@@ -1,7 +1,7 @@
-import autolens as al
+import autoarray as aa
 
 
-class MockConvolver(al.Convolver):
+class MockConvolver(aa.Convolver):
     def __init__(self, mask, kernel, blurring_mask=None):
         super(MockConvolver, self).__init__(
             mask=mask, kernel=kernel.in_2d

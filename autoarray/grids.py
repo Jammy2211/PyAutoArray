@@ -608,7 +608,7 @@ class SparseToGrid(object):
           grid's shape is speciifed by the unmasked_sparse_grid_shape parameter.
 
         - The (masked) sparse-grid, which is all pixels on the unmasked sparse-grid above which fall within unmasked \
-          grid pixels. These are the pixels which are actually used for other modules in PyAutoLens.
+          grid pixels. These are the pixels which are actually used for other modules in PyAutoArray.
 
         The origin of the unmasked sparse grid can be changed to allow off-center pairings with sparse-grid pixels, \
         which is necessary when a mask has a centre offset from (0.0", 0.0"). However, the sparse grid itself \
