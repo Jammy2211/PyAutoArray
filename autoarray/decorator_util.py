@@ -1,6 +1,5 @@
 import numba
-
-import autofit as af
+from autoarray import conf
 
 """
 Depending on if we're using a super computer, we want two different numba decorators:
@@ -14,9 +13,9 @@ If on super computer:
 @numba.jit(nopython=True, cache=False, parallel=True)
 """
 
-nopython = af.conf.instance.general.get("numba", "nopython", bool)
-cache = af.conf.instance.general.get("numba", "cache", bool)
-parallel = af.conf.instance.general.get("numba", "parallel", bool)
+nopython = conf.instance.general.get("numba", "nopython", bool)
+cache = conf.instance.general.get("numba", "cache", bool)
+parallel = conf.instance.general.get("numba", "parallel", bool)
 
 
 def jit(nopython=nopython, cache=cache, parallel=parallel):
