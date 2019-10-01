@@ -19,4 +19,4 @@ from autoarray.mapping_util import (
     sparse_mapping_util,
 )
 
-__version__ = "0.0.1"
+__version__ = '0.0.0'
