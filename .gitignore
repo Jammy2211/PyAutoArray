@@ -1,1 +1,9 @@
 .env
+__pycache__
+*.swp
+.eggs/
+autoarray.egg-info/
+
+build//
+build/
+dist/
