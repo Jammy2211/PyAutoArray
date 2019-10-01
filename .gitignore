@@ -7,3 +7,4 @@ autoarray.egg-info/
 build//
 build/
 dist/
+.idea/
