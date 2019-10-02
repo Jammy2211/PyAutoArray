@@ -28,7 +28,7 @@ class Convolver(object):
 
         Setup is required to perform 2D real-space convolution on the masked array. This module finds the \
         relationship between the unmasked 2D datas, masked datas and kernel, so that 2D real-space convolutions \
-        can be efficiently applied to reduced 1D masked arrays.
+        can be efficiently applied to reduced 1D masked structures.
 
         This calculation also accounts for the blurring of light outside of the masked regions which blurs into \
         the masked region.

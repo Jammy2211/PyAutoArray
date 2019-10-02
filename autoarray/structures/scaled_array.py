@@ -3,7 +3,7 @@ import logging
 import numpy as np
 
 from autoarray import exc
-from autoarray.arrays import mask as msk
+from autoarray.structures import mask as msk
 from autoarray.util import array_util, binning_util
 
 logging.basicConfig()

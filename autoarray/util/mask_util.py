@@ -811,7 +811,7 @@ def sub_mask_1d_index_for_sub_mask_2d_index_from_sub_mask(sub_mask):
     """Create a 2D array which maps every False entry of a 2D mask to its 1D mask array index 2D binned mask. Every \
     True entry is given a value -1.
 
-    This is used as a convenience tool for creating arrays util between different grids and arrays.
+    This is used as a convenience tool for creating structures util between different grids and structures.
 
     For example, if we had a 3x4:
 

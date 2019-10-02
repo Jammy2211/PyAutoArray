@@ -336,7 +336,7 @@ def binned_mask_1d_index_for_padded_mask_2d_index_from_mask_2d_and_bin_up_factor
     We create an array the same shape as the 2D mask (after padding for the binnning up procedure), where each entry \
     gives the binned up mask's 1D masked array index.
     
-    This is used as a convenience tool for creating arrays util between different grids and arrays.
+    This is used as a convenience tool for creating structures util between different grids and structures.
     
     For example, if we had a 4x4 mask:
     
