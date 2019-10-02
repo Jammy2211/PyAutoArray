@@ -250,7 +250,7 @@ def replace_noise_map_2d_values_where_image_2d_values_are_negative(
 def numpy_array_1d_to_fits(array_1d, file_path, overwrite=False):
     """Write a 1D NumPy array to a .fits file.
 
-    Before outputting a NumPy array, the array is flipped upside-down using np.flipud. This is so that the arrays \
+    Before outputting a NumPy array, the array is flipped upside-down using np.flipud. This is so that the structures \
     appear the same orientation as .fits files loaded in DS9.
 
     Parameters
@@ -283,7 +283,7 @@ def numpy_array_1d_to_fits(array_1d, file_path, overwrite=False):
 def numpy_array_1d_from_fits(file_path, hdu):
     """Read a 2D NumPy array to a .fits file.
 
-    After loading the NumPy array, the array is flipped upside-down using np.flipud. This is so that the arrays \
+    After loading the NumPy array, the array is flipped upside-down using np.flipud. This is so that the structures \
     appear the same orientation as .fits files loaded in DS9.
 
     Parameters
@@ -309,7 +309,7 @@ def numpy_array_1d_from_fits(file_path, hdu):
 def numpy_array_2d_to_fits(array_2d, file_path, overwrite=False):
     """Write a 2D NumPy array to a .fits file.
 
-    Before outputting a NumPy array, the array is flipped upside-down using np.flipud. This is so that the arrays \
+    Before outputting a NumPy array, the array is flipped upside-down using np.flipud. This is so that the structures \
     appear the same orientation as .fits files loaded in DS9.
 
     Parameters
@@ -342,7 +342,7 @@ def numpy_array_2d_to_fits(array_2d, file_path, overwrite=False):
 def numpy_array_2d_from_fits(file_path, hdu):
     """Read a 2D NumPy array to a .fits file.
 
-    After loading the NumPy array, the array is flipped upside-down using np.flipud. This is so that the arrays \
+    After loading the NumPy array, the array is flipped upside-down using np.flipud. This is so that the structures \
     appear the same orientation as .fits files loaded in DS9.
 
     Parameters

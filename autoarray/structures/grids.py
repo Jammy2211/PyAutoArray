@@ -5,7 +5,7 @@ from sklearn.cluster import KMeans
 
 from autoarray import decorator_util
 from autoarray import exc
-from autoarray.arrays import mask as msk
+from autoarray.structures import mask as msk
 from autoarray.util import grid_util, array_util, mask_util, binning_util, sparse_util
 
 

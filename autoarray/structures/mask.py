@@ -3,7 +3,7 @@ import logging
 import numpy as np
 
 from autoarray import exc
-from autoarray.arrays import scaled_array, grids
+from autoarray.structures import scaled_array, grids
 from autoarray.util import binning_util
 from autoarray.util import array_util, grid_util, mask_util
 
