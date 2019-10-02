@@ -731,7 +731,7 @@ class TestPixelizationGrid:
 
 class TestSparseToGrid:
     class TestUnmaskedShape:
-        def test__properties_consistent_with_mapping_util(self):
+        def test__properties_consistent_with_util(self):
             mask = aa.Mask(
                 array_2d=np.array(
                     [[True, False, True], [False, False, False], [True, False, True]]
@@ -768,7 +768,7 @@ class TestSparseToGrid:
                 "int"
             )
 
-            unmasked_sparse_for_sparse_util = aa.sparse_mapping_util.unmasked_sparse_for_sparse_from_mask_and_pixel_centres(
+            unmasked_sparse_for_sparse_util = aa.sparse_util.unmasked_sparse_for_sparse_from_mask_and_pixel_centres(
                 total_sparse_pixels=total_sparse_pixels,
                 mask=mask,
                 unmasked_sparse_grid_pixel_centres=unmasked_sparse_grid_pixel_centres,
@@ -776,7 +776,7 @@ class TestSparseToGrid:
                 "int"
             )
 
-            sparse_for_unmasked_sparse_util = aa.sparse_mapping_util.sparse_for_unmasked_sparse_from_mask_and_pixel_centres(
+            sparse_for_unmasked_sparse_util = aa.sparse_util.sparse_for_unmasked_sparse_from_mask_and_pixel_centres(
                 mask=mask,
                 unmasked_sparse_grid_pixel_centres=unmasked_sparse_grid_pixel_centres,
                 total_sparse_pixels=total_sparse_pixels,
@@ -784,12 +784,12 @@ class TestSparseToGrid:
                 "int"
             )
 
-            sparse_1d_index_for_mask_1d_index_util = aa.sparse_mapping_util.sparse_1d_index_for_mask_1d_index_from_sparse_mappings(
+            sparse_1d_index_for_mask_1d_index_util = aa.sparse_util.sparse_1d_index_for_mask_1d_index_from_sparse_mappings(
                 regular_to_unmasked_sparse=regular_to_unmasked_sparse_util,
                 sparse_for_unmasked_sparse=sparse_for_unmasked_sparse_util,
             )
 
-            sparse_grid_util = aa.sparse_mapping_util.sparse_grid_from_unmasked_sparse_grid(
+            sparse_grid_util = aa.sparse_util.sparse_grid_from_unmasked_sparse_grid(
                 unmasked_sparse_grid=unmasked_sparse_grid_util,
                 unmasked_sparse_for_sparse=unmasked_sparse_for_sparse_util,
             )
@@ -1349,7 +1349,7 @@ class TestInterpolator:
         self
     ):
         # noinspection PyUnusedLocal
-        @aa.grids.grid_interpolate
+        @aa.grid_interpolate
         def func(profile, grid, grid_radial_minimum=None):
             result = np.zeros(grid.shape[0])
             result[0] = 1
@@ -1384,7 +1384,7 @@ class TestInterpolator:
         self
     ):
         # noinspection PyUnusedLocal
-        @aa.grids.grid_interpolate
+        @aa.grid_interpolate
         def func(profile, grid, grid_radial_minimum=None):
             result = np.zeros((grid.shape[0], 2))
             result[0, :] = 1

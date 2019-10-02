@@ -7,7 +7,7 @@ import shutil
 import autoarray as aa
 from autoarray import exc
 
-test_data_dir = "{}/test_files/array/".format(
+test_data_dir = "{}/../test_files/array/".format(
     os.path.dirname(os.path.realpath(__file__))
 )
 
@@ -1123,7 +1123,7 @@ class TestMappingScaled:
 
         mask = aa.Mask(array_2d=mask, pixel_scales=(7.0, 7.0), sub_size=1)
 
-        mask_2d_index_for_mask_1d_index = aa.mask_mapping_util.sub_mask_2d_index_for_sub_mask_1d_index_from_mask_and_sub_size(
+        mask_2d_index_for_mask_1d_index = aa.mask_util.sub_mask_2d_index_for_sub_mask_1d_index_from_mask_and_sub_size(
             mask=mask, sub_size=1
         )
 
@@ -1136,7 +1136,7 @@ class TestMappingScaled:
             [[True, False, True], [False, False, False], [True, False, False]]
         )
 
-        mask_1d_index_for_sub_mask_1d_index_util = aa.mask_mapping_util.mask_1d_index_for_sub_mask_1d_index_from_mask(
+        mask_1d_index_for_sub_mask_1d_index_util = aa.mask_util.mask_1d_index_for_sub_mask_1d_index_from_mask(
             mask=mask, sub_size=2
         )
         mask = aa.Mask(array_2d=mask, pixel_scales=(3.0, 3.0), sub_size=2)
@@ -1151,7 +1151,7 @@ class TestMappingScaled:
 
         mask = aa.Mask(array_2d=mask, pixel_scales=(7.0, 7.0), sub_size=2)
 
-        sub_mask_2d_index_for_sub_mask_1d_index = aa.mask_mapping_util.sub_mask_2d_index_for_sub_mask_1d_index_from_mask_and_sub_size(
+        sub_mask_2d_index_for_sub_mask_1d_index = aa.mask_util.sub_mask_2d_index_for_sub_mask_1d_index_from_mask_and_sub_size(
             mask=mask, sub_size=2
         )
 
@@ -1170,7 +1170,7 @@ class TestMappingScaled:
 
         array_1d = np.array([1.0, 6.0, 4.0, 5.0, 2.0])
 
-        array_2d_util = aa.array_mapping_util.sub_array_2d_for_sub_array_1d_mask_and_sub_size(
+        array_2d_util = aa.array_util.sub_array_2d_for_sub_array_1d_mask_and_sub_size(
             sub_array_1d=array_1d, mask=mask, sub_size=1
         )
 
@@ -1203,7 +1203,7 @@ class TestMappingScaled:
 
         masked_array_2d = array_2d * np.invert(mask)
 
-        array_1d_util = aa.array_mapping_util.sub_array_1d_for_sub_array_2d_mask_and_sub_size(
+        array_1d_util = aa.array_util.sub_array_1d_for_sub_array_2d_mask_and_sub_size(
             mask=mask, sub_array_2d=array_2d, sub_size=1
         )
 
@@ -1438,7 +1438,7 @@ class TestMappingGrids:
 
         masked_grid_2d = grid_2d * np.invert(mask[:, :, None])
 
-        grid_1d_util = aa.grid_mapping_util.sub_grid_1d_from_sub_grid_2d_mask_and_sub_size(
+        grid_1d_util = aa.grid_util.sub_grid_1d_from_sub_grid_2d_mask_and_sub_size(
             sub_grid_2d=masked_grid_2d, mask=mask, sub_size=1
         )
 
@@ -1461,7 +1461,7 @@ class TestMappingGrids:
 
         grid_1d = np.array([[1.0, 1.0], [6.0, 6.0], [4.0, 4.0], [5.0, 5.0], [2.0, 2.0]])
 
-        grid_2d_util = aa.grid_mapping_util.sub_grid_2d_from_sub_grid_1d_mask_and_sub_size(
+        grid_2d_util = aa.grid_util.sub_grid_2d_from_sub_grid_1d_mask_and_sub_size(
             sub_grid_1d=grid_1d, mask=mask, sub_size=1
         )
 
