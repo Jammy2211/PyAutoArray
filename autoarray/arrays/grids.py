@@ -5,11 +5,8 @@ from sklearn.cluster import KMeans
 
 from autoarray import decorator_util
 from autoarray import exc
-from autoarray import mask as msk
-from autoarray.util import grid_util, array_util, mask_util, binning_util
-from autoarray.mapping_util import (
-    sparse_mapping_util,
-)
+from autoarray.arrays import mask as msk
+from autoarray.util import grid_util, array_util, mask_util, binning_util, sparse_util
 
 
 class Grid(np.ndarray):
@@ -667,7 +664,7 @@ class SparseToGrid(object):
             unmasked_sparse_grid_pixel_centres=unmasked_sparse_grid_pixel_centres,
         )
 
-        sparse_for_unmasked_sparse = sparse_mapping_util.sparse_for_unmasked_sparse_from_mask_and_pixel_centres(
+        sparse_for_unmasked_sparse = sparse_util.sparse_for_unmasked_sparse_from_mask_and_pixel_centres(
             mask=grid.mask,
             unmasked_sparse_grid_pixel_centres=unmasked_sparse_grid_pixel_centres,
             total_sparse_pixels=total_sparse_pixels,
@@ -675,7 +672,7 @@ class SparseToGrid(object):
             "int"
         )
 
-        unmasked_sparse_for_sparse = sparse_mapping_util.unmasked_sparse_for_sparse_from_mask_and_pixel_centres(
+        unmasked_sparse_for_sparse = sparse_util.unmasked_sparse_for_sparse_from_mask_and_pixel_centres(
             total_sparse_pixels=total_sparse_pixels,
             mask=grid.mask,
             unmasked_sparse_grid_pixel_centres=unmasked_sparse_grid_pixel_centres,
@@ -690,14 +687,14 @@ class SparseToGrid(object):
             origin=origin,
         ).astype("int")
 
-        sparse_1d_index_for_mask_1d_index = sparse_mapping_util.sparse_1d_index_for_mask_1d_index_from_sparse_mappings(
+        sparse_1d_index_for_mask_1d_index = sparse_util.sparse_1d_index_for_mask_1d_index_from_sparse_mappings(
             regular_to_unmasked_sparse=regular_to_unmasked_sparse,
             sparse_for_unmasked_sparse=sparse_for_unmasked_sparse,
         ).astype(
             "int"
         )
 
-        sparse_grid = sparse_mapping_util.sparse_grid_from_unmasked_sparse_grid(
+        sparse_grid = sparse_util.sparse_grid_from_unmasked_sparse_grid(
             unmasked_sparse_grid=unmasked_sparse_grid_1d,
             unmasked_sparse_for_sparse=unmasked_sparse_for_sparse,
         )
@@ -728,7 +725,7 @@ class SparseToGrid(object):
         """
 
         if total_pixels > binned_grid.shape[0]:
-            raise exc.PixelizationException
+            raise exc.GridException
 
         kmeans = KMeans(
             n_clusters=total_pixels, random_state=seed, n_init=n_iter, max_iter=max_iter
@@ -736,7 +733,7 @@ class SparseToGrid(object):
 
         kmeans = kmeans.fit(X=binned_grid, sample_weight=binned_weight_map)
 
-        sparse_1d_index_for_mask_1d_index = sparse_mapping_util.sparse_1d_index_for_mask_1d_index_from_binned_grid(
+        sparse_1d_index_for_mask_1d_index = sparse_util.sparse_1d_index_for_mask_1d_index_from_binned_grid(
             sparse_labels=kmeans.labels_,
             binned_mask_1d_index_to_mask_1d_indexes=binned_grid.binned_mask_1d_index_to_mask_1d_indexes,
             binned_mask_1d_index_to_mask_1d_sizes=binned_grid.binned_mask_1d_index_to_mask_1d_sizes,

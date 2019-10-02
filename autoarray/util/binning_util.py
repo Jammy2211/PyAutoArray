@@ -2,7 +2,7 @@ from autoarray import decorator_util
 import numpy as np
 
 from autoarray.util import array_util, mask_util
-from autoarray.mapping_util import mask_mapping_util
+from autoarray.util import mask_util
 
 
 @decorator_util.jit()
@@ -297,19 +297,19 @@ def mask_1d_index_for_padded_mask_2d_index_from_mask_2d_and_bin_up_factor(
     True entry is given a value -1.
 
     This uses the function *mask_1d_index_for_padded_mask_2d_index*, see this method for a more detailed description of the \
-    mapping_util.
+    util.
 
     This function first pads the mask using the same padding when computed a binned up mask.
 
     Parameters
     ----------
     mask_2d : ndarray
-        The 2D mask that the mapping_util array is created for.
+        The 2D mask that the util array is created for.
 
     Returns
     -------
     ndarray
-        The 2D array mapping_util padded 2D mask entries to their 1D masked array indexes.
+        The 2D array util padded 2D mask entries to their 1D masked array indexes.
 
     Examples
     --------
@@ -321,7 +321,7 @@ def mask_1d_index_for_padded_mask_2d_index_from_mask_2d_and_bin_up_factor(
         array_2d=mask_2d, bin_up_factor=bin_up_factor, pad_value=True
     )
 
-    return mask_mapping_util.sub_mask_1d_index_for_sub_mask_2d_index_from_sub_mask(
+    return mask_util.sub_mask_1d_index_for_sub_mask_2d_index_from_sub_mask(
         sub_mask=padded_mask_2d
     )
 
@@ -336,7 +336,7 @@ def binned_mask_1d_index_for_padded_mask_2d_index_from_mask_2d_and_bin_up_factor
     We create an array the same shape as the 2D mask (after padding for the binnning up procedure), where each entry \
     gives the binned up mask's 1D masked array index.
     
-    This is used as a convenience tool for creating arrays mapping_util between different grids and arrays.
+    This is used as a convenience tool for creating arrays util between different grids and arrays.
     
     For example, if we had a 4x4 mask:
     
@@ -367,7 +367,7 @@ def binned_mask_1d_index_for_padded_mask_2d_index_from_mask_2d_and_bin_up_factor
     Returns
     -------
     ndarray
-        The 2D array mapping_util 2D mask entries to their 1D binned masked array indexes.
+        The 2D array util 2D mask entries to their 1D binned masked array indexes.
 
     Examples
     --------
@@ -462,7 +462,7 @@ def binned_masked_array_1d_for_masked_array_1d_from_mask_2d_and_bin_up_factor(
     Returns
     -------
     ndarray
-        The 1D array mapping_util 1D binned mask entries to their corresponding 1D masked array index.
+        The 1D array util 1D binned mask entries to their corresponding 1D masked array index.
 
     Examples
     --------
@@ -559,7 +559,7 @@ def masked_array_1d_for_binned_masked_array_1d_from_mask_2d_and_bin_up_factor(
     Returns
     -------
     ndarray
-        The 1D array mapping_util 1D binned mask entries to their corresponding 1D masked array index.
+        The 1D array util 1D binned mask entries to their corresponding 1D masked array index.
 
     Examples
     --------
@@ -607,7 +607,7 @@ def masked_array_1d_for_binned_masked_array_1d_all_from_mask_2d_and_bin_up_facto
     the original 2D mask that was binned up.
 
     Array indexing starts from the top-left and goes rightwards and downwards. The top-left pixel of each mask is \
-    used before binning up. Minus one's are used for mapping_util which go to masked values with True.
+    used before binning up. Minus one's are used for util which go to masked values with True.
 
     This uses the convenience tools *padded_mask_2d_to_mask_1d* and *padded_mask_2d_to_binned_mask_1d* to \
     make the calculation simpler.
@@ -660,7 +660,7 @@ def masked_array_1d_for_binned_masked_array_1d_all_from_mask_2d_and_bin_up_facto
     Returns
     -------
     ndarray
-        The 1D array mapping_util 1D binned mask entries to their corresponding 1D masked array index.
+        The 1D array util 1D binned mask entries to their corresponding 1D masked array index.
 
     Examples
     --------

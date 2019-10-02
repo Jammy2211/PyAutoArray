@@ -6,7 +6,7 @@ from autoarray.util import mask_util
 
 class Convolver(object):
     def __init__(self, mask, kernel):
-        """ Class to setup the 1D convolution of an / mapping_util matrix.
+        """ Class to setup the 1D convolution of an / util matrix.
 
         Take a simple 3x3 and masks:
 
@@ -98,7 +98,7 @@ class Convolver(object):
         image_frame_lengths = 9
 
         Once we have set up all these quantities, the convolution routine simply uses them to convolve a 1D array of a
-        masked or the masked of a mapping_util in the inversion module.
+        masked or the masked of a util in the inversion module.
 
         BLURRING FRAMES:
         --------------
@@ -106,7 +106,7 @@ class Convolver(object):
         Whilst the scheme above accounts for all blurred light within the masks, it does not account for the fact that \
         pixels outside of the masks will also blur light into it. This effect is accounted for using blurring frames.
 
-        It is omitted for mapping_util matrix blurring, as an inversion does not fit datas outside of the masks.
+        It is omitted for util matrix blurring, as an inversion does not fit datas outside of the masks.
 
         First, a blurring masks is computed from a masks, which describes all pixels which are close enough to the masks \
         to blur light into it for a given kernel size. Following the example above, the following blurring masks is \
@@ -375,9 +375,9 @@ class Convolver(object):
         return blurred_image_1d
 
     def convolve_mapping_matrix(self, mapping_matrix):
-        """For a given inversion mapping_util matrix, convolve every pixel's mapped with the PSF kernel.
+        """For a given inversion util matrix, convolve every pixel's mapped with the PSF kernel.
 
-        A mapping_util matrix provides non-zero entries in all elements which map two pixels to one another
+        A util matrix provides non-zero entries in all elements which map two pixels to one another
         (see *inversions.mappers*).
 
         For example, lets take an which is masked using a 'cross' of 5 pixels:
@@ -386,7 +386,7 @@ class Convolver(object):
         [[False, False, False]],
         [[ True, False,  True]]
 
-        As example mapping_util matrix of this cross is as follows (5 pixels x 3 source pixels):
+        As example util matrix of this cross is as follows (5 pixels x 3 source pixels):
 
         [1, 0, 0] [0->0]
         [1, 0, 0] [1->0]
@@ -394,7 +394,7 @@ class Convolver(object):
         [0, 1, 0] [3->1]
         [0, 0, 1] [4->2]
 
-        For each source-pixel, we can create an of its unit-surface brightnesses by mapping_util the non-zero
+        For each source-pixel, we can create an of its unit-surface brightnesses by util the non-zero
         entries back to masks. For example, doing this for source pixel 1 gives:
 
         [[0.0, 1.0, 0.0]],
@@ -428,8 +428,8 @@ class Convolver(object):
         [[0.0, 0.7, 0.7]],
         [[0.0, 0.0, 0.0]]
 
-        Finally, we map each of these blurred back to a blurred mapping_util matrix, which is analogous to the
-        mapping_util matrix.
+        Finally, we map each of these blurred back to a blurred util matrix, which is analogous to the
+        util matrix.
 
         [0.6, 0.0, 0.0] [0->0]
         [0.6, 0.0, 0.0] [1->0]
@@ -437,13 +437,13 @@ class Convolver(object):
         [0.0, 0.7, 0.0] [3->1]
         [0.0, 0.0, 0.6] [4->2]
 
-        If the mapping_util matrix is sub-gridded, we perform the convolution on the fractional surface brightnesses in an
+        If the util matrix is sub-gridded, we perform the convolution on the fractional surface brightnesses in an
         identical fashion to above.
 
         Parameters
         -----------
         mapping_matrix : ndarray
-            The 2D mapping_util matix describing how every inversion pixel maps to an datas_ pixel.
+            The 2D util matix describing how every inversion pixel maps to an datas_ pixel.
         """
         return self.convolve_matrix_jit(
             mapping_matrix=mapping_matrix,
