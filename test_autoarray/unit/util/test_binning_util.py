@@ -780,7 +780,8 @@ class TestMask1DIndexForPaddedMask2dIndex(object):
         )
 
         assert (
-            mask_1d_index_for_padded_mask_2d_index == np.array([[0, 1], [-1, 2], [-1, 3]])
+            mask_1d_index_for_padded_mask_2d_index
+            == np.array([[0, 1], [-1, 2], [-1, 3]])
         ).all()
 
     def test__includes_padding__padded_entries_are_given_minus_ones(self):

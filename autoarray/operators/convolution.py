@@ -216,7 +216,9 @@ class Convolver(object):
                     ].shape[0]
                     mask_1d_index += 1
 
-        self.blurring_mask = mask_util.blurring_mask_from_mask_and_kernel_shape(mask=mask, kernel_shape=kernel.shape)
+        self.blurring_mask = mask_util.blurring_mask_from_mask_and_kernel_shape(
+            mask=mask, kernel_shape=kernel.shape
+        )
 
         self.pixels_in_blurring_mask = int(
             np.size(self.blurring_mask) - np.sum(self.blurring_mask)
@@ -289,7 +291,9 @@ class Convolver(object):
 
         return frame, kernel_frame
 
-    def convolved_image_1d_from_image_array_and_blurring_array(self, image_array, blurring_array):
+    def convolved_image_1d_from_image_array_and_blurring_array(
+        self, image_array, blurring_array
+    ):
         """For a given 1D array and blurring array, convolve the two using this convolver.
 
         Parameters
@@ -317,9 +321,11 @@ class Convolver(object):
             blurring_frame_1d_lengths=self.blurring_frame_1d_lengths,
         )
 
-        return self.mask.scaled_array_from_array_1d(array_1d=convolved_image_1d)
+        return self.mask.mapping.scaled_array_from_array_1d(array_1d=convolved_image_1d)
 
-    def convolved_scaled_array_from_image_array_and_blurring_array(self, image_array, blurring_array):
+    def convolved_scaled_array_from_image_array_and_blurring_array(
+        self, image_array, blurring_array
+    ):
         """For a given 1D array and blurring array, convolve the two using this convolver.
 
         Parameters
@@ -329,8 +335,10 @@ class Convolver(object):
         blurring_array : ndarray
             1D array of the blurring values which blur into the array after PSF convolution.
         """
-        convolved_image_1d = self.convolved_image_1d_from_image_array_and_blurring_array(image_array=image_array, blurring_array=blurring_array)
-        return self.mask.scaled_array_from_array_1d(array_1d=convolved_image_1d)
+        convolved_image_1d = self.convolved_image_1d_from_image_array_and_blurring_array(
+            image_array=image_array, blurring_array=blurring_array
+        )
+        return self.mask.mapping.scaled_array_from_array_1d(array_1d=convolved_image_1d)
 
     @staticmethod
     @decorator_util.jit()

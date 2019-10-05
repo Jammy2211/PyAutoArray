@@ -151,9 +151,7 @@ class Grid(np.ndarray):
         """
 
         sub_grid_1d = grid_util.grid_1d_from_mask_pixel_scales_sub_size_and_origin(
-            mask=mask,
-            pixel_scales=mask.pixel_scales,
-            sub_size=mask.sub_size,
+            mask=mask, pixel_scales=mask.pixel_scales, sub_size=mask.sub_size
         )
 
         return Grid(sub_grid_1d=sub_grid_1d, mask=mask)
@@ -176,7 +174,7 @@ class Grid(np.ndarray):
             The size (sub_size x sub_size) of each unmasked pixels sub-grid.
         """
 
-        mask = msk.Mask.unmasked_from_shape_pixel_scales_and_sub_size(
+        mask = msk.AbstractMask.unmasked_from_shape_pixel_scales_and_sub_size(
             shape=shape, pixel_scales=(pixel_scale, pixel_scale), sub_size=sub_size
         )
 
@@ -252,19 +250,19 @@ class Grid(np.ndarray):
 
     @classmethod
     def from_sub_grid_2d_and_mask(cls, sub_grid_2d, mask):
-        return mask.grid_from_sub_grid_2d(sub_grid_2d=sub_grid_2d)
+        return mask.mapping.grid_from_sub_grid_2d(sub_grid_2d=sub_grid_2d)
 
     @classmethod
     def from_2d(cls, grid_2d, pixel_scale, origin=(0.0, 0.0)):
 
-        mask = msk.Mask.unmasked_from_shape_pixel_scales_and_sub_size(
+        mask = msk.AbstractMask.unmasked_from_shape_pixel_scales_and_sub_size(
             shape=(grid_2d.shape[0], grid_2d.shape[1]),
             pixel_scales=(pixel_scale, pixel_scale),
             sub_size=1,
             origin=origin,
         )
 
-        return mask.grid_from_sub_grid_2d(sub_grid_2d=grid_2d)
+        return mask.mapping.grid_from_sub_grid_2d(sub_grid_2d=grid_2d)
 
     @property
     def in_1d(self):
@@ -272,15 +270,15 @@ class Grid(np.ndarray):
 
     @property
     def in_2d(self):
-        return self.mask.sub_grid_2d_from_sub_grid_1d(sub_grid_1d=self)
+        return self.mask.mapping.sub_grid_2d_from_sub_grid_1d(sub_grid_1d=self)
 
     @property
     def in_1d_binned(self):
-        return self.mask.grid_binned_from_sub_grid_1d(sub_grid_1d=self)
+        return self.mask.mapping.grid_binned_from_sub_grid_1d(sub_grid_1d=self)
 
     @property
     def in_2d_binned(self):
-        return self.mask.grid_2d_binned_from_sub_grid_1d(sub_grid_1d=self)
+        return self.mask.mapping.grid_2d_binned_from_sub_grid_1d(sub_grid_1d=self)
 
     @property
     def total_pixels(self):
@@ -318,7 +316,7 @@ class Grid(np.ndarray):
 
         padded_shape = (shape[0] + kernel_shape[0] - 1, shape[1] + kernel_shape[1] - 1)
 
-        padded_mask = msk.Mask.unmasked_from_shape_pixel_scales_and_sub_size(
+        padded_mask = msk.AbstractMask.unmasked_from_shape_pixel_scales_and_sub_size(
             shape=padded_shape,
             pixel_scales=self.mask.pixel_scales,
             sub_size=self.mask.sub_size,
@@ -657,7 +655,12 @@ class SparseToGrid(object):
         )
 
         unmasked_sparse_grid_pixel_centres = grid_util.grid_pixel_centres_1d_from_grid_arcsec_1d_shape_and_pixel_scales(
-            grid_arcsec_1d=unmasked_sparse_grid_1d, shape=grid.mask.shape, pixel_scales=grid.mask.pixel_scales).astype('int')
+            grid_arcsec_1d=unmasked_sparse_grid_1d,
+            shape=grid.mask.shape,
+            pixel_scales=grid.mask.pixel_scales,
+        ).astype(
+            "int"
+        )
 
         total_sparse_pixels = mask_util.total_sparse_pixels_from_mask(
             mask=grid.mask,
@@ -685,7 +688,9 @@ class SparseToGrid(object):
             shape=unmasked_sparse_shape,
             pixel_scales=pixel_scales,
             origin=origin,
-        ).astype("int")
+        ).astype(
+            "int"
+        )
 
         sparse_1d_index_for_mask_1d_index = sparse_util.sparse_1d_index_for_mask_1d_index_from_sparse_mappings(
             regular_to_unmasked_sparse=regular_to_unmasked_sparse,

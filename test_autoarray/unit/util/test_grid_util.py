@@ -835,9 +835,7 @@ class TestGrid2DFromShape:
 
 
 class TestGridConversions(object):
-    def test__pixel_grid_1d_from_arcsec_grid_1d__coordinates_in_origins_of_pixels(
-        self
-    ):
+    def test__pixel_grid_1d_from_arcsec_grid_1d__coordinates_in_origins_of_pixels(self):
 
         grid_arcsec = np.array([[1.0, -2.0], [1.0, 2.0], [-1.0, -2.0], [-1.0, 2.0]])
 

@@ -575,7 +575,8 @@ class Test2dIndexesfrom1dIndex(object):
         )
 
         assert (
-            index_2d_for_index_1d == np.array([[0, 0], [0, 1], [0, 2], [1, 0], [1, 1], [1, 2]])
+            index_2d_for_index_1d
+            == np.array([[0, 0], [0, 1], [0, 2], [1, 0], [1, 1], [1, 2]])
         ).all()
 
     def test__6_1d_indexes_from_0_to_5__map_to_shape_3x2(self):
@@ -659,7 +660,7 @@ class TestSubArray1DFromSubArray2d(object):
 
         mask = np.array([[True, True, True], [True, False, True], [True, True, True]])
 
-        array_1d = aa.array_util.sub_array_1d_for_sub_array_2d_mask_and_sub_size(
+        array_1d = aa.array_util.sub_array_1d_from_sub_array_2d_mask_and_sub_size(
             mask=mask, sub_array_2d=array_2d, sub_size=1
         )
 
@@ -671,7 +672,7 @@ class TestSubArray1DFromSubArray2d(object):
             [[True, False, True], [False, False, False], [True, False, True]]
         )
 
-        array_1d = aa.array_util.sub_array_1d_for_sub_array_2d_mask_and_sub_size(
+        array_1d = aa.array_util.sub_array_1d_from_sub_array_2d_mask_and_sub_size(
             mask=mask, sub_array_2d=array_2d, sub_size=1
         )
 
@@ -687,7 +688,7 @@ class TestSubArray1DFromSubArray2d(object):
             ]
         )
 
-        array_1d = aa.array_util.sub_array_1d_for_sub_array_2d_mask_and_sub_size(
+        array_1d = aa.array_util.sub_array_1d_from_sub_array_2d_mask_and_sub_size(
             mask=mask, sub_array_2d=array_2d, sub_size=1
         )
 
@@ -704,7 +705,7 @@ class TestSubArray1DFromSubArray2d(object):
             ]
         )
 
-        array_1d = aa.array_util.sub_array_1d_for_sub_array_2d_mask_and_sub_size(
+        array_1d = aa.array_util.sub_array_1d_from_sub_array_2d_mask_and_sub_size(
             mask=mask, sub_array_2d=array_2d, sub_size=1
         )
 
@@ -725,7 +726,7 @@ class TestSubArray1DFromSubArray2d(object):
 
         mask = np.array([[True, True, True], [True, False, True], [True, True, True]])
 
-        sub_array_1d = aa.array_util.sub_array_1d_for_sub_array_2d_mask_and_sub_size(
+        sub_array_1d = aa.array_util.sub_array_1d_from_sub_array_2d_mask_and_sub_size(
             sub_array_2d=sub_array_2d, mask=mask, sub_size=2
         )
 
@@ -733,7 +734,7 @@ class TestSubArray1DFromSubArray2d(object):
 
         mask = np.array([[True, False, True], [True, False, True], [True, True, False]])
 
-        sub_array_1d = aa.array_util.sub_array_1d_for_sub_array_2d_mask_and_sub_size(
+        sub_array_1d = aa.array_util.sub_array_1d_from_sub_array_2d_mask_and_sub_size(
             sub_array_2d=sub_array_2d, mask=mask, sub_size=2
         )
 
@@ -760,7 +761,7 @@ class TestSubArray1DFromSubArray2d(object):
             ]
         )
 
-        sub_array_1d = aa.array_util.sub_array_1d_for_sub_array_2d_mask_and_sub_size(
+        sub_array_1d = aa.array_util.sub_array_1d_from_sub_array_2d_mask_and_sub_size(
             sub_array_2d=sub_array_2d, mask=mask, sub_size=2
         )
 
@@ -818,7 +819,7 @@ class TestSubArray1DFromSubArray2d(object):
             ]
         )
 
-        sub_array_1d = aa.array_util.sub_array_1d_for_sub_array_2d_mask_and_sub_size(
+        sub_array_1d = aa.array_util.sub_array_1d_from_sub_array_2d_mask_and_sub_size(
             sub_array_2d=sub_array_2d, mask=mask, sub_size=2
         )
 
@@ -844,7 +845,7 @@ class TestSubArray1DFromSubArray2d(object):
 
         mask = np.array([[False, True], [True, False]])
 
-        sub_array_1d = aa.array_util.sub_array_1d_for_sub_array_2d_mask_and_sub_size(
+        sub_array_1d = aa.array_util.sub_array_1d_from_sub_array_2d_mask_and_sub_size(
             sub_array_2d=sub_array_2d, mask=mask, sub_size=3
         )
 
@@ -861,7 +862,7 @@ class TestSubArray2dForSubArray1d(object):
 
         mask = np.full(fill_value=False, shape=(2, 2))
 
-        array_2d = aa.array_util.sub_array_2d_for_sub_array_1d_mask_and_sub_size(
+        array_2d = aa.array_util.sub_array_2d_from_sub_array_1d_mask_and_sub_size(
             sub_array_1d=array_1d, mask=mask, sub_size=1
         )
 
@@ -871,7 +872,7 @@ class TestSubArray2dForSubArray1d(object):
 
         mask = np.array([[False, False], [False, True]])
 
-        array_2d = aa.array_util.sub_array_2d_for_sub_array_1d_mask_and_sub_size(
+        array_2d = aa.array_util.sub_array_2d_from_sub_array_1d_mask_and_sub_size(
             sub_array_1d=array_1d, mask=mask, sub_size=1
         )
 
@@ -887,7 +888,7 @@ class TestSubArray2dForSubArray1d(object):
             ]
         )
 
-        array_2d = aa.array_util.sub_array_2d_for_sub_array_1d_mask_and_sub_size(
+        array_2d = aa.array_util.sub_array_2d_from_sub_array_1d_mask_and_sub_size(
             sub_array_1d=array_1d, mask=mask, sub_size=1
         )
 
@@ -906,7 +907,7 @@ class TestSubArray2dForSubArray1d(object):
 
         mask = np.array([[False, False], [False, True]])
 
-        array_2d = aa.array_util.sub_array_2d_for_sub_array_1d_mask_and_sub_size(
+        array_2d = aa.array_util.sub_array_2d_from_sub_array_1d_mask_and_sub_size(
             sub_array_1d=array_1d, mask=mask, sub_size=2
         )
 

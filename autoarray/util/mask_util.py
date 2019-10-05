@@ -4,7 +4,6 @@ from skimage.transform import rescale
 from autoarray import decorator_util
 from autoarray import exc
 from autoarray.util import grid_util
-from autoarray.util import array_util, mask_util
 
 
 @decorator_util.jit()
@@ -457,8 +456,12 @@ def blurring_mask_from_mask_and_kernel_shape(mask, kernel_shape):
     for y in range(mask.shape[0]):
         for x in range(mask.shape[1]):
             if not mask[y, x]:
-                for y1 in range((-kernel_shape[0] + 1) // 2, (kernel_shape[0] + 1) // 2):
-                    for x1 in range((-kernel_shape[1] + 1) // 2, (kernel_shape[1] + 1) // 2):
+                for y1 in range(
+                    (-kernel_shape[0] + 1) // 2, (kernel_shape[0] + 1) // 2
+                ):
+                    for x1 in range(
+                        (-kernel_shape[1] + 1) // 2, (kernel_shape[1] + 1) // 2
+                    ):
                         if (
                             0 <= x + x1 <= mask.shape[1] - 1
                             and 0 <= y + y1 <= mask.shape[0] - 1
@@ -620,7 +623,7 @@ def border_1d_indexes_from_mask(mask):
      pixels in an annular mask are edge pixels but not borders pixels."""
 
     edge_pixels = edge_1d_indexes_from_mask(mask=mask)
-    mask_2d_index_for_mask_1d_index = mask_util.sub_mask_2d_index_for_sub_mask_1d_index_from_mask_and_sub_size(
+    mask_2d_index_for_mask_1d_index = sub_mask_2d_index_for_sub_mask_1d_index_from_mask_and_sub_size(
         mask=mask, sub_size=1
     )
 
@@ -647,6 +650,7 @@ def border_1d_indexes_from_mask(mask):
 
     return border_pixels
 
+
 def sub_border_pixel_1d_indexes_from_mask_and_sub_size(mask, sub_size):
     """Compute a 1D array listing all borders pixel indexes in the mask. A borders pixel is a pixel which:
 
@@ -661,7 +665,7 @@ def sub_border_pixel_1d_indexes_from_mask_and_sub_size(mask, sub_size):
 
     sub_border_pixels = np.zeros(shape=border_pixels.shape[0])
 
-    mask_1d_index_to_sub_mask_2d_indexes = mask_util.sub_mask_1d_indexes_for_mask_1d_index_from_mask(
+    mask_1d_index_to_sub_mask_2d_indexes = sub_mask_1d_indexes_for_mask_1d_index_from_mask(
         mask=mask, sub_size=sub_size
     )
 
@@ -749,7 +753,7 @@ def mask_1d_index_for_sub_mask_1d_index_from_mask(mask, sub_size):
     mask_1d_index_for_sub_mask_1d_index = mask_1d_index_for_sub_mask_1d_index_from_mask(mask=mask, sub_size=2)
     """
 
-    total_sub_pixels = mask_util.total_sub_pixels_from_mask_and_sub_size(
+    total_sub_pixels = total_sub_pixels_from_mask_and_sub_size(
         mask=mask, sub_size=sub_size
     )
 
@@ -790,7 +794,7 @@ def sub_mask_1d_indexes_for_mask_1d_index_from_mask(mask, sub_size):
     mask_1d_index_for_sub_mask_1d_index = mask_1d_index_for_sub_mask_1d_index_from_mask(mask=mask, sub_size=2)
     """
 
-    total_pixels = mask_util.total_pixels_from_mask(mask=mask)
+    total_pixels = total_pixels_from_mask(mask=mask)
 
     sub_mask_1d_indexes_for_mask_1d_index = [[] for _ in range(total_pixels)]
 
@@ -841,7 +845,9 @@ def sub_mask_1d_index_for_sub_mask_2d_index_from_sub_mask(sub_mask):
     sub_two_to_one = mask_2d_to_mask_1d_index_from_mask_2d(mask_2d=mask_2d)
     """
 
-    sub_mask_1d_index_for_sub_mask_2d_index = np.full(fill_value=-1, shape=sub_mask.shape)
+    sub_mask_1d_index_for_sub_mask_2d_index = np.full(
+        fill_value=-1, shape=sub_mask.shape
+    )
 
     sub_mask_1d_index = 0
 
@@ -889,7 +895,7 @@ def sub_mask_2d_index_for_sub_mask_1d_index_from_mask_and_sub_size(mask, sub_siz
 
     """
 
-    total_sub_pixels = mask_util.total_sub_pixels_from_mask_and_sub_size(
+    total_sub_pixels = total_sub_pixels_from_mask_and_sub_size(
         mask=mask, sub_size=sub_size
     )
     sub_mask_2d_index_for_sub_mask_1d_index = np.zeros(shape=(total_sub_pixels, 2))
@@ -900,10 +906,9 @@ def sub_mask_2d_index_for_sub_mask_1d_index_from_mask_and_sub_size(mask, sub_siz
             if not mask[y, x]:
                 for y1 in range(sub_size):
                     for x1 in range(sub_size):
-                        sub_mask_2d_index_for_sub_mask_1d_index[sub_mask_1d_index, :] = (
-                            (y * sub_size) + y1,
-                            (x * sub_size) + x1,
-                        )
+                        sub_mask_2d_index_for_sub_mask_1d_index[
+                            sub_mask_1d_index, :
+                        ] = ((y * sub_size) + y1, (x * sub_size) + x1)
                         sub_mask_1d_index += 1
 
     return sub_mask_2d_index_for_sub_mask_1d_index

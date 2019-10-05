@@ -362,7 +362,7 @@ def numpy_array_2d_from_fits(file_path, hdu):
     array_2d = numpy_array_from_fits(file_path='/path/to/file/filename.fits', hdu=0)
     """
     hdu_list = fits.open(file_path)
-    return np.flipud(np.array(hdu_list[hdu].data)).astype('float64')
+    return np.flipud(np.array(hdu_list[hdu].data)).astype("float64")
 
 
 @decorator_util.jit()
@@ -445,7 +445,7 @@ def index_1d_for_index_2d_for_shape(indexes_2d, shape):
 
 
 @decorator_util.jit()
-def sub_array_1d_for_sub_array_2d_mask_and_sub_size(sub_array_2d, mask, sub_size):
+def sub_array_1d_from_sub_array_2d_mask_and_sub_size(sub_array_2d, mask, sub_size):
     """For a 2D sub array and mask, map the values of all unmasked pixels to a 1D sub-array.
 
     A sub-array is an array whose dimensions correspond to the hyper array (e.g. used to make the grid) \
@@ -511,7 +511,7 @@ def sub_array_1d_for_sub_array_2d_mask_and_sub_size(sub_array_2d, mask, sub_size
     return sub_array_1d
 
 
-def sub_array_2d_for_sub_array_1d_mask_and_sub_size(sub_array_1d, mask, sub_size):
+def sub_array_2d_from_sub_array_1d_mask_and_sub_size(sub_array_1d, mask, sub_size):
     """For a 1D array that was computed by util unmasked values from a 2D array of shape (rows, columns), map its \
     values back to the original 2D array where masked values are set to zero.
 

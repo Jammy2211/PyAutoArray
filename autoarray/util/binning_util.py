@@ -2,7 +2,6 @@ from autoarray import decorator_util
 import numpy as np
 
 from autoarray.util import array_util, mask_util
-from autoarray.util import mask_util
 
 
 @decorator_util.jit()
@@ -490,7 +489,9 @@ def binned_masked_array_1d_for_masked_array_1d_from_mask_2d_and_bin_up_factor(
     for mask_y in range(mask_1d_index_for_padded_mask_2d_index.shape[0]):
         for mask_x in range(mask_1d_index_for_padded_mask_2d_index.shape[1]):
             if mask_1d_index_for_padded_mask_2d_index[mask_y, mask_x] >= 0:
-                padded_mask_index = mask_1d_index_for_padded_mask_2d_index[mask_y, mask_x]
+                padded_mask_index = mask_1d_index_for_padded_mask_2d_index[
+                    mask_y, mask_x
+                ]
                 binned_mask_1d_index = binned_mask_1d_index_for_padded_mask_2d_index[
                     mask_y, mask_x
                 ]
@@ -574,7 +575,9 @@ def masked_array_1d_for_binned_masked_array_1d_from_mask_2d_and_bin_up_factor(
 
     total_binned_masked_pixels = mask_util.total_pixels_from_mask(mask=binned_upmask)
 
-    masked_array_1d_for_binned_masked_array_1d = -1 * np.ones(total_binned_masked_pixels)
+    masked_array_1d_for_binned_masked_array_1d = -1 * np.ones(
+        total_binned_masked_pixels
+    )
 
     mask_1d_index_for_padded_mask_2d_index = mask_1d_index_for_padded_mask_2d_index_from_mask_2d_and_bin_up_factor(
         mask_2d=mask_2d, bin_up_factor=bin_up_factor
@@ -591,7 +594,9 @@ def masked_array_1d_for_binned_masked_array_1d_from_mask_2d_and_bin_up_factor(
                     mask_y, mask_x
                 ]
                 if masked_array_1d_for_binned_masked_array_1d[binned_mask_index] == -1:
-                    padded_mask_index = mask_1d_index_for_padded_mask_2d_index[mask_y, mask_x]
+                    padded_mask_index = mask_1d_index_for_padded_mask_2d_index[
+                        mask_y, mask_x
+                    ]
                     masked_array_1d_for_binned_masked_array_1d[
                         binned_mask_index
                     ] = padded_mask_index
@@ -697,7 +702,9 @@ def masked_array_1d_for_binned_masked_array_1d_all_from_mask_2d_and_bin_up_facto
                     mask_y, mask_x
                 ]
                 binned_mask_count = int(binned_masked_array_1d_sizes[binned_mask_index])
-                padded_mask_index = mask_1d_index_for_padded_mask_2d_index[mask_y, mask_x]
+                padded_mask_index = mask_1d_index_for_padded_mask_2d_index[
+                    mask_y, mask_x
+                ]
 
                 masked_array_1d_for_binned_masked_array_1d_all[
                     binned_mask_index, binned_mask_count

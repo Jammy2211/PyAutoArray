@@ -42,36 +42,43 @@ class DataFit(object):
         self.model_data = model_data
 
         residual_map = fit_util.residual_map_from_data_and_model_data(
-            data=data, model_data=model_data)
+            data=data, model_data=model_data
+        )
 
-        self.residual_map = mask.scaled_array_from_array_1d(array_1d=residual_map)
+        self.residual_map = mask.mapping.scaled_array_from_array_1d(array_1d=residual_map)
 
         chi_squared_map = fit_util.chi_squared_map_from_residual_map_and_noise_map(
-            residual_map=self.residual_map, noise_map=self.noise_map)
+            residual_map=self.residual_map, noise_map=self.noise_map
+        )
 
-        self.chi_squared_map = mask.scaled_array_from_array_1d(array_1d=chi_squared_map)
+        self.chi_squared_map = mask.mapping.scaled_array_from_array_1d(array_1d=chi_squared_map)
 
         self.chi_squared = fit_util.chi_squared_from_chi_squared_map(
-            chi_squared_map=self.chi_squared_map)
+            chi_squared_map=self.chi_squared_map
+        )
 
         self.reduced_chi_squared = self.chi_squared / int(
-            np.size(self.mask) - np.sum(self.mask))
+            np.size(self.mask) - np.sum(self.mask)
+        )
 
         self.noise_normalization = fit_util.noise_normalization_from_noise_map(
-            noise_map=self.noise_map)
+            noise_map=self.noise_map
+        )
 
         self.likelihood = fit_util.likelihood_from_chi_squared_and_noise_normalization(
-            chi_squared=self.chi_squared, noise_normalization=self.noise_normalization)
+            chi_squared=self.chi_squared, noise_normalization=self.noise_normalization
+        )
 
     @property
     def normalized_residual_map(self):
         normalized_residual_map = fit_util.normalized_residual_map_from_residual_map_and_noise_map(
-            residual_map=self.residual_map, noise_map=self.noise_map)
-        return self.mask.scaled_array_from_array_1d(array_1d=normalized_residual_map)
+            residual_map=self.residual_map, noise_map=self.noise_map
+        )
+        return self.mask.mapping.scaled_array_from_array_1d(array_1d=normalized_residual_map)
 
     @property
     def signal_to_noise_map(self):
         """The signal-to-noise_map of the data and noise-map which are fitted."""
         signal_to_noise_map = np.divide(self.data, self.noise_map)
         signal_to_noise_map[signal_to_noise_map < 0] = 0
-        return self.mask.scaled_array_from_array_1d(array_1d=signal_to_noise_map)
+        return self.mask.mapping.scaled_array_from_array_1d(array_1d=signal_to_noise_map)
