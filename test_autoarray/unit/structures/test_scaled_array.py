@@ -14,9 +14,7 @@ test_data_dir = "{}/../test_files/array/".format(
 class TestConstructorMethods:
     def test__square_pixel_array__input_scaled_array__centre_is_origin(self):
 
-        scaled_array = aa.Scaled.from_2d(
-            array_2d=np.ones((3, 3)), pixel_scale=1.0
-        )
+        scaled_array = aa.Scaled.from_2d(array_2d=np.ones((3, 3)), pixel_scale=1.0)
 
         assert (scaled_array.in_1d == np.ones((9,))).all()
         assert (scaled_array.in_2d == np.ones((3, 3))).all()
@@ -27,9 +25,7 @@ class TestConstructorMethods:
         assert scaled_array.mask.arc_second_maxima == (1.5, 1.5)
         assert scaled_array.mask.arc_second_minima == (-1.5, -1.5)
 
-        scaled_array = aa.Scaled.from_2d(
-            array_2d=np.ones((3, 4)), pixel_scale=0.1
-        )
+        scaled_array = aa.Scaled.from_2d(array_2d=np.ones((3, 4)), pixel_scale=0.1)
 
         assert (scaled_array.in_1d == np.ones((12,))).all()
         assert (scaled_array.in_2d == np.ones((3, 4))).all()
@@ -37,12 +33,8 @@ class TestConstructorMethods:
         assert scaled_array.in_2d.shape == (3, 4)
         assert scaled_array.mask.central_pixel_coordinates == (1.0, 1.5)
         assert scaled_array.mask.shape_arcsec == pytest.approx((0.3, 0.4))
-        assert scaled_array.mask.arc_second_maxima == pytest.approx(
-            (0.15, 0.2), 1e-4
-        )
-        assert scaled_array.mask.arc_second_minima == pytest.approx(
-            (-0.15, -0.2), 1e-4
-        )
+        assert scaled_array.mask.arc_second_maxima == pytest.approx((0.15, 0.2), 1e-4)
+        assert scaled_array.mask.arc_second_minima == pytest.approx((-0.15, -0.2), 1e-4)
 
         scaled_array = aa.Scaled.from_2d(
             array_2d=np.ones((4, 3)), pixel_scale=0.1, origin=(1.0, 1.0)
@@ -54,12 +46,8 @@ class TestConstructorMethods:
         assert scaled_array.in_2d.shape == (4, 3)
         assert scaled_array.mask.central_pixel_coordinates == (1.5, 1.0)
         assert scaled_array.mask.shape_arcsec == pytest.approx((0.4, 0.3))
-        assert scaled_array.mask.arc_second_maxima == pytest.approx(
-            (1.2, 1.15), 1e-4
-        )
-        assert scaled_array.mask.arc_second_minima == pytest.approx(
-            (0.8, 0.85), 1e-4
-        )
+        assert scaled_array.mask.arc_second_maxima == pytest.approx((1.2, 1.15), 1e-4)
+        assert scaled_array.mask.arc_second_minima == pytest.approx((0.8, 0.85), 1e-4)
 
     def test__rectangular_pixel_array__input_scaled_array(self):
 
@@ -73,12 +61,8 @@ class TestConstructorMethods:
         assert scaled_array.in_2d.shape == (3, 3)
         assert scaled_array.mask.central_pixel_coordinates == (1.0, 1.0)
         assert scaled_array.mask.shape_arcsec == pytest.approx((6.0, 3.0))
-        assert scaled_array.mask.arc_second_maxima == pytest.approx(
-            (3.0, 1.5), 1e-4
-        )
-        assert scaled_array.mask.arc_second_minima == pytest.approx(
-            (-3.0, -1.5), 1e-4
-        )
+        assert scaled_array.mask.arc_second_maxima == pytest.approx((3.0, 1.5), 1e-4)
+        assert scaled_array.mask.arc_second_minima == pytest.approx((-3.0, -1.5), 1e-4)
 
         scaled_array = aa.Scaled.from_array_2d_and_pixel_scales(
             array_2d=np.ones((4, 3)), pixel_scales=(0.2, 0.1)
@@ -90,12 +74,8 @@ class TestConstructorMethods:
         assert scaled_array.in_2d.shape == (4, 3)
         assert scaled_array.mask.central_pixel_coordinates == (1.5, 1.0)
         assert scaled_array.mask.shape_arcsec == pytest.approx((0.8, 0.3), 1e-3)
-        assert scaled_array.mask.arc_second_maxima == pytest.approx(
-            (0.4, 0.15), 1e-4
-        )
-        assert scaled_array.mask.arc_second_minima == pytest.approx(
-            (-0.4, -0.15), 1e-4
-        )
+        assert scaled_array.mask.arc_second_maxima == pytest.approx((0.4, 0.15), 1e-4)
+        assert scaled_array.mask.arc_second_minima == pytest.approx((-0.4, -0.15), 1e-4)
 
         scaled_array = aa.Scaled.from_array_2d_and_pixel_scales(
             array_2d=np.ones((3, 4)), pixel_scales=(0.1, 0.2)
@@ -107,12 +87,8 @@ class TestConstructorMethods:
         assert scaled_array.in_2d.shape == (3, 4)
         assert scaled_array.mask.central_pixel_coordinates == (1.0, 1.5)
         assert scaled_array.mask.shape_arcsec == pytest.approx((0.3, 0.8), 1e-3)
-        assert scaled_array.mask.arc_second_maxima == pytest.approx(
-            (0.15, 0.4), 1e-4
-        )
-        assert scaled_array.mask.arc_second_minima == pytest.approx(
-            (-0.15, -0.4), 1e-4
-        )
+        assert scaled_array.mask.arc_second_maxima == pytest.approx((0.15, 0.4), 1e-4)
+        assert scaled_array.mask.arc_second_minima == pytest.approx((-0.15, -0.4), 1e-4)
 
         scaled_array = aa.Scaled.from_array_2d_and_pixel_scales(
             array_2d=np.ones((3, 3)), pixel_scales=(2.0, 1.0), origin=(-1.0, -2.0)
@@ -125,12 +101,8 @@ class TestConstructorMethods:
         assert scaled_array.mask.central_pixel_coordinates == (1.0, 1.0)
         assert scaled_array.mask.shape_arcsec == pytest.approx((6.0, 3.0))
         assert scaled_array.mask.origin == (-1.0, -2.0)
-        assert scaled_array.mask.arc_second_maxima == pytest.approx(
-            (2.0, -0.5), 1e-4
-        )
-        assert scaled_array.mask.arc_second_minima == pytest.approx(
-            (-4.0, -3.5), 1e-4
-        )
+        assert scaled_array.mask.arc_second_maxima == pytest.approx((2.0, -0.5), 1e-4)
+        assert scaled_array.mask.arc_second_minima == pytest.approx((-4.0, -3.5), 1e-4)
 
     def test__init__input_scaled_array_single_value__all_attributes_correct_including_data_inheritance(
         self
@@ -177,9 +149,7 @@ class TestNewScaledResized:
         array_2d = np.ones((5, 5))
         array_2d[2, 2] = 2.0
 
-        scaled_array = aa.Scaled.from_2d(
-            array_2d=array_2d, pixel_scale=1.0
-        )
+        scaled_array = aa.Scaled.from_2d(array_2d=array_2d, pixel_scale=1.0)
 
         scaled_array = scaled_array.new_scaled_array_resized_from_new_shape(
             new_shape=(7, 7), new_centre_pixels=(1, 1)
@@ -205,9 +175,7 @@ class TestNewScaledResized:
         array_2d = np.ones((5, 5))
         array_2d[2, 2] = 2.0
 
-        scaled_array = aa.Scaled.from_2d(
-            array_2d=array_2d, pixel_scale=1.0
-        )
+        scaled_array = aa.Scaled.from_2d(array_2d=array_2d, pixel_scale=1.0)
 
         scaled_array = scaled_array.new_scaled_array_resized_from_new_shape(
             new_shape=(3, 3), new_centre_pixels=(4, 4)
@@ -225,9 +193,7 @@ class TestNewScaledResized:
         array_2d = np.ones((5, 5))
         array_2d[2, 2] = 2.0
 
-        array = aa.Scaled.from_2d(
-            array_2d=array_2d, pixel_scale=3.0
-        )
+        array = aa.Scaled.from_2d(array_2d=array_2d, pixel_scale=3.0)
 
         scaled_array = array.new_scaled_array_resized_from_new_shape(
             new_shape=(3, 3), new_centre_arcsec=(6.0, 6.0)
@@ -271,27 +237,25 @@ class TestNewScaledResized:
 
 
 class TestNewScaledTrimmedKernelEdges:
-
     def test__trim_edges_where_extra_psf_blurring_is_performed(self):
         array_2d = np.ones((5, 5))
         array_2d[2, 2] = 2.0
 
-        scaled_array = aa.Scaled.from_2d(
-            array_2d=array_2d, pixel_scale=1.0
-        )
+        scaled_array = aa.Scaled.from_2d(array_2d=array_2d, pixel_scale=1.0)
 
         new_scaled_array = scaled_array.new_scaled_array_trimmed_from_kernel_shape(
-            kernel_shape=(3,3)
+            kernel_shape=(3, 3)
         )
 
         assert type(new_scaled_array) == aa.Scaled
-        assert (new_scaled_array.in_2d == np.array([[1.0, 1.0, 1.0],
-                                                [1.0, 2.0, 1.0],
-                                                [1.0, 1.0, 1.0]])).all()
+        assert (
+            new_scaled_array.in_2d
+            == np.array([[1.0, 1.0, 1.0], [1.0, 2.0, 1.0], [1.0, 1.0, 1.0]])
+        ).all()
         assert new_scaled_array.mask.pixel_scale == 1.0
 
         new_scaled_array = scaled_array.new_scaled_array_trimmed_from_kernel_shape(
-            kernel_shape=(5,5)
+            kernel_shape=(5, 5)
         )
 
         assert type(new_scaled_array) == aa.Scaled
@@ -301,18 +265,17 @@ class TestNewScaledTrimmedKernelEdges:
         array_2d = np.ones((9, 9))
         array_2d[4, 4] = 2.0
 
-        scaled_array = aa.Scaled.from_2d(
-            array_2d=array_2d, pixel_scale=1.0
-        )
+        scaled_array = aa.Scaled.from_2d(array_2d=array_2d, pixel_scale=1.0)
 
         new_scaled_array = scaled_array.new_scaled_array_trimmed_from_kernel_shape(
-            kernel_shape=(7,7)
+            kernel_shape=(7, 7)
         )
 
         assert type(new_scaled_array) == aa.Scaled
-        assert (new_scaled_array.in_2d == np.array([[1.0, 1.0, 1.0],
-                                                [1.0, 2.0, 1.0],
-                                                [1.0, 1.0, 1.0]])).all()
+        assert (
+            new_scaled_array.in_2d
+            == np.array([[1.0, 1.0, 1.0], [1.0, 2.0, 1.0], [1.0, 1.0, 1.0]])
+        ).all()
         assert new_scaled_array.mask.pixel_scale == 1.0
 
 
@@ -327,9 +290,7 @@ class TestNewScaledZoomed:
             ]
         )
 
-        scaled_array = aa.Scaled.from_2d(
-            array_2d=array_2d, pixel_scale=1.0
-        )
+        scaled_array = aa.Scaled.from_2d(array_2d=array_2d, pixel_scale=1.0)
 
         mask = aa.Mask(
             array_2d=np.array(
@@ -470,9 +431,7 @@ class TestNewScaledBinnedUp:
             ]
         )
 
-        scaled_array = aa.Scaled.from_2d(
-            array_2d=array_2d, pixel_scale=0.1
-        )
+        scaled_array = aa.Scaled.from_2d(array_2d=array_2d, pixel_scale=0.1)
 
         scaled_array_binned_util = aa.binning_util.binned_up_array_2d_using_mean_from_array_2d_and_bin_up_factor(
             array_2d=array_2d, bin_up_factor=4
@@ -507,9 +466,7 @@ class TestNewScaledBinnedUp:
             ]
         )
 
-        scaled_array = aa.Scaled.from_2d(
-            array_2d=scaled_array, pixel_scale=0.1
-        )
+        scaled_array = aa.Scaled.from_2d(array_2d=scaled_array, pixel_scale=0.1)
 
         scaled_array_binned = scaled_array.new_scaled_array_binned_from_bin_up_factor(
             bin_up_factor=4, method="mean"
@@ -547,9 +504,7 @@ class TestNewScaledBinnedUp:
             ]
         )
 
-        array_2d = aa.Scaled.from_2d(
-            array_2d=array_2d, pixel_scale=0.1
-        )
+        array_2d = aa.Scaled.from_2d(array_2d=array_2d, pixel_scale=0.1)
         with pytest.raises(exc.ScaledException):
             array_2d.new_scaled_array_binned_from_bin_up_factor(
                 bin_up_factor=4, method="wrong"
