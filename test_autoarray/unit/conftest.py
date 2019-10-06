@@ -37,7 +37,7 @@ def make_mask_7x7():
         ]
     )
 
-    return mock_mask.MockAbstractMask(array_2d=array, pixel_scales=(1.0, 1.0), sub_size=1)
+    return mock_mask.MockScaledMask(array_2d=array, pixel_scales=(1.0, 1.0), sub_size=1)
 
 
 @pytest.fixture(name="sub_mask_7x7")
@@ -54,7 +54,7 @@ def make_sub_mask_7x7():
         ]
     )
 
-    return mock_mask.MockAbstractMask(array_2d=array, sub_size=2)
+    return mock_mask.MockScaledMask(array_2d=array, sub_size=2)
 
 
 @pytest.fixture(name="mask_7x7_1_pix")
@@ -71,7 +71,7 @@ def make_mask_7x7_1_pix():
         ]
     )
 
-    return mock_mask.MockAbstractMask(array_2d=array)
+    return mock_mask.MockScaledMask(array_2d=array)
 
 
 @pytest.fixture(name="blurring_mask_7x7")
@@ -88,7 +88,7 @@ def make_blurring_mask_7x7():
         ]
     )
 
-    return mock_mask.MockAbstractMask(array_2d=array)
+    return mock_mask.MockScaledMask(array_2d=array)
 
 
 @pytest.fixture(name="mask_6x6")
@@ -104,7 +104,7 @@ def make_mask_6x6():
         ]
     )
 
-    return mock_mask.MockAbstractMask(array_2d=array)
+    return mock_mask.MockScaledMask(array_2d=array)
 
 
 # GRIDS #

@@ -57,8 +57,7 @@ class AbstractArray(np.ndarray):
         # Return a tuple that replaces the parent's __setstate__ tuple with our own
         return pickled_state[0], pickled_state[1], new_state
 
-        # noinspection PyMethodOverriding
-
+    # noinspection PyMethodOverriding
     def __setstate__(self, state):
 
         for key, value in state[-1].items():
@@ -91,6 +90,7 @@ class AbstractArray(np.ndarray):
         for y in range(self.shape[0]):
             for x in range(self.shape[1]):
                 func(y, x)
+
 
 class PixelArray(AbstractArray):
 

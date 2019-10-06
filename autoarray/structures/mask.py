@@ -748,7 +748,7 @@ class ScaledMask(AbstractMask):
             mask_2d=self, bin_up_factor=bin_up_factor
         )
 
-        return cls(
+        return self.__class__(
             array_2d=binned_up_mask,
             pixel_scales=(
                 self.pixel_scales[0] * bin_up_factor,
