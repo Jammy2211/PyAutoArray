@@ -1,5 +1,5 @@
 from autoarray.structures.mask import AbstractMask, PixelMask, ScaledMask
-from autoarray.structures.scaled_array import Scaled
+from autoarray.structures.arrays import AbstractArray, PixelArray, ScaledArray
 from autoarray.structures.grids import (
     Grid,
     BinnedGrid,

@@ -3,7 +3,7 @@ import logging
 import numpy as np
 
 from autoarray import exc
-from autoarray.structures import scaled_array, grids
+from autoarray.structures import arrays, grids
 from autoarray.util import binning_util
 from autoarray.util import array_util, grid_util, mask_util
 
@@ -174,7 +174,7 @@ class ScaledMapping(Mapping):
             The 1D array which is mapped to its masked 2D array.
         """
         mask = self.mask.new_mask_with_new_sub_size(sub_size=1)
-        return scaled_array.Scaled(sub_array_1d=array_1d, mask=mask)
+        return arrays.ScaledArray(sub_array_1d=array_1d, mask=mask)
 
     def scaled_array_from_array_2d(self, array_2d):
         """For a 2D array (e.g. an image, noise_map, etc.) map it to a masked 1D array of valuees using this mask.
@@ -198,7 +198,7 @@ class ScaledMapping(Mapping):
         sub_array_1d : ndarray
             The 1D sub_array which is mapped to its masked 2D sub-array.
         """
-        return scaled_array.Scaled(sub_array_1d=sub_array_1d, mask=self.mask)
+        return arrays.ScaledArray(sub_array_1d=sub_array_1d, mask=self.mask)
 
     def scaled_array_from_sub_array_2d(self, sub_array_2d):
         """ Map a 2D sub-array to its masked 1D sub-array.
@@ -230,7 +230,7 @@ class ScaledMapping(Mapping):
         )
 
         mask = self.mask.new_mask_with_new_sub_size(sub_size=1)
-        return scaled_array.Scaled(sub_array_1d=binned_array_1d, mask=mask)
+        return arrays.ScaledArray(sub_array_1d=binned_array_1d, mask=mask)
 
     def grid_from_grid_1d(self, grid_1d):
         """ Map a 1D grid the same dimension as the grid to its original 2D grid.
