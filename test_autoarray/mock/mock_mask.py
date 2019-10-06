@@ -4,7 +4,7 @@ import autoarray as aa
 from autoarray import exc
 
 
-class MockAbstractMask(aa.AbstractMask):
+class MockScaledMask(aa.ScaledMask):
     def __new__(
         cls,
         array_2d,
@@ -52,7 +52,7 @@ class MockAbstractMask(aa.AbstractMask):
             self, kernel_shape
         )
 
-        return MockAbstractMask(array_2d=blurring_mask, pixel_scales=self.pixel_scales)
+        return MockScaledMask(array_2d=blurring_mask, pixel_scales=self.pixel_scales)
 
 
 class MockMask1D(np.ndarray):

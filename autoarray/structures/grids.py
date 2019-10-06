@@ -174,7 +174,7 @@ class Grid(np.ndarray):
             The size (sub_size x sub_size) of each unmasked pixels sub-grid.
         """
 
-        mask = msk.AbstractMask.unmasked_from_shape_pixel_scales_and_sub_size(
+        mask = msk.ScaledMask.unmasked_from_shape_pixel_scales_and_sub_size(
             shape=shape, pixel_scales=(pixel_scale, pixel_scale), sub_size=sub_size
         )
 
@@ -255,7 +255,7 @@ class Grid(np.ndarray):
     @classmethod
     def from_2d(cls, grid_2d, pixel_scale, origin=(0.0, 0.0)):
 
-        mask = msk.AbstractMask.unmasked_from_shape_pixel_scales_and_sub_size(
+        mask = msk.ScaledMask.unmasked_from_shape_pixel_scales_and_sub_size(
             shape=(grid_2d.shape[0], grid_2d.shape[1]),
             pixel_scales=(pixel_scale, pixel_scale),
             sub_size=1,
@@ -316,7 +316,7 @@ class Grid(np.ndarray):
 
         padded_shape = (shape[0] + kernel_shape[0] - 1, shape[1] + kernel_shape[1] - 1)
 
-        padded_mask = msk.AbstractMask.unmasked_from_shape_pixel_scales_and_sub_size(
+        padded_mask = msk.ScaledMask.unmasked_from_shape_pixel_scales_and_sub_size(
             shape=padded_shape,
             pixel_scales=self.mask.pixel_scales,
             sub_size=self.mask.sub_size,

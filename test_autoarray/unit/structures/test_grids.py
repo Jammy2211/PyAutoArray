@@ -6,7 +6,7 @@ import autoarray as aa
 
 @pytest.fixture(name="grid")
 def make_grid():
-    mask = aa.Mask(
+    mask = aa.ScaledMask(
         np.array([[True, False, True], [False, False, False], [True, False, True]]),
         pixel_scales=(1.0, 1.0),
         sub_size=1,
@@ -24,7 +24,7 @@ class TestGrid:
                 [True, True, False, False],
             ]
         )
-        mask = aa.Mask(array_2d=mask, pixel_scales=(2.0, 2.0), sub_size=1)
+        mask = aa.ScaledMask(array_2d=mask, pixel_scales=(2.0, 2.0), sub_size=1)
 
         grid_via_util = aa.grid_util.grid_1d_from_mask_pixel_scales_sub_size_and_origin(
             mask=mask, sub_size=1, pixel_scales=(2.0, 2.0)
@@ -47,7 +47,7 @@ class TestGrid:
 
         mask = np.array([[True, True, True], [True, False, False], [True, True, False]])
 
-        mask = aa.Mask(mask, pixel_scales=(3.0, 3.0), sub_size=2)
+        mask = aa.ScaledMask(mask, pixel_scales=(3.0, 3.0), sub_size=2)
 
         grid_via_util = aa.grid_util.grid_1d_from_mask_pixel_scales_sub_size_and_origin(
             mask=mask, pixel_scales=(3.0, 3.0), sub_size=2
@@ -65,7 +65,7 @@ class TestGrid:
                 [False, False, False, False],
             ]
         )
-        mask = aa.Mask(array_2d=mask, pixel_scales=(2.0, 2.0), sub_size=1)
+        mask = aa.ScaledMask(array_2d=mask, pixel_scales=(2.0, 2.0), sub_size=1)
 
         grid_via_util = aa.grid_util.grid_1d_from_mask_pixel_scales_sub_size_and_origin(
             mask=mask, pixel_scales=(2.0, 2.0), sub_size=1
@@ -112,7 +112,7 @@ class TestGrid:
             ]
         )
 
-        mask = aa.Mask(array_2d=mask, pixel_scales=(2.0, 2.0), sub_size=2)
+        mask = aa.ScaledMask(array_2d=mask, pixel_scales=(2.0, 2.0), sub_size=2)
 
         blurring_mask_util = aa.mask_util.blurring_mask_from_mask_and_kernel_shape(
             mask=mask, kernel_shape=(3, 5)
@@ -151,7 +151,7 @@ class TestGrid:
             ]
         )
 
-        mask = aa.Mask(array_2d=mask, pixel_scales=(2.0, 2.0), sub_size=2)
+        mask = aa.ScaledMask(array_2d=mask, pixel_scales=(2.0, 2.0), sub_size=2)
 
         blurring_mask_util = aa.mask_util.blurring_mask_from_mask_and_kernel_shape(
             mask=mask, kernel_shape=(3, 5)
@@ -161,7 +161,7 @@ class TestGrid:
             mask=blurring_mask_util, pixel_scales=(2.0, 2.0), sub_size=1
         )
 
-        mask = aa.Mask(array_2d=mask, pixel_scales=(2.0, 2.0), sub_size=2)
+        mask = aa.ScaledMask(array_2d=mask, pixel_scales=(2.0, 2.0), sub_size=2)
         blurring_grid = aa.Grid.blurring_grid_from_mask_and_kernel_shape(
             mask=mask, kernel_shape=(3, 5)
         )
@@ -232,7 +232,7 @@ class TestGrid:
         assert padded_grid.shape == (54, 2)
         assert (padded_grid == padded_grid_util).all()
 
-        mask = aa.Mask(
+        mask = aa.ScaledMask(
             array_2d=np.full((5, 4), False), pixel_scales=(2.0, 2.0), sub_size=2
         )
 
@@ -249,7 +249,7 @@ class TestGrid:
         assert padded_grid == pytest.approx(padded_grid_util, 1e-4)
         assert padded_grid.interpolator is None
 
-        mask = aa.Mask(
+        mask = aa.ScaledMask(
             array_2d=np.full((2, 5), False), pixel_scales=(8.0, 8.0), sub_size=4
         )
 
@@ -279,7 +279,7 @@ class TestGrid:
         assert padded_grid.interpolator is not None
         assert padded_grid.interpolator.pixel_scale_interpolation_grid == 0.1
 
-        mask = aa.AbstractMask.unmasked_from_shape_pixel_scales_and_sub_size(
+        mask = aa.ScaledMask.unmasked_from_shape_pixel_scales_and_sub_size(
             shape=(6, 6), pixel_scales=(3.0, 3.0), sub_size=1
         )
 
@@ -290,7 +290,7 @@ class TestGrid:
         assert (padded_grid.interpolator.vtx == interpolator.vtx).all()
         assert (padded_grid.interpolator.wts == interpolator.wts).all()
 
-        mask = aa.Mask(
+        mask = aa.ScaledMask(
             array_2d=np.full((5, 4), False), pixel_scales=(2.0, 2.0), sub_size=2
         )
 
@@ -303,7 +303,7 @@ class TestGrid:
         assert padded_grid.interpolator is not None
         assert padded_grid.interpolator.pixel_scale_interpolation_grid == 0.1
 
-        mask = aa.AbstractMask.unmasked_from_shape_pixel_scales_and_sub_size(
+        mask = aa.ScaledMask.unmasked_from_shape_pixel_scales_and_sub_size(
             shape=(7, 6), pixel_scales=(2.0, 2.0), sub_size=2
         )
 
@@ -327,7 +327,7 @@ class TestGrid:
             ]
         )
 
-        mask = aa.Mask(array_2d=mask, pixel_scales=(2.0, 2.0), sub_size=2)
+        mask = aa.ScaledMask(array_2d=mask, pixel_scales=(2.0, 2.0), sub_size=2)
 
         sub_border_1d_indexes_util = aa.mask_util.sub_border_pixel_1d_indexes_from_mask_and_sub_size(
             mask=mask, sub_size=2
@@ -340,7 +340,7 @@ class TestGrid:
         )
 
     def test__masked_shape_arcsec(self):
-        mask = aa.AbstractMask.circular(
+        mask = aa.ScaledMask.circular(
             shape=(3, 3), radius_arcsec=1.0, pixel_scales=(1.0, 1.0), sub_size=1
         )
 
@@ -371,7 +371,7 @@ class TestGrid:
                 [True, True, False, False],
             ]
         )
-        mask = aa.Mask(array_2d=mask, pixel_scales=(2.0, 2.0), sub_size=1)
+        mask = aa.ScaledMask(array_2d=mask, pixel_scales=(2.0, 2.0), sub_size=1)
 
         grid = aa.Grid.from_mask(mask=mask)
 
@@ -386,7 +386,7 @@ class TestGrid:
         )
 
     def test__yticks(self):
-        mask = aa.AbstractMask.circular(
+        mask = aa.ScaledMask.circular(
             shape=(3, 3), radius_arcsec=1.0, pixel_scales=(1.0, 1.0), sub_size=1
         )
 
@@ -400,7 +400,7 @@ class TestGrid:
         assert grid.yticks == pytest.approx(np.array([2.0, 3.0, 4.0, 5.0]), 1e-3)
 
     def test__xticks(self):
-        mask = aa.AbstractMask.circular(
+        mask = aa.ScaledMask.circular(
             shape=(3, 3), radius_arcsec=1.0, pixel_scales=(1.0, 1.0), sub_size=1
         )
 
@@ -421,7 +421,7 @@ class TestGrid:
                 [True, True, False, False],
             ]
         )
-        mask = aa.Mask(array_2d=mask, pixel_scales=(2.0, 2.0), sub_size=1)
+        mask = aa.ScaledMask(array_2d=mask, pixel_scales=(2.0, 2.0), sub_size=1)
 
         grid = aa.Grid.from_mask(mask=mask)
 
@@ -447,7 +447,7 @@ class TestGrid:
                 [True, True, False, False],
             ]
         )
-        mask = aa.Mask(array_2d=mask, pixel_scales=(2.0, 2.0), sub_size=1)
+        mask = aa.ScaledMask(array_2d=mask, pixel_scales=(2.0, 2.0), sub_size=1)
 
         grid = aa.Grid.from_mask(mask=mask)
 
@@ -470,7 +470,7 @@ class TestGridBorder(object):
             ]
         )
 
-        mask = aa.Mask(array_2d=mask, pixel_scales=(2.0, 2.0), sub_size=2)
+        mask = aa.ScaledMask(array_2d=mask, pixel_scales=(2.0, 2.0), sub_size=2)
 
         grid = aa.Grid.from_mask(mask=mask)
 
@@ -493,7 +493,7 @@ class TestGridBorder(object):
         ).all()
 
     def test__inside_border_no_relocations(self):
-        mask = aa.AbstractMask.circular(
+        mask = aa.ScaledMask.circular(
             shape=(30, 30), radius_arcsec=1.0, pixel_scales=(0.1, 0.1), sub_size=1
         )
 
@@ -511,7 +511,7 @@ class TestGridBorder(object):
         assert (relocated_grid.mask == mask).all()
         assert relocated_grid.mask.sub_size == 1
 
-        mask = aa.AbstractMask.circular(
+        mask = aa.ScaledMask.circular(
             shape=(30, 30), radius_arcsec=1.0, pixel_scales=(0.1, 0.1), sub_size=2
         )
 
@@ -530,7 +530,7 @@ class TestGridBorder(object):
         assert relocated_grid.mask.sub_size == 2
 
     def test__outside_border_are_relocations(self):
-        mask = aa.AbstractMask.circular(
+        mask = aa.ScaledMask.circular(
             shape=(30, 30), radius_arcsec=1.0, pixel_scales=(0.1, 0.1), sub_size=1
         )
 
@@ -548,7 +548,7 @@ class TestGridBorder(object):
         assert (relocated_grid.mask == mask).all()
         assert relocated_grid.mask.sub_size == 1
 
-        mask = aa.AbstractMask.circular(
+        mask = aa.ScaledMask.circular(
             shape=(30, 30), radius_arcsec=1.0, pixel_scales=(0.1, 0.1), sub_size=2
         )
 
@@ -569,7 +569,7 @@ class TestGridBorder(object):
     def test__outside_border_are_relocations__positive_origin_included_in_relocate(
         self
     ):
-        mask = aa.AbstractMask.circular(
+        mask = aa.ScaledMask.circular(
             shape=(60, 60),
             radius_arcsec=1.0,
             pixel_scales=(0.1, 0.1),
@@ -596,7 +596,7 @@ class TestGridBorder(object):
         assert (relocated_grid.mask == mask).all()
         assert relocated_grid.mask.sub_size == 1
 
-        mask = aa.AbstractMask.circular(
+        mask = aa.ScaledMask.circular(
             shape=(60, 60),
             radius_arcsec=1.0,
             pixel_scales=(0.1, 0.1),
@@ -704,7 +704,7 @@ class TestPixelizationGrid:
         ).all()
 
     def test__from_unmasked_sparse_shape_and_grid(self):
-        mask = aa.Mask(
+        mask = aa.ScaledMask(
             array_2d=np.array(
                 [[True, False, True], [False, False, False], [True, False, True]]
             ),
@@ -732,7 +732,7 @@ class TestPixelizationGrid:
 class TestSparseToGrid:
     class TestUnmaskedShape:
         def test__properties_consistent_with_util(self):
-            mask = aa.Mask(
+            mask = aa.ScaledMask(
                 array_2d=np.array(
                     [[True, False, True], [False, False, False], [True, False, True]]
                 ),
@@ -807,7 +807,7 @@ class TestSparseToGrid:
         def test__sparse_grid_overlaps_mask_perfectly__masked_pixels_in_masked_sparse_grid(
             self
         ):
-            mask = aa.Mask(
+            mask = aa.ScaledMask(
                 array_2d=np.array(
                     [[True, False, True], [False, False, False], [True, False, True]]
                 ),
@@ -833,7 +833,7 @@ class TestSparseToGrid:
             ).all()
 
         def test__same_as_above_but_4x3_grid_and_mask(self):
-            mask = aa.Mask(
+            mask = aa.ScaledMask(
                 array_2d=np.array(
                     [
                         [True, False, True],
@@ -873,7 +873,7 @@ class TestSparseToGrid:
             ).all()
 
         def test__same_as_above_but_3x4_grid_and_mask(self):
-            mask = aa.Mask(
+            mask = aa.ScaledMask(
                 array_2d=np.array(
                     [
                         [True, False, True, True],
@@ -912,7 +912,7 @@ class TestSparseToGrid:
         def test__mask_with_offset_centre__origin_of_sparse_to_grid_moves_to_give_same_pairings(
             self
         ):
-            mask = aa.Mask(
+            mask = aa.ScaledMask(
                 array_2d=np.array(
                     [
                         [True, True, True, False, True],
@@ -947,7 +947,7 @@ class TestSparseToGrid:
             ).all()
 
         def test__same_as_above_but_different_offset(self):
-            mask = aa.Mask(
+            mask = aa.ScaledMask(
                 array_2d=np.array(
                     [
                         [True, True, True, True, True],
@@ -1012,7 +1012,7 @@ class TestSparseToGrid:
             ).all()
 
         def test__same_as_above__but_4x3_image(self):
-            mask = aa.Mask(
+            mask = aa.ScaledMask(
                 array_2d=np.array(
                     [
                         [True, False, True],
@@ -1052,7 +1052,7 @@ class TestSparseToGrid:
             ).all()
 
         def test__same_as_above__but_3x4_image(self):
-            mask = aa.Mask(
+            mask = aa.ScaledMask(
                 array_2d=np.array(
                     [
                         [True, False, True, True],
@@ -1089,7 +1089,7 @@ class TestSparseToGrid:
             ).all()
 
         def test__from_grid_and_shape__offset_mask__origin_shift_corrects(self):
-            mask = aa.Mask(
+            mask = aa.ScaledMask(
                 array_2d=np.array(
                     [
                         [True, True, False, False, False],
@@ -1134,7 +1134,7 @@ class TestSparseToGrid:
         def test__binned_weight_map_all_ones__kmenas_grid_is_grid_overlapping_image(
             self
         ):
-            mask = aa.Mask(
+            mask = aa.ScaledMask(
                 array_2d=np.array(
                     [
                         [False, False, False, False],
@@ -1184,7 +1184,7 @@ class TestSparseToGrid:
             ).all()
 
         def test__binned_weight_map_changes_grid_from_above(self):
-            mask = aa.Mask(
+            mask = aa.ScaledMask(
                 array_2d=np.array(
                     [
                         [False, False, False, False],
@@ -1225,7 +1225,7 @@ class TestSparseToGrid:
         def test__binned_weight_map_all_ones__pixel_scale_binned_grid_leads_to_binning_up_by_factor_2(
             self
         ):
-            mask = aa.Mask(
+            mask = aa.ScaledMask(
                 array_2d=np.full(fill_value=False, shape=(8, 8)),
                 pixel_scales=(0.5, 0.5),
                 sub_size=2,
@@ -1362,7 +1362,7 @@ class TestInterpolator:
             return result
 
         grid = aa.Grid.from_mask(
-            mask=aa.AbstractMask.unmasked_from_shape_pixel_scales_and_sub_size(
+            mask=aa.ScaledMask.unmasked_from_shape_pixel_scales_and_sub_size(
                 shape=(3, 3), pixel_scales=(1.0, 1.0), sub_size=1
             )
         )
@@ -1374,7 +1374,7 @@ class TestInterpolator:
         assert (values == np.array([[1, 0, 0, 0, 0, 0, 0, 0, 0]])).all()
 
         grid = aa.Grid.from_mask(
-            mask=aa.AbstractMask.unmasked_from_shape_pixel_scales_and_sub_size(
+            mask=aa.ScaledMask.unmasked_from_shape_pixel_scales_and_sub_size(
                 shape=(3, 3), pixel_scales=(1.0, 1.0), sub_size=1
             )
         )
@@ -1397,7 +1397,7 @@ class TestInterpolator:
             return result
 
         grid = aa.Grid.from_mask(
-            mask=aa.AbstractMask.unmasked_from_shape_pixel_scales_and_sub_size(
+            mask=aa.ScaledMask.unmasked_from_shape_pixel_scales_and_sub_size(
                 shape=(3, 3), pixel_scales=(1.0, 1.0), sub_size=1
             )
         )
@@ -1414,7 +1414,7 @@ class TestInterpolator:
         ).all()
 
         grid = aa.Grid.from_mask(
-            mask=aa.AbstractMask.unmasked_from_shape_pixel_scales_and_sub_size(
+            mask=aa.ScaledMask.unmasked_from_shape_pixel_scales_and_sub_size(
                 shape=(3, 3), pixel_scales=(1.0, 1.0), sub_size=1
             )
         )
@@ -1446,7 +1446,7 @@ class TestInterpolator:
 
     def test__20x20_deflection_angles_no_central_pixels__interpolated_accurately(self):
 
-        mask = aa.AbstractMask.circular_annular(
+        mask = aa.ScaledMask.circular_annular(
             shape=(20, 20),
             pixel_scales=(1.0, 1.0),
             sub_size=1,
@@ -1478,7 +1478,7 @@ class TestInterpolator:
 
     def test__move_centre_of_galaxy__interpolated_accurately(self):
 
-        mask = aa.AbstractMask.circular_annular(
+        mask = aa.ScaledMask.circular_annular(
             shape=(24, 24),
             pixel_scales=(1.0, 1.0),
             sub_size=1,
@@ -1511,7 +1511,7 @@ class TestInterpolator:
 
     def test__different_interpolation_pixel_scales_still_works(self):
 
-        mask = aa.AbstractMask.circular_annular(
+        mask = aa.ScaledMask.circular_annular(
             shape=(28, 28),
             pixel_scales=(1.0, 1.0),
             sub_size=1,
