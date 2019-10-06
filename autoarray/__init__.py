@@ -19,5 +19,9 @@ from autoarray.util import (
     mask_util,
     sparse_util,
 )
+from autoarray.plotters.array_plotters import plot_array
+from autoarray.plotters.grid_plotters import plot_grid
+from autoarray.plotters.line_yx_plotters import plot_line
+from autoarray.plotters import plotter_util
 
 __version__ = "0.1.1"
