@@ -11,9 +11,46 @@ test_data_dir = "{}/../test_files/array/".format(
 )
 
 
+@pytest.fixture(name="simple_array")
+def make_simple_array():
+    return aa.Scaled.from_2d(
+        np.array(
+            [
+                [1, 2, 3],
+                [4, 5, 6],
+                [7, 8, 9],
+            ]
+        ),
+        pixel_scale=1.0
+    )
+
+
+@pytest.mark.parametrize(
+    "index, value",
+    [
+        (0, 1),
+        (4, 5),
+        (8, 9)
+    ]
+)
+def test_1d(index, value, simple_array):
+    assert simple_array[index] == value
+
+
+@pytest.mark.parametrize(
+    "indices, value",
+    [
+        ((0, 0), 1),
+        ((1, 1), 5),
+        ((2, 2), 9)
+    ]
+)
+def test_2d(indices, value, simple_array):
+    assert simple_array[indices[0], indices[1]] == value
+
+
 class TestConstructorMethods:
     def test__square_pixel_array__input_scaled_array__centre_is_origin(self):
-
         scaled_array = aa.Scaled.from_2d(
             array_2d=np.ones((3, 3)), pixel_scale=1.0
         )
@@ -62,7 +99,6 @@ class TestConstructorMethods:
         )
 
     def test__rectangular_pixel_array__input_scaled_array(self):
-
         scaled_array = aa.Scaled.from_array_2d_and_pixel_scales(
             array_2d=np.ones((3, 3)), pixel_scales=(2.0, 1.0)
         )
@@ -133,7 +169,7 @@ class TestConstructorMethods:
         )
 
     def test__init__input_scaled_array_single_value__all_attributes_correct_including_data_inheritance(
-        self
+            self
     ):
         scaled_array = aa.Scaled.from_single_value_shape_and_pixel_scale(
             value=5.0, shape=(3, 3), pixel_scale=1.0, origin=(1.0, 1.0)
@@ -281,17 +317,17 @@ class TestNewScaledTrimmedKernelEdges:
         )
 
         new_scaled_array = scaled_array.new_scaled_array_trimmed_from_kernel_shape(
-            kernel_shape=(3,3)
+            kernel_shape=(3, 3)
         )
 
         assert type(new_scaled_array) == aa.Scaled
         assert (new_scaled_array.in_2d == np.array([[1.0, 1.0, 1.0],
-                                                [1.0, 2.0, 1.0],
-                                                [1.0, 1.0, 1.0]])).all()
+                                                    [1.0, 2.0, 1.0],
+                                                    [1.0, 1.0, 1.0]])).all()
         assert new_scaled_array.mask.pixel_scale == 1.0
 
         new_scaled_array = scaled_array.new_scaled_array_trimmed_from_kernel_shape(
-            kernel_shape=(5,5)
+            kernel_shape=(5, 5)
         )
 
         assert type(new_scaled_array) == aa.Scaled
@@ -306,13 +342,13 @@ class TestNewScaledTrimmedKernelEdges:
         )
 
         new_scaled_array = scaled_array.new_scaled_array_trimmed_from_kernel_shape(
-            kernel_shape=(7,7)
+            kernel_shape=(7, 7)
         )
 
         assert type(new_scaled_array) == aa.Scaled
         assert (new_scaled_array.in_2d == np.array([[1.0, 1.0, 1.0],
-                                                [1.0, 2.0, 1.0],
-                                                [1.0, 1.0, 1.0]])).all()
+                                                    [1.0, 2.0, 1.0],
+                                                    [1.0, 1.0, 1.0]])).all()
         assert new_scaled_array.mask.pixel_scale == 1.0
 
 
@@ -366,7 +402,7 @@ class TestNewScaledZoomed:
             mask=mask, buffer=0
         )
         assert (
-            scaled_array_zoomed.in_2d == np.array([[6.0, 7.0, 8.0], [10.0, 11.0, 12.0]])
+                scaled_array_zoomed.in_2d == np.array([[6.0, 7.0, 8.0], [10.0, 11.0, 12.0]])
         ).all()
 
         mask = aa.Mask(
@@ -386,8 +422,8 @@ class TestNewScaledZoomed:
             mask=mask, buffer=0
         )
         assert (
-            scaled_array_zoomed.in_2d
-            == np.array([[6.0, 7.0], [10.0, 11.0], [14.0, 15.0]])
+                scaled_array_zoomed.in_2d
+                == np.array([[6.0, 7.0], [10.0, 11.0], [14.0, 15.0]])
         ).all()
 
         mask = aa.Mask(
@@ -407,7 +443,7 @@ class TestNewScaledZoomed:
             mask=mask, buffer=0
         )
         assert (
-            scaled_array_zoomed.in_2d == np.array([[5.0, 6.0, 7.0], [9.0, 10.0, 11.0]])
+                scaled_array_zoomed.in_2d == np.array([[5.0, 6.0, 7.0], [9.0, 10.0, 11.0]])
         ).all()
 
         mask = aa.Mask(
@@ -427,8 +463,8 @@ class TestNewScaledZoomed:
             mask=mask, buffer=0
         )
         assert (
-            scaled_array_zoomed.in_2d
-            == np.array([[2.0, 3.0], [6.0, 7.0], [10.0, 11.0]])
+                scaled_array_zoomed.in_2d
+                == np.array([[2.0, 3.0], [6.0, 7.0], [10.0, 11.0]])
         ).all()
 
         mask = aa.Mask(
@@ -448,15 +484,15 @@ class TestNewScaledZoomed:
             mask=mask, buffer=1
         )
         assert (
-            scaled_array_zoomed.in_2d
-            == np.array(
-                [
-                    [1.0, 2.0, 3.0, 4.0],
-                    [5.0, 6.0, 7.0, 8.0],
-                    [9.0, 10.0, 11.0, 12.0],
-                    [13.0, 14.0, 15.0, 16.0],
-                ]
-            )
+                scaled_array_zoomed.in_2d
+                == np.array(
+            [
+                [1.0, 2.0, 3.0, 4.0],
+                [5.0, 6.0, 7.0, 8.0],
+                [9.0, 10.0, 11.0, 12.0],
+                [13.0, 14.0, 15.0, 16.0],
+            ]
+        )
         ).all()
 
 

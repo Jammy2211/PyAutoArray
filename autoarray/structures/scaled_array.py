@@ -72,7 +72,7 @@ class Scaled(np.ndarray):
 
     @classmethod
     def from_single_value_shape_and_pixel_scale(
-        cls, value, shape, pixel_scale, origin=(0.0, 0.0)
+            cls, value, shape, pixel_scale, origin=(0.0, 0.0)
     ):
         """
         Creates an instance of Array and fills it with a single value
@@ -116,6 +116,28 @@ class Scaled(np.ndarray):
         return cls.from_2d(
             array_2d=array_2d, pixel_scale=pixel_scale, origin=origin
         )
+
+    def __getitem__(self, items) -> float:
+        """
+        Get item decides whether to access to 1D or 2D representation of the array by inspecting the input
+        to get item. If a single integer is supplied the 1D representation is used; if two integers are
+        supplied then the 2D representation is used.
+
+        Parameters
+        ----------
+        items: (int, int) | int
+            The location of an item in the array
+
+        Returns
+        -------
+        value
+            Some value in the array
+        """
+        if isinstance(items, int):
+            return super().__getitem__(items)
+        if len(items) == 2:
+            return self.in_2d[items[1], items[0]]
+        return super().__getitem__(*items)
 
     @property
     def in_1d(self):
@@ -216,7 +238,7 @@ class Scaled(np.ndarray):
         )
 
     def new_scaled_array_resized_from_new_shape(
-        self, new_shape, new_centre_pixels=None, new_centre_arcsec=None
+            self, new_shape, new_centre_pixels=None, new_centre_arcsec=None
     ):
         """resized the array to a new shape and at a new origin.
 
@@ -270,7 +292,8 @@ class Scaled(np.ndarray):
         array_y = np.int(self.mask.shape[0])
         array_x = np.int(self.mask.shape[1])
         trimmed_array_2d = self.in_2d[psf_cut_y: array_y - psf_cut_y, psf_cut_x: array_x - psf_cut_x]
-        return Scaled.from_array_2d_and_pixel_scales(array_2d=trimmed_array_2d, pixel_scales=self.mask.pixel_scales)
+        return Scaled.from_array_2d_and_pixel_scales(array_2d=trimmed_array_2d,
+                                                     pixel_scales=self.mask.pixel_scales)
 
     def new_scaled_array_binned_from_bin_up_factor(self, bin_up_factor, method):
 
