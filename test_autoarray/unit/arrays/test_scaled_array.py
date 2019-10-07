@@ -25,6 +25,10 @@ def make_simple_array():
     )
 
 
+def test_to_string_is_2d(simple_array):
+    assert str(simple_array) == str(simple_array.in_2d)
+
+
 @pytest.mark.parametrize(
     "index, value",
     [
