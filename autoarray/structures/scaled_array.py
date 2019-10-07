@@ -79,6 +79,7 @@ class Scaled(np.ndarray):
 
         Parameters
         ----------
+        origin
         value: float
             The value with which the array should be filled
         shape: (int, int)
@@ -139,21 +140,39 @@ class Scaled(np.ndarray):
             return self.in_2d[items[1], items[0]]
         return super().__getitem__(*items)
 
+    def __str__(self):
+        """
+        2D is a better representation to print
+        """
+        return str(self.in_2d)
+
     @property
-    def in_1d(self):
+    def in_1d(self) -> np.ndarray:
+        """
+        The array in 1D, which is its underlying representation
+        """
         return self
 
     @property
     def in_2d(self):
-        return self.mask.sub_array_2d_from_sub_array_1d(sub_array_1d=self)
+        """
+        The array mapper to 2D by using the mask
+        """
+        return self.mask.sub_array_2d_from_sub_array_1d(
+            sub_array_1d=self
+        )
 
     @property
     def in_1d_binned(self):
-        return self.mask.scaled_array_binned_from_sub_array_1d(sub_array_1d=self)
+        return self.mask.scaled_array_binned_from_sub_array_1d(
+            sub_array_1d=self
+        )
 
     @property
     def in_2d_binned(self):
-        return self.mask.array_2d_binned_from_sub_array_1d(sub_array_1d=self)
+        return self.mask.array_2d_binned_from_sub_array_1d(
+            sub_array_1d=self
+        )
 
     def new_with_array(self, array):
         """
