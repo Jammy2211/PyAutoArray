@@ -1,5 +1,5 @@
 from autolens import exc
-from autolens.plotters import plotter_util
+from autoarray.plotters import plotter_util
 
 import matplotlib.pyplot as plt
 import numpy as np
