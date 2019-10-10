@@ -6,9 +6,6 @@ matplotlib.use(backend)
 import matplotlib.pyplot as plt
 import numpy as np
 
-import autoarray as aa
-from autolens import exc
-
 
 def get_subplot_rows_columns_figsize(number_subplots):
     """Get the size of a sub plot in (rows, columns), based on the number of subplots that are going to be plotted.

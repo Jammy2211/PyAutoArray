@@ -10,7 +10,7 @@ import numpy as np
 import itertools
 
 from autolens import exc
-from autolens.plotters import plotter_util
+from autoarray.plotters import plotter_util
 
 
 def plot_array(
