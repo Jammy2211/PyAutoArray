@@ -14,6 +14,266 @@ test_data_dir = "{}/../test_files/array/".format(
 
 class TestAbstractMask:
 
+    class TestMaskSetup:
+
+        def test__array_finalize__sets_non_inputs_to_none(self):
+            mask = np.array(
+                [
+                    [True, True, True, True],
+                    [True, False, False, True],
+                    [True, True, True, True],
+                ]
+            )
+
+            mask = aa.AbstractMask(array_2d=mask)
+
+            mask_new = mask + mask
+
+            assert mask_new.pixel_scales == None
+            assert mask_new.origin == None
+
+    class TestMaskRegions:
+        def test__blurring_mask_for_psf_shape__compare_to_array_util(self):
+            mask = np.array(
+                [
+                    [True, True, True, True, True, True, True, True],
+                    [True, False, True, True, True, False, True, True],
+                    [True, True, True, True, True, True, True, True],
+                    [True, True, True, True, True, True, True, True],
+                    [True, True, True, True, True, True, True, True],
+                    [True, False, True, True, True, False, True, True],
+                    [True, True, True, True, True, True, True, True],
+                    [True, True, True, True, True, True, True, True],
+                    [True, True, True, True, True, True, True, True],
+                ]
+            )
+
+            blurring_mask_via_util = aa.mask_util.blurring_mask_from_mask_and_kernel_shape(
+                mask=mask, kernel_shape=(3, 3)
+            )
+
+            mask = aa.AbstractMask(array_2d=mask)
+            blurring_mask = mask.blurring_mask_from_kernel_shape(kernel_shape=(3, 3))
+
+            assert (blurring_mask == blurring_mask_via_util).all()
+
+        def test__edge_image_pixels__compare_to_array_util(self):
+            mask = np.array(
+                [
+                    [True, True, True, True, True, True, True, True, True],
+                    [True, False, False, False, False, False, False, False, True],
+                    [True, False, True, True, True, True, True, False, True],
+                    [True, False, True, False, False, False, True, False, True],
+                    [True, False, True, False, True, False, True, False, True],
+                    [True, False, True, False, False, False, True, False, True],
+                    [True, False, True, True, True, True, True, False, True],
+                    [True, False, False, False, False, False, False, False, True],
+                    [True, True, True, True, True, True, True, True, True],
+                ]
+            )
+
+            edge_pixels_util = aa.mask_util.edge_1d_indexes_from_mask(mask=mask)
+
+            mask = aa.AbstractMask(array_2d=mask)
+
+            assert mask._edge_1d_indexes == pytest.approx(edge_pixels_util, 1e-4)
+            assert mask._edge_2d_indexes[0] == pytest.approx(np.array([1, 1]), 1e-4)
+            assert mask._edge_2d_indexes[10] == pytest.approx(np.array([3, 3]), 1e-4)
+            assert mask._edge_1d_indexes.shape[0] == mask._edge_2d_indexes.shape[0]
+
+        def test__edge_mask(self):
+            mask = np.array(
+                [
+                    [True, True, True, True, True, True, True, True, True],
+                    [True, False, False, False, False, False, False, False, True],
+                    [True, False, True, True, True, True, True, False, True],
+                    [True, False, True, False, False, False, True, False, True],
+                    [True, False, True, False, True, False, True, False, True],
+                    [True, False, True, False, False, False, True, False, True],
+                    [True, False, True, True, True, True, True, False, True],
+                    [True, False, False, False, False, False, False, False, True],
+                    [True, True, True, True, True, True, True, True, True],
+                ]
+            )
+
+            mask = aa.AbstractMask(array_2d=mask)
+
+            assert (
+                    mask.edge_mask
+                    == np.array(
+                [
+                    [True, True, True, True, True, True, True, True, True],
+                    [True, False, False, False, False, False, False, False, True],
+                    [True, False, True, True, True, True, True, False, True],
+                    [True, False, True, False, False, False, True, False, True],
+                    [True, False, True, False, True, False, True, False, True],
+                    [True, False, True, False, False, False, True, False, True],
+                    [True, False, True, True, True, True, True, False, True],
+                    [True, False, False, False, False, False, False, False, True],
+                    [True, True, True, True, True, True, True, True, True],
+                ]
+            )
+            ).all()
+
+        def test__border_image_pixels__compare_to_array_util(self):
+            mask = np.array(
+                [
+                    [True, True, True, True, True, True, True, True, True],
+                    [True, False, False, False, False, False, False, False, True],
+                    [True, False, True, True, True, True, True, False, True],
+                    [True, False, True, False, False, False, True, False, True],
+                    [True, False, True, False, True, False, True, False, True],
+                    [True, False, True, False, False, False, True, False, True],
+                    [True, False, True, True, True, True, True, False, True],
+                    [True, False, False, False, False, False, False, False, True],
+                    [True, True, True, True, True, True, True, True, True],
+                ]
+            )
+
+            border_pixels_util = aa.mask_util.border_1d_indexes_from_mask(mask=mask)
+
+            mask = aa.AbstractMask(array_2d=mask)
+
+            assert mask._border_1d_indexes == pytest.approx(border_pixels_util, 1e-4)
+            assert mask._border_2d_indexes[0] == pytest.approx(np.array([1, 1]), 1e-4)
+            assert mask._border_2d_indexes[10] == pytest.approx(np.array([3, 7]), 1e-4)
+            assert mask._border_1d_indexes.shape[0] == mask._border_2d_indexes.shape[0]
+
+        def test__border_mask(self):
+            mask = np.array(
+                [
+                    [True, True, True, True, True, True, True, True, True],
+                    [True, False, False, False, False, False, False, False, True],
+                    [True, False, True, True, True, True, True, False, True],
+                    [True, False, True, False, False, False, True, False, True],
+                    [True, False, True, False, True, False, True, False, True],
+                    [True, False, True, False, False, False, True, False, True],
+                    [True, False, True, True, True, True, True, False, True],
+                    [True, False, False, False, False, False, False, False, True],
+                    [True, True, True, True, True, True, True, True, True],
+                ]
+            )
+
+            mask = aa.AbstractMask(array_2d=mask)
+
+            assert (
+                    mask.border_mask
+                    == np.array(
+                [
+                    [True, True, True, True, True, True, True, True, True],
+                    [True, False, False, False, False, False, False, False, True],
+                    [True, False, True, True, True, True, True, False, True],
+                    [True, False, True, True, True, True, True, False, True],
+                    [True, False, True, True, True, True, True, False, True],
+                    [True, False, True, True, True, True, True, False, True],
+                    [True, False, True, True, True, True, True, False, True],
+                    [True, False, False, False, False, False, False, False, True],
+                    [True, True, True, True, True, True, True, True, True],
+                ]
+            )
+            ).all()
+
+
+class TestPixelMask:
+    class TestConstructors:
+
+        def test__mask_all_unmasked__5x5__input__all_are_false(self):
+            mask = aa.PixelMask.unmasked_from_shape(
+                shape=(5, 5), invert=False,
+            )
+
+            assert mask.shape == (5, 5)
+            assert (
+                    mask
+                    == np.array(
+                [
+                    [False, False, False, False, False],
+                    [False, False, False, False, False],
+                    [False, False, False, False, False],
+                    [False, False, False, False, False],
+                    [False, False, False, False, False],
+                ]
+            )
+            ).all()
+
+        def test__mask_all_unmasked_inverted__5x5__input__all_are_true(self):
+            mask = aa.PixelMask.unmasked_from_shape(
+                shape=(5, 5), invert=True, 
+            )
+
+            assert mask.shape == (5, 5)
+            assert (
+                    mask
+                    == np.array(
+                [
+                    [True, True, True, True, True],
+                    [True, True, True, True, True],
+                    [True, True, True, True, True],
+                    [True, True, True, True, True],
+                    [True, True, True, True, True],
+                ]
+            )
+            ).all()
+
+    class TestParse:
+
+        def test__load_and_output_mask_to_fits(self):
+            mask = aa.PixelMask.from_fits(
+                file_path=test_data_dir + "3x3_ones.fits", hdu=0,
+            )
+
+            output_data_dir = "{}/../../test_files/array/output_test/".format(
+                os.path.dirname(os.path.realpath(__file__))
+            )
+
+            if os.path.exists(output_data_dir):
+                shutil.rmtree(output_data_dir)
+
+            os.makedirs(output_data_dir)
+
+            mask.output_mask_to_fits(file_path=output_data_dir + "mask.fits")
+
+            mask = aa.PixelMask.from_fits(
+                file_path=output_data_dir + "mask.fits", hdu=0)
+
+            assert (mask == np.ones((3, 3))).all()
+
+    class TestResizing:
+
+        def test__pad__compare_to_manual_mask(self):
+            mask_2d = np.full(fill_value=False, shape=(5, 5))
+            mask_2d[2, 2] = True
+
+            mask = aa.PixelMask(array_2d=mask_2d)
+
+            mask_resized = mask.resized_mask_from_new_shape(
+                new_shape=(7, 7), new_centre_pixels=(1, 1)
+            )
+
+            mask_resized_manual = np.full(fill_value=False, shape=(7, 7))
+            mask_resized_manual[4, 4] = True
+
+            assert type(mask_resized) == aa.PixelMask
+            assert (mask_resized == mask_resized_manual).all()
+
+        def test__trim__compare_to_manual_mask(self):
+            mask_2d = np.full(fill_value=False, shape=(5, 5))
+            mask_2d[2, 2] = True
+
+            mask = aa.PixelMask(array_2d=mask_2d)
+
+            mask_resized = mask.resized_mask_from_new_shape(
+                new_shape=(3, 3), new_centre_pixels=(4, 4)
+            )
+
+            mask_resized_manual = np.full(fill_value=False, shape=(3, 3))
+
+            assert type(mask_resized) == aa.PixelMask
+            assert (mask_resized == mask_resized_manual).all()
+
+
+class TestAbstractSubMask:
+
     class MaskSetup:
 
         def test__array_finalize__sets_non_inputs_to_none(self):
@@ -25,7 +285,7 @@ class TestAbstractMask:
                 ]
             )
 
-            mask = aa.AbstractMask(array_2d=mask, sub_size=1)
+            mask = aa.AbstractSubMask(array_2d=mask, sub_size=1)
 
             mask_new = mask + mask
 
@@ -42,7 +302,7 @@ class TestAbstractMask:
                 ]
             )
 
-            mask = aa.AbstractMask(mask, sub_size=1)
+            mask = aa.AbstractSubMask(mask, sub_size=1)
 
             assert (
                 mask
@@ -80,7 +340,7 @@ class TestAbstractMask:
 
             mask = np.array([[False, True], [False, False]])
 
-            mask = aa.AbstractMask(array_2d=mask, sub_size=2)
+            mask = aa.AbstractSubMask(array_2d=mask, sub_size=2)
 
             assert (
                 mask.sub_mask
@@ -96,7 +356,7 @@ class TestAbstractMask:
 
             mask = np.array([[False, False, True], [False, True, False]])
 
-            mask = aa.AbstractMask(array_2d=mask, sub_size=2)
+            mask = aa.AbstractSubMask(array_2d=mask, sub_size=2)
 
             assert (
                 mask.sub_mask
@@ -110,146 +370,7 @@ class TestAbstractMask:
                 )
             ).all()
 
-    class TestMaskRegions:
-        def test__blurring_mask_for_psf_shape__compare_to_array_util(self):
-            mask = np.array(
-                [
-                    [True, True, True, True, True, True, True, True],
-                    [True, False, True, True, True, False, True, True],
-                    [True, True, True, True, True, True, True, True],
-                    [True, True, True, True, True, True, True, True],
-                    [True, True, True, True, True, True, True, True],
-                    [True, False, True, True, True, False, True, True],
-                    [True, True, True, True, True, True, True, True],
-                    [True, True, True, True, True, True, True, True],
-                    [True, True, True, True, True, True, True, True],
-                ]
-            )
-
-            blurring_mask_via_util = aa.mask_util.blurring_mask_from_mask_and_kernel_shape(
-                mask=mask, kernel_shape=(3, 3)
-            )
-
-            mask = aa.AbstractMask(mask, sub_size=1)
-            blurring_mask = mask.blurring_mask_from_kernel_shape(kernel_shape=(3, 3))
-
-            assert (blurring_mask == blurring_mask_via_util).all()
-
-        def test__edge_image_pixels__compare_to_array_util(self):
-            mask = np.array(
-                [
-                    [True, True, True, True, True, True, True, True, True],
-                    [True, False, False, False, False, False, False, False, True],
-                    [True, False, True, True, True, True, True, False, True],
-                    [True, False, True, False, False, False, True, False, True],
-                    [True, False, True, False, True, False, True, False, True],
-                    [True, False, True, False, False, False, True, False, True],
-                    [True, False, True, True, True, True, True, False, True],
-                    [True, False, False, False, False, False, False, False, True],
-                    [True, True, True, True, True, True, True, True, True],
-                ]
-            )
-
-            edge_pixels_util = aa.mask_util.edge_1d_indexes_from_mask(mask=mask)
-
-            mask = aa.AbstractMask(array_2d=mask, sub_size=1)
-
-            assert mask._edge_1d_indexes == pytest.approx(edge_pixels_util, 1e-4)
-            assert mask._edge_2d_indexes[0] == pytest.approx(np.array([1, 1]), 1e-4)
-            assert mask._edge_2d_indexes[10] == pytest.approx(np.array([3, 3]), 1e-4)
-            assert mask._edge_1d_indexes.shape[0] == mask._edge_2d_indexes.shape[0]
-
-        def test__edge_mask(self):
-            mask = np.array(
-                [
-                    [True, True, True, True, True, True, True, True, True],
-                    [True, False, False, False, False, False, False, False, True],
-                    [True, False, True, True, True, True, True, False, True],
-                    [True, False, True, False, False, False, True, False, True],
-                    [True, False, True, False, True, False, True, False, True],
-                    [True, False, True, False, False, False, True, False, True],
-                    [True, False, True, True, True, True, True, False, True],
-                    [True, False, False, False, False, False, False, False, True],
-                    [True, True, True, True, True, True, True, True, True],
-                ]
-            )
-
-            mask = aa.AbstractMask(array_2d=mask, sub_size=1)
-
-            assert (
-                    mask.edge_mask
-                    == np.array(
-                [
-                    [True, True, True, True, True, True, True, True, True],
-                    [True, False, False, False, False, False, False, False, True],
-                    [True, False, True, True, True, True, True, False, True],
-                    [True, False, True, False, False, False, True, False, True],
-                    [True, False, True, False, True, False, True, False, True],
-                    [True, False, True, False, False, False, True, False, True],
-                    [True, False, True, True, True, True, True, False, True],
-                    [True, False, False, False, False, False, False, False, True],
-                    [True, True, True, True, True, True, True, True, True],
-                ]
-            )
-            ).all()
-
-        def test__border_image_pixels__compare_to_array_util(self):
-            mask = np.array(
-                [
-                    [True, True, True, True, True, True, True, True, True],
-                    [True, False, False, False, False, False, False, False, True],
-                    [True, False, True, True, True, True, True, False, True],
-                    [True, False, True, False, False, False, True, False, True],
-                    [True, False, True, False, True, False, True, False, True],
-                    [True, False, True, False, False, False, True, False, True],
-                    [True, False, True, True, True, True, True, False, True],
-                    [True, False, False, False, False, False, False, False, True],
-                    [True, True, True, True, True, True, True, True, True],
-                ]
-            )
-
-            border_pixels_util = aa.mask_util.border_1d_indexes_from_mask(mask=mask)
-
-            mask = aa.AbstractMask(mask, sub_size=1)
-
-            assert mask._border_1d_indexes == pytest.approx(border_pixels_util, 1e-4)
-            assert mask._border_2d_indexes[0] == pytest.approx(np.array([1, 1]), 1e-4)
-            assert mask._border_2d_indexes[10] == pytest.approx(np.array([3, 7]), 1e-4)
-            assert mask._border_1d_indexes.shape[0] == mask._border_2d_indexes.shape[0]
-
-        def test__border_mask(self):
-            mask = np.array(
-                [
-                    [True, True, True, True, True, True, True, True, True],
-                    [True, False, False, False, False, False, False, False, True],
-                    [True, False, True, True, True, True, True, False, True],
-                    [True, False, True, False, False, False, True, False, True],
-                    [True, False, True, False, True, False, True, False, True],
-                    [True, False, True, False, False, False, True, False, True],
-                    [True, False, True, True, True, True, True, False, True],
-                    [True, False, False, False, False, False, False, False, True],
-                    [True, True, True, True, True, True, True, True, True],
-                ]
-            )
-
-            mask = aa.AbstractMask(array_2d=mask, sub_size=1)
-
-            assert (
-                    mask.border_mask
-                    == np.array(
-                [
-                    [True, True, True, True, True, True, True, True, True],
-                    [True, False, False, False, False, False, False, False, True],
-                    [True, False, True, True, True, True, True, False, True],
-                    [True, False, True, True, True, True, True, False, True],
-                    [True, False, True, True, True, True, True, False, True],
-                    [True, False, True, True, True, True, True, False, True],
-                    [True, False, True, True, True, True, True, False, True],
-                    [True, False, False, False, False, False, False, False, True],
-                    [True, True, True, True, True, True, True, True, True],
-                ]
-            )
-            ).all()
+    class TestSubMaskRegions:
 
         def test__sub_border_1d_indexes__compare_to_array_util_and_numerics(self):
             mask = np.array(
@@ -268,7 +389,7 @@ class TestAbstractMask:
                 mask=mask, sub_size=2
             )
 
-            mask = aa.AbstractMask(array_2d=mask, sub_size=2)
+            mask = aa.AbstractSubMask(array_2d=mask, sub_size=2)
 
             assert mask._sub_border_1d_indexes == pytest.approx(
                 sub_border_pixels_util, 1e-4
@@ -286,21 +407,19 @@ class TestAbstractMask:
                 ]
             )
 
-            mask = aa.AbstractMask(mask, sub_size=2)
+            mask = aa.AbstractSubMask(mask, sub_size=2)
 
             assert (
                     mask._sub_border_1d_indexes == np.array([0, 5, 9, 14, 23, 26, 31, 35])
             ).all()
 
 
-class TestPixelMask:
-    
+class TestPixelSubMask:
     class TestConstructors:
 
         def test__mask_all_unmasked__5x5__input__all_are_false(self):
-
-            mask = aa.PixelMask.unmasked_from_shape_and_sub_size(
-                shape=(5, 5), invert=False, sub_size=1
+            mask = aa.PixelSubMask.unmasked_from_shape_and_sub_size(
+                shape=(5, 5), invert=False, sub_size=1,
             )
 
             assert mask.shape == (5, 5)
@@ -318,7 +437,7 @@ class TestPixelMask:
             ).all()
 
         def test__mask_all_unmasked_inverted__5x5__input__all_are_true(self):
-            mask = aa.PixelMask.unmasked_from_shape_and_sub_size(
+            mask = aa.PixelSubMask.unmasked_from_shape_and_sub_size(
                 shape=(5, 5), invert=True, sub_size=1
             )
 
@@ -339,8 +458,7 @@ class TestPixelMask:
     class TestParse:
 
         def test__load_and_output_mask_to_fits(self):
-
-            mask = aa.PixelMask.from_fits(
+            mask = aa.PixelSubMask.from_fits(
                 file_path=test_data_dir + "3x3_ones.fits", hdu=0, sub_size=1
             )
 
@@ -355,7 +473,7 @@ class TestPixelMask:
 
             mask.output_mask_to_fits(file_path=output_data_dir + "mask.fits")
 
-            mask = aa.PixelMask.from_fits(
+            mask = aa.PixelSubMask.from_fits(
                 file_path=output_data_dir + "mask.fits", hdu=0, sub_size=1)
 
             assert (mask == np.ones((3, 3))).all()
@@ -363,11 +481,10 @@ class TestPixelMask:
     class TestResizing:
 
         def test__pad__compare_to_manual_mask(self):
-
             mask_2d = np.full(fill_value=False, shape=(5, 5))
             mask_2d[2, 2] = True
 
-            mask = aa.PixelMask(array_2d=mask_2d, sub_size=1)
+            mask = aa.PixelSubMask(array_2d=mask_2d, sub_size=1)
 
             mask_resized = mask.resized_mask_from_new_shape(
                 new_shape=(7, 7), new_centre_pixels=(1, 1)
@@ -376,15 +493,14 @@ class TestPixelMask:
             mask_resized_manual = np.full(fill_value=False, shape=(7, 7))
             mask_resized_manual[4, 4] = True
 
-            assert type(mask_resized) == aa.PixelMask
+            assert type(mask_resized) == aa.PixelSubMask
             assert (mask_resized == mask_resized_manual).all()
 
         def test__trim__compare_to_manual_mask(self):
-
             mask_2d = np.full(fill_value=False, shape=(5, 5))
             mask_2d[2, 2] = True
 
-            mask = aa.PixelMask(array_2d=mask_2d, sub_size=1)
+            mask = aa.PixelSubMask(array_2d=mask_2d, sub_size=1)
 
             mask_resized = mask.resized_mask_from_new_shape(
                 new_shape=(3, 3), new_centre_pixels=(4, 4)
@@ -392,7 +508,7 @@ class TestPixelMask:
 
             mask_resized_manual = np.full(fill_value=False, shape=(3, 3))
 
-            assert type(mask_resized) == aa.PixelMask
+            assert type(mask_resized) == aa.PixelSubMask
             assert (mask_resized == mask_resized_manual).all()
 
 
