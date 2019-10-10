@@ -97,7 +97,7 @@ class PixelArray(AbstractArray):
     @classmethod
     def from_1d_and_shape(cls, array_1d, shape):
 
-        mask = msk.PixelMask.unmasked_from_shape_and_sub_size(
+        mask = msk.PixelSubMask.unmasked_from_shape_and_sub_size(
             shape=shape,
             sub_size=1,
         )
@@ -107,7 +107,7 @@ class PixelArray(AbstractArray):
     @classmethod
     def from_2d(cls, array_2d):
 
-        mask = msk.PixelMask.unmasked_from_shape_and_sub_size(
+        mask = msk.PixelSubMask.unmasked_from_shape_and_sub_size(
             shape=array_2d.shape,
             sub_size=1,
         )

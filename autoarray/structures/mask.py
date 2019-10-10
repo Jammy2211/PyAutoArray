@@ -14,7 +14,7 @@ class AbstractMask(np.ndarray):
 
     # noinspection PyUnusedLocal
     def __new__(
-        cls, array_2d, sub_size, *args, **kwargs
+        cls, array_2d, *args, **kwargs
     ):
         """ A mask, which is applied to a 2D array of hyper_galaxies to extract a set of unmasked image pixels (i.e. mask entry \
         is *False* or 0) which are then fitted in an analysis.
@@ -34,13 +34,7 @@ class AbstractMask(np.ndarray):
         """
         # noinspection PyArgumentList
 
-        obj = array_2d.view(cls)
-
-        obj.sub_size = sub_size
-        obj.sub_length = int(obj.sub_size ** 2.0)
-        obj.sub_fraction = 1.0 / obj.sub_length
-
-        return obj
+        return array_2d.view(cls)
 
     def __array_finalize__(self, obj):
 
@@ -63,14 +57,6 @@ class AbstractMask(np.ndarray):
 
         array_util.numpy_array_2d_to_fits(
             array_2d=self, file_path=file_path, overwrite=overwrite
-        )
-
-    def new_mask_with_new_sub_size(self, sub_size):
-        return self.__class__(
-            array_2d=self,
-            pixel_scales=self.pixel_scales,
-            sub_size=sub_size,
-            origin=self.origin,
         )
 
     @property
@@ -100,16 +86,6 @@ class AbstractMask(np.ndarray):
         )
 
         return self.__class__(array_2d=blurring_mask, pixel_scales=self.pixel_scales, sub_size=1)
-
-    @property
-    def sub_mask(self):
-
-        sub_shape = (self.shape[0] * self.sub_size, self.shape[1] * self.sub_size)
-
-        return mask_util.mask_from_shape_and_mask_2d_index_for_mask_1d_index(
-            shape=sub_shape,
-            mask_2d_index_for_mask_1d_index=self._sub_mask_2d_index_for_sub_mask_1d_index,
-        ).astype("bool")
 
     @property
     def edge_mask(self):
@@ -190,6 +166,171 @@ class AbstractMask(np.ndarray):
         )
 
     @property
+    def _mask_2d_index_for_mask_1d_index(self):
+        """A 1D array of mappings between every unmasked pixel and its 2D pixel coordinates."""
+        return mask_util.sub_mask_2d_index_for_sub_mask_1d_index_from_mask_and_sub_size(
+            mask=self, sub_size=1
+        ).astype("int")
+
+
+class PixelMask(AbstractMask):
+
+    # noinspection PyUnusedLocal
+    def __new__(
+        cls, array_2d, *args, **kwargs
+    ):
+        """ A mask, which is applied to a 2D array of hyper_galaxies to extract a set of unmasked image pixels (i.e. mask entry \
+        is *False* or 0) which are then fitted in an analysis.
+
+        The mask retains the pixel scale of the array and has a centre and origin.
+
+        Parameters
+        ----------
+        array_2d: ndarray
+            An array of bools representing the mask.
+        pixel_scales: (float, float)
+            The arc-second to pixel conversion factor of each pixel.
+        origin : (float, float)
+            The (y,x) arc-second origin of the mask's coordinate system.
+        centre : (float, float)
+            The (y,x) arc-second centre of the mask provided it is a standard geometric shape (e.g. a circle).
+        """
+        # noinspection PyArgumentList
+
+        obj = super(PixelMask, cls).__new__(cls, array_2d=array_2d)
+        return obj
+
+    @property
+    def mapping(self):
+        return mapping.Mapping(mask=self)
+
+    @classmethod
+    def unmasked_from_shape(
+        cls, shape, invert=False
+    ):
+        """Setup a mask where all pixels are unmasked.
+
+        Parameters
+        ----------
+        shape : (int, int)
+            The (y,x) shape of the mask in units of pixels.
+        pixel_scales : (float, float)
+            The arc-second to pixel conversion factor of each pixel.
+        """
+        mask = np.full(tuple(map(lambda d: int(d), shape)), False)
+        if invert:
+            mask = np.invert(mask)
+        return cls(
+            array_2d=mask,
+        )
+
+    @classmethod
+    def from_fits(cls, file_path, hdu):
+        """
+        Loads the image from a .fits file.
+
+        Parameters
+        ----------
+        file_path : str
+            The full path of the fits file.
+        hdu : int
+            The HDU number in the fits file containing the image image.
+        pixel_scales : (float, float)
+            The arc-second to pixel conversion factor of each pixel.
+        """
+        return PixelMask(
+            array_util.numpy_array_2d_from_fits(file_path=file_path, hdu=hdu),
+        )
+
+    def resized_mask_from_new_shape(
+        self, new_shape, new_centre_pixels=None,
+    ):
+        """resized the array to a new shape and at a new origin.
+
+        Parameters
+        -----------
+        new_shape : (int, int)
+            The new two-dimensional shape of the array.
+        """
+        if new_centre_pixels is None:
+
+            new_centre = (
+                -1,
+                -1,
+            )  # In Numba, the input origin must be the same image type as the origin, thus we cannot
+            # pass 'None' and instead use the tuple (-1, -1).
+
+        elif new_centre_pixels is not None:
+
+            new_centre = new_centre_pixels
+
+        else:
+
+            raise exc.MaskException(
+                "You have supplied two centres (pixels and arc-seconds) to the resize hyper"
+                "array function"
+            )
+
+        resized_mask_2d = array_util.resized_array_2d_from_array_2d_and_resized_shape(
+            array_2d=self, resized_shape=new_shape, origin=new_centre
+        ).astype("bool")
+
+        return self.__class__(
+            array_2d=resized_mask_2d,
+            origin=new_centre,
+        )
+
+class AbstractSubMask(AbstractMask):
+
+    # noinspection PyUnusedLocal
+    def __new__(
+        cls, array_2d, sub_size, *args, **kwargs
+    ):
+        """ A mask, which is applied to a 2D array of hyper_galaxies to extract a set of unmasked image pixels (i.e. mask entry \
+        is *False* or 0) which are then fitted in an analysis.
+
+        The mask retains the pixel scale of the array and has a centre and origin.
+
+        Parameters
+        ----------
+        array_2d: ndarray
+            An array of bools representing the mask.
+        pixel_scales: (float, float)
+            The arc-second to pixel conversion factor of each pixel.
+        origin : (float, float)
+            The (y,x) arc-second origin of the mask's coordinate system.
+        centre : (float, float)
+            The (y,x) arc-second centre of the mask provided it is a standard geometric shape (e.g. a circle).
+        """
+        # noinspection PyArgumentList
+
+        obj = super(AbstractSubMask, cls).__new__(cls=cls, array_2d=array_2d)
+
+        obj.sub_size = sub_size
+        obj.sub_length = int(obj.sub_size ** 2.0)
+        obj.sub_fraction = 1.0 / obj.sub_length
+
+        return obj
+
+    def new_mask_with_new_sub_size(self, sub_size):
+        return self.__class__(
+            array_2d=self,
+            pixel_scales=self.pixel_scales,
+            sub_size=sub_size,
+            origin=self.origin,
+        )
+
+    @property
+    def sub_mask(self):
+
+        sub_shape = (self.shape[0] * self.sub_size, self.shape[1] * self.sub_size)
+
+        return mask_util.mask_from_shape_and_mask_2d_index_for_mask_1d_index(
+            shape=sub_shape,
+            mask_2d_index_for_mask_1d_index=self._sub_mask_2d_index_for_sub_mask_1d_index,
+        ).astype("bool")
+
+    @property
     def _sub_border_1d_indexes(self):
         """The indicies of the mask's border pixels, where a border pixel is any unmasked pixel on an
         exterior edge (e.g. next to at least one pixel with a *True* value but not central pixels like those within \
@@ -197,13 +338,6 @@ class AbstractMask(np.ndarray):
         """
         return mask_util.sub_border_pixel_1d_indexes_from_mask_and_sub_size(
             mask=self, sub_size=self.sub_size
-        ).astype("int")
-
-    @property
-    def _mask_2d_index_for_mask_1d_index(self):
-        """A 1D array of mappings between every unmasked pixel and its 2D pixel coordinates."""
-        return mask_util.sub_mask_2d_index_for_sub_mask_1d_index_from_mask_and_sub_size(
-            mask=self, sub_size=1
         ).astype("int")
 
     @property
@@ -228,7 +362,7 @@ class AbstractMask(np.ndarray):
         ).astype("int")
 
 
-class PixelMask(AbstractMask):
+class PixelSubMask(AbstractSubMask):
 
     # noinspection PyUnusedLocal
     def __new__(
@@ -252,12 +386,12 @@ class PixelMask(AbstractMask):
         """
         # noinspection PyArgumentList
 
-        obj = super(PixelMask, cls).__new__(cls, array_2d=array_2d, sub_size=sub_size)
+        obj = super(PixelSubMask, cls).__new__(cls, array_2d=array_2d, sub_size=sub_size)
         return obj
 
     @property
     def mapping(self):
-        return mapping.Mapping(mask=self)
+        return mapping.SubMapping(mask=self)
 
     @classmethod
     def unmasked_from_shape_and_sub_size(
@@ -280,7 +414,7 @@ class PixelMask(AbstractMask):
         )
 
     @classmethod
-    def from_fits(cls, file_path, hdu, sub_size, origin=(0.0, 0.0)):
+    def from_fits(cls, file_path, hdu, sub_size):
         """
         Loads the image from a .fits file.
 
@@ -293,10 +427,9 @@ class PixelMask(AbstractMask):
         pixel_scales : (float, float)
             The arc-second to pixel conversion factor of each pixel.
         """
-        return cls(
+        return PixelSubMask(
             array_util.numpy_array_2d_from_fits(file_path=file_path, hdu=hdu),
             sub_size=sub_size,
-            origin=origin,
         )
 
     def resized_mask_from_new_shape(
@@ -340,7 +473,7 @@ class PixelMask(AbstractMask):
         )
 
 
-class ScaledMask(AbstractMask):
+class ScaledMask(AbstractSubMask):
 
     # noinspection PyUnusedLocal
     def __new__(
@@ -861,7 +994,6 @@ class ScaledMask(AbstractMask):
         an annulus mask).
         """
         return self.masked_sub_grid[self._sub_border_1d_indexes]
-
 
     @property
     def _zoom_offset_pixels(self):

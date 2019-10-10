@@ -9,76 +9,9 @@ from autoarray.util import array_util, grid_util, mask_util
 
 
 class Mapping(object):
-    
+
     def __init__(self, mask):
-        
         self.mask = mask
-
-    def sub_array_2d_from_sub_array_1d(self, sub_array_1d):
-        """ Map a 1D sub-array the same dimension as the sub-grid (e.g. including sub-pixels) to its original masked
-        2D sub array.
-
-        Parameters
-        -----------
-        sub_array_1d : ndarray
-            The 1D sub_array which is mapped to its masked 2D sub-array.
-        """
-        return array_util.sub_array_2d_from_sub_array_1d_mask_and_sub_size(
-            sub_array_1d=sub_array_1d, mask=self.mask, sub_size=self.mask.sub_size
-        )
-
-    def array_2d_binned_from_sub_array_1d(self, sub_array_1d):
-        """ Map a 1D sub-array the same dimension as the sub-grid to its original masked 2D sub-array and return it as
-        a hyper array.
-
-        Parameters
-        -----------
-        sub_array_1d : ndarray
-            The 1D sub-array of which is mapped to a 2D hyper sub-array the dimensions.
-        """
-        binned_array_1d = np.multiply(
-            self.mask.sub_fraction, sub_array_1d.reshape(-1, self.mask.sub_length).sum(axis=1)
-        )
-        return array_util.sub_array_2d_from_sub_array_1d_mask_and_sub_size(
-            sub_array_1d=binned_array_1d, mask=self.mask, sub_size=1
-        )
-
-    def sub_grid_2d_from_sub_grid_1d(self, sub_grid_1d):
-        """ Map a 1D sub-grid the same dimension as the sub-grid (e.g. including sub-pixels) to its original masked
-        2D sub grid.
-
-        Parameters
-        -----------
-        sub_grid_1d : ndgrid
-            The 1D sub_grid which is mapped to its masked 2D sub-grid.
-        """
-        return grid_util.sub_grid_2d_from_sub_grid_1d_mask_and_sub_size(
-            sub_grid_1d=sub_grid_1d, mask=self.mask, sub_size=self.mask.sub_size
-        )
-
-    def grid_2d_binned_from_sub_grid_1d(self, sub_grid_1d):
-        """ Map a 1D sub-grid the same dimension as the sub-grid to its original masked 2D sub-grid and return it as
-        a hyper grid.
-
-        Parameters
-        -----------
-        sub_grid_1d : ndgrid
-            The 1D sub-grid of which is mapped to a 2D hyper sub-grid the dimensions.
-        """
-
-        grid_1d_y = np.multiply(
-            self.mask.sub_fraction, sub_grid_1d[:,0].reshape(-1, self.mask.sub_length).sum(axis=1)
-        )
-
-        grid_1d_x = np.multiply(
-            self.mask.sub_fraction, sub_grid_1d[:,1].reshape(-1, self.mask.sub_length).sum(axis=1)
-        )
-
-        binned_grid_1d = np.stack((grid_1d_y, grid_1d_x), axis=-1)
-
-        return grid_util.sub_grid_2d_from_sub_grid_1d_mask_and_sub_size(
-            sub_grid_1d=binned_grid_1d, mask=self.mask, sub_size=1
-        )
 
     def trimmed_array_2d_from_padded_array_1d_and_image_shape(
         self, padded_array_1d, image_shape
@@ -158,7 +91,80 @@ class Mapping(object):
         )
 
 
-class ScaledMapping(Mapping):
+class SubMapping(Mapping):
+
+    def __init__(self, mask):
+
+        super(SubMapping, self).__init__(mask=mask)
+
+    def sub_array_2d_from_sub_array_1d(self, sub_array_1d):
+        """ Map a 1D sub-array the same dimension as the sub-grid (e.g. including sub-pixels) to its original masked
+        2D sub array.
+
+        Parameters
+        -----------
+        sub_array_1d : ndarray
+            The 1D sub_array which is mapped to its masked 2D sub-array.
+        """
+        return array_util.sub_array_2d_from_sub_array_1d_mask_and_sub_size(
+            sub_array_1d=sub_array_1d, mask=self.mask, sub_size=self.mask.sub_size
+        )
+
+    def array_2d_binned_from_sub_array_1d(self, sub_array_1d):
+        """ Map a 1D sub-array the same dimension as the sub-grid to its original masked 2D sub-array and return it as
+        a hyper array.
+
+        Parameters
+        -----------
+        sub_array_1d : ndarray
+            The 1D sub-array of which is mapped to a 2D hyper sub-array the dimensions.
+        """
+        binned_array_1d = np.multiply(
+            self.mask.sub_fraction, sub_array_1d.reshape(-1, self.mask.sub_length).sum(axis=1)
+        )
+        return array_util.sub_array_2d_from_sub_array_1d_mask_and_sub_size(
+            sub_array_1d=binned_array_1d, mask=self.mask, sub_size=1
+        )
+
+    def sub_grid_2d_from_sub_grid_1d(self, sub_grid_1d):
+        """ Map a 1D sub-grid the same dimension as the sub-grid (e.g. including sub-pixels) to its original masked
+        2D sub grid.
+
+        Parameters
+        -----------
+        sub_grid_1d : ndgrid
+            The 1D sub_grid which is mapped to its masked 2D sub-grid.
+        """
+        return grid_util.sub_grid_2d_from_sub_grid_1d_mask_and_sub_size(
+            sub_grid_1d=sub_grid_1d, mask=self.mask, sub_size=self.mask.sub_size
+        )
+
+    def grid_2d_binned_from_sub_grid_1d(self, sub_grid_1d):
+        """ Map a 1D sub-grid the same dimension as the sub-grid to its original masked 2D sub-grid and return it as
+        a hyper grid.
+
+        Parameters
+        -----------
+        sub_grid_1d : ndgrid
+            The 1D sub-grid of which is mapped to a 2D hyper sub-grid the dimensions.
+        """
+
+        grid_1d_y = np.multiply(
+            self.mask.sub_fraction, sub_grid_1d[:,0].reshape(-1, self.mask.sub_length).sum(axis=1)
+        )
+
+        grid_1d_x = np.multiply(
+            self.mask.sub_fraction, sub_grid_1d[:,1].reshape(-1, self.mask.sub_length).sum(axis=1)
+        )
+
+        binned_grid_1d = np.stack((grid_1d_y, grid_1d_x), axis=-1)
+
+        return grid_util.sub_grid_2d_from_sub_grid_1d_mask_and_sub_size(
+            sub_grid_1d=binned_grid_1d, mask=self.mask, sub_size=1
+        )
+
+
+class ScaledMapping(SubMapping):
     
     def __init__(self, mask):
         
