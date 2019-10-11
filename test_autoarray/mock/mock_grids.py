@@ -2,17 +2,17 @@ import autoarray as aa
 import numpy as np
 
 
-class MockGrid(aa.Grid):
+class MockSubGrid(aa.SubGrid):
     def __new__(cls, mask, *args, **kwargs):
         sub_grid_1d = aa.grid_util.grid_1d_from_mask_pixel_scales_sub_size_and_origin(
             mask=mask,
-            pixel_scales=(mask.pixel_scale, mask.pixel_scale),
+            pixel_scales=(mask.geometry.pixel_scale, mask.geometry.pixel_scale),
             sub_size=mask.sub_size,
         )
 
         obj = sub_grid_1d.view(cls)
         obj.mask = mask
-        obj._sub_border_1d_indexes = mask._sub_border_1d_indexes
+        obj._sub_border_1d_indexes = regions._sub_border_1d_indexes
         obj.interpolator = None
         obj.binned = None
         return obj
@@ -21,7 +21,7 @@ class MockGrid(aa.Grid):
         pass
 
 
-class MockBinnedGrid(aa.BinnedGrid):
+class MockBinnedGrid(aa.BinnedSubGrid):
     pass
 
 

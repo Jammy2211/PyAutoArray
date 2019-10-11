@@ -20,7 +20,7 @@ def make_simple_mask_7x7():
         ]
     )
 
-    return aa.PixelMask(array_2d=mask, sub_size=1)
+    return aa.Mask(array_2d=mask, sub_size=1)
 
 
 @pytest.fixture(name="simple_mask_5x5")
@@ -36,7 +36,7 @@ def make_simple_mask_5x5():
         ]
     )
 
-    return aa.PixelMask(array_2d=mask, sub_size=1)
+    return aa.Mask(array_2d=mask, sub_size=1)
 
 
 @pytest.fixture(name="simple_mask_index_array")
@@ -54,7 +54,7 @@ def make_cross_mask():
     mask[2, 1] = False
     mask[2, 3] = False
 
-    return aa.PixelMask(array_2d=mask, sub_size=1)
+    return aa.Mask(array_2d=mask, sub_size=1)
 
 
 @pytest.fixture(name="cross_mask_index_array")
@@ -1157,17 +1157,17 @@ class TestCompareToFull2dConv:
         im = np.arange(900).reshape(30, 30)
         kernel = np.arange(49).reshape(7, 7)
         blurred_im = scipy.signal.convolve2d(im, kernel, mode="same")
-        mask = aa.ScaledMask.circular(
+        mask = aa.ScaledSubMask.circular(
             shape=(30, 30), pixel_scales=(1.0, 1.0), sub_size=1, radius_arcsec=4.0
         )
-        blurred_masked_im_0 = mask.mapping.scaled_array_from_array_2d(blurred_im)
+        blurred_masked_im_0 = mask.mapping.array_from_array_2d(blurred_im)
 
         # Now reproduce this datas_ using the frame convolver_image
 
-        blurring_mask = mask.blurring_mask_from_kernel_shape(kernel.shape)
+        blurring_mask = mask.regions.blurring_mask_from_kernel_shape(kernel.shape)
         convolver = aa.Convolver(mask=mask, kernel=kernel)
-        im_1d = mask.mapping.scaled_array_from_array_2d(im)
-        blurring_im_1d = blurring_mask.mapping.scaled_array_from_array_2d(im)
+        im_1d = mask.mapping.array_from_array_2d(im)
+        blurring_im_1d = blurring_mask.mapping.array_from_array_2d(im)
         blurred_masked_im_1 = convolver.convolved_image_1d_from_image_array_and_blurring_array(
             image_array=im_1d, blurring_array=blurring_im_1d
         )

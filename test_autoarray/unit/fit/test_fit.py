@@ -6,15 +6,15 @@ import numpy as np
 class TestDataFit:
     def test__image_and_model_are_identical__no_masking__check_values_are_correct(self):
 
-        mask = aa.ScaledMask(
+        mask = aa.ScaledSubMask(
             array_2d=np.array([[False, False], [False, False]]),
             sub_size=1,
             pixel_scales=(1.0, 1.0),
         )
 
-        data = aa.ScaledArray(sub_array_1d=np.array([1.0, 2.0, 3.0, 4.0]), mask=mask)
-        noise_map = aa.ScaledArray(sub_array_1d=np.array([2.0, 2.0, 2.0, 2.0]), mask=mask)
-        model_data = aa.ScaledArray(sub_array_1d=np.array([1.0, 2.0, 3.0, 4.0]), mask=mask)
+        data = aa.ScaledSubArray(array_1d=np.array([1.0, 2.0, 3.0, 4.0]), mask=mask)
+        noise_map = aa.ScaledSubArray(array_1d=np.array([2.0, 2.0, 2.0, 2.0]), mask=mask)
+        model_data = aa.ScaledSubArray(array_1d=np.array([1.0, 2.0, 3.0, 4.0]), mask=mask)
 
         data_fit = aa.DataFit(
             mask=mask, data=data, noise_map=noise_map, model_data=model_data
@@ -58,15 +58,15 @@ class TestDataFit:
 
     def test__image_and_model_mismatch__no_masking__check_values_are_correct(self):
 
-        mask = aa.ScaledMask(
+        mask = aa.ScaledSubMask(
             array_2d=np.array([[False, True], [False, False]]),
             sub_size=1,
             pixel_scales=(1.0, 1.0),
         )
 
-        data = aa.ScaledArray(sub_array_1d=np.array([1.0, 2.0, 3.0]), mask=mask)
-        noise_map = aa.ScaledArray(sub_array_1d=np.array([2.0, 2.0, 2.0]), mask=mask)
-        model_data = aa.ScaledArray(sub_array_1d=np.array([1.0, 1.0, 1.0]), mask=mask)
+        data = aa.ScaledSubArray(array_1d=np.array([1.0, 2.0, 3.0]), mask=mask)
+        noise_map = aa.ScaledSubArray(array_1d=np.array([2.0, 2.0, 2.0]), mask=mask)
+        model_data = aa.ScaledSubArray(array_1d=np.array([1.0, 1.0, 1.0]), mask=mask)
 
         data_fit = aa.DataFit(
             data=data, noise_map=noise_map, mask=mask, model_data=model_data

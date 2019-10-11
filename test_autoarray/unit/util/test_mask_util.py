@@ -45,7 +45,7 @@ class TestTotalPixels:
     class TestTotalSparsePixels:
         def test__mask_full_false__full_pixelization_grid_pixels_in_mask(self):
 
-            ma = aa.PixelMask(
+            ma = aa.Mask(
                 array_2d=np.array(
                     [
                         [False, False, False],
@@ -78,7 +78,7 @@ class TestTotalPixels:
             self
         ):
 
-            ma = aa.PixelMask(
+            ma = aa.Mask(
                 array_2d=np.array(
                     [[True, False, True], [False, False, False], [True, False, True]]
                 ),
@@ -105,7 +105,7 @@ class TestTotalPixels:
 
         def test__same_as_above_but_3x4_mask(self):
 
-            ma = aa.PixelMask(
+            ma = aa.Mask(
                 array_2d=np.array(
                     [
                         [True, True, False, True],
@@ -136,7 +136,7 @@ class TestTotalPixels:
 
         def test__same_as_above_but_4x3_mask(self):
 
-            ma = aa.PixelMask(
+            ma = aa.Mask(
                 array_2d=np.array(
                     [
                         [True, False, True],

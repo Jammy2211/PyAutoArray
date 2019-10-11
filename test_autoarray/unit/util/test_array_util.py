@@ -653,7 +653,7 @@ class Test1dIndexFromIndex2D(object):
         assert (index_1d_for_index_2d == np.array([1, 4, 7, 8, 0, 2, 3, 5, 6])).all()
 
 
-class TestSubArray1DFromSubArray2d(object):
+class TestArray1DFromArray2d(object):
     def test__map_simple_data__sub_size_1(self):
 
         array_2d = np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
@@ -855,7 +855,7 @@ class TestSubArray1DFromSubArray2d(object):
         ).all()
 
 
-class TestSubArray2dForSubArray1d(object):
+class TestArray2dForArray1d(object):
     def test__simple_2d_array__is_masked_and_mapped__sub_size_1(self):
 
         array_1d = np.array([1.0, 2.0, 3.0, 4.0])
