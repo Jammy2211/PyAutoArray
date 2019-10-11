@@ -4,7 +4,7 @@ import autoarray as aa
 from autoarray import exc
 
 
-class MockScaledMask(aa.ScaledMask):
+class MockScaledMask(aa.ScaledSubMask):
     def __new__(
         cls,
         array_2d,
