@@ -6,6 +6,10 @@ class GridException(Exception):
     pass
 
 
+class KernelException(Exception):
+    pass
+
+
 class ConvolutionException(Exception):
     pass
 
