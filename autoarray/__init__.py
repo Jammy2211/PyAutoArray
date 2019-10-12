@@ -4,6 +4,7 @@ from autoarray.mask.geometry import Geometry, ScaledGeometry, ScaledSubGeometry
 from autoarray.mask.regions import Regions, SubRegions
 from autoarray.mask.mask import Mask, ScaledMask,ScaledSubMask
 from autoarray.structures.arrays import Array, ScaledArray, ScaledSubArray
+from autoarray.structures.kernel import Kernel
 from autoarray.structures.grids import (
     Grid,
     SubGrid,
