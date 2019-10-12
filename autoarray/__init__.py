@@ -1,3 +1,4 @@
+
 from autoarray.mask.mapping import Mapping, ScaledMapping, ScaledSubMapping
 from autoarray.mask.geometry import Geometry, ScaledGeometry, ScaledSubGeometry
 from autoarray.mask.regions import Regions, SubRegions
