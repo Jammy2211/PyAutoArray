@@ -166,7 +166,7 @@ def plot_array(
         )
 
     if zoom_around_mask and mask is not None:
-        array = array.new_array_zoomed_from_mask(mask=mask, buffer=2)
+        array = array.zoomed_array_from_mask(mask=mask, buffer=2)
         zoom_offset_pixels = np.asarray(mask._zoom_offset_pixels)
         zoom_offset_arcsec = np.asarray(mask._zoom_offset_arcsec)
     else:

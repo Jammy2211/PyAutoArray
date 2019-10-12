@@ -137,8 +137,8 @@ class Mapping(object):
         )
 
         # noinspection PyUnresolvedReferences
-        blurred_padded_array_2d = psf.convolved_array_2d_from_array_2d(
-            array_2d=padded_array_2d
+        blurred_padded_array_2d = psf.convolved_array_from_array(
+            array=padded_array_2d
         )
 
         return array_util.sub_array_1d_from_sub_array_2d_mask_and_sub_size(
@@ -165,8 +165,8 @@ class Mapping(object):
 
         padded_array_2d = array_util.sub_array_2d_from_sub_array_1d_mask_and_sub_size(sub_array_1d=padded_array_1d, mask=self.mask_2d, sub_size=1)
 
-        blurred_image_2d = psf.convolved_array_2d_from_array_2d(
-            array_2d=padded_array_2d.in_2d
+        blurred_image_2d = psf.convolved_array_from_array(
+            array=padded_array_2d.in_2d
         )
 
         blurred_image_1d = array_util.sub_array_1d_from_sub_array_2d_mask_and_sub_size(sub_array_1d=blurred_image_2d, mask=self.mask_2d, sub_size=1)

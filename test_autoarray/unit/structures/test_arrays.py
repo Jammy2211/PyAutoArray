@@ -21,7 +21,7 @@ class TestAbstractArray:
 
             arr = aa.ScaledSubArray.from_2d_pixel_scale_and_sub_size(array_2d=array_2d, sub_size=1, pixel_scale=1.0)
 
-            arr = arr.new_array_resized_from_new_shape(
+            arr = arr.resized_array_from_new_shape(
                 new_shape=(7, 7),
             )
 
@@ -47,7 +47,7 @@ class TestAbstractArray:
 
             arr = aa.ScaledSubArray.from_2d_pixel_scale_and_sub_size(array_2d=array_2d, sub_size=1, pixel_scale=1.0)
 
-            arr = arr.new_array_resized_from_new_shape(
+            arr = arr.resized_array_from_new_shape(
                 new_shape=(3, 3),
             )
 
@@ -65,7 +65,7 @@ class TestAbstractArray:
 
             arr = aa.ScaledSubArray.from_2d_pixel_scale_and_sub_size(array_2d=array_2d, sub_size=1, pixel_scale=1.0)
 
-            new_arr = arr.new_array_trimmed_from_kernel_shape(
+            new_arr = arr.trimmed_array_from_kernel_shape(
                 kernel_shape=(3, 3)
             )
 
@@ -76,7 +76,7 @@ class TestAbstractArray:
             ).all()
             assert new_arr.mask.geometry.pixel_scale == 1.0
 
-            new_arr = arr.new_array_trimmed_from_kernel_shape(
+            new_arr = arr.trimmed_array_from_kernel_shape(
                 kernel_shape=(5, 5)
             )
 
@@ -89,7 +89,7 @@ class TestAbstractArray:
 
             arr = aa.ScaledSubArray.from_2d_pixel_scale_and_sub_size(array_2d=array_2d, sub_size=1, pixel_scale=1.0)
 
-            new_arr = arr.new_array_trimmed_from_kernel_shape(
+            new_arr = arr.trimmed_array_from_kernel_shape(
                 kernel_shape=(7, 7)
             )
 
@@ -125,7 +125,7 @@ class TestAbstractArray:
                 sub_size=1,
             )
 
-            arr_zoomed = arr.new_array_zoomed_from_mask(
+            arr_zoomed = arr.zoomed_array_from_mask(
                 mask=mask, buffer=0
             )
             assert (arr_zoomed.in_2d == np.array([[6.0, 7.0], [10.0, 11.0]])).all()
@@ -143,7 +143,7 @@ class TestAbstractArray:
                 sub_size=1,
             )
 
-            arr_zoomed = arr.new_array_zoomed_from_mask(
+            arr_zoomed = arr.zoomed_array_from_mask(
                 mask=mask, buffer=0
             )
             assert (
@@ -163,7 +163,7 @@ class TestAbstractArray:
                 sub_size=1,
             )
 
-            arr_zoomed = arr.new_array_zoomed_from_mask(
+            arr_zoomed = arr.zoomed_array_from_mask(
                 mask=mask, buffer=0
             )
             assert (
@@ -184,7 +184,7 @@ class TestAbstractArray:
                 sub_size=1,
             )
 
-            arr_zoomed = arr.new_array_zoomed_from_mask(
+            arr_zoomed = arr.zoomed_array_from_mask(
                 mask=mask, buffer=0
             )
             assert (
@@ -204,7 +204,7 @@ class TestAbstractArray:
                 sub_size=1,
             )
 
-            arr_zoomed = arr.new_array_zoomed_from_mask(
+            arr_zoomed = arr.zoomed_array_from_mask(
                 mask=mask, buffer=0
             )
             assert (
@@ -225,7 +225,7 @@ class TestAbstractArray:
                 sub_size=1,
             )
 
-            arr_zoomed = arr.new_array_zoomed_from_mask(
+            arr_zoomed = arr.zoomed_array_from_mask(
                 mask=mask, buffer=1
             )
             assert (
@@ -254,7 +254,7 @@ class TestAbstractArray:
             arr_binned_util = aa.binning_util.binned_up_array_2d_using_mean_from_array_2d_and_bin_up_factor(
                 array_2d=array_2d, bin_up_factor=4
             )
-            arr_binned = arr.new_array_binned_from_bin_up_factor(
+            arr_binned = arr.binned_array_from_bin_up_factor(
                 bin_up_factor=4, method="mean"
             )
             assert (arr_binned.in_2d == arr_binned_util).all()
@@ -263,7 +263,7 @@ class TestAbstractArray:
             arr_binned_util = aa.binning_util.binned_array_2d_using_quadrature_from_array_2d_and_bin_up_factor(
                 array_2d=array_2d, bin_up_factor=4
             )
-            arr_binned = arr.new_array_binned_from_bin_up_factor(
+            arr_binned = arr.binned_array_from_bin_up_factor(
                 bin_up_factor=4, method="quadrature"
             )
             assert (arr_binned.in_2d == arr_binned_util).all()
@@ -272,7 +272,7 @@ class TestAbstractArray:
             arr_binned_util = aa.binning_util.binned_array_2d_using_sum_from_array_2d_and_bin_up_factor(
                 array_2d=array_2d, bin_up_factor=4
             )
-            arr_binned = arr.new_array_binned_from_bin_up_factor(
+            arr_binned = arr.binned_array_from_bin_up_factor(
                 bin_up_factor=4, method="sum"
             )
             assert (arr_binned.in_2d == arr_binned_util).all()
@@ -289,7 +289,7 @@ class TestAbstractArray:
 
             array_2d = aa.ScaledSubArray.from_2d_pixel_scale_and_sub_size(array_2d=array_2d, sub_size=1, pixel_scale=0.1)
             with pytest.raises(exc.ScaledException):
-                array_2d.new_array_binned_from_bin_up_factor(
+                array_2d.binned_array_from_bin_up_factor(
                     bin_up_factor=4, method="wrong"
                 )
 

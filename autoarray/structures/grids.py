@@ -128,6 +128,16 @@ class Grid(np.ndarray):
         obj.binned = None
         return obj
 
+    def __array_finalize__(self, obj):
+
+        if isinstance(obj, Grid):
+            self.mask = obj.mask
+            self.interpolator = obj.interpolator
+            self.binned = obj.binned
+
+        if hasattr(obj, '_sub_border_1d_indexes'):
+            self._sub_border_1d_indexes = obj._sub_border_1d_indexes
+
     @property
     def mapping(self):
         return self.mask.mapping
@@ -453,16 +463,6 @@ class SubGrid(Grid):
 
         """
         return super(SubGrid, cls).__new__(cls=cls, grid_1d=grid_1d, mask=mask, binned=binned)
-
-    def __array_finalize__(self, obj):
-
-        if isinstance(obj, SubGrid):
-            self.mask = obj.mask
-            self.interpolator = obj.interpolator
-            self.binned = obj.binned
-
-        if hasattr(obj, '_sub_border_1d_indexes'):
-            self._sub_border_1d_indexes = obj._sub_border_1d_indexes
 
     @classmethod
     def from_mask(cls, mask):

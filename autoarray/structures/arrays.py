@@ -10,6 +10,7 @@ logging.basicConfig()
 logger = logging.getLogger(__name__)
 
 
+
 class AbstractArray(np.ndarray):
 
     # noinspection PyUnusedLocal
@@ -80,7 +81,8 @@ class AbstractArray(np.ndarray):
         return np.ndarray.__array_wrap__(self, out_arr, context)
 
     def __array_finalize__(self, obj):
-        if hasattr(self, 'mask'):
+
+        if hasattr(obj, 'mask'):
             self.mask = obj.mask
 
     def __eq__(self, other):
@@ -106,7 +108,7 @@ class AbstractArray(np.ndarray):
             for x in range(self.shape[1]):
                 func(y, x)
 
-    def new_array_zoomed_from_mask(self, mask, buffer=1):
+    def zoomed_array_from_mask(self, mask, buffer=1):
         """Extract the 2D region of an array corresponding to the rectangle encompassing all unmasked values.
 
         This is used to extract and visualize only the region of an image that is used in an analysis.
@@ -133,7 +135,7 @@ class AbstractArray(np.ndarray):
 
         return extracted_mask_2d.mapping.array_from_array_2d(array_2d=extracted_array_2d)
 
-    def new_array_resized_from_new_shape(
+    def resized_array_from_new_shape(
         self, new_shape,
     ):
         """resized the array to a new shape and at a new origin.
@@ -154,7 +156,7 @@ class AbstractArray(np.ndarray):
 
         return resized_mask_2d.mapping.array_from_array_2d(array_2d=resized_array_2d)
 
-    def new_array_trimmed_from_kernel_shape(self, kernel_shape):
+    def trimmed_array_from_kernel_shape(self, kernel_shape):
         psf_cut_y = np.int(np.ceil(kernel_shape[0] / 2)) - 1
         psf_cut_x = np.int(np.ceil(kernel_shape[1] / 2)) - 1
         array_y = np.int(self.mask.shape[0])
@@ -169,7 +171,7 @@ class AbstractArray(np.ndarray):
 
         return resized_mask_2d.mapping.array_from_array_2d(array_2d=trimmed_array_2d)
 
-    def new_array_binned_from_bin_up_factor(self, bin_up_factor, method):
+    def binned_array_from_bin_up_factor(self, bin_up_factor, method):
 
         binned_mask = self.mapping.binned_mask_from_bin_up_factor(bin_up_factor=bin_up_factor)
 
@@ -224,6 +226,8 @@ class Array(AbstractArray):
 
     @classmethod
     def from_2d(cls, array_2d):
+
+        array_2d = np.asarray(array_2d)
 
         mask = msk.Mask.unmasked_from_shape(
             shape=array_2d.shape,
@@ -301,7 +305,11 @@ class ScaledArray(AbstractArray):
             mask=mask, sub_array_2d=array_2d, sub_size=1
         )
 
-        return ScaledArray(array_1d=array_1d, mask=mask)
+        return cls(array_1d=array_1d, mask=mask)
+
+    @classmethod
+    def from_2d_and_pixel_scale(cls, array_2d, pixel_scale, origin=(0.0, 0.0)):
+        return cls.from_2d_and_pixel_scales(array_2d=array_2d, pixel_scales=(pixel_scale, pixel_scale), origin=origin)
 
     @classmethod
     def from_single_value_shape_and_pixel_scales(
@@ -328,6 +336,29 @@ class ScaledArray(AbstractArray):
         return cls.from_2d_and_pixel_scales(array_2d=array_2d, pixel_scales=pixel_scales, origin=origin)
 
     @classmethod
+    def from_single_value_shape_and_pixel_scale(
+        cls, value, shape, pixel_scale, origin=(0.0, 0.0),
+    ):
+        """
+        Creates an instance of Array and fills it with a single value
+
+        Parameters
+        ----------
+        value: float
+            The value with which the array should be filled
+        shape: (int, int)
+            The shape of the array
+        pixel_scale: float
+            The scale of a pixel in arc seconds
+
+        Returns
+        -------
+        array: ScaledArray
+            An array filled with a single value
+        """
+        return cls.from_single_value_shape_and_pixel_scales(value=value, shape=shape, pixel_scales=(pixel_scale, pixel_scale), origin=origin)
+
+    @classmethod
     def from_fits_and_pixel_scales(cls, file_path, hdu, pixel_scales, origin=(0.0, 0.0)):
         """
         Loads the image from a .fits file.
@@ -345,6 +376,22 @@ class ScaledArray(AbstractArray):
             file_path=file_path, hdu=hdu
         ).astype("float64")
         return cls.from_2d_and_pixel_scales(array_2d=array_2d, pixel_scales=pixel_scales, origin=origin)
+
+    @classmethod
+    def from_fits_and_pixel_scale(cls, file_path, hdu, pixel_scale, origin=(0.0, 0.0)):
+        """
+        Loads the image from a .fits file.
+
+        Parameters
+        ----------
+        file_path : str
+            The full path of the fits file.
+        hdu : int
+            The HDU number in the fits file containing the image image.
+        pixel_scale: float
+            The arc-second to pixel conversion factor of each pixel.
+        """
+        return cls.from_fits_and_pixel_scales(file_path=file_path, hdu=hdu, pixel_scales=(pixel_scale, pixel_scale), origin=origin)
 
 
 class ScaledSubArray(AbstractArray):
