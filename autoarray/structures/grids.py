@@ -8,6 +8,43 @@ from autoarray import exc
 from autoarray.mask import mask as msk
 from autoarray.util import grid_util, array_util, mask_util, binning_util, sparse_util
 
+# def grid(grid, pixel_scales, shape_2d=None, sub_size=None, origin=(0.0, 0.0)):
+#
+#     grid = np.asarray(grid)
+#
+#     if type(pixel_scales) is float:
+#         pixel_scales = (pixel_scales, pixel_scales)
+#
+#     if len(grid.shape) == 2 and shape_2d is None:
+#         raise exc.ArrayException('A 2D array cannot be used to set up a Grid class without its 2D shape.')
+#
+#     if shape_2d is not None and len(shape_2d) != 2:
+#         raise exc.ArrayException('The input shape_2d parameter is not a tuple of type (float, float)')
+#
+#     if pixel_scales is None and sub_size is None:
+#
+#         if len(grid.shape) == 3:
+#             return Grid.from_(array_2d=array)
+#         elif len(array.shape) == 1:
+#             return Array.from_1d_and_shape_2d(array_1d=array, shape_2d=shape_2d)
+#
+#     elif pixel_scales is not None and sub_size is None:
+#
+#         if len(array.shape) == 2:
+#             return ScaledArray.from_2d_and_pixel_scales(array_2d=array, pixel_scales=pixel_scales, origin=origin)
+#         elif len(array.shape) == 1:
+#             return ScaledArray.from_1d_shape_2d_and_pixel_scales(array_1d=array, shape_2d=shape_2d,
+#                                                                  pixel_scales=pixel_scales, origin=origin)
+#
+#     elif pixel_scales is not None and sub_size is not None:
+#
+#         if len(array.shape) == 2:
+#             return ScaledSubArray.from_2d_pixel_scales_and_sub_size(sub_array_2d=array, pixel_scales=pixel_scales,
+#                                                                     sub_size=sub_size, origin=origin)
+#         elif len(array.shape) == 1:
+#             return ScaledSubArray.from_1d_shape_2d_pixel_scales_and_sub_size(sub_array_1d=array, shape_2d=shape_2d,
+#                                                                              pixel_scales=pixel_scales,
+#                                                                              sub_size=sub_size, origin=origin)
 
 class Grid(np.ndarray):
     def __new__(cls, grid_1d, mask, binned=None, *args, **kwargs):
@@ -137,6 +174,28 @@ class Grid(np.ndarray):
 
         if hasattr(obj, '_sub_border_1d_indexes'):
             self._sub_border_1d_indexes = obj._sub_border_1d_indexes
+
+    @classmethod
+    def from_1d_and_shape_2d(cls, grid_1d, shape_2d, pixel_scales, origin=(0.0, 0.0)):
+
+        mask = msk.ScaledMask.unmasked_from_shape(
+            shape=shape_2d, pixel_scales=pixel_scales, origin=origin,
+        )
+
+        return Grid(grid_1d=grid_1d, mask=mask)
+
+    @classmethod
+    def from_2d(cls, grid_2d, pixel_scales, origin=(0.0, 0.0)):
+
+        mask = msk.Mask.unmasked_from_shape(
+            shape=(grid_2d.shape[0], grid_2d.shape[1]),
+        )
+
+        grid_1d = grid_util.sub_grid_1d_from_sub_grid_2d_mask_and_sub_size(
+            mask=mask, sub_grid_2d=grid_2d, sub_size=1
+        )
+
+        return Grid(grid_1d=grid_1d, mask=mask)
 
     @property
     def mapping(self):

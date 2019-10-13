@@ -290,50 +290,6 @@ class Array(AbstractArray):
 
         return Array(array_1d=array_1d, mask=mask)
 
-    @classmethod
-    def from_single_value_and_shape_2d(
-        cls, value, shape_2d,
-    ):
-        """
-        Creates an instance of Array and fills it with a single value
-
-        Parameters
-        ----------
-        value: float
-            The value with which the array should be filled
-        shape_2d: (int, int)
-            The shape of the array
-        pixel_scales: (float, float)
-            The scale of a pixel in arc seconds
-
-        Returns
-        -------
-        array: ScaledArray
-            An array filled with a single value
-        """
-        array_2d = np.ones(shape_2d) * value
-        return cls.from_2d(array_2d=array_2d)
-
-    @classmethod
-    def from_fits(cls, file_path, hdu):
-        """
-        Loads the image from a .fits file.
-
-        Parameters
-        ----------
-        file_path : str
-            The full path of the fits file.
-        hdu : int
-            The HDU number in the fits file containing the image image.
-        pixel_scales: (float, float)
-            The arc-second to pixel conversion factor of each pixel.
-        """
-        array_2d = array_util.numpy_array_2d_from_fits(
-            file_path=file_path, hdu=hdu
-        ).astype("float64")
-        return cls.from_2d(array_2d=array_2d)
-
-
 class ScaledArray(AbstractArray):
 
     @classmethod
@@ -357,49 +313,6 @@ class ScaledArray(AbstractArray):
         )
 
         return cls(array_1d=array_1d, mask=mask)
-
-    @classmethod
-    def from_single_value_shape_2d_and_pixel_scales(
-        cls, value, shape_2d, pixel_scales, origin=(0.0, 0.0),
-    ):
-        """
-        Creates an instance of Array and fills it with a single value
-
-        Parameters
-        ----------
-        value: float
-            The value with which the array should be filled
-        shape_2d: (int, int)
-            The shape of the array
-        pixel_scales: float
-            The scale of a pixel in arc seconds
-
-        Returns
-        -------
-        array: ScaledArray
-            An array filled with a single value
-        """
-        array_2d = np.ones(shape_2d) * value
-        return cls.from_2d_and_pixel_scales(array_2d=array_2d, pixel_scales=pixel_scales, origin=origin)
-
-    @classmethod
-    def from_fits_and_pixel_scales(cls, file_path, hdu, pixel_scales, origin=(0.0, 0.0)):
-        """
-        Loads the image from a .fits file.
-
-        Parameters
-        ----------
-        file_path : str
-            The full path of the fits file.
-        hdu : int
-            The HDU number in the fits file containing the image image.
-        pixel_scales: (float, float)
-            The arc-second to pixel conversion factor of each pixel.
-        """
-        array_2d = array_util.numpy_array_2d_from_fits(
-            file_path=file_path, hdu=hdu
-        ).astype("float64")
-        return cls.from_2d_and_pixel_scales(array_2d=array_2d, pixel_scales=pixel_scales, origin=origin)
 
 
 class ScaledSubArray(AbstractArray):
@@ -433,50 +346,6 @@ class ScaledSubArray(AbstractArray):
     @classmethod
     def from_sub_array_2d_and_mask(cls, sub_array_2d, mask):
         return mask.mapping.array_from_sub_array_2d(sub_array_2d=sub_array_2d)
-
-    @classmethod
-    def from_single_value_shape_2d_pixel_scales_and_sub_size(
-        cls, value, shape_2d, pixel_scales, sub_size, origin=(0.0, 0.0)
-    ):
-        """
-        Creates an instance of Array and fills it with a single value
-
-        Parameters
-        ----------
-        value: float
-            The value with which the array should be filled
-        shape_2d: (int, int)
-            The shape of the array
-        pixel_scales: float
-            The scale of a pixel in arc seconds
-
-        Returns
-        -------
-        array: ScaledArray
-            An array filled with a single value
-        """
-        sub_shape_2d = (shape_2d[0] * sub_size, shape_2d[1] * sub_size)
-        sub_array_2d = np.ones(sub_shape_2d) * value
-        return cls.from_2d_pixel_scales_and_sub_size(sub_array_2d=sub_array_2d, sub_size=sub_size, pixel_scales=pixel_scales, origin=origin)
-
-    @classmethod
-    def from_fits_pixel_scales_and_sub_size(cls, file_path, hdu, pixel_scales, sub_size, origin=(0.0, 0.0)):
-        """
-        Loads the image from a .fits file.
-
-        Parameters
-        ----------
-        file_path : str
-            The full path of the fits file.
-        hdu : int
-            The HDU number in the fits file containing the image image.
-        pixel_scales: float
-            The arc-second to pixel conversion factor of each pixel.
-        """
-        sub_array_2d = array_util.numpy_array_2d_from_fits(
-            file_path=file_path, hdu=hdu
-        ).astype("float64")
-        return cls.from_2d_pixel_scales_and_sub_size(sub_array_2d=sub_array_2d, sub_size=sub_size, pixel_scales=pixel_scales, origin=origin)
 
     @property
     def in_2d(self):
