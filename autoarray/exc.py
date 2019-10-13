@@ -1,3 +1,7 @@
+class ArrayException(Exception):
+    pass
+
+
 class ScaledException(Exception):
     pass
 
