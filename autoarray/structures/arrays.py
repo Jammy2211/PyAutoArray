@@ -54,6 +54,14 @@ def full(fill_value, shape_2d, pixel_scales=None, sub_size=None, origin=(0.0, 0.
     return array(array=np.full(fill_value=fill_value, shape=shape_2d), pixel_scales=pixel_scales, sub_size=sub_size, origin=origin)
 
 
+def ones(shape_2d, pixel_scales=None, sub_size=None, origin=(0.0, 0.0)):
+    return full(fill_value=1.0, shape_2d=shape_2d, pixel_scales=pixel_scales, sub_size=sub_size, origin=origin)
+
+
+def zeros(shape_2d, pixel_scales=None, sub_size=None, origin=(0.0, 0.0)):
+    return full(fill_value=0.0, shape_2d=shape_2d, pixel_scales=pixel_scales, sub_size=sub_size, origin=origin)
+
+
 class AbstractArray(np.ndarray):
 
     # noinspection PyUnusedLocal
