@@ -62,6 +62,11 @@ def zeros(shape_2d, pixel_scales=None, sub_size=None, origin=(0.0, 0.0)):
     return full(fill_value=0.0, shape_2d=shape_2d, pixel_scales=pixel_scales, sub_size=sub_size, origin=origin)
 
 
+def array_from_fits(file_path, hdu, pixel_scales=None, sub_size=None, origin=(0.0, 0.0)):
+    array_2d = array_util.numpy_array_2d_from_fits(file_path=file_path, hdu=hdu)
+    return array(array=array_2d,  pixel_scales=pixel_scales, sub_size=sub_size, origin=origin)
+
+
 class AbstractArray(np.ndarray):
 
     # noinspection PyUnusedLocal
