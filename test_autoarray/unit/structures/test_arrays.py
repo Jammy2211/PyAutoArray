@@ -216,6 +216,66 @@ class TestAPIFactory:
             assert array.geometry.origin == (0.0, 1.0)
             assert array.mask.sub_size == 2
 
+    class TestFromFits:
+
+        def test__array__makes_array_without_other_inputs(self):
+
+            array = aa.array_from_fits(
+                file_path=test_data_dir + "3x3_ones.fits",
+                hdu=0)
+
+            assert type(array) == aa.Array
+            assert (array.in_2d == np.ones((3,3))).all()
+            assert (array.in_1d == np.ones(9,)).all()
+
+            array = aa.array_from_fits(file_path=test_data_dir + "4x3_ones.fits", hdu=0)
+
+            assert type(array) == aa.Array
+            assert (array.in_2d == np.ones((4,3))).all()
+            assert (array.in_1d == np.ones((12,))).all()
+
+        def test__array__makes_scaled_array_with_pixel_scale(self):
+
+            array = aa.array_from_fits(
+                file_path=test_data_dir + "3x3_ones.fits",
+                hdu=0, pixel_scales=1.0)
+
+            assert type(array) == aa.ScaledArray
+            assert (array.in_2d == np.ones((3,3))).all()
+            assert (array.in_1d == np.ones(9,)).all()
+            assert array.geometry.pixel_scales == (1.0, 1.0)
+            assert array.geometry.origin == (0.0, 0.0)
+
+            array = aa.array_from_fits(file_path=test_data_dir + "4x3_ones.fits", hdu=0, pixel_scales=1.0, origin=(0.0, 1.0))
+
+            assert type(array) == aa.ScaledArray
+            assert (array.in_2d == np.ones((4,3))).all()
+            assert (array.in_1d == np.ones((12,))).all()
+            assert array.geometry.pixel_scales == (1.0, 1.0)
+            assert array.geometry.origin == (0.0, 1.0)
+
+
+        def test__array__makes_scaled_sub_array_with_pixel_scale_and_sub_size(self):
+
+            array = aa.array_from_fits(file_path=test_data_dir + "3x3_ones.fits",
+                hdu=0, pixel_scales=1.0, sub_size=1)
+
+            assert type(array) == aa.ScaledSubArray
+            assert (array.in_2d == np.ones((3,3))).all()
+            assert (array.in_1d == np.ones(9,)).all()
+            assert array.geometry.pixel_scales == (1.0, 1.0)
+            assert array.geometry.origin == (0.0, 0.0)
+            assert array.mask.sub_size == 1
+
+            array = aa.array_from_fits(file_path=test_data_dir + "4x3_ones.fits", hdu=0, pixel_scales=1.0, sub_size=1, origin=(0.0, 1.0))
+
+            assert type(array) == aa.ScaledSubArray
+            assert (array.in_2d == np.ones((4,3))).all()
+            assert (array.in_1d == np.ones(12,)).all()
+            assert array.geometry.pixel_scales == (1.0, 1.0)
+            assert array.geometry.origin == (0.0, 1.0)
+            assert array.mask.sub_size == 1
+
 
 class TestAbstractArray:
 
