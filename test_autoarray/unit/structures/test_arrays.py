@@ -562,192 +562,108 @@ class TestAbstractArray:
 
 class TestArray:
 
-    class TestConstructorMethods:
+    def test__from_constructor_class_method_in_2d(
+        self
+    ):
+        arr = aa.Array.from_2d(array_2d=5.0*np.ones((3,3)),
+        )
 
-        def test__init__input_arr_single_value__all_attributes_correct_including_data_inheritance(
-            self
-        ):
-            arr = aa.Array.from_single_value_and_shape_2d(
-                value=5.0, shape_2d=(3, 3),
-            )
+        assert type(arr) == aa.Array
+        assert type(arr.mask) == aa.Mask
+        assert (arr.in_2d == 5.0 * np.ones((3, 3))).all()
+        assert arr.in_2d.shape == (3, 3)
+        assert arr.geometry.central_pixel_coordinates == (1.0, 1.0)
 
-            assert type(arr) == aa.Array
-            assert type(arr.mask) == aa.Mask
-            assert (arr.in_2d == 5.0 * np.ones((3, 3))).all()
-            assert arr.in_2d.shape == (3, 3)
-            assert arr.geometry.central_pixel_coordinates == (1.0, 1.0)
+    def test__from_constructor_class_method_in_1d(
+        self
+    ):
+        arr = aa.Array.from_1d_and_shape_2d(array_1d=5.0*np.ones((9, )), shape_2d=(3,3),
+        )
 
-        def test__from_fits__all_attributes_correct_including_data_inheritance(self):
-            arr = aa.Array.from_fits(
-                file_path=test_data_dir + "3x3_ones.fits",
-                hdu=0,
-            )
-
-            assert type(arr) == aa.Array
-            assert type(arr.mask) == aa.Mask
-            assert (arr.in_2d == np.ones((3, 3))).all()
-            assert arr.in_2d.shape == (3, 3)
-            assert arr.geometry.central_pixel_coordinates == (1.0, 1.0)
-
-            arr = aa.Array.from_fits(
-                file_path=test_data_dir + "4x3_ones.fits", hdu=0,
-            )
-
-            assert (arr.in_2d == np.ones((4, 3))).all()
-            assert arr.in_2d.shape == (4, 3)
-            assert arr.geometry.central_pixel_coordinates == (1.5, 1.0)
+        assert type(arr) == aa.Array
+        assert type(arr.mask) == aa.Mask
+        assert (arr.in_2d == 5.0 * np.ones((3, 3))).all()
+        assert arr.in_2d.shape == (3, 3)
+        assert arr.geometry.central_pixel_coordinates == (1.0, 1.0)
 
 
 class TestScaledArray:
 
-    class TestConstructorMethods:
+    def test__constructor_class_method_in_2d(self):
 
-        def test__square_pixel_array__input_arr__centre_is_origin(self):
+        arr = aa.ScaledArray.from_2d_and_pixel_scales(array_2d=np.ones((3, 3)), pixel_scales=(1.0, 1.0))
 
-            arr = aa.ScaledArray.from_2d_and_pixel_scales(array_2d=np.ones((3, 3)), pixel_scales=(1.0, 1.0))
+        assert type(arr) == aa.ScaledArray
+        assert type(arr.mask) == aa.ScaledMask
+        assert (arr.in_1d == np.ones((9,))).all()
+        assert (arr.in_2d == np.ones((3, 3))).all()
+        assert arr.mask.geometry.pixel_scale == 1.0
+        assert arr.geometry.central_pixel_coordinates == (1.0, 1.0)
+        assert arr.geometry.shape_arcsec == pytest.approx((3.0, 3.0))
+        assert arr.geometry.arc_second_maxima == (1.5, 1.5)
+        assert arr.geometry.arc_second_minima == (-1.5, -1.5)
 
-            assert type(arr) == aa.ScaledArray
-            assert type(arr.mask) == aa.ScaledMask
-            assert (arr.in_1d == np.ones((9,))).all()
-            assert (arr.in_2d == np.ones((3, 3))).all()
-            assert arr.mask.geometry.pixel_scale == 1.0
-            assert arr.geometry.central_pixel_coordinates == (1.0, 1.0)
-            assert arr.geometry.shape_arcsec == pytest.approx((3.0, 3.0))
-            assert arr.geometry.arc_second_maxima == (1.5, 1.5)
-            assert arr.geometry.arc_second_minima == (-1.5, -1.5)
+        arr = aa.ScaledArray.from_2d_and_pixel_scales(array_2d=np.ones((3, 4)), pixel_scales=(0.1, 0.1))
 
-            arr = aa.ScaledArray.from_2d_and_pixel_scales(array_2d=np.ones((3, 4)), pixel_scales=(0.1, 0.1))
+        assert type(arr) == aa.ScaledArray
+        assert type(arr.mask) == aa.ScaledMask
+        assert (arr.in_1d == np.ones((12,))).all()
+        assert (arr.in_2d == np.ones((3, 4))).all()
+        assert arr.mask.geometry.pixel_scale == 0.1
+        assert arr.geometry.central_pixel_coordinates == (1.0, 1.5)
+        assert arr.geometry.shape_arcsec == pytest.approx((0.3, 0.4))
+        assert arr.geometry.arc_second_maxima == pytest.approx((0.15, 0.2), 1e-4)
+        assert arr.geometry.arc_second_minima == pytest.approx((-0.15, -0.2), 1e-4)
 
-            assert type(arr) == aa.ScaledArray
-            assert type(arr.mask) == aa.ScaledMask
-            assert (arr.in_1d == np.ones((12,))).all()
-            assert (arr.in_2d == np.ones((3, 4))).all()
-            assert arr.mask.geometry.pixel_scale == 0.1
-            assert arr.geometry.central_pixel_coordinates == (1.0, 1.5)
-            assert arr.geometry.shape_arcsec == pytest.approx((0.3, 0.4))
-            assert arr.geometry.arc_second_maxima == pytest.approx((0.15, 0.2), 1e-4)
-            assert arr.geometry.arc_second_minima == pytest.approx((-0.15, -0.2), 1e-4)
+        arr = aa.ScaledArray.from_2d_and_pixel_scales(
+            array_2d=np.ones((4, 3)), pixel_scales=(0.1, 0.1), origin=(1.0, 1.0)
+        )
 
-            arr = aa.ScaledArray.from_2d_and_pixel_scales(
-                array_2d=np.ones((4, 3)), pixel_scales=(0.1, 0.1), origin=(1.0, 1.0)
-            )
+        assert type(arr) == aa.ScaledArray
+        assert type(arr.mask) == aa.ScaledMask
+        assert (arr.in_1d == np.ones((12,))).all()
+        assert (arr.in_2d == np.ones((4, 3))).all()
+        assert arr.mask.geometry.pixel_scale == 0.1
+        assert arr.geometry.central_pixel_coordinates == (1.5, 1.0)
+        assert arr.geometry.shape_arcsec == pytest.approx((0.4, 0.3))
+        assert arr.geometry.arc_second_maxima == pytest.approx((1.2, 1.15), 1e-4)
+        assert arr.geometry.arc_second_minima == pytest.approx((0.8, 0.85), 1e-4)
 
-            assert type(arr) == aa.ScaledArray
-            assert type(arr.mask) == aa.ScaledMask
-            assert (arr.in_1d == np.ones((12,))).all()
-            assert (arr.in_2d == np.ones((4, 3))).all()
-            assert arr.mask.geometry.pixel_scale == 0.1
-            assert arr.geometry.central_pixel_coordinates == (1.5, 1.0)
-            assert arr.geometry.shape_arcsec == pytest.approx((0.4, 0.3))
-            assert arr.geometry.arc_second_maxima == pytest.approx((1.2, 1.15), 1e-4)
-            assert arr.geometry.arc_second_minima == pytest.approx((0.8, 0.85), 1e-4)
+        arr = aa.ScaledArray.from_2d_and_pixel_scales(
+            array_2d=np.ones((3, 3)), pixel_scales=(2.0, 1.0), origin=(-1.0, -2.0)
+        )
 
-        def test__rectangular_pixel_array__input_arr(self):
+        assert type(arr) == aa.ScaledArray
+        assert type(arr.mask) == aa.ScaledMask
+        assert arr.in_1d == pytest.approx(np.ones((9,)), 1e-4)
+        assert arr.in_2d == pytest.approx(np.ones((3, 3)), 1e-4)
+        assert arr.mask.geometry.pixel_scales == (2.0, 1.0)
+        assert arr.geometry.central_pixel_coordinates == (1.0, 1.0)
+        assert arr.geometry.shape_arcsec == pytest.approx((6.0, 3.0))
+        assert arr.geometry.origin == (-1.0, -2.0)
+        assert arr.geometry.arc_second_maxima == pytest.approx((2.0, -0.5), 1e-4)
+        assert arr.geometry.arc_second_minima == pytest.approx((-4.0, -3.5), 1e-4)
 
-            arr = aa.ScaledArray.from_2d_and_pixel_scales(
-                array_2d=np.ones((3, 3)), pixel_scales=(2.0, 1.0)
-            )
+    def test__constructor_class_method_in_1d(self):
 
-            assert type(arr) == aa.ScaledArray
-            assert type(arr.mask) == aa.ScaledMask
-            assert arr.in_1d == pytest.approx(np.ones((9,)), 1e-4)
-            assert arr.in_2d == pytest.approx(np.ones((3, 3)), 1e-4)
-            assert arr.mask.geometry.pixel_scales == (2.0, 1.0)
-            assert arr.geometry.central_pixel_coordinates == (1.0, 1.0)
-            assert arr.geometry.shape_arcsec == pytest.approx((6.0, 3.0))
-            assert arr.geometry.arc_second_maxima == pytest.approx((3.0, 1.5), 1e-4)
-            assert arr.geometry.arc_second_minima == pytest.approx((-3.0, -1.5), 1e-4)
+        arr = aa.ScaledArray.from_1d_shape_2d_and_pixel_scales(
+            array_1d=np.ones((9, )), shape_2d=(3,3), pixel_scales=(2.0, 1.0), origin=(-1.0, -2.0)
+        )
 
-            arr = aa.ScaledArray.from_2d_and_pixel_scales(
-                array_2d=np.ones((4, 3)), pixel_scales=(0.2, 0.1)
-            )
-
-            assert type(arr) == aa.ScaledArray
-            assert type(arr.mask) == aa.ScaledMask
-            assert arr.in_1d == pytest.approx(np.ones((12,)), 1e-4)
-            assert arr.in_2d == pytest.approx(np.ones((4, 3)), 1e-4)
-            assert arr.mask.geometry.pixel_scales == (0.2, 0.1)
-            assert arr.geometry.central_pixel_coordinates == (1.5, 1.0)
-            assert arr.geometry.shape_arcsec == pytest.approx((0.8, 0.3), 1e-3)
-            assert arr.geometry.arc_second_maxima == pytest.approx((0.4, 0.15), 1e-4)
-            assert arr.geometry.arc_second_minima == pytest.approx((-0.4, -0.15), 1e-4)
-
-            arr = aa.ScaledArray.from_2d_and_pixel_scales(
-                array_2d=np.ones((3, 4)), pixel_scales=(0.1, 0.2)
-            )
-
-            assert type(arr) == aa.ScaledArray
-            assert type(arr.mask) == aa.ScaledMask
-            assert arr.in_1d == pytest.approx(np.ones((12,)), 1e-4)
-            assert arr.in_2d == pytest.approx(np.ones((3, 4)), 1e-4)
-            assert arr.mask.geometry.pixel_scales == (0.1, 0.2)
-            assert arr.geometry.central_pixel_coordinates == (1.0, 1.5)
-            assert arr.geometry.shape_arcsec == pytest.approx((0.3, 0.8), 1e-3)
-            assert arr.geometry.arc_second_maxima == pytest.approx((0.15, 0.4), 1e-4)
-            assert arr.geometry.arc_second_minima == pytest.approx((-0.15, -0.4), 1e-4)
-
-            arr = aa.ScaledArray.from_2d_and_pixel_scales(
-                array_2d=np.ones((3, 3)), pixel_scales=(2.0, 1.0), origin=(-1.0, -2.0)
-            )
-
-            assert type(arr) == aa.ScaledArray
-            assert type(arr.mask) == aa.ScaledMask
-            assert arr.in_1d == pytest.approx(np.ones((9,)), 1e-4)
-            assert arr.in_2d == pytest.approx(np.ones((3, 3)), 1e-4)
-            assert arr.mask.geometry.pixel_scales == (2.0, 1.0)
-            assert arr.geometry.central_pixel_coordinates == (1.0, 1.0)
-            assert arr.geometry.shape_arcsec == pytest.approx((6.0, 3.0))
-            assert arr.geometry.origin == (-1.0, -2.0)
-            assert arr.geometry.arc_second_maxima == pytest.approx((2.0, -0.5), 1e-4)
-            assert arr.geometry.arc_second_minima == pytest.approx((-4.0, -3.5), 1e-4)
-
-        def test__init__input_arr_single_value__all_attributes_correct_including_data_inheritance(
-            self
-        ):
-            arr = aa.ScaledArray.from_single_value_shape_2d_and_pixel_scales(
-                value=5.0, shape_2d=(3, 3), pixel_scales=(1.0, 1.0), origin=(1.0, 1.0)
-            )
-
-            assert type(arr) == aa.ScaledArray
-            assert type(arr.mask) == aa.ScaledMask
-            assert (arr.in_2d == 5.0 * np.ones((3, 3))).all()
-            assert arr.mask.geometry.pixel_scale == 1.0
-            assert arr.geometry.central_pixel_coordinates == (1.0, 1.0)
-            assert arr.geometry.shape_arcsec == pytest.approx((3.0, 3.0))
-            assert arr.geometry.origin == (1.0, 1.0)
-
-        def test__from_fits__all_attributes_correct_including_data_inheritance(self):
-
-            arr = aa.ScaledArray.from_fits_and_pixel_scales(
-                file_path=test_data_dir + "3x3_ones.fits",
-                hdu=0,
-                pixel_scales=(1.0, 1.0),
-                origin=(1.0, 1.0),
-            )
-
-            assert type(arr) == aa.ScaledArray
-            assert type(arr.mask) == aa.ScaledMask
-            assert (arr.in_2d == np.ones((3, 3))).all()
-            assert arr.mask.geometry.pixel_scale == 1.0
-            assert arr.geometry.central_pixel_coordinates == (1.0, 1.0)
-            assert arr.geometry.shape_arcsec == pytest.approx((3.0, 3.0))
-            assert arr.geometry.origin == (1.0, 1.0)
-
-            arr = aa.ScaledArray.from_fits_and_pixel_scales(
-                file_path=test_data_dir + "4x3_ones.fits", hdu=0, pixel_scales=(0.1, 0.1)
-            )
-            
-            assert type(arr) == aa.ScaledArray
-            assert type(arr.mask) == aa.ScaledMask
-            assert (arr.in_2d == np.ones((4, 3))).all()
-            assert arr.mask.geometry.pixel_scale == 0.1
-            assert arr.geometry.central_pixel_coordinates == (1.5, 1.0)
-            assert arr.geometry.shape_arcsec == pytest.approx((0.4, 0.3))
-
+        assert type(arr) == aa.ScaledArray
+        assert type(arr.mask) == aa.ScaledMask
+        assert arr.in_1d == pytest.approx(np.ones((9,)), 1e-4)
+        assert arr.in_2d == pytest.approx(np.ones((3, 3)), 1e-4)
+        assert arr.mask.geometry.pixel_scales == (2.0, 1.0)
+        assert arr.geometry.central_pixel_coordinates == (1.0, 1.0)
+        assert arr.geometry.shape_arcsec == pytest.approx((6.0, 3.0))
+        assert arr.geometry.origin == (-1.0, -2.0)
+        assert arr.geometry.arc_second_maxima == pytest.approx((2.0, -0.5), 1e-4)
+        assert arr.geometry.arc_second_minima == pytest.approx((-4.0, -3.5), 1e-4)
 
 class TestScaledSubArray:
 
-    def test__square_pixel_array__input_arr__centre_is_origin(self):
+    def test__constructor_class_method_in_2d(self):
 
         arr = aa.ScaledSubArray.from_2d_pixel_scales_and_sub_size(sub_array_2d=np.ones((3, 3)), sub_size=1, pixel_scales=(1.0, 1.0))
 
@@ -792,44 +708,6 @@ class TestScaledSubArray:
         assert arr.geometry.arc_second_maxima == pytest.approx((1.1, 1.05), 1e-4)
         assert arr.geometry.arc_second_minima == pytest.approx((0.9, 0.95), 1e-4)
 
-    def test__rectangular_pixel_array__input_arr(self):
-
-        arr = aa.ScaledSubArray.from_2d_pixel_scales_and_sub_size(
-            sub_array_2d=np.ones((3, 3)), pixel_scales=(2.0, 1.0), sub_size=1,
-        )
-
-        assert arr.in_1d == pytest.approx(np.ones((9,)), 1e-4)
-        assert arr.in_2d == pytest.approx(np.ones((3, 3)), 1e-4)
-        assert arr.mask.geometry.pixel_scales == (2.0, 1.0)
-        assert arr.geometry.central_pixel_coordinates == (1.0, 1.0)
-        assert arr.geometry.shape_arcsec == pytest.approx((6.0, 3.0))
-        assert arr.geometry.arc_second_maxima == pytest.approx((3.0, 1.5), 1e-4)
-        assert arr.geometry.arc_second_minima == pytest.approx((-3.0, -1.5), 1e-4)
-
-        arr = aa.ScaledSubArray.from_2d_pixel_scales_and_sub_size(
-            sub_array_2d=np.ones((4, 3)), pixel_scales=(0.2, 0.1), sub_size=1
-        )
-
-        assert arr.in_1d == pytest.approx(np.ones((12,)), 1e-4)
-        assert arr.in_2d == pytest.approx(np.ones((4, 3)), 1e-4)
-        assert arr.mask.geometry.pixel_scales == (0.2, 0.1)
-        assert arr.geometry.central_pixel_coordinates == (1.5, 1.0)
-        assert arr.geometry.shape_arcsec == pytest.approx((0.8, 0.3), 1e-3)
-        assert arr.geometry.arc_second_maxima == pytest.approx((0.4, 0.15), 1e-4)
-        assert arr.geometry.arc_second_minima == pytest.approx((-0.4, -0.15), 1e-4)
-
-        arr = aa.ScaledSubArray.from_2d_pixel_scales_and_sub_size(
-            sub_array_2d=np.ones((3, 4)), pixel_scales=(0.1, 0.2), sub_size=1
-        )
-
-        assert arr.in_1d == pytest.approx(np.ones((12,)), 1e-4)
-        assert arr.in_2d == pytest.approx(np.ones((3, 4)), 1e-4)
-        assert arr.mask.geometry.pixel_scales == (0.1, 0.2)
-        assert arr.geometry.central_pixel_coordinates == (1.0, 1.5)
-        assert arr.geometry.shape_arcsec == pytest.approx((0.3, 0.8), 1e-3)
-        assert arr.geometry.arc_second_maxima == pytest.approx((0.15, 0.4), 1e-4)
-        assert arr.geometry.arc_second_minima == pytest.approx((-0.15, -0.4), 1e-4)
-
         arr = aa.ScaledSubArray.from_2d_pixel_scales_and_sub_size(
             sub_array_2d=np.ones((3, 3)), pixel_scales=(2.0, 1.0), sub_size=1, origin=(-1.0, -2.0)
         )
@@ -843,41 +721,18 @@ class TestScaledSubArray:
         assert arr.geometry.arc_second_maxima == pytest.approx((2.0, -0.5), 1e-4)
         assert arr.geometry.arc_second_minima == pytest.approx((-4.0, -3.5), 1e-4)
 
-    def test__init__input_arr_single_value__all_attributes_correct_including_data_inheritance(
-        self
-    ):
-        arr = aa.ScaledSubArray.from_single_value_shape_2d_pixel_scales_and_sub_size(
-            value=5.0, shape_2d=(3, 3), pixel_scales=(1.0, 1.0), sub_size=1, origin=(1.0, 1.0)
+
+    def test__constructor_class_method_in_1d(self):
+
+        arr = aa.ScaledSubArray.from_1d_shape_2d_pixel_scales_and_sub_size(
+            sub_array_1d=np.ones((9, )), shape_2d=(3,3), pixel_scales=(2.0, 1.0), sub_size=1, origin=(-1.0, -2.0)
         )
 
-        assert (arr.in_2d == 5.0 * np.ones((3, 3))).all()
-        assert arr.mask.geometry.pixel_scale == 1.0
-        assert arr.in_2d.shape == (3, 3)
+        assert arr.in_1d == pytest.approx(np.ones((9,)), 1e-4)
+        assert arr.in_2d == pytest.approx(np.ones((3, 3)), 1e-4)
+        assert arr.mask.geometry.pixel_scales == (2.0, 1.0)
         assert arr.geometry.central_pixel_coordinates == (1.0, 1.0)
-        assert arr.geometry.shape_arcsec == pytest.approx((3.0, 3.0))
-        assert arr.geometry.origin == (1.0, 1.0)
-
-    def test__from_fits__all_attributes_correct_including_data_inheritance(self):
-        arr = aa.ScaledSubArray.from_fits_pixel_scales_and_sub_size(
-            file_path=test_data_dir + "3x3_ones.fits",
-            hdu=0,
-            pixel_scales=(1.0, 1.0),
-            sub_size=1,
-            origin=(1.0, 1.0),
-        )
-
-        assert (arr.in_2d == np.ones((3, 3))).all()
-        assert arr.mask.geometry.pixel_scale == 1.0
-        assert arr.geometry.central_pixel_coordinates == (1.0, 1.0)
-        assert arr.geometry.shape_arcsec == pytest.approx((3.0, 3.0))
-        assert arr.geometry.origin == (1.0, 1.0)
-
-        arr = aa.ScaledSubArray.from_fits_pixel_scales_and_sub_size(
-            file_path=test_data_dir + "4x3_ones.fits", hdu=0, pixel_scales=(0.1, 0.1), sub_size=1,
-        )
-
-        assert (arr.in_2d == np.ones((4, 3))).all()
-        assert arr.mask.geometry.pixel_scale == 0.1
-        assert arr.in_2d.shape == (4, 3)
-        assert arr.geometry.central_pixel_coordinates == (1.5, 1.0)
-        assert arr.geometry.shape_arcsec == pytest.approx((0.4, 0.3))
+        assert arr.geometry.shape_arcsec == pytest.approx((6.0, 3.0))
+        assert arr.geometry.origin == (-1.0, -2.0)
+        assert arr.geometry.arc_second_maxima == pytest.approx((2.0, -0.5), 1e-4)
+        assert arr.geometry.arc_second_minima == pytest.approx((-4.0, -3.5), 1e-4)
