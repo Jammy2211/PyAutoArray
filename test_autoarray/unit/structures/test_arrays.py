@@ -162,6 +162,60 @@ class TestAPIFactory:
             assert array.geometry.origin == (0.0, 1.0)
             assert array.mask.sub_size == 2
 
+    class TestOnesZeros:
+
+        def test__array__makes_array_without_other_inputs(self):
+
+            array = aa.ones(shape_2d=(2,2))
+
+            assert type(array) == aa.Array
+            assert (array.in_2d == np.array([[1.0, 1.0], [1.0, 1.0]])).all()
+            assert (array.in_1d == np.array([1.0, 1.0, 1.0, 1.0])).all()
+
+            array = aa.zeros(shape_2d=(2,2))
+
+            assert type(array) == aa.Array
+            assert (array.in_2d == np.array([[0.0, 0.0], [0.0, 0.0]])).all()
+            assert (array.in_1d == np.array([0.0, 0.0, 0.0, 0.0])).all()
+
+        def test__array__makes_scaled_array_with_pixel_scale(self):
+
+            array = aa.ones(shape_2d=(2,2), pixel_scales=1.0)
+
+            assert type(array) == aa.ScaledArray
+            assert (array.in_2d == np.array([[1.0, 1.0], [1.0, 1.0]])).all()
+            assert (array.in_1d == np.array([1.0, 1.0, 1.0, 1.0])).all()
+            assert array.geometry.pixel_scales == (1.0, 1.0)
+            assert array.geometry.origin == (0.0, 0.0)
+
+            array = aa.zeros(shape_2d=(2,2), pixel_scales=1.0, origin=(0.0, 1.0))
+
+            assert type(array) == aa.ScaledArray
+            assert (array.in_2d == np.array([[0.0, 0.0], [0.0, 0.0]])).all()
+            assert (array.in_1d == np.array([0.0, 0.0, 0.0, 0.0])).all()
+            assert array.geometry.pixel_scales == (1.0, 1.0)
+            assert array.geometry.origin == (0.0, 1.0)
+
+        def test__array__makes_scaled_sub_array_with_pixel_scale_and_sub_size(self):
+
+            array = aa.ones(shape_2d=(1,4), pixel_scales=1.0, sub_size=1)
+
+            assert type(array) == aa.ScaledSubArray
+            assert (array.in_2d == np.array([[1.0, 1.0, 1.0, 1.0]])).all()
+            assert (array.in_1d == np.array([1.0, 1.0, 1.0, 1.0])).all()
+            assert array.geometry.pixel_scales == (1.0, 1.0)
+            assert array.geometry.origin == (0.0, 0.0)
+            assert array.mask.sub_size == 1
+
+            array = aa.zeros(shape_2d=(1,1), pixel_scales=1.0, sub_size=2, origin=(0.0, 1.0))
+
+            assert type(array) == aa.ScaledSubArray
+            assert (array.in_2d == np.array([[0.0, 0.0], [0.0, 0.0]])).all()
+            assert (array.in_1d == np.array([0.0, 0.0, 0.0, 0.0])).all()
+            assert array.geometry.pixel_scales == (1.0, 1.0)
+            assert array.geometry.origin == (0.0, 1.0)
+            assert array.mask.sub_size == 2
+
 
 class TestAbstractArray:
 

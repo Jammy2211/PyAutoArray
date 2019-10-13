@@ -1,4 +1,4 @@
-from autoarray.structures.arrays import array, full
+from autoarray.structures.arrays import array, full, ones, zeros
 from autoarray.mask.mapping import Mapping, ScaledMapping, ScaledSubMapping
 from autoarray.mask.geometry import Geometry, ScaledGeometry, ScaledSubGeometry
 from autoarray.mask.regions import Regions, SubRegions
