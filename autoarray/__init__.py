@@ -1,5 +1,5 @@
 from autoarray.structures.arrays import array, full, ones, zeros, array_from_fits
-from autoarray.structures.grids import grid
+from autoarray.structures.grids import grid, grid_uniform
 from autoarray.mask.mapping import Mapping, ScaledMapping, ScaledSubMapping
 from autoarray.mask.geometry import Geometry, ScaledGeometry, ScaledSubGeometry
 from autoarray.mask.regions import Regions, SubRegions

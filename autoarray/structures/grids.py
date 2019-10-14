@@ -46,6 +46,25 @@ def grid(grid, pixel_scales, shape_2d=None, sub_size=None, origin=(0.0, 0.0)):
                 sub_grid_1d=grid, shape_2d=shape_2d, pixel_scales=pixel_scales,
                 sub_size=sub_size, origin=origin)
 
+def grid_uniform(pixel_scales, shape_2d, sub_size=None, origin=(0.0, 0.0)):
+
+    if type(pixel_scales) is float:
+        pixel_scales = (pixel_scales, pixel_scales)
+
+    if sub_size is None:
+
+        grid_1d = grid_util.grid_1d_from_shape_pixel_scales_sub_size_and_origin(
+            shape=shape_2d, pixel_scales=pixel_scales, sub_size=1, origin=origin
+        )
+
+    else:
+
+        grid_1d = grid_util.grid_1d_from_shape_pixel_scales_sub_size_and_origin(
+            shape=shape_2d, pixel_scales=pixel_scales, sub_size=sub_size, origin=origin
+        )
+
+    return grid(grid=grid_1d, shape_2d=shape_2d, pixel_scales=pixel_scales, sub_size=sub_size, origin=origin)
+
 
 class AbstractGrid(abstract_structure.AbstractStructure):
 
@@ -436,34 +455,6 @@ class ScaledSubGrid(AbstractGrid):
         )
 
         return mask.mapping.grid_from_sub_grid_2d(sub_grid_2d=sub_grid_2d)
-
-    @classmethod
-    def from_shape_2d_pixel_scale_and_sub_size(cls, shape_2d, pixel_scale, sub_size):
-        """Setup a sub-grid from a 2D array shape and pixel scale. Here, the center of every pixel on the 2D \
-        array gives the grid's (y,x) arc-second coordinates, where each pixel has sub-pixels specified by the \
-        sub-grid size.
-
-        This is equivalent to using a 2D mask consisting entirely of unmasked pixels.
-
-        Parameters
-        -----------
-        shape_2d : (int, int)
-            The 2D shape of the array, where all pixels are used to generate the grid's grid.
-        pixel_scale : float
-            The size of each pixel in arc seconds.
-        sub_size : int
-            The size (sub_size x sub_size) of each unmasked pixels sub-grid.
-        """
-
-        mask = msk.ScaledSubMask.unmasked_from_shape(
-            shape=shape_2d, pixel_scales=(pixel_scale, pixel_scale), sub_size=sub_size
-        )
-
-        sub_grid_1d = grid_util.grid_1d_from_mask_pixel_scales_sub_size_and_origin(
-            mask=mask, pixel_scales=mask.geometry.pixel_scales, sub_size=sub_size
-        )
-
-        return ScaledSubGrid(grid_1d=sub_grid_1d, mask=mask)
 
     @classmethod
     def from_sub_grid_2d_and_mask(cls, sub_grid_2d, mask):
