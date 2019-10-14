@@ -15,7 +15,7 @@ class TestUnmaskedSparseForSparse:
     ):
 
         ma = aa.ScaledMask(
-            array_2d=np.array(
+            mask_2d=np.array(
                 [[False, False, False], [False, False, False], [False, False, False]]
             ),
             pixel_scales=(1.0, 1.0),
@@ -46,7 +46,7 @@ class TestUnmaskedSparseForSparse:
     ):
 
         ma = aa.ScaledMask(
-            array_2d=np.array(
+            mask_2d=np.array(
                 [[False, False, False], [False, False, False], [False, False, False]]
             ),
             pixel_scales=(1.0, 1.0),
@@ -73,7 +73,7 @@ class TestUnmaskedSparseForSparse:
     def test__mask_is_cross__some_pix_pixels_are_masked__omitted_from_mapping(self):
 
         ma = aa.ScaledMask(
-            array_2d=np.array(
+            mask_2d=np.array(
                 [[True, False, True], [False, False, False], [True, False, True]]
             ),
             pixel_scales=(1.0, 1.0),
@@ -100,7 +100,7 @@ class TestUnmaskedSparseForSparse:
     def test__same_as_above__different_mask_and_centres(self):
 
         ma = aa.ScaledMask(
-            array_2d=np.array(
+            mask_2d=np.array(
                 [[False, False, True], [False, False, False], [True, False, False]]
             ),
             pixel_scales=(1.0, 1.0),
@@ -127,7 +127,7 @@ class TestUnmaskedSparseForSparse:
     def test__same_as_above__but_3x4_mask(self):
 
         ma = aa.ScaledMask(
-            array_2d=np.array(
+            mask_2d=np.array(
                 [
                     [True, True, False, True],
                     [False, False, False, False],
@@ -158,7 +158,7 @@ class TestUnmaskedSparseForSparse:
     def test__same_as_above__but_4x3_mask(self):
 
         ma = aa.ScaledMask(
-            array_2d=np.array(
+            mask_2d=np.array(
                 [
                     [True, False, True],
                     [True, False, True],
@@ -194,7 +194,7 @@ class TestSparseForUnmaskedSparse:
     ):
 
         ma = aa.ScaledMask(
-            array_2d=np.array(
+            mask_2d=np.array(
                 [[False, False, False], [False, False, False], [False, False, False]]
             ),
             pixel_scales=(1.0, 1.0),
@@ -220,7 +220,7 @@ class TestSparseForUnmaskedSparse:
     ):
 
         ma = aa.ScaledMask(
-            array_2d=np.array(
+            mask_2d=np.array(
                 [[False, False, False], [False, False, False], [False, False, False]]
             ),
             pixel_scales=(1.0, 1.0),
@@ -242,7 +242,7 @@ class TestSparseForUnmaskedSparse:
     def test__mask_is_cross__some_pix_pixels_are_masked__omitted_from_mapping(self):
 
         ma = aa.ScaledMask(
-            array_2d=np.array(
+            mask_2d=np.array(
                 [[True, False, True], [False, False, False], [True, False, True]]
             ),
             pixel_scales=(1.0, 1.0),
@@ -266,7 +266,7 @@ class TestSparseForUnmaskedSparse:
     def test__same_as_above__different_mask_and_centres(self):
 
         ma = aa.ScaledMask(
-            array_2d=np.array(
+            mask_2d=np.array(
                 [[False, False, True], [False, False, False], [True, False, False]]
             ),
             pixel_scales=(1.0, 1.0),
@@ -288,7 +288,7 @@ class TestSparseForUnmaskedSparse:
     def test__same_as_above__but_3x4_mask(self):
 
         ma = aa.ScaledMask(
-            array_2d=np.array(
+            mask_2d=np.array(
                 [
                     [True, True, False, True],
                     [False, False, False, False],
@@ -314,7 +314,7 @@ class TestSparseForUnmaskedSparse:
     def test__same_as_above__but_4x3_mask(self):
 
         ma = aa.ScaledMask(
-            array_2d=np.array(
+            mask_2d=np.array(
                 [
                     [True, False, True],
                     [True, False, True],

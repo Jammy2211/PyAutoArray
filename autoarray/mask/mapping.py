@@ -207,17 +207,17 @@ class ScaledMapping(Mapping):
 
     @property
     def mask(self):
-        return mask.ScaledMask(array_2d=self.mask_2d, pixel_scales=self.pixel_scales, origin=self.origin)
+        return mask.ScaledMask(mask_2d=self.mask_2d, pixel_scales=self.pixel_scales, origin=self.origin)
 
     @property
     def mask_no_sub(self):
-        return mask.ScaledMask(array_2d=self.mask_2d, pixel_scales=self.pixel_scales, origin=self.origin)
+        return mask.ScaledMask(mask_2d=self.mask_2d, pixel_scales=self.pixel_scales, origin=self.origin)
 
     def mask_from_array_2d(self, array_2d):
-        return mask.ScaledMask(array_2d=array_2d, pixel_scales=self.pixel_scales, origin=self.origin)
+        return mask.ScaledMask(mask_2d=array_2d, pixel_scales=self.pixel_scales, origin=self.origin)
 
     def mask_no_sub_from_array_2d(self, array_2d):
-        return mask.ScaledMask(array_2d=array_2d, pixel_scales=self.pixel_scales, origin=self.origin)
+        return mask.ScaledMask(mask_2d=array_2d, pixel_scales=self.pixel_scales, origin=self.origin)
 
     def array_from_array_1d(self, array_1d):
         """ Map a 1D array the same dimension as the grid to its original 2D array.
@@ -238,7 +238,7 @@ class ScaledMapping(Mapping):
         )
 
         return mask.ScaledMask(
-            array_2d=binned_up_mask,
+            mask_2d=binned_up_mask,
             pixel_scales=(
                 self.pixel_scales[0] * bin_up_factor,
                 self.pixel_scales[1] * bin_up_factor,
@@ -304,10 +304,10 @@ class ScaledSubMapping(ScaledMapping):
 
     @property
     def mask(self):
-        return mask.ScaledSubMask(array_2d=self.mask_2d, sub_size=self.sub_size, pixel_scales=self.pixel_scales, origin=self.origin)
+        return mask.ScaledSubMask(mask_2d=self.mask_2d, sub_size=self.sub_size, pixel_scales=self.pixel_scales, origin=self.origin)
 
     def mask_from_array_2d(self, array_2d):
-        return mask.ScaledSubMask(array_2d=array_2d, sub_size=self.sub_size, pixel_scales=self.pixel_scales, origin=self.origin)
+        return mask.ScaledSubMask(mask_2d=array_2d, sub_size=self.sub_size, pixel_scales=self.pixel_scales, origin=self.origin)
 
     def binned_mask_from_bin_up_factor(self, bin_up_factor):
 
@@ -316,7 +316,7 @@ class ScaledSubMapping(ScaledMapping):
         )
 
         return mask.ScaledSubMask(
-            array_2d=binned_up_mask,
+            mask_2d=binned_up_mask,
             pixel_scales=(
                 self.pixel_scales[0] * bin_up_factor,
                 self.pixel_scales[1] * bin_up_factor,

@@ -379,7 +379,7 @@ class TestAbstractArray:
             arr = aa.ScaledSubArray.from_sub_array_2d_pixel_scales_and_sub_size(sub_array_2d=array_2d, sub_size=1, pixel_scales=(1.0, 1.0))
 
             mask = aa.ScaledSubMask(
-                array_2d=np.array(
+                mask_2d=np.array(
                     [
                         [True, True, True, True],
                         [True, False, False, True],
@@ -397,7 +397,7 @@ class TestAbstractArray:
             assert (arr_zoomed.in_2d == np.array([[6.0, 7.0], [10.0, 11.0]])).all()
 
             mask = aa.ScaledSubMask(
-                array_2d=np.array(
+                mask_2d=np.array(
                     [
                         [True, True, True, True],
                         [True, False, False, True],
@@ -417,7 +417,7 @@ class TestAbstractArray:
             ).all()
 
             mask = aa.ScaledSubMask(
-                array_2d=np.array(
+                mask_2d=np.array(
                     [
                         [True, True, True, True],
                         [True, False, False, True],
@@ -438,7 +438,7 @@ class TestAbstractArray:
             ).all()
 
             mask = aa.ScaledSubMask(
-                array_2d=np.array(
+                mask_2d=np.array(
                     [
                         [True, True, True, True],
                         [True, False, False, True],
@@ -458,7 +458,7 @@ class TestAbstractArray:
             ).all()
 
             mask = aa.ScaledSubMask(
-                array_2d=np.array(
+                mask_2d=np.array(
                     [
                         [True, False, True, True],
                         [True, False, False, True],
@@ -479,7 +479,7 @@ class TestAbstractArray:
             ).all()
 
             mask = aa.ScaledSubMask(
-                array_2d=np.array(
+                mask_2d=np.array(
                     [
                         [True, True, True, True],
                         [True, False, False, True],

@@ -1132,7 +1132,7 @@ class TestConvolution(object):
         mask[2, 1] = False
         mask[2, 3] = False
 
-        cross_mask = aa.ScaledMask(array_2d=mask, pixel_scales=(1.0, 1.0), sub_size=1)
+        cross_mask = aa.ScaledMask(mask_2d=mask, pixel_scales=(1.0, 1.0), sub_size=1)
 
         kernel = np.array([[0, 0.2, 0], [0.2, 0.4, 0.2], [0, 0.2, 0]])
 
