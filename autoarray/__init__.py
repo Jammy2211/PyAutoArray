@@ -1,4 +1,5 @@
 from autoarray.structures.arrays import array, full, ones, zeros, array_from_fits
+from autoarray.structures.grids import grid
 from autoarray.mask.mapping import Mapping, ScaledMapping, ScaledSubMapping
 from autoarray.mask.geometry import Geometry, ScaledGeometry, ScaledSubGeometry
 from autoarray.mask.regions import Regions, SubRegions
@@ -6,9 +7,9 @@ from autoarray.mask.mask import Mask, ScaledMask,ScaledSubMask
 from autoarray.structures.arrays import Array, ScaledArray, ScaledSubArray
 from autoarray.structures.kernel import Kernel
 from autoarray.structures.grids import (
-    Grid,
-    SubGrid,
-    BinnedSubGrid,
+    ScaledGrid,
+    ScaledSubGrid,
+    BinnedGrid,
     PixelizationGrid,
     SparseToGrid,
     Interpolator,

@@ -256,7 +256,7 @@ class ScaledMapping(Mapping):
         grid_1d : ndgrid
             The 1D grid which is mapped to its masked 2D grid.
         """
-        return grids.Grid(grid_1d=grid_1d, mask=self.mask)
+        return grids.ScaledGrid(grid_1d=grid_1d, mask=self.mask)
 
     def grid_from_grid_2d(self, grid_2d):
         """For a 2D grid (e.g. an image, noise_map, etc.) map it to a masked 1D grid of valuees using this mask.
@@ -452,7 +452,7 @@ class ScaledSubMapping(ScaledMapping):
         sub_grid_1d : ndgrid
             The 1D sub_grid which is mapped to its masked 2D sub-grid.
         """
-        return grids.SubGrid(grid_1d=sub_grid_1d, mask=self.mask)
+        return grids.ScaledSubGrid(grid_1d=sub_grid_1d, mask=self.mask)
 
     def grid_from_sub_grid_2d(self, sub_grid_2d):
         """ Map a 2D sub-grid to its masked 1D sub-grid.
@@ -488,6 +488,6 @@ class ScaledSubMapping(ScaledMapping):
             sub_array_1d=sub_grid_1d[:, 1]
         )
 
-        return grids.Grid(
+        return grids.ScaledGrid(
             grid_1d=np.stack((grid_1d_y, grid_1d_x), axis=-1), mask=self.mask_no_sub
         )

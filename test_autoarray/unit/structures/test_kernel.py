@@ -198,7 +198,7 @@ class TestConvolve(object):
         self
     ):
         
-        image = aa.Array.from_2d([[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]])
+        image = aa.Array.from_array_2d([[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]])
         kernel = np.array([[0.0, 1.0, 0.0], [1.0, 2.0, 1.0], [0.0, 1.0, 0.0]])
 
         kernel = aa.Kernel.from_2d_and_pixel_scale(array_2d=kernel, pixel_scale=1.0)
@@ -210,7 +210,7 @@ class TestConvolve(object):
     def test__image_is_4x4_central_value_of_one__kernel_is_cross__blurred_image_becomes_cross(
         self
     ):
-        image = aa.Array.from_2d(
+        image = aa.Array.from_array_2d(
             [
                 [0.0, 0.0, 0.0, 0.0],
                 [0.0, 1.0, 0.0, 0.0],
@@ -240,7 +240,7 @@ class TestConvolve(object):
     def test__image_is_4x3_central_value_of_one__kernel_is_cross__blurred_image_becomes_cross(
         self
     ):
-        image = aa.Array.from_2d(
+        image = aa.Array.from_array_2d(
             [[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0], [0.0, 0.0, 0.0]]
         )
 
@@ -260,7 +260,7 @@ class TestConvolve(object):
     def test__image_is_3x4_central_value_of_one__kernel_is_cross__blurred_image_becomes_cross(
         self
     ):
-        image = aa.Array.from_2d(
+        image = aa.Array.from_array_2d(
             [[0.0, 0.0, 0.0, 0.0], [0.0, 1.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0]]
         )
 
@@ -280,7 +280,7 @@ class TestConvolve(object):
     def test__image_is_4x4_has_two_central_values__kernel_is_asymmetric__blurred_image_follows_convolution(
         self
     ):
-        image = aa.Array.from_2d(
+        image = aa.Array.from_array_2d(
             [
                 [0.0, 0.0, 0.0, 0.0],
                 [0.0, 1.0, 0.0, 0.0],
@@ -310,7 +310,7 @@ class TestConvolve(object):
     def test__image_is_4x4_values_are_on_edge__kernel_is_asymmetric__blurring_does_not_account_for_edge_effects(
         self
     ):
-        image = aa.Array.from_2d(
+        image = aa.Array.from_array_2d(
             [
                 [0.0, 0.0, 0.0, 0.0],
                 [1.0, 0.0, 0.0, 0.0],
@@ -340,7 +340,7 @@ class TestConvolve(object):
     def test__image_is_4x4_values_are_on_corner__kernel_is_asymmetric__blurring_does_not_account_for_edge_effects(
         self
     ):
-        image = aa.Array.from_2d(
+        image = aa.Array.from_array_2d(
             [
                 [1.0, 0.0, 0.0, 0.0],
                 [0.0, 0.0, 0.0, 0.0],

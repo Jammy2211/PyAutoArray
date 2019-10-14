@@ -8,45 +8,46 @@ from autoarray import exc
 from autoarray.mask import mask as msk
 from autoarray.util import grid_util, array_util, mask_util, binning_util, sparse_util
 
-# def grid(grid, pixel_scales, shape_2d=None, sub_size=None, origin=(0.0, 0.0)):
-#
-#     grid = np.asarray(grid)
-#
-#     if type(pixel_scales) is float:
-#         pixel_scales = (pixel_scales, pixel_scales)
-#
-#     if len(grid.shape) == 2 and shape_2d is None:
-#         raise exc.ArrayException('A 2D array cannot be used to set up a Grid class without its 2D shape.')
-#
-#     if shape_2d is not None and len(shape_2d) != 2:
-#         raise exc.ArrayException('The input shape_2d parameter is not a tuple of type (float, float)')
-#
-#     if pixel_scales is None and sub_size is None:
-#
-#         if len(grid.shape) == 3:
-#             return Grid.from_(array_2d=array)
-#         elif len(array.shape) == 1:
-#             return Array.from_1d_and_shape_2d(array_1d=array, shape_2d=shape_2d)
-#
-#     elif pixel_scales is not None and sub_size is None:
-#
-#         if len(array.shape) == 2:
-#             return ScaledArray.from_2d_and_pixel_scales(array_2d=array, pixel_scales=pixel_scales, origin=origin)
-#         elif len(array.shape) == 1:
-#             return ScaledArray.from_1d_shape_2d_and_pixel_scales(array_1d=array, shape_2d=shape_2d,
-#                                                                  pixel_scales=pixel_scales, origin=origin)
-#
-#     elif pixel_scales is not None and sub_size is not None:
-#
-#         if len(array.shape) == 2:
-#             return ScaledSubArray.from_2d_pixel_scales_and_sub_size(sub_array_2d=array, pixel_scales=pixel_scales,
-#                                                                     sub_size=sub_size, origin=origin)
-#         elif len(array.shape) == 1:
-#             return ScaledSubArray.from_1d_shape_2d_pixel_scales_and_sub_size(sub_array_1d=array, shape_2d=shape_2d,
-#                                                                              pixel_scales=pixel_scales,
-#                                                                              sub_size=sub_size, origin=origin)
+def grid(grid, pixel_scales, shape_2d=None, sub_size=None, origin=(0.0, 0.0)):
 
-class Grid(np.ndarray):
+    grid = np.asarray(grid)
+
+    if type(pixel_scales) is float:
+        pixel_scales = (pixel_scales, pixel_scales)
+
+    if len(grid.shape) == 2 and shape_2d is None:
+        raise exc.GridException('A 2D grid cannot be used to set up a Grid class without its 2D shape.')
+
+    if shape_2d is not None and len(shape_2d) != 2:
+        raise exc.GridException('The input shape_2d parameter is not a tuple of type (float, float)')
+
+    if grid.shape[-1] != 2:
+        raise exc.GridException('The final dimension of the input grid is not equal to 2 (e.g. the (y,x) coordinates)')
+
+    if 2 < len(grid.shape) > 3:
+        raise exc.GridException('The dimensions of the input grid array is not 2 or 3')
+
+    if sub_size is None:
+
+        if len(grid.shape) == 3:
+            return ScaledGrid.from_grid_2d_and_pixel_scales(grid_2d=grid, pixel_scales=pixel_scales, origin=origin)
+        elif len(grid.shape) == 2:
+            return ScaledGrid.from_grid_1d_shape_2d_and_pixel_scales(
+                grid_1d=grid, shape_2d=shape_2d, pixel_scales=pixel_scales, origin=origin)
+
+    elif sub_size is not None:
+
+        if len(grid.shape) == 3:
+            return ScaledSubGrid.from_sub_grid_2d_pixel_scales_and_sub_size(sub_grid_2d=grid, pixel_scales=pixel_scales,
+                                                                    sub_size=sub_size, origin=origin)
+        elif len(grid.shape) == 2:
+            return ScaledSubGrid.from_sub_grid_1d_shape_2d_pixel_scales_and_sub_size(
+                sub_grid_1d=grid, shape_2d=shape_2d, pixel_scales=pixel_scales,
+                sub_size=sub_size, origin=origin)
+
+
+class AbstractGrid(np.ndarray):
+
     def __new__(cls, grid_1d, mask, binned=None, *args, **kwargs):
         """A grid of coordinates, where each entry corresponds to the (y,x) coordinates at the centre of an \
         unmasked pixel. The positive y-axis is upwards and poitive x-axis to the right.
@@ -94,7 +95,7 @@ class Grid(np.ndarray):
         sub-pixel of an unmasked pixel (e.g. the pixels of a grid). The positive y-axis is upwards and poitive \
         x-axis to the right, and this convention is followed for the sub-pixels in each unmasked pixel.
 
-        A *SubGrid* is ordered such that pixels begin from the first (top-left) sub-pixel in the first unmasked pixel. \
+        A *ScaledSubGrid* is ordered such that pixels begin from the first (top-left) sub-pixel in the first unmasked pixel. \
         Indexes then go over the sub-pixels in each unmasked pixel, for every unmasked pixel. Therefore, \
         the sub-grid is an ndarray of shape [total_unmasked_pixels*(sub_grid_shape)**2, 2]. For example:
 
@@ -167,35 +168,14 @@ class Grid(np.ndarray):
 
     def __array_finalize__(self, obj):
 
-        if isinstance(obj, Grid):
+        if isinstance(obj, AbstractGrid):
+
             self.mask = obj.mask
             self.interpolator = obj.interpolator
             self.binned = obj.binned
 
         if hasattr(obj, '_sub_border_1d_indexes'):
             self._sub_border_1d_indexes = obj._sub_border_1d_indexes
-
-    @classmethod
-    def from_1d_and_shape_2d(cls, grid_1d, shape_2d, pixel_scales, origin=(0.0, 0.0)):
-
-        mask = msk.ScaledMask.unmasked_from_shape(
-            shape=shape_2d, pixel_scales=pixel_scales, origin=origin,
-        )
-
-        return Grid(grid_1d=grid_1d, mask=mask)
-
-    @classmethod
-    def from_2d(cls, grid_2d, pixel_scales, origin=(0.0, 0.0)):
-
-        mask = msk.Mask.unmasked_from_shape(
-            shape=(grid_2d.shape[0], grid_2d.shape[1]),
-        )
-
-        grid_1d = grid_util.sub_grid_1d_from_sub_grid_2d_mask_and_sub_size(
-            mask=mask, sub_grid_2d=grid_2d, sub_size=1
-        )
-
-        return Grid(grid_1d=grid_1d, mask=mask)
 
     @property
     def mapping(self):
@@ -212,29 +192,6 @@ class Grid(np.ndarray):
     @property
     def in_1d(self):
         return self
-
-    @property
-    def in_2d(self):
-        return self.mask.mapping.grid_2d_from_grid_1d(grid_1d=self)
-
-    @classmethod
-    def from_mask(cls, mask):
-        """Setup a sub-grid of the unmasked pixels, using a mask and a specified sub-grid size. The center of \
-        every unmasked pixel's sub-pixels give the grid's (y,x) arc-second coordinates.
-
-        Parameters
-        -----------
-        mask : Mask
-            The mask whose masked pixels are used to setup the sub-pixel grid.
-        sub_size : int
-            The size (sub_size x sub_size) of each unmasked pixels sub-grid.
-        """
-
-        sub_grid_1d = grid_util.grid_1d_from_mask_pixel_scales_sub_size_and_origin(
-            mask=mask, pixel_scales=mask.geometry.pixel_scales, sub_size=1
-        )
-
-        return Grid(grid_1d=sub_grid_1d, mask=mask)
 
     @classmethod
     def blurring_grid_from_mask_and_kernel_shape(cls, mask, kernel_shape):
@@ -298,7 +255,7 @@ class Grid(np.ndarray):
 
         blurring_mask = mask.regions.blurring_mask_from_kernel_shape(kernel_shape=kernel_shape)
 
-        return Grid.from_mask(mask=blurring_mask)
+        return ScaledGrid.from_mask(mask=blurring_mask)
 
     def blurring_grid_from_kernel_shape(self, kernel_shape):
 
@@ -306,7 +263,7 @@ class Grid(np.ndarray):
             kernel_shape=kernel_shape
         )
 
-        return Grid.from_mask(mask=blurring_mask)
+        return self.__class__.from_mask(mask=blurring_mask)
 
     def new_grid_with_binned_grid(self, binned_grid):
         # noinspection PyAttributeOutsideInit
@@ -407,121 +364,55 @@ class Grid(np.ndarray):
         return grid
 
 
-class SubGrid(Grid):
+class ScaledGrid(AbstractGrid):
 
-    def __new__(cls, grid_1d, mask, binned=None, *args, **kwargs):
-        """A grid of coordinates, where each entry corresponds to the (y,x) coordinates at the centre of an \
-        unmasked pixel. The positive y-axis is upwards and poitive x-axis to the right. 
-        
-        A *Grid* is ordered such pixels begin from the top-row of the mask and go rightwards and then \ 
-        downwards. Therefore, it is a ndarray of shape [total_unmasked_pixels, 2]. The first element of the ndarray \
-        thus corresponds to the pixel index and second element the y or x arc -econd coordinates. For example:
+    @classmethod
+    def from_grid_1d_shape_2d_and_pixel_scales(cls, grid_1d, shape_2d, pixel_scales, origin=(0.0, 0.0)):
 
-        - grid[3,0] = the 4th unmasked pixel's y-coordinate.
-        - grid[6,1] = the 7th unmasked pixel's x-coordinate.
+        mask = msk.ScaledMask.unmasked_from_shape(
+            shape=shape_2d, pixel_scales=pixel_scales, origin=origin,
+        )
 
-        Below is a visual illustration of a grid, where a total of 10 pixels are unmasked and are included in \
-        the grid.
+        return ScaledGrid(grid_1d=grid_1d, mask=mask)
 
-        |x|x|x|x|x|x|x|x|x|x|
-        |x|x|x|x|x|x|x|x|x|x|     This is an example mask.Mask, where:
-        |x|x|x|x|x|x|x|x|x|x|
-        |x|x|x|x|o|o|x|x|x|x|     x = True (Pixel is masked and excluded from the grid)
-        |x|x|x|o|o|o|o|x|x|x|     o = False (Pixel is not masked and included in the grid)
-        |x|x|x|o|o|o|o|x|x|x|
-        |x|x|x|x|x|x|x|x|x|x|
-        |x|x|x|x|x|x|x|x|x|x|
-        |x|x|x|x|x|x|x|x|x|x|
-        |x|x|x|x|x|x|x|x|x|x|
+    @classmethod
+    def from_grid_2d_and_pixel_scales(cls, grid_2d, pixel_scales, origin=(0.0, 0.0)):
 
-        The mask pixel index's will come out like this (and the direction of arc-second coordinates is highlighted
-        around the mask.
+        mask = msk.ScaledMask.unmasked_from_shape(
+            shape=(grid_2d.shape[0], grid_2d.shape[1]), pixel_scales=pixel_scales, origin=origin
+        )
 
-        pixel_scale = 1.0"
+        grid_1d = grid_util.sub_grid_1d_from_sub_grid_2d_mask_and_sub_size(
+            mask=mask, sub_grid_2d=grid_2d, sub_size=1
+        )
 
-        <--- -ve  x  +ve -->
-                                                        y      x
-        |x|x|x|x|x|x|x|x|x|x|  ^   grid[0] = [ 1.5, -0.5]
-        |x|x|x|x|x|x|x|x|x|x|  |   grid[1] = [ 1.5,  0.5]
-        |x|x|x|x|x|x|x|x|x|x|  |   grid[2] = [ 0.5, -1.5]
-        |x|x|x|x|0|1|x|x|x|x| +ve  grid[3] = [ 0.5, -0.5]
-        |x|x|x|2|3|4|5|x|x|x|  y   grid[4] = [ 0.5,  0.5]
-        |x|x|x|6|7|8|9|x|x|x| -ve  grid[5] = [ 0.5,  1.5]
-        |x|x|x|x|x|x|x|x|x|x|  |   grid[6] = [-0.5, -1.5]
-        |x|x|x|x|x|x|x|x|x|x|  |   grid[7] = [-0.5, -0.5]
-        |x|x|x|x|x|x|x|x|x|x| \/   grid[8] = [-0.5,  0.5]
-        |x|x|x|x|x|x|x|x|x|x|      grid[9] = [-0.5,  1.5]
+        return ScaledGrid(grid_1d=grid_1d, mask=mask)
 
-        A sub-grid of coordinates, where each entry corresponds to the (y,x) coordinates at the centre of each \
-        sub-pixel of an unmasked pixel (e.g. the pixels of a grid). The positive y-axis is upwards and poitive \
-        x-axis to the right, and this convention is followed for the sub-pixels in each unmasked pixel.
+    @property
+    def in_2d(self):
+        return self.mask.mapping.grid_2d_from_grid_1d(grid_1d=self)
 
-        A *SubGrid* is ordered such that pixels begin from the first (top-left) sub-pixel in the first unmasked pixel. \
-        Indexes then go over the sub-pixels in each unmasked pixel, for every unmasked pixel. Therefore, \
-        the sub-grid is an ndarray of shape [total_unmasked_pixels*(sub_grid_shape)**2, 2]. For example:
+    @classmethod
+    def from_mask(cls, mask):
+        """Setup a sub-grid of the unmasked pixels, using a mask and a specified sub-grid size. The center of \
+        every unmasked pixel's sub-pixels give the grid's (y,x) arc-second coordinates.
 
-        - grid[9, 1] - using a 2x2 sub-grid, gives the 3rd unmasked pixel's 2nd sub-pixel x-coordinate.
-        - grid[9, 1] - using a 3x3 sub-grid, gives the 2nd unmasked pixel's 1st sub-pixel x-coordinate.
-        - grid[27, 0] - using a 3x3 sub-grid, gives the 4th unmasked pixel's 1st sub-pixel y-coordinate.
-
-        Below is a visual illustration of a sub grid. Like the grid, the indexing of each sub-pixel goes from \
-        the top-left corner. In contrast to the grid above, our illustration below restricts the mask to just \
-        2 pixels, to keep the illustration brief.
-
-        |x|x|x|x|x|x|x|x|x|x|
-        |x|x|x|x|x|x|x|x|x|x|     This is an example mask.Mask, where:
-        |x|x|x|x|x|x|x|x|x|x|
-        |x|x|x|x|x|x|x|x|x|x|     x = True (Pixel is masked and excluded from lens)
-        |x|x|x|x|o|o|x|x|x|x|     o = False (Pixel is not masked and included in lens)
-        |x|x|x|x|x|x|x|x|x|x|
-        |x|x|x|x|x|x|x|x|x|x|
-        |x|x|x|x|x|x|x|x|x|x|
-        |x|x|x|x|x|x|x|x|x|x|
-        |x|x|x|x|x|x|x|x|x|x|
-
-        Our grid looks like it did before:
-
-        pixel_scale = 1.0"
-
-        <--- -ve  x  +ve -->
-
-        |x|x|x|x|x|x|x|x|x|x|  ^
-        |x|x|x|x|x|x|x|x|x|x|  |
-        |x|x|x|x|x|x|x|x|x|x|  |                        y     x
-        |x|x|x|x|x|x|x|x|x|x| +ve  grid[0] = [0.5,  -1.5]
-        |x|x|x|0|1|x|x|x|x|x|  y   grid[1] = [0.5,  -0.5]
-        |x|x|x|x|x|x|x|x|x|x| -ve
-        |x|x|x|x|x|x|x|x|x|x|  |
-        |x|x|x|x|x|x|x|x|x|x|  |
-        |x|x|x|x|x|x|x|x|x|x| \/
-        |x|x|x|x|x|x|x|x|x|x|
-
-        However, we now go to each unmasked pixel and derive a sub-pixel grid for it. For example, for pixel 0,
-        if *sub_size=2*, we use a 2x2 sub-grid:
-
-        Pixel 0 - (2x2):
-                                y      x
-               grid[0] = [0.66, -1.66]
-        |0|1|  grid[1] = [0.66, -1.33]
-        |2|3|  grid[2] = [0.33, -1.66]
-               grid[3] = [0.33, -1.33]
-
-        Now, we'd normally sub-grid all pixels using the same *sub_size*, but for this illustration lets
-        pretend we used a sub_size of 3x3 for pixel 1:
-
-                                  y      x
-                 grid[0] = [0.75, -0.75]
-                 grid[1] = [0.75, -0.5]
-                 grid[2] = [0.75, -0.25]
-        |0|1|2|  grid[3] = [0.5,  -0.75]
-        |3|4|5|  grid[4] = [0.5,  -0.5]
-        |6|7|8|  grid[5] = [0.5,  -0.25]
-                 grid[6] = [0.25, -0.75]
-                 grid[7] = [0.25, -0.5]
-                 grid[8] = [0.25, -0.25]
-
+        Parameters
+        -----------
+        mask : Mask
+            The mask whose masked pixels are used to setup the sub-pixel grid.
+        sub_size : int
+            The size (sub_size x sub_size) of each unmasked pixels sub-grid.
         """
-        return super(SubGrid, cls).__new__(cls=cls, grid_1d=grid_1d, mask=mask, binned=binned)
+
+        grid_1d = grid_util.grid_1d_from_mask_pixel_scales_sub_size_and_origin(
+            mask=mask, pixel_scales=mask.geometry.pixel_scales, sub_size=1
+        )
+
+        return ScaledGrid(grid_1d=grid_1d, mask=mask)
+
+
+class ScaledSubGrid(AbstractGrid):
 
     @classmethod
     def from_mask(cls, mask):
@@ -540,10 +431,33 @@ class SubGrid(Grid):
             mask=mask, pixel_scales=mask.geometry.pixel_scales, sub_size=mask.sub_size
         )
 
-        return SubGrid(grid_1d=sub_grid_1d, mask=mask)
+        return ScaledSubGrid(grid_1d=sub_grid_1d, mask=mask)
 
     @classmethod
-    def from_shape_pixel_scale_and_sub_size(cls, shape, pixel_scale, sub_size):
+    def from_sub_grid_1d_shape_2d_pixel_scales_and_sub_size(cls, sub_grid_1d, shape_2d, pixel_scales, sub_size, origin=(0.0, 0.0)):
+
+        mask = msk.ScaledSubMask.unmasked_from_shape(
+            shape=shape_2d,
+            pixel_scales=pixel_scales,
+            sub_size=sub_size,
+            origin=origin,
+        )
+
+        return mask.mapping.grid_from_sub_grid_1d(sub_grid_1d=sub_grid_1d)
+
+    @classmethod
+    def from_sub_grid_2d_pixel_scales_and_sub_size(cls, sub_grid_2d, pixel_scales, sub_size, origin=(0.0, 0.0)):
+
+        shape = (sub_grid_2d.shape[0] / sub_size, sub_grid_2d.shape[1] / sub_size)
+
+        mask = msk.ScaledSubMask.unmasked_from_shape(
+            shape=shape, pixel_scales=pixel_scales, sub_size=sub_size, origin=origin
+        )
+
+        return mask.mapping.grid_from_sub_grid_2d(sub_grid_2d=sub_grid_2d)
+
+    @classmethod
+    def from_shape_2d_pixel_scale_and_sub_size(cls, shape_2d, pixel_scale, sub_size):
         """Setup a sub-grid from a 2D array shape and pixel scale. Here, the center of every pixel on the 2D \
         array gives the grid's (y,x) arc-second coordinates, where each pixel has sub-pixels specified by the \
         sub-grid size.
@@ -552,7 +466,7 @@ class SubGrid(Grid):
 
         Parameters
         -----------
-        shape : (int, int)
+        shape_2d : (int, int)
             The 2D shape of the array, where all pixels are used to generate the grid's grid.
         pixel_scale : float
             The size of each pixel in arc seconds.
@@ -561,30 +475,18 @@ class SubGrid(Grid):
         """
 
         mask = msk.ScaledSubMask.unmasked_from_shape(
-            shape=shape, pixel_scales=(pixel_scale, pixel_scale), sub_size=sub_size
+            shape=shape_2d, pixel_scales=(pixel_scale, pixel_scale), sub_size=sub_size
         )
 
         sub_grid_1d = grid_util.grid_1d_from_mask_pixel_scales_sub_size_and_origin(
             mask=mask, pixel_scales=mask.geometry.pixel_scales, sub_size=sub_size
         )
 
-        return SubGrid(grid_1d=sub_grid_1d, mask=mask)
+        return ScaledSubGrid(grid_1d=sub_grid_1d, mask=mask)
 
     @classmethod
     def from_sub_grid_2d_and_mask(cls, sub_grid_2d, mask):
         return mask.mapping.grid_from_sub_grid_2d(sub_grid_2d=sub_grid_2d)
-
-    @classmethod
-    def from_2d(cls, grid_2d, pixel_scale, origin=(0.0, 0.0)):
-
-        mask = msk.ScaledSubMask.unmasked_from_shape(
-            shape=(grid_2d.shape[0], grid_2d.shape[1]),
-            pixel_scales=(pixel_scale, pixel_scale),
-            sub_size=1,
-            origin=origin,
-        )
-
-        return mask.mapping.grid_from_sub_grid_2d(sub_grid_2d=grid_2d)
 
     @property
     def in_2d(self):
@@ -610,7 +512,7 @@ class SubGrid(Grid):
             sub_size=self.mask.sub_size,
         )
 
-        padded_sub_grid = SubGrid.from_mask(mask=padded_mask)
+        padded_sub_grid = ScaledSubGrid.from_mask(mask=padded_mask)
 
         if self.interpolator is None:
             return padded_sub_grid
@@ -636,7 +538,7 @@ class SubGrid(Grid):
             The grid, whose grid coordinates are relocated.
         """
 
-        return SubGrid(
+        return ScaledSubGrid(
             grid_1d=self.relocated_grid_from_grid_jit(
                 grid=grid, border_grid=self.sub_border_grid
             ),
@@ -666,7 +568,7 @@ class SubGrid(Grid):
 
     def __reduce__(self):
         # Get the parent's __reduce__ tuple
-        pickled_state = super(SubGrid, self).__reduce__()
+        pickled_state = super(ScaledSubGrid, self).__reduce__()
         # Create our own tuple to pass to __setstate__
         class_dict = {}
         for key, value in self.__dict__.items():
@@ -680,10 +582,10 @@ class SubGrid(Grid):
 
         for key, value in state[-1].items():
             setattr(self, key, value)
-        super(SubGrid, self).__setstate__(state[0:-1])
+        super(ScaledSubGrid, self).__setstate__(state[0:-1])
 
 
-class BinnedSubGrid(SubGrid):
+class BinnedGrid(ScaledSubGrid):
     def __init__(
         self,
         grid_1d,
@@ -694,7 +596,7 @@ class BinnedSubGrid(SubGrid):
         total_unbinned_pixels,
     ):
         # noinspection PyArgumentList
-        super(BinnedSubGrid, self).__init__()
+        super(BinnedGrid, self).__init__()
         self.mask = mask
         self.bin_up_factor = bin_up_factor
         self.binned_mask_1d_index_to_mask_1d_indexes = (
@@ -707,7 +609,7 @@ class BinnedSubGrid(SubGrid):
 
     def __array_finalize__(self, obj):
         super().__array_finalize__(obj)
-        if isinstance(obj, BinnedSubGrid):
+        if isinstance(obj, BinnedGrid):
             self.mask = obj.mask
             self.bin_up_factor = obj.bin_up_factor
             self.binned_mask_1d_index_to_mask_1d_indexes = (
@@ -733,12 +635,12 @@ class BinnedSubGrid(SubGrid):
             bin_up_factor=bin_up_factor
         )
 
-        binned_grid = Grid.from_mask(mask=binned_mask)
+        binned_grid = ScaledGrid.from_mask(mask=binned_mask)
         binned_mask_1d_index_to_mask_1d_indexes, binned_mask_1d_index_to_mask_1d_sizes = binning_util.masked_array_1d_for_binned_masked_array_1d_all_from_mask_2d_and_bin_up_factor(
             mask_2d=mask, bin_up_factor=bin_up_factor
         )
 
-        return BinnedSubGrid(
+        return BinnedGrid(
             grid_1d=binned_grid,
             mask=binned_mask,
             bin_up_factor=bin_up_factor,
@@ -830,7 +732,7 @@ class SparseToGrid(object):
             The shape of the unmasked sparse-grid whose centres form the sparse-grid.
         pixel_scales : (float, float)
             The pixel-to-arcsecond scale of a pixel in the y and x directions.
-        grid : SubGrid
+        grid : ScaledSubGrid
             The grid used to determine which pixels are in the sparse grid.
         origin : (float, float)
             The centre of the unmasked sparse grid, which matches the centre of the mask.
