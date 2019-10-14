@@ -26,24 +26,24 @@ def array(array, shape_2d=None, pixel_scales=None, sub_size=None, origin=(0.0, 0
     if pixel_scales is None and sub_size is None:
         
         if len(array.shape) == 2:
-            return Array.from_2d(array_2d=array)
+            return Array.from_array_2d(array_2d=array)
         elif len(array.shape) == 1:
-            return Array.from_1d_and_shape_2d(array_1d=array, shape_2d=shape_2d)
+            return Array.from_array_1d_and_shape_2d(array_1d=array, shape_2d=shape_2d)
 
     elif pixel_scales is not None and sub_size is None:
         
         if len(array.shape) == 2:
-            return ScaledArray.from_2d_and_pixel_scales(array_2d=array, pixel_scales=pixel_scales, origin=origin)
+            return ScaledArray.from_array_2d_and_pixel_scales(array_2d=array, pixel_scales=pixel_scales, origin=origin)
         elif len(array.shape) == 1:
-            return ScaledArray.from_1d_shape_2d_and_pixel_scales(array_1d=array, shape_2d=shape_2d, pixel_scales=pixel_scales, origin=origin)
+            return ScaledArray.from_array_1d_shape_2d_and_pixel_scales(array_1d=array, shape_2d=shape_2d, pixel_scales=pixel_scales, origin=origin)
 
     elif pixel_scales is not None and sub_size is not None:
 
         if len(array.shape) == 2:
-            return ScaledSubArray.from_2d_pixel_scales_and_sub_size(sub_array_2d=array, pixel_scales=pixel_scales, sub_size=sub_size, origin=origin)
+            return ScaledSubArray.from_sub_array_2d_pixel_scales_and_sub_size(sub_array_2d=array, pixel_scales=pixel_scales, sub_size=sub_size, origin=origin)
         elif len(array.shape) == 1:
-            return ScaledSubArray.from_1d_shape_2d_pixel_scales_and_sub_size(sub_array_1d=array, shape_2d=shape_2d,
-                                                                             pixel_scales=pixel_scales, sub_size=sub_size, origin=origin)
+            return ScaledSubArray.from_sub_array_1d_shape_2d_pixel_scales_and_sub_size(sub_array_1d=array, shape_2d=shape_2d,
+                                                                                       pixel_scales=pixel_scales, sub_size=sub_size, origin=origin)
 
 
 def full(fill_value, shape_2d, pixel_scales=None, sub_size=None, origin=(0.0, 0.0)):
@@ -269,7 +269,7 @@ class AbstractArray(np.ndarray):
 class Array(AbstractArray):
 
     @classmethod
-    def from_1d_and_shape_2d(cls, array_1d, shape_2d):
+    def from_array_1d_and_shape_2d(cls, array_1d, shape_2d):
 
         mask = msk.Mask.unmasked_from_shape(
             shape=shape_2d,
@@ -278,7 +278,7 @@ class Array(AbstractArray):
         return Array(array_1d=array_1d, mask=mask)
 
     @classmethod
-    def from_2d(cls, array_2d):
+    def from_array_2d(cls, array_2d):
 
         mask = msk.Mask.unmasked_from_shape(
             shape=array_2d.shape,
@@ -290,10 +290,11 @@ class Array(AbstractArray):
 
         return Array(array_1d=array_1d, mask=mask)
 
+
 class ScaledArray(AbstractArray):
 
     @classmethod
-    def from_1d_shape_2d_and_pixel_scales(cls, array_1d, shape_2d, pixel_scales, origin=(0.0, 0.0)):
+    def from_array_1d_shape_2d_and_pixel_scales(cls, array_1d, shape_2d, pixel_scales, origin=(0.0, 0.0)):
 
         mask = msk.ScaledMask.unmasked_from_shape(
             shape=shape_2d, pixel_scales=pixel_scales, origin=origin
@@ -302,7 +303,7 @@ class ScaledArray(AbstractArray):
         return ScaledArray(array_1d=array_1d, mask=mask)
 
     @classmethod
-    def from_2d_and_pixel_scales(cls, array_2d, pixel_scales, origin=(0.0, 0.0)):
+    def from_array_2d_and_pixel_scales(cls, array_2d, pixel_scales, origin=(0.0, 0.0)):
 
         mask = msk.ScaledMask.unmasked_from_shape(
             shape=array_2d.shape, pixel_scales=pixel_scales, origin=origin
@@ -321,7 +322,7 @@ class ScaledSubArray(AbstractArray):
     """
 
     @classmethod
-    def from_1d_shape_2d_pixel_scales_and_sub_size(cls, sub_array_1d, shape_2d, pixel_scales, sub_size, origin=(0.0, 0.0)):
+    def from_sub_array_1d_shape_2d_pixel_scales_and_sub_size(cls, sub_array_1d, shape_2d, pixel_scales, sub_size, origin=(0.0, 0.0)):
 
         mask = msk.ScaledSubMask.unmasked_from_shape(
             shape=shape_2d,
@@ -333,7 +334,7 @@ class ScaledSubArray(AbstractArray):
         return mask.mapping.array_from_sub_array_1d(sub_array_1d=sub_array_1d)
 
     @classmethod
-    def from_2d_pixel_scales_and_sub_size(cls, sub_array_2d, pixel_scales, sub_size, origin=(0.0, 0.0)):
+    def from_sub_array_2d_pixel_scales_and_sub_size(cls, sub_array_2d, pixel_scales, sub_size, origin=(0.0, 0.0)):
 
         shape = (sub_array_2d.shape[0] / sub_size, sub_array_2d.shape[1] / sub_size)
 

@@ -39,16 +39,16 @@ class Kernel(arrays.ScaledArray):
     @classmethod
     def from_2d_and_pixel_scale(cls, array_2d, pixel_scale, origin=(0.0, 0.0), renormalize=False):
 
-        scaled_array = arrays.ScaledArray.from_2d_and_pixel_scales(array_2d=array_2d, pixel_scales=(pixel_scale, pixel_scale), origin=origin)
+        scaled_array = arrays.ScaledArray.from_array_2d_and_pixel_scales(array_2d=array_2d, pixel_scales=(pixel_scale, pixel_scale), origin=origin)
 
         return cls(array_1d=scaled_array, mask=scaled_array.mask, renormalize=renormalize)
 
     @classmethod
-    def from_2d_and_pixel_scales(
+    def from_array_2d_and_pixel_scales(
         cls, array_2d, pixel_scales, origin=(0.0, 0.0), renormalize=False
     ):
 
-        scaled_array = arrays.ScaledArray.from_2d_and_pixel_scales(array_2d=array_2d, pixel_scales=pixel_scales, origin=origin)
+        scaled_array = arrays.ScaledArray.from_array_2d_and_pixel_scales(array_2d=array_2d, pixel_scales=pixel_scales, origin=origin)
         return cls(array_1d=scaled_array, mask=scaled_array.mask, renormalize=renormalize)
 
     @classmethod
@@ -175,7 +175,7 @@ class Kernel(arrays.ScaledArray):
             self.mask.geometry.pixel_scales[1] * pixel_scale_factors[1],
         )
 
-        return Kernel.from_2d_and_pixel_scales(
+        return Kernel.from_array_2d_and_pixel_scales(
             array_2d=kernel_rescaled, pixel_scales=pixel_scales, renormalize=renormalize
         )
 
