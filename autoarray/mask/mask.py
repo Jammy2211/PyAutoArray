@@ -10,11 +10,13 @@ logging.basicConfig()
 logger = logging.getLogger(__name__)
 
 
-class Mask(np.ndarray):
+
+
+class AbstractMask(np.ndarray):
 
     # noinspection PyUnusedLocal
     def __new__(
-        cls, array_2d, *args, **kwargs
+        cls, mask_2d, *args, **kwargs
     ):
         """ A mask, which is applied to a 2D array of hyper_galaxies to extract a set of unmasked image pixels (i.e. mask entry \
         is *False* or 0) which are then fitted in an analysis.
@@ -23,7 +25,7 @@ class Mask(np.ndarray):
 
         Parameters
         ----------
-        array_2d: ndarray
+        mask_2d: ndarray
             An array of bools representing the mask.
         pixel_scales: (float, float)
             The arc-second to pixel conversion factor of each pixel.
@@ -32,12 +34,12 @@ class Mask(np.ndarray):
         centre : (float, float)
             The (y,x) arc-second centre of the mask provided it is a standard geometric shape (e.g. a circle).
         """
-        obj = array_2d.view(cls)
+        obj = mask_2d.view(cls)
         return obj
 
     @property
     def mapping(self):
-        return mapping.Mapping(mask_2d=self)
+        raise NotImplementedError()
 
     @property
     def geometry(self):
@@ -46,6 +48,15 @@ class Mask(np.ndarray):
     @property
     def regions(self):
         return self.mapping.regions
+
+    def output_mask_to_fits(self, file_path, overwrite=False):
+
+        array_util.numpy_array_2d_to_fits(
+            array_2d=self, file_path=file_path, overwrite=overwrite
+        )
+
+
+class Mask(AbstractMask):
 
     @classmethod
     def unmasked_from_shape(
@@ -64,7 +75,7 @@ class Mask(np.ndarray):
         if invert:
             mask = np.invert(mask)
         return cls(
-            array_2d=mask,
+            mask_2d=mask,
         )
 
     @classmethod
@@ -85,11 +96,9 @@ class Mask(np.ndarray):
             array_util.numpy_array_2d_from_fits(file_path=file_path, hdu=hdu),
         )
 
-    def output_mask_to_fits(self, file_path, overwrite=False):
-
-        array_util.numpy_array_2d_to_fits(
-            array_2d=self, file_path=file_path, overwrite=overwrite
-        )
+    @property
+    def mapping(self):
+        return mapping.Mapping(mask_2d=self)
 
     @property
     def is_sub(self):
@@ -104,7 +113,7 @@ class ScaledMask(Mask):
 
     # noinspection PyUnusedLocal
     def __new__(
-        cls, array_2d, pixel_scales, origin=(0.0, 0.0), *args, **kwargs
+        cls, mask_2d, pixel_scales, origin=(0.0, 0.0), *args, **kwargs
     ):
         """ A mask, which is applied to a 2D array of hyper_galaxies to extract a set of unmasked image pixels (i.e. mask entry \
         is *False* or 0) which are then fitted in an analysis.
@@ -113,7 +122,7 @@ class ScaledMask(Mask):
 
         Parameters
         ----------
-        array_2d: ndarray
+        mask_2d: ndarray
             An array of bools representing the mask.
         pixel_scales: (float, float)
             The arc-second to pixel conversion factor of each pixel.
@@ -124,7 +133,7 @@ class ScaledMask(Mask):
         """
         # noinspection PyArgumentList
 
-        obj = super(ScaledMask, cls).__new__(cls, array_2d=array_2d)
+        obj = super(ScaledMask, cls).__new__(cls, mask_2d=mask_2d)
         obj.pixel_scales = pixel_scales
         obj.origin = origin
         return obj
@@ -150,7 +159,7 @@ class ScaledMask(Mask):
         if invert:
             mask = np.invert(mask)
         return cls(
-            array_2d=mask, pixel_scales=pixel_scales, origin=origin,
+            mask_2d=mask, pixel_scales=pixel_scales, origin=origin,
         )
 
     @classmethod
@@ -168,15 +177,15 @@ class ScaledMask(Mask):
             The arc-second to pixel conversion factor of each pixel.
         """
         return ScaledMask(
-            array_2d=array_util.numpy_array_2d_from_fits(file_path=file_path, hdu=hdu), pixel_scales=pixel_scales, origin=origin
+            mask_2d=array_util.numpy_array_2d_from_fits(file_path=file_path, hdu=hdu), pixel_scales=pixel_scales, origin=origin
         )
 
 
-class ScaledSubMask(ScaledMask):
+class ScaledSubMask(AbstractMask):
 
     # noinspection PyUnusedLocal
     def __new__(
-        cls, array_2d, pixel_scales, sub_size, origin=(0.0, 0.0), *args, **kwargs
+        cls, mask_2d, pixel_scales, sub_size, origin=(0.0, 0.0), *args, **kwargs
     ):
         """ A mask, which is applied to a 2D array of hyper_galaxies to extract a set of unmasked image pixels (i.e. mask entry \
         is *False* or 0) which are then fitted in an analysis.
@@ -185,7 +194,7 @@ class ScaledSubMask(ScaledMask):
 
         Parameters
         ----------
-        array_2d: ndarray
+        mask_2d: ndarray
             An array of bools representing the mask.
         pixel_scales: (float, float)
             The arc-second to pixel conversion factor of each pixel.
@@ -196,8 +205,12 @@ class ScaledSubMask(ScaledMask):
         """
         # noinspection PyArgumentList
 
-        obj = super(ScaledSubMask, cls).__new__(cls, array_2d=array_2d, sub_size=sub_size, pixel_scales=pixel_scales, origin=origin)
+        obj = super(ScaledSubMask, cls).__new__(cls, mask_2d=mask_2d, pixel_scales=pixel_scales, origin=origin)
         obj.sub_size = sub_size
+        obj.sub_length = int(sub_size ** 2.0)
+        obj.sub_fraction = 1.0 / obj.sub_length
+        obj.pixel_scales = pixel_scales
+        obj.origin = origin
         return obj
 
     @property
@@ -221,7 +234,7 @@ class ScaledSubMask(ScaledMask):
         if invert:
             mask = np.invert(mask)
         return ScaledSubMask(
-            array_2d=mask, pixel_scales=pixel_scales, sub_size=sub_size, origin=origin
+            mask_2d=mask, pixel_scales=pixel_scales, sub_size=sub_size, origin=origin
         )
 
     @classmethod
@@ -257,7 +270,7 @@ class ScaledSubMask(ScaledMask):
         if invert:
             mask = np.invert(mask)
         return ScaledSubMask(
-            array_2d=mask.astype("bool"),
+            mask_2d=mask.astype("bool"),
             pixel_scales=pixel_scales,
             sub_size=sub_size,
             origin=origin,
@@ -304,7 +317,7 @@ class ScaledSubMask(ScaledMask):
             mask = np.invert(mask)
 
         return ScaledSubMask(
-            array_2d=mask.astype("bool"),
+            mask_2d=mask.astype("bool"),
             pixel_scales=pixel_scales,
             sub_size=sub_size,
             origin=origin,
@@ -360,7 +373,7 @@ class ScaledSubMask(ScaledMask):
             mask = np.invert(mask)
 
         return ScaledSubMask(
-            array_2d=mask.astype("bool"),
+            mask_2d=mask.astype("bool"),
             pixel_scales=pixel_scales,
             sub_size=sub_size,
             origin=origin,
@@ -411,7 +424,7 @@ class ScaledSubMask(ScaledMask):
             mask = np.invert(mask)
 
         return ScaledSubMask(
-            array_2d=mask.astype("bool"),
+            mask_2d=mask.astype("bool"),
             pixel_scales=pixel_scales,
             sub_size=sub_size,
             origin=origin,
@@ -476,7 +489,7 @@ class ScaledSubMask(ScaledMask):
             mask = np.invert(mask)
 
         return ScaledSubMask(
-            array_2d=mask.astype("bool"),
+            mask_2d=mask.astype("bool"),
             pixel_scales=pixel_scales,
             sub_size=sub_size,
             origin=origin,

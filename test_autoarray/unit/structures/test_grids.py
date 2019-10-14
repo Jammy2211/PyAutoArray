@@ -246,7 +246,7 @@ class TestGrid:
             ]
         )
 
-        mask = aa.ScaledSubMask(array_2d=mask, pixel_scales=(2.0, 2.0), sub_size=2)
+        mask = aa.ScaledSubMask(mask_2d=mask, pixel_scales=(2.0, 2.0), sub_size=2)
 
         blurring_mask_util = aa.mask_util.blurring_mask_from_mask_and_kernel_shape(
             mask=mask, kernel_shape=(3, 5)
@@ -278,7 +278,7 @@ class TestGrid:
             ]
         )
 
-        mask = aa.ScaledSubMask(array_2d=mask, pixel_scales=(2.0, 2.0), sub_size=2)
+        mask = aa.ScaledSubMask(mask_2d=mask, pixel_scales=(2.0, 2.0), sub_size=2)
 
         blurring_mask_util = aa.mask_util.blurring_mask_from_mask_and_kernel_shape(
             mask=mask, kernel_shape=(3, 5)
@@ -288,7 +288,7 @@ class TestGrid:
             mask=blurring_mask_util, pixel_scales=(2.0, 2.0), sub_size=1
         )
 
-        mask = aa.ScaledSubMask(array_2d=mask, pixel_scales=(2.0, 2.0), sub_size=2)
+        mask = aa.ScaledSubMask(mask_2d=mask, pixel_scales=(2.0, 2.0), sub_size=2)
         blurring_grid = aa.ScaledGrid.blurring_grid_from_mask_and_kernel_shape(
             mask=mask, kernel_shape=(3, 5)
         )
@@ -328,7 +328,7 @@ class TestGrid:
                 [True, True, False, False],
             ]
         )
-        mask = aa.ScaledMask(array_2d=mask, pixel_scales=(2.0, 2.0))
+        mask = aa.ScaledMask(mask_2d=mask, pixel_scales=(2.0, 2.0))
 
         grid = aa.ScaledGrid.from_mask(mask=mask)
 
@@ -379,7 +379,7 @@ class TestGrid:
                 [True, True, False, False],
             ]
         )
-        mask = aa.ScaledMask(array_2d=mask, pixel_scales=(2.0, 2.0))
+        mask = aa.ScaledMask(mask_2d=mask, pixel_scales=(2.0, 2.0))
 
         grid = aa.ScaledGrid.from_mask(mask=mask)
 
@@ -405,7 +405,7 @@ class TestGrid:
                 [True, True, False, False],
             ]
         )
-        mask = aa.ScaledMask(array_2d=mask, pixel_scales=(2.0, 2.0))
+        mask = aa.ScaledMask(mask_2d=mask, pixel_scales=(2.0, 2.0))
 
         grid = aa.ScaledGrid.from_mask(mask=mask)
 
@@ -497,7 +497,7 @@ class TestSubGrid:
                 [True, True, False, False],
             ]
         )
-        mask = aa.ScaledSubMask(array_2d=mask, pixel_scales=(2.0, 2.0), sub_size=1)
+        mask = aa.ScaledSubMask(mask_2d=mask, pixel_scales=(2.0, 2.0), sub_size=1)
 
         grid_via_util = aa.grid_util.grid_1d_from_mask_pixel_scales_sub_size_and_origin(
             mask=mask, sub_size=1, pixel_scales=(2.0, 2.0)
@@ -583,7 +583,7 @@ class TestSubGrid:
         assert (padded_grid == padded_grid_util).all()
 
         mask = aa.ScaledSubMask(
-            array_2d=np.full((5, 4), False), pixel_scales=(2.0, 2.0), sub_size=2
+            mask_2d=np.full((5, 4), False), pixel_scales=(2.0, 2.0), sub_size=2
         )
 
         grid = aa.ScaledSubGrid.from_mask(mask=mask)
@@ -600,7 +600,7 @@ class TestSubGrid:
         assert padded_grid.interpolator is None
 
         mask = aa.ScaledSubMask(
-            array_2d=np.full((2, 5), False), pixel_scales=(8.0, 8.0), sub_size=4
+            mask_2d=np.full((2, 5), False), pixel_scales=(8.0, 8.0), sub_size=4
         )
 
         grid = aa.ScaledSubGrid.from_mask(mask=mask)
@@ -641,7 +641,7 @@ class TestSubGrid:
         assert (padded_grid.interpolator.wts == interpolator.wts).all()
 
         mask = aa.ScaledSubMask(
-            array_2d=np.full((5, 4), False), pixel_scales=(2.0, 2.0), sub_size=2
+            mask_2d=np.full((5, 4), False), pixel_scales=(2.0, 2.0), sub_size=2
         )
 
         grid = aa.ScaledSubGrid.from_mask(mask=mask)
@@ -677,7 +677,7 @@ class TestSubGrid:
             ]
         )
 
-        mask = aa.ScaledSubMask(array_2d=mask, pixel_scales=(2.0, 2.0), sub_size=2)
+        mask = aa.ScaledSubMask(mask_2d=mask, pixel_scales=(2.0, 2.0), sub_size=2)
 
         sub_border_1d_indexes_util = aa.mask_util.sub_border_pixel_1d_indexes_from_mask_and_sub_size(
             mask=mask, sub_size=2
@@ -704,7 +704,7 @@ class TestGridBorder(object):
             ]
         )
 
-        mask = aa.ScaledSubMask(array_2d=mask, pixel_scales=(2.0, 2.0), sub_size=2)
+        mask = aa.ScaledSubMask(mask_2d=mask, pixel_scales=(2.0, 2.0), sub_size=2)
 
         grid = aa.ScaledSubGrid.from_mask(mask=mask)
 
@@ -939,7 +939,7 @@ class TestPixelizationGrid:
 
     def test__from_unmasked_sparse_shape_and_grid(self):
         mask = aa.ScaledSubMask(
-            array_2d=np.array(
+            mask_2d=np.array(
                 [[True, False, True], [False, False, False], [True, False, True]]
             ),
             pixel_scales=(0.5, 0.5),
@@ -967,7 +967,7 @@ class TestSparseToGrid:
     class TestUnmaskedShape:
         def test__properties_consistent_with_util(self):
             mask = aa.ScaledSubMask(
-                array_2d=np.array(
+                mask_2d=np.array(
                     [[True, False, True], [False, False, False], [True, False, True]]
                 ),
                 pixel_scales=(0.5, 0.5),
@@ -1042,7 +1042,7 @@ class TestSparseToGrid:
             self
         ):
             mask = aa.ScaledSubMask(
-                array_2d=np.array(
+                mask_2d=np.array(
                     [[True, False, True], [False, False, False], [True, False, True]]
                 ),
                 pixel_scales=(1.0, 1.0),
@@ -1068,7 +1068,7 @@ class TestSparseToGrid:
 
         def test__same_as_above_but_4x3_grid_and_mask(self):
             mask = aa.ScaledSubMask(
-                array_2d=np.array(
+                mask_2d=np.array(
                     [
                         [True, False, True],
                         [False, False, False],
@@ -1108,7 +1108,7 @@ class TestSparseToGrid:
 
         def test__same_as_above_but_3x4_grid_and_mask(self):
             mask = aa.ScaledSubMask(
-                array_2d=np.array(
+                mask_2d=np.array(
                     [
                         [True, False, True, True],
                         [False, False, False, False],
@@ -1147,7 +1147,7 @@ class TestSparseToGrid:
             self
         ):
             mask = aa.ScaledSubMask(
-                array_2d=np.array(
+                mask_2d=np.array(
                     [
                         [True, True, True, False, True],
                         [True, True, False, False, False],
@@ -1182,7 +1182,7 @@ class TestSparseToGrid:
 
         def test__same_as_above_but_different_offset(self):
             mask = aa.ScaledSubMask(
-                array_2d=np.array(
+                mask_2d=np.array(
                     [
                         [True, True, True, True, True],
                         [True, True, True, False, True],
@@ -1247,7 +1247,7 @@ class TestSparseToGrid:
 
         def test__same_as_above__but_4x3_image(self):
             mask = aa.ScaledSubMask(
-                array_2d=np.array(
+                mask_2d=np.array(
                     [
                         [True, False, True],
                         [False, False, False],
@@ -1287,7 +1287,7 @@ class TestSparseToGrid:
 
         def test__same_as_above__but_3x4_image(self):
             mask = aa.ScaledSubMask(
-                array_2d=np.array(
+                mask_2d=np.array(
                     [
                         [True, False, True, True],
                         [False, False, False, False],
@@ -1324,7 +1324,7 @@ class TestSparseToGrid:
 
         def test__from_grid_and_shape__offset_mask__origin_shift_corrects(self):
             mask = aa.ScaledSubMask(
-                array_2d=np.array(
+                mask_2d=np.array(
                     [
                         [True, True, False, False, False],
                         [True, True, False, False, False],
@@ -1369,7 +1369,7 @@ class TestSparseToGrid:
             self
         ):
             mask = aa.ScaledSubMask(
-                array_2d=np.array(
+                mask_2d=np.array(
                     [
                         [False, False, False, False],
                         [False, False, False, False],
@@ -1419,7 +1419,7 @@ class TestSparseToGrid:
 
         def test__binned_weight_map_changes_grid_from_above(self):
             mask = aa.ScaledSubMask(
-                array_2d=np.array(
+                mask_2d=np.array(
                     [
                         [False, False, False, False],
                         [False, False, False, False],
@@ -1460,7 +1460,7 @@ class TestSparseToGrid:
             self
         ):
             mask = aa.ScaledSubMask(
-                array_2d=np.full(fill_value=False, shape=(8, 8)),
+                mask_2d=np.full(fill_value=False, shape=(8, 8)),
                 pixel_scales=(0.5, 0.5),
                 sub_size=2,
             )
