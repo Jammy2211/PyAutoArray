@@ -5,6 +5,7 @@ from sklearn.cluster import KMeans
 
 from autoarray import decorator_util
 from autoarray import exc
+from autoarray.structures import abstract_structure
 from autoarray.mask import mask as msk
 from autoarray.util import grid_util, array_util, mask_util, binning_util, sparse_util
 
@@ -46,7 +47,7 @@ def grid(grid, pixel_scales, shape_2d=None, sub_size=None, origin=(0.0, 0.0)):
                 sub_size=sub_size, origin=origin)
 
 
-class AbstractGrid(np.ndarray):
+class AbstractGrid(abstract_structure.AbstractStructure):
 
     def __new__(cls, grid_1d, mask, binned=None, *args, **kwargs):
         """A grid of coordinates, where each entry corresponds to the (y,x) coordinates at the centre of an \
@@ -160,38 +161,22 @@ class AbstractGrid(np.ndarray):
                  grid[8] = [0.25, -0.25]
 
         """
-        obj = grid_1d.view(cls)
-        obj.mask = mask
+        obj = super(AbstractGrid, cls).__new__(cls=cls, structure_1d=grid_1d, mask=mask)
         obj.interpolator = None
         obj.binned = None
         return obj
 
     def __array_finalize__(self, obj):
 
+        super(AbstractGrid, self).__array_finalize__(obj)
+
         if isinstance(obj, AbstractGrid):
 
-            self.mask = obj.mask
             self.interpolator = obj.interpolator
             self.binned = obj.binned
 
         if hasattr(obj, '_sub_border_1d_indexes'):
             self._sub_border_1d_indexes = obj._sub_border_1d_indexes
-
-    @property
-    def mapping(self):
-        return self.mask.mapping
-
-    @property
-    def regions(self):
-        return self.mask.regions
-
-    @property
-    def geometry(self):
-        return self.mask.geometry
-
-    @property
-    def in_1d(self):
-        return self
 
     @classmethod
     def blurring_grid_from_mask_and_kernel_shape(cls, mask, kernel_shape):
@@ -282,10 +267,6 @@ class AbstractGrid(np.ndarray):
             pixel_scale_interpolation_grid=pixel_scale_interpolation_grid,
         )
         return self
-
-    @property
-    def total_pixels(self):
-        return self.shape[0]
 
     @property
     @array_util.Memoizer()

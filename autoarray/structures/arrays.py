@@ -3,6 +3,7 @@ import logging
 import numpy as np
 
 from autoarray import exc
+from autoarray.structures import abstract_structure
 from autoarray.mask import mask as msk
 from autoarray.util import array_util, binning_util
 
@@ -67,7 +68,7 @@ def array_from_fits(file_path, hdu, pixel_scales=None, sub_size=None, origin=(0.
     return array(array=array_2d,  pixel_scales=pixel_scales, sub_size=sub_size, origin=origin)
 
 
-class AbstractArray(np.ndarray):
+class AbstractArray(abstract_structure.AbstractStructure):
 
     # noinspection PyUnusedLocal
     def __new__(cls, array_1d, mask, *args, **kwargs):
@@ -82,22 +83,8 @@ class AbstractArray(np.ndarray):
         origin : (float, float)
             The arc-second origin of the hyper array's coordinate system.
         """
-
-        obj = array_1d.view(cls)
-        obj.mask = mask
+        obj = super(AbstractArray, cls).__new__(cls=cls, structure_1d=array_1d, mask=mask)
         return obj
-
-    @property
-    def mapping(self):
-        return self.mask.mapping
-
-    @property
-    def regions(self):
-        return self.mask.regions
-
-    @property
-    def geometry(self):
-        return self.mask.geometry
 
     def new_with_array(self, array):
         """
@@ -136,21 +123,12 @@ class AbstractArray(np.ndarray):
     def __array_wrap__(self, out_arr, context=None):
         return np.ndarray.__array_wrap__(self, out_arr, context)
 
-    def __array_finalize__(self, obj):
-
-        if hasattr(obj, 'mask'):
-            self.mask = obj.mask
-
     def __eq__(self, other):
         super_result = super(AbstractArray, self).__eq__(other)
         try:
             return super_result.all()
         except AttributeError:
             return super_result
-
-    @property
-    def in_1d(self):
-        return self
 
     @property
     def in_2d(self):
