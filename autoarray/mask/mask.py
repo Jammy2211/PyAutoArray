@@ -14,29 +14,6 @@ class Mask(np.ndarray):
 
     # noinspection PyUnusedLocal
     def __new__(
-        cls, mask_2d, *args, **kwargs
-    ):
-        """ A mask, which is applied to a 2D array of hyper_galaxies to extract a set of unmasked image pixels (i.e. mask entry \
-        is *False* or 0) which are then fitted in an analysis.
-
-        The mask retains the pixel scale of the array and has a centre and origin.
-
-        Parameters
-        ----------
-        mask_2d: ndarray
-            An array of bools representing the mask.
-        pixel_scales: (float, float)
-            The arc-second to pixel conversion factor of each pixel.
-        origin : (float, float)
-            The (y,x) arc-second origin of the mask's coordinate system.
-        centre : (float, float)
-            The (y,x) arc-second centre of the mask provided it is a standard geometric shape (e.g. a circle).
-        """
-        obj = mask_2d.view(cls)
-        return obj
-
-    # noinspection PyUnusedLocal
-    def __new__(
         cls, mask_2d, pixel_scales, sub_size, origin=(0.0, 0.0), *args, **kwargs
     ):
         """ A mask, which is applied to a 2D array of hyper_galaxies to extract a set of unmasked image pixels (i.e. mask entry \
@@ -92,7 +69,7 @@ class Mask(np.ndarray):
         ----------
         shape : (int, int)
             The (y,x) shape of the mask in units of pixels.
-        pixel_scales : (float, float)
+        pixel_scales : float or (float, float)
             The arc-second to pixel conversion factor of each pixel.
         """
         return cls.manual(
@@ -322,3 +299,11 @@ class Mask(np.ndarray):
     @property
     def pixels_in_mask(self):
         return int(np.size(self) - np.sum(self))
+
+    @property
+    def sub_pixels_in_mask(self):
+        return self.sub_size ** 2 * self.pixels_in_mask
+
+    @property
+    def sub_shape(self):
+        return (self.shape[0] * self.sub_size, self.shape[1] * self.sub_size)

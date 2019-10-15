@@ -1,6 +1,7 @@
 from autoarray.mask.mask import Mask as mask
-from autoarray.structures.arrays import Array as array
+from autoarray.structures.arrays import Array as array, ArrayMasked as array_masked
 from autoarray.structures.grids import Grid as grid
+from autoarray.structures.kernel import Kernel as kernel
 from autoarray.mask.mapping import Mapping
 from autoarray.mask.geometry import Geometry
 from autoarray.mask.regions import Regions, Regions

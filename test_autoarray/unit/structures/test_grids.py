@@ -15,7 +15,7 @@ def make_grid():
     return aa.Grid.from_mask(mask=mask)
 
 
-class TestAPIFactory:
+class TestAPI:
 
     class TestManual:
 
