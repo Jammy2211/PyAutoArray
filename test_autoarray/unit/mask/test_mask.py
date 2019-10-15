@@ -441,6 +441,48 @@ class TestFromAndToFits:
         assert mask.origin == (2.0, 2.0)
 
 
+class TestSubQuantities:
+
+    def test__sub_shape_is_shape_times_sub_size(self):
+
+        mask = aa.mask.unmasked(
+            shape_2d=(5, 5), sub_size=1,
+        )
+
+        assert mask.sub_shape == (5, 5)
+
+        mask = aa.mask.unmasked(
+            shape_2d=(5, 5), sub_size=2,
+        )
+
+        assert mask.sub_shape == (10, 10)
+
+        mask = aa.mask.unmasked(
+            shape_2d=(10, 5), sub_size=3,
+        )
+
+        assert mask.sub_shape == (30, 15)
+
+    def test__sub_pixels_in_mask_is_pixels_in_mask_times_sub_size_squared(self):
+
+        mask = aa.mask.unmasked(
+            shape_2d=(5, 5), sub_size=1,
+        )
+
+        assert mask.sub_pixels_in_mask == 25
+
+        mask = aa.mask.unmasked(
+            shape_2d=(5, 5), sub_size=2,
+        )
+
+        assert mask.sub_pixels_in_mask == 100
+
+        mask = aa.mask.unmasked(
+            shape_2d=(10, 10), sub_size=3,
+        )
+
+        assert mask.sub_pixels_in_mask == 900
+
 class TestBinnedMask:
 
     def test__compare_to_mask_via_util(self):

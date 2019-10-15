@@ -1,17 +1,14 @@
-import logging
-
-from scipy.stats import norm
 
 import scipy.signal
-from astropy import units
 from skimage.transform import resize, rescale
 
 import numpy as np
 
+from autoarray.structures import abstract_structure
 from autoarray.structures import arrays
 from autoarray import exc
 
-class Kernel(arrays.Array):
+class Kernel(abstract_structure.AbstractStructure):
 
     # noinspection PyUnusedLocal
     def __new__(cls, array_1d, mask, renormalize=False, *args, **kwargs):
@@ -29,7 +26,7 @@ class Kernel(arrays.Array):
 
         #        obj = arrays.Scaled(array_1d=sub_array_1d, mask=mask)
 
-        obj = super(Kernel, cls).__new__(cls=cls, array_1d=array_1d, mask=mask)
+        obj = super(Kernel, cls).__new__(cls=cls, structure_1d=array_1d, mask=mask)
 
         if renormalize:
             obj[:] = np.divide(obj, np.sum(obj))
@@ -37,26 +34,20 @@ class Kernel(arrays.Array):
         return obj
 
     @classmethod
-    def from_2d_and_pixel_scale(cls, array_2d, pixel_scale, origin=(0.0, 0.0), renormalize=False):
+    def manual(cls, array, shape_2d=None, pixel_scales=None, origin=(0.0, 0.0), renormalize=False):
 
-        scaled_array = arrays.Array.from_array_2d_and_pixel_scales(array_2d=array_2d, pixel_scales=(pixel_scale, pixel_scale), origin=origin)
+        array = arrays.Array.manual(
+            array=array,
+            shape_2d=shape_2d, pixel_scales=pixel_scales, origin=origin)
 
-        return cls(array_1d=scaled_array, mask=scaled_array.mask, renormalize=renormalize)
-
-    @classmethod
-    def from_array_2d_and_pixel_scales(
-        cls, array_2d, pixel_scales, origin=(0.0, 0.0), renormalize=False
-    ):
-
-        scaled_array = arrays.Array.from_array_2d_and_pixel_scales(array_2d=array_2d, pixel_scales=pixel_scales, origin=origin)
-        return cls(array_1d=scaled_array, mask=scaled_array.mask, renormalize=renormalize)
+        return Kernel(array_1d=array, mask=array.mask, renormalize=renormalize)
 
     @classmethod
-    def from_no_blurring_kernel(cls, pixel_scale):
+    def no_blur(cls, pixel_scales):
 
         array = np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]])
 
-        return cls.from_2d_and_pixel_scale(array_2d=array, pixel_scale=pixel_scale, renormalize=False)
+        return cls.manual(array=array, pixel_scales=pixel_scales)
     #
     # @classmethod
     # def from_gaussian(
@@ -112,7 +103,7 @@ class Kernel(arrays.Array):
     #     )
 
     @classmethod
-    def from_fits_and_pixel_scale(cls, file_path, hdu, pixel_scale, renormalize=False):
+    def from_fits(cls, file_path, hdu, pixel_scales=None, origin=(0.0, 0.0), renormalize=False):
         """
         Loads the Kernel from a .fits file.
 
@@ -124,13 +115,12 @@ class Kernel(arrays.Array):
         hdu : int
             The HDU the Kernel is stored in the .fits file.
         """
-        return cls.from_2d_and_pixel_scale(
-            array_2d=arrays.array_util.numpy_array_2d_from_fits(
-                file_path=file_path, hdu=hdu
-            ),
-            pixel_scale=pixel_scale,
-            renormalize=renormalize,
-        )
+
+        array = arrays.Array.from_fits(
+            file_path=file_path, hdu=hdu,
+            pixel_scales=pixel_scales, origin=origin)
+
+        return Kernel(array_1d=array, mask=array.mask, renormalize=renormalize)
 
     def rescaled_with_odd_dimensions_from_rescale_factor(
         self, rescale_factor, renormalize=False
@@ -171,13 +161,17 @@ class Kernel(arrays.Array):
             self.mask.shape[1] / kernel_rescaled.shape[1],
         )
         pixel_scales = (
-            self.mask.geometry.pixel_scales[0] * pixel_scale_factors[0],
-            self.mask.geometry.pixel_scales[1] * pixel_scale_factors[1],
+            self.pixel_scales[0] * pixel_scale_factors[0],
+            self.pixel_scales[1] * pixel_scale_factors[1],
         )
 
-        return Kernel.from_array_2d_and_pixel_scales(
-            array_2d=kernel_rescaled, pixel_scales=pixel_scales, renormalize=renormalize
+        return Kernel.manual(
+            array=kernel_rescaled, pixel_scales=pixel_scales, renormalize=renormalize
         )
+
+    @property
+    def in_2d(self):
+        return self.mask.mapping.sub_array_2d_from_sub_array_1d(sub_array_1d=self)
 
     @property
     def renormalized(self):
