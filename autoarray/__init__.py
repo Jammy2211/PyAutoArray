@@ -1,6 +1,6 @@
 from autoarray.mask.mask import Mask as mask
 from autoarray.structures.arrays import Array as array
-from autoarray.structures.grids import grid, grid_uniform
+from autoarray.structures.grids import Grid as grid
 from autoarray.mask.mapping import Mapping
 from autoarray.mask.geometry import Geometry
 from autoarray.mask.regions import Regions, Regions

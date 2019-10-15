@@ -82,8 +82,8 @@ class Geometry(object):
         This is defined from the top-left corner, such that the first pixel at location [0, 0] will have a negative x \
         value y value in arc seconds.
         """
-        grid_1d = grid_util.grid_1d_from_shape_pixel_scales_sub_size_and_origin(
-            shape=self.mask.shape,
+        grid_1d = grid_util.grid_1d_from_shape_2d_pixel_scales_sub_size_and_origin(
+            shape_2d=self.mask.shape,
             pixel_scales=self.mask.pixel_scales,
             sub_size=1,
             origin=self.mask.origin,
@@ -155,7 +155,7 @@ class Geometry(object):
         """
         grid_pixel_centres_1d = grid_util.grid_pixel_centres_1d_from_grid_arcsec_1d_shape_and_pixel_scales(
             grid_arcsec_1d=grid_arcsec_1d,
-            shape=self.mask.shape,
+            shape_2d=self.mask.shape,
             pixel_scales=self.mask.pixel_scales,
             origin=self.mask.origin,
         ).astype(
