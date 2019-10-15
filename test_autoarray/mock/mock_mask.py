@@ -1,10 +1,11 @@
 import numpy as np
 
 import autoarray as aa
+from autoarray.mask import geometry, mapping, regions
 from autoarray import exc
 
 
-class MockScaledMask(aa.Mask):
+class MockMask(aa.Mask):
     def __new__(
         cls,
         mask_2d,
@@ -21,12 +22,14 @@ class MockScaledMask(aa.Mask):
         obj.sub_length = int(obj.sub_size ** 2.0)
         obj.sub_fraction = 1.0 / obj.sub_length
         obj.origin = origin
-
+        obj.mapping = mapping.Mapping(mask=obj)
+        obj.geometry = geometry.Geometry(mask=obj)
+        obj.regions = regions.Regions(mask=obj)
         return obj
 
     def __init__(
         self,
-        array_2d,
+        mask_2d,
         pixel_scales=(1.0, 1.0),
         sub_size=1,
         origin=(0.0, 0.0),
@@ -52,7 +55,7 @@ class MockScaledMask(aa.Mask):
             self, kernel_shape
         )
 
-        return MockScaledMask(array_2d=blurring_mask, pixel_scales=self.pixel_scales)
+        return MockMask(mask_2d=blurring_mask, pixel_scales=self.pixel_scales)
 
 
 class MockMask1D(np.ndarray):

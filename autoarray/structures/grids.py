@@ -9,62 +9,6 @@ from autoarray.structures import abstract_structure
 from autoarray.mask import mask as msk
 from autoarray.util import grid_util, array_util, mask_util, binning_util, sparse_util
 
-def grid(grid, pixel_scales, shape_2d=None, sub_size=None, origin=(0.0, 0.0)):
-
-    grid = np.asarray(grid)
-
-    if type(pixel_scales) is float:
-        pixel_scales = (pixel_scales, pixel_scales)
-
-    if len(grid.shape) == 2 and shape_2d is None:
-        raise exc.GridException('A 2D grid cannot be used to set up a Grid class without its 2D shape.')
-
-    if shape_2d is not None and len(shape_2d) != 2:
-        raise exc.GridException('The input shape_2d parameter is not a tuple of type (float, float)')
-
-    if grid.shape[-1] != 2:
-        raise exc.GridException('The final dimension of the input grid is not equal to 2 (e.g. the (y,x) coordinates)')
-
-    if 2 < len(grid.shape) > 3:
-        raise exc.GridException('The dimensions of the input grid array is not 2 or 3')
-
-    if sub_size is None:
-
-        if len(grid.shape) == 3:
-            return Grid.from_grid_2d_and_pixel_scales(grid_2d=grid, pixel_scales=pixel_scales, origin=origin)
-        elif len(grid.shape) == 2:
-            return Grid.from_grid_1d_shape_2d_and_pixel_scales(
-                grid_1d=grid, shape_2d=shape_2d, pixel_scales=pixel_scales, origin=origin)
-
-    elif sub_size is not None:
-
-        if len(grid.shape) == 3:
-            return Grid.from_sub_grid_2d_pixel_scales_and_sub_size(sub_grid_2d=grid, pixel_scales=pixel_scales,
-                                                                   sub_size=sub_size, origin=origin)
-        elif len(grid.shape) == 2:
-            return Grid.from_sub_grid_1d_shape_2d_pixel_scales_and_sub_size(
-                sub_grid_1d=grid, shape_2d=shape_2d, pixel_scales=pixel_scales,
-                sub_size=sub_size, origin=origin)
-
-def grid_uniform(pixel_scales, shape_2d, sub_size=None, origin=(0.0, 0.0)):
-
-    if type(pixel_scales) is float:
-        pixel_scales = (pixel_scales, pixel_scales)
-
-    if sub_size is None:
-
-        grid_1d = grid_util.grid_1d_from_shape_pixel_scales_sub_size_and_origin(
-            shape=shape_2d, pixel_scales=pixel_scales, sub_size=1, origin=origin
-        )
-
-    else:
-
-        grid_1d = grid_util.grid_1d_from_shape_pixel_scales_sub_size_and_origin(
-            shape=shape_2d, pixel_scales=pixel_scales, sub_size=sub_size, origin=origin
-        )
-
-    return grid(grid=grid_1d, shape_2d=shape_2d, pixel_scales=pixel_scales, sub_size=sub_size, origin=origin)
-
 
 class Grid(abstract_structure.AbstractStructure):
 
@@ -198,6 +142,69 @@ class Grid(abstract_structure.AbstractStructure):
             self._sub_border_1d_indexes = obj._sub_border_1d_indexes
 
     @classmethod
+    def from_sub_grid_1d_shape_2d_pixel_scales_and_sub_size(cls, sub_grid_1d, shape_2d, pixel_scales, sub_size, origin=(0.0, 0.0)):
+
+        mask = msk.Mask.unmasked(
+            shape_2d=shape_2d,
+            pixel_scales=pixel_scales,
+            sub_size=sub_size,
+            origin=origin,
+        )
+
+        return mask.mapping.grid_from_sub_grid_1d(sub_grid_1d=sub_grid_1d)
+
+    @classmethod
+    def from_sub_grid_2d_pixel_scales_and_sub_size(cls, sub_grid_2d, pixel_scales, sub_size, origin=(0.0, 0.0)):
+
+        shape = (int(sub_grid_2d.shape[0] / sub_size), int(sub_grid_2d.shape[1] / sub_size))
+
+        mask = msk.Mask.unmasked(
+            shape_2d=shape, pixel_scales=pixel_scales, sub_size=sub_size, origin=origin
+        )
+
+        return mask.mapping.grid_from_sub_grid_2d(sub_grid_2d=sub_grid_2d)
+
+    @classmethod
+    def manual(cls, grid, pixel_scales, shape_2d=None, sub_size=1, origin=(0.0, 0.0)):
+
+        grid = np.asarray(grid)
+
+        if type(pixel_scales) is float:
+            pixel_scales = (pixel_scales, pixel_scales)
+
+        if len(grid.shape) == 2 and shape_2d is None:
+            raise exc.GridException('A 2D grid cannot be used to set up a Grid class without its 2D shape.')
+
+        if shape_2d is not None and len(shape_2d) != 2:
+            raise exc.GridException('The input shape_2d parameter is not a tuple of type (float, float)')
+
+        if grid.shape[-1] != 2:
+            raise exc.GridException('The final dimension of the input grid is not equal to 2 (e.g. the (y,x) coordinates)')
+
+        if 2 < len(grid.shape) > 3:
+            raise exc.GridException('The dimensions of the input grid array is not 2 or 3')
+
+        if len(grid.shape) == 3:
+            return Grid.from_sub_grid_2d_pixel_scales_and_sub_size(sub_grid_2d=grid, pixel_scales=pixel_scales,
+                                                                   sub_size=sub_size, origin=origin)
+        elif len(grid.shape) == 2:
+            return Grid.from_sub_grid_1d_shape_2d_pixel_scales_and_sub_size(
+                sub_grid_1d=grid, shape_2d=shape_2d, pixel_scales=pixel_scales,
+                sub_size=sub_size, origin=origin)
+
+    @classmethod
+    def uniform(cls, pixel_scales, shape_2d, sub_size=1, origin=(0.0, 0.0)):
+
+        if type(pixel_scales) is float:
+            pixel_scales = (pixel_scales, pixel_scales)
+
+        grid_1d = grid_util.grid_1d_from_shape_2d_pixel_scales_sub_size_and_origin(
+            shape_2d=shape_2d, pixel_scales=pixel_scales, sub_size=sub_size, origin=origin
+        )
+
+        return cls.manual(grid=grid_1d, shape_2d=shape_2d, pixel_scales=pixel_scales, sub_size=sub_size, origin=origin)
+
+    @classmethod
     def from_mask(cls, mask):
         """Setup a sub-grid of the unmasked pixels, using a mask and a specified sub-grid size. The center of \
         every unmasked pixel's sub-pixels give the grid's (y,x) arc-second coordinates.
@@ -211,33 +218,10 @@ class Grid(abstract_structure.AbstractStructure):
         """
 
         sub_grid_1d = grid_util.grid_1d_from_mask_pixel_scales_sub_size_and_origin(
-            mask=mask, pixel_scales=mask.geometry.pixel_scales, sub_size=mask.sub_size
+            mask=mask, pixel_scales=mask.pixel_scales, sub_size=mask.sub_size, origin=mask.origin
         )
 
         return Grid(grid_1d=sub_grid_1d, mask=mask)
-
-    @classmethod
-    def from_sub_grid_1d_shape_2d_pixel_scales_and_sub_size(cls, sub_grid_1d, shape_2d, pixel_scales, sub_size, origin=(0.0, 0.0)):
-
-        mask = msk.Mask.unmasked_from_shape(
-            shape=shape_2d,
-            pixel_scales=pixel_scales,
-            sub_size=sub_size,
-            origin=origin,
-        )
-
-        return mask.mapping.grid_from_sub_grid_1d(sub_grid_1d=sub_grid_1d)
-
-    @classmethod
-    def from_sub_grid_2d_pixel_scales_and_sub_size(cls, sub_grid_2d, pixel_scales, sub_size, origin=(0.0, 0.0)):
-
-        shape = (sub_grid_2d.shape[0] / sub_size, sub_grid_2d.shape[1] / sub_size)
-
-        mask = msk.Mask.unmasked_from_shape(
-            shape=shape, pixel_scales=pixel_scales, sub_size=sub_size, origin=origin
-        )
-
-        return mask.mapping.grid_from_sub_grid_2d(sub_grid_2d=sub_grid_2d)
 
     @classmethod
     def from_sub_grid_2d_and_mask(cls, sub_grid_2d, mask):
@@ -427,9 +411,9 @@ class Grid(abstract_structure.AbstractStructure):
 
         padded_shape = (shape[0] + kernel_shape[0] - 1, shape[1] + kernel_shape[1] - 1)
 
-        padded_mask = msk.Mask.unmasked_from_shape(
-            shape=padded_shape,
-            pixel_scales=self.mask.geometry.pixel_scales,
+        padded_mask = msk.Mask.unmasked(
+            shape_2d=padded_shape,
+            pixel_scales=self.mask.pixel_scales,
             sub_size=self.mask.sub_size,
         )
 
@@ -544,9 +528,9 @@ class BinnedGrid(Grid):
     @classmethod
     def from_mask_and_pixel_scale_binned_grid(cls, mask, pixel_scale_binned_grid):
 
-        if pixel_scale_binned_grid > mask.geometry.pixel_scale:
+        if pixel_scale_binned_grid > mask.pixel_scale:
 
-            bin_up_factor = int(pixel_scale_binned_grid / mask.geometry.pixel_scale)
+            bin_up_factor = int(pixel_scale_binned_grid / mask.pixel_scale)
 
         else:
 
@@ -555,6 +539,8 @@ class BinnedGrid(Grid):
         binned_mask = mask.mapping.binned_mask_from_bin_up_factor(
             bin_up_factor=bin_up_factor
         )
+
+        binned_mask = binned_mask.mapping.mask_sub_1_from_mask(mask=binned_mask)
 
         binned_grid = Grid.from_mask(mask=binned_mask)
         binned_mask_1d_index_to_mask_1d_indexes, binned_mask_1d_index_to_mask_1d_sizes = binning_util.masked_array_1d_for_binned_masked_array_1d_all_from_mask_2d_and_bin_up_factor(
@@ -673,7 +659,7 @@ class SparseToGrid(object):
             The grid of (y,x) arc-second coordinates at the centre of every image value (e.g. image-pixels).
         """
 
-        pixel_scale = grid.mask.geometry.pixel_scale
+        pixel_scale = grid.mask.pixel_scale
 
         pixel_scales = (
             (grid.shape_arcsec[0] + pixel_scale) / (unmasked_sparse_shape[0]),
@@ -682,8 +668,8 @@ class SparseToGrid(object):
 
         origin = grid.geometry.mask_centre
 
-        unmasked_sparse_grid_1d = grid_util.grid_1d_from_shape_pixel_scales_sub_size_and_origin(
-            shape=unmasked_sparse_shape,
+        unmasked_sparse_grid_1d = grid_util.grid_1d_from_shape_2d_pixel_scales_sub_size_and_origin(
+            shape_2d=unmasked_sparse_shape,
             pixel_scales=pixel_scales,
             sub_size=1,
             origin=origin,
@@ -691,8 +677,8 @@ class SparseToGrid(object):
 
         unmasked_sparse_grid_pixel_centres = grid_util.grid_pixel_centres_1d_from_grid_arcsec_1d_shape_and_pixel_scales(
             grid_arcsec_1d=unmasked_sparse_grid_1d,
-            shape=grid.mask.shape,
-            pixel_scales=grid.mask.geometry.pixel_scales,
+            shape_2d=grid.mask.shape,
+            pixel_scales=grid.mask.pixel_scales,
         ).astype(
             "int"
         )
@@ -815,7 +801,7 @@ class Interpolator(object):
         cls, mask, grid, pixel_scale_interpolation_grid
     ):
 
-        rescale_factor = mask.geometry.pixel_scale / pixel_scale_interpolation_grid
+        rescale_factor = mask.pixel_scale / pixel_scale_interpolation_grid
 
         rescaled_mask = mask_util.rescaledmask_from_mask_2d_and_rescale_factor(
             mask_2d=mask, rescale_factor=rescale_factor

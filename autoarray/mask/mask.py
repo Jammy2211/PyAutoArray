@@ -9,6 +9,7 @@ from autoarray.util import array_util, binning_util, mask_util
 logging.basicConfig()
 logger = logging.getLogger(__name__)
 
+
 class Mask(np.ndarray):
 
     # noinspection PyUnusedLocal

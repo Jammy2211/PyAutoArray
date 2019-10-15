@@ -259,8 +259,8 @@ class TestGrids:
         ).all()
 
     def test__unmasked_grid_1d__compare_to_array_util(self):
-        grid_1d_util = aa.grid_util.grid_1d_from_shape_pixel_scales_sub_size_and_origin(
-            shape=(4,7), pixel_scales=(0.56, 0.56), sub_size=1,
+        grid_1d_util = aa.grid_util.grid_1d_from_shape_2d_pixel_scales_sub_size_and_origin(
+            shape_2d=(4, 7), pixel_scales=(0.56, 0.56), sub_size=1,
         )
 
         mask = aa.mask(
@@ -269,8 +269,8 @@ class TestGrids:
 
         assert mask.geometry.unmasked_grid.in_1d == pytest.approx(grid_1d_util, 1e-4)
 
-        grid_1d_util = aa.grid_util.grid_1d_from_shape_pixel_scales_sub_size_and_origin(
-            shape=(4,7), pixel_scales=(0.8, 0.56), sub_size=1,
+        grid_1d_util = aa.grid_util.grid_1d_from_shape_2d_pixel_scales_sub_size_and_origin(
+            shape_2d=(4, 7), pixel_scales=(0.8, 0.56), sub_size=1,
         )
 
         mask = aa.mask(
@@ -291,8 +291,8 @@ class TestGrids:
 
         assert mask.geometry.unmasked_grid.in_2d == pytest.approx(grid_2d_util, 1e-4)
 
-        grid_1d_util = aa.grid_util.grid_1d_from_shape_pixel_scales_sub_size_and_origin(
-           shape=(4,7), pixel_scales=(0.56, 0.56), origin=(-1.0, -4.0), sub_size=1,
+        grid_1d_util = aa.grid_util.grid_1d_from_shape_2d_pixel_scales_sub_size_and_origin(
+           shape_2d=(4, 7), pixel_scales=(0.56, 0.56), origin=(-1.0, -4.0), sub_size=1,
         )
 
         mask = aa.mask(
@@ -311,8 +311,8 @@ class TestGrids:
 
         assert mask.geometry.unmasked_grid.in_2d == pytest.approx(grid_2d_util, 1e-4)
 
-        grid_1d_util = aa.grid_util.grid_1d_from_shape_pixel_scales_sub_size_and_origin(
-            shape=(4,7), pixel_scales=(0.8, 0.56), origin=(-1.0, -4.0), sub_size=1,
+        grid_1d_util = aa.grid_util.grid_1d_from_shape_2d_pixel_scales_sub_size_and_origin(
+            shape_2d=(4, 7), pixel_scales=(0.8, 0.56), origin=(-1.0, -4.0), sub_size=1,
         )
 
         mask = aa.mask(
@@ -835,7 +835,7 @@ class TestGridConversions:
         )
 
         grid_pixels_util = aa.grid_util.grid_pixel_centres_1d_from_grid_arcsec_1d_shape_and_pixel_scales(
-            grid_arcsec_1d=grid_arcsec_1d, shape=(2, 2), pixel_scales=(2.0, 2.0)
+            grid_arcsec_1d=grid_arcsec_1d, shape_2d=(2, 2), pixel_scales=(2.0, 2.0)
         )
 
         grid_pixels = mask.geometry.grid_pixel_centres_from_grid_arcsec_1d(
@@ -853,7 +853,7 @@ class TestGridConversions:
         )
 
         grid_pixels_util = aa.grid_util.grid_pixel_centres_1d_from_grid_arcsec_1d_shape_and_pixel_scales(
-            grid_arcsec_1d=grid_arcsec_1d, shape=(2, 2), pixel_scales=(7.0, 2.0)
+            grid_arcsec_1d=grid_arcsec_1d, shape_2d=(2, 2), pixel_scales=(7.0, 2.0)
         )
 
         grid_pixels = mask.geometry.grid_pixel_centres_from_grid_arcsec_1d(
@@ -962,7 +962,7 @@ class TestGridConversions:
 
         grid_pixels_util = aa.grid_util.grid_pixel_centres_1d_from_grid_arcsec_1d_shape_and_pixel_scales(
             grid_arcsec_1d=grid_arcsec,
-            shape=(2, 2),
+            shape_2d=(2, 2),
             pixel_scales=(2.0, 2.0),
             origin=(1.0, 2.0),
         )
@@ -1016,7 +1016,7 @@ class TestGridConversions:
 
         grid_pixels_util = aa.grid_util.grid_pixel_centres_1d_from_grid_arcsec_1d_shape_and_pixel_scales(
             grid_arcsec_1d=grid_arcsec,
-            shape=(2, 2),
+            shape_2d=(2, 2),
             pixel_scales=(2.0, 1.0),
             origin=(1.0, 2.0),
         )
