@@ -11,64 +11,7 @@ logging.basicConfig()
 logger = logging.getLogger(__name__)
 
 
-def array(array, shape_2d=None, pixel_scales=None, sub_size=None, origin=(0.0, 0.0)):
-
-    array = np.asarray(array)
-
-    if type(pixel_scales) is float:
-        pixel_scales = (pixel_scales, pixel_scales)
-
-    if len(array.shape) == 1 and shape_2d is None:
-        raise exc.ArrayException('A 1D array cannot be used to set up an Array class without its 2D shape.')
-
-    if shape_2d is not None and len(shape_2d) != 2:
-        raise exc.ArrayException('The input shape_2d parameter is not a tuple of type (float, float)')
-
-    if pixel_scales is None and sub_size is None:
-        
-        if len(array.shape) == 2:
-            return Array.from_array_2d(array_2d=array)
-        elif len(array.shape) == 1:
-            return Array.from_array_1d_and_shape_2d(array_1d=array, shape_2d=shape_2d)
-
-    elif pixel_scales is not None and sub_size is None:
-        
-        if len(array.shape) == 2:
-            return ScaledArray.from_array_2d_and_pixel_scales(array_2d=array, pixel_scales=pixel_scales, origin=origin)
-        elif len(array.shape) == 1:
-            return ScaledArray.from_array_1d_shape_2d_and_pixel_scales(array_1d=array, shape_2d=shape_2d, pixel_scales=pixel_scales, origin=origin)
-
-    elif pixel_scales is not None and sub_size is not None:
-
-        if len(array.shape) == 2:
-            return ScaledSubArray.from_sub_array_2d_pixel_scales_and_sub_size(sub_array_2d=array, pixel_scales=pixel_scales, sub_size=sub_size, origin=origin)
-        elif len(array.shape) == 1:
-            return ScaledSubArray.from_sub_array_1d_shape_2d_pixel_scales_and_sub_size(sub_array_1d=array, shape_2d=shape_2d,
-                                                                                       pixel_scales=pixel_scales, sub_size=sub_size, origin=origin)
-
-
-def full(fill_value, shape_2d, pixel_scales=None, sub_size=None, origin=(0.0, 0.0)):
-
-    if sub_size is not None:
-        shape_2d = (shape_2d[0] * sub_size, shape_2d[1] * sub_size)
-
-    return array(array=np.full(fill_value=fill_value, shape=shape_2d), pixel_scales=pixel_scales, sub_size=sub_size, origin=origin)
-
-
-def ones(shape_2d, pixel_scales=None, sub_size=None, origin=(0.0, 0.0)):
-    return full(fill_value=1.0, shape_2d=shape_2d, pixel_scales=pixel_scales, sub_size=sub_size, origin=origin)
-
-
-def zeros(shape_2d, pixel_scales=None, sub_size=None, origin=(0.0, 0.0)):
-    return full(fill_value=0.0, shape_2d=shape_2d, pixel_scales=pixel_scales, sub_size=sub_size, origin=origin)
-
-
-def array_from_fits(file_path, hdu, pixel_scales=None, sub_size=None, origin=(0.0, 0.0)):
-    array_2d = array_util.numpy_array_2d_from_fits(file_path=file_path, hdu=hdu)
-    return array(array=array_2d,  pixel_scales=pixel_scales, sub_size=sub_size, origin=origin)
-
-
-class AbstractArray(abstract_structure.AbstractStructure):
+class Array(abstract_structure.AbstractStructure):
 
     # noinspection PyUnusedLocal
     def __new__(cls, array_1d, mask, *args, **kwargs):
@@ -83,7 +26,7 @@ class AbstractArray(abstract_structure.AbstractStructure):
         origin : (float, float)
             The arc-second origin of the hyper array's coordinate system.
         """
-        obj = super(AbstractArray, cls).__new__(cls=cls, structure_1d=array_1d, mask=mask)
+        obj = super(Array, cls).__new__(cls=cls, structure_1d=array_1d, mask=mask)
         return obj
 
     def new_with_array(self, array):
@@ -95,7 +38,7 @@ class AbstractArray(abstract_structure.AbstractStructure):
 
         Returns
         -------
-        new_array: ScaledArray
+        new_array: Array
             A new instance of this class that shares all of this instances attributes with a new ndarray.
         """
         arguments = vars(self)
@@ -104,7 +47,7 @@ class AbstractArray(abstract_structure.AbstractStructure):
 
     def __reduce__(self):
         # Get the parent's __reduce__ tuple
-        pickled_state = super(AbstractArray, self).__reduce__()
+        pickled_state = super(Array, self).__reduce__()
         # Create our own tuple to pass to __setstate__
         class_dict = {}
         for key, value in self.__dict__.items():
@@ -118,21 +61,87 @@ class AbstractArray(abstract_structure.AbstractStructure):
 
         for key, value in state[-1].items():
             setattr(self, key, value)
-        super(AbstractArray, self).__setstate__(state[0:-1])
+        super(Array, self).__setstate__(state[0:-1])
 
     def __array_wrap__(self, out_arr, context=None):
         return np.ndarray.__array_wrap__(self, out_arr, context)
 
     def __eq__(self, other):
-        super_result = super(AbstractArray, self).__eq__(other)
+        super_result = super(Array, self).__eq__(other)
         try:
             return super_result.all()
         except AttributeError:
             return super_result
 
-    @property
-    def in_2d(self):
-        return self.mask.mapping.array_2d_from_array_1d(array_1d=self)
+    @classmethod
+    def from_sub_array_1d_shape_2d_pixel_scales_and_sub_size(cls, sub_array_1d, shape_2d, pixel_scales, sub_size, origin=(0.0, 0.0)):
+
+        mask = msk.Mask.unmasked(
+            shape_2d=shape_2d,
+            pixel_scales=pixel_scales,
+            sub_size=sub_size,
+            origin=origin,
+        )
+
+        return mask.mapping.array_from_sub_array_1d(sub_array_1d=sub_array_1d)
+
+    @classmethod
+    def from_sub_array_2d_pixel_scales_and_sub_size(cls, sub_array_2d, pixel_scales, sub_size, origin=(0.0, 0.0)):
+
+        shape_2d = (int(sub_array_2d.shape[0] / sub_size), int(sub_array_2d.shape[1] / sub_size))
+
+        mask = msk.Mask.unmasked(
+            shape_2d=shape_2d, pixel_scales=pixel_scales, sub_size=sub_size, origin=origin
+        )
+
+        return mask.mapping.array_from_sub_array_2d(sub_array_2d=sub_array_2d)
+
+    @classmethod
+    def manual(cls, array, shape_2d=None, pixel_scales=None, sub_size=1, origin=(0.0, 0.0)):
+
+        array = np.asarray(array)
+
+        if type(pixel_scales) is float:
+            pixel_scales = (pixel_scales, pixel_scales)
+
+        if len(array.shape) == 1 and shape_2d is None:
+            raise exc.ArrayException('A 1D array cannot be used to set up an Array class without its 2D shape.')
+
+        if shape_2d is not None and len(shape_2d) != 2:
+            raise exc.ArrayException('The input shape_2d parameter is not a tuple of type (float, float)')
+
+        if len(array.shape) == 2:
+            return Array.from_sub_array_2d_pixel_scales_and_sub_size(sub_array_2d=array, pixel_scales=pixel_scales,
+                                                                     sub_size=sub_size, origin=origin)
+        elif len(array.shape) == 1:
+            return Array.from_sub_array_1d_shape_2d_pixel_scales_and_sub_size(sub_array_1d=array, shape_2d=shape_2d,
+                                                                              pixel_scales=pixel_scales,
+                                                                              sub_size=sub_size, origin=origin)
+
+    @classmethod
+    def full(cls, fill_value, shape_2d, pixel_scales=None, sub_size=1, origin=(0.0, 0.0)):
+
+        if sub_size is not None:
+            shape_2d = (shape_2d[0] * sub_size, shape_2d[1] * sub_size)
+
+        return cls.manual(array=np.full(fill_value=fill_value, shape=shape_2d), pixel_scales=pixel_scales, sub_size=sub_size, origin=origin)
+
+    @classmethod
+    def ones(cls, shape_2d, pixel_scales=None, sub_size=1, origin=(0.0, 0.0)):
+        return cls.full(fill_value=1.0, shape_2d=shape_2d, pixel_scales=pixel_scales, sub_size=sub_size, origin=origin)
+
+    @classmethod
+    def zeros(cls, shape_2d, pixel_scales=None, sub_size=1, origin=(0.0, 0.0)):
+        return cls.full(fill_value=0.0, shape_2d=shape_2d, pixel_scales=pixel_scales, sub_size=sub_size, origin=origin)
+
+    @classmethod
+    def from_fits(cls, file_path, hdu, pixel_scales=None, sub_size=1, origin=(0.0, 0.0)):
+        array_2d = array_util.numpy_array_2d_from_fits(file_path=file_path, hdu=hdu)
+        return cls.manual(array=array_2d,  pixel_scales=pixel_scales, sub_size=sub_size, origin=origin)
+
+    @classmethod
+    def from_sub_array_2d_and_mask(cls, sub_array_2d, mask):
+        return mask.mapping.array_from_sub_array_2d(sub_array_2d=sub_array_2d)
 
     def map(self, func):
         for y in range(self.shape[0]):
@@ -243,22 +252,7 @@ class AbstractArray(abstract_structure.AbstractStructure):
                 "[mean | quadrature | sum]"
             )
 
-
-class Array(AbstractArray):
-
-    @classmethod
-    def from_array_1d_and_shape_2d(cls, array_1d, shape_2d):
-
-        mask = msk.Mask.unmasked_from_shape(
-            shape=shape_2d,
-        )
-
-        return Array(array_1d=array_1d, mask=mask)
-
-    @classmethod
-    def from_array_2d(cls, array_2d):
-
-        mask = msk.Mask.unmasked_from_shape(
+        mask = msk.Mask.unmasked(
             shape=array_2d.shape,
         )
 
@@ -267,64 +261,6 @@ class Array(AbstractArray):
         )
 
         return Array(array_1d=array_1d, mask=mask)
-
-
-class ScaledArray(AbstractArray):
-
-    @classmethod
-    def from_array_1d_shape_2d_and_pixel_scales(cls, array_1d, shape_2d, pixel_scales, origin=(0.0, 0.0)):
-
-        mask = msk.ScaledMask.unmasked_from_shape(
-            shape=shape_2d, pixel_scales=pixel_scales, origin=origin
-        )
-
-        return ScaledArray(array_1d=array_1d, mask=mask)
-
-    @classmethod
-    def from_array_2d_and_pixel_scales(cls, array_2d, pixel_scales, origin=(0.0, 0.0)):
-
-        mask = msk.ScaledMask.unmasked_from_shape(
-            shape=array_2d.shape, pixel_scales=pixel_scales, origin=origin
-        )
-
-        array_1d = array_util.sub_array_1d_from_sub_array_2d_mask_and_sub_size(
-            mask=mask, sub_array_2d=array_2d, sub_size=1
-        )
-
-        return cls(array_1d=array_1d, mask=mask)
-
-
-class ScaledSubArray(AbstractArray):
-    """
-    Class storing the grid_stacks for 2D pixel grid_stacks (e.g. image, PSF, signal_to_noise_ratio).
-    """
-
-    @classmethod
-    def from_sub_array_1d_shape_2d_pixel_scales_and_sub_size(cls, sub_array_1d, shape_2d, pixel_scales, sub_size, origin=(0.0, 0.0)):
-
-        mask = msk.ScaledSubMask.unmasked_from_shape(
-            shape=shape_2d,
-            pixel_scales=pixel_scales,
-            sub_size=sub_size,
-            origin=origin,
-        )
-
-        return mask.mapping.array_from_sub_array_1d(sub_array_1d=sub_array_1d)
-
-    @classmethod
-    def from_sub_array_2d_pixel_scales_and_sub_size(cls, sub_array_2d, pixel_scales, sub_size, origin=(0.0, 0.0)):
-
-        shape = (sub_array_2d.shape[0] / sub_size, sub_array_2d.shape[1] / sub_size)
-
-        mask = msk.ScaledSubMask.unmasked_from_shape(
-            shape=shape, pixel_scales=pixel_scales, sub_size=sub_size, origin=origin
-        )
-
-        return mask.mapping.array_from_sub_array_2d(sub_array_2d=sub_array_2d)
-
-    @classmethod
-    def from_sub_array_2d_and_mask(cls, sub_array_2d, mask):
-        return mask.mapping.array_from_sub_array_2d(sub_array_2d=sub_array_2d)
 
     @property
     def in_2d(self):

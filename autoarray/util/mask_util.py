@@ -128,8 +128,8 @@ def total_sparse_pixels_from_mask(mask, unmasked_sparse_grid_pixel_centres):
 
 
 @decorator_util.jit()
-def mask_circular_from_shape_pixel_scales_and_radius(
-    shape, pixel_scales, radius_arcsec, centre=(0.0, 0.0)
+def mask_circular_from_shape_2d_pixel_scales_and_radius(
+    shape_2d, pixel_scales, radius_arcsec, centre=(0.0, 0.0)
 ):
     """Compute a circular mask from the 2D mask array shape and radius of the circle.
 
@@ -137,7 +137,7 @@ def mask_circular_from_shape_pixel_scales_and_radius(
 
     Parameters
      ----------
-    shape: (int, int)
+    shape_2d: (int, int)
         The (y,x) shape of the mask in units of pixels.
     pixel_scale: float
         The arc-second to pixel conversion factor of each pixel.
@@ -157,7 +157,7 @@ def mask_circular_from_shape_pixel_scales_and_radius(
         shape=(10, 10), pixel_scale=0.1, radius_arcsec=0.5, centre=(0.0, 0.0))
     """
 
-    mask = np.full(shape, True)
+    mask = np.full(shape_2d, True)
 
     centres_arcsec = mask_centres_from_shape_pixel_scale_and_centre(
         shape=mask.shape, pixel_scales=pixel_scales, centre=centre
@@ -178,8 +178,8 @@ def mask_circular_from_shape_pixel_scales_and_radius(
 
 
 @decorator_util.jit()
-def mask_circular_annular_from_shape_pixel_scales_and_radii(
-    shape, pixel_scales, inner_radius_arcsec, outer_radius_arcsec, centre=(0.0, 0.0)
+def mask_circular_annular_from_shape_2d_pixel_scales_and_radii(
+    shape_2d, pixel_scales, inner_radius_arcsec, outer_radius_arcsec, centre=(0.0, 0.0)
 ):
     """Compute an annular mask from an input inner and outer mask radius and shape.
 
@@ -187,7 +187,7 @@ def mask_circular_annular_from_shape_pixel_scales_and_radii(
 
     Parameters
      ----------
-    shape : (int, int)
+    shape_2d : (int, int)
         The (y,x) shape of the mask in units of pixels.
     pixel_scales : (float, float)
         The arc-second to pixel conversion factor of each pixel.
@@ -209,7 +209,7 @@ def mask_circular_annular_from_shape_pixel_scales_and_radii(
         shape=(10, 10), pixel_scale=0.1, inner_radius_arcsec=0.5, outer_radius_arcsec=1.5, centre=(0.0, 0.0))
     """
 
-    mask = np.full(shape, True)
+    mask = np.full(shape_2d, True)
 
     centres_arcsec = mask_centres_from_shape_pixel_scale_and_centre(
         shape=mask.shape, pixel_scales=pixel_scales, centre=centre
@@ -230,8 +230,8 @@ def mask_circular_annular_from_shape_pixel_scales_and_radii(
 
 
 @decorator_util.jit()
-def mask_circular_anti_annular_from_shape_pixel_scales_and_radii(
-    shape,
+def mask_circular_anti_annular_from_shape_2d_pixel_scales_and_radii(
+    shape_2d,
     pixel_scales,
     inner_radius_arcsec,
     outer_radius_arcsec,
@@ -240,7 +240,7 @@ def mask_circular_anti_annular_from_shape_pixel_scales_and_radii(
 ):
     """Compute an annular mask from an input inner and outer mask radius and shape."""
 
-    mask = np.full(shape, True)
+    mask = np.full(shape_2d, True)
 
     centres_arcsec = mask_centres_from_shape_pixel_scale_and_centre(
         shape=mask.shape, pixel_scales=pixel_scales, centre=centre
@@ -278,8 +278,8 @@ def elliptical_radius_from_y_x_phi_and_axis_ratio(y_arcsec, x_arcsec, phi, axis_
 
 
 @decorator_util.jit()
-def mask_elliptical_from_shape_pixel_scales_and_radius(
-    shape, pixel_scales, major_axis_radius_arcsec, axis_ratio, phi, centre=(0.0, 0.0)
+def mask_elliptical_from_shape_2d_pixel_scales_and_radius(
+    shape_2d, pixel_scales, major_axis_radius_arcsec, axis_ratio, phi, centre=(0.0, 0.0)
 ):
     """Compute an elliptical mask from an input major-axis mask radius, axis-ratio, rotational angle phi, shape and \
     centre.
@@ -288,7 +288,7 @@ def mask_elliptical_from_shape_pixel_scales_and_radius(
 
     Parameters
      ----------
-    shape: (int, int)
+    shape_2d: (int, int)
         The (y,x) shape of the mask in units of pixels.
     pixel_scales : (float, float)
         The arc-second to pixel conversion factor of each pixel.
@@ -313,7 +313,7 @@ def mask_elliptical_from_shape_pixel_scales_and_radius(
         shape=(10, 10), pixel_scale=0.1, major_axis_radius_arcsec=0.5, axis_ratio=0.5, phi=45.0, centre=(0.0, 0.0))
     """
 
-    mask = np.full(shape, True)
+    mask = np.full(shape_2d, True)
 
     centres_arcsec = mask_centres_from_shape_pixel_scale_and_centre(
         shape=mask.shape, pixel_scales=pixel_scales, centre=centre
@@ -336,8 +336,8 @@ def mask_elliptical_from_shape_pixel_scales_and_radius(
 
 
 @decorator_util.jit()
-def mask_elliptical_annular_from_shape_pixel_scales_and_radius(
-    shape,
+def mask_elliptical_annular_from_shape_2d_pixel_scales_and_radius(
+    shape_2d,
     pixel_scales,
     inner_major_axis_radius_arcsec,
     inner_axis_ratio,
@@ -354,7 +354,7 @@ def mask_elliptical_annular_from_shape_pixel_scales_and_radius(
 
     Parameters
      ----------
-    shape: (int, int)
+    shape_2d: (int, int)
         The (y,x) shape of the mask in units of pixels.
     pixel_scales : (float, float)
         The arc-second to pixel conversion factor of each pixel.
@@ -389,7 +389,7 @@ def mask_elliptical_annular_from_shape_pixel_scales_and_radius(
          centre=(0.0, 0.0))
     """
 
-    mask = np.full(shape, True)
+    mask = np.full(shape_2d, True)
 
     centres_arcsec = mask_centres_from_shape_pixel_scale_and_centre(
         shape=mask.shape, pixel_scales=pixel_scales, centre=centre

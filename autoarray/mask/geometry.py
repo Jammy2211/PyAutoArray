@@ -3,62 +3,37 @@ import numpy as np
 from autoarray import exc
 from autoarray.util import array_util, grid_util
 
-
-
 class Geometry(object):
 
-    def __init__(self, mapping):
+    def __init__(self, mask):
 
-        self.mapping = mapping
-
-    @property
-    def mask(self):
-        return self.mapping.mask
+        self.mask = mask
 
     @property
-    def mask_2d(self):
-        return self.mapping.mask_2d
+    def mapping(self):
+        return self.mask.mapping
 
     @property
     def regions(self):
-        return self.mapping.regions
-
-    @property
-    def shape(self):
-        return self.mapping.mask_2d.shape
+        return self.mask.regions
 
     @property
     def central_pixel_coordinates(self):
-        return float(self.shape[0] - 1) / 2, float(self.shape[1] - 1) / 2
-
-
-class ScaledGeometry(Geometry):
-
-    def __init__(self, mapping):
-
-        super(ScaledGeometry, self).__init__(mapping=mapping)
-
-    @property
-    def pixel_scales(self):
-        return self.mapping.pixel_scales
-
-    @property
-    def pixel_scale(self):
-        return self.mapping.pixel_scale
+        return float(self.mask.shape[0] - 1) / 2, float(self.mask.shape[1] - 1) / 2
 
     @property
     def origin(self):
-        return self.mapping.origin
+        return self.mask.origin
 
     def pixel_coordinates_from_arcsec_coordinates(self, arcsec_coordinates):
         return (
             int(
-                ((-arcsec_coordinates[0] + self.origin[0]) / self.pixel_scales[0])
+                ((-arcsec_coordinates[0] + self.mask.origin[0]) / self.mask.pixel_scales[0])
                 + self.central_pixel_coordinates[0]
                 + 0.5
             ),
             int(
-                ((arcsec_coordinates[1] - self.origin[1]) / self.pixel_scales[1])
+                ((arcsec_coordinates[1] - self.mask.origin[1]) / self.mask.pixel_scales[1])
                 + self.central_pixel_coordinates[1]
                 + 0.5
             ),
@@ -72,22 +47,22 @@ class ScaledGeometry(Geometry):
     @property
     def shape_arcsec(self):
         return (
-            float(self.pixel_scales[0] * self.shape[0]),
-            float(self.pixel_scales[1] * self.shape[1]),
+            float(self.mask.pixel_scales[0] * self.mask.shape[0]),
+            float(self.mask.pixel_scales[1] * self.mask.shape[1]),
         )
 
     @property
     def arc_second_maxima(self):
         return (
-            (self.shape_arcsec[0] / 2.0) + self.origin[0],
-            (self.shape_arcsec[1] / 2.0) + self.origin[1],
+            (self.shape_arcsec[0] / 2.0) + self.mask.origin[0],
+            (self.shape_arcsec[1] / 2.0) + self.mask.origin[1],
         )
 
     @property
     def arc_second_minima(self):
         return (
-            (-(self.shape_arcsec[0] / 2.0)) + self.origin[0],
-            (-(self.shape_arcsec[1] / 2.0)) + self.origin[1],
+            (-(self.shape_arcsec[0] / 2.0)) + self.mask.origin[0],
+            (-(self.shape_arcsec[1] / 2.0)) + self.mask.origin[1],
         )
 
     @property
@@ -108,19 +83,19 @@ class ScaledGeometry(Geometry):
         value y value in arc seconds.
         """
         grid_1d = grid_util.grid_1d_from_shape_pixel_scales_sub_size_and_origin(
-            shape=self.shape,
-            pixel_scales=self.pixel_scales,
+            shape=self.mask.shape,
+            pixel_scales=self.mask.pixel_scales,
             sub_size=1,
-            origin=self.origin,
+            origin=self.mask.origin,
         )
-        return self.mapping.grid_from_grid_1d(grid_1d=grid_1d)
+        return self.mask.mapping.grid_from_grid_1d(grid_1d=grid_1d)
 
     @property
     def masked_grid(self):
         grid_1d = grid_util.grid_1d_from_mask_pixel_scales_sub_size_and_origin(
-            mask=self.mask_2d, pixel_scales=self.pixel_scales, sub_size=1, origin=self.origin
+            mask=self.mask, pixel_scales=self.mask.pixel_scales, sub_size=1, origin=self.mask.origin
         )
-        return self.mapping.grid_from_grid_1d(grid_1d=grid_1d)
+        return self.mask.mapping.grid_from_grid_1d(grid_1d=grid_1d)
 
     @property
     def edge_grid(self):
@@ -157,8 +132,8 @@ class ScaledGeometry(Geometry):
         """
         grid_pixels_1d = grid_util.grid_pixels_1d_from_grid_arcsec_1d_shape_and_pixel_scales(
             grid_arcsec_1d=grid_arcsec_1d,
-            shape=self.mask_2d.shape,
-            pixel_scales=self.mask.geometry.pixel_scales,
+            shape=self.mask.shape,
+            pixel_scales=self.mask.pixel_scales,
             origin=self.mask.origin,
         )
         return grid_arcsec_1d.mask.mapping.grid_from_grid_1d(grid_1d=grid_pixels_1d)
@@ -180,8 +155,8 @@ class ScaledGeometry(Geometry):
         """
         grid_pixel_centres_1d = grid_util.grid_pixel_centres_1d_from_grid_arcsec_1d_shape_and_pixel_scales(
             grid_arcsec_1d=grid_arcsec_1d,
-            shape=self.mask_2d.shape,
-            pixel_scales=self.mask.geometry.pixel_scales,
+            shape=self.mask.shape,
+            pixel_scales=self.mask.pixel_scales,
             origin=self.mask.origin,
         ).astype(
             "int"
@@ -209,8 +184,8 @@ class ScaledGeometry(Geometry):
         """
         grid_pixel_indexes_1d = grid_util.grid_pixel_indexes_1d_from_grid_arcsec_1d_shape_and_pixel_scales(
             grid_arcsec_1d=grid_arcsec_1d,
-            shape=self.mask_2d.shape,
-            pixel_scales=self.mask.geometry.pixel_scales,
+            shape=self.mask.shape,
+            pixel_scales=self.mask.pixel_scales,
             origin=self.mask.origin,
         ).astype(
             "int"
@@ -233,11 +208,52 @@ class ScaledGeometry(Geometry):
         """
         grid_arcsec_1d = grid_util.grid_arcsec_1d_from_grid_pixels_1d_shape_and_pixel_scales(
             grid_pixels_1d=grid_pixels_1d,
-            shape=self.mask_2d.shape,
-            pixel_scales=self.mask.geometry.pixel_scales,
+            shape=self.mask.shape,
+            pixel_scales=self.mask.pixel_scales,
             origin=self.mask.origin,
         )
         return grid_pixels_1d.mask.mapping.grid_from_grid_1d(grid_1d=grid_arcsec_1d)
+
+    @property
+    def sub_size(self):
+        return self.mask.sub_size
+
+    def grid_arcsec_from_grid_pixels_1d_for_marching_squares(
+        self, grid_pixels_1d, shape
+    ):
+
+        grid_arcsec_1d = grid_util.grid_arcsec_1d_from_grid_pixels_1d_shape_and_pixel_scales(
+            grid_pixels_1d=grid_pixels_1d,
+            shape=shape,
+            pixel_scales=(
+                self.mask.pixel_scales[0] / self.mask.sub_size,
+                self.mask.pixel_scales[1] / self.mask.sub_size,
+            ),
+            origin=self.mask.origin,
+        )
+
+        grid_arcsec_1d[:, 0] -= self.mask.pixel_scales[0] / (2.0 * self.mask.sub_size)
+        grid_arcsec_1d[:, 1] += self.mask.pixel_scales[1] / (2.0 * self.mask.sub_size)
+
+        return grid_arcsec_1d
+
+    @property
+    def masked_sub_grid(self):
+        sub_grid_1d = grid_util.grid_1d_from_mask_pixel_scales_sub_size_and_origin(
+            mask=self.mask,
+            pixel_scales=self.mask.pixel_scales,
+            sub_size=self.mask.sub_size,
+            origin=self.mask.origin,
+        )
+        return self.mask.mapping.grid_from_sub_grid_1d(sub_grid_1d=sub_grid_1d)
+
+    @property
+    def sub_border_grid_1d(self):
+        """The indicies of the mask's border pixels, where a border pixel is any unmasked pixel on an
+        exterior edge (e.g. next to at least one pixel with a *True* value but not central pixels like those within \
+        an annulus mask).
+        """
+        return self.masked_sub_grid[self.mask.regions._sub_border_1d_indexes]
 
     @property
     def _zoom_offset_pixels(self):
@@ -249,7 +265,7 @@ class ScaledGeometry(Geometry):
     @property
     def _zoom_centre(self):
 
-        extraction_grid_1d = self.mapping.geometry.grid_pixels_from_grid_arcsec(
+        extraction_grid_1d = self.mask.geometry.grid_pixels_from_grid_arcsec(
             grid_arcsec_1d=self.masked_grid.in_1d
         )
         y_pixels_max = np.max(extraction_grid_1d[:, 0])
@@ -264,8 +280,8 @@ class ScaledGeometry(Geometry):
     @property
     def _zoom_offset_arcsec(self):
         return (
-            -self.pixel_scales * self._zoom_offset_pixels[0],
-            self.pixel_scales * self._zoom_offset_pixels[1],
+            -self.mask.pixel_scales * self._zoom_offset_pixels[0],
+            self.mask.pixel_scales * self._zoom_offset_pixels[1],
         )
 
     @property
@@ -276,7 +292,7 @@ class ScaledGeometry(Geometry):
         This is used to zoom in on the region of an image that is used in an analysis for visualization."""
 
         # Have to convert mask to bool for invert function to work.
-        where = np.array(np.where(np.invert(self.mask_2d.astype("bool"))))
+        where = np.array(np.where(np.invert(self.mask.astype("bool"))))
         y0, x0 = np.amin(where, axis=1)
         y1, x1 = np.amax(where, axis=1)
 
@@ -293,51 +309,3 @@ class ScaledGeometry(Geometry):
             y0 -= int(length_difference / 2.0)
 
         return [y0, y1 + 1, x0, x1 + 1]
-
-
-class ScaledSubGeometry(ScaledGeometry):
-
-    def __init__(self, mapping):
-
-        super(ScaledSubGeometry, self).__init__(mapping=mapping)
-
-    @property
-    def sub_size(self):
-        return self.mapping.sub_size
-
-    def grid_arcsec_from_grid_pixels_1d_for_marching_squares(
-        self, grid_pixels_1d, shape
-    ):
-
-        grid_arcsec_1d = grid_util.grid_arcsec_1d_from_grid_pixels_1d_shape_and_pixel_scales(
-            grid_pixels_1d=grid_pixels_1d,
-            shape=shape,
-            pixel_scales=(
-                self.mask.geometry.pixel_scales[0] / self.sub_size,
-                self.mask.geometry.pixel_scales[1] / self.sub_size,
-            ),
-            origin=self.mask.origin,
-        )
-
-        grid_arcsec_1d[:, 0] -= self.mask.geometry.pixel_scales[0] / (2.0 * self.sub_size)
-        grid_arcsec_1d[:, 1] += self.mask.geometry.pixel_scales[1] / (2.0 * self.sub_size)
-
-        return grid_arcsec_1d
-
-    @property
-    def masked_sub_grid(self):
-        sub_grid_1d = grid_util.grid_1d_from_mask_pixel_scales_sub_size_and_origin(
-            mask=self.mask_2d,
-            pixel_scales=self.pixel_scales,
-            sub_size=self.sub_size,
-            origin=self.origin,
-        )
-        return self.mapping.grid_from_sub_grid_1d(sub_grid_1d=sub_grid_1d)
-
-    @property
-    def sub_border_grid_1d(self):
-        """The indicies of the mask's border pixels, where a border pixel is any unmasked pixel on an
-        exterior edge (e.g. next to at least one pixel with a *True* value but not central pixels like those within \
-        an annulus mask).
-        """
-        return self.masked_sub_grid[self.mapping.regions._sub_border_1d_indexes]

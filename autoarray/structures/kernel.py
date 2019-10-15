@@ -11,7 +11,7 @@ import numpy as np
 from autoarray.structures import arrays
 from autoarray import exc
 
-class Kernel(arrays.ScaledArray):
+class Kernel(arrays.Array):
 
     # noinspection PyUnusedLocal
     def __new__(cls, array_1d, mask, renormalize=False, *args, **kwargs):
@@ -39,7 +39,7 @@ class Kernel(arrays.ScaledArray):
     @classmethod
     def from_2d_and_pixel_scale(cls, array_2d, pixel_scale, origin=(0.0, 0.0), renormalize=False):
 
-        scaled_array = arrays.ScaledArray.from_array_2d_and_pixel_scales(array_2d=array_2d, pixel_scales=(pixel_scale, pixel_scale), origin=origin)
+        scaled_array = arrays.Array.from_array_2d_and_pixel_scales(array_2d=array_2d, pixel_scales=(pixel_scale, pixel_scale), origin=origin)
 
         return cls(array_1d=scaled_array, mask=scaled_array.mask, renormalize=renormalize)
 
@@ -48,7 +48,7 @@ class Kernel(arrays.ScaledArray):
         cls, array_2d, pixel_scales, origin=(0.0, 0.0), renormalize=False
     ):
 
-        scaled_array = arrays.ScaledArray.from_array_2d_and_pixel_scales(array_2d=array_2d, pixel_scales=pixel_scales, origin=origin)
+        scaled_array = arrays.Array.from_array_2d_and_pixel_scales(array_2d=array_2d, pixel_scales=pixel_scales, origin=origin)
         return cls(array_1d=scaled_array, mask=scaled_array.mask, renormalize=renormalize)
 
     @classmethod

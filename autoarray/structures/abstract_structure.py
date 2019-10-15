@@ -125,6 +125,22 @@ class AbstractStructure(np.ndarray):
             self.mask = obj.mask
 
     @property
+    def pixel_scale(self):
+        return self.mask.pixel_scale
+
+    @property
+    def pixel_scales(self):
+        return self.mask.pixel_scales
+
+    @property
+    def origin(self):
+        return self.mask.origin
+
+    @property
+    def sub_size(self):
+        return self.mask.sub_size
+
+    @property
     def mapping(self):
         return self.mask.mapping
 
