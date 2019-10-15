@@ -1,14 +1,14 @@
-from autoarray.structures.arrays import array, full, ones, zeros, array_from_fits
+from autoarray.mask.mask import Mask as mask
+from autoarray.structures.arrays import Array as array
 from autoarray.structures.grids import grid, grid_uniform
-from autoarray.mask.mapping import Mapping, ScaledMapping, ScaledSubMapping
-from autoarray.mask.geometry import Geometry, ScaledGeometry, ScaledSubGeometry
-from autoarray.mask.regions import Regions, SubRegions
-from autoarray.mask.mask import Mask, ScaledMask,ScaledSubMask
-from autoarray.structures.arrays import Array, ScaledArray, ScaledSubArray
+from autoarray.mask.mapping import Mapping
+from autoarray.mask.geometry import Geometry
+from autoarray.mask.regions import Regions, Regions
+from autoarray.mask.mask import Mask
+from autoarray.structures.arrays import Array
 from autoarray.structures.kernel import Kernel
 from autoarray.structures.grids import (
-    ScaledGrid,
-    ScaledSubGrid,
+    Grid,
     BinnedGrid,
     PixelizationGrid,
     SparseToGrid,

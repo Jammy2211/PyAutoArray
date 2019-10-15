@@ -169,8 +169,8 @@ class TestTotalPixels:
 
 class TestMaskCircular(object):
     def test__3x3_mask_input_radius_small__medium__big__masks(self):
-        mask = aa.mask_util.mask_circular_from_shape_pixel_scales_and_radius(
-            shape=(3, 3), pixel_scales=(1.0, 1.0), radius_arcsec=0.5
+        mask = aa.mask_util.mask_circular_from_shape_2d_pixel_scales_and_radius(
+            shape_2d=(3, 3), pixel_scales=(1.0, 1.0), radius_arcsec=0.5
         )
 
         assert (
@@ -178,8 +178,8 @@ class TestMaskCircular(object):
             == np.array([[True, True, True], [True, False, True], [True, True, True]])
         ).all()
 
-        mask = aa.mask_util.mask_circular_from_shape_pixel_scales_and_radius(
-            shape=(3, 3), pixel_scales=(1.0, 1.0), radius_arcsec=1.3
+        mask = aa.mask_util.mask_circular_from_shape_2d_pixel_scales_and_radius(
+            shape_2d=(3, 3), pixel_scales=(1.0, 1.0), radius_arcsec=1.3
         )
 
         assert (
@@ -189,8 +189,8 @@ class TestMaskCircular(object):
             )
         ).all()
 
-        mask = aa.mask_util.mask_circular_from_shape_pixel_scales_and_radius(
-            shape=(3, 3), pixel_scales=(1.0, 1.0), radius_arcsec=3.0
+        mask = aa.mask_util.mask_circular_from_shape_2d_pixel_scales_and_radius(
+            shape_2d=(3, 3), pixel_scales=(1.0, 1.0), radius_arcsec=3.0
         )
 
         assert (
@@ -200,8 +200,8 @@ class TestMaskCircular(object):
             )
         ).all()
 
-        mask = aa.mask_util.mask_circular_from_shape_pixel_scales_and_radius(
-            shape=(3, 3), pixel_scales=(0.5, 1.0), radius_arcsec=0.5
+        mask = aa.mask_util.mask_circular_from_shape_2d_pixel_scales_and_radius(
+            shape_2d=(3, 3), pixel_scales=(0.5, 1.0), radius_arcsec=0.5
         )
 
         assert (
@@ -211,8 +211,8 @@ class TestMaskCircular(object):
 
     def test__4x3_mask_input_radius_small__medium__big__masks(self):
 
-        mask = aa.mask_util.mask_circular_from_shape_pixel_scales_and_radius(
-            shape=(4, 3), pixel_scales=(1.0, 1.0), radius_arcsec=0.5
+        mask = aa.mask_util.mask_circular_from_shape_2d_pixel_scales_and_radius(
+            shape_2d=(4, 3), pixel_scales=(1.0, 1.0), radius_arcsec=0.5
         )
 
         assert (
@@ -227,8 +227,8 @@ class TestMaskCircular(object):
             )
         ).all()
 
-        mask = aa.mask_util.mask_circular_from_shape_pixel_scales_and_radius(
-            shape=(4, 3), pixel_scales=(1.0, 1.0), radius_arcsec=1.5001
+        mask = aa.mask_util.mask_circular_from_shape_2d_pixel_scales_and_radius(
+            shape_2d=(4, 3), pixel_scales=(1.0, 1.0), radius_arcsec=1.5001
         )
 
         assert (
@@ -243,8 +243,8 @@ class TestMaskCircular(object):
             )
         ).all()
 
-        mask = aa.mask_util.mask_circular_from_shape_pixel_scales_and_radius(
-            shape=(4, 3), pixel_scales=(1.0, 1.0), radius_arcsec=3.0
+        mask = aa.mask_util.mask_circular_from_shape_2d_pixel_scales_and_radius(
+            shape_2d=(4, 3), pixel_scales=(1.0, 1.0), radius_arcsec=3.0
         )
 
         assert (
@@ -260,8 +260,8 @@ class TestMaskCircular(object):
         ).all()
 
     def test__4x4_mask_input_radius_small__medium__big__masks(self):
-        mask = aa.mask_util.mask_circular_from_shape_pixel_scales_and_radius(
-            shape=(4, 4), pixel_scales=(1.0, 1.0), radius_arcsec=0.72
+        mask = aa.mask_util.mask_circular_from_shape_2d_pixel_scales_and_radius(
+            shape_2d=(4, 4), pixel_scales=(1.0, 1.0), radius_arcsec=0.72
         )
 
         assert (
@@ -276,8 +276,8 @@ class TestMaskCircular(object):
             )
         ).all()
 
-        mask = aa.mask_util.mask_circular_from_shape_pixel_scales_and_radius(
-            shape=(4, 4), pixel_scales=(1.0, 1.0), radius_arcsec=1.7
+        mask = aa.mask_util.mask_circular_from_shape_2d_pixel_scales_and_radius(
+            shape_2d=(4, 4), pixel_scales=(1.0, 1.0), radius_arcsec=1.7
         )
 
         assert (
@@ -292,8 +292,8 @@ class TestMaskCircular(object):
             )
         ).all()
 
-        mask = aa.mask_util.mask_circular_from_shape_pixel_scales_and_radius(
-            shape=(4, 4), pixel_scales=(1.0, 1.0), radius_arcsec=3.0
+        mask = aa.mask_util.mask_circular_from_shape_2d_pixel_scales_and_radius(
+            shape_2d=(4, 4), pixel_scales=(1.0, 1.0), radius_arcsec=3.0
         )
 
         assert (
@@ -310,8 +310,8 @@ class TestMaskCircular(object):
 
     def test__origin_shifts__downwards__right__diagonal(self):
 
-        mask = aa.mask_util.mask_circular_from_shape_pixel_scales_and_radius(
-            shape=(3, 3), pixel_scales=(3.0, 3.0), radius_arcsec=0.5, centre=(-3, 0)
+        mask = aa.mask_util.mask_circular_from_shape_2d_pixel_scales_and_radius(
+            shape_2d=(3, 3), pixel_scales=(3.0, 3.0), radius_arcsec=0.5, centre=(-3, 0)
         )
 
         assert mask.shape == (3, 3)
@@ -320,8 +320,8 @@ class TestMaskCircular(object):
             == np.array([[True, True, True], [True, True, True], [True, False, True]])
         ).all()
 
-        mask = aa.mask_util.mask_circular_from_shape_pixel_scales_and_radius(
-            shape=(3, 3), pixel_scales=(3.0, 3.0), radius_arcsec=0.5, centre=(0.0, 3.0)
+        mask = aa.mask_util.mask_circular_from_shape_2d_pixel_scales_and_radius(
+            shape_2d=(3, 3), pixel_scales=(3.0, 3.0), radius_arcsec=0.5, centre=(0.0, 3.0)
         )
 
         assert mask.shape == (3, 3)
@@ -330,8 +330,8 @@ class TestMaskCircular(object):
             == np.array([[True, True, True], [True, True, False], [True, True, True]])
         ).all()
 
-        mask = aa.mask_util.mask_circular_from_shape_pixel_scales_and_radius(
-            shape=(3, 3), pixel_scales=(3.0, 3.0), radius_arcsec=0.5, centre=(3, 3)
+        mask = aa.mask_util.mask_circular_from_shape_2d_pixel_scales_and_radius(
+            shape_2d=(3, 3), pixel_scales=(3.0, 3.0), radius_arcsec=0.5, centre=(3, 3)
         )
 
         assert (
@@ -342,8 +342,8 @@ class TestMaskCircular(object):
 
 class TestMaskAnnular(object):
     def test__mask_inner_radius_zero_outer_radius_small_medium_and_large__mask(self):
-        mask = aa.mask_util.mask_circular_annular_from_shape_pixel_scales_and_radii(
-            shape=(3, 3),
+        mask = aa.mask_util.mask_circular_annular_from_shape_2d_pixel_scales_and_radii(
+            shape_2d=(3, 3),
             pixel_scales=(1.0, 1.0),
             inner_radius_arcsec=0.0,
             outer_radius_arcsec=0.5,
@@ -354,8 +354,8 @@ class TestMaskAnnular(object):
             == np.array([[True, True, True], [True, False, True], [True, True, True]])
         ).all()
 
-        mask = aa.mask_util.mask_circular_annular_from_shape_pixel_scales_and_radii(
-            shape=(4, 4),
+        mask = aa.mask_util.mask_circular_annular_from_shape_2d_pixel_scales_and_radii(
+            shape_2d=(4, 4),
             pixel_scales=(1.0, 1.0),
             inner_radius_arcsec=0.81,
             outer_radius_arcsec=2.0,
@@ -373,8 +373,8 @@ class TestMaskAnnular(object):
             )
         ).all()
 
-        mask = aa.mask_util.mask_circular_annular_from_shape_pixel_scales_and_radii(
-            shape=(3, 3),
+        mask = aa.mask_util.mask_circular_annular_from_shape_2d_pixel_scales_and_radii(
+            shape_2d=(3, 3),
             pixel_scales=(1.0, 1.0),
             inner_radius_arcsec=0.5,
             outer_radius_arcsec=3.0,
@@ -387,8 +387,8 @@ class TestMaskAnnular(object):
             )
         ).all()
 
-        mask = aa.mask_util.mask_circular_annular_from_shape_pixel_scales_and_radii(
-            shape=(4, 4),
+        mask = aa.mask_util.mask_circular_annular_from_shape_2d_pixel_scales_and_radii(
+            shape_2d=(4, 4),
             pixel_scales=(0.5, 1.0),
             inner_radius_arcsec=1.1,
             outer_radius_arcsec=2.0,
@@ -407,8 +407,8 @@ class TestMaskAnnular(object):
         ).all()
 
     def test__4x3_mask_inner_radius_small_outer_radius_medium__mask(self):
-        mask = aa.mask_util.mask_circular_annular_from_shape_pixel_scales_and_radii(
-            shape=(4, 3),
+        mask = aa.mask_util.mask_circular_annular_from_shape_2d_pixel_scales_and_radii(
+            shape_2d=(4, 3),
             pixel_scales=(1.0, 1.0),
             inner_radius_arcsec=0.51,
             outer_radius_arcsec=1.51,
@@ -427,8 +427,8 @@ class TestMaskAnnular(object):
         ).all()
 
     def test__4x3_mask_inner_radius_medium_outer_radius_large__mask(self):
-        mask = aa.mask_util.mask_circular_annular_from_shape_pixel_scales_and_radii(
-            shape=(4, 3),
+        mask = aa.mask_util.mask_circular_annular_from_shape_2d_pixel_scales_and_radii(
+            shape_2d=(4, 3),
             pixel_scales=(1.0, 1.0),
             inner_radius_arcsec=1.51,
             outer_radius_arcsec=3.0,
@@ -447,8 +447,8 @@ class TestMaskAnnular(object):
         ).all()
 
     def test__4x4_mask_inner_radius_medium_outer_radius_large__mask(self):
-        mask = aa.mask_util.mask_circular_annular_from_shape_pixel_scales_and_radii(
-            shape=(4, 4),
+        mask = aa.mask_util.mask_circular_annular_from_shape_2d_pixel_scales_and_radii(
+            shape_2d=(4, 4),
             pixel_scales=(1.0, 1.0),
             inner_radius_arcsec=1.71,
             outer_radius_arcsec=3.0,
@@ -468,8 +468,8 @@ class TestMaskAnnular(object):
 
     def test__origin_shift__simple_shift_upwards__right_diagonal(self):
 
-        mask = aa.mask_util.mask_circular_annular_from_shape_pixel_scales_and_radii(
-            shape=(3, 3),
+        mask = aa.mask_util.mask_circular_annular_from_shape_2d_pixel_scales_and_radii(
+            shape_2d=(3, 3),
             pixel_scales=(3.0, 3.0),
             inner_radius_arcsec=0.5,
             outer_radius_arcsec=9.0,
@@ -484,8 +484,8 @@ class TestMaskAnnular(object):
             )
         ).all()
 
-        mask = aa.mask_util.mask_circular_annular_from_shape_pixel_scales_and_radii(
-            shape=(3, 3),
+        mask = aa.mask_util.mask_circular_annular_from_shape_2d_pixel_scales_and_radii(
+            shape_2d=(3, 3),
             pixel_scales=(3.0, 3.0),
             inner_radius_arcsec=0.5,
             outer_radius_arcsec=9.0,
@@ -500,8 +500,8 @@ class TestMaskAnnular(object):
             )
         ).all()
 
-        mask = aa.mask_util.mask_circular_annular_from_shape_pixel_scales_and_radii(
-            shape=(3, 3),
+        mask = aa.mask_util.mask_circular_annular_from_shape_2d_pixel_scales_and_radii(
+            shape_2d=(3, 3),
             pixel_scales=(3.0, 3.0),
             inner_radius_arcsec=0.5,
             outer_radius_arcsec=9.0,
@@ -522,8 +522,8 @@ class TestMaskAntiAnnular(object):
         self
     ):
 
-        mask = aa.mask_util.mask_circular_anti_annular_from_shape_pixel_scales_and_radii(
-            shape=(5, 5),
+        mask = aa.mask_util.mask_circular_anti_annular_from_shape_2d_pixel_scales_and_radii(
+            shape_2d=(5, 5),
             pixel_scales=(1.0, 1.0),
             inner_radius_arcsec=0.5,
             outer_radius_arcsec=10.0,
@@ -547,8 +547,8 @@ class TestMaskAntiAnnular(object):
         self
     ):
 
-        mask = aa.mask_util.mask_circular_anti_annular_from_shape_pixel_scales_and_radii(
-            shape=(5, 5),
+        mask = aa.mask_util.mask_circular_anti_annular_from_shape_2d_pixel_scales_and_radii(
+            shape_2d=(5, 5),
             pixel_scales=(1.0, 1.0),
             inner_radius_arcsec=1.5,
             outer_radius_arcsec=10.0,
@@ -568,8 +568,8 @@ class TestMaskAntiAnnular(object):
             )
         ).all()
 
-        mask = aa.mask_util.mask_circular_anti_annular_from_shape_pixel_scales_and_radii(
-            shape=(5, 5),
+        mask = aa.mask_util.mask_circular_anti_annular_from_shape_2d_pixel_scales_and_radii(
+            shape_2d=(5, 5),
             pixel_scales=(0.1, 1.0),
             inner_radius_arcsec=1.5,
             outer_radius_arcsec=10.0,
@@ -593,8 +593,8 @@ class TestMaskAntiAnnular(object):
         self
     ):
 
-        mask = aa.mask_util.mask_circular_anti_annular_from_shape_pixel_scales_and_radii(
-            shape=(5, 5),
+        mask = aa.mask_util.mask_circular_anti_annular_from_shape_2d_pixel_scales_and_radii(
+            shape_2d=(5, 5),
             pixel_scales=(1.0, 1.0),
             inner_radius_arcsec=0.5,
             outer_radius_arcsec=1.5,
@@ -616,8 +616,8 @@ class TestMaskAntiAnnular(object):
 
     def test__7x7_second_outer_radius_mask_works_too(self):
 
-        mask = aa.mask_util.mask_circular_anti_annular_from_shape_pixel_scales_and_radii(
-            shape=(7, 7),
+        mask = aa.mask_util.mask_circular_anti_annular_from_shape_2d_pixel_scales_and_radii(
+            shape_2d=(7, 7),
             pixel_scales=(1.0, 1.0),
             inner_radius_arcsec=0.5,
             outer_radius_arcsec=1.5,
@@ -641,8 +641,8 @@ class TestMaskAntiAnnular(object):
 
     def test__origin_shift__diagonal_shift(self):
 
-        mask = aa.mask_util.mask_circular_anti_annular_from_shape_pixel_scales_and_radii(
-            shape=(7, 7),
+        mask = aa.mask_util.mask_circular_anti_annular_from_shape_2d_pixel_scales_and_radii(
+            shape_2d=(7, 7),
             pixel_scales=(3.0, 3.0),
             inner_radius_arcsec=1.5,
             outer_radius_arcsec=4.5,
@@ -669,8 +669,8 @@ class TestMaskAntiAnnular(object):
 class TestMaskElliptical(object):
     def test__input_circular_params__small_medium_and_large_masks(self):
 
-        mask = aa.mask_util.mask_elliptical_from_shape_pixel_scales_and_radius(
-            shape=(3, 3),
+        mask = aa.mask_util.mask_elliptical_from_shape_2d_pixel_scales_and_radius(
+            shape_2d=(3, 3),
             pixel_scales=(1.0, 1.0),
             major_axis_radius_arcsec=0.5,
             axis_ratio=1.0,
@@ -682,8 +682,8 @@ class TestMaskElliptical(object):
             == np.array([[True, True, True], [True, False, True], [True, True, True]])
         ).all()
 
-        mask = aa.mask_util.mask_elliptical_from_shape_pixel_scales_and_radius(
-            shape=(3, 3),
+        mask = aa.mask_util.mask_elliptical_from_shape_2d_pixel_scales_and_radius(
+            shape_2d=(3, 3),
             pixel_scales=(1.0, 1.0),
             major_axis_radius_arcsec=1.3,
             axis_ratio=1.0,
@@ -697,8 +697,8 @@ class TestMaskElliptical(object):
             )
         ).all()
 
-        mask = aa.mask_util.mask_elliptical_from_shape_pixel_scales_and_radius(
-            shape=(3, 3),
+        mask = aa.mask_util.mask_elliptical_from_shape_2d_pixel_scales_and_radius(
+            shape_2d=(3, 3),
             pixel_scales=(1.0, 1.0),
             major_axis_radius_arcsec=3.0,
             axis_ratio=1.0,
@@ -716,8 +716,8 @@ class TestMaskElliptical(object):
         self
     ):
 
-        mask = aa.mask_util.mask_elliptical_from_shape_pixel_scales_and_radius(
-            shape=(3, 3),
+        mask = aa.mask_util.mask_elliptical_from_shape_2d_pixel_scales_and_radius(
+            shape_2d=(3, 3),
             pixel_scales=(1.0, 1.0),
             major_axis_radius_arcsec=1.3,
             axis_ratio=0.1,
@@ -729,8 +729,8 @@ class TestMaskElliptical(object):
             == np.array([[True, True, True], [False, False, False], [True, True, True]])
         ).all()
 
-        mask = aa.mask_util.mask_elliptical_from_shape_pixel_scales_and_radius(
-            shape=(3, 3),
+        mask = aa.mask_util.mask_elliptical_from_shape_2d_pixel_scales_and_radius(
+            shape_2d=(3, 3),
             pixel_scales=(1.0, 1.0),
             major_axis_radius_arcsec=1.3,
             axis_ratio=0.1,
@@ -742,8 +742,8 @@ class TestMaskElliptical(object):
             == np.array([[True, True, True], [False, False, False], [True, True, True]])
         ).all()
 
-        mask = aa.mask_util.mask_elliptical_from_shape_pixel_scales_and_radius(
-            shape=(3, 3),
+        mask = aa.mask_util.mask_elliptical_from_shape_2d_pixel_scales_and_radius(
+            shape_2d=(3, 3),
             pixel_scales=(1.0, 1.0),
             major_axis_radius_arcsec=1.3,
             axis_ratio=0.1,
@@ -757,8 +757,8 @@ class TestMaskElliptical(object):
 
     def test__same_as_above_but_90_degree_rotations(self):
 
-        mask = aa.mask_util.mask_elliptical_from_shape_pixel_scales_and_radius(
-            shape=(3, 3),
+        mask = aa.mask_util.mask_elliptical_from_shape_2d_pixel_scales_and_radius(
+            shape_2d=(3, 3),
             pixel_scales=(1.0, 1.0),
             major_axis_radius_arcsec=1.3,
             axis_ratio=0.1,
@@ -770,8 +770,8 @@ class TestMaskElliptical(object):
             == np.array([[True, False, True], [True, False, True], [True, False, True]])
         ).all()
 
-        mask = aa.mask_util.mask_elliptical_from_shape_pixel_scales_and_radius(
-            shape=(3, 3),
+        mask = aa.mask_util.mask_elliptical_from_shape_2d_pixel_scales_and_radius(
+            shape_2d=(3, 3),
             pixel_scales=(1.0, 1.0),
             major_axis_radius_arcsec=1.3,
             axis_ratio=0.1,
@@ -785,8 +785,8 @@ class TestMaskElliptical(object):
 
     def test__same_as_above_but_diagonal_rotations(self):
 
-        mask = aa.mask_util.mask_elliptical_from_shape_pixel_scales_and_radius(
-            shape=(3, 3),
+        mask = aa.mask_util.mask_elliptical_from_shape_2d_pixel_scales_and_radius(
+            shape_2d=(3, 3),
             pixel_scales=(1.0, 1.0),
             major_axis_radius_arcsec=1.5,
             axis_ratio=0.1,
@@ -798,8 +798,8 @@ class TestMaskElliptical(object):
             == np.array([[True, True, False], [True, False, True], [False, True, True]])
         ).all()
 
-        mask = aa.mask_util.mask_elliptical_from_shape_pixel_scales_and_radius(
-            shape=(3, 3),
+        mask = aa.mask_util.mask_elliptical_from_shape_2d_pixel_scales_and_radius(
+            shape_2d=(3, 3),
             pixel_scales=(1.0, 1.0),
             major_axis_radius_arcsec=1.5,
             axis_ratio=0.1,
@@ -811,8 +811,8 @@ class TestMaskElliptical(object):
             == np.array([[False, True, True], [True, False, True], [True, True, False]])
         ).all()
 
-        mask = aa.mask_util.mask_elliptical_from_shape_pixel_scales_and_radius(
-            shape=(3, 3),
+        mask = aa.mask_util.mask_elliptical_from_shape_2d_pixel_scales_and_radius(
+            shape_2d=(3, 3),
             pixel_scales=(1.0, 1.0),
             major_axis_radius_arcsec=1.5,
             axis_ratio=0.1,
@@ -824,8 +824,8 @@ class TestMaskElliptical(object):
             == np.array([[True, True, False], [True, False, True], [False, True, True]])
         ).all()
 
-        mask = aa.mask_util.mask_elliptical_from_shape_pixel_scales_and_radius(
-            shape=(3, 3),
+        mask = aa.mask_util.mask_elliptical_from_shape_2d_pixel_scales_and_radius(
+            shape_2d=(3, 3),
             pixel_scales=(1.0, 1.0),
             major_axis_radius_arcsec=1.5,
             axis_ratio=0.1,
@@ -839,8 +839,8 @@ class TestMaskElliptical(object):
 
     def test__4x3__ellipse_is_formed(self):
 
-        mask = aa.mask_util.mask_elliptical_from_shape_pixel_scales_and_radius(
-            shape=(4, 3),
+        mask = aa.mask_util.mask_elliptical_from_shape_2d_pixel_scales_and_radius(
+            shape_2d=(4, 3),
             pixel_scales=(1.0, 1.0),
             major_axis_radius_arcsec=1.5,
             axis_ratio=0.9,
@@ -859,8 +859,8 @@ class TestMaskElliptical(object):
             )
         ).all()
 
-        mask = aa.mask_util.mask_elliptical_from_shape_pixel_scales_and_radius(
-            shape=(4, 3),
+        mask = aa.mask_util.mask_elliptical_from_shape_2d_pixel_scales_and_radius(
+            shape_2d=(4, 3),
             pixel_scales=(1.0, 1.0),
             major_axis_radius_arcsec=1.5,
             axis_ratio=0.1,
@@ -879,8 +879,8 @@ class TestMaskElliptical(object):
             )
         ).all()
 
-        mask = aa.mask_util.mask_elliptical_from_shape_pixel_scales_and_radius(
-            shape=(4, 3),
+        mask = aa.mask_util.mask_elliptical_from_shape_2d_pixel_scales_and_radius(
+            shape_2d=(4, 3),
             pixel_scales=(1.0, 0.1),
             major_axis_radius_arcsec=1.5,
             axis_ratio=0.1,
@@ -901,8 +901,8 @@ class TestMaskElliptical(object):
 
     def test__3x4__ellipse_is_formed(self):
 
-        mask = aa.mask_util.mask_elliptical_from_shape_pixel_scales_and_radius(
-            shape=(3, 4),
+        mask = aa.mask_util.mask_elliptical_from_shape_2d_pixel_scales_and_radius(
+            shape_2d=(3, 4),
             pixel_scales=(1.0, 1.0),
             major_axis_radius_arcsec=1.5,
             axis_ratio=0.9,
@@ -920,8 +920,8 @@ class TestMaskElliptical(object):
             )
         ).all()
 
-        mask = aa.mask_util.mask_elliptical_from_shape_pixel_scales_and_radius(
-            shape=(3, 4),
+        mask = aa.mask_util.mask_elliptical_from_shape_2d_pixel_scales_and_radius(
+            shape_2d=(3, 4),
             pixel_scales=(1.0, 1.0),
             major_axis_radius_arcsec=1.5,
             axis_ratio=0.1,
@@ -939,8 +939,8 @@ class TestMaskElliptical(object):
             )
         ).all()
 
-        mask = aa.mask_util.mask_elliptical_from_shape_pixel_scales_and_radius(
-            shape=(3, 4),
+        mask = aa.mask_util.mask_elliptical_from_shape_2d_pixel_scales_and_radius(
+            shape_2d=(3, 4),
             pixel_scales=(0.1, 1.0),
             major_axis_radius_arcsec=1.5,
             axis_ratio=0.1,
@@ -960,8 +960,8 @@ class TestMaskElliptical(object):
 
     def test__3x3_mask__shifts_dowwards__right__diagonal(self):
 
-        mask = aa.mask_util.mask_elliptical_from_shape_pixel_scales_and_radius(
-            shape=(3, 3),
+        mask = aa.mask_util.mask_elliptical_from_shape_2d_pixel_scales_and_radius(
+            shape_2d=(3, 3),
             pixel_scales=(3.0, 3.0),
             major_axis_radius_arcsec=4.8,
             axis_ratio=0.1,
@@ -974,8 +974,8 @@ class TestMaskElliptical(object):
             == np.array([[True, True, True], [True, True, False], [True, False, True]])
         ).all()
 
-        mask = aa.mask_util.mask_elliptical_from_shape_pixel_scales_and_radius(
-            shape=(3, 3),
+        mask = aa.mask_util.mask_elliptical_from_shape_2d_pixel_scales_and_radius(
+            shape_2d=(3, 3),
             pixel_scales=(3.0, 3.0),
             major_axis_radius_arcsec=4.8,
             axis_ratio=0.1,
@@ -988,8 +988,8 @@ class TestMaskElliptical(object):
             == np.array([[True, True, True], [True, True, False], [True, False, True]])
         ).all()
 
-        mask = aa.mask_util.mask_elliptical_from_shape_pixel_scales_and_radius(
-            shape=(3, 3),
+        mask = aa.mask_util.mask_elliptical_from_shape_2d_pixel_scales_and_radius(
+            shape_2d=(3, 3),
             pixel_scales=(3.0, 3.0),
             major_axis_radius_arcsec=4.8,
             axis_ratio=0.1,
@@ -1008,8 +1008,8 @@ class TestMaskEllipticalAnnular(object):
         self
     ):
 
-        mask = aa.mask_util.mask_elliptical_annular_from_shape_pixel_scales_and_radius(
-            shape=(3, 3),
+        mask = aa.mask_util.mask_elliptical_annular_from_shape_2d_pixel_scales_and_radius(
+            shape_2d=(3, 3),
             pixel_scales=(1.0, 1.0),
             inner_major_axis_radius_arcsec=0.0,
             inner_axis_ratio=1.0,
@@ -1024,8 +1024,8 @@ class TestMaskEllipticalAnnular(object):
             == np.array([[True, True, True], [True, False, True], [True, True, True]])
         ).all()
 
-        mask = aa.mask_util.mask_elliptical_annular_from_shape_pixel_scales_and_radius(
-            shape=(4, 4),
+        mask = aa.mask_util.mask_elliptical_annular_from_shape_2d_pixel_scales_and_radius(
+            shape_2d=(4, 4),
             pixel_scales=(1.0, 1.0),
             inner_major_axis_radius_arcsec=0.81,
             inner_axis_ratio=1.0,
@@ -1047,8 +1047,8 @@ class TestMaskEllipticalAnnular(object):
             )
         ).all()
 
-        mask = aa.mask_util.mask_elliptical_annular_from_shape_pixel_scales_and_radius(
-            shape=(3, 3),
+        mask = aa.mask_util.mask_elliptical_annular_from_shape_2d_pixel_scales_and_radius(
+            shape_2d=(3, 3),
             pixel_scales=(1.0, 1.0),
             inner_major_axis_radius_arcsec=0.5,
             inner_axis_ratio=1.0,
@@ -1067,8 +1067,8 @@ class TestMaskEllipticalAnnular(object):
 
     def test__elliptical_parameters_and_rotations_work_correctly(self):
 
-        mask = aa.mask_util.mask_elliptical_annular_from_shape_pixel_scales_and_radius(
-            shape=(3, 3),
+        mask = aa.mask_util.mask_elliptical_annular_from_shape_2d_pixel_scales_and_radius(
+            shape_2d=(3, 3),
             pixel_scales=(1.0, 1.0),
             inner_major_axis_radius_arcsec=0.0,
             inner_axis_ratio=1.0,
@@ -1083,8 +1083,8 @@ class TestMaskEllipticalAnnular(object):
             == np.array([[True, True, True], [False, False, False], [True, True, True]])
         ).all()
 
-        mask = aa.mask_util.mask_elliptical_annular_from_shape_pixel_scales_and_radius(
-            shape=(3, 3),
+        mask = aa.mask_util.mask_elliptical_annular_from_shape_2d_pixel_scales_and_radius(
+            shape_2d=(3, 3),
             pixel_scales=(1.0, 1.0),
             inner_major_axis_radius_arcsec=0.0,
             inner_axis_ratio=1.0,
@@ -1099,8 +1099,8 @@ class TestMaskEllipticalAnnular(object):
             == np.array([[True, False, True], [True, False, True], [True, False, True]])
         ).all()
 
-        mask = aa.mask_util.mask_elliptical_annular_from_shape_pixel_scales_and_radius(
-            shape=(3, 3),
+        mask = aa.mask_util.mask_elliptical_annular_from_shape_2d_pixel_scales_and_radius(
+            shape_2d=(3, 3),
             pixel_scales=(1.0, 1.0),
             inner_major_axis_radius_arcsec=0.0,
             inner_axis_ratio=1.0,
@@ -1115,8 +1115,8 @@ class TestMaskEllipticalAnnular(object):
             == np.array([[True, True, False], [True, False, True], [False, True, True]])
         ).all()
 
-        mask = aa.mask_util.mask_elliptical_annular_from_shape_pixel_scales_and_radius(
-            shape=(3, 3),
+        mask = aa.mask_util.mask_elliptical_annular_from_shape_2d_pixel_scales_and_radius(
+            shape_2d=(3, 3),
             pixel_scales=(0.1, 1.0),
             inner_major_axis_radius_arcsec=0.0,
             inner_axis_ratio=1.0,
@@ -1133,8 +1133,8 @@ class TestMaskEllipticalAnnular(object):
 
     def test__large_mask_array__can_see_elliptical_annuli_form(self):
 
-        mask = aa.mask_util.mask_elliptical_annular_from_shape_pixel_scales_and_radius(
-            shape=(7, 5),
+        mask = aa.mask_util.mask_elliptical_annular_from_shape_2d_pixel_scales_and_radius(
+            shape_2d=(7, 5),
             pixel_scales=(1.0, 1.0),
             inner_major_axis_radius_arcsec=1.0,
             inner_axis_ratio=0.1,
@@ -1159,8 +1159,8 @@ class TestMaskEllipticalAnnular(object):
             )
         ).all()
 
-        mask = aa.mask_util.mask_elliptical_annular_from_shape_pixel_scales_and_radius(
-            shape=(7, 5),
+        mask = aa.mask_util.mask_elliptical_annular_from_shape_2d_pixel_scales_and_radius(
+            shape_2d=(7, 5),
             pixel_scales=(1.0, 1.0),
             inner_major_axis_radius_arcsec=1.0,
             inner_axis_ratio=0.1,
@@ -1185,8 +1185,8 @@ class TestMaskEllipticalAnnular(object):
             )
         ).all()
 
-        mask = aa.mask_util.mask_elliptical_annular_from_shape_pixel_scales_and_radius(
-            shape=(7, 5),
+        mask = aa.mask_util.mask_elliptical_annular_from_shape_2d_pixel_scales_and_radius(
+            shape_2d=(7, 5),
             pixel_scales=(1.0, 1.0),
             inner_major_axis_radius_arcsec=2.0,
             inner_axis_ratio=0.1,
@@ -1211,8 +1211,8 @@ class TestMaskEllipticalAnnular(object):
             )
         ).all()
 
-        mask = aa.mask_util.mask_elliptical_annular_from_shape_pixel_scales_and_radius(
-            shape=(7, 5),
+        mask = aa.mask_util.mask_elliptical_annular_from_shape_2d_pixel_scales_and_radius(
+            shape_2d=(7, 5),
             pixel_scales=(1.0, 1.0),
             inner_major_axis_radius_arcsec=1.0,
             inner_axis_ratio=0.1,
@@ -1239,8 +1239,8 @@ class TestMaskEllipticalAnnular(object):
 
     def test__shifts(self):
 
-        mask = aa.mask_util.mask_elliptical_annular_from_shape_pixel_scales_and_radius(
-            shape=(7, 5),
+        mask = aa.mask_util.mask_elliptical_annular_from_shape_2d_pixel_scales_and_radius(
+            shape_2d=(7, 5),
             pixel_scales=(1.0, 1.0),
             inner_major_axis_radius_arcsec=1.0,
             inner_axis_ratio=0.1,
@@ -1266,8 +1266,8 @@ class TestMaskEllipticalAnnular(object):
             )
         ).all()
 
-        mask = aa.mask_util.mask_elliptical_annular_from_shape_pixel_scales_and_radius(
-            shape=(7, 5),
+        mask = aa.mask_util.mask_elliptical_annular_from_shape_2d_pixel_scales_and_radius(
+            shape_2d=(7, 5),
             pixel_scales=(1.0, 1.0),
             inner_major_axis_radius_arcsec=1.0,
             inner_axis_ratio=0.1,
@@ -1293,8 +1293,8 @@ class TestMaskEllipticalAnnular(object):
             )
         ).all()
 
-        mask = aa.mask_util.mask_elliptical_annular_from_shape_pixel_scales_and_radius(
-            shape=(7, 5),
+        mask = aa.mask_util.mask_elliptical_annular_from_shape_2d_pixel_scales_and_radius(
+            shape_2d=(7, 5),
             pixel_scales=(1.0, 1.0),
             inner_major_axis_radius_arcsec=1.0,
             inner_axis_ratio=0.1,

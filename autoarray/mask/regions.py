@@ -3,24 +3,21 @@ import logging
 import numpy as np
 
 from autoarray import exc
+from autoarray.mask import mask as msk
 from autoarray.util import array_util, mask_util
 
 
 class Regions(object):
 
-    def __init__(self, mapping):
+    def __init__(self, mask):
 
-        self.mapping = mapping
-
-    @property
-    def mask_2d(self):
-        return self.mapping.mask_2d
+        self.mask = mask
 
     @property
     def _mask_2d_index_for_mask_1d_index(self):
         """A 1D array of mappings between every unmasked pixel and its 2D pixel coordinates."""
         return mask_util.sub_mask_2d_index_for_sub_mask_1d_index_from_mask_and_sub_size(
-            mask=self.mask_2d, sub_size=1
+            mask=self.mask, sub_size=1
         ).astype("int")
 
     @property
@@ -28,7 +25,7 @@ class Regions(object):
         """The indicies of the mask's edge pixels, where an edge pixel is any unmasked pixel on its edge \
         (next to at least one pixel with a *True* value).
         """
-        return mask_util.edge_1d_indexes_from_mask(mask=self.mask_2d).astype("int")
+        return mask_util.edge_1d_indexes_from_mask(mask=self.mask).astype("int")
 
     @property
     def _edge_2d_indexes(self):
@@ -45,7 +42,7 @@ class Regions(object):
         exterior edge (e.g. next to at least one pixel with a *True* value but not central pixels like those within \
         an annulus mask).
         """
-        return mask_util.border_1d_indexes_from_mask(mask=self.mask_2d).astype("int")
+        return mask_util.border_1d_indexes_from_mask(mask=self.mask).astype("int")
 
     @property
     def _border_2d_indexes(self):
@@ -56,6 +53,16 @@ class Regions(object):
         return self._mask_2d_index_for_mask_1d_index[self._border_1d_indexes].astype(
             "int"
         )
+
+    @property
+    def _sub_border_1d_indexes(self):
+        """The indicies of the mask's border pixels, where a border pixel is any unmasked pixel on an
+        exterior edge (e.g. next to at least one pixel with a *True* value but not central pixels like those within \
+        an annulus mask).
+        """
+        return mask_util.sub_border_pixel_1d_indexes_from_mask_and_sub_size(
+            mask=self.mask, sub_size=self.mask.sub_size
+        ).astype("int")
 
     @array_util.Memoizer()
     def blurring_mask_from_kernel_shape(self, kernel_shape):
@@ -72,10 +79,11 @@ class Regions(object):
             raise exc.MaskException("psf_size of exterior region must be odd")
 
         blurring_mask = mask_util.blurring_mask_from_mask_and_kernel_shape(
-            mask=self.mask_2d, kernel_shape=kernel_shape
+            mask=self.mask, kernel_shape=kernel_shape
         )
 
-        return self.mapping.mask_no_sub_from_array_2d(array_2d=blurring_mask)
+        return msk.Mask(mask_2d=blurring_mask, sub_size=1, pixel_scales=self.mask.pixel_scales,
+                  origin=self.mask.origin)
 
     @property
     def edge_mask(self):
@@ -83,9 +91,10 @@ class Regions(object):
         exterior edge (e.g. next to at least one pixel with a *True* value but not central pixels like those within \
         an annulus mask).
         """
-        mask = np.full(fill_value=True, shape=self.mask_2d.shape)
+        mask = np.full(fill_value=True, shape=self.mask.shape)
         mask[self._edge_2d_indexes[:, 0], self._edge_2d_indexes[:, 1]] = False
-        return self.mapping.mask_from_array_2d(array_2d=mask)
+        return msk.Mask(mask_2d=mask, sub_size=self.mask.sub_size, pixel_scales=self.mask.pixel_scales,
+                  origin=self.mask.origin)
 
     @property
     def border_mask(self):
@@ -93,34 +102,16 @@ class Regions(object):
         exterior edge (e.g. next to at least one pixel with a *True* value but not central pixels like those within \
         an annulus mask).
         """
-        mask = np.full(fill_value=True, shape=self.mask_2d.shape)
+        mask = np.full(fill_value=True, shape=self.mask.shape)
         mask[self._border_2d_indexes[:, 0], self._border_2d_indexes[:, 1]] = False
-        return self.mapping.mask_from_array_2d(
-            array_2d=mask,
-        )
-
-
-class SubRegions(Regions):
-
-    def __init__(self, mapping):
-
-        super(SubRegions, self).__init__(mapping=mapping)
-
-    @property
-    def _sub_border_1d_indexes(self):
-        """The indicies of the mask's border pixels, where a border pixel is any unmasked pixel on an
-        exterior edge (e.g. next to at least one pixel with a *True* value but not central pixels like those within \
-        an annulus mask).
-        """
-        return mask_util.sub_border_pixel_1d_indexes_from_mask_and_sub_size(
-            mask=self.mask_2d, sub_size=self.mapping.sub_size
-        ).astype("int")
+        return msk.Mask(mask_2d=mask, sub_size=self.mask.sub_size, pixel_scales=self.mask.pixel_scales,
+                  origin=self.mask.origin)
 
     @property
     def _sub_mask_2d_index_for_sub_mask_1d_index(self):
         """A 1D array of mappings between every unmasked sub pixel and its 2D sub-pixel coordinates."""
         return mask_util.sub_mask_2d_index_for_sub_mask_1d_index_from_mask_and_sub_size(
-            mask=self.mask_2d, sub_size=self.mapping.sub_size
+            mask=self.mask, sub_size=self.mask.sub_size
         ).astype("int")
 
     @property
@@ -134,13 +125,13 @@ class SubRegions(Regions):
         - sub_to_pixel[20] = 4 -  The twenty first sub-pixel is within the 5th pixel.
         """
         return mask_util.mask_1d_index_for_sub_mask_1d_index_from_mask(
-            mask=self.mask_2d, sub_size=self.mapping.sub_size
+            mask=self.mask, sub_size=self.mask.sub_size
         ).astype("int")
 
     @property
-    def sub_mask(self):
+    def sub_mask_2d(self):
 
-        sub_shape = (self.mask_2d.shape[0] * self.mapping.sub_size, self.mask_2d.shape[1] * self.mapping.sub_size)
+        sub_shape = (self.mask.shape[0] * self.mask.sub_size, self.mask.shape[1] * self.mask.sub_size)
 
         return mask_util.mask_from_shape_and_mask_2d_index_for_mask_1d_index(
             shape=sub_shape,

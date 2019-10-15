@@ -1157,7 +1157,7 @@ class TestCompareToFull2dConv:
         im = np.arange(900).reshape(30, 30)
         kernel = np.arange(49).reshape(7, 7)
         blurred_im = scipy.signal.convolve2d(im, kernel, mode="same")
-        mask = aa.ScaledSubMask.circular(
+        mask = aa.Mask.circular(
             shape=(30, 30), pixel_scales=(1.0, 1.0), sub_size=1, radius_arcsec=4.0
         )
         blurred_masked_im_0 = mask.mapping.array_from_array_2d(blurred_im)
