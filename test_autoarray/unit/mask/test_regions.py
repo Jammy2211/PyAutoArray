@@ -7,7 +7,7 @@ class TestRegions:
 
     def test__mask_2d_index_for_mask_1d_index__compare_to_array_util(self):
 
-        mask = aa.mask([[True, True, True], [True, False, False], [True, True, False]])
+        mask = aa.mask.manual([[True, True, True], [True, False, False], [True, True, False]])
 
         mask_2d_index_for_mask_1d_index = aa.mask_util.sub_mask_2d_index_for_sub_mask_1d_index_from_mask_and_sub_size(
             mask=mask, sub_size=1
@@ -19,7 +19,7 @@ class TestRegions:
 
     def test__blurring_mask_for_psf_shape__compare_to_array_util(self):
 
-        mask = aa.mask(
+        mask = aa.mask.manual(
             [
                 [True, True, True, True, True, True, True, True],
                 [True, False, True, True, True, False, True, True],
@@ -42,7 +42,7 @@ class TestRegions:
         assert (blurring_mask == blurring_mask_via_util).all()
 
     def test__edge_image_pixels__compare_to_array_util(self):
-        mask = aa.mask(
+        mask = aa.mask.manual(
             [
                 [True, True, True, True, True, True, True, True, True],
                 [True, False, False, False, False, False, False, False, True],
@@ -66,7 +66,7 @@ class TestRegions:
         assert mask.regions._edge_1d_indexes.shape[0] == mask.regions._edge_2d_indexes.shape[0]
 
     def test__edge_mask(self):
-        mask = aa.mask(
+        mask = aa.mask.manual(
             [
                 [True, True, True, True, True, True, True, True, True],
                 [True, False, False, False, False, False, False, False, True],
@@ -98,7 +98,7 @@ class TestRegions:
         ).all()
 
     def test__border_image_pixels__compare_to_array_util(self):
-        mask = aa.mask(
+        mask = aa.mask.manual(
             [
                 [True, True, True, True, True, True, True, True, True],
                 [True, False, False, False, False, False, False, False, True],
@@ -120,7 +120,7 @@ class TestRegions:
         assert mask.regions._border_1d_indexes.shape[0] == mask.regions._border_2d_indexes.shape[0]
 
     def test__border_mask(self):
-        mask = aa.mask(
+        mask = aa.mask.manual(
             [
                 [True, True, True, True, True, True, True, True, True],
                 [True, False, False, False, False, False, False, False, True],
@@ -153,7 +153,7 @@ class TestRegions:
 
     def test__sub_border_1d_indexes__compare_to_array_util_and_numerics(self):
 
-        mask = aa.mask(
+        mask = aa.mask.manual(
             [
                 [False, False, False, False, False, False, False, True],
                 [False, True, True, True, True, True, False, True],
@@ -173,7 +173,7 @@ class TestRegions:
             sub_border_pixels_util, 1e-4
         )
 
-        mask = aa.mask(
+        mask = aa.mask.manual(
             [
                 [True, True, True, True, True, True, True],
                 [True, True, True, True, True, True, True],
@@ -190,7 +190,7 @@ class TestRegions:
     ).all()
 
     def test__mask_1d_index_for_sub_mask_1d_index__compare_to_util(self):
-        mask = aa.mask(
+        mask = aa.mask.manual(
             [[True, False, True], [False, False, False], [True, False, False]], sub_size=2
         )
 
@@ -204,7 +204,7 @@ class TestRegions:
         ).all()
 
     def test__sub_mask_2d_index_for_sub_mask_1d_index__compare_to_array_util(self):
-        mask = aa.mask([[True, True, True], [True, False, False], [True, True, False]], sub_size=2)
+        mask = aa.mask.manual([[True, True, True], [True, False, False], [True, True, False]], sub_size=2)
 
         sub_mask_2d_index_for_sub_mask_1d_index = aa.mask_util.sub_mask_2d_index_for_sub_mask_1d_index_from_mask_and_sub_size(
             mask=mask, sub_size=2
@@ -216,7 +216,7 @@ class TestRegions:
 
     def test__sub_mask__is_mask_at_sub_grid_resolution(self):
 
-        mask = aa.mask([[False, True], [False, False]], sub_size=2)
+        mask = aa.mask.manual([[False, True], [False, False]], sub_size=2)
 
         assert (
                 mask.regions.sub_mask_2d
@@ -230,7 +230,7 @@ class TestRegions:
         )
         ).all()
 
-        mask = aa.mask([[False, False, True], [False, True, False]], sub_size=2)
+        mask = aa.mask.manual([[False, False, True], [False, True, False]], sub_size=2)
 
         assert (
                 mask.regions.sub_mask_2d

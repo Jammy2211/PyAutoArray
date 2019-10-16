@@ -10,7 +10,7 @@ from autoarray.mask import mask as msk
 from autoarray.util import grid_util, array_util, mask_util, binning_util, sparse_util
 
 
-class Grid(abstract_structure.AbstractStructure):
+class AbstractGrid(abstract_structure.AbstractStructure):
 
     def __new__(cls, grid_1d, mask, binned=None, *args, **kwargs):
         """A grid of coordinates, where each entry corresponds to the (y,x) coordinates at the centre of an \
@@ -124,14 +124,14 @@ class Grid(abstract_structure.AbstractStructure):
                  grid[8] = [0.25, -0.25]
 
         """
-        obj = super(Grid, cls).__new__(cls=cls, structure_1d=grid_1d, mask=mask)
+        obj = super(AbstractGrid, cls).__new__(cls=cls, structure_1d=grid_1d, mask=mask)
         obj.interpolator = None
         obj.binned = None
         return obj
 
     def __array_finalize__(self, obj):
 
-        super(Grid, self).__array_finalize__(obj)
+        super(AbstractGrid, self).__array_finalize__(obj)
 
         if isinstance(obj, Grid):
 
@@ -141,155 +141,23 @@ class Grid(abstract_structure.AbstractStructure):
         if hasattr(obj, '_sub_border_1d_indexes'):
             self._sub_border_1d_indexes = obj._sub_border_1d_indexes
 
-    @classmethod
-    def from_sub_grid_1d_shape_2d_pixel_scales_and_sub_size(cls, sub_grid_1d, shape_2d, pixel_scales, sub_size, origin=(0.0, 0.0)):
+    def __reduce__(self):
+        # Get the parent's __reduce__ tuple
+        pickled_state = super(AbstractGrid, self).__reduce__()
+        # Create our own tuple to pass to __setstate__
+        class_dict = {}
+        for key, value in self.__dict__.items():
+            class_dict[key] = value
+        new_state = pickled_state[2] + (class_dict,)
+        # Return a tuple that replaces the parent's __setstate__ tuple with our own
+        return pickled_state[0], pickled_state[1], new_state
 
-        mask = msk.Mask.unmasked(
-            shape_2d=shape_2d,
-            pixel_scales=pixel_scales,
-            sub_size=sub_size,
-            origin=origin,
-        )
+    # noinspection PyMethodOverriding
+    def __setstate__(self, state):
 
-        return mask.mapping.grid_from_sub_grid_1d(sub_grid_1d=sub_grid_1d)
-
-    @classmethod
-    def from_sub_grid_2d_pixel_scales_and_sub_size(cls, sub_grid_2d, pixel_scales, sub_size, origin=(0.0, 0.0)):
-
-        shape = (int(sub_grid_2d.shape[0] / sub_size), int(sub_grid_2d.shape[1] / sub_size))
-
-        mask = msk.Mask.unmasked(
-            shape_2d=shape, pixel_scales=pixel_scales, sub_size=sub_size, origin=origin
-        )
-
-        return mask.mapping.grid_from_sub_grid_2d(sub_grid_2d=sub_grid_2d)
-
-    @classmethod
-    def manual(cls, grid, pixel_scales, shape_2d=None, sub_size=1, origin=(0.0, 0.0)):
-
-        grid = np.asarray(grid)
-
-        if type(pixel_scales) is float:
-            pixel_scales = (pixel_scales, pixel_scales)
-
-        if len(grid.shape) == 2 and shape_2d is None:
-            raise exc.GridException('A 2D grid cannot be used to set up a Grid class without its 2D shape.')
-
-        if shape_2d is not None and len(shape_2d) != 2:
-            raise exc.GridException('The input shape_2d parameter is not a tuple of type (float, float)')
-
-        if grid.shape[-1] != 2:
-            raise exc.GridException('The final dimension of the input grid is not equal to 2 (e.g. the (y,x) coordinates)')
-
-        if 2 < len(grid.shape) > 3:
-            raise exc.GridException('The dimensions of the input grid array is not 2 or 3')
-
-        if len(grid.shape) == 3:
-            return Grid.from_sub_grid_2d_pixel_scales_and_sub_size(sub_grid_2d=grid, pixel_scales=pixel_scales,
-                                                                   sub_size=sub_size, origin=origin)
-        elif len(grid.shape) == 2:
-            return Grid.from_sub_grid_1d_shape_2d_pixel_scales_and_sub_size(
-                sub_grid_1d=grid, shape_2d=shape_2d, pixel_scales=pixel_scales,
-                sub_size=sub_size, origin=origin)
-
-    @classmethod
-    def uniform(cls, pixel_scales, shape_2d, sub_size=1, origin=(0.0, 0.0)):
-
-        if type(pixel_scales) is float:
-            pixel_scales = (pixel_scales, pixel_scales)
-
-        grid_1d = grid_util.grid_1d_from_shape_2d_pixel_scales_sub_size_and_origin(
-            shape_2d=shape_2d, pixel_scales=pixel_scales, sub_size=sub_size, origin=origin
-        )
-
-        return cls.manual(grid=grid_1d, shape_2d=shape_2d, pixel_scales=pixel_scales, sub_size=sub_size, origin=origin)
-
-    @classmethod
-    def from_mask(cls, mask):
-        """Setup a sub-grid of the unmasked pixels, using a mask and a specified sub-grid size. The center of \
-        every unmasked pixel's sub-pixels give the grid's (y,x) arc-second coordinates.
-
-        Parameters
-        -----------
-        mask : Mask
-            The mask whose masked pixels are used to setup the sub-pixel grid.
-        sub_size : int
-            The size (sub_size x sub_size) of each unmasked pixels sub-grid.
-        """
-
-        sub_grid_1d = grid_util.grid_1d_from_mask_pixel_scales_sub_size_and_origin(
-            mask=mask, pixel_scales=mask.pixel_scales, sub_size=mask.sub_size, origin=mask.origin
-        )
-
-        return Grid(grid_1d=sub_grid_1d, mask=mask)
-
-    @classmethod
-    def from_sub_grid_2d_and_mask(cls, sub_grid_2d, mask):
-        return mask.mapping.grid_from_sub_grid_2d(sub_grid_2d=sub_grid_2d)
-
-    @classmethod
-    def blurring_grid_from_mask_and_kernel_shape(cls, mask, kernel_shape):
-        """Setup a blurring-grid from a mask, where a blurring grid consists of all pixels that are masked, but they \
-        are close enough to the unmasked pixels that a fraction of their light will be blurred into those pixels \
-        via PSF convolution. For example, if our mask is as follows:
-
-        |x|x|x|x|x|x|x|x|x|x|
-        |x|x|x|x|x|x|x|x|x|x|     This is an imaging.Mask, where:
-        |x|x|x|x|x|x|x|x|x|x|
-        |x|x|x|x|x|x|x|x|x|x|     x = True (Pixel is masked and excluded from lens)
-        |x|x|x|o|o|o|x|x|x|x|     o = False (Pixel is not masked and included in lens)
-        |x|x|x|o|o|o|x|x|x|x|
-        |x|x|x|o|o|o|x|x|x|x|
-        |x|x|x|x|x|x|x|x|x|x|
-        |x|x|x|x|x|x|x|x|x|x|
-        |x|x|x|x|x|x|x|x|x|x|
-
-        For a PSF of shape (3,3), the following blurring mask is computed (noting that only pixels that are direct \
-        neighbors of the unmasked pixels above will blur light into an unmasked pixel):
-
-        |x|x|x|x|x|x|x|x|x|     This is an example grid.Mask, where:
-        |x|x|x|x|x|x|x|x|x|
-        |x|x|o|o|o|o|o|x|x|     x = True (Pixel is masked and excluded from lens)
-        |x|x|o|x|x|x|o|x|x|     o = False (Pixel is not masked and included in lens)
-        |x|x|o|x|x|x|o|x|x|
-        |x|x|o|x|x|x|o|x|x|
-        |x|x|o|o|o|o|o|x|x|
-        |x|x|x|x|x|x|x|x|x|
-        |x|x|x|x|x|x|x|x|x|
-
-        Thus, the blurring grid coordinates and indexes will be as follows:
-
-        pixel_scale = 1.0"
-
-        <--- -ve  x  +ve -->
-                                                            y     x
-        |x|x|x |x |x |x |x |x|x|  |   blurring_grid[0] = [2.0, -2.0]  blurring_grid[9] =  [-1.0, -2.0]
-        |x|x|x |x |x |x |x |x|x|  |   blurring_grid[1] = [2.0, -1.0]  blurring_grid[10] = [-1.0,  2.0]
-        |x|x|0 |1 |2 |3 |4 |x|x| +ve  blurring_grid[2] = [2.0,  0.0]  blurring_grid[11] = [-2.0, -2.0]
-        |x|x|5 |x |x |x |6 |x|x|  y   blurring_grid[3] = [2.0,  1.0]  blurring_grid[12] = [-2.0, -1.0]
-        |x|x|7 |x |x |x |8 |x|x| -ve  blurring_grid[4] = [2.0,  2.0]  blurring_grid[13] = [-2.0,  0.0]
-        |x|x|9 |x |x |x |10|x|x|  |   blurring_grid[5] = [1.0, -2.0]  blurring_grid[14] = [-2.0,  1.0]
-        |x|x|11|12|13|14|15|x|x|  |   blurring_grid[6] = [1.0,  2.0]  blurring_grid[15] = [-2.0,  2.0]
-        |x|x|x |x |x |x |x |x|x| \/   blurring_grid[7] = [0.0, -2.0]
-        |x|x|x |x |x |x |x |x|x|      blurring_grid[8] = [0.0,  2.0]
-
-        For a PSF of shape (5,5), the following blurring mask is computed (noting that pixels that are 2 pixels from an
-        direct unmasked pixels now blur light into an unmasked pixel):
-
-        |x|x|x|x|x|x|x|x|x|     This is an example grid.Mask, where:
-        |x|o|o|o|o|o|o|o|x|
-        |x|o|o|o|o|o|o|o|x|     x = True (Pixel is masked and excluded from lens)
-        |x|o|o|x|x|x|o|o|x|     o = False (Pixel is not masked and included in lens)
-        |x|o|o|x|x|x|o|o|x|
-        |x|o|o|x|x|x|o|o|x|
-        |x|o|o|o|o|o|o|o|x|
-        |x|o|o|o|o|o|o|o|x|
-        |x|x|x|x|x|x|x|x|x|
-        """
-
-        blurring_mask = mask.regions.blurring_mask_from_kernel_shape(kernel_shape=kernel_shape)
-
-        return Grid.from_mask(mask=blurring_mask)
+        for key, value in state[-1].items():
+            setattr(self, key, value)
+        super(AbstractGrid, self).__setstate__(state[0:-1])
 
     @property
     def in_2d(self):
@@ -309,7 +177,7 @@ class Grid(abstract_structure.AbstractStructure):
             kernel_shape=kernel_shape
         )
 
-        return self.__class__.from_mask(mask=blurring_mask)
+        return GridMasked.from_mask(mask=blurring_mask)
 
     def new_grid_with_binned_grid(self, binned_grid):
         # noinspection PyAttributeOutsideInit
@@ -417,7 +285,7 @@ class Grid(abstract_structure.AbstractStructure):
             sub_size=self.mask.sub_size,
         )
 
-        padded_sub_grid = Grid.from_mask(mask=padded_mask)
+        padded_sub_grid = GridMasked.from_mask(mask=padded_mask)
 
         if self.interpolator is None:
             return padded_sub_grid
@@ -471,23 +339,182 @@ class Grid(abstract_structure.AbstractStructure):
             nearest_pixelization_1d_index_for_mask_1d_index=pixelization_grid.nearest_pixelization_1d_index_for_mask_1d_index,
         )
 
-    def __reduce__(self):
-        # Get the parent's __reduce__ tuple
-        pickled_state = super(Grid, self).__reduce__()
-        # Create our own tuple to pass to __setstate__
-        class_dict = {}
-        for key, value in self.__dict__.items():
-            class_dict[key] = value
-        new_state = pickled_state[2] + (class_dict,)
-        # Return a tuple that replaces the parent's __setstate__ tuple with our own
-        return pickled_state[0], pickled_state[1], new_state
 
-    # noinspection PyMethodOverriding
-    def __setstate__(self, state):
+class Grid(AbstractGrid):
 
-        for key, value in state[-1].items():
-            setattr(self, key, value)
-        super(Grid, self).__setstate__(state[0:-1])
+    @classmethod
+    def from_sub_grid_1d_shape_2d_pixel_scales_and_sub_size(cls, sub_grid_1d, shape_2d, pixel_scales, sub_size, origin=(0.0, 0.0)):
+
+        mask = msk.Mask.unmasked(
+            shape_2d=shape_2d,
+            pixel_scales=pixel_scales,
+            sub_size=sub_size,
+            origin=origin,
+        )
+
+        return mask.mapping.grid_from_sub_grid_1d(sub_grid_1d=sub_grid_1d)
+
+    @classmethod
+    def from_sub_grid_2d_pixel_scales_and_sub_size(cls, sub_grid_2d, pixel_scales, sub_size, origin=(0.0, 0.0)):
+
+        shape = (int(sub_grid_2d.shape[0] / sub_size), int(sub_grid_2d.shape[1] / sub_size))
+
+        mask = msk.Mask.unmasked(
+            shape_2d=shape, pixel_scales=pixel_scales, sub_size=sub_size, origin=origin
+        )
+
+        return mask.mapping.grid_from_sub_grid_2d(sub_grid_2d=sub_grid_2d)
+
+    @classmethod
+    def manual(cls, grid, pixel_scales, shape_2d=None, sub_size=1, origin=(0.0, 0.0)):
+
+        grid = np.asarray(grid)
+
+        if type(pixel_scales) is float:
+            pixel_scales = (pixel_scales, pixel_scales)
+
+        if len(grid.shape) == 2 and shape_2d is None:
+            raise exc.GridException('A 2D grid cannot be used to set up a Grid class without its 2D shape.')
+
+        if shape_2d is not None and len(shape_2d) != 2:
+            raise exc.GridException('The input shape_2d parameter is not a tuple of type (float, float)')
+
+        if grid.shape[-1] != 2:
+            raise exc.GridException('The final dimension of the input grid is not equal to 2 (e.g. the (y,x) coordinates)')
+
+        if 2 < len(grid.shape) > 3:
+            raise exc.GridException('The dimensions of the input grid array is not 2 or 3')
+
+        if len(grid.shape) == 3:
+            return Grid.from_sub_grid_2d_pixel_scales_and_sub_size(sub_grid_2d=grid, pixel_scales=pixel_scales,
+                                                                   sub_size=sub_size, origin=origin)
+        elif len(grid.shape) == 2:
+            return Grid.from_sub_grid_1d_shape_2d_pixel_scales_and_sub_size(
+                sub_grid_1d=grid, shape_2d=shape_2d, pixel_scales=pixel_scales,
+                sub_size=sub_size, origin=origin)
+
+    @classmethod
+    def uniform(cls, pixel_scales, shape_2d, sub_size=1, origin=(0.0, 0.0)):
+
+        if type(pixel_scales) is float:
+            pixel_scales = (pixel_scales, pixel_scales)
+
+        grid_1d = grid_util.grid_1d_from_shape_2d_pixel_scales_sub_size_and_origin(
+            shape_2d=shape_2d, pixel_scales=pixel_scales, sub_size=sub_size, origin=origin
+        )
+
+        return cls.manual(grid=grid_1d, shape_2d=shape_2d, pixel_scales=pixel_scales, sub_size=sub_size, origin=origin)
+
+    @classmethod
+    def from_sub_grid_2d_and_mask(cls, sub_grid_2d, mask):
+        return mask.mapping.grid_from_sub_grid_2d(sub_grid_2d=sub_grid_2d)
+
+    @classmethod
+    def blurring_grid_from_mask_and_kernel_shape(cls, mask, kernel_shape):
+        """Setup a blurring-grid from a mask, where a blurring grid consists of all pixels that are masked, but they \
+        are close enough to the unmasked pixels that a fraction of their light will be blurred into those pixels \
+        via PSF convolution. For example, if our mask is as follows:
+
+        |x|x|x|x|x|x|x|x|x|x|
+        |x|x|x|x|x|x|x|x|x|x|     This is an imaging.Mask, where:
+        |x|x|x|x|x|x|x|x|x|x|
+        |x|x|x|x|x|x|x|x|x|x|     x = True (Pixel is masked and excluded from lens)
+        |x|x|x|o|o|o|x|x|x|x|     o = False (Pixel is not masked and included in lens)
+        |x|x|x|o|o|o|x|x|x|x|
+        |x|x|x|o|o|o|x|x|x|x|
+        |x|x|x|x|x|x|x|x|x|x|
+        |x|x|x|x|x|x|x|x|x|x|
+        |x|x|x|x|x|x|x|x|x|x|
+
+        For a PSF of shape (3,3), the following blurring mask is computed (noting that only pixels that are direct \
+        neighbors of the unmasked pixels above will blur light into an unmasked pixel):
+
+        |x|x|x|x|x|x|x|x|x|     This is an example grid.Mask, where:
+        |x|x|x|x|x|x|x|x|x|
+        |x|x|o|o|o|o|o|x|x|     x = True (Pixel is masked and excluded from lens)
+        |x|x|o|x|x|x|o|x|x|     o = False (Pixel is not masked and included in lens)
+        |x|x|o|x|x|x|o|x|x|
+        |x|x|o|x|x|x|o|x|x|
+        |x|x|o|o|o|o|o|x|x|
+        |x|x|x|x|x|x|x|x|x|
+        |x|x|x|x|x|x|x|x|x|
+
+        Thus, the blurring grid coordinates and indexes will be as follows:
+
+        pixel_scale = 1.0"
+
+        <--- -ve  x  +ve -->
+                                                            y     x
+        |x|x|x |x |x |x |x |x|x|  |   blurring_grid[0] = [2.0, -2.0]  blurring_grid[9] =  [-1.0, -2.0]
+        |x|x|x |x |x |x |x |x|x|  |   blurring_grid[1] = [2.0, -1.0]  blurring_grid[10] = [-1.0,  2.0]
+        |x|x|0 |1 |2 |3 |4 |x|x| +ve  blurring_grid[2] = [2.0,  0.0]  blurring_grid[11] = [-2.0, -2.0]
+        |x|x|5 |x |x |x |6 |x|x|  y   blurring_grid[3] = [2.0,  1.0]  blurring_grid[12] = [-2.0, -1.0]
+        |x|x|7 |x |x |x |8 |x|x| -ve  blurring_grid[4] = [2.0,  2.0]  blurring_grid[13] = [-2.0,  0.0]
+        |x|x|9 |x |x |x |10|x|x|  |   blurring_grid[5] = [1.0, -2.0]  blurring_grid[14] = [-2.0,  1.0]
+        |x|x|11|12|13|14|15|x|x|  |   blurring_grid[6] = [1.0,  2.0]  blurring_grid[15] = [-2.0,  2.0]
+        |x|x|x |x |x |x |x |x|x| \/   blurring_grid[7] = [0.0, -2.0]
+        |x|x|x |x |x |x |x |x|x|      blurring_grid[8] = [0.0,  2.0]
+
+        For a PSF of shape (5,5), the following blurring mask is computed (noting that pixels that are 2 pixels from an
+        direct unmasked pixels now blur light into an unmasked pixel):
+
+        |x|x|x|x|x|x|x|x|x|     This is an example grid.Mask, where:
+        |x|o|o|o|o|o|o|o|x|
+        |x|o|o|o|o|o|o|o|x|     x = True (Pixel is masked and excluded from lens)
+        |x|o|o|x|x|x|o|o|x|     o = False (Pixel is not masked and included in lens)
+        |x|o|o|x|x|x|o|o|x|
+        |x|o|o|x|x|x|o|o|x|
+        |x|o|o|o|o|o|o|o|x|
+        |x|o|o|o|o|o|o|o|x|
+        |x|x|x|x|x|x|x|x|x|
+        """
+
+        blurring_mask = mask.regions.blurring_mask_from_kernel_shape(kernel_shape=kernel_shape)
+
+        return GridMasked.from_mask(mask=blurring_mask)
+
+
+class GridMasked(AbstractGrid):
+    
+    @classmethod
+    def manual(cls, grid, mask):
+        
+        grid = np.asarray(grid)
+
+        if len(grid.shape) == 3:
+
+            if (grid.shape[0], grid.shape[1]) != mask.sub_shape:
+                raise exc.GridException('The input grid is 2D but not the same dimensions as the sub-mask '
+                                         '(e.g. the mask 2D shape multipled by its sub size.')
+
+            return mask.mapping.grid_from_sub_grid_2d(sub_grid_2d=grid)
+
+        elif len(grid.shape) == 2:
+
+            if grid.shape[0] != mask.sub_pixels_in_mask:
+                raise exc.GridException('The input 1D grid does not have the same number of entries as sub-pixels in'
+                                         'the mask.')
+
+            return mask.mapping.grid_from_sub_grid_1d(sub_grid_1d=grid)
+    
+    @classmethod
+    def from_mask(cls, mask):
+        """Setup a sub-grid of the unmasked pixels, using a mask and a specified sub-grid size. The center of \
+        every unmasked pixel's sub-pixels give the grid's (y,x) arc-second coordinates.
+
+        Parameters
+        -----------
+        mask : Mask
+            The mask whose masked pixels are used to setup the sub-pixel grid.
+        sub_size : int
+            The size (sub_size x sub_size) of each unmasked pixels sub-grid.
+        """
+
+        sub_grid_1d = grid_util.grid_1d_from_mask_pixel_scales_sub_size_and_origin(
+            mask=mask, pixel_scales=mask.pixel_scales, sub_size=mask.sub_size, origin=mask.origin
+        )
+
+        return Grid(grid_1d=sub_grid_1d, mask=mask)
 
 
 class BinnedGrid(Grid):
@@ -542,7 +569,7 @@ class BinnedGrid(Grid):
 
         binned_mask = binned_mask.mapping.mask_sub_1_from_mask(mask=binned_mask)
 
-        binned_grid = Grid.from_mask(mask=binned_mask)
+        binned_grid = GridMasked.from_mask(mask=binned_mask)
         binned_mask_1d_index_to_mask_1d_indexes, binned_mask_1d_index_to_mask_1d_sizes = binning_util.masked_array_1d_for_binned_masked_array_1d_all_from_mask_2d_and_bin_up_factor(
             mask_2d=mask, bin_up_factor=bin_up_factor
         )

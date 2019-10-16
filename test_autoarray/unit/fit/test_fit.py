@@ -6,7 +6,7 @@ import numpy as np
 class TestDataFit:
     def test__image_and_model_are_identical__no_masking__check_values_are_correct(self):
 
-        mask = aa.ScaledSubMask(
+        mask = aa.mask.manual(
             mask_2d=np.array([[False, False], [False, False]]),
             sub_size=1,
             pixel_scales=(1.0, 1.0),
@@ -58,7 +58,7 @@ class TestDataFit:
 
     def test__image_and_model_mismatch__no_masking__check_values_are_correct(self):
 
-        mask = aa.ScaledSubMask(
+        mask = aa.mask.manual(
             mask_2d=np.array([[False, True], [False, False]]),
             sub_size=1,
             pixel_scales=(1.0, 1.0),

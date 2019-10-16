@@ -15,7 +15,7 @@ class TestMapping:
 
         array_2d = np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9], [10, 11, 12]])
 
-        mask = aa.mask(
+        mask = aa.mask.manual(
             [
                 [True, False, True],
                 [False, False, False],
@@ -37,7 +37,7 @@ class TestMapping:
         assert (scaled_array.in_2d == masked_array_2d).all()
 
     def test__array_from_array_1d__compare_to_util(self):
-        mask = aa.mask(
+        mask = aa.mask.manual(
             [
                 [True, True, False, False],
                 [True, False, True, True],
@@ -73,7 +73,7 @@ class TestMapping:
             ]
         )
 
-        mask = aa.mask(
+        mask = aa.mask.manual(
             [
                 [True, False, True, True],
                 [False, False, False, True],
@@ -94,7 +94,7 @@ class TestMapping:
         assert (grid.in_2d == masked_grid_2d).all()
 
     def test__grid_from_grid_1d__compare_to_util(self):
-        mask = aa.mask(
+        mask = aa.mask.manual(
             [
                 [True, True, False, False],
                 [True, False, True, True],
@@ -118,7 +118,7 @@ class TestMapping:
 
     def test__sub_array_2d_from_sub_array_1d__use_2x3_mask(self):
 
-        mask = aa.mask([[False, False, True], [False, True, False]], sub_size=2)
+        mask = aa.mask.manual([[False, False, True], [False, True, False]], sub_size=2)
 
         sub_array_1d = np.array(
             [
@@ -156,7 +156,7 @@ class TestMapping:
         ).all()
 
     def test__sub_array_2d_binned_from_sub_array_1d(self):
-        mask = aa.mask([[False, False, True], [False, True, False]], sub_size=2)
+        mask = aa.mask.manual([[False, False, True], [False, True, False]], sub_size=2)
 
         sub_array_1d = np.array(
             [
@@ -184,7 +184,7 @@ class TestMapping:
         assert (sub_array_2d == np.array([[3.5, 2.0, 0.0], [3.0, 0.0, 2.0]])).all()
 
     def test__sub_grid_2d_from_sub_grid_1d(self):
-        mask = aa.mask([[False, False, True], [False, True, False]], sub_size=2)
+        mask = aa.mask.manual([[False, False, True], [False, True, False]], sub_size=2)
 
         sub_grid_1d = np.array(
             [
@@ -250,7 +250,7 @@ class TestMapping:
         ).all()
 
     def test__sub_grid_2d_binned_from_sub_grid_1d(self):
-        mask = aa.mask([[False, False, True], [False, True, False]], sub_size=2)
+        mask = aa.mask.manual([[False, False, True], [False, True, False]], sub_size=2)
 
         sub_grid_1d = np.array(
             [
@@ -289,7 +289,7 @@ class TestMapping:
 
     def test__array_from_sub_array_1d(self):
 
-        mask = aa.mask([[False, True], [False, False]], sub_size=2)
+        mask = aa.mask.manual([[False, True], [False, False]], sub_size=2)
 
         sub_array_1d = np.array(
             [1.0, 2.0, 3.0, 4.0, 9.0, 10.0, 11.0, 12.0, 13.0, 14.0, 15.0, 16.0]
@@ -321,7 +321,7 @@ class TestMapping:
             ]
         )
 
-        mask = aa.mask([[False, False, True], [False, True, False]], sub_size=2)
+        mask = aa.mask.manual([[False, False, True], [False, True, False]], sub_size=2)
 
         scaled_array = mask.mapping.array_from_sub_array_2d(sub_array_2d=sub_array_2d)
 
@@ -352,7 +352,7 @@ class TestMapping:
         assert (scaled_array.in_2d == sub_array_2d).all()
 
     def test__array_binned_from_sub_array_1d_by_binning_up(self):
-        mask = aa.mask([[False, False, True], [False, True, False]], pixel_scales=(3.0, 3.0), sub_size=2)
+        mask = aa.mask.manual([[False, False, True], [False, True, False]], pixel_scales=(3.0, 3.0), sub_size=2)
 
         sub_array_1d = np.array(
             [
@@ -387,7 +387,7 @@ class TestMapping:
         assert scaled_array.mask.origin == (0.0, 0.0)
 
     def test__grid_from_sub_grid_1d(self):
-        mask = aa.mask([[False, True], [False, False]], sub_size=2)
+        mask = aa.mask.manual([[False, True], [False, False]], sub_size=2)
 
         sub_grid_1d = np.array(
             [
@@ -460,7 +460,7 @@ class TestMapping:
             ]
         )
 
-        mask = aa.mask([[False, False, True], [False, True, False]], sub_size=2)
+        mask = aa.mask.manual([[False, False, True], [False, True, False]], sub_size=2)
 
         grid = mask.mapping.grid_from_sub_grid_2d(sub_grid_2d=sub_grid_2d)
 
@@ -491,7 +491,7 @@ class TestMapping:
         assert (grid.in_2d == sub_grid_2d).all()
 
     def test__grid_binned_from_sub_grid_1d(self):
-        mask = aa.mask([[False, True], [False, False]], sub_size=2)
+        mask = aa.mask.manual([[False, True], [False, False]], sub_size=2)
 
         grid_1d = np.array(
             [
@@ -520,7 +520,7 @@ class TestMapping:
         ).all()
 
     def test__trimmed_array_2d_from_padded_array_1d_and_image_shape(self):
-        mask = aa.mask(np.full(shape=(4, 4), fill_value=False))
+        mask = aa.mask.manual(np.full(shape=(4, 4), fill_value=False))
 
         array_1d = np.array(
             [
@@ -582,7 +582,7 @@ class TestResizedMask:
 
     def test__resized_mask__pad__compare_to_manual_mask(self):
 
-        mask = aa.mask(np.full(fill_value=False, shape=(5, 5)))
+        mask = aa.mask.manual(np.full(fill_value=False, shape=(5, 5)))
         mask[2, 2] = True
 
         mask_resized = mask.mapping.resized_mask_from_new_shape(
@@ -596,7 +596,7 @@ class TestResizedMask:
 
     def test__resized_mask__trim__compare_to_manual_mask(self):
 
-        mask = aa.mask(np.full(fill_value=False, shape=(5, 5)))
+        mask = aa.mask.manual(np.full(fill_value=False, shape=(5, 5)))
         mask[2, 2] = True
 
         mask = aa.Mapping(mask=mask)
@@ -615,7 +615,7 @@ class TestBinnedMask:
 
     def test__compare_to_mask_via_util(self):
 
-        mask = aa.mask(np.full(shape=(14, 19), fill_value=True))
+        mask = aa.mask.manual(np.full(shape=(14, 19), fill_value=True))
         mask[1, 5] = False
         mask[6, 5] = False
         mask[4, 9] = False
@@ -630,7 +630,7 @@ class TestBinnedMask:
         assert (mask == binned_up_mask_via_util).all()
         assert mask.pixel_scales == None
 
-        mask = aa.mask(np.full(shape=(14, 19), fill_value=True), pixel_scales=(1.0, 2.0))
+        mask = aa.mask.manual(np.full(shape=(14, 19), fill_value=True), pixel_scales=(1.0, 2.0))
         mask[1, 5] = False
         mask[6, 5] = False
         mask[4, 9] = False

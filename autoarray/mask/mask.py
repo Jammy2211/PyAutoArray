@@ -14,7 +14,7 @@ class Mask(np.ndarray):
 
     # noinspection PyUnusedLocal
     def __new__(
-        cls, mask_2d, pixel_scales, sub_size, origin=(0.0, 0.0), *args, **kwargs
+        cls, mask_2d, pixel_scales=None, sub_size=1, origin=(0.0, 0.0), *args, **kwargs
     ):
         """ A mask, which is applied to a 2D array of hyper_galaxies to extract a set of unmasked image pixels (i.e. mask entry \
         is *False* or 0) which are then fitted in an analysis.
