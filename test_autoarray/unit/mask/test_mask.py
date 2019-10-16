@@ -513,4 +513,4 @@ class TestBinnedMask:
 
         mask = mask.mapping.binned_mask_from_bin_up_factor(bin_up_factor=3)
         assert (mask == binned_up_mask_via_util).all()
-        assert mask.pixel_scales == 6.0
+        assert mask.pixel_scales == (6.0, 6.0)

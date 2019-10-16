@@ -251,6 +251,7 @@ class TestGridMaskedAPI:
 
             assert grid == pytest.approx(grid_via_util, 1e-4)
 
+
 class TestGrid:
 
     def test__constructor_class_method_in_2d(self):
@@ -843,70 +844,6 @@ class TestGridBorder(object):
         assert relocated_grid.sub_size == 2
 
 
-class TestBinnedGrid:
-    def test__from_mask_and_pixel_scale_binned_grid__correct_binned_bin_up_calculated(
-        self, mask_7x7, grid_7x7
-    ):
-        mask_7x7.pixel_scales = (1.0, 1.0)
-        binned_grid = aa.BinnedGrid.from_mask_and_pixel_scale_binned_grid(
-            mask=mask_7x7, pixel_scale_binned_grid=1.0
-        )
-
-        assert (binned_grid == grid_7x7).all()
-        assert (binned_grid.mask == mask_7x7).all()
-        assert binned_grid.bin_up_factor == 1
-        assert (
-            binned_grid.binned_mask_1d_index_to_mask_1d_indexes
-            == np.array([[0], [1], [2], [3], [4], [5], [6], [7], [8]])
-        ).all()
-
-        mask_7x7.pixel_scales = (1.0, 1.0)
-        binned_grid = aa.BinnedGrid.from_mask_and_pixel_scale_binned_grid(
-            mask=mask_7x7, pixel_scale_binned_grid=1.9
-        )
-
-        assert binned_grid.bin_up_factor == 1
-        assert (binned_grid.mask == mask_7x7).all()
-        assert (
-            binned_grid.binned_mask_1d_index_to_mask_1d_indexes
-            == np.array([[0], [1], [2], [3], [4], [5], [6], [7], [8]])
-        ).all()
-
-        mask_7x7.pixel_scales = (1.0, 1.0)
-        binned_grid = aa.BinnedGrid.from_mask_and_pixel_scale_binned_grid(
-            mask=mask_7x7, pixel_scale_binned_grid=2.0
-        )
-
-        assert binned_grid.bin_up_factor == 2
-        assert (
-            binned_grid.mask
-            == np.array(
-                [
-                    [True, True, True, True],
-                    [True, False, False, True],
-                    [True, False, False, True],
-                    [True, True, True, True],
-                ]
-            )
-        ).all()
-
-        assert (
-            binned_grid
-            == np.array([[1.0, -1.0], [1.0, 1.0], [-1.0, -1.0], [-1.0, 1.0]])
-        ).all()
-        assert (
-            binned_grid.binned_mask_1d_index_to_mask_1d_indexes
-            == np.array([[0, -1, -1, -1], [1, 2, -1, -1], [3, 6, -1, -1], [4, 5, 7, 8]])
-        ).all()
-
-        mask_7x7.pixel_scales = (2.0, 2.0)
-        binned_grid = aa.BinnedGrid.from_mask_and_pixel_scale_binned_grid(
-            mask=mask_7x7, pixel_scale_binned_grid=1.0
-        )
-
-        assert binned_grid.bin_up_factor == 1
-
-
 class TestPixelizationGrid:
     def test__pixelization_grid__attributes(self):
         pix_grid = aa.PixelizationGrid(
@@ -1348,7 +1285,7 @@ class TestSparseToGrid:
             ).all()
 
     class TestUnmaskedShapeAndWeightImage:
-        def test__binned_weight_map_all_ones__kmeans_grid_is_grid_overlapping_image(
+        def test__weight_map_all_ones__kmeans_grid_is_grid_overlapping_image(
             self
         ):
             mask = aa.mask.manual(
@@ -1364,16 +1301,16 @@ class TestSparseToGrid:
                 sub_size=1,
             )
 
-            binned_grid = aa.BinnedGrid.from_mask_and_pixel_scale_binned_grid(
-                mask=mask, pixel_scale_binned_grid=mask.pixel_scales
+            grid = aa.grid_masked.from_mask(
+                mask=mask,
             )
 
-            binned_weight_map = np.ones(mask.pixels_in_mask)
+            weight_map = np.ones(mask.pixels_in_mask)
 
-            sparse_to_grid_weight = aa.SparseToGrid.from_total_pixels_binned_grid_and_weight_map(
+            sparse_to_grid_weight = aa.SparseToGrid.from_total_pixels_grid_and_weight_map(
                 total_pixels=8,
-                binned_grid=binned_grid,
-                binned_weight_map=binned_weight_map,
+                grid=grid,
+                weight_map=weight_map,
                 n_iter=10,
                 max_iter=20,
                 seed=1,
@@ -1400,7 +1337,7 @@ class TestSparseToGrid:
                 == np.array([1, 1, 2, 2, 1, 1, 3, 3, 5, 4, 0, 7, 5, 4, 6, 6])
             ).all()
 
-        def test__binned_weight_map_changes_grid_from_above(self):
+        def test__weight_map_changed_from_above(self):
             mask = aa.mask.manual(
                 mask_2d=np.array(
                     [
@@ -1414,17 +1351,17 @@ class TestSparseToGrid:
                 sub_size=2,
             )
 
-            binned_grid = aa.BinnedGrid.from_mask_and_pixel_scale_binned_grid(
-                mask=mask, pixel_scale_binned_grid=mask.pixel_scales
+            grid = aa.grid_masked.from_mask(
+                mask=mask,
             )
 
-            binned_weight_map = np.ones(mask.pixels_in_mask)
-            binned_weight_map[0:15] = 0.00000001
+            weight_map = np.ones(mask.pixels_in_mask)
+            weight_map[0:15] = 0.00000001
 
-            sparse_to_grid_weight = aa.SparseToGrid.from_total_pixels_binned_grid_and_weight_map(
+            sparse_to_grid_weight = aa.SparseToGrid.from_total_pixels_grid_and_weight_map(
                 total_pixels=8,
-                binned_grid=binned_grid,
-                binned_weight_map=binned_weight_map,
+                grid=grid,
+                weight_map=weight_map,
                 n_iter=10,
                 max_iter=30,
                 seed=1,
@@ -1437,118 +1374,6 @@ class TestSparseToGrid:
             assert (
                 sparse_to_grid_weight.sparse_1d_index_for_mask_1d_index
                 == np.array([5, 1, 0, 0, 5, 1, 1, 4, 3, 6, 7, 4, 3, 6, 2, 2])
-            ).all()
-
-        def test__binned_weight_map_all_ones__pixel_scale_binned_grid_leads_to_binning_up_by_factor_2(
-            self
-        ):
-            mask = aa.mask.manual(
-                mask_2d=np.full(fill_value=False, shape=(8, 8)),
-                pixel_scales=(0.5, 0.5),
-                sub_size=2,
-            )
-
-            binned_grid = aa.BinnedGrid.from_mask_and_pixel_scale_binned_grid(
-                mask=mask, pixel_scale_binned_grid=2.0 * mask.pixel_scales
-            )
-
-            binned_weight_map = np.ones(binned_grid.shape[0])
-
-            sparse_to_grid_weight = aa.SparseToGrid.from_total_pixels_binned_grid_and_weight_map(
-                total_pixels=8,
-                binned_grid=binned_grid,
-                binned_weight_map=binned_weight_map,
-                n_iter=10,
-                max_iter=30,
-                seed=1,
-            )
-
-            assert (
-                sparse_to_grid_weight.sparse
-                == np.array(
-                    [
-                        [-0.5, 0.5],
-                        [1.0, -1.0],
-                        [1.5, 1.0],
-                        [0.5, 1.0],
-                        [-1.0, -0.5],
-                        [-1.0, -1.5],
-                        [-1.5, 1.0],
-                        [-0.5, 1.5],
-                    ]
-                )
-            ).all()
-
-            assert (
-                sparse_to_grid_weight.sparse_1d_index_for_mask_1d_index
-                == np.array(
-                    [
-                        1,
-                        1,
-                        1,
-                        1,
-                        2,
-                        2,
-                        2,
-                        2,
-                        1,
-                        1,
-                        1,
-                        1,
-                        2,
-                        2,
-                        2,
-                        2,
-                        1,
-                        1,
-                        1,
-                        1,
-                        3,
-                        3,
-                        3,
-                        3,
-                        1,
-                        1,
-                        1,
-                        1,
-                        3,
-                        3,
-                        3,
-                        3,
-                        5,
-                        5,
-                        4,
-                        4,
-                        0,
-                        0,
-                        7,
-                        7,
-                        5,
-                        5,
-                        4,
-                        4,
-                        0,
-                        0,
-                        7,
-                        7,
-                        5,
-                        5,
-                        4,
-                        4,
-                        6,
-                        6,
-                        6,
-                        6,
-                        5,
-                        5,
-                        4,
-                        4,
-                        6,
-                        6,
-                        6,
-                        6,
-                    ]
-                )
             ).all()
 
 

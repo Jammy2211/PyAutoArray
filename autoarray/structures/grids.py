@@ -525,77 +525,6 @@ class GridMasked(AbstractGrid):
         return Grid(grid_1d=sub_grid_1d, mask=mask)
 
 
-class BinnedGrid(Grid):
-    def __init__(
-        self,
-        grid_1d,
-        mask,
-        bin_up_factor,
-        binned_mask_1d_index_to_mask_1d_indexes,
-        binned_mask_1d_index_to_mask_1d_sizes,
-        total_unbinned_pixels,
-    ):
-        # noinspection PyArgumentList
-        super(BinnedGrid, self).__init__()
-        self.mask = mask
-        self.bin_up_factor = bin_up_factor
-        self.binned_mask_1d_index_to_mask_1d_indexes = (
-            binned_mask_1d_index_to_mask_1d_indexes
-        )
-        self.binned_mask_1d_index_to_mask_1d_sizes = (
-            binned_mask_1d_index_to_mask_1d_sizes
-        )
-        self.total_unbinned_pixels = total_unbinned_pixels
-
-    def __array_finalize__(self, obj):
-        super().__array_finalize__(obj)
-        if isinstance(obj, BinnedGrid):
-            self.mask = obj.mask
-            self.bin_up_factor = obj.bin_up_factor
-            self.binned_mask_1d_index_to_mask_1d_indexes = (
-                obj.binned_mask_1d_index_to_mask_1d_indexes
-            )
-            self.binned_mask_1d_index_to_mask_1d_sizes = (
-                obj.binned_mask_1d_index_to_mask_1d_sizes
-            )
-            self.total_unbinned_pixels = obj.total_unbinned_pixels
-
-    @classmethod
-    def from_mask_and_pixel_scale_binned_grid(cls, mask, pixel_scale_binned_grid):
-
-        if pixel_scale_binned_grid > mask.pixel_scales:
-
-            bin_up_factor = int(pixel_scale_binned_grid / mask.pixel_scales)
-
-        else:
-
-            bin_up_factor = 1
-
-        binned_mask = mask.mapping.binned_mask_from_bin_up_factor(
-            bin_up_factor=bin_up_factor
-        )
-
-        binned_mask = binned_mask.mapping.mask_sub_1_from_mask(mask=binned_mask)
-
-        binned_grid = GridMasked.from_mask(mask=binned_mask)
-        binned_mask_1d_index_to_mask_1d_indexes, binned_mask_1d_index_to_mask_1d_sizes = binning_util.masked_array_1d_for_binned_masked_array_1d_all_from_mask_2d_and_bin_up_factor(
-            mask_2d=mask, bin_up_factor=bin_up_factor
-        )
-
-        return BinnedGrid(
-            grid_1d=binned_grid,
-            mask=binned_mask,
-            bin_up_factor=bin_up_factor,
-            binned_mask_1d_index_to_mask_1d_indexes=binned_mask_1d_index_to_mask_1d_indexes.astype(
-                "int"
-            ),
-            binned_mask_1d_index_to_mask_1d_sizes=binned_mask_1d_index_to_mask_1d_sizes.astype(
-                "int"
-            ),
-            total_unbinned_pixels=mask.pixels_in_mask,
-        )
-
-
 class PixelizationGrid(np.ndarray):
     def __new__(
         cls, grid_1d, nearest_pixelization_1d_index_for_mask_1d_index, *args, **kwargs
@@ -697,8 +626,8 @@ class SparseToGrid(object):
         pixel_scales = grid.mask.pixel_scales
 
         pixel_scales = (
-            (grid.shape_arcsec[0] + pixel_scales) / (unmasked_sparse_shape[0]),
-            (grid.shape_arcsec[1] + pixel_scales) / (unmasked_sparse_shape[1]),
+            (grid.shape_arcsec[0] + pixel_scales[0]) / (unmasked_sparse_shape[0]),
+            (grid.shape_arcsec[1] + pixel_scales[1]) / (unmasked_sparse_shape[1]),
         )
 
         origin = grid.geometry.mask_centre
@@ -766,11 +695,11 @@ class SparseToGrid(object):
         )
 
     @classmethod
-    def from_total_pixels_binned_grid_and_weight_map(
+    def from_total_pixels_grid_and_weight_map(
         cls,
         total_pixels,
-        binned_grid,
-        binned_weight_map,
+        grid,
+        weight_map,
         n_iter=1,
         max_iter=5,
         seed=None,
@@ -781,29 +710,22 @@ class SparseToGrid(object):
 
         Parameters
         -----------
-        binned_grid : grids.Grid
+        grid : grids.Grid
             The grid of (y,x) arc-second coordinates at the centre of every image value (e.g. image-pixels).
         """
 
-        if total_pixels > binned_grid.shape[0]:
+        if total_pixels > grid.shape[0]:
             raise exc.GridException
 
         kmeans = KMeans(
             n_clusters=total_pixels, random_state=seed, n_init=n_iter, max_iter=max_iter
         )
 
-        kmeans = kmeans.fit(X=binned_grid, sample_weight=binned_weight_map)
-
-        sparse_1d_index_for_mask_1d_index = sparse_util.sparse_1d_index_for_mask_1d_index_from_binned_grid(
-            sparse_labels=kmeans.labels_,
-            binned_mask_1d_index_to_mask_1d_indexes=binned_grid.binned_mask_1d_index_to_mask_1d_indexes,
-            binned_mask_1d_index_to_mask_1d_sizes=binned_grid.binned_mask_1d_index_to_mask_1d_sizes,
-            total_unbinned_pixels=binned_grid.total_unbinned_pixels,
-        )
+        kmeans = kmeans.fit(X=grid.in_1d_binned, sample_weight=weight_map)
 
         return SparseToGrid(
             sparse_grid=kmeans.cluster_centers_,
-            sparse_1d_index_for_mask_1d_index=sparse_1d_index_for_mask_1d_index.astype(
+            sparse_1d_index_for_mask_1d_index=kmeans.labels_.astype(
                 "int"
             ),
         )
@@ -836,7 +758,7 @@ class Interpolator(object):
         cls, mask, grid, pixel_scale_interpolation_grid
     ):
 
-        rescale_factor = mask.pixel_scales / pixel_scale_interpolation_grid
+        rescale_factor = mask.pixel_scale / pixel_scale_interpolation_grid
 
         rescaled_mask = mask_util.rescaledmask_from_mask_2d_and_rescale_factor(
             mask_2d=mask, rescale_factor=rescale_factor

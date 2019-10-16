@@ -10,7 +10,6 @@ from autoarray.structures.arrays import Array
 from autoarray.structures.kernel import Kernel
 from autoarray.structures.grids import (
     Grid,
-    BinnedGrid,
     PixelizationGrid,
     SparseToGrid,
     Interpolator,
