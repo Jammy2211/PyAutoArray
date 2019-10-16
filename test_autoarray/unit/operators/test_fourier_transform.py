@@ -16,7 +16,7 @@ class TestVisiblities(object):
             preload_transform=False,
         )
 
-        image = aa.Array.from_single_value_and_shape_2d(value=1.0, shape_2d=(1))
+        image = aa.array.ones(shape_2d=(1, 1))
 
         real_visibilities = transformer.real_visibilities_from_image(
             image=image
@@ -34,7 +34,7 @@ class TestVisiblities(object):
             preload_transform=False,
         )
 
-        image = aa.Array.from_single_value_and_shape_2d(value=1.0, shape_2d=(2))
+        image = aa.array.ones(shape_2d=(1, 2))
 
         real_visibilities = transformer.real_visibilities_from_image(
             image=image
@@ -55,7 +55,7 @@ class TestVisiblities(object):
             preload_transform=False,
         )
 
-        image = np.array([2.0])
+        image = aa.array.manual([[2.0]])
 
         real_visibilities = transformer.real_visibilities_from_image(
             image=image
@@ -73,7 +73,7 @@ class TestVisiblities(object):
             preload_transform=False,
         )
 
-        image = np.array([3.0, 6.0])
+        image = aa.array.manual([[3.0, 6.0]])
 
         real_visibilities = transformer.real_visibilities_from_image(
             image=image
@@ -99,7 +99,7 @@ class TestVisiblities(object):
             preload_transform=False,
         )
 
-        image = np.array([2.0])
+        image = aa.array.manual([[2.0]])
 
         real_visibilities_via_preload = transformer_preload.real_visibilities_from_image(
             image=image
@@ -121,7 +121,7 @@ class TestVisiblities(object):
             preload_transform=False,
         )
 
-        image = aa.Array.from_single_value_and_shape_2d(value=1.0, shape_2d=(1))
+        image = aa.array.ones(shape_2d=(1, 1))
 
         imaginary_visibilities = transformer.imaginary_visibilities_from_image(
             image=image
@@ -139,7 +139,7 @@ class TestVisiblities(object):
             preload_transform=False,
         )
 
-        image = aa.Array.from_single_value_and_shape_2d(value=1.0, shape_2d=(2))
+        image = aa.array.ones(shape_2d=(2, 1))
 
         imaginary_visibilities = transformer.imaginary_visibilities_from_image(
             image=image
@@ -160,7 +160,7 @@ class TestVisiblities(object):
             preload_transform=False,
         )
 
-        image = np.array([2.0])
+        image = aa.array.manual([[2.0]])
 
         imaginary_visibilities = transformer.imaginary_visibilities_from_image(
             image=image
@@ -178,7 +178,7 @@ class TestVisiblities(object):
             preload_transform=False,
         )
 
-        image = np.array([3.0, 6.0])
+        image = aa.array.manual([[3.0, 6.0]])
 
         imaginary_visibilities = transformer.imaginary_visibilities_from_image(
             image=image
@@ -204,7 +204,7 @@ class TestVisiblities(object):
             preload_transform=False,
         )
 
-        image = np.array([2.0])
+        image = aa.array.manual([[2.0]])
 
         imaginary_visibilities_via_preload = transformer_preload.imaginary_visibilities_from_image(
             image=image
@@ -227,7 +227,7 @@ class TestVisiblities(object):
             preload_transform=False,
         )
 
-        image = np.array([3.0, 6.0])
+        image = aa.array.manual([[3.0, 6.0]])
 
         visibilities = transformer.visibilities_from_image(image=image)
 

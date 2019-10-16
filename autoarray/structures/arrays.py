@@ -204,6 +204,7 @@ class AbstractArray(abstract_structure.AbstractStructure):
     def in_2d_binned(self):
         return self.mask.mapping.array_2d_binned_from_sub_array_1d(sub_array_1d=self)
 
+
 class Array(AbstractArray):
 
     @classmethod
