@@ -67,7 +67,7 @@ class Kernel(arrays.AbstractArray):
         return cls.full(fill_value=0.0, shape_2d=shape_2d, pixel_scales=pixel_scales, origin=origin)
 
     @classmethod
-    def no_blur(cls, pixel_scales):
+    def no_blur(cls, pixel_scales=None):
 
         array = np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]])
 
