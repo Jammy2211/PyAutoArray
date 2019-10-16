@@ -366,18 +366,12 @@ class Grid(AbstractGrid):
         return mask.mapping.grid_from_sub_grid_2d(sub_grid_2d=sub_grid_2d)
 
     @classmethod
-    def manual(cls, grid, pixel_scales, shape_2d=None, sub_size=1, origin=(0.0, 0.0)):
+    def manual_1d(cls, grid, shape_2d, pixel_scales, sub_size=1, origin=(0.0, 0.0)):
 
         grid = np.asarray(grid)
 
         if type(pixel_scales) is float:
             pixel_scales = (pixel_scales, pixel_scales)
-
-        if len(grid.shape) == 2 and shape_2d is None:
-            raise exc.GridException('A 2D grid cannot be used to set up a Grid class without its 2D shape.')
-
-        if shape_2d is not None and len(shape_2d) != 2:
-            raise exc.GridException('The input shape_2d parameter is not a tuple of type (float, float)')
 
         if grid.shape[-1] != 2:
             raise exc.GridException('The final dimension of the input grid is not equal to 2 (e.g. the (y,x) coordinates)')
@@ -385,13 +379,26 @@ class Grid(AbstractGrid):
         if 2 < len(grid.shape) > 3:
             raise exc.GridException('The dimensions of the input grid array is not 2 or 3')
 
-        if len(grid.shape) == 3:
-            return Grid.from_sub_grid_2d_pixel_scales_and_sub_size(sub_grid_2d=grid, pixel_scales=pixel_scales,
-                                                                   sub_size=sub_size, origin=origin)
-        elif len(grid.shape) == 2:
-            return Grid.from_sub_grid_1d_shape_2d_pixel_scales_and_sub_size(
-                sub_grid_1d=grid, shape_2d=shape_2d, pixel_scales=pixel_scales,
-                sub_size=sub_size, origin=origin)
+        return Grid.from_sub_grid_1d_shape_2d_pixel_scales_and_sub_size(
+            sub_grid_1d=grid, shape_2d=shape_2d, pixel_scales=pixel_scales,
+            sub_size=sub_size, origin=origin)
+
+    @classmethod
+    def manual_2d(cls, grid, pixel_scales, sub_size=1, origin=(0.0, 0.0)):
+
+        grid = np.asarray(grid)
+
+        if type(pixel_scales) is float:
+            pixel_scales = (pixel_scales, pixel_scales)
+
+        if grid.shape[-1] != 2:
+            raise exc.GridException('The final dimension of the input grid is not equal to 2 (e.g. the (y,x) coordinates)')
+
+        if 2 < len(grid.shape) > 3:
+            raise exc.GridException('The dimensions of the input grid array is not 2 or 3')
+
+        return Grid.from_sub_grid_2d_pixel_scales_and_sub_size(sub_grid_2d=grid, pixel_scales=pixel_scales,
+                                                               sub_size=sub_size, origin=origin)
 
     @classmethod
     def uniform(cls, pixel_scales, shape_2d, sub_size=1, origin=(0.0, 0.0)):
@@ -403,7 +410,7 @@ class Grid(AbstractGrid):
             shape_2d=shape_2d, pixel_scales=pixel_scales, sub_size=sub_size, origin=origin
         )
 
-        return cls.manual(grid=grid_1d, shape_2d=shape_2d, pixel_scales=pixel_scales, sub_size=sub_size, origin=origin)
+        return cls.manual_1d(grid=grid_1d, shape_2d=shape_2d, pixel_scales=pixel_scales, sub_size=sub_size, origin=origin)
 
     @classmethod
     def from_sub_grid_2d_and_mask(cls, sub_grid_2d, mask):
@@ -477,26 +484,27 @@ class Grid(AbstractGrid):
 class GridMasked(AbstractGrid):
     
     @classmethod
-    def manual(cls, grid, mask):
+    def manual_1d(cls, grid, mask):
         
         grid = np.asarray(grid)
 
-        if len(grid.shape) == 3:
+        if grid.shape[0] != mask.sub_pixels_in_mask:
+            raise exc.GridException('The input 1D grid does not have the same number of entries as sub-pixels in'
+                                     'the mask.')
 
-            if (grid.shape[0], grid.shape[1]) != mask.sub_shape:
-                raise exc.GridException('The input grid is 2D but not the same dimensions as the sub-mask '
-                                         '(e.g. the mask 2D shape multipled by its sub size.')
+        return mask.mapping.grid_from_sub_grid_1d(sub_grid_1d=grid)
 
-            return mask.mapping.grid_from_sub_grid_2d(sub_grid_2d=grid)
+    @classmethod
+    def manual_2d(cls, grid, mask):
 
-        elif len(grid.shape) == 2:
+        grid = np.asarray(grid)
 
-            if grid.shape[0] != mask.sub_pixels_in_mask:
-                raise exc.GridException('The input 1D grid does not have the same number of entries as sub-pixels in'
-                                         'the mask.')
+        if (grid.shape[0], grid.shape[1]) != mask.sub_shape:
+            raise exc.GridException('The input grid is 2D but not the same dimensions as the sub-mask '
+                                    '(e.g. the mask 2D shape multipled by its sub size.')
 
-            return mask.mapping.grid_from_sub_grid_1d(sub_grid_1d=grid)
-    
+        return mask.mapping.grid_from_sub_grid_2d(sub_grid_2d=grid)
+
     @classmethod
     def from_mask(cls, mask):
         """Setup a sub-grid of the unmasked pixels, using a mask and a specified sub-grid size. The center of \
