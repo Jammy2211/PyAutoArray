@@ -232,7 +232,7 @@ class TestGridMaskedAPI:
 
             assert type(grid) == aa.Grid
             assert grid == pytest.approx(grid_via_util, 1e-4)
-            assert grid.pixel_scale == 2.0
+            assert grid.pixel_scales == (2.0, 2.0)
             assert grid.interpolator == None
 
             grid_2d = mask.mapping.sub_grid_2d_from_sub_grid_1d(sub_grid_1d=grid)
@@ -261,7 +261,7 @@ class TestGrid:
         assert (grid.in_2d == np.ones((3, 3, 2))).all()
         assert (grid.in_1d_binned == np.ones((9, 2))).all()
         assert (grid.in_2d_binned == np.ones((3, 3, 2))).all()
-        assert grid.pixel_scale == 1.0
+        assert grid.pixel_scales == (1.0, 1.0)
         assert grid.geometry.central_pixel_coordinates == (1.0, 1.0)
         assert grid.geometry.shape_arcsec == pytest.approx((3.0, 3.0))
         assert grid.geometry.arc_second_maxima == (1.5, 1.5)
@@ -273,7 +273,7 @@ class TestGrid:
         assert (grid.in_2d == np.ones((4, 4, 2))).all()
         assert (grid.in_1d_binned == np.ones((4, 2))).all()
         assert (grid.in_2d_binned == np.ones((2, 2, 2))).all()
-        assert grid.pixel_scale == 0.1
+        assert grid.pixel_scales == (0.1, 0.1)
         assert grid.geometry.central_pixel_coordinates == (0.5, 0.5)
         assert grid.geometry.shape_arcsec == pytest.approx((0.2, 0.2))
         assert grid.geometry.arc_second_maxima == pytest.approx((0.1, 0.1), 1e-4)
@@ -292,7 +292,7 @@ class TestGrid:
         assert grid.in_2d_binned.shape == (1, 1, 2)
         assert (grid.in_1d_binned == np.array([4.0, 5.0])).all()
         assert (grid.in_2d_binned == np.array([[4.0, 5.0]])).all()
-        assert grid.pixel_scale == 0.1
+        assert grid.pixel_scales == (0.1, 0.1)
         assert grid.geometry.central_pixel_coordinates == (0.0, 0.0)
         assert grid.geometry.shape_arcsec == pytest.approx((0.1, 0.1))
         assert grid.geometry.arc_second_maxima == pytest.approx((1.05, 1.05), 1e-4)
@@ -356,7 +356,7 @@ class TestGrid:
         blurring_grid = grid.blurring_grid_from_kernel_shape(kernel_shape=(3, 5))
 
         assert blurring_grid == pytest.approx(blurring_grid_util, 1e-4)
-        assert blurring_grid.pixel_scale == 2.0
+        assert blurring_grid.pixel_scales == (2.0, 2.0)
 
     def test__blurring_grid_from_kernel_shape__compare_to_array_util(self):
         mask = np.array(
@@ -389,7 +389,7 @@ class TestGrid:
         )
 
         assert blurring_grid == pytest.approx(blurring_grid_util, 1e-4)
-        assert blurring_grid.pixel_scale == 2.0
+        assert blurring_grid.pixel_scales == (2.0, 2.0)
 
     def test__masked_shape_arcsec(self):
         
@@ -1365,7 +1365,7 @@ class TestSparseToGrid:
             )
 
             binned_grid = aa.BinnedGrid.from_mask_and_pixel_scale_binned_grid(
-                mask=mask, pixel_scale_binned_grid=mask.pixel_scale
+                mask=mask, pixel_scale_binned_grid=mask.pixel_scales
             )
 
             binned_weight_map = np.ones(mask.pixels_in_mask)
@@ -1415,7 +1415,7 @@ class TestSparseToGrid:
             )
 
             binned_grid = aa.BinnedGrid.from_mask_and_pixel_scale_binned_grid(
-                mask=mask, pixel_scale_binned_grid=mask.pixel_scale
+                mask=mask, pixel_scale_binned_grid=mask.pixel_scales
             )
 
             binned_weight_map = np.ones(mask.pixels_in_mask)
@@ -1449,7 +1449,7 @@ class TestSparseToGrid:
             )
 
             binned_grid = aa.BinnedGrid.from_mask_and_pixel_scale_binned_grid(
-                mask=mask, pixel_scale_binned_grid=2.0 * mask.pixel_scale
+                mask=mask, pixel_scale_binned_grid=2.0 * mask.pixel_scales
             )
 
             binned_weight_map = np.ones(binned_grid.shape[0])

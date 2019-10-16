@@ -55,7 +55,7 @@ class TestVisiblities(object):
             preload_transform=False,
         )
 
-        image = aa.array.manual_1d([[2.0]])
+        image = aa.array.manual_2d([[2.0]])
 
         real_visibilities = transformer.real_visibilities_from_image(
             image=image
@@ -73,7 +73,7 @@ class TestVisiblities(object):
             preload_transform=False,
         )
 
-        image = aa.array.manual_1d([[3.0, 6.0]])
+        image = aa.array.manual_2d([[3.0, 6.0]])
 
         real_visibilities = transformer.real_visibilities_from_image(
             image=image
@@ -99,7 +99,7 @@ class TestVisiblities(object):
             preload_transform=False,
         )
 
-        image = aa.array.manual_1d([[2.0]])
+        image = aa.array.manual_2d([[2.0]])
 
         real_visibilities_via_preload = transformer_preload.real_visibilities_from_image(
             image=image
@@ -160,7 +160,7 @@ class TestVisiblities(object):
             preload_transform=False,
         )
 
-        image = aa.array.manual_1d([[2.0]])
+        image = aa.array.manual_2d([[2.0]])
 
         imaginary_visibilities = transformer.imaginary_visibilities_from_image(
             image=image
@@ -178,7 +178,7 @@ class TestVisiblities(object):
             preload_transform=False,
         )
 
-        image = aa.array.manual_1d([[3.0, 6.0]])
+        image = aa.array.manual_2d([[3.0, 6.0]])
 
         imaginary_visibilities = transformer.imaginary_visibilities_from_image(
             image=image
@@ -204,7 +204,7 @@ class TestVisiblities(object):
             preload_transform=False,
         )
 
-        image = aa.array.manual_1d([[2.0]])
+        image = aa.array.manual_2d([[2.0]])
 
         imaginary_visibilities_via_preload = transformer_preload.imaginary_visibilities_from_image(
             image=image
@@ -227,7 +227,7 @@ class TestVisiblities(object):
             preload_transform=False,
         )
 
-        image = aa.array.manual_1d([[3.0, 6.0]])
+        image = aa.array.manual_2d([[3.0, 6.0]])
 
         visibilities = transformer.visibilities_from_image(image=image)
 

@@ -435,7 +435,7 @@ class TestArray:
             assert (arr.in_2d == np.ones((3, 3))).all()
             assert (arr.in_1d_binned == np.ones((9,))).all()
             assert (arr.in_2d_binned == np.ones((3, 3))).all()
-            assert arr.pixel_scale == 1.0
+            assert arr.pixel_scales == (1.0, 1.0)
             assert arr.geometry.central_pixel_coordinates == (1.0, 1.0)
             assert arr.geometry.shape_arcsec == pytest.approx((3.0, 3.0))
             assert arr.geometry.arc_second_maxima == (1.5, 1.5)
@@ -448,7 +448,7 @@ class TestArray:
             assert (arr.in_2d == np.ones((4, 4))).all()
             assert (arr.in_1d_binned == np.ones((4,))).all()
             assert (arr.in_2d_binned == np.ones((2, 2))).all()
-            assert arr.pixel_scale == 0.1
+            assert arr.pixel_scales == (0.1, 0.1)
             assert arr.geometry.central_pixel_coordinates == (0.5, 0.5)
             assert arr.geometry.shape_arcsec == pytest.approx((0.2, 0.2))
             assert arr.geometry.arc_second_maxima == pytest.approx((0.1, 0.1), 1e-4)
@@ -467,7 +467,7 @@ class TestArray:
             assert arr.in_2d_binned.shape == (2, 1)
             assert (arr.in_1d_binned == np.array([2.5, 6.5])).all()
             assert (arr.in_2d_binned == np.array([[2.5], [6.5]])).all()
-            assert arr.pixel_scale == 0.1
+            assert arr.pixel_scales == (0.1, 0.1)
             assert arr.geometry.central_pixel_coordinates == (0.5, 0.0)
             assert arr.geometry.shape_arcsec == pytest.approx((0.2, 0.1))
             assert arr.geometry.arc_second_maxima == pytest.approx((1.1, 1.05), 1e-4)
@@ -508,7 +508,7 @@ class TestArray:
 
             arr = aa.Array.from_sub_array_2d_pixel_scales_and_sub_size(sub_array_2d=array_2d, sub_size=1, pixel_scales=(1.0, 1.0))
 
-            arr = arr.resized_array_from_new_shape(
+            arr = arr.resized_from_new_shape(
                 new_shape=(7, 7),
             )
 
@@ -526,7 +526,7 @@ class TestArray:
 
             assert type(arr) == aa.Array
             assert (arr.in_2d == arr_resized_manual).all()
-            assert arr.mask.pixel_scale == 1.0
+            assert arr.mask.pixel_scales == (1.0, 1.0)
 
         def test__trim__compare_to_array_util(self):
             array_2d = np.ones((5, 5))
@@ -534,7 +534,7 @@ class TestArray:
 
             arr = aa.Array.from_sub_array_2d_pixel_scales_and_sub_size(sub_array_2d=array_2d, sub_size=1, pixel_scales=(1.0, 1.0))
 
-            arr = arr.resized_array_from_new_shape(
+            arr = arr.resized_from_new_shape(
                 new_shape=(3, 3),
             )
 
@@ -544,7 +544,7 @@ class TestArray:
 
             assert type(arr) == aa.Array
             assert (arr.in_2d == arr_resized_manual).all()
-            assert arr.mask.pixel_scale == 1.0
+            assert arr.mask.pixel_scales == (1.0, 1.0)
 
         def test__kernel_trim__trim_edges_where_extra_psf_blurring_is_performed(self):
             array_2d = np.ones((5, 5))
@@ -552,7 +552,7 @@ class TestArray:
 
             arr = aa.Array.from_sub_array_2d_pixel_scales_and_sub_size(sub_array_2d=array_2d, sub_size=1, pixel_scales=(1.0, 1.0))
 
-            new_arr = arr.trimmed_array_from_kernel_shape(
+            new_arr = arr.trimmed_from_kernel_shape(
                 kernel_shape=(3, 3)
             )
 
@@ -561,22 +561,22 @@ class TestArray:
                 new_arr.in_2d
                 == np.array([[1.0, 1.0, 1.0], [1.0, 2.0, 1.0], [1.0, 1.0, 1.0]])
             ).all()
-            assert new_arr.mask.pixel_scale == 1.0
+            assert new_arr.mask.pixel_scales == (1.0, 1.0)
 
-            new_arr = arr.trimmed_array_from_kernel_shape(
+            new_arr = arr.trimmed_from_kernel_shape(
                 kernel_shape=(5, 5)
             )
 
             assert type(new_arr) == aa.Array
             assert (new_arr.in_2d == np.array([[2.0]])).all()
-            assert new_arr.mask.pixel_scale == 1.0
+            assert new_arr.mask.pixel_scales == (1.0, 1.0)
 
             array_2d = np.ones((9, 9))
             array_2d[4, 4] = 2.0
 
             arr = aa.Array.from_sub_array_2d_pixel_scales_and_sub_size(sub_array_2d=array_2d, sub_size=1, pixel_scales=(1.0, 1.0))
 
-            new_arr = arr.trimmed_array_from_kernel_shape(
+            new_arr = arr.trimmed_from_kernel_shape(
                 kernel_shape=(7, 7)
             )
 
@@ -585,7 +585,7 @@ class TestArray:
                 new_arr.in_2d
                 == np.array([[1.0, 1.0, 1.0], [1.0, 2.0, 1.0], [1.0, 1.0, 1.0]])
             ).all()
-            assert new_arr.mask.pixel_scale == 1.0
+            assert new_arr.mask.pixel_scales == (1.0, 1.0)
 
         def test__zoomed__2d_array_zoomed__uses_the_limits_of_the_mask(self):
             array_2d = np.array(
@@ -612,7 +612,7 @@ class TestArray:
                 sub_size=1,
             )
 
-            arr_zoomed = arr.zoomed_array_from_mask(
+            arr_zoomed = arr.zoomed_from_mask(
                 mask=mask, buffer=0
             )
             assert (arr_zoomed.in_2d == np.array([[6.0, 7.0], [10.0, 11.0]])).all()
@@ -630,7 +630,7 @@ class TestArray:
                 sub_size=1,
             )
 
-            arr_zoomed = arr.zoomed_array_from_mask(
+            arr_zoomed = arr.zoomed_from_mask(
                 mask=mask, buffer=0
             )
             assert (
@@ -650,7 +650,7 @@ class TestArray:
                 sub_size=1,
             )
 
-            arr_zoomed = arr.zoomed_array_from_mask(
+            arr_zoomed = arr.zoomed_from_mask(
                 mask=mask, buffer=0
             )
             assert (
@@ -671,7 +671,7 @@ class TestArray:
                 sub_size=1,
             )
 
-            arr_zoomed = arr.zoomed_array_from_mask(
+            arr_zoomed = arr.zoomed_from_mask(
                 mask=mask, buffer=0
             )
             assert (
@@ -691,7 +691,7 @@ class TestArray:
                 sub_size=1,
             )
 
-            arr_zoomed = arr.zoomed_array_from_mask(
+            arr_zoomed = arr.zoomed_from_mask(
                 mask=mask, buffer=0
             )
             assert (
@@ -712,7 +712,7 @@ class TestArray:
                 sub_size=1,
             )
 
-            arr_zoomed = arr.zoomed_array_from_mask(
+            arr_zoomed = arr.zoomed_from_mask(
                 mask=mask, buffer=1
             )
             assert (
@@ -741,29 +741,29 @@ class TestArray:
             arr_binned_util = aa.binning_util.binned_up_array_2d_using_mean_from_array_2d_and_bin_up_factor(
                 array_2d=array_2d, bin_up_factor=4
             )
-            arr_binned = arr.binned_array_from_bin_up_factor(
+            arr_binned = arr.binned_from_bin_up_factor(
                 bin_up_factor=4, method="mean"
             )
             assert (arr_binned.in_2d == arr_binned_util).all()
-            assert arr_binned.pixel_scale == 0.4
+            assert arr_binned.pixel_scales == (0.4, 0.4)
 
             arr_binned_util = aa.binning_util.binned_array_2d_using_quadrature_from_array_2d_and_bin_up_factor(
                 array_2d=array_2d, bin_up_factor=4
             )
-            arr_binned = arr.binned_array_from_bin_up_factor(
+            arr_binned = arr.binned_from_bin_up_factor(
                 bin_up_factor=4, method="quadrature"
             )
             assert (arr_binned.in_2d == arr_binned_util).all()
-            assert arr_binned.pixel_scale == 0.4
+            assert arr_binned.pixel_scales == (0.4, 0.4)
 
             arr_binned_util = aa.binning_util.binned_array_2d_using_sum_from_array_2d_and_bin_up_factor(
                 array_2d=array_2d, bin_up_factor=4
             )
-            arr_binned = arr.binned_array_from_bin_up_factor(
+            arr_binned = arr.binned_from_bin_up_factor(
                 bin_up_factor=4, method="sum"
             )
             assert (arr_binned.in_2d == arr_binned_util).all()
-            assert arr_binned.pixel_scale == 0.4
+            assert arr_binned.pixel_scales == (0.4, 0.4)
 
         def test__binned_up__invalid_method__raises_exception(self):
             array_2d = np.array(
@@ -776,6 +776,6 @@ class TestArray:
 
             array_2d = aa.Array.from_sub_array_2d_pixel_scales_and_sub_size(sub_array_2d=array_2d, sub_size=1, pixel_scales=(0.1, 0.1))
             with pytest.raises(exc.ScaledException):
-                array_2d.binned_array_from_bin_up_factor(
+                array_2d.binned_from_bin_up_factor(
                     bin_up_factor=4, method="wrong"
                 )
