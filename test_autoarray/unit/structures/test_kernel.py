@@ -28,14 +28,52 @@ class TestAPI:
             assert kernel.origin == (0.0, 0.0)
     
             kernel = aa.kernel.manual_1d(
-                array=np.ones((12,)), pixel_scales=1.0, renormalize=False
+                array=np.ones((12,)), shape_2d=(4,3), pixel_scales=1.0, renormalize=False
             )
     
             assert kernel.in_2d.shape == (4, 3)
             assert (kernel.in_2d == np.ones((4, 3))).all()
             assert kernel.pixel_scales == (1.0, 1.0)
             assert kernel.origin == (0.0, 0.0)
-    
+
+    class TestFull:
+
+        def test__kernel_is_set_of_full_values(
+                self
+        ):
+            kernel = aa.kernel.full(
+               fill_value=3.0, shape_2d=(3,3), pixel_scales=1.0,
+            )
+
+            assert kernel.in_2d.shape == (3, 3)
+            assert (kernel.in_2d == 3.0 * np.ones((3, 3))).all()
+            assert kernel.pixel_scales == (1.0, 1.0)
+            assert kernel.origin == (0.0, 0.0)
+
+    class TestOnesZeros:
+
+        def test__kernel_is_set_of_full_values(
+                self
+        ):
+            kernel = aa.kernel.ones(
+               shape_2d=(3,3), pixel_scales=1.0,
+            )
+
+            assert kernel.in_2d.shape == (3, 3)
+            assert (kernel.in_2d == np.ones((3, 3))).all()
+            assert kernel.pixel_scales == (1.0, 1.0)
+            assert kernel.origin == (0.0, 0.0)
+
+            kernel = aa.kernel.zeros(
+               shape_2d=(3,3), pixel_scales=1.0,
+            )
+
+            assert kernel.in_2d.shape == (3, 3)
+            assert (kernel.in_2d == np.zeros((3, 3))).all()
+            assert kernel.pixel_scales == (1.0, 1.0)
+            assert kernel.origin == (0.0, 0.0)
+
+
     class TestFromFits:
     
         def test__from_fits__input_kernel_3x3__all_attributes_correct_including_data_inheritance(
@@ -61,7 +99,7 @@ class TestAPI:
                 kernel.in_2d
                 == np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]])
             ).all()
-            assert kernel.pixel_scale == 1.0
+            assert kernel.pixel_scales == (1.0, 1.0)
     
             kernel = aa.kernel.no_blur(pixel_scales=2.0)
     
@@ -69,7 +107,7 @@ class TestAPI:
                 kernel.in_2d
                 == np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]])
             ).all()
-            assert kernel.pixel_scale == 2.0
+            assert kernel.pixel_scales == (2.0, 2.0)
 
 class TestRenormalize(object):
     def test__input_is_already_normalized__no_change(self):
@@ -104,7 +142,7 @@ class TestBinnedUp(object):
         kernel = kernel.rescaled_with_odd_dimensions_from_rescale_factor(
             rescale_factor=0.5, renormalize=True
         )
-        assert kernel.pixel_scale == 2.0
+        assert kernel.pixel_scales == (2.0, 2.0)
         assert (kernel.in_2d == (1.0 / 9.0) * np.ones((3, 3))).all()
 
         array_2d = np.ones((9, 9))
@@ -112,7 +150,7 @@ class TestBinnedUp(object):
         kernel = kernel.rescaled_with_odd_dimensions_from_rescale_factor(
             rescale_factor=0.333333333333333, renormalize=True
         )
-        assert kernel.pixel_scale == 3.0
+        assert kernel.pixel_scales == (3.0, 3.0)
         assert (kernel.in_2d == (1.0 / 9.0) * np.ones((3, 3))).all()
 
         array_2d = np.ones((18, 6))
@@ -120,7 +158,7 @@ class TestBinnedUp(object):
         kernel = kernel.rescaled_with_odd_dimensions_from_rescale_factor(
             rescale_factor=0.5, renormalize=True
         )
-        assert kernel.pixel_scale == 2.0
+        assert kernel.pixel_scales == (2.0, 2.0)
         assert (kernel.in_2d == (1.0 / 27.0) * np.ones((9, 3))).all()
 
         array_2d = np.ones((6, 18))
@@ -128,7 +166,7 @@ class TestBinnedUp(object):
         kernel = kernel.rescaled_with_odd_dimensions_from_rescale_factor(
             rescale_factor=0.5, renormalize=True
         )
-        assert kernel.pixel_scale == 2.0
+        assert kernel.pixel_scales == (2.0, 2.0)
         assert (kernel.in_2d == (1.0 / 27.0) * np.ones((3, 9))).all()
 
     def test__kernel_is_even_x_even_after_binning_up__resized_to_odd_x_odd_with_shape_plus_one(
@@ -139,7 +177,7 @@ class TestBinnedUp(object):
         kernel = kernel.rescaled_with_odd_dimensions_from_rescale_factor(
             rescale_factor=2.0, renormalize=True
         )
-        assert kernel.pixel_scale == 0.4
+        assert kernel.pixel_scales == (0.4, 0.4)
         assert (kernel.in_2d == (1.0 / 25.0) * np.ones((5, 5))).all()
 
         array_2d = np.ones((40, 40))
@@ -147,7 +185,7 @@ class TestBinnedUp(object):
         kernel = kernel.rescaled_with_odd_dimensions_from_rescale_factor(
             rescale_factor=0.1, renormalize=True
         )
-        assert kernel.pixel_scale == 8.0
+        assert kernel.pixel_scales == (8.0, 8.0)
         assert (kernel.in_2d == (1.0 / 25.0) * np.ones((5, 5))).all()
 
         array_2d = np.ones((2, 4))
@@ -182,7 +220,7 @@ class TestBinnedUp(object):
         assert (kernel.in_2d == (1.0 / 9.0) * np.ones((3, 3))).all()
 
         array_2d = np.ones((9, 12))
-        kernel = aa.Kernel.manual_2(array=array_2d, pixel_scales=1.0, renormalize=False)
+        kernel = aa.Kernel.manual_2d(array=array_2d, pixel_scales=1.0, renormalize=False)
         kernel = kernel.rescaled_with_odd_dimensions_from_rescale_factor(
             rescale_factor=0.33333333333, renormalize=True
         )
@@ -221,7 +259,7 @@ class TestConvolve(object):
         self
     ):
         
-        image = aa.Array.manual_1d([[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]])
+        image = aa.Array.manual_2d([[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]])
         kernel = np.array([[0.0, 1.0, 0.0], [1.0, 2.0, 1.0], [0.0, 1.0, 0.0]])
 
         kernel = aa.Kernel.manual_2d(array=kernel, pixel_scales=1.0)
@@ -419,18 +457,18 @@ class TestConvolve(object):
 #
 # class TestFromAlmaGaussian(object):
 #     def test__identical_to_astropy_gaussian_model__circular_no_rotation(self):
-#         pixel_scale = 0.1
+#         pixel_scales = 0.1
 #
 #         x_stddev = (
 #             2.0e-5
 #             * (units.deg).to(units.arcsec)
-#             / pixel_scale
+#             / pixel_scales
 #             / (2.0 * np.sqrt(2.0 * np.log(2.0)))
 #         )
 #         y_stddev = (
 #             2.0e-5
 #             * (units.deg).to(units.arcsec)
-#             / pixel_scale
+#             / pixel_scales
 #             / (2.0 * np.sqrt(2.0 * np.log(2.0)))
 #         )
 #
@@ -450,7 +488,7 @@ class TestConvolve(object):
 #
 #         kernel = aa.Kernel.from_as_gaussian_via_alma_fits_header_parameters(
 #             shape=shape,
-#             pixel_scales=pixel_scale,
+#             pixel_scales=pixel_scales,
 #             y_stddev=2.0e-5,
 #             x_stddev=2.0e-5,
 #             theta=0.0,
@@ -461,18 +499,18 @@ class TestConvolve(object):
 #     def test__identical_to_astropy_gaussian_model__circular_no_rotation_different_pixel_scale(
 #         self
 #     ):
-#         pixel_scale = 0.02
+#         pixel_scales = 0.02
 #
 #         x_stddev = (
 #             2.0e-5
 #             * (units.deg).to(units.arcsec)
-#             / pixel_scale
+#             / pixel_scales
 #             / (2.0 * np.sqrt(2.0 * np.log(2.0)))
 #         )
 #         y_stddev = (
 #             2.0e-5
 #             * (units.deg).to(units.arcsec)
-#             / pixel_scale
+#             / pixel_scales
 #             / (2.0 * np.sqrt(2.0 * np.log(2.0)))
 #         )
 #
@@ -492,7 +530,7 @@ class TestConvolve(object):
 #
 #         kernel = aa.Kernel.from_as_gaussian_via_alma_fits_header_parameters(
 #             shape=shape,
-#             pixel_scales=pixel_scale,
+#             pixel_scales=pixel_scales,
 #             y_stddev=2.0e-5,
 #             x_stddev=2.0e-5,
 #             theta=0.0,
@@ -503,18 +541,18 @@ class TestConvolve(object):
 #     def test__identical_to_astropy_gaussian_model__include_ellipticity_from_x_and_y_stddev(
 #         self
 #     ):
-#         pixel_scale = 0.1
+#         pixel_scales = 0.1
 #
 #         x_stddev = (
 #             1.0e-5
 #             * (units.deg).to(units.arcsec)
-#             / pixel_scale
+#             / pixel_scales
 #             / (2.0 * np.sqrt(2.0 * np.log(2.0)))
 #         )
 #         y_stddev = (
 #             2.0e-5
 #             * (units.deg).to(units.arcsec)
-#             / pixel_scale
+#             / pixel_scales
 #             / (2.0 * np.sqrt(2.0 * np.log(2.0)))
 #         )
 #
@@ -537,7 +575,7 @@ class TestConvolve(object):
 #
 #         kernel = aa.Kernel.from_as_gaussian_via_alma_fits_header_parameters(
 #             shape=shape,
-#             pixel_scales=pixel_scale,
+#             pixel_scales=pixel_scales,
 #             y_stddev=2.0e-5,
 #             x_stddev=1.0e-5,
 #             theta=theta_deg,
@@ -548,18 +586,18 @@ class TestConvolve(object):
 #     def test__identical_to_astropy_gaussian_model__include_different_ellipticity_from_x_and_y_stddev(
 #         self
 #     ):
-#         pixel_scale = 0.1
+#         pixel_scales = 0.1
 #
 #         x_stddev = (
 #             3.0e-5
 #             * (units.deg).to(units.arcsec)
-#             / pixel_scale
+#             / pixel_scales
 #             / (2.0 * np.sqrt(2.0 * np.log(2.0)))
 #         )
 #         y_stddev = (
 #             2.0e-5
 #             * (units.deg).to(units.arcsec)
-#             / pixel_scale
+#             / pixel_scales
 #             / (2.0 * np.sqrt(2.0 * np.log(2.0)))
 #         )
 #
@@ -582,7 +620,7 @@ class TestConvolve(object):
 #
 #         kernel = aa.Kernel.from_as_gaussian_via_alma_fits_header_parameters(
 #             shape=shape,
-#             pixel_scales=pixel_scale,
+#             pixel_scales=pixel_scales,
 #             y_stddev=2.0e-5,
 #             x_stddev=3.0e-5,
 #             theta=theta_deg,
@@ -591,18 +629,18 @@ class TestConvolve(object):
 #         assert kernel_astropy == pytest.approx(kernel.in_2d, 1e-4)
 #
 #     def test__identical_to_astropy_gaussian_model__include_rotation_angle_30(self):
-#         pixel_scale = 0.1
+#         pixel_scales = 0.1
 #
 #         x_stddev = (
 #             1.0e-5
 #             * (units.deg).to(units.arcsec)
-#             / pixel_scale
+#             / pixel_scales
 #             / (2.0 * np.sqrt(2.0 * np.log(2.0)))
 #         )
 #         y_stddev = (
 #             2.0e-5
 #             * (units.deg).to(units.arcsec)
-#             / pixel_scale
+#             / pixel_scales
 #             / (2.0 * np.sqrt(2.0 * np.log(2.0)))
 #         )
 #
@@ -625,7 +663,7 @@ class TestConvolve(object):
 #
 #         kernel = aa.Kernel.from_as_gaussian_via_alma_fits_header_parameters(
 #             shape=shape,
-#             pixel_scales=pixel_scale,
+#             pixel_scales=pixel_scales,
 #             y_stddev=2.0e-5,
 #             x_stddev=1.0e-5,
 #             theta=theta_deg,
@@ -634,18 +672,18 @@ class TestConvolve(object):
 #         assert kernel_astropy == pytest.approx(kernel.in_2d, 1e-4)
 #
 #     def test__identical_to_astropy_gaussian_model__include_rotation_angle_230(self):
-#         pixel_scale = 0.1
+#         pixel_scales = 0.1
 #
 #         x_stddev = (
 #             1.0e-5
 #             * (units.deg).to(units.arcsec)
-#             / pixel_scale
+#             / pixel_scales
 #             / (2.0 * np.sqrt(2.0 * np.log(2.0)))
 #         )
 #         y_stddev = (
 #             2.0e-5
 #             * (units.deg).to(units.arcsec)
-#             / pixel_scale
+#             / pixel_scales
 #             / (2.0 * np.sqrt(2.0 * np.log(2.0)))
 #         )
 #
@@ -668,7 +706,7 @@ class TestConvolve(object):
 #
 #         kernel = aa.Kernel.from_as_gaussian_via_alma_fits_header_parameters(
 #             shape=shape,
-#             pixel_scales=pixel_scale,
+#             pixel_scales=pixel_scales,
 #             y_stddev=2.0e-5,
 #             x_stddev=1.0e-5,
 #             theta=theta_deg,

@@ -30,7 +30,7 @@ class AbstractStructure(np.ndarray):
         The mask pixel index's will come out like this (and the direction of arc-second coordinates is highlighted
         around the mask.
 
-        pixel_scale = 1.0"
+        pixel_scales = 1.0"
 
         <--- -ve  x  +ve -->
                                                         y      x
@@ -74,7 +74,7 @@ class AbstractStructure(np.ndarray):
 
         Our grid looks like it did before:
 
-        pixel_scale = 1.0"
+        pixel_scales = 1.0"
 
         <--- -ve  x  +ve -->
 
@@ -125,12 +125,12 @@ class AbstractStructure(np.ndarray):
             self.mask = obj.mask
 
     @property
-    def pixel_scale(self):
-        return self.mask.pixel_scale
-
-    @property
     def pixel_scales(self):
         return self.mask.pixel_scales
+
+    @property
+    def pixel_scale(self):
+        return self.mask.pixel_scale
 
     @property
     def origin(self):

@@ -499,7 +499,7 @@ class TestBinnedMask:
 
         mask = mask.mapping.binned_mask_from_bin_up_factor(bin_up_factor=2)
         assert (mask == binned_up_mask_via_util).all()
-        assert mask.pixel_scale == 2.0
+        assert mask.pixel_scales == (2.0, 2.0)
 
         mask = aa.mask.unmasked(shape_2d=(14, 19), pixel_scales=(2.0, 2.0))
         mask[1, 5] = False
@@ -513,4 +513,4 @@ class TestBinnedMask:
 
         mask = mask.mapping.binned_mask_from_bin_up_factor(bin_up_factor=3)
         assert (mask == binned_up_mask_via_util).all()
-        assert mask.pixel_scale == 6.0
+        assert mask.pixel_scales == 6.0

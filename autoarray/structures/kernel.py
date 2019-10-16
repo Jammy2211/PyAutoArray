@@ -8,7 +8,7 @@ from autoarray.structures import abstract_structure
 from autoarray.structures import arrays
 from autoarray import exc
 
-class Kernel(abstract_structure.AbstractStructure):
+class Kernel(arrays.AbstractArray):
 
     # noinspection PyUnusedLocal
     def __new__(cls, array_1d, mask, renormalize=False, *args, **kwargs):
@@ -26,7 +26,7 @@ class Kernel(abstract_structure.AbstractStructure):
 
         #        obj = arrays.Scaled(array_1d=sub_array_1d, mask=mask)
 
-        obj = super(Kernel, cls).__new__(cls=cls, structure_1d=array_1d, mask=mask)
+        obj = super(Kernel, cls).__new__(cls=cls, array_1d=array_1d, mask=mask)
 
         if renormalize:
             obj[:] = np.divide(obj, np.sum(obj))
@@ -34,7 +34,7 @@ class Kernel(abstract_structure.AbstractStructure):
         return obj
 
     @classmethod
-    def manual_1d(cls, array, shape_2d=None, pixel_scales=None, origin=(0.0, 0.0), renormalize=False):
+    def manual_1d(cls, array, shape_2d, pixel_scales=None, origin=(0.0, 0.0), renormalize=False):
 
         array = arrays.Array.manual_1d(
             array=array,
@@ -51,6 +51,22 @@ class Kernel(abstract_structure.AbstractStructure):
         return Kernel(array_1d=array, mask=array.mask, renormalize=renormalize)
 
     @classmethod
+    def full(cls, fill_value, shape_2d, pixel_scales=None, sub_size=1, origin=(0.0, 0.0)):
+
+        if sub_size is not None:
+            shape_2d = (shape_2d[0] * sub_size, shape_2d[1] * sub_size)
+
+        return cls.manual_2d(array=np.full(fill_value=fill_value, shape=shape_2d), pixel_scales=pixel_scales, origin=origin)
+
+    @classmethod
+    def ones(cls, shape_2d, pixel_scales=None, origin=(0.0, 0.0)):
+        return cls.full(fill_value=1.0, shape_2d=shape_2d, pixel_scales=pixel_scales, origin=origin)
+
+    @classmethod
+    def zeros(cls, shape_2d, pixel_scales=None, origin=(0.0, 0.0)):
+        return cls.full(fill_value=0.0, shape_2d=shape_2d, pixel_scales=pixel_scales, origin=origin)
+
+    @classmethod
     def no_blur(cls, pixel_scales):
 
         array = np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]])
@@ -59,7 +75,7 @@ class Kernel(abstract_structure.AbstractStructure):
     #
     # @classmethod
     # def from_gaussian(
-    #     cls, shape, pixel_scale, sigma, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0
+    #     cls, shape, pixel_scales, sigma, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0
     # ):
     #     """Simulate the Kernel as an elliptical Gaussian profile."""
     #     from autolens.model.profiles.light_profiles import EllipticalGaussian
@@ -69,18 +85,18 @@ class Kernel(abstract_structure.AbstractStructure):
     #     )
     #
     #     grid = arrays.SubGrid.from_shape_pixel_scale_and_sub_size(
-    #         shape=shape, pixel_scale=pixel_scale, sub_size=1
+    #         shape=shape, pixel_scales=pixel_scales, sub_size=1
     #     )
     #
     #     gaussian = gaussian.profile_image_from_grid(grid=grid)
     #
     #     return Kernel.from_2d_and_pixel_scale(
-    #         array_2d=gaussian.in_2d, pixel_scale=pixel_scale, renormalize=True
+    #         array_2d=gaussian.in_2d, pixel_scales=pixel_scales, renormalize=True
     #     )
     #
     # @classmethod
     # def from_as_gaussian_via_alma_fits_header_parameters(
-    #     cls, shape, pixel_scale, y_stddev, x_stddev, theta, centre=(0.0, 0.0)
+    #     cls, shape, pixel_scales, y_stddev, x_stddev, theta, centre=(0.0, 0.0)
     # ):
     #
     #     x_stddev = (
@@ -101,13 +117,13 @@ class Kernel(abstract_structure.AbstractStructure):
     #     )
     #
     #     grid = arrays.SubGrid.from_shape_pixel_scale_and_sub_size(
-    #         shape=shape, pixel_scale=pixel_scale, sub_size=1
+    #         shape=shape, pixel_scales=pixel_scales, sub_size=1
     #     )
     #
     #     gaussian = gaussian.profile_image_from_grid(grid=grid)
     #
     #     return Kernel.from_2d_and_pixel_scale(
-    #         array_2d=gaussian.in_2d, pixel_scale=pixel_scale, renormalize=True
+    #         array_2d=gaussian.in_2d, pixel_scales=pixel_scales, renormalize=True
     #     )
 
     @classmethod
@@ -117,7 +133,7 @@ class Kernel(abstract_structure.AbstractStructure):
 
         Parameters
         ----------
-        pixel_scale
+        pixel_scales
         file_path: String
             The path to the file containing the Kernel
         hdu : int
@@ -173,7 +189,7 @@ class Kernel(abstract_structure.AbstractStructure):
             self.pixel_scales[1] * pixel_scale_factors[1],
         )
 
-        return Kernel.manual(
+        return Kernel.manual_2d(
             array=kernel_rescaled, pixel_scales=pixel_scales, renormalize=renormalize
         )
 

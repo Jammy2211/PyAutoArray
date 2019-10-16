@@ -139,7 +139,7 @@ def mask_circular_from_shape_2d_pixel_scales_and_radius(
      ----------
     shape_2d: (int, int)
         The (y,x) shape of the mask in units of pixels.
-    pixel_scale: float
+    pixel_scales: float
         The arc-second to pixel conversion factor of each pixel.
     radius_arcsec : float
         The radius (in arc seconds) of the circle within which pixels unmasked.
@@ -154,7 +154,7 @@ def mask_circular_from_shape_2d_pixel_scales_and_radius(
     Examples
     --------
     mask = mask_circular_from_shape_pixel_scale_and_radius( \
-        shape=(10, 10), pixel_scale=0.1, radius_arcsec=0.5, centre=(0.0, 0.0))
+        shape=(10, 10), pixel_scales=0.1, radius_arcsec=0.5, centre=(0.0, 0.0))
     """
 
     mask = np.full(shape_2d, True)
@@ -206,7 +206,7 @@ def mask_circular_annular_from_shape_2d_pixel_scales_and_radii(
     Examples
     --------
     mask = mask_annnular_from_shape_pixel_scale_and_radius( \
-        shape=(10, 10), pixel_scale=0.1, inner_radius_arcsec=0.5, outer_radius_arcsec=1.5, centre=(0.0, 0.0))
+        shape=(10, 10), pixel_scales=0.1, inner_radius_arcsec=0.5, outer_radius_arcsec=1.5, centre=(0.0, 0.0))
     """
 
     mask = np.full(shape_2d, True)
@@ -310,7 +310,7 @@ def mask_elliptical_from_shape_2d_pixel_scales_and_radius(
     Examples
     --------
     mask = mask_elliptical_from_shape_pixel_scale_and_radius( \
-        shape=(10, 10), pixel_scale=0.1, major_axis_radius_arcsec=0.5, axis_ratio=0.5, phi=45.0, centre=(0.0, 0.0))
+        shape=(10, 10), pixel_scales=0.1, major_axis_radius_arcsec=0.5, axis_ratio=0.5, phi=45.0, centre=(0.0, 0.0))
     """
 
     mask = np.full(shape_2d, True)
@@ -383,7 +383,7 @@ def mask_elliptical_annular_from_shape_2d_pixel_scales_and_radius(
     Examples
     --------
     mask = mask_elliptical_annuli_from_shape_pixel_scale_and_radius( \
-        shape=(10, 10), pixel_scale=0.1,
+        shape=(10, 10), pixel_scales=0.1,
          inner_major_axis_radius_arcsec=0.5, inner_axis_ratio=0.5, inner_phi=45.0,
          outer_major_axis_radius_arcsec=1.5, outer_axis_ratio=0.8, outer_phi=90.0,
          centre=(0.0, 0.0))

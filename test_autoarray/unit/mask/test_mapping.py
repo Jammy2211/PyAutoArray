@@ -58,7 +58,7 @@ class TestMapping:
         assert (scaled_array == array_1d).all()
         assert (scaled_array.in_1d == array_1d).all()
         assert (scaled_array.in_2d == masked_array_2d).all()
-        assert scaled_array.mask.pixel_scale == 3.0
+        assert scaled_array.mask.pixel_scales == (3.0, 3.0)
         assert scaled_array.mask.origin == (0.0, 0.0)
         assert (scaled_array.geometry.xticks == np.array([-6.0, -2.0, 2.0, 6.0])).all()
         assert (scaled_array.geometry.yticks == np.array([-4.5, -1.5, 1.5, 4.5])).all()

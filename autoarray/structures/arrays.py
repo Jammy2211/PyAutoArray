@@ -78,7 +78,7 @@ class AbstractArray(abstract_structure.AbstractStructure):
             for x in range(self.shape[1]):
                 func(y, x)
 
-    def zoomed_array_from_mask(self, mask, buffer=1):
+    def zoomed_from_mask(self, mask, buffer=1):
         """Extract the 2D region of an array corresponding to the rectangle encompassing all unmasked values.
 
         This is used to extract and visualize only the region of an image that is used in an analysis.
@@ -105,7 +105,7 @@ class AbstractArray(abstract_structure.AbstractStructure):
 
         return extracted_mask_2d.mapping.array_from_array_2d(array_2d=extracted_array_2d)
 
-    def resized_array_from_new_shape(
+    def resized_from_new_shape(
         self, new_shape,
     ):
         """resized the array to a new shape and at a new origin.
@@ -126,7 +126,7 @@ class AbstractArray(abstract_structure.AbstractStructure):
 
         return resized_mask_2d.mapping.array_from_array_2d(array_2d=resized_array_2d)
 
-    def trimmed_array_from_kernel_shape(self, kernel_shape):
+    def trimmed_from_kernel_shape(self, kernel_shape):
         psf_cut_y = np.int(np.ceil(kernel_shape[0] / 2)) - 1
         psf_cut_x = np.int(np.ceil(kernel_shape[1] / 2)) - 1
         array_y = np.int(self.mask.shape[0])
@@ -141,7 +141,7 @@ class AbstractArray(abstract_structure.AbstractStructure):
 
         return resized_mask_2d.mapping.array_from_array_2d(array_2d=trimmed_array_2d)
 
-    def binned_array_from_bin_up_factor(self, bin_up_factor, method):
+    def binned_from_bin_up_factor(self, bin_up_factor, method):
 
         binned_mask = self.mapping.binned_mask_from_bin_up_factor(bin_up_factor=bin_up_factor)
 

@@ -40,7 +40,7 @@ class AbstractGrid(abstract_structure.AbstractStructure):
         The mask pixel index's will come out like this (and the direction of arc-second coordinates is highlighted
         around the mask.
 
-        pixel_scale = 1.0"
+        pixel_scales = 1.0"
 
         <--- -ve  x  +ve -->
                                                         y      x
@@ -84,7 +84,7 @@ class AbstractGrid(abstract_structure.AbstractStructure):
 
         Our grid looks like it did before:
 
-        pixel_scale = 1.0"
+        pixel_scales = 1.0"
 
         <--- -ve  x  +ve -->
 
@@ -448,7 +448,7 @@ class Grid(AbstractGrid):
 
         Thus, the blurring grid coordinates and indexes will be as follows:
 
-        pixel_scale = 1.0"
+        pixel_scales = 1.0"
 
         <--- -ve  x  +ve -->
                                                             y     x
@@ -563,9 +563,9 @@ class BinnedGrid(Grid):
     @classmethod
     def from_mask_and_pixel_scale_binned_grid(cls, mask, pixel_scale_binned_grid):
 
-        if pixel_scale_binned_grid > mask.pixel_scale:
+        if pixel_scale_binned_grid > mask.pixel_scales:
 
-            bin_up_factor = int(pixel_scale_binned_grid / mask.pixel_scale)
+            bin_up_factor = int(pixel_scale_binned_grid / mask.pixel_scales)
 
         else:
 
@@ -694,11 +694,11 @@ class SparseToGrid(object):
             The grid of (y,x) arc-second coordinates at the centre of every image value (e.g. image-pixels).
         """
 
-        pixel_scale = grid.mask.pixel_scale
+        pixel_scales = grid.mask.pixel_scales
 
         pixel_scales = (
-            (grid.shape_arcsec[0] + pixel_scale) / (unmasked_sparse_shape[0]),
-            (grid.shape_arcsec[1] + pixel_scale) / (unmasked_sparse_shape[1]),
+            (grid.shape_arcsec[0] + pixel_scales) / (unmasked_sparse_shape[0]),
+            (grid.shape_arcsec[1] + pixel_scales) / (unmasked_sparse_shape[1]),
         )
 
         origin = grid.geometry.mask_centre
@@ -836,7 +836,7 @@ class Interpolator(object):
         cls, mask, grid, pixel_scale_interpolation_grid
     ):
 
-        rescale_factor = mask.pixel_scale / pixel_scale_interpolation_grid
+        rescale_factor = mask.pixel_scales / pixel_scale_interpolation_grid
 
         rescaled_mask = mask_util.rescaledmask_from_mask_2d_and_rescale_factor(
             mask_2d=mask, rescale_factor=rescale_factor
