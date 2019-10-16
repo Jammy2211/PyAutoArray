@@ -34,11 +34,19 @@ class Kernel(abstract_structure.AbstractStructure):
         return obj
 
     @classmethod
-    def manual(cls, array, shape_2d=None, pixel_scales=None, origin=(0.0, 0.0), renormalize=False):
+    def manual_1d(cls, array, shape_2d=None, pixel_scales=None, origin=(0.0, 0.0), renormalize=False):
 
-        array = arrays.Array.manual(
+        array = arrays.Array.manual_1d(
             array=array,
             shape_2d=shape_2d, pixel_scales=pixel_scales, origin=origin)
+
+        return Kernel(array_1d=array, mask=array.mask, renormalize=renormalize)
+
+    @classmethod
+    def manual_2d(cls, array, pixel_scales=None, origin=(0.0, 0.0), renormalize=False):
+
+        array = arrays.Array.manual_2d(
+            array=array, pixel_scales=pixel_scales, origin=origin)
 
         return Kernel(array_1d=array, mask=array.mask, renormalize=renormalize)
 
@@ -47,7 +55,7 @@ class Kernel(abstract_structure.AbstractStructure):
 
         array = np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]])
 
-        return cls.manual(array=array, pixel_scales=pixel_scales)
+        return cls.manual_2d(array=array, pixel_scales=pixel_scales)
     #
     # @classmethod
     # def from_gaussian(
