@@ -179,14 +179,21 @@ class Kernel(arrays.AbstractArray):
                 mode="constant",
             )
 
-        pixel_scale_factors = (
-            self.mask.shape[0] / kernel_rescaled.shape[0],
-            self.mask.shape[1] / kernel_rescaled.shape[1],
-        )
-        pixel_scales = (
-            self.pixel_scales[0] * pixel_scale_factors[0],
-            self.pixel_scales[1] * pixel_scale_factors[1],
-        )
+        if self.pixel_scales is not None:
+
+            pixel_scale_factors = (
+                self.mask.shape[0] / kernel_rescaled.shape[0],
+                self.mask.shape[1] / kernel_rescaled.shape[1],
+            )
+
+            pixel_scales = (
+                self.pixel_scales[0] * pixel_scale_factors[0],
+                self.pixel_scales[1] * pixel_scale_factors[1],
+            )
+
+        else:
+
+            pixel_scales = None
 
         return Kernel.manual_2d(
             array=kernel_rescaled, pixel_scales=pixel_scales, renormalize=renormalize
