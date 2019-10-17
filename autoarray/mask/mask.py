@@ -307,3 +307,13 @@ class Mask(np.ndarray):
     @property
     def sub_shape(self):
         return (self.shape[0] * self.sub_size, self.shape[1] * self.sub_size)
+
+    @property
+    def sub_mask_2d(self):
+
+        sub_shape = (self.shape[0] * self.sub_size, self.shape[1] * self.sub_size)
+
+        return mask_util.mask_from_shape_and_mask_2d_index_for_mask_1d_index(
+            shape=sub_shape,
+            mask_2d_index_for_mask_1d_index=self.regions._sub_mask_2d_index_for_sub_mask_1d_index,
+        ).astype("bool")

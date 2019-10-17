@@ -213,33 +213,3 @@ class TestRegions:
         assert mask.regions._sub_mask_2d_index_for_sub_mask_1d_index == pytest.approx(
             sub_mask_2d_index_for_sub_mask_1d_index, 1e-4
         )
-
-    def test__sub_mask__is_mask_at_sub_grid_resolution(self):
-
-        mask = aa.mask.manual([[False, True], [False, False]], sub_size=2)
-
-        assert (
-                mask.regions.sub_mask_2d
-                == np.array(
-            [
-                [False, False, True, True],
-                [False, False, True, True],
-                [False, False, False, False],
-                [False, False, False, False],
-            ]
-        )
-        ).all()
-
-        mask = aa.mask.manual([[False, False, True], [False, True, False]], sub_size=2)
-
-        assert (
-                mask.regions.sub_mask_2d
-                == np.array(
-            [
-                [False, False, False, False, True, True],
-                [False, False, False, False, True, True],
-                [False, False, True, True, False, False],
-                [False, False, True, True, False, False],
-            ]
-        )
-        ).all()

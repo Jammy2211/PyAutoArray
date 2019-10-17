@@ -127,13 +127,3 @@ class Regions(object):
         return mask_util.mask_1d_index_for_sub_mask_1d_index_from_mask(
             mask=self.mask, sub_size=self.mask.sub_size
         ).astype("int")
-
-    @property
-    def sub_mask_2d(self):
-
-        sub_shape = (self.mask.shape[0] * self.mask.sub_size, self.mask.shape[1] * self.mask.sub_size)
-
-        return mask_util.mask_from_shape_and_mask_2d_index_for_mask_1d_index(
-            shape=sub_shape,
-            mask_2d_index_for_mask_1d_index=self._sub_mask_2d_index_for_sub_mask_1d_index,
-        ).astype("bool")
