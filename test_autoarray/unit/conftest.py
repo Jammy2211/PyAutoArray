@@ -142,7 +142,7 @@ def make_image_7x7():
 
 @pytest.fixture(name="psf_3x3")
 def make_psf_3x3():
-    return mock_data.MockPSF(shape=(3, 3), value=1.0)
+    return mock_data.MockPSF(shape_2d=(3, 3), value=1.0)
 
 
 @pytest.fixture(name="noise_map_7x7")
@@ -202,7 +202,7 @@ def make_imaging_data_7x7(
 @pytest.fixture(name="imaging_data_6x6")
 def make_imaging_data_6x6():
     image = mock_data.MockImage(shape=(6, 6), value=1.0)
-    psf = mock_data.MockPSF(shape=(3, 3), value=1.0)
+    psf = mock_data.MockPSF(shape_2d=(3, 3), value=1.0)
     noise_map = mock_data.MockNoiseMap(shape=(6, 6), value=2.0)
     background_noise_map = mock_data.MockBackgroundNoiseMap(shape=(6, 6), value=3.0)
     poisson_noise_map = mock_data.MockPoissonNoiseMap(shape=(6, 6), value=4.0)
@@ -234,7 +234,7 @@ def make_visibilities_noise_map_7():
 
 @pytest.fixture(name="primary_beam_3x3")
 def make_primary_beam_3x3():
-    return mock_data.MockPrimaryBeam(shape=(3, 3), value=1.0)
+    return mock_data.MockPrimaryBeam(shape_2d=(3, 3), value=1.0)
 
 
 @pytest.fixture(name="uv_wavelengths_7")
@@ -242,8 +242,8 @@ def make_uv_wavelengths_7():
     return mock_data.MockUVWavelengths(shape=7, value=3.0)
 
 
-@pytest.fixture(name="uv_plane_data_7")
-def make_uv_plane_data_7(
+@pytest.fixture(name="interferometer_data_7")
+def make_interferometer_data_7(
     visibilities_7, visibilities_noise_map_7, primary_beam_3x3, uv_wavelengths_7
 ):
     return mock_data.MockInterferometer(

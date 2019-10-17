@@ -78,7 +78,7 @@ class AbstractArray(abstract_structure.AbstractStructure):
             for x in range(self.shape[1]):
                 func(y, x)
 
-    def zoomed_from_mask(self, mask, buffer=1):
+    def zoomed_around_mask(self, buffer=1):
         """Extract the 2D region of an array corresponding to the rectangle encompassing all unmasked values.
 
         This is used to extract and visualize only the region of an image that is used in an analysis.
@@ -93,17 +93,15 @@ class AbstractArray(abstract_structure.AbstractStructure):
 
         extracted_array_2d = array_util.extracted_array_2d_from_array_2d_and_coordinates(
             array_2d=self.in_2d,
-            y0=mask.geometry._zoom_region[0] - buffer,
-            y1=mask.geometry._zoom_region[1] + buffer,
-            x0=mask.geometry._zoom_region[2] - buffer,
-            x1=mask.geometry._zoom_region[3] + buffer,
+            y0=self.geometry._zoom_region[0] - buffer,
+            y1=self.geometry._zoom_region[1] + buffer,
+            x0=self.geometry._zoom_region[2] - buffer,
+            x1=self.geometry._zoom_region[3] + buffer,
         )
 
-        extracted_mask_2d = self.mask.mapping.resized_mask_from_new_shape(
-            new_shape=extracted_array_2d.shape
-        )
+        mask_2d = msk.Mask.unmasked(shape_2d=extracted_array_2d.shape, pixel_scales=self.pixel_scales, sub_size=self.sub_size, origin=self.origin)
 
-        return extracted_mask_2d.mapping.array_from_array_2d(array_2d=extracted_array_2d)
+        return ArrayMasked.manual_2d(array=extracted_array_2d, mask=mask_2d)
 
     def resized_from_new_shape(
         self, new_shape,
