@@ -2,7 +2,14 @@ from autoarray.structures import arrays
 
 import numpy as np
 
+# TODO : The way these work dpeending on if the input array (e.g. the weight map) are an auto array or not is a bit
+# TODO : clunky. For example, we can currently overwrite pixel_scales. We need to decade how we approach this.
+
 def array_using_correct_dimensions(array, pixel_scales=None, sub_size=1, origin=(0.0, 0.0)):
+
+    if isinstance(array, arrays.AbstractArray):
+        return array
+
     if len(array.shape) == 1:
         return arrays.Array.manual_1d(array=array, shape_2d=array.shape_2d, pixel_scales=pixel_scales, sub_size=sub_size, origin=origin)
     elif len(array.shape) == 2:

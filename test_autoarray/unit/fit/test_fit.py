@@ -12,9 +12,9 @@ class TestDataFit:
             pixel_scales=(1.0, 1.0),
         )
 
-        data = aa.Array(array_1d=np.array([1.0, 2.0, 3.0, 4.0]), mask=mask)
-        noise_map = aa.Array(array_1d=np.array([2.0, 2.0, 2.0, 2.0]), mask=mask)
-        model_data = aa.Array(array_1d=np.array([1.0, 2.0, 3.0, 4.0]), mask=mask)
+        data = aa.array_masked.manual_1d(array=np.array([1.0, 2.0, 3.0, 4.0]), mask=mask)
+        noise_map = aa.array_masked.manual_1d(array=np.array([2.0, 2.0, 2.0, 2.0]), mask=mask)
+        model_data = aa.array_masked.manual_1d(array=np.array([1.0, 2.0, 3.0, 4.0]), mask=mask)
 
         data_fit = aa.DataFit(
             mask=mask, data=data, noise_map=noise_map, model_data=model_data
@@ -64,9 +64,9 @@ class TestDataFit:
             pixel_scales=(1.0, 1.0),
         )
 
-        data = aa.Array(array_1d=np.array([1.0, 2.0, 3.0]), mask=mask)
-        noise_map = aa.Array(array_1d=np.array([2.0, 2.0, 2.0]), mask=mask)
-        model_data = aa.Array(array_1d=np.array([1.0, 1.0, 1.0]), mask=mask)
+        data = aa.array_masked.manual_1d(array=np.array([1.0, 2.0, 3.0]), mask=mask)
+        noise_map = aa.array_masked.manual_1d(array=np.array([2.0, 2.0, 2.0]), mask=mask)
+        model_data = aa.array_masked.manual_1d(array=np.array([1.0, 1.0, 1.0]), mask=mask)
 
         data_fit = aa.DataFit(
             data=data, noise_map=noise_map, mask=mask, model_data=model_data

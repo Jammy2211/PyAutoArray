@@ -520,7 +520,8 @@ class TestMapping:
         ).all()
 
     def test__trimmed_array_2d_from_padded_array_1d_and_image_shape(self):
-        mask = aa.mask.manual(np.full(shape=(4, 4), fill_value=False))
+
+        mask = aa.mask.unmasked(shape_2d=(4, 4))
 
         array_1d = np.array(
             [
@@ -549,9 +550,7 @@ class TestMapping:
 
         assert (array_2d == np.array([[6.0, 7.0], [1.0, 2.0]])).all()
 
-        mask.mapping = aa.Mapping(
-            mask=np.full((5, 3), False)
-        )
+        mask = aa.mask.unmasked(shape_2d=(5, 3))
 
         array_1d = np.array(
             [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0]
@@ -563,9 +562,7 @@ class TestMapping:
 
         assert (array_2d == np.array([[5.0], [8.0], [2.0]])).all()
 
-        mask.mapping = aa.Mapping(
-            mask=np.full((3, 5), False)
-        )
+        mask = aa.mask.unmasked(shape_2d=(3, 5))
 
         array_1d = np.array(
             [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0]
@@ -582,7 +579,7 @@ class TestResizedMask:
 
     def test__resized_mask__pad__compare_to_manual_mask(self):
 
-        mask = aa.mask.manual(np.full(fill_value=False, shape=(5, 5)))
+        mask = aa.mask.unmasked(shape_2d=(5, 5))
         mask[2, 2] = True
 
         mask_resized = mask.mapping.resized_mask_from_new_shape(
@@ -596,12 +593,10 @@ class TestResizedMask:
 
     def test__resized_mask__trim__compare_to_manual_mask(self):
 
-        mask = aa.mask.manual(np.full(fill_value=False, shape=(5, 5)))
+        mask = aa.mask.unmasked(shape_2d=(5, 5))
         mask[2, 2] = True
 
-        mask = aa.Mapping(mask=mask)
-
-        mask_resized = mask.resized_mask_from_new_shape(
+        mask_resized = mask.mapping.resized_mask_from_new_shape(
             new_shape=(3, 3),
         )
 
@@ -615,7 +610,7 @@ class TestBinnedMask:
 
     def test__compare_to_mask_via_util(self):
 
-        mask = aa.mask.manual(np.full(shape=(14, 19), fill_value=True))
+        mask = aa.mask.unmasked(shape_2d=(14, 19), invert=True)
         mask[1, 5] = False
         mask[6, 5] = False
         mask[4, 9] = False
@@ -630,7 +625,7 @@ class TestBinnedMask:
         assert (mask == binned_up_mask_via_util).all()
         assert mask.pixel_scales == None
 
-        mask = aa.mask.manual(np.full(shape=(14, 19), fill_value=True), pixel_scales=(1.0, 2.0))
+        mask = aa.mask.unmasked(shape_2d=(14, 19), pixel_scales=(1.0, 2.0), invert=True)
         mask[1, 5] = False
         mask[6, 5] = False
         mask[4, 9] = False

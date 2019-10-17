@@ -5,6 +5,7 @@ import pytest
 import shutil
 
 import autoarray as aa
+from autoarray.mask import mask as msk
 from autoarray import exc
 
 test_data_dir = "{}/../test_files/array/".format(
@@ -18,26 +19,26 @@ class TestMask:
 
         mask = aa.mask.manual(mask_2d=[[False, False], [False, False]])
 
-        assert type(mask) == aa.Mask
+        assert type(mask) == msk.Mask
         assert (mask == np.array([[False, False], [False, False]])).all()
 
         mask = aa.mask.manual(mask_2d=[[False, False, True], [True, True, False]])
 
-        assert type(mask) == aa.Mask
+        assert type(mask) == msk.Mask
         assert (mask == np.array([[False, False, True], [True, True, False]])).all()
 
     def test__mask__makes_mask_with_pixel_scale(self):
 
         mask = aa.mask.manual(mask_2d=[[False, False], [True, True]], pixel_scales=1.0)
 
-        assert type(mask) == aa.Mask
+        assert type(mask) == msk.Mask
         assert (mask == np.array([[False, False], [True, True]])).all()
         assert mask.pixel_scales == (1.0, 1.0)
         assert mask.origin == (0.0, 0.0)
 
         mask = aa.mask.manual(mask_2d=[[False, False, True], [True, True, False]], pixel_scales=(2.0, 3.0), origin=(0.0, 1.0))
 
-        assert type(mask) == aa.Mask
+        assert type(mask) == msk.Mask
         assert (mask == np.array([[False, False, True], [True, True, False]])).all()
         assert mask.pixel_scales == (2.0, 3.0)
         assert mask.origin == (0.0, 1.0)
@@ -46,7 +47,7 @@ class TestMask:
 
         mask = aa.mask.manual(mask_2d=[[False, False], [True, True]], pixel_scales=1.0, sub_size=1)
 
-        assert type(mask) == aa.Mask
+        assert type(mask) == msk.Mask
         assert (mask == np.array([[False, False], [True, True]])).all()
         assert mask.pixel_scales == (1.0, 1.0)
         assert mask.origin == (0.0, 0.0)
@@ -54,7 +55,7 @@ class TestMask:
 
         mask = aa.mask.manual(mask_2d=[[False, False], [True, True]], pixel_scales=(2.0, 3.0), sub_size=2, origin=(0.0, 1.0))
 
-        assert type(mask) == aa.Mask
+        assert type(mask) == msk.Mask
         assert (mask == np.array([[False, False], [True, True]])).all()
         assert mask.pixel_scales == (2.0, 3.0)
         assert mask.origin == (0.0, 1.0)
@@ -62,7 +63,7 @@ class TestMask:
 
         mask = aa.mask.manual(mask_2d=[[False, False], [True, True], [True, False], [False, True]], pixel_scales=1.0, sub_size=2)
 
-        assert type(mask) == aa.Mask
+        assert type(mask) == msk.Mask
         assert (mask == np.array([[False, False], [True, True], [True, False], [False, True]])).all()
         assert mask.pixel_scales == (1.0, 1.0)
         assert mask.origin == (0.0, 0.0)
@@ -72,7 +73,7 @@ class TestMask:
 
         mask = aa.mask.manual(mask_2d=[[False, False, True], [True, True, False]], invert=True)
 
-        assert type(mask) == aa.Mask
+        assert type(mask) == msk.Mask
         assert (mask == np.array([[True, True, False], [False, False, True]])).all()
 
     def test__mask__input_is_1d_mask__no_shape_2d__raises_exception(self):
@@ -418,7 +419,7 @@ class TestFromAndToFits:
 
     def test__load_and_output_mask_to_fits(self):
 
-        mask = aa.Mask.from_fits(
+        mask = msk.Mask.from_fits(
             file_path=test_data_dir + "3x3_ones.fits", hdu=0, sub_size=1, pixel_scales=(1.0, 1.0),
         )
 
@@ -433,7 +434,7 @@ class TestFromAndToFits:
 
         mask.output_fits(file_path=output_data_dir + "mask.fits")
 
-        mask = aa.Mask.from_fits(
+        mask = msk.Mask.from_fits(
             file_path=output_data_dir + "mask.fits", hdu=0, sub_size=1, pixel_scales=(1.0, 1.0), origin=(2.0, 2.0))
 
         assert (mask == np.ones((3, 3))).all()

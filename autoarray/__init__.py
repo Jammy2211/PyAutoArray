@@ -3,7 +3,8 @@ from autoarray.structures.arrays import Array as array, ArrayMasked as array_mas
 from autoarray.structures.grids import Grid as grid, GridMasked as grid_masked
 from autoarray.structures.kernel import Kernel as kernel
 from autoarray.data import data_converter
-from autoarray.data.imaging import ImagingData as imaging
+from autoarray.data.imaging import Imaging as imaging
+from autoarray.data.interferometer import Interferometer as interferometer
 from autoarray.operators.convolution import Convolver
 from autoarray.operators.fourier_transform import Transformer
 from autoarray.fit.fit import DataFit

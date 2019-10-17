@@ -2,7 +2,7 @@ import ast
 import numpy as np
 
 from autoarray.structures import arrays
-from autolens import exc
+from autoarray import exc
 
 
 class AbstractData(object):
