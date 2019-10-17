@@ -7,6 +7,7 @@ from astropy import units
 from astropy.modeling import functional_models
 from astropy.coordinates import Angle
 import autoarray as aa
+from autoarray.structures import arrays, kernel as kern
 from autoarray import exc
 
 test_data_dir = "{}/../test_files/array/".format(
@@ -117,7 +118,7 @@ class TestRenormalize(object):
     def test__input_is_already_normalized__no_change(self):
 
         kernel_data = np.ones((3, 3)) / 9.0
-        kernel = aa.Kernel.manual_2d(array=kernel_data, pixel_scales=1.0, renormalize=True)
+        kernel = kern.Kernel.manual_2d(array=kernel_data, pixel_scales=1.0, renormalize=True)
 
         assert kernel.in_2d == pytest.approx(kernel_data, 1e-3)
 
@@ -125,14 +126,14 @@ class TestRenormalize(object):
 
         kernel_data =np.ones((3, 3))
 
-        kernel = aa.Kernel.manual_2d(array=kernel_data, pixel_scales=1.0, renormalize=True)
+        kernel = kern.Kernel.manual_2d(array=kernel_data, pixel_scales=1.0, renormalize=True)
 
         assert kernel.in_2d == pytest.approx(np.ones((3, 3)) / 9.0, 1e-3)
 
     def test__same_as_above__renomalized_false_does_not_renormalize(self):
         kernel_data = np.ones((3, 3))
 
-        kernel = aa.Kernel.manual_2d(array=kernel_data, pixel_scales=1.0, renormalize=False)
+        kernel = kern.Kernel.manual_2d(array=kernel_data, pixel_scales=1.0, renormalize=False)
 
         assert kernel.in_2d == pytest.approx(np.ones((3, 3)), 1e-3)
 
@@ -142,7 +143,7 @@ class TestBinnedUp(object):
         self
     ):
         array_2d = np.ones((6, 6))
-        kernel = aa.Kernel.manual_2d(array=array_2d, pixel_scales=1.0, renormalize=False)
+        kernel = kern.Kernel.manual_2d(array=array_2d, pixel_scales=1.0, renormalize=False)
         kernel = kernel.rescaled_with_odd_dimensions_from_rescale_factor(
             rescale_factor=0.5, renormalize=True
         )
@@ -150,7 +151,7 @@ class TestBinnedUp(object):
         assert (kernel.in_2d == (1.0 / 9.0) * np.ones((3, 3))).all()
 
         array_2d = np.ones((9, 9))
-        kernel = aa.Kernel.manual_2d(array=array_2d, pixel_scales=1.0, renormalize=False)
+        kernel = kern.Kernel.manual_2d(array=array_2d, pixel_scales=1.0, renormalize=False)
         kernel = kernel.rescaled_with_odd_dimensions_from_rescale_factor(
             rescale_factor=0.333333333333333, renormalize=True
         )
@@ -158,7 +159,7 @@ class TestBinnedUp(object):
         assert (kernel.in_2d == (1.0 / 9.0) * np.ones((3, 3))).all()
 
         array_2d = np.ones((18, 6))
-        kernel = aa.Kernel.manual_2d(array=array_2d, pixel_scales=1.0, renormalize=False)
+        kernel = kern.Kernel.manual_2d(array=array_2d, pixel_scales=1.0, renormalize=False)
         kernel = kernel.rescaled_with_odd_dimensions_from_rescale_factor(
             rescale_factor=0.5, renormalize=True
         )
@@ -166,7 +167,7 @@ class TestBinnedUp(object):
         assert (kernel.in_2d == (1.0 / 27.0) * np.ones((9, 3))).all()
 
         array_2d = np.ones((6, 18))
-        kernel = aa.Kernel.manual_2d(array=array_2d, pixel_scales=1.0, renormalize=False)
+        kernel = kern.Kernel.manual_2d(array=array_2d, pixel_scales=1.0, renormalize=False)
         kernel = kernel.rescaled_with_odd_dimensions_from_rescale_factor(
             rescale_factor=0.5, renormalize=True
         )
@@ -177,7 +178,7 @@ class TestBinnedUp(object):
         self
     ):
         array_2d = np.array(np.ones((2, 2)))
-        kernel = aa.Kernel.manual_2d(array=array_2d, pixel_scales=1.0, renormalize=False)
+        kernel = kern.Kernel.manual_2d(array=array_2d, pixel_scales=1.0, renormalize=False)
         kernel = kernel.rescaled_with_odd_dimensions_from_rescale_factor(
             rescale_factor=2.0, renormalize=True
         )
@@ -185,7 +186,7 @@ class TestBinnedUp(object):
         assert (kernel.in_2d == (1.0 / 25.0) * np.ones((5, 5))).all()
 
         array_2d = np.ones((40, 40))
-        kernel = aa.Kernel.manual_2d(array=array_2d, pixel_scales=1.0, renormalize=False)
+        kernel = kern.Kernel.manual_2d(array=array_2d, pixel_scales=1.0, renormalize=False)
         kernel = kernel.rescaled_with_odd_dimensions_from_rescale_factor(
             rescale_factor=0.1, renormalize=True
         )
@@ -193,7 +194,7 @@ class TestBinnedUp(object):
         assert (kernel.in_2d == (1.0 / 25.0) * np.ones((5, 5))).all()
 
         array_2d = np.ones((2, 4))
-        kernel = aa.Kernel.manual_2d(array=array_2d, pixel_scales=1.0, renormalize=False)
+        kernel = kern.Kernel.manual_2d(array=array_2d, pixel_scales=1.0, renormalize=False)
         kernel = kernel.rescaled_with_odd_dimensions_from_rescale_factor(
             rescale_factor=2.0, renormalize=True
         )
@@ -203,7 +204,7 @@ class TestBinnedUp(object):
         assert (kernel.in_2d == (1.0 / 45.0) * np.ones((5, 9))).all()
 
         array_2d = np.array(np.ones((4, 2)))
-        kernel = aa.Kernel.manual_2d(array=array_2d, pixel_scales=1.0, renormalize=False)
+        kernel = kern.Kernel.manual_2d(array=array_2d, pixel_scales=1.0, renormalize=False)
         kernel = kernel.rescaled_with_odd_dimensions_from_rescale_factor(
             rescale_factor=2.0, renormalize=True
         )
@@ -215,7 +216,7 @@ class TestBinnedUp(object):
         self
     ):
         array_2d = np.array(np.ones((6, 4)))
-        kernel = aa.Kernel.manual_2d(array=array_2d, pixel_scales=1.0, renormalize=False)
+        kernel = kern.Kernel.manual_2d(array=array_2d, pixel_scales=1.0, renormalize=False)
         kernel = kernel.rescaled_with_odd_dimensions_from_rescale_factor(
             rescale_factor=0.5, renormalize=True
         )
@@ -224,7 +225,7 @@ class TestBinnedUp(object):
         assert (kernel.in_2d == (1.0 / 9.0) * np.ones((3, 3))).all()
 
         array_2d = np.ones((9, 12))
-        kernel = aa.Kernel.manual_2d(array=array_2d, pixel_scales=1.0, renormalize=False)
+        kernel = kern.Kernel.manual_2d(array=array_2d, pixel_scales=1.0, renormalize=False)
         kernel = kernel.rescaled_with_odd_dimensions_from_rescale_factor(
             rescale_factor=0.33333333333, renormalize=True
         )
@@ -233,7 +234,7 @@ class TestBinnedUp(object):
         assert (kernel.in_2d == (1.0 / 15.0) * np.ones((3, 5))).all()
 
         array_2d = np.array(np.ones((4, 6)))
-        kernel = aa.Kernel.manual_2d(array=array_2d, pixel_scales=1.0, renormalize=False)
+        kernel = kern.Kernel.manual_2d(array=array_2d, pixel_scales=1.0, renormalize=False)
         kernel = kernel.rescaled_with_odd_dimensions_from_rescale_factor(
             rescale_factor=0.5, renormalize=True
         )
@@ -242,7 +243,7 @@ class TestBinnedUp(object):
         assert (kernel.in_2d == (1.0 / 9.0) * np.ones((3, 3))).all()
 
         array_2d = np.ones((12, 9))
-        kernel = aa.Kernel.manual_2d(array=array_2d, pixel_scales=1.0, renormalize=False)
+        kernel = kern.Kernel.manual_2d(array=array_2d, pixel_scales=1.0, renormalize=False)
         kernel = kernel.rescaled_with_odd_dimensions_from_rescale_factor(
             rescale_factor=0.33333333333, renormalize=True
         )
@@ -254,7 +255,7 @@ class TestConvolve(object):
     def test__kernel_is_not_odd_x_odd__raises_error(self):
         kernel = np.array([[0.0, 1.0], [1.0, 2.0]])
 
-        kernel = aa.Kernel.manual_2d(array=kernel, pixel_scales=1.0)
+        kernel = kern.Kernel.manual_2d(array=kernel, pixel_scales=1.0)
 
         with pytest.raises(exc.KernelException):
             kernel.convolved_array_from_array(np.ones((5, 5)))
@@ -263,10 +264,10 @@ class TestConvolve(object):
         self
     ):
         
-        image = aa.Array.manual_2d([[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]])
+        image = arrays.Array.manual_2d([[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]])
         kernel = np.array([[0.0, 1.0, 0.0], [1.0, 2.0, 1.0], [0.0, 1.0, 0.0]])
 
-        kernel = aa.Kernel.manual_2d(array=kernel, pixel_scales=1.0)
+        kernel = kern.Kernel.manual_2d(array=kernel, pixel_scales=1.0)
 
         blurred_image = kernel.convolved_array_from_array(image)
 
@@ -275,7 +276,7 @@ class TestConvolve(object):
     def test__image_is_4x4_central_value_of_one__kernel_is_cross__blurred_image_becomes_cross(
         self
     ):
-        image = aa.Array.manual_2d(
+        image = arrays.Array.manual_2d(
             [
                 [0.0, 0.0, 0.0, 0.0],
                 [0.0, 1.0, 0.0, 0.0],
@@ -286,7 +287,7 @@ class TestConvolve(object):
 
         kernel = np.array([[0.0, 1.0, 0.0], [1.0, 2.0, 1.0], [0.0, 1.0, 0.0]])
 
-        kernel = aa.Kernel.manual_2d(array=kernel, pixel_scales=1.0)
+        kernel = kern.Kernel.manual_2d(array=kernel, pixel_scales=1.0)
 
         blurred_image = kernel.convolved_array_from_array(image)
 
@@ -305,13 +306,13 @@ class TestConvolve(object):
     def test__image_is_4x3_central_value_of_one__kernel_is_cross__blurred_image_becomes_cross(
         self
     ):
-        image = aa.Array.manual_2d(
+        image = arrays.Array.manual_2d(
             [[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0], [0.0, 0.0, 0.0]]
         )
 
         kernel = np.array([[0.0, 1.0, 0.0], [1.0, 2.0, 1.0], [0.0, 1.0, 0.0]])
 
-        kernel = aa.Kernel.manual_2d(array=kernel, pixel_scales=1.0)
+        kernel = kern.Kernel.manual_2d(array=kernel, pixel_scales=1.0)
 
         blurred_image = kernel.convolved_array_from_array(image)
 
@@ -325,13 +326,13 @@ class TestConvolve(object):
     def test__image_is_3x4_central_value_of_one__kernel_is_cross__blurred_image_becomes_cross(
         self
     ):
-        image = aa.Array.manual_2d(
+        image = arrays.Array.manual_2d(
             [[0.0, 0.0, 0.0, 0.0], [0.0, 1.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0]]
         )
 
         kernel = np.array([[0.0, 1.0, 0.0], [1.0, 2.0, 1.0], [0.0, 1.0, 0.0]])
 
-        kernel = aa.Kernel.manual_2d(array=kernel, pixel_scales=1.0)
+        kernel = kern.Kernel.manual_2d(array=kernel, pixel_scales=1.0)
 
         blurred_image = kernel.convolved_array_from_array(image)
 
@@ -345,7 +346,7 @@ class TestConvolve(object):
     def test__image_is_4x4_has_two_central_values__kernel_is_asymmetric__blurred_image_follows_convolution(
         self
     ):
-        image = aa.Array.manual_2d(
+        image = arrays.Array.manual_2d(
             [
                 [0.0, 0.0, 0.0, 0.0],
                 [0.0, 1.0, 0.0, 0.0],
@@ -356,7 +357,7 @@ class TestConvolve(object):
 
         kernel = np.array([[1.0, 1.0, 1.0], [2.0, 2.0, 1.0], [1.0, 3.0, 3.0]])
 
-        kernel = aa.Kernel.manual_2d(array=kernel, pixel_scales=1.0)
+        kernel = kern.Kernel.manual_2d(array=kernel, pixel_scales=1.0)
 
         blurred_image = kernel.convolved_array_from_array(image)
 
@@ -375,7 +376,7 @@ class TestConvolve(object):
     def test__image_is_4x4_values_are_on_edge__kernel_is_asymmetric__blurring_does_not_account_for_edge_effects(
         self
     ):
-        image = aa.Array.manual_2d(
+        image = arrays.Array.manual_2d(
             [
                 [0.0, 0.0, 0.0, 0.0],
                 [1.0, 0.0, 0.0, 0.0],
@@ -386,7 +387,7 @@ class TestConvolve(object):
 
         kernel = np.array([[1.0, 1.0, 1.0], [2.0, 2.0, 1.0], [1.0, 3.0, 3.0]])
 
-        kernel = aa.Kernel.manual_2d(array=kernel, pixel_scales=1.0)
+        kernel = kern.Kernel.manual_2d(array=kernel, pixel_scales=1.0)
 
         blurred_image = kernel.convolved_array_from_array(image)
 
@@ -405,7 +406,7 @@ class TestConvolve(object):
     def test__image_is_4x4_values_are_on_corner__kernel_is_asymmetric__blurring_does_not_account_for_edge_effects(
         self
     ):
-        image = aa.Array.manual_2d(
+        image = arrays.Array.manual_2d(
             [
                 [1.0, 0.0, 0.0, 0.0],
                 [0.0, 0.0, 0.0, 0.0],
@@ -416,7 +417,7 @@ class TestConvolve(object):
 
         kernel = np.array([[1.0, 1.0, 1.0], [2.0, 2.0, 1.0], [1.0, 3.0, 3.0]])
 
-        kernel = aa.Kernel.manual_2d(array=kernel, pixel_scales=1.0)
+        kernel = kern.Kernel.manual_2d(array=kernel, pixel_scales=1.0)
 
         blurred_image = kernel.convolved_array_from_array(image)
 
@@ -437,7 +438,7 @@ class TestFromGaussian(object):
 
     def test__identical_to_gaussian_light_profile(self):
 
-        kernel = aa.Kernel.from_gaussian(
+        kernel = kern.Kernel.from_gaussian(
             shape_2d=(3, 3),
             pixel_scales=1.0,
             centre=(0.1, 0.1),
@@ -480,7 +481,7 @@ class TestFromAlmaGaussian(object):
         kernel_astropy = gaussian_astropy(x, y)
         kernel_astropy /= np.sum(kernel_astropy)
 
-        kernel = aa.Kernel.from_as_gaussian_via_alma_fits_header_parameters(
+        kernel = kern.Kernel.from_as_gaussian_via_alma_fits_header_parameters(
             shape_2d=shape,
             pixel_scales=pixel_scales,
             y_stddev=2.0e-5,
@@ -522,7 +523,7 @@ class TestFromAlmaGaussian(object):
         kernel_astropy = gaussian_astropy(x, y)
         kernel_astropy /= np.sum(kernel_astropy)
 
-        kernel = aa.Kernel.from_as_gaussian_via_alma_fits_header_parameters(
+        kernel = kern.Kernel.from_as_gaussian_via_alma_fits_header_parameters(
             shape_2d=shape,
             pixel_scales=pixel_scales,
             y_stddev=2.0e-5,
@@ -567,7 +568,7 @@ class TestFromAlmaGaussian(object):
         kernel_astropy = gaussian_astropy(x, y)
         kernel_astropy /= np.sum(kernel_astropy)
 
-        kernel = aa.Kernel.from_as_gaussian_via_alma_fits_header_parameters(
+        kernel = kern.Kernel.from_as_gaussian_via_alma_fits_header_parameters(
             shape_2d=shape,
             pixel_scales=pixel_scales,
             y_stddev=2.0e-5,
@@ -612,7 +613,7 @@ class TestFromAlmaGaussian(object):
         kernel_astropy = gaussian_astropy(x, y)
         kernel_astropy /= np.sum(kernel_astropy)
 
-        kernel = aa.Kernel.from_as_gaussian_via_alma_fits_header_parameters(
+        kernel = kern.Kernel.from_as_gaussian_via_alma_fits_header_parameters(
             shape_2d=shape,
             pixel_scales=pixel_scales,
             y_stddev=2.0e-5,
@@ -655,7 +656,7 @@ class TestFromAlmaGaussian(object):
         kernel_astropy = gaussian_astropy(x, y)
         kernel_astropy /= np.sum(kernel_astropy)
 
-        kernel = aa.Kernel.from_as_gaussian_via_alma_fits_header_parameters(
+        kernel = kern.Kernel.from_as_gaussian_via_alma_fits_header_parameters(
             shape_2d=shape,
             pixel_scales=pixel_scales,
             y_stddev=2.0e-5,
@@ -698,7 +699,7 @@ class TestFromAlmaGaussian(object):
         kernel_astropy = gaussian_astropy(x, y)
         kernel_astropy /= np.sum(kernel_astropy)
 
-        kernel = aa.Kernel.from_as_gaussian_via_alma_fits_header_parameters(
+        kernel = kern.Kernel.from_as_gaussian_via_alma_fits_header_parameters(
             shape_2d=shape,
             pixel_scales=pixel_scales,
             y_stddev=2.0e-5,

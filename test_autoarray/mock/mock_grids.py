@@ -1,10 +1,11 @@
-import autoarray as aa
+from autoarray.util import grid_util
+from autoarray.structures import grids
 import numpy as np
 
 
-class MockScaledSubGrid(aa.Grid):
+class MockGrid(grids.Grid):
     def __new__(cls, mask, *args, **kwargs):
-        sub_grid_1d = aa.grid_util.grid_1d_from_mask_pixel_scales_sub_size_and_origin(
+        sub_grid_1d = grid_util.grid_1d_from_mask_pixel_scales_sub_size_and_origin(
             mask=mask,
             pixel_scales=(mask.geometry.pixel_scales, mask.geometry.pixel_scales),
             sub_size=mask.sub_size,
@@ -12,7 +13,7 @@ class MockScaledSubGrid(aa.Grid):
 
         obj = sub_grid_1d.view(cls)
         obj.mask = mask
-        obj._sub_border_1d_indexes = regions._sub_border_1d_indexes
+        obj._sub_border_1d_indexes = mask.regions._sub_border_1d_indexes
         obj.interpolator = None
         obj.binned = None
         return obj

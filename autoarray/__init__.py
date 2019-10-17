@@ -2,19 +2,8 @@ from autoarray.mask.mask import Mask as mask
 from autoarray.structures.arrays import Array as array, ArrayMasked as array_masked
 from autoarray.structures.grids import Grid as grid, GridMasked as grid_masked
 from autoarray.structures.kernel import Kernel as kernel
-from autoarray.mask.mapping import Mapping
-from autoarray.mask.geometry import Geometry
-from autoarray.mask.regions import Regions, Regions
-from autoarray.mask.mask import Mask
-from autoarray.structures.arrays import Array
-from autoarray.structures.kernel import Kernel
-from autoarray.structures.grids import (
-    Grid,
-    PixelizationGrid,
-    SparseToGrid,
-    Interpolator,
-    grid_interpolate,
-)
+from autoarray.data import data_converter
+from autoarray.data.imaging import ImagingData as imaging
 from autoarray.operators.convolution import Convolver
 from autoarray.operators.fourier_transform import Transformer
 from autoarray.fit.fit import DataFit

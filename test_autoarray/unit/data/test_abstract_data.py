@@ -6,7 +6,6 @@ import shutil
 
 import autoarray as aa
 from autoarray.data import abstract_data
-import autolens as al
 
 logger = logging.getLogger(__name__)
 
@@ -70,44 +69,6 @@ class TestPotentialChiSquaredMap:
             == np.array([[0.1 ** 2.0, 0.2 ** 2.0], [0.1 ** 2.0, 1.0 ** 2.0]])
         ).all()
         assert data.potential_chi_squared_max == 1.0
-
-
-class TestAbstractNoiseMap(object):
-    class TestFromWeightMap:
-        def test__weight_map_no_zeros__uses_1_over_sqrt_value(self):
-            weight_map = aa.array.manual_2d([[1.0, 4.0, 16.0], [1.0, 4.0, 16.0]])
-
-            noise_map = abstract_data.AbstractNoiseMap.from_weight_map(
-                weight_map=weight_map,
-            )
-
-            assert (
-                noise_map.in_2d == np.array([[1.0, 0.5, 0.25], [1.0, 0.5, 0.25]])
-            ).all()
-
-        def test__weight_map_no_zeros__zeros_set_to_10000000(self):
-
-            weight_map = aa.array.manual_2d([[1.0, 4.0, 0.0], [1.0, 4.0, 16.0]])
-
-            noise_map = abstract_data.AbstractNoiseMap.from_weight_map(
-                weight_map=weight_map,
-            )
-
-            assert (
-                noise_map.in_2d == np.array([[1.0, 0.5, 1.0e8], [1.0, 0.5, 0.25]])
-            ).all()
-
-    class TestFromInverseAbstractNoiseMap:
-        def test__inverse_noise_map_no_zeros__uses_1_over_value(self):
-            inverse_noise_map = aa.array.manual_2d([[1.0, 4.0, 16.0], [1.0, 4.0, 16.0]])
-
-            noise_map = abstract_data.AbstractNoiseMap.from_inverse_noise_map(
-                inverse_noise_map=inverse_noise_map,
-            )
-
-            assert (
-                noise_map.in_2d == np.array([[1.0, 0.25, 0.0625], [1.0, 0.25, 0.0625]])
-            ).all()
 
 
 class TestExposureTimeMap(object):

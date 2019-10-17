@@ -20,3 +20,7 @@ class ConvolutionException(Exception):
 
 class MaskException(Exception):
     pass
+
+
+class DataException(Exception):
+    pass
