@@ -58,8 +58,6 @@ class TestRegions:
 
         edge_pixels_util = aa.mask_util.edge_1d_indexes_from_mask(mask=mask)
 
-        mask.mapping = aa.Mapping(mask=mask)
-
         assert mask.regions._edge_1d_indexes == pytest.approx(edge_pixels_util, 1e-4)
         assert mask.regions._edge_2d_indexes[0] == pytest.approx(np.array([1, 1]), 1e-4)
         assert mask.regions._edge_2d_indexes[10] == pytest.approx(np.array([3, 3]), 1e-4)
