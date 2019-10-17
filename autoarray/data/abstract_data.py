@@ -1,7 +1,7 @@
 import ast
 import numpy as np
 
-import autoarray as aa
+from autoarray.structures import arrays
 from autolens import exc
 
 
@@ -11,7 +11,7 @@ class AbstractData(object):
 
         Parameters
         ----------
-        data : aa.Array
+        data : arrays.Array
             The array of the image data_type, in units of electrons per second.
         pixel_scales : float
             The size of each pixel in arc seconds.
@@ -26,7 +26,7 @@ class AbstractData(object):
         poisson_noise_map : NoiseMap
             An array describing the RMS standard deviation error in each pixel due to the Poisson counts of the source,
             preferably in units of electrons per second.
-        exposure_time_map : aa.Array
+        exposure_time_map : arrays.Array
             An array describing the effective exposure time in each imaging pixel.
         background_sky_map : aa.Scaled
             An array describing the background sky.
@@ -121,54 +121,7 @@ class AbstractData(object):
         return self.array_from_electrons_per_second_to_counts(self.data)
 
 
-class AbstractNoiseMap(aa.Array):
-    @classmethod
-    def from_weight_map(cls, weight_map):
-        """Setup the noise-map from a weight map, which is a form of noise-map that comes via HST image-reduction and \
-        the software package MultiDrizzle.
-
-        The variance in each pixel is computed as:
-
-        Variance = 1.0 / sqrt(weight_map).
-
-        The weight map may contain zeros, in which cause the variances are converted to large values to omit them from \
-        the analysis.
-
-        Parameters
-        -----------
-        pixel_scales : float
-            The size of each pixel in arc seconds.
-        weight_map : ndarray
-            The weight-value of each pixel which is converted to a variance.
-        """
-        np.seterr(divide="ignore")
-        noise_map = 1.0 / np.sqrt(weight_map)
-        noise_map[noise_map > 1.0e8] = 1.0e8
-        return noise_map
-
-    @classmethod
-    def from_inverse_noise_map(cls, inverse_noise_map):
-        """Setup the noise-map from an root-mean square standard deviation map, which is a form of noise-map that \
-        comes via HST image-reduction and the software package MultiDrizzle.
-
-        The variance in each pixel is computed as:
-
-        Variance = 1.0 / inverse_std_map.
-
-        The weight map may contain zeros, in which cause the variances are converted to large values to omit them from \
-        the analysis.
-
-        Parameters
-        -----------
-        pixel_scales : float
-            The size of each pixel in arc seconds.
-        inverse_noise_map : ndarray
-            The inverse noise_map value of each pixel which is converted to a variance.
-        """
-        return 1.0 / inverse_noise_map
-
-
-class ExposureTimeMap(aa.Array):
+class ExposureTimeMap(arrays.Array):
     @classmethod
     def from_exposure_time_and_inverse_noise_map(
         cls, exposure_time, inverse_noise_map
@@ -191,7 +144,7 @@ def load_image(image_path, image_hdu, pixel_scales):
     pixel_scales : float
         The size of each pixel in arc seconds..
     """
-    return aa.array.from_fits(
+    return arrays.Array.from_fits(
         file_path=image_path, hdu=image_hdu, pixel_scales=pixel_scales
     )
 

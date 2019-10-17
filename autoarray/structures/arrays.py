@@ -231,13 +231,9 @@ class Array(AbstractArray):
         if shape_2d is not None and len(shape_2d) != 2:
             raise exc.ArrayException('The input shape_2d parameter is not a tuple of type (float, float)')
 
-        if len(array.shape) == 2:
-            return Array.from_sub_array_2d_pixel_scales_and_sub_size(sub_array_2d=array, pixel_scales=pixel_scales,
-                                                                     sub_size=sub_size, origin=origin)
-        elif len(array.shape) == 1:
-            return Array.from_sub_array_1d_shape_2d_pixel_scales_and_sub_size(sub_array_1d=array, shape_2d=shape_2d,
-                                                                              pixel_scales=pixel_scales,
-                                                                              sub_size=sub_size, origin=origin)
+        return Array.from_sub_array_1d_shape_2d_pixel_scales_and_sub_size(sub_array_1d=array, shape_2d=shape_2d,
+                                                                          pixel_scales=pixel_scales,
+                                                                          sub_size=sub_size, origin=origin)
 
     @classmethod
     def manual_2d(cls, array, pixel_scales=None, sub_size=1, origin=(0.0, 0.0)):

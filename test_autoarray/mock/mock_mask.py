@@ -1,11 +1,12 @@
 import numpy as np
 
-import autoarray as aa
+from autoarray.util import mask_util
+from autoarray.mask import mask as msk
 from autoarray.mask import geometry, mapping, regions
 from autoarray import exc
 
 
-class MockMask(aa.Mask):
+class MockMask(msk.Mask):
     def __new__(
         cls,
         mask_2d,
@@ -51,7 +52,7 @@ class MockMask(aa.Mask):
         if kernel_shape[0] % 2 == 0 or kernel_shape[1] % 2 == 0:
             raise exc.MaskException("psf_size of exterior region must be odd")
 
-        blurring_mask = aa.mask_util.blurring_mask_from_mask_and_kernel_shape(
+        blurring_mask = mask_util.blurring_mask_from_mask_and_kernel_shape(
             self, kernel_shape
         )
 
