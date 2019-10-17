@@ -401,7 +401,7 @@ class Grid(AbstractGrid):
                                                                sub_size=sub_size, origin=origin)
 
     @classmethod
-    def uniform(cls, pixel_scales, shape_2d, sub_size=1, origin=(0.0, 0.0)):
+    def uniform(cls, shape_2d, pixel_scales, sub_size=1, origin=(0.0, 0.0)):
 
         if type(pixel_scales) is float:
             pixel_scales = (pixel_scales, pixel_scales)

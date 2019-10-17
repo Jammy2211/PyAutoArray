@@ -1,11 +1,11 @@
 
+from astropy import units
 import scipy.signal
 from skimage.transform import resize, rescale
 
 import numpy as np
 
-from autoarray.structures import abstract_structure
-from autoarray.structures import arrays
+from autoarray.structures import arrays, grids
 from autoarray import exc
 
 class Kernel(arrays.AbstractArray):
@@ -72,59 +72,58 @@ class Kernel(arrays.AbstractArray):
         array = np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]])
 
         return cls.manual_2d(array=array, pixel_scales=pixel_scales)
-    #
-    # @classmethod
-    # def from_gaussian(
-    #     cls, shape, pixel_scales, sigma, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0
-    # ):
-    #     """Simulate the Kernel as an elliptical Gaussian profile."""
-    #     from autolens.model.profiles.light_profiles import EllipticalGaussian
-    #
-    #     gaussian = EllipticalGaussian(
-    #         centre=centre, axis_ratio=axis_ratio, phi=phi, intensity=1.0, sigma=sigma
-    #     )
-    #
-    #     grid = arrays.SubGrid.from_shape_pixel_scale_and_sub_size(
-    #         shape=shape, pixel_scales=pixel_scales, sub_size=1
-    #     )
-    #
-    #     gaussian = gaussian.profile_image_from_grid(grid=grid)
-    #
-    #     return Kernel.from_2d_and_pixel_scale(
-    #         array_2d=gaussian.in_2d, pixel_scales=pixel_scales, renormalize=True
-    #     )
-    #
-    # @classmethod
-    # def from_as_gaussian_via_alma_fits_header_parameters(
-    #     cls, shape, pixel_scales, y_stddev, x_stddev, theta, centre=(0.0, 0.0)
-    # ):
-    #
-    #     x_stddev = (
-    #         x_stddev * (units.deg).to(units.arcsec) / (2.0 * np.sqrt(2.0 * np.log(2.0)))
-    #     )
-    #     y_stddev = (
-    #         y_stddev * (units.deg).to(units.arcsec) / (2.0 * np.sqrt(2.0 * np.log(2.0)))
-    #     )
-    #
-    #     axis_ratio = x_stddev / y_stddev
-    #
-    #     gaussian = EllipticalGaussian(
-    #         centre=centre,
-    #         axis_ratio=axis_ratio,
-    #         phi=90.0 - theta,
-    #         intensity=1.0,
-    #         sigma=y_stddev,
-    #     )
-    #
-    #     grid = arrays.SubGrid.from_shape_pixel_scale_and_sub_size(
-    #         shape=shape, pixel_scales=pixel_scales, sub_size=1
-    #     )
-    #
-    #     gaussian = gaussian.profile_image_from_grid(grid=grid)
-    #
-    #     return Kernel.from_2d_and_pixel_scale(
-    #         array_2d=gaussian.in_2d, pixel_scales=pixel_scales, renormalize=True
-    #     )
+
+    @classmethod
+    def from_gaussian(
+        cls, shape_2d, pixel_scales, sigma, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0
+    ):
+        """Simulate the Kernel as an elliptical Gaussian profile."""
+        from autolens.model.profiles.light_profiles import EllipticalGaussian
+
+        grid = grids.Grid.uniform(shape_2d=shape_2d, pixel_scales=pixel_scales)
+        grid_shifted = np.subtract(grid, centre)
+        grid_radius = np.sqrt(np.sum(grid_shifted ** 2.0, 1))
+        theta_coordinate_to_profile = (
+            np.arctan2(grid_shifted[:, 0], grid_shifted[:, 1])
+            - np.radians(phi)
+        )
+        grid_transformed = np.vstack(
+            (
+                grid_radius * np.sin(theta_coordinate_to_profile),
+                grid_radius * np.cos(theta_coordinate_to_profile),
+            )
+        ).T
+
+        grid_elliptical_radii = np.sqrt(
+            np.add(
+                np.square(grid_transformed[:, 1]), np.square(np.divide(grid_transformed[:, 0], axis_ratio))
+            )
+        )
+
+        gaussian = np.multiply(
+            np.divide(1.0, sigma * np.sqrt(2.0 * np.pi)),
+            np.exp(-0.5 * np.square(np.divide(grid_elliptical_radii, sigma))),
+        )
+
+        return Kernel.manual_1d(
+            array=gaussian, shape_2d=shape_2d, pixel_scales=pixel_scales, renormalize=True
+        )
+
+    @classmethod
+    def from_as_gaussian_via_alma_fits_header_parameters(
+        cls, shape_2d, pixel_scales, y_stddev, x_stddev, theta, centre=(0.0, 0.0)
+    ):
+
+        x_stddev = (
+            x_stddev * (units.deg).to(units.arcsec) / (2.0 * np.sqrt(2.0 * np.log(2.0)))
+        )
+        y_stddev = (
+            y_stddev * (units.deg).to(units.arcsec) / (2.0 * np.sqrt(2.0 * np.log(2.0)))
+        )
+
+        axis_ratio = x_stddev / y_stddev
+
+        return Kernel.from_gaussian(shape_2d=shape_2d, pixel_scales=pixel_scales, sigma=y_stddev, axis_ratio=axis_ratio, phi=90.0 - theta, centre=centre)
 
     @classmethod
     def from_fits(cls, file_path, hdu, pixel_scales=None, origin=(0.0, 0.0), renormalize=False):

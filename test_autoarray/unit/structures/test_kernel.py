@@ -3,6 +3,9 @@ import os
 import numpy as np
 import pytest
 
+from astropy import units
+from astropy.modeling import functional_models
+from astropy.coordinates import Angle
 import autoarray as aa
 from autoarray import exc
 
@@ -108,6 +111,7 @@ class TestAPI:
                 == np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]])
             ).all()
             assert kernel.pixel_scales == (2.0, 2.0)
+
 
 class TestRenormalize(object):
     def test__input_is_already_normalized__no_change(self):
@@ -429,287 +433,277 @@ class TestConvolve(object):
         ).all()
 
 
-# class TestFromGaussian(object):
-#     def test__identical_to_gaussian_light_profile(self):
-#         grid = aa.SubGrid.from_shape_pixel_scale_and_sub_size(
-#             shape=(3, 3), pixel_scales=1.0, sub_size=1
-#         )
-#
-#         gaussian = aa.light_profiles.EllipticalGaussian(
-#             centre=(0.1, 0.1), axis_ratio=0.9, phi=45.0, intensity=1.0, sigma=1.0
-#         )
-#         profile_gaussian = gaussian.profile_image_from_grid(grid=grid)
-#
-#         profile_kernel = aa.Kernel.manual(
-#             array=profile_gaussian.in_2d, renormalize=True
-#         )
-#
-#         imaging_kernel = aa.Kernel.from_gaussian(
-#             shape=(3, 3),
-#             pixel_scales=1.0,
-#             centre=(0.1, 0.1),
-#             axis_ratio=0.9,
-#             phi=45.0,
-#             sigma=1.0,
-#         )
-#
-#         assert profile_kernel.in_2d == pytest.approx(imaging_kernel.in_2d, 1e-4)
-#
-# class TestFromAlmaGaussian(object):
-#     def test__identical_to_astropy_gaussian_model__circular_no_rotation(self):
-#         pixel_scales = 0.1
-#
-#         x_stddev = (
-#             2.0e-5
-#             * (units.deg).to(units.arcsec)
-#             / pixel_scales
-#             / (2.0 * np.sqrt(2.0 * np.log(2.0)))
-#         )
-#         y_stddev = (
-#             2.0e-5
-#             * (units.deg).to(units.arcsec)
-#             / pixel_scales
-#             / (2.0 * np.sqrt(2.0 * np.log(2.0)))
-#         )
-#
-#         gaussian_astropy = functional_models.Gaussian2D(
-#             amplitude=1.0,
-#             x_mean=2.0,
-#             y_mean=2.0,
-#             x_stddev=x_stddev,
-#             y_stddev=y_stddev,
-#             theta=0.0,
-#         )
-#
-#         shape = (5, 5)
-#         y, x = np.mgrid[0 : shape[1], 0 : shape[0]]
-#         kernel_astropy = gaussian_astropy(x, y)
-#         kernel_astropy /= np.sum(kernel_astropy)
-#
-#         kernel = aa.Kernel.from_as_gaussian_via_alma_fits_header_parameters(
-#             shape=shape,
-#             pixel_scales=pixel_scales,
-#             y_stddev=2.0e-5,
-#             x_stddev=2.0e-5,
-#             theta=0.0,
-#         )
-#
-#         assert kernel_astropy == pytest.approx(kernel.in_2d, 1e-4)
-#
-#     def test__identical_to_astropy_gaussian_model__circular_no_rotation_different_pixel_scale(
-#         self
-#     ):
-#         pixel_scales = 0.02
-#
-#         x_stddev = (
-#             2.0e-5
-#             * (units.deg).to(units.arcsec)
-#             / pixel_scales
-#             / (2.0 * np.sqrt(2.0 * np.log(2.0)))
-#         )
-#         y_stddev = (
-#             2.0e-5
-#             * (units.deg).to(units.arcsec)
-#             / pixel_scales
-#             / (2.0 * np.sqrt(2.0 * np.log(2.0)))
-#         )
-#
-#         gaussian_astropy = functional_models.Gaussian2D(
-#             amplitude=1.0,
-#             x_mean=2.0,
-#             y_mean=2.0,
-#             x_stddev=x_stddev,
-#             y_stddev=y_stddev,
-#             theta=0.0,
-#         )
-#
-#         shape = (5, 5)
-#         y, x = np.mgrid[0 : shape[1], 0 : shape[0]]
-#         kernel_astropy = gaussian_astropy(x, y)
-#         kernel_astropy /= np.sum(kernel_astropy)
-#
-#         kernel = aa.Kernel.from_as_gaussian_via_alma_fits_header_parameters(
-#             shape=shape,
-#             pixel_scales=pixel_scales,
-#             y_stddev=2.0e-5,
-#             x_stddev=2.0e-5,
-#             theta=0.0,
-#         )
-#
-#         assert kernel_astropy == pytest.approx(kernel.in_2d, 1e-4)
-#
-#     def test__identical_to_astropy_gaussian_model__include_ellipticity_from_x_and_y_stddev(
-#         self
-#     ):
-#         pixel_scales = 0.1
-#
-#         x_stddev = (
-#             1.0e-5
-#             * (units.deg).to(units.arcsec)
-#             / pixel_scales
-#             / (2.0 * np.sqrt(2.0 * np.log(2.0)))
-#         )
-#         y_stddev = (
-#             2.0e-5
-#             * (units.deg).to(units.arcsec)
-#             / pixel_scales
-#             / (2.0 * np.sqrt(2.0 * np.log(2.0)))
-#         )
-#
-#         theta_deg = 0.0
-#         theta = Angle(theta_deg, "deg").radian
-#
-#         gaussian_astropy = functional_models.Gaussian2D(
-#             amplitude=1.0,
-#             x_mean=2.0,
-#             y_mean=2.0,
-#             x_stddev=x_stddev,
-#             y_stddev=y_stddev,
-#             theta=theta,
-#         )
-#
-#         shape = (5, 5)
-#         y, x = np.mgrid[0 : shape[1], 0 : shape[0]]
-#         kernel_astropy = gaussian_astropy(x, y)
-#         kernel_astropy /= np.sum(kernel_astropy)
-#
-#         kernel = aa.Kernel.from_as_gaussian_via_alma_fits_header_parameters(
-#             shape=shape,
-#             pixel_scales=pixel_scales,
-#             y_stddev=2.0e-5,
-#             x_stddev=1.0e-5,
-#             theta=theta_deg,
-#         )
-#
-#         assert kernel_astropy == pytest.approx(kernel.in_2d, 1e-4)
-#
-#     def test__identical_to_astropy_gaussian_model__include_different_ellipticity_from_x_and_y_stddev(
-#         self
-#     ):
-#         pixel_scales = 0.1
-#
-#         x_stddev = (
-#             3.0e-5
-#             * (units.deg).to(units.arcsec)
-#             / pixel_scales
-#             / (2.0 * np.sqrt(2.0 * np.log(2.0)))
-#         )
-#         y_stddev = (
-#             2.0e-5
-#             * (units.deg).to(units.arcsec)
-#             / pixel_scales
-#             / (2.0 * np.sqrt(2.0 * np.log(2.0)))
-#         )
-#
-#         theta_deg = 0.0
-#         theta = Angle(theta_deg, "deg").radian
-#
-#         gaussian_astropy = functional_models.Gaussian2D(
-#             amplitude=1.0,
-#             x_mean=2.0,
-#             y_mean=2.0,
-#             x_stddev=x_stddev,
-#             y_stddev=y_stddev,
-#             theta=theta,
-#         )
-#
-#         shape = (5, 5)
-#         y, x = np.mgrid[0 : shape[1], 0 : shape[0]]
-#         kernel_astropy = gaussian_astropy(x, y)
-#         kernel_astropy /= np.sum(kernel_astropy)
-#
-#         kernel = aa.Kernel.from_as_gaussian_via_alma_fits_header_parameters(
-#             shape=shape,
-#             pixel_scales=pixel_scales,
-#             y_stddev=2.0e-5,
-#             x_stddev=3.0e-5,
-#             theta=theta_deg,
-#         )
-#
-#         assert kernel_astropy == pytest.approx(kernel.in_2d, 1e-4)
-#
-#     def test__identical_to_astropy_gaussian_model__include_rotation_angle_30(self):
-#         pixel_scales = 0.1
-#
-#         x_stddev = (
-#             1.0e-5
-#             * (units.deg).to(units.arcsec)
-#             / pixel_scales
-#             / (2.0 * np.sqrt(2.0 * np.log(2.0)))
-#         )
-#         y_stddev = (
-#             2.0e-5
-#             * (units.deg).to(units.arcsec)
-#             / pixel_scales
-#             / (2.0 * np.sqrt(2.0 * np.log(2.0)))
-#         )
-#
-#         theta_deg = 30.0
-#         theta = Angle(theta_deg, "deg").radian
-#
-#         gaussian_astropy = functional_models.Gaussian2D(
-#             amplitude=1.0,
-#             x_mean=1.0,
-#             y_mean=1.0,
-#             x_stddev=x_stddev,
-#             y_stddev=y_stddev,
-#             theta=theta,
-#         )
-#
-#         shape = (3, 3)
-#         y, x = np.mgrid[0 : shape[1], 0 : shape[0]]
-#         kernel_astropy = gaussian_astropy(x, y)
-#         kernel_astropy /= np.sum(kernel_astropy)
-#
-#         kernel = aa.Kernel.from_as_gaussian_via_alma_fits_header_parameters(
-#             shape=shape,
-#             pixel_scales=pixel_scales,
-#             y_stddev=2.0e-5,
-#             x_stddev=1.0e-5,
-#             theta=theta_deg,
-#         )
-#
-#         assert kernel_astropy == pytest.approx(kernel.in_2d, 1e-4)
-#
-#     def test__identical_to_astropy_gaussian_model__include_rotation_angle_230(self):
-#         pixel_scales = 0.1
-#
-#         x_stddev = (
-#             1.0e-5
-#             * (units.deg).to(units.arcsec)
-#             / pixel_scales
-#             / (2.0 * np.sqrt(2.0 * np.log(2.0)))
-#         )
-#         y_stddev = (
-#             2.0e-5
-#             * (units.deg).to(units.arcsec)
-#             / pixel_scales
-#             / (2.0 * np.sqrt(2.0 * np.log(2.0)))
-#         )
-#
-#         theta_deg = 230.0
-#         theta = Angle(theta_deg, "deg").radian
-#
-#         gaussian_astropy = functional_models.Gaussian2D(
-#             amplitude=1.0,
-#             x_mean=1.0,
-#             y_mean=1.0,
-#             x_stddev=x_stddev,
-#             y_stddev=y_stddev,
-#             theta=theta,
-#         )
-#
-#         shape = (3, 3)
-#         y, x = np.mgrid[0 : shape[1], 0 : shape[0]]
-#         kernel_astropy = gaussian_astropy(x, y)
-#         kernel_astropy /= np.sum(kernel_astropy)
-#
-#         kernel = aa.Kernel.from_as_gaussian_via_alma_fits_header_parameters(
-#             shape=shape,
-#             pixel_scales=pixel_scales,
-#             y_stddev=2.0e-5,
-#             x_stddev=1.0e-5,
-#             theta=theta_deg,
-#         )
-#
-#         assert kernel_astropy == pytest.approx(kernel.in_2d, 1e-4)
+class TestFromGaussian(object):
+
+    def test__identical_to_gaussian_light_profile(self):
+
+        kernel = aa.Kernel.from_gaussian(
+            shape_2d=(3, 3),
+            pixel_scales=1.0,
+            centre=(0.1, 0.1),
+            axis_ratio=0.9,
+            phi=45.0,
+            sigma=1.0,
+        )
+
+        assert kernel.in_2d == pytest.approx(np.array([[0.06281, 0.13647, 0.0970], [0.11173, 0.21589, 0.136477], [0.065026, 0.11173, 0.06281]]), 1.0e-3)
+
+
+class TestFromAlmaGaussian(object):
+    def test__identical_to_astropy_gaussian_model__circular_no_rotation(self):
+        pixel_scales = 0.1
+
+        x_stddev = (
+            2.0e-5
+            * (units.deg).to(units.arcsec)
+            / pixel_scales
+            / (2.0 * np.sqrt(2.0 * np.log(2.0)))
+        )
+        y_stddev = (
+            2.0e-5
+            * (units.deg).to(units.arcsec)
+            / pixel_scales
+            / (2.0 * np.sqrt(2.0 * np.log(2.0)))
+        )
+
+        gaussian_astropy = functional_models.Gaussian2D(
+            amplitude=1.0,
+            x_mean=2.0,
+            y_mean=2.0,
+            x_stddev=x_stddev,
+            y_stddev=y_stddev,
+            theta=0.0,
+        )
+
+        shape = (5, 5)
+        y, x = np.mgrid[0 : shape[1], 0 : shape[0]]
+        kernel_astropy = gaussian_astropy(x, y)
+        kernel_astropy /= np.sum(kernel_astropy)
+
+        kernel = aa.Kernel.from_as_gaussian_via_alma_fits_header_parameters(
+            shape_2d=shape,
+            pixel_scales=pixel_scales,
+            y_stddev=2.0e-5,
+            x_stddev=2.0e-5,
+            theta=0.0,
+        )
+
+        assert kernel_astropy == pytest.approx(kernel.in_2d, 1e-4)
+
+    def test__identical_to_astropy_gaussian_model__circular_no_rotation_different_pixel_scale(
+        self
+    ):
+        pixel_scales = 0.02
+
+        x_stddev = (
+            2.0e-5
+            * (units.deg).to(units.arcsec)
+            / pixel_scales
+            / (2.0 * np.sqrt(2.0 * np.log(2.0)))
+        )
+        y_stddev = (
+            2.0e-5
+            * (units.deg).to(units.arcsec)
+            / pixel_scales
+            / (2.0 * np.sqrt(2.0 * np.log(2.0)))
+        )
+
+        gaussian_astropy = functional_models.Gaussian2D(
+            amplitude=1.0,
+            x_mean=2.0,
+            y_mean=2.0,
+            x_stddev=x_stddev,
+            y_stddev=y_stddev,
+            theta=0.0,
+        )
+
+        shape = (5, 5)
+        y, x = np.mgrid[0 : shape[1], 0 : shape[0]]
+        kernel_astropy = gaussian_astropy(x, y)
+        kernel_astropy /= np.sum(kernel_astropy)
+
+        kernel = aa.Kernel.from_as_gaussian_via_alma_fits_header_parameters(
+            shape_2d=shape,
+            pixel_scales=pixel_scales,
+            y_stddev=2.0e-5,
+            x_stddev=2.0e-5,
+            theta=0.0,
+        )
+
+        assert kernel_astropy == pytest.approx(kernel.in_2d, 1e-4)
+
+    def test__identical_to_astropy_gaussian_model__include_ellipticity_from_x_and_y_stddev(
+        self
+    ):
+        pixel_scales = 0.1
+
+        x_stddev = (
+            1.0e-5
+            * (units.deg).to(units.arcsec)
+            / pixel_scales
+            / (2.0 * np.sqrt(2.0 * np.log(2.0)))
+        )
+        y_stddev = (
+            2.0e-5
+            * (units.deg).to(units.arcsec)
+            / pixel_scales
+            / (2.0 * np.sqrt(2.0 * np.log(2.0)))
+        )
+
+        theta_deg = 0.0
+        theta = Angle(theta_deg, "deg").radian
+
+        gaussian_astropy = functional_models.Gaussian2D(
+            amplitude=1.0,
+            x_mean=2.0,
+            y_mean=2.0,
+            x_stddev=x_stddev,
+            y_stddev=y_stddev,
+            theta=theta,
+        )
+
+        shape = (5, 5)
+        y, x = np.mgrid[0 : shape[1], 0 : shape[0]]
+        kernel_astropy = gaussian_astropy(x, y)
+        kernel_astropy /= np.sum(kernel_astropy)
+
+        kernel = aa.Kernel.from_as_gaussian_via_alma_fits_header_parameters(
+            shape_2d=shape,
+            pixel_scales=pixel_scales,
+            y_stddev=2.0e-5,
+            x_stddev=1.0e-5,
+            theta=theta_deg,
+        )
+
+        assert kernel_astropy == pytest.approx(kernel.in_2d, 1e-4)
+
+    def test__identical_to_astropy_gaussian_model__include_different_ellipticity_from_x_and_y_stddev(
+        self
+    ):
+        pixel_scales = 0.1
+
+        x_stddev = (
+            3.0e-5
+            * (units.deg).to(units.arcsec)
+            / pixel_scales
+            / (2.0 * np.sqrt(2.0 * np.log(2.0)))
+        )
+        y_stddev = (
+            2.0e-5
+            * (units.deg).to(units.arcsec)
+            / pixel_scales
+            / (2.0 * np.sqrt(2.0 * np.log(2.0)))
+        )
+
+        theta_deg = 0.0
+        theta = Angle(theta_deg, "deg").radian
+
+        gaussian_astropy = functional_models.Gaussian2D(
+            amplitude=1.0,
+            x_mean=2.0,
+            y_mean=2.0,
+            x_stddev=x_stddev,
+            y_stddev=y_stddev,
+            theta=theta,
+        )
+
+        shape = (5, 5)
+        y, x = np.mgrid[0 : shape[1], 0 : shape[0]]
+        kernel_astropy = gaussian_astropy(x, y)
+        kernel_astropy /= np.sum(kernel_astropy)
+
+        kernel = aa.Kernel.from_as_gaussian_via_alma_fits_header_parameters(
+            shape_2d=shape,
+            pixel_scales=pixel_scales,
+            y_stddev=2.0e-5,
+            x_stddev=3.0e-5,
+            theta=theta_deg,
+        )
+
+        assert kernel_astropy == pytest.approx(kernel.in_2d, 1e-4)
+
+    def test__identical_to_astropy_gaussian_model__include_rotation_angle_30(self):
+        pixel_scales = 0.1
+
+        x_stddev = (
+            1.0e-5
+            * (units.deg).to(units.arcsec)
+            / pixel_scales
+            / (2.0 * np.sqrt(2.0 * np.log(2.0)))
+        )
+        y_stddev = (
+            2.0e-5
+            * (units.deg).to(units.arcsec)
+            / pixel_scales
+            / (2.0 * np.sqrt(2.0 * np.log(2.0)))
+        )
+
+        theta_deg = 30.0
+        theta = Angle(theta_deg, "deg").radian
+
+        gaussian_astropy = functional_models.Gaussian2D(
+            amplitude=1.0,
+            x_mean=1.0,
+            y_mean=1.0,
+            x_stddev=x_stddev,
+            y_stddev=y_stddev,
+            theta=theta,
+        )
+
+        shape = (3, 3)
+        y, x = np.mgrid[0 : shape[1], 0 : shape[0]]
+        kernel_astropy = gaussian_astropy(x, y)
+        kernel_astropy /= np.sum(kernel_astropy)
+
+        kernel = aa.Kernel.from_as_gaussian_via_alma_fits_header_parameters(
+            shape_2d=shape,
+            pixel_scales=pixel_scales,
+            y_stddev=2.0e-5,
+            x_stddev=1.0e-5,
+            theta=theta_deg,
+        )
+
+        assert kernel_astropy == pytest.approx(kernel.in_2d, 1e-4)
+
+    def test__identical_to_astropy_gaussian_model__include_rotation_angle_230(self):
+        pixel_scales = 0.1
+
+        x_stddev = (
+            1.0e-5
+            * (units.deg).to(units.arcsec)
+            / pixel_scales
+            / (2.0 * np.sqrt(2.0 * np.log(2.0)))
+        )
+        y_stddev = (
+            2.0e-5
+            * (units.deg).to(units.arcsec)
+            / pixel_scales
+            / (2.0 * np.sqrt(2.0 * np.log(2.0)))
+        )
+
+        theta_deg = 230.0
+        theta = Angle(theta_deg, "deg").radian
+
+        gaussian_astropy = functional_models.Gaussian2D(
+            amplitude=1.0,
+            x_mean=1.0,
+            y_mean=1.0,
+            x_stddev=x_stddev,
+            y_stddev=y_stddev,
+            theta=theta,
+        )
+
+        shape = (3, 3)
+        y, x = np.mgrid[0 : shape[1], 0 : shape[0]]
+        kernel_astropy = gaussian_astropy(x, y)
+        kernel_astropy /= np.sum(kernel_astropy)
+
+        kernel = aa.Kernel.from_as_gaussian_via_alma_fits_header_parameters(
+            shape_2d=shape,
+            pixel_scales=pixel_scales,
+            y_stddev=2.0e-5,
+            x_stddev=1.0e-5,
+            theta=theta_deg,
+        )
+
+        assert kernel_astropy == pytest.approx(kernel.in_2d, 1e-4)
