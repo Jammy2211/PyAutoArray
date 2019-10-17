@@ -163,3 +163,7 @@ class AbstractStructure(np.ndarray):
     @property
     def total_pixels(self):
         return self.shape[0]
+
+    @property
+    def binned_pixel_scales_from_bin_up_factor(self):
+        return self.mask.binned_pixel_scales_from_bin_up_factor

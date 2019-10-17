@@ -182,16 +182,6 @@ class AbstractArray(abstract_structure.AbstractStructure):
                 "[mean | quadrature | sum]"
             )
 
-        mask = msk.Mask.unmasked(
-            shape=array_2d.shape,
-        )
-
-        array_1d = array_util.sub_array_1d_from_sub_array_2d_mask_and_sub_size(
-            mask=mask, sub_array_2d=array_2d, sub_size=1
-        )
-
-        return Array(array_1d=array_1d, mask=mask)
-
     @property
     def in_2d(self):
         return self.mask.mapping.sub_array_2d_from_sub_array_1d(sub_array_1d=self)
