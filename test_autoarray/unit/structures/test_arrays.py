@@ -589,6 +589,7 @@ class TestArray:
             assert new_arr.mask.pixel_scales == (1.0, 1.0)
 
         def test__zoomed__2d_array_zoomed__uses_the_limits_of_the_mask(self):
+
             array_2d = np.array(
                 [
                     [1.0, 2.0, 3.0, 4.0],
@@ -598,8 +599,6 @@ class TestArray:
                 ]
             )
 
-            arr = arrays.Array.from_sub_array_2d_pixel_scales_and_sub_size(sub_array_2d=array_2d, sub_size=1, pixel_scales=(1.0, 1.0))
-
             mask = aa.mask.manual(
                 mask_2d=np.array(
                     [
@@ -613,16 +612,17 @@ class TestArray:
                 sub_size=1,
             )
 
-            arr_zoomed = arr.zoomed_from_mask(
-                mask=mask, buffer=0
-            )
+            arr_masked = aa.array_masked.manual_2d(array=array_2d, mask=mask)
+
+            arr_zoomed = arr_masked.zoomed_around_mask(buffer=0)
+
             assert (arr_zoomed.in_2d == np.array([[6.0, 7.0], [10.0, 11.0]])).all()
 
             mask = aa.mask.manual(
                 mask_2d=np.array(
                     [
                         [True, True, True, True],
-                        [True, False, False, True],
+                        [True, False, False, False],
                         [True, False, False, False],
                         [True, True, True, True],
                     ]
@@ -631,9 +631,8 @@ class TestArray:
                 sub_size=1,
             )
 
-            arr_zoomed = arr.zoomed_from_mask(
-                mask=mask, buffer=0
-            )
+            arr_masked = aa.array_masked.manual_2d(array=array_2d, mask=mask)
+            arr_zoomed = arr_masked.zoomed_around_mask(buffer=0)
             assert (
                 arr_zoomed.in_2d == np.array([[6.0, 7.0, 8.0], [10.0, 11.0, 12.0]])
             ).all()
@@ -644,16 +643,15 @@ class TestArray:
                         [True, True, True, True],
                         [True, False, False, True],
                         [True, False, False, True],
-                        [True, True, False, True],
+                        [True, False, False, True],
                     ]
                 ),
                 pixel_scales=(1.0, 1.0),
                 sub_size=1,
             )
 
-            arr_zoomed = arr.zoomed_from_mask(
-                mask=mask, buffer=0
-            )
+            arr_masked = aa.array_masked.manual_2d(array=array_2d, mask=mask)
+            arr_zoomed = arr_masked.zoomed_around_mask(buffer=0)
             assert (
                 arr_zoomed.in_2d
                 == np.array([[6.0, 7.0], [10.0, 11.0], [14.0, 15.0]])
@@ -672,11 +670,11 @@ class TestArray:
                 sub_size=1,
             )
 
-            arr_zoomed = arr.zoomed_from_mask(
-                mask=mask, buffer=0
-            )
+            arr_masked = aa.array_masked.manual_2d(array=array_2d, mask=mask)
+            arr_zoomed = arr_masked.zoomed_around_mask(buffer=0)
+
             assert (
-                arr_zoomed.in_2d == np.array([[5.0, 6.0, 7.0], [9.0, 10.0, 11.0]])
+                arr_zoomed.in_2d == np.array([[0.0, 6.0, 7.0], [9.0, 10.0, 11.0]])
             ).all()
 
             mask = aa.mask.manual(
@@ -692,12 +690,12 @@ class TestArray:
                 sub_size=1,
             )
 
-            arr_zoomed = arr.zoomed_from_mask(
-                mask=mask, buffer=0
+            arr_masked = aa.array_masked.manual_2d(array=array_2d, mask=mask)
+            arr_zoomed = arr_masked.zoomed_around_mask(buffer=0
             )
             assert (
                 arr_zoomed.in_2d
-                == np.array([[2.0, 3.0], [6.0, 7.0], [10.0, 11.0]])
+                == np.array([[2.0, 0.0], [6.0, 7.0], [10.0, 11.0]])
             ).all()
 
             mask = aa.mask.manual(
@@ -713,17 +711,18 @@ class TestArray:
                 sub_size=1,
             )
 
-            arr_zoomed = arr.zoomed_from_mask(
-                mask=mask, buffer=1
+            arr_masked = aa.array_masked.manual_2d(array=array_2d, mask=mask)
+            arr_zoomed = arr_masked.zoomed_around_mask(buffer=1
             )
+
             assert (
                 arr_zoomed.in_2d
                 == np.array(
                     [
-                        [1.0, 2.0, 3.0, 4.0],
-                        [5.0, 6.0, 7.0, 8.0],
-                        [9.0, 10.0, 11.0, 12.0],
-                        [13.0, 14.0, 15.0, 16.0],
+                        [0.0, 0.0, 0.0, 0.0],
+                        [0.0, 6.0, 7.0, 0.0],
+                        [0.0, 10.0, 11.0, 0.0],
+                        [0.0, 0.0, 0.0, 0.0],
                     ]
                 )
             ).all()

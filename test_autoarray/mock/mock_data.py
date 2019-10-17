@@ -48,9 +48,10 @@ class MockBackgrondSkyMap(object):
 
 
 class MockPSF(object):
-    def __new__(cls, shape, value, pixel_scales=1.0, *args, **kwargs):
-        return aa.kernel.manual_2d(
-            array=value * np.ones(shape=shape),
+    def __new__(cls, shape_2d, value, pixel_scales=1.0, *args, **kwargs):
+        return aa.kernel.full(
+            fill_value=value,
+            shape_2d=shape_2d,
             pixel_scales=pixel_scales,
             origin=(0.0, 0.0),
         )
@@ -105,9 +106,10 @@ class MockImaging(imaging.Imaging):
 
 
 class MockPrimaryBeam(object):
-    def __new__(cls, shape, value, pixel_scales=1.0, *args, **kwargs):
-        return aa.kernel(
-            array_1d=value * np.ones(shape=shape),
+    def __new__(cls, shape_2d, value, pixel_scales=1.0, *args, **kwargs):
+        return aa.kernel.full(
+            fill_value=value,
+            shape_2d=shape_2d,
             pixel_scales=pixel_scales,
             origin=(0.0, 0.0),
         )

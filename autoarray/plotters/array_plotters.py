@@ -15,10 +15,8 @@ from autoarray.plotters import plotter_util
 
 def plot_array(
     array,
-    origin=None,
-    mask=None,
-    extract_array_from_mask=False,
-    zoom_around_mask=False,
+    should_plot_origin=True,
+    mask_overlay=None,
     should_plot_border=False,
     lines=None,
     positions=None,
@@ -63,9 +61,9 @@ def plot_array(
     -----------
     array : data_type.array.aa.Scaled
         The 2D array of data_type which is plotted.
-    origin : (float, float).
+    should_plot_origin : (float, float).
         The origin of the coordinate system of the array, which is plotted as an 'x' on the image if input.
-    mask : data_type.array.mask.Mask
+    mask_overlay : data_type.array.mask.Mask
         The mask applied to the array, the edge of which is plotted as a set of points over the plotted array.
     extract_array_from_mask : bool
         The plotter array is extracted using the mask, such that masked values are plotted as zeros. This ensures \
@@ -160,21 +158,12 @@ def plot_array(
     if array is None or np.all(array == 0):
         return
 
-    if extract_array_from_mask and mask is not None:
-        array = np.add(
-            array, 0.0, out=np.zeros_like(array), where=np.asarray(mask) == 0
-        )
-
-    if zoom_around_mask and mask is not None:
-        array = array.zoomed_from_mask(mask=mask, buffer=2)
-        zoom_offset_pixels = np.asarray(mask._zoom_offset_pixels)
-        zoom_offset_arcsec = np.asarray(mask._zoom_offset_arcsec)
-    else:
-        zoom_offset_pixels = None
-        zoom_offset_arcsec = None
+    array = array.zoomed_around_mask(buffer=2)
+    zoom_offset_pixels = np.asarray(array.geometry._zoom_offset_pixels)
+    zoom_offset_arcsec = np.asarray(array.geometry._zoom_offset_arcsec)
 
     if aspect is "square":
-        aspect = float(array.mask.shape_arcsec[1]) / float(array.mask.shape_arcsec[0])
+        aspect = float(array.mask.geometry.shape_arcsec[1]) / float(array.mask.geometry.shape_arcsec[0])
 
     fig = plot_figure(
         array=array,
@@ -211,13 +200,13 @@ def plot_array(
     )
     plot_origin(
         array=array,
-        origin=origin,
+        should_plot_origin=should_plot_origin,
         units=units,
         kpc_per_arcsec=kpc_per_arcsec,
         zoom_offset_arcsec=zoom_offset_arcsec,
     )
-    plot_mask(
-        mask=mask,
+    plot_mask_overlay(
+        mask=mask_overlay,
         units=units,
         kpc_per_arcsec=kpc_per_arcsec,
         pointsize=mask_pointsize,
@@ -225,7 +214,7 @@ def plot_array(
     )
     plotter_util.plot_lines(line_lists=lines)
     plot_border(
-        mask=mask,
+        mask=mask_overlay,
         should_plot_border=should_plot_border,
         units=units,
         kpc_per_arcsec=kpc_per_arcsec,
@@ -350,7 +339,7 @@ def plot_figure(
         yticks_manual=yticks_manual,
     )
 
-    plt.imshow(array, aspect=aspect, cmap=cmap, norm=norm_scale, extent=extent)
+    plt.imshow(array.in_2d, aspect=aspect, cmap=cmap, norm=norm_scale, extent=extent)
     return fig
 
 
@@ -382,10 +371,10 @@ def get_extent(array, units, kpc_per_arcsec, xticks_manual, yticks_manual):
     elif units in "arcsec" or kpc_per_arcsec is None:
         return np.asarray(
             [
-                array.mask.arc_second_minima[1],
-                array.mask.arc_second_maxima[1],
-                array.mask.arc_second_minima[0],
-                array.mask.arc_second_maxima[0],
+                array.mask.geometry.arc_second_minima[1],
+                array.mask.geometry.arc_second_maxima[1],
+                array.mask.geometry.arc_second_minima[0],
+                array.mask.geometry.arc_second_maxima[0],
             ]
         )
     elif units in "kpc":
@@ -394,10 +383,10 @@ def get_extent(array, units, kpc_per_arcsec, xticks_manual, yticks_manual):
                 lambda tick: tick * kpc_per_arcsec,
                 np.asarray(
                     [
-                        array.mask.arc_second_minima[1],
-                        array.mask.arc_second_maxima[1],
-                        array.mask.arc_second_minima[0],
-                        array.mask.arc_second_maxima[0],
+                        array.mask.geometry.arc_second_minima[1],
+                        array.mask.geometry.arc_second_maxima[1],
+                        array.mask.geometry.arc_second_minima[0],
+                        array.mask.geometry.arc_second_maxima[0],
                     ]
                 ),
             )
@@ -546,7 +535,7 @@ def convert_grid_units(array, grid_arcsec, units, kpc_per_arcsec):
         )
 
 
-def plot_origin(array, origin, units, kpc_per_arcsec, zoom_offset_arcsec):
+def plot_origin(array, should_plot_origin, units, kpc_per_arcsec, zoom_offset_arcsec):
     """Plot the (y,x) origin ofo the array's coordinates as a 'x'.
     
     Parameters
@@ -560,9 +549,9 @@ def plot_origin(array, origin, units, kpc_per_arcsec, zoom_offset_arcsec):
     kpc_per_arcsec : float or None
         The conversion factor between arc-seconds and kiloparsecs, required to plot the units in kpc.
     """
-    if origin is not None:
+    if should_plot_origin:
 
-        origin_grid = np.asarray(origin)
+        origin_grid = np.asarray(array.origin)
 
         if zoom_offset_arcsec is not None:
             origin_grid -= zoom_offset_arcsec
@@ -661,7 +650,7 @@ def plot_ellipses(
                 )
 
 
-def plot_mask(mask, units, kpc_per_arcsec, pointsize, zoom_offset_pixels):
+def plot_mask_overlay(mask, units, kpc_per_arcsec, pointsize, zoom_offset_pixels):
     """Plot the mask of the array on the figure.
 
     Parameters
@@ -679,14 +668,14 @@ def plot_mask(mask, units, kpc_per_arcsec, pointsize, zoom_offset_pixels):
     if mask is not None:
 
         plt.gca()
-        edge_pixels = mask._mask_2d_index_for_mask_1d_index[mask._edge_1d_indexes] + 0.5
+        edge_pixels = mask.regions._mask_2d_index_for_mask_1d_index[mask.regions._edge_1d_indexes] + 0.5
 
         if zoom_offset_pixels is not None:
             edge_pixels_plot = edge_pixels - zoom_offset_pixels
         else:
             edge_pixels_plot = edge_pixels
 
-        edge_arcsec = mask.mapping.grid_arcsec_from_grid_pixels_1d(
+        edge_arcsec = mask.geometry.grid_arcsec_from_grid_pixels_1d(
             grid_pixels_1d=edge_pixels_plot
         )
         edge_units = convert_grid_units(
@@ -696,7 +685,7 @@ def plot_mask(mask, units, kpc_per_arcsec, pointsize, zoom_offset_pixels):
             kpc_per_arcsec=kpc_per_arcsec,
         )
 
-        plt.scatter(y=edge_units[:, 0], x=edge_units[:, 1], s=pointsize, c="k")
+        plt.scatter(y=np.asarray(edge_units[:, 0]), x=np.asarray(edge_units[:, 1]), s=pointsize, c="k")
 
 
 def plot_border(

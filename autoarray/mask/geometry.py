@@ -136,7 +136,7 @@ class Geometry(object):
             pixel_scales=self.mask.pixel_scales,
             origin=self.mask.origin,
         )
-        return grid_arcsec_1d.mask.mapping.grid_from_grid_1d(grid_1d=grid_pixels_1d)
+        return self.mask.mapping.grid_from_grid_1d(grid_1d=grid_pixels_1d)
 
     def grid_pixel_centres_from_grid_arcsec_1d(self, grid_arcsec_1d):
         """Convert a grid of (y,x) arc second coordinates to a grid of (y,x) pixel values. Pixel coordinates are \
@@ -161,7 +161,7 @@ class Geometry(object):
         ).astype(
             "int"
         )
-        return grid_arcsec_1d.mask.mapping.grid_from_grid_1d(grid_1d=grid_pixel_centres_1d)
+        return self.mask.mapping.grid_from_grid_1d(grid_1d=grid_pixel_centres_1d)
 
     def grid_pixel_indexes_from_grid_arcsec_1d(self, grid_arcsec_1d):
         """Convert a grid of (y,x) arc second coordinates to a grid of (y,x) pixel 1D indexes. Pixel coordinates are \
@@ -190,7 +190,7 @@ class Geometry(object):
         ).astype(
             "int"
         )
-        return grid_arcsec_1d.mask.mapping.grid_from_grid_1d(grid_1d=grid_pixel_indexes_1d)
+        return self.mask.mapping.grid_from_grid_1d(grid_1d=grid_pixel_indexes_1d)
 
     def grid_arcsec_from_grid_pixels_1d(self, grid_pixels_1d):
         """Convert a grid of (y,x) pixel coordinates to a grid of (y,x) arc second values.
@@ -212,7 +212,7 @@ class Geometry(object):
             pixel_scales=self.mask.pixel_scales,
             origin=self.mask.origin,
         )
-        return grid_pixels_1d.mask.mapping.grid_from_grid_1d(grid_1d=grid_arcsec_1d)
+        return self.mask.mapping.grid_from_grid_1d(grid_1d=grid_arcsec_1d)
 
     @property
     def sub_size(self):
@@ -280,8 +280,8 @@ class Geometry(object):
     @property
     def _zoom_offset_arcsec(self):
         return (
-            -self.mask.pixel_scales * self._zoom_offset_pixels[0],
-            self.mask.pixel_scales * self._zoom_offset_pixels[1],
+            -self.mask.pixel_scales[0] * self._zoom_offset_pixels[0],
+            self.mask.pixel_scales[1] * self._zoom_offset_pixels[1],
         )
 
     @property

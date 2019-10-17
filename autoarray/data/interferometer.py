@@ -224,10 +224,10 @@ class Interferometer(AbstractInterferometer):
     convert_from_electrons=False,
     gain=None,
     convert_from_adus=False,):
-        """Factory for loading the uv_plane data_type from .fits files, as well as computing properties like the noise-map,
-        exposure-time map, etc. from the uv_plane-data_type.
+        """Factory for loading the interferometer data_type from .fits files, as well as computing properties like the noise-map,
+        exposure-time map, etc. from the interferometer-data_type.
 
-        This factory also includes a number of routines for converting the uv_plane-data_type from units not supported by PyAutoLens \
+        This factory also includes a number of routines for converting the interferometer-data_type from units not supported by PyAutoLens \
         (e.g. adus, electrons) to electrons per second.
 
         Parameters
@@ -241,12 +241,12 @@ class Interferometer(AbstractInterferometer):
             The hdu the image is contained in the .fits file specified by *image_path*.
         image_hdu : int
             The hdu the image is contained in the .fits file that *image_path* points too.
-        resized_uv_plane_shape : (int, int) | None
-            If input, the uv_plane structures that are image sized, e.g. the image, noise-maps) are resized to these dimensions.
-        resized_uv_plane_origin_pixels : (int, int) | None
-            If the uv_plane structures are resized, this defines a new origin (in pixels) around which recentering occurs.
-        resized_uv_plane_origin_arcsec : (float, float) | None
-            If the uv_plane structures are resized, this defines a new origin (in arc-seconds) around which recentering occurs.
+        resized_interferometer_shape : (int, int) | None
+            If input, the interferometer structures that are image sized, e.g. the image, noise-maps) are resized to these dimensions.
+        resized_interferometer_origin_pixels : (int, int) | None
+            If the interferometer structures are resized, this defines a new origin (in pixels) around which recentering occurs.
+        resized_interferometer_origin_arcsec : (float, float) | None
+            If the interferometer structures are resized, this defines a new origin (in arc-seconds) around which recentering occurs.
         primary_beam_path : str
             The path to the primary_beam .fits file containing the primary_beam (e.g. '/path/to/primary_beam.fits')
         primary_beam_hdu : int
@@ -298,7 +298,7 @@ class Interferometer(AbstractInterferometer):
         exposure_time_map_hdu : int
             The hdu the exposure_time_map is contained in the .fits file specified by *exposure_time_map_path*.
         exposure_time_map_from_single_value : float
-            The exposure time of the uv_plane imaging, which is used to compute the exposure-time map as a single value \
+            The exposure time of the interferometer imaging, which is used to compute the exposure-time map as a single value \
             (see *ExposureTimeMap.from_single_value*).
         exposure_time_map_from_inverse_noise_map : bool
             If True, the exposure-time map is computed from the background noise_map map \
@@ -351,7 +351,7 @@ class Interferometer(AbstractInterferometer):
         file_path=primary_beam_path, hdu=primary_beam_hdu, pixel_scales=pixel_scales, renormalize=renormalize_primary_beam
     )
 
-        uv_plane_data = Interferometer(
+        interferometer_data = Interferometer(
             shape_2d=shape,
             visibilities=visibilities,
             pixel_scales=pixel_scales,
@@ -362,16 +362,16 @@ class Interferometer(AbstractInterferometer):
         )
 
         if resized_primary_beam_shape is not None:
-            uv_plane_data = uv_plane_data.resized_primary_beam_from_new_shape(
+            interferometer_data = interferometer_data.resized_primary_beam_from_new_shape(
                 new_shape=resized_primary_beam_shape
             )
 
         if convert_from_electrons:
-            uv_plane_data = uv_plane_data.data_in_electrons()
+            interferometer_data = interferometer_data.data_in_electrons()
         elif convert_from_adus:
-            uv_plane_data = uv_plane_data.data_in_adus_from_gain(gain=gain)
+            interferometer_data = interferometer_data.data_in_adus_from_gain(gain=gain)
 
-        return uv_plane_data
+        return interferometer_data
 
     @classmethod
     def simulate(
