@@ -7,7 +7,7 @@ from astropy import units
 from astropy.modeling import functional_models
 from astropy.coordinates import Angle
 import autoarray as aa
-from autoarray.structures import arrays, kernel as kern
+from autoarray.structures import kernel as kern, arrays
 from autoarray import exc
 
 test_data_dir = "{}/../test_files/array/".format(

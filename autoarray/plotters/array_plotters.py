@@ -67,7 +67,7 @@ def plot_array(
         The mask applied to the array, the edge of which is plotted as a set of points over the plotted array.
     extract_array_from_mask : bool
         The plotter array is extracted using the mask, such that masked values are plotted as zeros. This ensures \
-        bright features outside the mask do not impact the color map of the plot.
+        bright features outside the mask do not impact the color map of the plotters.
     zoom_around_mask : bool
         If True, the 2D region of the array corresponding to the rectangle encompassing all unmasked values is \
         plotted, thereby zooming into the region of interest.
@@ -82,7 +82,7 @@ def plot_array(
     units : str
         The units of the y / x axis of the plots, in arc-seconds ('arcsec') or kiloparsecs ('kpc').
     kpc_per_arcsec : float or None
-        The conversion factor between arc-seconds and kiloparsecs, required to plot the units in kpc.
+        The conversion factor between arc-seconds and kiloparsecs, required to plotters the units in kpc.
     figsize : (int, int)
         The size of the figure in (rows, columns).
     aspect : str
@@ -91,7 +91,7 @@ def plot_array(
     cmap : str
         The colormap the array is plotted using, which may be chosen from the standard matplotlib colormaps.
     norm : str
-        The normalization of the colormap used to plot the image, specifically whether it is linear ('linear'), log \
+        The normalization of the colormap used to plotters the image, specifically whether it is linear ('linear'), log \
         ('log') or a symmetric log normalization ('symmetric_log').
     norm_min : float or None
         The minimum array value the colormap map spans (all values below this value are plotted the same color).
@@ -280,7 +280,7 @@ def plot_figure(
     xticks_manual,
     yticks_manual,
 ):
-    """Open a matplotlib figure and plot the array of data_type on it.
+    """Open a matplotlib figure and plotters the array of data_type on it.
 
     Parameters
     -----------
@@ -291,7 +291,7 @@ def plot_figure(
     units : str
         The units of the y / x axis of the plots, in arc-seconds ('arcsec') or kiloparsecs ('kpc').
     kpc_per_arcsec : float or None
-        The conversion factor between arc-seconds and kiloparsecs, required to plot the units in kpc.
+        The conversion factor between arc-seconds and kiloparsecs, required to plotters the units in kpc.
     figsize : (int, int)
         The size of the figure in (rows, columns).
     aspect : str
@@ -300,7 +300,7 @@ def plot_figure(
     cmap : str
         The colormap the array is plotted using, which may be chosen from the standard matplotlib colormaps.
     norm : str
-        The normalization of the colormap used to plot the image, specifically whether it is linear ('linear'), log \
+        The normalization of the colormap used to plotters the image, specifically whether it is linear ('linear'), log \
         ('log') or a symmetric log normalization ('symmetric_log').
     norm_min : float or None
         The minimum array value the colormap map spans (all values below this value are plotted the same color).
@@ -355,7 +355,7 @@ def get_extent(array, units, kpc_per_arcsec, xticks_manual, yticks_manual):
     units : str
         The units of the y / x axis of the plots, in arc-seconds ('arcsec') or kiloparsecs ('kpc').
     kpc_per_arcsec : float
-        The conversion factor between arc-seconds and kiloparsecs, required to plot the units in kpc.
+        The conversion factor between arc-seconds and kiloparsecs, required to plotters the units in kpc.
     xticks_manual :  [] or None
         If input, the xticks do not use the array's default xticks but instead overwrite them as these values.
     yticks_manual :  [] or None
@@ -474,7 +474,7 @@ def set_xy_labels_and_ticksize(
     units : str
         The units of the y / x axis of the plots, in arc-seconds ('arcsec') or kiloparsecs ('kpc').
     kpc_per_arcsec : float
-        The conversion factor between arc-seconds and kiloparsecs, required to plot the units in kpc.
+        The conversion factor between arc-seconds and kiloparsecs, required to plotters the units in kpc.
     xlabelsize : int
         The fontsize of the x axes label.
     ylabelsize : int
@@ -520,7 +520,7 @@ def convert_grid_units(array, grid_arcsec, units, kpc_per_arcsec):
     units : str
         The units of the y / x axis of the plots, in arc-seconds ('arcsec') or kiloparsecs ('kpc').
     kpc_per_arcsec : float
-        The conversion factor between arc-seconds and kiloparsecs, required to plot the units in kpc.
+        The conversion factor between arc-seconds and kiloparsecs, required to plotters the units in kpc.
     """
     if units in "pixels":
         return array.grid_pixels_from_grid_arcsec(grid_arcsec_1d=grid_arcsec)
@@ -547,7 +547,7 @@ def plot_origin(array, should_plot_origin, units, kpc_per_arcsec, zoom_offset_ar
     units : str
         The units of the y / x axis of the plots, in arc-seconds ('arcsec') or kiloparsecs ('kpc').
     kpc_per_arcsec : float or None
-        The conversion factor between arc-seconds and kiloparsecs, required to plot the units in kpc.
+        The conversion factor between arc-seconds and kiloparsecs, required to plotters the units in kpc.
     """
     if should_plot_origin:
 
@@ -577,7 +577,7 @@ def plot_centres(array, centres, units, kpc_per_arcsec, zoom_offset_arcsec):
     units : str
         The units of the y / x axis of the plots, in arc-seconds ('arcsec') or kiloparsecs ('kpc').
     kpc_per_arcsec : float or None
-        The conversion factor between arc-seconds and kiloparsecs, required to plot the units in kpc.
+        The conversion factor between arc-seconds and kiloparsecs, required to plotters the units in kpc.
     """
     if centres is not None:
 
@@ -615,7 +615,7 @@ def plot_ellipses(
     units : str
         The units of the y / x axis of the plots, in arc-seconds ('arcsec') or kiloparsecs ('kpc').
     kpc_per_arcsec : float or None
-        The conversion factor between arc-seconds and kiloparsecs, required to plot the units in kpc.
+        The conversion factor between arc-seconds and kiloparsecs, required to plotters the units in kpc.
     """
     if centres is not None and axis_ratios is not None and phis is not None:
 
@@ -660,7 +660,7 @@ def plot_mask_overlay(mask, units, kpc_per_arcsec, pointsize, zoom_offset_pixels
     units : str
         The units of the y / x axis of the plots, in arc-seconds ('arcsec') or kiloparsecs ('kpc').
     kpc_per_arcsec : float or None
-        The conversion factor between arc-seconds and kiloparsecs, required to plot the units in kpc.
+        The conversion factor between arc-seconds and kiloparsecs, required to plotters the units in kpc.
     pointsize : int
         The size of the points plotted to show the mask.
     """
@@ -702,7 +702,7 @@ def plot_border(
     units : str
         The units of the y / x axis of the plots, in arc-seconds ('arcsec') or kiloparsecs ('kpc').
     kpc_per_arcsec : float or None
-        The conversion factor between arc-seconds and kiloparsecs, required to plot the units in kpc.
+        The conversion factor between arc-seconds and kiloparsecs, required to plotters the units in kpc.
     border_pointsize : int
         The size of the points plotted to show the borders.
     """
@@ -740,7 +740,7 @@ def plot_points(
     units : str
         The units of the y / x axis of the plots, in arc-seconds ('arcsec') or kiloparsecs ('kpc').
     kpc_per_arcsec : float or None
-        The conversion factor between arc-seconds and kiloparsecs, required to plot the units in kpc.
+        The conversion factor between arc-seconds and kiloparsecs, required to plotters the units in kpc.
     pointsize : int
         The size of the points plotted to show the input positions.
     """
@@ -784,7 +784,7 @@ def plot_grid(grid_arcsec, array, units, kpc_per_arcsec, pointsize, zoom_offset_
      units : str
          The units of the y / x axis of the plots, in arc-seconds ('arcsec') or kiloparsecs ('kpc').
      kpc_per_arcsec : float or None
-         The conversion factor between arc-seconds and kiloparsecs, required to plot the units in kpc.
+         The conversion factor between arc-seconds and kiloparsecs, required to plotters the units in kpc.
      grid_pointsize : int
          The size of the points plotted to show the grid.
      """

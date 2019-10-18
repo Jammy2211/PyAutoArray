@@ -101,7 +101,7 @@ class AbstractInterferometer(abstract_data.AbstractData):
     ):
     
         if primary_beam_path is not None:
-            aa.array_util.numpy_array_2d_to_fits(
+            aa.util.array.numpy_array_2d_to_fits(
                 array_2d=self.primary_beam.in_2d,
                 file_path=primary_beam_path,
                 overwrite=overwrite,
@@ -111,14 +111,14 @@ class AbstractInterferometer(abstract_data.AbstractData):
             self.exposure_time_map is not None
             and exposure_time_map_path is not None
         ):
-            aa.array_util.numpy_array_1d_to_fits(
+            aa.util.array.numpy_array_1d_to_fits(
                 array_1d=self.exposure_time_map,
                 file_path=exposure_time_map_path,
                 overwrite=overwrite,
             )
     
         if self.visibilities is not None and real_visibilities_path is not None:
-            aa.array_util.numpy_array_1d_to_fits(
+            aa.util.array.numpy_array_1d_to_fits(
                 array_1d=self.visibilities[:, 0],
                 file_path=real_visibilities_path,
                 overwrite=overwrite,
@@ -128,28 +128,28 @@ class AbstractInterferometer(abstract_data.AbstractData):
             self.visibilities is not None
             and imaginary_visibilities_path is not None
         ):
-            aa.array_util.numpy_array_1d_to_fits(
+            aa.util.array.numpy_array_1d_to_fits(
                 array_1d=self.visibilities[:, 1],
                 file_path=imaginary_visibilities_path,
                 overwrite=overwrite,
             )
     
         if self.noise_map is not None and noise_map_path is not None:
-            aa.array_util.numpy_array_1d_to_fits(
+            aa.util.array.numpy_array_1d_to_fits(
                 array_1d=self.noise_map,
                 file_path=noise_map_path,
                 overwrite=overwrite,
             )
     
         if self.uv_wavelengths is not None and u_wavelengths_path is not None:
-            aa.array_util.numpy_array_1d_to_fits(
+            aa.util.array.numpy_array_1d_to_fits(
                 array_1d=self.uv_wavelengths[:, 0],
                 file_path=u_wavelengths_path,
                 overwrite=overwrite,
             )
     
         if self.uv_wavelengths is not None and v_wavelengths_path is not None:
-            aa.array_util.numpy_array_1d_to_fits(
+            aa.util.array.numpy_array_1d_to_fits(
                 array_1d=self.uv_wavelengths[:, 1],
                 file_path=v_wavelengths_path,
                 overwrite=overwrite,
@@ -351,7 +351,7 @@ class Interferometer(AbstractInterferometer):
         file_path=primary_beam_path, hdu=primary_beam_hdu, pixel_scales=pixel_scales, renormalize=renormalize_primary_beam
     )
 
-        interferometer_data = Interferometer(
+        interferometer = Interferometer(
             shape_2d=shape,
             visibilities=visibilities,
             pixel_scales=pixel_scales,
@@ -362,16 +362,16 @@ class Interferometer(AbstractInterferometer):
         )
 
         if resized_primary_beam_shape is not None:
-            interferometer_data = interferometer_data.resized_primary_beam_from_new_shape(
+            interferometer = interferometer.resized_primary_beam_from_new_shape(
                 new_shape=resized_primary_beam_shape
             )
 
         if convert_from_electrons:
-            interferometer_data = interferometer_data.data_in_electrons()
+            interferometer = interferometer.data_in_electrons()
         elif convert_from_adus:
-            interferometer_data = interferometer_data.data_in_adus_from_gain(gain=gain)
+            interferometer = interferometer.data_in_adus_from_gain(gain=gain)
 
-        return interferometer_data
+        return interferometer
 
     @classmethod
     def simulate(
@@ -533,14 +533,14 @@ def gaussian_noise_map_from_shape_and_sigma(shape, sigma, noise_seed=-1):
 def load_visibilities(visibilities_path, visibilities_hdu):
 
     if visibilities_path is not None:
-        return aa.array_util.numpy_array_1d_from_fits(
+        return aa.util.array.numpy_array_1d_from_fits(
             file_path=visibilities_path, hdu=visibilities_hdu
         )
 
 
 def load_visibilities_noise_map(noise_map_path, noise_map_hdu):
     if noise_map_path is not None:
-        return aa.array_util.numpy_array_1d_from_fits(
+        return aa.util.array.numpy_array_1d_from_fits(
             file_path=noise_map_path, hdu=noise_map_hdu
         )
 
@@ -587,7 +587,7 @@ def load_exposure_time_map(
             fill_value=exposure_time, shape=shape_1d
         )
     elif exposure_time is None and exposure_time_map_path is not None:
-        return aa.array_util.numpy_array_1d_from_fits(
+        return aa.util.array.numpy_array_1d_from_fits(
             file_path=exposure_time_map_path,
             hdu=exposure_time_map_hdu,
         )

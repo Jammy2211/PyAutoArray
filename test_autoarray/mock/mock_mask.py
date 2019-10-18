@@ -1,7 +1,7 @@
 import numpy as np
 
-from autoarray.util import mask_util
 from autoarray.mask import mask as msk
+from autoarray.util import mask_util
 from autoarray.mask import geometry, mapping, regions
 from autoarray import exc
 

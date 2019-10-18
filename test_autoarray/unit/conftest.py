@@ -5,7 +5,7 @@ import pytest
 
 import autoarray as aa
 from autoarray import conf
-
+from autoarray.fit import fit
 from test_autoarray.mock import mock_mask
 from test_autoarray.mock import mock_data
 from test_autoarray.mock import mock_grids
@@ -176,8 +176,8 @@ def make_positions_7x7():
     return list(map(lambda position_set: np.asarray(position_set), positions))
 
 
-@pytest.fixture(name="imaging_data_7x7")
-def make_imaging_data_7x7(
+@pytest.fixture(name="imaging_7x7")
+def make_imaging_7x7(
     image_7x7,
     psf_3x3,
     noise_map_7x7,
@@ -195,12 +195,12 @@ def make_imaging_data_7x7(
         poisson_noise_map=poisson_noise_map_7x7,
         exposure_time_map=exposure_time_map_7x7,
         background_sky_map=background_sky_map_7x7,
-        name="mock_imaging_data_7x7",
+        name="mock_imaging_7x7",
     )
 
 
-@pytest.fixture(name="imaging_data_6x6")
-def make_imaging_data_6x6():
+@pytest.fixture(name="imaging_6x6")
+def make_imaging_6x6():
     image = mock_data.MockImage(shape=(6, 6), value=1.0)
     psf = mock_data.MockPSF(shape_2d=(3, 3), value=1.0)
     noise_map = mock_data.MockNoiseMap(shape=(6, 6), value=2.0)
@@ -218,7 +218,7 @@ def make_imaging_data_6x6():
         poisson_noise_map=poisson_noise_map,
         exposure_time_map=exposure_time_map,
         background_sky_map=background_sky_map,
-        name="mock_imaging_data_6x6",
+        name="mock_imaging_6x6",
     )
 
 
@@ -242,8 +242,8 @@ def make_uv_wavelengths_7():
     return mock_data.MockUVWavelengths(shape=7, value=3.0)
 
 
-@pytest.fixture(name="interferometer_data_7")
-def make_interferometer_data_7(
+@pytest.fixture(name="interferometer_7")
+def make_interferometer_7(
     visibilities_7, visibilities_noise_map_7, primary_beam_3x3, uv_wavelengths_7
 ):
     return mock_data.MockInterferometer(
@@ -265,8 +265,8 @@ def make_transformer_7x7_7(uv_wavelengths_7, grid_7x7):
 
 
 @pytest.fixture(name="fit_7x7")
-def make_lens_imaging_fit_x1_plane_7x7(imaging_data_7x7, mask_7x7):
-    return aa.DataFit(
-        mask=mask_7x7, data=imaging_data_7x7.data, noise_map=imaging_data_7x7.noise_map,
-        model_data=5.0*imaging_data_7x7.data
+def make_lens_imaging_fit_x1_plane_7x7(imaging_7x7, mask_7x7):
+    return fit.DataFit(
+        mask=mask_7x7, data=imaging_7x7.data, noise_map=imaging_7x7.noise_map,
+        model_data=5.0*imaging_7x7.data
     )

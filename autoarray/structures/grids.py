@@ -7,7 +7,7 @@ from autoarray import decorator_util
 from autoarray import exc
 from autoarray.structures import abstract_structure
 from autoarray.mask import mask as msk
-from autoarray.util import grid_util, array_util, mask_util, binning_util, sparse_util
+from autoarray.util import sparse_util, array_util, grid_util, mask_util
 
 
 class AbstractGrid(abstract_structure.AbstractStructure):

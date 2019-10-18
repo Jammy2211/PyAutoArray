@@ -2,7 +2,8 @@ import os
 
 import pytest
 
-from autoarray.data.plotters import interferometer_plotters
+import autoarray as aa
+
 
 @pytest.fixture(name="interferometer_plotter_path")
 def make_interferometer_plotter_setup():
@@ -14,10 +15,10 @@ def make_interferometer_plotter_setup():
 
 
 def test__individual_attributes_are_output(
-    interferometer_data_7, interferometer_plotter_path, plot_patch
+    interferometer_7, interferometer_plotter_path, plot_patch
 ):
-    interferometer_plotters.plot_visibilities(
-        interferometer_data=interferometer_data_7,
+    aa.plot.interferometer.visibilities(
+        interferometer=interferometer_7,
         cb_tick_values=[1.0],
         cb_tick_labels=["1.0"],
         output_path=interferometer_plotter_path,
@@ -26,24 +27,24 @@ def test__individual_attributes_are_output(
 
     assert interferometer_plotter_path + "interferometer_visibilities.png" in plot_patch.paths
 
-    interferometer_plotters.plot_u_wavelengths(
-        interferometer_data=interferometer_data_7,
+    aa.plot.interferometer.u_wavelengths(
+        interferometer=interferometer_7,
         output_path=interferometer_plotter_path,
         output_format="png",
     )
 
     assert interferometer_plotter_path + "interferometer_u_wavelengths.png" in plot_patch.paths
 
-    interferometer_plotters.plot_v_wavelengths(
-        interferometer_data=interferometer_data_7,
+    aa.plot.interferometer.v_wavelengths(
+        interferometer=interferometer_7,
         output_path=interferometer_plotter_path,
         output_format="png",
     )
 
     assert interferometer_plotter_path + "interferometer_v_wavelengths.png" in plot_patch.paths
 
-    interferometer_plotters.plot_primary_beam(
-        interferometer_data=interferometer_data_7,
+    aa.plot.interferometer.primary_beam(
+        interferometer=interferometer_7,
         cb_tick_values=[1.0],
         cb_tick_labels=["1.0"],
         output_path=interferometer_plotter_path,
@@ -52,22 +53,22 @@ def test__individual_attributes_are_output(
 
     assert interferometer_plotter_path + "interferometer_primary_beam.png" in plot_patch.paths
 
-    interferometer_plotters.plot_interferometer_subplot(
-        interferometer_data=interferometer_data_7,
+    aa.plot.interferometer.subplot(
+        interferometer=interferometer_7,
         cb_tick_values=[1.0],
         cb_tick_labels=["1.0"],
         output_path=interferometer_plotter_path,
         output_format="png",
     )
 
-    assert interferometer_plotter_path + "interferometer_data.png" in plot_patch.paths
+    assert interferometer_plotter_path + "interferometer.png" in plot_patch.paths
 
 
-def test__interferometer_individuals__output_dependent_on_input(
-    interferometer_data_7, interferometer_plotter_path, plot_patch
+def test__individuals__output_dependent_on_input(
+    interferometer_7, interferometer_plotter_path, plot_patch
 ):
-    interferometer_plotters.plot_interferometer_individual(
-        interferometer_data=interferometer_data_7,
+    aa.plot.interferometer.individual(
+        interferometer=interferometer_7,
         should_plot_visibilities=True,
         should_plot_u_wavelengths=False,
         should_plot_v_wavelengths=True,

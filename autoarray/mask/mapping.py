@@ -1,11 +1,8 @@
-import logging
-
 import numpy as np
 
-from autoarray import exc
 from autoarray.mask import mask as msk
-from autoarray.structures import arrays, grids
-from autoarray.util import array_util, grid_util, binning_util
+from autoarray.structures import grids, arrays
+from autoarray.util import binning_util, array_util, grid_util
 
 
 class Mapping(object):

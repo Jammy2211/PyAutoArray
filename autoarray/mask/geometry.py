@@ -1,7 +1,7 @@
 import numpy as np
 
-from autoarray import exc
 from autoarray.util import array_util, grid_util
+
 
 class Geometry(object):
 

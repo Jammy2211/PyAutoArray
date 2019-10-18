@@ -10,7 +10,7 @@ class TestVisiblities(object):
         uv_wavelengths = np.ones(shape=(4, 2))
         grid_radians = np.ones(shape=(1, 2))
 
-        transformer = aa.Transformer(
+        transformer = aa.transformer(
             uv_wavelengths=uv_wavelengths,
             grid_radians=grid_radians,
             preload_transform=False,
@@ -28,7 +28,7 @@ class TestVisiblities(object):
 
         grid_radians = np.array([[0.1, 0.2], [0.3, 0.4]])
 
-        transformer = aa.Transformer(
+        transformer = aa.transformer(
             uv_wavelengths=uv_wavelengths,
             grid_radians=grid_radians,
             preload_transform=False,
@@ -49,7 +49,7 @@ class TestVisiblities(object):
         uv_wavelengths = np.ones(shape=(4, 2))
         grid_radians = np.ones(shape=(1, 2))
 
-        transformer = aa.Transformer(
+        transformer = aa.transformer(
             uv_wavelengths=uv_wavelengths,
             grid_radians=grid_radians,
             preload_transform=False,
@@ -67,7 +67,7 @@ class TestVisiblities(object):
 
         grid_radians = np.array([[0.1, 0.2], [0.3, 0.4]])
 
-        transformer = aa.Transformer(
+        transformer = aa.transformer(
             uv_wavelengths=uv_wavelengths,
             grid_radians=grid_radians,
             preload_transform=False,
@@ -88,12 +88,12 @@ class TestVisiblities(object):
         uv_wavelengths = np.ones(shape=(4, 2))
         grid_radians = np.ones(shape=(1, 2))
 
-        transformer_preload = aa.Transformer(
+        transformer_preload = aa.transformer(
             uv_wavelengths=uv_wavelengths,
             grid_radians=grid_radians,
             preload_transform=True,
         )
-        transformer = aa.Transformer(
+        transformer = aa.transformer(
             uv_wavelengths=uv_wavelengths,
             grid_radians=grid_radians,
             preload_transform=False,
@@ -115,7 +115,7 @@ class TestVisiblities(object):
         uv_wavelengths = np.ones(shape=(4, 2))
         grid_radians = np.ones(shape=(1, 2))
 
-        transformer = aa.Transformer(
+        transformer = aa.transformer(
             uv_wavelengths=uv_wavelengths,
             grid_radians=grid_radians,
             preload_transform=False,
@@ -133,7 +133,7 @@ class TestVisiblities(object):
 
         grid_radians = np.array([[0.1, 0.2], [0.3, 0.4]])
 
-        transformer = aa.Transformer(
+        transformer = aa.transformer(
             uv_wavelengths=uv_wavelengths,
             grid_radians=grid_radians,
             preload_transform=False,
@@ -154,7 +154,7 @@ class TestVisiblities(object):
         uv_wavelengths = np.ones(shape=(4, 2))
         grid_radians = np.ones(shape=(1, 2))
 
-        transformer = aa.Transformer(
+        transformer = aa.transformer(
             uv_wavelengths=uv_wavelengths,
             grid_radians=grid_radians,
             preload_transform=False,
@@ -172,7 +172,7 @@ class TestVisiblities(object):
 
         grid_radians = np.array([[0.1, 0.2], [0.3, 0.4]])
 
-        transformer = aa.Transformer(
+        transformer = aa.transformer(
             uv_wavelengths=uv_wavelengths,
             grid_radians=grid_radians,
             preload_transform=False,
@@ -193,12 +193,12 @@ class TestVisiblities(object):
         uv_wavelengths = np.ones(shape=(4, 2))
         grid_radians = np.ones(shape=(1, 2))
 
-        transformer_preload = aa.Transformer(
+        transformer_preload = aa.transformer(
             uv_wavelengths=uv_wavelengths,
             grid_radians=grid_radians,
             preload_transform=True,
         )
-        transformer = aa.Transformer(
+        transformer = aa.transformer(
             uv_wavelengths=uv_wavelengths,
             grid_radians=grid_radians,
             preload_transform=False,
@@ -221,7 +221,7 @@ class TestVisiblities(object):
 
         grid_radians = np.array([[0.1, 0.2], [0.3, 0.4]])
 
-        transformer = aa.Transformer(
+        transformer = aa.transformer(
             uv_wavelengths=uv_wavelengths,
             grid_radians=grid_radians,
             preload_transform=False,

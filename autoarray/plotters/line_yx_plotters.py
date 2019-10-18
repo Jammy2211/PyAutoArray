@@ -95,7 +95,7 @@ def set_xy_labels_and_ticksize(
     units : str
         The units of the y / x axis of the plots, in arc-seconds ('arcsec') or kiloparsecs ('kpc').
     kpc_per_arcsec : float
-        The conversion factor between arc-seconds and kiloparsecs, required to plot the units in kpc.
+        The conversion factor between arc-seconds and kiloparsecs, required to plotters the units in kpc.
     ylabel : str
         The y-label of the figure, which is the physical quantitiy being plotted.
     xlabelsize : int

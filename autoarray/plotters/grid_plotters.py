@@ -39,7 +39,7 @@ def plot_grid(
     output_format="show",
     output_filename="grid",
 ):
-    """Plot a grid of (y,x) Cartesian coordinates as a scatter plot of points.
+    """Plot a grid of (y,x) Cartesian coordinates as a scatter plotters of points.
 
     Parameters
     -----------
@@ -55,7 +55,7 @@ def plot_grid(
     units : str
         The units of the y / x axis of the plots, in arc-seconds ('arcsec') or kiloparsecs ('kpc').
     kpc_per_arcsec : float
-        The conversion factor between arc-seconds and kiloparsecs, required to plot the units in kpc.
+        The conversion factor between arc-seconds and kiloparsecs, required to plotters the units in kpc.
     figsize : (int, int)
         The size of the figure in (rows, columns).
     pointsize : int
@@ -147,7 +147,7 @@ def convert_grid_units(grid_arcsec, units, kpc_per_arcsec):
     units : str
         The units of the y / x axis of the plots, in arc-seconds ('arcsec') or kiloparsecs ('kpc').
     kpc_per_arcsec : float
-        The conversion factor between arc-seconds and kiloparsecs, required to plot the units in kpc.
+        The conversion factor between arc-seconds and kiloparsecs, required to plotters the units in kpc.
     """
 
     if units in "arcsec" or kpc_per_arcsec is None:
@@ -167,7 +167,7 @@ def set_xy_labels(units, kpc_per_arcsec, xlabelsize, ylabelsize, xyticksize):
     units : str
         The units of the y / x axis of the plots, in arc-seconds ('arcsec') or kiloparsecs ('kpc').
     kpc_per_arcsec : float
-        The conversion factor between arc-seconds and kiloparsecs, required to plot the units in kpc.
+        The conversion factor between arc-seconds and kiloparsecs, required to plotters the units in kpc.
     xlabelsize : int
         The fontsize of the x axes label.
     ylabelsize : int

@@ -5,9 +5,9 @@ from scipy.stats import norm
 import numpy as np
 
 from autoarray import exc
-from autoarray.util import array_util
 from autoarray.mask import mask as msk
-from autoarray.structures import arrays, grids, kernel
+from autoarray.structures import kernel, arrays
+from autoarray.util import array_util
 from autoarray.data import abstract_data, data_converter
 
 logger = logging.getLogger(__name__)
@@ -356,7 +356,9 @@ class AbstractImaging(abstract_data.AbstractData):
                 overwrite=overwrite,
             )
 
+
 class Imaging(AbstractImaging):
+
     def __init__(
         self,
         image,
@@ -610,7 +612,7 @@ class Imaging(AbstractImaging):
             pixel_scales=pixel_scales,
         )
 
-        imaging_data = Imaging(
+        imaging = Imaging(
             image=image,
             pixel_scales=pixel_scales,
             psf=psf,
@@ -624,21 +626,21 @@ class Imaging(AbstractImaging):
         )
 
         if resized_imaging_shape is not None:
-            imaging_data = imaging_data.resized_data_from_new_shape(
+            imaging = imaging.resized_data_from_new_shape(
                 new_shape=resized_imaging_shape,
             )
 
         if resized_psf_shape is not None:
-            imaging_data = imaging_data.resized_psf_from_new_shape(
+            imaging = imaging.resized_psf_from_new_shape(
                 new_shape=resized_psf_shape
             )
 
         if convert_from_electrons:
-            imaging_data = imaging_data.data_in_electrons()
+            imaging = imaging.data_in_electrons()
         elif convert_from_adus:
-            imaging_data = imaging_data.data_in_adus_from_gain(gain=gain)
+            imaging = imaging.data_in_adus_from_gain(gain=gain)
 
-        return imaging_data
+        return imaging
 
     @classmethod
     def simulate(

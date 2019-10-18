@@ -18,7 +18,7 @@ class TestTotalPixels:
             [[True, False, True], [False, False, False], [True, False, True]]
         )
 
-        assert aa.mask_util.total_pixels_from_mask(mask=mask) == 5
+        assert aa.util.mask.total_pixels_from_mask(mask=mask) == 5
 
     def test__total_sub_pixels_from_mask(self):
         mask = np.array(
@@ -26,7 +26,7 @@ class TestTotalPixels:
         )
 
         assert (
-            aa.mask_util.total_sub_pixels_from_mask_and_sub_size(mask, sub_size=2) == 20
+            aa.util.mask.total_sub_pixels_from_mask_and_sub_size(mask, sub_size=2) == 20
         )
 
     def test__total_edge_pixels_from_mask(self):
@@ -41,7 +41,7 @@ class TestTotalPixels:
             ]
         )
 
-        assert aa.mask_util.total_edge_pixels_from_mask(mask=mask) == 8
+        assert aa.util.mask.total_edge_pixels_from_mask(mask=mask) == 8
 
     class TestTotalSparsePixels:
         def test__mask_full_false__full_pixelization_grid_pixels_in_mask(self):
@@ -59,7 +59,7 @@ class TestTotalPixels:
 
             full_pix_grid_pixel_centres = np.array([[0, 0], [0, 1], [0, 2], [1, 0]])
 
-            total_masked_pixels = aa.mask_util.total_sparse_pixels_from_mask(
+            total_masked_pixels = aa.util.mask.total_sparse_pixels_from_mask(
                 mask=ma, unmasked_sparse_grid_pixel_centres=full_pix_grid_pixel_centres
             )
 
@@ -69,7 +69,7 @@ class TestTotalPixels:
                 [[0, 0], [0, 1], [0, 2], [1, 0], [1, 1], [2, 1]]
             )
 
-            total_masked_pixels = aa.mask_util.total_sparse_pixels_from_mask(
+            total_masked_pixels = aa.util.mask.total_sparse_pixels_from_mask(
                 mask=ma, unmasked_sparse_grid_pixel_centres=full_pix_grid_pixel_centres
             )
 
@@ -88,7 +88,7 @@ class TestTotalPixels:
 
             full_pix_grid_pixel_centres = np.array([[0, 0], [0, 1], [0, 2], [1, 0]])
 
-            total_masked_pixels = aa.mask_util.total_sparse_pixels_from_mask(
+            total_masked_pixels = aa.util.mask.total_sparse_pixels_from_mask(
                 mask=ma, unmasked_sparse_grid_pixel_centres=full_pix_grid_pixel_centres
             )
 
@@ -98,7 +98,7 @@ class TestTotalPixels:
                 [[0, 0], [0, 1], [0, 2], [1, 0], [1, 1], [2, 1]]
             )
 
-            total_masked_pixels = aa.mask_util.total_sparse_pixels_from_mask(
+            total_masked_pixels = aa.util.mask.total_sparse_pixels_from_mask(
                 mask=ma, unmasked_sparse_grid_pixel_centres=full_pix_grid_pixel_centres
             )
 
@@ -119,7 +119,7 @@ class TestTotalPixels:
 
             full_pix_grid_pixel_centres = np.array([[0, 0], [0, 1], [0, 2], [1, 0]])
 
-            total_masked_pixels = aa.mask_util.total_sparse_pixels_from_mask(
+            total_masked_pixels = aa.util.mask.total_sparse_pixels_from_mask(
                 mask=ma, unmasked_sparse_grid_pixel_centres=full_pix_grid_pixel_centres
             )
 
@@ -129,7 +129,7 @@ class TestTotalPixels:
                 [[0, 0], [0, 1], [0, 2], [1, 0], [1, 1], [1, 2], [1, 3], [2, 2]]
             )
 
-            total_masked_pixels = aa.mask_util.total_sparse_pixels_from_mask(
+            total_masked_pixels = aa.util.mask.total_sparse_pixels_from_mask(
                 mask=ma, unmasked_sparse_grid_pixel_centres=full_pix_grid_pixel_centres
             )
 
@@ -151,7 +151,7 @@ class TestTotalPixels:
 
             full_pix_grid_pixel_centres = np.array([[0, 0], [0, 1], [0, 2], [1, 1]])
 
-            total_masked_pixels = aa.mask_util.total_sparse_pixels_from_mask(
+            total_masked_pixels = aa.util.mask.total_sparse_pixels_from_mask(
                 mask=ma, unmasked_sparse_grid_pixel_centres=full_pix_grid_pixel_centres
             )
 
@@ -161,7 +161,7 @@ class TestTotalPixels:
                 [[0, 0], [0, 1], [0, 2], [1, 1], [2, 0], [2, 1], [2, 2], [3, 1]]
             )
 
-            total_masked_pixels = aa.mask_util.total_sparse_pixels_from_mask(
+            total_masked_pixels = aa.util.mask.total_sparse_pixels_from_mask(
                 mask=ma, unmasked_sparse_grid_pixel_centres=full_pix_grid_pixel_centres
             )
 
@@ -170,7 +170,7 @@ class TestTotalPixels:
 
 class TestMaskCircular(object):
     def test__3x3_mask_input_radius_small__medium__big__masks(self):
-        mask = aa.mask_util.mask_circular_from_shape_2d_pixel_scales_and_radius(
+        mask = aa.util.mask.mask_circular_from_shape_2d_pixel_scales_and_radius(
             shape_2d=(3, 3), pixel_scales=(1.0, 1.0), radius_arcsec=0.5
         )
 
@@ -179,7 +179,7 @@ class TestMaskCircular(object):
             == np.array([[True, True, True], [True, False, True], [True, True, True]])
         ).all()
 
-        mask = aa.mask_util.mask_circular_from_shape_2d_pixel_scales_and_radius(
+        mask = aa.util.mask.mask_circular_from_shape_2d_pixel_scales_and_radius(
             shape_2d=(3, 3), pixel_scales=(1.0, 1.0), radius_arcsec=1.3
         )
 
@@ -190,7 +190,7 @@ class TestMaskCircular(object):
             )
         ).all()
 
-        mask = aa.mask_util.mask_circular_from_shape_2d_pixel_scales_and_radius(
+        mask = aa.util.mask.mask_circular_from_shape_2d_pixel_scales_and_radius(
             shape_2d=(3, 3), pixel_scales=(1.0, 1.0), radius_arcsec=3.0
         )
 
@@ -201,7 +201,7 @@ class TestMaskCircular(object):
             )
         ).all()
 
-        mask = aa.mask_util.mask_circular_from_shape_2d_pixel_scales_and_radius(
+        mask = aa.util.mask.mask_circular_from_shape_2d_pixel_scales_and_radius(
             shape_2d=(3, 3), pixel_scales=(0.5, 1.0), radius_arcsec=0.5
         )
 
@@ -212,7 +212,7 @@ class TestMaskCircular(object):
 
     def test__4x3_mask_input_radius_small__medium__big__masks(self):
 
-        mask = aa.mask_util.mask_circular_from_shape_2d_pixel_scales_and_radius(
+        mask = aa.util.mask.mask_circular_from_shape_2d_pixel_scales_and_radius(
             shape_2d=(4, 3), pixel_scales=(1.0, 1.0), radius_arcsec=0.5
         )
 
@@ -228,7 +228,7 @@ class TestMaskCircular(object):
             )
         ).all()
 
-        mask = aa.mask_util.mask_circular_from_shape_2d_pixel_scales_and_radius(
+        mask = aa.util.mask.mask_circular_from_shape_2d_pixel_scales_and_radius(
             shape_2d=(4, 3), pixel_scales=(1.0, 1.0), radius_arcsec=1.5001
         )
 
@@ -244,7 +244,7 @@ class TestMaskCircular(object):
             )
         ).all()
 
-        mask = aa.mask_util.mask_circular_from_shape_2d_pixel_scales_and_radius(
+        mask = aa.util.mask.mask_circular_from_shape_2d_pixel_scales_and_radius(
             shape_2d=(4, 3), pixel_scales=(1.0, 1.0), radius_arcsec=3.0
         )
 
@@ -261,7 +261,7 @@ class TestMaskCircular(object):
         ).all()
 
     def test__4x4_mask_input_radius_small__medium__big__masks(self):
-        mask = aa.mask_util.mask_circular_from_shape_2d_pixel_scales_and_radius(
+        mask = aa.util.mask.mask_circular_from_shape_2d_pixel_scales_and_radius(
             shape_2d=(4, 4), pixel_scales=(1.0, 1.0), radius_arcsec=0.72
         )
 
@@ -277,7 +277,7 @@ class TestMaskCircular(object):
             )
         ).all()
 
-        mask = aa.mask_util.mask_circular_from_shape_2d_pixel_scales_and_radius(
+        mask = aa.util.mask.mask_circular_from_shape_2d_pixel_scales_and_radius(
             shape_2d=(4, 4), pixel_scales=(1.0, 1.0), radius_arcsec=1.7
         )
 
@@ -293,7 +293,7 @@ class TestMaskCircular(object):
             )
         ).all()
 
-        mask = aa.mask_util.mask_circular_from_shape_2d_pixel_scales_and_radius(
+        mask = aa.util.mask.mask_circular_from_shape_2d_pixel_scales_and_radius(
             shape_2d=(4, 4), pixel_scales=(1.0, 1.0), radius_arcsec=3.0
         )
 
@@ -311,7 +311,7 @@ class TestMaskCircular(object):
 
     def test__origin_shifts__downwards__right__diagonal(self):
 
-        mask = aa.mask_util.mask_circular_from_shape_2d_pixel_scales_and_radius(
+        mask = aa.util.mask.mask_circular_from_shape_2d_pixel_scales_and_radius(
             shape_2d=(3, 3), pixel_scales=(3.0, 3.0), radius_arcsec=0.5, centre=(-3, 0)
         )
 
@@ -321,7 +321,7 @@ class TestMaskCircular(object):
             == np.array([[True, True, True], [True, True, True], [True, False, True]])
         ).all()
 
-        mask = aa.mask_util.mask_circular_from_shape_2d_pixel_scales_and_radius(
+        mask = aa.util.mask.mask_circular_from_shape_2d_pixel_scales_and_radius(
             shape_2d=(3, 3), pixel_scales=(3.0, 3.0), radius_arcsec=0.5, centre=(0.0, 3.0)
         )
 
@@ -331,7 +331,7 @@ class TestMaskCircular(object):
             == np.array([[True, True, True], [True, True, False], [True, True, True]])
         ).all()
 
-        mask = aa.mask_util.mask_circular_from_shape_2d_pixel_scales_and_radius(
+        mask = aa.util.mask.mask_circular_from_shape_2d_pixel_scales_and_radius(
             shape_2d=(3, 3), pixel_scales=(3.0, 3.0), radius_arcsec=0.5, centre=(3, 3)
         )
 
@@ -343,7 +343,7 @@ class TestMaskCircular(object):
 
 class TestMaskAnnular(object):
     def test__mask_inner_radius_zero_outer_radius_small_medium_and_large__mask(self):
-        mask = aa.mask_util.mask_circular_annular_from_shape_2d_pixel_scales_and_radii(
+        mask = aa.util.mask.mask_circular_annular_from_shape_2d_pixel_scales_and_radii(
             shape_2d=(3, 3),
             pixel_scales=(1.0, 1.0),
             inner_radius_arcsec=0.0,
@@ -355,7 +355,7 @@ class TestMaskAnnular(object):
             == np.array([[True, True, True], [True, False, True], [True, True, True]])
         ).all()
 
-        mask = aa.mask_util.mask_circular_annular_from_shape_2d_pixel_scales_and_radii(
+        mask = aa.util.mask.mask_circular_annular_from_shape_2d_pixel_scales_and_radii(
             shape_2d=(4, 4),
             pixel_scales=(1.0, 1.0),
             inner_radius_arcsec=0.81,
@@ -374,7 +374,7 @@ class TestMaskAnnular(object):
             )
         ).all()
 
-        mask = aa.mask_util.mask_circular_annular_from_shape_2d_pixel_scales_and_radii(
+        mask = aa.util.mask.mask_circular_annular_from_shape_2d_pixel_scales_and_radii(
             shape_2d=(3, 3),
             pixel_scales=(1.0, 1.0),
             inner_radius_arcsec=0.5,
@@ -388,7 +388,7 @@ class TestMaskAnnular(object):
             )
         ).all()
 
-        mask = aa.mask_util.mask_circular_annular_from_shape_2d_pixel_scales_and_radii(
+        mask = aa.util.mask.mask_circular_annular_from_shape_2d_pixel_scales_and_radii(
             shape_2d=(4, 4),
             pixel_scales=(0.5, 1.0),
             inner_radius_arcsec=1.1,
@@ -408,7 +408,7 @@ class TestMaskAnnular(object):
         ).all()
 
     def test__4x3_mask_inner_radius_small_outer_radius_medium__mask(self):
-        mask = aa.mask_util.mask_circular_annular_from_shape_2d_pixel_scales_and_radii(
+        mask = aa.util.mask.mask_circular_annular_from_shape_2d_pixel_scales_and_radii(
             shape_2d=(4, 3),
             pixel_scales=(1.0, 1.0),
             inner_radius_arcsec=0.51,
@@ -428,7 +428,7 @@ class TestMaskAnnular(object):
         ).all()
 
     def test__4x3_mask_inner_radius_medium_outer_radius_large__mask(self):
-        mask = aa.mask_util.mask_circular_annular_from_shape_2d_pixel_scales_and_radii(
+        mask = aa.util.mask.mask_circular_annular_from_shape_2d_pixel_scales_and_radii(
             shape_2d=(4, 3),
             pixel_scales=(1.0, 1.0),
             inner_radius_arcsec=1.51,
@@ -448,7 +448,7 @@ class TestMaskAnnular(object):
         ).all()
 
     def test__4x4_mask_inner_radius_medium_outer_radius_large__mask(self):
-        mask = aa.mask_util.mask_circular_annular_from_shape_2d_pixel_scales_and_radii(
+        mask = aa.util.mask.mask_circular_annular_from_shape_2d_pixel_scales_and_radii(
             shape_2d=(4, 4),
             pixel_scales=(1.0, 1.0),
             inner_radius_arcsec=1.71,
@@ -469,7 +469,7 @@ class TestMaskAnnular(object):
 
     def test__origin_shift__simple_shift_upwards__right_diagonal(self):
 
-        mask = aa.mask_util.mask_circular_annular_from_shape_2d_pixel_scales_and_radii(
+        mask = aa.util.mask.mask_circular_annular_from_shape_2d_pixel_scales_and_radii(
             shape_2d=(3, 3),
             pixel_scales=(3.0, 3.0),
             inner_radius_arcsec=0.5,
@@ -485,7 +485,7 @@ class TestMaskAnnular(object):
             )
         ).all()
 
-        mask = aa.mask_util.mask_circular_annular_from_shape_2d_pixel_scales_and_radii(
+        mask = aa.util.mask.mask_circular_annular_from_shape_2d_pixel_scales_and_radii(
             shape_2d=(3, 3),
             pixel_scales=(3.0, 3.0),
             inner_radius_arcsec=0.5,
@@ -501,7 +501,7 @@ class TestMaskAnnular(object):
             )
         ).all()
 
-        mask = aa.mask_util.mask_circular_annular_from_shape_2d_pixel_scales_and_radii(
+        mask = aa.util.mask.mask_circular_annular_from_shape_2d_pixel_scales_and_radii(
             shape_2d=(3, 3),
             pixel_scales=(3.0, 3.0),
             inner_radius_arcsec=0.5,
@@ -523,7 +523,7 @@ class TestMaskAntiAnnular(object):
         self
     ):
 
-        mask = aa.mask_util.mask_circular_anti_annular_from_shape_2d_pixel_scales_and_radii(
+        mask = aa.util.mask.mask_circular_anti_annular_from_shape_2d_pixel_scales_and_radii(
             shape_2d=(5, 5),
             pixel_scales=(1.0, 1.0),
             inner_radius_arcsec=0.5,
@@ -548,7 +548,7 @@ class TestMaskAntiAnnular(object):
         self
     ):
 
-        mask = aa.mask_util.mask_circular_anti_annular_from_shape_2d_pixel_scales_and_radii(
+        mask = aa.util.mask.mask_circular_anti_annular_from_shape_2d_pixel_scales_and_radii(
             shape_2d=(5, 5),
             pixel_scales=(1.0, 1.0),
             inner_radius_arcsec=1.5,
@@ -569,7 +569,7 @@ class TestMaskAntiAnnular(object):
             )
         ).all()
 
-        mask = aa.mask_util.mask_circular_anti_annular_from_shape_2d_pixel_scales_and_radii(
+        mask = aa.util.mask.mask_circular_anti_annular_from_shape_2d_pixel_scales_and_radii(
             shape_2d=(5, 5),
             pixel_scales=(0.1, 1.0),
             inner_radius_arcsec=1.5,
@@ -594,7 +594,7 @@ class TestMaskAntiAnnular(object):
         self
     ):
 
-        mask = aa.mask_util.mask_circular_anti_annular_from_shape_2d_pixel_scales_and_radii(
+        mask = aa.util.mask.mask_circular_anti_annular_from_shape_2d_pixel_scales_and_radii(
             shape_2d=(5, 5),
             pixel_scales=(1.0, 1.0),
             inner_radius_arcsec=0.5,
@@ -617,7 +617,7 @@ class TestMaskAntiAnnular(object):
 
     def test__7x7_second_outer_radius_mask_works_too(self):
 
-        mask = aa.mask_util.mask_circular_anti_annular_from_shape_2d_pixel_scales_and_radii(
+        mask = aa.util.mask.mask_circular_anti_annular_from_shape_2d_pixel_scales_and_radii(
             shape_2d=(7, 7),
             pixel_scales=(1.0, 1.0),
             inner_radius_arcsec=0.5,
@@ -642,7 +642,7 @@ class TestMaskAntiAnnular(object):
 
     def test__origin_shift__diagonal_shift(self):
 
-        mask = aa.mask_util.mask_circular_anti_annular_from_shape_2d_pixel_scales_and_radii(
+        mask = aa.util.mask.mask_circular_anti_annular_from_shape_2d_pixel_scales_and_radii(
             shape_2d=(7, 7),
             pixel_scales=(3.0, 3.0),
             inner_radius_arcsec=1.5,
@@ -670,7 +670,7 @@ class TestMaskAntiAnnular(object):
 class TestMaskElliptical(object):
     def test__input_circular_params__small_medium_and_large_masks(self):
 
-        mask = aa.mask_util.mask_elliptical_from_shape_2d_pixel_scales_and_radius(
+        mask = aa.util.mask.mask_elliptical_from_shape_2d_pixel_scales_and_radius(
             shape_2d=(3, 3),
             pixel_scales=(1.0, 1.0),
             major_axis_radius_arcsec=0.5,
@@ -683,7 +683,7 @@ class TestMaskElliptical(object):
             == np.array([[True, True, True], [True, False, True], [True, True, True]])
         ).all()
 
-        mask = aa.mask_util.mask_elliptical_from_shape_2d_pixel_scales_and_radius(
+        mask = aa.util.mask.mask_elliptical_from_shape_2d_pixel_scales_and_radius(
             shape_2d=(3, 3),
             pixel_scales=(1.0, 1.0),
             major_axis_radius_arcsec=1.3,
@@ -698,7 +698,7 @@ class TestMaskElliptical(object):
             )
         ).all()
 
-        mask = aa.mask_util.mask_elliptical_from_shape_2d_pixel_scales_and_radius(
+        mask = aa.util.mask.mask_elliptical_from_shape_2d_pixel_scales_and_radius(
             shape_2d=(3, 3),
             pixel_scales=(1.0, 1.0),
             major_axis_radius_arcsec=3.0,
@@ -717,7 +717,7 @@ class TestMaskElliptical(object):
         self
     ):
 
-        mask = aa.mask_util.mask_elliptical_from_shape_2d_pixel_scales_and_radius(
+        mask = aa.util.mask.mask_elliptical_from_shape_2d_pixel_scales_and_radius(
             shape_2d=(3, 3),
             pixel_scales=(1.0, 1.0),
             major_axis_radius_arcsec=1.3,
@@ -730,7 +730,7 @@ class TestMaskElliptical(object):
             == np.array([[True, True, True], [False, False, False], [True, True, True]])
         ).all()
 
-        mask = aa.mask_util.mask_elliptical_from_shape_2d_pixel_scales_and_radius(
+        mask = aa.util.mask.mask_elliptical_from_shape_2d_pixel_scales_and_radius(
             shape_2d=(3, 3),
             pixel_scales=(1.0, 1.0),
             major_axis_radius_arcsec=1.3,
@@ -743,7 +743,7 @@ class TestMaskElliptical(object):
             == np.array([[True, True, True], [False, False, False], [True, True, True]])
         ).all()
 
-        mask = aa.mask_util.mask_elliptical_from_shape_2d_pixel_scales_and_radius(
+        mask = aa.util.mask.mask_elliptical_from_shape_2d_pixel_scales_and_radius(
             shape_2d=(3, 3),
             pixel_scales=(1.0, 1.0),
             major_axis_radius_arcsec=1.3,
@@ -758,7 +758,7 @@ class TestMaskElliptical(object):
 
     def test__same_as_above_but_90_degree_rotations(self):
 
-        mask = aa.mask_util.mask_elliptical_from_shape_2d_pixel_scales_and_radius(
+        mask = aa.util.mask.mask_elliptical_from_shape_2d_pixel_scales_and_radius(
             shape_2d=(3, 3),
             pixel_scales=(1.0, 1.0),
             major_axis_radius_arcsec=1.3,
@@ -771,7 +771,7 @@ class TestMaskElliptical(object):
             == np.array([[True, False, True], [True, False, True], [True, False, True]])
         ).all()
 
-        mask = aa.mask_util.mask_elliptical_from_shape_2d_pixel_scales_and_radius(
+        mask = aa.util.mask.mask_elliptical_from_shape_2d_pixel_scales_and_radius(
             shape_2d=(3, 3),
             pixel_scales=(1.0, 1.0),
             major_axis_radius_arcsec=1.3,
@@ -786,7 +786,7 @@ class TestMaskElliptical(object):
 
     def test__same_as_above_but_diagonal_rotations(self):
 
-        mask = aa.mask_util.mask_elliptical_from_shape_2d_pixel_scales_and_radius(
+        mask = aa.util.mask.mask_elliptical_from_shape_2d_pixel_scales_and_radius(
             shape_2d=(3, 3),
             pixel_scales=(1.0, 1.0),
             major_axis_radius_arcsec=1.5,
@@ -799,7 +799,7 @@ class TestMaskElliptical(object):
             == np.array([[True, True, False], [True, False, True], [False, True, True]])
         ).all()
 
-        mask = aa.mask_util.mask_elliptical_from_shape_2d_pixel_scales_and_radius(
+        mask = aa.util.mask.mask_elliptical_from_shape_2d_pixel_scales_and_radius(
             shape_2d=(3, 3),
             pixel_scales=(1.0, 1.0),
             major_axis_radius_arcsec=1.5,
@@ -812,7 +812,7 @@ class TestMaskElliptical(object):
             == np.array([[False, True, True], [True, False, True], [True, True, False]])
         ).all()
 
-        mask = aa.mask_util.mask_elliptical_from_shape_2d_pixel_scales_and_radius(
+        mask = aa.util.mask.mask_elliptical_from_shape_2d_pixel_scales_and_radius(
             shape_2d=(3, 3),
             pixel_scales=(1.0, 1.0),
             major_axis_radius_arcsec=1.5,
@@ -825,7 +825,7 @@ class TestMaskElliptical(object):
             == np.array([[True, True, False], [True, False, True], [False, True, True]])
         ).all()
 
-        mask = aa.mask_util.mask_elliptical_from_shape_2d_pixel_scales_and_radius(
+        mask = aa.util.mask.mask_elliptical_from_shape_2d_pixel_scales_and_radius(
             shape_2d=(3, 3),
             pixel_scales=(1.0, 1.0),
             major_axis_radius_arcsec=1.5,
@@ -840,7 +840,7 @@ class TestMaskElliptical(object):
 
     def test__4x3__ellipse_is_formed(self):
 
-        mask = aa.mask_util.mask_elliptical_from_shape_2d_pixel_scales_and_radius(
+        mask = aa.util.mask.mask_elliptical_from_shape_2d_pixel_scales_and_radius(
             shape_2d=(4, 3),
             pixel_scales=(1.0, 1.0),
             major_axis_radius_arcsec=1.5,
@@ -860,7 +860,7 @@ class TestMaskElliptical(object):
             )
         ).all()
 
-        mask = aa.mask_util.mask_elliptical_from_shape_2d_pixel_scales_and_radius(
+        mask = aa.util.mask.mask_elliptical_from_shape_2d_pixel_scales_and_radius(
             shape_2d=(4, 3),
             pixel_scales=(1.0, 1.0),
             major_axis_radius_arcsec=1.5,
@@ -880,7 +880,7 @@ class TestMaskElliptical(object):
             )
         ).all()
 
-        mask = aa.mask_util.mask_elliptical_from_shape_2d_pixel_scales_and_radius(
+        mask = aa.util.mask.mask_elliptical_from_shape_2d_pixel_scales_and_radius(
             shape_2d=(4, 3),
             pixel_scales=(1.0, 0.1),
             major_axis_radius_arcsec=1.5,
@@ -902,7 +902,7 @@ class TestMaskElliptical(object):
 
     def test__3x4__ellipse_is_formed(self):
 
-        mask = aa.mask_util.mask_elliptical_from_shape_2d_pixel_scales_and_radius(
+        mask = aa.util.mask.mask_elliptical_from_shape_2d_pixel_scales_and_radius(
             shape_2d=(3, 4),
             pixel_scales=(1.0, 1.0),
             major_axis_radius_arcsec=1.5,
@@ -921,7 +921,7 @@ class TestMaskElliptical(object):
             )
         ).all()
 
-        mask = aa.mask_util.mask_elliptical_from_shape_2d_pixel_scales_and_radius(
+        mask = aa.util.mask.mask_elliptical_from_shape_2d_pixel_scales_and_radius(
             shape_2d=(3, 4),
             pixel_scales=(1.0, 1.0),
             major_axis_radius_arcsec=1.5,
@@ -940,7 +940,7 @@ class TestMaskElliptical(object):
             )
         ).all()
 
-        mask = aa.mask_util.mask_elliptical_from_shape_2d_pixel_scales_and_radius(
+        mask = aa.util.mask.mask_elliptical_from_shape_2d_pixel_scales_and_radius(
             shape_2d=(3, 4),
             pixel_scales=(0.1, 1.0),
             major_axis_radius_arcsec=1.5,
@@ -961,7 +961,7 @@ class TestMaskElliptical(object):
 
     def test__3x3_mask__shifts_dowwards__right__diagonal(self):
 
-        mask = aa.mask_util.mask_elliptical_from_shape_2d_pixel_scales_and_radius(
+        mask = aa.util.mask.mask_elliptical_from_shape_2d_pixel_scales_and_radius(
             shape_2d=(3, 3),
             pixel_scales=(3.0, 3.0),
             major_axis_radius_arcsec=4.8,
@@ -975,7 +975,7 @@ class TestMaskElliptical(object):
             == np.array([[True, True, True], [True, True, False], [True, False, True]])
         ).all()
 
-        mask = aa.mask_util.mask_elliptical_from_shape_2d_pixel_scales_and_radius(
+        mask = aa.util.mask.mask_elliptical_from_shape_2d_pixel_scales_and_radius(
             shape_2d=(3, 3),
             pixel_scales=(3.0, 3.0),
             major_axis_radius_arcsec=4.8,
@@ -989,7 +989,7 @@ class TestMaskElliptical(object):
             == np.array([[True, True, True], [True, True, False], [True, False, True]])
         ).all()
 
-        mask = aa.mask_util.mask_elliptical_from_shape_2d_pixel_scales_and_radius(
+        mask = aa.util.mask.mask_elliptical_from_shape_2d_pixel_scales_and_radius(
             shape_2d=(3, 3),
             pixel_scales=(3.0, 3.0),
             major_axis_radius_arcsec=4.8,
@@ -1009,7 +1009,7 @@ class TestMaskEllipticalAnnular(object):
         self
     ):
 
-        mask = aa.mask_util.mask_elliptical_annular_from_shape_2d_pixel_scales_and_radius(
+        mask = aa.util.mask.mask_elliptical_annular_from_shape_2d_pixel_scales_and_radius(
             shape_2d=(3, 3),
             pixel_scales=(1.0, 1.0),
             inner_major_axis_radius_arcsec=0.0,
@@ -1025,7 +1025,7 @@ class TestMaskEllipticalAnnular(object):
             == np.array([[True, True, True], [True, False, True], [True, True, True]])
         ).all()
 
-        mask = aa.mask_util.mask_elliptical_annular_from_shape_2d_pixel_scales_and_radius(
+        mask = aa.util.mask.mask_elliptical_annular_from_shape_2d_pixel_scales_and_radius(
             shape_2d=(4, 4),
             pixel_scales=(1.0, 1.0),
             inner_major_axis_radius_arcsec=0.81,
@@ -1048,7 +1048,7 @@ class TestMaskEllipticalAnnular(object):
             )
         ).all()
 
-        mask = aa.mask_util.mask_elliptical_annular_from_shape_2d_pixel_scales_and_radius(
+        mask = aa.util.mask.mask_elliptical_annular_from_shape_2d_pixel_scales_and_radius(
             shape_2d=(3, 3),
             pixel_scales=(1.0, 1.0),
             inner_major_axis_radius_arcsec=0.5,
@@ -1068,7 +1068,7 @@ class TestMaskEllipticalAnnular(object):
 
     def test__elliptical_parameters_and_rotations_work_correctly(self):
 
-        mask = aa.mask_util.mask_elliptical_annular_from_shape_2d_pixel_scales_and_radius(
+        mask = aa.util.mask.mask_elliptical_annular_from_shape_2d_pixel_scales_and_radius(
             shape_2d=(3, 3),
             pixel_scales=(1.0, 1.0),
             inner_major_axis_radius_arcsec=0.0,
@@ -1084,7 +1084,7 @@ class TestMaskEllipticalAnnular(object):
             == np.array([[True, True, True], [False, False, False], [True, True, True]])
         ).all()
 
-        mask = aa.mask_util.mask_elliptical_annular_from_shape_2d_pixel_scales_and_radius(
+        mask = aa.util.mask.mask_elliptical_annular_from_shape_2d_pixel_scales_and_radius(
             shape_2d=(3, 3),
             pixel_scales=(1.0, 1.0),
             inner_major_axis_radius_arcsec=0.0,
@@ -1100,7 +1100,7 @@ class TestMaskEllipticalAnnular(object):
             == np.array([[True, False, True], [True, False, True], [True, False, True]])
         ).all()
 
-        mask = aa.mask_util.mask_elliptical_annular_from_shape_2d_pixel_scales_and_radius(
+        mask = aa.util.mask.mask_elliptical_annular_from_shape_2d_pixel_scales_and_radius(
             shape_2d=(3, 3),
             pixel_scales=(1.0, 1.0),
             inner_major_axis_radius_arcsec=0.0,
@@ -1116,7 +1116,7 @@ class TestMaskEllipticalAnnular(object):
             == np.array([[True, True, False], [True, False, True], [False, True, True]])
         ).all()
 
-        mask = aa.mask_util.mask_elliptical_annular_from_shape_2d_pixel_scales_and_radius(
+        mask = aa.util.mask.mask_elliptical_annular_from_shape_2d_pixel_scales_and_radius(
             shape_2d=(3, 3),
             pixel_scales=(0.1, 1.0),
             inner_major_axis_radius_arcsec=0.0,
@@ -1134,7 +1134,7 @@ class TestMaskEllipticalAnnular(object):
 
     def test__large_mask_array__can_see_elliptical_annuli_form(self):
 
-        mask = aa.mask_util.mask_elliptical_annular_from_shape_2d_pixel_scales_and_radius(
+        mask = aa.util.mask.mask_elliptical_annular_from_shape_2d_pixel_scales_and_radius(
             shape_2d=(7, 5),
             pixel_scales=(1.0, 1.0),
             inner_major_axis_radius_arcsec=1.0,
@@ -1160,7 +1160,7 @@ class TestMaskEllipticalAnnular(object):
             )
         ).all()
 
-        mask = aa.mask_util.mask_elliptical_annular_from_shape_2d_pixel_scales_and_radius(
+        mask = aa.util.mask.mask_elliptical_annular_from_shape_2d_pixel_scales_and_radius(
             shape_2d=(7, 5),
             pixel_scales=(1.0, 1.0),
             inner_major_axis_radius_arcsec=1.0,
@@ -1186,7 +1186,7 @@ class TestMaskEllipticalAnnular(object):
             )
         ).all()
 
-        mask = aa.mask_util.mask_elliptical_annular_from_shape_2d_pixel_scales_and_radius(
+        mask = aa.util.mask.mask_elliptical_annular_from_shape_2d_pixel_scales_and_radius(
             shape_2d=(7, 5),
             pixel_scales=(1.0, 1.0),
             inner_major_axis_radius_arcsec=2.0,
@@ -1212,7 +1212,7 @@ class TestMaskEllipticalAnnular(object):
             )
         ).all()
 
-        mask = aa.mask_util.mask_elliptical_annular_from_shape_2d_pixel_scales_and_radius(
+        mask = aa.util.mask.mask_elliptical_annular_from_shape_2d_pixel_scales_and_radius(
             shape_2d=(7, 5),
             pixel_scales=(1.0, 1.0),
             inner_major_axis_radius_arcsec=1.0,
@@ -1240,7 +1240,7 @@ class TestMaskEllipticalAnnular(object):
 
     def test__shifts(self):
 
-        mask = aa.mask_util.mask_elliptical_annular_from_shape_2d_pixel_scales_and_radius(
+        mask = aa.util.mask.mask_elliptical_annular_from_shape_2d_pixel_scales_and_radius(
             shape_2d=(7, 5),
             pixel_scales=(1.0, 1.0),
             inner_major_axis_radius_arcsec=1.0,
@@ -1267,7 +1267,7 @@ class TestMaskEllipticalAnnular(object):
             )
         ).all()
 
-        mask = aa.mask_util.mask_elliptical_annular_from_shape_2d_pixel_scales_and_radius(
+        mask = aa.util.mask.mask_elliptical_annular_from_shape_2d_pixel_scales_and_radius(
             shape_2d=(7, 5),
             pixel_scales=(1.0, 1.0),
             inner_major_axis_radius_arcsec=1.0,
@@ -1294,7 +1294,7 @@ class TestMaskEllipticalAnnular(object):
             )
         ).all()
 
-        mask = aa.mask_util.mask_elliptical_annular_from_shape_2d_pixel_scales_and_radius(
+        mask = aa.util.mask.mask_elliptical_annular_from_shape_2d_pixel_scales_and_radius(
             shape_2d=(7, 5),
             pixel_scales=(1.0, 1.0),
             inner_major_axis_radius_arcsec=1.0,
@@ -1326,7 +1326,7 @@ class TestMaskBlurring(object):
     def test__size__3x3_small_mask(self):
         mask = np.array([[True, True, True], [True, False, True], [True, True, True]])
 
-        blurring_mask = aa.mask_util.blurring_mask_from_mask_and_kernel_shape(
+        blurring_mask = aa.util.mask.blurring_mask_from_mask_and_kernel_shape(
             mask, kernel_shape=(3, 3)
         )
 
@@ -1350,7 +1350,7 @@ class TestMaskBlurring(object):
             ]
         )
 
-        blurring_mask = aa.mask_util.blurring_mask_from_mask_and_kernel_shape(
+        blurring_mask = aa.util.mask.blurring_mask_from_mask_and_kernel_shape(
             mask, kernel_shape=(3, 3)
         )
 
@@ -1382,7 +1382,7 @@ class TestMaskBlurring(object):
             ]
         )
 
-        blurring_mask = aa.mask_util.blurring_mask_from_mask_and_kernel_shape(
+        blurring_mask = aa.util.mask.blurring_mask_from_mask_and_kernel_shape(
             mask, kernel_shape=(5, 5)
         )
 
@@ -1414,7 +1414,7 @@ class TestMaskBlurring(object):
             ]
         )
 
-        blurring_mask = aa.mask_util.blurring_mask_from_mask_and_kernel_shape(
+        blurring_mask = aa.util.mask.blurring_mask_from_mask_and_kernel_shape(
             mask, kernel_shape=(5, 3)
         )
 
@@ -1448,7 +1448,7 @@ class TestMaskBlurring(object):
             ]
         )
 
-        blurring_mask = aa.mask_util.blurring_mask_from_mask_and_kernel_shape(
+        blurring_mask = aa.util.mask.blurring_mask_from_mask_and_kernel_shape(
             mask, kernel_shape=(3, 5)
         )
 
@@ -1482,7 +1482,7 @@ class TestMaskBlurring(object):
             ]
         )
 
-        blurring_mask = aa.mask_util.blurring_mask_from_mask_and_kernel_shape(
+        blurring_mask = aa.util.mask.blurring_mask_from_mask_and_kernel_shape(
             mask, kernel_shape=(3, 3)
         )
 
@@ -1516,7 +1516,7 @@ class TestMaskBlurring(object):
             ]
         )
 
-        blurring_mask = aa.mask_util.blurring_mask_from_mask_and_kernel_shape(
+        blurring_mask = aa.util.mask.blurring_mask_from_mask_and_kernel_shape(
             mask, kernel_shape=(5, 5)
         )
 
@@ -1552,7 +1552,7 @@ class TestMaskBlurring(object):
             ]
         )
 
-        blurring_mask = aa.mask_util.blurring_mask_from_mask_and_kernel_shape(
+        blurring_mask = aa.util.mask.blurring_mask_from_mask_and_kernel_shape(
             mask, kernel_shape=(5, 3)
         )
 
@@ -1590,7 +1590,7 @@ class TestMaskBlurring(object):
             ]
         )
 
-        blurring_mask = aa.mask_util.blurring_mask_from_mask_and_kernel_shape(
+        blurring_mask = aa.util.mask.blurring_mask_from_mask_and_kernel_shape(
             mask, kernel_shape=(3, 5)
         )
 
@@ -1627,7 +1627,7 @@ class TestMaskBlurring(object):
             ]
         )
 
-        blurring_mask = aa.mask_util.blurring_mask_from_mask_and_kernel_shape(
+        blurring_mask = aa.util.mask.blurring_mask_from_mask_and_kernel_shape(
             mask, kernel_shape=(3, 3)
         )
 
@@ -1661,7 +1661,7 @@ class TestMaskBlurring(object):
             ]
         )
 
-        blurring_mask = aa.mask_util.blurring_mask_from_mask_and_kernel_shape(
+        blurring_mask = aa.util.mask.blurring_mask_from_mask_and_kernel_shape(
             mask, kernel_shape=(5, 5)
         )
 
@@ -1695,7 +1695,7 @@ class TestMaskBlurring(object):
             ]
         )
 
-        blurring_mask = aa.mask_util.blurring_mask_from_mask_and_kernel_shape(
+        blurring_mask = aa.util.mask.blurring_mask_from_mask_and_kernel_shape(
             mask, kernel_shape=(3, 3)
         )
 
@@ -1730,7 +1730,7 @@ class TestMaskBlurring(object):
             ]
         )
 
-        blurring_mask = aa.mask_util.blurring_mask_from_mask_and_kernel_shape(
+        blurring_mask = aa.util.mask.blurring_mask_from_mask_and_kernel_shape(
             mask, kernel_shape=(3, 3)
         )
 
@@ -1767,7 +1767,7 @@ class TestMaskBlurring(object):
         )
 
         with pytest.raises(exc.MaskException):
-            aa.mask_util.blurring_mask_from_mask_and_kernel_shape(
+            aa.util.mask.blurring_mask_from_mask_and_kernel_shape(
                 mask, kernel_shape=(5, 5)
             )
 
@@ -1778,7 +1778,7 @@ class TestMaskFromShapeAndMask2dIndexForMask1dIndex(object):
         one_to_two = np.array([[0, 0], [0, 1], [1, 0], [1, 1]])
         shape = (2, 2)
 
-        mask_2d = aa.mask_util.mask_from_shape_and_mask_2d_index_for_mask_1d_index(
+        mask_2d = aa.util.mask.mask_from_shape_and_mask_2d_index_for_mask_1d_index(
             shape=shape, mask_2d_index_for_mask_1d_index=one_to_two
         )
 
@@ -1789,7 +1789,7 @@ class TestMaskFromShapeAndMask2dIndexForMask1dIndex(object):
         one_to_two = np.array([[0, 0], [0, 1], [1, 0]])
         shape = (2, 2)
 
-        mask_2d = aa.mask_util.mask_from_shape_and_mask_2d_index_for_mask_1d_index(
+        mask_2d = aa.util.mask.mask_from_shape_and_mask_2d_index_for_mask_1d_index(
             shape=shape, mask_2d_index_for_mask_1d_index=one_to_two
         )
 
@@ -1800,7 +1800,7 @@ class TestMaskFromShapeAndMask2dIndexForMask1dIndex(object):
         one_to_two = np.array([[0, 0], [0, 1], [1, 0], [2, 0], [2, 1], [2, 3]])
         shape = (3, 4)
 
-        mask_2d = aa.mask_util.mask_from_shape_and_mask_2d_index_for_mask_1d_index(
+        mask_2d = aa.util.mask.mask_from_shape_and_mask_2d_index_for_mask_1d_index(
             shape=shape, mask_2d_index_for_mask_1d_index=one_to_two
         )
 
@@ -1830,7 +1830,7 @@ class TestEdgePixels(object):
             ]
         )
 
-        edge_pixels = aa.mask_util.edge_1d_indexes_from_mask(mask=mask)
+        edge_pixels = aa.util.mask.edge_1d_indexes_from_mask(mask=mask)
 
         assert (edge_pixels == np.array([0])).all()
 
@@ -1847,7 +1847,7 @@ class TestEdgePixels(object):
             ]
         )
 
-        edge_pixels = aa.mask_util.edge_1d_indexes_from_mask(mask=mask)
+        edge_pixels = aa.util.mask.edge_1d_indexes_from_mask(mask=mask)
 
         assert (edge_pixels == np.array([0, 1, 2, 3, 5, 6, 7, 8])).all()
 
@@ -1864,7 +1864,7 @@ class TestEdgePixels(object):
             ]
         )
 
-        edge_pixels = aa.mask_util.edge_1d_indexes_from_mask(mask=mask)
+        edge_pixels = aa.util.mask.edge_1d_indexes_from_mask(mask=mask)
 
         assert (edge_pixels == np.array([0, 1, 2, 3, 5, 6, 8, 9, 11, 12, 13, 14])).all()
 
@@ -1882,7 +1882,7 @@ class TestEdgePixels(object):
             ]
         )
 
-        edge_pixels = aa.mask_util.edge_1d_indexes_from_mask(mask=mask)
+        edge_pixels = aa.util.mask.edge_1d_indexes_from_mask(mask=mask)
 
         assert (
             edge_pixels
@@ -1903,7 +1903,7 @@ class TestEdgePixels(object):
             ]
         )
 
-        edge_pixels = aa.mask_util.edge_1d_indexes_from_mask(mask=mask)
+        edge_pixels = aa.util.mask.edge_1d_indexes_from_mask(mask=mask)
 
         assert (
             edge_pixels
@@ -1925,7 +1925,7 @@ class TestEdgePixels(object):
             ]
         )
 
-        edge_pixels = aa.mask_util.edge_1d_indexes_from_mask(mask=mask)
+        edge_pixels = aa.util.mask.edge_1d_indexes_from_mask(mask=mask)
 
         assert (
             edge_pixels == np.array([0, 1, 2, 3, 4, 6, 7, 8, 10, 11, 12, 13, 14])
@@ -1944,7 +1944,7 @@ class TestEdgePixels(object):
             ]
         )
 
-        edge_pixels = aa.mask_util.edge_1d_indexes_from_mask(mask=mask)
+        edge_pixels = aa.util.mask.edge_1d_indexes_from_mask(mask=mask)
 
         assert (
             edge_pixels
@@ -1967,7 +1967,7 @@ class TestBorderPixels(object):
             ]
         )
 
-        border_pixels = aa.mask_util.border_1d_indexes_from_mask(mask=mask)
+        border_pixels = aa.util.mask.border_1d_indexes_from_mask(mask=mask)
 
         assert (border_pixels == np.array([0])).all()
 
@@ -1983,7 +1983,7 @@ class TestBorderPixels(object):
             ]
         )
 
-        border_pixels = aa.mask_util.border_1d_indexes_from_mask(mask=mask)
+        border_pixels = aa.util.mask.border_1d_indexes_from_mask(mask=mask)
 
         assert (border_pixels == np.array([0, 1, 2])).all()
 
@@ -1999,7 +1999,7 @@ class TestBorderPixels(object):
             ]
         )
 
-        border_pixels = aa.mask_util.border_1d_indexes_from_mask(mask=mask)
+        border_pixels = aa.util.mask.border_1d_indexes_from_mask(mask=mask)
 
         assert (border_pixels == np.array([0, 1, 2, 3, 5, 6, 7, 8])).all()
 
@@ -2019,7 +2019,7 @@ class TestBorderPixels(object):
             ]
         )
 
-        border_pixels = aa.mask_util.border_1d_indexes_from_mask(mask=mask)
+        border_pixels = aa.util.mask.border_1d_indexes_from_mask(mask=mask)
 
         assert (
             border_pixels
@@ -2070,7 +2070,7 @@ class TestBorderPixels(object):
             ]
         )
 
-        border_pixels = aa.mask_util.border_1d_indexes_from_mask(mask=mask)
+        border_pixels = aa.util.mask.border_1d_indexes_from_mask(mask=mask)
 
         assert (
             border_pixels
@@ -2120,7 +2120,7 @@ class TestBorderPixels(object):
             ]
         )
 
-        border_pixels = aa.mask_util.border_1d_indexes_from_mask(mask=mask)
+        border_pixels = aa.util.mask.border_1d_indexes_from_mask(mask=mask)
 
         assert (
             border_pixels
@@ -2172,7 +2172,7 @@ class TestSubBorderPixels(object):
             ]
         )
 
-        sub_border_pixels = aa.mask_util.sub_border_pixel_1d_indexes_from_mask_and_sub_size(
+        sub_border_pixels = aa.util.mask.sub_border_pixel_1d_indexes_from_mask_and_sub_size(
             mask=mask, sub_size=1
         )
 
@@ -2190,7 +2190,7 @@ class TestSubBorderPixels(object):
             ]
         )
 
-        sub_border_pixels = aa.mask_util.sub_border_pixel_1d_indexes_from_mask_and_sub_size(
+        sub_border_pixels = aa.util.mask.sub_border_pixel_1d_indexes_from_mask_and_sub_size(
             mask=mask, sub_size=1
         )
 
@@ -2208,7 +2208,7 @@ class TestSubBorderPixels(object):
             ]
         )
 
-        sub_border_pixels = aa.mask_util.sub_border_pixel_1d_indexes_from_mask_and_sub_size(
+        sub_border_pixels = aa.util.mask.sub_border_pixel_1d_indexes_from_mask_and_sub_size(
             mask=mask, sub_size=1
         )
 
@@ -2230,7 +2230,7 @@ class TestSubBorderPixels(object):
             ]
         )
 
-        sub_border_pixels = aa.mask_util.sub_border_pixel_1d_indexes_from_mask_and_sub_size(
+        sub_border_pixels = aa.util.mask.sub_border_pixel_1d_indexes_from_mask_and_sub_size(
             mask=mask, sub_size=2
         )
 
@@ -2248,7 +2248,7 @@ class TestSubBorderPixels(object):
             ]
         )
 
-        sub_border_pixels = aa.mask_util.sub_border_pixel_1d_indexes_from_mask_and_sub_size(
+        sub_border_pixels = aa.util.mask.sub_border_pixel_1d_indexes_from_mask_and_sub_size(
             mask=mask, sub_size=2
         )
 
@@ -2266,7 +2266,7 @@ class TestSubBorderPixels(object):
             ]
         )
 
-        sub_border_pixels = aa.mask_util.sub_border_pixel_1d_indexes_from_mask_and_sub_size(
+        sub_border_pixels = aa.util.mask.sub_border_pixel_1d_indexes_from_mask_and_sub_size(
             mask=mask, sub_size=2
         )
 
@@ -2288,7 +2288,7 @@ class TestSubBorderPixels(object):
             ]
         )
 
-        sub_border_pixels = aa.mask_util.sub_border_pixel_1d_indexes_from_mask_and_sub_size(
+        sub_border_pixels = aa.util.mask.sub_border_pixel_1d_indexes_from_mask_and_sub_size(
             mask=mask, sub_size=3
         )
 
@@ -2306,7 +2306,7 @@ class TestSubBorderPixels(object):
             ]
         )
 
-        sub_border_pixels = aa.mask_util.sub_border_pixel_1d_indexes_from_mask_and_sub_size(
+        sub_border_pixels = aa.util.mask.sub_border_pixel_1d_indexes_from_mask_and_sub_size(
             mask=mask, sub_size=3
         )
 
@@ -2324,7 +2324,7 @@ class TestSubBorderPixels(object):
             ]
         )
 
-        sub_border_pixels = aa.mask_util.sub_border_pixel_1d_indexes_from_mask_and_sub_size(
+        sub_border_pixels = aa.util.mask.sub_border_pixel_1d_indexes_from_mask_and_sub_size(
             mask=mask, sub_size=3
         )
 
@@ -2346,7 +2346,7 @@ class TestSubBorderPixels(object):
             ]
         )
 
-        sub_border_pixels = aa.mask_util.sub_border_pixel_1d_indexes_from_mask_and_sub_size(
+        sub_border_pixels = aa.util.mask.sub_border_pixel_1d_indexes_from_mask_and_sub_size(
             mask=mask, sub_size=2
         )
 
@@ -2399,7 +2399,7 @@ class TestSubBorderPixels(object):
             ]
         )
 
-        sub_border_pixels = aa.mask_util.sub_border_pixel_1d_indexes_from_mask_and_sub_size(
+        sub_border_pixels = aa.util.mask.sub_border_pixel_1d_indexes_from_mask_and_sub_size(
             mask=mask, sub_size=2
         )
 
@@ -2451,7 +2451,7 @@ class TestSubBorderPixels(object):
             ]
         )
 
-        sub_border_pixels = aa.mask_util.sub_border_pixel_1d_indexes_from_mask_and_sub_size(
+        sub_border_pixels = aa.util.mask.sub_border_pixel_1d_indexes_from_mask_and_sub_size(
             mask=mask, sub_size=2
         )
 
@@ -2494,7 +2494,7 @@ class TestMask2DIndexFromSubMask1DIndex(object):
     ):
         mask = np.array([[True, True, True], [True, False, True], [True, True, True]])
 
-        mask_1d_index_for_sub_mask_1d_index = aa.mask_util.mask_1d_index_for_sub_mask_1d_index_from_mask(
+        mask_1d_index_for_sub_mask_1d_index = aa.util.mask.mask_1d_index_for_sub_mask_1d_index_from_mask(
             mask, sub_size=2
         )
 
@@ -2505,7 +2505,7 @@ class TestMask2DIndexFromSubMask1DIndex(object):
     ):
         mask = np.array([[True, True, True], [False, False, False], [True, True, True]])
 
-        mask_1d_index_for_sub_mask_1d_index = aa.mask_util.mask_1d_index_for_sub_mask_1d_index_from_mask(
+        mask_1d_index_for_sub_mask_1d_index = aa.util.mask.mask_1d_index_for_sub_mask_1d_index_from_mask(
             mask, sub_size=2
         )
 
@@ -2519,7 +2519,7 @@ class TestMask2DIndexFromSubMask1DIndex(object):
     ):
         mask = np.array([[True, True, True], [False, False, False], [True, True, True]])
 
-        mask_1d_index_for_sub_mask_1d_index = aa.mask_util.mask_1d_index_for_sub_mask_1d_index_from_mask(
+        mask_1d_index_for_sub_mask_1d_index = aa.util.mask.mask_1d_index_for_sub_mask_1d_index_from_mask(
             mask, sub_size=3
         )
 
@@ -2566,7 +2566,7 @@ class TestSubMask1DIndexFromMask1DIndexes(object):
 
         mask = np.array([[True, True, True], [True, False, True], [True, True, True]])
 
-        sub_mask_1d_indexes_for_mask_1d_index = aa.mask_util.sub_mask_1d_indexes_for_mask_1d_index_from_mask(
+        sub_mask_1d_indexes_for_mask_1d_index = aa.util.mask.sub_mask_1d_indexes_for_mask_1d_index_from_mask(
             mask, sub_size=2
         )
 
@@ -2577,7 +2577,7 @@ class TestSubMask1DIndexFromMask1DIndexes(object):
     ):
         mask = np.array([[True, True, True], [False, False, False], [True, True, True]])
 
-        sub_mask_1d_indexes_for_mask_1d_index = aa.mask_util.sub_mask_1d_indexes_for_mask_1d_index_from_mask(
+        sub_mask_1d_indexes_for_mask_1d_index = aa.util.mask.sub_mask_1d_indexes_for_mask_1d_index_from_mask(
             mask, sub_size=2
         )
 
@@ -2592,7 +2592,7 @@ class TestSubMask1DIndexFromMask1DIndexes(object):
     ):
         mask = np.array([[True, True, True], [False, False, False], [True, True, True]])
 
-        sub_mask_1d_indexes_for_mask_1d_index = aa.mask_util.sub_mask_1d_indexes_for_mask_1d_index_from_mask(
+        sub_mask_1d_indexes_for_mask_1d_index = aa.util.mask.sub_mask_1d_indexes_for_mask_1d_index_from_mask(
             mask, sub_size=3
         )
 
@@ -2608,7 +2608,7 @@ class TestSubMask2dToSubMask1d(object):
 
         mask_2d = np.full(fill_value=False, shape=(3, 3))
 
-        sub_mask_1d_index_for_sub_mask_2d_index = aa.mask_util.sub_mask_1d_index_for_sub_mask_2d_index_from_sub_mask(
+        sub_mask_1d_index_for_sub_mask_2d_index = aa.util.mask.sub_mask_1d_index_for_sub_mask_2d_index_from_sub_mask(
             sub_mask=mask_2d
         )
 
@@ -2619,7 +2619,7 @@ class TestSubMask2dToSubMask1d(object):
 
         mask_2d = np.full(fill_value=False, shape=(2, 3))
 
-        sub_mask_1d_index_for_sub_mask_2d_index = aa.mask_util.sub_mask_1d_index_for_sub_mask_2d_index_from_sub_mask(
+        sub_mask_1d_index_for_sub_mask_2d_index = aa.util.mask.sub_mask_1d_index_for_sub_mask_2d_index_from_sub_mask(
             sub_mask=mask_2d
         )
 
@@ -2629,7 +2629,7 @@ class TestSubMask2dToSubMask1d(object):
 
         mask_2d = np.full(fill_value=False, shape=(3, 2))
 
-        sub_mask_1d_index_for_sub_mask_2d_index = aa.mask_util.sub_mask_1d_index_for_sub_mask_2d_index_from_sub_mask(
+        sub_mask_1d_index_for_sub_mask_2d_index = aa.util.mask.sub_mask_1d_index_for_sub_mask_2d_index_from_sub_mask(
             sub_mask=mask_2d
         )
 
@@ -2646,7 +2646,7 @@ class TestSubMask2dToSubMask1d(object):
             [[False, True, False], [True, True, False], [False, False, True]]
         )
 
-        sub_mask_1d_index_for_sub_mask_2d_index = aa.mask_util.sub_mask_1d_index_for_sub_mask_2d_index_from_sub_mask(
+        sub_mask_1d_index_for_sub_mask_2d_index = aa.util.mask.sub_mask_1d_index_for_sub_mask_2d_index_from_sub_mask(
             sub_mask=mask_2d
         )
 
@@ -2663,7 +2663,7 @@ class TestSubMask2dToSubMask1d(object):
             ]
         )
 
-        sub_mask_1d_index_for_sub_mask_2d_index = aa.mask_util.sub_mask_1d_index_for_sub_mask_2d_index_from_sub_mask(
+        sub_mask_1d_index_for_sub_mask_2d_index = aa.util.mask.sub_mask_1d_index_for_sub_mask_2d_index_from_sub_mask(
             sub_mask=mask_2d
         )
 
@@ -2681,7 +2681,7 @@ class TestSubMask2dToSubMask1d(object):
             ]
         )
 
-        sub_mask_1d_index_for_sub_mask_2d_index = aa.mask_util.sub_mask_1d_index_for_sub_mask_2d_index_from_sub_mask(
+        sub_mask_1d_index_for_sub_mask_2d_index = aa.util.mask.sub_mask_1d_index_for_sub_mask_2d_index_from_sub_mask(
             sub_mask=mask_2d
         )
 
@@ -2696,7 +2696,7 @@ class TestSubMask2DForSubMask1D(object):
 
         mask = np.array([[True, True, True], [True, False, True], [True, True, True]])
 
-        sub_mask_2d_index_for_sub_mask_1d_index = aa.mask_util.sub_mask_2d_index_for_sub_mask_1d_index_from_mask_and_sub_size(
+        sub_mask_2d_index_for_sub_mask_1d_index = aa.util.mask.sub_mask_2d_index_for_sub_mask_1d_index_from_mask_and_sub_size(
             mask=mask, sub_size=1
         )
 
@@ -2706,7 +2706,7 @@ class TestSubMask2DForSubMask1D(object):
             [[True, False, True], [False, False, False], [True, False, True]]
         )
 
-        sub_mask_2d_index_for_sub_mask_1d_index = aa.mask_util.sub_mask_2d_index_for_sub_mask_1d_index_from_mask_and_sub_size(
+        sub_mask_2d_index_for_sub_mask_1d_index = aa.util.mask.sub_mask_2d_index_for_sub_mask_1d_index_from_mask_and_sub_size(
             mask=mask, sub_size=1
         )
 
@@ -2723,7 +2723,7 @@ class TestSubMask2DForSubMask1D(object):
             ]
         )
 
-        sub_mask_2d_index_for_sub_mask_1d_index = aa.mask_util.sub_mask_2d_index_for_sub_mask_1d_index_from_mask_and_sub_size(
+        sub_mask_2d_index_for_sub_mask_1d_index = aa.util.mask.sub_mask_2d_index_for_sub_mask_1d_index_from_mask_and_sub_size(
             mask=mask, sub_size=1
         )
 
@@ -2741,7 +2741,7 @@ class TestSubMask2DForSubMask1D(object):
             ]
         )
 
-        sub_mask_2d_index_for_sub_mask_1d_index = aa.mask_util.sub_mask_2d_index_for_sub_mask_1d_index_from_mask_and_sub_size(
+        sub_mask_2d_index_for_sub_mask_1d_index = aa.util.mask.sub_mask_2d_index_for_sub_mask_1d_index_from_mask_and_sub_size(
             mask=mask, sub_size=1
         )
 
@@ -2754,7 +2754,7 @@ class TestSubMask2DForSubMask1D(object):
 
         mask = np.array([[True, True, True], [True, False, True], [True, True, True]])
 
-        sub_mask_2d_index_for_sub_mask_1d_index = aa.mask_util.sub_mask_2d_index_for_sub_mask_1d_index_from_mask_and_sub_size(
+        sub_mask_2d_index_for_sub_mask_1d_index = aa.util.mask.sub_mask_2d_index_for_sub_mask_1d_index_from_mask_and_sub_size(
             mask=mask, sub_size=2
         )
 
@@ -2763,7 +2763,7 @@ class TestSubMask2DForSubMask1D(object):
             == np.array([[2, 2], [2, 3], [3, 2], [3, 3]])
         ).all()
 
-        sub_mask_2d_index_for_sub_mask_1d_index = aa.mask_util.sub_mask_2d_index_for_sub_mask_1d_index_from_mask_and_sub_size(
+        sub_mask_2d_index_for_sub_mask_1d_index = aa.util.mask.sub_mask_2d_index_for_sub_mask_1d_index_from_mask_and_sub_size(
             mask=mask, sub_size=3
         )
 
@@ -2778,7 +2778,7 @@ class TestSubMask2DForSubMask1D(object):
             [[True, False, True], [False, False, False], [True, False, True]]
         )
 
-        sub_mask_2d_index_for_sub_mask_1d_index = aa.mask_util.sub_mask_2d_index_for_sub_mask_1d_index_from_mask_and_sub_size(
+        sub_mask_2d_index_for_sub_mask_1d_index = aa.util.mask.sub_mask_2d_index_for_sub_mask_1d_index_from_mask_and_sub_size(
             mask=mask, sub_size=2
         )
 
@@ -2818,7 +2818,7 @@ class TestSubMask2DForSubMask1D(object):
             ]
         )
 
-        sub_mask_2d_index_for_sub_mask_1d_index = aa.mask_util.sub_mask_2d_index_for_sub_mask_1d_index_from_mask_and_sub_size(
+        sub_mask_2d_index_for_sub_mask_1d_index = aa.util.mask.sub_mask_2d_index_for_sub_mask_1d_index_from_mask_and_sub_size(
             mask=mask, sub_size=2
         )
 
@@ -2838,7 +2838,7 @@ class TestSubMask2DForSubMask1D(object):
             ]
         )
 
-        sub_mask_2d_index_for_sub_mask_1d_index = aa.mask_util.sub_mask_2d_index_for_sub_mask_1d_index_from_mask_and_sub_size(
+        sub_mask_2d_index_for_sub_mask_1d_index = aa.util.mask.sub_mask_2d_index_for_sub_mask_1d_index_from_mask_and_sub_size(
             mask=mask, sub_size=2
         )
 
@@ -2862,7 +2862,7 @@ class TestRescaledMaskFromMask(object):
             ]
         )
 
-        rescaled_mask = aa.mask_util.rescaledmask_from_mask_2d_and_rescale_factor(
+        rescaled_mask = aa.util.mask.rescaledmask_from_mask_2d_and_rescale_factor(
             mask_2d=mask, rescale_factor=1.0
         )
 
@@ -2892,7 +2892,7 @@ class TestRescaledMaskFromMask(object):
             ]
         )
 
-        rescaled_mask = aa.mask_util.rescaledmask_from_mask_2d_and_rescale_factor(
+        rescaled_mask = aa.util.mask.rescaledmask_from_mask_2d_and_rescale_factor(
             mask_2d=mask, rescale_factor=2.0
         )
 
@@ -2925,7 +2925,7 @@ class TestRescaledMaskFromMask(object):
             ]
         )
 
-        rescaled_mask = aa.mask_util.rescaledmask_from_mask_2d_and_rescale_factor(
+        rescaled_mask = aa.util.mask.rescaledmask_from_mask_2d_and_rescale_factor(
             mask_2d=mask, rescale_factor=2.0
         )
 
@@ -2961,7 +2961,7 @@ class TestRescaledMaskFromMask(object):
             ]
         )
 
-        rescaled_mask = aa.mask_util.rescaledmask_from_mask_2d_and_rescale_factor(
+        rescaled_mask = aa.util.mask.rescaledmask_from_mask_2d_and_rescale_factor(
             mask_2d=mask, rescale_factor=1.2
         )
 
@@ -2980,7 +2980,7 @@ class TestRescaledMaskFromMask(object):
             )
         ).all()
 
-        rescaled_mask = aa.mask_util.rescaledmask_from_mask_2d_and_rescale_factor(
+        rescaled_mask = aa.util.mask.rescaledmask_from_mask_2d_and_rescale_factor(
             mask_2d=mask, rescale_factor=0.8
         )
 
@@ -3010,7 +3010,7 @@ class TestRescaledMaskFromMask(object):
             ]
         )
 
-        rescaled_mask = aa.mask_util.rescaledmask_from_mask_2d_and_rescale_factor(
+        rescaled_mask = aa.util.mask.rescaledmask_from_mask_2d_and_rescale_factor(
             mask_2d=mask, rescale_factor=1.2
         )
 
@@ -3028,7 +3028,7 @@ class TestRescaledMaskFromMask(object):
             )
         ).all()
 
-        rescaled_mask = aa.mask_util.rescaledmask_from_mask_2d_and_rescale_factor(
+        rescaled_mask = aa.util.mask.rescaledmask_from_mask_2d_and_rescale_factor(
             mask_2d=mask, rescale_factor=0.8
         )
 
@@ -3059,7 +3059,7 @@ class TestEdgeBuffedMaskFromMask(object):
             ]
         )
 
-        edge_buffed_mask = aa.mask_util.edge_buffed_mask_from_mask(mask=mask)
+        edge_buffed_mask = aa.util.mask.edge_buffed_mask_from_mask(mask=mask)
 
         assert (
             edge_buffed_mask
@@ -3087,7 +3087,7 @@ class TestEdgeBuffedMaskFromMask(object):
             ]
         )
 
-        edge_buffed_mask = aa.mask_util.edge_buffed_mask_from_mask(mask=mask)
+        edge_buffed_mask = aa.util.mask.edge_buffed_mask_from_mask(mask=mask)
 
         assert (
             edge_buffed_mask
@@ -3114,7 +3114,7 @@ class TestEdgeBuffedMaskFromMask(object):
             ]
         )
 
-        edge_buffed_mask = aa.mask_util.edge_buffed_mask_from_mask(mask=mask)
+        edge_buffed_mask = aa.util.mask.edge_buffed_mask_from_mask(mask=mask)
 
         assert (
             edge_buffed_mask
@@ -3143,7 +3143,7 @@ class TestEdgeBuffedMaskFromMask(object):
             ]
         )
 
-        edge_buffed_mask = aa.mask_util.edge_buffed_mask_from_mask(mask=mask)
+        edge_buffed_mask = aa.util.mask.edge_buffed_mask_from_mask(mask=mask)
 
         assert (
             edge_buffed_mask

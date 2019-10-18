@@ -5,12 +5,11 @@ backend = conf.instance.visualize.get("figures", "backend", str)
 matplotlib.use(backend)
 from matplotlib import pyplot as plt
 
-from autoarray.plotters import plotter_util
-from autoarray.data.plotters import data_plotters
+from autoarray.plotters import array_plotters, grid_plotters, line_yx_plotters, plotter_util
 
 
-def plot_interferometer_subplot(
-    interferometer_data,
+def subplot(
+    interferometer,
     plot_origin=True,
     units="arcsec",
     kpc_per_arcsec=None,
@@ -34,17 +33,17 @@ def plot_interferometer_subplot(
     plot_axis_type="linear",
     legend_fontsize=12,
     output_path=None,
-    output_filename="interferometer_data",
+    output_filename="interferometer",
     output_format="show",
 ):
-    """Plot the interferometer data_type as a sub-plot of all its quantites (e.g. the data, noise_map-map, PSF, Signal-to_noise-map, \
+    """Plot the interferometer data_type as a sub-plotters of all its quantites (e.g. the data, noise_map-map, PSF, Signal-to_noise-map, \
      etc).
 
     Set *autolens.data_type.array.plotters.array_plotters* for a description of all innput parameters not described below.
 
     Parameters
     -----------
-    interferometer_data : data_type.UVPlaneData
+    interferometer : data_type.UVPlaneData
         The interferometer data_type, which includes the observed data_type, noise_map-map, PSF, signal-to-noise_map-map, etc.
     plot_origin : True
         If true, the origin of the data's coordinate system is plotted as a 'x'.
@@ -66,8 +65,8 @@ def plot_interferometer_subplot(
     plt.figure(figsize=figsize)
     plt.subplot(rows, columns, 1)
 
-    plot_visibilities(
-        interferometer_data=interferometer_data,
+    visibilities(
+        interferometer=interferometer,
         as_subplot=True,
         units=units,
         kpc_per_arcsec=kpc_per_arcsec,
@@ -89,8 +88,8 @@ def plot_interferometer_subplot(
 
     plt.subplot(rows, columns, 2)
 
-    plot_u_wavelengths(
-        interferometer_data=interferometer_data,
+    u_wavelengths(
+        interferometer=interferometer,
         as_subplot=True,
         units=units,
         kpc_per_arcsec=kpc_per_arcsec,
@@ -108,8 +107,8 @@ def plot_interferometer_subplot(
 
     plt.subplot(rows, columns, 4)
 
-    plot_v_wavelengths(
-        interferometer_data=interferometer_data,
+    v_wavelengths(
+        interferometer=interferometer,
         as_subplot=True,
         units=units,
         kpc_per_arcsec=kpc_per_arcsec,
@@ -127,8 +126,8 @@ def plot_interferometer_subplot(
 
     plt.subplot(rows, columns, 3)
 
-    plot_primary_beam(
-        interferometer_data=interferometer_data,
+    primary_beam(
+        interferometer=interferometer,
         plot_origin=plot_origin,
         as_subplot=True,
         units=units,
@@ -163,8 +162,8 @@ def plot_interferometer_subplot(
     plt.close()
 
 
-def plot_interferometer_individual(
-    interferometer_data,
+def individual(
+    interferometer,
     should_plot_visibilities=False,
     should_plot_u_wavelengths=False,
     should_plot_v_wavelengths=False,
@@ -180,7 +179,7 @@ def plot_interferometer_individual(
 
     Parameters
     -----------
-    interferometer_data : data_type.UVPlaneData
+    interferometer : data_type.UVPlaneData
         The interferometer data_type, which includes the observed data_type, noise_map-map, PSF, signal-to-noise_map-map, etc.
     plot_origin : True
         If true, the origin of the data's coordinate system is plotted as a 'x'.
@@ -188,8 +187,8 @@ def plot_interferometer_individual(
 
     if should_plot_visibilities:
 
-        plot_visibilities(
-            interferometer_data=interferometer_data,
+        visibilities(
+            interferometer=interferometer,
             units=units,
             output_path=output_path,
             output_format=output_format,
@@ -197,8 +196,8 @@ def plot_interferometer_individual(
 
     if should_plot_u_wavelengths:
 
-        plot_u_wavelengths(
-            interferometer_data=interferometer_data,
+        u_wavelengths(
+            interferometer=interferometer,
             units=units,
             output_path=output_path,
             output_format=output_format,
@@ -206,8 +205,8 @@ def plot_interferometer_individual(
 
     if should_plot_v_wavelengths:
 
-        plot_v_wavelengths(
-            interferometer_data=interferometer_data,
+        v_wavelengths(
+            interferometer=interferometer,
             units=units,
             output_path=output_path,
             output_format=output_format,
@@ -215,16 +214,16 @@ def plot_interferometer_individual(
 
     if should_plot_primary_beam:
 
-        plot_primary_beam(
-            interferometer_data=interferometer_data,
+        primary_beam(
+            interferometer=interferometer,
             units=units,
             output_path=output_path,
             output_format=output_format,
         )
 
 
-def plot_visibilities(
-    interferometer_data,
+def visibilities(
+    interferometer,
     as_subplot=False,
     units="arcsec",
     kpc_per_arcsec=None,
@@ -259,9 +258,9 @@ def plot_visibilities(
         over the immage.
     """
 
-    data_plotters.plot_visibilities(
-        visibilities=interferometer_data.visibilities,
-        noise_map=interferometer_data.noise_map,
+    grid_plotters.plot_grid(
+        grid=interferometer.visibilities,
+        colors=interferometer.noise_map,
         as_subplot=as_subplot,
         units=units,
         kpc_per_arcsec=kpc_per_arcsec,
@@ -283,8 +282,8 @@ def plot_visibilities(
     )
 
 
-def plot_u_wavelengths(
-    interferometer_data,
+def u_wavelengths(
+    interferometer,
     as_subplot=False,
     label="Wavelengths",
     units="",
@@ -317,16 +316,17 @@ def plot_u_wavelengths(
         over the immage.
     """
 
-    data_plotters.plot_u_wavelengths(
-        uv_wavelengths=interferometer_data.uv_wavelengths,
+    line_yx_plotters.plot_line(
+        y=interferometer.uv_wavelengths[:, 0],
+        x=None,
         as_subplot=as_subplot,
         label=label,
+        plot_axis_type=plot_axis_type,
         units=units,
         kpc_per_arcsec=kpc_per_arcsec,
         figsize=figsize,
-        plot_axis_type=plot_axis_type,
-        ylabel=ylabel,
         title=title,
+        ylabel=ylabel,
         titlesize=titlesize,
         xlabelsize=xlabelsize,
         ylabelsize=ylabelsize,
@@ -338,8 +338,8 @@ def plot_u_wavelengths(
     )
 
 
-def plot_v_wavelengths(
-    interferometer_data,
+def v_wavelengths(
+    interferometer,
     as_subplot=False,
     label="Wavelengths",
     units="",
@@ -372,16 +372,17 @@ def plot_v_wavelengths(
         over the immage.
     """
 
-    data_plotters.plot_v_wavelengths(
-        uv_wavelengths=interferometer_data.uv_wavelengths,
+    line_yx_plotters.plot_line(
+        y=interferometer.uv_wavelengths[:, 1],
+        x=None,
         as_subplot=as_subplot,
         label=label,
+        plot_axis_type=plot_axis_type,
         units=units,
         kpc_per_arcsec=kpc_per_arcsec,
         figsize=figsize,
-        plot_axis_type=plot_axis_type,
-        ylabel=ylabel,
         title=title,
+        ylabel=ylabel,
         titlesize=titlesize,
         xlabelsize=xlabelsize,
         ylabelsize=ylabelsize,
@@ -393,8 +394,8 @@ def plot_v_wavelengths(
     )
 
 
-def plot_primary_beam(
-    interferometer_data,
+def primary_beam(
+    interferometer,
     plot_origin=True,
     as_subplot=False,
     units="arcsec",
@@ -433,9 +434,9 @@ def plot_primary_beam(
         If true, the origin of the data's coordinate system is plotted as a 'x'.
     """
 
-    data_plotters.plot_primary_beam(
-        primary_beam=interferometer_data.primary_beam,
-        plot_origin=plot_origin,
+    array_plotters.plot_array(
+        array=interferometer.primary_beam,
+        should_plot_origin=plot_origin,
         as_subplot=as_subplot,
         units=units,
         kpc_per_arcsec=kpc_per_arcsec,
@@ -461,3 +462,4 @@ def plot_primary_beam(
         output_format=output_format,
         output_filename=output_filename,
     )
+
