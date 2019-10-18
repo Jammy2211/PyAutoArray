@@ -262,3 +262,11 @@ def make_transformer_7x7_7(uv_wavelengths_7, grid_7x7):
         uv_wavelengths=uv_wavelengths_7,
         grid_radians=grid_7x7.mask.geometry.masked_grid.in_radians,
     )
+
+
+@pytest.fixture(name="fit_7x7")
+def make_lens_imaging_fit_x1_plane_7x7(imaging_data_7x7, mask_7x7):
+    return aa.DataFit(
+        mask=mask_7x7, data=imaging_data_7x7.data, noise_map=imaging_data_7x7.noise_map,
+        model_data=5.0*imaging_data_7x7.data
+    )
