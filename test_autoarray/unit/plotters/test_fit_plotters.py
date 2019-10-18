@@ -1,4 +1,4 @@
-from autoarray.fit.plotters import fit_plotter_util
+import autoarray as aa
 import pytest
 import os
 
@@ -14,7 +14,7 @@ def test__fit_quantities_are_output(
     fit_7x7, fit_plotter_util_path, plot_patch
 ):
 
-    fit_plotter_util.plot_image(
+    aa.plot.fit.image(
         fit=fit_7x7,
         mask_overlay=fit_7x7.mask,
         cb_tick_values=[1.0],
@@ -25,7 +25,7 @@ def test__fit_quantities_are_output(
 
     assert fit_plotter_util_path + "fit_image.png" in plot_patch.paths
 
-    fit_plotter_util.plot_noise_map(
+    aa.plot.fit.noise_map(
         fit=fit_7x7,
         mask_overlay=fit_7x7.mask,
         cb_tick_values=[1.0],
@@ -36,7 +36,7 @@ def test__fit_quantities_are_output(
 
     assert fit_plotter_util_path + "fit_noise_map.png" in plot_patch.paths
 
-    fit_plotter_util.plot_signal_to_noise_map(
+    aa.plot.fit.signal_to_noise_map(
         fit=fit_7x7,
         mask_overlay=fit_7x7.mask,
         cb_tick_values=[1.0],
@@ -47,7 +47,7 @@ def test__fit_quantities_are_output(
 
     assert fit_plotter_util_path + "fit_signal_to_noise_map.png" in plot_patch.paths
 
-    fit_plotter_util.plot_model_image(
+    aa.plot.fit.model_image(
         fit=fit_7x7,
         mask_overlay=fit_7x7.mask,
         cb_tick_values=[1.0],
@@ -58,7 +58,7 @@ def test__fit_quantities_are_output(
 
     assert fit_plotter_util_path + "fit_model_image.png" in plot_patch.paths
 
-    fit_plotter_util.plot_residual_map(
+    aa.plot.fit.residual_map(
         fit=fit_7x7,
         mask_overlay=fit_7x7.mask,
         cb_tick_values=[1.0],
@@ -69,7 +69,7 @@ def test__fit_quantities_are_output(
 
     assert fit_plotter_util_path + "fit_residual_map.png" in plot_patch.paths
 
-    fit_plotter_util.plot_normalized_residual_map(
+    aa.plot.fit.normalized_residual_map(
         fit=fit_7x7,
         mask_overlay=fit_7x7.mask,
         cb_tick_values=[1.0],
@@ -82,7 +82,7 @@ def test__fit_quantities_are_output(
         fit_plotter_util_path + "fit_normalized_residual_map.png" in plot_patch.paths
     )
 
-    fit_plotter_util.plot_chi_squared_map(
+    aa.plot.fit.chi_squared_map(
         fit=fit_7x7,
         mask_overlay=fit_7x7.mask,
         cb_tick_values=[1.0],

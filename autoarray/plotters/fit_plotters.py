@@ -1,7 +1,7 @@
 from autoarray.plotters import array_plotters
 
 
-def plot_image(
+def image(
     fit,
     mask_overlay=None,
     positions=None,
@@ -80,7 +80,7 @@ def plot_image(
     )
 
 
-def plot_noise_map(
+def noise_map(
     fit,
     mask_overlay=None,
     positions=None,
@@ -155,7 +155,7 @@ def plot_noise_map(
     )
 
 
-def plot_signal_to_noise_map(
+def signal_to_noise_map(
     fit,
     mask_overlay=None,
     positions=None,
@@ -230,7 +230,7 @@ def plot_signal_to_noise_map(
     )
 
 
-def plot_model_image(
+def model_image(
     fit,
     mask_overlay=None,
     positions=None,
@@ -305,7 +305,7 @@ def plot_model_image(
     )
 
 
-def plot_residual_map(
+def residual_map(
     fit,
     mask_overlay=None,
     positions=None,
@@ -380,7 +380,7 @@ def plot_residual_map(
     )
 
 
-def plot_normalized_residual_map(
+def normalized_residual_map(
     fit,
     mask_overlay=None,
     positions=None,
@@ -455,7 +455,7 @@ def plot_normalized_residual_map(
     )
 
 
-def plot_chi_squared_map(
+def chi_squared_map(
     fit,
     mask_overlay=None,
     positions=None,

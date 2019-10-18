@@ -443,7 +443,7 @@ class TestArray:
             assert arr.geometry.arc_second_minima == (-1.5, -1.5)
 
             arr = arrays.Array.from_sub_array_2d_pixel_scales_and_sub_size(sub_array_2d=np.ones((4, 4)), sub_size=2,
-                                                                       pixel_scales=(0.1, 0.1))
+                                                                           pixel_scales=(0.1, 0.1))
 
             assert (arr.in_1d == np.ones((16,))).all()
             assert (arr.in_2d == np.ones((4, 4))).all()
@@ -738,7 +738,7 @@ class TestArray:
 
             arr = arrays.Array.from_sub_array_2d_pixel_scales_and_sub_size(sub_array_2d=array_2d, sub_size=1, pixel_scales=(0.1, 0.1))
 
-            arr_binned_util = aa.binning_util.binned_up_array_2d_using_mean_from_array_2d_and_bin_up_factor(
+            arr_binned_util = aa.util.binning.binned_up_array_2d_using_mean_from_array_2d_and_bin_up_factor(
                 array_2d=array_2d, bin_up_factor=4
             )
             arr_binned = arr.binned_from_bin_up_factor(
@@ -747,7 +747,7 @@ class TestArray:
             assert (arr_binned.in_2d == arr_binned_util).all()
             assert arr_binned.pixel_scales == (0.4, 0.4)
 
-            arr_binned_util = aa.binning_util.binned_array_2d_using_quadrature_from_array_2d_and_bin_up_factor(
+            arr_binned_util = aa.util.binning.binned_array_2d_using_quadrature_from_array_2d_and_bin_up_factor(
                 array_2d=array_2d, bin_up_factor=4
             )
             arr_binned = arr.binned_from_bin_up_factor(
@@ -756,7 +756,7 @@ class TestArray:
             assert (arr_binned.in_2d == arr_binned_util).all()
             assert arr_binned.pixel_scales == (0.4, 0.4)
 
-            arr_binned_util = aa.binning_util.binned_array_2d_using_sum_from_array_2d_and_bin_up_factor(
+            arr_binned_util = aa.util.binning.binned_array_2d_using_sum_from_array_2d_and_bin_up_factor(
                 array_2d=array_2d, bin_up_factor=4
             )
             arr_binned = arr.binned_from_bin_up_factor(

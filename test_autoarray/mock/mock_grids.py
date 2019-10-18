@@ -1,5 +1,5 @@
-from autoarray.util import grid_util
 from autoarray.structures import grids
+from autoarray.util import grid_util
 import numpy as np
 
 

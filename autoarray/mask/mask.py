@@ -4,7 +4,7 @@ import numpy as np
 
 from autoarray import exc
 from autoarray.mask import geometry, mapping, regions
-from autoarray.util import array_util, binning_util, mask_util
+from autoarray.util import array_util, mask_util
 
 logging.basicConfig()
 logger = logging.getLogger(__name__)

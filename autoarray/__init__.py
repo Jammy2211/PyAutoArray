@@ -5,22 +5,10 @@ from autoarray.structures.kernel import Kernel as kernel
 from autoarray.data import data_converter
 from autoarray.data.imaging import Imaging as imaging
 from autoarray.data.interferometer import Interferometer as interferometer
-from autoarray.operators.convolution import Convolver
-from autoarray.operators.fourier_transform import Transformer
-from autoarray.fit.fit import DataFit
-from autoarray.util import (
-    array_util,
-    binning_util,
-    fit_util,
-    grid_util,
-    mask_util,
-    sparse_util,
-)
-from autoarray.plotters.array_plotters import plot_array
-from autoarray.plotters.grid_plotters import plot_grid
-from autoarray.plotters.line_yx_plotters import plot_line
-from autoarray.plotters.quantity_radii_plotters import plot_quantity_as_function_of_radius
-from autoarray.data.plotters import data_plotters, imaging_plotters, interferometer_plotters
-from autoarray.plotters import plotter_util
+from autoarray.operators.convolution import Convolver as convolver
+from autoarray.operators.fourier_transform import Transformer as transformer
+from autoarray.fit.fit import DataFit as fit
+from autoarray import util
+from autoarray import plotters as plot
 
 __version__ = "0.1.1"

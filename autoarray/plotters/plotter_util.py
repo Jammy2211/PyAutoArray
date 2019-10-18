@@ -8,7 +8,7 @@ import numpy as np
 
 
 def get_subplot_rows_columns_figsize(number_subplots):
-    """Get the size of a sub plot in (rows, columns), based on the number of subplots that are going to be plotted.
+    """Get the size of a sub plotters in (rows, columns), based on the number of subplots that are going to be plotted.
 
     Parameters
     -----------
@@ -120,7 +120,7 @@ def output_figure(array, as_subplot, output_path, output_filename, output_format
         elif output_format is "png":
             plt.savefig(output_path + output_filename + ".png", bbox_inches="tight")
         elif output_format is "fits":
-            aa.array_util.numpy_array_2d_to_fits(
+            aa.util.array.numpy_array_2d_to_fits(
                 array_2d=array,
                 file_path=output_path + output_filename + ".fits",
                 overwrite=True,
@@ -177,7 +177,7 @@ def plot_lines(line_lists):
     units : str
         The units of the y / x axis of the plots, in arc-seconds ('arcsec') or kiloparsecs ('kpc').
     kpc_per_arcsec : float or None
-        The conversion factor between arc-seconds and kiloparsecs, required to plot the units in kpc.
+        The conversion factor between arc-seconds and kiloparsecs, required to plotters the units in kpc.
     lines_pointsize : int
         The size of the points plotted to show the liness.
     """

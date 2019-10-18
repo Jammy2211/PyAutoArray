@@ -5,7 +5,7 @@ from skimage.transform import resize, rescale
 
 import numpy as np
 
-from autoarray.structures import arrays, grids
+from autoarray.structures import grids, arrays
 from autoarray import exc
 
 class Kernel(arrays.AbstractArray):
@@ -78,7 +78,6 @@ class Kernel(arrays.AbstractArray):
         cls, shape_2d, pixel_scales, sigma, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0
     ):
         """Simulate the Kernel as an elliptical Gaussian profile."""
-        from autolens.model.profiles.light_profiles import EllipticalGaussian
 
         grid = grids.Grid.uniform(shape_2d=shape_2d, pixel_scales=pixel_scales)
         grid_shifted = np.subtract(grid, centre)
