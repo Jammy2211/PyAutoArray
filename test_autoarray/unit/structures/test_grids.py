@@ -288,7 +288,8 @@ class TestGrid:
                                    [7.0, 8.0]]]), pixel_scales=(0.1, 0.1), sub_size=2, origin=(1.0, 1.0)
         )
 
-        assert grid.shape_2d == (2, 2, 2)
+        assert grid.shape_2d == (1, 1)
+        assert grid.sub_shape_2d == (2, 2)
         assert (grid.in_1d == np.array([[1.0, 2.0], [3.0, 4.0], [5.0, 6.0], [7.0, 8.0]])).all()
         assert (grid.in_2d == np.array([[[1.0, 2.0], [3.0, 4.0]], [[5.0, 6.0], [7.0, 8.0]]])).all()
         assert grid.in_2d_binned.shape == (1, 1, 2)

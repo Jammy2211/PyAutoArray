@@ -53,7 +53,7 @@ class Mapping(object):
         array_1d : ndarray
             The 1D array which is mapped to its masked 2D array.
         """
-        return arrays.Array(array_1d=array_1d, mask=self.mask)
+        return arrays.Array(array_1d=array_1d, mask=self.mask_sub_1)
 
     def array_from_array_2d(self, array_2d):
         """For a 2D array (e.g. an image, noise_map, etc.) map it to a masked 1D array of valuees using this mask.
@@ -185,7 +185,7 @@ class Mapping(object):
         grid_1d : ndgrid
             The 1D grid which is mapped to its masked 2D grid.
         """
-        return grids.Grid(grid_1d=grid_1d, mask=self.mask)
+        return grids.Grid(grid_1d=grid_1d, mask=self.mask_sub_1)
 
     def grid_from_grid_2d(self, grid_2d):
         """For a 2D grid (e.g. an image, noise_map, etc.) map it to a masked 1D grid of valuees using this mask.
