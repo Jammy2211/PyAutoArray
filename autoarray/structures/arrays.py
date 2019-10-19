@@ -91,7 +91,7 @@ class AbstractArray(abstract_structure.AbstractStructure):
             The buffer of pixels around the extraction.
         """
 
-        extracted_array_2d = array_util.extracted_array_2d_from_array_2d_and_coordinates(
+        extracted_array_2d = array_util.extracted_array_2d_from_array_2d(
             array_2d=self.in_2d,
             y0=self.geometry._zoom_region[0] - buffer,
             y1=self.geometry._zoom_region[1] + buffer,
@@ -114,7 +114,7 @@ class AbstractArray(abstract_structure.AbstractStructure):
             The new two-dimensional shape of the array.
         """
 
-        resized_array_2d = array_util.resized_array_2d_from_array_2d_and_resized_shape(
+        resized_array_2d = array_util.resized_array_2d_from_array_2d(
             array_2d=self.in_2d, resized_shape=new_shape,
         )
 
@@ -145,7 +145,7 @@ class AbstractArray(abstract_structure.AbstractStructure):
 
         if method is "mean":
 
-            binned_array_2d = binning_util.binned_up_array_2d_using_mean_from_array_2d_and_bin_up_factor(
+            binned_array_2d = binning_util.bin_array_2d_via_mean(
                 array_2d=self.in_2d, bin_up_factor=bin_up_factor
             )
 
@@ -155,7 +155,7 @@ class AbstractArray(abstract_structure.AbstractStructure):
 
         elif method is "quadrature":
 
-            binned_array_2d = binning_util.binned_array_2d_using_quadrature_from_array_2d_and_bin_up_factor(
+            binned_array_2d = binning_util.bin_array_2d_via_quadrature(
                 array_2d=self.in_2d, bin_up_factor=bin_up_factor
             )
 
@@ -165,7 +165,7 @@ class AbstractArray(abstract_structure.AbstractStructure):
 
         elif method is "sum":
 
-            binned_array_2d = binning_util.binned_array_2d_using_sum_from_array_2d_and_bin_up_factor(
+            binned_array_2d = binning_util.bin_array_2d_via_sum(
                 array_2d=self.in_2d, bin_up_factor=bin_up_factor
             )
 

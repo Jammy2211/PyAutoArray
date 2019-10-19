@@ -25,7 +25,7 @@ def padded_binning_shape_2d_from_shape_2d_and_bin_up_factor(shape_2d, bin_up_fac
 
 
 @decorator_util.jit()
-def padded_binning_array_2d_from_array_2d_and_bin_up_factor(
+def padded_binning_array_2d_from_array_2d(
     array_2d, bin_up_factor, pad_value=0.0
 ):
     """If an array is to be binned up, but the dimensions are not divisible by the bin-up factor, this routine pads \
@@ -59,13 +59,13 @@ def padded_binning_array_2d_from_array_2d_and_bin_up_factor(
         shape_2d=array_2d.shape, bin_up_factor=bin_up_factor
     )
 
-    return array_util.resized_array_2d_from_array_2d_and_resized_shape(
+    return array_util.resized_array_2d_from_array_2d(
         array_2d=array_2d, resized_shape=padded_binning_shape_2d, pad_value=pad_value
     )
 
 
 @decorator_util.jit()
-def binned_up_array_2d_using_mean_from_array_2d_and_bin_up_factor(
+def bin_array_2d_via_mean(
     array_2d, bin_up_factor
 ):
     """Bin up an array to coarser resolution, by binning up groups of pixels and using their mean value to determine \
@@ -95,7 +95,7 @@ def binned_up_array_2d_using_mean_from_array_2d_and_bin_up_factor(
     resize_array = bin_up_array_2d_using_mean(array_2d=array_2d, bin_up_factor=2)
     """
 
-    padded_binning_array_2d = padded_binning_array_2d_from_array_2d_and_bin_up_factor(
+    padded_binning_array_2d = padded_binning_array_2d_from_array_2d(
         array_2d=array_2d, bin_up_factor=bin_up_factor
     )
 
@@ -121,7 +121,7 @@ def binned_up_array_2d_using_mean_from_array_2d_and_bin_up_factor(
 
 
 @decorator_util.jit()
-def binned_array_2d_using_quadrature_from_array_2d_and_bin_up_factor(
+def bin_array_2d_via_quadrature(
     array_2d, bin_up_factor
 ):
     """Bin up an array to coarser resolution, by binning up groups of pixels and using their quadrature value to \
@@ -151,7 +151,7 @@ def binned_array_2d_using_quadrature_from_array_2d_and_bin_up_factor(
     resize_array = bin_up_array_2d_using_quadrature(array_2d=array_2d, bin_up_factor=2)
     """
 
-    padded_binning_array_2d = padded_binning_array_2d_from_array_2d_and_bin_up_factor(
+    padded_binning_array_2d = padded_binning_array_2d_from_array_2d(
         array_2d=array_2d, bin_up_factor=bin_up_factor
     )
 
@@ -177,7 +177,7 @@ def binned_array_2d_using_quadrature_from_array_2d_and_bin_up_factor(
 
 
 @decorator_util.jit()
-def binned_array_2d_using_sum_from_array_2d_and_bin_up_factor(array_2d, bin_up_factor):
+def bin_array_2d_via_sum(array_2d, bin_up_factor):
     """Bin up an array to coarser resolution, by binning up groups of pixels and using their sum value to determine \
      the value of the new pixel.
 
@@ -205,7 +205,7 @@ def binned_array_2d_using_sum_from_array_2d_and_bin_up_factor(array_2d, bin_up_f
     resize_array = bin_up_array_2d_using_sum(array_2d=array_2d, bin_up_factor=2)
     """
 
-    padded_binning_array_2d = padded_binning_array_2d_from_array_2d_and_bin_up_factor(
+    padded_binning_array_2d = padded_binning_array_2d_from_array_2d(
         array_2d=array_2d, bin_up_factor=bin_up_factor
     )
 
@@ -231,7 +231,7 @@ def binned_array_2d_using_sum_from_array_2d_and_bin_up_factor(array_2d, bin_up_f
 
 
 @decorator_util.jit()
-def binned_up_mask_from_mask_2d_and_bin_up_factor(mask_2d, bin_up_factor):
+def bin_mask_2d(mask_2d, bin_up_factor):
     """Bin up an array to coarser resolution, by binning up groups of pixels and using their sum value to determine \
      the value of the new pixel.
 
@@ -262,19 +262,19 @@ def binned_up_mask_from_mask_2d_and_bin_up_factor(mask_2d, bin_up_factor):
     resize_array = resize_array_2d(array_2d=array_2d, new_shape=(2,2), origin=(2, 2))
     """
 
-    padded_mask_2d = padded_binning_array_2d_from_array_2d_and_bin_up_factor(
+    padded_mask_2d = padded_binning_array_2d_from_array_2d(
         array_2d=mask_2d, bin_up_factor=bin_up_factor, pad_value=True
     )
 
-    binnedmask = np.zeros(
+    binned_mask = np.zeros(
         shape=(
             padded_mask_2d.shape[0] // bin_up_factor,
             padded_mask_2d.shape[1] // bin_up_factor,
         )
     )
 
-    for y in range(binnedmask.shape[0]):
-        for x in range(binnedmask.shape[1]):
+    for y in range(binned_mask.shape[0]):
+        for x in range(binned_mask.shape[1]):
             value = True
             for y1 in range(bin_up_factor):
                 for x1 in range(bin_up_factor):
@@ -283,13 +283,13 @@ def binned_up_mask_from_mask_2d_and_bin_up_factor(mask_2d, bin_up_factor):
                     if padded_mask_2d[padded_y, padded_x] == False:
                         value = False
 
-            binnedmask[y, x] = value
+            binned_mask[y, x] = value
 
-    return binnedmask
+    return binned_mask
 
 
 @decorator_util.jit()
-def mask_1d_index_for_padded_mask_2d_index_from_mask_2d_and_bin_up_factor(
+def mask_1d_index_for_padded_mask_2d_index_via_mask_2d(
     mask_2d, bin_up_factor
 ):
     """Create a 2D array which maps every False entry of a 2D mask to its 1D mask array index 2D binned mask. Every \
@@ -316,17 +316,17 @@ def mask_1d_index_for_padded_mask_2d_index_from_mask_2d_and_bin_up_factor(
     mask_2d_to_mask_1d_index = mask_1d_index_for_padded_mask_2d_index_from_mask_2d(mask_2d=mask_2d)
     """
 
-    padded_mask_2d = padded_binning_array_2d_from_array_2d_and_bin_up_factor(
+    padded_mask_2d = padded_binning_array_2d_from_array_2d(
         array_2d=mask_2d, bin_up_factor=bin_up_factor, pad_value=True
     )
 
-    return mask_util.sub_mask_1d_index_for_sub_mask_2d_index_from_sub_mask(
-        sub_mask=padded_mask_2d
+    return mask_util.sub_mask_1d_index_for_sub_mask_2d_index_from_sub_mask_2d(
+        sub_mask_2d=padded_mask_2d
     )
 
 
 @decorator_util.jit()
-def binned_mask_1d_index_for_padded_mask_2d_index_from_mask_2d_and_bin_up_factor(
+def binned_mask_1d_index_for_padded_mask_2d_index_via_mask_2d(
     mask_2d, bin_up_factor
 ):
     """Create a 2D array which maps every False entry of a 2D mask to its 1D binned mask index (created using the \
@@ -371,15 +371,15 @@ def binned_mask_1d_index_for_padded_mask_2d_index_from_mask_2d_and_bin_up_factor
     Examples
     --------
     mask_2d = np.full(fill_value=False, shape=(9,9))
-    mask_to_binnedmask =
+    mask_to_binned_mask =
         mask_2d_to_binned_mask_1d_index_from_mask_2d_and_bin_up_factor(mask_2d=mask_2d, bin_up_factor=3)
     """
 
-    padded_mask_2d = padded_binning_array_2d_from_array_2d_and_bin_up_factor(
+    padded_mask_2d = padded_binning_array_2d_from_array_2d(
         array_2d=mask_2d, bin_up_factor=bin_up_factor, pad_value=True
     )
 
-    binnedmask = binned_up_mask_from_mask_2d_and_bin_up_factor(
+    binned_mask = bin_mask_2d(
         mask_2d=mask_2d, bin_up_factor=bin_up_factor
     )
 
@@ -389,9 +389,9 @@ def binned_mask_1d_index_for_padded_mask_2d_index_from_mask_2d_and_bin_up_factor
 
     binned_mask_1d_index = 0
 
-    for bin_y in range(binnedmask.shape[0]):
-        for bin_x in range(binnedmask.shape[1]):
-            if binnedmask[bin_y, bin_x] == False:
+    for bin_y in range(binned_mask.shape[0]):
+        for bin_x in range(binned_mask.shape[1]):
+            if binned_mask[bin_y, bin_x] == False:
                 for bin_y1 in range(bin_up_factor):
                     for bin_x1 in range(bin_up_factor):
                         mask_y = bin_y * bin_up_factor + bin_y1
@@ -407,7 +407,7 @@ def binned_mask_1d_index_for_padded_mask_2d_index_from_mask_2d_and_bin_up_factor
 
 
 @decorator_util.jit()
-def binned_masked_array_1d_for_masked_array_1d_from_mask_2d_and_bin_up_factor(
+def binned_masked_array_1d_for_masked_array_1d_via_mask_2d(
     mask_2d, bin_up_factor
 ):
     """Create a 1D array which maps every (padded) masked index to its corresponding 1D index in the binned 1D \
@@ -466,23 +466,23 @@ def binned_masked_array_1d_for_masked_array_1d_from_mask_2d_and_bin_up_factor(
     Examples
     --------
     mask_2d = np.full(fill_value=False, shape=(9,9))
-    mask_to_binnedmask =
+    mask_to_binned_mask =
         masked_array_1d_for_binned_masked_array_1d_from_mask_2d_and_bin_up_factor(mask_2d=mask_2d, bin_up_factor=3)
     """
 
-    padded_mask_2d = padded_binning_array_2d_from_array_2d_and_bin_up_factor(
+    padded_mask_2d = padded_binning_array_2d_from_array_2d(
         array_2d=mask_2d, bin_up_factor=bin_up_factor, pad_value=True
     )
 
-    total_masked_pixels = mask_util.total_pixels_from_mask(mask=padded_mask_2d)
+    total_masked_pixels = mask_util.total_pixels_from_mask_2d(mask_2d=padded_mask_2d)
 
     binned_masked_array_1d_for_masked_array_1d = np.zeros(shape=total_masked_pixels)
 
-    mask_1d_index_for_padded_mask_2d_index = mask_1d_index_for_padded_mask_2d_index_from_mask_2d_and_bin_up_factor(
+    mask_1d_index_for_padded_mask_2d_index = mask_1d_index_for_padded_mask_2d_index_via_mask_2d(
         mask_2d=mask_2d, bin_up_factor=bin_up_factor
     )
 
-    binned_mask_1d_index_for_padded_mask_2d_index = binned_mask_1d_index_for_padded_mask_2d_index_from_mask_2d_and_bin_up_factor(
+    binned_mask_1d_index_for_padded_mask_2d_index = binned_mask_1d_index_for_padded_mask_2d_index_via_mask_2d(
         mask_2d=mask_2d, bin_up_factor=bin_up_factor
     )
 
@@ -503,7 +503,7 @@ def binned_masked_array_1d_for_masked_array_1d_from_mask_2d_and_bin_up_factor(
 
 
 @decorator_util.jit()
-def masked_array_1d_for_binned_masked_array_1d_from_mask_2d_and_bin_up_factor(
+def masked_array_1d_for_binned_masked_array_1d_via_mask_2d(
     mask_2d, bin_up_factor
 ):
     """Create a 1D array which maps every (padded) binned masked index to its correspond 1D index in the original 2D \
@@ -565,25 +565,25 @@ def masked_array_1d_for_binned_masked_array_1d_from_mask_2d_and_bin_up_factor(
     Examples
     --------
     mask_2d = np.full(fill_value=False, shape=(9,9))
-    mask_to_binnedmask =
+    mask_to_binned_mask =
         masked_array_1d_for_binned_masked_array_1d_from_mask_2d_and_bin_up_factor(mask_2d=mask_2d, bin_up_factor=3)
     """
 
-    binned_upmask = binned_up_mask_from_mask_2d_and_bin_up_factor(
+    binned_upmask = bin_mask_2d(
         mask_2d=mask_2d, bin_up_factor=bin_up_factor
     )
 
-    total_binned_masked_pixels = mask_util.total_pixels_from_mask(mask=binned_upmask)
+    total_binned_masked_pixels = mask_util.total_pixels_from_mask_2d(mask_2d=binned_upmask)
 
     masked_array_1d_for_binned_masked_array_1d = -1 * np.ones(
         total_binned_masked_pixels
     )
 
-    mask_1d_index_for_padded_mask_2d_index = mask_1d_index_for_padded_mask_2d_index_from_mask_2d_and_bin_up_factor(
+    mask_1d_index_for_padded_mask_2d_index = mask_1d_index_for_padded_mask_2d_index_via_mask_2d(
         mask_2d=mask_2d, bin_up_factor=bin_up_factor
     )
 
-    binned_mask_1d_index_for_padded_mask_2d_index = binned_mask_1d_index_for_padded_mask_2d_index_from_mask_2d_and_bin_up_factor(
+    binned_mask_1d_index_for_padded_mask_2d_index = binned_mask_1d_index_for_padded_mask_2d_index_via_mask_2d(
         mask_2d=mask_2d, bin_up_factor=bin_up_factor
     )
 
@@ -605,7 +605,7 @@ def masked_array_1d_for_binned_masked_array_1d_from_mask_2d_and_bin_up_factor(
 
 
 @decorator_util.jit()
-def masked_array_1d_for_binned_masked_array_1d_all_from_mask_2d_and_bin_up_factor(
+def masked_array_1d_for_binned_masked_array_1d_all_via_mask_2d(
     mask_2d, bin_up_factor
 ):
     """Create a 2D array which maps every (padded) binned masked index to all of the corresponding 1D indexes of the \
@@ -670,15 +670,15 @@ def masked_array_1d_for_binned_masked_array_1d_all_from_mask_2d_and_bin_up_facto
     Examples
     --------
     mask_2d = np.full(fill_value=False, shape=(9,9))
-    mask_to_binnedmask =
+    mask_to_binned_mask =
         masked_array_1d_for_binned_masked_array_1d_from_mask_2d_and_bin_up_factor(mask_2d=mask_2d, bin_up_factor=3)
     """
 
-    binned_upmask = binned_up_mask_from_mask_2d_and_bin_up_factor(
+    binned_upmask = bin_mask_2d(
         mask_2d=mask_2d, bin_up_factor=bin_up_factor
     )
 
-    total_binned_masked_pixels = mask_util.total_pixels_from_mask(mask=binned_upmask)
+    total_binned_masked_pixels = mask_util.total_pixels_from_mask_2d(mask_2d=binned_upmask)
 
     masked_array_1d_for_binned_masked_array_1d_all = -1 * np.ones(
         (total_binned_masked_pixels, bin_up_factor ** 2)
@@ -686,11 +686,11 @@ def masked_array_1d_for_binned_masked_array_1d_all_from_mask_2d_and_bin_up_facto
 
     binned_masked_array_1d_sizes = np.zeros(total_binned_masked_pixels)
 
-    mask_1d_index_for_padded_mask_2d_index = mask_1d_index_for_padded_mask_2d_index_from_mask_2d_and_bin_up_factor(
+    mask_1d_index_for_padded_mask_2d_index = mask_1d_index_for_padded_mask_2d_index_via_mask_2d(
         mask_2d=mask_2d, bin_up_factor=bin_up_factor
     )
 
-    binned_mask_1d_index_for_padded_mask_2d_index = binned_mask_1d_index_for_padded_mask_2d_index_from_mask_2d_and_bin_up_factor(
+    binned_mask_1d_index_for_padded_mask_2d_index = binned_mask_1d_index_for_padded_mask_2d_index_via_mask_2d(
         mask_2d=mask_2d, bin_up_factor=bin_up_factor
     )
 

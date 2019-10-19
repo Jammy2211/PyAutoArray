@@ -82,7 +82,7 @@ class Geometry(object):
         This is defined from the top-left corner, such that the first pixel at location [0, 0] will have a negative x \
         value y value in arc seconds.
         """
-        grid_1d = grid_util.grid_1d_from_shape_2d_pixel_scales_sub_size_and_origin(
+        grid_1d = grid_util.grid_1d_via_shape_2d(
             shape_2d=self.mask.shape,
             pixel_scales=self.mask.pixel_scales,
             sub_size=1,
@@ -92,8 +92,8 @@ class Geometry(object):
 
     @property
     def masked_grid(self):
-        grid_1d = grid_util.grid_1d_from_mask_pixel_scales_sub_size_and_origin(
-            mask=self.mask, pixel_scales=self.mask.pixel_scales, sub_size=1, origin=self.mask.origin
+        grid_1d = grid_util.grid_1d_via_mask_2d(
+            mask_2d=self.mask, pixel_scales=self.mask.pixel_scales, sub_size=1, origin=self.mask.origin
         )
         return self.mask.mapping.grid_from_grid_1d(grid_1d=grid_1d)
 
@@ -130,9 +130,9 @@ class Geometry(object):
         grid_arcsec_1d: ndarray
             A grid of (y,x) coordinates in arc seconds.
         """
-        grid_pixels_1d = grid_util.grid_pixels_1d_from_grid_arcsec_1d_shape_and_pixel_scales(
+        grid_pixels_1d = grid_util.grid_pixels_1d_from_grid_arcsec_1d_shape_2d_and_pixel_scales(
             grid_arcsec_1d=grid_arcsec_1d,
-            shape=self.mask.shape,
+            shape_2d=self.mask.shape,
             pixel_scales=self.mask.pixel_scales,
             origin=self.mask.origin,
         )
@@ -153,7 +153,7 @@ class Geometry(object):
         grid_arcsec_1d: ndarray
             The grid of (y,x) coordinates in arc seconds.
         """
-        grid_pixel_centres_1d = grid_util.grid_pixel_centres_1d_from_grid_arcsec_1d_shape_and_pixel_scales(
+        grid_pixel_centres_1d = grid_util.grid_pixel_centres_1d_from_grid_arcsec_1d_shape_2d_and_pixel_scales(
             grid_arcsec_1d=grid_arcsec_1d,
             shape_2d=self.mask.shape,
             pixel_scales=self.mask.pixel_scales,
@@ -182,9 +182,9 @@ class Geometry(object):
         grid_arcsec_1d: ndarray
             The grid of (y,x) coordinates in arc seconds.
         """
-        grid_pixel_indexes_1d = grid_util.grid_pixel_indexes_1d_from_grid_arcsec_1d_shape_and_pixel_scales(
+        grid_pixel_indexes_1d = grid_util.grid_pixel_indexes_1d_from_grid_arcsec_1d_shape_2d_and_pixel_scales(
             grid_arcsec_1d=grid_arcsec_1d,
-            shape=self.mask.shape,
+            shape_2d=self.mask.shape,
             pixel_scales=self.mask.pixel_scales,
             origin=self.mask.origin,
         ).astype(
@@ -206,9 +206,9 @@ class Geometry(object):
         grid_pixels_1d : ndarray
             The grid of (y,x) coordinates in pixels.
         """
-        grid_arcsec_1d = grid_util.grid_arcsec_1d_from_grid_pixels_1d_shape_and_pixel_scales(
+        grid_arcsec_1d = grid_util.grid_arcsec_1d_from_grid_pixels_1d_shape_2d_and_pixel_scales(
             grid_pixels_1d=grid_pixels_1d,
-            shape=self.mask.shape,
+            shape_2d=self.mask.shape,
             pixel_scales=self.mask.pixel_scales,
             origin=self.mask.origin,
         )
@@ -222,9 +222,9 @@ class Geometry(object):
         self, grid_pixels_1d, shape
     ):
 
-        grid_arcsec_1d = grid_util.grid_arcsec_1d_from_grid_pixels_1d_shape_and_pixel_scales(
+        grid_arcsec_1d = grid_util.grid_arcsec_1d_from_grid_pixels_1d_shape_2d_and_pixel_scales(
             grid_pixels_1d=grid_pixels_1d,
-            shape=shape,
+            shape_2d=shape,
             pixel_scales=(
                 self.mask.pixel_scales[0] / self.mask.sub_size,
                 self.mask.pixel_scales[1] / self.mask.sub_size,
@@ -239,8 +239,8 @@ class Geometry(object):
 
     @property
     def masked_sub_grid(self):
-        sub_grid_1d = grid_util.grid_1d_from_mask_pixel_scales_sub_size_and_origin(
-            mask=self.mask,
+        sub_grid_1d = grid_util.grid_1d_via_mask_2d(
+            mask_2d=self.mask,
             pixel_scales=self.mask.pixel_scales,
             sub_size=self.mask.sub_size,
             origin=self.mask.origin,
