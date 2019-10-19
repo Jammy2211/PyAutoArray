@@ -21,7 +21,7 @@ class TestMapping:
                 [False, False, False],
                 [True, False, True],
                 [True, True, True],
-            ]
+            ], sub_size=2
         )
 
         masked_array_2d = array_2d * np.invert(mask)
@@ -30,11 +30,12 @@ class TestMapping:
             mask=mask, sub_array_2d=array_2d, sub_size=1
         )
 
-        scaled_array = mask.mapping.array_from_array_2d(array_2d=array_2d)
+        arr = mask.mapping.array_from_array_2d(array_2d=array_2d)
 
-        assert (scaled_array == array_1d_util).all()
-        assert (scaled_array.in_1d == array_1d_util).all()
-        assert (scaled_array.in_2d == masked_array_2d).all()
+        assert (arr == array_1d_util).all()
+        assert (arr.in_1d == array_1d_util).all()
+        assert (arr.in_2d == masked_array_2d).all()
+        assert arr.sub_size == 1
 
     def test__array_from_array_1d__compare_to_util(self):
         mask = aa.mask.manual(
@@ -42,7 +43,7 @@ class TestMapping:
                 [True, True, False, False],
                 [True, False, True, True],
                 [True, True, False, False],
-            ], pixel_scales=(3.0, 3.0),
+            ], pixel_scales=(3.0, 3.0), sub_size=2,
         )
 
         array_1d = np.array([1.0, 6.0, 4.0, 5.0, 2.0])
@@ -53,16 +54,17 @@ class TestMapping:
 
         masked_array_2d = array_2d_util * np.invert(mask)
 
-        scaled_array = mask.mapping.array_from_array_1d(array_1d=array_1d)
+        arr = mask.mapping.array_from_array_1d(array_1d=array_1d)
 
-        assert (scaled_array == array_1d).all()
-        assert (scaled_array.in_1d == array_1d).all()
-        assert (scaled_array.in_2d == masked_array_2d).all()
-        assert scaled_array.mask.pixel_scales == (3.0, 3.0)
-        assert scaled_array.mask.origin == (0.0, 0.0)
-        assert (scaled_array.geometry.xticks == np.array([-6.0, -2.0, 2.0, 6.0])).all()
-        assert (scaled_array.geometry.yticks == np.array([-4.5, -1.5, 1.5, 4.5])).all()
-        assert scaled_array.geometry.shape_arcsec == (9.0, 12.0)
+        assert (arr == array_1d).all()
+        assert (arr.in_1d == array_1d).all()
+        assert (arr.in_2d == masked_array_2d).all()
+        assert arr.pixel_scales == (3.0, 3.0)
+        assert arr.origin == (0.0, 0.0)
+        assert arr.sub_size == 1
+        assert (arr.geometry.xticks == np.array([-6.0, -2.0, 2.0, 6.0])).all()
+        assert (arr.geometry.yticks == np.array([-4.5, -1.5, 1.5, 4.5])).all()
+        assert arr.geometry.shape_arcsec == (9.0, 12.0)
 
     def test__grid_from_grid_2d__compare_to_util(self):
         grid_2d = np.array(
@@ -78,7 +80,7 @@ class TestMapping:
                 [True, False, True, True],
                 [False, False, False, True],
                 [True, False, True, False],
-            ]
+            ], sub_size=2,
         )
 
         masked_grid_2d = grid_2d * np.invert(mask[:, :, None])
@@ -92,6 +94,7 @@ class TestMapping:
         assert (grid == grid_1d_util).all()
         assert (grid.in_1d == grid).all()
         assert (grid.in_2d == masked_grid_2d).all()
+        assert grid.sub_size == 1
 
     def test__grid_from_grid_1d__compare_to_util(self):
         mask = aa.mask.manual(
@@ -99,7 +102,7 @@ class TestMapping:
                 [True, True, False, False],
                 [True, False, True, True],
                 [True, True, False, False],
-            ]
+            ], sub_size=2
         )
 
         grid_1d = np.array([[1.0, 1.0], [6.0, 6.0], [4.0, 4.0], [5.0, 5.0], [2.0, 2.0]])
@@ -115,6 +118,7 @@ class TestMapping:
         assert (grid == grid_1d).all()
         assert (grid.in_1d == grid_1d).all()
         assert (grid.in_2d == masked_grid_2d).all()
+        assert grid.sub_size == 1
 
     def test__sub_array_2d_from_sub_array_1d__use_2x3_mask(self):
 
@@ -295,12 +299,12 @@ class TestMapping:
             [1.0, 2.0, 3.0, 4.0, 9.0, 10.0, 11.0, 12.0, 13.0, 14.0, 15.0, 16.0]
         )
 
-        scaled_array = mask.mapping.array_from_sub_array_1d(sub_array_1d=sub_array_1d)
+        arr = mask.mapping.array_from_sub_array_1d(sub_array_1d=sub_array_1d)
 
-        assert (scaled_array.in_1d == sub_array_1d).all()
+        assert (arr.in_1d == sub_array_1d).all()
 
         assert (
-                scaled_array.in_2d
+                arr.in_2d
                 == np.array(
             [
                 [1.0, 2.0, 0.0, 0.0],
@@ -323,10 +327,10 @@ class TestMapping:
 
         mask = aa.mask.manual([[False, False, True], [False, True, False]], sub_size=2)
 
-        scaled_array = mask.mapping.array_from_sub_array_2d(sub_array_2d=sub_array_2d)
+        arr = mask.mapping.array_from_sub_array_2d(sub_array_2d=sub_array_2d)
 
         assert (
-                scaled_array.in_1d
+                arr.in_1d
                 == np.array(
             [
                 1.0,
@@ -349,7 +353,7 @@ class TestMapping:
         )
         ).all()
 
-        assert (scaled_array.in_2d == sub_array_2d).all()
+        assert (arr.in_2d == sub_array_2d).all()
 
     def test__array_binned_from_sub_array_1d_by_binning_up(self):
         mask = aa.mask.manual([[False, False, True], [False, True, False]], pixel_scales=(3.0, 3.0), sub_size=2)
@@ -375,16 +379,16 @@ class TestMapping:
             ]
         )
 
-        scaled_array = mask.mapping.array_binned_from_sub_array_1d(
+        arr = mask.mapping.array_binned_from_sub_array_1d(
             sub_array_1d=sub_array_1d
         )
 
-        assert (scaled_array.in_1d == np.array([3.5, 2.0, 3.0, 2.0])).all()
+        assert (arr.in_1d == np.array([3.5, 2.0, 3.0, 2.0])).all()
         assert (
-                scaled_array.in_2d == np.array([[3.5, 2.0, 0.0], [3.0, 0.0, 2.0]])
+                arr.in_2d == np.array([[3.5, 2.0, 0.0], [3.0, 0.0, 2.0]])
         ).all()
-        assert scaled_array.mask.pixel_scales == (3.0, 3.0)
-        assert scaled_array.mask.origin == (0.0, 0.0)
+        assert arr.mask.pixel_scales == (3.0, 3.0)
+        assert arr.mask.origin == (0.0, 0.0)
 
     def test__grid_from_sub_grid_1d(self):
         mask = aa.mask.manual([[False, True], [False, False]], sub_size=2)
