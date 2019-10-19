@@ -9,7 +9,6 @@ import matplotlib.colors as colors
 import numpy as np
 import itertools
 
-from autolens import exc
 from autoarray.plotters import plotter_util
 
 
