@@ -68,6 +68,7 @@ class Mapping(object):
         )
         return self.array_from_array_1d(array_1d=array_1d)
 
+
     def sub_array_2d_from_sub_array_1d(self, sub_array_1d):
         """ Map a 1D sub-array the same dimension as the sub-grid (e.g. including sub-pixels) to its original masked
         2D sub array.
