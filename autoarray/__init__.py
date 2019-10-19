@@ -10,5 +10,6 @@ from autoarray.operators.fourier_transform import Transformer as transformer
 from autoarray.fit.fit import DataFit as fit
 from autoarray import util
 from autoarray import plotters as plot
+from autoarray import conf
 
 __version__ = "0.1.1"
