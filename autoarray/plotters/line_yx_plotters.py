@@ -1,4 +1,3 @@
-from autolens import exc
 from autoarray.plotters import plotter_util
 
 import matplotlib.pyplot as plt

@@ -7,7 +7,6 @@ from matplotlib import pyplot as plt
 import numpy as np
 import itertools
 
-from autolens import exc
 from autoarray.plotters import plotter_util
 
 
