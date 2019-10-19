@@ -366,7 +366,7 @@ class Grid(AbstractGrid):
         return mask.mapping.grid_from_sub_grid_2d(sub_grid_2d=sub_grid_2d)
 
     @classmethod
-    def manual_1d(cls, grid, shape_2d, pixel_scales, sub_size=1, origin=(0.0, 0.0)):
+    def manual_1d(cls, grid, shape_2d, pixel_scales=None, sub_size=1, origin=(0.0, 0.0)):
 
         grid = np.asarray(grid)
 
@@ -384,7 +384,7 @@ class Grid(AbstractGrid):
             sub_size=sub_size, origin=origin)
 
     @classmethod
-    def manual_2d(cls, grid, pixel_scales, sub_size=1, origin=(0.0, 0.0)):
+    def manual_2d(cls, grid, pixel_scales=None, sub_size=1, origin=(0.0, 0.0)):
 
         grid = np.asarray(grid)
 
@@ -401,7 +401,7 @@ class Grid(AbstractGrid):
                                                                sub_size=sub_size, origin=origin)
 
     @classmethod
-    def uniform(cls, shape_2d, pixel_scales, sub_size=1, origin=(0.0, 0.0)):
+    def uniform(cls, shape_2d, pixel_scales=None, sub_size=1, origin=(0.0, 0.0)):
 
         if type(pixel_scales) is float:
             pixel_scales = (pixel_scales, pixel_scales)
