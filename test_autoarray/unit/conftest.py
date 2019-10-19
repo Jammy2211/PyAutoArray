@@ -8,7 +8,6 @@ from autoarray import conf
 from autoarray.fit import fit
 from test_autoarray.mock import mock_mask
 from test_autoarray.mock import mock_data
-from test_autoarray.mock import mock_grids
 from test_autoarray.mock import mock_convolution
 
 directory = path.dirname(path.realpath(__file__))
@@ -89,7 +88,7 @@ def make_blurring_mask_7x7():
         ]
     )
 
-    return mock_mask.MockMask(blurring_mask_2d=blurring_mask_2d)
+    return mock_mask.MockMask(mask_2d=blurring_mask_2d)
 
 
 @pytest.fixture(name="mask_6x6")
