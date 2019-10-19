@@ -1,7 +1,7 @@
-import autofit as af
+from autoarray import conf
 import matplotlib
 
-backend = af.conf.instance.visualize.get("figures", "backend", str)
+backend = conf.instance.visualize.get("figures", "backend", str)
 matplotlib.use(backend)
 import matplotlib.pyplot as plt
 import matplotlib.colors as colors

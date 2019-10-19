@@ -219,12 +219,12 @@ class Geometry(object):
         return self.mask.sub_size
 
     def grid_arcsec_from_grid_pixels_1d_for_marching_squares(
-        self, grid_pixels_1d, shape
+        self, grid_pixels_1d, shape_2d
     ):
 
         grid_arcsec_1d = grid_util.grid_arcsec_1d_from_grid_pixels_1d_shape_2d_and_pixel_scales(
             grid_pixels_1d=grid_pixels_1d,
-            shape_2d=shape,
+            shape_2d=shape_2d,
             pixel_scales=(
                 self.mask.pixel_scales[0] / self.mask.sub_size,
                 self.mask.pixel_scales[1] / self.mask.sub_size,
@@ -235,7 +235,7 @@ class Geometry(object):
         grid_arcsec_1d[:, 0] -= self.mask.pixel_scales[0] / (2.0 * self.mask.sub_size)
         grid_arcsec_1d[:, 1] += self.mask.pixel_scales[1] / (2.0 * self.mask.sub_size)
 
-        return grid_arcsec_1d
+        return self.mask.mapping.grid_from_grid_1d(grid_1d=grid_arcsec_1d)
 
     @property
     def masked_sub_grid(self):

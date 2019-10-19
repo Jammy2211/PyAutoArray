@@ -26,7 +26,7 @@ class TestAPI:
                 array=np.ones((3, 3)), pixel_scales=1.0, renormalize=False
             )
     
-            assert kernel.in_2d.shape == (3, 3)
+            assert kernel.shape_2d == (3, 3)
             assert (kernel.in_2d == np.ones((3, 3))).all()
             assert kernel.pixel_scales == (1.0, 1.0)
             assert kernel.origin == (0.0, 0.0)
@@ -35,7 +35,7 @@ class TestAPI:
                 array=np.ones((12,)), shape_2d=(4,3), pixel_scales=1.0, renormalize=False
             )
     
-            assert kernel.in_2d.shape == (4, 3)
+            assert kernel.shape_2d == (4, 3)
             assert (kernel.in_2d == np.ones((4, 3))).all()
             assert kernel.pixel_scales == (1.0, 1.0)
             assert kernel.origin == (0.0, 0.0)
@@ -49,7 +49,7 @@ class TestAPI:
                fill_value=3.0, shape_2d=(3,3), pixel_scales=1.0,
             )
 
-            assert kernel.in_2d.shape == (3, 3)
+            assert kernel.shape_2d == (3, 3)
             assert (kernel.in_2d == 3.0 * np.ones((3, 3))).all()
             assert kernel.pixel_scales == (1.0, 1.0)
             assert kernel.origin == (0.0, 0.0)
@@ -63,7 +63,7 @@ class TestAPI:
                shape_2d=(3,3), pixel_scales=1.0,
             )
 
-            assert kernel.in_2d.shape == (3, 3)
+            assert kernel.shape_2d == (3, 3)
             assert (kernel.in_2d == np.ones((3, 3))).all()
             assert kernel.pixel_scales == (1.0, 1.0)
             assert kernel.origin == (0.0, 0.0)
@@ -72,7 +72,7 @@ class TestAPI:
                shape_2d=(3,3), pixel_scales=1.0,
             )
 
-            assert kernel.in_2d.shape == (3, 3)
+            assert kernel.shape_2d == (3, 3)
             assert (kernel.in_2d == np.zeros((3, 3))).all()
             assert kernel.pixel_scales == (1.0, 1.0)
             assert kernel.origin == (0.0, 0.0)

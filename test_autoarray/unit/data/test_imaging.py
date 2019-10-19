@@ -2127,7 +2127,7 @@ class TestSimulateImaging(object):
             pixel_scales=0.1,
         )
 
-        exposure_time_map = aa.array.ones(shape_2d=image.in_2d.shape)
+        exposure_time_map = aa.array.ones(shape_2d=image.shape_2d)
 
         imaging_simulated = aa.imaging.simulate(
             image=image,
@@ -2489,7 +2489,7 @@ class TestSimulatePoissonNoise(object):
             image, exposure_time, seed=1
         )
 
-        assert simulated_poisson_image.in_2d.shape == (2, 2)
+        assert simulated_poisson_image.shape_2d == (2, 2)
         assert (simulated_poisson_image.in_2d == np.zeros((2, 2))).all()
 
     def test__input_image_includes_10s__exposure_time_is_1s__gives_noise_values_near_1_to_5(
@@ -2501,7 +2501,7 @@ class TestSimulatePoissonNoise(object):
         poisson_noise_map = imaging.generate_poisson_noise(image, exposure_time, seed=1)
         simulated_poisson_image = image + poisson_noise_map
 
-        assert simulated_poisson_image.in_2d.shape == (2, 2)
+        assert simulated_poisson_image.shape_2d == (2, 2)
 
         # Use known noise_map_1d map for given seed.
         assert (
@@ -2520,7 +2520,7 @@ class TestSimulatePoissonNoise(object):
         poisson_noise_map = imaging.generate_poisson_noise(image, exposure_time, seed=1)
         simulated_poisson_image = image + poisson_noise_map
 
-        assert simulated_poisson_image.in_2d.shape == (2, 2)
+        assert simulated_poisson_image.shape_2d == (2, 2)
 
         # Use known noise_map_1d map for given seed.
         assert (poisson_noise_map.in_2d == np.array([[1, 4], [3, 1]])).all()
@@ -2542,7 +2542,7 @@ class TestSimulatePoissonNoise(object):
 
         simulated_poisson_image = image + poisson_noise_map
 
-        assert simulated_poisson_image.in_2d.shape == (2, 2)
+        assert simulated_poisson_image.shape_2d == (2, 2)
 
         # Use known noise_map_1d map for given seed.
         assert (poisson_noise_map.in_2d == np.array([[571, 0], [0, -441]])).all()
