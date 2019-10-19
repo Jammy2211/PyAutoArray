@@ -26,14 +26,14 @@ class TestUnmaskedSparseForSparse:
             [[0, 0], [0, 1], [0, 2], [1, 0], [1, 1], [1, 2], [2, 0], [2, 1], [2, 2]]
         )
 
-        total_masked_pixels = aa.util.mask.total_sparse_pixels_from_mask(
-            mask=ma,
+        total_masked_pixels = aa.util.mask.total_sparse_pixels_from_mask_2d(
+            mask_2d=ma,
             unmasked_sparse_grid_pixel_centres=unmasked_sparse_grid_pixel_centres,
         )
 
-        unmasked_sparse_for_sparse = aa.util.sparse.unmasked_sparse_for_sparse_from_mask_and_pixel_centres(
+        unmasked_sparse_for_sparse = aa.util.sparse.unmasked_sparse_for_sparse_from_mask_2d_and_pixel_centres(
             total_sparse_pixels=total_masked_pixels,
-            mask=ma,
+            mask_2d=ma,
             unmasked_sparse_grid_pixel_centres=unmasked_sparse_grid_pixel_centres,
         )
 
@@ -57,14 +57,14 @@ class TestUnmaskedSparseForSparse:
             [[0, 0], [0, 1], [2, 2], [1, 1], [0, 2], [2, 0], [0, 2]]
         )
 
-        total_masked_pixels = aa.util.mask.total_sparse_pixels_from_mask(
-            mask=ma,
+        total_masked_pixels = aa.util.mask.total_sparse_pixels_from_mask_2d(
+            mask_2d=ma,
             unmasked_sparse_grid_pixel_centres=unmasked_sparse_grid_pixel_centres,
         )
 
-        unmasked_sparse_for_sparse = aa.util.sparse.unmasked_sparse_for_sparse_from_mask_and_pixel_centres(
+        unmasked_sparse_for_sparse = aa.util.sparse.unmasked_sparse_for_sparse_from_mask_2d_and_pixel_centres(
             total_sparse_pixels=total_masked_pixels,
-            mask=ma,
+            mask_2d=ma,
             unmasked_sparse_grid_pixel_centres=unmasked_sparse_grid_pixel_centres,
         )
 
@@ -84,14 +84,14 @@ class TestUnmaskedSparseForSparse:
             [[0, 0], [0, 1], [0, 2], [1, 0], [1, 1], [1, 2], [2, 0], [2, 1], [2, 2]]
         )
 
-        total_masked_pixels = aa.util.mask.total_sparse_pixels_from_mask(
-            mask=ma,
+        total_masked_pixels = aa.util.mask.total_sparse_pixels_from_mask_2d(
+            mask_2d=ma,
             unmasked_sparse_grid_pixel_centres=unmasked_sparse_grid_pixel_centres,
         )
 
-        unmasked_sparse_for_sparse = aa.util.sparse.unmasked_sparse_for_sparse_from_mask_and_pixel_centres(
+        unmasked_sparse_for_sparse = aa.util.sparse.unmasked_sparse_for_sparse_from_mask_2d_and_pixel_centres(
             total_sparse_pixels=total_masked_pixels,
-            mask=ma,
+            mask_2d=ma,
             unmasked_sparse_grid_pixel_centres=unmasked_sparse_grid_pixel_centres,
         )
 
@@ -111,14 +111,14 @@ class TestUnmaskedSparseForSparse:
             [[0, 0], [0, 1], [0, 2], [0, 2], [0, 2], [1, 1]]
         )
 
-        total_masked_pixels = aa.util.mask.total_sparse_pixels_from_mask(
-            mask=ma,
+        total_masked_pixels = aa.util.mask.total_sparse_pixels_from_mask_2d(
+            mask_2d=ma,
             unmasked_sparse_grid_pixel_centres=unmasked_sparse_grid_pixel_centres,
         )
 
-        unmasked_sparse_for_sparse = aa.util.sparse.unmasked_sparse_for_sparse_from_mask_and_pixel_centres(
+        unmasked_sparse_for_sparse = aa.util.sparse.unmasked_sparse_for_sparse_from_mask_2d_and_pixel_centres(
             total_sparse_pixels=total_masked_pixels,
-            mask=ma,
+            mask_2d=ma,
             unmasked_sparse_grid_pixel_centres=unmasked_sparse_grid_pixel_centres,
         )
 
@@ -142,14 +142,14 @@ class TestUnmaskedSparseForSparse:
             [[0, 0], [0, 1], [0, 2], [0, 2], [0, 2], [1, 1], [2, 3], [2, 2]]
         )
 
-        total_masked_pixels = aa.util.mask.total_sparse_pixels_from_mask(
-            mask=ma,
+        total_masked_pixels = aa.util.mask.total_sparse_pixels_from_mask_2d(
+            mask_2d=ma,
             unmasked_sparse_grid_pixel_centres=unmasked_sparse_grid_pixel_centres,
         )
 
-        unmasked_sparse_for_sparse = aa.util.sparse.unmasked_sparse_for_sparse_from_mask_and_pixel_centres(
+        unmasked_sparse_for_sparse = aa.util.sparse.unmasked_sparse_for_sparse_from_mask_2d_and_pixel_centres(
             total_sparse_pixels=total_masked_pixels,
-            mask=ma,
+            mask_2d=ma,
             unmasked_sparse_grid_pixel_centres=unmasked_sparse_grid_pixel_centres,
         )
 
@@ -174,14 +174,14 @@ class TestUnmaskedSparseForSparse:
             [[0, 0], [0, 1], [0, 2], [0, 2], [0, 2], [1, 1], [2, 2], [3, 1]]
         )
 
-        total_masked_pixels = aa.util.mask.total_sparse_pixels_from_mask(
-            mask=ma,
+        total_masked_pixels = aa.util.mask.total_sparse_pixels_from_mask_2d(
+            mask_2d=ma,
             unmasked_sparse_grid_pixel_centres=unmasked_sparse_grid_pixel_centres,
         )
 
-        unmasked_sparse_for_sparse = aa.util.sparse.unmasked_sparse_for_sparse_from_mask_and_pixel_centres(
+        unmasked_sparse_for_sparse = aa.util.sparse.unmasked_sparse_for_sparse_from_mask_2d_and_pixel_centres(
             total_sparse_pixels=total_masked_pixels,
-            mask=ma,
+            mask_2d=ma,
             unmasked_sparse_grid_pixel_centres=unmasked_sparse_grid_pixel_centres,
         )
 
@@ -205,8 +205,8 @@ class TestSparseForUnmaskedSparse:
             [[0, 0], [0, 1], [0, 2], [1, 0], [1, 1], [1, 2], [2, 0], [2, 1], [2, 2]]
         )
 
-        sparse_for_unmasked_sparse = aa.util.sparse.sparse_for_unmasked_sparse_from_mask_and_pixel_centres(
-            mask=ma,
+        sparse_for_unmasked_sparse = aa.util.sparse.sparse_for_unmasked_sparse_from_mask_2d_and_pixel_centres(
+            mask_2d=ma,
             unmasked_sparse_grid_pixel_centres=unmasked_sparse_grid_pixel_centres,
             total_sparse_pixels=9,
         )
@@ -231,8 +231,8 @@ class TestSparseForUnmaskedSparse:
             [[0, 0], [0, 1], [2, 2], [1, 1], [0, 2], [2, 0], [0, 2]]
         )
 
-        sparse_for_unmasked_sparse = aa.util.sparse.sparse_for_unmasked_sparse_from_mask_and_pixel_centres(
-            mask=ma,
+        sparse_for_unmasked_sparse = aa.util.sparse.sparse_for_unmasked_sparse_from_mask_2d_and_pixel_centres(
+            mask_2d=ma,
             unmasked_sparse_grid_pixel_centres=unmasked_sparse_grid_pixel_centres,
             total_sparse_pixels=9,
         )
@@ -253,8 +253,8 @@ class TestSparseForUnmaskedSparse:
             [[0, 0], [0, 1], [0, 2], [1, 0], [1, 1], [1, 2], [2, 0], [2, 1], [2, 2]]
         )
 
-        sparse_for_unmasked_sparse = aa.util.sparse.sparse_for_unmasked_sparse_from_mask_and_pixel_centres(
-            mask=ma,
+        sparse_for_unmasked_sparse = aa.util.sparse.sparse_for_unmasked_sparse_from_mask_2d_and_pixel_centres(
+            mask_2d=ma,
             unmasked_sparse_grid_pixel_centres=unmasked_sparse_grid_pixel_centres,
             total_sparse_pixels=5,
         )
@@ -277,8 +277,8 @@ class TestSparseForUnmaskedSparse:
             [[0, 0], [0, 1], [0, 2], [0, 2], [0, 2], [1, 1]]
         )
 
-        sparse_for_unmasked_sparse = aa.util.sparse.sparse_for_unmasked_sparse_from_mask_and_pixel_centres(
-            mask=ma,
+        sparse_for_unmasked_sparse = aa.util.sparse.sparse_for_unmasked_sparse_from_mask_2d_and_pixel_centres(
+            mask_2d=ma,
             unmasked_sparse_grid_pixel_centres=unmasked_sparse_grid_pixel_centres,
             total_sparse_pixels=4,
         )
@@ -303,8 +303,8 @@ class TestSparseForUnmaskedSparse:
             [[0, 0], [0, 1], [0, 2], [0, 2], [0, 2], [1, 1], [2, 3], [0, 2]]
         )
 
-        sparse_for_unmasked_sparse = aa.util.sparse.sparse_for_unmasked_sparse_from_mask_and_pixel_centres(
-            mask=ma,
+        sparse_for_unmasked_sparse = aa.util.sparse.sparse_for_unmasked_sparse_from_mask_2d_and_pixel_centres(
+            mask_2d=ma,
             unmasked_sparse_grid_pixel_centres=unmasked_sparse_grid_pixel_centres,
             total_sparse_pixels=5,
         )
@@ -330,8 +330,8 @@ class TestSparseForUnmaskedSparse:
             [[0, 0], [0, 1], [0, 2], [0, 2], [0, 2], [1, 1], [2, 2], [3, 1]]
         )
 
-        sparse_for_unmasked_sparse = aa.util.sparse.sparse_for_unmasked_sparse_from_mask_and_pixel_centres(
-            mask=ma,
+        sparse_for_unmasked_sparse = aa.util.sparse.sparse_for_unmasked_sparse_from_mask_2d_and_pixel_centres(
+            mask_2d=ma,
             unmasked_sparse_grid_pixel_centres=unmasked_sparse_grid_pixel_centres,
             total_sparse_pixels=6,
         )

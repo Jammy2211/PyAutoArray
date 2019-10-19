@@ -52,7 +52,7 @@ class MockMask(msk.Mask):
         if kernel_shape[0] % 2 == 0 or kernel_shape[1] % 2 == 0:
             raise exc.MaskException("psf_size of exterior region must be odd")
 
-        blurring_mask = mask_util.blurring_mask_from_mask_and_kernel_shape(
+        blurring_mask = mask_util.blurring_mask_2d_from_mask_2d_and_kernel_shape_2d(
             self, kernel_shape
         )
 

@@ -724,31 +724,31 @@ class TestNewImagingBinnedUp:
         image[27] = 2.0
         image[33] = 2.0
 
-        binned_image_util = aa.util.binning.binned_up_array_2d_using_mean_from_array_2d_and_bin_up_factor(
+        binned_image_util = aa.util.binning.bin_array_2d_via_mean(
             array_2d=image.in_2d, bin_up_factor=2
         )
 
         noise_map_array = aa.array.ones(shape_2d=(6,6), pixel_scales=1.0)
         noise_map_array[21:24] = 3.0
-        binned_noise_map_util = aa.util.binning.binned_array_2d_using_quadrature_from_array_2d_and_bin_up_factor(
+        binned_noise_map_util = aa.util.binning.bin_array_2d_via_quadrature(
             array_2d=noise_map_array.in_2d, bin_up_factor=2
         )
 
         background_noise_map_array = aa.array.ones(shape_2d=(6,6), pixel_scales=1.0)
         background_noise_map_array[21:24] = 4.0
-        binned_background_noise_map_util = aa.util.binning.binned_array_2d_using_quadrature_from_array_2d_and_bin_up_factor(
+        binned_background_noise_map_util = aa.util.binning.bin_array_2d_via_quadrature(
             array_2d=background_noise_map_array.in_2d, bin_up_factor=2
         )
 
         exposure_time_map_array = aa.array.ones(shape_2d=(6,6), pixel_scales=1.0)
         exposure_time_map_array[21:24] = 5.0
-        binned_exposure_time_map_util = aa.util.binning.binned_array_2d_using_sum_from_array_2d_and_bin_up_factor(
+        binned_exposure_time_map_util = aa.util.binning.bin_array_2d_via_sum(
             array_2d=exposure_time_map_array.in_2d, bin_up_factor=2
         )
 
         background_sky_map_array = aa.array.ones(shape_2d=(6,6), pixel_scales=1.0)
         background_sky_map_array[21:24] = 6.0
-        binned_background_sky_map_util = aa.util.binning.binned_up_array_2d_using_mean_from_array_2d_and_bin_up_factor(
+        binned_background_sky_map_util = aa.util.binning.bin_array_2d_via_mean(
             array_2d=background_sky_map_array.in_2d, bin_up_factor=2
         )
 

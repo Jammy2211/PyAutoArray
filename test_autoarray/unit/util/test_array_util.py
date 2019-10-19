@@ -95,7 +95,7 @@ class TestResize:
         array = np.ones((7, 7))
         array[3, 3] = 2.0
 
-        modified = aa.util.array.resized_array_2d_from_array_2d_and_resized_shape(
+        modified = aa.util.array.resized_array_2d_from_array_2d(
             array_2d=array, resized_shape=(3, 3)
         )
 
@@ -107,7 +107,7 @@ class TestResize:
         array = np.ones((7, 7))
         array[3, 3] = 2.0
 
-        modified = aa.util.array.resized_array_2d_from_array_2d_and_resized_shape(
+        modified = aa.util.array.resized_array_2d_from_array_2d(
             array_2d=array, resized_shape=(4, 4)
         )
 
@@ -128,7 +128,7 @@ class TestResize:
         array = np.ones((6, 6))
         array[2:4, 2:4] = 2.0
 
-        modified = aa.util.array.resized_array_2d_from_array_2d_and_resized_shape(
+        modified = aa.util.array.resized_array_2d_from_array_2d(
             array_2d=array, resized_shape=(4, 4)
         )
 
@@ -149,7 +149,7 @@ class TestResize:
         array = np.ones((6, 6))
         array[2:4, 2:4] = 2.0
 
-        modified = aa.util.array.resized_array_2d_from_array_2d_and_resized_shape(
+        modified = aa.util.array.resized_array_2d_from_array_2d(
             array_2d=array, resized_shape=(3, 3)
         )
 
@@ -161,7 +161,7 @@ class TestResize:
         array = np.ones((5, 4))
         array[2, 1:3] = 2.0
 
-        modified = aa.util.array.resized_array_2d_from_array_2d_and_resized_shape(
+        modified = aa.util.array.resized_array_2d_from_array_2d(
             array_2d=array, resized_shape=(3, 2)
         )
 
@@ -171,7 +171,7 @@ class TestResize:
         array = np.ones((4, 5))
         array[1:3, 2] = 2.0
 
-        modified = aa.util.array.resized_array_2d_from_array_2d_and_resized_shape(
+        modified = aa.util.array.resized_array_2d_from_array_2d(
             array_2d=array, resized_shape=(2, 3)
         )
 
@@ -181,7 +181,7 @@ class TestResize:
 
         array = np.ones((7, 7))
         array[4, 4] = 2.0
-        modified = aa.util.array.resized_array_2d_from_array_2d_and_resized_shape(
+        modified = aa.util.array.resized_array_2d_from_array_2d(
             array_2d=array, resized_shape=(3, 3), origin=(4, 4)
         )
         assert (
@@ -190,7 +190,7 @@ class TestResize:
 
         array = np.ones((6, 6))
         array[3, 4] = 2.0
-        modified = aa.util.array.resized_array_2d_from_array_2d_and_resized_shape(
+        modified = aa.util.array.resized_array_2d_from_array_2d(
             array_2d=array, resized_shape=(3, 3), origin=(3, 4)
         )
         assert (
@@ -199,7 +199,7 @@ class TestResize:
 
         array = np.ones((9, 8))
         array[4, 3] = 2.0
-        modified = aa.util.array.resized_array_2d_from_array_2d_and_resized_shape(
+        modified = aa.util.array.resized_array_2d_from_array_2d(
             array_2d=array, resized_shape=(3, 3), origin=(4, 3)
         )
         assert (
@@ -208,7 +208,7 @@ class TestResize:
 
         array = np.ones((8, 9))
         array[3, 5] = 2.0
-        modified = aa.util.array.resized_array_2d_from_array_2d_and_resized_shape(
+        modified = aa.util.array.resized_array_2d_from_array_2d(
             array_2d=array, resized_shape=(3, 3), origin=(3, 5)
         )
         assert (
@@ -220,7 +220,7 @@ class TestResize:
         array = np.ones((3, 3))
         array[1, 1] = 2.0
 
-        modified = aa.util.array.resized_array_2d_from_array_2d_and_resized_shape(
+        modified = aa.util.array.resized_array_2d_from_array_2d(
             array_2d=array, resized_shape=(5, 5)
         )
 
@@ -242,7 +242,7 @@ class TestResize:
         array = np.ones((3, 3))
         array[1, 1] = 2.0
 
-        modified = aa.util.array.resized_array_2d_from_array_2d_and_resized_shape(
+        modified = aa.util.array.resized_array_2d_from_array_2d(
             array_2d=array, resized_shape=(4, 4)
         )
 
@@ -263,7 +263,7 @@ class TestResize:
         array = np.ones((4, 4))
         array[1:3, 1:3] = 2.0
 
-        modified = aa.util.array.resized_array_2d_from_array_2d_and_resized_shape(
+        modified = aa.util.array.resized_array_2d_from_array_2d(
             array_2d=array, resized_shape=(6, 6)
         )
 
@@ -286,7 +286,7 @@ class TestResize:
         array = np.ones((4, 4))
         array[1:3, 1:3] = 2.0
 
-        modified = aa.util.array.resized_array_2d_from_array_2d_and_resized_shape(
+        modified = aa.util.array.resized_array_2d_from_array_2d(
             array_2d=array, resized_shape=(5, 5)
         )
 
@@ -307,7 +307,7 @@ class TestResize:
         array = np.ones((3, 2))
         array[1, 0:2] = 2.0
 
-        modified = aa.util.array.resized_array_2d_from_array_2d_and_resized_shape(
+        modified = aa.util.array.resized_array_2d_from_array_2d(
             array_2d=array, resized_shape=(5, 4)
         )
 
@@ -328,7 +328,7 @@ class TestResize:
         array = np.ones((2, 3))
         array[0:2, 1] = 2.0
 
-        modified = aa.util.array.resized_array_2d_from_array_2d_and_resized_shape(
+        modified = aa.util.array.resized_array_2d_from_array_2d(
             array_2d=array, resized_shape=(4, 5)
         )
 
@@ -348,7 +348,7 @@ class TestResize:
 
         array = np.ones((3, 3))
         array[2, 2] = 2.0
-        modified = aa.util.array.resized_array_2d_from_array_2d_and_resized_shape(
+        modified = aa.util.array.resized_array_2d_from_array_2d(
             array_2d=array, resized_shape=(5, 5), origin=(2, 2)
         )
 
@@ -367,7 +367,7 @@ class TestResize:
 
         array = np.ones((2, 3))
         array[0, 0] = 2.0
-        modified = aa.util.array.resized_array_2d_from_array_2d_and_resized_shape(
+        modified = aa.util.array.resized_array_2d_from_array_2d(
             array_2d=array, resized_shape=(4, 5), origin=(0, 1)
         )
 
@@ -555,7 +555,7 @@ class Test2dIndexesfrom1dIndex(object):
 
         indexes_1d = np.array([0, 1, 2, 3, 4, 5, 6, 7, 8])
 
-        index_2d_for_index_1d = aa.util.array.index_2d_for_index_1d_for_shape(
+        index_2d_for_index_1d = aa.util.array.index_2d_for_index_1d_from_shape(
             indexes_1d=indexes_1d, shape=(3, 3)
         )
 
@@ -570,7 +570,7 @@ class Test2dIndexesfrom1dIndex(object):
 
         indexes_1d = np.array([0, 1, 2, 3, 4, 5])
 
-        index_2d_for_index_1d = aa.util.array.index_2d_for_index_1d_for_shape(
+        index_2d_for_index_1d = aa.util.array.index_2d_for_index_1d_from_shape(
             indexes_1d=indexes_1d, shape=(2, 3)
         )
 
@@ -583,7 +583,7 @@ class Test2dIndexesfrom1dIndex(object):
 
         indexes_1d = np.array([0, 1, 2, 3, 4, 5])
 
-        indexes_2d = aa.util.array.index_2d_for_index_1d_for_shape(
+        indexes_2d = aa.util.array.index_2d_for_index_1d_from_shape(
             indexes_1d=indexes_1d, shape=(3, 2)
         )
 
@@ -595,7 +595,7 @@ class Test2dIndexesfrom1dIndex(object):
 
         indexes_1d = np.array([1, 4, 7, 8, 0, 2, 3, 5, 6])
 
-        index_2d_for_index_1d = aa.util.array.index_2d_for_index_1d_for_shape(
+        index_2d_for_index_1d = aa.util.array.index_2d_for_index_1d_from_shape(
             indexes_1d=indexes_1d, shape=(3, 3)
         )
 
@@ -614,7 +614,7 @@ class Test1dIndexFromIndex2D(object):
             [[0, 0], [0, 1], [0, 2], [1, 0], [1, 1], [1, 2], [2, 0], [2, 1], [2, 2]]
         )
 
-        index_1d_for_index_2d = aa.util.array.index_1d_for_index_2d_for_shape(
+        index_1d_for_index_2d = aa.util.array.index_1d_for_index_2d_from_shape(
             indexes_2d=indexes_2d, shape=(3, 3)
         )
 
@@ -624,7 +624,7 @@ class Test1dIndexFromIndex2D(object):
 
         indexes_2d = np.array([[0, 0], [0, 1], [0, 2], [1, 0], [1, 1], [1, 2]])
 
-        index_1d_for_index_2d = aa.util.array.index_1d_for_index_2d_for_shape(
+        index_1d_for_index_2d = aa.util.array.index_1d_for_index_2d_from_shape(
             indexes_2d=indexes_2d, shape=(2, 3)
         )
 
@@ -634,7 +634,7 @@ class Test1dIndexFromIndex2D(object):
 
         indexes_2d = np.array([[0, 0], [0, 1], [1, 0], [1, 1], [2, 0], [2, 1]])
 
-        index_1d_for_index_2d = aa.util.array.index_1d_for_index_2d_for_shape(
+        index_1d_for_index_2d = aa.util.array.index_1d_for_index_2d_from_shape(
             indexes_2d=indexes_2d, shape=(3, 2)
         )
 
@@ -646,7 +646,7 @@ class Test1dIndexFromIndex2D(object):
             [[0, 1], [1, 1], [2, 1], [2, 2], [0, 0], [0, 2], [1, 0], [1, 2], [2, 0]]
         )
 
-        index_1d_for_index_2d = aa.util.array.index_1d_for_index_2d_for_shape(
+        index_1d_for_index_2d = aa.util.array.index_1d_for_index_2d_from_shape(
             indexes_2d=indexes_2d, shape=(3, 3)
         )
 
@@ -660,7 +660,7 @@ class TestArray1DFromArray2d(object):
 
         mask = np.array([[True, True, True], [True, False, True], [True, True, True]])
 
-        array_1d = aa.util.array.sub_array_1d_from_sub_array_2d_mask_and_sub_size(
+        array_1d = aa.util.array.sub_array_1d_from_sub_array_2d(
             mask=mask, sub_array_2d=array_2d, sub_size=1
         )
 
@@ -672,7 +672,7 @@ class TestArray1DFromArray2d(object):
             [[True, False, True], [False, False, False], [True, False, True]]
         )
 
-        array_1d = aa.util.array.sub_array_1d_from_sub_array_2d_mask_and_sub_size(
+        array_1d = aa.util.array.sub_array_1d_from_sub_array_2d(
             mask=mask, sub_array_2d=array_2d, sub_size=1
         )
 
@@ -688,7 +688,7 @@ class TestArray1DFromArray2d(object):
             ]
         )
 
-        array_1d = aa.util.array.sub_array_1d_from_sub_array_2d_mask_and_sub_size(
+        array_1d = aa.util.array.sub_array_1d_from_sub_array_2d(
             mask=mask, sub_array_2d=array_2d, sub_size=1
         )
 
@@ -705,7 +705,7 @@ class TestArray1DFromArray2d(object):
             ]
         )
 
-        array_1d = aa.util.array.sub_array_1d_from_sub_array_2d_mask_and_sub_size(
+        array_1d = aa.util.array.sub_array_1d_from_sub_array_2d(
             mask=mask, sub_array_2d=array_2d, sub_size=1
         )
 
@@ -726,7 +726,7 @@ class TestArray1DFromArray2d(object):
 
         mask = np.array([[True, True, True], [True, False, True], [True, True, True]])
 
-        sub_array_1d = aa.util.array.sub_array_1d_from_sub_array_2d_mask_and_sub_size(
+        sub_array_1d = aa.util.array.sub_array_1d_from_sub_array_2d(
             sub_array_2d=sub_array_2d, mask=mask, sub_size=2
         )
 
@@ -734,7 +734,7 @@ class TestArray1DFromArray2d(object):
 
         mask = np.array([[True, False, True], [True, False, True], [True, True, False]])
 
-        sub_array_1d = aa.util.array.sub_array_1d_from_sub_array_2d_mask_and_sub_size(
+        sub_array_1d = aa.util.array.sub_array_1d_from_sub_array_2d(
             sub_array_2d=sub_array_2d, mask=mask, sub_size=2
         )
 
@@ -761,7 +761,7 @@ class TestArray1DFromArray2d(object):
             ]
         )
 
-        sub_array_1d = aa.util.array.sub_array_1d_from_sub_array_2d_mask_and_sub_size(
+        sub_array_1d = aa.util.array.sub_array_1d_from_sub_array_2d(
             sub_array_2d=sub_array_2d, mask=mask, sub_size=2
         )
 
@@ -819,7 +819,7 @@ class TestArray1DFromArray2d(object):
             ]
         )
 
-        sub_array_1d = aa.util.array.sub_array_1d_from_sub_array_2d_mask_and_sub_size(
+        sub_array_1d = aa.util.array.sub_array_1d_from_sub_array_2d(
             sub_array_2d=sub_array_2d, mask=mask, sub_size=2
         )
 
@@ -845,7 +845,7 @@ class TestArray1DFromArray2d(object):
 
         mask = np.array([[False, True], [True, False]])
 
-        sub_array_1d = aa.util.array.sub_array_1d_from_sub_array_2d_mask_and_sub_size(
+        sub_array_1d = aa.util.array.sub_array_1d_from_sub_array_2d(
             sub_array_2d=sub_array_2d, mask=mask, sub_size=3
         )
 
@@ -862,7 +862,7 @@ class TestArray2dForArray1d(object):
 
         mask = np.full(fill_value=False, shape=(2, 2))
 
-        array_2d = aa.util.array.sub_array_2d_from_sub_array_1d_mask_and_sub_size(
+        array_2d = aa.util.array.sub_array_2d_from_sub_array_1d(
             sub_array_1d=array_1d, mask=mask, sub_size=1
         )
 
@@ -872,7 +872,7 @@ class TestArray2dForArray1d(object):
 
         mask = np.array([[False, False], [False, True]])
 
-        array_2d = aa.util.array.sub_array_2d_from_sub_array_1d_mask_and_sub_size(
+        array_2d = aa.util.array.sub_array_2d_from_sub_array_1d(
             sub_array_1d=array_1d, mask=mask, sub_size=1
         )
 
@@ -888,7 +888,7 @@ class TestArray2dForArray1d(object):
             ]
         )
 
-        array_2d = aa.util.array.sub_array_2d_from_sub_array_1d_mask_and_sub_size(
+        array_2d = aa.util.array.sub_array_2d_from_sub_array_1d(
             sub_array_1d=array_1d, mask=mask, sub_size=1
         )
 
@@ -907,7 +907,7 @@ class TestArray2dForArray1d(object):
 
         mask = np.array([[False, False], [False, True]])
 
-        array_2d = aa.util.array.sub_array_2d_from_sub_array_1d_mask_and_sub_size(
+        array_2d = aa.util.array.sub_array_2d_from_sub_array_1d(
             sub_array_1d=array_1d, mask=mask, sub_size=2
         )
 

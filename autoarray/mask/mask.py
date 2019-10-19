@@ -91,7 +91,7 @@ class Mask(np.ndarray):
         centre: (float, float)
             The centre of the circle used to mask pixels.
         """
-        mask_2d = mask_util.mask_circular_from_shape_2d_pixel_scales_and_radius(
+        mask_2d = mask_util.mask_2d_circular_from_shape_2d_pixel_scales_and_radius(
             shape_2d=shape_2d,
             pixel_scales=pixel_scales,
             radius_arcsec=radius_arcsec,
@@ -121,7 +121,7 @@ class Mask(np.ndarray):
         centre: (float, float)
             The centre of the annulus used to mask pixels.
         """
-        mask_2d = mask_util.mask_circular_annular_from_shape_2d_pixel_scales_and_radii(
+        mask_2d = mask_util.mask_2d_circular_annular_from_shape_2d_pixel_scales_and_radii(
             shape_2d=shape_2d,
             pixel_scales=pixel_scales,
             inner_radius_arcsec=inner_radius_arcsec,
@@ -160,7 +160,7 @@ class Mask(np.ndarray):
         centre: (float, float)
             The centre of the anti-annulus used to mask pixels.
         """
-        mask_2d = mask_util.mask_circular_anti_annular_from_shape_2d_pixel_scales_and_radii(
+        mask_2d = mask_util.mask_2d_circular_anti_annular_from_shape_2d_pixel_scales_and_radii(
             shape_2d=shape_2d,
             pixel_scales=pixel_scales,
             inner_radius_arcsec=inner_radius_arcsec,
@@ -196,7 +196,7 @@ class Mask(np.ndarray):
         centre: (float, float)
             The centre of the ellipse used to mask pixels.
         """
-        mask_2d = mask_util.mask_elliptical_from_shape_2d_pixel_scales_and_radius(
+        mask_2d = mask_util.mask_2d_elliptical_from_shape_2d_pixel_scales_and_radius(
             shape_2d=shape_2d,
             pixel_scales=pixel_scales,
             major_axis_radius_arcsec=major_axis_radius_arcsec,
@@ -243,7 +243,7 @@ class Mask(np.ndarray):
         centre: (float, float)
             The centre of the elliptical annuli used to mask pixels.
         """
-        mask_2d = mask_util.mask_elliptical_annular_from_shape_2d_pixel_scales_and_radius(
+        mask_2d = mask_util.mask_2d_elliptical_annular_from_shape_2d_pixel_scales_and_radius(
             shape_2d=shape_2d,
             pixel_scales=pixel_scales,
             inner_major_axis_radius_arcsec=inner_major_axis_radius_arcsec,
@@ -313,7 +313,7 @@ class Mask(np.ndarray):
 
         sub_shape = (self.shape[0] * self.sub_size, self.shape[1] * self.sub_size)
 
-        return mask_util.mask_from_shape_and_mask_2d_index_for_mask_1d_index(
-            shape=sub_shape,
+        return mask_util.mask_2d_from_shape_2d_and_mask_2d_index_for_mask_1d_index(
+            shape_2d=sub_shape,
             mask_2d_index_for_mask_1d_index=self.regions._sub_mask_2d_index_for_sub_mask_1d_index,
         ).astype("bool")

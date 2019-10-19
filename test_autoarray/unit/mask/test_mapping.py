@@ -26,7 +26,7 @@ class TestMapping:
 
         masked_array_2d = array_2d * np.invert(mask)
 
-        array_1d_util = aa.util.array.sub_array_1d_from_sub_array_2d_mask_and_sub_size(
+        array_1d_util = aa.util.array.sub_array_1d_from_sub_array_2d(
             mask=mask, sub_array_2d=array_2d, sub_size=1
         )
 
@@ -47,7 +47,7 @@ class TestMapping:
 
         array_1d = np.array([1.0, 6.0, 4.0, 5.0, 2.0])
 
-        array_2d_util = aa.util.array.sub_array_2d_from_sub_array_1d_mask_and_sub_size(
+        array_2d_util = aa.util.array.sub_array_2d_from_sub_array_1d(
             sub_array_1d=array_1d, mask=mask, sub_size=1
         )
 
@@ -83,8 +83,8 @@ class TestMapping:
 
         masked_grid_2d = grid_2d * np.invert(mask[:, :, None])
 
-        grid_1d_util = aa.util.grid.sub_grid_1d_from_sub_grid_2d_mask_and_sub_size(
-            sub_grid_2d=masked_grid_2d, mask=mask, sub_size=1
+        grid_1d_util = aa.util.grid.sub_grid_1d_from_sub_grid_2d(
+            sub_grid_2d=masked_grid_2d, mask_2d=mask, sub_size=1
         )
 
         grid = mask.mapping.grid_from_grid_2d(grid_2d=masked_grid_2d)
@@ -104,8 +104,8 @@ class TestMapping:
 
         grid_1d = np.array([[1.0, 1.0], [6.0, 6.0], [4.0, 4.0], [5.0, 5.0], [2.0, 2.0]])
 
-        grid_2d_util = aa.util.grid.sub_grid_2d_from_sub_grid_1d_mask_and_sub_size(
-            sub_grid_1d=grid_1d, mask=mask, sub_size=1
+        grid_2d_util = aa.util.grid.sub_grid_2d_from_sub_grid_1d(
+            sub_grid_1d=grid_1d, mask_2d=mask, sub_size=1
         )
 
         masked_grid_2d = grid_2d_util * np.invert(mask[:, :, None])
@@ -616,7 +616,7 @@ class TestBinnedMask:
         mask[4, 9] = False
         mask[11, 10] = False
 
-        binned_up_mask_via_util = aa.util.binning.binned_up_mask_from_mask_2d_and_bin_up_factor(
+        binned_up_mask_via_util = aa.util.binning.bin_mask_2d(
             mask_2d=mask, bin_up_factor=2
         )
 
@@ -631,7 +631,7 @@ class TestBinnedMask:
         mask[4, 9] = False
         mask[11, 10] = False
 
-        binned_up_mask_via_util = aa.util.binning.binned_up_mask_from_mask_2d_and_bin_up_factor(
+        binned_up_mask_via_util = aa.util.binning.bin_mask_2d(
             mask_2d=mask, bin_up_factor=3
         )
 

@@ -406,7 +406,7 @@ class Grid(AbstractGrid):
         if type(pixel_scales) is float:
             pixel_scales = (pixel_scales, pixel_scales)
 
-        grid_1d = grid_util.grid_1d_from_shape_2d_pixel_scales_sub_size_and_origin(
+        grid_1d = grid_util.grid_1d_via_shape_2d(
             shape_2d=shape_2d, pixel_scales=pixel_scales, sub_size=sub_size, origin=origin
         )
 
@@ -518,8 +518,8 @@ class GridMasked(AbstractGrid):
             The size (sub_size x sub_size) of each unmasked pixels sub-grid.
         """
 
-        sub_grid_1d = grid_util.grid_1d_from_mask_pixel_scales_sub_size_and_origin(
-            mask=mask, pixel_scales=mask.pixel_scales, sub_size=mask.sub_size, origin=mask.origin
+        sub_grid_1d = grid_util.grid_1d_via_mask_2d(
+            mask_2d=mask, pixel_scales=mask.pixel_scales, sub_size=mask.sub_size, origin=mask.origin
         )
 
         return Grid(grid_1d=sub_grid_1d, mask=mask)
@@ -632,14 +632,14 @@ class SparseToGrid(object):
 
         origin = grid.geometry.mask_centre
 
-        unmasked_sparse_grid_1d = grid_util.grid_1d_from_shape_2d_pixel_scales_sub_size_and_origin(
+        unmasked_sparse_grid_1d = grid_util.grid_1d_via_shape_2d(
             shape_2d=unmasked_sparse_shape,
             pixel_scales=pixel_scales,
             sub_size=1,
             origin=origin,
         )
 
-        unmasked_sparse_grid_pixel_centres = grid_util.grid_pixel_centres_1d_from_grid_arcsec_1d_shape_and_pixel_scales(
+        unmasked_sparse_grid_pixel_centres = grid_util.grid_pixel_centres_1d_from_grid_arcsec_1d_shape_2d_and_pixel_scales(
             grid_arcsec_1d=unmasked_sparse_grid_1d,
             shape_2d=grid.mask.shape,
             pixel_scales=grid.mask.pixel_scales,
@@ -647,30 +647,30 @@ class SparseToGrid(object):
             "int"
         )
 
-        total_sparse_pixels = mask_util.total_sparse_pixels_from_mask(
-            mask=grid.mask,
+        total_sparse_pixels = mask_util.total_sparse_pixels_from_mask_2d(
+            mask_2d=grid.mask,
             unmasked_sparse_grid_pixel_centres=unmasked_sparse_grid_pixel_centres,
         )
 
-        sparse_for_unmasked_sparse = sparse_util.sparse_for_unmasked_sparse_from_mask_and_pixel_centres(
-            mask=grid.mask,
+        sparse_for_unmasked_sparse = sparse_util.sparse_for_unmasked_sparse_from_mask_2d_and_pixel_centres(
+            mask_2d=grid.mask,
             unmasked_sparse_grid_pixel_centres=unmasked_sparse_grid_pixel_centres,
             total_sparse_pixels=total_sparse_pixels,
         ).astype(
             "int"
         )
 
-        unmasked_sparse_for_sparse = sparse_util.unmasked_sparse_for_sparse_from_mask_and_pixel_centres(
+        unmasked_sparse_for_sparse = sparse_util.unmasked_sparse_for_sparse_from_mask_2d_and_pixel_centres(
             total_sparse_pixels=total_sparse_pixels,
-            mask=grid.mask,
+            mask_2d=grid.mask,
             unmasked_sparse_grid_pixel_centres=unmasked_sparse_grid_pixel_centres,
         ).astype(
             "int"
         )
 
-        regular_to_unmasked_sparse = grid_util.grid_pixel_indexes_1d_from_grid_arcsec_1d_shape_and_pixel_scales(
+        regular_to_unmasked_sparse = grid_util.grid_pixel_indexes_1d_from_grid_arcsec_1d_shape_2d_and_pixel_scales(
             grid_arcsec_1d=grid,
-            shape=unmasked_sparse_shape,
+            shape_2d=unmasked_sparse_shape,
             pixel_scales=pixel_scales,
             origin=origin,
         ).astype(
@@ -760,16 +760,16 @@ class Interpolator(object):
 
         rescale_factor = mask.pixel_scale / pixel_scale_interpolation_grid
 
-        rescaled_mask = mask_util.rescaledmask_from_mask_2d_and_rescale_factor(
+        rescaled_mask = mask_util.rescaled_mask_2d_from_mask_2d_and_rescale_factor(
             mask_2d=mask, rescale_factor=rescale_factor
         )
 
-        interp_mask = mask_util.edge_buffed_mask_from_mask(mask=rescaled_mask).astype(
+        interp_mask = mask_util.edge_buffed_mask_2d_from_mask_2d(mask_2d=rescaled_mask).astype(
             "bool"
         )
 
-        interp_grid = grid_util.grid_1d_from_mask_pixel_scales_sub_size_and_origin(
-            mask=interp_mask,
+        interp_grid = grid_util.grid_1d_via_mask_2d(
+            mask_2d=interp_mask,
             pixel_scales=(
                 pixel_scale_interpolation_grid,
                 pixel_scale_interpolation_grid,

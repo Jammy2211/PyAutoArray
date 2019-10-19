@@ -9,8 +9,8 @@ logger.level = logging.DEBUG
 
 
 @decorator_util.jit()
-def unmasked_sparse_for_sparse_from_mask_and_pixel_centres(
-    total_sparse_pixels, mask, unmasked_sparse_grid_pixel_centres
+def unmasked_sparse_for_sparse_from_mask_2d_and_pixel_centres(
+    total_sparse_pixels, mask_2d, unmasked_sparse_grid_pixel_centres
 ):
     """Determine the util between every masked pixelization-grid pixel and pixelization-grid pixel. This is \
     performed by checking whether each pixelization-grid pixel is within the masks, and util the indexes.
@@ -19,7 +19,7 @@ def unmasked_sparse_for_sparse_from_mask_and_pixel_centres(
     -----------
     total_sparse_pixels : int
         The total number of pixels in the pixelization grid which fall within the masks.
-    mask : imaging.masks.Mask
+    mask_2d : imaging.masks.Mask
         The masks within which pixelization pixels must be inside
     unmasked_sparse_grid_pixel_centres : ndarray
         The centres of the unmasked pixelization grid pixels.
@@ -34,7 +34,7 @@ def unmasked_sparse_for_sparse_from_mask_and_pixel_centres(
         y = unmasked_sparse_grid_pixel_centres[full_pixel_index, 0]
         x = unmasked_sparse_grid_pixel_centres[full_pixel_index, 1]
 
-        if not mask[y, x]:
+        if not mask_2d[y, x]:
             unmasked_sparse_for_sparse[pixel_index] = full_pixel_index
             pixel_index += 1
 
@@ -42,8 +42,8 @@ def unmasked_sparse_for_sparse_from_mask_and_pixel_centres(
 
 
 @decorator_util.jit()
-def sparse_for_unmasked_sparse_from_mask_and_pixel_centres(
-    mask, unmasked_sparse_grid_pixel_centres, total_sparse_pixels
+def sparse_for_unmasked_sparse_from_mask_2d_and_pixel_centres(
+    mask_2d, unmasked_sparse_grid_pixel_centres, total_sparse_pixels
 ):
     """Determine the util between every pixelization-grid pixel and masked pixelization-grid pixel. This is \
     performed by checking whether each pixelization-grid pixel is within the masks, and util the indexes.
@@ -56,7 +56,7 @@ def sparse_for_unmasked_sparse_from_mask_and_pixel_centres(
     -----------
     total_sparse_pixels : int
         The total number of pixels in the pixelization grid which fall within the masks.
-    mask : imaging.masks.Mask
+    mask_2d : imaging.masks.Mask
         The masks within which pixelization pixels must be inside
     unmasked_sparse_grid_pixel_centres : ndarray
         The centres of the unmasked pixelization grid pixels.
@@ -74,7 +74,7 @@ def sparse_for_unmasked_sparse_from_mask_and_pixel_centres(
 
         sparse_for_unmasked_sparse[unmasked_sparse_pixel_index] = pixel_index
 
-        if not mask[y, x]:
+        if not mask_2d[y, x]:
             if pixel_index < total_sparse_pixels - 1:
                 pixel_index += 1
 

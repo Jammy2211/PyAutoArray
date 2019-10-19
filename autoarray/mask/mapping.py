@@ -22,7 +22,7 @@ class Mapping(object):
             The new two-dimensional shape of the array.
         """
 
-        resized_mask_2d = array_util.resized_array_2d_from_array_2d_and_resized_shape(
+        resized_mask_2d = array_util.resized_array_2d_from_array_2d(
             array_2d=self.mask, resized_shape=new_shape,
         ).astype("bool")
 
@@ -39,7 +39,7 @@ class Mapping(object):
         sub_array_1d : ndarray
             The 1D sub_array which is mapped to its masked 2D sub-array.
         """
-        return array_util.sub_array_2d_from_sub_array_1d_mask_and_sub_size(
+        return array_util.sub_array_2d_from_sub_array_1d(
             sub_array_1d=array_1d, mask=self.mask, sub_size=1
         )
 
@@ -63,7 +63,7 @@ class Mapping(object):
         array_2d : ndarray | None | float
             The 2D array to be mapped to a masked 1D array.
         """
-        array_1d = array_util.sub_array_1d_from_sub_array_2d_mask_and_sub_size(
+        array_1d = array_util.sub_array_1d_from_sub_array_2d(
             mask=self.mask, sub_array_2d=array_2d, sub_size=1
         )
         return self.array_from_array_1d(array_1d=array_1d)
@@ -77,7 +77,7 @@ class Mapping(object):
         sub_array_1d : ndarray
             The 1D sub_array which is mapped to its masked 2D sub-array.
         """
-        return array_util.sub_array_2d_from_sub_array_1d_mask_and_sub_size(
+        return array_util.sub_array_2d_from_sub_array_1d(
             sub_array_1d=sub_array_1d, mask=self.mask, sub_size=self.mask.sub_size
         )
 
@@ -93,7 +93,7 @@ class Mapping(object):
         binned_array_1d = np.multiply(
             self.mask.sub_fraction, sub_array_1d.reshape(-1, self.mask.sub_length).sum(axis=1)
         )
-        return array_util.sub_array_2d_from_sub_array_1d_mask_and_sub_size(
+        return array_util.sub_array_2d_from_sub_array_1d(
             sub_array_1d=binned_array_1d, mask=self.mask, sub_size=1
         )
 
@@ -118,7 +118,7 @@ class Mapping(object):
         su_array_2d : ndarray
             The 2D sub-array which is mapped to its masked 1D sub-array.
         """
-        sub_array_1d = array_util.sub_array_1d_from_sub_array_2d_mask_and_sub_size(
+        sub_array_1d = array_util.sub_array_1d_from_sub_array_2d(
             sub_array_2d=sub_array_2d, mask=self.mask, sub_size=self.mask.sub_size
         )
         return self.array_from_sub_array_1d(sub_array_1d=sub_array_1d)
@@ -147,8 +147,8 @@ class Mapping(object):
         sub_grid_1d : ndgrid
             The 1D sub_grid which is mapped to its masked 2D sub-grid.
         """
-        return grid_util.sub_grid_2d_from_sub_grid_1d_mask_and_sub_size(
-            sub_grid_1d=sub_grid_1d, mask=self.mask, sub_size=self.mask.sub_size
+        return grid_util.sub_grid_2d_from_sub_grid_1d(
+            sub_grid_1d=sub_grid_1d, mask_2d=self.mask, sub_size=self.mask.sub_size
         )
 
     def grid_2d_binned_from_sub_grid_1d(self, sub_grid_1d):
@@ -171,8 +171,8 @@ class Mapping(object):
 
         binned_grid_1d = np.stack((grid_1d_y, grid_1d_x), axis=-1)
 
-        return grid_util.sub_grid_2d_from_sub_grid_1d_mask_and_sub_size(
-            sub_grid_1d=binned_grid_1d, mask=self.mask, sub_size=1
+        return grid_util.sub_grid_2d_from_sub_grid_1d(
+            sub_grid_1d=binned_grid_1d, mask_2d=self.mask, sub_size=1
         )
 
     def grid_from_grid_1d(self, grid_1d):
@@ -195,8 +195,8 @@ class Mapping(object):
         grid_2d : ndgrid | None | float
             The 2D grid to be mapped to a masked 1D grid.
         """
-        grid_1d = grid_util.sub_grid_1d_from_sub_grid_2d_mask_and_sub_size(
-            mask=self.mask, sub_grid_2d=grid_2d, sub_size=1
+        grid_1d = grid_util.sub_grid_1d_from_sub_grid_2d(
+            mask_2d=self.mask, sub_grid_2d=grid_2d, sub_size=1
         )
         return self.grid_from_grid_1d(grid_1d=grid_1d)
 
@@ -209,8 +209,8 @@ class Mapping(object):
         sub_grid_1d : ndgrid
             The 1D sub_grid which is mapped to its masked 2D sub-grid.
         """
-        return grid_util.sub_grid_2d_from_sub_grid_1d_mask_and_sub_size(
-            sub_grid_1d=grid_1d, mask=self.mask, sub_size=1
+        return grid_util.sub_grid_2d_from_sub_grid_1d(
+            sub_grid_1d=grid_1d, mask_2d=self.mask, sub_size=1
         )
 
     def grid_from_sub_grid_1d(self, sub_grid_1d):
@@ -234,8 +234,8 @@ class Mapping(object):
         su_grid_2d : ndgrid
             The 2D sub-grid which is mapped to its masked 1D sub-grid.
         """
-        sub_grid_1d = grid_util.sub_grid_1d_from_sub_grid_2d_mask_and_sub_size(
-            sub_grid_2d=sub_grid_2d, mask=self.mask, sub_size=self.mask.sub_size
+        sub_grid_1d = grid_util.sub_grid_1d_from_sub_grid_2d(
+            sub_grid_2d=sub_grid_2d, mask_2d=self.mask, sub_size=self.mask.sub_size
         )
         return self.grid_from_sub_grid_1d(sub_grid_1d=sub_grid_1d)
 
@@ -273,7 +273,7 @@ class Mapping(object):
             A 1D array of values which were computed using a padded grid
         """
 
-        padded_array_2d = array_util.sub_array_2d_from_sub_array_1d_mask_and_sub_size(sub_array_1d=padded_array_1d, mask=self.mask, sub_size=1)
+        padded_array_2d = array_util.sub_array_2d_from_sub_array_1d(sub_array_1d=padded_array_1d, mask=self.mask, sub_size=1)
 
         pad_size_0 = self.mask.shape[0] - image_shape[0]
         pad_size_1 = self.mask.shape[1] - image_shape[1]
@@ -294,7 +294,7 @@ class Mapping(object):
             An array describing the PSF kernel of the image.
         """
 
-        padded_array_2d = array_util.sub_array_2d_from_sub_array_1d_mask_and_sub_size(
+        padded_array_2d = array_util.sub_array_2d_from_sub_array_1d(
             sub_array_1d=padded_array_1d,
             mask=np.full(fill_value=False, shape=self.mask.shape),
             sub_size=1,
@@ -305,7 +305,7 @@ class Mapping(object):
             array=padded_array_2d
         )
 
-        return array_util.sub_array_1d_from_sub_array_2d_mask_and_sub_size(
+        return array_util.sub_array_1d_from_sub_array_2d(
             sub_array_2d=blurred_padded_array_2d,
             mask=np.full(self.mask.shape, False),
             sub_size=1,
@@ -327,13 +327,13 @@ class Mapping(object):
             The 1D unmasked image which is blurred.
         """
 
-        padded_array_2d = array_util.sub_array_2d_from_sub_array_1d_mask_and_sub_size(sub_array_1d=padded_array_1d, mask=self.mask, sub_size=1)
+        padded_array_2d = array_util.sub_array_2d_from_sub_array_1d(sub_array_1d=padded_array_1d, mask=self.mask, sub_size=1)
 
         blurred_image_2d = psf.convolved_array_from_array(
             array=padded_array_2d.in_2d
         )
 
-        blurred_image_1d = array_util.sub_array_1d_from_sub_array_2d_mask_and_sub_size(sub_array_1d=blurred_image_2d, mask=self.mask, sub_size=1)
+        blurred_image_1d = array_util.sub_array_1d_from_sub_array_2d(sub_array_1d=blurred_image_2d, mask=self.mask, sub_size=1)
 
         return self.trimmed_array_2d_from_padded_array_1d_and_image_shape(
             padded_array_1d=blurred_image_1d, image_shape=image_shape
@@ -354,7 +354,7 @@ class Mapping(object):
 
     def binned_mask_from_bin_up_factor(self, bin_up_factor):
 
-        binned_up_mask = binning_util.binned_up_mask_from_mask_2d_and_bin_up_factor(
+        binned_up_mask = binning_util.bin_mask_2d(
             mask_2d=self.mask, bin_up_factor=bin_up_factor
         )
 
