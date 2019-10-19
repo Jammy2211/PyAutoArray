@@ -462,7 +462,7 @@ class TestArray:
                                        [7.0, 8.0]]), pixel_scales=(0.1, 0.1), sub_size=2, origin=(1.0, 1.0)
             )
 
-            assert arr.in_2d.shape == (4, 2)
+            assert arr.shape_2d == (4, 2)
             assert (arr.in_1d == np.array([1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0])).all()
             assert (arr.in_2d == np.array([[1.0, 2.0], [3.0, 4.0], [5.0, 6.0], [7.0, 8.0]])).all()
             assert arr.in_2d_binned.shape == (2, 1)

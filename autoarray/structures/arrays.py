@@ -288,7 +288,7 @@ class ArrayMasked(AbstractArray):
 
         array = np.asarray(array)
 
-        if array.shape != mask.sub_shape:
+        if array.shape != mask.sub_shape_2d:
             raise exc.ArrayException('The input array is 2D but not the same dimensions as the sub-mask '
                                      '(e.g. the mask 2D shape multipled by its sub size.')
 
@@ -296,7 +296,7 @@ class ArrayMasked(AbstractArray):
 
     @classmethod
     def full(cls, fill_value, mask):
-        return cls.manual_2d(array=np.full(fill_value=fill_value, shape=mask.sub_shape), mask=mask)
+        return cls.manual_2d(array=np.full(fill_value=fill_value, shape=mask.sub_shape_2d), mask=mask)
 
     @classmethod
     def ones(cls, mask):

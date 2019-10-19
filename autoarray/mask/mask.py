@@ -305,7 +305,11 @@ class Mask(np.ndarray):
         return self.sub_size ** 2 * self.pixels_in_mask
 
     @property
-    def sub_shape(self):
+    def sub_shape_1d(self):
+        return self.pixels_in_mask * self.sub_size ** 2.0
+
+    @property
+    def sub_shape_2d(self):
         return (self.shape[0] * self.sub_size, self.shape[1] * self.sub_size)
 
     @property
@@ -317,3 +321,7 @@ class Mask(np.ndarray):
             shape_2d=sub_shape,
             mask_2d_index_for_mask_1d_index=self.regions._sub_mask_2d_index_for_sub_mask_1d_index,
         ).astype("bool")
+
+    @property
+    def mask_sub_1(self):
+        return self.mapping.mask_sub_1

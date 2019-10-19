@@ -29,7 +29,7 @@ class AbstractImaging(abstract_data.AbstractData):
 
     @property
     def shape(self):
-        return self.image.in_2d.shape
+        return self.image.shape_2d
 
     def binned_data_from_bin_up_factor(self, bin_up_factor):
 
@@ -272,17 +272,17 @@ class AbstractImaging(abstract_data.AbstractData):
         edges = []
 
         for edge_no in range(no_edges):
-            top_edge = self.image.in_2d[edge_no, edge_no : self.image.in_2d.shape[1] - edge_no]
+            top_edge = self.image.in_2d[edge_no, edge_no : self.image.shape_2d[1] - edge_no]
             bottom_edge = self.image.in_2d[
-                self.image.in_2d.shape[0] - 1 - edge_no,
-                edge_no : self.image.in_2d.shape[1] - edge_no,
+                self.image.shape_2d[0] - 1 - edge_no,
+                edge_no : self.image.shape_2d[1] - edge_no,
             ]
             left_edge = self.image.in_2d[
-                edge_no + 1 : self.image.in_2d.shape[0] - 1 - edge_no, edge_no
+                edge_no + 1 : self.image.shape_2d[0] - 1 - edge_no, edge_no
             ]
             right_edge = self.image.in_2d[
-                edge_no + 1 : self.image.in_2d.shape[0] - 1 - edge_no,
-                self.image.in_2d.shape[1] - 1 - edge_no,
+                edge_no + 1 : self.image.shape_2d[0] - 1 - edge_no,
+                self.image.shape_2d[1] - 1 - edge_no,
             ]
 
             edges = np.concatenate(

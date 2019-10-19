@@ -499,7 +499,7 @@ class GridMasked(AbstractGrid):
 
         grid = np.asarray(grid)
 
-        if (grid.shape[0], grid.shape[1]) != mask.sub_shape:
+        if (grid.shape[0], grid.shape[1]) != mask.sub_shape_2d:
             raise exc.GridException('The input grid is 2D but not the same dimensions as the sub-mask '
                                     '(e.g. the mask 2D shape multipled by its sub size.')
 
