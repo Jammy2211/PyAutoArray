@@ -64,7 +64,7 @@ class TestMapping:
         assert arr.sub_size == 1
         assert (arr.geometry.xticks == np.array([-6.0, -2.0, 2.0, 6.0])).all()
         assert (arr.geometry.yticks == np.array([-4.5, -1.5, 1.5, 4.5])).all()
-        assert arr.geometry.shape_arcsec == (9.0, 12.0)
+        assert arr.geometry.shape_2d_arcsec == (9.0, 12.0)
 
     def test__grid_from_grid_2d__compare_to_util(self):
         grid_2d = np.array(

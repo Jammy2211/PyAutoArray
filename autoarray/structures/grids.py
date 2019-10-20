@@ -203,7 +203,7 @@ class AbstractGrid(abstract_structure.AbstractStructure):
         return (self * np.pi) / 648000.0
 
     @property
-    def shape_arcsec(self):
+    def shape_2d_arcsec(self):
         return (
             np.amax(self[:, 0]) - np.amin(self[:, 0]),
             np.amax(self[:, 1]) - np.amin(self[:, 1]),
@@ -626,8 +626,8 @@ class SparseToGrid(object):
         pixel_scales = grid.mask.pixel_scales
 
         pixel_scales = (
-            (grid.shape_arcsec[0] + pixel_scales[0]) / (unmasked_sparse_shape[0]),
-            (grid.shape_arcsec[1] + pixel_scales[1]) / (unmasked_sparse_shape[1]),
+            (grid.shape_2d_arcsec[0] + pixel_scales[0]) / (unmasked_sparse_shape[0]),
+            (grid.shape_2d_arcsec[1] + pixel_scales[1]) / (unmasked_sparse_shape[1]),
         )
 
         origin = grid.geometry.mask_centre

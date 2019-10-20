@@ -45,7 +45,7 @@ class Geometry(object):
         return grid_util.grid_centre_from_grid_1d(grid_1d=self.masked_grid)
 
     @property
-    def shape_arcsec(self):
+    def shape_2d_arcsec(self):
         return (
             float(self.mask.pixel_scales[0] * self.mask.shape[0]),
             float(self.mask.pixel_scales[1] * self.mask.shape[1]),
@@ -54,15 +54,15 @@ class Geometry(object):
     @property
     def arc_second_maxima(self):
         return (
-            (self.shape_arcsec[0] / 2.0) + self.mask.origin[0],
-            (self.shape_arcsec[1] / 2.0) + self.mask.origin[1],
+            (self.shape_2d_arcsec[0] / 2.0) + self.mask.origin[0],
+            (self.shape_2d_arcsec[1] / 2.0) + self.mask.origin[1],
         )
 
     @property
     def arc_second_minima(self):
         return (
-            (-(self.shape_arcsec[0] / 2.0)) + self.mask.origin[0],
-            (-(self.shape_arcsec[1] / 2.0)) + self.mask.origin[1],
+            (-(self.shape_2d_arcsec[0] / 2.0)) + self.mask.origin[0],
+            (-(self.shape_2d_arcsec[1] / 2.0)) + self.mask.origin[1],
         )
 
     @property
