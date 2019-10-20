@@ -265,7 +265,7 @@ class TestGrid:
         assert (grid.in_2d_binned == np.ones((3, 3, 2))).all()
         assert grid.pixel_scales == (1.0, 1.0)
         assert grid.geometry.central_pixel_coordinates == (1.0, 1.0)
-        assert grid.geometry.shape_arcsec == pytest.approx((3.0, 3.0))
+        assert grid.geometry.shape_2d_arcsec == pytest.approx((3.0, 3.0))
         assert grid.geometry.arc_second_maxima == (1.5, 1.5)
         assert grid.geometry.arc_second_minima == (-1.5, -1.5)
 
@@ -277,7 +277,7 @@ class TestGrid:
         assert (grid.in_2d_binned == np.ones((2, 2, 2))).all()
         assert grid.pixel_scales == (0.1, 0.1)
         assert grid.geometry.central_pixel_coordinates == (0.5, 0.5)
-        assert grid.geometry.shape_arcsec == pytest.approx((0.2, 0.2))
+        assert grid.geometry.shape_2d_arcsec == pytest.approx((0.2, 0.2))
         assert grid.geometry.arc_second_maxima == pytest.approx((0.1, 0.1), 1e-4)
         assert grid.geometry.arc_second_minima == pytest.approx((-0.1, -0.1), 1e-4)
 
@@ -297,7 +297,7 @@ class TestGrid:
         assert (grid.in_2d_binned == np.array([[4.0, 5.0]])).all()
         assert grid.pixel_scales == (0.1, 0.1)
         assert grid.geometry.central_pixel_coordinates == (0.0, 0.0)
-        assert grid.geometry.shape_arcsec == pytest.approx((0.1, 0.1))
+        assert grid.geometry.shape_2d_arcsec == pytest.approx((0.1, 0.1))
         assert grid.geometry.arc_second_maxima == pytest.approx((1.05, 1.05), 1e-4)
         assert grid.geometry.arc_second_minima == pytest.approx((0.95, 0.95), 1e-4)
 
@@ -309,7 +309,7 @@ class TestGrid:
         assert grid.in_2d == pytest.approx(np.ones((3, 3, 2)), 1e-4)
         assert grid.pixel_scales == (2.0, 1.0)
         assert grid.geometry.central_pixel_coordinates == (1.0, 1.0)
-        assert grid.geometry.shape_arcsec == pytest.approx((6.0, 3.0))
+        assert grid.geometry.shape_2d_arcsec == pytest.approx((6.0, 3.0))
         assert grid.origin == (-1.0, -2.0)
         assert grid.geometry.arc_second_maxima == pytest.approx((2.0, -0.5), 1e-4)
         assert grid.geometry.arc_second_minima == pytest.approx((-4.0, -3.5), 1e-4)
@@ -324,7 +324,7 @@ class TestGrid:
         assert grid.in_2d == pytest.approx(np.ones((3, 3, 2)), 1e-4)
         assert grid.pixel_scales == (2.0, 1.0)
         assert grid.geometry.central_pixel_coordinates == (1.0, 1.0)
-        assert grid.geometry.shape_arcsec == pytest.approx((6.0, 3.0))
+        assert grid.geometry.shape_2d_arcsec == pytest.approx((6.0, 3.0))
         assert grid.origin == (-1.0, -2.0)
         assert grid.geometry.arc_second_maxima == pytest.approx((2.0, -0.5), 1e-4)
         assert grid.geometry.arc_second_minima == pytest.approx((-4.0, -3.5), 1e-4)
@@ -394,30 +394,30 @@ class TestGrid:
         assert blurring_grid == pytest.approx(blurring_grid_util, 1e-4)
         assert blurring_grid.pixel_scales == (2.0, 2.0)
 
-    def test__masked_shape_arcsec(self):
+    def test__masked_shape_2d_arcsec(self):
         
         mask = aa.mask.circular(
             shape_2d=(3, 3), radius_arcsec=1.0, pixel_scales=(1.0, 1.0), sub_size=1
         )
 
         grid = grids.Grid(grid_1d=np.array([[1.5, 1.0], [-1.5, -1.0]]), mask=mask)
-        assert grid.shape_arcsec == (3.0, 2.0)
+        assert grid.shape_2d_arcsec == (3.0, 2.0)
 
         grid = grids.Grid(
             grid_1d=np.array([[1.5, 1.0], [-1.5, -1.0], [0.1, 0.1]]), mask=mask
         )
-        assert grid.shape_arcsec == (3.0, 2.0)
+        assert grid.shape_2d_arcsec == (3.0, 2.0)
 
         grid = grids.Grid(
             grid_1d=np.array([[1.5, 1.0], [-1.5, -1.0], [3.0, 3.0]]), mask=mask
         )
-        assert grid.shape_arcsec == (4.5, 4.0)
+        assert grid.shape_2d_arcsec == (4.5, 4.0)
 
         grid = grids.Grid(
             grid_1d=np.array([[1.5, 1.0], [-1.5, -1.0], [3.0, 3.0], [7.0, -5.0]]),
             mask=mask,
         )
-        assert grid.shape_arcsec == (8.5, 8.0)
+        assert grid.shape_2d_arcsec == (8.5, 8.0)
 
     def test__in_radians(self):
         mask = np.array(

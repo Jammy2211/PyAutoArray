@@ -162,7 +162,7 @@ def plot_array(
     zoom_offset_arcsec = np.asarray(array.geometry._zoom_offset_arcsec)
 
     if aspect is "square":
-        aspect = float(array.mask.geometry.shape_arcsec[1]) / float(array.mask.geometry.shape_arcsec[0])
+        aspect = float(array.mask.geometry.shape_2d_arcsec[1]) / float(array.mask.geometry.shape_2d_arcsec[0])
 
     fig = plot_figure(
         array=array,
