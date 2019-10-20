@@ -210,6 +210,20 @@ class AbstractGrid(abstract_structure.AbstractStructure):
         )
 
     @property
+    def arc_second_maxima(self):
+        return (
+            (self.shape_2d_arcsec[0] / 2.0),
+            (self.shape_2d_arcsec[1] / 2.0),
+        )
+
+    @property
+    def arc_second_minima(self):
+        return (
+            (-(self.shape_2d_arcsec[0] / 2.0)),
+            (-(self.shape_2d_arcsec[1] / 2.0)),
+        )
+
+    @property
     def yticks(self):
         """Compute the yticks labels of this grid, used for plotting the y-axis ticks when visualizing a grid"""
         return np.linspace(np.min(self[:, 0]), np.max(self[:, 0]), 4)

@@ -24,3 +24,11 @@ class MaskException(Exception):
 
 class DataException(Exception):
     pass
+
+
+class PixelizationException(Exception):
+    pass
+
+
+class InversionException(Exception):
+    pass
