@@ -256,21 +256,6 @@ def make_interferometer_7(
     )
 
 
-# @pytest.fixture(name="lens_interferometer_7")
-# def make_lens_interferometer_7(
-#     interferometer_7, mask_7x7, sub_grid_7x7, transformer_7x7_7, binned_grid_7x7
-# ):
-#     return mock_lens_data.MockLensUVPlaneData(
-#         interferometer=interferometer_7,
-#         mask=mask_7x7,
-#         grid=sub_grid_7x7,
-#         transformer=transformer_7x7_7,
-#         binned_grid=binned_grid_7x7,
-#     )
-
-
-
-
 @pytest.fixture(name="transformer_7x7_7")
 def make_transformer_7x7_7(uv_wavelengths_7, grid_7x7):
     return mock_data.MockTransformer(
@@ -285,19 +270,25 @@ def make_transformer_7x7_7(uv_wavelengths_7, grid_7x7):
 @pytest.fixture(name="masked_imaging_7x7")
 def make_masked_imaging_7x7(
     imaging_7x7,
-    mask_7x7,
-    sub_grid_7x7,
-    blurring_grid_7x7,
-    convolver_7x7,
-    binned_grid_7x7,
+    sub_mask_7x7,
 ):
     return aa.masked_imaging.manual(
         imaging=imaging_7x7,
+        mask=sub_mask_7x7,
+    )
+
+@pytest.fixture(name="masked_interferometer_7")
+def make_masked_interferometer_7(
+    interferometer_7, mask_7x7, sub_grid_7x7, transformer_7x7_7,
+):
+    return aa.masked_interferometer.manual(
+        interferometer=interferometer_7,
         mask=mask_7x7,
     )
 
+
 @pytest.fixture(name="fit_7x7")
-def make_lens_imaging_fit_x1_plane_7x7(imaging_7x7, mask_7x7):
+def make_masked_imaging_fit_x1_plane_7x7(imaging_7x7, mask_7x7):
     return fit.DataFit(
         mask=mask_7x7, data=imaging_7x7.data, noise_map=imaging_7x7.noise_map,
         model_data=5.0*imaging_7x7.data
