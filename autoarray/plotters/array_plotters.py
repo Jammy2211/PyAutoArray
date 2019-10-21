@@ -1,4 +1,5 @@
 from autoarray import conf
+from autoarray import exc
 import matplotlib
 
 backend = conf.instance.visualize.get("figures", "backend", str)
@@ -24,7 +25,7 @@ def plot_array(
     phis=None,
     grid=None,
     as_subplot=False,
-    units="arcsec",
+    units="pixels",
     kpc_per_arcsec=None,
     figsize=(7, 7),
     aspect="equal",
@@ -157,13 +158,21 @@ def plot_array(
     if array is None or np.all(array == 0):
         return
 
+    if array.pixel_scales is None and (units is 'arcsec' or units is 'kpc'):
+        raise exc.ArrayException("You cannot plot an array in units of arcsec or kpc if the input array does not have "
+                                 "pixel scales.")
+
     array = array.in_1d_binned
     array = array.zoomed_around_mask(buffer=2)
     zoom_offset_pixels = np.asarray(array.geometry._zoom_offset_pixels)
-    zoom_offset_arcsec = np.asarray(array.geometry._zoom_offset_arcsec)
+
+    if array.pixel_scales is None:
+        zoom_offset_arcsec = (0.0, 0.0)
+    else:
+        zoom_offset_arcsec = np.asarray(array.geometry._zoom_offset_arcsec)
 
     if aspect is "square":
-        aspect = float(array.mask.geometry.shape_2d_arcsec[1]) / float(array.mask.geometry.shape_2d_arcsec[0])
+        aspect = float(array.shape_2d[1]) / float(array.shape_2d[0])
 
     fig = plot_figure(
         array=array,
@@ -367,7 +376,7 @@ def get_extent(array, units, kpc_per_arcsec, xticks_manual, yticks_manual):
         )
 
     if units in "pixels":
-        return np.asarray([0, array.shape[1], 0, array.shape[0]])
+        return np.asarray([0, array.shape_2d[1], 0, array.shape_2d[0]])
     elif units in "arcsec" or kpc_per_arcsec is None:
         return np.asarray(
             [
@@ -522,8 +531,9 @@ def convert_grid_units(array, grid_arcsec, units, kpc_per_arcsec):
     kpc_per_arcsec : float
         The conversion factor between arc-seconds and kiloparsecs, required to plotters the units in kpc.
     """
+
     if units in "pixels":
-        return array.grid_pixels_from_grid_arcsec(grid_arcsec_1d=grid_arcsec)
+        return array.geometry.grid_pixels_from_grid_arcsec(grid_arcsec_1d=grid_arcsec)
     elif units in "arcsec" or kpc_per_arcsec is None:
         return grid_arcsec
     elif units in "kpc":

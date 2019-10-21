@@ -92,6 +92,7 @@ class Geometry(object):
 
     @property
     def masked_grid(self):
+
         grid_1d = grid_util.grid_1d_via_mask_2d(
             mask_2d=self.mask, pixel_scales=self.mask.pixel_scales, sub_size=1, origin=self.mask.origin
         )
@@ -256,13 +257,6 @@ class Geometry(object):
         return self.masked_sub_grid[self.mask.regions._sub_border_1d_indexes]
 
     @property
-    def _zoom_offset_pixels(self):
-        return (
-            self._zoom_centre[0] - self.central_pixel_coordinates[0],
-            self._zoom_centre[1] - self.central_pixel_coordinates[1],
-        )
-
-    @property
     def _zoom_centre(self):
 
         extraction_grid_1d = self.mask.geometry.grid_pixels_from_grid_arcsec(
@@ -278,7 +272,19 @@ class Geometry(object):
         )
 
     @property
+    def _zoom_offset_pixels(self):
+
+        if self.mask.pixel_scales is None:
+            return self.central_pixel_coordinates
+
+        return (
+            self._zoom_centre[0] - self.central_pixel_coordinates[0],
+            self._zoom_centre[1] - self.central_pixel_coordinates[1],
+        )
+
+    @property
     def _zoom_offset_arcsec(self):
+
         return (
             -self.mask.pixel_scales[0] * self._zoom_offset_pixels[0],
             self.mask.pixel_scales[1] * self._zoom_offset_pixels[1],
