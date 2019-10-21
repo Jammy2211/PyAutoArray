@@ -538,7 +538,7 @@ class TestNewImagingResized:
             background_sky_map=background_sky_map_array,
         )
 
-        imaging = imaging.resized_data_from_new_shape(
+        imaging = imaging.resized_from_new_shape(
             new_shape=(4, 4)
         )
 
@@ -767,7 +767,7 @@ class TestNewImagingBinnedUp:
             background_sky_map=background_sky_map_array,
         )
 
-        imaging = imaging.binned_data_from_bin_up_factor(
+        imaging = imaging.binned_from_bin_up_factor(
             bin_up_factor=2
         )
 
@@ -818,7 +818,7 @@ class TestSNRLimit:
             background_sky_map=aa.array.full(fill_value=3.0, shape_2d=(2,2)),
         )
 
-        imaging = imaging.signal_to_noise_limited_data_from_signal_to_noise_limit(
+        imaging = imaging.signal_to_noise_limited_from_signal_to_noise_limit(
             signal_to_noise_limit=100.0
         )
 
@@ -856,7 +856,7 @@ class TestSNRLimit:
             background_sky_map=aa.array.full(fill_value=3.0, shape_2d=(2,2)),
         )
 
-        imaging_capped = imaging.signal_to_noise_limited_data_from_signal_to_noise_limit(
+        imaging_capped = imaging.signal_to_noise_limited_from_signal_to_noise_limit(
             signal_to_noise_limit=2.0
         )
 
@@ -885,7 +885,7 @@ class TestSNRLimit:
             imaging_capped.background_sky_map.in_2d == 3.0 * np.ones((2, 2))
         ).all()
 
-        imaging_capped = imaging.signal_to_noise_limited_data_from_signal_to_noise_limit(
+        imaging_capped = imaging.signal_to_noise_limited_from_signal_to_noise_limit(
             signal_to_noise_limit=3.0
         )
 

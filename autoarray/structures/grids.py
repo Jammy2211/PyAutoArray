@@ -177,7 +177,7 @@ class AbstractGrid(abstract_structure.AbstractStructure):
             kernel_shape=kernel_shape
         )
 
-        return GridMasked.from_mask(mask=blurring_mask)
+        return MaskedGrid.from_mask(mask=blurring_mask)
 
     def new_grid_with_binned_grid(self, binned_grid):
         # noinspection PyAttributeOutsideInit
@@ -299,7 +299,7 @@ class AbstractGrid(abstract_structure.AbstractStructure):
             sub_size=self.mask.sub_size,
         )
 
-        padded_sub_grid = GridMasked.from_mask(mask=padded_mask)
+        padded_sub_grid = MaskedGrid.from_mask(mask=padded_mask)
 
         if self.interpolator is None:
             return padded_sub_grid
@@ -492,10 +492,10 @@ class Grid(AbstractGrid):
 
         blurring_mask = mask.regions.blurring_mask_from_kernel_shape(kernel_shape=kernel_shape)
 
-        return GridMasked.from_mask(mask=blurring_mask)
+        return MaskedGrid.from_mask(mask=blurring_mask)
 
 
-class GridMasked(AbstractGrid):
+class MaskedGrid(AbstractGrid):
     
     @classmethod
     def manual_1d(cls, grid, mask):

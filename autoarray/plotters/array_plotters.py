@@ -157,6 +157,7 @@ def plot_array(
     if array is None or np.all(array == 0):
         return
 
+    array = array.in_1d_binned
     array = array.zoomed_around_mask(buffer=2)
     zoom_offset_pixels = np.asarray(array.geometry._zoom_offset_pixels)
     zoom_offset_arcsec = np.asarray(array.geometry._zoom_offset_arcsec)

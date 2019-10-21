@@ -25,7 +25,7 @@ class TestRectangular:
 
         # Source-plane comprises 5 grid, so 5 masked_image pixels traced to the pix-plane.
 
-        grid = aa.grid_masked.manual_1d(
+        grid = aa.masked_grid.manual_1d(
             grid=np.array(
                 [[1.0, -1.0], [1.0, 1.0], [0.0, 0.0], [-1.0, -1.0], [-1.0, 1.0]]
             ),
@@ -37,7 +37,7 @@ class TestRectangular:
         # There is no sub-grid, so our grid are just the masked_image grid (note the NumPy weighted_data structure
         # ensures this has no sub-gridding)
 
-        pix = aa.pix.Rectangular(shape_2d=(3, 3))
+        pix = aa.pix.Rectangular(shape=(3, 3))
 
         mapper = pix.mapper_from_grid_and_pixelization_grid(
             grid=grid,
@@ -105,7 +105,7 @@ class TestRectangular:
 
         # There is no sub-grid, so our grid are just the masked_image grid (note the NumPy weighted_data structure
         # ensures this has no sub-gridding)
-        grid = aa.grid_masked.manual_1d(
+        grid = aa.masked_grid.manual_1d(
             grid=np.array(
                 [
                     [0.9, -0.9],
@@ -130,7 +130,7 @@ class TestRectangular:
 
         pixelization_grid = MockPixelizationGrid(arr=grid)
 
-        pix = aa.pix.Rectangular(shape_2d=(3, 3))
+        pix = aa.pix.Rectangular(shape=(3, 3))
 
         mapper = pix.mapper_from_grid_and_pixelization_grid(
             grid=grid, pixelization_grid=pixelization_grid, inversion_uses_border=False
@@ -206,7 +206,7 @@ class TestRectangular:
         # The grid below is unphysical in that the (0.0, 0.0) terms on the end of each sub-grid probably couldn't
         # happen for a real lensing calculation. This is to make a mapping_matrix matrix which explicitly tests the
         # sub-grid.
-        grid = aa.grid_masked.manual_1d(
+        grid = aa.masked_grid.manual_1d(
             grid=np.array(
                 [
                     [1.0, -1.0],
@@ -236,7 +236,7 @@ class TestRectangular:
 
         pixelization_grid = MockPixelizationGrid(arr=grid)
 
-        pix = aa.pix.Rectangular(shape_2d=(3, 3))
+        pix = aa.pix.Rectangular(shape=(3, 3))
 
         mapper = pix.mapper_from_grid_and_pixelization_grid(
             grid=grid, pixelization_grid=pixelization_grid, inversion_uses_border=False
@@ -298,7 +298,7 @@ class TestRectangular:
 
         mask = aa.mask.manual(mask_2d=mask, pixel_scales=1.0, sub_size=1)
 
-        grid = aa.grid_masked.manual_1d(
+        grid = aa.masked_grid.manual_1d(
             grid=np.array(
                 [[1.0, 1.0], [1.0, 1.0], [1.0, 1.0], [1.0, 1.0], [-1.0, -1.0]]
             ),
@@ -307,7 +307,7 @@ class TestRectangular:
 
         pixelization_grid = MockPixelizationGrid(grid)
 
-        pix = aa.pix.Rectangular(shape_2d=(3, 3))
+        pix = aa.pix.Rectangular(shape=(3, 3))
 
         mapper = pix.mapper_from_grid_and_pixelization_grid(
             grid=grid, pixelization_grid=pixelization_grid, inversion_uses_border=True
@@ -379,11 +379,11 @@ class TestVoronoiMagnification:
             ]
         )
 
-        grid = aa.grid_masked.manual_1d(grid=grid, mask=mask)
+        grid = aa.masked_grid.manual_1d(grid=grid, mask=mask)
 
-        pix = aa.pix.VoronoiMagnification(shape_2d=(3, 3))
+        pix = aa.pix.VoronoiMagnification(shape=(3, 3))
         sparse_to_grid = grids.SparseToGrid.from_grid_and_unmasked_2d_grid_shape(
-            grid=grid, unmasked_sparse_shape=pix.shape_2d,
+            grid=grid, unmasked_sparse_shape=pix.shape,
         )
 
         pixelization_grid = MockPixelizationGrid(
@@ -457,11 +457,11 @@ class TestVoronoiMagnification:
 
         grid = np.array([[1.0, 0.0], [0.0, -1.0], [0.0, 0.0], [0.0, 1.0], [-1.0, 0.0]])
 
-        grid = aa.grid_masked.manual_1d(grid=grid, mask=mask)
+        grid = aa.masked_grid.manual_1d(grid=grid, mask=mask)
 
-        pix = aa.pix.VoronoiMagnification(shape_2d=(3, 3))
+        pix = aa.pix.VoronoiMagnification(shape=(3, 3))
         sparse_to_grid = grids.SparseToGrid.from_grid_and_unmasked_2d_grid_shape(
-            grid=grid, unmasked_sparse_shape=pix.shape_2d,
+            grid=grid, unmasked_sparse_shape=pix.shape,
         )
 
         pixelization_grid = MockPixelizationGrid(
@@ -546,11 +546,11 @@ class TestVoronoiMagnification:
             ]
         )
 
-        grid = aa.grid_masked.manual_1d(grid=grid, mask=mask)
+        grid = aa.masked_grid.manual_1d(grid=grid, mask=mask)
 
-        pix = aa.pix.VoronoiMagnification(shape_2d=(3, 3))
+        pix = aa.pix.VoronoiMagnification(shape=(3, 3))
         sparse_to_grid = grids.SparseToGrid.from_grid_and_unmasked_2d_grid_shape(
-            grid=grid, unmasked_sparse_shape=pix.shape_2d,
+            grid=grid, unmasked_sparse_shape=pix.shape,
         )
 
         pixelization_grid = MockPixelizationGrid(
@@ -618,11 +618,11 @@ class TestVoronoiMagnification:
 
         grid = np.array([[2.0, 1.0], [1.0, 0.0], [1.0, 1.0], [1.0, 2.0], [0.0, 1.0]])
 
-        grid = aa.grid_masked.manual_1d(grid=grid, mask=mask)
+        grid = aa.masked_grid.manual_1d(grid=grid, mask=mask)
 
-        pix = aa.pix.VoronoiMagnification(shape_2d=(3, 3))
+        pix = aa.pix.VoronoiMagnification(shape=(3, 3))
         sparse_to_grid = grids.SparseToGrid.from_grid_and_unmasked_2d_grid_shape(
-            grid=grid, unmasked_sparse_shape=pix.shape_2d,
+            grid=grid, unmasked_sparse_shape=pix.shape,
         )
 
         pixelization_grid = MockPixelizationGrid(

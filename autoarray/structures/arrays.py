@@ -101,7 +101,7 @@ class AbstractArray(abstract_structure.AbstractStructure):
 
         mask_2d = msk.Mask.unmasked(shape_2d=extracted_array_2d.shape, pixel_scales=self.pixel_scales, sub_size=self.sub_size, origin=self.origin)
 
-        return ArrayMasked.manual_2d(array=extracted_array_2d, mask=mask_2d)
+        return MaskedArray.manual_2d(array=extracted_array_2d, mask=mask_2d)
 
     def resized_from_new_shape(
         self, new_shape,
@@ -270,7 +270,7 @@ class Array(AbstractArray):
         return mask.mapping.array_from_sub_array_2d(sub_array_2d=sub_array_2d)
 
 
-class ArrayMasked(AbstractArray):
+class MaskedArray(AbstractArray):
 
     @classmethod
     def manual_1d(cls, array, mask):
