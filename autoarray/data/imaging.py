@@ -420,10 +420,10 @@ class Imaging(AbstractImaging):
 
     @classmethod
     def from_fits(cls, image_path,
-                  noise_map_path,
         pixel_scales=None,
         image_hdu=0,
         resized_imaging_shape=None,
+          noise_map_path=None,
         noise_map_hdu=0,
         noise_map_from_image_and_background_noise_map=False,
         psf_path=None,

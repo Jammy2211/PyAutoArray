@@ -8,7 +8,7 @@ from autoarray.data.interferometer import Interferometer as interferometer
 from autoarray.operators.convolution import Convolver as convolver
 from autoarray.operators.fourier_transform import Transformer as transformer
 from autoarray.operators.inversion import pixelizations as pix, regularization as reg, mappers, inversions
-from autoarray.fit.fit import DataFit as fit
+from autoarray.fit.fit import DataFit as fit, ImagingFit as fit_imaging
 from autoarray.fit.masked_data import MaskedImaging as masked_imaging, MaskedInterferometer as masked_interferometer
 from autoarray import util
 from autoarray import plotters as plot
