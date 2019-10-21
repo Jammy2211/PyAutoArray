@@ -105,7 +105,7 @@ class Kernel(arrays.AbstractArray):
         )
 
         return Kernel.manual_1d(
-            array=gaussian, shape_2d=shape_2d, pixel_scales=pixel_scales, renormalize=True
+            array=gaussian, shape_2d=shape_2d, pixel_scales=pixel_scales, renormalize=False
         )
 
     @classmethod
@@ -205,7 +205,7 @@ class Kernel(arrays.AbstractArray):
     @property
     def renormalized(self):
         """Renormalize the Kernel such that its data_vector values sum to unity."""
-        return Kernel(array_1d=self, mask=self.mask, renormalize=True)
+        return Kernel(array_1d=self, mask=self.mask, renormalize=False)
 
     def convolved_array_from_array(self, array):
         """

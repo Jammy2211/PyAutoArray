@@ -5,7 +5,7 @@ from autoarray.util import mask_util
 
 
 class Convolver(object):
-    def __init__(self, mask, kernel):
+    def __init__(self, mask_2d, kernel_2d):
         """ Class to setup the 1D convolution of an / util matrix.
 
         Take a simple 3x3 and masks:
@@ -166,29 +166,29 @@ class Convolver(object):
 
         Parameters
         ----------
-        mask : Mask
+        mask_2d : Mask
             The masks, where True eliminates datas.
         blurring_mask : Mask
             A masks of pixels outside the masks but whose light blurs into it after PSF convolution.
-        kernel : grid.PSF or ndarray
+        kernel_2d : grid.PSF or ndarray
             An array representing a PSF.
         """
-        if kernel.shape[0] % 2 == 0 or kernel.shape[1] % 2 == 0:
+        if kernel_2d.shape[0] % 2 == 0 or kernel_2d.shape[1] % 2 == 0:
             raise exc.ConvolutionException("PSF kernel must be odd")
 
-        self.mask = mask
+        self.mask = mask_2d
 
-        self.mask_index_array = np.full(mask.shape, -1)
-        self.pixels_in_mask = int(np.size(mask) - np.sum(mask))
+        self.mask_index_array = np.full(mask_2d.shape, -1)
+        self.pixels_in_mask = int(np.size(mask_2d) - np.sum(mask_2d))
 
         count = 0
-        for x in range(mask.shape[0]):
-            for y in range(mask.shape[1]):
-                if not mask[x, y]:
+        for x in range(mask_2d.shape[0]):
+            for y in range(mask_2d.shape[1]):
+                if not mask_2d[x, y]:
                     self.mask_index_array[x, y] = count
                     count += 1
 
-        self.kernel = kernel
+        self.kernel = kernel_2d
         self.kernel_max_size = self.kernel.shape[0] * self.kernel.shape[1]
 
         mask_1d_index = 0
@@ -201,9 +201,9 @@ class Convolver(object):
         self.image_frame_1d_lengths = np.zeros((self.pixels_in_mask), dtype="int")
         for x in range(self.mask_index_array.shape[0]):
             for y in range(self.mask_index_array.shape[1]):
-                if not mask[x][y]:
+                if not mask_2d[x][y]:
                     image_frame_1d_indexes, image_frame_1d_kernels = self.frame_at_coordinates_jit(
-                        (x, y), mask, self.mask_index_array, self.kernel[:, :]
+                        (x, y), mask_2d, self.mask_index_array, self.kernel[:, :]
                     )
                     self.image_frame_1d_indexes[
                         mask_1d_index, :
@@ -217,7 +217,7 @@ class Convolver(object):
                     mask_1d_index += 1
 
         self.blurring_mask = mask_util.blurring_mask_2d_from_mask_2d_and_kernel_shape_2d(
-            mask_2d=mask, kernel_shape_2d=kernel.shape
+            mask_2d=mask_2d, kernel_shape_2d=kernel_2d.shape
         )
 
         self.pixels_in_blurring_mask = int(
@@ -234,11 +234,11 @@ class Convolver(object):
         self.blurring_frame_1d_lengths = np.zeros(
             (self.pixels_in_blurring_mask), dtype="int"
         )
-        for x in range(mask.shape[0]):
-            for y in range(mask.shape[1]):
-                if mask[x][y] and not self.blurring_mask[x, y]:
+        for x in range(mask_2d.shape[0]):
+            for y in range(mask_2d.shape[1]):
+                if mask_2d[x][y] and not self.blurring_mask[x, y]:
                     image_frame_1d_indexes, image_frame_1d_kernels = self.frame_at_coordinates_jit(
-                        (x, y), mask, self.mask_index_array, self.kernel
+                        (x, y), mask_2d, self.mask_index_array, self.kernel
                     )
                     self.blurring_frame_1d_indexes[
                         mask_1d_index, :

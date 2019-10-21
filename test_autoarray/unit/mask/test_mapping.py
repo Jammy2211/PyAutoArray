@@ -3,6 +3,7 @@ import os
 import numpy as np
 import pytest
 
+from autoarray import exc
 import autoarray as aa
 
 test_data_dir = "{}/../test_files/array/".format(
@@ -577,6 +578,55 @@ class TestMapping:
         )
 
         assert (array_2d == np.array([[7.0, 8.0, 9.0]])).all()
+
+
+class TestMappingExceptions:
+
+    def test__array_2d_from_array_1d__raises_exception_if_input_array_1d_is_not_shape_of_pixels_in_mask(self):
+        mask = aa.mask.manual(
+            [
+                [True, True, False, False],
+                [True, False, True, True],
+                [True, True, False, False],
+            ], pixel_scales=(3.0, 3.0), sub_size=2,
+        )
+
+        with pytest.raises(exc.MappingException):
+            mask.mapping.array_2d_from_array_1d(array_1d=np.array([1.0, 6.0, 4.0, 5.0]))
+
+        with pytest.raises(exc.MappingException):
+            mask.mapping.array_2d_from_array_1d(array_1d=np.array([1.0, 6.0, 4.0, 5.0, 6.0, 7.0]))
+
+
+    def test__array_from_array_1d__raises_exception_if_input_array_1d_is_not_shape_of_pixels_in_mask(self):
+        mask = aa.mask.manual(
+            [
+                [True, True, False, False],
+                [True, False, True, True],
+                [True, True, False, False],
+            ], pixel_scales=(3.0, 3.0), sub_size=2,
+        )
+
+        with pytest.raises(exc.MappingException):
+            mask.mapping.array_from_array_1d(array_1d=np.array([1.0, 6.0, 4.0, 5.0]))
+
+        with pytest.raises(exc.MappingException):
+            mask.mapping.array_from_array_1d(array_1d=np.array([1.0, 6.0, 4.0, 5.0, 6.0, 7.0]))
+
+    def test__array_from_array_2d__raises_exception_if_input_array_2d_is_not_shape_2d_of_mask(self):
+        mask = aa.mask.manual(
+            [
+                [True, True, False, False],
+                [True, False, True, True],
+                [True, True, False, False],
+            ], pixel_scales=(3.0, 3.0), sub_size=2,
+        )
+
+        with pytest.raises(exc.MappingException):
+            mask.mapping.array_from_array_2d(array_2d=np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9], [10, 11, 12], [13, 14, 15]]))
+
+        with pytest.raises(exc.MappingException):
+            mask.mapping.array_from_array_2d(array_2d=np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]]))
 
 
 class TestResizedMask:

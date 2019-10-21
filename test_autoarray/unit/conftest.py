@@ -112,17 +112,17 @@ def make_mask_6x6():
 
 @pytest.fixture(name="grid_7x7")
 def make_grid_7x7(mask_7x7):
-    return aa.grid_masked.from_mask(mask=mask_7x7)
+    return aa.masked_grid.from_mask(mask=mask_7x7)
 
 
 @pytest.fixture(name="sub_grid_7x7")
 def make_sub_grid_7x7(sub_mask_7x7):
-    return aa.grid_masked.from_mask(mask=sub_mask_7x7)
+    return aa.masked_grid.from_mask(mask=sub_mask_7x7)
 
 
 @pytest.fixture(name="blurring_grid_7x7")
 def make_blurring_grid_7x7(blurring_mask_7x7):
-    return aa.grid_masked.from_mask(mask=blurring_mask_7x7)
+    return aa.masked_grid.from_mask(mask=blurring_mask_7x7)
 
 
 # CONVOLVERS #
@@ -131,8 +131,9 @@ def make_blurring_grid_7x7(blurring_mask_7x7):
 @pytest.fixture(name="convolver_7x7")
 def make_convolver_7x7(mask_7x7, blurring_mask_7x7, psf_3x3):
     return mock_convolution.MockConvolver(
-        mask=mask_7x7, blurring_mask=blurring_mask_7x7, kernel=psf_3x3
+        mask_2d=mask_7x7, blurring_mask=blurring_mask_7x7, kernel_2d=psf_3x3
     )
+
 
 @pytest.fixture(name="image_7x7")
 def make_image_7x7():
@@ -255,6 +256,21 @@ def make_interferometer_7(
     )
 
 
+# @pytest.fixture(name="lens_interferometer_7")
+# def make_lens_interferometer_7(
+#     interferometer_7, mask_7x7, sub_grid_7x7, transformer_7x7_7, binned_grid_7x7
+# ):
+#     return mock_lens_data.MockLensUVPlaneData(
+#         interferometer=interferometer_7,
+#         mask=mask_7x7,
+#         grid=sub_grid_7x7,
+#         transformer=transformer_7x7_7,
+#         binned_grid=binned_grid_7x7,
+#     )
+
+
+
+
 @pytest.fixture(name="transformer_7x7_7")
 def make_transformer_7x7_7(uv_wavelengths_7, grid_7x7):
     return mock_data.MockTransformer(
@@ -262,6 +278,23 @@ def make_transformer_7x7_7(uv_wavelengths_7, grid_7x7):
         grid_radians=grid_7x7.mask.geometry.masked_grid.in_radians,
     )
 
+
+
+### MASKED DATA ###
+
+@pytest.fixture(name="masked_imaging_7x7")
+def make_masked_imaging_7x7(
+    imaging_7x7,
+    mask_7x7,
+    sub_grid_7x7,
+    blurring_grid_7x7,
+    convolver_7x7,
+    binned_grid_7x7,
+):
+    return aa.masked_imaging.manual(
+        imaging=imaging_7x7,
+        mask=mask_7x7,
+    )
 
 @pytest.fixture(name="fit_7x7")
 def make_lens_imaging_fit_x1_plane_7x7(imaging_7x7, mask_7x7):

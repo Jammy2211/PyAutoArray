@@ -150,7 +150,7 @@ class TestReconstructedDataVectorAndImage:
             sub_size=1,
         )
 
-        grid = aa.grid_masked.from_mask(mask=mask)
+        grid = aa.masked_grid.from_mask(mask=mask)
 
         inv = aa.inversions.InversionImaging.from_data_mapper_and_regularization(
             image=np.ones(9),
@@ -195,7 +195,7 @@ class TestReconstructedDataVectorAndImage:
             sub_size=1,
         )
 
-        grid = aa.grid_masked.from_mask(mask=mask)
+        grid = aa.masked_grid.from_mask(mask=mask)
 
         inv = aa.inversions.InversionImaging.from_data_mapper_and_regularization(
             image=np.ones(9),

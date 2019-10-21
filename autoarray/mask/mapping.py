@@ -1,5 +1,6 @@
 import numpy as np
 
+from autoarray import exc
 from autoarray.mask import mask as msk
 from autoarray.structures import grids, arrays
 from autoarray.util import binning_util, array_util, grid_util
@@ -39,6 +40,11 @@ class Mapping(object):
         sub_array_1d : ndarray
             The 1D sub_array which is mapped to its masked 2D sub-array.
         """
+
+        if array_1d.shape[0] != self.mask.pixels_in_mask:
+            raise exc.MappingException('The number of pixels in array_1d is not equal to the number of pixels in'
+                                       'the mask.')
+
         return array_util.sub_array_2d_from_sub_array_1d(
             sub_array_1d=array_1d, mask=self.mask, sub_size=1
         )
@@ -53,6 +59,11 @@ class Mapping(object):
         array_1d : ndarray
             The 1D array which is mapped to its masked 2D array.
         """
+
+        if array_1d.shape[0] != self.mask.pixels_in_mask:
+            raise exc.MappingException('The number of pixels in array_1d is not equal to the number of pixels in'
+                                       'the mask.')
+
         return arrays.Array(array_1d=array_1d, mask=self.mask_sub_1)
 
     def array_from_array_2d(self, array_2d):
@@ -63,11 +74,15 @@ class Mapping(object):
         array_2d : ndarray | None | float
             The 2D array to be mapped to a masked 1D array.
         """
+
+        if array_2d.shape != self.mask.shape_2d:
+            raise exc.MappingException('The number of pixels in array_1d is not equal to the number of pixels in'
+                                       'the mask.')
+
         array_1d = array_util.sub_array_1d_from_sub_array_2d(
             mask=self.mask, sub_array_2d=array_2d, sub_size=1
         )
         return self.array_from_array_1d(array_1d=array_1d)
-
 
     def sub_array_2d_from_sub_array_1d(self, sub_array_1d):
         """ Map a 1D sub-array the same dimension as the sub-grid (e.g. including sub-pixels) to its original masked

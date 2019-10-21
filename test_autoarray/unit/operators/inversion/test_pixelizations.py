@@ -11,7 +11,7 @@ class TestRectangular:
             self
         ):
 
-            pix = aa.pix.Rectangular(shape_2d=(3, 3))
+            pix = aa.pix.Rectangular(shape=(3, 3))
 
             pixelization_grid = np.array(
                 [
@@ -44,7 +44,7 @@ class TestRectangular:
             assert (geometry.pixel_neighbors_size == np.array([2, 3, 2, 3, 4, 3, 2, 3, 2])).all()
 
         def test__3x3_grid__same_as_above_change_buffer(self):
-            pix = aa.pix.Rectangular(shape_2d=(3, 3))
+            pix = aa.pix.Rectangular(shape=(3, 3))
 
             pixelization_grid = np.array(
                 [
@@ -67,7 +67,7 @@ class TestRectangular:
 
         def test__5x4_grid__buffer_is_small(self):
 
-            pix = aa.pix.Rectangular(shape_2d=(5, 4))
+            pix = aa.pix.Rectangular(shape=(5, 4))
 
             pixelization_grid = np.array(
                 [
@@ -90,7 +90,7 @@ class TestRectangular:
 
         def test__3x3_grid__larger_range_of_grid(self):
 
-            pix = aa.pix.Rectangular(shape_2d=(3, 3))
+            pix = aa.pix.Rectangular(shape=(3, 3))
 
             pixelization_grid = np.array(
                 [[2.0, 1.0], [4.0, 3.0], [6.0, 5.0], [8.0, 7.0]]
@@ -104,7 +104,7 @@ class TestRectangular:
     class TestPixelCentres:
         def test__3x3_grid__pixel_centres(self):
 
-            pix = aa.pix.Rectangular(shape_2d=(3, 3))
+            pix = aa.pix.Rectangular(shape=(3, 3))
 
             pixelization_grid = np.array(
                 [
@@ -140,7 +140,7 @@ class TestRectangular:
 
         def test__4x3_grid__pixel_centres(self):
 
-            pix = aa.pix.Rectangular(shape_2d=(4, 3))
+            pix = aa.pix.Rectangular(shape=(4, 3))
 
             pixelization_grid = np.array(
                 [
@@ -184,7 +184,7 @@ class TestRectangular:
             # |8 | 9|10|11|
             # |12|13|14|15|
 
-            pix = aa.pix.Rectangular(shape_2d=(7, 5))
+            pix = aa.pix.Rectangular(shape=(7, 5))
 
             pixel_neighbors, pixel_neighbors_size = pix.pixel_neighbors
             pixel_neighbors_util, pixel_neighbors_size_util = aa.util.pixelization.rectangular_neighbors_from_shape(
@@ -197,7 +197,7 @@ class TestRectangular:
     class TestPixelizationGrid:
         def test__pixelization_grid_returns_none_as_not_used(self, sub_grid_7x7):
 
-            pix = aa.pix.Rectangular(shape_2d=(3, 3))
+            pix = aa.pix.Rectangular(shape=(3, 3))
 
             assert pix.pixelization_grid_from_grid(grid=sub_grid_7x7) == None
 
@@ -393,15 +393,15 @@ class TestVoronoi:
 class TestVoronoiMagnification:
     def test__number_of_pixels_setup_correct(self):
 
-        pix = aa.pix.VoronoiMagnification(shape_2d=(3, 3))
+        pix = aa.pix.VoronoiMagnification(shape=(3, 3))
 
-        assert pix.shape_2d == (3, 3)
+        assert pix.shape == (3, 3)
 
     def test__pixelization_grid_returns_same_as_computed_from_grids_module(
         self, sub_grid_7x7
     ):
 
-        pix = aa.pix.VoronoiMagnification(shape_2d=(3, 3))
+        pix = aa.pix.VoronoiMagnification(shape=(3, 3))
 
         pixelization_grid = pix.pixelization_grid_from_grid(grid=sub_grid_7x7)
 

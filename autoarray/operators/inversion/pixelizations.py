@@ -25,7 +25,7 @@ class Pixelization(object):
 
 
 class Rectangular(Pixelization):
-    def __init__(self, shape_2d=(3, 3)):
+    def __init__(self, shape=(3, 3)):
         """A rectangular pixelization, where pixels are defined on a Cartesian and uniform grid of shape \ 
         (rows, columns).
 
@@ -33,17 +33,17 @@ class Rectangular(Pixelization):
 
         Parameters
         -----------
-        shape_2d : (int, int)
+        shape : (int, int)
             The dimensions of the rectangular grid of pixels (y_pixels, x_pixel)
         """
 
-        if shape_2d[0] <= 2 or shape_2d[1] <= 2:
+        if shape[0] <= 2 or shape[1] <= 2:
             raise exc.PixelizationException(
                 "The rectangular pixelization must be at least dimensions 3x3"
             )
 
-        self.shape_2d = (int(shape_2d[0]), int(shape_2d[1]))
-        self.pixels = self.shape_2d[0] * self.shape_2d[1]
+        self.shape = (int(shape[0]), int(shape[1]))
+        self.pixels = self.shape[0] * self.shape[1]
         super(Rectangular, self).__init__()
 
     class Geometry(object):
@@ -99,13 +99,13 @@ class Rectangular(Pixelization):
         x_min = np.min(grid[:, 1]) - buffer
         x_max = np.max(grid[:, 1]) + buffer
         pixel_scales = (
-            float((y_max - y_min) / self.shape_2d[0]),
-            float((x_max - x_min) / self.shape_2d[1]),
+            float((y_max - y_min) / self.shape[0]),
+            float((x_max - x_min) / self.shape[1]),
         )
         origin = ((y_max + y_min) / 2.0, (x_max + x_min) / 2.0)
         pixel_neighbors, pixel_neighbors_size = self.pixel_neighbors
         return self.Geometry(
-            shape_2d=self.shape_2d,
+            shape_2d=self.shape,
             pixel_scales=pixel_scales,
             origin=origin,
             pixel_neighbors=pixel_neighbors,
@@ -114,7 +114,7 @@ class Rectangular(Pixelization):
 
     @property
     def pixel_neighbors(self):
-        return pixelization_util.rectangular_neighbors_from_shape(shape=self.shape_2d)
+        return pixelization_util.rectangular_neighbors_from_shape(shape=self.shape)
 
     def mapper_from_grid_and_pixelization_grid(
         self,
@@ -150,7 +150,7 @@ class Rectangular(Pixelization):
             pixels=self.pixels,
             grid=relocated_grid,
             pixel_centres=geometry.pixel_centres,
-            shape_2d=self.shape_2d,
+            shape_2d=self.shape,
             geometry=geometry,
             hyper_image=hyper_image,
         )
@@ -335,25 +335,25 @@ class Voronoi(Pixelization):
 
 
 class VoronoiMagnification(Voronoi):
-    def __init__(self, shape_2d=(3, 3)):
+    def __init__(self, shape=(3, 3)):
         """A pixelization which adapts to the magnification pattern of a lens's mass model and uses a Voronoi \
         pixelization to discretize the grid into pixels.
 
         Parameters
         ----------
-        shape_2d : (int, int)
+        shape : (int, int)
             The shape of the unmasked sparse-grid which is laid over the masked image, in order to derive the \
             adaptive-magnification pixelization (see *ImagePlanePixelization*)
         """
         super(VoronoiMagnification, self).__init__()
-        self.shape_2d = (int(shape_2d[0]), int(shape_2d[1]))
-        self.pixels = self.shape_2d[0] * self.shape_2d[1]
+        self.shape = (int(shape[0]), int(shape[1]))
+        self.pixels = self.shape[0] * self.shape[1]
 
     def pixelization_grid_from_grid(
         self, grid, hyper_image=None, seed=1
     ):
         sparse_to_grid = grids.SparseToGrid.from_grid_and_unmasked_2d_grid_shape(
-            grid=grid, unmasked_sparse_shape=self.shape_2d
+            grid=grid, unmasked_sparse_shape=self.shape
         )
 
         return grids.PixelizationGrid(

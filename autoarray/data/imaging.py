@@ -31,13 +31,13 @@ class AbstractImaging(abstract_data.AbstractData):
     def shape(self):
         return self.image.shape_2d
 
-    def binned_data_from_bin_up_factor(self, bin_up_factor):
+    def binned_from_bin_up_factor(self, bin_up_factor):
 
         image = self.image.binned_from_bin_up_factor(
             bin_up_factor=bin_up_factor, method="mean"
         )
         psf = self.psf.rescaled_with_odd_dimensions_from_rescale_factor(
-            rescale_factor=1.0 / bin_up_factor, renormalize=True
+            rescale_factor=1.0 / bin_up_factor, renormalize=False
         )
         noise_map = self.noise_map.binned_from_bin_up_factor(
             bin_up_factor=bin_up_factor,
@@ -75,7 +75,7 @@ class AbstractImaging(abstract_data.AbstractData):
             name=self.name,
         )
 
-    def resized_data_from_new_shape(
+    def resized_from_new_shape(
         self, new_shape,
     ):
 
@@ -213,7 +213,7 @@ class AbstractImaging(abstract_data.AbstractData):
             name=self.name,
         )
 
-    def signal_to_noise_limited_data_from_signal_to_noise_limit(self, signal_to_noise_limit):
+    def signal_to_noise_limited_from_signal_to_noise_limit(self, signal_to_noise_limit):
 
         noise_map_limit = np.where(
             self.signal_to_noise_map > signal_to_noise_limit,
@@ -221,7 +221,7 @@ class AbstractImaging(abstract_data.AbstractData):
             self.noise_map,
         )
 
-        noise_map_limit = arrays.ArrayMasked.manual_1d(array=noise_map_limit, mask=self.image.mask)
+        noise_map_limit = arrays.MaskedArray.manual_1d(array=noise_map_limit, mask=self.image.mask)
 
         return Imaging(
             image=self.image,
@@ -294,7 +294,7 @@ class AbstractImaging(abstract_data.AbstractData):
     def output_to_fits(
         self,
         image_path,
-        psf_path,
+        psf_path=None,
         noise_map_path=None,
         background_noise_map_path=None,
         poisson_noise_map_path=None,
@@ -362,8 +362,8 @@ class Imaging(AbstractImaging):
     def __init__(
         self,
         image,
-        psf,
-        noise_map=None,
+        noise_map,
+        psf=None,
         background_noise_map=None,
         poisson_noise_map=None,
         exposure_time_map=None,
@@ -409,8 +409,8 @@ class Imaging(AbstractImaging):
     @classmethod
     def manual(cls,
         image,
-        psf,
-        noise_map=None,
+        noise_map,
+        psf=None,
         background_noise_map=None,
         poisson_noise_map=None,
         exposure_time_map=None,
@@ -420,16 +420,16 @@ class Imaging(AbstractImaging):
 
     @classmethod
     def from_fits(cls, image_path,
-        pixel_scales,
+                  noise_map_path,
+        pixel_scales=None,
         image_hdu=0,
         resized_imaging_shape=None,
+        noise_map_hdu=0,
+        noise_map_from_image_and_background_noise_map=False,
         psf_path=None,
         psf_hdu=0,
         resized_psf_shape=None,
         renormalize_psf=True,
-        noise_map_path=None,
-        noise_map_hdu=0,
-        noise_map_from_image_and_background_noise_map=False,
         convert_noise_map_from_weight_map=False,
         convert_noise_map_from_inverse_noise_map=False,
         background_noise_map_path=None,
@@ -626,7 +626,7 @@ class Imaging(AbstractImaging):
         )
 
         if resized_imaging_shape is not None:
-            imaging = imaging.resized_data_from_new_shape(
+            imaging = imaging.resized_from_new_shape(
                 new_shape=resized_imaging_shape,
             )
 
@@ -720,7 +720,7 @@ class Imaging(AbstractImaging):
             image += noise_realization
             image_counts = np.multiply(image, exposure_time_map)
             noise_map = np.divide(np.sqrt(image_counts), exposure_time_map)
-            noise_map = arrays.ArrayMasked.manual_1d(array=noise_map, mask=noise_map.mask)
+            noise_map = arrays.MaskedArray.manual_1d(array=noise_map, mask=noise_map.mask)
         else:
             noise_map = arrays.Array.full(
                 fill_value=noise_if_add_noise_false,
@@ -750,11 +750,11 @@ class Imaging(AbstractImaging):
 
         mask = msk.Mask.unmasked(shape_2d=image.shape_2d, pixel_scales=image.pixel_scales)
 
-        image = arrays.ArrayMasked.manual_1d(array=image, mask=mask)
-        background_noise_map = arrays.ArrayMasked.manual_1d(
+        image = arrays.MaskedArray.manual_1d(array=image, mask=mask)
+        background_noise_map = arrays.MaskedArray.manual_1d(
             array=background_noise_map, mask=mask
         )
-        poisson_noise_map = arrays.ArrayMasked.manual_1d(
+        poisson_noise_map = arrays.MaskedArray.manual_1d(
             array=poisson_noise_map, mask=mask
         )
 
