@@ -25,7 +25,6 @@ class TestConstructor:
 
         imaging = aa.imaging(
             image=image,
-            pixel_scales=0.1,
             noise_map=noise_map,
             psf=psf,
             background_noise_map=aa.array.full(fill_value=7.0,
@@ -71,6 +70,7 @@ class TestEstimateNoiseFromImage:
 
         imaging = aa.imaging(
             image=image,
+            noise_map=None,
             pixel_scales=1.0,
             psf=aa.kernel.ones(shape_2d=(3,3)),
             exposure_time_map=exposure_time,
@@ -98,7 +98,7 @@ class TestEstimateNoiseFromImage:
 
         imaging = aa.imaging(
             image=image,
-            pixel_scales=1.0,
+            noise_map=None,
             psf=aa.kernel.ones(shape_2d=(3,3)),
             exposure_time_map=exposure_time,
             background_noise_map=background_noise,
@@ -128,7 +128,7 @@ class TestEstimateNoiseFromImage:
 
         imaging = aa.imaging(
             image=image,
-            pixel_scales=1.0,
+            noise_map=None,
             psf=aa.kernel.ones(shape_2d=(3,3)),
             exposure_time_map=exposure_time,
             background_noise_map=background_noise,
@@ -153,7 +153,7 @@ class TestEstimateNoiseFromImage:
 
         imaging = aa.imaging(
             image=image,
-            pixel_scales=1.0,
+            noise_map=None,
             psf=aa.kernel.ones(shape_2d=(3,3)),
             exposure_time_map=exposure_time,
             background_noise_map=background_noise,
@@ -189,7 +189,7 @@ class TestEstimateNoiseFromImage:
 
         imaging = aa.imaging(
             image=image,
-            pixel_scales=1.0,
+            noise_map=None,
             psf=aa.kernel.ones(shape_2d=(3,3)),
             exposure_time_map=exposure_time,
             background_noise_map=background_noise,
@@ -219,7 +219,7 @@ class TestEstimateNoiseFromImage:
 
         imaging = aa.imaging(
             image=image,
-            pixel_scales=1.0,
+            noise_map=None,
             psf=aa.kernel.ones(shape_2d=(3,3)),
             exposure_time_map=exposure_time,
             background_noise_map=background_noise,
@@ -254,7 +254,7 @@ class TestEstimateNoiseFromImage:
 
         imaging = aa.imaging(
             image=image,
-            pixel_scales=1.0,
+            noise_map=None,
             psf=aa.kernel.ones(shape_2d=(3,3)),
             exposure_time_map=exposure_time,
             background_noise_map=background_noise,
@@ -292,7 +292,7 @@ class TestEstimateNoiseFromImage:
 
         imaging = aa.imaging(
             image=image,
-            pixel_scales=1.0,
+            noise_map=None,
             psf=aa.kernel.ones(shape_2d=(3,3)),
             exposure_time_map=exposure_time,
             background_noise_map=background_noise,
@@ -328,7 +328,7 @@ class TestEstimateNoiseFromImage:
 
         imaging = aa.imaging(
             image=image,
-            pixel_scales=1.0,
+            noise_map=None,
             psf=aa.kernel.ones(shape_2d=(3,3)),
             exposure_time_map=exposure_time,
             background_noise_map=background_noise,
@@ -366,7 +366,7 @@ class TestEstimateNoiseFromImage:
 
         imaging = aa.imaging(
             image=image,
-            pixel_scales=1.0,
+            noise_map=None,
             psf=aa.kernel.ones(shape_2d=(3,3)),
             exposure_time_map=exposure_time,
             background_noise_map=background_noise,
@@ -530,7 +530,6 @@ class TestNewImagingResized:
 
         imaging = aa.imaging(
             image=image,
-            pixel_scales=1.0,
             psf=aa.kernel.zeros(shape_2d=(3,3)),
             noise_map=noise_map_array,
             background_noise_map=background_noise_map_array,
@@ -609,6 +608,7 @@ class TestNewImagingResized:
 
         imaging = aa.imaging(
             image=image,
+            noise_map=None,
             psf=aa.kernel.zeros(shape_2d=(3,3)),
         )
 
@@ -639,7 +639,6 @@ class TestNewImagingModifiedImage:
 
         imaging = aa.imaging(
             image=image,
-            pixel_scales=1.0,
             psf=aa.kernel.zeros(shape_2d=(3,3)),
             noise_map=noise_map_array,
             background_noise_map=background_noise_map_array,
@@ -754,12 +753,11 @@ class TestNewImagingBinnedUp:
 
         psf = aa.kernel.ones(shape_2d=(3,5), pixel_scales=1.0)
         psf_util = psf.rescaled_with_odd_dimensions_from_rescale_factor(
-            rescale_factor=0.5, renormalize=True
+            rescale_factor=0.5, renormalize=False
         )
 
         imaging = aa.imaging(
             image=image,
-            pixel_scales=1.0,
             psf=psf,
             noise_map=noise_map_array,
             background_noise_map=background_noise_map_array,
@@ -925,7 +923,6 @@ class TestImageConvertedFrom:
 
         imaging = aa.imaging(
             image=image,
-            pixel_scales=1.0,
             psf=aa.kernel.zeros(shape_2d=(3,3)),
             noise_map=noise_map_array,
             background_noise_map=background_noise_map_array,
@@ -953,7 +950,6 @@ class TestImageConvertedFrom:
 
         imaging = aa.imaging(
             image=image,
-            pixel_scales=1.0,
             psf=aa.kernel.zeros(shape_2d=(3,3)),
             noise_map=noise_map_array,
             background_noise_map=background_noise_map_array,

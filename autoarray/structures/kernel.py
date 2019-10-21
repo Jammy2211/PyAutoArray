@@ -105,7 +105,7 @@ class Kernel(arrays.AbstractArray):
         )
 
         return Kernel.manual_1d(
-            array=gaussian, shape_2d=shape_2d, pixel_scales=pixel_scales, renormalize=False
+            array=gaussian, shape_2d=shape_2d, pixel_scales=pixel_scales, renormalize=True
         )
 
     @classmethod

@@ -381,3 +381,24 @@ class TestLikelihood:
         assert likelihood == pytest.approx(
             -0.5 * (chi_squared + noise_normalization), 1e-4
         )
+
+
+class TestInversionEvidence:
+
+    def test__simple_values(self):
+
+        likelihood_with_regularization_terms = aa.util.fit.likelihood_with_regularization_from_inversion_terms(
+            chi_squared=3.0, regularization_term=6.0, noise_normalization=2.0
+        )
+
+        assert likelihood_with_regularization_terms == -0.5 * (3.0 + 6.0 + 2.0)
+
+        evidences = aa.util.fit.evidence_from_inversion_terms(
+            chi_squared=3.0,
+            regularization_term=6.0,
+            log_curvature_regularization_term=9.0,
+            log_regularization_term=10.0,
+            noise_normalization=30.0,
+        )
+
+        assert evidences == -0.5 * (3.0 + 6.0 + 9.0 - 10.0 + 30.0)
