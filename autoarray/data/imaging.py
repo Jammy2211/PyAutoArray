@@ -680,7 +680,7 @@ class Imaging(AbstractImaging):
         """
 
         if psf is None:
-            psf = kernel.Kernel.no_blur()
+            psf = kernel.Kernel.no_blur(pixel_scales=image.pixel_scales)
             image_needs_trimming = False
         else:
             image_needs_trimming = True
