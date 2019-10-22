@@ -1,9 +1,29 @@
 from codecs import open
 from os.path import abspath, dirname, join
+from subprocess import call
 
-from setuptools import find_packages, setup
+from setuptools import find_packages, setup, Command
 
 from autoarray import __version__
+
+
+class RunTests(Command):
+    """Run all tests."""
+
+    description = "run tests"
+    user_options = []
+
+    def initialize_options(self):
+        pass
+
+    def finalize_options(self):
+        pass
+
+    def run(self):
+        """Run all tests!"""
+        errno = call(["py.test", "--cov=autolens", "--cov-report=term-missing"])
+        raise SystemExit(errno)
+
 
 this_dir = abspath(dirname(__file__))
 with open(join(this_dir, "README.md"), encoding="utf-8") as file:
@@ -40,6 +60,6 @@ setup(
     keywords="cli",
     packages=find_packages(exclude=["docs"]),
     install_requires=requirements,
-    setup_requires=["pytest-runner"],
-    tests_require=["pytest"],
+    extras_require={"test": ["coverage", "pytest", "pytest-cov"]},
+    cmd_class={"test": RunTests}
 )
