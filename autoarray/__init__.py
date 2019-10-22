@@ -1,6 +1,6 @@
 from autoarray.mask.mask import Mask as mask
 from autoarray.structures.arrays import Array as array, MaskedArray as masked_array
-from autoarray.structures.grids import Grid as grid, MaskedGrid as masked_grid
+from autoarray.structures.grids import Grid as grid, MaskedGrid as masked_grid, IrregularGrid as irregular_grid
 from autoarray.structures.kernel import Kernel as kernel
 from autoarray.data import data_converter
 from autoarray.data.imaging import Imaging as imaging

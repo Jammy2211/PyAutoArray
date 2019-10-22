@@ -2,7 +2,7 @@ import numpy as np
 import pytest
 
 import autoarray as aa
-from test_autoarray.mock.mock_grids import MockPixelizationGrid
+from test_autoarray.mock.mock_grids import MockIrregularGrid
 from test_autoarray.mock.mock_inversion import MockGeometry
 
 
@@ -68,7 +68,7 @@ class TestRectangularMapper:
 
             geometry = pix.geometry_from_grid(grid=pixelization_grid)
 
-            grid = MockPixelizationGrid(
+            grid = MockIrregularGrid(
                 pixelization_grid,
                 mask_1d_index_for_sub_mask_1d_index=np.ones((1)),
                 sub_size=1,
@@ -125,7 +125,7 @@ class TestRectangularMapper:
 
             geometry = pix.geometry_from_grid(grid=pixelization_grid)
 
-            grid = MockPixelizationGrid(
+            grid = MockIrregularGrid(
                 pixelization_grid,
                 mask_1d_index_for_sub_mask_1d_index=np.ones((1)),
                 sub_size=1,
@@ -180,7 +180,7 @@ class TestRectangularMapper:
 
             geometry = pix.geometry_from_grid(grid=pixelization_grid)
 
-            grid = MockPixelizationGrid(
+            grid = MockIrregularGrid(
                 pixelization_grid,
                 mask_1d_index_for_sub_mask_1d_index=np.ones((1)),
                 sub_size=1,
@@ -242,7 +242,7 @@ class TestRectangularMapper:
 
             geometry = pix.geometry_from_grid(grid=pixelization_grid)
 
-            grid = MockPixelizationGrid(
+            grid = MockIrregularGrid(
                 pixelization_grid,
                 mask_1d_index_for_sub_mask_1d_index=np.ones((1)),
                 sub_size=1,
@@ -306,7 +306,7 @@ class TestRectangularMapper:
 
             geometry = pix.geometry_from_grid(grid=pixelization_grid)
 
-            grid = MockPixelizationGrid(
+            grid = MockIrregularGrid(
                 pixelization_grid,
                 mask_1d_index_for_sub_mask_1d_index=np.ones((1)),
                 sub_size=1,
@@ -356,7 +356,7 @@ class TestRectangularMapper:
 
             geometry = pix.geometry_from_grid(grid=pixelization_grid)
 
-            grid = MockPixelizationGrid(
+            grid = MockIrregularGrid(
                 pixelization_grid,
                 mask_1d_index_for_sub_mask_1d_index=np.ones((1)),
                 sub_size=1,
@@ -401,7 +401,7 @@ class TestRectangularMapper:
 
             geometry = pix.geometry_from_grid(grid=pixelization_grid)
 
-            grid = MockPixelizationGrid(
+            grid = MockIrregularGrid(
                 pixelization_grid,
                 mask_1d_index_for_sub_mask_1d_index=np.ones((1)),
                 sub_size=1,
@@ -447,7 +447,7 @@ class TestRectangularMapper:
 
             geometry = pix.geometry_from_grid(grid=pixelization_grid)
 
-            grid = MockPixelizationGrid(
+            grid = MockIrregularGrid(
                 pixelization_grid,
                 mask_1d_index_for_sub_mask_1d_index=np.ones((1)),
                 sub_size=1,
@@ -493,7 +493,7 @@ class TestRectangularMapper:
 
             pix = aa.pix.Rectangular(shape=(3, 4))
 
-            grid = MockPixelizationGrid(
+            grid = MockIrregularGrid(
                 pixelization_grid,
                 mask_1d_index_for_sub_mask_1d_index=np.ones((1)),
                 sub_size=1,
@@ -567,7 +567,7 @@ class TestRectangularMapper:
 
             geometry = pix.geometry_from_grid(grid=pixelization_grid)
 
-            grid = MockPixelizationGrid(
+            grid = MockIrregularGrid(
                 pixelization_sub_grid,
                 mask_1d_index_for_sub_mask_1d_index=np.ones((1)),
                 sub_size=1,
@@ -624,7 +624,7 @@ class TestRectangularMapper:
 
             geometry = pix.geometry_from_grid(grid=pixelization_grid)
 
-            grid = MockPixelizationGrid(
+            grid = MockIrregularGrid(
                 pixelization_grid,
                 mask_1d_index_for_sub_mask_1d_index=np.ones((1)),
                 sub_size=1,
@@ -670,7 +670,7 @@ class TestRectangularMapper:
 
             geometry = pix.geometry_from_grid(grid=pixelization_grid)
 
-            grid = MockPixelizationGrid(
+            grid = MockIrregularGrid(
                 pixelization_grid,
                 mask_1d_index_for_sub_mask_1d_index=np.ones((1)),
                 sub_size=1,
@@ -922,13 +922,13 @@ class TestVoronoiMapper:
                 grid_7x7, pixel_centers
             )
 
-            nearest_pixelization_1d_index_for_mask_1d_index = np.array(
+            nearest_irregular_1d_index_for_mask_1d_index = np.array(
                 [0, 0, 1, 0, 0, 1, 2, 2, 3]
             )
 
-            pixelization_grid = MockPixelizationGrid(
+            pixelization_grid = MockIrregularGrid(
                 arr=pixel_centers,
-                nearest_pixelization_1d_index_for_mask_1d_index=nearest_pixelization_1d_index_for_mask_1d_index,
+                nearest_irregular_1d_index_for_mask_1d_index=nearest_irregular_1d_index_for_mask_1d_index,
             )
 
             pix = aa.pix.Voronoi()
@@ -961,13 +961,13 @@ class TestVoronoiMapper:
                 [[0.1, 0.1], [1.1, 0.1], [2.1, 0.1], [0.1, 1.1], [1.1, 1.1], [2.1, 1.1]]
             )
 
-            nearest_pixelization_1d_index_for_mask_1d_index = np.array(
+            nearest_irregular_1d_index_for_mask_1d_index = np.array(
                 [0, 0, 1, 0, 0, 1, 2, 2, 3]
             )
 
-            pixelization_grid = MockPixelizationGrid(
+            pixelization_grid = MockIrregularGrid(
                 arr=pixel_centers,
-                nearest_pixelization_1d_index_for_mask_1d_index=nearest_pixelization_1d_index_for_mask_1d_index,
+                nearest_irregular_1d_index_for_mask_1d_index=nearest_irregular_1d_index_for_mask_1d_index,
             )
 
             pix = aa.pix.Voronoi()

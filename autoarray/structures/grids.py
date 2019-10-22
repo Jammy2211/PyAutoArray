@@ -346,11 +346,11 @@ class AbstractGrid(abstract_structure.AbstractStructure):
             The grid, whose grid coordinates are relocated.
         """
 
-        return PixelizationGrid(
-            grid_1d=self.relocated_grid_from_grid_jit(
+        return IrregularGrid(
+            grid=self.relocated_grid_from_grid_jit(
                 grid=pixelization_grid, border_grid=self.sub_border_grid
             ),
-            nearest_pixelization_1d_index_for_mask_1d_index=pixelization_grid.nearest_pixelization_1d_index_for_mask_1d_index,
+            nearest_irregular_1d_index_for_mask_1d_index=pixelization_grid.nearest_irregular_1d_index_for_mask_1d_index,
         )
 
 
@@ -539,9 +539,10 @@ class MaskedGrid(AbstractGrid):
         return Grid(grid_1d=sub_grid_1d, mask=mask)
 
 
-class PixelizationGrid(np.ndarray):
+class IrregularGrid(np.ndarray):
+
     def __new__(
-        cls, grid_1d, nearest_pixelization_1d_index_for_mask_1d_index, *args, **kwargs
+        cls, grid, nearest_irregular_1d_index_for_mask_1d_index=None, *args, **kwargs
     ):
         """A pixelization-grid of (y,x) coordinates which are used to form the pixel centres of adaptive pixelizations in the \
         *pixelizations* module.
@@ -558,15 +559,20 @@ class PixelizationGrid(np.ndarray):
         pix_grid : ndarray
             The grid of (y,x) arc-second coordinates of every image-plane pixelization grid used for adaptive source \
             -plane pixelizations.
-        nearest_pixelization_1d_index_for_mask_1d_index : ndarray
+        nearest_irregular_1d_index_for_mask_1d_index : ndarray
             A 1D array that maps every grid pixel to its nearest pixelization-grid pixel.
         """
-        obj = grid_1d.view(cls)
-        obj.nearest_pixelization_1d_index_for_mask_1d_index = (
-            nearest_pixelization_1d_index_for_mask_1d_index
+        grid = np.asarray(grid)
+        obj = grid.view(cls)
+        obj.nearest_irregular_1d_index_for_mask_1d_index = (
+            nearest_irregular_1d_index_for_mask_1d_index
         )
         obj.interpolator = None
         return obj
+
+    @classmethod
+    def manual_1d(cls, grid):
+        return IrregularGrid(grid=grid)
 
     @classmethod
     def from_grid_and_unmasked_2d_grid_shape(cls, unmasked_sparse_shape, grid):
@@ -575,18 +581,31 @@ class PixelizationGrid(np.ndarray):
             unmasked_sparse_shape=unmasked_sparse_shape, grid=grid
         )
 
-        return PixelizationGrid(
-            grid_1d=sparse_grid.sparse,
-            nearest_pixelization_1d_index_for_mask_1d_index=sparse_grid.sparse_1d_index_for_mask_1d_index,
+        return IrregularGrid(
+            grid=sparse_grid.sparse,
+            nearest_irregular_1d_index_for_mask_1d_index=sparse_grid.sparse_1d_index_for_mask_1d_index,
         )
 
     def __array_finalize__(self, obj):
-        if hasattr(obj, "nearest_pixelization_1d_index_for_mask_1d_index"):
-            self.nearest_pixelization_1d_index_for_mask_1d_index = (
-                obj.nearest_pixelization_1d_index_for_mask_1d_index
+        if hasattr(obj, "nearest_irregular_1d_index_for_mask_1d_index"):
+            self.nearest_irregular_1d_index_for_mask_1d_index = (
+                obj.nearest_irregular_1d_index_for_mask_1d_index
             )
         if hasattr(obj, "interpolator"):
             self.interpolator = obj.interpolator
+
+    @property
+    def mapping(self):
+
+        class IrregularMapping(object):
+
+            def __init__(self):
+                pass
+
+            def grid_from_sub_grid_1d(self, sub_grid_1d):
+                return IrregularGrid(grid=sub_grid_1d)
+
+        return IrregularMapping()
 
 
 class SparseToGrid(object):

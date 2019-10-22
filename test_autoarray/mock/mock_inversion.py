@@ -28,7 +28,7 @@ class MockPixelization(object):
     ):
         return self.value
 
-    def pixelization_grid_from_grid(self, grid, cluster_grid, hyper_image):
+    def pixelization_grid_from_grid(self, grid, hyper_image):
         if hyper_image is None:
             return self.grid
         else:

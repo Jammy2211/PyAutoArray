@@ -22,11 +22,11 @@ class MockGrid(grids.Grid):
         pass
 
 
-class MockPixelizationGrid(np.ndarray):
+class MockIrregularGrid(np.ndarray):
     def __new__(
         cls,
         arr,
-        nearest_pixelization_1d_index_for_mask_1d_index=None,
+        nearest_irregular_1d_index_for_mask_1d_index=None,
         mask_1d_index_for_sub_mask_1d_index=None,
         sub_size=1,
         *args,
@@ -47,12 +47,12 @@ class MockPixelizationGrid(np.ndarray):
         pix_grid : ndarray
             The grid of (y,x) arc-second coordinates of every image-plane pixelization grid used for adaptive source \
             -plane pixelizations.
-        nearest_pixelization_1d_index_for_mask_1d_index : ndarray
+        nearest_irregular_1d_index_for_mask_1d_index : ndarray
             A 1D array that maps every grid pixel to its nearest pixelization-grid pixel.
         """
         obj = arr.view(cls)
-        obj.nearest_pixelization_1d_index_for_mask_1d_index = (
-            nearest_pixelization_1d_index_for_mask_1d_index
+        obj.nearest_irregular_1d_index_for_mask_1d_index = (
+            nearest_irregular_1d_index_for_mask_1d_index
         )
         obj._mask_1d_index_for_sub_mask_1d_index = mask_1d_index_for_sub_mask_1d_index
         obj.sub_size = sub_size

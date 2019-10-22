@@ -528,7 +528,7 @@ class TestMapping:
 
         mask = aa.mask.unmasked(shape_2d=(4, 4))
 
-        array_1d = np.array(
+        array_1d = aa.masked_array.manual_1d(
             [
                 1.0,
                 2.0,
@@ -546,35 +546,35 @@ class TestMapping:
                 5.0,
                 6.0,
                 7.0,
-            ]
+            ], mask=mask
         )
 
-        array_2d = mask.mapping.trimmed_array_2d_from_padded_array_1d_and_image_shape(
-            padded_array_1d=array_1d, image_shape=(2, 2)
+        array_2d = mask.mapping.trimmed_array_2d_from_padded_array_and_image_shape(
+            padded_array=array_1d, image_shape=(2, 2)
         )
 
         assert (array_2d == np.array([[6.0, 7.0], [1.0, 2.0]])).all()
 
         mask = aa.mask.unmasked(shape_2d=(5, 3))
 
-        array_1d = np.array(
-            [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0]
+        array_1d = aa.masked_array.manual_1d(
+            [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0], mask=mask
         )
 
-        array_2d = mask.mapping.trimmed_array_2d_from_padded_array_1d_and_image_shape(
-            padded_array_1d=array_1d, image_shape=(3, 1)
+        array_2d = mask.mapping.trimmed_array_2d_from_padded_array_and_image_shape(
+            padded_array=array_1d, image_shape=(3, 1)
         )
 
         assert (array_2d == np.array([[5.0], [8.0], [2.0]])).all()
 
         mask = aa.mask.unmasked(shape_2d=(3, 5))
 
-        array_1d = np.array(
-            [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0]
+        array_1d = aa.masked_array.manual_1d(
+            [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0], mask=mask
         )
 
-        array_2d = mask.mapping.trimmed_array_2d_from_padded_array_1d_and_image_shape(
-            padded_array_1d=array_1d, image_shape=(1, 3)
+        array_2d = mask.mapping.trimmed_array_2d_from_padded_array_and_image_shape(
+            padded_array=array_1d, image_shape=(1, 3)
         )
 
         assert (array_2d == np.array([[7.0, 8.0, 9.0]])).all()
