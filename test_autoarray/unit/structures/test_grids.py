@@ -23,7 +23,7 @@ class TestGridAPI:
         def test__grid__makes_scaled_grid_with_pixel_scale(self):
 
             grid = aa.grid.manual_2d(grid=[[[1.0, 2.0], [3.0, 4.0]],
-                                 [[5.0, 6.0], [7.0, 8.0]]], pixel_scales=1.0)
+                                           [[5.0, 6.0], [7.0, 8.0]]], pixel_scales=1.0)
 
             assert type(grid) == grids.Grid
             assert (grid.in_2d == np.array([[[1.0, 2.0], [3.0, 4.0]], [[5.0, 6.0], [7.0, 8.0]]])).all()
