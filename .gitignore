@@ -3,7 +3,7 @@ __pycache__
 *.swp
 .eggs/
 autoarray.egg-info/
-
+*pytest_cache
 build//
 build/
 dist/
