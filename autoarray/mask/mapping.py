@@ -278,22 +278,20 @@ class Mapping(object):
             grid_1d=np.stack((grid_1d_y, grid_1d_x), axis=-1), mask=self.mask_sub_1
         )
 
-    def trimmed_array_2d_from_padded_array_1d_and_image_shape(
-        self, padded_array_1d, image_shape
+    def trimmed_array_2d_from_padded_array_and_image_shape(
+        self, padded_array, image_shape
     ):
         """ Map a padded 1D array of values to its original 2D array, trimming all edge values.
 
         Parameters
         -----------
-        padded_array_1d : ndarray
+        padded_array : ndarray
             A 1D array of values which were computed using a padded grid
         """
 
-        padded_array_2d = array_util.sub_array_2d_from_sub_array_1d(sub_array_1d=padded_array_1d, mask=self.mask, sub_size=1)
-
         pad_size_0 = self.mask.shape[0] - image_shape[0]
         pad_size_1 = self.mask.shape[1] - image_shape[1]
-        return padded_array_2d[
+        return padded_array.in_2d_binned[
             pad_size_0 // 2 : self.mask.shape[0] - pad_size_0 // 2,
             pad_size_1 // 2 : self.mask.shape[1] - pad_size_1 // 2,
         ]
@@ -327,8 +325,8 @@ class Mapping(object):
             sub_size=1,
         )
 
-    def unmasked_blurred_array_2d_from_padded_array_1d_psf_and_image_shape(
-        self, padded_array_1d, psf, image_shape
+    def unmasked_blurred_array_2d_from_padded_array_psf_and_image_shape(
+        self, padded_array, psf, image_shape
     ):
         """For a padded grid and psf, compute an unmasked blurred image from an unmasked unblurred image.
 
@@ -343,16 +341,12 @@ class Mapping(object):
             The 1D unmasked image which is blurred.
         """
 
-        padded_array_2d = array_util.sub_array_2d_from_sub_array_1d(sub_array_1d=padded_array_1d, mask=self.mask, sub_size=1)
-
-        blurred_image_2d = psf.convolved_array_from_array(
-            array=padded_array_2d.in_2d
+        blurred_image = psf.convolved_array_from_array(
+            array=padded_array
         )
 
-        blurred_image_1d = array_util.sub_array_1d_from_sub_array_2d(sub_array_1d=blurred_image_2d, mask=self.mask, sub_size=1)
-
-        return self.trimmed_array_2d_from_padded_array_1d_and_image_shape(
-            padded_array_1d=blurred_image_1d, image_shape=image_shape
+        return self.trimmed_array_2d_from_padded_array_and_image_shape(
+            padded_array=blurred_image, image_shape=image_shape
         )
 
     @property

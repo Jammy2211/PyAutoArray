@@ -194,7 +194,7 @@ class TestRectangular:
             assert (pixel_neighbors == pixel_neighbors_util).all()
             assert (pixel_neighbors_size == pixel_neighbors_size_util).all()
 
-    class TestPixelizationGrid:
+    class TestIrregularGrid:
         def test__pixelization_grid_returns_none_as_not_used(self, sub_grid_7x7):
 
             pix = aa.pix.Rectangular(shape=(3, 3))
@@ -405,14 +405,14 @@ class TestVoronoiMagnification:
 
         pixelization_grid = pix.pixelization_grid_from_grid(grid=sub_grid_7x7)
 
-        pixelization_grid_manual = grids.PixelizationGrid.from_grid_and_unmasked_2d_grid_shape(
+        pixelization_grid_manual = grids.IrregularGrid.from_grid_and_unmasked_2d_grid_shape(
             unmasked_sparse_shape=(3, 3), grid=sub_grid_7x7
         )
 
         assert (pixelization_grid_manual == pixelization_grid).all()
         assert (
-            pixelization_grid_manual.nearest_pixelization_1d_index_for_mask_1d_index
-            == pixelization_grid.nearest_pixelization_1d_index_for_mask_1d_index
+            pixelization_grid_manual.nearest_irregular_1d_index_for_mask_1d_index
+            == pixelization_grid.nearest_irregular_1d_index_for_mask_1d_index
         ).all()
 
 
@@ -526,13 +526,13 @@ class TestVoronoiBrightness:
             seed=1,
         )
 
-        pixelization_grid_manual = grids.PixelizationGrid(
-            grid_1d=sparse_to_grid.sparse,
-            nearest_pixelization_1d_index_for_mask_1d_index=sparse_to_grid.sparse_1d_index_for_mask_1d_index,
+        pixelization_grid_manual = grids.IrregularGrid(
+            grid=sparse_to_grid.sparse,
+            nearest_irregular_1d_index_for_mask_1d_index=sparse_to_grid.sparse_1d_index_for_mask_1d_index,
         )
 
         assert (pixelization_grid_manual == pixelization_grid).all()
         assert (
-            pixelization_grid_manual.nearest_pixelization_1d_index_for_mask_1d_index
-            == pixelization_grid.nearest_pixelization_1d_index_for_mask_1d_index
+            pixelization_grid_manual.nearest_irregular_1d_index_for_mask_1d_index
+            == pixelization_grid.nearest_irregular_1d_index_for_mask_1d_index
         ).all()

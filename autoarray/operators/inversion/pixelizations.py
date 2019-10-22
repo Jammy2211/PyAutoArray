@@ -356,9 +356,9 @@ class VoronoiMagnification(Voronoi):
             grid=grid, unmasked_sparse_shape=self.shape
         )
 
-        return grids.PixelizationGrid(
-            grid_1d=sparse_to_grid.sparse,
-            nearest_pixelization_1d_index_for_mask_1d_index=sparse_to_grid.sparse_1d_index_for_mask_1d_index,
+        return grids.IrregularGrid(
+            grid=sparse_to_grid.sparse,
+            nearest_irregular_1d_index_for_mask_1d_index=sparse_to_grid.sparse_1d_index_for_mask_1d_index,
         )
 
 
@@ -395,7 +395,7 @@ class VoronoiBrightnessImage(Voronoi):
             seed=seed,
         )
 
-        return grids.PixelizationGrid(
-            grid_1d=sparse_to_grid.sparse,
-            nearest_pixelization_1d_index_for_mask_1d_index=sparse_to_grid.sparse_1d_index_for_mask_1d_index,
+        return grids.IrregularGrid(
+            grid=sparse_to_grid.sparse,
+            nearest_irregular_1d_index_for_mask_1d_index=sparse_to_grid.sparse_1d_index_for_mask_1d_index,
         )

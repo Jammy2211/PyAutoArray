@@ -234,7 +234,7 @@ class VoronoiMapper(Mapper):
         """  The 1D index mappings between the sub pixels and Voronoi pixelization pixels. """
         return mapper_util.pixelization_1d_index_for_voronoi_sub_mask_1d_index_from_grids_and_geometry(
             grid=self.grid,
-            nearest_pixelization_1d_index_for_mask_1d_index=self.pixel_centres.nearest_pixelization_1d_index_for_mask_1d_index,
+            nearest_irregular_1d_index_for_mask_1d_index=self.pixel_centres.nearest_irregular_1d_index_for_mask_1d_index,
             mask_1d_index_for_sub_mask_1d_index=self.grid.regions._mask_1d_index_for_sub_mask_1d_index,
             pixel_centres=self.pixel_centres,
             pixel_neighbors=self.geometry.pixel_neighbors,

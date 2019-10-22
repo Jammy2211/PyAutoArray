@@ -228,7 +228,7 @@ class Kernel(arrays.AbstractArray):
         if self.mask.shape[0] % 2 == 0 or self.mask.shape[1] % 2 == 0:
             raise exc.KernelException("Kernel Kernel must be odd")
 
-        return array.mapping.array_from_array_2d(array_2d=scipy.signal.convolve2d(array.in_2d, self.in_2d, mode="same"))
+        return array.mapping.array_from_array_2d(array_2d=scipy.signal.convolve2d(array.in_2d_binned, self.in_2d, mode="same"))
 
     def convolved_array_2d_from_array_2d(self, array_2d):
         """
