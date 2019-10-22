@@ -33,7 +33,7 @@ class Transformer(object):
         if self.preload_transform:
 
             return self.real_visibilities_via_preload_jit(
-                image_1d=image.in_1d,
+                image_1d=image.in_1d_binned,
                 preloaded_reals=self.preload_real_transforms,
                 total_visibilities=self.total_visibilities,
                 total_image_pixels=self.total_image_pixels,
@@ -42,7 +42,7 @@ class Transformer(object):
         else:
 
             return self.real_visibilities_jit(
-                image_1d=image.in_1d,
+                image_1d=image.in_1d_binned,
                 grid_radians=self.grid_radians,
                 uv_wavelengths=self.uv_wavelengths,
                 total_visibilities=self.total_visibilities,
@@ -110,7 +110,7 @@ class Transformer(object):
         if self.preload_transform:
 
             return self.imaginary_visibilities_via_preload_jit(
-                image_1d=image.in_1d,
+                image_1d=image.in_1d_binned,
                 preloaded_imaginarys=self.preload_imaginary_transforms,
                 total_visibilities=self.total_visibilities,
                 total_image_pixels=self.total_image_pixels,
@@ -119,7 +119,7 @@ class Transformer(object):
         else:
 
             return self.imaginary_visibilities_jit(
-                image_1d=image.in_1d,
+                image_1d=image.in_1d_binned,
                 grid_radians=self.grid_radians,
                 uv_wavelengths=self.uv_wavelengths,
                 total_visibilities=self.total_visibilities,
