@@ -3,7 +3,7 @@ import pytest
 
 import autoarray as aa
 from test_autoarray.mock.mock_grids import MockPixelizationGrid
-from test_automodel.mock.mock_inversion import MockGeometry
+from test_autoarray.mock.mock_inversion import MockGeometry
 
 
 def grid_to_pixel_pixels_via_nearest_neighbour(grid, pixel_centers):

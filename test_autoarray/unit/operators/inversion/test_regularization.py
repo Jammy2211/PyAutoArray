@@ -1,7 +1,7 @@
 import autoarray as aa
 import numpy as np
 
-from test_automodel.mock.mock_inversion import MockRegMapper
+from test_autoarray.mock.mock_inversion import MockRegMapper
 
 class TestRegularizationConstant:
     def test__regularization_matrix__compare_to_regularization_util(self):
