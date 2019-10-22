@@ -3,7 +3,7 @@ from autoarray import exc
 import numpy as np
 import pytest
 
-from test_automodel.mock import mock_inversion
+from test_autoarray.mock import mock_inversion
 
 
 class TestRegularizationTerm:
