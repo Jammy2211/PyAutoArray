@@ -149,7 +149,7 @@ class MaskedImaging(AbstractMaskedData):
         )
         binned_mask = self.mask.mapping.binned_mask_from_bin_up_factor(bin_up_factor=bin_up_factor)
 
-        return MaskedImaging(
+        return self.__class__(
             imaging=binned_imaging,
             mask=binned_mask,
             trimmed_psf_shape_2d=self.trimmed_psf_shape_2d,
@@ -165,7 +165,7 @@ class MaskedImaging(AbstractMaskedData):
             signal_to_noise_limit=signal_to_noise_limit
         )
 
-        return MaskedImaging(
+        return self.__class__(
             imaging=imaging_with_signal_to_noise_limit,
             mask=self.mask,
             trimmed_psf_shape_2d=self.trimmed_psf_shape_2d,
@@ -174,7 +174,8 @@ class MaskedImaging(AbstractMaskedData):
             inversion_uses_border=self.inversion_uses_border,
             hyper_noise_map_max=self.hyper_noise_map_max,
         )
-    
+
+
 class MaskedInterferometer(AbstractMaskedData):
     def __init__(
             self,
