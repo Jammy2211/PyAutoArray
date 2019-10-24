@@ -230,29 +230,6 @@ class Kernel(arrays.AbstractArray):
 
         return array.mapping.array_from_array_2d(array_2d=scipy.signal.convolve2d(array.in_2d_binned, self.in_2d, mode="same"))
 
-    def convolved_array_2d_from_array_2d(self, array_2d):
-        """
-        Convolve an array with this Kernel
-
-        Parameters
-        ----------
-        image : ndarray
-            An array representing the image the Kernel is convolved with.
-
-        Returns
-        -------
-        convolved_image : ndarray
-            An array representing the image after convolution.
-
-        Raises
-        ------
-        KernelException if either Kernel psf dimension is odd
-        """
-        if self.mask.shape[0] % 2 == 0 or self.mask.shape[1] % 2 == 0:
-            raise exc.KernelException("Kernel Kernel must be odd")
-
-        return scipy.signal.convolve2d(array_2d, self.in_2d, mode="same")
-
     def convolved_array_from_array_2d_and_mask(self, array_2d, mask):
         """
         Convolve an array with this Kernel
@@ -272,8 +249,11 @@ class Kernel(arrays.AbstractArray):
         KernelException if either Kernel psf dimension is odd
         """
 
+        if self.mask.shape[0] % 2 == 0 or self.mask.shape[1] % 2 == 0:
+            raise exc.KernelException("Kernel Kernel must be odd")
+
         mask_sub_1 = mask.mapping.mask_sub_1
 
         return mask_sub_1.mapping.array_from_array_2d(
-            array_2d=self.convolved_array_2d_from_array_2d(array_2d=array_2d)
+            scipy.signal.convolve2d(array_2d, self.in_2d, mode="same")
         )

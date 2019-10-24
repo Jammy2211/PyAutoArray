@@ -291,16 +291,16 @@ class Convolver(object):
 
         return frame, kernel_frame
 
-    def convolved_image_from_image_array_and_blurring_array(
-        self, image_array, blurring_array
+    def convolved_image_from_image_and_blurring_image(
+        self, image, blurring_image
     ):
         """For a given 1D array and blurring array, convolve the two using this convolver.
 
         Parameters
         -----------
-        image_array : ndarray
+        image : ndarray
             1D array of the values which are to be blurred with the convolver's PSF.
-        blurring_array : ndarray
+        blurring_image : ndarray
             1D array of the blurring values which blur into the array after PSF convolution.
         """
 
@@ -311,11 +311,11 @@ class Convolver(object):
             )
 
         convolved_image = self.convolve_jit(
-            image_1d_array=image_array,
+            image_1d_array=image.in_1d_binned,
             image_frame_1d_indexes=self.image_frame_1d_indexes,
             image_frame_1d_kernels=self.image_frame_1d_kernels,
             image_frame_1d_lengths=self.image_frame_1d_lengths,
-            blurring_1d_array=blurring_array,
+            blurring_1d_array=blurring_image.in_1d_binned,
             blurring_frame_1d_indexes=self.blurring_frame_1d_indexes,
             blurring_frame_1d_kernels=self.blurring_frame_1d_kernels,
             blurring_frame_1d_lengths=self.blurring_frame_1d_lengths,

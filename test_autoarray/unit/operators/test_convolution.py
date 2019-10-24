@@ -1141,8 +1141,8 @@ class TestConvolution(object):
         image_array = np.array([1, 0, 0, 0, 0])
         blurring_array = np.array([0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
 
-        result = convolver.convolved_image_from_image_array_and_blurring_array(
-            image_array=image_array, blurring_array=blurring_array
+        result = convolver.convolved_image_from_image_and_blurring_image(
+            image=image_array, blurring_image=blurring_array
         )
 
         assert (np.round(result, 1) == np.array([0.6, 0.2, 0.2, 0.0, 0.0])).all()
@@ -1171,8 +1171,8 @@ class TestCompareToFull2dConv:
         blurring_mask = mask.regions.blurring_mask_from_kernel_shape(kernel_shape=kernel.shape_2d)
         convolver = aa.convolver(mask=mask, kernel=kernel)
         blurring_image = blurring_mask.mapping.array_from_array_2d(array_2d=image.in_2d)
-        blurred_masked_im_1 = convolver.convolved_image_from_image_array_and_blurring_array(
-            image_array=masked_image, blurring_array=blurring_image
+        blurred_masked_im_1 = convolver.convolved_image_from_image_and_blurring_image(
+            image=masked_image, blurring_image=blurring_image
         )
 
         assert blurred_masked_image == pytest.approx(blurred_masked_im_1, 1e-4)
