@@ -40,7 +40,7 @@ def subplot(
     output_filename="imaging",
     output_format="show",
 ):
-    """Plot the imaging data_type as a sub-plotters of all its quantites (e.g. the data, noise_map-map, PSF, Signal-to_noise-map, \
+    """Plot the imaging data_type as a sub-plotters of all its quantites (e.g. the simulate, noise_map-map, PSF, Signal-to_noise-map, \
      etc).
 
     Set *autolens.data_type.array.plotters.array_plotters* for a description of all innput parameters not described below.
@@ -50,9 +50,9 @@ def subplot(
     imaging : data_type.ImagingData
         The imaging data_type, which includes the observed data_type, noise_map-map, PSF, signal-to-noise_map-map, etc.
     plot_origin : True
-        If true, the origin of the data's coordinate system is plotted as a 'x'.
+        If true, the origin of the simulate's coordinate system is plotted as a 'x'.
     image_plane_pix_grid : ndarray or data_type.array.grid_stacks.PixGrid
-        If an adaptive pixelization whose pixels are formed by tracing pixels from the data, this plots those pixels \
+        If an adaptive pixelization whose pixels are formed by tracing pixels from the simulate, this plots those pixels \
         over the immage.
     ignore_config : bool
         If *False*, the config file general.ini is used to determine whether the subpot is plotted. If *True*, the \
@@ -278,7 +278,7 @@ def individual(
     output_path=None,
     output_format="png",
 ):
-    """Plot each attribute of the imaging data_type as individual figures one by one (e.g. the data, noise_map-map, PSF, \
+    """Plot each attribute of the imaging data_type as individual figures one by one (e.g. the simulate, noise_map-map, PSF, \
      Signal-to_noise-map, etc).
 
     Set *autolens.data_type.array.plotters.array_plotters* for a description of all innput parameters not described below.
@@ -288,7 +288,7 @@ def individual(
     imaging : data_type.ImagingData
         The imaging data_type, which includes the observed data_type, noise_map-map, PSF, signal-to-noise_map-map, etc.
     plot_origin : True
-        If true, the origin of the data's coordinate system is plotted as a 'x'.
+        If true, the origin of the simulate's coordinate system is plotted as a 'x'.
     """
 
     if should_plot_image:
@@ -401,9 +401,9 @@ def image(
     image : data_type.ImagingData
         The imaging data_type, which includes the observed data_type, noise_map-map, PSF, signal-to-noise_map-map, etc.
     plot_origin : True
-        If true, the origin of the data's coordinate system is plotted as a 'x'.
+        If true, the origin of the simulate's coordinate system is plotted as a 'x'.
     image_plane_pix_grid : ndarray or data_type.array.grid_stacks.PixGrid
-        If an adaptive pixelization whose pixels are formed by tracing pixels from the data, this plots those pixels \
+        If an adaptive pixelization whose pixels are formed by tracing pixels from the simulate, this plots those pixels \
         over the immage.
     """
     array_plotters.plot_array(
@@ -482,7 +482,7 @@ def noise_map(
     image : data_type.ImagingData
         The imaging data_type, which includes the observed data_type, noise_map-map, PSF, signal-to-noise_map-map, etc.
     plot_origin : True
-        If true, the origin of the data's coordinate system is plotted as a 'x'.
+        If true, the origin of the simulate's coordinate system is plotted as a 'x'.
     """
 
     array_plotters.plot_array(
@@ -554,7 +554,7 @@ def psf(
     image : data_type.ImagingData
         The imaging data_type, which includes the observed data_type, noise_map-map, PSF, signal-to-noise_map-map, etc.
     plot_origin : True
-        If true, the origin of the data's coordinate system is plotted as a 'x'.
+        If true, the origin of the simulate's coordinate system is plotted as a 'x'.
     """
 
     array_plotters.plot_array(
@@ -626,7 +626,7 @@ def signal_to_noise_map(
     image : data_type.ImagingData
         The imaging data_type, which includes the observed image, noise_map-map, PSF, signal-to-noise_map-map, etc.
     plot_origin : True
-        If true, the origin of the data's coordinate system is plotted as a 'x'.
+        If true, the origin of the simulate's coordinate system is plotted as a 'x'.
     """
 
     array_plotters.plot_array(
@@ -699,7 +699,7 @@ def absolute_signal_to_noise_map(
     image : data_type.ImagingData
         The imaging data_type, which includes the observed image, noise_map-map, PSF, signal-to-noise_map-map, etc.
     plot_origin : True
-        If true, the origin of the data's coordinate system is plotted as a 'x'.
+        If true, the origin of the simulate's coordinate system is plotted as a 'x'.
     """
 
     array_plotters.plot_array(
@@ -772,7 +772,7 @@ def potential_chi_squared_map(
     image : data_type.ImagingData
         The imaging data_type, which includes the observed image, noise_map-map, PSF, signal-to-noise_map-map, etc.
     plot_origin : True
-        If true, the origin of the data's coordinate system is plotted as a 'x'.
+        If true, the origin of the simulate's coordinate system is plotted as a 'x'.
     """
 
     array_plotters.plot_array(
