@@ -11,7 +11,6 @@ class AbstractMaskedData(object):
             pixel_scale_interpolation_grid=None,
             inversion_pixel_limit=None,
             inversion_uses_border=True,
-            hyper_noise_map_max=None,
     ):
 
         self.mask = mask
@@ -34,8 +33,6 @@ class AbstractMaskedData(object):
 
             self.grid = None
 
-        self.hyper_noise_map_max = hyper_noise_map_max
-
         self.inversion_pixel_limit = inversion_pixel_limit
         self.inversion_uses_border = inversion_uses_border
 
@@ -50,7 +47,6 @@ class MaskedImaging(AbstractMaskedData):
             pixel_scale_interpolation_grid=None,
             inversion_pixel_limit=None,
             inversion_uses_border=True,
-            hyper_noise_map_max=None,
     ):
         """
         The lens simulate is the collection of data_type (image, noise-map, PSF), a mask, grid, convolver \
@@ -89,7 +85,6 @@ class MaskedImaging(AbstractMaskedData):
             pixel_scale_interpolation_grid=pixel_scale_interpolation_grid,
             inversion_pixel_limit=inversion_pixel_limit,
             inversion_uses_border=inversion_uses_border,
-            hyper_noise_map_max=hyper_noise_map_max,
         )
 
         self.image = mask.mapping.array_from_array_2d(array_2d=imaging.image.in_2d)
@@ -135,13 +130,11 @@ class MaskedImaging(AbstractMaskedData):
                trimmed_psf_shape_2d=None,
                pixel_scale_interpolation_grid=None,
                inversion_pixel_limit=None,
-               inversion_uses_border=True,
-               hyper_noise_map_max=None):
+               inversion_uses_border=True):
         return cls(imaging=imaging, mask=mask,
                    trimmed_psf_shape_2d=trimmed_psf_shape_2d,
                    pixel_scale_interpolation_grid=pixel_scale_interpolation_grid,
-                   inversion_pixel_limit=inversion_pixel_limit, inversion_uses_border=inversion_uses_border,
-                   hyper_noise_map_max=hyper_noise_map_max)
+                   inversion_pixel_limit=inversion_pixel_limit, inversion_uses_border=inversion_uses_border)
 
     def signal_to_noise_map(self):
         return self.image / self.noise_map
@@ -160,7 +153,6 @@ class MaskedImaging(AbstractMaskedData):
             pixel_scale_interpolation_grid=self.pixel_scale_interpolation_grid,
             inversion_pixel_limit=self.inversion_pixel_limit,
             inversion_uses_border=self.inversion_uses_border,
-            hyper_noise_map_max=self.hyper_noise_map_max,
         )
 
     def signal_to_noise_limited_from_signal_to_noise_limit(self, signal_to_noise_limit):
@@ -176,7 +168,6 @@ class MaskedImaging(AbstractMaskedData):
             pixel_scale_interpolation_grid=self.pixel_scale_interpolation_grid,
             inversion_pixel_limit=self.inversion_pixel_limit,
             inversion_uses_border=self.inversion_uses_border,
-            hyper_noise_map_max=self.hyper_noise_map_max,
         )
 
 
@@ -189,7 +180,6 @@ class MaskedInterferometer(AbstractMaskedData):
             pixel_scale_interpolation_grid=None,
             inversion_pixel_limit=None,
             inversion_uses_border=True,
-            hyper_noise_map_max=None,
     ):
         """
         The lens simulate is the collection of data_type (image, noise-map, primary_beam), a mask, grid, convolver \
@@ -228,7 +218,6 @@ class MaskedInterferometer(AbstractMaskedData):
             pixel_scale_interpolation_grid=pixel_scale_interpolation_grid,
             inversion_pixel_limit=inversion_pixel_limit,
             inversion_uses_border=inversion_uses_border,
-            hyper_noise_map_max=hyper_noise_map_max,
         )
 
         if self.interferometer.primary_beam is None:
@@ -260,13 +249,11 @@ class MaskedInterferometer(AbstractMaskedData):
             trimmed_primary_beam_shape_2d=None,
             pixel_scale_interpolation_grid=None,
             inversion_pixel_limit=None,
-            inversion_uses_border=True,
-            hyper_noise_map_max=None):
+            inversion_uses_border=True):
         return cls(interferometer, real_space_mask=real_space_mask,
                    trimmed_primary_beam_shape_2d=trimmed_primary_beam_shape_2d,
                    pixel_scale_interpolation_grid=pixel_scale_interpolation_grid,
-                   inversion_pixel_limit=inversion_pixel_limit, inversion_uses_border=inversion_uses_border,
-                   hyper_noise_map_max=hyper_noise_map_max)
+                   inversion_pixel_limit=inversion_pixel_limit, inversion_uses_border=inversion_uses_border)
 
 
     def signal_to_noise_map(self):
