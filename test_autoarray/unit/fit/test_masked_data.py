@@ -206,7 +206,7 @@ class TestMaskedImaging(object):
             == 2.0 * np.ones((19, 19))
         ).all()
         assert (masked_imaging.psf.in_2d == np.ones((7, 7))).all()
-        assert masked_imaging.convolver.kernel.shape == (7, 7)
+        assert masked_imaging.convolver.kernel.shape_2d == (7, 7)
         assert (masked_imaging.image == np.array([1.0])).all()
         assert (masked_imaging.noise_map == np.array([2.0])).all()
 
