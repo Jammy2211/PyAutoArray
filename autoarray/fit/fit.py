@@ -7,18 +7,18 @@ class DataFit(object):
 
     # noinspection PyUnresolvedReferences
     def __init__(self, mask, data, noise_map, model_data, inversion=None):
-        """Class to fit data where the data structures are any dimension.
+        """Class to fit simulate where the simulate structures are any dimension.
 
         Parameters
         -----------
         data : ndarray
-            The observed data that is fitted.
+            The observed simulate that is fitted.
         noise_map : ndarray
-            The noise_map-map of the observed data.
+            The noise_map-map of the observed simulate.
         mask: msk.Mask
-            The masks that is applied to the data.
+            The masks that is applied to the simulate.
         model_data : ndarray
-            The model data the fitting image is fitted with.
+            The model simulate the fitting image is fitted with.
 
         Attributes
         -----------
@@ -27,14 +27,14 @@ class DataFit(object):
         chi_squared_map : ndarray
             The chi-squared map of the fit ((datas - model_data) / noise_maps ) **2.0
         chi_squared : float
-            The overall chi-squared of the model's fit to the data, summed over every data-point.
+            The overall chi-squared of the model's fit to the simulate, summed over every simulate-point.
         reduced_chi_squared : float
-            The reduced chi-squared of the model's fit to data (chi_squared / number of datas points), summed over \
-            every data-point.
+            The reduced chi-squared of the model's fit to simulate (chi_squared / number of datas points), summed over \
+            every simulate-point.
         noise_normalization : float
-            The overall normalization term of the noise_map-map, summed over every data-point.
+            The overall normalization term of the noise_map-map, summed over every simulate-point.
         likelihood : float
-            The overall likelihood of the model's fit to the data, summed over evey data-point.
+            The overall likelihood of the model's fit to the simulate, summed over evey simulate-point.
         """
         self.mask = mask
         self.data = data
@@ -62,7 +62,7 @@ class DataFit(object):
 
     @property
     def signal_to_noise_map(self):
-        """The signal-to-noise_map of the data and noise-map which are fitted."""
+        """The signal-to-noise_map of the simulate and noise-map which are fitted."""
         signal_to_noise_map = np.divide(self.data, self.noise_map)
         signal_to_noise_map[signal_to_noise_map < 0] = 0
         return signal_to_noise_map
@@ -122,18 +122,18 @@ class DataFit(object):
 class ImagingFit(DataFit):
 
     def __init__(self, mask, image, noise_map, model_image, inversion=None):
-        """Class to fit data where the data structures are any dimension.
+        """Class to fit simulate where the simulate structures are any dimension.
 
         Parameters
         -----------
-        data : ndarray
-            The observed data that is fitted.
+        simulate : ndarray
+            The observed simulate that is fitted.
         noise_map : ndarray
-            The noise_map-map of the observed data.
+            The noise_map-map of the observed simulate.
         mask: msk.Mask
-            The masks that is applied to the data.
+            The masks that is applied to the simulate.
         model_data : ndarray
-            The model data the fitting image is fitted with.
+            The model simulate the fitting image is fitted with.
 
         Attributes
         -----------
@@ -142,14 +142,14 @@ class ImagingFit(DataFit):
         chi_squared_map : ndarray
             The chi-squared map of the fit ((datas - model_data) / noise_maps ) **2.0
         chi_squared : float
-            The overall chi-squared of the model's fit to the data, summed over every data-point.
+            The overall chi-squared of the model's fit to the simulate, summed over every simulate-point.
         reduced_chi_squared : float
-            The reduced chi-squared of the model's fit to data (chi_squared / number of datas points), summed over \
-            every data-point.
+            The reduced chi-squared of the model's fit to simulate (chi_squared / number of datas points), summed over \
+            every simulate-point.
         noise_normalization : float
-            The overall normalization term of the noise_map-map, summed over every data-point.
+            The overall normalization term of the noise_map-map, summed over every simulate-point.
         likelihood : float
-            The overall likelihood of the model's fit to the data, summed over evey data-point.
+            The overall likelihood of the model's fit to the simulate, summed over evey simulate-point.
         """
 
         super(ImagingFit, self).__init__(mask=mask, data=image, noise_map=noise_map, model_data=model_image, inversion=inversion)
@@ -166,18 +166,18 @@ class ImagingFit(DataFit):
 class InterferometerFit(DataFit):
 
     def __init__(self, visibilities_mask, visibilities, noise_map, model_visibilities, inversion=None):
-        """Class to fit data where the data structures are any dimension.
+        """Class to fit simulate where the simulate structures are any dimension.
 
         Parameters
         -----------
-        data : ndarray
-            The observed data that is fitted.
+        simulate : ndarray
+            The observed simulate that is fitted.
         noise_map : ndarray
-            The noise_map-map of the observed data.
+            The noise_map-map of the observed simulate.
         visibilities_mask: msk.Mask
-            The masks that is applied to the data.
+            The masks that is applied to the simulate.
         model_data : ndarray
-            The model data the fitting image is fitted with.
+            The model simulate the fitting image is fitted with.
 
         Attributes
         -----------
@@ -186,14 +186,14 @@ class InterferometerFit(DataFit):
         chi_squared_map : ndarray
             The chi-squared map of the fit ((datas - model_data) / noise_maps ) **2.0
         chi_squared : float
-            The overall chi-squared of the model's fit to the data, summed over every data-point.
+            The overall chi-squared of the model's fit to the simulate, summed over every simulate-point.
         reduced_chi_squared : float
-            The reduced chi-squared of the model's fit to data (chi_squared / number of datas points), summed over \
-            every data-point.
+            The reduced chi-squared of the model's fit to simulate (chi_squared / number of datas points), summed over \
+            every simulate-point.
         noise_normalization : float
-            The overall normalization term of the noise_map-map, summed over every data-point.
+            The overall normalization term of the noise_map-map, summed over every simulate-point.
         likelihood : float
-            The overall likelihood of the model's fit to the data, summed over evey data-point.
+            The overall likelihood of the model's fit to the simulate, summed over evey simulate-point.
         """
 
         super(InterferometerFit, self).__init__(mask=visibilities_mask, data=visibilities, noise_map=noise_map, model_data=model_visibilities, inversion=inversion)

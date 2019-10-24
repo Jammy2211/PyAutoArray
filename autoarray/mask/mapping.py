@@ -330,7 +330,7 @@ class Mapping(object):
     ):
         """For a padded grid and psf, compute an unmasked blurred image from an unmasked unblurred image.
 
-        This relies on using the lens data's padded-grid, which is a grid of (y,x) coordinates which extends over the \
+        This relies on using the lens simulate's padded-grid, which is a grid of (y,x) coordinates which extends over the \
         entire image as opposed to just the masked region.
 
         Parameters
