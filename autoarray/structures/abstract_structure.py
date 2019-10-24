@@ -118,6 +118,18 @@ class AbstractStructure(np.ndarray):
         obj.mask = mask
         return obj
 
+    @property
+    def shape_1d(self):
+        return self.mask.shape_1d
+
+    @property
+    def sub_shape_1d(self):
+        return self.mask.sub_shape_1d
+
+    @property
+    def in_1d(self):
+        return self
+
     def __array_finalize__(self, obj):
 
         if isinstance(obj, AbstractStructure):
@@ -125,16 +137,8 @@ class AbstractStructure(np.ndarray):
             self.mask = obj.mask
 
     @property
-    def shape_1d(self):
-        return self.shape
-
-    @property
     def shape_2d(self):
         return self.mask.shape
-
-    @property
-    def sub_shape_1d(self):
-        return self.mask.sub_shape_1d
 
     @property
     def sub_shape_2d(self):
@@ -167,10 +171,6 @@ class AbstractStructure(np.ndarray):
     @property
     def geometry(self):
         return self.mask.geometry
-
-    @property
-    def in_1d(self):
-        return self
 
     @property
     def total_pixels(self):

@@ -305,6 +305,10 @@ class Mask(np.ndarray):
         return self.sub_size ** 2 * self.pixels_in_mask
 
     @property
+    def shape_1d(self):
+        return self.pixels_in_mask
+
+    @property
     def shape_2d(self):
         return self.shape
 

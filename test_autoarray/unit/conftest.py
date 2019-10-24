@@ -230,14 +230,14 @@ def make_imaging_6x6():
     )
 
 
-@pytest.fixture(name="visibilities_7")
+@pytest.fixture(name="visibilities_7x2")
 def make_visibilities_7():
-    return mock_data.MockVisibilities(shape=7, value=1.0)
+    return mock_data.MockVisibilities(shape=(7,2), value=1.0)
 
 
-@pytest.fixture(name="visibilities_noise_map_7")
-def make_visibilities_noise_map_7():
-    return mock_data.MockVisibilitiesNoiseMap(shape=7, value=2.0)
+@pytest.fixture(name="noise_map_7x2")
+def make_noise_map_7():
+    return mock_data.MockVisibilitiesNoiseMap(shape=(7,2), value=2.0)
 
 
 @pytest.fixture(name="primary_beam_3x3")
@@ -245,29 +245,27 @@ def make_primary_beam_3x3():
     return mock_data.MockPrimaryBeam(shape_2d=(3, 3), value=1.0)
 
 
-@pytest.fixture(name="uv_wavelengths_7")
+@pytest.fixture(name="uv_wavelengths_7x2")
 def make_uv_wavelengths_7():
-    return mock_data.MockUVWavelengths(shape=7, value=3.0)
+    return mock_data.MockUVWavelengths(shape=(7,2), value=3.0)
 
 
 @pytest.fixture(name="interferometer_7")
 def make_interferometer_7(
-    visibilities_7, visibilities_noise_map_7, primary_beam_3x3, uv_wavelengths_7
+    visibilities_7x2, noise_map_7x2, primary_beam_3x3, uv_wavelengths_7x2
 ):
     return mock_data.MockInterferometer(
-        shape_2d=(7, 7),
-        visibilities=visibilities_7,
-        pixel_scales=1.0,
-        noise_map=visibilities_noise_map_7,
+        visibilities=visibilities_7x2,
+        noise_map=noise_map_7x2,
+        uv_wavelengths=uv_wavelengths_7x2,
         primary_beam=primary_beam_3x3,
-        uv_wavelengths=uv_wavelengths_7,
     )
 
 
 @pytest.fixture(name="transformer_7x7_7")
-def make_transformer_7x7_7(uv_wavelengths_7, grid_7x7):
+def make_transformer_7x7_7(uv_wavelengths_7x2, grid_7x7):
     return mock_data.MockTransformer(
-        uv_wavelengths=uv_wavelengths_7,
+        uv_wavelengths=uv_wavelengths_7x2,
         grid_radians=grid_7x7.mask.geometry.masked_grid.in_radians,
     )
 
@@ -298,6 +296,8 @@ def make_masked_interferometer_7(
 @pytest.fixture(name="fit_7x7")
 def make_masked_imaging_fit_x1_plane_7x7(masked_imaging_7x7):
     return fit.DataFit(
-        masked_data=masked_imaging_7x7,
+        mask=masked_imaging_7x7.mask,
+        data=masked_imaging_7x7.image,
+        noise_map=masked_imaging_7x7.noise_map,
         model_data=5.0*masked_imaging_7x7.image
     )

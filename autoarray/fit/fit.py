@@ -118,6 +118,7 @@ class DataFit(object):
         else:
             return self.evidence
 
+
 class ImagingFit(DataFit):
 
     def __init__(self, mask, image, noise_map, model_image, inversion=None):
@@ -159,4 +160,52 @@ class ImagingFit(DataFit):
 
     @property
     def model_image(self):
+        return self.model_data
+
+
+class InterferometerFit(DataFit):
+
+    def __init__(self, visibilities_mask, visibilities, noise_map, model_visibilities, inversion=None):
+        """Class to fit data where the data structures are any dimension.
+
+        Parameters
+        -----------
+        data : ndarray
+            The observed data that is fitted.
+        noise_map : ndarray
+            The noise_map-map of the observed data.
+        visibilities_mask: msk.Mask
+            The masks that is applied to the data.
+        model_data : ndarray
+            The model data the fitting image is fitted with.
+
+        Attributes
+        -----------
+        residual_map : ndarray
+            The residual map of the fit (datas - model_data).
+        chi_squared_map : ndarray
+            The chi-squared map of the fit ((datas - model_data) / noise_maps ) **2.0
+        chi_squared : float
+            The overall chi-squared of the model's fit to the data, summed over every data-point.
+        reduced_chi_squared : float
+            The reduced chi-squared of the model's fit to data (chi_squared / number of datas points), summed over \
+            every data-point.
+        noise_normalization : float
+            The overall normalization term of the noise_map-map, summed over every data-point.
+        likelihood : float
+            The overall likelihood of the model's fit to the data, summed over evey data-point.
+        """
+
+        super(InterferometerFit, self).__init__(mask=visibilities_mask, data=visibilities, noise_map=noise_map, model_data=model_visibilities, inversion=inversion)
+
+    @property
+    def visibilities_mask(self):
+        return self.mask
+
+    @property
+    def visibilities(self):
+        return self.data
+
+    @property
+    def model_visibilities(self):
         return self.model_data

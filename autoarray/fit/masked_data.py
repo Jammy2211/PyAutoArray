@@ -184,7 +184,7 @@ class MaskedInterferometer(AbstractMaskedData):
     def __init__(
             self,
             interferometer,
-            mask,
+            real_space_mask,
             trimmed_primary_beam_shape_2d=None,
             pixel_scale_interpolation_grid=None,
             inversion_pixel_limit=None,
@@ -202,7 +202,7 @@ class MaskedInterferometer(AbstractMaskedData):
         ----------
         imaging: im.Imaging
             The imaging data_type all in 2D (the image, noise-map, primary_beam, etc.)
-        mask: msk.Mask
+        real_space_mask: msk.Mask
             The 2D mask that is applied to the image.
         sub_size : int
             The size of the sub-grid used for each lens SubGrid. E.g. a value of 2 grid each image-pixel on a 2x2 \
@@ -224,7 +224,7 @@ class MaskedInterferometer(AbstractMaskedData):
         self.interferometer = interferometer
 
         super(MaskedInterferometer, self).__init__(
-            mask=mask,
+            mask=real_space_mask,
             pixel_scale_interpolation_grid=pixel_scale_interpolation_grid,
             inversion_pixel_limit=inversion_pixel_limit,
             inversion_uses_border=inversion_uses_border,
@@ -247,20 +247,22 @@ class MaskedInterferometer(AbstractMaskedData):
         )
 
         self.visibilities = interferometer.visibilities
-        self.noise_map =  np.stack(
-                (self.interferometer.noise_map, self.interferometer.noise_map), axis=-1
-            )
+        self.noise_map =  interferometer.noise_map
         self.visibilities_mask = np.full(fill_value=False, shape=self.interferometer.uv_wavelengths.shape)
+
+    @property
+    def real_space_mask(self):
+        return self.mask
 
     @classmethod
     def manual(cls, interferometer,
-            mask,
+            real_space_mask,
             trimmed_primary_beam_shape_2d=None,
             pixel_scale_interpolation_grid=None,
             inversion_pixel_limit=None,
             inversion_uses_border=True,
             hyper_noise_map_max=None):
-        return cls(interferometer, mask=mask,
+        return cls(interferometer, real_space_mask=real_space_mask,
                    trimmed_primary_beam_shape_2d=trimmed_primary_beam_shape_2d,
                    pixel_scale_interpolation_grid=pixel_scale_interpolation_grid,
                    inversion_pixel_limit=inversion_pixel_limit, inversion_uses_border=inversion_uses_border,

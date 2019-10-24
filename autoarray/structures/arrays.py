@@ -192,6 +192,12 @@ class AbstractArray(abstract_structure.AbstractStructure):
     def in_2d_binned(self):
         return self.mask.mapping.array_2d_binned_from_sub_array_1d(sub_array_1d=self)
 
+    def output_to_fits(self, file_path, overwrite=False):
+
+        array_util.numpy_array_2d_to_fits(
+            array_2d=self.in_2d, file_path=file_path, overwrite=overwrite
+        )
+
 
 class Array(AbstractArray):
 
