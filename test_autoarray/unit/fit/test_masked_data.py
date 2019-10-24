@@ -73,20 +73,6 @@ class TestAbstractMaskedData(object):
 
         assert masked_imaging_7x7.inversion_uses_border == False
 
-    def test__hyper_noise_map_max(self, sub_mask_7x7):
-        masked_imaging_7x7 = md.AbstractMaskedData(
-            mask=sub_mask_7x7, hyper_noise_map_max=10.0
-        )
-
-        assert masked_imaging_7x7.hyper_noise_map_max == 10.0
-
-        masked_imaging_7x7 = md.AbstractMaskedData(
-            mask=sub_mask_7x7, hyper_noise_map_max=20.0
-        )
-
-        assert masked_imaging_7x7.hyper_noise_map_max == 20.0
-
-
 class TestMaskedImaging(object):
     def test__masked_data(self, imaging_7x7, sub_mask_7x7):
 
