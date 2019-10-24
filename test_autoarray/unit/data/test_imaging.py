@@ -2475,7 +2475,6 @@ class TestSimulateImaging(object):
             )
 
 
-
 class TestSimulatePoissonNoise(object):
     def test__input_image_all_0s__exposure_time_all_1s__all_noise_values_are_0s(self):
         

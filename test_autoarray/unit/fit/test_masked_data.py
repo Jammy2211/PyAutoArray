@@ -286,7 +286,7 @@ class TestMaskedInterferometer(object):
 
         masked_interferometer_7 = aa.masked_interferometer.manual(
         interferometer=interferometer_7,
-            mask=sub_mask_7x7,
+            real_space_mask=sub_mask_7x7,
         )
 
         assert (
@@ -314,7 +314,7 @@ class TestMaskedInterferometer(object):
 
         masked_interferometer_7 = aa.masked_interferometer.manual(
         interferometer=interferometer_7,
-            mask=sub_mask_7x7,
+            real_space_mask=sub_mask_7x7,
         )
 
         assert type(masked_interferometer_7.transformer) == fourier_transform.Transformer
@@ -325,11 +325,9 @@ class TestMaskedInterferometer(object):
         primary_beam = aa.kernel.ones(shape_2d=(7, 7), pixel_scales=1.0)
 
         interferometer = aa.interferometer(
-            shape_2d=(2, 2),
-            visibilities=np.ones((19, 2)),
-            pixel_scales=3.0,
+            visibilities=aa.visibilities.ones(shape_1d=(19, )),
             primary_beam=primary_beam,
-            noise_map=2.0 * np.ones((19,)),
+            noise_map=2.0 * aa.visibilities.ones(shape_1d=(19, )),
             uv_wavelengths=3.0 * np.ones((19, 2)),
         )
         mask = aa.mask.unmasked(
@@ -339,7 +337,7 @@ class TestMaskedInterferometer(object):
 
         masked_interferometer_7 = aa.masked_interferometer.manual(
             interferometer=interferometer,
-            mask=mask,
+            real_space_mask=mask,
             trimmed_primary_beam_shape_2d=(7, 7),
         )
 
@@ -350,5 +348,4 @@ class TestMaskedInterferometer(object):
         ).all()
         assert (masked_interferometer_7.primary_beam.in_2d == np.ones((7, 7))).all()
 
-        assert masked_interferometer_7.mask.sub_size == 8
         assert masked_interferometer_7.trimmed_primary_beam_shape_2d == (7, 7)

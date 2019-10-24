@@ -1138,8 +1138,8 @@ class TestConvolution(object):
 
         convolver = aa.convolver(mask=cross_mask, kernel=kernel)
 
-        image_array = np.array([1, 0, 0, 0, 0])
-        blurring_array = np.array([0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
+        image_array = aa.array.manual_1d(array=[1, 0, 0, 0, 0], shape_2d=(5,5))
+        blurring_array = aa.array.manual_1d(array=[0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], shape_2d=(5,5))
 
         result = convolver.convolved_image_from_image_and_blurring_image(
             image=image_array, blurring_image=blurring_array

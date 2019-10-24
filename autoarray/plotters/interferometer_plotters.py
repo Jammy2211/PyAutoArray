@@ -260,7 +260,7 @@ def visibilities(
 
     grid_plotters.plot_grid(
         grid=interferometer.visibilities,
-        colors=interferometer.noise_map,
+        colors=interferometer.noise_map[:,0],
         as_subplot=as_subplot,
         units=units,
         kpc_per_arcsec=kpc_per_arcsec,

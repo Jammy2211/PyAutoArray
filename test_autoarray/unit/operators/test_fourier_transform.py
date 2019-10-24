@@ -110,7 +110,7 @@ class TestVisiblities(object):
 
         assert (real_visibilities_via_preload == real_visibilities).all()
 
-    def test__imaginary_visibilities__intensity_image_all_ones__simple_cases(self):
+    def test__imag_visibilities__intensity_image_all_ones__simple_cases(self):
 
         uv_wavelengths = np.ones(shape=(4, 2))
         grid_radians = np.ones(shape=(1, 2))
@@ -123,11 +123,11 @@ class TestVisiblities(object):
 
         image = aa.array.ones(shape_2d=(1, 1))
 
-        imaginary_visibilities = transformer.imaginary_visibilities_from_image(
+        imag_visibilities = transformer.imag_visibilities_from_image(
             image=image
         )
 
-        assert (imaginary_visibilities == np.zeros(shape=4)).all()
+        assert (imag_visibilities == np.zeros(shape=4)).all()
 
         uv_wavelengths = np.array([[0.2, 1.0], [0.5, 1.1], [0.8, 1.2]])
 
@@ -141,15 +141,15 @@ class TestVisiblities(object):
 
         image = aa.array.ones(shape_2d=(2, 1))
 
-        imaginary_visibilities = transformer.imaginary_visibilities_from_image(
+        imag_visibilities = transformer.imag_visibilities_from_image(
             image=image
         )
 
-        assert imaginary_visibilities == pytest.approx(
+        assert imag_visibilities == pytest.approx(
             np.array([1.350411, 0.791759, 0.0]), 1.0e-4
         )
 
-    def test__imaginary_visibilities__intensity_image_varies__simple_cases(self):
+    def test__imag_visibilities__intensity_image_varies__simple_cases(self):
 
         uv_wavelengths = np.ones(shape=(4, 2))
         grid_radians = np.ones(shape=(1, 2))
@@ -162,11 +162,11 @@ class TestVisiblities(object):
 
         image = aa.array.manual_2d([[2.0]])
 
-        imaginary_visibilities = transformer.imaginary_visibilities_from_image(
+        imag_visibilities = transformer.imag_visibilities_from_image(
             image=image
         )
 
-        assert (imaginary_visibilities == np.array([0.0])).all()
+        assert (imag_visibilities == np.array([0.0])).all()
 
         uv_wavelengths = np.array([[0.2, 1.0], [0.5, 1.1], [0.8, 1.2]])
 
@@ -180,15 +180,15 @@ class TestVisiblities(object):
 
         image = aa.array.manual_2d([[3.0, 6.0]])
 
-        imaginary_visibilities = transformer.imaginary_visibilities_from_image(
+        imag_visibilities = transformer.imag_visibilities_from_image(
             image=image
         )
 
-        assert imaginary_visibilities == pytest.approx(
+        assert imag_visibilities == pytest.approx(
             np.array([6.9980971, 4.56218, 0.746069]), 1.0e-4
         )
 
-    def test__imaginary_visibilities__preload_and_non_preload_give_same_answer(self):
+    def test__imag_visibilities__preload_and_non_preload_give_same_answer(self):
 
         uv_wavelengths = np.ones(shape=(4, 2))
         grid_radians = np.ones(shape=(1, 2))
@@ -206,14 +206,14 @@ class TestVisiblities(object):
 
         image = aa.array.manual_2d([[2.0]])
 
-        imaginary_visibilities_via_preload = transformer_preload.imaginary_visibilities_from_image(
+        imag_visibilities_via_preload = transformer_preload.imag_visibilities_from_image(
             image=image
         )
-        imaginary_visibilities = transformer.imaginary_visibilities_from_image(
+        imag_visibilities = transformer.imag_visibilities_from_image(
             image=image
         )
 
-        assert (imaginary_visibilities_via_preload == imaginary_visibilities).all()
+        assert (imag_visibilities_via_preload == imag_visibilities).all()
 
     def test__visiblities_from_image__same_as_individual_calculations_above(self):
 
@@ -241,9 +241,9 @@ class TestVisiblities(object):
         real_visibilities = transformer.real_visibilities_from_image(
             image=image
         )
-        imaginary_visibilities = transformer.imaginary_visibilities_from_image(
+        imag_visibilities = transformer.imag_visibilities_from_image(
             image=image
         )
 
         assert (visibilities[:, 0] == real_visibilities).all()
-        assert (visibilities[:, 1] == imaginary_visibilities).all()
+        assert (visibilities[:, 1] == imag_visibilities).all()

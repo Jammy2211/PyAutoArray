@@ -302,36 +302,26 @@ class AbstractImaging(abstract_data.AbstractData):
         background_sky_map_path=None,
         overwrite=False,
     ):
-        array_util.numpy_array_2d_to_fits(
-            array_2d=self.image.in_2d, file_path=image_path, overwrite=overwrite
-        )
-        array_util.numpy_array_2d_to_fits(
-            array_2d=self.psf.in_2d, file_path=psf_path, overwrite=overwrite
-        )
+        self.image.output_to_fits(file_path=image_path, overwrite=overwrite)
+        self.psf.output_to_fits(file_path=psf_path, overwrite=overwrite)
     
         if self.noise_map is not None and noise_map_path is not None:
-            array_util.numpy_array_2d_to_fits(
-                array_2d=self.noise_map.in_2d,
-                file_path=noise_map_path,
-                overwrite=overwrite,
+            self.noise_map.output_to_fits(file_path=noise_map_path, overwrite=overwrite
             )
     
         if (
             self.background_noise_map is not None
             and background_noise_map_path is not None
         ):
-            array_util.numpy_array_2d_to_fits(
-                array_2d=self.background_noise_map.in_2d,
+            self.background_noise_map.output_to_fits(
                 file_path=background_noise_map_path,
-                overwrite=overwrite,
-            )
+                overwrite=overwrite)
     
         if (
             self.poisson_noise_map is not None
             and poisson_noise_map_path is not None
         ):
-            array_util.numpy_array_2d_to_fits(
-                array_2d=self.poisson_noise_map.in_2d,
+            self.poisson_noise_map.output_to_fits(
                 file_path=poisson_noise_map_path,
                 overwrite=overwrite,
             )
@@ -340,8 +330,7 @@ class AbstractImaging(abstract_data.AbstractData):
             self.exposure_time_map is not None
             and exposure_time_map_path is not None
         ):
-            array_util.numpy_array_2d_to_fits(
-                array_2d=self.exposure_time_map.in_2d,
+            self.exposure_time_map.output_to_fits(
                 file_path=exposure_time_map_path,
                 overwrite=overwrite,
             )
@@ -350,8 +339,7 @@ class AbstractImaging(abstract_data.AbstractData):
             self.background_sky_map is not None
             and background_sky_map_path is not None
         ):
-            array_util.numpy_array_2d_to_fits(
-                array_2d=self.background_sky_map.in_2d,
+            self.background_sky_map.output_to_fits(
                 file_path=background_sky_map_path,
                 overwrite=overwrite,
             )

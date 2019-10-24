@@ -2,6 +2,7 @@ import os
 
 import numpy as np
 import pytest
+import shutil
 
 import autoarray as aa
 from autoarray.structures import arrays
@@ -789,3 +790,29 @@ class TestArray:
                 array_2d.binned_from_bin_up_factor(
                     bin_up_factor=4, method="wrong"
                 )
+
+    class TestOutputToFits:
+
+        def test__output_to_files(self):
+
+            array = aa.array.from_fits(
+                file_path=test_data_dir + "3x3_ones.fits", hdu=0,
+            )
+
+            output_data_dir = "{}/../test_files/array/output_test/".format(
+                os.path.dirname(os.path.realpath(__file__))
+            )
+            if os.path.exists(output_data_dir):
+                shutil.rmtree(output_data_dir)
+
+            os.makedirs(output_data_dir)
+
+            array.output_to_fits(
+                file_path=output_data_dir + "array.fits",
+            )
+
+            array_from_out = aa.array.from_fits(
+                file_path=output_data_dir + "array.fits", hdu=0,
+            )
+
+            assert (array_from_out.in_2d == np.ones((3, 3))).all()
