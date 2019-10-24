@@ -109,8 +109,8 @@ class MaskedImaging(AbstractMaskedData):
             self.psf = imaging.psf.resized_from_new_shape(new_shape=self.trimmed_psf_shape_2d)
 
             self.convolver = convolution.Convolver(
-                mask_2d=mask,
-                kernel_2d=self.psf.in_2d,
+                mask=mask,
+                kernel=self.psf,
             )
 
             if mask.pixel_scales is not None:

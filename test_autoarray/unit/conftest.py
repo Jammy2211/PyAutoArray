@@ -139,7 +139,7 @@ def make_blurring_grid_7x7(blurring_mask_7x7):
 @pytest.fixture(name="convolver_7x7")
 def make_convolver_7x7(mask_7x7, blurring_mask_7x7, psf_3x3):
     return mock_convolution.MockConvolver(
-        mask_2d=mask_7x7, blurring_mask=blurring_mask_7x7, kernel_2d=psf_3x3
+        mask=mask_7x7, blurring_mask=blurring_mask_7x7, kernel=psf_3x3
     )
 
 
@@ -296,8 +296,8 @@ def make_masked_interferometer_7(
 
 
 @pytest.fixture(name="fit_7x7")
-def make_masked_imaging_fit_x1_plane_7x7(imaging_7x7, mask_7x7):
+def make_masked_imaging_fit_x1_plane_7x7(masked_imaging_7x7):
     return fit.DataFit(
-        mask=mask_7x7, data=imaging_7x7.data, noise_map=imaging_7x7.noise_map,
-        model_data=5.0*imaging_7x7.data
+        masked_data=masked_imaging_7x7,
+        model_data=5.0*masked_imaging_7x7.image
     )
