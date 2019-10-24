@@ -6,7 +6,7 @@ from autoarray.util import fit_util
 class DataFit(object):
 
     # noinspection PyUnresolvedReferences
-    def __init__(self, mask, data, noise_map, model_data, inversion=None):
+    def __init__(self, masked_data, model_data, inversion=None):
         """Class to fit data where the data structures are any dimension.
 
         Parameters
@@ -36,15 +36,21 @@ class DataFit(object):
         likelihood : float
             The overall likelihood of the model's fit to the data, summed over evey data-point.
         """
-        self.mask = mask
-        self.data = data
-        self.noise_map = noise_map
+        self.masked_data = masked_data
         self.model_data = model_data
         self.inversion = inversion
 
-    @classmethod
-    def from_masked_data(cls, masked_data, model_data):
-        return cls(mask=masked_data.mask, data=masked_data.data, noise_map=masked_data.noise_map, model_data=model_data)
+    @property
+    def mask(self):
+        return self.masked_data.mask
+
+    @property
+    def data(self):
+        return self.masked_data.data
+
+    @property
+    def noise_map(self):
+        return self.masked_data.noise_map
 
     @property
     def residual_map(self):
@@ -122,10 +128,13 @@ class DataFit(object):
         else:
             return self.evidence
 
+    @property
+    def grid(self):
+        return self.masked_data.grid
 
 class ImagingFit(DataFit):
 
-    def __init__(self, mask, image, noise_map, model_image, inversion=None):
+    def __init__(self, masked_imaging, model_image, inversion=None):
         """Class to fit data where the data structures are any dimension.
 
         Parameters
@@ -156,7 +165,11 @@ class ImagingFit(DataFit):
             The overall likelihood of the model's fit to the data, summed over evey data-point.
         """
 
-        super(ImagingFit, self).__init__(mask=mask, data=image, noise_map=noise_map, model_data=model_image, inversion=inversion)
+        super(ImagingFit, self).__init__(masked_data=masked_imaging, model_data=model_image, inversion=inversion)
+
+    @property
+    def masked_imaging(self):
+        return self.masked_data
 
     @property
     def image(self):
