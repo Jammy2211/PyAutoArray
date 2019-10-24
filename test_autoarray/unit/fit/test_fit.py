@@ -24,7 +24,7 @@ class TestImagingFit:
         model_data = aa.masked_array.manual_1d(array=np.array([1.0, 2.0, 3.0, 4.0]), mask=mask)
 
         fit = aa.fit_imaging(
-            masked_imaging=masked_imaging, model_image=model_data
+            mask=mask, image=data, noise_map=noise_map, model_image=model_data
         )
 
         assert (fit.mask == np.array([[False, False], [False, False]])).all()
@@ -83,7 +83,7 @@ class TestImagingFit:
         inversion = mock_fit.MockFitInversion(regularization_term=2.0, log_det_curvature_reg_matrix_term=3.0, log_det_regularization_matrix_term=4.0)
 
         fit = aa.fit(
-            masked_data=masked_imaging, model_data=model_data, inversion=inversion
+            mask=mask, data=data, noise_map=noise_map, model_data=model_data, inversion=inversion
         )
 
         assert fit.chi_squared == 0.0
