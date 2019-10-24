@@ -99,7 +99,7 @@ class MaskedImaging(AbstractMaskedData):
 
         ### PSF TRIMMING + CONVOLVER ###
 
-        if hasattr(imaging, 'psf'):
+        if imaging.psf is not None:
 
             if trimmed_psf_shape_2d is None:
                 self.trimmed_psf_shape_2d = imaging.psf.shape_2d
@@ -124,6 +124,10 @@ class MaskedImaging(AbstractMaskedData):
                     self.blurring_grid = self.blurring_grid.new_grid_with_interpolator(
                         pixel_scale_interpolation_grid=self.pixel_scale_interpolation_grid
                     )
+
+    @property
+    def data(self):
+        return self.image
 
     @classmethod
     def manual(cls, imaging,
