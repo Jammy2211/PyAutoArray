@@ -1,4 +1,5 @@
 from autoarray import decorator_util
+from autoarray.structures import visibilities as vis
 
 import numpy as np
 
@@ -189,4 +190,4 @@ class Transformer(object):
             image=image
         )
 
-        return np.stack((real_visibilities, imag_visibilities), axis=-1)
+        return vis.Visibilities(visibilities_1d=np.stack((real_visibilities, imag_visibilities), axis=-1))
