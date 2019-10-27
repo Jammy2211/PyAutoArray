@@ -45,6 +45,19 @@ class Mask(np.ndarray):
         obj.regions = regions.Regions(mask=obj)
         return obj
 
+    def __array_finalize__(self, obj):
+
+        if isinstance(obj, Mask):
+
+            self.sub_size = obj.sub_size
+            self.sub_length = obj.sub_length
+            self.sub_fraction = obj.sub_fraction
+            self.pixel_scales = obj.pixel_scales
+            self.origin = obj.origin
+            self.mapping = mapping.Mapping(mask=obj)
+            self.geometry = geometry.Geometry(mask=obj)
+            self.regions = regions.Regions(mask=obj)
+
     @classmethod
     def manual(cls, mask_2d, pixel_scales=None, sub_size=1, origin=(0.0, 0.0), invert=False):
 
@@ -127,8 +140,9 @@ class Mask(np.ndarray):
             The centre of the annulus used to mask pixels.
         """
 
-        if type(pixel_scales) is float:
-            pixel_scales = (pixel_scales, pixel_scales)
+        if type(pixel_scales) is not tuple:
+            if type(pixel_scales) is float or int:
+                pixel_scales = (float(pixel_scales), float(pixel_scales))
 
         mask_2d = mask_util.mask_2d_circular_annular_from_shape_2d_pixel_scales_and_radii(
             shape_2d=shape_2d,
@@ -170,8 +184,9 @@ class Mask(np.ndarray):
             The centre of the anti-annulus used to mask pixels.
         """
 
-        if type(pixel_scales) is float:
-            pixel_scales = (pixel_scales, pixel_scales)
+        if type(pixel_scales) is not tuple:
+            if type(pixel_scales) is float or int:
+                pixel_scales = (float(pixel_scales), float(pixel_scales))
 
         mask_2d = mask_util.mask_2d_circular_anti_annular_from_shape_2d_pixel_scales_and_radii(
             shape_2d=shape_2d,
@@ -210,8 +225,9 @@ class Mask(np.ndarray):
             The centre of the ellipse used to mask pixels.
         """
 
-        if type(pixel_scales) is float:
-            pixel_scales = (pixel_scales, pixel_scales)
+        if type(pixel_scales) is not tuple:
+            if type(pixel_scales) is float or int:
+                pixel_scales = (float(pixel_scales), float(pixel_scales))
 
         mask_2d = mask_util.mask_2d_elliptical_from_shape_2d_pixel_scales_and_radius(
             shape_2d=shape_2d,
@@ -261,8 +277,9 @@ class Mask(np.ndarray):
             The centre of the elliptical annuli used to mask pixels.
         """
 
-        if type(pixel_scales) is float:
-            pixel_scales = (pixel_scales, pixel_scales)
+        if type(pixel_scales) is not tuple:
+            if type(pixel_scales) is float or int:
+                pixel_scales = (float(pixel_scales), float(pixel_scales))
 
         mask_2d = mask_util.mask_2d_elliptical_annular_from_shape_2d_pixel_scales_and_radius(
             shape_2d=shape_2d,
@@ -295,8 +312,9 @@ class Mask(np.ndarray):
             The arc-second to pixel conversion factor of each pixel.
         """
 
-        if type(pixel_scales) is float:
-            pixel_scales = (pixel_scales, pixel_scales)
+        if type(pixel_scales) is not tuple:
+            if type(pixel_scales) is float or int:
+                pixel_scales = (float(pixel_scales), float(pixel_scales))
 
         return cls(
             array_util.numpy_array_2d_from_fits(file_path=file_path, hdu=hdu),
