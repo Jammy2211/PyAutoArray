@@ -327,7 +327,7 @@ class Mask(np.ndarray):
     def output_fits(self, file_path, overwrite=False):
 
         array_util.numpy_array_2d_to_fits(
-            array_2d=self, file_path=file_path, overwrite=overwrite
+            array_2d=self.astype('float'), file_path=file_path, overwrite=overwrite
         )
 
     @property
