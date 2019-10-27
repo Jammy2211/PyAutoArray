@@ -45,7 +45,7 @@ def plot_array(
     xlabelsize=16,
     ylabelsize=16,
     xyticksize=16,
-    mask_pointsize=10,
+    mask_overlay_pointsize=10,
     border_pointsize=2,
     position_pointsize=30,
     grid_pointsize=1,
@@ -115,7 +115,7 @@ def plot_array(
         The fontsize of the y axes label.
     xyticksize : int
         The font size of the x and y ticks on the figure axes.
-    mask_pointsize : int
+    mask_overlay_pointsize : int
         The size of the points plotted to show the mask.
     border_pointsize : int
         The size of the points plotted to show the borders.
@@ -150,7 +150,7 @@ def plot_array(
         cmap='jet', norm='linear, norm_min=None, norm_max=None, linthresh=None, linscale=None,
         cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01, cb_tick_values=None, cb_tick_labels=None,
         title='Image', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
-        mask_pointsize=10, border_pointsize=2, position_pointsize=10, grid_pointsize=10,
+        mask_overlay_pointsize=10, border_pointsize=2, position_pointsize=10, grid_pointsize=10,
         xticks_manual=None, yticks_manual=None,
         output_path='/path/to/output', output_format='png', output_filename='image')
     """
@@ -218,7 +218,7 @@ def plot_array(
         mask=mask_overlay,
         units=units,
         kpc_per_arcsec=kpc_per_arcsec,
-        pointsize=mask_pointsize,
+        pointsize=mask_overlay_pointsize,
         zoom_offset_pixels=zoom_offset_pixels,
     )
     plotter_util.plot_lines(line_lists=lines)
