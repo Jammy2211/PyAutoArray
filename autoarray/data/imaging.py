@@ -31,6 +31,10 @@ class AbstractImaging(abstract_data.AbstractData):
     def shape(self):
         return self.image.shape_2d
 
+    @property
+    def shape_2d(self):
+        return self.image.shape_2d
+
     def binned_from_bin_up_factor(self, bin_up_factor):
 
         image = self.image.binned_from_bin_up_factor(

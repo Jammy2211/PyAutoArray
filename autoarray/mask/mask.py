@@ -91,6 +91,11 @@ class Mask(np.ndarray):
         centre: (float, float)
             The centre of the circle used to mask pixels.
         """
+
+        if type(pixel_scales) is not tuple:
+            if type(pixel_scales) is float or int:
+                pixel_scales = (float(pixel_scales), float(pixel_scales))
+
         mask_2d = mask_util.mask_2d_circular_from_shape_2d_pixel_scales_and_radius(
             shape_2d=shape_2d,
             pixel_scales=pixel_scales,
@@ -121,6 +126,10 @@ class Mask(np.ndarray):
         centre: (float, float)
             The centre of the annulus used to mask pixels.
         """
+
+        if type(pixel_scales) is float:
+            pixel_scales = (pixel_scales, pixel_scales)
+
         mask_2d = mask_util.mask_2d_circular_annular_from_shape_2d_pixel_scales_and_radii(
             shape_2d=shape_2d,
             pixel_scales=pixel_scales,
@@ -160,6 +169,10 @@ class Mask(np.ndarray):
         centre: (float, float)
             The centre of the anti-annulus used to mask pixels.
         """
+
+        if type(pixel_scales) is float:
+            pixel_scales = (pixel_scales, pixel_scales)
+
         mask_2d = mask_util.mask_2d_circular_anti_annular_from_shape_2d_pixel_scales_and_radii(
             shape_2d=shape_2d,
             pixel_scales=pixel_scales,
@@ -196,6 +209,10 @@ class Mask(np.ndarray):
         centre: (float, float)
             The centre of the ellipse used to mask pixels.
         """
+
+        if type(pixel_scales) is float:
+            pixel_scales = (pixel_scales, pixel_scales)
+
         mask_2d = mask_util.mask_2d_elliptical_from_shape_2d_pixel_scales_and_radius(
             shape_2d=shape_2d,
             pixel_scales=pixel_scales,
@@ -243,6 +260,10 @@ class Mask(np.ndarray):
         centre: (float, float)
             The centre of the elliptical annuli used to mask pixels.
         """
+
+        if type(pixel_scales) is float:
+            pixel_scales = (pixel_scales, pixel_scales)
+
         mask_2d = mask_util.mask_2d_elliptical_annular_from_shape_2d_pixel_scales_and_radius(
             shape_2d=shape_2d,
             pixel_scales=pixel_scales,
@@ -273,6 +294,10 @@ class Mask(np.ndarray):
         pixel_scales : (float, float)
             The arc-second to pixel conversion factor of each pixel.
         """
+
+        if type(pixel_scales) is float:
+            pixel_scales = (pixel_scales, pixel_scales)
+
         return cls(
             array_util.numpy_array_2d_from_fits(file_path=file_path, hdu=hdu),
             pixel_scales=pixel_scales,

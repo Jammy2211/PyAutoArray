@@ -145,7 +145,7 @@ def make_convolver_7x7(mask_7x7, blurring_mask_7x7, psf_3x3):
 
 @pytest.fixture(name="image_7x7")
 def make_image_7x7():
-    return mock_data.MockImage(shape=(7, 7), value=1.0)
+    return mock_data.MockImage(shape_2d=(7, 7), value=1.0)
 
 
 @pytest.fixture(name="psf_3x3")
@@ -155,27 +155,27 @@ def make_psf_3x3():
 
 @pytest.fixture(name="noise_map_7x7")
 def make_noise_map_7x7():
-    return mock_data.MockNoiseMap(shape=(7, 7), value=2.0)
+    return mock_data.MockNoiseMap(shape_2d=(7, 7), value=2.0)
 
 
 @pytest.fixture(name="background_noise_map_7x7")
 def make_background_noise_map_7x7():
-    return mock_data.MockBackgroundNoiseMap(shape=(7, 7), value=3.0)
+    return mock_data.MockBackgroundNoiseMap(shape_2d=(7, 7), value=3.0)
 
 
 @pytest.fixture(name="poisson_noise_map_7x7")
 def make_poisson_noise_map_7x7():
-    return mock_data.MockPoissonNoiseMap(shape=(7, 7), value=4.0)
+    return mock_data.MockPoissonNoiseMap(shape_2d=(7, 7), value=4.0)
 
 
 @pytest.fixture(name="exposure_time_map_7x7")
 def make_exposure_time_map_7x7():
-    return mock_data.MockExposureTimeMap(shape=(7, 7), value=5.0)
+    return mock_data.MockExposureTimeMap(shape_2d=(7, 7), value=5.0)
 
 
 @pytest.fixture(name="background_sky_map_7x7")
 def make_background_sky_map_7x7():
-    return mock_data.MockBackgrondSkyMap(shape=(7, 7), value=6.0)
+    return mock_data.MockBackgrondSkyMap(shape_2d=(7, 7), value=6.0)
 
 
 @pytest.fixture(name="positions_7x7")
@@ -209,13 +209,13 @@ def make_imaging_7x7(
 
 @pytest.fixture(name="imaging_6x6")
 def make_imaging_6x6():
-    image = mock_data.MockImage(shape=(6, 6), value=1.0)
+    image = mock_data.MockImage(shape_2d=(6, 6), value=1.0)
     psf = mock_data.MockPSF(shape_2d=(3, 3), value=1.0)
-    noise_map = mock_data.MockNoiseMap(shape=(6, 6), value=2.0)
-    background_noise_map = mock_data.MockBackgroundNoiseMap(shape=(6, 6), value=3.0)
-    poisson_noise_map = mock_data.MockPoissonNoiseMap(shape=(6, 6), value=4.0)
-    exposure_time_map = mock_data.MockExposureTimeMap(shape=(6, 6), value=5.0)
-    background_sky_map = mock_data.MockBackgrondSkyMap(shape=(6, 6), value=6.0)
+    noise_map = mock_data.MockNoiseMap(shape_2d=(6, 6), value=2.0)
+    background_noise_map = mock_data.MockBackgroundNoiseMap(shape_2d=(6, 6), value=3.0)
+    poisson_noise_map = mock_data.MockPoissonNoiseMap(shape_2d=(6, 6), value=4.0)
+    exposure_time_map = mock_data.MockExposureTimeMap(shape_2d=(6, 6), value=5.0)
+    background_sky_map = mock_data.MockBackgrondSkyMap(shape_2d=(6, 6), value=6.0)
 
     return mock_data.MockImaging(
         image=image,
