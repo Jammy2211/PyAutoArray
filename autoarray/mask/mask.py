@@ -34,6 +34,7 @@ class Mask(np.ndarray):
         """
         # noinspection PyArgumentList
 
+        mask_2d = mask_2d.astype('bool')
         obj = mask_2d.view(cls)
         obj.sub_size = sub_size
         obj.sub_length = int(sub_size ** 2.0)
