@@ -6,44 +6,44 @@ from autoarray.operators import fourier_transform
 
 
 class MockImage(object):
-    def __new__(cls, shape, value, pixel_scales=1.0):
-        return aa.array.manual_2d(
-            array=value * np.ones(shape=shape), pixel_scales=pixel_scales
+    def __new__(cls, shape_2d, value, pixel_scales=1.0):
+        return aa.array.full(
+            fill_value=value, shape_2d=shape_2d, pixel_scales=pixel_scales
         )
 
 
 class MockNoiseMap(object):
-    def __new__(cls, shape, value, pixel_scales=1.0):
-        return aa.array.manual_2d(
-            array=value * np.ones(shape=shape), pixel_scales=pixel_scales
+    def __new__(cls, shape_2d, value, pixel_scales=1.0):
+        return aa.array.full(
+            fill_value=value, shape_2d=shape_2d, pixel_scales=pixel_scales
         )
 
 
 class MockBackgroundNoiseMap(object):
-    def __new__(cls, shape, value, pixel_scales=1.0):
-        return aa.array.manual_2d(
-            array=value * np.ones(shape=shape), pixel_scales=pixel_scales
+    def __new__(cls, shape_2d, value, pixel_scales=1.0):
+        return aa.array.full(
+            fill_value=value, shape_2d=shape_2d, pixel_scales=pixel_scales
         )
 
 
 class MockPoissonNoiseMap(object):
-    def __new__(cls, shape, value, pixel_scales=1.0):
-        return aa.array.manual_2d(
-            array=value * np.ones(shape=shape), pixel_scales=pixel_scales
+    def __new__(cls, shape_2d, value, pixel_scales=1.0):
+        return aa.array.full(
+            fill_value=value, shape_2d=shape_2d, pixel_scales=pixel_scales
         )
 
 
 class MockExposureTimeMap(object):
-    def __new__(cls, shape, value, pixel_scales=1.0):
-        return aa.array.manual_2d(
-            array=value * np.ones(shape=shape), pixel_scales=pixel_scales
+    def __new__(cls, shape_2d, value, pixel_scales=1.0):
+        return aa.array.full(
+            fill_value=value, shape_2d=shape_2d, pixel_scales=pixel_scales
         )
 
 
 class MockBackgrondSkyMap(object):
-    def __new__(cls, shape, value, pixel_scales=1.0):
-        return aa.array.manual_2d(
-            array=value * np.ones(shape=shape), pixel_scales=pixel_scales
+    def __new__(cls, shape_2d, value, pixel_scales=1.0):
+        return aa.array.full(
+            fill_value=value, shape_2d=shape_2d, pixel_scales=pixel_scales
         )
 
 
