@@ -92,7 +92,7 @@ class Visibilities(AbstractVisibilities):
 
     @classmethod
     def full(cls, fill_value, shape_1d):
-        return cls.manual_1d(visibilities=np.full(fill_value=fill_value, shape=(shape_1d, 2)))
+        return cls.manual_1d(visibilities=np.full(fill_value=fill_value, shape=(shape_1d[0], 2)))
 
     @classmethod
     def ones(cls, shape_1d):
