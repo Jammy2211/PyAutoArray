@@ -1,4 +1,5 @@
 import autoarray as aa
+from autoarray.structures import kernel as kern
 from autoarray.operators import convolution, fourier_transform
 from autoarray.fit import masked_data as md
 import numpy as np
@@ -72,6 +73,7 @@ class TestAbstractMaskedData(object):
         )
 
         assert masked_imaging_7x7.inversion_uses_border == False
+
 
 class TestMaskedImaging(object):
     def test__masked_data(self, imaging_7x7, sub_mask_7x7):
@@ -154,12 +156,13 @@ class TestMaskedImaging(object):
             == new_blurring_grid.interpolator.wts
         ).all()
 
-    def test__convolvers(self, imaging_7x7, sub_mask_7x7):
+    def test__psf_and_convolvers(self, imaging_7x7, sub_mask_7x7):
 
         masked_imaging_7x7 = aa.masked_imaging.manual(
             imaging=imaging_7x7,
             mask=sub_mask_7x7)
 
+        assert type(masked_imaging_7x7.psf) == kern.Kernel
         assert type(masked_imaging_7x7.convolver) == convolution.Convolver
 
     def test__different_imaging_without_mock_objects__customize_constructor_inputs(
@@ -296,13 +299,14 @@ class TestMaskedInterferometer(object):
         ).all()
         assert masked_interferometer_7.interferometer.uv_wavelengths[0, 0] == -55636.4609375
 
-    def test__transformer(self, interferometer_7, sub_mask_7x7):
+    def test__primary_beam_and_transformer(self, interferometer_7, sub_mask_7x7):
 
         masked_interferometer_7 = aa.masked_interferometer.manual(
         interferometer=interferometer_7,
             real_space_mask=sub_mask_7x7,
         )
 
+        assert type(masked_interferometer_7.primary_beam) == kern.Kernel
         assert type(masked_interferometer_7.transformer) == fourier_transform.Transformer
 
     def test__different_interferometer_without_mock_objects__customize_constructor_inputs(
