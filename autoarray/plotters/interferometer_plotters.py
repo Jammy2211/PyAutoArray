@@ -5,7 +5,12 @@ backend = conf.instance.visualize.get("figures", "backend", str)
 matplotlib.use(backend)
 from matplotlib import pyplot as plt
 
-from autoarray.plotters import array_plotters, grid_plotters, line_yx_plotters, plotter_util
+from autoarray.plotters import (
+    array_plotters,
+    grid_plotters,
+    line_yx_plotters,
+    plotter_util,
+)
 
 
 def subplot(
@@ -260,7 +265,7 @@ def visibilities(
 
     grid_plotters.plot_grid(
         grid=interferometer.visibilities,
-        colors=interferometer.noise_map[:,0],
+        colors=interferometer.noise_map[:, 0],
         as_subplot=as_subplot,
         units=units,
         kpc_per_arcsec=kpc_per_arcsec,
@@ -462,4 +467,3 @@ def primary_beam(
         output_format=output_format,
         output_filename=output_filename,
     )
-

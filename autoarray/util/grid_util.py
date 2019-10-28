@@ -43,9 +43,7 @@ def grid_centre_from_grid_1d(grid_1d):
 
 
 @decorator_util.jit()
-def grid_1d_via_mask_2d(
-    mask_2d, pixel_scales, sub_size, origin=(0.0, 0.0)
-):
+def grid_1d_via_mask_2d(mask_2d, pixel_scales, sub_size, origin=(0.0, 0.0)):
     """ For a sub-grid, every unmasked pixel of a 2D mask array of shape (rows, columns) is divided into a finer \
     uniform grid of shape (sub_size, sub_size). This routine computes the (y,x) arc second coordinates at \
     the centre of every sub-pixel defined by this 2D mask array.
@@ -83,7 +81,9 @@ def grid_1d_via_mask_2d(
     grid_1d = sub_grid_1d_from_mask_pixel_scales_and_origin(mask=mask, pixel_scales=(0.5, 0.5), origin=(0.0, 0.0))
     """
 
-    total_sub_pixels = mask_util.total_sub_pixels_from_mask_2d_and_sub_size(mask_2d, sub_size)
+    total_sub_pixels = mask_util.total_sub_pixels_from_mask_2d_and_sub_size(
+        mask_2d, sub_size
+    )
 
     grid_1d = np.zeros(shape=(total_sub_pixels, 2))
 
@@ -121,9 +121,7 @@ def grid_1d_via_mask_2d(
     return grid_1d
 
 
-def grid_2d_via_mask_2d(
-    mask_2d, pixel_scales, sub_size, origin=(0.0, 0.0)
-):
+def grid_2d_via_mask_2d(mask_2d, pixel_scales, sub_size, origin=(0.0, 0.0)):
     """ For a sub-grid, every unmasked pixel of a 2D mask array of shape (rows, columns) is divided into a finer \
     uniform grid of shape (sub_size, sub_size). This routine computes the (y,x) arc second coordinates at \
     the centre of every sub-pixel defined by this 2D mask array.
@@ -170,9 +168,7 @@ def grid_2d_via_mask_2d(
     )
 
 
-def grid_1d_via_shape_2d(
-    shape_2d, pixel_scales, sub_size, origin=(0.0, 0.0)
-):
+def grid_1d_via_shape_2d(shape_2d, pixel_scales, sub_size, origin=(0.0, 0.0)):
     """ For a sub-grid, every unmasked pixel of a 2D mask array of shape (rows, columns) is divided into a finer \
     uniform grid of shape (sub_size, sub_size). This routine computes the (y,x) arc second coordinates at \
     the centre of every sub-pixel defined by this 2D mask array.
@@ -216,9 +212,7 @@ def grid_1d_via_shape_2d(
     )
 
 
-def grid_2d_via_shape_2d(
-    shape_2d, pixel_scales, sub_size, origin=(0.0, 0.0)
-):
+def grid_2d_via_shape_2d(shape_2d, pixel_scales, sub_size, origin=(0.0, 0.0)):
     """ For a sub-grid, every unmasked pixel of a 2D mask array of shape (rows, columns) is divided into a finer \
     uniform grid of shape (sub_size, sub_size). This routine computes the (y,x) arc second coordinates at \
     the centre of every sub-pixel defined by this 2D mask array.

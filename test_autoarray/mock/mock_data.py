@@ -153,9 +153,7 @@ class MockUVWavelengths(np.ndarray):
 
 
 class MockInterferometer(interferometer.Interferometer):
-    def __init__(
-        self, visibilities, primary_beam, noise_map, uv_wavelengths
-    ):
+    def __init__(self, visibilities, primary_beam, noise_map, uv_wavelengths):
         super(MockInterferometer, self).__init__(
             visibilities=visibilities,
             noise_map=noise_map,

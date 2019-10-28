@@ -128,6 +128,7 @@ def make_sub_grid_7x7_simple(mask_7x7, sub_grid_7x7):
     sub_grid_7x7[3] = np.array([1.0, 0.0])
     return sub_grid_7x7
 
+
 @pytest.fixture(name="blurring_grid_7x7")
 def make_blurring_grid_7x7(blurring_mask_7x7):
     return aa.masked_grid.from_mask(mask=blurring_mask_7x7)
@@ -138,9 +139,7 @@ def make_blurring_grid_7x7(blurring_mask_7x7):
 
 @pytest.fixture(name="convolver_7x7")
 def make_convolver_7x7(mask_7x7, blurring_mask_7x7, psf_3x3):
-    return mock_convolution.MockConvolver(
-        mask=mask_7x7, kernel=psf_3x3
-    )
+    return mock_convolution.MockConvolver(mask=mask_7x7, kernel=psf_3x3)
 
 
 @pytest.fixture(name="image_7x7")
@@ -232,12 +231,12 @@ def make_imaging_6x6():
 
 @pytest.fixture(name="visibilities_7x2")
 def make_visibilities_7():
-    return mock_data.MockVisibilities(shape=(7,2), value=1.0)
+    return mock_data.MockVisibilities(shape=(7, 2), value=1.0)
 
 
 @pytest.fixture(name="noise_map_7x2")
 def make_noise_map_7():
-    return mock_data.MockVisibilitiesNoiseMap(shape=(7,2), value=2.0)
+    return mock_data.MockVisibilitiesNoiseMap(shape=(7, 2), value=2.0)
 
 
 @pytest.fixture(name="primary_beam_3x3")
@@ -247,7 +246,7 @@ def make_primary_beam_3x3():
 
 @pytest.fixture(name="uv_wavelengths_7x2")
 def make_uv_wavelengths_7():
-    return mock_data.MockUVWavelengths(shape=(7,2), value=3.0)
+    return mock_data.MockUVWavelengths(shape=(7, 2), value=3.0)
 
 
 @pytest.fixture(name="interferometer_7")
@@ -270,26 +269,20 @@ def make_transformer_7x7_7(uv_wavelengths_7x2, grid_7x7):
     )
 
 
-
 ### MASKED DATA ###
 
+
 @pytest.fixture(name="masked_imaging_7x7")
-def make_masked_imaging_7x7(
-    imaging_7x7,
-    sub_mask_7x7,
-):
-    return aa.masked_imaging.manual(
-        imaging=imaging_7x7,
-        mask=sub_mask_7x7,
-    )
+def make_masked_imaging_7x7(imaging_7x7, sub_mask_7x7):
+    return aa.masked_imaging.manual(imaging=imaging_7x7, mask=sub_mask_7x7)
+
 
 @pytest.fixture(name="masked_interferometer_7")
 def make_masked_interferometer_7(
-    interferometer_7, mask_7x7, sub_grid_7x7, transformer_7x7_7,
+    interferometer_7, mask_7x7, sub_grid_7x7, transformer_7x7_7
 ):
     return aa.masked_interferometer.manual(
-        interferometer=interferometer_7,
-        mask=mask_7x7,
+        interferometer=interferometer_7, mask=mask_7x7
     )
 
 
@@ -299,5 +292,5 @@ def make_masked_imaging_fit_x1_plane_7x7(masked_imaging_7x7):
         mask=masked_imaging_7x7.mask,
         data=masked_imaging_7x7.image,
         noise_map=masked_imaging_7x7.noise_map,
-        model_data=5.0*masked_imaging_7x7.image
+        model_data=5.0 * masked_imaging_7x7.image,
     )

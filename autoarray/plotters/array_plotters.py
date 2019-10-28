@@ -158,9 +158,11 @@ def plot_array(
     if array is None or np.all(array == 0):
         return
 
-    if array.pixel_scales is None and (units is 'arcsec' or units is 'kpc'):
-        raise exc.ArrayException("You cannot plot an array in units of arcsec or kpc if the input array does not have "
-                                 "pixel scales.")
+    if array.pixel_scales is None and (units is "arcsec" or units is "kpc"):
+        raise exc.ArrayException(
+            "You cannot plot an array in units of arcsec or kpc if the input array does not have "
+            "pixel scales."
+        )
 
     array = array.in_1d_binned
     array = array.zoomed_around_mask(buffer=2)
@@ -678,7 +680,10 @@ def plot_mask_overlay(mask, units, kpc_per_arcsec, pointsize, zoom_offset_pixels
     if mask is not None:
 
         plt.gca()
-        edge_pixels = mask.regions._mask_2d_index_for_mask_1d_index[mask.regions._edge_1d_indexes] + 0.5
+        edge_pixels = (
+            mask.regions._mask_2d_index_for_mask_1d_index[mask.regions._edge_1d_indexes]
+            + 0.5
+        )
 
         if zoom_offset_pixels is not None:
             edge_pixels_plot = edge_pixels - zoom_offset_pixels
@@ -695,7 +700,12 @@ def plot_mask_overlay(mask, units, kpc_per_arcsec, pointsize, zoom_offset_pixels
             kpc_per_arcsec=kpc_per_arcsec,
         )
 
-        plt.scatter(y=np.asarray(edge_units[:, 0]), x=np.asarray(edge_units[:, 1]), s=pointsize, c="k")
+        plt.scatter(
+            y=np.asarray(edge_units[:, 0]),
+            x=np.asarray(edge_units[:, 1]),
+            s=pointsize,
+            c="k",
+        )
 
 
 def plot_border(

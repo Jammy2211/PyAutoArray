@@ -410,7 +410,7 @@ def image(
         array=imaging.image,
         should_plot_origin=plot_origin,
         grid=grid,
-    mask_overlay=mask_overlay,
+        mask_overlay=mask_overlay,
         should_plot_border=should_plot_border,
         positions=positions,
         as_subplot=as_subplot,
@@ -488,7 +488,7 @@ def noise_map(
     array_plotters.plot_array(
         array=imaging.noise_map,
         should_plot_origin=plot_origin,
-    mask_overlay=mask_overlay,
+        mask_overlay=mask_overlay,
         as_subplot=as_subplot,
         units=units,
         kpc_per_arcsec=kpc_per_arcsec,
@@ -632,7 +632,7 @@ def signal_to_noise_map(
     array_plotters.plot_array(
         array=imaging.signal_to_noise_map,
         should_plot_origin=plot_origin,
-    mask_overlay=mask_overlay,
+        mask_overlay=mask_overlay,
         as_subplot=as_subplot,
         units=units,
         kpc_per_arcsec=kpc_per_arcsec,
@@ -659,6 +659,7 @@ def signal_to_noise_map(
         output_format=output_format,
         output_filename=output_filename,
     )
+
 
 def absolute_signal_to_noise_map(
     imaging,
@@ -705,7 +706,7 @@ def absolute_signal_to_noise_map(
     array_plotters.plot_array(
         array=imaging.absolute_signal_to_noise_map,
         should_plot_origin=plot_origin,
-    mask_overlay=mask_overlay,
+        mask_overlay=mask_overlay,
         as_subplot=as_subplot,
         units=units,
         kpc_per_arcsec=kpc_per_arcsec,
@@ -732,6 +733,7 @@ def absolute_signal_to_noise_map(
         output_format=output_format,
         output_filename=output_filename,
     )
+
 
 def potential_chi_squared_map(
     imaging,
@@ -778,7 +780,7 @@ def potential_chi_squared_map(
     array_plotters.plot_array(
         array=imaging.potential_chi_squared_map,
         should_plot_origin=plot_origin,
-    mask_overlay=mask_overlay,
+        mask_overlay=mask_overlay,
         as_subplot=as_subplot,
         units=units,
         kpc_per_arcsec=kpc_per_arcsec,

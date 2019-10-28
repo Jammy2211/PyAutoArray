@@ -18,9 +18,7 @@ class TestVisiblities(object):
 
         image = aa.array.ones(shape_2d=(1, 1))
 
-        real_visibilities = transformer.real_visibilities_from_image(
-            image=image
-        )
+        real_visibilities = transformer.real_visibilities_from_image(image=image)
 
         assert (real_visibilities == np.ones(shape=4)).all()
 
@@ -36,9 +34,7 @@ class TestVisiblities(object):
 
         image = aa.array.ones(shape_2d=(1, 2))
 
-        real_visibilities = transformer.real_visibilities_from_image(
-            image=image
-        )
+        real_visibilities = transformer.real_visibilities_from_image(image=image)
 
         assert real_visibilities == pytest.approx(
             np.array([1.11715, 1.68257, 1.93716]), 1.0e-4
@@ -57,9 +53,7 @@ class TestVisiblities(object):
 
         image = aa.array.manual_2d([[2.0]])
 
-        real_visibilities = transformer.real_visibilities_from_image(
-            image=image
-        )
+        real_visibilities = transformer.real_visibilities_from_image(image=image)
 
         assert (real_visibilities == np.array([2.0])).all()
 
@@ -75,9 +69,7 @@ class TestVisiblities(object):
 
         image = aa.array.manual_2d([[3.0, 6.0]])
 
-        real_visibilities = transformer.real_visibilities_from_image(
-            image=image
-        )
+        real_visibilities = transformer.real_visibilities_from_image(image=image)
 
         assert real_visibilities == pytest.approx(
             np.array([3.91361, 7.10136, 8.717248]), 1.0e-4
@@ -104,9 +96,7 @@ class TestVisiblities(object):
         real_visibilities_via_preload = transformer_preload.real_visibilities_from_image(
             image=image
         )
-        real_visibilities = transformer.real_visibilities_from_image(
-            image=image
-        )
+        real_visibilities = transformer.real_visibilities_from_image(image=image)
 
         assert (real_visibilities_via_preload == real_visibilities).all()
 
@@ -123,9 +113,7 @@ class TestVisiblities(object):
 
         image = aa.array.ones(shape_2d=(1, 1))
 
-        imag_visibilities = transformer.imag_visibilities_from_image(
-            image=image
-        )
+        imag_visibilities = transformer.imag_visibilities_from_image(image=image)
 
         assert (imag_visibilities == np.zeros(shape=4)).all()
 
@@ -141,9 +129,7 @@ class TestVisiblities(object):
 
         image = aa.array.ones(shape_2d=(2, 1))
 
-        imag_visibilities = transformer.imag_visibilities_from_image(
-            image=image
-        )
+        imag_visibilities = transformer.imag_visibilities_from_image(image=image)
 
         assert imag_visibilities == pytest.approx(
             np.array([1.350411, 0.791759, 0.0]), 1.0e-4
@@ -162,9 +148,7 @@ class TestVisiblities(object):
 
         image = aa.array.manual_2d([[2.0]])
 
-        imag_visibilities = transformer.imag_visibilities_from_image(
-            image=image
-        )
+        imag_visibilities = transformer.imag_visibilities_from_image(image=image)
 
         assert (imag_visibilities == np.array([0.0])).all()
 
@@ -180,9 +164,7 @@ class TestVisiblities(object):
 
         image = aa.array.manual_2d([[3.0, 6.0]])
 
-        imag_visibilities = transformer.imag_visibilities_from_image(
-            image=image
-        )
+        imag_visibilities = transformer.imag_visibilities_from_image(image=image)
 
         assert imag_visibilities == pytest.approx(
             np.array([6.9980971, 4.56218, 0.746069]), 1.0e-4
@@ -209,9 +191,7 @@ class TestVisiblities(object):
         imag_visibilities_via_preload = transformer_preload.imag_visibilities_from_image(
             image=image
         )
-        imag_visibilities = transformer.imag_visibilities_from_image(
-            image=image
-        )
+        imag_visibilities = transformer.imag_visibilities_from_image(image=image)
 
         assert (imag_visibilities_via_preload == imag_visibilities).all()
 
@@ -238,12 +218,8 @@ class TestVisiblities(object):
             np.array([6.9980971, 4.56218, 0.746069]), 1.0e-4
         )
 
-        real_visibilities = transformer.real_visibilities_from_image(
-            image=image
-        )
-        imag_visibilities = transformer.imag_visibilities_from_image(
-            image=image
-        )
+        real_visibilities = transformer.real_visibilities_from_image(image=image)
+        imag_visibilities = transformer.imag_visibilities_from_image(image=image)
 
         assert (visibilities[:, 0] == real_visibilities).all()
         assert (visibilities[:, 1] == imag_visibilities).all()

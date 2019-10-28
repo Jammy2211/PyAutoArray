@@ -72,17 +72,19 @@ class AbstractVisibilities(np.ndarray):
 
     @property
     def real(self):
-        return self[:,0]
+        return self[:, 0]
 
     @property
     def imag(self):
-        return self[:,1]
+        return self[:, 1]
 
     def output_to_fits(self, file_path, overwrite=False):
-        array_util.numpy_array_2d_to_fits(array_2d=self, file_path=file_path, overwrite=overwrite)
+        array_util.numpy_array_2d_to_fits(
+            array_2d=self, file_path=file_path, overwrite=overwrite
+        )
+
 
 class Visibilities(AbstractVisibilities):
-
     @classmethod
     def manual_1d(cls, visibilities):
 
@@ -93,7 +95,9 @@ class Visibilities(AbstractVisibilities):
 
     @classmethod
     def full(cls, fill_value, shape_1d):
-        return cls.manual_1d(visibilities=np.full(fill_value=fill_value, shape=(shape_1d[0], 2)))
+        return cls.manual_1d(
+            visibilities=np.full(fill_value=fill_value, shape=(shape_1d[0], 2))
+        )
 
     @classmethod
     def ones(cls, shape_1d):
@@ -105,5 +109,7 @@ class Visibilities(AbstractVisibilities):
 
     @classmethod
     def from_fits(cls, file_path, hdu):
-        visibilities_1d = array_util.numpy_array_2d_from_fits(file_path=file_path, hdu=hdu)
+        visibilities_1d = array_util.numpy_array_2d_from_fits(
+            file_path=file_path, hdu=hdu
+        )
         return cls.manual_1d(visibilities=visibilities_1d)

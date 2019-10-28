@@ -4,7 +4,6 @@ from autoarray.util import array_util, grid_util
 
 
 class Geometry(object):
-
     def __init__(self, mask):
 
         self.mask = mask
@@ -28,12 +27,18 @@ class Geometry(object):
     def pixel_coordinates_from_arcsec_coordinates(self, arcsec_coordinates):
         return (
             int(
-                ((-arcsec_coordinates[0] + self.mask.origin[0]) / self.mask.pixel_scales[0])
+                (
+                    (-arcsec_coordinates[0] + self.mask.origin[0])
+                    / self.mask.pixel_scales[0]
+                )
                 + self.central_pixel_coordinates[0]
                 + 0.5
             ),
             int(
-                ((arcsec_coordinates[1] - self.mask.origin[1]) / self.mask.pixel_scales[1])
+                (
+                    (arcsec_coordinates[1] - self.mask.origin[1])
+                    / self.mask.pixel_scales[1]
+                )
                 + self.central_pixel_coordinates[1]
                 + 0.5
             ),
@@ -94,7 +99,10 @@ class Geometry(object):
     def masked_grid(self):
 
         grid_1d = grid_util.grid_1d_via_mask_2d(
-            mask_2d=self.mask, pixel_scales=self.mask.pixel_scales, sub_size=1, origin=self.mask.origin
+            mask_2d=self.mask,
+            pixel_scales=self.mask.pixel_scales,
+            sub_size=1,
+            origin=self.mask.origin,
         )
         return self.mask.mapping.grid_from_grid_1d(grid_1d=grid_1d)
 
@@ -114,7 +122,9 @@ class Geometry(object):
         an annulus mask).
         """
         border_grid_1d = self.masked_grid[self.regions._border_1d_indexes]
-        return self.regions.border_mask.mapping.grid_from_grid_1d(grid_1d=border_grid_1d)
+        return self.regions.border_mask.mapping.grid_from_grid_1d(
+            grid_1d=border_grid_1d
+        )
 
     def grid_pixels_from_grid_arcsec(self, grid_arcsec_1d):
         """Convert a grid of (y,x) arc second coordinates to a grid of (y,x) pixel values. Pixel coordinates are \

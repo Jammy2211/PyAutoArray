@@ -18,8 +18,8 @@ class TestInterferometerMethods(object):
 
         interferometer = aa.interferometer.manual(
             visibilities=aa.visibilities.manual_1d(visibilities=[[1, 1]]),
-            primary_beam=aa.kernel.zeros(shape_2d=(5,5), pixel_scales=1.0),
-            noise_map=aa.visibilities.manual_1d(visibilities=[[2,2]]),
+            primary_beam=aa.kernel.zeros(shape_2d=(5, 5), pixel_scales=1.0),
+            noise_map=aa.visibilities.manual_1d(visibilities=[[2, 2]]),
             exposure_time_map=1,
             uv_wavelengths=1,
         )
@@ -34,7 +34,7 @@ class TestInterferometerMethods(object):
 
         interferometer = aa.interferometer.manual(
             visibilities=np.array([[1, 1]]),
-            primary_beam=aa.kernel.zeros(shape_2d=(5,5), pixel_scales=1.0),
+            primary_beam=aa.kernel.zeros(shape_2d=(5, 5), pixel_scales=1.0),
             noise_map=1,
             exposure_time_map=2,
             uv_wavelengths=3,
@@ -68,9 +68,7 @@ class TestSimulateInterferometer(object):
             noise_sigma=None,
         )
 
-        simulated_visibilities = transformer_7x7_7.visibilities_from_image(
-            image=image
-        )
+        simulated_visibilities = transformer_7x7_7.visibilities_from_image(image=image)
 
         assert interferometer_simulated.visibilities == pytest.approx(
             simulated_visibilities, 1.0e-4
@@ -134,9 +132,7 @@ class TestSimulateInterferometer(object):
             noise_seed=1,
         )
 
-        simulated_visibilities = transformer_7x7_7.visibilities_from_image(
-            image=image
-        )
+        simulated_visibilities = transformer_7x7_7.visibilities_from_image(image=image)
 
         assert (
             interferometer_simulated.exposure_time_map.in_2d == 20.0 * np.ones((3, 3))
@@ -333,7 +329,7 @@ class TestInterferometerFromFits(object):
             aa.interferometer.from_fits(
                 visibilities_path=test_data_dir + "3x2_ones_twos.fits",
                 noise_map_path=test_data_dir + "3x3_threes.fits",
-            uv_wavelengths_path=test_data_dir + "3x2_fives_sixes.fits",
+                uv_wavelengths_path=test_data_dir + "3x2_fives_sixes.fits",
                 exposure_time_map_path=test_data_dir + "3x3_ones.fits",
                 exposure_time_map_from_single_value=1.0,
             )
@@ -377,10 +373,9 @@ class TestInterferometerFromFits(object):
 
         assert (interferometer.visibilities.real == np.ones(3)).all()
         assert (interferometer.visibilities.imag == 2.0 * np.ones(3)).all()
-        assert (interferometer.noise_map.real == 3.0 * np.ones((3, ))).all()
-        assert (interferometer.noise_map.imag == 4.0 * np.ones((3, ))).all()
+        assert (interferometer.noise_map.real == 3.0 * np.ones((3,))).all()
+        assert (interferometer.noise_map.imag == 4.0 * np.ones((3,))).all()
         assert (interferometer.uv_wavelengths[:, 0] == 5.0 * np.ones(3)).all()
         assert (interferometer.uv_wavelengths[:, 1] == 6.0 * np.ones(3)).all()
         assert (interferometer.primary_beam.in_2d == 5.0 * np.ones((3, 3))).all()
         assert (interferometer.exposure_time_map == 6.0 * np.ones((3,))).all()
-

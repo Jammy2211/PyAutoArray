@@ -6,7 +6,6 @@ from autoarray.util import array_util, mask_util
 
 
 class Regions(object):
-
     def __init__(self, mask):
 
         self.mask = mask
@@ -80,8 +79,12 @@ class Regions(object):
             mask_2d=self.mask, kernel_shape_2d=kernel_shape
         )
 
-        return msk.Mask(mask_2d=blurring_mask, sub_size=1, pixel_scales=self.mask.pixel_scales,
-                  origin=self.mask.origin)
+        return msk.Mask(
+            mask_2d=blurring_mask,
+            sub_size=1,
+            pixel_scales=self.mask.pixel_scales,
+            origin=self.mask.origin,
+        )
 
     @property
     def edge_mask(self):
@@ -91,8 +94,12 @@ class Regions(object):
         """
         mask = np.full(fill_value=True, shape=self.mask.shape)
         mask[self._edge_2d_indexes[:, 0], self._edge_2d_indexes[:, 1]] = False
-        return msk.Mask(mask_2d=mask, sub_size=self.mask.sub_size, pixel_scales=self.mask.pixel_scales,
-                  origin=self.mask.origin)
+        return msk.Mask(
+            mask_2d=mask,
+            sub_size=self.mask.sub_size,
+            pixel_scales=self.mask.pixel_scales,
+            origin=self.mask.origin,
+        )
 
     @property
     def border_mask(self):
@@ -102,8 +109,12 @@ class Regions(object):
         """
         mask = np.full(fill_value=True, shape=self.mask.shape)
         mask[self._border_2d_indexes[:, 0], self._border_2d_indexes[:, 1]] = False
-        return msk.Mask(mask_2d=mask, sub_size=self.mask.sub_size, pixel_scales=self.mask.pixel_scales,
-                  origin=self.mask.origin)
+        return msk.Mask(
+            mask_2d=mask,
+            sub_size=self.mask.sub_size,
+            pixel_scales=self.mask.pixel_scales,
+            origin=self.mask.origin,
+        )
 
     @property
     def _sub_mask_2d_index_for_sub_mask_1d_index(self):

@@ -384,7 +384,6 @@ class TestLikelihood:
 
 
 class TestInversionEvidence:
-
     def test__simple_values(self):
 
         likelihood_with_regularization_terms = aa.util.fit.likelihood_with_regularization_from_inversion_terms(

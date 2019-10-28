@@ -550,9 +550,7 @@ def sub_array_2d_from_sub_array_1d(sub_array_1d, mask, sub_size):
 
     sub_one_to_two = mask_util.sub_mask_2d_index_for_sub_mask_1d_index_via_mask_2d(
         mask_2d=mask, sub_size=sub_size
-    ).astype(
-        "int"
-    )
+    ).astype("int")
 
     return sub_array_2d_from_sub_array_1d_sub_shape_via_sub_indexes(
         sub_array_1d=sub_array_1d,

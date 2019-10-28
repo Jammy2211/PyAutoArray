@@ -26,7 +26,8 @@ class TestTotalPixels:
         )
 
         assert (
-                aa.util.mask.total_sub_pixels_from_mask_2d_and_sub_size(mask, sub_size=2) == 20
+            aa.util.mask.total_sub_pixels_from_mask_2d_and_sub_size(mask, sub_size=2)
+            == 20
         )
 
     def test__total_edge_pixels_from_mask(self):
@@ -60,7 +61,8 @@ class TestTotalPixels:
             full_pix_grid_pixel_centres = np.array([[0, 0], [0, 1], [0, 2], [1, 0]])
 
             total_masked_pixels = aa.util.mask.total_sparse_pixels_from_mask_2d(
-                mask_2d=ma, unmasked_sparse_grid_pixel_centres=full_pix_grid_pixel_centres
+                mask_2d=ma,
+                unmasked_sparse_grid_pixel_centres=full_pix_grid_pixel_centres,
             )
 
             assert total_masked_pixels == 4
@@ -70,7 +72,8 @@ class TestTotalPixels:
             )
 
             total_masked_pixels = aa.util.mask.total_sparse_pixels_from_mask_2d(
-                mask_2d=ma, unmasked_sparse_grid_pixel_centres=full_pix_grid_pixel_centres
+                mask_2d=ma,
+                unmasked_sparse_grid_pixel_centres=full_pix_grid_pixel_centres,
             )
 
             assert total_masked_pixels == 6
@@ -89,7 +92,8 @@ class TestTotalPixels:
             full_pix_grid_pixel_centres = np.array([[0, 0], [0, 1], [0, 2], [1, 0]])
 
             total_masked_pixels = aa.util.mask.total_sparse_pixels_from_mask_2d(
-                mask_2d=ma, unmasked_sparse_grid_pixel_centres=full_pix_grid_pixel_centres
+                mask_2d=ma,
+                unmasked_sparse_grid_pixel_centres=full_pix_grid_pixel_centres,
             )
 
             assert total_masked_pixels == 2
@@ -99,7 +103,8 @@ class TestTotalPixels:
             )
 
             total_masked_pixels = aa.util.mask.total_sparse_pixels_from_mask_2d(
-                mask_2d=ma, unmasked_sparse_grid_pixel_centres=full_pix_grid_pixel_centres
+                mask_2d=ma,
+                unmasked_sparse_grid_pixel_centres=full_pix_grid_pixel_centres,
             )
 
             assert total_masked_pixels == 4
@@ -120,7 +125,8 @@ class TestTotalPixels:
             full_pix_grid_pixel_centres = np.array([[0, 0], [0, 1], [0, 2], [1, 0]])
 
             total_masked_pixels = aa.util.mask.total_sparse_pixels_from_mask_2d(
-                mask_2d=ma, unmasked_sparse_grid_pixel_centres=full_pix_grid_pixel_centres
+                mask_2d=ma,
+                unmasked_sparse_grid_pixel_centres=full_pix_grid_pixel_centres,
             )
 
             assert total_masked_pixels == 2
@@ -130,7 +136,8 @@ class TestTotalPixels:
             )
 
             total_masked_pixels = aa.util.mask.total_sparse_pixels_from_mask_2d(
-                mask_2d=ma, unmasked_sparse_grid_pixel_centres=full_pix_grid_pixel_centres
+                mask_2d=ma,
+                unmasked_sparse_grid_pixel_centres=full_pix_grid_pixel_centres,
             )
 
             assert total_masked_pixels == 6
@@ -152,7 +159,8 @@ class TestTotalPixels:
             full_pix_grid_pixel_centres = np.array([[0, 0], [0, 1], [0, 2], [1, 1]])
 
             total_masked_pixels = aa.util.mask.total_sparse_pixels_from_mask_2d(
-                mask_2d=ma, unmasked_sparse_grid_pixel_centres=full_pix_grid_pixel_centres
+                mask_2d=ma,
+                unmasked_sparse_grid_pixel_centres=full_pix_grid_pixel_centres,
             )
 
             assert total_masked_pixels == 2
@@ -162,7 +170,8 @@ class TestTotalPixels:
             )
 
             total_masked_pixels = aa.util.mask.total_sparse_pixels_from_mask_2d(
-                mask_2d=ma, unmasked_sparse_grid_pixel_centres=full_pix_grid_pixel_centres
+                mask_2d=ma,
+                unmasked_sparse_grid_pixel_centres=full_pix_grid_pixel_centres,
             )
 
             assert total_masked_pixels == 6
@@ -322,7 +331,10 @@ class TestMaskCircular(object):
         ).all()
 
         mask = aa.util.mask.mask_2d_circular_from_shape_2d_pixel_scales_and_radius(
-            shape_2d=(3, 3), pixel_scales=(3.0, 3.0), radius_arcsec=0.5, centre=(0.0, 3.0)
+            shape_2d=(3, 3),
+            pixel_scales=(3.0, 3.0),
+            radius_arcsec=0.5,
+            centre=(0.0, 3.0),
         )
 
         assert mask.shape == (3, 3)

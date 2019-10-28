@@ -105,7 +105,9 @@ class InversionImaging(object):
             blurred_mapping_matrix=self.blurred_mapping_matrix,
             solution_vector=self.reconstruction,
         )
-        return self.mapper.grid.mapping.array_from_array_1d(array_1d=reconstructed_image)
+        return self.mapper.grid.mapping.array_from_array_1d(
+            array_1d=reconstructed_image
+        )
 
     @property
     def errors_with_covariance(self):
