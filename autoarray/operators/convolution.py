@@ -203,7 +203,10 @@ class Convolver(object):
             for y in range(self.mask_index_array.shape[1]):
                 if not mask[x][y]:
                     image_frame_1d_indexes, image_frame_1d_kernels = self.frame_at_coordinates_jit(
-                        coordinates=(x, y), mask=mask, mask_index_array=self.mask_index_array, kernel_2d=self.kernel.in_2d[:, :]
+                        coordinates=(x, y),
+                        mask=mask,
+                        mask_index_array=self.mask_index_array,
+                        kernel_2d=self.kernel.in_2d[:, :],
                     )
                     self.image_frame_1d_indexes[
                         mask_1d_index, :
@@ -238,7 +241,10 @@ class Convolver(object):
             for y in range(mask.shape[1]):
                 if mask[x][y] and not self.blurring_mask[x, y]:
                     image_frame_1d_indexes, image_frame_1d_kernels = self.frame_at_coordinates_jit(
-                        coordinates=(x, y), mask=mask, mask_index_array=self.mask_index_array, kernel_2d=self.kernel.in_2d
+                        coordinates=(x, y),
+                        mask=mask,
+                        mask_index_array=self.mask_index_array,
+                        kernel_2d=self.kernel.in_2d,
                     )
                     self.blurring_frame_1d_indexes[
                         mask_1d_index, :
@@ -291,9 +297,7 @@ class Convolver(object):
 
         return frame, kernel_frame
 
-    def convolved_image_from_image_and_blurring_image(
-        self, image, blurring_image
-    ):
+    def convolved_image_from_image_and_blurring_image(self, image, blurring_image):
         """For a given 1D array and blurring array, convolve the two using this convolver.
 
         Parameters

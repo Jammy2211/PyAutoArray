@@ -5,6 +5,7 @@ import autoarray as aa
 from autoarray import exc
 from autoarray.structures import grids
 
+
 @pytest.fixture(name="grid")
 def make_grid():
     mask = aa.mask.manual(
@@ -17,29 +18,46 @@ def make_grid():
 
 
 class TestGridAPI:
-
     class TestManual:
-
         def test__grid__makes_scaled_grid_with_pixel_scale(self):
 
-            grid = aa.grid.manual_2d(grid=[[[1.0, 2.0], [3.0, 4.0]],
-                                           [[5.0, 6.0], [7.0, 8.0]]], pixel_scales=1.0)
+            grid = aa.grid.manual_2d(
+                grid=[[[1.0, 2.0], [3.0, 4.0]], [[5.0, 6.0], [7.0, 8.0]]],
+                pixel_scales=1.0,
+            )
 
             assert type(grid) == grids.Grid
-            assert (grid.in_2d == np.array([[[1.0, 2.0], [3.0, 4.0]], [[5.0, 6.0], [7.0, 8.0]]])).all()
-            assert (grid.in_1d == np.array([[1.0, 2.0], [3.0, 4.0], [5.0, 6.0], [7.0, 8.0]])).all()
+            assert (
+                grid.in_2d
+                == np.array([[[1.0, 2.0], [3.0, 4.0]], [[5.0, 6.0], [7.0, 8.0]]])
+            ).all()
+            assert (
+                grid.in_1d == np.array([[1.0, 2.0], [3.0, 4.0], [5.0, 6.0], [7.0, 8.0]])
+            ).all()
             assert grid.pixel_scales == (1.0, 1.0)
             assert grid.origin == (0.0, 0.0)
 
-            grid = aa.grid.manual_1d(grid=[[1.0, 2.0], [3.0, 4.0], [5.0, 6.0], [7.0, 8.0]], shape_2d=(2,2), pixel_scales=1.0, origin=(0.0, 1.0))
+            grid = aa.grid.manual_1d(
+                grid=[[1.0, 2.0], [3.0, 4.0], [5.0, 6.0], [7.0, 8.0]],
+                shape_2d=(2, 2),
+                pixel_scales=1.0,
+                origin=(0.0, 1.0),
+            )
 
             assert type(grid) == grids.Grid
-            assert (grid.in_2d == np.array([[[1.0, 2.0], [3.0, 4.0]], [[5.0, 6.0], [7.0, 8.0]]])).all()
-            assert (grid.in_1d == np.array([[1.0, 2.0], [3.0, 4.0], [5.0, 6.0], [7.0, 8.0]])).all()
+            assert (
+                grid.in_2d
+                == np.array([[[1.0, 2.0], [3.0, 4.0]], [[5.0, 6.0], [7.0, 8.0]]])
+            ).all()
+            assert (
+                grid.in_1d == np.array([[1.0, 2.0], [3.0, 4.0], [5.0, 6.0], [7.0, 8.0]])
+            ).all()
             assert grid.pixel_scales == (1.0, 1.0)
             assert grid.origin == (0.0, 1.0)
 
-            grid = aa.grid.manual_1d(grid=[[1.0, 2.0], [3.0, 4.0]], shape_2d=(2,1), pixel_scales=(2.0, 3.0))
+            grid = aa.grid.manual_1d(
+                grid=[[1.0, 2.0], [3.0, 4.0]], shape_2d=(2, 1), pixel_scales=(2.0, 3.0)
+            )
 
             assert type(grid) == grids.Grid
             assert (grid.in_2d == np.array([[[1.0, 2.0]], [[3.0, 4.0]]])).all()
@@ -49,24 +67,48 @@ class TestGridAPI:
 
         def test__grid__makes_scaled_sub_grid_with_pixel_scale_and_sub_size(self):
 
-            grid = aa.grid.manual_2d(grid=[[[1.0, 2.0], [3.0, 4.0]],
-                                 [[5.0, 6.0], [7.0, 8.0]]], pixel_scales=1.0, sub_size=1)
+            grid = aa.grid.manual_2d(
+                grid=[[[1.0, 2.0], [3.0, 4.0]], [[5.0, 6.0], [7.0, 8.0]]],
+                pixel_scales=1.0,
+                sub_size=1,
+            )
 
             assert type(grid) == grids.Grid
-            assert (grid.in_2d == np.array([[[1.0, 2.0], [3.0, 4.0]], [[5.0, 6.0], [7.0, 8.0]]])).all()
-            assert (grid.in_1d == np.array([[1.0, 2.0], [3.0, 4.0], [5.0, 6.0], [7.0, 8.0]])).all()
-            assert (grid.in_2d_binned == np.array([[[1.0, 2.0], [3.0, 4.0]], [[5.0, 6.0], [7.0, 8.0]]])).all()
-            assert (grid.in_1d_binned == np.array([[1.0, 2.0], [3.0, 4.0], [5.0, 6.0], [7.0, 8.0]])).all()
+            assert (
+                grid.in_2d
+                == np.array([[[1.0, 2.0], [3.0, 4.0]], [[5.0, 6.0], [7.0, 8.0]]])
+            ).all()
+            assert (
+                grid.in_1d == np.array([[1.0, 2.0], [3.0, 4.0], [5.0, 6.0], [7.0, 8.0]])
+            ).all()
+            assert (
+                grid.in_2d_binned
+                == np.array([[[1.0, 2.0], [3.0, 4.0]], [[5.0, 6.0], [7.0, 8.0]]])
+            ).all()
+            assert (
+                grid.in_1d_binned
+                == np.array([[1.0, 2.0], [3.0, 4.0], [5.0, 6.0], [7.0, 8.0]])
+            ).all()
             assert grid.pixel_scales == (1.0, 1.0)
             assert grid.origin == (0.0, 0.0)
             assert grid.sub_size == 1
 
-            grid = aa.grid.manual_1d(grid=[[1.0, 2.0], [3.0, 4.0], [5.0, 6.0], [7.0, 8.0]],
-                           shape_2d=(1,1), pixel_scales=1.0, sub_size=2, origin=(0.0, 1.0))
+            grid = aa.grid.manual_1d(
+                grid=[[1.0, 2.0], [3.0, 4.0], [5.0, 6.0], [7.0, 8.0]],
+                shape_2d=(1, 1),
+                pixel_scales=1.0,
+                sub_size=2,
+                origin=(0.0, 1.0),
+            )
 
             assert type(grid) == grids.Grid
-            assert (grid.in_2d == np.array([[[1.0, 2.0], [3.0, 4.0]], [[5.0, 6.0], [7.0, 8.0]]])).all()
-            assert (grid.in_1d == np.array([[1.0, 2.0], [3.0, 4.0], [5.0, 6.0], [7.0, 8.0]])).all()
+            assert (
+                grid.in_2d
+                == np.array([[[1.0, 2.0], [3.0, 4.0]], [[5.0, 6.0], [7.0, 8.0]]])
+            ).all()
+            assert (
+                grid.in_1d == np.array([[1.0, 2.0], [3.0, 4.0], [5.0, 6.0], [7.0, 8.0]])
+            ).all()
             assert (grid.in_2d_binned == np.array([[[4.0, 5.0]]])).all()
             assert (grid.in_1d_binned == np.array([[4.0, 5.0]])).all()
             assert grid.pixel_scales == (1.0, 1.0)
@@ -74,30 +116,39 @@ class TestGridAPI:
             assert grid.sub_size == 2
 
     class TestGridUniform:
-
         def test__grid_uniform__makes_scaled_grid_with_pixel_scale(self):
 
             grid = aa.grid.uniform(shape_2d=(2, 2), pixel_scales=2.0)
 
             assert type(grid) == grids.Grid
-            assert (grid.in_2d == np.array([[[1.0, -1.0], [1.0, 1.0]], [[-1.0, -1.0], [-1.0, 1.0]]])).all()
-            assert (grid.in_1d == np.array([[1.0, -1.0], [1.0, 1.0], [-1.0, -1.0], [-1.0, 1.0]])).all()
+            assert (
+                grid.in_2d
+                == np.array([[[1.0, -1.0], [1.0, 1.0]], [[-1.0, -1.0], [-1.0, 1.0]]])
+            ).all()
+            assert (
+                grid.in_1d
+                == np.array([[1.0, -1.0], [1.0, 1.0], [-1.0, -1.0], [-1.0, 1.0]])
+            ).all()
             assert grid.pixel_scales == (2.0, 2.0)
             assert grid.origin == (0.0, 0.0)
 
             grid = aa.grid.uniform(shape_2d=(2, 2), pixel_scales=2.0, origin=(1.0, 1.0))
 
             assert type(grid) == grids.Grid
-            assert (grid.in_2d == np.array([[[2.0, 0.0], [2.0, 2.0]], [[0.0, 0.0], [0.0, 2.0]]])).all()
-            assert (grid.in_1d == np.array([[2.0, 0.0], [2.0, 2.0], [0.0, 0.0], [0.0, 2.0]])).all()
+            assert (
+                grid.in_2d
+                == np.array([[[2.0, 0.0], [2.0, 2.0]], [[0.0, 0.0], [0.0, 2.0]]])
+            ).all()
+            assert (
+                grid.in_1d == np.array([[2.0, 0.0], [2.0, 2.0], [0.0, 0.0], [0.0, 2.0]])
+            ).all()
             assert grid.pixel_scales == (2.0, 2.0)
             assert grid.origin == (1.0, 1.0)
 
             grid = aa.grid.uniform(shape_2d=(2, 1), pixel_scales=(2.0, 1.0))
 
             assert type(grid) == grids.Grid
-            assert (grid.in_2d == np.array([[[1.0, 0.0]],
-                                            [[-1.0, 0.0]]])).all()
+            assert (grid.in_2d == np.array([[[1.0, 0.0]], [[-1.0, 0.0]]])).all()
             assert (grid.in_1d == np.array([[1.0, 0.0], [-1.0, 0.0]])).all()
             assert grid.pixel_scales == (2.0, 1.0)
             assert grid.origin == (0.0, 0.0)
@@ -107,21 +158,46 @@ class TestGridAPI:
             grid = aa.grid.uniform(shape_2d=(2, 2), pixel_scales=2.0, sub_size=1)
 
             assert type(grid) == grids.Grid
-            assert (grid.in_2d == np.array([[[1.0, -1.0], [1.0, 1.0]], [[-1.0, -1.0], [-1.0, 1.0]]])).all()
-            assert (grid.in_1d == np.array([[1.0, -1.0], [1.0, 1.0], [-1.0, -1.0], [-1.0, 1.0]])).all()
-            assert (grid.in_2d_binned == np.array([[[1.0, -1.0], [1.0, 1.0]], [[-1.0, -1.0], [-1.0, 1.0]]])).all()
-            assert (grid.in_1d_binned == np.array([[1.0, -1.0], [1.0, 1.0], [-1.0, -1.0], [-1.0, 1.0]])).all()
+            assert (
+                grid.in_2d
+                == np.array([[[1.0, -1.0], [1.0, 1.0]], [[-1.0, -1.0], [-1.0, 1.0]]])
+            ).all()
+            assert (
+                grid.in_1d
+                == np.array([[1.0, -1.0], [1.0, 1.0], [-1.0, -1.0], [-1.0, 1.0]])
+            ).all()
+            assert (
+                grid.in_2d_binned
+                == np.array([[[1.0, -1.0], [1.0, 1.0]], [[-1.0, -1.0], [-1.0, 1.0]]])
+            ).all()
+            assert (
+                grid.in_1d_binned
+                == np.array([[1.0, -1.0], [1.0, 1.0], [-1.0, -1.0], [-1.0, 1.0]])
+            ).all()
             assert grid.pixel_scales == (2.0, 2.0)
             assert grid.origin == (0.0, 0.0)
             assert grid.sub_size == 1
 
-            grid = aa.grid.uniform(shape_2d=(2, 2), pixel_scales=2.0, sub_size=1, origin=(1.0, 1.0))
+            grid = aa.grid.uniform(
+                shape_2d=(2, 2), pixel_scales=2.0, sub_size=1, origin=(1.0, 1.0)
+            )
 
             assert type(grid) == grids.Grid
-            assert (grid.in_2d == np.array([[[2.0, 0.0], [2.0, 2.0]], [[0.0, 0.0], [0.0, 2.0]]])).all()
-            assert (grid.in_1d == np.array([[2.0, 0.0], [2.0, 2.0], [0.0, 0.0], [0.0, 2.0]])).all()
-            assert (grid.in_2d_binned == np.array([[[2.0, 0.0], [2.0, 2.0]], [[0.0, 0.0], [0.0, 2.0]]])).all()
-            assert (grid.in_1d_binned == np.array([[2.0, 0.0], [2.0, 2.0], [0.0, 0.0], [0.0, 2.0]])).all()
+            assert (
+                grid.in_2d
+                == np.array([[[2.0, 0.0], [2.0, 2.0]], [[0.0, 0.0], [0.0, 2.0]]])
+            ).all()
+            assert (
+                grid.in_1d == np.array([[2.0, 0.0], [2.0, 2.0], [0.0, 0.0], [0.0, 2.0]])
+            ).all()
+            assert (
+                grid.in_2d_binned
+                == np.array([[[2.0, 0.0], [2.0, 2.0]], [[0.0, 0.0], [0.0, 2.0]]])
+            ).all()
+            assert (
+                grid.in_1d_binned
+                == np.array([[2.0, 0.0], [2.0, 2.0], [0.0, 0.0], [0.0, 2.0]])
+            ).all()
             assert grid.pixel_scales == (2.0, 2.0)
             assert grid.origin == (1.0, 1.0)
             assert grid.sub_size == 1
@@ -129,10 +205,32 @@ class TestGridAPI:
             grid = aa.grid.uniform(shape_2d=(2, 1), pixel_scales=1.0, sub_size=2)
 
             assert type(grid) == grids.Grid
-            assert (grid.in_2d == np.array([[[0.75, -0.25], [0.75, 0.25]], [[0.25, -0.25], [0.25, 0.25]],
-                                            [[-0.25, -0.25], [-0.25, 0.25]], [[-0.75, -0.25], [-0.75, 0.25]]])).all()
-            assert (grid.in_1d == np.array([[0.75, -0.25], [0.75, 0.25], [0.25, -0.25], [0.25, 0.25],
-                                            [-0.25, -0.25], [-0.25, 0.25], [-0.75, -0.25], [-0.75, 0.25]])).all()
+            assert (
+                grid.in_2d
+                == np.array(
+                    [
+                        [[0.75, -0.25], [0.75, 0.25]],
+                        [[0.25, -0.25], [0.25, 0.25]],
+                        [[-0.25, -0.25], [-0.25, 0.25]],
+                        [[-0.75, -0.25], [-0.75, 0.25]],
+                    ]
+                )
+            ).all()
+            assert (
+                grid.in_1d
+                == np.array(
+                    [
+                        [0.75, -0.25],
+                        [0.75, 0.25],
+                        [0.25, -0.25],
+                        [0.25, 0.25],
+                        [-0.25, -0.25],
+                        [-0.25, 0.25],
+                        [-0.75, -0.25],
+                        [-0.75, 0.25],
+                    ]
+                )
+            ).all()
             assert (grid.in_2d_binned == np.array([[[0.5, 0.0]], [[-0.5, 0.0]]])).all()
             assert (grid.in_1d_binned == np.array([[0.5, 0.0], [-0.5, 0.0]])).all()
             assert grid.pixel_scales == (1.0, 1.0)
@@ -141,40 +239,69 @@ class TestGridAPI:
 
 
 class TestGridMaskedAPI:
-
     class TestManual:
-
         def test__grid__makes_scaled_grid_with_pixel_scale(self):
 
-            mask = aa.mask.unmasked(shape_2d=(2,2), pixel_scales=1.0)
-            grid = aa.masked_grid.manual_2d(grid=[[[1.0, 2.0], [3.0, 4.0]],
-                                 [[5.0, 6.0], [7.0, 8.0]]], mask=mask)
+            mask = aa.mask.unmasked(shape_2d=(2, 2), pixel_scales=1.0)
+            grid = aa.masked_grid.manual_2d(
+                grid=[[[1.0, 2.0], [3.0, 4.0]], [[5.0, 6.0], [7.0, 8.0]]], mask=mask
+            )
 
             assert type(grid) == grids.Grid
-            assert (grid.in_2d == np.array([[[1.0, 2.0], [3.0, 4.0]], [[5.0, 6.0], [7.0, 8.0]]])).all()
-            assert (grid.in_1d == np.array([[1.0, 2.0], [3.0, 4.0], [5.0, 6.0], [7.0, 8.0]])).all()
+            assert (
+                grid.in_2d
+                == np.array([[[1.0, 2.0], [3.0, 4.0]], [[5.0, 6.0], [7.0, 8.0]]])
+            ).all()
+            assert (
+                grid.in_1d == np.array([[1.0, 2.0], [3.0, 4.0], [5.0, 6.0], [7.0, 8.0]])
+            ).all()
             assert grid.pixel_scales == (1.0, 1.0)
             assert grid.origin == (0.0, 0.0)
 
-            mask = aa.mask.manual([[True, False], [False, False]], pixel_scales=1.0, origin=(0.0, 1.0))
-            grid = aa.masked_grid.manual_1d(grid=[[3.0, 4.0], [5.0, 6.0], [7.0, 8.0]], mask=mask)
+            mask = aa.mask.manual(
+                [[True, False], [False, False]], pixel_scales=1.0, origin=(0.0, 1.0)
+            )
+            grid = aa.masked_grid.manual_1d(
+                grid=[[3.0, 4.0], [5.0, 6.0], [7.0, 8.0]], mask=mask
+            )
 
             assert type(grid) == grids.Grid
-            assert (grid.in_2d == np.array([[[0.0, 0.0], [3.0, 4.0]], [[5.0, 6.0], [7.0, 8.0]]])).all()
+            assert (
+                grid.in_2d
+                == np.array([[[0.0, 0.0], [3.0, 4.0]], [[5.0, 6.0], [7.0, 8.0]]])
+            ).all()
             assert (grid.in_1d == np.array([[3.0, 4.0], [5.0, 6.0], [7.0, 8.0]])).all()
             assert grid.pixel_scales == (1.0, 1.0)
             assert grid.origin == (0.0, 1.0)
 
-            mask = aa.mask.manual([[False], [True]], sub_size=2, pixel_scales=1.0, origin=(0.0, 1.0))
-            grid = aa.masked_grid.manual_2d(grid=[[[1.0, 2.0], [3.0, 4.0]], [[5.0, 6.0], [7.0, 8.0]],
-                                               [[1.0, 2.0], [3.0, 4.0]], [[5.0, 6.0], [7.0, 7.0]]], mask=mask)
+            mask = aa.mask.manual(
+                [[False], [True]], sub_size=2, pixel_scales=1.0, origin=(0.0, 1.0)
+            )
+            grid = aa.masked_grid.manual_2d(
+                grid=[
+                    [[1.0, 2.0], [3.0, 4.0]],
+                    [[5.0, 6.0], [7.0, 8.0]],
+                    [[1.0, 2.0], [3.0, 4.0]],
+                    [[5.0, 6.0], [7.0, 7.0]],
+                ],
+                mask=mask,
+            )
 
             assert type(grid) == grids.Grid
-            assert (grid.in_2d == np.array([[[1.0, 2.0], [3.0, 4.0]],
-                                            [[5.0, 6.0], [7.0, 8.0]],
-                                            [[0.0, 0.0], [0.0, 0.0]],
-                                            [[0.0, 0.0], [0.0, 0.0]]])).all()
-            assert (grid.in_1d == np.array([[1.0, 2.0], [3.0, 4.0], [5.0, 6.0], [7.0, 8.0]])).all()
+            assert (
+                grid.in_2d
+                == np.array(
+                    [
+                        [[1.0, 2.0], [3.0, 4.0]],
+                        [[5.0, 6.0], [7.0, 8.0]],
+                        [[0.0, 0.0], [0.0, 0.0]],
+                        [[0.0, 0.0], [0.0, 0.0]],
+                    ]
+                )
+            ).all()
+            assert (
+                grid.in_1d == np.array([[1.0, 2.0], [3.0, 4.0], [5.0, 6.0], [7.0, 8.0]])
+            ).all()
             assert (grid.in_2d_binned == np.array([[[4.0, 5.0]], [[0.0, 0.0]]])).all()
             assert (grid.in_1d_binned == np.array([[4.0, 5.0]])).all()
             assert grid.pixel_scales == (1.0, 1.0)
@@ -189,32 +316,53 @@ class TestGridMaskedAPI:
 
             with pytest.raises(exc.GridException):
                 mask = aa.mask.unmasked(shape_2d=(2, 2), pixel_scales=1.0, sub_size=2)
-                aa.masked_grid.manual_2d(grid=[[[1.0, 1.0], [2.0, 2.0]], [[3.0, 3.0], [4.0, 4.0]]], mask=mask)
+                aa.masked_grid.manual_2d(
+                    grid=[[[1.0, 1.0], [2.0, 2.0]], [[3.0, 3.0], [4.0, 4.0]]], mask=mask
+                )
 
             with pytest.raises(exc.GridException):
                 mask = aa.mask.unmasked(shape_2d=(2, 2), pixel_scales=1.0, sub_size=2)
-                aa.masked_grid.manual_2d(grid=[[[1.0, 1.0], [2.0, 2.0]], [[3.0, 3.0], [4.0, 4.0]], [[5.0, 5.0], [6.0, 6.0]]], mask=mask)
+                aa.masked_grid.manual_2d(
+                    grid=[
+                        [[1.0, 1.0], [2.0, 2.0]],
+                        [[3.0, 3.0], [4.0, 4.0]],
+                        [[5.0, 5.0], [6.0, 6.0]],
+                    ],
+                    mask=mask,
+                )
 
-        def test__exception_raised_if_input_grid_is_not_number_of_masked_sub_pixels(self):
+        def test__exception_raised_if_input_grid_is_not_number_of_masked_sub_pixels(
+            self
+        ):
 
             with pytest.raises(exc.GridException):
-                mask = aa.mask.manual(mask_2d=[[False, False], [True, False]], sub_size=1)
-                aa.masked_grid.manual_1d(grid=[[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0]], mask=mask)
+                mask = aa.mask.manual(
+                    mask_2d=[[False, False], [True, False]], sub_size=1
+                )
+                aa.masked_grid.manual_1d(
+                    grid=[[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0]], mask=mask
+                )
 
             with pytest.raises(exc.GridException):
-                mask = aa.mask.manual(mask_2d=[[False, False], [True, False]], sub_size=1)
+                mask = aa.mask.manual(
+                    mask_2d=[[False, False], [True, False]], sub_size=1
+                )
                 aa.masked_grid.manual_1d(grid=[[1.0, 1.0], [2.0, 2.0]], mask=mask)
 
             with pytest.raises(exc.GridException):
                 mask = aa.mask.manual(mask_2d=[[False, True], [True, True]], sub_size=2)
-                aa.masked_grid.manual_2d(grid=[[[1.0, 1.0], [2.0, 2.0], [4.0, 4.0]]], mask=mask)
+                aa.masked_grid.manual_2d(
+                    grid=[[[1.0, 1.0], [2.0, 2.0], [4.0, 4.0]]], mask=mask
+                )
 
             with pytest.raises(exc.GridException):
                 mask = aa.mask.manual(mask_2d=[[False, True], [True, True]], sub_size=2)
-                aa.masked_grid.manual_2d(grid=[[[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0], [5.0, 5.0]]], mask=mask)
+                aa.masked_grid.manual_2d(
+                    grid=[[[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0], [5.0, 5.0]]],
+                    mask=mask,
+                )
 
     class TestFromMask:
-
         def test__from_mask__compare_to_array_util(self):
             mask = np.array(
                 [
@@ -240,7 +388,9 @@ class TestGridMaskedAPI:
 
             assert (grid.in_2d == grid_2d).all()
 
-            mask = np.array([[True, True, True], [True, False, False], [True, True, False]])
+            mask = np.array(
+                [[True, True, True], [True, False, False], [True, True, False]]
+            )
 
             mask = aa.mask.manual(mask, pixel_scales=(3.0, 3.0), sub_size=2)
 
@@ -254,10 +404,11 @@ class TestGridMaskedAPI:
 
 
 class TestGrid:
-
     def test__constructor_class_method_in_2d(self):
 
-        grid = grids.Grid.from_sub_grid_2d_pixel_scales_and_sub_size(sub_grid_2d=np.ones((3, 3, 2)), sub_size=1, pixel_scales=(1.0, 1.0))
+        grid = grids.Grid.from_sub_grid_2d_pixel_scales_and_sub_size(
+            sub_grid_2d=np.ones((3, 3, 2)), sub_size=1, pixel_scales=(1.0, 1.0)
+        )
 
         assert (grid.in_1d == np.ones((9, 2))).all()
         assert (grid.in_2d == np.ones((3, 3, 2))).all()
@@ -269,7 +420,9 @@ class TestGrid:
         assert grid.geometry.arc_second_maxima == (1.5, 1.5)
         assert grid.geometry.arc_second_minima == (-1.5, -1.5)
 
-        grid = grids.Grid.from_sub_grid_2d_pixel_scales_and_sub_size(sub_grid_2d=np.ones((4, 4, 2)), sub_size=2, pixel_scales=(0.1, 0.1))
+        grid = grids.Grid.from_sub_grid_2d_pixel_scales_and_sub_size(
+            sub_grid_2d=np.ones((4, 4, 2)), sub_size=2, pixel_scales=(0.1, 0.1)
+        )
 
         assert (grid.in_1d == np.ones((16, 2))).all()
         assert (grid.in_2d == np.ones((4, 4, 2))).all()
@@ -282,16 +435,20 @@ class TestGrid:
         assert grid.geometry.arc_second_minima == pytest.approx((-0.1, -0.1), 1e-4)
 
         grid = grids.Grid.from_sub_grid_2d_pixel_scales_and_sub_size(
-            sub_grid_2d=np.array([[[1.0, 2.0],
-                                   [3.0, 4.0]],
-                                   [[5.0, 6.0],
-                                   [7.0, 8.0]]]), pixel_scales=(0.1, 0.1), sub_size=2, origin=(1.0, 1.0)
+            sub_grid_2d=np.array([[[1.0, 2.0], [3.0, 4.0]], [[5.0, 6.0], [7.0, 8.0]]]),
+            pixel_scales=(0.1, 0.1),
+            sub_size=2,
+            origin=(1.0, 1.0),
         )
 
         assert grid.shape_2d == (1, 1)
         assert grid.sub_shape_2d == (2, 2)
-        assert (grid.in_1d == np.array([[1.0, 2.0], [3.0, 4.0], [5.0, 6.0], [7.0, 8.0]])).all()
-        assert (grid.in_2d == np.array([[[1.0, 2.0], [3.0, 4.0]], [[5.0, 6.0], [7.0, 8.0]]])).all()
+        assert (
+            grid.in_1d == np.array([[1.0, 2.0], [3.0, 4.0], [5.0, 6.0], [7.0, 8.0]])
+        ).all()
+        assert (
+            grid.in_2d == np.array([[[1.0, 2.0], [3.0, 4.0]], [[5.0, 6.0], [7.0, 8.0]]])
+        ).all()
         assert grid.in_2d_binned.shape == (1, 1, 2)
         assert (grid.in_1d_binned == np.array([4.0, 5.0])).all()
         assert (grid.in_2d_binned == np.array([[4.0, 5.0]])).all()
@@ -302,7 +459,10 @@ class TestGrid:
         assert grid.geometry.arc_second_minima == pytest.approx((0.95, 0.95), 1e-4)
 
         grid = grids.Grid.from_sub_grid_2d_pixel_scales_and_sub_size(
-            sub_grid_2d=np.ones((3, 3, 2)), pixel_scales=(2.0, 1.0), sub_size=1, origin=(-1.0, -2.0)
+            sub_grid_2d=np.ones((3, 3, 2)),
+            pixel_scales=(2.0, 1.0),
+            sub_size=1,
+            origin=(-1.0, -2.0),
         )
 
         assert grid.in_1d == pytest.approx(np.ones((9, 2)), 1e-4)
@@ -317,10 +477,14 @@ class TestGrid:
     def test__constructor_class_method_in_1d(self):
 
         grid = grids.Grid.from_sub_grid_1d_shape_2d_pixel_scales_and_sub_size(
-            sub_grid_1d=np.ones((9, 2)), shape_2d=(3,3), pixel_scales=(2.0, 1.0), sub_size=1, origin=(-1.0, -2.0)
+            sub_grid_1d=np.ones((9, 2)),
+            shape_2d=(3, 3),
+            pixel_scales=(2.0, 1.0),
+            sub_size=1,
+            origin=(-1.0, -2.0),
         )
 
-        assert grid.in_1d == pytest.approx(np.ones((9,2)), 1e-4)
+        assert grid.in_1d == pytest.approx(np.ones((9, 2)), 1e-4)
         assert grid.in_2d == pytest.approx(np.ones((3, 3, 2)), 1e-4)
         assert grid.pixel_scales == (2.0, 1.0)
         assert grid.geometry.central_pixel_coordinates == (1.0, 1.0)
@@ -395,7 +559,7 @@ class TestGrid:
         assert blurring_grid.pixel_scales == (2.0, 2.0)
 
     def test__masked_shape_2d_arcsec(self):
-        
+
         mask = aa.mask.circular(
             shape_2d=(3, 3), radius_arcsec=1.0, pixel_scales=(1.0, 1.0), sub_size=1
         )
@@ -514,9 +678,7 @@ class TestGrid:
 
     def test__padded_grid_from_kernel_shape__matches_grid_2d_after_padding(self):
 
-        grid = grids.Grid.uniform(
-            shape_2d=(4, 4), pixel_scales=3.0, sub_size=1
-        )
+        grid = grids.Grid.uniform(shape_2d=(4, 4), pixel_scales=3.0, sub_size=1)
 
         padded_grid = grid.padded_grid_from_kernel_shape(kernel_shape=(3, 3))
 
@@ -529,9 +691,7 @@ class TestGrid:
         assert (padded_grid == padded_grid_util).all()
         assert padded_grid.interpolator is None
 
-        grid = grids.Grid.uniform(
-            shape_2d=(4, 5), pixel_scales=2.0, sub_size=1
-        )
+        grid = grids.Grid.uniform(shape_2d=(4, 5), pixel_scales=2.0, sub_size=1)
 
         padded_grid = grid.padded_grid_from_kernel_shape(kernel_shape=(3, 3))
 
@@ -542,9 +702,7 @@ class TestGrid:
         assert padded_grid.shape == (42, 2)
         assert (padded_grid == padded_grid_util).all()
 
-        grid = grids.Grid.uniform(
-            shape_2d=(5, 4), pixel_scales=1.0, sub_size=1
-        )
+        grid = grids.Grid.uniform(shape_2d=(5, 4), pixel_scales=1.0, sub_size=1)
 
         padded_grid = grid.padded_grid_from_kernel_shape(kernel_shape=(3, 3))
 
@@ -555,9 +713,7 @@ class TestGrid:
         assert padded_grid.shape == (42, 2)
         assert (padded_grid == padded_grid_util).all()
 
-        grid = grids.Grid.uniform(
-            shape_2d=(5, 5), pixel_scales=8.0, sub_size=1
-        )
+        grid = grids.Grid.uniform(shape_2d=(5, 5), pixel_scales=8.0, sub_size=1)
 
         padded_grid = grid.padded_grid_from_kernel_shape(kernel_shape=(2, 5))
 
@@ -604,9 +760,7 @@ class TestGrid:
     def test__padded_grid_from_kernel_shape__has_interpolator_grid_if_had_one_before(
         self
     ):
-        grid = grids.Grid.uniform(
-            shape_2d=(4, 4), pixel_scales=3.0, sub_size=1
-        )
+        grid = grids.Grid.uniform(shape_2d=(4, 4), pixel_scales=3.0, sub_size=1)
 
         grid = grid.new_grid_with_interpolator(pixel_scale_interpolation_grid=0.1)
 
@@ -615,9 +769,7 @@ class TestGrid:
         assert padded_grid.interpolator is not None
         assert padded_grid.interpolator.pixel_scale_interpolation_grid == 0.1
 
-        mask = aa.mask.unmasked(
-            shape_2d=(6, 6), pixel_scales=(3.0, 3.0), sub_size=1
-        )
+        mask = aa.mask.unmasked(shape_2d=(6, 6), pixel_scales=(3.0, 3.0), sub_size=1)
 
         interpolator = grids.Interpolator.from_mask_grid_and_pixel_scale_interpolation_grids(
             mask=mask, grid=padded_grid, pixel_scale_interpolation_grid=0.1
@@ -639,9 +791,7 @@ class TestGrid:
         assert padded_grid.interpolator is not None
         assert padded_grid.interpolator.pixel_scale_interpolation_grid == 0.1
 
-        mask = aa.mask.unmasked(
-            shape_2d=(7, 6), pixel_scales=(2.0, 2.0), sub_size=2
-        )
+        mask = aa.mask.unmasked(shape_2d=(7, 6), pixel_scales=(2.0, 2.0), sub_size=2)
 
         interpolator = grids.Interpolator.from_mask_grid_and_pixel_scale_interpolation_grids(
             mask=mask, grid=padded_grid, pixel_scale_interpolation_grid=0.1
@@ -903,7 +1053,10 @@ class TestSparseToGrid:
             )
 
             unmasked_sparse_grid_util = aa.util.grid.grid_1d_via_shape_2d(
-                shape_2d=(10, 10), pixel_scales=(0.15, 0.15), sub_size=1, origin=(0.0, 0.0)
+                shape_2d=(10, 10),
+                pixel_scales=(0.15, 0.15),
+                sub_size=1,
+                origin=(0.0, 0.0),
             )
 
             unmasked_sparse_grid_pixel_centres = aa.util.grid.grid_pixel_centres_1d_from_grid_arcsec_1d_shape_2d_and_pixel_scales(
@@ -1287,9 +1440,7 @@ class TestSparseToGrid:
             ).all()
 
     class TestUnmaskedShapeAndWeightImage:
-        def test__weight_map_all_ones__kmeans_grid_is_grid_overlapping_image(
-            self
-        ):
+        def test__weight_map_all_ones__kmeans_grid_is_grid_overlapping_image(self):
             mask = aa.mask.manual(
                 mask_2d=np.array(
                     [
@@ -1303,9 +1454,7 @@ class TestSparseToGrid:
                 sub_size=1,
             )
 
-            grid = aa.masked_grid.from_mask(
-                mask=mask,
-            )
+            grid = aa.masked_grid.from_mask(mask=mask)
 
             weight_map = np.ones(mask.pixels_in_mask)
 
@@ -1353,9 +1502,7 @@ class TestSparseToGrid:
                 sub_size=2,
             )
 
-            grid = aa.masked_grid.from_mask(
-                mask=mask,
-            )
+            grid = aa.masked_grid.from_mask(mask=mask)
 
             weight_map = np.ones(mask.pixels_in_mask)
             weight_map[0:15] = 0.00000001
@@ -1406,9 +1553,7 @@ class TestInterpolator:
             return result
 
         grid = aa.masked_grid.from_mask(
-            mask=aa.mask.unmasked(
-                shape_2d=(3, 3), pixel_scales=(1.0, 1.0), sub_size=1
-            )
+            mask=aa.mask.unmasked(shape_2d=(3, 3), pixel_scales=(1.0, 1.0), sub_size=1)
         )
 
         values = func(None, grid)
@@ -1418,9 +1563,7 @@ class TestInterpolator:
         assert (values == np.array([[1, 0, 0, 0, 0, 0, 0, 0, 0]])).all()
 
         grid = aa.masked_grid.from_mask(
-            mask=aa.mask.unmasked(
-                shape_2d=(3, 3), pixel_scales=(1.0, 1.0), sub_size=1
-            )
+            mask=aa.mask.unmasked(shape_2d=(3, 3), pixel_scales=(1.0, 1.0), sub_size=1)
         )
         grid.interpolator = grids.Interpolator.from_mask_grid_and_pixel_scale_interpolation_grids(
             grid.mask, grid, pixel_scale_interpolation_grid=0.5
@@ -1441,9 +1584,7 @@ class TestInterpolator:
             return result
 
         grid = aa.masked_grid.from_mask(
-            mask=aa.mask.unmasked(
-                shape_2d=(3, 3), pixel_scales=(1.0, 1.0), sub_size=1
-            )
+            mask=aa.mask.unmasked(shape_2d=(3, 3), pixel_scales=(1.0, 1.0), sub_size=1)
         )
 
         values = func(None, grid)
@@ -1458,9 +1599,7 @@ class TestInterpolator:
         ).all()
 
         grid = aa.masked_grid.from_mask(
-            mask=aa.mask.unmasked(
-                shape_2d=(3, 3), pixel_scales=(1.0, 1.0), sub_size=1
-            )
+            mask=aa.mask.unmasked(shape_2d=(3, 3), pixel_scales=(1.0, 1.0), sub_size=1)
         )
         grid.interpolator = grids.Interpolator.from_mask_grid_and_pixel_scale_interpolation_grids(
             grid.mask, grid, pixel_scale_interpolation_grid=0.5

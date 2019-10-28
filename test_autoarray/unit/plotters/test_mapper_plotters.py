@@ -14,8 +14,8 @@ def make_mapper_plotter_setup():
 
 @pytest.fixture(name="image")
 def make_image():
-    image = aa.array.ones(shape_2d=(3,3), pixel_scales=1.0)
-    noise_map = aa.array.full(fill_value=2.0, shape_2d=(3,3), pixel_scales=1.0)
+    image = aa.array.ones(shape_2d=(3, 3), pixel_scales=1.0)
+    noise_map = aa.array.full(fill_value=2.0, shape_2d=(3, 3), pixel_scales=1.0)
     psf = aa.kernel.manual_2d(array=3.0 * np.ones((3, 3)), pixel_scales=1.0)
 
     return aa.imaging.manual(image=image, noise_map=noise_map, psf=psf)
@@ -28,9 +28,7 @@ def make_mask():
 
 @pytest.fixture(name="grid")
 def make_grid():
-    return aa.grid.uniform(
-        shape_2d=(100, 100), pixel_scales=0.05, sub_size=2
-    )
+    return aa.grid.uniform(shape_2d=(100, 100), pixel_scales=0.05, sub_size=2)
 
 
 @pytest.fixture(name="rectangular_pixelization")
@@ -40,8 +38,8 @@ def make_rectangular_pixelization():
 
 @pytest.fixture(name="rectangular_mapper")
 def make_rectangular_mapper(rectangular_pixelization, grid):
-    return rectangular_pixelization.mapper_from_grid_and_pixelization_grid(
-        grid=grid, pixelization_grid=None, inversion_uses_border=False
+    return rectangular_pixelization.mapper_from_grid_and_sparse_grid(
+        grid=grid, sparse_grid=None, inversion_uses_border=False
     )
 
 

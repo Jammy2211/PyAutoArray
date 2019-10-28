@@ -1,8 +1,8 @@
 import numpy as np
 from functools import wraps
 
-class AbstractStructure(np.ndarray):
 
+class AbstractStructure(np.ndarray):
     def __new__(cls, structure_1d, mask, *args, **kwargs):
         """A grid of coordinates, where each entry corresponds to the (y,x) coordinates at the centre of an \
         unmasked pixel. The positive y-axis is upwards and poitive x-axis to the right.

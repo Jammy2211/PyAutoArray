@@ -186,8 +186,8 @@ class Transformer(object):
     def visibilities_from_image(self, image):
 
         real_visibilities = self.real_visibilities_from_image(image=image)
-        imag_visibilities = self.imag_visibilities_from_image(
-            image=image
-        )
+        imag_visibilities = self.imag_visibilities_from_image(image=image)
 
-        return vis.Visibilities(visibilities_1d=np.stack((real_visibilities, imag_visibilities), axis=-1))
+        return vis.Visibilities(
+            visibilities_1d=np.stack((real_visibilities, imag_visibilities), axis=-1)
+        )

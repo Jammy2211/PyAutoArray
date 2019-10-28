@@ -75,15 +75,11 @@ class DataFit(object):
 
     @property
     def reduced_chi_squared(self):
-        return self.chi_squared / int(
-            np.size(self.mask) - np.sum(self.mask)
-        )
+        return self.chi_squared / int(np.size(self.mask) - np.sum(self.mask))
 
     @property
     def noise_normalization(self):
-        return fit_util.noise_normalization_from_noise_map(
-            noise_map=self.noise_map
-        )
+        return fit_util.noise_normalization_from_noise_map(noise_map=self.noise_map)
 
     @property
     def likelihood(self):
@@ -120,7 +116,6 @@ class DataFit(object):
 
 
 class ImagingFit(DataFit):
-
     def __init__(self, mask, image, noise_map, model_image, inversion=None):
         """Class to fit simulate where the simulate structures are any dimension.
 
@@ -152,7 +147,13 @@ class ImagingFit(DataFit):
             The overall likelihood of the model's fit to the simulate, summed over evey simulate-point.
         """
 
-        super(ImagingFit, self).__init__(mask=mask, data=image, noise_map=noise_map, model_data=model_image, inversion=inversion)
+        super(ImagingFit, self).__init__(
+            mask=mask,
+            data=image,
+            noise_map=noise_map,
+            model_data=model_image,
+            inversion=inversion,
+        )
 
     @property
     def image(self):
@@ -164,8 +165,14 @@ class ImagingFit(DataFit):
 
 
 class InterferometerFit(DataFit):
-
-    def __init__(self, visibilities_mask, visibilities, noise_map, model_visibilities, inversion=None):
+    def __init__(
+        self,
+        visibilities_mask,
+        visibilities,
+        noise_map,
+        model_visibilities,
+        inversion=None,
+    ):
         """Class to fit simulate where the simulate structures are any dimension.
 
         Parameters
@@ -196,7 +203,13 @@ class InterferometerFit(DataFit):
             The overall likelihood of the model's fit to the simulate, summed over evey simulate-point.
         """
 
-        super(InterferometerFit, self).__init__(mask=visibilities_mask, data=visibilities, noise_map=noise_map, model_data=model_visibilities, inversion=inversion)
+        super(InterferometerFit, self).__init__(
+            mask=visibilities_mask,
+            data=visibilities,
+            noise_map=noise_map,
+            model_data=model_visibilities,
+            inversion=inversion,
+        )
 
     @property
     def visibilities_mask(self):

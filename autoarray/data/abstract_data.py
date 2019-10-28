@@ -58,7 +58,9 @@ class AbstractData(object):
     @property
     def absolute_signal_to_noise_map(self):
         """The estimated absolute_signal-to-noise_maps mappers of the image."""
-        return self.mapping.array_from_array_1d(array_1d=np.divide(np.abs(self.data), self.noise_map))
+        return self.mapping.array_from_array_1d(
+            array_1d=np.divide(np.abs(self.data), self.noise_map)
+        )
 
     @property
     def absolute_signal_to_noise_max(self):
@@ -69,7 +71,9 @@ class AbstractData(object):
     def potential_chi_squared_map(self):
         """The potential chi-squared map of the imaging data_type. This represents how much each pixel can contribute to \
         the chi-squared map, assuming the model fails to fit it at all (e.g. model value = 0.0)."""
-        return self.mapping.array_from_array_1d(array_1d=np.square(self.absolute_signal_to_noise_map))
+        return self.mapping.array_from_array_1d(
+            array_1d=np.square(self.absolute_signal_to_noise_map)
+        )
 
     @property
     def potential_chi_squared_max(self):
@@ -123,12 +127,8 @@ class AbstractData(object):
 
 class ExposureTimeMap(arrays.Array):
     @classmethod
-    def from_exposure_time_and_inverse_noise_map(
-        cls, exposure_time, inverse_noise_map
-    ):
-        relative_background_noise_map = inverse_noise_map / np.max(
-            inverse_noise_map
-        )
+    def from_exposure_time_and_inverse_noise_map(cls, exposure_time, inverse_noise_map):
+        relative_background_noise_map = inverse_noise_map / np.max(inverse_noise_map)
         return np.abs(exposure_time * (relative_background_noise_map))
 
 
@@ -207,8 +207,7 @@ def load_exposure_time_map(
 
         if exposure_time_map_from_inverse_noise_map:
             return ExposureTimeMap.from_exposure_time_and_inverse_noise_map(
-                exposure_time=exposure_time,
-                inverse_noise_map=inverse_noise_map,
+                exposure_time=exposure_time, inverse_noise_map=inverse_noise_map
             )
 
 
