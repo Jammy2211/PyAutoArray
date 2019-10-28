@@ -600,6 +600,20 @@ class IrregularGrid(np.ndarray):
             self.interpolator = obj.interpolator
 
     @property
+    def mask(self):
+
+        class IrregularMask(object):
+
+            def __init__(self, sub_shape_1d):
+
+                self.sub_shape_1d = sub_shape_1d
+
+            def grid_from_sub_grid_1d(self, sub_grid_1d):
+                return IrregularGrid(grid=sub_grid_1d)
+
+        return IrregularMask(sub_shape_1d=self.shape[0])
+
+    @property
     def mapping(self):
 
         class IrregularMapping(object):
