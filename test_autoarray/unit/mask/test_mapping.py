@@ -659,6 +659,32 @@ class TestResizedMask:
 
         assert (mask_resized == mask_resized_manual).all()
 
+    def test__rescaled_mask_from_rescale_factor__compare_to_manual_mask(self):
+
+        mask = aa.mask.unmasked(shape_2d=(5, 5))
+        mask[2, 2] = True
+
+        mask_rescaled = mask.mapping.rescaled_mask_from_rescale_factor(rescale_factor=2.0)
+
+        mask_rescaled_manual = np.full(fill_value=False, shape=(3, 3))
+        mask_rescaled_manual[1, 1] = True
+
+        mask_rescaled_manual = aa.util.mask.rescaled_mask_2d_from_mask_2d_and_rescale_factor(
+            mask_2d=mask, rescale_factor=2.0
+        )
+
+        assert (mask_rescaled == mask_rescaled_manual).all()
+
+    def test__edged_buffed_mask__compare_to_manual_mask(self):
+
+        mask = aa.mask.unmasked(shape_2d=(5, 5))
+        mask[2, 2] = True
+
+        edge_buffed_mask_manual = aa.util.mask.edge_buffed_mask_2d_from_mask_2d(mask_2d=mask).astype(
+            "bool"
+        )
+
+        assert (mask.mapping.edge_buffed_mask == edge_buffed_mask_manual).all()
 
 class TestBinnedMask:
 

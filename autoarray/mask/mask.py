@@ -62,7 +62,8 @@ class Mask(np.ndarray):
     @classmethod
     def manual(cls, mask_2d, pixel_scales=None, sub_size=1, origin=(0.0, 0.0), invert=False):
 
-        mask_2d = np.asarray(mask_2d).astype('bool')
+        if type(mask_2d) is list:
+            mask_2d = np.asarray(mask_2d).astype('bool')
 
         if invert:
             mask_2d = np.invert(mask_2d)
@@ -358,7 +359,7 @@ class Mask(np.ndarray):
 
     @property
     def sub_shape_1d(self):
-        return self.pixels_in_mask * self.sub_size ** 2.0
+        return int(self.pixels_in_mask * self.sub_size ** 2.0)
 
     @property
     def sub_shape_2d(self):

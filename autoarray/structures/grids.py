@@ -382,7 +382,8 @@ class Grid(AbstractGrid):
     @classmethod
     def manual_1d(cls, grid, shape_2d, pixel_scales=None, sub_size=1, origin=(0.0, 0.0)):
 
-        grid = np.asarray(grid)
+        if type(grid) is list:
+            grid = np.asarray(grid)
 
         if type(pixel_scales) is float:
             pixel_scales = (pixel_scales, pixel_scales)
@@ -400,7 +401,8 @@ class Grid(AbstractGrid):
     @classmethod
     def manual_2d(cls, grid, pixel_scales=None, sub_size=1, origin=(0.0, 0.0)):
 
-        grid = np.asarray(grid)
+        if type(grid) is list:
+            grid = np.asarray(grid)
 
         if type(pixel_scales) is float:
             pixel_scales = (pixel_scales, pixel_scales)
@@ -499,8 +501,9 @@ class MaskedGrid(AbstractGrid):
     
     @classmethod
     def manual_1d(cls, grid, mask):
-        
-        grid = np.asarray(grid)
+
+        if type(grid) is list:
+            grid = np.asarray(grid)
 
         if grid.shape[0] != mask.sub_pixels_in_mask:
             raise exc.GridException('The input 1D grid does not have the same number of entries as sub-pixels in'
@@ -511,7 +514,8 @@ class MaskedGrid(AbstractGrid):
     @classmethod
     def manual_2d(cls, grid, mask):
 
-        grid = np.asarray(grid)
+        if type(grid) is list:
+            grid = np.asarray(grid)
 
         if (grid.shape[0], grid.shape[1]) != mask.sub_shape_2d:
             raise exc.GridException('The input grid is 2D but not the same dimensions as the sub-mask '
@@ -562,7 +566,8 @@ class IrregularGrid(np.ndarray):
         nearest_irregular_1d_index_for_mask_1d_index : ndarray
             A 1D array that maps every grid pixel to its nearest pixelization-grid pixel.
         """
-        grid = np.asarray(grid)
+        if type(grid) is list:
+            grid = np.asarray(grid)
         obj = grid.view(cls)
         obj.nearest_irregular_1d_index_for_mask_1d_index = (
             nearest_irregular_1d_index_for_mask_1d_index
@@ -793,13 +798,11 @@ class Interpolator(object):
 
         rescale_factor = mask.pixel_scale / pixel_scale_interpolation_grid
 
-        rescaled_mask = mask_util.rescaled_mask_2d_from_mask_2d_and_rescale_factor(
-            mask_2d=mask, rescale_factor=rescale_factor
-        )
+        mask = mask.mapping.mask_sub_1
 
-        interp_mask = mask_util.edge_buffed_mask_2d_from_mask_2d(mask_2d=rescaled_mask).astype(
-            "bool"
-        )
+        rescaled_mask = mask.mapping.rescaled_mask_from_rescale_factor(rescale_factor=rescale_factor)
+
+        interp_mask = rescaled_mask.mapping.edge_buffed_mask
 
         interp_grid = grid_util.grid_1d_via_mask_2d(
             mask_2d=interp_mask,
@@ -813,7 +816,7 @@ class Interpolator(object):
 
         return Interpolator(
             grid=grid,
-            interp_grid=interp_grid,
+            interp_grid=MaskedGrid.manual_1d(grid=interp_grid, mask=interp_mask),
             pixel_scale_interpolation_grid=pixel_scale_interpolation_grid,
         )
 
