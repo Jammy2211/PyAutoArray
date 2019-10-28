@@ -3,7 +3,7 @@ import numpy as np
 from autoarray import exc
 from autoarray.mask import mask as msk
 from autoarray.structures import grids, arrays
-from autoarray.util import binning_util, array_util, grid_util
+from autoarray.util import binning_util, array_util, grid_util, mask_util
 
 
 class Mapping(object):
@@ -348,6 +348,19 @@ class Mapping(object):
         return self.trimmed_array_2d_from_padded_array_and_image_shape(
             padded_array=blurred_image, image_shape=image_shape
         )
+
+    def rescaled_mask_from_rescale_factor(self, rescale_factor):
+        rescaled_mask = mask_util.rescaled_mask_2d_from_mask_2d_and_rescale_factor(
+            mask_2d=self.mask, rescale_factor=rescale_factor
+        )
+        return msk.Mask(mask_2d=rescaled_mask, pixel_scales=self.mask.pixel_scales, sub_size=self.mask.sub_size, origin=self.mask.origin)
+
+    @property
+    def edge_buffed_mask(self):
+        edge_buffed_mask = mask_util.edge_buffed_mask_2d_from_mask_2d(mask_2d=self.mask).astype(
+            "bool"
+        )
+        return msk.Mask(mask_2d=edge_buffed_mask, pixel_scales=self.mask.pixel_scales, sub_size=self.mask.sub_size, origin=self.mask.origin)
 
     @property
     def mask_sub_1(self):

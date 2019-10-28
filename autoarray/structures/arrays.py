@@ -227,7 +227,8 @@ class Array(AbstractArray):
     @classmethod
     def manual_1d(cls, array, shape_2d, pixel_scales=None, sub_size=1, origin=(0.0, 0.0)):
 
-        array = np.asarray(array)
+        if type(array) is list:
+            array = np.asarray(array)
 
         if type(pixel_scales) is float:
             pixel_scales = (pixel_scales, pixel_scales)
@@ -242,7 +243,8 @@ class Array(AbstractArray):
     @classmethod
     def manual_2d(cls, array, pixel_scales=None, sub_size=1, origin=(0.0, 0.0)):
 
-        array = np.asarray(array)
+        if type(array) is list:
+            array = np.asarray(array)
 
         if type(pixel_scales) is float:
             pixel_scales = (pixel_scales, pixel_scales)
@@ -281,7 +283,8 @@ class MaskedArray(AbstractArray):
     @classmethod
     def manual_1d(cls, array, mask):
 
-        array = np.asarray(array)
+        if type(array) is list:
+            array = np.asarray(array)
 
         if array.shape[0] != mask.sub_pixels_in_mask:
             raise exc.ArrayException('The input 1D array does not have the same number of entries as sub-pixels in'
@@ -292,7 +295,8 @@ class MaskedArray(AbstractArray):
     @classmethod
     def manual_2d(cls, array, mask):
 
-        array = np.asarray(array)
+        if type(array) is list:
+            array = np.asarray(array)
 
         if array.shape != mask.sub_shape_2d:
             raise exc.ArrayException('The input array is 2D but not the same dimensions as the sub-mask '

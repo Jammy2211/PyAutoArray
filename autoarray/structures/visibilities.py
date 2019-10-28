@@ -86,7 +86,8 @@ class Visibilities(AbstractVisibilities):
     @classmethod
     def manual_1d(cls, visibilities):
 
-        visibilities = np.asarray(visibilities)
+        if type(visibilities) is list:
+            visibilities = np.asarray(visibilities)
 
         return Visibilities(visibilities_1d=visibilities)
 
