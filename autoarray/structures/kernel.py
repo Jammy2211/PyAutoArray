@@ -56,22 +56,22 @@ class Kernel(arrays.AbstractArray):
         if sub_size is not None:
             shape_2d = (shape_2d[0] * sub_size, shape_2d[1] * sub_size)
 
-        return cls.manual_2d(array=np.full(fill_value=fill_value, shape=shape_2d), pixel_scales=pixel_scales, origin=origin)
+        return Kernel.manual_2d(array=np.full(fill_value=fill_value, shape=shape_2d), pixel_scales=pixel_scales, origin=origin)
 
     @classmethod
     def ones(cls, shape_2d, pixel_scales=None, origin=(0.0, 0.0)):
-        return cls.full(fill_value=1.0, shape_2d=shape_2d, pixel_scales=pixel_scales, origin=origin)
+        return Kernel.full(fill_value=1.0, shape_2d=shape_2d, pixel_scales=pixel_scales, origin=origin)
 
     @classmethod
     def zeros(cls, shape_2d, pixel_scales=None, origin=(0.0, 0.0)):
-        return cls.full(fill_value=0.0, shape_2d=shape_2d, pixel_scales=pixel_scales, origin=origin)
+        return Kernel.full(fill_value=0.0, shape_2d=shape_2d, pixel_scales=pixel_scales, origin=origin)
 
     @classmethod
     def no_blur(cls, pixel_scales=None):
 
         array = np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]])
 
-        return cls.manual_2d(array=array, pixel_scales=pixel_scales)
+        return Kernel.manual_2d(array=array, pixel_scales=pixel_scales)
 
     @classmethod
     def from_gaussian(
@@ -142,7 +142,7 @@ class Kernel(arrays.AbstractArray):
             file_path=file_path, hdu=hdu,
             pixel_scales=pixel_scales, origin=origin)
 
-        return Kernel(array_1d=array, mask=array.mask, renormalize=renormalize)
+        return Kernel(array_1d=array[:], mask=array.mask, renormalize=renormalize)
 
     def rescaled_with_odd_dimensions_from_rescale_factor(
         self, rescale_factor, renormalize=False

@@ -1,4 +1,4 @@
-from autoarray.structures import arrays, grids
+from autoarray.structures import arrays, grids, kernel
 from autoarray.operators import convolution, fourier_transform
 
 import numpy as np
@@ -101,7 +101,7 @@ class MaskedImaging(AbstractMaskedData):
             else:
                 self.trimmed_psf_shape_2d = trimmed_psf_shape_2d
 
-            self.psf = imaging.psf.resized_from_new_shape(new_shape=self.trimmed_psf_shape_2d)
+            self.psf = kernel.Kernel.manual_2d(array=imaging.psf.resized_from_new_shape(new_shape=self.trimmed_psf_shape_2d).in_2d)
 
             self.convolver = convolution.Convolver(
                 mask=mask,
@@ -228,7 +228,7 @@ class MaskedInterferometer(AbstractMaskedData):
             self.trimmed_primary_beam_shape_2d = trimmed_primary_beam_shape_2d
 
         if self.trimmed_primary_beam_shape_2d is not None:
-            self.primary_beam = interferometer.primary_beam.resized_from_new_shape(new_shape=self.trimmed_primary_beam_shape_2d)
+            self.primary_beam = kernel.Kernel.manual_2d(array=interferometer.primary_beam.resized_from_new_shape(new_shape=self.trimmed_primary_beam_shape_2d).in_2d)
 
         self.transformer = fourier_transform.Transformer(
             uv_wavelengths=interferometer.uv_wavelengths,
