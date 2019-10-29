@@ -1,17 +1,16 @@
-from autoarray.structures import arrays, grids
+from autoarray.structures import arrays, grids, kernel
 from autoarray.operators import convolution, fourier_transform
 
 import numpy as np
 
-class AbstractMaskedData(object):
 
+class AbstractMaskedData(object):
     def __init__(
-            self,
-            mask,
-            pixel_scale_interpolation_grid=None,
-            inversion_pixel_limit=None,
-            inversion_uses_border=True,
-            hyper_noise_map_max=None,
+        self,
+        mask,
+        pixel_scale_interpolation_grid=None,
+        inversion_pixel_limit=None,
+        inversion_uses_border=True,
     ):
 
         self.mask = mask
@@ -34,29 +33,25 @@ class AbstractMaskedData(object):
 
             self.grid = None
 
-        self.hyper_noise_map_max = hyper_noise_map_max
-
         self.inversion_pixel_limit = inversion_pixel_limit
         self.inversion_uses_border = inversion_uses_border
 
 
 class MaskedImaging(AbstractMaskedData):
-
     def __init__(
-            self,
-            imaging,
-            mask,
-            trimmed_psf_shape_2d=None,
-            pixel_scale_interpolation_grid=None,
-            inversion_pixel_limit=None,
-            inversion_uses_border=True,
-            hyper_noise_map_max=None,
+        self,
+        imaging,
+        mask,
+        trimmed_psf_shape_2d=None,
+        pixel_scale_interpolation_grid=None,
+        inversion_pixel_limit=None,
+        inversion_uses_border=True,
     ):
         """
-        The lens data is the collection of data_type (image, noise-map, PSF), a mask, grid, convolver \
+        The lens simulate is the collection of data_type (image, noise-map, PSF), a mask, grid, convolver \
         and other utilities that are used for modeling and fitting an image of a strong lens.
 
-        Whilst the image, noise-map, etc. are loaded in 2D, the lens data creates reduced 1D arrays of each \
+        Whilst the image, noise-map, etc. are loaded in 2D, the lens simulate creates reduced 1D arrays of each \
         for lensing calculations.
 
         Parameters
@@ -89,29 +84,31 @@ class MaskedImaging(AbstractMaskedData):
             pixel_scale_interpolation_grid=pixel_scale_interpolation_grid,
             inversion_pixel_limit=inversion_pixel_limit,
             inversion_uses_border=inversion_uses_border,
-            hyper_noise_map_max=hyper_noise_map_max,
         )
 
         self.image = mask.mapping.array_from_array_2d(array_2d=imaging.image.in_2d)
-        self.noise_map = mask.mapping.array_from_array_2d(array_2d=imaging.noise_map.in_2d)
+        self.noise_map = mask.mapping.array_from_array_2d(
+            array_2d=imaging.noise_map.in_2d
+        )
 
         self.pixel_scale_interpolation_grid = pixel_scale_interpolation_grid
 
         ### PSF TRIMMING + CONVOLVER ###
 
-        if hasattr(imaging, 'psf'):
+        if imaging.psf is not None:
 
             if trimmed_psf_shape_2d is None:
                 self.trimmed_psf_shape_2d = imaging.psf.shape_2d
             else:
                 self.trimmed_psf_shape_2d = trimmed_psf_shape_2d
 
-            self.psf = imaging.psf.resized_from_new_shape(new_shape=self.trimmed_psf_shape_2d)
-
-            self.convolver = convolution.Convolver(
-                mask_2d=mask,
-                kernel_2d=self.psf.in_2d,
+            self.psf = kernel.Kernel.manual_2d(
+                array=imaging.psf.resized_from_new_shape(
+                    new_shape=self.trimmed_psf_shape_2d
+                ).in_2d
             )
+
+            self.convolver = convolution.Convolver(mask=mask, kernel=self.psf)
 
             if mask.pixel_scales is not None:
 
@@ -125,19 +122,28 @@ class MaskedImaging(AbstractMaskedData):
                         pixel_scale_interpolation_grid=self.pixel_scale_interpolation_grid
                     )
 
+    @property
+    def data(self):
+        return self.image
+
     @classmethod
-    def manual(cls, imaging,
-               mask,
-               trimmed_psf_shape_2d=None,
-               pixel_scale_interpolation_grid=None,
-               inversion_pixel_limit=None,
-               inversion_uses_border=True,
-               hyper_noise_map_max=None):
-        return cls(imaging=imaging, mask=mask,
-                   trimmed_psf_shape_2d=trimmed_psf_shape_2d,
-                   pixel_scale_interpolation_grid=pixel_scale_interpolation_grid,
-                   inversion_pixel_limit=inversion_pixel_limit, inversion_uses_border=inversion_uses_border,
-                   hyper_noise_map_max=hyper_noise_map_max)
+    def manual(
+        cls,
+        imaging,
+        mask,
+        trimmed_psf_shape_2d=None,
+        pixel_scale_interpolation_grid=None,
+        inversion_pixel_limit=None,
+        inversion_uses_border=True,
+    ):
+        return cls(
+            imaging=imaging,
+            mask=mask,
+            trimmed_psf_shape_2d=trimmed_psf_shape_2d,
+            pixel_scale_interpolation_grid=pixel_scale_interpolation_grid,
+            inversion_pixel_limit=inversion_pixel_limit,
+            inversion_uses_border=inversion_uses_border,
+        )
 
     def signal_to_noise_map(self):
         return self.image / self.noise_map
@@ -147,16 +153,17 @@ class MaskedImaging(AbstractMaskedData):
         binned_imaging = self.imaging.binned_from_bin_up_factor(
             bin_up_factor=bin_up_factor
         )
-        binned_mask = self.mask.mapping.binned_mask_from_bin_up_factor(bin_up_factor=bin_up_factor)
+        binned_mask = self.mask.mapping.binned_mask_from_bin_up_factor(
+            bin_up_factor=bin_up_factor
+        )
 
-        return MaskedImaging(
+        return self.__class__(
             imaging=binned_imaging,
             mask=binned_mask,
             trimmed_psf_shape_2d=self.trimmed_psf_shape_2d,
             pixel_scale_interpolation_grid=self.pixel_scale_interpolation_grid,
             inversion_pixel_limit=self.inversion_pixel_limit,
             inversion_uses_border=self.inversion_uses_border,
-            hyper_noise_map_max=self.hyper_noise_map_max,
         )
 
     def signal_to_noise_limited_from_signal_to_noise_limit(self, signal_to_noise_limit):
@@ -165,39 +172,38 @@ class MaskedImaging(AbstractMaskedData):
             signal_to_noise_limit=signal_to_noise_limit
         )
 
-        return MaskedImaging(
+        return self.__class__(
             imaging=imaging_with_signal_to_noise_limit,
             mask=self.mask,
             trimmed_psf_shape_2d=self.trimmed_psf_shape_2d,
             pixel_scale_interpolation_grid=self.pixel_scale_interpolation_grid,
             inversion_pixel_limit=self.inversion_pixel_limit,
             inversion_uses_border=self.inversion_uses_border,
-            hyper_noise_map_max=self.hyper_noise_map_max,
         )
-    
+
+
 class MaskedInterferometer(AbstractMaskedData):
     def __init__(
-            self,
-            interferometer,
-            mask,
-            trimmed_primary_beam_shape_2d=None,
-            pixel_scale_interpolation_grid=None,
-            inversion_pixel_limit=None,
-            inversion_uses_border=True,
-            hyper_noise_map_max=None,
+        self,
+        interferometer,
+        real_space_mask,
+        trimmed_primary_beam_shape_2d=None,
+        pixel_scale_interpolation_grid=None,
+        inversion_pixel_limit=None,
+        inversion_uses_border=True,
     ):
         """
-        The lens data is the collection of data_type (image, noise-map, primary_beam), a mask, grid, convolver \
+        The lens simulate is the collection of data_type (image, noise-map, primary_beam), a mask, grid, convolver \
         and other utilities that are used for modeling and fitting an image of a strong lens.
 
-        Whilst the image, noise-map, etc. are loaded in 2D, the lens data creates reduced 1D arrays of each \
+        Whilst the image, noise-map, etc. are loaded in 2D, the lens simulate creates reduced 1D arrays of each \
         for lensing calculations.
 
         Parameters
         ----------
         imaging: im.Imaging
             The imaging data_type all in 2D (the image, noise-map, primary_beam, etc.)
-        mask: msk.Mask
+        real_space_mask: msk.Mask
             The 2D mask that is applied to the image.
         sub_size : int
             The size of the sub-grid used for each lens SubGrid. E.g. a value of 2 grid each image-pixel on a 2x2 \
@@ -219,22 +225,30 @@ class MaskedInterferometer(AbstractMaskedData):
         self.interferometer = interferometer
 
         super(MaskedInterferometer, self).__init__(
-            mask=mask,
+            mask=real_space_mask,
             pixel_scale_interpolation_grid=pixel_scale_interpolation_grid,
             inversion_pixel_limit=inversion_pixel_limit,
             inversion_uses_border=inversion_uses_border,
-            hyper_noise_map_max=hyper_noise_map_max,
         )
 
         if self.interferometer.primary_beam is None:
             self.trimmed_primary_beam_shape_2d = None
-        elif trimmed_primary_beam_shape_2d is None and self.interferometer.primary_beam is not None:
-            self.trimmed_primary_beam_shape_2d = self.interferometer.primary_beam.shape_2d
+        elif (
+            trimmed_primary_beam_shape_2d is None
+            and self.interferometer.primary_beam is not None
+        ):
+            self.trimmed_primary_beam_shape_2d = (
+                self.interferometer.primary_beam.shape_2d
+            )
         else:
             self.trimmed_primary_beam_shape_2d = trimmed_primary_beam_shape_2d
 
         if self.trimmed_primary_beam_shape_2d is not None:
-            self.primary_beam = interferometer.primary_beam.resized_from_new_shape(new_shape=self.trimmed_primary_beam_shape_2d)
+            self.primary_beam = kernel.Kernel.manual_2d(
+                array=interferometer.primary_beam.resized_from_new_shape(
+                    new_shape=self.trimmed_primary_beam_shape_2d
+                ).in_2d
+            )
 
         self.transformer = fourier_transform.Transformer(
             uv_wavelengths=interferometer.uv_wavelengths,
@@ -242,25 +256,33 @@ class MaskedInterferometer(AbstractMaskedData):
         )
 
         self.visibilities = interferometer.visibilities
-        self.noise_map =  np.stack(
-                (self.interferometer.noise_map, self.interferometer.noise_map), axis=-1
-            )
-        self.visibilities_mask = np.full(fill_value=False, shape=self.interferometer.uv_wavelengths.shape)
+        self.noise_map = interferometer.noise_map
+        self.visibilities_mask = np.full(
+            fill_value=False, shape=self.interferometer.uv_wavelengths.shape
+        )
+
+    @property
+    def real_space_mask(self):
+        return self.mask
 
     @classmethod
-    def manual(cls, interferometer,
-            mask,
-            trimmed_primary_beam_shape_2d=None,
-            pixel_scale_interpolation_grid=None,
-            inversion_pixel_limit=None,
-            inversion_uses_border=True,
-            hyper_noise_map_max=None):
-        return cls(interferometer, mask=mask,
-                   trimmed_primary_beam_shape_2d=trimmed_primary_beam_shape_2d,
-                   pixel_scale_interpolation_grid=pixel_scale_interpolation_grid,
-                   inversion_pixel_limit=inversion_pixel_limit, inversion_uses_border=inversion_uses_border,
-                   hyper_noise_map_max=hyper_noise_map_max)
-
+    def manual(
+        cls,
+        interferometer,
+        real_space_mask,
+        trimmed_primary_beam_shape_2d=None,
+        pixel_scale_interpolation_grid=None,
+        inversion_pixel_limit=None,
+        inversion_uses_border=True,
+    ):
+        return cls(
+            interferometer,
+            real_space_mask=real_space_mask,
+            trimmed_primary_beam_shape_2d=trimmed_primary_beam_shape_2d,
+            pixel_scale_interpolation_grid=pixel_scale_interpolation_grid,
+            inversion_pixel_limit=inversion_pixel_limit,
+            inversion_uses_border=inversion_uses_border,
+        )
 
     def signal_to_noise_map(self):
         return self.visibilities / self.noise_map

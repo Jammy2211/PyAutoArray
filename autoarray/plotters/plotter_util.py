@@ -5,6 +5,8 @@ backend = conf.instance.visualize.get("figures", "backend", str)
 matplotlib.use(backend)
 import matplotlib.pyplot as plt
 import numpy as np
+from autoarray import exc
+from autoarray.util import array_util
 
 
 def get_subplot_rows_columns_figsize(number_subplots):
@@ -120,7 +122,7 @@ def output_figure(array, as_subplot, output_path, output_filename, output_format
         elif output_format is "png":
             plt.savefig(output_path + output_filename + ".png", bbox_inches="tight")
         elif output_format is "fits":
-            aa.util.array.numpy_array_2d_to_fits(
+            array_util.numpy_array_2d_to_fits(
                 array_2d=array,
                 file_path=output_path + output_filename + ".fits",
                 overwrite=True,

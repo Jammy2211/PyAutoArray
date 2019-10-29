@@ -10,9 +10,7 @@ def make_fit_plotter_util_path_setup():
     )
 
 
-def test__fit_quantities_are_output(
-    fit_7x7, fit_plotter_util_path, plot_patch
-):
+def test__fit_quantities_are_output(fit_7x7, fit_plotter_util_path, plot_patch):
 
     aa.plot.fit.image(
         fit=fit_7x7,
@@ -78,9 +76,7 @@ def test__fit_quantities_are_output(
         output_format="png",
     )
 
-    assert (
-        fit_plotter_util_path + "fit_normalized_residual_map.png" in plot_patch.paths
-    )
+    assert fit_plotter_util_path + "fit_normalized_residual_map.png" in plot_patch.paths
 
     aa.plot.fit.chi_squared_map(
         fit=fit_7x7,

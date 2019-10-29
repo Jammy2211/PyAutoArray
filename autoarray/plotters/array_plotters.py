@@ -45,7 +45,7 @@ def plot_array(
     xlabelsize=16,
     ylabelsize=16,
     xyticksize=16,
-    mask_pointsize=10,
+    mask_overlay_pointsize=10,
     border_pointsize=2,
     position_pointsize=30,
     grid_pointsize=1,
@@ -115,7 +115,7 @@ def plot_array(
         The fontsize of the y axes label.
     xyticksize : int
         The font size of the x and y ticks on the figure axes.
-    mask_pointsize : int
+    mask_overlay_pointsize : int
         The size of the points plotted to show the mask.
     border_pointsize : int
         The size of the points plotted to show the borders.
@@ -150,7 +150,7 @@ def plot_array(
         cmap='jet', norm='linear, norm_min=None, norm_max=None, linthresh=None, linscale=None,
         cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01, cb_tick_values=None, cb_tick_labels=None,
         title='Image', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
-        mask_pointsize=10, border_pointsize=2, position_pointsize=10, grid_pointsize=10,
+        mask_overlay_pointsize=10, border_pointsize=2, position_pointsize=10, grid_pointsize=10,
         xticks_manual=None, yticks_manual=None,
         output_path='/path/to/output', output_format='png', output_filename='image')
     """
@@ -158,9 +158,11 @@ def plot_array(
     if array is None or np.all(array == 0):
         return
 
-    if array.pixel_scales is None and (units is 'arcsec' or units is 'kpc'):
-        raise exc.ArrayException("You cannot plot an array in units of arcsec or kpc if the input array does not have "
-                                 "pixel scales.")
+    if array.pixel_scales is None and (units is "arcsec" or units is "kpc"):
+        raise exc.ArrayException(
+            "You cannot plot an array in units of arcsec or kpc if the input array does not have "
+            "pixel scales."
+        )
 
     array = array.in_1d_binned
     array = array.zoomed_around_mask(buffer=2)
@@ -218,7 +220,7 @@ def plot_array(
         mask=mask_overlay,
         units=units,
         kpc_per_arcsec=kpc_per_arcsec,
-        pointsize=mask_pointsize,
+        pointsize=mask_overlay_pointsize,
         zoom_offset_pixels=zoom_offset_pixels,
     )
     plotter_util.plot_lines(line_lists=lines)
@@ -678,7 +680,10 @@ def plot_mask_overlay(mask, units, kpc_per_arcsec, pointsize, zoom_offset_pixels
     if mask is not None:
 
         plt.gca()
-        edge_pixels = mask.regions._mask_2d_index_for_mask_1d_index[mask.regions._edge_1d_indexes] + 0.5
+        edge_pixels = (
+            mask.regions._mask_2d_index_for_mask_1d_index[mask.regions._edge_1d_indexes]
+            + 0.5
+        )
 
         if zoom_offset_pixels is not None:
             edge_pixels_plot = edge_pixels - zoom_offset_pixels
@@ -695,7 +700,12 @@ def plot_mask_overlay(mask, units, kpc_per_arcsec, pointsize, zoom_offset_pixels
             kpc_per_arcsec=kpc_per_arcsec,
         )
 
-        plt.scatter(y=np.asarray(edge_units[:, 0]), x=np.asarray(edge_units[:, 1]), s=pointsize, c="k")
+        plt.scatter(
+            y=np.asarray(edge_units[:, 0]),
+            x=np.asarray(edge_units[:, 1]),
+            s=pointsize,
+            c="k",
+        )
 
 
 def plot_border(

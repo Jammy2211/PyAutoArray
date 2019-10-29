@@ -122,8 +122,8 @@ class Regularization(object):
             
         """
 
-class Constant(Regularization):
 
+class Constant(Regularization):
     def __init__(self, coefficient=1.0):
         """A constant-regularization scheme (regularization is described in the *Regularization* class above).
 
@@ -146,14 +146,15 @@ class Constant(Regularization):
         super(Constant, self).__init__()
 
     def regularization_weights_from_mapper(self, mapper):
-        return self.coefficient * np.ones(mapper.pixels)
+        return self.coefficient * np.ones(mapper.pixelization_grid.pixels)
 
     def regularization_matrix_from_mapper(self, mapper):
         return regularization_util.constant_regularization_matrix_from_pixel_neighbors(
             coefficient=self.coefficient,
-            pixel_neighbors=mapper.pixel_neighbors,
-            pixel_neighbors_size=mapper.pixel_neighbors_size,
+            pixel_neighbors=mapper.pixelization_grid.pixel_neighbors,
+            pixel_neighbors_size=mapper.pixelization_grid.pixel_neighbors_size,
         )
+
 
 class AdaptiveBrightness(Regularization):
     def __init__(self, inner_coefficient=1.0, outer_coefficient=1.0, signal_scale=1.0):
@@ -222,6 +223,6 @@ class AdaptiveBrightness(Regularization):
 
         return regularization_util.weighted_regularization_matrix_from_pixel_neighbors(
             regularization_weights=regularization_weights,
-            pixel_neighbors=mapper.pixel_neighbors,
-            pixel_neighbors_size=mapper.pixel_neighbors_size,
+            pixel_neighbors=mapper.pixelization_grid.pixel_neighbors,
+            pixel_neighbors_size=mapper.pixelization_grid.pixel_neighbors_size,
         )

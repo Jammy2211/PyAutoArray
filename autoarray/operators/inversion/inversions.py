@@ -105,7 +105,9 @@ class InversionImaging(object):
             blurred_mapping_matrix=self.blurred_mapping_matrix,
             solution_vector=self.reconstruction,
         )
-        return self.mapper.grid.mask.mapping.array_from_array_1d(array_1d=reconstructed_image)
+        return self.mapper.grid.mapping.array_from_array_1d(
+            array_1d=reconstructed_image
+        )
 
     @property
     def errors_with_covariance(self):
@@ -117,30 +119,30 @@ class InversionImaging(object):
 
     @property
     def residual_map(self):
-        return inversion_util.pixelization_residual_map_from_pixelization_values_and_reconstructed_data_1d(
+        return inversion_util.inversion_residual_map_from_pixelization_values_and_reconstructed_data_1d(
             pixelization_values=self.reconstruction,
             reconstructed_data_1d=self.mapped_reconstructed_image,
-            mask_1d_index_for_sub_mask_1d_index=self.mapper.grid.mask._mask_1d_index_for_sub_mask_1d_index,
+            mask_1d_index_for_sub_mask_1d_index=self.mapper.grid.mask.regions._mask_1d_index_for_sub_mask_1d_index,
             all_sub_mask_1d_indexes_for_pixelization_1d_index=self.mapper.all_sub_mask_1d_indexes_for_pixelization_1d_index,
         )
 
     @property
     def normalized_residual_map(self):
-        return inversion_util.pixelization_normalized_residual_map_from_pixelization_values_and_reconstructed_data_1d(
+        return inversion_util.inversion_normalized_residual_map_from_pixelization_values_and_reconstructed_data_1d(
             pixelization_values=self.reconstruction,
             reconstructed_data_1d=self.mapped_reconstructed_image,
             noise_map_1d=self.noise_map,
-            mask_1d_index_for_sub_mask_1d_index=self.mapper.grid.mask._mask_1d_index_for_sub_mask_1d_index,
+            mask_1d_index_for_sub_mask_1d_index=self.mapper.grid.mask.regions._mask_1d_index_for_sub_mask_1d_index,
             all_sub_mask_1d_indexes_for_pixelization_1d_index=self.mapper.all_sub_mask_1d_indexes_for_pixelization_1d_index,
         )
 
     @property
     def chi_squared_map(self):
-        return inversion_util.pixelization_chi_squared_map_from_pixelization_values_and_reconstructed_data_1d(
+        return inversion_util.inversion_chi_squared_map_from_pixelization_values_and_reconstructed_data_1d(
             pixelization_values=self.reconstruction,
             reconstructed_data_1d=self.mapped_reconstructed_image,
             noise_map_1d=self.noise_map,
-            mask_1d_index_for_sub_mask_1d_index=self.mapper.grid.mask._mask_1d_index_for_sub_mask_1d_index,
+            mask_1d_index_for_sub_mask_1d_index=self.mapper.grid.mask.regions._mask_1d_index_for_sub_mask_1d_index,
             all_sub_mask_1d_indexes_for_pixelization_1d_index=self.mapper.all_sub_mask_1d_indexes_for_pixelization_1d_index,
         )
 

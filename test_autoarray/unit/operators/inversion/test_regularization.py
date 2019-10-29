@@ -1,7 +1,8 @@
 import autoarray as aa
 import numpy as np
 
-from test_autoarray.mock.mock_inversion import MockRegMapper
+from test_autoarray.mock.mock_inversion import MockPixelizationGrid, MockRegMapper
+
 
 class TestRegularizationConstant:
     def test__regularization_matrix__compare_to_regularization_util(self):
@@ -22,12 +23,14 @@ class TestRegularizationConstant:
 
         pixel_neighbors_size = np.array([4, 3, 3, 3, 4, 3, 3, 3, 2])
 
-        mapper = MockRegMapper(pixel_neighbors=pixel_neighbors, pixel_neighbors_size=pixel_neighbors_size)
+        pixelization_grid = MockPixelizationGrid(pixel_neighbors=pixel_neighbors, pixel_neighbors_size=pixel_neighbors_size)
+
+        mapper = MockRegMapper(
+            pixelization_grid=pixelization_grid,
+        )
 
         reg = aa.reg.Constant(coefficient=1.0)
-        regularization_matrix = reg.regularization_matrix_from_mapper(
-            mapper=mapper
-        )
+        regularization_matrix = reg.regularization_matrix_from_mapper(mapper=mapper)
 
         regularization_matrix_util = aa.util.regularization.constant_regularization_matrix_from_pixel_neighbors(
             coefficient=1.0,
@@ -39,12 +42,9 @@ class TestRegularizationConstant:
 
 
 class TestRegularizationWeighted:
-
     def test__weights__compare_to_regularization_util(self):
 
-        reg = aa.reg.AdaptiveBrightness(
-            inner_coefficient=10.0, outer_coefficient=15.0
-        )
+        reg = aa.reg.AdaptiveBrightness(inner_coefficient=10.0, outer_coefficient=15.0)
 
         pixel_signals = np.array([0.21, 0.586, 0.45])
 
@@ -60,7 +60,9 @@ class TestRegularizationWeighted:
 
     def test__regularization_matrix__compare_to_regularization_util(self):
 
-        reg = aa.reg.AdaptiveBrightness(inner_coefficient=1.0, outer_coefficient=2.0, signal_scale=1.0)
+        reg = aa.reg.AdaptiveBrightness(
+            inner_coefficient=1.0, outer_coefficient=2.0, signal_scale=1.0
+        )
 
         pixel_neighbors = np.array(
             [
@@ -76,13 +78,18 @@ class TestRegularizationWeighted:
         pixel_neighbors_size = np.array([2, 3, 4, 2, 4, 3])
         pixel_signals = np.array([1.0, 2.0, 3.0, 4.0, 5.0, 6.0])
 
-        mapper = MockRegMapper(pixel_neighbors=pixel_neighbors, pixel_neighbors_size=pixel_neighbors_size, pixel_signals=pixel_signals)
+        pixelization_grid = MockPixelizationGrid(pixel_neighbors=pixel_neighbors, pixel_neighbors_size=pixel_neighbors_size)
 
-        regularization_matrix = reg.regularization_matrix_from_mapper(
-            mapper=mapper
+        mapper = MockRegMapper(
+            pixelization_grid=pixelization_grid,
+            pixel_signals=pixel_signals,
         )
 
-        regularization_weights = aa.util.regularization.adaptive_regularization_weights_from_pixel_signals(pixel_signals=pixel_signals, inner_coefficient=1.0, outer_coefficient=2.0)
+        regularization_matrix = reg.regularization_matrix_from_mapper(mapper=mapper)
+
+        regularization_weights = aa.util.regularization.adaptive_regularization_weights_from_pixel_signals(
+            pixel_signals=pixel_signals, inner_coefficient=1.0, outer_coefficient=2.0
+        )
 
         regularization_matrix_util = aa.util.regularization.weighted_regularization_matrix_from_pixel_neighbors(
             regularization_weights=regularization_weights,

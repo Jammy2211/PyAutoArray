@@ -40,9 +40,9 @@ def mapping_matrix_from_pixelization_1d_index_for_sub_mask_1d_index(
 @decorator_util.jit()
 def pixelization_1d_index_for_voronoi_sub_mask_1d_index_from_grids_and_geometry(
     grid,
-    nearest_pixelization_1d_index_for_mask_1d_index,
+    nearest_irregular_1d_index_for_mask_1d_index,
     mask_1d_index_for_sub_mask_1d_index,
-    pixel_centres,
+    pixelization_grid,
     pixel_neighbors,
     pixel_neighbors_size,
 ):
@@ -59,10 +59,10 @@ def pixelization_1d_index_for_voronoi_sub_mask_1d_index_from_grids_and_geometry(
     grid : Grid
         The grid of (y,x) arc-second coordinates at the centre of every unmasked pixel, which has been traced to \
         to an irgrid via lens.
-    nearest_pixelization_1d_index_for_mask_1d_index : ndarray
+    nearest_irregular_1d_index_for_mask_1d_index : ndarray
         A 1D array that maps every grid pixel to its nearest pix-grid pixel (as determined on the unlensed \
         2D array).
-    pixel_centres : (float, float)
+    pixelization_grid : (float, float)
         The (y,x) centre of every Voronoi pixel in arc-seconds.
     pixel_neighbors : ndarray
         An array of length (voronoi_pixels) which provides the index of all neighbors of every pixel in \
@@ -76,13 +76,13 @@ def pixelization_1d_index_for_voronoi_sub_mask_1d_index_from_grids_and_geometry(
 
     for sub_mask_1d_index in range(grid.shape[0]):
 
-        nearest_pixelization_1d_index = nearest_pixelization_1d_index_for_mask_1d_index[
+        nearest_pixelization_1d_index = nearest_irregular_1d_index_for_mask_1d_index[
             mask_1d_index_for_sub_mask_1d_index[sub_mask_1d_index]
         ]
 
         while True:
 
-            nearest_pixelization_pixel_center = pixel_centres[
+            nearest_pixelization_pixel_center = pixelization_grid[
                 nearest_pixelization_1d_index
             ]
 
@@ -103,8 +103,8 @@ def pixelization_1d_index_for_voronoi_sub_mask_1d_index_from_grids_and_geometry(
                 ]
 
                 separation_from_neighbor = (
-                    grid[sub_mask_1d_index, 0] - pixel_centres[neighbor, 0]
-                ) ** 2 + (grid[sub_mask_1d_index, 1] - pixel_centres[neighbor, 1]) ** 2
+                                                   grid[sub_mask_1d_index, 0] - pixelization_grid[neighbor, 0]
+                ) ** 2 + (grid[sub_mask_1d_index, 1] - pixelization_grid[neighbor, 1]) ** 2
 
                 if (
                     separation_from_neighbor

@@ -1,4 +1,5 @@
 from autoarray import decorator_util
+from autoarray.structures import visibilities as vis
 
 import numpy as np
 
@@ -22,7 +23,7 @@ class Transformer(object):
                 total_image_pixels=self.total_image_pixels,
             )
 
-            self.preload_imaginary_transforms = self.preload_imaginary_transforms(
+            self.preload_imag_transforms = self.preload_imag_transforms(
                 grid_radians=grid_radians,
                 uv_wavelengths=uv_wavelengths,
                 total_image_pixels=self.total_image_pixels,
@@ -33,7 +34,7 @@ class Transformer(object):
         if self.preload_transform:
 
             return self.real_visibilities_via_preload_jit(
-                image_1d=image.in_1d,
+                image_1d=image.in_1d_binned,
                 preloaded_reals=self.preload_real_transforms,
                 total_visibilities=self.total_visibilities,
                 total_image_pixels=self.total_image_pixels,
@@ -42,7 +43,7 @@ class Transformer(object):
         else:
 
             return self.real_visibilities_jit(
-                image_1d=image.in_1d,
+                image_1d=image.in_1d_binned,
                 grid_radians=self.grid_radians,
                 uv_wavelengths=self.uv_wavelengths,
                 total_visibilities=self.total_visibilities,
@@ -105,21 +106,21 @@ class Transformer(object):
 
         return real_visibilities
 
-    def imaginary_visibilities_from_image(self, image):
+    def imag_visibilities_from_image(self, image):
 
         if self.preload_transform:
 
-            return self.imaginary_visibilities_via_preload_jit(
-                image_1d=image.in_1d,
-                preloaded_imaginarys=self.preload_imaginary_transforms,
+            return self.imag_visibilities_via_preload_jit(
+                image_1d=image.in_1d_binned,
+                preloaded_imags=self.preload_imag_transforms,
                 total_visibilities=self.total_visibilities,
                 total_image_pixels=self.total_image_pixels,
             )
 
         else:
 
-            return self.imaginary_visibilities_jit(
-                image_1d=image.in_1d,
+            return self.imag_visibilities_jit(
+                image_1d=image.in_1d_binned,
                 grid_radians=self.grid_radians,
                 uv_wavelengths=self.uv_wavelengths,
                 total_visibilities=self.total_visibilities,
@@ -128,15 +129,15 @@ class Transformer(object):
 
     @staticmethod
     @decorator_util.jit()
-    def preload_imaginary_transforms(grid_radians, uv_wavelengths, total_image_pixels):
+    def preload_imag_transforms(grid_radians, uv_wavelengths, total_image_pixels):
 
-        preloaded_imaginary_transforms = np.zeros(
+        preloaded_imag_transforms = np.zeros(
             shape=(total_image_pixels, uv_wavelengths.shape[0])
         )
 
         for i in range(total_image_pixels):
             for j in range(uv_wavelengths.shape[0]):
-                preloaded_imaginary_transforms[i, j] += np.sin(
+                preloaded_imag_transforms[i, j] += np.sin(
                     -2.0
                     * np.pi
                     * (
@@ -145,33 +146,33 @@ class Transformer(object):
                     )
                 )
 
-        return preloaded_imaginary_transforms
+        return preloaded_imag_transforms
 
     @staticmethod
     @decorator_util.jit()
-    def imaginary_visibilities_via_preload_jit(
-        image_1d, preloaded_imaginarys, total_visibilities, total_image_pixels
+    def imag_visibilities_via_preload_jit(
+        image_1d, preloaded_imags, total_visibilities, total_image_pixels
     ):
 
-        imaginary_visibilities = np.zeros(shape=(total_visibilities))
+        imag_visibilities = np.zeros(shape=(total_visibilities))
 
         for i in range(total_image_pixels):
             for j in range(total_visibilities):
-                imaginary_visibilities[j] += image_1d[i] * preloaded_imaginarys[i, j]
+                imag_visibilities[j] += image_1d[i] * preloaded_imags[i, j]
 
-        return imaginary_visibilities
+        return imag_visibilities
 
     @staticmethod
     @decorator_util.jit()
-    def imaginary_visibilities_jit(
+    def imag_visibilities_jit(
         image_1d, grid_radians, uv_wavelengths, total_visibilities, total_image_pixels
     ):
 
-        imaginary_visibilities = np.zeros(shape=(total_visibilities))
+        imag_visibilities = np.zeros(shape=(total_visibilities))
 
         for i in range(total_image_pixels):
             for j in range(total_visibilities):
-                imaginary_visibilities[j] += image_1d[i] * np.sin(
+                imag_visibilities[j] += image_1d[i] * np.sin(
                     -2.0
                     * np.pi
                     * (
@@ -180,13 +181,13 @@ class Transformer(object):
                     )
                 )
 
-        return imaginary_visibilities
+        return imag_visibilities
 
     def visibilities_from_image(self, image):
 
         real_visibilities = self.real_visibilities_from_image(image=image)
-        imaginary_visibilities = self.imaginary_visibilities_from_image(
-            image=image
-        )
+        imag_visibilities = self.imag_visibilities_from_image(image=image)
 
-        return np.stack((real_visibilities, imaginary_visibilities), axis=-1)
+        return vis.Visibilities(
+            visibilities_1d=np.stack((real_visibilities, imag_visibilities), axis=-1)
+        )

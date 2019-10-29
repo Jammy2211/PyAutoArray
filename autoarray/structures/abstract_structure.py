@@ -1,7 +1,8 @@
 import numpy as np
+from functools import wraps
+
 
 class AbstractStructure(np.ndarray):
-
     def __new__(cls, structure_1d, mask, *args, **kwargs):
         """A grid of coordinates, where each entry corresponds to the (y,x) coordinates at the centre of an \
         unmasked pixel. The positive y-axis is upwards and poitive x-axis to the right.
@@ -126,19 +127,23 @@ class AbstractStructure(np.ndarray):
 
     @property
     def shape_1d(self):
-        return self.shape
-
-    @property
-    def shape_2d(self):
-        return self.mask.shape
+        return self.mask.shape_1d
 
     @property
     def sub_shape_1d(self):
         return self.mask.sub_shape_1d
 
     @property
+    def shape_2d(self):
+        return self.mask.shape
+
+    @property
     def sub_shape_2d(self):
         return self.mask.sub_shape_2d
+
+    @property
+    def in_1d(self):
+        return self
 
     @property
     def pixel_scales(self):
@@ -167,10 +172,6 @@ class AbstractStructure(np.ndarray):
     @property
     def geometry(self):
         return self.mask.geometry
-
-    @property
-    def in_1d(self):
-        return self
 
     @property
     def total_pixels(self):

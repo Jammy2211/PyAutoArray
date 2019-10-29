@@ -1,4 +1,3 @@
-
 from astropy import units
 import scipy.signal
 from skimage.transform import resize, rescale
@@ -7,6 +6,7 @@ import numpy as np
 
 from autoarray.structures import grids, arrays
 from autoarray import exc
+
 
 class Kernel(arrays.AbstractArray):
 
@@ -34,11 +34,13 @@ class Kernel(arrays.AbstractArray):
         return obj
 
     @classmethod
-    def manual_1d(cls, array, shape_2d, pixel_scales=None, origin=(0.0, 0.0), renormalize=False):
+    def manual_1d(
+        cls, array, shape_2d, pixel_scales=None, origin=(0.0, 0.0), renormalize=False
+    ):
 
         array = arrays.Array.manual_1d(
-            array=array,
-            shape_2d=shape_2d, pixel_scales=pixel_scales, origin=origin)
+            array=array, shape_2d=shape_2d, pixel_scales=pixel_scales, origin=origin
+        )
 
         return Kernel(array_1d=array, mask=array.mask, renormalize=renormalize)
 
@@ -46,32 +48,43 @@ class Kernel(arrays.AbstractArray):
     def manual_2d(cls, array, pixel_scales=None, origin=(0.0, 0.0), renormalize=False):
 
         array = arrays.Array.manual_2d(
-            array=array, pixel_scales=pixel_scales, origin=origin)
+            array=array, pixel_scales=pixel_scales, origin=origin
+        )
 
         return Kernel(array_1d=array, mask=array.mask, renormalize=renormalize)
 
     @classmethod
-    def full(cls, fill_value, shape_2d, pixel_scales=None, sub_size=1, origin=(0.0, 0.0)):
+    def full(
+        cls, fill_value, shape_2d, pixel_scales=None, sub_size=1, origin=(0.0, 0.0)
+    ):
 
         if sub_size is not None:
             shape_2d = (shape_2d[0] * sub_size, shape_2d[1] * sub_size)
 
-        return cls.manual_2d(array=np.full(fill_value=fill_value, shape=shape_2d), pixel_scales=pixel_scales, origin=origin)
+        return Kernel.manual_2d(
+            array=np.full(fill_value=fill_value, shape=shape_2d),
+            pixel_scales=pixel_scales,
+            origin=origin,
+        )
 
     @classmethod
     def ones(cls, shape_2d, pixel_scales=None, origin=(0.0, 0.0)):
-        return cls.full(fill_value=1.0, shape_2d=shape_2d, pixel_scales=pixel_scales, origin=origin)
+        return Kernel.full(
+            fill_value=1.0, shape_2d=shape_2d, pixel_scales=pixel_scales, origin=origin
+        )
 
     @classmethod
     def zeros(cls, shape_2d, pixel_scales=None, origin=(0.0, 0.0)):
-        return cls.full(fill_value=0.0, shape_2d=shape_2d, pixel_scales=pixel_scales, origin=origin)
+        return Kernel.full(
+            fill_value=0.0, shape_2d=shape_2d, pixel_scales=pixel_scales, origin=origin
+        )
 
     @classmethod
     def no_blur(cls, pixel_scales=None):
 
         array = np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]])
 
-        return cls.manual_2d(array=array, pixel_scales=pixel_scales)
+        return Kernel.manual_2d(array=array, pixel_scales=pixel_scales)
 
     @classmethod
     def from_gaussian(
@@ -82,10 +95,9 @@ class Kernel(arrays.AbstractArray):
         grid = grids.Grid.uniform(shape_2d=shape_2d, pixel_scales=pixel_scales)
         grid_shifted = np.subtract(grid, centre)
         grid_radius = np.sqrt(np.sum(grid_shifted ** 2.0, 1))
-        theta_coordinate_to_profile = (
-            np.arctan2(grid_shifted[:, 0], grid_shifted[:, 1])
-            - np.radians(phi)
-        )
+        theta_coordinate_to_profile = np.arctan2(
+            grid_shifted[:, 0], grid_shifted[:, 1]
+        ) - np.radians(phi)
         grid_transformed = np.vstack(
             (
                 grid_radius * np.sin(theta_coordinate_to_profile),
@@ -95,7 +107,8 @@ class Kernel(arrays.AbstractArray):
 
         grid_elliptical_radii = np.sqrt(
             np.add(
-                np.square(grid_transformed[:, 1]), np.square(np.divide(grid_transformed[:, 0], axis_ratio))
+                np.square(grid_transformed[:, 1]),
+                np.square(np.divide(grid_transformed[:, 0], axis_ratio)),
             )
         )
 
@@ -105,7 +118,10 @@ class Kernel(arrays.AbstractArray):
         )
 
         return Kernel.manual_1d(
-            array=gaussian, shape_2d=shape_2d, pixel_scales=pixel_scales, renormalize=True
+            array=gaussian,
+            shape_2d=shape_2d,
+            pixel_scales=pixel_scales,
+            renormalize=True,
         )
 
     @classmethod
@@ -122,10 +138,19 @@ class Kernel(arrays.AbstractArray):
 
         axis_ratio = x_stddev / y_stddev
 
-        return Kernel.from_gaussian(shape_2d=shape_2d, pixel_scales=pixel_scales, sigma=y_stddev, axis_ratio=axis_ratio, phi=90.0 - theta, centre=centre)
+        return Kernel.from_gaussian(
+            shape_2d=shape_2d,
+            pixel_scales=pixel_scales,
+            sigma=y_stddev,
+            axis_ratio=axis_ratio,
+            phi=90.0 - theta,
+            centre=centre,
+        )
 
     @classmethod
-    def from_fits(cls, file_path, hdu, pixel_scales=None, origin=(0.0, 0.0), renormalize=False):
+    def from_fits(
+        cls, file_path, hdu, pixel_scales=None, origin=(0.0, 0.0), renormalize=False
+    ):
         """
         Loads the Kernel from a .fits file.
 
@@ -139,10 +164,10 @@ class Kernel(arrays.AbstractArray):
         """
 
         array = arrays.Array.from_fits(
-            file_path=file_path, hdu=hdu,
-            pixel_scales=pixel_scales, origin=origin)
+            file_path=file_path, hdu=hdu, pixel_scales=pixel_scales, origin=origin
+        )
 
-        return Kernel(array_1d=array, mask=array.mask, renormalize=renormalize)
+        return Kernel(array_1d=array[:], mask=array.mask, renormalize=renormalize)
 
     def rescaled_with_odd_dimensions_from_rescale_factor(
         self, rescale_factor, renormalize=False
@@ -159,7 +184,10 @@ class Kernel(arrays.AbstractArray):
         if kernel_rescaled.shape[0] % 2 == 0 and kernel_rescaled.shape[1] % 2 == 0:
             kernel_rescaled = resize(
                 kernel_rescaled,
-                output_shape=(kernel_rescaled.shape[0] + 1, kernel_rescaled.shape[1] + 1),
+                output_shape=(
+                    kernel_rescaled.shape[0] + 1,
+                    kernel_rescaled.shape[1] + 1,
+                ),
                 anti_aliasing=False,
                 mode="constant",
             )
@@ -228,30 +256,11 @@ class Kernel(arrays.AbstractArray):
         if self.mask.shape[0] % 2 == 0 or self.mask.shape[1] % 2 == 0:
             raise exc.KernelException("Kernel Kernel must be odd")
 
-        return array.mapping.array_from_array_2d(array_2d=scipy.signal.convolve2d(array.in_2d, self.in_2d, mode="same"))
-
-    def convolved_array_2d_from_array_2d(self, array_2d):
-        """
-        Convolve an array with this Kernel
-
-        Parameters
-        ----------
-        image : ndarray
-            An array representing the image the Kernel is convolved with.
-
-        Returns
-        -------
-        convolved_image : ndarray
-            An array representing the image after convolution.
-
-        Raises
-        ------
-        KernelException if either Kernel psf dimension is odd
-        """
-        if self.mask.shape[0] % 2 == 0 or self.mask.shape[1] % 2 == 0:
-            raise exc.KernelException("Kernel Kernel must be odd")
-
-        return scipy.signal.convolve2d(array_2d, self.in_2d, mode="same")
+        return array.mapping.array_from_array_2d(
+            array_2d=scipy.signal.convolve2d(
+                array.in_2d_binned, self.in_2d, mode="same"
+            )
+        )
 
     def convolved_array_from_array_2d_and_mask(self, array_2d, mask):
         """
@@ -272,8 +281,11 @@ class Kernel(arrays.AbstractArray):
         KernelException if either Kernel psf dimension is odd
         """
 
+        if self.mask.shape[0] % 2 == 0 or self.mask.shape[1] % 2 == 0:
+            raise exc.KernelException("Kernel Kernel must be odd")
+
         mask_sub_1 = mask.mapping.mask_sub_1
 
         return mask_sub_1.mapping.array_from_array_2d(
-            array_2d=self.convolved_array_2d_from_array_2d(array_2d=array_2d)
+            scipy.signal.convolve2d(array_2d, self.in_2d, mode="same")
         )

@@ -641,9 +641,7 @@ class TestBinUpMask2d:
             ]
         )
 
-        binned_mask = aa.util.binning.bin_mask_2d(
-            mask_2d=mask_2d, bin_up_factor=2
-        )
+        binned_mask = aa.util.binning.bin_mask_2d(mask_2d=mask_2d, bin_up_factor=2)
 
         assert (binned_mask == np.array([[False, True], [False, False]])).all()
 
@@ -656,9 +654,7 @@ class TestBinUpMask2d:
             ]
         )
 
-        binned_mask = aa.util.binning.bin_mask_2d(
-            mask_2d=mask_2d, bin_up_factor=2
-        )
+        binned_mask = aa.util.binning.bin_mask_2d(mask_2d=mask_2d, bin_up_factor=2)
 
         assert (binned_mask == np.array([[True, True], [True, False]])).all()
 
@@ -675,9 +671,7 @@ class TestBinUpMask2d:
             ]
         )
 
-        binned_mask = aa.util.binning.bin_mask_2d(
-            mask_2d=mask_2d, bin_up_factor=3
-        )
+        binned_mask = aa.util.binning.bin_mask_2d(mask_2d=mask_2d, bin_up_factor=3)
 
         assert (binned_mask == np.array([[True], [True]])).all()
 
@@ -692,9 +686,7 @@ class TestBinUpMask2d:
             ]
         )
 
-        binned_mask = aa.util.binning.bin_mask_2d(
-            mask_2d=mask_2d, bin_up_factor=3
-        )
+        binned_mask = aa.util.binning.bin_mask_2d(mask_2d=mask_2d, bin_up_factor=3)
         assert (binned_mask == np.array([[False], [True]])).all()
 
         mask_2d = np.array(
@@ -705,9 +697,7 @@ class TestBinUpMask2d:
             ]
         )
 
-        binned_mask = aa.util.binning.bin_mask_2d(
-            mask_2d=mask_2d, bin_up_factor=3
-        )
+        binned_mask = aa.util.binning.bin_mask_2d(mask_2d=mask_2d, bin_up_factor=3)
         assert (binned_mask == np.array([[True, True]])).all()
 
         mask_2d = np.array(
@@ -718,9 +708,7 @@ class TestBinUpMask2d:
             ]
         )
 
-        binned_mask = aa.util.binning.bin_mask_2d(
-            mask_2d=mask_2d, bin_up_factor=3
-        )
+        binned_mask = aa.util.binning.bin_mask_2d(mask_2d=mask_2d, bin_up_factor=3)
         assert (binned_mask == np.array([[True, False]])).all()
 
     def test__bin_includes_padding_image_with_zeros(self):
@@ -736,9 +724,7 @@ class TestBinUpMask2d:
         mask_2d = np.full(shape=(4, 4), fill_value=True)
         mask_2d[1, 1] = False
         mask_2d[3, 3] = False
-        binned_mask = aa.util.binning.bin_mask_2d(
-            mask_2d=mask_2d, bin_up_factor=3
-        )
+        binned_mask = aa.util.binning.bin_mask_2d(mask_2d=mask_2d, bin_up_factor=3)
         assert (binned_mask == np.array([[False, True], [True, False]])).all()
 
         # Padded Array:
@@ -748,9 +734,7 @@ class TestBinUpMask2d:
 
         mask_2d = np.full(shape=(2, 3), fill_value=True)
         mask_2d[1, 2] = False
-        binned_2d_mask = aa.util.binning.bin_mask_2d(
-            mask_2d=mask_2d, bin_up_factor=2
-        )
+        binned_2d_mask = aa.util.binning.bin_mask_2d(mask_2d=mask_2d, bin_up_factor=2)
         assert (binned_2d_mask == np.array([[True, False]])).all()
 
 

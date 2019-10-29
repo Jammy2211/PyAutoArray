@@ -5,7 +5,12 @@ backend = conf.instance.visualize.get("figures", "backend", str)
 matplotlib.use(backend)
 from matplotlib import pyplot as plt
 
-from autoarray.plotters import array_plotters, grid_plotters, line_yx_plotters, plotter_util
+from autoarray.plotters import (
+    array_plotters,
+    grid_plotters,
+    line_yx_plotters,
+    plotter_util,
+)
 
 
 def subplot(
@@ -36,7 +41,7 @@ def subplot(
     output_filename="interferometer",
     output_format="show",
 ):
-    """Plot the interferometer data_type as a sub-plotters of all its quantites (e.g. the data, noise_map-map, PSF, Signal-to_noise-map, \
+    """Plot the interferometer data_type as a sub-plotters of all its quantites (e.g. the simulate, noise_map-map, PSF, Signal-to_noise-map, \
      etc).
 
     Set *autolens.data_type.array.plotters.array_plotters* for a description of all innput parameters not described below.
@@ -46,9 +51,9 @@ def subplot(
     interferometer : data_type.UVPlaneData
         The interferometer data_type, which includes the observed data_type, noise_map-map, PSF, signal-to-noise_map-map, etc.
     plot_origin : True
-        If true, the origin of the data's coordinate system is plotted as a 'x'.
+        If true, the origin of the simulate's coordinate system is plotted as a 'x'.
     image_plane_pix_grid : ndarray or data_type.array.grid_stacks.PixGrid
-        If an adaptive pixelization whose pixels are formed by tracing pixels from the data, this plots those pixels \
+        If an adaptive pixelization whose pixels are formed by tracing pixels from the simulate, this plots those pixels \
         over the immage.
     ignore_config : bool
         If *False*, the config file general.ini is used to determine whether the subpot is plotted. If *True*, the \
@@ -172,7 +177,7 @@ def individual(
     output_path=None,
     output_format="png",
 ):
-    """Plot each attribute of the interferometer data_type as individual figures one by one (e.g. the data, noise_map-map, PSF, \
+    """Plot each attribute of the interferometer data_type as individual figures one by one (e.g. the simulate, noise_map-map, PSF, \
      Signal-to_noise-map, etc).
 
     Set *autolens.data_type.array.plotters.array_plotters* for a description of all innput parameters not described below.
@@ -182,7 +187,7 @@ def individual(
     interferometer : data_type.UVPlaneData
         The interferometer data_type, which includes the observed data_type, noise_map-map, PSF, signal-to-noise_map-map, etc.
     plot_origin : True
-        If true, the origin of the data's coordinate system is plotted as a 'x'.
+        If true, the origin of the simulate's coordinate system is plotted as a 'x'.
     """
 
     if should_plot_visibilities:
@@ -250,17 +255,17 @@ def visibilities(
     Parameters
     -----------
     image : ScaledSquarePixelArray
-        The image of the data.
+        The image of the simulate.
     plot_origin : True
-        If true, the origin of the data's coordinate system is plotted as a 'x'.
+        If true, the origin of the simulate's coordinate system is plotted as a 'x'.
     image_plane_pix_grid : ndarray or data_type.array.grid_stacks.PixGrid
-        If an adaptive pixelization whose pixels are formed by tracing pixels from the data, this plots those pixels \
+        If an adaptive pixelization whose pixels are formed by tracing pixels from the simulate, this plots those pixels \
         over the immage.
     """
 
     grid_plotters.plot_grid(
         grid=interferometer.visibilities,
-        colors=interferometer.noise_map,
+        colors=interferometer.noise_map[:, 0],
         as_subplot=as_subplot,
         units=units,
         kpc_per_arcsec=kpc_per_arcsec,
@@ -308,11 +313,11 @@ def u_wavelengths(
     Parameters
     -----------
     image : ScaledSquarePixelArray
-        The image of the data.
+        The image of the simulate.
     plot_origin : True
-        If true, the origin of the data's coordinate system is plotted as a 'x'.
+        If true, the origin of the simulate's coordinate system is plotted as a 'x'.
     image_plane_pix_grid : ndarray or data_type.array.grid_stacks.PixGrid
-        If an adaptive pixelization whose pixels are formed by tracing pixels from the data, this plots those pixels \
+        If an adaptive pixelization whose pixels are formed by tracing pixels from the simulate, this plots those pixels \
         over the immage.
     """
 
@@ -364,11 +369,11 @@ def v_wavelengths(
     Parameters
     -----------
     image : ScaledSquarePixelArray
-        The image of the data.
+        The image of the simulate.
     plot_origin : True
-        If true, the origin of the data's coordinate system is plotted as a 'x'.
+        If true, the origin of the simulate's coordinate system is plotted as a 'x'.
     image_plane_pix_grid : ndarray or data_type.array.grid_stacks.PixGrid
-        If an adaptive pixelization whose pixels are formed by tracing pixels from the data, this plots those pixels \
+        If an adaptive pixelization whose pixels are formed by tracing pixels from the simulate, this plots those pixels \
         over the immage.
     """
 
@@ -431,7 +436,7 @@ def primary_beam(
     image : data_type.ImagingData
         The interferometer data_type, which includes the observed data_type, noise_map-map, PSF, signal-to-noise_map-map, etc.
     plot_origin : True
-        If true, the origin of the data's coordinate system is plotted as a 'x'.
+        If true, the origin of the simulate's coordinate system is plotted as a 'x'.
     """
 
     array_plotters.plot_array(
@@ -462,4 +467,3 @@ def primary_beam(
         output_format=output_format,
         output_filename=output_filename,
     )
-
