@@ -1,5 +1,3 @@
-from autofit.exc import FitException
-
 class ArrayException(Exception):
     pass
 
@@ -36,9 +34,5 @@ class PixelizationException(Exception):
     pass
 
 
-class FitException(Exception):
-    pass
-
-
-class InversionException(FitException):
+class InversionException(Exception):
     pass
