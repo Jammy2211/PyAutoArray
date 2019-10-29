@@ -445,7 +445,7 @@ class TestFromAndToFits:
 
         os.makedirs(output_data_dir)
 
-        mask.output_fits(file_path=output_data_dir + "mask.fits")
+        mask.output_to_fits(file_path=output_data_dir + "mask.fits")
 
         mask = msk.Mask.from_fits(
             file_path=output_data_dir + "mask.fits",

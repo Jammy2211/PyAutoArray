@@ -25,7 +25,7 @@ def plot_array(
     phis=None,
     grid=None,
     as_subplot=False,
-    units="pixels",
+    units="arcsec",
     kpc_per_arcsec=None,
     figsize=(7, 7),
     aspect="equal",
