@@ -311,7 +311,7 @@ class Array(AbstractArray):
 
     @classmethod
     def from_fits(
-        cls, file_path, hdu, pixel_scales=None, sub_size=1, origin=(0.0, 0.0)
+        cls, file_path, hdu=0, pixel_scales=None, sub_size=1, origin=(0.0, 0.0)
     ):
         array_2d = array_util.numpy_array_2d_from_fits(file_path=file_path, hdu=hdu)
         return cls.manual_2d(

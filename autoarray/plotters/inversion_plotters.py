@@ -437,7 +437,7 @@ def residual_map(
     xyticksize=16,
     output_path=None,
     output_format="show",
-    output_filename="inversion_pixelization_residual_map",
+    output_filename="inversion_inversion_residual_map",
 ):
 
     if output_format is "fits":
@@ -516,7 +516,7 @@ def normalized_residual_map(
     xyticksize=16,
     output_path=None,
     output_format="show",
-    output_filename="inversion_pixelization_normalized_residual_map",
+    output_filename="inversion_inversion_normalized_residual_map",
 ):
 
     if output_format is "fits":
@@ -595,7 +595,7 @@ def chi_squared_map(
     xyticksize=16,
     output_path=None,
     output_format="show",
-    output_filename="inversion_pixelization_chi_squared_map",
+    output_filename="inversion_inversion_chi_squared_map",
 ):
 
     if output_format is "fits":
@@ -674,7 +674,7 @@ def regularization_weights(
     xyticksize=16,
     output_path=None,
     output_format="show",
-    output_filename="inversion_pixelization_regularization_weights",
+    output_filename="inversion_inversion_regularization_weights",
 ):
 
     if output_format is "fits":

@@ -559,11 +559,11 @@ class TestMapping:
             mask=mask,
         )
 
-        array_2d = mask.mapping.trimmed_array_2d_from_padded_array_and_image_shape(
+        array = mask.mapping.trimmed_array_from_padded_array_and_image_shape(
             padded_array=array_1d, image_shape=(2, 2)
         )
 
-        assert (array_2d == np.array([[6.0, 7.0], [1.0, 2.0]])).all()
+        assert (array.in_2d == np.array([[6.0, 7.0], [1.0, 2.0]])).all()
 
         mask = aa.mask.unmasked(shape_2d=(5, 3))
 
@@ -572,11 +572,11 @@ class TestMapping:
             mask=mask,
         )
 
-        array_2d = mask.mapping.trimmed_array_2d_from_padded_array_and_image_shape(
+        array = mask.mapping.trimmed_array_from_padded_array_and_image_shape(
             padded_array=array_1d, image_shape=(3, 1)
         )
 
-        assert (array_2d == np.array([[5.0], [8.0], [2.0]])).all()
+        assert (array.in_2d == np.array([[5.0], [8.0], [2.0]])).all()
 
         mask = aa.mask.unmasked(shape_2d=(3, 5))
 
@@ -585,11 +585,11 @@ class TestMapping:
             mask=mask,
         )
 
-        array_2d = mask.mapping.trimmed_array_2d_from_padded_array_and_image_shape(
+        array = mask.mapping.trimmed_array_from_padded_array_and_image_shape(
             padded_array=array_1d, image_shape=(1, 3)
         )
 
-        assert (array_2d == np.array([[7.0, 8.0, 9.0]])).all()
+        assert (array.in_2d == np.array([[7.0, 8.0, 9.0]])).all()
 
 
 class TestMappingExceptions:

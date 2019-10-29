@@ -284,7 +284,7 @@ class Mapping(object):
             grid_1d=np.stack((grid_1d_y, grid_1d_x), axis=-1), mask=self.mask_sub_1
         )
 
-    def trimmed_array_2d_from_padded_array_and_image_shape(
+    def trimmed_array_from_padded_array_and_image_shape(
         self, padded_array, image_shape
     ):
         """ Map a padded 1D array of values to its original 2D array, trimming all edge values.
@@ -297,10 +297,11 @@ class Mapping(object):
 
         pad_size_0 = self.mask.shape[0] - image_shape[0]
         pad_size_1 = self.mask.shape[1] - image_shape[1]
-        return padded_array.in_2d_binned[
+        trimmed_array = padded_array.in_2d_binned[
             pad_size_0 // 2 : self.mask.shape[0] - pad_size_0 // 2,
             pad_size_1 // 2 : self.mask.shape[1] - pad_size_1 // 2,
         ]
+        return arrays.Array.manual_2d(array=trimmed_array, pixel_scales=self.mask.pixel_scales, sub_size=1, origin=self.mask.origin)
 
     def convolve_padded_array_1d_with_psf(self, padded_array_1d, psf):
         """Convolve a 1d padded array of values (e.g. image before PSF blurring) with a PSF, and then trim \
@@ -329,7 +330,7 @@ class Mapping(object):
             sub_size=1,
         )
 
-    def unmasked_blurred_array_2d_from_padded_array_psf_and_image_shape(
+    def unmasked_blurred_array_from_padded_array_psf_and_image_shape(
         self, padded_array, psf, image_shape
     ):
         """For a padded grid and psf, compute an unmasked blurred image from an unmasked unblurred image.
@@ -347,7 +348,7 @@ class Mapping(object):
 
         blurred_image = psf.convolved_array_from_array(array=padded_array)
 
-        return self.trimmed_array_2d_from_padded_array_and_image_shape(
+        return self.trimmed_array_from_padded_array_and_image_shape(
             padded_array=blurred_image, image_shape=image_shape
         )
 
