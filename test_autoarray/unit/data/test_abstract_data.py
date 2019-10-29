@@ -13,11 +13,6 @@ test_data_dir = "{}/../test_files/array/".format(
     os.path.dirname(os.path.realpath(__file__))
 )
 
-test_positions_dir = "{}/../test_files/positions/".format(
-    os.path.dirname(os.path.realpath(__file__))
-)
-
-
 class TestSignalToNoise:
     def test__image_and_noise_are_values__signal_to_noise_is_ratio_of_each(self):
         array = aa.array.manual_2d([[1.0, 2.0], [3.0, 4.0]])
@@ -96,38 +91,3 @@ class TestExposureTimeMap(object):
             exposure_time_map.in_2d == np.array([[0.375, 1.5, 3.0], [0.375, 1.5, 3.0]])
         ).all()
 
-
-class TestPositionsToFile(object):
-    def test__load_positions__retains_list_structure(self):
-        positions = abstract_data.load_positions(
-            positions_path=test_positions_dir + "positions_test.dat"
-        )
-
-        assert positions == [
-            [[1.0, 1.0], [2.0, 2.0]],
-            [[3.0, 3.0], [4.0, 4.0], [5.0, 6.0]],
-        ]
-
-    def test__output_positions(self):
-        positions = [[[4.0, 4.0], [5.0, 5.0]], [[6.0, 6.0], [7.0, 7.0], [8.0, 8.0]]]
-
-        output_data_dir = "{}/../test_files/positions/output_test/".format(
-            os.path.dirname(os.path.realpath(__file__))
-        )
-        if os.path.exists(output_data_dir):
-            shutil.rmtree(output_data_dir)
-
-        os.makedirs(output_data_dir)
-
-        abstract_data.output_positions(
-            positions=positions, positions_path=output_data_dir + "positions_test.dat"
-        )
-
-        positions = abstract_data.load_positions(
-            positions_path=output_data_dir + "positions_test.dat"
-        )
-
-        assert positions == [
-            [[4.0, 4.0], [5.0, 5.0]],
-            [[6.0, 6.0], [7.0, 7.0], [8.0, 8.0]],
-        ]
