@@ -244,3 +244,7 @@ class VoronoiMapper(Mapper):
         ).astype(
             "int"
         )
+
+    @property
+    def voronoi(self):
+        return self.pixelization_grid.voronoi
