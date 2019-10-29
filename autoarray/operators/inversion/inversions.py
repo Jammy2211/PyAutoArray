@@ -122,7 +122,7 @@ class InversionImaging(object):
         return inversion_util.pixelization_residual_map_from_pixelization_values_and_reconstructed_data_1d(
             pixelization_values=self.reconstruction,
             reconstructed_data_1d=self.mapped_reconstructed_image,
-            mask_1d_index_for_sub_mask_1d_index=self.mapper.grid.mask._mask_1d_index_for_sub_mask_1d_index,
+            mask_1d_index_for_sub_mask_1d_index=self.mapper.grid.mask.regions._mask_1d_index_for_sub_mask_1d_index,
             all_sub_mask_1d_indexes_for_pixelization_1d_index=self.mapper.all_sub_mask_1d_indexes_for_pixelization_1d_index,
         )
 
@@ -132,7 +132,7 @@ class InversionImaging(object):
             pixelization_values=self.reconstruction,
             reconstructed_data_1d=self.mapped_reconstructed_image,
             noise_map_1d=self.noise_map,
-            mask_1d_index_for_sub_mask_1d_index=self.mapper.grid.mask._mask_1d_index_for_sub_mask_1d_index,
+            mask_1d_index_for_sub_mask_1d_index=self.mapper.grid.mask.regions._mask_1d_index_for_sub_mask_1d_index,
             all_sub_mask_1d_indexes_for_pixelization_1d_index=self.mapper.all_sub_mask_1d_indexes_for_pixelization_1d_index,
         )
 
@@ -142,7 +142,7 @@ class InversionImaging(object):
             pixelization_values=self.reconstruction,
             reconstructed_data_1d=self.mapped_reconstructed_image,
             noise_map_1d=self.noise_map,
-            mask_1d_index_for_sub_mask_1d_index=self.mapper.grid.mask._mask_1d_index_for_sub_mask_1d_index,
+            mask_1d_index_for_sub_mask_1d_index=self.mapper.grid.mask.regions._mask_1d_index_for_sub_mask_1d_index,
             all_sub_mask_1d_indexes_for_pixelization_1d_index=self.mapper.all_sub_mask_1d_indexes_for_pixelization_1d_index,
         )
 
