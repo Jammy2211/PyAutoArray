@@ -37,4 +37,4 @@ from autoarray.structures.arrays import Array as array, MaskedArray as masked_ar
 from autoarray.structures.grids import Grid as grid, MaskedGrid as masked_grid
 from autoarray.structures.kernel import Kernel as kernel
 
-__version__ = "0.2.0"
+__version__ = '0.2.1'
