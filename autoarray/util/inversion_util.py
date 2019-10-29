@@ -122,7 +122,7 @@ def reconstructed_data_vector_from_blurred_mapping_matrix_and_solution_vector(
     return reconstructed_data_vector
 
 
-def pixelization_residual_map_from_pixelization_values_and_reconstructed_data_1d(
+def inversion_residual_map_from_pixelization_values_and_reconstructed_data_1d(
     pixelization_values,
     reconstructed_data_1d,
     mask_1d_index_for_sub_mask_1d_index,
@@ -149,7 +149,7 @@ def pixelization_residual_map_from_pixelization_values_and_reconstructed_data_1d
     return pixelization_residuals
 
 
-def pixelization_normalized_residual_map_from_pixelization_values_and_reconstructed_data_1d(
+def inversion_normalized_residual_map_from_pixelization_values_and_reconstructed_data_1d(
     pixelization_values,
     reconstructed_data_1d,
     noise_map_1d,
@@ -179,7 +179,7 @@ def pixelization_normalized_residual_map_from_pixelization_values_and_reconstruc
     return pixelization_normalized_residuals
 
 
-def pixelization_chi_squared_map_from_pixelization_values_and_reconstructed_data_1d(
+def inversion_chi_squared_map_from_pixelization_values_and_reconstructed_data_1d(
     pixelization_values,
     reconstructed_data_1d,
     noise_map_1d,

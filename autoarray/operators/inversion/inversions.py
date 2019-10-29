@@ -119,7 +119,7 @@ class InversionImaging(object):
 
     @property
     def residual_map(self):
-        return inversion_util.pixelization_residual_map_from_pixelization_values_and_reconstructed_data_1d(
+        return inversion_util.inversion_residual_map_from_pixelization_values_and_reconstructed_data_1d(
             pixelization_values=self.reconstruction,
             reconstructed_data_1d=self.mapped_reconstructed_image,
             mask_1d_index_for_sub_mask_1d_index=self.mapper.grid.mask.regions._mask_1d_index_for_sub_mask_1d_index,
@@ -128,7 +128,7 @@ class InversionImaging(object):
 
     @property
     def normalized_residual_map(self):
-        return inversion_util.pixelization_normalized_residual_map_from_pixelization_values_and_reconstructed_data_1d(
+        return inversion_util.inversion_normalized_residual_map_from_pixelization_values_and_reconstructed_data_1d(
             pixelization_values=self.reconstruction,
             reconstructed_data_1d=self.mapped_reconstructed_image,
             noise_map_1d=self.noise_map,
@@ -138,7 +138,7 @@ class InversionImaging(object):
 
     @property
     def chi_squared_map(self):
-        return inversion_util.pixelization_chi_squared_map_from_pixelization_values_and_reconstructed_data_1d(
+        return inversion_util.inversion_chi_squared_map_from_pixelization_values_and_reconstructed_data_1d(
             pixelization_values=self.reconstruction,
             reconstructed_data_1d=self.mapped_reconstructed_image,
             noise_map_1d=self.noise_map,

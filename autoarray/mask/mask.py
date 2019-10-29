@@ -373,7 +373,7 @@ class Mask(np.ndarray):
         )
 
     @classmethod
-    def from_fits(cls, file_path, hdu, pixel_scales, sub_size, origin=(0.0, 0.0)):
+    def from_fits(cls, file_path, pixel_scales, hdu=0, sub_size=1, origin=(0.0, 0.0)):
         """
         Loads the image from a .fits file.
 
@@ -383,7 +383,7 @@ class Mask(np.ndarray):
             The full path of the fits file.
         hdu : int
             The HDU number in the fits file containing the image image.
-        pixel_scales : (float, float)
+        pixel_scales : float or (float, float)
             The arc-second to pixel conversion factor of each pixel.
         """
 
