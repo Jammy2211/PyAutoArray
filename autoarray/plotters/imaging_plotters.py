@@ -33,14 +33,14 @@ def subplot(
     xlabelsize=10,
     ylabelsize=10,
     xyticksize=10,
-    mask_pointsize=10,
+    mask_overlay_pointsize=10,
     position_pointsize=30,
     grid_pointsize=1,
     output_path=None,
     output_filename="imaging",
     output_format="show",
 ):
-    """Plot the imaging data_type as a sub-plotters of all its quantites (e.g. the data, noise_map-map, PSF, Signal-to_noise-map, \
+    """Plot the imaging data_type as a sub-plotters of all its quantites (e.g. the simulate, noise_map-map, PSF, Signal-to_noise-map, \
      etc).
 
     Set *autolens.data_type.array.plotters.array_plotters* for a description of all innput parameters not described below.
@@ -50,9 +50,9 @@ def subplot(
     imaging : data_type.ImagingData
         The imaging data_type, which includes the observed data_type, noise_map-map, PSF, signal-to-noise_map-map, etc.
     plot_origin : True
-        If true, the origin of the data's coordinate system is plotted as a 'x'.
+        If true, the origin of the simulate's coordinate system is plotted as a 'x'.
     image_plane_pix_grid : ndarray or data_type.array.grid_stacks.PixGrid
-        If an adaptive pixelization whose pixels are formed by tracing pixels from the data, this plots those pixels \
+        If an adaptive pixelization whose pixels are formed by tracing pixels from the simulate, this plots those pixels \
         over the immage.
     ignore_config : bool
         If *False*, the config file general.ini is used to determine whether the subpot is plotted. If *True*, the \
@@ -95,7 +95,7 @@ def subplot(
         xlabelsize=xlabelsize,
         ylabelsize=ylabelsize,
         xyticksize=xyticksize,
-        mask_pointsize=mask_pointsize,
+        mask_overlay_pointsize=mask_overlay_pointsize,
         position_pointsize=position_pointsize,
         grid_pointsize=grid_pointsize,
         output_path=output_path,
@@ -128,7 +128,7 @@ def subplot(
         xlabelsize=xlabelsize,
         ylabelsize=ylabelsize,
         xyticksize=xyticksize,
-        mask_pointsize=mask_pointsize,
+        mask_overlay_pointsize=mask_overlay_pointsize,
         output_path=output_path,
         output_format=output_format,
     )
@@ -187,7 +187,7 @@ def subplot(
         xlabelsize=xlabelsize,
         ylabelsize=ylabelsize,
         xyticksize=xyticksize,
-        mask_pointsize=mask_pointsize,
+        mask_overlay_pointsize=mask_overlay_pointsize,
         output_path=output_path,
         output_format=output_format,
     )
@@ -218,7 +218,7 @@ def subplot(
         xlabelsize=xlabelsize,
         ylabelsize=ylabelsize,
         xyticksize=xyticksize,
-        mask_pointsize=mask_pointsize,
+        mask_overlay_pointsize=mask_overlay_pointsize,
         output_path=output_path,
         output_format=output_format,
     )
@@ -249,7 +249,7 @@ def subplot(
         xlabelsize=xlabelsize,
         ylabelsize=ylabelsize,
         xyticksize=xyticksize,
-        mask_pointsize=mask_pointsize,
+        mask_overlay_pointsize=mask_overlay_pointsize,
         output_path=output_path,
         output_format=output_format,
     )
@@ -278,7 +278,7 @@ def individual(
     output_path=None,
     output_format="png",
 ):
-    """Plot each attribute of the imaging data_type as individual figures one by one (e.g. the data, noise_map-map, PSF, \
+    """Plot each attribute of the imaging data_type as individual figures one by one (e.g. the simulate, noise_map-map, PSF, \
      Signal-to_noise-map, etc).
 
     Set *autolens.data_type.array.plotters.array_plotters* for a description of all innput parameters not described below.
@@ -288,7 +288,7 @@ def individual(
     imaging : data_type.ImagingData
         The imaging data_type, which includes the observed data_type, noise_map-map, PSF, signal-to-noise_map-map, etc.
     plot_origin : True
-        If true, the origin of the data's coordinate system is plotted as a 'x'.
+        If true, the origin of the simulate's coordinate system is plotted as a 'x'.
     """
 
     if should_plot_image:
@@ -385,7 +385,7 @@ def image(
     xlabelsize=16,
     ylabelsize=16,
     xyticksize=16,
-    mask_pointsize=10,
+    mask_overlay_pointsize=10,
     position_pointsize=30,
     grid_pointsize=1,
     output_path=None,
@@ -401,16 +401,16 @@ def image(
     image : data_type.ImagingData
         The imaging data_type, which includes the observed data_type, noise_map-map, PSF, signal-to-noise_map-map, etc.
     plot_origin : True
-        If true, the origin of the data's coordinate system is plotted as a 'x'.
+        If true, the origin of the simulate's coordinate system is plotted as a 'x'.
     image_plane_pix_grid : ndarray or data_type.array.grid_stacks.PixGrid
-        If an adaptive pixelization whose pixels are formed by tracing pixels from the data, this plots those pixels \
+        If an adaptive pixelization whose pixels are formed by tracing pixels from the simulate, this plots those pixels \
         over the immage.
     """
     array_plotters.plot_array(
         array=imaging.image,
         should_plot_origin=plot_origin,
         grid=grid,
-    mask_overlay=mask_overlay,
+        mask_overlay=mask_overlay,
         should_plot_border=should_plot_border,
         positions=positions,
         as_subplot=as_subplot,
@@ -434,7 +434,7 @@ def image(
         xlabelsize=xlabelsize,
         ylabelsize=ylabelsize,
         xyticksize=xyticksize,
-        mask_pointsize=mask_pointsize,
+        mask_overlay_pointsize=mask_overlay_pointsize,
         position_pointsize=position_pointsize,
         grid_pointsize=grid_pointsize,
         output_path=output_path,
@@ -468,7 +468,7 @@ def noise_map(
     xlabelsize=16,
     ylabelsize=16,
     xyticksize=16,
-    mask_pointsize=10,
+    mask_overlay_pointsize=10,
     output_path=None,
     output_format="show",
     output_filename="imaging_noise_map",
@@ -482,13 +482,13 @@ def noise_map(
     image : data_type.ImagingData
         The imaging data_type, which includes the observed data_type, noise_map-map, PSF, signal-to-noise_map-map, etc.
     plot_origin : True
-        If true, the origin of the data's coordinate system is plotted as a 'x'.
+        If true, the origin of the simulate's coordinate system is plotted as a 'x'.
     """
 
     array_plotters.plot_array(
         array=imaging.noise_map,
         should_plot_origin=plot_origin,
-    mask_overlay=mask_overlay,
+        mask_overlay=mask_overlay,
         as_subplot=as_subplot,
         units=units,
         kpc_per_arcsec=kpc_per_arcsec,
@@ -510,7 +510,7 @@ def noise_map(
         xlabelsize=xlabelsize,
         ylabelsize=ylabelsize,
         xyticksize=xyticksize,
-        mask_pointsize=mask_pointsize,
+        mask_overlay_pointsize=mask_overlay_pointsize,
         output_path=output_path,
         output_format=output_format,
         output_filename=output_filename,
@@ -554,7 +554,7 @@ def psf(
     image : data_type.ImagingData
         The imaging data_type, which includes the observed data_type, noise_map-map, PSF, signal-to-noise_map-map, etc.
     plot_origin : True
-        If true, the origin of the data's coordinate system is plotted as a 'x'.
+        If true, the origin of the simulate's coordinate system is plotted as a 'x'.
     """
 
     array_plotters.plot_array(
@@ -612,7 +612,7 @@ def signal_to_noise_map(
     xlabelsize=16,
     ylabelsize=16,
     xyticksize=16,
-    mask_pointsize=10,
+    mask_overlay_pointsize=10,
     output_path=None,
     output_format="show",
     output_filename="imaging_signal_to_noise_map",
@@ -626,13 +626,13 @@ def signal_to_noise_map(
     image : data_type.ImagingData
         The imaging data_type, which includes the observed image, noise_map-map, PSF, signal-to-noise_map-map, etc.
     plot_origin : True
-        If true, the origin of the data's coordinate system is plotted as a 'x'.
+        If true, the origin of the simulate's coordinate system is plotted as a 'x'.
     """
 
     array_plotters.plot_array(
         array=imaging.signal_to_noise_map,
         should_plot_origin=plot_origin,
-    mask_overlay=mask_overlay,
+        mask_overlay=mask_overlay,
         as_subplot=as_subplot,
         units=units,
         kpc_per_arcsec=kpc_per_arcsec,
@@ -654,11 +654,12 @@ def signal_to_noise_map(
         xlabelsize=xlabelsize,
         ylabelsize=ylabelsize,
         xyticksize=xyticksize,
-        mask_pointsize=mask_pointsize,
+        mask_overlay_pointsize=mask_overlay_pointsize,
         output_path=output_path,
         output_format=output_format,
         output_filename=output_filename,
     )
+
 
 def absolute_signal_to_noise_map(
     imaging,
@@ -685,7 +686,7 @@ def absolute_signal_to_noise_map(
     xlabelsize=16,
     ylabelsize=16,
     xyticksize=16,
-    mask_pointsize=10,
+    mask_overlay_pointsize=10,
     output_path=None,
     output_format="show",
     output_filename="imaging_absolute_signal_to_noise_map",
@@ -699,13 +700,13 @@ def absolute_signal_to_noise_map(
     image : data_type.ImagingData
         The imaging data_type, which includes the observed image, noise_map-map, PSF, signal-to-noise_map-map, etc.
     plot_origin : True
-        If true, the origin of the data's coordinate system is plotted as a 'x'.
+        If true, the origin of the simulate's coordinate system is plotted as a 'x'.
     """
 
     array_plotters.plot_array(
         array=imaging.absolute_signal_to_noise_map,
         should_plot_origin=plot_origin,
-    mask_overlay=mask_overlay,
+        mask_overlay=mask_overlay,
         as_subplot=as_subplot,
         units=units,
         kpc_per_arcsec=kpc_per_arcsec,
@@ -727,11 +728,12 @@ def absolute_signal_to_noise_map(
         xlabelsize=xlabelsize,
         ylabelsize=ylabelsize,
         xyticksize=xyticksize,
-        mask_pointsize=mask_pointsize,
+        mask_overlay_pointsize=mask_overlay_pointsize,
         output_path=output_path,
         output_format=output_format,
         output_filename=output_filename,
     )
+
 
 def potential_chi_squared_map(
     imaging,
@@ -758,7 +760,7 @@ def potential_chi_squared_map(
     xlabelsize=16,
     ylabelsize=16,
     xyticksize=16,
-    mask_pointsize=10,
+    mask_overlay_pointsize=10,
     output_path=None,
     output_format="show",
     output_filename="imaging_potential_chi_squared_map",
@@ -772,13 +774,13 @@ def potential_chi_squared_map(
     image : data_type.ImagingData
         The imaging data_type, which includes the observed image, noise_map-map, PSF, signal-to-noise_map-map, etc.
     plot_origin : True
-        If true, the origin of the data's coordinate system is plotted as a 'x'.
+        If true, the origin of the simulate's coordinate system is plotted as a 'x'.
     """
 
     array_plotters.plot_array(
         array=imaging.potential_chi_squared_map,
         should_plot_origin=plot_origin,
-    mask_overlay=mask_overlay,
+        mask_overlay=mask_overlay,
         as_subplot=as_subplot,
         units=units,
         kpc_per_arcsec=kpc_per_arcsec,
@@ -800,7 +802,7 @@ def potential_chi_squared_map(
         xlabelsize=xlabelsize,
         ylabelsize=ylabelsize,
         xyticksize=xyticksize,
-        mask_pointsize=mask_pointsize,
+        mask_overlay_pointsize=mask_overlay_pointsize,
         output_path=output_path,
         output_format=output_format,
         output_filename=output_filename,

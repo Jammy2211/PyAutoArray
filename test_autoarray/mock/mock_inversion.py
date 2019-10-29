@@ -1,34 +1,18 @@
 import numpy as np
 
 
-class MockGeometry(object):
-    def __init__(
-        self,
-        pixel_centres=None,
-        pixel_neighbors=np.array([1]),
-        pixel_neighbors_size=np.array([1]),
-    ):
-
-        self.pixel_scales = (1.0, 1.0)
-        self.origin = (0.0, 0.0)
-        self.pixel_centres = pixel_centres
-
-        self.pixel_neighbors = pixel_neighbors.astype("int")
-        self.pixel_neighbors_size = pixel_neighbors_size.astype("int")
-
-
 class MockPixelization(object):
     def __init__(self, value, grid=None):
         self.value = value
         self.grid = grid
 
     # noinspection PyUnusedLocal,PyShadowingNames
-    def mapper_from_grid_and_pixelization_grid(
-        self, grid, pixelization_grid, inversion_uses_border, hyper_image=None
+    def mapper_from_grid_and_sparse_grid(
+        self, grid, sparse_grid, inversion_uses_border, hyper_image=None
     ):
         return self.value
 
-    def pixelization_grid_from_grid(self, grid, cluster_grid, hyper_image):
+    def sparse_grid_from_grid(self, grid, hyper_image):
         if hyper_image is None:
             return self.grid
         else:
@@ -48,11 +32,19 @@ class MockRegularization(object):
         return np.array([[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]])
 
 
-class MockRegMapper(object):
+class MockPixelizationGrid(object):
 
-    def __init__(self, pixel_neighbors=None, pixel_neighbors_size=None, pixel_signals=None):
+    def __init__(self, pixel_neighbors=None, pixel_neighbors_size=None):
+
         self.pixel_neighbors = pixel_neighbors
         self.pixel_neighbors_size = pixel_neighbors_size
+
+class MockRegMapper(object):
+    def __init__(
+        self, pixelization_grid=None, pixel_signals=None
+    ):
+
+        self.pixelization_grid = pixelization_grid
         self.pixel_signals = pixel_signals
 
     def pixel_signals_from_signal_scale(self, signal_scale):
@@ -64,7 +56,6 @@ class MockMapper(object):
 
         self.grid = grid
         self.mapping_matrix = np.ones(matrix_shape)
-        self.geometry = MockGeometry()
 
 
 class MockConvolver(object):

@@ -11,7 +11,7 @@ from autoarray.operators.inversion import mappers
 
 def subplot(
     inversion,
-    mask=None,
+    mask_overlay=None,
     positions=None,
     grid=None,
     units="arcsec",
@@ -46,10 +46,10 @@ def subplot(
         figsize = figsize_tool
 
     ratio = float(
-        (inversion.mapper.arc_second_maxima[1] - inversion.mapper.arc_second_minima[1])
+        (inversion.mapper.grid.arc_second_maxima[1] - inversion.mapper.grid.arc_second_minima[1])
         / (
-            inversion.mapper.arc_second_maxima[0]
-            - inversion.mapper.arc_second_minima[0]
+            inversion.mapper.grid.arc_second_maxima[0]
+            - inversion.mapper.grid.arc_second_minima[0]
         )
     )
 
@@ -66,7 +66,7 @@ def subplot(
 
     reconstructed_image(
         inversion=inversion,
-        mask=mask,
+        mask_overlay=mask_overlay,
         positions=positions,
         grid=grid,
         as_subplot=True,
@@ -254,7 +254,7 @@ def subplot(
         output_format=output_format,
     )
 
-    plotter_util.output_subaa.plot.array(
+    plotter_util.output_subplot_array(
         output_path=output_path,
         output_filename=output_filename,
         output_format=output_format,
@@ -265,7 +265,7 @@ def subplot(
 
 def reconstructed_image(
     inversion,
-    mask=None,
+    mask_overlay=None,
     positions=None,
     grid=None,
     as_subplot=False,
@@ -295,8 +295,8 @@ def reconstructed_image(
 ):
 
     aa.plot.array(
-        array=inversion.reconstructed_data_2d,
-        mask_overlay=mask,
+        array=inversion.mapped_reconstructed_image,
+        mask_overlay=mask_overlay,
         positions=positions,
         grid=grid,
         as_subplot=as_subplot,
@@ -368,7 +368,7 @@ def reconstruction(
 
     plot_values(
         inversion=inversion,
-        source_pixel_values=inversion.pixelization_values,
+        source_pixel_values=inversion.reconstruction,
         plot_origin=plot_origin,
         positions=positions,
         should_plot_centres=should_plot_centres,
@@ -437,7 +437,7 @@ def residual_map(
     xyticksize=16,
     output_path=None,
     output_format="show",
-    output_filename="inversion_pixelization_residual_map",
+    output_filename="inversion_inversion_residual_map",
 ):
 
     if output_format is "fits":
@@ -516,7 +516,7 @@ def normalized_residual_map(
     xyticksize=16,
     output_path=None,
     output_format="show",
-    output_filename="inversion_pixelization_normalized_residual_map",
+    output_filename="inversion_inversion_normalized_residual_map",
 ):
 
     if output_format is "fits":
@@ -595,7 +595,7 @@ def chi_squared_map(
     xyticksize=16,
     output_path=None,
     output_format="show",
-    output_filename="inversion_pixelization_chi_squared_map",
+    output_filename="inversion_inversion_chi_squared_map",
 ):
 
     if output_format is "fits":
@@ -674,7 +674,7 @@ def regularization_weights(
     xyticksize=16,
     output_path=None,
     output_format="show",
-    output_filename="inversion_pixelization_regularization_weights",
+    output_filename="inversion_inversion_regularization_weights",
 ):
 
     if output_format is "fits":

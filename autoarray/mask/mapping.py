@@ -3,18 +3,15 @@ import numpy as np
 from autoarray import exc
 from autoarray.mask import mask as msk
 from autoarray.structures import grids, arrays
-from autoarray.util import binning_util, array_util, grid_util
+from autoarray.util import binning_util, array_util, grid_util, mask_util
 
 
 class Mapping(object):
-
     def __init__(self, mask):
 
         self.mask = mask
 
-    def resized_mask_from_new_shape(
-        self, new_shape,
-    ):
+    def resized_mask_from_new_shape(self, new_shape):
         """resized the array to a new shape and at a new origin.
 
         Parameters
@@ -24,11 +21,14 @@ class Mapping(object):
         """
 
         resized_mask_2d = array_util.resized_array_2d_from_array_2d(
-            array_2d=self.mask, resized_shape=new_shape,
+            array_2d=self.mask, resized_shape=new_shape
         ).astype("bool")
 
         return msk.Mask(
-            mask_2d=resized_mask_2d, pixel_scales=self.mask.pixel_scales, sub_size=self.mask.sub_size, origin=self.mask.origin
+            mask_2d=resized_mask_2d,
+            pixel_scales=self.mask.pixel_scales,
+            sub_size=self.mask.sub_size,
+            origin=self.mask.origin,
         )
 
     def array_2d_from_array_1d(self, array_1d):
@@ -42,8 +42,10 @@ class Mapping(object):
         """
 
         if array_1d.shape[0] != self.mask.pixels_in_mask:
-            raise exc.MappingException('The number of pixels in array_1d is not equal to the number of pixels in'
-                                       'the mask.')
+            raise exc.MappingException(
+                "The number of pixels in array_1d is not equal to the number of pixels in"
+                "the mask."
+            )
 
         return array_util.sub_array_2d_from_sub_array_1d(
             sub_array_1d=array_1d, mask=self.mask, sub_size=1
@@ -61,8 +63,10 @@ class Mapping(object):
         """
 
         if array_1d.shape[0] != self.mask.pixels_in_mask:
-            raise exc.MappingException('The number of pixels in array_1d is not equal to the number of pixels in'
-                                       'the mask.')
+            raise exc.MappingException(
+                "The number of pixels in array_1d is not equal to the number of pixels in"
+                "the mask."
+            )
 
         return arrays.Array(array_1d=array_1d, mask=self.mask_sub_1)
 
@@ -76,8 +80,10 @@ class Mapping(object):
         """
 
         if array_2d.shape != self.mask.shape_2d:
-            raise exc.MappingException('The number of pixels in array_1d is not equal to the number of pixels in'
-                                       'the mask.')
+            raise exc.MappingException(
+                "The number of pixels in array_1d is not equal to the number of pixels in"
+                "the mask."
+            )
 
         array_1d = array_util.sub_array_1d_from_sub_array_2d(
             mask=self.mask, sub_array_2d=array_2d, sub_size=1
@@ -107,7 +113,8 @@ class Mapping(object):
             The 1D sub-array of which is mapped to a 2D hyper sub-array the dimensions.
         """
         binned_array_1d = np.multiply(
-            self.mask.sub_fraction, sub_array_1d.reshape(-1, self.mask.sub_length).sum(axis=1)
+            self.mask.sub_fraction,
+            sub_array_1d.reshape(-1, self.mask.sub_length).sum(axis=1),
         )
         return array_util.sub_array_2d_from_sub_array_1d(
             sub_array_1d=binned_array_1d, mask=self.mask, sub_size=1
@@ -150,7 +157,8 @@ class Mapping(object):
             a 1d array.
         """
         binned_array_1d = np.multiply(
-            self.mask.sub_fraction, sub_array_1d.reshape(-1, self.mask.sub_length).sum(axis=1)
+            self.mask.sub_fraction,
+            sub_array_1d.reshape(-1, self.mask.sub_length).sum(axis=1),
         )
         return arrays.Array(array_1d=binned_array_1d, mask=self.mask_sub_1)
 
@@ -178,11 +186,13 @@ class Mapping(object):
         """
 
         grid_1d_y = np.multiply(
-            self.mask.sub_fraction, sub_grid_1d[:, 0].reshape(-1, self.mask.sub_length).sum(axis=1)
+            self.mask.sub_fraction,
+            sub_grid_1d[:, 0].reshape(-1, self.mask.sub_length).sum(axis=1),
         )
 
         grid_1d_x = np.multiply(
-            self.mask.sub_fraction, sub_grid_1d[:, 1].reshape(-1, self.mask.sub_length).sum(axis=1)
+            self.mask.sub_fraction,
+            sub_grid_1d[:, 1].reshape(-1, self.mask.sub_length).sum(axis=1),
         )
 
         binned_grid_1d = np.stack((grid_1d_y, grid_1d_x), axis=-1)
@@ -266,37 +276,32 @@ class Mapping(object):
             a 1d grid.
         """
 
-        grid_1d_y = self.array_binned_from_sub_array_1d(
-            sub_array_1d=sub_grid_1d[:, 0]
-        )
+        grid_1d_y = self.array_binned_from_sub_array_1d(sub_array_1d=sub_grid_1d[:, 0])
 
-        grid_1d_x = self.array_binned_from_sub_array_1d(
-            sub_array_1d=sub_grid_1d[:, 1]
-        )
+        grid_1d_x = self.array_binned_from_sub_array_1d(sub_array_1d=sub_grid_1d[:, 1])
 
         return grids.Grid(
             grid_1d=np.stack((grid_1d_y, grid_1d_x), axis=-1), mask=self.mask_sub_1
         )
 
-    def trimmed_array_2d_from_padded_array_1d_and_image_shape(
-        self, padded_array_1d, image_shape
+    def trimmed_array_from_padded_array_and_image_shape(
+        self, padded_array, image_shape
     ):
         """ Map a padded 1D array of values to its original 2D array, trimming all edge values.
 
         Parameters
         -----------
-        padded_array_1d : ndarray
+        padded_array : ndarray
             A 1D array of values which were computed using a padded grid
         """
 
-        padded_array_2d = array_util.sub_array_2d_from_sub_array_1d(sub_array_1d=padded_array_1d, mask=self.mask, sub_size=1)
-
         pad_size_0 = self.mask.shape[0] - image_shape[0]
         pad_size_1 = self.mask.shape[1] - image_shape[1]
-        return padded_array_2d[
+        trimmed_array = padded_array.in_2d_binned[
             pad_size_0 // 2 : self.mask.shape[0] - pad_size_0 // 2,
             pad_size_1 // 2 : self.mask.shape[1] - pad_size_1 // 2,
         ]
+        return arrays.Array.manual_2d(array=trimmed_array, pixel_scales=self.mask.pixel_scales, sub_size=1, origin=self.mask.origin)
 
     def convolve_padded_array_1d_with_psf(self, padded_array_1d, psf):
         """Convolve a 1d padded array of values (e.g. image before PSF blurring) with a PSF, and then trim \
@@ -317,9 +322,7 @@ class Mapping(object):
         )
 
         # noinspection PyUnresolvedReferences
-        blurred_padded_array_2d = psf.convolved_array_from_array(
-            array=padded_array_2d
-        )
+        blurred_padded_array_2d = psf.convolved_array_from_array(array=padded_array_2d)
 
         return array_util.sub_array_1d_from_sub_array_2d(
             sub_array_2d=blurred_padded_array_2d,
@@ -327,12 +330,12 @@ class Mapping(object):
             sub_size=1,
         )
 
-    def unmasked_blurred_array_2d_from_padded_array_1d_psf_and_image_shape(
-        self, padded_array_1d, psf, image_shape
+    def unmasked_blurred_array_from_padded_array_psf_and_image_shape(
+        self, padded_array, psf, image_shape
     ):
         """For a padded grid and psf, compute an unmasked blurred image from an unmasked unblurred image.
 
-        This relies on using the lens data's padded-grid, which is a grid of (y,x) coordinates which extends over the \
+        This relies on using the lens simulate's padded-grid, which is a grid of (y,x) coordinates which extends over the \
         entire image as opposed to just the masked region.
 
         Parameters
@@ -343,28 +346,58 @@ class Mapping(object):
             The 1D unmasked image which is blurred.
         """
 
-        padded_array_2d = array_util.sub_array_2d_from_sub_array_1d(sub_array_1d=padded_array_1d, mask=self.mask, sub_size=1)
+        blurred_image = psf.convolved_array_from_array(array=padded_array)
 
-        blurred_image_2d = psf.convolved_array_from_array(
-            array=padded_array_2d.in_2d
+        return self.trimmed_array_from_padded_array_and_image_shape(
+            padded_array=blurred_image, image_shape=image_shape
         )
 
-        blurred_image_1d = array_util.sub_array_1d_from_sub_array_2d(sub_array_1d=blurred_image_2d, mask=self.mask, sub_size=1)
+    def rescaled_mask_from_rescale_factor(self, rescale_factor):
+        rescaled_mask = mask_util.rescaled_mask_2d_from_mask_2d_and_rescale_factor(
+            mask_2d=self.mask, rescale_factor=rescale_factor
+        )
+        return msk.Mask(
+            mask_2d=rescaled_mask,
+            pixel_scales=self.mask.pixel_scales,
+            sub_size=self.mask.sub_size,
+            origin=self.mask.origin,
+        )
 
-        return self.trimmed_array_2d_from_padded_array_1d_and_image_shape(
-            padded_array_1d=blurred_image_1d, image_shape=image_shape
+    @property
+    def edge_buffed_mask(self):
+        edge_buffed_mask = mask_util.edge_buffed_mask_2d_from_mask_2d(
+            mask_2d=self.mask
+        ).astype("bool")
+        return msk.Mask(
+            mask_2d=edge_buffed_mask,
+            pixel_scales=self.mask.pixel_scales,
+            sub_size=self.mask.sub_size,
+            origin=self.mask.origin,
         )
 
     @property
     def mask_sub_1(self):
-        return msk.Mask(mask_2d=self.mask, sub_size=1, pixel_scales=self.mask.pixel_scales, origin=self.mask.origin)
+        return msk.Mask(
+            mask_2d=self.mask,
+            sub_size=1,
+            pixel_scales=self.mask.pixel_scales,
+            origin=self.mask.origin,
+        )
 
     def mask_sub_1_from_mask(self, mask):
-        return msk.Mask(mask_2d=mask, sub_size=1, pixel_scales=self.mask.pixel_scales, origin=self.mask.origin)
+        return msk.Mask(
+            mask_2d=mask,
+            sub_size=1,
+            pixel_scales=self.mask.pixel_scales,
+            origin=self.mask.origin,
+        )
 
     def binned_pixel_scales_from_bin_up_factor(self, bin_up_factor):
         if self.mask.pixel_scales is not None:
-            return (self.mask.pixel_scales[0] * bin_up_factor, self.mask.pixel_scales[1] * bin_up_factor)
+            return (
+                self.mask.pixel_scales[0] * bin_up_factor,
+                self.mask.pixel_scales[1] * bin_up_factor,
+            )
         else:
             return None
 
@@ -376,7 +409,9 @@ class Mapping(object):
 
         return msk.Mask(
             mask_2d=binned_up_mask,
-            pixel_scales=self.binned_pixel_scales_from_bin_up_factor(bin_up_factor=bin_up_factor),
+            pixel_scales=self.binned_pixel_scales_from_bin_up_factor(
+                bin_up_factor=bin_up_factor
+            ),
             sub_size=self.mask.sub_size,
             origin=self.mask.origin,
         )

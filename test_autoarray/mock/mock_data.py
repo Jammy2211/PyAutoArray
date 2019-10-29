@@ -6,44 +6,44 @@ from autoarray.operators import fourier_transform
 
 
 class MockImage(object):
-    def __new__(cls, shape, value, pixel_scales=1.0):
-        return aa.array.manual_2d(
-            array=value * np.ones(shape=shape), pixel_scales=pixel_scales
+    def __new__(cls, shape_2d, value, pixel_scales=1.0):
+        return aa.array.full(
+            fill_value=value, shape_2d=shape_2d, pixel_scales=pixel_scales
         )
 
 
 class MockNoiseMap(object):
-    def __new__(cls, shape, value, pixel_scales=1.0):
-        return aa.array.manual_2d(
-            array=value * np.ones(shape=shape), pixel_scales=pixel_scales
+    def __new__(cls, shape_2d, value, pixel_scales=1.0):
+        return aa.array.full(
+            fill_value=value, shape_2d=shape_2d, pixel_scales=pixel_scales
         )
 
 
 class MockBackgroundNoiseMap(object):
-    def __new__(cls, shape, value, pixel_scales=1.0):
-        return aa.array.manual_2d(
-            array=value * np.ones(shape=shape), pixel_scales=pixel_scales
+    def __new__(cls, shape_2d, value, pixel_scales=1.0):
+        return aa.array.full(
+            fill_value=value, shape_2d=shape_2d, pixel_scales=pixel_scales
         )
 
 
 class MockPoissonNoiseMap(object):
-    def __new__(cls, shape, value, pixel_scales=1.0):
-        return aa.array.manual_2d(
-            array=value * np.ones(shape=shape), pixel_scales=pixel_scales
+    def __new__(cls, shape_2d, value, pixel_scales=1.0):
+        return aa.array.full(
+            fill_value=value, shape_2d=shape_2d, pixel_scales=pixel_scales
         )
 
 
 class MockExposureTimeMap(object):
-    def __new__(cls, shape, value, pixel_scales=1.0):
-        return aa.array.manual_2d(
-            array=value * np.ones(shape=shape), pixel_scales=pixel_scales
+    def __new__(cls, shape_2d, value, pixel_scales=1.0):
+        return aa.array.full(
+            fill_value=value, shape_2d=shape_2d, pixel_scales=pixel_scales
         )
 
 
 class MockBackgrondSkyMap(object):
-    def __new__(cls, shape, value, pixel_scales=1.0):
-        return aa.array.manual_2d(
-            array=value * np.ones(shape=shape), pixel_scales=pixel_scales
+    def __new__(cls, shape_2d, value, pixel_scales=1.0):
+        return aa.array.full(
+            fill_value=value, shape_2d=shape_2d, pixel_scales=pixel_scales
         )
 
 
@@ -116,29 +116,25 @@ class MockPrimaryBeam(object):
 
 
 class MockVisibilities(np.ndarray):
-    def __new__(cls, shape, value, pixel_scales=1.0):
-        array = value * np.ones(shape=(shape, 2))
+    def __new__(cls, shape, value):
+        array = value * np.ones(shape=shape)
 
         obj = np.array(array, dtype="float64").view(cls)
-        obj.pixel_scales = pixel_scales
-        obj.origin = (0.0, 0.0)
 
         return obj
 
 
 class MockVisibilitiesNoiseMap(np.ndarray):
-    def __new__(cls, shape, value, pixel_scales=1.0):
+    def __new__(cls, shape, value):
         array = value * np.ones(shape=shape)
 
         obj = np.array(array, dtype="float64").view(cls)
-        obj.pixel_scales = pixel_scales
-        obj.origin = (0.0, 0.0)
 
         return obj
 
 
 class MockUVWavelengths(np.ndarray):
-    def __new__(cls, shape, value, pixel_scales=1.0):
+    def __new__(cls, shape, value):
         array = np.array(
             [
                 [-55636.4609375, 171376.90625],
@@ -152,23 +148,17 @@ class MockUVWavelengths(np.ndarray):
         )
 
         obj = np.array(array, dtype="float64").view(cls)
-        obj.pixel_scales = pixel_scales
-        obj.origin = (0.0, 0.0)
 
         return obj
 
 
 class MockInterferometer(interferometer.Interferometer):
-    def __init__(
-        self, shape_2d, visibilities, pixel_scales, primary_beam, noise_map, uv_wavelengths
-    ):
+    def __init__(self, visibilities, primary_beam, noise_map, uv_wavelengths):
         super(MockInterferometer, self).__init__(
-            shape_2d=shape_2d,
             visibilities=visibilities,
-            pixel_scales=pixel_scales,
-            primary_beam=primary_beam,
             noise_map=noise_map,
             uv_wavelengths=uv_wavelengths,
+            primary_beam=primary_beam,
         )
 
 

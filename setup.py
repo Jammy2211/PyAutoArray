@@ -61,5 +61,5 @@ setup(
     packages=find_packages(exclude=["docs"]),
     install_requires=requirements,
     extras_require={"test": ["coverage", "pytest", "pytest-cov"]},
-    cmd_class={"test": RunTests}
+    cmd_class={"test": RunTests},
 )

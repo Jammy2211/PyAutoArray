@@ -120,6 +120,15 @@ def make_sub_grid_7x7(sub_mask_7x7):
     return aa.masked_grid.from_mask(mask=sub_mask_7x7)
 
 
+@pytest.fixture(name="sub_grid_7x7_simple")
+def make_sub_grid_7x7_simple(mask_7x7, sub_grid_7x7):
+    sub_grid_7x7[0] = np.array([1.0, 1.0])
+    sub_grid_7x7[1] = np.array([1.0, 0.0])
+    sub_grid_7x7[2] = np.array([1.0, 1.0])
+    sub_grid_7x7[3] = np.array([1.0, 0.0])
+    return sub_grid_7x7
+
+
 @pytest.fixture(name="blurring_grid_7x7")
 def make_blurring_grid_7x7(blurring_mask_7x7):
     return aa.masked_grid.from_mask(mask=blurring_mask_7x7)
@@ -130,14 +139,12 @@ def make_blurring_grid_7x7(blurring_mask_7x7):
 
 @pytest.fixture(name="convolver_7x7")
 def make_convolver_7x7(mask_7x7, blurring_mask_7x7, psf_3x3):
-    return mock_convolution.MockConvolver(
-        mask_2d=mask_7x7, blurring_mask=blurring_mask_7x7, kernel_2d=psf_3x3
-    )
+    return mock_convolution.MockConvolver(mask=mask_7x7, kernel=psf_3x3)
 
 
 @pytest.fixture(name="image_7x7")
 def make_image_7x7():
-    return mock_data.MockImage(shape=(7, 7), value=1.0)
+    return mock_data.MockImage(shape_2d=(7, 7), value=1.0)
 
 
 @pytest.fixture(name="psf_3x3")
@@ -147,27 +154,27 @@ def make_psf_3x3():
 
 @pytest.fixture(name="noise_map_7x7")
 def make_noise_map_7x7():
-    return mock_data.MockNoiseMap(shape=(7, 7), value=2.0)
+    return mock_data.MockNoiseMap(shape_2d=(7, 7), value=2.0)
 
 
 @pytest.fixture(name="background_noise_map_7x7")
 def make_background_noise_map_7x7():
-    return mock_data.MockBackgroundNoiseMap(shape=(7, 7), value=3.0)
+    return mock_data.MockBackgroundNoiseMap(shape_2d=(7, 7), value=3.0)
 
 
 @pytest.fixture(name="poisson_noise_map_7x7")
 def make_poisson_noise_map_7x7():
-    return mock_data.MockPoissonNoiseMap(shape=(7, 7), value=4.0)
+    return mock_data.MockPoissonNoiseMap(shape_2d=(7, 7), value=4.0)
 
 
 @pytest.fixture(name="exposure_time_map_7x7")
 def make_exposure_time_map_7x7():
-    return mock_data.MockExposureTimeMap(shape=(7, 7), value=5.0)
+    return mock_data.MockExposureTimeMap(shape_2d=(7, 7), value=5.0)
 
 
 @pytest.fixture(name="background_sky_map_7x7")
 def make_background_sky_map_7x7():
-    return mock_data.MockBackgrondSkyMap(shape=(7, 7), value=6.0)
+    return mock_data.MockBackgrondSkyMap(shape_2d=(7, 7), value=6.0)
 
 
 @pytest.fixture(name="positions_7x7")
@@ -201,13 +208,13 @@ def make_imaging_7x7(
 
 @pytest.fixture(name="imaging_6x6")
 def make_imaging_6x6():
-    image = mock_data.MockImage(shape=(6, 6), value=1.0)
+    image = mock_data.MockImage(shape_2d=(6, 6), value=1.0)
     psf = mock_data.MockPSF(shape_2d=(3, 3), value=1.0)
-    noise_map = mock_data.MockNoiseMap(shape=(6, 6), value=2.0)
-    background_noise_map = mock_data.MockBackgroundNoiseMap(shape=(6, 6), value=3.0)
-    poisson_noise_map = mock_data.MockPoissonNoiseMap(shape=(6, 6), value=4.0)
-    exposure_time_map = mock_data.MockExposureTimeMap(shape=(6, 6), value=5.0)
-    background_sky_map = mock_data.MockBackgrondSkyMap(shape=(6, 6), value=6.0)
+    noise_map = mock_data.MockNoiseMap(shape_2d=(6, 6), value=2.0)
+    background_noise_map = mock_data.MockBackgroundNoiseMap(shape_2d=(6, 6), value=3.0)
+    poisson_noise_map = mock_data.MockPoissonNoiseMap(shape_2d=(6, 6), value=4.0)
+    exposure_time_map = mock_data.MockExposureTimeMap(shape_2d=(6, 6), value=5.0)
+    background_sky_map = mock_data.MockBackgrondSkyMap(shape_2d=(6, 6), value=6.0)
 
     return mock_data.MockImaging(
         image=image,
@@ -222,14 +229,14 @@ def make_imaging_6x6():
     )
 
 
-@pytest.fixture(name="visibilities_7")
+@pytest.fixture(name="visibilities_7x2")
 def make_visibilities_7():
-    return mock_data.MockVisibilities(shape=7, value=1.0)
+    return mock_data.MockVisibilities(shape=(7, 2), value=1.0)
 
 
-@pytest.fixture(name="visibilities_noise_map_7")
-def make_visibilities_noise_map_7():
-    return mock_data.MockVisibilitiesNoiseMap(shape=7, value=2.0)
+@pytest.fixture(name="noise_map_7x2")
+def make_noise_map_7():
+    return mock_data.MockVisibilitiesNoiseMap(shape=(7, 2), value=2.0)
 
 
 @pytest.fixture(name="primary_beam_3x3")
@@ -237,59 +244,53 @@ def make_primary_beam_3x3():
     return mock_data.MockPrimaryBeam(shape_2d=(3, 3), value=1.0)
 
 
-@pytest.fixture(name="uv_wavelengths_7")
+@pytest.fixture(name="uv_wavelengths_7x2")
 def make_uv_wavelengths_7():
-    return mock_data.MockUVWavelengths(shape=7, value=3.0)
+    return mock_data.MockUVWavelengths(shape=(7, 2), value=3.0)
 
 
 @pytest.fixture(name="interferometer_7")
 def make_interferometer_7(
-    visibilities_7, visibilities_noise_map_7, primary_beam_3x3, uv_wavelengths_7
+    visibilities_7x2, noise_map_7x2, primary_beam_3x3, uv_wavelengths_7x2
 ):
     return mock_data.MockInterferometer(
-        shape_2d=(7, 7),
-        visibilities=visibilities_7,
-        pixel_scales=1.0,
-        noise_map=visibilities_noise_map_7,
+        visibilities=visibilities_7x2,
+        noise_map=noise_map_7x2,
+        uv_wavelengths=uv_wavelengths_7x2,
         primary_beam=primary_beam_3x3,
-        uv_wavelengths=uv_wavelengths_7,
     )
 
 
 @pytest.fixture(name="transformer_7x7_7")
-def make_transformer_7x7_7(uv_wavelengths_7, grid_7x7):
+def make_transformer_7x7_7(uv_wavelengths_7x2, grid_7x7):
     return mock_data.MockTransformer(
-        uv_wavelengths=uv_wavelengths_7,
+        uv_wavelengths=uv_wavelengths_7x2,
         grid_radians=grid_7x7.mask.geometry.masked_grid.in_radians,
     )
 
 
-
 ### MASKED DATA ###
 
+
 @pytest.fixture(name="masked_imaging_7x7")
-def make_masked_imaging_7x7(
-    imaging_7x7,
-    sub_mask_7x7,
-):
-    return aa.masked_imaging.manual(
-        imaging=imaging_7x7,
-        mask=sub_mask_7x7,
-    )
+def make_masked_imaging_7x7(imaging_7x7, sub_mask_7x7):
+    return aa.masked_imaging.manual(imaging=imaging_7x7, mask=sub_mask_7x7)
+
 
 @pytest.fixture(name="masked_interferometer_7")
 def make_masked_interferometer_7(
-    interferometer_7, mask_7x7, sub_grid_7x7, transformer_7x7_7,
+    interferometer_7, mask_7x7, sub_grid_7x7, transformer_7x7_7
 ):
     return aa.masked_interferometer.manual(
-        interferometer=interferometer_7,
-        mask=mask_7x7,
+        interferometer=interferometer_7, mask=mask_7x7
     )
 
 
 @pytest.fixture(name="fit_7x7")
-def make_masked_imaging_fit_x1_plane_7x7(imaging_7x7, mask_7x7):
+def make_masked_imaging_fit_x1_plane_7x7(masked_imaging_7x7):
     return fit.DataFit(
-        mask=mask_7x7, data=imaging_7x7.data, noise_map=imaging_7x7.noise_map,
-        model_data=5.0*imaging_7x7.data
+        mask=masked_imaging_7x7.mask,
+        data=masked_imaging_7x7.image,
+        noise_map=masked_imaging_7x7.noise_map,
+        model_data=5.0 * masked_imaging_7x7.image,
     )

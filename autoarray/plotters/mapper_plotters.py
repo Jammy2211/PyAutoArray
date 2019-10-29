@@ -61,7 +61,9 @@ def image_and_mapper(
     )
 
     image_grid = convert_grid(
-        grid=mapper.grid.geometry.unmasked_grid, units=units, kpc_per_arcsec=kpc_per_arcsec
+        grid=mapper.grid.geometry.unmasked_grid,
+        units=units,
+        kpc_per_arcsec=kpc_per_arcsec,
     )
 
     point_colors = itertools.cycle(["y", "r", "k", "g", "m"])
@@ -530,13 +532,13 @@ def plot_centres(should_plot_centres, mapper, units, kpc_per_arcsec):
 
         if units in "arcsec" or kpc_per_arcsec is None:
 
-            pixel_centres = mapper.pixel_centres
+            pixelization_grid = mapper.pixelization_grid
 
         elif units in "kpc":
 
-            pixel_centres = mapper.pixel_centres * kpc_per_arcsec
+            pixelization_grid = mapper.pixelization_grid * kpc_per_arcsec
 
-        plt.scatter(y=pixel_centres[:, 0], x=pixel_centres[:, 1], s=3, c="r")
+        plt.scatter(y=pixelization_grid[:, 0], x=pixelization_grid[:, 1], s=3, c="r")
 
 
 def plot_plane_grid(

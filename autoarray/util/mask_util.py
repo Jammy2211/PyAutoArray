@@ -457,10 +457,10 @@ def blurring_mask_2d_from_mask_2d_and_kernel_shape_2d(mask_2d, kernel_shape_2d):
         for x in range(mask_2d.shape[1]):
             if not mask_2d[y, x]:
                 for y1 in range(
-                        (-kernel_shape_2d[0] + 1) // 2, (kernel_shape_2d[0] + 1) // 2
+                    (-kernel_shape_2d[0] + 1) // 2, (kernel_shape_2d[0] + 1) // 2
                 ):
                     for x1 in range(
-                            (-kernel_shape_2d[1] + 1) // 2, (kernel_shape_2d[1] + 1) // 2
+                        (-kernel_shape_2d[1] + 1) // 2, (kernel_shape_2d[1] + 1) // 2
                     ):
                         if (
                             0 <= x + x1 <= mask_2d.shape[1] - 1
@@ -605,7 +605,9 @@ def total_border_pixels_from_mask_2d_and_edge_pixels(
 
     for i in range(edge_pixels.shape[0]):
 
-        if check_if_border_pixel(mask_2d, edge_pixels[i], mask_2d_index_for_mask_1d_index):
+        if check_if_border_pixel(
+            mask_2d, edge_pixels[i], mask_2d_index_for_mask_1d_index
+        ):
             border_pixel_total += 1
 
     return border_pixel_total
@@ -800,7 +802,9 @@ def sub_mask_1d_indexes_for_mask_1d_index_via_mask_2d(mask_2d, sub_size):
 
     mask_1d_index_for_sub_mask_1d_index = mask_1d_index_for_sub_mask_1d_index_via_mask_2d(
         mask_2d=mask_2d, sub_size=sub_size
-    ).astype("int")
+    ).astype(
+        "int"
+    )
 
     for sub_mask_1d_index, mask_1d_index in enumerate(
         mask_1d_index_for_sub_mask_1d_index

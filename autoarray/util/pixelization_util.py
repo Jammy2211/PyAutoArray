@@ -59,7 +59,9 @@ def rectangular_corner_neighbors(pixel_neighbors, pixel_neighbors_size, shape, p
 
 
 @decorator_util.jit()
-def rectangular_top_edge_neighbors(pixel_neighbors, pixel_neighbors_size, shape, pixels):
+def rectangular_top_edge_neighbors(
+    pixel_neighbors, pixel_neighbors_size, shape, pixels
+):
 
     for pix in range(1, shape[1] - 1):
         pixel_index = pix
@@ -72,7 +74,9 @@ def rectangular_top_edge_neighbors(pixel_neighbors, pixel_neighbors_size, shape,
 
 
 @decorator_util.jit()
-def rectangular_left_edge_neighbors(pixel_neighbors, pixel_neighbors_size, shape, pixels):
+def rectangular_left_edge_neighbors(
+    pixel_neighbors, pixel_neighbors_size, shape, pixels
+):
 
     for pix in range(1, shape[0] - 1):
         pixel_index = pix * shape[1]
@@ -85,7 +89,9 @@ def rectangular_left_edge_neighbors(pixel_neighbors, pixel_neighbors_size, shape
 
 
 @decorator_util.jit()
-def rectangular_right_edge_neighbors(pixel_neighbors, pixel_neighbors_size, shape, pixels):
+def rectangular_right_edge_neighbors(
+    pixel_neighbors, pixel_neighbors_size, shape, pixels
+):
 
     for pix in range(1, shape[0] - 1):
         pixel_index = pix * shape[1] + shape[1] - 1
@@ -98,7 +104,9 @@ def rectangular_right_edge_neighbors(pixel_neighbors, pixel_neighbors_size, shap
 
 
 @decorator_util.jit()
-def rectangular_bottom_edge_neighbors(pixel_neighbors, pixel_neighbors_size, shape, pixels):
+def rectangular_bottom_edge_neighbors(
+    pixel_neighbors, pixel_neighbors_size, shape, pixels
+):
 
     for pix in range(1, shape[1] - 1):
         pixel_index = pixels - pix - 1

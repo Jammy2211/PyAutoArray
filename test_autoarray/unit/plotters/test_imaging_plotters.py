@@ -4,6 +4,7 @@ import pytest
 
 import autoarray as aa
 
+
 @pytest.fixture(name="imaging_plotter_path")
 def make_imaging_plotter_setup():
     imaging_plotter_path = "{}/../../test_files/plotting/imaging/".format(
