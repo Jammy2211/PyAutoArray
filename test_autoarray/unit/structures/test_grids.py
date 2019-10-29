@@ -1,3 +1,5 @@
+import os
+import shutil
 import numpy as np
 import pytest
 
@@ -1760,3 +1762,66 @@ class TestInterpolator:
 
         assert np.max(true_grid_radii[:, 0] - interpolated_grid_radii_y) < 0.1
         assert np.max(true_grid_radii[:, 1] - interpolated_grid_radii_x) < 0.1
+
+
+
+test_positions_dir = "{}/../test_files/positions/".format(
+    os.path.dirname(os.path.realpath(__file__))
+)
+
+class TestPositions:
+
+    def test__input_is_list_of_lists__converted_to_irregular_grids(self):
+
+        positions = aa.positions(positions=[[[1.0, 1.0], [2.0, 2.0]]])
+
+        assert type(positions[0][0]) == grids.IrregularGrid
+        assert (positions[0][0] == np.array([1.0, 1.0])).all()
+
+        assert type(positions[0][1]) == grids.IrregularGrid
+        assert (positions[0][1] == np.array([2.0, 2.0])).all()
+
+        positions = aa.positions(positions=[[[1.0, 1.0], [2.0, 2.0]], [[3.0, 3.0]]])
+
+        assert type(positions[0][0]) == grids.IrregularGrid
+        assert (positions[0][0] == np.array([1.0, 1.0])).all()
+
+        assert type(positions[0][1]) == grids.IrregularGrid
+        assert (positions[0][1] == np.array([2.0, 2.0])).all()
+
+        assert type(positions[1][0]) == grids.IrregularGrid
+        assert (positions[1][0] == np.array([3.0, 3.0])).all()
+
+    def test__load_positions__retains_list_structure(self):
+        positions = aa.positions.load_positions(
+            positions_path=test_positions_dir + "positions_test.dat"
+        )
+
+        assert positions == [
+            [[1.0, 1.0], [2.0, 2.0]],
+            [[3.0, 3.0], [4.0, 4.0], [5.0, 6.0]],
+        ]
+
+    def test__output_positions(self):
+        positions = aa.positions([[[4.0, 4.0], [5.0, 5.0]], [[6.0, 6.0], [7.0, 7.0], [8.0, 8.0]]])
+
+        output_data_dir = "{}/../test_files/positions/output_test/".format(
+            os.path.dirname(os.path.realpath(__file__))
+        )
+        if os.path.exists(output_data_dir):
+            shutil.rmtree(output_data_dir)
+
+        os.makedirs(output_data_dir)
+
+        positions.output_positions(
+            positions_path=output_data_dir + "positions_test.dat"
+        )
+
+        positions = aa.positions.load_positions(
+            positions_path=output_data_dir + "positions_test.dat"
+        )
+
+        assert positions == [
+            [[4.0, 4.0], [5.0, 5.0]],
+            [[6.0, 6.0], [7.0, 7.0], [8.0, 8.0]],
+        ]
