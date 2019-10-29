@@ -903,7 +903,7 @@ class Positions(list):
         super(Positions, self).__init__(positions)
 
     @classmethod
-    def load_positions(cls, positions_path):
+    def from_file(cls, positions_path):
         """Load the positions of an image.
 
         Positions correspond to a set of pixels in the lensed source galaxy that are anticipated to come from the same \
@@ -930,7 +930,7 @@ class Positions(list):
 
         return positions
 
-    def output_positions(self, positions_path):
+    def output_to_file(self, positions_path):
         """Output the positions of an image to a positions.dat file.
 
         Positions correspond to a set of pixels in the lensed source galaxy that are anticipated to come from the same \

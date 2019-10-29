@@ -1793,7 +1793,7 @@ class TestPositions:
         assert (positions[1][0] == np.array([3.0, 3.0])).all()
 
     def test__load_positions__retains_list_structure(self):
-        positions = aa.positions.load_positions(
+        positions = aa.positions.from_file(
             positions_path=test_positions_dir + "positions_test.dat"
         )
 
@@ -1813,11 +1813,11 @@ class TestPositions:
 
         os.makedirs(output_data_dir)
 
-        positions.output_positions(
+        positions.output_to_file(
             positions_path=output_data_dir + "positions_test.dat"
         )
 
-        positions = aa.positions.load_positions(
+        positions = aa.positions.from_file(
             positions_path=output_data_dir + "positions_test.dat"
         )
 
