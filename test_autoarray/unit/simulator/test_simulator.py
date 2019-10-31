@@ -2,7 +2,6 @@ import autoarray as aa
 
 import numpy as np
 import os
-import shutil
 
 test_data_dir = "{}/../test_files/arrays/".format(
     os.path.dirname(os.path.realpath(__file__))
@@ -34,7 +33,7 @@ class TestImaging:
             shape_2d=(31, 31), sigma=0.5, pixel_scales=0.2
         )
 
-        assert lsst.shape == (101, 101)
+        assert lsst.shape_2d == (101, 101)
         assert lsst.pixel_scales == (0.2, 0.2)
         assert lsst.psf == lsst_psf
         assert lsst.exposure_time == 100.0
@@ -46,7 +45,7 @@ class TestImaging:
             shape_2d=(31, 31), sigma=0.1, pixel_scales=0.1
         )
 
-        assert euclid.shape == (151, 151)
+        assert euclid.shape_2d == (151, 151)
         assert euclid.pixel_scales == (0.1, 0.1)
         assert euclid.psf == euclid_psf
         assert euclid.exposure_time == 565.0
@@ -58,7 +57,7 @@ class TestImaging:
             shape_2d=(31, 31), sigma=0.05, pixel_scales=0.05
         )
 
-        assert hst.shape == (251, 251)
+        assert hst.shape_2d == (251, 251)
         assert hst.pixel_scales == (0.05, 0.05)
         assert hst.psf == hst_psf
         assert hst.exposure_time == 2000.0
@@ -70,7 +69,7 @@ class TestImaging:
             shape_2d=(31, 31), sigma=0.05, pixel_scales=0.03
         )
 
-        assert hst_up_sampled.shape == (401, 401)
+        assert hst_up_sampled.shape_2d == (401, 401)
         assert hst_up_sampled.pixel_scales == (0.03, 0.03)
         assert hst_up_sampled.psf == hst_up_sampled_psf
         assert hst_up_sampled.exposure_time == 2000.0
@@ -82,7 +81,7 @@ class TestImaging:
             shape_2d=(31, 31), sigma=0.025, pixel_scales=0.01
         )
 
-        assert adaptive_optics.shape == (751, 751)
+        assert adaptive_optics.shape_2d == (751, 751)
         assert adaptive_optics.pixel_scales == (0.01, 0.01)
         assert adaptive_optics.psf == adaptive_optics_psf
         assert adaptive_optics.exposure_time == 1000.0
