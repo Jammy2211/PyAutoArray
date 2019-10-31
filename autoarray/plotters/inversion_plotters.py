@@ -761,7 +761,7 @@ def plot_values(
     output_filename="pixelization_source_values",
 ):
 
-    if isinstance(inversion.mapper, mappers.RectangularMapper):
+    if isinstance(inversion.mapper, mappers.MapperRectangular):
 
         reconstructed_pixelization = inversion.mapper.reconstructed_pixelization_from_solution_vector(
             solution_vector=source_pixel_values
@@ -822,7 +822,7 @@ def plot_values(
             output_format=output_format,
         )
 
-    elif isinstance(inversion.mapper, mappers.VoronoiMapper):
+    elif isinstance(inversion.mapper, mappers.MapperVoronoi):
 
         mapper_plotters.voronoi_mapper(
             mapper=inversion.mapper,

@@ -121,7 +121,7 @@ def plot_mapper(
     output_format="show",
 ):
 
-    if isinstance(mapper, mappers.RectangularMapper):
+    if isinstance(mapper, mappers.MapperRectangular):
 
         rectangular_mapper(
             mapper=mapper,

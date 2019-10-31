@@ -1,14 +1,11 @@
 from autoarray.structures import grids
 import autoarray as aa
-from autoarray.operators.inversion import pixelizations
 import numpy as np
-import pytest
-import scipy.spatial
 
 
 class TestRectangular:
 
-    class TestIrregularGrid:
+    class TestGridIrregular:
         def test__pixelization_grid_returns_none_as_not_used(self, sub_grid_7x7):
 
             pix = aa.pix.Rectangular(shape=(3, 3))
@@ -31,7 +28,7 @@ class TestVoronoiMagnification:
 
         pixelization_grid = pix.sparse_grid_from_grid(grid=sub_grid_7x7)
 
-        pixelization_grid_manual = grids.IrregularGrid.from_grid_and_unmasked_2d_grid_shape(
+        pixelization_grid_manual = grids.GridIrregular.from_grid_and_unmasked_2d_grid_shape(
             unmasked_sparse_shape=(3, 3), grid=sub_grid_7x7
         )
 
@@ -127,7 +124,7 @@ class TestVoronoiBrightness:
             total_pixels=pix.pixels, grid=sub_grid_7x7, weight_map=weight_map, seed=1
         )
 
-        pixelization_grid_manual = grids.IrregularGrid(
+        pixelization_grid_manual = grids.GridIrregular(
             grid=sparse_to_grid.sparse,
             nearest_irregular_1d_index_for_mask_1d_index=sparse_to_grid.sparse_1d_index_for_mask_1d_index,
         )

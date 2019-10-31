@@ -1,9 +1,8 @@
 import autoarray as aa
 from autoarray.structures import grids
+from autoarray.operators.inversion import mappers
 import numpy as np
 import pytest
-
-from test_autoarray.mock.mock_grids import MockIrregularGrid
 
 
 class TestRectangular:
@@ -25,7 +24,7 @@ class TestRectangular:
 
         # Source-plane comprises 5 grid, so 5 masked_image pixels traced to the pix-plane.
 
-        grid = aa.masked_grid.manual_1d(
+        grid = aa.masked.grid.manual_1d(
             grid=np.array(
                 [[1.0, -1.0], [1.0, 1.0], [0.0, 0.0], [-1.0, -1.0], [-1.0, 1.0]]
             ),
@@ -101,7 +100,7 @@ class TestRectangular:
 
         # There is no sub-grid, so our grid are just the masked_image grid (note the NumPy weighted_data structure
         # ensures this has no sub-gridding)
-        grid = aa.masked_grid.manual_1d(
+        grid = aa.masked.grid.manual_1d(
             grid=np.array(
                 [
                     [0.9, -0.9],
@@ -200,7 +199,7 @@ class TestRectangular:
         # The grid below is unphysical in that the (0.0, 0.0) terms on the end of each sub-grid probably couldn't
         # happen for a real lensing calculation. This is to make a mapping_matrix matrix which explicitly tests the
         # sub-grid.
-        grid = aa.masked_grid.manual_1d(
+        grid = aa.masked.grid.manual_1d(
             grid=np.array(
                 [
                     [1.0, -1.0],
@@ -290,7 +289,7 @@ class TestRectangular:
 
         mask = aa.mask.manual(mask_2d=mask, pixel_scales=1.0, sub_size=1)
 
-        grid = aa.masked_grid.manual_1d(
+        grid = aa.masked.grid.manual_1d(
             grid=np.array(
                 [[1.0, 1.0], [1.0, 1.0], [1.0, 1.0], [1.0, 1.0], [-1.0, -1.0]]
             ),
@@ -369,14 +368,14 @@ class TestVoronoiMagnification:
             ]
         )
 
-        grid = aa.masked_grid.manual_1d(grid=grid, mask=mask)
+        grid = aa.masked.grid.manual_1d(grid=grid, mask=mask)
 
         pix = aa.pix.VoronoiMagnification(shape=(3, 3))
         sparse_to_grid = grids.SparseToGrid.from_grid_and_unmasked_2d_grid_shape(
             grid=grid, unmasked_sparse_shape=pix.shape
         )
 
-        pixelization_grid = aa.pix_grid.VoronoiGrid(
+        pixelization_grid = aa.grid_voronoi(
             grid_1d=sparse_to_grid.sparse,
             nearest_irregular_1d_index_for_mask_1d_index=sparse_to_grid.sparse_1d_index_for_mask_1d_index,
         )
@@ -394,7 +393,7 @@ class TestVoronoiMagnification:
    #     assert mapper.pixelization_grid.origin == pytest.approx((0.0, 0.0), 1.0e-4)
         assert (mapper.hyper_image == np.ones((2, 2))).all()
 
-        assert isinstance(mapper, aa.mappers.VoronoiMapper)
+        assert isinstance(mapper, mappers.MapperVoronoi)
 
         assert (
             mapper.mapping_matrix
@@ -445,14 +444,14 @@ class TestVoronoiMagnification:
 
         grid = np.array([[1.0, 0.0], [0.0, -1.0], [0.0, 0.0], [0.0, 1.0], [-1.0, 0.0]])
 
-        grid = aa.masked_grid.manual_1d(grid=grid, mask=mask)
+        grid = aa.masked.grid.manual_1d(grid=grid, mask=mask)
 
         pix = aa.pix.VoronoiMagnification(shape=(3, 3))
         sparse_to_grid = grids.SparseToGrid.from_grid_and_unmasked_2d_grid_shape(
             grid=grid, unmasked_sparse_shape=pix.shape
         )
 
-        pixelization_grid = aa.pix_grid.VoronoiGrid(
+        pixelization_grid = aa.grid_voronoi(
             grid_1d=sparse_to_grid.sparse,
             nearest_irregular_1d_index_for_mask_1d_index=sparse_to_grid.sparse_1d_index_for_mask_1d_index,
         )
@@ -466,7 +465,7 @@ class TestVoronoiMagnification:
         assert (mapper.pixelization_grid == sparse_to_grid.sparse).all()
      #   assert mapper.pixelization_grid.origin == pytest.approx((0.0, 0.0), 1.0e-4)
 
-        assert isinstance(mapper, aa.mappers.VoronoiMapper)
+        assert isinstance(mapper, mappers.MapperVoronoi)
 
         assert (
             mapper.mapping_matrix
@@ -532,14 +531,14 @@ class TestVoronoiMagnification:
             ]
         )
 
-        grid = aa.masked_grid.manual_1d(grid=grid, mask=mask)
+        grid = aa.masked.grid.manual_1d(grid=grid, mask=mask)
 
         pix = aa.pix.VoronoiMagnification(shape=(3, 3))
         sparse_to_grid = grids.SparseToGrid.from_grid_and_unmasked_2d_grid_shape(
             grid=grid, unmasked_sparse_shape=pix.shape
         )
 
-        pixelization_grid = aa.pix_grid.VoronoiGrid(
+        pixelization_grid = aa.grid_voronoi(
             grid_1d=sparse_to_grid.sparse,
             nearest_irregular_1d_index_for_mask_1d_index=sparse_to_grid.sparse_1d_index_for_mask_1d_index,
         )
@@ -553,7 +552,7 @@ class TestVoronoiMagnification:
         assert (mapper.pixelization_grid == sparse_to_grid.sparse).all()
     #    assert mapper.pixelization_grid.origin == pytest.approx((0.0, 0.005), 1.0e-4)
 
-        assert isinstance(mapper, aa.mappers.VoronoiMapper)
+        assert isinstance(mapper, mappers.MapperVoronoi)
 
         assert (
             mapper.mapping_matrix
@@ -602,14 +601,14 @@ class TestVoronoiMagnification:
 
         grid = np.array([[2.0, 1.0], [1.0, 0.0], [1.0, 1.0], [1.0, 2.0], [0.0, 1.0]])
 
-        grid = aa.masked_grid.manual_1d(grid=grid, mask=mask)
+        grid = aa.masked.grid.manual_1d(grid=grid, mask=mask)
 
         pix = aa.pix.VoronoiMagnification(shape=(3, 3))
         sparse_to_grid = grids.SparseToGrid.from_grid_and_unmasked_2d_grid_shape(
             grid=grid, unmasked_sparse_shape=pix.shape
         )
 
-        pixelization_grid = aa.pix_grid.VoronoiGrid(
+        pixelization_grid = aa.grid_voronoi(
             grid_1d=sparse_to_grid.sparse,
             nearest_irregular_1d_index_for_mask_1d_index=sparse_to_grid.sparse_1d_index_for_mask_1d_index,
         )
@@ -623,7 +622,7 @@ class TestVoronoiMagnification:
         assert (mapper.pixelization_grid == sparse_to_grid.sparse).all()
      #   assert mapper.pixelization_grid.origin == pytest.approx((1.0, 1.0), 1.0e-4)
 
-        assert isinstance(mapper, aa.mappers.VoronoiMapper)
+        assert isinstance(mapper, mappers.MapperVoronoi)
 
         assert (
             mapper.mapping_matrix

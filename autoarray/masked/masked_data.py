@@ -1,4 +1,5 @@
-from autoarray.structures import arrays, grids, kernel
+from autoarray.structures import kernel
+from autoarray.masked import masked_structures
 from autoarray.operators import convolution, fourier_transform
 
 import numpy as np
@@ -19,7 +20,7 @@ class AbstractMaskedData(object):
 
         if mask.pixel_scales is not None:
 
-            self.grid = grids.MaskedGrid.from_mask(mask=mask)
+            self.grid = masked_structures.MaskedGrid.from_mask(mask=mask)
 
             if pixel_scale_interpolation_grid is not None:
 

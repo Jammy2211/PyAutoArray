@@ -537,7 +537,7 @@ class TestMapping:
 
         mask = aa.mask.unmasked(shape_2d=(4, 4))
 
-        array_1d = aa.masked_array.manual_1d(
+        array_1d = aa.masked.array.manual_1d(
             [
                 1.0,
                 2.0,
@@ -567,7 +567,7 @@ class TestMapping:
 
         mask = aa.mask.unmasked(shape_2d=(5, 3))
 
-        array_1d = aa.masked_array.manual_1d(
+        array_1d = aa.masked.array.manual_1d(
             [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0],
             mask=mask,
         )
@@ -580,7 +580,7 @@ class TestMapping:
 
         mask = aa.mask.unmasked(shape_2d=(3, 5))
 
-        array_1d = aa.masked_array.manual_1d(
+        array_1d = aa.masked.array.manual_1d(
             [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0],
             mask=mask,
         )

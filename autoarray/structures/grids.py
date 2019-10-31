@@ -1,5 +1,6 @@
 import ast
 import numpy as np
+import scipy.spatial
 import scipy.spatial.qhull as qhull
 from functools import wraps
 from sklearn.cluster import KMeans
@@ -8,7 +9,7 @@ from autoarray import decorator_util
 from autoarray import exc
 from autoarray.structures import abstract_structure
 from autoarray.mask import mask as msk
-from autoarray.util import sparse_util, array_util, grid_util, mask_util
+from autoarray.util import sparse_util, array_util, grid_util, mask_util, pixelization_util
 
 
 class AbstractGrid(abstract_structure.AbstractStructure):
@@ -177,7 +178,14 @@ class AbstractGrid(abstract_structure.AbstractStructure):
             kernel_shape=kernel_shape
         )
 
-        return MaskedGrid.from_mask(mask=blurring_mask)
+        blurring_grid_1d = grid_util.grid_1d_via_mask_2d(mask_2d=blurring_mask,
+                                                         pixel_scales=blurring_mask.pixel_scales,
+                                                         sub_size=blurring_mask.sub_size,
+                                                         origin=blurring_mask.origin,
+                                                         )
+
+        return blurring_mask.mapping.grid_from_grid_1d(grid_1d=blurring_grid_1d)
+
 
     def new_grid_with_binned_grid(self, binned_grid):
         # noinspection PyAttributeOutsideInit
@@ -296,7 +304,13 @@ class AbstractGrid(abstract_structure.AbstractStructure):
             sub_size=self.mask.sub_size,
         )
 
-        padded_sub_grid = MaskedGrid.from_mask(mask=padded_mask)
+        padded_grid_1d = grid_util.grid_1d_via_mask_2d(mask_2d=padded_mask,
+                                                         pixel_scales=padded_mask.pixel_scales,
+                                                         sub_size=padded_mask.sub_size,
+                                                         origin=padded_mask.origin,
+                                                         )
+
+        padded_sub_grid =  padded_mask.mapping.grid_from_sub_grid_1d(sub_grid_1d=padded_grid_1d)
 
         if self.interpolator is None:
             return padded_sub_grid
@@ -343,7 +357,7 @@ class AbstractGrid(abstract_structure.AbstractStructure):
             The grid, whose grid coordinates are relocated.
         """
 
-        return IrregularGrid(
+        return GridIrregular(
             grid=self.relocated_grid_from_grid_jit(
                 grid=pixelization_grid, border_grid=self.sub_border_grid
             ),
@@ -459,6 +473,28 @@ class Grid(AbstractGrid):
         )
 
     @classmethod
+    def from_mask(cls, mask):
+        """Setup a sub-grid of the unmasked pixels, using a mask and a specified sub-grid size. The center of \
+        every unmasked pixel's sub-pixels give the grid's (y,x) arc-second coordinates.
+
+        Parameters
+        -----------
+        mask : Mask
+            The mask whose masked pixels are used to setup the sub-pixel grid.
+        sub_size : int
+            The size (sub_size x sub_size) of each unmasked pixels sub-grid.
+        """
+
+        sub_grid_1d = grid_util.grid_1d_via_mask_2d(
+            mask_2d=mask,
+            pixel_scales=mask.pixel_scales,
+            sub_size=mask.sub_size,
+            origin=mask.origin,
+        )
+
+        return mask.mapping.grid_from_sub_grid_1d(sub_grid_1d=sub_grid_1d)
+
+    @classmethod
     def from_sub_grid_2d_and_mask(cls, sub_grid_2d, mask):
         return mask.mapping.grid_from_sub_grid_2d(sub_grid_2d=sub_grid_2d)
 
@@ -526,62 +562,16 @@ class Grid(AbstractGrid):
             kernel_shape=kernel_shape
         )
 
-        return MaskedGrid.from_mask(mask=blurring_mask)
+        blurring_grid_1d = grid_util.grid_1d_via_mask_2d(mask_2d=blurring_mask,
+                                                         pixel_scales=blurring_mask.pixel_scales,
+                                                         sub_size=blurring_mask.sub_size,
+                                                         origin=blurring_mask.origin,
+                                                         )
+
+        return blurring_mask.mapping.grid_from_grid_1d(grid_1d=blurring_grid_1d)
 
 
-class MaskedGrid(AbstractGrid):
-    @classmethod
-    def manual_1d(cls, grid, mask):
-
-        if type(grid) is list:
-            grid = np.asarray(grid)
-
-        if grid.shape[0] != mask.sub_pixels_in_mask:
-            raise exc.GridException(
-                "The input 1D grid does not have the same number of entries as sub-pixels in"
-                "the mask."
-            )
-
-        return mask.mapping.grid_from_sub_grid_1d(sub_grid_1d=grid)
-
-    @classmethod
-    def manual_2d(cls, grid, mask):
-
-        if type(grid) is list:
-            grid = np.asarray(grid)
-
-        if (grid.shape[0], grid.shape[1]) != mask.sub_shape_2d:
-            raise exc.GridException(
-                "The input grid is 2D but not the same dimensions as the sub-mask "
-                "(e.g. the mask 2D shape multipled by its sub size."
-            )
-
-        return mask.mapping.grid_from_sub_grid_2d(sub_grid_2d=grid)
-
-    @classmethod
-    def from_mask(cls, mask):
-        """Setup a sub-grid of the unmasked pixels, using a mask and a specified sub-grid size. The center of \
-        every unmasked pixel's sub-pixels give the grid's (y,x) arc-second coordinates.
-
-        Parameters
-        -----------
-        mask : Mask
-            The mask whose masked pixels are used to setup the sub-pixel grid.
-        sub_size : int
-            The size (sub_size x sub_size) of each unmasked pixels sub-grid.
-        """
-
-        sub_grid_1d = grid_util.grid_1d_via_mask_2d(
-            mask_2d=mask,
-            pixel_scales=mask.pixel_scales,
-            sub_size=mask.sub_size,
-            origin=mask.origin,
-        )
-
-        return Grid(grid_1d=sub_grid_1d, mask=mask)
-
-
-class IrregularGrid(np.ndarray):
+class GridIrregular(np.ndarray):
     def __new__(
         cls, grid, nearest_irregular_1d_index_for_mask_1d_index=None, *args, **kwargs
     ):
@@ -614,7 +604,7 @@ class IrregularGrid(np.ndarray):
 
     @classmethod
     def manual_1d(cls, grid):
-        return IrregularGrid(grid=grid)
+        return GridIrregular(grid=grid)
 
     @classmethod
     def from_grid_and_unmasked_2d_grid_shape(cls, unmasked_sparse_shape, grid):
@@ -623,7 +613,7 @@ class IrregularGrid(np.ndarray):
             unmasked_sparse_shape=unmasked_sparse_shape, grid=grid
         )
 
-        return IrregularGrid(
+        return GridIrregular(
             grid=sparse_grid.sparse,
             nearest_irregular_1d_index_for_mask_1d_index=sparse_grid.sparse_1d_index_for_mask_1d_index,
         )
@@ -648,7 +638,7 @@ class IrregularGrid(np.ndarray):
                 self.sub_shape_1d = sub_shape_1d
 
             def grid_from_sub_grid_1d(self, sub_grid_1d):
-                return IrregularGrid(grid=sub_grid_1d)
+                return GridIrregular(grid=sub_grid_1d)
 
         return IrregularMask(sub_shape_1d=self.shape[0])
 
@@ -659,7 +649,7 @@ class IrregularGrid(np.ndarray):
                 pass
 
             def grid_from_sub_grid_1d(self, sub_grid_1d):
-                return IrregularGrid(grid=sub_grid_1d)
+                return GridIrregular(grid=sub_grid_1d)
 
         return IrregularMapping()
 
@@ -834,6 +824,164 @@ class SparseToGrid(object):
         return len(self.sparse)
 
 
+class GridRectangular(Grid):
+
+    def __new__(
+            cls, grid_1d, shape_2d, pixel_scales, origin=(0.0, 0.0), *args,
+            **kwargs
+    ):
+        """A pixelization-grid of (y,x) coordinates which are used to form the pixel centres of adaptive pixelizations in the \
+        *pixelizations* module.
+
+        A *PixGrid* is ordered such pixels begin from the top-row of the mask and go rightwards and then \
+        downwards. Therefore, it is a ndarray of shape [total_pix_pixels, 2]. The first element of the ndarray \
+        thus corresponds to the pixelization pixel index and second element the y or x arc -econd coordinates. For example:
+
+        - pix_grid[3,0] = the 4th unmasked pixel's y-coordinate.
+        - pix_grid[6,1] = the 7th unmasked pixel's x-coordinate.
+
+        Parameters
+        -----------
+        pix_grid : ndarray
+            The grid of (y,x) arc-second coordinates of every image-plane pixelization grid used for adaptive source \
+            -plane pixelizations.
+        nearest_irregular_1d_index_for_mask_1d_index : ndarray
+            A 1D array that maps every grid pixel to its nearest pixelization-grid pixel.
+        """
+
+        mask = msk.Mask.unmasked(
+            shape_2d=shape_2d,
+            pixel_scales=pixel_scales,
+            sub_size=1,
+            origin=origin,
+        )
+
+        obj = super(GridRectangular, cls).__new__(cls=cls, grid_1d=grid_1d, mask=mask)
+        pixel_neighbors, pixel_neighbors_size = pixelization_util.rectangular_neighbors_from_shape(shape=shape_2d)
+        obj.pixel_neighbors = pixel_neighbors.astype("int")
+        obj.pixel_neighbors_size = pixel_neighbors_size.astype("int")
+        return obj
+
+    def __array_finalize__(self, obj):
+        pass
+
+    @classmethod
+    def overlay_grid(cls, shape_2d, grid, buffer=1e-8):
+        """The geometry of a rectangular grid.
+
+        This is used to map grid of (y,x) arc-second coordinates to the pixels on the rectangular grid.
+
+        Parameters
+        -----------
+        shape_2d : (int, int)
+            The dimensions of the rectangular grid of pixels (y_pixels, x_pixel)
+        pixel_scales : (float, float)
+            The pixel-to-arcsecond scale of a pixel in the y and x directions.
+        origin : (float, float)
+            The arc-second origin of the rectangular pixelization's coordinate system.
+        pixel_neighbors : ndarray
+            An array of length (y_pixels*x_pixels) which provides the index of all neighbors of every pixel in \
+            the rectangular grid (entries of -1 correspond to no neighbor).
+        pixel_neighbors_size : ndarrayy
+            An array of length (y_pixels*x_pixels) which gives the number of neighbors of every pixel in the \
+            rectangular grid.
+        """
+
+        y_min = np.min(grid[:, 0]) - buffer
+        y_max = np.max(grid[:, 0]) + buffer
+        x_min = np.min(grid[:, 1]) - buffer
+        x_max = np.max(grid[:, 1]) + buffer
+
+        pixel_scales = (
+            float((y_max - y_min) / shape_2d[0]),
+            float((x_max - x_min) / shape_2d[1]),
+        )
+
+        origin = ((y_max + y_min) / 2.0, (x_max + x_min) / 2.0)
+
+        grid_1d = grid_util.grid_1d_via_shape_2d(
+                shape_2d=shape_2d,
+                pixel_scales=pixel_scales,
+                sub_size=1,
+                origin=origin,
+            )
+
+        return GridRectangular(grid_1d=grid_1d, shape_2d=shape_2d, pixel_scales=pixel_scales, origin=origin)
+
+    @property
+    def pixels(self):
+        return self.shape_2d[0] * self.shape_2d[1]
+
+    @property
+    def shape_2d_arcsec(self):
+        return (self.shape_2d[0] * self.pixel_scales[0], self.shape_2d[1] * self.pixel_scales[1])
+
+
+class GridVoronoi(GridIrregular):
+    """Determine the geometry of the Voronoi pixelization, by alligning it with the outer-most coordinates on a \
+    grid plus a small buffer.
+
+    Parameters
+    -----------
+    grid : ndarray
+        The (y,x) grid of coordinates which determine the Voronoi pixelization's
+    pixelization_grid : ndarray
+        The (y,x) centre of every Voronoi pixel in arc-seconds.
+    origin : (float, float)
+        The arc-second origin of the Voronoi pixelization's coordinate system.
+    pixel_neighbors : ndarray
+        An array of length (voronoi_pixels) which provides the index of all neighbors of every pixel in \
+        the Voronoi grid (entries of -1 correspond to no neighbor).
+    pixel_neighbors_size : ndarrayy
+        An array of length (voronoi_pixels) which gives the number of neighbors of every pixel in the \
+        Voronoi grid.
+    """
+    def __new__(
+            cls, grid_1d, nearest_irregular_1d_index_for_mask_1d_index=None, *args,
+            **kwargs
+    ):
+        """A pixelization-grid of (y,x) coordinates which are used to form the pixel centres of adaptive pixelizations in the \
+        *pixelizations* module.
+
+        A *PixGrid* is ordered such pixels begin from the top-row of the mask and go rightwards and then \
+        downwards. Therefore, it is a ndarray of shape [total_pix_pixels, 2]. The first element of the ndarray \
+        thus corresponds to the pixelization pixel index and second element the y or x arc -econd coordinates. For example:
+
+        - pix_grid[3,0] = the 4th unmasked pixel's y-coordinate.
+        - pix_grid[6,1] = the 7th unmasked pixel's x-coordinate.
+
+        Parameters
+        -----------
+        pix_grid : ndarray
+            The grid of (y,x) arc-second coordinates of every image-plane pixelization grid used for adaptive source \
+            -plane pixelizations.
+        nearest_irregular_1d_index_for_mask_1d_index : ndarray
+            A 1D array that maps every grid pixel to its nearest pixelization-grid pixel.
+        """
+
+        obj = super(GridVoronoi, cls).__new__(cls=cls, grid=grid_1d)
+
+        obj.pixels = grid_1d.shape[0]
+
+        try:
+            obj.voronoi = scipy.spatial.Voronoi(
+                np.asarray([grid_1d[:, 1], grid_1d[:, 0]]).T,
+                qhull_options="Qbb Qc Qx Qm",
+            )
+        except OverflowError or scipy.spatial.qhull.QhullError:
+            raise exc.PixelizationException()
+
+        pixel_neighbors, pixel_neighbors_size = pixelization_util.voronoi_neighbors_from_pixels_and_ridge_points(
+            pixels=obj.pixels, ridge_points=np.asarray(obj.voronoi.ridge_points)
+        )
+
+        obj.pixel_neighbors = pixel_neighbors.astype("int")
+        obj.pixel_neighbors_size = pixel_neighbors_size.astype("int")
+        obj.nearest_irregular_1d_index_for_mask_1d_index = nearest_irregular_1d_index_for_mask_1d_index
+
+        return obj
+
+
 class Interpolator(object):
     def __init__(self, grid, interp_grid, pixel_scale_interpolation_grid):
         self.grid = grid
@@ -879,7 +1027,7 @@ class Interpolator(object):
 
         return Interpolator(
             grid=grid,
-            interp_grid=MaskedGrid.manual_1d(grid=interp_grid, mask=interp_mask),
+            interp_grid=interp_mask.mapping.grid_from_grid_1d(grid_1d=interp_grid),
             pixel_scale_interpolation_grid=pixel_scale_interpolation_grid,
         )
 
@@ -893,7 +1041,7 @@ class Positions(list):
 
         positions = list(
             map(
-                lambda position_set: IrregularGrid.manual_1d(
+                lambda position_set: GridIrregular.manual_1d(
                     grid=np.asarray(position_set)
                 ),
                 positions,

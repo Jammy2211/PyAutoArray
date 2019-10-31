@@ -112,12 +112,12 @@ def make_mask_6x6():
 
 @pytest.fixture(name="grid_7x7")
 def make_grid_7x7(mask_7x7):
-    return aa.masked_grid.from_mask(mask=mask_7x7)
+    return aa.masked.grid.from_mask(mask=mask_7x7)
 
 
 @pytest.fixture(name="sub_grid_7x7")
 def make_sub_grid_7x7(sub_mask_7x7):
-    return aa.masked_grid.from_mask(mask=sub_mask_7x7)
+    return aa.masked.grid.from_mask(mask=sub_mask_7x7)
 
 
 @pytest.fixture(name="sub_grid_7x7_simple")
@@ -131,7 +131,7 @@ def make_sub_grid_7x7_simple(mask_7x7, sub_grid_7x7):
 
 @pytest.fixture(name="blurring_grid_7x7")
 def make_blurring_grid_7x7(blurring_mask_7x7):
-    return aa.masked_grid.from_mask(mask=blurring_mask_7x7)
+    return aa.masked.grid.from_mask(mask=blurring_mask_7x7)
 
 
 # CONVOLVERS #
@@ -274,14 +274,14 @@ def make_transformer_7x7_7(uv_wavelengths_7x2, grid_7x7):
 
 @pytest.fixture(name="masked_imaging_7x7")
 def make_masked_imaging_7x7(imaging_7x7, sub_mask_7x7):
-    return aa.masked_imaging.manual(imaging=imaging_7x7, mask=sub_mask_7x7)
+    return aa.masked.imaging.manual(imaging=imaging_7x7, mask=sub_mask_7x7)
 
 
 @pytest.fixture(name="masked_interferometer_7")
 def make_masked_interferometer_7(
     interferometer_7, mask_7x7, sub_grid_7x7, transformer_7x7_7
 ):
-    return aa.masked_interferometer.manual(
+    return aa.masked.interferometer.manual(
         interferometer=interferometer_7, mask=mask_7x7
     )
 

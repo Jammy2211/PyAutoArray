@@ -12,7 +12,7 @@ def make_fit_plotter_util_path_setup():
 
 def test__fit_quantities_are_output(fit_7x7, fit_plotter_util_path, plot_patch):
 
-    aa.plot.fit.image(
+    aa.plot.fit_imaging.image(
         fit=fit_7x7,
         mask_overlay=fit_7x7.mask,
         cb_tick_values=[1.0],
@@ -23,7 +23,7 @@ def test__fit_quantities_are_output(fit_7x7, fit_plotter_util_path, plot_patch):
 
     assert fit_plotter_util_path + "fit_image.png" in plot_patch.paths
 
-    aa.plot.fit.noise_map(
+    aa.plot.fit_imaging.noise_map(
         fit=fit_7x7,
         mask_overlay=fit_7x7.mask,
         cb_tick_values=[1.0],
@@ -34,7 +34,7 @@ def test__fit_quantities_are_output(fit_7x7, fit_plotter_util_path, plot_patch):
 
     assert fit_plotter_util_path + "fit_noise_map.png" in plot_patch.paths
 
-    aa.plot.fit.signal_to_noise_map(
+    aa.plot.fit_imaging.signal_to_noise_map(
         fit=fit_7x7,
         mask_overlay=fit_7x7.mask,
         cb_tick_values=[1.0],
@@ -45,7 +45,7 @@ def test__fit_quantities_are_output(fit_7x7, fit_plotter_util_path, plot_patch):
 
     assert fit_plotter_util_path + "fit_signal_to_noise_map.png" in plot_patch.paths
 
-    aa.plot.fit.model_image(
+    aa.plot.fit_imaging.model_image(
         fit=fit_7x7,
         mask_overlay=fit_7x7.mask,
         cb_tick_values=[1.0],
@@ -56,7 +56,7 @@ def test__fit_quantities_are_output(fit_7x7, fit_plotter_util_path, plot_patch):
 
     assert fit_plotter_util_path + "fit_model_image.png" in plot_patch.paths
 
-    aa.plot.fit.residual_map(
+    aa.plot.fit_imaging.residual_map(
         fit=fit_7x7,
         mask_overlay=fit_7x7.mask,
         cb_tick_values=[1.0],
@@ -67,7 +67,7 @@ def test__fit_quantities_are_output(fit_7x7, fit_plotter_util_path, plot_patch):
 
     assert fit_plotter_util_path + "fit_residual_map.png" in plot_patch.paths
 
-    aa.plot.fit.normalized_residual_map(
+    aa.plot.fit_imaging.normalized_residual_map(
         fit=fit_7x7,
         mask_overlay=fit_7x7.mask,
         cb_tick_values=[1.0],
@@ -78,7 +78,7 @@ def test__fit_quantities_are_output(fit_7x7, fit_plotter_util_path, plot_patch):
 
     assert fit_plotter_util_path + "fit_normalized_residual_map.png" in plot_patch.paths
 
-    aa.plot.fit.chi_squared_map(
+    aa.plot.fit_imaging.chi_squared_map(
         fit=fit_7x7,
         mask_overlay=fit_7x7.mask,
         cb_tick_values=[1.0],
