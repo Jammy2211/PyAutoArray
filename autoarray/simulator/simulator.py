@@ -5,8 +5,8 @@ from autoarray.data import imaging
 class ImagingSimulator(object):
 
     def __init__(
-        self, shape_2d, pixel_scales, psf, exposure_time, background_sky_level, add_noise=True, noise_if_add_noise_false=0.1,
-        noise_seed=-1,
+        self, shape_2d, pixel_scales, sub_size, psf, exposure_time, background_sky_level, add_noise=True, noise_if_add_noise_false=0.1,
+        noise_seed=-1, origin=(0.0, 0.0),
     ):
         """A class representing a Imaging observation, using the shape of the image, the pixel scale,
         psf, exposure time, etc.
@@ -31,6 +31,8 @@ class ImagingSimulator(object):
 
         self.shape_2d = shape_2d
         self.pixel_scales = pixel_scales
+        self.sub_size = sub_size
+        self.origin = origin
         self.psf = psf
         self.exposure_time = exposure_time
         self.background_sky_level = background_sky_level
@@ -43,6 +45,7 @@ class ImagingSimulator(object):
         cls,
         shape=(101, 101),
         pixel_scales=0.2,
+        sub_size=8,
         psf_shape=(31, 31),
         psf_sigma=0.5,
         exposure_time=100.0,
@@ -60,6 +63,7 @@ class ImagingSimulator(object):
         return ImagingSimulator(
             shape_2d=shape,
             pixel_scales=pixel_scales,
+            sub_size=sub_size,
             psf=psf,
             exposure_time=exposure_time,
             background_sky_level=background_sky_level,
@@ -73,6 +77,7 @@ class ImagingSimulator(object):
         cls,
         shape=(151, 151),
         pixel_scales=0.1,
+        sub_size=8,
         psf_shape=(31, 31),
         psf_sigma=0.1,
         exposure_time=565.0,
@@ -90,6 +95,7 @@ class ImagingSimulator(object):
         return ImagingSimulator(
             shape_2d=shape,
             pixel_scales=pixel_scales,
+            sub_size=sub_size,
             psf=psf,
             exposure_time=exposure_time,
             background_sky_level=background_sky_level,
@@ -103,6 +109,7 @@ class ImagingSimulator(object):
         cls,
         shape=(251, 251),
         pixel_scales=0.05,
+            sub_size=8,
         psf_shape=(31, 31),
         psf_sigma=0.05,
         exposure_time=2000.0,
@@ -120,6 +127,7 @@ class ImagingSimulator(object):
         return ImagingSimulator(
             shape_2d=shape,
             pixel_scales=pixel_scales,
+            sub_size=sub_size,
             psf=psf,
             exposure_time=exposure_time,
             background_sky_level=background_sky_level,
@@ -133,6 +141,7 @@ class ImagingSimulator(object):
         cls,
         shape=(401, 401),
         pixel_scales=0.03,
+            sub_size=8,
         psf_shape=(31, 31),
         psf_sigma=0.05,
         exposure_time=2000.0,
@@ -151,6 +160,7 @@ class ImagingSimulator(object):
         return ImagingSimulator(
             shape_2d=shape,
             pixel_scales=pixel_scales,
+            sub_size=sub_size,
             psf=psf,
             exposure_time=exposure_time,
             background_sky_level=background_sky_level,
@@ -164,6 +174,7 @@ class ImagingSimulator(object):
         cls,
         shape=(751, 751),
         pixel_scales=0.01,
+            sub_size=8,
         psf_shape=(31, 31),
         psf_sigma=0.025,
         exposure_time=1000.0,
@@ -181,6 +192,7 @@ class ImagingSimulator(object):
         return ImagingSimulator(
             shape_2d=shape,
             pixel_scales=pixel_scales,
+            sub_size=sub_size,
             psf=psf,
             exposure_time=exposure_time,
             background_sky_level=background_sky_level,
@@ -188,6 +200,12 @@ class ImagingSimulator(object):
             noise_if_add_noise_false=noise_if_add_noise_false,
             noise_seed=noise_seed,
         )
+
+    @property
+    def grid(self):
+        return aa.grid.uniform(
+            shape_2d=self.shape_2d,
+                               pixel_scales=self.pixel_scales, sub_size=self.sub_size, origin=self.origin)
 
     def from_image(
         self,

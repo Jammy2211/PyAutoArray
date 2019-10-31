@@ -9,23 +9,41 @@ test_data_dir = "{}/../test_files/arrays/".format(
 
 
 class TestImaging:
+
+    def test__simulator_grid_is_uniform_grid_with_same_inputs(self):
+
+        grid = aa.grid.uniform(shape_2d=(31, 31), pixel_scales=0.05, sub_size=1, origin=(0.1, 0.1))
+
+        simulator = aa.simulator.imaging(
+            shape_2d=(31, 31),
+            pixel_scales=0.05,
+            sub_size=1,
+            origin=(0.1, 0.1),
+            psf=None,
+            exposure_time=20.0,
+            background_sky_level=10.0,
+        )
+
+        assert (simulator.grid == grid).all()
+
     def test__constructor_and_specific_instrument_class_methods(self):
 
         psf = aa.kernel.from_gaussian(shape_2d=(11, 11), sigma=0.1, pixel_scales=0.1)
 
-        observation = aa.simulator.imaging(
+        simulator = aa.simulator.imaging(
             shape_2d=(51, 51),
             pixel_scales=0.1,
+            sub_size=1,
             psf=psf,
             exposure_time=20.0,
             background_sky_level=10.0,
         )
 
-        assert observation.shape_2d == (51, 51)
-        assert observation.pixel_scales == (0.1, 0.1)
-        assert observation.psf == psf
-        assert observation.exposure_time == 20.0
-        assert observation.background_sky_level == 10.0
+        assert simulator.shape_2d == (51, 51)
+        assert simulator.pixel_scales == (0.1, 0.1)
+        assert simulator.psf == psf
+        assert simulator.exposure_time == 20.0
+        assert simulator.background_sky_level == 10.0
 
         lsst = aa.simulator.imaging.lsst()
 
@@ -94,13 +112,12 @@ class TestImaging:
             pixel_scales=1.0,
         )
 
-        grid = aa.grid.uniform(shape_2d=(20, 20), pixel_scales=0.05, sub_size=1)
-
         image = aa.array.manual_2d([[1.0, 2.0, 3.0], [4.0, 5.0, 6.0]])
 
         simulator = aa.simulator.imaging(
             shape_2d=(20, 20),
             pixel_scales=0.05,
+            sub_size=1,
             psf=psf,
             exposure_time=10000.0,
             background_sky_level=100.0,
