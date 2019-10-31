@@ -2,7 +2,7 @@ import numpy as np
 
 
 def residual_map_from_data_mask_and_model_data(data, mask, model_data):
-    """Compute the residual map between a masked observed simulator and model simulator, where:
+    """Compute the residual map between a masked observed simulate and model simulator, where:
 
     Residuals = (Data - Model_Data).
 
@@ -23,7 +23,7 @@ def residual_map_from_data_mask_and_model_data(data, mask, model_data):
 def normalized_residual_map_from_residual_map_noise_map_and_mask(
     residual_map, noise_map, mask
 ):
-    """Compute the normalized residual map between a masked observed simulator and model simulator, where:
+    """Compute the normalized residual map between a masked observed simulate and model simulator, where:
 
     Normalized_Residual = (Data - Model_Data) / Noise
 
@@ -102,7 +102,7 @@ def noise_normalization_from_noise_map_and_mask(noise_map, mask):
 
 
 def residual_map_from_data_and_model_data(data, model_data):
-    """Compute the residual map between a masked observed simulator and model simulator, where:
+    """Compute the residual map between a masked observed simulate and model simulator, where:
 
     Residuals = (Data - Model_Data).
 
@@ -119,7 +119,7 @@ def residual_map_from_data_and_model_data(data, model_data):
 
 
 def normalized_residual_map_from_residual_map_and_noise_map(residual_map, noise_map):
-    """Compute the normalized residual map between a masked observed simulator and model simulator, where:
+    """Compute the normalized residual map between a masked observed simulate and model simulator, where:
 
     Normalized_Residual = (Data - Model_Data) / Noise
 

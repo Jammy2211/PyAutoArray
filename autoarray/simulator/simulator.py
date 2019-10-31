@@ -2,11 +2,20 @@ import autoarray as aa
 
 from autoarray.data import imaging
 
-class ImagingSimulator(object):
 
+class ImagingSimulator(object):
     def __init__(
-        self, shape_2d, pixel_scales, sub_size, psf, exposure_time, background_sky_level, add_noise=True, noise_if_add_noise_false=0.1,
-        noise_seed=-1, origin=(0.0, 0.0),
+        self,
+        shape_2d,
+        pixel_scales,
+        sub_size,
+        psf,
+        exposure_time,
+        background_sky_level,
+        add_noise=True,
+        noise_if_add_noise_false=0.1,
+        noise_seed=-1,
+        origin=(0.0, 0.0),
     ):
         """A class representing a Imaging observation, using the shape of the image, the pixel scale,
         psf, exposure time, etc.
@@ -51,8 +60,8 @@ class ImagingSimulator(object):
         exposure_time=100.0,
         background_sky_level=1.0,
         add_noise=True,
-            noise_if_add_noise_false=0.1,
-            noise_seed=-1,
+        noise_if_add_noise_false=0.1,
+        noise_seed=-1,
     ):
         """Default settings for an observation with the Large Synotpic Survey Telescope.
 
@@ -82,9 +91,9 @@ class ImagingSimulator(object):
         psf_sigma=0.1,
         exposure_time=565.0,
         background_sky_level=1.0,
-            add_noise=True,
-            noise_if_add_noise_false=0.1,
-            noise_seed=-1,
+        add_noise=True,
+        noise_if_add_noise_false=0.1,
+        noise_seed=-1,
     ):
         """Default settings for an observation with the Euclid space satellite.
 
@@ -109,14 +118,14 @@ class ImagingSimulator(object):
         cls,
         shape=(251, 251),
         pixel_scales=0.05,
-            sub_size=8,
+        sub_size=8,
         psf_shape=(31, 31),
         psf_sigma=0.05,
         exposure_time=2000.0,
         background_sky_level=1.0,
-            add_noise=True,
-            noise_if_add_noise_false=0.1,
-            noise_seed=-1,
+        add_noise=True,
+        noise_if_add_noise_false=0.1,
+        noise_seed=-1,
     ):
         """Default settings for an observation with the Hubble Space Telescope.
 
@@ -141,14 +150,14 @@ class ImagingSimulator(object):
         cls,
         shape=(401, 401),
         pixel_scales=0.03,
-            sub_size=8,
+        sub_size=8,
         psf_shape=(31, 31),
         psf_sigma=0.05,
         exposure_time=2000.0,
         background_sky_level=1.0,
-            add_noise=True,
-            noise_if_add_noise_false=0.1,
-            noise_seed=-1,
+        add_noise=True,
+        noise_if_add_noise_false=0.1,
+        noise_seed=-1,
     ):
         """Default settings for an observation with the Hubble Space Telescope which has been upscaled to a higher \
         pixel-scale to better sample the PSF.
@@ -166,7 +175,7 @@ class ImagingSimulator(object):
             background_sky_level=background_sky_level,
             add_noise=add_noise,
             noise_if_add_noise_false=noise_if_add_noise_false,
-            noise_seed=noise_seed
+            noise_seed=noise_seed,
         )
 
     @classmethod
@@ -174,14 +183,14 @@ class ImagingSimulator(object):
         cls,
         shape=(751, 751),
         pixel_scales=0.01,
-            sub_size=8,
+        sub_size=8,
         psf_shape=(31, 31),
         psf_sigma=0.025,
         exposure_time=1000.0,
         background_sky_level=1.0,
-            add_noise=True,
-            noise_if_add_noise_false=0.1,
-            noise_seed=-1,
+        add_noise=True,
+        noise_if_add_noise_false=0.1,
+        noise_seed=-1,
     ):
         """Default settings for an observation using Keck Adaptive Optics imaging.
 
@@ -205,13 +214,12 @@ class ImagingSimulator(object):
     def grid(self):
         return aa.grid.uniform(
             shape_2d=self.shape_2d,
-                               pixel_scales=self.pixel_scales, sub_size=self.sub_size, origin=self.origin)
+            pixel_scales=self.pixel_scales,
+            sub_size=self.sub_size,
+            origin=self.origin,
+        )
 
-    def from_image(
-        self,
-        image,
-        name=None,
-    ):
+    def from_image(self, image, name=None):
         """
         Create a realistic simulated image by applying effects to a plain simulated image.
 

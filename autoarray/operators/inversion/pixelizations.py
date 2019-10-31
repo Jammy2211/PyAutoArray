@@ -46,11 +46,7 @@ class Rectangular(Pixelization):
         super(Rectangular, self).__init__()
 
     def mapper_from_grid_and_sparse_grid(
-        self,
-        grid,
-        sparse_grid=None,
-        inversion_uses_border=False,
-        hyper_image=None,
+        self, grid, sparse_grid=None, inversion_uses_border=False, hyper_image=None
     ):
         """Setup a rectangular mapper from a rectangular pixelization, as follows:
 
@@ -73,7 +69,9 @@ class Rectangular(Pixelization):
         else:
             relocated_grid = grid
 
-        pixelization_grid = grids.GridRectangular.overlay_grid(shape_2d=self.shape, grid=relocated_grid)
+        pixelization_grid = grids.GridRectangular.overlay_grid(
+            shape_2d=self.shape, grid=relocated_grid
+        )
 
         return mappers.MapperRectangular(
             grid=relocated_grid,
@@ -96,11 +94,7 @@ class Voronoi(Pixelization):
         super(Voronoi, self).__init__()
 
     def mapper_from_grid_and_sparse_grid(
-        self,
-        grid,
-        sparse_grid=None,
-        inversion_uses_border=False,
-        hyper_image=None,
+        self, grid, sparse_grid=None, inversion_uses_border=False, hyper_image=None
     ):
         """Setup a Voronoi mapper from an adaptive-magnification pixelization, as follows:
 
@@ -135,7 +129,8 @@ class Voronoi(Pixelization):
 
         pixelization_grid = grids.GridVoronoi(
             grid_1d=relocated_pixelization_grid,
-            nearest_irregular_1d_index_for_mask_1d_index=sparse_grid.nearest_irregular_1d_index_for_mask_1d_index)
+            nearest_irregular_1d_index_for_mask_1d_index=sparse_grid.nearest_irregular_1d_index_for_mask_1d_index,
+        )
 
         return mappers.MapperVoronoi(
             grid=relocated_grid,

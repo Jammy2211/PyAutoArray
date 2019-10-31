@@ -6,12 +6,14 @@ from autoarray.util import inversion_util
 
 def inversion(masked_data, mapper, regularization):
 
-    image = masked_data.image
-    noise_map = masked_data.noise_map
-
     return InversionImaging.from_data_mapper_and_regularization(
-        image=masked_data.image, noise_map=masked_data.noise_map, convolver=masked_data.convolver,
-        mapper=mapper, regularization=regularization)
+        image=masked_data.image,
+        noise_map=masked_data.noise_map,
+        convolver=masked_data.convolver,
+        mapper=mapper,
+        regularization=regularization,
+    )
+
 
 class InversionImaging(object):
     def __init__(

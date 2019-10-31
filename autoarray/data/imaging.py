@@ -373,7 +373,7 @@ class Imaging(AbstractImaging):
         name=None,
         **kwargs
     ):
-        """A collection of 2D Imaging simulator (an image, noise-map, psf, etc.)
+        """A collection of 2D imaging data(an image, noise-map, psf, etc.)
 
         Parameters
         ----------

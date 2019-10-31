@@ -3,12 +3,17 @@ from autoarray.util import array_util, grid_util, mapper_util
 
 import numpy as np
 
+
 def mapper(grid, pixelization_grid, hyper_image=None):
 
     if isinstance(pixelization_grid, grids.GridRectangular):
-        return MapperRectangular(grid=grid, pixelization_grid=pixelization_grid, hyper_image=hyper_image)
+        return MapperRectangular(
+            grid=grid, pixelization_grid=pixelization_grid, hyper_image=hyper_image
+        )
     elif isinstance(pixelization_grid, grids.GridVoronoi):
-        return MapperVoronoi(grid=grid, pixelization_grid=pixelization_grid, hyper_image=hyper_image)
+        return MapperVoronoi(
+            grid=grid, pixelization_grid=pixelization_grid, hyper_image=hyper_image
+        )
 
 
 class Mapper(object):
@@ -140,9 +145,7 @@ class Mapper(object):
 
 
 class MapperRectangular(Mapper):
-    def __init__(
-        self, grid, pixelization_grid, hyper_image=None
-    ):
+    def __init__(self, grid, pixelization_grid, hyper_image=None):
         """ Class representing a rectangular mapper, which maps unmasked pixels on a masked 2D array (in the form of \
         a grid, see the *hyper_galaxies.array.grid* module) to pixels discretized on a rectangular grid.
 
@@ -162,9 +165,7 @@ class MapperRectangular(Mapper):
             The geometry (e.g. y / x edge locations, pixel-scales) of the rectangular pixelization.
         """
         super(MapperRectangular, self).__init__(
-            grid=grid,
-            pixelization_grid=pixelization_grid,
-            hyper_image=hyper_image,
+            grid=grid, pixelization_grid=pixelization_grid, hyper_image=hyper_image
         )
 
     @property
@@ -204,9 +205,7 @@ class MapperRectangular(Mapper):
 
 
 class MapperVoronoi(Mapper):
-    def __init__(
-        self, grid, pixelization_grid, hyper_image=None
-    ):
+    def __init__(self, grid, pixelization_grid, hyper_image=None):
         """Class representing a Voronoi mapper, which maps unmasked pixels on a masked 2D array (in the form of \
         a grid, see the *hyper_galaxies.array.grid* module) to pixels discretized on a Voronoi grid.
 
@@ -229,9 +228,7 @@ class MapperVoronoi(Mapper):
             A pre-computed hyper_galaxies-image of the image the mapper is expected to reconstruct, used for adaptive analysis.
         """
         super(MapperVoronoi, self).__init__(
-            grid=grid,
-            pixelization_grid=pixelization_grid,
-            hyper_image=hyper_image,
+            grid=grid, pixelization_grid=pixelization_grid, hyper_image=hyper_image
         )
 
     @property

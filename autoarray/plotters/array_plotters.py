@@ -144,7 +144,7 @@ def plot_array(
     Examples
     --------
         array_plotters.plot_array(
-        array=image, origin=(0.0, 0.0), mask=circular_mask, extract_array_from_mask=True, zoom_around_mask=True,
+        array=image, origin=(0.0, 0.0), mask=circular_mask,
         should_plot_border=False, positions=[[1.0, 1.0], [2.0, 2.0]], grid=None, as_subplot=False,
         units='arcsec', kpc_per_arcsec=None, figsize=(7,7), aspect='auto',
         cmap='jet', norm='linear, norm_min=None, norm_max=None, linthresh=None, linscale=None,
@@ -165,13 +165,14 @@ def plot_array(
         )
 
     array = array.in_1d_binned
-    array = array.zoomed_around_mask(buffer=2)
     zoom_offset_pixels = np.asarray(array.geometry._zoom_offset_pixels)
 
     if array.pixel_scales is None:
         zoom_offset_arcsec = (0.0, 0.0)
     else:
         zoom_offset_arcsec = np.asarray(array.geometry._zoom_offset_arcsec)
+
+    array = array.zoomed_around_mask(buffer=2)
 
     if aspect is "square":
         aspect = float(array.shape_2d[1]) / float(array.shape_2d[0])
@@ -729,21 +730,21 @@ def plot_border(
     if should_plot_border and mask is not None:
 
         plt.gca()
-        border_grid_1d = mask.border_grid
+        border_grid = mask.geometry.border_grid.in_1d_binned
 
         if zoom_offset_arcsec is not None:
-            border_grid_1d_plot = border_grid_1d - zoom_offset_arcsec.astype("int")
+            border_grid_plot = border_grid - zoom_offset_arcsec.astype("int")
         else:
-            border_grid_1d_plot = border_grid_1d
+            border_grid_plot = border_grid
 
         border_units = convert_grid_units(
             array=mask,
-            grid_arcsec=border_grid_1d_plot,
+            grid_arcsec=border_grid_plot,
             units=units,
             kpc_per_arcsec=kpc_per_arcsec,
         )
 
-        plt.scatter(y=border_units[:, 0], x=border_units[:, 1], s=pointsize, c="y")
+        plt.scatter(y=np.asarray(border_units[:, 0]), x=np.asarray(border_units[:, 1]), s=pointsize, c="y")
 
 
 def plot_points(

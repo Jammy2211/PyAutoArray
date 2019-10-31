@@ -13,6 +13,7 @@ test_data_dir = "{}/../test_files/array/".format(
     os.path.dirname(os.path.realpath(__file__))
 )
 
+
 class TestSignalToNoise:
     def test__image_and_noise_are_values__signal_to_noise_is_ratio_of_each(self):
         array = aa.array.manual_2d([[1.0, 2.0], [3.0, 4.0]])
@@ -90,4 +91,3 @@ class TestExposureTimeMap(object):
         assert (
             exposure_time_map.in_2d == np.array([[0.375, 1.5, 3.0], [0.375, 1.5, 3.0]])
         ).all()
-

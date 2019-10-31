@@ -208,5 +208,3 @@ def load_exposure_time_map(
             return ExposureTimeMap.from_exposure_time_and_inverse_noise_map(
                 exposure_time=exposure_time, inverse_noise_map=inverse_noise_map
             )
-
-

@@ -16,10 +16,7 @@ from autoarray.operators.convolution import Convolver as convolver
 from autoarray.operators.fourier_transform import Transformer as transformer
 from autoarray.operators.inversion.mappers import mapper
 from autoarray.operators.inversion.inversions import inversion
-from autoarray.operators.inversion import (
-    pixelizations as pix,
-    regularization as reg,
-)
+from autoarray.operators.inversion import pixelizations as pix, regularization as reg
 from autoarray import masked
 from autoarray import simulator
 from autoarray import conf
@@ -27,4 +24,4 @@ from autoarray import plotters as plot
 from autoarray import util
 from autoarray.fit.fit import fit
 
-__version__ = '0.2.2'
+__version__ = "0.2.2"

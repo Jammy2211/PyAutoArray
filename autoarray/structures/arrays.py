@@ -321,5 +321,3 @@ class Array(AbstractArray):
     @classmethod
     def from_sub_array_2d_and_mask(cls, sub_array_2d, mask):
         return mask.mapping.array_from_sub_array_2d(sub_array_2d=sub_array_2d)
-
-

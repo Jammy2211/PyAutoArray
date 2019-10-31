@@ -365,7 +365,6 @@ class TestGridMaskedAPI:
                     mask=mask,
                 )
 
-
     class TestFromMask:
         def test__from_mask__compare_to_array_util(self):
             mask = np.array(
@@ -1559,7 +1558,7 @@ class TestSparseToGrid:
 class TestGridRectangular:
     class TestGridNeighbors:
         def test__3x3_grid__buffer_is_small__grid_give_min_minus_1_max_1__sets_up_geometry_correctly(
-                self
+            self
         ):
             grid = np.array(
                 [
@@ -1575,7 +1574,9 @@ class TestGridRectangular:
                 ]
             )
 
-            pix_grid = aa.grid_rectangular.overlay_grid(shape_2d=(3, 3), grid=grid, buffer=1e-8)
+            pix_grid = aa.grid_rectangular.overlay_grid(
+                shape_2d=(3, 3), grid=grid, buffer=1e-8
+            )
 
             assert pix_grid.shape_2d == (3, 3)
             assert pix_grid.pixel_scales == pytest.approx((2.0 / 3.0, 2.0 / 3.0), 1e-2)
@@ -1590,7 +1591,7 @@ class TestGridRectangular:
             assert (pix_grid.pixel_neighbors[8] == [5, 7, -1, -1]).all()
 
             assert (
-                    pix_grid.pixel_neighbors_size == np.array([2, 3, 2, 3, 4, 3, 2, 3, 2])
+                pix_grid.pixel_neighbors_size == np.array([2, 3, 2, 3, 4, 3, 2, 3, 2])
             ).all()
 
         def test__3x3_grid__same_as_above_change_buffer(self):
@@ -1608,7 +1609,9 @@ class TestGridRectangular:
                 ]
             )
 
-            pix_grid = aa.grid_rectangular.overlay_grid(shape_2d=(3, 3), grid=grid, buffer=1e-8)
+            pix_grid = aa.grid_rectangular.overlay_grid(
+                shape_2d=(3, 3), grid=grid, buffer=1e-8
+            )
 
             assert pix_grid.shape_2d == (3, 3)
             assert pix_grid.pixel_scales == pytest.approx((2.0 / 3.0, 2.0 / 3.0), 1e-2)
@@ -1628,17 +1631,19 @@ class TestGridRectangular:
                 ]
             )
 
-            pix_grid = aa.grid_rectangular.overlay_grid(shape_2d=(5, 4), grid=grid, buffer=1e-8)
+            pix_grid = aa.grid_rectangular.overlay_grid(
+                shape_2d=(5, 4), grid=grid, buffer=1e-8
+            )
 
             assert pix_grid.shape_2d == (5, 4)
             assert pix_grid.pixel_scales == pytest.approx((2.0 / 5.0, 2.0 / 4.0), 1e-2)
 
         def test__3x3_grid__larger_range_of_grid(self):
-            grid = np.array(
-                [[2.0, 1.0], [4.0, 3.0], [6.0, 5.0], [8.0, 7.0]]
-            )
+            grid = np.array([[2.0, 1.0], [4.0, 3.0], [6.0, 5.0], [8.0, 7.0]])
 
-            pix_grid = aa.grid_rectangular.overlay_grid(shape_2d=(3, 3), grid=grid, buffer=1e-8)
+            pix_grid = aa.grid_rectangular.overlay_grid(
+                shape_2d=(3, 3), grid=grid, buffer=1e-8
+            )
 
             assert pix_grid.shape_2d == (3, 3)
             assert pix_grid.pixel_scales == pytest.approx((6.0 / 3.0, 6.0 / 3.0), 1e-2)
@@ -1659,7 +1664,9 @@ class TestGridRectangular:
                 ]
             )
 
-            pix_grid = aa.grid_rectangular.overlay_grid(shape_2d=(3, 3), grid=grid, buffer=1e-8)
+            pix_grid = aa.grid_rectangular.overlay_grid(
+                shape_2d=(3, 3), grid=grid, buffer=1e-8
+            )
 
             assert pix_grid == pytest.approx(
                 np.array(
@@ -1692,7 +1699,9 @@ class TestGridRectangular:
                 ]
             )
 
-            pix_grid = aa.grid_rectangular.overlay_grid(shape_2d=(4, 3), grid=grid, buffer=1e-8)
+            pix_grid = aa.grid_rectangular.overlay_grid(
+                shape_2d=(4, 3), grid=grid, buffer=1e-8
+            )
 
             assert pix_grid == pytest.approx(
                 np.array(
@@ -1720,8 +1729,9 @@ class TestGridRectangular:
             # |8 | 9|10|11|
             # |12|13|14|15|
 
-            pix_grid = aa.grid_rectangular.overlay_grid(shape_2d=(7, 5), grid=np.zeros((2, 2)),
-                                                        buffer=1e-8)
+            pix_grid = aa.grid_rectangular.overlay_grid(
+                shape_2d=(7, 5), grid=np.zeros((2, 2)), buffer=1e-8
+            )
 
             pixel_neighbors_util, pixel_neighbors_size_util = aa.util.pixelization.rectangular_neighbors_from_shape(
                 shape=(7, 5)
@@ -1753,20 +1763,20 @@ class TestVoronoi:
             pix = aa.grid_voronoi(grid_1d=grid)
 
             assert (
-                    pix.voronoi.points
-                    == np.array(
-                [
-                    [0.0, 2.0],
-                    [1.0, 2.0],
-                    [2.0, 2.0],
-                    [0.0, 1.0],
-                    [1.0, 1.0],
-                    [2.0, 1.0],
-                    [0.0, 0.0],
-                    [1.0, 0.0],
-                    [2.0, 0.0],
-                ]
-            )
+                pix.voronoi.points
+                == np.array(
+                    [
+                        [0.0, 2.0],
+                        [1.0, 2.0],
+                        [2.0, 2.0],
+                        [0.0, 1.0],
+                        [1.0, 1.0],
+                        [2.0, 1.0],
+                        [0.0, 0.0],
+                        [1.0, 0.0],
+                        [2.0, 0.0],
+                    ]
+                )
             ).all()
 
         def test__points_in_x_cross_shape__sets_up_diamond_voronoi_vertices(self):
@@ -1825,18 +1835,44 @@ class TestVoronoi:
             # ridge points is a numpy array for speed, but convert to list for the comparisons below so we can use in
             # to look for each list
 
-            pix.voronoi.ridge_grid = list(map(lambda x: list(x), pix.voronoi.ridge_points))
+            pix.voronoi.ridge_grid = list(
+                map(lambda x: list(x), pix.voronoi.ridge_points)
+            )
 
             assert len(pix.voronoi.ridge_points) == 8
 
-            assert [2, 0] in pix.voronoi.ridge_points or [0, 2] in pix.voronoi.ridge_points
-            assert [2, 1] in pix.voronoi.ridge_points or [1, 2] in pix.voronoi.ridge_points
-            assert [2, 3] in pix.voronoi.ridge_points or [3, 2] in pix.voronoi.ridge_points
-            assert [2, 4] in pix.voronoi.ridge_points or [4, 2] in pix.voronoi.ridge_points
-            assert [0, 1] in pix.voronoi.ridge_points or [1, 0] in pix.voronoi.ridge_points
-            assert [0.3] in pix.voronoi.ridge_points or [3, 0] in pix.voronoi.ridge_points
-            assert [3, 4] in pix.voronoi.ridge_points or [4, 3] in pix.voronoi.ridge_points
-            assert [4, 1] in pix.voronoi.ridge_points or [1, 4] in pix.voronoi.ridge_points
+            assert [2, 0] in pix.voronoi.ridge_points or [
+                0,
+                2,
+            ] in pix.voronoi.ridge_points
+            assert [2, 1] in pix.voronoi.ridge_points or [
+                1,
+                2,
+            ] in pix.voronoi.ridge_points
+            assert [2, 3] in pix.voronoi.ridge_points or [
+                3,
+                2,
+            ] in pix.voronoi.ridge_points
+            assert [2, 4] in pix.voronoi.ridge_points or [
+                4,
+                2,
+            ] in pix.voronoi.ridge_points
+            assert [0, 1] in pix.voronoi.ridge_points or [
+                1,
+                0,
+            ] in pix.voronoi.ridge_points
+            assert [0.3] in pix.voronoi.ridge_points or [
+                3,
+                0,
+            ] in pix.voronoi.ridge_points
+            assert [3, 4] in pix.voronoi.ridge_points or [
+                4,
+                3,
+            ] in pix.voronoi.ridge_points
+            assert [4, 1] in pix.voronoi.ridge_points or [
+                1,
+                4,
+            ] in pix.voronoi.ridge_points
 
         def test__9_points_in_square___sets_up_pairs_of_voronoi_cells(self):
             # 9 points in a square - makes a square (this is the example int he scipy documentaiton page)
@@ -1860,23 +1896,61 @@ class TestVoronoi:
             # ridge points is a numpy array for speed, but convert to list for the comparisons below so we can use in
             # to look for each list
 
-            pix.voronoi.ridge_grid = list(map(lambda x: list(x), pix.voronoi.ridge_points))
+            pix.voronoi.ridge_grid = list(
+                map(lambda x: list(x), pix.voronoi.ridge_points)
+            )
 
             assert len(pix.voronoi.ridge_points) == 12
 
-            assert [0, 1] in pix.voronoi.ridge_points or [1, 0] in pix.voronoi.ridge_points
-            assert [1, 2] in pix.voronoi.ridge_points or [2, 1] in pix.voronoi.ridge_points
-            assert [3, 4] in pix.voronoi.ridge_points or [4, 3] in pix.voronoi.ridge_points
-            assert [4, 5] in pix.voronoi.ridge_points or [5, 4] in pix.voronoi.ridge_points
-            assert [6, 7] in pix.voronoi.ridge_points or [7, 6] in pix.voronoi.ridge_points
-            assert [7, 8] in pix.voronoi.ridge_points or [8, 7] in pix.voronoi.ridge_points
+            assert [0, 1] in pix.voronoi.ridge_points or [
+                1,
+                0,
+            ] in pix.voronoi.ridge_points
+            assert [1, 2] in pix.voronoi.ridge_points or [
+                2,
+                1,
+            ] in pix.voronoi.ridge_points
+            assert [3, 4] in pix.voronoi.ridge_points or [
+                4,
+                3,
+            ] in pix.voronoi.ridge_points
+            assert [4, 5] in pix.voronoi.ridge_points or [
+                5,
+                4,
+            ] in pix.voronoi.ridge_points
+            assert [6, 7] in pix.voronoi.ridge_points or [
+                7,
+                6,
+            ] in pix.voronoi.ridge_points
+            assert [7, 8] in pix.voronoi.ridge_points or [
+                8,
+                7,
+            ] in pix.voronoi.ridge_points
 
-            assert [0, 3] in pix.voronoi.ridge_points or [3, 0] in pix.voronoi.ridge_points
-            assert [1, 4] in pix.voronoi.ridge_points or [4, 1] in pix.voronoi.ridge_points
-            assert [4, 7] in pix.voronoi.ridge_points or [7, 4] in pix.voronoi.ridge_points
-            assert [2, 5] in pix.voronoi.ridge_points or [5, 2] in pix.voronoi.ridge_points
-            assert [5, 8] in pix.voronoi.ridge_points or [8, 5] in pix.voronoi.ridge_points
-            assert [3, 6] in pix.voronoi.ridge_points or [6, 3] in pix.voronoi.ridge_points
+            assert [0, 3] in pix.voronoi.ridge_points or [
+                3,
+                0,
+            ] in pix.voronoi.ridge_points
+            assert [1, 4] in pix.voronoi.ridge_points or [
+                4,
+                1,
+            ] in pix.voronoi.ridge_points
+            assert [4, 7] in pix.voronoi.ridge_points or [
+                7,
+                4,
+            ] in pix.voronoi.ridge_points
+            assert [2, 5] in pix.voronoi.ridge_points or [
+                5,
+                2,
+            ] in pix.voronoi.ridge_points
+            assert [5, 8] in pix.voronoi.ridge_points or [
+                8,
+                5,
+            ] in pix.voronoi.ridge_points
+            assert [3, 6] in pix.voronoi.ridge_points or [
+                6,
+                3,
+            ] in pix.voronoi.ridge_points
 
     class TestNeighbors:
         def test__compare_to_pixelization_util(self):
@@ -2145,13 +2219,12 @@ class TestInterpolator:
         assert np.max(true_grid_radii[:, 1] - interpolated_grid_radii_x) < 0.1
 
 
-
 test_positions_dir = "{}/../test_files/positions/".format(
     os.path.dirname(os.path.realpath(__file__))
 )
 
-class TestPositions:
 
+class TestPositions:
     def test__input_is_list_of_lists__converted_to_irregular_grids(self):
 
         positions = aa.positions(positions=[[[1.0, 1.0], [2.0, 2.0]]])
@@ -2184,7 +2257,9 @@ class TestPositions:
         ]
 
     def test__output_positions(self):
-        positions = aa.positions([[[4.0, 4.0], [5.0, 5.0]], [[6.0, 6.0], [7.0, 7.0], [8.0, 8.0]]])
+        positions = aa.positions(
+            [[[4.0, 4.0], [5.0, 5.0]], [[6.0, 6.0], [7.0, 7.0], [8.0, 8.0]]]
+        )
 
         output_data_dir = "{}/../test_files/positions/output_test/".format(
             os.path.dirname(os.path.realpath(__file__))
@@ -2194,9 +2269,7 @@ class TestPositions:
 
         os.makedirs(output_data_dir)
 
-        positions.output_to_file(
-            positions_path=output_data_dir + "positions_test.dat"
-        )
+        positions.output_to_file(positions_path=output_data_dir + "positions_test.dat")
 
         positions = aa.positions.from_file(
             positions_path=output_data_dir + "positions_test.dat"

@@ -9,7 +9,7 @@ import numpy as np
 import itertools
 from scipy.spatial import Voronoi
 
-from autoarray.plotters import grid_plotters, imaging_plotters, plotter_util
+from autoarray.plotters import grid_plotters, plotter_util
 from autoarray.operators.inversion import mappers
 
 
@@ -449,12 +449,12 @@ def plot_rectangular_pixelization_lines(mapper, units, kpc_per_arcsec):
         ys = np.linspace(
             mapper.grid.arc_second_minima[0],
             mapper.grid.arc_second_maxima[0],
-            mapper.shape_2d[0] + 1,
+            mapper.pixelization_grid.shape_2d[0] + 1,
         )
         xs = np.linspace(
             mapper.grid.arc_second_minima[1],
             mapper.grid.arc_second_maxima[1],
-            mapper.shape_2d[1] + 1,
+            mapper.pixelization_grid.shape_2d[1] + 1,
         )
 
     elif units in "kpc":
@@ -462,12 +462,12 @@ def plot_rectangular_pixelization_lines(mapper, units, kpc_per_arcsec):
         ys = np.linspace(
             mapper.grid.arc_second_minima[0] * kpc_per_arcsec,
             mapper.grid.arc_second_maxima[0] * kpc_per_arcsec,
-            mapper.shape_2d[0] + 1,
+            mapper.pixelization_grid.shape_2d[0] + 1,
         )
         xs = np.linspace(
             mapper.grid.arc_second_minima[1] * kpc_per_arcsec,
             mapper.grid.arc_second_maxima[1] * kpc_per_arcsec,
-            mapper.shape_2d[1] + 1,
+            mapper.pixelization_grid.shape_2d[1] + 1,
         )
 
     # grid lines
@@ -591,7 +591,7 @@ def plot_border(
 
     if should_plot_border:
 
-        border_arcsec = mapper.grid[mapper.grid.sub_border_pixels]
+        border_arcsec = mapper.grid[mapper.grid.mask.regions._sub_border_1d_indexes]
         border_units = convert_grid(
             grid=border_arcsec, units=units, kpc_per_arcsec=kpc_per_arcsec
         )
@@ -635,7 +635,7 @@ def plot_image_plane_source_pixels(grid, mapper, source_pixels, point_colors):
                 plt.scatter(
                     y=np.asarray(
                         grid[
-                            mapper.pixelization_1d_index_for_sub_mask_1d_index[
+                            mapper.all_sub_mask_1d_indexes_for_pixelization_1d_index[
                                 source_pixel
                             ],
                             0,
@@ -643,7 +643,7 @@ def plot_image_plane_source_pixels(grid, mapper, source_pixels, point_colors):
                     ),
                     x=np.asarray(
                         grid[
-                            mapper.pixelization_1d_index_for_sub_mask_1d_index[
+                            mapper.all_sub_mask_1d_indexes_for_pixelization_1d_index[
                                 source_pixel
                             ],
                             1,
@@ -678,7 +678,7 @@ def plot_source_plane_source_pixels(grid, mapper, source_pixels, point_colors):
                 plt.scatter(
                     y=np.asarray(
                         grid[
-                            mapper.pixelization_1d_index_for_sub_mask_1d_index[
+                            mapper.all_sub_mask_1d_indexes_for_pixelization_1d_index[
                                 source_pixel
                             ],
                             0,
@@ -686,7 +686,7 @@ def plot_source_plane_source_pixels(grid, mapper, source_pixels, point_colors):
                     ),
                     x=np.asarray(
                         grid[
-                            mapper.pixelization_1d_index_for_sub_mask_1d_index[
+                            mapper.all_sub_mask_1d_indexes_for_pixelization_1d_index[
                                 source_pixel
                             ],
                             1,

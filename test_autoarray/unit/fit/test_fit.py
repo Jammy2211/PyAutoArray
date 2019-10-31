@@ -29,9 +29,7 @@ class TestImagingFit:
             array=np.array([1.0, 2.0, 3.0, 4.0]), mask=mask
         )
 
-        fit = aa.fit(
-            masked_data=masked_imaging, model_data=model_data
-        )
+        fit = aa.fit(masked_data=masked_imaging, model_data=model_data)
 
         assert (fit.mask == np.array([[False, False], [False, False]])).all()
 
@@ -90,9 +88,7 @@ class TestImagingFit:
             array=np.array([1.0, 2.0, 3.0]), mask=mask
         )
 
-        fit = aa.fit(
-            masked_data=masked_imaging, model_data=model_data
-        )
+        fit = aa.fit(masked_data=masked_imaging, model_data=model_data)
 
         assert (fit.mask == np.array([[False, False], [True, False]])).all()
 
@@ -158,9 +154,7 @@ class TestImagingFit:
         )
 
         fit = aa.fit(
-            masked_data=masked_imaging,
-            model_data=model_data,
-            inversion=inversion,
+            masked_data=masked_imaging, model_data=model_data, inversion=inversion
         )
 
         assert fit.chi_squared == 0.0
@@ -201,10 +195,7 @@ class TestInterferometerFit:
 
         model_data = aa.visibilities.manual_1d(visibilities=[[1.0, 2.0], [3.0, 4.0]])
 
-        fit = aa.fit(
-            masked_data=masked_interferometer,
-            model_data=model_data,
-        )
+        fit = aa.fit(masked_data=masked_interferometer, model_data=model_data)
 
         assert (
             fit.visibilities_mask == np.array([[False, False], [False, False]])
@@ -258,10 +249,7 @@ class TestInterferometerFit:
 
         model_data = aa.visibilities.manual_1d(visibilities=[[1.0, 2.0], [3.0, 3.0]])
 
-        fit = aa.fit(
-            masked_data=masked_interferometer,
-            model_data=model_data,
-        )
+        fit = aa.fit(masked_data=masked_interferometer, model_data=model_data)
 
         assert (
             fit.visibilities_mask == np.array([[False, False], [False, False]])
