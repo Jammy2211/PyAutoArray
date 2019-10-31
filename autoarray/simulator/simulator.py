@@ -14,7 +14,7 @@ class ImagingSimulator(object):
         Parameters
         ----------
         shape_2d : (int, int)
-            The shape of the observation. Note that we do not simulate a full Imaging frame (e.g. 2000 x 2000 pixels for \
+            The shape of the observation. Note that we do not simulator a full Imaging frame (e.g. 2000 x 2000 pixels for \
             Hubble imaging), but instead just a cut-out around the strong lens.
         pixel_scales : float
             The size of each pixel in arc seconds.
@@ -29,7 +29,7 @@ class ImagingSimulator(object):
         if type(pixel_scales) is float:
             pixel_scales = (pixel_scales, pixel_scales)
 
-        self.shape = shape_2d
+        self.shape_2d = shape_2d
         self.pixel_scales = pixel_scales
         self.psf = psf
         self.exposure_time = exposure_time

@@ -22,7 +22,7 @@ class TestImaging:
             background_sky_level=10.0,
         )
 
-        assert observation.shape == (51, 51)
+        assert observation.shape_2d == (51, 51)
         assert observation.pixel_scales == (0.1, 0.1)
         assert observation.psf == psf
         assert observation.exposure_time == 20.0
