@@ -11,6 +11,7 @@ from autoarray.structures.kernel import Kernel as kernel
 from autoarray.structures.visibilities import Visibilities as visibilities
 from autoarray.data.imaging import Imaging as imaging
 from autoarray.data.interferometer import Interferometer as interferometer
+from autoarray.data import data_converter
 from autoarray.operators.convolution import Convolver as convolver
 from autoarray.operators.fourier_transform import Transformer as transformer
 from autoarray.operators.inversion.mappers import mapper
@@ -24,7 +25,6 @@ from autoarray import simulator
 from autoarray import conf
 from autoarray import plotters as plot
 from autoarray import util
-from autoarray.data import data_converter
 from autoarray.fit.fit import fit
 
 __version__ = '0.2.2'
