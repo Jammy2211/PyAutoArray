@@ -373,7 +373,7 @@ class Imaging(AbstractImaging):
         name=None,
         **kwargs
     ):
-        """A collection of 2D Imaging simulate (an image, noise-map, psf, etc.)
+        """A collection of 2D Imaging simulator (an image, noise-map, psf, etc.)
 
         Parameters
         ----------
@@ -464,9 +464,9 @@ class Imaging(AbstractImaging):
         lens_name=None,
     ):
         """Factory for loading the imaging data_type from .fits files, as well as computing properties like the noise-map,
-        exposure-time map, etc. from the imaging-simulate.
+        exposure-time map, etc. from the imaging-simulator.
 
-        This factory also includes a number of routines for converting the imaging-simulate from units not supported by PyAutoLens \
+        This factory also includes a number of routines for converting the imaging-simulator from units not supported by PyAutoLens \
         (e.g. adus, electrons) to electrons per second.
 
         Parameters

@@ -2,18 +2,18 @@ import numpy as np
 
 
 def residual_map_from_data_mask_and_model_data(data, mask, model_data):
-    """Compute the residual map between a masked observed simulate and model simulate, where:
+    """Compute the residual map between a masked observed simulator and model simulator, where:
 
     Residuals = (Data - Model_Data).
 
     Parameters
     -----------
     data : np.ndarray
-        The observed simulate that is fitted.
+        The observed simulator that is fitted.
     mask : np.ndarray
-        The mask applied to the simulate, where *False* entries are included in the calculation.
+        The mask applied to the simulator, where *False* entries are included in the calculation.
     model_data : np.ndarray
-        The model simulate used to fit the observed simulate.
+        The model simulator used to fit the observed simulator.
     """
     return np.subtract(
         data, model_data, out=np.zeros_like(data), where=np.asarray(mask) == 0
@@ -23,16 +23,16 @@ def residual_map_from_data_mask_and_model_data(data, mask, model_data):
 def normalized_residual_map_from_residual_map_noise_map_and_mask(
     residual_map, noise_map, mask
 ):
-    """Compute the normalized residual map between a masked observed simulate and model simulate, where:
+    """Compute the normalized residual map between a masked observed simulator and model simulator, where:
 
     Normalized_Residual = (Data - Model_Data) / Noise
 
     Parameters
     -----------
     residual_map : np.ndarray
-        The residual-map of the model-simulate fit to the observed simulate.
+        The residual-map of the model-simulator fit to the observed simulator.
     noise_map : np.ndarray
-        The noise-map of the observed simulate.
+        The noise-map of the observed simulator.
     mask : np.ndarray
         The mask applied to the residual-map, where *False* entries are included in the calculation.
     """
@@ -55,9 +55,9 @@ def chi_squared_map_from_residual_map_noise_map_and_mask(residual_map, noise_map
     Parameters
     -----------
     residual_map : np.ndarray
-        The residual-map of the model-simulate fit to the observed simulate.
+        The residual-map of the model-simulator fit to the observed simulator.
     noise_map : np.ndarray
-        The noise-map of the observed simulate.
+        The noise-map of the observed simulator.
     mask : np.ndarray
         The mask applied to the residual-map, where *False* entries are included in the calculation.
     """
@@ -72,13 +72,13 @@ def chi_squared_map_from_residual_map_noise_map_and_mask(residual_map, noise_map
 
 
 def chi_squared_from_chi_squared_map_and_mask(chi_squared_map, mask):
-    """Compute the chi-squared terms of each model's simulate-set's fit to an observed simulate-set, by summing the masked
+    """Compute the chi-squared terms of each model's simulator-set's fit to an observed simulator-set, by summing the masked
     chi-squared map of the fit.
 
     Parameters
     ----------
     chi_squared_map : np.ndarray
-        The chi-squared map of values of the model-simulate fit to the observed simulate.
+        The chi-squared map of values of the model-simulator fit to the observed simulator.
     mask : np.ndarray
         The mask applied to the chi-squared map, where *False* entries are included in the calculation.
     """
@@ -94,7 +94,7 @@ def noise_normalization_from_noise_map_and_mask(noise_map, mask):
     Parameters
     ----------
     noise_map : np.ndarray
-        The masked noise-map of the observed simulate.
+        The masked noise-map of the observed simulator.
     mask : np.ndarray
         The mask applied to the noise-map, where *False* entries are included in the calculation.
     """
@@ -102,33 +102,33 @@ def noise_normalization_from_noise_map_and_mask(noise_map, mask):
 
 
 def residual_map_from_data_and_model_data(data, model_data):
-    """Compute the residual map between a masked observed simulate and model simulate, where:
+    """Compute the residual map between a masked observed simulator and model simulator, where:
 
     Residuals = (Data - Model_Data).
 
     Parameters
     -----------
     data : np.ndarray
-        The observed simulate that is fitted.
+        The observed simulator that is fitted.
     mask : np.ndarray
-        The mask applied to the simulate, where *False* entries are included in the calculation.
+        The mask applied to the simulator, where *False* entries are included in the calculation.
     model_data : np.ndarray
-        The model simulate used to fit the observed simulate.
+        The model simulator used to fit the observed simulator.
     """
     return np.subtract(data, model_data, out=np.zeros_like(data))
 
 
 def normalized_residual_map_from_residual_map_and_noise_map(residual_map, noise_map):
-    """Compute the normalized residual map between a masked observed simulate and model simulate, where:
+    """Compute the normalized residual map between a masked observed simulator and model simulator, where:
 
     Normalized_Residual = (Data - Model_Data) / Noise
 
     Parameters
     -----------
     residual_map : np.ndarray
-        The residual-map of the model-simulate fit to the observed simulate.
+        The residual-map of the model-simulator fit to the observed simulator.
     noise_map : np.ndarray
-        The noise-map of the observed simulate.
+        The noise-map of the observed simulator.
     mask : np.ndarray
         The mask applied to the residual-map, where *False* entries are included in the calculation.
     """
@@ -146,9 +146,9 @@ def chi_squared_map_from_residual_map_and_noise_map(residual_map, noise_map):
     Parameters
     -----------
     residual_map : np.ndarray
-        The residual-map of the model-simulate fit to the observed simulate.
+        The residual-map of the model-simulator fit to the observed simulator.
     noise_map : np.ndarray
-        The noise-map of the observed simulate.
+        The noise-map of the observed simulator.
     mask : np.ndarray
         The mask applied to the residual-map, where *False* entries are included in the calculation.
     """
@@ -158,13 +158,13 @@ def chi_squared_map_from_residual_map_and_noise_map(residual_map, noise_map):
 
 
 def chi_squared_from_chi_squared_map(chi_squared_map):
-    """Compute the chi-squared terms of each model's simulate-set's fit to an observed simulate-set, by summing the masked
+    """Compute the chi-squared terms of each model's simulator-set's fit to an observed simulator-set, by summing the masked
     chi-squared map of the fit.
 
     Parameters
     ----------
     chi_squared_map : np.ndarray
-        The chi-squared map of values of the model-simulate fit to the observed simulate.
+        The chi-squared map of values of the model-simulator fit to the observed simulator.
     mask : np.ndarray
         The mask applied to the chi-squared map, where *False* entries are included in the calculation.
     """
@@ -180,7 +180,7 @@ def noise_normalization_from_noise_map(noise_map):
     Parameters
     ----------
     noise_map : np.ndarray
-        The masked noise-map of the observed simulate.
+        The masked noise-map of the observed simulator.
     mask : np.ndarray
         The mask applied to the noise-map, where *False* entries are included in the calculation.
     """
@@ -190,16 +190,16 @@ def noise_normalization_from_noise_map(noise_map):
 def likelihood_from_chi_squared_and_noise_normalization(
     chi_squared, noise_normalization
 ):
-    """Compute the likelihood of each masked 1D model-simulate fit to the simulate, where:
+    """Compute the likelihood of each masked 1D model-simulator fit to the simulator, where:
 
     Likelihood = -0.5*[Chi_Squared_Term + Noise_Term] (see functions above for these definitions)
 
     Parameters
     ----------
     chi_squared : float
-        The chi-squared term for the model-simulate fit to the observed simulate.
+        The chi-squared term for the model-simulator fit to the observed simulator.
     noise_normalization : float
-        The normalization noise_map-term for the observed simulate's noise-map.
+        The normalization noise_map-term for the observed simulator's noise-map.
     """
     return -0.5 * (chi_squared + noise_normalization)
 
