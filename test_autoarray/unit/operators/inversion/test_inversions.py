@@ -1,4 +1,5 @@
 import autoarray as aa
+from autoarray.operators.inversion import inversions
 from autoarray import exc
 import numpy as np
 import pytest
@@ -11,7 +12,7 @@ class TestRegularizationTerm:
 
         matrix_shape = (3, 3)
 
-        inv = aa.inversions.InversionImaging.from_data_mapper_and_regularization(
+        inv = inversions.InversionImaging.from_data_mapper_and_regularization(
             image=np.ones(9),
             noise_map=np.ones(9),
             convolver=mock_inversion.MockConvolver(matrix_shape),
@@ -45,7 +46,7 @@ class TestRegularizationTerm:
 
         matrix_shape = (3, 3)
 
-        inv = aa.inversions.InversionImaging.from_data_mapper_and_regularization(
+        inv = inversions.InversionImaging.from_data_mapper_and_regularization(
             image=np.ones(9),
             noise_map=np.ones(9),
             convolver=mock_inversion.MockConvolver(matrix_shape),
@@ -81,7 +82,7 @@ class TestLogDetMatrix:
 
         matrix_shape = (3, 3)
 
-        inv = aa.inversions.InversionImaging.from_data_mapper_and_regularization(
+        inv = inversions.InversionImaging.from_data_mapper_and_regularization(
             image=np.ones(9),
             noise_map=np.ones(9),
             convolver=mock_inversion.MockConvolver(matrix_shape),
@@ -101,7 +102,7 @@ class TestLogDetMatrix:
 
         matrix_shape = (3, 3)
 
-        inv = aa.inversions.InversionImaging.from_data_mapper_and_regularization(
+        inv = inversions.InversionImaging.from_data_mapper_and_regularization(
             image=np.ones(9),
             noise_map=np.ones(9),
             convolver=mock_inversion.MockConvolver(matrix_shape),
@@ -121,7 +122,7 @@ class TestLogDetMatrix:
 
         matrix_shape = (3, 3)
 
-        inv = aa.inversions.InversionImaging.from_data_mapper_and_regularization(
+        inv = inversions.InversionImaging.from_data_mapper_and_regularization(
             image=np.ones(9),
             noise_map=np.ones(9),
             convolver=mock_inversion.MockConvolver(matrix_shape),
@@ -150,9 +151,9 @@ class TestReconstructedDataVectorAndImage:
             sub_size=1,
         )
 
-        grid = aa.masked_grid.from_mask(mask=mask)
+        grid = aa.masked.grid.from_mask(mask=mask)
 
-        inv = aa.inversions.InversionImaging.from_data_mapper_and_regularization(
+        inv = inversions.InversionImaging.from_data_mapper_and_regularization(
             image=np.ones(9),
             noise_map=np.ones(9),
             convolver=mock_inversion.MockConvolver(matrix_shape),
@@ -194,9 +195,9 @@ class TestReconstructedDataVectorAndImage:
             sub_size=1,
         )
 
-        grid = aa.masked_grid.from_mask(mask=mask)
+        grid = aa.masked.grid.from_mask(mask=mask)
 
-        inv = aa.inversions.InversionImaging.from_data_mapper_and_regularization(
+        inv = inversions.InversionImaging.from_data_mapper_and_regularization(
             image=np.ones(9),
             noise_map=np.ones(9),
             convolver=mock_inversion.MockConvolver(matrix_shape),
@@ -240,7 +241,7 @@ class TestReconstructedDataVectorAndImage:
 #         grid = aa.grid_stack_from_mask_sub_size_and_psf_shape(
 #             mask=mask, sub_size=1, psf_shape=(1,1))
 #
-#         inv = aa.inversions.Inversion(
+#         inv = inversions.Inversion(
 #             image_1d=np.ones(9), noise_map_1d=np.ones(9), convolver=mock_inversion.MockConvolver(matrix_shape),
 #             mapper=mock_inversion.MockMapper(matrix_shape, grid),
 #             regularization=mock_inversion.MockRegularization(matrix_shape))

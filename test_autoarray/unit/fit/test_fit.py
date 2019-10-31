@@ -14,23 +14,23 @@ class TestImagingFit:
             pixel_scales=(1.0, 1.0),
         )
 
-        data = aa.masked_array.manual_1d(
+        data = aa.masked.array.manual_1d(
             array=np.array([1.0, 2.0, 3.0, 4.0]), mask=mask
         )
-        noise_map = aa.masked_array.manual_1d(
+        noise_map = aa.masked.array.manual_1d(
             array=np.array([2.0, 2.0, 2.0, 2.0]), mask=mask
         )
 
         imaging = aa.imaging(image=data, noise_map=noise_map)
 
-        masked_imaging = aa.masked_imaging(imaging=imaging, mask=mask)
+        masked_imaging = aa.masked.imaging(imaging=imaging, mask=mask)
 
-        model_data = aa.masked_array.manual_1d(
+        model_data = aa.masked.array.manual_1d(
             array=np.array([1.0, 2.0, 3.0, 4.0]), mask=mask
         )
 
-        fit = aa.fit_imaging(
-            mask=mask, image=data, noise_map=noise_map, model_image=model_data
+        fit = aa.fit(
+            masked_data=masked_imaging, model_data=model_data
         )
 
         assert (fit.mask == np.array([[False, False], [False, False]])).all()
@@ -77,21 +77,21 @@ class TestImagingFit:
             pixel_scales=(1.0, 1.0),
         )
 
-        data = aa.masked_array.manual_1d(array=np.array([1.0, 2.0, 4.0]), mask=mask)
-        noise_map = aa.masked_array.manual_1d(
+        data = aa.masked.array.manual_1d(array=np.array([1.0, 2.0, 4.0]), mask=mask)
+        noise_map = aa.masked.array.manual_1d(
             array=np.array([2.0, 2.0, 2.0]), mask=mask
         )
 
         imaging = aa.imaging(image=data, noise_map=noise_map)
 
-        masked_imaging = aa.masked_imaging(imaging=imaging, mask=mask)
+        masked_imaging = aa.masked.imaging(imaging=imaging, mask=mask)
 
-        model_data = aa.masked_array.manual_1d(
+        model_data = aa.masked.array.manual_1d(
             array=np.array([1.0, 2.0, 3.0]), mask=mask
         )
 
-        fit = aa.fit_imaging(
-            mask=mask, image=data, noise_map=noise_map, model_image=model_data
+        fit = aa.fit(
+            masked_data=masked_imaging, model_data=model_data
         )
 
         assert (fit.mask == np.array([[False, False], [True, False]])).all()
@@ -136,18 +136,18 @@ class TestImagingFit:
             pixel_scales=(1.0, 1.0),
         )
 
-        data = aa.masked_array.manual_1d(
+        data = aa.masked.array.manual_1d(
             array=np.array([1.0, 2.0, 3.0, 4.0]), mask=mask
         )
-        noise_map = aa.masked_array.manual_1d(
+        noise_map = aa.masked.array.manual_1d(
             array=np.array([2.0, 2.0, 2.0, 2.0]), mask=mask
         )
 
         imaging = aa.imaging(image=data, noise_map=noise_map)
 
-        masked_imaging = aa.masked_imaging(imaging=imaging, mask=mask)
+        masked_imaging = aa.masked.imaging(imaging=imaging, mask=mask)
 
-        model_data = aa.masked_array.manual_1d(
+        model_data = aa.masked.array.manual_1d(
             array=np.array([1.0, 2.0, 3.0, 4.0]), mask=mask
         )
 
@@ -158,9 +158,7 @@ class TestImagingFit:
         )
 
         fit = aa.fit(
-            mask=mask,
-            data=data,
-            noise_map=noise_map,
+            masked_data=masked_imaging,
             model_data=model_data,
             inversion=inversion,
         )
@@ -197,17 +195,15 @@ class TestInterferometerFit:
             visibilities=data, noise_map=noise_map, uv_wavelengths=np.ones(shape=(2, 2))
         )
 
-        masked_interferometer = aa.masked_interferometer(
+        masked_interferometer = aa.masked.interferometer(
             interferometer=interferometer, real_space_mask=mask
         )
 
         model_data = aa.visibilities.manual_1d(visibilities=[[1.0, 2.0], [3.0, 4.0]])
 
-        fit = aa.fit_interferometer(
-            visibilities_mask=masked_interferometer.visibilities_mask,
-            visibilities=data,
-            noise_map=noise_map,
-            model_visibilities=model_data,
+        fit = aa.fit(
+            masked_data=masked_interferometer,
+            model_data=model_data,
         )
 
         assert (
@@ -256,17 +252,15 @@ class TestInterferometerFit:
             visibilities=data, noise_map=noise_map, uv_wavelengths=np.ones(shape=(2, 2))
         )
 
-        masked_interferometer = aa.masked_interferometer(
+        masked_interferometer = aa.masked.interferometer(
             interferometer=interferometer, real_space_mask=mask
         )
 
         model_data = aa.visibilities.manual_1d(visibilities=[[1.0, 2.0], [3.0, 3.0]])
 
-        fit = aa.fit_interferometer(
-            visibilities_mask=masked_interferometer.visibilities_mask,
-            visibilities=data,
-            noise_map=noise_map,
-            model_visibilities=model_data,
+        fit = aa.fit(
+            masked_data=masked_interferometer,
+            model_data=model_data,
         )
 
         assert (
@@ -315,7 +309,7 @@ class TestInterferometerFit:
             visibilities=data, noise_map=noise_map, uv_wavelengths=np.ones(shape=(2, 2))
         )
 
-        masked_interferometer = aa.masked_interferometer(
+        masked_interferometer = aa.masked.interferometer(
             interferometer=interferometer, real_space_mask=mask
         )
 
@@ -327,11 +321,9 @@ class TestInterferometerFit:
             log_det_regularization_matrix_term=4.0,
         )
 
-        fit = aa.fit_interferometer(
-            visibilities_mask=masked_interferometer.visibilities_mask,
-            visibilities=data,
-            noise_map=noise_map,
-            model_visibilities=model_data,
+        fit = aa.fit(
+            masked_data=masked_interferometer,
+            model_data=model_data,
             inversion=inversion,
         )
 

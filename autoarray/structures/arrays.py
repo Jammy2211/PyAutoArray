@@ -101,14 +101,14 @@ class AbstractArray(abstract_structure.AbstractStructure):
             x1=self.geometry._zoom_region[3] + buffer,
         )
 
-        mask_2d = msk.Mask.unmasked(
+        mask = msk.Mask.unmasked(
             shape_2d=extracted_array_2d.shape,
             pixel_scales=self.pixel_scales,
             sub_size=self.sub_size,
             origin=self.origin,
         )
 
-        return MaskedArray.manual_2d(array=extracted_array_2d, mask=mask_2d)
+        return mask.mapping.array_from_array_2d(array_2d=extracted_array_2d)
 
     def resized_from_new_shape(self, new_shape):
         """resized the array to a new shape and at a new origin.
@@ -323,50 +323,3 @@ class Array(AbstractArray):
         return mask.mapping.array_from_sub_array_2d(sub_array_2d=sub_array_2d)
 
 
-class MaskedArray(AbstractArray):
-    @classmethod
-    def manual_1d(cls, array, mask):
-
-        if type(array) is list:
-            array = np.asarray(array)
-
-        if array.shape[0] != mask.sub_pixels_in_mask:
-            raise exc.ArrayException(
-                "The input 1D array does not have the same number of entries as sub-pixels in"
-                "the mask."
-            )
-
-        return mask.mapping.array_from_sub_array_1d(sub_array_1d=array)
-
-    @classmethod
-    def manual_2d(cls, array, mask):
-
-        if type(array) is list:
-            array = np.asarray(array)
-
-        if array.shape != mask.sub_shape_2d:
-            raise exc.ArrayException(
-                "The input array is 2D but not the same dimensions as the sub-mask "
-                "(e.g. the mask 2D shape multipled by its sub size."
-            )
-
-        return mask.mapping.array_from_sub_array_2d(sub_array_2d=array)
-
-    @classmethod
-    def full(cls, fill_value, mask):
-        return cls.manual_2d(
-            array=np.full(fill_value=fill_value, shape=mask.sub_shape_2d), mask=mask
-        )
-
-    @classmethod
-    def ones(cls, mask):
-        return cls.full(fill_value=1.0, mask=mask)
-
-    @classmethod
-    def zeros(cls, mask):
-        return cls.full(fill_value=0.0, mask=mask)
-
-    @classmethod
-    def from_fits(cls, file_path, hdu, mask):
-        array_2d = array_util.numpy_array_2d_from_fits(file_path=file_path, hdu=hdu)
-        return cls.manual_2d(array=array_2d, mask=mask)

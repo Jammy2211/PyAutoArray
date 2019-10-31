@@ -1,7 +1,14 @@
-from autoarray.structures import arrays
+from autoarray.structures import arrays, grids
 from autoarray.util import array_util, grid_util, mapper_util
 
 import numpy as np
+
+def mapper(grid, pixelization_grid, hyper_image=None):
+
+    if isinstance(pixelization_grid, grids.GridRectangular):
+        return MapperRectangular(grid=grid, pixelization_grid=pixelization_grid, hyper_image=hyper_image)
+    elif isinstance(pixelization_grid, grids.GridVoronoi):
+        return MapperVoronoi(grid=grid, pixelization_grid=pixelization_grid, hyper_image=hyper_image)
 
 
 class Mapper(object):
@@ -132,7 +139,7 @@ class Mapper(object):
         )
 
 
-class RectangularMapper(Mapper):
+class MapperRectangular(Mapper):
     def __init__(
         self, grid, pixelization_grid, hyper_image=None
     ):
@@ -154,7 +161,7 @@ class RectangularMapper(Mapper):
         geometry : pixelization.Rectangular.Geometry
             The geometry (e.g. y / x edge locations, pixel-scales) of the rectangular pixelization.
         """
-        super(RectangularMapper, self).__init__(
+        super(MapperRectangular, self).__init__(
             grid=grid,
             pixelization_grid=pixelization_grid,
             hyper_image=hyper_image,
@@ -196,9 +203,9 @@ class RectangularMapper(Mapper):
         )
 
 
-class VoronoiMapper(Mapper):
+class MapperVoronoi(Mapper):
     def __init__(
-        self, grid, pixelization_grid,hyper_image=None
+        self, grid, pixelization_grid, hyper_image=None
     ):
         """Class representing a Voronoi mapper, which maps unmasked pixels on a masked 2D array (in the form of \
         a grid, see the *hyper_galaxies.array.grid* module) to pixels discretized on a Voronoi grid.
@@ -221,7 +228,7 @@ class VoronoiMapper(Mapper):
         hyper_image : ndarray
             A pre-computed hyper_galaxies-image of the image the mapper is expected to reconstruct, used for adaptive analysis.
         """
-        super(VoronoiMapper, self).__init__(
+        super(MapperVoronoi, self).__init__(
             grid=grid,
             pixelization_grid=pixelization_grid,
             hyper_image=hyper_image,

@@ -22,7 +22,7 @@ class MockGrid(grids.Grid):
         pass
 
 
-class MockIrregularGrid(np.ndarray):
+class MockGridIrregular(np.ndarray):
     def __new__(
         cls,
         arr,
