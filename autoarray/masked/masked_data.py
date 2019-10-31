@@ -49,10 +49,10 @@ class MaskedImaging(AbstractMaskedData):
         inversion_uses_border=True,
     ):
         """
-        The lens simulator is the collection of data_type (image, noise-map, PSF), a mask, grid, convolver \
+        The lens data is the collection of data_type (image, noise-map, PSF), a mask, grid, convolver \
         and other utilities that are used for modeling and fitting an image of a strong lens.
 
-        Whilst the image, noise-map, etc. are loaded in 2D, the lens simulator creates reduced 1D arrays of each \
+        Whilst the image, noise-map, etc. are loaded in 2D, the lens data creates reduced 1D arrays of each \
         for lensing calculations.
 
         Parameters
@@ -194,10 +194,10 @@ class MaskedInterferometer(AbstractMaskedData):
         inversion_uses_border=True,
     ):
         """
-        The lens simulator is the collection of data_type (image, noise-map, primary_beam), a mask, grid, convolver \
+        The lens data is the collection of data_type (image, noise-map, primary_beam), a mask, grid, convolver \
         and other utilities that are used for modeling and fitting an image of a strong lens.
 
-        Whilst the image, noise-map, etc. are loaded in 2D, the lens simulator creates reduced 1D arrays of each \
+        Whilst the image, noise-map, etc. are loaded in 2D, the lens data creates reduced 1D arrays of each \
         for lensing calculations.
 
         Parameters

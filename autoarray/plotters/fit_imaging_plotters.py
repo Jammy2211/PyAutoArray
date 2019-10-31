@@ -3,7 +3,7 @@ from autoarray.plotters import array_plotters
 
 def image(
     fit,
-    mask_overlay=None,
+    mask=None,
     positions=None,
     grid=None,
     as_subplot=False,
@@ -28,7 +28,7 @@ def image(
     ylabelsize=16,
     xyticksize=16,
     grid_pointsize=1,
-    mask_overlay_pointsize=10,
+    mask_pointsize=10,
     position_pointsize=10,
     output_path=None,
     output_format="show",
@@ -48,7 +48,7 @@ def image(
     array_plotters.plot_array(
         array=fit.data,
         grid=grid,
-        mask_overlay=mask_overlay,
+        mask=mask,
         positions=positions,
         as_subplot=as_subplot,
         units=units,
@@ -72,7 +72,7 @@ def image(
         ylabelsize=ylabelsize,
         xyticksize=xyticksize,
         grid_pointsize=grid_pointsize,
-        mask_overlay_pointsize=mask_overlay_pointsize,
+        mask_pointsize=mask_pointsize,
         position_pointsize=position_pointsize,
         output_path=output_path,
         output_format=output_format,
@@ -82,7 +82,7 @@ def image(
 
 def noise_map(
     fit,
-    mask_overlay=None,
+    mask=None,
     positions=None,
     as_subplot=False,
     units="arcsec",
@@ -105,7 +105,7 @@ def noise_map(
     xlabelsize=16,
     ylabelsize=16,
     xyticksize=16,
-    mask_overlay_pointsize=10,
+    mask_pointsize=10,
     position_pointsize=10,
     output_path=None,
     output_format="show",
@@ -124,7 +124,7 @@ def noise_map(
     """
     array_plotters.plot_array(
         array=fit.noise_map,
-        mask_overlay=mask_overlay,
+        mask=mask,
         positions=positions,
         as_subplot=as_subplot,
         units=units,
@@ -147,7 +147,7 @@ def noise_map(
         xlabelsize=xlabelsize,
         ylabelsize=ylabelsize,
         xyticksize=xyticksize,
-        mask_overlay_pointsize=mask_overlay_pointsize,
+        mask_pointsize=mask_pointsize,
         position_pointsize=position_pointsize,
         output_path=output_path,
         output_format=output_format,
@@ -157,7 +157,7 @@ def noise_map(
 
 def signal_to_noise_map(
     fit,
-    mask_overlay=None,
+    mask=None,
     positions=None,
     as_subplot=False,
     units="arcsec",
@@ -180,7 +180,7 @@ def signal_to_noise_map(
     xlabelsize=16,
     ylabelsize=16,
     xyticksize=16,
-    mask_overlay_pointsize=10,
+    mask_pointsize=10,
     position_pointsize=10,
     output_path=None,
     output_format="show",
@@ -199,7 +199,7 @@ def signal_to_noise_map(
     """
     array_plotters.plot_array(
         array=fit.signal_to_noise_map,
-        mask_overlay=mask_overlay,
+        mask=mask,
         positions=positions,
         as_subplot=as_subplot,
         units=units,
@@ -222,7 +222,7 @@ def signal_to_noise_map(
         xlabelsize=xlabelsize,
         ylabelsize=ylabelsize,
         xyticksize=xyticksize,
-        mask_overlay_pointsize=mask_overlay_pointsize,
+        mask_pointsize=mask_pointsize,
         position_pointsize=position_pointsize,
         output_path=output_path,
         output_format=output_format,
@@ -232,7 +232,7 @@ def signal_to_noise_map(
 
 def model_image(
     fit,
-    mask_overlay=None,
+    mask=None,
     positions=None,
     as_subplot=False,
     units="arcsec",
@@ -255,7 +255,7 @@ def model_image(
     xlabelsize=16,
     ylabelsize=16,
     xyticksize=16,
-    mask_overlay_pointsize=10,
+    mask_pointsize=10,
     position_pointsize=10,
     output_path=None,
     output_format="show",
@@ -274,7 +274,7 @@ def model_image(
     """
     array_plotters.plot_array(
         array=fit.model_data,
-        mask_overlay=mask_overlay,
+        mask=mask,
         positions=positions,
         as_subplot=as_subplot,
         units=units,
@@ -297,7 +297,7 @@ def model_image(
         xlabelsize=xlabelsize,
         ylabelsize=ylabelsize,
         xyticksize=xyticksize,
-        mask_overlay_pointsize=mask_overlay_pointsize,
+        mask_pointsize=mask_pointsize,
         position_pointsize=position_pointsize,
         output_path=output_path,
         output_format=output_format,
@@ -307,7 +307,7 @@ def model_image(
 
 def residual_map(
     fit,
-    mask_overlay=None,
+    mask=None,
     positions=None,
     as_subplot=False,
     units="arcsec",
@@ -330,7 +330,7 @@ def residual_map(
     xlabelsize=16,
     ylabelsize=16,
     xyticksize=16,
-    mask_overlay_pointsize=10,
+    mask_pointsize=10,
     position_pointsize=10,
     output_path=None,
     output_format="show",
@@ -349,7 +349,7 @@ def residual_map(
     """
     array_plotters.plot_array(
         array=fit.residual_map,
-        mask_overlay=mask_overlay,
+        mask=mask,
         positions=positions,
         as_subplot=as_subplot,
         units=units,
@@ -372,7 +372,7 @@ def residual_map(
         xlabelsize=xlabelsize,
         ylabelsize=ylabelsize,
         xyticksize=xyticksize,
-        mask_overlay_pointsize=mask_overlay_pointsize,
+        mask_pointsize=mask_pointsize,
         position_pointsize=position_pointsize,
         output_path=output_path,
         output_format=output_format,
@@ -382,7 +382,7 @@ def residual_map(
 
 def normalized_residual_map(
     fit,
-    mask_overlay=None,
+    mask=None,
     positions=None,
     as_subplot=False,
     units="arcsec",
@@ -405,7 +405,7 @@ def normalized_residual_map(
     xlabelsize=16,
     ylabelsize=16,
     xyticksize=16,
-    mask_overlay_pointsize=10,
+    mask_pointsize=10,
     position_pointsize=10,
     output_path=None,
     output_format="show",
@@ -424,7 +424,7 @@ def normalized_residual_map(
     """
     array_plotters.plot_array(
         array=fit.normalized_residual_map,
-        mask_overlay=mask_overlay,
+        mask=mask,
         positions=positions,
         as_subplot=as_subplot,
         units=units,
@@ -447,7 +447,7 @@ def normalized_residual_map(
         xlabelsize=xlabelsize,
         ylabelsize=ylabelsize,
         xyticksize=xyticksize,
-        mask_overlay_pointsize=mask_overlay_pointsize,
+        mask_pointsize=mask_pointsize,
         position_pointsize=position_pointsize,
         output_path=output_path,
         output_format=output_format,
@@ -457,7 +457,7 @@ def normalized_residual_map(
 
 def chi_squared_map(
     fit,
-    mask_overlay=None,
+    mask=None,
     positions=None,
     as_subplot=False,
     units="arcsec",
@@ -480,7 +480,7 @@ def chi_squared_map(
     xlabelsize=16,
     ylabelsize=16,
     xyticksize=16,
-    mask_overlay_pointsize=10,
+    mask_pointsize=10,
     position_pointsize=10,
     output_path=None,
     output_format="show",
@@ -499,7 +499,7 @@ def chi_squared_map(
     """
     array_plotters.plot_array(
         array=fit.chi_squared_map,
-        mask_overlay=mask_overlay,
+        mask=mask,
         positions=positions,
         as_subplot=as_subplot,
         units=units,
@@ -522,7 +522,7 @@ def chi_squared_map(
         xlabelsize=xlabelsize,
         ylabelsize=ylabelsize,
         xyticksize=xyticksize,
-        mask_overlay_pointsize=mask_overlay_pointsize,
+        mask_pointsize=mask_pointsize,
         position_pointsize=position_pointsize,
         output_path=output_path,
         output_format=output_format,
@@ -530,17 +530,17 @@ def chi_squared_map(
     )
 
 
-def get_mask_overlay(fit, should_plot_mask_overlay):
+def get_mask(fit, should_plot_mask):
     """Get the masks of the fit if the masks should be plotted on the fit.
 
     Parameters
     -----------
     fit : datas.fitting.fitting.AbstractLensHyperFit
         The fit to the datas, which includes a lisrt of every model image, residual_map, chi-squareds, etc.
-    should_plot_mask_overlay : bool
+    should_plot_mask : bool
         If *True*, the masks is plotted on the fit's datas.
     """
-    if should_plot_mask_overlay:
+    if should_plot_mask:
         return fit.mask
     else:
         return None

@@ -11,7 +11,7 @@ from autoarray.operators.inversion import mappers
 
 def subplot(
     inversion,
-    mask_overlay=None,
+    mask=None,
     positions=None,
     grid=None,
     units="arcsec",
@@ -66,7 +66,7 @@ def subplot(
 
     reconstructed_image(
         inversion=inversion,
-        mask_overlay=mask_overlay,
+        mask=mask,
         positions=positions,
         grid=grid,
         as_subplot=True,
@@ -265,7 +265,7 @@ def subplot(
 
 def reconstructed_image(
     inversion,
-    mask_overlay=None,
+    mask=None,
     positions=None,
     grid=None,
     as_subplot=False,
@@ -296,7 +296,7 @@ def reconstructed_image(
 
     aa.plot.array(
         array=inversion.mapped_reconstructed_image,
-        mask_overlay=mask_overlay,
+        mask=mask,
         positions=positions,
         grid=grid,
         as_subplot=as_subplot,

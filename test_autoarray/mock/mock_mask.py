@@ -46,7 +46,7 @@ class MockMask(msk.Mask):
         Parameters
         ----------
         kernel_shape : (int, int)
-           The shape of the psf which defines the blurring region (e.al. the shape of the PSF)
+           The shape of the psf which defines the blurring region (e.aa. the shape of the PSF)
         """
 
         if kernel_shape[0] % 2 == 0 or kernel_shape[1] % 2 == 0:
