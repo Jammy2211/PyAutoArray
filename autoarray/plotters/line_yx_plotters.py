@@ -96,7 +96,7 @@ def set_xy_labels_and_ticksize(
     kpc_per_arcsec : float
         The conversion factor between arc-seconds and kiloparsecs, required to plotters the units in kpc.
     ylabel : str
-        The y-label of the figure, which is the physical quantitiy being plotted.
+        The y-label of the figure, which is the physical quantity being plotted.
     xlabelsize : int
         The fontsize of the x axes label.
     ylabelsize : int

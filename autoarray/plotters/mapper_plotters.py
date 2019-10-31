@@ -16,7 +16,7 @@ from autoarray.operators.inversion import mappers
 def image_and_mapper(
     imaging,
     mapper,
-    mask_overlay=None,
+    mask=None,
     positions=None,
     should_plot_centres=False,
     should_plot_grid=False,
@@ -36,9 +36,9 @@ def image_and_mapper(
     plt.figure(figsize=figsize)
     plt.subplot(rows, columns, 1)
 
-    imaging_plotters.image(
+    aa.plot.imaging.image(
         imaging=imaging,
-        mask_overlay=mask_overlay,
+        mask=mask,
         positions=positions,
         as_subplot=True,
         units=units,

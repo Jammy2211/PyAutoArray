@@ -14,7 +14,7 @@ def test__fit_quantities_are_output(fit_7x7, fit_plotter_util_path, plot_patch):
 
     aa.plot.fit_imaging.image(
         fit=fit_7x7,
-        mask_overlay=fit_7x7.mask,
+        mask=fit_7x7.mask,
         cb_tick_values=[1.0],
         cb_tick_labels=["1.0"],
         output_path=fit_plotter_util_path,
@@ -25,7 +25,7 @@ def test__fit_quantities_are_output(fit_7x7, fit_plotter_util_path, plot_patch):
 
     aa.plot.fit_imaging.noise_map(
         fit=fit_7x7,
-        mask_overlay=fit_7x7.mask,
+        mask=fit_7x7.mask,
         cb_tick_values=[1.0],
         cb_tick_labels=["1.0"],
         output_path=fit_plotter_util_path,
@@ -36,7 +36,7 @@ def test__fit_quantities_are_output(fit_7x7, fit_plotter_util_path, plot_patch):
 
     aa.plot.fit_imaging.signal_to_noise_map(
         fit=fit_7x7,
-        mask_overlay=fit_7x7.mask,
+        mask=fit_7x7.mask,
         cb_tick_values=[1.0],
         cb_tick_labels=["1.0"],
         output_path=fit_plotter_util_path,
@@ -47,7 +47,7 @@ def test__fit_quantities_are_output(fit_7x7, fit_plotter_util_path, plot_patch):
 
     aa.plot.fit_imaging.model_image(
         fit=fit_7x7,
-        mask_overlay=fit_7x7.mask,
+        mask=fit_7x7.mask,
         cb_tick_values=[1.0],
         cb_tick_labels=["1.0"],
         output_path=fit_plotter_util_path,
@@ -58,7 +58,7 @@ def test__fit_quantities_are_output(fit_7x7, fit_plotter_util_path, plot_patch):
 
     aa.plot.fit_imaging.residual_map(
         fit=fit_7x7,
-        mask_overlay=fit_7x7.mask,
+        mask=fit_7x7.mask,
         cb_tick_values=[1.0],
         cb_tick_labels=["1.0"],
         output_path=fit_plotter_util_path,
@@ -69,7 +69,7 @@ def test__fit_quantities_are_output(fit_7x7, fit_plotter_util_path, plot_patch):
 
     aa.plot.fit_imaging.normalized_residual_map(
         fit=fit_7x7,
-        mask_overlay=fit_7x7.mask,
+        mask=fit_7x7.mask,
         cb_tick_values=[1.0],
         cb_tick_labels=["1.0"],
         output_path=fit_plotter_util_path,
@@ -80,7 +80,7 @@ def test__fit_quantities_are_output(fit_7x7, fit_plotter_util_path, plot_patch):
 
     aa.plot.fit_imaging.chi_squared_map(
         fit=fit_7x7,
-        mask_overlay=fit_7x7.mask,
+        mask=fit_7x7.mask,
         cb_tick_values=[1.0],
         cb_tick_labels=["1.0"],
         output_path=fit_plotter_util_path,
