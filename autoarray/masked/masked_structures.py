@@ -12,7 +12,6 @@ logger = logging.getLogger(__name__)
 
 
 class MaskedArray(AbstractArray):
-
     @classmethod
     def manual_1d(cls, array, mask):
 

@@ -4,7 +4,6 @@ import numpy as np
 
 
 class TestRectangular:
-
     class TestGridIrregular:
         def test__pixelization_grid_returns_none_as_not_used(self, sub_grid_7x7):
 
@@ -121,7 +120,7 @@ class TestVoronoiBrightness:
         weight_map = pix.weight_map_from_hyper_image(hyper_image=hyper_image)
 
         sparse_to_grid = grids.SparseToGrid.from_total_pixels_grid_and_weight_map(
-            total_pixels=pix.pixels, grid=sub_grid_7x7, weight_map=weight_map, seed=1
+            total_pixels=al.pix.pixels, grid=sub_grid_7x7, weight_map=weight_map, seed=1
         )
 
         pixelization_grid_manual = grids.GridIrregular(

@@ -301,7 +301,12 @@ class Mapping(object):
             pad_size_0 // 2 : self.mask.shape[0] - pad_size_0 // 2,
             pad_size_1 // 2 : self.mask.shape[1] - pad_size_1 // 2,
         ]
-        return arrays.Array.manual_2d(array=trimmed_array, pixel_scales=self.mask.pixel_scales, sub_size=1, origin=self.mask.origin)
+        return arrays.Array.manual_2d(
+            array=trimmed_array,
+            pixel_scales=self.mask.pixel_scales,
+            sub_size=1,
+            origin=self.mask.origin,
+        )
 
     def convolve_padded_array_1d_with_psf(self, padded_array_1d, psf):
         """Convolve a 1d padded array of values (e.g. image before PSF blurring) with a PSF, and then trim \

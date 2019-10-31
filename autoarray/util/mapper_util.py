@@ -103,8 +103,9 @@ def pixelization_1d_index_for_voronoi_sub_mask_1d_index_from_grids_and_geometry(
                 ]
 
                 separation_from_neighbor = (
-                                                   grid[sub_mask_1d_index, 0] - pixelization_grid[neighbor, 0]
-                ) ** 2 + (grid[sub_mask_1d_index, 1] - pixelization_grid[neighbor, 1]) ** 2
+                    (grid[sub_mask_1d_index, 0] - pixelization_grid[neighbor, 0]) ** 2
+                    + (grid[sub_mask_1d_index, 1] - pixelization_grid[neighbor, 1]) ** 2
+                )
 
                 if (
                     separation_from_neighbor

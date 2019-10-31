@@ -46,7 +46,10 @@ def subplot(
         figsize = figsize_tool
 
     ratio = float(
-        (inversion.mapper.grid.arc_second_maxima[1] - inversion.mapper.grid.arc_second_minima[1])
+        (
+            inversion.mapper.grid.arc_second_maxima[1]
+            - inversion.mapper.grid.arc_second_minima[1]
+        )
         / (
             inversion.mapper.grid.arc_second_maxima[0]
             - inversion.mapper.grid.arc_second_minima[0]

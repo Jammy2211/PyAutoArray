@@ -9,7 +9,13 @@ from autoarray import decorator_util
 from autoarray import exc
 from autoarray.structures import abstract_structure
 from autoarray.mask import mask as msk
-from autoarray.util import sparse_util, array_util, grid_util, mask_util, pixelization_util
+from autoarray.util import (
+    sparse_util,
+    array_util,
+    grid_util,
+    mask_util,
+    pixelization_util,
+)
 
 
 class AbstractGrid(abstract_structure.AbstractStructure):
@@ -178,14 +184,14 @@ class AbstractGrid(abstract_structure.AbstractStructure):
             kernel_shape=kernel_shape
         )
 
-        blurring_grid_1d = grid_util.grid_1d_via_mask_2d(mask_2d=blurring_mask,
-                                                         pixel_scales=blurring_mask.pixel_scales,
-                                                         sub_size=blurring_mask.sub_size,
-                                                         origin=blurring_mask.origin,
-                                                         )
+        blurring_grid_1d = grid_util.grid_1d_via_mask_2d(
+            mask_2d=blurring_mask,
+            pixel_scales=blurring_mask.pixel_scales,
+            sub_size=blurring_mask.sub_size,
+            origin=blurring_mask.origin,
+        )
 
         return blurring_mask.mapping.grid_from_grid_1d(grid_1d=blurring_grid_1d)
-
 
     def new_grid_with_binned_grid(self, binned_grid):
         # noinspection PyAttributeOutsideInit
@@ -226,7 +232,12 @@ class AbstractGrid(abstract_structure.AbstractStructure):
         return ((-(self.shape_2d_arcsec[0] / 2.0)), (-(self.shape_2d_arcsec[1] / 2.0)))
 
     def extent_with_buffer(self, buffer=1.0e-8):
-        return [self.arc_second_minima[0] - buffer, self.arc_second_maxima[0] + buffer, self.arc_second_minima[1] - buffer, self.arc_second_maxima[1] + buffer]
+        return [
+            self.arc_second_minima[0] - buffer,
+            self.arc_second_maxima[0] + buffer,
+            self.arc_second_minima[1] - buffer,
+            self.arc_second_maxima[1] + buffer,
+        ]
 
     @property
     def yticks(self):
@@ -304,13 +315,16 @@ class AbstractGrid(abstract_structure.AbstractStructure):
             sub_size=self.mask.sub_size,
         )
 
-        padded_grid_1d = grid_util.grid_1d_via_mask_2d(mask_2d=padded_mask,
-                                                         pixel_scales=padded_mask.pixel_scales,
-                                                         sub_size=padded_mask.sub_size,
-                                                         origin=padded_mask.origin,
-                                                         )
+        padded_grid_1d = grid_util.grid_1d_via_mask_2d(
+            mask_2d=padded_mask,
+            pixel_scales=padded_mask.pixel_scales,
+            sub_size=padded_mask.sub_size,
+            origin=padded_mask.origin,
+        )
 
-        padded_sub_grid =  padded_mask.mapping.grid_from_sub_grid_1d(sub_grid_1d=padded_grid_1d)
+        padded_sub_grid = padded_mask.mapping.grid_from_sub_grid_1d(
+            sub_grid_1d=padded_grid_1d
+        )
 
         if self.interpolator is None:
             return padded_sub_grid
@@ -562,11 +576,12 @@ class Grid(AbstractGrid):
             kernel_shape=kernel_shape
         )
 
-        blurring_grid_1d = grid_util.grid_1d_via_mask_2d(mask_2d=blurring_mask,
-                                                         pixel_scales=blurring_mask.pixel_scales,
-                                                         sub_size=blurring_mask.sub_size,
-                                                         origin=blurring_mask.origin,
-                                                         )
+        blurring_grid_1d = grid_util.grid_1d_via_mask_2d(
+            mask_2d=blurring_mask,
+            pixel_scales=blurring_mask.pixel_scales,
+            sub_size=blurring_mask.sub_size,
+            origin=blurring_mask.origin,
+        )
 
         return blurring_mask.mapping.grid_from_grid_1d(grid_1d=blurring_grid_1d)
 
@@ -669,7 +684,12 @@ class GridIrregular(np.ndarray):
         return ((-(self.shape_2d_arcsec[0] / 2.0)), (-(self.shape_2d_arcsec[1] / 2.0)))
 
     def extent_with_buffer(self, buffer=1.0e-8):
-        return [self.arc_second_minima[0] - buffer, self.arc_second_maxima[0] + buffer, self.arc_second_minima[1] - buffer, self.arc_second_maxima[1] + buffer]
+        return [
+            self.arc_second_minima[0] - buffer,
+            self.arc_second_maxima[0] + buffer,
+            self.arc_second_minima[1] - buffer,
+            self.arc_second_maxima[1] + buffer,
+        ]
 
 
 class SparseToGrid(object):
@@ -825,10 +845,8 @@ class SparseToGrid(object):
 
 
 class GridRectangular(Grid):
-
     def __new__(
-            cls, grid_1d, shape_2d, pixel_scales, origin=(0.0, 0.0), *args,
-            **kwargs
+        cls, grid_1d, shape_2d, pixel_scales, origin=(0.0, 0.0), *args, **kwargs
     ):
         """A pixelization-grid of (y,x) coordinates which are used to form the pixel centres of adaptive pixelizations in the \
         *pixelizations* module.
@@ -850,14 +868,13 @@ class GridRectangular(Grid):
         """
 
         mask = msk.Mask.unmasked(
-            shape_2d=shape_2d,
-            pixel_scales=pixel_scales,
-            sub_size=1,
-            origin=origin,
+            shape_2d=shape_2d, pixel_scales=pixel_scales, sub_size=1, origin=origin
         )
 
         obj = super(GridRectangular, cls).__new__(cls=cls, grid_1d=grid_1d, mask=mask)
-        pixel_neighbors, pixel_neighbors_size = pixelization_util.rectangular_neighbors_from_shape(shape=shape_2d)
+        pixel_neighbors, pixel_neighbors_size = pixelization_util.rectangular_neighbors_from_shape(
+            shape=shape_2d
+        )
         obj.pixel_neighbors = pixel_neighbors.astype("int")
         obj.pixel_neighbors_size = pixel_neighbors_size.astype("int")
         return obj
@@ -900,13 +917,12 @@ class GridRectangular(Grid):
         origin = ((y_max + y_min) / 2.0, (x_max + x_min) / 2.0)
 
         grid_1d = grid_util.grid_1d_via_shape_2d(
-                shape_2d=shape_2d,
-                pixel_scales=pixel_scales,
-                sub_size=1,
-                origin=origin,
-            )
+            shape_2d=shape_2d, pixel_scales=pixel_scales, sub_size=1, origin=origin
+        )
 
-        return GridRectangular(grid_1d=grid_1d, shape_2d=shape_2d, pixel_scales=pixel_scales, origin=origin)
+        return GridRectangular(
+            grid_1d=grid_1d, shape_2d=shape_2d, pixel_scales=pixel_scales, origin=origin
+        )
 
     @property
     def pixels(self):
@@ -914,7 +930,10 @@ class GridRectangular(Grid):
 
     @property
     def shape_2d_arcsec(self):
-        return (self.shape_2d[0] * self.pixel_scales[0], self.shape_2d[1] * self.pixel_scales[1])
+        return (
+            self.shape_2d[0] * self.pixel_scales[0],
+            self.shape_2d[1] * self.pixel_scales[1],
+        )
 
 
 class GridVoronoi(GridIrregular):
@@ -936,9 +955,9 @@ class GridVoronoi(GridIrregular):
         An array of length (voronoi_pixels) which gives the number of neighbors of every pixel in the \
         Voronoi grid.
     """
+
     def __new__(
-            cls, grid_1d, nearest_irregular_1d_index_for_mask_1d_index=None, *args,
-            **kwargs
+        cls, grid_1d, nearest_irregular_1d_index_for_mask_1d_index=None, *args, **kwargs
     ):
         """A pixelization-grid of (y,x) coordinates which are used to form the pixel centres of adaptive pixelizations in the \
         *pixelizations* module.
@@ -977,7 +996,9 @@ class GridVoronoi(GridIrregular):
 
         obj.pixel_neighbors = pixel_neighbors.astype("int")
         obj.pixel_neighbors_size = pixel_neighbors_size.astype("int")
-        obj.nearest_irregular_1d_index_for_mask_1d_index = nearest_irregular_1d_index_for_mask_1d_index
+        obj.nearest_irregular_1d_index_for_mask_1d_index = (
+            nearest_irregular_1d_index_for_mask_1d_index
+        )
 
         return obj
 
@@ -1036,7 +1057,6 @@ class Interpolator(object):
 
 
 class Positions(list):
-
     def __init__(self, positions):
 
         positions = list(
@@ -1097,10 +1117,9 @@ class Positions(list):
             The path to the positions .dat file containing the positions (e.g. '/path/to/positions.dat')
         """
 
-        positions_out = list(map(
-            lambda position_set: np.ndarray.tolist(position_set),
-            self,
-        ))
+        positions_out = list(
+            map(lambda position_set: np.ndarray.tolist(position_set), self)
+        )
 
         with open(positions_path, "w") as f:
             for position in positions_out:

@@ -18,7 +18,7 @@ class Geometry(object):
 
     @property
     def central_pixel_coordinates(self):
-        return float(self.mask.shape[0] - 1) / 2, float(self.mask.shape[1] - 1) / 2
+        return float(self.mask.shape_2d[0] - 1) / 2, float(self.mask.shape_2d[1] - 1) / 2
 
     @property
     def origin(self):
@@ -276,6 +276,7 @@ class Geometry(object):
         y_pixels_min = np.min(extraction_grid_1d[:, 0])
         x_pixels_max = np.max(extraction_grid_1d[:, 1])
         x_pixels_min = np.min(extraction_grid_1d[:, 1])
+
         return (
             ((y_pixels_max + y_pixels_min - 1.0) / 2.0),
             ((x_pixels_max + x_pixels_min - 1.0) / 2.0),

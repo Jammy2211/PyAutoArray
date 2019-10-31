@@ -9,10 +9,11 @@ test_data_dir = "{}/../test_files/arrays/".format(
 
 
 class TestImaging:
-
     def test__simulator_grid_is_uniform_grid_with_same_inputs(self):
 
-        grid = aa.grid.uniform(shape_2d=(31, 31), pixel_scales=0.05, sub_size=1, origin=(0.1, 0.1))
+        grid = aa.grid.uniform(
+            shape_2d=(31, 31), pixel_scales=0.05, sub_size=1, origin=(0.1, 0.1)
+        )
 
         simulator = aa.simulator.imaging(
             shape_2d=(31, 31),
@@ -106,7 +107,7 @@ class TestImaging:
         assert adaptive_optics.background_sky_level == 1.0
 
     def test__from_image_same_as_manual_image_input(self):
-        
+
         psf = aa.kernel.manual_2d(
             array=np.array([[0.0, 1.0, 0.0], [1.0, 2.0, 1.0], [0.0, 1.0, 0.0]]),
             pixel_scales=1.0,
@@ -121,13 +122,11 @@ class TestImaging:
             psf=psf,
             exposure_time=10000.0,
             background_sky_level=100.0,
-            add_noise=True, 
-            noise_seed=1
+            add_noise=True,
+            noise_seed=1,
         )
 
-        imaging_simulated = simulator.from_image(
-            image=image,
-        )
+        imaging_simulated = simulator.from_image(image=image)
 
         imaging_manual = aa.imaging.simulate(
             image=image,
@@ -147,4 +146,3 @@ class TestImaging:
         assert (
             imaging_simulated.exposure_time_map == imaging_manual.exposure_time_map
         ).all()
-

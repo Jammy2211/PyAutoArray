@@ -33,16 +33,14 @@ class MockRegularization(object):
 
 
 class MockPixelizationGrid(object):
-
     def __init__(self, pixel_neighbors=None, pixel_neighbors_size=None):
 
         self.pixel_neighbors = pixel_neighbors
         self.pixel_neighbors_size = pixel_neighbors_size
 
+
 class MockRegMapper(object):
-    def __init__(
-        self, pixelization_grid=None, pixel_signals=None
-    ):
+    def __init__(self, pixelization_grid=None, pixel_signals=None):
 
         self.pixelization_grid = pixelization_grid
         self.pixel_signals = pixel_signals

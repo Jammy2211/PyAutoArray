@@ -126,13 +126,13 @@ class TestRectangular:
         pix = aa.pix.Rectangular(shape=(3, 3))
 
         mapper = pix.mapper_from_grid_and_sparse_grid(
-            grid=grid,
-            sparse_grid=None,
-            inversion_uses_border=False,
+            grid=grid, sparse_grid=None, inversion_uses_border=False
         )
 
         assert mapper.is_image_plane_pixelization == False
-        assert mapper.pixelization_grid.shape_2d_arcsec == pytest.approx((2.2, 2.2), 1.0e-4)
+        assert mapper.pixelization_grid.shape_2d_arcsec == pytest.approx(
+            (2.2, 2.2), 1.0e-4
+        )
         assert mapper.pixelization_grid.origin == pytest.approx((0.0, 0.0), 1.0e-4)
 
         assert (
@@ -230,13 +230,13 @@ class TestRectangular:
         pix = aa.pix.Rectangular(shape=(3, 3))
 
         mapper = pix.mapper_from_grid_and_sparse_grid(
-            grid=grid,
-            sparse_grid=None,
-            inversion_uses_border=False,
+            grid=grid, sparse_grid=None, inversion_uses_border=False
         )
 
         assert mapper.is_image_plane_pixelization == False
-        assert mapper.pixelization_grid.shape_2d_arcsec == pytest.approx((2.0, 2.0), 1.0e-4)
+        assert mapper.pixelization_grid.shape_2d_arcsec == pytest.approx(
+            (2.0, 2.0), 1.0e-4
+        )
         assert mapper.pixelization_grid.origin == pytest.approx((0.0, 0.0), 1.0e-4)
 
         assert (
@@ -299,13 +299,13 @@ class TestRectangular:
         pix = aa.pix.Rectangular(shape=(3, 3))
 
         mapper = pix.mapper_from_grid_and_sparse_grid(
-            grid=grid,
-            sparse_grid=None,
-            inversion_uses_border=False,
+            grid=grid, sparse_grid=None, inversion_uses_border=False
         )
 
         assert mapper.is_image_plane_pixelization == False
-        assert mapper.pixelization_grid.shape_2d_arcsec == pytest.approx((2.0, 2.0), 1.0e-4)
+        assert mapper.pixelization_grid.shape_2d_arcsec == pytest.approx(
+            (2.0, 2.0), 1.0e-4
+        )
         assert mapper.pixelization_grid.origin == pytest.approx((0.0, 0.0), 1.0e-4)
 
         assert (
@@ -372,7 +372,7 @@ class TestVoronoiMagnification:
 
         pix = aa.pix.VoronoiMagnification(shape=(3, 3))
         sparse_to_grid = grids.SparseToGrid.from_grid_and_unmasked_2d_grid_shape(
-            grid=grid, unmasked_sparse_shape=pix.shape
+            grid=grid, unmasked_sparse_shape=al.pix.shape
         )
 
         pixelization_grid = aa.grid_voronoi(
@@ -388,9 +388,11 @@ class TestVoronoiMagnification:
         )
 
         assert mapper.is_image_plane_pixelization == True
-        assert mapper.pixelization_grid.shape_2d_arcsec == pytest.approx((2.0, 2.0), 1.0e-4)
+        assert mapper.pixelization_grid.shape_2d_arcsec == pytest.approx(
+            (2.0, 2.0), 1.0e-4
+        )
         assert (mapper.pixelization_grid == sparse_to_grid.sparse).all()
-   #     assert mapper.pixelization_grid.origin == pytest.approx((0.0, 0.0), 1.0e-4)
+        #     assert mapper.pixelization_grid.origin == pytest.approx((0.0, 0.0), 1.0e-4)
         assert (mapper.hyper_image == np.ones((2, 2))).all()
 
         assert isinstance(mapper, mappers.MapperVoronoi)
@@ -448,7 +450,7 @@ class TestVoronoiMagnification:
 
         pix = aa.pix.VoronoiMagnification(shape=(3, 3))
         sparse_to_grid = grids.SparseToGrid.from_grid_and_unmasked_2d_grid_shape(
-            grid=grid, unmasked_sparse_shape=pix.shape
+            grid=grid, unmasked_sparse_shape=al.pix.shape
         )
 
         pixelization_grid = aa.grid_voronoi(
@@ -461,9 +463,11 @@ class TestVoronoiMagnification:
         )
 
         assert mapper.is_image_plane_pixelization == True
-        assert mapper.pixelization_grid.shape_2d_arcsec == pytest.approx((2.0, 2.0), 1.0e-4)
+        assert mapper.pixelization_grid.shape_2d_arcsec == pytest.approx(
+            (2.0, 2.0), 1.0e-4
+        )
         assert (mapper.pixelization_grid == sparse_to_grid.sparse).all()
-     #   assert mapper.pixelization_grid.origin == pytest.approx((0.0, 0.0), 1.0e-4)
+        #   assert mapper.pixelization_grid.origin == pytest.approx((0.0, 0.0), 1.0e-4)
 
         assert isinstance(mapper, mappers.MapperVoronoi)
 
@@ -535,7 +539,7 @@ class TestVoronoiMagnification:
 
         pix = aa.pix.VoronoiMagnification(shape=(3, 3))
         sparse_to_grid = grids.SparseToGrid.from_grid_and_unmasked_2d_grid_shape(
-            grid=grid, unmasked_sparse_shape=pix.shape
+            grid=grid, unmasked_sparse_shape=al.pix.shape
         )
 
         pixelization_grid = aa.grid_voronoi(
@@ -550,7 +554,7 @@ class TestVoronoiMagnification:
         assert mapper.is_image_plane_pixelization == True
         assert mapper.grid.shape_2d_arcsec == pytest.approx((2.02, 2.01), 1.0e-4)
         assert (mapper.pixelization_grid == sparse_to_grid.sparse).all()
-    #    assert mapper.pixelization_grid.origin == pytest.approx((0.0, 0.005), 1.0e-4)
+        #    assert mapper.pixelization_grid.origin == pytest.approx((0.0, 0.005), 1.0e-4)
 
         assert isinstance(mapper, mappers.MapperVoronoi)
 
@@ -605,7 +609,7 @@ class TestVoronoiMagnification:
 
         pix = aa.pix.VoronoiMagnification(shape=(3, 3))
         sparse_to_grid = grids.SparseToGrid.from_grid_and_unmasked_2d_grid_shape(
-            grid=grid, unmasked_sparse_shape=pix.shape
+            grid=grid, unmasked_sparse_shape=al.pix.shape
         )
 
         pixelization_grid = aa.grid_voronoi(
@@ -618,9 +622,11 @@ class TestVoronoiMagnification:
         )
 
         assert mapper.is_image_plane_pixelization == True
-        assert mapper.pixelization_grid.shape_2d_arcsec == pytest.approx((2.0, 2.0), 1.0e-4)
+        assert mapper.pixelization_grid.shape_2d_arcsec == pytest.approx(
+            (2.0, 2.0), 1.0e-4
+        )
         assert (mapper.pixelization_grid == sparse_to_grid.sparse).all()
-     #   assert mapper.pixelization_grid.origin == pytest.approx((1.0, 1.0), 1.0e-4)
+        #   assert mapper.pixelization_grid.origin == pytest.approx((1.0, 1.0), 1.0e-4)
 
         assert isinstance(mapper, mappers.MapperVoronoi)
 

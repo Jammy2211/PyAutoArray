@@ -3,14 +3,26 @@ import numpy as np
 from autoarray.masked import masked_data as md
 from autoarray.util import fit_util
 
+
 def fit(masked_data, model_data, inversion=None):
 
     if isinstance(masked_data, md.MaskedImaging):
-        return ImagingFit(mask=masked_data.mask, image=masked_data.image, noise_map=masked_data.noise_map,
-                          model_image=model_data, inversion=inversion)
+        return ImagingFit(
+            mask=masked_data.mask,
+            image=masked_data.image,
+            noise_map=masked_data.noise_map,
+            model_image=model_data,
+            inversion=inversion,
+        )
     elif isinstance(masked_data, md.MaskedInterferometer):
-        return InterferometerFit(visibilities_mask=masked_data.visibilities_mask, visibilities=masked_data.visibilities, noise_map=masked_data.noise_map,
-                          model_visibilities=model_data, inversion=inversion)
+        return InterferometerFit(
+            visibilities_mask=masked_data.visibilities_mask,
+            visibilities=masked_data.visibilities,
+            noise_map=masked_data.noise_map,
+            model_visibilities=model_data,
+            inversion=inversion,
+        )
+
 
 class DataFit(object):
 
