@@ -592,6 +592,22 @@ class TestMapping:
         assert (array.in_2d == np.array([[7.0, 8.0, 9.0]])).all()
 
 
+class TestNewMask:
+
+    def test__new_mask_with_new_sub_size(self):
+
+        mask = aa.mask.unmasked(shape_2d=(3,3), sub_size=4)
+
+        mask_new = mask.mapping.mask_new_sub_size_from_mask(mask=mask)
+
+        assert (mask_new == np.full(fill_value=False, shape=(3,3))).all()
+        assert mask_new.sub_size == 1
+
+        mask_new = mask.mapping.mask_new_sub_size_from_mask(mask=mask, sub_size=8)
+
+        assert (mask_new == np.full(fill_value=False, shape=(3,3))).all()
+        assert mask_new.sub_size == 8
+
 class TestMappingExceptions:
     def test__array_2d_from_array_1d__raises_exception_if_input_array_1d_is_not_shape_of_pixels_in_mask(
         self

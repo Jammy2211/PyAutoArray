@@ -225,18 +225,29 @@ class AbstractGrid(abstract_structure.AbstractStructure):
 
     @property
     def arc_second_maxima(self):
-        return ((self.shape_2d_arcsec[0] / 2.0), (self.shape_2d_arcsec[1] / 2.0))
+        return (self.origin[0] + (self.shape_2d_arcsec[0] / 2.0), self.origin[1] + (self.shape_2d_arcsec[1] / 2.0))
 
     @property
     def arc_second_minima(self):
-        return ((-(self.shape_2d_arcsec[0] / 2.0)), (-(self.shape_2d_arcsec[1] / 2.0)))
+        return ((self.origin[0]-(self.shape_2d_arcsec[0] / 2.0)), (self.origin[1]-(self.shape_2d_arcsec[1] / 2.0)))
+
+    @property
+    def axis_limits(self):
+        return np.asarray(
+                [
+                    self.arc_second_minima[1],
+                    self.arc_second_maxima[1],
+                    self.arc_second_minima[0],
+                    self.arc_second_maxima[0],
+                ]
+            )
 
     def extent_with_buffer(self, buffer=1.0e-8):
         return [
-            self.arc_second_minima[0] - buffer,
-            self.arc_second_maxima[0] + buffer,
             self.arc_second_minima[1] - buffer,
             self.arc_second_maxima[1] + buffer,
+            self.arc_second_minima[0] - buffer,
+            self.arc_second_maxima[0] + buffer,
         ]
 
     @property
@@ -624,7 +635,7 @@ class GridIrregular(np.ndarray):
     @classmethod
     def from_grid_and_unmasked_2d_grid_shape(cls, unmasked_sparse_shape, grid):
 
-        sparse_grid = SparseToGrid.from_grid_and_unmasked_2d_grid_shape(
+        sparse_grid = SparseGrid.from_grid_and_unmasked_2d_grid_shape(
             unmasked_sparse_shape=unmasked_sparse_shape, grid=grid
         )
 
@@ -677,22 +688,25 @@ class GridIrregular(np.ndarray):
 
     @property
     def arc_second_maxima(self):
-        return ((self.shape_2d_arcsec[0] / 2.0), (self.shape_2d_arcsec[1] / 2.0))
+        return (np.amax(self[:, 0]), np.amax(self[:, 1]))
 
     @property
     def arc_second_minima(self):
-        return ((-(self.shape_2d_arcsec[0] / 2.0)), (-(self.shape_2d_arcsec[1] / 2.0)))
+        return (np.amin(self[:, 0]),  np.amin(self[:, 1]))
 
-    def extent_with_buffer(self, buffer=1.0e-8):
-        return [
-            self.arc_second_minima[0] - buffer,
-            self.arc_second_maxima[0] + buffer,
-            self.arc_second_minima[1] - buffer,
-            self.arc_second_maxima[1] + buffer,
-        ]
+    @property
+    def axis_limits(self):
+        return np.asarray(
+                [
+                    self.arc_second_minima[1],
+                    self.arc_second_maxima[1],
+                    self.arc_second_minima[0],
+                    self.arc_second_maxima[0],
+                ]
+            )
 
 
-class SparseToGrid(object):
+class SparseGrid(object):
     def __init__(self, sparse_grid, sparse_1d_index_for_mask_1d_index):
         """A sparse grid of coordinates, where each entry corresponds to the (y,x) coordinates at the centre of a \
         pixel on the sparse grid. To setup the sparse-grid, it is laid over a grid of unmasked pixels, such \
@@ -732,7 +746,7 @@ class SparseToGrid(object):
     def from_grid_and_unmasked_2d_grid_shape(cls, grid, unmasked_sparse_shape):
         """Calculate the image-plane pixelization from a grid of coordinates (and its mask).
 
-        See *grid_stacks.SparseToGrid* for details on how this grid is calculated.
+        See *grid_stacks.SparseGrid* for details on how this grid is calculated.
 
         Parameters
         -----------
@@ -806,7 +820,7 @@ class SparseToGrid(object):
             unmasked_sparse_for_sparse=unmasked_sparse_for_sparse,
         )
 
-        return SparseToGrid(
+        return SparseGrid(
             sparse_grid=sparse_grid,
             sparse_1d_index_for_mask_1d_index=sparse_1d_index_for_mask_1d_index,
         )
@@ -817,7 +831,7 @@ class SparseToGrid(object):
     ):
         """Calculate the image-plane pixelization from a grid of coordinates (and its mask).
 
-        See *grid_stacks.SparseToGrid* for details on how this grid is calculated.
+        See *grid_stacks.SparseGrid* for details on how this grid is calculated.
 
         Parameters
         -----------
@@ -834,7 +848,7 @@ class SparseToGrid(object):
 
         kmeans = kmeans.fit(X=grid.in_1d_binned, sample_weight=weight_map)
 
-        return SparseToGrid(
+        return SparseGrid(
             sparse_grid=kmeans.cluster_centers_,
             sparse_1d_index_for_mask_1d_index=kmeans.labels_.astype("int"),
         )
@@ -931,8 +945,8 @@ class GridRectangular(Grid):
     @property
     def shape_2d_arcsec(self):
         return (
-            self.shape_2d[0] * self.pixel_scales[0],
-            self.shape_2d[1] * self.pixel_scales[1],
+            (self.shape_2d[0] * self.pixel_scales[0]),
+             (self.shape_2d[1] * self.pixel_scales[1]),
         )
 
 

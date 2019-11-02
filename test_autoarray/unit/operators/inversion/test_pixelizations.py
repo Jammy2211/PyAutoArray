@@ -119,13 +119,13 @@ class TestVoronoiBrightness:
 
         weight_map = pix.weight_map_from_hyper_image(hyper_image=hyper_image)
 
-        sparse_to_grid = grids.SparseToGrid.from_total_pixels_grid_and_weight_map(
-            total_pixels=al.pix.pixels, grid=sub_grid_7x7, weight_map=weight_map, seed=1
+        sparse_grid = grids.SparseGrid.from_total_pixels_grid_and_weight_map(
+            total_pixels=pix.pixels, grid=sub_grid_7x7, weight_map=weight_map, seed=1
         )
 
         pixelization_grid_manual = grids.GridIrregular(
-            grid=sparse_to_grid.sparse,
-            nearest_irregular_1d_index_for_mask_1d_index=sparse_to_grid.sparse_1d_index_for_mask_1d_index,
+            grid=sparse_grid.sparse,
+            nearest_irregular_1d_index_for_mask_1d_index=sparse_grid.sparse_1d_index_for_mask_1d_index,
         )
 
         assert (pixelization_grid_manual == pixelization_grid).all()

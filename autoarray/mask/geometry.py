@@ -93,7 +93,8 @@ class Geometry(object):
             sub_size=1,
             origin=self.mask.origin,
         )
-        return self.mask.mapping.grid_from_grid_1d(grid_1d=grid_1d)
+
+        return self.mask.regions.unmasked_mask.mapping.grid_from_grid_1d(grid_1d=grid_1d)
 
     @property
     def masked_grid(self):
