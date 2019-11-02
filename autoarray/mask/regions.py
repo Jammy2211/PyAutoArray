@@ -87,6 +87,19 @@ class Regions(object):
         )
 
     @property
+    def unmasked_mask(self):
+        """The indicies of the mask's border pixels, where a border pixel is any unmasked pixel on an
+        exterior edge (e.g. next to at least one pixel with a *True* value but not central pixels like those within \
+        an annulus mask).
+        """
+        return msk.Mask.unmasked(
+            shape_2d=self.mask.shape_2d,
+            sub_size=self.mask.sub_size,
+            pixel_scales=self.mask.pixel_scales,
+            origin=self.mask.origin,
+        )
+
+    @property
     def edge_mask(self):
         """The indicies of the mask's border pixels, where a border pixel is any unmasked pixel on an
         exterior edge (e.g. next to at least one pixel with a *True* value but not central pixels like those within \

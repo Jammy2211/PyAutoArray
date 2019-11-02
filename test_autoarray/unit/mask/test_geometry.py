@@ -233,17 +233,24 @@ class TestCoordinates:
 
 
 class TestGrids:
-    def test__unmasked_grid_2d__compare_to_array_util(self):
+    def test__unmasked_grid__compare_to_array_util(self):
 
         grid_2d_util = aa.util.grid.grid_2d_via_shape_2d(
+            shape_2d=(4, 7), pixel_scales=(0.56, 0.56), sub_size=1
+        )
+
+        grid_1d_util = aa.util.grid.grid_1d_via_shape_2d(
             shape_2d=(4, 7), pixel_scales=(0.56, 0.56), sub_size=1
         )
 
         mask = aa.mask.manual(
             mask_2d=np.full(fill_value=False, shape=(4, 7)), pixel_scales=(0.56, 0.56)
         )
+        mask[0,0] = True
 
+        assert mask.geometry.unmasked_grid.in_1d == pytest.approx(grid_1d_util, 1e-4)
         assert mask.geometry.unmasked_grid.in_2d == pytest.approx(grid_2d_util, 1e-4)
+        assert (mask.geometry.unmasked_grid.mask == np.full(fill_value=False, shape=(4, 7))).all()
 
         mask = aa.mask.manual(
             mask_2d=np.full(fill_value=False, shape=(3, 3)), pixel_scales=(1.0, 1.0)
@@ -264,10 +271,15 @@ class TestGrids:
             shape_2d=(4, 7), pixel_scales=(0.8, 0.56), sub_size=1
         )
 
+        grid_1d_util = aa.util.grid.grid_1d_via_shape_2d(
+            shape_2d=(4, 7), pixel_scales=(0.8, 0.56), sub_size=1
+        )
+
         mask = aa.mask.manual(
             mask_2d=np.full(fill_value=False, shape=(4, 7)), pixel_scales=(0.8, 0.56)
         )
 
+        assert mask.geometry.unmasked_grid.in_1d == pytest.approx(grid_1d_util, 1e-4)
         assert mask.geometry.unmasked_grid.in_2d == pytest.approx(grid_2d_util, 1e-4)
 
         mask = aa.mask.manual(
@@ -284,27 +296,6 @@ class TestGrids:
                 ]
             )
         ).all()
-
-    def test__unmasked_grid_1d__compare_to_array_util(self):
-        grid_1d_util = aa.util.grid.grid_1d_via_shape_2d(
-            shape_2d=(4, 7), pixel_scales=(0.56, 0.56), sub_size=1
-        )
-
-        mask = aa.mask.manual(
-            mask_2d=np.full(fill_value=False, shape=(4, 7)), pixel_scales=(0.56, 0.56)
-        )
-
-        assert mask.geometry.unmasked_grid.in_1d == pytest.approx(grid_1d_util, 1e-4)
-
-        grid_1d_util = aa.util.grid.grid_1d_via_shape_2d(
-            shape_2d=(4, 7), pixel_scales=(0.8, 0.56), sub_size=1
-        )
-
-        mask = aa.mask.manual(
-            mask_2d=np.full(fill_value=False, shape=(4, 7)), pixel_scales=(0.8, 0.56)
-        )
-
-        assert mask.geometry.unmasked_grid.in_1d == pytest.approx(grid_1d_util, 1e-4)
 
     def test__grid_with_nonzero_origins__compure_to_array_util(self):
 

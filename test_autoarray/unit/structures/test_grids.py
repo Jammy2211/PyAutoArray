@@ -1049,7 +1049,7 @@ class TestGridIrregular:
 
         grid = aa.masked.grid.from_mask(mask=mask)
 
-        sparse_to_grid = grids.SparseToGrid.from_grid_and_unmasked_2d_grid_shape(
+        sparse_grid = grids.SparseGrid.from_grid_and_unmasked_2d_grid_shape(
             unmasked_sparse_shape=(10, 10), grid=grid
         )
 
@@ -1057,14 +1057,14 @@ class TestGridIrregular:
             unmasked_sparse_shape=(10, 10), grid=grid
         )
 
-        assert (sparse_to_grid.sparse == pixelization_grid).all()
+        assert (sparse_grid.sparse == pixelization_grid).all()
         assert (
-            sparse_to_grid.sparse_1d_index_for_mask_1d_index
+            sparse_grid.sparse_1d_index_for_mask_1d_index
             == pixelization_grid.nearest_irregular_1d_index_for_mask_1d_index
         ).all()
 
 
-class TestSparseToGrid:
+class TestSparseGrid:
     class TestUnmaskedShape:
         def test__properties_consistent_with_util(self):
             mask = aa.mask.manual(
@@ -1077,7 +1077,7 @@ class TestSparseToGrid:
 
             grid = aa.masked.grid.from_mask(mask=mask)
 
-            sparse_to_grid = grids.SparseToGrid.from_grid_and_unmasked_2d_grid_shape(
+            sparse_grid = grids.SparseGrid.from_grid_and_unmasked_2d_grid_shape(
                 unmasked_sparse_shape=(10, 10), grid=grid
             )
 
@@ -1137,10 +1137,10 @@ class TestSparseToGrid:
             )
 
             assert (
-                sparse_to_grid.sparse_1d_index_for_mask_1d_index
+                sparse_grid.sparse_1d_index_for_mask_1d_index
                 == sparse_1d_index_for_mask_1d_index_util
             ).all()
-            assert (sparse_to_grid.sparse == sparse_grid_util).all()
+            assert (sparse_grid.sparse == sparse_grid_util).all()
 
         def test__sparse_grid_overlaps_mask_perfectly__masked_pixels_in_masked_sparse_grid(
             self
@@ -1155,16 +1155,16 @@ class TestSparseToGrid:
 
             grid = aa.masked.grid.from_mask(mask=mask)
 
-            sparse_to_grid = grids.SparseToGrid.from_grid_and_unmasked_2d_grid_shape(
+            sparse_grid = grids.SparseGrid.from_grid_and_unmasked_2d_grid_shape(
                 unmasked_sparse_shape=(3, 3), grid=grid
             )
 
             assert (
-                sparse_to_grid.sparse_1d_index_for_mask_1d_index
+                sparse_grid.sparse_1d_index_for_mask_1d_index
                 == np.array([0, 1, 2, 3, 4])
             ).all()
             assert (
-                sparse_to_grid.sparse
+                sparse_grid.sparse
                 == np.array(
                     [[1.0, 0.0], [0.0, -1.0], [0.0, 0.0], [0.0, 1.0], [-1.0, 0.0]]
                 )
@@ -1186,16 +1186,16 @@ class TestSparseToGrid:
 
             grid = aa.masked.grid.from_mask(mask=mask)
 
-            sparse_to_grid = grids.SparseToGrid.from_grid_and_unmasked_2d_grid_shape(
+            sparse_grid = grids.SparseGrid.from_grid_and_unmasked_2d_grid_shape(
                 unmasked_sparse_shape=(4, 3), grid=grid
             )
 
             assert (
-                sparse_to_grid.sparse_1d_index_for_mask_1d_index
+                sparse_grid.sparse_1d_index_for_mask_1d_index
                 == np.array([0, 1, 2, 3, 4, 5, 6, 7])
             ).all()
             assert (
-                sparse_to_grid.sparse
+                sparse_grid.sparse
                 == np.array(
                     [
                         [1.5, 0.0],
@@ -1225,16 +1225,16 @@ class TestSparseToGrid:
 
             grid = aa.masked.grid.from_mask(mask=mask)
 
-            sparse_to_grid = grids.SparseToGrid.from_grid_and_unmasked_2d_grid_shape(
+            sparse_grid = grids.SparseGrid.from_grid_and_unmasked_2d_grid_shape(
                 unmasked_sparse_shape=(3, 4), grid=grid
             )
 
             assert (
-                sparse_to_grid.sparse_1d_index_for_mask_1d_index
+                sparse_grid.sparse_1d_index_for_mask_1d_index
                 == np.array([0, 1, 2, 3, 4, 5])
             ).all()
             assert (
-                sparse_to_grid.sparse
+                sparse_grid.sparse
                 == np.array(
                     [
                         [1.0, -0.5],
@@ -1247,7 +1247,7 @@ class TestSparseToGrid:
                 )
             ).all()
 
-        def test__mask_with_offset_centre__origin_of_sparse_to_grid_moves_to_give_same_pairings(
+        def test__mask_with_offset_centre__origin_of_sparse_grid_moves_to_give_same_pairings(
             self
         ):
             mask = aa.mask.manual(
@@ -1269,16 +1269,16 @@ class TestSparseToGrid:
             # Without a change in origin, only the central 3 pixels are paired as the unmasked sparse grid overlaps
             # the central (3x3) pixels only.
 
-            sparse_to_grid = grids.SparseToGrid.from_grid_and_unmasked_2d_grid_shape(
+            sparse_grid = grids.SparseGrid.from_grid_and_unmasked_2d_grid_shape(
                 unmasked_sparse_shape=(3, 3), grid=grid
             )
 
             assert (
-                sparse_to_grid.sparse_1d_index_for_mask_1d_index
+                sparse_grid.sparse_1d_index_for_mask_1d_index
                 == np.array([0, 1, 2, 3, 4])
             ).all()
             assert (
-                sparse_to_grid.sparse
+                sparse_grid.sparse
                 == np.array(
                     [[2.0, 1.0], [1.0, 0.0], [1.0, 1.0], [1.0, 2.0], [0.0, 1.0]]
                 )
@@ -1304,16 +1304,16 @@ class TestSparseToGrid:
             # Without a change in origin, only the central 3 pixels are paired as the unmasked sparse grid overlaps
             # the central (3x3) pixels only.
 
-            sparse_to_grid = grids.SparseToGrid.from_grid_and_unmasked_2d_grid_shape(
+            sparse_grid = grids.SparseGrid.from_grid_and_unmasked_2d_grid_shape(
                 unmasked_sparse_shape=(3, 3), grid=grid
             )
 
             assert (
-                sparse_to_grid.sparse_1d_index_for_mask_1d_index
+                sparse_grid.sparse_1d_index_for_mask_1d_index
                 == np.array([0, 1, 2, 3, 4])
             ).all()
             assert (
-                sparse_to_grid.sparse
+                sparse_grid.sparse
                 == np.array(
                     [[2.0, 2.0], [0.0, 0.0], [0.0, 2.0], [0.0, 4.0], [-2.0, 2.0]]
                 )
@@ -1324,16 +1324,16 @@ class TestSparseToGrid:
         ):
             grid = aa.masked.grid.from_mask(mask=mask_7x7)
 
-            sparse_to_grid = grids.SparseToGrid.from_grid_and_unmasked_2d_grid_shape(
+            sparse_grid = grids.SparseGrid.from_grid_and_unmasked_2d_grid_shape(
                 grid=grid, unmasked_sparse_shape=(3, 3)
             )
 
             assert (
-                sparse_to_grid.sparse_1d_index_for_mask_1d_index
+                sparse_grid.sparse_1d_index_for_mask_1d_index
                 == np.array([0, 1, 2, 3, 4, 5, 6, 7, 8])
             ).all()
             assert (
-                sparse_to_grid.sparse
+                sparse_grid.sparse
                 == np.array(
                     [
                         [1.0, -1.0],
@@ -1365,16 +1365,16 @@ class TestSparseToGrid:
 
             grid = aa.masked.grid.from_mask(mask=mask)
 
-            sparse_to_grid = grids.SparseToGrid.from_grid_and_unmasked_2d_grid_shape(
+            sparse_grid = grids.SparseGrid.from_grid_and_unmasked_2d_grid_shape(
                 unmasked_sparse_shape=(4, 3), grid=grid
             )
 
             assert (
-                sparse_to_grid.sparse_1d_index_for_mask_1d_index
+                sparse_grid.sparse_1d_index_for_mask_1d_index
                 == np.array([0, 1, 2, 3, 4, 5, 6, 7])
             ).all()
             assert (
-                sparse_to_grid.sparse
+                sparse_grid.sparse
                 == np.array(
                     [
                         [1.5, 0.0],
@@ -1404,16 +1404,16 @@ class TestSparseToGrid:
 
             grid = aa.masked.grid.from_mask(mask=mask)
 
-            sparse_to_grid = grids.SparseToGrid.from_grid_and_unmasked_2d_grid_shape(
+            sparse_grid = grids.SparseGrid.from_grid_and_unmasked_2d_grid_shape(
                 unmasked_sparse_shape=(3, 4), grid=grid
             )
 
             assert (
-                sparse_to_grid.sparse_1d_index_for_mask_1d_index
+                sparse_grid.sparse_1d_index_for_mask_1d_index
                 == np.array([0, 1, 2, 3, 4, 5])
             ).all()
             assert (
-                sparse_to_grid.sparse
+                sparse_grid.sparse
                 == np.array(
                     [
                         [1.0, -0.5],
@@ -1443,16 +1443,16 @@ class TestSparseToGrid:
 
             grid = aa.masked.grid.from_mask(mask=mask)
 
-            sparse_to_grid = grids.SparseToGrid.from_grid_and_unmasked_2d_grid_shape(
+            sparse_grid = grids.SparseGrid.from_grid_and_unmasked_2d_grid_shape(
                 unmasked_sparse_shape=(3, 3), grid=grid
             )
 
             assert (
-                sparse_to_grid.sparse_1d_index_for_mask_1d_index
+                sparse_grid.sparse_1d_index_for_mask_1d_index
                 == np.array([0, 1, 2, 3, 4, 5, 6, 7, 8])
             ).all()
             assert (
-                sparse_to_grid.sparse
+                sparse_grid.sparse
                 == np.array(
                     [
                         [2.0, 0.0],
@@ -1487,7 +1487,7 @@ class TestSparseToGrid:
 
             weight_map = np.ones(mask.pixels_in_mask)
 
-            sparse_to_grid_weight = grids.SparseToGrid.from_total_pixels_grid_and_weight_map(
+            sparse_grid_weight = grids.SparseGrid.from_total_pixels_grid_and_weight_map(
                 total_pixels=8,
                 grid=grid,
                 weight_map=weight_map,
@@ -1497,7 +1497,7 @@ class TestSparseToGrid:
             )
 
             assert (
-                sparse_to_grid_weight.sparse
+                sparse_grid_weight.sparse
                 == np.array(
                     [
                         [-0.25, 0.25],
@@ -1513,7 +1513,7 @@ class TestSparseToGrid:
             ).all()
 
             assert (
-                sparse_to_grid_weight.sparse_1d_index_for_mask_1d_index
+                sparse_grid_weight.sparse_1d_index_for_mask_1d_index
                 == np.array([1, 1, 2, 2, 1, 1, 3, 3, 5, 4, 0, 7, 5, 4, 6, 6])
             ).all()
 
@@ -1536,7 +1536,7 @@ class TestSparseToGrid:
             weight_map = np.ones(mask.pixels_in_mask)
             weight_map[0:15] = 0.00000001
 
-            sparse_to_grid_weight = grids.SparseToGrid.from_total_pixels_grid_and_weight_map(
+            sparse_grid_weight = grids.SparseGrid.from_total_pixels_grid_and_weight_map(
                 total_pixels=8,
                 grid=grid,
                 weight_map=weight_map,
@@ -1545,12 +1545,12 @@ class TestSparseToGrid:
                 seed=1,
             )
 
-            assert sparse_to_grid_weight.sparse[1] == pytest.approx(
+            assert sparse_grid_weight.sparse[1] == pytest.approx(
                 np.array([0.4166666, -0.0833333]), 1.0e-4
             )
 
             assert (
-                sparse_to_grid_weight.sparse_1d_index_for_mask_1d_index
+                sparse_grid_weight.sparse_1d_index_for_mask_1d_index
                 == np.array([5, 1, 0, 0, 5, 1, 1, 4, 3, 6, 7, 4, 3, 6, 2, 2])
             ).all()
 

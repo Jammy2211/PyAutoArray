@@ -447,13 +447,13 @@ def plot_rectangular_pixelization_lines(mapper, units, kpc_per_arcsec):
     if units in "arcsec" or kpc_per_arcsec is None:
 
         ys = np.linspace(
-            mapper.grid.arc_second_minima[0],
-            mapper.grid.arc_second_maxima[0],
+            mapper.pixelization_grid.arc_second_minima[0],
+            mapper.pixelization_grid.arc_second_maxima[0],
             mapper.pixelization_grid.shape_2d[0] + 1,
         )
         xs = np.linspace(
-            mapper.grid.arc_second_minima[1],
-            mapper.grid.arc_second_maxima[1],
+            mapper.pixelization_grid.arc_second_minima[1],
+            mapper.pixelization_grid.arc_second_maxima[1],
             mapper.pixelization_grid.shape_2d[1] + 1,
         )
 
@@ -482,29 +482,17 @@ def set_axis_limits(mapper, units, kpc_per_arcsec):
     if units in "arcsec" or kpc_per_arcsec is None:
 
         grid_plotters.set_axis_limits(
-            axis_limits=np.asarray(
-                [
-                    mapper.grid.arc_second_minima[1],
-                    mapper.grid.arc_second_maxima[1],
-                    mapper.grid.arc_second_minima[0],
-                    mapper.grid.arc_second_maxima[0],
-                ]
-            ),
+            axis_limits=mapper.pixelization_grid.axis_limits,
             grid=None,
             symmetric_around_centre=False,
         )
 
     elif units in "kpc":
 
+        axis_limits_kpc = mapper.pixelization_grid.axis_limits * kpc_per_arcsec
+
         grid_plotters.set_axis_limits(
-            axis_limits=np.asarray(
-                [
-                    mapper.grid.arc_second_minima[1] * kpc_per_arcsec,
-                    mapper.grid.arc_second_maxima[1] * kpc_per_arcsec,
-                    mapper.grid.arc_second_minima[0] * kpc_per_arcsec,
-                    mapper.grid.arc_second_maxima[0] * kpc_per_arcsec,
-                ]
-            ),
+            axis_limits=axis_limits_kpc,
             grid=None,
             symmetric_around_centre=False,
         )

@@ -6,6 +6,7 @@ def image(
     mask=None,
     positions=None,
     grid=None,
+    lines=None,
     as_subplot=False,
     units="arcsec",
     kpc_per_arcsec=None,
@@ -49,6 +50,7 @@ def image(
         array=fit.data,
         grid=grid,
         mask=mask,
+        lines=lines,
         positions=positions,
         as_subplot=as_subplot,
         units=units,
@@ -233,6 +235,7 @@ def signal_to_noise_map(
 def model_image(
     fit,
     mask=None,
+    lines=None,
     positions=None,
     as_subplot=False,
     units="arcsec",
@@ -275,6 +278,7 @@ def model_image(
     array_plotters.plot_array(
         array=fit.model_data,
         mask=mask,
+        lines=lines,
         positions=positions,
         as_subplot=as_subplot,
         units=units,

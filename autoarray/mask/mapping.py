@@ -389,10 +389,10 @@ class Mapping(object):
             origin=self.mask.origin,
         )
 
-    def mask_sub_1_from_mask(self, mask):
+    def mask_new_sub_size_from_mask(self, mask, sub_size=1):
         return msk.Mask(
             mask_2d=mask,
-            sub_size=1,
+            sub_size=sub_size,
             pixel_scales=self.mask.pixel_scales,
             origin=self.mask.origin,
         )

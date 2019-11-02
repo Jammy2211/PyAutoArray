@@ -5,7 +5,9 @@ backend = conf.instance.visualize.get("figures", "backend", str)
 matplotlib.use(backend)
 import matplotlib.pyplot as plt
 import numpy as np
+from autoarray import conf
 from autoarray import exc
+from autoarray.structures import grids
 from autoarray.util import array_util
 
 
@@ -152,21 +154,6 @@ def output_subplot_array(output_path, output_filename, output_format):
         raise exc.PlottingException("You cannot output a subplots with format .fits")
 
 
-def get_critical_curve_and_caustic(obj, grid, plot_critical_curve, plot_caustics):
-
-    if plot_critical_curve:
-        critical_curves = obj.critical_curves_from_grid(grid=grid)
-    else:
-        critical_curves = []
-
-    if plot_caustics:
-        caustics = obj.caustics_from_grid(grid=grid)
-    else:
-        caustics = []
-
-    return [critical_curves, caustics]
-
-
 def plot_lines(line_lists):
     """Plot the liness of the mask or the array on the figure.
 
@@ -186,7 +173,7 @@ def plot_lines(line_lists):
     if line_lists is not None:
         for line_list in line_lists:
             for line in line_list:
-                if not line == []:
+                if len(line) == 0:
                     plt.plot(line[:, 1], line[:, 0], c="r", lw=1.5, zorder=200)
 
 
@@ -242,3 +229,23 @@ def quantity_and_annuli_radii_from_minimum_and_maximum_radii_and_radii_points(
     )
 
     return quantity_radii, annuli_radii
+
+
+def get_critical_curve_and_caustic(obj, grid, plot_critical_curves, plot_caustics):
+
+    plot_sub_size = conf.instance.visualize.get('figures', 'plot_sub_size', int)
+
+    unmasked_grid = grids.Grid.uniform(
+        shape_2d=grid.mask.shape_2d, pixel_scales=grid.pixel_scales, sub_size=plot_sub_size, origin=grid.origin)
+
+    if plot_critical_curves:
+        critical_curves = obj.critical_curves_from_grid(grid=unmasked_grid)
+    else:
+        critical_curves = []
+
+    if plot_caustics:
+        caustics = obj.caustics_from_grid(grid=unmasked_grid)
+    else:
+        caustics = []
+
+    return [critical_curves, caustics]

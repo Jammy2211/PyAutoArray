@@ -155,13 +155,13 @@ class VoronoiMagnification(Voronoi):
         self.pixels = self.shape[0] * self.shape[1]
 
     def sparse_grid_from_grid(self, grid, hyper_image=None, seed=1):
-        sparse_to_grid = grids.SparseToGrid.from_grid_and_unmasked_2d_grid_shape(
+        sparse_grid = grids.SparseGrid.from_grid_and_unmasked_2d_grid_shape(
             grid=grid, unmasked_sparse_shape=self.shape
         )
 
         return grids.GridIrregular(
-            grid=sparse_to_grid.sparse,
-            nearest_irregular_1d_index_for_mask_1d_index=sparse_to_grid.sparse_1d_index_for_mask_1d_index,
+            grid=sparse_grid.sparse,
+            nearest_irregular_1d_index_for_mask_1d_index=sparse_grid.sparse_1d_index_for_mask_1d_index,
         )
 
 
@@ -189,11 +189,11 @@ class VoronoiBrightnessImage(Voronoi):
     def sparse_grid_from_grid(self, grid, hyper_image, seed=0):
         weight_map = self.weight_map_from_hyper_image(hyper_image=hyper_image)
 
-        sparse_to_grid = grids.SparseToGrid.from_total_pixels_grid_and_weight_map(
+        sparse_grid = grids.SparseGrid.from_total_pixels_grid_and_weight_map(
             total_pixels=self.pixels, grid=grid, weight_map=weight_map, seed=seed
         )
 
         return grids.GridIrregular(
-            grid=sparse_to_grid.sparse,
-            nearest_irregular_1d_index_for_mask_1d_index=sparse_to_grid.sparse_1d_index_for_mask_1d_index,
+            grid=sparse_grid.sparse,
+            nearest_irregular_1d_index_for_mask_1d_index=sparse_grid.sparse_1d_index_for_mask_1d_index,
         )
