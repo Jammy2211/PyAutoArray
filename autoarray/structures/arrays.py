@@ -110,6 +110,25 @@ class AbstractArray(abstract_structure.AbstractStructure):
 
         return mask.mapping.array_from_array_2d(array_2d=extracted_array_2d)
 
+    def extent_of_zoomed_array(self, buffer=1):
+
+        extracted_array_2d = array_util.extracted_array_2d_from_array_2d(
+            array_2d=self.in_2d,
+            y0=self.geometry._zoom_region[0] - buffer,
+            y1=self.geometry._zoom_region[1] + buffer,
+            x0=self.geometry._zoom_region[2] - buffer,
+            x1=self.geometry._zoom_region[3] + buffer,
+        )
+
+        mask = msk.Mask.unmasked(
+            shape_2d=extracted_array_2d.shape,
+            pixel_scales=self.pixel_scales,
+            sub_size=self.sub_size,
+            origin=self.mask.geometry.mask_centre,
+        )
+
+        return mask.geometry.extent
+
     def resized_from_new_shape(self, new_shape):
         """resized the array to a new shape and at a new origin.
 

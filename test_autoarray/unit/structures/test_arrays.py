@@ -848,6 +848,37 @@ class TestArray:
                 )
             ).all()
 
+
+        def test__zoomed__array_extent__uses_the_limits_of_the_unzoomed_mask(self):
+
+            array_2d = np.array(
+                [
+                    [1.0, 2.0, 3.0, 4.0],
+                    [5.0, 6.0, 7.0, 8.0],
+                    [9.0, 10.0, 11.0, 12.0],
+                    [13.0, 14.0, 15.0, 16.0],
+                ]
+            )
+
+            mask = aa.mask.manual(
+                mask_2d=np.array(
+                    [
+                        [True, True, True, False],
+                        [True, False, False, True],
+                        [True, False, False, True],
+                        [True, True, True, True],
+                    ]
+                ),
+                pixel_scales=(1.0, 2.0),
+                sub_size=1,
+            )
+
+            arr_masked = aa.masked.array.manual_2d(array=array_2d, mask=mask)
+
+            extent = arr_masked.extent_of_zoomed_array(buffer=1)
+
+            assert extent == pytest.approx(np.array([-4.0, 6.0, -2.0, 3.0]), 1.0e-4)
+
         def test__binned_up__compare_all_extract_methods_to_array_util(self):
             array_2d = np.array(
                 [
