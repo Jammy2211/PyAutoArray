@@ -18,7 +18,7 @@ def image_and_mapper(
     mapper,
     mask=None,
     positions=None,
-    plot_centres=False,
+    include_centres=False,
     include_grid=False,
     include_border=False,
     image_pixels=None,
@@ -81,7 +81,7 @@ def image_and_mapper(
 
     plot_mapper(
         mapper=mapper,
-        plot_centres=plot_centres,
+        include_centres=include_centres,
         include_grid=include_grid,
         include_border=include_border,
         image_pixels=image_pixels,
@@ -102,7 +102,7 @@ def image_and_mapper(
 
 def plot_mapper(
     mapper,
-    plot_centres=False,
+    include_centres=False,
     include_grid=False,
     include_border=False,
     image_pixels=None,
@@ -125,7 +125,7 @@ def plot_mapper(
 
         rectangular_mapper(
             mapper=mapper,
-            plot_centres=plot_centres,
+            include_centres=include_centres,
             include_grid=include_grid,
             include_border=include_border,
             image_pixels=image_pixels,
@@ -147,7 +147,7 @@ def plot_mapper(
 
 def rectangular_mapper(
     mapper,
-    plot_centres=False,
+    include_centres=False,
     include_grid=False,
     include_border=False,
     image_pixels=None,
@@ -183,7 +183,7 @@ def rectangular_mapper(
     )
 
     plot_centres(
-        plot_centres=plot_centres,
+        include_centres=include_centres,
         mapper=mapper,
         units=units,
         kpc_per_arcsec=kpc_per_arcsec,
@@ -245,7 +245,8 @@ def rectangular_mapper(
 def voronoi_mapper(
     mapper,
     source_pixel_values,
-    plot_centres=True,
+    include_centres=True,
+    lines=None,
     include_grid=True,
     include_border=False,
     image_pixels=None,
@@ -302,7 +303,7 @@ def voronoi_mapper(
     )
 
     plot_centres(
-        plot_centres=plot_centres,
+        include_centres=include_centres,
         mapper=mapper,
         units=units,
         kpc_per_arcsec=kpc_per_arcsec,
@@ -335,6 +336,8 @@ def voronoi_mapper(
         xlabelsize=xlabelsize,
         ylabelsize=ylabelsize,
     )
+
+    plotter_util.plot_lines(line_lists=lines)
 
     mapper_grid = convert_grid(
         grid=mapper.grid, units=units, kpc_per_arcsec=kpc_per_arcsec
@@ -514,9 +517,9 @@ def set_colorbar(
         cb.ax.set_yticklabels(cb_tick_labels)
 
 
-def plot_centres(plot_centres, mapper, units, kpc_per_arcsec):
+def plot_centres(include_centres, mapper, units, kpc_per_arcsec):
 
-    if plot_centres:
+    if include_centres:
 
         if units in "arcsec" or kpc_per_arcsec is None:
 

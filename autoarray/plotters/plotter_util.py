@@ -174,7 +174,7 @@ def plot_lines(line_lists):
         for line_list in line_lists:
             for line in line_list:
                 if len(line) != 0:
-                    plt.plot(line[:, 1], line[:, 0], c="r", lw=1.5, zorder=200)
+                    plt.plot(line[:, 1], line[:, 0], c="w", lw=2.0, zorder=200)
 
 
 def close_figure(as_subplot):

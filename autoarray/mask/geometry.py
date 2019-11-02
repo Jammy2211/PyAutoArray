@@ -71,6 +71,17 @@ class Geometry(object):
         )
 
     @property
+    def extent(self):
+        return np.asarray(
+            [
+                self.arc_second_minima[1],
+                self.arc_second_maxima[1],
+                self.arc_second_minima[0],
+                self.arc_second_maxima[0],
+            ]
+        )
+
+    @property
     def yticks(self):
         """Compute the yticks labels of this grid, used for plotting the y-axis ticks when visualizing an image-grid"""
         return np.linspace(self.arc_second_minima[0], self.arc_second_maxima[0], 4)

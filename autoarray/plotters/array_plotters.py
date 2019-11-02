@@ -165,13 +165,7 @@ def plot_array(
         )
 
     array = array.in_1d_binned
-    zoom_offset_pixels = np.asarray(array.geometry._zoom_offset_pixels)
-
-    if array.pixel_scales is None:
-        zoom_offset_arcsec = (0.0, 0.0)
-    else:
-        zoom_offset_arcsec = np.asarray(array.geometry._zoom_offset_arcsec)
-
+    extent = array.extent_of_zoomed_array(buffer=1)
     array = array.zoomed_around_mask(buffer=1)
 
     if aspect is "square":
@@ -180,6 +174,7 @@ def plot_array(
     fig = plot_figure(
         array=array,
         as_subplot=as_subplot,
+        extent=extent,
         units=units,
         kpc_per_arcsec=kpc_per_arcsec,
         figsize=figsize,
@@ -215,14 +210,12 @@ def plot_array(
         include_origin=include_origin,
         units=units,
         kpc_per_arcsec=kpc_per_arcsec,
-        zoom_offset_arcsec=zoom_offset_arcsec,
     )
     plot_mask(
         mask=mask,
         units=units,
         kpc_per_arcsec=kpc_per_arcsec,
         pointsize=mask_pointsize,
-        zoom_offset_pixels=zoom_offset_pixels,
     )
     plotter_util.plot_lines(line_lists=lines)
     plot_border(
@@ -231,7 +224,6 @@ def plot_array(
         units=units,
         kpc_per_arcsec=kpc_per_arcsec,
         pointsize=border_pointsize,
-        zoom_offset_arcsec=zoom_offset_arcsec,
     )
     plot_points(
         points_arcsec=positions,
@@ -239,7 +231,6 @@ def plot_array(
         units=units,
         kpc_per_arcsec=kpc_per_arcsec,
         pointsize=position_pointsize,
-        zoom_offset_arcsec=zoom_offset_arcsec,
     )
     plot_grid(
         grid_arcsec=grid,
@@ -247,14 +238,12 @@ def plot_array(
         units=units,
         kpc_per_arcsec=kpc_per_arcsec,
         pointsize=grid_pointsize,
-        zoom_offset_arcsec=zoom_offset_arcsec,
     )
     plot_centres(
         array=array,
         centres=centres,
         units=units,
         kpc_per_arcsec=kpc_per_arcsec,
-        zoom_offset_arcsec=zoom_offset_arcsec,
     )
     plot_ellipses(
         fig=fig,
@@ -264,7 +253,6 @@ def plot_array(
         phis=phis,
         units=units,
         kpc_per_arcsec=kpc_per_arcsec,
-        zoom_offset_arcsec=zoom_offset_arcsec,
     )
     plotter_util.output_figure(
         array,
@@ -279,6 +267,7 @@ def plot_array(
 def plot_figure(
     array,
     as_subplot,
+    extent,
     units,
     kpc_per_arcsec,
     figsize,
@@ -345,6 +334,7 @@ def plot_figure(
 
     extent = get_extent(
         array=array,
+        extent=extent,
         units=units,
         kpc_per_arcsec=kpc_per_arcsec,
         xticks_manual=xticks_manual,
@@ -355,7 +345,7 @@ def plot_figure(
     return fig
 
 
-def get_extent(array, units, kpc_per_arcsec, xticks_manual, yticks_manual):
+def get_extent(array, extent, units, kpc_per_arcsec, xticks_manual, yticks_manual):
     """Get the extent of the dimensions of the array in the units of the figure (e.g. arc-seconds or kpc).
 
     This is used to set the extent of the array and thus the y / x axis limits.
@@ -381,26 +371,12 @@ def get_extent(array, units, kpc_per_arcsec, xticks_manual, yticks_manual):
     if units in "pixels":
         return np.asarray([0, array.shape_2d[1], 0, array.shape_2d[0]])
     elif units in "arcsec" or kpc_per_arcsec is None:
-        return np.asarray(
-            [
-                array.mask.geometry.arc_second_minima[1],
-                array.mask.geometry.arc_second_maxima[1],
-                array.mask.geometry.arc_second_minima[0],
-                array.mask.geometry.arc_second_maxima[0],
-            ]
-        )
+        return extent
     elif units in "kpc":
         return list(
             map(
                 lambda tick: tick * kpc_per_arcsec,
-                np.asarray(
-                    [
-                        array.mask.geometry.arc_second_minima[1],
-                        array.mask.geometry.arc_second_maxima[1],
-                        array.mask.geometry.arc_second_minima[0],
-                        array.mask.geometry.arc_second_maxima[0],
-                    ]
-                ),
+                extent,
             )
         )
     else:
@@ -548,7 +524,7 @@ def convert_grid_units(array, grid_arcsec, units, kpc_per_arcsec):
         )
 
 
-def plot_origin(array, include_origin, units, kpc_per_arcsec, zoom_offset_arcsec):
+def plot_origin(array, include_origin, units, kpc_per_arcsec):
     """Plot the (y,x) origin ofo the array's coordinates as a 'x'.
     
     Parameters
@@ -566,9 +542,6 @@ def plot_origin(array, include_origin, units, kpc_per_arcsec, zoom_offset_arcsec
 
         origin_grid = np.asarray(array.origin)
 
-        if zoom_offset_arcsec is not None:
-            origin_grid -= zoom_offset_arcsec
-
         origin_units = convert_grid_units(
             array=array,
             grid_arcsec=origin_grid,
@@ -578,7 +551,7 @@ def plot_origin(array, include_origin, units, kpc_per_arcsec, zoom_offset_arcsec
         plt.scatter(y=origin_units[0], x=origin_units[1], s=80, c="k", marker="x")
 
 
-def plot_centres(array, centres, units, kpc_per_arcsec, zoom_offset_arcsec):
+def plot_centres(array, centres, units, kpc_per_arcsec):
     """Plot the (y,x) centres (e.g. of a mass profile) on the array as an 'x'.
 
     Parameters
@@ -600,9 +573,6 @@ def plot_centres(array, centres, units, kpc_per_arcsec, zoom_offset_arcsec):
             color = next(colors)
             for centre in centres_of_galaxy:
 
-                if zoom_offset_arcsec is not None:
-                    centre -= zoom_offset_arcsec
-
                 centre_units = convert_grid_units(
                     array=array,
                     grid_arcsec=centre,
@@ -615,7 +585,7 @@ def plot_centres(array, centres, units, kpc_per_arcsec, zoom_offset_arcsec):
 
 
 def plot_ellipses(
-    fig, array, centres, axis_ratios, phis, units, kpc_per_arcsec, zoom_offset_arcsec
+    fig, array, centres, axis_ratios, phis, units, kpc_per_arcsec,
 ):
     """Plot the (y,x) centres (e.g. of a mass profile) on the array as an 'x'.
 
@@ -642,9 +612,6 @@ def plot_ellipses(
                 axis_ratio = axis_ratios[set_index][geometry_index]
                 phi = phis[set_index][geometry_index]
 
-                if zoom_offset_arcsec is not None:
-                    centre -= zoom_offset_arcsec
-
                 centre_units = convert_grid_units(
                     array=array,
                     grid_arcsec=centre,
@@ -663,7 +630,7 @@ def plot_ellipses(
                 )
 
 
-def plot_mask(mask, units, kpc_per_arcsec, pointsize, zoom_offset_pixels):
+def plot_mask(mask, units, kpc_per_arcsec, pointsize):
     """Plot the mask of the array on the figure.
 
     Parameters
@@ -686,13 +653,8 @@ def plot_mask(mask, units, kpc_per_arcsec, pointsize, zoom_offset_pixels):
             + 0.5
         )
 
-        if zoom_offset_pixels is not None:
-            edge_pixels_plot = edge_pixels - zoom_offset_pixels
-        else:
-            edge_pixels_plot = edge_pixels
-
         edge_arcsec = mask.geometry.grid_arcsec_from_grid_pixels_1d(
-            grid_pixels_1d=edge_pixels_plot
+            grid_pixels_1d=edge_pixels
         )
         edge_units = convert_grid_units(
             array=mask,
@@ -710,7 +672,7 @@ def plot_mask(mask, units, kpc_per_arcsec, pointsize, zoom_offset_pixels):
 
 
 def plot_border(
-    mask, include_border, units, kpc_per_arcsec, pointsize, zoom_offset_arcsec
+    mask, include_border, units, kpc_per_arcsec, pointsize,
 ):
     """Plot the borders of the mask or the array on the figure.
 
@@ -732,14 +694,9 @@ def plot_border(
         plt.gca()
         border_grid = mask.geometry.border_grid.in_1d_binned
 
-        if zoom_offset_arcsec is not None:
-            border_grid_plot = border_grid - zoom_offset_arcsec.astype("int")
-        else:
-            border_grid_plot = border_grid
-
         border_units = convert_grid_units(
             array=mask,
-            grid_arcsec=border_grid_plot,
+            grid_arcsec=border_grid,
             units=units,
             kpc_per_arcsec=kpc_per_arcsec,
         )
@@ -748,7 +705,7 @@ def plot_border(
 
 
 def plot_points(
-    points_arcsec, array, units, kpc_per_arcsec, pointsize, zoom_offset_arcsec
+    points_arcsec, array, units, kpc_per_arcsec, pointsize,
 ):
     """Plot a set of points over the array of data_type on the figure.
 
@@ -774,14 +731,9 @@ def plot_points(
         point_colors = itertools.cycle(["m", "y", "r", "w", "c", "b", "g", "k"])
         for point_set_arcsec in points_arcsec:
 
-            if zoom_offset_arcsec is not None:
-                point_set_arcsec_plot = point_set_arcsec - zoom_offset_arcsec
-            else:
-                point_set_arcsec_plot = point_set_arcsec
-
             point_set_units = convert_grid_units(
                 array=array,
-                grid_arcsec=point_set_arcsec_plot,
+                grid_arcsec=point_set_arcsec,
                 units=units,
                 kpc_per_arcsec=kpc_per_arcsec,
             )
@@ -793,7 +745,7 @@ def plot_points(
             )
 
 
-def plot_grid(grid_arcsec, array, units, kpc_per_arcsec, pointsize, zoom_offset_arcsec):
+def plot_grid(grid_arcsec, array, units, kpc_per_arcsec, pointsize):
     """Plot a grid of points over the array of data_type on the figure.
 
      Parameters
@@ -811,13 +763,8 @@ def plot_grid(grid_arcsec, array, units, kpc_per_arcsec, pointsize, zoom_offset_
      """
     if grid_arcsec is not None:
 
-        if zoom_offset_arcsec is not None:
-            grid_arcsec_plot = grid_arcsec - zoom_offset_arcsec
-        else:
-            grid_arcsec_plot = grid_arcsec
-
         grid_units = convert_grid_units(
-            grid_arcsec=grid_arcsec_plot,
+            grid_arcsec=grid_arcsec,
             array=array,
             units=units,
             kpc_per_arcsec=kpc_per_arcsec,
