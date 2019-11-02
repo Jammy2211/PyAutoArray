@@ -102,8 +102,8 @@ def subplot(
     reconstruction(
         inversion=inversion,
         positions=None,
-        should_plot_grid=False,
-        should_plot_centres=False,
+        include_grid=False,
+        plot_centres=False,
         as_subplot=True,
         units=units,
         kpc_per_arcsec=kpc_per_arcsec,
@@ -134,8 +134,8 @@ def subplot(
     residual_map(
         inversion=inversion,
         positions=None,
-        should_plot_grid=False,
-        should_plot_centres=False,
+        include_grid=False,
+        plot_centres=False,
         as_subplot=True,
         units=units,
         kpc_per_arcsec=kpc_per_arcsec,
@@ -166,8 +166,8 @@ def subplot(
     normalized_residual_map(
         inversion=inversion,
         positions=None,
-        should_plot_grid=False,
-        should_plot_centres=False,
+        include_grid=False,
+        plot_centres=False,
         as_subplot=True,
         units=units,
         kpc_per_arcsec=kpc_per_arcsec,
@@ -198,8 +198,8 @@ def subplot(
     chi_squared_map(
         inversion=inversion,
         positions=None,
-        should_plot_grid=False,
-        should_plot_centres=False,
+        include_grid=False,
+        plot_centres=False,
         as_subplot=True,
         units=units,
         kpc_per_arcsec=kpc_per_arcsec,
@@ -230,8 +230,8 @@ def subplot(
     regularization_weights(
         inversion=inversion,
         positions=None,
-        should_plot_grid=False,
-        should_plot_centres=False,
+        include_grid=False,
+        plot_centres=False,
         as_subplot=True,
         units=units,
         kpc_per_arcsec=kpc_per_arcsec,
@@ -331,11 +331,11 @@ def reconstructed_image(
 
 def reconstruction(
     inversion,
-    plot_origin=True,
+    include_origin=True,
     positions=None,
-    should_plot_centres=False,
-    should_plot_grid=False,
-    should_plot_border=False,
+    plot_centres=False,
+    include_grid=False,
+    include_border=False,
     image_pixels=None,
     source_pixels=None,
     as_subplot=False,
@@ -372,11 +372,11 @@ def reconstruction(
     plot_values(
         inversion=inversion,
         source_pixel_values=inversion.reconstruction,
-        plot_origin=plot_origin,
+        include_origin=include_origin,
         positions=positions,
-        should_plot_centres=should_plot_centres,
-        should_plot_grid=should_plot_grid,
-        should_plot_border=should_plot_border,
+        plot_centres=plot_centres,
+        include_grid=include_grid,
+        include_border=include_border,
         image_pixels=image_pixels,
         source_pixels=source_pixels,
         as_subplot=as_subplot,
@@ -410,11 +410,11 @@ def reconstruction(
 
 def residual_map(
     inversion,
-    plot_origin=True,
+    include_origin=True,
     positions=None,
-    should_plot_centres=False,
-    should_plot_grid=False,
-    should_plot_border=False,
+    plot_centres=False,
+    include_grid=False,
+    include_border=False,
     image_pixels=None,
     source_pixels=None,
     as_subplot=False,
@@ -451,11 +451,11 @@ def residual_map(
     plot_values(
         inversion=inversion,
         source_pixel_values=inversion.residual_map,
-        plot_origin=plot_origin,
+        include_origin=include_origin,
         positions=positions,
-        should_plot_centres=should_plot_centres,
-        should_plot_grid=should_plot_grid,
-        should_plot_border=should_plot_border,
+        plot_centres=plot_centres,
+        include_grid=include_grid,
+        include_border=include_border,
         image_pixels=image_pixels,
         source_pixels=source_pixels,
         as_subplot=as_subplot,
@@ -489,11 +489,11 @@ def residual_map(
 
 def normalized_residual_map(
     inversion,
-    plot_origin=True,
+    include_origin=True,
     positions=None,
-    should_plot_centres=False,
-    should_plot_grid=False,
-    should_plot_border=False,
+    plot_centres=False,
+    include_grid=False,
+    include_border=False,
     image_pixels=None,
     source_pixels=None,
     as_subplot=False,
@@ -530,11 +530,11 @@ def normalized_residual_map(
     plot_values(
         inversion=inversion,
         source_pixel_values=inversion.normalized_residual_map,
-        plot_origin=plot_origin,
+        include_origin=include_origin,
         positions=positions,
-        should_plot_centres=should_plot_centres,
-        should_plot_grid=should_plot_grid,
-        should_plot_border=should_plot_border,
+        plot_centres=plot_centres,
+        include_grid=include_grid,
+        include_border=include_border,
         image_pixels=image_pixels,
         source_pixels=source_pixels,
         as_subplot=as_subplot,
@@ -568,11 +568,11 @@ def normalized_residual_map(
 
 def chi_squared_map(
     inversion,
-    plot_origin=True,
+    include_origin=True,
     positions=None,
-    should_plot_centres=False,
-    should_plot_grid=False,
-    should_plot_border=False,
+    plot_centres=False,
+    include_grid=False,
+    include_border=False,
     image_pixels=None,
     source_pixels=None,
     as_subplot=False,
@@ -609,11 +609,11 @@ def chi_squared_map(
     plot_values(
         inversion=inversion,
         source_pixel_values=inversion.chi_squared_map,
-        plot_origin=plot_origin,
+        include_origin=include_origin,
         positions=positions,
-        should_plot_centres=should_plot_centres,
-        should_plot_grid=should_plot_grid,
-        should_plot_border=should_plot_border,
+        plot_centres=plot_centres,
+        include_grid=include_grid,
+        include_border=include_border,
         image_pixels=image_pixels,
         source_pixels=source_pixels,
         as_subplot=as_subplot,
@@ -647,11 +647,11 @@ def chi_squared_map(
 
 def regularization_weights(
     inversion,
-    plot_origin=True,
+    include_origin=True,
     positions=None,
-    should_plot_centres=False,
-    should_plot_grid=False,
-    should_plot_border=False,
+    plot_centres=False,
+    include_grid=False,
+    include_border=False,
     image_pixels=None,
     source_pixels=None,
     as_subplot=False,
@@ -692,11 +692,11 @@ def regularization_weights(
     plot_values(
         inversion=inversion,
         source_pixel_values=regularization_weights,
-        plot_origin=plot_origin,
+        include_origin=include_origin,
         positions=positions,
-        should_plot_centres=should_plot_centres,
-        should_plot_grid=should_plot_grid,
-        should_plot_border=should_plot_border,
+        plot_centres=plot_centres,
+        include_grid=include_grid,
+        include_border=include_border,
         image_pixels=image_pixels,
         source_pixels=source_pixels,
         as_subplot=as_subplot,
@@ -731,11 +731,11 @@ def regularization_weights(
 def plot_values(
     inversion,
     source_pixel_values,
-    plot_origin=True,
+    include_origin=True,
     positions=None,
-    should_plot_centres=False,
-    should_plot_grid=False,
-    should_plot_border=False,
+    plot_centres=False,
+    include_grid=False,
+    include_border=False,
     image_pixels=None,
     source_pixels=None,
     as_subplot=False,
@@ -770,11 +770,11 @@ def plot_values(
             solution_vector=source_pixel_values
         )
 
-        origin = get_origin(image=reconstructed_pixelization, plot_origin=plot_origin)
+        origin = get_origin(image=reconstructed_pixelization, include_origin=include_origin)
 
         aa.plot.array(
             array=reconstructed_pixelization,
-            should_plot_origin=origin,
+            include_origin=origin,
             positions=positions,
             as_subplot=True,
             units=units,
@@ -802,9 +802,9 @@ def plot_values(
 
         mapper_plotters.rectangular_mapper(
             mapper=inversion.mapper,
-            should_plot_centres=should_plot_centres,
-            should_plot_grid=should_plot_grid,
-            should_plot_border=should_plot_border,
+            plot_centres=plot_centres,
+            include_grid=include_grid,
+            include_border=include_border,
             image_pixels=image_pixels,
             source_pixels=source_pixels,
             as_subplot=True,
@@ -830,9 +830,9 @@ def plot_values(
         mapper_plotters.voronoi_mapper(
             mapper=inversion.mapper,
             source_pixel_values=source_pixel_values,
-            should_plot_centres=should_plot_centres,
-            should_plot_grid=should_plot_grid,
-            should_plot_border=should_plot_border,
+            plot_centres=plot_centres,
+            include_grid=include_grid,
+            include_border=include_border,
             image_pixels=image_pixels,
             source_pixels=source_pixels,
             as_subplot=True,
@@ -854,9 +854,9 @@ def plot_values(
         )
 
 
-def get_origin(image, plot_origin):
+def get_origin(image, include_origin):
 
-    if plot_origin:
+    if include_origin:
         return image.origin
     else:
         return None
