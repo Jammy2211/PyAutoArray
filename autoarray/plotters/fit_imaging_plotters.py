@@ -43,7 +43,7 @@ def image(
     -----------
     image : datas.imaging.datas.Imaging
         The datas-datas, which includes the observed datas, noise_map-map, PSF, signal-to-noise_map-map, etc.
-    plot_origin : True
+    include_origin : True
         If true, the origin of the datas's coordinate system is plotted as a 'x'.
     """
     array_plotters.plot_array(
@@ -121,7 +121,7 @@ def noise_map(
     -----------
     image : datas.imaging.datas.Imaging
         The datas-datas, which includes the observed datas, noise_map-map, PSF, signal-to-noise_map-map, etc.
-    plot_origin : True
+    include_origin : True
         If true, the origin of the datas's coordinate system is plotted as a 'x'.
     """
     array_plotters.plot_array(
@@ -196,7 +196,7 @@ def signal_to_noise_map(
     -----------
     image : datas.imaging.datas.Imaging
     The datas-datas, which includes the observed datas, signal_to_noise_map-map, PSF, signal-to-signal_to_noise_map-map, etc.
-    plot_origin : True
+    include_origin : True
     If true, the origin of the datas's coordinate system is plotted as a 'x'.
     """
     array_plotters.plot_array(
@@ -534,17 +534,17 @@ def chi_squared_map(
     )
 
 
-def get_mask(fit, should_plot_mask):
+def get_mask(fit, include_mask):
     """Get the masks of the fit if the masks should be plotted on the fit.
 
     Parameters
     -----------
     fit : datas.fitting.fitting.AbstractLensHyperFit
         The fit to the datas, which includes a lisrt of every model image, residual_map, chi-squareds, etc.
-    should_plot_mask : bool
+    include_mask : bool
         If *True*, the masks is plotted on the fit's datas.
     """
-    if should_plot_mask:
+    if include_mask:
         return fit.mask
     else:
         return None

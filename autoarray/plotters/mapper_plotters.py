@@ -18,9 +18,9 @@ def image_and_mapper(
     mapper,
     mask=None,
     positions=None,
-    should_plot_centres=False,
-    should_plot_grid=False,
-    should_plot_border=False,
+    plot_centres=False,
+    include_grid=False,
+    include_border=False,
     image_pixels=None,
     source_pixels=None,
     units="arcsec",
@@ -81,9 +81,9 @@ def image_and_mapper(
 
     plot_mapper(
         mapper=mapper,
-        should_plot_centres=should_plot_centres,
-        should_plot_grid=should_plot_grid,
-        should_plot_border=should_plot_border,
+        plot_centres=plot_centres,
+        include_grid=include_grid,
+        include_border=include_border,
         image_pixels=image_pixels,
         source_pixels=source_pixels,
         as_subplot=True,
@@ -102,9 +102,9 @@ def image_and_mapper(
 
 def plot_mapper(
     mapper,
-    should_plot_centres=False,
-    should_plot_grid=False,
-    should_plot_border=False,
+    plot_centres=False,
+    include_grid=False,
+    include_border=False,
     image_pixels=None,
     source_pixels=None,
     as_subplot=False,
@@ -125,9 +125,9 @@ def plot_mapper(
 
         rectangular_mapper(
             mapper=mapper,
-            should_plot_centres=should_plot_centres,
-            should_plot_grid=should_plot_grid,
-            should_plot_border=should_plot_border,
+            plot_centres=plot_centres,
+            include_grid=include_grid,
+            include_border=include_border,
             image_pixels=image_pixels,
             source_pixels=source_pixels,
             as_subplot=as_subplot,
@@ -147,9 +147,9 @@ def plot_mapper(
 
 def rectangular_mapper(
     mapper,
-    should_plot_centres=False,
-    should_plot_grid=False,
-    should_plot_border=False,
+    plot_centres=False,
+    include_grid=False,
+    include_border=False,
     image_pixels=None,
     source_pixels=None,
     as_subplot=False,
@@ -183,14 +183,14 @@ def rectangular_mapper(
     )
 
     plot_centres(
-        should_plot_centres=should_plot_centres,
+        plot_centres=plot_centres,
         mapper=mapper,
         units=units,
         kpc_per_arcsec=kpc_per_arcsec,
     )
 
     plot_plane_grid(
-        should_plot_grid=should_plot_grid,
+        include_grid=include_grid,
         mapper=mapper,
         as_subplot=True,
         units=units,
@@ -204,7 +204,7 @@ def rectangular_mapper(
     )
 
     plot_border(
-        should_plot_border=should_plot_border,
+        include_border=include_border,
         mapper=mapper,
         as_subplot=True,
         units=units,
@@ -245,9 +245,9 @@ def rectangular_mapper(
 def voronoi_mapper(
     mapper,
     source_pixel_values,
-    should_plot_centres=True,
-    should_plot_grid=True,
-    should_plot_border=False,
+    plot_centres=True,
+    include_grid=True,
+    include_border=False,
     image_pixels=None,
     source_pixels=None,
     as_subplot=False,
@@ -302,14 +302,14 @@ def voronoi_mapper(
     )
 
     plot_centres(
-        should_plot_centres=should_plot_centres,
+        plot_centres=plot_centres,
         mapper=mapper,
         units=units,
         kpc_per_arcsec=kpc_per_arcsec,
     )
 
     plot_plane_grid(
-        should_plot_grid=should_plot_grid,
+        include_grid=include_grid,
         mapper=mapper,
         as_subplot=True,
         units=units,
@@ -323,7 +323,7 @@ def voronoi_mapper(
     )
 
     plot_border(
-        should_plot_border=should_plot_border,
+        include_border=include_border,
         mapper=mapper,
         as_subplot=True,
         units=units,
@@ -514,9 +514,9 @@ def set_colorbar(
         cb.ax.set_yticklabels(cb_tick_labels)
 
 
-def plot_centres(should_plot_centres, mapper, units, kpc_per_arcsec):
+def plot_centres(plot_centres, mapper, units, kpc_per_arcsec):
 
-    if should_plot_centres:
+    if plot_centres:
 
         if units in "arcsec" or kpc_per_arcsec is None:
 
@@ -530,7 +530,7 @@ def plot_centres(should_plot_centres, mapper, units, kpc_per_arcsec):
 
 
 def plot_plane_grid(
-    should_plot_grid,
+    include_grid,
     mapper,
     as_subplot,
     units,
@@ -543,7 +543,7 @@ def plot_plane_grid(
     ylabelsize,
 ):
 
-    if should_plot_grid:
+    if include_grid:
 
         grid_units = convert_grid(
             grid=mapper.grid, units=units, kpc_per_arcsec=kpc_per_arcsec
@@ -564,7 +564,7 @@ def plot_plane_grid(
 
 
 def plot_border(
-    should_plot_border,
+    include_border,
     mapper,
     as_subplot,
     units,
@@ -577,7 +577,7 @@ def plot_border(
     ylabelsize,
 ):
 
-    if should_plot_border:
+    if include_border:
 
         border_arcsec = mapper.grid[mapper.grid.mask.regions._sub_border_1d_indexes]
         border_units = convert_grid(

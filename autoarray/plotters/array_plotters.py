@@ -15,9 +15,9 @@ from autoarray.plotters import plotter_util
 
 def plot_array(
     array,
-    should_plot_origin=True,
+    include_origin=True,
     mask=None,
-    should_plot_border=False,
+    include_border=False,
     lines=None,
     positions=None,
     centres=None,
@@ -61,7 +61,7 @@ def plot_array(
     -----------
     array : data_type.array.aa.Scaled
         The 2D array of data_type which is plotted.
-    should_plot_origin : (float, float).
+    include_origin : (float, float).
         The origin of the coordinate system of the array, which is plotted as an 'x' on the image if input.
     mask : data_type.array.mask.Mask
         The mask applied to the array, the edge of which is plotted as a set of points over the plotted array.
@@ -71,7 +71,7 @@ def plot_array(
     zoom_around_mask : bool
         If True, the 2D region of the array corresponding to the rectangle encompassing all unmasked values is \
         plotted, thereby zooming into the region of interest.
-    should_plot_border : bool
+    include_border : bool
         If a mask is supplied, its borders pixels (e.g. the exterior edge) is plotted if this is *True*.
     positions : [[]]
         Lists of (y,x) coordinates on the image which are plotted as colored dots, to highlight specific pixels.
@@ -145,7 +145,7 @@ def plot_array(
     --------
         array_plotters.plot_array(
         array=image, origin=(0.0, 0.0), mask=circular_mask,
-        should_plot_border=False, positions=[[1.0, 1.0], [2.0, 2.0]], grid=None, as_subplot=False,
+        include_border=False, positions=[[1.0, 1.0], [2.0, 2.0]], grid=None, as_subplot=False,
         units='arcsec', kpc_per_arcsec=None, figsize=(7,7), aspect='auto',
         cmap='jet', norm='linear, norm_min=None, norm_max=None, linthresh=None, linscale=None,
         cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01, cb_tick_values=None, cb_tick_labels=None,
@@ -212,7 +212,7 @@ def plot_array(
     )
     plot_origin(
         array=array,
-        should_plot_origin=should_plot_origin,
+        include_origin=include_origin,
         units=units,
         kpc_per_arcsec=kpc_per_arcsec,
         zoom_offset_arcsec=zoom_offset_arcsec,
@@ -227,7 +227,7 @@ def plot_array(
     plotter_util.plot_lines(line_lists=lines)
     plot_border(
         mask=mask,
-        should_plot_border=should_plot_border,
+        include_border=include_border,
         units=units,
         kpc_per_arcsec=kpc_per_arcsec,
         pointsize=border_pointsize,
@@ -548,7 +548,7 @@ def convert_grid_units(array, grid_arcsec, units, kpc_per_arcsec):
         )
 
 
-def plot_origin(array, should_plot_origin, units, kpc_per_arcsec, zoom_offset_arcsec):
+def plot_origin(array, include_origin, units, kpc_per_arcsec, zoom_offset_arcsec):
     """Plot the (y,x) origin ofo the array's coordinates as a 'x'.
     
     Parameters
@@ -562,7 +562,7 @@ def plot_origin(array, should_plot_origin, units, kpc_per_arcsec, zoom_offset_ar
     kpc_per_arcsec : float or None
         The conversion factor between arc-seconds and kiloparsecs, required to plotters the units in kpc.
     """
-    if should_plot_origin:
+    if include_origin:
 
         origin_grid = np.asarray(array.origin)
 
@@ -710,7 +710,7 @@ def plot_mask(mask, units, kpc_per_arcsec, pointsize, zoom_offset_pixels):
 
 
 def plot_border(
-    mask, should_plot_border, units, kpc_per_arcsec, pointsize, zoom_offset_arcsec
+    mask, include_border, units, kpc_per_arcsec, pointsize, zoom_offset_arcsec
 ):
     """Plot the borders of the mask or the array on the figure.
 
@@ -718,7 +718,7 @@ def plot_border(
     -----------t.
     mask : ndarray of data_type.array.mask.Mask
         The mask applied to the array, the edge of which is plotted as a set of points over the plotted array.
-    should_plot_border : bool
+    include_border : bool
         If a mask is supplied, its borders pixels (e.g. the exterior edge) is plotted if this is *True*.
     units : str
         The units of the y / x axis of the plots, in arc-seconds ('arcsec') or kiloparsecs ('kpc').
@@ -727,7 +727,7 @@ def plot_border(
     border_pointsize : int
         The size of the points plotted to show the borders.
     """
-    if should_plot_border and mask is not None:
+    if include_border and mask is not None:
 
         plt.gca()
         border_grid = mask.geometry.border_grid.in_1d_binned

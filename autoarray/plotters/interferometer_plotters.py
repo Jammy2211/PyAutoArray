@@ -15,7 +15,7 @@ from autoarray.plotters import (
 
 def subplot(
     interferometer,
-    plot_origin=True,
+    include_origin=True,
     units="arcsec",
     kpc_per_arcsec=None,
     figsize=None,
@@ -50,7 +50,7 @@ def subplot(
     -----------
     interferometer : data_type.UVPlaneData
         The interferometer data_type, which includes the observed data_type, noise_map-map, PSF, signal-to-noise_map-map, etc.
-    plot_origin : True
+    include_origin : True
         If true, the origin of the data's coordinate system is plotted as a 'x'.
     image_plane_pix_grid : ndarray or data_type.array.grid_stacks.PixGrid
         If an adaptive pixelization whose pixels are formed by tracing pixels from the data, this plots those pixels \
@@ -133,7 +133,7 @@ def subplot(
 
     primary_beam(
         interferometer=interferometer,
-        plot_origin=plot_origin,
+        include_origin=include_origin,
         as_subplot=True,
         units=units,
         kpc_per_arcsec=kpc_per_arcsec,
@@ -169,10 +169,10 @@ def subplot(
 
 def individual(
     interferometer,
-    should_plot_visibilities=False,
-    should_plot_u_wavelengths=False,
-    should_plot_v_wavelengths=False,
-    should_plot_primary_beam=False,
+    plot_visibilities=False,
+    plot_u_wavelengths=False,
+    plot_v_wavelengths=False,
+    plot_primary_beam=False,
     units="arcsec",
     output_path=None,
     output_format="png",
@@ -186,11 +186,11 @@ def individual(
     -----------
     interferometer : data_type.UVPlaneData
         The interferometer data_type, which includes the observed data_type, noise_map-map, PSF, signal-to-noise_map-map, etc.
-    plot_origin : True
+    include_origin : True
         If true, the origin of the data's coordinate system is plotted as a 'x'.
     """
 
-    if should_plot_visibilities:
+    if plot_visibilities:
 
         visibilities(
             interferometer=interferometer,
@@ -199,7 +199,7 @@ def individual(
             output_format=output_format,
         )
 
-    if should_plot_u_wavelengths:
+    if plot_u_wavelengths:
 
         u_wavelengths(
             interferometer=interferometer,
@@ -208,7 +208,7 @@ def individual(
             output_format=output_format,
         )
 
-    if should_plot_v_wavelengths:
+    if plot_v_wavelengths:
 
         v_wavelengths(
             interferometer=interferometer,
@@ -217,7 +217,7 @@ def individual(
             output_format=output_format,
         )
 
-    if should_plot_primary_beam:
+    if plot_primary_beam:
 
         primary_beam(
             interferometer=interferometer,
@@ -256,7 +256,7 @@ def visibilities(
     -----------
     image : ScaledSquarePixelArray
         The image of the data.
-    plot_origin : True
+    include_origin : True
         If true, the origin of the data's coordinate system is plotted as a 'x'.
     image_plane_pix_grid : ndarray or data_type.array.grid_stacks.PixGrid
         If an adaptive pixelization whose pixels are formed by tracing pixels from the data, this plots those pixels \
@@ -314,7 +314,7 @@ def u_wavelengths(
     -----------
     image : ScaledSquarePixelArray
         The image of the data.
-    plot_origin : True
+    include_origin : True
         If true, the origin of the data's coordinate system is plotted as a 'x'.
     image_plane_pix_grid : ndarray or data_type.array.grid_stacks.PixGrid
         If an adaptive pixelization whose pixels are formed by tracing pixels from the data, this plots those pixels \
@@ -370,7 +370,7 @@ def v_wavelengths(
     -----------
     image : ScaledSquarePixelArray
         The image of the data.
-    plot_origin : True
+    include_origin : True
         If true, the origin of the data's coordinate system is plotted as a 'x'.
     image_plane_pix_grid : ndarray or data_type.array.grid_stacks.PixGrid
         If an adaptive pixelization whose pixels are formed by tracing pixels from the data, this plots those pixels \
@@ -401,7 +401,7 @@ def v_wavelengths(
 
 def primary_beam(
     interferometer,
-    plot_origin=True,
+    include_origin=True,
     as_subplot=False,
     units="arcsec",
     kpc_per_arcsec=None,
@@ -435,13 +435,13 @@ def primary_beam(
     -----------
     image : data_type.ImagingData
         The interferometer data_type, which includes the observed data_type, noise_map-map, PSF, signal-to-noise_map-map, etc.
-    plot_origin : True
+    include_origin : True
         If true, the origin of the data's coordinate system is plotted as a 'x'.
     """
 
     array_plotters.plot_array(
         array=interferometer.primary_beam,
-        should_plot_origin=plot_origin,
+        include_origin=include_origin,
         as_subplot=as_subplot,
         units=units,
         kpc_per_arcsec=kpc_per_arcsec,

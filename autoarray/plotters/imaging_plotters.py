@@ -10,9 +10,9 @@ from autoarray.plotters import array_plotters, plotter_util
 
 def subplot(
     imaging,
-    plot_origin=True,
+    include_origin=True,
     mask=None,
-    should_plot_border=False,
+    include_border=False,
     positions=None,
     units="arcsec",
     kpc_per_arcsec=None,
@@ -49,7 +49,7 @@ def subplot(
     -----------
     imaging : data_type.ImagingData
         The imaging data_type, which includes the observed data_type, noise_map-map, PSF, signal-to-noise_map-map, etc.
-    plot_origin : True
+    include_origin : True
         If true, the origin of the data's coordinate system is plotted as a 'x'.
     image_plane_pix_grid : ndarray or data_type.array.grid_stacks.PixGrid
         If an adaptive pixelization whose pixels are formed by tracing pixels from the data, this plots those pixels \
@@ -71,9 +71,9 @@ def subplot(
 
     image(
         imaging=imaging,
-        plot_origin=plot_origin,
+        include_origin=include_origin,
         mask=mask,
-        should_plot_border=should_plot_border,
+        include_border=include_border,
         positions=positions,
         as_subplot=True,
         units=units,
@@ -106,7 +106,7 @@ def subplot(
 
     noise_map(
         imaging=imaging,
-        plot_origin=plot_origin,
+        include_origin=include_origin,
         mask=mask,
         as_subplot=True,
         units=units,
@@ -165,7 +165,7 @@ def subplot(
 
     signal_to_noise_map(
         imaging=imaging,
-        plot_origin=plot_origin,
+        include_origin=include_origin,
         mask=mask,
         as_subplot=True,
         units=units,
@@ -196,7 +196,7 @@ def subplot(
 
     absolute_signal_to_noise_map(
         imaging=imaging,
-        plot_origin=plot_origin,
+        include_origin=include_origin,
         mask=mask,
         as_subplot=True,
         units=units,
@@ -227,7 +227,7 @@ def subplot(
 
     potential_chi_squared_map(
         imaging=imaging,
-        plot_origin=plot_origin,
+        include_origin=include_origin,
         mask=mask,
         as_subplot=True,
         units=units,
@@ -265,15 +265,15 @@ def subplot(
 
 def individual(
     imaging,
-    plot_origin=True,
+    include_origin=True,
     mask=None,
     positions=None,
-    should_plot_image=False,
-    should_plot_noise_map=False,
-    should_plot_psf=False,
-    should_plot_signal_to_noise_map=False,
-    should_plot_absolute_signal_to_noise_map=False,
-    should_plot_potential_chi_squared_map=False,
+    plot_image=False,
+    plot_noise_map=False,
+    plot_psf=False,
+    plot_signal_to_noise_map=False,
+    plot_absolute_signal_to_noise_map=False,
+    plot_potential_chi_squared_map=False,
     units="arcsec",
     output_path=None,
     output_format="png",
@@ -287,15 +287,15 @@ def individual(
     -----------
     imaging : data_type.ImagingData
         The imaging data_type, which includes the observed data_type, noise_map-map, PSF, signal-to-noise_map-map, etc.
-    plot_origin : True
+    include_origin : True
         If true, the origin of the data's coordinate system is plotted as a 'x'.
     """
 
-    if should_plot_image:
+    if plot_image:
 
         image(
             imaging=imaging,
-            plot_origin=plot_origin,
+            include_origin=include_origin,
             mask=mask,
             positions=positions,
             units=units,
@@ -303,53 +303,53 @@ def individual(
             output_format=output_format,
         )
 
-    if should_plot_noise_map:
+    if plot_noise_map:
 
         noise_map(
             imaging=imaging,
-            plot_origin=plot_origin,
+            include_origin=include_origin,
             mask=mask,
             units=units,
             output_path=output_path,
             output_format=output_format,
         )
 
-    if should_plot_psf:
+    if plot_psf:
 
         psf(
             imaging=imaging,
-            plot_origin=plot_origin,
+            include_origin=include_origin,
             output_path=output_path,
             output_format=output_format,
         )
 
-    if should_plot_signal_to_noise_map:
+    if plot_signal_to_noise_map:
 
         signal_to_noise_map(
             imaging=imaging,
-            plot_origin=plot_origin,
+            include_origin=include_origin,
             mask=mask,
             units=units,
             output_path=output_path,
             output_format=output_format,
         )
 
-    if should_plot_absolute_signal_to_noise_map:
+    if plot_absolute_signal_to_noise_map:
 
         absolute_signal_to_noise_map(
             imaging=imaging,
-            plot_origin=plot_origin,
+            include_origin=include_origin,
             mask=mask,
             units=units,
             output_path=output_path,
             output_format=output_format,
         )
 
-    if should_plot_potential_chi_squared_map:
+    if plot_potential_chi_squared_map:
 
         potential_chi_squared_map(
             imaging=imaging,
-            plot_origin=plot_origin,
+            include_origin=include_origin,
             mask=mask,
             units=units,
             output_path=output_path,
@@ -359,10 +359,10 @@ def individual(
 
 def image(
     imaging,
-    plot_origin=True,
+    include_origin=True,
     grid=None,
     mask=None,
-    should_plot_border=False,
+    include_border=False,
     positions=None,
     as_subplot=False,
     units="arcsec",
@@ -400,7 +400,7 @@ def image(
     -----------
     image : data_type.ImagingData
         The imaging data_type, which includes the observed data_type, noise_map-map, PSF, signal-to-noise_map-map, etc.
-    plot_origin : True
+    include_origin : True
         If true, the origin of the data's coordinate system is plotted as a 'x'.
     image_plane_pix_grid : ndarray or data_type.array.grid_stacks.PixGrid
         If an adaptive pixelization whose pixels are formed by tracing pixels from the data, this plots those pixels \
@@ -408,10 +408,10 @@ def image(
     """
     array_plotters.plot_array(
         array=imaging.image,
-        should_plot_origin=plot_origin,
+        include_origin=include_origin,
         grid=grid,
         mask=mask,
-        should_plot_border=should_plot_border,
+        include_border=include_border,
         positions=positions,
         as_subplot=as_subplot,
         units=units,
@@ -445,7 +445,7 @@ def image(
 
 def noise_map(
     imaging,
-    plot_origin=True,
+    include_origin=True,
     mask=None,
     as_subplot=False,
     units="arcsec",
@@ -481,13 +481,13 @@ def noise_map(
     -----------
     image : data_type.ImagingData
         The imaging data_type, which includes the observed data_type, noise_map-map, PSF, signal-to-noise_map-map, etc.
-    plot_origin : True
+    include_origin : True
         If true, the origin of the data's coordinate system is plotted as a 'x'.
     """
 
     array_plotters.plot_array(
         array=imaging.noise_map,
-        should_plot_origin=plot_origin,
+        include_origin=include_origin,
         mask=mask,
         as_subplot=as_subplot,
         units=units,
@@ -519,7 +519,7 @@ def noise_map(
 
 def psf(
     imaging,
-    plot_origin=True,
+    include_origin=True,
     as_subplot=False,
     units="arcsec",
     kpc_per_arcsec=None,
@@ -553,13 +553,13 @@ def psf(
     -----------
     image : data_type.ImagingData
         The imaging data_type, which includes the observed data_type, noise_map-map, PSF, signal-to-noise_map-map, etc.
-    plot_origin : True
+    include_origin : True
         If true, the origin of the data's coordinate system is plotted as a 'x'.
     """
 
     array_plotters.plot_array(
         array=imaging.psf,
-        should_plot_origin=plot_origin,
+        include_origin=include_origin,
         as_subplot=as_subplot,
         units=units,
         kpc_per_arcsec=kpc_per_arcsec,
@@ -589,7 +589,7 @@ def psf(
 
 def signal_to_noise_map(
     imaging,
-    plot_origin=True,
+    include_origin=True,
     mask=None,
     as_subplot=False,
     units="arcsec",
@@ -625,13 +625,13 @@ def signal_to_noise_map(
     -----------
     image : data_type.ImagingData
         The imaging data_type, which includes the observed image, noise_map-map, PSF, signal-to-noise_map-map, etc.
-    plot_origin : True
+    include_origin : True
         If true, the origin of the data's coordinate system is plotted as a 'x'.
     """
 
     array_plotters.plot_array(
         array=imaging.signal_to_noise_map,
-        should_plot_origin=plot_origin,
+        include_origin=include_origin,
         mask=mask,
         as_subplot=as_subplot,
         units=units,
@@ -663,7 +663,7 @@ def signal_to_noise_map(
 
 def absolute_signal_to_noise_map(
     imaging,
-    plot_origin=True,
+    include_origin=True,
     mask=None,
     as_subplot=False,
     units="arcsec",
@@ -699,13 +699,13 @@ def absolute_signal_to_noise_map(
     -----------
     image : data_type.ImagingData
         The imaging data_type, which includes the observed image, noise_map-map, PSF, signal-to-noise_map-map, etc.
-    plot_origin : True
+    include_origin : True
         If true, the origin of the data's coordinate system is plotted as a 'x'.
     """
 
     array_plotters.plot_array(
         array=imaging.absolute_signal_to_noise_map,
-        should_plot_origin=plot_origin,
+        include_origin=include_origin,
         mask=mask,
         as_subplot=as_subplot,
         units=units,
@@ -737,7 +737,7 @@ def absolute_signal_to_noise_map(
 
 def potential_chi_squared_map(
     imaging,
-    plot_origin=True,
+    include_origin=True,
     mask=None,
     as_subplot=False,
     units="arcsec",
@@ -773,13 +773,13 @@ def potential_chi_squared_map(
     -----------
     image : data_type.ImagingData
         The imaging data_type, which includes the observed image, noise_map-map, PSF, signal-to-noise_map-map, etc.
-    plot_origin : True
+    include_origin : True
         If true, the origin of the data's coordinate system is plotted as a 'x'.
     """
 
     array_plotters.plot_array(
         array=imaging.potential_chi_squared_map,
-        should_plot_origin=plot_origin,
+        include_origin=include_origin,
         mask=mask,
         as_subplot=as_subplot,
         units=units,

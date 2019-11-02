@@ -49,8 +49,8 @@ def test__image_and_rectangular_mapper_is_output(
     aa.plot.mapper.image_and_mapper(
         imaging=image,
         mapper=rectangular_mapper,
-        should_plot_centres=True,
-        should_plot_grid=True,
+        plot_centres=True,
+        include_grid=True,
         image_pixels=[[0, 1, 2], [3]],
         source_pixels=[[1, 2], [0]],
         output_path=mapper_plotter_path,
@@ -64,8 +64,8 @@ def test__rectangular_mapper_is_output(
 ):
     aa.plot.mapper.plot_mapper(
         mapper=rectangular_mapper,
-        should_plot_centres=True,
-        should_plot_grid=True,
+        plot_centres=True,
+        include_grid=True,
         image_pixels=[[0, 1, 2], [3]],
         source_pixels=[[1, 2], [0]],
         output_path=mapper_plotter_path,

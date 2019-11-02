@@ -81,10 +81,10 @@ def test__individuals__output_dependent_on_input(
 ):
     aa.plot.interferometer.individual(
         interferometer=interferometer_7,
-        should_plot_visibilities=True,
-        should_plot_u_wavelengths=False,
-        should_plot_v_wavelengths=True,
-        should_plot_primary_beam=True,
+        plot_visibilities=True,
+        plot_u_wavelengths=False,
+        plot_v_wavelengths=True,
+        plot_primary_beam=True,
         output_path=interferometer_plotter_path,
         output_format="png",
     )

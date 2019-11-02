@@ -78,9 +78,9 @@ def test__imaging_individuals__output_dependent_on_input(
 ):
     aa.plot.imaging.individual(
         imaging=imaging_7x7,
-        should_plot_image=True,
-        should_plot_psf=True,
-        should_plot_absolute_signal_to_noise_map=True,
+        plot_image=True,
+        plot_psf=True,
+        plot_absolute_signal_to_noise_map=True,
         output_path=imaging_plotter_path,
         output_format="png",
     )

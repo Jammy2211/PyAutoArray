@@ -161,7 +161,7 @@ def plot_lines(line_lists):
     -----------t.
     mask : ndarray of data_type.array.mask.Mask
         The mask applied to the array, the edge of which is plotted as a set of points over the plotted array.
-    should_plot_lines : bool
+    plot_lines : bool
         If a mask is supplied, its liness pixels (e.g. the exterior edge) is plotted if this is *True*.
     units : str
         The units of the y / x axis of the plots, in arc-seconds ('arcsec') or kiloparsecs ('kpc').
@@ -173,7 +173,7 @@ def plot_lines(line_lists):
     if line_lists is not None:
         for line_list in line_lists:
             for line in line_list:
-                if len(line) == 0:
+                if len(line) != 0:
                     plt.plot(line[:, 1], line[:, 0], c="r", lw=1.5, zorder=200)
 
 
@@ -231,19 +231,19 @@ def quantity_and_annuli_radii_from_minimum_and_maximum_radii_and_radii_points(
     return quantity_radii, annuli_radii
 
 
-def get_critical_curve_and_caustic(obj, grid, plot_critical_curves, plot_caustics):
+def get_critical_curve_and_caustic(obj, grid, include_critical_curves, include_caustics):
 
     plot_sub_size = conf.instance.visualize.get('figures', 'plot_sub_size', int)
 
     unmasked_grid = grids.Grid.uniform(
         shape_2d=grid.mask.shape_2d, pixel_scales=grid.pixel_scales, sub_size=plot_sub_size, origin=grid.origin)
 
-    if plot_critical_curves:
+    if include_critical_curves:
         critical_curves = obj.critical_curves_from_grid(grid=unmasked_grid)
     else:
         critical_curves = []
 
-    if plot_caustics:
+    if include_caustics:
         caustics = obj.caustics_from_grid(grid=unmasked_grid)
     else:
         caustics = []
