@@ -1,7 +1,7 @@
 import autoarray as aa
 from autoarray.structures import kernel as kern
 from autoarray.operators import convolution, fourier_transform
-from autoarray.masked import masked_data as md
+from autoarray.masked import masked_dataset as md
 import numpy as np
 
 
@@ -10,22 +10,22 @@ class TestAbstractMaskedData(object):
         self, imaging_7x7, sub_mask_7x7, grid_7x7, sub_grid_7x7, blurring_grid_7x7
     ):
 
-        masked_data = md.AbstractMaskedData(mask=sub_mask_7x7)
+        masked_dataset = md.AbstractMaskedDataset(mask=sub_mask_7x7)
 
-        assert (masked_data.grid.in_1d_binned == grid_7x7).all()
-        assert (masked_data.grid.in_1d == sub_grid_7x7).all()
+        assert (masked_dataset.grid.in_1d_binned == grid_7x7).all()
+        assert (masked_dataset.grid.in_1d == sub_grid_7x7).all()
 
         sub_mask_7x7.pixel_scales = None
 
-        masked_data = md.AbstractMaskedData(mask=sub_mask_7x7)
+        masked_dataset = md.AbstractMaskedDataset(mask=sub_mask_7x7)
 
-        assert masked_data.grid is None
+        assert masked_dataset.grid is None
 
     def test__pixel_scale_interpolation_grid_input__grids_nclude_interpolators(
         self, sub_mask_7x7
     ):
 
-        masked_imaging_7x7 = md.AbstractMaskedData(
+        masked_imaging_7x7 = md.AbstractMaskedDataset(
             mask=sub_mask_7x7, pixel_scale_interpolation_grid=1.0
         )
 
@@ -40,31 +40,31 @@ class TestAbstractMaskedData(object):
             masked_imaging_7x7.grid.interpolator.wts == new_grid.interpolator.wts
         ).all()
 
-        masked_imaging_7x7 = md.AbstractMaskedData(mask=sub_mask_7x7)
+        masked_imaging_7x7 = md.AbstractMaskedDataset(mask=sub_mask_7x7)
 
         assert masked_imaging_7x7.grid.interpolator is None
 
     def test__inversion_pixel_limit(self, sub_mask_7x7):
-        masked_imaging_7x7 = md.AbstractMaskedData(
+        masked_imaging_7x7 = md.AbstractMaskedDataset(
             mask=sub_mask_7x7, inversion_pixel_limit=2
         )
 
         assert masked_imaging_7x7.inversion_pixel_limit == 2
 
-        masked_imaging_7x7 = md.AbstractMaskedData(
+        masked_imaging_7x7 = md.AbstractMaskedDataset(
             mask=sub_mask_7x7, inversion_pixel_limit=5
         )
 
         assert masked_imaging_7x7.inversion_pixel_limit == 5
 
     def test__inversion_uses_border(self, sub_mask_7x7):
-        masked_imaging_7x7 = md.AbstractMaskedData(
+        masked_imaging_7x7 = md.AbstractMaskedDataset(
             mask=sub_mask_7x7, inversion_uses_border=True
         )
 
         assert masked_imaging_7x7.inversion_uses_border == True
 
-        masked_imaging_7x7 = md.AbstractMaskedData(
+        masked_imaging_7x7 = md.AbstractMaskedDataset(
             mask=sub_mask_7x7, inversion_uses_border=False
         )
 
@@ -72,7 +72,7 @@ class TestAbstractMaskedData(object):
 
 
 class TestMaskedImaging(object):
-    def test__masked_data(self, imaging_7x7, sub_mask_7x7):
+    def test__masked_dataset(self, imaging_7x7, sub_mask_7x7):
 
         masked_imaging_7x7 = aa.masked.imaging.manual(
             imaging=imaging_7x7, mask=sub_mask_7x7
@@ -214,16 +214,16 @@ class TestMaskedImaging(object):
             imaging=imaging_7x7, mask=mask_7x7
         )
 
-        masked_data_snr_limit = masked_imaging_7x7.signal_to_noise_limited_from_signal_to_noise_limit(
+        masked_dataset_snr_limit = masked_imaging_7x7.signal_to_noise_limited_from_signal_to_noise_limit(
             signal_to_noise_limit=0.25
         )
 
         assert (
-            masked_data_snr_limit.image.in_2d == np.ones((7, 7)) * np.invert(mask_7x7)
+            masked_dataset_snr_limit.image.in_2d == np.ones((7, 7)) * np.invert(mask_7x7)
         ).all()
 
         assert (
-            masked_data_snr_limit.noise_map.in_2d
+            masked_dataset_snr_limit.noise_map.in_2d
             == np.array(
                 [
                     [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
@@ -237,15 +237,15 @@ class TestMaskedImaging(object):
             )
         ).all()
 
-        assert (masked_data_snr_limit.psf.in_2d == np.ones((3, 3))).all()
-        assert masked_data_snr_limit.psf_shape_2d == (3, 3)
+        assert (masked_dataset_snr_limit.psf.in_2d == np.ones((3, 3))).all()
+        assert masked_dataset_snr_limit.psf_shape_2d == (3, 3)
 
-        assert (masked_data_snr_limit.image.in_1d == np.ones(9)).all()
-        assert (masked_data_snr_limit.noise_map.in_1d == 4.0 * np.ones(9)).all()
+        assert (masked_dataset_snr_limit.image.in_1d == np.ones(9)).all()
+        assert (masked_dataset_snr_limit.noise_map.in_1d == 4.0 * np.ones(9)).all()
 
 
 class TestMaskedInterferometer(object):
-    def test__masked_data(self, interferometer_7, sub_mask_7x7):
+    def test__masked_dataset(self, interferometer_7, sub_mask_7x7):
 
         masked_interferometer_7 = aa.masked.interferometer.manual(
             interferometer=interferometer_7, real_space_mask=sub_mask_7x7

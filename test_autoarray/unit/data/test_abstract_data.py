@@ -5,7 +5,7 @@ import numpy as np
 import shutil
 
 import autoarray as aa
-from autoarray.data import abstract_data
+from autoarray.dataset import abstract_dataset
 
 logger = logging.getLogger(__name__)
 
@@ -19,7 +19,7 @@ class TestSignalToNoise:
         array = aa.array.manual_2d([[1.0, 2.0], [3.0, 4.0]])
         noise_map = aa.array.manual_2d([[10.0, 10.0], [30.0, 4.0]])
 
-        data = abstract_data.AbstractData(data=array, noise_map=noise_map)
+        data = abstract_dataset.AbstractDataset(data=array, noise_map=noise_map)
 
         assert (
             data.signal_to_noise_map.in_2d == np.array([[0.1, 0.2], [0.1, 1.0]])
@@ -31,7 +31,7 @@ class TestSignalToNoise:
 
         noise_map = aa.array.manual_2d([[10.0, 10.0], [30.0, 4.0]])
 
-        data = abstract_data.AbstractData(data=array, noise_map=noise_map)
+        data = abstract_dataset.AbstractDataset(data=array, noise_map=noise_map)
 
         assert (
             data.signal_to_noise_map.in_2d == np.array([[0.0, 0.2], [0.1, 0.0]])
@@ -47,7 +47,7 @@ class TestAbsoluteSignalToNoise:
 
         noise_map = aa.array.manual_2d([[10.0, 10.0], [30.0, 4.0]])
 
-        data = abstract_data.AbstractData(data=array, noise_map=noise_map)
+        data = abstract_dataset.AbstractDataset(data=array, noise_map=noise_map)
 
         assert (
             data.absolute_signal_to_noise_map.in_2d
@@ -63,7 +63,7 @@ class TestPotentialChiSquaredMap:
         array = aa.array.manual_2d([[-1.0, 2.0], [3.0, -4.0]])
         noise_map = aa.array.manual_2d([[10.0, 10.0], [30.0, 4.0]])
 
-        data = abstract_data.AbstractData(data=array, noise_map=noise_map)
+        data = abstract_dataset.AbstractDataset(data=array, noise_map=noise_map)
 
         assert (
             data.potential_chi_squared_map.in_2d
@@ -76,7 +76,7 @@ class TestExposureTimeMap(object):
     def test__from_background_noise_map__covnerts_to_exposure_times(self):
         background_noise_map = aa.array.manual_2d([[1.0, 4.0, 8.0], [1.0, 4.0, 8.0]])
 
-        exposure_time_map = abstract_data.ExposureTimeMap.from_exposure_time_and_inverse_noise_map(
+        exposure_time_map = abstract_dataset.ExposureTimeMap.from_exposure_time_and_inverse_noise_map(
             exposure_time=1.0, inverse_noise_map=background_noise_map
         )
 
@@ -84,7 +84,7 @@ class TestExposureTimeMap(object):
             exposure_time_map.in_2d == np.array([[0.125, 0.5, 1.0], [0.125, 0.5, 1.0]])
         ).all()
 
-        exposure_time_map = abstract_data.ExposureTimeMap.from_exposure_time_and_inverse_noise_map(
+        exposure_time_map = abstract_dataset.ExposureTimeMap.from_exposure_time_and_inverse_noise_map(
             exposure_time=3.0, inverse_noise_map=background_noise_map
         )
 

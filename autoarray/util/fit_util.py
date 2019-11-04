@@ -11,7 +11,7 @@ def residual_map_from_data_mask_and_model_data(data, mask, model_data):
     data : np.ndarray
         The observed simulator that is fitted.
     mask : np.ndarray
-        The mask applied to the data, where *False* entries are included in the calculation.
+        The mask applied to the dataset, where *False* entries are included in the calculation.
     model_data : np.ndarray
         The model simulator used to fit the observed simulator.
     """
@@ -111,7 +111,7 @@ def residual_map_from_data_and_model_data(data, model_data):
     data : np.ndarray
         The observed simulator that is fitted.
     mask : np.ndarray
-        The mask applied to the data, where *False* entries are included in the calculation.
+        The mask applied to the dataset, where *False* entries are included in the calculation.
     model_data : np.ndarray
         The model simulator used to fit the observed simulator.
     """
@@ -190,7 +190,7 @@ def noise_normalization_from_noise_map(noise_map):
 def likelihood_from_chi_squared_and_noise_normalization(
     chi_squared, noise_normalization
 ):
-    """Compute the likelihood of each masked 1D model-simulator fit to the data, where:
+    """Compute the likelihood of each masked 1D model-simulator fit to the dataset, where:
 
     Likelihood = -0.5*[Chi_Squared_Term + Noise_Term] (see functions above for these definitions)
 

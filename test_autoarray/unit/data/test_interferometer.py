@@ -5,7 +5,7 @@ import numpy as np
 import pytest
 
 import autoarray as aa
-from autoarray.data import interferometer
+from autoarray.dataset import interferometer
 from autoarray import exc
 
 test_data_dir = "{}/../test_files/array/".format(

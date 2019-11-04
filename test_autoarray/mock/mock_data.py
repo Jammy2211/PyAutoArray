@@ -1,7 +1,7 @@
 import numpy as np
 
 import autoarray as aa
-from autoarray.data import imaging, interferometer
+from autoarray.dataset import imaging, interferometer
 from autoarray.operators import fourier_transform
 
 

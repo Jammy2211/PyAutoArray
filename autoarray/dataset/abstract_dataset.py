@@ -4,7 +4,7 @@ from autoarray.structures import arrays
 from autoarray import exc
 
 
-class AbstractData(object):
+class AbstractDataset(object):
     def __init__(self, data, noise_map, exposure_time_map=None):
         """A collection of abstract 2D for different data_type classes (an image, pixel-scale, noise-map, etc.)
 

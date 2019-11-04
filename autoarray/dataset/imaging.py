@@ -8,12 +8,12 @@ from autoarray import exc
 from autoarray.mask import mask as msk
 from autoarray.structures import kernel, arrays
 from autoarray.masked import masked_structures
-from autoarray.data import abstract_data, data_converter
+from autoarray.dataset import abstract_dataset, data_converter
 
 logger = logging.getLogger(__name__)
 
 
-class AbstractImaging(abstract_data.AbstractData):
+class AbstractImagingSet(abstract_dataset.AbstractDataset):
     @property
     def image(self):
         return self.data
@@ -360,7 +360,7 @@ class AbstractImaging(abstract_data.AbstractData):
             )
 
 
-class Imaging(AbstractImaging):
+class Imaging(AbstractImagingSet):
     def __init__(
         self,
         image,
@@ -373,7 +373,7 @@ class Imaging(AbstractImaging):
         name=None,
         **kwargs
     ):
-        """A collection of 2D imaging data(an image, noise-map, psf, etc.)
+        """A collection of 2D imaging dataset(an image, noise-map, psf, etc.)
 
         Parameters
         ----------
@@ -557,7 +557,7 @@ class Imaging(AbstractImaging):
             time map and gain.
         """
 
-        image = abstract_data.load_image(
+        image = abstract_dataset.load_image(
             image_path=image_path, image_hdu=image_hdu, pixel_scales=pixel_scales
         )
 
@@ -574,7 +574,7 @@ class Imaging(AbstractImaging):
         else:
             inverse_noise_map = None
 
-        exposure_time_map = abstract_data.load_exposure_time_map(
+        exposure_time_map = abstract_dataset.load_exposure_time_map(
             exposure_time_map_path=exposure_time_map_path,
             exposure_time_map_hdu=exposure_time_map_hdu,
             pixel_scales=pixel_scales,
