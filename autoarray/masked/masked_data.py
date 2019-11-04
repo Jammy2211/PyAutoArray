@@ -43,7 +43,7 @@ class MaskedImaging(AbstractMaskedData):
         self,
         imaging,
         mask,
-        trimmed_psf_shape_2d=None,
+        psf_shape_2d=None,
         pixel_scale_interpolation_grid=None,
         inversion_pixel_limit=None,
         inversion_uses_border=True,
@@ -64,7 +64,7 @@ class MaskedImaging(AbstractMaskedData):
         sub_size : int
             The size of the sub-grid used for each lens SubGrid. E.g. a value of 2 grid each image-pixel on a 2x2 \
             sub-grid.
-        trimmed_psf_shape_2d : (int, int)
+        psf_shape_2d : (int, int)
             The shape of the PSF used for convolving model image generated using analytic light profiles. A smaller \
             shape will trim the PSF relative to the input image PSF, giving a faster analysis run-time.
         positions : [[]]
@@ -98,14 +98,14 @@ class MaskedImaging(AbstractMaskedData):
 
         if imaging.psf is not None:
 
-            if trimmed_psf_shape_2d is None:
-                self.trimmed_psf_shape_2d = imaging.psf.shape_2d
+            if psf_shape_2d is None:
+                self.psf_shape_2d = imaging.psf.shape_2d
             else:
-                self.trimmed_psf_shape_2d = trimmed_psf_shape_2d
+                self.psf_shape_2d = psf_shape_2d
 
             self.psf = kernel.Kernel.manual_2d(
                 array=imaging.psf.resized_from_new_shape(
-                    new_shape=self.trimmed_psf_shape_2d
+                    new_shape=self.psf_shape_2d
                 ).in_2d
             )
 
@@ -114,7 +114,7 @@ class MaskedImaging(AbstractMaskedData):
             if mask.pixel_scales is not None:
 
                 self.blurring_grid = self.grid.blurring_grid_from_kernel_shape(
-                    kernel_shape=self.trimmed_psf_shape_2d
+                    kernel_shape_2d=self.psf_shape_2d
                 )
 
                 if pixel_scale_interpolation_grid is not None:
@@ -132,7 +132,7 @@ class MaskedImaging(AbstractMaskedData):
         cls,
         imaging,
         mask,
-        trimmed_psf_shape_2d=None,
+        psf_shape_2d=None,
         pixel_scale_interpolation_grid=None,
         inversion_pixel_limit=None,
         inversion_uses_border=True,
@@ -140,7 +140,7 @@ class MaskedImaging(AbstractMaskedData):
         return cls(
             imaging=imaging,
             mask=mask,
-            trimmed_psf_shape_2d=trimmed_psf_shape_2d,
+            psf_shape_2d=psf_shape_2d,
             pixel_scale_interpolation_grid=pixel_scale_interpolation_grid,
             inversion_pixel_limit=inversion_pixel_limit,
             inversion_uses_border=inversion_uses_border,
@@ -161,7 +161,7 @@ class MaskedImaging(AbstractMaskedData):
         return self.__class__(
             imaging=binned_imaging,
             mask=binned_mask,
-            trimmed_psf_shape_2d=self.trimmed_psf_shape_2d,
+            psf_shape_2d=self.psf_shape_2d,
             pixel_scale_interpolation_grid=self.pixel_scale_interpolation_grid,
             inversion_pixel_limit=self.inversion_pixel_limit,
             inversion_uses_border=self.inversion_uses_border,
@@ -176,7 +176,7 @@ class MaskedImaging(AbstractMaskedData):
         return self.__class__(
             imaging=imaging_with_signal_to_noise_limit,
             mask=self.mask,
-            trimmed_psf_shape_2d=self.trimmed_psf_shape_2d,
+            psf_shape_2d=self.psf_shape_2d,
             pixel_scale_interpolation_grid=self.pixel_scale_interpolation_grid,
             inversion_pixel_limit=self.inversion_pixel_limit,
             inversion_uses_border=self.inversion_uses_border,
@@ -188,7 +188,7 @@ class MaskedInterferometer(AbstractMaskedData):
         self,
         interferometer,
         real_space_mask,
-        trimmed_primary_beam_shape_2d=None,
+        primary_beam_shape_2d=None,
         pixel_scale_interpolation_grid=None,
         inversion_pixel_limit=None,
         inversion_uses_border=True,
@@ -209,7 +209,7 @@ class MaskedInterferometer(AbstractMaskedData):
         sub_size : int
             The size of the sub-grid used for each lens SubGrid. E.g. a value of 2 grid each image-pixel on a 2x2 \
             sub-grid.
-        trimmed_primary_beam_shape_2d : (int, int)
+        primary_beam_shape_2d : (int, int)
             The shape of the primary_beam used for convolving model image generated using analytic light profiles. A smaller \
             shape will trim the primary_beam relative to the input image primary_beam, giving a faster analysis run-time.
         positions : [[]]
@@ -233,21 +233,21 @@ class MaskedInterferometer(AbstractMaskedData):
         )
 
         if self.interferometer.primary_beam is None:
-            self.trimmed_primary_beam_shape_2d = None
+            self.primary_beam_shape_2d = None
         elif (
-            trimmed_primary_beam_shape_2d is None
-            and self.interferometer.primary_beam is not None
+                primary_beam_shape_2d is None
+                and self.interferometer.primary_beam is not None
         ):
-            self.trimmed_primary_beam_shape_2d = (
+            self.primary_beam_shape_2d = (
                 self.interferometer.primary_beam.shape_2d
             )
         else:
-            self.trimmed_primary_beam_shape_2d = trimmed_primary_beam_shape_2d
+            self.primary_beam_shape_2d = primary_beam_shape_2d
 
-        if self.trimmed_primary_beam_shape_2d is not None:
+        if self.primary_beam_shape_2d is not None:
             self.primary_beam = kernel.Kernel.manual_2d(
                 array=interferometer.primary_beam.resized_from_new_shape(
-                    new_shape=self.trimmed_primary_beam_shape_2d
+                    new_shape=self.primary_beam_shape_2d
                 ).in_2d
             )
 
@@ -271,7 +271,7 @@ class MaskedInterferometer(AbstractMaskedData):
         cls,
         interferometer,
         real_space_mask,
-        trimmed_primary_beam_shape_2d=None,
+        primary_beam_shape_2d=None,
         pixel_scale_interpolation_grid=None,
         inversion_pixel_limit=None,
         inversion_uses_border=True,
@@ -279,7 +279,7 @@ class MaskedInterferometer(AbstractMaskedData):
         return cls(
             interferometer,
             real_space_mask=real_space_mask,
-            trimmed_primary_beam_shape_2d=trimmed_primary_beam_shape_2d,
+            primary_beam_shape_2d=primary_beam_shape_2d,
             pixel_scale_interpolation_grid=pixel_scale_interpolation_grid,
             inversion_pixel_limit=inversion_pixel_limit,
             inversion_uses_border=inversion_uses_border,

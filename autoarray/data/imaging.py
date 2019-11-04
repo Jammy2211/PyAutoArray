@@ -710,12 +710,12 @@ class Imaging(AbstractImaging):
         image = psf.convolved_array_from_array(array=image)
 
         if image_needs_trimming:
-            image = image.trimmed_from_kernel_shape(kernel_shape=psf.shape_2d)
+            image = image.trimmed_from_kernel_shape(kernel_shape_2d=psf.shape_2d)
             exposure_time_map = exposure_time_map.trimmed_from_kernel_shape(
-                kernel_shape=psf.shape_2d
+                kernel_shape_2d=psf.shape_2d
             )
             background_sky_map = background_sky_map.trimmed_from_kernel_shape(
-                kernel_shape=psf.shape_2d
+                kernel_shape_2d=psf.shape_2d
             )
 
         if add_noise is True:

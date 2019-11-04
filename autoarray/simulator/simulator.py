@@ -55,7 +55,7 @@ class ImagingSimulator(object):
         shape=(101, 101),
         pixel_scales=0.2,
         sub_size=8,
-        psf_shape=(31, 31),
+        psf_shape_2d=(31, 31),
         psf_sigma=0.5,
         exposure_time=100.0,
         background_sky_level=1.0,
@@ -67,7 +67,7 @@ class ImagingSimulator(object):
 
         This can be customized by over-riding the default input values."""
         psf = aa.kernel.from_gaussian(
-            shape_2d=psf_shape, sigma=psf_sigma, pixel_scales=pixel_scales
+            shape_2d=psf_shape_2d, sigma=psf_sigma, pixel_scales=pixel_scales
         )
         return ImagingSimulator(
             shape_2d=shape,
@@ -87,7 +87,7 @@ class ImagingSimulator(object):
         shape=(151, 151),
         pixel_scales=0.1,
         sub_size=8,
-        psf_shape=(31, 31),
+        psf_shape_2d=(31, 31),
         psf_sigma=0.1,
         exposure_time=565.0,
         background_sky_level=1.0,
@@ -99,7 +99,7 @@ class ImagingSimulator(object):
 
         This can be customized by over-riding the default input values."""
         psf = aa.kernel.from_gaussian(
-            shape_2d=psf_shape, sigma=psf_sigma, pixel_scales=pixel_scales
+            shape_2d=psf_shape_2d, sigma=psf_sigma, pixel_scales=pixel_scales
         )
         return ImagingSimulator(
             shape_2d=shape,
@@ -119,7 +119,7 @@ class ImagingSimulator(object):
         shape=(251, 251),
         pixel_scales=0.05,
         sub_size=8,
-        psf_shape=(31, 31),
+        psf_shape_2d=(31, 31),
         psf_sigma=0.05,
         exposure_time=2000.0,
         background_sky_level=1.0,
@@ -131,7 +131,7 @@ class ImagingSimulator(object):
 
         This can be customized by over-riding the default input values."""
         psf = aa.kernel.from_gaussian(
-            shape_2d=psf_shape, sigma=psf_sigma, pixel_scales=pixel_scales
+            shape_2d=psf_shape_2d, sigma=psf_sigma, pixel_scales=pixel_scales
         )
         return ImagingSimulator(
             shape_2d=shape,
@@ -151,7 +151,7 @@ class ImagingSimulator(object):
         shape=(401, 401),
         pixel_scales=0.03,
         sub_size=8,
-        psf_shape=(31, 31),
+        psf_shape_2d=(31, 31),
         psf_sigma=0.05,
         exposure_time=2000.0,
         background_sky_level=1.0,
@@ -164,7 +164,7 @@ class ImagingSimulator(object):
 
         This can be customized by over-riding the default input values."""
         psf = aa.kernel.from_gaussian(
-            shape_2d=psf_shape, sigma=psf_sigma, pixel_scales=pixel_scales
+            shape_2d=psf_shape_2d, sigma=psf_sigma, pixel_scales=pixel_scales
         )
         return ImagingSimulator(
             shape_2d=shape,
@@ -184,7 +184,7 @@ class ImagingSimulator(object):
         shape=(751, 751),
         pixel_scales=0.01,
         sub_size=8,
-        psf_shape=(31, 31),
+        psf_shape_2d=(31, 31),
         psf_sigma=0.025,
         exposure_time=1000.0,
         background_sky_level=1.0,
@@ -196,7 +196,7 @@ class ImagingSimulator(object):
 
         This can be customized by over-riding the default input values."""
         psf = aa.kernel.from_gaussian(
-            shape_2d=psf_shape, sigma=psf_sigma, pixel_scales=pixel_scales
+            shape_2d=psf_shape_2d, sigma=psf_sigma, pixel_scales=pixel_scales
         )
         return ImagingSimulator(
             shape_2d=shape,

@@ -178,10 +178,10 @@ class AbstractGrid(abstract_structure.AbstractStructure):
     def in_2d_binned(self):
         return self.mask.mapping.grid_2d_binned_from_sub_grid_1d(sub_grid_1d=self)
 
-    def blurring_grid_from_kernel_shape(self, kernel_shape):
+    def blurring_grid_from_kernel_shape(self, kernel_shape_2d):
 
         blurring_mask = self.mask.regions.blurring_mask_from_kernel_shape(
-            kernel_shape=kernel_shape
+            kernel_shape_2d=kernel_shape_2d
         )
 
         blurring_grid_1d = grid_util.grid_1d_via_mask_2d(
@@ -314,11 +314,11 @@ class AbstractGrid(abstract_structure.AbstractStructure):
 
         return grid
 
-    def padded_grid_from_kernel_shape(self, kernel_shape):
+    def padded_grid_from_kernel_shape(self, kernel_shape_2d):
 
         shape = self.mask.shape
 
-        padded_shape = (shape[0] + kernel_shape[0] - 1, shape[1] + kernel_shape[1] - 1)
+        padded_shape = (shape[0] + kernel_shape_2d[0] - 1, shape[1] + kernel_shape_2d[1] - 1)
 
         padded_mask = msk.Mask.unmasked(
             shape_2d=padded_shape,
@@ -524,7 +524,7 @@ class Grid(AbstractGrid):
         return mask.mapping.grid_from_sub_grid_2d(sub_grid_2d=sub_grid_2d)
 
     @classmethod
-    def blurring_grid_from_mask_and_kernel_shape(cls, mask, kernel_shape):
+    def blurring_grid_from_mask_and_kernel_shape(cls, mask, kernel_shape_2d):
         """Setup a blurring-grid from a mask, where a blurring grid consists of all pixels that are masked, but they \
         are close enough to the unmasked pixels that a fraction of their light will be blurred into those pixels \
         via PSF convolution. For example, if our mask is as follows:
@@ -584,7 +584,7 @@ class Grid(AbstractGrid):
         """
 
         blurring_mask = mask.regions.blurring_mask_from_kernel_shape(
-            kernel_shape=kernel_shape
+            kernel_shape_2d=kernel_shape_2d
         )
 
         blurring_grid_1d = grid_util.grid_1d_via_mask_2d(

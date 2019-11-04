@@ -148,9 +148,9 @@ class AbstractArray(abstract_structure.AbstractStructure):
 
         return resized_mask_2d.mapping.array_from_array_2d(array_2d=resized_array_2d)
 
-    def trimmed_from_kernel_shape(self, kernel_shape):
-        psf_cut_y = np.int(np.ceil(kernel_shape[0] / 2)) - 1
-        psf_cut_x = np.int(np.ceil(kernel_shape[1] / 2)) - 1
+    def trimmed_from_kernel_shape(self, kernel_shape_2d):
+        psf_cut_y = np.int(np.ceil(kernel_shape_2d[0] / 2)) - 1
+        psf_cut_x = np.int(np.ceil(kernel_shape_2d[1] / 2)) - 1
         array_y = np.int(self.mask.shape[0])
         array_x = np.int(self.mask.shape[1])
         trimmed_array_2d = self.in_2d[
