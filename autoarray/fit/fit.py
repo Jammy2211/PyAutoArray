@@ -24,7 +24,7 @@ def fit(masked_dataset, model_data, inversion=None):
         )
 
 
-class DataFit(object):
+class DatasetFit(object):
 
     # noinspection PyUnresolvedReferences
     def __init__(self, mask, data, noise_map, model_data, inversion=None):
@@ -136,7 +136,7 @@ class DataFit(object):
             return self.evidence
 
 
-class ImagingFit(DataFit):
+class ImagingFit(DatasetFit):
     def __init__(self, mask, image, noise_map, model_image, inversion=None):
         """Class to fit simulator where the dataset structures are any dimension.
 
@@ -185,7 +185,7 @@ class ImagingFit(DataFit):
         return self.model_data
 
 
-class InterferometerFit(DataFit):
+class InterferometerFit(DatasetFit):
     def __init__(
         self,
         visibilities_mask,

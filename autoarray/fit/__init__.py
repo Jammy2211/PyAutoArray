@@ -1,5 +1,5 @@
 from ..fit.fit import (
-    DataFit as data,
+    DatasetFit as data,
     ImagingFit as imaging,
     InterferometerFit as interferometer,
 )
