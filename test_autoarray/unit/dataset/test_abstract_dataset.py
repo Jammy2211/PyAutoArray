@@ -2,7 +2,6 @@ import logging
 import os
 
 import numpy as np
-import shutil
 
 import autoarray as aa
 from autoarray.dataset import abstract_dataset
@@ -19,24 +18,24 @@ class TestSignalToNoise:
         array = aa.array.manual_2d([[1.0, 2.0], [3.0, 4.0]])
         noise_map = aa.array.manual_2d([[10.0, 10.0], [30.0, 4.0]])
 
-        data = abstract_dataset.AbstractDataset(data=array, noise_map=noise_map)
+        dataset = abstract_dataset.AbstractDataset(data=array, noise_map=noise_map)
 
         assert (
-            data.signal_to_noise_map.in_2d == np.array([[0.1, 0.2], [0.1, 1.0]])
+            dataset.signal_to_noise_map.in_2d == np.array([[0.1, 0.2], [0.1, 1.0]])
         ).all()
-        assert data.signal_to_noise_max == 1.0
+        assert dataset.signal_to_noise_max == 1.0
 
     def test__same_as_above__but_image_has_negative_values__replaced_with_zeros(self):
         array = aa.array.manual_2d([[-1.0, 2.0], [3.0, -4.0]])
 
         noise_map = aa.array.manual_2d([[10.0, 10.0], [30.0, 4.0]])
 
-        data = abstract_dataset.AbstractDataset(data=array, noise_map=noise_map)
+        dataset = abstract_dataset.AbstractDataset(data=array, noise_map=noise_map)
 
         assert (
-            data.signal_to_noise_map.in_2d == np.array([[0.0, 0.2], [0.1, 0.0]])
+            dataset.signal_to_noise_map.in_2d == np.array([[0.0, 0.2], [0.1, 0.0]])
         ).all()
-        assert data.signal_to_noise_max == 0.2
+        assert dataset.signal_to_noise_max == 0.2
 
 
 class TestAbsoluteSignalToNoise:
@@ -47,13 +46,13 @@ class TestAbsoluteSignalToNoise:
 
         noise_map = aa.array.manual_2d([[10.0, 10.0], [30.0, 4.0]])
 
-        data = abstract_dataset.AbstractDataset(data=array, noise_map=noise_map)
+        dataset = abstract_dataset.AbstractDataset(data=array, noise_map=noise_map)
 
         assert (
-            data.absolute_signal_to_noise_map.in_2d
+            dataset.absolute_signal_to_noise_map.in_2d
             == np.array([[0.1, 0.2], [0.1, 1.0]])
         ).all()
-        assert data.absolute_signal_to_noise_max == 1.0
+        assert dataset.absolute_signal_to_noise_max == 1.0
 
 
 class TestPotentialChiSquaredMap:
@@ -63,13 +62,13 @@ class TestPotentialChiSquaredMap:
         array = aa.array.manual_2d([[-1.0, 2.0], [3.0, -4.0]])
         noise_map = aa.array.manual_2d([[10.0, 10.0], [30.0, 4.0]])
 
-        data = abstract_dataset.AbstractDataset(data=array, noise_map=noise_map)
+        dataset = abstract_dataset.AbstractDataset(data=array, noise_map=noise_map)
 
         assert (
-            data.potential_chi_squared_map.in_2d
+            dataset.potential_chi_squared_map.in_2d
             == np.array([[0.1 ** 2.0, 0.2 ** 2.0], [0.1 ** 2.0, 1.0 ** 2.0]])
         ).all()
-        assert data.potential_chi_squared_max == 1.0
+        assert dataset.potential_chi_squared_max == 1.0
 
 
 class TestExposureTimeMap(object):
