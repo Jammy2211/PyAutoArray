@@ -682,7 +682,7 @@ class TestArray:
                 sub_array_2d=array_2d, sub_size=1, pixel_scales=(1.0, 1.0)
             )
 
-            new_arr = arr.trimmed_from_kernel_shape(kernel_shape=(3, 3))
+            new_arr = arr.trimmed_from_kernel_shape(kernel_shape_2d=(3, 3))
 
             assert type(new_arr) == arrays.Array
             assert (
@@ -691,7 +691,7 @@ class TestArray:
             ).all()
             assert new_arr.mask.pixel_scales == (1.0, 1.0)
 
-            new_arr = arr.trimmed_from_kernel_shape(kernel_shape=(5, 5))
+            new_arr = arr.trimmed_from_kernel_shape(kernel_shape_2d=(5, 5))
 
             assert type(new_arr) == arrays.Array
             assert (new_arr.in_2d == np.array([[2.0]])).all()
@@ -704,7 +704,7 @@ class TestArray:
                 sub_array_2d=array_2d, sub_size=1, pixel_scales=(1.0, 1.0)
             )
 
-            new_arr = arr.trimmed_from_kernel_shape(kernel_shape=(7, 7))
+            new_arr = arr.trimmed_from_kernel_shape(kernel_shape_2d=(7, 7))
 
             assert type(new_arr) == arrays.Array
             assert (

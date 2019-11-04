@@ -549,7 +549,7 @@ class TestGrid:
 
         grid = aa.masked.grid.from_mask(mask=mask)
 
-        blurring_grid = grid.blurring_grid_from_kernel_shape(kernel_shape=(3, 5))
+        blurring_grid = grid.blurring_grid_from_kernel_shape(kernel_shape_2d=(3, 5))
 
         assert blurring_grid == pytest.approx(blurring_grid_util, 1e-4)
         assert blurring_grid.pixel_scales == (2.0, 2.0)
@@ -581,7 +581,7 @@ class TestGrid:
 
         mask = aa.mask.manual(mask_2d=mask, pixel_scales=(2.0, 2.0), sub_size=2)
         blurring_grid = grids.Grid.blurring_grid_from_mask_and_kernel_shape(
-            mask=mask, kernel_shape=(3, 5)
+            mask=mask, kernel_shape_2d=(3, 5)
         )
 
         assert blurring_grid == pytest.approx(blurring_grid_util, 1e-4)
@@ -709,7 +709,7 @@ class TestGrid:
 
         grid = grids.Grid.uniform(shape_2d=(4, 4), pixel_scales=3.0, sub_size=1)
 
-        padded_grid = grid.padded_grid_from_kernel_shape(kernel_shape=(3, 3))
+        padded_grid = grid.padded_grid_from_kernel_shape(kernel_shape_2d=(3, 3))
 
         padded_grid_util = aa.util.grid.grid_1d_via_mask_2d(
             mask_2d=np.full((6, 6), False), pixel_scales=(3.0, 3.0), sub_size=1
@@ -722,7 +722,7 @@ class TestGrid:
 
         grid = grids.Grid.uniform(shape_2d=(4, 5), pixel_scales=2.0, sub_size=1)
 
-        padded_grid = grid.padded_grid_from_kernel_shape(kernel_shape=(3, 3))
+        padded_grid = grid.padded_grid_from_kernel_shape(kernel_shape_2d=(3, 3))
 
         padded_grid_util = aa.util.grid.grid_1d_via_mask_2d(
             mask_2d=np.full((6, 7), False), pixel_scales=(2.0, 2.0), sub_size=1
@@ -733,7 +733,7 @@ class TestGrid:
 
         grid = grids.Grid.uniform(shape_2d=(5, 4), pixel_scales=1.0, sub_size=1)
 
-        padded_grid = grid.padded_grid_from_kernel_shape(kernel_shape=(3, 3))
+        padded_grid = grid.padded_grid_from_kernel_shape(kernel_shape_2d=(3, 3))
 
         padded_grid_util = aa.util.grid.grid_1d_via_mask_2d(
             mask_2d=np.full((7, 6), False), pixel_scales=(1.0, 1.0), sub_size=1
@@ -744,7 +744,7 @@ class TestGrid:
 
         grid = grids.Grid.uniform(shape_2d=(5, 5), pixel_scales=8.0, sub_size=1)
 
-        padded_grid = grid.padded_grid_from_kernel_shape(kernel_shape=(2, 5))
+        padded_grid = grid.padded_grid_from_kernel_shape(kernel_shape_2d=(2, 5))
 
         padded_grid_util = aa.util.grid.grid_1d_via_mask_2d(
             mask_2d=np.full((6, 9), False), pixel_scales=(8.0, 8.0), sub_size=1
@@ -759,7 +759,7 @@ class TestGrid:
 
         grid = aa.masked.grid.from_mask(mask=mask)
 
-        padded_grid = grid.padded_grid_from_kernel_shape(kernel_shape=(3, 3))
+        padded_grid = grid.padded_grid_from_kernel_shape(kernel_shape_2d=(3, 3))
 
         padded_grid_util = aa.util.grid.grid_1d_via_mask_2d(
             mask_2d=np.full((7, 6), False), pixel_scales=(2.0, 2.0), sub_size=2
@@ -776,7 +776,7 @@ class TestGrid:
 
         grid = aa.masked.grid.from_mask(mask=mask)
 
-        padded_grid = grid.padded_grid_from_kernel_shape(kernel_shape=(5, 5))
+        padded_grid = grid.padded_grid_from_kernel_shape(kernel_shape_2d=(5, 5))
 
         padded_grid_util = aa.util.grid.grid_1d_via_mask_2d(
             mask_2d=np.full((6, 9), False), pixel_scales=(8.0, 8.0), sub_size=4
@@ -793,7 +793,7 @@ class TestGrid:
 
         grid = grid.new_grid_with_interpolator(pixel_scale_interpolation_grid=0.1)
 
-        padded_grid = grid.padded_grid_from_kernel_shape(kernel_shape=(3, 3))
+        padded_grid = grid.padded_grid_from_kernel_shape(kernel_shape_2d=(3, 3))
 
         assert padded_grid.interpolator is not None
         assert padded_grid.interpolator.pixel_scale_interpolation_grid == 0.1
@@ -815,7 +815,7 @@ class TestGrid:
 
         grid = grid.new_grid_with_interpolator(pixel_scale_interpolation_grid=0.1)
 
-        padded_grid = grid.padded_grid_from_kernel_shape(kernel_shape=(3, 3))
+        padded_grid = grid.padded_grid_from_kernel_shape(kernel_shape_2d=(3, 3))
 
         assert padded_grid.interpolator is not None
         assert padded_grid.interpolator.pixel_scale_interpolation_grid == 0.1

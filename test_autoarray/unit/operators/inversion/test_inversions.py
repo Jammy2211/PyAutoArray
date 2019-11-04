@@ -239,7 +239,7 @@ class TestReconstructedDataVectorAndImage:
 #                                         [True, True, True]]), pixel_scales=1.0)
 #
 #         grid = aa.grid_stack_from_mask_sub_size_and_psf_shape(
-#             mask=mask, sub_size=1, psf_shape=(1,1))
+#             mask=mask, sub_size=1, psf_shape_2d=(1,1))
 #
 #         inv = inversions.Inversion(
 #             image_1d=np.ones(9), noise_map_1d=np.ones(9), convolver=mock_inversion.MockConvolver(matrix_shape),

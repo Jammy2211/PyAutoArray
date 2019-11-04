@@ -61,7 +61,7 @@ class TestRegions:
         )
 
         blurring_mask = mask.regions.blurring_mask_from_kernel_shape(
-            kernel_shape=(3, 3)
+            kernel_shape_2d=(3, 3)
         )
 
         assert (blurring_mask == blurring_mask_via_util).all()

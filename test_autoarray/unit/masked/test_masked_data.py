@@ -92,7 +92,7 @@ class TestMaskedImaging(object):
 
         assert (masked_imaging_7x7.psf.in_1d == np.ones(9)).all()
         assert (masked_imaging_7x7.psf.in_2d == np.ones((3, 3))).all()
-        assert masked_imaging_7x7.trimmed_psf_shape_2d == (3, 3)
+        assert masked_imaging_7x7.psf_shape_2d == (3, 3)
 
     def test__blurring_grid(
         self, imaging_7x7, sub_mask_7x7, grid_7x7, sub_grid_7x7, blurring_grid_7x7
@@ -116,7 +116,7 @@ class TestMaskedImaging(object):
         grid = aa.masked.grid.from_mask(mask=sub_mask_7x7)
         new_grid = grid.new_grid_with_interpolator(pixel_scale_interpolation_grid=1.0)
 
-        blurring_grid = grid.blurring_grid_from_kernel_shape(kernel_shape=(3, 3))
+        blurring_grid = grid.blurring_grid_from_kernel_shape(kernel_shape_2d=(3, 3))
         new_blurring_grid = blurring_grid.new_grid_with_interpolator(
             pixel_scale_interpolation_grid=1.0
         )
@@ -166,7 +166,7 @@ class TestMaskedImaging(object):
         mask[9, 9] = False
 
         masked_imaging = aa.masked.imaging.manual(
-            imaging=imaging, mask=mask, trimmed_psf_shape_2d=(7, 7)
+            imaging=imaging, mask=mask, psf_shape_2d=(7, 7)
         )
 
         assert (masked_imaging.imaging.image.in_2d == np.ones((19, 19))).all()
@@ -238,7 +238,7 @@ class TestMaskedImaging(object):
         ).all()
 
         assert (masked_data_snr_limit.psf.in_2d == np.ones((3, 3))).all()
-        assert masked_data_snr_limit.trimmed_psf_shape_2d == (3, 3)
+        assert masked_data_snr_limit.psf_shape_2d == (3, 3)
 
         assert (masked_data_snr_limit.image.in_1d == np.ones(9)).all()
         assert (masked_data_snr_limit.noise_map.in_1d == 4.0 * np.ones(9)).all()
@@ -264,7 +264,7 @@ class TestMaskedInterferometer(object):
         ).all()
 
         assert (masked_interferometer_7.primary_beam.in_2d == np.ones((3, 3))).all()
-        assert masked_interferometer_7.trimmed_primary_beam_shape_2d == (3, 3)
+        assert masked_interferometer_7.primary_beam_shape_2d == (3, 3)
 
         assert (
             masked_interferometer_7.interferometer.uv_wavelengths
@@ -305,7 +305,7 @@ class TestMaskedInterferometer(object):
         masked_interferometer_7 = aa.masked.interferometer.manual(
             interferometer=interferometer,
             real_space_mask=mask,
-            trimmed_primary_beam_shape_2d=(7, 7),
+            primary_beam_shape_2d=(7, 7),
         )
 
         assert (masked_interferometer_7.visibilities == np.ones((19, 2))).all()
@@ -316,4 +316,4 @@ class TestMaskedInterferometer(object):
         ).all()
         assert (masked_interferometer_7.primary_beam.in_2d == np.ones((7, 7))).all()
 
-        assert masked_interferometer_7.trimmed_primary_beam_shape_2d == (7, 7)
+        assert masked_interferometer_7.primary_beam_shape_2d == (7, 7)

@@ -447,7 +447,7 @@ def blurring_mask_2d_from_mask_2d_and_kernel_shape_2d(mask_2d, kernel_shape_2d):
                      [True, False, True]
                      [True, True, True]])      
     
-    blurring_mask = blurring_mask_from_mask_and_psf_shape(mask=mask, psf_shape=(3,3)) 
+    blurring_mask = blurring_mask_from_mask_and_psf_shape(mask=mask, psf_shape_2d=(3,3)) 
     
     """
 
@@ -895,7 +895,7 @@ def sub_mask_2d_index_for_sub_mask_1d_index_via_mask_2d(mask_2d, sub_size):
                      [True, False, True]
                      [True, True, True]])
 
-    blurring_mask = blurring_mask_from_mask_and_psf_shape(mask=mask, psf_shape=(3,3))
+    blurring_mask = blurring_mask_from_mask_and_psf_shape(mask=mask, psf_shape_2d=(3,3))
 
     """
 

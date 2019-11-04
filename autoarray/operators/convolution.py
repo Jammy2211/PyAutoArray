@@ -267,7 +267,7 @@ class Convolver(object):
         ----------
         coordinates: (int, int)
             The coordinates of mask_index_array on which the frame should be centred
-        kernel_shape: (int, int)
+        kernel_shape_2d: (int, int)
             The shape of the kernel for which this frame will be used
         """
 

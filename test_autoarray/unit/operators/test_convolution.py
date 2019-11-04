@@ -1195,7 +1195,7 @@ class TestCompareToFull2dConv:
         # Now reproduce this datas_ using the frame convolver_image
 
         blurring_mask = mask.regions.blurring_mask_from_kernel_shape(
-            kernel_shape=kernel.shape_2d
+            kernel_shape_2d=kernel.shape_2d
         )
         convolver = aa.convolver(mask=mask, kernel=kernel)
         blurring_image = blurring_mask.mapping.array_from_array_2d(array_2d=image.in_2d)
