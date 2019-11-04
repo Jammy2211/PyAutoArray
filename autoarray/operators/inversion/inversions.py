@@ -4,12 +4,12 @@ from autoarray import exc
 from autoarray.util import inversion_util
 
 
-def inversion(masked_data, mapper, regularization):
+def inversion(masked_dataset, mapper, regularization):
 
     return InversionImaging.from_data_mapper_and_regularization(
-        image=masked_data.image,
-        noise_map=masked_data.noise_map,
-        convolver=masked_data.convolver,
+        image=masked_dataset.image,
+        noise_map=masked_dataset.noise_map,
+        convolver=masked_dataset.convolver,
         mapper=mapper,
         regularization=regularization,
     )

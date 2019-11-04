@@ -4,13 +4,13 @@ import numpy as np
 import autoarray as aa
 
 from autoarray import exc
-from autoarray.data import abstract_data
+from autoarray.dataset import abstract_dataset
 
 
 logger = logging.getLogger(__name__)
 
 
-class AbstractInterferometer(abstract_data.AbstractData):
+class AbstractInterferometerSet(abstract_dataset.AbstractDataset):
     @property
     def visibilities(self):
         return self.data
@@ -74,7 +74,7 @@ class AbstractInterferometer(abstract_data.AbstractData):
             )
 
 
-class Interferometer(AbstractInterferometer):
+class Interferometer(AbstractInterferometerSet):
     def __init__(
         self,
         visibilities,

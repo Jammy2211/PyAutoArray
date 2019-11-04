@@ -6,7 +6,7 @@ import shutil
 
 import autoarray as aa
 from autoarray import exc
-from autoarray.data import imaging
+from autoarray.dataset import imaging
 
 test_data_dir = "{}/../test_files/array/".format(
     os.path.dirname(os.path.realpath(__file__))

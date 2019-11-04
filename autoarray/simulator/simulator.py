@@ -1,6 +1,6 @@
 import autoarray as aa
 
-from autoarray.data import imaging
+from autoarray.dataset import imaging
 
 
 class ImagingSimulator(object):
