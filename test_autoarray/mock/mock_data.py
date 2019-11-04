@@ -115,7 +115,7 @@ class MockPrimaryBeam(object):
         )
 
 
-class MockVisibilities(np.ndarray):
+class MockVisibilities(aa.visibilities):
     def __new__(cls, shape, value):
         array = value * np.ones(shape=shape)
 

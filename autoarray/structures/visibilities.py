@@ -2,10 +2,7 @@ import logging
 
 import numpy as np
 
-from autoarray import exc
-from autoarray.structures import abstract_structure
-from autoarray.mask import mask as msk
-from autoarray.util import binning_util, array_util
+from autoarray.util import array_util
 
 logging.basicConfig()
 logger = logging.getLogger(__name__)
