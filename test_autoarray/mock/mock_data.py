@@ -116,21 +116,13 @@ class MockPrimaryBeam(object):
 
 
 class MockVisibilities(aa.visibilities):
-    def __new__(cls, shape, value):
-        array = value * np.ones(shape=shape)
-
-        obj = np.array(array, dtype="float64").view(cls)
-
-        return obj
+    def __new__(cls, shape_1d, value):
+        return aa.visibilities.full(shape_1d=(shape_1d,), fill_value=value)
 
 
 class MockVisibilitiesNoiseMap(np.ndarray):
-    def __new__(cls, shape, value):
-        array = value * np.ones(shape=shape)
-
-        obj = np.array(array, dtype="float64").view(cls)
-
-        return obj
+    def __new__(cls, shape_1d, value):
+        return aa.visibilities.full(shape_1d=(shape_1d,), fill_value=value)
 
 
 class MockUVWavelengths(np.ndarray):

@@ -219,7 +219,8 @@ class TestMaskedImaging(object):
         )
 
         assert (
-            masked_dataset_snr_limit.image.in_2d == np.ones((7, 7)) * np.invert(mask_7x7)
+            masked_dataset_snr_limit.image.in_2d
+            == np.ones((7, 7)) * np.invert(mask_7x7)
         ).all()
 
         assert (

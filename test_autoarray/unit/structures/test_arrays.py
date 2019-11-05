@@ -629,7 +629,6 @@ class TestArray:
             assert arr.geometry.arc_second_minima == pytest.approx((-4.0, -3.5), 1e-4)
 
     class TestNewArrays:
-
         def test__pad__compare_to_array_util(self):
             array_2d = np.ones((5, 5))
             array_2d[2, 2] = 2.0
@@ -847,7 +846,6 @@ class TestArray:
                     ]
                 )
             ).all()
-
 
         def test__zoomed__array_extent__uses_the_limits_of_the_unzoomed_mask(self):
 

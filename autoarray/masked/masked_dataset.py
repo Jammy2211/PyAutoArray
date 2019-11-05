@@ -235,12 +235,10 @@ class MaskedInterferometer(AbstractMaskedDataset):
         if self.interferometer.primary_beam is None:
             self.primary_beam_shape_2d = None
         elif (
-                primary_beam_shape_2d is None
-                and self.interferometer.primary_beam is not None
+            primary_beam_shape_2d is None
+            and self.interferometer.primary_beam is not None
         ):
-            self.primary_beam_shape_2d = (
-                self.interferometer.primary_beam.shape_2d
-            )
+            self.primary_beam_shape_2d = self.interferometer.primary_beam.shape_2d
         else:
             self.primary_beam_shape_2d = primary_beam_shape_2d
 

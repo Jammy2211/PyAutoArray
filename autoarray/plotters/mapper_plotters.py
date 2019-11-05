@@ -495,9 +495,7 @@ def set_axis_limits(mapper, units, kpc_per_arcsec):
         axis_limits_kpc = mapper.pixelization_grid.axis_limits * kpc_per_arcsec
 
         grid_plotters.set_axis_limits(
-            axis_limits=axis_limits_kpc,
-            grid=None,
-            symmetric_around_centre=False,
+            axis_limits=axis_limits_kpc, grid=None, symmetric_around_centre=False
         )
 
 

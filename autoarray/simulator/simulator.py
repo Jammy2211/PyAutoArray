@@ -5,6 +5,7 @@ from autoarray.structures import grids, kernel
 from autoarray.dataset import imaging, interferometer
 from autoarray.operators import fourier_transform
 
+
 class ImagingSimulator(object):
     def __init__(
         self,
@@ -297,7 +298,10 @@ class InterferometerSimulator(object):
         self.uv_wavelengths = uv_wavelengths
         self.sub_size = sub_size
         self.origin = origin
-        self.transformer = fourier_transform.Transformer(uv_wavelengths=self.uv_wavelengths, grid_radians=self.grid.in_1d_binned.in_radians)
+        self.transformer = fourier_transform.Transformer(
+            uv_wavelengths=self.uv_wavelengths,
+            grid_radians=self.grid.in_1d_binned.in_radians,
+        )
         self.exposure_time = exposure_time
         self.background_sky_level = background_sky_level
         self.primary_beam = primary_beam
@@ -333,13 +337,18 @@ class InterferometerSimulator(object):
         This can be customized by over-riding the default input values."""
 
         uv_wavelengths_path = "{}/dataset/sma_uv_wavelengths.fits".format(
-        os.path.dirname(os.path.realpath(__file__)))
+            os.path.dirname(os.path.realpath(__file__))
+        )
 
-        uv_wavelengths = array_util.numpy_array_1d_from_fits(file_path=uv_wavelengths_path, hdu=0)
+        uv_wavelengths = array_util.numpy_array_1d_from_fits(
+            file_path=uv_wavelengths_path, hdu=0
+        )
 
         if primary_beam_shape_2d is not None and primary_beam_sigma is not None:
             primary_beam = kernel.Kernel.from_gaussian(
-                shape_2d=primary_beam_shape_2d, sigma=primary_beam_sigma, pixel_scales=real_space_pixel_scales
+                shape_2d=primary_beam_shape_2d,
+                sigma=primary_beam_sigma,
+                pixel_scales=real_space_pixel_scales,
             )
         else:
             primary_beam = None

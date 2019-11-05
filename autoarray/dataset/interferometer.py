@@ -5,6 +5,7 @@ import autoarray as aa
 
 from autoarray import exc
 from autoarray.dataset import abstract_dataset
+from autoarray.structures import visibilities as vis
 
 
 logger = logging.getLogger(__name__)
@@ -239,11 +240,14 @@ class Interferometer(AbstractInterferometerSet):
             file_path=uv_wavelengths_path, hdu=uv_wavelengths_hdu
         )
 
-        primary_beam = aa.kernel.from_fits(
-            file_path=primary_beam_path,
-            hdu=primary_beam_hdu,
-            renormalize=renormalize_primary_beam,
-        )
+        if primary_beam_path is not None:
+            primary_beam = aa.kernel.from_fits(
+                file_path=primary_beam_path,
+                hdu=primary_beam_hdu,
+                renormalize=renormalize_primary_beam,
+            )
+        else:
+            primary_beam = None
 
         interferometer = Interferometer(
             visibilities=visibilities,
@@ -332,6 +336,8 @@ class Interferometer(AbstractInterferometerSet):
                 fill_value=noise_if_add_noise_false, shape=visibilities.shape
             )
             noise_map_realization = None
+
+        noise_map = vis.Visibilities.manual_1d(visibilities=noise_map)
 
         if np.isnan(noise_map).any():
             raise exc.DataException(

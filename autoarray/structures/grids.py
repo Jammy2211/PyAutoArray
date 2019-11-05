@@ -225,22 +225,28 @@ class AbstractGrid(abstract_structure.AbstractStructure):
 
     @property
     def arc_second_maxima(self):
-        return (self.origin[0] + (self.shape_2d_arcsec[0] / 2.0), self.origin[1] + (self.shape_2d_arcsec[1] / 2.0))
+        return (
+            self.origin[0] + (self.shape_2d_arcsec[0] / 2.0),
+            self.origin[1] + (self.shape_2d_arcsec[1] / 2.0),
+        )
 
     @property
     def arc_second_minima(self):
-        return ((self.origin[0]-(self.shape_2d_arcsec[0] / 2.0)), (self.origin[1]-(self.shape_2d_arcsec[1] / 2.0)))
+        return (
+            (self.origin[0] - (self.shape_2d_arcsec[0] / 2.0)),
+            (self.origin[1] - (self.shape_2d_arcsec[1] / 2.0)),
+        )
 
     @property
     def axis_limits(self):
         return np.asarray(
-                [
-                    self.arc_second_minima[1],
-                    self.arc_second_maxima[1],
-                    self.arc_second_minima[0],
-                    self.arc_second_maxima[0],
-                ]
-            )
+            [
+                self.arc_second_minima[1],
+                self.arc_second_maxima[1],
+                self.arc_second_minima[0],
+                self.arc_second_maxima[0],
+            ]
+        )
 
     def extent_with_buffer(self, buffer=1.0e-8):
         return [
@@ -318,7 +324,10 @@ class AbstractGrid(abstract_structure.AbstractStructure):
 
         shape = self.mask.shape
 
-        padded_shape = (shape[0] + kernel_shape_2d[0] - 1, shape[1] + kernel_shape_2d[1] - 1)
+        padded_shape = (
+            shape[0] + kernel_shape_2d[0] - 1,
+            shape[1] + kernel_shape_2d[1] - 1,
+        )
 
         padded_mask = msk.Mask.unmasked(
             shape_2d=padded_shape,
@@ -692,18 +701,18 @@ class GridIrregular(np.ndarray):
 
     @property
     def arc_second_minima(self):
-        return (np.amin(self[:, 0]),  np.amin(self[:, 1]))
+        return (np.amin(self[:, 0]), np.amin(self[:, 1]))
 
     @property
     def axis_limits(self):
         return np.asarray(
-                [
-                    self.arc_second_minima[1],
-                    self.arc_second_maxima[1],
-                    self.arc_second_minima[0],
-                    self.arc_second_maxima[0],
-                ]
-            )
+            [
+                self.arc_second_minima[1],
+                self.arc_second_maxima[1],
+                self.arc_second_minima[0],
+                self.arc_second_maxima[0],
+            ]
+        )
 
 
 class SparseGrid(object):
@@ -946,7 +955,7 @@ class GridRectangular(Grid):
     def shape_2d_arcsec(self):
         return (
             (self.shape_2d[0] * self.pixel_scales[0]),
-             (self.shape_2d[1] * self.pixel_scales[1]),
+            (self.shape_2d[1] * self.pixel_scales[1]),
         )
 
 

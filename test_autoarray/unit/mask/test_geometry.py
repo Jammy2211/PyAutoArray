@@ -246,11 +246,13 @@ class TestGrids:
         mask = aa.mask.manual(
             mask_2d=np.full(fill_value=False, shape=(4, 7)), pixel_scales=(0.56, 0.56)
         )
-        mask[0,0] = True
+        mask[0, 0] = True
 
         assert mask.geometry.unmasked_grid.in_1d == pytest.approx(grid_1d_util, 1e-4)
         assert mask.geometry.unmasked_grid.in_2d == pytest.approx(grid_2d_util, 1e-4)
-        assert (mask.geometry.unmasked_grid.mask == np.full(fill_value=False, shape=(4, 7))).all()
+        assert (
+            mask.geometry.unmasked_grid.mask == np.full(fill_value=False, shape=(4, 7))
+        ).all()
 
         mask = aa.mask.manual(
             mask_2d=np.full(fill_value=False, shape=(3, 3)), pixel_scales=(1.0, 1.0)

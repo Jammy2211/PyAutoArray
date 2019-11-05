@@ -7,7 +7,7 @@ import numpy as np
 class Transformer(object):
     def __init__(self, uv_wavelengths, grid_radians, preload_transform=True):
 
-        self.uv_wavelengths = uv_wavelengths.astype('float')
+        self.uv_wavelengths = uv_wavelengths.astype("float")
         self.grid_radians = grid_radians.in_1d_binned
 
         self.total_visibilities = uv_wavelengths.shape[0]
