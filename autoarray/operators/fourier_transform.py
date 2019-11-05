@@ -7,25 +7,25 @@ import numpy as np
 class Transformer(object):
     def __init__(self, uv_wavelengths, grid_radians, preload_transform=True):
 
-        self.uv_wavelengths = uv_wavelengths
-        self.grid_radians = grid_radians
+        self.uv_wavelengths = uv_wavelengths.astype('float')
+        self.grid_radians = grid_radians.in_1d_binned
 
         self.total_visibilities = uv_wavelengths.shape[0]
-        self.total_image_pixels = grid_radians.shape[0]
+        self.total_image_pixels = grid_radians.shape_1d
 
         self.preload_transform = preload_transform
 
         if preload_transform:
 
             self.preload_real_transforms = self.preload_real_transforms(
-                grid_radians=grid_radians,
-                uv_wavelengths=uv_wavelengths,
+                grid_radians=self.grid_radians,
+                uv_wavelengths=self.uv_wavelengths,
                 total_image_pixels=self.total_image_pixels,
             )
 
             self.preload_imag_transforms = self.preload_imag_transforms(
-                grid_radians=grid_radians,
-                uv_wavelengths=uv_wavelengths,
+                grid_radians=self.grid_radians,
+                uv_wavelengths=self.uv_wavelengths,
                 total_image_pixels=self.total_image_pixels,
             )
 
