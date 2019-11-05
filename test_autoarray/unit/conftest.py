@@ -290,9 +290,9 @@ def make_masked_interferometer_7(
 def make_masked_imaging_fit_x1_plane_7x7(masked_imaging_7x7):
     return fit.ImagingFit(
         mask=masked_imaging_7x7.mask,
-        data=masked_imaging_7x7.image,
+        image=masked_imaging_7x7.image,
         noise_map=masked_imaging_7x7.noise_map,
-        model_data=5.0 * masked_imaging_7x7.image,
+        model_image=5.0 * masked_imaging_7x7.image,
     )
 
 @pytest.fixture(name="fit_interferometer_7")
