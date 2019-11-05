@@ -15,17 +15,10 @@ from autoarray.plotters import (
 
 def subplot(
     interferometer,
-    include_origin=True,
     units="arcsec",
     kpc_per_arcsec=None,
     figsize=None,
-    aspect="square",
     cmap="jet",
-    norm="linear",
-    norm_min=None,
-    norm_max=None,
-    linthresh=0.05,
-    linscale=0.01,
     cb_ticksize=10,
     cb_fraction=0.047,
     cb_pad=0.01,
@@ -68,6 +61,7 @@ def subplot(
         figsize = figsize_tool
 
     plt.figure(figsize=figsize)
+
     plt.subplot(rows, columns, 1)
 
     visibilities(
@@ -92,6 +86,29 @@ def subplot(
     )
 
     plt.subplot(rows, columns, 2)
+
+    noise_map(
+        interferometer=interferometer,
+        as_subplot=True,
+        units=units,
+        kpc_per_arcsec=kpc_per_arcsec,
+        figsize=figsize,
+        cmap=cmap,
+        cb_ticksize=cb_ticksize,
+        cb_fraction=cb_fraction,
+        cb_pad=cb_pad,
+        cb_tick_values=cb_tick_values,
+        cb_tick_labels=cb_tick_labels,
+        titlesize=titlesize,
+        xlabelsize=xlabelsize,
+        ylabelsize=ylabelsize,
+        xyticksize=xyticksize,
+        output_path=output_path,
+        output_format=output_format,
+        output_filename=output_filename,
+    )
+
+    plt.subplot(rows, columns, 3)
 
     u_wavelengths(
         interferometer=interferometer,
@@ -129,34 +146,34 @@ def subplot(
         output_filename=output_filename,
     )
 
-    plt.subplot(rows, columns, 3)
-
-    primary_beam(
-        interferometer=interferometer,
-        include_origin=include_origin,
-        as_subplot=True,
-        units=units,
-        kpc_per_arcsec=kpc_per_arcsec,
-        figsize=figsize,
-        aspect=aspect,
-        cmap=cmap,
-        norm=norm,
-        norm_min=norm_min,
-        norm_max=norm_max,
-        linthresh=linthresh,
-        linscale=linscale,
-        cb_ticksize=cb_ticksize,
-        cb_fraction=cb_fraction,
-        cb_pad=cb_pad,
-        cb_tick_values=cb_tick_values,
-        cb_tick_labels=cb_tick_labels,
-        titlesize=titlesize,
-        xlabelsize=xlabelsize,
-        ylabelsize=ylabelsize,
-        xyticksize=xyticksize,
-        output_path=output_path,
-        output_format=output_format,
-    )
+    # plt.subplot(rows, columns, 3)
+    #
+    # primary_beam(
+    #     interferometer=interferometer,
+    #     include_origin=include_origin,
+    #     as_subplot=True,
+    #     units=units,
+    #     kpc_per_arcsec=kpc_per_arcsec,
+    #     figsize=figsize,
+    #     aspect=aspect,
+    #     cmap=cmap,
+    #     norm=norm,
+    #     norm_min=norm_min,
+    #     norm_max=norm_max,
+    #     linthresh=linthresh,
+    #     linscale=linscale,
+    #     cb_ticksize=cb_ticksize,
+    #     cb_fraction=cb_fraction,
+    #     cb_pad=cb_pad,
+    #     cb_tick_values=cb_tick_values,
+    #     cb_tick_labels=cb_tick_labels,
+    #     titlesize=titlesize,
+    #     xlabelsize=xlabelsize,
+    #     ylabelsize=ylabelsize,
+    #     xyticksize=xyticksize,
+    #     output_path=output_path,
+    #     output_format=output_format,
+    # )
 
     plotter_util.output_subplot_array(
         output_path=output_path,
@@ -170,6 +187,7 @@ def subplot(
 def individual(
     interferometer,
     plot_visibilities=False,
+    plot_noise_map=False,
     plot_u_wavelengths=False,
     plot_v_wavelengths=False,
     plot_primary_beam=False,
@@ -193,6 +211,15 @@ def individual(
     if plot_visibilities:
 
         visibilities(
+            interferometer=interferometer,
+            units=units,
+            output_path=output_path,
+            output_format=output_format,
+        )
+
+    if plot_noise_map:
+
+        noise_map(
             interferometer=interferometer,
             units=units,
             output_path=output_path,
@@ -227,6 +254,7 @@ def individual(
         )
 
 
+
 def visibilities(
     interferometer,
     as_subplot=False,
@@ -247,6 +275,65 @@ def visibilities(
     output_path=None,
     output_format="show",
     output_filename="interferometer_visibilities",
+):
+    """Plot the observed image of the imaging data_type.
+
+    Set *autolens.data_type.array.plotters.array_plotters* for a description of all input parameters not described below.
+
+    Parameters
+    -----------
+    image : ScaledSquarePixelArray
+        The image of the dataset.
+    include_origin : True
+        If true, the origin of the dataset's coordinate system is plotted as a 'x'.
+    image_plane_pix_grid : ndarray or data_type.array.grid_stacks.PixGrid
+        If an adaptive pixelization whose pixels are formed by tracing pixels from the dataset, this plots those pixels \
+        over the immage.
+    """
+
+    grid_plotters.plot_grid(
+        grid=interferometer.visibilities,
+        as_subplot=as_subplot,
+        units=units,
+        kpc_per_arcsec=kpc_per_arcsec,
+        figsize=figsize,
+        cmap=cmap,
+        cb_ticksize=cb_ticksize,
+        cb_fraction=cb_fraction,
+        cb_pad=cb_pad,
+        cb_tick_values=cb_tick_values,
+        cb_tick_labels=cb_tick_labels,
+        title=title,
+        titlesize=titlesize,
+        xlabelsize=xlabelsize,
+        ylabelsize=ylabelsize,
+        xyticksize=xyticksize,
+        output_path=output_path,
+        output_format=output_format,
+        output_filename=output_filename,
+    )
+
+
+def noise_map(
+    interferometer,
+    as_subplot=False,
+    units="arcsec",
+    kpc_per_arcsec=None,
+    figsize=(7, 7),
+    cmap="jet",
+    cb_ticksize=10,
+    cb_fraction=0.047,
+    cb_pad=0.01,
+    cb_tick_values=None,
+    cb_tick_labels=None,
+    title="Noise Map",
+    titlesize=16,
+    xlabelsize=16,
+    ylabelsize=16,
+    xyticksize=16,
+    output_path=None,
+    output_format="show",
+    output_filename="interferometer_noise_map",
 ):
     """Plot the observed image of the imaging data_type.
 

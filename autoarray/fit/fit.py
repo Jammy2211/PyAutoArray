@@ -177,6 +177,10 @@ class ImagingFit(DatasetFit):
         )
 
     @property
+    def masked_imaging(self):
+        return self.masked_dataset
+
+    @property
     def image(self):
         return self.data
 
@@ -231,6 +235,10 @@ class InterferometerFit(DatasetFit):
             model_data=model_visibilities,
             inversion=inversion,
         )
+
+    @property
+    def masked_interferometer(self):
+        return self.masked_dataset
 
     @property
     def visibilities_mask(self):

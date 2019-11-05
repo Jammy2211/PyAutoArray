@@ -18,7 +18,10 @@ class Geometry(object):
 
     @property
     def central_pixel_coordinates(self):
-        return float(self.mask.shape_2d[0] - 1) / 2, float(self.mask.shape_2d[1] - 1) / 2
+        return (
+            float(self.mask.shape_2d[0] - 1) / 2,
+            float(self.mask.shape_2d[1] - 1) / 2,
+        )
 
     @property
     def origin(self):
@@ -105,7 +108,9 @@ class Geometry(object):
             origin=self.mask.origin,
         )
 
-        return self.mask.regions.unmasked_mask.mapping.grid_from_grid_1d(grid_1d=grid_1d)
+        return self.mask.regions.unmasked_mask.mapping.grid_from_grid_1d(
+            grid_1d=grid_1d
+        )
 
     @property
     def masked_grid(self):

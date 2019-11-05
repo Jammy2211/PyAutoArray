@@ -36,8 +36,7 @@ class TestRegions:
         )
 
         assert (
-            mask.regions.unmasked_mask
-            == np.full(fill_value=False, shape=(9,9))
+            mask.regions.unmasked_mask == np.full(fill_value=False, shape=(9, 9))
         ).all()
 
     def test__blurring_mask_for_psf_shape__compare_to_array_util(self):

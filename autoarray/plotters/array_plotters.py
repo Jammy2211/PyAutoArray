@@ -212,10 +212,7 @@ def plot_array(
         kpc_per_arcsec=kpc_per_arcsec,
     )
     plot_mask(
-        mask=mask,
-        units=units,
-        kpc_per_arcsec=kpc_per_arcsec,
-        pointsize=mask_pointsize,
+        mask=mask, units=units, kpc_per_arcsec=kpc_per_arcsec, pointsize=mask_pointsize
     )
     plotter_util.plot_lines(line_lists=lines)
     plot_border(
@@ -240,10 +237,7 @@ def plot_array(
         pointsize=grid_pointsize,
     )
     plot_centres(
-        array=array,
-        centres=centres,
-        units=units,
-        kpc_per_arcsec=kpc_per_arcsec,
+        array=array, centres=centres, units=units, kpc_per_arcsec=kpc_per_arcsec
     )
     plot_ellipses(
         fig=fig,
@@ -373,12 +367,7 @@ def get_extent(array, extent, units, kpc_per_arcsec, xticks_manual, yticks_manua
     elif units in "arcsec" or kpc_per_arcsec is None:
         return extent
     elif units in "kpc":
-        return list(
-            map(
-                lambda tick: tick * kpc_per_arcsec,
-                extent,
-            )
-        )
+        return list(map(lambda tick: tick * kpc_per_arcsec, extent))
     else:
         raise exc.PlottingException(
             "The units supplied to the plotted are not a valid string (must be pixels | "
@@ -584,9 +573,7 @@ def plot_centres(array, centres, units, kpc_per_arcsec):
                 )
 
 
-def plot_ellipses(
-    fig, array, centres, axis_ratios, phis, units, kpc_per_arcsec,
-):
+def plot_ellipses(fig, array, centres, axis_ratios, phis, units, kpc_per_arcsec):
     """Plot the (y,x) centres (e.g. of a mass profile) on the array as an 'x'.
 
     Parameters
@@ -671,9 +658,7 @@ def plot_mask(mask, units, kpc_per_arcsec, pointsize):
         )
 
 
-def plot_border(
-    mask, include_border, units, kpc_per_arcsec, pointsize,
-):
+def plot_border(mask, include_border, units, kpc_per_arcsec, pointsize):
     """Plot the borders of the mask or the array on the figure.
 
     Parameters
@@ -701,12 +686,15 @@ def plot_border(
             kpc_per_arcsec=kpc_per_arcsec,
         )
 
-        plt.scatter(y=np.asarray(border_units[:, 0]), x=np.asarray(border_units[:, 1]), s=pointsize, c="y")
+        plt.scatter(
+            y=np.asarray(border_units[:, 0]),
+            x=np.asarray(border_units[:, 1]),
+            s=pointsize,
+            c="y",
+        )
 
 
-def plot_points(
-    points_arcsec, array, units, kpc_per_arcsec, pointsize,
-):
+def plot_points(points_arcsec, array, units, kpc_per_arcsec, pointsize):
     """Plot a set of points over the array of data_type on the figure.
 
     Parameters
