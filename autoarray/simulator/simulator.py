@@ -71,7 +71,7 @@ class ImagingSimulator(object):
         psf = kernel.Kernel.from_gaussian(
             shape_2d=psf_shape_2d, sigma=psf_sigma, pixel_scales=pixel_scales
         )
-        return ImagingSimulator(
+        return cls(
             shape_2d=shape,
             pixel_scales=pixel_scales,
             sub_size=sub_size,
@@ -103,7 +103,7 @@ class ImagingSimulator(object):
         psf = kernel.Kernel.from_gaussian(
             shape_2d=psf_shape_2d, sigma=psf_sigma, pixel_scales=pixel_scales
         )
-        return ImagingSimulator(
+        return cls(
             shape_2d=shape,
             pixel_scales=pixel_scales,
             sub_size=sub_size,
@@ -135,7 +135,7 @@ class ImagingSimulator(object):
         psf = kernel.Kernel.from_gaussian(
             shape_2d=psf_shape_2d, sigma=psf_sigma, pixel_scales=pixel_scales
         )
-        return ImagingSimulator(
+        return cls(
             shape_2d=shape,
             pixel_scales=pixel_scales,
             sub_size=sub_size,
@@ -168,7 +168,7 @@ class ImagingSimulator(object):
         psf = kernel.Kernel.from_gaussian(
             shape_2d=psf_shape_2d, sigma=psf_sigma, pixel_scales=pixel_scales
         )
-        return ImagingSimulator(
+        return cls(
             shape_2d=shape,
             pixel_scales=pixel_scales,
             sub_size=sub_size,
@@ -200,7 +200,7 @@ class ImagingSimulator(object):
         psf = kernel.Kernel.from_gaussian(
             shape_2d=psf_shape_2d, sigma=psf_sigma, pixel_scales=pixel_scales
         )
-        return ImagingSimulator(
+        return cls(
             shape_2d=shape,
             pixel_scales=pixel_scales,
             sub_size=sub_size,
@@ -344,7 +344,7 @@ class InterferometerSimulator(object):
         else:
             primary_beam = None
 
-        return InterferometerSimulator(
+        return cls(
             real_space_shape_2d=real_space_shape_2d,
             real_space_pixel_scales=real_space_pixel_scales,
             uv_wavelengths=uv_wavelengths,
