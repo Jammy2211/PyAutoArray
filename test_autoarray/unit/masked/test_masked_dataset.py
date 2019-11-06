@@ -1,6 +1,6 @@
 import autoarray as aa
 from autoarray.structures import kernel as kern
-from autoarray.operators import convolution, fourier_transform
+from autoarray.operators import convolver, transformer
 from autoarray.masked import masked_dataset as md
 import numpy as np
 
@@ -146,7 +146,7 @@ class TestMaskedImaging(object):
         )
 
         assert type(masked_imaging_7x7.psf) == kern.Kernel
-        assert type(masked_imaging_7x7.convolver) == convolution.Convolver
+        assert type(masked_imaging_7x7.convolver) == convolver.Convolver
 
     def test__different_imaging_without_mock_objects__customize_constructor_inputs(
         self
@@ -283,9 +283,7 @@ class TestMaskedInterferometer(object):
         )
 
         assert type(masked_interferometer_7.primary_beam) == kern.Kernel
-        assert (
-            type(masked_interferometer_7.transformer) == fourier_transform.Transformer
-        )
+        assert type(masked_interferometer_7.transformer) == transformer.Transformer
 
     def test__different_interferometer_without_mock_objects__customize_constructor_inputs(
         self

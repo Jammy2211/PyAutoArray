@@ -3,7 +3,7 @@ import os
 from autoarray.util import array_util
 from autoarray.structures import grids, kernel
 from autoarray.dataset import imaging, interferometer
-from autoarray.operators import fourier_transform
+from autoarray.operators import transformer
 
 
 class ImagingSimulator(object):
@@ -298,7 +298,7 @@ class InterferometerSimulator(object):
         self.uv_wavelengths = uv_wavelengths
         self.sub_size = sub_size
         self.origin = origin
-        self.transformer = fourier_transform.Transformer(
+        self.transformer = transformer.Transformer(
             uv_wavelengths=self.uv_wavelengths,
             grid_radians=self.grid.in_1d_binned.in_radians,
         )

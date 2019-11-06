@@ -18,6 +18,7 @@ def inversion(masked_dataset, mapper, regularization):
 class InversionImaging(object):
     def __init__(
         self,
+        image,
         noise_map,
         mapper,
         regularization,
@@ -62,6 +63,7 @@ class InversionImaging(object):
             The vector containing the reconstructed fit to the hyper_galaxies.
         """
 
+        self.image = image
         self.noise_map = noise_map
         self.mapper = mapper
         self.regularization = regularization
@@ -81,12 +83,12 @@ class InversionImaging(object):
 
         data_vector = inversion_util.data_vector_from_blurred_mapping_matrix_and_data(
             blurred_mapping_matrix=blurred_mapping_matrix,
-            image_1d=image,
-            noise_map_1d=noise_map,
+            image=image,
+            noise_map=noise_map,
         )
 
         curvature_matrix = inversion_util.curvature_matrix_from_blurred_mapping_matrix(
-            blurred_mapping_matrix=blurred_mapping_matrix, noise_map_1d=noise_map
+            blurred_mapping_matrix=blurred_mapping_matrix, noise_map=noise_map
         )
 
         regularization_matrix = regularization.regularization_matrix_from_mapper(
@@ -101,6 +103,7 @@ class InversionImaging(object):
             raise exc.InversionException()
 
         return InversionImaging(
+            image=image,
             noise_map=noise_map,
             mapper=mapper,
             regularization=regularization,
@@ -112,9 +115,9 @@ class InversionImaging(object):
 
     @property
     def mapped_reconstructed_image(self):
-        reconstructed_image = inversion_util.reconstructed_data_vector_from_blurred_mapping_matrix_and_solution_vector(
+        reconstructed_image = inversion_util.mapper_reconstructed_image_from_blurred_mapping_matrix_and_reconstruction(
             blurred_mapping_matrix=self.blurred_mapping_matrix,
-            solution_vector=self.reconstruction,
+            reconstruction=self.reconstruction,
         )
         return self.mapper.grid.mapping.array_from_array_1d(
             array_1d=reconstructed_image
@@ -132,7 +135,7 @@ class InversionImaging(object):
     def residual_map(self):
         return inversion_util.inversion_residual_map_from_pixelization_values_and_reconstructed_data_1d(
             pixelization_values=self.reconstruction,
-            reconstructed_data_1d=self.mapped_reconstructed_image,
+            mapped_reconstructed_data=self.image,
             mask_1d_index_for_sub_mask_1d_index=self.mapper.grid.mask.regions._mask_1d_index_for_sub_mask_1d_index,
             all_sub_mask_1d_indexes_for_pixelization_1d_index=self.mapper.all_sub_mask_1d_indexes_for_pixelization_1d_index,
         )
@@ -141,7 +144,7 @@ class InversionImaging(object):
     def normalized_residual_map(self):
         return inversion_util.inversion_normalized_residual_map_from_pixelization_values_and_reconstructed_data_1d(
             pixelization_values=self.reconstruction,
-            reconstructed_data_1d=self.mapped_reconstructed_image,
+            mapped_reconstructed_data=self.image,
             noise_map_1d=self.noise_map,
             mask_1d_index_for_sub_mask_1d_index=self.mapper.grid.mask.regions._mask_1d_index_for_sub_mask_1d_index,
             all_sub_mask_1d_indexes_for_pixelization_1d_index=self.mapper.all_sub_mask_1d_indexes_for_pixelization_1d_index,
@@ -151,7 +154,7 @@ class InversionImaging(object):
     def chi_squared_map(self):
         return inversion_util.inversion_chi_squared_map_from_pixelization_values_and_reconstructed_data_1d(
             pixelization_values=self.reconstruction,
-            reconstructed_data_1d=self.mapped_reconstructed_image,
+            mapped_reconstructed_data=self.image,
             noise_map_1d=self.noise_map,
             mask_1d_index_for_sub_mask_1d_index=self.mapper.grid.mask.regions._mask_1d_index_for_sub_mask_1d_index,
             all_sub_mask_1d_indexes_for_pixelization_1d_index=self.mapper.all_sub_mask_1d_indexes_for_pixelization_1d_index,

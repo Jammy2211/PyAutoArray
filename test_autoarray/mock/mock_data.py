@@ -2,7 +2,7 @@ import numpy as np
 
 import autoarray as aa
 from autoarray.dataset import imaging, interferometer
-from autoarray.operators import fourier_transform
+from autoarray.operators import transformer
 
 
 class MockImage(object):
@@ -154,7 +154,7 @@ class MockInterferometer(interferometer.Interferometer):
         )
 
 
-class MockTransformer(fourier_transform.Transformer):
+class MockTransformer(transformer.Transformer):
     def __init__(self, uv_wavelengths, grid_radians):
         super(MockTransformer, self).__init__(
             uv_wavelengths=uv_wavelengths, grid_radians=grid_radians
