@@ -92,7 +92,7 @@ def noise_map(
     """
     grid_plotters.plot_grid(
         grid=fit.visibilities,
-        colors=fit.noise_map[:,0],
+        colors=fit.noise_map[:, 0],
         as_subplot=as_subplot,
         units=units,
         kpc_per_arcsec=kpc_per_arcsec,
@@ -148,7 +148,7 @@ def signal_to_noise_map(
     """
     grid_plotters.plot_grid(
         grid=fit.visibilities,
-        colors=fit.signal_to_noise_map[:,0],
+        colors=fit.signal_to_noise_map[:, 0],
         as_subplot=as_subplot,
         units=units,
         kpc_per_arcsec=kpc_per_arcsec,
@@ -204,7 +204,7 @@ def model_visibilities(
     """
     grid_plotters.plot_grid(
         grid=fit.visibilities,
-        colors=fit.model_visibilities[:,0],
+        colors=fit.model_visibilities[:, 0],
         as_subplot=as_subplot,
         units=units,
         kpc_per_arcsec=kpc_per_arcsec,
@@ -260,7 +260,7 @@ def residual_map(
     """
     grid_plotters.plot_grid(
         grid=fit.visibilities,
-        colors=fit.residual_map[:,0],
+        colors=fit.residual_map[:, 0],
         as_subplot=as_subplot,
         units=units,
         kpc_per_arcsec=kpc_per_arcsec,
@@ -316,7 +316,7 @@ def normalized_residual_map(
     """
     grid_plotters.plot_grid(
         grid=fit.visibilities,
-        colors=fit.normalized_residual_map[:,0],
+        colors=fit.normalized_residual_map[:, 0],
         as_subplot=as_subplot,
         units=units,
         kpc_per_arcsec=kpc_per_arcsec,
@@ -372,7 +372,7 @@ def chi_squared_map(
     """
     grid_plotters.plot_grid(
         grid=fit.visibilities,
-        colors=fit.chi_squared_map[:,0],
+        colors=fit.chi_squared_map[:, 0],
         as_subplot=as_subplot,
         units=units,
         kpc_per_arcsec=kpc_per_arcsec,

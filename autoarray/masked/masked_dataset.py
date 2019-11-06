@@ -1,6 +1,6 @@
 from autoarray.structures import kernel
 from autoarray.masked import masked_structures
-from autoarray.operators import convolution, fourier_transform
+from autoarray.operators import convolver, transformer
 
 import numpy as np
 
@@ -109,7 +109,7 @@ class MaskedImaging(AbstractMaskedDataset):
                 ).in_2d
             )
 
-            self.convolver = convolution.Convolver(mask=mask, kernel=self.psf)
+            self.convolver = convolver.Convolver(mask=mask, kernel=self.psf)
 
             if mask.pixel_scales is not None:
 
@@ -249,7 +249,7 @@ class MaskedInterferometer(AbstractMaskedDataset):
                 ).in_2d
             )
 
-        self.transformer = fourier_transform.Transformer(
+        self.transformer = transformer.Transformer(
             uv_wavelengths=interferometer.uv_wavelengths,
             grid_radians=self.grid.in_1d_binned.in_radians,
         )

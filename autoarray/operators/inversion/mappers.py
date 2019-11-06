@@ -124,11 +124,11 @@ class Mapper(object):
             [] for _ in range(self.pixels)
         ]
 
-        for mask_1d_index, pixelization_1d_index in enumerate(
+        for mask_1d_index, pix_1_index in enumerate(
             self.pixelization_1d_index_for_sub_mask_1d_index
         ):
             all_sub_mask_1d_indexes_for_pixelization_1d_index[
-                pixelization_1d_index
+                pix_1_index
             ].append(mask_1d_index)
 
         return all_sub_mask_1d_indexes_for_pixelization_1d_index

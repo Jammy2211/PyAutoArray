@@ -254,7 +254,6 @@ def individual(
         )
 
 
-
 def visibilities(
     interferometer,
     as_subplot=False,

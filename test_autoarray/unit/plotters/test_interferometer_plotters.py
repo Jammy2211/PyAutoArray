@@ -31,7 +31,6 @@ def test__individual_attributes_are_output(
         in plot_patch.paths
     )
 
-
     aa.plot.interferometer.noise_map(
         interferometer=interferometer_7,
         cb_tick_values=[1.0],
@@ -41,8 +40,7 @@ def test__individual_attributes_are_output(
     )
 
     assert (
-        interferometer_plotter_path + "interferometer_noise_map.png"
-        in plot_patch.paths
+        interferometer_plotter_path + "interferometer_noise_map.png" in plot_patch.paths
     )
 
     aa.plot.interferometer.u_wavelengths(

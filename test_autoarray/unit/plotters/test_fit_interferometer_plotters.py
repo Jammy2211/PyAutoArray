@@ -10,7 +10,9 @@ def make_fit_plotter_util_path_setup():
     )
 
 
-def test__fit_quantities_are_output(fit_interferometer_7, fit_plotter_util_path, plot_patch):
+def test__fit_quantities_are_output(
+    fit_interferometer_7, fit_plotter_util_path, plot_patch
+):
 
     aa.plot.fit_interferometer.visibilities(
         fit=fit_interferometer_7,
