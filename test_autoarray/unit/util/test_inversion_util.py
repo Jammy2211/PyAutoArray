@@ -186,6 +186,7 @@ class TestCurvatureMatrixFromBlurred(object):
 
         assert (curvature_matrix_via_blurred == curvature_matrix_via_transformed).all()
 
+
 class TestPixelizationResiduals(object):
     def test__pixelization_perfectly_reconstructed_data__quantities_like_residuals_all_zeros(
         self
