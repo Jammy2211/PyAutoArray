@@ -101,25 +101,25 @@ def curvature_matrix_from_blurred_mapping_matrix_jit(
 
 
 @decorator_util.jit()
-def mapper_reconstructed_image_from_blurred_mapping_matrix_and_reconstruction(
-    blurred_mapping_matrix, reconstruction
+def mapped_reconstructed_data_from_mapping_matrix_and_reconstruction(
+    mapping_matrix, reconstruction
 ):
     """ Compute the reconstructed hyper_galaxies vector from the blurrred util matrix *f* and solution vector *S*.
 
     Parameters
     -----------
-    blurred_mapping_matrix : ndarray
+    mapping_matrix : ndarray
         The matrix representing the blurred mappings between sub-grid pixels and pixelization pixels.
 
     """
-    reconstructed_data_vector = np.zeros(blurred_mapping_matrix.shape[0])
-    for i in range(blurred_mapping_matrix.shape[0]):
+    mapped_reconstructred_data = np.zeros(mapping_matrix.shape[0])
+    for i in range(mapping_matrix.shape[0]):
         for j in range(reconstruction.shape[0]):
-            reconstructed_data_vector[i] += (
-                    reconstruction[j] * blurred_mapping_matrix[i, j]
+            mapped_reconstructred_data[i] += (
+                    reconstruction[j] * mapping_matrix[i, j]
             )
 
-    return reconstructed_data_vector
+    return mapped_reconstructred_data
 
 
 @decorator_util.jit()
@@ -142,12 +142,10 @@ def data_vector_from_transformed_mapping_matrix_and_data(
     data_vector = np.zeros(transformed_mapping_matrix.shape[1])
 
     for vis_1d_index in range(transformed_mapping_matrix.shape[0]):
-        for pix_1_index in range(transformed_mapping_matrix.shape[1]):
-            data_vector[pix_1_index] += (
-                    visibilities[vis_1d_index]
-                    * transformed_mapping_matrix[vis_1d_index, pix_1_index]
+        for pix_1d_index in range(transformed_mapping_matrix.shape[1]):
+            data_vector[pix_1d_index] += visibilities[vis_1d_index] \
+                    * transformed_mapping_matrix[vis_1d_index, pix_1d_index] \
                     / (noise_map[vis_1d_index] ** 2.0)
-            )
 
     return data_vector
 
