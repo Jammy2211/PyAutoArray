@@ -79,7 +79,9 @@ class TestDataVectorFromData(object):
 
         assert (data_vector == np.array([2.0, 3.0, 1.0])).all()
 
-    def test__data_vector_via_transformer_mapping_matrix_method_same_as_blurred_method(self):
+    def test__data_vector_via_transformer_mapping_matrix_method_same_as_blurred_method(
+        self
+    ):
 
         mapping_matrix = np.array(
             [
@@ -96,9 +98,7 @@ class TestDataVectorFromData(object):
         noise_map = np.array([2.0, 1.0, 1.0, 4.0, 1.0, 1.0])
 
         data_vector_via_blurred = aa.util.inversion.data_vector_from_blurred_mapping_matrix_and_data(
-            blurred_mapping_matrix=mapping_matrix,
-            image=data,
-            noise_map=noise_map,
+            blurred_mapping_matrix=mapping_matrix, image=data, noise_map=noise_map
         )
 
         data_vector_via_transformed = aa.util.inversion.data_vector_from_transformed_mapping_matrix_and_data(
@@ -159,7 +159,9 @@ class TestCurvatureMatrixFromBlurred(object):
             == np.array([[1.25, 0.25, 0.0], [0.25, 2.25, 1.0], [0.0, 1.0, 1.0]])
         ).all()
 
-    def test__curvature_matrix_via_transformer_mapping_matrix_method_same_as_blurred_method(self):
+    def test__curvature_matrix_via_transformer_mapping_matrix_method_same_as_blurred_method(
+        self
+    ):
 
         mapping_matrix = np.array(
             [
@@ -175,13 +177,11 @@ class TestCurvatureMatrixFromBlurred(object):
         noise_map = np.array([2.0, 1.0, 1.0, 4.0, 1.0, 1.0])
 
         curvature_matrix_via_blurred = aa.util.inversion.curvature_matrix_from_blurred_mapping_matrix(
-            blurred_mapping_matrix=mapping_matrix,
-            noise_map=noise_map,
+            blurred_mapping_matrix=mapping_matrix, noise_map=noise_map
         )
 
         curvature_matrix_via_transformed = aa.util.inversion.curvature_matrix_from_transformed_mapping_matrix(
-            transformed_mapping_matrix=mapping_matrix,
-            noise_map=noise_map,
+            transformed_mapping_matrix=mapping_matrix, noise_map=noise_map
         )
 
         assert (curvature_matrix_via_blurred == curvature_matrix_via_transformed).all()

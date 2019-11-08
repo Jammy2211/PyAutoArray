@@ -26,9 +26,9 @@ def data_vector_from_blurred_mapping_matrix_and_data(
     for mask_1d_index in range(mapping_shape[0]):
         for pix_1_index in range(mapping_shape[1]):
             data_vector[pix_1_index] += (
-                    image[mask_1d_index]
-                    * blurred_mapping_matrix[mask_1d_index, pix_1_index]
-                    / (noise_map[mask_1d_index] ** 2.0)
+                image[mask_1d_index]
+                * blurred_mapping_matrix[mask_1d_index, pix_1_index]
+                / (noise_map[mask_1d_index] ** 2.0)
             )
 
     return data_vector
@@ -80,8 +80,8 @@ def curvature_matrix_from_blurred_mapping_matrix_jit(
         for pix_1_index in range(blurred_mapping_matrix.shape[1]):
             if blurred_mapping_matrix[mask_1d_index, pix_1_index] > 0.0:
                 flist[index] = (
-                        blurred_mapping_matrix[mask_1d_index, pix_1_index]
-                        / noise_map[mask_1d_index]
+                    blurred_mapping_matrix[mask_1d_index, pix_1_index]
+                    / noise_map[mask_1d_index]
                 )
                 iflist[index] = pix_1_index
                 index += 1
@@ -115,16 +115,14 @@ def mapped_reconstructed_data_from_mapping_matrix_and_reconstruction(
     mapped_reconstructred_data = np.zeros(mapping_matrix.shape[0])
     for i in range(mapping_matrix.shape[0]):
         for j in range(reconstruction.shape[0]):
-            mapped_reconstructred_data[i] += (
-                    reconstruction[j] * mapping_matrix[i, j]
-            )
+            mapped_reconstructred_data[i] += reconstruction[j] * mapping_matrix[i, j]
 
     return mapped_reconstructred_data
 
 
 @decorator_util.jit()
 def data_vector_from_transformed_mapping_matrix_and_data(
-        transformed_mapping_matrix, visibilities, noise_map
+    transformed_mapping_matrix, visibilities, noise_map
 ):
     """Compute the hyper_galaxies vector *D* from a transformed util matrix *f* and the 1D image *d* and 1D noise-map *\sigma* \
     (see Warren & Dye 2003).
@@ -143,15 +141,18 @@ def data_vector_from_transformed_mapping_matrix_and_data(
 
     for vis_1d_index in range(transformed_mapping_matrix.shape[0]):
         for pix_1d_index in range(transformed_mapping_matrix.shape[1]):
-            data_vector[pix_1d_index] += visibilities[vis_1d_index] \
-                    * transformed_mapping_matrix[vis_1d_index, pix_1d_index] \
-                    / (noise_map[vis_1d_index] ** 2.0)
+            data_vector[pix_1d_index] += (
+                visibilities[vis_1d_index]
+                * transformed_mapping_matrix[vis_1d_index, pix_1d_index]
+                / (noise_map[vis_1d_index] ** 2.0)
+            )
 
     return data_vector
 
+
 @decorator_util.jit()
 def curvature_matrix_from_transformed_mapping_matrix(
-        transformed_mapping_matrix, noise_map,
+    transformed_mapping_matrix, noise_map
 ):
     """Compute the curvature matrix *F* from a transformed util matrix *f* and the 1D noise-map *\sigma* \
     (see Warren & Dye 2003).
@@ -172,12 +173,13 @@ def curvature_matrix_from_transformed_mapping_matrix(
     )
 
     for pix_1d_index_0 in range(transformed_mapping_matrix.shape[1]):
-        for pix_1d_index_1 in range(pix_1d_index_0+1):
+        for pix_1d_index_1 in range(pix_1d_index_0 + 1):
             for vis_1d_index in range(transformed_mapping_matrix.shape[0]):
-                curvature_matrix[pix_1d_index_0, pix_1d_index_1] += \
-                    transformed_mapping_matrix[vis_1d_index, pix_1d_index_0] * \
-                    transformed_mapping_matrix[vis_1d_index, pix_1d_index_1] / \
-                        noise_map[vis_1d_index]**2
+                curvature_matrix[pix_1d_index_0, pix_1d_index_1] += (
+                    transformed_mapping_matrix[vis_1d_index, pix_1d_index_0]
+                    * transformed_mapping_matrix[vis_1d_index, pix_1d_index_1]
+                    / noise_map[vis_1d_index] ** 2
+                )
 
     for i in range(transformed_mapping_matrix.shape[1]):
         for j in range(transformed_mapping_matrix.shape[1]):
@@ -205,8 +207,8 @@ def inversion_residual_map_from_pixelization_values_and_reconstructed_data_1d(
             sub_mask_total += 1
             mask_1d_index = mask_1d_index_for_sub_mask_1d_index[sub_mask_1d_index]
             residual = (
-                    mapped_reconstructed_data[mask_1d_index]
-                    - pixelization_values[pix_1_index]
+                mapped_reconstructed_data[mask_1d_index]
+                - pixelization_values[pix_1_index]
             )
             residual_map[pix_1_index] += np.abs(residual)
 
@@ -237,8 +239,8 @@ def inversion_normalized_residual_map_from_pixelization_values_and_reconstructed
             sub_mask_total += 1
             mask_1d_index = mask_1d_index_for_sub_mask_1d_index[sub_mask_1d_index]
             residual = (
-                    mapped_reconstructed_data[mask_1d_index]
-                    - pixelization_values[pix_1_index]
+                mapped_reconstructed_data[mask_1d_index]
+                - pixelization_values[pix_1_index]
             )
             normalized_residual_map[pix_1_index] += np.abs(
                 (residual / noise_map_1d[mask_1d_index])
@@ -268,8 +270,8 @@ def inversion_chi_squared_map_from_pixelization_values_and_reconstructed_data_1d
             sub_mask_total += 1
             mask_1d_index = mask_1d_index_for_sub_mask_1d_index[sub_mask_1d_index]
             residual = (
-                    mapped_reconstructed_data[mask_1d_index]
-                    - pixelization_values[pix_1_index]
+                mapped_reconstructed_data[mask_1d_index]
+                - pixelization_values[pix_1_index]
             )
             chi_squared_map[pix_1_index] += (
                 residual / noise_map_1d[mask_1d_index]
