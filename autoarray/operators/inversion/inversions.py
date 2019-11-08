@@ -17,7 +17,7 @@ def inversion(masked_dataset, mapper, regularization):
             mapper=mapper,
             regularization=regularization,
         )
-    
+
     elif isinstance(masked_dataset, md.MaskedInterferometer):
 
         return InversionInterferometer.from_data_mapper_and_regularization(
@@ -30,7 +30,6 @@ def inversion(masked_dataset, mapper, regularization):
 
 
 class Inversion(object):
-
     def __init__(
         self,
         noise_map,
@@ -152,9 +151,14 @@ class InversionImaging(Inversion):
             The vector containing the reconstructed fit to the hyper_galaxies.
         """
 
-        super(InversionImaging, self).__init__(noise_map=noise_map, mapper=mapper, regularization=regularization,
-                                               regularization_matrix=regularization_matrix, curvature_reg_matrix=curvature_reg_matrix,
-                                               reconstruction=reconstruction)
+        super(InversionImaging, self).__init__(
+            noise_map=noise_map,
+            mapper=mapper,
+            regularization=regularization,
+            regularization_matrix=regularization_matrix,
+            curvature_reg_matrix=curvature_reg_matrix,
+            reconstruction=reconstruction,
+        )
 
         self.image = image
         self.blurred_mapping_matrix = blurred_mapping_matrix
@@ -288,9 +292,14 @@ class InversionInterferometer(Inversion):
             The vector containing the reconstructed fit to the hyper_galaxies.
         """
 
-        super(InversionInterferometer, self).__init__(noise_map=noise_map, mapper=mapper, regularization=regularization,
-                                               regularization_matrix=regularization_matrix, curvature_reg_matrix=curvature_reg_matrix,
-                                               reconstruction=reconstruction)
+        super(InversionInterferometer, self).__init__(
+            noise_map=noise_map,
+            mapper=mapper,
+            regularization=regularization,
+            regularization_matrix=regularization_matrix,
+            curvature_reg_matrix=curvature_reg_matrix,
+            reconstruction=reconstruction,
+        )
 
         self.visibilities = visibilities
         self.transformed_mapping_matrices = transformed_mapping_matrices
@@ -306,24 +315,24 @@ class InversionInterferometer(Inversion):
 
         real_data_vector = inversion_util.data_vector_from_transformed_mapping_matrix_and_data(
             transformed_mapping_matrix=transformed_mapping_matrices[0],
-            visibilities=visibilities[:,0],
-            noise_map=noise_map[:,0],
+            visibilities=visibilities[:, 0],
+            noise_map=noise_map[:, 0],
         )
 
         imag_data_vector = inversion_util.data_vector_from_transformed_mapping_matrix_and_data(
             transformed_mapping_matrix=transformed_mapping_matrices[1],
-            visibilities=visibilities[:,1],
-            noise_map=noise_map[:,1],
+            visibilities=visibilities[:, 1],
+            noise_map=noise_map[:, 1],
         )
 
         real_curvature_matrix = inversion_util.curvature_matrix_from_transformed_mapping_matrix(
             transformed_mapping_matrix=transformed_mapping_matrices[0],
-            noise_map=noise_map[:,0],
+            noise_map=noise_map[:, 0],
         )
 
         imag_curvature_matrix = inversion_util.curvature_matrix_from_transformed_mapping_matrix(
             transformed_mapping_matrix=transformed_mapping_matrices[1],
-            noise_map=noise_map[:,1],
+            noise_map=noise_map[:, 1],
         )
 
         regularization_matrix = regularization.regularization_matrix_from_mapper(
@@ -334,7 +343,9 @@ class InversionInterferometer(Inversion):
         imag_curvature_reg_matrix = np.add(imag_curvature_matrix, regularization_matrix)
 
         data_vector = np.add(real_data_vector, imag_data_vector)
-        curvature_reg_matrix = np.add(real_curvature_reg_matrix, imag_curvature_reg_matrix)
+        curvature_reg_matrix = np.add(
+            real_curvature_reg_matrix, imag_curvature_reg_matrix
+        )
 
         try:
             values = np.linalg.solve(curvature_reg_matrix, data_vector)
@@ -353,6 +364,13 @@ class InversionInterferometer(Inversion):
         )
 
     @property
+    def mapped_reconstructed_image(self):
+        return inversion_util.mapped_reconstructed_data_from_mapping_matrix_and_reconstruction(
+            mapping_matrix=self.mapper.mapping_matrix,
+            reconstruction=self.reconstruction,
+        )
+
+    @property
     def mapped_reconstructed_visibilities(self):
         real_visibilities = inversion_util.mapped_reconstructed_data_from_mapping_matrix_and_reconstruction(
             mapping_matrix=self.transformed_mapping_matrices[0],
@@ -364,4 +382,6 @@ class InversionInterferometer(Inversion):
             reconstruction=self.reconstruction,
         )
 
-        return vis.Visibilities(visibilities_1d=np.stack((real_visibilities, imag_visibilities), axis=-1))
+        return vis.Visibilities(
+            visibilities_1d=np.stack((real_visibilities, imag_visibilities), axis=-1)
+        )
