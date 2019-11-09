@@ -216,9 +216,9 @@ class InversionImaging(Inversion):
 
     @property
     def residual_map(self):
-        return inversion_util.inversion_residual_map_from_pixelization_values_and_reconstructed_data_1d(
+        return inversion_util.inversion_residual_map_from_pixelization_values_and_data(
             pixelization_values=self.reconstruction,
-            mapped_reconstructed_data=self.image,
+            data=self.image,
             mask_1d_index_for_sub_mask_1d_index=self.mapper.grid.mask.regions._mask_1d_index_for_sub_mask_1d_index,
             all_sub_mask_1d_indexes_for_pixelization_1d_index=self.mapper.all_sub_mask_1d_indexes_for_pixelization_1d_index,
         )
@@ -365,10 +365,12 @@ class InversionInterferometer(Inversion):
 
     @property
     def mapped_reconstructed_image(self):
-        return inversion_util.mapped_reconstructed_data_from_mapping_matrix_and_reconstruction(
+        mapped_reconstructed_image = inversion_util.mapped_reconstructed_data_from_mapping_matrix_and_reconstruction(
             mapping_matrix=self.mapper.mapping_matrix,
             reconstruction=self.reconstruction,
         )
+
+        return self.mapper.grid.mapping.array_from_array_1d(array_1d=mapped_reconstructed_image)
 
     @property
     def mapped_reconstructed_visibilities(self):
