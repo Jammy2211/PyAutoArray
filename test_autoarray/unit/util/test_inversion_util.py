@@ -201,9 +201,9 @@ class TestPixelizationResiduals(object):
             [2, 2, 2],
         ]
 
-        pixelization_residuals = aa.util.inversion.inversion_residual_map_from_pixelization_values_and_reconstructed_data_1d(
+        pixelization_residuals = aa.util.inversion.inversion_residual_map_from_pixelization_values_and_data(
             pixelization_values=pixelization_values,
-            mapped_reconstructed_data=reconstructed_data_1d,
+            data=reconstructed_data_1d,
             mask_1d_index_for_sub_mask_1d_index=mask_1d_index_for_sub_mask_1d_index,
             all_sub_mask_1d_indexes_for_pixelization_1d_index=all_sub_mask_1d_indexes_for_pixelization_1d_index,
         )
@@ -221,9 +221,9 @@ class TestPixelizationResiduals(object):
             [6, 7, 8],
         ]
 
-        pixelization_residuals = aa.util.inversion.inversion_residual_map_from_pixelization_values_and_reconstructed_data_1d(
+        pixelization_residuals = aa.util.inversion.inversion_residual_map_from_pixelization_values_and_data(
             pixelization_values=pixelization_values,
-            mapped_reconstructed_data=reconstructed_data_1d,
+            data=reconstructed_data_1d,
             mask_1d_index_for_sub_mask_1d_index=mask_1d_index_for_sub_mask_1d_index,
             all_sub_mask_1d_indexes_for_pixelization_1d_index=all_sub_mask_1d_indexes_for_pixelization_1d_index,
         )
@@ -239,9 +239,9 @@ class TestPixelizationResiduals(object):
             [6, 7, 8],
         ]
 
-        pixelization_residuals = aa.util.inversion.inversion_residual_map_from_pixelization_values_and_reconstructed_data_1d(
+        pixelization_residuals = aa.util.inversion.inversion_residual_map_from_pixelization_values_and_data(
             pixelization_values=pixelization_values,
-            mapped_reconstructed_data=reconstructed_data_1d,
+            data=reconstructed_data_1d,
             mask_1d_index_for_sub_mask_1d_index=mask_1d_index_for_sub_mask_1d_index,
             all_sub_mask_1d_indexes_for_pixelization_1d_index=all_sub_mask_1d_indexes_for_pixelization_1d_index,
         )

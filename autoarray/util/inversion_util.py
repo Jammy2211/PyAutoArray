@@ -188,9 +188,9 @@ def curvature_matrix_from_transformed_mapping_matrix(
     return curvature_matrix
 
 
-def inversion_residual_map_from_pixelization_values_and_reconstructed_data_1d(
+def inversion_residual_map_from_pixelization_values_and_data(
     pixelization_values,
-    mapped_reconstructed_data,
+    data,
     mask_1d_index_for_sub_mask_1d_index,
     all_sub_mask_1d_indexes_for_pixelization_1d_index,
 ):
@@ -207,8 +207,8 @@ def inversion_residual_map_from_pixelization_values_and_reconstructed_data_1d(
             sub_mask_total += 1
             mask_1d_index = mask_1d_index_for_sub_mask_1d_index[sub_mask_1d_index]
             residual = (
-                mapped_reconstructed_data[mask_1d_index]
-                - pixelization_values[pix_1_index]
+                    data[mask_1d_index]
+                    - pixelization_values[pix_1_index]
             )
             residual_map[pix_1_index] += np.abs(residual)
 
