@@ -370,7 +370,9 @@ class InversionInterferometer(Inversion):
             reconstruction=self.reconstruction,
         )
 
-        return self.mapper.grid.mapping.array_from_array_1d(array_1d=mapped_reconstructed_image)
+        return self.mapper.grid.mapping.array_from_array_1d(
+            array_1d=mapped_reconstructed_image
+        )
 
     @property
     def mapped_reconstructed_visibilities(self):

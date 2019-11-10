@@ -206,10 +206,7 @@ def inversion_residual_map_from_pixelization_values_and_data(
         for sub_mask_1d_index in sub_mask_1d_indexes:
             sub_mask_total += 1
             mask_1d_index = mask_1d_index_for_sub_mask_1d_index[sub_mask_1d_index]
-            residual = (
-                    data[mask_1d_index]
-                    - pixelization_values[pix_1_index]
-            )
+            residual = data[mask_1d_index] - pixelization_values[pix_1_index]
             residual_map[pix_1_index] += np.abs(residual)
 
         residual_map[pix_1_index] /= sub_mask_total

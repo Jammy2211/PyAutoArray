@@ -190,12 +190,12 @@ class ImagingFit(DatasetFit):
 
 class InterferometerFit(DatasetFit):
     def __init__(
-            self,
-            visibilities_mask,
-            visibilities,
-            noise_map,
-            model_visibilities,
-            inversion=None,
+        self,
+        visibilities_mask,
+        visibilities,
+        noise_map,
+        model_visibilities,
+        inversion=None,
     ):
         """Class to fit simulator where the dataset structures are any dimension.
 
