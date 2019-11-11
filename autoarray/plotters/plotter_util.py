@@ -245,12 +245,12 @@ def get_critical_curve_and_caustic(
     )
 
     if include_critical_curves:
-        critical_curves = obj.critical_curves_from_grid(grid=unmasked_grid)
+        critical_curves = obj.critical_curves(grid=unmasked_grid)
     else:
         critical_curves = []
 
     if include_caustics:
-        caustics = obj.caustics_from_grid(grid=unmasked_grid)
+        caustics = obj.caustics(grid=unmasked_grid)
     else:
         caustics = []
 
