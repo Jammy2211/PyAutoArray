@@ -394,7 +394,7 @@ class TestRegularizationWeightedMatrix:
             test_regularization_matrix, 1.0e-4
         )
 
-    def test__2_b_matrices_size_4x4_variables_regularization_weights__makes_correct_regularization_matrix(
+    def test__2_b_matrices_size_4x4_models_regularization_weights__makes_correct_regularization_matrix(
         self
     ):
         # Simple case, where we have just one regularization direction, regularizing pixel 0 -> 1 and 1 -> 2.
