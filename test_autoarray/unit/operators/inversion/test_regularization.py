@@ -4,7 +4,7 @@ import numpy as np
 from test_autoarray.mock.mock_inversion import MockPixelizationGrid, MockRegMapper
 
 
-class TestRegularizationConstant:
+class TestRegularizationinstance:
     def test__regularization_matrix__compare_to_regularization_util(self):
 
         pixel_neighbors = np.array(
@@ -29,10 +29,10 @@ class TestRegularizationConstant:
 
         mapper = MockRegMapper(pixelization_grid=pixelization_grid)
 
-        reg = aa.reg.Constant(coefficient=1.0)
+        reg = aa.reg.instance(coefficient=1.0)
         regularization_matrix = reg.regularization_matrix_from_mapper(mapper=mapper)
 
-        regularization_matrix_util = aa.util.regularization.constant_regularization_matrix_from_pixel_neighbors(
+        regularization_matrix_util = aa.util.regularization.instance_regularization_matrix_from_pixel_neighbors(
             coefficient=1.0,
             pixel_neighbors=pixel_neighbors,
             pixel_neighbors_size=pixel_neighbors_size,

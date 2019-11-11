@@ -123,18 +123,18 @@ class Regularization(object):
         """
 
 
-class Constant(Regularization):
+class instance(Regularization):
     def __init__(self, coefficient=1.0):
-        """A constant-regularization scheme (regularization is described in the *Regularization* class above).
+        """A instance-regularization scheme (regularization is described in the *Regularization* class above).
 
-        For the constant regularization_matrix scheme, there is only 1 regularization coefficient that is applied to \
+        For the instance regularization_matrix scheme, there is only 1 regularization coefficient that is applied to \
         all neighboring pixels. This means that we when write B, we only need to regularize pixels in one direction \
         (e.g. pixel 0 regularizes pixel 1, but NOT visa versa). For example:
 
         B = [-1, 1]  [0->1]
             [0, -1]  1 does not regularization with 0
 
-        A small numerical value of 1.0e-8 is added to all elements in a constant regularization matrix, to ensure that \
+        A small numerical value of 1.0e-8 is added to all elements in a instance regularization matrix, to ensure that \
         it is positive definite.
 
         Parameters
@@ -143,13 +143,13 @@ class Constant(Regularization):
             The regularization coefficient which controls the degree of smooth of the inversion reconstruction.
         """
         self.coefficient = coefficient
-        super(Constant, self).__init__()
+        super(instance, self).__init__()
 
     def regularization_weights_from_mapper(self, mapper):
         return self.coefficient * np.ones(mapper.pixelization_grid.pixels)
 
     def regularization_matrix_from_mapper(self, mapper):
-        return regularization_util.constant_regularization_matrix_from_pixel_neighbors(
+        return regularization_util.instance_regularization_matrix_from_pixel_neighbors(
             coefficient=self.coefficient,
             pixel_neighbors=mapper.pixelization_grid.pixel_neighbors,
             pixel_neighbors_size=mapper.pixelization_grid.pixel_neighbors_size,
@@ -158,20 +158,20 @@ class Constant(Regularization):
 
 class AdaptiveBrightness(Regularization):
     def __init__(self, inner_coefficient=1.0, outer_coefficient=1.0, signal_scale=1.0):
-        """ A constant-regularization scheme (regularization is described in the *Regularization* class above).
+        """ A instance-regularization scheme (regularization is described in the *Regularization* class above).
 
         For the weighted regularization scheme, each pixel is given an 'effective regularization weight', which is \
         applied when each set of pixel neighbors are regularized with one another. The motivation of this is that \
         different regions of a pixelization require different levels of regularization (e.g., high smoothing where the \
         no signal is present and less smoothing where it is, see (Nightingale, Dye and Massey 2018)).
 
-        Unlike the constant regularization_matrix scheme, neighboring pixels must now be regularized with one another \
+        Unlike the instance regularization_matrix scheme, neighboring pixels must now be regularized with one another \
         in both directions (e.g. if pixel 0 regularizes pixel 1, pixel 1 must also regularize pixel 0). For example:
 
         B = [-1, 1]  [0->1]
             [-1, -1]  1 now also regularizes 0
 
-        For a constant regularization coefficient this would NOT produce a positive-definite matrix. However, for
+        For a instance regularization coefficient this would NOT produce a positive-definite matrix. However, for
         the weighted scheme, it does!
 
         The regularize weights change the B matrix as shown below - we simply multiply each pixel's effective \
