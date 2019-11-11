@@ -232,25 +232,16 @@ def quantity_and_annuli_radii_from_minimum_and_maximum_radii_and_radii_points(
 
 
 def get_critical_curve_and_caustic(
-    obj, grid, include_critical_curves, include_caustics
+    obj, include_critical_curves, include_caustics
 ):
 
-    plot_sub_size = conf.instance.visualize.get("figures", "plot_sub_size", int)
-
-    unmasked_grid = grids.Grid.uniform(
-        shape_2d=grid.mask.shape_2d,
-        pixel_scales=grid.pixel_scales,
-        sub_size=plot_sub_size,
-        origin=grid.origin,
-    )
-
     if include_critical_curves:
-        critical_curves = obj.critical_curves(grid=unmasked_grid)
+        critical_curves = obj.critical_curves
     else:
         critical_curves = []
 
     if include_caustics:
-        caustics = obj.caustics(grid=unmasked_grid)
+        caustics = obj.caustics
     else:
         caustics = []
 
