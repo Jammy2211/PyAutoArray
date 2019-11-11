@@ -321,7 +321,7 @@ class TestEstimateNoiseFromImage:
     def test__image_and_exposure_times_and_background_are_all_ranges_of_values__noise_estimates_correct(
         self
     ):
-        # Use same pattern as above, noting that we are now also using a variable background signal_to_noise_ratio map.
+        # Use same pattern as above, noting that we are now also using a model background signal_to_noise_ratio map.
 
         image = aa.array.manual_2d(array=[[5.0, 3.0], [10.0, 20.0]])
 
@@ -2277,7 +2277,7 @@ class TestSimulateImaging(object):
 
         background_sky_map = aa.array.full(fill_value=16.0, shape_2d=image.mask.shape)
 
-        imaging_variable = aa.imaging.simulate(
+        imaging_model = aa.imaging.simulate(
             image=image,
             exposure_time=1.0,
             exposure_time_map=exposure_time_map,
@@ -2309,14 +2309,14 @@ class TestSimulateImaging(object):
         )
 
         assert (
-            imaging_variable.exposure_time_map.in_2d
+            imaging_model.exposure_time_map.in_2d
             == imaging_simulated.exposure_time_map.in_2d
         ).all()
-        assert imaging_variable.image.in_2d == pytest.approx(
+        assert imaging_model.image.in_2d == pytest.approx(
             imaging_simulated.image.in_2d, 1e-4
         )
         assert (
-            imaging_variable.background_noise_map.in_2d
+            imaging_model.background_noise_map.in_2d
             == imaging_simulated.background_noise_map.in_2d
         ).all()
 
