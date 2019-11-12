@@ -123,7 +123,7 @@ class Regularization(object):
         """
 
 
-class instance(Regularization):
+class Constant(Regularization):
     def __init__(self, coefficient=1.0):
         """A instance-regularization scheme (regularization is described in the *Regularization* class above).
 
@@ -143,7 +143,7 @@ class instance(Regularization):
             The regularization coefficient which controls the degree of smooth of the inversion reconstruction.
         """
         self.coefficient = coefficient
-        super(instance, self).__init__()
+        super(Constant, self).__init__()
 
     def regularization_weights_from_mapper(self, mapper):
         return self.coefficient * np.ones(mapper.pixelization_grid.pixels)
