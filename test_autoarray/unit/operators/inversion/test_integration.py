@@ -62,7 +62,7 @@ class TestRectangular:
         assert mapper.shape_2d == (3, 3)
         assert (mapper.hyper_image == np.ones((2, 2))).all()
 
-        reg = aa.reg.instance(coefficient=1.0)
+        reg = aa.reg.Constant(coefficient=1.0)
         regularization_matrix = reg.regularization_matrix_from_mapper(mapper=mapper)
 
         assert (
@@ -175,7 +175,7 @@ class TestRectangular:
         ).all()
         assert mapper.shape_2d == (3, 3)
 
-        reg = aa.reg.instance(coefficient=1.0)
+        reg = aa.reg.Constant(coefficient=1.0)
         regularization_matrix = reg.regularization_matrix_from_mapper(mapper=mapper)
 
         assert (
@@ -287,7 +287,7 @@ class TestRectangular:
         ).all()
         assert mapper.shape_2d == (3, 3)
 
-        reg = aa.reg.instance(coefficient=1.0)
+        reg = aa.reg.Constant(coefficient=1.0)
         regularization_matrix = reg.regularization_matrix_from_mapper(mapper=mapper)
 
         assert (
@@ -372,7 +372,7 @@ class TestRectangular:
         ).all()
         assert mapper.shape_2d == (3, 3)
 
-        reg = aa.reg.instance(coefficient=1.0)
+        reg = aa.reg.Constant(coefficient=1.0)
         regularization_matrix = reg.regularization_matrix_from_mapper(mapper=mapper)
 
         assert (
@@ -432,7 +432,7 @@ class TestRectangular:
             grid=grid, sparse_grid=None, inversion_uses_border=False
         )
 
-        reg = aa.reg.instance(coefficient=0.0)
+        reg = aa.reg.Constant(coefficient=0.0)
 
         visibilities = aa.visibilities.manual_1d(
             visibilities=[
@@ -547,7 +547,7 @@ class TestVoronoiMagnification:
             )
         ).all()
 
-        reg = aa.reg.instance(coefficient=1.0)
+        reg = aa.reg.Constant(coefficient=1.0)
         regularization_matrix = reg.regularization_matrix_from_mapper(mapper=mapper)
 
         assert (
@@ -639,7 +639,7 @@ class TestVoronoiMagnification:
             )
         ).all()
 
-        reg = aa.reg.instance(coefficient=1.0)
+        reg = aa.reg.Constant(coefficient=1.0)
         regularization_matrix = reg.regularization_matrix_from_mapper(mapper=mapper)
 
         assert (
@@ -748,7 +748,7 @@ class TestVoronoiMagnification:
             )
         ).all()
 
-        reg = aa.reg.instance(coefficient=1.0)
+        reg = aa.reg.Constant(coefficient=1.0)
         regularization_matrix = reg.regularization_matrix_from_mapper(mapper=mapper)
 
         assert (
@@ -838,7 +838,7 @@ class TestVoronoiMagnification:
             )
         ).all()
 
-        reg = aa.reg.instance(coefficient=1.0)
+        reg = aa.reg.Constant(coefficient=1.0)
         regularization_matrix = reg.regularization_matrix_from_mapper(mapper=mapper)
 
         assert (
@@ -896,7 +896,7 @@ class TestVoronoiMagnification:
             grid=grid, sparse_grid=sparse_grid, inversion_uses_border=False
         )
 
-        reg = aa.reg.instance(coefficient=0.0)
+        reg = aa.reg.Constant(coefficient=0.0)
 
         visibilities = aa.visibilities.manual_1d(
             visibilities=[

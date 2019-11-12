@@ -507,6 +507,21 @@ class Grid(AbstractGrid):
         )
 
     @classmethod
+    def bounding_box(cls, bounding_box, shape_2d, sub_size=1):
+
+        y_max, y_min, x_max, x_min = bounding_box
+
+        pixel_scales = ((y_max - y_min) / (shape_2d[0] - 1), (x_max - x_min) / (shape_2d[1] - 1))
+        origin = ((y_max + y_min) / 2.0, (x_max + x_min) / 2.0)
+
+        return cls.uniform(
+            shape_2d=shape_2d,
+            pixel_scales=pixel_scales,
+            sub_size=sub_size,
+            origin=origin,
+        )
+
+    @classmethod
     def from_mask(cls, mask):
         """Setup a sub-grid of the unmasked pixels, using a mask and a specified sub-grid size. The center of \
         every unmasked pixel's sub-pixels give the grid's (y,x) arc-second coordinates.
@@ -682,6 +697,9 @@ class GridIrregular(np.ndarray):
         class IrregularMapping(object):
             def __init__(self):
                 pass
+
+            def array_from_sub_array_1d(self, sub_array_1d):
+                return sub_array_1d
 
             def grid_from_sub_grid_1d(self, sub_grid_1d):
                 return GridIrregular(grid=sub_grid_1d)

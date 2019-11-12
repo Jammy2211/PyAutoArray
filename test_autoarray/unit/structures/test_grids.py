@@ -240,6 +240,31 @@ class TestGridAPI:
             assert grid.origin == (0.0, 0.0)
             assert grid.sub_size == 2
 
+    class TestGridBoundingBox:
+        def test__grid_bounding_box__uniform_box__makes_grid_with_correct_pixel_scales_and_origin(self):
+
+            grid = aa.grid.bounding_box(bounding_box=[2.0, -2.0, 2.0, -2.0], shape_2d=(3, 3))
+
+            assert (grid.in_1d == np.array([[2.0, -2.0], [2.0, 0.0], [2.0, 2.0],
+                                            [0.0, -2.0], [0.0, 0.0], [0.0, 2.0],
+                                            [-2.0, -2.0], [-2.0, 0.0], [-2.0, 2.0]])).all()
+            assert grid.pixel_scales == (2.0, 2.0)
+            assert grid.origin == (0.0, 0.0)
+
+            grid = aa.grid.bounding_box(bounding_box=[2.0, -2.0, 2.0, -2.0], shape_2d=(2, 3))
+
+            assert (grid.in_1d == np.array([[2.0, -2.0], [2.0, 0.0], [2.0, 2.0],
+                                            [-2.0, -2.0], [-2.0, 0.0], [-2.0, 2.0]])).all()
+            assert grid.pixel_scales == (4.0, 2.0)
+            assert grid.origin == (0.0, 0.0)
+
+            grid = aa.grid.bounding_box(bounding_box=[10.0, 8.0, 3.0, -2.0], shape_2d=(3, 3))
+
+            assert grid.in_1d == pytest.approx(np.array([[10.0, -2.0], [10.0, 0.5], [10.0, 3.0],
+                                            [9.0, -2.0], [9.0, 0.5], [9.0, 3.0],
+                                            [8.0, -2.0], [8.0, 0.5], [8.0, 3.0]]), 1.0e-4)
+            assert grid.pixel_scales == (1.0, 2.5)
+            assert grid.origin == (9.0, 0.5)
 
 class TestGridMaskedAPI:
     class TestManual:
