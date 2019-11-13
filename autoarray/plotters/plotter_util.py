@@ -231,9 +231,7 @@ def quantity_and_annuli_radii_from_minimum_and_maximum_radii_and_radii_points(
     return quantity_radii, annuli_radii
 
 
-def get_critical_curve_and_caustic(
-    obj, include_critical_curves, include_caustics
-):
+def get_critical_curve_and_caustic(obj, include_critical_curves, include_caustics):
 
     if include_critical_curves:
         critical_curves = obj.critical_curves
