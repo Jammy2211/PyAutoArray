@@ -511,7 +511,10 @@ class Grid(AbstractGrid):
 
         y_max, y_min, x_max, x_min = bounding_box
 
-        pixel_scales = ((y_max - y_min) / (shape_2d[0] - 1), (x_max - x_min) / (shape_2d[1] - 1))
+        pixel_scales = (
+            (y_max - y_min) / (shape_2d[0] - 1),
+            (x_max - x_min) / (shape_2d[1] - 1),
+        )
         origin = ((y_max + y_min) / 2.0, (x_max + x_min) / 2.0)
 
         return cls.uniform(
