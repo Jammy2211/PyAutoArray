@@ -174,7 +174,7 @@ class Convolver(object):
             An array representing a PSF.
         """
         if kernel.shape_2d[0] % 2 == 0 or kernel.shape_2d[1] % 2 == 0:
-            raise exc.ConvolutionException("PSF kernel must be odd")
+            raise exc.ConvolverException("PSF kernel must be odd")
 
         self.mask = mask
 
@@ -309,7 +309,7 @@ class Convolver(object):
         """
 
         if self.blurring_mask is None:
-            raise exc.ConvolutionException(
+            raise exc.ConvolverException(
                 "You cannot use the convolve_image function of a Convolver if the Convolver was"
                 "not created with a blurring_mask."
             )

@@ -3,6 +3,8 @@ import numpy as np
 from autoarray.masked import masked_dataset as md
 from autoarray.util import fit_util
 
+def fit_masked_dataset(masked_dataset, model_data, inversion=None):
+    return fit(masked_dataset=masked_dataset, model_data=model_data, inversion=inversion)
 
 def fit(masked_dataset, model_data, inversion=None):
     if isinstance(masked_dataset, md.MaskedImaging):

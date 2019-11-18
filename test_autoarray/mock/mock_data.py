@@ -83,14 +83,14 @@ class MockImaging(imaging.Imaging):
     def __init__(
         self,
         image,
-        pixel_scales,
-        psf,
         noise_map,
-        background_noise_map,
-        poisson_noise_map,
-        exposure_time_map,
-        background_sky_map,
-        name,
+        pixel_scales,
+        psf=None,
+        background_noise_map=None,
+        poisson_noise_map=None,
+        exposure_time_map=None,
+        background_sky_map=None,
+        name='',
     ):
         super(MockImaging, self).__init__(
             image=image,

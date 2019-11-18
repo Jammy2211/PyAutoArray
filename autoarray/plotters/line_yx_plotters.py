@@ -1,3 +1,4 @@
+from autoarray import exc
 from autoarray.plotters import plotter_util
 
 import matplotlib.pyplot as plt
@@ -12,8 +13,8 @@ def plot_line(
     plot_axis_type="semilogy",
     vertical_lines=None,
     vertical_line_labels=None,
-    units="arcsec",
-    kpc_per_arcsec=None,
+    unit_label="scaled",
+    unit_conversion_factor=None,
     figsize=(7, 7),
     plot_legend=False,
     title="Quantity vs Radius",
@@ -37,8 +38,7 @@ def plot_line(
     plot_y_vs_x(y=y, x=x, plot_axis_type=plot_axis_type, label=label)
 
     set_xy_labels_and_ticksize(
-        units=units,
-        kpc_per_arcsec=kpc_per_arcsec,
+        unit_label=unit_label,
         ylabel=ylabel,
         xlabelsize=xlabelsize,
         ylabelsize=ylabelsize,
@@ -48,8 +48,7 @@ def plot_line(
     plot_vertical_lines(
         vertical_lines=vertical_lines,
         vertical_line_labels=vertical_line_labels,
-        units=units,
-        kpc_per_arcsec=kpc_per_arcsec,
+        unit_conversion_factor=unit_conversion_factor,
     )
 
     set_legend(plot_legend=plot_legend, legend_fontsize=legend_fontsize)
@@ -80,7 +79,7 @@ def plot_y_vs_x(y, x, plot_axis_type, label):
 
 
 def set_xy_labels_and_ticksize(
-    units, kpc_per_arcsec, ylabel, xlabelsize, ylabelsize, xyticksize
+    unit_label, ylabel, xlabelsize, ylabelsize, xyticksize
 ):
     """Set the x and y labels of the figure, and set the fontsize of those labels.
 
@@ -91,9 +90,9 @@ def set_xy_labels_and_ticksize(
 
     Parameters
     -----------
-    units : str
-        The units of the y / x axis of the plots, in arc-seconds ('arcsec') or kiloparsecs ('kpc').
-    kpc_per_arcsec : float
+    unit_label : str
+        The units of the y / x axis of the plots.
+    unit_conversion_factor : float
         The conversion factor between arc-seconds and kiloparsecs, required to plotters the units in kpc.
     ylabel : str
         The y-label of the figure, which is the physical quantity being plotted.
@@ -106,40 +105,20 @@ def set_xy_labels_and_ticksize(
     """
 
     plt.ylabel(ylabel=ylabel, fontsize=ylabelsize)
-
-    if units in "arcsec" or kpc_per_arcsec is None:
-
-        plt.xlabel("x (arcsec)", fontsize=xlabelsize)
-
-    elif units in "kpc":
-
-        plt.xlabel("x (kpc)", fontsize=xlabelsize)
-
-    else:
-        raise exc.PlottingException(
-            "The units supplied to the plotter are not a valid string (must be pixels | "
-            "arcsec | kpc)"
-        )
-
+    plt.xlabel("x (" + unit_label + ")", fontsize=xlabelsize)
     plt.tick_params(labelsize=xyticksize)
 
-
-def plot_vertical_lines(vertical_lines, vertical_line_labels, units, kpc_per_arcsec):
+def plot_vertical_lines(vertical_lines, vertical_line_labels, unit_conversion_factor):
 
     if vertical_lines is [] or vertical_lines is None:
         return
 
     for vertical_line, vertical_line_label in zip(vertical_lines, vertical_line_labels):
 
-        if units in "arcsec" or kpc_per_arcsec is None:
+        if unit_conversion_factor is None:
             x_value_plot = vertical_line
-        elif units in "kpc":
-            x_value_plot = vertical_line
-        else:
-            raise exc.PlottingException(
-                "The units supplied to the plotter are not a valid string (must be pixels | "
-                "arcsec | kpc)"
-            )
+        elif unit_conversion_factor is not None:
+            x_value_plot = vertical_line * unit_conversion_factor
 
         plt.axvline(x=x_value_plot, label=vertical_line_label, linestyle="--")
 

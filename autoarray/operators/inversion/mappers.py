@@ -179,8 +179,8 @@ class MapperRectangular(Mapper):
     @property
     def pixelization_1d_index_for_sub_mask_1d_index(self):
         """The 1D index mappings between the sub grid's pixels and rectangular pixelization's pixels"""
-        return grid_util.grid_pixel_indexes_1d_from_grid_arcsec_1d_shape_2d_and_pixel_scales(
-            grid_arcsec_1d=self.grid,
+        return grid_util.grid_pixel_indexes_1d_from_grid_scaled_1d_shape_2d_and_pixel_scales(
+            grid_scaled_1d=self.grid,
             shape_2d=self.pixelization_grid.shape_2d,
             pixel_scales=self.pixelization_grid.pixel_scales,
             origin=self.pixelization_grid.origin,

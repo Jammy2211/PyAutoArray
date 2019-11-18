@@ -23,7 +23,7 @@ class TestImagingSimulator:
             origin=(0.1, 0.1),
             psf=None,
             exposure_time=20.0,
-            background_sky_level=10.0,
+            background_level=10.0,
         )
 
         assert (simulator.grid == grid).all()
@@ -38,14 +38,14 @@ class TestImagingSimulator:
             sub_size=1,
             psf=psf,
             exposure_time=20.0,
-            background_sky_level=10.0,
+            background_level=10.0,
         )
 
         assert simulator.shape_2d == (51, 51)
         assert simulator.pixel_scales == (0.1, 0.1)
         assert simulator.psf == psf
         assert simulator.exposure_time == 20.0
-        assert simulator.background_sky_level == 10.0
+        assert simulator.background_level == 10.0
 
         lsst = aa.simulator.imaging.lsst()
 
@@ -57,7 +57,7 @@ class TestImagingSimulator:
         assert lsst.pixel_scales == (0.2, 0.2)
         assert lsst.psf == lsst_psf
         assert lsst.exposure_time == 100.0
-        assert lsst.background_sky_level == 1.0
+        assert lsst.background_level == 1.0
 
         euclid = aa.simulator.imaging.euclid()
 
@@ -69,7 +69,7 @@ class TestImagingSimulator:
         assert euclid.pixel_scales == (0.1, 0.1)
         assert euclid.psf == euclid_psf
         assert euclid.exposure_time == 565.0
-        assert euclid.background_sky_level == 1.0
+        assert euclid.background_level == 1.0
 
         hst = aa.simulator.imaging.hst()
 
@@ -81,7 +81,7 @@ class TestImagingSimulator:
         assert hst.pixel_scales == (0.05, 0.05)
         assert hst.psf == hst_psf
         assert hst.exposure_time == 2000.0
-        assert hst.background_sky_level == 1.0
+        assert hst.background_level == 1.0
 
         hst_up_sampled = aa.simulator.imaging.hst_up_sampled()
 
@@ -93,7 +93,7 @@ class TestImagingSimulator:
         assert hst_up_sampled.pixel_scales == (0.03, 0.03)
         assert hst_up_sampled.psf == hst_up_sampled_psf
         assert hst_up_sampled.exposure_time == 2000.0
-        assert hst_up_sampled.background_sky_level == 1.0
+        assert hst_up_sampled.background_level == 1.0
 
         adaptive_optics = aa.simulator.imaging.keck_adaptive_optics()
 
@@ -105,7 +105,7 @@ class TestImagingSimulator:
         assert adaptive_optics.pixel_scales == (0.01, 0.01)
         assert adaptive_optics.psf == adaptive_optics_psf
         assert adaptive_optics.exposure_time == 1000.0
-        assert adaptive_optics.background_sky_level == 1.0
+        assert adaptive_optics.background_level == 1.0
 
     def test__from_image_same_as_manual_image_input(self):
 
@@ -122,7 +122,7 @@ class TestImagingSimulator:
             sub_size=1,
             psf=psf,
             exposure_time=10000.0,
-            background_sky_level=100.0,
+            background_level=100.0,
             add_noise=True,
             noise_seed=1,
         )
@@ -133,7 +133,7 @@ class TestImagingSimulator:
             image=image,
             exposure_time=10000.0,
             psf=psf,
-            background_sky_level=100.0,
+            background_level=100.0,
             add_noise=True,
             noise_seed=1,
         )
@@ -163,7 +163,7 @@ class TestInterferometerSimulator:
             sub_size=1,
             origin=(0.1, 0.1),
             exposure_time=20.0,
-            background_sky_level=10.0,
+            background_level=10.0,
         )
 
         assert (simulator.grid == grid).all()
@@ -187,7 +187,7 @@ class TestInterferometerSimulator:
             [184584.953125, -16373.30566406], 1.0e-4
         )
         assert sma.exposure_time == 100.0
-        assert sma.background_sky_level == 1.0
+        assert sma.background_level == 1.0
 
     def test__from_real_space_image_same_as_manual_image_input(self):
 
@@ -205,7 +205,7 @@ class TestInterferometerSimulator:
             sub_size=1,
             primary_beam=primary_beam,
             exposure_time=10000.0,
-            background_sky_level=100.0,
+            background_level=100.0,
             noise_sigma=0.1,
             noise_seed=1,
         )
@@ -220,7 +220,7 @@ class TestInterferometerSimulator:
             transformer=simulator.transformer,
             exposure_time=10000.0,
             primary_beam=primary_beam,
-            background_sky_level=100.0,
+            background_level=100.0,
             noise_sigma=0.1,
             noise_seed=1,
         )

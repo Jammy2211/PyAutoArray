@@ -27,11 +27,11 @@ class Geometry(object):
     def origin(self):
         return self.mask.origin
 
-    def pixel_coordinates_from_arcsec_coordinates(self, arcsec_coordinates):
+    def pixel_coordinates_from_scaled_coordinates(self, scaled_coordinates):
         return (
             int(
                 (
-                    (-arcsec_coordinates[0] + self.mask.origin[0])
+                    (-scaled_coordinates[0] + self.mask.origin[0])
                     / self.mask.pixel_scales[0]
                 )
                 + self.central_pixel_coordinates[0]
@@ -39,7 +39,7 @@ class Geometry(object):
             ),
             int(
                 (
-                    (arcsec_coordinates[1] - self.mask.origin[1])
+                    (scaled_coordinates[1] - self.mask.origin[1])
                     / self.mask.pixel_scales[1]
                 )
                 + self.central_pixel_coordinates[1]
@@ -53,46 +53,46 @@ class Geometry(object):
         return grid_util.grid_centre_from_grid_1d(grid_1d=self.masked_grid)
 
     @property
-    def shape_2d_arcsec(self):
+    def shape_2d_scaled(self):
         return (
             float(self.mask.pixel_scales[0] * self.mask.shape[0]),
             float(self.mask.pixel_scales[1] * self.mask.shape[1]),
         )
 
     @property
-    def arc_second_maxima(self):
+    def scaled_maxima(self):
         return (
-            (self.shape_2d_arcsec[0] / 2.0) + self.mask.origin[0],
-            (self.shape_2d_arcsec[1] / 2.0) + self.mask.origin[1],
+            (self.shape_2d_scaled[0] / 2.0) + self.mask.origin[0],
+            (self.shape_2d_scaled[1] / 2.0) + self.mask.origin[1],
         )
 
     @property
-    def arc_second_minima(self):
+    def scaled_minima(self):
         return (
-            (-(self.shape_2d_arcsec[0] / 2.0)) + self.mask.origin[0],
-            (-(self.shape_2d_arcsec[1] / 2.0)) + self.mask.origin[1],
+            (-(self.shape_2d_scaled[0] / 2.0)) + self.mask.origin[0],
+            (-(self.shape_2d_scaled[1] / 2.0)) + self.mask.origin[1],
         )
 
     @property
     def extent(self):
         return np.asarray(
             [
-                self.arc_second_minima[1],
-                self.arc_second_maxima[1],
-                self.arc_second_minima[0],
-                self.arc_second_maxima[0],
+                self.scaled_minima[1],
+                self.scaled_maxima[1],
+                self.scaled_minima[0],
+                self.scaled_maxima[0],
             ]
         )
 
     @property
     def yticks(self):
         """Compute the yticks labels of this grid, used for plotting the y-axis ticks when visualizing an image-grid"""
-        return np.linspace(self.arc_second_minima[0], self.arc_second_maxima[0], 4)
+        return np.linspace(self.scaled_minima[0], self.scaled_maxima[0], 4)
 
     @property
     def xticks(self):
         """Compute the xticks labels of this grid, used for plotting the x-axis ticks when visualizing an image-grid"""
-        return np.linspace(self.arc_second_minima[1], self.arc_second_maxima[1], 4)
+        return np.linspace(self.scaled_minima[1], self.scaled_maxima[1], 4)
 
     @property
     def unmasked_grid(self):
@@ -143,7 +143,7 @@ class Geometry(object):
             grid_1d=border_grid_1d
         )
 
-    def grid_pixels_from_grid_arcsec(self, grid_arcsec_1d):
+    def grid_pixels_from_grid_scaled_1d(self, grid_scaled_1d):
         """Convert a grid of (y,x) arc second coordinates to a grid of (y,x) pixel values. Pixel coordinates are \
         returned as floats such that they include the decimal offset from each pixel's top-left corner.
 
@@ -155,18 +155,18 @@ class Geometry(object):
 
         Parameters
         ----------
-        grid_arcsec_1d: ndarray
+        grid_scaled_1d: ndarray
             A grid of (y,x) coordinates in arc seconds.
         """
-        grid_pixels_1d = grid_util.grid_pixels_1d_from_grid_arcsec_1d_shape_2d_and_pixel_scales(
-            grid_arcsec_1d=grid_arcsec_1d,
+        grid_pixels_1d = grid_util.grid_pixels_1d_from_grid_scaled_1d_shape_2d_and_pixel_scales(
+            grid_scaled_1d=grid_scaled_1d,
             shape_2d=self.mask.shape,
             pixel_scales=self.mask.pixel_scales,
             origin=self.mask.origin,
         )
         return self.mask.mapping.grid_from_grid_1d(grid_1d=grid_pixels_1d)
 
-    def grid_pixel_centres_from_grid_arcsec_1d(self, grid_arcsec_1d):
+    def grid_pixel_centres_from_grid_scaled_1d(self, grid_scaled_1d):
         """Convert a grid of (y,x) arc second coordinates to a grid of (y,x) pixel values. Pixel coordinates are \
         returned as integers such that they map directly to the pixel they are contained within.
 
@@ -178,11 +178,11 @@ class Geometry(object):
 
         Parameters
         ----------
-        grid_arcsec_1d: ndarray
+        grid_scaled_1d: ndarray
             The grid of (y,x) coordinates in arc seconds.
         """
-        grid_pixel_centres_1d = grid_util.grid_pixel_centres_1d_from_grid_arcsec_1d_shape_2d_and_pixel_scales(
-            grid_arcsec_1d=grid_arcsec_1d,
+        grid_pixel_centres_1d = grid_util.grid_pixel_centres_1d_from_grid_scaled_1d_shape_2d_and_pixel_scales(
+            grid_scaled_1d=grid_scaled_1d,
             shape_2d=self.mask.shape,
             pixel_scales=self.mask.pixel_scales,
             origin=self.mask.origin,
@@ -191,7 +191,7 @@ class Geometry(object):
         )
         return self.mask.mapping.grid_from_grid_1d(grid_1d=grid_pixel_centres_1d)
 
-    def grid_pixel_indexes_from_grid_arcsec_1d(self, grid_arcsec_1d):
+    def grid_pixel_indexes_from_grid_scaled_1d(self, grid_scaled_1d):
         """Convert a grid of (y,x) arc second coordinates to a grid of (y,x) pixel 1D indexes. Pixel coordinates are \
         returned as integers such that they are the pixel from the top-left of the 2D grid going rights and then \
         downwards.
@@ -207,11 +207,11 @@ class Geometry(object):
 
         Parameters
         ----------
-        grid_arcsec_1d: ndarray
+        grid_scaled_1d: ndarray
             The grid of (y,x) coordinates in arc seconds.
         """
-        grid_pixel_indexes_1d = grid_util.grid_pixel_indexes_1d_from_grid_arcsec_1d_shape_2d_and_pixel_scales(
-            grid_arcsec_1d=grid_arcsec_1d,
+        grid_pixel_indexes_1d = grid_util.grid_pixel_indexes_1d_from_grid_scaled_1d_shape_2d_and_pixel_scales(
+            grid_scaled_1d=grid_scaled_1d,
             shape_2d=self.mask.shape,
             pixel_scales=self.mask.pixel_scales,
             origin=self.mask.origin,
@@ -220,7 +220,7 @@ class Geometry(object):
         )
         return self.mask.mapping.grid_from_grid_1d(grid_1d=grid_pixel_indexes_1d)
 
-    def grid_arcsec_from_grid_pixels_1d(self, grid_pixels_1d):
+    def grid_scaled_from_grid_pixels_1d(self, grid_pixels_1d):
         """Convert a grid of (y,x) pixel coordinates to a grid of (y,x) arc second values.
 
         The pixel coordinate origin is at the top left corner of the grid, such that the pixel [0,0] corresponds to \
@@ -234,23 +234,23 @@ class Geometry(object):
         grid_pixels_1d : ndarray
             The grid of (y,x) coordinates in pixels.
         """
-        grid_arcsec_1d = grid_util.grid_arcsec_1d_from_grid_pixels_1d_shape_2d_and_pixel_scales(
+        grid_scaled_1d = grid_util.grid_scaled_1d_from_grid_pixels_1d_shape_2d_and_pixel_scales(
             grid_pixels_1d=grid_pixels_1d,
             shape_2d=self.mask.shape,
             pixel_scales=self.mask.pixel_scales,
             origin=self.mask.origin,
         )
-        return self.mask.mapping.grid_from_grid_1d(grid_1d=grid_arcsec_1d)
+        return self.mask.mapping.grid_from_grid_1d(grid_1d=grid_scaled_1d)
 
     @property
     def sub_size(self):
         return self.mask.sub_size
 
-    def grid_arcsec_from_grid_pixels_1d_for_marching_squares(
+    def grid_scaled_from_grid_pixels_1d_for_marching_squares(
         self, grid_pixels_1d, shape_2d
     ):
 
-        grid_arcsec_1d = grid_util.grid_arcsec_1d_from_grid_pixels_1d_shape_2d_and_pixel_scales(
+        grid_scaled_1d = grid_util.grid_scaled_1d_from_grid_pixels_1d_shape_2d_and_pixel_scales(
             grid_pixels_1d=grid_pixels_1d,
             shape_2d=shape_2d,
             pixel_scales=(
@@ -260,10 +260,10 @@ class Geometry(object):
             origin=self.mask.origin,
         )
 
-        grid_arcsec_1d[:, 0] -= self.mask.pixel_scales[0] / (2.0 * self.mask.sub_size)
-        grid_arcsec_1d[:, 1] += self.mask.pixel_scales[1] / (2.0 * self.mask.sub_size)
+        grid_scaled_1d[:, 0] -= self.mask.pixel_scales[0] / (2.0 * self.mask.sub_size)
+        grid_scaled_1d[:, 1] += self.mask.pixel_scales[1] / (2.0 * self.mask.sub_size)
 
-        return self.mask.mapping.grid_from_grid_1d(grid_1d=grid_arcsec_1d)
+        return self.mask.mapping.grid_from_grid_1d(grid_1d=grid_scaled_1d)
 
     @property
     def masked_sub_grid(self):
@@ -286,8 +286,8 @@ class Geometry(object):
     @property
     def _zoom_centre(self):
 
-        extraction_grid_1d = self.mask.geometry.grid_pixels_from_grid_arcsec(
-            grid_arcsec_1d=self.masked_grid.in_1d
+        extraction_grid_1d = self.mask.geometry.grid_pixels_from_grid_scaled_1d(
+            grid_scaled_1d=self.masked_grid.in_1d
         )
         y_pixels_max = np.max(extraction_grid_1d[:, 0])
         y_pixels_min = np.min(extraction_grid_1d[:, 0])
@@ -311,7 +311,7 @@ class Geometry(object):
         )
 
     @property
-    def _zoom_offset_arcsec(self):
+    def _zoom_offset_scaled(self):
 
         return (
             -self.mask.pixel_scales[0] * self._zoom_offset_pixels[0],
