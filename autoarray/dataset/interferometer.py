@@ -273,7 +273,7 @@ class Interferometer(AbstractInterferometerSet):
         transformer,
         primary_beam=None,
         exposure_time_map=None,
-        background_sky_level=0.0,
+        background_level=0.0,
         background_sky_map=None,
         noise_sigma=None,
         noise_if_add_noise_false=0.1,
@@ -316,7 +316,7 @@ class Interferometer(AbstractInterferometerSet):
         if background_sky_map is None:
 
             background_sky_map = aa.array.full(
-                fill_value=background_sky_level,
+                fill_value=background_level,
                 shape_2d=real_space_image.shape_2d,
                 pixel_scales=real_space_pixel_scales,
             )

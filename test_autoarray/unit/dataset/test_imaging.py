@@ -2302,7 +2302,7 @@ class TestSimulateImaging(object):
         imaging_simulated = aa.imaging.simulate(
             image=image,
             exposure_time=1.0,
-            background_sky_level=16.0,
+            background_level=16.0,
             psf=psf,
             add_noise=False,
             noise_seed=1,

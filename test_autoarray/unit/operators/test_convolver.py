@@ -142,7 +142,7 @@ class TestNumbering(object):
         ).all()
 
     def test__even_kernel_failure(self):
-        with pytest.raises(exc.ConvolutionException):
+        with pytest.raises(exc.ConvolverException):
             aa.convolver(
                 mask=np.full((3, 3), False), kernel=aa.kernel.ones(shape_2d=(2, 2))
             )
@@ -1184,7 +1184,7 @@ class TestCompareToFull2dConv:
         blurred_image = aa.array.manual_2d(array=blurred_image)
 
         mask = aa.mask.circular(
-            shape_2d=(30, 30), pixel_scales=(1.0, 1.0), sub_size=1, radius_arcsec=4.0
+            shape_2d=(30, 30), pixel_scales=(1.0, 1.0), sub_size=1, radius_scaled=4.0
         )
 
         masked_image = mask.mapping.array_from_array_2d(array_2d=image.in_2d)

@@ -18,8 +18,8 @@ def plot_grid(
     points=None,
     lines=None,
     as_subplot=False,
-    units="arcsec",
-    kpc_per_arcsec=None,
+    unit_conversion_factor=None,
+    unit_label="scaled",
     figsize=(12, 8),
     pointsize=5,
     pointcolor="k",
@@ -52,10 +52,10 @@ def plot_grid(
         different planes).
     as_subplot : bool
         Whether the grid is plotted as part of a subplot, in which case the grid figure is not opened / closed.
-    units : str
-        The units of the y / x axis of the plots, in arc-seconds ('arcsec') or kiloparsecs ('kpc').
-    kpc_per_arcsec : float
-        The conversion factor between arc-seconds and kiloparsecs, required to plotters the units in kpc.
+    unit_label : str
+        The label of the units of the y / x axis of the plots.
+    unit_conversion_factor : float
+        The conversion factor between arc-seconds and kiloparsecs, required to plotters the unit_label in kpc.
     figsize : (int, int)
         The size of the figure in (rows, columns).
     pointsize : int
@@ -82,7 +82,7 @@ def plot_grid(
 
     plotter_util.setup_figure(figsize=figsize, as_subplot=as_subplot)
     grid = convert_grid_units(
-        grid_arcsec=grid, units=units, kpc_per_arcsec=kpc_per_arcsec
+        grid=grid, unit_conversion_factor=unit_conversion_factor
     )
 
     if colors is not None:
@@ -109,9 +109,8 @@ def plot_grid(
         )
 
     plotter_util.set_title(title=title, titlesize=titlesize)
-    set_xy_labels(
-        units=units,
-        kpc_per_arcsec=kpc_per_arcsec,
+    plotter_util.set_xy_labels_and_ticksize(
+        unit_label=unit_label,
         xlabelsize=xlabelsize,
         ylabelsize=ylabelsize,
         xyticksize=xyticksize,
@@ -136,62 +135,24 @@ def plot_grid(
     plotter_util.close_figure(as_subplot=as_subplot)
 
 
-def convert_grid_units(grid_arcsec, units, kpc_per_arcsec):
-    """Convert the grid from its input units (arc-seconds) to the input unit (e.g. retain arc-seconds) or convert to \
-    another set of units (kiloparsecs).
+def convert_grid_units(grid, unit_conversion_factor):
+    """Convert the grid from its input unit_label (arc-seconds) to the input unit (e.g. retain arc-seconds) or convert to \
+    another set of unit_label (kiloparsecs).
 
     Parameters
     -----------
-    grid_arcsec : ndarray or data_type.array.aa.Grid
+    grid : ndarray or data_type.array.aa.Grid
         The (y,x) coordinates of the grid in arc-seconds, in an array of shape (total_coordinates, 2).
-    units : str
-        The units of the y / x axis of the plots, in arc-seconds ('arcsec') or kiloparsecs ('kpc').
-    kpc_per_arcsec : float
-        The conversion factor between arc-seconds and kiloparsecs, required to plotters the units in kpc.
+    unit_label : str
+        The label of the units of the y / x axis of the plots.
+    unit_conversion_factor : float
+        The conversion factor between arc-seconds and kiloparsecs, required to plotters the unit_label in kpc.
     """
 
-    if units in "arcsec" or kpc_per_arcsec is None:
-        return grid_arcsec
-    elif units in "kpc":
-        return grid_arcsec * kpc_per_arcsec
-
-
-def set_xy_labels(units, kpc_per_arcsec, xlabelsize, ylabelsize, xyticksize):
-    """Set the x and y labels of the figure, and set the fontsize of those labels.
-
-    The x and y labels are always the distance scales, thus the labels are either arc-seconds or kpc and depend on the \
-    units the figure is plotted in.
-
-    Parameters
-    -----------
-    units : str
-        The units of the y / x axis of the plots, in arc-seconds ('arcsec') or kiloparsecs ('kpc').
-    kpc_per_arcsec : float
-        The conversion factor between arc-seconds and kiloparsecs, required to plotters the units in kpc.
-    xlabelsize : int
-        The fontsize of the x axes label.
-    ylabelsize : int
-        The fontsize of the y axes label.
-    xyticksize : int
-        The font size of the x and y ticks on the figure axes.
-    """
-    if units in "arcsec" or kpc_per_arcsec is None:
-
-        plt.xlabel("x (arcsec)", fontsize=xlabelsize)
-        plt.ylabel("y (arcsec)", fontsize=ylabelsize)
-
-    elif units in "kpc":
-
-        plt.xlabel("x (kpc)", fontsize=xlabelsize)
-        plt.ylabel("y (kpc)", fontsize=ylabelsize)
-
-    else:
-        raise exc.PlottingException(
-            "The units supplied to the plotted are not a valid string (must be pixels | "
-            "arcsec | kpc)"
-        )
-
-    plt.tick_params(labelsize=xyticksize)
+    if unit_conversion_factor is None:
+        return grid
+    elif unit_conversion_factor is not None:
+        return grid * unit_conversion_factor
 
 
 def set_axis_limits(axis_limits, grid, symmetric_around_centre):

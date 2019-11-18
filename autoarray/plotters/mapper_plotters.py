@@ -23,7 +23,7 @@ def image_and_mapper(
     include_border=False,
     image_pixels=None,
     source_pixels=None,
-    units="arcsec",
+    units="scaled",
     kpc_per_arcsec=None,
     output_path=None,
     output_filename="image_and_mapper",
@@ -108,7 +108,7 @@ def plot_mapper(
     image_pixels=None,
     source_pixels=None,
     as_subplot=False,
-    units="arcsec",
+    units="scaled",
     kpc_per_arcsec=None,
     xyticksize=16,
     figsize=(7, 7),
@@ -153,7 +153,7 @@ def rectangular_mapper(
     image_pixels=None,
     source_pixels=None,
     as_subplot=False,
-    units="arcsec",
+    units="scaled",
     kpc_per_arcsec=None,
     xyticksize=16,
     figsize=(7, 7),
@@ -252,7 +252,7 @@ def voronoi_mapper(
     image_pixels=None,
     source_pixels=None,
     as_subplot=False,
-    units="arcsec",
+    units="scaled",
     kpc_per_arcsec=None,
     xyticksize=16,
     figsize=(7, 7),
@@ -447,29 +447,29 @@ def voronoi_finite_polygons_2d(vor, radius=None):
 
 def plot_rectangular_pixelization_lines(mapper, units, kpc_per_arcsec):
 
-    if units in "arcsec" or kpc_per_arcsec is None:
+    if units in "scaled" or kpc_per_arcsec is None:
 
         ys = np.linspace(
-            mapper.pixelization_grid.arc_second_minima[0],
-            mapper.pixelization_grid.arc_second_maxima[0],
+            mapper.pixelization_grid.scaled_minima[0],
+            mapper.pixelization_grid.scaled_maxima[0],
             mapper.pixelization_grid.shape_2d[0] + 1,
         )
         xs = np.linspace(
-            mapper.pixelization_grid.arc_second_minima[1],
-            mapper.pixelization_grid.arc_second_maxima[1],
+            mapper.pixelization_grid.scaled_minima[1],
+            mapper.pixelization_grid.scaled_maxima[1],
             mapper.pixelization_grid.shape_2d[1] + 1,
         )
 
     elif units in "kpc":
 
         ys = np.linspace(
-            mapper.grid.arc_second_minima[0] * kpc_per_arcsec,
-            mapper.grid.arc_second_maxima[0] * kpc_per_arcsec,
+            mapper.grid.scaled_minima[0] * kpc_per_arcsec,
+            mapper.grid.scaled_maxima[0] * kpc_per_arcsec,
             mapper.pixelization_grid.shape_2d[0] + 1,
         )
         xs = np.linspace(
-            mapper.grid.arc_second_minima[1] * kpc_per_arcsec,
-            mapper.grid.arc_second_maxima[1] * kpc_per_arcsec,
+            mapper.grid.scaled_minima[1] * kpc_per_arcsec,
+            mapper.grid.scaled_maxima[1] * kpc_per_arcsec,
             mapper.pixelization_grid.shape_2d[1] + 1,
         )
 
@@ -482,7 +482,7 @@ def plot_rectangular_pixelization_lines(mapper, units, kpc_per_arcsec):
 
 def set_axis_limits(mapper, units, kpc_per_arcsec):
 
-    if units in "arcsec" or kpc_per_arcsec is None:
+    if units in "scaled" or kpc_per_arcsec is None:
 
         grid_plotters.set_axis_limits(
             axis_limits=mapper.pixelization_grid.axis_limits,
@@ -519,7 +519,7 @@ def plot_centres(include_centres, mapper, units, kpc_per_arcsec):
 
     if include_centres:
 
-        if units in "arcsec" or kpc_per_arcsec is None:
+        if units in "scaled" or kpc_per_arcsec is None:
 
             pixelization_grid = mapper.pixelization_grid
 
@@ -553,8 +553,8 @@ def plot_plane_grid(
         aa.plot.grid(
             grid=grid_units,
             as_subplot=as_subplot,
-            units=units,
-            kpc_per_arcsec=kpc_per_arcsec,
+            unit_label=units,
+            unit_conversion_factor=kpc_per_arcsec,
             pointsize=pointsize,
             xyticksize=xyticksize,
             title=title,
@@ -588,8 +588,8 @@ def plot_border(
         aa.plot.grid(
             grid=border_units,
             as_subplot=as_subplot,
-            units=units,
-            kpc_per_arcsec=kpc_per_arcsec,
+            unit_label=units,
+            unit_conversion_factor=kpc_per_arcsec,
             pointsize=pointsize,
             pointcolor="y",
             xyticksize=xyticksize,
@@ -688,7 +688,7 @@ def plot_source_plane_source_pixels(grid, mapper, source_pixels, point_colors):
 
 def convert_grid(grid, units, kpc_per_arcsec):
 
-    if units in "arcsec" or kpc_per_arcsec is None:
+    if units in "scaled" or kpc_per_arcsec is None:
         return grid
     elif units in "kpc":
         return grid * kpc_per_arcsec

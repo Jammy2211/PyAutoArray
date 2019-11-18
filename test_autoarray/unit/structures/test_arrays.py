@@ -542,8 +542,8 @@ class TestArray:
     class TestConstructorMethods:
         def test__constructor_class_method_in_2d(self):
 
-            arr = arrays.Array.from_sub_array_2d_pixel_scales_and_sub_size(
-                sub_array_2d=np.ones((3, 3)), sub_size=1, pixel_scales=(1.0, 1.0)
+            arr = arrays.Array.manual_2d(
+                array=np.ones((3, 3)), sub_size=1, pixel_scales=(1.0, 1.0)
             )
 
             assert (arr.in_1d == np.ones((9,))).all()
@@ -552,12 +552,12 @@ class TestArray:
             assert (arr.in_2d_binned == np.ones((3, 3))).all()
             assert arr.pixel_scales == (1.0, 1.0)
             assert arr.geometry.central_pixel_coordinates == (1.0, 1.0)
-            assert arr.geometry.shape_2d_arcsec == pytest.approx((3.0, 3.0))
-            assert arr.geometry.arc_second_maxima == (1.5, 1.5)
-            assert arr.geometry.arc_second_minima == (-1.5, -1.5)
+            assert arr.geometry.shape_2d_scaled == pytest.approx((3.0, 3.0))
+            assert arr.geometry.scaled_maxima == (1.5, 1.5)
+            assert arr.geometry.scaled_minima == (-1.5, -1.5)
 
-            arr = arrays.Array.from_sub_array_2d_pixel_scales_and_sub_size(
-                sub_array_2d=np.ones((4, 4)), sub_size=2, pixel_scales=(0.1, 0.1)
+            arr = arrays.Array.manual_2d(
+                array=np.ones((4, 4)), sub_size=2, pixel_scales=(0.1, 0.1)
             )
 
             assert (arr.in_1d == np.ones((16,))).all()
@@ -566,12 +566,12 @@ class TestArray:
             assert (arr.in_2d_binned == np.ones((2, 2))).all()
             assert arr.pixel_scales == (0.1, 0.1)
             assert arr.geometry.central_pixel_coordinates == (0.5, 0.5)
-            assert arr.geometry.shape_2d_arcsec == pytest.approx((0.2, 0.2))
-            assert arr.geometry.arc_second_maxima == pytest.approx((0.1, 0.1), 1e-4)
-            assert arr.geometry.arc_second_minima == pytest.approx((-0.1, -0.1), 1e-4)
+            assert arr.geometry.shape_2d_scaled == pytest.approx((0.2, 0.2))
+            assert arr.geometry.scaled_maxima == pytest.approx((0.1, 0.1), 1e-4)
+            assert arr.geometry.scaled_minima == pytest.approx((-0.1, -0.1), 1e-4)
 
-            arr = arrays.Array.from_sub_array_2d_pixel_scales_and_sub_size(
-                sub_array_2d=np.array([[1.0, 2.0], [3.0, 4.0], [5.0, 6.0], [7.0, 8.0]]),
+            arr = arrays.Array.manual_2d(
+                array=np.array([[1.0, 2.0], [3.0, 4.0], [5.0, 6.0], [7.0, 8.0]]),
                 pixel_scales=(0.1, 0.1),
                 sub_size=2,
                 origin=(1.0, 1.0),
@@ -590,12 +590,12 @@ class TestArray:
             assert (arr.in_2d_binned == np.array([[2.5], [6.5]])).all()
             assert arr.pixel_scales == (0.1, 0.1)
             assert arr.geometry.central_pixel_coordinates == (0.5, 0.0)
-            assert arr.geometry.shape_2d_arcsec == pytest.approx((0.2, 0.1))
-            assert arr.geometry.arc_second_maxima == pytest.approx((1.1, 1.05), 1e-4)
-            assert arr.geometry.arc_second_minima == pytest.approx((0.9, 0.95), 1e-4)
+            assert arr.geometry.shape_2d_scaled == pytest.approx((0.2, 0.1))
+            assert arr.geometry.scaled_maxima == pytest.approx((1.1, 1.05), 1e-4)
+            assert arr.geometry.scaled_minima == pytest.approx((0.9, 0.95), 1e-4)
 
-            arr = arrays.Array.from_sub_array_2d_pixel_scales_and_sub_size(
-                sub_array_2d=np.ones((3, 3)),
+            arr = arrays.Array.manual_2d(
+                array=np.ones((3, 3)),
                 pixel_scales=(2.0, 1.0),
                 sub_size=1,
                 origin=(-1.0, -2.0),
@@ -605,14 +605,14 @@ class TestArray:
             assert arr.in_2d == pytest.approx(np.ones((3, 3)), 1e-4)
             assert arr.pixel_scales == (2.0, 1.0)
             assert arr.geometry.central_pixel_coordinates == (1.0, 1.0)
-            assert arr.geometry.shape_2d_arcsec == pytest.approx((6.0, 3.0))
+            assert arr.geometry.shape_2d_scaled == pytest.approx((6.0, 3.0))
             assert arr.geometry.origin == (-1.0, -2.0)
-            assert arr.geometry.arc_second_maxima == pytest.approx((2.0, -0.5), 1e-4)
-            assert arr.geometry.arc_second_minima == pytest.approx((-4.0, -3.5), 1e-4)
+            assert arr.geometry.scaled_maxima == pytest.approx((2.0, -0.5), 1e-4)
+            assert arr.geometry.scaled_minima == pytest.approx((-4.0, -3.5), 1e-4)
 
         def test__constructor_class_method_in_1d(self):
-            arr = arrays.Array.from_sub_array_1d_shape_2d_pixel_scales_and_sub_size(
-                sub_array_1d=np.ones((9,)),
+            arr = arrays.Array.manual_1d(
+                array=np.ones((9,)),
                 shape_2d=(3, 3),
                 pixel_scales=(2.0, 1.0),
                 sub_size=1,
@@ -623,18 +623,18 @@ class TestArray:
             assert arr.in_2d == pytest.approx(np.ones((3, 3)), 1e-4)
             assert arr.pixel_scales == (2.0, 1.0)
             assert arr.geometry.central_pixel_coordinates == (1.0, 1.0)
-            assert arr.geometry.shape_2d_arcsec == pytest.approx((6.0, 3.0))
+            assert arr.geometry.shape_2d_scaled == pytest.approx((6.0, 3.0))
             assert arr.geometry.origin == (-1.0, -2.0)
-            assert arr.geometry.arc_second_maxima == pytest.approx((2.0, -0.5), 1e-4)
-            assert arr.geometry.arc_second_minima == pytest.approx((-4.0, -3.5), 1e-4)
+            assert arr.geometry.scaled_maxima == pytest.approx((2.0, -0.5), 1e-4)
+            assert arr.geometry.scaled_minima == pytest.approx((-4.0, -3.5), 1e-4)
 
     class TestNewArrays:
         def test__pad__compare_to_array_util(self):
             array_2d = np.ones((5, 5))
             array_2d[2, 2] = 2.0
 
-            arr = arrays.Array.from_sub_array_2d_pixel_scales_and_sub_size(
-                sub_array_2d=array_2d, sub_size=1, pixel_scales=(1.0, 1.0)
+            arr = arrays.Array.manual_2d(
+                array=array_2d, sub_size=1, pixel_scales=(1.0, 1.0)
             )
 
             arr = arr.resized_from_new_shape(new_shape=(7, 7))
@@ -659,8 +659,8 @@ class TestArray:
             array_2d = np.ones((5, 5))
             array_2d[2, 2] = 2.0
 
-            arr = arrays.Array.from_sub_array_2d_pixel_scales_and_sub_size(
-                sub_array_2d=array_2d, sub_size=1, pixel_scales=(1.0, 1.0)
+            arr = arrays.Array.manual_2d(
+                array=array_2d, sub_size=1, pixel_scales=(1.0, 1.0)
             )
 
             arr = arr.resized_from_new_shape(new_shape=(3, 3))
@@ -677,8 +677,8 @@ class TestArray:
             array_2d = np.ones((5, 5))
             array_2d[2, 2] = 2.0
 
-            arr = arrays.Array.from_sub_array_2d_pixel_scales_and_sub_size(
-                sub_array_2d=array_2d, sub_size=1, pixel_scales=(1.0, 1.0)
+            arr = arrays.Array.manual_2d(
+                array=array_2d, sub_size=1, pixel_scales=(1.0, 1.0)
             )
 
             new_arr = arr.trimmed_from_kernel_shape(kernel_shape_2d=(3, 3))
@@ -699,8 +699,8 @@ class TestArray:
             array_2d = np.ones((9, 9))
             array_2d[4, 4] = 2.0
 
-            arr = arrays.Array.from_sub_array_2d_pixel_scales_and_sub_size(
-                sub_array_2d=array_2d, sub_size=1, pixel_scales=(1.0, 1.0)
+            arr = arrays.Array.manual_2d(
+                array=array_2d, sub_size=1, pixel_scales=(1.0, 1.0)
             )
 
             new_arr = arr.trimmed_from_kernel_shape(kernel_shape_2d=(7, 7))
@@ -886,8 +886,8 @@ class TestArray:
                 ]
             )
 
-            arr = arrays.Array.from_sub_array_2d_pixel_scales_and_sub_size(
-                sub_array_2d=array_2d, sub_size=1, pixel_scales=(0.1, 0.1)
+            arr = arrays.Array.manual_2d(
+                array=array_2d, sub_size=1, pixel_scales=(0.1, 0.1)
             )
 
             arr_binned_util = aa.util.binning.bin_array_2d_via_mean(
@@ -922,10 +922,10 @@ class TestArray:
                 ]
             )
 
-            array_2d = arrays.Array.from_sub_array_2d_pixel_scales_and_sub_size(
-                sub_array_2d=array_2d, sub_size=1, pixel_scales=(0.1, 0.1)
+            array_2d = arrays.Array.manual_2d(
+                array=array_2d, sub_size=1, pixel_scales=(0.1, 0.1)
             )
-            with pytest.raises(exc.ScaledException):
+            with pytest.raises(exc.ArrayException):
                 array_2d.binned_from_bin_up_factor(bin_up_factor=4, method="wrong")
 
     class TestOutputToFits:

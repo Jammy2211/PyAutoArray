@@ -13,7 +13,7 @@ from autoarray.dataset import abstract_dataset, data_converter
 logger = logging.getLogger(__name__)
 
 
-class AbstractImagingSet(abstract_dataset.AbstractDataset):
+class AbstractImagingDataSet(abstract_dataset.AbstractDataset):
     @property
     def image(self):
         return self.data
@@ -331,7 +331,9 @@ class AbstractImagingSet(abstract_dataset.AbstractDataset):
         overwrite=False,
     ):
         self.image.output_to_fits(file_path=image_path, overwrite=overwrite)
-        self.psf.output_to_fits(file_path=psf_path, overwrite=overwrite)
+
+        if self.psf is not None and psf_path is not None:
+            self.psf.output_to_fits(file_path=psf_path, overwrite=overwrite)
 
         if self.noise_map is not None and noise_map_path is not None:
             self.noise_map.output_to_fits(file_path=noise_map_path, overwrite=overwrite)
@@ -360,7 +362,7 @@ class AbstractImagingSet(abstract_dataset.AbstractDataset):
             )
 
 
-class Imaging(AbstractImagingSet):
+class Imaging(AbstractImagingDataSet):
     def __init__(
         self,
         image,
@@ -464,9 +466,9 @@ class Imaging(AbstractImagingSet):
         lens_name=None,
     ):
         """Factory for loading the imaging data_type from .fits files, as well as computing properties like the noise-map,
-        exposure-time map, etc. from the imaging-simulator.
+        exposure-time map, etc. from the imaging-data.
 
-        This factory also includes a number of routines for converting the imaging-simulator from units not supported by PyAutoLens \
+        This factory also includes a number of routines for converting the imaging-data from units not supported by PyAutoLens \
         (e.g. adus, electrons) to electrons per second.
 
         Parameters
@@ -659,7 +661,7 @@ class Imaging(AbstractImagingSet):
         exposure_time,
         psf=None,
         exposure_time_map=None,
-        background_sky_level=0.0,
+        background_level=0.0,
         background_sky_map=None,
         add_noise=True,
         noise_if_add_noise_false=0.1,
@@ -702,7 +704,7 @@ class Imaging(AbstractImagingSet):
 
         if background_sky_map is None:
             background_sky_map = arrays.Array.full(
-                fill_value=background_sky_level, shape_2d=image.shape_2d
+                fill_value=background_level, shape_2d=image.shape_2d
             )
 
         image += background_sky_map
@@ -730,7 +732,7 @@ class Imaging(AbstractImagingSet):
             )
         else:
             noise_map = arrays.Array.full(
-                fill_value=noise_if_add_noise_false, shape_2d=image.shape_2d
+                fill_value=noise_if_add_noise_false, shape_2d=image.shape_2d, pixel_scales=image.pixel_scales
             )
             noise_realization = None
 
