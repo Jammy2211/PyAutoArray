@@ -5,9 +5,7 @@ backend = conf.instance.visualize.get("figures", "backend", str)
 matplotlib.use(backend)
 import matplotlib.pyplot as plt
 import numpy as np
-from autoarray import conf
 from autoarray import exc
-from autoarray.structures import grids
 from autoarray.util import array_util
 
 
@@ -64,6 +62,33 @@ def set_title(title, titlesize):
         The size of of the title of the figure.
     """
     plt.title(title, fontsize=titlesize)
+
+def set_xy_labels_and_ticksize(
+    unit_label, xlabelsize, ylabelsize, xyticksize
+):
+    """Set the x and y labels of the figure, and set the fontsize of those labels.
+
+    The x and y labels are always the distance scales, thus the labels are either arc-seconds or kpc and depend on the \
+    units the figure is plotted in.
+
+    Parameters
+    -----------
+    unit_label : str
+        The label for the units of the y / x axis of the plots.
+    unit_conversion_factor : float
+        The conversion factor between arc-seconds and kiloparsecs, required to plotters the units in kpc.
+    xlabelsize : int
+        The fontsize of the x axes label.
+    ylabelsize : int
+        The fontsize of the y axes label.
+    xyticksize : int
+        The font size of the x and y ticks on the figure axes.
+    """
+
+    plt.xlabel("x (" + unit_label + ")", fontsize=xlabelsize)
+    plt.ylabel("y (" + unit_label + ")", fontsize=ylabelsize)
+
+    plt.tick_params(labelsize=xyticksize)
 
 
 def set_colorbar(cb_ticksize, cb_fraction, cb_pad, cb_tick_values, cb_tick_labels):
@@ -164,7 +189,7 @@ def plot_lines(line_lists):
     plot_lines : bool
         If a mask is supplied, its liness pixels (e.g. the exterior edge) is plotted if this is *True*.
     units : str
-        The units of the y / x axis of the plots, in arc-seconds ('arcsec') or kiloparsecs ('kpc').
+        The units of the y / x axis of the plots.
     kpc_per_arcsec : float or None
         The conversion factor between arc-seconds and kiloparsecs, required to plotters the units in kpc.
     lines_pointsize : int
@@ -188,9 +213,6 @@ def close_figure(as_subplot):
     """
     if not as_subplot:
         plt.close()
-
-
-# def check_units_distance_can_be_plotted(units_distance, kpc_per_arcsec):
 
 
 def radii_bin_size_from_minimum_and_maximum_radii_and_radii_points(

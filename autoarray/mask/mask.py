@@ -105,7 +105,7 @@ class Mask(np.ndarray):
     def circular(
         cls,
         shape_2d,
-        radius_arcsec,
+        radius_scaled,
         pixel_scales,
         sub_size=1,
         origin=(0.0, 0.0),
@@ -120,7 +120,7 @@ class Mask(np.ndarray):
             The (y,x) shape of the mask in units of pixels.
         pixel_scales : (float, float)
             The arc-second to pixel conversion factor of each pixel.
-        radius_arcsec : float
+        radius_scaled : float
             The radius (in arc seconds) of the circle within which pixels unmasked.
         centre: (float, float)
             The centre of the circle used to mask pixels.
@@ -133,7 +133,7 @@ class Mask(np.ndarray):
         mask_2d = mask_util.mask_2d_circular_from_shape_2d_pixel_scales_and_radius(
             shape_2d=shape_2d,
             pixel_scales=pixel_scales,
-            radius_arcsec=radius_arcsec,
+            radius_scaled=radius_scaled,
             centre=centre,
         )
 
@@ -149,8 +149,8 @@ class Mask(np.ndarray):
     def circular_annular(
         cls,
         shape_2d,
-        inner_radius_arcsec,
-        outer_radius_arcsec,
+        inner_radius_scaled,
+        outer_radius_scaled,
         pixel_scales,
         sub_size=1,
         origin=(0.0, 0.0),
@@ -166,9 +166,9 @@ class Mask(np.ndarray):
             The (y,x) shape of the mask in units of pixels.
         pixel_scales : (float, float)
             The arc-second to pixel conversion factor of each pixel.
-        inner_radius_arcsec : float
+        inner_radius_scaled : float
             The radius (in arc seconds) of the inner circle outside of which pixels are unmasked.
-        outer_radius_arcsec : float
+        outer_radius_scaled : float
             The radius (in arc seconds) of the outer circle within which pixels are unmasked.
         centre: (float, float)
             The centre of the annulus used to mask pixels.
@@ -181,8 +181,8 @@ class Mask(np.ndarray):
         mask_2d = mask_util.mask_2d_circular_annular_from_shape_2d_pixel_scales_and_radii(
             shape_2d=shape_2d,
             pixel_scales=pixel_scales,
-            inner_radius_arcsec=inner_radius_arcsec,
-            outer_radius_arcsec=outer_radius_arcsec,
+            inner_radius_scaled=inner_radius_scaled,
+            outer_radius_scaled=outer_radius_scaled,
             centre=centre,
         )
 
@@ -198,9 +198,9 @@ class Mask(np.ndarray):
     def circular_anti_annular(
         cls,
         shape_2d,
-        inner_radius_arcsec,
-        outer_radius_arcsec,
-        outer_radius_2_arcsec,
+        inner_radius_scaled,
+        outer_radius_scaled,
+        outer_radius_2_scaled,
         pixel_scales,
         sub_size=1,
         origin=(0.0, 0.0),
@@ -219,12 +219,12 @@ class Mask(np.ndarray):
             The (y,x) shape of the mask in units of pixels.
         pixel_scales : (float, float)
             The arc-second to pixel conversion factor of each pixel.
-        inner_radius_arcsec : float
+        inner_radius_scaled : float
             The radius (in arc seconds) of the inner circle inside of which pixels are unmasked.
-        outer_radius_arcsec : float
+        outer_radius_scaled : float
             The radius (in arc seconds) of the outer circle within which pixels are masked and outside of which they \
             are unmasked.
-        outer_radius_2_arcsec : float
+        outer_radius_2_scaled : float
             The radius (in arc seconds) of the second outer circle within which pixels are unmasked and outside of \
             which they masked.
         centre: (float, float)
@@ -238,9 +238,9 @@ class Mask(np.ndarray):
         mask_2d = mask_util.mask_2d_circular_anti_annular_from_shape_2d_pixel_scales_and_radii(
             shape_2d=shape_2d,
             pixel_scales=pixel_scales,
-            inner_radius_arcsec=inner_radius_arcsec,
-            outer_radius_arcsec=outer_radius_arcsec,
-            outer_radius_2_arcsec=outer_radius_2_arcsec,
+            inner_radius_scaled=inner_radius_scaled,
+            outer_radius_scaled=outer_radius_scaled,
+            outer_radius_2_scaled=outer_radius_2_scaled,
             centre=centre,
         )
 
@@ -256,7 +256,7 @@ class Mask(np.ndarray):
     def elliptical(
         cls,
         shape_2d,
-        major_axis_radius_arcsec,
+        major_axis_radius_scaled,
         axis_ratio,
         phi,
         pixel_scales,
@@ -273,7 +273,7 @@ class Mask(np.ndarray):
             The (y,x) shape of the mask in units of pixels.
         pixel_scales : (float, float)
             The arc-second to pixel conversion factor of each pixel.
-        major_axis_radius_arcsec : float
+        major_axis_radius_scaled : float
             The major-axis (in arc seconds) of the ellipse within which pixels are unmasked.
         axis_ratio : float
             The axis-ratio of the ellipse within which pixels are unmasked.
@@ -291,7 +291,7 @@ class Mask(np.ndarray):
         mask_2d = mask_util.mask_2d_elliptical_from_shape_2d_pixel_scales_and_radius(
             shape_2d=shape_2d,
             pixel_scales=pixel_scales,
-            major_axis_radius_arcsec=major_axis_radius_arcsec,
+            major_axis_radius_scaled=major_axis_radius_scaled,
             axis_ratio=axis_ratio,
             phi=phi,
             centre=centre,
@@ -309,10 +309,10 @@ class Mask(np.ndarray):
     def elliptical_annular(
         cls,
         shape_2d,
-        inner_major_axis_radius_arcsec,
+        inner_major_axis_radius_scaled,
         inner_axis_ratio,
         inner_phi,
-        outer_major_axis_radius_arcsec,
+        outer_major_axis_radius_scaled,
         outer_axis_ratio,
         outer_phi,
         pixel_scales,
@@ -330,14 +330,14 @@ class Mask(np.ndarray):
             The (y,x) shape of the mask in units of pixels.
         pixel_scales : (float, float)
             The arc-second to pixel conversion factor of each pixel.
-        inner_major_axis_radius_arcsec : float
+        inner_major_axis_radius_scaled : float
             The major-axis (in arc seconds) of the inner ellipse within which pixels are masked.
         inner_axis_ratio : float
             The axis-ratio of the inner ellipse within which pixels are masked.
         inner_phi : float
             The rotation angle of the inner ellipse within which pixels are masked, (counter-clockwise from the \
             positive x-axis).
-        outer_major_axis_radius_arcsec : float
+        outer_major_axis_radius_scaled : float
             The major-axis (in arc seconds) of the outer ellipse within which pixels are unmasked.
         outer_axis_ratio : float
             The axis-ratio of the outer ellipse within which pixels are unmasked.
@@ -355,10 +355,10 @@ class Mask(np.ndarray):
         mask_2d = mask_util.mask_2d_elliptical_annular_from_shape_2d_pixel_scales_and_radius(
             shape_2d=shape_2d,
             pixel_scales=pixel_scales,
-            inner_major_axis_radius_arcsec=inner_major_axis_radius_arcsec,
+            inner_major_axis_radius_scaled=inner_major_axis_radius_scaled,
             inner_axis_ratio=inner_axis_ratio,
             inner_phi=inner_phi,
-            outer_major_axis_radius_arcsec=outer_major_axis_radius_arcsec,
+            outer_major_axis_radius_scaled=outer_major_axis_radius_scaled,
             outer_axis_ratio=outer_axis_ratio,
             outer_phi=outer_phi,
             centre=centre,
