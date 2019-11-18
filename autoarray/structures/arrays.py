@@ -195,7 +195,7 @@ class AbstractArray(abstract_structure.AbstractStructure):
 
         else:
 
-            raise exc.ScaledException(
+            raise exc.ArrayException(
                 "The method used in binned_up_array_from_array is not a valid method "
                 "[mean | quadrature | sum]"
             )
@@ -220,38 +220,6 @@ class AbstractArray(abstract_structure.AbstractStructure):
 
 
 class Array(AbstractArray):
-    @classmethod
-    def from_sub_array_1d_shape_2d_pixel_scales_and_sub_size(
-        cls, sub_array_1d, shape_2d, pixel_scales, sub_size, origin=(0.0, 0.0)
-    ):
-
-        mask = msk.Mask.unmasked(
-            shape_2d=shape_2d,
-            pixel_scales=pixel_scales,
-            sub_size=sub_size,
-            origin=origin,
-        )
-
-        return mask.mapping.array_from_sub_array_1d(sub_array_1d=sub_array_1d)
-
-    @classmethod
-    def from_sub_array_2d_pixel_scales_and_sub_size(
-        cls, sub_array_2d, pixel_scales, sub_size, origin=(0.0, 0.0)
-    ):
-
-        shape_2d = (
-            int(sub_array_2d.shape[0] / sub_size),
-            int(sub_array_2d.shape[1] / sub_size),
-        )
-
-        mask = msk.Mask.unmasked(
-            shape_2d=shape_2d,
-            pixel_scales=pixel_scales,
-            sub_size=sub_size,
-            origin=origin,
-        )
-
-        return mask.mapping.array_from_sub_array_2d(sub_array_2d=sub_array_2d)
 
     @classmethod
     def manual_1d(
@@ -269,13 +237,14 @@ class Array(AbstractArray):
                 "The input shape_2d parameter is not a tuple of type (float, float)"
             )
 
-        return Array.from_sub_array_1d_shape_2d_pixel_scales_and_sub_size(
-            sub_array_1d=array,
+        mask = msk.Mask.unmasked(
             shape_2d=shape_2d,
             pixel_scales=pixel_scales,
             sub_size=sub_size,
             origin=origin,
         )
+
+        return mask.mapping.array_from_sub_array_1d(sub_array_1d=array)
 
     @classmethod
     def manual_2d(cls, array, pixel_scales=None, sub_size=1, origin=(0.0, 0.0)):
@@ -286,12 +255,19 @@ class Array(AbstractArray):
         if type(pixel_scales) is float:
             pixel_scales = (pixel_scales, pixel_scales)
 
-        return Array.from_sub_array_2d_pixel_scales_and_sub_size(
-            sub_array_2d=array,
+        shape_2d = (
+            int(array.shape[0] / sub_size),
+            int(array.shape[1] / sub_size),
+        )
+
+        mask = msk.Mask.unmasked(
+            shape_2d=shape_2d,
             pixel_scales=pixel_scales,
             sub_size=sub_size,
             origin=origin,
         )
+
+        return mask.mapping.array_from_sub_array_2d(sub_array_2d=array)
 
     @classmethod
     def full(

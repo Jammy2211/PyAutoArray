@@ -15,7 +15,7 @@ def subplot(
     lines=None,
     positions=None,
     grid=None,
-    units="arcsec",
+    units="scaled",
     kpc_per_arcsec=None,
     figsize=None,
     aspect="square",
@@ -48,12 +48,12 @@ def subplot(
 
     ratio = float(
         (
-            inversion.mapper.grid.arc_second_maxima[1]
-            - inversion.mapper.grid.arc_second_minima[1]
+            inversion.mapper.grid.scaled_maxima[1]
+            - inversion.mapper.grid.scaled_minima[1]
         )
         / (
-            inversion.mapper.grid.arc_second_maxima[0]
-            - inversion.mapper.grid.arc_second_minima[0]
+            inversion.mapper.grid.scaled_maxima[0]
+            - inversion.mapper.grid.scaled_minima[0]
         )
     )
 
@@ -276,7 +276,7 @@ def reconstructed_image(
     positions=None,
     grid=None,
     as_subplot=False,
-    units="arcsec",
+    units="scaled",
     kpc_per_arcsec=None,
     figsize=(7, 7),
     aspect="square",
@@ -305,11 +305,11 @@ def reconstructed_image(
         array=inversion.mapped_reconstructed_image,
         mask=mask,
         lines=lines,
-        positions=positions,
+        points=positions,
         grid=grid,
         as_subplot=as_subplot,
-        units=units,
-        kpc_per_arcsec=kpc_per_arcsec,
+        unit_label=units,
+        unit_conversion_factor=kpc_per_arcsec,
         figsize=figsize,
         aspect=aspect,
         cmap=cmap,
@@ -345,7 +345,7 @@ def reconstruction(
     image_pixels=None,
     source_pixels=None,
     as_subplot=False,
-    units="arcsec",
+    units="scaled",
     kpc_per_arcsec=None,
     figsize=(7, 7),
     aspect="square",
@@ -425,7 +425,7 @@ def residual_map(
     image_pixels=None,
     source_pixels=None,
     as_subplot=False,
-    units="arcsec",
+    units="scaled",
     kpc_per_arcsec=None,
     figsize=(7, 7),
     aspect="square",
@@ -504,7 +504,7 @@ def normalized_residual_map(
     image_pixels=None,
     source_pixels=None,
     as_subplot=False,
-    units="arcsec",
+    units="scaled",
     kpc_per_arcsec=None,
     figsize=(7, 7),
     aspect="square",
@@ -583,7 +583,7 @@ def chi_squared_map(
     image_pixels=None,
     source_pixels=None,
     as_subplot=False,
-    units="arcsec",
+    units="scaled",
     kpc_per_arcsec=None,
     figsize=(7, 7),
     aspect="square",
@@ -662,7 +662,7 @@ def regularization_weights(
     image_pixels=None,
     source_pixels=None,
     as_subplot=False,
-    units="arcsec",
+    units="scaled",
     kpc_per_arcsec=None,
     figsize=(7, 7),
     aspect="square",
@@ -747,7 +747,7 @@ def plot_values(
     image_pixels=None,
     source_pixels=None,
     as_subplot=False,
-    units="arcsec",
+    units="scaled",
     kpc_per_arcsec=None,
     figsize=(7, 7),
     aspect="square",
@@ -786,10 +786,10 @@ def plot_values(
             array=reconstructed_pixelization,
             include_origin=origin,
             lines=lines,
-            positions=positions,
+            points=positions,
             as_subplot=True,
-            units=units,
-            kpc_per_arcsec=kpc_per_arcsec,
+            unit_label=units,
+            unit_conversion_factor=kpc_per_arcsec,
             figsize=figsize,
             aspect=aspect,
             cmap=cmap,

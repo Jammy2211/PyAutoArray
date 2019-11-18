@@ -14,7 +14,7 @@ class ImagingSimulator(object):
         sub_size,
         psf,
         exposure_time,
-        background_sky_level,
+        background_level,
         add_noise=True,
         noise_if_add_noise_false=0.1,
         noise_seed=-1,
@@ -34,7 +34,7 @@ class ImagingSimulator(object):
             An arrays describing the PSF kernel of the image.
         exposure_time : float
             The exposure time of an observation using this data_type.
-        background_sky_level : float
+        background_level : float
             The level of the background sky of an observationg using this data_type.
         """
 
@@ -47,7 +47,7 @@ class ImagingSimulator(object):
         self.origin = origin
         self.psf = psf
         self.exposure_time = exposure_time
-        self.background_sky_level = background_sky_level
+        self.background_level = background_level
         self.add_noise = add_noise
         self.noise_if_add_noise_false = noise_if_add_noise_false
         self.noise_seed = noise_seed
@@ -61,7 +61,7 @@ class ImagingSimulator(object):
         psf_shape_2d=(31, 31),
         psf_sigma=0.5,
         exposure_time=100.0,
-        background_sky_level=1.0,
+        background_level=1.0,
         add_noise=True,
         noise_if_add_noise_false=0.1,
         noise_seed=-1,
@@ -78,7 +78,7 @@ class ImagingSimulator(object):
             sub_size=sub_size,
             psf=psf,
             exposure_time=exposure_time,
-            background_sky_level=background_sky_level,
+            background_level=background_level,
             add_noise=add_noise,
             noise_if_add_noise_false=noise_if_add_noise_false,
             noise_seed=noise_seed,
@@ -93,7 +93,7 @@ class ImagingSimulator(object):
         psf_shape_2d=(31, 31),
         psf_sigma=0.1,
         exposure_time=565.0,
-        background_sky_level=1.0,
+        background_level=1.0,
         add_noise=True,
         noise_if_add_noise_false=0.1,
         noise_seed=-1,
@@ -110,7 +110,7 @@ class ImagingSimulator(object):
             sub_size=sub_size,
             psf=psf,
             exposure_time=exposure_time,
-            background_sky_level=background_sky_level,
+            background_level=background_level,
             add_noise=add_noise,
             noise_if_add_noise_false=noise_if_add_noise_false,
             noise_seed=noise_seed,
@@ -125,7 +125,7 @@ class ImagingSimulator(object):
         psf_shape_2d=(31, 31),
         psf_sigma=0.05,
         exposure_time=2000.0,
-        background_sky_level=1.0,
+        background_level=1.0,
         add_noise=True,
         noise_if_add_noise_false=0.1,
         noise_seed=-1,
@@ -142,7 +142,7 @@ class ImagingSimulator(object):
             sub_size=sub_size,
             psf=psf,
             exposure_time=exposure_time,
-            background_sky_level=background_sky_level,
+            background_level=background_level,
             add_noise=add_noise,
             noise_if_add_noise_false=noise_if_add_noise_false,
             noise_seed=noise_seed,
@@ -157,7 +157,7 @@ class ImagingSimulator(object):
         psf_shape_2d=(31, 31),
         psf_sigma=0.05,
         exposure_time=2000.0,
-        background_sky_level=1.0,
+        background_level=1.0,
         add_noise=True,
         noise_if_add_noise_false=0.1,
         noise_seed=-1,
@@ -175,7 +175,7 @@ class ImagingSimulator(object):
             sub_size=sub_size,
             psf=psf,
             exposure_time=exposure_time,
-            background_sky_level=background_sky_level,
+            background_level=background_level,
             add_noise=add_noise,
             noise_if_add_noise_false=noise_if_add_noise_false,
             noise_seed=noise_seed,
@@ -190,7 +190,7 @@ class ImagingSimulator(object):
         psf_shape_2d=(31, 31),
         psf_sigma=0.025,
         exposure_time=1000.0,
-        background_sky_level=1.0,
+        background_level=1.0,
         add_noise=True,
         noise_if_add_noise_false=0.1,
         noise_seed=-1,
@@ -207,7 +207,7 @@ class ImagingSimulator(object):
             sub_size=sub_size,
             psf=psf,
             exposure_time=exposure_time,
-            background_sky_level=background_sky_level,
+            background_level=background_level,
             add_noise=add_noise,
             noise_if_add_noise_false=noise_if_add_noise_false,
             noise_seed=noise_seed,
@@ -249,7 +249,7 @@ class ImagingSimulator(object):
             image=image,
             exposure_time=self.exposure_time,
             psf=self.psf,
-            background_sky_level=self.background_sky_level,
+            background_level=self.background_level,
             add_noise=self.add_noise,
             noise_if_add_noise_false=self.noise_if_add_noise_false,
             noise_seed=self.noise_seed,
@@ -265,7 +265,7 @@ class InterferometerSimulator(object):
         uv_wavelengths,
         sub_size,
         exposure_time,
-        background_sky_level,
+        background_level,
         primary_beam=None,
         noise_sigma=0.1,
         noise_if_add_noise_false=0.1,
@@ -286,7 +286,7 @@ class InterferometerSimulator(object):
             An arrays describing the PSF kernel of the image.
         exposure_time : float
             The exposure time of an observation using this data_type.
-        background_sky_level : float
+        background_level : float
             The level of the background sky of an observationg using this data_type.
         """
 
@@ -303,7 +303,7 @@ class InterferometerSimulator(object):
             grid_radians=self.grid.in_1d_binned.in_radians,
         )
         self.exposure_time = exposure_time
-        self.background_sky_level = background_sky_level
+        self.background_level = background_level
         self.primary_beam = primary_beam
         self.noise_sigma = noise_sigma
         self.noise_if_add_noise_false = noise_if_add_noise_false
@@ -327,7 +327,7 @@ class InterferometerSimulator(object):
         primary_beam_shape_2d=None,
         primary_beam_sigma=None,
         exposure_time=100.0,
-        background_sky_level=1.0,
+        background_level=1.0,
         noise_sigma=0.1,
         noise_if_add_noise_false=0.1,
         noise_seed=-1,
@@ -360,7 +360,7 @@ class InterferometerSimulator(object):
             sub_size=sub_size,
             primary_beam=primary_beam,
             exposure_time=exposure_time,
-            background_sky_level=background_sky_level,
+            background_level=background_level,
             noise_sigma=noise_sigma,
             noise_if_add_noise_false=noise_if_add_noise_false,
             noise_seed=noise_seed,
@@ -395,7 +395,7 @@ class InterferometerSimulator(object):
             exposure_time=self.exposure_time,
             transformer=self.transformer,
             primary_beam=self.primary_beam,
-            background_sky_level=self.background_sky_level,
+            background_level=self.background_level,
             noise_sigma=self.noise_sigma,
             noise_if_add_noise_false=self.noise_if_add_noise_false,
             noise_seed=self.noise_seed,
