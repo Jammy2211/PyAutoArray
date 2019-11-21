@@ -142,8 +142,11 @@ class AbstractGrid(abstract_structure.AbstractStructure):
 
         if isinstance(obj, Grid):
 
-            self.interpolator = obj.interpolator
-            self.binned = obj.binned
+            if hasattr(obj, 'interpolator'):
+                self.interpolator = obj.interpolator
+
+            if hasattr(obj, 'binned'):
+                self.binned = obj.binned
 
         if hasattr(obj, "_sub_border_1d_indexes"):
             self._sub_border_1d_indexes = obj._sub_border_1d_indexes
