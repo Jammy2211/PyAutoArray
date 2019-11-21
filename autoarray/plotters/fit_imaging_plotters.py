@@ -1,5 +1,260 @@
-from autoarray.plotters import array_plotters
+import matplotlib
+from autoarray import conf
 
+backend = conf.instance.visualize.get("figures", "backend", str)
+matplotlib.use(backend)
+from matplotlib import pyplot as plt
+
+from autoarray.plotters import array_plotters
+from autoarray.plotters import inversion_plotters
+from autoarray.plotters import plotter_util
+
+
+def subplot(
+    fit,
+    include_mask=True,
+    grid=None,
+    points=None,
+    lines=None,
+    use_scaled_units=True,
+    unit_conversion_factor=None,
+    unit_label="arcsec",
+    figsize=None,
+    aspect="square",
+    cmap="jet",
+    norm="linear",
+    norm_min=None,
+    norm_max=None,
+    linthresh=0.05,
+    linscale=0.01,
+    cb_ticksize=10,
+    cb_fraction=0.047,
+    cb_pad=0.01,
+    cb_tick_values=None,
+    cb_tick_labels=None,
+    titlesize=10,
+    xlabelsize=10,
+    ylabelsize=10,
+    xyticksize=10,
+    mask_pointsize=10,
+    position_pointsize=10,
+    grid_pointsize=1,
+    output_path=None,
+    output_filename="fit",
+    output_format="show",
+):
+
+    rows, columns, figsize_tool = plotter_util.get_subplot_rows_columns_figsize(
+        number_subplots=6
+    )
+
+    mask = get_mask(fit=fit, include_mask=include_mask)
+
+    if figsize is None:
+        figsize = figsize_tool
+
+    plt.figure(figsize=figsize)
+    plt.subplot(rows, columns, 1)
+
+    image(
+        fit=fit,
+        grid=grid,
+        mask=mask,
+        points=points,
+        as_subplot=True,
+        unit_label=unit_label,
+        use_scaled_units=use_scaled_units,
+        unit_conversion_factor=unit_conversion_factor,
+        figsize=figsize,
+        aspect=aspect,
+        cmap=cmap,
+        norm=norm,
+        norm_min=norm_min,
+        norm_max=norm_max,
+        linthresh=linthresh,
+        linscale=linscale,
+        cb_ticksize=cb_ticksize,
+        cb_fraction=cb_fraction,
+        cb_pad=cb_pad,
+        cb_tick_values=cb_tick_values,
+        cb_tick_labels=cb_tick_labels,
+        titlesize=titlesize,
+        xlabelsize=xlabelsize,
+        ylabelsize=ylabelsize,
+        xyticksize=xyticksize,
+        grid_pointsize=grid_pointsize,
+        position_pointsize=position_pointsize,
+        mask_pointsize=mask_pointsize,
+        output_path=output_path,
+        output_filename="",
+        output_format=output_format,
+    )
+
+    plt.subplot(rows, columns, 2)
+
+    signal_to_noise_map(
+        fit=fit,
+        mask=mask,
+        as_subplot=True,
+        unit_label=unit_label,
+        use_scaled_units=use_scaled_units,
+        unit_conversion_factor=unit_conversion_factor,
+        figsize=figsize,
+        aspect=aspect,
+        cmap=cmap,
+        norm=norm,
+        norm_min=norm_min,
+        norm_max=norm_max,
+        linthresh=linthresh,
+        linscale=linscale,
+        cb_ticksize=cb_ticksize,
+        cb_fraction=cb_fraction,
+        cb_pad=cb_pad,
+        cb_tick_values=cb_tick_values,
+        cb_tick_labels=cb_tick_labels,
+        titlesize=titlesize,
+        xlabelsize=xlabelsize,
+        ylabelsize=ylabelsize,
+        xyticksize=xyticksize,
+        position_pointsize=position_pointsize,
+        mask_pointsize=mask_pointsize,
+        output_path=output_path,
+        output_filename="",
+        output_format=output_format,
+    )
+
+    plt.subplot(rows, columns, 3)
+
+    model_image(
+        fit=fit,
+        mask=mask,
+        lines=lines,
+        as_subplot=True,
+        unit_label=unit_label,
+        use_scaled_units=use_scaled_units,
+        unit_conversion_factor=unit_conversion_factor,
+        figsize=figsize,
+        aspect=aspect,
+        cmap=cmap,
+        norm=norm,
+        norm_min=norm_min,
+        norm_max=norm_max,
+        linthresh=linthresh,
+        linscale=linscale,
+        cb_ticksize=cb_ticksize,
+        cb_fraction=cb_fraction,
+        cb_pad=cb_pad,
+        cb_tick_values=cb_tick_values,
+        cb_tick_labels=cb_tick_labels,
+        titlesize=titlesize,
+        xlabelsize=xlabelsize,
+        ylabelsize=ylabelsize,
+        xyticksize=xyticksize,
+        output_path=output_path,
+        output_filename="",
+        output_format=output_format,
+    )
+
+    plt.subplot(rows, columns, 4)
+
+    residual_map(
+        fit=fit,
+        mask=mask,
+        as_subplot=True,
+        unit_label=unit_label,
+        use_scaled_units=use_scaled_units,
+        unit_conversion_factor=unit_conversion_factor,
+        figsize=figsize,
+        aspect=aspect,
+        cmap=cmap,
+        norm=norm,
+        norm_min=norm_min,
+        norm_max=norm_max,
+        linthresh=linthresh,
+        linscale=linscale,
+        cb_ticksize=cb_ticksize,
+        cb_fraction=cb_fraction,
+        cb_pad=cb_pad,
+        cb_tick_values=cb_tick_values,
+        cb_tick_labels=cb_tick_labels,
+        titlesize=titlesize,
+        xlabelsize=xlabelsize,
+        ylabelsize=ylabelsize,
+        xyticksize=xyticksize,
+        output_path=output_path,
+        output_filename="",
+        output_format=output_format,
+    )
+
+    plt.subplot(rows, columns, 5)
+
+    normalized_residual_map(
+        fit=fit,
+        mask=mask,
+        as_subplot=True,
+        unit_label=unit_label,
+        use_scaled_units=use_scaled_units,
+        unit_conversion_factor=unit_conversion_factor,
+        figsize=figsize,
+        aspect=aspect,
+        cmap=cmap,
+        norm=norm,
+        norm_min=norm_min,
+        norm_max=norm_max,
+        linthresh=linthresh,
+        linscale=linscale,
+        cb_ticksize=cb_ticksize,
+        cb_fraction=cb_fraction,
+        cb_pad=cb_pad,
+        cb_tick_values=cb_tick_values,
+        cb_tick_labels=cb_tick_labels,
+        titlesize=titlesize,
+        xlabelsize=xlabelsize,
+        ylabelsize=ylabelsize,
+        xyticksize=xyticksize,
+        output_path=output_path,
+        output_filename="",
+        output_format=output_format,
+    )
+
+    plt.subplot(rows, columns, 6)
+
+    chi_squared_map(
+        fit=fit,
+        mask=mask,
+        as_subplot=True,
+        unit_label=unit_label,
+        use_scaled_units=use_scaled_units,
+        unit_conversion_factor=unit_conversion_factor,
+        figsize=figsize,
+        aspect=aspect,
+        cmap=cmap,
+        norm=norm,
+        norm_min=norm_min,
+        norm_max=norm_max,
+        linthresh=linthresh,
+        linscale=linscale,
+        cb_ticksize=cb_ticksize,
+        cb_fraction=cb_fraction,
+        cb_pad=cb_pad,
+        cb_tick_values=cb_tick_values,
+        cb_tick_labels=cb_tick_labels,
+        titlesize=titlesize,
+        xlabelsize=xlabelsize,
+        ylabelsize=ylabelsize,
+        xyticksize=xyticksize,
+        output_path=output_path,
+        output_filename="",
+        output_format=output_format,
+    )
+
+    plotter_util.output_subplot_array(
+        output_path=output_path,
+        output_filename=output_filename,
+        output_format=output_format,
+    )
+
+    plt.close()
 
 
 def individuals(
@@ -19,7 +274,8 @@ def individuals(
     plot_inversion_normalized_residual_map=False,
     plot_inversion_chi_squared_map=False,
     plot_inversion_regularization_weight_map=False,
-    units="scaled",
+    unit_conversion_factor=None,
+    unit_label="scaled",
     output_path=None,
     output_format="show",
 ):
@@ -45,76 +301,76 @@ def individuals(
         image(
             fit=fit,
             mask=mask,
-            points=positions,
-            units=units,
-            kpc_per_arcsec=kpc_per_arcsec,
+            points=points,
+            unit_label=unit_label,
+            unit_conversion_factor=unit_conversion_factor,
             output_path=output_path,
             output_format=output_format,
         )
 
     if plot_noise_map:
 
-        aa.plot.fit_imaging.noise_map(
+        noise_map(
             fit=fit,
             mask=mask,
-            units=units,
-            kpc_per_arcsec=kpc_per_arcsec,
+            unit_label=unit_label,
+            unit_conversion_factor=unit_conversion_factor,
             output_path=output_path,
             output_format=output_format,
         )
 
     if plot_signal_to_noise_map:
 
-        aa.plot.fit_imaging.signal_to_noise_map(
+        signal_to_noise_map(
             fit=fit,
             mask=mask,
-            units=units,
-            kpc_per_arcsec=kpc_per_arcsec,
+            unit_conversion_factor=unit_conversion_factor,
+            unit_label=unit_label,
             output_path=output_path,
             output_format=output_format,
         )
 
     if plot_model_image:
 
-        aa.plot.fit_imaging.model_image(
+        model_image(
             fit=fit,
             mask=mask,
-            lines=critical_curves,
-            units=units,
-            kpc_per_arcsec=kpc_per_arcsec,
+            lines=lines,
+            unit_conversion_factor=unit_conversion_factor,
+            unit_label=unit_label,
             output_path=output_path,
             output_format=output_format,
         )
 
     if plot_residual_map:
 
-        aa.plot.fit_imaging.residual_map(
+        residual_map(
             fit=fit,
             mask=mask,
-            units=units,
-            kpc_per_arcsec=kpc_per_arcsec,
+            unit_conversion_factor=unit_conversion_factor,
+            unit_label=unit_label,
             output_path=output_path,
             output_format=output_format,
         )
 
     if plot_normalized_residual_map:
 
-        aa.plot.fit_imaging.normalized_residual_map(
+        normalized_residual_map(
             fit=fit,
             mask=mask,
-            units=units,
-            kpc_per_arcsec=kpc_per_arcsec,
+            unit_conversion_factor=unit_conversion_factor,
+            unit_label=unit_label,
             output_path=output_path,
             output_format=output_format,
         )
 
     if plot_chi_squared_map:
 
-        aa.plot.fit_imaging.chi_squared_map(
+        chi_squared_map(
             fit=fit,
             mask=mask,
-            units=units,
-            kpc_per_arcsec=kpc_per_arcsec,
+            unit_conversion_factor=unit_conversion_factor,
+            unit_label=unit_label,
             output_path=output_path,
             output_format=output_format,
         )
@@ -123,10 +379,11 @@ def individuals(
 
         if fit.total_inversions == 1:
 
-            aa.plot.inversion.residual_map(
+            inversion_plotters.residual_map(
                 inversion=fit.inversion,
                 include_grid=True,
-                units=units,
+                unit_conversion_factor=unit_conversion_factor,
+                unit_label=unit_label,
                 figsize=(20, 20),
                 output_path=output_path,
                 output_format=output_format,
@@ -136,10 +393,11 @@ def individuals(
 
         if fit.total_inversions == 1:
 
-            aa.plot.inversion.normalized_residual_map(
+            inversion_plotters.normalized_residual_map(
                 inversion=fit.inversion,
                 include_grid=True,
-                units=units,
+                unit_conversion_factor=unit_conversion_factor,
+                unit_label=unit_label,
                 figsize=(20, 20),
                 output_path=output_path,
                 output_format=output_format,
@@ -149,10 +407,11 @@ def individuals(
 
         if fit.total_inversions == 1:
 
-            aa.plot.inversion.chi_squared_map(
+            inversion_plotters.chi_squared_map(
                 inversion=fit.inversion,
                 include_grid=True,
-                units=units,
+                unit_conversion_factor=unit_conversion_factor,
+                unit_label=unit_label,
                 figsize=(20, 20),
                 output_path=output_path,
                 output_format=output_format,
@@ -162,87 +421,15 @@ def individuals(
 
         if fit.total_inversions == 1:
 
-            aa.plot.inversion.regularization_weights(
+            inversion_plotters.regularization_weights(
                 inversion=fit.inversion,
                 include_grid=True,
-                units=units,
+                unit_conversion_factor=unit_conversion_factor,
+                unit_label=unit_label,
                 figsize=(20, 20),
                 output_path=output_path,
                 output_format=output_format,
             )
-
-    if plot_subtracted_images_of_planes:
-
-        for plane_index in range(fit.tracer.total_planes):
-
-            subtracted_image_of_plane(
-                fit=fit,
-                plane_index=plane_index,
-                mask=mask,
-                include_critical_curves=include_critical_curves,
-                units=units,
-                kpc_per_arcsec=kpc_per_arcsec,
-                output_path=output_path,
-                output_format=output_format,
-            )
-
-    if plot_model_images_of_planes:
-
-        for plane_index in range(fit.tracer.total_planes):
-
-            model_image_of_plane(
-                fit=fit,
-                plane_index=plane_index,
-                mask=mask,
-                include_critical_curves=include_critical_curves,
-                units=units,
-                kpc_per_arcsec=kpc_per_arcsec,
-                output_path=output_path,
-                output_format=output_format,
-            )
-
-    if plot_plane_images_of_planes:
-
-        if fit.tracer.has_mass_profile:
-
-            lines = plotter_util.get_critical_curve_and_caustic(
-                obj=fit.tracer,
-                include_critical_curves=False,
-                include_caustics=include_caustics,
-            )
-
-        else:
-
-            lines = None
-
-        for plane_index in range(fit.tracer.total_planes):
-
-            output_filename = "fit_plane_image_of_plane_" + str(plane_index)
-
-            if fit.tracer.planes[plane_index].has_light_profile:
-
-                plane_plotters.plane_image(
-                    plane=fit.tracer.planes[plane_index],
-                    grid=traced_grids[plane_index],
-                    lines=lines,
-                    units=units,
-                    output_path=output_path,
-                    output_filename=output_filename,
-                    output_format=output_format,
-                )
-
-            elif fit.tracer.planes[plane_index].has_pixelization:
-
-                aa.plot.inversion.reconstruction(
-                    inversion=fit.inversion,
-                    lines=lines,
-                    units=units,
-                    kpc_per_arcsec=kpc_per_arcsec,
-                    output_path=output_path,
-                    output_filename=output_filename,
-                    output_format=output_format,
-                )
-
 
 def image(
     fit,
@@ -251,8 +438,9 @@ def image(
     grid=None,
     lines=None,
     as_subplot=False,
-    units="scaled",
-    kpc_per_arcsec=None,
+    use_scaled_units=True,
+    unit_conversion_factor=None,
+    unit_label="scaled",
     figsize=(7, 7),
     aspect="square",
     cmap="jet",
@@ -296,8 +484,9 @@ def image(
         lines=lines,
         points=points,
         as_subplot=as_subplot,
-        unit_label=units,
-        unit_conversion_factor=kpc_per_arcsec,
+        use_scaled_units=use_scaled_units,
+        unit_conversion_factor=unit_conversion_factor,
+        unit_label=unit_label,
         figsize=figsize,
         aspect=aspect,
         cmap=cmap,
@@ -330,8 +519,9 @@ def noise_map(
     mask=None,
     points=None,
     as_subplot=False,
-    units="scaled",
-    kpc_per_arcsec=None,
+        use_scaled_units=True,
+        unit_conversion_factor=None,
+    unit_label="scaled",
     figsize=(7, 7),
     aspect="square",
     cmap="jet",
@@ -372,8 +562,9 @@ def noise_map(
         mask=mask,
         points=points,
         as_subplot=as_subplot,
-        unit_label=units,
-        unit_conversion_factor=kpc_per_arcsec,
+        use_scaled_units=use_scaled_units,
+        unit_conversion_factor=unit_conversion_factor,
+        unit_label=unit_label,
         figsize=figsize,
         aspect=aspect,
         cmap=cmap,
@@ -405,8 +596,9 @@ def signal_to_noise_map(
     mask=None,
     points=None,
     as_subplot=False,
-    units="scaled",
-    kpc_per_arcsec=None,
+        use_scaled_units=True,
+        unit_conversion_factor=None,
+    unit_label="scaled",
     figsize=(7, 7),
     aspect="square",
     cmap="jet",
@@ -447,8 +639,9 @@ def signal_to_noise_map(
         mask=mask,
         points=points,
         as_subplot=as_subplot,
-        unit_label=units,
-        unit_conversion_factor=kpc_per_arcsec,
+        use_scaled_units=use_scaled_units,
+        unit_conversion_factor=unit_conversion_factor,
+        unit_label=unit_label,
         figsize=figsize,
         aspect=aspect,
         cmap=cmap,
@@ -481,8 +674,9 @@ def model_image(
     lines=None,
     points=None,
     as_subplot=False,
-    units="scaled",
-    kpc_per_arcsec=None,
+        use_scaled_units=True,
+        unit_conversion_factor=None,
+    unit_label="scaled",
     figsize=(7, 7),
     aspect="square",
     cmap="jet",
@@ -524,8 +718,9 @@ def model_image(
         lines=lines,
         points=points,
         as_subplot=as_subplot,
-        unit_label=units,
-        unit_conversion_factor=kpc_per_arcsec,
+        use_scaled_units=use_scaled_units,
+        unit_conversion_factor=unit_conversion_factor,
+        unit_label=unit_label,
         figsize=figsize,
         aspect=aspect,
         cmap=cmap,
@@ -557,8 +752,9 @@ def residual_map(
     mask=None,
     points=None,
     as_subplot=False,
-    units="scaled",
-    kpc_per_arcsec=None,
+        use_scaled_units=True,
+        unit_conversion_factor=None,
+    unit_label="scaled",
     figsize=(7, 7),
     aspect="square",
     cmap="jet",
@@ -599,8 +795,9 @@ def residual_map(
         mask=mask,
         points=points,
         as_subplot=as_subplot,
-        unit_label=units,
-        unit_conversion_factor=kpc_per_arcsec,
+        use_scaled_units=use_scaled_units,
+        unit_conversion_factor=unit_conversion_factor,
+        unit_label=unit_label,
         figsize=figsize,
         aspect=aspect,
         cmap=cmap,
@@ -632,8 +829,9 @@ def normalized_residual_map(
     mask=None,
     points=None,
     as_subplot=False,
-    units="scaled",
-    kpc_per_arcsec=None,
+        use_scaled_units=True,
+        unit_conversion_factor=None,
+    unit_label="scaled",
     figsize=(7, 7),
     aspect="square",
     cmap="jet",
@@ -674,8 +872,9 @@ def normalized_residual_map(
         mask=mask,
         points=points,
         as_subplot=as_subplot,
-        unit_label=units,
-        unit_conversion_factor=kpc_per_arcsec,
+        use_scaled_units=use_scaled_units,
+        unit_conversion_factor=unit_conversion_factor,
+        unit_label=unit_label,
         figsize=figsize,
         aspect=aspect,
         cmap=cmap,
@@ -707,8 +906,9 @@ def chi_squared_map(
     mask=None,
     points=None,
     as_subplot=False,
-    units="scaled",
-    kpc_per_arcsec=None,
+        use_scaled_units=True,
+        unit_conversion_factor=None,
+    unit_label="scaled",
     figsize=(7, 7),
     aspect="square",
     cmap="jet",
@@ -749,8 +949,9 @@ def chi_squared_map(
         mask=mask,
         points=points,
         as_subplot=as_subplot,
-        unit_label=units,
-        unit_conversion_factor=kpc_per_arcsec,
+        use_scaled_units=use_scaled_units,
+        unit_conversion_factor=unit_conversion_factor,
+        unit_label=unit_label,
         figsize=figsize,
         aspect=aspect,
         cmap=cmap,

@@ -11,20 +11,20 @@ class AbstractDataset(object):
         Parameters
         ----------
         data : arrays.Array
-            The array of the image data_type, in units of electrons per second.
+            The array of the image data_type, in unit_label of electrons per second.
         pixel_scales : float
             The size of each pixel in arc seconds.
         psf : PSF
             An array describing the PSF kernel of the image.
         noise_map : NoiseMap | float | ndarray
-            An array describing the RMS standard deviation error in each pixel, preferably in units of electrons per
+            An array describing the RMS standard deviation error in each pixel, preferably in unit_label of electrons per
             second.
         background_noise_map : NoiseMap
             An array describing the RMS standard deviation error in each pixel due to the background sky noise_map,
-            preferably in units of electrons per second.
+            preferably in unit_label of electrons per second.
         poisson_noise_map : NoiseMap
             An array describing the RMS standard deviation error in each pixel due to the Poisson counts of the source,
-            preferably in units of electrons per second.
+            preferably in unit_label of electrons per second.
         exposure_time_map : arrays.Array
             An array describing the effective exposure time in each imaging pixel.
         background_sky_map : aa.Scaled
@@ -81,7 +81,7 @@ class AbstractDataset(object):
 
     def array_from_electrons_per_second_to_counts(self, array):
         """
-        For an array (in electrons per second) and an exposure time mappers, return an array in units counts.
+        For an array (in electrons per second) and an exposure time mappers, return an array in unit_label counts.
 
         Parameters
         ----------
@@ -92,7 +92,7 @@ class AbstractDataset(object):
 
     def array_from_counts_to_electrons_per_second(self, array):
         """
-        For an array (in counts) and an exposure time mappers, convert the array to units electrons per second
+        For an array (in counts) and an exposure time mappers, convert the array to unit_label electrons per second
 
         Parameters
         ----------
@@ -106,7 +106,7 @@ class AbstractDataset(object):
 
     def array_from_adus_to_electrons_per_second(self, array, gain):
         """
-        For an array (in counts) and an exposure time mappers, convert the array to units electrons per second
+        For an array (in counts) and an exposure time mappers, convert the array to unit_label electrons per second
 
         Parameters
         ----------
@@ -120,7 +120,7 @@ class AbstractDataset(object):
 
     @property
     def image_counts(self):
-        """The image in units of counts."""
+        """The image in unit_label of counts."""
         return self.array_from_electrons_per_second_to_counts(self.data)
 
 

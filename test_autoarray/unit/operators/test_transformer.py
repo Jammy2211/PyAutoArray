@@ -8,7 +8,7 @@ class TestVisiblities(object):
     def test__real_visibilities__intensity_image_all_ones__simple_cases(self):
 
         uv_wavelengths = np.ones(shape=(4, 2))
-        grid_radians = aa.grid.manual_2d([[[1.0, 1.0]]])
+        grid_radians = aa.grid.manual_2d([[[1.0, 1.0]]], pixel_scales=1.0)
 
         transformer = aa.transformer(
             uv_wavelengths=uv_wavelengths,
@@ -24,7 +24,7 @@ class TestVisiblities(object):
 
         uv_wavelengths = np.array([[0.2, 1.0], [0.5, 1.1], [0.8, 1.2]])
 
-        grid_radians = aa.grid.manual_2d([[[0.1, 0.2], [0.3, 0.4]]])
+        grid_radians = aa.grid.manual_2d([[[0.1, 0.2], [0.3, 0.4]]], pixel_scales=1.0)
 
         transformer = aa.transformer(
             uv_wavelengths=uv_wavelengths,
@@ -43,7 +43,7 @@ class TestVisiblities(object):
     def test__real_visibilities__intensity_image_varies__simple_cases(self):
 
         uv_wavelengths = np.ones(shape=(4, 2))
-        grid_radians = aa.grid.manual_2d([[[1.0, 1.0]]])
+        grid_radians = aa.grid.manual_2d([[[1.0, 1.0]]], pixel_scales=1.0)
 
         transformer = aa.transformer(
             uv_wavelengths=uv_wavelengths,
@@ -59,7 +59,7 @@ class TestVisiblities(object):
 
         uv_wavelengths = np.array([[0.2, 1.0], [0.5, 1.1], [0.8, 1.2]])
 
-        grid_radians = aa.grid.manual_2d([[[0.1, 0.2], [0.3, 0.4]]])
+        grid_radians = aa.grid.manual_2d([[[0.1, 0.2], [0.3, 0.4]]], pixel_scales=1.0)
 
         transformer = aa.transformer(
             uv_wavelengths=uv_wavelengths,
@@ -78,7 +78,7 @@ class TestVisiblities(object):
     def test__real_visibilities__preload_and_non_preload_give_same_answer(self):
 
         uv_wavelengths = np.array([[0.2, 1.0], [0.5, 1.1], [0.8, 1.2]])
-        grid_radians = aa.grid.manual_2d([[[0.1, 0.2], [0.3, 0.4]]])
+        grid_radians = aa.grid.manual_2d([[[0.1, 0.2], [0.3, 0.4]]], pixel_scales=1.0)
 
         transformer_preload = aa.transformer(
             uv_wavelengths=uv_wavelengths,
@@ -103,7 +103,7 @@ class TestVisiblities(object):
     def test__imag_visibilities__intensity_image_all_ones__simple_cases(self):
 
         uv_wavelengths = np.ones(shape=(4, 2))
-        grid_radians = aa.grid.manual_2d([[[1.0, 1.0]]])
+        grid_radians = aa.grid.manual_2d([[[1.0, 1.0]]], pixel_scales=1.0)
 
         transformer = aa.transformer(
             uv_wavelengths=uv_wavelengths,
@@ -119,7 +119,7 @@ class TestVisiblities(object):
 
         uv_wavelengths = np.array([[0.2, 1.0], [0.5, 1.1], [0.8, 1.2]])
 
-        grid_radians = aa.grid.manual_2d([[[0.1, 0.2], [0.3, 0.4]]])
+        grid_radians = aa.grid.manual_2d([[[0.1, 0.2], [0.3, 0.4]]], pixel_scales=1.0)
 
         transformer = aa.transformer(
             uv_wavelengths=uv_wavelengths,
@@ -138,7 +138,7 @@ class TestVisiblities(object):
     def test__imag_visibilities__intensity_image_varies__simple_cases(self):
 
         uv_wavelengths = np.ones(shape=(4, 2))
-        grid_radians = aa.grid.manual_2d([[[1.0, 1.0]]])
+        grid_radians = aa.grid.manual_2d([[[1.0, 1.0]]], pixel_scales=1.0)
 
         transformer = aa.transformer(
             uv_wavelengths=uv_wavelengths,
@@ -154,7 +154,7 @@ class TestVisiblities(object):
 
         uv_wavelengths = np.array([[0.2, 1.0], [0.5, 1.1], [0.8, 1.2]])
 
-        grid_radians = aa.grid.manual_2d([[[0.1, 0.2], [0.3, 0.4]]])
+        grid_radians = aa.grid.manual_2d([[[0.1, 0.2], [0.3, 0.4]]], pixel_scales=1.0)
 
         transformer = aa.transformer(
             uv_wavelengths=uv_wavelengths,
@@ -173,7 +173,7 @@ class TestVisiblities(object):
     def test__imag_visibilities__preload_and_non_preload_give_same_answer(self):
 
         uv_wavelengths = np.array([[0.2, 1.0], [0.5, 1.1], [0.8, 1.2]])
-        grid_radians = aa.grid.manual_2d([[[0.1, 0.2], [0.3, 0.4]]])
+        grid_radians = aa.grid.manual_2d([[[0.1, 0.2], [0.3, 0.4]]], pixel_scales=1.0)
 
         transformer_preload = aa.transformer(
             uv_wavelengths=uv_wavelengths,
@@ -199,7 +199,7 @@ class TestVisiblities(object):
 
         uv_wavelengths = np.array([[0.2, 1.0], [0.5, 1.1], [0.8, 1.2]])
 
-        grid_radians = aa.grid.manual_2d([[[0.1, 0.2], [0.3, 0.4]]])
+        grid_radians = aa.grid.manual_2d([[[0.1, 0.2], [0.3, 0.4]]], pixel_scales=1.0)
 
         transformer = aa.transformer(
             uv_wavelengths=uv_wavelengths,
@@ -229,7 +229,7 @@ class TestVisiblitiesMappingMatrix(object):
     def test__real_visibilities__mapping_matrix_all_ones__simple_cases(self):
 
         uv_wavelengths = np.ones(shape=(4, 2))
-        grid_radians = aa.grid.manual_2d([[[1.0, 1.0]]])
+        grid_radians = aa.grid.manual_2d([[[1.0, 1.0]]], pixel_scales=1.0)
 
         transformer = aa.transformer(
             uv_wavelengths=uv_wavelengths,
@@ -247,7 +247,7 @@ class TestVisiblitiesMappingMatrix(object):
 
         uv_wavelengths = np.array([[0.2, 1.0], [0.5, 1.1], [0.8, 1.2]])
 
-        grid_radians = aa.grid.manual_2d([[[0.1, 0.2], [0.3, 0.4]]])
+        grid_radians = aa.grid.manual_2d([[[0.1, 0.2], [0.3, 0.4]]], pixel_scales=1.0)
 
         transformer = aa.transformer(
             uv_wavelengths=uv_wavelengths,
@@ -278,7 +278,7 @@ class TestVisiblitiesMappingMatrix(object):
 
     def test__real_visibilities__more_complex_mapping_matrix(self):
 
-        grid_radians = aa.grid.manual_2d([[[0.1, 0.2], [0.3, 0.4], [0.5, 0.6]]])
+        grid_radians = aa.grid.manual_2d([[[0.1, 0.2], [0.3, 0.4], [0.5, 0.6]]], pixel_scales=1.0)
 
         uv_wavelengths = np.array([[0.7, 0.8], [0.9, 1.0]])
 
@@ -327,7 +327,7 @@ class TestVisiblitiesMappingMatrix(object):
     def test__real_visibilities__preload_and_non_preload_give_same_answer(self):
 
         uv_wavelengths = np.array([[0.2, 1.0], [0.5, 1.1], [0.8, 1.2]])
-        grid_radians = aa.grid.manual_2d([[[0.1, 0.2], [0.3, 0.4]]])
+        grid_radians = aa.grid.manual_2d([[[0.1, 0.2], [0.3, 0.4]]], pixel_scales=1.0)
 
         transformer_preload = aa.transformer(
             uv_wavelengths=uv_wavelengths,
@@ -356,7 +356,7 @@ class TestVisiblitiesMappingMatrix(object):
     def test__imag_visibilities__mapping_matrix_all_ones__simple_cases(self):
 
         uv_wavelengths = np.ones(shape=(4, 2))
-        grid_radians = aa.grid.manual_2d([[[1.0, 1.0]]])
+        grid_radians = aa.grid.manual_2d([[[1.0, 1.0]]], pixel_scales=1.0)
 
         transformer = aa.transformer(
             uv_wavelengths=uv_wavelengths,
@@ -374,7 +374,7 @@ class TestVisiblitiesMappingMatrix(object):
 
         uv_wavelengths = np.array([[0.2, 1.0], [0.5, 1.1], [0.8, 1.2]])
 
-        grid_radians = aa.grid.manual_2d([[[0.1, 0.2], [0.3, 0.4]]])
+        grid_radians = aa.grid.manual_2d([[[0.1, 0.2], [0.3, 0.4]]], pixel_scales=1.0)
 
         transformer = aa.transformer(
             uv_wavelengths=uv_wavelengths,
@@ -404,7 +404,7 @@ class TestVisiblitiesMappingMatrix(object):
 
     def test__imag_visibilities__more_complex_mapping_matrix(self):
 
-        grid_radians = aa.grid.manual_2d([[[0.1, 0.2], [0.3, 0.4], [0.5, 0.6]]])
+        grid_radians = aa.grid.manual_2d([[[0.1, 0.2], [0.3, 0.4], [0.5, 0.6]]], pixel_scales=1.0)
 
         uv_wavelengths = np.array([[0.7, 0.8], [0.9, 1.0]])
 
@@ -453,7 +453,7 @@ class TestVisiblitiesMappingMatrix(object):
     def test__imag_visibilities__preload_and_non_preload_give_same_answer(self):
 
         uv_wavelengths = np.array([[0.2, 1.0], [0.5, 1.1], [0.8, 1.2]])
-        grid_radians = aa.grid.manual_2d([[[0.1, 0.2], [0.3, 0.4]]])
+        grid_radians = aa.grid.manual_2d([[[0.1, 0.2], [0.3, 0.4]]], pixel_scales=1.0)
 
         transformer_preload = aa.transformer(
             uv_wavelengths=uv_wavelengths,
@@ -484,7 +484,7 @@ class TestVisiblitiesMappingMatrix(object):
     ):
 
         uv_wavelengths = np.array([[0.2, 1.0], [0.5, 1.1], [0.8, 1.2]])
-        grid_radians = aa.grid.manual_2d([[[0.1, 0.2], [0.3, 0.4]]])
+        grid_radians = aa.grid.manual_2d([[[0.1, 0.2], [0.3, 0.4]]], pixel_scales=1.0)
 
         transformer = aa.transformer(
             uv_wavelengths=uv_wavelengths,

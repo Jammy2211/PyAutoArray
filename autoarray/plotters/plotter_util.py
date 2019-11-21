@@ -63,20 +63,21 @@ def set_title(title, titlesize):
     """
     plt.title(title, fontsize=titlesize)
 
+
 def set_xy_labels_and_ticksize(
     unit_label, xlabelsize, ylabelsize, xyticksize
 ):
     """Set the x and y labels of the figure, and set the fontsize of those labels.
 
     The x and y labels are always the distance scales, thus the labels are either arc-seconds or kpc and depend on the \
-    units the figure is plotted in.
+    unit_label the figure is plotted in.
 
     Parameters
     -----------
     unit_label : str
-        The label for the units of the y / x axis of the plots.
+        The label for the unit_label of the y / x axis of the plots.
     unit_conversion_factor : float
-        The conversion factor between arc-seconds and kiloparsecs, required to plotters the units in kpc.
+        The conversion factor between arc-seconds and kiloparsecs, required to plotters the unit_label in kpc.
     xlabelsize : int
         The fontsize of the x axes label.
     ylabelsize : int
@@ -89,6 +90,47 @@ def set_xy_labels_and_ticksize(
     plt.ylabel("y (" + unit_label + ")", fontsize=ylabelsize)
 
     plt.tick_params(labelsize=xyticksize)
+
+
+def set_yxticks(array, extent, use_scaled_units, unit_conversion_factor, xticks_manual, yticks_manual):
+    """Get the extent of the dimensions of the array in the unit_label of the figure (e.g. arc-seconds or kpc).
+
+    This is used to set the extent of the array and thus the y / x axis limits.
+
+    Parameters
+    -----------
+    array : data_type.array.aa.Scaled
+        The 2D array of data_type which is plotted.
+    unit_label : str
+        The label for the unit_label of the y / x axis of the plots.
+    unit_conversion_factor : float
+        The conversion factor between arc-seconds and kiloparsecs, required to plotters the unit_label in kpc.
+    xticks_manual :  [] or None
+        If input, the xticks do not use the array's default xticks but instead overwrite them as these values.
+    yticks_manual :  [] or None
+        If input, the yticks do not use the array's default yticks but instead overwrite them as these values.
+    """
+
+    yticks = np.round(np.linspace(extent[2], extent[3], 5), 2)
+    xticks = np.round(np.linspace(extent[0], extent[1], 5), 2)
+
+    if xticks_manual is not None and yticks_manual is not None:
+        ytick_labels = np.asarray([yticks_manual[0], yticks_manual[3]])
+        xtick_labels = np.asarray([xticks_manual[0], xticks_manual[3]])
+    elif not use_scaled_units:
+        ytick_labels = np.linspace(0, array.shape_2d[0], 5).astype("int")
+        xtick_labels = np.linspace(0, array.shape_2d[1], 5).astype("int")
+    elif use_scaled_units and unit_conversion_factor is None:
+        ytick_labels = np.round(np.linspace(extent[2], extent[3], 5), 2)
+        xtick_labels = np.round(np.linspace(extent[0], extent[1], 5), 2)
+    elif use_scaled_units and unit_conversion_factor is not None:
+        ytick_labels = np.round(np.linspace(extent[2], extent[3], 5), 2) * unit_conversion_factor
+        xtick_labels = np.round(np.linspace(extent[0], extent[1], 5), 2) * unit_conversion_factor
+    else:
+        raise exc.PlottingException("The y and y ticks cannot be set using the input options.")
+
+    plt.yticks(ticks=yticks, labels=ytick_labels)
+    plt.xticks(ticks=xticks, labels=xtick_labels)
 
 
 def set_colorbar(cb_ticksize, cb_fraction, cb_pad, cb_tick_values, cb_tick_labels):
@@ -188,10 +230,10 @@ def plot_lines(line_lists):
         The mask applied to the array, the edge of which is plotted as a set of points over the plotted array.
     plot_lines : bool
         If a mask is supplied, its liness pixels (e.g. the exterior edge) is plotted if this is *True*.
-    units : str
-        The units of the y / x axis of the plots.
+    unit_label : str
+        The unit_label of the y / x axis of the plots.
     kpc_per_arcsec : float or None
-        The conversion factor between arc-seconds and kiloparsecs, required to plotters the units in kpc.
+        The conversion factor between arc-seconds and kiloparsecs, required to plotters the unit_label in kpc.
     lines_pointsize : int
         The size of the points plotted to show the liness.
     """

@@ -238,7 +238,7 @@ class AbstractGrid(abstract_structure.AbstractStructure):
         )
 
     @property
-    def axis_limits(self):
+    def extent(self):
         return np.asarray(
             [
                 self.scaled_minima[1],
