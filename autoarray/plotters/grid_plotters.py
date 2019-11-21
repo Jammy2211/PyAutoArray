@@ -53,7 +53,7 @@ def plot_grid(
     as_subplot : bool
         Whether the grid is plotted as part of a subplot, in which case the grid figure is not opened / closed.
     unit_label : str
-        The label of the units of the y / x axis of the plots.
+        The label of the unit_label of the y / x axis of the plots.
     unit_conversion_factor : float
         The conversion factor between arc-seconds and kiloparsecs, required to plotters the unit_label in kpc.
     figsize : (int, int)
@@ -81,9 +81,6 @@ def plot_grid(
     """
 
     plotter_util.setup_figure(figsize=figsize, as_subplot=as_subplot)
-    grid = convert_grid_units(
-        grid=grid, unit_conversion_factor=unit_conversion_factor
-    )
 
     if colors is not None:
 
@@ -121,6 +118,10 @@ def plot_grid(
         grid=grid,
         symmetric_around_centre=symmetric_around_centre,
     )
+
+    plotter_util.set_yxticks(array=None, extent=grid.extent, use_scaled_units=True,
+                             unit_conversion_factor=unit_conversion_factor, xticks_manual=None, yticks_manual=None)
+
     plot_points(grid=grid, points=points, pointcolor=pointcolor)
     plotter_util.plot_lines(line_lists=lines)
 
@@ -133,26 +134,6 @@ def plot_grid(
         output_format=output_format,
     )
     plotter_util.close_figure(as_subplot=as_subplot)
-
-
-def convert_grid_units(grid, unit_conversion_factor):
-    """Convert the grid from its input unit_label (arc-seconds) to the input unit (e.g. retain arc-seconds) or convert to \
-    another set of unit_label (kiloparsecs).
-
-    Parameters
-    -----------
-    grid : ndarray or data_type.array.aa.Grid
-        The (y,x) coordinates of the grid in arc-seconds, in an array of shape (total_coordinates, 2).
-    unit_label : str
-        The label of the units of the y / x axis of the plots.
-    unit_conversion_factor : float
-        The conversion factor between arc-seconds and kiloparsecs, required to plotters the unit_label in kpc.
-    """
-
-    if unit_conversion_factor is None:
-        return grid
-    elif unit_conversion_factor is not None:
-        return grid * unit_conversion_factor
 
 
 def set_axis_limits(axis_limits, grid, symmetric_around_centre):

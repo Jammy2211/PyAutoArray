@@ -1,7 +1,7 @@
-import autoarray as aa
 import matplotlib
+from autoarray import conf
 
-backend = aa.conf.instance.visualize.get("figures", "backend", str)
+backend = conf.instance.visualize.get("figures", "backend", str)
 matplotlib.use(backend)
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
@@ -9,7 +9,7 @@ import numpy as np
 import itertools
 from scipy.spatial import Voronoi
 
-from autoarray.plotters import grid_plotters, plotter_util
+from autoarray.plotters import imaging_plotters, grid_plotters, plotter_util
 from autoarray.operators.inversion import mappers
 
 
@@ -23,8 +23,9 @@ def image_and_mapper(
     include_border=False,
     image_pixels=None,
     source_pixels=None,
-    units="scaled",
-    kpc_per_arcsec=None,
+    use_scaled_units=True,
+    unit_conversion_factor=None,
+    unit_label="scaled",
     output_path=None,
     output_filename="image_and_mapper",
     output_format="show",
@@ -36,13 +37,14 @@ def image_and_mapper(
     plt.figure(figsize=figsize)
     plt.subplot(rows, columns, 1)
 
-    aa.plot.imaging.image(
+    imaging_plotters.image(
         imaging=imaging,
         mask=mask,
         positions=positions,
         as_subplot=True,
-        units=units,
-        kpc_per_arcsec=None,
+        use_scaled_units=use_scaled_units,
+        unit_conversion_factor=unit_conversion_factor,
+        unit_label=unit_label,
         xyticksize=16,
         norm="linear",
         norm_min=None,
@@ -60,18 +62,13 @@ def image_and_mapper(
         output_format=output_format,
     )
 
-    image_grid = convert_grid(
-        grid=mapper.grid.geometry.unmasked_grid,
-        units=units,
-        kpc_per_arcsec=kpc_per_arcsec,
-    )
 
     point_colors = itertools.cycle(["y", "r", "k", "g", "m"])
     plot_image_pixels(
-        grid=image_grid, image_pixels=image_pixels, point_colors=point_colors
+        grid=mapper.grid.geometry.unmasked_grid, image_pixels=image_pixels, point_colors=point_colors
     )
     plot_image_plane_source_pixels(
-        grid=image_grid,
+        grid=mapper.grid.geometry.unmasked_grid,
         mapper=mapper,
         source_pixels=source_pixels,
         point_colors=point_colors,
@@ -87,8 +84,9 @@ def image_and_mapper(
         image_pixels=image_pixels,
         source_pixels=source_pixels,
         as_subplot=True,
-        units=units,
-        kpc_per_arcsec=kpc_per_arcsec,
+        unit_label=unit_label,
+        use_scaled_units=use_scaled_units,
+        unit_conversion_factor=unit_conversion_factor,
         figsize=None,
     )
 
@@ -108,8 +106,9 @@ def plot_mapper(
     image_pixels=None,
     source_pixels=None,
     as_subplot=False,
-    units="scaled",
-    kpc_per_arcsec=None,
+    use_scaled_units=True,
+    unit_label="scaled",
+    unit_conversion_factor=None,
     xyticksize=16,
     figsize=(7, 7),
     title="Mapper",
@@ -131,8 +130,9 @@ def plot_mapper(
             image_pixels=image_pixels,
             source_pixels=source_pixels,
             as_subplot=as_subplot,
-            units=units,
-            kpc_per_arcsec=kpc_per_arcsec,
+            use_scaled_units=use_scaled_units,
+            unit_label=unit_label,
+            unit_conversion_factor=unit_conversion_factor,
             xyticksize=xyticksize,
             figsize=figsize,
             title=title,
@@ -153,8 +153,9 @@ def rectangular_mapper(
     image_pixels=None,
     source_pixels=None,
     as_subplot=False,
-    units="scaled",
-    kpc_per_arcsec=None,
+    use_scaled_units=True,
+    unit_label="scaled",
+    unit_conversion_factor=None,
     xyticksize=16,
     figsize=(7, 7),
     title="Rectangular Mapper",
@@ -168,15 +169,14 @@ def rectangular_mapper(
 
     plotter_util.setup_figure(figsize=figsize, as_subplot=as_subplot)
 
-    set_axis_limits(mapper=mapper, units=units, kpc_per_arcsec=kpc_per_arcsec)
+    set_axis_limits(mapper=mapper, unit_label=unit_label, unit_conversion_factor=unit_conversion_factor)
     plot_rectangular_pixelization_lines(
-        mapper=mapper, units=units, kpc_per_arcsec=kpc_per_arcsec
+        mapper=mapper, use_scaled_units=use_scaled_units, unit_conversion_factor=unit_conversion_factor
     )
 
     plotter_util.set_title(title=title, titlesize=titlesize)
-    grid_plotters.set_xy_labels(
-        units=units,
-        kpc_per_arcsec=kpc_per_arcsec,
+    plotter_util.set_xy_labels_and_ticksize(
+        unit_label=unit_label,
         xlabelsize=xlabelsize,
         ylabelsize=ylabelsize,
         xyticksize=xyticksize,
@@ -185,16 +185,14 @@ def rectangular_mapper(
     plot_centres(
         include_centres=include_centres,
         mapper=mapper,
-        units=units,
-        kpc_per_arcsec=kpc_per_arcsec,
     )
 
-    plot_plane_grid(
+    plot_mapper_grid(
         include_grid=include_grid,
         mapper=mapper,
         as_subplot=True,
-        units=units,
-        kpc_per_arcsec=kpc_per_arcsec,
+        unit_label=unit_label,
+        unit_conversion_factor=unit_conversion_factor,
         pointsize=10,
         xyticksize=xyticksize,
         title=title,
@@ -207,8 +205,8 @@ def rectangular_mapper(
         include_border=include_border,
         mapper=mapper,
         as_subplot=True,
-        units=units,
-        kpc_per_arcsec=kpc_per_arcsec,
+        unit_label=unit_label,
+        unit_conversion_factor=unit_conversion_factor,
         pointsize=30,
         xyticksize=xyticksize,
         title=title,
@@ -217,16 +215,12 @@ def rectangular_mapper(
         ylabelsize=ylabelsize,
     )
 
-    mapper_grid = convert_grid(
-        grid=mapper.grid, units=units, kpc_per_arcsec=kpc_per_arcsec
-    )
-
     point_colors = itertools.cycle(["y", "r", "k", "g", "m"])
     plot_source_plane_image_pixels(
-        grid=mapper_grid, image_pixels=image_pixels, point_colors=point_colors
+        grid=mapper.grid, image_pixels=image_pixels, point_colors=point_colors
     )
     plot_source_plane_source_pixels(
-        grid=mapper_grid,
+        grid=mapper.grid,
         mapper=mapper,
         source_pixels=source_pixels,
         point_colors=point_colors,
@@ -252,8 +246,9 @@ def voronoi_mapper(
     image_pixels=None,
     source_pixels=None,
     as_subplot=False,
-    units="scaled",
-    kpc_per_arcsec=None,
+    use_scaled_units=True,
+    unit_label="scaled",
+    unit_conversion_factor=None,
     xyticksize=16,
     figsize=(7, 7),
     title="Rectangular Mapper",
@@ -272,7 +267,7 @@ def voronoi_mapper(
 
     plotter_util.setup_figure(figsize=figsize, as_subplot=as_subplot)
 
-    set_axis_limits(mapper=mapper, units=units, kpc_per_arcsec=kpc_per_arcsec)
+    set_axis_limits(mapper=mapper, unit_label=unit_label, unit_conversion_factor=unit_conversion_factor)
 
     regions_SP, vertices_SP = voronoi_finite_polygons_2d(mapper.voronoi)
 
@@ -294,9 +289,8 @@ def voronoi_mapper(
         plt.fill(*zip(*polygon), alpha=0.7, facecolor=col, lw=0.0)
 
     plotter_util.set_title(title=title, titlesize=titlesize)
-    grid_plotters.set_xy_labels(
-        units=units,
-        kpc_per_arcsec=kpc_per_arcsec,
+    plotter_util.set_xy_labels_and_ticksize(
+        unit_label=unit_label,
         xlabelsize=xlabelsize,
         ylabelsize=ylabelsize,
         xyticksize=xyticksize,
@@ -305,16 +299,14 @@ def voronoi_mapper(
     plot_centres(
         include_centres=include_centres,
         mapper=mapper,
-        units=units,
-        kpc_per_arcsec=kpc_per_arcsec,
     )
 
-    plot_plane_grid(
+    plot_mapper_grid(
         include_grid=include_grid,
         mapper=mapper,
         as_subplot=True,
-        units=units,
-        kpc_per_arcsec=kpc_per_arcsec,
+        unit_label=unit_label,
+        unit_conversion_factor=unit_conversion_factor,
         pointsize=10,
         xyticksize=xyticksize,
         title=title,
@@ -327,8 +319,8 @@ def voronoi_mapper(
         include_border=include_border,
         mapper=mapper,
         as_subplot=True,
-        units=units,
-        kpc_per_arcsec=kpc_per_arcsec,
+        unit_label=unit_label,
+        unit_conversion_factor=unit_conversion_factor,
         pointsize=30,
         xyticksize=xyticksize,
         title=title,
@@ -339,16 +331,12 @@ def voronoi_mapper(
 
     plotter_util.plot_lines(line_lists=lines)
 
-    mapper_grid = convert_grid(
-        grid=mapper.grid, units=units, kpc_per_arcsec=kpc_per_arcsec
-    )
-
     point_colors = itertools.cycle(["y", "r", "k", "g", "m"])
     plot_source_plane_image_pixels(
-        grid=mapper_grid, image_pixels=image_pixels, point_colors=point_colors
+        grid=mapper.grid, image_pixels=image_pixels, point_colors=point_colors
     )
     plot_source_plane_source_pixels(
-        grid=mapper_grid,
+        grid=mapper.grid,
         mapper=mapper,
         source_pixels=source_pixels,
         point_colors=point_colors,
@@ -445,9 +433,9 @@ def voronoi_finite_polygons_2d(vor, radius=None):
     return new_regions, np.asarray(new_vertices)
 
 
-def plot_rectangular_pixelization_lines(mapper, units, kpc_per_arcsec):
+def plot_rectangular_pixelization_lines(mapper, use_scaled_units, unit_conversion_factor):
 
-    if units in "scaled" or kpc_per_arcsec is None:
+    if use_scaled_units and unit_conversion_factor is None:
 
         ys = np.linspace(
             mapper.pixelization_grid.scaled_minima[0],
@@ -460,16 +448,16 @@ def plot_rectangular_pixelization_lines(mapper, units, kpc_per_arcsec):
             mapper.pixelization_grid.shape_2d[1] + 1,
         )
 
-    elif units in "kpc":
+    elif use_scaled_units and unit_conversion_factor is not None:
 
         ys = np.linspace(
-            mapper.grid.scaled_minima[0] * kpc_per_arcsec,
-            mapper.grid.scaled_maxima[0] * kpc_per_arcsec,
+            mapper.grid.scaled_minima[0] * unit_conversion_factor,
+            mapper.grid.scaled_maxima[0] * unit_conversion_factor,
             mapper.pixelization_grid.shape_2d[0] + 1,
         )
         xs = np.linspace(
-            mapper.grid.scaled_minima[1] * kpc_per_arcsec,
-            mapper.grid.scaled_maxima[1] * kpc_per_arcsec,
+            mapper.grid.scaled_minima[1] * unit_conversion_factor,
+            mapper.grid.scaled_maxima[1] * unit_conversion_factor,
             mapper.pixelization_grid.shape_2d[1] + 1,
         )
 
@@ -480,19 +468,19 @@ def plot_rectangular_pixelization_lines(mapper, units, kpc_per_arcsec):
         plt.plot([xs[0], xs[-1]], [y, y], color="black", linestyle="-")
 
 
-def set_axis_limits(mapper, units, kpc_per_arcsec):
+def set_axis_limits(mapper, unit_label, unit_conversion_factor):
 
-    if units in "scaled" or kpc_per_arcsec is None:
+    if unit_label in "scaled" or unit_conversion_factor is None:
 
         grid_plotters.set_axis_limits(
-            axis_limits=mapper.pixelization_grid.axis_limits,
+            axis_limits=mapper.pixelization_grid.extent,
             grid=None,
             symmetric_around_centre=False,
         )
 
-    elif units in "kpc":
+    elif unit_label in "kpc":
 
-        axis_limits_kpc = mapper.pixelization_grid.axis_limits * kpc_per_arcsec
+        axis_limits_kpc = mapper.pixelization_grid.extent * unit_conversion_factor
 
         grid_plotters.set_axis_limits(
             axis_limits=axis_limits_kpc, grid=None, symmetric_around_centre=False
@@ -515,27 +503,21 @@ def set_colorbar(
         cb.ax.set_yticklabels(cb_tick_labels)
 
 
-def plot_centres(include_centres, mapper, units, kpc_per_arcsec):
+def plot_centres(include_centres, mapper):
 
     if include_centres:
 
-        if units in "scaled" or kpc_per_arcsec is None:
-
-            pixelization_grid = mapper.pixelization_grid
-
-        elif units in "kpc":
-
-            pixelization_grid = mapper.pixelization_grid * kpc_per_arcsec
+        pixelization_grid = mapper.pixelization_grid
 
         plt.scatter(y=pixelization_grid[:, 0], x=pixelization_grid[:, 1], s=3, c="r")
 
 
-def plot_plane_grid(
+def plot_mapper_grid(
     include_grid,
     mapper,
     as_subplot,
-    units,
-    kpc_per_arcsec,
+    unit_label,
+    unit_conversion_factor,
     pointsize,
     xyticksize,
     title,
@@ -546,15 +528,11 @@ def plot_plane_grid(
 
     if include_grid:
 
-        grid_units = convert_grid(
-            grid=mapper.grid, units=units, kpc_per_arcsec=kpc_per_arcsec
-        )
-
-        aa.plot.grid(
-            grid=grid_units,
+        grid_plotters.plot_grid(
+            grid=mapper.grid,
             as_subplot=as_subplot,
-            unit_label=units,
-            unit_conversion_factor=kpc_per_arcsec,
+            unit_label=unit_label,
+            unit_conversion_factor=unit_conversion_factor,
             pointsize=pointsize,
             xyticksize=xyticksize,
             title=title,
@@ -568,8 +546,8 @@ def plot_border(
     include_border,
     mapper,
     as_subplot,
-    units,
-    kpc_per_arcsec,
+    unit_label,
+    unit_conversion_factor,
     pointsize,
     xyticksize,
     title,
@@ -580,16 +558,13 @@ def plot_border(
 
     if include_border:
 
-        border_arcsec = mapper.grid[mapper.grid.mask.regions._sub_border_1d_indexes]
-        border_units = convert_grid(
-            grid=border_arcsec, units=units, kpc_per_arcsec=kpc_per_arcsec
-        )
+        border = mapper.grid[mapper.grid.mask.regions._sub_border_1d_indexes]
 
-        aa.plot.grid(
-            grid=border_units,
+        grid_plotters.plot_grid(
+            grid=border,
             as_subplot=as_subplot,
-            unit_label=units,
-            unit_conversion_factor=kpc_per_arcsec,
+            unit_label=unit_label,
+            unit_conversion_factor=unit_conversion_factor,
             pointsize=pointsize,
             pointcolor="y",
             xyticksize=xyticksize,
@@ -684,11 +659,3 @@ def plot_source_plane_source_pixels(grid, mapper, source_pixels, point_colors):
                     s=8,
                     color=color,
                 )
-
-
-def convert_grid(grid, units, kpc_per_arcsec):
-
-    if units in "scaled" or kpc_per_arcsec is None:
-        return grid
-    elif units in "kpc":
-        return grid * kpc_per_arcsec

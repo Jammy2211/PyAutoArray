@@ -89,7 +89,7 @@ class Mask(np.ndarray):
         Parameters
         ----------
         shape : (int, int)
-            The (y,x) shape of the mask in units of pixels.
+            The (y,x) shape of the mask in unit_label of pixels.
         pixel_scales : float or (float, float)
             The arc-second to pixel conversion factor of each pixel.
         """
@@ -117,7 +117,7 @@ class Mask(np.ndarray):
         Parameters
         ----------
         shape: (int, int)
-            The (y,x) shape of the mask in units of pixels.
+            The (y,x) shape of the mask in unit_label of pixels.
         pixel_scales : (float, float)
             The arc-second to pixel conversion factor of each pixel.
         radius_scaled : float
@@ -163,7 +163,7 @@ class Mask(np.ndarray):
         Parameters
         ----------
         shape : (int, int)
-            The (y,x) shape of the mask in units of pixels.
+            The (y,x) shape of the mask in unit_label of pixels.
         pixel_scales : (float, float)
             The arc-second to pixel conversion factor of each pixel.
         inner_radius_scaled : float
@@ -216,7 +216,7 @@ class Mask(np.ndarray):
         Parameters
         ----------
         shape : (int, int)
-            The (y,x) shape of the mask in units of pixels.
+            The (y,x) shape of the mask in unit_label of pixels.
         pixel_scales : (float, float)
             The arc-second to pixel conversion factor of each pixel.
         inner_radius_scaled : float
@@ -270,7 +270,7 @@ class Mask(np.ndarray):
         Parameters
         ----------
         shape: (int, int)
-            The (y,x) shape of the mask in units of pixels.
+            The (y,x) shape of the mask in unit_label of pixels.
         pixel_scales : (float, float)
             The arc-second to pixel conversion factor of each pixel.
         major_axis_radius_scaled : float
@@ -327,7 +327,7 @@ class Mask(np.ndarray):
         Parameters
         ----------
         shape: (int, int)
-            The (y,x) shape of the mask in units of pixels.
+            The (y,x) shape of the mask in unit_label of pixels.
         pixel_scales : (float, float)
             The arc-second to pixel conversion factor of each pixel.
         inner_major_axis_radius_scaled : float
