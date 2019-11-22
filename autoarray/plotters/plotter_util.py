@@ -111,8 +111,8 @@ def set_yxticks(array, extent, use_scaled_units, unit_conversion_factor, xticks_
         If input, the yticks do not use the array's default yticks but instead overwrite them as these values.
     """
 
-    yticks = np.round(np.linspace(extent[2], extent[3], 5), 2)
-    xticks = np.round(np.linspace(extent[0], extent[1], 5), 2)
+    yticks = np.linspace(extent[2], extent[3], 5)
+    xticks = np.linspace(extent[0], extent[1], 5)
 
     if xticks_manual is not None and yticks_manual is not None:
         ytick_labels = np.asarray([yticks_manual[0], yticks_manual[3]])
@@ -124,8 +124,8 @@ def set_yxticks(array, extent, use_scaled_units, unit_conversion_factor, xticks_
         ytick_labels = np.round(np.linspace(extent[2], extent[3], 5), 2)
         xtick_labels = np.round(np.linspace(extent[0], extent[1], 5), 2)
     elif use_scaled_units and unit_conversion_factor is not None:
-        ytick_labels = np.round(np.linspace(extent[2], extent[3], 5), 2) * unit_conversion_factor
-        xtick_labels = np.round(np.linspace(extent[0], extent[1], 5), 2) * unit_conversion_factor
+        ytick_labels = np.round(np.linspace(extent[2]* unit_conversion_factor, extent[3]* unit_conversion_factor, 5), 2)
+        xtick_labels = np.round(np.linspace(extent[0]* unit_conversion_factor, extent[1]* unit_conversion_factor, 5), 2)
     else:
         raise exc.PlottingException("The y and y ticks cannot be set using the input options.")
 
