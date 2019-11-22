@@ -7,7 +7,7 @@ class TestRectangular:
     class TestGridIrregular:
         def test__pixelization_grid_returns_none_as_not_used(self, sub_grid_7x7):
 
-            pix = aa.pix.Rectangular(shp=(3, 3))
+            pix = aa.pix.Rectangular(shape=(3, 3))
 
             assert pix.sparse_grid_from_grid(grid=sub_grid_7x7) == None
 
@@ -15,7 +15,7 @@ class TestRectangular:
 class TestVoronoiMagnification:
     def test__number_of_pixels_setup_correct(self):
 
-        pix = aa.pix.VoronoiMagnification(shp=(3, 3))
+        pix = aa.pix.VoronoiMagnification(shape=(3, 3))
 
         assert pix.shape == (3, 3)
 
@@ -23,7 +23,7 @@ class TestVoronoiMagnification:
         self, sub_grid_7x7
     ):
 
-        pix = aa.pix.VoronoiMagnification(shp=(3, 3))
+        pix = aa.pix.VoronoiMagnification(shape=(3, 3))
 
         pixelization_grid = pix.sparse_grid_from_grid(grid=sub_grid_7x7)
 
