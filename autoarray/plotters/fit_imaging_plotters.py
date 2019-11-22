@@ -302,6 +302,7 @@ def individuals(
             fit=fit,
             mask=mask,
             points=points,
+            grid=grid,
             unit_label=unit_label,
             unit_conversion_factor=unit_conversion_factor,
             output_path=output_path,
