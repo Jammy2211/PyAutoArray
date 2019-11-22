@@ -275,13 +275,14 @@ def individual(
     include_origin=True,
     mask=None,
     positions=None,
+    unit_label="scaled",
+    unit_conversion_factor=None,
     plot_image=False,
     plot_noise_map=False,
     plot_psf=False,
     plot_signal_to_noise_map=False,
     plot_absolute_signal_to_noise_map=False,
     plot_potential_chi_squared_map=False,
-    unit_label="scaled",
     output_path=None,
     output_format="png",
 ):
@@ -306,6 +307,7 @@ def individual(
             mask=mask,
             positions=positions,
             unit_label=unit_label,
+            unit_conversion_factor=unit_conversion_factor,
             output_path=output_path,
             output_format=output_format,
         )
@@ -317,6 +319,7 @@ def individual(
             include_origin=include_origin,
             mask=mask,
             unit_label=unit_label,
+            unit_conversion_factor=unit_conversion_factor,
             output_path=output_path,
             output_format=output_format,
         )
@@ -326,6 +329,8 @@ def individual(
         psf(
             imaging=imaging,
             include_origin=include_origin,
+            unit_label=unit_label,
+            unit_conversion_factor=unit_conversion_factor,
             output_path=output_path,
             output_format=output_format,
         )
@@ -337,6 +342,7 @@ def individual(
             include_origin=include_origin,
             mask=mask,
             unit_label=unit_label,
+            unit_conversion_factor=unit_conversion_factor,
             output_path=output_path,
             output_format=output_format,
         )
@@ -348,6 +354,7 @@ def individual(
             include_origin=include_origin,
             mask=mask,
             unit_label=unit_label,
+            unit_conversion_factor=unit_conversion_factor,
             output_path=output_path,
             output_format=output_format,
         )
@@ -359,6 +366,7 @@ def individual(
             include_origin=include_origin,
             mask=mask,
             unit_label=unit_label,
+            unit_conversion_factor=unit_conversion_factor,
             output_path=output_path,
             output_format=output_format,
         )

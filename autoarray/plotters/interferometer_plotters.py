@@ -186,12 +186,13 @@ def subplot(
 
 def individual(
     interferometer,
+    unit_label="scaled",
+    unit_conversion_factor=None,
     plot_visibilities=False,
     plot_noise_map=False,
     plot_u_wavelengths=False,
     plot_v_wavelengths=False,
     plot_primary_beam=False,
-    unit_label="scaled",
     output_path=None,
     output_format="png",
 ):
@@ -213,6 +214,7 @@ def individual(
         visibilities(
             interferometer=interferometer,
             unit_label=unit_label,
+            unit_conversion_factor=unit_conversion_factor,
             output_path=output_path,
             output_format=output_format,
         )
@@ -222,6 +224,7 @@ def individual(
         noise_map(
             interferometer=interferometer,
             unit_label=unit_label,
+            unit_conversion_factor=unit_conversion_factor,
             output_path=output_path,
             output_format=output_format,
         )
@@ -231,6 +234,7 @@ def individual(
         u_wavelengths(
             interferometer=interferometer,
             unit_label=unit_label,
+            unit_conversion_factor=unit_conversion_factor,
             output_path=output_path,
             output_format=output_format,
         )
@@ -240,6 +244,7 @@ def individual(
         v_wavelengths(
             interferometer=interferometer,
             unit_label=unit_label,
+            unit_conversion_factor=unit_conversion_factor,
             output_path=output_path,
             output_format=output_format,
         )
@@ -249,6 +254,7 @@ def individual(
         primary_beam(
             interferometer=interferometer,
             unit_label=unit_label,
+            unit_conversion_factor=unit_conversion_factor,
             output_path=output_path,
             output_format=output_format,
         )
