@@ -6,7 +6,7 @@ array[0] = 3.0
 mask = aa.mask.circular(
     shape_2d=array.shape_2d,
     pixel_scales=array.pixel_scales,
-    radius_scaled=3.0,
+    radius=3.0,
     centre=(2.0, 2.0),
 )
 
