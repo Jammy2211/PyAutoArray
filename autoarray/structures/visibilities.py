@@ -80,6 +80,30 @@ class AbstractVisibilities(np.ndarray):
             array_2d=self, file_path=file_path, overwrite=overwrite
         )
 
+    @property
+    def scaled_maxima(self):
+        return (
+            np.max(self.real),
+            np.max(self.imag),
+        )
+
+    @property
+    def scaled_minima(self):
+        return (
+            np.min(self.real),
+            np.min(self.imag),
+        )
+
+    @property
+    def extent(self):
+        return np.asarray(
+            [
+                self.scaled_minima[1],
+                self.scaled_maxima[1],
+                self.scaled_minima[0],
+                self.scaled_maxima[0],
+            ]
+        )
 
 class Visibilities(AbstractVisibilities):
     @classmethod

@@ -138,7 +138,7 @@ def mask_2d_circular_from_shape_2d_pixel_scales_and_radius(
     Parameters
      ----------
     shape_2d: (int, int)
-        The (y,x) shape of the mask in units of pixels.
+        The (y,x) shape of the mask in unit_label of pixels.
     pixel_scales: float
         The arc-second to pixel conversion factor of each pixel.
     radius_scaled : float
@@ -188,7 +188,7 @@ def mask_2d_circular_annular_from_shape_2d_pixel_scales_and_radii(
     Parameters
      ----------
     shape_2d : (int, int)
-        The (y,x) shape of the mask in units of pixels.
+        The (y,x) shape of the mask in unit_label of pixels.
     pixel_scales : (float, float)
         The arc-second to pixel conversion factor of each pixel.
     inner_radius_scaled : float
@@ -289,7 +289,7 @@ def mask_2d_elliptical_from_shape_2d_pixel_scales_and_radius(
     Parameters
      ----------
     shape_2d: (int, int)
-        The (y,x) shape of the mask in units of pixels.
+        The (y,x) shape of the mask in unit_label of pixels.
     pixel_scales : (float, float)
         The arc-second to pixel conversion factor of each pixel.
     major_axis_radius_scaled : float
@@ -355,7 +355,7 @@ def mask_2d_elliptical_annular_from_shape_2d_pixel_scales_and_radius(
     Parameters
      ----------
     shape_2d: (int, int)
-        The (y,x) shape of the mask in units of pixels.
+        The (y,x) shape of the mask in unit_label of pixels.
     pixel_scales : (float, float)
         The arc-second to pixel conversion factor of each pixel.
     inner_major_axis_radius_scaled : float

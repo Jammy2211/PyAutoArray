@@ -15,8 +15,8 @@ from autoarray.plotters import (
 
 def subplot(
     interferometer,
-    units="scaled",
-    kpc_per_arcsec=None,
+    unit_conversion_factor=None,
+    unit_label="scaled",
     figsize=None,
     cmap="jet",
     cb_ticksize=10,
@@ -67,8 +67,8 @@ def subplot(
     visibilities(
         interferometer=interferometer,
         as_subplot=True,
-        units=units,
-        kpc_per_arcsec=kpc_per_arcsec,
+        unit_conversion_factor=unit_conversion_factor,
+        unit_label=unit_label,
         figsize=figsize,
         cmap=cmap,
         cb_ticksize=cb_ticksize,
@@ -90,8 +90,8 @@ def subplot(
     noise_map(
         interferometer=interferometer,
         as_subplot=True,
-        units=units,
-        kpc_per_arcsec=kpc_per_arcsec,
+        unit_conversion_factor=unit_conversion_factor,
+        unit_label=unit_label,
         figsize=figsize,
         cmap=cmap,
         cb_ticksize=cb_ticksize,
@@ -113,8 +113,8 @@ def subplot(
     u_wavelengths(
         interferometer=interferometer,
         as_subplot=True,
-        units=units,
-        kpc_per_arcsec=kpc_per_arcsec,
+        unit_conversion_factor=unit_conversion_factor,
+        unit_label=unit_label,
         figsize=figsize,
         plot_axis_type=plot_axis_type,
         titlesize=titlesize,
@@ -132,8 +132,8 @@ def subplot(
     v_wavelengths(
         interferometer=interferometer,
         as_subplot=True,
-        units=units,
-        kpc_per_arcsec=kpc_per_arcsec,
+        unit_conversion_factor=unit_conversion_factor,
+        unit_label=unit_label,
         figsize=figsize,
         plot_axis_type=plot_axis_type,
         titlesize=titlesize,
@@ -152,7 +152,7 @@ def subplot(
     #     interferometer=interferometer,
     #     include_origin=include_origin,
     #     as_subplot=True,
-    #     units=units,
+    #     unit_label=unit_label,
     #     kpc_per_arcsec=kpc_per_arcsec,
     #     figsize=figsize,
     #     aspect=aspect,
@@ -186,12 +186,13 @@ def subplot(
 
 def individual(
     interferometer,
+    unit_label="scaled",
+    unit_conversion_factor=None,
     plot_visibilities=False,
     plot_noise_map=False,
     plot_u_wavelengths=False,
     plot_v_wavelengths=False,
     plot_primary_beam=False,
-    units="scaled",
     output_path=None,
     output_format="png",
 ):
@@ -212,7 +213,8 @@ def individual(
 
         visibilities(
             interferometer=interferometer,
-            units=units,
+            unit_label=unit_label,
+            unit_conversion_factor=unit_conversion_factor,
             output_path=output_path,
             output_format=output_format,
         )
@@ -221,7 +223,8 @@ def individual(
 
         noise_map(
             interferometer=interferometer,
-            units=units,
+            unit_label=unit_label,
+            unit_conversion_factor=unit_conversion_factor,
             output_path=output_path,
             output_format=output_format,
         )
@@ -230,7 +233,8 @@ def individual(
 
         u_wavelengths(
             interferometer=interferometer,
-            units=units,
+            unit_label=unit_label,
+            unit_conversion_factor=unit_conversion_factor,
             output_path=output_path,
             output_format=output_format,
         )
@@ -239,7 +243,8 @@ def individual(
 
         v_wavelengths(
             interferometer=interferometer,
-            units=units,
+            unit_label=unit_label,
+            unit_conversion_factor=unit_conversion_factor,
             output_path=output_path,
             output_format=output_format,
         )
@@ -248,7 +253,8 @@ def individual(
 
         primary_beam(
             interferometer=interferometer,
-            units=units,
+            unit_label=unit_label,
+            unit_conversion_factor=unit_conversion_factor,
             output_path=output_path,
             output_format=output_format,
         )
@@ -257,8 +263,8 @@ def individual(
 def visibilities(
     interferometer,
     as_subplot=False,
-    units="scaled",
-    kpc_per_arcsec=None,
+    unit_conversion_factor=None,
+    unit_label="scaled",
     figsize=(7, 7),
     cmap="jet",
     cb_ticksize=10,
@@ -293,8 +299,8 @@ def visibilities(
     grid_plotters.plot_grid(
         grid=interferometer.visibilities,
         as_subplot=as_subplot,
-        unit_label=units,
-        unit_conversion_factor=kpc_per_arcsec,
+        unit_conversion_factor=unit_conversion_factor,
+        unit_label=unit_label,
         figsize=figsize,
         cmap=cmap,
         cb_ticksize=cb_ticksize,
@@ -316,8 +322,8 @@ def visibilities(
 def noise_map(
     interferometer,
     as_subplot=False,
-    units="scaled",
-    kpc_per_arcsec=None,
+    unit_conversion_factor=None,
+    unit_label="scaled",
     figsize=(7, 7),
     cmap="jet",
     cb_ticksize=10,
@@ -353,8 +359,8 @@ def noise_map(
         grid=interferometer.visibilities,
         colors=interferometer.noise_map[:, 0],
         as_subplot=as_subplot,
-        unit_label=units,
-        unit_conversion_factor=kpc_per_arcsec,
+        unit_conversion_factor=unit_conversion_factor,
+        unit_label=unit_label,
         figsize=figsize,
         cmap=cmap,
         cb_ticksize=cb_ticksize,
@@ -377,8 +383,8 @@ def u_wavelengths(
     interferometer,
     as_subplot=False,
     label="Wavelengths",
-    units="",
-    kpc_per_arcsec=None,
+    unit_conversion_factor=None,
+        unit_label="",
     figsize=(14, 7),
     plot_axis_type="linear",
     ylabel="U-Wavelength",
@@ -413,8 +419,8 @@ def u_wavelengths(
         as_subplot=as_subplot,
         label=label,
         plot_axis_type=plot_axis_type,
-        unit_label=units,
-        unit_conversion_factor=kpc_per_arcsec,
+        unit_conversion_factor=unit_conversion_factor,
+        unit_label=unit_label,
         figsize=figsize,
         title=title,
         ylabel=ylabel,
@@ -433,8 +439,8 @@ def v_wavelengths(
     interferometer,
     as_subplot=False,
     label="Wavelengths",
-    units="",
-    kpc_per_arcsec=None,
+    unit_conversion_factor=None,
+    unit_label="",
     figsize=(14, 7),
     plot_axis_type="linear",
     ylabel="V-Wavelength",
@@ -469,8 +475,8 @@ def v_wavelengths(
         as_subplot=as_subplot,
         label=label,
         plot_axis_type=plot_axis_type,
-        unit_label=units,
-        unit_conversion_factor=kpc_per_arcsec,
+        unit_conversion_factor=unit_conversion_factor,
+        unit_label=unit_label,
         figsize=figsize,
         title=title,
         ylabel=ylabel,
@@ -489,8 +495,9 @@ def primary_beam(
     interferometer,
     include_origin=True,
     as_subplot=False,
-    units="scaled",
-    kpc_per_arcsec=None,
+    use_scaled_units=True,
+    unit_conversion_factor=None,
+    unit_label="scaled",
     figsize=(7, 7),
     aspect="square",
     cmap="jet",
@@ -529,8 +536,9 @@ def primary_beam(
         array=interferometer.primary_beam,
         include_origin=include_origin,
         as_subplot=as_subplot,
-        unit_label=units,
-        unit_conversion_factor=kpc_per_arcsec,
+        use_scaled_units=use_scaled_units,
+        unit_conversion_factor=unit_conversion_factor,
+        unit_label=unit_label,
         figsize=figsize,
         aspect=aspect,
         cmap=cmap,

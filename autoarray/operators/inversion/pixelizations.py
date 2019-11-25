@@ -24,7 +24,7 @@ class Pixelization(object):
 
 
 class Rectangular(Pixelization):
-    def __init__(self, shp=(3, 3)):
+    def __init__(self, shape=(3, 3)):
         """A rectangular pixelization, where pixels are defined on a Cartesian and uniform grid of shape \ 
         (rows, columns).
 
@@ -32,16 +32,16 @@ class Rectangular(Pixelization):
 
         Parameters
         -----------
-        shp : (int, int)
+        shape : (int, int)
             The dimensions of the rectangular grid of pixels (y_pixels, x_pixel)
         """
 
-        if shp[0] <= 2 or shp[1] <= 2:
+        if shape[0] <= 2 or shape[1] <= 2:
             raise exc.PixelizationException(
                 "The rectangular pixelization must be at least dimensions 3x3"
             )
 
-        self.shape = (int(shp[0]), int(shp[1]))
+        self.shape = (int(shape[0]), int(shape[1]))
         self.pixels = self.shape[0] * self.shape[1]
         super(Rectangular, self).__init__()
 
@@ -140,18 +140,18 @@ class Voronoi(Pixelization):
 
 
 class VoronoiMagnification(Voronoi):
-    def __init__(self, shp=(3, 3)):
+    def __init__(self, shape=(3, 3)):
         """A pixelization which adapts to the magnification pattern of a lens's mass model and uses a Voronoi \
         pixelization to discretize the grid into pixels.
 
         Parameters
         ----------
-        shp : (int, int)
+        shape : (int, int)
             The shape of the unmasked sparse-grid which is laid over the masked image, in order to derive the \
             adaptive-magnification pixelization (see *ImagePlanePixelization*)
         """
         super(VoronoiMagnification, self).__init__()
-        self.shape = (int(shp[0]), int(shp[1]))
+        self.shape = (int(shape[0]), int(shape[1]))
         self.pixels = self.shape[0] * self.shape[1]
 
     def sparse_grid_from_grid(self, grid, hyper_image=None, seed=1):
