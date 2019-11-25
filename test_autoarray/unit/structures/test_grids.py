@@ -661,7 +661,7 @@ class TestGrid:
     def test__masked_shape_2d_arcsec(self):
 
         mask = aa.mask.circular(
-            shape_2d=(3, 3), radius_scaled=1.0, pixel_scales=(1.0, 1.0), sub_size=1
+            shape_2d=(3, 3), radius=1.0, pixel_scales=(1.0, 1.0), sub_size=1
         )
 
         grid = grids.Grid(grid_1d=np.array([[1.5, 1.0], [-1.5, -1.0]]), mask=mask)
@@ -708,7 +708,7 @@ class TestGrid:
     def test__yticks(self):
 
         mask = aa.mask.circular(
-            shape_2d=(3, 3), radius_scaled=1.0, pixel_scales=(1.0, 1.0), sub_size=1
+            shape_2d=(3, 3), radius=1.0, pixel_scales=(1.0, 1.0), sub_size=1
         )
 
         grid = grids.Grid(grid_1d=np.array([[1.5, 1.0], [-1.5, -1.0]]), mask=mask)
@@ -722,7 +722,7 @@ class TestGrid:
 
     def test__xticks(self):
         mask = aa.mask.circular(
-            shape_2d=(3, 3), radius_scaled=1.0, pixel_scales=(1.0, 1.0), sub_size=1
+            shape_2d=(3, 3), radius=1.0, pixel_scales=(1.0, 1.0), sub_size=1
         )
 
         grid = grids.Grid(grid_1d=np.array([[1.0, 1.5], [-1.0, -1.5]]), mask=mask)
@@ -964,7 +964,7 @@ class TestGridBorder(object):
 
     def test__inside_border_no_relocations(self):
         mask = aa.mask.circular(
-            shape_2d=(30, 30), radius_scaled=1.0, pixel_scales=(0.1, 0.1), sub_size=1
+            shape_2d=(30, 30), radius=1.0, pixel_scales=(0.1, 0.1), sub_size=1
         )
 
         grid = aa.masked.grid.from_mask(mask=mask)
@@ -982,7 +982,7 @@ class TestGridBorder(object):
         assert relocated_grid.sub_size == 1
 
         mask = aa.mask.circular(
-            shape_2d=(30, 30), radius_scaled=1.0, pixel_scales=(0.1, 0.1), sub_size=2
+            shape_2d=(30, 30), radius=1.0, pixel_scales=(0.1, 0.1), sub_size=2
         )
 
         grid = aa.masked.grid.from_mask(mask=mask)
@@ -1001,7 +1001,7 @@ class TestGridBorder(object):
 
     def test__outside_border_are_relocations(self):
         mask = aa.mask.circular(
-            shape_2d=(30, 30), radius_scaled=1.0, pixel_scales=(0.1, 0.1), sub_size=1
+            shape_2d=(30, 30), radius=1.0, pixel_scales=(0.1, 0.1), sub_size=1
         )
 
         grid = aa.masked.grid.from_mask(mask=mask)
@@ -1019,7 +1019,7 @@ class TestGridBorder(object):
         assert relocated_grid.sub_size == 1
 
         mask = aa.mask.circular(
-            shape_2d=(30, 30), radius_scaled=1.0, pixel_scales=(0.1, 0.1), sub_size=2
+            shape_2d=(30, 30), radius=1.0, pixel_scales=(0.1, 0.1), sub_size=2
         )
 
         grid = aa.masked.grid.from_mask(mask=mask)
@@ -1041,7 +1041,7 @@ class TestGridBorder(object):
     ):
         mask = aa.mask.circular(
             shape_2d=(60, 60),
-            radius_scaled=1.0,
+            radius=1.0,
             pixel_scales=(0.1, 0.1),
             centre=(1.0, 1.0),
             sub_size=1,
@@ -1068,7 +1068,7 @@ class TestGridBorder(object):
 
         mask = aa.mask.circular(
             shape_2d=(60, 60),
-            radius_scaled=1.0,
+            radius=1.0,
             pixel_scales=(0.1, 0.1),
             centre=(1.0, 1.0),
             sub_size=2,
@@ -2161,8 +2161,8 @@ class TestInterpolator:
             shape_2d=(20, 20),
             pixel_scales=(1.0, 1.0),
             sub_size=1,
-            inner_radius_scaled=3.0,
-            outer_radius_scaled=8.0,
+            inner_radius=3.0,
+            outer_radius=8.0,
         )
 
         grid = aa.masked.grid.from_mask(mask=mask)
@@ -2193,8 +2193,8 @@ class TestInterpolator:
             shape_2d=(24, 24),
             pixel_scales=(1.0, 1.0),
             sub_size=1,
-            inner_radius_scaled=3.0,
-            outer_radius_scaled=8.0,
+            inner_radius=3.0,
+            outer_radius=8.0,
             centre=(3.0, 3.0),
         )
 
@@ -2226,8 +2226,8 @@ class TestInterpolator:
             shape_2d=(28, 28),
             pixel_scales=(1.0, 1.0),
             sub_size=1,
-            inner_radius_scaled=3.0,
-            outer_radius_scaled=8.0,
+            inner_radius=3.0,
+            outer_radius=8.0,
             centre=(3.0, 3.0),
         )
 
