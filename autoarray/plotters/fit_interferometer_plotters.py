@@ -1,11 +1,355 @@
-from autoarray.plotters import grid_plotters
+from autoarray import conf
+import matplotlib
+
+backend = conf.instance.visualize.get("figures", "backend", str)
+matplotlib.use(backend)
+from matplotlib import pyplot as plt
+
+from autoarray.plotters import grid_plotters, inversion_plotters, plotter_util
+
+
+
+def subplot(
+    fit,
+    unit_conversion_factor=None,
+    unit_label="arcsec",
+    figsize=None,
+    cmap="jet",
+    cb_ticksize=10,
+    cb_fraction=0.047,
+    cb_pad=0.01,
+    cb_tick_values=None,
+    cb_tick_labels=None,
+    titlesize=10,
+    xlabelsize=10,
+    ylabelsize=10,
+    xyticksize=10,
+    grid_pointsize=1,
+    output_path=None,
+    output_filename="fit",
+    output_format="show",
+):
+
+    rows, columns, figsize_tool = plotter_util.get_subplot_rows_columns_figsize(
+        number_subplots=6
+    )
+
+    if figsize is None:
+        figsize = figsize_tool
+
+    plt.figure(figsize=figsize)
+
+    plt.subplot(rows, columns, 1)
+
+    visibilities(
+        fit=fit,
+        as_subplot=True,
+        unit_conversion_factor=unit_conversion_factor,
+        unit_label=unit_label,
+        figsize=figsize,
+        cmap=cmap,
+        cb_ticksize=cb_ticksize,
+        cb_fraction=cb_fraction,
+        cb_pad=cb_pad,
+        cb_tick_values=cb_tick_values,
+        cb_tick_labels=cb_tick_labels,
+        titlesize=titlesize,
+        xlabelsize=xlabelsize,
+        ylabelsize=ylabelsize,
+        xyticksize=xyticksize,
+        pointsize=grid_pointsize,
+        output_path=output_path,
+        output_filename="",
+        output_format=output_format,
+    )
+
+    plt.subplot(rows, columns, 2)
+
+    signal_to_noise_map(
+        fit=fit,
+        as_subplot=True,
+        unit_label=unit_label,
+        unit_conversion_factor=unit_conversion_factor,
+        figsize=figsize,
+        cmap=cmap,
+        cb_ticksize=cb_ticksize,
+        cb_fraction=cb_fraction,
+        cb_pad=cb_pad,
+        cb_tick_values=cb_tick_values,
+        cb_tick_labels=cb_tick_labels,
+        titlesize=titlesize,
+        xlabelsize=xlabelsize,
+        ylabelsize=ylabelsize,
+        xyticksize=xyticksize,
+        output_path=output_path,
+        output_filename="",
+        output_format=output_format,
+    )
+
+    plt.subplot(rows, columns, 3)
+
+    model_visibilities(
+        fit=fit,
+        as_subplot=True,
+        unit_conversion_factor=unit_conversion_factor,
+        unit_label=unit_label,
+        figsize=figsize,
+        cmap=cmap,
+        cb_ticksize=cb_ticksize,
+        cb_fraction=cb_fraction,
+        cb_pad=cb_pad,
+        cb_tick_values=cb_tick_values,
+        cb_tick_labels=cb_tick_labels,
+        titlesize=titlesize,
+        xlabelsize=xlabelsize,
+        ylabelsize=ylabelsize,
+        xyticksize=xyticksize,
+        output_path=output_path,
+        output_filename="",
+        output_format=output_format,
+    )
+
+    plt.subplot(rows, columns, 4)
+
+    residual_map(
+        fit=fit,
+        as_subplot=True,
+        unit_conversion_factor=unit_conversion_factor,
+        unit_label=unit_label,
+        figsize=figsize,
+        cmap=cmap,
+        cb_ticksize=cb_ticksize,
+        cb_fraction=cb_fraction,
+        cb_pad=cb_pad,
+        cb_tick_values=cb_tick_values,
+        cb_tick_labels=cb_tick_labels,
+        titlesize=titlesize,
+        xlabelsize=xlabelsize,
+        ylabelsize=ylabelsize,
+        xyticksize=xyticksize,
+        output_path=output_path,
+        output_filename="",
+        output_format=output_format,
+    )
+
+    plt.subplot(rows, columns, 5)
+
+    normalized_residual_map(
+        fit=fit,
+        as_subplot=True,
+        unit_label=unit_label,
+        unit_conversion_factor=unit_conversion_factor,
+        figsize=figsize,
+        cmap=cmap,
+        cb_ticksize=cb_ticksize,
+        cb_fraction=cb_fraction,
+        cb_pad=cb_pad,
+        cb_tick_values=cb_tick_values,
+        cb_tick_labels=cb_tick_labels,
+        titlesize=titlesize,
+        xlabelsize=xlabelsize,
+        ylabelsize=ylabelsize,
+        xyticksize=xyticksize,
+        output_path=output_path,
+        output_filename="",
+        output_format=output_format,
+    )
+
+    plt.subplot(rows, columns, 6)
+
+    chi_squared_map(
+        fit=fit,
+        as_subplot=True,
+        unit_conversion_factor=unit_conversion_factor,
+        unit_label=unit_label,
+        figsize=figsize,
+        cmap=cmap,
+        cb_ticksize=cb_ticksize,
+        cb_fraction=cb_fraction,
+        cb_pad=cb_pad,
+        cb_tick_values=cb_tick_values,
+        cb_tick_labels=cb_tick_labels,
+        titlesize=titlesize,
+        xlabelsize=xlabelsize,
+        ylabelsize=ylabelsize,
+        xyticksize=xyticksize,
+        output_path=output_path,
+        output_filename="",
+        output_format=output_format,
+    )
+
+    plotter_util.output_subplot_array(
+        output_path=output_path,
+        output_filename=output_filename,
+        output_format=output_format,
+    )
+
+    plt.close()
+
+
+def individuals(
+    fit,
+    plot_visibilities=False,
+    plot_noise_map=False,
+    plot_signal_to_noise_map=False,
+    plot_model_visibilities=False,
+    plot_residual_map=False,
+    plot_normalized_residual_map=False,
+    plot_chi_squared_map=False,
+    plot_inversion_residual_map=False,
+    plot_inversion_normalized_residual_map=False,
+    plot_inversion_chi_squared_map=False,
+    plot_inversion_regularization_weight_map=False,
+    unit_conversion_factor=None,
+    unit_label="arcsec",
+    output_path=None,
+    output_format="show",
+):
+    """Plot the model datas_ of an analysis, using the *Fitter* class object.
+
+    The visualization and output type can be fully customized.
+
+    Parameters
+    -----------
+    fit : autolens.lens.fitting.Fitter
+        Class containing fit between the model datas_ and observed lens datas_ (including residual_map, chi_squared_map etc.)
+    output_path : str
+        The path where the datas_ is output if the output_type is a file format (e.g. png, fits)
+    output_format : str
+        How the datas_ is output. File formats (e.g. png, fits) output the datas_ to harddisk. 'show' displays the datas_ \
+        in the python interpreter window.
+    """
+
+    if plot_visibilities:
+
+        visibilities(
+            fit=fit,
+            unit_label=unit_label,
+            unit_conversion_factor=unit_conversion_factor,
+            output_path=output_path,
+            output_format=output_format,
+        )
+
+    if plot_noise_map:
+
+        noise_map(
+            fit=fit,
+            unit_label=unit_label,
+            unit_conversion_factor=unit_conversion_factor,
+            output_path=output_path,
+            output_format=output_format,
+        )
+
+    if plot_signal_to_noise_map:
+
+        signal_to_noise_map(
+            fit=fit,
+            unit_label=unit_label,
+            unit_conversion_factor=unit_conversion_factor,
+            output_path=output_path,
+            output_format=output_format,
+        )
+
+    if plot_model_visibilities:
+
+        model_visibilities(
+            fit=fit,
+            unit_label=unit_label,
+            unit_conversion_factor=unit_conversion_factor,
+            output_path=output_path,
+            output_format=output_format,
+        )
+
+    if plot_residual_map:
+
+        residual_map(
+            fit=fit,
+            unit_label=unit_label,
+            unit_conversion_factor=unit_conversion_factor,
+            output_path=output_path,
+            output_format=output_format,
+        )
+
+    if plot_normalized_residual_map:
+
+        normalized_residual_map(
+            fit=fit,
+            unit_label=unit_label,
+            unit_conversion_factor=unit_conversion_factor,
+            output_path=output_path,
+            output_format=output_format,
+        )
+
+    if plot_chi_squared_map:
+
+        chi_squared_map(
+            fit=fit,
+            unit_label=unit_label,
+            unit_conversion_factor=unit_conversion_factor,
+            output_path=output_path,
+            output_format=output_format,
+        )
+
+    if plot_inversion_residual_map:
+
+        if fit.total_inversions == 1:
+
+            inversion_plotters.residual_map(
+                inversion=fit.inversion,
+                include_grid=True,
+                unit_label=unit_label,
+                figsize=(20, 20),
+                output_path=output_path,
+                output_format=output_format,
+            )
+
+    if plot_inversion_normalized_residual_map:
+
+        if fit.total_inversions == 1:
+
+            inversion_plotters.normalized_residual_map(
+                inversion=fit.inversion,
+                include_grid=True,
+                unit_label=unit_label,
+                figsize=(20, 20),
+                output_path=output_path,
+                output_format=output_format,
+            )
+
+    if plot_inversion_chi_squared_map:
+
+        if fit.total_inversions == 1:
+
+            inversion_plotters.chi_squared_map(
+                inversion=fit.inversion,
+                include_grid=True,
+                unit_conversion_factor=unit_conversion_factor,
+                unit_label=unit_label,
+                figsize=(20, 20),
+                output_path=output_path,
+                output_format=output_format,
+            )
+
+    if plot_inversion_regularization_weight_map:
+
+        if fit.total_inversions == 1:
+
+            inversion_plotters.regularization_weights(
+                inversion=fit.inversion,
+                include_grid=True,
+                unit_conversion_factor=unit_conversion_factor,
+                unit_label=unit_label,
+                figsize=(20, 20),
+                output_path=output_path,
+                output_format=output_format,
+            )
 
 
 def visibilities(
     fit,
     as_subplot=False,
-    units="scaled",
-    kpc_per_arcsec=None,
+    unit_conversion_factor=None,
+    unit_label="scaled",
     figsize=(7, 7),
     cmap="jet",
     cb_ticksize=10,
@@ -37,8 +381,8 @@ def visibilities(
     grid_plotters.plot_grid(
         grid=fit.visibilities,
         as_subplot=as_subplot,
-        unit_label=units,
-        unit_conversion_factor=kpc_per_arcsec,
+        unit_conversion_factor=unit_conversion_factor,
+        unit_label=unit_label,
         figsize=figsize,
         cmap=cmap,
         cb_ticksize=cb_ticksize,
@@ -61,8 +405,8 @@ def visibilities(
 def noise_map(
     fit,
     as_subplot=False,
-    units="scaled",
-    kpc_per_arcsec=None,
+    unit_conversion_factor=None,
+    unit_label="scaled",
     figsize=(7, 7),
     cmap="jet",
     cb_ticksize=10,
@@ -94,8 +438,8 @@ def noise_map(
         grid=fit.visibilities,
         colors=fit.noise_map[:, 0],
         as_subplot=as_subplot,
-        unit_label=units,
-        unit_conversion_factor=kpc_per_arcsec,
+        unit_conversion_factor=unit_conversion_factor,
+        unit_label=unit_label,
         figsize=figsize,
         cmap=cmap,
         cb_ticksize=cb_ticksize,
@@ -117,8 +461,8 @@ def noise_map(
 def signal_to_noise_map(
     fit,
     as_subplot=False,
-    units="scaled",
-    kpc_per_arcsec=None,
+    unit_conversion_factor=None,
+    unit_label="scaled",
     figsize=(7, 7),
     cmap="jet",
     cb_ticksize=10,
@@ -150,8 +494,8 @@ def signal_to_noise_map(
         grid=fit.visibilities,
         colors=fit.signal_to_noise_map[:, 0],
         as_subplot=as_subplot,
-        unit_label=units,
-        unit_conversion_factor=kpc_per_arcsec,
+        unit_conversion_factor=unit_conversion_factor,
+        unit_label=unit_label,
         figsize=figsize,
         cmap=cmap,
         cb_ticksize=cb_ticksize,
@@ -173,8 +517,8 @@ def signal_to_noise_map(
 def model_visibilities(
     fit,
     as_subplot=False,
-    units="scaled",
-    kpc_per_arcsec=None,
+    unit_conversion_factor=None,
+    unit_label="scaled",
     figsize=(7, 7),
     cmap="jet",
     cb_ticksize=10,
@@ -206,8 +550,8 @@ def model_visibilities(
         grid=fit.visibilities,
         colors=fit.model_visibilities[:, 0],
         as_subplot=as_subplot,
-        unit_label=units,
-        unit_conversion_factor=kpc_per_arcsec,
+        unit_conversion_factor=unit_conversion_factor,
+        unit_label=unit_label,
         figsize=figsize,
         cmap=cmap,
         cb_ticksize=cb_ticksize,
@@ -229,8 +573,8 @@ def model_visibilities(
 def residual_map(
     fit,
     as_subplot=False,
-    units="scaled",
-    kpc_per_arcsec=None,
+    unit_conversion_factor=None,
+    unit_label="scaled",
     figsize=(7, 7),
     cmap="jet",
     cb_ticksize=10,
@@ -262,8 +606,8 @@ def residual_map(
         grid=fit.visibilities,
         colors=fit.residual_map[:, 0],
         as_subplot=as_subplot,
-        unit_label=units,
-        unit_conversion_factor=kpc_per_arcsec,
+        unit_conversion_factor=unit_conversion_factor,
+        unit_label=unit_label,
         figsize=figsize,
         cmap=cmap,
         cb_ticksize=cb_ticksize,
@@ -285,8 +629,8 @@ def residual_map(
 def normalized_residual_map(
     fit,
     as_subplot=False,
-    units="scaled",
-    kpc_per_arcsec=None,
+    unit_conversion_factor=None,
+    unit_label="scaled",
     figsize=(7, 7),
     cmap="jet",
     cb_ticksize=10,
@@ -318,8 +662,8 @@ def normalized_residual_map(
         grid=fit.visibilities,
         colors=fit.normalized_residual_map[:, 0],
         as_subplot=as_subplot,
-        unit_label=units,
-        unit_conversion_factor=kpc_per_arcsec,
+        unit_conversion_factor=unit_conversion_factor,
+        unit_label=unit_label,
         figsize=figsize,
         cmap=cmap,
         cb_ticksize=cb_ticksize,
@@ -341,8 +685,8 @@ def normalized_residual_map(
 def chi_squared_map(
     fit,
     as_subplot=False,
-    units="scaled",
-    kpc_per_arcsec=None,
+    unit_conversion_factor=None,
+    unit_label="scaled",
     figsize=(7, 7),
     cmap="jet",
     cb_ticksize=10,
@@ -374,8 +718,8 @@ def chi_squared_map(
         grid=fit.visibilities,
         colors=fit.chi_squared_map[:, 0],
         as_subplot=as_subplot,
-        unit_label=units,
-        unit_conversion_factor=kpc_per_arcsec,
+        unit_conversion_factor=unit_conversion_factor,
+        unit_label=unit_label,
         figsize=figsize,
         cmap=cmap,
         cb_ticksize=cb_ticksize,
@@ -392,3 +736,19 @@ def chi_squared_map(
         output_format=output_format,
         output_filename=output_filename,
     )
+
+
+def get_mask(fit, include_mask):
+    """Get the masks of the fit if the masks should be plotted on the fit.
+
+    Parameters
+    -----------
+    fit : datas.fitting.fitting.AbstractLensHyperFit
+        The fit to the datas, which includes a lisrt of every model image, residual_map, chi-squareds, etc.
+    include_mask : bool
+        If *True*, the masks is plotted on the fit's datas.
+    """
+    if include_mask:
+        return fit.mask
+    else:
+        return None

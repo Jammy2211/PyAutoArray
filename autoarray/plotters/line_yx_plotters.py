@@ -53,6 +53,8 @@ def plot_line(
 
     set_legend(plot_legend=plot_legend, legend_fontsize=legend_fontsize)
 
+    set_xticks(extent=[np.min(x), np.max(x)], unit_conversion_factor=unit_conversion_factor, xticks_manual=None)
+
     plotter_util.output_figure(
         array=None,
         as_subplot=as_subplot,
@@ -84,16 +86,16 @@ def set_xy_labels_and_ticksize(
     """Set the x and y labels of the figure, and set the fontsize of those labels.
 
     The x label is always the distance scale / radius, thus the x-label is either arc-seconds or kpc and depending \
-    on the units the figure is plotted in.
+    on the unit_label the figure is plotted in.
 
     The ylabel is the physical quantity being plotted and is passed as an input parameter.
 
     Parameters
     -----------
     unit_label : str
-        The units of the y / x axis of the plots.
+        The unit_label of the y / x axis of the plots.
     unit_conversion_factor : float
-        The conversion factor between arc-seconds and kiloparsecs, required to plotters the units in kpc.
+        The conversion factor between arc-seconds and kiloparsecs, required to plotters the unit_label in kpc.
     ylabel : str
         The y-label of the figure, which is the physical quantity being plotted.
     xlabelsize : int
@@ -107,6 +109,39 @@ def set_xy_labels_and_ticksize(
     plt.ylabel(ylabel=ylabel, fontsize=ylabelsize)
     plt.xlabel("x (" + unit_label + ")", fontsize=xlabelsize)
     plt.tick_params(labelsize=xyticksize)
+
+
+def set_xticks(extent, unit_conversion_factor, xticks_manual):
+    """Get the extent of the dimensions of the array in the unit_label of the figure (e.g. arc-seconds or kpc).
+
+    This is used to set the extent of the array and thus the y / x axis limits.
+
+    Parameters
+    -----------
+    array : data_type.array.aa.Scaled
+        The 2D array of data_type which is plotted.
+    unit_label : str
+        The label for the unit_label of the y / x axis of the plots.
+    unit_conversion_factor : float
+        The conversion factor between arc-seconds and kiloparsecs, required to plotters the unit_label in kpc.
+    xticks_manual :  [] or None
+        If input, the xticks do not use the array's default xticks but instead overwrite them as these values.
+    yticks_manual :  [] or None
+        If input, the yticks do not use the array's default yticks but instead overwrite them as these values.
+    """
+
+    xticks = np.round(np.linspace(extent[0], extent[1], 5), 2)
+
+    if xticks_manual is not None:
+        xtick_labels = np.asarray([xticks_manual[0], xticks_manual[3]])
+    elif unit_conversion_factor is None:
+        xtick_labels = np.round(np.linspace(extent[0], extent[1], 5), 2)
+    elif unit_conversion_factor is not None:
+        xtick_labels = np.round(np.linspace(extent[0], extent[1], 5), 2) * unit_conversion_factor
+    else:
+        raise exc.PlottingException("The y and y ticks cannot be set using the input options.")
+
+    plt.xticks(ticks=xticks, labels=xtick_labels)
 
 def plot_vertical_lines(vertical_lines, vertical_line_labels, unit_conversion_factor):
 

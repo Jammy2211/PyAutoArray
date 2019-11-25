@@ -1184,7 +1184,7 @@ class TestCompareToFull2dConv:
         blurred_image = aa.array.manual_2d(array=blurred_image)
 
         mask = aa.mask.circular(
-            shape_2d=(30, 30), pixel_scales=(1.0, 1.0), sub_size=1, radius_scaled=4.0
+            shape_2d=(30, 30), pixel_scales=(1.0, 1.0), sub_size=1, radius=4.0
         )
 
         masked_image = mask.mapping.array_from_array_2d(array_2d=image.in_2d)
