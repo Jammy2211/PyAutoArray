@@ -133,7 +133,7 @@ class Mask(np.ndarray):
         mask_2d = mask_util.mask_2d_circular_from_shape_2d_pixel_scales_and_radius(
             shape_2d=shape_2d,
             pixel_scales=pixel_scales,
-            radius_scaled=radius,
+            radius=radius,
             centre=centre,
         )
 
@@ -181,8 +181,8 @@ class Mask(np.ndarray):
         mask_2d = mask_util.mask_2d_circular_annular_from_shape_2d_pixel_scales_and_radii(
             shape_2d=shape_2d,
             pixel_scales=pixel_scales,
-            inner_radius_scaled=inner_radius,
-            outer_radius_scaled=outer_radius,
+            inner_radius=inner_radius,
+            outer_radius=outer_radius,
             centre=centre,
         )
 
@@ -238,8 +238,8 @@ class Mask(np.ndarray):
         mask_2d = mask_util.mask_2d_circular_anti_annular_from_shape_2d_pixel_scales_and_radii(
             shape_2d=shape_2d,
             pixel_scales=pixel_scales,
-            inner_radius_scaled=inner_radius,
-            outer_radius_scaled=outer_radius,
+            inner_radius=inner_radius,
+            outer_radius=outer_radius,
             outer_radius_2_scaled=outer_radius_2,
             centre=centre,
         )
@@ -291,7 +291,7 @@ class Mask(np.ndarray):
         mask_2d = mask_util.mask_2d_elliptical_from_shape_2d_pixel_scales_and_radius(
             shape_2d=shape_2d,
             pixel_scales=pixel_scales,
-            major_axis_radius_scaled=major_axis_radius,
+            major_axis_radius=major_axis_radius,
             axis_ratio=axis_ratio,
             phi=phi,
             centre=centre,
@@ -355,10 +355,10 @@ class Mask(np.ndarray):
         mask_2d = mask_util.mask_2d_elliptical_annular_from_shape_2d_pixel_scales_and_radius(
             shape_2d=shape_2d,
             pixel_scales=pixel_scales,
-            inner_major_axis_radius_scaled=inner_major_axis_radius,
+            inner_major_axis_radius=inner_major_axis_radius,
             inner_axis_ratio=inner_axis_ratio,
             inner_phi=inner_phi,
-            outer_major_axis_radius_scaled=outer_major_axis_radius,
+            outer_major_axis_radius=outer_major_axis_radius,
             outer_axis_ratio=outer_axis_ratio,
             outer_phi=outer_phi,
             centre=centre,
