@@ -9,8 +9,8 @@ from autoarray.plotters import (
     array_plotters,
     grid_plotters,
     line_yx_plotters,
-    plotter_util,
 )
+from autoarray.util import plotter_util
 
 
 def subplot(
