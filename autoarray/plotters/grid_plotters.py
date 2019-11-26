@@ -7,8 +7,7 @@ from matplotlib import pyplot as plt
 import numpy as np
 import itertools
 
-from autoarray.util import array_util
-from autoarray.plotters import plotter_util
+from autoarray.util import array_util, plotter_util
 
 
 def plot_grid(
