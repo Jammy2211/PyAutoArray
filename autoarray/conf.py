@@ -3,6 +3,13 @@ import os
 from copy import deepcopy
 
 
+def get_matplotlib_backend():
+    try:
+        return instance.visualize.get("figures", "backend", str)
+    except Exception:
+        return "TKAgg"
+
+
 def family(current_class):
     yield current_class
     for next_class in current_class.__bases__:

@@ -220,7 +220,6 @@ class AbstractArray(abstract_structure.AbstractStructure):
 
 
 class Array(AbstractArray):
-
     @classmethod
     def manual_1d(
         cls, array, shape_2d, pixel_scales=None, sub_size=1, origin=(0.0, 0.0)
@@ -255,10 +254,7 @@ class Array(AbstractArray):
         if type(pixel_scales) is float:
             pixel_scales = (pixel_scales, pixel_scales)
 
-        shape_2d = (
-            int(array.shape[0] / sub_size),
-            int(array.shape[1] / sub_size),
-        )
+        shape_2d = (int(array.shape[0] / sub_size), int(array.shape[1] / sub_size))
 
         mask = msk.Mask.unmasked(
             shape_2d=shape_2d,

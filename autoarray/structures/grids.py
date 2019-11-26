@@ -142,10 +142,10 @@ class AbstractGrid(abstract_structure.AbstractStructure):
 
         if isinstance(obj, Grid):
 
-            if hasattr(obj, 'interpolator'):
+            if hasattr(obj, "interpolator"):
                 self.interpolator = obj.interpolator
 
-            if hasattr(obj, 'binned'):
+            if hasattr(obj, "binned"):
                 self.binned = obj.binned
 
         if hasattr(obj, "_sub_border_1d_indexes"):
@@ -434,9 +434,7 @@ class Grid(AbstractGrid):
         return mask.mapping.grid_from_sub_grid_2d(sub_grid_2d=sub_grid_2d)
 
     @classmethod
-    def manual_1d(
-        cls, grid, shape_2d, pixel_scales, sub_size=1, origin=(0.0, 0.0)
-    ):
+    def manual_1d(cls, grid, shape_2d, pixel_scales, sub_size=1, origin=(0.0, 0.0)):
 
         if type(grid) is list:
             grid = np.asarray(grid)

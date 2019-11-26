@@ -1,7 +1,7 @@
 from autoarray import conf
 import matplotlib
 
-backend = conf.instance.visualize.get("figures", "backend", str)
+backend = conf.get_matplotlib_backend()
 matplotlib.use(backend)
 from matplotlib import pyplot as plt
 
@@ -384,7 +384,7 @@ def u_wavelengths(
     as_subplot=False,
     label="Wavelengths",
     unit_conversion_factor=None,
-        unit_label="",
+    unit_label="",
     figsize=(14, 7),
     plot_axis_type="linear",
     ylabel="U-Wavelength",

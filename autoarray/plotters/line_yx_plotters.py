@@ -53,7 +53,11 @@ def plot_line(
 
     set_legend(plot_legend=plot_legend, legend_fontsize=legend_fontsize)
 
-    set_xticks(extent=[np.min(x), np.max(x)], unit_conversion_factor=unit_conversion_factor, xticks_manual=None)
+    set_xticks(
+        extent=[np.min(x), np.max(x)],
+        unit_conversion_factor=unit_conversion_factor,
+        xticks_manual=None,
+    )
 
     plotter_util.output_figure(
         array=None,
@@ -80,9 +84,7 @@ def plot_y_vs_x(y, x, plot_axis_type, label):
         )
 
 
-def set_xy_labels_and_ticksize(
-    unit_label, ylabel, xlabelsize, ylabelsize, xyticksize
-):
+def set_xy_labels_and_ticksize(unit_label, ylabel, xlabelsize, ylabelsize, xyticksize):
     """Set the x and y labels of the figure, and set the fontsize of those labels.
 
     The x label is always the distance scale / radius, thus the x-label is either arc-seconds or kpc and depending \
@@ -137,11 +139,16 @@ def set_xticks(extent, unit_conversion_factor, xticks_manual):
     elif unit_conversion_factor is None:
         xtick_labels = np.round(np.linspace(extent[0], extent[1], 5), 2)
     elif unit_conversion_factor is not None:
-        xtick_labels = np.round(np.linspace(extent[0], extent[1], 5), 2) * unit_conversion_factor
+        xtick_labels = (
+            np.round(np.linspace(extent[0], extent[1], 5), 2) * unit_conversion_factor
+        )
     else:
-        raise exc.PlottingException("The y and y ticks cannot be set using the input options.")
+        raise exc.PlottingException(
+            "The y and y ticks cannot be set using the input options."
+        )
 
     plt.xticks(ticks=xticks, labels=xtick_labels)
+
 
 def plot_vertical_lines(vertical_lines, vertical_line_labels, unit_conversion_factor):
 

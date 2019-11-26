@@ -278,7 +278,9 @@ class TestVisiblitiesMappingMatrix(object):
 
     def test__real_visibilities__more_complex_mapping_matrix(self):
 
-        grid_radians = aa.grid.manual_2d([[[0.1, 0.2], [0.3, 0.4], [0.5, 0.6]]], pixel_scales=1.0)
+        grid_radians = aa.grid.manual_2d(
+            [[[0.1, 0.2], [0.3, 0.4], [0.5, 0.6]]], pixel_scales=1.0
+        )
 
         uv_wavelengths = np.array([[0.7, 0.8], [0.9, 1.0]])
 
@@ -404,7 +406,9 @@ class TestVisiblitiesMappingMatrix(object):
 
     def test__imag_visibilities__more_complex_mapping_matrix(self):
 
-        grid_radians = aa.grid.manual_2d([[[0.1, 0.2], [0.3, 0.4], [0.5, 0.6]]], pixel_scales=1.0)
+        grid_radians = aa.grid.manual_2d(
+            [[[0.1, 0.2], [0.3, 0.4], [0.5, 0.6]]], pixel_scales=1.0
+        )
 
         uv_wavelengths = np.array([[0.7, 0.8], [0.9, 1.0]])
 

@@ -90,7 +90,7 @@ class MockImaging(imaging.Imaging):
         poisson_noise_map=None,
         exposure_time_map=None,
         background_sky_map=None,
-        name='',
+        name="",
     ):
         super(MockImaging, self).__init__(
             image=image,

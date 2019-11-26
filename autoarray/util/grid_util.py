@@ -304,10 +304,10 @@ def grid_pixels_1d_from_grid_scaled_1d_shape_2d_and_pixel_scales(
     for i in range(grid_scaled_1d.shape[0]):
 
         grid_pixels_1d[i, 0] = (
-                (-grid_scaled_1d[i, 0] / pixel_scales[0]) + centres_arcsec[0] + 0.5
+            (-grid_scaled_1d[i, 0] / pixel_scales[0]) + centres_arcsec[0] + 0.5
         )
         grid_pixels_1d[i, 1] = (
-                (grid_scaled_1d[i, 1] / pixel_scales[1]) + centres_arcsec[1] + 0.5
+            (grid_scaled_1d[i, 1] / pixel_scales[1]) + centres_arcsec[1] + 0.5
         )
 
     return grid_pixels_1d

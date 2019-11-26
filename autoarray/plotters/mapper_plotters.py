@@ -1,7 +1,7 @@
 import matplotlib
 from autoarray import conf
 
-backend = conf.instance.visualize.get("figures", "backend", str)
+backend = conf.get_matplotlib_backend()
 matplotlib.use(backend)
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
@@ -62,10 +62,11 @@ def image_and_mapper(
         output_format=output_format,
     )
 
-
     point_colors = itertools.cycle(["y", "r", "k", "g", "m"])
     plot_image_pixels(
-        grid=mapper.grid.geometry.unmasked_grid, image_pixels=image_pixels, point_colors=point_colors
+        grid=mapper.grid.geometry.unmasked_grid,
+        image_pixels=image_pixels,
+        point_colors=point_colors,
     )
     plot_image_plane_source_pixels(
         grid=mapper.grid.geometry.unmasked_grid,
@@ -169,9 +170,15 @@ def rectangular_mapper(
 
     plotter_util.setup_figure(figsize=figsize, as_subplot=as_subplot)
 
-    set_axis_limits(mapper=mapper, unit_label=unit_label, unit_conversion_factor=unit_conversion_factor)
+    set_axis_limits(
+        mapper=mapper,
+        unit_label=unit_label,
+        unit_conversion_factor=unit_conversion_factor,
+    )
     plot_rectangular_pixelization_lines(
-        mapper=mapper, use_scaled_units=use_scaled_units, unit_conversion_factor=unit_conversion_factor
+        mapper=mapper,
+        use_scaled_units=use_scaled_units,
+        unit_conversion_factor=unit_conversion_factor,
     )
 
     plotter_util.set_title(title=title, titlesize=titlesize)
@@ -182,10 +189,7 @@ def rectangular_mapper(
         xyticksize=xyticksize,
     )
 
-    plot_centres(
-        include_centres=include_centres,
-        mapper=mapper,
-    )
+    plot_centres(include_centres=include_centres, mapper=mapper)
 
     plot_mapper_grid(
         include_grid=include_grid,
@@ -267,7 +271,11 @@ def voronoi_mapper(
 
     plotter_util.setup_figure(figsize=figsize, as_subplot=as_subplot)
 
-    set_axis_limits(mapper=mapper, unit_label=unit_label, unit_conversion_factor=unit_conversion_factor)
+    set_axis_limits(
+        mapper=mapper,
+        unit_label=unit_label,
+        unit_conversion_factor=unit_conversion_factor,
+    )
 
     regions_SP, vertices_SP = voronoi_finite_polygons_2d(mapper.voronoi)
 
@@ -296,10 +304,7 @@ def voronoi_mapper(
         xyticksize=xyticksize,
     )
 
-    plot_centres(
-        include_centres=include_centres,
-        mapper=mapper,
-    )
+    plot_centres(include_centres=include_centres, mapper=mapper)
 
     plot_mapper_grid(
         include_grid=include_grid,
@@ -433,7 +438,9 @@ def voronoi_finite_polygons_2d(vor, radius=None):
     return new_regions, np.asarray(new_vertices)
 
 
-def plot_rectangular_pixelization_lines(mapper, use_scaled_units, unit_conversion_factor):
+def plot_rectangular_pixelization_lines(
+    mapper, use_scaled_units, unit_conversion_factor
+):
 
     if use_scaled_units and unit_conversion_factor is None:
 

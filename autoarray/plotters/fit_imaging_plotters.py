@@ -1,7 +1,7 @@
 import matplotlib
 from autoarray import conf
 
-backend = conf.instance.visualize.get("figures", "backend", str)
+backend = conf.get_matplotlib_backend()
 matplotlib.use(backend)
 from matplotlib import pyplot as plt
 
@@ -432,6 +432,7 @@ def individuals(
                 output_format=output_format,
             )
 
+
 def image(
     fit,
     mask=None,
@@ -520,8 +521,8 @@ def noise_map(
     mask=None,
     points=None,
     as_subplot=False,
-        use_scaled_units=True,
-        unit_conversion_factor=None,
+    use_scaled_units=True,
+    unit_conversion_factor=None,
     unit_label="scaled",
     figsize=(7, 7),
     aspect="square",
@@ -597,8 +598,8 @@ def signal_to_noise_map(
     mask=None,
     points=None,
     as_subplot=False,
-        use_scaled_units=True,
-        unit_conversion_factor=None,
+    use_scaled_units=True,
+    unit_conversion_factor=None,
     unit_label="scaled",
     figsize=(7, 7),
     aspect="square",
@@ -675,8 +676,8 @@ def model_image(
     lines=None,
     points=None,
     as_subplot=False,
-        use_scaled_units=True,
-        unit_conversion_factor=None,
+    use_scaled_units=True,
+    unit_conversion_factor=None,
     unit_label="scaled",
     figsize=(7, 7),
     aspect="square",
@@ -753,8 +754,8 @@ def residual_map(
     mask=None,
     points=None,
     as_subplot=False,
-        use_scaled_units=True,
-        unit_conversion_factor=None,
+    use_scaled_units=True,
+    unit_conversion_factor=None,
     unit_label="scaled",
     figsize=(7, 7),
     aspect="square",
@@ -830,8 +831,8 @@ def normalized_residual_map(
     mask=None,
     points=None,
     as_subplot=False,
-        use_scaled_units=True,
-        unit_conversion_factor=None,
+    use_scaled_units=True,
+    unit_conversion_factor=None,
     unit_label="scaled",
     figsize=(7, 7),
     aspect="square",
@@ -907,8 +908,8 @@ def chi_squared_map(
     mask=None,
     points=None,
     as_subplot=False,
-        use_scaled_units=True,
-        unit_conversion_factor=None,
+    use_scaled_units=True,
+    unit_conversion_factor=None,
     unit_label="scaled",
     figsize=(7, 7),
     aspect="square",

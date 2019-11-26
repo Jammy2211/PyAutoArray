@@ -1,7 +1,7 @@
 from autoarray import conf
 import matplotlib
 
-backend = conf.instance.visualize.get("figures", "backend", str)
+backend = conf.get_matplotlib_backend()
 matplotlib.use(backend)
 from matplotlib import pyplot as plt
 import numpy as np
@@ -119,8 +119,14 @@ def plot_grid(
         symmetric_around_centre=symmetric_around_centre,
     )
 
-    plotter_util.set_yxticks(array=None, extent=grid.extent, use_scaled_units=True,
-                             unit_conversion_factor=unit_conversion_factor, xticks_manual=None, yticks_manual=None)
+    plotter_util.set_yxticks(
+        array=None,
+        extent=grid.extent,
+        use_scaled_units=True,
+        unit_conversion_factor=unit_conversion_factor,
+        xticks_manual=None,
+        yticks_manual=None,
+    )
 
     plot_points(grid=grid, points=points, pointcolor=pointcolor)
     plotter_util.plot_lines(line_lists=lines)
