@@ -175,7 +175,7 @@ class TestCircular:
         mask_via_util = aa.util.mask.mask_2d_circular_from_shape_2d_pixel_scales_and_radius(
             shape_2d=(5, 4),
             pixel_scales=(2.7, 2.7),
-            radius_scaled=3.5,
+            radius=3.5,
             centre=(0.0, 0.0),
         )
 
@@ -195,7 +195,7 @@ class TestCircular:
         mask_via_util = aa.util.mask.mask_2d_circular_from_shape_2d_pixel_scales_and_radius(
             shape_2d=(5, 4),
             pixel_scales=(2.7, 2.7),
-            radius_scaled=3.5,
+            radius=3.5,
             centre=(0.0, 0.0),
         )
 
@@ -218,8 +218,8 @@ class TestAnnular:
         mask_via_util = aa.util.mask.mask_2d_circular_annular_from_shape_2d_pixel_scales_and_radii(
             shape_2d=(5, 4),
             pixel_scales=(2.7, 2.7),
-            inner_radius_scaled=0.8,
-            outer_radius_scaled=3.5,
+            inner_radius=0.8,
+            outer_radius=3.5,
             centre=(0.0, 0.0),
         )
 
@@ -240,8 +240,8 @@ class TestAnnular:
         mask_via_util = aa.util.mask.mask_2d_circular_annular_from_shape_2d_pixel_scales_and_radii(
             shape_2d=(5, 4),
             pixel_scales=(2.7, 2.7),
-            inner_radius_scaled=0.8,
-            outer_radius_scaled=3.5,
+            inner_radius=0.8,
+            outer_radius=3.5,
             centre=(0.0, 0.0),
         )
 
@@ -265,8 +265,8 @@ class TestAntiAnnular:
         mask_via_util = aa.util.mask.mask_2d_circular_anti_annular_from_shape_2d_pixel_scales_and_radii(
             shape_2d=(9, 9),
             pixel_scales=(1.2, 1.2),
-            inner_radius_scaled=0.8,
-            outer_radius_scaled=2.2,
+            inner_radius=0.8,
+            outer_radius=2.2,
             outer_radius_2_scaled=3.0,
             centre=(0.0, 0.0),
         )
@@ -289,8 +289,8 @@ class TestAntiAnnular:
         mask_via_util = aa.util.mask.mask_2d_circular_anti_annular_from_shape_2d_pixel_scales_and_radii(
             shape_2d=(9, 9),
             pixel_scales=(1.2, 1.2),
-            inner_radius_scaled=0.8,
-            outer_radius_scaled=2.2,
+            inner_radius=0.8,
+            outer_radius=2.2,
             outer_radius_2_scaled=3.0,
             centre=(0.0, 0.0),
         )
@@ -316,7 +316,7 @@ class TestElliptical:
         mask_via_util = aa.util.mask.mask_2d_elliptical_from_shape_2d_pixel_scales_and_radius(
             shape_2d=(8, 5),
             pixel_scales=(2.7, 2.7),
-            major_axis_radius_scaled=5.7,
+            major_axis_radius=5.7,
             axis_ratio=0.4,
             phi=40.0,
             centre=(0.0, 0.0),
@@ -340,7 +340,7 @@ class TestElliptical:
         mask_via_util = aa.util.mask.mask_2d_elliptical_from_shape_2d_pixel_scales_and_radius(
             shape_2d=(8, 5),
             pixel_scales=(2.7, 2.7),
-            major_axis_radius_scaled=5.7,
+            major_axis_radius=5.7,
             axis_ratio=0.4,
             phi=40.0,
             centre=(0.0, 0.0),
@@ -367,10 +367,10 @@ class TestEllipiticalAnnular:
         mask_via_util = aa.util.mask.mask_2d_elliptical_annular_from_shape_2d_pixel_scales_and_radius(
             shape_2d=(8, 5),
             pixel_scales=(2.7, 2.7),
-            inner_major_axis_radius_scaled=2.1,
+            inner_major_axis_radius=2.1,
             inner_axis_ratio=0.6,
             inner_phi=20.0,
-            outer_major_axis_radius_scaled=5.7,
+            outer_major_axis_radius=5.7,
             outer_axis_ratio=0.4,
             outer_phi=40.0,
             centre=(0.0, 0.0),
@@ -398,10 +398,10 @@ class TestEllipiticalAnnular:
         mask_via_util = aa.util.mask.mask_2d_elliptical_annular_from_shape_2d_pixel_scales_and_radius(
             shape_2d=(8, 5),
             pixel_scales=(2.7, 2.7),
-            inner_major_axis_radius_scaled=2.1,
+            inner_major_axis_radius=2.1,
             inner_axis_ratio=0.6,
             inner_phi=20.0,
-            outer_major_axis_radius_scaled=5.7,
+            outer_major_axis_radius=5.7,
             outer_axis_ratio=0.4,
             outer_phi=40.0,
             centre=(0.0, 0.0),
