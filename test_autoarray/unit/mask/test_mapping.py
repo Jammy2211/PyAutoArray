@@ -68,7 +68,7 @@ class TestMapping:
         assert arr.sub_size == 1
         assert (arr.geometry.xticks == np.array([-6.0, -2.0, 2.0, 6.0])).all()
         assert (arr.geometry.yticks == np.array([-4.5, -1.5, 1.5, 4.5])).all()
-        assert arr.geometry.shape_2d_arcsec == (9.0, 12.0)
+        assert arr.geometry.shape_2d_scaled == (9.0, 12.0)
 
     def test__grid_from_grid_2d__compare_to_util(self):
         grid_2d = np.array(
@@ -537,7 +537,7 @@ class TestMapping:
 
         mask = aa.mask.unmasked(shape_2d=(4, 4))
 
-        array_1d = aa.masked_array.manual_1d(
+        array_1d = aa.masked.array.manual_1d(
             [
                 1.0,
                 2.0,
@@ -567,7 +567,7 @@ class TestMapping:
 
         mask = aa.mask.unmasked(shape_2d=(5, 3))
 
-        array_1d = aa.masked_array.manual_1d(
+        array_1d = aa.masked.array.manual_1d(
             [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0],
             mask=mask,
         )
@@ -580,7 +580,7 @@ class TestMapping:
 
         mask = aa.mask.unmasked(shape_2d=(3, 5))
 
-        array_1d = aa.masked_array.manual_1d(
+        array_1d = aa.masked.array.manual_1d(
             [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0],
             mask=mask,
         )
@@ -590,6 +590,22 @@ class TestMapping:
         )
 
         assert (array.in_2d == np.array([[7.0, 8.0, 9.0]])).all()
+
+
+class TestNewMask:
+    def test__new_mask_with_new_sub_size(self):
+
+        mask = aa.mask.unmasked(shape_2d=(3, 3), sub_size=4)
+
+        mask_new = mask.mapping.mask_new_sub_size_from_mask(mask=mask)
+
+        assert (mask_new == np.full(fill_value=False, shape=(3, 3))).all()
+        assert mask_new.sub_size == 1
+
+        mask_new = mask.mapping.mask_new_sub_size_from_mask(mask=mask, sub_size=8)
+
+        assert (mask_new == np.full(fill_value=False, shape=(3, 3))).all()
+        assert mask_new.sub_size == 8
 
 
 class TestMappingExceptions:

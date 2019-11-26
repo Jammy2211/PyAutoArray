@@ -17,6 +17,7 @@ def make_interferometer_plotter_setup():
 def test__individual_attributes_are_output(
     interferometer_7, interferometer_plotter_path, plot_patch
 ):
+
     aa.plot.interferometer.visibilities(
         interferometer=interferometer_7,
         cb_tick_values=[1.0],
@@ -28,6 +29,18 @@ def test__individual_attributes_are_output(
     assert (
         interferometer_plotter_path + "interferometer_visibilities.png"
         in plot_patch.paths
+    )
+
+    aa.plot.interferometer.noise_map(
+        interferometer=interferometer_7,
+        cb_tick_values=[1.0],
+        cb_tick_labels=["1.0"],
+        output_path=interferometer_plotter_path,
+        output_format="png",
+    )
+
+    assert (
+        interferometer_plotter_path + "interferometer_noise_map.png" in plot_patch.paths
     )
 
     aa.plot.interferometer.u_wavelengths(
@@ -81,10 +94,10 @@ def test__individuals__output_dependent_on_input(
 ):
     aa.plot.interferometer.individual(
         interferometer=interferometer_7,
-        should_plot_visibilities=True,
-        should_plot_u_wavelengths=False,
-        should_plot_v_wavelengths=True,
-        should_plot_primary_beam=True,
+        plot_visibilities=True,
+        plot_u_wavelengths=False,
+        plot_v_wavelengths=True,
+        plot_primary_beam=True,
         output_path=interferometer_plotter_path,
         output_format="png",
     )

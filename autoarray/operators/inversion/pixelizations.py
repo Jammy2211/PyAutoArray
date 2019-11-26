@@ -3,8 +3,7 @@ import scipy.spatial
 
 from autoarray import exc
 from autoarray.structures import grids
-from autoarray.operators.inversion import pixelization_grids, mappers
-from autoarray.util import pixelization_util
+from autoarray.operators.inversion import mappers
 
 
 class Pixelization(object):
@@ -47,11 +46,7 @@ class Rectangular(Pixelization):
         super(Rectangular, self).__init__()
 
     def mapper_from_grid_and_sparse_grid(
-        self,
-        grid,
-        sparse_grid=None,
-        inversion_uses_border=False,
-        hyper_image=None,
+        self, grid, sparse_grid=None, inversion_uses_border=False, hyper_image=None
     ):
         """Setup a rectangular mapper from a rectangular pixelization, as follows:
 
@@ -74,9 +69,11 @@ class Rectangular(Pixelization):
         else:
             relocated_grid = grid
 
-        pixelization_grid = pixelization_grids.RectangularGrid.from_shape_2d_and_grid(shape_2d=self.shape, grid=relocated_grid)
+        pixelization_grid = grids.GridRectangular.overlay_grid(
+            shape_2d=self.shape, grid=relocated_grid
+        )
 
-        return mappers.RectangularMapper(
+        return mappers.MapperRectangular(
             grid=relocated_grid,
             pixelization_grid=pixelization_grid,
             hyper_image=hyper_image,
@@ -97,11 +94,7 @@ class Voronoi(Pixelization):
         super(Voronoi, self).__init__()
 
     def mapper_from_grid_and_sparse_grid(
-        self,
-        grid,
-        sparse_grid=None,
-        inversion_uses_border=False,
-        hyper_image=None,
+        self, grid, sparse_grid=None, inversion_uses_border=False, hyper_image=None
     ):
         """Setup a Voronoi mapper from an adaptive-magnification pixelization, as follows:
 
@@ -134,11 +127,12 @@ class Voronoi(Pixelization):
             relocated_grid = grid
             relocated_pixelization_grid = sparse_grid
 
-        pixelization_grid = pixelization_grids.VoronoiGrid(
+        pixelization_grid = grids.GridVoronoi(
             grid_1d=relocated_pixelization_grid,
-            nearest_irregular_1d_index_for_mask_1d_index=sparse_grid.nearest_irregular_1d_index_for_mask_1d_index)
+            nearest_irregular_1d_index_for_mask_1d_index=sparse_grid.nearest_irregular_1d_index_for_mask_1d_index,
+        )
 
-        return mappers.VoronoiMapper(
+        return mappers.MapperVoronoi(
             grid=relocated_grid,
             pixelization_grid=pixelization_grid,
             hyper_image=hyper_image,
@@ -161,13 +155,13 @@ class VoronoiMagnification(Voronoi):
         self.pixels = self.shape[0] * self.shape[1]
 
     def sparse_grid_from_grid(self, grid, hyper_image=None, seed=1):
-        sparse_to_grid = grids.SparseToGrid.from_grid_and_unmasked_2d_grid_shape(
+        sparse_grid = grids.SparseGrid.from_grid_and_unmasked_2d_grid_shape(
             grid=grid, unmasked_sparse_shape=self.shape
         )
 
-        return grids.IrregularGrid(
-            grid=sparse_to_grid.sparse,
-            nearest_irregular_1d_index_for_mask_1d_index=sparse_to_grid.sparse_1d_index_for_mask_1d_index,
+        return grids.GridIrregular(
+            grid=sparse_grid.sparse,
+            nearest_irregular_1d_index_for_mask_1d_index=sparse_grid.sparse_1d_index_for_mask_1d_index,
         )
 
 
@@ -195,11 +189,11 @@ class VoronoiBrightnessImage(Voronoi):
     def sparse_grid_from_grid(self, grid, hyper_image, seed=0):
         weight_map = self.weight_map_from_hyper_image(hyper_image=hyper_image)
 
-        sparse_to_grid = grids.SparseToGrid.from_total_pixels_grid_and_weight_map(
+        sparse_grid = grids.SparseGrid.from_total_pixels_grid_and_weight_map(
             total_pixels=self.pixels, grid=grid, weight_map=weight_map, seed=seed
         )
 
-        return grids.IrregularGrid(
-            grid=sparse_to_grid.sparse,
-            nearest_irregular_1d_index_for_mask_1d_index=sparse_to_grid.sparse_1d_index_for_mask_1d_index,
+        return grids.GridIrregular(
+            grid=sparse_grid.sparse,
+            nearest_irregular_1d_index_for_mask_1d_index=sparse_grid.sparse_1d_index_for_mask_1d_index,
         )

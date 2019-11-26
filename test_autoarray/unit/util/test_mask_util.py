@@ -180,7 +180,7 @@ class TestTotalPixels:
 class TestMaskCircular(object):
     def test__3x3_mask_input_radius_small__medium__big__masks(self):
         mask = aa.util.mask.mask_2d_circular_from_shape_2d_pixel_scales_and_radius(
-            shape_2d=(3, 3), pixel_scales=(1.0, 1.0), radius_arcsec=0.5
+            shape_2d=(3, 3), pixel_scales=(1.0, 1.0), radius_scaled=0.5
         )
 
         assert (
@@ -189,7 +189,7 @@ class TestMaskCircular(object):
         ).all()
 
         mask = aa.util.mask.mask_2d_circular_from_shape_2d_pixel_scales_and_radius(
-            shape_2d=(3, 3), pixel_scales=(1.0, 1.0), radius_arcsec=1.3
+            shape_2d=(3, 3), pixel_scales=(1.0, 1.0), radius_scaled=1.3
         )
 
         assert (
@@ -200,7 +200,7 @@ class TestMaskCircular(object):
         ).all()
 
         mask = aa.util.mask.mask_2d_circular_from_shape_2d_pixel_scales_and_radius(
-            shape_2d=(3, 3), pixel_scales=(1.0, 1.0), radius_arcsec=3.0
+            shape_2d=(3, 3), pixel_scales=(1.0, 1.0), radius_scaled=3.0
         )
 
         assert (
@@ -211,7 +211,7 @@ class TestMaskCircular(object):
         ).all()
 
         mask = aa.util.mask.mask_2d_circular_from_shape_2d_pixel_scales_and_radius(
-            shape_2d=(3, 3), pixel_scales=(0.5, 1.0), radius_arcsec=0.5
+            shape_2d=(3, 3), pixel_scales=(0.5, 1.0), radius_scaled=0.5
         )
 
         assert (
@@ -222,7 +222,7 @@ class TestMaskCircular(object):
     def test__4x3_mask_input_radius_small__medium__big__masks(self):
 
         mask = aa.util.mask.mask_2d_circular_from_shape_2d_pixel_scales_and_radius(
-            shape_2d=(4, 3), pixel_scales=(1.0, 1.0), radius_arcsec=0.5
+            shape_2d=(4, 3), pixel_scales=(1.0, 1.0), radius_scaled=0.5
         )
 
         assert (
@@ -238,7 +238,7 @@ class TestMaskCircular(object):
         ).all()
 
         mask = aa.util.mask.mask_2d_circular_from_shape_2d_pixel_scales_and_radius(
-            shape_2d=(4, 3), pixel_scales=(1.0, 1.0), radius_arcsec=1.5001
+            shape_2d=(4, 3), pixel_scales=(1.0, 1.0), radius_scaled=1.5001
         )
 
         assert (
@@ -254,7 +254,7 @@ class TestMaskCircular(object):
         ).all()
 
         mask = aa.util.mask.mask_2d_circular_from_shape_2d_pixel_scales_and_radius(
-            shape_2d=(4, 3), pixel_scales=(1.0, 1.0), radius_arcsec=3.0
+            shape_2d=(4, 3), pixel_scales=(1.0, 1.0), radius_scaled=3.0
         )
 
         assert (
@@ -271,7 +271,7 @@ class TestMaskCircular(object):
 
     def test__4x4_mask_input_radius_small__medium__big__masks(self):
         mask = aa.util.mask.mask_2d_circular_from_shape_2d_pixel_scales_and_radius(
-            shape_2d=(4, 4), pixel_scales=(1.0, 1.0), radius_arcsec=0.72
+            shape_2d=(4, 4), pixel_scales=(1.0, 1.0), radius_scaled=0.72
         )
 
         assert (
@@ -287,7 +287,7 @@ class TestMaskCircular(object):
         ).all()
 
         mask = aa.util.mask.mask_2d_circular_from_shape_2d_pixel_scales_and_radius(
-            shape_2d=(4, 4), pixel_scales=(1.0, 1.0), radius_arcsec=1.7
+            shape_2d=(4, 4), pixel_scales=(1.0, 1.0), radius_scaled=1.7
         )
 
         assert (
@@ -303,7 +303,7 @@ class TestMaskCircular(object):
         ).all()
 
         mask = aa.util.mask.mask_2d_circular_from_shape_2d_pixel_scales_and_radius(
-            shape_2d=(4, 4), pixel_scales=(1.0, 1.0), radius_arcsec=3.0
+            shape_2d=(4, 4), pixel_scales=(1.0, 1.0), radius_scaled=3.0
         )
 
         assert (
@@ -321,7 +321,7 @@ class TestMaskCircular(object):
     def test__origin_shifts__downwards__right__diagonal(self):
 
         mask = aa.util.mask.mask_2d_circular_from_shape_2d_pixel_scales_and_radius(
-            shape_2d=(3, 3), pixel_scales=(3.0, 3.0), radius_arcsec=0.5, centre=(-3, 0)
+            shape_2d=(3, 3), pixel_scales=(3.0, 3.0), radius_scaled=0.5, centre=(-3, 0)
         )
 
         assert mask.shape == (3, 3)
@@ -333,7 +333,7 @@ class TestMaskCircular(object):
         mask = aa.util.mask.mask_2d_circular_from_shape_2d_pixel_scales_and_radius(
             shape_2d=(3, 3),
             pixel_scales=(3.0, 3.0),
-            radius_arcsec=0.5,
+            radius_scaled=0.5,
             centre=(0.0, 3.0),
         )
 
@@ -344,7 +344,7 @@ class TestMaskCircular(object):
         ).all()
 
         mask = aa.util.mask.mask_2d_circular_from_shape_2d_pixel_scales_and_radius(
-            shape_2d=(3, 3), pixel_scales=(3.0, 3.0), radius_arcsec=0.5, centre=(3, 3)
+            shape_2d=(3, 3), pixel_scales=(3.0, 3.0), radius_scaled=0.5, centre=(3, 3)
         )
 
         assert (
@@ -358,8 +358,8 @@ class TestMaskAnnular(object):
         mask = aa.util.mask.mask_2d_circular_annular_from_shape_2d_pixel_scales_and_radii(
             shape_2d=(3, 3),
             pixel_scales=(1.0, 1.0),
-            inner_radius_arcsec=0.0,
-            outer_radius_arcsec=0.5,
+            inner_radius_scaled=0.0,
+            outer_radius_scaled=0.5,
         )
 
         assert (
@@ -370,8 +370,8 @@ class TestMaskAnnular(object):
         mask = aa.util.mask.mask_2d_circular_annular_from_shape_2d_pixel_scales_and_radii(
             shape_2d=(4, 4),
             pixel_scales=(1.0, 1.0),
-            inner_radius_arcsec=0.81,
-            outer_radius_arcsec=2.0,
+            inner_radius_scaled=0.81,
+            outer_radius_scaled=2.0,
         )
 
         assert (
@@ -389,8 +389,8 @@ class TestMaskAnnular(object):
         mask = aa.util.mask.mask_2d_circular_annular_from_shape_2d_pixel_scales_and_radii(
             shape_2d=(3, 3),
             pixel_scales=(1.0, 1.0),
-            inner_radius_arcsec=0.5,
-            outer_radius_arcsec=3.0,
+            inner_radius_scaled=0.5,
+            outer_radius_scaled=3.0,
         )
 
         assert (
@@ -403,8 +403,8 @@ class TestMaskAnnular(object):
         mask = aa.util.mask.mask_2d_circular_annular_from_shape_2d_pixel_scales_and_radii(
             shape_2d=(4, 4),
             pixel_scales=(0.5, 1.0),
-            inner_radius_arcsec=1.1,
-            outer_radius_arcsec=2.0,
+            inner_radius_scaled=1.1,
+            outer_radius_scaled=2.0,
         )
 
         assert (
@@ -423,8 +423,8 @@ class TestMaskAnnular(object):
         mask = aa.util.mask.mask_2d_circular_annular_from_shape_2d_pixel_scales_and_radii(
             shape_2d=(4, 3),
             pixel_scales=(1.0, 1.0),
-            inner_radius_arcsec=0.51,
-            outer_radius_arcsec=1.51,
+            inner_radius_scaled=0.51,
+            outer_radius_scaled=1.51,
         )
 
         assert (
@@ -443,8 +443,8 @@ class TestMaskAnnular(object):
         mask = aa.util.mask.mask_2d_circular_annular_from_shape_2d_pixel_scales_and_radii(
             shape_2d=(4, 3),
             pixel_scales=(1.0, 1.0),
-            inner_radius_arcsec=1.51,
-            outer_radius_arcsec=3.0,
+            inner_radius_scaled=1.51,
+            outer_radius_scaled=3.0,
         )
 
         assert (
@@ -463,8 +463,8 @@ class TestMaskAnnular(object):
         mask = aa.util.mask.mask_2d_circular_annular_from_shape_2d_pixel_scales_and_radii(
             shape_2d=(4, 4),
             pixel_scales=(1.0, 1.0),
-            inner_radius_arcsec=1.71,
-            outer_radius_arcsec=3.0,
+            inner_radius_scaled=1.71,
+            outer_radius_scaled=3.0,
         )
 
         assert (
@@ -484,8 +484,8 @@ class TestMaskAnnular(object):
         mask = aa.util.mask.mask_2d_circular_annular_from_shape_2d_pixel_scales_and_radii(
             shape_2d=(3, 3),
             pixel_scales=(3.0, 3.0),
-            inner_radius_arcsec=0.5,
-            outer_radius_arcsec=9.0,
+            inner_radius_scaled=0.5,
+            outer_radius_scaled=9.0,
             centre=(3.0, 0.0),
         )
 
@@ -500,8 +500,8 @@ class TestMaskAnnular(object):
         mask = aa.util.mask.mask_2d_circular_annular_from_shape_2d_pixel_scales_and_radii(
             shape_2d=(3, 3),
             pixel_scales=(3.0, 3.0),
-            inner_radius_arcsec=0.5,
-            outer_radius_arcsec=9.0,
+            inner_radius_scaled=0.5,
+            outer_radius_scaled=9.0,
             centre=(0.0, 3.0),
         )
 
@@ -516,8 +516,8 @@ class TestMaskAnnular(object):
         mask = aa.util.mask.mask_2d_circular_annular_from_shape_2d_pixel_scales_and_radii(
             shape_2d=(3, 3),
             pixel_scales=(3.0, 3.0),
-            inner_radius_arcsec=0.5,
-            outer_radius_arcsec=9.0,
+            inner_radius_scaled=0.5,
+            outer_radius_scaled=9.0,
             centre=(-3.0, 3.0),
         )
 
@@ -538,9 +538,9 @@ class TestMaskAntiAnnular(object):
         mask = aa.util.mask.mask_2d_circular_anti_annular_from_shape_2d_pixel_scales_and_radii(
             shape_2d=(5, 5),
             pixel_scales=(1.0, 1.0),
-            inner_radius_arcsec=0.5,
-            outer_radius_arcsec=10.0,
-            outer_radius_2_arcsec=20.0,
+            inner_radius_scaled=0.5,
+            outer_radius_scaled=10.0,
+            outer_radius_2_scaled=20.0,
         )
 
         assert (
@@ -563,9 +563,9 @@ class TestMaskAntiAnnular(object):
         mask = aa.util.mask.mask_2d_circular_anti_annular_from_shape_2d_pixel_scales_and_radii(
             shape_2d=(5, 5),
             pixel_scales=(1.0, 1.0),
-            inner_radius_arcsec=1.5,
-            outer_radius_arcsec=10.0,
-            outer_radius_2_arcsec=20.0,
+            inner_radius_scaled=1.5,
+            outer_radius_scaled=10.0,
+            outer_radius_2_scaled=20.0,
         )
 
         assert (
@@ -584,9 +584,9 @@ class TestMaskAntiAnnular(object):
         mask = aa.util.mask.mask_2d_circular_anti_annular_from_shape_2d_pixel_scales_and_radii(
             shape_2d=(5, 5),
             pixel_scales=(0.1, 1.0),
-            inner_radius_arcsec=1.5,
-            outer_radius_arcsec=10.0,
-            outer_radius_2_arcsec=20.0,
+            inner_radius_scaled=1.5,
+            outer_radius_scaled=10.0,
+            outer_radius_2_scaled=20.0,
         )
 
         assert (
@@ -609,9 +609,9 @@ class TestMaskAntiAnnular(object):
         mask = aa.util.mask.mask_2d_circular_anti_annular_from_shape_2d_pixel_scales_and_radii(
             shape_2d=(5, 5),
             pixel_scales=(1.0, 1.0),
-            inner_radius_arcsec=0.5,
-            outer_radius_arcsec=1.5,
-            outer_radius_2_arcsec=20.0,
+            inner_radius_scaled=0.5,
+            outer_radius_scaled=1.5,
+            outer_radius_2_scaled=20.0,
         )
 
         assert (
@@ -632,9 +632,9 @@ class TestMaskAntiAnnular(object):
         mask = aa.util.mask.mask_2d_circular_anti_annular_from_shape_2d_pixel_scales_and_radii(
             shape_2d=(7, 7),
             pixel_scales=(1.0, 1.0),
-            inner_radius_arcsec=0.5,
-            outer_radius_arcsec=1.5,
-            outer_radius_2_arcsec=2.9,
+            inner_radius_scaled=0.5,
+            outer_radius_scaled=1.5,
+            outer_radius_2_scaled=2.9,
         )
 
         assert (
@@ -657,9 +657,9 @@ class TestMaskAntiAnnular(object):
         mask = aa.util.mask.mask_2d_circular_anti_annular_from_shape_2d_pixel_scales_and_radii(
             shape_2d=(7, 7),
             pixel_scales=(3.0, 3.0),
-            inner_radius_arcsec=1.5,
-            outer_radius_arcsec=4.5,
-            outer_radius_2_arcsec=8.7,
+            inner_radius_scaled=1.5,
+            outer_radius_scaled=4.5,
+            outer_radius_2_scaled=8.7,
             centre=(-3.0, 3.0),
         )
 
@@ -685,7 +685,7 @@ class TestMaskElliptical(object):
         mask = aa.util.mask.mask_2d_elliptical_from_shape_2d_pixel_scales_and_radius(
             shape_2d=(3, 3),
             pixel_scales=(1.0, 1.0),
-            major_axis_radius_arcsec=0.5,
+            major_axis_radius_scaled=0.5,
             axis_ratio=1.0,
             phi=0.0,
         )
@@ -698,7 +698,7 @@ class TestMaskElliptical(object):
         mask = aa.util.mask.mask_2d_elliptical_from_shape_2d_pixel_scales_and_radius(
             shape_2d=(3, 3),
             pixel_scales=(1.0, 1.0),
-            major_axis_radius_arcsec=1.3,
+            major_axis_radius_scaled=1.3,
             axis_ratio=1.0,
             phi=0.0,
         )
@@ -713,7 +713,7 @@ class TestMaskElliptical(object):
         mask = aa.util.mask.mask_2d_elliptical_from_shape_2d_pixel_scales_and_radius(
             shape_2d=(3, 3),
             pixel_scales=(1.0, 1.0),
-            major_axis_radius_arcsec=3.0,
+            major_axis_radius_scaled=3.0,
             axis_ratio=1.0,
             phi=0.0,
         )
@@ -732,7 +732,7 @@ class TestMaskElliptical(object):
         mask = aa.util.mask.mask_2d_elliptical_from_shape_2d_pixel_scales_and_radius(
             shape_2d=(3, 3),
             pixel_scales=(1.0, 1.0),
-            major_axis_radius_arcsec=1.3,
+            major_axis_radius_scaled=1.3,
             axis_ratio=0.1,
             phi=0.0,
         )
@@ -745,7 +745,7 @@ class TestMaskElliptical(object):
         mask = aa.util.mask.mask_2d_elliptical_from_shape_2d_pixel_scales_and_radius(
             shape_2d=(3, 3),
             pixel_scales=(1.0, 1.0),
-            major_axis_radius_arcsec=1.3,
+            major_axis_radius_scaled=1.3,
             axis_ratio=0.1,
             phi=180.0,
         )
@@ -758,7 +758,7 @@ class TestMaskElliptical(object):
         mask = aa.util.mask.mask_2d_elliptical_from_shape_2d_pixel_scales_and_radius(
             shape_2d=(3, 3),
             pixel_scales=(1.0, 1.0),
-            major_axis_radius_arcsec=1.3,
+            major_axis_radius_scaled=1.3,
             axis_ratio=0.1,
             phi=360.0,
         )
@@ -773,7 +773,7 @@ class TestMaskElliptical(object):
         mask = aa.util.mask.mask_2d_elliptical_from_shape_2d_pixel_scales_and_radius(
             shape_2d=(3, 3),
             pixel_scales=(1.0, 1.0),
-            major_axis_radius_arcsec=1.3,
+            major_axis_radius_scaled=1.3,
             axis_ratio=0.1,
             phi=90.0,
         )
@@ -786,7 +786,7 @@ class TestMaskElliptical(object):
         mask = aa.util.mask.mask_2d_elliptical_from_shape_2d_pixel_scales_and_radius(
             shape_2d=(3, 3),
             pixel_scales=(1.0, 1.0),
-            major_axis_radius_arcsec=1.3,
+            major_axis_radius_scaled=1.3,
             axis_ratio=0.1,
             phi=270.0,
         )
@@ -801,7 +801,7 @@ class TestMaskElliptical(object):
         mask = aa.util.mask.mask_2d_elliptical_from_shape_2d_pixel_scales_and_radius(
             shape_2d=(3, 3),
             pixel_scales=(1.0, 1.0),
-            major_axis_radius_arcsec=1.5,
+            major_axis_radius_scaled=1.5,
             axis_ratio=0.1,
             phi=45.0,
         )
@@ -814,7 +814,7 @@ class TestMaskElliptical(object):
         mask = aa.util.mask.mask_2d_elliptical_from_shape_2d_pixel_scales_and_radius(
             shape_2d=(3, 3),
             pixel_scales=(1.0, 1.0),
-            major_axis_radius_arcsec=1.5,
+            major_axis_radius_scaled=1.5,
             axis_ratio=0.1,
             phi=135.0,
         )
@@ -827,7 +827,7 @@ class TestMaskElliptical(object):
         mask = aa.util.mask.mask_2d_elliptical_from_shape_2d_pixel_scales_and_radius(
             shape_2d=(3, 3),
             pixel_scales=(1.0, 1.0),
-            major_axis_radius_arcsec=1.5,
+            major_axis_radius_scaled=1.5,
             axis_ratio=0.1,
             phi=225.0,
         )
@@ -840,7 +840,7 @@ class TestMaskElliptical(object):
         mask = aa.util.mask.mask_2d_elliptical_from_shape_2d_pixel_scales_and_radius(
             shape_2d=(3, 3),
             pixel_scales=(1.0, 1.0),
-            major_axis_radius_arcsec=1.5,
+            major_axis_radius_scaled=1.5,
             axis_ratio=0.1,
             phi=315.0,
         )
@@ -855,7 +855,7 @@ class TestMaskElliptical(object):
         mask = aa.util.mask.mask_2d_elliptical_from_shape_2d_pixel_scales_and_radius(
             shape_2d=(4, 3),
             pixel_scales=(1.0, 1.0),
-            major_axis_radius_arcsec=1.5,
+            major_axis_radius_scaled=1.5,
             axis_ratio=0.9,
             phi=90.0,
         )
@@ -875,7 +875,7 @@ class TestMaskElliptical(object):
         mask = aa.util.mask.mask_2d_elliptical_from_shape_2d_pixel_scales_and_radius(
             shape_2d=(4, 3),
             pixel_scales=(1.0, 1.0),
-            major_axis_radius_arcsec=1.5,
+            major_axis_radius_scaled=1.5,
             axis_ratio=0.1,
             phi=270.0,
         )
@@ -895,7 +895,7 @@ class TestMaskElliptical(object):
         mask = aa.util.mask.mask_2d_elliptical_from_shape_2d_pixel_scales_and_radius(
             shape_2d=(4, 3),
             pixel_scales=(1.0, 0.1),
-            major_axis_radius_arcsec=1.5,
+            major_axis_radius_scaled=1.5,
             axis_ratio=0.1,
             phi=270.0,
         )
@@ -917,7 +917,7 @@ class TestMaskElliptical(object):
         mask = aa.util.mask.mask_2d_elliptical_from_shape_2d_pixel_scales_and_radius(
             shape_2d=(3, 4),
             pixel_scales=(1.0, 1.0),
-            major_axis_radius_arcsec=1.5,
+            major_axis_radius_scaled=1.5,
             axis_ratio=0.9,
             phi=0.0,
         )
@@ -936,7 +936,7 @@ class TestMaskElliptical(object):
         mask = aa.util.mask.mask_2d_elliptical_from_shape_2d_pixel_scales_and_radius(
             shape_2d=(3, 4),
             pixel_scales=(1.0, 1.0),
-            major_axis_radius_arcsec=1.5,
+            major_axis_radius_scaled=1.5,
             axis_ratio=0.1,
             phi=180.0,
         )
@@ -955,7 +955,7 @@ class TestMaskElliptical(object):
         mask = aa.util.mask.mask_2d_elliptical_from_shape_2d_pixel_scales_and_radius(
             shape_2d=(3, 4),
             pixel_scales=(0.1, 1.0),
-            major_axis_radius_arcsec=1.5,
+            major_axis_radius_scaled=1.5,
             axis_ratio=0.1,
             phi=180.0,
         )
@@ -976,7 +976,7 @@ class TestMaskElliptical(object):
         mask = aa.util.mask.mask_2d_elliptical_from_shape_2d_pixel_scales_and_radius(
             shape_2d=(3, 3),
             pixel_scales=(3.0, 3.0),
-            major_axis_radius_arcsec=4.8,
+            major_axis_radius_scaled=4.8,
             axis_ratio=0.1,
             phi=45.0,
             centre=(-3.0, 0.0),
@@ -990,7 +990,7 @@ class TestMaskElliptical(object):
         mask = aa.util.mask.mask_2d_elliptical_from_shape_2d_pixel_scales_and_radius(
             shape_2d=(3, 3),
             pixel_scales=(3.0, 3.0),
-            major_axis_radius_arcsec=4.8,
+            major_axis_radius_scaled=4.8,
             axis_ratio=0.1,
             phi=45.0,
             centre=(0.0, 3.0),
@@ -1004,7 +1004,7 @@ class TestMaskElliptical(object):
         mask = aa.util.mask.mask_2d_elliptical_from_shape_2d_pixel_scales_and_radius(
             shape_2d=(3, 3),
             pixel_scales=(3.0, 3.0),
-            major_axis_radius_arcsec=4.8,
+            major_axis_radius_scaled=4.8,
             axis_ratio=0.1,
             phi=45.0,
             centre=(-3.0, 3.0),
@@ -1024,10 +1024,10 @@ class TestMaskEllipticalAnnular(object):
         mask = aa.util.mask.mask_2d_elliptical_annular_from_shape_2d_pixel_scales_and_radius(
             shape_2d=(3, 3),
             pixel_scales=(1.0, 1.0),
-            inner_major_axis_radius_arcsec=0.0,
+            inner_major_axis_radius_scaled=0.0,
             inner_axis_ratio=1.0,
             inner_phi=0.0,
-            outer_major_axis_radius_arcsec=0.5,
+            outer_major_axis_radius_scaled=0.5,
             outer_axis_ratio=1.0,
             outer_phi=0.0,
         )
@@ -1040,10 +1040,10 @@ class TestMaskEllipticalAnnular(object):
         mask = aa.util.mask.mask_2d_elliptical_annular_from_shape_2d_pixel_scales_and_radius(
             shape_2d=(4, 4),
             pixel_scales=(1.0, 1.0),
-            inner_major_axis_radius_arcsec=0.81,
+            inner_major_axis_radius_scaled=0.81,
             inner_axis_ratio=1.0,
             inner_phi=0.0,
-            outer_major_axis_radius_arcsec=2.0,
+            outer_major_axis_radius_scaled=2.0,
             outer_axis_ratio=1.0,
             outer_phi=0.0,
         )
@@ -1063,10 +1063,10 @@ class TestMaskEllipticalAnnular(object):
         mask = aa.util.mask.mask_2d_elliptical_annular_from_shape_2d_pixel_scales_and_radius(
             shape_2d=(3, 3),
             pixel_scales=(1.0, 1.0),
-            inner_major_axis_radius_arcsec=0.5,
+            inner_major_axis_radius_scaled=0.5,
             inner_axis_ratio=1.0,
             inner_phi=0.0,
-            outer_major_axis_radius_arcsec=3.0,
+            outer_major_axis_radius_scaled=3.0,
             outer_axis_ratio=1.0,
             outer_phi=0.0,
         )
@@ -1083,10 +1083,10 @@ class TestMaskEllipticalAnnular(object):
         mask = aa.util.mask.mask_2d_elliptical_annular_from_shape_2d_pixel_scales_and_radius(
             shape_2d=(3, 3),
             pixel_scales=(1.0, 1.0),
-            inner_major_axis_radius_arcsec=0.0,
+            inner_major_axis_radius_scaled=0.0,
             inner_axis_ratio=1.0,
             inner_phi=0.0,
-            outer_major_axis_radius_arcsec=2.0,
+            outer_major_axis_radius_scaled=2.0,
             outer_axis_ratio=0.1,
             outer_phi=0.0,
         )
@@ -1099,10 +1099,10 @@ class TestMaskEllipticalAnnular(object):
         mask = aa.util.mask.mask_2d_elliptical_annular_from_shape_2d_pixel_scales_and_radius(
             shape_2d=(3, 3),
             pixel_scales=(1.0, 1.0),
-            inner_major_axis_radius_arcsec=0.0,
+            inner_major_axis_radius_scaled=0.0,
             inner_axis_ratio=1.0,
             inner_phi=0.0,
-            outer_major_axis_radius_arcsec=2.0,
+            outer_major_axis_radius_scaled=2.0,
             outer_axis_ratio=0.1,
             outer_phi=90.0,
         )
@@ -1115,10 +1115,10 @@ class TestMaskEllipticalAnnular(object):
         mask = aa.util.mask.mask_2d_elliptical_annular_from_shape_2d_pixel_scales_and_radius(
             shape_2d=(3, 3),
             pixel_scales=(1.0, 1.0),
-            inner_major_axis_radius_arcsec=0.0,
+            inner_major_axis_radius_scaled=0.0,
             inner_axis_ratio=1.0,
             inner_phi=0.0,
-            outer_major_axis_radius_arcsec=2.0,
+            outer_major_axis_radius_scaled=2.0,
             outer_axis_ratio=0.1,
             outer_phi=45.0,
         )
@@ -1131,10 +1131,10 @@ class TestMaskEllipticalAnnular(object):
         mask = aa.util.mask.mask_2d_elliptical_annular_from_shape_2d_pixel_scales_and_radius(
             shape_2d=(3, 3),
             pixel_scales=(0.1, 1.0),
-            inner_major_axis_radius_arcsec=0.0,
+            inner_major_axis_radius_scaled=0.0,
             inner_axis_ratio=1.0,
             inner_phi=0.0,
-            outer_major_axis_radius_arcsec=2.0,
+            outer_major_axis_radius_scaled=2.0,
             outer_axis_ratio=0.1,
             outer_phi=45.0,
         )
@@ -1149,10 +1149,10 @@ class TestMaskEllipticalAnnular(object):
         mask = aa.util.mask.mask_2d_elliptical_annular_from_shape_2d_pixel_scales_and_radius(
             shape_2d=(7, 5),
             pixel_scales=(1.0, 1.0),
-            inner_major_axis_radius_arcsec=1.0,
+            inner_major_axis_radius_scaled=1.0,
             inner_axis_ratio=0.1,
             inner_phi=0.0,
-            outer_major_axis_radius_arcsec=2.0,
+            outer_major_axis_radius_scaled=2.0,
             outer_axis_ratio=0.1,
             outer_phi=90.0,
         )
@@ -1175,10 +1175,10 @@ class TestMaskEllipticalAnnular(object):
         mask = aa.util.mask.mask_2d_elliptical_annular_from_shape_2d_pixel_scales_and_radius(
             shape_2d=(7, 5),
             pixel_scales=(1.0, 1.0),
-            inner_major_axis_radius_arcsec=1.0,
+            inner_major_axis_radius_scaled=1.0,
             inner_axis_ratio=0.1,
             inner_phi=0.0,
-            outer_major_axis_radius_arcsec=2.0,
+            outer_major_axis_radius_scaled=2.0,
             outer_axis_ratio=0.5,
             outer_phi=90.0,
         )
@@ -1201,10 +1201,10 @@ class TestMaskEllipticalAnnular(object):
         mask = aa.util.mask.mask_2d_elliptical_annular_from_shape_2d_pixel_scales_and_radius(
             shape_2d=(7, 5),
             pixel_scales=(1.0, 1.0),
-            inner_major_axis_radius_arcsec=2.0,
+            inner_major_axis_radius_scaled=2.0,
             inner_axis_ratio=0.1,
             inner_phi=0.0,
-            outer_major_axis_radius_arcsec=2.0,
+            outer_major_axis_radius_scaled=2.0,
             outer_axis_ratio=0.5,
             outer_phi=90.0,
         )
@@ -1227,10 +1227,10 @@ class TestMaskEllipticalAnnular(object):
         mask = aa.util.mask.mask_2d_elliptical_annular_from_shape_2d_pixel_scales_and_radius(
             shape_2d=(7, 5),
             pixel_scales=(1.0, 1.0),
-            inner_major_axis_radius_arcsec=1.0,
+            inner_major_axis_radius_scaled=1.0,
             inner_axis_ratio=0.1,
             inner_phi=0.0,
-            outer_major_axis_radius_arcsec=2.0,
+            outer_major_axis_radius_scaled=2.0,
             outer_axis_ratio=0.8,
             outer_phi=90.0,
         )
@@ -1255,10 +1255,10 @@ class TestMaskEllipticalAnnular(object):
         mask = aa.util.mask.mask_2d_elliptical_annular_from_shape_2d_pixel_scales_and_radius(
             shape_2d=(7, 5),
             pixel_scales=(1.0, 1.0),
-            inner_major_axis_radius_arcsec=1.0,
+            inner_major_axis_radius_scaled=1.0,
             inner_axis_ratio=0.1,
             inner_phi=0.0,
-            outer_major_axis_radius_arcsec=2.0,
+            outer_major_axis_radius_scaled=2.0,
             outer_axis_ratio=0.1,
             outer_phi=90.0,
             centre=(-1.0, 0.0),
@@ -1282,10 +1282,10 @@ class TestMaskEllipticalAnnular(object):
         mask = aa.util.mask.mask_2d_elliptical_annular_from_shape_2d_pixel_scales_and_radius(
             shape_2d=(7, 5),
             pixel_scales=(1.0, 1.0),
-            inner_major_axis_radius_arcsec=1.0,
+            inner_major_axis_radius_scaled=1.0,
             inner_axis_ratio=0.1,
             inner_phi=0.0,
-            outer_major_axis_radius_arcsec=2.0,
+            outer_major_axis_radius_scaled=2.0,
             outer_axis_ratio=0.1,
             outer_phi=90.0,
             centre=(0.0, 1.0),
@@ -1309,10 +1309,10 @@ class TestMaskEllipticalAnnular(object):
         mask = aa.util.mask.mask_2d_elliptical_annular_from_shape_2d_pixel_scales_and_radius(
             shape_2d=(7, 5),
             pixel_scales=(1.0, 1.0),
-            inner_major_axis_radius_arcsec=1.0,
+            inner_major_axis_radius_scaled=1.0,
             inner_axis_ratio=0.1,
             inner_phi=0.0,
-            outer_major_axis_radius_arcsec=2.0,
+            outer_major_axis_radius_scaled=2.0,
             outer_axis_ratio=0.1,
             outer_phi=90.0,
             centre=(-1.0, 1.0),

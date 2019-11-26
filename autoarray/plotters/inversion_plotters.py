@@ -1,7 +1,7 @@
 import autoarray as aa
 import matplotlib
 
-backend = aa.conf.instance.visualize.get("figures", "backend", str)
+backend = aa.conf.get_matplotlib_backend()
 matplotlib.use(backend)
 from matplotlib import pyplot as plt
 
@@ -11,11 +11,13 @@ from autoarray.operators.inversion import mappers
 
 def subplot(
     inversion,
-    mask_overlay=None,
+    mask=None,
+    lines=None,
     positions=None,
     grid=None,
-    units="arcsec",
-    kpc_per_arcsec=None,
+    use_scaled_units=True,
+    unit_label="scaled",
+    unit_conversion_factor=None,
     figsize=None,
     aspect="square",
     cmap="jet",
@@ -46,10 +48,13 @@ def subplot(
         figsize = figsize_tool
 
     ratio = float(
-        (inversion.mapper.grid.arc_second_maxima[1] - inversion.mapper.grid.arc_second_minima[1])
+        (
+            inversion.mapper.grid.scaled_maxima[1]
+            - inversion.mapper.grid.scaled_minima[1]
+        )
         / (
-            inversion.mapper.grid.arc_second_maxima[0]
-            - inversion.mapper.grid.arc_second_minima[0]
+            inversion.mapper.grid.scaled_maxima[0]
+            - inversion.mapper.grid.scaled_minima[0]
         )
     )
 
@@ -66,12 +71,14 @@ def subplot(
 
     reconstructed_image(
         inversion=inversion,
-        mask_overlay=mask_overlay,
+        mask=mask,
+        lines=lines,
         positions=positions,
         grid=grid,
         as_subplot=True,
-        units=units,
-        kpc_per_arcsec=kpc_per_arcsec,
+        use_scaled_units=use_scaled_units,
+        unit_label=unit_label,
+        unit_conversion_factor=unit_conversion_factor,
         figsize=figsize,
         aspect=aspect,
         cmap=cmap,
@@ -99,11 +106,13 @@ def subplot(
     reconstruction(
         inversion=inversion,
         positions=None,
-        should_plot_grid=False,
-        should_plot_centres=False,
+        lines=lines,
+        include_grid=False,
+        include_centres=False,
         as_subplot=True,
-        units=units,
-        kpc_per_arcsec=kpc_per_arcsec,
+        use_scaled_units=use_scaled_units,
+        unit_label=unit_label,
+        unit_conversion_factor=unit_conversion_factor,
         figsize=figsize,
         aspect=None,
         cmap=cmap,
@@ -131,11 +140,12 @@ def subplot(
     residual_map(
         inversion=inversion,
         positions=None,
-        should_plot_grid=False,
-        should_plot_centres=False,
+        include_grid=False,
+        include_centres=False,
         as_subplot=True,
-        units=units,
-        kpc_per_arcsec=kpc_per_arcsec,
+        use_scaled_units=use_scaled_units,
+        unit_label=unit_label,
+        unit_conversion_factor=unit_conversion_factor,
         figsize=figsize,
         aspect=None,
         cmap=cmap,
@@ -163,11 +173,12 @@ def subplot(
     normalized_residual_map(
         inversion=inversion,
         positions=None,
-        should_plot_grid=False,
-        should_plot_centres=False,
+        include_grid=False,
+        include_centres=False,
         as_subplot=True,
-        units=units,
-        kpc_per_arcsec=kpc_per_arcsec,
+        use_scaled_units=use_scaled_units,
+        unit_label=unit_label,
+        unit_conversion_factor=unit_conversion_factor,
         figsize=figsize,
         aspect=None,
         cmap=cmap,
@@ -195,11 +206,12 @@ def subplot(
     chi_squared_map(
         inversion=inversion,
         positions=None,
-        should_plot_grid=False,
-        should_plot_centres=False,
+        include_grid=False,
+        include_centres=False,
         as_subplot=True,
-        units=units,
-        kpc_per_arcsec=kpc_per_arcsec,
+        use_scaled_units=use_scaled_units,
+        unit_label=unit_label,
+        kpc_per_arcsec=unit_conversion_factor,
         figsize=figsize,
         aspect=None,
         cmap=cmap,
@@ -227,11 +239,12 @@ def subplot(
     regularization_weights(
         inversion=inversion,
         positions=None,
-        should_plot_grid=False,
-        should_plot_centres=False,
+        include_grid=False,
+        include_centres=False,
         as_subplot=True,
-        units=units,
-        kpc_per_arcsec=kpc_per_arcsec,
+        use_scaled_units=use_scaled_units,
+        unit_label=unit_label,
+        unit_conversion_factor=unit_conversion_factor,
         figsize=figsize,
         aspect=None,
         cmap=cmap,
@@ -265,12 +278,14 @@ def subplot(
 
 def reconstructed_image(
     inversion,
-    mask_overlay=None,
+    mask=None,
+    lines=None,
     positions=None,
     grid=None,
     as_subplot=False,
-    units="arcsec",
-    kpc_per_arcsec=None,
+    use_scaled_units=True,
+    unit_label="scaled",
+    unit_conversion_factor=None,
     figsize=(7, 7),
     aspect="square",
     cmap="jet",
@@ -296,12 +311,14 @@ def reconstructed_image(
 
     aa.plot.array(
         array=inversion.mapped_reconstructed_image,
-        mask_overlay=mask_overlay,
-        positions=positions,
+        mask=mask,
+        lines=lines,
+        points=positions,
         grid=grid,
         as_subplot=as_subplot,
-        units=units,
-        kpc_per_arcsec=kpc_per_arcsec,
+        use_scaled_units=use_scaled_units,
+        unit_label=unit_label,
+        unit_conversion_factor=unit_conversion_factor,
         figsize=figsize,
         aspect=aspect,
         cmap=cmap,
@@ -328,16 +345,18 @@ def reconstructed_image(
 
 def reconstruction(
     inversion,
-    plot_origin=True,
+    include_origin=True,
+    lines=None,
     positions=None,
-    should_plot_centres=False,
-    should_plot_grid=False,
-    should_plot_border=False,
+    include_centres=False,
+    include_grid=False,
+    include_border=False,
     image_pixels=None,
     source_pixels=None,
     as_subplot=False,
-    units="arcsec",
-    kpc_per_arcsec=None,
+    use_scaled_units=True,
+    unit_label="scaled",
+    unit_conversion_factor=None,
     figsize=(7, 7),
     aspect="square",
     cmap="jet",
@@ -369,16 +388,18 @@ def reconstruction(
     plot_values(
         inversion=inversion,
         source_pixel_values=inversion.reconstruction,
-        plot_origin=plot_origin,
+        include_origin=include_origin,
+        lines=lines,
         positions=positions,
-        should_plot_centres=should_plot_centres,
-        should_plot_grid=should_plot_grid,
-        should_plot_border=should_plot_border,
+        include_centres=include_centres,
+        include_grid=include_grid,
+        include_border=include_border,
         image_pixels=image_pixels,
         source_pixels=source_pixels,
         as_subplot=as_subplot,
-        units=units,
-        kpc_per_arcsec=kpc_per_arcsec,
+        use_scaled_units=use_scaled_units,
+        unit_label=unit_label,
+        unit_conversion_facto=unit_conversion_factor,
         figsize=figsize,
         aspect=aspect,
         cmap=cmap,
@@ -407,16 +428,17 @@ def reconstruction(
 
 def residual_map(
     inversion,
-    plot_origin=True,
+    include_origin=True,
     positions=None,
-    should_plot_centres=False,
-    should_plot_grid=False,
-    should_plot_border=False,
+    include_centres=False,
+    include_grid=False,
+    include_border=False,
     image_pixels=None,
     source_pixels=None,
     as_subplot=False,
-    units="arcsec",
-    kpc_per_arcsec=None,
+    use_scaled_units=True,
+    unit_label="scaled",
+    unit_conversion_factor=None,
     figsize=(7, 7),
     aspect="square",
     cmap="jet",
@@ -448,16 +470,17 @@ def residual_map(
     plot_values(
         inversion=inversion,
         source_pixel_values=inversion.residual_map,
-        plot_origin=plot_origin,
+        include_origin=include_origin,
         positions=positions,
-        should_plot_centres=should_plot_centres,
-        should_plot_grid=should_plot_grid,
-        should_plot_border=should_plot_border,
+        include_centres=include_centres,
+        include_grid=include_grid,
+        include_border=include_border,
         image_pixels=image_pixels,
         source_pixels=source_pixels,
         as_subplot=as_subplot,
-        units=units,
-        kpc_per_arcsec=kpc_per_arcsec,
+        use_scaled_units=use_scaled_units,
+        unit_label=unit_label,
+        unit_conversion_facto=unit_conversion_factor,
         figsize=figsize,
         aspect=aspect,
         cmap=cmap,
@@ -486,16 +509,17 @@ def residual_map(
 
 def normalized_residual_map(
     inversion,
-    plot_origin=True,
+    include_origin=True,
     positions=None,
-    should_plot_centres=False,
-    should_plot_grid=False,
-    should_plot_border=False,
+    include_centres=False,
+    include_grid=False,
+    include_border=False,
     image_pixels=None,
     source_pixels=None,
     as_subplot=False,
-    units="arcsec",
-    kpc_per_arcsec=None,
+    use_scaled_units=True,
+    unit_label="scaled",
+    unit_conversion_factor=None,
     figsize=(7, 7),
     aspect="square",
     cmap="jet",
@@ -527,16 +551,17 @@ def normalized_residual_map(
     plot_values(
         inversion=inversion,
         source_pixel_values=inversion.normalized_residual_map,
-        plot_origin=plot_origin,
+        include_origin=include_origin,
         positions=positions,
-        should_plot_centres=should_plot_centres,
-        should_plot_grid=should_plot_grid,
-        should_plot_border=should_plot_border,
+        include_centres=include_centres,
+        include_grid=include_grid,
+        include_border=include_border,
         image_pixels=image_pixels,
         source_pixels=source_pixels,
         as_subplot=as_subplot,
-        units=units,
-        kpc_per_arcsec=kpc_per_arcsec,
+        use_scaled_units=use_scaled_units,
+        unit_label=unit_label,
+        unit_conversion_facto=unit_conversion_factor,
         figsize=figsize,
         aspect=aspect,
         cmap=cmap,
@@ -565,15 +590,16 @@ def normalized_residual_map(
 
 def chi_squared_map(
     inversion,
-    plot_origin=True,
+    include_origin=True,
     positions=None,
-    should_plot_centres=False,
-    should_plot_grid=False,
-    should_plot_border=False,
+    include_centres=False,
+    include_grid=False,
+    include_border=False,
     image_pixels=None,
     source_pixels=None,
     as_subplot=False,
-    units="arcsec",
+    use_scaled_units=True,
+    unit_label="scaled",
     kpc_per_arcsec=None,
     figsize=(7, 7),
     aspect="square",
@@ -606,16 +632,17 @@ def chi_squared_map(
     plot_values(
         inversion=inversion,
         source_pixel_values=inversion.chi_squared_map,
-        plot_origin=plot_origin,
+        include_origin=include_origin,
         positions=positions,
-        should_plot_centres=should_plot_centres,
-        should_plot_grid=should_plot_grid,
-        should_plot_border=should_plot_border,
+        include_centres=include_centres,
+        include_grid=include_grid,
+        include_border=include_border,
         image_pixels=image_pixels,
         source_pixels=source_pixels,
         as_subplot=as_subplot,
-        units=units,
-        kpc_per_arcsec=kpc_per_arcsec,
+        use_scaled_units=use_scaled_units,
+        unit_label=unit_label,
+        unit_conversion_facto=kpc_per_arcsec,
         figsize=figsize,
         aspect=aspect,
         cmap=cmap,
@@ -644,16 +671,17 @@ def chi_squared_map(
 
 def regularization_weights(
     inversion,
-    plot_origin=True,
+    include_origin=True,
     positions=None,
-    should_plot_centres=False,
-    should_plot_grid=False,
-    should_plot_border=False,
+    include_centres=False,
+    include_grid=False,
+    include_border=False,
     image_pixels=None,
     source_pixels=None,
     as_subplot=False,
-    units="arcsec",
-    kpc_per_arcsec=None,
+    use_scaled_units=True,
+    unit_label="scaled",
+    unit_conversion_factor=None,
     figsize=(7, 7),
     aspect="square",
     cmap="jet",
@@ -689,16 +717,17 @@ def regularization_weights(
     plot_values(
         inversion=inversion,
         source_pixel_values=regularization_weights,
-        plot_origin=plot_origin,
+        include_origin=include_origin,
         positions=positions,
-        should_plot_centres=should_plot_centres,
-        should_plot_grid=should_plot_grid,
-        should_plot_border=should_plot_border,
+        include_centres=include_centres,
+        include_grid=include_grid,
+        include_border=include_border,
         image_pixels=image_pixels,
         source_pixels=source_pixels,
         as_subplot=as_subplot,
-        units=units,
-        kpc_per_arcsec=kpc_per_arcsec,
+        use_scaled_units=use_scaled_units,
+        unit_label=unit_label,
+        unit_conversion_facto=unit_conversion_factor,
         figsize=figsize,
         aspect=aspect,
         cmap=cmap,
@@ -728,16 +757,18 @@ def regularization_weights(
 def plot_values(
     inversion,
     source_pixel_values,
-    plot_origin=True,
+    include_origin=True,
+    lines=None,
     positions=None,
-    should_plot_centres=False,
-    should_plot_grid=False,
-    should_plot_border=False,
+    include_centres=False,
+    include_grid=False,
+    include_border=False,
     image_pixels=None,
     source_pixels=None,
     as_subplot=False,
-    units="arcsec",
-    kpc_per_arcsec=None,
+    use_scaled_units=True,
+    unit_label="scaled",
+    unit_conversion_facto=None,
     figsize=(7, 7),
     aspect="square",
     cmap="jet",
@@ -761,21 +792,25 @@ def plot_values(
     output_filename="pixelization_source_values",
 ):
 
-    if isinstance(inversion.mapper, mappers.RectangularMapper):
+    if isinstance(inversion.mapper, mappers.MapperRectangular):
 
         reconstructed_pixelization = inversion.mapper.reconstructed_pixelization_from_solution_vector(
             solution_vector=source_pixel_values
         )
 
-        origin = get_origin(image=reconstructed_pixelization, plot_origin=plot_origin)
+        origin = get_origin(
+            image=reconstructed_pixelization, include_origin=include_origin
+        )
 
         aa.plot.array(
             array=reconstructed_pixelization,
-            should_plot_origin=origin,
-            positions=positions,
+            include_origin=origin,
+            lines=lines,
+            points=positions,
             as_subplot=True,
-            units=units,
-            kpc_per_arcsec=kpc_per_arcsec,
+            use_scaled_units=use_scaled_units,
+            unit_label=unit_label,
+            unit_conversion_factor=unit_conversion_facto,
             figsize=figsize,
             aspect=aspect,
             cmap=cmap,
@@ -799,14 +834,15 @@ def plot_values(
 
         mapper_plotters.rectangular_mapper(
             mapper=inversion.mapper,
-            should_plot_centres=should_plot_centres,
-            should_plot_grid=should_plot_grid,
-            should_plot_border=should_plot_border,
+            include_centres=include_centres,
+            include_grid=include_grid,
+            include_border=include_border,
             image_pixels=image_pixels,
             source_pixels=source_pixels,
             as_subplot=True,
-            units=units,
-            kpc_per_arcsec=kpc_per_arcsec,
+            use_scaled_units=use_scaled_units,
+            unit_label=unit_label,
+            unit_conversion_factor=unit_conversion_facto,
             title=title,
             titlesize=titlesize,
             xlabelsize=xlabelsize,
@@ -822,19 +858,21 @@ def plot_values(
             output_format=output_format,
         )
 
-    elif isinstance(inversion.mapper, mappers.VoronoiMapper):
+    elif isinstance(inversion.mapper, mappers.MapperVoronoi):
 
         mapper_plotters.voronoi_mapper(
             mapper=inversion.mapper,
             source_pixel_values=source_pixel_values,
-            should_plot_centres=should_plot_centres,
-            should_plot_grid=should_plot_grid,
-            should_plot_border=should_plot_border,
+            include_centres=include_centres,
+            lines=lines,
+            include_grid=include_grid,
+            include_border=include_border,
             image_pixels=image_pixels,
             source_pixels=source_pixels,
             as_subplot=True,
-            units=units,
-            kpc_per_arcsec=kpc_per_arcsec,
+            use_scaled_units=use_scaled_units,
+            unit_label=unit_label,
+            unit_conversion_factor=unit_conversion_facto,
             title=title,
             titlesize=titlesize,
             xlabelsize=xlabelsize,
@@ -851,9 +889,9 @@ def plot_values(
         )
 
 
-def get_origin(image, plot_origin):
+def get_origin(image, include_origin):
 
-    if plot_origin:
+    if include_origin:
         return image.origin
     else:
         return None

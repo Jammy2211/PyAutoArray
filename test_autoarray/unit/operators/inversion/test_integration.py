@@ -1,9 +1,8 @@
 import autoarray as aa
 from autoarray.structures import grids
+from autoarray.operators.inversion import mappers
 import numpy as np
 import pytest
-
-from test_autoarray.mock.mock_grids import MockIrregularGrid
 
 
 class TestRectangular:
@@ -25,7 +24,7 @@ class TestRectangular:
 
         # Source-plane comprises 5 grid, so 5 masked_image pixels traced to the pix-plane.
 
-        grid = aa.masked_grid.manual_1d(
+        grid = aa.masked.grid.manual_1d(
             grid=np.array(
                 [[1.0, -1.0], [1.0, 1.0], [0.0, 0.0], [-1.0, -1.0], [-1.0, 1.0]]
             ),
@@ -45,7 +44,7 @@ class TestRectangular:
         )
 
         assert mapper.is_image_plane_pixelization == False
-        assert mapper.grid.shape_2d_arcsec == pytest.approx((2.0, 2.0), 1.0e-4)
+        assert mapper.grid.shape_2d_scaled == pytest.approx((2.0, 2.0), 1.0e-4)
         assert mapper.grid.origin == pytest.approx((0.0, 0.0), 1.0e-4)
 
         assert (
@@ -83,6 +82,22 @@ class TestRectangular:
             )
         ).all()
 
+        image = aa.array.ones(shape_2d=(7, 7))
+        noise_map = aa.array.ones(shape_2d=(7, 7))
+        psf = aa.kernel.no_blur()
+
+        imaging = aa.imaging(image=image, noise_map=noise_map, psf=psf)
+
+        masked_data = aa.masked.imaging(imaging=imaging, mask=mask)
+
+        inversion = aa.inversion(
+            masked_dataset=masked_data, mapper=mapper, regularization=reg
+        )
+
+        assert (inversion.blurred_mapping_matrix == mapper.mapping_matrix).all()
+        assert (inversion.regularization_matrix == regularization_matrix).all()
+        assert inversion.mapped_reconstructed_image == pytest.approx(np.ones(5), 1.0e-4)
+
     def test__15_grid__no_sub_grid(self):
 
         mask = np.array(
@@ -101,7 +116,7 @@ class TestRectangular:
 
         # There is no sub-grid, so our grid are just the masked_image grid (note the NumPy weighted_data structure
         # ensures this has no sub-gridding)
-        grid = aa.masked_grid.manual_1d(
+        grid = aa.masked.grid.manual_1d(
             grid=np.array(
                 [
                     [0.9, -0.9],
@@ -127,13 +142,13 @@ class TestRectangular:
         pix = aa.pix.Rectangular(shape=(3, 3))
 
         mapper = pix.mapper_from_grid_and_sparse_grid(
-            grid=grid,
-            sparse_grid=None,
-            inversion_uses_border=False,
+            grid=grid, sparse_grid=None, inversion_uses_border=False
         )
 
         assert mapper.is_image_plane_pixelization == False
-        assert mapper.pixelization_grid.shape_2d_arcsec == pytest.approx((2.2, 2.2), 1.0e-4)
+        assert mapper.pixelization_grid.shape_2d_scaled == pytest.approx(
+            (2.2, 2.2), 1.0e-4
+        )
         assert mapper.pixelization_grid.origin == pytest.approx((0.0, 0.0), 1.0e-4)
 
         assert (
@@ -180,6 +195,24 @@ class TestRectangular:
             )
         ).all()
 
+        image = aa.array.ones(shape_2d=(7, 7))
+        noise_map = aa.array.ones(shape_2d=(7, 7))
+        psf = aa.kernel.no_blur()
+
+        imaging = aa.imaging(image=image, noise_map=noise_map, psf=psf)
+
+        masked_data = aa.masked.imaging(imaging=imaging, mask=mask)
+
+        inversion = aa.inversion(
+            masked_dataset=masked_data, mapper=mapper, regularization=reg
+        )
+
+        assert (inversion.blurred_mapping_matrix == mapper.mapping_matrix).all()
+        assert (inversion.regularization_matrix == regularization_matrix).all()
+        assert inversion.mapped_reconstructed_image == pytest.approx(
+            np.ones(15), 1.0e-4
+        )
+
     def test__5_simple_grid__include_sub_grid(self):
 
         mask = np.array(
@@ -200,7 +233,7 @@ class TestRectangular:
         # The grid below is unphysical in that the (0.0, 0.0) terms on the end of each sub-grid probably couldn't
         # happen for a real lensing calculation. This is to make a mapping_matrix matrix which explicitly tests the
         # sub-grid.
-        grid = aa.masked_grid.manual_1d(
+        grid = aa.masked.grid.manual_1d(
             grid=np.array(
                 [
                     [1.0, -1.0],
@@ -231,13 +264,13 @@ class TestRectangular:
         pix = aa.pix.Rectangular(shape=(3, 3))
 
         mapper = pix.mapper_from_grid_and_sparse_grid(
-            grid=grid,
-            sparse_grid=None,
-            inversion_uses_border=False,
+            grid=grid, sparse_grid=None, inversion_uses_border=False
         )
 
         assert mapper.is_image_plane_pixelization == False
-        assert mapper.pixelization_grid.shape_2d_arcsec == pytest.approx((2.0, 2.0), 1.0e-4)
+        assert mapper.pixelization_grid.shape_2d_scaled == pytest.approx(
+            (2.0, 2.0), 1.0e-4
+        )
         assert mapper.pixelization_grid.origin == pytest.approx((0.0, 0.0), 1.0e-4)
 
         assert (
@@ -274,6 +307,22 @@ class TestRectangular:
             )
         ).all()
 
+        image = aa.array.ones(shape_2d=(7, 7))
+        noise_map = aa.array.ones(shape_2d=(7, 7))
+        psf = aa.kernel.no_blur()
+
+        imaging = aa.imaging(image=image, noise_map=noise_map, psf=psf)
+
+        masked_data = aa.masked.imaging(imaging=imaging, mask=mask)
+
+        inversion = aa.inversion(
+            masked_dataset=masked_data, mapper=mapper, regularization=reg
+        )
+
+        assert (inversion.blurred_mapping_matrix == mapper.mapping_matrix).all()
+        assert (inversion.regularization_matrix == regularization_matrix).all()
+        assert inversion.mapped_reconstructed_image == pytest.approx(np.ones(5), 1.0e-4)
+
     def test__grid__requires_border_relocation(self):
 
         mask = np.array(
@@ -290,7 +339,7 @@ class TestRectangular:
 
         mask = aa.mask.manual(mask_2d=mask, pixel_scales=1.0, sub_size=1)
 
-        grid = aa.masked_grid.manual_1d(
+        grid = aa.masked.grid.manual_1d(
             grid=np.array(
                 [[1.0, 1.0], [1.0, 1.0], [1.0, 1.0], [1.0, 1.0], [-1.0, -1.0]]
             ),
@@ -300,13 +349,13 @@ class TestRectangular:
         pix = aa.pix.Rectangular(shape=(3, 3))
 
         mapper = pix.mapper_from_grid_and_sparse_grid(
-            grid=grid,
-            sparse_grid=None,
-            inversion_uses_border=False,
+            grid=grid, sparse_grid=None, inversion_uses_border=False
         )
 
         assert mapper.is_image_plane_pixelization == False
-        assert mapper.pixelization_grid.shape_2d_arcsec == pytest.approx((2.0, 2.0), 1.0e-4)
+        assert mapper.pixelization_grid.shape_2d_scaled == pytest.approx(
+            (2.0, 2.0), 1.0e-4
+        )
         assert mapper.pixelization_grid.origin == pytest.approx((0.0, 0.0), 1.0e-4)
 
         assert (
@@ -343,13 +392,96 @@ class TestRectangular:
             )
         ).all()
 
+        image = aa.array.ones(shape_2d=(7, 7))
+        noise_map = aa.array.ones(shape_2d=(7, 7))
+        psf = aa.kernel.no_blur()
+
+        imaging = aa.imaging(image=image, noise_map=noise_map, psf=psf)
+
+        masked_data = aa.masked.imaging(imaging=imaging, mask=mask)
+
+        inversion = aa.inversion(
+            masked_dataset=masked_data, mapper=mapper, regularization=reg
+        )
+
+        assert (inversion.blurred_mapping_matrix == mapper.mapping_matrix).all()
+        assert (inversion.regularization_matrix == regularization_matrix).all()
+        assert inversion.mapped_reconstructed_image == pytest.approx(np.ones(5), 1.0e-4)
+
+    def test__interferometer(self):
+
+        mask = np.array(
+            [
+                [False, False, False, False, False, False, False],
+                [False, False, False, False, False, False, False],
+                [False, False, False, False, False, False, False],
+                [False, False, False, False, False, False, False],
+                [False, False, False, False, False, False, False],
+                [False, False, False, False, False, False, False],
+                [False, False, False, False, False, False, False],
+            ]
+        )
+
+        mask = aa.mask.manual(mask_2d=mask, pixel_scales=0.1, sub_size=1)
+
+        grid = aa.masked.grid.from_mask(mask=mask)
+
+        pix = aa.pix.Rectangular(shape=(7, 7))
+
+        mapper = pix.mapper_from_grid_and_sparse_grid(
+            grid=grid, sparse_grid=None, inversion_uses_border=False
+        )
+
+        reg = aa.reg.Constant(coefficient=0.0)
+
+        visibilities = aa.visibilities.manual_1d(
+            visibilities=[
+                [1.0, 0.0],
+                [1.0, 0.0],
+                [1.0, 0.0],
+                [1.0, 0.0],
+                [1.0, 0.0],
+                [1.0, 0.0],
+                [1.0, 0.0],
+            ]
+        )
+        noise_map = aa.visibilities.ones(shape_1d=(7,))
+        uv_wavelengths = np.ones(shape=(7, 2))
+
+        interferometer = aa.interferometer(
+            visibilities=visibilities,
+            noise_map=noise_map,
+            uv_wavelengths=uv_wavelengths,
+        )
+
+        masked_data = aa.masked.interferometer(
+            interferometer=interferometer, real_space_mask=mask
+        )
+
+        inversion = aa.inversion(
+            masked_dataset=masked_data, mapper=mapper, regularization=reg
+        )
+
+        assert inversion.mapped_reconstructed_visibilities[:, 0] == pytest.approx(
+            np.ones(shape=(7,)), 1.0e-4
+        )
+        assert inversion.mapped_reconstructed_visibilities[:, 1] == pytest.approx(
+            np.zeros(shape=(7,)), 1.0e-4
+        )
+
 
 class TestVoronoiMagnification:
     def test__3x3_simple_grid(self):
 
         mask = aa.mask.manual(
             mask_2d=np.array(
-                [[False, False, False], [False, False, False], [False, False, False]]
+                [
+                    [True, True, True, True, True],
+                    [True, False, False, False, True],
+                    [True, False, False, False, True],
+                    [True, False, False, False, True],
+                    [True, True, True, True, True],
+                ]
             ),
             pixel_scales=1.0,
             sub_size=1,
@@ -369,16 +501,16 @@ class TestVoronoiMagnification:
             ]
         )
 
-        grid = aa.masked_grid.manual_1d(grid=grid, mask=mask)
+        grid = aa.masked.grid.manual_1d(grid=grid, mask=mask)
 
         pix = aa.pix.VoronoiMagnification(shape=(3, 3))
-        sparse_to_grid = grids.SparseToGrid.from_grid_and_unmasked_2d_grid_shape(
+        sparse_grid = grids.SparseGrid.from_grid_and_unmasked_2d_grid_shape(
             grid=grid, unmasked_sparse_shape=pix.shape
         )
 
-        pixelization_grid = aa.pix_grid.VoronoiGrid(
-            grid_1d=sparse_to_grid.sparse,
-            nearest_irregular_1d_index_for_mask_1d_index=sparse_to_grid.sparse_1d_index_for_mask_1d_index,
+        pixelization_grid = aa.grid_voronoi(
+            grid_1d=sparse_grid.sparse,
+            nearest_irregular_1d_index_for_mask_1d_index=sparse_grid.sparse_1d_index_for_mask_1d_index,
         )
 
         mapper = pix.mapper_from_grid_and_sparse_grid(
@@ -389,12 +521,14 @@ class TestVoronoiMagnification:
         )
 
         assert mapper.is_image_plane_pixelization == True
-        assert mapper.pixelization_grid.shape_2d_arcsec == pytest.approx((2.0, 2.0), 1.0e-4)
-        assert (mapper.pixelization_grid == sparse_to_grid.sparse).all()
-   #     assert mapper.pixelization_grid.origin == pytest.approx((0.0, 0.0), 1.0e-4)
+        assert mapper.pixelization_grid.shape_2d_scaled == pytest.approx(
+            (2.0, 2.0), 1.0e-4
+        )
+        assert (mapper.pixelization_grid == sparse_grid.sparse).all()
+        #     assert mapper.pixelization_grid.origin == pytest.approx((0.0, 0.0), 1.0e-4)
         assert (mapper.hyper_image == np.ones((2, 2))).all()
 
-        assert isinstance(mapper, aa.mappers.VoronoiMapper)
+        assert isinstance(mapper, mappers.MapperVoronoi)
 
         assert (
             mapper.mapping_matrix
@@ -433,11 +567,33 @@ class TestVoronoiMagnification:
             )
         ).all()
 
+        image = aa.array.ones(shape_2d=(5, 5))
+        noise_map = aa.array.ones(shape_2d=(5, 5))
+        psf = aa.kernel.no_blur()
+
+        imaging = aa.imaging(image=image, noise_map=noise_map, psf=psf)
+
+        masked_data = aa.masked.imaging(imaging=imaging, mask=mask)
+
+        inversion = aa.inversion(
+            masked_dataset=masked_data, mapper=mapper, regularization=reg
+        )
+
+        assert (inversion.blurred_mapping_matrix == mapper.mapping_matrix).all()
+        assert (inversion.regularization_matrix == regularization_matrix).all()
+        assert inversion.mapped_reconstructed_image == pytest.approx(np.ones(9), 1.0e-4)
+
     def test__3x3_simple_grid__include_mask(self):
 
         mask = aa.mask.manual(
             mask_2d=np.array(
-                [[True, False, True], [False, False, False], [True, False, True]]
+                [
+                    [True, True, True, True, True],
+                    [True, True, False, True, True],
+                    [True, False, False, False, True],
+                    [True, True, False, True, True],
+                    [True, True, True, True, True],
+                ]
             ),
             pixel_scales=1.0,
             sub_size=1,
@@ -445,16 +601,16 @@ class TestVoronoiMagnification:
 
         grid = np.array([[1.0, 0.0], [0.0, -1.0], [0.0, 0.0], [0.0, 1.0], [-1.0, 0.0]])
 
-        grid = aa.masked_grid.manual_1d(grid=grid, mask=mask)
+        grid = aa.masked.grid.manual_1d(grid=grid, mask=mask)
 
         pix = aa.pix.VoronoiMagnification(shape=(3, 3))
-        sparse_to_grid = grids.SparseToGrid.from_grid_and_unmasked_2d_grid_shape(
+        sparse_grid = grids.SparseGrid.from_grid_and_unmasked_2d_grid_shape(
             grid=grid, unmasked_sparse_shape=pix.shape
         )
 
-        pixelization_grid = aa.pix_grid.VoronoiGrid(
-            grid_1d=sparse_to_grid.sparse,
-            nearest_irregular_1d_index_for_mask_1d_index=sparse_to_grid.sparse_1d_index_for_mask_1d_index,
+        pixelization_grid = aa.grid_voronoi(
+            grid_1d=sparse_grid.sparse,
+            nearest_irregular_1d_index_for_mask_1d_index=sparse_grid.sparse_1d_index_for_mask_1d_index,
         )
 
         mapper = pix.mapper_from_grid_and_sparse_grid(
@@ -462,11 +618,13 @@ class TestVoronoiMagnification:
         )
 
         assert mapper.is_image_plane_pixelization == True
-        assert mapper.pixelization_grid.shape_2d_arcsec == pytest.approx((2.0, 2.0), 1.0e-4)
-        assert (mapper.pixelization_grid == sparse_to_grid.sparse).all()
-     #   assert mapper.pixelization_grid.origin == pytest.approx((0.0, 0.0), 1.0e-4)
+        assert mapper.pixelization_grid.shape_2d_scaled == pytest.approx(
+            (2.0, 2.0), 1.0e-4
+        )
+        assert (mapper.pixelization_grid == sparse_grid.sparse).all()
+        #   assert mapper.pixelization_grid.origin == pytest.approx((0.0, 0.0), 1.0e-4)
 
-        assert isinstance(mapper, aa.mappers.VoronoiMapper)
+        assert isinstance(mapper, mappers.MapperVoronoi)
 
         assert (
             mapper.mapping_matrix
@@ -497,11 +655,33 @@ class TestVoronoiMagnification:
             )
         ).all()
 
+        image = aa.array.ones(shape_2d=(5, 5))
+        noise_map = aa.array.ones(shape_2d=(5, 5))
+        psf = aa.kernel.no_blur()
+
+        imaging = aa.imaging(image=image, noise_map=noise_map, psf=psf)
+
+        masked_data = aa.masked.imaging(imaging=imaging, mask=mask)
+
+        inversion = aa.inversion(
+            masked_dataset=masked_data, mapper=mapper, regularization=reg
+        )
+
+        assert (inversion.blurred_mapping_matrix == mapper.mapping_matrix).all()
+        assert (inversion.regularization_matrix == regularization_matrix).all()
+        assert inversion.mapped_reconstructed_image == pytest.approx(np.ones(5), 1.0e-4)
+
     def test__3x3_simple_grid__include_mask_and_sub_grid(self):
 
         mask = aa.mask.manual(
             mask_2d=np.array(
-                [[True, False, True], [False, False, False], [True, False, True]]
+                [
+                    [True, True, True, True, True],
+                    [True, True, False, True, True],
+                    [True, False, False, False, True],
+                    [True, True, False, True, True],
+                    [True, True, True, True, True],
+                ]
             ),
             pixel_scales=1.0,
             sub_size=2,
@@ -532,16 +712,16 @@ class TestVoronoiMagnification:
             ]
         )
 
-        grid = aa.masked_grid.manual_1d(grid=grid, mask=mask)
+        grid = aa.masked.grid.manual_1d(grid=grid, mask=mask)
 
         pix = aa.pix.VoronoiMagnification(shape=(3, 3))
-        sparse_to_grid = grids.SparseToGrid.from_grid_and_unmasked_2d_grid_shape(
+        sparse_grid = grids.SparseGrid.from_grid_and_unmasked_2d_grid_shape(
             grid=grid, unmasked_sparse_shape=pix.shape
         )
 
-        pixelization_grid = aa.pix_grid.VoronoiGrid(
-            grid_1d=sparse_to_grid.sparse,
-            nearest_irregular_1d_index_for_mask_1d_index=sparse_to_grid.sparse_1d_index_for_mask_1d_index,
+        pixelization_grid = aa.grid_voronoi(
+            grid_1d=sparse_grid.sparse,
+            nearest_irregular_1d_index_for_mask_1d_index=sparse_grid.sparse_1d_index_for_mask_1d_index,
         )
 
         mapper = pix.mapper_from_grid_and_sparse_grid(
@@ -549,11 +729,11 @@ class TestVoronoiMagnification:
         )
 
         assert mapper.is_image_plane_pixelization == True
-        assert mapper.grid.shape_2d_arcsec == pytest.approx((2.02, 2.01), 1.0e-4)
-        assert (mapper.pixelization_grid == sparse_to_grid.sparse).all()
-    #    assert mapper.pixelization_grid.origin == pytest.approx((0.0, 0.005), 1.0e-4)
+        assert mapper.grid.shape_2d_scaled == pytest.approx((2.02, 2.01), 1.0e-4)
+        assert (mapper.pixelization_grid == sparse_grid.sparse).all()
+        #    assert mapper.pixelization_grid.origin == pytest.approx((0.0, 0.005), 1.0e-4)
 
-        assert isinstance(mapper, aa.mappers.VoronoiMapper)
+        assert isinstance(mapper, mappers.MapperVoronoi)
 
         assert (
             mapper.mapping_matrix
@@ -584,16 +764,34 @@ class TestVoronoiMagnification:
             )
         ).all()
 
+        image = aa.array.ones(shape_2d=(5, 5))
+        noise_map = aa.array.ones(shape_2d=(5, 5))
+        psf = aa.kernel.no_blur()
+
+        imaging = aa.imaging(image=image, noise_map=noise_map, psf=psf)
+
+        masked_data = aa.masked.imaging(imaging=imaging, mask=mask)
+
+        inversion = aa.inversion(
+            masked_dataset=masked_data, mapper=mapper, regularization=reg
+        )
+
+        assert (inversion.blurred_mapping_matrix == mapper.mapping_matrix).all()
+        assert (inversion.regularization_matrix == regularization_matrix).all()
+        assert inversion.mapped_reconstructed_image == pytest.approx(np.ones(5), 1.0e-4)
+
     def test__3x3_simple_grid__include_mask_with_offset_centre(self):
 
         mask = aa.mask.manual(
             mask_2d=np.array(
                 [
-                    [True, True, True, False, True],
-                    [True, True, False, False, False],
-                    [True, True, True, False, True],
-                    [True, True, True, True, True],
-                    [True, True, True, True, True],
+                    [True, True, True, True, True, True, True],
+                    [True, True, True, True, False, True, True],
+                    [True, True, True, False, False, False, True],
+                    [True, True, True, True, False, True, True],
+                    [True, True, True, True, True, True, True],
+                    [True, True, True, True, True, True, True],
+                    [True, True, True, True, True, True, True],
                 ]
             ),
             pixel_scales=1.0,
@@ -602,16 +800,16 @@ class TestVoronoiMagnification:
 
         grid = np.array([[2.0, 1.0], [1.0, 0.0], [1.0, 1.0], [1.0, 2.0], [0.0, 1.0]])
 
-        grid = aa.masked_grid.manual_1d(grid=grid, mask=mask)
+        grid = aa.masked.grid.manual_1d(grid=grid, mask=mask)
 
         pix = aa.pix.VoronoiMagnification(shape=(3, 3))
-        sparse_to_grid = grids.SparseToGrid.from_grid_and_unmasked_2d_grid_shape(
+        sparse_grid = grids.SparseGrid.from_grid_and_unmasked_2d_grid_shape(
             grid=grid, unmasked_sparse_shape=pix.shape
         )
 
-        pixelization_grid = aa.pix_grid.VoronoiGrid(
-            grid_1d=sparse_to_grid.sparse,
-            nearest_irregular_1d_index_for_mask_1d_index=sparse_to_grid.sparse_1d_index_for_mask_1d_index,
+        pixelization_grid = aa.grid_voronoi(
+            grid_1d=sparse_grid.sparse,
+            nearest_irregular_1d_index_for_mask_1d_index=sparse_grid.sparse_1d_index_for_mask_1d_index,
         )
 
         mapper = pix.mapper_from_grid_and_sparse_grid(
@@ -619,11 +817,13 @@ class TestVoronoiMagnification:
         )
 
         assert mapper.is_image_plane_pixelization == True
-        assert mapper.pixelization_grid.shape_2d_arcsec == pytest.approx((2.0, 2.0), 1.0e-4)
-        assert (mapper.pixelization_grid == sparse_to_grid.sparse).all()
-     #   assert mapper.pixelization_grid.origin == pytest.approx((1.0, 1.0), 1.0e-4)
+        assert mapper.pixelization_grid.shape_2d_scaled == pytest.approx(
+            (2.0, 2.0), 1.0e-4
+        )
+        assert (mapper.pixelization_grid == sparse_grid.sparse).all()
+        #   assert mapper.pixelization_grid.origin == pytest.approx((1.0, 1.0), 1.0e-4)
 
-        assert isinstance(mapper, aa.mappers.VoronoiMapper)
+        assert isinstance(mapper, mappers.MapperVoronoi)
 
         assert (
             mapper.mapping_matrix
@@ -653,3 +853,82 @@ class TestVoronoiMagnification:
                 ]
             )
         ).all()
+
+        image = aa.array.ones(shape_2d=(7, 7))
+        noise_map = aa.array.ones(shape_2d=(7, 7))
+        psf = aa.kernel.no_blur()
+
+        imaging = aa.imaging(image=image, noise_map=noise_map, psf=psf)
+
+        masked_data = aa.masked.imaging(imaging=imaging, mask=mask)
+
+        inversion = aa.inversion(
+            masked_dataset=masked_data, mapper=mapper, regularization=reg
+        )
+
+        assert (inversion.blurred_mapping_matrix == mapper.mapping_matrix).all()
+        assert (inversion.regularization_matrix == regularization_matrix).all()
+        assert inversion.mapped_reconstructed_image == pytest.approx(np.ones(5), 1.0e-4)
+
+    def test__interferometer(self):
+
+        mask = np.array(
+            [
+                [False, False, False, False, False, False, False],
+                [False, False, False, False, False, False, False],
+                [False, False, False, False, False, False, False],
+                [False, False, False, False, False, False, False],
+                [False, False, False, False, False, False, False],
+                [False, False, False, False, False, False, False],
+                [False, False, False, False, False, False, False],
+            ]
+        )
+
+        mask = aa.mask.manual(mask_2d=mask, pixel_scales=0.1, sub_size=1)
+
+        grid = aa.masked.grid.from_mask(mask=mask)
+
+        pix = aa.pix.VoronoiMagnification(shape=(7, 7))
+
+        sparse_grid = pix.sparse_grid_from_grid(grid=grid)
+
+        mapper = pix.mapper_from_grid_and_sparse_grid(
+            grid=grid, sparse_grid=sparse_grid, inversion_uses_border=False
+        )
+
+        reg = aa.reg.Constant(coefficient=0.0)
+
+        visibilities = aa.visibilities.manual_1d(
+            visibilities=[
+                [1.0, 0.0],
+                [1.0, 0.0],
+                [1.0, 0.0],
+                [1.0, 0.0],
+                [1.0, 0.0],
+                [1.0, 0.0],
+                [1.0, 0.0],
+            ]
+        )
+        noise_map = aa.visibilities.ones(shape_1d=(7,))
+        uv_wavelengths = np.ones(shape=(7, 2))
+
+        interferometer = aa.interferometer(
+            visibilities=visibilities,
+            noise_map=noise_map,
+            uv_wavelengths=uv_wavelengths,
+        )
+
+        masked_data = aa.masked.interferometer(
+            interferometer=interferometer, real_space_mask=mask
+        )
+
+        inversion = aa.inversion(
+            masked_dataset=masked_data, mapper=mapper, regularization=reg
+        )
+
+        assert inversion.mapped_reconstructed_visibilities[:, 0] == pytest.approx(
+            np.ones(shape=(7,)), 1.0e-4
+        )
+        assert inversion.mapped_reconstructed_visibilities[:, 1] == pytest.approx(
+            np.zeros(shape=(7,)), 1.0e-4
+        )

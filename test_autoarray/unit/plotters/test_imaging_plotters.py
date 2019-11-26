@@ -21,7 +21,7 @@ def test__individual_attributes_are_output(
     aa.plot.imaging.image(
         imaging=imaging_7x7,
         positions=positions_7x7,
-        mask_overlay=mask_7x7,
+        mask=mask_7x7,
         cb_tick_values=[1.0],
         cb_tick_labels=["1.0"],
         output_path=imaging_plotter_path,
@@ -32,7 +32,7 @@ def test__individual_attributes_are_output(
 
     aa.plot.imaging.noise_map(
         imaging=imaging_7x7,
-        mask_overlay=mask_7x7,
+        mask=mask_7x7,
         cb_tick_values=[1.0],
         cb_tick_labels=["1.0"],
         output_path=imaging_plotter_path,
@@ -53,7 +53,7 @@ def test__individual_attributes_are_output(
 
     aa.plot.imaging.signal_to_noise_map(
         imaging=imaging_7x7,
-        mask_overlay=mask_7x7,
+        mask=mask_7x7,
         cb_tick_values=[1.0],
         cb_tick_labels=["1.0"],
         output_path=imaging_plotter_path,
@@ -78,9 +78,9 @@ def test__imaging_individuals__output_dependent_on_input(
 ):
     aa.plot.imaging.individual(
         imaging=imaging_7x7,
-        should_plot_image=True,
-        should_plot_psf=True,
-        should_plot_absolute_signal_to_noise_map=True,
+        plot_image=True,
+        plot_psf=True,
+        plot_absolute_signal_to_noise_map=True,
         output_path=imaging_plotter_path,
         output_format="png",
     )

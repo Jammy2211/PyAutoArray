@@ -62,26 +62,39 @@ class Regions(object):
         ).astype("int")
 
     @array_util.Memoizer()
-    def blurring_mask_from_kernel_shape(self, kernel_shape):
+    def blurring_mask_from_kernel_shape(self, kernel_shape_2d):
         """Compute a blurring mask, which represents all masked pixels whose light will be blurred into unmasked \
         pixels via PSF convolution (see grid.Grid.blurring_grid_from_mask_and_psf_shape).
 
         Parameters
         ----------
-        kernel_shape : (int, int)
+        kernel_shape_2d : (int, int)
            The shape of the psf which defines the blurring region (e.g. the shape of the PSF)
         """
 
-        if kernel_shape[0] % 2 == 0 or kernel_shape[1] % 2 == 0:
+        if kernel_shape_2d[0] % 2 == 0 or kernel_shape_2d[1] % 2 == 0:
             raise exc.MaskException("psf_size of exterior region must be odd")
 
         blurring_mask = mask_util.blurring_mask_2d_from_mask_2d_and_kernel_shape_2d(
-            mask_2d=self.mask, kernel_shape_2d=kernel_shape
+            mask_2d=self.mask, kernel_shape_2d=kernel_shape_2d
         )
 
         return msk.Mask(
             mask_2d=blurring_mask,
             sub_size=1,
+            pixel_scales=self.mask.pixel_scales,
+            origin=self.mask.origin,
+        )
+
+    @property
+    def unmasked_mask(self):
+        """The indicies of the mask's border pixels, where a border pixel is any unmasked pixel on an
+        exterior edge (e.g. next to at least one pixel with a *True* value but not central pixels like those within \
+        an annulus mask).
+        """
+        return msk.Mask.unmasked(
+            shape_2d=self.mask.shape_2d,
+            sub_size=self.mask.sub_size,
             pixel_scales=self.mask.pixel_scales,
             origin=self.mask.origin,
         )

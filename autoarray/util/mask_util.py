@@ -129,7 +129,7 @@ def total_sparse_pixels_from_mask_2d(mask_2d, unmasked_sparse_grid_pixel_centres
 
 @decorator_util.jit()
 def mask_2d_circular_from_shape_2d_pixel_scales_and_radius(
-    shape_2d, pixel_scales, radius_arcsec, centre=(0.0, 0.0)
+    shape_2d, pixel_scales, radius_scaled, centre=(0.0, 0.0)
 ):
     """Compute a circular mask from the 2D mask array shape and radius of the circle.
 
@@ -138,10 +138,10 @@ def mask_2d_circular_from_shape_2d_pixel_scales_and_radius(
     Parameters
      ----------
     shape_2d: (int, int)
-        The (y,x) shape of the mask in units of pixels.
+        The (y,x) shape of the mask in unit_label of pixels.
     pixel_scales: float
         The arc-second to pixel conversion factor of each pixel.
-    radius_arcsec : float
+    radius_scaled : float
         The radius (in arc seconds) of the circle within which pixels unmasked.
     centre: (float, float)
         The centre of the circle used to mask pixels.
@@ -154,7 +154,7 @@ def mask_2d_circular_from_shape_2d_pixel_scales_and_radius(
     Examples
     --------
     mask = mask_circular_from_shape_pixel_scale_and_radius( \
-        shape=(10, 10), pixel_scales=0.1, radius_arcsec=0.5, centre=(0.0, 0.0))
+        shape=(10, 10), pixel_scales=0.1, radius=0.5, centre=(0.0, 0.0))
     """
 
     mask = np.full(shape_2d, True)
@@ -171,7 +171,7 @@ def mask_2d_circular_from_shape_2d_pixel_scales_and_radius(
 
             r_arcsec = np.sqrt(x_arcsec ** 2 + y_arcsec ** 2)
 
-            if r_arcsec <= radius_arcsec:
+            if r_arcsec <= radius_scaled:
                 mask[y, x] = False
 
     return mask
@@ -179,7 +179,7 @@ def mask_2d_circular_from_shape_2d_pixel_scales_and_radius(
 
 @decorator_util.jit()
 def mask_2d_circular_annular_from_shape_2d_pixel_scales_and_radii(
-    shape_2d, pixel_scales, inner_radius_arcsec, outer_radius_arcsec, centre=(0.0, 0.0)
+    shape_2d, pixel_scales, inner_radius_scaled, outer_radius_scaled, centre=(0.0, 0.0)
 ):
     """Compute an annular mask from an input inner and outer mask radius and shape.
 
@@ -188,12 +188,12 @@ def mask_2d_circular_annular_from_shape_2d_pixel_scales_and_radii(
     Parameters
      ----------
     shape_2d : (int, int)
-        The (y,x) shape of the mask in units of pixels.
+        The (y,x) shape of the mask in unit_label of pixels.
     pixel_scales : (float, float)
         The arc-second to pixel conversion factor of each pixel.
-    inner_radius_arcsec : float
+    inner_radius_scaled : float
         The radius (in arc seconds) of the inner circle outside of which pixels are unmasked.
-    outer_radius_arcsec : float
+    outer_radius_scaled : float
         The radius (in arc seconds) of the outer circle within which pixels are unmasked.
     centre: (float, float)
         The centre of the annulus used to mask pixels.
@@ -206,7 +206,7 @@ def mask_2d_circular_annular_from_shape_2d_pixel_scales_and_radii(
     Examples
     --------
     mask = mask_annnular_from_shape_pixel_scale_and_radius( \
-        shape=(10, 10), pixel_scales=0.1, inner_radius_arcsec=0.5, outer_radius_arcsec=1.5, centre=(0.0, 0.0))
+        shape=(10, 10), pixel_scales=0.1, inner_radius=0.5, outer_radius=1.5, centre=(0.0, 0.0))
     """
 
     mask = np.full(shape_2d, True)
@@ -223,7 +223,7 @@ def mask_2d_circular_annular_from_shape_2d_pixel_scales_and_radii(
 
             r_arcsec = np.sqrt(x_arcsec ** 2 + y_arcsec ** 2)
 
-            if outer_radius_arcsec >= r_arcsec >= inner_radius_arcsec:
+            if outer_radius_scaled >= r_arcsec >= inner_radius_scaled:
                 mask[y, x] = False
 
     return mask
@@ -233,9 +233,9 @@ def mask_2d_circular_annular_from_shape_2d_pixel_scales_and_radii(
 def mask_2d_circular_anti_annular_from_shape_2d_pixel_scales_and_radii(
     shape_2d,
     pixel_scales,
-    inner_radius_arcsec,
-    outer_radius_arcsec,
-    outer_radius_2_arcsec,
+    inner_radius_scaled,
+    outer_radius_scaled,
+    outer_radius_2_scaled,
     centre=(0.0, 0.0),
 ):
     """Compute an annular mask from an input inner and outer mask radius and shape."""
@@ -255,8 +255,8 @@ def mask_2d_circular_anti_annular_from_shape_2d_pixel_scales_and_radii(
             r_arcsec = np.sqrt(x_arcsec ** 2 + y_arcsec ** 2)
 
             if (
-                inner_radius_arcsec >= r_arcsec
-                or outer_radius_2_arcsec >= r_arcsec >= outer_radius_arcsec
+                inner_radius_scaled >= r_arcsec
+                or outer_radius_2_scaled >= r_arcsec >= outer_radius_scaled
             ):
                 mask[y, x] = False
 
@@ -279,7 +279,7 @@ def elliptical_radius_from_y_x_phi_and_axis_ratio(y_arcsec, x_arcsec, phi, axis_
 
 @decorator_util.jit()
 def mask_2d_elliptical_from_shape_2d_pixel_scales_and_radius(
-    shape_2d, pixel_scales, major_axis_radius_arcsec, axis_ratio, phi, centre=(0.0, 0.0)
+    shape_2d, pixel_scales, major_axis_radius_scaled, axis_ratio, phi, centre=(0.0, 0.0)
 ):
     """Compute an elliptical mask from an input major-axis mask radius, axis-ratio, rotational angle phi, shape and \
     centre.
@@ -289,10 +289,10 @@ def mask_2d_elliptical_from_shape_2d_pixel_scales_and_radius(
     Parameters
      ----------
     shape_2d: (int, int)
-        The (y,x) shape of the mask in units of pixels.
+        The (y,x) shape of the mask in unit_label of pixels.
     pixel_scales : (float, float)
         The arc-second to pixel conversion factor of each pixel.
-    major_axis_radius_arcsec : float
+    major_axis_radius_scaled : float
         The major-axis (in arc seconds) of the ellipse within which pixels are unmasked.
     axis_ratio : float
         The axis-ratio of the ellipse within which pixels are unmasked.
@@ -310,7 +310,7 @@ def mask_2d_elliptical_from_shape_2d_pixel_scales_and_radius(
     Examples
     --------
     mask = mask_elliptical_from_shape_pixel_scale_and_radius( \
-        shape=(10, 10), pixel_scales=0.1, major_axis_radius_arcsec=0.5, axis_ratio=0.5, phi=45.0, centre=(0.0, 0.0))
+        shape=(10, 10), pixel_scales=0.1, major_axis_radius=0.5, axis_ratio=0.5, phi=45.0, centre=(0.0, 0.0))
     """
 
     mask = np.full(shape_2d, True)
@@ -329,7 +329,7 @@ def mask_2d_elliptical_from_shape_2d_pixel_scales_and_radius(
                 y_arcsec, x_arcsec, phi, axis_ratio
             )
 
-            if r_arcsec_elliptical <= major_axis_radius_arcsec:
+            if r_arcsec_elliptical <= major_axis_radius_scaled:
                 mask[y, x] = False
 
     return mask
@@ -339,10 +339,10 @@ def mask_2d_elliptical_from_shape_2d_pixel_scales_and_radius(
 def mask_2d_elliptical_annular_from_shape_2d_pixel_scales_and_radius(
     shape_2d,
     pixel_scales,
-    inner_major_axis_radius_arcsec,
+    inner_major_axis_radius_scaled,
     inner_axis_ratio,
     inner_phi,
-    outer_major_axis_radius_arcsec,
+    outer_major_axis_radius_scaled,
     outer_axis_ratio,
     outer_phi,
     centre=(0.0, 0.0),
@@ -355,17 +355,17 @@ def mask_2d_elliptical_annular_from_shape_2d_pixel_scales_and_radius(
     Parameters
      ----------
     shape_2d: (int, int)
-        The (y,x) shape of the mask in units of pixels.
+        The (y,x) shape of the mask in unit_label of pixels.
     pixel_scales : (float, float)
         The arc-second to pixel conversion factor of each pixel.
-    inner_major_axis_radius_arcsec : float
+    inner_major_axis_radius_scaled : float
         The major-axis (in arc seconds) of the inner ellipse within which pixels are masked.
     inner_axis_ratio : float
         The axis-ratio of the inner ellipse within which pixels are masked.
     inner_phi : float
         The rotation angle of the inner ellipse within which pixels are masked, (counter-clockwise from the \
         positive x-axis).
-    outer_major_axis_radius_arcsec : float
+    outer_major_axis_radius_scaled : float
         The major-axis (in arc seconds) of the outer ellipse within which pixels are unmasked.
     outer_axis_ratio : float
         The axis-ratio of the outer ellipse within which pixels are unmasked.
@@ -384,8 +384,8 @@ def mask_2d_elliptical_annular_from_shape_2d_pixel_scales_and_radius(
     --------
     mask = mask_elliptical_annuli_from_shape_pixel_scale_and_radius( \
         shape=(10, 10), pixel_scales=0.1,
-         inner_major_axis_radius_arcsec=0.5, inner_axis_ratio=0.5, inner_phi=45.0,
-         outer_major_axis_radius_arcsec=1.5, outer_axis_ratio=0.8, outer_phi=90.0,
+         inner_major_axis_radius=0.5, inner_axis_ratio=0.5, inner_phi=45.0,
+         outer_major_axis_radius=1.5, outer_axis_ratio=0.8, outer_phi=90.0,
          centre=(0.0, 0.0))
     """
 
@@ -410,8 +410,8 @@ def mask_2d_elliptical_annular_from_shape_2d_pixel_scales_and_radius(
             )
 
             if (
-                inner_r_arcsec_elliptical >= inner_major_axis_radius_arcsec
-                and outer_r_arcsec_elliptical <= outer_major_axis_radius_arcsec
+                inner_r_arcsec_elliptical >= inner_major_axis_radius_scaled
+                and outer_r_arcsec_elliptical <= outer_major_axis_radius_scaled
             ):
                 mask[y, x] = False
 
@@ -447,7 +447,7 @@ def blurring_mask_2d_from_mask_2d_and_kernel_shape_2d(mask_2d, kernel_shape_2d):
                      [True, False, True]
                      [True, True, True]])      
     
-    blurring_mask = blurring_mask_from_mask_and_psf_shape(mask=mask, psf_shape=(3,3)) 
+    blurring_mask = blurring_mask_from_mask_and_psf_shape(mask=mask, psf_shape_2d=(3,3)) 
     
     """
 
@@ -895,7 +895,7 @@ def sub_mask_2d_index_for_sub_mask_1d_index_via_mask_2d(mask_2d, sub_size):
                      [True, False, True]
                      [True, True, True]])
 
-    blurring_mask = blurring_mask_from_mask_and_psf_shape(mask=mask, psf_shape=(3,3))
+    blurring_mask = blurring_mask_from_mask_and_psf_shape(mask=mask, psf_shape_2d=(3,3))
 
     """
 
