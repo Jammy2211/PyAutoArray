@@ -9,7 +9,8 @@ import numpy as np
 import itertools
 from scipy.spatial import Voronoi
 
-from autoarray.plotters import imaging_plotters, grid_plotters, plotter_util
+from autoarray.plotters import imaging_plotters, grid_plotters
+from autoarray.util import plotter_util
 from autoarray.operators.inversion import mappers
 
 

@@ -1,4 +1,4 @@
-from autoarray.plotters import plotter_util
+from autoarray.util import plotter_util
 
 
 class TestRadii:
