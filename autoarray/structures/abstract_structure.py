@@ -122,7 +122,7 @@ class AbstractStructure(np.ndarray):
     def __array_finalize__(self, obj):
 
         if isinstance(obj, AbstractStructure):
-            if hasattr(obj, 'mask'):
+            if hasattr(obj, "mask"):
                 self.mask = obj.mask
 
     @property

@@ -10,9 +10,7 @@ def make_fit_plotter_util_path_setup():
     )
 
 
-def test__fit_sub_plot(
-    fit_interferometer_7, fit_plotter_util_path, plot_patch
-):
+def test__fit_sub_plot(fit_interferometer_7, fit_plotter_util_path, plot_patch):
 
     aa.plot.fit_interferometer.subplot(
         fit=fit_interferometer_7,
@@ -26,9 +24,7 @@ def test__fit_sub_plot(
 
 
 def test__fit_individuals__depedent_on_input(
-    fit_interferometer_7,
-    fit_plotter_util_path,
-    plot_patch,
+    fit_interferometer_7, fit_plotter_util_path, plot_patch
 ):
 
     aa.plot.fit_interferometer.individuals(
@@ -46,28 +42,18 @@ def test__fit_individuals__depedent_on_input(
 
     assert fit_plotter_util_path + "fit_noise_map.png" not in plot_patch.paths
 
-    assert (
-        fit_plotter_util_path + "fit_signal_to_noise_map.png"
-        not in plot_patch.paths
-    )
+    assert fit_plotter_util_path + "fit_signal_to_noise_map.png" not in plot_patch.paths
 
-    assert (
-        fit_plotter_util_path + "fit_model_visibilities.png"
-        in plot_patch.paths
-    )
+    assert fit_plotter_util_path + "fit_model_visibilities.png" in plot_patch.paths
 
-    assert (
-        fit_plotter_util_path + "fit_residual_map.png" not in plot_patch.paths
-    )
+    assert fit_plotter_util_path + "fit_residual_map.png" not in plot_patch.paths
 
     assert (
         fit_plotter_util_path + "fit_normalized_residual_map.png"
         not in plot_patch.paths
     )
 
-    assert (
-        fit_plotter_util_path + "fit_chi_squared_map.png" in plot_patch.paths
-    )
+    assert fit_plotter_util_path + "fit_chi_squared_map.png" in plot_patch.paths
 
 
 def test__fit_quantities_are_output(

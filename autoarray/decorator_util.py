@@ -13,9 +13,14 @@ If on super computer:
 @numba.jit(nopython=True, cache=False, parallel=True)
 """
 
-nopython = conf.instance.general.get("numba", "nopython", bool)
-cache = conf.instance.general.get("numba", "cache", bool)
-parallel = conf.instance.general.get("numba", "parallel", bool)
+try:
+    nopython = conf.instance.general.get("numba", "nopython", bool)
+    cache = conf.instance.general.get("numba", "cache", bool)
+    parallel = conf.instance.general.get("numba", "parallel", bool)
+except Exception:
+    nopython = True
+    cache = True
+    parallel = False
 
 
 def jit(nopython=nopython, cache=cache, parallel=parallel):

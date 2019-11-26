@@ -1,12 +1,11 @@
 from autoarray import conf
 import matplotlib
 
-backend = conf.instance.visualize.get("figures", "backend", str)
+backend = conf.get_matplotlib_backend()
 matplotlib.use(backend)
 from matplotlib import pyplot as plt
 
 from autoarray.plotters import grid_plotters, inversion_plotters, plotter_util
-
 
 
 def subplot(

@@ -82,17 +82,11 @@ class AbstractVisibilities(np.ndarray):
 
     @property
     def scaled_maxima(self):
-        return (
-            np.max(self.real),
-            np.max(self.imag),
-        )
+        return (np.max(self.real), np.max(self.imag))
 
     @property
     def scaled_minima(self):
-        return (
-            np.min(self.real),
-            np.min(self.imag),
-        )
+        return (np.min(self.real), np.min(self.imag))
 
     @property
     def extent(self):
@@ -104,6 +98,7 @@ class AbstractVisibilities(np.ndarray):
                 self.scaled_maxima[0],
             ]
         )
+
 
 class Visibilities(AbstractVisibilities):
     @classmethod

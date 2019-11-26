@@ -373,7 +373,15 @@ class Mask(np.ndarray):
         )
 
     @classmethod
-    def from_fits(cls, file_path, pixel_scales, hdu=0, sub_size=1, origin=(0.0, 0.0), resized_mask_shape=None):
+    def from_fits(
+        cls,
+        file_path,
+        pixel_scales,
+        hdu=0,
+        sub_size=1,
+        origin=(0.0, 0.0),
+        resized_mask_shape=None,
+    ):
         """
         Loads the image from a .fits file.
 
@@ -400,7 +408,9 @@ class Mask(np.ndarray):
 
         if resized_mask_shape is not None:
 
-            mask = mask.mapping.resized_mask_from_new_shape(new_shape=resized_mask_shape)
+            mask = mask.mapping.resized_mask_from_new_shape(
+                new_shape=resized_mask_shape
+            )
 
         return mask
 

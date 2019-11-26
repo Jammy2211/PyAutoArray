@@ -10,7 +10,9 @@ mask = aa.mask.circular(
     centre=(2.0, 2.0),
 )
 
-grid = aa.grid.uniform(shape_2d=(5, 5), pixel_scales=array.pixel_scales, origin=(2.0, 2.0))
+grid = aa.grid.uniform(
+    shape_2d=(5, 5), pixel_scales=array.pixel_scales, origin=(2.0, 2.0)
+)
 
 aa.plot.array(array=array, mask=mask, grid=grid, points=[[[1.0, 1.0]], [[2.0, 2.0]]])
 

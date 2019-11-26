@@ -427,8 +427,6 @@ class TestEllipiticalAnnular:
 
 
 class TestFromAndToFits:
-
-
     def test__load_and_output_mask_to_fits(self):
 
         mask = msk.Mask.from_fits(
@@ -468,7 +466,7 @@ class TestFromAndToFits:
             hdu=0,
             sub_size=1,
             pixel_scales=(1.0, 1.0),
-            resized_mask_shape=(1, 1)
+            resized_mask_shape=(1, 1),
         )
 
         assert mask.shape_2d == (1, 1)
@@ -478,10 +476,11 @@ class TestFromAndToFits:
             hdu=0,
             sub_size=1,
             pixel_scales=(1.0, 1.0),
-            resized_mask_shape=(5, 5)
+            resized_mask_shape=(5, 5),
         )
 
         assert mask.shape_2d == (5, 5)
+
 
 class TestSubQuantities:
     def test__sub_shape_is_shape_times_sub_size(self):

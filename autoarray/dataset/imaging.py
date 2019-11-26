@@ -732,7 +732,9 @@ class Imaging(AbstractImagingDataSet):
             )
         else:
             noise_map = arrays.Array.full(
-                fill_value=noise_if_add_noise_false, shape_2d=image.shape_2d, pixel_scales=image.pixel_scales
+                fill_value=noise_if_add_noise_false,
+                shape_2d=image.shape_2d,
+                pixel_scales=image.pixel_scales,
             )
             noise_realization = None
 

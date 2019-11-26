@@ -2,7 +2,8 @@ from autoarray import conf
 from autoarray import exc
 import matplotlib
 
-backend = conf.instance.visualize.get("figures", "backend", str)
+backend = conf.get_matplotlib_backend()
+
 matplotlib.use(backend)
 import matplotlib.pyplot as plt
 import matplotlib.colors as colors
@@ -203,30 +204,13 @@ def plot_array(
         cb_tick_values=cb_tick_values,
         cb_tick_labels=cb_tick_labels,
     )
-    plot_origin(
-        array=array,
-        include_origin=include_origin,
-    )
-    plot_mask(
-        mask=mask, pointsize=mask_pointsize
-    )
+    plot_origin(array=array, include_origin=include_origin)
+    plot_mask(mask=mask, pointsize=mask_pointsize)
     plotter_util.plot_lines(line_lists=lines)
-    plot_border(
-        mask=mask,
-        include_border=include_border,
-        pointsize=border_pointsize,
-    )
-    plot_points(
-        points=points,
-        pointsize=point_pointsize,
-    )
-    plot_grid(
-        grid=grid,
-        pointsize=grid_pointsize,
-    )
-    plot_centres(
-        centres=centres,
-    )
+    plot_border(mask=mask, include_border=include_border, pointsize=border_pointsize)
+    plot_points(points=points, pointsize=point_pointsize)
+    plot_grid(grid=grid, pointsize=grid_pointsize)
+    plot_centres(centres=centres)
     plotter_util.output_figure(
         array,
         as_subplot=as_subplot,
@@ -306,8 +290,14 @@ def plot_figure(
     )
 
     plt.imshow(array.in_2d, aspect=aspect, cmap=cmap, norm=norm_scale, extent=extent)
-    plotter_util.set_yxticks(array=array, extent=extent, use_scaled_units=use_scaled_units,
-                unit_conversion_factor=unit_conversion_factor, xticks_manual=xticks_manual, yticks_manual=yticks_manual)
+    plotter_util.set_yxticks(
+        array=array,
+        extent=extent,
+        use_scaled_units=use_scaled_units,
+        unit_conversion_factor=unit_conversion_factor,
+        xticks_manual=xticks_manual,
+        yticks_manual=yticks_manual,
+    )
 
     return fig
 
@@ -416,9 +406,8 @@ def plot_centres(centres):
             color = next(colors)
             for centre in centres_of_galaxy:
 
-                plt.scatter(
-                    y=centre[0], x=centre[1], s=300, c=color, marker="x"
-                )
+                plt.scatter(y=centre[0], x=centre[1], s=300, c=color, marker="x")
+
 
 def plot_mask(mask, pointsize):
     """Plot the mask of the array on the figure.
@@ -503,9 +492,7 @@ def plot_points(points, pointsize):
 
     if points is not None:
 
-        points = list(
-            map(lambda position_set: np.asarray(position_set), points)
-        )
+        points = list(map(lambda position_set: np.asarray(position_set), points))
         point_colors = itertools.cycle(["m", "y", "r", "w", "c", "b", "g", "k"])
         for point_set in points:
 
@@ -536,8 +523,5 @@ def plot_grid(grid, pointsize):
     if grid is not None:
 
         plt.scatter(
-            y=np.asarray(grid[:, 0]),
-            x=np.asarray(grid[:, 1]),
-            s=pointsize,
-            c="k",
+            y=np.asarray(grid[:, 0]), x=np.asarray(grid[:, 1]), s=pointsize, c="k"
         )

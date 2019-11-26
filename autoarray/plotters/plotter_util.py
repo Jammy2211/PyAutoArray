@@ -1,7 +1,7 @@
 from autoarray import conf
 import matplotlib
 
-backend = conf.instance.visualize.get("figures", "backend", str)
+backend = conf.get_matplotlib_backend()
 matplotlib.use(backend)
 import matplotlib.pyplot as plt
 import numpy as np
@@ -64,9 +64,7 @@ def set_title(title, titlesize):
     plt.title(title, fontsize=titlesize)
 
 
-def set_xy_labels_and_ticksize(
-    unit_label, xlabelsize, ylabelsize, xyticksize
-):
+def set_xy_labels_and_ticksize(unit_label, xlabelsize, ylabelsize, xyticksize):
     """Set the x and y labels of the figure, and set the fontsize of those labels.
 
     The x and y labels are always the distance scales, thus the labels are either arc-seconds or kpc and depend on the \
@@ -92,7 +90,14 @@ def set_xy_labels_and_ticksize(
     plt.tick_params(labelsize=xyticksize)
 
 
-def set_yxticks(array, extent, use_scaled_units, unit_conversion_factor, xticks_manual, yticks_manual):
+def set_yxticks(
+    array,
+    extent,
+    use_scaled_units,
+    unit_conversion_factor,
+    xticks_manual,
+    yticks_manual,
+):
     """Get the extent of the dimensions of the array in the unit_label of the figure (e.g. arc-seconds or kpc).
 
     This is used to set the extent of the array and thus the y / x axis limits.
@@ -124,10 +129,26 @@ def set_yxticks(array, extent, use_scaled_units, unit_conversion_factor, xticks_
         ytick_labels = np.round(np.linspace(extent[2], extent[3], 5), 2)
         xtick_labels = np.round(np.linspace(extent[0], extent[1], 5), 2)
     elif use_scaled_units and unit_conversion_factor is not None:
-        ytick_labels = np.round(np.linspace(extent[2]* unit_conversion_factor, extent[3]* unit_conversion_factor, 5), 2)
-        xtick_labels = np.round(np.linspace(extent[0]* unit_conversion_factor, extent[1]* unit_conversion_factor, 5), 2)
+        ytick_labels = np.round(
+            np.linspace(
+                extent[2] * unit_conversion_factor,
+                extent[3] * unit_conversion_factor,
+                5,
+            ),
+            2,
+        )
+        xtick_labels = np.round(
+            np.linspace(
+                extent[0] * unit_conversion_factor,
+                extent[1] * unit_conversion_factor,
+                5,
+            ),
+            2,
+        )
     else:
-        raise exc.PlottingException("The y and y ticks cannot be set using the input options.")
+        raise exc.PlottingException(
+            "The y and y ticks cannot be set using the input options."
+        )
 
     plt.yticks(ticks=yticks, labels=ytick_labels)
     plt.xticks(ticks=xticks, labels=xtick_labels)
@@ -293,4 +314,3 @@ def quantity_and_annuli_radii_from_minimum_and_maximum_radii_and_radii_points(
     )
 
     return quantity_radii, annuli_radii
-

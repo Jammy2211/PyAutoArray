@@ -1,7 +1,7 @@
 import autoarray as aa
 import matplotlib
 
-backend = aa.conf.instance.visualize.get("figures", "backend", str)
+backend = aa.conf.get_matplotlib_backend()
 matplotlib.use(backend)
 from matplotlib import pyplot as plt
 
@@ -15,7 +15,7 @@ def subplot(
     lines=None,
     positions=None,
     grid=None,
-        use_scaled_units=True,
+    use_scaled_units=True,
     unit_label="scaled",
     unit_conversion_factor=None,
     figsize=None,
@@ -354,7 +354,7 @@ def reconstruction(
     image_pixels=None,
     source_pixels=None,
     as_subplot=False,
-        use_scaled_units=True,
+    use_scaled_units=True,
     unit_label="scaled",
     unit_conversion_factor=None,
     figsize=(7, 7),
@@ -436,7 +436,7 @@ def residual_map(
     image_pixels=None,
     source_pixels=None,
     as_subplot=False,
-        use_scaled_units=True,
+    use_scaled_units=True,
     unit_label="scaled",
     unit_conversion_factor=None,
     figsize=(7, 7),
@@ -517,7 +517,7 @@ def normalized_residual_map(
     image_pixels=None,
     source_pixels=None,
     as_subplot=False,
-        use_scaled_units=True,
+    use_scaled_units=True,
     unit_label="scaled",
     unit_conversion_factor=None,
     figsize=(7, 7),
@@ -598,7 +598,7 @@ def chi_squared_map(
     image_pixels=None,
     source_pixels=None,
     as_subplot=False,
-        use_scaled_units=True,
+    use_scaled_units=True,
     unit_label="scaled",
     kpc_per_arcsec=None,
     figsize=(7, 7),
@@ -679,7 +679,7 @@ def regularization_weights(
     image_pixels=None,
     source_pixels=None,
     as_subplot=False,
-        use_scaled_units=True,
+    use_scaled_units=True,
     unit_label="scaled",
     unit_conversion_factor=None,
     figsize=(7, 7),
@@ -766,7 +766,7 @@ def plot_values(
     image_pixels=None,
     source_pixels=None,
     as_subplot=False,
-        use_scaled_units=True,
+    use_scaled_units=True,
     unit_label="scaled",
     unit_conversion_facto=None,
     figsize=(7, 7),
