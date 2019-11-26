@@ -316,7 +316,7 @@ class TestMaskedArrayAPI:
         def test__array__makes_array_with_pixel_scale(self):
 
             mask = aa.mask.unmasked(shape_2d=(2, 2), pixel_scales=1.0)
-            array = aa.masked_array.manual_2d(array=[[1.0, 2.0], [3.0, 4.0]], mask=mask)
+            array = aa.masked.array.manual_2d(array=[[1.0, 2.0], [3.0, 4.0]], mask=mask)
 
             assert type(array) == arrays.Array
             assert (array.in_2d == np.array([[1.0, 2.0], [3.0, 4.0]])).all()
@@ -329,7 +329,7 @@ class TestMaskedArrayAPI:
                 pixel_scales=1.0,
                 origin=(0.0, 1.0),
             )
-            array = aa.masked_array.manual_1d(array=[1.0, 2.0, 4.0], mask=mask)
+            array = aa.masked.array.manual_1d(array=[1.0, 2.0, 4.0], mask=mask)
 
             assert type(array) == arrays.Array
             assert (array.in_2d == np.array([[1.0, 2.0], [0.0, 4.0]])).all()
@@ -342,7 +342,7 @@ class TestMaskedArrayAPI:
                 pixel_scales=1.0,
                 origin=(0.0, 1.0),
             )
-            array = aa.masked_array.manual_2d(array=[[1.0, 2.0], [3.0, 4.0]], mask=mask)
+            array = aa.masked.array.manual_2d(array=[[1.0, 2.0], [3.0, 4.0]], mask=mask)
 
             assert type(array) == arrays.Array
             assert (array.in_2d == np.array([[1.0, 2.0], [0.0, 4.0]])).all()
@@ -353,7 +353,7 @@ class TestMaskedArrayAPI:
             mask = aa.mask.manual(
                 mask_2d=[[False], [True]], pixel_scales=2.0, sub_size=2
             )
-            array = aa.masked_array.manual_1d(array=[1.0, 2.0, 3.0, 4.0], mask=mask)
+            array = aa.masked.array.manual_1d(array=[1.0, 2.0, 3.0, 4.0], mask=mask)
 
             assert type(array) == arrays.Array
             assert (
@@ -373,15 +373,15 @@ class TestMaskedArrayAPI:
 
             with pytest.raises(exc.ArrayException):
                 mask = aa.mask.unmasked(shape_2d=(2, 2), pixel_scales=1.0, sub_size=1)
-                aa.masked_array.manual_2d(array=[[1.0], [3.0]], mask=mask)
+                aa.masked.array.manual_2d(array=[[1.0], [3.0]], mask=mask)
 
             with pytest.raises(exc.ArrayException):
                 mask = aa.mask.unmasked(shape_2d=(2, 2), pixel_scales=1.0, sub_size=2)
-                aa.masked_array.manual_2d(array=[[1.0, 2.0], [3.0, 4.0]], mask=mask)
+                aa.masked.array.manual_2d(array=[[1.0, 2.0], [3.0, 4.0]], mask=mask)
 
             with pytest.raises(exc.ArrayException):
                 mask = aa.mask.unmasked(shape_2d=(2, 2), pixel_scales=1.0, sub_size=2)
-                aa.masked_array.manual_2d(
+                aa.masked.array.manual_2d(
                     array=[[1.0, 2.0], [3.0, 4.0], [5.0, 6.0]], mask=mask
                 )
 
@@ -393,27 +393,27 @@ class TestMaskedArrayAPI:
                 mask = aa.mask.manual(
                     mask_2d=[[False, False], [True, False]], sub_size=1
                 )
-                aa.masked_array.manual_1d(array=[1.0, 2.0, 3.0, 4.0], mask=mask)
+                aa.masked.array.manual_1d(array=[1.0, 2.0, 3.0, 4.0], mask=mask)
 
             with pytest.raises(exc.ArrayException):
                 mask = aa.mask.manual(
                     mask_2d=[[False, False], [True, False]], sub_size=1
                 )
-                aa.masked_array.manual_1d(array=[1.0, 2.0], mask=mask)
+                aa.masked.array.manual_1d(array=[1.0, 2.0], mask=mask)
 
             with pytest.raises(exc.ArrayException):
                 mask = aa.mask.manual(mask_2d=[[False, True], [True, True]], sub_size=2)
-                aa.masked_array.manual_1d(array=[1.0, 2.0, 4.0], mask=mask)
+                aa.masked.array.manual_1d(array=[1.0, 2.0, 4.0], mask=mask)
 
             with pytest.raises(exc.ArrayException):
                 mask = aa.mask.manual(mask_2d=[[False, True], [True, True]], sub_size=2)
-                aa.masked_array.manual_1d(array=[1.0, 2.0, 3.0, 4.0, 5.0], mask=mask)
+                aa.masked.array.manual_1d(array=[1.0, 2.0, 3.0, 4.0, 5.0], mask=mask)
 
     class TestFull:
         def test__makes_array_using_mask(self):
 
             mask = aa.mask.unmasked(shape_2d=(2, 2), pixel_scales=1.0)
-            array = aa.masked_array.full(fill_value=1.0, mask=mask)
+            array = aa.masked.array.full(fill_value=1.0, mask=mask)
 
             assert type(array) == arrays.Array
             assert (array.in_2d == np.array([[1.0, 1.0], [1.0, 1.0]])).all()
@@ -426,7 +426,7 @@ class TestMaskedArrayAPI:
                 pixel_scales=1.0,
                 origin=(0.0, 1.0),
             )
-            array = aa.masked_array.full(fill_value=2.0, mask=mask)
+            array = aa.masked.array.full(fill_value=2.0, mask=mask)
 
             assert type(array) == arrays.Array
             assert (array.in_2d == np.array([[2.0, 2.0], [0.0, 2.0]])).all()
@@ -437,7 +437,7 @@ class TestMaskedArrayAPI:
             mask = aa.mask.manual(
                 mask_2d=[[False], [True]], pixel_scales=2.0, sub_size=2
             )
-            array = aa.masked_array.full(fill_value=3.0, mask=mask)
+            array = aa.masked.array.full(fill_value=3.0, mask=mask)
 
             assert type(array) == arrays.Array
             assert (
@@ -455,7 +455,7 @@ class TestMaskedArrayAPI:
         def test__makes_array_using_mask(self):
 
             mask = aa.mask.unmasked(shape_2d=(2, 2), pixel_scales=1.0)
-            array = aa.masked_array.ones(mask=mask)
+            array = aa.masked.array.ones(mask=mask)
 
             assert type(array) == arrays.Array
             assert (array.in_2d == np.array([[1.0, 1.0], [1.0, 1.0]])).all()
@@ -468,7 +468,7 @@ class TestMaskedArrayAPI:
                 pixel_scales=1.0,
                 origin=(0.0, 1.0),
             )
-            array = aa.masked_array.zeros(mask=mask)
+            array = aa.masked.array.zeros(mask=mask)
 
             assert type(array) == arrays.Array
             assert (array.in_2d == np.array([[0.0, 0.0], [0.0, 0.0]])).all()
@@ -479,7 +479,7 @@ class TestMaskedArrayAPI:
             mask = aa.mask.manual(
                 mask_2d=[[False], [True]], pixel_scales=2.0, sub_size=2
             )
-            array = aa.masked_array.ones(mask=mask)
+            array = aa.masked.array.ones(mask=mask)
 
             assert type(array) == arrays.Array
             assert (
@@ -497,7 +497,7 @@ class TestMaskedArrayAPI:
         def test__array_from_fits_uses_mask(self):
 
             mask = aa.mask.unmasked(shape_2d=(3, 3), pixel_scales=1.0)
-            array = aa.masked_array.from_fits(
+            array = aa.masked.array.from_fits(
                 file_path=test_data_dir + "3x3_ones.fits", hdu=0, mask=mask
             )
 
@@ -518,7 +518,7 @@ class TestMaskedArrayAPI:
                 pixel_scales=1.0,
                 origin=(0.0, 1.0),
             )
-            array = aa.masked_array.from_fits(
+            array = aa.masked.array.from_fits(
                 file_path=test_data_dir + "4x3_ones.fits", hdu=0, mask=mask
             )
 
@@ -542,8 +542,8 @@ class TestArray:
     class TestConstructorMethods:
         def test__constructor_class_method_in_2d(self):
 
-            arr = arrays.Array.from_sub_array_2d_pixel_scales_and_sub_size(
-                sub_array_2d=np.ones((3, 3)), sub_size=1, pixel_scales=(1.0, 1.0)
+            arr = arrays.Array.manual_2d(
+                array=np.ones((3, 3)), sub_size=1, pixel_scales=(1.0, 1.0)
             )
 
             assert (arr.in_1d == np.ones((9,))).all()
@@ -552,12 +552,12 @@ class TestArray:
             assert (arr.in_2d_binned == np.ones((3, 3))).all()
             assert arr.pixel_scales == (1.0, 1.0)
             assert arr.geometry.central_pixel_coordinates == (1.0, 1.0)
-            assert arr.geometry.shape_2d_arcsec == pytest.approx((3.0, 3.0))
-            assert arr.geometry.arc_second_maxima == (1.5, 1.5)
-            assert arr.geometry.arc_second_minima == (-1.5, -1.5)
+            assert arr.geometry.shape_2d_scaled == pytest.approx((3.0, 3.0))
+            assert arr.geometry.scaled_maxima == (1.5, 1.5)
+            assert arr.geometry.scaled_minima == (-1.5, -1.5)
 
-            arr = arrays.Array.from_sub_array_2d_pixel_scales_and_sub_size(
-                sub_array_2d=np.ones((4, 4)), sub_size=2, pixel_scales=(0.1, 0.1)
+            arr = arrays.Array.manual_2d(
+                array=np.ones((4, 4)), sub_size=2, pixel_scales=(0.1, 0.1)
             )
 
             assert (arr.in_1d == np.ones((16,))).all()
@@ -566,12 +566,12 @@ class TestArray:
             assert (arr.in_2d_binned == np.ones((2, 2))).all()
             assert arr.pixel_scales == (0.1, 0.1)
             assert arr.geometry.central_pixel_coordinates == (0.5, 0.5)
-            assert arr.geometry.shape_2d_arcsec == pytest.approx((0.2, 0.2))
-            assert arr.geometry.arc_second_maxima == pytest.approx((0.1, 0.1), 1e-4)
-            assert arr.geometry.arc_second_minima == pytest.approx((-0.1, -0.1), 1e-4)
+            assert arr.geometry.shape_2d_scaled == pytest.approx((0.2, 0.2))
+            assert arr.geometry.scaled_maxima == pytest.approx((0.1, 0.1), 1e-4)
+            assert arr.geometry.scaled_minima == pytest.approx((-0.1, -0.1), 1e-4)
 
-            arr = arrays.Array.from_sub_array_2d_pixel_scales_and_sub_size(
-                sub_array_2d=np.array([[1.0, 2.0], [3.0, 4.0], [5.0, 6.0], [7.0, 8.0]]),
+            arr = arrays.Array.manual_2d(
+                array=np.array([[1.0, 2.0], [3.0, 4.0], [5.0, 6.0], [7.0, 8.0]]),
                 pixel_scales=(0.1, 0.1),
                 sub_size=2,
                 origin=(1.0, 1.0),
@@ -590,12 +590,12 @@ class TestArray:
             assert (arr.in_2d_binned == np.array([[2.5], [6.5]])).all()
             assert arr.pixel_scales == (0.1, 0.1)
             assert arr.geometry.central_pixel_coordinates == (0.5, 0.0)
-            assert arr.geometry.shape_2d_arcsec == pytest.approx((0.2, 0.1))
-            assert arr.geometry.arc_second_maxima == pytest.approx((1.1, 1.05), 1e-4)
-            assert arr.geometry.arc_second_minima == pytest.approx((0.9, 0.95), 1e-4)
+            assert arr.geometry.shape_2d_scaled == pytest.approx((0.2, 0.1))
+            assert arr.geometry.scaled_maxima == pytest.approx((1.1, 1.05), 1e-4)
+            assert arr.geometry.scaled_minima == pytest.approx((0.9, 0.95), 1e-4)
 
-            arr = arrays.Array.from_sub_array_2d_pixel_scales_and_sub_size(
-                sub_array_2d=np.ones((3, 3)),
+            arr = arrays.Array.manual_2d(
+                array=np.ones((3, 3)),
                 pixel_scales=(2.0, 1.0),
                 sub_size=1,
                 origin=(-1.0, -2.0),
@@ -605,14 +605,14 @@ class TestArray:
             assert arr.in_2d == pytest.approx(np.ones((3, 3)), 1e-4)
             assert arr.pixel_scales == (2.0, 1.0)
             assert arr.geometry.central_pixel_coordinates == (1.0, 1.0)
-            assert arr.geometry.shape_2d_arcsec == pytest.approx((6.0, 3.0))
+            assert arr.geometry.shape_2d_scaled == pytest.approx((6.0, 3.0))
             assert arr.geometry.origin == (-1.0, -2.0)
-            assert arr.geometry.arc_second_maxima == pytest.approx((2.0, -0.5), 1e-4)
-            assert arr.geometry.arc_second_minima == pytest.approx((-4.0, -3.5), 1e-4)
+            assert arr.geometry.scaled_maxima == pytest.approx((2.0, -0.5), 1e-4)
+            assert arr.geometry.scaled_minima == pytest.approx((-4.0, -3.5), 1e-4)
 
         def test__constructor_class_method_in_1d(self):
-            arr = arrays.Array.from_sub_array_1d_shape_2d_pixel_scales_and_sub_size(
-                sub_array_1d=np.ones((9,)),
+            arr = arrays.Array.manual_1d(
+                array=np.ones((9,)),
                 shape_2d=(3, 3),
                 pixel_scales=(2.0, 1.0),
                 sub_size=1,
@@ -623,18 +623,18 @@ class TestArray:
             assert arr.in_2d == pytest.approx(np.ones((3, 3)), 1e-4)
             assert arr.pixel_scales == (2.0, 1.0)
             assert arr.geometry.central_pixel_coordinates == (1.0, 1.0)
-            assert arr.geometry.shape_2d_arcsec == pytest.approx((6.0, 3.0))
+            assert arr.geometry.shape_2d_scaled == pytest.approx((6.0, 3.0))
             assert arr.geometry.origin == (-1.0, -2.0)
-            assert arr.geometry.arc_second_maxima == pytest.approx((2.0, -0.5), 1e-4)
-            assert arr.geometry.arc_second_minima == pytest.approx((-4.0, -3.5), 1e-4)
+            assert arr.geometry.scaled_maxima == pytest.approx((2.0, -0.5), 1e-4)
+            assert arr.geometry.scaled_minima == pytest.approx((-4.0, -3.5), 1e-4)
 
     class TestNewArrays:
         def test__pad__compare_to_array_util(self):
             array_2d = np.ones((5, 5))
             array_2d[2, 2] = 2.0
 
-            arr = arrays.Array.from_sub_array_2d_pixel_scales_and_sub_size(
-                sub_array_2d=array_2d, sub_size=1, pixel_scales=(1.0, 1.0)
+            arr = arrays.Array.manual_2d(
+                array=array_2d, sub_size=1, pixel_scales=(1.0, 1.0)
             )
 
             arr = arr.resized_from_new_shape(new_shape=(7, 7))
@@ -659,8 +659,8 @@ class TestArray:
             array_2d = np.ones((5, 5))
             array_2d[2, 2] = 2.0
 
-            arr = arrays.Array.from_sub_array_2d_pixel_scales_and_sub_size(
-                sub_array_2d=array_2d, sub_size=1, pixel_scales=(1.0, 1.0)
+            arr = arrays.Array.manual_2d(
+                array=array_2d, sub_size=1, pixel_scales=(1.0, 1.0)
             )
 
             arr = arr.resized_from_new_shape(new_shape=(3, 3))
@@ -677,11 +677,11 @@ class TestArray:
             array_2d = np.ones((5, 5))
             array_2d[2, 2] = 2.0
 
-            arr = arrays.Array.from_sub_array_2d_pixel_scales_and_sub_size(
-                sub_array_2d=array_2d, sub_size=1, pixel_scales=(1.0, 1.0)
+            arr = arrays.Array.manual_2d(
+                array=array_2d, sub_size=1, pixel_scales=(1.0, 1.0)
             )
 
-            new_arr = arr.trimmed_from_kernel_shape(kernel_shape=(3, 3))
+            new_arr = arr.trimmed_from_kernel_shape(kernel_shape_2d=(3, 3))
 
             assert type(new_arr) == arrays.Array
             assert (
@@ -690,7 +690,7 @@ class TestArray:
             ).all()
             assert new_arr.mask.pixel_scales == (1.0, 1.0)
 
-            new_arr = arr.trimmed_from_kernel_shape(kernel_shape=(5, 5))
+            new_arr = arr.trimmed_from_kernel_shape(kernel_shape_2d=(5, 5))
 
             assert type(new_arr) == arrays.Array
             assert (new_arr.in_2d == np.array([[2.0]])).all()
@@ -699,11 +699,11 @@ class TestArray:
             array_2d = np.ones((9, 9))
             array_2d[4, 4] = 2.0
 
-            arr = arrays.Array.from_sub_array_2d_pixel_scales_and_sub_size(
-                sub_array_2d=array_2d, sub_size=1, pixel_scales=(1.0, 1.0)
+            arr = arrays.Array.manual_2d(
+                array=array_2d, sub_size=1, pixel_scales=(1.0, 1.0)
             )
 
-            new_arr = arr.trimmed_from_kernel_shape(kernel_shape=(7, 7))
+            new_arr = arr.trimmed_from_kernel_shape(kernel_shape_2d=(7, 7))
 
             assert type(new_arr) == arrays.Array
             assert (
@@ -736,7 +736,7 @@ class TestArray:
                 sub_size=1,
             )
 
-            arr_masked = aa.masked_array.manual_2d(array=array_2d, mask=mask)
+            arr_masked = aa.masked.array.manual_2d(array=array_2d, mask=mask)
 
             arr_zoomed = arr_masked.zoomed_around_mask(buffer=0)
 
@@ -755,7 +755,7 @@ class TestArray:
                 sub_size=1,
             )
 
-            arr_masked = aa.masked_array.manual_2d(array=array_2d, mask=mask)
+            arr_masked = aa.masked.array.manual_2d(array=array_2d, mask=mask)
             arr_zoomed = arr_masked.zoomed_around_mask(buffer=0)
             assert (
                 arr_zoomed.in_2d == np.array([[6.0, 7.0, 8.0], [10.0, 11.0, 12.0]])
@@ -774,7 +774,7 @@ class TestArray:
                 sub_size=1,
             )
 
-            arr_masked = aa.masked_array.manual_2d(array=array_2d, mask=mask)
+            arr_masked = aa.masked.array.manual_2d(array=array_2d, mask=mask)
             arr_zoomed = arr_masked.zoomed_around_mask(buffer=0)
             assert (
                 arr_zoomed.in_2d == np.array([[6.0, 7.0], [10.0, 11.0], [14.0, 15.0]])
@@ -793,7 +793,7 @@ class TestArray:
                 sub_size=1,
             )
 
-            arr_masked = aa.masked_array.manual_2d(array=array_2d, mask=mask)
+            arr_masked = aa.masked.array.manual_2d(array=array_2d, mask=mask)
             arr_zoomed = arr_masked.zoomed_around_mask(buffer=0)
 
             assert (
@@ -813,7 +813,7 @@ class TestArray:
                 sub_size=1,
             )
 
-            arr_masked = aa.masked_array.manual_2d(array=array_2d, mask=mask)
+            arr_masked = aa.masked.array.manual_2d(array=array_2d, mask=mask)
             arr_zoomed = arr_masked.zoomed_around_mask(buffer=0)
             assert (
                 arr_zoomed.in_2d == np.array([[2.0, 0.0], [6.0, 7.0], [10.0, 11.0]])
@@ -832,7 +832,7 @@ class TestArray:
                 sub_size=1,
             )
 
-            arr_masked = aa.masked_array.manual_2d(array=array_2d, mask=mask)
+            arr_masked = aa.masked.array.manual_2d(array=array_2d, mask=mask)
             arr_zoomed = arr_masked.zoomed_around_mask(buffer=1)
 
             assert (
@@ -847,6 +847,36 @@ class TestArray:
                 )
             ).all()
 
+        def test__zoomed__array_extent__uses_the_limits_of_the_unzoomed_mask(self):
+
+            array_2d = np.array(
+                [
+                    [1.0, 2.0, 3.0, 4.0],
+                    [5.0, 6.0, 7.0, 8.0],
+                    [9.0, 10.0, 11.0, 12.0],
+                    [13.0, 14.0, 15.0, 16.0],
+                ]
+            )
+
+            mask = aa.mask.manual(
+                mask_2d=np.array(
+                    [
+                        [True, True, True, False],
+                        [True, False, False, True],
+                        [True, False, False, True],
+                        [True, True, True, True],
+                    ]
+                ),
+                pixel_scales=(1.0, 2.0),
+                sub_size=1,
+            )
+
+            arr_masked = aa.masked.array.manual_2d(array=array_2d, mask=mask)
+
+            extent = arr_masked.extent_of_zoomed_array(buffer=1)
+
+            assert extent == pytest.approx(np.array([-4.0, 6.0, -2.0, 3.0]), 1.0e-4)
+
         def test__binned_up__compare_all_extract_methods_to_array_util(self):
             array_2d = np.array(
                 [
@@ -856,8 +886,8 @@ class TestArray:
                 ]
             )
 
-            arr = arrays.Array.from_sub_array_2d_pixel_scales_and_sub_size(
-                sub_array_2d=array_2d, sub_size=1, pixel_scales=(0.1, 0.1)
+            arr = arrays.Array.manual_2d(
+                array=array_2d, sub_size=1, pixel_scales=(0.1, 0.1)
             )
 
             arr_binned_util = aa.util.binning.bin_array_2d_via_mean(
@@ -892,10 +922,10 @@ class TestArray:
                 ]
             )
 
-            array_2d = arrays.Array.from_sub_array_2d_pixel_scales_and_sub_size(
-                sub_array_2d=array_2d, sub_size=1, pixel_scales=(0.1, 0.1)
+            array_2d = arrays.Array.manual_2d(
+                array=array_2d, sub_size=1, pixel_scales=(0.1, 0.1)
             )
-            with pytest.raises(exc.ScaledException):
+            with pytest.raises(exc.ArrayException):
                 array_2d.binned_from_bin_up_factor(bin_up_factor=4, method="wrong")
 
     class TestOutputToFits:

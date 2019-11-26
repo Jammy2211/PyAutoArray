@@ -301,7 +301,12 @@ class Mapping(object):
             pad_size_0 // 2 : self.mask.shape[0] - pad_size_0 // 2,
             pad_size_1 // 2 : self.mask.shape[1] - pad_size_1 // 2,
         ]
-        return arrays.Array.manual_2d(array=trimmed_array, pixel_scales=self.mask.pixel_scales, sub_size=1, origin=self.mask.origin)
+        return arrays.Array.manual_2d(
+            array=trimmed_array,
+            pixel_scales=self.mask.pixel_scales,
+            sub_size=1,
+            origin=self.mask.origin,
+        )
 
     def convolve_padded_array_1d_with_psf(self, padded_array_1d, psf):
         """Convolve a 1d padded array of values (e.g. image before PSF blurring) with a PSF, and then trim \
@@ -335,12 +340,12 @@ class Mapping(object):
     ):
         """For a padded grid and psf, compute an unmasked blurred image from an unmasked unblurred image.
 
-        This relies on using the lens simulate's padded-grid, which is a grid of (y,x) coordinates which extends over the \
+        This relies on using the lens dataset's padded-grid, which is a grid of (y,x) coordinates which extends over the \
         entire image as opposed to just the masked region.
 
         Parameters
         ----------
-        psf : abstract_data.PSF
+        psf : aa.kernel
             The PSF of the image used for convolution.
         unmasked_image_1d : ndarray
             The 1D unmasked image which is blurred.
@@ -384,10 +389,10 @@ class Mapping(object):
             origin=self.mask.origin,
         )
 
-    def mask_sub_1_from_mask(self, mask):
+    def mask_new_sub_size_from_mask(self, mask, sub_size=1):
         return msk.Mask(
             mask_2d=mask,
-            sub_size=1,
+            sub_size=sub_size,
             pixel_scales=self.mask.pixel_scales,
             origin=self.mask.origin,
         )

@@ -1,7 +1,19 @@
-from autoarray.structures import arrays
+from autoarray.structures import arrays, grids
 from autoarray.util import array_util, grid_util, mapper_util
 
 import numpy as np
+
+
+def mapper(grid, pixelization_grid, hyper_image=None):
+
+    if isinstance(pixelization_grid, grids.GridRectangular):
+        return MapperRectangular(
+            grid=grid, pixelization_grid=pixelization_grid, hyper_image=hyper_image
+        )
+    elif isinstance(pixelization_grid, grids.GridVoronoi):
+        return MapperVoronoi(
+            grid=grid, pixelization_grid=pixelization_grid, hyper_image=hyper_image
+        )
 
 
 class Mapper(object):
@@ -112,12 +124,12 @@ class Mapper(object):
             [] for _ in range(self.pixels)
         ]
 
-        for mask_1d_index, pixelization_1d_index in enumerate(
+        for mask_1d_index, pix_1_index in enumerate(
             self.pixelization_1d_index_for_sub_mask_1d_index
         ):
-            all_sub_mask_1d_indexes_for_pixelization_1d_index[
-                pixelization_1d_index
-            ].append(mask_1d_index)
+            all_sub_mask_1d_indexes_for_pixelization_1d_index[pix_1_index].append(
+                mask_1d_index
+            )
 
         return all_sub_mask_1d_indexes_for_pixelization_1d_index
 
@@ -132,10 +144,8 @@ class Mapper(object):
         )
 
 
-class RectangularMapper(Mapper):
-    def __init__(
-        self, grid, pixelization_grid, hyper_image=None
-    ):
+class MapperRectangular(Mapper):
+    def __init__(self, grid, pixelization_grid, hyper_image=None):
         """ Class representing a rectangular mapper, which maps unmasked pixels on a masked 2D array (in the form of \
         a grid, see the *hyper_galaxies.array.grid* module) to pixels discretized on a rectangular grid.
 
@@ -154,10 +164,8 @@ class RectangularMapper(Mapper):
         geometry : pixelization.Rectangular.Geometry
             The geometry (e.g. y / x edge locations, pixel-scales) of the rectangular pixelization.
         """
-        super(RectangularMapper, self).__init__(
-            grid=grid,
-            pixelization_grid=pixelization_grid,
-            hyper_image=hyper_image,
+        super(MapperRectangular, self).__init__(
+            grid=grid, pixelization_grid=pixelization_grid, hyper_image=hyper_image
         )
 
     @property
@@ -171,8 +179,8 @@ class RectangularMapper(Mapper):
     @property
     def pixelization_1d_index_for_sub_mask_1d_index(self):
         """The 1D index mappings between the sub grid's pixels and rectangular pixelization's pixels"""
-        return grid_util.grid_pixel_indexes_1d_from_grid_arcsec_1d_shape_2d_and_pixel_scales(
-            grid_arcsec_1d=self.grid,
+        return grid_util.grid_pixel_indexes_1d_from_grid_scaled_1d_shape_2d_and_pixel_scales(
+            grid_scaled_1d=self.grid,
             shape_2d=self.pixelization_grid.shape_2d,
             pixel_scales=self.pixelization_grid.pixel_scales,
             origin=self.pixelization_grid.origin,
@@ -196,10 +204,8 @@ class RectangularMapper(Mapper):
         )
 
 
-class VoronoiMapper(Mapper):
-    def __init__(
-        self, grid, pixelization_grid,hyper_image=None
-    ):
+class MapperVoronoi(Mapper):
+    def __init__(self, grid, pixelization_grid, hyper_image=None):
         """Class representing a Voronoi mapper, which maps unmasked pixels on a masked 2D array (in the form of \
         a grid, see the *hyper_galaxies.array.grid* module) to pixels discretized on a Voronoi grid.
 
@@ -221,10 +227,8 @@ class VoronoiMapper(Mapper):
         hyper_image : ndarray
             A pre-computed hyper_galaxies-image of the image the mapper is expected to reconstruct, used for adaptive analysis.
         """
-        super(VoronoiMapper, self).__init__(
-            grid=grid,
-            pixelization_grid=pixelization_grid,
-            hyper_image=hyper_image,
+        super(MapperVoronoi, self).__init__(
+            grid=grid, pixelization_grid=pixelization_grid, hyper_image=hyper_image
         )
 
     @property

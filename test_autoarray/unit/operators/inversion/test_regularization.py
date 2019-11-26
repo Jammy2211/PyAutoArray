@@ -4,7 +4,7 @@ import numpy as np
 from test_autoarray.mock.mock_inversion import MockPixelizationGrid, MockRegMapper
 
 
-class TestRegularizationConstant:
+class TestRegularizationinstance:
     def test__regularization_matrix__compare_to_regularization_util(self):
 
         pixel_neighbors = np.array(
@@ -23,16 +23,16 @@ class TestRegularizationConstant:
 
         pixel_neighbors_size = np.array([4, 3, 3, 3, 4, 3, 3, 3, 2])
 
-        pixelization_grid = MockPixelizationGrid(pixel_neighbors=pixel_neighbors, pixel_neighbors_size=pixel_neighbors_size)
-
-        mapper = MockRegMapper(
-            pixelization_grid=pixelization_grid,
+        pixelization_grid = MockPixelizationGrid(
+            pixel_neighbors=pixel_neighbors, pixel_neighbors_size=pixel_neighbors_size
         )
+
+        mapper = MockRegMapper(pixelization_grid=pixelization_grid)
 
         reg = aa.reg.Constant(coefficient=1.0)
         regularization_matrix = reg.regularization_matrix_from_mapper(mapper=mapper)
 
-        regularization_matrix_util = aa.util.regularization.constant_regularization_matrix_from_pixel_neighbors(
+        regularization_matrix_util = aa.util.regularization.instance_regularization_matrix_from_pixel_neighbors(
             coefficient=1.0,
             pixel_neighbors=pixel_neighbors,
             pixel_neighbors_size=pixel_neighbors_size,
@@ -78,11 +78,12 @@ class TestRegularizationWeighted:
         pixel_neighbors_size = np.array([2, 3, 4, 2, 4, 3])
         pixel_signals = np.array([1.0, 2.0, 3.0, 4.0, 5.0, 6.0])
 
-        pixelization_grid = MockPixelizationGrid(pixel_neighbors=pixel_neighbors, pixel_neighbors_size=pixel_neighbors_size)
+        pixelization_grid = MockPixelizationGrid(
+            pixel_neighbors=pixel_neighbors, pixel_neighbors_size=pixel_neighbors_size
+        )
 
         mapper = MockRegMapper(
-            pixelization_grid=pixelization_grid,
-            pixel_signals=pixel_signals,
+            pixelization_grid=pixelization_grid, pixel_signals=pixel_signals
         )
 
         regularization_matrix = reg.regularization_matrix_from_mapper(mapper=mapper)

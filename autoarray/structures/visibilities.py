@@ -2,10 +2,7 @@ import logging
 
 import numpy as np
 
-from autoarray import exc
-from autoarray.structures import abstract_structure
-from autoarray.mask import mask as msk
-from autoarray.util import binning_util, array_util
+from autoarray.util import array_util
 
 logging.basicConfig()
 logger = logging.getLogger(__name__)
@@ -81,6 +78,25 @@ class AbstractVisibilities(np.ndarray):
     def output_to_fits(self, file_path, overwrite=False):
         array_util.numpy_array_2d_to_fits(
             array_2d=self, file_path=file_path, overwrite=overwrite
+        )
+
+    @property
+    def scaled_maxima(self):
+        return (np.max(self.real), np.max(self.imag))
+
+    @property
+    def scaled_minima(self):
+        return (np.min(self.real), np.min(self.imag))
+
+    @property
+    def extent(self):
+        return np.asarray(
+            [
+                self.scaled_minima[1],
+                self.scaled_maxima[1],
+                self.scaled_minima[0],
+                self.scaled_maxima[0],
+            ]
         )
 
 

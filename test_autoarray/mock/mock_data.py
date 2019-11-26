@@ -1,8 +1,8 @@
 import numpy as np
 
 import autoarray as aa
-from autoarray.data import imaging, interferometer
-from autoarray.operators import fourier_transform
+from autoarray.dataset import imaging, interferometer
+from autoarray.operators import transformer
 
 
 class MockImage(object):
@@ -83,14 +83,14 @@ class MockImaging(imaging.Imaging):
     def __init__(
         self,
         image,
-        pixel_scales,
-        psf,
         noise_map,
-        background_noise_map,
-        poisson_noise_map,
-        exposure_time_map,
-        background_sky_map,
-        name,
+        pixel_scales,
+        psf=None,
+        background_noise_map=None,
+        poisson_noise_map=None,
+        exposure_time_map=None,
+        background_sky_map=None,
+        name="",
     ):
         super(MockImaging, self).__init__(
             image=image,
@@ -115,22 +115,14 @@ class MockPrimaryBeam(object):
         )
 
 
-class MockVisibilities(np.ndarray):
-    def __new__(cls, shape, value):
-        array = value * np.ones(shape=shape)
-
-        obj = np.array(array, dtype="float64").view(cls)
-
-        return obj
+class MockVisibilities(aa.visibilities):
+    def __new__(cls, shape_1d, value):
+        return aa.visibilities.full(shape_1d=(shape_1d,), fill_value=value)
 
 
 class MockVisibilitiesNoiseMap(np.ndarray):
-    def __new__(cls, shape, value):
-        array = value * np.ones(shape=shape)
-
-        obj = np.array(array, dtype="float64").view(cls)
-
-        return obj
+    def __new__(cls, shape_1d, value):
+        return aa.visibilities.full(shape_1d=(shape_1d,), fill_value=value)
 
 
 class MockUVWavelengths(np.ndarray):
@@ -162,7 +154,7 @@ class MockInterferometer(interferometer.Interferometer):
         )
 
 
-class MockTransformer(fourier_transform.Transformer):
+class MockTransformer(transformer.Transformer):
     def __init__(self, uv_wavelengths, grid_radians):
         super(MockTransformer, self).__init__(
             uv_wavelengths=uv_wavelengths, grid_radians=grid_radians

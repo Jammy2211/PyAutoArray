@@ -233,17 +233,26 @@ class TestCoordinates:
 
 
 class TestGrids:
-    def test__unmasked_grid_2d__compare_to_array_util(self):
+    def test__unmasked_grid__compare_to_array_util(self):
 
         grid_2d_util = aa.util.grid.grid_2d_via_shape_2d(
+            shape_2d=(4, 7), pixel_scales=(0.56, 0.56), sub_size=1
+        )
+
+        grid_1d_util = aa.util.grid.grid_1d_via_shape_2d(
             shape_2d=(4, 7), pixel_scales=(0.56, 0.56), sub_size=1
         )
 
         mask = aa.mask.manual(
             mask_2d=np.full(fill_value=False, shape=(4, 7)), pixel_scales=(0.56, 0.56)
         )
+        mask[0, 0] = True
 
+        assert mask.geometry.unmasked_grid.in_1d == pytest.approx(grid_1d_util, 1e-4)
         assert mask.geometry.unmasked_grid.in_2d == pytest.approx(grid_2d_util, 1e-4)
+        assert (
+            mask.geometry.unmasked_grid.mask == np.full(fill_value=False, shape=(4, 7))
+        ).all()
 
         mask = aa.mask.manual(
             mask_2d=np.full(fill_value=False, shape=(3, 3)), pixel_scales=(1.0, 1.0)
@@ -264,10 +273,15 @@ class TestGrids:
             shape_2d=(4, 7), pixel_scales=(0.8, 0.56), sub_size=1
         )
 
+        grid_1d_util = aa.util.grid.grid_1d_via_shape_2d(
+            shape_2d=(4, 7), pixel_scales=(0.8, 0.56), sub_size=1
+        )
+
         mask = aa.mask.manual(
             mask_2d=np.full(fill_value=False, shape=(4, 7)), pixel_scales=(0.8, 0.56)
         )
 
+        assert mask.geometry.unmasked_grid.in_1d == pytest.approx(grid_1d_util, 1e-4)
         assert mask.geometry.unmasked_grid.in_2d == pytest.approx(grid_2d_util, 1e-4)
 
         mask = aa.mask.manual(
@@ -284,27 +298,6 @@ class TestGrids:
                 ]
             )
         ).all()
-
-    def test__unmasked_grid_1d__compare_to_array_util(self):
-        grid_1d_util = aa.util.grid.grid_1d_via_shape_2d(
-            shape_2d=(4, 7), pixel_scales=(0.56, 0.56), sub_size=1
-        )
-
-        mask = aa.mask.manual(
-            mask_2d=np.full(fill_value=False, shape=(4, 7)), pixel_scales=(0.56, 0.56)
-        )
-
-        assert mask.geometry.unmasked_grid.in_1d == pytest.approx(grid_1d_util, 1e-4)
-
-        grid_1d_util = aa.util.grid.grid_1d_via_shape_2d(
-            shape_2d=(4, 7), pixel_scales=(0.8, 0.56), sub_size=1
-        )
-
-        mask = aa.mask.manual(
-            mask_2d=np.full(fill_value=False, shape=(4, 7)), pixel_scales=(0.8, 0.56)
-        )
-
-        assert mask.geometry.unmasked_grid.in_1d == pytest.approx(grid_1d_util, 1e-4)
 
     def test__grid_with_nonzero_origins__compure_to_array_util(self):
 
@@ -632,49 +625,49 @@ class TestArcsecToPixel:
             mask_2d=np.full(fill_value=False, shape=(2, 2)), pixel_scales=(2.0, 2.0)
         )
 
-        assert mask.geometry.pixel_coordinates_from_arcsec_coordinates(
-            arcsec_coordinates=(1.0, -1.0)
+        assert mask.geometry.pixel_coordinates_from_scaled_coordinates(
+            scaled_coordinates=(1.0, -1.0)
         ) == (0, 0)
-        assert mask.geometry.pixel_coordinates_from_arcsec_coordinates(
-            arcsec_coordinates=(1.0, 1.0)
+        assert mask.geometry.pixel_coordinates_from_scaled_coordinates(
+            scaled_coordinates=(1.0, 1.0)
         ) == (0, 1)
-        assert mask.geometry.pixel_coordinates_from_arcsec_coordinates(
-            arcsec_coordinates=(-1.0, -1.0)
+        assert mask.geometry.pixel_coordinates_from_scaled_coordinates(
+            scaled_coordinates=(-1.0, -1.0)
         ) == (1, 0)
-        assert mask.geometry.pixel_coordinates_from_arcsec_coordinates(
-            arcsec_coordinates=(-1.0, 1.0)
+        assert mask.geometry.pixel_coordinates_from_scaled_coordinates(
+            scaled_coordinates=(-1.0, 1.0)
         ) == (1, 1)
 
         mask = aa.mask.manual(
             mask_2d=np.full(fill_value=False, shape=(3, 3)), pixel_scales=(3.0, 3.0)
         )
 
-        assert mask.geometry.pixel_coordinates_from_arcsec_coordinates(
-            arcsec_coordinates=(3.0, -3.0)
+        assert mask.geometry.pixel_coordinates_from_scaled_coordinates(
+            scaled_coordinates=(3.0, -3.0)
         ) == (0, 0)
-        assert mask.geometry.pixel_coordinates_from_arcsec_coordinates(
-            arcsec_coordinates=(3.0, 0.0)
+        assert mask.geometry.pixel_coordinates_from_scaled_coordinates(
+            scaled_coordinates=(3.0, 0.0)
         ) == (0, 1)
-        assert mask.geometry.pixel_coordinates_from_arcsec_coordinates(
-            arcsec_coordinates=(3.0, 3.0)
+        assert mask.geometry.pixel_coordinates_from_scaled_coordinates(
+            scaled_coordinates=(3.0, 3.0)
         ) == (0, 2)
-        assert mask.geometry.pixel_coordinates_from_arcsec_coordinates(
-            arcsec_coordinates=(0.0, -3.0)
+        assert mask.geometry.pixel_coordinates_from_scaled_coordinates(
+            scaled_coordinates=(0.0, -3.0)
         ) == (1, 0)
-        assert mask.geometry.pixel_coordinates_from_arcsec_coordinates(
-            arcsec_coordinates=(0.0, 0.0)
+        assert mask.geometry.pixel_coordinates_from_scaled_coordinates(
+            scaled_coordinates=(0.0, 0.0)
         ) == (1, 1)
-        assert mask.geometry.pixel_coordinates_from_arcsec_coordinates(
-            arcsec_coordinates=(0.0, 3.0)
+        assert mask.geometry.pixel_coordinates_from_scaled_coordinates(
+            scaled_coordinates=(0.0, 3.0)
         ) == (1, 2)
-        assert mask.geometry.pixel_coordinates_from_arcsec_coordinates(
-            arcsec_coordinates=(-3.0, -3.0)
+        assert mask.geometry.pixel_coordinates_from_scaled_coordinates(
+            scaled_coordinates=(-3.0, -3.0)
         ) == (2, 0)
-        assert mask.geometry.pixel_coordinates_from_arcsec_coordinates(
-            arcsec_coordinates=(-3.0, 0.0)
+        assert mask.geometry.pixel_coordinates_from_scaled_coordinates(
+            scaled_coordinates=(-3.0, 0.0)
         ) == (2, 1)
-        assert mask.geometry.pixel_coordinates_from_arcsec_coordinates(
-            arcsec_coordinates=(-3.0, 3.0)
+        assert mask.geometry.pixel_coordinates_from_scaled_coordinates(
+            scaled_coordinates=(-3.0, 3.0)
         ) == (2, 2)
 
     def test__pixel_coordinates_from_arcsec_coordinates__arcsec_are_pixel_corners(self):
@@ -683,56 +676,56 @@ class TestArcsecToPixel:
             mask_2d=np.full(fill_value=False, shape=(2, 2)), pixel_scales=(2.0, 2.0)
         )
 
-        assert mask.geometry.pixel_coordinates_from_arcsec_coordinates(
-            arcsec_coordinates=(1.99, -1.99)
+        assert mask.geometry.pixel_coordinates_from_scaled_coordinates(
+            scaled_coordinates=(1.99, -1.99)
         ) == (0, 0)
-        assert mask.geometry.pixel_coordinates_from_arcsec_coordinates(
-            arcsec_coordinates=(1.99, -0.01)
+        assert mask.geometry.pixel_coordinates_from_scaled_coordinates(
+            scaled_coordinates=(1.99, -0.01)
         ) == (0, 0)
-        assert mask.geometry.pixel_coordinates_from_arcsec_coordinates(
-            arcsec_coordinates=(0.01, -1.99)
+        assert mask.geometry.pixel_coordinates_from_scaled_coordinates(
+            scaled_coordinates=(0.01, -1.99)
         ) == (0, 0)
-        assert mask.geometry.pixel_coordinates_from_arcsec_coordinates(
-            arcsec_coordinates=(0.01, -0.01)
+        assert mask.geometry.pixel_coordinates_from_scaled_coordinates(
+            scaled_coordinates=(0.01, -0.01)
         ) == (0, 0)
 
-        assert mask.geometry.pixel_coordinates_from_arcsec_coordinates(
-            arcsec_coordinates=(2.01, 0.01)
+        assert mask.geometry.pixel_coordinates_from_scaled_coordinates(
+            scaled_coordinates=(2.01, 0.01)
         ) == (0, 1)
-        assert mask.geometry.pixel_coordinates_from_arcsec_coordinates(
-            arcsec_coordinates=(2.01, 1.99)
+        assert mask.geometry.pixel_coordinates_from_scaled_coordinates(
+            scaled_coordinates=(2.01, 1.99)
         ) == (0, 1)
-        assert mask.geometry.pixel_coordinates_from_arcsec_coordinates(
-            arcsec_coordinates=(0.01, 0.01)
+        assert mask.geometry.pixel_coordinates_from_scaled_coordinates(
+            scaled_coordinates=(0.01, 0.01)
         ) == (0, 1)
-        assert mask.geometry.pixel_coordinates_from_arcsec_coordinates(
-            arcsec_coordinates=(0.01, 1.99)
+        assert mask.geometry.pixel_coordinates_from_scaled_coordinates(
+            scaled_coordinates=(0.01, 1.99)
         ) == (0, 1)
 
-        assert mask.geometry.pixel_coordinates_from_arcsec_coordinates(
-            arcsec_coordinates=(-0.01, -1.99)
+        assert mask.geometry.pixel_coordinates_from_scaled_coordinates(
+            scaled_coordinates=(-0.01, -1.99)
         ) == (1, 0)
-        assert mask.geometry.pixel_coordinates_from_arcsec_coordinates(
-            arcsec_coordinates=(-0.01, -0.01)
+        assert mask.geometry.pixel_coordinates_from_scaled_coordinates(
+            scaled_coordinates=(-0.01, -0.01)
         ) == (1, 0)
-        assert mask.geometry.pixel_coordinates_from_arcsec_coordinates(
-            arcsec_coordinates=(-1.99, -1.99)
+        assert mask.geometry.pixel_coordinates_from_scaled_coordinates(
+            scaled_coordinates=(-1.99, -1.99)
         ) == (1, 0)
-        assert mask.geometry.pixel_coordinates_from_arcsec_coordinates(
-            arcsec_coordinates=(-1.99, -0.01)
+        assert mask.geometry.pixel_coordinates_from_scaled_coordinates(
+            scaled_coordinates=(-1.99, -0.01)
         ) == (1, 0)
 
-        assert mask.geometry.pixel_coordinates_from_arcsec_coordinates(
-            arcsec_coordinates=(-0.01, 0.01)
+        assert mask.geometry.pixel_coordinates_from_scaled_coordinates(
+            scaled_coordinates=(-0.01, 0.01)
         ) == (1, 1)
-        assert mask.geometry.pixel_coordinates_from_arcsec_coordinates(
-            arcsec_coordinates=(-0.01, 1.99)
+        assert mask.geometry.pixel_coordinates_from_scaled_coordinates(
+            scaled_coordinates=(-0.01, 1.99)
         ) == (1, 1)
-        assert mask.geometry.pixel_coordinates_from_arcsec_coordinates(
-            arcsec_coordinates=(-1.99, 0.01)
+        assert mask.geometry.pixel_coordinates_from_scaled_coordinates(
+            scaled_coordinates=(-1.99, 0.01)
         ) == (1, 1)
-        assert mask.geometry.pixel_coordinates_from_arcsec_coordinates(
-            arcsec_coordinates=(-1.99, 1.99)
+        assert mask.geometry.pixel_coordinates_from_scaled_coordinates(
+            scaled_coordinates=(-1.99, 1.99)
         ) == (1, 1)
 
     def test__pixel_coordinates_from_arcsec_coordinates___arcsec_are_pixel_centres__nonzero_centre(
@@ -744,17 +737,17 @@ class TestArcsecToPixel:
             origin=(1.0, 1.0),
         )
 
-        assert mask.geometry.pixel_coordinates_from_arcsec_coordinates(
-            arcsec_coordinates=(2.0, 0.0)
+        assert mask.geometry.pixel_coordinates_from_scaled_coordinates(
+            scaled_coordinates=(2.0, 0.0)
         ) == (0, 0)
-        assert mask.geometry.pixel_coordinates_from_arcsec_coordinates(
-            arcsec_coordinates=(2.0, 2.0)
+        assert mask.geometry.pixel_coordinates_from_scaled_coordinates(
+            scaled_coordinates=(2.0, 2.0)
         ) == (0, 1)
-        assert mask.geometry.pixel_coordinates_from_arcsec_coordinates(
-            arcsec_coordinates=(0.0, 0.0)
+        assert mask.geometry.pixel_coordinates_from_scaled_coordinates(
+            scaled_coordinates=(0.0, 0.0)
         ) == (1, 0)
-        assert mask.geometry.pixel_coordinates_from_arcsec_coordinates(
-            arcsec_coordinates=(0.0, 2.0)
+        assert mask.geometry.pixel_coordinates_from_scaled_coordinates(
+            scaled_coordinates=(0.0, 2.0)
         ) == (1, 1)
 
         mask = aa.mask.manual(
@@ -763,32 +756,32 @@ class TestArcsecToPixel:
             origin=(3.0, 3.0),
         )
 
-        assert mask.geometry.pixel_coordinates_from_arcsec_coordinates(
-            arcsec_coordinates=(6.0, 0.0)
+        assert mask.geometry.pixel_coordinates_from_scaled_coordinates(
+            scaled_coordinates=(6.0, 0.0)
         ) == (0, 0)
-        assert mask.geometry.pixel_coordinates_from_arcsec_coordinates(
-            arcsec_coordinates=(6.0, 3.0)
+        assert mask.geometry.pixel_coordinates_from_scaled_coordinates(
+            scaled_coordinates=(6.0, 3.0)
         ) == (0, 1)
-        assert mask.geometry.pixel_coordinates_from_arcsec_coordinates(
-            arcsec_coordinates=(6.0, 6.0)
+        assert mask.geometry.pixel_coordinates_from_scaled_coordinates(
+            scaled_coordinates=(6.0, 6.0)
         ) == (0, 2)
-        assert mask.geometry.pixel_coordinates_from_arcsec_coordinates(
-            arcsec_coordinates=(3.0, 0.0)
+        assert mask.geometry.pixel_coordinates_from_scaled_coordinates(
+            scaled_coordinates=(3.0, 0.0)
         ) == (1, 0)
-        assert mask.geometry.pixel_coordinates_from_arcsec_coordinates(
-            arcsec_coordinates=(3.0, 3.0)
+        assert mask.geometry.pixel_coordinates_from_scaled_coordinates(
+            scaled_coordinates=(3.0, 3.0)
         ) == (1, 1)
-        assert mask.geometry.pixel_coordinates_from_arcsec_coordinates(
-            arcsec_coordinates=(3.0, 6.0)
+        assert mask.geometry.pixel_coordinates_from_scaled_coordinates(
+            scaled_coordinates=(3.0, 6.0)
         ) == (1, 2)
-        assert mask.geometry.pixel_coordinates_from_arcsec_coordinates(
-            arcsec_coordinates=(0.0, 0.0)
+        assert mask.geometry.pixel_coordinates_from_scaled_coordinates(
+            scaled_coordinates=(0.0, 0.0)
         ) == (2, 0)
-        assert mask.geometry.pixel_coordinates_from_arcsec_coordinates(
-            arcsec_coordinates=(0.0, 3.0)
+        assert mask.geometry.pixel_coordinates_from_scaled_coordinates(
+            scaled_coordinates=(0.0, 3.0)
         ) == (2, 1)
-        assert mask.geometry.pixel_coordinates_from_arcsec_coordinates(
-            arcsec_coordinates=(0.0, 6.0)
+        assert mask.geometry.pixel_coordinates_from_scaled_coordinates(
+            scaled_coordinates=(0.0, 6.0)
         ) == (2, 2)
 
     def test__pixel_coordinates_from_arcsec_coordinates__arcsec_are_pixel_corners__nonzero_centre(
@@ -800,56 +793,56 @@ class TestArcsecToPixel:
             origin=(1.0, 1.0),
         )
 
-        assert mask.geometry.pixel_coordinates_from_arcsec_coordinates(
-            arcsec_coordinates=(2.99, -0.99)
+        assert mask.geometry.pixel_coordinates_from_scaled_coordinates(
+            scaled_coordinates=(2.99, -0.99)
         ) == (0, 0)
-        assert mask.geometry.pixel_coordinates_from_arcsec_coordinates(
-            arcsec_coordinates=(2.99, 0.99)
+        assert mask.geometry.pixel_coordinates_from_scaled_coordinates(
+            scaled_coordinates=(2.99, 0.99)
         ) == (0, 0)
-        assert mask.geometry.pixel_coordinates_from_arcsec_coordinates(
-            arcsec_coordinates=(1.01, -0.99)
+        assert mask.geometry.pixel_coordinates_from_scaled_coordinates(
+            scaled_coordinates=(1.01, -0.99)
         ) == (0, 0)
-        assert mask.geometry.pixel_coordinates_from_arcsec_coordinates(
-            arcsec_coordinates=(1.01, 0.99)
+        assert mask.geometry.pixel_coordinates_from_scaled_coordinates(
+            scaled_coordinates=(1.01, 0.99)
         ) == (0, 0)
 
-        assert mask.geometry.pixel_coordinates_from_arcsec_coordinates(
-            arcsec_coordinates=(3.01, 1.01)
+        assert mask.geometry.pixel_coordinates_from_scaled_coordinates(
+            scaled_coordinates=(3.01, 1.01)
         ) == (0, 1)
-        assert mask.geometry.pixel_coordinates_from_arcsec_coordinates(
-            arcsec_coordinates=(3.01, 2.99)
+        assert mask.geometry.pixel_coordinates_from_scaled_coordinates(
+            scaled_coordinates=(3.01, 2.99)
         ) == (0, 1)
-        assert mask.geometry.pixel_coordinates_from_arcsec_coordinates(
-            arcsec_coordinates=(1.01, 1.01)
+        assert mask.geometry.pixel_coordinates_from_scaled_coordinates(
+            scaled_coordinates=(1.01, 1.01)
         ) == (0, 1)
-        assert mask.geometry.pixel_coordinates_from_arcsec_coordinates(
-            arcsec_coordinates=(1.01, 2.99)
+        assert mask.geometry.pixel_coordinates_from_scaled_coordinates(
+            scaled_coordinates=(1.01, 2.99)
         ) == (0, 1)
 
-        assert mask.geometry.pixel_coordinates_from_arcsec_coordinates(
-            arcsec_coordinates=(0.99, -0.99)
+        assert mask.geometry.pixel_coordinates_from_scaled_coordinates(
+            scaled_coordinates=(0.99, -0.99)
         ) == (1, 0)
-        assert mask.geometry.pixel_coordinates_from_arcsec_coordinates(
-            arcsec_coordinates=(0.99, 0.99)
+        assert mask.geometry.pixel_coordinates_from_scaled_coordinates(
+            scaled_coordinates=(0.99, 0.99)
         ) == (1, 0)
-        assert mask.geometry.pixel_coordinates_from_arcsec_coordinates(
-            arcsec_coordinates=(-0.99, -0.99)
+        assert mask.geometry.pixel_coordinates_from_scaled_coordinates(
+            scaled_coordinates=(-0.99, -0.99)
         ) == (1, 0)
-        assert mask.geometry.pixel_coordinates_from_arcsec_coordinates(
-            arcsec_coordinates=(-0.99, 0.99)
+        assert mask.geometry.pixel_coordinates_from_scaled_coordinates(
+            scaled_coordinates=(-0.99, 0.99)
         ) == (1, 0)
 
-        assert mask.geometry.pixel_coordinates_from_arcsec_coordinates(
-            arcsec_coordinates=(0.99, 1.01)
+        assert mask.geometry.pixel_coordinates_from_scaled_coordinates(
+            scaled_coordinates=(0.99, 1.01)
         ) == (1, 1)
-        assert mask.geometry.pixel_coordinates_from_arcsec_coordinates(
-            arcsec_coordinates=(0.99, 2.99)
+        assert mask.geometry.pixel_coordinates_from_scaled_coordinates(
+            scaled_coordinates=(0.99, 2.99)
         ) == (1, 1)
-        assert mask.geometry.pixel_coordinates_from_arcsec_coordinates(
-            arcsec_coordinates=(-0.99, 1.01)
+        assert mask.geometry.pixel_coordinates_from_scaled_coordinates(
+            scaled_coordinates=(-0.99, 1.01)
         ) == (1, 1)
-        assert mask.geometry.pixel_coordinates_from_arcsec_coordinates(
-            arcsec_coordinates=(-0.99, 2.99)
+        assert mask.geometry.pixel_coordinates_from_scaled_coordinates(
+            scaled_coordinates=(-0.99, 2.99)
         ) == (1, 1)
 
 
@@ -863,11 +856,11 @@ class TestGridConversions:
             grid_1d=np.array([[1.0, -2.0], [1.0, 2.0], [-1.0, -2.0], [-1.0, 2.0]])
         )
 
-        grid_pixels_util = aa.util.grid.grid_pixels_1d_from_grid_arcsec_1d_shape_2d_and_pixel_scales(
-            grid_arcsec_1d=grid_arcsec_1d, shape_2d=(2, 2), pixel_scales=(2.0, 4.0)
+        grid_pixels_util = aa.util.grid.grid_pixels_1d_from_grid_scaled_1d_shape_2d_and_pixel_scales(
+            grid_scaled_1d=grid_arcsec_1d, shape_2d=(2, 2), pixel_scales=(2.0, 4.0)
         )
-        grid_pixels = mask.geometry.grid_pixels_from_grid_arcsec(
-            grid_arcsec_1d=grid_arcsec_1d
+        grid_pixels = mask.geometry.grid_pixels_from_grid_scaled_1d(
+            grid_scaled_1d=grid_arcsec_1d
         )
 
         assert (grid_pixels == grid_pixels_util).all()
@@ -883,12 +876,12 @@ class TestGridConversions:
             grid_1d=np.array([[0.5, -0.5], [0.5, 0.5], [-0.5, -0.5], [-0.5, 0.5]])
         )
 
-        grid_pixels_util = aa.util.grid.grid_pixel_centres_1d_from_grid_arcsec_1d_shape_2d_and_pixel_scales(
-            grid_arcsec_1d=grid_arcsec_1d, shape_2d=(2, 2), pixel_scales=(2.0, 2.0)
+        grid_pixels_util = aa.util.grid.grid_pixel_centres_1d_from_grid_scaled_1d_shape_2d_and_pixel_scales(
+            grid_scaled_1d=grid_arcsec_1d, shape_2d=(2, 2), pixel_scales=(2.0, 2.0)
         )
 
-        grid_pixels = mask.geometry.grid_pixel_centres_from_grid_arcsec_1d(
-            grid_arcsec_1d=grid_arcsec_1d
+        grid_pixels = mask.geometry.grid_pixel_centres_from_grid_scaled_1d(
+            grid_scaled_1d=grid_arcsec_1d
         )
 
         assert (grid_pixels == grid_pixels_util).all()
@@ -901,12 +894,12 @@ class TestGridConversions:
             grid_1d=np.array([[1.0, -2.0], [1.0, 2.0], [-1.0, -2.0], [-1.0, 2.0]])
         )
 
-        grid_pixels_util = aa.util.grid.grid_pixel_centres_1d_from_grid_arcsec_1d_shape_2d_and_pixel_scales(
-            grid_arcsec_1d=grid_arcsec_1d, shape_2d=(2, 2), pixel_scales=(7.0, 2.0)
+        grid_pixels_util = aa.util.grid.grid_pixel_centres_1d_from_grid_scaled_1d_shape_2d_and_pixel_scales(
+            grid_scaled_1d=grid_arcsec_1d, shape_2d=(2, 2), pixel_scales=(7.0, 2.0)
         )
 
-        grid_pixels = mask.geometry.grid_pixel_centres_from_grid_arcsec_1d(
-            grid_arcsec_1d=grid_arcsec_1d
+        grid_pixels = mask.geometry.grid_pixel_centres_from_grid_scaled_1d(
+            grid_scaled_1d=grid_arcsec_1d
         )
 
         assert (grid_pixels == grid_pixels_util).all()
@@ -920,12 +913,12 @@ class TestGridConversions:
             grid_1d=np.array([[1.0, -1.0], [1.0, 1.0], [-1.0, -1.0], [-1.0, 1.0]])
         )
 
-        grid_pixel_indexes_util = aa.util.grid.grid_pixel_indexes_1d_from_grid_arcsec_1d_shape_2d_and_pixel_scales(
-            grid_arcsec_1d=grid_arcsec, shape_2d=(2, 2), pixel_scales=(2.0, 2.0)
+        grid_pixel_indexes_util = aa.util.grid.grid_pixel_indexes_1d_from_grid_scaled_1d_shape_2d_and_pixel_scales(
+            grid_scaled_1d=grid_arcsec, shape_2d=(2, 2), pixel_scales=(2.0, 2.0)
         )
 
-        grid_pixel_indexes = mask.geometry.grid_pixel_indexes_from_grid_arcsec_1d(
-            grid_arcsec_1d=grid_arcsec
+        grid_pixel_indexes = mask.geometry.grid_pixel_indexes_from_grid_scaled_1d(
+            grid_scaled_1d=grid_arcsec
         )
 
         assert (grid_pixel_indexes == grid_pixel_indexes_util).all()
@@ -938,12 +931,12 @@ class TestGridConversions:
             grid_1d=np.array([[1.0, -2.0], [1.0, 2.0], [-1.0, -2.0], [-1.0, 2.0]])
         )
 
-        grid_pixels_util = aa.util.grid.grid_pixel_indexes_1d_from_grid_arcsec_1d_shape_2d_and_pixel_scales(
-            grid_arcsec_1d=grid_arcsec, shape_2d=(2, 2), pixel_scales=(2.0, 4.0)
+        grid_pixels_util = aa.util.grid.grid_pixel_indexes_1d_from_grid_scaled_1d_shape_2d_and_pixel_scales(
+            grid_scaled_1d=grid_arcsec, shape_2d=(2, 2), pixel_scales=(2.0, 4.0)
         )
 
-        grid_pixels = mask.geometry.grid_pixel_indexes_from_grid_arcsec_1d(
-            grid_arcsec_1d=grid_arcsec
+        grid_pixels = mask.geometry.grid_pixel_indexes_from_grid_scaled_1d(
+            grid_scaled_1d=grid_arcsec
         )
 
         assert (grid_pixels == grid_pixels_util).all()
@@ -957,11 +950,11 @@ class TestGridConversions:
             grid_1d=np.array([[0, 0], [0, 1], [1, 0], [1, 1]])
         )
 
-        grid_pixels_util = aa.util.grid.grid_arcsec_1d_from_grid_pixels_1d_shape_2d_and_pixel_scales(
+        grid_pixels_util = aa.util.grid.grid_scaled_1d_from_grid_pixels_1d_shape_2d_and_pixel_scales(
             grid_pixels_1d=grid_pixels, shape_2d=(2, 2), pixel_scales=(2.0, 2.0)
         )
 
-        grid_pixels = mask.geometry.grid_arcsec_from_grid_pixels_1d(
+        grid_pixels = mask.geometry.grid_scaled_from_grid_pixels_1d(
             grid_pixels_1d=grid_pixels
         )
 
@@ -975,10 +968,10 @@ class TestGridConversions:
             grid_1d=np.array([[0, 0], [0, 1], [1, 0], [1, 1]])
         )
 
-        grid_pixels_util = aa.util.grid.grid_arcsec_1d_from_grid_pixels_1d_shape_2d_and_pixel_scales(
+        grid_pixels_util = aa.util.grid.grid_scaled_1d_from_grid_pixels_1d_shape_2d_and_pixel_scales(
             grid_pixels_1d=grid_pixels, shape_2d=(2, 2), pixel_scales=(2.0, 2.0)
         )
-        grid_pixels = mask.geometry.grid_arcsec_from_grid_pixels_1d(
+        grid_pixels = mask.geometry.grid_scaled_from_grid_pixels_1d(
             grid_pixels_1d=grid_pixels
         )
 
@@ -995,36 +988,36 @@ class TestGridConversions:
             grid_1d=np.array([[1.0, -2.0], [1.0, 2.0], [-1.0, -2.0], [-1.0, 2.0]])
         )
 
-        grid_pixels_util = aa.util.grid.grid_pixels_1d_from_grid_arcsec_1d_shape_2d_and_pixel_scales(
-            grid_arcsec_1d=grid_arcsec,
+        grid_pixels_util = aa.util.grid.grid_pixels_1d_from_grid_scaled_1d_shape_2d_and_pixel_scales(
+            grid_scaled_1d=grid_arcsec,
             shape_2d=(2, 2),
             pixel_scales=(2.0, 2.0),
             origin=(1.0, 2.0),
         )
-        grid_pixels = mask.geometry.grid_pixels_from_grid_arcsec(
-            grid_arcsec_1d=grid_arcsec
+        grid_pixels = mask.geometry.grid_pixels_from_grid_scaled_1d(
+            grid_scaled_1d=grid_arcsec
         )
         assert (grid_pixels == grid_pixels_util).all()
 
-        grid_pixels_util = aa.util.grid.grid_pixel_indexes_1d_from_grid_arcsec_1d_shape_2d_and_pixel_scales(
-            grid_arcsec_1d=grid_arcsec,
+        grid_pixels_util = aa.util.grid.grid_pixel_indexes_1d_from_grid_scaled_1d_shape_2d_and_pixel_scales(
+            grid_scaled_1d=grid_arcsec,
             shape_2d=(2, 2),
             pixel_scales=(2.0, 2.0),
             origin=(1.0, 2.0),
         )
-        grid_pixels = mask.geometry.grid_pixel_indexes_from_grid_arcsec_1d(
-            grid_arcsec_1d=grid_arcsec
+        grid_pixels = mask.geometry.grid_pixel_indexes_from_grid_scaled_1d(
+            grid_scaled_1d=grid_arcsec
         )
         assert grid_pixels == pytest.approx(grid_pixels_util, 1e-4)
 
-        grid_pixels_util = aa.util.grid.grid_pixel_centres_1d_from_grid_arcsec_1d_shape_2d_and_pixel_scales(
-            grid_arcsec_1d=grid_arcsec,
+        grid_pixels_util = aa.util.grid.grid_pixel_centres_1d_from_grid_scaled_1d_shape_2d_and_pixel_scales(
+            grid_scaled_1d=grid_arcsec,
             shape_2d=(2, 2),
             pixel_scales=(2.0, 2.0),
             origin=(1.0, 2.0),
         )
-        grid_pixels = mask.geometry.grid_pixel_centres_from_grid_arcsec_1d(
-            grid_arcsec_1d=grid_arcsec
+        grid_pixels = mask.geometry.grid_pixel_centres_from_grid_scaled_1d(
+            grid_scaled_1d=grid_arcsec
         )
         assert grid_pixels == pytest.approx(grid_pixels_util, 1e-4)
 
@@ -1032,14 +1025,14 @@ class TestGridConversions:
             grid_1d=np.array([[0, 0], [0, 1], [1, 0], [1, 1]])
         )
 
-        grid_arcsec_util = aa.util.grid.grid_arcsec_1d_from_grid_pixels_1d_shape_2d_and_pixel_scales(
+        grid_arcsec_util = aa.util.grid.grid_scaled_1d_from_grid_pixels_1d_shape_2d_and_pixel_scales(
             grid_pixels_1d=grid_pixels,
             shape_2d=(2, 2),
             pixel_scales=(2.0, 2.0),
             origin=(1.0, 2.0),
         )
 
-        grid_arcsec = mask.geometry.grid_arcsec_from_grid_pixels_1d(
+        grid_arcsec = mask.geometry.grid_scaled_from_grid_pixels_1d(
             grid_pixels_1d=grid_pixels
         )
 
@@ -1055,36 +1048,36 @@ class TestGridConversions:
             origin=(1.0, 2.0),
         )
 
-        grid_pixels_util = aa.util.grid.grid_pixels_1d_from_grid_arcsec_1d_shape_2d_and_pixel_scales(
-            grid_arcsec_1d=grid_arcsec,
+        grid_pixels_util = aa.util.grid.grid_pixels_1d_from_grid_scaled_1d_shape_2d_and_pixel_scales(
+            grid_scaled_1d=grid_arcsec,
             shape_2d=(2, 2),
             pixel_scales=(2.0, 1.0),
             origin=(1.0, 2.0),
         )
-        grid_pixels = mask.geometry.grid_pixels_from_grid_arcsec(
-            grid_arcsec_1d=grid_arcsec
+        grid_pixels = mask.geometry.grid_pixels_from_grid_scaled_1d(
+            grid_scaled_1d=grid_arcsec
         )
         assert (grid_pixels == grid_pixels_util).all()
 
-        grid_pixels_util = aa.util.grid.grid_pixel_indexes_1d_from_grid_arcsec_1d_shape_2d_and_pixel_scales(
-            grid_arcsec_1d=grid_arcsec,
+        grid_pixels_util = aa.util.grid.grid_pixel_indexes_1d_from_grid_scaled_1d_shape_2d_and_pixel_scales(
+            grid_scaled_1d=grid_arcsec,
             shape_2d=(2, 2),
             pixel_scales=(2.0, 1.0),
             origin=(1.0, 2.0),
         )
-        grid_pixels = mask.geometry.grid_pixel_indexes_from_grid_arcsec_1d(
-            grid_arcsec_1d=grid_arcsec
+        grid_pixels = mask.geometry.grid_pixel_indexes_from_grid_scaled_1d(
+            grid_scaled_1d=grid_arcsec
         )
         assert (grid_pixels == grid_pixels_util).all()
 
-        grid_pixels_util = aa.util.grid.grid_pixel_centres_1d_from_grid_arcsec_1d_shape_2d_and_pixel_scales(
-            grid_arcsec_1d=grid_arcsec,
+        grid_pixels_util = aa.util.grid.grid_pixel_centres_1d_from_grid_scaled_1d_shape_2d_and_pixel_scales(
+            grid_scaled_1d=grid_arcsec,
             shape_2d=(2, 2),
             pixel_scales=(2.0, 1.0),
             origin=(1.0, 2.0),
         )
-        grid_pixels = mask.geometry.grid_pixel_centres_from_grid_arcsec_1d(
-            grid_arcsec_1d=grid_arcsec
+        grid_pixels = mask.geometry.grid_pixel_centres_from_grid_scaled_1d(
+            grid_scaled_1d=grid_arcsec
         )
         assert grid_pixels == pytest.approx(grid_pixels_util, 1e-4)
 
@@ -1092,14 +1085,14 @@ class TestGridConversions:
             grid_1d=np.array([[0, 0], [0, 1], [1, 0], [1, 1]])
         )
 
-        grid_arcsec_util = aa.util.grid.grid_arcsec_1d_from_grid_pixels_1d_shape_2d_and_pixel_scales(
+        grid_arcsec_util = aa.util.grid.grid_scaled_1d_from_grid_pixels_1d_shape_2d_and_pixel_scales(
             grid_pixels_1d=grid_pixels,
             shape_2d=(2, 2),
             pixel_scales=(2.0, 1.0),
             origin=(1.0, 2.0),
         )
 
-        grid_arcsec = mask.geometry.grid_arcsec_from_grid_pixels_1d(
+        grid_arcsec = mask.geometry.grid_scaled_from_grid_pixels_1d(
             grid_pixels_1d=grid_pixels
         )
 

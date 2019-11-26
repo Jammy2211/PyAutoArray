@@ -112,12 +112,12 @@ def make_mask_6x6():
 
 @pytest.fixture(name="grid_7x7")
 def make_grid_7x7(mask_7x7):
-    return aa.masked_grid.from_mask(mask=mask_7x7)
+    return aa.masked.grid.from_mask(mask=mask_7x7)
 
 
 @pytest.fixture(name="sub_grid_7x7")
 def make_sub_grid_7x7(sub_mask_7x7):
-    return aa.masked_grid.from_mask(mask=sub_mask_7x7)
+    return aa.masked.grid.from_mask(mask=sub_mask_7x7)
 
 
 @pytest.fixture(name="sub_grid_7x7_simple")
@@ -131,7 +131,7 @@ def make_sub_grid_7x7_simple(mask_7x7, sub_grid_7x7):
 
 @pytest.fixture(name="blurring_grid_7x7")
 def make_blurring_grid_7x7(blurring_mask_7x7):
-    return aa.masked_grid.from_mask(mask=blurring_mask_7x7)
+    return aa.masked.grid.from_mask(mask=blurring_mask_7x7)
 
 
 # CONVOLVERS #
@@ -231,12 +231,12 @@ def make_imaging_6x6():
 
 @pytest.fixture(name="visibilities_7x2")
 def make_visibilities_7():
-    return mock_data.MockVisibilities(shape=(7, 2), value=1.0)
+    return mock_data.MockVisibilities(shape_1d=7, value=1.0)
 
 
 @pytest.fixture(name="noise_map_7x2")
 def make_noise_map_7():
-    return mock_data.MockVisibilitiesNoiseMap(shape=(7, 2), value=2.0)
+    return mock_data.MockVisibilitiesNoiseMap(shape_1d=7, value=2.0)
 
 
 @pytest.fixture(name="primary_beam_3x3")
@@ -274,23 +274,33 @@ def make_transformer_7x7_7(uv_wavelengths_7x2, grid_7x7):
 
 @pytest.fixture(name="masked_imaging_7x7")
 def make_masked_imaging_7x7(imaging_7x7, sub_mask_7x7):
-    return aa.masked_imaging.manual(imaging=imaging_7x7, mask=sub_mask_7x7)
+    return aa.masked.imaging.manual(imaging=imaging_7x7, mask=sub_mask_7x7)
 
 
 @pytest.fixture(name="masked_interferometer_7")
 def make_masked_interferometer_7(
     interferometer_7, mask_7x7, sub_grid_7x7, transformer_7x7_7
 ):
-    return aa.masked_interferometer.manual(
-        interferometer=interferometer_7, mask=mask_7x7
+    return aa.masked.interferometer.manual(
+        interferometer=interferometer_7, real_space_mask=mask_7x7
     )
 
 
-@pytest.fixture(name="fit_7x7")
+@pytest.fixture(name="fit_imaging_7x7")
 def make_masked_imaging_fit_x1_plane_7x7(masked_imaging_7x7):
-    return fit.DataFit(
+    return fit.ImagingFit(
         mask=masked_imaging_7x7.mask,
-        data=masked_imaging_7x7.image,
+        image=masked_imaging_7x7.image,
         noise_map=masked_imaging_7x7.noise_map,
-        model_data=5.0 * masked_imaging_7x7.image,
+        model_image=5.0 * masked_imaging_7x7.image,
+    )
+
+
+@pytest.fixture(name="fit_interferometer_7")
+def make_masked_interferometer_fit_x1_plane_7(masked_interferometer_7):
+    return fit.InterferometerFit(
+        visibilities_mask=masked_interferometer_7.visibilities_mask,
+        visibilities=masked_interferometer_7.visibilities,
+        noise_map=masked_interferometer_7.noise_map,
+        model_visibilities=5.0 * masked_interferometer_7.visibilities,
     )

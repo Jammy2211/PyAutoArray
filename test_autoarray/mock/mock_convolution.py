@@ -1,7 +1,7 @@
-from autoarray.operators import convolution
+from autoarray.operators import convolver
 
 
-class MockConvolver(convolution.Convolver):
+class MockConvolver(convolver.Convolver):
     def __init__(self, mask, kernel):
         super(MockConvolver, self).__init__(mask=mask, kernel=kernel)
 

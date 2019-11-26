@@ -1,7 +1,7 @@
 from autoarray import conf
 import matplotlib
 
-backend = conf.instance.visualize.get("figures", "backend", str)
+backend = conf.get_matplotlib_backend()
 matplotlib.use(backend)
 import matplotlib.pyplot as plt
 import numpy as np
@@ -62,6 +62,96 @@ def set_title(title, titlesize):
         The size of of the title of the figure.
     """
     plt.title(title, fontsize=titlesize)
+
+
+def set_xy_labels_and_ticksize(unit_label, xlabelsize, ylabelsize, xyticksize):
+    """Set the x and y labels of the figure, and set the fontsize of those labels.
+
+    The x and y labels are always the distance scales, thus the labels are either arc-seconds or kpc and depend on the \
+    unit_label the figure is plotted in.
+
+    Parameters
+    -----------
+    unit_label : str
+        The label for the unit_label of the y / x axis of the plots.
+    unit_conversion_factor : float
+        The conversion factor between arc-seconds and kiloparsecs, required to plotters the unit_label in kpc.
+    xlabelsize : int
+        The fontsize of the x axes label.
+    ylabelsize : int
+        The fontsize of the y axes label.
+    xyticksize : int
+        The font size of the x and y ticks on the figure axes.
+    """
+
+    plt.xlabel("x (" + unit_label + ")", fontsize=xlabelsize)
+    plt.ylabel("y (" + unit_label + ")", fontsize=ylabelsize)
+
+    plt.tick_params(labelsize=xyticksize)
+
+
+def set_yxticks(
+    array,
+    extent,
+    use_scaled_units,
+    unit_conversion_factor,
+    xticks_manual,
+    yticks_manual,
+):
+    """Get the extent of the dimensions of the array in the unit_label of the figure (e.g. arc-seconds or kpc).
+
+    This is used to set the extent of the array and thus the y / x axis limits.
+
+    Parameters
+    -----------
+    array : data_type.array.aa.Scaled
+        The 2D array of data_type which is plotted.
+    unit_label : str
+        The label for the unit_label of the y / x axis of the plots.
+    unit_conversion_factor : float
+        The conversion factor between arc-seconds and kiloparsecs, required to plotters the unit_label in kpc.
+    xticks_manual :  [] or None
+        If input, the xticks do not use the array's default xticks but instead overwrite them as these values.
+    yticks_manual :  [] or None
+        If input, the yticks do not use the array's default yticks but instead overwrite them as these values.
+    """
+
+    yticks = np.linspace(extent[2], extent[3], 5)
+    xticks = np.linspace(extent[0], extent[1], 5)
+
+    if xticks_manual is not None and yticks_manual is not None:
+        ytick_labels = np.asarray([yticks_manual[0], yticks_manual[3]])
+        xtick_labels = np.asarray([xticks_manual[0], xticks_manual[3]])
+    elif not use_scaled_units:
+        ytick_labels = np.linspace(0, array.shape_2d[0], 5).astype("int")
+        xtick_labels = np.linspace(0, array.shape_2d[1], 5).astype("int")
+    elif use_scaled_units and unit_conversion_factor is None:
+        ytick_labels = np.round(np.linspace(extent[2], extent[3], 5), 2)
+        xtick_labels = np.round(np.linspace(extent[0], extent[1], 5), 2)
+    elif use_scaled_units and unit_conversion_factor is not None:
+        ytick_labels = np.round(
+            np.linspace(
+                extent[2] * unit_conversion_factor,
+                extent[3] * unit_conversion_factor,
+                5,
+            ),
+            2,
+        )
+        xtick_labels = np.round(
+            np.linspace(
+                extent[0] * unit_conversion_factor,
+                extent[1] * unit_conversion_factor,
+                5,
+            ),
+            2,
+        )
+    else:
+        raise exc.PlottingException(
+            "The y and y ticks cannot be set using the input options."
+        )
+
+    plt.yticks(ticks=yticks, labels=ytick_labels)
+    plt.xticks(ticks=xticks, labels=xtick_labels)
 
 
 def set_colorbar(cb_ticksize, cb_fraction, cb_pad, cb_tick_values, cb_tick_labels):
@@ -152,21 +242,6 @@ def output_subplot_array(output_path, output_filename, output_format):
         raise exc.PlottingException("You cannot output a subplots with format .fits")
 
 
-def get_critical_curve_and_caustic(obj, grid, plot_critical_curve, plot_caustics):
-
-    if plot_critical_curve:
-        critical_curves = obj.critical_curves_from_grid(grid=grid)
-    else:
-        critical_curves = []
-
-    if plot_caustics:
-        caustics = obj.caustics_from_grid(grid=grid)
-    else:
-        caustics = []
-
-    return [critical_curves, caustics]
-
-
 def plot_lines(line_lists):
     """Plot the liness of the mask or the array on the figure.
 
@@ -174,20 +249,20 @@ def plot_lines(line_lists):
     -----------t.
     mask : ndarray of data_type.array.mask.Mask
         The mask applied to the array, the edge of which is plotted as a set of points over the plotted array.
-    should_plot_lines : bool
+    plot_lines : bool
         If a mask is supplied, its liness pixels (e.g. the exterior edge) is plotted if this is *True*.
-    units : str
-        The units of the y / x axis of the plots, in arc-seconds ('arcsec') or kiloparsecs ('kpc').
+    unit_label : str
+        The unit_label of the y / x axis of the plots.
     kpc_per_arcsec : float or None
-        The conversion factor between arc-seconds and kiloparsecs, required to plotters the units in kpc.
+        The conversion factor between arc-seconds and kiloparsecs, required to plotters the unit_label in kpc.
     lines_pointsize : int
         The size of the points plotted to show the liness.
     """
     if line_lists is not None:
         for line_list in line_lists:
             for line in line_list:
-                if not line == []:
-                    plt.plot(line[:, 1], line[:, 0], c="r", lw=1.5, zorder=200)
+                if len(line) != 0:
+                    plt.plot(line[:, 1], line[:, 0], c="w", lw=2.0, zorder=200)
 
 
 def close_figure(as_subplot):
@@ -201,9 +276,6 @@ def close_figure(as_subplot):
     """
     if not as_subplot:
         plt.close()
-
-
-# def check_units_distance_can_be_plotted(units_distance, kpc_per_arcsec):
 
 
 def radii_bin_size_from_minimum_and_maximum_radii_and_radii_points(

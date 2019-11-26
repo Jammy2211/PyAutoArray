@@ -101,14 +101,33 @@ class AbstractArray(abstract_structure.AbstractStructure):
             x1=self.geometry._zoom_region[3] + buffer,
         )
 
-        mask_2d = msk.Mask.unmasked(
+        mask = msk.Mask.unmasked(
             shape_2d=extracted_array_2d.shape,
             pixel_scales=self.pixel_scales,
             sub_size=self.sub_size,
             origin=self.origin,
         )
 
-        return MaskedArray.manual_2d(array=extracted_array_2d, mask=mask_2d)
+        return mask.mapping.array_from_array_2d(array_2d=extracted_array_2d)
+
+    def extent_of_zoomed_array(self, buffer=1):
+
+        extracted_array_2d = array_util.extracted_array_2d_from_array_2d(
+            array_2d=self.in_2d,
+            y0=self.geometry._zoom_region[0] - buffer,
+            y1=self.geometry._zoom_region[1] + buffer,
+            x0=self.geometry._zoom_region[2] - buffer,
+            x1=self.geometry._zoom_region[3] + buffer,
+        )
+
+        mask = msk.Mask.unmasked(
+            shape_2d=extracted_array_2d.shape,
+            pixel_scales=self.pixel_scales,
+            sub_size=self.sub_size,
+            origin=self.mask.geometry.mask_centre,
+        )
+
+        return mask.geometry.extent
 
     def resized_from_new_shape(self, new_shape):
         """resized the array to a new shape and at a new origin.
@@ -129,9 +148,9 @@ class AbstractArray(abstract_structure.AbstractStructure):
 
         return resized_mask_2d.mapping.array_from_array_2d(array_2d=resized_array_2d)
 
-    def trimmed_from_kernel_shape(self, kernel_shape):
-        psf_cut_y = np.int(np.ceil(kernel_shape[0] / 2)) - 1
-        psf_cut_x = np.int(np.ceil(kernel_shape[1] / 2)) - 1
+    def trimmed_from_kernel_shape(self, kernel_shape_2d):
+        psf_cut_y = np.int(np.ceil(kernel_shape_2d[0] / 2)) - 1
+        psf_cut_x = np.int(np.ceil(kernel_shape_2d[1] / 2)) - 1
         array_y = np.int(self.mask.shape[0])
         array_x = np.int(self.mask.shape[1])
         trimmed_array_2d = self.in_2d[
@@ -176,7 +195,7 @@ class AbstractArray(abstract_structure.AbstractStructure):
 
         else:
 
-            raise exc.ScaledException(
+            raise exc.ArrayException(
                 "The method used in binned_up_array_from_array is not a valid method "
                 "[mean | quadrature | sum]"
             )
@@ -202,39 +221,6 @@ class AbstractArray(abstract_structure.AbstractStructure):
 
 class Array(AbstractArray):
     @classmethod
-    def from_sub_array_1d_shape_2d_pixel_scales_and_sub_size(
-        cls, sub_array_1d, shape_2d, pixel_scales, sub_size, origin=(0.0, 0.0)
-    ):
-
-        mask = msk.Mask.unmasked(
-            shape_2d=shape_2d,
-            pixel_scales=pixel_scales,
-            sub_size=sub_size,
-            origin=origin,
-        )
-
-        return mask.mapping.array_from_sub_array_1d(sub_array_1d=sub_array_1d)
-
-    @classmethod
-    def from_sub_array_2d_pixel_scales_and_sub_size(
-        cls, sub_array_2d, pixel_scales, sub_size, origin=(0.0, 0.0)
-    ):
-
-        shape_2d = (
-            int(sub_array_2d.shape[0] / sub_size),
-            int(sub_array_2d.shape[1] / sub_size),
-        )
-
-        mask = msk.Mask.unmasked(
-            shape_2d=shape_2d,
-            pixel_scales=pixel_scales,
-            sub_size=sub_size,
-            origin=origin,
-        )
-
-        return mask.mapping.array_from_sub_array_2d(sub_array_2d=sub_array_2d)
-
-    @classmethod
     def manual_1d(
         cls, array, shape_2d, pixel_scales=None, sub_size=1, origin=(0.0, 0.0)
     ):
@@ -250,13 +236,14 @@ class Array(AbstractArray):
                 "The input shape_2d parameter is not a tuple of type (float, float)"
             )
 
-        return Array.from_sub_array_1d_shape_2d_pixel_scales_and_sub_size(
-            sub_array_1d=array,
+        mask = msk.Mask.unmasked(
             shape_2d=shape_2d,
             pixel_scales=pixel_scales,
             sub_size=sub_size,
             origin=origin,
         )
+
+        return mask.mapping.array_from_sub_array_1d(sub_array_1d=array)
 
     @classmethod
     def manual_2d(cls, array, pixel_scales=None, sub_size=1, origin=(0.0, 0.0)):
@@ -267,12 +254,16 @@ class Array(AbstractArray):
         if type(pixel_scales) is float:
             pixel_scales = (pixel_scales, pixel_scales)
 
-        return Array.from_sub_array_2d_pixel_scales_and_sub_size(
-            sub_array_2d=array,
+        shape_2d = (int(array.shape[0] / sub_size), int(array.shape[1] / sub_size))
+
+        mask = msk.Mask.unmasked(
+            shape_2d=shape_2d,
             pixel_scales=pixel_scales,
             sub_size=sub_size,
             origin=origin,
         )
+
+        return mask.mapping.array_from_sub_array_2d(sub_array_2d=array)
 
     @classmethod
     def full(
@@ -321,52 +312,3 @@ class Array(AbstractArray):
     @classmethod
     def from_sub_array_2d_and_mask(cls, sub_array_2d, mask):
         return mask.mapping.array_from_sub_array_2d(sub_array_2d=sub_array_2d)
-
-
-class MaskedArray(AbstractArray):
-    @classmethod
-    def manual_1d(cls, array, mask):
-
-        if type(array) is list:
-            array = np.asarray(array)
-
-        if array.shape[0] != mask.sub_pixels_in_mask:
-            raise exc.ArrayException(
-                "The input 1D array does not have the same number of entries as sub-pixels in"
-                "the mask."
-            )
-
-        return mask.mapping.array_from_sub_array_1d(sub_array_1d=array)
-
-    @classmethod
-    def manual_2d(cls, array, mask):
-
-        if type(array) is list:
-            array = np.asarray(array)
-
-        if array.shape != mask.sub_shape_2d:
-            raise exc.ArrayException(
-                "The input array is 2D but not the same dimensions as the sub-mask "
-                "(e.g. the mask 2D shape multipled by its sub size."
-            )
-
-        return mask.mapping.array_from_sub_array_2d(sub_array_2d=array)
-
-    @classmethod
-    def full(cls, fill_value, mask):
-        return cls.manual_2d(
-            array=np.full(fill_value=fill_value, shape=mask.sub_shape_2d), mask=mask
-        )
-
-    @classmethod
-    def ones(cls, mask):
-        return cls.full(fill_value=1.0, mask=mask)
-
-    @classmethod
-    def zeros(cls, mask):
-        return cls.full(fill_value=0.0, mask=mask)
-
-    @classmethod
-    def from_fits(cls, file_path, hdu, mask):
-        array_2d = array_util.numpy_array_2d_from_fits(file_path=file_path, hdu=hdu)
-        return cls.manual_2d(array=array_2d, mask=mask)

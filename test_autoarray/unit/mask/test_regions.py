@@ -19,6 +19,26 @@ class TestRegions:
             mask_2d_index_for_mask_1d_index, 1e-4
         )
 
+    def test__unmasked_mask(self):
+
+        mask = aa.mask.manual(
+            [
+                [True, True, True, True, True, True, True, True, True],
+                [True, False, False, False, False, False, False, False, True],
+                [True, False, True, True, True, True, True, False, True],
+                [True, False, True, False, False, False, True, False, True],
+                [True, False, True, False, True, False, True, False, True],
+                [True, False, True, False, False, False, True, False, True],
+                [True, False, True, True, True, True, True, False, True],
+                [True, False, False, False, False, False, False, False, True],
+                [True, True, True, True, True, True, True, True, True],
+            ]
+        )
+
+        assert (
+            mask.regions.unmasked_mask == np.full(fill_value=False, shape=(9, 9))
+        ).all()
+
     def test__blurring_mask_for_psf_shape__compare_to_array_util(self):
 
         mask = aa.mask.manual(
@@ -40,7 +60,7 @@ class TestRegions:
         )
 
         blurring_mask = mask.regions.blurring_mask_from_kernel_shape(
-            kernel_shape=(3, 3)
+            kernel_shape_2d=(3, 3)
         )
 
         assert (blurring_mask == blurring_mask_via_util).all()

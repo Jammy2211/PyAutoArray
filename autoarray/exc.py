@@ -2,10 +2,6 @@ class ArrayException(Exception):
     pass
 
 
-class ScaledException(Exception):
-    pass
-
-
 class GridException(Exception):
     pass
 
@@ -14,7 +10,7 @@ class KernelException(Exception):
     pass
 
 
-class ConvolutionException(Exception):
+class ConvolverException(Exception):
     pass
 
 
@@ -35,4 +31,8 @@ class PixelizationException(Exception):
 
 
 class InversionException(Exception):
+    pass
+
+
+class PlottingException(Exception):
     pass

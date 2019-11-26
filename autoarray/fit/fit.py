@@ -1,22 +1,48 @@
 import numpy as np
 
+from autoarray.masked import masked_dataset as md
 from autoarray.util import fit_util
 
 
-class DataFit(object):
+def fit_masked_dataset(masked_dataset, model_data, inversion=None):
+    return fit(
+        masked_dataset=masked_dataset, model_data=model_data, inversion=inversion
+    )
+
+
+def fit(masked_dataset, model_data, inversion=None):
+    if isinstance(masked_dataset, md.MaskedImaging):
+        return ImagingFit(
+            mask=masked_dataset.mask,
+            image=masked_dataset.image,
+            noise_map=masked_dataset.noise_map,
+            model_image=model_data,
+            inversion=inversion,
+        )
+    elif isinstance(masked_dataset, md.MaskedInterferometer):
+        return InterferometerFit(
+            visibilities_mask=masked_dataset.visibilities_mask,
+            visibilities=masked_dataset.visibilities,
+            noise_map=masked_dataset.noise_map,
+            model_visibilities=model_data,
+            inversion=inversion,
+        )
+
+
+class DatasetFit(object):
 
     # noinspection PyUnresolvedReferences
     def __init__(self, mask, data, noise_map, model_data, inversion=None):
-        """Class to fit simulate where the simulate structures are any dimension.
+        """Class to fit simulator where the dataset structures are any dimension.
 
         Parameters
         -----------
         data : ndarray
-            The observed simulate that is fitted.
+            The observed simulator that is fitted.
         noise_map : ndarray
-            The noise_map-map of the observed simulate.
+            The noise_map-map of the observed simulator.
         mask: msk.Mask
-            The masks that is applied to the simulate.
+            The masks that is applied to the dataset.
         model_data : ndarray
             The model simulate the fitting image is fitted with.
 
@@ -27,14 +53,14 @@ class DataFit(object):
         chi_squared_map : ndarray
             The chi-squared map of the fit ((datas - model_data) / noise_maps ) **2.0
         chi_squared : float
-            The overall chi-squared of the model's fit to the simulate, summed over every simulate-point.
+            The overall chi-squared of the model's fit to the dataset, summed over every simulator-point.
         reduced_chi_squared : float
             The reduced chi-squared of the model's fit to simulate (chi_squared / number of datas points), summed over \
-            every simulate-point.
+            every simulator-point.
         noise_normalization : float
-            The overall normalization term of the noise_map-map, summed over every simulate-point.
+            The overall normalization term of the noise_map-map, summed over every simulator-point.
         likelihood : float
-            The overall likelihood of the model's fit to the simulate, summed over evey simulate-point.
+            The overall likelihood of the model's fit to the dataset, summed over evey simulator-point.
         """
         self.mask = mask
         self.data = data
@@ -62,7 +88,7 @@ class DataFit(object):
 
     @property
     def signal_to_noise_map(self):
-        """The signal-to-noise_map of the simulate and noise-map which are fitted."""
+        """The signal-to-noise_map of the dataset and noise-map which are fitted."""
         signal_to_noise_map = np.divide(self.data, self.noise_map)
         signal_to_noise_map[signal_to_noise_map < 0] = 0
         return signal_to_noise_map
@@ -115,18 +141,18 @@ class DataFit(object):
             return self.evidence
 
 
-class ImagingFit(DataFit):
+class ImagingFit(DatasetFit):
     def __init__(self, mask, image, noise_map, model_image, inversion=None):
-        """Class to fit simulate where the simulate structures are any dimension.
+        """Class to fit simulator where the dataset structures are any dimension.
 
         Parameters
         -----------
-        simulate : ndarray
-            The observed simulate that is fitted.
+        simulator : ndarray
+            The observed simulator that is fitted.
         noise_map : ndarray
-            The noise_map-map of the observed simulate.
+            The noise_map-map of the observed simulator.
         mask: msk.Mask
-            The masks that is applied to the simulate.
+            The masks that is applied to the dataset.
         model_data : ndarray
             The model simulate the fitting image is fitted with.
 
@@ -137,14 +163,14 @@ class ImagingFit(DataFit):
         chi_squared_map : ndarray
             The chi-squared map of the fit ((datas - model_data) / noise_maps ) **2.0
         chi_squared : float
-            The overall chi-squared of the model's fit to the simulate, summed over every simulate-point.
+            The overall chi-squared of the model's fit to the dataset, summed over every simulator-point.
         reduced_chi_squared : float
             The reduced chi-squared of the model's fit to simulate (chi_squared / number of datas points), summed over \
-            every simulate-point.
+            every simulator-point.
         noise_normalization : float
-            The overall normalization term of the noise_map-map, summed over every simulate-point.
+            The overall normalization term of the noise_map-map, summed over every simulator-point.
         likelihood : float
-            The overall likelihood of the model's fit to the simulate, summed over evey simulate-point.
+            The overall likelihood of the model's fit to the dataset, summed over evey simulator-point.
         """
 
         super(ImagingFit, self).__init__(
@@ -156,6 +182,10 @@ class ImagingFit(DataFit):
         )
 
     @property
+    def masked_imaging(self):
+        return self.masked_dataset
+
+    @property
     def image(self):
         return self.data
 
@@ -164,7 +194,7 @@ class ImagingFit(DataFit):
         return self.model_data
 
 
-class InterferometerFit(DataFit):
+class InterferometerFit(DatasetFit):
     def __init__(
         self,
         visibilities_mask,
@@ -173,16 +203,16 @@ class InterferometerFit(DataFit):
         model_visibilities,
         inversion=None,
     ):
-        """Class to fit simulate where the simulate structures are any dimension.
+        """Class to fit simulator where the dataset structures are any dimension.
 
         Parameters
         -----------
-        simulate : ndarray
-            The observed simulate that is fitted.
+        simulator : ndarray
+            The observed simulator that is fitted.
         noise_map : ndarray
-            The noise_map-map of the observed simulate.
+            The noise_map-map of the observed simulator.
         visibilities_mask: msk.Mask
-            The masks that is applied to the simulate.
+            The masks that is applied to the dataset.
         model_data : ndarray
             The model simulate the fitting image is fitted with.
 
@@ -193,14 +223,14 @@ class InterferometerFit(DataFit):
         chi_squared_map : ndarray
             The chi-squared map of the fit ((datas - model_data) / noise_maps ) **2.0
         chi_squared : float
-            The overall chi-squared of the model's fit to the simulate, summed over every simulate-point.
+            The overall chi-squared of the model's fit to the dataset, summed over every simulator-point.
         reduced_chi_squared : float
             The reduced chi-squared of the model's fit to simulate (chi_squared / number of datas points), summed over \
-            every simulate-point.
+            every simulator-point.
         noise_normalization : float
-            The overall normalization term of the noise_map-map, summed over every simulate-point.
+            The overall normalization term of the noise_map-map, summed over every simulator-point.
         likelihood : float
-            The overall likelihood of the model's fit to the simulate, summed over evey simulate-point.
+            The overall likelihood of the model's fit to the dataset, summed over evey simulator-point.
         """
 
         super(InterferometerFit, self).__init__(
@@ -210,6 +240,10 @@ class InterferometerFit(DataFit):
             model_data=model_visibilities,
             inversion=inversion,
         )
+
+    @property
+    def masked_interferometer(self):
+        return self.masked_dataset
 
     @property
     def visibilities_mask(self):

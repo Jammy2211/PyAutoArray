@@ -4,7 +4,7 @@ import numpy as np
 import pytest
 
 
-class TestRegularizationConstantMatrix:
+class TestRegularizationinstanceMatrix:
     def test__1_b_matrix_size_3x3__weights_all_1s__makes_correct_regularization_matrix(
         self
     ):
@@ -26,7 +26,7 @@ class TestRegularizationConstantMatrix:
             test_b_matrix.T, test_b_matrix
         ) + 1e-8 * np.identity(3)
 
-        regularization_matrix = aa.util.regularization.constant_regularization_matrix_from_pixel_neighbors(
+        regularization_matrix = aa.util.regularization.instance_regularization_matrix_from_pixel_neighbors(
             coefficient=1.0,
             pixel_neighbors=pixel_neighbors,
             pixel_neighbors_size=pixel_neighbors_size,
@@ -53,7 +53,7 @@ class TestRegularizationConstantMatrix:
 
         pixel_neighbors_size = np.array([2, 2, 2, 2])
 
-        regularization_matrix = aa.util.regularization.constant_regularization_matrix_from_pixel_neighbors(
+        regularization_matrix = aa.util.regularization.instance_regularization_matrix_from_pixel_neighbors(
             coefficient=1.0,
             pixel_neighbors=pixel_neighbors,
             pixel_neighbors_size=pixel_neighbors_size,
@@ -80,7 +80,7 @@ class TestRegularizationConstantMatrix:
             test_b_matrix.T, test_b_matrix
         ) + 1e-8 * np.identity(4)
 
-        regularization_matrix = aa.util.regularization.constant_regularization_matrix_from_pixel_neighbors(
+        regularization_matrix = aa.util.regularization.instance_regularization_matrix_from_pixel_neighbors(
             coefficient=2.0,
             pixel_neighbors=pixel_neighbors,
             pixel_neighbors_size=pixel_neighbors_size,
@@ -146,7 +146,7 @@ class TestRegularizationConstantMatrix:
             + 1e-8 * np.identity(9)
         )
 
-        regularization_matrix = aa.util.regularization.constant_regularization_matrix_from_pixel_neighbors(
+        regularization_matrix = aa.util.regularization.instance_regularization_matrix_from_pixel_neighbors(
             coefficient=1.0,
             pixel_neighbors=pixel_neighbors,
             pixel_neighbors_size=pixel_neighbors_size,
@@ -394,7 +394,7 @@ class TestRegularizationWeightedMatrix:
             test_regularization_matrix, 1.0e-4
         )
 
-    def test__2_b_matrices_size_4x4_variables_regularization_weights__makes_correct_regularization_matrix(
+    def test__2_b_matrices_size_4x4_models_regularization_weights__makes_correct_regularization_matrix(
         self
     ):
         # Simple case, where we have just one regularization direction, regularizing pixel 0 -> 1 and 1 -> 2.

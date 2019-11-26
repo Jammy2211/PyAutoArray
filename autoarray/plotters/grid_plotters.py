@@ -1,12 +1,13 @@
 from autoarray import conf
 import matplotlib
 
-backend = conf.instance.visualize.get("figures", "backend", str)
+backend = conf.get_matplotlib_backend()
 matplotlib.use(backend)
 from matplotlib import pyplot as plt
 import numpy as np
 import itertools
 
+from autoarray.util import array_util
 from autoarray.plotters import plotter_util
 
 
@@ -17,8 +18,8 @@ def plot_grid(
     points=None,
     lines=None,
     as_subplot=False,
-    units="arcsec",
-    kpc_per_arcsec=None,
+    unit_conversion_factor=None,
+    unit_label="scaled",
     figsize=(12, 8),
     pointsize=5,
     pointcolor="k",
@@ -51,10 +52,10 @@ def plot_grid(
         different planes).
     as_subplot : bool
         Whether the grid is plotted as part of a subplot, in which case the grid figure is not opened / closed.
-    units : str
-        The units of the y / x axis of the plots, in arc-seconds ('arcsec') or kiloparsecs ('kpc').
-    kpc_per_arcsec : float
-        The conversion factor between arc-seconds and kiloparsecs, required to plotters the units in kpc.
+    unit_label : str
+        The label of the unit_label of the y / x axis of the plots.
+    unit_conversion_factor : float
+        The conversion factor between arc-seconds and kiloparsecs, required to plotters the unit_label in kpc.
     figsize : (int, int)
         The size of the figure in (rows, columns).
     pointsize : int
@@ -80,9 +81,6 @@ def plot_grid(
     """
 
     plotter_util.setup_figure(figsize=figsize, as_subplot=as_subplot)
-    grid = convert_grid_units(
-        grid_arcsec=grid, units=units, kpc_per_arcsec=kpc_per_arcsec
-    )
 
     if colors is not None:
 
@@ -108,9 +106,8 @@ def plot_grid(
         )
 
     plotter_util.set_title(title=title, titlesize=titlesize)
-    set_xy_labels(
-        units=units,
-        kpc_per_arcsec=kpc_per_arcsec,
+    plotter_util.set_xy_labels_and_ticksize(
+        unit_label=unit_label,
         xlabelsize=xlabelsize,
         ylabelsize=ylabelsize,
         xyticksize=xyticksize,
@@ -121,11 +118,21 @@ def plot_grid(
         grid=grid,
         symmetric_around_centre=symmetric_around_centre,
     )
+
+    plotter_util.set_yxticks(
+        array=None,
+        extent=grid.extent,
+        use_scaled_units=True,
+        unit_conversion_factor=unit_conversion_factor,
+        xticks_manual=None,
+        yticks_manual=None,
+    )
+
     plot_points(grid=grid, points=points, pointcolor=pointcolor)
     plotter_util.plot_lines(line_lists=lines)
 
     plt.tick_params(labelsize=xyticksize)
-    plotter_util.output_figure(
+    output_figure(
         array=None,
         as_subplot=as_subplot,
         output_path=output_path,
@@ -133,64 +140,6 @@ def plot_grid(
         output_format=output_format,
     )
     plotter_util.close_figure(as_subplot=as_subplot)
-
-
-def convert_grid_units(grid_arcsec, units, kpc_per_arcsec):
-    """Convert the grid from its input units (arc-seconds) to the input unit (e.g. retain arc-seconds) or convert to \
-    another set of units (kiloparsecs).
-
-    Parameters
-    -----------
-    grid_arcsec : ndarray or data_type.array.aa.Grid
-        The (y,x) coordinates of the grid in arc-seconds, in an array of shape (total_coordinates, 2).
-    units : str
-        The units of the y / x axis of the plots, in arc-seconds ('arcsec') or kiloparsecs ('kpc').
-    kpc_per_arcsec : float
-        The conversion factor between arc-seconds and kiloparsecs, required to plotters the units in kpc.
-    """
-
-    if units in "arcsec" or kpc_per_arcsec is None:
-        return grid_arcsec
-    elif units in "kpc":
-        return grid_arcsec * kpc_per_arcsec
-
-
-def set_xy_labels(units, kpc_per_arcsec, xlabelsize, ylabelsize, xyticksize):
-    """Set the x and y labels of the figure, and set the fontsize of those labels.
-
-    The x and y labels are always the distance scales, thus the labels are either arc-seconds or kpc and depend on the \
-    units the figure is plotted in.
-
-    Parameters
-    -----------
-    units : str
-        The units of the y / x axis of the plots, in arc-seconds ('arcsec') or kiloparsecs ('kpc').
-    kpc_per_arcsec : float
-        The conversion factor between arc-seconds and kiloparsecs, required to plotters the units in kpc.
-    xlabelsize : int
-        The fontsize of the x axes label.
-    ylabelsize : int
-        The fontsize of the y axes label.
-    xyticksize : int
-        The font size of the x and y ticks on the figure axes.
-    """
-    if units in "arcsec" or kpc_per_arcsec is None:
-
-        plt.xlabel("x (arcsec)", fontsize=xlabelsize)
-        plt.ylabel("y (arcsec)", fontsize=ylabelsize)
-
-    elif units in "kpc":
-
-        plt.xlabel("x (kpc)", fontsize=xlabelsize)
-        plt.ylabel("y (kpc)", fontsize=ylabelsize)
-
-    else:
-        raise exc.PlottingException(
-            "The units supplied to the plotted are not a valid string (must be pixels | "
-            "arcsec | kpc)"
-        )
-
-    plt.tick_params(labelsize=xyticksize)
 
 
 def set_axis_limits(axis_limits, grid, symmetric_around_centre):
@@ -250,3 +199,37 @@ def plot_points(grid, points, pointcolor):
                     s=8,
                     color=pointcolor,
                 )
+
+
+def output_figure(array, as_subplot, output_path, output_filename, output_format):
+    """Output the figure, either as an image on the screen or to the hard-disk as a .png or .fits file.
+
+    Parameters
+    -----------
+    array : ndarray
+        The 2D array of image to be output, required for outputting the image as a fits file.
+    as_subplot : bool
+        Whether the figure is part of subplot, in which case the figure is not output so that the entire subplot can \
+        be output instead using the *output_subplot_array* function.
+    output_path : str
+        The path on the hard-disk where the figure is output.
+    output_filename : str
+        The filename of the figure that is output.
+    output_format : str
+        The format the figue is output:
+        'show' - display on computer screen.
+        'png' - output to hard-disk as a png.
+        'fits' - output to hard-disk as a fits file.'
+    """
+    if not as_subplot:
+
+        if output_format is "show":
+            plt.show()
+        elif output_format is "png":
+            plt.savefig(output_path + output_filename + ".png", bbox_inches="tight")
+        elif output_format is "fits":
+            array_util.numpy_array_1d_to_fits(
+                array_1d=array,
+                file_path=output_path + output_filename + ".fits",
+                overwrite=True,
+            )
