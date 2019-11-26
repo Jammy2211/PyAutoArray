@@ -6,7 +6,6 @@ from setuptools import find_packages, setup, Command
 
 from autoarray import __version__
 
-
 class RunTests(Command):
     """Run all tests."""
 
