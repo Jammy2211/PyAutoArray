@@ -8,3 +8,4 @@ from ..util import pixelization_util as pixelization
 from ..util import regularization_util as regularization
 from ..util import mapper_util as mapper
 from ..util import inversion_util as inversion
+from ..util import plotter_util as plotter

@@ -5,7 +5,8 @@ backend = conf.get_matplotlib_backend()
 matplotlib.use(backend)
 from matplotlib import pyplot as plt
 
-from autoarray.plotters import array_plotters, plotter_util
+from autoarray.plotters import array_plotters
+from autoarray.util import plotter_util
 
 
 def subplot(

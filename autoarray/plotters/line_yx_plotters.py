@@ -1,5 +1,5 @@
 from autoarray import exc
-from autoarray.plotters import plotter_util
+from autoarray.util import plotter_util
 
 import matplotlib.pyplot as plt
 import numpy as np

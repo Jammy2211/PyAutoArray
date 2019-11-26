@@ -11,7 +11,7 @@ import matplotlib.colors as colors
 import numpy as np
 import itertools
 
-from autoarray.plotters import plotter_util
+from autoarray.util import plotter_util
 
 
 def plot_array(
