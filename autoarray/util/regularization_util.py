@@ -3,7 +3,7 @@ from autoarray import decorator_util
 
 
 @decorator_util.jit()
-def instance_regularization_matrix_from_pixel_neighbors(
+def constant_regularization_matrix_from_pixel_neighbors(
     coefficient, pixel_neighbors, pixel_neighbors_size
 ):
     """From the pixel-neighbors, setup the regularization matrix using the instance regularization scheme.

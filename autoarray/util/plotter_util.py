@@ -242,6 +242,36 @@ def output_subplot_array(output_path, output_filename, output_format):
         raise exc.PlottingException("You cannot output a subplots with format .fits")
 
 
+def get_mask_from_fit(include_mask, fit):
+    """Get the masks of the fit if the masks should be plotted on the fit.
+
+    Parameters
+    -----------
+    fit : datas.fitting.fitting.AbstractLensHyperFit
+        The fit to the datas, which includes a lisrt of every model image, residual_map, chi-squareds, etc.
+    include_mask : bool
+        If *True*, the masks is plotted on the fit's datas.
+    """
+    if include_mask:
+        return fit.mask
+    else:
+        return None
+
+def get_real_space_mask_from_fit(include_mask, fit):
+    """Get the masks of the fit if the masks should be plotted on the fit.
+
+    Parameters
+    -----------
+    fit : datas.fitting.fitting.AbstractLensHyperFit
+        The fit to the datas, which includes a lisrt of every model image, residual_map, chi-squareds, etc.
+    include_mask : bool
+        If *True*, the masks is plotted on the fit's datas.
+    """
+    if include_mask:
+        return fit.masked_dataset.mask
+    else:
+        return None
+
 def plot_lines(line_lists):
     """Plot the liness of the mask or the array on the figure.
 

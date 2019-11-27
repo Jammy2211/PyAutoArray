@@ -165,8 +165,14 @@ def plot_array(
         )
 
     array = array.in_1d_binned
-    extent = array.extent_of_zoomed_array(buffer=0)
-    array = array.zoomed_around_mask(buffer=0)
+
+    if array.mask.is_all_false:
+        buffer = 0
+    else:
+        buffer = 1
+
+    extent = array.extent_of_zoomed_array(buffer=buffer)
+    array = array.zoomed_around_mask(buffer=buffer)
 
     if aspect is "square":
         aspect = float(array.shape_2d[1]) / float(array.shape_2d[0])
@@ -381,7 +387,7 @@ def plot_origin(array, include_origin):
     """
     if include_origin:
 
-        plt.scatter(y=array.origin[0], x=array.origin[1], s=80, c="k", marker="x")
+        plt.scatter(y=np.asarray(array.origin[0]), x=np.asarray(array.origin[1]), s=80, c="k", marker="x")
 
 
 def plot_centres(centres):

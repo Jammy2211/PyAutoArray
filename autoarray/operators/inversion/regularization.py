@@ -149,7 +149,7 @@ class Constant(Regularization):
         return self.coefficient * np.ones(mapper.pixelization_grid.pixels)
 
     def regularization_matrix_from_mapper(self, mapper):
-        return regularization_util.instance_regularization_matrix_from_pixel_neighbors(
+        return regularization_util.constant_regularization_matrix_from_pixel_neighbors(
             coefficient=self.coefficient,
             pixel_neighbors=mapper.pixelization_grid.pixel_neighbors,
             pixel_neighbors_size=mapper.pixelization_grid.pixel_neighbors_size,
