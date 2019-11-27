@@ -173,9 +173,10 @@ def rectangular_mapper(
 
     set_axis_limits(
         mapper=mapper,
-        unit_label=unit_label,
+        use_scaled_units=use_scaled_units,
         unit_conversion_factor=unit_conversion_factor,
     )
+
     plot_rectangular_pixelization_lines(
         mapper=mapper,
         use_scaled_units=use_scaled_units,
@@ -274,7 +275,7 @@ def voronoi_mapper(
 
     set_axis_limits(
         mapper=mapper,
-        unit_label=unit_label,
+        use_scaled_units=use_scaled_units,
         unit_conversion_factor=unit_conversion_factor,
     )
 
@@ -459,13 +460,13 @@ def plot_rectangular_pixelization_lines(
     elif use_scaled_units and unit_conversion_factor is not None:
 
         ys = np.linspace(
-            mapper.grid.scaled_minima[0] * unit_conversion_factor,
-            mapper.grid.scaled_maxima[0] * unit_conversion_factor,
+            mapper.pixelization_grid.scaled_minima[0] * unit_conversion_factor,
+            mapper.pixelization_grid.scaled_maxima[0] * unit_conversion_factor,
             mapper.pixelization_grid.shape_2d[0] + 1,
         )
         xs = np.linspace(
-            mapper.grid.scaled_minima[1] * unit_conversion_factor,
-            mapper.grid.scaled_maxima[1] * unit_conversion_factor,
+            mapper.pixelization_grid.scaled_minima[1] * unit_conversion_factor,
+            mapper.pixelization_grid.scaled_maxima[1] * unit_conversion_factor,
             mapper.pixelization_grid.shape_2d[1] + 1,
         )
 
@@ -476,9 +477,9 @@ def plot_rectangular_pixelization_lines(
         plt.plot([xs[0], xs[-1]], [y, y], color="black", linestyle="-")
 
 
-def set_axis_limits(mapper, unit_label, unit_conversion_factor):
+def set_axis_limits(mapper, use_scaled_units, unit_conversion_factor):
 
-    if unit_label in "scaled" or unit_conversion_factor is None:
+    if use_scaled_units and unit_conversion_factor is None:
 
         grid_plotters.set_axis_limits(
             axis_limits=mapper.pixelization_grid.extent,
@@ -486,7 +487,7 @@ def set_axis_limits(mapper, unit_label, unit_conversion_factor):
             symmetric_around_centre=False,
         )
 
-    elif unit_label in "kpc":
+    elif use_scaled_units and unit_conversion_factor is not None:
 
         axis_limits_kpc = mapper.pixelization_grid.extent * unit_conversion_factor
 

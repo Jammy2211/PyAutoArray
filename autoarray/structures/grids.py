@@ -722,7 +722,7 @@ class GridIrregular(np.ndarray):
         return (np.amin(self[:, 0]), np.amin(self[:, 1]))
 
     @property
-    def axis_limits(self):
+    def extent(self):
         return np.asarray(
             [
                 self.scaled_minima[1],
