@@ -32,7 +32,7 @@ class TestRegularizationinstance:
         reg = aa.reg.Constant(coefficient=1.0)
         regularization_matrix = reg.regularization_matrix_from_mapper(mapper=mapper)
 
-        regularization_matrix_util = aa.util.regularization.instance_regularization_matrix_from_pixel_neighbors(
+        regularization_matrix_util = aa.util.regularization.constant_regularization_matrix_from_pixel_neighbors(
             coefficient=1.0,
             pixel_neighbors=pixel_neighbors,
             pixel_neighbors_size=pixel_neighbors_size,

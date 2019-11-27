@@ -435,6 +435,10 @@ class Mask(np.ndarray):
         return int(np.size(self) - np.sum(self))
 
     @property
+    def is_all_false(self):
+        return self.pixels_in_mask == self.shape_2d[0] * self.shape_2d[1]
+
+    @property
     def sub_pixels_in_mask(self):
         return self.sub_size ** 2 * self.pixels_in_mask
 
