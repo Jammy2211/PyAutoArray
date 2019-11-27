@@ -231,7 +231,7 @@ class TestRectangular:
 
         # Assume a 2x2 sub-grid, so each of our 5 masked_image-pixels are split into 4.
         # The grid below is unphysical in that the (0.0, 0.0) terms on the end of each sub-grid probably couldn't
-        # happen for a real lensing calculation. This is to make a mapping_matrix matrix which explicitly tests the
+        # happen for a real lens calculation. This is to make a mapping_matrix matrix which explicitly tests the
         # sub-grid.
         grid = aa.masked.grid.manual_1d(
             grid=np.array(
