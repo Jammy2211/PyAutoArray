@@ -127,16 +127,19 @@ class Voronoi(Pixelization):
             relocated_grid = grid
             relocated_pixelization_grid = sparse_grid
 
-        pixelization_grid = grids.GridVoronoi(
-            grid_1d=relocated_pixelization_grid,
-            nearest_irregular_1d_index_for_mask_1d_index=sparse_grid.nearest_irregular_1d_index_for_mask_1d_index,
-        )
+        try:
+            pixelization_grid = grids.GridVoronoi(
+                grid_1d=relocated_pixelization_grid,
+                nearest_irregular_1d_index_for_mask_1d_index=sparse_grid.nearest_irregular_1d_index_for_mask_1d_index,
+            )
 
-        return mappers.MapperVoronoi(
-            grid=relocated_grid,
-            pixelization_grid=pixelization_grid,
-            hyper_image=hyper_image,
-        )
+            return mappers.MapperVoronoi(
+                grid=relocated_grid,
+                pixelization_grid=pixelization_grid,
+                hyper_image=hyper_image,
+            )
+        except ValueError as e:
+            raise e
 
 
 class VoronoiMagnification(Voronoi):
