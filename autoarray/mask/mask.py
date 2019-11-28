@@ -14,7 +14,7 @@ class Mask(np.ndarray):
 
     # noinspection PyUnusedLocal
     def __new__(
-        cls, mask_2d, pixel_scales=None, sub_size=1, origin=(0.0, 0.0), *args, **kwargs
+            cls, mask_2d, pixel_scales=None, sub_size=1, origin=(0.0, 0.0), *args, **kwargs
     ):
         """ A mask, which is applied to a 2D array of hyper_galaxies to extract a set of unmasked image pixels (i.e. mask entry \
         is *False* or 0) which are then fitted in an analysis.
@@ -41,27 +41,32 @@ class Mask(np.ndarray):
         obj.sub_fraction = 1.0 / obj.sub_length
         obj.pixel_scales = pixel_scales
         obj.origin = origin
-        obj.mapping = mapping.Mapping(mask=obj)
-        obj.geometry = geometry.Geometry(mask=obj)
-        obj.regions = regions.Regions(mask=obj)
         return obj
+
+    @property
+    def mapping(self):
+        return mapping.Mapping(mask=self)
+
+    @property
+    def geometry(self):
+        return geometry.Geometry(mask=self)
+
+    @property
+    def regions(self):
+        return regions.Regions(mask=self)
 
     def __array_finalize__(self, obj):
 
         if isinstance(obj, Mask):
-
             self.sub_size = obj.sub_size
             self.sub_length = obj.sub_length
             self.sub_fraction = obj.sub_fraction
             self.pixel_scales = obj.pixel_scales
             self.origin = obj.origin
-            self.mapping = mapping.Mapping(mask=obj)
-            self.geometry = geometry.Geometry(mask=obj)
-            self.regions = regions.Regions(mask=obj)
 
     @classmethod
     def manual(
-        cls, mask_2d, pixel_scales=None, sub_size=1, origin=(0.0, 0.0), invert=False
+            cls, mask_2d, pixel_scales=None, sub_size=1, origin=(0.0, 0.0), invert=False
     ):
 
         if type(mask_2d) is list:
@@ -82,7 +87,7 @@ class Mask(np.ndarray):
 
     @classmethod
     def unmasked(
-        cls, shape_2d, pixel_scales=None, sub_size=1, origin=(0.0, 0.0), invert=False
+            cls, shape_2d, pixel_scales=None, sub_size=1, origin=(0.0, 0.0), invert=False
     ):
         """Setup a mask where all pixels are unmasked.
 
@@ -103,14 +108,14 @@ class Mask(np.ndarray):
 
     @classmethod
     def circular(
-        cls,
-        shape_2d,
-        radius,
-        pixel_scales,
-        sub_size=1,
-        origin=(0.0, 0.0),
-        centre=(0.0, 0.0),
-        invert=False,
+            cls,
+            shape_2d,
+            radius,
+            pixel_scales,
+            sub_size=1,
+            origin=(0.0, 0.0),
+            centre=(0.0, 0.0),
+            invert=False,
     ):
         """Setup a mask where unmasked pixels are within a circle of an input arc second radius and centre.
 
@@ -147,15 +152,15 @@ class Mask(np.ndarray):
 
     @classmethod
     def circular_annular(
-        cls,
-        shape_2d,
-        inner_radius,
-        outer_radius,
-        pixel_scales,
-        sub_size=1,
-        origin=(0.0, 0.0),
-        centre=(0.0, 0.0),
-        invert=False,
+            cls,
+            shape_2d,
+            inner_radius,
+            outer_radius,
+            pixel_scales,
+            sub_size=1,
+            origin=(0.0, 0.0),
+            centre=(0.0, 0.0),
+            invert=False,
     ):
         """Setup a mask where unmasked pixels are within an annulus of input inner and outer arc second radii and \
          centre.
@@ -196,16 +201,16 @@ class Mask(np.ndarray):
 
     @classmethod
     def circular_anti_annular(
-        cls,
-        shape_2d,
-        inner_radius,
-        outer_radius,
-        outer_radius_2,
-        pixel_scales,
-        sub_size=1,
-        origin=(0.0, 0.0),
-        centre=(0.0, 0.0),
-        invert=False,
+            cls,
+            shape_2d,
+            inner_radius,
+            outer_radius,
+            outer_radius_2,
+            pixel_scales,
+            sub_size=1,
+            origin=(0.0, 0.0),
+            centre=(0.0, 0.0),
+            invert=False,
     ):
         """Setup a mask where unmasked pixels are outside an annulus of input inner and outer arc second radii, but \
         within a second outer radius, and at a given centre.
@@ -254,16 +259,16 @@ class Mask(np.ndarray):
 
     @classmethod
     def elliptical(
-        cls,
-        shape_2d,
-        major_axis_radius,
-        axis_ratio,
-        phi,
-        pixel_scales,
-        sub_size=1,
-        origin=(0.0, 0.0),
-        centre=(0.0, 0.0),
-        invert=False,
+            cls,
+            shape_2d,
+            major_axis_radius,
+            axis_ratio,
+            phi,
+            pixel_scales,
+            sub_size=1,
+            origin=(0.0, 0.0),
+            centre=(0.0, 0.0),
+            invert=False,
     ):
         """ Setup a mask where unmasked pixels are within an ellipse of an input arc second major-axis and centre.
 
@@ -307,19 +312,19 @@ class Mask(np.ndarray):
 
     @classmethod
     def elliptical_annular(
-        cls,
-        shape_2d,
-        inner_major_axis_radius,
-        inner_axis_ratio,
-        inner_phi,
-        outer_major_axis_radius,
-        outer_axis_ratio,
-        outer_phi,
-        pixel_scales,
-        sub_size=1,
-        origin=(0.0, 0.0),
-        centre=(0.0, 0.0),
-        invert=False,
+            cls,
+            shape_2d,
+            inner_major_axis_radius,
+            inner_axis_ratio,
+            inner_phi,
+            outer_major_axis_radius,
+            outer_axis_ratio,
+            outer_phi,
+            pixel_scales,
+            sub_size=1,
+            origin=(0.0, 0.0),
+            centre=(0.0, 0.0),
+            invert=False,
     ):
         """Setup a mask where unmasked pixels are within an elliptical annulus of input inner and outer arc second \
         major-axis and centre.
@@ -374,13 +379,13 @@ class Mask(np.ndarray):
 
     @classmethod
     def from_fits(
-        cls,
-        file_path,
-        pixel_scales,
-        hdu=0,
-        sub_size=1,
-        origin=(0.0, 0.0),
-        resized_mask_shape=None,
+            cls,
+            file_path,
+            pixel_scales,
+            hdu=0,
+            sub_size=1,
+            origin=(0.0, 0.0),
+            resized_mask_shape=None,
     ):
         """
         Loads the image from a .fits file.
@@ -407,7 +412,6 @@ class Mask(np.ndarray):
         )
 
         if resized_mask_shape is not None:
-
             mask = mask.mapping.resized_mask_from_new_shape(
                 new_shape=resized_mask_shape
             )
