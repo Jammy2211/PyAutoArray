@@ -23,9 +23,6 @@ class MockMask(msk.Mask):
         obj.sub_length = int(obj.sub_size ** 2.0)
         obj.sub_fraction = 1.0 / obj.sub_length
         obj.origin = origin
-        obj.mapping = mapping.Mapping(mask=obj)
-        obj.geometry = geometry.Geometry(mask=obj)
-        obj.regions = regions.Regions(mask=obj)
         return obj
 
     def __init__(
