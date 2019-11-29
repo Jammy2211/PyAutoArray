@@ -873,7 +873,10 @@ class SparseGrid(object):
             n_clusters=total_pixels, random_state=seed, n_init=n_iter, max_iter=max_iter
         )
 
-        kmeans = kmeans.fit(X=grid.in_1d_binned, sample_weight=weight_map)
+        try:
+            kmeans = kmeans.fit(X=grid.in_1d_binned, sample_weight=weight_map)
+        except ValueError:
+            raise exc.InversionException()
 
         return SparseGrid(
             sparse_grid=kmeans.cluster_centers_,
