@@ -290,9 +290,10 @@ def plot_lines(line_lists):
     """
     if line_lists is not None:
         for line_list in line_lists:
-            for line in line_list:
-                if len(line) != 0:
-                    plt.plot(line[:, 1], line[:, 0], c="w", lw=2.0, zorder=200)
+            if line_list is not None:
+                for line in line_list:
+                    if len(line) != 0:
+                        plt.plot(line[:, 1], line[:, 0], c="w", lw=2.0, zorder=200)
 
 
 def close_figure(as_subplot):
