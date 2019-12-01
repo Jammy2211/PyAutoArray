@@ -934,13 +934,12 @@ class TestImagingFromFits(object):
         imaging = aa.imaging.from_fits(
             pixel_scales=0.1,
             image_path=test_data_dir + "3x3_ones.fits",
-            psf_path=test_data_dir + "3x3_twos.fits",
             noise_map_path=test_data_dir + "3x3_threes.fits",
             renormalize_psf=False,
         )
 
         assert (imaging.image.in_2d == np.ones((3, 3))).all()
-        assert (imaging.psf.in_2d == 2.0 * np.ones((3, 3))).all()
+        assert imaging.psf == None
         assert (imaging.noise_map.in_2d == 3.0 * np.ones((3, 3))).all()
         assert imaging.background_noise_map == None
         assert imaging.poisson_noise_map == None
@@ -948,7 +947,6 @@ class TestImagingFromFits(object):
         assert imaging.background_sky_map == None
 
         assert imaging.pixel_scales == (0.1, 0.1)
-        assert imaging.psf.mask.pixel_scales == (0.1, 0.1)
         assert imaging.noise_map.mask.pixel_scales == (0.1, 0.1)
 
     def test__optional_array_paths_included__loads_optional_array(self):

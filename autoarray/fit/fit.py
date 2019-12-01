@@ -140,6 +140,12 @@ class DatasetFit(object):
         else:
             return self.evidence
 
+    @property
+    def total_inversions(self):
+        if self.inversion is None:
+            return 0
+        else:
+            return 1
 
 class ImagingFit(DatasetFit):
     def __init__(self, mask, image, noise_map, model_image, inversion=None):
