@@ -257,6 +257,7 @@ def get_mask_from_fit(include_mask, fit):
     else:
         return None
 
+
 def get_real_space_mask_from_fit(include_mask, fit):
     """Get the masks of the fit if the masks should be plotted on the fit.
 
@@ -271,6 +272,7 @@ def get_real_space_mask_from_fit(include_mask, fit):
         return fit.masked_dataset.mask
     else:
         return None
+
 
 def plot_lines(line_lists):
     """Plot the liness of the mask or the array on the figure.

@@ -147,6 +147,7 @@ class DatasetFit(object):
         else:
             return 1
 
+
 class ImagingFit(DatasetFit):
     def __init__(self, mask, image, noise_map, model_image, inversion=None):
         """Class to fit simulator where the dataset structures are any dimension.

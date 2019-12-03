@@ -57,7 +57,7 @@ class AbstractDataset(object):
     @property
     def absolute_signal_to_noise_map(self):
         """The estimated absolute_signal-to-noise_maps mappers of the image."""
-        return self.mapping.array_from_array_1d(
+        return self.mapping.array_stored_1d_from_array_1d(
             array_1d=np.divide(np.abs(self.data), self.noise_map)
         )
 
@@ -70,7 +70,7 @@ class AbstractDataset(object):
     def potential_chi_squared_map(self):
         """The potential chi-squared map of the imaging data_type. This represents how much each pixel can contribute to \
         the chi-squared map, assuming the model fails to fit it at all (e.g. model value = 0.0)."""
-        return self.mapping.array_from_array_1d(
+        return self.mapping.array_stored_1d_from_array_1d(
             array_1d=np.square(self.absolute_signal_to_noise_map)
         )
 

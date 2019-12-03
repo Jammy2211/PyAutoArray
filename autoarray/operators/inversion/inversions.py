@@ -210,7 +210,7 @@ class InversionImaging(Inversion):
             mapping_matrix=self.blurred_mapping_matrix,
             reconstruction=self.reconstruction,
         )
-        return self.mapper.grid.mapping.array_from_array_1d(
+        return self.mapper.grid.mapping.array_stored_1d_from_array_1d(
             array_1d=reconstructed_image
         )
 
@@ -370,7 +370,7 @@ class InversionInterferometer(Inversion):
             reconstruction=self.reconstruction,
         )
 
-        return self.mapper.grid.mapping.array_from_array_1d(
+        return self.mapper.grid.mapping.array_stored_1d_from_array_1d(
             array_1d=mapped_reconstructed_image
         )
 

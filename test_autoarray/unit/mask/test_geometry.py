@@ -852,7 +852,7 @@ class TestGridConversions:
             mask_2d=np.full(fill_value=False, shape=(2, 2)), pixel_scales=(2.0, 4.0)
         )
 
-        grid_arcsec_1d = mask.mapping.grid_from_grid_1d(
+        grid_arcsec_1d = mask.mapping.grid_stored_1d_from_grid_1d(
             grid_1d=np.array([[1.0, -2.0], [1.0, 2.0], [-1.0, -2.0], [-1.0, 2.0]])
         )
 
@@ -872,7 +872,7 @@ class TestGridConversions:
             mask_2d=np.full(fill_value=False, shape=(2, 2)), pixel_scales=(2.0, 2.0)
         )
 
-        grid_arcsec_1d = mask.mapping.grid_from_grid_1d(
+        grid_arcsec_1d = mask.mapping.grid_stored_1d_from_grid_1d(
             grid_1d=np.array([[0.5, -0.5], [0.5, 0.5], [-0.5, -0.5], [-0.5, 0.5]])
         )
 
@@ -890,7 +890,7 @@ class TestGridConversions:
             mask_2d=np.full(fill_value=False, shape=(2, 2)), pixel_scales=(7.0, 2.0)
         )
 
-        grid_arcsec_1d = mask.mapping.grid_from_grid_1d(
+        grid_arcsec_1d = mask.mapping.grid_stored_1d_from_grid_1d(
             grid_1d=np.array([[1.0, -2.0], [1.0, 2.0], [-1.0, -2.0], [-1.0, 2.0]])
         )
 
@@ -909,7 +909,7 @@ class TestGridConversions:
             mask_2d=np.full(fill_value=False, shape=(2, 2)), pixel_scales=(2.0, 2.0)
         )
 
-        grid_arcsec = mask.mapping.grid_from_grid_1d(
+        grid_arcsec = mask.mapping.grid_stored_1d_from_grid_1d(
             grid_1d=np.array([[1.0, -1.0], [1.0, 1.0], [-1.0, -1.0], [-1.0, 1.0]])
         )
 
@@ -927,7 +927,7 @@ class TestGridConversions:
             mask_2d=np.full(fill_value=False, shape=(2, 2)), pixel_scales=(2.0, 4.0)
         )
 
-        grid_arcsec = mask.mapping.grid_from_grid_1d(
+        grid_arcsec = mask.mapping.grid_stored_1d_from_grid_1d(
             grid_1d=np.array([[1.0, -2.0], [1.0, 2.0], [-1.0, -2.0], [-1.0, 2.0]])
         )
 
@@ -946,7 +946,7 @@ class TestGridConversions:
             mask_2d=np.full(fill_value=False, shape=(2, 2)), pixel_scales=(2.0, 2.0)
         )
 
-        grid_pixels = mask.mapping.grid_from_grid_1d(
+        grid_pixels = mask.mapping.grid_stored_1d_from_grid_1d(
             grid_1d=np.array([[0, 0], [0, 1], [1, 0], [1, 1]])
         )
 
@@ -964,7 +964,7 @@ class TestGridConversions:
             mask_2d=np.full(fill_value=False, shape=(2, 2)), pixel_scales=(2.0, 2.0)
         )
 
-        grid_pixels = mask.mapping.grid_from_grid_1d(
+        grid_pixels = mask.mapping.grid_stored_1d_from_grid_1d(
             grid_1d=np.array([[0, 0], [0, 1], [1, 0], [1, 1]])
         )
 
@@ -984,7 +984,7 @@ class TestGridConversions:
             origin=(1.0, 2.0),
         )
 
-        grid_arcsec = mask.mapping.grid_from_grid_1d(
+        grid_arcsec = mask.mapping.grid_stored_1d_from_grid_1d(
             grid_1d=np.array([[1.0, -2.0], [1.0, 2.0], [-1.0, -2.0], [-1.0, 2.0]])
         )
 
@@ -1021,7 +1021,7 @@ class TestGridConversions:
         )
         assert grid_pixels == pytest.approx(grid_pixels_util, 1e-4)
 
-        grid_pixels = mask.mapping.grid_from_grid_1d(
+        grid_pixels = mask.mapping.grid_stored_1d_from_grid_1d(
             grid_1d=np.array([[0, 0], [0, 1], [1, 0], [1, 1]])
         )
 
@@ -1038,7 +1038,7 @@ class TestGridConversions:
 
         assert (grid_arcsec == grid_arcsec_util).all()
 
-        grid_arcsec = mask.mapping.grid_from_grid_1d(
+        grid_arcsec = mask.mapping.grid_stored_1d_from_grid_1d(
             grid_1d=np.array([[1.0, -2.0], [1.0, 2.0], [-1.0, -2.0], [-1.0, 2.0]])
         )
 
@@ -1081,7 +1081,7 @@ class TestGridConversions:
         )
         assert grid_pixels == pytest.approx(grid_pixels_util, 1e-4)
 
-        grid_pixels = mask.mapping.grid_from_grid_1d(
+        grid_pixels = mask.mapping.grid_stored_1d_from_grid_1d(
             grid_1d=np.array([[0, 0], [0, 1], [1, 0], [1, 1]])
         )
 
