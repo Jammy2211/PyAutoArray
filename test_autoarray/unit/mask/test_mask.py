@@ -131,6 +131,7 @@ class TestMask:
 
         assert mask.is_all_false == False
 
+
 class TestUnmasked:
     def test__mask_all_unmasked__5x5__input__all_are_false(self):
 
@@ -190,10 +191,7 @@ class TestCircular:
     def test__mask_circular__compare_to_array_util(self):
 
         mask_via_util = aa.util.mask.mask_2d_circular_from_shape_2d_pixel_scales_and_radius(
-            shape_2d=(5, 4),
-            pixel_scales=(2.7, 2.7),
-            radius=3.5,
-            centre=(0.0, 0.0),
+            shape_2d=(5, 4), pixel_scales=(2.7, 2.7), radius=3.5, centre=(0.0, 0.0)
         )
 
         mask = aa.mask.circular(
@@ -210,10 +208,7 @@ class TestCircular:
 
     def test__mask_circular__inverted__compare_to_array_util(self):
         mask_via_util = aa.util.mask.mask_2d_circular_from_shape_2d_pixel_scales_and_radius(
-            shape_2d=(5, 4),
-            pixel_scales=(2.7, 2.7),
-            radius=3.5,
-            centre=(0.0, 0.0),
+            shape_2d=(5, 4), pixel_scales=(2.7, 2.7), radius=3.5, centre=(0.0, 0.0)
         )
 
         mask = aa.mask.circular(

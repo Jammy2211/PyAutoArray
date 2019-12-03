@@ -458,7 +458,7 @@ class TestGridMaskedAPI:
             assert grid.pixel_scales == (2.0, 2.0)
             assert grid.interpolator == None
 
-            grid_2d = mask.mapping.sub_grid_2d_from_sub_grid_1d(sub_grid_1d=grid)
+            grid_2d = mask.mapping.grid_stored_2d_from_sub_grid_1d(sub_grid_1d=grid)
 
             assert (grid.in_2d == grid_2d).all()
 
@@ -498,7 +498,7 @@ class TestGridMaskedAPI:
             assert grid.pixel_scales == (2.0, 2.0)
             assert grid.interpolator == None
 
-            grid_2d = mask.mapping.sub_grid_2d_from_sub_grid_1d(sub_grid_1d=grid)
+            grid_2d = mask.mapping.grid_stored_2d_from_sub_grid_1d(sub_grid_1d=grid)
 
             assert (grid.in_2d == grid_2d).all()
 

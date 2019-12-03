@@ -5,11 +5,7 @@ backend = conf.get_matplotlib_backend()
 matplotlib.use(backend)
 from matplotlib import pyplot as plt
 
-from autoarray.plotters import (
-    array_plotters,
-    grid_plotters,
-    line_yx_plotters,
-)
+from autoarray.plotters import array_plotters, grid_plotters, line_yx_plotters
 from autoarray.util import plotter_util
 
 

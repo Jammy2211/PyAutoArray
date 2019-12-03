@@ -177,12 +177,16 @@ def rectangular_mapper(
         symmetric_around_centre=False,
     )
 
-    plotter_util.set_yxticks(array=None, extent=mapper.pixelization_grid.extent, use_scaled_units=use_scaled_units,
-                             unit_conversion_factor=unit_conversion_factor, xticks_manual=None, yticks_manual=None)
-
-    plot_rectangular_pixelization_lines(
-        mapper=mapper,
+    plotter_util.set_yxticks(
+        array=None,
+        extent=mapper.pixelization_grid.extent,
+        use_scaled_units=use_scaled_units,
+        unit_conversion_factor=unit_conversion_factor,
+        xticks_manual=None,
+        yticks_manual=None,
     )
+
+    plot_rectangular_pixelization_lines(mapper=mapper)
 
     plotter_util.set_title(title=title, titlesize=titlesize)
     plotter_util.set_xy_labels_and_ticksize(
@@ -280,8 +284,14 @@ def voronoi_mapper(
         symmetric_around_centre=False,
     )
 
-    plotter_util.set_yxticks(array=None, extent=mapper.pixelization_grid.extent, use_scaled_units=use_scaled_units,
-                             unit_conversion_factor=unit_conversion_factor, xticks_manual=None, yticks_manual=None)
+    plotter_util.set_yxticks(
+        array=None,
+        extent=mapper.pixelization_grid.extent,
+        use_scaled_units=use_scaled_units,
+        unit_conversion_factor=unit_conversion_factor,
+        xticks_manual=None,
+        yticks_manual=None,
+    )
 
     regions_SP, vertices_SP = voronoi_finite_polygons_2d(mapper.voronoi)
 
@@ -444,9 +454,7 @@ def voronoi_finite_polygons_2d(vor, radius=None):
     return new_regions, np.asarray(new_vertices)
 
 
-def plot_rectangular_pixelization_lines(
-    mapper,
-):
+def plot_rectangular_pixelization_lines(mapper,):
 
     ys = np.linspace(
         mapper.pixelization_grid.scaled_minima[0],

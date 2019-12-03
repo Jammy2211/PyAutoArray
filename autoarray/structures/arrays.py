@@ -14,20 +14,24 @@ logger = logging.getLogger(__name__)
 class AbstractArray(abstract_structure.AbstractStructure):
 
     # noinspection PyUnusedLocal
-    def __new__(cls, array_1d, mask, *args, **kwargs):
+    def __new__(cls, array, mask, store_in_1d=True, *args, **kwargs):
         """ A hyper array with square-pixels.
 
         Parameters
         ----------
-        array_1d: ndarray
+        array: ndarray
             An array representing image (e.g. an image, noise-map, etc.)
         pixel_scales: (float, float)
             The arc-second to pixel conversion factor of each pixel.
         origin : (float, float)
             The arc-second origin of the hyper array's coordinate system.
         """
+        
+        if store_in_1d and len(array.shape) != 1:
+            raise exc.ArrayException("Fill In")
+        
         obj = super(AbstractArray, cls).__new__(
-            cls=cls, structure_1d=array_1d, mask=mask
+            cls=cls, structure=array, mask=mask, store_in_1d=store_in_1d,
         )
         return obj
 
@@ -108,7 +112,7 @@ class AbstractArray(abstract_structure.AbstractStructure):
             origin=self.origin,
         )
 
-        return mask.mapping.array_from_array_2d(array_2d=extracted_array_2d)
+        return mask.mapping.array_stored_1d_from_array_2d(array_2d=extracted_array_2d)
 
     def extent_of_zoomed_array(self, buffer=1):
 
@@ -146,7 +150,7 @@ class AbstractArray(abstract_structure.AbstractStructure):
             new_shape=new_shape
         )
 
-        return resized_mask_2d.mapping.array_from_array_2d(array_2d=resized_array_2d)
+        return resized_mask_2d.mapping.array_stored_1d_from_array_2d(array_2d=resized_array_2d)
 
     def trimmed_from_kernel_shape(self, kernel_shape_2d):
         psf_cut_y = np.int(np.ceil(kernel_shape_2d[0] / 2)) - 1
@@ -161,7 +165,7 @@ class AbstractArray(abstract_structure.AbstractStructure):
             new_shape=trimmed_array_2d.shape
         )
 
-        return resized_mask_2d.mapping.array_from_array_2d(array_2d=trimmed_array_2d)
+        return resized_mask_2d.mapping.array_stored_1d_from_array_2d(array_2d=trimmed_array_2d)
 
     def binned_from_bin_up_factor(self, bin_up_factor, method):
 
@@ -175,7 +179,7 @@ class AbstractArray(abstract_structure.AbstractStructure):
                 array_2d=self.in_2d, bin_up_factor=bin_up_factor
             )
 
-            return binned_mask.mapping.array_from_array_2d(array_2d=binned_array_2d)
+            return binned_mask.mapping.array_stored_1d_from_array_2d(array_2d=binned_array_2d)
 
         elif method is "quadrature":
 
@@ -183,7 +187,7 @@ class AbstractArray(abstract_structure.AbstractStructure):
                 array_2d=self.in_2d, bin_up_factor=bin_up_factor
             )
 
-            return binned_mask.mapping.array_from_array_2d(array_2d=binned_array_2d)
+            return binned_mask.mapping.array_stored_1d_from_array_2d(array_2d=binned_array_2d)
 
         elif method is "sum":
 
@@ -191,7 +195,7 @@ class AbstractArray(abstract_structure.AbstractStructure):
                 array_2d=self.in_2d, bin_up_factor=bin_up_factor
             )
 
-            return binned_mask.mapping.array_from_array_2d(array_2d=binned_array_2d)
+            return binned_mask.mapping.array_stored_1d_from_array_2d(array_2d=binned_array_2d)
 
         else:
 
@@ -202,15 +206,26 @@ class AbstractArray(abstract_structure.AbstractStructure):
 
     @property
     def in_2d(self):
-        return self.mask.mapping.sub_array_2d_from_sub_array_1d(sub_array_1d=self)
+        if self.store_in_1d:
+            return self.mask.mapping.array_stored_2d_from_sub_array_1d(sub_array_1d=self)
+        else:
+            return self
 
     @property
     def in_1d_binned(self):
-        return self.mask.mapping.array_binned_from_sub_array_1d(sub_array_1d=self)
+        if self.store_in_1d:
+            return self.mask.mapping.array_stored_1d_binned_from_sub_array_1d(sub_array_1d=self)
+        else:
+            sub_array_1d = self.mask.mapping.array_stored_1d_from_sub_array_2d(sub_array_2d=self)
+            return self.mask.mapping.array_stored_1d_binned_from_sub_array_1d(sub_array_1d=sub_array_1d)
 
     @property
     def in_2d_binned(self):
-        return self.mask.mapping.array_2d_binned_from_sub_array_1d(sub_array_1d=self)
+        if self.store_in_1d:
+            return self.mask.mapping.array_stored_2d_binned_from_sub_array_1d(sub_array_1d=self)
+        else:
+            sub_array_1d = self.mask.mapping.array_stored_1d_from_sub_array_2d(sub_array_2d=self)
+            return self.mask.mapping.array_stored_2d_binned_from_sub_array_1d(sub_array_1d=sub_array_1d)
 
     def output_to_fits(self, file_path, overwrite=False):
 
@@ -222,7 +237,7 @@ class AbstractArray(abstract_structure.AbstractStructure):
 class Array(AbstractArray):
     @classmethod
     def manual_1d(
-        cls, array, shape_2d, pixel_scales=None, sub_size=1, origin=(0.0, 0.0)
+        cls, array, shape_2d, pixel_scales=None, sub_size=1, origin=(0.0, 0.0), store_in_1d=True,
     ):
 
         if type(array) is list:
@@ -243,10 +258,13 @@ class Array(AbstractArray):
             origin=origin,
         )
 
-        return mask.mapping.array_from_sub_array_1d(sub_array_1d=array)
+        if store_in_1d:
+            return mask.mapping.array_stored_1d_from_sub_array_1d(sub_array_1d=array)
+        else:
+            return mask.mapping.array_stored_2d_from_sub_array_1d(sub_array_1d=array)
 
     @classmethod
-    def manual_2d(cls, array, pixel_scales=None, sub_size=1, origin=(0.0, 0.0)):
+    def manual_2d(cls, array, pixel_scales=None, sub_size=1, origin=(0.0, 0.0), store_in_1d=True):
 
         if type(array) is list:
             array = np.asarray(array)
@@ -263,11 +281,14 @@ class Array(AbstractArray):
             origin=origin,
         )
 
-        return mask.mapping.array_from_sub_array_2d(sub_array_2d=array)
+        if store_in_1d:
+            return mask.mapping.array_stored_1d_from_sub_array_2d(sub_array_2d=array)
+        else:
+            return mask.mapping.array_stored_2d_from_sub_array_2d(sub_array_2d=array)
 
     @classmethod
     def full(
-        cls, fill_value, shape_2d, pixel_scales=None, sub_size=1, origin=(0.0, 0.0)
+        cls, fill_value, shape_2d, pixel_scales=None, sub_size=1, origin=(0.0, 0.0), store_in_1d=True,
     ):
 
         if sub_size is not None:
@@ -278,37 +299,36 @@ class Array(AbstractArray):
             pixel_scales=pixel_scales,
             sub_size=sub_size,
             origin=origin,
+            store_in_1d=store_in_1d,
         )
 
     @classmethod
-    def ones(cls, shape_2d, pixel_scales=None, sub_size=1, origin=(0.0, 0.0)):
+    def ones(cls, shape_2d, pixel_scales=None, sub_size=1, origin=(0.0, 0.0), store_in_1d=True):
         return cls.full(
             fill_value=1.0,
             shape_2d=shape_2d,
             pixel_scales=pixel_scales,
             sub_size=sub_size,
             origin=origin,
+            store_in_1d=store_in_1d,
         )
 
     @classmethod
-    def zeros(cls, shape_2d, pixel_scales=None, sub_size=1, origin=(0.0, 0.0)):
+    def zeros(cls, shape_2d, pixel_scales=None, sub_size=1, origin=(0.0, 0.0), store_in_1d=True):
         return cls.full(
             fill_value=0.0,
             shape_2d=shape_2d,
             pixel_scales=pixel_scales,
             sub_size=sub_size,
             origin=origin,
+            store_in_1d=store_in_1d,
         )
 
     @classmethod
     def from_fits(
-        cls, file_path, hdu=0, pixel_scales=None, sub_size=1, origin=(0.0, 0.0)
+        cls, file_path, hdu=0, pixel_scales=None, sub_size=1, origin=(0.0, 0.0), store_in_1d=True
     ):
         array_2d = array_util.numpy_array_2d_from_fits(file_path=file_path, hdu=hdu)
         return cls.manual_2d(
-            array=array_2d, pixel_scales=pixel_scales, sub_size=sub_size, origin=origin
+            array=array_2d, pixel_scales=pixel_scales, sub_size=sub_size, origin=origin, store_in_1d=store_in_1d,
         )
-
-    @classmethod
-    def from_sub_array_2d_and_mask(cls, sub_array_2d, mask):
-        return mask.mapping.array_from_sub_array_2d(sub_array_2d=sub_array_2d)

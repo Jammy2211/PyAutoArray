@@ -11,12 +11,12 @@ from autoarray import exc
 class Kernel(arrays.AbstractArray):
 
     # noinspection PyUnusedLocal
-    def __new__(cls, array_1d, mask, renormalize=False, *args, **kwargs):
+    def __new__(cls, array, mask, renormalize=False, *args, **kwargs):
         """ A hyper array with square-pixels.
 
         Parameters
         ----------
-        array_1d: ndarray
+        array: ndarray
             An array representing image (e.g. an image, noise-map, etc.)
         pixel_scales: (float, float)
             The arc-second to pixel conversion factor of each pixel.
@@ -26,7 +26,7 @@ class Kernel(arrays.AbstractArray):
 
         #        obj = arrays.Scaled(array_1d=sub_array_1d, mask=mask)
 
-        obj = super(Kernel, cls).__new__(cls=cls, array_1d=array_1d, mask=mask)
+        obj = super(Kernel, cls).__new__(cls=cls, array=array, mask=mask)
 
         if renormalize:
             obj[:] = np.divide(obj, np.sum(obj))
@@ -42,7 +42,7 @@ class Kernel(arrays.AbstractArray):
             array=array, shape_2d=shape_2d, pixel_scales=pixel_scales, origin=origin
         )
 
-        return Kernel(array_1d=array, mask=array.mask, renormalize=renormalize)
+        return Kernel(array=array, mask=array.mask, renormalize=renormalize)
 
     @classmethod
     def manual_2d(cls, array, pixel_scales=None, origin=(0.0, 0.0), renormalize=False):
@@ -51,7 +51,7 @@ class Kernel(arrays.AbstractArray):
             array=array, pixel_scales=pixel_scales, origin=origin
         )
 
-        return Kernel(array_1d=array, mask=array.mask, renormalize=renormalize)
+        return Kernel(array=array, mask=array.mask, renormalize=renormalize)
 
     @classmethod
     def full(
@@ -167,7 +167,7 @@ class Kernel(arrays.AbstractArray):
             file_path=file_path, hdu=hdu, pixel_scales=pixel_scales, origin=origin
         )
 
-        return Kernel(array_1d=array[:], mask=array.mask, renormalize=renormalize)
+        return Kernel(array=array[:], mask=array.mask, renormalize=renormalize)
 
     def rescaled_with_odd_dimensions_from_rescale_factor(
         self, rescale_factor, renormalize=False
@@ -228,12 +228,12 @@ class Kernel(arrays.AbstractArray):
 
     @property
     def in_2d(self):
-        return self.mask.mapping.sub_array_2d_from_sub_array_1d(sub_array_1d=self)
+        return self.mask.mapping.array_stored_2d_from_sub_array_1d(sub_array_1d=self)
 
     @property
     def renormalized(self):
         """Renormalize the Kernel such that its data_vector values sum to unity."""
-        return Kernel(array_1d=self, mask=self.mask, renormalize=False)
+        return Kernel(array=self, mask=self.mask, renormalize=False)
 
     def convolved_array_from_array(self, array):
         """
@@ -256,7 +256,7 @@ class Kernel(arrays.AbstractArray):
         if self.mask.shape[0] % 2 == 0 or self.mask.shape[1] % 2 == 0:
             raise exc.KernelException("Kernel Kernel must be odd")
 
-        return array.mapping.array_from_array_2d(
+        return array.mapping.array_stored_1d_from_array_2d(
             array_2d=scipy.signal.convolve2d(
                 array.in_2d_binned, self.in_2d, mode="same"
             )
@@ -286,6 +286,6 @@ class Kernel(arrays.AbstractArray):
 
         mask_sub_1 = mask.mapping.mask_sub_1
 
-        return mask_sub_1.mapping.array_from_array_2d(
+        return mask_sub_1.mapping.array_stored_1d_from_array_2d(
             scipy.signal.convolve2d(array_2d, self.in_2d, mode="same")
         )
