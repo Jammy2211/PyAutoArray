@@ -108,7 +108,7 @@ class Geometry(object):
             origin=self.mask.origin,
         )
 
-        return self.mask.regions.unmasked_mask.mapping.grid_from_grid_1d(
+        return self.mask.regions.unmasked_mask.mapping.grid_stored_1d_from_grid_1d(
             grid_1d=grid_1d
         )
 
@@ -121,7 +121,7 @@ class Geometry(object):
             sub_size=1,
             origin=self.mask.origin,
         )
-        return self.mask.mapping.grid_from_grid_1d(grid_1d=grid_1d)
+        return self.mask.mapping.grid_stored_1d_from_grid_1d(grid_1d=grid_1d)
 
     @property
     def edge_grid(self):
@@ -130,7 +130,7 @@ class Geometry(object):
         an annulus mask).
         """
         edge_grid_1d = self.masked_grid[self.regions._edge_1d_indexes]
-        return self.regions.edge_mask.mapping.grid_from_grid_1d(grid_1d=edge_grid_1d)
+        return self.regions.edge_mask.mapping.grid_stored_1d_from_grid_1d(grid_1d=edge_grid_1d)
 
     @property
     def border_grid(self):
@@ -139,7 +139,7 @@ class Geometry(object):
         an annulus mask).
         """
         border_grid_1d = self.masked_grid[self.regions._border_1d_indexes]
-        return self.regions.border_mask.mapping.grid_from_grid_1d(
+        return self.regions.border_mask.mapping.grid_stored_1d_from_grid_1d(
             grid_1d=border_grid_1d
         )
 
@@ -164,7 +164,7 @@ class Geometry(object):
             pixel_scales=self.mask.pixel_scales,
             origin=self.mask.origin,
         )
-        return self.mask.mapping.grid_from_grid_1d(grid_1d=grid_pixels_1d)
+        return self.mask.mapping.grid_stored_1d_from_grid_1d(grid_1d=grid_pixels_1d)
 
     def grid_pixel_centres_from_grid_scaled_1d(self, grid_scaled_1d):
         """Convert a grid of (y,x) arc second coordinates to a grid of (y,x) pixel values. Pixel coordinates are \
@@ -189,7 +189,7 @@ class Geometry(object):
         ).astype(
             "int"
         )
-        return self.mask.mapping.grid_from_grid_1d(grid_1d=grid_pixel_centres_1d)
+        return self.mask.mapping.grid_stored_1d_from_grid_1d(grid_1d=grid_pixel_centres_1d)
 
     def grid_pixel_indexes_from_grid_scaled_1d(self, grid_scaled_1d):
         """Convert a grid of (y,x) arc second coordinates to a grid of (y,x) pixel 1D indexes. Pixel coordinates are \
@@ -218,7 +218,7 @@ class Geometry(object):
         ).astype(
             "int"
         )
-        return self.mask.mapping.grid_from_grid_1d(grid_1d=grid_pixel_indexes_1d)
+        return self.mask.mapping.grid_stored_1d_from_grid_1d(grid_1d=grid_pixel_indexes_1d)
 
     def grid_scaled_from_grid_pixels_1d(self, grid_pixels_1d):
         """Convert a grid of (y,x) pixel coordinates to a grid of (y,x) arc second values.
@@ -240,7 +240,7 @@ class Geometry(object):
             pixel_scales=self.mask.pixel_scales,
             origin=self.mask.origin,
         )
-        return self.mask.mapping.grid_from_grid_1d(grid_1d=grid_scaled_1d)
+        return self.mask.mapping.grid_stored_1d_from_grid_1d(grid_1d=grid_scaled_1d)
 
     @property
     def sub_size(self):
@@ -263,7 +263,7 @@ class Geometry(object):
         grid_scaled_1d[:, 0] -= self.mask.pixel_scales[0] / (2.0 * self.mask.sub_size)
         grid_scaled_1d[:, 1] += self.mask.pixel_scales[1] / (2.0 * self.mask.sub_size)
 
-        return self.mask.mapping.grid_from_grid_1d(grid_1d=grid_scaled_1d)
+        return self.mask.mapping.grid_stored_1d_from_grid_1d(grid_1d=grid_scaled_1d)
 
     @property
     def masked_sub_grid(self):
@@ -273,7 +273,7 @@ class Geometry(object):
             sub_size=self.mask.sub_size,
             origin=self.mask.origin,
         )
-        return self.mask.mapping.grid_from_sub_grid_1d(sub_grid_1d=sub_grid_1d)
+        return self.mask.mapping.grid_stored_1d_from_sub_grid_1d(sub_grid_1d=sub_grid_1d)
 
     @property
     def sub_border_grid_1d(self):

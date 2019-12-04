@@ -131,7 +131,7 @@ class AbstractGrid(abstract_structure.AbstractStructure):
                  grid[8] = [0.25, -0.25]
 
         """
-        obj = super(AbstractGrid, cls).__new__(cls=cls, structure_1d=grid_1d, mask=mask)
+        obj = super(AbstractGrid, cls).__new__(cls=cls, structure=grid_1d, mask=mask)
         obj.interpolator = None
         obj.binned = None
         return obj
@@ -171,15 +171,15 @@ class AbstractGrid(abstract_structure.AbstractStructure):
 
     @property
     def in_2d(self):
-        return self.mask.mapping.sub_grid_2d_from_sub_grid_1d(sub_grid_1d=self)
+        return self.mask.mapping.grid_stored_2d_from_sub_grid_1d(sub_grid_1d=self)
 
     @property
     def in_1d_binned(self):
-        return self.mask.mapping.grid_binned_from_sub_grid_1d(sub_grid_1d=self)
+        return self.mask.mapping.grid_binned_stored_1d_from_sub_grid_1d(sub_grid_1d=self)
 
     @property
     def in_2d_binned(self):
-        return self.mask.mapping.grid_2d_binned_from_sub_grid_1d(sub_grid_1d=self)
+        return self.mask.mapping.grid_binned_stored_2d_from_sub_grid_1d(sub_grid_1d=self)
 
     def blurring_grid_from_kernel_shape(self, kernel_shape_2d):
 
@@ -194,7 +194,7 @@ class AbstractGrid(abstract_structure.AbstractStructure):
             origin=blurring_mask.origin,
         )
 
-        return blurring_mask.mapping.grid_from_grid_1d(grid_1d=blurring_grid_1d)
+        return blurring_mask.mapping.grid_stored_1d_from_grid_1d(grid_1d=blurring_grid_1d)
 
     def new_grid_with_binned_grid(self, binned_grid):
         # noinspection PyAttributeOutsideInit
@@ -345,7 +345,7 @@ class AbstractGrid(abstract_structure.AbstractStructure):
             origin=padded_mask.origin,
         )
 
-        padded_sub_grid = padded_mask.mapping.grid_from_sub_grid_1d(
+        padded_sub_grid = padded_mask.mapping.grid_stored_1d_from_sub_grid_1d(
             sub_grid_1d=padded_grid_1d
         )
 
@@ -415,7 +415,7 @@ class Grid(AbstractGrid):
             origin=origin,
         )
 
-        return mask.mapping.grid_from_sub_grid_1d(sub_grid_1d=sub_grid_1d)
+        return mask.mapping.grid_stored_1d_from_sub_grid_1d(sub_grid_1d=sub_grid_1d)
 
     @classmethod
     def from_sub_grid_2d_pixel_scales_and_sub_size(
@@ -431,7 +431,7 @@ class Grid(AbstractGrid):
             shape_2d=shape, pixel_scales=pixel_scales, sub_size=sub_size, origin=origin
         )
 
-        return mask.mapping.grid_from_sub_grid_2d(sub_grid_2d=sub_grid_2d)
+        return mask.mapping.grid_stored_1d_from_sub_grid_2d(sub_grid_2d=sub_grid_2d)
 
     @classmethod
     def manual_1d(cls, grid, shape_2d, pixel_scales, sub_size=1, origin=(0.0, 0.0)):
@@ -545,7 +545,7 @@ class Grid(AbstractGrid):
             origin=mask.origin,
         )
 
-        return mask.mapping.grid_from_sub_grid_1d(sub_grid_1d=sub_grid_1d)
+        return mask.mapping.grid_stored_1d_from_sub_grid_1d(sub_grid_1d=sub_grid_1d)
 
     @classmethod
     def blurring_grid_from_mask_and_kernel_shape(cls, mask, kernel_shape_2d):
@@ -618,7 +618,7 @@ class Grid(AbstractGrid):
             origin=blurring_mask.origin,
         )
 
-        return blurring_mask.mapping.grid_from_grid_1d(grid_1d=blurring_grid_1d)
+        return blurring_mask.mapping.grid_stored_1d_from_grid_1d(grid_1d=blurring_grid_1d)
 
 
 class GridIrregular(np.ndarray):
@@ -698,10 +698,10 @@ class GridIrregular(np.ndarray):
             def __init__(self):
                 pass
 
-            def array_from_sub_array_1d(self, sub_array_1d):
+            def array_stored_1d_from_sub_array_1d(self, sub_array_1d):
                 return sub_array_1d
 
-            def grid_from_sub_grid_1d(self, sub_grid_1d):
+            def grid_stored_1d_from_sub_grid_1d(self, sub_grid_1d):
                 return GridIrregular(grid=sub_grid_1d)
 
         return IrregularMapping()
@@ -873,7 +873,10 @@ class SparseGrid(object):
             n_clusters=total_pixels, random_state=seed, n_init=n_iter, max_iter=max_iter
         )
 
-        kmeans = kmeans.fit(X=grid.in_1d_binned, sample_weight=weight_map)
+        try:
+            kmeans = kmeans.fit(X=grid.in_1d_binned, sample_weight=weight_map)
+        except ValueError:
+            raise exc.InversionException()
 
         return SparseGrid(
             sparse_grid=kmeans.cluster_centers_,
@@ -1028,7 +1031,7 @@ class GridVoronoi(GridIrregular):
                 np.asarray([grid_1d[:, 1], grid_1d[:, 0]]).T,
                 qhull_options="Qbb Qc Qx Qm",
             )
-        except OverflowError or scipy.spatial.qhull.QhullError:
+        except ValueError or OverflowError or scipy.spatial.qhull.QhullError:
             raise exc.PixelizationException()
 
         pixel_neighbors, pixel_neighbors_size = pixelization_util.voronoi_neighbors_from_pixels_and_ridge_points(
@@ -1089,7 +1092,7 @@ class Interpolator(object):
 
         return Interpolator(
             grid=grid,
-            interp_grid=interp_mask.mapping.grid_from_grid_1d(grid_1d=interp_grid),
+            interp_grid=interp_mask.mapping.grid_stored_1d_from_grid_1d(grid_1d=interp_grid),
             pixel_scale_interpolation_grid=pixel_scale_interpolation_grid,
         )
 

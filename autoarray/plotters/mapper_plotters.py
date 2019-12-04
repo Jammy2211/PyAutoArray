@@ -171,17 +171,22 @@ def rectangular_mapper(
 
     plotter_util.setup_figure(figsize=figsize, as_subplot=as_subplot)
 
-    set_axis_limits(
-        mapper=mapper,
-        use_scaled_units=use_scaled_units,
-        unit_conversion_factor=unit_conversion_factor,
+    grid_plotters.set_axis_limits(
+        axis_limits=mapper.pixelization_grid.extent,
+        grid=None,
+        symmetric_around_centre=False,
     )
 
-    plot_rectangular_pixelization_lines(
-        mapper=mapper,
+    plotter_util.set_yxticks(
+        array=None,
+        extent=mapper.pixelization_grid.extent,
         use_scaled_units=use_scaled_units,
         unit_conversion_factor=unit_conversion_factor,
+        xticks_manual=None,
+        yticks_manual=None,
     )
+
+    plot_rectangular_pixelization_lines(mapper=mapper)
 
     plotter_util.set_title(title=title, titlesize=titlesize)
     plotter_util.set_xy_labels_and_ticksize(
@@ -273,10 +278,19 @@ def voronoi_mapper(
 
     plotter_util.setup_figure(figsize=figsize, as_subplot=as_subplot)
 
-    set_axis_limits(
-        mapper=mapper,
+    grid_plotters.set_axis_limits(
+        axis_limits=mapper.pixelization_grid.extent,
+        grid=None,
+        symmetric_around_centre=False,
+    )
+
+    plotter_util.set_yxticks(
+        array=None,
+        extent=mapper.pixelization_grid.extent,
         use_scaled_units=use_scaled_units,
         unit_conversion_factor=unit_conversion_factor,
+        xticks_manual=None,
+        yticks_manual=None,
     )
 
     regions_SP, vertices_SP = voronoi_finite_polygons_2d(mapper.voronoi)
@@ -440,60 +454,24 @@ def voronoi_finite_polygons_2d(vor, radius=None):
     return new_regions, np.asarray(new_vertices)
 
 
-def plot_rectangular_pixelization_lines(
-    mapper, use_scaled_units, unit_conversion_factor
-):
+def plot_rectangular_pixelization_lines(mapper,):
 
-    if use_scaled_units and unit_conversion_factor is None:
-
-        ys = np.linspace(
-            mapper.pixelization_grid.scaled_minima[0],
-            mapper.pixelization_grid.scaled_maxima[0],
-            mapper.pixelization_grid.shape_2d[0] + 1,
-        )
-        xs = np.linspace(
-            mapper.pixelization_grid.scaled_minima[1],
-            mapper.pixelization_grid.scaled_maxima[1],
-            mapper.pixelization_grid.shape_2d[1] + 1,
-        )
-
-    elif use_scaled_units and unit_conversion_factor is not None:
-
-        ys = np.linspace(
-            mapper.pixelization_grid.scaled_minima[0] * unit_conversion_factor,
-            mapper.pixelization_grid.scaled_maxima[0] * unit_conversion_factor,
-            mapper.pixelization_grid.shape_2d[0] + 1,
-        )
-        xs = np.linspace(
-            mapper.pixelization_grid.scaled_minima[1] * unit_conversion_factor,
-            mapper.pixelization_grid.scaled_maxima[1] * unit_conversion_factor,
-            mapper.pixelization_grid.shape_2d[1] + 1,
-        )
+    ys = np.linspace(
+        mapper.pixelization_grid.scaled_minima[0],
+        mapper.pixelization_grid.scaled_maxima[0],
+        mapper.pixelization_grid.shape_2d[0] + 1,
+    )
+    xs = np.linspace(
+        mapper.pixelization_grid.scaled_minima[1],
+        mapper.pixelization_grid.scaled_maxima[1],
+        mapper.pixelization_grid.shape_2d[1] + 1,
+    )
 
     # grid lines
     for x in xs:
         plt.plot([x, x], [ys[0], ys[-1]], color="black", linestyle="-")
     for y in ys:
         plt.plot([xs[0], xs[-1]], [y, y], color="black", linestyle="-")
-
-
-def set_axis_limits(mapper, use_scaled_units, unit_conversion_factor):
-
-    if use_scaled_units and unit_conversion_factor is None:
-
-        grid_plotters.set_axis_limits(
-            axis_limits=mapper.pixelization_grid.extent,
-            grid=None,
-            symmetric_around_centre=False,
-        )
-
-    elif use_scaled_units and unit_conversion_factor is not None:
-
-        axis_limits_kpc = mapper.pixelization_grid.extent * unit_conversion_factor
-
-        grid_plotters.set_axis_limits(
-            axis_limits=axis_limits_kpc, grid=None, symmetric_around_centre=False
-        )
 
 
 def set_colorbar(

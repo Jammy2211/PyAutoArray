@@ -615,12 +615,18 @@ class Imaging(AbstractImagingDataSet):
             convert_from_adus=convert_from_adus,
         )
 
-        psf = kernel.Kernel.from_fits(
-            file_path=psf_path,
-            hdu=psf_hdu,
-            pixel_scales=pixel_scales,
-            renormalize=renormalize_psf,
-        )
+        if psf_path is not None:
+
+            psf = kernel.Kernel.from_fits(
+                file_path=psf_path,
+                hdu=psf_hdu,
+                pixel_scales=pixel_scales,
+                renormalize=renormalize_psf,
+            )
+
+        else:
+
+            psf = None
 
         background_sky_map = load_background_sky_map(
             background_sky_map_path=background_sky_map_path,
@@ -644,7 +650,7 @@ class Imaging(AbstractImagingDataSet):
         if resized_imaging_shape is not None:
             imaging = imaging.resized_from_new_shape(new_shape=resized_imaging_shape)
 
-        if resized_psf_shape is not None:
+        if resized_psf_shape is not None and imaging.psf is not None:
             imaging = imaging.resized_psf_from_new_shape(new_shape=resized_psf_shape)
 
         if convert_from_electrons:
