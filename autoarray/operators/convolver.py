@@ -325,7 +325,7 @@ class Convolver(object):
             blurring_frame_1d_lengths=self.blurring_frame_1d_lengths,
         )
 
-        return self.mask.mapping.array_from_array_1d(array_1d=convolved_image)
+        return self.mask.mapping.array_stored_1d_from_array_1d(array_1d=convolved_image)
 
     @staticmethod
     @decorator_util.jit()

@@ -331,10 +331,7 @@ class TestMaskCircular(object):
         ).all()
 
         mask = aa.util.mask.mask_2d_circular_from_shape_2d_pixel_scales_and_radius(
-            shape_2d=(3, 3),
-            pixel_scales=(3.0, 3.0),
-            radius=0.5,
-            centre=(0.0, 3.0),
+            shape_2d=(3, 3), pixel_scales=(3.0, 3.0), radius=0.5, centre=(0.0, 3.0)
         )
 
         assert mask.shape == (3, 3)
@@ -356,10 +353,7 @@ class TestMaskCircular(object):
 class TestMaskAnnular(object):
     def test__mask_inner_radius_zero_outer_radius_small_medium_and_large__mask(self):
         mask = aa.util.mask.mask_2d_circular_annular_from_shape_2d_pixel_scales_and_radii(
-            shape_2d=(3, 3),
-            pixel_scales=(1.0, 1.0),
-            inner_radius=0.0,
-            outer_radius=0.5,
+            shape_2d=(3, 3), pixel_scales=(1.0, 1.0), inner_radius=0.0, outer_radius=0.5
         )
 
         assert (
@@ -387,10 +381,7 @@ class TestMaskAnnular(object):
         ).all()
 
         mask = aa.util.mask.mask_2d_circular_annular_from_shape_2d_pixel_scales_and_radii(
-            shape_2d=(3, 3),
-            pixel_scales=(1.0, 1.0),
-            inner_radius=0.5,
-            outer_radius=3.0,
+            shape_2d=(3, 3), pixel_scales=(1.0, 1.0), inner_radius=0.5, outer_radius=3.0
         )
 
         assert (
@@ -401,10 +392,7 @@ class TestMaskAnnular(object):
         ).all()
 
         mask = aa.util.mask.mask_2d_circular_annular_from_shape_2d_pixel_scales_and_radii(
-            shape_2d=(4, 4),
-            pixel_scales=(0.5, 1.0),
-            inner_radius=1.1,
-            outer_radius=2.0,
+            shape_2d=(4, 4), pixel_scales=(0.5, 1.0), inner_radius=1.1, outer_radius=2.0
         )
 
         assert (

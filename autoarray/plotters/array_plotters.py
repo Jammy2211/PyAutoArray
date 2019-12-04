@@ -387,7 +387,13 @@ def plot_origin(array, include_origin):
     """
     if include_origin:
 
-        plt.scatter(y=np.asarray(array.origin[0]), x=np.asarray(array.origin[1]), s=80, c="k", marker="x")
+        plt.scatter(
+            y=np.asarray(array.origin[0]),
+            x=np.asarray(array.origin[1]),
+            s=80,
+            c="k",
+            marker="x",
+        )
 
 
 def plot_centres(centres):
