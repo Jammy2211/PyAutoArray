@@ -177,45 +177,6 @@ class Mapping(object):
         )
         return arrays.Array(array=binned_array_2d, mask=self.mask_sub_1, store_in_1d=False)
 
-    def grid_stored_2d_from_sub_grid_1d(self, sub_grid_1d):
-        """ Map a 1D sub-grid the same dimension as the sub-grid (e.g. including sub-pixels) to its original masked
-        2D sub grid.
-
-        Parameters
-        -----------
-        sub_grid_1d : ndgrid
-            The 1D sub_grid which is mapped to its masked 2D sub-grid.
-        """
-        return grid_util.sub_grid_2d_from_sub_grid_1d(
-            sub_grid_1d=sub_grid_1d, mask_2d=self.mask, sub_size=self.mask.sub_size
-        )
-
-    def grid_binned_stored_2d_from_sub_grid_1d(self, sub_grid_1d):
-        """ Map a 1D sub-grid the same dimension as the sub-grid to its original masked 2D sub-grid and return it as
-        a hyper grid.
-
-        Parameters
-        -----------
-        sub_grid_1d : ndgrid
-            The 1D sub-grid of which is mapped to a 2D hyper sub-grid the dimensions.
-        """
-
-        grid_1d_y = np.multiply(
-            self.mask.sub_fraction,
-            sub_grid_1d[:, 0].reshape(-1, self.mask.sub_length).sum(axis=1),
-        )
-
-        grid_1d_x = np.multiply(
-            self.mask.sub_fraction,
-            sub_grid_1d[:, 1].reshape(-1, self.mask.sub_length).sum(axis=1),
-        )
-
-        binned_grid_1d = np.stack((grid_1d_y, grid_1d_x), axis=-1)
-
-        return grid_util.sub_grid_2d_from_sub_grid_1d(
-            sub_grid_1d=binned_grid_1d, mask_2d=self.mask, sub_size=1
-        )
-
     def grid_stored_1d_from_grid_1d(self, grid_1d):
         """ Map a 1D grid the same dimension as the grid to its original 2D grid.
 
@@ -226,7 +187,7 @@ class Mapping(object):
         grid_1d : ndgrid
             The 1D grid which is mapped to its masked 2D grid.
         """
-        return grids.Grid(grid_1d=grid_1d, mask=self.mask_sub_1)
+        return grids.Grid(grid_1d=grid_1d, mask=self.mask_sub_1, store_in_1d=True)
 
     def grid_stored_1d_from_grid_2d(self, grid_2d):
         """For a 2D grid (e.g. an image, noise_map, etc.) map it to a masked 1D grid of valuees using this mask.
@@ -240,19 +201,6 @@ class Mapping(object):
             mask_2d=self.mask, sub_grid_2d=grid_2d, sub_size=1
         )
         return self.grid_stored_1d_from_grid_1d(grid_1d=grid_1d)
-
-    def grid_stored_2d_from_grid_1d(self, grid_1d):
-        """ Map a 1D sub-grid the same dimension as the sub-grid (e.g. including sub-pixels) to its original masked
-        2D sub grid.
-
-        Parameters
-        -----------
-        sub_grid_1d : ndgrid
-            The 1D sub_grid which is mapped to its masked 2D sub-grid.
-        """
-        return grid_util.sub_grid_2d_from_sub_grid_1d(
-            sub_grid_1d=grid_1d, mask_2d=self.mask, sub_size=1
-        )
 
     def grid_stored_1d_from_sub_grid_1d(self, sub_grid_1d):
         """ Map a 1D sub-grid the same dimension as the sub-grid (e.g. including sub-pixels) to its original masked
@@ -280,7 +228,7 @@ class Mapping(object):
         )
         return self.grid_stored_1d_from_sub_grid_1d(sub_grid_1d=sub_grid_1d)
 
-    def grid_binned_stored_1d_from_sub_grid_1d(self, sub_grid_1d):
+    def grid_stored_1d_binned_from_sub_grid_1d(self, sub_grid_1d):
         """For an input 1D sub-grid, map its values to a 1D grid of values by summing each set \of sub-pixel \
         values and dividing by the total number of sub-pixels.
 
@@ -297,6 +245,58 @@ class Mapping(object):
 
         return grids.Grid(
             grid_1d=np.stack((grid_1d_y, grid_1d_x), axis=-1), mask=self.mask_sub_1
+        )
+
+    def grid_stored_2d_from_grid_1d(self, grid_1d):
+        """ Map a 1D sub-grid the same dimension as the sub-grid (e.g. including sub-pixels) to its original masked
+        2D sub grid.
+
+        Parameters
+        -----------
+        sub_grid_1d : ndgrid
+            The 1D sub_grid which is mapped to its masked 2D sub-grid.
+        """
+        return grid_util.sub_grid_2d_from_sub_grid_1d(
+            sub_grid_1d=grid_1d, mask_2d=self.mask, sub_size=1
+        )
+
+    def grid_stored_2d_from_sub_grid_1d(self, sub_grid_1d):
+        """ Map a 1D sub-grid the same dimension as the sub-grid (e.g. including sub-pixels) to its original masked
+        2D sub grid.
+
+        Parameters
+        -----------
+        sub_grid_1d : ndgrid
+            The 1D sub_grid which is mapped to its masked 2D sub-grid.
+        """
+        return grid_util.sub_grid_2d_from_sub_grid_1d(
+            sub_grid_1d=sub_grid_1d, mask_2d=self.mask, sub_size=self.mask.sub_size
+        )
+
+    def grid_stored_2d_binned_from_sub_grid_1d(self, sub_grid_1d):
+        """ Map a 1D sub-grid the same dimension as the sub-grid to its original masked 2D sub-grid and return it as
+        a hyper grid.
+
+        Parameters
+        -----------
+        sub_grid_1d : ndgrid
+            The 1D sub-grid of which is mapped to a 2D hyper sub-grid the dimensions.
+        """
+
+        grid_1d_y = np.multiply(
+            self.mask.sub_fraction,
+            sub_grid_1d[:, 0].reshape(-1, self.mask.sub_length).sum(axis=1),
+        )
+
+        grid_1d_x = np.multiply(
+            self.mask.sub_fraction,
+            sub_grid_1d[:, 1].reshape(-1, self.mask.sub_length).sum(axis=1),
+        )
+
+        binned_grid_1d = np.stack((grid_1d_y, grid_1d_x), axis=-1)
+
+        return grid_util.sub_grid_2d_from_sub_grid_1d(
+            sub_grid_1d=binned_grid_1d, mask_2d=self.mask, sub_size=1
         )
 
     def trimmed_array_from_padded_array_and_image_shape(
