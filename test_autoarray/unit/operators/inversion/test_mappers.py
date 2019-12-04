@@ -54,7 +54,7 @@ class TestRectangularMapper:
             )
 
             pixelization_grid = aa.grid_rectangular(
-                grid_1d=np.ones((2, 2)), shape_2d=(3, 3), pixel_scales=(1.0, 1.0)
+                grid=np.ones((2, 2)), shape_2d=(3, 3), pixel_scales=(1.0, 1.0)
             )
 
             mapper = aa.mapper(grid=grid, pixelization_grid=pixelization_grid)
