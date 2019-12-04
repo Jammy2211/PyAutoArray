@@ -1,5 +1,6 @@
 import numpy as np
 
+
 class AbstractStructure(np.ndarray):
     def __new__(cls, structure, mask, store_in_1d=True, *args, **kwargs):
         """A grid of coordinates, where each entry corresponds to the (y,x) coordinates at the centre of an \
@@ -142,13 +143,6 @@ class AbstractStructure(np.ndarray):
     @property
     def sub_shape_2d(self):
         return self.mask.sub_shape_2d
-
-    @property
-    def in_1d(self):
-        if self.store_in_1d:
-            return self
-        else:
-            return self.mask.mapping.array_stored_1d_from_sub_array_2d(sub_array_2d=self)
 
     @property
     def pixel_scales(self):
