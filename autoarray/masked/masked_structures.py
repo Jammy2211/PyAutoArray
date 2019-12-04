@@ -44,13 +44,19 @@ class MaskedArray(AbstractArray):
         if store_in_1d:
             return mask.mapping.array_stored_1d_from_sub_array_2d(sub_array_2d=array)
         else:
-            masked_sub_array_1d = mask.mapping.array_stored_1d_from_sub_array_2d(sub_array_2d=array)
-            return mask.mapping.array_stored_2d_from_sub_array_1d(sub_array_1d=masked_sub_array_1d)
+            masked_sub_array_1d = mask.mapping.array_stored_1d_from_sub_array_2d(
+                sub_array_2d=array
+            )
+            return mask.mapping.array_stored_2d_from_sub_array_1d(
+                sub_array_1d=masked_sub_array_1d
+            )
 
     @classmethod
     def full(cls, fill_value, mask, store_in_1d=True):
         return cls.manual_2d(
-            array=np.full(fill_value=fill_value, shape=mask.sub_shape_2d), mask=mask, store_in_1d=store_in_1d
+            array=np.full(fill_value=fill_value, shape=mask.sub_shape_2d),
+            mask=mask,
+            store_in_1d=store_in_1d,
         )
 
     @classmethod
@@ -69,7 +75,7 @@ class MaskedArray(AbstractArray):
 
 class MaskedGrid(AbstractGrid):
     @classmethod
-    def manual_1d(cls, grid, mask):
+    def manual_1d(cls, grid, mask, store_in_1d=True):
 
         if type(grid) is list:
             grid = np.asarray(grid)
@@ -80,10 +86,13 @@ class MaskedGrid(AbstractGrid):
                 "the mask."
             )
 
-        return mask.mapping.grid_stored_1d_from_sub_grid_1d(sub_grid_1d=grid)
+        if store_in_1d:
+            return mask.mapping.grid_stored_1d_from_sub_grid_1d(sub_grid_1d=grid)
+        else:
+            return mask.mapping.grid_stored_2d_from_sub_grid_1d(sub_grid_1d=grid)
 
     @classmethod
-    def manual_2d(cls, grid, mask):
+    def manual_2d(cls, grid, mask, store_in_1d=True):
 
         if type(grid) is list:
             grid = np.asarray(grid)
@@ -94,10 +103,14 @@ class MaskedGrid(AbstractGrid):
                 "(e.g. the mask 2D shape multipled by its sub size."
             )
 
-        return mask.mapping.grid_stored_1d_from_sub_grid_2d(sub_grid_2d=grid)
+        if store_in_1d:
+            return mask.mapping.grid_stored_1d_from_sub_grid_2d(sub_grid_2d=grid)
+        else:
+            sub_grid_1d = mask.mapping.grid_stored_1d_from_sub_grid_2d(sub_grid_2d=grid)
+            return mask.mapping.grid_stored_2d_from_sub_grid_1d(sub_grid_1d=sub_grid_1d)
 
     @classmethod
-    def from_mask(cls, mask):
+    def from_mask(cls, mask, store_in_1d=True):
         """Setup a sub-grid of the unmasked pixels, using a mask and a specified sub-grid size. The center of \
         every unmasked pixel's sub-pixels give the grid's (y,x) arc-second coordinates.
 
@@ -116,4 +129,7 @@ class MaskedGrid(AbstractGrid):
             origin=mask.origin,
         )
 
-        return mask.mapping.grid_stored_1d_from_sub_grid_1d(sub_grid_1d=sub_grid_1d)
+        if store_in_1d:
+            return mask.mapping.grid_stored_1d_from_sub_grid_1d(sub_grid_1d=sub_grid_1d)
+        else:
+            return mask.mapping.grid_stored_2d_from_sub_grid_1d(sub_grid_1d=sub_grid_1d)

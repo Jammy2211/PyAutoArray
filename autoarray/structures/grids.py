@@ -19,7 +19,7 @@ from autoarray.util import (
 
 
 class AbstractGrid(abstract_structure.AbstractStructure):
-    def __new__(cls, grid_1d, mask, binned=None, *args, **kwargs):
+    def __new__(cls, grid, mask, store_in_1d=True, binned=None, *args, **kwargs):
         """A grid of coordinates, where each entry corresponds to the (y,x) coordinates at the centre of an \
         unmasked pixel. The positive y-axis is upwards and poitive x-axis to the right.
 
@@ -131,7 +131,9 @@ class AbstractGrid(abstract_structure.AbstractStructure):
                  grid[8] = [0.25, -0.25]
 
         """
-        obj = super(AbstractGrid, cls).__new__(cls=cls, structure=grid_1d, mask=mask)
+        obj = super(AbstractGrid, cls).__new__(
+            cls=cls, structure=grid, mask=mask, store_in_1d=store_in_1d
+        )
         obj.interpolator = None
         obj.binned = None
         return obj
@@ -170,16 +172,46 @@ class AbstractGrid(abstract_structure.AbstractStructure):
         super(AbstractGrid, self).__setstate__(state[0:-1])
 
     @property
+    def in_1d(self):
+        if self.store_in_1d:
+            return self
+        else:
+            return self.mask.mapping.grid_stored_1d_from_sub_grid_2d(sub_grid_2d=self)
+
+    @property
     def in_2d(self):
-        return self.mask.mapping.grid_stored_2d_from_sub_grid_1d(sub_grid_1d=self)
+        if self.store_in_1d:
+            return self.mask.mapping.grid_stored_2d_from_sub_grid_1d(sub_grid_1d=self)
+        else:
+            return self
 
     @property
     def in_1d_binned(self):
-        return self.mask.mapping.grid_binned_stored_1d_from_sub_grid_1d(sub_grid_1d=self)
+        if self.store_in_1d:
+            return self.mask.mapping.grid_stored_1d_binned_from_sub_grid_1d(
+                sub_grid_1d=self
+            )
+        else:
+            sub_grid_1d = self.mask.mapping.grid_stored_1d_from_sub_grid_2d(
+                sub_grid_2d=self
+            )
+            return self.mask.mapping.grid_stored_1d_binned_from_sub_grid_1d(
+                sub_grid_1d=sub_grid_1d
+            )
 
     @property
     def in_2d_binned(self):
-        return self.mask.mapping.grid_binned_stored_2d_from_sub_grid_1d(sub_grid_1d=self)
+        if self.store_in_1d:
+            return self.mask.mapping.grid_stored_2d_binned_from_sub_grid_1d(
+                sub_grid_1d=self
+            )
+        else:
+            sub_grid_1d = self.mask.mapping.grid_stored_1d_from_sub_grid_2d(
+                sub_grid_2d=self
+            )
+            return self.mask.mapping.grid_stored_2d_binned_from_sub_grid_1d(
+                sub_grid_1d=sub_grid_1d
+            )
 
     def blurring_grid_from_kernel_shape(self, kernel_shape_2d):
 
@@ -194,7 +226,9 @@ class AbstractGrid(abstract_structure.AbstractStructure):
             origin=blurring_mask.origin,
         )
 
-        return blurring_mask.mapping.grid_stored_1d_from_grid_1d(grid_1d=blurring_grid_1d)
+        return blurring_mask.mapping.grid_stored_1d_from_grid_1d(
+            grid_1d=blurring_grid_1d
+        )
 
     def new_grid_with_binned_grid(self, binned_grid):
         # noinspection PyAttributeOutsideInit
@@ -374,7 +408,7 @@ class AbstractGrid(abstract_structure.AbstractStructure):
         """
 
         return Grid(
-            grid_1d=self.relocated_grid_from_grid_jit(
+            grid=self.relocated_grid_from_grid_jit(
                 grid=grid, border_grid=self.sub_border_grid
             ),
             mask=grid.mask,
@@ -404,9 +438,31 @@ class AbstractGrid(abstract_structure.AbstractStructure):
 
 class Grid(AbstractGrid):
     @classmethod
-    def from_sub_grid_1d_shape_2d_pixel_scales_and_sub_size(
-        cls, sub_grid_1d, shape_2d, pixel_scales, sub_size, origin=(0.0, 0.0)
+    def manual_1d(
+        cls,
+        grid,
+        shape_2d,
+        pixel_scales,
+        sub_size=1,
+        origin=(0.0, 0.0),
+        store_in_1d=True,
     ):
+
+        if type(grid) is list:
+            grid = np.asarray(grid)
+
+        if type(pixel_scales) is float:
+            pixel_scales = (pixel_scales, pixel_scales)
+
+        if grid.shape[-1] != 2:
+            raise exc.GridException(
+                "The final dimension of the input grid is not equal to 2 (e.g. the (y,x) coordinates)"
+            )
+
+        if 2 < len(grid.shape) > 3:
+            raise exc.GridException(
+                "The dimensions of the input grid array is not 2 or 3"
+            )
 
         mask = msk.Mask.unmasked(
             shape_2d=shape_2d,
@@ -415,79 +471,47 @@ class Grid(AbstractGrid):
             origin=origin,
         )
 
-        return mask.mapping.grid_stored_1d_from_sub_grid_1d(sub_grid_1d=sub_grid_1d)
+        if store_in_1d:
+            return mask.mapping.grid_stored_1d_from_sub_grid_1d(sub_grid_1d=grid)
+        else:
+            return mask.mapping.grid_stored_2d_from_sub_grid_1d(sub_grid_1d=grid)
 
     @classmethod
-    def from_sub_grid_2d_pixel_scales_and_sub_size(
-        cls, sub_grid_2d, pixel_scales, sub_size, origin=(0.0, 0.0)
+    def manual_2d(
+        cls, grid, pixel_scales, sub_size=1, origin=(0.0, 0.0), store_in_1d=True
     ):
 
-        shape = (
-            int(sub_grid_2d.shape[0] / sub_size),
-            int(sub_grid_2d.shape[1] / sub_size),
-        )
+        if type(grid) is list:
+            grid = np.asarray(grid)
+
+        if type(pixel_scales) is float:
+            pixel_scales = (pixel_scales, pixel_scales)
+
+        if grid.shape[-1] != 2:
+            raise exc.GridException(
+                "The final dimension of the input grid is not equal to 2 (e.g. the (y,x) coordinates)"
+            )
+
+        if 2 < len(grid.shape) > 3:
+            raise exc.GridException(
+                "The dimensions of the input grid array is not 2 or 3"
+            )
+
+        shape = (int(grid.shape[0] / sub_size), int(grid.shape[1] / sub_size))
 
         mask = msk.Mask.unmasked(
             shape_2d=shape, pixel_scales=pixel_scales, sub_size=sub_size, origin=origin
         )
 
-        return mask.mapping.grid_stored_1d_from_sub_grid_2d(sub_grid_2d=sub_grid_2d)
+        if store_in_1d:
+            return mask.mapping.grid_stored_1d_from_sub_grid_2d(sub_grid_2d=grid)
+        else:
+            return mask.mapping.grid_stored_2d_from_sub_grid_2d(sub_grid_2d=grid)
 
     @classmethod
-    def manual_1d(cls, grid, shape_2d, pixel_scales, sub_size=1, origin=(0.0, 0.0)):
-
-        if type(grid) is list:
-            grid = np.asarray(grid)
-
-        if type(pixel_scales) is float:
-            pixel_scales = (pixel_scales, pixel_scales)
-
-        if grid.shape[-1] != 2:
-            raise exc.GridException(
-                "The final dimension of the input grid is not equal to 2 (e.g. the (y,x) coordinates)"
-            )
-
-        if 2 < len(grid.shape) > 3:
-            raise exc.GridException(
-                "The dimensions of the input grid array is not 2 or 3"
-            )
-
-        return Grid.from_sub_grid_1d_shape_2d_pixel_scales_and_sub_size(
-            sub_grid_1d=grid,
-            shape_2d=shape_2d,
-            pixel_scales=pixel_scales,
-            sub_size=sub_size,
-            origin=origin,
-        )
-
-    @classmethod
-    def manual_2d(cls, grid, pixel_scales, sub_size=1, origin=(0.0, 0.0)):
-
-        if type(grid) is list:
-            grid = np.asarray(grid)
-
-        if type(pixel_scales) is float:
-            pixel_scales = (pixel_scales, pixel_scales)
-
-        if grid.shape[-1] != 2:
-            raise exc.GridException(
-                "The final dimension of the input grid is not equal to 2 (e.g. the (y,x) coordinates)"
-            )
-
-        if 2 < len(grid.shape) > 3:
-            raise exc.GridException(
-                "The dimensions of the input grid array is not 2 or 3"
-            )
-
-        return Grid.from_sub_grid_2d_pixel_scales_and_sub_size(
-            sub_grid_2d=grid,
-            pixel_scales=pixel_scales,
-            sub_size=sub_size,
-            origin=origin,
-        )
-
-    @classmethod
-    def uniform(cls, shape_2d, pixel_scales, sub_size=1, origin=(0.0, 0.0)):
+    def uniform(
+        cls, shape_2d, pixel_scales, sub_size=1, origin=(0.0, 0.0), store_in_1d=True
+    ):
 
         if type(pixel_scales) is float:
             pixel_scales = (pixel_scales, pixel_scales)
@@ -505,10 +529,11 @@ class Grid(AbstractGrid):
             pixel_scales=pixel_scales,
             sub_size=sub_size,
             origin=origin,
+            store_in_1d=store_in_1d,
         )
 
     @classmethod
-    def bounding_box(cls, bounding_box, shape_2d, sub_size=1):
+    def bounding_box(cls, bounding_box, shape_2d, sub_size=1, store_in_1d=True):
 
         y_max, y_min, x_max, x_min = bounding_box
 
@@ -523,10 +548,11 @@ class Grid(AbstractGrid):
             pixel_scales=pixel_scales,
             sub_size=sub_size,
             origin=origin,
+            store_in_1d=store_in_1d,
         )
 
     @classmethod
-    def from_mask(cls, mask):
+    def from_mask(cls, mask, store_in_1d=True):
         """Setup a sub-grid of the unmasked pixels, using a mask and a specified sub-grid size. The center of \
         every unmasked pixel's sub-pixels give the grid's (y,x) scaled coordinates.
 
@@ -545,10 +571,15 @@ class Grid(AbstractGrid):
             origin=mask.origin,
         )
 
-        return mask.mapping.grid_stored_1d_from_sub_grid_1d(sub_grid_1d=sub_grid_1d)
+        if store_in_1d:
+            return mask.mapping.grid_stored_1d_from_sub_grid_1d(sub_grid_1d=sub_grid_1d)
+        else:
+            return mask.mapping.grid_stored_2d_from_sub_grid_1d(sub_grid_1d=sub_grid_1d)
 
     @classmethod
-    def blurring_grid_from_mask_and_kernel_shape(cls, mask, kernel_shape_2d):
+    def blurring_grid_from_mask_and_kernel_shape(
+        cls, mask, kernel_shape_2d, store_in_1d=True
+    ):
         """Setup a blurring-grid from a mask, where a blurring grid consists of all pixels that are masked, but they \
         are close enough to the unmasked pixels that a fraction of their light will be blurred into those pixels \
         via PSF convolution. For example, if our mask is as follows:
@@ -618,7 +649,14 @@ class Grid(AbstractGrid):
             origin=blurring_mask.origin,
         )
 
-        return blurring_mask.mapping.grid_stored_1d_from_grid_1d(grid_1d=blurring_grid_1d)
+        if store_in_1d:
+            return blurring_mask.mapping.grid_stored_1d_from_grid_1d(
+                grid_1d=blurring_grid_1d
+            )
+        else:
+            return blurring_mask.mapping.grid_stored_2d_from_grid_1d(
+                grid_1d=blurring_grid_1d
+            )
 
 
 class GridIrregular(np.ndarray):
@@ -889,9 +927,7 @@ class SparseGrid(object):
 
 
 class GridRectangular(Grid):
-    def __new__(
-        cls, grid_1d, shape_2d, pixel_scales, origin=(0.0, 0.0), *args, **kwargs
-    ):
+    def __new__(cls, grid, shape_2d, pixel_scales, origin=(0.0, 0.0), *args, **kwargs):
         """A pixelization-grid of (y,x) coordinates which are used to form the pixel centres of adaptive pixelizations in the \
         *pixelizations* module.
 
@@ -915,7 +951,7 @@ class GridRectangular(Grid):
             shape_2d=shape_2d, pixel_scales=pixel_scales, sub_size=1, origin=origin
         )
 
-        obj = super(GridRectangular, cls).__new__(cls=cls, grid_1d=grid_1d, mask=mask)
+        obj = super(GridRectangular, cls).__new__(cls=cls, grid=grid, mask=mask)
         pixel_neighbors, pixel_neighbors_size = pixelization_util.rectangular_neighbors_from_shape(
             shape=shape_2d
         )
@@ -965,7 +1001,7 @@ class GridRectangular(Grid):
         )
 
         return GridRectangular(
-            grid_1d=grid_1d, shape_2d=shape_2d, pixel_scales=pixel_scales, origin=origin
+            grid=grid_1d, shape_2d=shape_2d, pixel_scales=pixel_scales, origin=origin
         )
 
     @property
@@ -1092,7 +1128,9 @@ class Interpolator(object):
 
         return Interpolator(
             grid=grid,
-            interp_grid=interp_mask.mapping.grid_stored_1d_from_grid_1d(grid_1d=interp_grid),
+            interp_grid=interp_mask.mapping.grid_stored_1d_from_grid_1d(
+                grid_1d=interp_grid
+            ),
             pixel_scale_interpolation_grid=pixel_scale_interpolation_grid,
         )
 
