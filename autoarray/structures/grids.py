@@ -698,10 +698,10 @@ class GridIrregular(np.ndarray):
             def __init__(self):
                 pass
 
-            def array_from_sub_array_1d(self, sub_array_1d):
+            def array_stored_1d_from_sub_array_1d(self, sub_array_1d):
                 return sub_array_1d
 
-            def grid_from_sub_grid_1d(self, sub_grid_1d):
+            def grid_stored_1d_from_sub_grid_1d(self, sub_grid_1d):
                 return GridIrregular(grid=sub_grid_1d)
 
         return IrregularMapping()
