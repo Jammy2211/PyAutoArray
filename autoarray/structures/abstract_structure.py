@@ -124,7 +124,8 @@ class AbstractStructure(np.ndarray):
             if hasattr(obj, "mask"):
                 self.mask = obj.mask
 
-            self.store_in_1d = obj.store_in_1d
+            if hasattr(obj, "store_in_1d"):
+                self.store_in_1d = obj.store_in_1d
 
     @property
     def shape_1d(self):

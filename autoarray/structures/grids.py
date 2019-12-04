@@ -1031,7 +1031,7 @@ class GridVoronoi(GridIrregular):
                 np.asarray([grid_1d[:, 1], grid_1d[:, 0]]).T,
                 qhull_options="Qbb Qc Qx Qm",
             )
-        except OverflowError or scipy.spatial.qhull.QhullError:
+        except ValueError or OverflowError or scipy.spatial.qhull.QhullError:
             raise exc.PixelizationException()
 
         pixel_neighbors, pixel_neighbors_size = pixelization_util.voronoi_neighbors_from_pixels_and_ridge_points(
