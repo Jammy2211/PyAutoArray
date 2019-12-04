@@ -12,7 +12,6 @@ test_data_dir = "{}/../test_files/array/".format(
 
 
 class TestMapping:
-
     def test__array_stored_1d_from_array_1d__compare_to_util(self):
         mask = aa.mask.manual(
             [
@@ -188,7 +187,9 @@ class TestMapping:
             ]
         )
 
-        arr = mask.mapping.array_stored_1d_binned_from_sub_array_1d(sub_array_1d=sub_array_1d)
+        arr = mask.mapping.array_stored_1d_binned_from_sub_array_1d(
+            sub_array_1d=sub_array_1d
+        )
 
         assert (arr == np.array([3.5, 2.0, 3.0, 2.0])).all()
         assert (arr.in_1d == np.array([3.5, 2.0, 3.0, 2.0])).all()
@@ -252,9 +253,7 @@ class TestMapping:
             ]
         )
 
-        arr = mask.mapping.array_stored_2d_from_sub_array_1d(
-            sub_array_1d=sub_array_1d
-        )
+        arr = mask.mapping.array_stored_2d_from_sub_array_1d(sub_array_1d=sub_array_1d)
 
         assert (
             arr
@@ -310,7 +309,32 @@ class TestMapping:
         assert (arr == np.array([[3.5, 2.0, 0.0], [3.0, 0.0, 2.0]])).all()
         assert (arr.in_2d == np.array([[3.5, 2.0, 0.0], [3.0, 0.0, 2.0]])).all()
 
-    def test__grid_from_grid_2d__compare_to_util(self):
+    def test__grid_stored_1d_from_grid_1d__compare_to_util(self):
+        mask = aa.mask.manual(
+            [
+                [True, True, False, False],
+                [True, False, True, True],
+                [True, True, False, False],
+            ],
+            sub_size=2,
+        )
+
+        grid_1d = np.array([[1.0, 1.0], [6.0, 6.0], [4.0, 4.0], [5.0, 5.0], [2.0, 2.0]])
+
+        grid_2d_util = aa.util.grid.sub_grid_2d_from_sub_grid_1d(
+            sub_grid_1d=grid_1d, mask_2d=mask, sub_size=1
+        )
+
+        masked_grid_2d = grid_2d_util * np.invert(mask[:, :, None])
+
+        grid = mask.mapping.grid_stored_1d_from_grid_1d(grid_1d=grid_1d)
+
+        assert (grid == grid_1d).all()
+        assert (grid.in_1d == grid_1d).all()
+        assert (grid.in_2d == masked_grid_2d).all()
+        assert grid.sub_size == 1
+
+    def test__grid_stored_1d_from_grid_2d__compare_to_util(self):
         grid_2d = np.array(
             [
                 [[1, 1], [2, 2], [3, 3], [4, 4]],
@@ -341,136 +365,7 @@ class TestMapping:
         assert (grid.in_2d == masked_grid_2d).all()
         assert grid.sub_size == 1
 
-    def test__grid_from_grid_1d__compare_to_util(self):
-        mask = aa.mask.manual(
-            [
-                [True, True, False, False],
-                [True, False, True, True],
-                [True, True, False, False],
-            ],
-            sub_size=2,
-        )
-
-        grid_1d = np.array([[1.0, 1.0], [6.0, 6.0], [4.0, 4.0], [5.0, 5.0], [2.0, 2.0]])
-
-        grid_2d_util = aa.util.grid.sub_grid_2d_from_sub_grid_1d(
-            sub_grid_1d=grid_1d, mask_2d=mask, sub_size=1
-        )
-
-        masked_grid_2d = grid_2d_util * np.invert(mask[:, :, None])
-
-        grid = mask.mapping.grid_stored_1d_from_grid_1d(grid_1d=grid_1d)
-
-        assert (grid == grid_1d).all()
-        assert (grid.in_1d == grid_1d).all()
-        assert (grid.in_2d == masked_grid_2d).all()
-        assert grid.sub_size == 1
-
-    def test__sub_grid_2d_from_sub_grid_1d(self):
-        mask = aa.mask.manual([[False, False, True], [False, True, False]], sub_size=2)
-
-        sub_grid_1d = np.array(
-            [
-                [1.0, 1.0],
-                [1.0, 1.0],
-                [1.0, 1.0],
-                [1.0, 1.0],
-                [2.0, 2.0],
-                [2.0, 2.0],
-                [2.0, 2.0],
-                [2.0, 2.0],
-                [3.0, 3.0],
-                [3.0, 3.0],
-                [3.0, 3.0],
-                [3.0, 3.0],
-                [4.0, 4.0],
-                [4.0, 4.0],
-                [4.0, 4.0],
-                [4.0, 4.0],
-            ]
-        )
-
-        sub_grid_2d = mask.mapping.grid_stored_2d_from_sub_grid_1d(sub_grid_1d=sub_grid_1d)
-
-        assert (
-            sub_grid_2d
-            == np.array(
-                [
-                    [
-                        [1.0, 1.0],
-                        [1.0, 1.0],
-                        [2.0, 2.0],
-                        [2.0, 2.0],
-                        [0.0, 0.0],
-                        [0.0, 0.0],
-                    ],
-                    [
-                        [1.0, 1.0],
-                        [1.0, 1.0],
-                        [2.0, 2.0],
-                        [2.0, 2.0],
-                        [0.0, 0.0],
-                        [0.0, 0.0],
-                    ],
-                    [
-                        [3.0, 3.0],
-                        [3.0, 3.0],
-                        [0.0, 0.0],
-                        [0.0, 0.0],
-                        [4.0, 4.0],
-                        [4.0, 4.0],
-                    ],
-                    [
-                        [3.0, 3.0],
-                        [3.0, 3.0],
-                        [0.0, 0.0],
-                        [0.0, 0.0],
-                        [4.0, 4.0],
-                        [4.0, 4.0],
-                    ],
-                ]
-            )
-        ).all()
-
-    def test__sub_grid_2d_binned_from_sub_grid_1d(self):
-        mask = aa.mask.manual([[False, False, True], [False, True, False]], sub_size=2)
-
-        sub_grid_1d = np.array(
-            [
-                [1.0, 1.0],
-                [1.0, 1.0],
-                [1.0, 1.0],
-                [1.0, 1.0],
-                [2.0, 2.0],
-                [2.0, 2.0],
-                [2.0, 2.0],
-                [2.0, 2.0],
-                [3.0, 3.0],
-                [3.0, 3.0],
-                [3.0, 3.0],
-                [3.0, 3.0],
-                [4.0, 4.0],
-                [4.0, 4.0],
-                [4.0, 4.0],
-                [4.0, 4.0],
-            ]
-        )
-
-        sub_grid_2d_binned = mask.mapping.grid_stored_2d_binned_from_sub_grid_1d(
-            sub_grid_1d=sub_grid_1d
-        )
-
-        assert (
-            sub_grid_2d_binned
-            == np.array(
-                [
-                    [[1.0, 1.0], [2.0, 2.0], [0.0, 0.0]],
-                    [[3.0, 3.0], [0.0, 0.0], [4.0, 4.0]],
-                ]
-            )
-        ).all()
-
-    def test__grid_from_sub_grid_1d(self):
+    def test__grid_stored_1d_from_sub_grid_1d(self):
         mask = aa.mask.manual([[False, True], [False, False]], sub_size=2)
 
         sub_grid_1d = np.array(
@@ -492,6 +387,7 @@ class TestMapping:
 
         grid = mask.mapping.grid_stored_1d_from_sub_grid_1d(sub_grid_1d=sub_grid_1d)
 
+        assert (grid == sub_grid_1d).all()
         assert (grid.in_1d == sub_grid_1d).all()
 
         assert (
@@ -506,7 +402,7 @@ class TestMapping:
             )
         ).all()
 
-    def test__grid_from_sub_grid_2d(self):
+    def test__grid_stored_1d_from_sub_grid_2d(self):
         sub_grid_2d = np.array(
             [
                 [
@@ -549,6 +445,30 @@ class TestMapping:
         grid = mask.mapping.grid_stored_1d_from_sub_grid_2d(sub_grid_2d=sub_grid_2d)
 
         assert (
+            grid
+            == np.array(
+                [
+                    [1.0, 1.0],
+                    [1.0, 1.0],
+                    [1.0, 1.0],
+                    [1.0, 1.0],
+                    [2.0, 2.0],
+                    [2.0, 2.0],
+                    [2.0, 2.0],
+                    [2.0, 2.0],
+                    [3.0, 3.0],
+                    [3.0, 3.0],
+                    [3.0, 3.0],
+                    [3.0, 3.0],
+                    [4.0, 4.0],
+                    [4.0, 4.0],
+                    [4.0, 4.0],
+                    [4.0, 4.0],
+                ]
+            )
+        ).all()
+
+        assert (
             grid.in_1d
             == np.array(
                 [
@@ -574,7 +494,7 @@ class TestMapping:
 
         assert (grid.in_2d == sub_grid_2d).all()
 
-    def test__grid_binned_from_sub_grid_1d(self):
+    def test__grid_stored_1d_binned_from_sub_grid_1d(self):
         mask = aa.mask.manual([[False, True], [False, False]], sub_size=2)
 
         grid_1d = np.array(
@@ -596,12 +516,178 @@ class TestMapping:
 
         grid = mask.mapping.grid_stored_1d_binned_from_sub_grid_1d(sub_grid_1d=grid_1d)
 
+        assert (grid == np.array([[2.5, 3.0], [10.5, 10.5], [14.5, 14.5]])).all()
         assert (grid.in_1d == np.array([[2.5, 3.0], [10.5, 10.5], [14.5, 14.5]])).all()
 
         assert (
             grid.in_2d
             == np.array([[[2.5, 3.0], [0.0, 0.0]], [[10.5, 10.5], [14.5, 14.5]]])
         ).all()
+
+    def test__grid_stored_2d_from_sub_grid_1d(self):
+        mask = aa.mask.manual([[False, False, True], [False, True, False]], sub_size=2)
+
+        sub_grid_1d = np.array(
+            [
+                [1.0, 1.0],
+                [1.0, 1.0],
+                [1.0, 1.0],
+                [1.0, 1.0],
+                [2.0, 2.0],
+                [2.0, 2.0],
+                [2.0, 2.0],
+                [2.0, 2.0],
+                [3.0, 3.0],
+                [3.0, 3.0],
+                [3.0, 3.0],
+                [3.0, 3.0],
+                [4.0, 4.0],
+                [4.0, 4.0],
+                [4.0, 4.0],
+                [4.0, 4.0],
+            ]
+        )
+
+        grid = mask.mapping.grid_stored_2d_from_sub_grid_1d(sub_grid_1d=sub_grid_1d)
+
+        assert (
+            grid
+            == np.array(
+                [
+                    [
+                        [1.0, 1.0],
+                        [1.0, 1.0],
+                        [2.0, 2.0],
+                        [2.0, 2.0],
+                        [0.0, 0.0],
+                        [0.0, 0.0],
+                    ],
+                    [
+                        [1.0, 1.0],
+                        [1.0, 1.0],
+                        [2.0, 2.0],
+                        [2.0, 2.0],
+                        [0.0, 0.0],
+                        [0.0, 0.0],
+                    ],
+                    [
+                        [3.0, 3.0],
+                        [3.0, 3.0],
+                        [0.0, 0.0],
+                        [0.0, 0.0],
+                        [4.0, 4.0],
+                        [4.0, 4.0],
+                    ],
+                    [
+                        [3.0, 3.0],
+                        [3.0, 3.0],
+                        [0.0, 0.0],
+                        [0.0, 0.0],
+                        [4.0, 4.0],
+                        [4.0, 4.0],
+                    ],
+                ]
+            )
+        ).all()
+        assert (
+            grid.in_2d
+            == np.array(
+                [
+                    [
+                        [1.0, 1.0],
+                        [1.0, 1.0],
+                        [2.0, 2.0],
+                        [2.0, 2.0],
+                        [0.0, 0.0],
+                        [0.0, 0.0],
+                    ],
+                    [
+                        [1.0, 1.0],
+                        [1.0, 1.0],
+                        [2.0, 2.0],
+                        [2.0, 2.0],
+                        [0.0, 0.0],
+                        [0.0, 0.0],
+                    ],
+                    [
+                        [3.0, 3.0],
+                        [3.0, 3.0],
+                        [0.0, 0.0],
+                        [0.0, 0.0],
+                        [4.0, 4.0],
+                        [4.0, 4.0],
+                    ],
+                    [
+                        [3.0, 3.0],
+                        [3.0, 3.0],
+                        [0.0, 0.0],
+                        [0.0, 0.0],
+                        [4.0, 4.0],
+                        [4.0, 4.0],
+                    ],
+                ]
+            )
+        ).all()
+
+    def test__grid_stored_2d_binned_from_sub_grid_1d(self):
+        mask = aa.mask.manual([[False, False, True], [False, True, False]], sub_size=2)
+
+        sub_grid_1d = np.array(
+            [
+                [1.0, 1.0],
+                [1.0, 1.0],
+                [1.0, 1.0],
+                [1.0, 1.0],
+                [2.0, 2.0],
+                [2.0, 2.0],
+                [2.0, 2.0],
+                [2.0, 2.0],
+                [3.0, 3.0],
+                [3.0, 3.0],
+                [3.0, 3.0],
+                [3.0, 3.0],
+                [4.0, 4.0],
+                [4.0, 4.0],
+                [4.0, 4.0],
+                [4.0, 4.0],
+            ]
+        )
+
+        sub_grid_2d_binned = mask.mapping.grid_stored_2d_binned_from_sub_grid_1d(
+            sub_grid_1d=sub_grid_1d
+        )
+
+        assert (
+            sub_grid_2d_binned
+            == np.array(
+                [
+                    [[1.0, 1.0], [2.0, 2.0], [0.0, 0.0]],
+                    [[3.0, 3.0], [0.0, 0.0], [4.0, 4.0]],
+                ]
+            )
+        ).all()
+
+        assert (
+            sub_grid_2d_binned.in_2d
+            == np.array(
+                [
+                    [[1.0, 1.0], [2.0, 2.0], [0.0, 0.0]],
+                    [[3.0, 3.0], [0.0, 0.0], [4.0, 4.0]],
+                ]
+            )
+        ).all()
+
+        assert (
+            sub_grid_2d_binned.in_2d_binned
+            == np.array(
+                [
+                    [[1.0, 1.0], [2.0, 2.0], [0.0, 0.0]],
+                    [[3.0, 3.0], [0.0, 0.0], [4.0, 4.0]],
+                ]
+            )
+        ).all()
+
+
 
     def test__trimmed_array_2d_from_padded_array_1d_and_image_shape(self):
 
@@ -693,7 +779,9 @@ class TestMappingExceptions:
         )
 
         with pytest.raises(exc.MappingException):
-            mask.mapping.array_stored_2d_from_array_1d(array_1d=np.array([1.0, 6.0, 4.0, 5.0]))
+            mask.mapping.array_stored_2d_from_array_1d(
+                array_1d=np.array([1.0, 6.0, 4.0, 5.0])
+            )
 
         with pytest.raises(exc.MappingException):
             mask.mapping.array_stored_2d_from_array_1d(
@@ -714,7 +802,9 @@ class TestMappingExceptions:
         )
 
         with pytest.raises(exc.MappingException):
-            mask.mapping.array_stored_1d_from_array_1d(array_1d=np.array([1.0, 6.0, 4.0, 5.0]))
+            mask.mapping.array_stored_1d_from_array_1d(
+                array_1d=np.array([1.0, 6.0, 4.0, 5.0])
+            )
 
         with pytest.raises(exc.MappingException):
             mask.mapping.array_stored_1d_from_array_1d(
