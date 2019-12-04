@@ -20,8 +20,6 @@ class MockMask(msk.Mask):
         obj = mask_2d.view(cls)
         obj.pixel_scales = pixel_scales
         obj.sub_size = sub_size
-        obj.sub_length = int(obj.sub_size ** 2.0)
-        obj.sub_fraction = 1.0 / obj.sub_length
         obj.origin = origin
         return obj
 
