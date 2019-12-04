@@ -456,7 +456,7 @@ class TestMapping:
             ]
         )
 
-        sub_grid_2d_binned = mask.mapping.grid_binned_stored_2d_from_sub_grid_1d(
+        sub_grid_2d_binned = mask.mapping.grid_stored_2d_binned_from_sub_grid_1d(
             sub_grid_1d=sub_grid_1d
         )
 
@@ -594,7 +594,7 @@ class TestMapping:
             ]
         )
 
-        grid = mask.mapping.grid_binned_stored_1d_from_sub_grid_1d(sub_grid_1d=grid_1d)
+        grid = mask.mapping.grid_stored_1d_binned_from_sub_grid_1d(sub_grid_1d=grid_1d)
 
         assert (grid.in_1d == np.array([[2.5, 3.0], [10.5, 10.5], [14.5, 14.5]])).all()
 

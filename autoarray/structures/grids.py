@@ -19,7 +19,7 @@ from autoarray.util import (
 
 
 class AbstractGrid(abstract_structure.AbstractStructure):
-    def __new__(cls, grid_1d, mask, binned=None, *args, **kwargs):
+    def __new__(cls, grid_1d, mask, store_in_1d=True, binned=None, *args, **kwargs):
         """A grid of coordinates, where each entry corresponds to the (y,x) coordinates at the centre of an \
         unmasked pixel. The positive y-axis is upwards and poitive x-axis to the right.
 
@@ -175,11 +175,11 @@ class AbstractGrid(abstract_structure.AbstractStructure):
 
     @property
     def in_1d_binned(self):
-        return self.mask.mapping.grid_binned_stored_1d_from_sub_grid_1d(sub_grid_1d=self)
+        return self.mask.mapping.grid_stored_1d_binned_from_sub_grid_1d(sub_grid_1d=self)
 
     @property
     def in_2d_binned(self):
-        return self.mask.mapping.grid_binned_stored_2d_from_sub_grid_1d(sub_grid_1d=self)
+        return self.mask.mapping.grid_stored_2d_binned_from_sub_grid_1d(sub_grid_1d=self)
 
     def blurring_grid_from_kernel_shape(self, kernel_shape_2d):
 
@@ -403,38 +403,9 @@ class AbstractGrid(abstract_structure.AbstractStructure):
 
 
 class Grid(AbstractGrid):
-    @classmethod
-    def from_sub_grid_1d_shape_2d_pixel_scales_and_sub_size(
-        cls, sub_grid_1d, shape_2d, pixel_scales, sub_size, origin=(0.0, 0.0)
-    ):
-
-        mask = msk.Mask.unmasked(
-            shape_2d=shape_2d,
-            pixel_scales=pixel_scales,
-            sub_size=sub_size,
-            origin=origin,
-        )
-
-        return mask.mapping.grid_stored_1d_from_sub_grid_1d(sub_grid_1d=sub_grid_1d)
 
     @classmethod
-    def from_sub_grid_2d_pixel_scales_and_sub_size(
-        cls, sub_grid_2d, pixel_scales, sub_size, origin=(0.0, 0.0)
-    ):
-
-        shape = (
-            int(sub_grid_2d.shape[0] / sub_size),
-            int(sub_grid_2d.shape[1] / sub_size),
-        )
-
-        mask = msk.Mask.unmasked(
-            shape_2d=shape, pixel_scales=pixel_scales, sub_size=sub_size, origin=origin
-        )
-
-        return mask.mapping.grid_stored_1d_from_sub_grid_2d(sub_grid_2d=sub_grid_2d)
-
-    @classmethod
-    def manual_1d(cls, grid, shape_2d, pixel_scales, sub_size=1, origin=(0.0, 0.0)):
+    def manual_1d(cls, grid, shape_2d, pixel_scales, sub_size=1, origin=(0.0, 0.0), store_in_1d=True,):
 
         if type(grid) is list:
             grid = np.asarray(grid)
@@ -452,13 +423,14 @@ class Grid(AbstractGrid):
                 "The dimensions of the input grid array is not 2 or 3"
             )
 
-        return Grid.from_sub_grid_1d_shape_2d_pixel_scales_and_sub_size(
-            sub_grid_1d=grid,
+        mask = msk.Mask.unmasked(
             shape_2d=shape_2d,
             pixel_scales=pixel_scales,
             sub_size=sub_size,
             origin=origin,
         )
+
+        return mask.mapping.grid_stored_1d_from_sub_grid_1d(sub_grid_1d=grid)
 
     @classmethod
     def manual_2d(cls, grid, pixel_scales, sub_size=1, origin=(0.0, 0.0)):
@@ -479,12 +451,16 @@ class Grid(AbstractGrid):
                 "The dimensions of the input grid array is not 2 or 3"
             )
 
-        return Grid.from_sub_grid_2d_pixel_scales_and_sub_size(
-            sub_grid_2d=grid,
-            pixel_scales=pixel_scales,
-            sub_size=sub_size,
-            origin=origin,
+        shape = (
+            int(grid.shape[0] / sub_size),
+            int(grid.shape[1] / sub_size),
         )
+
+        mask = msk.Mask.unmasked(
+            shape_2d=shape, pixel_scales=pixel_scales, sub_size=sub_size, origin=origin
+        )
+
+        return mask.mapping.grid_stored_1d_from_sub_grid_2d(sub_grid_2d=grid)
 
     @classmethod
     def uniform(cls, shape_2d, pixel_scales, sub_size=1, origin=(0.0, 0.0)):
