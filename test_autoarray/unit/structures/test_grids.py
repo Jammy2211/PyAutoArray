@@ -151,8 +151,7 @@ class TestGridAPI:
 
             assert type(grid) == grids.Grid
             assert (
-                grid
-                == np.array([[[1.0, 2.0], [3.0, 4.0]], [[5.0, 6.0], [7.0, 8.0]]])
+                grid == np.array([[[1.0, 2.0], [3.0, 4.0]], [[5.0, 6.0], [7.0, 8.0]]])
             ).all()
             assert (
                 grid.in_2d
@@ -205,7 +204,9 @@ class TestGridAPI:
             assert grid.pixel_scales == (2.0, 1.0)
             assert grid.origin == (0.0, 0.0)
 
-            grid = aa.grid.uniform(shape_2d=(2, 2), pixel_scales=2.0, origin=(1.0, 1.0), store_in_1d=True)
+            grid = aa.grid.uniform(
+                shape_2d=(2, 2), pixel_scales=2.0, origin=(1.0, 1.0), store_in_1d=True
+            )
 
             assert type(grid) == grids.Grid
             assert (
@@ -221,7 +222,9 @@ class TestGridAPI:
             assert grid.pixel_scales == (2.0, 2.0)
             assert grid.origin == (1.0, 1.0)
 
-            grid = aa.grid.uniform(shape_2d=(2, 1), pixel_scales=(2.0, 1.0), store_in_1d=False)
+            grid = aa.grid.uniform(
+                shape_2d=(2, 1), pixel_scales=(2.0, 1.0), store_in_1d=False
+            )
 
             assert type(grid) == grids.Grid
             assert (grid == np.array([[[1.0, 0.0]], [[-1.0, 0.0]]])).all()
@@ -363,7 +366,7 @@ class TestGridAPI:
             assert grid.origin == (0.0, 0.0)
 
             grid = aa.grid.bounding_box(
-                bounding_box=[10.0, 8.0, 3.0, -2.0], shape_2d=(3, 3), store_in_1d=True,
+                bounding_box=[10.0, 8.0, 3.0, -2.0], shape_2d=(3, 3), store_in_1d=True
             )
 
             assert grid == pytest.approx(
@@ -408,15 +411,9 @@ class TestGridAPI:
             assert grid.in_2d == pytest.approx(
                 np.array(
                     [
-                        [[10.0, -2.0],
-                        [10.0, 0.5],
-                        [10.0, 3.0]],
-                        [[9.0, -2.0],
-                        [9.0, 0.5],
-                        [9.0, 3.0]],
-                        [[8.0, -2.0],
-                        [8.0, 0.5],
-                        [8.0, 3.0]],
+                        [[10.0, -2.0], [10.0, 0.5], [10.0, 3.0]],
+                        [[9.0, -2.0], [9.0, 0.5], [9.0, 3.0]],
+                        [[8.0, -2.0], [8.0, 0.5], [8.0, 3.0]],
                     ]
                 ),
                 1.0e-4,
