@@ -687,8 +687,6 @@ class TestMapping:
             )
         ).all()
 
-
-
     def test__trimmed_array_2d_from_padded_array_1d_and_image_shape(self):
 
         mask = aa.mask.unmasked(shape_2d=(4, 4))
