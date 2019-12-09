@@ -17,7 +17,7 @@ def preload_real_transforms(grid_radians, uv_wavelengths):
                 * np.pi
                 * (
                     grid_radians[image_1d_index, 1] * uv_wavelengths[vis_1d_index, 0]
-                    - grid_radians[image_1d_index, 0] * uv_wavelengths[vis_1d_index, 1]
+                    + grid_radians[image_1d_index, 0] * uv_wavelengths[vis_1d_index, 1]
                 )
             )
 
@@ -38,7 +38,7 @@ def preload_imag_transforms(grid_radians, uv_wavelengths):
                 * np.pi
                 * (
                     grid_radians[image_1d_index, 1] * uv_wavelengths[vis_1d_index, 0]
-                    - grid_radians[image_1d_index, 0] * uv_wavelengths[vis_1d_index, 1]
+                    + grid_radians[image_1d_index, 0] * uv_wavelengths[vis_1d_index, 1]
                 )
             )
 
@@ -71,7 +71,7 @@ def real_visibilities_jit(image_1d, grid_radians, uv_wavelengths):
                 * np.pi
                 * (
                     grid_radians[image_1d_index, 1] * uv_wavelengths[vis_1d_index, 0]
-                    - grid_radians[image_1d_index, 0] * uv_wavelengths[vis_1d_index, 1]
+                    + grid_radians[image_1d_index, 0] * uv_wavelengths[vis_1d_index, 1]
                 )
             )
 
@@ -104,7 +104,7 @@ def imag_visibilities_jit(image_1d, grid_radians, uv_wavelengths):
                 * np.pi
                 * (
                     grid_radians[image_1d_index, 1] * uv_wavelengths[vis_1d_index, 0]
-                    - grid_radians[image_1d_index, 0] * uv_wavelengths[vis_1d_index, 1]
+                    + grid_radians[image_1d_index, 0] * uv_wavelengths[vis_1d_index, 1]
                 )
             )
 
@@ -156,7 +156,7 @@ def real_transformed_mapping_matrix_jit(mapping_matrix, grid_radians, uv_wavelen
                             * (
                                 grid_radians[image_1d_index, 1]
                                 * uv_wavelengths[vis_1d_index, 0]
-                                - grid_radians[image_1d_index, 0]
+                                + grid_radians[image_1d_index, 0]
                                 * uv_wavelengths[vis_1d_index, 1]
                             )
                         )
@@ -210,7 +210,7 @@ def imag_transformed_mapping_matrix_jit(mapping_matrix, grid_radians, uv_wavelen
                             * (
                                 grid_radians[image_1d_index, 1]
                                 * uv_wavelengths[vis_1d_index, 0]
-                                - grid_radians[image_1d_index, 0]
+                                + grid_radians[image_1d_index, 0]
                                 * uv_wavelengths[vis_1d_index, 1]
                             )
                         )

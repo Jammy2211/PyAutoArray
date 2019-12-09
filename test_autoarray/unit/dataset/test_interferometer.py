@@ -140,7 +140,7 @@ class TestSimulateInterferometer(object):
         assert interferometer_simulated.real_space_pixel_scales == (0.1, 0.1)
 
         assert interferometer_simulated.visibilities[0, :] == pytest.approx(
-            [1.728611, -2.582958], 1.0e-4
+            [-0.005364, -2.36682], 1.0e-4
         )
         noise_map_realization = (
             interferometer_simulated.visibilities - simulated_visibilities

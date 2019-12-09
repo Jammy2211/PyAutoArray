@@ -36,8 +36,10 @@ class TestVisiblities(object):
 
         real_visibilities = transformer.real_visibilities_from_image(image=image)
 
+        print(real_visibilities)
+
         assert real_visibilities == pytest.approx(
-            np.array([1.11715, 1.68257, 1.93716]), 1.0e-4
+            np.array([-0.091544, -0.73359736, -0.613160]), 1.0e-4
         )
 
     def test__real_visibilities__intensity_image_varies__simple_cases(self):
@@ -72,7 +74,7 @@ class TestVisiblities(object):
         real_visibilities = transformer.real_visibilities_from_image(image=image)
 
         assert real_visibilities == pytest.approx(
-            np.array([3.91361, 7.10136, 8.717248]), 1.0e-4
+            np.array([-2.46153, -5.14765, -3.11681]), 1.0e-4
         )
 
     def test__real_visibilities__preload_and_non_preload_give_same_answer(self):
@@ -115,7 +117,7 @@ class TestVisiblities(object):
 
         imag_visibilities = transformer.imag_visibilities_from_image(image=image)
 
-        assert (imag_visibilities == np.zeros(shape=4)).all()
+        assert imag_visibilities == pytest.approx(np.zeros(shape=4), 1.0e-4)
 
         uv_wavelengths = np.array([[0.2, 1.0], [0.5, 1.1], [0.8, 1.2]])
 
@@ -132,7 +134,7 @@ class TestVisiblities(object):
         imag_visibilities = transformer.imag_visibilities_from_image(image=image)
 
         assert imag_visibilities == pytest.approx(
-            np.array([1.350411, 0.791759, 0.0]), 1.0e-4
+            np.array([-1.45506, -0.781201, -0.077460]), 1.0e-4
         )
 
     def test__imag_visibilities__intensity_image_varies__simple_cases(self):
@@ -150,7 +152,7 @@ class TestVisiblities(object):
 
         imag_visibilities = transformer.imag_visibilities_from_image(image=image)
 
-        assert (imag_visibilities == np.array([0.0])).all()
+        assert imag_visibilities == pytest.approx(np.zeros((4,)), 1.0e-4)
 
         uv_wavelengths = np.array([[0.2, 1.0], [0.5, 1.1], [0.8, 1.2]])
 
@@ -167,7 +169,7 @@ class TestVisiblities(object):
         imag_visibilities = transformer.imag_visibilities_from_image(image=image)
 
         assert imag_visibilities == pytest.approx(
-            np.array([6.9980971, 4.56218, 0.746069]), 1.0e-4
+            np.array([-6.418822, -1.78146, 2.48210]), 1.0e-4
         )
 
     def test__imag_visibilities__preload_and_non_preload_give_same_answer(self):
@@ -212,10 +214,10 @@ class TestVisiblities(object):
         visibilities = transformer.visibilities_from_image(image=image)
 
         assert visibilities[:, 0] == pytest.approx(
-            np.array([3.91361, 7.10136, 8.717248]), 1.0e-4
+            np.array([-2.46153, -5.14765, -3.11681]), 1.0e-4
         )
         assert visibilities[:, 1] == pytest.approx(
-            np.array([6.9980971, 4.56218, 0.746069]), 1.0e-4
+            np.array([-6.418822, -1.78146, 2.48210]), 1.0e-4
         )
 
         real_visibilities = transformer.real_visibilities_from_image(image=image)
@@ -261,8 +263,10 @@ class TestVisiblitiesMappingMatrix(object):
             mapping_matrix=mapping_matrix
         )
 
+        print(transformed_mapping_matrix)
+
         assert transformed_mapping_matrix == pytest.approx(
-            np.array([[1.11715], [1.68257], [1.93716]]), 1.0e-4
+            np.array([[-0.091544], [-0.733597], [-0.613160]]), 1.0e-4
         )
 
         mapping_matrix = np.ones(shape=(2, 2))
@@ -272,7 +276,7 @@ class TestVisiblitiesMappingMatrix(object):
         )
 
         assert transformed_mapping_matrix == pytest.approx(
-            np.array([[1.11715, 1.11715], [1.68257, 1.68257], [1.93716, 1.93716]]),
+            np.array([[-0.091544, -0.091544], [-0.733597, -0.733597], [-0.61316, -0.61316]]),
             1.0e-4,
         )
 
@@ -297,7 +301,7 @@ class TestVisiblitiesMappingMatrix(object):
         )
 
         assert transformed_mapping_matrix == pytest.approx(
-            np.array([[0.92977], [0.87630]]), 1.0e-4
+            np.array([[0.18738], [-0.18738]]), 1.0e-4
         )
 
         mapping_matrix = np.array([[0.0], [1.0], [0.0]])
@@ -306,8 +310,10 @@ class TestVisiblitiesMappingMatrix(object):
             mapping_matrix=mapping_matrix
         )
 
+        print(transformed_mapping_matrix)
+
         assert transformed_mapping_matrix == pytest.approx(
-            np.array([[0.96858], [0.92977]]), 1.0e-4
+            np.array([[-0.992111], [-0.53582]]), 1.0e-4
         )
 
         mapping_matrix = np.array([[0.0, 0.5], [0.0, 0.2], [1.0, 0.0]])
@@ -319,8 +325,8 @@ class TestVisiblitiesMappingMatrix(object):
         assert transformed_mapping_matrix == pytest.approx(
             np.array(
                 [
-                    [0.99211, 0.5 * 0.92977 + 0.2 * 0.96858],
-                    [0.96858, 0.5 * 0.87630 + 0.2 * 0.92977],
+                    [0.42577, -0.10473],
+                    [0.968583, -0.20085],
                 ]
             ),
             1.0e-4,
@@ -372,7 +378,7 @@ class TestVisiblitiesMappingMatrix(object):
             mapping_matrix=mapping_matrix
         )
 
-        assert (transformed_mapping_matrix == np.zeros(shape=(4, 1))).all()
+        assert transformed_mapping_matrix == pytest.approx(np.zeros(shape=(4, 1)), 1.0e-4)
 
         uv_wavelengths = np.array([[0.2, 1.0], [0.5, 1.1], [0.8, 1.2]])
 
@@ -391,7 +397,7 @@ class TestVisiblitiesMappingMatrix(object):
         )
 
         assert transformed_mapping_matrix == pytest.approx(
-            np.array([[1.350411], [0.791759], [0.0]]), 1.0e-4
+            np.array([[-1.455060], [-0.78120], [-0.07746]]), 1.0e-4
         )
 
         mapping_matrix = np.ones(shape=(2, 2))
@@ -401,7 +407,7 @@ class TestVisiblitiesMappingMatrix(object):
         )
 
         assert transformed_mapping_matrix == pytest.approx(
-            np.array([[1.350411, 1.350411], [0.791759, 0.791759], [0.0, 0.0]]), 1.0e-4
+            np.array([[-1.45506, -1.45506], [-0.78120, -0.78120], [-0.07746, -0.07746]]), 1.0e-4
         )
 
     def test__imag_visibilities__more_complex_mapping_matrix(self):
@@ -425,7 +431,7 @@ class TestVisiblitiesMappingMatrix(object):
         )
 
         assert transformed_mapping_matrix == pytest.approx(
-            np.array([[-0.36812], [-0.48175]]), 1.0e-4
+            np.array([[-0.982287], [-0.982287]]), 1.0e-4
         )
 
         mapping_matrix = np.array([[0.0], [1.0], [0.0]])
@@ -435,7 +441,7 @@ class TestVisiblitiesMappingMatrix(object):
         )
 
         assert transformed_mapping_matrix == pytest.approx(
-            np.array([[-0.24868], [-0.36812]]), 1.0e-4
+            np.array([[0.12533], [0.84432]]), 1.0e-4
         )
 
         mapping_matrix = np.array([[0.0, 0.5], [0.0, 0.2], [1.0, 0.0]])
@@ -447,8 +453,8 @@ class TestVisiblitiesMappingMatrix(object):
         assert transformed_mapping_matrix == pytest.approx(
             np.array(
                 [
-                    [-0.12533, 0.5 * -0.36812 + 0.2 * -0.24868],
-                    [-0.24868, 0.5 * -0.48175 + 0.2 * -0.36812],
+                    [0.90482, -0.46607],
+                    [-0.24868, -0.32227],
                 ]
             ),
             1.0e-4,
@@ -503,8 +509,8 @@ class TestVisiblitiesMappingMatrix(object):
         )
 
         assert transformed_mapping_matrices[0] == pytest.approx(
-            np.array([[1.11715], [1.68257], [1.93716]]), 1.0e-4
+            np.array([[-0.09154], [-0.73359], [-0.61316]]), 1.0e-4
         )
         assert transformed_mapping_matrices[1] == pytest.approx(
-            np.array([[1.350411], [0.791759], [0.0]]), 1.0e-4
+            np.array([[-1.45506], [-0.78120], [-0.07746]]), 1.0e-4
         )
