@@ -5,7 +5,7 @@ backend = conf.get_matplotlib_backend()
 matplotlib.use(backend)
 from matplotlib import pyplot as plt
 
-from autoarray.plotters import grid_plotters, inversion_plotters
+from autoarray.plotters import grid_plotters, inversion_plotters, line_yx_plotters
 from autoarray.util import plotter_util
 from autoarray.structures import grids
 
@@ -628,26 +628,22 @@ def residual_map_vs_uv_distances(
 
     if plot_real:
         y = fit.residual_map[:,0]
+        title += " Real"
         output_filename += "_real"
     else:
         y = fit.residual_map[:,1]
+        title += " Imag"
         output_filename += "_imag"
 
-    grid = grids.GridIrregular.manual_yx_1d(y=y, x=fit.masked_interferometer.interferometer.uv_distances)
-
-    grid_plotters.plot_grid(
-        grid=grid,
+    line_yx_plotters.plot_line(
+        y=y,
+        x=fit.masked_interferometer.interferometer.uv_distances / 10 ** 3.0,
         as_subplot=as_subplot,
         unit_conversion_factor=unit_conversion_factor,
         unit_label_y=unit_label_y,
         unit_label_x=unit_label_x,
         figsize=figsize,
-        cmap=cmap,
-        cb_ticksize=cb_ticksize,
-        cb_fraction=cb_fraction,
-        cb_pad=cb_pad,
-        cb_tick_values=cb_tick_values,
-        cb_tick_labels=cb_tick_labels,
+        plot_axis_type="scatter",
         title=title,
         titlesize=titlesize,
         xlabelsize=xlabelsize,
@@ -696,26 +692,22 @@ def normalized_residual_map_vs_uv_distances(
 
     if plot_real:
         y = fit.normalized_residual_map[:,0]
+        title += " Real"
         output_filename += "_real"
     else:
         y = fit.normalized_residual_map[:,1]
+        title += " Imag"
         output_filename += "_imag"
 
-    grid = grids.GridIrregular.manual_yx_1d(y=y, x=fit.masked_interferometer.interferometer.uv_distances)
-
-    grid_plotters.plot_grid(
-        grid=grid,
+    line_yx_plotters.plot_line(
+        y=y,
+        x=fit.masked_interferometer.interferometer.uv_distances / 10 ** 3.0,
         as_subplot=as_subplot,
         unit_conversion_factor=unit_conversion_factor,
         unit_label_y=unit_label_y,
         unit_label_x=unit_label_x,
         figsize=figsize,
-        cmap=cmap,
-        cb_ticksize=cb_ticksize,
-        cb_fraction=cb_fraction,
-        cb_pad=cb_pad,
-        cb_tick_values=cb_tick_values,
-        cb_tick_labels=cb_tick_labels,
+        plot_axis_type="scatter",
         title=title,
         titlesize=titlesize,
         xlabelsize=xlabelsize,
@@ -764,26 +756,22 @@ def chi_squared_map_vs_uv_distances(
 
     if plot_real:
         y = fit.chi_squared_map[:,0]
+        title += " Real"
         output_filename += "_real"
     else:
         y = fit.chi_squared_map[:,1]
+        title += " Imag"
         output_filename += "_imag"
 
-    grid = grids.GridIrregular.manual_yx_1d(y=y, x=fit.masked_interferometer.interferometer.uv_distances)
-
-    grid_plotters.plot_grid(
-        grid=grid,
+    line_yx_plotters.plot_line(
+        y=y,
+        x=fit.masked_interferometer.interferometer.uv_distances / 10 ** 3.0,
         as_subplot=as_subplot,
         unit_conversion_factor=unit_conversion_factor,
         unit_label_y=unit_label_y,
         unit_label_x=unit_label_x,
         figsize=figsize,
-        cmap=cmap,
-        cb_ticksize=cb_ticksize,
-        cb_fraction=cb_fraction,
-        cb_pad=cb_pad,
-        cb_tick_values=cb_tick_values,
-        cb_tick_labels=cb_tick_labels,
+        plot_axis_type="scatter",
         title=title,
         titlesize=titlesize,
         xlabelsize=xlabelsize,

@@ -14,7 +14,6 @@ import numpy as np
 def subplot(
     interferometer,
     unit_conversion_factor=None,
-    unit_label="scaled",
     figsize=None,
     cmap="jet",
     cb_ticksize=10,
@@ -64,7 +63,6 @@ def subplot(
         interferometer=interferometer,
         as_subplot=True,
         unit_conversion_factor=unit_conversion_factor,
-        unit_label=unit_label,
         figsize=figsize,
         titlesize=titlesize,
         xlabelsize=xlabelsize,
@@ -81,7 +79,6 @@ def subplot(
         interferometer=interferometer,
         as_subplot=True,
         unit_conversion_factor=unit_conversion_factor,
-        unit_label=unit_label,
         figsize=figsize,
         cmap=cmap,
         cb_ticksize=cb_ticksize,
@@ -327,9 +324,10 @@ def visibilities(
         grid=interferometer.visibilities,
         as_subplot=as_subplot,
         unit_conversion_factor=unit_conversion_factor,
-        unit_label_y=unit_label,
-        unit_label_x=unit_label,
+        unit_label_y="imag",
+        unit_label_x="real",
         figsize=figsize,
+        pointsize=20,
         cmap=cmap,
         cb_ticksize=cb_ticksize,
         cb_fraction=cb_fraction,
@@ -520,9 +518,10 @@ def uv_wavelengths(
     interferometer,
     as_subplot=False,
     unit_conversion_factor=None,
-    unit_label="Wavelengths",
+    unit_label_y="V-Wavelengths ($\lambda$)",
+    unit_label_x="U-Wavelengths ($\lambda$)",
     figsize=(14, 7),
-    title="U-Wavelengths",
+    title="UV-Wavelengths",
     titlesize=16,
     xlabelsize=16,
     ylabelsize=16,
@@ -548,18 +547,20 @@ def uv_wavelengths(
 
     grid_plotters.plot_grid(
         grid=grids.GridIrregular.manual_yx_1d(
-            y=interferometer.uv_wavelengths[:, 1], x=interferometer.uv_wavelengths[:, 1]
+            y=interferometer.uv_wavelengths[:, 1]/ 10 ** 3.0, x=interferometer.uv_wavelengths[:, 0]/ 10 ** 3.0
         ),
         as_subplot=as_subplot,
         unit_conversion_factor=unit_conversion_factor,
-        unit_label_y=unit_label,
-        unit_label_x=unit_label,
+        unit_label_y=unit_label_y,
+        unit_label_x=unit_label_x,
+        pointsize=20,
         figsize=figsize,
         title=title,
         titlesize=titlesize,
         xlabelsize=xlabelsize,
         ylabelsize=ylabelsize,
         xyticksize=xyticksize,
+        symmetric_around_centre=True,
         output_path=output_path,
         output_format=output_format,
         output_filename=output_filename,
@@ -588,21 +589,14 @@ def amplitudes_vs_uv_distances(
     output_format="show",
     output_filename="interferometer_amplitudes_vs_uv_distances",
 ):
-    grid_plotters.plot_grid(
-        grid=grids.GridIrregular.manual_yx_1d(
-            y=interferometer.amplitudes, x=interferometer.uv_distances / 10 ** 3.0
-        ),
+    line_yx_plotters.plot_line(
+        y=interferometer.amplitudes, x=interferometer.uv_distances / 10 ** 3.0,
         as_subplot=as_subplot,
         unit_conversion_factor=unit_conversion_factor,
         unit_label_y=unit_label_y,
         unit_label_x=unit_label_x,
+        plot_axis_type="scatter",
         figsize=figsize,
-        cmap=cmap,
-        cb_ticksize=cb_ticksize,
-        cb_fraction=cb_fraction,
-        cb_pad=cb_pad,
-        cb_tick_values=cb_tick_values,
-        cb_tick_labels=cb_tick_labels,
         title=title,
         titlesize=titlesize,
         xlabelsize=xlabelsize,
@@ -637,21 +631,14 @@ def phases_vs_uv_distances(
     output_filename="interferometer_phases_vs_uv_distances",
 ):
 
-    grid_plotters.plot_grid(
-        grid=grids.GridIrregular.manual_yx_1d(
-            y=interferometer.phases, x=interferometer.uv_distances / 10 ** 3.0
-        ),
+    line_yx_plotters.plot_line(
+        y=interferometer.phases, x=interferometer.uv_distances / 10 ** 3.0,
         as_subplot=as_subplot,
         unit_conversion_factor=unit_conversion_factor,
         unit_label_y=unit_label_y,
         unit_label_x=unit_label_x,
+        plot_axis_type="scatter",
         figsize=figsize,
-        cmap=cmap,
-        cb_ticksize=cb_ticksize,
-        cb_fraction=cb_fraction,
-        cb_pad=cb_pad,
-        cb_tick_values=cb_tick_values,
-        cb_tick_labels=cb_tick_labels,
         title=title,
         titlesize=titlesize,
         xlabelsize=xlabelsize,

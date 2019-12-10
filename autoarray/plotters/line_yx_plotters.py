@@ -23,6 +23,7 @@ def plot_line(
     xlabelsize=16,
     ylabelsize=16,
     xyticksize=16,
+    pointsize=20,
     legend_fontsize=12,
     output_path=None,
     output_format="show",
@@ -35,7 +36,7 @@ def plot_line(
     if x is None:
         x = np.arange(len(y))
 
-    plot_y_vs_x(y=y, x=x, plot_axis_type=plot_axis_type, label=label)
+    plot_y_vs_x(y=y, x=x, plot_axis_type=plot_axis_type, label=label, pointsize=pointsize)
 
     set_xy_labels_and_ticksize(
         unit_label_y=unit_label_y,
@@ -59,17 +60,20 @@ def plot_line(
         xticks_manual=None,
     )
 
-    plotter_util.output_figure(
-        array=None,
-        as_subplot=as_subplot,
-        output_path=output_path,
-        output_filename=output_filename,
-        output_format=output_format,
-    )
+    if output_format is not "fits":
+
+        plotter_util.output_figure(
+            array=None,
+            as_subplot=as_subplot,
+            output_path=output_path,
+            output_filename=output_filename,
+            output_format=output_format,
+        )
+
     plotter_util.close_figure(as_subplot=as_subplot)
 
 
-def plot_y_vs_x(y, x, plot_axis_type, label):
+def plot_y_vs_x(y, x, plot_axis_type, label, pointsize):
 
     if plot_axis_type is "linear":
         plt.plot(x, y, label=label)
@@ -77,6 +81,8 @@ def plot_y_vs_x(y, x, plot_axis_type, label):
         plt.semilogy(x, y, label=label)
     elif plot_axis_type is "loglog":
         plt.loglog(x, y, label=label)
+    elif plot_axis_type is "scatter":
+        plt.scatter(x, y, label=label, s=pointsize)
     else:
         raise exc.PlottingException(
             "The plot_axis_type supplied to the plotter is not a valid string (must be linear "

@@ -470,7 +470,7 @@ def residual_map(
 
     plot_values(
         inversion=inversion,
-        source_pixel_values=inversion.residual_map_vs_uv_distances,
+        source_pixel_values=inversion.residual_map,
         include_origin=include_origin,
         positions=positions,
         include_centres=include_centres,
@@ -551,7 +551,7 @@ def normalized_residual_map(
 
     plot_values(
         inversion=inversion,
-        source_pixel_values=inversion.normalized_residual_map_vs_uv_distances,
+        source_pixel_values=inversion.normalized_residual_map,
         include_origin=include_origin,
         positions=positions,
         include_centres=include_centres,
@@ -632,7 +632,7 @@ def chi_squared_map(
 
     plot_values(
         inversion=inversion,
-        source_pixel_values=inversion.chi_squared_map_vs_uv_distances,
+        source_pixel_values=inversion.chi_squared_map,
         include_origin=include_origin,
         positions=positions,
         include_centres=include_centres,
