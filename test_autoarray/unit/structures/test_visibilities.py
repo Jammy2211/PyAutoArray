@@ -21,9 +21,14 @@ class TestVisibilitiesAPI:
             )
 
             assert type(visibilities) == vis.Visibilities
+            assert visibilities.flipped_1d == np.array([[2.0, 1.0], [4.0, 3.0]])
             assert (visibilities.in_1d == np.array([[1.0, 2.0], [3.0, 4.0]])).all()
             assert (visibilities.real == np.array([1.0, 3.0])).all()
             assert (visibilities.imag == np.array([2.0, 4.0])).all()
+            assert (visibilities.amplitudes == np.array([np.sqrt(5), 5.0])).all()
+            assert visibilities.phases == pytest.approx(
+                np.array([1.10714872, 0.92729522]), 1.0e-4
+            )
 
             visibilities = aa.visibilities.manual_1d(
                 visibilities=[[1.0, 2.0], [3.0, 4.0], [5.0, 6.0]]

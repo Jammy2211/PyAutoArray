@@ -194,6 +194,13 @@ class TestInterferometerFromFits(object):
         assert (interferometer.noise_map.imag == 4.0 * np.ones(3)).all()
         assert (interferometer.uv_wavelengths[:, 0] == 5.0 * np.ones(3)).all()
         assert (interferometer.uv_wavelengths[:, 1] == 6.0 * np.ones(3)).all()
+        assert interferometer.amplitudes == pytest.approx(
+            np.sqrt(5) * np.ones(3), 1.0e-4
+        )
+        assert interferometer.phases == pytest.approx(1.10714 * np.ones(3), 1.0e-4)
+        assert interferometer.uv_distances == pytest.approx(
+            np.sqrt(61) * np.ones(3), 1.0e-4
+        )
         assert (interferometer.primary_beam.in_2d == 5.0 * np.ones((3, 3))).all()
 
     def test__optional_array_paths_included__loads_optional_array(self):

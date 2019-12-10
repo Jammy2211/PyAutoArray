@@ -7,12 +7,11 @@ from matplotlib import pyplot as plt
 
 from autoarray.plotters import grid_plotters, inversion_plotters
 from autoarray.util import plotter_util
-
+from autoarray.structures import grids
 
 def subplot(
     fit,
     unit_conversion_factor=None,
-    unit_label="arcsec",
     figsize=None,
     cmap="jet",
     cb_ticksize=10,
@@ -24,7 +23,6 @@ def subplot(
     xlabelsize=10,
     ylabelsize=10,
     xyticksize=10,
-    grid_pointsize=1,
     output_path=None,
     output_filename="fit",
     output_format="show",
@@ -41,11 +39,10 @@ def subplot(
 
     plt.subplot(rows, columns, 1)
 
-    visibilities(
+    residual_map_vs_uv_distances(
         fit=fit,
         as_subplot=True,
         unit_conversion_factor=unit_conversion_factor,
-        unit_label=unit_label,
         figsize=figsize,
         cmap=cmap,
         cb_ticksize=cb_ticksize,
@@ -57,7 +54,6 @@ def subplot(
         xlabelsize=xlabelsize,
         ylabelsize=ylabelsize,
         xyticksize=xyticksize,
-        pointsize=grid_pointsize,
         output_path=output_path,
         output_filename="",
         output_format=output_format,
@@ -65,10 +61,9 @@ def subplot(
 
     plt.subplot(rows, columns, 2)
 
-    signal_to_noise_map(
+    normalized_residual_map_vs_uv_distances(
         fit=fit,
         as_subplot=True,
-        unit_label=unit_label,
         unit_conversion_factor=unit_conversion_factor,
         figsize=figsize,
         cmap=cmap,
@@ -88,11 +83,10 @@ def subplot(
 
     plt.subplot(rows, columns, 3)
 
-    model_visibilities(
+    chi_squared_map_vs_uv_distances(
         fit=fit,
         as_subplot=True,
         unit_conversion_factor=unit_conversion_factor,
-        unit_label=unit_label,
         figsize=figsize,
         cmap=cmap,
         cb_ticksize=cb_ticksize,
@@ -111,11 +105,11 @@ def subplot(
 
     plt.subplot(rows, columns, 4)
 
-    residual_map(
+    residual_map_vs_uv_distances(
         fit=fit,
+        plot_real=False,
         as_subplot=True,
         unit_conversion_factor=unit_conversion_factor,
-        unit_label=unit_label,
         figsize=figsize,
         cmap=cmap,
         cb_ticksize=cb_ticksize,
@@ -134,10 +128,10 @@ def subplot(
 
     plt.subplot(rows, columns, 5)
 
-    normalized_residual_map(
+    normalized_residual_map_vs_uv_distances(
         fit=fit,
+        plot_real=False,
         as_subplot=True,
-        unit_label=unit_label,
         unit_conversion_factor=unit_conversion_factor,
         figsize=figsize,
         cmap=cmap,
@@ -157,11 +151,11 @@ def subplot(
 
     plt.subplot(rows, columns, 6)
 
-    chi_squared_map(
+    chi_squared_map_vs_uv_distances(
         fit=fit,
+        plot_real=False,
         as_subplot=True,
         unit_conversion_factor=unit_conversion_factor,
-        unit_label=unit_label,
         figsize=figsize,
         cmap=cmap,
         cb_ticksize=cb_ticksize,
@@ -262,9 +256,17 @@ def individuals(
 
     if plot_residual_map:
 
-        residual_map(
+        residual_map_vs_uv_distances(
             fit=fit,
-            unit_label=unit_label,
+            plot_real=True,
+            unit_conversion_factor=unit_conversion_factor,
+            output_path=output_path,
+            output_format=output_format,
+        )
+
+        residual_map_vs_uv_distances(
+            fit=fit,
+            plot_real=False,
             unit_conversion_factor=unit_conversion_factor,
             output_path=output_path,
             output_format=output_format,
@@ -272,9 +274,17 @@ def individuals(
 
     if plot_normalized_residual_map:
 
-        normalized_residual_map(
+        normalized_residual_map_vs_uv_distances(
             fit=fit,
-            unit_label=unit_label,
+            plot_real=True,
+            unit_conversion_factor=unit_conversion_factor,
+            output_path=output_path,
+            output_format=output_format,
+        )
+
+        normalized_residual_map_vs_uv_distances(
+            fit=fit,
+            plot_real=False,
             unit_conversion_factor=unit_conversion_factor,
             output_path=output_path,
             output_format=output_format,
@@ -282,9 +292,17 @@ def individuals(
 
     if plot_chi_squared_map:
 
-        chi_squared_map(
+        chi_squared_map_vs_uv_distances(
             fit=fit,
-            unit_label=unit_label,
+            plot_real=True,
+            unit_conversion_factor=unit_conversion_factor,
+            output_path=output_path,
+            output_format=output_format,
+        )
+
+        chi_squared_map_vs_uv_distances(
+            fit=fit,
+            plot_real=False,
             unit_conversion_factor=unit_conversion_factor,
             output_path=output_path,
             output_format=output_format,
@@ -382,7 +400,8 @@ def visibilities(
         grid=fit.visibilities,
         as_subplot=as_subplot,
         unit_conversion_factor=unit_conversion_factor,
-        unit_label=unit_label,
+        unit_label_y=unit_label,
+        unit_label_x=unit_label,
         figsize=figsize,
         cmap=cmap,
         cb_ticksize=cb_ticksize,
@@ -439,7 +458,8 @@ def noise_map(
         colors=fit.noise_map[:, 0],
         as_subplot=as_subplot,
         unit_conversion_factor=unit_conversion_factor,
-        unit_label=unit_label,
+        unit_label_y=unit_label,
+        unit_label_x=unit_label,
         figsize=figsize,
         cmap=cmap,
         cb_ticksize=cb_ticksize,
@@ -495,7 +515,8 @@ def signal_to_noise_map(
         colors=fit.signal_to_noise_map[:, 0],
         as_subplot=as_subplot,
         unit_conversion_factor=unit_conversion_factor,
-        unit_label=unit_label,
+        unit_label_y=unit_label,
+        unit_label_x=unit_label,
         figsize=figsize,
         cmap=cmap,
         cb_ticksize=cb_ticksize,
@@ -551,7 +572,7 @@ def model_visibilities(
         colors=fit.model_visibilities[:, 0],
         as_subplot=as_subplot,
         unit_conversion_factor=unit_conversion_factor,
-        unit_label=unit_label,
+        unit_label_y=unit_label,
         figsize=figsize,
         cmap=cmap,
         cb_ticksize=cb_ticksize,
@@ -570,11 +591,13 @@ def model_visibilities(
     )
 
 
-def residual_map(
+def residual_map_vs_uv_distances(
     fit,
     as_subplot=False,
+    plot_real=True,
     unit_conversion_factor=None,
-    unit_label="scaled",
+    unit_label_y="V$_{R,data}$ - V$_{R,model}$",
+    unit_label_x=r"UV$_{distance}$ (k$\lambda$)",
     figsize=(7, 7),
     cmap="jet",
     cb_ticksize=10,
@@ -589,7 +612,7 @@ def residual_map(
     xyticksize=16,
     output_path=None,
     output_format="show",
-    output_filename="fit_residual_map",
+    output_filename="fit_residual_map_vs_uv_distances",
 ):
     """Plot the residual-map of a lens fit.
 
@@ -602,12 +625,22 @@ def residual_map(
     visibilities_index : int
         The index of the datas in the datas-set of which the residual_map are plotted.
     """
+
+    if plot_real:
+        y = fit.residual_map[:,0]
+        output_filename += "_real"
+    else:
+        y = fit.residual_map[:,1]
+        output_filename += "_imag"
+
+    grid = grids.GridIrregular.manual_yx_1d(y=y, x=fit.masked_interferometer.interferometer.uv_distances)
+
     grid_plotters.plot_grid(
-        grid=fit.visibilities,
-        colors=fit.residual_map[:, 0],
+        grid=grid,
         as_subplot=as_subplot,
         unit_conversion_factor=unit_conversion_factor,
-        unit_label=unit_label,
+        unit_label_y=unit_label_y,
+        unit_label_x=unit_label_x,
         figsize=figsize,
         cmap=cmap,
         cb_ticksize=cb_ticksize,
@@ -626,11 +659,13 @@ def residual_map(
     )
 
 
-def normalized_residual_map(
+def normalized_residual_map_vs_uv_distances(
     fit,
     as_subplot=False,
+    plot_real=True,
     unit_conversion_factor=None,
-    unit_label="scaled",
+    unit_label_y="V$_{R,data}$ - V$_{R,model}$",
+    unit_label_x=r"UV$_{distance}$ (k$\lambda$)",
     figsize=(7, 7),
     cmap="jet",
     cb_ticksize=10,
@@ -645,7 +680,7 @@ def normalized_residual_map(
     xyticksize=16,
     output_path=None,
     output_format="show",
-    output_filename="fit_normalized_residual_map",
+    output_filename="fit_normalized_residual_map_vs_uv_distances",
 ):
     """Plot the residual-map of a lens fit.
 
@@ -654,16 +689,26 @@ def normalized_residual_map(
     Parameters
     -----------
     fit : datas.fitting.fitting.AbstractFitter
-        The fit to the datas, which includes a list of every model visibilities, normalized_residual_map, chi-squareds, etc.
+        The fit to the datas, which includes a list of every model visibilities, residual_map, chi-squareds, etc.
     visibilities_index : int
-        The index of the datas in the datas-set of which the normalized_residual_map are plotted.
+        The index of the datas in the datas-set of which the residual_map are plotted.
     """
+
+    if plot_real:
+        y = fit.normalized_residual_map[:,0]
+        output_filename += "_real"
+    else:
+        y = fit.normalized_residual_map[:,1]
+        output_filename += "_imag"
+
+    grid = grids.GridIrregular.manual_yx_1d(y=y, x=fit.masked_interferometer.interferometer.uv_distances)
+
     grid_plotters.plot_grid(
-        grid=fit.visibilities,
-        colors=fit.normalized_residual_map[:, 0],
+        grid=grid,
         as_subplot=as_subplot,
         unit_conversion_factor=unit_conversion_factor,
-        unit_label=unit_label,
+        unit_label_y=unit_label_y,
+        unit_label_x=unit_label_x,
         figsize=figsize,
         cmap=cmap,
         cb_ticksize=cb_ticksize,
@@ -682,11 +727,13 @@ def normalized_residual_map(
     )
 
 
-def chi_squared_map(
+def chi_squared_map_vs_uv_distances(
     fit,
     as_subplot=False,
+    plot_real=True,
     unit_conversion_factor=None,
-    unit_label="scaled",
+    unit_label_y="V$_{R,data}$ - V$_{R,model}$",
+    unit_label_x=r"UV$_{distance}$ (k$\lambda$)",
     figsize=(7, 7),
     cmap="jet",
     cb_ticksize=10,
@@ -701,9 +748,9 @@ def chi_squared_map(
     xyticksize=16,
     output_path=None,
     output_format="show",
-    output_filename="fit_chi_squared_map",
+    output_filename="fit_chi_squared_map_vs_uv_distances",
 ):
-    """Plot the chi-squared map of a lens fit.
+    """Plot the residual-map of a lens fit.
 
     Set *autolens.datas.grid.plotters.grid_plotters* for a description of all input parameters not described below.
 
@@ -712,14 +759,24 @@ def chi_squared_map(
     fit : datas.fitting.fitting.AbstractFitter
         The fit to the datas, which includes a list of every model visibilities, residual_map, chi-squareds, etc.
     visibilities_index : int
-        The index of the datas in the datas-set of which the chi-squareds are plotted.
+        The index of the datas in the datas-set of which the residual_map are plotted.
     """
+
+    if plot_real:
+        y = fit.chi_squared_map[:,0]
+        output_filename += "_real"
+    else:
+        y = fit.chi_squared_map[:,1]
+        output_filename += "_imag"
+
+    grid = grids.GridIrregular.manual_yx_1d(y=y, x=fit.masked_interferometer.interferometer.uv_distances)
+
     grid_plotters.plot_grid(
-        grid=fit.visibilities,
-        colors=fit.chi_squared_map[:, 0],
+        grid=grid,
         as_subplot=as_subplot,
         unit_conversion_factor=unit_conversion_factor,
-        unit_label=unit_label,
+        unit_label_y=unit_label_y,
+        unit_label_x=unit_label_x,
         figsize=figsize,
         cmap=cmap,
         cb_ticksize=cb_ticksize,

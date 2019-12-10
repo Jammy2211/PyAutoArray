@@ -7,6 +7,7 @@ from matplotlib import pyplot as plt
 import numpy as np
 import itertools
 
+from autoarray.structures import grids
 from autoarray.util import array_util, plotter_util
 
 
@@ -18,7 +19,8 @@ def plot_grid(
     lines=None,
     as_subplot=False,
     unit_conversion_factor=None,
-    unit_label="scaled",
+    unit_label_y="scaled",
+    unit_label_x="scaled",
     figsize=(12, 8),
     pointsize=5,
     pointcolor="k",
@@ -51,7 +53,7 @@ def plot_grid(
         different planes).
     as_subplot : bool
         Whether the grid is plotted as part of a subplot, in which case the grid figure is not opened / closed.
-    unit_label : str
+    unit_label_y : str
         The label of the unit_label of the y / x axis of the plots.
     unit_conversion_factor : float
         The conversion factor between arc-seconds and kiloparsecs, required to plotters the unit_label in kpc.
@@ -105,8 +107,9 @@ def plot_grid(
         )
 
     plotter_util.set_title(title=title, titlesize=titlesize)
-    plotter_util.set_xy_labels_and_ticksize(
-        unit_label=unit_label,
+    plotter_util.set_yx_labels_and_ticksize(
+        unit_label_y=unit_label_y,
+        unit_label_x=unit_label_x,
         xlabelsize=xlabelsize,
         ylabelsize=ylabelsize,
         xyticksize=xyticksize,

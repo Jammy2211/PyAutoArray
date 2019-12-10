@@ -276,7 +276,9 @@ class TestVisiblitiesMappingMatrix(object):
         )
 
         assert transformed_mapping_matrix == pytest.approx(
-            np.array([[-0.091544, -0.091544], [-0.733597, -0.733597], [-0.61316, -0.61316]]),
+            np.array(
+                [[-0.091544, -0.091544], [-0.733597, -0.733597], [-0.61316, -0.61316]]
+            ),
             1.0e-4,
         )
 
@@ -323,13 +325,7 @@ class TestVisiblitiesMappingMatrix(object):
         )
 
         assert transformed_mapping_matrix == pytest.approx(
-            np.array(
-                [
-                    [0.42577, -0.10473],
-                    [0.968583, -0.20085],
-                ]
-            ),
-            1.0e-4,
+            np.array([[0.42577, -0.10473], [0.968583, -0.20085]]), 1.0e-4
         )
 
     def test__real_visibilities__preload_and_non_preload_give_same_answer(self):
@@ -378,7 +374,9 @@ class TestVisiblitiesMappingMatrix(object):
             mapping_matrix=mapping_matrix
         )
 
-        assert transformed_mapping_matrix == pytest.approx(np.zeros(shape=(4, 1)), 1.0e-4)
+        assert transformed_mapping_matrix == pytest.approx(
+            np.zeros(shape=(4, 1)), 1.0e-4
+        )
 
         uv_wavelengths = np.array([[0.2, 1.0], [0.5, 1.1], [0.8, 1.2]])
 
@@ -407,7 +405,10 @@ class TestVisiblitiesMappingMatrix(object):
         )
 
         assert transformed_mapping_matrix == pytest.approx(
-            np.array([[-1.45506, -1.45506], [-0.78120, -0.78120], [-0.07746, -0.07746]]), 1.0e-4
+            np.array(
+                [[-1.45506, -1.45506], [-0.78120, -0.78120], [-0.07746, -0.07746]]
+            ),
+            1.0e-4,
         )
 
     def test__imag_visibilities__more_complex_mapping_matrix(self):
@@ -451,13 +452,7 @@ class TestVisiblitiesMappingMatrix(object):
         )
 
         assert transformed_mapping_matrix == pytest.approx(
-            np.array(
-                [
-                    [0.90482, -0.46607],
-                    [-0.24868, -0.32227],
-                ]
-            ),
-            1.0e-4,
+            np.array([[0.90482, -0.46607], [-0.24868, -0.32227]]), 1.0e-4
         )
 
     def test__imag_visibilities__preload_and_non_preload_give_same_answer(self):

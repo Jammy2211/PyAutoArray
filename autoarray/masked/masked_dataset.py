@@ -263,6 +263,10 @@ class MaskedInterferometer(AbstractMaskedDataset):
         )
 
     @property
+    def uv_distances(self):
+        return self.interferometer.uv_distances
+
+    @property
     def real_space_mask(self):
         return self.mask
 
