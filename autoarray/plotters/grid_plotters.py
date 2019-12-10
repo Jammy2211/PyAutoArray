@@ -128,6 +128,7 @@ def plot_grid(
         unit_conversion_factor=unit_conversion_factor,
         xticks_manual=None,
         yticks_manual=None,
+        symmetric_around_centre=symmetric_around_centre,
     )
 
     plot_points(grid=grid, points=points, pointcolor=pointcolor)

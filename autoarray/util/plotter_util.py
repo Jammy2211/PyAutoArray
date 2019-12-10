@@ -97,6 +97,7 @@ def set_yxticks(
     unit_conversion_factor,
     xticks_manual,
     yticks_manual,
+    symmetric_around_centre=False,
 ):
     """Get the extent of the dimensions of the array in the unit_label of the figure (e.g. arc-seconds or kpc).
 
@@ -115,6 +116,9 @@ def set_yxticks(
     yticks_manual :  [] or None
         If input, the yticks do not use the array's default yticks but instead overwrite them as these values.
     """
+
+    if symmetric_around_centre:
+        return
 
     yticks = np.linspace(extent[2], extent[3], 5)
     xticks = np.linspace(extent[0], extent[1], 5)
