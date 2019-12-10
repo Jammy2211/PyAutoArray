@@ -68,12 +68,26 @@ class AbstractVisibilities(np.ndarray):
         return self.shape[0]
 
     @property
+    def flipped_1d(self):
+        return Visibilities.manual_1d(visibilities=np.fliplr(self))
+
+    @property
     def real(self):
         return self[:, 0]
 
     @property
     def imag(self):
         return self[:, 1]
+
+    @property
+    @array_util.Memoizer()
+    def amplitudes(self):
+        return np.sqrt(np.square(self.real) + np.square(self.imag))
+
+    @property
+    @array_util.Memoizer()
+    def phases(self):
+        return np.arctan2(self.imag, self.real)
 
     def output_to_fits(self, file_path, overwrite=False):
         array_util.numpy_array_2d_to_fits(

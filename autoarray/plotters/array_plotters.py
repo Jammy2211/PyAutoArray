@@ -196,8 +196,9 @@ def plot_array(
     )
 
     plotter_util.set_title(title=title, titlesize=titlesize)
-    plotter_util.set_xy_labels_and_ticksize(
-        unit_label=unit_label,
+    plotter_util.set_yx_labels_and_ticksize(
+        unit_label_y=unit_label,
+        unit_label_x=unit_label,
         xlabelsize=xlabelsize,
         ylabelsize=ylabelsize,
         xyticksize=xyticksize,

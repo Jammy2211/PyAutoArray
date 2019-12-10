@@ -16,6 +16,20 @@ class AbstractInterferometerSet(abstract_dataset.AbstractDataset):
     def visibilities(self):
         return self.data
 
+    @property
+    def amplitudes(self):
+        return self.visibilities.amplitudes
+
+    @property
+    def phases(self):
+        return self.visibilities.phases
+
+    @property
+    def uv_distances(self):
+        return np.sqrt(
+            np.square(self.uv_wavelengths[:, 0]) + np.square(self.uv_wavelengths[:, 1])
+        )
+
     def modified_visibilities_from_visibilities(self, visibilities):
 
         return Interferometer(
@@ -89,9 +103,6 @@ class Interferometer(AbstractInterferometerSet):
             data=visibilities, noise_map=noise_map, exposure_time_map=exposure_time_map
         )
 
-        self.magnitudes = np.sqrt(
-            np.square(self.visibilities.real) + np.square(self.visibilities.imag)
-        )
         self.uv_wavelengths = uv_wavelengths
         self.primary_beam = primary_beam
 

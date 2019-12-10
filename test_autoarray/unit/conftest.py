@@ -298,9 +298,11 @@ def make_masked_imaging_fit_x1_plane_7x7(masked_imaging_7x7):
 
 @pytest.fixture(name="fit_interferometer_7")
 def make_masked_interferometer_fit_x1_plane_7(masked_interferometer_7):
-    return fit.InterferometerFit(
+    fit_interferometer = fit.InterferometerFit(
         visibilities_mask=masked_interferometer_7.visibilities_mask,
         visibilities=masked_interferometer_7.visibilities,
         noise_map=masked_interferometer_7.noise_map,
         model_visibilities=5.0 * masked_interferometer_7.visibilities,
     )
+    fit_interferometer.masked_dataset = masked_interferometer_7
+    return fit_interferometer

@@ -7,6 +7,8 @@ from matplotlib import pyplot as plt
 
 from autoarray.plotters import array_plotters, grid_plotters, line_yx_plotters
 from autoarray.util import plotter_util
+from autoarray.structures import grids
+import numpy as np
 
 
 def subplot(
@@ -24,8 +26,6 @@ def subplot(
     xlabelsize=10,
     ylabelsize=10,
     xyticksize=10,
-    plot_axis_type="linear",
-    legend_fontsize=12,
     output_path=None,
     output_filename="interferometer",
     output_format="show",
@@ -50,7 +50,7 @@ def subplot(
     """
 
     rows, columns, figsize_tool = plotter_util.get_subplot_rows_columns_figsize(
-        number_subplots=3
+        number_subplots=4
     )
 
     if figsize is None:
@@ -59,6 +59,23 @@ def subplot(
     plt.figure(figsize=figsize)
 
     plt.subplot(rows, columns, 1)
+
+    uv_wavelengths(
+        interferometer=interferometer,
+        as_subplot=True,
+        unit_conversion_factor=unit_conversion_factor,
+        unit_label=unit_label,
+        figsize=figsize,
+        titlesize=titlesize,
+        xlabelsize=xlabelsize,
+        ylabelsize=ylabelsize,
+        xyticksize=xyticksize,
+        output_path=output_path,
+        output_format=output_format,
+        output_filename=output_filename,
+    )
+
+    plt.subplot(rows, columns, 2)
 
     visibilities(
         interferometer=interferometer,
@@ -81,13 +98,12 @@ def subplot(
         output_filename=output_filename,
     )
 
-    plt.subplot(rows, columns, 2)
+    plt.subplot(rows, columns, 3)
 
-    noise_map(
+    amplitudes_vs_uv_distances(
         interferometer=interferometer,
         as_subplot=True,
         unit_conversion_factor=unit_conversion_factor,
-        unit_label=unit_label,
         figsize=figsize,
         cmap=cmap,
         cb_ticksize=cb_ticksize,
@@ -104,39 +120,23 @@ def subplot(
         output_filename=output_filename,
     )
 
-    plt.subplot(rows, columns, 3)
-
-    u_wavelengths(
-        interferometer=interferometer,
-        as_subplot=True,
-        unit_conversion_factor=unit_conversion_factor,
-        unit_label=unit_label,
-        figsize=figsize,
-        plot_axis_type=plot_axis_type,
-        titlesize=titlesize,
-        xlabelsize=xlabelsize,
-        ylabelsize=ylabelsize,
-        xyticksize=xyticksize,
-        legend_fontsize=legend_fontsize,
-        output_path=output_path,
-        output_format=output_format,
-        output_filename=output_filename,
-    )
-
     plt.subplot(rows, columns, 4)
 
-    v_wavelengths(
+    phases_vs_uv_distances(
         interferometer=interferometer,
         as_subplot=True,
         unit_conversion_factor=unit_conversion_factor,
-        unit_label=unit_label,
         figsize=figsize,
-        plot_axis_type=plot_axis_type,
+        cmap=cmap,
+        cb_ticksize=cb_ticksize,
+        cb_fraction=cb_fraction,
+        cb_pad=cb_pad,
+        cb_tick_values=cb_tick_values,
+        cb_tick_labels=cb_tick_labels,
         titlesize=titlesize,
         xlabelsize=xlabelsize,
         ylabelsize=ylabelsize,
         xyticksize=xyticksize,
-        legend_fontsize=legend_fontsize,
         output_path=output_path,
         output_format=output_format,
         output_filename=output_filename,
@@ -188,6 +188,9 @@ def individual(
     plot_noise_map=False,
     plot_u_wavelengths=False,
     plot_v_wavelengths=False,
+    plot_uv_wavelengths=False,
+    plot_amplitudes_vs_uv_distances=False,
+    plot_phases_vs_uv_distances=False,
     plot_primary_beam=False,
     output_path=None,
     output_format="png",
@@ -227,7 +230,7 @@ def individual(
 
     if plot_u_wavelengths:
 
-        u_wavelengths(
+        uv_wavelengths(
             interferometer=interferometer,
             unit_label=unit_label,
             unit_conversion_factor=unit_conversion_factor,
@@ -240,6 +243,34 @@ def individual(
         v_wavelengths(
             interferometer=interferometer,
             unit_label=unit_label,
+            unit_conversion_factor=unit_conversion_factor,
+            output_path=output_path,
+            output_format=output_format,
+        )
+
+    if plot_uv_wavelengths:
+
+        uv_wavelengths(
+            interferometer=interferometer,
+            unit_label=unit_label,
+            unit_conversion_factor=unit_conversion_factor,
+            output_path=output_path,
+            output_format=output_format,
+        )
+
+    if plot_amplitudes_vs_uv_distances:
+
+        amplitudes_vs_uv_distances(
+            interferometer=interferometer,
+            unit_conversion_factor=unit_conversion_factor,
+            output_path=output_path,
+            output_format=output_format,
+        )
+
+    if plot_phases_vs_uv_distances:
+
+        phases_vs_uv_distances(
+            interferometer=interferometer,
             unit_conversion_factor=unit_conversion_factor,
             output_path=output_path,
             output_format=output_format,
@@ -296,7 +327,8 @@ def visibilities(
         grid=interferometer.visibilities,
         as_subplot=as_subplot,
         unit_conversion_factor=unit_conversion_factor,
-        unit_label=unit_label,
+        unit_label_y=unit_label,
+        unit_label_x=unit_label,
         figsize=figsize,
         cmap=cmap,
         cb_ticksize=cb_ticksize,
@@ -356,7 +388,8 @@ def noise_map(
         colors=interferometer.noise_map[:, 0],
         as_subplot=as_subplot,
         unit_conversion_factor=unit_conversion_factor,
-        unit_label=unit_label,
+        unit_label_y=unit_label,
+        unit_label_x=unit_label,
         figsize=figsize,
         cmap=cmap,
         cb_ticksize=cb_ticksize,
@@ -389,7 +422,6 @@ def u_wavelengths(
     xlabelsize=16,
     ylabelsize=16,
     xyticksize=16,
-    legend_fontsize=12,
     output_path=None,
     output_format="show",
     output_filename="interferometer_u_wavelengths",
@@ -416,15 +448,14 @@ def u_wavelengths(
         label=label,
         plot_axis_type=plot_axis_type,
         unit_conversion_factor=unit_conversion_factor,
-        unit_label=unit_label,
+        unit_label_x=unit_label,
         figsize=figsize,
         title=title,
-        ylabel=ylabel,
+        unit_label_y=ylabel,
         titlesize=titlesize,
         xlabelsize=xlabelsize,
         ylabelsize=ylabelsize,
         xyticksize=xyticksize,
-        legend_fontsize=legend_fontsize,
         output_path=output_path,
         output_format=output_format,
         output_filename=output_filename,
@@ -445,7 +476,6 @@ def v_wavelengths(
     xlabelsize=16,
     ylabelsize=16,
     xyticksize=16,
-    legend_fontsize=12,
     output_path=None,
     output_format="show",
     output_filename="interferometer_v_wavelengths",
@@ -472,15 +502,161 @@ def v_wavelengths(
         label=label,
         plot_axis_type=plot_axis_type,
         unit_conversion_factor=unit_conversion_factor,
-        unit_label=unit_label,
+        unit_label_x=unit_label,
         figsize=figsize,
         title=title,
-        ylabel=ylabel,
+        unit_label_y=ylabel,
         titlesize=titlesize,
         xlabelsize=xlabelsize,
         ylabelsize=ylabelsize,
         xyticksize=xyticksize,
-        legend_fontsize=legend_fontsize,
+        output_path=output_path,
+        output_format=output_format,
+        output_filename=output_filename,
+    )
+
+
+def uv_wavelengths(
+    interferometer,
+    as_subplot=False,
+    unit_conversion_factor=None,
+    unit_label="Wavelengths",
+    figsize=(14, 7),
+    title="U-Wavelengths",
+    titlesize=16,
+    xlabelsize=16,
+    ylabelsize=16,
+    xyticksize=16,
+    output_path=None,
+    output_format="show",
+    output_filename="interferometer_uv_wavelengths",
+):
+    """Plot the observed image of the imaging data_type.
+
+    Set *autolens.data_type.array.plotters.array_plotters* for a description of all input parameters not described below.
+
+    Parameters
+    -----------
+    image : ScaledSquarePixelArray
+        The image of the dataset.
+    include_origin : True
+        If true, the origin of the dataset's coordinate system is plotted as a 'x'.
+    image_plane_pix_grid : ndarray or data_type.array.grid_stacks.PixGrid
+        If an adaptive pixelization whose pixels are formed by tracing pixels from the dataset, this plots those pixels \
+        over the immage.
+    """
+
+    grid_plotters.plot_grid(
+        grid=grids.GridIrregular.manual_yx_1d(
+            y=interferometer.uv_wavelengths[:, 1], x=interferometer.uv_wavelengths[:, 1]
+        ),
+        as_subplot=as_subplot,
+        unit_conversion_factor=unit_conversion_factor,
+        unit_label_y=unit_label,
+        unit_label_x=unit_label,
+        figsize=figsize,
+        title=title,
+        titlesize=titlesize,
+        xlabelsize=xlabelsize,
+        ylabelsize=ylabelsize,
+        xyticksize=xyticksize,
+        output_path=output_path,
+        output_format=output_format,
+        output_filename=output_filename,
+    )
+
+
+def amplitudes_vs_uv_distances(
+    interferometer,
+    as_subplot=False,
+    unit_conversion_factor=None,
+    unit_label_y="amplitude (Jy)",
+    unit_label_x=r"UV$_{distance}$ (k$\lambda$)",
+    figsize=(14, 7),
+    cmap="jet",
+    cb_ticksize=10,
+    cb_fraction=0.047,
+    cb_pad=0.01,
+    cb_tick_values=None,
+    cb_tick_labels=None,
+    title="Amplitudes vs UV-distances",
+    titlesize=16,
+    xlabelsize=16,
+    ylabelsize=16,
+    xyticksize=16,
+    output_path=None,
+    output_format="show",
+    output_filename="interferometer_amplitudes_vs_uv_distances",
+):
+    grid_plotters.plot_grid(
+        grid=grids.GridIrregular.manual_yx_1d(
+            y=interferometer.amplitudes, x=interferometer.uv_distances / 10 ** 3.0
+        ),
+        as_subplot=as_subplot,
+        unit_conversion_factor=unit_conversion_factor,
+        unit_label_y=unit_label_y,
+        unit_label_x=unit_label_x,
+        figsize=figsize,
+        cmap=cmap,
+        cb_ticksize=cb_ticksize,
+        cb_fraction=cb_fraction,
+        cb_pad=cb_pad,
+        cb_tick_values=cb_tick_values,
+        cb_tick_labels=cb_tick_labels,
+        title=title,
+        titlesize=titlesize,
+        xlabelsize=xlabelsize,
+        ylabelsize=ylabelsize,
+        xyticksize=xyticksize,
+        output_path=output_path,
+        output_format=output_format,
+        output_filename=output_filename,
+    )
+
+
+def phases_vs_uv_distances(
+    interferometer,
+    as_subplot=False,
+    unit_conversion_factor=None,
+    unit_label_y="phase (deg)",
+    unit_label_x=r"UV$_{distance}$ (k$\lambda$)",
+    figsize=(14, 7),
+    cmap="jet",
+    cb_ticksize=10,
+    cb_fraction=0.047,
+    cb_pad=0.01,
+    cb_tick_values=None,
+    cb_tick_labels=None,
+    title="Phases vs UV-distances",
+    titlesize=16,
+    xlabelsize=16,
+    ylabelsize=16,
+    xyticksize=16,
+    output_path=None,
+    output_format="show",
+    output_filename="interferometer_phases_vs_uv_distances",
+):
+
+    grid_plotters.plot_grid(
+        grid=grids.GridIrregular.manual_yx_1d(
+            y=interferometer.phases, x=interferometer.uv_distances / 10 ** 3.0
+        ),
+        as_subplot=as_subplot,
+        unit_conversion_factor=unit_conversion_factor,
+        unit_label_y=unit_label_y,
+        unit_label_x=unit_label_x,
+        figsize=figsize,
+        cmap=cmap,
+        cb_ticksize=cb_ticksize,
+        cb_fraction=cb_fraction,
+        cb_pad=cb_pad,
+        cb_tick_values=cb_tick_values,
+        cb_tick_labels=cb_tick_labels,
+        title=title,
+        titlesize=titlesize,
+        xlabelsize=xlabelsize,
+        ylabelsize=ylabelsize,
+        xyticksize=xyticksize,
         output_path=output_path,
         output_format=output_format,
         output_filename=output_filename,

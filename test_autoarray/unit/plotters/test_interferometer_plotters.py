@@ -65,6 +65,39 @@ def test__individual_attributes_are_output(
         in plot_patch.paths
     )
 
+    aa.plot.interferometer.uv_wavelengths(
+        interferometer=interferometer_7,
+        output_path=interferometer_plotter_path,
+        output_format="png",
+    )
+
+    assert (
+        interferometer_plotter_path + "interferometer_uv_wavelengths.png"
+        in plot_patch.paths
+    )
+
+    aa.plot.interferometer.amplitudes_vs_uv_distances(
+        interferometer=interferometer_7,
+        output_path=interferometer_plotter_path,
+        output_format="png",
+    )
+
+    assert (
+        interferometer_plotter_path + "interferometer_amplitudes_vs_uv_distances.png"
+        in plot_patch.paths
+    )
+
+    aa.plot.interferometer.phases_vs_uv_distances(
+        interferometer=interferometer_7,
+        output_path=interferometer_plotter_path,
+        output_format="png",
+    )
+
+    assert (
+        interferometer_plotter_path + "interferometer_phases_vs_uv_distances.png"
+        in plot_patch.paths
+    )
+
     aa.plot.interferometer.primary_beam(
         interferometer=interferometer_7,
         cb_tick_values=[1.0],
@@ -98,6 +131,7 @@ def test__individuals__output_dependent_on_input(
         plot_u_wavelengths=False,
         plot_v_wavelengths=True,
         plot_primary_beam=True,
+        plot_amplitudes_vs_uv_distances=True,
         output_path=interferometer_plotter_path,
         output_format="png",
     )
@@ -115,6 +149,16 @@ def test__individuals__output_dependent_on_input(
     assert (
         interferometer_plotter_path + "interferometer_v_wavelengths.png"
         in plot_patch.paths
+    )
+
+    assert (
+        interferometer_plotter_path + "interferometer_amplitudes_vs_uv_distances.png"
+        in plot_patch.paths
+    )
+
+    assert (
+        interferometer_plotter_path + "interferometer_phases_vs_uv_distances.png"
+        not in plot_patch.paths
     )
 
     assert (

@@ -13,12 +13,12 @@ def plot_line(
     plot_axis_type="semilogy",
     vertical_lines=None,
     vertical_line_labels=None,
-    unit_label="scaled",
+    unit_label_y="Quantity",
+    unit_label_x="scaled",
     unit_conversion_factor=None,
     figsize=(7, 7),
     plot_legend=False,
     title="Quantity vs Radius",
-    ylabel="Quantity",
     titlesize=16,
     xlabelsize=16,
     ylabelsize=16,
@@ -38,10 +38,10 @@ def plot_line(
     plot_y_vs_x(y=y, x=x, plot_axis_type=plot_axis_type, label=label)
 
     set_xy_labels_and_ticksize(
-        unit_label=unit_label,
-        ylabel=ylabel,
-        xlabelsize=xlabelsize,
+        unit_label_y=unit_label_y,
+        unit_label_x=unit_label_x,
         ylabelsize=ylabelsize,
+        xlabelsize=xlabelsize,
         xyticksize=xyticksize,
     )
 
@@ -84,7 +84,7 @@ def plot_y_vs_x(y, x, plot_axis_type, label):
         )
 
 
-def set_xy_labels_and_ticksize(unit_label, ylabel, xlabelsize, ylabelsize, xyticksize):
+def set_xy_labels_and_ticksize(unit_label_x, unit_label_y, xlabelsize, ylabelsize, xyticksize):
     """Set the x and y labels of the figure, and set the fontsize of those labels.
 
     The x label is always the distance scale / radius, thus the x-label is either arc-seconds or kpc and depending \
@@ -94,11 +94,11 @@ def set_xy_labels_and_ticksize(unit_label, ylabel, xlabelsize, ylabelsize, xytic
 
     Parameters
     -----------
-    unit_label : str
+    unit_label_x : str
         The unit_label of the y / x axis of the plots.
     unit_conversion_factor : float
         The conversion factor between arc-seconds and kiloparsecs, required to plotters the unit_label in kpc.
-    ylabel : str
+    unit_label_y : str
         The y-label of the figure, which is the physical quantity being plotted.
     xlabelsize : int
         The fontsize of the x axes label.
@@ -108,8 +108,8 @@ def set_xy_labels_and_ticksize(unit_label, ylabel, xlabelsize, ylabelsize, xytic
         The font size of the x and y ticks on the figure axes.
     """
 
-    plt.ylabel(ylabel=ylabel, fontsize=ylabelsize)
-    plt.xlabel("x (" + unit_label + ")", fontsize=xlabelsize)
+    plt.ylabel(ylabel=unit_label_y, fontsize=ylabelsize)
+    plt.xlabel("x (" + unit_label_x + ")", fontsize=xlabelsize)
     plt.tick_params(labelsize=xyticksize)
 
 

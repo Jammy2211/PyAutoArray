@@ -506,7 +506,54 @@ class Grid(AbstractGrid):
         if store_in_1d:
             return mask.mapping.grid_stored_1d_from_sub_grid_2d(sub_grid_2d=grid)
         else:
-            return mask.mapping.grid_stored_2d_from_sub_grid_2d(sub_grid_2d=grid)
+            sub_grid_1d = mask.mapping.grid_stored_1d_from_sub_grid_2d(sub_grid_2d=grid)
+            return mask.mapping.grid_stored_2d_from_sub_grid_1d(sub_grid_1d=sub_grid_1d)
+
+    @classmethod
+    def manual_yx_1d(
+        cls,
+        y,
+        x,
+        shape_2d,
+        pixel_scales,
+        sub_size=1,
+        origin=(0.0, 0.0),
+        store_in_1d=True,
+    ):
+
+        if type(y) is list:
+            y = np.asarray(y)
+
+        if type(x) is list:
+            x = np.asarray(x)
+
+        return cls.manual_1d(
+            grid=np.stack((y, x), axis=-1),
+            shape_2d=shape_2d,
+            pixel_scales=pixel_scales,
+            sub_size=sub_size,
+            origin=origin,
+            store_in_1d=store_in_1d,
+        )
+
+    @classmethod
+    def manual_yx_2d(
+        cls, y, x, pixel_scales, sub_size=1, origin=(0.0, 0.0), store_in_1d=True
+    ):
+
+        if type(y) is list:
+            y = np.asarray(y)
+
+        if type(x) is list:
+            x = np.asarray(x)
+
+        return cls.manual_2d(
+            grid=np.stack((y, x), axis=-1),
+            pixel_scales=pixel_scales,
+            sub_size=sub_size,
+            origin=origin,
+            store_in_1d=store_in_1d,
+        )
 
     @classmethod
     def uniform(
@@ -693,6 +740,10 @@ class GridIrregular(np.ndarray):
     @classmethod
     def manual_1d(cls, grid):
         return GridIrregular(grid=grid)
+
+    @classmethod
+    def manual_yx_1d(cls, y, x):
+        return GridIrregular(grid=np.stack((y, x), axis=-1))
 
     @classmethod
     def from_grid_and_unmasked_2d_grid_shape(cls, unmasked_sparse_shape, grid):
