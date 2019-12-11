@@ -51,10 +51,10 @@ class TestImagingFit:
         assert (fit.residual_map.in_2d == np.array([[0.0, 0.0], [0.0, 0.0]])).all()
 
         assert (
-                fit.normalized_residual_map.in_1d == np.array([0.0, 0.0, 0.0, 0.0])
+            fit.normalized_residual_map.in_1d == np.array([0.0, 0.0, 0.0, 0.0])
         ).all()
         assert (
-                fit.normalized_residual_map.in_2d == np.array([[0.0, 0.0], [0.0, 0.0]])
+            fit.normalized_residual_map.in_2d == np.array([[0.0, 0.0], [0.0, 0.0]])
         ).all()
 
         assert (fit.chi_squared_map.in_1d == np.array([0.0, 0.0, 0.0, 0.0])).all()
@@ -111,7 +111,7 @@ class TestImagingFit:
 
         assert (fit.normalized_residual_map.in_1d == np.array([0.0, 0.0, 0.5])).all()
         assert (
-                fit.normalized_residual_map.in_2d == np.array([[0.0, 0.0], [0.0, 0.5]])
+            fit.normalized_residual_map.in_2d == np.array([[0.0, 0.0], [0.0, 0.5]])
         ).all()
 
         assert (fit.chi_squared_map.in_1d == np.array([0.0, 0.0, 0.25])).all()
@@ -216,7 +216,7 @@ class TestInterferometerFit:
         assert (fit.residual_map.in_1d == np.array([[0.0, 0.0], [0.0, 0.0]])).all()
 
         assert (
-                fit.normalized_residual_map.in_1d == np.array([[0.0, 0.0], [0.0, 0.0]])
+            fit.normalized_residual_map.in_1d == np.array([[0.0, 0.0], [0.0, 0.0]])
         ).all()
 
         assert (fit.chi_squared_map.in_1d == np.array([[0.0, 0.0], [0.0, 0.0]])).all()
@@ -270,7 +270,7 @@ class TestInterferometerFit:
         assert (fit.residual_map.in_1d == np.array([[0.0, 0.0], [0.0, 1.0]])).all()
 
         assert (
-                fit.normalized_residual_map.in_1d == np.array([[0.0, 0.0], [0.0, 0.5]])
+            fit.normalized_residual_map.in_1d == np.array([[0.0, 0.0], [0.0, 0.5]])
         ).all()
 
         assert (fit.chi_squared_map.in_1d == np.array([[0.0, 0.0], [0.0, 0.25]])).all()

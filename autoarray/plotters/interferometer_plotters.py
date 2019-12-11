@@ -547,7 +547,8 @@ def uv_wavelengths(
 
     grid_plotters.plot_grid(
         grid=grids.GridIrregular.manual_yx_1d(
-            y=interferometer.uv_wavelengths[:, 1]/ 10 ** 3.0, x=interferometer.uv_wavelengths[:, 0]/ 10 ** 3.0
+            y=interferometer.uv_wavelengths[:, 1] / 10 ** 3.0,
+            x=interferometer.uv_wavelengths[:, 0] / 10 ** 3.0,
         ),
         as_subplot=as_subplot,
         unit_conversion_factor=unit_conversion_factor,
@@ -590,7 +591,8 @@ def amplitudes_vs_uv_distances(
     output_filename="interferometer_amplitudes_vs_uv_distances",
 ):
     line_yx_plotters.plot_line(
-        y=interferometer.amplitudes, x=interferometer.uv_distances / 10 ** 3.0,
+        y=interferometer.amplitudes,
+        x=interferometer.uv_distances / 10 ** 3.0,
         as_subplot=as_subplot,
         unit_conversion_factor=unit_conversion_factor,
         unit_label_y=unit_label_y,
@@ -632,7 +634,8 @@ def phases_vs_uv_distances(
 ):
 
     line_yx_plotters.plot_line(
-        y=interferometer.phases, x=interferometer.uv_distances / 10 ** 3.0,
+        y=interferometer.phases,
+        x=interferometer.uv_distances / 10 ** 3.0,
         as_subplot=as_subplot,
         unit_conversion_factor=unit_conversion_factor,
         unit_label_y=unit_label_y,
