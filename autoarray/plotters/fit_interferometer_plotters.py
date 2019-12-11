@@ -9,6 +9,7 @@ from autoarray.plotters import grid_plotters, inversion_plotters, line_yx_plotte
 from autoarray.util import plotter_util
 from autoarray.structures import grids
 
+
 def subplot(
     fit,
     unit_conversion_factor=None,
@@ -627,11 +628,11 @@ def residual_map_vs_uv_distances(
     """
 
     if plot_real:
-        y = fit.residual_map[:,0]
+        y = fit.residual_map[:, 0]
         title += " Real"
         output_filename += "_real"
     else:
-        y = fit.residual_map[:,1]
+        y = fit.residual_map[:, 1]
         title += " Imag"
         output_filename += "_imag"
 
@@ -691,11 +692,11 @@ def normalized_residual_map_vs_uv_distances(
     """
 
     if plot_real:
-        y = fit.normalized_residual_map[:,0]
+        y = fit.normalized_residual_map[:, 0]
         title += " Real"
         output_filename += "_real"
     else:
-        y = fit.normalized_residual_map[:,1]
+        y = fit.normalized_residual_map[:, 1]
         title += " Imag"
         output_filename += "_imag"
 
@@ -755,11 +756,11 @@ def chi_squared_map_vs_uv_distances(
     """
 
     if plot_real:
-        y = fit.chi_squared_map[:,0]
+        y = fit.chi_squared_map[:, 0]
         title += " Real"
         output_filename += "_real"
     else:
-        y = fit.chi_squared_map[:,1]
+        y = fit.chi_squared_map[:, 1]
         title += " Imag"
         output_filename += "_imag"
 
