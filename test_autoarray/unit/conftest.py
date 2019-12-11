@@ -6,7 +6,6 @@ import pytest
 import autoarray as aa
 from autoarray import conf
 from autoarray.fit import fit
-from test_autoarray.mock import mock_mask
 from test_autoarray.mock import mock_convolution
 
 directory = path.dirname(path.realpath(__file__))
@@ -36,7 +35,7 @@ def make_mask_7x7():
         ]
     )
 
-    return mock_mask.MockMask(mask_2d=mask_2d, pixel_scales=(1.0, 1.0), sub_size=1)
+    return aa.mask.manual(mask_2d=mask_2d, pixel_scales=(1.0, 1.0), sub_size=1)
 
 
 @pytest.fixture(name="sub_mask_7x7")
@@ -53,7 +52,7 @@ def make_sub_mask_7x7():
         ]
     )
 
-    return mock_mask.MockMask(mask_2d=mask_2d, sub_size=2)
+    return aa.mask.manual(mask_2d=mask_2d, sub_size=2, pixel_scales=(1.0, 1.0))
 
 
 @pytest.fixture(name="mask_7x7_1_pix")
@@ -70,7 +69,7 @@ def make_mask_7x7_1_pix():
         ]
     )
 
-    return mock_mask.MockMask(mask_2d=mask_2d)
+    return aa.mask.manual(mask_2d=mask_2d, pixel_scales=(1.0, 1.0))
 
 
 @pytest.fixture(name="blurring_mask_7x7")
@@ -87,7 +86,7 @@ def make_blurring_mask_7x7():
         ]
     )
 
-    return mock_mask.MockMask(mask_2d=blurring_mask_2d)
+    return aa.mask.manual(mask_2d=blurring_mask_2d, pixel_scales=(1.0, 1.0))
 
 
 @pytest.fixture(name="mask_6x6")
@@ -103,7 +102,7 @@ def make_mask_6x6():
         ]
     )
 
-    return mock_mask.MockMask(mask_2d=mask_2d)
+    return aa.mask.manual(mask_2d=mask_2d, pixel_scales=(1.0, 1.0))
 
 
 # GRIDS #
