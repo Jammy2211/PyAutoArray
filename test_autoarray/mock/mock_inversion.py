@@ -1,5 +1,6 @@
 import numpy as np
 
+
 class MockFitInversion(object):
     def __init__(
         self,
