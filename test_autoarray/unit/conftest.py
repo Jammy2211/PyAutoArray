@@ -141,37 +141,37 @@ def make_convolver_7x7(mask_7x7, blurring_mask_7x7, psf_3x3):
 
 @pytest.fixture(name="image_7x7")
 def make_image_7x7():
-    return aa.array.full(fill_value=1.0, shape_2d=(7,7), pixel_scales=(1.0, 1.0))
+    return aa.array.full(fill_value=1.0, shape_2d=(7, 7), pixel_scales=(1.0, 1.0))
 
 
 @pytest.fixture(name="psf_3x3")
 def make_psf_3x3():
-    return aa.kernel.full(fill_value=1.0, shape_2d=(3,3), pixel_scales=(1.0, 1.0))
+    return aa.kernel.full(fill_value=1.0, shape_2d=(3, 3), pixel_scales=(1.0, 1.0))
 
 
 @pytest.fixture(name="noise_map_7x7")
 def make_noise_map_7x7():
-    return aa.array.full(fill_value=2.0, shape_2d=(7,7), pixel_scales=(1.0, 1.0))
+    return aa.array.full(fill_value=2.0, shape_2d=(7, 7), pixel_scales=(1.0, 1.0))
 
 
 @pytest.fixture(name="background_noise_map_7x7")
 def make_background_noise_map_7x7():
-    return aa.array.full(fill_value=3.0, shape_2d=(7,7), pixel_scales=(1.0, 1.0))
+    return aa.array.full(fill_value=3.0, shape_2d=(7, 7), pixel_scales=(1.0, 1.0))
 
 
 @pytest.fixture(name="poisson_noise_map_7x7")
 def make_poisson_noise_map_7x7():
-    return aa.array.full(fill_value=4.0, shape_2d=(7,7), pixel_scales=(1.0, 1.0))
+    return aa.array.full(fill_value=4.0, shape_2d=(7, 7), pixel_scales=(1.0, 1.0))
 
 
 @pytest.fixture(name="exposure_time_map_7x7")
 def make_exposure_time_map_7x7():
-    return aa.array.full(fill_value=5.0, shape_2d=(7,7), pixel_scales=(1.0, 1.0))
+    return aa.array.full(fill_value=5.0, shape_2d=(7, 7), pixel_scales=(1.0, 1.0))
 
 
 @pytest.fixture(name="background_sky_map_7x7")
 def make_background_sky_map_7x7():
-    return aa.array.full(fill_value=6.0, shape_2d=(7,7), pixel_scales=(1.0, 1.0))
+    return aa.array.full(fill_value=6.0, shape_2d=(7, 7), pixel_scales=(1.0, 1.0))
 
 
 @pytest.fixture(name="positions_7x7")
@@ -239,26 +239,22 @@ def make_noise_map_7():
 
 @pytest.fixture(name="primary_beam_3x3")
 def make_primary_beam_3x3():
-    return aa.kernel.full(
-            fill_value=1.0,
-            shape_2d=(3,3),
-            pixel_scales=(1.0, 1.0)
-        )
+    return aa.kernel.full(fill_value=1.0, shape_2d=(3, 3), pixel_scales=(1.0, 1.0))
 
 
 @pytest.fixture(name="uv_wavelengths_7x2")
 def make_uv_wavelengths_7():
     return np.array(
-            [
-                [-55636.4609375, 171376.90625],
-                [-6903.21923828, 51155.578125],
-                [-63488.4140625, 4141.28369141],
-                [55502.828125, 47016.7265625],
-                [54160.75390625, -99354.1796875],
-                [-9327.66308594, -95212.90625],
-                [0.0, 0.0],
-            ]
-        )
+        [
+            [-55636.4609375, 171376.90625],
+            [-6903.21923828, 51155.578125],
+            [-63488.4140625, 4141.28369141],
+            [55502.828125, 47016.7265625],
+            [54160.75390625, -99354.1796875],
+            [-9327.66308594, -95212.90625],
+            [0.0, 0.0],
+        ]
+    )
 
 
 @pytest.fixture(name="interferometer_7")
