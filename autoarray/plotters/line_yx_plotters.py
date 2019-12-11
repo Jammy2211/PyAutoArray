@@ -33,10 +33,15 @@ def plot_line(
     plotter_util.setup_figure(figsize=figsize, as_subplot=as_subplot)
     plotter_util.set_title(title=title, titlesize=titlesize)
 
+    if y is None:
+        return
+
     if x is None:
         x = np.arange(len(y))
 
-    plot_y_vs_x(y=y, x=x, plot_axis_type=plot_axis_type, label=label, pointsize=pointsize)
+    plot_y_vs_x(
+        y=y, x=x, plot_axis_type=plot_axis_type, label=label, pointsize=pointsize
+    )
 
     set_xy_labels_and_ticksize(
         unit_label_y=unit_label_y,
@@ -90,7 +95,9 @@ def plot_y_vs_x(y, x, plot_axis_type, label, pointsize):
         )
 
 
-def set_xy_labels_and_ticksize(unit_label_x, unit_label_y, xlabelsize, ylabelsize, xyticksize):
+def set_xy_labels_and_ticksize(
+    unit_label_x, unit_label_y, xlabelsize, ylabelsize, xyticksize
+):
     """Set the x and y labels of the figure, and set the fontsize of those labels.
 
     The x label is always the distance scale / radius, thus the x-label is either arc-seconds or kpc and depending \

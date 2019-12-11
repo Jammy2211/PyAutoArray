@@ -46,9 +46,15 @@ def test__fit_individuals__depedent_on_input(
 
     assert fit_plotter_util_path + "fit_model_visibilities.png" in plot_patch.paths
 
-    assert fit_plotter_util_path + "fit_residual_map_vs_uv_distances_real.png" not in plot_patch.paths
+    assert (
+        fit_plotter_util_path + "fit_residual_map_vs_uv_distances_real.png"
+        not in plot_patch.paths
+    )
 
-    assert fit_plotter_util_path + "fit_residual_map_vs_uv_distances_imag.png" not in plot_patch.paths
+    assert (
+        fit_plotter_util_path + "fit_residual_map_vs_uv_distances_imag.png"
+        not in plot_patch.paths
+    )
 
     assert (
         fit_plotter_util_path + "fit_normalized_residual_map_vs_uv_distances_real.png"
@@ -60,9 +66,16 @@ def test__fit_individuals__depedent_on_input(
         not in plot_patch.paths
     )
 
-    assert fit_plotter_util_path + "fit_chi_squared_map_vs_uv_distances_real.png" in plot_patch.paths
+    assert (
+        fit_plotter_util_path + "fit_chi_squared_map_vs_uv_distances_real.png"
+        in plot_patch.paths
+    )
 
-    assert fit_plotter_util_path + "fit_chi_squared_map_vs_uv_distances_imag.png" in plot_patch.paths
+    assert (
+        fit_plotter_util_path + "fit_chi_squared_map_vs_uv_distances_imag.png"
+        in plot_patch.paths
+    )
+
 
 def test__fit_quantities_are_output(
     fit_interferometer_7, fit_plotter_util_path, plot_patch
@@ -116,7 +129,10 @@ def test__fit_quantities_are_output(
         output_format="png",
     )
 
-    assert fit_plotter_util_path + "fit_residual_map_vs_uv_distances_real.png" in plot_patch.paths
+    assert (
+        fit_plotter_util_path + "fit_residual_map_vs_uv_distances_real.png"
+        in plot_patch.paths
+    )
 
     aa.plot.fit_interferometer.residual_map_vs_uv_distances(
         fit=fit_interferometer_7,
@@ -127,7 +143,10 @@ def test__fit_quantities_are_output(
         output_format="png",
     )
 
-    assert fit_plotter_util_path + "fit_residual_map_vs_uv_distances_imag.png" in plot_patch.paths
+    assert (
+        fit_plotter_util_path + "fit_residual_map_vs_uv_distances_imag.png"
+        in plot_patch.paths
+    )
 
     aa.plot.fit_interferometer.normalized_residual_map_vs_uv_distances(
         fit=fit_interferometer_7,
@@ -137,7 +156,10 @@ def test__fit_quantities_are_output(
         output_format="png",
     )
 
-    assert fit_plotter_util_path + "fit_normalized_residual_map_vs_uv_distances_real.png" in plot_patch.paths
+    assert (
+        fit_plotter_util_path + "fit_normalized_residual_map_vs_uv_distances_real.png"
+        in plot_patch.paths
+    )
 
     aa.plot.fit_interferometer.normalized_residual_map_vs_uv_distances(
         fit=fit_interferometer_7,
@@ -148,8 +170,11 @@ def test__fit_quantities_are_output(
         output_format="png",
     )
 
-    assert fit_plotter_util_path + "fit_normalized_residual_map_vs_uv_distances_imag.png" in plot_patch.paths
-    
+    assert (
+        fit_plotter_util_path + "fit_normalized_residual_map_vs_uv_distances_imag.png"
+        in plot_patch.paths
+    )
+
     aa.plot.fit_interferometer.chi_squared_map_vs_uv_distances(
         fit=fit_interferometer_7,
         cb_tick_values=[1.0],
@@ -158,7 +183,10 @@ def test__fit_quantities_are_output(
         output_format="png",
     )
 
-    assert fit_plotter_util_path + "fit_chi_squared_map_vs_uv_distances_real.png" in plot_patch.paths
+    assert (
+        fit_plotter_util_path + "fit_chi_squared_map_vs_uv_distances_real.png"
+        in plot_patch.paths
+    )
 
     aa.plot.fit_interferometer.chi_squared_map_vs_uv_distances(
         fit=fit_interferometer_7,
@@ -169,4 +197,7 @@ def test__fit_quantities_are_output(
         output_format="png",
     )
 
-    assert fit_plotter_util_path + "fit_chi_squared_map_vs_uv_distances_imag.png" in plot_patch.paths
+    assert (
+        fit_plotter_util_path + "fit_chi_squared_map_vs_uv_distances_imag.png"
+        in plot_patch.paths
+    )

@@ -64,7 +64,9 @@ def set_title(title, titlesize):
     plt.title(title, fontsize=titlesize)
 
 
-def set_yx_labels_and_ticksize(unit_label_y, unit_label_x, xlabelsize, ylabelsize, xyticksize):
+def set_yx_labels_and_ticksize(
+    unit_label_y, unit_label_x, xlabelsize, ylabelsize, xyticksize
+):
     """Set the x and y labels of the figure, and set the fontsize of those labels.
 
     The x and y labels are always the distance scales, thus the labels are either arc-seconds or kpc and depend on the \

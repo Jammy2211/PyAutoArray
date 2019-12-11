@@ -40,7 +40,7 @@ def subplot(
     grid_pointsize=1,
     output_path=None,
     output_filename="imaging",
-    output_format="show",
+    output_format="show"
 ):
     """Plot the imaging data_type as a sub-plotters of all its quantites (e.g. the dataset, noise_map-map, PSF, Signal-to_noise-map, \
      etc).
