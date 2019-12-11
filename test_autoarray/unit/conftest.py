@@ -6,7 +6,6 @@ import pytest
 import autoarray as aa
 from autoarray import conf
 from autoarray.fit import fit
-from test_autoarray.mock import mock_convolution
 
 directory = path.dirname(path.realpath(__file__))
 
@@ -137,7 +136,7 @@ def make_blurring_grid_7x7(blurring_mask_7x7):
 
 @pytest.fixture(name="convolver_7x7")
 def make_convolver_7x7(mask_7x7, blurring_mask_7x7, psf_3x3):
-    return mock_convolution.MockConvolver(mask=mask_7x7, kernel=psf_3x3)
+    return aa.convolver(mask=mask_7x7, kernel=psf_3x3)
 
 
 @pytest.fixture(name="image_7x7")
