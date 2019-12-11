@@ -1,5 +1,7 @@
 from autoarray import decorator_util
 import numpy as np
+from astropy.io import fits
+import os
 
 
 @decorator_util.jit()

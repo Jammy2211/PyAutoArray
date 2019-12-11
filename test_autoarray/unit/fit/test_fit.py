@@ -2,7 +2,7 @@ import autoarray as aa
 
 import numpy as np
 
-from test_autoarray.mock import mock_fit
+from test_autoarray.mock import mock_inversion
 
 
 class TestImagingFit:
@@ -51,10 +51,10 @@ class TestImagingFit:
         assert (fit.residual_map.in_2d == np.array([[0.0, 0.0], [0.0, 0.0]])).all()
 
         assert (
-                fit.normalized_residual_map.in_1d == np.array([0.0, 0.0, 0.0, 0.0])
+            fit.normalized_residual_map.in_1d == np.array([0.0, 0.0, 0.0, 0.0])
         ).all()
         assert (
-                fit.normalized_residual_map.in_2d == np.array([[0.0, 0.0], [0.0, 0.0]])
+            fit.normalized_residual_map.in_2d == np.array([[0.0, 0.0], [0.0, 0.0]])
         ).all()
 
         assert (fit.chi_squared_map.in_1d == np.array([0.0, 0.0, 0.0, 0.0])).all()
@@ -111,7 +111,7 @@ class TestImagingFit:
 
         assert (fit.normalized_residual_map.in_1d == np.array([0.0, 0.0, 0.5])).all()
         assert (
-                fit.normalized_residual_map.in_2d == np.array([[0.0, 0.0], [0.0, 0.5]])
+            fit.normalized_residual_map.in_2d == np.array([[0.0, 0.0], [0.0, 0.5]])
         ).all()
 
         assert (fit.chi_squared_map.in_1d == np.array([0.0, 0.0, 0.25])).all()
@@ -147,7 +147,7 @@ class TestImagingFit:
             array=np.array([1.0, 2.0, 3.0, 4.0]), mask=mask
         )
 
-        inversion = mock_fit.MockFitInversion(
+        inversion = mock_inversion.MockFitInversion(
             regularization_term=2.0,
             log_det_curvature_reg_matrix_term=3.0,
             log_det_regularization_matrix_term=4.0,
@@ -216,7 +216,7 @@ class TestInterferometerFit:
         assert (fit.residual_map.in_1d == np.array([[0.0, 0.0], [0.0, 0.0]])).all()
 
         assert (
-                fit.normalized_residual_map.in_1d == np.array([[0.0, 0.0], [0.0, 0.0]])
+            fit.normalized_residual_map.in_1d == np.array([[0.0, 0.0], [0.0, 0.0]])
         ).all()
 
         assert (fit.chi_squared_map.in_1d == np.array([[0.0, 0.0], [0.0, 0.0]])).all()
@@ -270,7 +270,7 @@ class TestInterferometerFit:
         assert (fit.residual_map.in_1d == np.array([[0.0, 0.0], [0.0, 1.0]])).all()
 
         assert (
-                fit.normalized_residual_map.in_1d == np.array([[0.0, 0.0], [0.0, 0.5]])
+            fit.normalized_residual_map.in_1d == np.array([[0.0, 0.0], [0.0, 0.5]])
         ).all()
 
         assert (fit.chi_squared_map.in_1d == np.array([[0.0, 0.0], [0.0, 0.25]])).all()
@@ -303,7 +303,7 @@ class TestInterferometerFit:
 
         model_data = aa.visibilities.manual_1d(visibilities=[[1.0, 2.0], [3.0, 4.0]])
 
-        inversion = mock_fit.MockFitInversion(
+        inversion = mock_inversion.MockFitInversion(
             regularization_term=2.0,
             log_det_curvature_reg_matrix_term=3.0,
             log_det_regularization_matrix_term=4.0,

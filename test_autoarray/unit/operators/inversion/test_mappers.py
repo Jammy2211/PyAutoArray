@@ -2,7 +2,6 @@ import numpy as np
 import pytest
 
 import autoarray as aa
-from test_autoarray.mock.mock_grids import MockGridIrregular
 
 
 def grid_to_pixel_pixels_via_nearest_neighbour(grid, pixel_centers):
