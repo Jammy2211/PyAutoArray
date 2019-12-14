@@ -573,3 +573,24 @@ def sub_array_2d_from_sub_array_1d_sub_shape_via_sub_indexes(
         ] = sub_array_1d[index]
 
     return array_2d
+
+
+@decorator_util.jit()
+def peak_pixels_from_array_2d(array_2d):
+
+    peak_pixels = []
+
+    for y in range(1, array_2d.shape[0] - 1):
+        for x in range(1, array_2d.shape[1] - 1):
+            if array_2d[y, x] > array_2d[y + 1, x] and \
+                array_2d[y, x] > array_2d[y + 1, x + 1] and \
+                array_2d[y, x] > array_2d[y, x + 1] and \
+                array_2d[y, x] > array_2d[y - 1, x + 1] and \
+                array_2d[y, x] > array_2d[y - 1, x] and \
+                array_2d[y, x] > array_2d[y - 1, x - 1] and \
+                array_2d[y, x] > array_2d[y, x - 1] and \
+                array_2d[y, x] > array_2d[y + 1, x - 1]:
+
+                peak_pixels.append([y, x])
+
+    return peak_pixels
