@@ -924,7 +924,7 @@ class TestArray2dForArray1d(object):
         ).all()
 
 
-class TestPeakPixelCoordinates:
+class TestPeakPixels:
 
     def test__simple_arrays(self):
 
@@ -987,3 +987,67 @@ class TestPeakPixelCoordinates:
         peak_pixels = aa.util.array.peak_pixels_from_array_2d(array_2d=array.in_2d)
 
         assert peak_pixels == [[2,1], [3, 3]]
+        
+class TestTroughPixels:
+
+    def test__simple_arrays(self):
+
+        array = aa.array.manual_2d(array=[[9.0, 9.0, 9.0, 9.0, 9.0],
+                                             [9.0, 9.0, 9.0, 9.0, 9.0],
+                                             [9.0, 9.0, 1.0, 9.0, 9.0],
+                                             [9.0, 9.0, 9.0, 9.0, 9.0],
+                                             [9.0, 9.0, 9.0, 9.0, 9.0]])
+
+        trough_pixels = aa.util.array.trough_pixels_from_array_2d(array_2d=array.in_2d)
+
+        assert trough_pixels == [[2,2]]
+
+        array = aa.array.manual_2d(array=[[9.0, 9.0, 9.0, 9.0, 9.0],
+                                             [9.0, 9.0, 9.0, 9.0, 9.0],
+                                             [9.0, 1.0, 9.0, 1.0, 9.0],
+                                             [9.0, 9.0, 9.0, 9.0, 9.0],
+                                             [9.0, 9.0, 9.0, 9.0, 9.0]])
+
+        trough_pixels = aa.util.array.trough_pixels_from_array_2d(array_2d=array.in_2d)
+
+        assert trough_pixels == [[2,1], [2, 3]]
+
+        array = aa.array.manual_2d(array=[[9.0, 9.0, 9.0, 9.0, 9.0],
+                                             [9.0, 9.0, 9.0, 1.0, 9.0],
+                                             [9.0, 1.0, 9.0, 1.0, 9.0],
+                                             [9.0, 9.0, 9.0, 9.0, 9.0],
+                                             [9.0, 9.0, 9.0, 9.0, 9.0]])
+
+        trough_pixels = aa.util.array.trough_pixels_from_array_2d(array_2d=array.in_2d)
+
+        assert trough_pixels == [[2,1]]
+
+        array = aa.array.manual_2d(array=[[9.0, 9.0, 9.0, 9.0, 9.0],
+                                             [9.0, 9.0, 9.0, 1.0, 9.0],
+                                             [9.0, 1.0, 9.0, 2.0, 9.0],
+                                             [9.0, 9.0, 9.0, 9.0, 9.0],
+                                             [9.0, 9.0, 9.0, 9.0, 9.0]])
+
+        trough_pixels = aa.util.array.trough_pixels_from_array_2d(array_2d=array.in_2d)
+
+        assert trough_pixels == [[1,3], [2, 1]]
+
+        array = aa.array.manual_2d(array=[[9.0, 9.0, 7.0, 9.0, 9.0],
+                                             [9.0, 9.0, 9.0, 9.0, 9.0],
+                                             [4.0, 1.0, 9.0, 1.0, 9.0],
+                                             [9.0, 1.0, 9.0, 9.0, 9.0],
+                                             [9.0, 9.0, 8.0, 9.0, 9.0]])
+
+        trough_pixels = aa.util.array.trough_pixels_from_array_2d(array_2d=array.in_2d)
+
+        assert trough_pixels == [[2, 3]]
+
+        array = aa.array.manual_2d(array=[[9.0, 9.0, 9.0, 9.0, 9.0],
+                                             [2.0, 8.0, 7.0, 6.0, 8.0],
+                                             [4.0, 0.1, 4.0, 1.0, 8.0],
+                                             [1.0, 0.5, 7.0, 0.1, 8.0],
+                                             [9.0, 9.0, 9.0, 9.0, 9.0]])
+
+        trough_pixels = aa.util.array.trough_pixels_from_array_2d(array_2d=array.in_2d)
+
+        assert trough_pixels == [[2,1], [3, 3]]
