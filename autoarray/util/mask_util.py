@@ -520,6 +520,23 @@ def mask_2d_from_shape_2d_and_mask_2d_index_for_mask_1d_index(
 
     return mask
 
+@decorator_util.jit()
+def check_if_edge_pixel(mask_2d, y, x):
+    if (
+            mask_2d[y + 1, x]
+            or mask_2d[y - 1, x]
+            or mask_2d[y, x + 1]
+            or mask_2d[y, x - 1]
+            or mask_2d[y + 1, x + 1]
+            or mask_2d[y + 1, x - 1]
+            or mask_2d[y - 1, x + 1]
+            or mask_2d[y - 1, x - 1]
+    ):
+        return True
+    else:
+        return False
+
+
 
 @decorator_util.jit()
 def total_edge_pixels_from_mask_2d(mask_2d):
@@ -530,16 +547,7 @@ def total_edge_pixels_from_mask_2d(mask_2d):
     for y in range(1, mask_2d.shape[0] - 1):
         for x in range(1, mask_2d.shape[1] - 1):
             if not mask_2d[y, x]:
-                if (
-                    mask_2d[y + 1, x]
-                    or mask_2d[y - 1, x]
-                    or mask_2d[y, x + 1]
-                    or mask_2d[y, x - 1]
-                    or mask_2d[y + 1, x + 1]
-                    or mask_2d[y + 1, x - 1]
-                    or mask_2d[y - 1, x + 1]
-                    or mask_2d[y - 1, x - 1]
-                ):
+                if check_if_edge_pixel(mask_2d=mask_2d, y=y, x=x):
                     edge_pixel_total += 1
 
     return edge_pixel_total

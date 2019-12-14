@@ -676,15 +676,16 @@ def pixels_at_coordinate_from_grid_2d(grid_2d, coordinate, mask_2d=None):
 
     for y in range(1, grid_2d.shape[0] - 1):
         for x in range(1, grid_2d.shape[1] - 1):
-            if not mask_2d[y,x]:
+            if not mask_2d[y,x] and not mask_util.check_if_edge_pixel(mask_2d=mask_2d, y=y, x=x):
 
                 top_left_quadrant = quadrant_from_coordinate(coordinate=grid_shifted[y+1, x-1, :])
                 top_right_quadrant = quadrant_from_coordinate(coordinate=grid_shifted[y+1, x+1, :])
                 bottom_left_quadrant =  quadrant_from_coordinate(coordinate=grid_shifted[y-1, x-1, :])
                 bottom_right_quadrant = quadrant_from_coordinate(coordinate=grid_shifted[y-1, x+1, :])
 
-                if top_left_quadrant + top_right_quadrant + bottom_left_quadrant + bottom_right_quadrant == 6:
+                if (top_left_quadrant + top_right_quadrant + bottom_left_quadrant + bottom_right_quadrant) == 6:
+                    if top_left_quadrant != top_right_quadrant != bottom_left_quadrant != bottom_right_quadrant:
 
-                    pixels_at_coordinate.append([y,x])
+                        pixels_at_coordinate.append([y,x])
 
     return pixels_at_coordinate
