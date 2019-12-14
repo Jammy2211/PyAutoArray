@@ -398,7 +398,7 @@ class Mapping(object):
 
     @property
     def edge_buffed_mask(self):
-        edge_buffed_mask = mask_util.edge_buffed_mask_2d_from_mask_2d(
+        edge_buffed_mask = mask_util.buffed_mask_2d_from_mask_2d(
             mask_2d=self.mask
         ).astype("bool")
         return msk.Mask(

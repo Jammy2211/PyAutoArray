@@ -383,6 +383,23 @@ class Mask(np.ndarray):
         )
 
     @classmethod
+    def from_pixel_coordinates(cls, shape_2d, pixel_coordinates, pixel_scales, sub_size=1, origin=(0.0, 0.0), buffer=0, invert=False):
+
+        mask_2d = cls.unmasked(shape_2d=shape_2d, pixel_scales=pixel_scales, sub_size=sub_size, origin=origin, invert=True)
+
+        for pixel in pixel_coordinates:
+            mask_2d[pixel[0], pixel[1]] = False
+
+        return cls.manual(
+            mask_2d=mask_2d,
+            pixel_scales=pixel_scales,
+            sub_size=sub_size,
+            origin=origin,
+            invert=invert,
+        )
+
+
+    @classmethod
     def from_fits(
         cls,
         file_path,
