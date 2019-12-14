@@ -263,6 +263,25 @@ def mask_2d_circular_anti_annular_from_shape_2d_pixel_scales_and_radii(
     return mask
 
 
+def mask_2d_from_pixel_coordinates(
+    shape_2d,
+    pixel_coordinates,
+    buffer=0,
+):
+    """Compute an annular mask from an input inner and outer mask radius and shape."""
+
+    mask_2d = np.full(shape=shape_2d, fill_value=True)
+
+    for y, x in pixel_coordinates:
+
+        mask_2d[y, x] = False
+
+    if buffer == 0:
+        return mask_2d
+    else:
+        return buffed_mask_2d_from_mask_2d(mask_2d=mask_2d, buffer=buffer)
+
+
 @decorator_util.jit()
 def elliptical_radius_from_y_x_phi_and_axis_ratio(y_arcsec, x_arcsec, phi, axis_ratio):
     r_arcsec = np.sqrt(x_arcsec ** 2 + y_arcsec ** 2)
@@ -701,31 +720,20 @@ def sub_border_pixel_1d_indexes_from_mask_2d_and_sub_size(mask_2d, sub_size):
 
 
 @decorator_util.jit()
-def edge_buffed_mask_2d_from_mask_2d(mask_2d):
+def buffed_mask_2d_from_mask_2d(mask_2d, buffer=1):
 
-    edge_buffed_mask_2d = mask_2d.copy()
+    buffed_mask_2d = mask_2d.copy()
 
     for y in range(mask_2d.shape[0]):
         for x in range(mask_2d.shape[1]):
             if not mask_2d[y, x]:
-                if y + 1 <= mask_2d.shape[0] - 1:
-                    edge_buffed_mask_2d[y + 1, x] = False
-                if y - 1 >= 0:
-                    edge_buffed_mask_2d[y - 1, x] = False
-                if x + 1 <= mask_2d.shape[1] - 1:
-                    edge_buffed_mask_2d[y, x + 1] = False
-                if x - 1 >= 0:
-                    edge_buffed_mask_2d[y, x - 1] = False
-                if y + 1 <= mask_2d.shape[0] - 1 and x + 1 <= mask_2d.shape[1] - 1:
-                    edge_buffed_mask_2d[y + 1, x + 1] = False
-                if y + 1 <= mask_2d.shape[0] - 1 and x - 1 >= 0:
-                    edge_buffed_mask_2d[y + 1, x - 1] = False
-                if y - 1 >= 0 and x + 1 <= mask_2d.shape[1] - 1:
-                    edge_buffed_mask_2d[y - 1, x + 1] = False
-                if y - 1 >= 0 and x >= 0:
-                    edge_buffed_mask_2d[y - 1, x - 1] = False
+                for y0 in range(y-buffer, y+1+buffer):
+                    for x0 in range(x-buffer, x+1+buffer):
 
-    return edge_buffed_mask_2d
+                        if y0 >= 0 and x0 >= 0 and y0 <= mask_2d.shape[0]-1 and x0 <= mask_2d.shape[1]-1:
+                            buffed_mask_2d[y0, x0] = False
+
+    return buffed_mask_2d
 
 
 def rescaled_mask_2d_from_mask_2d_and_rescale_factor(mask_2d, rescale_factor):

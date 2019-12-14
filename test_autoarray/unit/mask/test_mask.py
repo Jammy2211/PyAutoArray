@@ -438,6 +438,13 @@ class TestEllipiticalAnnular:
         assert mask.geometry.mask_centre == (0.0, 0.0)
 
 
+# class TestFromPixelCoordinates:
+#
+#     def test__simple_cases_without_buffer:
+#
+#         mask =
+
+
 class TestFromAndToFits:
     def test__load_and_output_mask_to_fits(self):
 
