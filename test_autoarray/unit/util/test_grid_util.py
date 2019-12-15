@@ -1868,15 +1868,15 @@ class TestPixelsAtCoordinate(object):
 
         grid = aa.grid.uniform(shape_2d=(5,5), pixel_scales=1.0)
 
-        mask_2d = aa.mask.manual(mask_2d=[[True, True, True, True, True],
-                                          [True, True, True, False, True],
-                                          [True, True, False, True, True],
+        mask_2d = aa.mask.manual(mask_2d=[[True, True, False, False, False],
+                                          [True, True, False, False, False],
+                                          [True, True, False, False, False],
                                           [True, True, True, True, True],
                                           [True, True, True, True, True]])
 
         pixels_at_coordinate = aa.util.grid.pixels_at_coordinate_from_grid_2d(grid_2d=grid.in_2d, coordinate=(0.3, 0.3), mask_2d=mask_2d)
 
-        assert pixels_at_coordinate == [[1,3], [2,2]]
+        assert pixels_at_coordinate == [[1,3]]
 
     def test__non_uniform_grid__locates_multiple_pixels_correctly(self):
 
