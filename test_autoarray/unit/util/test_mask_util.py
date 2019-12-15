@@ -1363,6 +1363,22 @@ class TestMaskFromPixelCoordinates(object):
                          [True, True, True, True, True]])
         ).all()
 
+        mask_2d = aa.util.mask.mask_2d_from_pixel_coordinates(
+            shape_2d=(7,7),
+            pixel_coordinates=[[2,2], [5, 5]], buffer=1)
+
+        assert (
+            mask_2d
+            == np.array([[True, True, True, True, True, True, True],
+                         [True, False, False, False, True, True, True],
+                         [True, False, False, False, True, True, True],
+                         [True, False, False, False, True, True, True],
+                         [True, True, True, True, False, False, False],
+                         [True, True, True, True, False, False, False],
+                         [True, True, True, True, False, False, False],])
+        ).all()
+
+
 
 class TestMaskBlurring(object):
     def test__size__3x3_small_mask(self):
