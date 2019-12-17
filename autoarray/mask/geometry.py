@@ -24,6 +24,13 @@ class Geometry(object):
         )
 
     @property
+    def central_scaled_coordinates(self):
+        return (
+            self.central_pixel_coordinates[0] + (self.origin[0] / self.mask.pixel_scales[0]),
+            self.central_pixel_coordinates[1] - (self.origin[1] / self.mask.pixel_scales[1]),
+        )
+
+    @property
     def origin(self):
         return self.mask.origin
 
@@ -46,6 +53,10 @@ class Geometry(object):
                 + 0.5
             ),
         )
+
+    def scaled_coordinates_from_pixel_coordinates(self, pixel_coordinates):
+        return (self.mask.pixel_scales[0] * -(pixel_coordinates[0] - self.central_scaled_coordinates[0]),
+                self.mask.pixel_scales[1] * (pixel_coordinates[1] - self.central_scaled_coordinates[1]))
 
     @property
     @array_util.Memoizer()
