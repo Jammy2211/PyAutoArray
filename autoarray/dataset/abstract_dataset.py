@@ -1,3 +1,5 @@
+import pickle
+
 import numpy as np
 
 from autoarray import exc
@@ -8,6 +10,35 @@ class AbstractDataset:
     @property
     def name(self) -> str:
         return "data"  #  TODO: this should have a 'real' name
+
+    def save(self, directory: str):
+        """
+        Save this instance as a pickle with the dataset name in the given directory.
+
+        Parameters
+        ----------
+        directory
+            The directory to save into
+        """
+        with open(f"{directory}/{self.name}.pickle", "wb") as f:
+            pickle.dump(self, f)
+
+    @classmethod
+    def load(cls, filename) -> "AbstractDataset":
+        """
+        Load the dataset at the specified filename
+
+        Parameters
+        ----------
+        filename
+            The filename containing the dataset
+
+        Returns
+        -------
+        The dataset
+        """
+        with open(filename, "rb") as f:
+            return pickle.load(f)
 
     def __init__(self, data, noise_map, exposure_time_map=None):
         """A collection of abstract 2D for different data_type classes (an image, pixel-scale, noise-map, etc.)
