@@ -2480,26 +2480,47 @@ test_positions_dir = "{}/../test_files/positions/".format(
 
 
 class TestPositions:
-    def test__input_is_list_of_lists__converted_to_irregular_grids(self):
 
-        positions = aa.positions(positions=[[[1.0, 1.0], [2.0, 2.0]]])
+    def test__converts_to_and_from_pixels(self):
 
-        assert type(positions[0][0]) == grids.GridIrregular
-        assert (positions[0][0] == np.array([1.0, 1.0])).all()
+        mask = aa.mask.manual(
+            mask_2d=np.full(fill_value=False, shape=(2, 2)), pixel_scales=(2.0, 2.0)
+        )
 
-        assert type(positions[0][1]) == grids.GridIrregular
-        assert (positions[0][1] == np.array([2.0, 2.0])).all()
+        positions = aa.positions(positions=[[(1.0, -1.0), (1.0, 1.0)]], mask=mask)
 
-        positions = aa.positions(positions=[[[1.0, 1.0], [2.0, 2.0]], [[3.0, 3.0]]])
+        assert positions.scaled == [[(1.0, -1.0), (1.0, 1.0)]]
+        assert positions.pixels == [[(0, 0), (0, 1)]]
 
-        assert type(positions[0][0]) == grids.GridIrregular
-        assert (positions[0][0] == np.array([1.0, 1.0])).all()
+        positions = aa.positions.from_pixel_positions_and_mask(positions_pixels=[[(0, 0), (0, 1)]], mask=mask)
 
-        assert type(positions[0][1]) == grids.GridIrregular
-        assert (positions[0][1] == np.array([2.0, 2.0])).all()
+        assert positions.scaled == [[(1.0, -1.0), (1.0, 1.0)]]
+        assert positions.pixels == [[(0, 0), (0, 1)]]
 
-        assert type(positions[1][0]) == grids.GridIrregular
-        assert (positions[1][0] == np.array([3.0, 3.0])).all()
+    def test__input_is_list_of_tuples__converted_to_irregular_grids(self):
+
+        positions = aa.positions(positions=[[(1.0, 1.0), (2.0, 2.0)]])
+
+        assert positions == [[(1.0, 1.0), (2.0, 2.0)]]
+
+        assert type(positions.as_grid[0][0]) == grids.GridIrregular
+        assert (positions.as_grid[0][0] == np.array([1.0, 1.0])).all()
+
+        assert type(positions.as_grid[0][1]) == grids.GridIrregular
+        assert (positions.as_grid[0][1] == np.array([2.0, 2.0])).all()
+
+        positions = aa.positions(positions=[[(1.0, 1.0), (2.0, 2.0)], [(3.0, 3.0)]])
+
+        assert positions == [[(1.0, 1.0), (2.0, 2.0)], [(3.0, 3.0)]]
+
+        assert type(positions.as_grid[0][0]) == grids.GridIrregular
+        assert (positions.as_grid[0][0] == np.array([1.0, 1.0])).all()
+
+        assert type(positions.as_grid[0][1]) == grids.GridIrregular
+        assert (positions.as_grid[0][1] == np.array([2.0, 2.0])).all()
+
+        assert type(positions.as_grid[1][0]) == grids.GridIrregular
+        assert (positions.as_grid[1][0] == np.array([3.0, 3.0])).all()
 
     def test__load_positions__retains_list_structure(self):
         positions = aa.positions.from_file(
@@ -2507,13 +2528,13 @@ class TestPositions:
         )
 
         assert positions == [
-            [[1.0, 1.0], [2.0, 2.0]],
-            [[3.0, 3.0], [4.0, 4.0], [5.0, 6.0]],
+            [(1.0, 1.0), (2.0, 2.0)],
+            [(3.0, 3.0), (4.0, 4.0),(5.0, 6.0)],
         ]
 
     def test__output_positions(self):
         positions = aa.positions(
-            [[[4.0, 4.0], [5.0, 5.0]], [[6.0, 6.0], [7.0, 7.0], [8.0, 8.0]]]
+            [[(4.0, 4.0), (5.0, 5.0)], [(6.0, 6.0), (7.0, 7.0), (8.0, 8.0)]]
         )
 
         output_data_dir = "{}/../test_files/positions/output_test/".format(
@@ -2531,6 +2552,6 @@ class TestPositions:
         )
 
         assert positions == [
-            [[4.0, 4.0], [5.0, 5.0]],
-            [[6.0, 6.0], [7.0, 7.0], [8.0, 8.0]],
+            [(4.0, 4.0), (5.0, 5.0)],
+            [(6.0, 6.0), (7.0, 7.0), (8.0, 8.0)],
         ]

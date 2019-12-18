@@ -176,7 +176,7 @@ def make_background_sky_map_7x7():
 
 @pytest.fixture(name="positions_7x7")
 def make_positions_7x7():
-    positions = [[[0.1, 0.1], [0.2, 0.2]], [[0.3, 0.3]]]
+    positions = [[(0.1, 0.1), (0.2, 0.2)], [(0.3, 0.3)]]
     return list(map(lambda position_set: np.asarray(position_set), positions))
 
 
