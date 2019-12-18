@@ -32,14 +32,14 @@ def centres_from_shape_pixel_scales_and_origin(shape, pixel_scales, origin):
     y_centre_arcsec = float(shape[0] - 1) / 2 + (origin[0] / pixel_scales[0])
     x_centre_arcsec = float(shape[1] - 1) / 2 - (origin[1] / pixel_scales[1])
 
-    return (y_centre_arcsec, x_centre_arcsec)
+    return y_centre_arcsec, x_centre_arcsec
 
 
 @decorator_util.jit()
 def grid_centre_from_grid_1d(grid_1d):
     centre_y = (np.max(grid_1d[:, 0]) + np.min(grid_1d[:, 0])) / 2.0
     centre_x = (np.max(grid_1d[:, 1]) + np.min(grid_1d[:, 1])) / 2.0
-    return (centre_y, centre_x)
+    return centre_y, centre_x
 
 
 @decorator_util.jit()
