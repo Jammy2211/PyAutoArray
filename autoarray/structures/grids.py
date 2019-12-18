@@ -1190,18 +1190,40 @@ class Interpolator(object):
 
 
 class Positions(list):
-    def __init__(self, positions):
+    def __init__(self, positions, mask=None):
 
-        positions = list(
+        super(Positions, self).__init__(positions)
+
+        self.mask = mask
+
+    @classmethod
+    def from_pixel_positions_and_mask(cls, positions_pixels, mask):
+        positions = []
+        for position_set in positions_pixels:
+            positions.append([mask.geometry.scaled_coordinates_from_pixel_coordinates(pixel_coordinates=coordinates) for coordinates in position_set])
+        return cls(positions=positions, mask=mask)
+
+    @property
+    def as_grid(self):
+        return list(
             map(
                 lambda position_set: GridIrregular.manual_1d(
                     grid=np.asarray(position_set)
                 ),
-                positions,
+                self,
             )
         )
 
-        super(Positions, self).__init__(positions)
+    @property
+    def scaled(self):
+        return self
+
+    @property
+    def pixels(self):
+        positions = []
+        for position_set in self:
+            positions.append([self.mask.geometry.pixel_coordinates_from_scaled_coordinates(scaled_coordinates=coordinates) for coordinates in position_set])
+        return self.__class__(positions=positions, mask=self.mask)
 
     @classmethod
     def from_file(cls, positions_path):
@@ -1244,18 +1266,14 @@ class Positions(list):
 
         Parameters
         ----------
-        positions : [[[]]]
-            The lists of positions (e.g. [[[1.0, 1.0], [2.0, 2.0]], [[3.0, 3.0], [4.0, 4.0]]])
+        positions : [[()]]
+            The lists of positions (e.g. [[(1.0, 1.0), (2.0, 2.0)], [(3.0, 3.0), (4.0, 4.0)]])
         positions_path : str
             The path to the positions .dat file containing the positions (e.g. '/path/to/positions.dat')
         """
 
-        positions_out = list(
-            map(lambda position_set: np.ndarray.tolist(position_set), self)
-        )
-
         with open(positions_path, "w") as f:
-            for position in positions_out:
+            for position in self:
                 f.write("%s\n" % position)
 
 
