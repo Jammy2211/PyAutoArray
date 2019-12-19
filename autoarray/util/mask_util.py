@@ -263,11 +263,7 @@ def mask_2d_circular_anti_annular_from_shape_2d_pixel_scales_and_radii(
     return mask
 
 
-def mask_2d_from_pixel_coordinates(
-    shape_2d,
-    pixel_coordinates,
-    buffer=0,
-):
+def mask_2d_from_pixel_coordinates(shape_2d, pixel_coordinates, buffer=0):
     """Compute an annular mask from an input inner and outer mask radius and shape."""
 
     mask_2d = np.full(shape=shape_2d, fill_value=True)
@@ -539,22 +535,22 @@ def mask_2d_from_shape_2d_and_mask_2d_index_for_mask_1d_index(
 
     return mask
 
+
 @decorator_util.jit()
 def check_if_edge_pixel(mask_2d, y, x):
     if (
-            mask_2d[y + 1, x]
-            or mask_2d[y - 1, x]
-            or mask_2d[y, x + 1]
-            or mask_2d[y, x - 1]
-            or mask_2d[y + 1, x + 1]
-            or mask_2d[y + 1, x - 1]
-            or mask_2d[y - 1, x + 1]
-            or mask_2d[y - 1, x - 1]
+        mask_2d[y + 1, x]
+        or mask_2d[y - 1, x]
+        or mask_2d[y, x + 1]
+        or mask_2d[y, x - 1]
+        or mask_2d[y + 1, x + 1]
+        or mask_2d[y + 1, x - 1]
+        or mask_2d[y - 1, x + 1]
+        or mask_2d[y - 1, x - 1]
     ):
         return True
     else:
         return False
-
 
 
 @decorator_util.jit()
@@ -727,10 +723,15 @@ def buffed_mask_2d_from_mask_2d(mask_2d, buffer=1):
     for y in range(mask_2d.shape[0]):
         for x in range(mask_2d.shape[1]):
             if not mask_2d[y, x]:
-                for y0 in range(y-buffer, y+1+buffer):
-                    for x0 in range(x-buffer, x+1+buffer):
+                for y0 in range(y - buffer, y + 1 + buffer):
+                    for x0 in range(x - buffer, x + 1 + buffer):
 
-                        if y0 >= 0 and x0 >= 0 and y0 <= mask_2d.shape[0]-1 and x0 <= mask_2d.shape[1]-1:
+                        if (
+                            y0 >= 0
+                            and x0 >= 0
+                            and y0 <= mask_2d.shape[0] - 1
+                            and x0 <= mask_2d.shape[1] - 1
+                        ):
                             buffed_mask_2d[y0, x0] = False
 
     return buffed_mask_2d

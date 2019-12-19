@@ -439,49 +439,62 @@ class TestEllipiticalAnnular:
 
 
 class TestFromPixelCoordinates:
-
-    def test__mask_with_or_without_buffer__false_at_buffed_coordinates(
-        self
-    ):
+    def test__mask_with_or_without_buffer__false_at_buffed_coordinates(self):
 
         mask = aa.mask.from_pixel_coordinates(
-            shape_2d=(5,5),
-            pixel_coordinates=[[2,2]], pixel_scales=1.0, buffer=0)
+            shape_2d=(5, 5), pixel_coordinates=[[2, 2]], pixel_scales=1.0, buffer=0
+        )
 
         assert (
             mask
-            == np.array([[True, True, True, True, True],
-                         [True, True, True, True, True],
-                         [True, True, False, True, True],
-                         [True, True, True, True, True],
-                         [True, True, True, True, True]])).all()
-
-        mask = aa.mask.from_pixel_coordinates(
-            shape_2d=(5,5),
-            pixel_coordinates=[[2,2]], pixel_scales=1.0, buffer=1)
-
-        assert (
-            mask
-            == np.array([[True, True, True, True, True],
-                         [True, False, False, False, True],
-                         [True, False, False, False, True],
-                         [True, False, False, False, True],
-                         [True, True, True, True, True]])
+            == np.array(
+                [
+                    [True, True, True, True, True],
+                    [True, True, True, True, True],
+                    [True, True, False, True, True],
+                    [True, True, True, True, True],
+                    [True, True, True, True, True],
+                ]
+            )
         ).all()
 
         mask = aa.mask.from_pixel_coordinates(
-            shape_2d=(7,7),
-            pixel_coordinates=[[2,2], [5, 5]], pixel_scales=1.0, buffer=1)
+            shape_2d=(5, 5), pixel_coordinates=[[2, 2]], pixel_scales=1.0, buffer=1
+        )
 
         assert (
             mask
-            == np.array([[True, True, True, True, True, True, True],
-                         [True, False, False, False, True, True, True],
-                         [True, False, False, False, True, True, True],
-                         [True, False, False, False, True, True, True],
-                         [True, True, True, True, False, False, False],
-                         [True, True, True, True, False, False, False],
-                         [True, True, True, True, False, False, False],])
+            == np.array(
+                [
+                    [True, True, True, True, True],
+                    [True, False, False, False, True],
+                    [True, False, False, False, True],
+                    [True, False, False, False, True],
+                    [True, True, True, True, True],
+                ]
+            )
+        ).all()
+
+        mask = aa.mask.from_pixel_coordinates(
+            shape_2d=(7, 7),
+            pixel_coordinates=[[2, 2], [5, 5]],
+            pixel_scales=1.0,
+            buffer=1,
+        )
+
+        assert (
+            mask
+            == np.array(
+                [
+                    [True, True, True, True, True, True, True],
+                    [True, False, False, False, True, True, True],
+                    [True, False, False, False, True, True, True],
+                    [True, False, False, False, True, True, True],
+                    [True, True, True, True, False, False, False],
+                    [True, True, True, True, False, False, False],
+                    [True, True, True, True, False, False, False],
+                ]
+            )
         ).all()
 
 

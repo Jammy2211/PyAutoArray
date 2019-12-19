@@ -1842,52 +1842,128 @@ class TestSubGrid2DFromSubGrid1d(object):
         ).all()
 
 
-class TestPixelsAtCoordinate(object):
-
+class TestPositionsAtCoordinate(object):
     def test__uniform_grid__locates_pixels_correctly(self):
 
-        grid = aa.grid.uniform(shape_2d=(5,5), pixel_scales=1.0)
+        grid = aa.grid.uniform(shape_2d=(5, 5), pixel_scales=1.0)
 
-        pixels_at_coordinate = aa.util.grid.pixels_at_coordinate_from_grid_2d(grid_2d=grid.in_2d, coordinate=(0.3, 0.3))
+        pixels_at_coordinate = aa.util.grid.positions_at_coordinate_from_grid_2d(
+            grid_2d=grid.in_2d, coordinate=(0.3, 0.3)
+        )
 
-        assert pixels_at_coordinate == [[1,2], [1,3], [2,2], [2,3]]
+        assert pixels_at_coordinate == [(1, 2), (1, 3), (2, 2), (2, 3)]
 
-        pixels_at_coordinate = aa.util.grid.pixels_at_coordinate_from_grid_2d(grid_2d=grid.in_2d, coordinate=(-0.3, 0.3))
+        pixels_at_coordinate = aa.util.grid.positions_at_coordinate_from_grid_2d(
+            grid_2d=grid.in_2d, coordinate=(-0.3, 0.3)
+        )
 
-        assert pixels_at_coordinate == [[2,2], [2,3], [3,2], [3,3]]
+        assert pixels_at_coordinate == [(2, 2), (2, 3), (3, 2), (3, 3)]
 
-        pixels_at_coordinate = aa.util.grid.pixels_at_coordinate_from_grid_2d(grid_2d=grid.in_2d, coordinate=(0.6, 0.6))
+        pixels_at_coordinate = aa.util.grid.positions_at_coordinate_from_grid_2d(
+            grid_2d=grid.in_2d, coordinate=(0.6, 0.6)
+        )
 
-        assert pixels_at_coordinate == [[1,2], [1,3], [2,2], [2,3]]
+        assert pixels_at_coordinate == [(1, 2), (1, 3), (2, 2), (2, 3)]
 
-        pixels_at_coordinate = aa.util.grid.pixels_at_coordinate_from_grid_2d(grid_2d=grid.in_2d, coordinate=(1.1, 1.1))
+        pixels_at_coordinate = aa.util.grid.positions_at_coordinate_from_grid_2d(
+            grid_2d=grid.in_2d, coordinate=(1.1, 1.1)
+        )
 
-        assert pixels_at_coordinate == [[1,3]]
+        assert pixels_at_coordinate == [(1, 3)]
 
     def test__uniform_grid__mask_remove_points(self):
 
-        grid = aa.grid.uniform(shape_2d=(5,5), pixel_scales=1.0)
+        grid = aa.grid.uniform(shape_2d=(5, 5), pixel_scales=1.0)
 
-        mask_2d = aa.mask.manual(mask_2d=[[True, True, False, False, False],
-                                          [True, True, False, False, False],
-                                          [True, True, False, False, False],
-                                          [True, True, True, True, True],
-                                          [True, True, True, True, True]])
+        mask_2d = aa.mask.manual(
+            mask_2d=[
+                [True, True, False, False, False],
+                [True, True, False, False, False],
+                [True, True, False, False, False],
+                [True, True, True, True, True],
+                [True, True, True, True, True],
+            ]
+        )
 
-        pixels_at_coordinate = aa.util.grid.pixels_at_coordinate_from_grid_2d(grid_2d=grid.in_2d, coordinate=(0.3, 0.3), mask_2d=mask_2d)
+        pixels_at_coordinate = aa.util.grid.positions_at_coordinate_from_grid_2d(
+            grid_2d=grid.in_2d, coordinate=(0.3, 0.3), mask_2d=mask_2d
+        )
 
-        assert pixels_at_coordinate == [[1,3]]
+        assert pixels_at_coordinate == [(1, 3)]
 
     def test__non_uniform_grid__locates_multiple_pixels_correctly(self):
 
-        grid = aa.grid.manual_2d(grid=[[[3.0, 1.0], [0.0, 0.0], [3.0, 3.0], [0.0, 0.0], [0.0, 0.0], [0.0, 0.0], [0.0, 0.0]],
-                                       [[0.0, 0.0], [0.0, 0.0], [0.0, 0.0], [0.0, 0.0], [0.0, 0.0], [0.0, 0.0], [0.0, 0.0]],
-                                       [[1.0, 1.0], [0.0, 0.0], [1.0, 3.0], [0.0, 0.0], [0.0, 0.0], [0.0, 0.0], [0.0, 0.0]],
-                                       [[0.0, 0.0], [0.0, 0.0], [0.0, 0.0], [0.0, 0.0], [1.0, 3.0], [0.0, 0.0], [1.0, 1.0]],
-                                       [[0.0, 0.0], [0.0, 0.0], [0.0, 0.0], [0.0, 0.0], [0.0, 0.0], [0.0, 0.0], [0.0, 0.0]],
-                                       [[0.0, 0.0], [0.0, 0.0], [0.0, 0.0], [0.0, 0.0], [3.0, 3.0], [0.0, 0.0], [3.0, 1.0]],
-                                       [[0.0, 0.0], [0.0, 0.0], [0.0, 0.0], [0.0, 0.0], [0.0, 0.0], [0.0, 0.0], [0.0, 0.0]]], pixel_scales=1.0)
+        grid = aa.grid.manual_2d(
+            grid=[
+                [
+                    [3.0, 1.0],
+                    [0.0, 0.0],
+                    [3.0, 3.0],
+                    [0.0, 0.0],
+                    [0.0, 0.0],
+                    [0.0, 0.0],
+                    [0.0, 0.0],
+                ],
+                [
+                    [0.0, 0.0],
+                    [0.0, 0.0],
+                    [0.0, 0.0],
+                    [0.0, 0.0],
+                    [0.0, 0.0],
+                    [0.0, 0.0],
+                    [0.0, 0.0],
+                ],
+                [
+                    [1.0, 1.0],
+                    [0.0, 0.0],
+                    [1.0, 3.0],
+                    [0.0, 0.0],
+                    [0.0, 0.0],
+                    [0.0, 0.0],
+                    [0.0, 0.0],
+                ],
+                [
+                    [0.0, 0.0],
+                    [0.0, 0.0],
+                    [0.0, 0.0],
+                    [0.0, 0.0],
+                    [1.0, 3.0],
+                    [0.0, 0.0],
+                    [1.0, 1.0],
+                ],
+                [
+                    [0.0, 0.0],
+                    [0.0, 0.0],
+                    [0.0, 0.0],
+                    [0.0, 0.0],
+                    [0.0, 0.0],
+                    [0.0, 0.0],
+                    [0.0, 0.0],
+                ],
+                [
+                    [0.0, 0.0],
+                    [0.0, 0.0],
+                    [0.0, 0.0],
+                    [0.0, 0.0],
+                    [3.0, 3.0],
+                    [0.0, 0.0],
+                    [3.0, 1.0],
+                ],
+                [
+                    [0.0, 0.0],
+                    [0.0, 0.0],
+                    [0.0, 0.0],
+                    [0.0, 0.0],
+                    [0.0, 0.0],
+                    [0.0, 0.0],
+                    [0.0, 0.0],
+                ],
+            ],
+            pixel_scales=1.0,
+        )
 
-        pixels_at_coordinate = aa.util.grid.pixels_at_coordinate_from_grid_2d(grid_2d=grid.in_2d, coordinate=(2.0, 2.0))
+        pixels_at_coordinate = aa.util.grid.positions_at_coordinate_from_grid_2d(
+            grid_2d=grid.in_2d, coordinate=(2.0, 2.0)
+        )
 
-        assert pixels_at_coordinate == [[1,1], [4,5]]
+        assert pixels_at_coordinate == [(1, 1), (4, 5)]
