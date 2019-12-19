@@ -883,7 +883,7 @@ class TestResizedMask:
         mask = aa.mask.unmasked(shape_2d=(5, 5))
         mask[2, 2] = True
 
-        edge_buffed_mask_manual = aa.util.mask.edge_buffed_mask_2d_from_mask_2d(
+        edge_buffed_mask_manual = aa.util.mask.buffed_mask_2d_from_mask_2d(
             mask_2d=mask
         ).astype("bool")
 

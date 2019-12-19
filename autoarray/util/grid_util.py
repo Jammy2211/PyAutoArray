@@ -32,14 +32,14 @@ def centres_from_shape_pixel_scales_and_origin(shape, pixel_scales, origin):
     y_centre_arcsec = float(shape[0] - 1) / 2 + (origin[0] / pixel_scales[0])
     x_centre_arcsec = float(shape[1] - 1) / 2 - (origin[1] / pixel_scales[1])
 
-    return (y_centre_arcsec, x_centre_arcsec)
+    return y_centre_arcsec, x_centre_arcsec
 
 
 @decorator_util.jit()
 def grid_centre_from_grid_1d(grid_1d):
     centre_y = (np.max(grid_1d[:, 0]) + np.min(grid_1d[:, 0])) / 2.0
     centre_x = (np.max(grid_1d[:, 1]) + np.min(grid_1d[:, 1])) / 2.0
-    return (centre_y, centre_x)
+    return centre_y, centre_x
 
 
 @decorator_util.jit()
@@ -648,3 +648,66 @@ def sub_grid_2d_from_sub_grid_1d(sub_grid_1d, mask_2d, sub_size):
     )
 
     return np.stack((sub_grid_2d_y, sub_grid_2d_x), axis=-1)
+
+
+@decorator_util.jit()
+def quadrant_from_coordinate(coordinate):
+
+    if coordinate[0] >= 0.0 and coordinate[1] <= 0.0:
+        return 0
+    elif coordinate[0] >= 0.0 and coordinate[1] >= 0.0:
+        return 1
+    elif coordinate[0] <= 0.0 and coordinate[1] <= 0.0:
+        return 2
+    elif coordinate[0] <= 0.0 and coordinate[1] >= 0.0:
+        return 3
+
+
+@decorator_util.jit()
+def positions_at_coordinate_from_grid_2d(grid_2d, coordinate, mask_2d=None):
+
+    if mask_2d is None:
+        mask_2d = np.full(fill_value=False, shape=(grid_2d.shape[0], grid_2d.shape[1]))
+
+    grid_shifted = np.zeros(shape=grid_2d.shape)
+
+    grid_shifted[:, :, 0] = grid_2d[:, :, 0] - coordinate[0]
+    grid_shifted[:, :, 1] = grid_2d[:, :, 1] - coordinate[1]
+
+    pixels_at_coordinate = []
+
+    for y in range(1, grid_2d.shape[0] - 1):
+        for x in range(1, grid_2d.shape[1] - 1):
+            if not mask_2d[y, x] and not mask_util.check_if_edge_pixel(
+                mask_2d=mask_2d, y=y, x=x
+            ):
+
+                top_left_quadrant = quadrant_from_coordinate(
+                    coordinate=grid_shifted[y + 1, x - 1, :]
+                )
+                top_right_quadrant = quadrant_from_coordinate(
+                    coordinate=grid_shifted[y + 1, x + 1, :]
+                )
+                bottom_left_quadrant = quadrant_from_coordinate(
+                    coordinate=grid_shifted[y - 1, x - 1, :]
+                )
+                bottom_right_quadrant = quadrant_from_coordinate(
+                    coordinate=grid_shifted[y - 1, x + 1, :]
+                )
+
+                if (
+                    top_left_quadrant
+                    + top_right_quadrant
+                    + bottom_left_quadrant
+                    + bottom_right_quadrant
+                ) == 6:
+                    if (
+                        top_left_quadrant
+                        != top_right_quadrant
+                        != bottom_left_quadrant
+                        != bottom_right_quadrant
+                    ):
+
+                        pixels_at_coordinate.append((y, x))
+
+    return pixels_at_coordinate
