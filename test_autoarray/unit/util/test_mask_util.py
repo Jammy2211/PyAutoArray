@@ -1323,13 +1323,11 @@ class TestMaskEllipticalAnnular(object):
 
 
 class TestMaskFromPixelCoordinates(object):
-    def test__mask_without_buffer__false_at_coordinates(
-        self
-    ):
+    def test__mask_without_buffer__false_at_coordinates(self):
 
         mask_2d = aa.util.mask.mask_2d_from_pixel_coordinates(
-            shape_2d=(3,3),
-            pixel_coordinates=[[0,0]])
+            shape_2d=(3, 3), pixel_coordinates=[[0, 0]]
+        )
 
         assert (
             mask_2d
@@ -1337,47 +1335,48 @@ class TestMaskFromPixelCoordinates(object):
         ).all()
 
         mask_2d = aa.util.mask.mask_2d_from_pixel_coordinates(
-            shape_2d=(2,3),
-            pixel_coordinates=[[0,1], [1,1], [1,2]])
+            shape_2d=(2, 3), pixel_coordinates=[[0, 1], [1, 1], [1, 2]]
+        )
 
-        assert (
-            mask_2d
-            == np.array([[True, False, True],
-                         [True, False, False]])
-        ).all()
+        assert (mask_2d == np.array([[True, False, True], [True, False, False]])).all()
 
-    def test__mask_with_buffer__false_at_buffed_coordinates(
-        self
-    ):
+    def test__mask_with_buffer__false_at_buffed_coordinates(self):
 
         mask_2d = aa.util.mask.mask_2d_from_pixel_coordinates(
-            shape_2d=(5,5),
-            pixel_coordinates=[[2,2]], buffer=1)
+            shape_2d=(5, 5), pixel_coordinates=[[2, 2]], buffer=1
+        )
 
         assert (
             mask_2d
-            == np.array([[True, True, True, True, True],
-                         [True, False, False, False, True],
-                         [True, False, False, False, True],
-                         [True, False, False, False, True],
-                         [True, True, True, True, True]])
+            == np.array(
+                [
+                    [True, True, True, True, True],
+                    [True, False, False, False, True],
+                    [True, False, False, False, True],
+                    [True, False, False, False, True],
+                    [True, True, True, True, True],
+                ]
+            )
         ).all()
 
         mask_2d = aa.util.mask.mask_2d_from_pixel_coordinates(
-            shape_2d=(7,7),
-            pixel_coordinates=[[2,2], [5, 5]], buffer=1)
+            shape_2d=(7, 7), pixel_coordinates=[[2, 2], [5, 5]], buffer=1
+        )
 
         assert (
             mask_2d
-            == np.array([[True, True, True, True, True, True, True],
-                         [True, False, False, False, True, True, True],
-                         [True, False, False, False, True, True, True],
-                         [True, False, False, False, True, True, True],
-                         [True, True, True, True, False, False, False],
-                         [True, True, True, True, False, False, False],
-                         [True, True, True, True, False, False, False],])
+            == np.array(
+                [
+                    [True, True, True, True, True, True, True],
+                    [True, False, False, False, True, True, True],
+                    [True, False, False, False, True, True, True],
+                    [True, False, False, False, True, True, True],
+                    [True, True, True, True, False, False, False],
+                    [True, True, True, True, False, False, False],
+                    [True, True, True, True, False, False, False],
+                ]
+            )
         ).all()
-
 
 
 class TestMaskBlurring(object):
@@ -3104,9 +3103,7 @@ class TestRescaledMaskFromMask(object):
 
 
 class TestBuffedMaskFromMask(object):
-    def test__5x5_mask_false_centre_pixel__3x3_falses_in_centre_of_buffed_mask(
-        self
-    ):
+    def test__5x5_mask_false_centre_pixel__3x3_falses_in_centre_of_buffed_mask(self):
         mask = np.array(
             [
                 [True, True, True, True, True],
@@ -3132,9 +3129,7 @@ class TestBuffedMaskFromMask(object):
             )
         ).all()
 
-    def test__5x5_mask_false_offset_pixel__3x3_falses_in_centre_of_buffed_mask(
-        self
-    ):
+    def test__5x5_mask_false_offset_pixel__3x3_falses_in_centre_of_buffed_mask(self):
         mask = np.array(
             [
                 [True, True, True, True, True],
@@ -3217,45 +3212,65 @@ class TestBuffedMaskFromMask(object):
         ).all()
 
     def test__buffer_is_above_2__mask_includes_buffing(self):
-        
-        mask_2d = np.array([[True, True, True, True, True, True, True],
-                         [True, True, True, True, True, True, True],
-                        [True, True, True, True, True, True, True],
-                         [True, True, True, False, True, True, True],
-                         [True, True, True, True, True, True, True],
-                            [True, True, True, True, True, True, True],
-                         [True, True, True, True, True, True, True]])
 
-        buffed_mask_2d = aa.util.mask.buffed_mask_2d_from_mask_2d(mask_2d=mask_2d, buffer=2)
+        mask_2d = np.array(
+            [
+                [True, True, True, True, True, True, True],
+                [True, True, True, True, True, True, True],
+                [True, True, True, True, True, True, True],
+                [True, True, True, False, True, True, True],
+                [True, True, True, True, True, True, True],
+                [True, True, True, True, True, True, True],
+                [True, True, True, True, True, True, True],
+            ]
+        )
+
+        buffed_mask_2d = aa.util.mask.buffed_mask_2d_from_mask_2d(
+            mask_2d=mask_2d, buffer=2
+        )
 
         assert (
             buffed_mask_2d
-            == np.array([[True, True, True, True, True, True, True],
-                         [True, False, False, False, False, False, True],
-                        [True, False, False, False, False, False, True],
-                         [True, False, False, False, False, False, True],
-                         [True, False, False, False, False, False, True],
-                            [True, False, False, False, False, False, True],
-                         [True, True, True, True, True, True, True]])
+            == np.array(
+                [
+                    [True, True, True, True, True, True, True],
+                    [True, False, False, False, False, False, True],
+                    [True, False, False, False, False, False, True],
+                    [True, False, False, False, False, False, True],
+                    [True, False, False, False, False, False, True],
+                    [True, False, False, False, False, False, True],
+                    [True, True, True, True, True, True, True],
+                ]
+            )
         ).all()
-        
-        mask_2d = np.array([[True, True, True, True, True, True, True],
-                         [True, True, True, True, True, False, True],
-                        [True, True, True, True, True, True, True],
-                         [True, True, True, True, True, True, True],
-                         [True, True, True, True, True, True, True],
-                            [True, True, True, True, True, True, True],
-                         [True, True, True, True, True, True, True]])
 
-        buffed_mask_2d = aa.util.mask.buffed_mask_2d_from_mask_2d(mask_2d=mask_2d, buffer=2)
+        mask_2d = np.array(
+            [
+                [True, True, True, True, True, True, True],
+                [True, True, True, True, True, False, True],
+                [True, True, True, True, True, True, True],
+                [True, True, True, True, True, True, True],
+                [True, True, True, True, True, True, True],
+                [True, True, True, True, True, True, True],
+                [True, True, True, True, True, True, True],
+            ]
+        )
+
+        buffed_mask_2d = aa.util.mask.buffed_mask_2d_from_mask_2d(
+            mask_2d=mask_2d, buffer=2
+        )
 
         assert (
             buffed_mask_2d
-            == np.array([[True, True, True, False, False, False, False],
-                         [True, True, True, False, False, False, False],
-                        [True, True, True, False, False, False, False],
-                         [True, True, True, False, False, False, False],
-                         [True, True, True, True, True, True, True],
-                            [True, True, True, True, True, True, True],
-                         [True, True, True, True, True, True, True]])
+            == np.array(
+                [
+                    [True, True, True, False, False, False, False],
+                    [True, True, True, False, False, False, False],
+                    [True, True, True, False, False, False, False],
+                    [True, True, True, False, False, False, False],
+                    [True, True, True, True, True, True, True],
+                    [True, True, True, True, True, True, True],
+                    [True, True, True, True, True, True, True],
+                ]
+            )
         ).all()

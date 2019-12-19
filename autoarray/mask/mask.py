@@ -383,9 +383,20 @@ class Mask(np.ndarray):
         )
 
     @classmethod
-    def from_pixel_coordinates(cls, shape_2d, pixel_coordinates, pixel_scales, sub_size=1, origin=(0.0, 0.0), buffer=0, invert=False):
+    def from_pixel_coordinates(
+        cls,
+        shape_2d,
+        pixel_coordinates,
+        pixel_scales,
+        sub_size=1,
+        origin=(0.0, 0.0),
+        buffer=0,
+        invert=False,
+    ):
 
-        mask_2d = mask_util.mask_2d_from_pixel_coordinates(shape_2d=shape_2d, pixel_coordinates=pixel_coordinates, buffer=buffer)
+        mask_2d = mask_util.mask_2d_from_pixel_coordinates(
+            shape_2d=shape_2d, pixel_coordinates=pixel_coordinates, buffer=buffer
+        )
 
         return cls.manual(
             mask_2d=mask_2d,
@@ -394,7 +405,6 @@ class Mask(np.ndarray):
             origin=origin,
             invert=invert,
         )
-
 
     @classmethod
     def from_fits(

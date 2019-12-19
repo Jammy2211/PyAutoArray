@@ -925,229 +925,336 @@ class TestArray2dForArray1d(object):
 
 
 class TestPeakPixels:
-
     def test__simple_arrays(self):
 
-        array = aa.array.manual_2d(array=[[0.0, 0.0, 0.0, 0.0, 0.0],
-                                             [0.0, 0.0, 0.0, 0.0, 0.0],
-                                             [0.0, 0.0, 1.0, 0.0, 0.0],
-                                             [0.0, 0.0, 0.0, 0.0, 0.0],
-                                             [0.0, 0.0, 0.0, 0.0, 0.0]])
+        array = aa.array.manual_2d(
+            array=[
+                [0.0, 0.0, 0.0, 0.0, 0.0],
+                [0.0, 0.0, 0.0, 0.0, 0.0],
+                [0.0, 0.0, 1.0, 0.0, 0.0],
+                [0.0, 0.0, 0.0, 0.0, 0.0],
+                [0.0, 0.0, 0.0, 0.0, 0.0],
+            ]
+        )
 
         peak_pixels = aa.util.array.peak_pixels_from_array_2d(array_2d=array.in_2d)
 
-        assert peak_pixels == [[2,2]]
+        assert peak_pixels == [[2, 2]]
 
-        array = aa.array.manual_2d(array=[[0.0, 0.0, 0.0, 0.0, 0.0],
-                                             [0.0, 0.0, 0.0, 0.0, 0.0],
-                                             [0.0, 1.0, 0.0, 1.0, 0.0],
-                                             [0.0, 0.0, 0.0, 0.0, 0.0],
-                                             [0.0, 0.0, 0.0, 0.0, 0.0]])
-
-        peak_pixels = aa.util.array.peak_pixels_from_array_2d(array_2d=array.in_2d)
-
-        assert peak_pixels == [[2,1], [2, 3]]
-
-        array = aa.array.manual_2d(array=[[0.0, 0.0, 0.0, 0.0, 0.0],
-                                             [0.0, 0.0, 0.0, 1.0, 0.0],
-                                             [0.0, 1.0, 0.0, 1.0, 0.0],
-                                             [0.0, 0.0, 0.0, 0.0, 0.0],
-                                             [0.0, 0.0, 0.0, 0.0, 0.0]])
+        array = aa.array.manual_2d(
+            array=[
+                [0.0, 0.0, 0.0, 0.0, 0.0],
+                [0.0, 0.0, 0.0, 0.0, 0.0],
+                [0.0, 1.0, 0.0, 1.0, 0.0],
+                [0.0, 0.0, 0.0, 0.0, 0.0],
+                [0.0, 0.0, 0.0, 0.0, 0.0],
+            ]
+        )
 
         peak_pixels = aa.util.array.peak_pixels_from_array_2d(array_2d=array.in_2d)
 
-        assert peak_pixels == [[2,1]]
+        assert peak_pixels == [[2, 1], [2, 3]]
 
-        array = aa.array.manual_2d(array=[[0.0, 0.0, 0.0, 0.0, 0.0],
-                                             [0.0, 0.0, 0.0, 2.0, 0.0],
-                                             [0.0, 1.0, 0.0, 1.0, 0.0],
-                                             [0.0, 0.0, 0.0, 0.0, 0.0],
-                                             [0.0, 0.0, 0.0, 0.0, 0.0]])
+        array = aa.array.manual_2d(
+            array=[
+                [0.0, 0.0, 0.0, 0.0, 0.0],
+                [0.0, 0.0, 0.0, 1.0, 0.0],
+                [0.0, 1.0, 0.0, 1.0, 0.0],
+                [0.0, 0.0, 0.0, 0.0, 0.0],
+                [0.0, 0.0, 0.0, 0.0, 0.0],
+            ]
+        )
 
         peak_pixels = aa.util.array.peak_pixels_from_array_2d(array_2d=array.in_2d)
 
-        assert peak_pixels == [[1,3], [2, 1]]
+        assert peak_pixels == [[2, 1]]
 
-        array = aa.array.manual_2d(array=[[0.0, 0.0, 7.0, 0.0, 0.0],
-                                             [0.0, 0.0, 0.0, 0.0, 0.0],
-                                             [4.0, 1.0, 0.0, 1.0, 0.0],
-                                             [0.0, 0.0, 0.0, 0.0, 0.0],
-                                             [0.0, 0.0, 8.0, 0.0, 0.0]])
+        array = aa.array.manual_2d(
+            array=[
+                [0.0, 0.0, 0.0, 0.0, 0.0],
+                [0.0, 0.0, 0.0, 2.0, 0.0],
+                [0.0, 1.0, 0.0, 1.0, 0.0],
+                [0.0, 0.0, 0.0, 0.0, 0.0],
+                [0.0, 0.0, 0.0, 0.0, 0.0],
+            ]
+        )
+
+        peak_pixels = aa.util.array.peak_pixels_from_array_2d(array_2d=array.in_2d)
+
+        assert peak_pixels == [[1, 3], [2, 1]]
+
+        array = aa.array.manual_2d(
+            array=[
+                [0.0, 0.0, 7.0, 0.0, 0.0],
+                [0.0, 0.0, 0.0, 0.0, 0.0],
+                [4.0, 1.0, 0.0, 1.0, 0.0],
+                [0.0, 0.0, 0.0, 0.0, 0.0],
+                [0.0, 0.0, 8.0, 0.0, 0.0],
+            ]
+        )
 
         peak_pixels = aa.util.array.peak_pixels_from_array_2d(array_2d=array.in_2d)
 
         assert peak_pixels == [[2, 3]]
 
-        array = aa.array.manual_2d(array=[[0.0, 0.0, 0.0, 0.0, 0.0],
-                                             [2.0, 8.0, 7.0, 6.0, 8.0],
-                                             [4.0, 9.0, 4.0, 1.0, 8.0],
-                                             [1.0, 0.5, 7.0, 9.0, 8.0],
-                                             [0.0, 0.0, 0.0, 0.0, 0.0]])
+        array = aa.array.manual_2d(
+            array=[
+                [0.0, 0.0, 0.0, 0.0, 0.0],
+                [2.0, 8.0, 7.0, 6.0, 8.0],
+                [4.0, 9.0, 4.0, 1.0, 8.0],
+                [1.0, 0.5, 7.0, 9.0, 8.0],
+                [0.0, 0.0, 0.0, 0.0, 0.0],
+            ]
+        )
 
         peak_pixels = aa.util.array.peak_pixels_from_array_2d(array_2d=array.in_2d)
 
-        assert peak_pixels == [[2,1], [3, 3]]
+        assert peak_pixels == [[2, 1], [3, 3]]
 
     def test__simple_arrays_with_mask(self):
 
-        array = aa.array.manual_2d(array=[[0.0, 0.0, 0.0, 0.0, 0.0],
-                                          [0.0, 0.0, 0.0, 0.0, 0.0],
-                                          [0.0, 1.0, 0.0, 1.0, 0.0],
-                                          [0.0, 0.0, 0.0, 0.0, 0.0],
-                                          [0.0, 0.0, 0.0, 0.0, 0.0]])
+        array = aa.array.manual_2d(
+            array=[
+                [0.0, 0.0, 0.0, 0.0, 0.0],
+                [0.0, 0.0, 0.0, 0.0, 0.0],
+                [0.0, 1.0, 0.0, 1.0, 0.0],
+                [0.0, 0.0, 0.0, 0.0, 0.0],
+                [0.0, 0.0, 0.0, 0.0, 0.0],
+            ]
+        )
 
-        mask_2d = aa.mask.manual(mask_2d=[[True, True, True, True, True],
-                                          [True, True, True, True, True],
-                                          [True, True, True, False, True],
-                                          [True, True, True, True, True],
-                                          [True, True, True, True, True]])
+        mask_2d = aa.mask.manual(
+            mask_2d=[
+                [True, True, True, True, True],
+                [True, True, True, True, True],
+                [True, True, True, False, True],
+                [True, True, True, True, True],
+                [True, True, True, True, True],
+            ]
+        )
 
-        peak_pixels = aa.util.array.peak_pixels_from_array_2d(array_2d=array.in_2d, mask_2d=mask_2d)
+        peak_pixels = aa.util.array.peak_pixels_from_array_2d(
+            array_2d=array.in_2d, mask_2d=mask_2d
+        )
 
         assert peak_pixels == [[2, 3]]
 
-        array = aa.array.manual_2d(array=[[0.0, 0.0, 0.0, 0.0, 0.0],
-                                          [0.0, 0.0, 0.0, 1.0, 0.0],
-                                          [0.0, 1.0, 0.0, 1.0, 0.0],
-                                          [0.0, 0.0, 0.0, 0.0, 0.0],
-                                          [0.0, 0.0, 0.0, 0.0, 0.0]])
+        array = aa.array.manual_2d(
+            array=[
+                [0.0, 0.0, 0.0, 0.0, 0.0],
+                [0.0, 0.0, 0.0, 1.0, 0.0],
+                [0.0, 1.0, 0.0, 1.0, 0.0],
+                [0.0, 0.0, 0.0, 0.0, 0.0],
+                [0.0, 0.0, 0.0, 0.0, 0.0],
+            ]
+        )
 
-        mask_2d = aa.mask.manual(mask_2d=[[True, True, True, True, True],
-                                          [True, True, True, True, True],
-                                          [True, True, True, True, True],
-                                          [True, True, True, True, True],
-                                          [True, True, True, True, True]])
+        mask_2d = aa.mask.manual(
+            mask_2d=[
+                [True, True, True, True, True],
+                [True, True, True, True, True],
+                [True, True, True, True, True],
+                [True, True, True, True, True],
+                [True, True, True, True, True],
+            ]
+        )
 
-        peak_pixels = aa.util.array.peak_pixels_from_array_2d(array_2d=array.in_2d, mask_2d=mask_2d)
+        peak_pixels = aa.util.array.peak_pixels_from_array_2d(
+            array_2d=array.in_2d, mask_2d=mask_2d
+        )
 
         assert peak_pixels == []
 
-        array = aa.array.manual_2d(array=[[0.0, 0.0, 0.0, 0.0, 0.0],
-                                          [2.0, 8.0, 7.0, 6.0, 8.0],
-                                          [4.0, 9.0, 4.0, 1.0, 8.0],
-                                          [1.0, 0.5, 7.0, 9.0, 8.0],
-                                          [0.0, 0.0, 0.0, 0.0, 0.0]])
+        array = aa.array.manual_2d(
+            array=[
+                [0.0, 0.0, 0.0, 0.0, 0.0],
+                [2.0, 8.0, 7.0, 6.0, 8.0],
+                [4.0, 9.0, 4.0, 1.0, 8.0],
+                [1.0, 0.5, 7.0, 9.0, 8.0],
+                [0.0, 0.0, 0.0, 0.0, 0.0],
+            ]
+        )
 
-        mask_2d = aa.mask.manual(mask_2d=[[True, True, True, True, True],
-                                          [True, True, True, True, True],
-                                          [True, True, True, True, True],
-                                          [True, True, True, False, True],
-                                          [True, True, True, True, True]])
+        mask_2d = aa.mask.manual(
+            mask_2d=[
+                [True, True, True, True, True],
+                [True, True, True, True, True],
+                [True, True, True, True, True],
+                [True, True, True, False, True],
+                [True, True, True, True, True],
+            ]
+        )
 
-        peak_pixels = aa.util.array.peak_pixels_from_array_2d(array_2d=array.in_2d, mask_2d=mask_2d)
+        peak_pixels = aa.util.array.peak_pixels_from_array_2d(
+            array_2d=array.in_2d, mask_2d=mask_2d
+        )
 
         assert peak_pixels == [[3, 3]]
 
-class TestTroughPixels:
 
+class TestTroughPixels:
     def test__simple_arrays(self):
 
-        array = aa.array.manual_2d(array=[[9.0, 9.0, 9.0, 9.0, 9.0],
-                                             [9.0, 9.0, 9.0, 9.0, 9.0],
-                                             [9.0, 9.0, 1.0, 9.0, 9.0],
-                                             [9.0, 9.0, 9.0, 9.0, 9.0],
-                                             [9.0, 9.0, 9.0, 9.0, 9.0]])
+        array = aa.array.manual_2d(
+            array=[
+                [9.0, 9.0, 9.0, 9.0, 9.0],
+                [9.0, 9.0, 9.0, 9.0, 9.0],
+                [9.0, 9.0, 1.0, 9.0, 9.0],
+                [9.0, 9.0, 9.0, 9.0, 9.0],
+                [9.0, 9.0, 9.0, 9.0, 9.0],
+            ]
+        )
 
         trough_pixels = aa.util.array.trough_pixels_from_array_2d(array_2d=array.in_2d)
 
-        assert trough_pixels == [[2,2]]
+        assert trough_pixels == [[2, 2]]
 
-        array = aa.array.manual_2d(array=[[9.0, 9.0, 9.0, 9.0, 9.0],
-                                             [9.0, 9.0, 9.0, 9.0, 9.0],
-                                             [9.0, 1.0, 9.0, 1.0, 9.0],
-                                             [9.0, 9.0, 9.0, 9.0, 9.0],
-                                             [9.0, 9.0, 9.0, 9.0, 9.0]])
-
-        trough_pixels = aa.util.array.trough_pixels_from_array_2d(array_2d=array.in_2d)
-
-        assert trough_pixels == [[2,1], [2, 3]]
-
-        array = aa.array.manual_2d(array=[[9.0, 9.0, 9.0, 9.0, 9.0],
-                                             [9.0, 9.0, 9.0, 1.0, 9.0],
-                                             [9.0, 1.0, 9.0, 1.0, 9.0],
-                                             [9.0, 9.0, 9.0, 9.0, 9.0],
-                                             [9.0, 9.0, 9.0, 9.0, 9.0]])
+        array = aa.array.manual_2d(
+            array=[
+                [9.0, 9.0, 9.0, 9.0, 9.0],
+                [9.0, 9.0, 9.0, 9.0, 9.0],
+                [9.0, 1.0, 9.0, 1.0, 9.0],
+                [9.0, 9.0, 9.0, 9.0, 9.0],
+                [9.0, 9.0, 9.0, 9.0, 9.0],
+            ]
+        )
 
         trough_pixels = aa.util.array.trough_pixels_from_array_2d(array_2d=array.in_2d)
 
-        assert trough_pixels == [[2,1]]
+        assert trough_pixels == [[2, 1], [2, 3]]
 
-        array = aa.array.manual_2d(array=[[9.0, 9.0, 9.0, 9.0, 9.0],
-                                             [9.0, 9.0, 9.0, 1.0, 9.0],
-                                             [9.0, 1.0, 9.0, 2.0, 9.0],
-                                             [9.0, 9.0, 9.0, 9.0, 9.0],
-                                             [9.0, 9.0, 9.0, 9.0, 9.0]])
+        array = aa.array.manual_2d(
+            array=[
+                [9.0, 9.0, 9.0, 9.0, 9.0],
+                [9.0, 9.0, 9.0, 1.0, 9.0],
+                [9.0, 1.0, 9.0, 1.0, 9.0],
+                [9.0, 9.0, 9.0, 9.0, 9.0],
+                [9.0, 9.0, 9.0, 9.0, 9.0],
+            ]
+        )
 
         trough_pixels = aa.util.array.trough_pixels_from_array_2d(array_2d=array.in_2d)
 
-        assert trough_pixels == [[1,3], [2, 1]]
+        assert trough_pixels == [[2, 1]]
 
-        array = aa.array.manual_2d(array=[[9.0, 9.0, 7.0, 9.0, 9.0],
-                                             [9.0, 9.0, 9.0, 9.0, 9.0],
-                                             [4.0, 1.0, 9.0, 1.0, 9.0],
-                                             [9.0, 1.0, 9.0, 9.0, 9.0],
-                                             [9.0, 9.0, 8.0, 9.0, 9.0]])
+        array = aa.array.manual_2d(
+            array=[
+                [9.0, 9.0, 9.0, 9.0, 9.0],
+                [9.0, 9.0, 9.0, 1.0, 9.0],
+                [9.0, 1.0, 9.0, 2.0, 9.0],
+                [9.0, 9.0, 9.0, 9.0, 9.0],
+                [9.0, 9.0, 9.0, 9.0, 9.0],
+            ]
+        )
+
+        trough_pixels = aa.util.array.trough_pixels_from_array_2d(array_2d=array.in_2d)
+
+        assert trough_pixels == [[1, 3], [2, 1]]
+
+        array = aa.array.manual_2d(
+            array=[
+                [9.0, 9.0, 7.0, 9.0, 9.0],
+                [9.0, 9.0, 9.0, 9.0, 9.0],
+                [4.0, 1.0, 9.0, 1.0, 9.0],
+                [9.0, 1.0, 9.0, 9.0, 9.0],
+                [9.0, 9.0, 8.0, 9.0, 9.0],
+            ]
+        )
 
         trough_pixels = aa.util.array.trough_pixels_from_array_2d(array_2d=array.in_2d)
 
         assert trough_pixels == [[2, 3]]
 
-        array = aa.array.manual_2d(array=[[9.0, 9.0, 9.0, 9.0, 9.0],
-                                             [2.0, 8.0, 7.0, 6.0, 8.0],
-                                             [4.0, 0.1, 4.0, 1.0, 8.0],
-                                             [1.0, 0.5, 7.0, 0.1, 8.0],
-                                             [9.0, 9.0, 9.0, 9.0, 9.0]])
+        array = aa.array.manual_2d(
+            array=[
+                [9.0, 9.0, 9.0, 9.0, 9.0],
+                [2.0, 8.0, 7.0, 6.0, 8.0],
+                [4.0, 0.1, 4.0, 1.0, 8.0],
+                [1.0, 0.5, 7.0, 0.1, 8.0],
+                [9.0, 9.0, 9.0, 9.0, 9.0],
+            ]
+        )
 
         trough_pixels = aa.util.array.trough_pixels_from_array_2d(array_2d=array.in_2d)
 
-        assert trough_pixels == [[2,1], [3, 3]]
-        
+        assert trough_pixels == [[2, 1], [3, 3]]
+
     def test__simple_arrays_with_mask(self):
 
-        array = aa.array.manual_2d(array=[[9.0, 9.0, 9.0, 9.0, 9.0],
-                                          [9.0, 9.0, 9.0, 9.0, 9.0],
-                                          [9.0, 1.0, 9.0, 1.0, 9.0],
-                                          [9.0, 9.0, 9.0, 9.0, 9.0],
-                                          [9.0, 9.0, 9.0, 9.0, 9.0]])
+        array = aa.array.manual_2d(
+            array=[
+                [9.0, 9.0, 9.0, 9.0, 9.0],
+                [9.0, 9.0, 9.0, 9.0, 9.0],
+                [9.0, 1.0, 9.0, 1.0, 9.0],
+                [9.0, 9.0, 9.0, 9.0, 9.0],
+                [9.0, 9.0, 9.0, 9.0, 9.0],
+            ]
+        )
 
-        mask_2d = aa.mask.manual(mask_2d=[[True, True, True, True, True],
-                                          [True, True, True, True, True],
-                                          [True, True, True, False, True],
-                                          [True, True, True, True, True],
-                                          [True, True, True, True, True]])
+        mask_2d = aa.mask.manual(
+            mask_2d=[
+                [True, True, True, True, True],
+                [True, True, True, True, True],
+                [True, True, True, False, True],
+                [True, True, True, True, True],
+                [True, True, True, True, True],
+            ]
+        )
 
-        trough_pixels = aa.util.array.trough_pixels_from_array_2d(array_2d=array.in_2d, mask_2d=mask_2d)
+        trough_pixels = aa.util.array.trough_pixels_from_array_2d(
+            array_2d=array.in_2d, mask_2d=mask_2d
+        )
 
         assert trough_pixels == [[2, 3]]
 
-        array = aa.array.manual_2d(array=[[9.0, 9.0, 9.0, 9.0, 9.0],
-                                          [9.0, 9.0, 9.0, 1.0, 9.0],
-                                          [9.0, 1.0, 9.0, 1.0, 9.0],
-                                          [9.0, 9.0, 9.0, 9.0, 9.0],
-                                          [9.0, 9.0, 9.0, 9.0, 9.0]])
+        array = aa.array.manual_2d(
+            array=[
+                [9.0, 9.0, 9.0, 9.0, 9.0],
+                [9.0, 9.0, 9.0, 1.0, 9.0],
+                [9.0, 1.0, 9.0, 1.0, 9.0],
+                [9.0, 9.0, 9.0, 9.0, 9.0],
+                [9.0, 9.0, 9.0, 9.0, 9.0],
+            ]
+        )
 
-        mask_2d = aa.mask.manual(mask_2d=[[True, True, True, True, True],
-                                          [True, True, True, True, True],
-                                          [True, True, True, True, True],
-                                          [True, True, True, True, True],
-                                          [True, True, True, True, True]])
+        mask_2d = aa.mask.manual(
+            mask_2d=[
+                [True, True, True, True, True],
+                [True, True, True, True, True],
+                [True, True, True, True, True],
+                [True, True, True, True, True],
+                [True, True, True, True, True],
+            ]
+        )
 
-        trough_pixels = aa.util.array.trough_pixels_from_array_2d(array_2d=array.in_2d, mask_2d=mask_2d)
+        trough_pixels = aa.util.array.trough_pixels_from_array_2d(
+            array_2d=array.in_2d, mask_2d=mask_2d
+        )
 
         assert trough_pixels == []
 
-        array = aa.array.manual_2d(array=[[9.0, 9.0, 9.0, 9.0, 9.0],
-                                          [2.0, 8.0, 7.0, 6.0, 8.0],
-                                          [4.0, 9.0, 4.0, 1.0, 8.0],
-                                          [1.0, 0.5, 7.0, 0.1, 8.0],
-                                          [9.0, 9.0, 9.0, 9.0, 9.0]])
+        array = aa.array.manual_2d(
+            array=[
+                [9.0, 9.0, 9.0, 9.0, 9.0],
+                [2.0, 8.0, 7.0, 6.0, 8.0],
+                [4.0, 9.0, 4.0, 1.0, 8.0],
+                [1.0, 0.5, 7.0, 0.1, 8.0],
+                [9.0, 9.0, 9.0, 9.0, 9.0],
+            ]
+        )
 
-        mask_2d = aa.mask.manual(mask_2d=[[True, True, True, True, True],
-                                          [True, True, True, True, True],
-                                          [True, True, True, True, True],
-                                          [True, True, True, False, True],
-                                          [True, True, True, True, True]])
+        mask_2d = aa.mask.manual(
+            mask_2d=[
+                [True, True, True, True, True],
+                [True, True, True, True, True],
+                [True, True, True, True, True],
+                [True, True, True, False, True],
+                [True, True, True, True, True],
+            ]
+        )
 
-        trough_pixels = aa.util.array.trough_pixels_from_array_2d(array_2d=array.in_2d, mask_2d=mask_2d)
+        trough_pixels = aa.util.array.trough_pixels_from_array_2d(
+            array_2d=array.in_2d, mask_2d=mask_2d
+        )
 
         assert trough_pixels == [[3, 3]]

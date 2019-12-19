@@ -1197,16 +1197,23 @@ class Positions(list):
         self.mask = mask
 
     @classmethod
-    def from_pixel_positions_and_mask(cls, positions_pixels, mask):
+    def from_pixels_and_mask(cls, pixels, mask):
         positions = []
-        for position_set in positions_pixels:
-            positions.append([mask.geometry.scaled_coordinates_from_pixel_coordinates(pixel_coordinates=coordinates) for coordinates in position_set])
+        for position_set in pixels:
+            positions.append(
+                [
+                    mask.geometry.scaled_coordinates_from_pixel_coordinates(
+                        pixel_coordinates=coordinates
+                    )
+                    for coordinates in position_set
+                ]
+            )
         return cls(positions=positions, mask=mask)
 
     @property
     def in_1d(self):
 
-        total_positions =  sum([len(position_set) for position_set in self])
+        total_positions = sum([len(position_set) for position_set in self])
 
         grid_1d = np.zeros(shape=(total_positions, 2))
 
@@ -1219,20 +1226,30 @@ class Positions(list):
 
         return GridIrregular.manual_1d(grid=grid_1d)
 
+    @property
+    def list_in_1d(self):
+
+        positions_list = []
+
+        for position_set in self:
+            positions_list.append(GridIrregular(grid=position_set))
+
+        return positions_list
+
     def from_1d_positions(self, positions_1d):
 
         position_1d_index = 0
 
-        new_positions_list = []
+        new_positions = []
 
         for position_set_index in range(len(self)):
-            new_position_set_list=[]
+            new_position_set_list = []
             for positions_index in range(len(self[position_set_index])):
                 new_position_set_list.append(tuple(positions_1d[position_1d_index, :]))
                 position_1d_index += 1
-            new_positions_list.append(new_position_set_list)
+            new_positions.append(new_position_set_list)
 
-        return new_positions_list
+        return Positions(positions=new_positions, mask=self.mask)
 
     def from_1d_values(self, values_1d):
 
@@ -1241,7 +1258,7 @@ class Positions(list):
         new_values_list = []
 
         for position_set_index in range(len(self)):
-            new_values_set_list=[]
+            new_values_set_list = []
             for positions_index in range(len(self[position_set_index])):
                 new_values_set_list.append(values_1d[values_1d_index])
                 values_1d_index += 1
@@ -1257,7 +1274,14 @@ class Positions(list):
     def pixels(self):
         positions = []
         for position_set in self:
-            positions.append([self.mask.geometry.pixel_coordinates_from_scaled_coordinates(scaled_coordinates=coordinates) for coordinates in position_set])
+            positions.append(
+                [
+                    self.mask.geometry.pixel_coordinates_from_scaled_coordinates(
+                        scaled_coordinates=coordinates
+                    )
+                    for coordinates in position_set
+                ]
+            )
         return self.__class__(positions=positions, mask=self.mask)
 
     @classmethod
@@ -1357,9 +1381,15 @@ def convert_positions_to_grid(func):
                     return grid.from_1d_positions(positions_1d=values_1d)
             elif isinstance(values_1d, list):
                 if len(values_1d[0].shape) == 1:
-                    return [grid.from_1d_values(values_1d=value_1d) for value_1d in values_1d]
+                    return [
+                        grid.from_1d_values(values_1d=value_1d)
+                        for value_1d in values_1d
+                    ]
                 elif len(values_1d[0].shape) == 2:
-                    return [grid.from_1d_positions(positions_1d=value_1d) for value_1d in values_1d]
+                    return [
+                        grid.from_1d_positions(positions_1d=value_1d)
+                        for value_1d in values_1d
+                    ]
         else:
             return func(profile, grid, *args, **kwargs)
 

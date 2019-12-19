@@ -849,8 +849,7 @@ class TestArcsecToPixel:
         self
     ):
         mask = aa.mask.manual(
-            mask_2d=np.full(fill_value=False, shape=(3, 3)),
-            pixel_scales=(3.0, 3.0),
+            mask_2d=np.full(fill_value=False, shape=(3, 3)), pixel_scales=(3.0, 3.0)
         )
 
         assert mask.geometry.scaled_coordinates_from_pixel_coordinates(
@@ -933,6 +932,7 @@ class TestArcsecToPixel:
         assert mask.geometry.scaled_coordinates_from_pixel_coordinates(
             pixel_coordinates=(2, 2)
         ) == (0.0, 6.0)
+
 
 class TestGridConversions:
     def test__grid_pixels_from_grid_arcsec(self):

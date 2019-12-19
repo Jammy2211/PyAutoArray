@@ -585,19 +585,22 @@ def peak_pixels_from_array_2d(array_2d, mask_2d=None):
 
     for y in range(1, array_2d.shape[0] - 1):
         for x in range(1, array_2d.shape[1] - 1):
-            if not mask_2d[y,x]:
-                if array_2d[y, x] > array_2d[y + 1, x] and \
-                    array_2d[y, x] > array_2d[y + 1, x + 1] and \
-                    array_2d[y, x] > array_2d[y, x + 1] and \
-                    array_2d[y, x] > array_2d[y - 1, x + 1] and \
-                    array_2d[y, x] > array_2d[y - 1, x] and \
-                    array_2d[y, x] > array_2d[y - 1, x - 1] and \
-                    array_2d[y, x] > array_2d[y, x - 1] and \
-                    array_2d[y, x] > array_2d[y + 1, x - 1]:
+            if not mask_2d[y, x]:
+                if (
+                    array_2d[y, x] > array_2d[y + 1, x]
+                    and array_2d[y, x] > array_2d[y + 1, x + 1]
+                    and array_2d[y, x] > array_2d[y, x + 1]
+                    and array_2d[y, x] > array_2d[y - 1, x + 1]
+                    and array_2d[y, x] > array_2d[y - 1, x]
+                    and array_2d[y, x] > array_2d[y - 1, x - 1]
+                    and array_2d[y, x] > array_2d[y, x - 1]
+                    and array_2d[y, x] > array_2d[y + 1, x - 1]
+                ):
 
                     peak_pixels.append([y, x])
 
     return peak_pixels
+
 
 @decorator_util.jit()
 def trough_pixels_from_array_2d(array_2d, mask_2d=None):
@@ -609,15 +612,17 @@ def trough_pixels_from_array_2d(array_2d, mask_2d=None):
 
     for y in range(1, array_2d.shape[0] - 1):
         for x in range(1, array_2d.shape[1] - 1):
-            if not mask_2d[y,x]:
-                if array_2d[y, x] < array_2d[y + 1, x] and \
-                    array_2d[y, x] < array_2d[y + 1, x + 1] and \
-                    array_2d[y, x] < array_2d[y, x + 1] and \
-                    array_2d[y, x] < array_2d[y - 1, x + 1] and \
-                    array_2d[y, x] < array_2d[y - 1, x] and \
-                    array_2d[y, x] < array_2d[y - 1, x - 1] and \
-                    array_2d[y, x] < array_2d[y, x - 1] and \
-                    array_2d[y, x] < array_2d[y + 1, x - 1]:
+            if not mask_2d[y, x]:
+                if (
+                    array_2d[y, x] < array_2d[y + 1, x]
+                    and array_2d[y, x] < array_2d[y + 1, x + 1]
+                    and array_2d[y, x] < array_2d[y, x + 1]
+                    and array_2d[y, x] < array_2d[y - 1, x + 1]
+                    and array_2d[y, x] < array_2d[y - 1, x]
+                    and array_2d[y, x] < array_2d[y - 1, x - 1]
+                    and array_2d[y, x] < array_2d[y, x - 1]
+                    and array_2d[y, x] < array_2d[y + 1, x - 1]
+                ):
 
                     trough_pixels.append([y, x])
 
