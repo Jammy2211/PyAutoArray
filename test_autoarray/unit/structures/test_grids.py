@@ -2479,27 +2479,97 @@ test_positions_dir = "{}/../test_files/positions/".format(
 )
 
 
+class MockPositionInput(object):
+    def __init__(self):
+        pass
+
+    @grids.convert_positions_to_grid
+    def float_values_from_grid(self, grid):
+        return np.ones(shape=grid.shape[0])
+
+    @grids.convert_positions_to_grid
+    def tuple_values_from_grid(self, grid):
+        return np.multiply(2.0, grid)
+
+    @grids.convert_positions_to_grid
+    def float_values_from_grid_returns_list(self, grid):
+        return [np.ones(shape=grid.shape[0]), 2.0 * np.ones(shape=grid.shape[0])]
+
+    @grids.convert_positions_to_grid
+    def tuple_values_from_grid_returns_list(self, grid):
+        return [np.multiply(1.0, grid), np.multiply(2.0, grid)]
+
+
 class TestPositions:
-    def test__input_is_list_of_lists__converted_to_irregular_grids(self):
+    def test__converts_to_and_from_pixels(self):
 
-        positions = aa.positions(positions=[[[1.0, 1.0], [2.0, 2.0]]])
+        mask = aa.mask.manual(
+            mask_2d=np.full(fill_value=False, shape=(2, 2)), pixel_scales=(2.0, 2.0)
+        )
 
-        assert type(positions[0][0]) == grids.GridIrregular
-        assert (positions[0][0] == np.array([1.0, 1.0])).all()
+        positions = aa.positions(positions=[[(1.0, -1.0), (1.0, 1.0)]], mask=mask)
 
-        assert type(positions[0][1]) == grids.GridIrregular
-        assert (positions[0][1] == np.array([2.0, 2.0])).all()
+        assert type(positions.scaled) == grids.Positions
+        assert positions.scaled == [[(1.0, -1.0), (1.0, 1.0)]]
+        assert positions.pixels == [[(0, 0), (0, 1)]]
 
-        positions = aa.positions(positions=[[[1.0, 1.0], [2.0, 2.0]], [[3.0, 3.0]]])
+        positions = aa.positions.from_pixels_and_mask(
+            pixels=[[(0, 0), (0, 1)]], mask=mask
+        )
 
-        assert type(positions[0][0]) == grids.GridIrregular
-        assert (positions[0][0] == np.array([1.0, 1.0])).all()
+        assert positions.scaled == [[(1.0, -1.0), (1.0, 1.0)]]
+        assert positions.pixels == [[(0, 0), (0, 1)]]
 
-        assert type(positions[0][1]) == grids.GridIrregular
-        assert (positions[0][1] == np.array([2.0, 2.0])).all()
+    def test__input_is_list_of_tuples__converts_to_irregular_1d_grid(self):
 
-        assert type(positions[1][0]) == grids.GridIrregular
-        assert (positions[1][0] == np.array([3.0, 3.0])).all()
+        positions = aa.positions(positions=[[(1.0, 1.0), (2.0, 2.0)]])
+
+        assert positions == [[(1.0, 1.0), (2.0, 2.0)]]
+        assert type(positions.in_1d) == grids.GridIrregular
+        assert (positions.in_1d == np.array([[1.0, 1.0], [2.0, 2.0]])).all()
+        assert (positions.list_in_1d[0] == np.array([[1.0, 1.0], [2.0, 2.0]])).all()
+
+        positions = aa.positions(positions=[[(1.0, 1.0), (2.0, 2.0)], [(3.0, 3.0)]])
+
+        assert positions == [[(1.0, 1.0), (2.0, 2.0)], [(3.0, 3.0)]]
+        assert type(positions.in_1d) == grids.GridIrregular
+        assert (positions.in_1d == np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0]])).all()
+        assert (positions.list_in_1d[0] == np.array([[1.0, 1.0], [2.0, 2.0]])).all()
+        assert (positions.list_in_1d[1] == np.array([[3.0, 3.0]])).all()
+
+    def test__retain_original_list_of_tuples_from_a_1d_grid(self):
+
+        positions = aa.positions(positions=[[(1.0, 1.0), (2.0, 2.0)]])
+
+        positions_from_1d = positions.from_1d_positions(
+            positions_1d=np.array([[1.0, 1.0], [2.0, 2.0]])
+        )
+
+        assert type(positions_from_1d) == grids.Positions
+        assert positions_from_1d == [[(1.0, 1.0), (2.0, 2.0)]]
+
+        positions = aa.positions(positions=[[(1.0, 1.0), (2.0, 2.0)], [(3.0, 3.0)]])
+
+        positions_from_1d = positions.from_1d_positions(
+            positions_1d=np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0]])
+        )
+
+        assert type(positions_from_1d) == grids.Positions
+        assert positions_from_1d == [[(1.0, 1.0), (2.0, 2.0)], [(3.0, 3.0)]]
+
+    def test__retain_origin_list_but_as_floats_for_single_values(self):
+
+        positions = aa.positions(positions=[[(1.0, 1.0), (2.0, 2.0)]])
+
+        values_from_1d = positions.from_1d_values(values_1d=np.array([1.0, 2.0]))
+
+        assert values_from_1d == [[1.0, 2.0]]
+
+        positions = aa.positions(positions=[[(1.0, 1.0), (2.0, 2.0)], [(3.0, 3.0)]])
+
+        values_from_1d = positions.from_1d_values(values_1d=np.array([1.0, 2.0, 3.0]))
+
+        assert values_from_1d == [[1.0, 2.0], [3.0]]
 
     def test__load_positions__retains_list_structure(self):
         positions = aa.positions.from_file(
@@ -2507,13 +2577,13 @@ class TestPositions:
         )
 
         assert positions == [
-            [[1.0, 1.0], [2.0, 2.0]],
-            [[3.0, 3.0], [4.0, 4.0], [5.0, 6.0]],
+            [(1.0, 1.0), (2.0, 2.0)],
+            [(3.0, 3.0), (4.0, 4.0), (5.0, 6.0)],
         ]
 
     def test__output_positions(self):
         positions = aa.positions(
-            [[[4.0, 4.0], [5.0, 5.0]], [[6.0, 6.0], [7.0, 7.0], [8.0, 8.0]]]
+            [[(4.0, 4.0), (5.0, 5.0)], [(6.0, 6.0), (7.0, 7.0), (8.0, 8.0)]]
         )
 
         output_data_dir = "{}/../test_files/positions/output_test/".format(
@@ -2531,6 +2601,43 @@ class TestPositions:
         )
 
         assert positions == [
-            [[4.0, 4.0], [5.0, 5.0]],
-            [[6.0, 6.0], [7.0, 7.0], [8.0, 8.0]],
+            [(4.0, 4.0), (5.0, 5.0)],
+            [(6.0, 6.0), (7.0, 7.0), (8.0, 8.0)],
+        ]
+
+    def test__convert_positions_decorator__positions_are_input__output_in_same_format(
+        self
+    ):
+
+        positions_input = MockPositionInput()
+
+        positions = aa.positions(positions=[[(1.0, 2.0), (3.0, 4.0)], [(5.0, 6.0)]])
+
+        positions_output = positions_input.float_values_from_grid(grid=positions)
+
+        assert positions_output == [[1.0, 1.0], [1.0]]
+
+        positions_output = positions_input.tuple_values_from_grid(grid=positions)
+
+        assert positions_output == [[(2.0, 4.0), (6.0, 8.0)], [(10.0, 12.0)]]
+
+    def test__convert_positions_decorator__same_as_above_but_output_is_a_list(self):
+
+        positions_input = MockPositionInput()
+
+        positions = aa.positions(positions=[[(1.0, 2.0), (3.0, 4.0)], [(5.0, 6.0)]])
+
+        positions_output = positions_input.float_values_from_grid_returns_list(
+            grid=positions
+        )
+
+        assert positions_output == [[[1.0, 1.0], [1.0]], [[2.0, 2.0], [2.0]]]
+
+        positions_output = positions_input.tuple_values_from_grid_returns_list(
+            grid=positions
+        )
+
+        assert positions_output == [
+            [[(1.0, 2.0), (3.0, 4.0)], [(5.0, 6.0)]],
+            [[(2.0, 4.0), (6.0, 8.0)], [(10.0, 12.0)]],
         ]
