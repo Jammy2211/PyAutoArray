@@ -8,6 +8,7 @@ from sklearn.cluster import KMeans
 from autoarray import decorator_util
 from autoarray import exc
 from autoarray.structures import abstract_structure
+from autoarray.masked import masked_structures
 from autoarray.mask import mask as msk
 from autoarray.util import (
     sparse_util,
@@ -212,6 +213,14 @@ class AbstractGrid(abstract_structure.AbstractStructure):
             return self.mask.mapping.grid_stored_2d_binned_from_sub_grid_1d(
                 sub_grid_1d=sub_grid_1d
             )
+
+    def squared_distances_from_coordinate_array(self, coordinate=(0.0, 0.0)):
+        squared_distances = np.square(self[:, 0] - coordinate[0]) + np.square(self[:, 1] - coordinate[1])
+        return masked_structures.MaskedArray(array=squared_distances, mask=self.mask)
+
+    def distances_from_coordinate_array(self, coordinate=(0.0, 0.0)):
+        distances = np.sqrt(self.squared_distances_from_coordinate_array(coordinate=coordinate))
+        return masked_structures.MaskedArray(array=distances, mask=self.mask)
 
     def blurring_grid_from_kernel_shape(self, kernel_shape_2d):
 
