@@ -1109,6 +1109,44 @@ class TestGrid:
             sub_border_1d_indexes_util, 1e-4
         )
 
+    def test__square_distance_from_coordinate_array(self):
+
+        mask = aa.mask.manual(
+            [[True, False], [False, False]], pixel_scales=1.0, origin=(0.0, 1.0)
+        )
+        grid = aa.masked.grid.manual_1d(
+            grid=[[1.0, 1.0], [2.0, 3.0], [1.0, 2.0]], mask=mask
+        )
+
+        square_distances = grid.squared_distances_from_coordinate_array(coordinate=(0.0, 0.0))
+
+        assert (square_distances.in_1d == np.array([2.0, 13.0, 5.0])).all()
+        assert (square_distances.mask == mask).all()
+
+        square_distances = grid.squared_distances_from_coordinate_array(coordinate=(0.0, 1.0))
+
+        assert (square_distances.in_1d == np.array([1.0, 8.0, 2.0])).all()
+        assert (square_distances.mask == mask).all()
+
+    def test__distance_from_coordinate_array(self):
+
+        mask = aa.mask.manual(
+            [[True, False], [False, False]], pixel_scales=1.0, origin=(0.0, 1.0)
+        )
+        grid = aa.masked.grid.manual_1d(
+            grid=[[1.0, 1.0], [2.0, 3.0], [1.0, 2.0]], mask=mask
+        )
+
+        square_distances = grid.distances_from_coordinate_array(coordinate=(0.0, 0.0))
+
+        assert (square_distances.in_1d == np.array([np.sqrt(2.0), np.sqrt(13.0), np.sqrt(5.0)])).all()
+        assert (square_distances.mask == mask).all()
+
+        square_distances = grid.distances_from_coordinate_array(coordinate=(0.0, 1.0))
+
+        assert (square_distances.in_1d == np.array([1.0, np.sqrt(8.0), np.sqrt(2.0)])).all()
+        assert (square_distances.mask == mask).all()
+
 
 class TestGridBorder(object):
     def test__sub_border_grid_for_simple_mask(self):
