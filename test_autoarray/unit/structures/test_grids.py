@@ -418,7 +418,7 @@ class TestGridAPI:
         ):
 
             grid = aa.grid.bounding_box(
-                bounding_box=[2.0, -2.0, 2.0, -2.0], shape_2d=(3, 3)
+                bounding_box=[-2.0, 2.0, -2.0, 2.0], shape_2d=(3, 3)
             )
 
             assert (
@@ -441,7 +441,7 @@ class TestGridAPI:
             assert grid.origin == (0.0, 0.0)
 
             grid = aa.grid.bounding_box(
-                bounding_box=[2.0, -2.0, 2.0, -2.0], shape_2d=(2, 3)
+                bounding_box=[-2.0, 2.0, -2.0, 2.0], shape_2d=(2, 3)
             )
 
             assert (
@@ -461,7 +461,7 @@ class TestGridAPI:
             assert grid.origin == (0.0, 0.0)
 
             grid = aa.grid.bounding_box(
-                bounding_box=[10.0, 8.0, 3.0, -2.0], shape_2d=(3, 3), store_in_1d=True
+                bounding_box=[8.0, 10.0, -2.0, 3.0], shape_2d=(3, 3), store_in_1d=True
             )
 
             assert grid == pytest.approx(
@@ -500,7 +500,7 @@ class TestGridAPI:
             assert grid.origin == (9.0, 0.5)
 
             grid = aa.grid.bounding_box(
-                bounding_box=[10.0, 8.0, 3.0, -2.0], shape_2d=(3, 3), store_in_1d=False
+                bounding_box=[8.0, 10.0, -2.0, 3.0], shape_2d=(3, 3), store_in_1d=False
             )
 
             assert grid.in_2d == pytest.approx(
@@ -867,6 +867,20 @@ class TestGrid:
         )
         assert grid.shape_2d_scaled == (8.5, 8.0)
 
+    def test__flipped_property__returns_grid_as_x_then_y(self):
+
+        grid = aa.grid.manual_2d(grid=[[[1.0, 2.0], [3.0, 4.0]],
+                                       [[5.0, 6.0], [7.0, 8.0]]], pixel_scales=1.0)
+
+        assert (grid.in_1d_flipped == np.array([[2.0, 1.0], [4.0, 3.0], [6.0, 5.0], [8.0, 7.0]])).all()
+        assert (grid.in_2d_flipped == np.array([[[2.0, 1.0], [4.0, 3.0]],
+                                                [[6.0, 5.0], [8.0, 7.0]]])).all()
+
+        grid = aa.grid.manual_2d(grid=[[[1.0, 2.0], [3.0, 4.0], [5.0, 6.0]]], pixel_scales=1.0)
+
+        assert (grid.in_1d_flipped == np.array([[2.0, 1.0], [4.0, 3.0], [6.0, 5.0]])).all()
+        assert (grid.in_2d_flipped == np.array([[[2.0, 1.0], [4.0, 3.0], [6.0, 5.0]]])).all()
+
     def test__in_radians(self):
         mask = np.array(
             [
@@ -1118,12 +1132,12 @@ class TestGrid:
             grid=[[1.0, 1.0], [2.0, 3.0], [1.0, 2.0]], mask=mask
         )
 
-        square_distances = grid.squared_distances_from_coordinate_array(coordinate=(0.0, 0.0))
+        square_distances = grid.squared_distances_from_coordinate(coordinate=(0.0, 0.0))
 
         assert (square_distances.in_1d == np.array([2.0, 13.0, 5.0])).all()
         assert (square_distances.mask == mask).all()
 
-        square_distances = grid.squared_distances_from_coordinate_array(coordinate=(0.0, 1.0))
+        square_distances = grid.squared_distances_from_coordinate(coordinate=(0.0, 1.0))
 
         assert (square_distances.in_1d == np.array([1.0, 8.0, 2.0])).all()
         assert (square_distances.mask == mask).all()
@@ -1137,12 +1151,12 @@ class TestGrid:
             grid=[[1.0, 1.0], [2.0, 3.0], [1.0, 2.0]], mask=mask
         )
 
-        square_distances = grid.distances_from_coordinate_array(coordinate=(0.0, 0.0))
+        square_distances = grid.distances_from_coordinate(coordinate=(0.0, 0.0))
 
         assert (square_distances.in_1d == np.array([np.sqrt(2.0), np.sqrt(13.0), np.sqrt(5.0)])).all()
         assert (square_distances.mask == mask).all()
 
-        square_distances = grid.distances_from_coordinate_array(coordinate=(0.0, 1.0))
+        square_distances = grid.distances_from_coordinate(coordinate=(0.0, 1.0))
 
         assert (square_distances.in_1d == np.array([1.0, np.sqrt(8.0), np.sqrt(2.0)])).all()
         assert (square_distances.mask == mask).all()

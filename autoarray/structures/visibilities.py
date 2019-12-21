@@ -68,7 +68,7 @@ class AbstractVisibilities(np.ndarray):
         return self.shape[0]
 
     @property
-    def flipped_1d(self):
+    def in_1d_flipped(self):
         return Visibilities.manual_1d(visibilities=np.fliplr(self))
 
     @property
