@@ -195,6 +195,7 @@ def individuals(
     plot_inversion_normalized_residual_map=False,
     plot_inversion_chi_squared_map=False,
     plot_inversion_regularization_weight_map=False,
+    plot_inversion_interpolated_reconstruction=False,
     unit_conversion_factor=None,
     unit_label="arcsec",
     output_path=None,
@@ -362,6 +363,16 @@ def individuals(
                 output_path=output_path,
                 output_format=output_format,
             )
+
+    if plot_inversion_interpolated_reconstruction:
+
+        inversion_plotters.interpolated_reconstruction(
+            inversion=fit.inversion,
+            unit_conversion_factor=unit_conversion_factor,
+            unit_label=unit_label,
+            output_path=output_path,
+            output_format=output_format,
+        )
 
 
 def visibilities(
