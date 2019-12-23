@@ -7,6 +7,7 @@ from autoarray.util import inversion_util
 
 from scipy.interpolate import griddata
 
+
 def inversion(masked_dataset, mapper, regularization):
 
     if isinstance(masked_dataset, md.MaskedImaging):
@@ -54,12 +55,23 @@ class Inversion(object):
             dimension = int(np.sqrt(self.mapper.pixels))
             shape_2d = (dimension, dimension)
 
-        grid = grids.Grid.bounding_box(bounding_box=self.mapper.pixelization_grid.extent, shape_2d=shape_2d)
+        grid = grids.Grid.bounding_box(
+            bounding_box=self.mapper.pixelization_grid.extent, shape_2d=shape_2d
+        )
 
-        interpolated_reconstruction = griddata(points=self.mapper.pixelization_grid, values=self.reconstruction, xi=grid, method='linear')
+        interpolated_reconstruction = griddata(
+            points=self.mapper.pixelization_grid,
+            values=self.reconstruction,
+            xi=grid.in_2d,
+            method="linear",
+        )
 
-        return arrays.Array.manual_1d(array=interpolated_reconstruction, shape_2d=shape_2d, pixel_scales=grid.pixel_scales)
+        interpolated_reconstruction[np.isnan(interpolated_reconstruction)] = 0.0
 
+        return arrays.Array.manual_2d(
+            array=interpolated_reconstruction,
+            pixel_scales=grid.pixel_scales,
+        )
 
     @property
     def errors_with_covariance(self):

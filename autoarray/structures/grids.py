@@ -215,11 +215,15 @@ class AbstractGrid(abstract_structure.AbstractStructure):
             )
 
     def squared_distances_from_coordinate(self, coordinate=(0.0, 0.0)):
-        squared_distances = np.square(self[:, 0] - coordinate[0]) + np.square(self[:, 1] - coordinate[1])
+        squared_distances = np.square(self[:, 0] - coordinate[0]) + np.square(
+            self[:, 1] - coordinate[1]
+        )
         return masked_structures.MaskedArray(array=squared_distances, mask=self.mask)
 
     def distances_from_coordinate(self, coordinate=(0.0, 0.0)):
-        distances = np.sqrt(self.squared_distances_from_coordinate(coordinate=coordinate))
+        distances = np.sqrt(
+            self.squared_distances_from_coordinate(coordinate=coordinate)
+        )
         return masked_structures.MaskedArray(array=distances, mask=self.mask)
 
     def blurring_grid_from_kernel_shape(self, kernel_shape_2d):
@@ -263,7 +267,7 @@ class AbstractGrid(abstract_structure.AbstractStructure):
 
     @property
     def in_2d_flipped(self):
-        return np.stack((self.in_2d[:,:,1], self.in_2d[:,:,0]), axis=-1)
+        return np.stack((self.in_2d[:, :, 1], self.in_2d[:, :, 0]), axis=-1)
 
     @property
     @array_util.Memoizer()
@@ -783,11 +787,15 @@ class GridIrregular(np.ndarray):
             self.interpolator = obj.interpolator
 
     def squared_distances_from_coordinate(self, coordinate=(0.0, 0.0)):
-        squared_distances = np.square(self[:, 0] - coordinate[0]) + np.square(self[:, 1] - coordinate[1])
+        squared_distances = np.square(self[:, 0] - coordinate[0]) + np.square(
+            self[:, 1] - coordinate[1]
+        )
         return masked_structures.MaskedArray(array=squared_distances, mask=self.mask)
 
     def distances_from_coordinate(self, coordinate=(0.0, 0.0)):
-        distances = np.sqrt(self.squared_distances_from_coordinate(coordinate=coordinate))
+        distances = np.sqrt(
+            self.squared_distances_from_coordinate(coordinate=coordinate)
+        )
         return masked_structures.MaskedArray(array=distances, mask=self.mask)
 
     @property

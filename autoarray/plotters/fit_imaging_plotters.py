@@ -274,6 +274,7 @@ def individuals(
     plot_inversion_normalized_residual_map=False,
     plot_inversion_chi_squared_map=False,
     plot_inversion_regularization_weight_map=False,
+    plot_inversion_interpolated_reconstruction=False,
     unit_conversion_factor=None,
     unit_label="scaled",
     output_path=None,
@@ -428,6 +429,19 @@ def individuals(
                 unit_conversion_factor=unit_conversion_factor,
                 unit_label=unit_label,
                 figsize=(20, 20),
+                output_path=output_path,
+                output_format=output_format,
+            )
+
+    if plot_inversion_interpolated_reconstruction:
+
+        if fit.total_inversions == 1:
+
+            inversion_plotters.interpolated_reconstruction(
+                inversion=fit.inversion,
+                lines=lines,
+                unit_conversion_factor=unit_conversion_factor,
+                unit_label=unit_label,
                 output_path=output_path,
                 output_format=output_format,
             )
