@@ -1412,6 +1412,48 @@ class TestImagingFromFits(object):
         assert imaging.exposure_time_map.mask.pixel_scales == (0.1, 0.1)
         assert imaging.background_sky_map.mask.pixel_scales == (0.1, 0.1)
 
+    def test__noise_map_non_constant__adds_small_noise_values(self):
+
+        np.random.seed(1)
+
+        imaging = aa.imaging.from_fits(
+            pixel_scales=0.1,
+            image_path=test_data_dir + "3x3_ones.fits",
+            psf_path=test_data_dir + "3x3_twos.fits",
+            noise_map_path=test_data_dir + "3x3_threes.fits",
+            background_noise_map_path=test_data_dir + "3x3_fours.fits",
+            poisson_noise_map_path=test_data_dir + "3x3_fives.fits",
+            exposure_time_map_path=test_data_dir + "3x3_sixes.fits",
+            background_sky_map_path=test_data_dir + "3x3_sevens.fits",
+            noise_map_non_constant=True,
+            renormalize_psf=False,
+        )
+
+        assert (imaging.image.in_2d == np.ones((3, 3))).all()
+        assert (imaging.psf.in_2d == 2.0 * np.ones((3, 3))).all()
+        assert imaging.noise_map.in_2d == pytest.approx(
+            np.array(
+                [
+                    [3.000907, 3.00044, 3.000277],
+                    [3.0005587, 3.001036, 3.00119],
+                    [3.000558, 3.00103668, 3.0011903],
+                ]
+            ),
+            1.0e-2,
+        )
+        assert (imaging.background_noise_map.in_2d == 4.0 * np.ones((3, 3))).all()
+        assert (imaging.poisson_noise_map.in_2d == 5.0 * np.ones((3, 3))).all()
+        assert (imaging.exposure_time_map.in_2d == 6.0 * np.ones((3, 3))).all()
+        assert (imaging.background_sky_map.in_2d == 7.0 * np.ones((3, 3))).all()
+
+        assert imaging.pixel_scales == (0.1, 0.1)
+        assert imaging.psf.mask.pixel_scales == (0.1, 0.1)
+        assert imaging.noise_map.mask.pixel_scales == (0.1, 0.1)
+        assert imaging.background_noise_map.mask.pixel_scales == (0.1, 0.1)
+        assert imaging.poisson_noise_map.mask.pixel_scales == (0.1, 0.1)
+        assert imaging.exposure_time_map.mask.pixel_scales == (0.1, 0.1)
+        assert imaging.background_sky_map.mask.pixel_scales == (0.1, 0.1)
+
     def test__convert_background_noise_map_from_weight_map(self):
         imaging = aa.imaging.from_fits(
             pixel_scales=0.1,

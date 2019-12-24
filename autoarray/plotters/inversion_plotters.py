@@ -138,7 +138,7 @@ def subplot(
 
     plt.subplot(rows, columns, 3, aspect=float(aspect_inv))
 
-    residual_map(
+    errors(
         inversion=inversion,
         positions=None,
         include_grid=False,
@@ -171,7 +171,7 @@ def subplot(
 
     plt.subplot(rows, columns, 4, aspect=float(aspect_inv))
 
-    normalized_residual_map(
+    residual_map(
         inversion=inversion,
         positions=None,
         include_grid=False,
@@ -277,6 +277,132 @@ def subplot(
     plt.close()
 
 
+def individuals(
+    inversion,
+    lines=None,
+    plot_inversion_reconstruction=False,
+    plot_inversion_errors=False,
+    plot_inversion_residual_map=False,
+    plot_inversion_normalized_residual_map=False,
+    plot_inversion_chi_squared_map=False,
+    plot_inversion_regularization_weight_map=False,
+    plot_inversion_interpolated_reconstruction=False,
+    plot_inversion_interpolated_errors=False,
+    unit_conversion_factor=None,
+    unit_label="scaled",
+    output_path=None,
+    output_format="show",
+):
+    """Plot the model datas_ of an analysis, using the *Fitter* class object.
+
+    The visualization and output type can be fully customized.
+
+    Parameters
+    -----------
+    fit : autolens.lens.fitting.Fitter
+        Class containing fit between the model datas_ and observed lens datas_ (including residual_map, chi_squared_map etc.)
+    output_path : str
+        The path where the datas_ is output if the output_type is a file format (e.g. png, fits)
+    output_format : str
+        How the datas_ is output. File formats (e.g. png, fits) output the datas_ to harddisk. 'show' displays the datas_ \
+        in the python interpreter window.
+    """
+
+    if plot_inversion_reconstruction:
+
+        reconstruction(
+            inversion=inversion,
+            include_grid=True,
+            unit_conversion_factor=unit_conversion_factor,
+            unit_label=unit_label,
+            figsize=(20, 20),
+            output_path=output_path,
+            output_format=output_format,
+        )
+
+    if plot_inversion_errors:
+
+        errors(
+            inversion=inversion,
+            include_grid=True,
+            unit_conversion_factor=unit_conversion_factor,
+            unit_label=unit_label,
+            figsize=(20, 20),
+            output_path=output_path,
+            output_format=output_format,
+        )
+
+    if plot_inversion_residual_map:
+
+        residual_map(
+            inversion=inversion,
+            include_grid=True,
+            unit_conversion_factor=unit_conversion_factor,
+            unit_label=unit_label,
+            figsize=(20, 20),
+            output_path=output_path,
+            output_format=output_format,
+        )
+
+    if plot_inversion_normalized_residual_map:
+
+        normalized_residual_map(
+            inversion=inversion,
+            include_grid=True,
+            unit_conversion_factor=unit_conversion_factor,
+            unit_label=unit_label,
+            figsize=(20, 20),
+            output_path=output_path,
+            output_format=output_format,
+        )
+
+    if plot_inversion_chi_squared_map:
+
+        chi_squared_map(
+            inversion=inversion,
+            include_grid=True,
+            unit_conversion_factor=unit_conversion_factor,
+            unit_label=unit_label,
+            figsize=(20, 20),
+            output_path=output_path,
+            output_format=output_format,
+        )
+
+    if plot_inversion_regularization_weight_map:
+
+        regularization_weights(
+            inversion=inversion,
+            include_grid=True,
+            unit_conversion_factor=unit_conversion_factor,
+            unit_label=unit_label,
+            figsize=(20, 20),
+            output_path=output_path,
+            output_format=output_format,
+        )
+
+    if plot_inversion_interpolated_reconstruction:
+
+        interpolated_reconstruction(
+            inversion=inversion,
+            lines=lines,
+            unit_conversion_factor=unit_conversion_factor,
+            unit_label=unit_label,
+            output_path=output_path,
+            output_format=output_format,
+        )
+
+    if plot_inversion_interpolated_errors:
+
+        interpolated_errors(
+            inversion=inversion,
+            lines=lines,
+            unit_conversion_factor=unit_conversion_factor,
+            unit_label=unit_label,
+            output_path=output_path,
+            output_format=output_format,
+        )
+
+
 def reconstructed_image(
     inversion,
     mask=None,
@@ -371,14 +497,14 @@ def reconstruction(
     cb_pad=0.01,
     cb_tick_values=None,
     cb_tick_labels=None,
-    title="Reconstructed Pixelization",
+    title="Inversion Reconstruction",
     titlesize=16,
     xlabelsize=16,
     ylabelsize=16,
     xyticksize=16,
     output_path=None,
     output_format="show",
-    output_filename="inversion_pixelization_values",
+    output_filename="inversion_reconstruction",
 ):
 
     if output_format is "fits":
@@ -391,6 +517,87 @@ def reconstruction(
         source_pixel_values=inversion.reconstruction,
         include_origin=include_origin,
         lines=lines,
+        positions=positions,
+        include_centres=include_centres,
+        include_grid=include_grid,
+        include_border=include_border,
+        image_pixels=image_pixels,
+        source_pixels=source_pixels,
+        as_subplot=as_subplot,
+        use_scaled_units=use_scaled_units,
+        unit_label=unit_label,
+        unit_conversion_factor=unit_conversion_factor,
+        figsize=figsize,
+        aspect=aspect,
+        cmap=cmap,
+        norm=norm,
+        norm_min=norm_min,
+        norm_max=norm_max,
+        linthresh=linthresh,
+        linscale=linscale,
+        cb_ticksize=cb_ticksize,
+        cb_fraction=cb_fraction,
+        cb_pad=cb_pad,
+        cb_tick_values=cb_tick_values,
+        cb_tick_labels=cb_tick_labels,
+        title=title,
+        titlesize=titlesize,
+        xlabelsize=xlabelsize,
+        ylabelsize=ylabelsize,
+        xyticksize=xyticksize,
+        output_path=output_path,
+        output_format=output_format,
+        output_filename=output_filename,
+    )
+
+    plotter_util.close_figure(as_subplot=as_subplot)
+
+
+def errors(
+    inversion,
+    include_origin=True,
+    positions=None,
+    include_centres=False,
+    include_grid=False,
+    include_border=False,
+    image_pixels=None,
+    source_pixels=None,
+    as_subplot=False,
+    use_scaled_units=True,
+    unit_label="scaled",
+    unit_conversion_factor=None,
+    figsize=(7, 7),
+    aspect="square",
+    cmap="jet",
+    norm="linear",
+    norm_min=None,
+    norm_max=None,
+    linthresh=0.05,
+    linscale=0.01,
+    cb_ticksize=10,
+    cb_fraction=0.047,
+    cb_pad=0.01,
+    cb_tick_values=None,
+    cb_tick_labels=None,
+    title="Inversion Reconstruction Errors",
+    titlesize=16,
+    xlabelsize=16,
+    ylabelsize=16,
+    xyticksize=16,
+    output_path=None,
+    output_format="show",
+    output_filename="inversion_errors",
+):
+
+    if output_format is "fits":
+        return
+
+    plotter_util.setup_figure(figsize=figsize, as_subplot=as_subplot)
+
+    plot_values(
+        inversion=inversion,
+        source_pixel_values=inversion.errors,
+        include_origin=include_origin,
         positions=positions,
         include_centres=include_centres,
         include_grid=include_grid,
@@ -460,7 +667,7 @@ def residual_map(
     xyticksize=16,
     output_path=None,
     output_format="show",
-    output_filename="inversion_inversion_residual_map",
+    output_filename="inversion_residual_map",
 ):
 
     if output_format is "fits":
@@ -541,7 +748,7 @@ def normalized_residual_map(
     xyticksize=16,
     output_path=None,
     output_format="show",
-    output_filename="inversion_inversion_normalized_residual_map",
+    output_filename="inversion_normalized_residual_map",
 ):
 
     if output_format is "fits":
@@ -622,7 +829,7 @@ def chi_squared_map(
     xyticksize=16,
     output_path=None,
     output_format="show",
-    output_filename="inversion_inversion_chi_squared_map",
+    output_filename="inversion_chi_squared_map",
 ):
 
     if output_format is "fits":
@@ -703,7 +910,7 @@ def regularization_weights(
     xyticksize=16,
     output_path=None,
     output_format="show",
-    output_filename="inversion_inversion_regularization_weights",
+    output_filename="inversion_regularization_weights",
 ):
 
     if output_format is "fits":
@@ -888,6 +1095,136 @@ def plot_values(
             output_filename=output_filename,
             output_format=output_format,
         )
+
+
+def interpolated_reconstruction(
+    inversion,
+    lines=None,
+    positions=None,
+    grid=None,
+    as_subplot=False,
+    use_scaled_units=True,
+    unit_label="scaled",
+    unit_conversion_factor=None,
+    figsize=(7, 7),
+    aspect="square",
+    cmap="jet",
+    norm="linear",
+    norm_min=None,
+    norm_max=None,
+    linthresh=0.05,
+    linscale=0.01,
+    cb_ticksize=10,
+    cb_fraction=0.047,
+    cb_pad=0.01,
+    cb_tick_values=None,
+    cb_tick_labels=None,
+    title="Inversion Interpolated Reconstruction",
+    titlesize=16,
+    xlabelsize=16,
+    ylabelsize=16,
+    xyticksize=16,
+    output_path=None,
+    output_format="show",
+    output_filename="inversion_interpolated_reconstruction",
+):
+
+    aa.plot.array(
+        array=inversion.interpolated_reconstruction_from_shape_2d(),
+        lines=lines,
+        points=positions,
+        grid=grid,
+        as_subplot=as_subplot,
+        use_scaled_units=use_scaled_units,
+        unit_label=unit_label,
+        unit_conversion_factor=unit_conversion_factor,
+        figsize=figsize,
+        aspect=aspect,
+        cmap=cmap,
+        norm=norm,
+        norm_min=norm_min,
+        norm_max=norm_max,
+        linthresh=linthresh,
+        linscale=linscale,
+        cb_ticksize=cb_ticksize,
+        cb_fraction=cb_fraction,
+        cb_pad=cb_pad,
+        cb_tick_values=cb_tick_values,
+        cb_tick_labels=cb_tick_labels,
+        title=title,
+        titlesize=titlesize,
+        xlabelsize=xlabelsize,
+        ylabelsize=ylabelsize,
+        xyticksize=xyticksize,
+        output_path=output_path,
+        output_format=output_format,
+        output_filename=output_filename,
+    )
+
+
+def interpolated_errors(
+    inversion,
+    lines=None,
+    positions=None,
+    grid=None,
+    as_subplot=False,
+    use_scaled_units=True,
+    unit_label="scaled",
+    unit_conversion_factor=None,
+    figsize=(7, 7),
+    aspect="square",
+    cmap="jet",
+    norm="linear",
+    norm_min=None,
+    norm_max=None,
+    linthresh=0.05,
+    linscale=0.01,
+    cb_ticksize=10,
+    cb_fraction=0.047,
+    cb_pad=0.01,
+    cb_tick_values=None,
+    cb_tick_labels=None,
+    title="Inversion Interpolated Errors",
+    titlesize=16,
+    xlabelsize=16,
+    ylabelsize=16,
+    xyticksize=16,
+    output_path=None,
+    output_format="show",
+    output_filename="inversion_interpolated_errors",
+):
+
+    aa.plot.array(
+        array=inversion.interpolated_errors_from_shape_2d(),
+        lines=lines,
+        points=positions,
+        grid=grid,
+        as_subplot=as_subplot,
+        use_scaled_units=use_scaled_units,
+        unit_label=unit_label,
+        unit_conversion_factor=unit_conversion_factor,
+        figsize=figsize,
+        aspect=aspect,
+        cmap=cmap,
+        norm=norm,
+        norm_min=norm_min,
+        norm_max=norm_max,
+        linthresh=linthresh,
+        linscale=linscale,
+        cb_ticksize=cb_ticksize,
+        cb_fraction=cb_fraction,
+        cb_pad=cb_pad,
+        cb_tick_values=cb_tick_values,
+        cb_tick_labels=cb_tick_labels,
+        title=title,
+        titlesize=titlesize,
+        xlabelsize=xlabelsize,
+        ylabelsize=ylabelsize,
+        xyticksize=xyticksize,
+        output_path=output_path,
+        output_format=output_format,
+        output_filename=output_filename,
+    )
 
 
 def get_origin(image, include_origin):

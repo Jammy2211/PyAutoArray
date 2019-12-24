@@ -191,10 +191,14 @@ def individuals(
     plot_residual_map=False,
     plot_normalized_residual_map=False,
     plot_chi_squared_map=False,
+    plot_inversion_reconstruction=False,
+    plot_inversion_errors=False,
     plot_inversion_residual_map=False,
     plot_inversion_normalized_residual_map=False,
     plot_inversion_chi_squared_map=False,
     plot_inversion_regularization_weight_map=False,
+    plot_inversion_interpolated_reconstruction=False,
+    plot_inversion_interpolated_errors=False,
     unit_conversion_factor=None,
     unit_label="arcsec",
     output_path=None,
@@ -309,59 +313,23 @@ def individuals(
             output_format=output_format,
         )
 
-    if plot_inversion_residual_map:
+    if fit.total_inversions == 1:
 
-        if fit.total_inversions == 1:
-
-            inversion_plotters.residual_map(
-                inversion=fit.inversion,
-                include_grid=True,
-                unit_label=unit_label,
-                figsize=(20, 20),
-                output_path=output_path,
-                output_format=output_format,
-            )
-
-    if plot_inversion_normalized_residual_map:
-
-        if fit.total_inversions == 1:
-
-            inversion_plotters.normalized_residual_map(
-                inversion=fit.inversion,
-                include_grid=True,
-                unit_label=unit_label,
-                figsize=(20, 20),
-                output_path=output_path,
-                output_format=output_format,
-            )
-
-    if plot_inversion_chi_squared_map:
-
-        if fit.total_inversions == 1:
-
-            inversion_plotters.chi_squared_map(
-                inversion=fit.inversion,
-                include_grid=True,
-                unit_conversion_factor=unit_conversion_factor,
-                unit_label=unit_label,
-                figsize=(20, 20),
-                output_path=output_path,
-                output_format=output_format,
-            )
-
-    if plot_inversion_regularization_weight_map:
-
-        if fit.total_inversions == 1:
-
-            inversion_plotters.regularization_weights(
-                inversion=fit.inversion,
-                include_grid=True,
-                unit_conversion_factor=unit_conversion_factor,
-                unit_label=unit_label,
-                figsize=(20, 20),
-                output_path=output_path,
-                output_format=output_format,
-            )
+        inversion_plotters.individuals(
+            inversion=fit.inversion,
+            plot_inversion_reconstruction=plot_inversion_reconstruction,
+            plot_inversion_errors=plot_inversion_errors,
+            plot_inversion_residual_map=plot_inversion_residual_map,
+            plot_inversion_normalized_residual_map=plot_inversion_normalized_residual_map,
+            plot_inversion_chi_squared_map=plot_inversion_chi_squared_map,
+            plot_inversion_regularization_weight_map=plot_inversion_regularization_weight_map,
+            plot_inversion_interpolated_reconstruction=plot_inversion_interpolated_reconstruction,
+            plot_inversion_interpolated_errors=plot_inversion_interpolated_errors,
+            unit_conversion_factor=unit_conversion_factor,
+            unit_label=unit_label,
+            output_path=output_path,
+            output_format=output_format,
+        )
 
 
 def visibilities(

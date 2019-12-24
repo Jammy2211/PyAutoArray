@@ -413,12 +413,66 @@ class TestGridAPI:
             assert grid.sub_size == 2
 
     class TestGridBoundingBox:
-        def test__grid_bounding_box__uniform_box__makes_grid_with_correct_pixel_scales_and_origin(
+        def test__grid_bounding_box__align_at_corners__grid_corner_is_at_bounding_box_corner(
             self
         ):
 
             grid = aa.grid.bounding_box(
-                bounding_box=[2.0, -2.0, 2.0, -2.0], shape_2d=(3, 3)
+                bounding_box=[-2.0, 2.0, -2.0, 2.0],
+                shape_2d=(3, 3),
+                buffer_around_corners=False,
+            )
+
+            assert grid.in_1d == pytest.approx(
+                np.array(
+                    [
+                        [1.3333, -1.3333],
+                        [1.3333, 0.0],
+                        [1.3333, 1.3333],
+                        [0.0, -1.3333],
+                        [0.0, 0.0],
+                        [0.0, 1.3333],
+                        [-1.3333, -1.3333],
+                        [-1.3333, 0.0],
+                        [-1.3333, 1.3333],
+                    ]
+                ),
+                1.0e-4,
+            )
+
+            assert grid.pixel_scales == pytest.approx((1.33333, 1.3333), 1.0e-4)
+            assert grid.origin == (0.0, 0.0)
+
+            grid = aa.grid.bounding_box(
+                bounding_box=[-2.0, 2.0, -2.0, 2.0],
+                shape_2d=(2, 3),
+                buffer_around_corners=False,
+            )
+
+            assert grid.in_1d == pytest.approx(
+                np.array(
+                    [
+                        [1.0, -1.3333],
+                        [1.0, 0.0],
+                        [1.0, 1.3333],
+                        [-1.0, -1.3333],
+                        [-1.0, 0.0],
+                        [-1.0, 1.3333],
+                    ]
+                ),
+                1.0e-4,
+            )
+            assert grid.pixel_scales == pytest.approx((2.0, 1.33333), 1.0e4)
+            assert grid.origin == (0.0, 0.0)
+
+        def test__grid_bounding_box__uniform_box__buffer_around_corners__makes_grid_with_correct_pixel_scales_and_origin(
+            self
+        ):
+
+            grid = aa.grid.bounding_box(
+                bounding_box=[-2.0, 2.0, -2.0, 2.0],
+                shape_2d=(3, 3),
+                buffer_around_corners=True,
             )
 
             assert (
@@ -441,7 +495,9 @@ class TestGridAPI:
             assert grid.origin == (0.0, 0.0)
 
             grid = aa.grid.bounding_box(
-                bounding_box=[2.0, -2.0, 2.0, -2.0], shape_2d=(2, 3)
+                bounding_box=[-2.0, 2.0, -2.0, 2.0],
+                shape_2d=(2, 3),
+                buffer_around_corners=True,
             )
 
             assert (
@@ -461,7 +517,10 @@ class TestGridAPI:
             assert grid.origin == (0.0, 0.0)
 
             grid = aa.grid.bounding_box(
-                bounding_box=[10.0, 8.0, 3.0, -2.0], shape_2d=(3, 3), store_in_1d=True
+                bounding_box=[8.0, 10.0, -2.0, 3.0],
+                shape_2d=(3, 3),
+                store_in_1d=True,
+                buffer_around_corners=True,
             )
 
             assert grid == pytest.approx(
@@ -500,7 +559,10 @@ class TestGridAPI:
             assert grid.origin == (9.0, 0.5)
 
             grid = aa.grid.bounding_box(
-                bounding_box=[10.0, 8.0, 3.0, -2.0], shape_2d=(3, 3), store_in_1d=False
+                bounding_box=[8.0, 10.0, -2.0, 3.0],
+                shape_2d=(3, 3),
+                store_in_1d=False,
+                buffer_around_corners=True,
             )
 
             assert grid.in_2d == pytest.approx(
@@ -867,6 +929,32 @@ class TestGrid:
         )
         assert grid.shape_2d_scaled == (8.5, 8.0)
 
+    def test__flipped_property__returns_grid_as_x_then_y(self):
+
+        grid = aa.grid.manual_2d(
+            grid=[[[1.0, 2.0], [3.0, 4.0]], [[5.0, 6.0], [7.0, 8.0]]], pixel_scales=1.0
+        )
+
+        assert (
+            grid.in_1d_flipped
+            == np.array([[2.0, 1.0], [4.0, 3.0], [6.0, 5.0], [8.0, 7.0]])
+        ).all()
+        assert (
+            grid.in_2d_flipped
+            == np.array([[[2.0, 1.0], [4.0, 3.0]], [[6.0, 5.0], [8.0, 7.0]]])
+        ).all()
+
+        grid = aa.grid.manual_2d(
+            grid=[[[1.0, 2.0], [3.0, 4.0], [5.0, 6.0]]], pixel_scales=1.0
+        )
+
+        assert (
+            grid.in_1d_flipped == np.array([[2.0, 1.0], [4.0, 3.0], [6.0, 5.0]])
+        ).all()
+        assert (
+            grid.in_2d_flipped == np.array([[[2.0, 1.0], [4.0, 3.0], [6.0, 5.0]]])
+        ).all()
+
     def test__in_radians(self):
         mask = np.array(
             [
@@ -1108,6 +1196,49 @@ class TestGrid:
         assert grid.regions._sub_border_1d_indexes == pytest.approx(
             sub_border_1d_indexes_util, 1e-4
         )
+
+    def test__square_distance_from_coordinate_array(self):
+
+        mask = aa.mask.manual(
+            [[True, False], [False, False]], pixel_scales=1.0, origin=(0.0, 1.0)
+        )
+        grid = aa.masked.grid.manual_1d(
+            grid=[[1.0, 1.0], [2.0, 3.0], [1.0, 2.0]], mask=mask
+        )
+
+        square_distances = grid.squared_distances_from_coordinate(coordinate=(0.0, 0.0))
+
+        assert (square_distances.in_1d == np.array([2.0, 13.0, 5.0])).all()
+        assert (square_distances.mask == mask).all()
+
+        square_distances = grid.squared_distances_from_coordinate(coordinate=(0.0, 1.0))
+
+        assert (square_distances.in_1d == np.array([1.0, 8.0, 2.0])).all()
+        assert (square_distances.mask == mask).all()
+
+    def test__distance_from_coordinate_array(self):
+
+        mask = aa.mask.manual(
+            [[True, False], [False, False]], pixel_scales=1.0, origin=(0.0, 1.0)
+        )
+        grid = aa.masked.grid.manual_1d(
+            grid=[[1.0, 1.0], [2.0, 3.0], [1.0, 2.0]], mask=mask
+        )
+
+        square_distances = grid.distances_from_coordinate(coordinate=(0.0, 0.0))
+
+        assert (
+            square_distances.in_1d
+            == np.array([np.sqrt(2.0), np.sqrt(13.0), np.sqrt(5.0)])
+        ).all()
+        assert (square_distances.mask == mask).all()
+
+        square_distances = grid.distances_from_coordinate(coordinate=(0.0, 1.0))
+
+        assert (
+            square_distances.in_1d == np.array([1.0, np.sqrt(8.0), np.sqrt(2.0)])
+        ).all()
+        assert (square_distances.mask == mask).all()
 
 
 class TestGridBorder(object):

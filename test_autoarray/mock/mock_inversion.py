@@ -63,10 +63,15 @@ class MockRegMapper(object):
 
 
 class MockMapper(object):
-    def __init__(self, matrix_shape, grid=None):
+    def __init__(self, matrix_shape, grid=None, pixelization_grid=None):
 
         self.grid = grid
+        self.pixelization_grid = pixelization_grid
         self.mapping_matrix = np.ones(matrix_shape)
+        if pixelization_grid is not None:
+            self.pixels = pixelization_grid.shape[0]
+        else:
+            self.pixels = None
 
 
 class MockConvolver(object):
