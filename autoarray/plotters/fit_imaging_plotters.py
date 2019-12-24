@@ -399,6 +399,7 @@ def individuals(
             output_format=output_format,
         )
 
+
 def image(
     fit,
     mask=None,

@@ -529,6 +529,7 @@ def plot_mapper_grid(
             titlesize=titlesize,
             xlabelsize=xlabelsize,
             ylabelsize=ylabelsize,
+            bypass_limits=True,
         )
 
 
