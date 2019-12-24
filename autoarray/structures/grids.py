@@ -601,14 +601,30 @@ class Grid(AbstractGrid):
         )
 
     @classmethod
-    def bounding_box(cls, bounding_box, shape_2d, sub_size=1, store_in_1d=True):
+    def bounding_box(
+        cls,
+        bounding_box,
+        shape_2d,
+        sub_size=1,
+        buffer_around_corners=False,
+        store_in_1d=True,
+    ):
 
         y_min, y_max, x_min, x_max = bounding_box
 
-        pixel_scales = (
-            (y_max - y_min) / (shape_2d[0] - 1),
-            (x_max - x_min) / (shape_2d[1] - 1),
-        )
+        if not buffer_around_corners:
+
+            pixel_scales = (
+                (y_max - y_min) / (shape_2d[0]),
+                (x_max - x_min) / (shape_2d[1]),
+            )
+
+        else:
+
+            pixel_scales = (
+                (y_max - y_min) / (shape_2d[0] - 1),
+                (x_max - x_min) / (shape_2d[1] - 1),
+            )
         origin = ((y_max + y_min) / 2.0, (x_max + x_min) / 2.0)
 
         return cls.uniform(

@@ -442,6 +442,7 @@ class Imaging(AbstractImagingDataSet):
         noise_map_path=None,
         noise_map_hdu=0,
         noise_map_from_image_and_background_noise_map=False,
+        noise_map_non_constant=False,
         psf_path=None,
         psf_hdu=0,
         resized_psf_shape=None,
@@ -617,6 +618,12 @@ class Imaging(AbstractImagingDataSet):
             gain=gain,
             convert_from_adus=convert_from_adus,
         )
+
+        if noise_map_non_constant:
+            if np.allclose(noise_map, noise_map[0] * np.ones(shape=noise_map.shape)):
+                noise_map = noise_map + (
+                    0.001 * noise_map[0] * np.random.uniform(size=noise_map.shape_1d)
+                )
 
         if psf_path is not None:
 

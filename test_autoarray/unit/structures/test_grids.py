@@ -413,12 +413,66 @@ class TestGridAPI:
             assert grid.sub_size == 2
 
     class TestGridBoundingBox:
-        def test__grid_bounding_box__uniform_box__makes_grid_with_correct_pixel_scales_and_origin(
+        def test__grid_bounding_box__align_at_corners__grid_corner_is_at_bounding_box_corner(
             self
         ):
 
             grid = aa.grid.bounding_box(
-                bounding_box=[-2.0, 2.0, -2.0, 2.0], shape_2d=(3, 3)
+                bounding_box=[-2.0, 2.0, -2.0, 2.0],
+                shape_2d=(3, 3),
+                buffer_around_corners=False,
+            )
+
+            assert grid.in_1d == pytest.approx(
+                np.array(
+                    [
+                        [1.3333, -1.3333],
+                        [1.3333, 0.0],
+                        [1.3333, 1.3333],
+                        [0.0, -1.3333],
+                        [0.0, 0.0],
+                        [0.0, 1.3333],
+                        [-1.3333, -1.3333],
+                        [-1.3333, 0.0],
+                        [-1.3333, 1.3333],
+                    ]
+                ),
+                1.0e-4,
+            )
+
+            assert grid.pixel_scales == pytest.approx((1.33333, 1.3333), 1.0e-4)
+            assert grid.origin == (0.0, 0.0)
+
+            grid = aa.grid.bounding_box(
+                bounding_box=[-2.0, 2.0, -2.0, 2.0],
+                shape_2d=(2, 3),
+                buffer_around_corners=False,
+            )
+
+            assert grid.in_1d == pytest.approx(
+                np.array(
+                    [
+                        [1.0, -1.3333],
+                        [1.0, 0.0],
+                        [1.0, 1.3333],
+                        [-1.0, -1.3333],
+                        [-1.0, 0.0],
+                        [-1.0, 1.3333],
+                    ]
+                ),
+                1.0e-4,
+            )
+            assert grid.pixel_scales == pytest.approx((2.0, 1.33333), 1.0e4)
+            assert grid.origin == (0.0, 0.0)
+
+        def test__grid_bounding_box__uniform_box__buffer_around_corners__makes_grid_with_correct_pixel_scales_and_origin(
+            self
+        ):
+
+            grid = aa.grid.bounding_box(
+                bounding_box=[-2.0, 2.0, -2.0, 2.0],
+                shape_2d=(3, 3),
+                buffer_around_corners=True,
             )
 
             assert (
@@ -441,7 +495,9 @@ class TestGridAPI:
             assert grid.origin == (0.0, 0.0)
 
             grid = aa.grid.bounding_box(
-                bounding_box=[-2.0, 2.0, -2.0, 2.0], shape_2d=(2, 3)
+                bounding_box=[-2.0, 2.0, -2.0, 2.0],
+                shape_2d=(2, 3),
+                buffer_around_corners=True,
             )
 
             assert (
@@ -461,7 +517,10 @@ class TestGridAPI:
             assert grid.origin == (0.0, 0.0)
 
             grid = aa.grid.bounding_box(
-                bounding_box=[8.0, 10.0, -2.0, 3.0], shape_2d=(3, 3), store_in_1d=True
+                bounding_box=[8.0, 10.0, -2.0, 3.0],
+                shape_2d=(3, 3),
+                store_in_1d=True,
+                buffer_around_corners=True,
             )
 
             assert grid == pytest.approx(
@@ -500,7 +559,10 @@ class TestGridAPI:
             assert grid.origin == (9.0, 0.5)
 
             grid = aa.grid.bounding_box(
-                bounding_box=[8.0, 10.0, -2.0, 3.0], shape_2d=(3, 3), store_in_1d=False
+                bounding_box=[8.0, 10.0, -2.0, 3.0],
+                shape_2d=(3, 3),
+                store_in_1d=False,
+                buffer_around_corners=True,
             )
 
             assert grid.in_2d == pytest.approx(

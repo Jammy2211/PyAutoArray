@@ -232,7 +232,9 @@ class TestReconstructedDataVectorAndImage:
 
 
 class TestInterpolatedReconstruction:
-    def test__interpolation_reconsruction_is_on_same_grid_as_mapper_and_interpolates_values(self):
+    def test__interpolation_reconsruction_is_on_same_grid_as_mapper_and_interpolates_values(
+        self
+    ):
 
         matrix_shape = (3, 3)
 
@@ -278,7 +280,7 @@ class TestInterpolatedReconstruction:
             interpolated_reconstruction.in_2d
             == np.array([[1.0, 1.0, 1.0], [1.0, 1.0, 1.0], [1.0, 1.0, 1.0]])
         ).all()
-        assert interpolated_reconstruction.pixel_scales == (1.0, 1.0)
+        assert interpolated_reconstruction.pixel_scales == pytest.approx((0.66666, 0.66666), 1.0e-4)
 
         interpolated_reconstruction = inversion.interpolated_reconstruction_from_shape_2d(
             shape_2d=(2, 2)
@@ -290,10 +292,10 @@ class TestInterpolatedReconstruction:
         assert (
             interpolated_reconstruction.in_2d == np.array([[1.0, 1.0], [1.0, 1.0]])
         ).all()
-        assert interpolated_reconstruction.pixel_scales == (2.0, 2.0)
+        assert interpolated_reconstruction.pixel_scales == pytest.approx((1.0, 1.0), 1.0e-4)
 
         inversion.reconstruction = np.array(
-            [1.0, 1.0, 1.0, 1.0, 5.0, 1.0, 5.0, 1.0, 1.0]
+            [1.0, 1.0, 1.0, 5.0, 5.0, 5.0, 5.0, 1.0, 1.0]
         )
 
         interpolated_reconstruction = inversion.interpolated_reconstruction_from_shape_2d(
@@ -301,14 +303,16 @@ class TestInterpolatedReconstruction:
         )
 
         assert (
-            interpolated_reconstruction.in_1d == np.array([1.0, 1.0, 5.0, 1.0])
+            interpolated_reconstruction.in_1d == np.array([3.0, 3.0, 3.0, 3.0])
         ).all()
         assert (
-            interpolated_reconstruction.in_2d == np.array([[1.0, 1.0], [5.0, 1.0]])
+            interpolated_reconstruction.in_2d == np.array([[3.0, 3.0], [3.0, 3.0]])
         ).all()
-        assert interpolated_reconstruction.pixel_scales == (2.0, 2.0)
+        assert interpolated_reconstruction.pixel_scales == (1.0, 1.0)
 
-    def test__interpolation_errors_is_on_same_grid_as_mapper_and_interpolates_values(self):
+    def test__interpolation_errors_is_on_same_grid_as_mapper_and_interpolates_values(
+        self
+    ):
 
         matrix_shape = (3, 3)
 
@@ -344,9 +348,7 @@ class TestInterpolatedReconstruction:
 
         inversion.curvature_reg_matrix = np.eye(N=9)
 
-        interpolated_errors = (
-            inversion.interpolated_errors_from_shape_2d()
-        )
+        interpolated_errors = inversion.interpolated_errors_from_shape_2d()
 
         assert (
             interpolated_errors.in_1d
@@ -356,7 +358,7 @@ class TestInterpolatedReconstruction:
             interpolated_errors.in_2d
             == np.array([[1.0, 1.0, 1.0], [1.0, 1.0, 1.0], [1.0, 1.0, 1.0]])
         ).all()
-        assert interpolated_errors.pixel_scales == (1.0, 1.0)
+        assert interpolated_errors.pixel_scales == pytest.approx((0.66666, 0.66666), 1.0e-4)
 
 
 #

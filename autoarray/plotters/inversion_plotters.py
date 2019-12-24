@@ -497,14 +497,14 @@ def reconstruction(
     cb_pad=0.01,
     cb_tick_values=None,
     cb_tick_labels=None,
-    title="Reconstructed Pixelization",
+    title="Inversion Reconstruction",
     titlesize=16,
     xlabelsize=16,
     ylabelsize=16,
     xyticksize=16,
     output_path=None,
     output_format="show",
-    output_filename="inversion_pixelization_values",
+    output_filename="inversion_reconstruction",
 ):
 
     if output_format is "fits":
@@ -517,6 +517,87 @@ def reconstruction(
         source_pixel_values=inversion.reconstruction,
         include_origin=include_origin,
         lines=lines,
+        positions=positions,
+        include_centres=include_centres,
+        include_grid=include_grid,
+        include_border=include_border,
+        image_pixels=image_pixels,
+        source_pixels=source_pixels,
+        as_subplot=as_subplot,
+        use_scaled_units=use_scaled_units,
+        unit_label=unit_label,
+        unit_conversion_factor=unit_conversion_factor,
+        figsize=figsize,
+        aspect=aspect,
+        cmap=cmap,
+        norm=norm,
+        norm_min=norm_min,
+        norm_max=norm_max,
+        linthresh=linthresh,
+        linscale=linscale,
+        cb_ticksize=cb_ticksize,
+        cb_fraction=cb_fraction,
+        cb_pad=cb_pad,
+        cb_tick_values=cb_tick_values,
+        cb_tick_labels=cb_tick_labels,
+        title=title,
+        titlesize=titlesize,
+        xlabelsize=xlabelsize,
+        ylabelsize=ylabelsize,
+        xyticksize=xyticksize,
+        output_path=output_path,
+        output_format=output_format,
+        output_filename=output_filename,
+    )
+
+    plotter_util.close_figure(as_subplot=as_subplot)
+
+
+def errors(
+    inversion,
+    include_origin=True,
+    positions=None,
+    include_centres=False,
+    include_grid=False,
+    include_border=False,
+    image_pixels=None,
+    source_pixels=None,
+    as_subplot=False,
+    use_scaled_units=True,
+    unit_label="scaled",
+    unit_conversion_factor=None,
+    figsize=(7, 7),
+    aspect="square",
+    cmap="jet",
+    norm="linear",
+    norm_min=None,
+    norm_max=None,
+    linthresh=0.05,
+    linscale=0.01,
+    cb_ticksize=10,
+    cb_fraction=0.047,
+    cb_pad=0.01,
+    cb_tick_values=None,
+    cb_tick_labels=None,
+    title="Inversion Reconstruction Errors",
+    titlesize=16,
+    xlabelsize=16,
+    ylabelsize=16,
+    xyticksize=16,
+    output_path=None,
+    output_format="show",
+    output_filename="inversion_errors",
+):
+
+    if output_format is "fits":
+        return
+
+    plotter_util.setup_figure(figsize=figsize, as_subplot=as_subplot)
+
+    plot_values(
+        inversion=inversion,
+        source_pixel_values=inversion.errors,
+        include_origin=include_origin,
         positions=positions,
         include_centres=include_centres,
         include_grid=include_grid,
@@ -796,88 +877,6 @@ def chi_squared_map(
     plotter_util.close_figure(as_subplot=as_subplot)
 
 
-def errors(
-    inversion,
-    include_origin=True,
-    positions=None,
-    include_centres=False,
-    include_grid=False,
-    include_border=False,
-    image_pixels=None,
-    source_pixels=None,
-    as_subplot=False,
-    use_scaled_units=True,
-    unit_label="scaled",
-    unit_conversion_factor=None,
-    figsize=(7, 7),
-    aspect="square",
-    cmap="jet",
-    norm="linear",
-    norm_min=None,
-    norm_max=None,
-    linthresh=0.05,
-    linscale=0.01,
-    cb_ticksize=10,
-    cb_fraction=0.047,
-    cb_pad=0.01,
-    cb_tick_values=None,
-    cb_tick_labels=None,
-    title="Reconstructed Pixelization Errors",
-    titlesize=16,
-    xlabelsize=16,
-    ylabelsize=16,
-    xyticksize=16,
-    output_path=None,
-    output_format="show",
-    output_filename="inversion_errors",
-):
-
-    if output_format is "fits":
-        return
-
-    plotter_util.setup_figure(figsize=figsize, as_subplot=as_subplot)
-
-    plot_values(
-        inversion=inversion,
-        source_pixel_values=inversion.errors,
-        include_origin=include_origin,
-        positions=positions,
-        include_centres=include_centres,
-        include_grid=include_grid,
-        include_border=include_border,
-        image_pixels=image_pixels,
-        source_pixels=source_pixels,
-        as_subplot=as_subplot,
-        use_scaled_units=use_scaled_units,
-        unit_label=unit_label,
-        unit_conversion_factor=unit_conversion_factor,
-        figsize=figsize,
-        aspect=aspect,
-        cmap=cmap,
-        norm=norm,
-        norm_min=norm_min,
-        norm_max=norm_max,
-        linthresh=linthresh,
-        linscale=linscale,
-        cb_ticksize=cb_ticksize,
-        cb_fraction=cb_fraction,
-        cb_pad=cb_pad,
-        cb_tick_values=cb_tick_values,
-        cb_tick_labels=cb_tick_labels,
-        title=title,
-        titlesize=titlesize,
-        xlabelsize=xlabelsize,
-        ylabelsize=ylabelsize,
-        xyticksize=xyticksize,
-        output_path=output_path,
-        output_format=output_format,
-        output_filename=output_filename,
-    )
-
-    plotter_util.close_figure(as_subplot=as_subplot)
-
-
-
 def regularization_weights(
     inversion,
     include_origin=True,
@@ -1120,14 +1119,14 @@ def interpolated_reconstruction(
     cb_pad=0.01,
     cb_tick_values=None,
     cb_tick_labels=None,
-    title="Interpolated Reconstruction",
+    title="Inversion Interpolated Reconstruction",
     titlesize=16,
     xlabelsize=16,
     ylabelsize=16,
     xyticksize=16,
     output_path=None,
     output_format="show",
-    output_filename="interpolated_reconstruction",
+    output_filename="inversion_interpolated_reconstruction",
 ):
 
     aa.plot.array(
@@ -1185,14 +1184,14 @@ def interpolated_errors(
     cb_pad=0.01,
     cb_tick_values=None,
     cb_tick_labels=None,
-    title="Interpolated Errors",
+    title="Inversion Interpolated Errors",
     titlesize=16,
     xlabelsize=16,
     ylabelsize=16,
     xyticksize=16,
     output_path=None,
     output_format="show",
-    output_filename="interpolated_errors",
+    output_filename="inversion_interpolated_errors",
 ):
 
     aa.plot.array(
@@ -1226,7 +1225,6 @@ def interpolated_errors(
         output_format=output_format,
         output_filename=output_filename,
     )
-
 
 
 def get_origin(image, include_origin):
