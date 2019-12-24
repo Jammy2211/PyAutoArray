@@ -232,7 +232,7 @@ class TestReconstructedDataVectorAndImage:
 
 
 class TestInterpolatedReconstruction:
-    def test__interpolation_is_on_same_grid_as_mapper_and_interpolates_values(self):
+    def test__interpolation_reconsruction_is_on_same_grid_as_mapper_and_interpolates_values(self):
 
         matrix_shape = (3, 3)
 
@@ -307,6 +307,56 @@ class TestInterpolatedReconstruction:
             interpolated_reconstruction.in_2d == np.array([[1.0, 1.0], [5.0, 1.0]])
         ).all()
         assert interpolated_reconstruction.pixel_scales == (2.0, 2.0)
+
+    def test__interpolation_errors_is_on_same_grid_as_mapper_and_interpolates_values(self):
+
+        matrix_shape = (3, 3)
+
+        mask = aa.mask.manual(
+            mask_2d=np.array(
+                [[True, True, False], [False, False, False], [True, True, True]]
+            ),
+            pixel_scales=1.0,
+            sub_size=1,
+        )
+
+        grid = aa.masked.grid.from_mask(mask=mask)
+
+        pixelization_grid = aa.grid.uniform(
+            shape_2d=(3, 3), pixel_scales=1.0, sub_size=1
+        )
+
+        inversion = inversions.InversionImaging.from_data_mapper_and_regularization(
+            image=np.ones(9),
+            noise_map=np.ones(9),
+            convolver=mock_inversion.MockConvolver(matrix_shape),
+            mapper=mock_inversion.MockMapper(
+                matrix_shape=matrix_shape,
+                grid=grid,
+                pixelization_grid=pixelization_grid,
+            ),
+            regularization=mock_inversion.MockRegularization(matrix_shape),
+        )
+
+        inversion.reconstruction = np.array(
+            [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
+        )
+
+        inversion.curvature_reg_matrix = np.eye(N=9)
+
+        interpolated_errors = (
+            inversion.interpolated_errors_from_shape_2d()
+        )
+
+        assert (
+            interpolated_errors.in_1d
+            == np.array([1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0])
+        ).all()
+        assert (
+            interpolated_errors.in_2d
+            == np.array([[1.0, 1.0, 1.0], [1.0, 1.0, 1.0], [1.0, 1.0, 1.0]])
+        ).all()
+        assert interpolated_errors.pixel_scales == (1.0, 1.0)
 
 
 #

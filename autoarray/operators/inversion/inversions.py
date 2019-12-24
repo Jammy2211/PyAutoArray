@@ -50,6 +50,12 @@ class Inversion(object):
         self.reconstruction = reconstruction
 
     def interpolated_reconstruction_from_shape_2d(self, shape_2d=None):
+        return self.interpolated_values_from_shape_2d(values=self.reconstruction, shape_2d=shape_2d)
+
+    def interpolated_errors_from_shape_2d(self, shape_2d=None):
+        return self.interpolated_values_from_shape_2d(values=self.errors, shape_2d=shape_2d)
+
+    def interpolated_values_from_shape_2d(self, values, shape_2d=None):
 
         if shape_2d is None:
             dimension = int(np.sqrt(self.mapper.pixels))
@@ -61,7 +67,7 @@ class Inversion(object):
 
         interpolated_reconstruction = griddata(
             points=self.mapper.pixelization_grid,
-            values=self.reconstruction,
+            values=values,
             xi=grid.in_2d,
             method="linear",
         )
