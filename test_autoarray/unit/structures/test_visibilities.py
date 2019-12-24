@@ -21,7 +21,7 @@ class TestVisibilitiesAPI:
             )
 
             assert type(visibilities) == vis.Visibilities
-            assert visibilities.flipped_1d == np.array([[2.0, 1.0], [4.0, 3.0]])
+            assert visibilities.in_1d_flipped == np.array([[2.0, 1.0], [4.0, 3.0]])
             assert (visibilities.in_1d == np.array([[1.0, 2.0], [3.0, 4.0]])).all()
             assert (visibilities.real == np.array([1.0, 3.0])).all()
             assert (visibilities.imag == np.array([2.0, 4.0])).all()

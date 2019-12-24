@@ -36,6 +36,7 @@ def plot_grid(
     xlabelsize=16,
     ylabelsize=16,
     symmetric_around_centre=True,
+    bypass_limits=False,
     output_path=None,
     output_format="show",
     output_filename="grid",
@@ -115,11 +116,13 @@ def plot_grid(
         xyticksize=xyticksize,
     )
 
-    set_axis_limits(
-        axis_limits=axis_limits,
-        grid=grid,
-        symmetric_around_centre=symmetric_around_centre,
-    )
+    if not bypass_limits:
+
+        set_axis_limits(
+            axis_limits=axis_limits,
+            grid=grid,
+            symmetric_around_centre=symmetric_around_centre,
+        )
 
     plotter_util.set_yxticks(
         array=None,

@@ -8,6 +8,7 @@ from sklearn.cluster import KMeans
 from autoarray import decorator_util
 from autoarray import exc
 from autoarray.structures import abstract_structure
+from autoarray.masked import masked_structures
 from autoarray.mask import mask as msk
 from autoarray.util import (
     sparse_util,
@@ -213,6 +214,18 @@ class AbstractGrid(abstract_structure.AbstractStructure):
                 sub_grid_1d=sub_grid_1d
             )
 
+    def squared_distances_from_coordinate(self, coordinate=(0.0, 0.0)):
+        squared_distances = np.square(self[:, 0] - coordinate[0]) + np.square(
+            self[:, 1] - coordinate[1]
+        )
+        return masked_structures.MaskedArray(array=squared_distances, mask=self.mask)
+
+    def distances_from_coordinate(self, coordinate=(0.0, 0.0)):
+        distances = np.sqrt(
+            self.squared_distances_from_coordinate(coordinate=coordinate)
+        )
+        return masked_structures.MaskedArray(array=distances, mask=self.mask)
+
     def blurring_grid_from_kernel_shape(self, kernel_shape_2d):
 
         blurring_mask = self.mask.regions.blurring_mask_from_kernel_shape(
@@ -247,6 +260,14 @@ class AbstractGrid(abstract_structure.AbstractStructure):
             pixel_scale_interpolation_grid=pixel_scale_interpolation_grid,
         )
         return self
+
+    @property
+    def in_1d_flipped(self):
+        return np.fliplr(self)
+
+    @property
+    def in_2d_flipped(self):
+        return np.stack((self.in_2d[:, :, 1], self.in_2d[:, :, 0]), axis=-1)
 
     @property
     @array_util.Memoizer()
@@ -580,14 +601,30 @@ class Grid(AbstractGrid):
         )
 
     @classmethod
-    def bounding_box(cls, bounding_box, shape_2d, sub_size=1, store_in_1d=True):
+    def bounding_box(
+        cls,
+        bounding_box,
+        shape_2d,
+        sub_size=1,
+        buffer_around_corners=False,
+        store_in_1d=True,
+    ):
 
-        y_max, y_min, x_max, x_min = bounding_box
+        y_min, y_max, x_min, x_max = bounding_box
 
-        pixel_scales = (
-            (y_max - y_min) / (shape_2d[0] - 1),
-            (x_max - x_min) / (shape_2d[1] - 1),
-        )
+        if not buffer_around_corners:
+
+            pixel_scales = (
+                (y_max - y_min) / (shape_2d[0]),
+                (x_max - x_min) / (shape_2d[1]),
+            )
+
+        else:
+
+            pixel_scales = (
+                (y_max - y_min) / (shape_2d[0] - 1),
+                (x_max - x_min) / (shape_2d[1] - 1),
+            )
         origin = ((y_max + y_min) / 2.0, (x_max + x_min) / 2.0)
 
         return cls.uniform(
@@ -764,6 +801,18 @@ class GridIrregular(np.ndarray):
             )
         if hasattr(obj, "interpolator"):
             self.interpolator = obj.interpolator
+
+    def squared_distances_from_coordinate(self, coordinate=(0.0, 0.0)):
+        squared_distances = np.square(self[:, 0] - coordinate[0]) + np.square(
+            self[:, 1] - coordinate[1]
+        )
+        return masked_structures.MaskedArray(array=squared_distances, mask=self.mask)
+
+    def distances_from_coordinate(self, coordinate=(0.0, 0.0)):
+        distances = np.sqrt(
+            self.squared_distances_from_coordinate(coordinate=coordinate)
+        )
+        return masked_structures.MaskedArray(array=distances, mask=self.mask)
 
     @property
     def sub_shape_1d(self):

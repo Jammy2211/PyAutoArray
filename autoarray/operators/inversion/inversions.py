@@ -1,9 +1,11 @@
 import numpy as np
 
 from autoarray import exc
-from autoarray.structures import visibilities as vis
+from autoarray.structures import arrays, grids, visibilities as vis
 from autoarray.masked import masked_dataset as md
 from autoarray.util import inversion_util
+
+from scipy.interpolate import griddata
 
 
 def inversion(masked_dataset, mapper, regularization):
@@ -46,6 +48,41 @@ class Inversion(object):
         self.regularization_matrix = regularization_matrix
         self.curvature_reg_matrix = curvature_reg_matrix
         self.reconstruction = reconstruction
+
+    def interpolated_reconstruction_from_shape_2d(self, shape_2d=None):
+        return self.interpolated_values_from_shape_2d(
+            values=self.reconstruction, shape_2d=shape_2d
+        )
+
+    def interpolated_errors_from_shape_2d(self, shape_2d=None):
+        return self.interpolated_values_from_shape_2d(
+            values=self.errors, shape_2d=shape_2d
+        )
+
+    def interpolated_values_from_shape_2d(self, values, shape_2d=None):
+
+        if shape_2d is None:
+            dimension = int(np.sqrt(self.mapper.pixels))
+            shape_2d = (dimension, dimension)
+
+        grid = grids.Grid.bounding_box(
+            bounding_box=self.mapper.pixelization_grid.extent,
+            shape_2d=shape_2d,
+            buffer_around_corners=False,
+        )
+
+        interpolated_reconstruction = griddata(
+            points=self.mapper.pixelization_grid,
+            values=values,
+            xi=grid.in_2d,
+            method="linear",
+        )
+
+        interpolated_reconstruction[np.isnan(interpolated_reconstruction)] = 0.0
+
+        return arrays.Array.manual_2d(
+            array=interpolated_reconstruction, pixel_scales=grid.pixel_scales
+        )
 
     @property
     def errors_with_covariance(self):
