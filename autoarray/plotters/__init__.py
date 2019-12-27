@@ -10,3 +10,4 @@ from autoarray.plotters import fit_imaging_plotters as fit_imaging
 from autoarray.plotters import fit_interferometer_plotters as fit_interferometer
 from autoarray.plotters import mapper_plotters as mapper
 from autoarray.plotters import inversion_plotters as inversion
+from autoarray.plotters.settings import PlotterSettings as settings
