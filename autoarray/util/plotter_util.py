@@ -12,32 +12,6 @@ from autoarray.util import array_util
 
 
 
-def set_yx_labels_and_ticksize(
-    settings, labels
-):
-    """Set the x and y labels of the figure, and set the fontsize of those labels.
-
-    The x and y labels are always the distance scales, thus the labels are either arc-seconds or kpc and depend on the \
-    unit_label the figure is plotted in.
-
-    Parameters
-    -----------
-    unit_label : str
-        The label for the unit_label of the y / x axis of the plots.
-    unit_conversion_factor : float
-        The conversion factor between arc-seconds and kiloparsecs, required to plotters the unit_label in kpc.
-    xlabelsize : int
-        The fontsize of the x axes label.
-    ylabelsize : int
-        The fontsize of the y axes label.
-    xyticksize : int
-        The font size of the x and y ticks on the figure axes.
-    """
-
-    plt.ylabel("y (" + labels.y_units + ")", fontsize=settings.ylabelsize)
-    plt.xlabel("x (" + labels.x_units + ")", fontsize=settings.xlabelsize)
-
-    plt.tick_params(labelsize=settings.xyticksize)
 
 
 def set_yxticks(
