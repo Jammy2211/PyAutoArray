@@ -5,9 +5,10 @@ backend = conf.get_matplotlib_backend()
 matplotlib.use(backend)
 import matplotlib.pyplot as plt
 import numpy as np
-from autoarray import exc
 
+from autoarray import exc
 from autoarray import conf
+from autoarray.util import array_util
 
 def setting(section, name, python_type):
     return conf.instance.visualize.get(section, name, python_type)
@@ -278,3 +279,58 @@ class AbstractPlotter(object):
             return 4, 5, (25, 20)
         else:
             return 6, 6, (25, 20)
+
+    def output_figure(self, array):
+        """Output the figure, either as an image on the screen or to the hard-disk as a .png or .fits file.
+
+        Parameters
+        -----------
+        array : ndarray
+            The 2D array of image to be output, required for outputting the image as a fits file.
+        as_subplot : bool
+            Whether the figure is part of subplot, in which case the figure is not output so that the entire subplot can \
+            be output instead using the *output_subplot_array* function.
+        output_path : str
+            The path on the hard-disk where the figure is output.
+        output_filename : str
+            The filename of the figure that is output.
+        output_format : str
+            The format the figue is output:
+            'show' - display on computer screen.
+            'png' - output to hard-disk as a png.
+            'fits' - output to hard-disk as a fits file.'
+        """
+        if not self.as_subplot:
+
+            if self.output_format is "show":
+                plt.show()
+            elif self.output_format is "png":
+                plt.savefig(self.output_path + self.output_filename + ".png", bbox_inches="tight")
+            elif self.output_format is "fits":
+                array_util.numpy_array_2d_to_fits(
+                    array_2d=array,
+                    file_path=self.output_path + self.output_filename + ".fits",
+                    overwrite=True,
+                )
+
+    def output_subplot_array(self):
+        """Output a figure which consists of a set of subplot,, either as an image on the screen or to the hard-disk as a \
+        .png file.
+
+        Parameters
+        -----------
+        output_path : str
+            The path on the hard-disk where the figure is output.
+        output_filename : str
+            The filename of the figure that is output.
+        output_format : str
+            The format the figue is output:
+            'show' - display on computer screen.
+            'png' - output to hard-disk as a png.
+        """
+        if self.output_format is "show":
+            plt.show()
+        elif self.output_format is "png":
+            plt.savefig(self.output_path + self.output_filename + ".png", bbox_inches="tight")
+        elif self.output_format is "fits":
+            raise exc.PlottingException("You cannot output a subplots with format .fits")
