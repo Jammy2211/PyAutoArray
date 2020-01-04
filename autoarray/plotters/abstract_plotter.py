@@ -223,6 +223,36 @@ class AbstractPlotter(object):
         plt.yticks(ticks=yticks, labels=ytick_labels)
         plt.xticks(ticks=xticks, labels=xtick_labels)
 
+    def set_colorbar(self):
+        """Setup the colorbar of the figure, specifically its ticksize and the size is appears relative to the figure.
+
+        Parameters
+        -----------
+        cb_ticksize : int
+            The size of the tick labels on the colorbar.
+        cb_fraction : float
+            The fraction of the figure that the colorbar takes up, which resizes the colorbar relative to the figure.
+        cb_pad : float
+            Pads the color bar in the figure, which resizes the colorbar relative to the figure.
+        cb_tick_values : [float]
+            Manually specified values of where the colorbar tick labels appear on the colorbar.
+        cb_tick_labels : [float]
+            Manually specified labels of the color bar tick labels, which appear where specified by cb_tick_values.
+        """
+
+        if self.cb_tick_values is None and self.cb_tick_labels is None:
+            cb = plt.colorbar(fraction=self.cb_fraction, pad=self.cb_pad)
+        elif self.cb_tick_values is not None and self.cb_tick_labels is not None:
+            cb = plt.colorbar(fraction=self.cb_fraction, pad=self.cb_pad, ticks=self.cb_tick_values)
+            cb.ax.set_yticklabels(labels=self.cb_tick_labels)
+        else:
+            raise exc.PlottingException(
+                "Only 1 entry of cb_tick_values or cb_tick_labels was input. You must either supply"
+                "both the values and labels, or neither."
+            )
+
+        cb.ax.tick_params(labelsize=self.cb_ticksize)
+
     @staticmethod
     def get_subplot_rows_columns_figsize(number_subplots):
         """Get the size of a sub plotters in (rows, columns), based on the number of subplots that are going to be plotted.

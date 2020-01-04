@@ -17,37 +17,6 @@ from autoarray.util import array_util
 
 
 
-def set_colorbar(settings, labels):
-    """Setup the colorbar of the figure, specifically its ticksize and the size is appears relative to the figure.
-
-    Parameters
-    -----------
-    cb_ticksize : int
-        The size of the tick labels on the colorbar.
-    cb_fraction : float
-        The fraction of the figure that the colorbar takes up, which resizes the colorbar relative to the figure.
-    cb_pad : float
-        Pads the color bar in the figure, which resizes the colorbar relative to the figure.
-    cb_tick_values : [float]
-        Manually specified values of where the colorbar tick labels appear on the colorbar.
-    cb_tick_labels : [float]
-        Manually specified labels of the color bar tick labels, which appear where specified by cb_tick_values.
-    """
-
-    if labels.cb_tick_values is None and labels.cb_tick_labels is None:
-        cb = plt.colorbar(fraction=settings.cb_fraction, pad=settings.cb_pad)
-    elif labels.cb_tick_values is not None and labels.cb_tick_labels is not None:
-        cb = plt.colorbar(fraction=settings.cb_fraction, pad=settings.cb_pad, ticks=labels.cb_tick_values)
-        cb.ax.set_yticklabels(labels=labels.cb_tick_labels)
-    else:
-        raise exc.PlottingException(
-            "Only 1 entry of cb_tick_values or cb_tick_labels was input. You must either supply"
-            "both the values and labels, or neither."
-        )
-
-    cb.ax.tick_params(labelsize=settings.cb_ticksize)
-
-
 def output_figure(array, as_subplot, outputs):
     """Output the figure, either as an image on the screen or to the hard-disk as a .png or .fits file.
 
