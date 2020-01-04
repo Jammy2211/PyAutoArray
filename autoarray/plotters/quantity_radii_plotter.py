@@ -1,5 +1,3 @@
-from autoarray.plotters import line_yx_plotters
-
 
 def plot_quantity_as_function_of_radius(
     quantity,

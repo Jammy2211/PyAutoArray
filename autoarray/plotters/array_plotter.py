@@ -16,52 +16,33 @@ from autoarray.util import plotter_util
 
 def plot_array(
     array,
-    include_origin=True,
+    plotter_array=None,
     mask=None,
-    include_border=False,
     lines=None,
     points=None,
     centres=None,
     grid=None,
     as_subplot=False,
-    use_scaled_units=True,
-    unit_conversion_factor=None,
-    unit_label="scaled",
-    figsize=(7, 7),
-    aspect="equal",
-    cmap="jet",
-    norm="linear",
-    norm_min=None,
-    norm_max=None,
-    linthresh=0.05,
-    linscale=0.01,
-    cb_ticksize=10,
-    cb_fraction=0.047,
-    cb_pad=0.01,
-    cb_tick_values=None,
-    cb_tick_labels=None,
-    title="Array",
-    titlesize=16,
-    xlabelsize=16,
-    ylabelsize=16,
-    xyticksize=16,
-    mask_pointsize=10,
-    border_pointsize=2,
-    point_pointsize=30,
-    grid_pointsize=1,
-    xticks_manual=None,
-    yticks_manual=None,
-    output_path=None,
-    output_format="show",
-    output_filename="array",
+    settings=None,
+    include=None,
+    labels=None,
+    outputs=None,
 ):
     """Plot an array of data_type as a figure.
 
     Parameters
     -----------
+    settings : PlotterSettings
+        Settings
+    include : PlotterInclude
+        Include
+    labels : PlotterLabels
+        labels
+    outputs : PlotterOutputs
+        outputs
     array : data_type.array.aa.Scaled
         The 2D array of data_type which is plotted.
-    include_origin : (float, float).
+    origin : (float, float).
         The origin of the coordinate system of the array, which is plotted as an 'x' on the image if input.
     mask : data_type.array.mask.Mask
         The mask applied to the array, the edge of which is plotted as a set of points over the plotted array.
@@ -71,7 +52,7 @@ def plot_array(
     zoom_around_mask : bool
         If True, the 2D region of the array corresponding to the rectangle encompassing all unmasked values is \
         plotted, thereby zooming into the region of interest.
-    include_border : bool
+    border : bool
         If a mask is supplied, its borders pixels (e.g. the exterior edge) is plotted if this is *True*.
     points : [[]]
         Lists of (y,x) coordinates on the image which are plotted as colored dots, to highlight specific pixels.
@@ -145,7 +126,7 @@ def plot_array(
     --------
         array_plotters.plot_array(
         array=image, origin=(0.0, 0.0), mask=circular_mask,
-        include_border=False, points=[[1.0, 1.0], [2.0, 2.0]], grid=None, as_subplot=False,
+        border=False, points=[[1.0, 1.0], [2.0, 2.0]], grid=None, as_subplot=False,
         unit_label='scaled', kpc_per_arcsec=None, figsize=(7,7), aspect='auto',
         cmap='jet', norm='linear, norm_min=None, norm_max=None, linthresh=None, linscale=None,
         cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01, cb_tick_values=None, cb_tick_labels=None,
@@ -155,10 +136,13 @@ def plot_array(
         output_path='/path/to/output', output_format='png', output_filename='image')
     """
 
+    if plotter_array is None:
+        plotter_array = PlotterArray()
+
     if array is None or np.all(array == 0):
         return
 
-    if array.pixel_scales is None and use_scaled_units:
+    if array.pixel_scales is None and settings.use_scaled_units:
         raise exc.ArrayException(
             "You cannot plot an array using its scaled unit_label if the input array does not have "
             "a pixel scales attribute."
@@ -181,6 +165,8 @@ def plot_array(
         array=array,
         as_subplot=as_subplot,
         extent=extent,
+        settings=settings,
+        labels=labels,
         use_scaled_units=use_scaled_units,
         unit_conversion_factor=unit_conversion_factor,
         figsize=figsize,
@@ -211,10 +197,10 @@ def plot_array(
         cb_tick_values=cb_tick_values,
         cb_tick_labels=cb_tick_labels,
     )
-    plot_origin(array=array, include_origin=include_origin)
+    plot_origin(array=array, origin=origin)
     plot_mask(mask=mask, pointsize=mask_pointsize)
     plotter_util.plot_lines(line_lists=lines)
-    plot_border(mask=mask, include_border=include_border, pointsize=border_pointsize)
+    plot_border(mask=mask, border=border, pointsize=border_pointsize)
     plot_points(points=points, pointsize=point_pointsize)
     plot_grid(grid=grid, pointsize=grid_pointsize)
     plot_centres(centres=centres)
@@ -232,18 +218,8 @@ def plot_figure(
     array,
     as_subplot,
     extent,
-    use_scaled_units,
-    unit_conversion_factor,
-    figsize,
-    aspect,
-    cmap,
-    norm,
-    norm_min,
-    norm_max,
-    linthresh,
-    linscale,
-    xticks_manual,
-    yticks_manual,
+    settings,
+    labels
 ):
     """Open a matplotlib figure and plotters the array of data_type on it.
 
@@ -283,56 +259,24 @@ def plot_figure(
         If input, the yticks do not use the array's default yticks but instead overwrite them as these values.
     """
 
-    fig = plotter_util.setup_figure(figsize=figsize, as_subplot=as_subplot)
+    fig = plotter_util.setup_figure(as_subplot=as_subplot, settings=settings)
 
-    norm_min, norm_max = get_normalization_min_max(
-        array=array, norm_min=norm_min, norm_max=norm_max
-    )
     norm_scale = get_normalization_scale(
-        norm=norm,
-        norm_min=norm_min,
-        norm_max=norm_max,
-        linthresh=linthresh,
-        linscale=linscale,
+        array=array, settings=settings
     )
 
-    plt.imshow(array.in_2d, aspect=aspect, cmap=cmap, norm=norm_scale, extent=extent)
+    plt.imshow(array.in_2d, aspect=settings.aspect, cmap=settings.cmap, norm=norm_scale, extent=extent)
     plotter_util.set_yxticks(
         array=array,
         extent=extent,
-        use_scaled_units=use_scaled_units,
-        unit_conversion_factor=unit_conversion_factor,
-        xticks_manual=xticks_manual,
-        yticks_manual=yticks_manual,
+        settings=settings,
+        labels=labels
     )
 
     return fig
 
 
-def get_normalization_min_max(array, norm_min, norm_max):
-    """Get the minimum and maximum of the normalization of the array, which sets the lower and upper limits of the \
-    colormap.
-
-    If norm_min / norm_max are not supplied, the minimum / maximum values of the array of data_type are used.
-
-    Parameters
-    -----------
-    array : data_type.array.aa.Scaled
-        The 2D array of data_type which is plotted.
-    norm_min : float or None
-        The minimum array value the colormap map spans (all values below this value are plotted the same color).
-    norm_max : float or None
-        The maximum array value the colormap map spans (all values above this value are plotted the same color).
-    """
-    if norm_min is None:
-        norm_min = array.min()
-    if norm_max is None:
-        norm_max = array.max()
-
-    return norm_min, norm_max
-
-
-def get_normalization_scale(norm, norm_min, norm_max, linthresh, linscale):
+def get_normalization_scale(array, settings):
     """Get the normalization scale of the colormap. This will be hyper based on the input min / max normalization \
     values.
 
@@ -355,15 +299,26 @@ def get_normalization_scale(norm, norm_min, norm_max, linthresh, linscale):
         For the 'symmetric_log' colormap normalization, this allowws the linear range set by linthresh to be stretched \
         relative to the logarithmic range.
     """
-    if norm is "linear":
+
+    if settings.norm_min is None:
+        norm_min = array.min()
+    else:
+        norm_min = settings.norm_min
+
+    if settings.norm_max is None:
+        norm_max = array.max()
+    else:
+        norm_max = settings.norm_max
+
+    if settings.norm is "linear":
         return colors.Normalize(vmin=norm_min, vmax=norm_max)
-    elif norm is "log":
-        if norm_min == 0.0:
+    elif settings.norm is "log":
+        if settings.norm_min == 0.0:
             norm_min = 1.0e-4
         return colors.LogNorm(vmin=norm_min, vmax=norm_max)
-    elif norm is "symmetric_log":
+    elif settings.norm is "symmetric_log":
         return colors.SymLogNorm(
-            linthresh=linthresh, linscale=linscale, vmin=norm_min, vmax=norm_max
+            linthresh=settings.linthresh, linscale=settings.linscale, vmin=norm_min, vmax=norm_max
         )
     else:
         raise exc.PlottingException(
@@ -372,7 +327,7 @@ def get_normalization_scale(norm, norm_min, norm_max, linthresh, linscale):
         )
 
 
-def plot_origin(array, include_origin):
+def plot_origin(array, origin):
     """Plot the (y,x) origin ofo the array's coordinates as a 'x'.
     
     Parameters
@@ -386,7 +341,7 @@ def plot_origin(array, include_origin):
     unit_conversion_factor : float or None
         The conversion factor between arc-seconds and kiloparsecs, required to plotters the unit_label in kpc.
     """
-    if include_origin:
+    if origin:
 
         plt.scatter(
             y=np.asarray(array.origin[0]),
@@ -422,7 +377,7 @@ def plot_centres(centres):
                 plt.scatter(y=centre[0], x=centre[1], s=300, c=color, marker="x")
 
 
-def plot_mask(mask, pointsize):
+def plot_mask(mask, settings):
     """Plot the mask of the array on the figure.
 
     Parameters
@@ -452,19 +407,19 @@ def plot_mask(mask, pointsize):
         plt.scatter(
             y=np.asarray(edge_scaled[:, 0]),
             x=np.asarray(edge_scaled[:, 1]),
-            s=pointsize,
+            s=settings.mask_pointsize,
             c="k",
         )
 
 
-def plot_border(mask, include_border, pointsize):
+def plot_border(mask, border, settings):
     """Plot the borders of the mask or the array on the figure.
 
     Parameters
     -----------t.
     mask : ndarray of data_type.array.mask.Mask
         The mask applied to the array, the edge of which is plotted as a set of points over the plotted array.
-    include_border : bool
+    border : bool
         If a mask is supplied, its borders pixels (e.g. the exterior edge) is plotted if this is *True*.
     unit_label : str
         The label for the unit_label of the y / x axis of the plots.
@@ -473,7 +428,7 @@ def plot_border(mask, include_border, pointsize):
     border_pointsize : int
         The size of the points plotted to show the borders.
     """
-    if include_border and mask is not None:
+    if border and mask is not None:
 
         plt.gca()
         border_grid = mask.geometry.border_grid.in_1d_binned
@@ -481,12 +436,12 @@ def plot_border(mask, include_border, pointsize):
         plt.scatter(
             y=np.asarray(border_grid[:, 0]),
             x=np.asarray(border_grid[:, 1]),
-            s=pointsize,
+            s=settings.border_pointsize,
             c="y",
         )
 
 
-def plot_points(points, pointsize):
+def plot_points(points, settings):
     """Plot a set of points over the array of data_type on the figure.
 
     Parameters
@@ -513,11 +468,11 @@ def plot_points(points, pointsize):
                 y=point_set[:, 0],
                 x=point_set[:, 1],
                 color=next(point_colors),
-                s=pointsize,
+                s=settings.point_pointsize,
             )
 
 
-def plot_grid(grid, pointsize):
+def plot_grid(grid, settings):
     """Plot a grid of points over the array of data_type on the figure.
 
      Parameters
@@ -536,5 +491,5 @@ def plot_grid(grid, pointsize):
     if grid is not None:
 
         plt.scatter(
-            y=np.asarray(grid[:, 0]), x=np.asarray(grid[:, 1]), s=pointsize, c="k"
+            y=np.asarray(grid[:, 0]), x=np.asarray(grid[:, 1]), s=settings.grid_pointsize, c="k"
         )

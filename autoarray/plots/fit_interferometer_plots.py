@@ -5,9 +5,9 @@ backend = conf.get_matplotlib_backend()
 matplotlib.use(backend)
 from matplotlib import pyplot as plt
 
-from autoarray.plotters import grid_plotters, inversion_plotters, line_yx_plotters
+from autoarray.plotters import grid_plotter, line_yx_plotter
+from autoarray.plots import inversion_plots
 from autoarray.util import plotter_util
-from autoarray.structures import grids
 
 
 def subplot(
@@ -315,7 +315,7 @@ def individuals(
 
     if fit.total_inversions == 1:
 
-        inversion_plotters.individuals(
+        inversion_plots.individuals(
             inversion=fit.inversion,
             plot_inversion_reconstruction=plot_inversion_reconstruction,
             plot_inversion_errors=plot_inversion_errors,
@@ -362,7 +362,7 @@ def visibilities(
     -----------
     visibilities : datas.imaging.datas.Imaging
         The datas-datas, which includes the observed datas, noise_map-map, PSF, signal-to-noise_map-map, etc.
-    include_origin : True
+    origin : True
         If true, the origin of the datas's coordinate system is plotted as a 'x'.
     """
     grid_plotters.plot_grid(
@@ -419,7 +419,7 @@ def noise_map(
     -----------
     visibilities : datas.imaging.datas.Imaging
         The datas-datas, which includes the observed datas, noise_map-map, PSF, signal-to-noise_map-map, etc.
-    include_origin : True
+    origin : True
         If true, the origin of the datas's coordinate system is plotted as a 'x'.
     """
     grid_plotters.plot_grid(
@@ -476,7 +476,7 @@ def signal_to_noise_map(
     -----------
     visibilities : datas.imaging.datas.Imaging
     The datas-datas, which includes the observed datas, signal_to_noise_map-map, PSF, signal-to-signal_to_noise_map-map, etc.
-    include_origin : True
+    origin : True
     If true, the origin of the datas's coordinate system is plotted as a 'x'.
     """
     grid_plotters.plot_grid(

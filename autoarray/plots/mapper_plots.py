@@ -9,7 +9,8 @@ import numpy as np
 import itertools
 from scipy.spatial import Voronoi
 
-from autoarray.plotters import imaging_plotters, grid_plotters
+from autoarray.plotters import grid_plotter
+from autoarray.plots import imaging_plots
 from autoarray.util import plotter_util
 from autoarray.operators.inversion import mappers
 
@@ -21,7 +22,7 @@ def image_and_mapper(
     positions=None,
     include_centres=False,
     include_grid=False,
-    include_border=False,
+    border=False,
     image_pixels=None,
     source_pixels=None,
     use_scaled_units=True,
@@ -38,7 +39,7 @@ def image_and_mapper(
     plt.figure(figsize=figsize)
     plt.subplot(rows, columns, 1)
 
-    imaging_plotters.image(
+    imaging_plots.image(
         imaging=imaging,
         mask=mask,
         positions=positions,
@@ -82,7 +83,7 @@ def image_and_mapper(
         mapper=mapper,
         include_centres=include_centres,
         include_grid=include_grid,
-        include_border=include_border,
+        border=border,
         image_pixels=image_pixels,
         source_pixels=source_pixels,
         as_subplot=True,
@@ -104,7 +105,7 @@ def plot_mapper(
     mapper,
     include_centres=False,
     include_grid=False,
-    include_border=False,
+    border=False,
     image_pixels=None,
     source_pixels=None,
     as_subplot=False,
@@ -128,7 +129,7 @@ def plot_mapper(
             mapper=mapper,
             include_centres=include_centres,
             include_grid=include_grid,
-            include_border=include_border,
+            border=border,
             image_pixels=image_pixels,
             source_pixels=source_pixels,
             as_subplot=as_subplot,
@@ -151,7 +152,7 @@ def rectangular_mapper(
     mapper,
     include_centres=False,
     include_grid=False,
-    include_border=False,
+    border=False,
     image_pixels=None,
     source_pixels=None,
     as_subplot=False,
@@ -214,7 +215,7 @@ def rectangular_mapper(
     )
 
     plot_border(
-        include_border=include_border,
+        border=border,
         mapper=mapper,
         as_subplot=True,
         unit_label=unit_label,
@@ -254,7 +255,7 @@ def voronoi_mapper(
     include_centres=True,
     lines=None,
     include_grid=True,
-    include_border=False,
+    border=False,
     image_pixels=None,
     source_pixels=None,
     as_subplot=False,
@@ -339,7 +340,7 @@ def voronoi_mapper(
     )
 
     plot_border(
-        include_border=include_border,
+        border=border,
         mapper=mapper,
         as_subplot=True,
         unit_label=unit_label,
@@ -534,7 +535,7 @@ def plot_mapper_grid(
 
 
 def plot_border(
-    include_border,
+    border,
     mapper,
     as_subplot,
     unit_label,
@@ -547,7 +548,7 @@ def plot_border(
     ylabelsize,
 ):
 
-    if include_border:
+    if border:
 
         border = mapper.grid[mapper.grid.mask.regions._sub_border_1d_indexes]
 

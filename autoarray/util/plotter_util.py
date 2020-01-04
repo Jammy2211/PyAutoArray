@@ -35,7 +35,7 @@ def get_subplot_rows_columns_figsize(number_subplots):
         return 6, 6, (25, 20)
 
 
-def setup_figure(figsize, as_subplot):
+def setup_figure(as_subplot, settings):
     """Setup a figure for plotting an image.
 
     Parameters
@@ -47,11 +47,11 @@ def setup_figure(figsize, as_subplot):
         new figure and so that it can be output using the *output_subplot_array* function.
     """
     if not as_subplot:
-        fig = plt.figure(figsize=figsize)
+        fig = plt.figure(figsize=settings.figsize)
         return fig
 
 
-def set_title(title, titlesize):
+def set_title(settings, labels):
     """Set the title and title size of the figure.
 
     Parameters
@@ -61,11 +61,11 @@ def set_title(title, titlesize):
     titlesize : int
         The size of of the title of the figure.
     """
-    plt.title(title, fontsize=titlesize)
+    plt.title(labels.title, fontsize=settings.titlesize)
 
 
 def set_yx_labels_and_ticksize(
-    unit_label_y, unit_label_x, xlabelsize, ylabelsize, xyticksize
+    settings, labels
 ):
     """Set the x and y labels of the figure, and set the fontsize of those labels.
 
@@ -86,19 +86,17 @@ def set_yx_labels_and_ticksize(
         The font size of the x and y ticks on the figure axes.
     """
 
-    plt.ylabel("y (" + unit_label_y + ")", fontsize=ylabelsize)
-    plt.xlabel("x (" + unit_label_x + ")", fontsize=xlabelsize)
+    plt.ylabel("y (" + labels.y_units + ")", fontsize=settings.ylabelsize)
+    plt.xlabel("x (" + labels.x_units + ")", fontsize=settings.xlabelsize)
 
-    plt.tick_params(labelsize=xyticksize)
+    plt.tick_params(labelsize=settings.xyticksize)
 
 
 def set_yxticks(
     array,
     extent,
-    use_scaled_units,
-    unit_conversion_factor,
-    xticks_manual,
-    yticks_manual,
+    settings,
+    labels,
     symmetric_around_centre=False,
 ):
     """Get the extent of the dimensions of the array in the unit_label of the figure (e.g. arc-seconds or kpc).
@@ -125,28 +123,28 @@ def set_yxticks(
     yticks = np.linspace(extent[2], extent[3], 5)
     xticks = np.linspace(extent[0], extent[1], 5)
 
-    if xticks_manual is not None and yticks_manual is not None:
-        ytick_labels = np.asarray([yticks_manual[0], yticks_manual[3]])
-        xtick_labels = np.asarray([xticks_manual[0], xticks_manual[3]])
-    elif not use_scaled_units:
+    if labels.xticks is not None and labels.yticks is not None:
+        ytick_labels = np.asarray([labels.yticks[0], labels.yticks[3]])
+        xtick_labels = np.asarray([labels.xticks[0], labels.xticks[3]])
+    elif not settings.use_scaled_units:
         ytick_labels = np.linspace(0, array.shape_2d[0], 5).astype("int")
         xtick_labels = np.linspace(0, array.shape_2d[1], 5).astype("int")
-    elif use_scaled_units and unit_conversion_factor is None:
+    elif settings.use_scaled_units and settings.unit_conversion_factor is None:
         ytick_labels = np.round(np.linspace(extent[2], extent[3], 5), 2)
         xtick_labels = np.round(np.linspace(extent[0], extent[1], 5), 2)
-    elif use_scaled_units and unit_conversion_factor is not None:
+    elif settings.use_scaled_units and settings.unit_conversion_factor is not None:
         ytick_labels = np.round(
             np.linspace(
-                extent[2] * unit_conversion_factor,
-                extent[3] * unit_conversion_factor,
+                extent[2] * settings.unit_conversion_factor,
+                extent[3] * settings.unit_conversion_factor,
                 5,
             ),
             2,
         )
         xtick_labels = np.round(
             np.linspace(
-                extent[0] * unit_conversion_factor,
-                extent[1] * unit_conversion_factor,
+                extent[0] * settings.unit_conversion_factor,
+                extent[1] * settings.unit_conversion_factor,
                 5,
             ),
             2,
@@ -160,7 +158,7 @@ def set_yxticks(
     plt.xticks(ticks=xticks, labels=xtick_labels)
 
 
-def set_colorbar(cb_ticksize, cb_fraction, cb_pad, cb_tick_values, cb_tick_labels):
+def set_colorbar(settings, labels):
     """Setup the colorbar of the figure, specifically its ticksize and the size is appears relative to the figure.
 
     Parameters
@@ -177,21 +175,21 @@ def set_colorbar(cb_ticksize, cb_fraction, cb_pad, cb_tick_values, cb_tick_label
         Manually specified labels of the color bar tick labels, which appear where specified by cb_tick_values.
     """
 
-    if cb_tick_values is None and cb_tick_labels is None:
-        cb = plt.colorbar(fraction=cb_fraction, pad=cb_pad)
-    elif cb_tick_values is not None and cb_tick_labels is not None:
-        cb = plt.colorbar(fraction=cb_fraction, pad=cb_pad, ticks=cb_tick_values)
-        cb.ax.set_yticklabels(cb_tick_labels)
+    if labels.cb_tick_values is None and labels.cb_tick_labels is None:
+        cb = plt.colorbar(fraction=settings.cb_fraction, pad=settings.cb_pad)
+    elif labels.cb_tick_values is not None and labels.cb_tick_labels is not None:
+        cb = plt.colorbar(fraction=settings.cb_fraction, pad=settings.cb_pad, ticks=labels.cb_tick_values)
+        cb.ax.set_yticklabels(labels=labels.cb_tick_labels)
     else:
         raise exc.PlottingException(
             "Only 1 entry of cb_tick_values or cb_tick_labels was input. You must either supply"
             "both the values and labels, or neither."
         )
 
-    cb.ax.tick_params(labelsize=cb_ticksize)
+    cb.ax.tick_params(labelsize=settings.cb_ticksize)
 
 
-def output_figure(array, as_subplot, output_path, output_filename, output_format):
+def output_figure(array, as_subplot, outputs):
     """Output the figure, either as an image on the screen or to the hard-disk as a .png or .fits file.
 
     Parameters
@@ -213,19 +211,19 @@ def output_figure(array, as_subplot, output_path, output_filename, output_format
     """
     if not as_subplot:
 
-        if output_format is "show":
+        if outputs.format is "show":
             plt.show()
-        elif output_format is "png":
-            plt.savefig(output_path + output_filename + ".png", bbox_inches="tight")
-        elif output_format is "fits":
+        elif outputs.format is "png":
+            plt.savefig(outputs.path + outputs.filename + ".png", bbox_inches="tight")
+        elif outputs.format is "fits":
             array_util.numpy_array_2d_to_fits(
                 array_2d=array,
-                file_path=output_path + output_filename + ".fits",
+                file_path=outputs.path + outputs.filename + ".fits",
                 overwrite=True,
             )
 
 
-def output_subplot_array(output_path, output_filename, output_format):
+def output_subplot_array(outputs):
     """Output a figure which consists of a set of subplot,, either as an image on the screen or to the hard-disk as a \
     .png file.
 
@@ -240,41 +238,41 @@ def output_subplot_array(output_path, output_filename, output_format):
         'show' - display on computer screen.
         'png' - output to hard-disk as a png.
     """
-    if output_format is "show":
+    if outputs.format is "show":
         plt.show()
-    elif output_format is "png":
-        plt.savefig(output_path + output_filename + ".png", bbox_inches="tight")
-    elif output_format is "fits":
+    elif outputs.format is "png":
+        plt.savefig(outputs.path + outputs.filename + ".png", bbox_inches="tight")
+    elif outputs.format is "fits":
         raise exc.PlottingException("You cannot output a subplots with format .fits")
 
 
-def get_mask_from_fit(include_mask, fit):
+def get_mask_from_fit(mask, fit):
     """Get the masks of the fit if the masks should be plotted on the fit.
 
     Parameters
     -----------
     fit : datas.fitting.fitting.AbstractLensHyperFit
         The fit to the datas, which includes a lisrt of every model image, residual_map, chi-squareds, etc.
-    include_mask : bool
+    mask : bool
         If *True*, the masks is plotted on the fit's datas.
     """
-    if include_mask:
+    if mask:
         return fit.mask
     else:
         return None
 
 
-def get_real_space_mask_from_fit(include_mask, fit):
+def get_real_space_mask_from_fit(mask, fit):
     """Get the masks of the fit if the masks should be plotted on the fit.
 
     Parameters
     -----------
     fit : datas.fitting.fitting.AbstractLensHyperFit
         The fit to the datas, which includes a lisrt of every model image, residual_map, chi-squareds, etc.
-    include_mask : bool
+    mask : bool
         If *True*, the masks is plotted on the fit's datas.
     """
-    if include_mask:
+    if mask:
         return fit.masked_dataset.mask
     else:
         return None
