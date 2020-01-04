@@ -85,6 +85,163 @@ class ArrayPlotter(abstract_plotter.AbstractPlotter):
                  output_format=output_format,
                  output_filename=output_filename)
 
+    def plot_origin(self, array, origin):
+        """Plot the (y,x) origin ofo the array's coordinates as a 'x'.
+
+        Parameters
+        -----------
+        array : data_type.array.aa.Scaled
+            The 2D array of data_type which is plotted.
+        origin : (float, float).
+            The origin of the coordinate system of the array, which is plotted as an 'x' on the image if input.
+        unit_label : str
+            The label for the unit_label of the y / x axis of the plots.
+        unit_conversion_factor : float or None
+            The conversion factor between arc-seconds and kiloparsecs, required to plotters the unit_label in kpc.
+        """
+        if origin:
+            plt.scatter(
+                y=np.asarray(array.origin[0]),
+                x=np.asarray(array.origin[1]),
+                s=80,
+                c="k",
+                marker="x",
+            )
+
+    def plot_centres(self, centres):
+        """Plot the (y,x) centres (e.g. of a mass profile) on the array as an 'x'.
+
+        Parameters
+        -----------
+        array : data_type.array.aa.Scaled
+            The 2D array of data_type which is plotted.
+        centres : [[tuple]]
+            The list of centres; centres in the same list entry are colored the same.
+        use_scaled_units_label : str
+            The label for the unit_label of the y / x axis of the plots.
+        unit_conversion_factor : float or None
+            The conversion factor between arc-seconds and kiloparsecs, required to plotters the unit_label in kpc.
+        """
+        if centres is not None:
+
+            colors = itertools.cycle(["m", "y", "r", "w", "c", "b", "g", "k"])
+
+            for centres_of_galaxy in centres:
+                color = next(colors)
+                for centre in centres_of_galaxy:
+                    plt.scatter(y=centre[0], x=centre[1], s=300, c=color, marker="x")
+
+    def plot_mask(self, mask):
+        """Plot the mask of the array on the figure.
+
+        Parameters
+        -----------
+        mask : ndarray of data_type.array.mask.Mask
+            The mask applied to the array, the edge of which is plotted as a set of points over the plotted array.
+        use_scaled_units_label : str
+            The label for the unit_label of the y / x axis of the plots.
+        unit_conversion_factor : float or None
+            The conversion factor between arc-seconds and kiloparsecs, required to plotters the unit_label in kpc.
+        pointsize : int
+            The size of the points plotted to show the mask.
+        """
+
+        if mask is not None:
+            plt.gca()
+            edge_pixels = (
+                    mask.regions._mask_2d_index_for_mask_1d_index[mask.regions._edge_1d_indexes]
+                    + 0.5
+            )
+
+            edge_scaled = mask.geometry.grid_scaled_from_grid_pixels_1d(
+                grid_pixels_1d=edge_pixels
+            )
+
+            plt.scatter(
+                y=np.asarray(edge_scaled[:, 0]),
+                x=np.asarray(edge_scaled[:, 1]),
+                s=self.mask_pointsize,
+                c="k",
+            )
+
+    def plot_border(self, mask, border):
+        """Plot the borders of the mask or the array on the figure.
+
+        Parameters
+        -----------t.
+        mask : ndarray of data_type.array.mask.Mask
+            The mask applied to the array, the edge of which is plotted as a set of points over the plotted array.
+        border : bool
+            If a mask is supplied, its borders pixels (e.g. the exterior edge) is plotted if this is *True*.
+        unit_label : str
+            The label for the unit_label of the y / x axis of the plots.
+        kpc_per_arcsec : float or None
+            The conversion factor between arc-seconds and kiloparsecs, required to plotters the unit_label in kpc.
+        border_pointsize : int
+            The size of the points plotted to show the borders.
+        """
+        if border and mask is not None:
+            plt.gca()
+            border_grid = mask.geometry.border_grid.in_1d_binned
+
+            plt.scatter(
+                y=np.asarray(border_grid[:, 0]),
+                x=np.asarray(border_grid[:, 1]),
+                s=self.border_pointsize,
+                c="y",
+            )
+
+    def plot_points(self, points):
+        """Plot a set of points over the array of data_type on the figure.
+
+        Parameters
+        -----------
+        points : [[]]
+            Lists of (y,x) coordinates on the image which are plotted as colored dots, to highlight specific pixels.
+        array : data_type.array.aa.Scaled
+            The 2D array of data_type which is plotted.
+        use_scaled_units_label : str
+            The label for the unit_label of the y / x axis of the plots.
+        unit_conversion_factor : float or None
+            The conversion factor between arc-seconds and kiloparsecs, required to plotters the unit_label in kpc.
+        pointsize : int
+            The size of the points plotted to show the input points.
+        """
+
+        if points is not None:
+
+            points = list(map(lambda position_set: np.asarray(position_set), points))
+            point_colors = itertools.cycle(["m", "y", "r", "w", "c", "b", "g", "k"])
+            for point_set in points:
+                plt.scatter(
+                    y=point_set[:, 0],
+                    x=point_set[:, 1],
+                    color=next(point_colors),
+                    s=self.point_pointsize,
+                )
+
+    def plot_grid(self, grid):
+        """Plot a grid of points over the array of data_type on the figure.
+
+         Parameters
+         -----------.
+         grid_arcsec : ndarray or data_type.array.aa.Grid
+             A grid of (y,x) coordinates in arc-seconds which may be plotted over the array.
+         array : data_type.array.aa.Scaled
+            The 2D array of data_type which is plotted.
+         unit_label : str
+             The label for the unit_label of the y / x axis of the plots.
+         kpc_per_arcsec : float or None
+             The conversion factor between arc-seconds and kiloparsecs, required to plotters the unit_label in kpc.
+         grid_pointsize : int
+             The size of the points plotted to show the grid.
+         """
+        if grid is not None:
+
+            plt.scatter(
+                y=np.asarray(grid[:, 0]), x=np.asarray(grid[:, 1]), s=self.grid_pointsize, c="k"
+            )
+
 def plot_array(
     array,
     plotter_array=None,
@@ -395,172 +552,4 @@ def get_normalization_scale(array, settings):
         raise exc.PlottingException(
             "The normalization (norm) supplied to the plotter is not a valid string (must be "
             "linear | log | symmetric_log"
-        )
-
-
-def plot_origin(array, origin):
-    """Plot the (y,x) origin ofo the array's coordinates as a 'x'.
-    
-    Parameters
-    -----------
-    array : data_type.array.aa.Scaled
-        The 2D array of data_type which is plotted.
-    origin : (float, float).
-        The origin of the coordinate system of the array, which is plotted as an 'x' on the image if input.
-    unit_label : str
-        The label for the unit_label of the y / x axis of the plots.
-    unit_conversion_factor : float or None
-        The conversion factor between arc-seconds and kiloparsecs, required to plotters the unit_label in kpc.
-    """
-    if origin:
-
-        plt.scatter(
-            y=np.asarray(array.origin[0]),
-            x=np.asarray(array.origin[1]),
-            s=80,
-            c="k",
-            marker="x",
-        )
-
-
-def plot_centres(centres):
-    """Plot the (y,x) centres (e.g. of a mass profile) on the array as an 'x'.
-
-    Parameters
-    -----------
-    array : data_type.array.aa.Scaled
-        The 2D array of data_type which is plotted.
-    centres : [[tuple]]
-        The list of centres; centres in the same list entry are colored the same.
-    use_scaled_units_label : str
-        The label for the unit_label of the y / x axis of the plots.
-    unit_conversion_factor : float or None
-        The conversion factor between arc-seconds and kiloparsecs, required to plotters the unit_label in kpc.
-    """
-    if centres is not None:
-
-        colors = itertools.cycle(["m", "y", "r", "w", "c", "b", "g", "k"])
-
-        for centres_of_galaxy in centres:
-            color = next(colors)
-            for centre in centres_of_galaxy:
-
-                plt.scatter(y=centre[0], x=centre[1], s=300, c=color, marker="x")
-
-
-def plot_mask(mask, settings):
-    """Plot the mask of the array on the figure.
-
-    Parameters
-    -----------
-    mask : ndarray of data_type.array.mask.Mask
-        The mask applied to the array, the edge of which is plotted as a set of points over the plotted array.
-    use_scaled_units_label : str
-        The label for the unit_label of the y / x axis of the plots.
-    unit_conversion_factor : float or None
-        The conversion factor between arc-seconds and kiloparsecs, required to plotters the unit_label in kpc.
-    pointsize : int
-        The size of the points plotted to show the mask.
-    """
-
-    if mask is not None:
-
-        plt.gca()
-        edge_pixels = (
-            mask.regions._mask_2d_index_for_mask_1d_index[mask.regions._edge_1d_indexes]
-            + 0.5
-        )
-
-        edge_scaled = mask.geometry.grid_scaled_from_grid_pixels_1d(
-            grid_pixels_1d=edge_pixels
-        )
-
-        plt.scatter(
-            y=np.asarray(edge_scaled[:, 0]),
-            x=np.asarray(edge_scaled[:, 1]),
-            s=settings.mask_pointsize,
-            c="k",
-        )
-
-
-def plot_border(mask, border, settings):
-    """Plot the borders of the mask or the array on the figure.
-
-    Parameters
-    -----------t.
-    mask : ndarray of data_type.array.mask.Mask
-        The mask applied to the array, the edge of which is plotted as a set of points over the plotted array.
-    border : bool
-        If a mask is supplied, its borders pixels (e.g. the exterior edge) is plotted if this is *True*.
-    unit_label : str
-        The label for the unit_label of the y / x axis of the plots.
-    kpc_per_arcsec : float or None
-        The conversion factor between arc-seconds and kiloparsecs, required to plotters the unit_label in kpc.
-    border_pointsize : int
-        The size of the points plotted to show the borders.
-    """
-    if border and mask is not None:
-
-        plt.gca()
-        border_grid = mask.geometry.border_grid.in_1d_binned
-
-        plt.scatter(
-            y=np.asarray(border_grid[:, 0]),
-            x=np.asarray(border_grid[:, 1]),
-            s=settings.border_pointsize,
-            c="y",
-        )
-
-
-def plot_points(points, settings):
-    """Plot a set of points over the array of data_type on the figure.
-
-    Parameters
-    -----------
-    points : [[]]
-        Lists of (y,x) coordinates on the image which are plotted as colored dots, to highlight specific pixels.
-    array : data_type.array.aa.Scaled
-        The 2D array of data_type which is plotted.
-    use_scaled_units_label : str
-        The label for the unit_label of the y / x axis of the plots.
-    unit_conversion_factor : float or None
-        The conversion factor between arc-seconds and kiloparsecs, required to plotters the unit_label in kpc.
-    pointsize : int
-        The size of the points plotted to show the input points.
-    """
-
-    if points is not None:
-
-        points = list(map(lambda position_set: np.asarray(position_set), points))
-        point_colors = itertools.cycle(["m", "y", "r", "w", "c", "b", "g", "k"])
-        for point_set in points:
-
-            plt.scatter(
-                y=point_set[:, 0],
-                x=point_set[:, 1],
-                color=next(point_colors),
-                s=settings.point_pointsize,
-            )
-
-
-def plot_grid(grid, settings):
-    """Plot a grid of points over the array of data_type on the figure.
-
-     Parameters
-     -----------.
-     grid_arcsec : ndarray or data_type.array.aa.Grid
-         A grid of (y,x) coordinates in arc-seconds which may be plotted over the array.
-     array : data_type.array.aa.Scaled
-        The 2D array of data_type which is plotted.
-     unit_label : str
-         The label for the unit_label of the y / x axis of the plots.
-     kpc_per_arcsec : float or None
-         The conversion factor between arc-seconds and kiloparsecs, required to plotters the unit_label in kpc.
-     grid_pointsize : int
-         The size of the points plotted to show the grid.
-     """
-    if grid is not None:
-
-        plt.scatter(
-            y=np.asarray(grid[:, 0]), x=np.asarray(grid[:, 1]), s=settings.grid_pointsize, c="k"
         )
