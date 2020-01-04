@@ -11,8 +11,79 @@ import matplotlib.colors as colors
 import numpy as np
 import itertools
 
+from autoarray.plotters import abstract_plotter
 from autoarray.util import plotter_util
 
+
+class ArrayPlotter(abstract_plotter.AbstractPlotter):
+
+    def __init__(self,
+    use_scaled_units=None,
+    unit_conversion_factor=None,
+    unit_label=None,
+    figsize=None,
+    aspect=None,
+    cmap=None,
+    norm=None,
+    norm_min=None,
+    norm_max=None,
+    linthresh=None,
+    linscale=None,
+    cb_ticksize=None,
+    cb_fraction=None,
+    cb_pad=None,
+    cb_tick_values=None,
+    cb_tick_labels=None,
+    titlesize=None,
+    xlabelsize=None,
+    ylabelsize=None,
+    xyticksize=None,
+    mask_pointsize=None,
+    border_pointsize=None,
+    point_pointsize=None,
+    grid_pointsize=None,
+     include_origin=None,
+     include_mask=None,
+     include_border=None,
+     include_points=None,
+     label_title=None, label_yunits=None, label_xunits=None, label_yticks=None, label_xticks=None,
+                 output_path=None,
+                 output_format="show",
+                 output_filename=None
+                 ):
+
+        super(ArrayPlotter, self).__init__(use_scaled_units=use_scaled_units,
+    unit_conversion_factor=unit_conversion_factor,
+    unit_label=unit_label,
+    figsize=figsize,
+    aspect=aspect,
+    cmap=cmap,
+    norm=norm,
+    norm_min=norm_min,
+    norm_max=norm_max,
+    linthresh=linthresh,
+    linscale=linscale,
+    cb_ticksize=cb_ticksize,
+    cb_fraction=cb_fraction,
+    cb_pad=cb_pad,
+    cb_tick_values=cb_tick_values,
+    cb_tick_labels=cb_tick_labels,
+    titlesize=titlesize,
+    xlabelsize=xlabelsize,
+    ylabelsize=ylabelsize,
+    xyticksize=xyticksize,
+    mask_pointsize=mask_pointsize,
+    border_pointsize=border_pointsize,
+    point_pointsize=point_pointsize,
+    grid_pointsize=grid_pointsize,
+     include_origin=include_origin,
+     include_mask=include_mask,
+     include_border=include_border,
+     include_points=include_points,
+     label_title=label_title, label_yunits=label_yunits, label_xunits=label_xunits, label_yticks=label_yticks, label_xticks=label_xticks,
+                 output_path=output_path,
+                 output_format=output_format,
+                 output_filename=output_filename)
 
 def plot_array(
     array,
