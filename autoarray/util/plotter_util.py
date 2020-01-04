@@ -14,70 +14,7 @@ from autoarray.util import array_util
 
 
 
-def set_yxticks(
-    array,
-    extent,
-    settings,
-    labels,
-    symmetric_around_centre=False,
-):
-    """Get the extent of the dimensions of the array in the unit_label of the figure (e.g. arc-seconds or kpc).
 
-    This is used to set the extent of the array and thus the y / x axis limits.
-
-    Parameters
-    -----------
-    array : data_type.array.aa.Scaled
-        The 2D array of data_type which is plotted.
-    unit_label : str
-        The label for the unit_label of the y / x axis of the plots.
-    unit_conversion_factor : float
-        The conversion factor between arc-seconds and kiloparsecs, required to plotters the unit_label in kpc.
-    xticks_manual :  [] or None
-        If input, the xticks do not use the array's default xticks but instead overwrite them as these values.
-    yticks_manual :  [] or None
-        If input, the yticks do not use the array's default yticks but instead overwrite them as these values.
-    """
-
-    if symmetric_around_centre:
-        return
-
-    yticks = np.linspace(extent[2], extent[3], 5)
-    xticks = np.linspace(extent[0], extent[1], 5)
-
-    if labels.xticks is not None and labels.yticks is not None:
-        ytick_labels = np.asarray([labels.yticks[0], labels.yticks[3]])
-        xtick_labels = np.asarray([labels.xticks[0], labels.xticks[3]])
-    elif not settings.use_scaled_units:
-        ytick_labels = np.linspace(0, array.shape_2d[0], 5).astype("int")
-        xtick_labels = np.linspace(0, array.shape_2d[1], 5).astype("int")
-    elif settings.use_scaled_units and settings.unit_conversion_factor is None:
-        ytick_labels = np.round(np.linspace(extent[2], extent[3], 5), 2)
-        xtick_labels = np.round(np.linspace(extent[0], extent[1], 5), 2)
-    elif settings.use_scaled_units and settings.unit_conversion_factor is not None:
-        ytick_labels = np.round(
-            np.linspace(
-                extent[2] * settings.unit_conversion_factor,
-                extent[3] * settings.unit_conversion_factor,
-                5,
-            ),
-            2,
-        )
-        xtick_labels = np.round(
-            np.linspace(
-                extent[0] * settings.unit_conversion_factor,
-                extent[1] * settings.unit_conversion_factor,
-                5,
-            ),
-            2,
-        )
-    else:
-        raise exc.PlottingException(
-            "The y and y ticks cannot be set using the input options."
-        )
-
-    plt.yticks(ticks=yticks, labels=ytick_labels)
-    plt.xticks(ticks=xticks, labels=xtick_labels)
 
 
 def set_colorbar(settings, labels):
