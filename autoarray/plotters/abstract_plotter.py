@@ -93,3 +93,29 @@ class AbstractPlotter(object):
         self.output_path = output_path
         self.output_format = output_format
         self.output_filename = output_filename
+
+    @staticmethod
+    def get_subplot_rows_columns_figsize(number_subplots):
+        """Get the size of a sub plotters in (rows, columns), based on the number of subplots that are going to be plotted.
+
+        Parameters
+        -----------
+        number_subplots : int
+            The number of subplots that are to be plotted in the figure.
+        """
+        if number_subplots <= 2:
+            return 1, 2, (18, 8)
+        elif number_subplots <= 4:
+            return 2, 2, (13, 10)
+        elif number_subplots <= 6:
+            return 2, 3, (18, 12)
+        elif number_subplots <= 9:
+            return 3, 3, (25, 20)
+        elif number_subplots <= 12:
+            return 3, 4, (25, 20)
+        elif number_subplots <= 16:
+            return 4, 4, (25, 20)
+        elif number_subplots <= 20:
+            return 4, 5, (25, 20)
+        else:
+            return 6, 6, (25, 20)

@@ -116,3 +116,19 @@ class TestPlotterArray:
         assert plotter.output_path == "Path"
         assert plotter.output_format == "png"
         assert plotter.output_filename == "file"
+
+    def test__plotter_number_of_subplots(self):
+
+        plotter = abstract_plotter.AbstractPlotter()
+
+        rows, columns, figsize = plotter.get_subplot_rows_columns_figsize(number_subplots=1)
+
+        assert rows == 1
+        assert columns == 2
+        assert figsize == (18, 8)
+
+        rows, columns, figsize = plotter.get_subplot_rows_columns_figsize(number_subplots=4)
+
+        assert rows == 2
+        assert columns == 2
+        assert figsize == (13, 10)
