@@ -1,24 +1,23 @@
-import matplotlib
 from autoarray import conf
+import matplotlib
 
 backend = conf.get_matplotlib_backend()
 matplotlib.use(backend)
 from matplotlib import pyplot as plt
 
-from autoarray.plotters import array_plotters
-from autoarray.plotters import inversion_plotters
+from autoarray.plotters import array_plotter
 from autoarray.util import plotter_util
 
 
 def subplot(
-    fit,
-    include_mask=True,
-    grid=None,
-    points=None,
-    lines=None,
+    imaging,
+    origin=True,
+    mask=None,
+    border=False,
+    positions=None,
     use_scaled_units=True,
     unit_conversion_factor=None,
-    unit_label="arcsec",
+    unit_label="scaled",
     figsize=None,
     aspect="square",
     cmap="jet",
@@ -37,18 +36,34 @@ def subplot(
     ylabelsize=10,
     xyticksize=10,
     mask_pointsize=10,
-    position_pointsize=10,
+    position_pointsize=30,
     grid_pointsize=1,
     output_path=None,
-    output_filename="fit",
+    output_filename="imaging",
     output_format="show",
 ):
+    """Plot the imaging data_type as a sub-plotters of all its quantites (e.g. the dataset, noise_map-map, PSF, Signal-to_noise-map, \
+     etc).
+
+    Set *autolens.data_type.array.plotters.array_plotters* for a description of all innput parameters not described below.
+
+    Parameters
+    -----------
+    imaging : data_type.ImagingData
+        The imaging data_type, which includes the observed data_type, noise_map-map, PSF, signal-to-noise_map-map, etc.
+    origin : True
+        If true, the origin of the dataset's coordinate system is plotted as a 'x'.
+    image_plane_pix_grid : ndarray or data_type.array.grid_stacks.PixGrid
+        If an adaptive pixelization whose pixels are formed by tracing pixels from the dataset, this plots those pixels \
+        over the immage.
+    ignore_config : bool
+        If *False*, the config file general.ini is used to determine whether the subpot is plotted. If *True*, the \
+        config file is ignored.
+    """
 
     rows, columns, figsize_tool = plotter_util.get_subplot_rows_columns_figsize(
         number_subplots=6
     )
-
-    mask = plotter_util.get_mask_from_fit(fit=fit, include_mask=include_mask)
 
     if figsize is None:
         figsize = figsize_tool
@@ -57,14 +72,15 @@ def subplot(
     plt.subplot(rows, columns, 1)
 
     image(
-        fit=fit,
-        grid=grid,
+        imaging=imaging,
+        origin=origin,
         mask=mask,
-        points=points,
+        border=border,
+        positions=positions,
         as_subplot=True,
-        unit_label=unit_label,
         use_scaled_units=use_scaled_units,
         unit_conversion_factor=unit_conversion_factor,
+        unit_label=unit_label,
         figsize=figsize,
         aspect=aspect,
         cmap=cmap,
@@ -82,23 +98,23 @@ def subplot(
         xlabelsize=xlabelsize,
         ylabelsize=ylabelsize,
         xyticksize=xyticksize,
-        grid_pointsize=grid_pointsize,
-        position_pointsize=position_pointsize,
         mask_pointsize=mask_pointsize,
+        position_pointsize=position_pointsize,
+        grid_pointsize=grid_pointsize,
         output_path=output_path,
-        output_filename="",
         output_format=output_format,
     )
 
     plt.subplot(rows, columns, 2)
 
-    signal_to_noise_map(
-        fit=fit,
+    noise_map(
+        imaging=imaging,
+        origin=origin,
         mask=mask,
         as_subplot=True,
-        unit_label=unit_label,
         use_scaled_units=use_scaled_units,
         unit_conversion_factor=unit_conversion_factor,
+        unit_label=unit_label,
         figsize=figsize,
         aspect=aspect,
         cmap=cmap,
@@ -116,23 +132,19 @@ def subplot(
         xlabelsize=xlabelsize,
         ylabelsize=ylabelsize,
         xyticksize=xyticksize,
-        position_pointsize=position_pointsize,
         mask_pointsize=mask_pointsize,
         output_path=output_path,
-        output_filename="",
         output_format=output_format,
     )
 
     plt.subplot(rows, columns, 3)
 
-    model_image(
-        fit=fit,
-        mask=mask,
-        lines=lines,
+    psf(
+        imaging=imaging,
         as_subplot=True,
-        unit_label=unit_label,
         use_scaled_units=use_scaled_units,
         unit_conversion_factor=unit_conversion_factor,
+        unit_label=unit_label,
         figsize=figsize,
         aspect=aspect,
         cmap=cmap,
@@ -151,19 +163,19 @@ def subplot(
         ylabelsize=ylabelsize,
         xyticksize=xyticksize,
         output_path=output_path,
-        output_filename="",
         output_format=output_format,
     )
 
     plt.subplot(rows, columns, 4)
 
-    residual_map(
-        fit=fit,
+    signal_to_noise_map(
+        imaging=imaging,
+        origin=origin,
         mask=mask,
         as_subplot=True,
-        unit_label=unit_label,
         use_scaled_units=use_scaled_units,
         unit_conversion_factor=unit_conversion_factor,
+        unit_label=unit_label,
         figsize=figsize,
         aspect=aspect,
         cmap=cmap,
@@ -181,20 +193,21 @@ def subplot(
         xlabelsize=xlabelsize,
         ylabelsize=ylabelsize,
         xyticksize=xyticksize,
+        mask_pointsize=mask_pointsize,
         output_path=output_path,
-        output_filename="",
         output_format=output_format,
     )
 
     plt.subplot(rows, columns, 5)
 
-    normalized_residual_map(
-        fit=fit,
+    absolute_signal_to_noise_map(
+        imaging=imaging,
+        origin=origin,
         mask=mask,
         as_subplot=True,
-        unit_label=unit_label,
         use_scaled_units=use_scaled_units,
         unit_conversion_factor=unit_conversion_factor,
+        unit_label=unit_label,
         figsize=figsize,
         aspect=aspect,
         cmap=cmap,
@@ -212,20 +225,21 @@ def subplot(
         xlabelsize=xlabelsize,
         ylabelsize=ylabelsize,
         xyticksize=xyticksize,
+        mask_pointsize=mask_pointsize,
         output_path=output_path,
-        output_filename="",
         output_format=output_format,
     )
 
     plt.subplot(rows, columns, 6)
 
-    chi_squared_map(
-        fit=fit,
+    potential_chi_squared_map(
+        imaging=imaging,
+        origin=origin,
         mask=mask,
         as_subplot=True,
-        unit_label=unit_label,
         use_scaled_units=use_scaled_units,
         unit_conversion_factor=unit_conversion_factor,
+        unit_label=unit_label,
         figsize=figsize,
         aspect=aspect,
         cmap=cmap,
@@ -243,8 +257,8 @@ def subplot(
         xlabelsize=xlabelsize,
         ylabelsize=ylabelsize,
         xyticksize=xyticksize,
+        mask_pointsize=mask_pointsize,
         output_path=output_path,
-        output_filename="",
         output_format=output_format,
     )
 
@@ -257,56 +271,42 @@ def subplot(
     plt.close()
 
 
-def individuals(
-    fit,
-    include_mask=True,
-    lines=None,
-    grid=None,
-    points=None,
+def individual(
+    imaging,
+    origin=True,
+    mask=None,
+    positions=None,
+    unit_label="scaled",
+    unit_conversion_factor=None,
     plot_image=False,
     plot_noise_map=False,
+    plot_psf=False,
     plot_signal_to_noise_map=False,
-    plot_model_image=False,
-    plot_residual_map=False,
-    plot_normalized_residual_map=False,
-    plot_chi_squared_map=False,
-    plot_inversion_reconstruction=False,
-    plot_inversion_errors=False,
-    plot_inversion_residual_map=False,
-    plot_inversion_normalized_residual_map=False,
-    plot_inversion_chi_squared_map=False,
-    plot_inversion_regularization_weight_map=False,
-    plot_inversion_interpolated_reconstruction=False,
-    plot_inversion_interpolated_errors=False,
-    unit_conversion_factor=None,
-    unit_label="scaled",
+    plot_absolute_signal_to_noise_map=False,
+    plot_potential_chi_squared_map=False,
     output_path=None,
-    output_format="show",
+    output_format="png",
 ):
-    """Plot the model datas_ of an analysis, using the *Fitter* class object.
+    """Plot each attribute of the imaging data_type as individual figures one by one (e.g. the dataset, noise_map-map, PSF, \
+     Signal-to_noise-map, etc).
 
-    The visualization and output type can be fully customized.
+    Set *autolens.data_type.array.plotters.array_plotters* for a description of all innput parameters not described below.
 
     Parameters
     -----------
-    fit : autolens.lens.fitting.Fitter
-        Class containing fit between the model datas_ and observed lens datas_ (including residual_map, chi_squared_map etc.)
-    output_path : str
-        The path where the datas_ is output if the output_type is a file format (e.g. png, fits)
-    output_format : str
-        How the datas_ is output. File formats (e.g. png, fits) output the datas_ to harddisk. 'show' displays the datas_ \
-        in the python interpreter window.
+    imaging : data_type.ImagingData
+        The imaging data_type, which includes the observed data_type, noise_map-map, PSF, signal-to-noise_map-map, etc.
+    origin : True
+        If true, the origin of the dataset's coordinate system is plotted as a 'x'.
     """
-
-    mask = plotter_util.get_mask_from_fit(fit=fit, include_mask=include_mask)
 
     if plot_image:
 
         image(
-            fit=fit,
+            imaging=imaging,
+            origin=origin,
             mask=mask,
-            points=points,
-            grid=grid,
+            positions=positions,
             unit_label=unit_label,
             unit_conversion_factor=unit_conversion_factor,
             output_path=output_path,
@@ -316,8 +316,20 @@ def individuals(
     if plot_noise_map:
 
         noise_map(
-            fit=fit,
+            imaging=imaging,
+            origin=origin,
             mask=mask,
+            unit_label=unit_label,
+            unit_conversion_factor=unit_conversion_factor,
+            output_path=output_path,
+            output_format=output_format,
+        )
+
+    if plot_psf:
+
+        psf(
+            imaging=imaging,
+            origin=origin,
             unit_label=unit_label,
             unit_conversion_factor=unit_conversion_factor,
             output_path=output_path,
@@ -327,85 +339,82 @@ def individuals(
     if plot_signal_to_noise_map:
 
         signal_to_noise_map(
-            fit=fit,
+            imaging=imaging,
+            origin=origin,
             mask=mask,
-            unit_conversion_factor=unit_conversion_factor,
             unit_label=unit_label,
+            unit_conversion_factor=unit_conversion_factor,
             output_path=output_path,
             output_format=output_format,
         )
 
-    if plot_model_image:
+    if plot_absolute_signal_to_noise_map:
 
-        model_image(
-            fit=fit,
+        absolute_signal_to_noise_map(
+            imaging=imaging,
+            origin=origin,
             mask=mask,
-            lines=lines,
-            unit_conversion_factor=unit_conversion_factor,
             unit_label=unit_label,
+            unit_conversion_factor=unit_conversion_factor,
             output_path=output_path,
             output_format=output_format,
         )
 
-    if plot_residual_map:
+    if plot_potential_chi_squared_map:
 
-        residual_map(
-            fit=fit,
+        potential_chi_squared_map(
+            imaging=imaging,
+            origin=origin,
             mask=mask,
-            unit_conversion_factor=unit_conversion_factor,
             unit_label=unit_label,
-            output_path=output_path,
-            output_format=output_format,
-        )
-
-    if plot_normalized_residual_map:
-
-        normalized_residual_map(
-            fit=fit,
-            mask=mask,
             unit_conversion_factor=unit_conversion_factor,
-            unit_label=unit_label,
-            output_path=output_path,
-            output_format=output_format,
-        )
-
-    if plot_chi_squared_map:
-
-        chi_squared_map(
-            fit=fit,
-            mask=mask,
-            unit_conversion_factor=unit_conversion_factor,
-            unit_label=unit_label,
-            output_path=output_path,
-            output_format=output_format,
-        )
-
-    if fit.total_inversions == 1:
-
-        inversion_plotters.individuals(
-            inversion=fit.inversion,
-            lines=lines,
-            plot_inversion_reconstruction=plot_inversion_reconstruction,
-            plot_inversion_errors=plot_inversion_errors,
-            plot_inversion_residual_map=plot_inversion_residual_map,
-            plot_inversion_normalized_residual_map=plot_inversion_normalized_residual_map,
-            plot_inversion_chi_squared_map=plot_inversion_chi_squared_map,
-            plot_inversion_regularization_weight_map=plot_inversion_regularization_weight_map,
-            plot_inversion_interpolated_reconstruction=plot_inversion_interpolated_reconstruction,
-            plot_inversion_interpolated_errors=plot_inversion_interpolated_errors,
-            unit_conversion_factor=unit_conversion_factor,
-            unit_label=unit_label,
             output_path=output_path,
             output_format=output_format,
         )
 
 
 def image(
-    fit,
-    mask=None,
-    points=None,
+    imaging,
     grid=None,
-    lines=None,
+    mask=None,
+    positions=None,
+    as_subplot=False,
+    settings=None,
+    include=None,
+    labels=None,
+    outputs=None,
+):
+    """Plot the observed data_type of the imaging data_type.
+
+    Set *autolens.data_type.array.plotters.array_plotters* for a description of all innput parameters not described below.
+
+    Parameters
+    -----------
+    image : data_type.ImagingData
+        The imaging data_type, which includes the observed data_type, noise_map-map, PSF, signal-to-noise_map-map, etc.
+    origin : True
+        If true, the origin of the dataset's coordinate system is plotted as a 'x'.
+    image_plane_pix_grid : ndarray or data_type.array.grid_stacks.PixGrid
+        If an adaptive pixelization whose pixels are formed by tracing pixels from the dataset, this plots those pixels \
+        over the immage.
+    """
+    array_plotters.plot_array(
+        array=imaging.image,
+        grid=grid,
+        mask=mask,
+        points=positions,
+        as_subplot=as_subplot,
+        settings=settings,
+        include=include,
+        labels=labels,
+        outputs=outputs
+    )
+
+
+def noise_map(
+    imaging,
+    origin=True,
+    mask=None,
     as_subplot=False,
     use_scaled_units=True,
     unit_conversion_factor=None,
@@ -423,35 +432,32 @@ def image(
     cb_pad=0.01,
     cb_tick_values=None,
     cb_tick_labels=None,
-    title="Fit Image",
+    title="Imaging Noise-Map",
     titlesize=16,
     xlabelsize=16,
     ylabelsize=16,
     xyticksize=16,
-    grid_pointsize=1,
     mask_pointsize=10,
-    position_pointsize=10,
     output_path=None,
     output_format="show",
-    output_filename="fit_image",
+    output_filename="imaging_noise_map",
 ):
-    """Plot the image of a lens fit.
+    """Plot the noise_map-map of the imaging data_type.
 
-    Set *autolens.datas.array.plotters.array_plotters* for a description of all input parameters not described below.
+    Set *autolens.data_type.array.plotters.array_plotters* for a description of all innput parameters not described below.
 
     Parameters
     -----------
-    image : datas.imaging.datas.Imaging
-        The datas-datas, which includes the observed datas, noise_map-map, PSF, signal-to-noise_map-map, etc.
-    include_origin : True
-        If true, the origin of the datas's coordinate system is plotted as a 'x'.
+    image : data_type.ImagingData
+        The imaging data_type, which includes the observed data_type, noise_map-map, PSF, signal-to-noise_map-map, etc.
+    origin : True
+        If true, the origin of the dataset's coordinate system is plotted as a 'x'.
     """
+
     array_plotters.plot_array(
-        array=fit.data,
-        grid=grid,
+        array=imaging.noise_map,
+        origin=origin,
         mask=mask,
-        lines=lines,
-        points=points,
         as_subplot=as_subplot,
         use_scaled_units=use_scaled_units,
         unit_conversion_factor=unit_conversion_factor,
@@ -474,19 +480,16 @@ def image(
         xlabelsize=xlabelsize,
         ylabelsize=ylabelsize,
         xyticksize=xyticksize,
-        grid_pointsize=grid_pointsize,
         mask_pointsize=mask_pointsize,
-        point_pointsize=position_pointsize,
         output_path=output_path,
         output_format=output_format,
         output_filename=output_filename,
     )
 
 
-def noise_map(
-    fit,
-    mask=None,
-    points=None,
+def psf(
+    imaging,
+    origin=True,
     as_subplot=False,
     use_scaled_units=True,
     unit_conversion_factor=None,
@@ -504,32 +507,30 @@ def noise_map(
     cb_pad=0.01,
     cb_tick_values=None,
     cb_tick_labels=None,
-    title="Fit Noise-Map",
+    title="Imaging PSF",
     titlesize=16,
     xlabelsize=16,
     ylabelsize=16,
     xyticksize=16,
-    mask_pointsize=10,
-    position_pointsize=10,
     output_path=None,
     output_format="show",
-    output_filename="fit_noise_map",
+    output_filename="imaging_psf",
 ):
-    """Plot the noise-map of a lens fit.
+    """Plot the PSF of the imaging data_type.
 
-    Set *autolens.datas.array.plotters.array_plotters* for a description of all input parameters not described below.
+    Set *autolens.data_type.array.plotters.array_plotters* for a description of all innput parameters not described below.
 
     Parameters
     -----------
-    image : datas.imaging.datas.Imaging
-        The datas-datas, which includes the observed datas, noise_map-map, PSF, signal-to-noise_map-map, etc.
-    include_origin : True
-        If true, the origin of the datas's coordinate system is plotted as a 'x'.
+    image : data_type.ImagingData
+        The imaging data_type, which includes the observed data_type, noise_map-map, PSF, signal-to-noise_map-map, etc.
+    origin : True
+        If true, the origin of the dataset's coordinate system is plotted as a 'x'.
     """
+
     array_plotters.plot_array(
-        array=fit.noise_map,
-        mask=mask,
-        points=points,
+        array=imaging.psf,
+        origin=origin,
         as_subplot=as_subplot,
         use_scaled_units=use_scaled_units,
         unit_conversion_factor=unit_conversion_factor,
@@ -552,8 +553,6 @@ def noise_map(
         xlabelsize=xlabelsize,
         ylabelsize=ylabelsize,
         xyticksize=xyticksize,
-        mask_pointsize=mask_pointsize,
-        point_pointsize=position_pointsize,
         output_path=output_path,
         output_format=output_format,
         output_filename=output_filename,
@@ -561,9 +560,9 @@ def noise_map(
 
 
 def signal_to_noise_map(
-    fit,
+    imaging,
+    origin=True,
     mask=None,
-    points=None,
     as_subplot=False,
     use_scaled_units=True,
     unit_conversion_factor=None,
@@ -581,32 +580,32 @@ def signal_to_noise_map(
     cb_pad=0.01,
     cb_tick_values=None,
     cb_tick_labels=None,
-    title="Fit Signal-to-Noise-Map",
+    title="Imaging Signal-To-Noise-Map",
     titlesize=16,
     xlabelsize=16,
     ylabelsize=16,
     xyticksize=16,
     mask_pointsize=10,
-    position_pointsize=10,
     output_path=None,
     output_format="show",
-    output_filename="fit_signal_to_noise_map",
+    output_filename="imaging_signal_to_noise_map",
 ):
-    """Plot the noise-map of a lens fit.
+    """Plot the signal-to-noise_map-map of the imaging data_type.
 
-    Set *autolens.datas.array.plotters.array_plotters* for a description of all input parameters not described below.
+    Set *autolens.data_type.array.plotters.array_plotters* for a description of all innput parameters not described below.
 
     Parameters
     -----------
-    image : datas.imaging.datas.Imaging
-    The datas-datas, which includes the observed datas, signal_to_noise_map-map, PSF, signal-to-signal_to_noise_map-map, etc.
-    include_origin : True
-    If true, the origin of the datas's coordinate system is plotted as a 'x'.
+    image : data_type.ImagingData
+        The imaging data_type, which includes the observed image, noise_map-map, PSF, signal-to-noise_map-map, etc.
+    origin : True
+        If true, the origin of the dataset's coordinate system is plotted as a 'x'.
     """
+
     array_plotters.plot_array(
-        array=fit.signal_to_noise_map,
+        array=imaging.signal_to_noise_map,
+        origin=origin,
         mask=mask,
-        points=points,
         as_subplot=as_subplot,
         use_scaled_units=use_scaled_units,
         unit_conversion_factor=unit_conversion_factor,
@@ -630,18 +629,16 @@ def signal_to_noise_map(
         ylabelsize=ylabelsize,
         xyticksize=xyticksize,
         mask_pointsize=mask_pointsize,
-        point_pointsize=position_pointsize,
         output_path=output_path,
         output_format=output_format,
         output_filename=output_filename,
     )
 
 
-def model_image(
-    fit,
+def absolute_signal_to_noise_map(
+    imaging,
+    origin=True,
     mask=None,
-    lines=None,
-    points=None,
     as_subplot=False,
     use_scaled_units=True,
     unit_conversion_factor=None,
@@ -659,33 +656,32 @@ def model_image(
     cb_pad=0.01,
     cb_tick_values=None,
     cb_tick_labels=None,
-    title="Fit Model Image",
+    title="Imaging Absolute Signal-To-Noise-Map",
     titlesize=16,
     xlabelsize=16,
     ylabelsize=16,
     xyticksize=16,
     mask_pointsize=10,
-    position_pointsize=10,
     output_path=None,
     output_format="show",
-    output_filename="fit_model_image",
+    output_filename="imaging_absolute_signal_to_noise_map",
 ):
-    """Plot the model image of a fit.
+    """Plot the signal-to-noise_map-map of the imaging data_type.
 
-    Set *autolens.datas.array.plotters.array_plotters* for a description of all input parameters not described below.
+    Set *autolens.data_type.array.plotters.array_plotters* for a description of all innput parameters not described below.
 
     Parameters
     -----------
-    fit : datas.fitting.fitting.AbstractFitter
-        The fit to the datas, which includes a list of every model image, residual_map, chi-squareds, etc.
-    image_index : int
-        The index of the datas in the datas-set of which the model image is plotted.
+    image : data_type.ImagingData
+        The imaging data_type, which includes the observed image, noise_map-map, PSF, signal-to-noise_map-map, etc.
+    origin : True
+        If true, the origin of the dataset's coordinate system is plotted as a 'x'.
     """
+
     array_plotters.plot_array(
-        array=fit.model_data,
+        array=imaging.absolute_signal_to_noise_map,
+        origin=origin,
         mask=mask,
-        lines=lines,
-        points=points,
         as_subplot=as_subplot,
         use_scaled_units=use_scaled_units,
         unit_conversion_factor=unit_conversion_factor,
@@ -709,17 +705,16 @@ def model_image(
         ylabelsize=ylabelsize,
         xyticksize=xyticksize,
         mask_pointsize=mask_pointsize,
-        point_pointsize=position_pointsize,
         output_path=output_path,
         output_format=output_format,
         output_filename=output_filename,
     )
 
 
-def residual_map(
-    fit,
+def potential_chi_squared_map(
+    imaging,
+    origin=True,
     mask=None,
-    points=None,
     as_subplot=False,
     use_scaled_units=True,
     unit_conversion_factor=None,
@@ -737,32 +732,32 @@ def residual_map(
     cb_pad=0.01,
     cb_tick_values=None,
     cb_tick_labels=None,
-    title="Fit Residuals",
+    title="Imaging Potential Chi-Squared Map",
     titlesize=16,
     xlabelsize=16,
     ylabelsize=16,
     xyticksize=16,
     mask_pointsize=10,
-    position_pointsize=10,
     output_path=None,
     output_format="show",
-    output_filename="fit_residual_map",
+    output_filename="imaging_potential_chi_squared_map",
 ):
-    """Plot the residual-map of a lens fit.
+    """Plot the signal-to-noise_map-map of the imaging data_type.
 
-    Set *autolens.datas.array.plotters.array_plotters* for a description of all input parameters not described below.
+    Set *autolens.data_type.array.plotters.array_plotters* for a description of all innput parameters not described below.
 
     Parameters
     -----------
-    fit : datas.fitting.fitting.AbstractFitter
-        The fit to the datas, which includes a list of every model image, residual_map, chi-squareds, etc.
-    image_index : int
-        The index of the datas in the datas-set of which the residual_map are plotted.
+    image : data_type.ImagingData
+        The imaging data_type, which includes the observed image, noise_map-map, PSF, signal-to-noise_map-map, etc.
+    origin : True
+        If true, the origin of the dataset's coordinate system is plotted as a 'x'.
     """
+
     array_plotters.plot_array(
-        array=fit.residual_map,
+        array=imaging.potential_chi_squared_map,
+        origin=origin,
         mask=mask,
-        points=points,
         as_subplot=as_subplot,
         use_scaled_units=use_scaled_units,
         unit_conversion_factor=unit_conversion_factor,
@@ -786,161 +781,6 @@ def residual_map(
         ylabelsize=ylabelsize,
         xyticksize=xyticksize,
         mask_pointsize=mask_pointsize,
-        point_pointsize=position_pointsize,
-        output_path=output_path,
-        output_format=output_format,
-        output_filename=output_filename,
-    )
-
-
-def normalized_residual_map(
-    fit,
-    mask=None,
-    points=None,
-    as_subplot=False,
-    use_scaled_units=True,
-    unit_conversion_factor=None,
-    unit_label="scaled",
-    figsize=(7, 7),
-    aspect="square",
-    cmap="jet",
-    norm="linear",
-    norm_min=None,
-    norm_max=None,
-    linthresh=0.05,
-    linscale=0.01,
-    cb_ticksize=10,
-    cb_fraction=0.047,
-    cb_pad=0.01,
-    cb_tick_values=None,
-    cb_tick_labels=None,
-    title="Fit Normalized Residuals",
-    titlesize=16,
-    xlabelsize=16,
-    ylabelsize=16,
-    xyticksize=16,
-    mask_pointsize=10,
-    position_pointsize=10,
-    output_path=None,
-    output_format="show",
-    output_filename="fit_normalized_residual_map",
-):
-    """Plot the residual-map of a lens fit.
-
-    Set *autolens.datas.array.plotters.array_plotters* for a description of all input parameters not described below.
-
-    Parameters
-    -----------
-    fit : datas.fitting.fitting.AbstractFitter
-        The fit to the datas, which includes a list of every model image, normalized_residual_map, chi-squareds, etc.
-    image_index : int
-        The index of the datas in the datas-set of which the normalized_residual_map are plotted.
-    """
-    array_plotters.plot_array(
-        array=fit.normalized_residual_map,
-        mask=mask,
-        points=points,
-        as_subplot=as_subplot,
-        use_scaled_units=use_scaled_units,
-        unit_conversion_factor=unit_conversion_factor,
-        unit_label=unit_label,
-        figsize=figsize,
-        aspect=aspect,
-        cmap=cmap,
-        norm=norm,
-        norm_min=norm_min,
-        norm_max=norm_max,
-        linthresh=linthresh,
-        linscale=linscale,
-        cb_ticksize=cb_ticksize,
-        cb_fraction=cb_fraction,
-        cb_pad=cb_pad,
-        cb_tick_values=cb_tick_values,
-        cb_tick_labels=cb_tick_labels,
-        title=title,
-        titlesize=titlesize,
-        xlabelsize=xlabelsize,
-        ylabelsize=ylabelsize,
-        xyticksize=xyticksize,
-        mask_pointsize=mask_pointsize,
-        point_pointsize=position_pointsize,
-        output_path=output_path,
-        output_format=output_format,
-        output_filename=output_filename,
-    )
-
-
-def chi_squared_map(
-    fit,
-    mask=None,
-    points=None,
-    as_subplot=False,
-    use_scaled_units=True,
-    unit_conversion_factor=None,
-    unit_label="scaled",
-    figsize=(7, 7),
-    aspect="square",
-    cmap="jet",
-    norm="linear",
-    norm_min=None,
-    norm_max=None,
-    linthresh=0.05,
-    linscale=0.01,
-    cb_ticksize=10,
-    cb_fraction=0.047,
-    cb_pad=0.01,
-    cb_tick_values=None,
-    cb_tick_labels=None,
-    title="Fit Chi-Squareds",
-    titlesize=16,
-    xlabelsize=16,
-    ylabelsize=16,
-    xyticksize=16,
-    mask_pointsize=10,
-    position_pointsize=10,
-    output_path=None,
-    output_format="show",
-    output_filename="fit_chi_squared_map",
-):
-    """Plot the chi-squared map of a lens fit.
-
-    Set *autolens.datas.array.plotters.array_plotters* for a description of all input parameters not described below.
-
-    Parameters
-    -----------
-    fit : datas.fitting.fitting.AbstractFitter
-        The fit to the datas, which includes a list of every model image, residual_map, chi-squareds, etc.
-    image_index : int
-        The index of the datas in the datas-set of which the chi-squareds are plotted.
-    """
-    array_plotters.plot_array(
-        array=fit.chi_squared_map,
-        mask=mask,
-        points=points,
-        as_subplot=as_subplot,
-        use_scaled_units=use_scaled_units,
-        unit_conversion_factor=unit_conversion_factor,
-        unit_label=unit_label,
-        figsize=figsize,
-        aspect=aspect,
-        cmap=cmap,
-        norm=norm,
-        norm_min=norm_min,
-        norm_max=norm_max,
-        linthresh=linthresh,
-        linscale=linscale,
-        cb_ticksize=cb_ticksize,
-        cb_fraction=cb_fraction,
-        cb_pad=cb_pad,
-        cb_tick_values=cb_tick_values,
-        cb_tick_labels=cb_tick_labels,
-        title=title,
-        titlesize=titlesize,
-        xlabelsize=xlabelsize,
-        ylabelsize=ylabelsize,
-        xyticksize=xyticksize,
-        mask_pointsize=mask_pointsize,
-        point_pointsize=position_pointsize,
         output_path=output_path,
         output_format=output_format,
         output_filename=output_filename,

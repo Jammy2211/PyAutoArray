@@ -5,7 +5,7 @@ backend = aa.conf.get_matplotlib_backend()
 matplotlib.use(backend)
 from matplotlib import pyplot as plt
 
-from autoarray.plotters import mapper_plotters
+from autoarray.plots import mapper_plots
 from autoarray.util import plotter_util
 from autoarray.operators.inversion import mappers
 
@@ -472,12 +472,12 @@ def reconstructed_image(
 
 def reconstruction(
     inversion,
-    include_origin=True,
+    origin=True,
     lines=None,
     positions=None,
     include_centres=False,
     include_grid=False,
-    include_border=False,
+    border=False,
     image_pixels=None,
     source_pixels=None,
     as_subplot=False,
@@ -515,12 +515,12 @@ def reconstruction(
     plot_values(
         inversion=inversion,
         source_pixel_values=inversion.reconstruction,
-        include_origin=include_origin,
+        origin=origin,
         lines=lines,
         positions=positions,
         include_centres=include_centres,
         include_grid=include_grid,
-        include_border=include_border,
+        border=border,
         image_pixels=image_pixels,
         source_pixels=source_pixels,
         as_subplot=as_subplot,
@@ -555,11 +555,11 @@ def reconstruction(
 
 def errors(
     inversion,
-    include_origin=True,
+    origin=True,
     positions=None,
     include_centres=False,
     include_grid=False,
-    include_border=False,
+    border=False,
     image_pixels=None,
     source_pixels=None,
     as_subplot=False,
@@ -597,11 +597,11 @@ def errors(
     plot_values(
         inversion=inversion,
         source_pixel_values=inversion.errors,
-        include_origin=include_origin,
+        origin=origin,
         positions=positions,
         include_centres=include_centres,
         include_grid=include_grid,
-        include_border=include_border,
+        border=border,
         image_pixels=image_pixels,
         source_pixels=source_pixels,
         as_subplot=as_subplot,
@@ -636,11 +636,11 @@ def errors(
 
 def residual_map(
     inversion,
-    include_origin=True,
+    origin=True,
     positions=None,
     include_centres=False,
     include_grid=False,
-    include_border=False,
+    border=False,
     image_pixels=None,
     source_pixels=None,
     as_subplot=False,
@@ -678,11 +678,11 @@ def residual_map(
     plot_values(
         inversion=inversion,
         source_pixel_values=inversion.residual_map,
-        include_origin=include_origin,
+        origin=origin,
         positions=positions,
         include_centres=include_centres,
         include_grid=include_grid,
-        include_border=include_border,
+        border=border,
         image_pixels=image_pixels,
         source_pixels=source_pixels,
         as_subplot=as_subplot,
@@ -717,11 +717,11 @@ def residual_map(
 
 def normalized_residual_map(
     inversion,
-    include_origin=True,
+    origin=True,
     positions=None,
     include_centres=False,
     include_grid=False,
-    include_border=False,
+    border=False,
     image_pixels=None,
     source_pixels=None,
     as_subplot=False,
@@ -759,11 +759,11 @@ def normalized_residual_map(
     plot_values(
         inversion=inversion,
         source_pixel_values=inversion.normalized_residual_map,
-        include_origin=include_origin,
+        origin=origin,
         positions=positions,
         include_centres=include_centres,
         include_grid=include_grid,
-        include_border=include_border,
+        border=border,
         image_pixels=image_pixels,
         source_pixels=source_pixels,
         as_subplot=as_subplot,
@@ -798,11 +798,11 @@ def normalized_residual_map(
 
 def chi_squared_map(
     inversion,
-    include_origin=True,
+    origin=True,
     positions=None,
     include_centres=False,
     include_grid=False,
-    include_border=False,
+    border=False,
     image_pixels=None,
     source_pixels=None,
     as_subplot=False,
@@ -840,11 +840,11 @@ def chi_squared_map(
     plot_values(
         inversion=inversion,
         source_pixel_values=inversion.chi_squared_map,
-        include_origin=include_origin,
+        origin=origin,
         positions=positions,
         include_centres=include_centres,
         include_grid=include_grid,
-        include_border=include_border,
+        border=border,
         image_pixels=image_pixels,
         source_pixels=source_pixels,
         as_subplot=as_subplot,
@@ -879,11 +879,11 @@ def chi_squared_map(
 
 def regularization_weights(
     inversion,
-    include_origin=True,
+    origin=True,
     positions=None,
     include_centres=False,
     include_grid=False,
-    include_border=False,
+    border=False,
     image_pixels=None,
     source_pixels=None,
     as_subplot=False,
@@ -925,11 +925,11 @@ def regularization_weights(
     plot_values(
         inversion=inversion,
         source_pixel_values=regularization_weights,
-        include_origin=include_origin,
+        origin=origin,
         positions=positions,
         include_centres=include_centres,
         include_grid=include_grid,
-        include_border=include_border,
+        border=border,
         image_pixels=image_pixels,
         source_pixels=source_pixels,
         as_subplot=as_subplot,
@@ -965,12 +965,12 @@ def regularization_weights(
 def plot_values(
     inversion,
     source_pixel_values,
-    include_origin=True,
+    origin=True,
     lines=None,
     positions=None,
     include_centres=False,
     include_grid=False,
-    include_border=False,
+    border=False,
     image_pixels=None,
     source_pixels=None,
     as_subplot=False,
@@ -1007,12 +1007,12 @@ def plot_values(
         )
 
         origin = get_origin(
-            image=reconstructed_pixelization, include_origin=include_origin
+            image=reconstructed_pixelization, origin=origin
         )
 
         aa.plot.array(
             array=reconstructed_pixelization,
-            include_origin=origin,
+            origin=origin,
             lines=lines,
             points=positions,
             as_subplot=True,
@@ -1040,11 +1040,11 @@ def plot_values(
             output_filename=output_filename,
         )
 
-        mapper_plotters.rectangular_mapper(
+        mapper_plots.rectangular_mapper(
             mapper=inversion.mapper,
             include_centres=include_centres,
             include_grid=include_grid,
-            include_border=include_border,
+            border=border,
             image_pixels=image_pixels,
             source_pixels=source_pixels,
             as_subplot=True,
@@ -1068,13 +1068,13 @@ def plot_values(
 
     elif isinstance(inversion.mapper, mappers.MapperVoronoi):
 
-        mapper_plotters.voronoi_mapper(
+        mapper_plots.voronoi_mapper(
             mapper=inversion.mapper,
             source_pixel_values=source_pixel_values,
             include_centres=include_centres,
             lines=lines,
             include_grid=include_grid,
-            include_border=include_border,
+            border=border,
             image_pixels=image_pixels,
             source_pixels=source_pixels,
             as_subplot=True,
@@ -1227,9 +1227,9 @@ def interpolated_errors(
     )
 
 
-def get_origin(image, include_origin):
+def get_origin(image, origin):
 
-    if include_origin:
+    if origin:
         return image.origin
     else:
         return None

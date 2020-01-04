@@ -1,7 +1,8 @@
 from autoarray import conf
 from autoarray import exc
 from autoarray import masked
-from autoarray import plotters as plot
+from autoarray import plots as plot
+from autoarray import plotters as plotter
 from autoarray import simulator
 from autoarray import util
 from autoarray.dataset import data_converter

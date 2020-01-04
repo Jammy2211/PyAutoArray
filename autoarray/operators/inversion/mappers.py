@@ -39,7 +39,7 @@ class Mapper(object):
         border : grid.GridBorder
             The border of the grid's grid.
         hyper_image : ndarray
-            A pre-computed hyper_galaxies-image of the image the mapper is expected to reconstruct, used for adaptive analysis.
+            A pre-computed hyper-image of the image the mapper is expected to reconstruct, used for adaptive analysis.
         """
         self.grid = grid
         self.pixelization_grid = pixelization_grid
@@ -225,7 +225,7 @@ class MapperVoronoi(Mapper):
         geometry : pixelization.Voronoi.Geometry
             The geometry (e.g. y / x edge locations, pixel-scales) of the Vornoi pixelization.
         hyper_image : ndarray
-            A pre-computed hyper_galaxies-image of the image the mapper is expected to reconstruct, used for adaptive analysis.
+            A pre-computed hyper-image of the image the mapper is expected to reconstruct, used for adaptive analysis.
         """
         super(MapperVoronoi, self).__init__(
             grid=grid, pixelization_grid=pixelization_grid, hyper_image=hyper_image

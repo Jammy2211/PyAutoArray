@@ -94,7 +94,7 @@ def test__fit_sub_plot(fit_imaging_7x7, fit_plotter_util_path, plot_patch):
 
     aa.plot.fit_imaging.subplot(
         fit=fit_imaging_7x7,
-        include_mask=True,
+        mask=True,
         cb_tick_values=[1.0],
         cb_tick_labels=["1.0"],
         output_path=fit_plotter_util_path,
