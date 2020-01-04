@@ -1,4 +1,13 @@
 from autoarray import conf
+import matplotlib
+
+backend = conf.get_matplotlib_backend()
+matplotlib.use(backend)
+import matplotlib.pyplot as plt
+import numpy as np
+from autoarray import exc
+
+from autoarray import conf
 
 def setting(section, name, python_type):
     return conf.instance.visualize.get(section, name, python_type)
@@ -93,6 +102,23 @@ class AbstractPlotter(object):
         self.output_path = output_path
         self.output_format = output_format
         self.output_filename = output_filename
+
+        self.as_subplot = False
+
+    def setup_figure(self):
+        """Setup a figure for plotting an image.
+
+        Parameters
+        -----------
+        figsize : (int, int)
+            The size of the figure in (rows, columns).
+        as_subplot : bool
+            If the figure is a subplot, the setup_figure function is omitted to ensure that each subplot does not create a \
+            new figure and so that it can be output using the *output_subplot_array* function.
+        """
+        if not self.as_subplot:
+            fig = plt.figure(figsize=settings.figsize)
+            return fig
 
     @staticmethod
     def get_subplot_rows_columns_figsize(number_subplots):
