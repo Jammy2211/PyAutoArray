@@ -132,6 +132,33 @@ class AbstractPlotter(object):
         """
         plt.title(label=self.label_title, fontsize=self.titlesize)
 
+    def set_yx_labels_and_ticksize(
+            self
+    ):
+        """Set the x and y labels of the figure, and set the fontsize of those labels.
+
+        The x and y labels are always the distance scales, thus the labels are either arc-seconds or kpc and depend on the \
+        unit_label the figure is plotted in.
+
+        Parameters
+        -----------
+        unit_label : str
+            The label for the unit_label of the y / x axis of the plots.
+        unit_conversion_factor : float
+            The conversion factor between arc-seconds and kiloparsecs, required to plotters the unit_label in kpc.
+        xlabelsize : int
+            The fontsize of the x axes label.
+        ylabelsize : int
+            The fontsize of the y axes label.
+        xyticksize : int
+            The font size of the x and y ticks on the figure axes.
+        """
+
+        plt.ylabel("y (" + self.label_yunits + ")", fontsize=self.ylabelsize)
+        plt.xlabel("x (" + self.label_xunits + ")", fontsize=self.xlabelsize)
+
+        plt.tick_params(labelsize=self.xyticksize)
+
     @staticmethod
     def get_subplot_rows_columns_figsize(number_subplots):
         """Get the size of a sub plotters in (rows, columns), based on the number of subplots that are going to be plotted.
