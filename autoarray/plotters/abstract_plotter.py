@@ -135,7 +135,7 @@ class AbstractPlotter(object):
     def set_yx_labels_and_ticksize(
             self
     ):
-        """Set the x and y labels of the figure, and set the fontsize of those labels.
+        """Set the x and y labels of the figure, and set the fontsize of those self.label_
 
         The x and y labels are always the distance scales, thus the labels are either arc-seconds or kpc and depend on the \
         unit_label the figure is plotted in.
@@ -158,6 +158,70 @@ class AbstractPlotter(object):
         plt.xlabel("x (" + self.label_xunits + ")", fontsize=self.xlabelsize)
 
         plt.tick_params(labelsize=self.xyticksize)
+
+    def set_yxticks(
+            self,
+            array,
+            extent,
+            symmetric_around_centre=False,
+    ):
+        """Get the extent of the dimensions of the array in the unit_label of the figure (e.g. arc-seconds or kpc).
+
+        This is used to set the extent of the array and thus the y / x axis limits.
+
+        Parameters
+        -----------
+        array : data_type.array.aa.Scaled
+            The 2D array of data_type which is plotted.
+        unit_label : str
+            The label for the unit_label of the y / x axis of the plots.
+        unit_conversion_factor : float
+            The conversion factor between arc-seconds and kiloparsecs, required to plotters the unit_label in kpc.
+        xticks_manual :  [] or None
+            If input, the xticks do not use the array's default xticks but instead overwrite them as these values.
+        yticks_manual :  [] or None
+            If input, the yticks do not use the array's default yticks but instead overwrite them as these values.
+        """
+
+        if symmetric_around_centre:
+            return
+
+        yticks = np.linspace(extent[2], extent[3], 5)
+        xticks = np.linspace(extent[0], extent[1], 5)
+
+        if self.label_xticks is not None and self.label_yticks is not None:
+            ytick_labels = np.asarray([self.label_yticks[0], self.label_yticks[3]])
+            xtick_labels = np.asarray([self.label_xticks[0], self.label_xticks[3]])
+        elif not self.use_scaled_units:
+            ytick_labels = np.linspace(0, array.shape_2d[0], 5).astype("int")
+            xtick_labels = np.linspace(0, array.shape_2d[1], 5).astype("int")
+        elif self.use_scaled_units and self.unit_conversion_factor is None:
+            ytick_labels = np.round(np.linspace(extent[2], extent[3], 5), 2)
+            xtick_labels = np.round(np.linspace(extent[0], extent[1], 5), 2)
+        elif self.use_scaled_units and self.unit_conversion_factor is not None:
+            ytick_labels = np.round(
+                np.linspace(
+                    extent[2] * self.unit_conversion_factor,
+                    extent[3] * self.unit_conversion_factor,
+                    5,
+                ),
+                2,
+            )
+            xtick_labels = np.round(
+                np.linspace(
+                    extent[0] * self.unit_conversion_factor,
+                    extent[1] * self.unit_conversion_factor,
+                    5,
+                ),
+                2,
+            )
+        else:
+            raise exc.PlottingException(
+                "The y and y ticks cannot be set using the input options."
+            )
+
+        plt.yticks(ticks=yticks, labels=ytick_labels)
+        plt.xticks(ticks=xticks, labels=xtick_labels)
 
     @staticmethod
     def get_subplot_rows_columns_figsize(number_subplots):
