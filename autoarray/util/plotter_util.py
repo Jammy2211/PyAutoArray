@@ -8,12 +8,6 @@ import numpy as np
 from autoarray import exc
 
 
-
-
-
-
-
-
 def get_mask_from_fit(mask, fit):
     """Get the masks of the fit if the masks should be plotted on the fit.
 
@@ -45,42 +39,6 @@ def get_real_space_mask_from_fit(mask, fit):
     else:
         return None
 
-
-def plot_lines(line_lists):
-    """Plot the liness of the mask or the array on the figure.
-
-    Parameters
-    -----------t.
-    mask : ndarray of data_type.array.mask.Mask
-        The mask applied to the array, the edge of which is plotted as a set of points over the plotted array.
-    plot_lines : bool
-        If a mask is supplied, its liness pixels (e.g. the exterior edge) is plotted if this is *True*.
-    unit_label : str
-        The unit_label of the y / x axis of the plots.
-    kpc_per_arcsec : float or None
-        The conversion factor between arc-seconds and kiloparsecs, required to plotters the unit_label in kpc.
-    lines_pointsize : int
-        The size of the points plotted to show the liness.
-    """
-    if line_lists is not None:
-        for line_list in line_lists:
-            if line_list is not None:
-                for line in line_list:
-                    if len(line) != 0:
-                        plt.plot(line[:, 1], line[:, 0], c="w", lw=2.0, zorder=200)
-
-
-def close_figure(as_subplot):
-    """After plotting and outputting a figure, close the matplotlib figure instance (omit if a subplot).
-
-    Parameters
-    -----------
-    as_subplot : bool
-        Whether the figure is part of subplot, in which case the figure is not closed so that the entire figure can \
-        be closed later after output.
-    """
-    if not as_subplot:
-        plt.close()
 
 
 def radii_bin_size_from_minimum_and_maximum_radii_and_radii_points(
