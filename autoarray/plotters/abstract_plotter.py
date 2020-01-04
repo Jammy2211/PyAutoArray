@@ -117,8 +117,20 @@ class AbstractPlotter(object):
             new figure and so that it can be output using the *output_subplot_array* function.
         """
         if not self.as_subplot:
-            fig = plt.figure(figsize=settings.figsize)
+            fig = plt.figure(figsize=self.figsize)
             return fig
+
+    def set_title(self):
+        """Set the title and title size of the figure.
+
+        Parameters
+        -----------
+        title : str
+            The text of the title.
+        titlesize : int
+            The size of of the title of the figure.
+        """
+        plt.title(label=self.label_title, fontsize=self.titlesize)
 
     @staticmethod
     def get_subplot_rows_columns_figsize(number_subplots):
