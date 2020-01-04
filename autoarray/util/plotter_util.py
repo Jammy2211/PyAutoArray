@@ -9,17 +9,7 @@ from autoarray import exc
 from autoarray.util import array_util
 
 
-def set_title(settings, labels):
-    """Set the title and title size of the figure.
 
-    Parameters
-    -----------
-    title : str
-        The text of the title.
-    titlesize : int
-        The size of of the title of the figure.
-    """
-    plt.title(labels.title, fontsize=settings.titlesize)
 
 
 def set_yx_labels_and_ticksize(
