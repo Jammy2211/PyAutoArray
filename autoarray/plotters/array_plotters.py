@@ -1,7 +1,6 @@
 from autoarray import conf
 from autoarray import exc
 import matplotlib
-from functools import wraps
 
 backend = conf.get_matplotlib_backend()
 
@@ -13,48 +12,6 @@ import numpy as np
 import itertools
 
 from autoarray.plotters import plotters
-
-
-def set_labels(func):
-    """
-    Decorate a profile method that accepts a coordinate grid and returns a data_type grid.
-
-    If an interpolator attribute is associated with the input grid then that interpolator is used to down sample the
-    coordinate grid prior to calling the function and up sample the result of the function.
-
-    If no interpolator attribute is associated with the input grid then the function is called as hyper.
-
-    Parameters
-    ----------
-    func
-        Some method that accepts a grid
-
-    Returns
-    -------
-    decorated_function
-        The function with optional interpolation
-    """
-
-    @wraps(func)
-    def wrapper(*args, **kwargs):
-
-        array_plotter = kwargs["array_plotter"]
-
-        label_title = plotters.label_title_from_plotter(plotter=array_plotter, func=func)
-        label_yunits = plotters.label_yunits_from_plotter(plotter=array_plotter)
-        label_xunits = plotters.label_xunits_from_plotter(plotter=array_plotter)
-        output_filename = plotters.output_filename_from_plotter_and_func(plotter=array_plotter, func=func)
-
-        kwargs["array_plotter"] = array_plotter.plotter_with_new_labels_and_filename(
-            label_title=label_title,
-            label_yunits=label_yunits,
-            label_xunits=label_xunits,
-            output_filename=output_filename,
-        )
-
-        return func(*args, **kwargs)
-
-    return wrapper
 
 
 class ArrayPlotter(plotters.Plotter):
@@ -128,7 +85,6 @@ class ArrayPlotter(plotters.Plotter):
             output_format=output_format,
             output_filename=output_filename,
         )
-
 
     def plotter_as_sub_plotter(
         self,

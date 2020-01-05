@@ -1,15 +1,13 @@
 from autoarray import conf
 import matplotlib
 
-from functools import wraps
-
 backend = conf.get_matplotlib_backend()
 matplotlib.use(backend)
 from matplotlib import pyplot as plt
 
-from autoarray.plotters import plotters
-from autoarray.plotters import array_plotters
+from autoarray.plotters import plotters, array_plotters
 
+@plotters.set_includes
 def subplot(
     imaging,    
     include_origin=None,
@@ -115,7 +113,7 @@ def subplot(
 
     plt.close()
 
-
+@plotters.set_includes
 def individual(
     imaging,
     include_origin=None,
@@ -195,7 +193,7 @@ def individual(
         )
 
 @plotters.set_includes
-@array_plotters.set_labels
+@plotters.set_labels
 def image(
     imaging,
     include_origin=None,
@@ -228,7 +226,7 @@ def image(
     )
 
 @plotters.set_includes
-@array_plotters.set_labels
+@plotters.set_labels
 def noise_map(
     imaging,
     include_origin=None,
@@ -258,7 +256,7 @@ def noise_map(
     )
 
 @plotters.set_includes
-@array_plotters.set_labels
+@plotters.set_labels
 def psf(
     imaging,
     include_origin=None,
@@ -288,7 +286,7 @@ def psf(
     )
 
 @plotters.set_includes
-@array_plotters.set_labels
+@plotters.set_labels
 def signal_to_noise_map(
     imaging,
     include_origin=None,
@@ -317,7 +315,7 @@ def signal_to_noise_map(
     )
 
 @plotters.set_includes
-@array_plotters.set_labels
+@plotters.set_labels
 def absolute_signal_to_noise_map(
     imaging,
     include_origin=None,
@@ -346,7 +344,7 @@ def absolute_signal_to_noise_map(
     )
 
 @plotters.set_includes
-@array_plotters.set_labels
+@plotters.set_labels
 def potential_chi_squared_map(
     imaging,
     include_origin=None,

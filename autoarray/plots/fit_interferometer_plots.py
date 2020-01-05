@@ -5,7 +5,7 @@ backend = conf.get_matplotlib_backend()
 matplotlib.use(backend)
 from matplotlib import pyplot as plt
 
-from autoarray.plotters import grid_plotters, line_yx_plotters
+from autoarray.plotters import grid_plotters, line_plotters
 from autoarray.plots import inversion_plots
 from autoarray.util import plotter_util
 
@@ -369,8 +369,8 @@ def visibilities(
         grid=fit.visibilities,
         as_subplot=as_subplot,
         unit_conversion_factor=unit_conversion_factor,
-        unit_label_y=unit_label,
-        unit_label_x=unit_label,
+        label_yunits=unit_label,
+        label_xunits=unit_label,
         figsize=figsize,
         cmap=cmap,
         cb_ticksize=cb_ticksize,
@@ -427,8 +427,8 @@ def noise_map(
         colors=fit.noise_map[:, 0],
         as_subplot=as_subplot,
         unit_conversion_factor=unit_conversion_factor,
-        unit_label_y=unit_label,
-        unit_label_x=unit_label,
+        label_yunits=unit_label,
+        label_xunits=unit_label,
         figsize=figsize,
         cmap=cmap,
         cb_ticksize=cb_ticksize,
@@ -484,8 +484,8 @@ def signal_to_noise_map(
         colors=fit.signal_to_noise_map[:, 0],
         as_subplot=as_subplot,
         unit_conversion_factor=unit_conversion_factor,
-        unit_label_y=unit_label,
-        unit_label_x=unit_label,
+        label_yunits=unit_label,
+        label_xunits=unit_label,
         figsize=figsize,
         cmap=cmap,
         cb_ticksize=cb_ticksize,
@@ -541,7 +541,7 @@ def model_visibilities(
         colors=fit.model_visibilities[:, 0],
         as_subplot=as_subplot,
         unit_conversion_factor=unit_conversion_factor,
-        unit_label_y=unit_label,
+        label_yunits=unit_label,
         figsize=figsize,
         cmap=cmap,
         cb_ticksize=cb_ticksize,
@@ -565,8 +565,8 @@ def residual_map_vs_uv_distances(
     as_subplot=False,
     plot_real=True,
     unit_conversion_factor=None,
-    unit_label_y="V$_{R,data}$ - V$_{R,model}$",
-    unit_label_x=r"UV$_{distance}$ (k$\lambda$)",
+    label_yunits="V$_{R,data}$ - V$_{R,model}$",
+    label_xunits=r"UV$_{distance}$ (k$\lambda$)",
     figsize=(7, 7),
     cmap="jet",
     cb_ticksize=10,
@@ -604,13 +604,13 @@ def residual_map_vs_uv_distances(
         title += " Imag"
         output_filename += "_imag"
 
-    line_yx_plotters.plot_line(
+    line_plotters.plot_line(
         y=y,
         x=fit.masked_interferometer.interferometer.uv_distances / 10 ** 3.0,
         as_subplot=as_subplot,
         unit_conversion_factor=unit_conversion_factor,
-        unit_label_y=unit_label_y,
-        unit_label_x=unit_label_x,
+        label_yunits=label_yunits,
+        label_xunits=label_xunits,
         figsize=figsize,
         plot_axis_type="scatter",
         title=title,
@@ -629,8 +629,8 @@ def normalized_residual_map_vs_uv_distances(
     as_subplot=False,
     plot_real=True,
     unit_conversion_factor=None,
-    unit_label_y="V$_{R,data}$ - V$_{R,model}$",
-    unit_label_x=r"UV$_{distance}$ (k$\lambda$)",
+    label_yunits="V$_{R,data}$ - V$_{R,model}$",
+    label_xunits=r"UV$_{distance}$ (k$\lambda$)",
     figsize=(7, 7),
     cmap="jet",
     cb_ticksize=10,
@@ -668,13 +668,13 @@ def normalized_residual_map_vs_uv_distances(
         title += " Imag"
         output_filename += "_imag"
 
-    line_yx_plotters.plot_line(
+    line_plotters.plot_line(
         y=y,
         x=fit.masked_interferometer.interferometer.uv_distances / 10 ** 3.0,
         as_subplot=as_subplot,
         unit_conversion_factor=unit_conversion_factor,
-        unit_label_y=unit_label_y,
-        unit_label_x=unit_label_x,
+        label_yunits=label_yunits,
+        label_xunits=label_xunits,
         figsize=figsize,
         plot_axis_type="scatter",
         title=title,
@@ -693,8 +693,8 @@ def chi_squared_map_vs_uv_distances(
     as_subplot=False,
     plot_real=True,
     unit_conversion_factor=None,
-    unit_label_y="V$_{R,data}$ - V$_{R,model}$",
-    unit_label_x=r"UV$_{distance}$ (k$\lambda$)",
+    label_yunits="V$_{R,data}$ - V$_{R,model}$",
+    label_xunits=r"UV$_{distance}$ (k$\lambda$)",
     figsize=(7, 7),
     cmap="jet",
     cb_ticksize=10,
@@ -732,13 +732,13 @@ def chi_squared_map_vs_uv_distances(
         title += " Imag"
         output_filename += "_imag"
 
-    line_yx_plotters.plot_line(
+    line_plotters.plot_line(
         y=y,
         x=fit.masked_interferometer.interferometer.uv_distances / 10 ** 3.0,
         as_subplot=as_subplot,
         unit_conversion_factor=unit_conversion_factor,
-        unit_label_y=unit_label_y,
-        unit_label_x=unit_label_x,
+        label_yunits=label_yunits,
+        label_xunits=label_xunits,
         figsize=figsize,
         plot_axis_type="scatter",
         title=title,

@@ -1,8 +1,12 @@
+from os import path
+from autoarray import conf
 import os
 
 import pytest
 
 import autoarray as aa
+
+directory = path.dirname(path.realpath(__file__))
 
 
 @pytest.fixture(name="interferometer_plotter_path")
@@ -13,6 +17,11 @@ def make_interferometer_plotter_setup():
 
     return interferometer_plotter_path
 
+@pytest.fixture(autouse=True)
+def set_config_path():
+    conf.instance = conf.Config(
+        path.join(directory, "../test_files/plotters"), path.join(directory, "output")
+    )
 
 def test__individual_attributes_are_output(
     interferometer_7, interferometer_plotter_path, plot_patch
@@ -20,94 +29,96 @@ def test__individual_attributes_are_output(
 
     aa.plot.interferometer.visibilities(
         interferometer=interferometer_7,
-        cb_tick_values=[1.0],
-        cb_tick_labels=["1.0"],
-        output_path=interferometer_plotter_path,
-        output_format="png",
+        grid_plotter=aa.plotter.grid(
+            output_path=interferometer_plotter_path, output_format="png"
+        ),
     )
 
     assert (
-        interferometer_plotter_path + "interferometer_visibilities.png"
+        interferometer_plotter_path + "visibilities.png"
         in plot_patch.paths
     )
 
     aa.plot.interferometer.noise_map(
         interferometer=interferometer_7,
-        cb_tick_values=[1.0],
-        cb_tick_labels=["1.0"],
-        output_path=interferometer_plotter_path,
-        output_format="png",
+        grid_plotter=aa.plotter.grid(
+            output_path=interferometer_plotter_path, output_format="png"
+        ),
     )
 
     assert (
-        interferometer_plotter_path + "interferometer_noise_map.png" in plot_patch.paths
+        interferometer_plotter_path + "noise_map.png" in plot_patch.paths
     )
 
     aa.plot.interferometer.u_wavelengths(
         interferometer=interferometer_7,
-        output_path=interferometer_plotter_path,
-        output_format="png",
+        line_plotter=aa.plotter.line(
+            output_path=interferometer_plotter_path, output_format="png"
+        ),
     )
 
     assert (
-        interferometer_plotter_path + "interferometer_u_wavelengths.png"
+        interferometer_plotter_path + "u_wavelengths.png"
         in plot_patch.paths
     )
 
     aa.plot.interferometer.v_wavelengths(
         interferometer=interferometer_7,
-        output_path=interferometer_plotter_path,
-        output_format="png",
+        line_plotter=aa.plotter.line(
+            output_path=interferometer_plotter_path, output_format="png"
+        ),
     )
 
     assert (
-        interferometer_plotter_path + "interferometer_v_wavelengths.png"
+        interferometer_plotter_path + "v_wavelengths.png"
         in plot_patch.paths
     )
 
     aa.plot.interferometer.uv_wavelengths(
         interferometer=interferometer_7,
-        output_path=interferometer_plotter_path,
-        output_format="png",
+        grid_plotter=aa.plotter.grid(
+            output_path=interferometer_plotter_path, output_format="png"
+        ),
     )
 
     assert (
-        interferometer_plotter_path + "interferometer_uv_wavelengths.png"
+        interferometer_plotter_path + "uv_wavelengths.png"
         in plot_patch.paths
     )
 
     aa.plot.interferometer.amplitudes_vs_uv_distances(
         interferometer=interferometer_7,
-        output_path=interferometer_plotter_path,
-        output_format="png",
+        line_plotter=aa.plotter.line(
+            output_path=interferometer_plotter_path, output_format="png"
+        ),
     )
 
     assert (
-        interferometer_plotter_path + "interferometer_amplitudes_vs_uv_distances.png"
+        interferometer_plotter_path + "amplitudes_vs_uv_distances.png"
         in plot_patch.paths
     )
 
     aa.plot.interferometer.phases_vs_uv_distances(
         interferometer=interferometer_7,
-        output_path=interferometer_plotter_path,
-        output_format="png",
+        line_plotter=aa.plotter.line(
+            output_path=interferometer_plotter_path, output_format="png"
+        ),
     )
 
     assert (
-        interferometer_plotter_path + "interferometer_phases_vs_uv_distances.png"
+        interferometer_plotter_path + "phases_vs_uv_distances.png"
         in plot_patch.paths
     )
 
     aa.plot.interferometer.primary_beam(
         interferometer=interferometer_7,
-        cb_tick_values=[1.0],
-        cb_tick_labels=["1.0"],
-        output_path=interferometer_plotter_path,
-        output_format="png",
+        array_plotter=aa.plotter.array(
+            output_path=interferometer_plotter_path, output_format="png"
+        ),
     )
 
     assert (
-        interferometer_plotter_path + "interferometer_primary_beam.png"
+        interferometer_plotter_path + "primary_beam.png"
         in plot_patch.paths
     )
 

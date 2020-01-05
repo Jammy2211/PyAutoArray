@@ -5,12 +5,13 @@ backend = conf.get_matplotlib_backend()
 matplotlib.use(backend)
 from matplotlib import pyplot as plt
 
-from autoarray.plotters import array_plotters, grid_plotters, line_yx_plotters
+from autoarray.plotters import plotters
+from autoarray.plotters import array_plotters, grid_plotters, line_plotters
 from autoarray.util import plotter_util
 from autoarray.structures import grids
 import numpy as np
 
-
+@plotters.set_includes
 def subplot(
     interferometer,
     unit_conversion_factor=None,
@@ -176,7 +177,7 @@ def subplot(
 
     plt.close()
 
-
+@plotters.set_includes
 def individual(
     interferometer,
     unit_label="scaled",
@@ -283,27 +284,11 @@ def individual(
             output_format=output_format,
         )
 
-
+@plotters.set_includes
+@plotters.set_labels
 def visibilities(
     interferometer,
-    as_subplot=False,
-    unit_conversion_factor=None,
-    unit_label="scaled",
-    figsize=(7, 7),
-    cmap="jet",
-    cb_ticksize=10,
-    cb_fraction=0.047,
-    cb_pad=0.01,
-    cb_tick_values=None,
-    cb_tick_labels=None,
-    title="Visibilities",
-    titlesize=16,
-    xlabelsize=16,
-    ylabelsize=16,
-    xyticksize=16,
-    output_path=None,
-    output_format="show",
-    output_filename="interferometer_visibilities",
+    grid_plotter=grid_plotters.GridPlotter(),
 ):
     """Plot the observed image of the imaging data_type.
 
@@ -322,49 +307,13 @@ def visibilities(
 
     grid_plotter.plot_grid(
         grid=interferometer.visibilities,
-        as_subplot=as_subplot,
-        unit_conversion_factor=unit_conversion_factor,
-        unit_label_y="imag",
-        unit_label_x="real",
-        figsize=figsize,
-        pointsize=20,
-        cmap=cmap,
-        cb_ticksize=cb_ticksize,
-        cb_fraction=cb_fraction,
-        cb_pad=cb_pad,
-        cb_tick_values=cb_tick_values,
-        cb_tick_labels=cb_tick_labels,
-        title=title,
-        titlesize=titlesize,
-        xlabelsize=xlabelsize,
-        ylabelsize=ylabelsize,
-        xyticksize=xyticksize,
-        output_path=output_path,
-        output_format=output_format,
-        output_filename=output_filename,
     )
 
-
+@plotters.set_includes
+@plotters.set_labels
 def noise_map(
     interferometer,
-    as_subplot=False,
-    unit_conversion_factor=None,
-    unit_label="scaled",
-    figsize=(7, 7),
-    cmap="jet",
-    cb_ticksize=10,
-    cb_fraction=0.047,
-    cb_pad=0.01,
-    cb_tick_values=None,
-    cb_tick_labels=None,
-    title="Noise Map",
-    titlesize=16,
-    xlabelsize=16,
-    ylabelsize=16,
-    xyticksize=16,
-    output_path=None,
-    output_format="show",
-    output_filename="interferometer_noise_map",
+    grid_plotter=grid_plotters.GridPlotter(),
 ):
     """Plot the observed image of the imaging data_type.
 
@@ -384,45 +333,15 @@ def noise_map(
     grid_plotter.plot_grid(
         grid=interferometer.visibilities,
         colors=interferometer.noise_map[:, 0],
-        as_subplot=as_subplot,
-        unit_conversion_factor=unit_conversion_factor,
-        unit_label_y=unit_label,
-        unit_label_x=unit_label,
-        figsize=figsize,
-        cmap=cmap,
-        cb_ticksize=cb_ticksize,
-        cb_fraction=cb_fraction,
-        cb_pad=cb_pad,
-        cb_tick_values=cb_tick_values,
-        cb_tick_labels=cb_tick_labels,
-        title=title,
-        titlesize=titlesize,
-        xlabelsize=xlabelsize,
-        ylabelsize=ylabelsize,
-        xyticksize=xyticksize,
-        output_path=output_path,
-        output_format=output_format,
-        output_filename=output_filename,
     )
 
-
+@plotters.set_includes
+@plotters.set_labels
 def u_wavelengths(
     interferometer,
-    as_subplot=False,
     label="Wavelengths",
-    unit_conversion_factor=None,
-    unit_label="",
-    figsize=(14, 7),
     plot_axis_type="linear",
-    ylabel="U-Wavelength",
-    title="U-Wavelengths",
-    titlesize=16,
-    xlabelsize=16,
-    ylabelsize=16,
-    xyticksize=16,
-    output_path=None,
-    output_format="show",
-    output_filename="interferometer_u_wavelengths",
+    line_plotter=line_plotters.LinePlotter(),
 ):
     """Plot the observed image of the imaging data_type.
 
@@ -439,44 +358,20 @@ def u_wavelengths(
         over the immage.
     """
 
-    line_yx_plotters.plot_line(
+    line_plotter.plot_line(
         y=interferometer.uv_wavelengths[:, 0],
         x=None,
-        as_subplot=as_subplot,
         label=label,
         plot_axis_type=plot_axis_type,
-        unit_conversion_factor=unit_conversion_factor,
-        unit_label_x=unit_label,
-        figsize=figsize,
-        title=title,
-        unit_label_y=ylabel,
-        titlesize=titlesize,
-        xlabelsize=xlabelsize,
-        ylabelsize=ylabelsize,
-        xyticksize=xyticksize,
-        output_path=output_path,
-        output_format=output_format,
-        output_filename=output_filename,
     )
 
-
+@plotters.set_includes
+@plotters.set_labels
 def v_wavelengths(
     interferometer,
-    as_subplot=False,
     label="Wavelengths",
-    unit_conversion_factor=None,
-    unit_label="",
-    figsize=(14, 7),
     plot_axis_type="linear",
-    ylabel="V-Wavelength",
-    title="V-Wavelengths",
-    titlesize=16,
-    xlabelsize=16,
-    ylabelsize=16,
-    xyticksize=16,
-    output_path=None,
-    output_format="show",
-    output_filename="interferometer_v_wavelengths",
+    line_plotter=line_plotters.LinePlotter(),
 ):
     """Plot the observed image of the imaging data_type.
 
@@ -493,42 +388,20 @@ def v_wavelengths(
         over the immage.
     """
 
-    line_yx_plotters.plot_line(
+    line_plotter.plot_line(
         y=interferometer.uv_wavelengths[:, 1],
         x=None,
-        as_subplot=as_subplot,
         label=label,
         plot_axis_type=plot_axis_type,
-        unit_conversion_factor=unit_conversion_factor,
-        unit_label_x=unit_label,
-        figsize=figsize,
-        title=title,
-        unit_label_y=ylabel,
-        titlesize=titlesize,
-        xlabelsize=xlabelsize,
-        ylabelsize=ylabelsize,
-        xyticksize=xyticksize,
-        output_path=output_path,
-        output_format=output_format,
-        output_filename=output_filename,
     )
 
-
+@plotters.set_includes
+@plotters.set_labels
 def uv_wavelengths(
     interferometer,
-    as_subplot=False,
-    unit_conversion_factor=None,
-    unit_label_y="V-Wavelengths ($\lambda$)",
-    unit_label_x="U-Wavelengths ($\lambda$)",
-    figsize=(14, 7),
-    title="UV-Wavelengths",
-    titlesize=16,
-    xlabelsize=16,
-    ylabelsize=16,
-    xyticksize=16,
-    output_path=None,
-    output_format="show",
-    output_filename="interferometer_uv_wavelengths",
+    label_yunits="V-Wavelengths ($\lambda$)",
+    label_xunits="U-Wavelengths ($\lambda$)",
+    grid_plotter=grid_plotters.GridPlotter(),
 ):
     """Plot the observed image of the imaging data_type.
 
@@ -544,143 +417,60 @@ def uv_wavelengths(
         If an adaptive pixelization whose pixels are formed by tracing pixels from the dataset, this plots those pixels \
         over the immage.
     """
+
+    grid_plotter = grid_plotter.plotter_with_new_labels_and_filename(
+        label_yunits=label_yunits, label_xunits=label_xunits)
 
     grid_plotter.plot_grid(
         grid=grids.GridIrregular.manual_yx_1d(
             y=interferometer.uv_wavelengths[:, 1] / 10 ** 3.0,
             x=interferometer.uv_wavelengths[:, 0] / 10 ** 3.0,
         ),
-        as_subplot=as_subplot,
-        unit_conversion_factor=unit_conversion_factor,
-        unit_label_y=unit_label_y,
-        unit_label_x=unit_label_x,
-        pointsize=20,
-        figsize=figsize,
-        title=title,
-        titlesize=titlesize,
-        xlabelsize=xlabelsize,
-        ylabelsize=ylabelsize,
-        xyticksize=xyticksize,
         symmetric_around_centre=True,
-        output_path=output_path,
-        output_format=output_format,
-        output_filename=output_filename,
     )
 
-
+@plotters.set_includes
+@plotters.set_labels
 def amplitudes_vs_uv_distances(
     interferometer,
-    as_subplot=False,
-    unit_conversion_factor=None,
-    unit_label_y="amplitude (Jy)",
-    unit_label_x=r"UV$_{distance}$ (k$\lambda$)",
-    figsize=(14, 7),
-    cmap="jet",
-    cb_ticksize=10,
-    cb_fraction=0.047,
-    cb_pad=0.01,
-    cb_tick_values=None,
-    cb_tick_labels=None,
-    title="Amplitudes vs UV-distances",
-    titlesize=16,
-    xlabelsize=16,
-    ylabelsize=16,
-    xyticksize=16,
-    output_path=None,
-    output_format="show",
-    output_filename="interferometer_amplitudes_vs_uv_distances",
+    label_yunits="amplitude (Jy)",
+    label_xunits=r"UV$_{distance}$ (k$\lambda$)",
+    line_plotter=line_plotters.LinePlotter(),
 ):
-    line_yx_plotters.plot_line(
+
+    line_plotter = line_plotter.plotter_with_new_labels_and_filename(
+        label_yunits=label_yunits, label_xunits=label_xunits)
+
+    line_plotter.plot_line(
         y=interferometer.amplitudes,
         x=interferometer.uv_distances / 10 ** 3.0,
-        as_subplot=as_subplot,
-        unit_conversion_factor=unit_conversion_factor,
-        unit_label_y=unit_label_y,
-        unit_label_x=unit_label_x,
         plot_axis_type="scatter",
-        figsize=figsize,
-        title=title,
-        titlesize=titlesize,
-        xlabelsize=xlabelsize,
-        ylabelsize=ylabelsize,
-        xyticksize=xyticksize,
-        output_path=output_path,
-        output_format=output_format,
-        output_filename=output_filename,
     )
 
-
+@plotters.set_includes
+@plotters.set_labels
 def phases_vs_uv_distances(
     interferometer,
-    as_subplot=False,
-    unit_conversion_factor=None,
-    unit_label_y="phase (deg)",
-    unit_label_x=r"UV$_{distance}$ (k$\lambda$)",
-    figsize=(14, 7),
-    cmap="jet",
-    cb_ticksize=10,
-    cb_fraction=0.047,
-    cb_pad=0.01,
-    cb_tick_values=None,
-    cb_tick_labels=None,
-    title="Phases vs UV-distances",
-    titlesize=16,
-    xlabelsize=16,
-    ylabelsize=16,
-    xyticksize=16,
-    output_path=None,
-    output_format="show",
-    output_filename="interferometer_phases_vs_uv_distances",
+    label_yunits="phase (deg)",
+    label_xunits=r"UV$_{distance}$ (k$\lambda$)",
+    line_plotter=line_plotters.LinePlotter(),
 ):
 
-    line_yx_plotters.plot_line(
+    line_plotter = line_plotter.plotter_with_new_labels_and_filename(
+        label_yunits=label_yunits, label_xunits=label_xunits)
+
+    line_plotter.plot_line(
         y=interferometer.phases,
         x=interferometer.uv_distances / 10 ** 3.0,
-        as_subplot=as_subplot,
-        unit_conversion_factor=unit_conversion_factor,
-        unit_label_y=unit_label_y,
-        unit_label_x=unit_label_x,
         plot_axis_type="scatter",
-        figsize=figsize,
-        title=title,
-        titlesize=titlesize,
-        xlabelsize=xlabelsize,
-        ylabelsize=ylabelsize,
-        xyticksize=xyticksize,
-        output_path=output_path,
-        output_format=output_format,
-        output_filename=output_filename,
     )
 
-
+@plotters.set_includes
+@plotters.set_labels
 def primary_beam(
     interferometer,
-    origin=True,
-    as_subplot=False,
-    use_scaled_units=True,
-    unit_conversion_factor=None,
-    unit_label="scaled",
-    figsize=(7, 7),
-    aspect="square",
-    cmap="jet",
-    norm="linear",
-    norm_min=None,
-    norm_max=None,
-    linthresh=0.05,
-    linscale=0.01,
-    cb_ticksize=10,
-    cb_fraction=0.047,
-    cb_pad=0.01,
-    cb_tick_values=None,
-    cb_tick_labels=None,
-    title="Imaging PSF",
-    titlesize=16,
-    xlabelsize=16,
-    ylabelsize=16,
-    xyticksize=16,
-    output_path=None,
-    output_format="show",
-    output_filename="interferometer_primary_beam",
+    include_origin=None,
+    array_plotter=array_plotters.ArrayPlotter(),
 ):
     """Plot the PSF of the interferometer data_type.
 
@@ -696,30 +486,5 @@ def primary_beam(
 
     array_plotter.plot_array(
         array=interferometer.primary_beam,
-        origin=origin,
-        as_subplot=as_subplot,
-        use_scaled_units=use_scaled_units,
-        unit_conversion_factor=unit_conversion_factor,
-        unit_label=unit_label,
-        figsize=figsize,
-        aspect=aspect,
-        cmap=cmap,
-        norm=norm,
-        norm_min=norm_min,
-        norm_max=norm_max,
-        linthresh=linthresh,
-        linscale=linscale,
-        cb_ticksize=cb_ticksize,
-        cb_fraction=cb_fraction,
-        cb_pad=cb_pad,
-        cb_tick_values=cb_tick_values,
-        cb_tick_labels=cb_tick_labels,
-        title=title,
-        titlesize=titlesize,
-        xlabelsize=xlabelsize,
-        ylabelsize=ylabelsize,
-        xyticksize=xyticksize,
-        output_path=output_path,
-        output_format=output_format,
-        output_filename=output_filename,
+        include_origin=include_origin,
     )

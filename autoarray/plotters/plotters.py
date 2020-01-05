@@ -436,6 +436,39 @@ class Plotter(object):
             )
 
 
+def set_includes(func):
+    """
+    Decorate a profile method that accepts a coordinate grid and returns a data_type grid.
+
+    If an interpolator attribute is associated with the input grid then that interpolator is used to down sample the
+    coordinate grid prior to calling the function and up sample the result of the function.
+
+    If no interpolator attribute is associated with the input grid then the function is called as hyper.
+
+    Parameters
+    ----------
+    func
+        Some method that accepts a grid
+
+    Returns
+    -------
+    decorated_function
+        The function with optional interpolation
+    """
+
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+
+        if "include_origin" in kwargs:
+
+            kwargs["include_origin"] = load_include(
+                value=kwargs["include_origin"], name="origin", python_type=bool
+            )
+
+        return func(*args, **kwargs)
+
+    return wrapper
+
 def label_title_from_plotter(plotter, func):
     if plotter.label_title is None:
 
@@ -477,7 +510,7 @@ def output_filename_from_plotter_and_func(plotter, func):
 
         return plotter.output_filename
 
-def set_includes(func):
+def set_labels(func):
     """
     Decorate a profile method that accepts a coordinate grid and returns a data_type grid.
 
@@ -500,13 +533,29 @@ def set_includes(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
 
-        include_origin = kwargs["include_origin"] if "include_origin" in kwargs else None
+        plotter_key = None
 
-        include_origin = load_include(
-            value=include_origin, name="origin", python_type=bool
+        for key, value in kwargs.items():
+            if isinstance(value, Plotter):
+                plotter_key = key
+
+        if plotter_key is None:
+            raise exc.PlottingException("The plot function called could not locate a Plotter in the kwarg arguments"
+                                        "in order to set the labels.")
+
+        plotter = kwargs[plotter_key]
+
+        label_title = label_title_from_plotter(plotter=plotter, func=func)
+        label_yunits = label_yunits_from_plotter(plotter=plotter)
+        label_xunits = label_xunits_from_plotter(plotter=plotter)
+        output_filename = output_filename_from_plotter_and_func(plotter=plotter, func=func)
+
+        kwargs[plotter_key] = plotter.plotter_with_new_labels_and_filename(
+            label_title=label_title,
+            label_yunits=label_yunits,
+            label_xunits=label_xunits,
+            output_filename=output_filename,
         )
-
-        kwargs["include_origin"] = include_origin
 
         return func(*args, **kwargs)
 
