@@ -124,10 +124,15 @@ def test__individual_attributes_are_output(
 
     aa.plot.interferometer.subplot(
         interferometer=interferometer_7,
-        cb_tick_values=[1.0],
-        cb_tick_labels=["1.0"],
-        output_path=interferometer_plotter_path,
-        output_format="png",
+        array_plotter=aa.plotter.array(
+            output_path=interferometer_plotter_path, output_format="png"
+        ),
+        grid_plotter=aa.plotter.grid(
+            output_path=interferometer_plotter_path, output_format="png"
+        ),
+        line_plotter=aa.plotter.line(
+            output_path=interferometer_plotter_path, output_format="png"
+        ),
     )
 
     assert interferometer_plotter_path + "interferometer.png" in plot_patch.paths
