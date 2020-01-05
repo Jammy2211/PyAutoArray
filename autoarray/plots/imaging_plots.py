@@ -9,40 +9,14 @@ from matplotlib import pyplot as plt
 
 from autoarray.plotters import plotters
 from autoarray.plotters import array_plotters
-from autoarray.util import plotter_util
 
 def subplot(
-    imaging,
-    include_origin=True,
+    imaging,    
+    include_origin=None,
+    grid=None,
     mask=None,
-    border=False,
     positions=None,
-    use_scaled_units=True,
-    unit_conversion_factor=None,
-    unit_label="scaled",
-    figsize=None,
-    aspect="square",
-    cmap="jet",
-    norm="linear",
-    norm_min=None,
-    norm_max=None,
-    linthresh=0.05,
-    linscale=0.01,
-    cb_ticksize=10,
-    cb_fraction=0.047,
-    cb_pad=0.01,
-    cb_tick_values=None,
-    cb_tick_labels=None,
-    titlesize=10,
-    xlabelsize=10,
-    ylabelsize=10,
-    xyticksize=10,
-    mask_pointsize=10,
-    position_pointsize=30,
-    grid_pointsize=1,
-    output_path=None,
-    output_filename="imaging",
-    output_format="show",
+    array_plotter=array_plotters.ArrayPlotter(),
 ):
     """Plot the imaging data_type as a sub-plotters of all its quantites (e.g. the dataset, noise_map-map, PSF, Signal-to_noise-map, \
      etc).
@@ -63,12 +37,17 @@ def subplot(
         config file is ignored.
     """
 
-    rows, columns, figsize_tool = plotter_util.get_subplot_rows_columns_figsize(
+    array_plotter = array_plotter.plotter_as_sub_plotter()
+    array_plotter = array_plotter.plotter_with_new_labels_and_filename(output_filename="imaging")
+
+    rows, columns, figsize_tool = array_plotter.get_subplot_rows_columns_figsize(
         number_subplots=6
     )
 
-    if figsize is None:
+    if array_plotter.figsize is None:
         figsize = figsize_tool
+    else:
+        figsize = array_plotter.figsize
 
     plt.figure(figsize=figsize)
     plt.subplot(rows, columns, 1)
@@ -76,35 +55,10 @@ def subplot(
     image(
         imaging=imaging,
         include_origin=include_origin,
+        grid=grid,
         mask=mask,
-        border=border,
         positions=positions,
-        as_subplot=True,
-        use_scaled_units=use_scaled_units,
-        unit_conversion_factor=unit_conversion_factor,
-        unit_label=unit_label,
-        figsize=figsize,
-        aspect=aspect,
-        cmap=cmap,
-        norm=norm,
-        norm_min=norm_min,
-        norm_max=norm_max,
-        linthresh=linthresh,
-        linscale=linscale,
-        cb_ticksize=cb_ticksize,
-        cb_fraction=cb_fraction,
-        cb_pad=cb_pad,
-        cb_tick_values=cb_tick_values,
-        cb_tick_labels=cb_tick_labels,
-        titlesize=titlesize,
-        xlabelsize=xlabelsize,
-        ylabelsize=ylabelsize,
-        xyticksize=xyticksize,
-        mask_pointsize=mask_pointsize,
-        position_pointsize=position_pointsize,
-        grid_pointsize=grid_pointsize,
-        output_path=output_path,
-        output_format=output_format,
+        array_plotter=array_plotter
     )
 
     plt.subplot(rows, columns, 2)
@@ -113,59 +67,18 @@ def subplot(
         imaging=imaging,
         include_origin=include_origin,
         mask=mask,
-        as_subplot=True,
-        use_scaled_units=use_scaled_units,
-        unit_conversion_factor=unit_conversion_factor,
-        unit_label=unit_label,
-        figsize=figsize,
-        aspect=aspect,
-        cmap=cmap,
-        norm=norm,
-        norm_min=norm_min,
-        norm_max=norm_max,
-        linthresh=linthresh,
-        linscale=linscale,
-        cb_ticksize=cb_ticksize,
-        cb_fraction=cb_fraction,
-        cb_pad=cb_pad,
-        cb_tick_values=cb_tick_values,
-        cb_tick_labels=cb_tick_labels,
-        titlesize=titlesize,
-        xlabelsize=xlabelsize,
-        ylabelsize=ylabelsize,
-        xyticksize=xyticksize,
-        mask_pointsize=mask_pointsize,
-        output_path=output_path,
-        output_format=output_format,
+        positions=positions,
+        array_plotter=array_plotter
     )
 
     plt.subplot(rows, columns, 3)
 
     psf(
         imaging=imaging,
-        as_subplot=True,
-        use_scaled_units=use_scaled_units,
-        unit_conversion_factor=unit_conversion_factor,
-        unit_label=unit_label,
-        figsize=figsize,
-        aspect=aspect,
-        cmap=cmap,
-        norm=norm,
-        norm_min=norm_min,
-        norm_max=norm_max,
-        linthresh=linthresh,
-        linscale=linscale,
-        cb_ticksize=cb_ticksize,
-        cb_fraction=cb_fraction,
-        cb_pad=cb_pad,
-        cb_tick_values=cb_tick_values,
-        cb_tick_labels=cb_tick_labels,
-        titlesize=titlesize,
-        xlabelsize=xlabelsize,
-        ylabelsize=ylabelsize,
-        xyticksize=xyticksize,
-        output_path=output_path,
-        output_format=output_format,
+        include_origin=include_origin,
+        mask=mask,
+        positions=positions,
+        array_plotter=array_plotter
     )
 
     plt.subplot(rows, columns, 4)
@@ -174,30 +87,8 @@ def subplot(
         imaging=imaging,
         include_origin=include_origin,
         mask=mask,
-        as_subplot=True,
-        use_scaled_units=use_scaled_units,
-        unit_conversion_factor=unit_conversion_factor,
-        unit_label=unit_label,
-        figsize=figsize,
-        aspect=aspect,
-        cmap=cmap,
-        norm=norm,
-        norm_min=norm_min,
-        norm_max=norm_max,
-        linthresh=linthresh,
-        linscale=linscale,
-        cb_ticksize=cb_ticksize,
-        cb_fraction=cb_fraction,
-        cb_pad=cb_pad,
-        cb_tick_values=cb_tick_values,
-        cb_tick_labels=cb_tick_labels,
-        titlesize=titlesize,
-        xlabelsize=xlabelsize,
-        ylabelsize=ylabelsize,
-        xyticksize=xyticksize,
-        mask_pointsize=mask_pointsize,
-        output_path=output_path,
-        output_format=output_format,
+        positions=positions,
+        array_plotter=array_plotter
     )
 
     plt.subplot(rows, columns, 5)
@@ -206,30 +97,8 @@ def subplot(
         imaging=imaging,
         include_origin=include_origin,
         mask=mask,
-        as_subplot=True,
-        use_scaled_units=use_scaled_units,
-        unit_conversion_factor=unit_conversion_factor,
-        unit_label=unit_label,
-        figsize=figsize,
-        aspect=aspect,
-        cmap=cmap,
-        norm=norm,
-        norm_min=norm_min,
-        norm_max=norm_max,
-        linthresh=linthresh,
-        linscale=linscale,
-        cb_ticksize=cb_ticksize,
-        cb_fraction=cb_fraction,
-        cb_pad=cb_pad,
-        cb_tick_values=cb_tick_values,
-        cb_tick_labels=cb_tick_labels,
-        titlesize=titlesize,
-        xlabelsize=xlabelsize,
-        ylabelsize=ylabelsize,
-        xyticksize=xyticksize,
-        mask_pointsize=mask_pointsize,
-        output_path=output_path,
-        output_format=output_format,
+        positions=positions,
+        array_plotter=array_plotter
     )
 
     plt.subplot(rows, columns, 6)
@@ -238,44 +107,18 @@ def subplot(
         imaging=imaging,
         include_origin=include_origin,
         mask=mask,
-        as_subplot=True,
-        use_scaled_units=use_scaled_units,
-        unit_conversion_factor=unit_conversion_factor,
-        unit_label=unit_label,
-        figsize=figsize,
-        aspect=aspect,
-        cmap=cmap,
-        norm=norm,
-        norm_min=norm_min,
-        norm_max=norm_max,
-        linthresh=linthresh,
-        linscale=linscale,
-        cb_ticksize=cb_ticksize,
-        cb_fraction=cb_fraction,
-        cb_pad=cb_pad,
-        cb_tick_values=cb_tick_values,
-        cb_tick_labels=cb_tick_labels,
-        titlesize=titlesize,
-        xlabelsize=xlabelsize,
-        ylabelsize=ylabelsize,
-        xyticksize=xyticksize,
-        mask_pointsize=mask_pointsize,
-        output_path=output_path,
-        output_format=output_format,
+        positions=positions,
+        array_plotter=array_plotter
     )
 
-    plotter_util.output_subplot_array(
-        output_path=output_path,
-        output_filename=output_filename,
-        output_format=output_format,
-    )
+    array_plotter.output_subplot_array()
 
     plt.close()
 
 
 def individual(
     imaging,
-    include_origin=True,
+    include_origin=None,
     grid=None,
     mask=None,
     positions=None,
@@ -351,11 +194,11 @@ def individual(
             array_plotter=array_plotter,
         )
 
-
+@plotters.set_includes
 @array_plotters.set_labels
 def image(
     imaging,
-    include_origin=True,
+    include_origin=None,
     grid=None,
     mask=None,
     positions=None,
@@ -384,11 +227,11 @@ def image(
         points=positions,
     )
 
-
+@plotters.set_includes
 @array_plotters.set_labels
 def noise_map(
     imaging,
-    include_origin=True,
+    include_origin=None,
     grid=None,
     mask=None,
     positions=None,
@@ -414,11 +257,11 @@ def noise_map(
         points=positions,
     )
 
-
+@plotters.set_includes
 @array_plotters.set_labels
 def psf(
     imaging,
-    include_origin=True,
+    include_origin=None,
     grid=None,
     mask=None,
     positions=None,
@@ -444,11 +287,11 @@ def psf(
         points=positions,
     )
 
-
+@plotters.set_includes
 @array_plotters.set_labels
 def signal_to_noise_map(
     imaging,
-    include_origin=True,
+    include_origin=None,
     grid=None,
     mask=None,
     positions=None,
@@ -473,11 +316,11 @@ def signal_to_noise_map(
         points=positions,
     )
 
-
+@plotters.set_includes
 @array_plotters.set_labels
 def absolute_signal_to_noise_map(
     imaging,
-    include_origin=True,
+    include_origin=None,
     grid=None,
     mask=None,
     positions=None,
@@ -502,11 +345,11 @@ def absolute_signal_to_noise_map(
         points=positions,
     )
 
-
+@plotters.set_includes
 @array_plotters.set_labels
 def potential_chi_squared_map(
     imaging,
-    include_origin=True,
+    include_origin=None,
     grid=None,
     mask=None,
     positions=None,

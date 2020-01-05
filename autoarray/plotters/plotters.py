@@ -5,11 +5,11 @@ backend = conf.get_matplotlib_backend()
 matplotlib.use(backend)
 import matplotlib.pyplot as plt
 import numpy as np
+from functools import wraps
 
 from autoarray import exc
 from autoarray import conf
 from autoarray.util import array_util
-
 
 def setting(section, name, python_type):
     return conf.instance.visualize.get(section, name, python_type)
@@ -434,3 +434,82 @@ class Plotter(object):
             raise exc.PlottingException(
                 "You cannot output a subplots with format .fits"
             )
+
+
+def label_title_from_plotter(plotter, func):
+    if plotter.label_title is None:
+
+        return func.__name__.capitalize()
+
+    else:
+
+        return plotter.label_title
+
+def label_yunits_from_plotter(plotter):
+
+    if plotter.label_yunits is None:
+        if plotter.use_scaled_units:
+            return "scaled"
+        else:
+            return "pixels"
+
+    else:
+
+        return plotter.label_yunits
+
+def label_xunits_from_plotter(plotter):
+
+    if plotter.label_xunits is None:
+        if plotter.use_scaled_units:
+            return "scaled"
+        else:
+            return "pixels"
+
+    else:
+
+        return plotter.label_xunits
+
+def output_filename_from_plotter_and_func(plotter, func):
+
+    if plotter.output_filename is None:
+        return func.__name__
+    else:
+
+        return plotter.output_filename
+
+
+
+def set_includes(func):
+    """
+    Decorate a profile method that accepts a coordinate grid and returns a data_type grid.
+
+    If an interpolator attribute is associated with the input grid then that interpolator is used to down sample the
+    coordinate grid prior to calling the function and up sample the result of the function.
+
+    If no interpolator attribute is associated with the input grid then the function is called as hyper.
+
+    Parameters
+    ----------
+    func
+        Some method that accepts a grid
+
+    Returns
+    -------
+    decorated_function
+        The function with optional interpolation
+    """
+
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+
+        include_origin = kwargs["include_origin"] if "include_origin" in kwargs else None
+
+        include_origin = load_include(
+            value=include_origin, name="origin", python_type=bool
+        )
+
+        kwargs["include_origin"] = include_origin
+
+        return func(*args, **kwargs)
+
+    return wrapper
