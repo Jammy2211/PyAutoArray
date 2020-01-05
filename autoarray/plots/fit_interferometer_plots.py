@@ -5,7 +5,7 @@ backend = conf.get_matplotlib_backend()
 matplotlib.use(backend)
 from matplotlib import pyplot as plt
 
-from autoarray.plotters import grid_plotter, line_yx_plotter
+from autoarray.plotters import grid_plotters, line_yx_plotters
 from autoarray.plots import inversion_plots
 from autoarray.util import plotter_util
 
@@ -365,7 +365,7 @@ def visibilities(
     origin : True
         If true, the origin of the datas's coordinate system is plotted as a 'x'.
     """
-    grid_plotters.plot_grid(
+    grid_plotter.plot_grid(
         grid=fit.visibilities,
         as_subplot=as_subplot,
         unit_conversion_factor=unit_conversion_factor,
@@ -422,7 +422,7 @@ def noise_map(
     origin : True
         If true, the origin of the datas's coordinate system is plotted as a 'x'.
     """
-    grid_plotters.plot_grid(
+    grid_plotter.plot_grid(
         grid=fit.visibilities,
         colors=fit.noise_map[:, 0],
         as_subplot=as_subplot,
@@ -479,7 +479,7 @@ def signal_to_noise_map(
     origin : True
     If true, the origin of the datas's coordinate system is plotted as a 'x'.
     """
-    grid_plotters.plot_grid(
+    grid_plotter.plot_grid(
         grid=fit.visibilities,
         colors=fit.signal_to_noise_map[:, 0],
         as_subplot=as_subplot,
@@ -536,7 +536,7 @@ def model_visibilities(
     visibilities_index : int
         The index of the datas in the datas-set of which the model visibilities is plotted.
     """
-    grid_plotters.plot_grid(
+    grid_plotter.plot_grid(
         grid=fit.visibilities,
         colors=fit.model_visibilities[:, 0],
         as_subplot=as_subplot,

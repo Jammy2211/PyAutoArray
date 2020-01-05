@@ -7,79 +7,9 @@ backend = conf.get_matplotlib_backend()
 matplotlib.use(backend)
 from matplotlib import pyplot as plt
 
-from autoarray.plotters import array_plotter
+from autoarray.plotters import plotters
+from autoarray.plotters import array_plotters
 from autoarray.util import plotter_util
-
-module_name = "imaging"
-
-def set_labels(func):
-    """
-    Decorate a profile method that accepts a coordinate grid and returns a data_type grid.
-
-    If an interpolator attribute is associated with the input grid then that interpolator is used to down sample the
-    coordinate grid prior to calling the function and up sample the result of the function.
-
-    If no interpolator attribute is associated with the input grid then the function is called as hyper.
-
-    Parameters
-    ----------
-    func
-        Some method that accepts a grid
-
-    Returns
-    -------
-    decorated_function
-        The function with optional interpolation
-    """
-
-    @wraps(func)
-    def wrapper(imaging, *args, **kwargs):
-
-        array_plotter = kwargs["array_plotter"]
-
-        if array_plotter.label_title is None:
-
-            label_title = func.__name__.capitalize()
-
-        else:
-
-            label_title = array_plotter.label_title
-
-        if array_plotter.label_yunits is None:
-            if array_plotter.use_scaled_units:
-                label_yunits = "scaled"
-            else:
-                label_yunits = "pixels"
-
-        else:
-
-            label_yunits = array_plotter.label_yunits
-
-        if array_plotter.label_xunits is None:
-            if array_plotter.use_scaled_units:
-                label_xunits = "scaled"
-            else:
-                label_xunits = "pixels"
-        else:
-
-            label_xunits = array_plotter.label_xunits
-
-        if array_plotter.output_filename is None:
-            output_filename = module_name + '_' + func.__name__
-        else:
-
-            output_filename = array_plotter.output_filename
-
-        kwargs["array_plotter"] = array_plotter.plotter_with_new_labels_and_filename(
-            label_title=label_title,
-            label_yunits=label_yunits,
-            label_xunits=label_xunits,
-            output_filename=output_filename)
-
-        return func(imaging, *args, **kwargs)
-
-    return wrapper
-
 
 def subplot(
     imaging,
@@ -355,7 +285,7 @@ def individual(
     plot_signal_to_noise_map=False,
     plot_absolute_signal_to_noise_map=False,
     plot_potential_chi_squared_map=False,
-    array_plotter=array_plotter.ArrayPlotter(),
+    array_plotter=array_plotters.ArrayPlotter(),
 ):
     """Plot each attribute of the imaging data_type as individual figures one by one (e.g. the dataset, noise_map-map, PSF, \
      Signal-to_noise-map, etc).
@@ -378,7 +308,7 @@ def individual(
             grid=grid,
             mask=mask,
             positions=positions,
-            array_plotter=array_plotter
+            array_plotter=array_plotter,
         )
 
     if plot_noise_map:
@@ -387,16 +317,12 @@ def individual(
             imaging=imaging,
             include_origin=include_origin,
             mask=mask,
-            array_plotter=array_plotter
+            array_plotter=array_plotter,
         )
 
     if plot_psf:
 
-        psf(
-            imaging=imaging,
-            include_origin=include_origin,
-            array_plotter=array_plotter
-        )
+        psf(imaging=imaging, include_origin=include_origin, array_plotter=array_plotter)
 
     if plot_signal_to_noise_map:
 
@@ -404,7 +330,7 @@ def individual(
             imaging=imaging,
             include_origin=include_origin,
             mask=mask,
-            array_plotter=array_plotter
+            array_plotter=array_plotter,
         )
 
     if plot_absolute_signal_to_noise_map:
@@ -413,7 +339,7 @@ def individual(
             imaging=imaging,
             include_origin=include_origin,
             mask=mask,
-            array_plotter=array_plotter
+            array_plotter=array_plotter,
         )
 
     if plot_potential_chi_squared_map:
@@ -422,17 +348,18 @@ def individual(
             imaging=imaging,
             include_origin=include_origin,
             mask=mask,
-            array_plotter=array_plotter
+            array_plotter=array_plotter,
         )
 
-@set_labels
+
+@array_plotters.set_labels
 def image(
     imaging,
     include_origin=True,
     grid=None,
     mask=None,
     positions=None,
-    array_plotter=array_plotter.ArrayPlotter(),
+    array_plotter=array_plotters.ArrayPlotter(),
 ):
     """Plot the observed data_type of the imaging data_type.
 
@@ -457,14 +384,15 @@ def image(
         points=positions,
     )
 
-@set_labels
+
+@array_plotters.set_labels
 def noise_map(
     imaging,
     include_origin=True,
     grid=None,
     mask=None,
     positions=None,
-    array_plotter=array_plotter.ArrayPlotter(),
+    array_plotter=array_plotters.ArrayPlotter(),
 ):
     """Plot the noise_map-map of the imaging data_type.
 
@@ -486,14 +414,15 @@ def noise_map(
         points=positions,
     )
 
-@set_labels
+
+@array_plotters.set_labels
 def psf(
-        imaging,
+    imaging,
     include_origin=True,
     grid=None,
     mask=None,
     positions=None,
-    array_plotter=array_plotter.ArrayPlotter(),
+    array_plotter=array_plotters.ArrayPlotter(),
 ):
     """Plot the PSF of the imaging data_type.
 
@@ -515,14 +444,15 @@ def psf(
         points=positions,
     )
 
-@set_labels
+
+@array_plotters.set_labels
 def signal_to_noise_map(
-        imaging,
+    imaging,
     include_origin=True,
     grid=None,
     mask=None,
     positions=None,
-    array_plotter=array_plotter.ArrayPlotter(),
+    array_plotter=array_plotters.ArrayPlotter(),
 ):
     """Plot the signal-to-noise_map-map of the imaging data_type.
 
@@ -543,14 +473,15 @@ def signal_to_noise_map(
         points=positions,
     )
 
-@set_labels
+
+@array_plotters.set_labels
 def absolute_signal_to_noise_map(
-        imaging,
+    imaging,
     include_origin=True,
     grid=None,
     mask=None,
     positions=None,
-    array_plotter=array_plotter.ArrayPlotter(),
+    array_plotter=array_plotters.ArrayPlotter(),
 ):
     """Plot the signal-to-noise_map-map of the imaging data_type.
 
@@ -571,14 +502,15 @@ def absolute_signal_to_noise_map(
         points=positions,
     )
 
-@set_labels
+
+@array_plotters.set_labels
 def potential_chi_squared_map(
-        imaging,
+    imaging,
     include_origin=True,
     grid=None,
     mask=None,
     positions=None,
-    array_plotter=array_plotter.ArrayPlotter(),
+    array_plotter=array_plotters.ArrayPlotter(),
 ):
     """Plot the signal-to-noise_map-map of the imaging data_type.
 

@@ -9,7 +9,7 @@ import numpy as np
 import itertools
 from scipy.spatial import Voronoi
 
-from autoarray.plotters import grid_plotter
+from autoarray.plotters import grid_plotters
 from autoarray.plots import imaging_plots
 from autoarray.util import plotter_util
 from autoarray.operators.inversion import mappers
@@ -172,7 +172,7 @@ def rectangular_mapper(
 
     plotter_util.setup_figure(figsize=figsize, as_subplot=as_subplot)
 
-    grid_plotters.set_axis_limits(
+    grid_plotter.set_axis_limits(
         axis_limits=mapper.pixelization_grid.extent,
         grid=None,
         symmetric_around_centre=False,
@@ -280,7 +280,7 @@ def voronoi_mapper(
 
     plotter_util.setup_figure(figsize=figsize, as_subplot=as_subplot)
 
-    grid_plotters.set_axis_limits(
+    grid_plotter.set_axis_limits(
         axis_limits=mapper.pixelization_grid.extent,
         grid=None,
         symmetric_around_centre=False,
@@ -518,7 +518,7 @@ def plot_mapper_grid(
 
     if include_grid:
 
-        grid_plotters.plot_grid(
+        grid_plotter.plot_grid(
             grid=mapper.grid,
             as_subplot=as_subplot,
             unit_label_y=unit_label,
@@ -552,7 +552,7 @@ def plot_border(
 
         border = mapper.grid[mapper.grid.mask.regions._sub_border_1d_indexes]
 
-        grid_plotters.plot_grid(
+        grid_plotter.plot_grid(
             grid=border,
             as_subplot=as_subplot,
             unit_label_y=unit_label,

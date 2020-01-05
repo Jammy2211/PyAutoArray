@@ -10,86 +10,154 @@ from autoarray import exc
 from autoarray import conf
 from autoarray.util import array_util
 
+
 def setting(section, name, python_type):
     return conf.instance.visualize.get(section, name, python_type)
 
-
 def load_setting(value, name, python_type):
-    return value if value is not None else setting(section="settings", name=name, python_type=python_type)
+    return (
+        value
+        if value is not None
+        else setting(section="settings", name=name, python_type=python_type)
+    )
 
+def load_figure_setting(value, name, python_type):
+    return (
+        value
+        if value is not None
+        else setting(section="figures", name=name, python_type=python_type)
+    )
+
+def load_subplot_setting(value, name, python_type):
+    return (
+        value
+        if value is not None
+        else setting(section="subplots", name=name, python_type=python_type)
+    )
 
 def load_include(value, name, python_type):
-    return value if value is not None else setting(section="include", name=name, python_type=python_type)
+    return (
+        value
+        if value is not None
+        else setting(section="include", name=name, python_type=python_type)
+    )
 
 
-class AbstractPlotter(object):
+class Plotter(object):
 
-    def __init__(self,
-    use_scaled_units=None,
-    unit_conversion_factor=None,
-    figsize=None,
-    aspect=None,
-    cmap=None,
-    norm=None,
-    norm_min=None,
-    norm_max=None,
-    linthresh=None,
-    linscale=None,
-    cb_ticksize=None,
-    cb_fraction=None,
-    cb_pad=None,
-    cb_tick_values=None,
-    cb_tick_labels=None,
-    titlesize=None,
-    xlabelsize=None,
-    ylabelsize=None,
-    xyticksize=None,
-    mask_pointsize=None,
-    border_pointsize=None,
-    point_pointsize=None,
-    grid_pointsize=None,
-     include_origin=None,
-     include_mask=None,
-     include_border=None,
-     include_points=None,
-     label_title=None, label_yunits=None, label_xunits=None, label_yticks=None, label_xticks=None,
-                 output_path=None,
-                 output_format="show",
-                 output_filename=None
-                 ):
+    def __init__(
+        self,
+        is_sub_plotter=False,
+        use_scaled_units=None,
+        unit_conversion_factor=None,
+            figsize=None,
+            aspect=None,
+        cmap=None,
+        norm=None,
+        norm_min=None,
+        norm_max=None,
+        linthresh=None,
+        linscale=None,
+        cb_ticksize=None,
+        cb_fraction=None,
+        cb_pad=None,
+        cb_tick_values=None,
+        cb_tick_labels=None,
+        mask_pointsize=None,
+        border_pointsize=None,
+        point_pointsize=None,
+        grid_pointsize=None,
+        titlesize=None,
+        xlabelsize=None,
+        ylabelsize=None,
+        xyticksize=None,
+        label_title=None,
+        label_yunits=None,
+        label_xunits=None,
+        label_yticks=None,
+        label_xticks=None,
+        output_path=None,
+        output_format="show",
+        output_filename=None,
+    ):
 
-        self.use_scaled_units = load_setting(value=use_scaled_units, name="use_scaled_units", python_type=bool)
+        self.is_sub_plotter = is_sub_plotter
+
+        if not is_sub_plotter:
+
+            self.figsize = load_figure_setting(value=figsize, name="figsize", python_type=str)
+            if isinstance(self.figsize, str):
+                self.figsize = tuple(map(int, self.figsize[1:-1].split(",")))
+            self.aspect = load_figure_setting(value=aspect, name="aspect", python_type=str)
+            self.titlesize = load_figure_setting(
+                value=titlesize, name="titlesize", python_type=int
+            )
+            self.ylabelsize = load_figure_setting(
+                value=ylabelsize, name="ylabelsize", python_type=int
+            )
+            self.xlabelsize = load_figure_setting(
+                value=xlabelsize, name="xlabelsize", python_type=int
+            )
+            self.xyticksize = load_figure_setting(
+                value=xyticksize, name="xyticksize", python_type=int
+            )
+
+        else:
+
+            self.figsize = load_subplot_setting(value=figsize, name="figsize", python_type=str)
+            self.figsize = None if self.figsize == "auto" else self.figsize
+            if isinstance(self.figsize, str):
+                self.figsize = tuple(map(int, self.figsize[1:-1].split(",")))
+            self.aspect = load_subplot_setting(value=aspect, name="aspect", python_type=str)
+            self.titlesize = load_subplot_setting(
+                value=titlesize, name="titlesize", python_type=int
+            )
+            self.ylabelsize = load_subplot_setting(
+                value=ylabelsize, name="ylabelsize", python_type=int
+            )
+            self.xlabelsize = load_subplot_setting(
+                value=xlabelsize, name="xlabelsize", python_type=int
+            )
+            self.xyticksize = load_subplot_setting(
+                value=xyticksize, name="xyticksize", python_type=int
+            )
+
+        self.use_scaled_units = load_setting(
+            value=use_scaled_units, name="use_scaled_units", python_type=bool
+        )
         self.unit_conversion_factor = unit_conversion_factor
-        self.figsize = load_setting(value=figsize, name="figsize", python_type=str)
-        if isinstance(self.figsize, str):
-            self.figsize = tuple(map(int, self.figsize[1:-1].split(',')))
-        self.aspect = load_setting(value=aspect, name="aspect", python_type=str)
+
         self.cmap = load_setting(value=cmap, name="cmap", python_type=str)
         self.norm = load_setting(value=norm, name="norm", python_type=str)
         self.norm_min = load_setting(value=norm_min, name="norm_min", python_type=float)
         self.norm_max = load_setting(value=norm_max, name="norm_max", python_type=float)
-        self.linthresh = load_setting(value=linthresh, name="linthresh", python_type=float)
+        self.linthresh = load_setting(
+            value=linthresh, name="linthresh", python_type=float
+        )
         self.linscale = load_setting(value=linscale, name="linscale", python_type=float)
 
-        self.cb_ticksize = load_setting(value=cb_ticksize, name="cb_ticksize", python_type=int)
-        self.cb_fraction = load_setting(value=cb_fraction, name="cb_fraction", python_type=float)
+        self.cb_ticksize = load_setting(
+            value=cb_ticksize, name="cb_ticksize", python_type=int
+        )
+        self.cb_fraction = load_setting(
+            value=cb_fraction, name="cb_fraction", python_type=float
+        )
         self.cb_pad = load_setting(value=cb_pad, name="cb_pad", python_type=float)
         self.cb_tick_values = cb_tick_values
         self.cb_tick_labels = cb_tick_labels
 
-        self.titlesize = load_setting(value=titlesize, name="titlesize", python_type=int)
-        self.ylabelsize = load_setting(value=ylabelsize, name="ylabelsize", python_type=int)
-        self.xlabelsize = load_setting(value=xlabelsize, name="xlabelsize", python_type=int)
-        self.xyticksize = load_setting(value=xyticksize, name="xyticksize", python_type=int)
-        self.mask_pointsize = load_setting(value=mask_pointsize, name="mask_pointsize", python_type=int)
-        self.border_pointsize = load_setting(value=border_pointsize, name="border_pointsize", python_type=int)
-        self.point_pointsize = load_setting(value=point_pointsize, name="point_pointsize", python_type=int)
-        self.grid_pointsize = load_setting(value=grid_pointsize, name="grid_pointsize", python_type=int)
-
-        self.include_origin = load_include(value=include_origin, name="origin", python_type=bool)
-        self.include_mask = load_include(value=include_mask, name="mask", python_type=bool)
-        self.include_border = load_include(value=include_border, name="border", python_type=bool)
-        self.include_points = load_include(value=include_points, name="points", python_type=bool)
+        self.mask_pointsize = load_setting(
+            value=mask_pointsize, name="mask_pointsize", python_type=int
+        )
+        self.border_pointsize = load_setting(
+            value=border_pointsize, name="border_pointsize", python_type=int
+        )
+        self.point_pointsize = load_setting(
+            value=point_pointsize, name="point_pointsize", python_type=int
+        )
+        self.grid_pointsize = load_setting(
+            value=grid_pointsize, name="grid_pointsize", python_type=int
+        )
 
         self.label_title = label_title
         self.label_yunits = label_yunits
@@ -100,8 +168,6 @@ class AbstractPlotter(object):
         self.output_path = output_path
         self.output_format = output_format
         self.output_filename = output_filename
-
-        self.as_subplot = False
 
     def setup_figure(self):
         """Setup a figure for plotting an image.
@@ -114,7 +180,7 @@ class AbstractPlotter(object):
             If the figure is a subplot, the setup_figure function is omitted to ensure that each subplot does not create a \
             new figure and so that it can be output using the *output_subplot_array* function.
         """
-        if not self.as_subplot:
+        if not self.is_sub_plotter:
             fig = plt.figure(figsize=self.figsize)
             return fig
 
@@ -130,9 +196,7 @@ class AbstractPlotter(object):
         """
         plt.title(label=self.label_title, fontsize=self.titlesize)
 
-    def set_yx_labels_and_ticksize(
-            self
-    ):
+    def set_yx_labels_and_ticksize(self):
         """Set the x and y labels of the figure, and set the fontsize of those self.label_
 
         The x and y labels are always the distance scales, thus the labels are either arc-seconds or kpc and depend on the \
@@ -157,12 +221,7 @@ class AbstractPlotter(object):
 
         plt.tick_params(labelsize=self.xyticksize)
 
-    def set_yxticks(
-            self,
-            array,
-            extent,
-            symmetric_around_centre=False,
-    ):
+    def set_yxticks(self, array, extent, symmetric_around_centre=False):
         """Get the extent of the dimensions of the array in the unit_label of the figure (e.g. arc-seconds or kpc).
 
         This is used to set the extent of the array and thus the y / x axis limits.
@@ -241,7 +300,9 @@ class AbstractPlotter(object):
         if self.cb_tick_values is None and self.cb_tick_labels is None:
             cb = plt.colorbar(fraction=self.cb_fraction, pad=self.cb_pad)
         elif self.cb_tick_values is not None and self.cb_tick_labels is not None:
-            cb = plt.colorbar(fraction=self.cb_fraction, pad=self.cb_pad, ticks=self.cb_tick_values)
+            cb = plt.colorbar(
+                fraction=self.cb_fraction, pad=self.cb_pad, ticks=self.cb_tick_values
+            )
             cb.ax.set_yticklabels(labels=self.cb_tick_labels)
         else:
             raise exc.PlottingException(
@@ -275,6 +336,53 @@ class AbstractPlotter(object):
                         if len(line) != 0:
                             plt.plot(line[:, 1], line[:, 0], c="w", lw=2.0, zorder=200)
 
+    def output_figure(self, array):
+        """Output the figure, either as an image on the screen or to the hard-disk as a .png or .fits file.
+
+        Parameters
+        -----------
+        array : ndarray
+            The 2D array of image to be output, required for outputting the image as a fits file.
+        as_subplot : bool
+            Whether the figure is part of subplot, in which case the figure is not output so that the entire subplot can \
+            be output instead using the *output_subplot_array* function.
+        output_path : str
+            The path on the hard-disk where the figure is output.
+        output_filename : str
+            The filename of the figure that is output.
+        output_format : str
+            The format the figue is output:
+            'show' - display on computer screen.
+            'png' - output to hard-disk as a png.
+            'fits' - output to hard-disk as a fits file.'
+        """
+        if not self.is_sub_plotter:
+            if self.output_format is "show":
+                plt.show()
+            elif self.output_format is "png":
+                plt.savefig(
+                    self.output_path + self.output_filename + ".png",
+                    bbox_inches="tight",
+                )
+            elif self.output_format is "fits":
+                array_util.numpy_array_2d_to_fits(
+                    array_2d=array,
+                    file_path=self.output_path + self.output_filename + ".fits",
+                    overwrite=True,
+                )
+
+    def close_figure(self):
+        """After plotting and outputting a figure, close the matplotlib figure instance (omit if a subplot).
+
+        Parameters
+        -----------
+        as_subplot : bool
+            Whether the figure is part of subplot, in which case the figure is not closed so that the entire figure can \
+            be closed later after output.
+        """
+        if not self.is_sub_plotter:
+            plt.close()
+
     @staticmethod
     def get_subplot_rows_columns_figsize(number_subplots):
         """Get the size of a sub plotters in (rows, columns), based on the number of subplots that are going to be plotted.
@@ -301,39 +409,6 @@ class AbstractPlotter(object):
         else:
             return 6, 6, (25, 20)
 
-    def output_figure(self, array):
-        """Output the figure, either as an image on the screen or to the hard-disk as a .png or .fits file.
-
-        Parameters
-        -----------
-        array : ndarray
-            The 2D array of image to be output, required for outputting the image as a fits file.
-        as_subplot : bool
-            Whether the figure is part of subplot, in which case the figure is not output so that the entire subplot can \
-            be output instead using the *output_subplot_array* function.
-        output_path : str
-            The path on the hard-disk where the figure is output.
-        output_filename : str
-            The filename of the figure that is output.
-        output_format : str
-            The format the figue is output:
-            'show' - display on computer screen.
-            'png' - output to hard-disk as a png.
-            'fits' - output to hard-disk as a fits file.'
-        """
-        if not self.as_subplot:
-
-            if self.output_format is "show":
-                plt.show()
-            elif self.output_format is "png":
-                plt.savefig(self.output_path + self.output_filename + ".png", bbox_inches="tight")
-            elif self.output_format is "fits":
-                array_util.numpy_array_2d_to_fits(
-                    array_2d=array,
-                    file_path=self.output_path + self.output_filename + ".fits",
-                    overwrite=True,
-                )
-
     def output_subplot_array(self):
         """Output a figure which consists of a set of subplot,, either as an image on the screen or to the hard-disk as a \
         .png file.
@@ -352,18 +427,10 @@ class AbstractPlotter(object):
         if self.output_format is "show":
             plt.show()
         elif self.output_format is "png":
-            plt.savefig(self.output_path + self.output_filename + ".png", bbox_inches="tight")
+            plt.savefig(
+                self.output_path + self.output_filename + ".png", bbox_inches="tight"
+            )
         elif self.output_format is "fits":
-            raise exc.PlottingException("You cannot output a subplots with format .fits")
-
-    def close_figure(self):
-        """After plotting and outputting a figure, close the matplotlib figure instance (omit if a subplot).
-
-        Parameters
-        -----------
-        as_subplot : bool
-            Whether the figure is part of subplot, in which case the figure is not closed so that the entire figure can \
-            be closed later after output.
-        """
-        if not self.as_subplot:
-            plt.close()
+            raise exc.PlottingException(
+                "You cannot output a subplots with format .fits"
+            )

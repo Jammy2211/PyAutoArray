@@ -1,4 +1,3 @@
-
 def plot_quantity_as_function_of_radius(
     quantity,
     radii,
