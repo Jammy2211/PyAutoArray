@@ -14,40 +14,6 @@ import itertools
 
 from autoarray.plotters import plotters
 
-def set_includes(func):
-    """
-    Decorate a profile method that accepts a coordinate grid and returns a data_type grid.
-
-    If an interpolator attribute is associated with the input grid then that interpolator is used to down sample the
-    coordinate grid prior to calling the function and up sample the result of the function.
-
-    If no interpolator attribute is associated with the input grid then the function is called as hyper.
-
-    Parameters
-    ----------
-    func
-        Some method that accepts a grid
-
-    Returns
-    -------
-    decorated_function
-        The function with optional interpolation
-    """
-
-    @wraps(func)
-    def wrapper(imaging, *args, **kwargs):
-        
-        include_origin = kwargs["include_origin"]
-
-        include_origin = plotters.load_include(
-            value=include_origin, name="origin", python_type=bool
-        )
-
-        kwargs["include_origin"] = include_origin
-
-        return func(imaging, *args, **kwargs)
-
-    return wrapper
 
 def set_labels(func):
     """
@@ -70,42 +36,14 @@ def set_labels(func):
     """
 
     @wraps(func)
-    def wrapper(imaging, *args, **kwargs):
+    def wrapper(*args, **kwargs):
 
         array_plotter = kwargs["array_plotter"]
 
-        if array_plotter.label_title is None:
-
-            label_title = func.__name__.capitalize()
-
-        else:
-
-            label_title = array_plotter.label_title
-
-        if array_plotter.label_yunits is None:
-            if array_plotter.use_scaled_units:
-                label_yunits = "scaled"
-            else:
-                label_yunits = "pixels"
-
-        else:
-
-            label_yunits = array_plotter.label_yunits
-
-        if array_plotter.label_xunits is None:
-            if array_plotter.use_scaled_units:
-                label_xunits = "scaled"
-            else:
-                label_xunits = "pixels"
-        else:
-
-            label_xunits = array_plotter.label_xunits
-
-        if array_plotter.output_filename is None:
-            output_filename = func.__name__
-        else:
-
-            output_filename = array_plotter.output_filename
+        label_title = plotters.label_title_from_plotter(plotter=array_plotter, func=func)
+        label_yunits = plotters.label_yunits_from_plotter(plotter=array_plotter)
+        label_xunits = plotters.label_xunits_from_plotter(plotter=array_plotter)
+        output_filename = plotters.output_filename_from_plotter_and_func(plotter=array_plotter, func=func)
 
         kwargs["array_plotter"] = array_plotter.plotter_with_new_labels_and_filename(
             label_title=label_title,
@@ -114,7 +52,7 @@ def set_labels(func):
             output_filename=output_filename,
         )
 
-        return func(imaging, *args, **kwargs)
+        return func(*args, **kwargs)
 
     return wrapper
 
@@ -189,6 +127,46 @@ class ArrayPlotter(plotters.Plotter):
             output_path=output_path,
             output_format=output_format,
             output_filename=output_filename,
+        )
+
+
+    def plotter_as_sub_plotter(
+        self,
+    ):
+
+        return ArrayPlotter(
+            is_sub_plotter=True,
+            use_scaled_units=self.use_scaled_units,
+            unit_conversion_factor=self.unit_conversion_factor,
+            figsize=self.figsize,
+            aspect=self.aspect,
+            cmap=self.cmap,
+            norm=self.norm,
+            norm_min=self.norm_min,
+            norm_max=self.norm_max,
+            linthresh=self.linthresh,
+            linscale=self.linscale,
+            cb_ticksize=self.cb_ticksize,
+            cb_fraction=self.cb_fraction,
+            cb_pad=self.cb_pad,
+            cb_tick_values=self.cb_tick_values,
+            cb_tick_labels=self.cb_tick_labels,
+            titlesize=self.titlesize,
+            xlabelsize=self.xlabelsize,
+            ylabelsize=self.ylabelsize,
+            xyticksize=self.xyticksize,
+            mask_pointsize=self.mask_pointsize,
+            border_pointsize=self.border_pointsize,
+            point_pointsize=self.point_pointsize,
+            grid_pointsize=self.grid_pointsize,
+            label_title=self.label_title,
+            label_yunits=self.label_yunits,
+            label_xunits=self.label_xunits,
+            label_yticks=self.label_yticks,
+            label_xticks=self.label_xticks,
+            output_path=self.output_path,
+            output_format=self.output_format,
+            output_filename=self.output_filename,
         )
 
     def plotter_with_new_labels_and_filename(
