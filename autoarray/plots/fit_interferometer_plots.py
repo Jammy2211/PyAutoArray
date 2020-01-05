@@ -5,11 +5,12 @@ backend = conf.get_matplotlib_backend()
 matplotlib.use(backend)
 from matplotlib import pyplot as plt
 
-from autoarray.plotters import grid_plotters, line_plotters
+from autoarray.plotters import plotters, grid_plotters, line_plotters
 from autoarray.plots import inversion_plots
 from autoarray.util import plotter_util
 
-
+@plotters.set_includes
+@plotters.set_labels
 def subplot(
     fit,
     unit_conversion_factor=None,
@@ -181,7 +182,7 @@ def subplot(
 
     plt.close()
 
-
+@plotters.set_includes
 def individuals(
     fit,
     plot_visibilities=False,
@@ -331,28 +332,11 @@ def individuals(
             output_format=output_format,
         )
 
-
+@plotters.set_includes
+@plotters.set_labels
 def visibilities(
     fit,
-    as_subplot=False,
-    unit_conversion_factor=None,
-    unit_label="scaled",
-    figsize=(7, 7),
-    cmap="jet",
-    cb_ticksize=10,
-    cb_fraction=0.047,
-    cb_pad=0.01,
-    cb_tick_values=None,
-    cb_tick_labels=None,
-    title="Fit Image",
-    titlesize=16,
-    xlabelsize=16,
-    ylabelsize=16,
-    xyticksize=16,
-    pointsize=1,
-    output_path=None,
-    output_format="show",
-    output_filename="fit_visibilities",
+    grid_plotter=grid_plotters.GridPlotter(),
 ):
     """Plot the visibilities of a lens fit.
 
@@ -367,49 +351,13 @@ def visibilities(
     """
     grid_plotter.plot_grid(
         grid=fit.visibilities,
-        as_subplot=as_subplot,
-        unit_conversion_factor=unit_conversion_factor,
-        label_yunits=unit_label,
-        label_xunits=unit_label,
-        figsize=figsize,
-        cmap=cmap,
-        cb_ticksize=cb_ticksize,
-        cb_fraction=cb_fraction,
-        cb_pad=cb_pad,
-        cb_tick_values=cb_tick_values,
-        cb_tick_labels=cb_tick_labels,
-        title=title,
-        titlesize=titlesize,
-        xlabelsize=xlabelsize,
-        ylabelsize=ylabelsize,
-        xyticksize=xyticksize,
-        pointsize=pointsize,
-        output_path=output_path,
-        output_format=output_format,
-        output_filename=output_filename,
     )
 
-
+@plotters.set_includes
+@plotters.set_labels
 def noise_map(
     fit,
-    as_subplot=False,
-    unit_conversion_factor=None,
-    unit_label="scaled",
-    figsize=(7, 7),
-    cmap="jet",
-    cb_ticksize=10,
-    cb_fraction=0.047,
-    cb_pad=0.01,
-    cb_tick_values=None,
-    cb_tick_labels=None,
-    title="Fit Noise-Map",
-    titlesize=16,
-    xlabelsize=16,
-    ylabelsize=16,
-    xyticksize=16,
-    output_path=None,
-    output_format="show",
-    output_filename="fit_noise_map",
+    grid_plotter=grid_plotters.GridPlotter(),
 ):
     """Plot the noise-map of a lens fit.
 
@@ -425,48 +373,13 @@ def noise_map(
     grid_plotter.plot_grid(
         grid=fit.visibilities,
         colors=fit.noise_map[:, 0],
-        as_subplot=as_subplot,
-        unit_conversion_factor=unit_conversion_factor,
-        label_yunits=unit_label,
-        label_xunits=unit_label,
-        figsize=figsize,
-        cmap=cmap,
-        cb_ticksize=cb_ticksize,
-        cb_fraction=cb_fraction,
-        cb_pad=cb_pad,
-        cb_tick_values=cb_tick_values,
-        cb_tick_labels=cb_tick_labels,
-        title=title,
-        titlesize=titlesize,
-        xlabelsize=xlabelsize,
-        ylabelsize=ylabelsize,
-        xyticksize=xyticksize,
-        output_path=output_path,
-        output_format=output_format,
-        output_filename=output_filename,
     )
 
-
+@plotters.set_includes
+@plotters.set_labels
 def signal_to_noise_map(
     fit,
-    as_subplot=False,
-    unit_conversion_factor=None,
-    unit_label="scaled",
-    figsize=(7, 7),
-    cmap="jet",
-    cb_ticksize=10,
-    cb_fraction=0.047,
-    cb_pad=0.01,
-    cb_tick_values=None,
-    cb_tick_labels=None,
-    title="Fit Signal-to-Noise-Map",
-    titlesize=16,
-    xlabelsize=16,
-    ylabelsize=16,
-    xyticksize=16,
-    output_path=None,
-    output_format="show",
-    output_filename="fit_signal_to_noise_map",
+    grid_plotter=grid_plotters.GridPlotter(),
 ):
     """Plot the noise-map of a lens fit.
 
@@ -482,48 +395,13 @@ def signal_to_noise_map(
     grid_plotter.plot_grid(
         grid=fit.visibilities,
         colors=fit.signal_to_noise_map[:, 0],
-        as_subplot=as_subplot,
-        unit_conversion_factor=unit_conversion_factor,
-        label_yunits=unit_label,
-        label_xunits=unit_label,
-        figsize=figsize,
-        cmap=cmap,
-        cb_ticksize=cb_ticksize,
-        cb_fraction=cb_fraction,
-        cb_pad=cb_pad,
-        cb_tick_values=cb_tick_values,
-        cb_tick_labels=cb_tick_labels,
-        title=title,
-        titlesize=titlesize,
-        xlabelsize=xlabelsize,
-        ylabelsize=ylabelsize,
-        xyticksize=xyticksize,
-        output_path=output_path,
-        output_format=output_format,
-        output_filename=output_filename,
     )
 
-
+@plotters.set_includes
+@plotters.set_labels
 def model_visibilities(
     fit,
-    as_subplot=False,
-    unit_conversion_factor=None,
-    unit_label="scaled",
-    figsize=(7, 7),
-    cmap="jet",
-    cb_ticksize=10,
-    cb_fraction=0.047,
-    cb_pad=0.01,
-    cb_tick_values=None,
-    cb_tick_labels=None,
-    title="Fit Model Image",
-    titlesize=16,
-    xlabelsize=16,
-    ylabelsize=16,
-    xyticksize=16,
-    output_path=None,
-    output_format="show",
-    output_filename="fit_model_visibilities",
+    grid_plotter=grid_plotters.GridPlotter(),
 ):
     """Plot the model visibilities of a fit.
 
@@ -538,50 +416,16 @@ def model_visibilities(
     """
     grid_plotter.plot_grid(
         grid=fit.visibilities,
-        colors=fit.model_visibilities[:, 0],
-        as_subplot=as_subplot,
-        unit_conversion_factor=unit_conversion_factor,
-        label_yunits=unit_label,
-        figsize=figsize,
-        cmap=cmap,
-        cb_ticksize=cb_ticksize,
-        cb_fraction=cb_fraction,
-        cb_pad=cb_pad,
-        cb_tick_values=cb_tick_values,
-        cb_tick_labels=cb_tick_labels,
-        title=title,
-        titlesize=titlesize,
-        xlabelsize=xlabelsize,
-        ylabelsize=ylabelsize,
-        xyticksize=xyticksize,
-        output_path=output_path,
-        output_format=output_format,
-        output_filename=output_filename,
     )
 
-
+@plotters.set_includes
+@plotters.set_labels
 def residual_map_vs_uv_distances(
     fit,
-    as_subplot=False,
     plot_real=True,
-    unit_conversion_factor=None,
     label_yunits="V$_{R,data}$ - V$_{R,model}$",
     label_xunits=r"UV$_{distance}$ (k$\lambda$)",
-    figsize=(7, 7),
-    cmap="jet",
-    cb_ticksize=10,
-    cb_fraction=0.047,
-    cb_pad=0.01,
-    cb_tick_values=None,
-    cb_tick_labels=None,
-    title="Fit Residuals",
-    titlesize=16,
-    xlabelsize=16,
-    ylabelsize=16,
-    xyticksize=16,
-    output_path=None,
-    output_format="show",
-    output_filename="fit_residual_map_vs_uv_distances",
+    line_plotter=line_plotters.LinePlotter(),
 ):
     """Plot the residual-map of a lens fit.
 
@@ -594,58 +438,35 @@ def residual_map_vs_uv_distances(
     visibilities_index : int
         The index of the datas in the datas-set of which the residual_map are plotted.
     """
+
+    line_plotter = line_plotter.plotter_with_new_labels_and_filename(
+        label_yunits=label_yunits, label_xunits=label_xunits)
 
     if plot_real:
         y = fit.residual_map[:, 0]
-        title += " Real"
-        output_filename += "_real"
+        line_plotter = line_plotter.plotter_with_new_labels_and_filename(
+            label_title=line_plotter.label_title + " Real",
+        output_filename=line_plotter.output_filename + "_real")
     else:
         y = fit.residual_map[:, 1]
-        title += " Imag"
-        output_filename += "_imag"
+        line_plotter = line_plotter.plotter_with_new_labels_and_filename(
+            label_title=line_plotter.label_title + " Imag",
+        output_filename=line_plotter.output_filename + "_imag")
 
-    line_plotters.plot_line(
+    line_plotter.plot_line(
         y=y,
         x=fit.masked_interferometer.interferometer.uv_distances / 10 ** 3.0,
-        as_subplot=as_subplot,
-        unit_conversion_factor=unit_conversion_factor,
-        label_yunits=label_yunits,
-        label_xunits=label_xunits,
-        figsize=figsize,
         plot_axis_type="scatter",
-        title=title,
-        titlesize=titlesize,
-        xlabelsize=xlabelsize,
-        ylabelsize=ylabelsize,
-        xyticksize=xyticksize,
-        output_path=output_path,
-        output_format=output_format,
-        output_filename=output_filename,
     )
 
-
+@plotters.set_includes
+@plotters.set_labels
 def normalized_residual_map_vs_uv_distances(
     fit,
-    as_subplot=False,
     plot_real=True,
-    unit_conversion_factor=None,
     label_yunits="V$_{R,data}$ - V$_{R,model}$",
     label_xunits=r"UV$_{distance}$ (k$\lambda$)",
-    figsize=(7, 7),
-    cmap="jet",
-    cb_ticksize=10,
-    cb_fraction=0.047,
-    cb_pad=0.01,
-    cb_tick_values=None,
-    cb_tick_labels=None,
-    title="Fit Normalized Residuals",
-    titlesize=16,
-    xlabelsize=16,
-    ylabelsize=16,
-    xyticksize=16,
-    output_path=None,
-    output_format="show",
-    output_filename="fit_normalized_residual_map_vs_uv_distances",
+    line_plotter=line_plotters.LinePlotter(),
 ):
     """Plot the residual-map of a lens fit.
 
@@ -659,57 +480,34 @@ def normalized_residual_map_vs_uv_distances(
         The index of the datas in the datas-set of which the residual_map are plotted.
     """
 
-    if plot_real:
-        y = fit.normalized_residual_map[:, 0]
-        title += " Real"
-        output_filename += "_real"
-    else:
-        y = fit.normalized_residual_map[:, 1]
-        title += " Imag"
-        output_filename += "_imag"
+    line_plotter = line_plotter.plotter_with_new_labels_and_filename(
+        label_yunits=label_yunits, label_xunits=label_xunits)
 
-    line_plotters.plot_line(
+    if plot_real:
+        y = fit.residual_map[:, 0]
+        line_plotter = line_plotter.plotter_with_new_labels_and_filename(
+            label_title=line_plotter.label_title + " Real",
+        output_filename=line_plotter.output_filename + "_real")
+    else:
+        y = fit.residual_map[:, 1]
+        line_plotter = line_plotter.plotter_with_new_labels_and_filename(
+            label_title=line_plotter.label_title + " Imag",
+        output_filename=line_plotter.output_filename + "_imag")
+
+    line_plotter.plot_line(
         y=y,
         x=fit.masked_interferometer.interferometer.uv_distances / 10 ** 3.0,
-        as_subplot=as_subplot,
-        unit_conversion_factor=unit_conversion_factor,
-        label_yunits=label_yunits,
-        label_xunits=label_xunits,
-        figsize=figsize,
         plot_axis_type="scatter",
-        title=title,
-        titlesize=titlesize,
-        xlabelsize=xlabelsize,
-        ylabelsize=ylabelsize,
-        xyticksize=xyticksize,
-        output_path=output_path,
-        output_format=output_format,
-        output_filename=output_filename,
     )
 
-
+@plotters.set_includes
+@plotters.set_labels
 def chi_squared_map_vs_uv_distances(
     fit,
-    as_subplot=False,
     plot_real=True,
-    unit_conversion_factor=None,
     label_yunits="V$_{R,data}$ - V$_{R,model}$",
     label_xunits=r"UV$_{distance}$ (k$\lambda$)",
-    figsize=(7, 7),
-    cmap="jet",
-    cb_ticksize=10,
-    cb_fraction=0.047,
-    cb_pad=0.01,
-    cb_tick_values=None,
-    cb_tick_labels=None,
-    title="Fit Chi-Squareds",
-    titlesize=16,
-    xlabelsize=16,
-    ylabelsize=16,
-    xyticksize=16,
-    output_path=None,
-    output_format="show",
-    output_filename="fit_chi_squared_map_vs_uv_distances",
+    line_plotter=line_plotters.LinePlotter(),
 ):
     """Plot the residual-map of a lens fit.
 
@@ -723,30 +521,22 @@ def chi_squared_map_vs_uv_distances(
         The index of the datas in the datas-set of which the residual_map are plotted.
     """
 
-    if plot_real:
-        y = fit.chi_squared_map[:, 0]
-        title += " Real"
-        output_filename += "_real"
-    else:
-        y = fit.chi_squared_map[:, 1]
-        title += " Imag"
-        output_filename += "_imag"
+    line_plotter = line_plotter.plotter_with_new_labels_and_filename(
+        label_yunits=label_yunits, label_xunits=label_xunits)
 
-    line_plotters.plot_line(
+    if plot_real:
+        y = fit.residual_map[:, 0]
+        line_plotter = line_plotter.plotter_with_new_labels_and_filename(
+            label_title=line_plotter.label_title + " Real",
+        output_filename=line_plotter.output_filename + "_real")
+    else:
+        y = fit.residual_map[:, 1]
+        line_plotter = line_plotter.plotter_with_new_labels_and_filename(
+            label_title=line_plotter.label_title + " Imag",
+        output_filename=line_plotter.output_filename + "_imag")
+
+    line_plotter.plot_line(
         y=y,
         x=fit.masked_interferometer.interferometer.uv_distances / 10 ** 3.0,
-        as_subplot=as_subplot,
-        unit_conversion_factor=unit_conversion_factor,
-        label_yunits=label_yunits,
-        label_xunits=label_xunits,
-        figsize=figsize,
         plot_axis_type="scatter",
-        title=title,
-        titlesize=titlesize,
-        xlabelsize=xlabelsize,
-        ylabelsize=ylabelsize,
-        xyticksize=xyticksize,
-        output_path=output_path,
-        output_format=output_format,
-        output_filename=output_filename,
     )
