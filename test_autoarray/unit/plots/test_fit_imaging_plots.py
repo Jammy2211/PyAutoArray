@@ -101,7 +101,7 @@ def test__fit_sub_plot(fit_imaging_7x7, fit_imaging_path, plot_patch):
         ),
     )
 
-    assert fit_imaging_path + "fit.png" in plot_patch.paths
+    assert fit_imaging_path + "fit_imaging.png" in plot_patch.paths
 
 
 def test__fit_individuals__source_and_lens__depedent_on_input(
