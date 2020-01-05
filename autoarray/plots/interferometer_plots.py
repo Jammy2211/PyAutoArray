@@ -5,7 +5,7 @@ backend = conf.get_matplotlib_backend()
 matplotlib.use(backend)
 from matplotlib import pyplot as plt
 
-from autoarray.plotters import array_plotter, grid_plotter, line_yx_plotter
+from autoarray.plotters import array_plotters, grid_plotters, line_yx_plotters
 from autoarray.util import plotter_util
 from autoarray.structures import grids
 import numpy as np
@@ -320,7 +320,7 @@ def visibilities(
         over the immage.
     """
 
-    grid_plotters.plot_grid(
+    grid_plotter.plot_grid(
         grid=interferometer.visibilities,
         as_subplot=as_subplot,
         unit_conversion_factor=unit_conversion_factor,
@@ -381,7 +381,7 @@ def noise_map(
         over the immage.
     """
 
-    grid_plotters.plot_grid(
+    grid_plotter.plot_grid(
         grid=interferometer.visibilities,
         colors=interferometer.noise_map[:, 0],
         as_subplot=as_subplot,
@@ -545,7 +545,7 @@ def uv_wavelengths(
         over the immage.
     """
 
-    grid_plotters.plot_grid(
+    grid_plotter.plot_grid(
         grid=grids.GridIrregular.manual_yx_1d(
             y=interferometer.uv_wavelengths[:, 1] / 10 ** 3.0,
             x=interferometer.uv_wavelengths[:, 0] / 10 ** 3.0,
@@ -694,7 +694,7 @@ def primary_beam(
         If true, the origin of the dataset's coordinate system is plotted as a 'x'.
     """
 
-    array_plotters.plot_array(
+    array_plotter.plot_array(
         array=interferometer.primary_beam,
         origin=origin,
         as_subplot=as_subplot,

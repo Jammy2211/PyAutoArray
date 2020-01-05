@@ -40,7 +40,6 @@ def get_real_space_mask_from_fit(mask, fit):
         return None
 
 
-
 def radii_bin_size_from_minimum_and_maximum_radii_and_radii_points(
     minimum_radius, maximum_radius, radii_points
 ):

@@ -1006,9 +1006,7 @@ def plot_values(
             solution_vector=source_pixel_values
         )
 
-        origin = get_origin(
-            image=reconstructed_pixelization, origin=origin
-        )
+        origin = get_origin(image=reconstructed_pixelization, origin=origin)
 
         aa.plot.array(
             array=reconstructed_pixelization,

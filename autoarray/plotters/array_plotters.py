@@ -1,6 +1,7 @@
 from autoarray import conf
 from autoarray import exc
 import matplotlib
+from functools import wraps
 
 backend = conf.get_matplotlib_backend()
 
@@ -11,127 +12,245 @@ import matplotlib.colors as colors
 import numpy as np
 import itertools
 
-from autoarray.plotters import abstract_plotter
+from autoarray.plotters import plotters
+
+def set_includes(func):
+    """
+    Decorate a profile method that accepts a coordinate grid and returns a data_type grid.
+
+    If an interpolator attribute is associated with the input grid then that interpolator is used to down sample the
+    coordinate grid prior to calling the function and up sample the result of the function.
+
+    If no interpolator attribute is associated with the input grid then the function is called as hyper.
+
+    Parameters
+    ----------
+    func
+        Some method that accepts a grid
+
+    Returns
+    -------
+    decorated_function
+        The function with optional interpolation
+    """
+
+    @wraps(func)
+    def wrapper(imaging, *args, **kwargs):
+        
+        include_origin = kwargs["include_origin"]
+
+        include_origin = plotters.load_include(
+            value=include_origin, name="origin", python_type=bool
+        )
+
+        kwargs["include_origin"] = include_origin
+
+        return func(imaging, *args, **kwargs)
+
+    return wrapper
+
+def set_labels(func):
+    """
+    Decorate a profile method that accepts a coordinate grid and returns a data_type grid.
+
+    If an interpolator attribute is associated with the input grid then that interpolator is used to down sample the
+    coordinate grid prior to calling the function and up sample the result of the function.
+
+    If no interpolator attribute is associated with the input grid then the function is called as hyper.
+
+    Parameters
+    ----------
+    func
+        Some method that accepts a grid
+
+    Returns
+    -------
+    decorated_function
+        The function with optional interpolation
+    """
+
+    @wraps(func)
+    def wrapper(imaging, *args, **kwargs):
+
+        array_plotter = kwargs["array_plotter"]
+
+        if array_plotter.label_title is None:
+
+            label_title = func.__name__.capitalize()
+
+        else:
+
+            label_title = array_plotter.label_title
+
+        if array_plotter.label_yunits is None:
+            if array_plotter.use_scaled_units:
+                label_yunits = "scaled"
+            else:
+                label_yunits = "pixels"
+
+        else:
+
+            label_yunits = array_plotter.label_yunits
+
+        if array_plotter.label_xunits is None:
+            if array_plotter.use_scaled_units:
+                label_xunits = "scaled"
+            else:
+                label_xunits = "pixels"
+        else:
+
+            label_xunits = array_plotter.label_xunits
+
+        if array_plotter.output_filename is None:
+            output_filename = func.__name__
+        else:
+
+            output_filename = array_plotter.output_filename
+
+        kwargs["array_plotter"] = array_plotter.plotter_with_new_labels_and_filename(
+            label_title=label_title,
+            label_yunits=label_yunits,
+            label_xunits=label_xunits,
+            output_filename=output_filename,
+        )
+
+        return func(imaging, *args, **kwargs)
+
+    return wrapper
 
 
-class ArrayPlotter(abstract_plotter.AbstractPlotter):
+class ArrayPlotter(plotters.Plotter):
+    def __init__(
+        self,
+        is_sub_plotter=False,
+        use_scaled_units=None,
+        unit_conversion_factor=None,
+        figsize=None,
+        aspect=None,
+        cmap=None,
+        norm=None,
+        norm_min=None,
+        norm_max=None,
+        linthresh=None,
+        linscale=None,
+        cb_ticksize=None,
+        cb_fraction=None,
+        cb_pad=None,
+        cb_tick_values=None,
+        cb_tick_labels=None,
+        titlesize=None,
+        xlabelsize=None,
+        ylabelsize=None,
+        xyticksize=None,
+        mask_pointsize=None,
+        border_pointsize=None,
+        point_pointsize=None,
+        grid_pointsize=None,
+        label_title=None,
+        label_yunits=None,
+        label_xunits=None,
+        label_yticks=None,
+        label_xticks=None,
+        output_path=None,
+        output_format="show",
+        output_filename=None,
+    ):
 
-    def __init__(self,
-    use_scaled_units=None,
-    unit_conversion_factor=None,
-    figsize=None,
-    aspect=None,
-    cmap=None,
-    norm=None,
-    norm_min=None,
-    norm_max=None,
-    linthresh=None,
-    linscale=None,
-    cb_ticksize=None,
-    cb_fraction=None,
-    cb_pad=None,
-    cb_tick_values=None,
-    cb_tick_labels=None,
-    titlesize=None,
-    xlabelsize=None,
-    ylabelsize=None,
-    xyticksize=None,
-    mask_pointsize=None,
-    border_pointsize=None,
-    point_pointsize=None,
-    grid_pointsize=None,
-     include_origin=None,
-     include_mask=None,
-     include_border=None,
-     include_points=None,
-     label_title=None, label_yunits=None, label_xunits=None, label_yticks=None, label_xticks=None,
-                 output_path=None,
-                 output_format="show",
-                 output_filename=None
-                 ):
+        super(ArrayPlotter, self).__init__(
+            is_sub_plotter=is_sub_plotter,
+            use_scaled_units=use_scaled_units,
+            unit_conversion_factor=unit_conversion_factor,
+            figsize=figsize,
+            aspect=aspect,
+            cmap=cmap,
+            norm=norm,
+            norm_min=norm_min,
+            norm_max=norm_max,
+            linthresh=linthresh,
+            linscale=linscale,
+            cb_ticksize=cb_ticksize,
+            cb_fraction=cb_fraction,
+            cb_pad=cb_pad,
+            cb_tick_values=cb_tick_values,
+            cb_tick_labels=cb_tick_labels,
+            titlesize=titlesize,
+            xlabelsize=xlabelsize,
+            ylabelsize=ylabelsize,
+            xyticksize=xyticksize,
+            mask_pointsize=mask_pointsize,
+            border_pointsize=border_pointsize,
+            point_pointsize=point_pointsize,
+            grid_pointsize=grid_pointsize,
+            label_title=label_title,
+            label_yunits=label_yunits,
+            label_xunits=label_xunits,
+            label_yticks=label_yticks,
+            label_xticks=label_xticks,
+            output_path=output_path,
+            output_format=output_format,
+            output_filename=output_filename,
+        )
 
-        super(ArrayPlotter, self).__init__(use_scaled_units=use_scaled_units,
-    unit_conversion_factor=unit_conversion_factor,
-    figsize=figsize,
-    aspect=aspect,
-    cmap=cmap,
-    norm=norm,
-    norm_min=norm_min,
-    norm_max=norm_max,
-    linthresh=linthresh,
-    linscale=linscale,
-    cb_ticksize=cb_ticksize,
-    cb_fraction=cb_fraction,
-    cb_pad=cb_pad,
-    cb_tick_values=cb_tick_values,
-    cb_tick_labels=cb_tick_labels,
-    titlesize=titlesize,
-    xlabelsize=xlabelsize,
-    ylabelsize=ylabelsize,
-    xyticksize=xyticksize,
-    mask_pointsize=mask_pointsize,
-    border_pointsize=border_pointsize,
-    point_pointsize=point_pointsize,
-    grid_pointsize=grid_pointsize,
-     include_origin=include_origin,
-     include_mask=include_mask,
-     include_border=include_border,
-     include_points=include_points,
-     label_title=label_title, label_yunits=label_yunits, label_xunits=label_xunits, label_yticks=label_yticks, label_xticks=label_xticks,
-                 output_path=output_path,
-                 output_format=output_format,
-                 output_filename=output_filename)
-
-    def plotter_with_new_labels_and_filename(self, label_title=None, label_yunits=None, label_xunits=None, output_filename=None):
+    def plotter_with_new_labels_and_filename(
+        self,
+        label_title=None,
+        label_yunits=None,
+        label_xunits=None,
+        output_filename=None,
+    ):
 
         label_title = self.label_title if label_title is None else label_title
         label_yunits = self.label_yunits if label_yunits is None else label_yunits
         label_xunits = self.label_xunits if label_xunits is None else label_xunits
-        output_filename = self.output_filename if output_filename is None else output_filename
+        output_filename = (
+            self.output_filename if output_filename is None else output_filename
+        )
 
         return ArrayPlotter(
+            is_sub_plotter=self.is_sub_plotter,
             use_scaled_units=self.use_scaled_units,
-    unit_conversion_factor=self.unit_conversion_factor,
-    figsize=self.figsize,
-    aspect=self.aspect,
-    cmap=self.cmap,
-    norm=self.norm,
-    norm_min=self.norm_min,
-    norm_max=self.norm_max,
-    linthresh=self.linthresh,
-    linscale=self.linscale,
-    cb_ticksize=self.cb_ticksize,
-    cb_fraction=self.cb_fraction,
-    cb_pad=self.cb_pad,
-    cb_tick_values=self.cb_tick_values,
-    cb_tick_labels=self.cb_tick_labels,
-    titlesize=self.titlesize,
-    xlabelsize=self.xlabelsize,
-    ylabelsize=self.ylabelsize,
-    xyticksize=self.xyticksize,
-    mask_pointsize=self.mask_pointsize,
-    border_pointsize=self.border_pointsize,
-    point_pointsize=self.point_pointsize,
-    grid_pointsize=self.grid_pointsize,
-     include_origin=self.include_origin,
-     include_mask=self.include_mask,
-     include_border=self.include_border,
-     include_points=self.include_points,
-     label_title=label_title, label_yunits=label_yunits, label_xunits=label_xunits, label_yticks=self.label_yticks, label_xticks=self.label_xticks,
-                 output_path=self.output_path,
-                 output_format=self.output_format,
-                 output_filename=output_filename)
+            unit_conversion_factor=self.unit_conversion_factor,
+            figsize=self.figsize,
+            aspect=self.aspect,
+            cmap=self.cmap,
+            norm=self.norm,
+            norm_min=self.norm_min,
+            norm_max=self.norm_max,
+            linthresh=self.linthresh,
+            linscale=self.linscale,
+            cb_ticksize=self.cb_ticksize,
+            cb_fraction=self.cb_fraction,
+            cb_pad=self.cb_pad,
+            cb_tick_values=self.cb_tick_values,
+            cb_tick_labels=self.cb_tick_labels,
+            titlesize=self.titlesize,
+            xlabelsize=self.xlabelsize,
+            ylabelsize=self.ylabelsize,
+            xyticksize=self.xyticksize,
+            mask_pointsize=self.mask_pointsize,
+            border_pointsize=self.border_pointsize,
+            point_pointsize=self.point_pointsize,
+            grid_pointsize=self.grid_pointsize,
+            label_title=label_title,
+            label_yunits=label_yunits,
+            label_xunits=label_xunits,
+            label_yticks=self.label_yticks,
+            label_xticks=self.label_xticks,
+            output_path=self.output_path,
+            output_format=self.output_format,
+            output_filename=output_filename,
+        )
 
     def plot_array(
-            self,
-            array,
-            include_origin=False,
-            mask=None,
-            border=None,
-            lines=None,
-            points=None,
-            centres=None,
-            grid=None,
+        self,
+        array,
+        include_origin=False,
+        mask=None,
+        border=None,
+        lines=None,
+        points=None,
+        centres=None,
+        grid=None,
     ):
         """Plot an array of data_type as a figure.
 
@@ -260,17 +379,12 @@ class ArrayPlotter(abstract_plotter.AbstractPlotter):
         extent = array.extent_of_zoomed_array(buffer=buffer)
         array = array.zoomed_around_mask(buffer=buffer)
 
-        self.plot_figure(
-            array=array,
-            extent=extent,
-        )
+        self.plot_figure(array=array, extent=extent)
 
         self.set_title()
-        self.set_yx_labels_and_ticksize(
-        )
+        self.set_yx_labels_and_ticksize()
 
-        self.set_colorbar(
-        )
+        self.set_colorbar()
         self.plot_origin(array=array, include_origin=include_origin)
         self.plot_mask(mask=mask)
         self.plot_lines(line_lists=lines)
@@ -278,16 +392,10 @@ class ArrayPlotter(abstract_plotter.AbstractPlotter):
         self.plot_points(points=points)
         self.plot_grid(grid=grid)
         self.plot_centres(centres=centres)
-        self.output_figure(
-            array,
-        )
+        self.output_figure(array)
         self.close_figure()
 
-    def plot_figure(
-            self,
-            array,
-            extent,
-    ):
+    def plot_figure(self, array, extent):
         """Open a matplotlib figure and plotters the array of data_type on it.
 
         Parameters
@@ -328,20 +436,17 @@ class ArrayPlotter(abstract_plotter.AbstractPlotter):
 
         fig = self.setup_figure()
 
-        norm_scale = self.get_normalization_scale(
-            array=array,
-        )
+        norm_scale = self.get_normalization_scale(array=array)
 
         if self.aspect in "square":
             aspect = float(array.shape_2d[1]) / float(array.shape_2d[0])
         else:
             aspect = self.aspect
 
-        plt.imshow(X=array.in_2d, aspect=aspect, cmap=self.cmap, norm=norm_scale, extent=extent)
-        self.set_yxticks(
-            array=array,
-            extent=extent,
+        plt.imshow(
+            X=array.in_2d, aspect=aspect, cmap=self.cmap, norm=norm_scale, extent=extent
         )
+        self.set_yxticks(array=array, extent=extent)
 
         return fig
 
@@ -387,7 +492,10 @@ class ArrayPlotter(abstract_plotter.AbstractPlotter):
             return colors.LogNorm(vmin=norm_min, vmax=norm_max)
         elif self.norm in "symmetric_log":
             return colors.SymLogNorm(
-                linthresh=self.linthresh, linscale=self.linscale, vmin=norm_min, vmax=norm_max
+                linthresh=self.linthresh,
+                linscale=self.linscale,
+                vmin=norm_min,
+                vmax=norm_max,
             )
         else:
             raise exc.PlottingException(
@@ -459,8 +567,10 @@ class ArrayPlotter(abstract_plotter.AbstractPlotter):
         if mask is not None:
             plt.gca()
             edge_pixels = (
-                    mask.regions._mask_2d_index_for_mask_1d_index[mask.regions._edge_1d_indexes]
-                    + 0.5
+                mask.regions._mask_2d_index_for_mask_1d_index[
+                    mask.regions._edge_1d_indexes
+                ]
+                + 0.5
             )
 
             edge_scaled = mask.geometry.grid_scaled_from_grid_pixels_1d(
@@ -549,6 +659,8 @@ class ArrayPlotter(abstract_plotter.AbstractPlotter):
         if grid is not None:
 
             plt.scatter(
-                y=np.asarray(grid[:, 0]), x=np.asarray(grid[:, 1]), s=self.grid_pointsize, c="k"
+                y=np.asarray(grid[:, 0]),
+                x=np.asarray(grid[:, 1]),
+                s=self.grid_pointsize,
+                c="k",
             )
-

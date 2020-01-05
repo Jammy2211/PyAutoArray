@@ -5,7 +5,7 @@ backend = conf.get_matplotlib_backend()
 matplotlib.use(backend)
 from matplotlib import pyplot as plt
 
-from autoarray.plotters import array_plotter
+from autoarray.plotters import array_plotters
 from autoarray.plots import inversion_plots
 from autoarray.util import plotter_util
 
@@ -446,7 +446,7 @@ def image(
     origin : True
         If true, the origin of the datas's coordinate system is plotted as a 'x'.
     """
-    array_plotters.plot_array(
+    array_plotter.plot_array(
         array=fit.data,
         grid=grid,
         mask=mask,
@@ -603,7 +603,7 @@ def signal_to_noise_map(
     origin : True
     If true, the origin of the datas's coordinate system is plotted as a 'x'.
     """
-    array_plotters.plot_array(
+    array_plotter.plot_array(
         array=fit.signal_to_noise_map,
         mask=mask,
         points=points,
@@ -681,7 +681,7 @@ def model_image(
     image_index : int
         The index of the datas in the datas-set of which the model image is plotted.
     """
-    array_plotters.plot_array(
+    array_plotter.plot_array(
         array=fit.model_data,
         mask=mask,
         lines=lines,
