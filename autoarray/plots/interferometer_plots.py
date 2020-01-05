@@ -180,8 +180,6 @@ def subplot(
 @plotters.set_includes
 def individual(
     interferometer,
-    unit_label="scaled",
-    unit_conversion_factor=None,
     plot_visibilities=False,
     plot_noise_map=False,
     plot_u_wavelengths=False,
@@ -190,8 +188,9 @@ def individual(
     plot_amplitudes_vs_uv_distances=False,
     plot_phases_vs_uv_distances=False,
     plot_primary_beam=False,
-    output_path=None,
-    output_format="png",
+    array_plotter=array_plotters.ArrayPlotter(),
+    grid_plotter=grid_plotters.GridPlotter(),
+    line_plotter=line_plotters.LinePlotter(),
 ):
     """Plot each attribute of the interferometer data_type as individual figures one by one (e.g. the dataset, noise_map-map, PSF, \
      Signal-to_noise-map, etc).
@@ -210,78 +209,56 @@ def individual(
 
         visibilities(
             interferometer=interferometer,
-            unit_label=unit_label,
-            unit_conversion_factor=unit_conversion_factor,
-            output_path=output_path,
-            output_format=output_format,
+            grid_plotter=grid_plotter
         )
 
     if plot_noise_map:
 
         noise_map(
             interferometer=interferometer,
-            unit_label=unit_label,
-            unit_conversion_factor=unit_conversion_factor,
-            output_path=output_path,
-            output_format=output_format,
+            grid_plotter=grid_plotter
         )
 
     if plot_u_wavelengths:
 
         uv_wavelengths(
             interferometer=interferometer,
-            unit_label=unit_label,
-            unit_conversion_factor=unit_conversion_factor,
-            output_path=output_path,
-            output_format=output_format,
+            grid_plotter=grid_plotter
         )
 
     if plot_v_wavelengths:
 
         v_wavelengths(
             interferometer=interferometer,
-            unit_label=unit_label,
-            unit_conversion_factor=unit_conversion_factor,
-            output_path=output_path,
-            output_format=output_format,
+            line_plotter=line_plotter
         )
 
     if plot_uv_wavelengths:
 
         uv_wavelengths(
             interferometer=interferometer,
-            unit_label=unit_label,
-            unit_conversion_factor=unit_conversion_factor,
-            output_path=output_path,
-            output_format=output_format,
+            line_plotter=line_plotter
         )
 
     if plot_amplitudes_vs_uv_distances:
 
         amplitudes_vs_uv_distances(
             interferometer=interferometer,
-            unit_conversion_factor=unit_conversion_factor,
-            output_path=output_path,
-            output_format=output_format,
+            line_plotter=line_plotter
         )
 
     if plot_phases_vs_uv_distances:
 
         phases_vs_uv_distances(
             interferometer=interferometer,
-            unit_conversion_factor=unit_conversion_factor,
-            output_path=output_path,
-            output_format=output_format,
+            line_plotter=line_plotter
         )
 
     if plot_primary_beam:
 
         primary_beam(
             interferometer=interferometer,
-            unit_label=unit_label,
-            unit_conversion_factor=unit_conversion_factor,
-            output_path=output_path,
-            output_format=output_format,
+            array_plotter=array_plotter
         )
 
 @plotters.set_includes

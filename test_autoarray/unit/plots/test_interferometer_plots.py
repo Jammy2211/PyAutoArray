@@ -143,36 +143,43 @@ def test__individuals__output_dependent_on_input(
         plot_v_wavelengths=True,
         plot_primary_beam=True,
         plot_amplitudes_vs_uv_distances=True,
-        output_path=interferometer_plotter_path,
-        output_format="png",
+        array_plotter=aa.plotter.array(
+            output_path=interferometer_plotter_path, output_format="png"
+        ),
+        grid_plotter=aa.plotter.grid(
+            output_path=interferometer_plotter_path, output_format="png"
+        ),
+        line_plotter=aa.plotter.line(
+            output_path=interferometer_plotter_path, output_format="png"
+        ),
     )
 
     assert (
-        interferometer_plotter_path + "interferometer_visibilities.png"
+        interferometer_plotter_path + "visibilities.png"
         in plot_patch.paths
     )
 
     assert (
-        not interferometer_plotter_path + "interferometer_u_wavelengths.png"
+        not interferometer_plotter_path + "u_wavelengths.png"
         in plot_patch.paths
     )
 
     assert (
-        interferometer_plotter_path + "interferometer_v_wavelengths.png"
+        interferometer_plotter_path + "v_wavelengths.png"
         in plot_patch.paths
     )
 
     assert (
-        interferometer_plotter_path + "interferometer_amplitudes_vs_uv_distances.png"
+        interferometer_plotter_path + "amplitudes_vs_uv_distances.png"
         in plot_patch.paths
     )
 
     assert (
-        interferometer_plotter_path + "interferometer_phases_vs_uv_distances.png"
+        interferometer_plotter_path + "phases_vs_uv_distances.png"
         not in plot_patch.paths
     )
 
     assert (
-        interferometer_plotter_path + "interferometer_primary_beam.png"
+        interferometer_plotter_path + "primary_beam.png"
         in plot_patch.paths
     )
