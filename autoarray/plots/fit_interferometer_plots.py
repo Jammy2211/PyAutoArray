@@ -5,7 +5,7 @@ backend = conf.get_matplotlib_backend()
 matplotlib.use(backend)
 from matplotlib import pyplot as plt
 
-from autoarray.plotters import plotters, grid_plotters, line_plotters
+from autoarray.plotters import plotters, array_plotters, grid_plotters, line_plotters
 from autoarray.plots import inversion_plots
 from autoarray.util import plotter_util
 
@@ -200,10 +200,9 @@ def individuals(
     plot_inversion_regularization_weight_map=False,
     plot_inversion_interpolated_reconstruction=False,
     plot_inversion_interpolated_errors=False,
-    unit_conversion_factor=None,
-    unit_label="arcsec",
-    output_path=None,
-    output_format="show",
+    array_plotter=array_plotters.ArrayPlotter(),
+    grid_plotter=grid_plotters.GridPlotter(),
+    line_plotter=line_plotters.LinePlotter(),
 ):
     """Plot the model datas_ of an analysis, using the *Fitter* class object.
 
@@ -224,40 +223,28 @@ def individuals(
 
         visibilities(
             fit=fit,
-            unit_label=unit_label,
-            unit_conversion_factor=unit_conversion_factor,
-            output_path=output_path,
-            output_format=output_format,
+            grid_plotter=grid_plotter,
         )
 
     if plot_noise_map:
 
         noise_map(
             fit=fit,
-            unit_label=unit_label,
-            unit_conversion_factor=unit_conversion_factor,
-            output_path=output_path,
-            output_format=output_format,
+            grid_plotter=grid_plotter,
         )
 
     if plot_signal_to_noise_map:
 
         signal_to_noise_map(
             fit=fit,
-            unit_label=unit_label,
-            unit_conversion_factor=unit_conversion_factor,
-            output_path=output_path,
-            output_format=output_format,
+            grid_plotter=grid_plotter,
         )
 
     if plot_model_visibilities:
 
         model_visibilities(
             fit=fit,
-            unit_label=unit_label,
-            unit_conversion_factor=unit_conversion_factor,
-            output_path=output_path,
-            output_format=output_format,
+            grid_plotter=grid_plotter,
         )
 
     if plot_residual_map:
@@ -265,17 +252,13 @@ def individuals(
         residual_map_vs_uv_distances(
             fit=fit,
             plot_real=True,
-            unit_conversion_factor=unit_conversion_factor,
-            output_path=output_path,
-            output_format=output_format,
+            line_plotter=line_plotter,
         )
 
         residual_map_vs_uv_distances(
             fit=fit,
             plot_real=False,
-            unit_conversion_factor=unit_conversion_factor,
-            output_path=output_path,
-            output_format=output_format,
+            line_plotter=line_plotter,
         )
 
     if plot_normalized_residual_map:
@@ -283,17 +266,13 @@ def individuals(
         normalized_residual_map_vs_uv_distances(
             fit=fit,
             plot_real=True,
-            unit_conversion_factor=unit_conversion_factor,
-            output_path=output_path,
-            output_format=output_format,
+            line_plotter=line_plotter,
         )
 
         normalized_residual_map_vs_uv_distances(
             fit=fit,
             plot_real=False,
-            unit_conversion_factor=unit_conversion_factor,
-            output_path=output_path,
-            output_format=output_format,
+            line_plotter=line_plotter,
         )
 
     if plot_chi_squared_map:
@@ -301,17 +280,13 @@ def individuals(
         chi_squared_map_vs_uv_distances(
             fit=fit,
             plot_real=True,
-            unit_conversion_factor=unit_conversion_factor,
-            output_path=output_path,
-            output_format=output_format,
+            line_plotter=line_plotter,
         )
 
         chi_squared_map_vs_uv_distances(
             fit=fit,
             plot_real=False,
-            unit_conversion_factor=unit_conversion_factor,
-            output_path=output_path,
-            output_format=output_format,
+            line_plotter=line_plotter,
         )
 
     if fit.total_inversions == 1:
@@ -326,10 +301,9 @@ def individuals(
             plot_inversion_regularization_weight_map=plot_inversion_regularization_weight_map,
             plot_inversion_interpolated_reconstruction=plot_inversion_interpolated_reconstruction,
             plot_inversion_interpolated_errors=plot_inversion_interpolated_errors,
-            unit_conversion_factor=unit_conversion_factor,
-            unit_label=unit_label,
-            output_path=output_path,
-            output_format=output_format,
+            array_plotter=array_plotter,
+            grid_plotter=grid_plotter,
+            line_plotter=line_plotter,
         )
 
 @plotters.set_includes

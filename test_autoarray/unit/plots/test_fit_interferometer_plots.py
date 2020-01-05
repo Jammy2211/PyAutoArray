@@ -32,7 +32,7 @@ def test__fit_sub_plot(fit_interferometer_7, fit_interferometer_path, plot_patch
     assert fit_interferometer_path + "fit.png" in plot_patch.paths
 
 
-def test__fit_individuals__depedent_on_input(
+def test__fit_individuals__dependent_on_input(
     fit_interferometer_7, fit_interferometer_path, plot_patch
 ):
 
@@ -43,45 +43,52 @@ def test__fit_individuals__depedent_on_input(
         plot_signal_to_noise_map=False,
         plot_model_visibilities=True,
         plot_chi_squared_map=True,
-        output_path=fit_interferometer_path,
-        output_format="png",
+        array_plotter=aa.plotter.array(
+            output_path=fit_interferometer_path, output_format="png"
+        ),
+        grid_plotter=aa.plotter.grid(
+            output_path=fit_interferometer_path, output_format="png"
+        ),
+        line_plotter=aa.plotter.line(
+            output_path=fit_interferometer_path, output_format="png"
+        ),
     )
 
-    assert fit_interferometer_path + "fit_visibilities.png" in plot_patch.paths
+    assert fit_interferometer_path + "visibilities.png" in plot_patch.paths
 
-    assert fit_interferometer_path + "fit_noise_map.png" not in plot_patch.paths
+    assert fit_interferometer_path + "noise_map.png" not in plot_patch.paths
 
-    assert fit_interferometer_path + "fit_signal_to_noise_map.png" not in plot_patch.paths
+    assert fit_interferometer_path + "signal_to_noise_map.png" not in plot_patch.paths
 
-    assert fit_interferometer_path + "fit_model_visibilities.png" in plot_patch.paths
+    assert fit_interferometer_path + "model_visibilities.png" in plot_patch.paths
 
     assert (
-        fit_interferometer_path + "fit_residual_map_vs_uv_distances_real.png"
+        fit_interferometer_path + "residual_map_vs_uv_distances_real.png"
         not in plot_patch.paths
     )
 
     assert (
-        fit_interferometer_path + "fit_residual_map_vs_uv_distances_imag.png"
+        fit_interferometer_path + "residual_map_vs_uv_distances_imag.png"
         not in plot_patch.paths
     )
 
     assert (
-        fit_interferometer_path + "fit_normalized_residual_map_vs_uv_distances_real.png"
+        fit_interferometer_path + "normalized_residual_map_vs_uv_distances_real.png"
         not in plot_patch.paths
     )
 
     assert (
-        fit_interferometer_path + "fit_normalized_residual_map_vs_uv_distances_imag.png"
+        fit_interferometer_path + "normalized_residual_map_vs_uv_distances_imag.png"
         not in plot_patch.paths
     )
 
     assert (
-        fit_interferometer_path + "fit_chi_squared_map_vs_uv_distances_real.png"
+        fit_interferometer_path + "chi_squared_map_vs_uv_distances_real.png"
         in plot_patch.paths
     )
 
     assert (
-        fit_interferometer_path + "fit_chi_squared_map_vs_uv_distances_imag.png"
+        fit_interferometer_path + "chi_squared_map_vs_uv_distances_imag.png"
         in plot_patch.paths
     )
 
