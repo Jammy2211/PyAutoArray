@@ -191,8 +191,8 @@ def rectangular_mapper(
 
     plotter_util.set_title(title=title, titlesize=titlesize)
     plotter_util.set_yx_labels_and_ticksize(
-        unit_label_y=unit_label,
-        unit_label_x=unit_label,
+        label_yunits=unit_label,
+        label_xunits=unit_label,
         xlabelsize=xlabelsize,
         ylabelsize=ylabelsize,
         xyticksize=xyticksize,
@@ -316,8 +316,8 @@ def voronoi_mapper(
 
     plotter_util.set_title(title=title, titlesize=titlesize)
     plotter_util.set_yx_labels_and_ticksize(
-        unit_label_y=unit_label,
-        unit_label_x=unit_label,
+        label_yunits=unit_label,
+        label_xunits=unit_label,
         xlabelsize=xlabelsize,
         ylabelsize=ylabelsize,
         xyticksize=xyticksize,
@@ -521,8 +521,8 @@ def plot_mapper_grid(
         grid_plotter.plot_grid(
             grid=mapper.grid,
             as_subplot=as_subplot,
-            unit_label_y=unit_label,
-            unit_label_x=unit_label,
+            label_yunits=unit_label,
+            label_xunits=unit_label,
             unit_conversion_factor=unit_conversion_factor,
             pointsize=pointsize,
             xyticksize=xyticksize,
@@ -555,8 +555,8 @@ def plot_border(
         grid_plotter.plot_grid(
             grid=border,
             as_subplot=as_subplot,
-            unit_label_y=unit_label,
-            unit_label_x=unit_label,
+            label_yunits=unit_label,
+            label_xunits=unit_label,
             unit_conversion_factor=unit_conversion_factor,
             pointsize=pointsize,
             pointcolor="y",

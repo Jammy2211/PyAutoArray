@@ -81,6 +81,89 @@ class GridPlotter(plotters.Plotter):
         self.grid_pointcolor = grid_pointcolor
 
 
+    def plotter_as_sub_plotter(
+        self,
+    ):
+
+        return GridPlotter(
+            is_sub_plotter=True,
+            use_scaled_units=self.use_scaled_units,
+            unit_conversion_factor=self.unit_conversion_factor,
+            figsize=self.figsize,
+            aspect=self.aspect,
+            cmap=self.cmap,
+            norm=self.norm,
+            norm_min=self.norm_min,
+            norm_max=self.norm_max,
+            linthresh=self.linthresh,
+            linscale=self.linscale,
+            cb_ticksize=self.cb_ticksize,
+            cb_fraction=self.cb_fraction,
+            cb_pad=self.cb_pad,
+            cb_tick_values=self.cb_tick_values,
+            cb_tick_labels=self.cb_tick_labels,
+            titlesize=self.titlesize,
+            xlabelsize=self.xlabelsize,
+            ylabelsize=self.ylabelsize,
+            xyticksize=self.xyticksize,
+            grid_pointsize=self.grid_pointsize,
+            label_title=self.label_title,
+            label_yunits=self.label_yunits,
+            label_xunits=self.label_xunits,
+            label_yticks=self.label_yticks,
+            label_xticks=self.label_xticks,
+            output_path=self.output_path,
+            output_format=self.output_format,
+            output_filename=self.output_filename,
+        )
+
+    def plotter_with_new_labels_and_filename(
+        self,
+        label_title=None,
+        label_yunits=None,
+        label_xunits=None,
+        output_filename=None,
+    ):
+
+        label_title = self.label_title if label_title is None else label_title
+        label_yunits = self.label_yunits if label_yunits is None else label_yunits
+        label_xunits = self.label_xunits if label_xunits is None else label_xunits
+        output_filename = (
+            self.output_filename if output_filename is None else output_filename
+        )
+
+        return GridPlotter(
+            is_sub_plotter=self.is_sub_plotter,
+            use_scaled_units=self.use_scaled_units,
+            unit_conversion_factor=self.unit_conversion_factor,
+            figsize=self.figsize,
+            aspect=self.aspect,
+            cmap=self.cmap,
+            norm=self.norm,
+            norm_min=self.norm_min,
+            norm_max=self.norm_max,
+            linthresh=self.linthresh,
+            linscale=self.linscale,
+            cb_ticksize=self.cb_ticksize,
+            cb_fraction=self.cb_fraction,
+            cb_pad=self.cb_pad,
+            cb_tick_values=self.cb_tick_values,
+            cb_tick_labels=self.cb_tick_labels,
+            titlesize=self.titlesize,
+            xlabelsize=self.xlabelsize,
+            ylabelsize=self.ylabelsize,
+            xyticksize=self.xyticksize,
+            grid_pointsize=self.grid_pointsize,
+            label_title=label_title,
+            label_yunits=label_yunits,
+            label_xunits=label_xunits,
+            label_yticks=self.label_yticks,
+            label_xticks=self.label_xticks,
+            output_path=self.output_path,
+            output_format=self.output_format,
+            output_filename=output_filename,
+        )
+
     def plot_grid(
         self,
         grid,
@@ -104,7 +187,7 @@ class GridPlotter(plotters.Plotter):
             different planes).
         as_subplot : bool
             Whether the grid is plotted as part of a subplot, in which case the grid figure is not opened / closed.
-        unit_label_y : str
+        label_yunits : str
             The label of the unit_label of the y / x axis of the plots.
         unit_conversion_factor : float
             The conversion factor between arc-seconds and kiloparsecs, required to plotters the unit_label in kpc.

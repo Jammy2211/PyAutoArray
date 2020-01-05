@@ -1,12 +1,11 @@
 from autoarray import exc
-from autoarray.util import plotter_util
 
 import matplotlib.pyplot as plt
 import numpy as np
 
 from autoarray.plotters import plotters
 
-class GridPlotter(plotters.Plotter):
+class LinePlotter(plotters.Plotter):
     def __init__(
             self,
             is_sub_plotter=False,
@@ -30,7 +29,7 @@ class GridPlotter(plotters.Plotter):
             output_format="show",
             output_filename=None,
     ):
-        super(GridPlotter, self).__init__(
+        super(LinePlotter, self).__init__(
             is_sub_plotter=is_sub_plotter,
             use_scaled_units=use_scaled_units,
             unit_conversion_factor=unit_conversion_factor,
@@ -54,6 +53,71 @@ class GridPlotter(plotters.Plotter):
         self.include_legend = include_legend
         self.legend_fontsize = legend_fontsize
 
+    def plotter_as_sub_plotter(
+        self,
+    ):
+
+        return LinePlotter(
+            is_sub_plotter=True,
+            include_legend=self.include_legend,
+            legend_fontsize=self.legend_fontsize,
+            pointsize=self.pointsize,
+            use_scaled_units=self.use_scaled_units,
+            unit_conversion_factor=self.unit_conversion_factor,
+            figsize=self.figsize,
+            aspect=self.aspect,
+            titlesize=self.titlesize,
+            xlabelsize=self.xlabelsize,
+            ylabelsize=self.ylabelsize,
+            xyticksize=self.xyticksize,
+            label_title=self.label_title,
+            label_yunits=self.label_yunits,
+            label_xunits=self.label_xunits,
+            label_yticks=self.label_yticks,
+            label_xticks=self.label_xticks,
+            output_path=self.output_path,
+            output_format=self.output_format,
+            output_filename=self.output_filename,
+        )
+
+    def plotter_with_new_labels_and_filename(
+        self,
+        label_title=None,
+        label_yunits=None,
+        label_xunits=None,
+        output_filename=None,
+    ):
+
+        label_title = self.label_title if label_title is None else label_title
+        label_yunits = self.label_yunits if label_yunits is None else label_yunits
+        label_xunits = self.label_xunits if label_xunits is None else label_xunits
+        output_filename = (
+            self.output_filename if output_filename is None else output_filename
+        )
+
+        return LinePlotter(
+            is_sub_plotter=self.is_sub_plotter,
+            use_scaled_units=self.use_scaled_units,
+            include_legend=self.include_legend,
+            legend_fontsize=self.legend_fontsize,
+            unit_conversion_factor=self.unit_conversion_factor,
+            pointsize=self.pointsize,
+            figsize=self.figsize,
+            aspect=self.aspect,
+            titlesize=self.titlesize,
+            xlabelsize=self.xlabelsize,
+            ylabelsize=self.ylabelsize,
+            xyticksize=self.xyticksize,
+            label_title=label_title,
+            label_yunits=label_yunits,
+            label_xunits=label_xunits,
+            label_yticks=self.label_yticks,
+            label_xticks=self.label_xticks,
+            output_path=self.output_path,
+            output_format=self.output_format,
+            output_filename=output_filename,
+        )
+
     def plot_line(
         self,
         y,
@@ -62,9 +126,6 @@ class GridPlotter(plotters.Plotter):
         plot_axis_type="semilogy",
         vertical_lines=None,
         vertical_line_labels=None,
-        output_path=None,
-        output_format="show",
-        output_filename="quantity_vs_radius",
     ):
 
         if y is None:
@@ -94,7 +155,7 @@ class GridPlotter(plotters.Plotter):
             extent=[np.min(x), np.max(x)],
         )
 
-        if output_format is not "fits":
+        if self.output_format is not "fits":
 
             self.output_figure(
                 array=None,
@@ -132,11 +193,11 @@ class GridPlotter(plotters.Plotter):
 
         Parameters
         -----------
-        unit_label_x : str
+        label_xunits : str
             The unit_label of the y / x axis of the plots.
         unit_conversion_factor : float
             The conversion factor between arc-seconds and kiloparsecs, required to plotters the unit_label in kpc.
-        unit_label_y : str
+        label_yunits : str
             The y-label of the figure, which is the physical quantity being plotted.
         xlabelsize : int
             The fontsize of the x axes label.
