@@ -1,8 +1,13 @@
+from os import path
+from autoarray import conf
 import os
 
 import pytest
 
 import autoarray as aa
+
+
+directory = path.dirname(path.realpath(__file__))
 
 
 @pytest.fixture(name="imaging_plotter_path")
@@ -13,6 +18,11 @@ def make_imaging_plotter_setup():
 
     return imaging_plotter_path
 
+@pytest.fixture(autouse=True)
+def set_config_path():
+    conf.instance = conf.Config(
+        path.join(directory, "../test_files/settings"), path.join(directory, "output")
+    )
 
 def test__individual_attributes_are_output(
     imaging_7x7, positions_7x7, mask_7x7, imaging_plotter_path, plot_patch
@@ -22,10 +32,9 @@ def test__individual_attributes_are_output(
         imaging=imaging_7x7,
         positions=positions_7x7,
         mask=mask_7x7,
-        cb_tick_values=[1.0],
-        cb_tick_labels=["1.0"],
+        array_plotter=aa.plotter.array(
         output_path=imaging_plotter_path,
-        output_format="png",
+        output_format="png")
     )
 
     assert imaging_plotter_path + "imaging_image.png" in plot_patch.paths
@@ -33,20 +42,18 @@ def test__individual_attributes_are_output(
     aa.plot.imaging.noise_map(
         imaging=imaging_7x7,
         mask=mask_7x7,
-        cb_tick_values=[1.0],
-        cb_tick_labels=["1.0"],
+        array_plotter=aa.plotter.array(
         output_path=imaging_plotter_path,
-        output_format="png",
+        output_format="png")
     )
 
     assert imaging_plotter_path + "imaging_noise_map.png" in plot_patch.paths
 
     aa.plot.imaging.psf(
         imaging=imaging_7x7,
-        cb_tick_values=[1.0],
-        cb_tick_labels=["1.0"],
+        array_plotter=aa.plotter.array(
         output_path=imaging_plotter_path,
-        output_format="png",
+        output_format="png")
     )
 
     assert imaging_plotter_path + "imaging_psf.png" in plot_patch.paths
@@ -54,23 +61,21 @@ def test__individual_attributes_are_output(
     aa.plot.imaging.signal_to_noise_map(
         imaging=imaging_7x7,
         mask=mask_7x7,
-        cb_tick_values=[1.0],
-        cb_tick_labels=["1.0"],
+        array_plotter=aa.plotter.array(
         output_path=imaging_plotter_path,
-        output_format="png",
+        output_format="png")
     )
 
     assert imaging_plotter_path + "imaging_signal_to_noise_map.png" in plot_patch.paths
 
-    aa.plot.imaging.subplot(
-        imaging=imaging_7x7,
-        cb_tick_values=[1.0],
-        cb_tick_labels=["1.0"],
-        output_path=imaging_plotter_path,
-        output_format="png",
-    )
-
-    assert imaging_plotter_path + "imaging.png" in plot_patch.paths
+    # aa.plot.imaging.subplot(
+    #     imaging=imaging_7x7,
+    #     array_plotter=aa.plotter.array(
+    #     output_path=imaging_plotter_path,
+    #     output_format="png")
+    # )
+    #
+    # assert imaging_plotter_path + "imaging.png" in plot_patch.paths
 
 
 def test__imaging_individuals__output_dependent_on_input(
@@ -81,8 +86,9 @@ def test__imaging_individuals__output_dependent_on_input(
         plot_image=True,
         plot_psf=True,
         plot_absolute_signal_to_noise_map=True,
+        array_plotter=aa.plotter.array(
         output_path=imaging_plotter_path,
-        output_format="png",
+        output_format="png")
     )
 
     assert imaging_plotter_path + "imaging_image.png" in plot_patch.paths

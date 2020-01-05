@@ -1,6 +1,8 @@
 from autoarray import conf
 import matplotlib
 
+from functools import wraps
+
 backend = conf.get_matplotlib_backend()
 matplotlib.use(backend)
 from matplotlib import pyplot as plt
@@ -8,10 +10,80 @@ from matplotlib import pyplot as plt
 from autoarray.plotters import array_plotter
 from autoarray.util import plotter_util
 
+module_name = "imaging"
+
+def set_labels(func):
+    """
+    Decorate a profile method that accepts a coordinate grid and returns a data_type grid.
+
+    If an interpolator attribute is associated with the input grid then that interpolator is used to down sample the
+    coordinate grid prior to calling the function and up sample the result of the function.
+
+    If no interpolator attribute is associated with the input grid then the function is called as hyper.
+
+    Parameters
+    ----------
+    func
+        Some method that accepts a grid
+
+    Returns
+    -------
+    decorated_function
+        The function with optional interpolation
+    """
+
+    @wraps(func)
+    def wrapper(imaging, *args, **kwargs):
+
+        array_plotter = kwargs["array_plotter"]
+
+        if array_plotter.label_title is None:
+
+            label_title = func.__name__.capitalize()
+
+        else:
+
+            label_title = array_plotter.label_title
+
+        if array_plotter.label_yunits is None:
+            if array_plotter.use_scaled_units:
+                label_yunits = "scaled"
+            else:
+                label_yunits = "pixels"
+
+        else:
+
+            label_yunits = array_plotter.label_yunits
+
+        if array_plotter.label_xunits is None:
+            if array_plotter.use_scaled_units:
+                label_xunits = "scaled"
+            else:
+                label_xunits = "pixels"
+        else:
+
+            label_xunits = array_plotter.label_xunits
+
+        if array_plotter.output_filename is None:
+            output_filename = module_name + '_' + func.__name__
+        else:
+
+            output_filename = array_plotter.output_filename
+
+        kwargs["array_plotter"] = array_plotter.plotter_with_new_labels_and_filename(
+            label_title=label_title,
+            label_yunits=label_yunits,
+            label_xunits=label_xunits,
+            output_filename=output_filename)
+
+        return func(imaging, *args, **kwargs)
+
+    return wrapper
+
 
 def subplot(
     imaging,
-    origin=True,
+    include_origin=True,
     mask=None,
     border=False,
     positions=None,
@@ -51,8 +123,8 @@ def subplot(
     -----------
     imaging : data_type.ImagingData
         The imaging data_type, which includes the observed data_type, noise_map-map, PSF, signal-to-noise_map-map, etc.
-    origin : True
-        If true, the origin of the dataset's coordinate system is plotted as a 'x'.
+    include_origin : True
+        If true, the include_origin of the dataset's coordinate system is plotted as a 'x'.
     image_plane_pix_grid : ndarray or data_type.array.grid_stacks.PixGrid
         If an adaptive pixelization whose pixels are formed by tracing pixels from the dataset, this plots those pixels \
         over the immage.
@@ -73,7 +145,7 @@ def subplot(
 
     image(
         imaging=imaging,
-        origin=origin,
+        include_origin=include_origin,
         mask=mask,
         border=border,
         positions=positions,
@@ -109,7 +181,7 @@ def subplot(
 
     noise_map(
         imaging=imaging,
-        origin=origin,
+        include_origin=include_origin,
         mask=mask,
         as_subplot=True,
         use_scaled_units=use_scaled_units,
@@ -170,7 +242,7 @@ def subplot(
 
     signal_to_noise_map(
         imaging=imaging,
-        origin=origin,
+        include_origin=include_origin,
         mask=mask,
         as_subplot=True,
         use_scaled_units=use_scaled_units,
@@ -202,7 +274,7 @@ def subplot(
 
     absolute_signal_to_noise_map(
         imaging=imaging,
-        origin=origin,
+        include_origin=include_origin,
         mask=mask,
         as_subplot=True,
         use_scaled_units=use_scaled_units,
@@ -234,7 +306,7 @@ def subplot(
 
     potential_chi_squared_map(
         imaging=imaging,
-        origin=origin,
+        include_origin=include_origin,
         mask=mask,
         as_subplot=True,
         use_scaled_units=use_scaled_units,
@@ -273,19 +345,17 @@ def subplot(
 
 def individual(
     imaging,
-    origin=True,
+    include_origin=True,
+    grid=None,
     mask=None,
     positions=None,
-    unit_label="scaled",
-    unit_conversion_factor=None,
     plot_image=False,
     plot_noise_map=False,
     plot_psf=False,
     plot_signal_to_noise_map=False,
     plot_absolute_signal_to_noise_map=False,
     plot_potential_chi_squared_map=False,
-    output_path=None,
-    output_format="png",
+    array_plotter=array_plotter.ArrayPlotter(),
 ):
     """Plot each attribute of the imaging data_type as individual figures one by one (e.g. the dataset, noise_map-map, PSF, \
      Signal-to_noise-map, etc).
@@ -296,93 +366,73 @@ def individual(
     -----------
     imaging : data_type.ImagingData
         The imaging data_type, which includes the observed data_type, noise_map-map, PSF, signal-to-noise_map-map, etc.
-    origin : True
-        If true, the origin of the dataset's coordinate system is plotted as a 'x'.
+    include_origin : True
+        If true, the include_origin of the dataset's coordinate system is plotted as a 'x'.
     """
 
     if plot_image:
 
         image(
             imaging=imaging,
-            origin=origin,
+            include_origin=include_origin,
+            grid=grid,
             mask=mask,
             positions=positions,
-            unit_label=unit_label,
-            unit_conversion_factor=unit_conversion_factor,
-            output_path=output_path,
-            output_format=output_format,
+            array_plotter=array_plotter
         )
 
     if plot_noise_map:
 
         noise_map(
             imaging=imaging,
-            origin=origin,
+            include_origin=include_origin,
             mask=mask,
-            unit_label=unit_label,
-            unit_conversion_factor=unit_conversion_factor,
-            output_path=output_path,
-            output_format=output_format,
+            array_plotter=array_plotter
         )
 
     if plot_psf:
 
         psf(
             imaging=imaging,
-            origin=origin,
-            unit_label=unit_label,
-            unit_conversion_factor=unit_conversion_factor,
-            output_path=output_path,
-            output_format=output_format,
+            include_origin=include_origin,
+            array_plotter=array_plotter
         )
 
     if plot_signal_to_noise_map:
 
         signal_to_noise_map(
             imaging=imaging,
-            origin=origin,
+            include_origin=include_origin,
             mask=mask,
-            unit_label=unit_label,
-            unit_conversion_factor=unit_conversion_factor,
-            output_path=output_path,
-            output_format=output_format,
+            array_plotter=array_plotter
         )
 
     if plot_absolute_signal_to_noise_map:
 
         absolute_signal_to_noise_map(
             imaging=imaging,
-            origin=origin,
+            include_origin=include_origin,
             mask=mask,
-            unit_label=unit_label,
-            unit_conversion_factor=unit_conversion_factor,
-            output_path=output_path,
-            output_format=output_format,
+            array_plotter=array_plotter
         )
 
     if plot_potential_chi_squared_map:
 
         potential_chi_squared_map(
             imaging=imaging,
-            origin=origin,
+            include_origin=include_origin,
             mask=mask,
-            unit_label=unit_label,
-            unit_conversion_factor=unit_conversion_factor,
-            output_path=output_path,
-            output_format=output_format,
+            array_plotter=array_plotter
         )
 
-
+@set_labels
 def image(
     imaging,
+    include_origin=True,
     grid=None,
     mask=None,
     positions=None,
-    as_subplot=False,
-    settings=None,
-    include=None,
-    labels=None,
-    outputs=None,
+    array_plotter=array_plotter.ArrayPlotter(),
 ):
     """Plot the observed data_type of the imaging data_type.
 
@@ -392,55 +442,29 @@ def image(
     -----------
     image : data_type.ImagingData
         The imaging data_type, which includes the observed data_type, noise_map-map, PSF, signal-to-noise_map-map, etc.
-    origin : True
-        If true, the origin of the dataset's coordinate system is plotted as a 'x'.
+    include_origin : True
+        If true, the include_origin of the dataset's coordinate system is plotted as a 'x'.
     image_plane_pix_grid : ndarray or data_type.array.grid_stacks.PixGrid
         If an adaptive pixelization whose pixels are formed by tracing pixels from the dataset, this plots those pixels \
         over the immage.
     """
-    array_plotters.plot_array(
+
+    array_plotter.plot_array(
         array=imaging.image,
+        include_origin=include_origin,
         grid=grid,
         mask=mask,
         points=positions,
-        as_subplot=as_subplot,
-        settings=settings,
-        include=include,
-        labels=labels,
-        outputs=outputs
     )
 
-
+@set_labels
 def noise_map(
     imaging,
-    origin=True,
+    include_origin=True,
+    grid=None,
     mask=None,
-    as_subplot=False,
-    use_scaled_units=True,
-    unit_conversion_factor=None,
-    unit_label="scaled",
-    figsize=(7, 7),
-    aspect="square",
-    cmap="jet",
-    norm="linear",
-    norm_min=None,
-    norm_max=None,
-    linthresh=0.05,
-    linscale=0.01,
-    cb_ticksize=10,
-    cb_fraction=0.047,
-    cb_pad=0.01,
-    cb_tick_values=None,
-    cb_tick_labels=None,
-    title="Imaging Noise-Map",
-    titlesize=16,
-    xlabelsize=16,
-    ylabelsize=16,
-    xyticksize=16,
-    mask_pointsize=10,
-    output_path=None,
-    output_format="show",
-    output_filename="imaging_noise_map",
+    positions=None,
+    array_plotter=array_plotter.ArrayPlotter(),
 ):
     """Plot the noise_map-map of the imaging data_type.
 
@@ -450,71 +474,26 @@ def noise_map(
     -----------
     image : data_type.ImagingData
         The imaging data_type, which includes the observed data_type, noise_map-map, PSF, signal-to-noise_map-map, etc.
-    origin : True
-        If true, the origin of the dataset's coordinate system is plotted as a 'x'.
+    include_origin : True
+        If true, the include_origin of the dataset's coordinate system is plotted as a 'x'.
     """
 
-    array_plotters.plot_array(
-        array=imaging.noise_map,
-        origin=origin,
+    array_plotter.plot_array(
+        array=imaging.image,
+        include_origin=include_origin,
+        grid=grid,
         mask=mask,
-        as_subplot=as_subplot,
-        use_scaled_units=use_scaled_units,
-        unit_conversion_factor=unit_conversion_factor,
-        unit_label=unit_label,
-        figsize=figsize,
-        aspect=aspect,
-        cmap=cmap,
-        norm=norm,
-        norm_min=norm_min,
-        norm_max=norm_max,
-        linthresh=linthresh,
-        linscale=linscale,
-        cb_ticksize=cb_ticksize,
-        cb_fraction=cb_fraction,
-        cb_pad=cb_pad,
-        cb_tick_values=cb_tick_values,
-        cb_tick_labels=cb_tick_labels,
-        title=title,
-        titlesize=titlesize,
-        xlabelsize=xlabelsize,
-        ylabelsize=ylabelsize,
-        xyticksize=xyticksize,
-        mask_pointsize=mask_pointsize,
-        output_path=output_path,
-        output_format=output_format,
-        output_filename=output_filename,
+        points=positions,
     )
 
-
+@set_labels
 def psf(
-    imaging,
-    origin=True,
-    as_subplot=False,
-    use_scaled_units=True,
-    unit_conversion_factor=None,
-    unit_label="scaled",
-    figsize=(7, 7),
-    aspect="square",
-    cmap="jet",
-    norm="linear",
-    norm_min=None,
-    norm_max=None,
-    linthresh=0.05,
-    linscale=0.01,
-    cb_ticksize=10,
-    cb_fraction=0.047,
-    cb_pad=0.01,
-    cb_tick_values=None,
-    cb_tick_labels=None,
-    title="Imaging PSF",
-    titlesize=16,
-    xlabelsize=16,
-    ylabelsize=16,
-    xyticksize=16,
-    output_path=None,
-    output_format="show",
-    output_filename="imaging_psf",
+        imaging,
+    include_origin=True,
+    grid=None,
+    mask=None,
+    positions=None,
+    array_plotter=array_plotter.ArrayPlotter(),
 ):
     """Plot the PSF of the imaging data_type.
 
@@ -524,71 +503,26 @@ def psf(
     -----------
     image : data_type.ImagingData
         The imaging data_type, which includes the observed data_type, noise_map-map, PSF, signal-to-noise_map-map, etc.
-    origin : True
-        If true, the origin of the dataset's coordinate system is plotted as a 'x'.
+    include_origin : True
+        If true, the include_origin of the dataset's coordinate system is plotted as a 'x'.
     """
 
-    array_plotters.plot_array(
-        array=imaging.psf,
-        origin=origin,
-        as_subplot=as_subplot,
-        use_scaled_units=use_scaled_units,
-        unit_conversion_factor=unit_conversion_factor,
-        unit_label=unit_label,
-        figsize=figsize,
-        aspect=aspect,
-        cmap=cmap,
-        norm=norm,
-        norm_min=norm_min,
-        norm_max=norm_max,
-        linthresh=linthresh,
-        linscale=linscale,
-        cb_ticksize=cb_ticksize,
-        cb_fraction=cb_fraction,
-        cb_pad=cb_pad,
-        cb_tick_values=cb_tick_values,
-        cb_tick_labels=cb_tick_labels,
-        title=title,
-        titlesize=titlesize,
-        xlabelsize=xlabelsize,
-        ylabelsize=ylabelsize,
-        xyticksize=xyticksize,
-        output_path=output_path,
-        output_format=output_format,
-        output_filename=output_filename,
+    array_plotter.plot_array(
+        array=imaging.image,
+        include_origin=include_origin,
+        grid=grid,
+        mask=mask,
+        points=positions,
     )
 
-
+@set_labels
 def signal_to_noise_map(
-    imaging,
-    origin=True,
+        imaging,
+    include_origin=True,
+    grid=None,
     mask=None,
-    as_subplot=False,
-    use_scaled_units=True,
-    unit_conversion_factor=None,
-    unit_label="scaled",
-    figsize=(7, 7),
-    aspect="square",
-    cmap="jet",
-    norm="linear",
-    norm_min=None,
-    norm_max=None,
-    linthresh=0.05,
-    linscale=0.01,
-    cb_ticksize=10,
-    cb_fraction=0.047,
-    cb_pad=0.01,
-    cb_tick_values=None,
-    cb_tick_labels=None,
-    title="Imaging Signal-To-Noise-Map",
-    titlesize=16,
-    xlabelsize=16,
-    ylabelsize=16,
-    xyticksize=16,
-    mask_pointsize=10,
-    output_path=None,
-    output_format="show",
-    output_filename="imaging_signal_to_noise_map",
+    positions=None,
+    array_plotter=array_plotter.ArrayPlotter(),
 ):
     """Plot the signal-to-noise_map-map of the imaging data_type.
 
@@ -598,73 +532,25 @@ def signal_to_noise_map(
     -----------
     image : data_type.ImagingData
         The imaging data_type, which includes the observed image, noise_map-map, PSF, signal-to-noise_map-map, etc.
-    origin : True
-        If true, the origin of the dataset's coordinate system is plotted as a 'x'.
+    include_origin : True
+        If true, the include_origin of the dataset's coordinate system is plotted as a 'x'.
     """
-
-    array_plotters.plot_array(
-        array=imaging.signal_to_noise_map,
-        origin=origin,
+    array_plotter.plot_array(
+        array=imaging.image,
+        include_origin=include_origin,
+        grid=grid,
         mask=mask,
-        as_subplot=as_subplot,
-        use_scaled_units=use_scaled_units,
-        unit_conversion_factor=unit_conversion_factor,
-        unit_label=unit_label,
-        figsize=figsize,
-        aspect=aspect,
-        cmap=cmap,
-        norm=norm,
-        norm_min=norm_min,
-        norm_max=norm_max,
-        linthresh=linthresh,
-        linscale=linscale,
-        cb_ticksize=cb_ticksize,
-        cb_fraction=cb_fraction,
-        cb_pad=cb_pad,
-        cb_tick_values=cb_tick_values,
-        cb_tick_labels=cb_tick_labels,
-        title=title,
-        titlesize=titlesize,
-        xlabelsize=xlabelsize,
-        ylabelsize=ylabelsize,
-        xyticksize=xyticksize,
-        mask_pointsize=mask_pointsize,
-        output_path=output_path,
-        output_format=output_format,
-        output_filename=output_filename,
+        points=positions,
     )
 
-
+@set_labels
 def absolute_signal_to_noise_map(
-    imaging,
-    origin=True,
+        imaging,
+    include_origin=True,
+    grid=None,
     mask=None,
-    as_subplot=False,
-    use_scaled_units=True,
-    unit_conversion_factor=None,
-    unit_label="scaled",
-    figsize=(7, 7),
-    aspect="square",
-    cmap="jet",
-    norm="linear",
-    norm_min=None,
-    norm_max=None,
-    linthresh=0.05,
-    linscale=0.01,
-    cb_ticksize=10,
-    cb_fraction=0.047,
-    cb_pad=0.01,
-    cb_tick_values=None,
-    cb_tick_labels=None,
-    title="Imaging Absolute Signal-To-Noise-Map",
-    titlesize=16,
-    xlabelsize=16,
-    ylabelsize=16,
-    xyticksize=16,
-    mask_pointsize=10,
-    output_path=None,
-    output_format="show",
-    output_filename="imaging_absolute_signal_to_noise_map",
+    positions=None,
+    array_plotter=array_plotter.ArrayPlotter(),
 ):
     """Plot the signal-to-noise_map-map of the imaging data_type.
 
@@ -674,73 +560,25 @@ def absolute_signal_to_noise_map(
     -----------
     image : data_type.ImagingData
         The imaging data_type, which includes the observed image, noise_map-map, PSF, signal-to-noise_map-map, etc.
-    origin : True
-        If true, the origin of the dataset's coordinate system is plotted as a 'x'.
+    include_origin : True
+        If true, the include_origin of the dataset's coordinate system is plotted as a 'x'.
     """
-
-    array_plotters.plot_array(
-        array=imaging.absolute_signal_to_noise_map,
-        origin=origin,
+    array_plotter.plot_array(
+        array=imaging.image,
+        include_origin=include_origin,
+        grid=grid,
         mask=mask,
-        as_subplot=as_subplot,
-        use_scaled_units=use_scaled_units,
-        unit_conversion_factor=unit_conversion_factor,
-        unit_label=unit_label,
-        figsize=figsize,
-        aspect=aspect,
-        cmap=cmap,
-        norm=norm,
-        norm_min=norm_min,
-        norm_max=norm_max,
-        linthresh=linthresh,
-        linscale=linscale,
-        cb_ticksize=cb_ticksize,
-        cb_fraction=cb_fraction,
-        cb_pad=cb_pad,
-        cb_tick_values=cb_tick_values,
-        cb_tick_labels=cb_tick_labels,
-        title=title,
-        titlesize=titlesize,
-        xlabelsize=xlabelsize,
-        ylabelsize=ylabelsize,
-        xyticksize=xyticksize,
-        mask_pointsize=mask_pointsize,
-        output_path=output_path,
-        output_format=output_format,
-        output_filename=output_filename,
+        points=positions,
     )
 
-
+@set_labels
 def potential_chi_squared_map(
-    imaging,
-    origin=True,
+        imaging,
+    include_origin=True,
+    grid=None,
     mask=None,
-    as_subplot=False,
-    use_scaled_units=True,
-    unit_conversion_factor=None,
-    unit_label="scaled",
-    figsize=(7, 7),
-    aspect="square",
-    cmap="jet",
-    norm="linear",
-    norm_min=None,
-    norm_max=None,
-    linthresh=0.05,
-    linscale=0.01,
-    cb_ticksize=10,
-    cb_fraction=0.047,
-    cb_pad=0.01,
-    cb_tick_values=None,
-    cb_tick_labels=None,
-    title="Imaging Potential Chi-Squared Map",
-    titlesize=16,
-    xlabelsize=16,
-    ylabelsize=16,
-    xyticksize=16,
-    mask_pointsize=10,
-    output_path=None,
-    output_format="show",
-    output_filename="imaging_potential_chi_squared_map",
+    positions=None,
+    array_plotter=array_plotter.ArrayPlotter(),
 ):
     """Plot the signal-to-noise_map-map of the imaging data_type.
 
@@ -750,38 +588,13 @@ def potential_chi_squared_map(
     -----------
     image : data_type.ImagingData
         The imaging data_type, which includes the observed image, noise_map-map, PSF, signal-to-noise_map-map, etc.
-    origin : True
-        If true, the origin of the dataset's coordinate system is plotted as a 'x'.
+    include_origin : True
+        If true, the include_origin of the dataset's coordinate system is plotted as a 'x'.
     """
-
-    array_plotters.plot_array(
-        array=imaging.potential_chi_squared_map,
-        origin=origin,
+    array_plotter.plot_array(
+        array=imaging.image,
+        include_origin=include_origin,
+        grid=grid,
         mask=mask,
-        as_subplot=as_subplot,
-        use_scaled_units=use_scaled_units,
-        unit_conversion_factor=unit_conversion_factor,
-        unit_label=unit_label,
-        figsize=figsize,
-        aspect=aspect,
-        cmap=cmap,
-        norm=norm,
-        norm_min=norm_min,
-        norm_max=norm_max,
-        linthresh=linthresh,
-        linscale=linscale,
-        cb_ticksize=cb_ticksize,
-        cb_fraction=cb_fraction,
-        cb_pad=cb_pad,
-        cb_tick_values=cb_tick_values,
-        cb_tick_labels=cb_tick_labels,
-        title=title,
-        titlesize=titlesize,
-        xlabelsize=xlabelsize,
-        ylabelsize=ylabelsize,
-        xyticksize=xyticksize,
-        mask_pointsize=mask_pointsize,
-        output_path=output_path,
-        output_format=output_format,
-        output_filename=output_filename,
+        points=positions,
     )

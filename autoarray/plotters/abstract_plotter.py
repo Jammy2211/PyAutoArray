@@ -27,7 +27,6 @@ class AbstractPlotter(object):
     def __init__(self,
     use_scaled_units=None,
     unit_conversion_factor=None,
-    unit_label=None,
     figsize=None,
     aspect=None,
     cmap=None,
@@ -61,7 +60,6 @@ class AbstractPlotter(object):
 
         self.use_scaled_units = load_setting(value=use_scaled_units, name="use_scaled_units", python_type=bool)
         self.unit_conversion_factor = unit_conversion_factor
-        self.unit_label = load_setting(value=unit_label, name="unit_label", python_type=str)
         self.figsize = load_setting(value=figsize, name="figsize", python_type=str)
         if isinstance(self.figsize, str):
             self.figsize = tuple(map(int, self.figsize[1:-1].split(',')))

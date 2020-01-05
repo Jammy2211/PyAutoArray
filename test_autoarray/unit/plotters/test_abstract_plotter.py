@@ -1,5 +1,4 @@
 from os import path
-import autoarray as aa
 from autoarray import conf
 from autoarray.plotters import abstract_plotter
 
