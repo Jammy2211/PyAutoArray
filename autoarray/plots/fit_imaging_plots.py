@@ -12,46 +12,24 @@ from autoarray.util import plotter_util
 @plotters.set_includes
 def subplot(
     fit,
-    mask=True,
+    include_mask=None,
     grid=None,
     points=None,
     lines=None,
-    use_scaled_units=True,
-    unit_conversion_factor=None,
-    unit_label="arcsec",
-    figsize=None,
-    aspect="square",
-    cmap="jet",
-    norm="linear",
-    norm_min=None,
-    norm_max=None,
-    linthresh=0.05,
-    linscale=0.01,
-    cb_ticksize=10,
-    cb_fraction=0.047,
-    cb_pad=0.01,
-    cb_tick_values=None,
-    cb_tick_labels=None,
-    titlesize=10,
-    xlabelsize=10,
-    ylabelsize=10,
-    xyticksize=10,
-    mask_pointsize=10,
-    position_pointsize=10,
-    grid_pointsize=1,
-    output_path=None,
-    output_filename="fit",
-    output_format="show",
+    array_plotter=array_plotters.ArrayPlotter(),
 ):
 
-    rows, columns, figsize_tool = plotter_util.get_subplot_rows_columns_figsize(
+    array_plotter = array_plotter.plotter_as_sub_plotter()
+    array_plotter = array_plotter.plotter_with_new_labels_and_filename(output_filename="fit_imaging")
+
+    rows, columns, figsize_tool = array_plotter.get_subplot_rows_columns_figsize(
         number_subplots=6
     )
 
-    mask = plotter_util.get_mask_from_fit(fit=fit, include_mask=include_mask)
-
-    if figsize is None:
+    if array_plotter.figsize is None:
         figsize = figsize_tool
+    else:
+        figsize = array_plotter.figsize
 
     plt.figure(figsize=figsize)
     plt.subplot(rows, columns, 1)
@@ -61,33 +39,7 @@ def subplot(
         grid=grid,
         include_mask=include_mask,
         points=points,
-        as_subplot=True,
-        unit_label=unit_label,
-        use_scaled_units=use_scaled_units,
-        unit_conversion_factor=unit_conversion_factor,
-        figsize=figsize,
-        aspect=aspect,
-        cmap=cmap,
-        norm=norm,
-        norm_min=norm_min,
-        norm_max=norm_max,
-        linthresh=linthresh,
-        linscale=linscale,
-        cb_ticksize=cb_ticksize,
-        cb_fraction=cb_fraction,
-        cb_pad=cb_pad,
-        cb_tick_values=cb_tick_values,
-        cb_tick_labels=cb_tick_labels,
-        titlesize=titlesize,
-        xlabelsize=xlabelsize,
-        ylabelsize=ylabelsize,
-        xyticksize=xyticksize,
-        grid_pointsize=grid_pointsize,
-        position_pointsize=position_pointsize,
-        mask_pointsize=mask_pointsize,
-        output_path=output_path,
-        output_filename="",
-        output_format=output_format,
+        array_plotter=array_plotter,
     )
 
     plt.subplot(rows, columns, 2)
@@ -95,32 +47,7 @@ def subplot(
     signal_to_noise_map(
         fit=fit,
         include_mask=include_mask,
-        as_subplot=True,
-        unit_label=unit_label,
-        use_scaled_units=use_scaled_units,
-        unit_conversion_factor=unit_conversion_factor,
-        figsize=figsize,
-        aspect=aspect,
-        cmap=cmap,
-        norm=norm,
-        norm_min=norm_min,
-        norm_max=norm_max,
-        linthresh=linthresh,
-        linscale=linscale,
-        cb_ticksize=cb_ticksize,
-        cb_fraction=cb_fraction,
-        cb_pad=cb_pad,
-        cb_tick_values=cb_tick_values,
-        cb_tick_labels=cb_tick_labels,
-        titlesize=titlesize,
-        xlabelsize=xlabelsize,
-        ylabelsize=ylabelsize,
-        xyticksize=xyticksize,
-        position_pointsize=position_pointsize,
-        mask_pointsize=mask_pointsize,
-        output_path=output_path,
-        output_filename="",
-        output_format=output_format,
+        array_plotter=array_plotter,
     )
 
     plt.subplot(rows, columns, 3)
@@ -129,30 +56,7 @@ def subplot(
         fit=fit,
         include_mask=include_mask,
         lines=lines,
-        as_subplot=True,
-        unit_label=unit_label,
-        use_scaled_units=use_scaled_units,
-        unit_conversion_factor=unit_conversion_factor,
-        figsize=figsize,
-        aspect=aspect,
-        cmap=cmap,
-        norm=norm,
-        norm_min=norm_min,
-        norm_max=norm_max,
-        linthresh=linthresh,
-        linscale=linscale,
-        cb_ticksize=cb_ticksize,
-        cb_fraction=cb_fraction,
-        cb_pad=cb_pad,
-        cb_tick_values=cb_tick_values,
-        cb_tick_labels=cb_tick_labels,
-        titlesize=titlesize,
-        xlabelsize=xlabelsize,
-        ylabelsize=ylabelsize,
-        xyticksize=xyticksize,
-        output_path=output_path,
-        output_filename="",
-        output_format=output_format,
+        array_plotter=array_plotter,
     )
 
     plt.subplot(rows, columns, 4)
@@ -160,30 +64,7 @@ def subplot(
     residual_map(
         fit=fit,
         include_mask=include_mask,
-        as_subplot=True,
-        unit_label=unit_label,
-        use_scaled_units=use_scaled_units,
-        unit_conversion_factor=unit_conversion_factor,
-        figsize=figsize,
-        aspect=aspect,
-        cmap=cmap,
-        norm=norm,
-        norm_min=norm_min,
-        norm_max=norm_max,
-        linthresh=linthresh,
-        linscale=linscale,
-        cb_ticksize=cb_ticksize,
-        cb_fraction=cb_fraction,
-        cb_pad=cb_pad,
-        cb_tick_values=cb_tick_values,
-        cb_tick_labels=cb_tick_labels,
-        titlesize=titlesize,
-        xlabelsize=xlabelsize,
-        ylabelsize=ylabelsize,
-        xyticksize=xyticksize,
-        output_path=output_path,
-        output_filename="",
-        output_format=output_format,
+        array_plotter=array_plotter,
     )
 
     plt.subplot(rows, columns, 5)
@@ -191,30 +72,7 @@ def subplot(
     normalized_residual_map(
         fit=fit,
         include_mask=include_mask,
-        as_subplot=True,
-        unit_label=unit_label,
-        use_scaled_units=use_scaled_units,
-        unit_conversion_factor=unit_conversion_factor,
-        figsize=figsize,
-        aspect=aspect,
-        cmap=cmap,
-        norm=norm,
-        norm_min=norm_min,
-        norm_max=norm_max,
-        linthresh=linthresh,
-        linscale=linscale,
-        cb_ticksize=cb_ticksize,
-        cb_fraction=cb_fraction,
-        cb_pad=cb_pad,
-        cb_tick_values=cb_tick_values,
-        cb_tick_labels=cb_tick_labels,
-        titlesize=titlesize,
-        xlabelsize=xlabelsize,
-        ylabelsize=ylabelsize,
-        xyticksize=xyticksize,
-        output_path=output_path,
-        output_filename="",
-        output_format=output_format,
+        array_plotter=array_plotter,
     )
 
     plt.subplot(rows, columns, 6)
@@ -222,36 +80,10 @@ def subplot(
     chi_squared_map(
         fit=fit,
         include_mask=include_mask,
-        as_subplot=True,
-        unit_label=unit_label,
-        use_scaled_units=use_scaled_units,
-        unit_conversion_factor=unit_conversion_factor,
-        figsize=figsize,
-        aspect=aspect,
-        cmap=cmap,
-        norm=norm,
-        norm_min=norm_min,
-        norm_max=norm_max,
-        linthresh=linthresh,
-        linscale=linscale,
-        cb_ticksize=cb_ticksize,
-        cb_fraction=cb_fraction,
-        cb_pad=cb_pad,
-        cb_tick_values=cb_tick_values,
-        cb_tick_labels=cb_tick_labels,
-        titlesize=titlesize,
-        xlabelsize=xlabelsize,
-        ylabelsize=ylabelsize,
-        xyticksize=xyticksize,
-        output_path=output_path,
-        output_filename="",
-        output_format=output_format,
+        array_plotter=array_plotter,
     )
 
-    plotter_util.output_subplot_array(
-        output_path=output_path,
-        output_filename=output_filename,
-        output_format=output_format,
+    array_plotter.output_subplot_array(
     )
 
     plt.close()
