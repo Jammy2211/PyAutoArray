@@ -7,28 +7,14 @@ from matplotlib import pyplot as plt
 
 from autoarray.plotters import plotters
 from autoarray.plotters import array_plotters, grid_plotters, line_plotters
-from autoarray.util import plotter_util
 from autoarray.structures import grids
-import numpy as np
 
 @plotters.set_includes
 def subplot(
     interferometer,
-    unit_conversion_factor=None,
-    figsize=None,
-    cmap="jet",
-    cb_ticksize=10,
-    cb_fraction=0.047,
-    cb_pad=0.01,
-    cb_tick_values=None,
-    cb_tick_labels=None,
-    titlesize=10,
-    xlabelsize=10,
-    ylabelsize=10,
-    xyticksize=10,
-    output_path=None,
-    output_filename="interferometer",
-    output_format="show",
+    array_plotter=array_plotters.ArrayPlotter(),
+    grid_plotter=grid_plotters.GridPlotter(),
+    line_plotter=line_plotters.LinePlotter(),
 ):
     """Plot the interferometer data_type as a sub-plotters of all its quantites (e.g. the dataset, noise_map-map, PSF, Signal-to_noise-map, \
      etc).
@@ -49,12 +35,19 @@ def subplot(
         config file is ignored.
     """
 
-    rows, columns, figsize_tool = plotter_util.get_subplot_rows_columns_figsize(
+    array_plotter = array_plotter.plotter_as_sub_plotter()
+    grid_plotter = grid_plotter.plotter_as_sub_plotter()
+    line_plotter = line_plotter.plotter_as_sub_plotter()
+    array_plotter = array_plotter.plotter_with_new_labels_and_filename(output_filename="interferometer")
+
+    rows, columns, figsize_tool = array_plotter.get_subplot_rows_columns_figsize(
         number_subplots=4
     )
 
-    if figsize is None:
+    if array_plotter.figsize is None:
         figsize = figsize_tool
+    else:
+        figsize = array_plotter.figsize
 
     plt.figure(figsize=figsize)
 
@@ -62,117 +55,31 @@ def subplot(
 
     uv_wavelengths(
         interferometer=interferometer,
-        as_subplot=True,
-        unit_conversion_factor=unit_conversion_factor,
-        figsize=figsize,
-        titlesize=titlesize,
-        xlabelsize=xlabelsize,
-        ylabelsize=ylabelsize,
-        xyticksize=xyticksize,
-        output_path=output_path,
-        output_format=output_format,
-        output_filename=output_filename,
+        grid_plotter=grid_plotter
     )
 
     plt.subplot(rows, columns, 2)
 
     visibilities(
         interferometer=interferometer,
-        as_subplot=True,
-        unit_conversion_factor=unit_conversion_factor,
-        figsize=figsize,
-        cmap=cmap,
-        cb_ticksize=cb_ticksize,
-        cb_fraction=cb_fraction,
-        cb_pad=cb_pad,
-        cb_tick_values=cb_tick_values,
-        cb_tick_labels=cb_tick_labels,
-        titlesize=titlesize,
-        xlabelsize=xlabelsize,
-        ylabelsize=ylabelsize,
-        xyticksize=xyticksize,
-        output_path=output_path,
-        output_format=output_format,
-        output_filename=output_filename,
+        grid_plotter=grid_plotter
     )
 
     plt.subplot(rows, columns, 3)
 
     amplitudes_vs_uv_distances(
         interferometer=interferometer,
-        as_subplot=True,
-        unit_conversion_factor=unit_conversion_factor,
-        figsize=figsize,
-        cmap=cmap,
-        cb_ticksize=cb_ticksize,
-        cb_fraction=cb_fraction,
-        cb_pad=cb_pad,
-        cb_tick_values=cb_tick_values,
-        cb_tick_labels=cb_tick_labels,
-        titlesize=titlesize,
-        xlabelsize=xlabelsize,
-        ylabelsize=ylabelsize,
-        xyticksize=xyticksize,
-        output_path=output_path,
-        output_format=output_format,
-        output_filename=output_filename,
+        line_plotter=line_plotter,
     )
 
     plt.subplot(rows, columns, 4)
 
     phases_vs_uv_distances(
         interferometer=interferometer,
-        as_subplot=True,
-        unit_conversion_factor=unit_conversion_factor,
-        figsize=figsize,
-        cmap=cmap,
-        cb_ticksize=cb_ticksize,
-        cb_fraction=cb_fraction,
-        cb_pad=cb_pad,
-        cb_tick_values=cb_tick_values,
-        cb_tick_labels=cb_tick_labels,
-        titlesize=titlesize,
-        xlabelsize=xlabelsize,
-        ylabelsize=ylabelsize,
-        xyticksize=xyticksize,
-        output_path=output_path,
-        output_format=output_format,
-        output_filename=output_filename,
+        line_plotter=line_plotter
     )
 
-    # plt.subplot(rows, columns, 3)
-    #
-    # primary_beam(
-    #     interferometer=interferometer,
-    #     origin=origin,
-    #     as_subplot=True,
-    #     unit_label=unit_label,
-    #     kpc_per_arcsec=kpc_per_arcsec,
-    #     figsize=figsize,
-    #     aspect=aspect,
-    #     cmap=cmap,
-    #     norm=norm,
-    #     norm_min=norm_min,
-    #     norm_max=norm_max,
-    #     linthresh=linthresh,
-    #     linscale=linscale,
-    #     cb_ticksize=cb_ticksize,
-    #     cb_fraction=cb_fraction,
-    #     cb_pad=cb_pad,
-    #     cb_tick_values=cb_tick_values,
-    #     cb_tick_labels=cb_tick_labels,
-    #     titlesize=titlesize,
-    #     xlabelsize=xlabelsize,
-    #     ylabelsize=ylabelsize,
-    #     xyticksize=xyticksize,
-    #     output_path=output_path,
-    #     output_format=output_format,
-    # )
-
-    plotter_util.output_subplot_array(
-        output_path=output_path,
-        output_filename=output_filename,
-        output_format=output_format,
+    array_plotter.output_subplot_array(
     )
 
     plt.close()
