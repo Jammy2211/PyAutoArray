@@ -95,11 +95,10 @@ def test__fit_sub_plot(fit_imaging_7x7, fit_imaging_path, plot_patch):
 
     aa.plot.fit_imaging.subplot(
         fit=fit_imaging_7x7,
-        mask=True,
-        cb_tick_values=[1.0],
-        cb_tick_labels=["1.0"],
-        output_path=fit_imaging_path,
-        output_format="png",
+        include_mask=True,
+        array_plotter=aa.plotter.array(
+            output_path=fit_imaging_path, output_format="png"
+        ),
     )
 
     assert fit_imaging_path + "fit.png" in plot_patch.paths
@@ -111,31 +110,33 @@ def test__fit_individuals__source_and_lens__depedent_on_input(
 
     aa.plot.fit_imaging.individuals(
         fit=fit_imaging_7x7,
+        include_mask=True,
         plot_image=True,
         plot_noise_map=False,
         plot_signal_to_noise_map=False,
         plot_model_image=True,
         plot_chi_squared_map=True,
-        output_path=fit_imaging_path,
-        output_format="png",
+        array_plotter=aa.plotter.array(
+            output_path=fit_imaging_path, output_format="png"
+        ),
     )
 
-    assert fit_imaging_path + "fit_image.png" in plot_patch.paths
+    assert fit_imaging_path + "image.png" in plot_patch.paths
 
-    assert fit_imaging_path + "fit_noise_map.png" not in plot_patch.paths
+    assert fit_imaging_path + "noise_map.png" not in plot_patch.paths
 
-    assert fit_imaging_path + "fit_signal_to_noise_map.png" not in plot_patch.paths
+    assert fit_imaging_path + "signal_to_noise_map.png" not in plot_patch.paths
 
-    assert fit_imaging_path + "fit_model_image.png" in plot_patch.paths
+    assert fit_imaging_path + "model_image.png" in plot_patch.paths
 
-    assert fit_imaging_path + "fit_residual_map.png" not in plot_patch.paths
+    assert fit_imaging_path + "residual_map.png" not in plot_patch.paths
 
     assert (
-        fit_imaging_path + "fit_normalized_residual_map.png"
+        fit_imaging_path + "normalized_residual_map.png"
         not in plot_patch.paths
     )
 
-    assert fit_imaging_path + "fit_chi_squared_map.png" in plot_patch.paths
+    assert fit_imaging_path + "chi_squared_map.png" in plot_patch.paths
 
     aa.plot.fit_imaging.individuals(
         fit=fit_imaging_7x7,
@@ -144,23 +145,24 @@ def test__fit_individuals__source_and_lens__depedent_on_input(
         plot_signal_to_noise_map=False,
         plot_model_image=True,
         plot_chi_squared_map=True,
-        output_path=fit_imaging_path,
-        output_format="png",
+        array_plotter=aa.plotter.array(
+            output_path=fit_imaging_path, output_format="png"
+        ),
     )
 
-    assert fit_imaging_path + "fit_image.png" in plot_patch.paths
+    assert fit_imaging_path + "image.png" in plot_patch.paths
 
-    assert fit_imaging_path + "fit_noise_map.png" not in plot_patch.paths
+    assert fit_imaging_path + "noise_map.png" not in plot_patch.paths
 
-    assert fit_imaging_path + "fit_signal_to_noise_map.png" not in plot_patch.paths
+    assert fit_imaging_path + "signal_to_noise_map.png" not in plot_patch.paths
 
-    assert fit_imaging_path + "fit_model_image.png" in plot_patch.paths
+    assert fit_imaging_path + "model_image.png" in plot_patch.paths
 
-    assert fit_imaging_path + "fit_residual_map.png" not in plot_patch.paths
+    assert fit_imaging_path + "residual_map.png" not in plot_patch.paths
 
     assert (
-        fit_imaging_path + "fit_normalized_residual_map.png"
+        fit_imaging_path + "normalized_residual_map.png"
         not in plot_patch.paths
     )
 
-    assert fit_imaging_path + "fit_chi_squared_map.png" in plot_patch.paths
+    assert fit_imaging_path + "chi_squared_map.png" in plot_patch.paths

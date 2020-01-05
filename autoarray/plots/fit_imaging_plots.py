@@ -48,7 +48,7 @@ def subplot(
         number_subplots=6
     )
 
-    mask = plotter_util.get_mask_from_fit(fit=fit, include_mask=mask)
+    mask = plotter_util.get_mask_from_fit(fit=fit, include_mask=include_mask)
 
     if figsize is None:
         figsize = figsize_tool
@@ -59,7 +59,7 @@ def subplot(
     image(
         fit=fit,
         grid=grid,
-        mask=mask,
+        include_mask=include_mask,
         points=points,
         as_subplot=True,
         unit_label=unit_label,
@@ -94,7 +94,7 @@ def subplot(
 
     signal_to_noise_map(
         fit=fit,
-        mask=mask,
+        include_mask=include_mask,
         as_subplot=True,
         unit_label=unit_label,
         use_scaled_units=use_scaled_units,
@@ -127,7 +127,7 @@ def subplot(
 
     model_image(
         fit=fit,
-        mask=mask,
+        include_mask=include_mask,
         lines=lines,
         as_subplot=True,
         unit_label=unit_label,
@@ -159,7 +159,7 @@ def subplot(
 
     residual_map(
         fit=fit,
-        mask=mask,
+        include_mask=include_mask,
         as_subplot=True,
         unit_label=unit_label,
         use_scaled_units=use_scaled_units,
@@ -190,7 +190,7 @@ def subplot(
 
     normalized_residual_map(
         fit=fit,
-        mask=mask,
+        include_mask=include_mask,
         as_subplot=True,
         unit_label=unit_label,
         use_scaled_units=use_scaled_units,
@@ -221,7 +221,7 @@ def subplot(
 
     chi_squared_map(
         fit=fit,
-        mask=mask,
+        include_mask=include_mask,
         as_subplot=True,
         unit_label=unit_label,
         use_scaled_units=use_scaled_units,
@@ -259,7 +259,7 @@ def subplot(
 @plotters.set_includes
 def individuals(
     fit,
-    mask=True,
+    include_mask=None,
     lines=None,
     grid=None,
     points=None,
@@ -278,10 +278,7 @@ def individuals(
     plot_inversion_regularization_weight_map=False,
     plot_inversion_interpolated_reconstruction=False,
     plot_inversion_interpolated_errors=False,
-    unit_conversion_factor=None,
-    unit_label="scaled",
-    output_path=None,
-    output_format="show",
+    array_plotter=array_plotters.ArrayPlotter(),
 ):
     """Plot the model datas_ of an analysis, using the *Fitter* class object.
 
@@ -298,86 +295,63 @@ def individuals(
         in the python interpreter window.
     """
 
-    mask = plotter_util.get_mask_from_fit(fit=fit, include_mask=mask)
-
     if plot_image:
 
         image(
             fit=fit,
-            mask=mask,
+            include_mask=include_mask,
             points=points,
             grid=grid,
-            unit_label=unit_label,
-            unit_conversion_factor=unit_conversion_factor,
-            output_path=output_path,
-            output_format=output_format,
+            array_plotter=array_plotter,
         )
 
     if plot_noise_map:
 
         noise_map(
             fit=fit,
-            mask=mask,
-            unit_label=unit_label,
-            unit_conversion_factor=unit_conversion_factor,
-            output_path=output_path,
-            output_format=output_format,
+            include_mask=include_mask,
+            array_plotter=array_plotter,
         )
 
     if plot_signal_to_noise_map:
 
         signal_to_noise_map(
             fit=fit,
-            mask=mask,
-            unit_conversion_factor=unit_conversion_factor,
-            unit_label=unit_label,
-            output_path=output_path,
-            output_format=output_format,
+            include_mask=include_mask,
+            array_plotter=array_plotter,
         )
 
     if plot_model_image:
 
         model_image(
             fit=fit,
-            mask=mask,
+            include_mask=include_mask,
             lines=lines,
-            unit_conversion_factor=unit_conversion_factor,
-            unit_label=unit_label,
-            output_path=output_path,
-            output_format=output_format,
+            array_plotter=array_plotter,
         )
 
     if plot_residual_map:
 
         residual_map(
             fit=fit,
-            mask=mask,
-            unit_conversion_factor=unit_conversion_factor,
-            unit_label=unit_label,
-            output_path=output_path,
-            output_format=output_format,
+            include_mask=include_mask,
+            array_plotter=array_plotter,
         )
 
     if plot_normalized_residual_map:
 
         normalized_residual_map(
             fit=fit,
-            mask=mask,
-            unit_conversion_factor=unit_conversion_factor,
-            unit_label=unit_label,
-            output_path=output_path,
-            output_format=output_format,
+            include_mask=include_mask,
+            array_plotter=array_plotter,
         )
 
     if plot_chi_squared_map:
 
         chi_squared_map(
             fit=fit,
-            mask=mask,
-            unit_conversion_factor=unit_conversion_factor,
-            unit_label=unit_label,
-            output_path=output_path,
-            output_format=output_format,
+            include_mask=include_mask,
+            array_plotter=array_plotter,
         )
 
     if fit.total_inversions == 1:
@@ -393,10 +367,7 @@ def individuals(
             plot_inversion_regularization_weight_map=plot_inversion_regularization_weight_map,
             plot_inversion_interpolated_reconstruction=plot_inversion_interpolated_reconstruction,
             plot_inversion_interpolated_errors=plot_inversion_interpolated_errors,
-            unit_conversion_factor=unit_conversion_factor,
-            unit_label=unit_label,
-            output_path=output_path,
-            output_format=output_format,
+            array_plotter=array_plotter,
         )
 
 @plotters.set_includes
