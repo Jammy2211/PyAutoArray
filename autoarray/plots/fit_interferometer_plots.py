@@ -7,35 +7,29 @@ from matplotlib import pyplot as plt
 
 from autoarray.plotters import plotters, array_plotters, grid_plotters, line_plotters
 from autoarray.plots import inversion_plots
-from autoarray.util import plotter_util
 
 @plotters.set_includes
 @plotters.set_labels
 def subplot(
     fit,
-    unit_conversion_factor=None,
-    figsize=None,
-    cmap="jet",
-    cb_ticksize=10,
-    cb_fraction=0.047,
-    cb_pad=0.01,
-    cb_tick_values=None,
-    cb_tick_labels=None,
-    titlesize=10,
-    xlabelsize=10,
-    ylabelsize=10,
-    xyticksize=10,
-    output_path=None,
-    output_filename="fit",
-    output_format="show",
+    array_plotter=array_plotters.ArrayPlotter(),
+    grid_plotter=grid_plotters.GridPlotter(),
+    line_plotter=line_plotters.LinePlotter(),
 ):
 
-    rows, columns, figsize_tool = plotter_util.get_subplot_rows_columns_figsize(
+    array_plotter = array_plotter.plotter_as_sub_plotter()
+    grid_plotter = grid_plotter.plotter_as_sub_plotter()
+    line_plotter = line_plotter.plotter_as_sub_plotter()
+    array_plotter = array_plotter.plotter_with_new_labels_and_filename(output_filename="fit_interferometer")
+
+    rows, columns, figsize_tool = array_plotter.get_subplot_rows_columns_figsize(
         number_subplots=6
     )
 
-    if figsize is None:
+    if array_plotter.figsize is None:
         figsize = figsize_tool
+    else:
+        figsize = array_plotter.figsize
 
     plt.figure(figsize=figsize)
 
@@ -43,66 +37,21 @@ def subplot(
 
     residual_map_vs_uv_distances(
         fit=fit,
-        as_subplot=True,
-        unit_conversion_factor=unit_conversion_factor,
-        figsize=figsize,
-        cmap=cmap,
-        cb_ticksize=cb_ticksize,
-        cb_fraction=cb_fraction,
-        cb_pad=cb_pad,
-        cb_tick_values=cb_tick_values,
-        cb_tick_labels=cb_tick_labels,
-        titlesize=titlesize,
-        xlabelsize=xlabelsize,
-        ylabelsize=ylabelsize,
-        xyticksize=xyticksize,
-        output_path=output_path,
-        output_filename="",
-        output_format=output_format,
+        line_plotter=line_plotter
     )
 
     plt.subplot(rows, columns, 2)
 
     normalized_residual_map_vs_uv_distances(
         fit=fit,
-        as_subplot=True,
-        unit_conversion_factor=unit_conversion_factor,
-        figsize=figsize,
-        cmap=cmap,
-        cb_ticksize=cb_ticksize,
-        cb_fraction=cb_fraction,
-        cb_pad=cb_pad,
-        cb_tick_values=cb_tick_values,
-        cb_tick_labels=cb_tick_labels,
-        titlesize=titlesize,
-        xlabelsize=xlabelsize,
-        ylabelsize=ylabelsize,
-        xyticksize=xyticksize,
-        output_path=output_path,
-        output_filename="",
-        output_format=output_format,
+        line_plotter=line_plotter
     )
 
     plt.subplot(rows, columns, 3)
 
     chi_squared_map_vs_uv_distances(
         fit=fit,
-        as_subplot=True,
-        unit_conversion_factor=unit_conversion_factor,
-        figsize=figsize,
-        cmap=cmap,
-        cb_ticksize=cb_ticksize,
-        cb_fraction=cb_fraction,
-        cb_pad=cb_pad,
-        cb_tick_values=cb_tick_values,
-        cb_tick_labels=cb_tick_labels,
-        titlesize=titlesize,
-        xlabelsize=xlabelsize,
-        ylabelsize=ylabelsize,
-        xyticksize=xyticksize,
-        output_path=output_path,
-        output_filename="",
-        output_format=output_format,
+        line_plotter=line_plotter
     )
 
     plt.subplot(rows, columns, 4)
@@ -110,22 +59,7 @@ def subplot(
     residual_map_vs_uv_distances(
         fit=fit,
         plot_real=False,
-        as_subplot=True,
-        unit_conversion_factor=unit_conversion_factor,
-        figsize=figsize,
-        cmap=cmap,
-        cb_ticksize=cb_ticksize,
-        cb_fraction=cb_fraction,
-        cb_pad=cb_pad,
-        cb_tick_values=cb_tick_values,
-        cb_tick_labels=cb_tick_labels,
-        titlesize=titlesize,
-        xlabelsize=xlabelsize,
-        ylabelsize=ylabelsize,
-        xyticksize=xyticksize,
-        output_path=output_path,
-        output_filename="",
-        output_format=output_format,
+        line_plotter=line_plotter
     )
 
     plt.subplot(rows, columns, 5)
@@ -133,22 +67,7 @@ def subplot(
     normalized_residual_map_vs_uv_distances(
         fit=fit,
         plot_real=False,
-        as_subplot=True,
-        unit_conversion_factor=unit_conversion_factor,
-        figsize=figsize,
-        cmap=cmap,
-        cb_ticksize=cb_ticksize,
-        cb_fraction=cb_fraction,
-        cb_pad=cb_pad,
-        cb_tick_values=cb_tick_values,
-        cb_tick_labels=cb_tick_labels,
-        titlesize=titlesize,
-        xlabelsize=xlabelsize,
-        ylabelsize=ylabelsize,
-        xyticksize=xyticksize,
-        output_path=output_path,
-        output_filename="",
-        output_format=output_format,
+        line_plotter=line_plotter
     )
 
     plt.subplot(rows, columns, 6)
@@ -156,28 +75,10 @@ def subplot(
     chi_squared_map_vs_uv_distances(
         fit=fit,
         plot_real=False,
-        as_subplot=True,
-        unit_conversion_factor=unit_conversion_factor,
-        figsize=figsize,
-        cmap=cmap,
-        cb_ticksize=cb_ticksize,
-        cb_fraction=cb_fraction,
-        cb_pad=cb_pad,
-        cb_tick_values=cb_tick_values,
-        cb_tick_labels=cb_tick_labels,
-        titlesize=titlesize,
-        xlabelsize=xlabelsize,
-        ylabelsize=ylabelsize,
-        xyticksize=xyticksize,
-        output_path=output_path,
-        output_filename="",
-        output_format=output_format,
+        line_plotter=line_plotter
     )
 
-    plotter_util.output_subplot_array(
-        output_path=output_path,
-        output_filename=output_filename,
-        output_format=output_format,
+    array_plotter.output_subplot_array(
     )
 
     plt.close()

@@ -23,13 +23,18 @@ def test__fit_sub_plot(fit_interferometer_7, fit_interferometer_path, plot_patch
 
     aa.plot.fit_interferometer.subplot(
         fit=fit_interferometer_7,
-        cb_tick_values=[1.0],
-        cb_tick_labels=["1.0"],
-        output_path=fit_interferometer_path,
-        output_format="png",
+        array_plotter=aa.plotter.array(
+            output_path=fit_interferometer_path, output_format="png"
+        ),
+        grid_plotter=aa.plotter.grid(
+            output_path=fit_interferometer_path, output_format="png"
+        ),
+        line_plotter=aa.plotter.line(
+            output_path=fit_interferometer_path, output_format="png"
+        ),
     )
 
-    assert fit_interferometer_path + "fit.png" in plot_patch.paths
+    assert fit_interferometer_path + "fit_interferometer.png" in plot_patch.paths
 
 
 def test__fit_individuals__dependent_on_input(
@@ -43,15 +48,7 @@ def test__fit_individuals__dependent_on_input(
         plot_signal_to_noise_map=False,
         plot_model_visibilities=True,
         plot_chi_squared_map=True,
-        array_plotter=aa.plotter.array(
-            output_path=fit_interferometer_path, output_format="png"
-        ),
-        grid_plotter=aa.plotter.grid(
-            output_path=fit_interferometer_path, output_format="png"
-        ),
-        line_plotter=aa.plotter.line(
-            output_path=fit_interferometer_path, output_format="png"
-        ),
+
     )
 
     assert fit_interferometer_path + "visibilities.png" in plot_patch.paths
