@@ -477,8 +477,6 @@ def output_filename_from_plotter_and_func(plotter, func):
 
         return plotter.output_filename
 
-
-
 def set_includes(func):
     """
     Decorate a profile method that accepts a coordinate grid and returns a data_type grid.
