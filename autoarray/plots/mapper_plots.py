@@ -64,13 +64,14 @@ def image_and_mapper(
 
     plt.subplot(rows, columns, 2)
 
-    mapper_plotter.mapper_grid(
+    mapper_grid(
         mapper=mapper,
         include_centres=include_centres,
         include_grid=include_grid,
         include_border=include_border,
         image_pixels=image_pixels,
         source_pixels=source_pixels,
+        mapper_plotter=mapper_plotter
     )
 
     mapper_plotter.output_subplot_array()

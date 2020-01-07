@@ -48,7 +48,15 @@ def test__fit_individuals__dependent_on_input(
         plot_signal_to_noise_map=False,
         plot_model_visibilities=True,
         plot_chi_squared_map=True,
-
+        array_plotter=aa.plotter.array(
+            output_path=fit_interferometer_path, output_format="png"
+        ),
+        grid_plotter=aa.plotter.grid(
+            output_path=fit_interferometer_path, output_format="png"
+        ),
+        line_plotter=aa.plotter.line(
+            output_path=fit_interferometer_path, output_format="png"
+        ),
     )
 
     assert fit_interferometer_path + "visibilities.png" in plot_patch.paths

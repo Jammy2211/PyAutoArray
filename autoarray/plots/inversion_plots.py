@@ -272,7 +272,6 @@ def plot_values(
             origin=origin,
             lines=lines,
             points=positions,
-            as_subplot=True,
         )
 
         mapper_plotter.plot_rectangular_mapper(

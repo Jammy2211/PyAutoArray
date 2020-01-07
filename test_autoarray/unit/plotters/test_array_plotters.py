@@ -21,7 +21,7 @@ class TestArrayPlotter:
 
         assert plotter.is_sub_plotter == False
         assert plotter.figsize == (7, 7)
-        assert plotter.aspect == "figure"
+        assert plotter.aspect == "auto"
         assert plotter.cmap == "jet"
         assert plotter.norm == "linear"
         assert plotter.norm_min == None
