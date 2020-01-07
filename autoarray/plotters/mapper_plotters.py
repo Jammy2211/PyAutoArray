@@ -11,6 +11,7 @@ import matplotlib.cm as cm
 from autoarray.plotters import grid_plotters
 from autoarray.operators.inversion import mappers
 
+
 class MapperPlotter(grid_plotters.GridPlotter):
     def __init__(
         self,
@@ -78,7 +79,6 @@ class MapperPlotter(grid_plotters.GridPlotter):
             output_format=output_format,
             output_filename=output_filename,
         )
-
 
     def plotter_as_sub_plotter(
         self,
