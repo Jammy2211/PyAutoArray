@@ -5,10 +5,10 @@ backend = aa.conf.get_matplotlib_backend()
 matplotlib.use(backend)
 from matplotlib import pyplot as plt
 
-from autoarray.plotters import array_plotters, mapper_plotters
+from autoarray.plotters import plotters, array_plotters, mapper_plotters
 from autoarray.operators.inversion import mappers
 
-
+@plotters.set_includes
 def subplot(
     inversion,
     mask=None,
@@ -118,7 +118,7 @@ def subplot(
 
     plt.close()
 
-
+@plotters.set_includes
 def individuals(
     inversion,
     lines=None,
@@ -212,7 +212,8 @@ def individuals(
             array_plotter=array_plotter
         )
 
-
+@plotters.set_includes
+@plotters.set_labels
 def reconstructed_image(
     inversion,
     mask=None,
@@ -306,7 +307,8 @@ def plot_values(
 
     mapper_plotter.close_figure()
 
-
+@plotters.set_includes
+@plotters.set_labels
 def reconstruction(
     inversion,
     origin=True,
@@ -334,7 +336,8 @@ def reconstruction(
         mapper_plotter=mapper_plotter,
     )
 
-
+@plotters.set_includes
+@plotters.set_labels
 def errors(
     inversion,
     origin=True,
@@ -360,7 +363,8 @@ def errors(
         mapper_plotter=mapper_plotter
     )
 
-
+@plotters.set_includes
+@plotters.set_labels
 def residual_map(
     inversion,
     origin=True,
@@ -386,7 +390,8 @@ def residual_map(
         mapper_plotter=mapper_plotter
     )
 
-
+@plotters.set_includes
+@plotters.set_labels
 def normalized_residual_map(
     inversion,
     origin=True,
@@ -412,7 +417,8 @@ def normalized_residual_map(
         mapper_plotter=mapper_plotter
     )
 
-
+@plotters.set_includes
+@plotters.set_labels
 def chi_squared_map(
     inversion,
     origin=True,
@@ -435,9 +441,11 @@ def chi_squared_map(
         include_border=include_border,
         image_pixels=image_pixels,
         source_pixels=source_pixels,
+        mapper_plotter=mapper_plotter
     )
 
-
+@plotters.set_includes
+@plotters.set_labels
 def regularization_weights(
     inversion,
     origin=True,
@@ -464,10 +472,11 @@ def regularization_weights(
         include_border=include_border,
         image_pixels=image_pixels,
         source_pixels=source_pixels,
-        
+        mapper_plotter=mapper_plotter,
     )
 
-
+@plotters.set_includes
+@plotters.set_labels
 def interpolated_reconstruction(
     inversion,
     lines=None,
@@ -483,7 +492,8 @@ def interpolated_reconstruction(
         grid=grid,
     )
 
-
+@plotters.set_includes
+@plotters.set_labels
 def interpolated_errors(
     inversion,
     lines=None,
