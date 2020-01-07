@@ -1,14 +1,24 @@
+from os import path
+from autoarray import conf
+
 import autoarray as aa
 import os
 
 import numpy as np
 import pytest
 
+directory = path.dirname(path.realpath(__file__))
 
 @pytest.fixture(name="mapper_plotter_path")
 def make_mapper_plotter_setup():
     return "{}/../../../test_files/plotting/mapper/".format(
         os.path.dirname(os.path.realpath(__file__))
+    )
+
+@pytest.fixture(autouse=True)
+def set_config_path():
+    conf.instance = conf.Config(
+        path.join(directory, "../test_files/plotters"), path.join(directory, "output")
     )
 
 
@@ -53,8 +63,9 @@ def test__image_and_rectangular_mapper_is_output(
         include_grid=True,
         image_pixels=[[0, 1, 2], [3]],
         source_pixels=[[1, 2], [0]],
-        output_path=mapper_plotter_path,
-        output_format="png",
+        mapper_plotter=aa.plotter.mapper(
+            output_path=mapper_plotter_path, output_format="png"
+        ),
     )
     assert mapper_plotter_path + "image_and_mapper.png" in plot_patch.paths
 
@@ -62,14 +73,15 @@ def test__image_and_rectangular_mapper_is_output(
 def test__rectangular_mapper_is_output(
     rectangular_mapper, mapper_plotter_path, plot_patch
 ):
-    aa.plot.mapper.plot_mapper(
+    aa.plot.mapper.mapper_grid(
         mapper=rectangular_mapper,
         include_centres=True,
         include_grid=True,
         image_pixels=[[0, 1, 2], [3]],
         source_pixels=[[1, 2], [0]],
-        output_path=mapper_plotter_path,
-        output_filename="rectangular_mapper",
-        output_format="png",
+        mapper_plotter=aa.plotter.mapper(
+            output_path=mapper_plotter_path, output_format="png"
+        ),
     )
-    assert mapper_plotter_path + "rectangular_mapper.png" in plot_patch.paths
+
+    assert mapper_plotter_path + "mapper_grid.png" in plot_patch.paths
