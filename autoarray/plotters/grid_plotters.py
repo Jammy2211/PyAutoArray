@@ -80,10 +80,7 @@ class GridPlotter(plotters.Plotter):
 
         self.grid_pointcolor = grid_pointcolor
 
-
-    def plotter_as_sub_plotter(
-        self,
-    ):
+    def plotter_as_sub_plotter(self,):
 
         return GridPlotter(
             is_sub_plotter=True,
@@ -132,7 +129,11 @@ class GridPlotter(plotters.Plotter):
         output_filename = (
             self.output_filename if output_filename is None else output_filename
         )
-        unit_conversion_factor = self.unit_conversion_factor if unit_conversion_factor is None else unit_conversion_factor
+        unit_conversion_factor = (
+            self.unit_conversion_factor
+            if unit_conversion_factor is None
+            else unit_conversion_factor
+        )
 
         return GridPlotter(
             is_sub_plotter=self.is_sub_plotter,
@@ -257,9 +258,7 @@ class GridPlotter(plotters.Plotter):
         self.plot_lines(line_lists=lines)
 
         plt.tick_params(labelsize=self.xyticksize)
-        self.output_figure(
-            array=None,
-        )
+        self.output_figure(array=None)
         self.close_figure()
 
     def set_axis_limits(self, axis_limits, grid, symmetric_around_centre):
@@ -320,7 +319,6 @@ class GridPlotter(plotters.Plotter):
                         color=self.grid_pointcolor,
                     )
 
-
     def output_figure(self, array):
         """Output the figure, either as an image on the screen or to the hard-disk as a .png or .fits file.
 
@@ -346,7 +344,10 @@ class GridPlotter(plotters.Plotter):
             if self.output_format is "show":
                 plt.show()
             elif self.output_format is "png":
-                plt.savefig(self.output_path + self.output_filename + ".png", bbox_inches="tight")
+                plt.savefig(
+                    self.output_path + self.output_filename + ".png",
+                    bbox_inches="tight",
+                )
             elif self.output_format is "fits":
                 array_util.numpy_array_1d_to_fits(
                     array_1d=array,

@@ -8,6 +8,7 @@ from matplotlib import pyplot as plt
 from autoarray.plotters import plotters, array_plotters, mapper_plotters
 from autoarray.operators.inversion import mappers
 
+
 @plotters.set_includes
 def subplot(
     inversion,
@@ -21,7 +22,9 @@ def subplot(
 
     array_plotter = array_plotter.plotter_as_sub_plotter()
     mapper_plotter = mapper_plotter.plotter_as_sub_plotter()
-    mapper_plotter = mapper_plotter.plotter_with_new_labels_and_filename(output_filename="image_and_mapper")
+    mapper_plotter = mapper_plotter.plotter_with_new_labels_and_filename(
+        output_filename="image_and_mapper"
+    )
 
     rows, columns, figsize_tool = array_plotter.get_subplot_rows_columns_figsize(
         number_subplots=2
@@ -60,7 +63,7 @@ def subplot(
         lines=lines,
         positions=positions,
         grid=grid,
-        array_plotter=array_plotter
+        array_plotter=array_plotter,
     )
 
     plt.subplot(rows, columns, 2, aspect=float(aspect_inv))
@@ -71,7 +74,7 @@ def subplot(
         lines=lines,
         include_grid=None,
         include_centres=None,
-        mapper_plotter=mapper_plotter
+        mapper_plotter=mapper_plotter,
     )
 
     plt.subplot(rows, columns, 3, aspect=float(aspect_inv))
@@ -81,7 +84,7 @@ def subplot(
         positions=None,
         include_grid=None,
         include_centres=None,
-        mapper_plotter=mapper_plotter
+        mapper_plotter=mapper_plotter,
     )
 
     plt.subplot(rows, columns, 4, aspect=float(aspect_inv))
@@ -91,7 +94,7 @@ def subplot(
         positions=None,
         include_grid=None,
         include_centres=None,
-        mapper_plotter=mapper_plotter
+        mapper_plotter=mapper_plotter,
     )
 
     plt.subplot(rows, columns, 5, aspect=float(aspect_inv))
@@ -101,7 +104,7 @@ def subplot(
         positions=None,
         include_grid=None,
         include_centres=None,
-        mapper_plotter=mapper_plotter
+        mapper_plotter=mapper_plotter,
     )
 
     plt.subplot(rows, columns, 6, aspect=float(aspect_inv))
@@ -111,12 +114,13 @@ def subplot(
         positions=None,
         include_grid=None,
         include_centres=None,
-        mapper_plotter=mapper_plotter
+        mapper_plotter=mapper_plotter,
     )
 
     mapper_plotter.output_subplot_array()
 
     plt.close()
+
 
 @plotters.set_includes
 def individuals(
@@ -151,66 +155,49 @@ def individuals(
     if plot_inversion_reconstruction:
 
         reconstruction(
-            inversion=inversion,
-            include_grid=True,
-            array_plotter=array_plotter,
+            inversion=inversion, include_grid=True, array_plotter=array_plotter
         )
 
     if plot_inversion_errors:
 
-        errors(
-            inversion=inversion,
-            include_grid=True,
-            mapper_plotter=mapper_plotter,
-        )
+        errors(inversion=inversion, include_grid=True, mapper_plotter=mapper_plotter)
 
     if plot_inversion_residual_map:
 
         residual_map(
-            inversion=inversion,
-            include_grid=True,
-            mapper_plotter=mapper_plotter,
+            inversion=inversion, include_grid=True, mapper_plotter=mapper_plotter
         )
 
     if plot_inversion_normalized_residual_map:
 
         normalized_residual_map(
-            inversion=inversion,
-            include_grid=True,
-            mapper_plotter=mapper_plotter,
+            inversion=inversion, include_grid=True, mapper_plotter=mapper_plotter
         )
 
     if plot_inversion_chi_squared_map:
 
         chi_squared_map(
-            inversion=inversion,
-            include_grid=True,
-            mapper_plotter=mapper_plotter,
+            inversion=inversion, include_grid=True, mapper_plotter=mapper_plotter
         )
 
     if plot_inversion_regularization_weight_map:
 
         regularization_weights(
-            inversion=inversion,
-            include_grid=True,
-            mapper_plotter=mapper_plotter,
+            inversion=inversion, include_grid=True, mapper_plotter=mapper_plotter
         )
 
     if plot_inversion_interpolated_reconstruction:
 
         interpolated_reconstruction(
-            inversion=inversion,
-            lines=lines,
-            array_plotter=array_plotter
+            inversion=inversion, lines=lines, array_plotter=array_plotter
         )
 
     if plot_inversion_interpolated_errors:
 
         interpolated_errors(
-            inversion=inversion,
-            lines=lines,
-            array_plotter=array_plotter
+            inversion=inversion, lines=lines, array_plotter=array_plotter
         )
+
 
 @plotters.set_includes
 @plotters.set_labels
@@ -284,9 +271,7 @@ def plot_values(
             source_pixels=source_pixels,
         )
 
-        mapper_plotter.output_figure(
-            array=reconstructed_pixelization,
-        )
+        mapper_plotter.output_figure(array=reconstructed_pixelization)
 
     elif isinstance(inversion.mapper, mappers.MapperVoronoi):
 
@@ -301,11 +286,10 @@ def plot_values(
             source_pixels=source_pixels,
         )
 
-        mapper_plotter.output_figure(
-            array=None,
-        )
+        mapper_plotter.output_figure(array=None)
 
     mapper_plotter.close_figure()
+
 
 @plotters.set_includes
 @plotters.set_labels
@@ -336,6 +320,7 @@ def reconstruction(
         mapper_plotter=mapper_plotter,
     )
 
+
 @plotters.set_includes
 @plotters.set_labels
 def errors(
@@ -360,8 +345,9 @@ def errors(
         include_border=include_border,
         image_pixels=image_pixels,
         source_pixels=source_pixels,
-        mapper_plotter=mapper_plotter
+        mapper_plotter=mapper_plotter,
     )
+
 
 @plotters.set_includes
 @plotters.set_labels
@@ -387,8 +373,9 @@ def residual_map(
         include_border=include_border,
         image_pixels=image_pixels,
         source_pixels=source_pixels,
-        mapper_plotter=mapper_plotter
+        mapper_plotter=mapper_plotter,
     )
+
 
 @plotters.set_includes
 @plotters.set_labels
@@ -414,8 +401,9 @@ def normalized_residual_map(
         include_border=include_border,
         image_pixels=image_pixels,
         source_pixels=source_pixels,
-        mapper_plotter=mapper_plotter
+        mapper_plotter=mapper_plotter,
     )
+
 
 @plotters.set_includes
 @plotters.set_labels
@@ -428,7 +416,7 @@ def chi_squared_map(
     include_border=None,
     image_pixels=None,
     source_pixels=None,
-        mapper_plotter=mapper_plotters.MapperPlotter(),
+    mapper_plotter=mapper_plotters.MapperPlotter(),
 ):
 
     plot_values(
@@ -441,8 +429,9 @@ def chi_squared_map(
         include_border=include_border,
         image_pixels=image_pixels,
         source_pixels=source_pixels,
-        mapper_plotter=mapper_plotter
+        mapper_plotter=mapper_plotter,
     )
+
 
 @plotters.set_includes
 @plotters.set_labels
@@ -475,6 +464,7 @@ def regularization_weights(
         mapper_plotter=mapper_plotter,
     )
 
+
 @plotters.set_includes
 @plotters.set_labels
 def interpolated_reconstruction(
@@ -491,6 +481,7 @@ def interpolated_reconstruction(
         points=positions,
         grid=grid,
     )
+
 
 @plotters.set_includes
 @plotters.set_labels

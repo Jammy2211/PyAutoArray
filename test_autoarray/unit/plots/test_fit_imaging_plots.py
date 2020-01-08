@@ -6,17 +6,20 @@ from autoarray import conf
 
 directory = path.dirname(path.realpath(__file__))
 
+
 @pytest.fixture(name="fit_imaging_path")
 def make_fit_imaging_path_setup():
     return "{}/../../test_files/plotting/fit_imaging/".format(
         os.path.dirname(os.path.realpath(__file__))
     )
 
+
 @pytest.fixture(autouse=True)
 def set_config_path():
     conf.instance = conf.Config(
         path.join(directory, "../test_files/plotters"), path.join(directory, "output")
     )
+
 
 def test__fit_quantities_are_output(fit_imaging_7x7, fit_imaging_path, plot_patch):
 
@@ -131,10 +134,7 @@ def test__fit_individuals__source_and_lens__depedent_on_input(
 
     assert fit_imaging_path + "residual_map.png" not in plot_patch.paths
 
-    assert (
-        fit_imaging_path + "normalized_residual_map.png"
-        not in plot_patch.paths
-    )
+    assert fit_imaging_path + "normalized_residual_map.png" not in plot_patch.paths
 
     assert fit_imaging_path + "chi_squared_map.png" in plot_patch.paths
 
@@ -160,9 +160,6 @@ def test__fit_individuals__source_and_lens__depedent_on_input(
 
     assert fit_imaging_path + "residual_map.png" not in plot_patch.paths
 
-    assert (
-        fit_imaging_path + "normalized_residual_map.png"
-        not in plot_patch.paths
-    )
+    assert fit_imaging_path + "normalized_residual_map.png" not in plot_patch.paths
 
     assert fit_imaging_path + "chi_squared_map.png" in plot_patch.paths

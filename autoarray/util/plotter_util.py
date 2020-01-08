@@ -8,7 +8,7 @@ import numpy as np
 from autoarray import exc
 
 
-def get_mask_from_fit(include_mask, fit):
+def mask_from_fit(include_mask, fit):
     """Get the masks of the fit if the masks should be plotted on the fit.
 
     Parameters

@@ -15,7 +15,6 @@ def set_config_path():
 
 
 class TestPlotter:
-
     def test__plotter_settings_use_figure_config_if_not_manually_input(self):
 
         plotter = plotters.Plotter()

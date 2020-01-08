@@ -9,11 +9,13 @@ import pytest
 
 directory = path.dirname(path.realpath(__file__))
 
+
 @pytest.fixture(name="mapper_plotter_path")
 def make_mapper_plotter_setup():
     return "{}/../../../test_files/plotting/mapper/".format(
         os.path.dirname(os.path.realpath(__file__))
     )
+
 
 @pytest.fixture(autouse=True)
 def set_config_path():

@@ -86,9 +86,7 @@ class ArrayPlotter(plotters.Plotter):
             output_filename=output_filename,
         )
 
-    def plotter_as_sub_plotter(
-        self,
-    ):
+    def plotter_as_sub_plotter(self,):
 
         return ArrayPlotter(
             is_sub_plotter=True,
@@ -140,7 +138,11 @@ class ArrayPlotter(plotters.Plotter):
         output_filename = (
             self.output_filename if output_filename is None else output_filename
         )
-        unit_conversion_factor = self.unit_conversion_factor if unit_conversion_factor is None else unit_conversion_factor
+        unit_conversion_factor = (
+            self.unit_conversion_factor
+            if unit_conversion_factor is None
+            else unit_conversion_factor
+        )
 
         return ArrayPlotter(
             is_sub_plotter=self.is_sub_plotter,

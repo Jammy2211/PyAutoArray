@@ -28,7 +28,9 @@ def image_and_mapper(
 
     array_plotter = array_plotter.plotter_as_sub_plotter()
     mapper_plotter = mapper_plotter.plotter_as_sub_plotter()
-    mapper_plotter = mapper_plotter.plotter_with_new_labels_and_filename(output_filename="image_and_mapper")
+    mapper_plotter = mapper_plotter.plotter_with_new_labels_and_filename(
+        output_filename="image_and_mapper"
+    )
 
     rows, columns, figsize_tool = array_plotter.get_subplot_rows_columns_figsize(
         number_subplots=2
@@ -43,10 +45,7 @@ def image_and_mapper(
     plt.subplot(rows, columns, 1)
 
     imaging_plots.image(
-        imaging=imaging,
-        mask=mask,
-        positions=positions,
-        array_plotter=array_plotter
+        imaging=imaging, mask=mask, positions=positions, array_plotter=array_plotter
     )
 
     point_colors = itertools.cycle(["y", "r", "k", "g", "m"])
@@ -71,11 +70,12 @@ def image_and_mapper(
         include_border=include_border,
         image_pixels=image_pixels,
         source_pixels=source_pixels,
-        mapper_plotter=mapper_plotter
+        mapper_plotter=mapper_plotter,
     )
 
     mapper_plotter.output_subplot_array()
     plt.close()
+
 
 @plotters.set_includes
 @plotters.set_labels
@@ -90,10 +90,10 @@ def mapper_grid(
 ):
 
     mapper_plotter.plot_mapper(
-            mapper=mapper,
-            include_centres=include_centres,
-            include_grid=include_grid,
-            include_border=include_border,
-            image_pixels=image_pixels,
-            source_pixels=source_pixels,
-        )
+        mapper=mapper,
+        include_centres=include_centres,
+        include_grid=include_grid,
+        include_border=include_border,
+        image_pixels=image_pixels,
+        source_pixels=source_pixels,
+    )
