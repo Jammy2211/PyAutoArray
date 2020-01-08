@@ -80,9 +80,7 @@ class MapperPlotter(grid_plotters.GridPlotter):
             output_filename=output_filename,
         )
 
-    def plotter_as_sub_plotter(
-        self,
-    ):
+    def plotter_as_sub_plotter(self,):
 
         return MapperPlotter(
             is_sub_plotter=True,
@@ -131,7 +129,11 @@ class MapperPlotter(grid_plotters.GridPlotter):
         output_filename = (
             self.output_filename if output_filename is None else output_filename
         )
-        unit_conversion_factor = self.unit_conversion_factor if unit_conversion_factor is None else unit_conversion_factor
+        unit_conversion_factor = (
+            self.unit_conversion_factor
+            if unit_conversion_factor is None
+            else unit_conversion_factor
+        )
 
         return MapperPlotter(
             is_sub_plotter=self.is_sub_plotter,
@@ -166,13 +168,13 @@ class MapperPlotter(grid_plotters.GridPlotter):
         )
 
     def plot_mapper(
-            self,
-            mapper,
-            include_centres=False,
-            include_grid=False,
-            include_border=False,
-            image_pixels=None,
-            source_pixels=None,
+        self,
+        mapper,
+        include_centres=False,
+        include_grid=False,
+        include_border=False,
+        image_pixels=None,
+        source_pixels=None,
     ):
 
         if isinstance(mapper, mappers.MapperRectangular):
@@ -215,10 +217,7 @@ class MapperPlotter(grid_plotters.GridPlotter):
             symmetric_around_centre=False,
         )
 
-        self.set_yxticks(
-            array=None,
-            extent=mapper.pixelization_grid.extent,
-        )
+        self.set_yxticks(array=None, extent=mapper.pixelization_grid.extent)
 
         self.plot_rectangular_pixelization_lines(mapper=mapper)
 
@@ -227,15 +226,9 @@ class MapperPlotter(grid_plotters.GridPlotter):
 
         self.plot_centres(mapper=mapper, include_centres=include_centres)
 
-        self.plot_mapper_grid(
-            include_grid=include_grid,
-            mapper=mapper,
-        )
+        self.plot_mapper_grid(include_grid=include_grid, mapper=mapper)
 
-        self.plot_border(
-            include_border=include_border,
-            mapper=mapper,
-        )
+        self.plot_border(include_border=include_border, mapper=mapper)
 
         point_colors = itertools.cycle(["y", "r", "k", "g", "m"])
         self.plot_source_plane_image_pixels(
@@ -248,11 +241,8 @@ class MapperPlotter(grid_plotters.GridPlotter):
             point_colors=point_colors,
         )
 
-        self.output_figure(
-            None,
-        )
+        self.output_figure(None)
         self.close_figure()
-
 
     def plot_voronoi_mapper(
         self,
@@ -274,20 +264,16 @@ class MapperPlotter(grid_plotters.GridPlotter):
             symmetric_around_centre=False,
         )
 
-        self.set_yxticks(
-            array=None,
-            extent=mapper.pixelization_grid.extent,
-        )
+        self.set_yxticks(array=None, extent=mapper.pixelization_grid.extent)
 
-        regions_SP, vertices_SP = self.voronoi_finite_polygons_2d(voronoi=mapper.voronoi)
+        regions_SP, vertices_SP = self.voronoi_finite_polygons_2d(
+            voronoi=mapper.voronoi
+        )
 
         color_values = source_pixel_values[:] / np.max(source_pixel_values)
         cmap = plt.get_cmap("jet")
 
-        self.set_colorbar(
-            cmap=cmap,
-            color_values=source_pixel_values,
-        )
+        self.set_colorbar(cmap=cmap, color_values=source_pixel_values)
 
         for region, index in zip(regions_SP, range(mapper.pixels)):
             polygon = vertices_SP[region]
@@ -295,21 +281,13 @@ class MapperPlotter(grid_plotters.GridPlotter):
             plt.fill(*zip(*polygon), alpha=0.7, facecolor=col, lw=0.0)
 
         self.set_title()
-        self.set_yx_labels_and_ticksize(
-        )
+        self.set_yx_labels_and_ticksize()
 
         self.plot_centres(mapper=mapper, include_centres=include_centres)
 
-        self.plot_mapper_grid(
-            include_grid=include_grid,
-            mapper=mapper,
-        )
+        self.plot_mapper_grid(include_grid=include_grid, mapper=mapper)
 
-        self.plot_border(
-            include_border=include_border,
-            mapper=mapper,
-            as_subplot=True,
-        )
+        self.plot_border(include_border=include_border, mapper=mapper, as_subplot=True)
 
         self.plot_lines(line_lists=lines)
 
@@ -324,11 +302,8 @@ class MapperPlotter(grid_plotters.GridPlotter):
             point_colors=point_colors,
         )
 
-        self.output_figure(
-            None,
-        )
+        self.output_figure(None)
         self.close_figure()
-
 
     def voronoi_finite_polygons_2d(self, vor, radius=None):
         """
@@ -410,7 +385,6 @@ class MapperPlotter(grid_plotters.GridPlotter):
 
         return new_regions, np.asarray(new_vertices)
 
-
     def plot_rectangular_pixelization_lines(self, mapper):
 
         ys = np.linspace(
@@ -430,10 +404,7 @@ class MapperPlotter(grid_plotters.GridPlotter):
         for y in ys:
             plt.plot([xs[0], xs[-1]], [y, y], color="black", linestyle="-")
 
-
-    def set_colorbar(
-        self, color_values,
-    ):
+    def set_colorbar(self, color_values):
 
         cax = cm.ScalarMappable(cmap=self.cmap)
         cax.set_array(color_values)
@@ -442,10 +413,12 @@ class MapperPlotter(grid_plotters.GridPlotter):
             plt.colorbar(mappable=cax, fraction=self.cb_fraction, pad=self.cb_pad)
         elif self.cb_tick_values is not None and self.cb_tick_labels is not None:
             cb = plt.colorbar(
-                mappable=cax, fraction=self.cb_fraction, pad=self.cb_pad, ticks=self.cb_tick_values
+                mappable=cax,
+                fraction=self.cb_fraction,
+                pad=self.cb_pad,
+                ticks=self.cb_tick_values,
             )
             cb.ax.set_yticklabels(self.cb_tick_labels)
-
 
     def plot_centres(self, mapper, include_centres):
 
@@ -453,37 +426,23 @@ class MapperPlotter(grid_plotters.GridPlotter):
 
             pixelization_grid = mapper.pixelization_grid
 
-            plt.scatter(y=pixelization_grid[:, 0], x=pixelization_grid[:, 1], s=3, c="r")
+            plt.scatter(
+                y=pixelization_grid[:, 0], x=pixelization_grid[:, 1], s=3, c="r"
+            )
 
-
-    def plot_mapper_grid(
-        self,
-        mapper,
-        include_grid,
-    ):
+    def plot_mapper_grid(self, mapper, include_grid):
 
         if include_grid:
 
-            self.plot_grid(
-                grid=mapper.grid,
-                bypass_limits=True,
-            )
+            self.plot_grid(grid=mapper.grid, bypass_limits=True)
 
-
-    def plot_border(
-        self,
-        mapper,
-        include_border,
-    ):
+    def plot_border(self, mapper, include_border):
 
         if include_border:
 
             border = mapper.grid[mapper.grid.mask.regions._sub_border_1d_indexes]
 
-            self.plot_grid(
-                grid=border,
-            )
-
+            self.plot_grid(grid=border)
 
     def plot_image_pixels(self, grid, image_pixels, point_colors):
 
@@ -497,7 +456,6 @@ class MapperPlotter(grid_plotters.GridPlotter):
                     color=color,
                     s=10.0,
                 )
-
 
     def plot_image_plane_source_pixels(self, grid, mapper, source_pixels, point_colors):
 
@@ -527,7 +485,6 @@ class MapperPlotter(grid_plotters.GridPlotter):
                         color=color,
                     )
 
-
     def plot_source_plane_image_pixels(self, grid, image_pixels, point_colors):
 
         if image_pixels is not None:
@@ -541,8 +498,9 @@ class MapperPlotter(grid_plotters.GridPlotter):
                     color=color,
                 )
 
-
-    def plot_source_plane_source_pixels(self, grid, mapper, source_pixels, point_colors):
+    def plot_source_plane_source_pixels(
+        self, grid, mapper, source_pixels, point_colors
+    ):
 
         if source_pixels is not None:
 

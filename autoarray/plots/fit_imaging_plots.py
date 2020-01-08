@@ -9,6 +9,7 @@ from autoarray.plots import inversion_plots
 from autoarray.plotters import plotters, array_plotters
 from autoarray.util import plotter_util
 
+
 @plotters.set_includes
 def subplot(
     fit,
@@ -20,7 +21,9 @@ def subplot(
 ):
 
     array_plotter = array_plotter.plotter_as_sub_plotter()
-    array_plotter = array_plotter.plotter_with_new_labels_and_filename(output_filename="fit_imaging")
+    array_plotter = array_plotter.plotter_with_new_labels_and_filename(
+        output_filename="fit_imaging"
+    )
 
     rows, columns, figsize_tool = array_plotter.get_subplot_rows_columns_figsize(
         number_subplots=6
@@ -44,49 +47,32 @@ def subplot(
 
     plt.subplot(rows, columns, 2)
 
-    signal_to_noise_map(
-        fit=fit,
-        include_mask=include_mask,
-        array_plotter=array_plotter,
-    )
+    signal_to_noise_map(fit=fit, include_mask=include_mask, array_plotter=array_plotter)
 
     plt.subplot(rows, columns, 3)
 
     model_image(
-        fit=fit,
-        include_mask=include_mask,
-        lines=lines,
-        array_plotter=array_plotter,
+        fit=fit, include_mask=include_mask, lines=lines, array_plotter=array_plotter
     )
 
     plt.subplot(rows, columns, 4)
 
-    residual_map(
-        fit=fit,
-        include_mask=include_mask,
-        array_plotter=array_plotter,
-    )
+    residual_map(fit=fit, include_mask=include_mask, array_plotter=array_plotter)
 
     plt.subplot(rows, columns, 5)
 
     normalized_residual_map(
-        fit=fit,
-        include_mask=include_mask,
-        array_plotter=array_plotter,
+        fit=fit, include_mask=include_mask, array_plotter=array_plotter
     )
 
     plt.subplot(rows, columns, 6)
 
-    chi_squared_map(
-        fit=fit,
-        include_mask=include_mask,
-        array_plotter=array_plotter,
-    )
+    chi_squared_map(fit=fit, include_mask=include_mask, array_plotter=array_plotter)
 
-    array_plotter.output_subplot_array(
-    )
+    array_plotter.output_subplot_array()
 
     plt.close()
+
 
 @plotters.set_includes
 def individuals(
@@ -139,52 +125,33 @@ def individuals(
 
     if plot_noise_map:
 
-        noise_map(
-            fit=fit,
-            include_mask=include_mask,
-            array_plotter=array_plotter,
-        )
+        noise_map(fit=fit, include_mask=include_mask, array_plotter=array_plotter)
 
     if plot_signal_to_noise_map:
 
         signal_to_noise_map(
-            fit=fit,
-            include_mask=include_mask,
-            array_plotter=array_plotter,
+            fit=fit, include_mask=include_mask, array_plotter=array_plotter
         )
 
     if plot_model_image:
 
         model_image(
-            fit=fit,
-            include_mask=include_mask,
-            lines=lines,
-            array_plotter=array_plotter,
+            fit=fit, include_mask=include_mask, lines=lines, array_plotter=array_plotter
         )
 
     if plot_residual_map:
 
-        residual_map(
-            fit=fit,
-            include_mask=include_mask,
-            array_plotter=array_plotter,
-        )
+        residual_map(fit=fit, include_mask=include_mask, array_plotter=array_plotter)
 
     if plot_normalized_residual_map:
 
         normalized_residual_map(
-            fit=fit,
-            include_mask=include_mask,
-            array_plotter=array_plotter,
+            fit=fit, include_mask=include_mask, array_plotter=array_plotter
         )
 
     if plot_chi_squared_map:
 
-        chi_squared_map(
-            fit=fit,
-            include_mask=include_mask,
-            array_plotter=array_plotter,
-        )
+        chi_squared_map(fit=fit, include_mask=include_mask, array_plotter=array_plotter)
 
     if fit.total_inversions == 1:
 
@@ -201,6 +168,7 @@ def individuals(
             plot_inversion_interpolated_errors=plot_inversion_interpolated_errors,
             array_plotter=array_plotter,
         )
+
 
 @plotters.set_includes
 @plotters.set_labels
@@ -226,18 +194,16 @@ def image(
     array_plotter.plot_array(
         array=fit.data,
         grid=grid,
-        mask=plotter_util.get_mask_from_fit(fit=fit, include_mask=include_mask),
+        mask=plotter_util.mask_from_fit(fit=fit, include_mask=include_mask),
         lines=lines,
         points=points,
     )
 
+
 @plotters.set_includes
 @plotters.set_labels
 def noise_map(
-    fit,
-    include_mask=None,
-    points=None,
-    array_plotter=array_plotters.ArrayPlotter(),
+    fit, include_mask=None, points=None, array_plotter=array_plotters.ArrayPlotter()
 ):
     """Plot the noise-map of a lens fit.
 
@@ -252,17 +218,15 @@ def noise_map(
     """
     array_plotter.plot_array(
         array=fit.noise_map,
-        mask=plotter_util.get_mask_from_fit(fit=fit, include_mask=include_mask),
+        mask=plotter_util.mask_from_fit(fit=fit, include_mask=include_mask),
         points=points,
     )
+
 
 @plotters.set_includes
 @plotters.set_labels
 def signal_to_noise_map(
-    fit,
-    include_mask=None,
-    points=None,
-    array_plotter=array_plotters.ArrayPlotter(),
+    fit, include_mask=None, points=None, array_plotter=array_plotters.ArrayPlotter()
 ):
     """Plot the noise-map of a lens fit.
 
@@ -277,9 +241,10 @@ def signal_to_noise_map(
     """
     array_plotter.plot_array(
         array=fit.signal_to_noise_map,
-        mask=plotter_util.get_mask_from_fit(fit=fit, include_mask=include_mask),
+        mask=plotter_util.mask_from_fit(fit=fit, include_mask=include_mask),
         points=points,
     )
+
 
 @plotters.set_includes
 @plotters.set_labels
@@ -303,18 +268,16 @@ def model_image(
     """
     array_plotter.plot_array(
         array=fit.model_data,
-        mask=plotter_util.get_mask_from_fit(fit=fit, include_mask=include_mask),
+        mask=plotter_util.mask_from_fit(fit=fit, include_mask=include_mask),
         lines=lines,
         points=points,
     )
 
+
 @plotters.set_includes
 @plotters.set_labels
 def residual_map(
-    fit,
-    include_mask=None,
-    points=None,
-    array_plotter=array_plotters.ArrayPlotter(),
+    fit, include_mask=None, points=None, array_plotter=array_plotters.ArrayPlotter()
 ):
     """Plot the residual-map of a lens fit.
 
@@ -329,17 +292,15 @@ def residual_map(
     """
     array_plotter.plot_array(
         array=fit.residual_map,
-        mask=plotter_util.get_mask_from_fit(fit=fit, include_mask=include_mask),
+        mask=plotter_util.mask_from_fit(fit=fit, include_mask=include_mask),
         points=points,
     )
+
 
 @plotters.set_includes
 @plotters.set_labels
 def normalized_residual_map(
-    fit,
-    include_mask=None,
-    points=None,
-    array_plotter=array_plotters.ArrayPlotter(),
+    fit, include_mask=None, points=None, array_plotter=array_plotters.ArrayPlotter()
 ):
     """Plot the residual-map of a lens fit.
 
@@ -354,17 +315,15 @@ def normalized_residual_map(
     """
     array_plotter.plot_array(
         array=fit.normalized_residual_map,
-        mask=plotter_util.get_mask_from_fit(fit=fit, include_mask=include_mask),
+        mask=plotter_util.mask_from_fit(fit=fit, include_mask=include_mask),
         points=points,
     )
+
 
 @plotters.set_includes
 @plotters.set_labels
 def chi_squared_map(
-    fit,
-    include_mask=None,
-    points=None,
-    array_plotter=array_plotters.ArrayPlotter(),
+    fit, include_mask=None, points=None, array_plotter=array_plotters.ArrayPlotter()
 ):
     """Plot the chi-squared map of a lens fit.
 
@@ -379,6 +338,6 @@ def chi_squared_map(
     """
     array_plotter.plot_array(
         array=fit.chi_squared_map,
-        mask=plotter_util.get_mask_from_fit(fit=fit, include_mask=include_mask),
+        mask=plotter_util.mask_from_fit(fit=fit, include_mask=include_mask),
         points=points,
     )

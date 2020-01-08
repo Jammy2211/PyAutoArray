@@ -73,8 +73,8 @@ def test__individual_attributes_are_output(
     aa.plot.imaging.subplot(
         imaging=imaging_7x7,
         array_plotter=aa.plotter.array(
-        output_path=imaging_plotter_path,
-        output_format="png")
+            output_path=imaging_plotter_path, output_format="png"
+        ),
     )
 
     assert imaging_plotter_path + "imaging.png" in plot_patch.paths
@@ -99,16 +99,10 @@ def test__imaging_individuals__output_dependent_on_input(
 
     assert imaging_plotter_path + "psf.png" in plot_patch.paths
 
-    assert (
-        not imaging_plotter_path + "signal_to_noise_map.png" in plot_patch.paths
-    )
+    assert not imaging_plotter_path + "signal_to_noise_map.png" in plot_patch.paths
+
+    assert imaging_plotter_path + "absolute_signal_to_noise_map.png" in plot_patch.paths
 
     assert (
-        imaging_plotter_path + "absolute_signal_to_noise_map.png"
-        in plot_patch.paths
-    )
-
-    assert (
-        not imaging_plotter_path + "potential_chi_squared_map.png"
-        in plot_patch.paths
+        not imaging_plotter_path + "potential_chi_squared_map.png" in plot_patch.paths
     )

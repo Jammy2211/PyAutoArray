@@ -7,9 +7,10 @@ from matplotlib import pyplot as plt
 
 from autoarray.plotters import plotters, array_plotters
 
+
 @plotters.set_includes
 def subplot(
-    imaging,    
+    imaging,
     include_origin=None,
     grid=None,
     mask=None,
@@ -36,7 +37,9 @@ def subplot(
     """
 
     array_plotter = array_plotter.plotter_as_sub_plotter()
-    array_plotter = array_plotter.plotter_with_new_labels_and_filename(output_filename="imaging")
+    array_plotter = array_plotter.plotter_with_new_labels_and_filename(
+        output_filename="imaging"
+    )
 
     rows, columns, figsize_tool = array_plotter.get_subplot_rows_columns_figsize(
         number_subplots=6
@@ -56,7 +59,7 @@ def subplot(
         grid=grid,
         mask=mask,
         positions=positions,
-        array_plotter=array_plotter
+        array_plotter=array_plotter,
     )
 
     plt.subplot(rows, columns, 2)
@@ -66,7 +69,7 @@ def subplot(
         include_origin=include_origin,
         mask=mask,
         positions=positions,
-        array_plotter=array_plotter
+        array_plotter=array_plotter,
     )
 
     plt.subplot(rows, columns, 3)
@@ -76,7 +79,7 @@ def subplot(
         include_origin=include_origin,
         mask=mask,
         positions=positions,
-        array_plotter=array_plotter
+        array_plotter=array_plotter,
     )
 
     plt.subplot(rows, columns, 4)
@@ -86,7 +89,7 @@ def subplot(
         include_origin=include_origin,
         mask=mask,
         positions=positions,
-        array_plotter=array_plotter
+        array_plotter=array_plotter,
     )
 
     plt.subplot(rows, columns, 5)
@@ -96,7 +99,7 @@ def subplot(
         include_origin=include_origin,
         mask=mask,
         positions=positions,
-        array_plotter=array_plotter
+        array_plotter=array_plotter,
     )
 
     plt.subplot(rows, columns, 6)
@@ -106,12 +109,13 @@ def subplot(
         include_origin=include_origin,
         mask=mask,
         positions=positions,
-        array_plotter=array_plotter
+        array_plotter=array_plotter,
     )
 
     array_plotter.output_subplot_array()
 
     plt.close()
+
 
 @plotters.set_includes
 def individual(
@@ -192,6 +196,7 @@ def individual(
             array_plotter=array_plotter,
         )
 
+
 @plotters.set_includes
 @plotters.set_labels
 def image(
@@ -225,6 +230,7 @@ def image(
         points=positions,
     )
 
+
 @plotters.set_includes
 @plotters.set_labels
 def noise_map(
@@ -254,6 +260,7 @@ def noise_map(
         mask=mask,
         points=positions,
     )
+
 
 @plotters.set_includes
 @plotters.set_labels
@@ -285,6 +292,7 @@ def psf(
         points=positions,
     )
 
+
 @plotters.set_includes
 @plotters.set_labels
 def signal_to_noise_map(
@@ -314,6 +322,7 @@ def signal_to_noise_map(
         points=positions,
     )
 
+
 @plotters.set_includes
 @plotters.set_labels
 def absolute_signal_to_noise_map(
@@ -342,6 +351,7 @@ def absolute_signal_to_noise_map(
         mask=mask,
         points=positions,
     )
+
 
 @plotters.set_includes
 @plotters.set_labels

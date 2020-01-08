@@ -7,17 +7,20 @@ from autoarray import conf
 
 directory = path.dirname(path.realpath(__file__))
 
+
 @pytest.fixture(name="fit_interferometer_path")
 def make_fit_interferometer_path_setup():
     return "{}/../../test_files/plotting/fit_interferometer/".format(
         os.path.dirname(os.path.realpath(__file__))
     )
 
+
 @pytest.fixture(autouse=True)
 def set_config_path():
     conf.instance = conf.Config(
         path.join(directory, "../test_files/plotters"), path.join(directory, "output")
     )
+
 
 def test__fit_sub_plot(fit_interferometer_7, fit_interferometer_path, plot_patch):
 
