@@ -123,6 +123,7 @@ class GridPlotter(plotters.Plotter):
         label_yunits=None,
         label_xunits=None,
         output_filename=None,
+        unit_conversion_factor=None,
     ):
 
         label_title = self.label_title if label_title is None else label_title
@@ -131,11 +132,12 @@ class GridPlotter(plotters.Plotter):
         output_filename = (
             self.output_filename if output_filename is None else output_filename
         )
+        unit_conversion_factor = self.unit_conversion_factor if unit_conversion_factor is None else unit_conversion_factor
 
         return GridPlotter(
             is_sub_plotter=self.is_sub_plotter,
             use_scaled_units=self.use_scaled_units,
-            unit_conversion_factor=self.unit_conversion_factor,
+            unit_conversion_factor=unit_conversion_factor,
             figsize=self.figsize,
             aspect=self.aspect,
             cmap=self.cmap,

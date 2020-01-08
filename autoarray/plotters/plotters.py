@@ -8,40 +8,8 @@ import numpy as np
 from functools import wraps
 
 from autoarray import exc
-from autoarray import conf
 from autoarray.util import array_util
-
-def setting(section, name, python_type):
-    return conf.instance.visualize.get(section, name, python_type)
-
-def load_setting(value, name, python_type):
-    return (
-        value
-        if value is not None
-        else setting(section="settings", name=name, python_type=python_type)
-    )
-
-def load_figure_setting(value, name, python_type):
-    return (
-        value
-        if value is not None
-        else setting(section="figures", name=name, python_type=python_type)
-    )
-
-def load_subplot_setting(value, name, python_type):
-    return (
-        value
-        if value is not None
-        else setting(section="subplots", name=name, python_type=python_type)
-    )
-
-def load_include(value, name, python_type):
-    return (
-        value
-        if value is not None
-        else setting(section="include", name=name, python_type=python_type)
-    )
-
+from autoarray.plotters import plotters_util
 
 class Plotter(object):
 
@@ -85,77 +53,77 @@ class Plotter(object):
 
         if not is_sub_plotter:
 
-            self.figsize = load_figure_setting(value=figsize, name="figsize", python_type=str)
+            self.figsize = plotters_util.load_figure_setting(value=figsize, name="figsize", python_type=str)
             if isinstance(self.figsize, str):
                 self.figsize = tuple(map(int, self.figsize[1:-1].split(",")))
-            self.aspect = load_figure_setting(value=aspect, name="aspect", python_type=str)
-            self.titlesize = load_figure_setting(
+            self.aspect = plotters_util.load_figure_setting(value=aspect, name="aspect", python_type=str)
+            self.titlesize = plotters_util.load_figure_setting(
                 value=titlesize, name="titlesize", python_type=int
             )
-            self.ylabelsize = load_figure_setting(
+            self.ylabelsize = plotters_util.load_figure_setting(
                 value=ylabelsize, name="ylabelsize", python_type=int
             )
-            self.xlabelsize = load_figure_setting(
+            self.xlabelsize = plotters_util.load_figure_setting(
                 value=xlabelsize, name="xlabelsize", python_type=int
             )
-            self.xyticksize = load_figure_setting(
+            self.xyticksize = plotters_util.load_figure_setting(
                 value=xyticksize, name="xyticksize", python_type=int
             )
 
         else:
 
-            self.figsize = load_subplot_setting(value=figsize, name="figsize", python_type=str)
+            self.figsize = plotters_util.load_subplot_setting(value=figsize, name="figsize", python_type=str)
             self.figsize = None if self.figsize == "auto" else self.figsize
             if isinstance(self.figsize, str):
                 self.figsize = tuple(map(int, self.figsize[1:-1].split(",")))
-            self.aspect = load_subplot_setting(value=aspect, name="aspect", python_type=str)
-            self.titlesize = load_subplot_setting(
+            self.aspect = plotters_util.load_subplot_setting(value=aspect, name="aspect", python_type=str)
+            self.titlesize = plotters_util.load_subplot_setting(
                 value=titlesize, name="titlesize", python_type=int
             )
-            self.ylabelsize = load_subplot_setting(
+            self.ylabelsize = plotters_util.load_subplot_setting(
                 value=ylabelsize, name="ylabelsize", python_type=int
             )
-            self.xlabelsize = load_subplot_setting(
+            self.xlabelsize = plotters_util.load_subplot_setting(
                 value=xlabelsize, name="xlabelsize", python_type=int
             )
-            self.xyticksize = load_subplot_setting(
+            self.xyticksize = plotters_util.load_subplot_setting(
                 value=xyticksize, name="xyticksize", python_type=int
             )
 
-        self.use_scaled_units = load_setting(
+        self.use_scaled_units = plotters_util.load_setting(
             value=use_scaled_units, name="use_scaled_units", python_type=bool
         )
         self.unit_conversion_factor = unit_conversion_factor
 
-        self.cmap = load_setting(value=cmap, name="cmap", python_type=str)
-        self.norm = load_setting(value=norm, name="norm", python_type=str)
-        self.norm_min = load_setting(value=norm_min, name="norm_min", python_type=float)
-        self.norm_max = load_setting(value=norm_max, name="norm_max", python_type=float)
-        self.linthresh = load_setting(
+        self.cmap = plotters_util.load_setting(value=cmap, name="cmap", python_type=str)
+        self.norm = plotters_util.load_setting(value=norm, name="norm", python_type=str)
+        self.norm_min = plotters_util.load_setting(value=norm_min, name="norm_min", python_type=float)
+        self.norm_max = plotters_util.load_setting(value=norm_max, name="norm_max", python_type=float)
+        self.linthresh = plotters_util.load_setting(
             value=linthresh, name="linthresh", python_type=float
         )
-        self.linscale = load_setting(value=linscale, name="linscale", python_type=float)
+        self.linscale = plotters_util.load_setting(value=linscale, name="linscale", python_type=float)
 
-        self.cb_ticksize = load_setting(
+        self.cb_ticksize = plotters_util.load_setting(
             value=cb_ticksize, name="cb_ticksize", python_type=int
         )
-        self.cb_fraction = load_setting(
+        self.cb_fraction = plotters_util.load_setting(
             value=cb_fraction, name="cb_fraction", python_type=float
         )
-        self.cb_pad = load_setting(value=cb_pad, name="cb_pad", python_type=float)
+        self.cb_pad = plotters_util.load_setting(value=cb_pad, name="cb_pad", python_type=float)
         self.cb_tick_values = cb_tick_values
         self.cb_tick_labels = cb_tick_labels
 
-        self.mask_pointsize = load_setting(
+        self.mask_pointsize = plotters_util.load_setting(
             value=mask_pointsize, name="mask_pointsize", python_type=int
         )
-        self.border_pointsize = load_setting(
+        self.border_pointsize = plotters_util.load_setting(
             value=border_pointsize, name="border_pointsize", python_type=int
         )
-        self.point_pointsize = load_setting(
+        self.point_pointsize = plotters_util.load_setting(
             value=point_pointsize, name="point_pointsize", python_type=int
         )
-        self.grid_pointsize = load_setting(
+        self.grid_pointsize = plotters_util.load_setting(
             value=grid_pointsize, name="grid_pointsize", python_type=int
         )
 
@@ -459,56 +427,18 @@ def set_includes(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
 
-        if "include_origin" in kwargs:
+        includes = ["include_origin", "include_mask", "include_grid", "include_centres", "include_border"]
 
-            kwargs["include_origin"] = load_include(
-                value=kwargs["include_origin"], name="origin", python_type=bool
-            )
+        for include in includes:
+            if include in kwargs:
+                if kwargs[include] is None:
+
+                    kwargs[include] = plotters_util.setting(
+                        section="include", name=include[8:], python_type=bool)
 
         return func(*args, **kwargs)
 
     return wrapper
-
-def label_title_from_plotter(plotter, func):
-    if plotter.label_title is None:
-
-        return func.__name__.capitalize()
-
-    else:
-
-        return plotter.label_title
-
-def label_yunits_from_plotter(plotter):
-
-    if plotter.label_yunits is None:
-        if plotter.use_scaled_units:
-            return "scaled"
-        else:
-            return "pixels"
-
-    else:
-
-        return plotter.label_yunits
-
-def label_xunits_from_plotter(plotter):
-
-    if plotter.label_xunits is None:
-        if plotter.use_scaled_units:
-            return "scaled"
-        else:
-            return "pixels"
-
-    else:
-
-        return plotter.label_xunits
-
-def output_filename_from_plotter_and_func(plotter, func):
-
-    if plotter.output_filename is None:
-        return func.__name__
-    else:
-
-        return plotter.output_filename
 
 def set_labels(func):
     """
@@ -533,22 +463,13 @@ def set_labels(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
 
-        plotter_key = None
-
-        for key, value in kwargs.items():
-            if isinstance(value, Plotter):
-                plotter_key = key
-
-        if plotter_key is None:
-            raise exc.PlottingException("The plot function called could not locate a Plotter in the kwarg arguments"
-                                        "in order to set the labels.")
-
+        plotter_key = plotters_util.plotter_key_from_dictionary(dictionary=kwargs)
         plotter = kwargs[plotter_key]
 
-        label_title = label_title_from_plotter(plotter=plotter, func=func)
-        label_yunits = label_yunits_from_plotter(plotter=plotter)
-        label_xunits = label_xunits_from_plotter(plotter=plotter)
-        output_filename = output_filename_from_plotter_and_func(plotter=plotter, func=func)
+        label_title = plotters_util.label_title_from_plotter(plotter=plotter, func=func)
+        label_yunits = plotters_util.label_yunits_from_plotter(plotter=plotter)
+        label_xunits = plotters_util.label_xunits_from_plotter(plotter=plotter)
+        output_filename = plotters_util.output_filename_from_plotter_and_func(plotter=plotter, func=func)
 
         kwargs[plotter_key] = plotter.plotter_with_new_labels_and_filename(
             label_title=label_title,
