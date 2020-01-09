@@ -27,14 +27,14 @@ def test__fit_sub_plot(fit_interferometer_7, fit_interferometer_path, plot_patch
     aa.plot.fit_interferometer.subplot(
         fit=fit_interferometer_7,
         array_plotter=aa.plotter.array(
-            output_path=fit_interferometer_path, output_format="png"
-        ),
+            output=aa.plotter.Output(fit_interferometer_path, format="png"
+        )),
         grid_plotter=aa.plotter.grid(
-            output_path=fit_interferometer_path, output_format="png"
-        ),
+            output=aa.plotter.Output(path=fit_interferometer_path, format="png"
+        )),
         line_plotter=aa.plotter.line(
-            output_path=fit_interferometer_path, output_format="png"
-        ),
+            output=aa.plotter.Output(path=fit_interferometer_path, format="png"
+        )),
     )
 
     assert fit_interferometer_path + "fit_interferometer.png" in plot_patch.paths
@@ -52,14 +52,14 @@ def test__fit_individuals__dependent_on_input(
         plot_model_visibilities=True,
         plot_chi_squared_map=True,
         array_plotter=aa.plotter.array(
-            output_path=fit_interferometer_path, output_format="png"
-        ),
+            output=aa.plotter.Output(fit_interferometer_path, format="png"
+        )),
         grid_plotter=aa.plotter.grid(
-            output_path=fit_interferometer_path, output_format="png"
-        ),
+            output=aa.plotter.Output(path=fit_interferometer_path, format="png"
+        )),
         line_plotter=aa.plotter.line(
-            output_path=fit_interferometer_path, output_format="png"
-        ),
+            output=aa.plotter.Output(path=fit_interferometer_path, format="png"
+        )),
     )
 
     assert fit_interferometer_path + "visibilities.png" in plot_patch.paths
@@ -108,45 +108,45 @@ def test__fit_quantities_are_output(
     aa.plot.fit_interferometer.visibilities(
         fit=fit_interferometer_7,
         grid_plotter=aa.plotter.grid(
-            output_path=fit_interferometer_path, output_format="png"
+            output=aa.plotter.Output(path=fit_interferometer_path, format="png"
         ),
-    )
+    ))
 
     assert fit_interferometer_path + "visibilities.png" in plot_patch.paths
 
     aa.plot.fit_interferometer.noise_map(
         fit=fit_interferometer_7,
         grid_plotter=aa.plotter.grid(
-            output_path=fit_interferometer_path, output_format="png"
+            output=aa.plotter.Output(path=fit_interferometer_path, format="png"
         ),
-    )
+    ))
 
     assert fit_interferometer_path + "noise_map.png" in plot_patch.paths
 
     aa.plot.fit_interferometer.signal_to_noise_map(
         fit=fit_interferometer_7,
         grid_plotter=aa.plotter.grid(
-            output_path=fit_interferometer_path, output_format="png"
+            output=aa.plotter.Output(path=fit_interferometer_path, format="png"
         ),
-    )
+    ))
 
     assert fit_interferometer_path + "signal_to_noise_map.png" in plot_patch.paths
 
     aa.plot.fit_interferometer.model_visibilities(
         fit=fit_interferometer_7,
         grid_plotter=aa.plotter.grid(
-            output_path=fit_interferometer_path, output_format="png"
+            output=aa.plotter.Output(path=fit_interferometer_path, format="png"
         ),
-    )
+    ))
 
     assert fit_interferometer_path + "model_visibilities.png" in plot_patch.paths
 
     aa.plot.fit_interferometer.residual_map_vs_uv_distances(
         fit=fit_interferometer_7,
         line_plotter=aa.plotter.line(
-            output_path=fit_interferometer_path, output_format="png"
+            output=aa.plotter.Output(path=fit_interferometer_path, format="png"
         ),
-    )
+    ))
 
     assert (
         fit_interferometer_path + "residual_map_vs_uv_distances_real.png"
@@ -157,9 +157,9 @@ def test__fit_quantities_are_output(
         fit=fit_interferometer_7,
         plot_real=False,
         line_plotter=aa.plotter.line(
-            output_path=fit_interferometer_path, output_format="png"
+            output=aa.plotter.Output(path=fit_interferometer_path, format="png"
         ),
-    )
+    ))
 
     assert (
         fit_interferometer_path + "residual_map_vs_uv_distances_imag.png"
@@ -169,9 +169,9 @@ def test__fit_quantities_are_output(
     aa.plot.fit_interferometer.normalized_residual_map_vs_uv_distances(
         fit=fit_interferometer_7,
         line_plotter=aa.plotter.line(
-            output_path=fit_interferometer_path, output_format="png"
+            output=aa.plotter.Output(path=fit_interferometer_path, format="png"
         ),
-    )
+    ))
 
     assert (
         fit_interferometer_path + "normalized_residual_map_vs_uv_distances_real.png"
@@ -182,9 +182,9 @@ def test__fit_quantities_are_output(
         fit=fit_interferometer_7,
         plot_real=False,
         line_plotter=aa.plotter.line(
-            output_path=fit_interferometer_path, output_format="png"
+            output=aa.plotter.Output(path=fit_interferometer_path, format="png"
         ),
-    )
+    ))
 
     assert (
         fit_interferometer_path + "normalized_residual_map_vs_uv_distances_imag.png"
@@ -194,9 +194,9 @@ def test__fit_quantities_are_output(
     aa.plot.fit_interferometer.chi_squared_map_vs_uv_distances(
         fit=fit_interferometer_7,
         line_plotter=aa.plotter.line(
-            output_path=fit_interferometer_path, output_format="png"
+            output=aa.plotter.Output(path=fit_interferometer_path, format="png"
         ),
-    )
+    ))
 
     assert (
         fit_interferometer_path + "chi_squared_map_vs_uv_distances_real.png"
@@ -207,9 +207,9 @@ def test__fit_quantities_are_output(
         fit=fit_interferometer_7,
         plot_real=False,
         line_plotter=aa.plotter.line(
-            output_path=fit_interferometer_path, output_format="png"
+            output=aa.plotter.Output(path=fit_interferometer_path, format="png"
         ),
-    )
+    ))
 
     assert (
         fit_interferometer_path + "chi_squared_map_vs_uv_distances_imag.png"

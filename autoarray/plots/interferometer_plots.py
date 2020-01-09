@@ -40,7 +40,7 @@ def subplot(
     array_plotter = array_plotter.plotter_as_sub_plotter()
     grid_plotter = grid_plotter.plotter_as_sub_plotter()
     line_plotter = line_plotter.plotter_as_sub_plotter()
-    array_plotter = array_plotter.plotter_with_new_labels_and_filename(
+    array_plotter = array_plotter.plotter_with_new_output_filename(
         output_filename="interferometer"
     )
 
@@ -272,10 +272,6 @@ include=plotters.Include(),
         over the immage.
     """
 
-    grid_plotter = grid_plotter.plotter_with_new_labels_and_filename(
-        label_yunits=label_yunits, label_xunits=label_xunits
-    )
-
     grid_plotter.plot_grid(
         grid=grids.GridIrregular.manual_yx_1d(
             y=interferometer.uv_wavelengths[:, 1] / 10 ** 3.0,
@@ -295,10 +291,6 @@ include=plotters.Include(),
     line_plotter=line_plotters.LinePlotter(),
 ):
 
-    line_plotter = line_plotter.plotter_with_new_labels_and_filename(
-        label_yunits=label_yunits, label_xunits=label_xunits
-    )
-
     line_plotter.plot_line(
         y=interferometer.amplitudes,
         x=interferometer.uv_distances / 10 ** 3.0,
@@ -315,10 +307,6 @@ def phases_vs_uv_distances(
 include=plotters.Include(),
     line_plotter=line_plotters.LinePlotter(),
 ):
-
-    line_plotter = line_plotter.plotter_with_new_labels_and_filename(
-        label_yunits=label_yunits, label_xunits=label_xunits
-    )
 
     line_plotter.plot_line(
         y=interferometer.phases,

@@ -22,7 +22,7 @@ include=plotters.Include(),
     array_plotter = array_plotter.plotter_as_sub_plotter()
     grid_plotter = grid_plotter.plotter_as_sub_plotter()
     line_plotter = line_plotter.plotter_as_sub_plotter()
-    array_plotter = array_plotter.plotter_with_new_labels_and_filename(
+    array_plotter = array_plotter.plotter_with_new_output_filename(
         output_filename="fit_interferometer"
     )
 
@@ -259,21 +259,21 @@ def residual_map_vs_uv_distances(
         The index of the datas in the datas-set of which the residual_map are plotted.
     """
 
-    line_plotter = line_plotter.plotter_with_new_labels_and_filename(
-        label_yunits=label_yunits, label_xunits=label_xunits
-    )
-
     if plot_real:
         y = fit.residual_map[:, 0]
-        line_plotter = line_plotter.plotter_with_new_labels_and_filename(
-            label_title=line_plotter.label_title + " Real",
-            output_filename=line_plotter.output_filename + "_real",
+        line_plotter = line_plotter.plotter_with_new_labels(
+            labels=plotters.Labels(title=line_plotter.labels.title + " Real"),
+        )
+        line_plotter = line_plotter.plotter_with_new_output_filename(
+            output_filename=line_plotter.output.filename + "_real",
         )
     else:
         y = fit.residual_map[:, 1]
-        line_plotter = line_plotter.plotter_with_new_labels_and_filename(
-            label_title=line_plotter.label_title + " Imag",
-            output_filename=line_plotter.output_filename + "_imag",
+        line_plotter = line_plotter.plotter_with_new_labels(
+            labels=plotters.Labels(title=line_plotter.labels.title + " Imag"),
+        )
+        line_plotter = line_plotter.plotter_with_new_output_filename(
+            output_filename=line_plotter.output.filename + "_imag",
         )
 
     line_plotter.plot_line(
@@ -305,21 +305,21 @@ def normalized_residual_map_vs_uv_distances(
         The index of the datas in the datas-set of which the residual_map are plotted.
     """
 
-    line_plotter = line_plotter.plotter_with_new_labels_and_filename(
-        label_yunits=label_yunits, label_xunits=label_xunits
-    )
-
     if plot_real:
         y = fit.residual_map[:, 0]
-        line_plotter = line_plotter.plotter_with_new_labels_and_filename(
-            label_title=line_plotter.label_title + " Real",
-            output_filename=line_plotter.output_filename + "_real",
+        line_plotter = line_plotter.plotter_with_new_labels(
+            labels=plotters.Labels(title=line_plotter.labels.title + " Real"),
+        )
+        line_plotter = line_plotter.plotter_with_new_output_filename(
+            output_filename=line_plotter.output.filename + "_real",
         )
     else:
         y = fit.residual_map[:, 1]
-        line_plotter = line_plotter.plotter_with_new_labels_and_filename(
-            label_title=line_plotter.label_title + " Imag",
-            output_filename=line_plotter.output_filename + "_imag",
+        line_plotter = line_plotter.plotter_with_new_labels(
+            labels=plotters.Labels(title=line_plotter.labels.title + " Imag"),
+        )
+        line_plotter = line_plotter.plotter_with_new_output_filename(
+            output_filename=line_plotter.output.filename + "_imag",
         )
 
     line_plotter.plot_line(
@@ -351,21 +351,21 @@ def chi_squared_map_vs_uv_distances(
         The index of the datas in the datas-set of which the residual_map are plotted.
     """
 
-    line_plotter = line_plotter.plotter_with_new_labels_and_filename(
-        label_yunits=label_yunits, label_xunits=label_xunits
-    )
-
     if plot_real:
         y = fit.residual_map[:, 0]
-        line_plotter = line_plotter.plotter_with_new_labels_and_filename(
-            label_title=line_plotter.label_title + " Real",
-            output_filename=line_plotter.output_filename + "_real",
+        line_plotter = line_plotter.plotter_with_new_labels(
+            labels=plotters.Labels(title=line_plotter.labels.title + " Real"),
+        )
+        line_plotter = line_plotter.plotter_with_new_output_filename(
+            output_filename=line_plotter.output.filename + "_real",
         )
     else:
         y = fit.residual_map[:, 1]
-        line_plotter = line_plotter.plotter_with_new_labels_and_filename(
-            label_title=line_plotter.label_title + " Imag",
-            output_filename=line_plotter.output_filename + "_imag",
+        line_plotter = line_plotter.plotter_with_new_labels(
+            labels=plotters.Labels(title=line_plotter.labels.title + " Imag"),
+        )
+        line_plotter = line_plotter.plotter_with_new_output_filename(
+            output_filename=line_plotter.output.filename + "_imag",
         )
 
     line_plotter.plot_line(

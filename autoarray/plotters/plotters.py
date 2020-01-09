@@ -6,10 +6,228 @@ matplotlib.use(backend)
 import matplotlib.pyplot as plt
 import numpy as np
 from functools import wraps
+import copy
+import inspect
 
 from autoarray import exc
 from autoarray.util import array_util
-from autoarray.plotters import plotters_util
+
+def setting(section, name, python_type):
+    return conf.instance.visualize.get(section, name, python_type)
+
+def load_setting(value, name, python_type):
+    return (
+        value
+        if value is not None
+        else setting(section="settings", name=name, python_type=python_type)
+    )
+
+def load_figure_setting(value, name, python_type):
+    return (
+        value
+        if value is not None
+        else setting(section="figures", name=name, python_type=python_type)
+    )
+
+def load_subplot_setting(value, name, python_type):
+    return (
+        value
+        if value is not None
+        else setting(section="subplots", name=name, python_type=python_type)
+    )
+
+
+class Labels(object):
+
+    def __init__(self,
+                 title=None,
+                 yunits=None,
+                 xunits=None,
+                 titlesize=None, ysize=None, xsize=None,
+                 use_scaled_units=None, is_sub_plotter=False):
+
+        self.title = title
+        self._yunits = yunits
+        self._xunits = xunits
+
+        if not is_sub_plotter:
+
+            self.titlesize = load_figure_setting(
+                value=titlesize, name="titlesize", python_type=int
+            )
+            self.ysize = load_figure_setting(
+                value=ysize, name="ysize", python_type=int
+            )
+            self.xsize = load_figure_setting(
+                value=xsize, name="xsize", python_type=int
+            )
+
+        else:
+
+            self.titlesize = load_subplot_setting(
+                value=titlesize, name="titlesize", python_type=int
+            )
+            self.ysize = load_subplot_setting(
+                value=ysize, name="ysize", python_type=int
+            )
+            self.xsize = load_subplot_setting(
+                value=xsize, name="xsize", python_type=int
+            )
+
+        self.use_scaled_units = use_scaled_units
+
+    def title_from_func(self, func):
+        if self.title is None:
+
+            return func.__name__.capitalize()
+
+        else:
+
+            return self.title
+
+    def yunits_from_func(self, func):
+
+        if self._yunits is None:
+
+            args = inspect.getfullargspec(func).args
+            defaults = inspect.getfullargspec(func).defaults
+
+            if defaults is not None:
+                non_default_args = len(args) - len(defaults)
+            else:
+                non_default_args = 0
+
+            if "label_yunits" in args:
+                return defaults[args.index("label_yunits")-non_default_args]
+            else:
+                return None
+
+        else:
+
+            return self._yunits
+
+    def xunits_from_func(self, func):
+
+        if self._xunits is None:
+
+            args = inspect.getfullargspec(func).args
+            defaults = inspect.getfullargspec(func).defaults
+
+            if defaults is not None:
+                non_default_args = len(args) - len(defaults)
+            else:
+                non_default_args = 0
+
+            if "label_xunits" in args:
+                return defaults[args.index("label_xunits")-non_default_args]
+            else:
+                return None
+
+        else:
+
+            return self._xunits
+
+    @property
+    def yunits(self):
+
+        if self._yunits is None:
+            if self.use_scaled_units:
+                return "scaled"
+            else:
+                return "pixels"
+
+        else:
+
+            return self._yunits
+
+    @property
+    def xunits(self):
+
+        if self._xunits is None:
+            if self.use_scaled_units:
+                return "scaled"
+            else:
+                return "pixels"
+
+        else:
+
+            return self._xunits
+
+    def set_title(self):
+        """Set the title and title size of the figure.
+
+        Parameters
+        -----------
+        title : str
+            The text of the title.
+        titlesize : int
+            The size of of the title of the figure.
+        """
+        plt.title(label=self.title, fontsize=self.titlesize)
+
+    def set_yunits(self, include_brackets):
+        """Set the x and y labels of the figure, and set the fontsize of those self.label_
+
+        The x and y labels are always the distance scales, thus the labels are either arc-seconds or kpc and depend on the \
+        unit_label the figure is plotted in.
+
+        Parameters
+        -----------
+        unit_label : str
+            The label for the unit_label of the y / x axis of the plots.
+        unit_conversion_factor : float
+            The conversion factor between arc-seconds and kiloparsecs, required to plotters the unit_label in kpc.
+        xsize : int
+            The fontsize of the x axes label.
+        ysize : int
+            The fontsize of the y axes label.
+        xyticksize : int
+            The font size of the x and y ticks on the figure axes.
+        """
+        if include_brackets:
+            plt.ylabel("y (" + self.yunits + ")", fontsize=self.ysize)
+        else:
+            plt.ylabel(self.yunits, fontsize=self.ysize)
+
+    def set_xunits(self, include_brackets):
+        """Set the x and y labels of the figure, and set the fontsize of those self.label_
+
+        The x and y labels are always the distance scales, thus the labels are either arc-seconds or kpc and depend on the \
+        unit_label the figure is plotted in.
+
+        Parameters
+        -----------
+        unit_label : str
+            The label for the unit_label of the y / x axis of the plots.
+        unit_conversion_factor : float
+            The conversion factor between arc-seconds and kiloparsecs, required to plotters the unit_label in kpc.
+        xsize : int
+            The fontsize of the x axes label.
+        ysize : int
+            The fontsize of the y axes label.
+        xyticksize : int
+            The font size of the x and y ticks on the figure axes.
+        """
+        if include_brackets:
+            plt.xlabel("x (" + self.xunits + ")", fontsize=self.xsize)
+        else:
+            plt.xlabel(self.xunits, fontsize=self.xsize)
+
+class Output(object):
+
+    def __init__(self, path=None, filename=None, format="show"):
+
+        self.path = path
+        self.filename = filename
+        self.format = format
+
+    def filename_from_func(self, func):
+
+        if self.filename is None:
+            return func.__name__
+        else:
+
+            return self.filename
 
 
 class Plotter(object):
@@ -35,123 +253,103 @@ class Plotter(object):
         border_pointsize=None,
         point_pointsize=None,
         grid_pointsize=None,
-        titlesize=None,
-        xlabelsize=None,
-        ylabelsize=None,
+        yticks=None,
+        xticks=None,
         xyticksize=None,
-        label_title=None,
-        label_yunits=None,
-        label_xunits=None,
-        label_yticks=None,
-        label_xticks=None,
-        output_path=None,
-        output_format="show",
-        output_filename=None,
+        labels=Labels(),
+        output=Output()
     ):
 
         self.is_sub_plotter = is_sub_plotter
 
         if not is_sub_plotter:
 
-            self.figsize = plotters_util.load_figure_setting(
+            self.figsize = load_figure_setting(
                 value=figsize, name="figsize", python_type=str
             )
             if isinstance(self.figsize, str):
                 self.figsize = tuple(map(int, self.figsize[1:-1].split(",")))
-            self.aspect = plotters_util.load_figure_setting(
+            self.aspect = load_figure_setting(
                 value=aspect, name="aspect", python_type=str
             )
-            self.titlesize = plotters_util.load_figure_setting(
-                value=titlesize, name="titlesize", python_type=int
-            )
-            self.ylabelsize = plotters_util.load_figure_setting(
-                value=ylabelsize, name="ylabelsize", python_type=int
-            )
-            self.xlabelsize = plotters_util.load_figure_setting(
-                value=xlabelsize, name="xlabelsize", python_type=int
-            )
-            self.xyticksize = plotters_util.load_figure_setting(
+
+            self.xyticksize = load_figure_setting(
                 value=xyticksize, name="xyticksize", python_type=int
             )
 
         else:
 
-            self.figsize = plotters_util.load_subplot_setting(
+            self.figsize = load_subplot_setting(
                 value=figsize, name="figsize", python_type=str
             )
             self.figsize = None if self.figsize == "auto" else self.figsize
             if isinstance(self.figsize, str):
                 self.figsize = tuple(map(int, self.figsize[1:-1].split(",")))
-            self.aspect = plotters_util.load_subplot_setting(
+            self.aspect = load_subplot_setting(
                 value=aspect, name="aspect", python_type=str
             )
-            self.titlesize = plotters_util.load_subplot_setting(
-                value=titlesize, name="titlesize", python_type=int
-            )
-            self.ylabelsize = plotters_util.load_subplot_setting(
-                value=ylabelsize, name="ylabelsize", python_type=int
-            )
-            self.xlabelsize = plotters_util.load_subplot_setting(
-                value=xlabelsize, name="xlabelsize", python_type=int
-            )
-            self.xyticksize = plotters_util.load_subplot_setting(
+            self.xyticksize = load_subplot_setting(
                 value=xyticksize, name="xyticksize", python_type=int
             )
 
-        self.use_scaled_units = plotters_util.load_setting(
+        self.use_scaled_units = load_setting(
             value=use_scaled_units, name="use_scaled_units", python_type=bool
         )
         self.unit_conversion_factor = unit_conversion_factor
 
-        self.cmap = plotters_util.load_setting(value=cmap, name="cmap", python_type=str)
-        self.norm = plotters_util.load_setting(value=norm, name="norm", python_type=str)
-        self.norm_min = plotters_util.load_setting(
+        self.cmap = load_setting(value=cmap, name="cmap", python_type=str)
+        self.norm = load_setting(value=norm, name="norm", python_type=str)
+        self.norm_min = load_setting(
             value=norm_min, name="norm_min", python_type=float
         )
-        self.norm_max = plotters_util.load_setting(
+        self.norm_max = load_setting(
             value=norm_max, name="norm_max", python_type=float
         )
-        self.linthresh = plotters_util.load_setting(
+        self.linthresh = load_setting(
             value=linthresh, name="linthresh", python_type=float
         )
-        self.linscale = plotters_util.load_setting(
+        self.linscale = load_setting(
             value=linscale, name="linscale", python_type=float
         )
 
-        self.cb_ticksize = plotters_util.load_setting(
+        self.cb_ticksize = load_setting(
             value=cb_ticksize, name="cb_ticksize", python_type=int
         )
-        self.cb_fraction = plotters_util.load_setting(
+        self.cb_fraction = load_setting(
             value=cb_fraction, name="cb_fraction", python_type=float
         )
-        self.cb_pad = plotters_util.load_setting(
+        self.cb_pad = load_setting(
             value=cb_pad, name="cb_pad", python_type=float
         )
         self.cb_tick_values = cb_tick_values
         self.cb_tick_labels = cb_tick_labels
 
-        self.mask_pointsize = plotters_util.load_setting(
+        self.mask_pointsize = load_setting(
             value=mask_pointsize, name="mask_pointsize", python_type=int
         )
-        self.border_pointsize = plotters_util.load_setting(
+        self.border_pointsize = load_setting(
             value=border_pointsize, name="border_pointsize", python_type=int
         )
-        self.point_pointsize = plotters_util.load_setting(
+        self.point_pointsize = load_setting(
             value=point_pointsize, name="point_pointsize", python_type=int
         )
-        self.grid_pointsize = plotters_util.load_setting(
+        self.grid_pointsize = load_setting(
             value=grid_pointsize, name="grid_pointsize", python_type=int
         )
 
-        self.label_title = label_title
-        self.label_yunits = label_yunits
-        self.label_xunits = label_xunits
-        self.label_yticks = label_yticks
-        self.label_xticks = label_xticks
+        self.yticks = yticks
+        self.xticks = xticks
 
-        self.output_path = output_path
-        self.output_format = output_format
-        self.output_filename = output_filename
+        self.labels = Labels(
+            title=labels.title,
+            yunits=labels._yunits,
+            xunits=labels._xunits,
+            titlesize=labels.titlesize,
+            ysize=labels.ysize,
+            xsize=labels.xsize,
+            use_scaled_units=use_scaled_units)
+
+        self.output = Output(path=output.path, format=output.format, filename=output.filename)
 
     def setup_figure(self):
         """Setup a figure for plotting an image.
@@ -167,43 +365,6 @@ class Plotter(object):
         if not self.is_sub_plotter:
             fig = plt.figure(figsize=self.figsize)
             return fig
-
-    def set_title(self):
-        """Set the title and title size of the figure.
-
-        Parameters
-        -----------
-        title : str
-            The text of the title.
-        titlesize : int
-            The size of of the title of the figure.
-        """
-        plt.title(label=self.label_title, fontsize=self.titlesize)
-
-    def set_yx_labels_and_ticksize(self):
-        """Set the x and y labels of the figure, and set the fontsize of those self.label_
-
-        The x and y labels are always the distance scales, thus the labels are either arc-seconds or kpc and depend on the \
-        unit_label the figure is plotted in.
-
-        Parameters
-        -----------
-        unit_label : str
-            The label for the unit_label of the y / x axis of the plots.
-        unit_conversion_factor : float
-            The conversion factor between arc-seconds and kiloparsecs, required to plotters the unit_label in kpc.
-        xlabelsize : int
-            The fontsize of the x axes label.
-        ylabelsize : int
-            The fontsize of the y axes label.
-        xyticksize : int
-            The font size of the x and y ticks on the figure axes.
-        """
-
-        plt.ylabel("y (" + self.label_yunits + ")", fontsize=self.ylabelsize)
-        plt.xlabel("x (" + self.label_xunits + ")", fontsize=self.xlabelsize)
-
-        plt.tick_params(labelsize=self.xyticksize)
 
     def set_yxticks(self, array, extent, symmetric_around_centre=False):
         """Get the extent of the dimensions of the array in the unit_label of the figure (e.g. arc-seconds or kpc).
@@ -224,15 +385,17 @@ class Plotter(object):
             If input, the yticks do not use the array's default yticks but instead overwrite them as these values.
         """
 
+        plt.tick_params(labelsize=self.xyticksize)
+
         if symmetric_around_centre:
             return
 
         yticks = np.linspace(extent[2], extent[3], 5)
         xticks = np.linspace(extent[0], extent[1], 5)
 
-        if self.label_xticks is not None and self.label_yticks is not None:
-            ytick_labels = np.asarray([self.label_yticks[0], self.label_yticks[3]])
-            xtick_labels = np.asarray([self.label_xticks[0], self.label_xticks[3]])
+        if self.xticks is not None and self.yticks is not None:
+            ytick_labels = np.asarray([self.yticks[0], self.yticks[3]])
+            xtick_labels = np.asarray([self.xticks[0], self.xticks[3]])
         elif not self.use_scaled_units:
             ytick_labels = np.linspace(0, array.shape_2d[0], 5).astype("int")
             xtick_labels = np.linspace(0, array.shape_2d[1], 5).astype("int")
@@ -341,17 +504,17 @@ class Plotter(object):
             'fits' - output to hard-disk as a fits file.'
         """
         if not self.is_sub_plotter:
-            if self.output_format is "show":
+            if self.output.format is "show":
                 plt.show()
-            elif self.output_format is "png":
+            elif self.output.format is "png":
                 plt.savefig(
-                    self.output_path + self.output_filename + ".png",
+                    self.output.path + self.output.filename + ".png",
                     bbox_inches="tight",
                 )
-            elif self.output_format is "fits":
+            elif self.output.format is "fits":
                 array_util.numpy_array_2d_to_fits(
                     array_2d=array,
-                    file_path=self.output_path + self.output_filename + ".fits",
+                    file_path=self.output.path + self.output.filename + ".fits",
                     overwrite=True,
                 )
 
@@ -408,35 +571,92 @@ class Plotter(object):
             'show' - display on computer screen.
             'png' - output to hard-disk as a png.
         """
-        if self.output_format is "show":
+        if self.output.format is "show":
             plt.show()
-        elif self.output_format is "png":
+        elif self.output.format is "png":
             plt.savefig(
-                self.output_path + self.output_filename + ".png", bbox_inches="tight"
+                self.output.path + self.output.filename + ".png", bbox_inches="tight"
             )
-        elif self.output_format is "fits":
+        elif self.output.format is "fits":
             raise exc.PlottingException(
                 "You cannot output a subplots with format .fits"
             )
+
+    def plotter_as_sub_plotter(self):
+
+        if self.is_sub_plotter:
+            return self
+
+        plotter = copy.deepcopy(self)
+        plotter.is_sub_plotter = True
+
+        plotter.figsize = load_subplot_setting(
+            value=None, name="figsize", python_type=str
+        )
+        plotter.figsize = None if plotter.figsize == "auto" else plotter.figsize
+        if isinstance(plotter.figsize, str):
+            plotter.figsize = tuple(map(int, plotter.figsize[1:-1].split(",")))
+        plotter.aspect = load_subplot_setting(
+            value=None, name="aspect", python_type=str
+        )
+        plotter.titlesize = load_subplot_setting(
+            value=None, name="titlesize", python_type=int
+        )
+        plotter.ysize = load_subplot_setting(
+            value=None, name="ysize", python_type=int
+        )
+        plotter.xsize = load_subplot_setting(
+            value=None, name="xsize", python_type=int
+        )
+        plotter.xyticksize = load_subplot_setting(
+            value=None, name="xyticksize", python_type=int
+        )
+        
+        return plotter
+
+    def plotter_with_new_labels(
+        self,
+        labels=Labels(),
+    ):
+
+        plotter = copy.deepcopy(self)
+
+        plotter.labels.title = labels.title if labels.title is not None else self.labels.title
+        plotter.labels._yunits = labels._yunits if labels._yunits is not None else self.labels._yunits
+        plotter.labels._xunits = labels._xunits if labels._xunits is not None else self.labels._xunits
+        
+        return plotter
+
+    def plotter_with_new_output_filename(
+        self,
+        output_filename=None,
+    ):
+
+        plotter = copy.deepcopy(self)
+
+        plotter.output.filename = output_filename if output_filename is not None else self.output.filename
+
+        return plotter
 
 
 class Include(object):
 
     def __init__(self, origin=None, mask=None, grid=None, border=None, inversion_centres=None, inversion_grid=None, inversion_border=None):
 
-        def set_include(value, name):
+        self.origin = self.load_include(value=origin, name="origin")
+        self.mask = self.load_include(value=mask, name="mask")
+        self.grid = self.load_include(value=grid, name="grid")
+        self.border = self.load_include(value=border, name="border")
+        self.inversion_centres = self.load_include(value=inversion_centres, name="inversion_centres")
+        self.inversion_grid = self.load_include(value=inversion_grid, name="inversion_grid")
+        self.inversion_border = self.load_include(value=inversion_border, name="inversion_border")
 
-            return plotters_util.setting(
-                section="include", name=name, python_type=bool
-            ) if value is None else value
+    @staticmethod
+    def load_include(value, name):
 
-        self.origin = set_include(value=origin, name="origin")
-        self.mask = set_include(value=mask, name="mask")
-        self.grid = set_include(value=grid, name="grid")
-        self.border = set_include(value=border, name="border")
-        self.inversion_centres = set_include(value=inversion_centres, name="inversion_centres")
-        self.inversion_grid = set_include(value=inversion_grid, name="inversion_grid")
-        self.inversion_border = set_include(value=inversion_border, name="inversion_border")
+        return setting(
+            section="include", name=name, python_type=bool
+        ) if value is None else value
 
     def mask_from_fit(self, fit):
         """Get the masks of the fit if the masks should be plotted on the fit.
@@ -452,6 +672,23 @@ class Include(object):
             return fit.mask
         else:
             return None
+
+
+def plotter_key_from_dictionary(dictionary):
+
+    plotter_key = None
+
+    for key, value in dictionary.items():
+        if isinstance(value, Plotter):
+            plotter_key = key
+
+    if plotter_key is None:
+        raise exc.PlottingException(
+            "The plot function called could not locate a Plotter in the kwarg arguments"
+            "in order to set the labels."
+        )
+
+    return plotter_key
 
 def set_labels(func):
     """
@@ -476,22 +713,24 @@ def set_labels(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
 
-        plotter_key = plotters_util.plotter_key_from_dictionary(dictionary=kwargs)
+        plotter_key = plotter_key_from_dictionary(dictionary=kwargs)
         plotter = kwargs[plotter_key]
 
-        label_title = plotters_util.label_title_from_plotter(plotter=plotter, func=func)
-        label_yunits = plotters_util.label_yunits_from_plotter(plotter=plotter)
-        label_xunits = plotters_util.label_xunits_from_plotter(plotter=plotter)
-        output_filename = plotters_util.output_filename_from_plotter_and_func(
-            plotter=plotter, func=func
+        title = plotter.labels.title_from_func(func=func)
+        yunits = plotter.labels.yunits_from_func(func=func)
+        xunits = plotter.labels.xunits_from_func(func=func)
+
+        plotter = plotter.plotter_with_new_labels(
+            labels=Labels(title=title, yunits=yunits, xunits=xunits),
         )
 
-        kwargs[plotter_key] = plotter.plotter_with_new_labels_and_filename(
-            label_title=label_title,
-            label_yunits=label_yunits,
-            label_xunits=label_xunits,
-            output_filename=output_filename,
+        filename = plotter.output.filename_from_func(func=func)
+
+        plotter = plotter.plotter_with_new_output_filename(
+            output_filename=filename,
         )
+
+        kwargs[plotter_key] = plotter
 
         return func(*args, **kwargs)
 

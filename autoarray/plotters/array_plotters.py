@@ -33,22 +33,15 @@ class ArrayPlotter(plotters.Plotter):
         cb_pad=None,
         cb_tick_values=None,
         cb_tick_labels=None,
-        titlesize=None,
-        xlabelsize=None,
-        ylabelsize=None,
+            yticks=None,
+            xticks=None,
         xyticksize=None,
         mask_pointsize=None,
         border_pointsize=None,
         point_pointsize=None,
         grid_pointsize=None,
-        label_title=None,
-        label_yunits=None,
-        label_xunits=None,
-        label_yticks=None,
-        label_xticks=None,
-        output_path=None,
-        output_format="show",
-        output_filename=None,
+        labels=plotters.Labels(),
+        output=plotters.Output()
     ):
 
         super(ArrayPlotter, self).__init__(
@@ -68,115 +61,15 @@ class ArrayPlotter(plotters.Plotter):
             cb_pad=cb_pad,
             cb_tick_values=cb_tick_values,
             cb_tick_labels=cb_tick_labels,
-            titlesize=titlesize,
-            xlabelsize=xlabelsize,
-            ylabelsize=ylabelsize,
+            yticks=yticks,
+            xticks=xticks,
             xyticksize=xyticksize,
             mask_pointsize=mask_pointsize,
             border_pointsize=border_pointsize,
             point_pointsize=point_pointsize,
             grid_pointsize=grid_pointsize,
-            label_title=label_title,
-            label_yunits=label_yunits,
-            label_xunits=label_xunits,
-            label_yticks=label_yticks,
-            label_xticks=label_xticks,
-            output_path=output_path,
-            output_format=output_format,
-            output_filename=output_filename,
-        )
-
-    def plotter_as_sub_plotter(self,):
-
-        return ArrayPlotter(
-            is_sub_plotter=True,
-            use_scaled_units=self.use_scaled_units,
-            unit_conversion_factor=self.unit_conversion_factor,
-            figsize=self.figsize,
-            aspect=self.aspect,
-            cmap=self.cmap,
-            norm=self.norm,
-            norm_min=self.norm_min,
-            norm_max=self.norm_max,
-            linthresh=self.linthresh,
-            linscale=self.linscale,
-            cb_ticksize=self.cb_ticksize,
-            cb_fraction=self.cb_fraction,
-            cb_pad=self.cb_pad,
-            cb_tick_values=self.cb_tick_values,
-            cb_tick_labels=self.cb_tick_labels,
-            titlesize=self.titlesize,
-            xlabelsize=self.xlabelsize,
-            ylabelsize=self.ylabelsize,
-            xyticksize=self.xyticksize,
-            mask_pointsize=self.mask_pointsize,
-            border_pointsize=self.border_pointsize,
-            point_pointsize=self.point_pointsize,
-            grid_pointsize=self.grid_pointsize,
-            label_title=self.label_title,
-            label_yunits=self.label_yunits,
-            label_xunits=self.label_xunits,
-            label_yticks=self.label_yticks,
-            label_xticks=self.label_xticks,
-            output_path=self.output_path,
-            output_format=self.output_format,
-            output_filename=self.output_filename,
-        )
-
-    def plotter_with_new_labels_and_filename(
-        self,
-        label_title=None,
-        label_yunits=None,
-        label_xunits=None,
-        output_filename=None,
-        unit_conversion_factor=None,
-    ):
-
-        label_title = self.label_title if label_title is None else label_title
-        label_yunits = self.label_yunits if label_yunits is None else label_yunits
-        label_xunits = self.label_xunits if label_xunits is None else label_xunits
-        output_filename = (
-            self.output_filename if output_filename is None else output_filename
-        )
-        unit_conversion_factor = (
-            self.unit_conversion_factor
-            if unit_conversion_factor is None
-            else unit_conversion_factor
-        )
-
-        return ArrayPlotter(
-            is_sub_plotter=self.is_sub_plotter,
-            use_scaled_units=self.use_scaled_units,
-            unit_conversion_factor=unit_conversion_factor,
-            figsize=self.figsize,
-            aspect=self.aspect,
-            cmap=self.cmap,
-            norm=self.norm,
-            norm_min=self.norm_min,
-            norm_max=self.norm_max,
-            linthresh=self.linthresh,
-            linscale=self.linscale,
-            cb_ticksize=self.cb_ticksize,
-            cb_fraction=self.cb_fraction,
-            cb_pad=self.cb_pad,
-            cb_tick_values=self.cb_tick_values,
-            cb_tick_labels=self.cb_tick_labels,
-            titlesize=self.titlesize,
-            xlabelsize=self.xlabelsize,
-            ylabelsize=self.ylabelsize,
-            xyticksize=self.xyticksize,
-            mask_pointsize=self.mask_pointsize,
-            border_pointsize=self.border_pointsize,
-            point_pointsize=self.point_pointsize,
-            grid_pointsize=self.grid_pointsize,
-            label_title=label_title,
-            label_yunits=label_yunits,
-            label_xunits=label_xunits,
-            label_yticks=self.label_yticks,
-            label_xticks=self.label_xticks,
-            output_path=self.output_path,
-            output_format=self.output_format,
-            output_filename=output_filename,
+            labels=labels,
+            output=output
         )
 
     def plot_array(
@@ -252,9 +145,9 @@ class ArrayPlotter(plotters.Plotter):
             The fraction of the figure that the colorbar takes up, which resizes the colorbar relative to the figure.
         cb_pad : float
             Pads the color bar in the figure, which resizes the colorbar relative to the figure.
-        xlabelsize : int
+        xsize : int
             The fontsize of the x axes label.
-        ylabelsize : int
+        ysize : int
             The fontsize of the y axes label.
         xyticksize : int
             The font size of the x and y ticks on the figure axes.
@@ -292,7 +185,7 @@ class ArrayPlotter(plotters.Plotter):
             unit_label='scaled', kpc_per_arcsec=None, figsize=(7,7), aspect='auto',
             cmap='jet', norm='linear, norm_min=None, norm_max=None, linthresh=None, linscale=None,
             cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01, cb_tick_values=None, cb_tick_labels=None,
-            title='Image', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
+            title='Image', titlesize=16, xsize=16, ysize=16, xyticksize=16,
             mask_pointsize=10, border_pointsize=2, position_pointsize=10, grid_pointsize=10,
             xticks_manual=None, yticks_manual=None,
             output_path='/path/to/output', output_format='png', output_filename='image')
@@ -319,8 +212,9 @@ class ArrayPlotter(plotters.Plotter):
 
         self.plot_figure(array=array, extent=extent)
 
-        self.set_title()
-        self.set_yx_labels_and_ticksize()
+        self.labels.set_title()
+        self.labels.set_yunits(include_brackets=True)
+        self.labels.set_xunits(include_brackets=True)
 
         self.set_colorbar()
         self.plot_origin(array=array, include_origin=include_origin)
