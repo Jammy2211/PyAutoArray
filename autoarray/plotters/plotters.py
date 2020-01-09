@@ -420,49 +420,38 @@ class Plotter(object):
             )
 
 
-def set_includes(func):
-    """
-    Decorate a profile method that accepts a coordinate grid and returns a data_type grid.
+class Include(object):
 
-    If an interpolator attribute is associated with the input grid then that interpolator is used to down sample the
-    coordinate grid prior to calling the function and up sample the result of the function.
+    def __init__(self, origin=None, mask=None, grid=None, border=None, inversion_centres=None, inversion_grid=None, inversion_border=None):
 
-    If no interpolator attribute is associated with the input grid then the function is called as hyper.
+        def set_include(value, name):
 
-    Parameters
-    ----------
-    func
-        Some method that accepts a grid
+            return plotters_util.setting(
+                section="include", name=name, python_type=bool
+            ) if value is None else value
 
-    Returns
-    -------
-    decorated_function
-        The function with optional interpolation
-    """
+        self.origin = set_include(value=origin, name="origin")
+        self.mask = set_include(value=mask, name="mask")
+        self.grid = set_include(value=grid, name="grid")
+        self.border = set_include(value=border, name="border")
+        self.inversion_centres = set_include(value=inversion_centres, name="inversion_centres")
+        self.inversion_grid = set_include(value=inversion_grid, name="inversion_grid")
+        self.inversion_border = set_include(value=inversion_border, name="inversion_border")
 
-    @wraps(func)
-    def wrapper(*args, **kwargs):
+    def mask_from_fit(self, fit):
+        """Get the masks of the fit if the masks should be plotted on the fit.
 
-        includes = [
-            "include_origin",
-            "include_mask",
-            "include_grid",
-            "include_centres",
-            "include_border",
-        ]
-
-        for include in includes:
-            if include in kwargs:
-                if kwargs[include] is None:
-
-                    kwargs[include] = plotters_util.setting(
-                        section="include", name=include[8:], python_type=bool
-                    )
-
-        return func(*args, **kwargs)
-
-    return wrapper
-
+        Parameters
+        -----------
+        fit : datas.fitting.fitting.AbstractLensHyperFit
+            The fit to the datas, which includes a lisrt of every model image, residual_map, chi-squareds, etc.
+        include_mask : bool
+            If *True*, the masks is plotted on the fit's datas.
+        """
+        if self.mask:
+            return fit.mask
+        else:
+            return None
 
 def set_labels(func):
     """

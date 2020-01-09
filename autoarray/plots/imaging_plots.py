@@ -8,13 +8,13 @@ from matplotlib import pyplot as plt
 from autoarray.plotters import plotters, array_plotters
 
 
-@plotters.set_includes
+
 def subplot(
     imaging,
-    include_origin=None,
     grid=None,
     mask=None,
     positions=None,
+    include=plotters.Include(),
     array_plotter=array_plotters.ArrayPlotter(),
 ):
     """Plot the imaging data_type as a sub-plotters of all its quantites (e.g. the dataset, noise_map-map, PSF, Signal-to_noise-map, \
@@ -55,10 +55,10 @@ def subplot(
 
     image(
         imaging=imaging,
-        include_origin=include_origin,
         grid=grid,
         mask=mask,
         positions=positions,
+        include=include,
         array_plotter=array_plotter,
     )
 
@@ -66,9 +66,9 @@ def subplot(
 
     noise_map(
         imaging=imaging,
-        include_origin=include_origin,
         mask=mask,
         positions=positions,
+        include=include,
         array_plotter=array_plotter,
     )
 
@@ -76,9 +76,9 @@ def subplot(
 
     psf(
         imaging=imaging,
-        include_origin=include_origin,
         mask=mask,
         positions=positions,
+        include=include,
         array_plotter=array_plotter,
     )
 
@@ -86,9 +86,9 @@ def subplot(
 
     signal_to_noise_map(
         imaging=imaging,
-        include_origin=include_origin,
         mask=mask,
         positions=positions,
+        include=include,
         array_plotter=array_plotter,
     )
 
@@ -96,9 +96,9 @@ def subplot(
 
     absolute_signal_to_noise_map(
         imaging=imaging,
-        include_origin=include_origin,
         mask=mask,
         positions=positions,
+        include=include,
         array_plotter=array_plotter,
     )
 
@@ -106,9 +106,9 @@ def subplot(
 
     potential_chi_squared_map(
         imaging=imaging,
-        include_origin=include_origin,
         mask=mask,
         positions=positions,
+        include=include,
         array_plotter=array_plotter,
     )
 
@@ -117,10 +117,9 @@ def subplot(
     plt.close()
 
 
-@plotters.set_includes
+
 def individual(
     imaging,
-    include_origin=None,
     grid=None,
     mask=None,
     positions=None,
@@ -130,6 +129,7 @@ def individual(
     plot_signal_to_noise_map=False,
     plot_absolute_signal_to_noise_map=False,
     plot_potential_chi_squared_map=False,
+    include=plotters.Include(),
     array_plotter=array_plotters.ArrayPlotter(),
 ):
     """Plot each attribute of the imaging data_type as individual figures one by one (e.g. the dataset, noise_map-map, PSF, \
@@ -149,10 +149,10 @@ def individual(
 
         image(
             imaging=imaging,
-            include_origin=include_origin,
             grid=grid,
             mask=mask,
             positions=positions,
+            include=include,
             array_plotter=array_plotter,
         )
 
@@ -160,21 +160,21 @@ def individual(
 
         noise_map(
             imaging=imaging,
-            include_origin=include_origin,
             mask=mask,
+            include=include,
             array_plotter=array_plotter,
         )
 
     if plot_psf:
 
-        psf(imaging=imaging, include_origin=include_origin, array_plotter=array_plotter)
+        psf(imaging=imaging, include=include, array_plotter=array_plotter)
 
     if plot_signal_to_noise_map:
 
         signal_to_noise_map(
             imaging=imaging,
-            include_origin=include_origin,
             mask=mask,
+        include=include,
             array_plotter=array_plotter,
         )
 
@@ -182,8 +182,8 @@ def individual(
 
         absolute_signal_to_noise_map(
             imaging=imaging,
-            include_origin=include_origin,
             mask=mask,
+        include=include,
             array_plotter=array_plotter,
         )
 
@@ -191,20 +191,20 @@ def individual(
 
         potential_chi_squared_map(
             imaging=imaging,
-            include_origin=include_origin,
             mask=mask,
+        include=include,
             array_plotter=array_plotter,
         )
 
 
-@plotters.set_includes
+
 @plotters.set_labels
 def image(
     imaging,
-    include_origin=None,
     grid=None,
     mask=None,
     positions=None,
+    include=plotters.Include(),
     array_plotter=array_plotters.ArrayPlotter(),
 ):
     """Plot the observed data_type of the imaging data_type.
@@ -224,21 +224,21 @@ def image(
 
     array_plotter.plot_array(
         array=imaging.image,
-        include_origin=include_origin,
+        include_origin=include.origin,
         grid=grid,
         mask=mask,
         points=positions,
     )
 
 
-@plotters.set_includes
+
 @plotters.set_labels
 def noise_map(
     imaging,
-    include_origin=None,
     grid=None,
     mask=None,
     positions=None,
+    include=plotters.Include(),
     array_plotter=array_plotters.ArrayPlotter(),
 ):
     """Plot the noise_map-map of the imaging data_type.
@@ -255,21 +255,21 @@ def noise_map(
 
     array_plotter.plot_array(
         array=imaging.image,
-        include_origin=include_origin,
+        include_origin=include.origin,
         grid=grid,
         mask=mask,
         points=positions,
     )
 
 
-@plotters.set_includes
+
 @plotters.set_labels
 def psf(
     imaging,
-    include_origin=None,
     grid=None,
     mask=None,
     positions=None,
+    include=plotters.Include(),
     array_plotter=array_plotters.ArrayPlotter(),
 ):
     """Plot the PSF of the imaging data_type.
@@ -286,21 +286,21 @@ def psf(
 
     array_plotter.plot_array(
         array=imaging.image,
-        include_origin=include_origin,
+        include_origin=include.origin,
         grid=grid,
         mask=mask,
         points=positions,
     )
 
 
-@plotters.set_includes
+
 @plotters.set_labels
 def signal_to_noise_map(
     imaging,
-    include_origin=None,
     grid=None,
     mask=None,
     positions=None,
+    include=plotters.Include(),
     array_plotter=array_plotters.ArrayPlotter(),
 ):
     """Plot the signal-to-noise_map-map of the imaging data_type.
@@ -316,21 +316,21 @@ def signal_to_noise_map(
     """
     array_plotter.plot_array(
         array=imaging.image,
-        include_origin=include_origin,
+        include_origin=include.origin,
         grid=grid,
         mask=mask,
         points=positions,
     )
 
 
-@plotters.set_includes
+
 @plotters.set_labels
 def absolute_signal_to_noise_map(
     imaging,
-    include_origin=None,
     grid=None,
     mask=None,
     positions=None,
+    include=plotters.Include(),
     array_plotter=array_plotters.ArrayPlotter(),
 ):
     """Plot the signal-to-noise_map-map of the imaging data_type.
@@ -346,21 +346,21 @@ def absolute_signal_to_noise_map(
     """
     array_plotter.plot_array(
         array=imaging.image,
-        include_origin=include_origin,
+        include_origin=include.origin,
         grid=grid,
         mask=mask,
         points=positions,
     )
 
 
-@plotters.set_includes
+
 @plotters.set_labels
 def potential_chi_squared_map(
     imaging,
-    include_origin=None,
     grid=None,
     mask=None,
     positions=None,
+    include=plotters.Include(),
     array_plotter=array_plotters.ArrayPlotter(),
 ):
     """Plot the signal-to-noise_map-map of the imaging data_type.
@@ -376,7 +376,7 @@ def potential_chi_squared_map(
     """
     array_plotter.plot_array(
         array=imaging.image,
-        include_origin=include_origin,
+        include_origin=include.origin,
         grid=grid,
         mask=mask,
         points=positions,

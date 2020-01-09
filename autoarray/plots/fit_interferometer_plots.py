@@ -9,10 +9,11 @@ from autoarray.plotters import plotters, array_plotters, grid_plotters, line_plo
 from autoarray.plots import inversion_plots
 
 
-@plotters.set_includes
+
 @plotters.set_labels
 def subplot(
     fit,
+include=plotters.Include(),
     array_plotter=array_plotters.ArrayPlotter(),
     grid_plotter=grid_plotters.GridPlotter(),
     line_plotter=line_plotters.LinePlotter(),
@@ -38,36 +39,36 @@ def subplot(
 
     plt.subplot(rows, columns, 1)
 
-    residual_map_vs_uv_distances(fit=fit, line_plotter=line_plotter)
+    residual_map_vs_uv_distances(fit=fit, include=include, line_plotter=line_plotter)
 
     plt.subplot(rows, columns, 2)
 
-    normalized_residual_map_vs_uv_distances(fit=fit, line_plotter=line_plotter)
+    normalized_residual_map_vs_uv_distances(fit=fit, include=include, line_plotter=line_plotter)
 
     plt.subplot(rows, columns, 3)
 
-    chi_squared_map_vs_uv_distances(fit=fit, line_plotter=line_plotter)
+    chi_squared_map_vs_uv_distances(fit=fit, include=include, line_plotter=line_plotter)
 
     plt.subplot(rows, columns, 4)
 
-    residual_map_vs_uv_distances(fit=fit, plot_real=False, line_plotter=line_plotter)
+    residual_map_vs_uv_distances(fit=fit, plot_real=False, include=include, line_plotter=line_plotter)
 
     plt.subplot(rows, columns, 5)
 
     normalized_residual_map_vs_uv_distances(
-        fit=fit, plot_real=False, line_plotter=line_plotter
+        fit=fit, plot_real=False, include=include, line_plotter=line_plotter
     )
 
     plt.subplot(rows, columns, 6)
 
-    chi_squared_map_vs_uv_distances(fit=fit, plot_real=False, line_plotter=line_plotter)
+    chi_squared_map_vs_uv_distances(fit=fit, plot_real=False, include=include, line_plotter=line_plotter)
 
     array_plotter.output_subplot_array()
 
     plt.close()
 
 
-@plotters.set_includes
+
 def individuals(
     fit,
     plot_visibilities=False,
@@ -85,6 +86,7 @@ def individuals(
     plot_inversion_regularization_weight_map=False,
     plot_inversion_interpolated_reconstruction=False,
     plot_inversion_interpolated_errors=False,
+include=plotters.Include(),
     array_plotter=array_plotters.ArrayPlotter(),
     grid_plotter=grid_plotters.GridPlotter(),
     line_plotter=line_plotters.LinePlotter(),
@@ -106,46 +108,46 @@ def individuals(
 
     if plot_visibilities:
 
-        visibilities(fit=fit, grid_plotter=grid_plotter)
+        visibilities(fit=fit, include=include, grid_plotter=grid_plotter)
 
     if plot_noise_map:
 
-        noise_map(fit=fit, grid_plotter=grid_plotter)
+        noise_map(fit=fit, include=include, grid_plotter=grid_plotter)
 
     if plot_signal_to_noise_map:
 
-        signal_to_noise_map(fit=fit, grid_plotter=grid_plotter)
+        signal_to_noise_map(fit=fit, include=include, grid_plotter=grid_plotter)
 
     if plot_model_visibilities:
 
-        model_visibilities(fit=fit, grid_plotter=grid_plotter)
+        model_visibilities(fit=fit, include=include, grid_plotter=grid_plotter)
 
     if plot_residual_map:
 
-        residual_map_vs_uv_distances(fit=fit, plot_real=True, line_plotter=line_plotter)
+        residual_map_vs_uv_distances(fit=fit, plot_real=True, include=include, line_plotter=line_plotter)
 
         residual_map_vs_uv_distances(
-            fit=fit, plot_real=False, line_plotter=line_plotter
+            fit=fit, plot_real=False, include=include, line_plotter=line_plotter
         )
 
     if plot_normalized_residual_map:
 
         normalized_residual_map_vs_uv_distances(
-            fit=fit, plot_real=True, line_plotter=line_plotter
+            fit=fit, plot_real=True, include=include, line_plotter=line_plotter
         )
 
         normalized_residual_map_vs_uv_distances(
-            fit=fit, plot_real=False, line_plotter=line_plotter
+            fit=fit, plot_real=False, include=include, line_plotter=line_plotter
         )
 
     if plot_chi_squared_map:
 
         chi_squared_map_vs_uv_distances(
-            fit=fit, plot_real=True, line_plotter=line_plotter
+            fit=fit, plot_real=True, include=include, line_plotter=line_plotter
         )
 
         chi_squared_map_vs_uv_distances(
-            fit=fit, plot_real=False, line_plotter=line_plotter
+            fit=fit, plot_real=False, include=include, line_plotter=line_plotter
         )
 
     if fit.total_inversions == 1:
@@ -160,15 +162,16 @@ def individuals(
             plot_inversion_regularization_weight_map=plot_inversion_regularization_weight_map,
             plot_inversion_interpolated_reconstruction=plot_inversion_interpolated_reconstruction,
             plot_inversion_interpolated_errors=plot_inversion_interpolated_errors,
+            include=include,
             array_plotter=array_plotter,
             grid_plotter=grid_plotter,
             line_plotter=line_plotter,
         )
 
 
-@plotters.set_includes
+
 @plotters.set_labels
-def visibilities(fit, grid_plotter=grid_plotters.GridPlotter()):
+def visibilities(fit, include=plotters.Include(), grid_plotter=grid_plotters.GridPlotter()):
     """Plot the visibilities of a lens fit.
 
     Set *autolens.datas.grid.plotters.grid_plotters* for a description of all input parameters not described below.
@@ -176,16 +179,16 @@ def visibilities(fit, grid_plotter=grid_plotters.GridPlotter()):
     Parameters
     -----------
     visibilities : datas.imaging.datas.Imaging
-        The datas-datas, which includes the observed datas, noise_map-map, PSF, signal-to-noise_map-map, etc.
+        The datas-datas, which include the observed datas, noise_map-map, PSF, signal-to-noise_map-map, etc.
     origin : True
         If true, the origin of the datas's coordinate system is plotted as a 'x'.
     """
     grid_plotter.plot_grid(grid=fit.visibilities)
 
 
-@plotters.set_includes
+
 @plotters.set_labels
-def noise_map(fit, grid_plotter=grid_plotters.GridPlotter()):
+def noise_map(fit, include=plotters.Include(), grid_plotter=grid_plotters.GridPlotter()):
     """Plot the noise-map of a lens fit.
 
     Set *autolens.datas.grid.plotters.grid_plotters* for a description of all input parameters not described below.
@@ -193,16 +196,16 @@ def noise_map(fit, grid_plotter=grid_plotters.GridPlotter()):
     Parameters
     -----------
     visibilities : datas.imaging.datas.Imaging
-        The datas-datas, which includes the observed datas, noise_map-map, PSF, signal-to-noise_map-map, etc.
+        The datas-datas, which include the observed datas, noise_map-map, PSF, signal-to-noise_map-map, etc.
     origin : True
         If true, the origin of the datas's coordinate system is plotted as a 'x'.
     """
     grid_plotter.plot_grid(grid=fit.visibilities, colors=fit.noise_map[:, 0])
 
 
-@plotters.set_includes
+
 @plotters.set_labels
-def signal_to_noise_map(fit, grid_plotter=grid_plotters.GridPlotter()):
+def signal_to_noise_map(fit, include=plotters.Include(), grid_plotter=grid_plotters.GridPlotter()):
     """Plot the noise-map of a lens fit.
 
     Set *autolens.datas.grid.plotters.grid_plotters* for a description of all input parameters not described below.
@@ -210,16 +213,16 @@ def signal_to_noise_map(fit, grid_plotter=grid_plotters.GridPlotter()):
     Parameters
     -----------
     visibilities : datas.imaging.datas.Imaging
-    The datas-datas, which includes the observed datas, signal_to_noise_map-map, PSF, signal-to-signal_to_noise_map-map, etc.
+    The datas-datas, which include the observed datas, signal_to_noise_map-map, PSF, signal-to-signal_to_noise_map-map, etc.
     origin : True
     If true, the origin of the datas's coordinate system is plotted as a 'x'.
     """
     grid_plotter.plot_grid(grid=fit.visibilities, colors=fit.signal_to_noise_map[:, 0])
 
 
-@plotters.set_includes
+
 @plotters.set_labels
-def model_visibilities(fit, grid_plotter=grid_plotters.GridPlotter()):
+def model_visibilities(fit, include=plotters.Include(), grid_plotter=grid_plotters.GridPlotter()):
     """Plot the model visibilities of a fit.
 
     Set *autolens.datas.grid.plotters.grid_plotters* for a description of all input parameters not described below.
@@ -227,20 +230,21 @@ def model_visibilities(fit, grid_plotter=grid_plotters.GridPlotter()):
     Parameters
     -----------
     fit : datas.fitting.fitting.AbstractFitter
-        The fit to the datas, which includes a list of every model visibilities, residual_map, chi-squareds, etc.
+        The fit to the datas, which include a list of every model visibilities, residual_map, chi-squareds, etc.
     visibilities_index : int
         The index of the datas in the datas-set of which the model visibilities is plotted.
     """
     grid_plotter.plot_grid(grid=fit.visibilities)
 
 
-@plotters.set_includes
+
 @plotters.set_labels
 def residual_map_vs_uv_distances(
     fit,
     plot_real=True,
     label_yunits="V$_{R,data}$ - V$_{R,model}$",
     label_xunits=r"UV$_{distance}$ (k$\lambda$)",
+    include=plotters.Include(),
     line_plotter=line_plotters.LinePlotter(),
 ):
     """Plot the residual-map of a lens fit.
@@ -250,7 +254,7 @@ def residual_map_vs_uv_distances(
     Parameters
     -----------
     fit : datas.fitting.fitting.AbstractFitter
-        The fit to the datas, which includes a list of every model visibilities, residual_map, chi-squareds, etc.
+        The fit to the datas, which include a list of every model visibilities, residual_map, chi-squareds, etc.
     visibilities_index : int
         The index of the datas in the datas-set of which the residual_map are plotted.
     """
@@ -279,13 +283,14 @@ def residual_map_vs_uv_distances(
     )
 
 
-@plotters.set_includes
+
 @plotters.set_labels
 def normalized_residual_map_vs_uv_distances(
     fit,
     plot_real=True,
     label_yunits="V$_{R,data}$ - V$_{R,model}$",
     label_xunits=r"UV$_{distance}$ (k$\lambda$)",
+    include=plotters.Include(),
     line_plotter=line_plotters.LinePlotter(),
 ):
     """Plot the residual-map of a lens fit.
@@ -295,7 +300,7 @@ def normalized_residual_map_vs_uv_distances(
     Parameters
     -----------
     fit : datas.fitting.fitting.AbstractFitter
-        The fit to the datas, which includes a list of every model visibilities, residual_map, chi-squareds, etc.
+        The fit to the datas, which include a list of every model visibilities, residual_map, chi-squareds, etc.
     visibilities_index : int
         The index of the datas in the datas-set of which the residual_map are plotted.
     """
@@ -324,13 +329,14 @@ def normalized_residual_map_vs_uv_distances(
     )
 
 
-@plotters.set_includes
+
 @plotters.set_labels
 def chi_squared_map_vs_uv_distances(
     fit,
     plot_real=True,
     label_yunits="V$_{R,data}$ - V$_{R,model}$",
     label_xunits=r"UV$_{distance}$ (k$\lambda$)",
+    include=plotters.Include(),
     line_plotter=line_plotters.LinePlotter(),
 ):
     """Plot the residual-map of a lens fit.
@@ -340,7 +346,7 @@ def chi_squared_map_vs_uv_distances(
     Parameters
     -----------
     fit : datas.fitting.fitting.AbstractFitter
-        The fit to the datas, which includes a list of every model visibilities, residual_map, chi-squareds, etc.
+        The fit to the datas, which include a list of every model visibilities, residual_map, chi-squareds, etc.
     visibilities_index : int
         The index of the datas in the datas-set of which the residual_map are plotted.
     """

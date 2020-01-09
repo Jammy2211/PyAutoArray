@@ -10,18 +10,16 @@ from autoarray.plotters import plotters, array_plotters, mapper_plotters
 from autoarray.plots import imaging_plots
 
 
-@plotters.set_includes
+
 @plotters.set_labels
 def image_and_mapper(
     imaging,
     mapper,
     mask=None,
     positions=None,
-    include_centres=None,
-    include_grid=None,
-    include_border=None,
     image_pixels=None,
     source_pixels=None,
+    include=plotters.Include(),
     array_plotter=array_plotters.ArrayPlotter(),
     mapper_plotter=mapper_plotters.MapperPlotter(),
 ):
@@ -45,7 +43,7 @@ def image_and_mapper(
     plt.subplot(rows, columns, 1)
 
     imaging_plots.image(
-        imaging=imaging, mask=mask, positions=positions, array_plotter=array_plotter
+        imaging=imaging, mask=mask, positions=positions, include=include, array_plotter=array_plotter
     )
 
     point_colors = itertools.cycle(["y", "r", "k", "g", "m"])
@@ -65,11 +63,9 @@ def image_and_mapper(
 
     mapper_grid(
         mapper=mapper,
-        include_centres=include_centres,
-        include_grid=include_grid,
-        include_border=include_border,
         image_pixels=image_pixels,
         source_pixels=source_pixels,
+        include=include,
         mapper_plotter=mapper_plotter,
     )
 
@@ -77,23 +73,21 @@ def image_and_mapper(
     plt.close()
 
 
-@plotters.set_includes
+
 @plotters.set_labels
 def mapper_grid(
     mapper,
-    include_centres=None,
-    include_grid=None,
-    include_border=None,
     image_pixels=None,
     source_pixels=None,
+    include=plotters.Include(),
     mapper_plotter=mapper_plotters.MapperPlotter(),
 ):
 
     mapper_plotter.plot_mapper(
         mapper=mapper,
-        include_centres=include_centres,
-        include_grid=include_grid,
-        include_border=include_border,
         image_pixels=image_pixels,
         source_pixels=source_pixels,
+        include_centres=include.inversion_centres,
+        include_grid=include.inversion_grid,
+        include_border=include.inversion_border,
     )
