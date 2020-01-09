@@ -9,11 +9,10 @@ from autoarray.plotters import plotters, array_plotters, grid_plotters, line_plo
 from autoarray.plots import inversion_plots
 
 
-
 @plotters.set_labels
 def subplot(
     fit,
-include=plotters.Include(),
+    include=plotters.Include(),
     array_plotter=array_plotters.ArrayPlotter(),
     grid_plotter=grid_plotters.GridPlotter(),
     line_plotter=line_plotters.LinePlotter(),
@@ -43,7 +42,9 @@ include=plotters.Include(),
 
     plt.subplot(rows, columns, 2)
 
-    normalized_residual_map_vs_uv_distances(fit=fit, include=include, line_plotter=line_plotter)
+    normalized_residual_map_vs_uv_distances(
+        fit=fit, include=include, line_plotter=line_plotter
+    )
 
     plt.subplot(rows, columns, 3)
 
@@ -51,7 +52,9 @@ include=plotters.Include(),
 
     plt.subplot(rows, columns, 4)
 
-    residual_map_vs_uv_distances(fit=fit, plot_real=False, include=include, line_plotter=line_plotter)
+    residual_map_vs_uv_distances(
+        fit=fit, plot_real=False, include=include, line_plotter=line_plotter
+    )
 
     plt.subplot(rows, columns, 5)
 
@@ -61,12 +64,13 @@ include=plotters.Include(),
 
     plt.subplot(rows, columns, 6)
 
-    chi_squared_map_vs_uv_distances(fit=fit, plot_real=False, include=include, line_plotter=line_plotter)
+    chi_squared_map_vs_uv_distances(
+        fit=fit, plot_real=False, include=include, line_plotter=line_plotter
+    )
 
-    array_plotter.output_subplot_array()
+    array_plotter.output.to_figure(structure=None, is_sub_plotter=False)
 
     plt.close()
-
 
 
 def individuals(
@@ -86,7 +90,7 @@ def individuals(
     plot_inversion_regularization_weight_map=False,
     plot_inversion_interpolated_reconstruction=False,
     plot_inversion_interpolated_errors=False,
-include=plotters.Include(),
+    include=plotters.Include(),
     array_plotter=array_plotters.ArrayPlotter(),
     grid_plotter=grid_plotters.GridPlotter(),
     line_plotter=line_plotters.LinePlotter(),
@@ -124,7 +128,9 @@ include=plotters.Include(),
 
     if plot_residual_map:
 
-        residual_map_vs_uv_distances(fit=fit, plot_real=True, include=include, line_plotter=line_plotter)
+        residual_map_vs_uv_distances(
+            fit=fit, plot_real=True, include=include, line_plotter=line_plotter
+        )
 
         residual_map_vs_uv_distances(
             fit=fit, plot_real=False, include=include, line_plotter=line_plotter
@@ -169,9 +175,10 @@ include=plotters.Include(),
         )
 
 
-
 @plotters.set_labels
-def visibilities(fit, include=plotters.Include(), grid_plotter=grid_plotters.GridPlotter()):
+def visibilities(
+    fit, include=plotters.Include(), grid_plotter=grid_plotters.GridPlotter()
+):
     """Plot the visibilities of a lens fit.
 
     Set *autolens.datas.grid.plotters.grid_plotters* for a description of all input parameters not described below.
@@ -186,9 +193,10 @@ def visibilities(fit, include=plotters.Include(), grid_plotter=grid_plotters.Gri
     grid_plotter.plot_grid(grid=fit.visibilities)
 
 
-
 @plotters.set_labels
-def noise_map(fit, include=plotters.Include(), grid_plotter=grid_plotters.GridPlotter()):
+def noise_map(
+    fit, include=plotters.Include(), grid_plotter=grid_plotters.GridPlotter()
+):
     """Plot the noise-map of a lens fit.
 
     Set *autolens.datas.grid.plotters.grid_plotters* for a description of all input parameters not described below.
@@ -203,9 +211,10 @@ def noise_map(fit, include=plotters.Include(), grid_plotter=grid_plotters.GridPl
     grid_plotter.plot_grid(grid=fit.visibilities, colors=fit.noise_map[:, 0])
 
 
-
 @plotters.set_labels
-def signal_to_noise_map(fit, include=plotters.Include(), grid_plotter=grid_plotters.GridPlotter()):
+def signal_to_noise_map(
+    fit, include=plotters.Include(), grid_plotter=grid_plotters.GridPlotter()
+):
     """Plot the noise-map of a lens fit.
 
     Set *autolens.datas.grid.plotters.grid_plotters* for a description of all input parameters not described below.
@@ -220,9 +229,10 @@ def signal_to_noise_map(fit, include=plotters.Include(), grid_plotter=grid_plott
     grid_plotter.plot_grid(grid=fit.visibilities, colors=fit.signal_to_noise_map[:, 0])
 
 
-
 @plotters.set_labels
-def model_visibilities(fit, include=plotters.Include(), grid_plotter=grid_plotters.GridPlotter()):
+def model_visibilities(
+    fit, include=plotters.Include(), grid_plotter=grid_plotters.GridPlotter()
+):
     """Plot the model visibilities of a fit.
 
     Set *autolens.datas.grid.plotters.grid_plotters* for a description of all input parameters not described below.
@@ -235,7 +245,6 @@ def model_visibilities(fit, include=plotters.Include(), grid_plotter=grid_plotte
         The index of the datas in the datas-set of which the model visibilities is plotted.
     """
     grid_plotter.plot_grid(grid=fit.visibilities)
-
 
 
 @plotters.set_labels
@@ -262,18 +271,18 @@ def residual_map_vs_uv_distances(
     if plot_real:
         y = fit.residual_map[:, 0]
         line_plotter = line_plotter.plotter_with_new_labels(
-            labels=plotters.Labels(title=line_plotter.labels.title + " Real"),
+            labels=plotters.Labels(title=line_plotter.labels.title + " Real")
         )
         line_plotter = line_plotter.plotter_with_new_output_filename(
-            output_filename=line_plotter.output.filename + "_real",
+            output_filename=line_plotter.output.filename + "_real"
         )
     else:
         y = fit.residual_map[:, 1]
         line_plotter = line_plotter.plotter_with_new_labels(
-            labels=plotters.Labels(title=line_plotter.labels.title + " Imag"),
+            labels=plotters.Labels(title=line_plotter.labels.title + " Imag")
         )
         line_plotter = line_plotter.plotter_with_new_output_filename(
-            output_filename=line_plotter.output.filename + "_imag",
+            output_filename=line_plotter.output.filename + "_imag"
         )
 
     line_plotter.plot_line(
@@ -281,7 +290,6 @@ def residual_map_vs_uv_distances(
         x=fit.masked_interferometer.interferometer.uv_distances / 10 ** 3.0,
         plot_axis_type="scatter",
     )
-
 
 
 @plotters.set_labels
@@ -308,18 +316,18 @@ def normalized_residual_map_vs_uv_distances(
     if plot_real:
         y = fit.residual_map[:, 0]
         line_plotter = line_plotter.plotter_with_new_labels(
-            labels=plotters.Labels(title=line_plotter.labels.title + " Real"),
+            labels=plotters.Labels(title=line_plotter.labels.title + " Real")
         )
         line_plotter = line_plotter.plotter_with_new_output_filename(
-            output_filename=line_plotter.output.filename + "_real",
+            output_filename=line_plotter.output.filename + "_real"
         )
     else:
         y = fit.residual_map[:, 1]
         line_plotter = line_plotter.plotter_with_new_labels(
-            labels=plotters.Labels(title=line_plotter.labels.title + " Imag"),
+            labels=plotters.Labels(title=line_plotter.labels.title + " Imag")
         )
         line_plotter = line_plotter.plotter_with_new_output_filename(
-            output_filename=line_plotter.output.filename + "_imag",
+            output_filename=line_plotter.output.filename + "_imag"
         )
 
     line_plotter.plot_line(
@@ -327,7 +335,6 @@ def normalized_residual_map_vs_uv_distances(
         x=fit.masked_interferometer.interferometer.uv_distances / 10 ** 3.0,
         plot_axis_type="scatter",
     )
-
 
 
 @plotters.set_labels
@@ -354,18 +361,18 @@ def chi_squared_map_vs_uv_distances(
     if plot_real:
         y = fit.residual_map[:, 0]
         line_plotter = line_plotter.plotter_with_new_labels(
-            labels=plotters.Labels(title=line_plotter.labels.title + " Real"),
+            labels=plotters.Labels(title=line_plotter.labels.title + " Real")
         )
         line_plotter = line_plotter.plotter_with_new_output_filename(
-            output_filename=line_plotter.output.filename + "_real",
+            output_filename=line_plotter.output.filename + "_real"
         )
     else:
         y = fit.residual_map[:, 1]
         line_plotter = line_plotter.plotter_with_new_labels(
-            labels=plotters.Labels(title=line_plotter.labels.title + " Imag"),
+            labels=plotters.Labels(title=line_plotter.labels.title + " Imag")
         )
         line_plotter = line_plotter.plotter_with_new_output_filename(
-            output_filename=line_plotter.output.filename + "_imag",
+            output_filename=line_plotter.output.filename + "_imag"
         )
 
     line_plotter.plot_line(

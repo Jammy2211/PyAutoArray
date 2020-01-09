@@ -27,9 +27,9 @@ def test__fit_quantities_are_output(fit_imaging_7x7, fit_imaging_path, plot_patc
         fit=fit_imaging_7x7,
         include=aa.plotter.Include(mask=True),
         array_plotter=aa.plotter.array(
-            output=aa.plotter.Output(path=fit_imaging_path, format="png"
+            output=aa.plotter.Output(path=fit_imaging_path, format="png")
         ),
-    ))
+    )
 
     assert fit_imaging_path + "image.png" in plot_patch.paths
 
@@ -37,9 +37,9 @@ def test__fit_quantities_are_output(fit_imaging_7x7, fit_imaging_path, plot_patc
         fit=fit_imaging_7x7,
         include=aa.plotter.Include(mask=True),
         array_plotter=aa.plotter.array(
-            output=aa.plotter.Output(path=fit_imaging_path, format="png"
+            output=aa.plotter.Output(path=fit_imaging_path, format="png")
         ),
-    ))
+    )
 
     assert fit_imaging_path + "noise_map.png" in plot_patch.paths
 
@@ -47,9 +47,9 @@ def test__fit_quantities_are_output(fit_imaging_7x7, fit_imaging_path, plot_patc
         fit=fit_imaging_7x7,
         include=aa.plotter.Include(mask=True),
         array_plotter=aa.plotter.array(
-            output=aa.plotter.Output(path=fit_imaging_path, format="png"
+            output=aa.plotter.Output(path=fit_imaging_path, format="png")
         ),
-    ))
+    )
 
     assert fit_imaging_path + "signal_to_noise_map.png" in plot_patch.paths
 
@@ -57,9 +57,9 @@ def test__fit_quantities_are_output(fit_imaging_7x7, fit_imaging_path, plot_patc
         fit=fit_imaging_7x7,
         include=aa.plotter.Include(mask=True),
         array_plotter=aa.plotter.array(
-            output=aa.plotter.Output(path=fit_imaging_path, format="png"
+            output=aa.plotter.Output(path=fit_imaging_path, format="png")
         ),
-    ))
+    )
 
     assert fit_imaging_path + "model_image.png" in plot_patch.paths
 
@@ -67,9 +67,9 @@ def test__fit_quantities_are_output(fit_imaging_7x7, fit_imaging_path, plot_patc
         fit=fit_imaging_7x7,
         include=aa.plotter.Include(mask=True),
         array_plotter=aa.plotter.array(
-            output=aa.plotter.Output(path=fit_imaging_path, format="png"
+            output=aa.plotter.Output(path=fit_imaging_path, format="png")
         ),
-    ))
+    )
 
     assert fit_imaging_path + "residual_map.png" in plot_patch.paths
 
@@ -77,9 +77,9 @@ def test__fit_quantities_are_output(fit_imaging_7x7, fit_imaging_path, plot_patc
         fit=fit_imaging_7x7,
         include=aa.plotter.Include(mask=True),
         array_plotter=aa.plotter.array(
-            output=aa.plotter.Output(path=fit_imaging_path, format="png"
+            output=aa.plotter.Output(path=fit_imaging_path, format="png")
         ),
-    ))
+    )
 
     assert fit_imaging_path + "normalized_residual_map.png" in plot_patch.paths
 
@@ -87,9 +87,9 @@ def test__fit_quantities_are_output(fit_imaging_7x7, fit_imaging_path, plot_patc
         fit=fit_imaging_7x7,
         include=aa.plotter.Include(mask=True),
         array_plotter=aa.plotter.array(
-            output=aa.plotter.Output(path=fit_imaging_path, format="png"
+            output=aa.plotter.Output(path=fit_imaging_path, format="png")
         ),
-    ))
+    )
 
     assert fit_imaging_path + "chi_squared_map.png" in plot_patch.paths
 
@@ -100,9 +100,9 @@ def test__fit_sub_plot(fit_imaging_7x7, fit_imaging_path, plot_patch):
         fit=fit_imaging_7x7,
         include=aa.plotter.Include(mask=True),
         array_plotter=aa.plotter.array(
-            output=aa.plotter.Output(path=fit_imaging_path, format="png"
+            output=aa.plotter.Output(path=fit_imaging_path, format="png")
         ),
-    ))
+    )
 
     assert fit_imaging_path + "fit_imaging.png" in plot_patch.paths
 
@@ -120,9 +120,9 @@ def test__fit_individuals__source_and_lens__depedent_on_input(
         plot_model_image=True,
         plot_chi_squared_map=True,
         array_plotter=aa.plotter.array(
-            output=aa.plotter.Output(path=fit_imaging_path, format="png"
+            output=aa.plotter.Output(path=fit_imaging_path, format="png")
         ),
-    ))
+    )
 
     assert fit_imaging_path + "image.png" in plot_patch.paths
 
@@ -146,9 +146,9 @@ def test__fit_individuals__source_and_lens__depedent_on_input(
         plot_model_image=True,
         plot_chi_squared_map=True,
         array_plotter=aa.plotter.array(
-            output=aa.plotter.Output(path=fit_imaging_path, format="png"
+            output=aa.plotter.Output(path=fit_imaging_path, format="png")
         ),
-    ))
+    )
 
     assert fit_imaging_path + "image.png" in plot_patch.paths
 

@@ -36,9 +36,9 @@ def test__individual_attributes_are_output(
         mask=mask_7x7,
         include=aa.plotter.Include(mask=True),
         array_plotter=aa.plotter.array(
-            output=aa.plotter.Output(imaging_plotter_path, format="png"
+            output=aa.plotter.Output(imaging_plotter_path, format="png")
         ),
-    ))
+    )
 
     assert imaging_plotter_path + "image.png" in plot_patch.paths
 
@@ -46,18 +46,18 @@ def test__individual_attributes_are_output(
         imaging=imaging_7x7,
         mask=mask_7x7,
         array_plotter=aa.plotter.array(
-            output=aa.plotter.Output(imaging_plotter_path, format="png"
+            output=aa.plotter.Output(imaging_plotter_path, format="png")
         ),
-    ))
+    )
 
     assert imaging_plotter_path + "noise_map.png" in plot_patch.paths
 
     aa.plot.imaging.psf(
         imaging=imaging_7x7,
         array_plotter=aa.plotter.array(
-            output=aa.plotter.Output(imaging_plotter_path, format="png"
+            output=aa.plotter.Output(imaging_plotter_path, format="png")
         ),
-    ))
+    )
 
     assert imaging_plotter_path + "psf.png" in plot_patch.paths
 
@@ -65,18 +65,18 @@ def test__individual_attributes_are_output(
         imaging=imaging_7x7,
         mask=mask_7x7,
         array_plotter=aa.plotter.array(
-            output=aa.plotter.Output(imaging_plotter_path, format="png"
+            output=aa.plotter.Output(imaging_plotter_path, format="png")
         ),
-    ))
+    )
 
     assert imaging_plotter_path + "signal_to_noise_map.png" in plot_patch.paths
 
     aa.plot.imaging.subplot(
         imaging=imaging_7x7,
         array_plotter=aa.plotter.array(
-            output=aa.plotter.Output(imaging_plotter_path, format="png"
+            output=aa.plotter.Output(imaging_plotter_path, format="png")
         ),
-    ))
+    )
 
     assert imaging_plotter_path + "imaging.png" in plot_patch.paths
 
@@ -90,9 +90,9 @@ def test__imaging_individuals__output_dependent_on_input(
         plot_psf=True,
         plot_absolute_signal_to_noise_map=True,
         array_plotter=aa.plotter.array(
-            output=aa.plotter.Output(imaging_plotter_path, format="png"
+            output=aa.plotter.Output(imaging_plotter_path, format="png")
         ),
-    ))
+    )
 
     assert imaging_plotter_path + "image.png" in plot_patch.paths
 

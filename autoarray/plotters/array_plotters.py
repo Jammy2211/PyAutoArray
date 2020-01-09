@@ -33,15 +33,13 @@ class ArrayPlotter(plotters.Plotter):
         cb_pad=None,
         cb_tick_values=None,
         cb_tick_labels=None,
-            yticks=None,
-            xticks=None,
-        xyticksize=None,
         mask_pointsize=None,
         border_pointsize=None,
         point_pointsize=None,
         grid_pointsize=None,
+        ticks=plotters.Ticks(),
         labels=plotters.Labels(),
-        output=plotters.Output()
+        output=plotters.Output(),
     ):
 
         super(ArrayPlotter, self).__init__(
@@ -61,15 +59,13 @@ class ArrayPlotter(plotters.Plotter):
             cb_pad=cb_pad,
             cb_tick_values=cb_tick_values,
             cb_tick_labels=cb_tick_labels,
-            yticks=yticks,
-            xticks=xticks,
-            xyticksize=xyticksize,
             mask_pointsize=mask_pointsize,
             border_pointsize=border_pointsize,
             point_pointsize=point_pointsize,
             grid_pointsize=grid_pointsize,
+            ticks=ticks,
             labels=labels,
-            output=output
+            output=output,
         )
 
     def plot_array(
@@ -212,6 +208,19 @@ class ArrayPlotter(plotters.Plotter):
 
         self.plot_figure(array=array, extent=extent)
 
+        self.ticks.set_yticks(
+            array=array,
+            extent=extent,
+            use_scaled_units=self.use_scaled_units,
+            unit_conversion_factor=self.unit_conversion_factor,
+        )
+        self.ticks.set_xticks(
+            array=array,
+            extent=extent,
+            use_scaled_units=self.use_scaled_units,
+            unit_conversion_factor=self.unit_conversion_factor,
+        )
+
         self.labels.set_title()
         self.labels.set_yunits(include_brackets=True)
         self.labels.set_xunits(include_brackets=True)
@@ -224,7 +233,7 @@ class ArrayPlotter(plotters.Plotter):
         self.plot_points(points=points)
         self.plot_grid(grid=grid)
         self.plot_centres(centres=centres)
-        self.output_figure(array)
+        self.output.to_figure(structure=array, is_sub_plotter=self.is_sub_plotter)
         self.close_figure()
 
     def plot_figure(self, array, extent):
@@ -278,7 +287,6 @@ class ArrayPlotter(plotters.Plotter):
         plt.imshow(
             X=array.in_2d, aspect=aspect, cmap=self.cmap, norm=norm_scale, extent=extent
         )
-        self.set_yxticks(array=array, extent=extent)
 
         return fig
 

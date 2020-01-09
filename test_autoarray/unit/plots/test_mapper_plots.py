@@ -61,12 +61,14 @@ def test__image_and_rectangular_mapper_is_output(
     aa.plot.mapper.image_and_mapper(
         imaging=image,
         mapper=rectangular_mapper,
-        include=aa.plotter.Include(inversion_centres=True, inversion_grid=True, inversion_border=False),
+        include=aa.plotter.Include(
+            inversion_centres=True, inversion_grid=True, inversion_border=False
+        ),
         image_pixels=[[0, 1, 2], [3]],
         source_pixels=[[1, 2], [0]],
         mapper_plotter=aa.plotter.mapper(
-            output=aa.plotter.Output(path=mapper_plotter_path, format="png"
-        )),
+            output=aa.plotter.Output(path=mapper_plotter_path, format="png")
+        ),
     )
     assert mapper_plotter_path + "image_and_mapper.png" in plot_patch.paths
 
@@ -76,12 +78,14 @@ def test__rectangular_mapper_is_output(
 ):
     aa.plot.mapper.mapper_grid(
         mapper=rectangular_mapper,
-        include=aa.plotter.Include(inversion_centres=True, inversion_grid=True, inversion_border=False),
+        include=aa.plotter.Include(
+            inversion_centres=True, inversion_grid=True, inversion_border=False
+        ),
         image_pixels=[[0, 1, 2], [3]],
         source_pixels=[[1, 2], [0]],
         mapper_plotter=aa.plotter.mapper(
-            output=aa.plotter.Output(path=mapper_plotter_path, format="png"
-        )),
+            output=aa.plotter.Output(path=mapper_plotter_path, format="png")
+        ),
     )
 
     assert mapper_plotter_path + "mapper_grid.png" in plot_patch.paths

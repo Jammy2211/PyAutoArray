@@ -14,15 +14,40 @@ def set_config_path():
     )
 
 
-class TestLabels:
+class TestTicks:
+    def test__tick_settings_setup_correctly_from_config(self):
 
+        ticks = plotters.Ticks(is_sub_plotter=False)
+
+        assert ticks.ysize == 14
+        assert ticks.xsize == 15
+
+        ticks = plotters.Ticks(is_sub_plotter=True)
+
+        assert ticks.ysize == 24
+        assert ticks.xsize == 25
+
+        ticks = plotters.Ticks(ysize=34, xsize=35, is_sub_plotter=False)
+
+        assert ticks.ysize == 34
+        assert ticks.xsize == 35
+
+    def test_y_and_x_manual_setup_correctly(self):
+
+        ticks = plotters.Ticks(y_manual=[1.0, 2.0], x_manual=[3.0, 4.0])
+
+        assert ticks.y_manual == [1.0, 2.0]
+        assert ticks.x_manual == [3.0, 4.0]
+
+
+class TestLabels:
     def test__title_setup_correctly_from_config(self):
 
         labels = plotters.Labels()
 
         assert labels.title == None
 
-        labels=plotters.Labels(title="OMG")
+        labels = plotters.Labels(title="OMG")
 
         assert labels.title == "OMG"
 
@@ -44,10 +69,8 @@ class TestLabels:
         assert labels.yunits == "scaled"
         assert labels.xunits == "scaled"
 
-        labels = plotters.Labels(title="OMG",
-            yunits="hi",
-            xunits="hi2",
-           use_scaled_units=True
+        labels = plotters.Labels(
+            title="OMG", yunits="hi", xunits="hi2", use_scaled_units=True
         )
 
         assert labels.use_scaled_units == True
@@ -68,27 +91,22 @@ class TestLabels:
         labels = plotters.Labels(is_sub_plotter=True)
 
         assert labels.titlesize == 15
-        assert labels.ysize == 16
-        assert labels.xsize == 17
+        assert labels.ysize == 22
+        assert labels.xsize == 23
 
-        labels = plotters.Labels(is_sub_plotter=False,
-            titlesize=30, ysize=31, xsize=32
-        )
+        labels = plotters.Labels(is_sub_plotter=False, titlesize=30, ysize=31, xsize=32)
 
         assert labels.titlesize == 30
         assert labels.ysize == 31
         assert labels.xsize == 32
 
-        labels = plotters.Labels(is_sub_plotter=True,
-            titlesize=33, ysize=34, xsize=35
-        )
+        labels = plotters.Labels(is_sub_plotter=True, titlesize=33, ysize=34, xsize=35)
 
         assert labels.titlesize == 33
         assert labels.ysize == 34
         assert labels.xsize == 35
 
     def test__title_from_func__uses_func_name_if_title_is_none(self):
-
         def toy_func():
             pass
 
@@ -105,7 +123,6 @@ class TestLabels:
         assert title_from_func == "Hi"
 
     def test__yx_units_from_func__uses_function_inputs_if_available(self):
-
         def toy_func():
             pass
 
@@ -156,8 +173,25 @@ class TestLabels:
         assert xunits_from_func == "Hi2"
 
 
-class TestPlotter:
+class TestOutput:
+    def test__filename_from_func__returns_function_name_if_no_filename(self):
+        def toy_func():
+            pass
 
+        output = plotters.Output(filename=None)
+
+        filename_from_func = output.filename_from_func(func=toy_func)
+
+        assert filename_from_func == "toy_func"
+
+        output = plotters.Output(filename="Hi")
+
+        filename_from_func = output.filename_from_func(func=toy_func)
+
+        assert filename_from_func == "Hi"
+
+
+class TestPlotter:
     def test__plotter_settings_use_figure_config_if_not_manually_input(self):
 
         plotter = plotters.Plotter()
@@ -178,7 +212,6 @@ class TestPlotter:
         assert plotter.border_pointsize == 3
         assert plotter.point_pointsize == 4
         assert plotter.grid_pointsize == 5
-        assert plotter.xyticksize == 14
 
         plotter = plotters.Plotter(
             figsize=(6, 6),
@@ -192,7 +225,6 @@ class TestPlotter:
             cb_ticksize=20,
             cb_fraction=0.001,
             cb_pad=10.0,
-            xyticksize=23,
             mask_pointsize=24,
             border_pointsize=25,
             point_pointsize=26,
@@ -210,7 +242,6 @@ class TestPlotter:
         assert plotter.cb_ticksize == 20
         assert plotter.cb_fraction == 0.001
         assert plotter.cb_pad == 10.0
-        assert plotter.xyticksize == 23
         assert plotter.mask_pointsize == 24
         assert plotter.border_pointsize == 25
         assert plotter.point_pointsize == 26
@@ -235,7 +266,6 @@ class TestPlotter:
         assert plotter.border_pointsize == 3
         assert plotter.point_pointsize == 4
         assert plotter.grid_pointsize == 5
-        assert plotter.xyticksize == 18
 
         plotter = plotters.Plotter(
             is_sub_plotter=True,
@@ -250,7 +280,6 @@ class TestPlotter:
             cb_ticksize=20,
             cb_fraction=0.001,
             cb_pad=10.0,
-            xyticksize=23,
             mask_pointsize=24,
             border_pointsize=25,
             point_pointsize=26,
@@ -268,11 +297,30 @@ class TestPlotter:
         assert plotter.cb_ticksize == 20
         assert plotter.cb_fraction == 0.001
         assert plotter.cb_pad == 10.0
-        assert plotter.xyticksize == 23
         assert plotter.mask_pointsize == 24
         assert plotter.border_pointsize == 25
         assert plotter.point_pointsize == 26
         assert plotter.grid_pointsize == 27
+
+    def test__ticks_are_setup_correctly(self):
+
+        plotter = plotters.Plotter(is_sub_plotter=False)
+
+        #    assert plotter.ticks.ysize == 14
+        #    assert plotter.ticks.xsize == 15
+        assert plotter.ticks.y_manual == None
+        assert plotter.ticks.x_manual == None
+
+        plotter = plotters.Plotter(
+            ticks=plotters.Ticks(
+                ysize=24, xsize=25, y_manual=[1.0, 2.0], x_manual=[3.0, 4.0]
+            )
+        )
+
+        assert plotter.ticks.ysize == 24
+        assert plotter.ticks.xsize == 25
+        assert plotter.ticks.y_manual == [1.0, 2.0]
+        assert plotter.ticks.x_manual == [3.0, 4.0]
 
     def test__labels_are_setup_correctly(self):
 
@@ -287,12 +335,16 @@ class TestPlotter:
         # assert plotter.use_scaled_units == False
 
         plotter = plotters.Plotter(
-            labels=plotters.Labels(title="OMG",
-            yunits="hi",
-            xunits="hi2",
-            titlesize=1, ysize=2, xsize=3,
-           use_scaled_units=True
-        ))
+            labels=plotters.Labels(
+                title="OMG",
+                yunits="hi",
+                xunits="hi2",
+                titlesize=1,
+                ysize=2,
+                xsize=3,
+                use_scaled_units=True,
+            )
+        )
 
         assert plotter.labels.title == "OMG"
         assert plotter.labels._yunits == "hi"
@@ -301,21 +353,6 @@ class TestPlotter:
         assert plotter.labels.ysize == 2
         assert plotter.labels.xsize == 3
         assert plotter.use_scaled_units == True
-
-    def test__plotter_ticks_are_setup_correctly(self):
-
-        plotter = plotters.Plotter()
-
-        assert plotter.yticks == None
-        assert plotter.xticks == None
-
-        plotter = plotters.Plotter(
-            yticks=[1.0, 2.0],
-            xticks=[3.0, 4.0],
-        )
-
-        assert plotter.yticks == [1.0, 2.0]
-        assert plotter.xticks == [3.0, 4.0]
 
     def test__plotter_outputs_are_setup_correctly(self):
 
@@ -326,8 +363,8 @@ class TestPlotter:
         assert plotter.output.filename == None
 
         plotter = plotters.Plotter(
-            output=plotters.Output(path="Path", format="png", filename="file"
-        ))
+            output=plotters.Output(path="Path", format="png", filename="file")
+        )
 
         assert plotter.output.path == "Path"
         assert plotter.output.format == "png"

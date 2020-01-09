@@ -31,13 +31,11 @@ class MapperPlotter(grid_plotters.GridPlotter):
         cb_pad=None,
         cb_tick_values=None,
         cb_tick_labels=None,
-            yticks=None,
-            xticks=None,
-        xyticksize=None,
         grid_pointsize=5,
         grid_pointcolor="k",
+        ticks=plotters.Ticks(),
         labels=plotters.Labels(),
-        output=plotters.Output()
+        output=plotters.Output(),
     ):
 
         super(MapperPlotter, self).__init__(
@@ -57,13 +55,11 @@ class MapperPlotter(grid_plotters.GridPlotter):
             cb_pad=cb_pad,
             cb_tick_values=cb_tick_values,
             cb_tick_labels=cb_tick_labels,
-            yticks=yticks,
-            xticks=xticks,
-            xyticksize=xyticksize,
             grid_pointsize=grid_pointsize,
             grid_pointcolor=grid_pointcolor,
+            ticks=ticks,
             labels=labels,
-            output=output
+            output=output,
         )
 
     def plot_mapper(
@@ -116,7 +112,18 @@ class MapperPlotter(grid_plotters.GridPlotter):
             symmetric_around_centre=False,
         )
 
-        self.set_yxticks(array=None, extent=mapper.pixelization_grid.extent)
+        self.ticks.set_yticks(
+            array=None,
+            extent=mapper.pixelization_grid.extent,
+            use_scaled_units=self.use_scaled_units,
+            unit_conversion_factor=self.unit_conversion_factor,
+        )
+        self.ticks.set_xticks(
+            array=None,
+            extent=mapper.pixelization_grid.extent,
+            use_scaled_units=self.use_scaled_units,
+            unit_conversion_factor=self.unit_conversion_factor,
+        )
 
         self.plot_rectangular_pixelization_lines(mapper=mapper)
 
@@ -141,7 +148,7 @@ class MapperPlotter(grid_plotters.GridPlotter):
             point_colors=point_colors,
         )
 
-        self.output_figure(None)
+        self.output.to_figure(structure=None, is_sub_plotter=self.is_sub_plotter)
         self.close_figure()
 
     def plot_voronoi_mapper(
@@ -164,7 +171,18 @@ class MapperPlotter(grid_plotters.GridPlotter):
             symmetric_around_centre=False,
         )
 
-        self.set_yxticks(array=None, extent=mapper.pixelization_grid.extent)
+        self.ticks.set_yticks(
+            array=None,
+            extent=mapper.pixelization_grid.extent,
+            use_scaled_units=self.use_scaled_units,
+            unit_conversion_factor=self.unit_conversion_factor,
+        )
+        self.ticks.set_xticks(
+            array=None,
+            extent=mapper.pixelization_grid.extent,
+            use_scaled_units=self.use_scaled_units,
+            unit_conversion_factor=self.unit_conversion_factor,
+        )
 
         regions_SP, vertices_SP = self.voronoi_finite_polygons_2d(
             voronoi=mapper.voronoi
@@ -180,8 +198,9 @@ class MapperPlotter(grid_plotters.GridPlotter):
             col = cmap(color_values[index])
             plt.fill(*zip(*polygon), alpha=0.7, facecolor=col, lw=0.0)
 
-        self.set_title()
-        self.set_yx_labels_and_ticksize()
+        self.labels.set_title()
+        self.labels.set_yunits(include_brackets=True)
+        self.labels.set_xunits(include_brackets=True)
 
         self.plot_centres(mapper=mapper, include_centres=include_centres)
 
@@ -202,7 +221,7 @@ class MapperPlotter(grid_plotters.GridPlotter):
             point_colors=point_colors,
         )
 
-        self.output_figure(None)
+        self.output.to_figure(structure=None, is_sub_plotter=self.is_sub_plotter)
         self.close_figure()
 
     def voronoi_finite_polygons_2d(self, vor, radius=None):
