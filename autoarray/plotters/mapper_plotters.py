@@ -8,7 +8,7 @@ import itertools
 import numpy as np
 import matplotlib.cm as cm
 
-from autoarray.plotters import grid_plotters
+from autoarray.plotters import plotters, grid_plotters
 from autoarray.operators.inversion import mappers
 
 
@@ -31,20 +31,13 @@ class MapperPlotter(grid_plotters.GridPlotter):
         cb_pad=None,
         cb_tick_values=None,
         cb_tick_labels=None,
-        titlesize=None,
-        xlabelsize=None,
-        ylabelsize=None,
+            yticks=None,
+            xticks=None,
         xyticksize=None,
         grid_pointsize=5,
         grid_pointcolor="k",
-        label_title=None,
-        label_yunits=None,
-        label_xunits=None,
-        label_yticks=None,
-        label_xticks=None,
-        output_path=None,
-        output_format="show",
-        output_filename=None,
+        labels=plotters.Labels(),
+        output=plotters.Output()
     ):
 
         super(MapperPlotter, self).__init__(
@@ -64,107 +57,13 @@ class MapperPlotter(grid_plotters.GridPlotter):
             cb_pad=cb_pad,
             cb_tick_values=cb_tick_values,
             cb_tick_labels=cb_tick_labels,
-            titlesize=titlesize,
-            xlabelsize=xlabelsize,
-            ylabelsize=ylabelsize,
+            yticks=yticks,
+            xticks=xticks,
             xyticksize=xyticksize,
             grid_pointsize=grid_pointsize,
             grid_pointcolor=grid_pointcolor,
-            label_title=label_title,
-            label_yunits=label_yunits,
-            label_xunits=label_xunits,
-            label_yticks=label_yticks,
-            label_xticks=label_xticks,
-            output_path=output_path,
-            output_format=output_format,
-            output_filename=output_filename,
-        )
-
-    def plotter_as_sub_plotter(self):
-
-        return MapperPlotter(
-            is_sub_plotter=True,
-            use_scaled_units=self.use_scaled_units,
-            unit_conversion_factor=self.unit_conversion_factor,
-            figsize=self.figsize,
-            aspect=self.aspect,
-            cmap=self.cmap,
-            norm=self.norm,
-            norm_min=self.norm_min,
-            norm_max=self.norm_max,
-            linthresh=self.linthresh,
-            linscale=self.linscale,
-            cb_ticksize=self.cb_ticksize,
-            cb_fraction=self.cb_fraction,
-            cb_pad=self.cb_pad,
-            cb_tick_values=self.cb_tick_values,
-            cb_tick_labels=self.cb_tick_labels,
-            titlesize=self.titlesize,
-            xlabelsize=self.xlabelsize,
-            ylabelsize=self.ylabelsize,
-            xyticksize=self.xyticksize,
-            grid_pointsize=self.grid_pointsize,
-            label_title=self.label_title,
-            label_yunits=self.label_yunits,
-            label_xunits=self.label_xunits,
-            label_yticks=self.label_yticks,
-            label_xticks=self.label_xticks,
-            output_path=self.output_path,
-            output_format=self.output_format,
-            output_filename=self.output_filename,
-        )
-
-    def plotter_with_new_labels_and_filename(
-        self,
-        label_title=None,
-        label_yunits=None,
-        label_xunits=None,
-        output_filename=None,
-        unit_conversion_factor=None,
-    ):
-
-        label_title = self.label_title if label_title is None else label_title
-        label_yunits = self.label_yunits if label_yunits is None else label_yunits
-        label_xunits = self.label_xunits if label_xunits is None else label_xunits
-        output_filename = (
-            self.output_filename if output_filename is None else output_filename
-        )
-        unit_conversion_factor = (
-            self.unit_conversion_factor
-            if unit_conversion_factor is None
-            else unit_conversion_factor
-        )
-
-        return MapperPlotter(
-            is_sub_plotter=self.is_sub_plotter,
-            use_scaled_units=self.use_scaled_units,
-            unit_conversion_factor=unit_conversion_factor,
-            figsize=self.figsize,
-            aspect=self.aspect,
-            cmap=self.cmap,
-            norm=self.norm,
-            norm_min=self.norm_min,
-            norm_max=self.norm_max,
-            linthresh=self.linthresh,
-            linscale=self.linscale,
-            cb_ticksize=self.cb_ticksize,
-            cb_fraction=self.cb_fraction,
-            cb_pad=self.cb_pad,
-            cb_tick_values=self.cb_tick_values,
-            cb_tick_labels=self.cb_tick_labels,
-            titlesize=self.titlesize,
-            xlabelsize=self.xlabelsize,
-            ylabelsize=self.ylabelsize,
-            xyticksize=self.xyticksize,
-            grid_pointsize=self.grid_pointsize,
-            label_title=label_title,
-            label_yunits=label_yunits,
-            label_xunits=label_xunits,
-            label_yticks=self.label_yticks,
-            label_xticks=self.label_xticks,
-            output_path=self.output_path,
-            output_format=self.output_format,
-            output_filename=output_filename,
+            labels=labels,
+            output=output
         )
 
     def plot_mapper(
@@ -221,8 +120,9 @@ class MapperPlotter(grid_plotters.GridPlotter):
 
         self.plot_rectangular_pixelization_lines(mapper=mapper)
 
-        self.set_title()
-        self.set_yx_labels_and_ticksize()
+        self.labels.set_title()
+        self.labels.set_yunits(include_brackets=True)
+        self.labels.set_xunits(include_brackets=True)
 
         self.plot_centres(mapper=mapper, include_centres=include_centres)
 
@@ -437,8 +337,6 @@ class MapperPlotter(grid_plotters.GridPlotter):
             self.plot_grid(grid=mapper.grid, bypass_limits=True)
 
     def plot_border(self, mapper, include_border):
-
-        print(include_border)
 
         if include_border:
 

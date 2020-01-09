@@ -26,7 +26,7 @@ def image_and_mapper(
 
     array_plotter = array_plotter.plotter_as_sub_plotter()
     mapper_plotter = mapper_plotter.plotter_as_sub_plotter()
-    mapper_plotter = mapper_plotter.plotter_with_new_labels_and_filename(
+    mapper_plotter = mapper_plotter.plotter_with_new_output_filename(
         output_filename="image_and_mapper"
     )
 

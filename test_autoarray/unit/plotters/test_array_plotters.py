@@ -31,26 +31,26 @@ class TestArrayPlotter:
         assert plotter.cb_ticksize == 1
         assert plotter.cb_fraction == 3.0
         assert plotter.cb_pad == 4.0
+        assert plotter.cb_tick_values == None
+        assert plotter.cb_tick_labels == None
         assert plotter.mask_pointsize == 2
         assert plotter.border_pointsize == 3
         assert plotter.point_pointsize == 4
         assert plotter.grid_pointsize == 5
-        assert plotter.titlesize == 11
-        assert plotter.xlabelsize == 12
-        assert plotter.ylabelsize == 13
+        assert plotter.yticks == None
+        assert plotter.xticks == None
         assert plotter.xyticksize == 14
 
-        assert plotter.label_title == None
-        assert plotter.label_yunits == None
-        assert plotter.label_xunits == None
-        assert plotter.label_yticks == None
-        assert plotter.label_xticks == None
-        assert plotter.cb_tick_values == None
-        assert plotter.cb_tick_labels == None
+        assert plotter.labels.title == None
+        assert plotter.labels._yunits == None
+        assert plotter.labels._xunits == None
+  #      assert plotter.labels.titlesize == 11
+  #      assert plotter.labels.ysize == 12
+  #      assert plotter.labels.xsize == 13
 
-        assert plotter.output_path == None
-        assert plotter.output_format == "show"
-        assert plotter.output_filename == None
+        assert plotter.output.path == None
+        assert plotter.output.format == "show"
+        assert plotter.output.filename == None
 
         plotter = aa.plotter.array(
             figsize=(6, 6),
@@ -64,24 +64,21 @@ class TestArrayPlotter:
             cb_ticksize=20,
             cb_fraction=0.001,
             cb_pad=10.0,
-            titlesize=20,
-            xlabelsize=21,
-            ylabelsize=22,
             xyticksize=23,
             mask_pointsize=24,
             border_pointsize=25,
             point_pointsize=26,
             grid_pointsize=27,
-            label_title="OMG",
-            label_yunits="hi",
-            label_xunits="hi2",
-            label_yticks=[1.0, 2.0],
-            label_xticks=[3.0, 4.0],
+            yticks=[1.0, 2.0], xticks=[3.0, 4.0],
+            labels=aa.plotter.Labels(title="OMG",
+                                   yunits="hi",
+                                   xunits="hi2",
+                                   titlesize=1, ysize=2, xsize=3,
+                                   use_scaled_units=True
+                                   ),
             cb_tick_values=[5.0, 6.0],
             cb_tick_labels=[7.0, 8.0],
-            output_path="Path",
-            output_format="png",
-            output_filename="file",
+            output=aa.plotter.Output(path="Path", format="png", filename="file")
         )
 
         assert plotter.figsize == (6, 6)
@@ -95,96 +92,23 @@ class TestArrayPlotter:
         assert plotter.cb_ticksize == 20
         assert plotter.cb_fraction == 0.001
         assert plotter.cb_pad == 10.0
-        assert plotter.titlesize == 20
-        assert plotter.xlabelsize == 21
-        assert plotter.ylabelsize == 22
+        assert plotter.cb_tick_values == [5.0, 6.0]
+        assert plotter.cb_tick_labels == [7.0, 8.0]
+        assert plotter.yticks == [1.0, 2.0]
+        assert plotter.xticks == [3.0, 4.0]
         assert plotter.xyticksize == 23
         assert plotter.mask_pointsize == 24
         assert plotter.border_pointsize == 25
         assert plotter.point_pointsize == 26
         assert plotter.grid_pointsize == 27
 
-        assert plotter.label_title == "OMG"
-        assert plotter.label_yunits == "hi"
-        assert plotter.label_xunits == "hi2"
-        assert plotter.label_yticks == [1.0, 2.0]
-        assert plotter.label_xticks == [3.0, 4.0]
-        assert plotter.cb_tick_values == [5.0, 6.0]
-        assert plotter.cb_tick_labels == [7.0, 8.0]
+        assert plotter.labels.title == "OMG"
+        assert plotter.labels._yunits == "hi"
+        assert plotter.labels._xunits == "hi2"
+        assert plotter.labels.titlesize == 1
+        assert plotter.labels.ysize == 2
+        assert plotter.labels.xsize == 3
 
-        assert plotter.output_path == "Path"
-        assert plotter.output_format == "png"
-        assert plotter.output_filename == "file"
-
-    def test__new_plotter_with_labels_and_filename(self):
-
-        plotter = aa.plotter.array(
-            is_sub_plotter=False,
-            figsize=(6, 6),
-            aspect="auto",
-            cmap="cold",
-            norm="log",
-            norm_min=0.1,
-            norm_max=1.0,
-            linthresh=1.5,
-            linscale=2.0,
-            cb_ticksize=20,
-            cb_fraction=0.001,
-            cb_pad=10.0,
-            titlesize=20,
-            xlabelsize=21,
-            ylabelsize=22,
-            xyticksize=23,
-            mask_pointsize=24,
-            border_pointsize=25,
-            point_pointsize=26,
-            grid_pointsize=27,
-            label_title="OMG",
-            label_yunits="hi",
-            label_xunits="hi2",
-            label_yticks=[1.0, 2.0],
-            label_xticks=[3.0, 4.0],
-            cb_tick_values=[5.0, 6.0],
-            cb_tick_labels=[7.0, 8.0],
-            output_path="Path",
-            output_format="png",
-            output_filename="file",
-        )
-
-        plotter = plotter.plotter_with_new_labels_and_filename(
-            label_title="a", label_yunits="b", label_xunits="c", output_filename="d"
-        )
-
-        assert plotter.label_title == "a"
-        assert plotter.label_yunits == "b"
-        assert plotter.label_xunits == "c"
-        assert plotter.output_filename == "d"
-
-        assert plotter.is_sub_plotter == False
-        assert plotter.figsize == (6, 6)
-        assert plotter.aspect == "auto"
-        assert plotter.cmap == "cold"
-        assert plotter.norm == "log"
-        assert plotter.norm_min == 0.1
-        assert plotter.norm_max == 1.0
-        assert plotter.linthresh == 1.5
-        assert plotter.linscale == 2.0
-        assert plotter.cb_ticksize == 20
-        assert plotter.cb_fraction == 0.001
-        assert plotter.cb_pad == 10.0
-        assert plotter.titlesize == 20
-        assert plotter.xlabelsize == 21
-        assert plotter.ylabelsize == 22
-        assert plotter.xyticksize == 23
-        assert plotter.mask_pointsize == 24
-        assert plotter.border_pointsize == 25
-        assert plotter.point_pointsize == 26
-        assert plotter.grid_pointsize == 27
-
-        assert plotter.label_yticks == [1.0, 2.0]
-        assert plotter.label_xticks == [3.0, 4.0]
-        assert plotter.cb_tick_values == [5.0, 6.0]
-        assert plotter.cb_tick_labels == [7.0, 8.0]
-
-        assert plotter.output_path == "Path"
-        assert plotter.output_format == "png"
+        assert plotter.output.path == "Path"
+        assert plotter.output.format == "png"
+        assert plotter.output.filename == "file"
