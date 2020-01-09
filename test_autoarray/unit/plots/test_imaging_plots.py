@@ -34,6 +34,7 @@ def test__individual_attributes_are_output(
         imaging=imaging_7x7,
         positions=positions_7x7,
         mask=mask_7x7,
+        include=aa.plotter.include(mask=True),
         array_plotter=aa.plotter.array(
             output_path=imaging_plotter_path, output_format="png"
         ),

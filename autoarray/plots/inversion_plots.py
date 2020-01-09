@@ -9,13 +9,14 @@ from autoarray.plotters import plotters, array_plotters, mapper_plotters
 from autoarray.operators.inversion import mappers
 
 
-@plotters.set_includes
+
 def subplot(
     inversion,
     mask=None,
     lines=None,
     positions=None,
     grid=None,
+    include=plotters.Include(),
     array_plotter=array_plotters.ArrayPlotter(),
     mapper_plotter=mapper_plotters.MapperPlotter(),
 ):
@@ -63,6 +64,7 @@ def subplot(
         lines=lines,
         positions=positions,
         grid=grid,
+        include=include,
         array_plotter=array_plotter,
     )
 
@@ -72,8 +74,7 @@ def subplot(
         inversion=inversion,
         positions=None,
         lines=lines,
-        include_grid=None,
-        include_centres=None,
+include=include,
         mapper_plotter=mapper_plotter,
     )
 
@@ -82,8 +83,7 @@ def subplot(
     errors(
         inversion=inversion,
         positions=None,
-        include_grid=None,
-        include_centres=None,
+include=include,
         mapper_plotter=mapper_plotter,
     )
 
@@ -92,8 +92,7 @@ def subplot(
     residual_map(
         inversion=inversion,
         positions=None,
-        include_grid=None,
-        include_centres=None,
+include=include,
         mapper_plotter=mapper_plotter,
     )
 
@@ -102,8 +101,7 @@ def subplot(
     chi_squared_map(
         inversion=inversion,
         positions=None,
-        include_grid=None,
-        include_centres=None,
+include=include,
         mapper_plotter=mapper_plotter,
     )
 
@@ -112,8 +110,7 @@ def subplot(
     regularization_weights(
         inversion=inversion,
         positions=None,
-        include_grid=None,
-        include_centres=None,
+include=include,
         mapper_plotter=mapper_plotter,
     )
 
@@ -122,7 +119,7 @@ def subplot(
     plt.close()
 
 
-@plotters.set_includes
+
 def individuals(
     inversion,
     lines=None,
@@ -134,6 +131,7 @@ def individuals(
     plot_inversion_regularization_weight_map=False,
     plot_inversion_interpolated_reconstruction=False,
     plot_inversion_interpolated_errors=False,
+    include=plotters.Include(),
     array_plotter=array_plotters.ArrayPlotter(),
     mapper_plotter=mapper_plotters.MapperPlotter(),
 ):
@@ -155,68 +153,61 @@ def individuals(
     if plot_inversion_reconstruction:
 
         reconstruction(
-            inversion=inversion, include_grid=True, array_plotter=array_plotter
+            inversion=inversion, include=include, array_plotter=array_plotter
         )
 
     if plot_inversion_errors:
 
-        errors(inversion=inversion, include_grid=True, mapper_plotter=mapper_plotter)
+        errors(inversion=inversion, include=include, mapper_plotter=mapper_plotter)
 
     if plot_inversion_residual_map:
 
         residual_map(
-            inversion=inversion, include_grid=True, mapper_plotter=mapper_plotter
+            inversion=inversion, include=include, mapper_plotter=mapper_plotter
         )
 
     if plot_inversion_normalized_residual_map:
 
         normalized_residual_map(
-            inversion=inversion, include_grid=True, mapper_plotter=mapper_plotter
+            inversion=inversion, include=include, mapper_plotter=mapper_plotter
         )
 
     if plot_inversion_chi_squared_map:
 
         chi_squared_map(
-            inversion=inversion, include_grid=True, mapper_plotter=mapper_plotter
+            inversion=inversion, include=include, mapper_plotter=mapper_plotter
         )
 
     if plot_inversion_regularization_weight_map:
 
         regularization_weights(
-            inversion=inversion, include_grid=True, mapper_plotter=mapper_plotter
+            inversion=inversion, include=include, mapper_plotter=mapper_plotter
         )
 
     if plot_inversion_interpolated_reconstruction:
 
         interpolated_reconstruction(
-            inversion=inversion, lines=lines, array_plotter=array_plotter
+            inversion=inversion, lines=lines, include=include, array_plotter=array_plotter
         )
 
     if plot_inversion_interpolated_errors:
 
         interpolated_errors(
-            inversion=inversion, lines=lines, array_plotter=array_plotter
+            inversion=inversion, lines=lines, include=include, array_plotter=array_plotter
         )
 
 
-@plotters.set_includes
+
 @plotters.set_labels
 def reconstructed_image(
     inversion,
     mask=None,
+    grid=None,
     lines=None,
     positions=None,
-    include_grid=None,
+    include=plotters.Include(),
     array_plotter=array_plotters.ArrayPlotter(),
 ):
-
-    if include_grid:
-
-        grid = inversion.mapper.pixelization_grid
-
-    else:
-
-        grid = None
 
     array_plotter.plot_array(
         array=inversion.mapped_reconstructed_image,
@@ -224,20 +215,18 @@ def reconstructed_image(
         lines=lines,
         points=positions,
         grid=grid,
+        include_origin=include.origin
     )
 
 
 def plot_values(
     inversion,
     source_pixel_values,
-    origin=True,
     lines=None,
     positions=None,
-    include_centres=None,
-    include_grid=None,
-    include_border=None,
     image_pixels=None,
     source_pixels=None,
+    include=plotters.Include(),
     array_plotter=array_plotters.ArrayPlotter(),
     mapper_plotter=mapper_plotters.MapperPlotter(),
 ):
@@ -253,22 +242,20 @@ def plot_values(
             solution_vector=source_pixel_values
         )
 
-        origin = get_origin(image=reconstructed_pixelization, origin=origin)
-
         array_plotter.plot_array(
             array=reconstructed_pixelization,
-            origin=origin,
             lines=lines,
             points=positions,
+            include_origin=include.origin
         )
 
         mapper_plotter.plot_rectangular_mapper(
             mapper=inversion.mapper,
-            include_centres=include_centres,
-            include_grid=include_grid,
-            include_border=include_border,
             image_pixels=image_pixels,
             source_pixels=source_pixels,
+            include_centres=include.centres,
+            include_grid=include.grid,
+            include_border=include.border,
         )
 
         mapper_plotter.output_figure(array=reconstructed_pixelization)
@@ -278,12 +265,12 @@ def plot_values(
         mapper_plotter.plot_voronoi_mapper(
             mapper=inversion.mapper,
             source_pixel_values=source_pixel_values,
-            include_centres=include_centres,
             lines=lines,
-            include_grid=include_grid,
-            include_border=include_border,
             image_pixels=image_pixels,
             source_pixels=source_pixels,
+            include_centres=include.inversion_centres,
+            include_grid=include.inversion_grid,
+            include_border=include.inversion_border,
         )
 
         mapper_plotter.output_figure(array=None)
@@ -291,18 +278,16 @@ def plot_values(
     mapper_plotter.close_figure()
 
 
-@plotters.set_includes
+
 @plotters.set_labels
 def reconstruction(
     inversion,
     origin=True,
     lines=None,
     positions=None,
-    include_centres=None,
-    include_grid=None,
-    include_border=None,
     image_pixels=None,
     source_pixels=None,
+    include=plotters.Include(),
     mapper_plotter=mapper_plotters.MapperPlotter(),
 ):
 
@@ -312,26 +297,22 @@ def reconstruction(
         origin=origin,
         lines=lines,
         positions=positions,
-        include_centres=include_centres,
-        include_grid=include_grid,
-        include_border=include_border,
         image_pixels=image_pixels,
         source_pixels=source_pixels,
+        include=include,
         mapper_plotter=mapper_plotter,
     )
 
 
-@plotters.set_includes
+
 @plotters.set_labels
 def errors(
     inversion,
     origin=True,
     positions=None,
-    include_centres=None,
-    include_grid=None,
-    include_border=None,
     image_pixels=None,
     source_pixels=None,
+    include=plotters.Include(),
     mapper_plotter=mapper_plotters.MapperPlotter(),
 ):
 
@@ -340,26 +321,22 @@ def errors(
         source_pixel_values=inversion.errors,
         origin=origin,
         positions=positions,
-        include_centres=include_centres,
-        include_grid=include_grid,
-        include_border=include_border,
         image_pixels=image_pixels,
         source_pixels=source_pixels,
+        include=include,
         mapper_plotter=mapper_plotter,
     )
 
 
-@plotters.set_includes
+
 @plotters.set_labels
 def residual_map(
     inversion,
     origin=True,
     positions=None,
-    include_centres=None,
-    include_grid=None,
-    include_border=None,
     image_pixels=None,
     source_pixels=None,
+    include=plotters.Include(),
     mapper_plotter=mapper_plotters.MapperPlotter(),
 ):
 
@@ -368,26 +345,22 @@ def residual_map(
         source_pixel_values=inversion.residual_map,
         origin=origin,
         positions=positions,
-        include_centres=include_centres,
-        include_grid=include_grid,
-        include_border=include_border,
         image_pixels=image_pixels,
         source_pixels=source_pixels,
+        include=include,
         mapper_plotter=mapper_plotter,
     )
 
 
-@plotters.set_includes
+
 @plotters.set_labels
 def normalized_residual_map(
     inversion,
     origin=True,
     positions=None,
-    include_centres=None,
-    include_grid=None,
-    include_border=None,
     image_pixels=None,
     source_pixels=None,
+    include=plotters.Include(),
     mapper_plotter=mapper_plotters.MapperPlotter(),
 ):
 
@@ -396,26 +369,22 @@ def normalized_residual_map(
         source_pixel_values=inversion.normalized_residual_map,
         origin=origin,
         positions=positions,
-        include_centres=include_centres,
-        include_grid=include_grid,
-        include_border=include_border,
         image_pixels=image_pixels,
         source_pixels=source_pixels,
+        include=include,
         mapper_plotter=mapper_plotter,
     )
 
 
-@plotters.set_includes
+
 @plotters.set_labels
 def chi_squared_map(
     inversion,
     origin=True,
     positions=None,
-    include_centres=None,
-    include_grid=None,
-    include_border=None,
     image_pixels=None,
     source_pixels=None,
+    include=plotters.Include(),
     mapper_plotter=mapper_plotters.MapperPlotter(),
 ):
 
@@ -424,26 +393,22 @@ def chi_squared_map(
         source_pixel_values=inversion.chi_squared_map,
         origin=origin,
         positions=positions,
-        include_centres=include_centres,
-        include_grid=include_grid,
-        include_border=include_border,
         image_pixels=image_pixels,
         source_pixels=source_pixels,
+        include=include,
         mapper_plotter=mapper_plotter,
     )
 
 
-@plotters.set_includes
+
 @plotters.set_labels
 def regularization_weights(
     inversion,
     origin=True,
     positions=None,
-    include_centres=None,
-    include_grid=None,
-    include_border=None,
     image_pixels=None,
     source_pixels=None,
+    include=plotters.Include(),
     mapper_plotter=mapper_plotters.MapperPlotter(),
 ):
 
@@ -456,22 +421,21 @@ def regularization_weights(
         source_pixel_values=regularization_weights,
         origin=origin,
         positions=positions,
-        include_centres=include_centres,
-        include_grid=include_grid,
-        include_border=include_border,
         image_pixels=image_pixels,
         source_pixels=source_pixels,
+        include=include,
         mapper_plotter=mapper_plotter,
     )
 
 
-@plotters.set_includes
+
 @plotters.set_labels
 def interpolated_reconstruction(
     inversion,
     lines=None,
     positions=None,
     grid=None,
+    include=plotters.Include(),
     array_plotter=array_plotters.ArrayPlotter(),
 ):
 
@@ -480,16 +444,18 @@ def interpolated_reconstruction(
         lines=lines,
         points=positions,
         grid=grid,
+        include_origin=include.origin,
     )
 
 
-@plotters.set_includes
+
 @plotters.set_labels
 def interpolated_errors(
     inversion,
     lines=None,
     positions=None,
     grid=None,
+    include=plotters.Include(),
     array_plotter=array_plotters.ArrayPlotter(),
 ):
 
@@ -498,12 +464,5 @@ def interpolated_errors(
         lines=lines,
         points=positions,
         grid=grid,
+        include_origin=include.origin,
     )
-
-
-def get_origin(image, origin):
-
-    if origin:
-        return image.origin
-    else:
-        return None

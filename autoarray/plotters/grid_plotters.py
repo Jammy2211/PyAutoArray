@@ -272,7 +272,6 @@ class GridPlotter(plotters.Plotter):
         if axis_limits is not None:
             plt.axis(axis_limits)
         elif symmetric_around_centre:
-            print(grid)
             ymin = np.min(grid[:, 0])
             ymax = np.max(grid[:, 0])
             xmin = np.min(grid[:, 1])

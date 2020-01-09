@@ -80,7 +80,7 @@ class MapperPlotter(grid_plotters.GridPlotter):
             output_filename=output_filename,
         )
 
-    def plotter_as_sub_plotter(self,):
+    def plotter_as_sub_plotter(self):
 
         return MapperPlotter(
             is_sub_plotter=True,
@@ -287,7 +287,7 @@ class MapperPlotter(grid_plotters.GridPlotter):
 
         self.plot_mapper_grid(include_grid=include_grid, mapper=mapper)
 
-        self.plot_border(include_border=include_border, mapper=mapper, as_subplot=True)
+        self.plot_border(include_border=include_border, mapper=mapper)
 
         self.plot_lines(line_lists=lines)
 
@@ -437,6 +437,8 @@ class MapperPlotter(grid_plotters.GridPlotter):
             self.plot_grid(grid=mapper.grid, bypass_limits=True)
 
     def plot_border(self, mapper, include_border):
+
+        print(include_border)
 
         if include_border:
 
