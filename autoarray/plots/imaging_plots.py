@@ -8,7 +8,6 @@ from matplotlib import pyplot as plt
 from autoarray.plotters import plotters, array_plotters
 
 
-
 def subplot(
     imaging,
     grid=None,
@@ -112,10 +111,9 @@ def subplot(
         array_plotter=array_plotter,
     )
 
-    array_plotter.output_subplot_array()
+    array_plotter.output.to_figure(structure=None, is_sub_plotter=False)
 
     plt.close()
-
 
 
 def individual(
@@ -159,10 +157,7 @@ def individual(
     if plot_noise_map:
 
         noise_map(
-            imaging=imaging,
-            mask=mask,
-            include=include,
-            array_plotter=array_plotter,
+            imaging=imaging, mask=mask, include=include, array_plotter=array_plotter
         )
 
     if plot_psf:
@@ -172,30 +167,20 @@ def individual(
     if plot_signal_to_noise_map:
 
         signal_to_noise_map(
-            imaging=imaging,
-            mask=mask,
-        include=include,
-            array_plotter=array_plotter,
+            imaging=imaging, mask=mask, include=include, array_plotter=array_plotter
         )
 
     if plot_absolute_signal_to_noise_map:
 
         absolute_signal_to_noise_map(
-            imaging=imaging,
-            mask=mask,
-        include=include,
-            array_plotter=array_plotter,
+            imaging=imaging, mask=mask, include=include, array_plotter=array_plotter
         )
 
     if plot_potential_chi_squared_map:
 
         potential_chi_squared_map(
-            imaging=imaging,
-            mask=mask,
-        include=include,
-            array_plotter=array_plotter,
+            imaging=imaging, mask=mask, include=include, array_plotter=array_plotter
         )
-
 
 
 @plotters.set_labels
@@ -231,7 +216,6 @@ def image(
     )
 
 
-
 @plotters.set_labels
 def noise_map(
     imaging,
@@ -260,7 +244,6 @@ def noise_map(
         mask=mask,
         points=positions,
     )
-
 
 
 @plotters.set_labels
@@ -293,7 +276,6 @@ def psf(
     )
 
 
-
 @plotters.set_labels
 def signal_to_noise_map(
     imaging,
@@ -323,7 +305,6 @@ def signal_to_noise_map(
     )
 
 
-
 @plotters.set_labels
 def absolute_signal_to_noise_map(
     imaging,
@@ -351,7 +332,6 @@ def absolute_signal_to_noise_map(
         mask=mask,
         points=positions,
     )
-
 
 
 @plotters.set_labels

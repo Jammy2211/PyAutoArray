@@ -37,16 +37,18 @@ class TestArrayPlotter:
         assert plotter.border_pointsize == 3
         assert plotter.point_pointsize == 4
         assert plotter.grid_pointsize == 5
-        assert plotter.yticks == None
-        assert plotter.xticks == None
-        assert plotter.xyticksize == 14
+
+        assert plotter.ticks.y_manual == None
+        assert plotter.ticks.x_manual == None
+        #      assert plotter.ticks.ysize == 14
+        #      assert plotter.ticks.xsize == 14
 
         assert plotter.labels.title == None
         assert plotter.labels._yunits == None
         assert plotter.labels._xunits == None
-  #      assert plotter.labels.titlesize == 11
-  #      assert plotter.labels.ysize == 12
-  #      assert plotter.labels.xsize == 13
+        #      assert plotter.labels.titlesize == 11
+        #      assert plotter.labels.ysize == 12
+        #      assert plotter.labels.xsize == 13
 
         assert plotter.output.path == None
         assert plotter.output.format == "show"
@@ -64,21 +66,25 @@ class TestArrayPlotter:
             cb_ticksize=20,
             cb_fraction=0.001,
             cb_pad=10.0,
-            xyticksize=23,
             mask_pointsize=24,
             border_pointsize=25,
             point_pointsize=26,
             grid_pointsize=27,
-            yticks=[1.0, 2.0], xticks=[3.0, 4.0],
-            labels=aa.plotter.Labels(title="OMG",
-                                   yunits="hi",
-                                   xunits="hi2",
-                                   titlesize=1, ysize=2, xsize=3,
-                                   use_scaled_units=True
-                                   ),
+            ticks=aa.plotter.Ticks(
+                ysize=23, xsize=24, y_manual=[1.0, 2.0], x_manual=[3.0, 4.0]
+            ),
+            labels=aa.plotter.Labels(
+                title="OMG",
+                yunits="hi",
+                xunits="hi2",
+                titlesize=1,
+                ysize=2,
+                xsize=3,
+                use_scaled_units=True,
+            ),
             cb_tick_values=[5.0, 6.0],
             cb_tick_labels=[7.0, 8.0],
-            output=aa.plotter.Output(path="Path", format="png", filename="file")
+            output=aa.plotter.Output(path="Path", format="png", filename="file"),
         )
 
         assert plotter.figsize == (6, 6)
@@ -94,13 +100,16 @@ class TestArrayPlotter:
         assert plotter.cb_pad == 10.0
         assert plotter.cb_tick_values == [5.0, 6.0]
         assert plotter.cb_tick_labels == [7.0, 8.0]
-        assert plotter.yticks == [1.0, 2.0]
-        assert plotter.xticks == [3.0, 4.0]
-        assert plotter.xyticksize == 23
+
         assert plotter.mask_pointsize == 24
         assert plotter.border_pointsize == 25
         assert plotter.point_pointsize == 26
         assert plotter.grid_pointsize == 27
+
+        assert plotter.ticks.ysize == 23
+        assert plotter.ticks.xsize == 24
+        assert plotter.ticks.y_manual == [1.0, 2.0]
+        assert plotter.ticks.x_manual == [3.0, 4.0]
 
         assert plotter.labels.title == "OMG"
         assert plotter.labels._yunits == "hi"

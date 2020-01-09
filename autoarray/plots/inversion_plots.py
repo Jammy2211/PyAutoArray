@@ -9,7 +9,6 @@ from autoarray.plotters import plotters, array_plotters, mapper_plotters
 from autoarray.operators.inversion import mappers
 
 
-
 def subplot(
     inversion,
     mask=None,
@@ -74,7 +73,7 @@ def subplot(
         inversion=inversion,
         positions=None,
         lines=lines,
-include=include,
+        include=include,
         mapper_plotter=mapper_plotter,
     )
 
@@ -83,7 +82,7 @@ include=include,
     errors(
         inversion=inversion,
         positions=None,
-include=include,
+        include=include,
         mapper_plotter=mapper_plotter,
     )
 
@@ -92,7 +91,7 @@ include=include,
     residual_map(
         inversion=inversion,
         positions=None,
-include=include,
+        include=include,
         mapper_plotter=mapper_plotter,
     )
 
@@ -101,7 +100,7 @@ include=include,
     chi_squared_map(
         inversion=inversion,
         positions=None,
-include=include,
+        include=include,
         mapper_plotter=mapper_plotter,
     )
 
@@ -110,14 +109,13 @@ include=include,
     regularization_weights(
         inversion=inversion,
         positions=None,
-include=include,
+        include=include,
         mapper_plotter=mapper_plotter,
     )
 
-    mapper_plotter.output_subplot_array()
+    mapper_plotter.output.to_figure(structure=None, is_sub_plotter=False)
 
     plt.close()
-
 
 
 def individuals(
@@ -187,15 +185,20 @@ def individuals(
     if plot_inversion_interpolated_reconstruction:
 
         interpolated_reconstruction(
-            inversion=inversion, lines=lines, include=include, array_plotter=array_plotter
+            inversion=inversion,
+            lines=lines,
+            include=include,
+            array_plotter=array_plotter,
         )
 
     if plot_inversion_interpolated_errors:
 
         interpolated_errors(
-            inversion=inversion, lines=lines, include=include, array_plotter=array_plotter
+            inversion=inversion,
+            lines=lines,
+            include=include,
+            array_plotter=array_plotter,
         )
-
 
 
 @plotters.set_labels
@@ -215,7 +218,7 @@ def reconstructed_image(
         lines=lines,
         points=positions,
         grid=grid,
-        include_origin=include.origin
+        include_origin=include.origin,
     )
 
 
@@ -246,7 +249,7 @@ def plot_values(
             array=reconstructed_pixelization,
             lines=lines,
             points=positions,
-            include_origin=include.origin
+            include_origin=include.origin,
         )
 
         mapper_plotter.plot_rectangular_mapper(
@@ -278,7 +281,6 @@ def plot_values(
     mapper_plotter.close_figure()
 
 
-
 @plotters.set_labels
 def reconstruction(
     inversion,
@@ -304,7 +306,6 @@ def reconstruction(
     )
 
 
-
 @plotters.set_labels
 def errors(
     inversion,
@@ -326,7 +327,6 @@ def errors(
         include=include,
         mapper_plotter=mapper_plotter,
     )
-
 
 
 @plotters.set_labels
@@ -352,7 +352,6 @@ def residual_map(
     )
 
 
-
 @plotters.set_labels
 def normalized_residual_map(
     inversion,
@@ -376,7 +375,6 @@ def normalized_residual_map(
     )
 
 
-
 @plotters.set_labels
 def chi_squared_map(
     inversion,
@@ -398,7 +396,6 @@ def chi_squared_map(
         include=include,
         mapper_plotter=mapper_plotter,
     )
-
 
 
 @plotters.set_labels
@@ -428,7 +425,6 @@ def regularization_weights(
     )
 
 
-
 @plotters.set_labels
 def interpolated_reconstruction(
     inversion,
@@ -446,7 +442,6 @@ def interpolated_reconstruction(
         grid=grid,
         include_origin=include.origin,
     )
-
 
 
 @plotters.set_labels

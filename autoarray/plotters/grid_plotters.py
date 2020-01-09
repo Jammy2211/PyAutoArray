@@ -30,13 +30,11 @@ class GridPlotter(plotters.Plotter):
         cb_pad=None,
         cb_tick_values=None,
         cb_tick_labels=None,
-        yticks=None,
-        xticks=None,
-        xyticksize=None,
         grid_pointsize=5,
         grid_pointcolor="k",
+        ticks=plotters.Ticks(),
         labels=plotters.Labels(),
-        output=plotters.Output()
+        output=plotters.Output(),
     ):
 
         super(GridPlotter, self).__init__(
@@ -56,12 +54,10 @@ class GridPlotter(plotters.Plotter):
             cb_pad=cb_pad,
             cb_tick_values=cb_tick_values,
             cb_tick_labels=cb_tick_labels,
-            yticks=yticks,
-            xticks=xticks,
-            xyticksize=xyticksize,
             grid_pointsize=grid_pointsize,
+            ticks=ticks,
             labels=labels,
-            output=output
+            output=output,
         )
 
         self.grid_pointcolor = grid_pointcolor
@@ -148,17 +144,25 @@ class GridPlotter(plotters.Plotter):
                 symmetric_around_centre=symmetric_around_centre,
             )
 
-        self.set_yxticks(
+        self.ticks.set_yticks(
             array=None,
             extent=grid.extent,
+            use_scaled_units=self.use_scaled_units,
+            unit_conversion_factor=self.unit_conversion_factor,
+            symmetric_around_centre=symmetric_around_centre,
+        )
+        self.ticks.set_xticks(
+            array=None,
+            extent=grid.extent,
+            use_scaled_units=self.use_scaled_units,
+            unit_conversion_factor=self.unit_conversion_factor,
             symmetric_around_centre=symmetric_around_centre,
         )
 
         self.plot_points(grid=grid, points=points)
         self.plot_lines(line_lists=lines)
 
-        plt.tick_params(labelsize=self.xyticksize)
-        self.output_figure(array=None)
+        self.output.to_figure(structure=grid, is_sub_plotter=self.is_sub_plotter)
         self.close_figure()
 
     def set_axis_limits(self, axis_limits, grid, symmetric_around_centre):
@@ -217,39 +221,3 @@ class GridPlotter(plotters.Plotter):
                         s=8,
                         color=self.grid_pointcolor,
                     )
-
-    def output_figure(self, array):
-        """Output the figure, either as an image on the screen or to the hard-disk as a .png or .fits file.
-
-        Parameters
-        -----------
-        array : ndarray
-            The 2D array of image to be output, required for outputting the image as a fits file.
-        as_subplot : bool
-            Whether the figure is part of subplot, in which case the figure is not output so that the entire subplot can \
-            be output instead using the *output_subplot_array* function.
-        output_path : str
-            The path on the hard-disk where the figure is output.
-        output_filename : str
-            The filename of the figure that is output.
-        output_format : str
-            The format the figue is output:
-            'show' - display on computer screen.
-            'png' - output to hard-disk as a png.
-            'fits' - output to hard-disk as a fits file.'
-        """
-        if not self.is_sub_plotter:
-
-            if self.output.format is "show":
-                plt.show()
-            elif self.output.format is "png":
-                plt.savefig(
-                    self.output.path + self.output.filename + ".png",
-                    bbox_inches="tight",
-                )
-            elif self.output.format is "fits":
-                array_util.numpy_array_1d_to_fits(
-                    array_1d=array,
-                    file_path=self.output.path + self.output.filename + ".fits",
-                    overwrite=True,
-                )

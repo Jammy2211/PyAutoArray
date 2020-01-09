@@ -10,7 +10,6 @@ from autoarray.plotters import plotters, array_plotters, mapper_plotters
 from autoarray.plots import imaging_plots
 
 
-
 @plotters.set_labels
 def image_and_mapper(
     imaging,
@@ -43,7 +42,11 @@ def image_and_mapper(
     plt.subplot(rows, columns, 1)
 
     imaging_plots.image(
-        imaging=imaging, mask=mask, positions=positions, include=include, array_plotter=array_plotter
+        imaging=imaging,
+        mask=mask,
+        positions=positions,
+        include=include,
+        array_plotter=array_plotter,
     )
 
     point_colors = itertools.cycle(["y", "r", "k", "g", "m"])
@@ -69,9 +72,8 @@ def image_and_mapper(
         mapper_plotter=mapper_plotter,
     )
 
-    mapper_plotter.output_subplot_array()
+    mapper_plotter.output.to_figure(structure=None, is_sub_plotter=False)
     plt.close()
-
 
 
 @plotters.set_labels

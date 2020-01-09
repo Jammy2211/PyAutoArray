@@ -456,6 +456,12 @@ class AbstractGrid(abstract_structure.AbstractStructure):
             nearest_irregular_1d_index_for_mask_1d_index=pixelization_grid.nearest_irregular_1d_index_for_mask_1d_index,
         )
 
+    def output_to_fits(self, file_path, overwrite=False):
+
+        array_util.numpy_array_1d_to_fits(
+            array_2d=self.in_2d, file_path=file_path, overwrite=overwrite
+        )
+
 
 class Grid(AbstractGrid):
     @classmethod

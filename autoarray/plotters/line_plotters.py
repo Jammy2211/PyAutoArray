@@ -16,12 +16,10 @@ class LinePlotter(plotters.Plotter):
         legend_fontsize=12,
         figsize=None,
         aspect=None,
-        yticks=None,
-        xticks=None,
-        xyticksize=None,
         pointsize=5,
+        ticks=plotters.Ticks(),
         labels=plotters.Labels(),
-        output=plotters.Output()
+        output=plotters.Output(),
     ):
         super(LinePlotter, self).__init__(
             is_sub_plotter=is_sub_plotter,
@@ -29,11 +27,9 @@ class LinePlotter(plotters.Plotter):
             unit_conversion_factor=unit_conversion_factor,
             figsize=figsize,
             aspect=aspect,
-            yticks=yticks,
-            xticks=xticks,
-            xyticksize=xyticksize,
+            ticks=ticks,
             labels=labels,
-            output=output
+            output=output,
         )
 
         self.pointsize = pointsize
@@ -70,11 +66,14 @@ class LinePlotter(plotters.Plotter):
 
         self.set_legend()
 
-        self.set_xticks(extent=[np.min(x), np.max(x)])
+        self.ticks.set_xticks(
+            array=None,
+            extent=[np.min(x), np.max(x)],
+            use_scaled_units=self.use_scaled_units,
+            unit_conversion_factor=self.unit_conversion_factor,
+        )
 
-        if self.output.format is not "fits":
-
-            self.output_figure(array=None)
+        self.output.to_figure(structure=None, is_sub_plotter=self.is_sub_plotter)
 
         self.close_figure()
 
@@ -93,45 +92,6 @@ class LinePlotter(plotters.Plotter):
                 "The plot_axis_type supplied to the plotter is not a valid string (must be linear "
                 "| semilogy | loglog)"
             )
-
-    def set_xticks(self, extent):
-        """Get the extent of the dimensions of the array in the unit_label of the figure (e.g. arc-seconds or kpc).
-
-        This is used to set the extent of the array and thus the y / x axis limits.
-
-        Parameters
-        -----------
-        array : data_type.array.aa.Scaled
-            The 2D array of data_type which is plotted.
-        unit_label : str
-            The label for the unit_label of the y / x axis of the plots.
-        unit_conversion_factor : float
-            The conversion factor between arc-seconds and kiloparsecs, required to plotters the unit_label in kpc.
-        xticks_manual :  [] or None
-            If input, the xticks do not use the array's default xticks but instead overwrite them as these values.
-        yticks_manual :  [] or None
-            If input, the yticks do not use the array's default yticks but instead overwrite them as these values.
-        """
-
-        plt.tick_params(labelsize=self.xyticksize)
-
-        xticks = np.round(np.linspace(extent[0], extent[1], 5), 2)
-
-        if self.xticks is not None:
-            xtick_labels = np.asarray([self.xticks[0], self.xticks[3]])
-        elif self.unit_conversion_factor is None:
-            xtick_labels = np.round(np.linspace(extent[0], extent[1], 5), 2)
-        elif self.unit_conversion_factor is not None:
-            xtick_labels = (
-                np.round(np.linspace(extent[0], extent[1], 5), 2)
-                * self.unit_conversion_factor
-            )
-        else:
-            raise exc.PlottingException(
-                "The y and y ticks cannot be set using the input options."
-            )
-
-        plt.xticks(ticks=xticks, labels=xtick_labels)
 
     def plot_vertical_lines(self, vertical_lines, vertical_line_labels):
 
