@@ -302,6 +302,16 @@ class TestPlotter:
         assert plotter.point_pointsize == 26
         assert plotter.grid_pointsize == 27
 
+    def test__plotter_settings_plot_in_kpc__use_coonfig_if_available(self):
+
+        plotter = plotters.Plotter()
+
+        assert plotter.plot_in_kpc == False
+
+        plotter = plotters.Plotter(plot_in_kpc=True)
+
+        assert plotter.plot_in_kpc == True
+
     def test__ticks_are_setup_correctly(self):
 
         plotter = plotters.Plotter(is_sub_plotter=False)
