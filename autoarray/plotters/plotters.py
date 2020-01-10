@@ -176,6 +176,7 @@ class Labels(object):
         ysize=None,
         xsize=None,
         use_scaled_units=None,
+        plot_in_kpc=None,
         is_sub_plotter=False,
     ):
 
@@ -213,6 +214,7 @@ class Labels(object):
                 section="subplots_labels", value=xsize, name="xsize", python_type=int
             )
 
+        self.plot_in_kpc = plot_in_kpc
         self.use_scaled_units = use_scaled_units
 
     def title_from_func(self, func):
@@ -406,6 +408,7 @@ class Plotter(object):
         is_sub_plotter=False,
         use_scaled_units=None,
         unit_conversion_factor=None,
+        plot_in_kpc=None,
         figsize=None,
         aspect=None,
         cmap=None,
@@ -460,6 +463,15 @@ class Plotter(object):
             python_type=bool,
         )
         self.unit_conversion_factor = unit_conversion_factor
+        try:
+            self.plot_in_kpc = load_setting(
+                section="general",
+                value=plot_in_kpc,
+                name="plot_in_kpc",
+                python_type=bool,
+            )
+        except:
+            self.plot_in_kpc = None
 
         self.cmap = load_setting(
             section="settings", value=cmap, name="cmap", python_type=str
