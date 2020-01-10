@@ -10,7 +10,6 @@ import copy
 import inspect
 
 from autoarray import exc
-from autoarray.util import array_util
 
 
 def setting(section, name, python_type):
@@ -272,6 +271,13 @@ class Labels(object):
     def yunits(self):
 
         if self._yunits is None:
+
+            if self.plot_in_kpc is not None:
+                if self.plot_in_kpc:
+                    return "kpc"
+                else:
+                    return "arcsec"
+
             if self.use_scaled_units:
                 return "scaled"
             else:
@@ -285,6 +291,13 @@ class Labels(object):
     def xunits(self):
 
         if self._xunits is None:
+
+            if self.plot_in_kpc is not None:
+                if self.plot_in_kpc:
+                    return "kpc"
+                else:
+                    return "arcsec"
+
             if self.use_scaled_units:
                 return "scaled"
             else:
