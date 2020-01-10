@@ -382,12 +382,19 @@ class ArrayPlotter(plotters.Plotter):
         """
         if centres is not None:
 
-            colors = itertools.cycle(["m", "y", "r", "w", "c", "b", "g", "k"])
+            if not any(isinstance(el, list) for el in centres):
 
-            for centres_of_galaxy in centres:
-                color = next(colors)
-                for centre in centres_of_galaxy:
-                    plt.scatter(y=centre[0], x=centre[1], s=300, c=color, marker="x")
+                for centre in centres:
+                    plt.scatter(y=centre[0], x=centre[1], s=300, marker="x")
+
+            else:
+
+                colors = itertools.cycle(["m", "y", "r", "w", "c", "b", "g", "k"])
+
+                for centres_of_galaxy in centres:
+                    color = next(colors)
+                    for centre in centres_of_galaxy:
+                        plt.scatter(y=centre[0], x=centre[1], s=300, c=color, marker="x")
 
     def plot_mask(self, mask):
         """Plot the mask of the array on the figure.

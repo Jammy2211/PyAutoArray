@@ -26,7 +26,7 @@ def load_setting(section, value, name, python_type):
 
 class Ticks(object):
     def __init__(
-        self, ysize=None, xsize=None, y_manual=None, x_manual=None, is_sub_plotter=False
+        self, ysize=None, xsize=None, unit_conversion_factor=None, y_manual=None, x_manual=None, is_sub_plotter=False
     ):
 
         if not is_sub_plotter:
@@ -49,6 +49,7 @@ class Ticks(object):
                 "subplots_ticks", value=xsize, name="xsize", python_type=int
             )
 
+        self.unit_conversion_factor = unit_conversion_factor
         self.y_manual = y_manual
         self.x_manual = x_manual
 
@@ -628,11 +629,20 @@ class Plotter(object):
             The size of the points plotted to show the liness.
         """
         if line_lists is not None:
-            for line_list in line_lists:
-                if line_list is not None:
-                    for line in line_list:
-                        if len(line) != 0:
-                            plt.plot(line[:, 1], line[:, 0], c="w", lw=2.0, zorder=200)
+
+            if not any(isinstance(el, list) for el in line_lists):
+
+                for line in line_lists:
+                    if len(line) != 0:
+                        plt.plot(line[:, 1], line[:, 0], c="w", lw=2.0, zorder=200)
+
+            else:
+
+                for line_list in line_lists:
+                    if line_list is not None:
+                        for line in line_list:
+                            if len(line) != 0:
+                                plt.plot(line[:, 1], line[:, 0], c="w", lw=2.0, zorder=200)
 
     def close_figure(self):
         """After plotting and outputting a figure, close the matplotlib figure instance (omit if a subplot).
@@ -726,6 +736,20 @@ class Plotter(object):
 
         return plotter
 
+    def plotter_with_new_unit_conversion_factor(self, unit_conversion_factor=None):
+
+        plotter = copy.deepcopy(self)
+
+        plotter.unit_conversion_factor = (
+            unit_conversion_factor if unit_conversion_factor is not None else self.unit_conversion_factor
+        )
+
+        plotter.ticks.unit_conversion_factor = (
+            unit_conversion_factor if unit_conversion_factor is not None else self.unit_conversion_factor
+        )
+
+        return plotter
+
     def plotter_with_new_output_filename(self, output_filename=None):
 
         plotter = copy.deepcopy(self)
@@ -772,6 +796,13 @@ class Include(object):
             else value
         )
 
+    def grid_from_grid(self, grid):
+
+        if self.grid:
+            return grid
+        else:
+            return None
+
     def mask_from_fit(self, fit):
         """Get the masks of the fit if the masks should be plotted on the fit.
 
@@ -803,6 +834,17 @@ def plotter_key_from_dictionary(dictionary):
         )
 
     return plotter_key
+
+
+def kpc_per_arcsec_of_object_from_dictionary(dictionary):
+
+    kpc_per_arcsec = None
+
+    for key, value in dictionary.items():
+        if hasattr(value, "kpc_per_arcsec"):
+            return value.kpc_per_arcsec
+
+    return kpc_per_arcsec
 
 
 def set_labels(func):
@@ -842,6 +884,10 @@ def set_labels(func):
         filename = plotter.output.filename_from_func(func=func)
 
         plotter = plotter.plotter_with_new_output_filename(output_filename=filename)
+
+        kpc_per_arcsec = kpc_per_arcsec_of_object_from_dictionary(dictionary=kwargs)
+
+        plotter = plotter.plotter_with_new_unit_conversion_factor(unit_conversion_factor=kpc_per_arcsec)
 
         kwargs[plotter_key] = plotter
 
