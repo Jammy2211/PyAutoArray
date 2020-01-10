@@ -80,6 +80,45 @@ class TestLabels:
         assert labels.yunits == "hi"
         assert labels.xunits == "hi2"
 
+    def test__yx_units_use_plot_in_kpc_if_it_is_passed(self):
+
+        labels = plotters.Labels(plot_in_kpc=True)
+
+        assert labels.plot_in_kpc == True
+        assert labels._yunits == None
+        assert labels._xunits == None
+        assert labels.yunits == "kpc"
+        assert labels.xunits == "kpc"
+
+        labels = plotters.Labels(plot_in_kpc=False)
+
+        assert labels.plot_in_kpc == False
+        assert labels._yunits == None
+        assert labels._xunits == None
+        assert labels.yunits == "arcsec"
+        assert labels.xunits == "arcsec"
+
+        labels = plotters.Labels(
+            yunits="hi", xunits="hi2", plot_in_kpc=True
+        )
+
+        assert labels.plot_in_kpc == True
+        assert labels._yunits == "hi"
+        assert labels._xunits == "hi2"
+        assert labels.yunits == "hi"
+        assert labels.xunits == "hi2"
+
+        labels = plotters.Labels(
+            yunits="hi", xunits="hi2", plot_in_kpc=False
+        )
+
+        assert labels.plot_in_kpc == False
+        assert labels._yunits == "hi"
+        assert labels._xunits == "hi2"
+        assert labels.yunits == "hi"
+        assert labels.xunits == "hi2"
+
+
     def test__title_yx_sizes_are_setup_correctly_from_config(self):
 
         labels = plotters.Labels(is_sub_plotter=False)
