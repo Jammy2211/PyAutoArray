@@ -341,7 +341,7 @@ class TestPlotter:
         assert plotter.point_pointsize == 26
         assert plotter.grid_pointsize == 27
 
-    def test__plotter_settings_plot_in_kpc__use_coonfig_if_available(self):
+    def test__plotter_settings_plot_in_kpc__use_config_if_available(self):
 
         plotter = plotters.Plotter()
 
@@ -438,3 +438,43 @@ class TestPlotter:
         assert rows == 2
         assert columns == 2
         assert figsize == (13, 10)
+
+
+class TestDecorator:
+
+    def test__kpc_per_arcsec_extacted_from_object_if_available(self):
+
+        dictionary = {"hi": 1}
+
+        kpc_per_arcsec = plotters.kpc_per_arcsec_of_object_from_dictionary(dictionary=dictionary)
+
+        assert kpc_per_arcsec == None
+
+        class MockObj(object):
+
+            def __init__(self, param1):
+
+                self.param1 = param1
+
+        obj = MockObj(param1=1)
+
+        dictionary = {"hi": 1, "hello": obj}
+
+        kpc_per_arcsec = plotters.kpc_per_arcsec_of_object_from_dictionary(dictionary=dictionary)
+
+        assert kpc_per_arcsec == None
+
+        class MockObj(object):
+
+            def __init__(self, param1, kpc_per_arcsec):
+
+                self.param1 = param1
+                self.kpc_per_arcsec = kpc_per_arcsec
+
+        obj = MockObj(param1=1, kpc_per_arcsec=2)
+
+        dictionary = {"hi": 1, "hello": obj}
+
+        kpc_per_arcsec = plotters.kpc_per_arcsec_of_object_from_dictionary(dictionary=dictionary)
+
+        assert kpc_per_arcsec == 2
