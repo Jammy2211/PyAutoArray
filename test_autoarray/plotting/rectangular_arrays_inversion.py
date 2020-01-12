@@ -43,14 +43,14 @@ masked_imaging = al.masked.imaging(imaging=imaging, mask=mask)
 tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 fit = al.fit(masked_dataset=masked_imaging, tracer=tracer)
 
-al.plot.fit_imaging.subplot(
+al.plot.fit_imaging.subplot_fit_imaging(
     fit=fit, mask=True, include_image_plane_pix=True, aspect="auto"
 )
 
-al.plot.fit_imaging.subplot(
+al.plot.fit_imaging.subplot_fit_imaging(
     fit=fit, mask=True, include_image_plane_pix=True, aspect="equal"
 )
 
-al.plot.fit_imaging.subplot(
+al.plot.fit_imaging.subplot_fit_imaging(
     fit=fit, mask=True, include_image_plane_pix=True, aspect="square"
 )

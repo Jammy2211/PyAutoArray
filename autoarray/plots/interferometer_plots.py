@@ -1,7 +1,8 @@
-from autoarray.plotters import plotters, mat_objs
+from autoarray.plotters import plotters
 from autoarray.structures import grids
 
-def subplot(
+@plotters.set_subplot_title
+def subplot_interferometer(
     interferometer,
     include=plotters.Include(),
     sub_plotter=plotters.SubPlotter(),
@@ -24,10 +25,6 @@ def subplot(
         If *False*, the config file general.ini is used to determine whether the subpot is plotted. If *True*, the \
         config file is ignored.
     """
-
-    sub_plotter = sub_plotter.plotter_with_new_output(
-        output=mat_objs.Output(filename="interferometer"),
-    )
 
     number_subplots=4
 

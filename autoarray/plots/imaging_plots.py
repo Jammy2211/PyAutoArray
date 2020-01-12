@@ -1,7 +1,7 @@
-from autoarray.plotters import plotters, mat_objs
+from autoarray.plotters import plotters
 
-
-def subplot(
+@plotters.set_subplot_title
+def subplot_imaging(
     imaging,
     grid=None,
     mask=None,
@@ -30,10 +30,6 @@ def subplot(
 
 
     number_subplots = 6
-
-    sub_plotter = sub_plotter.plotter_with_new_output(
-        output=mat_objs.Output(filename="imaging"),
-    )
 
     sub_plotter.setup_subplot_figure(number_subplots=number_subplots)
 

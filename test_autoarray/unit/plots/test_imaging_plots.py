@@ -75,14 +75,14 @@ def test__subplot_is_output(
         imaging_7x7, positions_7x7, mask_7x7, imaging_plotter_path, plot_patch
 ):
 
-    aa.plot.imaging.subplot(
+    aa.plot.imaging.subplot_imaging(
         imaging=imaging_7x7,
         sub_plotter=aa.plotter.SubPlotter(
             output=aa.plotter.Output(imaging_plotter_path, format="png")
         ),
     )
 
-    assert imaging_plotter_path + "imaging.png" in plot_patch.paths
+    assert imaging_plotter_path + "subplot_imaging.png" in plot_patch.paths
 
 
 def test__imaging_individuals__output_dependent_on_input(

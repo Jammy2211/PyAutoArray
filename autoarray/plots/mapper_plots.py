@@ -1,11 +1,11 @@
 import itertools
 
-from autoarray.plotters import plotters, mat_objs
+from autoarray.plotters import plotters
 from autoarray.plots import imaging_plots
 
 
 @plotters.set_labels
-def image_and_mapper(
+def subplot_image_and_mapper(
     imaging,
     mapper,
     mask=None,
@@ -17,10 +17,6 @@ def image_and_mapper(
 ):
 
     number_subplots = 2
-
-    sub_plotter = sub_plotter.plotter_with_new_output(
-        output=mat_objs.Output(filename="image_and_mapper"),
-    )
 
     sub_plotter.setup_subplot_figure(number_subplots=number_subplots)
 

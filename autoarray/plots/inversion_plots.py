@@ -1,8 +1,8 @@
-from autoarray.plotters import plotters, mat_objs
+from autoarray.plotters import plotters
 from autoarray.operators.inversion import mappers
 
-
-def subplot(
+@plotters.set_subplot_title
+def subplot_inversion(
     inversion,
     mask=None,
     lines=None,
@@ -13,10 +13,6 @@ def subplot(
 ):
 
     number_subplots = 6
-
-    sub_plotter = sub_plotter.plotter_with_new_output(
-        output=mat_objs.Output(filename="inversion"),
-    )
 
     ratio = float(
         (
