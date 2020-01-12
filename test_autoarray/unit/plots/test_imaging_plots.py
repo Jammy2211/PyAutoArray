@@ -35,7 +35,7 @@ def test__individual_attributes_are_output(
         positions=positions_7x7,
         mask=mask_7x7,
         include=aa.plotter.Include(mask=True),
-        array_plotter=aa.plotter.array(
+        plotter=aa.plotter.Plotter(
             output=aa.plotter.Output(imaging_plotter_path, format="png")
         ),
     )
@@ -45,7 +45,7 @@ def test__individual_attributes_are_output(
     aa.plot.imaging.noise_map(
         imaging=imaging_7x7,
         mask=mask_7x7,
-        array_plotter=aa.plotter.array(
+        plotter=aa.plotter.Plotter(
             output=aa.plotter.Output(imaging_plotter_path, format="png")
         ),
     )
@@ -54,7 +54,7 @@ def test__individual_attributes_are_output(
 
     aa.plot.imaging.psf(
         imaging=imaging_7x7,
-        array_plotter=aa.plotter.array(
+        plotter=aa.plotter.Plotter(
             output=aa.plotter.Output(imaging_plotter_path, format="png")
         ),
     )
@@ -64,7 +64,7 @@ def test__individual_attributes_are_output(
     aa.plot.imaging.signal_to_noise_map(
         imaging=imaging_7x7,
         mask=mask_7x7,
-        array_plotter=aa.plotter.array(
+        plotter=aa.plotter.Plotter(
             output=aa.plotter.Output(imaging_plotter_path, format="png")
         ),
     )
@@ -73,7 +73,7 @@ def test__individual_attributes_are_output(
 
     aa.plot.imaging.subplot(
         imaging=imaging_7x7,
-        array_plotter=aa.plotter.array(
+        plotter=aa.plotter.Plotter(
             output=aa.plotter.Output(imaging_plotter_path, format="png")
         ),
     )
@@ -89,7 +89,7 @@ def test__imaging_individuals__output_dependent_on_input(
         plot_image=True,
         plot_psf=True,
         plot_absolute_signal_to_noise_map=True,
-        array_plotter=aa.plotter.array(
+        plotter=aa.plotter.Plotter(
             output=aa.plotter.Output(imaging_plotter_path, format="png")
         ),
     )

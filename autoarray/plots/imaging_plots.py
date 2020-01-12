@@ -5,7 +5,7 @@ backend = conf.get_matplotlib_backend()
 matplotlib.use(backend)
 from matplotlib import pyplot as plt
 
-from autoarray.plotters import plotters, array_plotters
+from autoarray.plotters import plotters
 
 
 def subplot(
@@ -14,12 +14,12 @@ def subplot(
     mask=None,
     positions=None,
     include=plotters.Include(),
-    array_plotter=array_plotters.ArrayPlotter(),
+    plotter=plotters.Plotter(),
 ):
     """Plot the imaging data_type as a sub-plotters of all its quantites (e.g. the dataset, noise_map-map, PSF, Signal-to_noise-map, \
      etc).
 
-    Set *autolens.data_type.array.plotters.array_plotters* for a description of all innput parameters not described below.
+    Set *autolens.data_type.array.plotters.plotters* for a description of all innput parameters not described below.
 
     Parameters
     -----------
@@ -35,19 +35,14 @@ def subplot(
         config file is ignored.
     """
 
-    array_plotter = array_plotter.plotter_as_sub_plotter()
-    array_plotter = array_plotter.plotter_with_new_output_filename(
+
+    plotter = plotter.plotter_with_new_output_filename(
         output_filename="imaging"
     )
 
-    rows, columns, figsize_tool = array_plotter.get_subplot_rows_columns_figsize(
+    rows, columns, figsize_tool = plotter.get_subplot_rows_columns_figsize(
         number_subplots=6
     )
-
-    if array_plotter.figsize is None:
-        figsize = figsize_tool
-    else:
-        figsize = array_plotter.figsize
 
     plt.figure(figsize=figsize)
     plt.subplot(rows, columns, 1)
@@ -58,7 +53,7 @@ def subplot(
         mask=mask,
         positions=positions,
         include=include,
-        array_plotter=array_plotter,
+        plotter=plotter,
     )
 
     plt.subplot(rows, columns, 2)
@@ -68,7 +63,7 @@ def subplot(
         mask=mask,
         positions=positions,
         include=include,
-        array_plotter=array_plotter,
+        plotter=plotter,
     )
 
     plt.subplot(rows, columns, 3)
@@ -78,7 +73,7 @@ def subplot(
         mask=mask,
         positions=positions,
         include=include,
-        array_plotter=array_plotter,
+        plotter=plotter,
     )
 
     plt.subplot(rows, columns, 4)
@@ -88,7 +83,7 @@ def subplot(
         mask=mask,
         positions=positions,
         include=include,
-        array_plotter=array_plotter,
+        plotter=plotter,
     )
 
     plt.subplot(rows, columns, 5)
@@ -98,7 +93,7 @@ def subplot(
         mask=mask,
         positions=positions,
         include=include,
-        array_plotter=array_plotter,
+        plotter=plotter,
     )
 
     plt.subplot(rows, columns, 6)
@@ -108,10 +103,10 @@ def subplot(
         mask=mask,
         positions=positions,
         include=include,
-        array_plotter=array_plotter,
+        plotter=plotter,
     )
 
-    array_plotter.output.to_figure(structure=None, is_sub_plotter=False)
+    plotter.output.to_figure(structure=None)
 
     plt.close()
 
@@ -128,12 +123,12 @@ def individual(
     plot_absolute_signal_to_noise_map=False,
     plot_potential_chi_squared_map=False,
     include=plotters.Include(),
-    array_plotter=array_plotters.ArrayPlotter(),
+    plotter=plotters.Plotter(),
 ):
     """Plot each attribute of the imaging data_type as individual figures one by one (e.g. the dataset, noise_map-map, PSF, \
      Signal-to_noise-map, etc).
 
-    Set *autolens.data_type.array.plotters.array_plotters* for a description of all innput parameters not described below.
+    Set *autolens.data_type.array.plotters.plotters* for a description of all innput parameters not described below.
 
     Parameters
     -----------
@@ -151,35 +146,35 @@ def individual(
             mask=mask,
             positions=positions,
             include=include,
-            array_plotter=array_plotter,
+            plotter=plotter,
         )
 
     if plot_noise_map:
 
         noise_map(
-            imaging=imaging, mask=mask, include=include, array_plotter=array_plotter
+            imaging=imaging, mask=mask, include=include, plotter=plotter
         )
 
     if plot_psf:
 
-        psf(imaging=imaging, include=include, array_plotter=array_plotter)
+        psf(imaging=imaging, include=include, plotter=plotter)
 
     if plot_signal_to_noise_map:
 
         signal_to_noise_map(
-            imaging=imaging, mask=mask, include=include, array_plotter=array_plotter
+            imaging=imaging, mask=mask, include=include, plotter=plotter
         )
 
     if plot_absolute_signal_to_noise_map:
 
         absolute_signal_to_noise_map(
-            imaging=imaging, mask=mask, include=include, array_plotter=array_plotter
+            imaging=imaging, mask=mask, include=include, plotter=plotter
         )
 
     if plot_potential_chi_squared_map:
 
         potential_chi_squared_map(
-            imaging=imaging, mask=mask, include=include, array_plotter=array_plotter
+            imaging=imaging, mask=mask, include=include, plotter=plotter
         )
 
 
@@ -190,11 +185,11 @@ def image(
     mask=None,
     positions=None,
     include=plotters.Include(),
-    array_plotter=array_plotters.ArrayPlotter(),
+    plotter=plotters.Plotter(),
 ):
     """Plot the observed data_type of the imaging data_type.
 
-    Set *autolens.data_type.array.plotters.array_plotters* for a description of all innput parameters not described below.
+    Set *autolens.data_type.array.plotters.plotters* for a description of all innput parameters not described below.
 
     Parameters
     -----------
@@ -207,7 +202,7 @@ def image(
         over the immage.
     """
 
-    array_plotter.plot_array(
+    plotter.array.plot(
         array=imaging.image,
         include_origin=include.origin,
         grid=grid,
@@ -223,11 +218,11 @@ def noise_map(
     mask=None,
     positions=None,
     include=plotters.Include(),
-    array_plotter=array_plotters.ArrayPlotter(),
+    plotter=plotters.Plotter(),
 ):
     """Plot the noise_map-map of the imaging data_type.
 
-    Set *autolens.data_type.array.plotters.array_plotters* for a description of all innput parameters not described below.
+    Set *autolens.data_type.array.plotters.plotters* for a description of all innput parameters not described below.
 
     Parameters
     -----------
@@ -237,7 +232,7 @@ def noise_map(
         If true, the include_origin of the dataset's coordinate system is plotted as a 'x'.
     """
 
-    array_plotter.plot_array(
+    plotter.array.plot(
         array=imaging.image,
         include_origin=include.origin,
         grid=grid,
@@ -253,11 +248,11 @@ def psf(
     mask=None,
     positions=None,
     include=plotters.Include(),
-    array_plotter=array_plotters.ArrayPlotter(),
+    plotter=plotters.Plotter(),
 ):
     """Plot the PSF of the imaging data_type.
 
-    Set *autolens.data_type.array.plotters.array_plotters* for a description of all innput parameters not described below.
+    Set *autolens.data_type.array.plotters.plotters* for a description of all innput parameters not described below.
 
     Parameters
     -----------
@@ -267,7 +262,7 @@ def psf(
         If true, the include_origin of the dataset's coordinate system is plotted as a 'x'.
     """
 
-    array_plotter.plot_array(
+    plotter.array.plot(
         array=imaging.image,
         include_origin=include.origin,
         grid=grid,
@@ -283,11 +278,11 @@ def signal_to_noise_map(
     mask=None,
     positions=None,
     include=plotters.Include(),
-    array_plotter=array_plotters.ArrayPlotter(),
+    plotter=plotters.Plotter(),
 ):
     """Plot the signal-to-noise_map-map of the imaging data_type.
 
-    Set *autolens.data_type.array.plotters.array_plotters* for a description of all innput parameters not described below.
+    Set *autolens.data_type.array.plotters.plotters* for a description of all innput parameters not described below.
 
     Parameters
     -----------
@@ -296,7 +291,7 @@ def signal_to_noise_map(
     include_origin : True
         If true, the include_origin of the dataset's coordinate system is plotted as a 'x'.
     """
-    array_plotter.plot_array(
+    plotter.array.plot(
         array=imaging.image,
         include_origin=include.origin,
         grid=grid,
@@ -312,11 +307,11 @@ def absolute_signal_to_noise_map(
     mask=None,
     positions=None,
     include=plotters.Include(),
-    array_plotter=array_plotters.ArrayPlotter(),
+    plotter=plotters.Plotter(),
 ):
     """Plot the signal-to-noise_map-map of the imaging data_type.
 
-    Set *autolens.data_type.array.plotters.array_plotters* for a description of all innput parameters not described below.
+    Set *autolens.data_type.array.plotters.plotters* for a description of all innput parameters not described below.
 
     Parameters
     -----------
@@ -325,7 +320,7 @@ def absolute_signal_to_noise_map(
     include_origin : True
         If true, the include_origin of the dataset's coordinate system is plotted as a 'x'.
     """
-    array_plotter.plot_array(
+    plotter.array.plot(
         array=imaging.image,
         include_origin=include.origin,
         grid=grid,
@@ -341,11 +336,11 @@ def potential_chi_squared_map(
     mask=None,
     positions=None,
     include=plotters.Include(),
-    array_plotter=array_plotters.ArrayPlotter(),
+    plotter=plotters.Plotter(),
 ):
     """Plot the signal-to-noise_map-map of the imaging data_type.
 
-    Set *autolens.data_type.array.plotters.array_plotters* for a description of all innput parameters not described below.
+    Set *autolens.data_type.array.plotters.plotters* for a description of all innput parameters not described below.
 
     Parameters
     -----------
@@ -354,7 +349,7 @@ def potential_chi_squared_map(
     include_origin : True
         If true, the include_origin of the dataset's coordinate system is plotted as a 'x'.
     """
-    array_plotter.plot_array(
+    plotter.array.plot(
         array=imaging.image,
         include_origin=include.origin,
         grid=grid,

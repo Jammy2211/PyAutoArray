@@ -5,7 +5,7 @@ from copy import deepcopy
 
 def get_matplotlib_backend():
     try:
-        return instance.visualize.get("figures", "backend", str)
+        return instance.visualize_general.get("general", "backend", str)
     except Exception:
         return "TKAgg"
 
@@ -101,7 +101,10 @@ class Config(object):
         self.non_linear = NamedConfig("{}/non_linear.ini".format(config_path))
         self.label_format = NamedConfig("{}/label_format.ini".format(config_path))
         self.general = NamedConfig("{}/general.ini".format(config_path))
-        self.visualize = NamedConfig("{}/visualize.ini".format(config_path))
+        self.visualize_general = NamedConfig("{}/visualize/general.ini".format(config_path))
+        self.visualize_plots = NamedConfig("{}/visualize/plots.ini".format(config_path))
+        self.visualize_figures = NamedConfig("{}/visualize/figures.ini".format(config_path))
+        self.visualize_subplots = NamedConfig("{}/visualize/subplots.ini".format(config_path))
         self.output_path = output_path
 
 

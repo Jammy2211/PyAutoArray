@@ -10,8 +10,8 @@ import pytest
 directory = path.dirname(path.realpath(__file__))
 
 
-@pytest.fixture(name="mapper_plotter_path")
-def make_mapper_plotter_setup():
+@pytest.fixture(name="plotter_path")
+def make_plotter_setup():
     return "{}/../../../test_files/plotting/mapper/".format(
         os.path.dirname(os.path.realpath(__file__))
     )
@@ -56,7 +56,7 @@ def make_rectangular_mapper(rectangular_pixelization, grid):
 
 
 def test__image_and_rectangular_mapper_is_output(
-    image, rectangular_mapper, mapper_plotter_path, plot_patch
+    image, rectangular_mapper, plotter_path, plot_patch
 ):
     aa.plot.mapper.image_and_mapper(
         imaging=image,
@@ -66,15 +66,15 @@ def test__image_and_rectangular_mapper_is_output(
         ),
         image_pixels=[[0, 1, 2], [3]],
         source_pixels=[[1, 2], [0]],
-        mapper_plotter=aa.plotter.mapper(
-            output=aa.plotter.Output(path=mapper_plotter_path, format="png")
+        plotter=aa.plotter.Plotter(
+            output=aa.plotter.Output(path=plotter_path, format="png")
         ),
     )
-    assert mapper_plotter_path + "image_and_mapper.png" in plot_patch.paths
+    assert plotter_path + "image_and_mapper.png" in plot_patch.paths
 
 
 def test__rectangular_mapper_is_output(
-    rectangular_mapper, mapper_plotter_path, plot_patch
+    rectangular_mapper, plotter_path, plot_patch
 ):
     aa.plot.mapper.mapper_grid(
         mapper=rectangular_mapper,
@@ -83,9 +83,9 @@ def test__rectangular_mapper_is_output(
         ),
         image_pixels=[[0, 1, 2], [3]],
         source_pixels=[[1, 2], [0]],
-        mapper_plotter=aa.plotter.mapper(
-            output=aa.plotter.Output(path=mapper_plotter_path, format="png")
+        plotter=aa.plotter.Plotter(
+            output=aa.plotter.Output(path=plotter_path, format="png")
         ),
     )
 
-    assert mapper_plotter_path + "mapper_grid.png" in plot_patch.paths
+    assert plotter_path + "mapper_grid.png" in plot_patch.paths

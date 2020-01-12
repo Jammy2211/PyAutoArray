@@ -31,7 +31,7 @@ def test__individual_attributes_are_output(
 
     aa.plot.interferometer.visibilities(
         interferometer=interferometer_7,
-        grid_plotter=aa.plotter.grid(
+        plotter=aa.plotter.Plotter(
             output=aa.plotter.Output(path=interferometer_plotter_path, format="png")
         ),
     )
@@ -40,7 +40,7 @@ def test__individual_attributes_are_output(
 
     aa.plot.interferometer.noise_map(
         interferometer=interferometer_7,
-        grid_plotter=aa.plotter.grid(
+        plotter=aa.plotter.Plotter(
             output=aa.plotter.Output(path=interferometer_plotter_path, format="png")
         ),
     )
@@ -49,7 +49,7 @@ def test__individual_attributes_are_output(
 
     aa.plot.interferometer.u_wavelengths(
         interferometer=interferometer_7,
-        line_plotter=aa.plotter.line(
+        plotter=aa.plotter.Plotter(
             output=aa.plotter.Output(path=interferometer_plotter_path, format="png")
         ),
     )
@@ -58,7 +58,7 @@ def test__individual_attributes_are_output(
 
     aa.plot.interferometer.v_wavelengths(
         interferometer=interferometer_7,
-        line_plotter=aa.plotter.line(
+        plotter=aa.plotter.Plotter(
             output=aa.plotter.Output(path=interferometer_plotter_path, format="png")
         ),
     )
@@ -67,7 +67,7 @@ def test__individual_attributes_are_output(
 
     aa.plot.interferometer.uv_wavelengths(
         interferometer=interferometer_7,
-        grid_plotter=aa.plotter.grid(
+        plotter=aa.plotter.Plotter(
             output=aa.plotter.Output(path=interferometer_plotter_path, format="png")
         ),
     )
@@ -76,7 +76,7 @@ def test__individual_attributes_are_output(
 
     aa.plot.interferometer.amplitudes_vs_uv_distances(
         interferometer=interferometer_7,
-        line_plotter=aa.plotter.line(
+        plotter=aa.plotter.Plotter(
             output=aa.plotter.Output(path=interferometer_plotter_path, format="png")
         ),
     )
@@ -88,7 +88,7 @@ def test__individual_attributes_are_output(
 
     aa.plot.interferometer.phases_vs_uv_distances(
         interferometer=interferometer_7,
-        line_plotter=aa.plotter.line(
+        plotter=aa.plotter.Plotter(
             output=aa.plotter.Output(path=interferometer_plotter_path, format="png")
         ),
     )
@@ -99,22 +99,20 @@ def test__individual_attributes_are_output(
 
     aa.plot.interferometer.primary_beam(
         interferometer=interferometer_7,
-        array_plotter=aa.plotter.array(
+        plotter=aa.plotter.Plotter(
             output=aa.plotter.Output(interferometer_plotter_path, format="png")
         ),
     )
 
     assert interferometer_plotter_path + "primary_beam.png" in plot_patch.paths
 
+def test__subplot_is_output(
+        interferometer_7, interferometer_plotter_path, plot_patch
+):
+
     aa.plot.interferometer.subplot(
         interferometer=interferometer_7,
-        array_plotter=aa.plotter.array(
-            output=aa.plotter.Output(interferometer_plotter_path, format="png")
-        ),
-        grid_plotter=aa.plotter.grid(
-            output=aa.plotter.Output(path=interferometer_plotter_path, format="png")
-        ),
-        line_plotter=aa.plotter.line(
+        sub_plotter=aa.plotter.SubPlotter(
             output=aa.plotter.Output(path=interferometer_plotter_path, format="png")
         ),
     )
@@ -132,13 +130,7 @@ def test__individuals__output_dependent_on_input(
         plot_v_wavelengths=True,
         plot_primary_beam=True,
         plot_amplitudes_vs_uv_distances=True,
-        array_plotter=aa.plotter.array(
-            output=aa.plotter.Output(interferometer_plotter_path, format="png")
-        ),
-        grid_plotter=aa.plotter.grid(
-            output=aa.plotter.Output(path=interferometer_plotter_path, format="png")
-        ),
-        line_plotter=aa.plotter.line(
+        plotter=aa.plotter.Plotter(
             output=aa.plotter.Output(path=interferometer_plotter_path, format="png")
         ),
     )

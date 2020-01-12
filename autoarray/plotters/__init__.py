@@ -1,5 +1,2 @@
-from autoarray.plotters.array_plotters import ArrayPlotter as array
-from autoarray.plotters.grid_plotters import GridPlotter as grid
-from autoarray.plotters.line_plotters import LinePlotter as line
-from autoarray.plotters.mapper_plotters import MapperPlotter as mapper
-from autoarray.plotters.plotters import Ticks, Labels, Output, Include
+from autoarray.plotters.mat_objs import Ticks, Labels, Output
+from autoarray.plotters.plotters import Plotter, SubPlotter, Include
