@@ -96,7 +96,7 @@ def test__fit_quantities_are_output(fit_imaging_7x7, fit_imaging_path, plot_patc
 
 def test__fit_sub_plot(fit_imaging_7x7, fit_imaging_path, plot_patch):
 
-    aa.plot.fit_imaging.subplot(
+    aa.plot.fit_imaging.subplot_fit_imaging(
         fit=fit_imaging_7x7,
         include=aa.plotter.Include(mask=True),
         sub_plotter=aa.plotter.SubPlotter(
@@ -104,7 +104,7 @@ def test__fit_sub_plot(fit_imaging_7x7, fit_imaging_path, plot_patch):
         ),
     )
 
-    assert fit_imaging_path + "fit_imaging.png" in plot_patch.paths
+    assert fit_imaging_path + "subplot_fit_imaging.png" in plot_patch.paths
 
 
 def test__fit_individuals__source_and_lens__depedent_on_input(

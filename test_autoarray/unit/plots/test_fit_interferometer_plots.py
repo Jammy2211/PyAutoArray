@@ -24,14 +24,14 @@ def set_config_path():
 
 def test__fit_sub_plot(fit_interferometer_7, fit_interferometer_path, plot_patch):
 
-    aa.plot.fit_interferometer.subplot(
+    aa.plot.fit_interferometer.subplot_fit_interferometer(
         fit=fit_interferometer_7,
         sub_plotter=aa.plotter.SubPlotter(
             output=aa.plotter.Output(fit_interferometer_path, format="png")
         ),
     )
 
-    assert fit_interferometer_path + "fit_interferometer.png" in plot_patch.paths
+    assert fit_interferometer_path + "subplot_fit_interferometer.png" in plot_patch.paths
 
 
 def test__fit_individuals__dependent_on_input(

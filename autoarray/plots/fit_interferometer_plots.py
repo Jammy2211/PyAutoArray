@@ -2,18 +2,14 @@ from autoarray.plotters import plotters, mat_objs
 from autoarray.plots import inversion_plots
 
 
-@plotters.set_labels
-def subplot(
+@plotters.set_subplot_title
+def subplot_fit_interferometer(
     fit,
     include=plotters.Include(),
     sub_plotter=plotters.SubPlotter(),
 ):
 
     number_subplots = 6
-
-    sub_plotter = sub_plotter.plotter_with_new_output(
-        output=mat_objs.Output(filename="fit_interferometer"),
-    )
 
     sub_plotter.setup_subplot_figure(number_subplots=number_subplots)
 

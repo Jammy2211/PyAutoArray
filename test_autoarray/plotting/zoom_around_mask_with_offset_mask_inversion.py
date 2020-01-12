@@ -45,7 +45,7 @@ al.plot.fit_imaging.subplot_for_plane(fit=fit, plane_index=1, plot_source_grid=T
 
 stop
 
-al.plot.fit_imaging.subplot(
+al.plot.fit_imaging.subplot_fit_imaging(
     fit=fit,
     mask=True,
     points=[[[2.2, 2.2], [-0.2, -0.2], [-0.2, 2.2], [2.2, -0.2]]],
@@ -55,7 +55,7 @@ al.plot.fit_imaging.subplot(
 fit = fit_with_offset_centre(centre=(2.05, 2.05))
 
 
-al.plot.fit_imaging.subplot(
+al.plot.fit_imaging.subplot_fit_imaging(
     fit=fit,
     mask=True,
     points=[[[2.2, 2.2], [-0.2, -0.2], [-0.2, 2.2], [2.2, -0.2]]],
@@ -64,7 +64,7 @@ al.plot.fit_imaging.subplot(
 
 fit = fit_with_offset_centre(centre=(2.1, 2.1))
 
-al.plot.fit_imaging.subplot(
+al.plot.fit_imaging.subplot_fit_imaging(
     fit=fit,
     mask=True,
     points=[[[2.2, 2.2], [-0.2, -0.2], [-0.2, 2.2], [2.2, -0.2]]],
@@ -73,7 +73,7 @@ al.plot.fit_imaging.subplot(
 
 fit = fit_with_offset_centre(centre=(2.95, 2.95))
 
-al.plot.fit_imaging.subplot(
+al.plot.fit_imaging.subplot_fit_imaging(
     fit=fit,
     mask=True,
     points=[[[2.2, 2.2], [-0.2, -0.2], [-0.2, 2.2], [2.2, -0.2]]],
@@ -82,7 +82,7 @@ al.plot.fit_imaging.subplot(
 
 fit = fit_with_offset_centre(centre=(5.9, 5.9))
 
-al.plot.fit_imaging.subplot(
+al.plot.fit_imaging.subplot_fit_imaging(
     fit=fit,
     mask=True,
     points=[[[2.2, 2.2], [-0.2, -0.2], [-0.2, 2.2], [2.2, -0.2]]],

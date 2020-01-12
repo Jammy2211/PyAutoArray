@@ -58,7 +58,7 @@ def make_rectangular_mapper(rectangular_pixelization, grid):
 def test__image_and_rectangular_mapper_is_output(
     image, rectangular_mapper, plotter_path, plot_patch
 ):
-    aa.plot.mapper.image_and_mapper(
+    aa.plot.mapper.subplot_image_and_mapper(
         imaging=image,
         mapper=rectangular_mapper,
         include=aa.plotter.Include(
@@ -70,7 +70,7 @@ def test__image_and_rectangular_mapper_is_output(
             output=aa.plotter.Output(path=plotter_path, format="png")
         ),
     )
-    assert plotter_path + "image_and_mapper.png" in plot_patch.paths
+    assert plotter_path + "subplot_image_and_mapper.png" in plot_patch.paths
 
 
 def test__rectangular_mapper_is_output(

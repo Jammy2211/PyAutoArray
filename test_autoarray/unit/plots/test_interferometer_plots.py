@@ -110,14 +110,14 @@ def test__subplot_is_output(
         interferometer_7, interferometer_plotter_path, plot_patch
 ):
 
-    aa.plot.interferometer.subplot(
+    aa.plot.interferometer.subplot_interferometer(
         interferometer=interferometer_7,
         sub_plotter=aa.plotter.SubPlotter(
             output=aa.plotter.Output(path=interferometer_plotter_path, format="png")
         ),
     )
 
-    assert interferometer_plotter_path + "interferometer.png" in plot_patch.paths
+    assert interferometer_plotter_path + "subplot_interferometer.png" in plot_patch.paths
 
 
 def test__individuals__output_dependent_on_input(
