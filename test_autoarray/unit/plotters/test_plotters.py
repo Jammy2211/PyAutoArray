@@ -78,6 +78,48 @@ class TestAbstractPlotter:
         assert plotter.labels.xsize == 3
         assert plotter.use_scaled_units == False
 
+    def test__plotter_with_new_labels__new_labels_if_input__sizes_dont_change(self):
+
+        plotter = plotters.Plotter(
+            use_scaled_units=False,
+            labels=mat_objs.Labels(
+                title="OMG",
+                yunits="hi",
+                xunits="hi2",
+                titlesize=1,
+                ysize=2,
+                xsize=3,
+            )
+        )
+
+        plotter = plotter.plotter_with_new_labels()
+
+        assert plotter.labels.title == "OMG"
+        assert plotter.labels._yunits == "hi"
+        assert plotter.labels._xunits == "hi2"
+        assert plotter.labels.titlesize == 1
+        assert plotter.labels.ysize == 2
+        assert plotter.labels.xsize == 3
+        assert plotter.use_scaled_units == False
+
+        plotter = plotter.plotter_with_new_labels(
+            labels=mat_objs.Labels(
+                title="OMG0",
+                yunits="hi0",
+                xunits="hi20",
+                titlesize=10,
+                ysize=20,
+                xsize=30,
+        ))
+
+        assert plotter.labels.title == "OMG0"
+        assert plotter.labels._yunits == "hi0"
+        assert plotter.labels._xunits == "hi20"
+        assert plotter.labels.titlesize == 10
+        assert plotter.labels.ysize == 20
+        assert plotter.labels.xsize == 30
+        assert plotter.use_scaled_units == False
+
     def test__plotter_outputs_are_setup_correctly(self):
 
         plotter = plotters.Plotter()
@@ -93,6 +135,40 @@ class TestAbstractPlotter:
         assert plotter.output.path == "Path"
         assert plotter.output.format == "png"
         assert plotter.output.filename == "file"
+
+    def test__plotter_with_new_outputs__new_outputs_are_setup_correctly_if_input(self):
+
+        plotter = plotters.Plotter(
+            output=mat_objs.Output(path="Path", format="png", filename="file")
+        )
+
+        plotter = plotter.plotter_with_new_output()
+
+        assert plotter.output.path == "Path"
+        assert plotter.output.format == "png"
+        assert plotter.output.filename == "file"
+
+        plotter = plotter.plotter_with_new_output(output=mat_objs.Output(path="Path0", filename="file0"))
+
+        assert plotter.output.path == "Path0"
+        assert plotter.output.format == "png"
+        assert plotter.output.filename == "file0"
+
+    def test__plotter_with_new_unit_conversion_factor__new_outputs_are_setup_correctly_if_input(self):
+
+        plotter = plotters.Plotter(
+            unit_conversion_factor=1.0
+        )
+
+        assert plotter.unit_conversion_factor == 1.0
+
+        plotter = plotter.plotter_with_new_unit_conversion_factor()
+
+        assert plotter.unit_conversion_factor == 1.0
+
+        plotter = plotter.plotter_with_new_unit_conversion_factor(unit_conversion_factor=2.0)
+
+        assert plotter.unit_conversion_factor == 2.0
 
     def test__plotter_array_property_inherits_plotter_attributes(self):
 

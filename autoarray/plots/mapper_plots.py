@@ -1,6 +1,6 @@
 import itertools
 
-from autoarray.plotters import plotters
+from autoarray.plotters import plotters, mat_objs
 from autoarray.plots import imaging_plots
 
 
@@ -18,8 +18,8 @@ def image_and_mapper(
 
     number_subplots = 2
 
-    sub_plotter = sub_plotter.plotter_with_new_output_filename(
-        output_filename="image_and_mapper"
+    sub_plotter = sub_plotter.plotter_with_new_output(
+        output=mat_objs.Output(filename="image_and_mapper"),
     )
 
     sub_plotter.setup_subplot_figure(number_subplots=number_subplots)
