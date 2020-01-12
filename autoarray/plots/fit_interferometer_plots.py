@@ -1,11 +1,4 @@
-from autoarray import conf
-import matplotlib
-
-backend = conf.get_matplotlib_backend()
-matplotlib.use(backend)
-from matplotlib import pyplot as plt
-
-from autoarray.plotters import plotters
+from autoarray.plotters import plotters, mat_objs
 from autoarray.plots import inversion_plots
 
 
@@ -16,56 +9,49 @@ def subplot(
     sub_plotter=plotters.SubPlotter(),
 ):
 
+    number_subplots = 6
+
     sub_plotter = sub_plotter.plotter_with_new_output_filename(
         output_filename="fit_interferometer"
     )
 
-    rows, columns, figsize_tool = sub_plotter.get_subplot_rows_columns_figsize(
-        number_subplots=6
-    )
+    sub_plotter.setup_subplot_figure(number_subplots=number_subplots)
 
-    if sub_plotter.figsize is None:
-        figsize = figsize_tool
-    else:
-        figsize = sub_plotter.figsize
-
-    plt.figure(figsize=figsize)
-
-    plt.subplot(rows, columns, 1)
+    sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index=1)
 
     residual_map_vs_uv_distances(fit=fit, include=include, plotter=sub_plotter)
 
-    plt.subplot(rows, columns, 2)
+    sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index= 2)
 
     normalized_residual_map_vs_uv_distances(
         fit=fit, include=include, plotter=sub_plotter
     )
 
-    plt.subplot(rows, columns, 3)
+    sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index= 3)
 
     chi_squared_map_vs_uv_distances(fit=fit, include=include, plotter=sub_plotter)
 
-    plt.subplot(rows, columns, 4)
+    sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index= 4)
 
     residual_map_vs_uv_distances(
         fit=fit, plot_real=False, include=include, plotter=sub_plotter
     )
 
-    plt.subplot(rows, columns, 5)
+    sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index= 5)
 
     normalized_residual_map_vs_uv_distances(
         fit=fit, plot_real=False, include=include, plotter=sub_plotter
     )
 
-    plt.subplot(rows, columns, 6)
+    sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index= 6)
 
     chi_squared_map_vs_uv_distances(
         fit=fit, plot_real=False, include=include, plotter=sub_plotter
     )
 
-    sub_plotter.output.to_figure(structure=None)
+    sub_plotter.output.subplot_to_figure()
 
-    plt.close()
+    sub_plotter.close_figure()
 
 
 def individuals(
@@ -262,7 +248,7 @@ def residual_map_vs_uv_distances(
     if plot_real:
         y = fit.residual_map[:, 0]
         plotter = plotter.plotter_with_new_labels(
-            labels=plotters.Labels(title=plotter.labels.title + " Real")
+            labels=mat_objs.Labels(title=plotter.labels.title + " Real")
         )
         plotter = plotter.plotter_with_new_output_filename(
             output_filename=plotter.output.filename + "_real"
@@ -270,13 +256,13 @@ def residual_map_vs_uv_distances(
     else:
         y = fit.residual_map[:, 1]
         plotter = plotter.plotter_with_new_labels(
-            labels=plotters.Labels(title=plotter.labels.title + " Imag")
+            labels=mat_objs.Labels(title=plotter.labels.title + " Imag")
         )
         plotter = plotter.plotter_with_new_output_filename(
             output_filename=plotter.output.filename + "_imag"
         )
 
-    plotter.array.plot(
+    plotter.line.plot(
         y=y,
         x=fit.masked_interferometer.interferometer.uv_distances / 10 ** 3.0,
         plot_axis_type="scatter",
@@ -307,7 +293,7 @@ def normalized_residual_map_vs_uv_distances(
     if plot_real:
         y = fit.residual_map[:, 0]
         plotter = plotter.plotter_with_new_labels(
-            labels=plotters.Labels(title=plotter.labels.title + " Real")
+            labels=mat_objs.Labels(title=plotter.labels.title + " Real")
         )
         plotter = plotter.plotter_with_new_output_filename(
             output_filename=plotter.output.filename + "_real"
@@ -315,13 +301,13 @@ def normalized_residual_map_vs_uv_distances(
     else:
         y = fit.residual_map[:, 1]
         plotter = plotter.plotter_with_new_labels(
-            labels=plotters.Labels(title=plotter.labels.title + " Imag")
+            labels=mat_objs.Labels(title=plotter.labels.title + " Imag")
         )
         plotter = plotter.plotter_with_new_output_filename(
             output_filename=plotter.output.filename + "_imag"
         )
 
-    plotter.array.plot(
+    plotter.line.plot(
         y=y,
         x=fit.masked_interferometer.interferometer.uv_distances / 10 ** 3.0,
         plot_axis_type="scatter",
@@ -352,7 +338,7 @@ def chi_squared_map_vs_uv_distances(
     if plot_real:
         y = fit.residual_map[:, 0]
         plotter = plotter.plotter_with_new_labels(
-            labels=plotters.Labels(title=plotter.labels.title + " Real")
+            labels=mat_objs.Labels(title=plotter.labels.title + " Real")
         )
         plotter = plotter.plotter_with_new_output_filename(
             output_filename=plotter.output.filename + "_real"
@@ -360,13 +346,13 @@ def chi_squared_map_vs_uv_distances(
     else:
         y = fit.residual_map[:, 1]
         plotter = plotter.plotter_with_new_labels(
-            labels=plotters.Labels(title=plotter.labels.title + " Imag")
+            labels=mat_objs.Labels(title=plotter.labels.title + " Imag")
         )
         plotter = plotter.plotter_with_new_output_filename(
             output_filename=plotter.output.filename + "_imag"
         )
 
-    plotter.array.plot(
+    plotter.line.plot(
         y=y,
         x=fit.masked_interferometer.interferometer.uv_distances / 10 ** 3.0,
         plot_axis_type="scatter",

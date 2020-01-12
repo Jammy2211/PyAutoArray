@@ -26,14 +26,8 @@ def test__fit_sub_plot(fit_interferometer_7, fit_interferometer_path, plot_patch
 
     aa.plot.fit_interferometer.subplot(
         fit=fit_interferometer_7,
-        sub_plotter=aa.plotter.Plotter(
+        sub_plotter=aa.plotter.SubPlotter(
             output=aa.plotter.Output(fit_interferometer_path, format="png")
-        ),
-        sub_plotter=aa.plotter.Plotter(
-            output=aa.plotter.Output(path=fit_interferometer_path, format="png")
-        ),
-        sub_plotter=aa.plotter.Plotter(
-            output=aa.plotter.Output(path=fit_interferometer_path, format="png")
         ),
     )
 
@@ -53,12 +47,6 @@ def test__fit_individuals__dependent_on_input(
         plot_chi_squared_map=True,
         plotter=aa.plotter.Plotter(
             output=aa.plotter.Output(fit_interferometer_path, format="png")
-        ),
-        plotter=aa.plotter.Plotter(
-            output=aa.plotter.Output(path=fit_interferometer_path, format="png")
-        ),
-        plotter=aa.plotter.Plotter(
-            output=aa.plotter.Output(path=fit_interferometer_path, format="png")
         ),
     )
 

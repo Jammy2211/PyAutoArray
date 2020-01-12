@@ -66,7 +66,7 @@ def test__image_and_rectangular_mapper_is_output(
         ),
         image_pixels=[[0, 1, 2], [3]],
         source_pixels=[[1, 2], [0]],
-        plotter=aa.plotter.Plotter(
+        sub_plotter=aa.plotter.SubPlotter(
             output=aa.plotter.Output(path=plotter_path, format="png")
         ),
     )

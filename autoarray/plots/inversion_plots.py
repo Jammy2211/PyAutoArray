@@ -1,10 +1,3 @@
-import autoarray as aa
-import matplotlib
-
-backend = aa.conf.get_matplotlib_backend()
-matplotlib.use(backend)
-from matplotlib import pyplot as plt
-
 from autoarray.plotters import plotters
 from autoarray.operators.inversion import mappers
 
@@ -16,17 +9,13 @@ def subplot(
     positions=None,
     grid=None,
     include=plotters.Include(),
-    plotter=plotters.Plotter(),
+    sub_plotter=plotters.SubPlotter(),
 ):
 
+    number_subplots = 6
 
-
-    plotter = plotter.plotter_with_new_output_filename(
+    sub_plotter = sub_plotter.plotter_with_new_output_filename(
         output_filename="image_and_mapper"
-    )
-
-    rows, columns, figsize_tool = plotter.get_subplot_rows_columns_figsize(
-        number_subplots=2
     )
 
     ratio = float(
@@ -40,76 +29,76 @@ def subplot(
         )
     )
 
-    if plotter.aspect is "square":
+    if sub_plotter.aspect is "square":
         aspect_inv = ratio
-    elif plotter.aspect is "auto":
+    elif sub_plotter.aspect is "auto":
         aspect_inv = 1.0 / ratio
-    elif plotter.aspect is "equal":
+    elif sub_plotter.aspect is "equal":
         aspect_inv = 1.0
 
-    plt.figure(figsize=figsize)
+    sub_plotter.setup_subplot_figure(number_subplots=number_subplots)
 
-    plt.subplot(rows, columns, 1)
+    sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index=1)
 
     reconstructed_image(
         inversion=inversion,
         mask=mask,
         lines=lines,
         positions=positions,
-        grid=include.inversion_image_pixelization_grid_from_fit(),
+        grid=grid,
         include=include,
-        plotter=plotter,
+        plotter=sub_plotter,
     )
 
-    plt.subplot(rows, columns, 2, aspect=float(aspect_inv))
+    sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index= 2, aspect=float(aspect_inv))
 
     reconstruction(
         inversion=inversion,
         positions=None,
         lines=lines,
         include=include,
-        plotter=plotter,
+        plotter=sub_plotter,
     )
 
-    plt.subplot(rows, columns, 3, aspect=float(aspect_inv))
+    sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index= 3, aspect=float(aspect_inv))
 
     errors(
         inversion=inversion,
         positions=None,
         include=include,
-        plotter=plotter,
+        plotter=sub_plotter,
     )
 
-    plt.subplot(rows, columns, 4, aspect=float(aspect_inv))
+    sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index= 4, aspect=float(aspect_inv))
 
     residual_map(
         inversion=inversion,
         positions=None,
         include=include,
-        plotter=plotter,
+        plotter=sub_plotter,
     )
 
-    plt.subplot(rows, columns, 5, aspect=float(aspect_inv))
+    sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index= 5, aspect=float(aspect_inv))
 
     chi_squared_map(
         inversion=inversion,
         positions=None,
         include=include,
-        plotter=plotter,
+        plotter=sub_plotter,
     )
 
-    plt.subplot(rows, columns, 6, aspect=float(aspect_inv))
+    sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index= 6, aspect=float(aspect_inv))
 
     regularization_weights(
         inversion=inversion,
         positions=None,
         include=include,
-        plotter=plotter,
+        plotter=sub_plotter,
     )
 
-    plotter.output.to_figure(structure=None)
+    sub_plotter.output.subplot_to_figure()
 
-    plt.close()
+    sub_plotter.close_figure()
 
 
 def individuals(
