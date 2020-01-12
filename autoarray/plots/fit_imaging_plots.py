@@ -1,10 +1,3 @@
-import matplotlib
-from autoarray import conf
-
-backend = conf.get_matplotlib_backend()
-matplotlib.use(backend)
-from matplotlib import pyplot as plt
-
 from autoarray.plots import inversion_plots
 from autoarray.plotters import plotters
 
@@ -15,48 +8,46 @@ def subplot(
     points=None,
     lines=None,
     include=plotters.Include(),
-    plotter=plotters.Plotter(),
+    sub_plotter=plotters.SubPlotter(),
 ):
 
+    number_subplots = 6
 
-    plotter = plotter.plotter_with_new_output_filename(
+    sub_plotter = sub_plotter.plotter_with_new_output_filename(
         output_filename="fit_imaging"
     )
 
-    rows, columns, figsize_tool = plotter.get_subplot_rows_columns_figsize(
-        number_subplots=6
-    )
+    sub_plotter.setup_subplot_figure(number_subplots=number_subplots)
 
-    plt.figure(figsize=figsize)
-    plt.subplot(rows, columns, 1)
+    sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index=1)
 
     image(
-        fit=fit, grid=grid, include=include, points=points, plotter=plotter
+        fit=fit, grid=grid, include=include, points=points, plotter=sub_plotter
     )
 
-    plt.subplot(rows, columns, 2)
+    sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index= 2)
 
-    signal_to_noise_map(fit=fit, include=include, plotter=plotter)
+    signal_to_noise_map(fit=fit, include=include, plotter=sub_plotter)
 
-    plt.subplot(rows, columns, 3)
+    sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index= 3)
 
-    model_image(fit=fit, include=include, lines=lines, plotter=plotter)
+    model_image(fit=fit, include=include, lines=lines, plotter=sub_plotter)
 
-    plt.subplot(rows, columns, 4)
+    sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index= 4)
 
-    residual_map(fit=fit, include=include, plotter=plotter)
+    residual_map(fit=fit, include=include, plotter=sub_plotter)
 
-    plt.subplot(rows, columns, 5)
+    sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index= 5)
 
-    normalized_residual_map(fit=fit, include=include, plotter=plotter)
+    normalized_residual_map(fit=fit, include=include, plotter=sub_plotter)
 
-    plt.subplot(rows, columns, 6)
+    sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index= 6)
 
-    chi_squared_map(fit=fit, include=include, plotter=plotter)
+    chi_squared_map(fit=fit, include=include, plotter=sub_plotter)
 
-    plotter.output.to_figure(structure=None)
+    sub_plotter.output.subplot_to_figure()
 
-    plt.close()
+    sub_plotter.close_figure()
 
 
 def individuals(

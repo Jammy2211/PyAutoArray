@@ -99,7 +99,7 @@ def test__fit_sub_plot(fit_imaging_7x7, fit_imaging_path, plot_patch):
     aa.plot.fit_imaging.subplot(
         fit=fit_imaging_7x7,
         include=aa.plotter.Include(mask=True),
-        plotter=aa.plotter.Plotter(
+        sub_plotter=aa.plotter.SubPlotter(
             output=aa.plotter.Output(path=fit_imaging_path, format="png")
         ),
     )

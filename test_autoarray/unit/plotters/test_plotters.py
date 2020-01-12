@@ -98,7 +98,6 @@ class TestAbstractPlotter:
 
         plotter = plotters.Plotter()
 
-        assert plotter.array.is_sub_plotter == False
         assert plotter.array.figsize == (7, 7)
         assert plotter.array.aspect == "auto"
         assert plotter.array.cmap == "jet"
@@ -205,7 +204,6 @@ class TestAbstractPlotter:
 
         plotter = plotters.Plotter()
 
-        assert plotter.grid.is_sub_plotter == False
         assert plotter.grid.figsize == (7, 7)
         assert plotter.grid.aspect == "auto"
         assert plotter.grid.cmap == "jet"
@@ -304,7 +302,6 @@ class TestAbstractPlotter:
 
         plotter = plotters.Plotter()
 
-        assert plotter.mapper.is_sub_plotter == False
         assert plotter.mapper.figsize == (7, 7)
         assert plotter.mapper.aspect == "auto"
         assert plotter.mapper.cmap == "jet"
@@ -404,7 +401,6 @@ class TestAbstractPlotter:
 
         plotter = plotters.Plotter()
 
-        assert plotter.line.is_sub_plotter == False
         assert plotter.line.figsize == (7, 7)
         assert plotter.line.aspect == "auto"
         assert plotter.line.line_pointsize == None
@@ -496,6 +492,7 @@ class TestAbstractPlotter:
 
         assert plt.fignum_exists(num=1) == False
 
+
 class TestPlotter:
     def test__plotter_settings_use_figure_config_if_not_manually_input(self):
 
@@ -550,6 +547,7 @@ class TestPlotter:
         assert plotter.border_pointsize == 25
         assert plotter.point_pointsize == 26
         assert plotter.grid_pointsize == 27
+
 
 class TestSubPlotter:
 
@@ -635,14 +633,14 @@ class TestSubPlotter:
 
         plotter = plotters.SubPlotter()
 
-        rows, columns, figsize = plotter.get_subplot_rows_columns(
+        rows, columns = plotter.get_subplot_rows_columns(
             number_subplots=1
         )
 
         assert rows == 1
         assert columns == 2
 
-        rows, columns, figsize = plotter.get_subplot_rows_columns(
+        rows, columns = plotter.get_subplot_rows_columns(
             number_subplots=4
         )
 

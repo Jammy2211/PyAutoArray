@@ -1495,7 +1495,7 @@ class MapperPlotter(GridPlotter):
             point_colors=point_colors,
         )
 
-        self.output.to_figure(structure=None, bypass=self.output_bypass)
+        self.output.to_figure(structure=None)
         self.close_figure()
 
     def plot_voronoi_mapper(
@@ -1700,7 +1700,7 @@ class MapperPlotter(GridPlotter):
 
         if include_grid:
 
-            self.plot(grid=mapper.grid, bypass_limits=True)
+            super(MapperPlotter, self).plot(grid=mapper.grid, bypass_limits=True)
 
     def plot_border(self, mapper, include_border):
 

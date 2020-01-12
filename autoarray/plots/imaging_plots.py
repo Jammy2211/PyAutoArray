@@ -1,10 +1,3 @@
-from autoarray import conf
-import matplotlib
-
-backend = conf.get_matplotlib_backend()
-matplotlib.use(backend)
-from matplotlib import pyplot as plt
-
 from autoarray.plotters import plotters
 
 
@@ -14,7 +7,7 @@ def subplot(
     mask=None,
     positions=None,
     include=plotters.Include(),
-    plotter=plotters.Plotter(),
+    sub_plotter=plotters.SubPlotter(),
 ):
     """Plot the imaging data_type as a sub-plotters of all its quantites (e.g. the dataset, noise_map-map, PSF, Signal-to_noise-map, \
      etc).
@@ -36,16 +29,15 @@ def subplot(
     """
 
 
-    plotter = plotter.plotter_with_new_output_filename(
+    number_subplots = 6
+
+    sub_plotter = sub_plotter.plotter_with_new_output_filename(
         output_filename="imaging"
     )
 
-    rows, columns, figsize_tool = plotter.get_subplot_rows_columns_figsize(
-        number_subplots=6
-    )
+    sub_plotter.setup_subplot_figure(number_subplots=number_subplots)
 
-    plt.figure(figsize=figsize)
-    plt.subplot(rows, columns, 1)
+    sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index=1)
 
     image(
         imaging=imaging,
@@ -53,62 +45,62 @@ def subplot(
         mask=mask,
         positions=positions,
         include=include,
-        plotter=plotter,
+        plotter=sub_plotter,
     )
 
-    plt.subplot(rows, columns, 2)
+    sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index= 2)
 
     noise_map(
         imaging=imaging,
         mask=mask,
         positions=positions,
         include=include,
-        plotter=plotter,
+        plotter=sub_plotter,
     )
 
-    plt.subplot(rows, columns, 3)
+    sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index= 3)
 
     psf(
         imaging=imaging,
         mask=mask,
         positions=positions,
         include=include,
-        plotter=plotter,
+        plotter=sub_plotter,
     )
 
-    plt.subplot(rows, columns, 4)
+    sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index= 4)
 
     signal_to_noise_map(
         imaging=imaging,
         mask=mask,
         positions=positions,
         include=include,
-        plotter=plotter,
+        plotter=sub_plotter,
     )
 
-    plt.subplot(rows, columns, 5)
+    sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index= 5)
 
     absolute_signal_to_noise_map(
         imaging=imaging,
         mask=mask,
         positions=positions,
         include=include,
-        plotter=plotter,
+        plotter=sub_plotter,
     )
 
-    plt.subplot(rows, columns, 6)
+    sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index= 6)
 
     potential_chi_squared_map(
         imaging=imaging,
         mask=mask,
         positions=positions,
         include=include,
-        plotter=plotter,
+        plotter=sub_plotter,
     )
 
-    plotter.output.to_figure(structure=None)
+    sub_plotter.output.subplot_to_figure()
 
-    plt.close()
+    sub_plotter.close_figure()
 
 
 def individual(
