@@ -1,4 +1,4 @@
-from autoarray.plotters import plotters
+from autoarray.plotters import plotters, mat_objs
 from autoarray.structures import grids
 
 def subplot(
@@ -25,8 +25,8 @@ def subplot(
         config file is ignored.
     """
 
-    sub_plotter = sub_plotter.plotter_with_new_output_filename(
-        output_filename="interferometer"
+    sub_plotter = sub_plotter.plotter_with_new_output(
+        output=mat_objs.Output(filename="interferometer"),
     )
 
     number_subplots=4

@@ -393,6 +393,15 @@ class AbstractPlotter(object):
         plotter.labels._xunits = (
             labels._xunits if labels._xunits is not None else self.labels._xunits
         )
+        plotter.labels.titlesize = (
+            labels.titlesize if labels.titlesize is not None else self.labels.titlesize
+        )
+        plotter.labels.ysize = (
+            labels.ysize if labels.ysize is not None else self.labels.ysize
+        )
+        plotter.labels.xsize = (
+            labels.xsize if labels.xsize is not None else self.labels.xsize
+        )
 
         return plotter
 
@@ -414,12 +423,16 @@ class AbstractPlotter(object):
 
         return plotter
 
-    def plotter_with_new_output_filename(self, output_filename=None):
+    def plotter_with_new_output(self, output=mat_objs.Output()):
 
         plotter = copy.deepcopy(self)
 
+        plotter.output.path = (
+            output.path if output.path is not None else self.output.path
+        )
+
         plotter.output.filename = (
-            output_filename if output_filename is not None else self.output.filename
+            output.filename if output.filename is not None else self.output.filename
         )
 
         return plotter
@@ -2048,7 +2061,7 @@ def set_labels(func):
 
         filename = plotter.output.filename_from_func(func=func)
 
-        plotter = plotter.plotter_with_new_output_filename(output_filename=filename)
+        plotter = plotter.plotter_with_new_output(mat_objs.Output(filename=filename))
 
         kpc_per_arcsec = kpc_per_arcsec_of_object_from_dictionary(dictionary=kwargs)
 
