@@ -6,6 +6,7 @@ matplotlib.use(backend)
 import matplotlib.pyplot as plt
 import numpy as np
 import inspect
+import os
 
 from autoarray import exc
 
@@ -318,12 +319,26 @@ class Labels(object):
 
 
 class Output(object):
-    def __init__(self, path=None, filename=None, format="show", bypass=False):
+    def __init__(self, path=None, filename=None, format=None, bypass=False):
 
         self.path = path
+
+        if path is not None:
+            try:
+                os.makedirs(path)
+            except FileExistsError:
+                pass
+
         self.filename = filename
-        self.format = format
+        self._format = format
         self.bypass = bypass
+
+    @property
+    def format(self):
+        if self._format is None:
+            return "show"
+        else:
+            return self._format
 
     def filename_from_func(self, func):
 

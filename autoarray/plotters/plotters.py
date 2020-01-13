@@ -198,7 +198,7 @@ class AbstractPlotter(object):
         )
 
         self.output = mat_objs.Output(
-            path=output.path, format=output.format, filename=output.filename, bypass=self.is_sub_plotter
+            path=output.path, format=output._format, filename=output.filename, bypass=self.is_sub_plotter
         )
 
         self.line_pointsize = line_pointsize
@@ -433,6 +433,10 @@ class AbstractPlotter(object):
 
         plotter.output.filename = (
             output.filename if output.filename is not None else self.output.filename
+        )
+
+        plotter.output._format = (
+            output._format if output._format is not None else self.output._format
         )
 
         return plotter
@@ -2025,7 +2029,7 @@ def kpc_per_arcsec_of_object_from_dictionary(dictionary):
     return kpc_per_arcsec
 
 
-def set_subplot_title(func):
+def set_subplot_filename(func):
     """
     Decorate a profile method that accepts a coordinate grid and returns a data_type grid.
 

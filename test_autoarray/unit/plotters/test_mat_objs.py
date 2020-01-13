@@ -3,6 +3,7 @@ from autoarray import conf
 from autoarray.plotters import mat_objs
 
 import pytest
+import os, shutil
 
 directory = path.dirname(path.realpath(__file__))
 
@@ -144,6 +145,20 @@ class TestLabels:
 
 
 class TestOutput:
+
+    def test__input_path_is_created(self):
+
+        test_path = path.join(directory, "../test_files/output_path")
+
+        if os.path.exists(test_path):
+            shutil.rmtree(test_path)
+
+        assert not os.path.exists(test_path)
+
+        output = mat_objs.Output(path=test_path)
+
+        assert os.path.exists(test_path)
+
     def test__filename_from_func__returns_function_name_if_no_filename(self):
         def toy_func():
             pass

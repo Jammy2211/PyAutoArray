@@ -1,6 +1,6 @@
 from autoarray.plotters import plotters
 
-@plotters.set_subplot_title
+@plotters.set_subplot_filename
 def subplot_imaging(
     imaging,
     grid=None,

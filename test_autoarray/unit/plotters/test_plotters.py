@@ -125,6 +125,7 @@ class TestAbstractPlotter:
         plotter = plotters.Plotter()
 
         assert plotter.output.path == None
+        assert plotter.output._format == None
         assert plotter.output.format == "show"
         assert plotter.output.filename == None
 
@@ -133,6 +134,7 @@ class TestAbstractPlotter:
         )
 
         assert plotter.output.path == "Path"
+        assert plotter.output._format == "png"
         assert plotter.output.format == "png"
         assert plotter.output.filename == "file"
 
@@ -145,14 +147,23 @@ class TestAbstractPlotter:
         plotter = plotter.plotter_with_new_output()
 
         assert plotter.output.path == "Path"
+        assert plotter.output._format == "png"
         assert plotter.output.format == "png"
         assert plotter.output.filename == "file"
 
         plotter = plotter.plotter_with_new_output(output=mat_objs.Output(path="Path0", filename="file0"))
 
         assert plotter.output.path == "Path0"
+        assert plotter.output._format == "png"
         assert plotter.output.format == "png"
         assert plotter.output.filename == "file0"
+
+        plotter = plotter.plotter_with_new_output(output=mat_objs.Output(path="Path1", filename="file1", format="fits"))
+
+        assert plotter.output.path == "Path1"
+        assert plotter.output._format == "fits"
+        assert plotter.output.format == "fits"
+        assert plotter.output.filename == "file1"
 
     def test__plotter_with_new_unit_conversion_factor__new_outputs_are_setup_correctly_if_input(self):
 
