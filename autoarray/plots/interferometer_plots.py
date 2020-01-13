@@ -1,7 +1,7 @@
 from autoarray.plotters import plotters
 from autoarray.structures import grids
 
-@plotters.set_subplot_title
+@plotters.set_subplot_filename
 def subplot_interferometer(
     interferometer,
     include=plotters.Include(),

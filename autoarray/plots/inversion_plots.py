@@ -1,7 +1,7 @@
 from autoarray.plotters import plotters
 from autoarray.operators.inversion import mappers
 
-@plotters.set_subplot_title
+@plotters.set_subplot_filename
 def subplot_inversion(
     inversion,
     mask=None,

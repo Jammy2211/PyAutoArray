@@ -1,7 +1,7 @@
 from autoarray.plots import inversion_plots
 from autoarray.plotters import plotters
 
-@plotters.set_subplot_title
+@plotters.set_subplot_filename
 def subplot_fit_imaging(
     fit,
     grid=None,

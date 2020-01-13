@@ -2,7 +2,7 @@ from autoarray.plotters import plotters, mat_objs
 from autoarray.plots import inversion_plots
 
 
-@plotters.set_subplot_title
+@plotters.set_subplot_filename
 def subplot_fit_interferometer(
     fit,
     include=plotters.Include(),
