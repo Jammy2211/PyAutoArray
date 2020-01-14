@@ -38,9 +38,7 @@ def load_subplot_setting(section, name, python_type):
 class AbstractPlotter(object):
     def __init__(
         self,
-        use_scaled_units=None,
-        unit_conversion_factor=None,
-        plot_in_kpc=None,
+        units=mat_objs.Units(),
         figure=mat_objs.Figure(),
         cmap=mat_objs.ColorMap(),
         cb=mat_objs.ColorBar(),
@@ -56,32 +54,22 @@ class AbstractPlotter(object):
         output=mat_objs.Output(),
     ):
 
-        if use_scaled_units is not None:
-            self.use_scaled_units = use_scaled_units
-        else:
-            try:
-                conf.instance.visualize_general.get("general", "use_scaled_units", bool)
-            except:
-                self.use_scaled_units = True
-
-        self.unit_conversion_factor = unit_conversion_factor
-        try:
-            self.plot_in_kpc = (
-                plot_in_kpc
-                if plot_in_kpc is not None
-                else conf.instance.visualize_general.get("general", "plot_in_kpc", bool)
-            )
-        except:
-            self.plot_in_kpc = None
-
         if not self.is_sub_plotter:
             load_setting_func = load_figure_setting
         else:
             load_setting_func = load_subplot_setting
 
-        self.figure = mat_objs.Figure.from_instance_and_config(figure=figure, load_func=load_setting_func)
-        self.cmap = mat_objs.ColorMap.from_instance_and_config(colormap=cmap, load_func=load_setting_func)
-        self.cb = mat_objs.ColorBar.from_instance_and_config(cb=cb, load_func=load_setting_func)
+        self.units = mat_objs.Units.from_instance_and_config(units=units)
+
+        self.figure = mat_objs.Figure.from_instance_and_config(
+            figure=figure, load_func=load_setting_func
+        )
+        self.cmap = mat_objs.ColorMap.from_instance_and_config(
+            colormap=cmap, load_func=load_setting_func
+        )
+        self.cb = mat_objs.ColorBar.from_instance_and_config(
+            cb=cb, load_func=load_setting_func
+        )
 
         self.mask_pointsize = (
             mask_pointsize
@@ -104,9 +92,19 @@ class AbstractPlotter(object):
             else load_setting_func("settings", "grid_pointsize", int)
         )
 
-        self.ticks = mat_objs.Ticks.from_instance_and_config(ticks=ticks, load_func=load_setting_func)
-        self.labels = mat_objs.Labels.from_instance_and_config(labels=labels, load_func=load_setting_func, use_scaled_units=use_scaled_units)
-        self.output = mat_objs.Output.from_instance_and_config(output=output, load_func=load_setting_func, is_sub_plotter=self.is_sub_plotter)
+        self.ticks = mat_objs.Ticks.from_instance_and_config(
+            ticks=ticks, load_func=load_setting_func, units=self.units,
+        )
+        self.labels = mat_objs.Labels.from_instance_and_config(
+            labels=labels,
+            load_func=load_setting_func,
+            units=self.units,
+        )
+        self.output = mat_objs.Output.from_instance_and_config(
+            output=output,
+            load_func=load_setting_func,
+            is_sub_plotter=self.is_sub_plotter,
+        )
 
         self.line_pointsize = line_pointsize
         self.include_legend = include_legend
@@ -115,9 +113,7 @@ class AbstractPlotter(object):
     @property
     def array(self):
         return ArrayPlotter(
-            use_scaled_units=self.use_scaled_units,
-            unit_conversion_factor=self.unit_conversion_factor,
-            plot_in_kpc=self.plot_in_kpc,
+            units=self.units,
             figure=self.figure,
             cmap=self.cmap,
             cb=self.cb,
@@ -133,9 +129,7 @@ class AbstractPlotter(object):
     @property
     def grid(self):
         return GridPlotter(
-            use_scaled_units=self.use_scaled_units,
-            unit_conversion_factor=self.unit_conversion_factor,
-            plot_in_kpc=self.plot_in_kpc,
+            units=self.units,
             figure=self.figure,
             cmap=self.cmap,
             cb=self.cb,
@@ -149,9 +143,7 @@ class AbstractPlotter(object):
     @property
     def mapper(self):
         return MapperPlotter(
-            use_scaled_units=self.use_scaled_units,
-            unit_conversion_factor=self.unit_conversion_factor,
-            plot_in_kpc=self.plot_in_kpc,
+            units=self.units,
             figure=self.figure,
             cmap=self.cmap,
             cb=self.cb,
@@ -165,9 +157,7 @@ class AbstractPlotter(object):
     @property
     def line(self):
         return LinePlotter(
-            use_scaled_units=self.use_scaled_units,
-            unit_conversion_factor=self.unit_conversion_factor,
-            plot_in_kpc=self.plot_in_kpc,
+            units=self.units,
             figure=self.figure,
             line_pointsize=self.line_pointsize,
             include_legend=self.include_legend,
@@ -250,21 +240,35 @@ class AbstractPlotter(object):
 
         return plotter
 
-    def plotter_with_new_unit_conversion_factor(self, unit_conversion_factor=None):
+    def plotter_with_new_units(self, units=mat_objs.Units()):
 
         plotter = copy.deepcopy(self)
 
-        plotter.unit_conversion_factor = (
-            unit_conversion_factor
-            if unit_conversion_factor is not None
-            else self.unit_conversion_factor
+        new_units = mat_objs.Units()
+
+        new_units.use_scaled = units.use_scaled = (
+            units.use_scaled
+            if units.use_scaled is not None
+            else self.units.use_scaled
         )
 
-        plotter.ticks.unit_conversion_factor = (
-            unit_conversion_factor
-            if unit_conversion_factor is not None
-            else self.unit_conversion_factor
+        new_units.in_kpc = units.in_kpc = (
+            units.in_kpc
+            if units.in_kpc is not None
+            else self.units.in_kpc
         )
+
+        new_units.conversion_factor = units.conversion_factor = (
+            units.conversion_factor
+            if units.conversion_factor is not None
+            else self.units.conversion_factor
+        )
+
+        plotter.units = new_units
+
+        plotter.ticks.units = new_units
+
+        plotter.labels.units = new_units
 
         return plotter
 
@@ -290,9 +294,7 @@ class AbstractPlotter(object):
 class Plotter(AbstractPlotter):
     def __init__(
         self,
-        use_scaled_units=None,
-        unit_conversion_factor=None,
-        plot_in_kpc=None,
+        units=mat_objs.Units(),
         figure=mat_objs.Figure(),
         cmap=mat_objs.ColorMap(),
         cb=mat_objs.ColorBar(),
@@ -309,9 +311,7 @@ class Plotter(AbstractPlotter):
     ):
 
         super(Plotter, self).__init__(
-            use_scaled_units=use_scaled_units,
-            unit_conversion_factor=unit_conversion_factor,
-            plot_in_kpc=plot_in_kpc,
+            units=units,
             figure=figure,
             cmap=cmap,
             cb=cb,
@@ -335,9 +335,7 @@ class Plotter(AbstractPlotter):
 class SubPlotter(AbstractPlotter):
     def __init__(
         self,
-        use_scaled_units=None,
-        unit_conversion_factor=None,
-        plot_in_kpc=None,
+            units=mat_objs.Units(),
         figure=mat_objs.Figure(),
         cmap=mat_objs.ColorMap(),
         cb=mat_objs.ColorBar(),
@@ -354,9 +352,7 @@ class SubPlotter(AbstractPlotter):
     ):
 
         super(SubPlotter, self).__init__(
-            use_scaled_units=use_scaled_units,
-            unit_conversion_factor=unit_conversion_factor,
-            plot_in_kpc=plot_in_kpc,
+            units=units,
             figure=figure,
             cmap=cmap,
             cb=cb,
@@ -453,9 +449,7 @@ class SubPlotter(AbstractPlotter):
 class ArrayPlotter(AbstractPlotter):
     def __init__(
         self,
-        use_scaled_units,
-        unit_conversion_factor,
-        plot_in_kpc,
+        units,
         figure,
         cmap,
         cb,
@@ -468,12 +462,8 @@ class ArrayPlotter(AbstractPlotter):
         output,
     ):
 
+        self.units = units
         self.figure = figure
-
-        self.use_scaled_units = use_scaled_units
-        self.unit_conversion_factor = unit_conversion_factor
-
-        self.plot_in_kpc = plot_in_kpc
 
         self.cmap = cmap
         self.cb = cb
@@ -611,7 +601,7 @@ class ArrayPlotter(AbstractPlotter):
         if array is None or np.all(array == 0):
             return
 
-        if array.pixel_scales is None and self.use_scaled_units:
+        if array.pixel_scales is None and self.units.use_scaled:
             raise exc.ArrayException(
                 "You cannot plot an array using its scaled unit_label if the input array does not have "
                 "a pixel scales attribute."
@@ -632,14 +622,10 @@ class ArrayPlotter(AbstractPlotter):
         self.ticks.set_yticks(
             array=array,
             extent=extent,
-            use_scaled_units=self.use_scaled_units,
-            unit_conversion_factor=self.unit_conversion_factor,
         )
         self.ticks.set_xticks(
             array=array,
             extent=extent,
-            use_scaled_units=self.use_scaled_units,
-            unit_conversion_factor=self.unit_conversion_factor,
         )
 
         self.labels.set_title()
@@ -649,10 +635,10 @@ class ArrayPlotter(AbstractPlotter):
         self.cb.plot()
         self.plot_origin(array=array, include_origin=include_origin)
         self.plot_mask(mask=mask)
-        self.plot_lines(lines=lines)
         self.plot_border(mask=mask, border=border)
-        self.plot_points(points=points)
         self.plot_grid(grid=grid)
+        self.plot_lines(lines=lines)
+        self.plot_points(points=points)
         self.plot_centres(centres=centres)
         self.output.to_figure(structure=array)
         self.figure.close()
@@ -701,7 +687,11 @@ class ArrayPlotter(AbstractPlotter):
         norm_scale = self.cmap.norm_from_array(array=array)
 
         plt.imshow(
-            X=array.in_2d, aspect=aspect, cmap=self.cmap.cmap, norm=norm_scale, extent=extent
+            X=array.in_2d,
+            aspect=aspect,
+            cmap=self.cmap.cmap,
+            norm=norm_scale,
+            extent=extent,
         )
 
     def plot_origin(self, array, include_origin):
@@ -726,38 +716,6 @@ class ArrayPlotter(AbstractPlotter):
                 c="k",
                 marker="x",
             )
-
-    def plot_centres(self, centres):
-        """Plot the (y,x) centres (e.g. of a mass profile) on the array as an 'x'.
-
-        Parameters
-        -----------
-        array : data_type.array.aa.Scaled
-            The 2D array of data_type which is plotted.
-        centres : [[tuple]]
-            The list of centres; centres in the same list entry are colored the same.
-        use_scaled_units_label : str
-            The label for the unit_label of the y / x axis of the plots.
-        unit_conversion_factor : float or None
-            The conversion factor between arc-seconds and kiloparsecs, required to plotters the unit_label in kpc.
-        """
-        if centres is not None:
-
-            if not any(isinstance(el, list) for el in centres):
-
-                for centre in centres:
-                    plt.scatter(y=centre[0], x=centre[1], s=300, marker="x")
-
-            else:
-
-                colors = itertools.cycle(["m", "y", "r", "w", "c", "b", "g", "k"])
-
-                for centres_of_galaxy in centres:
-                    color = next(colors)
-                    for centre in centres_of_galaxy:
-                        plt.scatter(
-                            y=centre[0], x=centre[1], s=300, c=color, marker="x"
-                        )
 
     def plot_mask(self, mask):
         """Plot the mask of the array on the figure.
@@ -813,6 +771,63 @@ class ArrayPlotter(AbstractPlotter):
                 c="y",
             )
 
+    def plot_grid(self, grid):
+        """Plot a grid of points over the array of data_type on the figure.
+
+         Parameters
+         -----------.
+         grid_arcsec : ndarray or data_type.array.aa.Grid
+             A grid of (y,x) coordinates in arc-seconds which may be plotted over the array.
+         array : data_type.array.aa.Scaled
+            The 2D array of data_type which is plotted.
+         unit_label : str
+             The label for the unit_label of the y / x axis of the plots.
+         kpc_per_arcsec : float or None
+             The conversion factor between arc-seconds and kiloparsecs, required to plotters the unit_label in kpc.
+         grid_pointsize : int
+             The size of the points plotted to show the grid.
+         """
+        if grid is not None:
+
+            plt.scatter(
+                y=np.asarray(grid[:, 0]),
+                x=np.asarray(grid[:, 1]),
+                s=self.grid_pointsize,
+                c="k",
+            )
+
+    def plot_centres(self, centres):
+        """Plot the (y,x) centres (e.g. of a mass profile) on the array as an 'x'.
+
+        Parameters
+        -----------
+        array : data_type.array.aa.Scaled
+            The 2D array of data_type which is plotted.
+        centres : [[tuple]]
+            The list of centres; centres in the same list entry are colored the same.
+        use_scaled_units_label : str
+            The label for the unit_label of the y / x axis of the plots.
+        unit_conversion_factor : float or None
+            The conversion factor between arc-seconds and kiloparsecs, required to plotters the unit_label in kpc.
+        """
+        if centres is not None:
+
+            if not any(isinstance(el, list) for el in centres):
+
+                for centre in centres:
+                    plt.scatter(y=centre[0], x=centre[1], s=300, marker="x")
+
+            else:
+
+                colors = itertools.cycle(["m", "y", "r", "w", "c", "b", "g", "k"])
+
+                for centres_of_galaxy in centres:
+                    color = next(colors)
+                    for centre in centres_of_galaxy:
+                        plt.scatter(
+                            y=centre[0], x=centre[1], s=300, c=color, marker="x"
+                        )
+
     def plot_points(self, points):
         """Plot a set of points over the array of data_type on the figure.
 
@@ -842,38 +857,11 @@ class ArrayPlotter(AbstractPlotter):
                     s=self.point_pointsize,
                 )
 
-    def plot_grid(self, grid):
-        """Plot a grid of points over the array of data_type on the figure.
-
-         Parameters
-         -----------.
-         grid_arcsec : ndarray or data_type.array.aa.Grid
-             A grid of (y,x) coordinates in arc-seconds which may be plotted over the array.
-         array : data_type.array.aa.Scaled
-            The 2D array of data_type which is plotted.
-         unit_label : str
-             The label for the unit_label of the y / x axis of the plots.
-         kpc_per_arcsec : float or None
-             The conversion factor between arc-seconds and kiloparsecs, required to plotters the unit_label in kpc.
-         grid_pointsize : int
-             The size of the points plotted to show the grid.
-         """
-        if grid is not None:
-
-            plt.scatter(
-                y=np.asarray(grid[:, 0]),
-                x=np.asarray(grid[:, 1]),
-                s=self.grid_pointsize,
-                c="k",
-            )
-
 
 class GridPlotter(AbstractPlotter):
     def __init__(
         self,
-        use_scaled_units,
-        unit_conversion_factor,
-        plot_in_kpc,
+        units,
         figure,
         cmap,
         cb,
@@ -884,12 +872,9 @@ class GridPlotter(AbstractPlotter):
         output,
     ):
 
-        self.figure=figure
+        self.figure = figure
 
-        self.use_scaled_units = use_scaled_units
-        self.unit_conversion_factor = unit_conversion_factor
-
-        self.plot_in_kpc = plot_in_kpc
+        self.units = units
 
         self.cmap = cmap
         self.cb = cb
@@ -990,15 +975,11 @@ class GridPlotter(AbstractPlotter):
         self.ticks.set_yticks(
             array=None,
             extent=grid.extent,
-            use_scaled_units=self.use_scaled_units,
-            unit_conversion_factor=self.unit_conversion_factor,
             symmetric_around_centre=symmetric_around_centre,
         )
         self.ticks.set_xticks(
             array=None,
             extent=grid.extent,
-            use_scaled_units=self.use_scaled_units,
-            unit_conversion_factor=self.unit_conversion_factor,
             symmetric_around_centre=symmetric_around_centre,
         )
 
@@ -1069,9 +1050,7 @@ class GridPlotter(AbstractPlotter):
 class MapperPlotter(GridPlotter):
     def __init__(
         self,
-        use_scaled_units,
-        unit_conversion_factor,
-        plot_in_kpc,
+        units,
         figure,
         cmap,
         cb,
@@ -1084,10 +1063,7 @@ class MapperPlotter(GridPlotter):
 
         self.figure = figure
 
-        self.use_scaled_units = use_scaled_units
-        self.unit_conversion_factor = unit_conversion_factor
-
-        self.plot_in_kpc = plot_in_kpc
+        self.units = units
 
         self.cmap = cmap
         self.cb = cb
@@ -1154,14 +1130,10 @@ class MapperPlotter(GridPlotter):
         self.ticks.set_yticks(
             array=None,
             extent=mapper.pixelization_grid.extent,
-            use_scaled_units=self.use_scaled_units,
-            unit_conversion_factor=self.unit_conversion_factor,
         )
         self.ticks.set_xticks(
             array=None,
             extent=mapper.pixelization_grid.extent,
-            use_scaled_units=self.use_scaled_units,
-            unit_conversion_factor=self.unit_conversion_factor,
         )
 
         self.plot_rectangular_pixelization_lines(mapper=mapper)
@@ -1213,14 +1185,10 @@ class MapperPlotter(GridPlotter):
         self.ticks.set_yticks(
             array=None,
             extent=mapper.pixelization_grid.extent,
-            use_scaled_units=self.use_scaled_units,
-            unit_conversion_factor=self.unit_conversion_factor,
         )
         self.ticks.set_xticks(
             array=None,
             extent=mapper.pixelization_grid.extent,
-            use_scaled_units=self.use_scaled_units,
-            unit_conversion_factor=self.unit_conversion_factor,
         )
 
         regions_SP, vertices_SP = self.voronoi_finite_polygons_2d(
@@ -1474,9 +1442,7 @@ class MapperPlotter(GridPlotter):
 class LinePlotter(AbstractPlotter):
     def __init__(
         self,
-        use_scaled_units,
-        unit_conversion_factor,
-        plot_in_kpc,
+        units,
         include_legend,
         legend_fontsize,
         figure,
@@ -1486,12 +1452,8 @@ class LinePlotter(AbstractPlotter):
         output,
     ):
 
-        self.figure=figure
-
-        self.use_scaled_units = use_scaled_units
-        self.unit_conversion_factor = unit_conversion_factor
-
-        self.plot_in_kpc = plot_in_kpc
+        self.units = units
+        self.figure = figure
 
         self.ticks = ticks
 
@@ -1536,8 +1498,6 @@ class LinePlotter(AbstractPlotter):
         self.ticks.set_xticks(
             array=None,
             extent=[np.min(x), np.max(x)],
-            use_scaled_units=self.use_scaled_units,
-            unit_conversion_factor=self.unit_conversion_factor,
         )
 
         self.output.to_figure(structure=None)
@@ -1569,10 +1529,10 @@ class LinePlotter(AbstractPlotter):
             vertical_lines, vertical_line_labels
         ):
 
-            if self.unit_conversion_factor is None:
+            if self.units.conversion_factor is None:
                 x_value_plot = vertical_line
             else:
-                x_value_plot = vertical_line * self.unit_conversion_factor
+                x_value_plot = vertical_line * self.units.conversion_factor
 
             plt.axvline(x=x_value_plot, label=vertical_line_label, linestyle="--")
 
@@ -1771,8 +1731,8 @@ def set_labels(func):
 
         kpc_per_arcsec = kpc_per_arcsec_of_object_from_dictionary(dictionary=kwargs)
 
-        plotter = plotter.plotter_with_new_unit_conversion_factor(
-            unit_conversion_factor=kpc_per_arcsec
+        plotter = plotter.plotter_with_new_units(
+            units=mat_objs.Units(conversion_factor=kpc_per_arcsec),
         )
 
         kwargs[plotter_key] = plotter
