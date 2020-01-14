@@ -2,10 +2,17 @@ from os import path
 from autoarray import conf
 from autoarray.plotters import plotters, mat_objs
 import matplotlib.pyplot as plt
-
+import os
 import pytest
 
 directory = path.dirname(path.realpath(__file__))
+
+
+@pytest.fixture(name="plotter_path")
+def make_plotter_setup():
+    return "{}/..//test_files/plotters/".format(
+        os.path.dirname(os.path.realpath(__file__))
+    )
 
 
 @pytest.fixture(autouse=True)
@@ -13,6 +20,7 @@ def set_config_path():
     conf.instance = conf.Config(
         path.join(directory, "../test_files/plotters"), path.join(directory, "output")
     )
+
 
 class TestAbstractPlotter:
 
@@ -734,6 +742,15 @@ class TestSubPlotter:
         assert rows == 2
         assert columns == 2
 
+
+class TestArrayPlotter:
+
+    def test__plot_lines__can_take_inputs_of_correct_form(self):
+
+        plotter = plotters.Plotter()
+
+        plotter.array.plot_lines(lines=[(1.0, 1.0), (2.0, 2.0)])
+        plotter.array.plot_lines(lines=[[(1.0, 1.0), (2.0, 2.0)], [(3.0, 3.0), (4.0, 4.0)]])
 
 class TestDecorator:
     def test__kpc_per_arcsec_extacted_from_object_if_available(self):

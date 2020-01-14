@@ -323,7 +323,7 @@ class Output(object):
 
         self.path = path
 
-        if path is not None:
+        if path is not None and path:
             try:
                 os.makedirs(path)
             except FileExistsError:
