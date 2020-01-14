@@ -41,8 +41,7 @@ class AbstractPlotter(object):
         use_scaled_units=None,
         unit_conversion_factor=None,
         plot_in_kpc=None,
-        figsize=None,
-        aspect=None,
+        figure=mat_objs.Figure(),
         cmap=mat_objs.ColorMap(),
         cb=mat_objs.ColorBar(),
         mask_pointsize=None,
@@ -80,22 +79,7 @@ class AbstractPlotter(object):
         else:
             load_setting_func = load_subplot_setting
 
-        self.figsize = (
-            figsize
-            if figsize is not None
-            else load_setting_func("figures", "figsize", str)
-        )
-        if self.figsize == "auto":
-            self.figsize = None
-        elif isinstance(self.figsize, str):
-            self.figsize = tuple(map(int, self.figsize[1:-1].split(",")))
-
-        self.aspect = (
-            aspect
-            if aspect is not None
-            else load_setting_func("figures", "aspect", str)
-        )
-
+        self.figure = mat_objs.Figure.from_instance_and_config(figure=figure, load_func=load_setting_func)
         self.cmap = mat_objs.ColorMap.from_instance_and_config(colormap=cmap, load_func=load_setting_func)
         self.cb = mat_objs.ColorBar.from_instance_and_config(cb=cb, load_func=load_setting_func)
 
@@ -134,8 +118,7 @@ class AbstractPlotter(object):
             use_scaled_units=self.use_scaled_units,
             unit_conversion_factor=self.unit_conversion_factor,
             plot_in_kpc=self.plot_in_kpc,
-            figsize=self.figsize,
-            aspect=self.aspect,
+            figure=self.figure,
             cmap=self.cmap,
             cb=self.cb,
             mask_pointsize=self.mask_pointsize,
@@ -153,8 +136,7 @@ class AbstractPlotter(object):
             use_scaled_units=self.use_scaled_units,
             unit_conversion_factor=self.unit_conversion_factor,
             plot_in_kpc=self.plot_in_kpc,
-            figsize=self.figsize,
-            aspect=self.aspect,
+            figure=self.figure,
             cmap=self.cmap,
             cb=self.cb,
             grid_pointsize=self.grid_pointsize,
@@ -170,8 +152,7 @@ class AbstractPlotter(object):
             use_scaled_units=self.use_scaled_units,
             unit_conversion_factor=self.unit_conversion_factor,
             plot_in_kpc=self.plot_in_kpc,
-            figsize=self.figsize,
-            aspect=self.aspect,
+            figure=self.figure,
             cmap=self.cmap,
             cb=self.cb,
             grid_pointsize=self.grid_pointsize,
@@ -187,8 +168,7 @@ class AbstractPlotter(object):
             use_scaled_units=self.use_scaled_units,
             unit_conversion_factor=self.unit_conversion_factor,
             plot_in_kpc=self.plot_in_kpc,
-            figsize=self.figsize,
-            aspect=self.aspect,
+            figure=self.figure,
             line_pointsize=self.line_pointsize,
             include_legend=self.include_legend,
             legend_fontsize=self.legend_fontsize,
@@ -196,14 +176,6 @@ class AbstractPlotter(object):
             labels=self.labels,
             output=self.output,
         )
-
-    def setup_figure(self):
-        if not plt.fignum_exists(num=1):
-            plt.figure(figsize=self.figsize)
-
-    def close_figure(self):
-        if plt.fignum_exists(num=1):
-            plt.close()
 
     @property
     def is_sub_plotter(self):
@@ -321,8 +293,7 @@ class Plotter(AbstractPlotter):
         use_scaled_units=None,
         unit_conversion_factor=None,
         plot_in_kpc=None,
-        figsize=None,
-        aspect=None,
+        figure=mat_objs.Figure(),
         cmap=mat_objs.ColorMap(),
         cb=mat_objs.ColorBar(),
         mask_pointsize=None,
@@ -341,8 +312,7 @@ class Plotter(AbstractPlotter):
             use_scaled_units=use_scaled_units,
             unit_conversion_factor=unit_conversion_factor,
             plot_in_kpc=plot_in_kpc,
-            figsize=figsize,
-            aspect=aspect,
+            figure=figure,
             cmap=cmap,
             cb=cb,
             mask_pointsize=mask_pointsize,
@@ -368,8 +338,7 @@ class SubPlotter(AbstractPlotter):
         use_scaled_units=None,
         unit_conversion_factor=None,
         plot_in_kpc=None,
-        figsize=None,
-        aspect=None,
+        figure=mat_objs.Figure(),
         cmap=mat_objs.ColorMap(),
         cb=mat_objs.ColorBar(),
         mask_pointsize=None,
@@ -388,8 +357,7 @@ class SubPlotter(AbstractPlotter):
             use_scaled_units=use_scaled_units,
             unit_conversion_factor=unit_conversion_factor,
             plot_in_kpc=plot_in_kpc,
-            figsize=figsize,
-            aspect=aspect,
+            figure=figure,
             cmap=cmap,
             cb=cb,
             mask_pointsize=mask_pointsize,
@@ -404,7 +372,7 @@ class SubPlotter(AbstractPlotter):
             output=output,
         )
 
-    def setup_subplot_figure(self, number_subplots):
+    def open_subplot_figure(self, number_subplots):
         """Setup a figure for plotting an image.
 
         Parameters
@@ -457,8 +425,8 @@ class SubPlotter(AbstractPlotter):
             The number of subplots that are to be plotted in the figure.
         """
 
-        if self.figsize is not None:
-            return self.figsize
+        if self.figure.figsize is not None:
+            return self.figure.figsize
 
         if number_subplots <= 2:
             return (18, 8)
@@ -488,8 +456,7 @@ class ArrayPlotter(AbstractPlotter):
         use_scaled_units,
         unit_conversion_factor,
         plot_in_kpc,
-        figsize,
-        aspect,
+        figure,
         cmap,
         cb,
         mask_pointsize,
@@ -501,8 +468,7 @@ class ArrayPlotter(AbstractPlotter):
         output,
     ):
 
-        self.figsize = figsize
-        self.aspect = aspect
+        self.figure = figure
 
         self.use_scaled_units = use_scaled_units
         self.unit_conversion_factor = unit_conversion_factor
@@ -680,7 +646,7 @@ class ArrayPlotter(AbstractPlotter):
         self.labels.set_yunits(include_brackets=True)
         self.labels.set_xunits(include_brackets=True)
 
-        self.cb.set_colorbar()
+        self.cb.plot()
         self.plot_origin(array=array, include_origin=include_origin)
         self.plot_mask(mask=mask)
         self.plot_lines(lines=lines)
@@ -689,7 +655,7 @@ class ArrayPlotter(AbstractPlotter):
         self.plot_grid(grid=grid)
         self.plot_centres(centres=centres)
         self.output.to_figure(structure=array)
-        self.close_figure()
+        self.figure.close()
 
     def plot_figure(self, array, extent):
         """Open a matplotlib figure and plotters the array of data_type on it.
@@ -730,14 +696,9 @@ class ArrayPlotter(AbstractPlotter):
             If input, the yticks do not use the array's default yticks but instead overwrite them as these values.
         """
 
-        self.setup_figure()
-
-        norm_scale = self.cmap.get_normalization_scale(array=array)
-
-        if self.aspect in "square":
-            aspect = float(array.shape_2d[1]) / float(array.shape_2d[0])
-        else:
-            aspect = self.aspect
+        self.figure.open()
+        aspect = self.figure.aspect_from_shape_2d(shape_2d=array.shape_2d)
+        norm_scale = self.cmap.norm_from_array(array=array)
 
         plt.imshow(
             X=array.in_2d, aspect=aspect, cmap=self.cmap.cmap, norm=norm_scale, extent=extent
@@ -913,8 +874,7 @@ class GridPlotter(AbstractPlotter):
         use_scaled_units,
         unit_conversion_factor,
         plot_in_kpc,
-        figsize,
-        aspect,
+        figure,
         cmap,
         cb,
         grid_pointsize,
@@ -924,8 +884,7 @@ class GridPlotter(AbstractPlotter):
         output,
     ):
 
-        self.figsize = figsize
-        self.aspect = aspect
+        self.figure=figure
 
         self.use_scaled_units = use_scaled_units
         self.unit_conversion_factor = unit_conversion_factor
@@ -997,7 +956,7 @@ class GridPlotter(AbstractPlotter):
             'png' - output to hard-disk as a png.
         """
 
-        self.setup_figure()
+        self.figure.open()
 
         if colors is not None:
 
@@ -1014,7 +973,7 @@ class GridPlotter(AbstractPlotter):
 
         if colors is not None:
 
-            self.cb.set_colorbar()
+            self.cb.plot()
 
         self.labels.set_title()
         self.labels.set_yunits(include_brackets=True)
@@ -1047,7 +1006,7 @@ class GridPlotter(AbstractPlotter):
         self.plot_lines(lines=lines)
 
         self.output.to_figure(structure=grid)
-        self.close_figure()
+        self.figure.close()
 
     def set_axis_limits(self, axis_limits, grid, symmetric_around_centre):
         """Set the axis limits of the figure the grid is plotted on.
@@ -1113,8 +1072,7 @@ class MapperPlotter(GridPlotter):
         use_scaled_units,
         unit_conversion_factor,
         plot_in_kpc,
-        figsize,
-        aspect,
+        figure,
         cmap,
         cb,
         grid_pointsize,
@@ -1124,8 +1082,7 @@ class MapperPlotter(GridPlotter):
         output,
     ):
 
-        self.figsize = figsize
-        self.aspect = aspect
+        self.figure = figure
 
         self.use_scaled_units = use_scaled_units
         self.unit_conversion_factor = unit_conversion_factor
@@ -1186,7 +1143,7 @@ class MapperPlotter(GridPlotter):
         source_pixels=None,
     ):
 
-        self.setup_figure()
+        self.figure.open()
 
         self.set_axis_limits(
             axis_limits=mapper.pixelization_grid.extent,
@@ -1231,7 +1188,7 @@ class MapperPlotter(GridPlotter):
         )
 
         self.output.to_figure(structure=None)
-        self.close_figure()
+        self.figure.close()
 
     def plot_voronoi_mapper(
         self,
@@ -1245,7 +1202,7 @@ class MapperPlotter(GridPlotter):
         source_pixels=None,
     ):
 
-        self.setup_figure()
+        self.figure.open()
 
         self.set_axis_limits(
             axis_limits=mapper.pixelization_grid.extent,
@@ -1273,7 +1230,7 @@ class MapperPlotter(GridPlotter):
         color_values = source_pixel_values[:] / np.max(source_pixel_values)
         cmap = plt.get_cmap("jet")
 
-        self.cb.set_colorbar_using_values(cmap=cmap, color_values=source_pixel_values)
+        self.cb.plot_with_values(cmap=cmap, color_values=source_pixel_values)
 
         for region, index in zip(regions_SP, range(mapper.pixels)):
             polygon = vertices_SP[region]
@@ -1304,7 +1261,7 @@ class MapperPlotter(GridPlotter):
         )
 
         self.output.to_figure(structure=None)
-        self.close_figure()
+        self.figure.close()
 
     def voronoi_finite_polygons_2d(self, vor, radius=None):
         """
@@ -1522,16 +1479,14 @@ class LinePlotter(AbstractPlotter):
         plot_in_kpc,
         include_legend,
         legend_fontsize,
-        figsize,
-        aspect,
+        figure,
         line_pointsize,
         ticks,
         labels,
         output,
     ):
 
-        self.figsize = figsize
-        self.aspect = aspect
+        self.figure=figure
 
         self.use_scaled_units = use_scaled_units
         self.unit_conversion_factor = unit_conversion_factor
@@ -1561,7 +1516,7 @@ class LinePlotter(AbstractPlotter):
         if y is None:
             return
 
-        self.setup_figure()
+        self.figure.open()
         self.labels.set_title()
 
         if x is None:
@@ -1587,7 +1542,7 @@ class LinePlotter(AbstractPlotter):
 
         self.output.to_figure(structure=None)
 
-        self.close_figure()
+        self.figure.close()
 
     def plot_y_vs_x(self, y, x, plot_axis_type, label):
 

@@ -33,7 +33,7 @@ def subplot_inversion(
     elif sub_plotter.aspect is "equal":
         aspect_inv = 1.0
 
-    sub_plotter.setup_subplot_figure(number_subplots=number_subplots)
+    sub_plotter.open_subplot_figure(number_subplots=number_subplots)
 
     sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index=1)
 
@@ -91,7 +91,7 @@ def subplot_inversion(
 
     sub_plotter.output.subplot_to_figure()
 
-    sub_plotter.close_figure()
+    sub_plotter.figure.close()
 
 
 def individuals(
