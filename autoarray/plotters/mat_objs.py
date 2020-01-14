@@ -13,10 +13,40 @@ import os
 from autoarray import exc
 
 
-class Figure(object):
+class Units(object):
 
-    def __init__(self,         figsize=None,
-        aspect=None):
+    def __init__(self, use_scaled=None, conversion_factor=None, in_kpc=None):
+
+        self.use_scaled = use_scaled
+        self.conversion_factor = conversion_factor
+        self.in_kpc = in_kpc
+
+    @classmethod
+    def from_instance_and_config(cls, units):
+
+        if units.use_scaled is not None:
+            use_scaled = units.use_scaled
+        else:
+            try:
+                conf.instance.visualize_general.get("general", "use_scaled", bool)
+            except:
+                use_scaled = True
+
+        try:
+            in_kpc = (
+                units.in_kpc
+                if units.in_kpc is not None
+                else conf.instance.visualize_general.get("units", "in_kpc", bool)
+            )
+        except:
+            in_kpc = None
+
+
+        return Units(use_scaled=use_scaled, conversion_factor=units.conversion_factor, in_kpc=in_kpc)
+
+
+class Figure(object):
+    def __init__(self, figsize=None, aspect=None):
 
         self.figsize = figsize
         self.aspect = aspect
@@ -111,13 +141,13 @@ class ColorMap(object):
         )
 
         return ColorMap(
-                cmap=cmap,
-                norm=norm,
-                norm_min=norm_min,
-                norm_max=norm_max,
-                linthresh=linthresh,
-                linscale=linscale,
-            )
+            cmap=cmap,
+            norm=norm,
+            norm_min=norm_min,
+            norm_max=norm_max,
+            linthresh=linthresh,
+            linscale=linscale,
+        )
 
     def norm_from_array(self, array):
         """Get the normalization scale of the colormap. This will be hyper based on the input min / max normalization \
@@ -156,7 +186,7 @@ class ColorMap(object):
         if self.norm in "linear":
             return colors.Normalize(vmin=norm_min, vmax=norm_max)
         elif self.norm in "log":
-            if self.norm_min == 0.0:
+            if norm_min == 0.0:
                 norm_min = 1.0e-4
             return colors.LogNorm(vmin=norm_min, vmax=norm_max)
         elif self.norm in "symmetric_log":
@@ -197,11 +227,7 @@ class ColorBar(object):
             if cb.fraction is not None
             else load_func("colorbar", "fraction", float)
         )
-        pad = (
-            cb.pad
-            if cb.pad is not None
-            else load_func("colorbar", "pad", float)
-        )
+        pad = cb.pad if cb.pad is not None else load_func("colorbar", "pad", float)
         tick_values = cb.tick_values
         tick_labels = cb.tick_labels
 
@@ -267,47 +293,37 @@ class Ticks(object):
         self,
         ysize=None,
         xsize=None,
-        unit_conversion_factor=None,
         y_manual=None,
         x_manual=None,
+        units=Units(),
     ):
 
         self.ysize = ysize
 
         self.xsize = xsize
-
-        self.unit_conversion_factor = unit_conversion_factor
         self.y_manual = y_manual
         self.x_manual = x_manual
+        self.units = units
 
     @classmethod
-    def from_instance_and_config(cls, ticks, load_func):
+    def from_instance_and_config(cls, ticks, load_func, units=Units()):
 
         ysize = (
-            ticks.ysize
-            if ticks.ysize is not None
-            else load_func("ticks", "ysize", int)
+            ticks.ysize if ticks.ysize is not None else load_func("ticks", "ysize", int)
         )
 
         xsize = (
-            ticks.xsize
-            if ticks.xsize is not None
-            else load_func("ticks", "xsize", int)
+            ticks.xsize if ticks.xsize is not None else load_func("ticks", "xsize", int)
         )
 
         return Ticks(
-            ysize=ysize,
-            xsize=xsize,
-            y_manual=ticks.y_manual,
-            x_manual=ticks.x_manual,
+            ysize=ysize, xsize=xsize, y_manual=ticks.y_manual, x_manual=ticks.x_manual, units=units,
         )
 
     def set_yticks(
         self,
         array,
         extent,
-        use_scaled_units,
-        unit_conversion_factor,
         symmetric_around_centre=False,
     ):
         """Get the extent of the dimensions of the array in the unit_label of the figure (e.g. arc-seconds or kpc).
@@ -337,15 +353,15 @@ class Ticks(object):
 
         if self.y_manual is not None:
             ytick_labels = np.asarray([self.y_manual[0], self.y_manual[3]])
-        elif not use_scaled_units:
+        elif not self.units.use_scaled:
             ytick_labels = np.linspace(0, array.shape_2d[0], 5).astype("int")
-        elif use_scaled_units and unit_conversion_factor is None:
+        elif self.units.use_scaled and self.units.conversion_factor is None:
             ytick_labels = np.round(np.linspace(extent[2], extent[3], 5), 2)
-        elif use_scaled_units and unit_conversion_factor is not None:
+        elif self.units.use_scaled and self.units.conversion_factor is not None:
             ytick_labels = np.round(
                 np.linspace(
-                    extent[2] * unit_conversion_factor,
-                    extent[3] * unit_conversion_factor,
+                    extent[2] * self.units.conversion_factor,
+                    extent[3] * self.units.conversion_factor,
                     5,
                 ),
                 2,
@@ -362,8 +378,6 @@ class Ticks(object):
         self,
         array,
         extent,
-        use_scaled_units,
-        unit_conversion_factor,
         symmetric_around_centre=False,
     ):
         """Get the extent of the dimensions of the array in the unit_label of the figure (e.g. arc-seconds or kpc).
@@ -393,15 +407,15 @@ class Ticks(object):
 
         if self.x_manual is not None:
             xtick_labels = np.asarray([self.x_manual[0], self.x_manual[3]])
-        elif not use_scaled_units:
+        elif not self.units.use_scaled:
             xtick_labels = np.linspace(0, array.shape_2d[0], 5).astype("int")
-        elif use_scaled_units and unit_conversion_factor is None:
+        elif self.units.use_scaled and self.units.conversion_factor is None:
             xtick_labels = np.round(np.linspace(extent[0], extent[1], 5), 2)
-        elif use_scaled_units and unit_conversion_factor is not None:
+        elif self.units.use_scaled and self.units.conversion_factor is not None:
             xtick_labels = np.round(
                 np.linspace(
-                    extent[0] * unit_conversion_factor,
-                    extent[1] * unit_conversion_factor,
+                    extent[0] * self.units.conversion_factor,
+                    extent[1] * self.units.conversion_factor,
                     5,
                 ),
                 2,
@@ -424,8 +438,7 @@ class Labels(object):
         titlesize=None,
         ysize=None,
         xsize=None,
-        use_scaled_units=None,
-        plot_in_kpc=None,
+        units=Units(),
     ):
 
         self.title = title
@@ -436,11 +449,10 @@ class Labels(object):
         self.ysize = ysize
         self.xsize = xsize
 
-        self.plot_in_kpc = plot_in_kpc
-        self.use_scaled_units = use_scaled_units
+        self.units = units
 
     @classmethod
-    def from_instance_and_config(cls, labels, load_func, use_scaled_units):
+    def from_instance_and_config(cls, labels, load_func, units=Units()):
 
         titlesize = (
             labels.titlesize
@@ -467,7 +479,7 @@ class Labels(object):
             titlesize=titlesize,
             ysize=ysize,
             xsize=xsize,
-            use_scaled_units=use_scaled_units,
+            units=units,
         )
 
     def title_from_func(self, func):
@@ -526,13 +538,13 @@ class Labels(object):
 
         if self._yunits is None:
 
-            if self.plot_in_kpc is not None:
-                if self.plot_in_kpc:
+            if self.units.in_kpc is not None:
+                if self.units.in_kpc:
                     return "kpc"
                 else:
                     return "arcsec"
 
-            if self.use_scaled_units:
+            if self.units.use_scaled:
                 return "scaled"
             else:
                 return "pixels"
@@ -546,13 +558,13 @@ class Labels(object):
 
         if self._xunits is None:
 
-            if self.plot_in_kpc is not None:
-                if self.plot_in_kpc:
+            if self.units.in_kpc is not None:
+                if self.units.in_kpc:
                     return "kpc"
                 else:
                     return "arcsec"
 
-            if self.use_scaled_units:
+            if self.units.use_scaled:
                 return "scaled"
             else:
                 return "pixels"
@@ -646,7 +658,6 @@ class Output(object):
             filename=output.filename,
             bypass=is_sub_plotter,
         )
-
 
     @property
     def format(self):

@@ -1,9 +1,13 @@
 from os import path
+import autoarray as aa
 from autoarray import conf
 from autoarray.plotters import mat_objs
 
+import matplotlib.pyplot as plt
+import matplotlib.colors as colors
 import pytest
 import os, shutil
+import numpy as np
 
 directory = path.dirname(path.realpath(__file__))
 
@@ -15,76 +19,206 @@ def set_config_path():
     )
 
 
+class TestFigure:
+
+    def test__aspect_from_shape_2d(self):
+
+        figure = mat_objs.Figure(aspect="auto")
+
+        aspect = figure.aspect_from_shape_2d(shape_2d=(2,2))
+
+        assert aspect == "auto"
+
+        figure = mat_objs.Figure(aspect="square")
+
+        aspect = figure.aspect_from_shape_2d(shape_2d=(2, 2))
+
+        assert aspect == 1.0
+
+        aspect = figure.aspect_from_shape_2d(shape_2d=(4, 2))
+
+        assert aspect == 0.5
+
+    def test__open_and_close__open_and_close_figures_correct(self):
+
+        figure = mat_objs.Figure()
+
+        assert plt.fignum_exists(num=1) == False
+
+        figure.open()
+
+        assert plt.fignum_exists(num=1) == True
+
+        figure.close()
+
+        assert plt.fignum_exists(num=1) == False
+
+
+class TestColorMap:
+
+    def test__norm_from_array__uses_input_norm_min_and_max_if_input(self):
+
+        cmap = mat_objs.ColorMap(norm_min=0.0, norm_max=1.0, norm="linear")
+
+        norm = cmap.norm_from_array(array=None)
+
+        assert isinstance(norm, colors.Normalize)
+        assert norm.vmin == 0.0
+        assert norm.vmax == 1.0
+
+        cmap = mat_objs.ColorMap(norm_min=0.0, norm_max=1.0, norm="log")
+
+        norm = cmap.norm_from_array(array=None)
+
+        assert isinstance(norm, colors.LogNorm)
+        assert norm.vmin == 1.0e-4 # Increased from 0.0 to ensure min isn't inf
+        assert norm.vmax == 1.0
+
+        cmap = mat_objs.ColorMap(norm_min=0.0, norm_max=1.0, linthresh=2.0, linscale=3.0, norm="symmetric_log")
+
+        norm = cmap.norm_from_array(array=None)
+
+        assert isinstance(norm, colors.SymLogNorm)
+        assert norm.vmin == 0.0
+        assert norm.vmax == 1.0
+        assert norm.linthresh == 2.0
+
+    def test__norm_from_array__uses_array_to_get_norm_min_and_max_if_no_manual_input(self):
+
+        array = aa.array.ones(shape_2d=(2,2))
+        array[0] = 0.0
+
+        cmap = mat_objs.ColorMap(norm_min=None, norm_max=None, norm="linear")
+
+        norm = cmap.norm_from_array(array=array)
+
+        assert isinstance(norm, colors.Normalize)
+        assert norm.vmin == 0.0
+        assert norm.vmax == 1.0
+
+        cmap = mat_objs.ColorMap(norm_min=None, norm_max=None, norm="log")
+
+        norm = cmap.norm_from_array(array=array)
+
+        assert isinstance(norm, colors.LogNorm)
+        assert norm.vmin == 1.0e-4 # Increased from 0.0 to ensure min isn't inf
+        assert norm.vmax == 1.0
+
+        cmap = mat_objs.ColorMap(norm_min=None, norm_max=None, linthresh=2.0, linscale=3.0, norm="symmetric_log")
+
+        norm = cmap.norm_from_array(array=array)
+
+        assert isinstance(norm, colors.SymLogNorm)
+        assert norm.vmin == 0.0
+        assert norm.vmax == 1.0
+        assert norm.linthresh == 2.0
+
+
+class TestColorBar:
+
+    def test__plot__works_for_reasonable_range_of_values(self):
+
+        figure = mat_objs.Figure()
+
+        figure.open()
+        plt.imshow(np.ones((2,2)))
+        cb = mat_objs.ColorBar(ticksize=1, fraction=1.0, pad=2.0)
+        cb.plot()
+        figure.close()
+
+        figure.open()
+        plt.imshow(np.ones((2,2)))
+        cb = mat_objs.ColorBar(ticksize=1, fraction=0.1, pad=0.5, tick_values=[0.25, 0.5, 0.75],
+                               tick_labels=[1.0, 2.0, 3.0])
+        cb.plot()
+        figure.close()
+
+        figure.open()
+        plt.imshow(np.ones((2,2)))
+        cb = mat_objs.ColorBar(ticksize=1, fraction=0.1, pad=0.5)
+        cb.plot_with_values(cmap=mat_objs.ColorMap().cmap, color_values=[1.0, 2.0, 3.0])
+        figure.close()
+
+
 class TestTicks:
-    def test__tick_settings_setup_correctly_from_config(self):
+
+    def test__set_yx_ticks__works_for_good_values(self):
+
+        array = aa.array.ones(shape_2d=(2,2), pixel_scales=1.0)
 
         ticks = mat_objs.Ticks(
             ysize=34,
             xsize=35,
-            y_manual=[1.0, 2.0],
-            x_manual=[3.0, 4.0],
-            unit_conversion_factor=2.0,
+            units=mat_objs.Units(use_scaled=True, conversion_factor=None)
         )
 
-        assert ticks.ysize == 34
-        assert ticks.xsize == 35
-        assert ticks.y_manual == [1.0, 2.0]
-        assert ticks.x_manual == [3.0, 4.0]
-        assert ticks.unit_conversion_factor == 2.0
+        ticks.set_yticks(array=array, extent=array.extent_of_zoomed_array(buffer=1), symmetric_around_centre=False)
+        ticks.set_xticks(array=array, extent=array.extent_of_zoomed_array(buffer=1), symmetric_around_centre=False)
+        ticks.set_yticks(array=array, extent=array.extent_of_zoomed_array(buffer=1), symmetric_around_centre=True)
+        ticks.set_xticks(array=array, extent=array.extent_of_zoomed_array(buffer=1), symmetric_around_centre=True)
 
+        ticks = mat_objs.Ticks(
+            ysize=34,
+            xsize=35,
+            units=mat_objs.Units(use_scaled=False, conversion_factor=None)
+        )
+
+        ticks.set_yticks(array=array, extent=array.extent_of_zoomed_array(buffer=1), symmetric_around_centre=False)
+        ticks.set_xticks(array=array, extent=array.extent_of_zoomed_array(buffer=1), symmetric_around_centre=False)
+        ticks.set_yticks(array=array, extent=array.extent_of_zoomed_array(buffer=1), symmetric_around_centre=True)
+        ticks.set_xticks(array=array, extent=array.extent_of_zoomed_array(buffer=1), symmetric_around_centre=True)
+
+        ticks = mat_objs.Ticks(
+            ysize=34,
+            xsize=35,
+            units=mat_objs.Units(use_scaled=True, conversion_factor=2.0))
+
+        ticks.set_yticks(array=array, extent=array.extent_of_zoomed_array(buffer=1), symmetric_around_centre=False)
+        ticks.set_xticks(array=array, extent=array.extent_of_zoomed_array(buffer=1), symmetric_around_centre=False)
+        ticks.set_yticks(array=array, extent=array.extent_of_zoomed_array(buffer=1), symmetric_around_centre=True)
+        ticks.set_xticks(array=array, extent=array.extent_of_zoomed_array(buffer=1), symmetric_around_centre=True)
+
+        ticks = mat_objs.Ticks(
+            ysize=34,
+            xsize=35,
+            units=mat_objs.Units(use_scaled=False, conversion_factor=2.0))
+
+        ticks.set_yticks(array=array, extent=array.extent_of_zoomed_array(buffer=1), symmetric_around_centre=False)
+        ticks.set_xticks(array=array, extent=array.extent_of_zoomed_array(buffer=1), symmetric_around_centre=False)
+        ticks.set_yticks(array=array, extent=array.extent_of_zoomed_array(buffer=1), symmetric_around_centre=True)
+        ticks.set_xticks(array=array, extent=array.extent_of_zoomed_array(buffer=1), symmetric_around_centre=True)
 
 class TestLabels:
-    def test__title__yx_units_setup_correctly_from_config(self):
-
-        labels = mat_objs.Labels(
-            title="OMG",
-            yunits="hi",
-            xunits="hi2",
-            use_scaled_units=True,
-            titlesize=30,
-            ysize=31,
-            xsize=32,
-        )
-
-        assert labels.use_scaled_units == True
-        assert labels.title == "OMG"
-        assert labels._yunits == "hi"
-        assert labels._xunits == "hi2"
-        assert labels.yunits == "hi"
-        assert labels.xunits == "hi2"
-        assert labels.titlesize == 30
-        assert labels.ysize == 31
-        assert labels.xsize == 32
 
     def test__yx_units_use_plot_in_kpc_if_it_is_passed(self):
 
-        labels = mat_objs.Labels(plot_in_kpc=True)
+        labels = mat_objs.Labels(units=mat_objs.Units(in_kpc=True))
 
-        assert labels.plot_in_kpc == True
+        assert labels.units.in_kpc == True
         assert labels._yunits == None
         assert labels._xunits == None
         assert labels.yunits == "kpc"
         assert labels.xunits == "kpc"
 
-        labels = mat_objs.Labels(plot_in_kpc=False)
+        labels = mat_objs.Labels(units=mat_objs.Units(in_kpc=False))
 
-        assert labels.plot_in_kpc == False
+        assert labels.units.in_kpc == False
         assert labels._yunits == None
         assert labels._xunits == None
         assert labels.yunits == "arcsec"
         assert labels.xunits == "arcsec"
 
-        labels = mat_objs.Labels(yunits="hi", xunits="hi2", plot_in_kpc=True)
+        labels = mat_objs.Labels(yunits="hi", xunits="hi2", units=mat_objs.Units(in_kpc=True))
 
-        assert labels.plot_in_kpc == True
+        assert labels.units.in_kpc == True
         assert labels._yunits == "hi"
         assert labels._xunits == "hi2"
         assert labels.yunits == "hi"
         assert labels.xunits == "hi2"
 
-        labels = mat_objs.Labels(yunits="hi", xunits="hi2", plot_in_kpc=False)
+        labels = mat_objs.Labels(yunits="hi", xunits="hi2", units=mat_objs.Units(in_kpc=False))
 
-        assert labels.plot_in_kpc == False
+        assert labels.units.in_kpc == False
         assert labels._yunits == "hi"
         assert labels._xunits == "hi2"
         assert labels.yunits == "hi"

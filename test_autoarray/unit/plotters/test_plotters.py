@@ -23,16 +23,35 @@ def set_config_path():
 
 
 class TestAbstractPlotterAttributes:
-
-    def test__plot_in_kpc__from_config_or_via_manual_input(self):
+    def test__units__from_config_or_via_manual_input(self):
 
         plotter = plotters.Plotter()
 
-        assert plotter.plot_in_kpc == False
+        assert plotter.units.use_scaled == True
+        assert plotter.units.in_kpc == False
+        assert plotter.units.conversion_factor == None
 
-        plotter = plotters.Plotter(plot_in_kpc=True)
+        assert plotter.ticks.units.use_scaled == True
+        assert plotter.ticks.units.in_kpc == False
+        assert plotter.ticks.units.conversion_factor == None
 
-        assert plotter.plot_in_kpc == True
+        assert plotter.labels.units.use_scaled == True
+        assert plotter.labels.units.in_kpc == False
+        assert plotter.labels.units.conversion_factor == None
+
+        plotter = plotters.Plotter(units=mat_objs.Units(in_kpc=True, use_scaled=False, conversion_factor=2.0))
+
+        assert plotter.units.use_scaled == False
+        assert plotter.units.in_kpc == True
+        assert plotter.units.conversion_factor == 2.0
+
+        assert plotter.ticks.units.use_scaled == False
+        assert plotter.ticks.units.in_kpc == True
+        assert plotter.ticks.units.conversion_factor == 2.0
+
+        assert plotter.labels.units.use_scaled == False
+        assert plotter.labels.units.in_kpc == True
+        assert plotter.labels.units.conversion_factor == 2.0
 
     def test__figure__from_config_or_via_manual_input(self):
 
@@ -42,8 +61,7 @@ class TestAbstractPlotterAttributes:
         assert plotter.figure.aspect == "auto"
 
         plotter = plotters.Plotter(
-            figure=mat_objs.Figure(figsize=(6, 6),
-            aspect="auto"),
+            figure=mat_objs.Figure(figsize=(6, 6), aspect="auto")
         )
 
         assert plotter.figure.figsize == (6, 6)
@@ -133,13 +151,12 @@ class TestAbstractPlotterAttributes:
         assert plotter.labels.titlesize == 11
         assert plotter.labels.ysize == 12
         assert plotter.labels.xsize == 13
-        assert plotter.use_scaled_units == True
+        assert plotter.labels.units.use_scaled == True
 
         plotter = plotters.Plotter(
-            use_scaled_units=False,
             labels=mat_objs.Labels(
-                title="OMG", yunits="hi", xunits="hi2", titlesize=1, ysize=2, xsize=3
-            ),
+                title="OMG", yunits="hi", xunits="hi2", titlesize=1, ysize=2, xsize=3),
+                units=mat_objs.Units(use_scaled=False)
         )
 
         assert plotter.labels.title == "OMG"
@@ -148,7 +165,7 @@ class TestAbstractPlotterAttributes:
         assert plotter.labels.titlesize == 1
         assert plotter.labels.ysize == 2
         assert plotter.labels.xsize == 3
-        assert plotter.use_scaled_units == False
+        assert plotter.labels.units.use_scaled == False
 
     def test__output__correctly(self):
 
@@ -173,10 +190,9 @@ class TestAbstractPlotter:
     def test__plotter_with_new_labels__new_labels_if_input__sizes_dont_change(self):
 
         plotter = plotters.Plotter(
-            use_scaled_units=False,
             labels=mat_objs.Labels(
                 title="OMG", yunits="hi", xunits="hi2", titlesize=1, ysize=2, xsize=3
-            ),
+            ), units=mat_objs.Units(use_scaled=False)
         )
 
         plotter = plotter.plotter_with_new_labels()
@@ -187,7 +203,7 @@ class TestAbstractPlotter:
         assert plotter.labels.titlesize == 1
         assert plotter.labels.ysize == 2
         assert plotter.labels.xsize == 3
-        assert plotter.use_scaled_units == False
+        assert plotter.labels.units.use_scaled == False
 
         plotter = plotter.plotter_with_new_labels(
             labels=mat_objs.Labels(
@@ -206,7 +222,7 @@ class TestAbstractPlotter:
         assert plotter.labels.titlesize == 10
         assert plotter.labels.ysize == 20
         assert plotter.labels.xsize == 30
-        assert plotter.use_scaled_units == False
+        assert plotter.labels.units.use_scaled == False
 
     def test__plotter_with_new_outputs__new_outputs_are_setup_correctly_if_input(self):
 
@@ -239,23 +255,37 @@ class TestAbstractPlotter:
         assert plotter.output.format == "fits"
         assert plotter.output.filename == "file1"
 
-    def test__plotter_with_new_unit_conversion_factor__new_outputs_are_setup_correctly_if_input(
+    def test__plotter_with_new_units__new_outputs_are_setup_correctly_if_input(
         self
     ):
 
-        plotter = plotters.Plotter(unit_conversion_factor=1.0)
+        plotter = plotters.Plotter(units=mat_objs.Units(use_scaled=True, in_kpc=True, conversion_factor=1.0))
 
-        assert plotter.unit_conversion_factor == 1.0
+        assert plotter.units.use_scaled == True
+        assert plotter.units.in_kpc == True
+        assert plotter.units.conversion_factor == 1.0
 
-        plotter = plotter.plotter_with_new_unit_conversion_factor()
+        assert plotter.labels.units.use_scaled == True
+        assert plotter.labels.units.in_kpc == True
+        assert plotter.labels.units.conversion_factor == 1.0
 
-        assert plotter.unit_conversion_factor == 1.0
+        assert plotter.ticks.units.use_scaled == True
+        assert plotter.ticks.units.in_kpc == True
+        assert plotter.ticks.units.conversion_factor == 1.0
 
-        plotter = plotter.plotter_with_new_unit_conversion_factor(
-            unit_conversion_factor=2.0
-        )
+        plotter = plotter.plotter_with_new_units(units=mat_objs.Units(use_scaled=False, in_kpc=False, conversion_factor=2.0))
 
-        assert plotter.unit_conversion_factor == 2.0
+        assert plotter.units.use_scaled == False
+        assert plotter.units.in_kpc == False
+        assert plotter.units.conversion_factor == 2.0
+
+        assert plotter.labels.units.use_scaled == False
+        assert plotter.labels.units.in_kpc == False
+        assert plotter.labels.units.conversion_factor == 2.0
+
+        assert plotter.ticks.units.use_scaled == False
+        assert plotter.ticks.units.in_kpc == False
+        assert plotter.ticks.units.conversion_factor == 2.0
 
     def test__plotter_array_property_inherits_plotter_attributes(self):
 
@@ -299,9 +329,7 @@ class TestAbstractPlotter:
         assert plotter.array.output.filename == None
 
         plotter = plotters.Plotter(
-            figure=mat_objs.Figure(
-            figsize=(6, 6),
-            aspect="auto"),
+            figure=mat_objs.Figure(figsize=(6, 6), aspect="auto"),
             cmap=mat_objs.ColorMap(
                 cmap="cold",
                 norm="log",
@@ -331,7 +359,6 @@ class TestAbstractPlotter:
                 titlesize=1,
                 ysize=2,
                 xsize=3,
-                use_scaled_units=True,
             ),
             output=mat_objs.Output(path="Path", format="png", filename="file"),
         )
@@ -379,20 +406,20 @@ class TestAbstractPlotter:
 
         assert plotter.grid.figure.figsize == (7, 7)
         assert plotter.grid.figure.aspect == "auto"
-        
+
         assert plotter.grid.cmap.cmap == "jet"
         assert plotter.grid.cmap.norm == "linear"
         assert plotter.grid.cmap.norm_min == None
         assert plotter.grid.cmap.norm_max == None
         assert plotter.grid.cmap.linthresh == 1.0
         assert plotter.grid.cmap.linscale == 2.0
-        
+
         assert plotter.grid.cb.ticksize == 1
         assert plotter.grid.cb.fraction == 3.0
         assert plotter.grid.cb.pad == 4.0
         assert plotter.grid.cb.tick_values == None
         assert plotter.grid.cb.tick_labels == None
-        
+
         assert plotter.grid.grid_pointsize == 5
 
         assert plotter.grid.ticks.y_manual == None
@@ -412,9 +439,7 @@ class TestAbstractPlotter:
         assert plotter.grid.output.filename == None
 
         plotter = plotters.Plotter(
-            figure=mat_objs.Figure(
-            figsize=(6, 6),
-            aspect="auto"),
+            figure=mat_objs.Figure(figsize=(6, 6), aspect="auto"),
             cmap=mat_objs.ColorMap(
                 cmap="cold",
                 norm="log",
@@ -441,21 +466,20 @@ class TestAbstractPlotter:
                 titlesize=1,
                 ysize=2,
                 xsize=3,
-                use_scaled_units=True,
             ),
             output=mat_objs.Output(path="Path", format="png", filename="file"),
         )
 
         assert plotter.grid.figure.figsize == (6, 6)
         assert plotter.grid.figure.aspect == "auto"
-        
+
         assert plotter.grid.cmap.cmap == "cold"
         assert plotter.grid.cmap.norm == "log"
         assert plotter.grid.cmap.norm_min == 0.1
         assert plotter.grid.cmap.norm_max == 1.0
         assert plotter.grid.cmap.linthresh == 1.5
         assert plotter.grid.cmap.linscale == 2.0
-        
+
         assert plotter.grid.cb.ticksize == 20
         assert plotter.grid.cb.fraction == 0.001
         assert plotter.grid.cb.pad == 10.0
@@ -494,13 +518,13 @@ class TestAbstractPlotter:
         assert plotter.mapper.cmap.norm_max == None
         assert plotter.mapper.cmap.linthresh == 1.0
         assert plotter.mapper.cmap.linscale == 2.0
-        
+
         assert plotter.mapper.cb.ticksize == 1
         assert plotter.mapper.cb.fraction == 3.0
         assert plotter.mapper.cb.pad == 4.0
         assert plotter.mapper.cb.tick_values == None
         assert plotter.mapper.cb.tick_labels == None
-        
+
         assert plotter.mapper.grid_pointsize == 5
         assert plotter.mapper.grid_pointcolor == "k"
 
@@ -521,9 +545,7 @@ class TestAbstractPlotter:
         assert plotter.mapper.output.filename == None
 
         plotter = plotters.Plotter(
-            figure=mat_objs.Figure(
-            figsize=(6, 6),
-            aspect="auto"),
+            figure=mat_objs.Figure(figsize=(6, 6), aspect="auto"),
             cmap=mat_objs.ColorMap(
                 cmap="cold",
                 norm="log",
@@ -550,21 +572,20 @@ class TestAbstractPlotter:
                 titlesize=1,
                 ysize=2,
                 xsize=3,
-                use_scaled_units=True,
             ),
             output=mat_objs.Output(path="Path", format="png", filename="file"),
         )
 
         assert plotter.mapper.figure.figsize == (6, 6)
         assert plotter.mapper.figure.aspect == "auto"
-        
+
         assert plotter.mapper.cmap.cmap == "cold"
         assert plotter.mapper.cmap.norm == "log"
         assert plotter.mapper.cmap.norm_min == 0.1
         assert plotter.mapper.cmap.norm_max == 1.0
         assert plotter.mapper.cmap.linthresh == 1.5
         assert plotter.mapper.cmap.linscale == 2.0
-        
+
         assert plotter.mapper.cb.ticksize == 20
         assert plotter.mapper.cb.fraction == 0.001
         assert plotter.mapper.cb.pad == 10.0
@@ -615,9 +636,7 @@ class TestAbstractPlotter:
         assert plotter.line.output.filename == None
 
         plotter = plotters.Plotter(
-            figure=mat_objs.Figure(
-            figsize=(6, 6),
-            aspect="auto"),
+            figure=mat_objs.Figure(figsize=(6, 6), aspect="auto"),
             line_pointsize=27,
             ticks=mat_objs.Ticks(
                 ysize=23, xsize=24, y_manual=[1.0, 2.0], x_manual=[3.0, 4.0]
@@ -629,7 +648,6 @@ class TestAbstractPlotter:
                 titlesize=1,
                 ysize=2,
                 xsize=3,
-                use_scaled_units=True,
             ),
             output=mat_objs.Output(path="Path", format="png", filename="file"),
             include_legend=True,
@@ -659,7 +677,7 @@ class TestAbstractPlotter:
         assert plotter.line.output.format == "png"
         assert plotter.line.output.filename == "file"
 
-    def test__open_and_close_figures(self):
+    def test__open_and_close_subplot_figures(self):
 
         plotter = plotters.Plotter()
 
@@ -697,8 +715,7 @@ class TestPlotter:
         assert plotter.grid_pointsize == 5
 
         plotter = plotters.Plotter(
-            figure=mat_objs.Figure(figsize=(6, 6),
-            aspect="auto"),
+            figure=mat_objs.Figure(figsize=(6, 6), aspect="auto"),
             mask_pointsize=24,
             border_pointsize=25,
             point_pointsize=26,
@@ -718,37 +735,34 @@ class TestSubPlotter:
 
         assert plotter.figure.figsize == None
         assert plotter.figure.aspect == "square"
-        
+
         assert plotter.cmap.cmap == "jet"
         assert plotter.cmap.norm == "linear"
         assert plotter.cmap.norm_min == None
         assert plotter.cmap.norm_max == None
         assert plotter.cmap.linthresh == 1.0
         assert plotter.cmap.linscale == 2.0
-        
+
         assert plotter.cb.ticksize == 1
         assert plotter.cb.fraction == 3.0
         assert plotter.cb.pad == 4.0
-        
+
         assert plotter.mask_pointsize == 2
         assert plotter.border_pointsize == 3
         assert plotter.point_pointsize == 4
         assert plotter.grid_pointsize == 5
 
         plotter = plotters.SubPlotter(
-            figure=mat_objs.Figure(figsize=(6, 6),
-            aspect="auto"),
+            figure=mat_objs.Figure(figsize=(6, 6), aspect="auto"),
             cmap=mat_objs.ColorMap(
-            cmap="cold",
-            norm="log",
-            norm_min=0.1,
-            norm_max=1.0,
-            linthresh=1.5,
-            linscale=2.0),
-            cb=mat_objs.ColorBar(
-            ticksize=20,
-            fraction=0.001,
-            pad=10.0),
+                cmap="cold",
+                norm="log",
+                norm_min=0.1,
+                norm_max=1.0,
+                linthresh=1.5,
+                linscale=2.0,
+            ),
+            cb=mat_objs.ColorBar(ticksize=20, fraction=0.001, pad=10.0),
             mask_pointsize=24,
             border_pointsize=25,
             point_pointsize=26,
