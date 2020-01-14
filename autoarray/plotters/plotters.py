@@ -346,7 +346,7 @@ class AbstractPlotter(object):
         cb.ax.tick_params(labelsize=self.cb_ticksize)
 
     @staticmethod
-    def plot_lines(line_lists):
+    def plot_lines(lines):
         """Plot the liness of the mask or the array on the figure.
 
         Parameters
@@ -362,23 +362,20 @@ class AbstractPlotter(object):
         lines_pointsize : int
             The size of the points plotted to show the liness.
         """
-        if line_lists is not None:
+        if lines is not None:
 
-            if not any(isinstance(el, list) for el in line_lists):
-
-                for line in line_lists:
-                    if len(line) != 0:
-                        plt.plot(line[:, 1], line[:, 0], c="w", lw=2.0, zorder=200)
+            if not any(isinstance(el, list) for el in lines) and not any(isinstance(el, np.ndarray) for el in lines):
+                if len(lines) != 0:
+                    plt.plot(np.asarray(lines)[:, 1], np.asarray(lines)[:, 0], c="w", lw=2.0, zorder=200)
 
             else:
 
-                for line_list in line_lists:
+                for line_list in lines:
                     if line_list is not None:
-                        for line in line_list:
-                            if len(line) != 0:
-                                plt.plot(
-                                    line[:, 1], line[:, 0], c="w", lw=2.0, zorder=200
-                                )
+                        if len(line_list) != 0:
+                            plt.plot(
+                                np.asarray(line_list)[:, 1], np.asarray(line_list)[:, 0], c="w", lw=2.0, zorder=200
+                            )
 
     def plotter_with_new_labels(self, labels=mat_objs.Labels()):
 
@@ -866,7 +863,7 @@ class ArrayPlotter(AbstractPlotter):
         self.set_colorbar()
         self.plot_origin(array=array, include_origin=include_origin)
         self.plot_mask(mask=mask)
-        self.plot_lines(line_lists=lines)
+        self.plot_lines(lines=lines)
         self.plot_border(mask=mask, border=border)
         self.plot_points(points=points)
         self.plot_grid(grid=grid)
@@ -1050,21 +1047,13 @@ class ArrayPlotter(AbstractPlotter):
         """
 
         if mask is not None:
-            plt.gca()
-            edge_pixels = (
-                mask.regions._mask_2d_index_for_mask_1d_index[
-                    mask.regions._edge_1d_indexes
-                ]
-                + 0.5
-            )
 
-            edge_scaled = mask.geometry.grid_scaled_from_grid_pixels_1d(
-                grid_pixels_1d=edge_pixels
-            )
+            plt.gca()
+            edge_grid = mask.geometry.edge_grid.in_1d_binned
 
             plt.scatter(
-                y=np.asarray(edge_scaled[:, 0]),
-                x=np.asarray(edge_scaled[:, 1]),
+                y=np.asarray(edge_grid[:, 0]),
+                x=np.asarray(edge_grid[:, 1]),
                 s=self.mask_pointsize,
                 c="k",
             )
@@ -1307,7 +1296,7 @@ class GridPlotter(AbstractPlotter):
         )
 
         self.plot_points(grid=grid, points=points)
-        self.plot_lines(line_lists=lines)
+        self.plot_lines(lines=lines)
 
         self.output.to_figure(structure=grid)
         self.close_figure()
@@ -1572,7 +1561,7 @@ class MapperPlotter(GridPlotter):
 
         self.plot_border(include_border=include_border, mapper=mapper)
 
-        self.plot_lines(line_lists=lines)
+        self.plot_lines(lines=lines)
 
         point_colors = itertools.cycle(["y", "r", "k", "g", "m"])
         self.plot_source_plane_image_pixels(
