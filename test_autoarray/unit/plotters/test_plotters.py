@@ -23,6 +23,7 @@ def set_config_path():
 
 
 class TestAbstractPlotterAttributes:
+
     def test__plot_in_kpc__from_config_or_via_manual_input(self):
 
         plotter = plotters.Plotter()
@@ -32,6 +33,21 @@ class TestAbstractPlotterAttributes:
         plotter = plotters.Plotter(plot_in_kpc=True)
 
         assert plotter.plot_in_kpc == True
+
+    def test__figure__from_config_or_via_manual_input(self):
+
+        plotter = plotters.Plotter()
+
+        assert plotter.figure.figsize == (7, 7)
+        assert plotter.figure.aspect == "auto"
+
+        plotter = plotters.Plotter(
+            figure=mat_objs.Figure(figsize=(6, 6),
+            aspect="auto"),
+        )
+
+        assert plotter.figure.figsize == (6, 6)
+        assert plotter.figure.aspect == "auto"
 
     def test__colormap__from_config_or_via_manual_input(self):
         plotter = plotters.Plotter()
@@ -245,8 +261,8 @@ class TestAbstractPlotter:
 
         plotter = plotters.Plotter()
 
-        assert plotter.array.figsize == (7, 7)
-        assert plotter.array.aspect == "auto"
+        assert plotter.array.figure.figsize == (7, 7)
+        assert plotter.array.figure.aspect == "auto"
 
         assert plotter.array.cmap.cmap == "jet"
         assert plotter.array.cmap.norm == "linear"
@@ -283,8 +299,9 @@ class TestAbstractPlotter:
         assert plotter.array.output.filename == None
 
         plotter = plotters.Plotter(
+            figure=mat_objs.Figure(
             figsize=(6, 6),
-            aspect="auto",
+            aspect="auto"),
             cmap=mat_objs.ColorMap(
                 cmap="cold",
                 norm="log",
@@ -319,8 +336,8 @@ class TestAbstractPlotter:
             output=mat_objs.Output(path="Path", format="png", filename="file"),
         )
 
-        assert plotter.array.figsize == (6, 6)
-        assert plotter.array.aspect == "auto"
+        assert plotter.array.figure.figsize == (6, 6)
+        assert plotter.array.figure.aspect == "auto"
 
         assert plotter.array.cmap.cmap == "cold"
         assert plotter.array.cmap.norm == "log"
@@ -360,8 +377,8 @@ class TestAbstractPlotter:
 
         plotter = plotters.Plotter()
 
-        assert plotter.grid.figsize == (7, 7)
-        assert plotter.grid.aspect == "auto"
+        assert plotter.grid.figure.figsize == (7, 7)
+        assert plotter.grid.figure.aspect == "auto"
         
         assert plotter.grid.cmap.cmap == "jet"
         assert plotter.grid.cmap.norm == "linear"
@@ -395,8 +412,9 @@ class TestAbstractPlotter:
         assert plotter.grid.output.filename == None
 
         plotter = plotters.Plotter(
+            figure=mat_objs.Figure(
             figsize=(6, 6),
-            aspect="auto",
+            aspect="auto"),
             cmap=mat_objs.ColorMap(
                 cmap="cold",
                 norm="log",
@@ -428,8 +446,8 @@ class TestAbstractPlotter:
             output=mat_objs.Output(path="Path", format="png", filename="file"),
         )
 
-        assert plotter.grid.figsize == (6, 6)
-        assert plotter.grid.aspect == "auto"
+        assert plotter.grid.figure.figsize == (6, 6)
+        assert plotter.grid.figure.aspect == "auto"
         
         assert plotter.grid.cmap.cmap == "cold"
         assert plotter.grid.cmap.norm == "log"
@@ -467,8 +485,8 @@ class TestAbstractPlotter:
 
         plotter = plotters.Plotter()
 
-        assert plotter.mapper.figsize == (7, 7)
-        assert plotter.mapper.aspect == "auto"
+        assert plotter.mapper.figure.figsize == (7, 7)
+        assert plotter.mapper.figure.aspect == "auto"
 
         assert plotter.mapper.cmap.cmap == "jet"
         assert plotter.mapper.cmap.norm == "linear"
@@ -503,8 +521,9 @@ class TestAbstractPlotter:
         assert plotter.mapper.output.filename == None
 
         plotter = plotters.Plotter(
+            figure=mat_objs.Figure(
             figsize=(6, 6),
-            aspect="auto",
+            aspect="auto"),
             cmap=mat_objs.ColorMap(
                 cmap="cold",
                 norm="log",
@@ -536,8 +555,8 @@ class TestAbstractPlotter:
             output=mat_objs.Output(path="Path", format="png", filename="file"),
         )
 
-        assert plotter.mapper.figsize == (6, 6)
-        assert plotter.mapper.aspect == "auto"
+        assert plotter.mapper.figure.figsize == (6, 6)
+        assert plotter.mapper.figure.aspect == "auto"
         
         assert plotter.mapper.cmap.cmap == "cold"
         assert plotter.mapper.cmap.norm == "log"
@@ -575,8 +594,8 @@ class TestAbstractPlotter:
 
         plotter = plotters.Plotter()
 
-        assert plotter.line.figsize == (7, 7)
-        assert plotter.line.aspect == "auto"
+        assert plotter.line.figure.figsize == (7, 7)
+        assert plotter.line.figure.aspect == "auto"
         assert plotter.line.line_pointsize == None
 
         assert plotter.line.ticks.y_manual == None
@@ -596,8 +615,9 @@ class TestAbstractPlotter:
         assert plotter.line.output.filename == None
 
         plotter = plotters.Plotter(
+            figure=mat_objs.Figure(
             figsize=(6, 6),
-            aspect="auto",
+            aspect="auto"),
             line_pointsize=27,
             ticks=mat_objs.Ticks(
                 ysize=23, xsize=24, y_manual=[1.0, 2.0], x_manual=[3.0, 4.0]
@@ -616,7 +636,7 @@ class TestAbstractPlotter:
             legend_fontsize=30,
         )
 
-        assert plotter.line.figsize == (6, 6)
+        assert plotter.line.figure.figsize == (6, 6)
 
         assert plotter.line.line_pointsize == 27
 
@@ -645,11 +665,11 @@ class TestAbstractPlotter:
 
         assert plt.fignum_exists(num=1) == False
 
-        plotter.setup_figure()
+        plotter.figure.open()
 
         assert plt.fignum_exists(num=1) == True
 
-        plotter.close_figure()
+        plotter.figure.close()
 
         assert plt.fignum_exists(num=1) == False
 
@@ -657,11 +677,11 @@ class TestAbstractPlotter:
 
         assert plt.fignum_exists(num=1) == False
 
-        plotter.setup_subplot_figure(number_subplots=4)
+        plotter.open_subplot_figure(number_subplots=4)
 
         assert plt.fignum_exists(num=1) == True
 
-        plotter.close_figure()
+        plotter.figure.close()
 
         assert plt.fignum_exists(num=1) == False
 
@@ -671,24 +691,20 @@ class TestPlotter:
 
         plotter = plotters.Plotter()
 
-        assert plotter.figsize == (7, 7)
-        assert plotter.aspect == "auto"
         assert plotter.mask_pointsize == 2
         assert plotter.border_pointsize == 3
         assert plotter.point_pointsize == 4
         assert plotter.grid_pointsize == 5
 
         plotter = plotters.Plotter(
-            figsize=(6, 6),
-            aspect="auto",
+            figure=mat_objs.Figure(figsize=(6, 6),
+            aspect="auto"),
             mask_pointsize=24,
             border_pointsize=25,
             point_pointsize=26,
             grid_pointsize=27,
         )
 
-        assert plotter.figsize == (6, 6)
-        assert plotter.aspect == "auto"
         assert plotter.mask_pointsize == 24
         assert plotter.border_pointsize == 25
         assert plotter.point_pointsize == 26
@@ -700,8 +716,8 @@ class TestSubPlotter:
 
         plotter = plotters.SubPlotter()
 
-        assert plotter.figsize == None
-        assert plotter.aspect == "square"
+        assert plotter.figure.figsize == None
+        assert plotter.figure.aspect == "square"
         
         assert plotter.cmap.cmap == "jet"
         assert plotter.cmap.norm == "linear"
@@ -720,8 +736,8 @@ class TestSubPlotter:
         assert plotter.grid_pointsize == 5
 
         plotter = plotters.SubPlotter(
-            figsize=(6, 6),
-            aspect="auto",
+            figure=mat_objs.Figure(figsize=(6, 6),
+            aspect="auto"),
             cmap=mat_objs.ColorMap(
             cmap="cold",
             norm="log",
@@ -739,8 +755,8 @@ class TestSubPlotter:
             grid_pointsize=27,
         )
 
-        assert plotter.figsize == (6, 6)
-        assert plotter.aspect == "auto"
+        assert plotter.figure.figsize == (6, 6)
+        assert plotter.figure.aspect == "auto"
 
         assert plotter.cmap.cmap == "cold"
         assert plotter.cmap.norm == "log"
@@ -770,7 +786,7 @@ class TestSubPlotter:
 
         assert figsize == (13, 10)
 
-        plotter = plotters.SubPlotter(figsize=(20, 20))
+        plotter = plotters.SubPlotter(figure=mat_objs.Figure(figsize=(20, 20)))
 
         figsize = plotter.get_subplot_figsize(number_subplots=4)
 

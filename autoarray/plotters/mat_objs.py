@@ -13,6 +13,51 @@ import os
 from autoarray import exc
 
 
+class Figure(object):
+
+    def __init__(self,         figsize=None,
+        aspect=None):
+
+        self.figsize = figsize
+        self.aspect = aspect
+
+    @classmethod
+    def from_instance_and_config(cls, figure, load_func):
+
+        figsize = (
+            figure.figsize
+            if figure.figsize is not None
+            else load_func("figures", "figsize", str)
+        )
+        if figsize == "auto":
+            figsize = None
+        elif isinstance(figsize, str):
+            figsize = tuple(map(int, figsize[1:-1].split(",")))
+
+        aspect = (
+            figure.aspect
+            if figure.aspect is not None
+            else load_func("figures", "aspect", str)
+        )
+
+        return Figure(figsize=figsize, aspect=aspect)
+
+    def aspect_from_shape_2d(self, shape_2d):
+
+        if self.aspect in "square":
+            return float(shape_2d[1]) / float(shape_2d[0])
+        else:
+            return self.aspect
+
+    def open(self):
+        if not plt.fignum_exists(num=1):
+            plt.figure(figsize=self.figsize)
+
+    def close(self):
+        if plt.fignum_exists(num=1):
+            plt.close()
+
+
 class ColorMap(object):
     def __init__(
         self,
@@ -74,7 +119,7 @@ class ColorMap(object):
                 linscale=linscale,
             )
 
-    def get_normalization_scale(self, array):
+    def norm_from_array(self, array):
         """Get the normalization scale of the colormap. This will be hyper based on the input min / max normalization \
         values.
 
@@ -168,7 +213,7 @@ class ColorBar(object):
             tick_labels=tick_labels,
         )
 
-    def set_colorbar(self):
+    def plot(self):
         """Setup the colorbar of the figure, specifically its ticksize and the size is appears relative to the figure.
 
         Parameters
@@ -200,7 +245,7 @@ class ColorBar(object):
 
         cb.ax.tick_params(labelsize=self.ticksize)
 
-    def set_colorbar_using_values(self, cmap, color_values):
+    def plot_with_values(self, cmap, color_values):
 
         cax = cm.ScalarMappable(cmap=cmap)
         cax.set_array(color_values)
@@ -215,6 +260,7 @@ class ColorBar(object):
                 ticks=self.tick_values,
             )
             cb.ax.set_yticklabels(self.tick_labels)
+
 
 class Ticks(object):
     def __init__(
