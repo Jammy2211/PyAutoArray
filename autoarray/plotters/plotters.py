@@ -4,8 +4,7 @@ import matplotlib
 backend = conf.get_matplotlib_backend()
 matplotlib.use(backend)
 import matplotlib.pyplot as plt
-import matplotlib.colors as colors
-import matplotlib.cm as cm
+
 import numpy as np
 from functools import wraps
 import copy
@@ -31,6 +30,7 @@ def load_setting(section, value, name, python_type):
 def load_figure_setting(section, name, python_type):
     return conf.instance.visualize_figures.get(section, name, python_type)
 
+
 def load_subplot_setting(section, name, python_type):
     return conf.instance.visualize_subplots.get(section, name, python_type)
 
@@ -38,32 +38,23 @@ def load_subplot_setting(section, name, python_type):
 class AbstractPlotter(object):
     def __init__(
         self,
-            use_scaled_units=None,
-            unit_conversion_factor=None,
-            plot_in_kpc=None,
-            figsize=None,
-            aspect=None,
-            cmap=None,
-            norm=None,
-            norm_min=None,
-            norm_max=None,
-            linthresh=None,
-            linscale=None,
-            cb_ticksize=None,
-            cb_fraction=None,
-            cb_pad=None,
-            cb_tick_values=None,
-            cb_tick_labels=None,
-            mask_pointsize=None,
-            border_pointsize=None,
-            point_pointsize=None,
-            grid_pointsize=None,
-            line_pointsize=None,
-            include_legend=None,
-            legend_fontsize=None,
-            ticks=mat_objs.Ticks(),
-            labels=mat_objs.Labels(),
-            output=mat_objs.Output(),
+        use_scaled_units=None,
+        unit_conversion_factor=None,
+        plot_in_kpc=None,
+        figsize=None,
+        aspect=None,
+        cmap=mat_objs.ColorMap(),
+        cb=mat_objs.ColorBar(),
+        mask_pointsize=None,
+        border_pointsize=None,
+        point_pointsize=None,
+        grid_pointsize=None,
+        line_pointsize=None,
+        include_legend=None,
+        legend_fontsize=None,
+        ticks=mat_objs.Ticks(),
+        labels=mat_objs.Labels(),
+        output=mat_objs.Output(),
     ):
 
         if use_scaled_units is not None:
@@ -76,10 +67,10 @@ class AbstractPlotter(object):
 
         self.unit_conversion_factor = unit_conversion_factor
         try:
-            self.plot_in_kpc = plot_in_kpc if plot_in_kpc is not None else conf.instance.visualize_general.get(
-                "general",
-                "plot_in_kpc",
-                bool,
+            self.plot_in_kpc = (
+                plot_in_kpc
+                if plot_in_kpc is not None
+                else conf.instance.visualize_general.get("general", "plot_in_kpc", bool)
             )
         except:
             self.plot_in_kpc = None
@@ -89,117 +80,49 @@ class AbstractPlotter(object):
         else:
             load_setting_func = load_subplot_setting
 
-        self.figsize = figsize if figsize is not None else load_setting_func("figures", "figsize", str)
+        self.figsize = (
+            figsize
+            if figsize is not None
+            else load_setting_func("figures", "figsize", str)
+        )
         if self.figsize == "auto":
             self.figsize = None
         elif isinstance(self.figsize, str):
             self.figsize = tuple(map(int, self.figsize[1:-1].split(",")))
-        self.aspect = aspect if aspect is not None else load_setting_func(
-            "figures", "aspect", str
+
+        self.aspect = (
+            aspect
+            if aspect is not None
+            else load_setting_func("figures", "aspect", str)
         )
 
-        self.cmap = cmap if cmap is not None else load_setting_func(
-            "settings", "cmap", str
+        self.cmap = mat_objs.ColorMap.from_instance_and_config(colormap=cmap, load_func=load_setting_func)
+        self.cb = mat_objs.ColorBar.from_instance_and_config(cb=cb, load_func=load_setting_func)
+
+        self.mask_pointsize = (
+            mask_pointsize
+            if mask_pointsize is not None
+            else load_setting_func("settings", "mask_pointsize", int)
         )
-        self.norm = norm if norm is not None else load_setting_func(
-            "settings", "norm", str
+        self.border_pointsize = (
+            border_pointsize
+            if border_pointsize is not None
+            else load_setting_func("settings", "border_pointsize", int)
         )
-        self.norm_min = norm_min if norm_min is not None else load_setting_func(
-            "settings", "norm_min", float
+        self.point_pointsize = (
+            point_pointsize
+            if point_pointsize is not None
+            else load_setting_func("settings", "point_pointsize", int)
         )
-        self.norm_max = norm_max if norm_max is not None else load_setting_func(
-            "settings", "norm_max", float
-        )
-        self.linthresh = linthresh if linthresh is not None else load_setting_func(
-            "settings", "linthresh", float
-        )
-        self.linscale = linscale if linscale is not None else load_setting_func(
-            "settings", "linscale", float
+        self.grid_pointsize = (
+            grid_pointsize
+            if grid_pointsize is not None
+            else load_setting_func("settings", "grid_pointsize", int)
         )
 
-        self.cb_ticksize = cb_ticksize if cb_ticksize is not None else load_setting_func(
-            "settings", "cb_ticksize", int
-        )
-        self.cb_fraction = cb_fraction if cb_fraction is not None else load_setting_func(
-            "settings", "cb_fraction", float
-        )
-        self.cb_pad = cb_pad if cb_pad is not None else load_setting_func(
-            "settings", "cb_pad", float
-        )
-        self.cb_tick_values = cb_tick_values
-        self.cb_tick_labels = cb_tick_labels
-
-        self.mask_pointsize = mask_pointsize if mask_pointsize is not None else load_setting_func(
-            "settings",
-            "mask_pointsize",
-            int,
-        )
-        self.border_pointsize = border_pointsize if border_pointsize is not None else load_setting_func(
-            "settings",
-            "border_pointsize",
-            int,
-        )
-        self.point_pointsize = point_pointsize if point_pointsize is not None else load_setting_func(
-            "settings",
-            "point_pointsize",
-            int,
-        )
-        self.grid_pointsize = grid_pointsize if grid_pointsize is not None else load_setting_func(
-            "settings",
-            "grid_pointsize",
-            int,
-        )
-
-        ticks_ysize = ticks.ysize if ticks.ysize is not None else load_setting_func(
-            "ticks",
-            "ysize",
-            int,
-        )
-
-        ticks_xsize = ticks.xsize if ticks.xsize is not None else load_setting_func(
-            "ticks",
-            "xsize",
-            int,
-        )
-
-        self.ticks = mat_objs.Ticks(
-            ysize=ticks_ysize,
-            xsize=ticks_xsize,
-            y_manual=ticks.y_manual,
-            x_manual=ticks.x_manual,
-        )
-
-        labels_titlesize = labels.titlesize if labels.titlesize is not None else load_setting_func(
-            "labels",
-            "titlesize",
-            int,
-        )
-
-        labels_ysize = labels.ysize if labels.ysize is not None else load_setting_func(
-            "labels",
-            "ysize",
-            int,
-        )
-
-        labels_xsize = labels.xsize if labels.xsize is not None else load_setting_func(
-            "labels",
-            "xsize",
-            int,
-        )
-
-        self.labels = mat_objs.Labels(
-            title=labels.title,
-            yunits=labels._yunits,
-            xunits=labels._xunits,
-            titlesize=labels_titlesize,
-            ysize=labels_ysize,
-            xsize=labels_xsize,
-            use_scaled_units=use_scaled_units,
-        )
-
-        self.output = mat_objs.Output(
-            path=output.path, format=output._format, filename=output.filename, bypass=self.is_sub_plotter
-        )
+        self.ticks = mat_objs.Ticks.from_instance_and_config(ticks=ticks, load_func=load_setting_func)
+        self.labels = mat_objs.Labels.from_instance_and_config(labels=labels, load_func=load_setting_func, use_scaled_units=use_scaled_units)
+        self.output = mat_objs.Output.from_instance_and_config(output=output, load_func=load_setting_func, is_sub_plotter=self.is_sub_plotter)
 
         self.line_pointsize = line_pointsize
         self.include_legend = include_legend
@@ -214,16 +137,7 @@ class AbstractPlotter(object):
             figsize=self.figsize,
             aspect=self.aspect,
             cmap=self.cmap,
-            norm=self.norm,
-            norm_min=self.norm_min,
-            norm_max=self.norm_max,
-            linthresh=self.linthresh,
-            linscale=self.linscale,
-            cb_ticksize=self.cb_ticksize,
-            cb_fraction=self.cb_fraction,
-            cb_pad=self.cb_pad,
-            cb_tick_values=self.cb_tick_values,
-            cb_tick_labels=self.cb_tick_labels,
+            cb=self.cb,
             mask_pointsize=self.mask_pointsize,
             border_pointsize=self.border_pointsize,
             point_pointsize=self.point_pointsize,
@@ -242,16 +156,7 @@ class AbstractPlotter(object):
             figsize=self.figsize,
             aspect=self.aspect,
             cmap=self.cmap,
-            norm=self.norm,
-            norm_min=self.norm_min,
-            norm_max=self.norm_max,
-            linthresh=self.linthresh,
-            linscale=self.linscale,
-            cb_ticksize=self.cb_ticksize,
-            cb_fraction=self.cb_fraction,
-            cb_pad=self.cb_pad,
-            cb_tick_values=self.cb_tick_values,
-            cb_tick_labels=self.cb_tick_labels,
+            cb=self.cb,
             grid_pointsize=self.grid_pointsize,
             grid_pointcolor="k",
             ticks=self.ticks,
@@ -268,16 +173,7 @@ class AbstractPlotter(object):
             figsize=self.figsize,
             aspect=self.aspect,
             cmap=self.cmap,
-            norm=self.norm,
-            norm_min=self.norm_min,
-            norm_max=self.norm_max,
-            linthresh=self.linthresh,
-            linscale=self.linscale,
-            cb_ticksize=self.cb_ticksize,
-            cb_fraction=self.cb_fraction,
-            cb_pad=self.cb_pad,
-            cb_tick_values=self.cb_tick_values,
-            cb_tick_labels=self.cb_tick_labels,
+            cb=self.cb,
             grid_pointsize=self.grid_pointsize,
             grid_pointcolor="k",
             ticks=self.ticks,
@@ -313,38 +209,6 @@ class AbstractPlotter(object):
     def is_sub_plotter(self):
         raise NotImplementedError()
 
-    def set_colorbar(self):
-        """Setup the colorbar of the figure, specifically its ticksize and the size is appears relative to the figure.
-
-        Parameters
-        -----------
-        cb_ticksize : int
-            The size of the tick labels on the colorbar.
-        cb_fraction : float
-            The fraction of the figure that the colorbar takes up, which resizes the colorbar relative to the figure.
-        cb_pad : float
-            Pads the color bar in the figure, which resizes the colorbar relative to the figure.
-        cb_tick_values : [float]
-            Manually specified values of where the colorbar tick labels appear on the colorbar.
-        cb_tick_labels : [float]
-            Manually specified labels of the color bar tick labels, which appear where specified by cb_tick_values.
-        """
-
-        if self.cb_tick_values is None and self.cb_tick_labels is None:
-            cb = plt.colorbar(fraction=self.cb_fraction, pad=self.cb_pad)
-        elif self.cb_tick_values is not None and self.cb_tick_labels is not None:
-            cb = plt.colorbar(
-                fraction=self.cb_fraction, pad=self.cb_pad, ticks=self.cb_tick_values
-            )
-            cb.ax.set_yticklabels(labels=self.cb_tick_labels)
-        else:
-            raise exc.PlottingException(
-                "Only 1 entry of cb_tick_values or cb_tick_labels was input. You must either supply"
-                "both the values and labels, or neither."
-            )
-
-        cb.ax.tick_params(labelsize=self.cb_ticksize)
-
     @staticmethod
     def plot_lines(lines):
         """Plot the liness of the mask or the array on the figure.
@@ -364,9 +228,17 @@ class AbstractPlotter(object):
         """
         if lines is not None:
 
-            if not any(isinstance(el, list) for el in lines) and not any(isinstance(el, np.ndarray) for el in lines):
+            if not any(isinstance(el, list) for el in lines) and not any(
+                isinstance(el, np.ndarray) for el in lines
+            ):
                 if len(lines) != 0:
-                    plt.plot(np.asarray(lines)[:, 1], np.asarray(lines)[:, 0], c="w", lw=2.0, zorder=200)
+                    plt.plot(
+                        np.asarray(lines)[:, 1],
+                        np.asarray(lines)[:, 0],
+                        c="w",
+                        lw=2.0,
+                        zorder=200,
+                    )
 
             else:
 
@@ -374,7 +246,11 @@ class AbstractPlotter(object):
                     if line_list is not None:
                         if len(line_list) != 0:
                             plt.plot(
-                                np.asarray(line_list)[:, 1], np.asarray(line_list)[:, 0], c="w", lw=2.0, zorder=200
+                                np.asarray(line_list)[:, 1],
+                                np.asarray(line_list)[:, 0],
+                                c="w",
+                                lw=2.0,
+                                zorder=200,
                             )
 
     def plotter_with_new_labels(self, labels=mat_objs.Labels()):
@@ -447,29 +323,20 @@ class Plotter(AbstractPlotter):
         plot_in_kpc=None,
         figsize=None,
         aspect=None,
-        cmap=None,
-        norm=None,
-        norm_min=None,
-        norm_max=None,
-        linthresh=None,
-        linscale=None,
-        cb_ticksize=None,
-        cb_fraction=None,
-        cb_pad=None,
-        cb_tick_values=None,
-        cb_tick_labels=None,
+        cmap=mat_objs.ColorMap(),
+        cb=mat_objs.ColorBar(),
         mask_pointsize=None,
         border_pointsize=None,
         point_pointsize=None,
         grid_pointsize=None,
-            line_pointsize=None,
-            include_legend=None,
-            legend_fontsize=None,
+        line_pointsize=None,
+        include_legend=None,
+        legend_fontsize=None,
         ticks=mat_objs.Ticks(),
         labels=mat_objs.Labels(),
         output=mat_objs.Output(),
     ):
-        
+
         super(Plotter, self).__init__(
             use_scaled_units=use_scaled_units,
             unit_conversion_factor=unit_conversion_factor,
@@ -477,16 +344,7 @@ class Plotter(AbstractPlotter):
             figsize=figsize,
             aspect=aspect,
             cmap=cmap,
-            norm=norm,
-            norm_min=norm_min,
-            norm_max=norm_max,
-            linthresh=linthresh,
-            linscale=linscale,
-            cb_ticksize=cb_ticksize,
-            cb_fraction=cb_fraction,
-            cb_pad=cb_pad,
-            cb_tick_values=cb_tick_values,
-            cb_tick_labels=cb_tick_labels,
+            cb=cb,
             mask_pointsize=mask_pointsize,
             border_pointsize=border_pointsize,
             point_pointsize=point_pointsize,
@@ -512,24 +370,15 @@ class SubPlotter(AbstractPlotter):
         plot_in_kpc=None,
         figsize=None,
         aspect=None,
-        cmap=None,
-        norm=None,
-        norm_min=None,
-        norm_max=None,
-        linthresh=None,
-        linscale=None,
-        cb_ticksize=None,
-        cb_fraction=None,
-        cb_pad=None,
-        cb_tick_values=None,
-        cb_tick_labels=None,
+        cmap=mat_objs.ColorMap(),
+        cb=mat_objs.ColorBar(),
         mask_pointsize=None,
         border_pointsize=None,
         point_pointsize=None,
         grid_pointsize=None,
-            line_pointsize=None,
-            include_legend=None,
-            legend_fontsize=None,
+        line_pointsize=None,
+        include_legend=None,
+        legend_fontsize=None,
         ticks=mat_objs.Ticks(),
         labels=mat_objs.Labels(),
         output=mat_objs.Output(),
@@ -542,16 +391,7 @@ class SubPlotter(AbstractPlotter):
             figsize=figsize,
             aspect=aspect,
             cmap=cmap,
-            norm=norm,
-            norm_min=norm_min,
-            norm_max=norm_max,
-            linthresh=linthresh,
-            linscale=linscale,
-            cb_ticksize=cb_ticksize,
-            cb_fraction=cb_fraction,
-            cb_pad=cb_pad,
-            cb_tick_values=cb_tick_values,
-            cb_tick_labels=cb_tick_labels,
+            cb=cb,
             mask_pointsize=mask_pointsize,
             border_pointsize=border_pointsize,
             point_pointsize=point_pointsize,
@@ -651,16 +491,7 @@ class ArrayPlotter(AbstractPlotter):
         figsize,
         aspect,
         cmap,
-        norm,
-        norm_min,
-        norm_max,
-        linthresh,
-        linscale,
-        cb_ticksize,
-        cb_fraction,
-        cb_pad,
-        cb_tick_values,
-        cb_tick_labels,
+        cb,
         mask_pointsize,
         border_pointsize,
         point_pointsize,
@@ -669,7 +500,6 @@ class ArrayPlotter(AbstractPlotter):
         labels,
         output,
     ):
-
 
         self.figsize = figsize
         self.aspect = aspect
@@ -680,17 +510,7 @@ class ArrayPlotter(AbstractPlotter):
         self.plot_in_kpc = plot_in_kpc
 
         self.cmap = cmap
-        self.norm = norm
-        self.norm_min = norm_min
-        self.norm_max = norm_max
-        self.linthresh = linthresh
-        self.linscale = linscale
-
-        self.cb_ticksize = cb_ticksize
-        self.cb_fraction = cb_fraction
-        self.cb_pad = cb_pad
-        self.cb_tick_values = cb_tick_values
-        self.cb_tick_labels = cb_tick_labels
+        self.cb = cb
 
         self.mask_pointsize = mask_pointsize
         self.border_pointsize = border_pointsize
@@ -860,7 +680,7 @@ class ArrayPlotter(AbstractPlotter):
         self.labels.set_yunits(include_brackets=True)
         self.labels.set_xunits(include_brackets=True)
 
-        self.set_colorbar()
+        self.cb.set_colorbar()
         self.plot_origin(array=array, include_origin=include_origin)
         self.plot_mask(mask=mask)
         self.plot_lines(lines=lines)
@@ -912,7 +732,7 @@ class ArrayPlotter(AbstractPlotter):
 
         self.setup_figure()
 
-        norm_scale = self.get_normalization_scale(array=array)
+        norm_scale = self.cmap.get_normalization_scale(array=array)
 
         if self.aspect in "square":
             aspect = float(array.shape_2d[1]) / float(array.shape_2d[0])
@@ -920,61 +740,8 @@ class ArrayPlotter(AbstractPlotter):
             aspect = self.aspect
 
         plt.imshow(
-            X=array.in_2d, aspect=aspect, cmap=self.cmap, norm=norm_scale, extent=extent
+            X=array.in_2d, aspect=aspect, cmap=self.cmap.cmap, norm=norm_scale, extent=extent
         )
-
-    def get_normalization_scale(self, array):
-        """Get the normalization scale of the colormap. This will be hyper based on the input min / max normalization \
-        values.
-
-        For a 'symmetric_log' colormap, linthesh and linscale also change the colormap.
-
-        If norm_min / norm_max are not supplied, the minimum / maximum values of the array of data_type are used.
-
-        Parameters
-        -----------
-        array : data_type.array.aa.Scaled
-            The 2D array of data_type which is plotted.
-        norm_min : float or None
-            The minimum array value the colormap map spans (all values below this value are plotted the same color).
-        norm_max : float or None
-            The maximum array value the colormap map spans (all values above this value are plotted the same color).
-        linthresh : float
-            For the 'symmetric_log' colormap normalization ,this specifies the range of values within which the colormap \
-            is linear.
-        linscale : float
-            For the 'symmetric_log' colormap normalization, this allowws the linear range set by linthresh to be stretched \
-            relative to the logarithmic range.
-        """
-
-        if self.norm_min is None:
-            norm_min = array.min()
-        else:
-            norm_min = self.norm_min
-
-        if self.norm_max is None:
-            norm_max = array.max()
-        else:
-            norm_max = self.norm_max
-
-        if self.norm in "linear":
-            return colors.Normalize(vmin=norm_min, vmax=norm_max)
-        elif self.norm in "log":
-            if self.norm_min == 0.0:
-                norm_min = 1.0e-4
-            return colors.LogNorm(vmin=norm_min, vmax=norm_max)
-        elif self.norm in "symmetric_log":
-            return colors.SymLogNorm(
-                linthresh=self.linthresh,
-                linscale=self.linscale,
-                vmin=norm_min,
-                vmax=norm_max,
-            )
-        else:
-            raise exc.PlottingException(
-                "The normalization (norm) supplied to the plotter is not a valid string (must be "
-                "linear | log | symmetric_log"
-            )
 
     def plot_origin(self, array, include_origin):
         """Plot the (y,x) origin ofo the array's coordinates as a 'x'.
@@ -1149,16 +916,7 @@ class GridPlotter(AbstractPlotter):
         figsize,
         aspect,
         cmap,
-        norm,
-        norm_min,
-        norm_max,
-        linthresh,
-        linscale,
-        cb_ticksize,
-        cb_fraction,
-        cb_pad,
-        cb_tick_values,
-        cb_tick_labels,
+        cb,
         grid_pointsize,
         grid_pointcolor,
         ticks,
@@ -1175,17 +933,7 @@ class GridPlotter(AbstractPlotter):
         self.plot_in_kpc = plot_in_kpc
 
         self.cmap = cmap
-        self.norm = norm
-        self.norm_min = norm_min
-        self.norm_max = norm_max
-        self.linthresh = linthresh
-        self.linscale = linscale
-
-        self.cb_ticksize = cb_ticksize
-        self.cb_fraction = cb_fraction
-        self.cb_pad = cb_pad
-        self.cb_tick_values = cb_tick_values
-        self.cb_tick_labels = cb_tick_labels
+        self.cb = cb
 
         self.grid_pointsize = grid_pointsize
         self.grid_pointcolor = grid_pointcolor
@@ -1253,7 +1001,7 @@ class GridPlotter(AbstractPlotter):
 
         if colors is not None:
 
-            plt.cm.get_cmap(self.cmap)
+            plt.cm.get_cmap(self.cmap.cmap)
 
         plt.scatter(
             y=np.asarray(grid[:, 0]),
@@ -1261,12 +1009,12 @@ class GridPlotter(AbstractPlotter):
             c=colors,
             s=self.grid_pointsize,
             marker=".",
-            cmap=self.cmap,
+            cmap=self.cmap.cmap,
         )
 
         if colors is not None:
 
-            self.set_colorbar()
+            self.cb.set_colorbar()
 
         self.labels.set_title()
         self.labels.set_yunits(include_brackets=True)
@@ -1368,16 +1116,7 @@ class MapperPlotter(GridPlotter):
         figsize,
         aspect,
         cmap,
-        norm,
-        norm_min,
-        norm_max,
-        linthresh,
-        linscale,
-        cb_ticksize,
-        cb_fraction,
-        cb_pad,
-        cb_tick_values,
-        cb_tick_labels,
+        cb,
         grid_pointsize,
         grid_pointcolor,
         ticks,
@@ -1394,17 +1133,7 @@ class MapperPlotter(GridPlotter):
         self.plot_in_kpc = plot_in_kpc
 
         self.cmap = cmap
-        self.norm = norm
-        self.norm_min = norm_min
-        self.norm_max = norm_max
-        self.linthresh = linthresh
-        self.linscale = linscale
-
-        self.cb_ticksize = cb_ticksize
-        self.cb_fraction = cb_fraction
-        self.cb_pad = cb_pad
-        self.cb_tick_values = cb_tick_values
-        self.cb_tick_labels = cb_tick_labels
+        self.cb = cb
 
         self.grid_pointsize = grid_pointsize
         self.grid_pointcolor = grid_pointcolor
@@ -1544,7 +1273,7 @@ class MapperPlotter(GridPlotter):
         color_values = source_pixel_values[:] / np.max(source_pixel_values)
         cmap = plt.get_cmap("jet")
 
-        self.set_colorbar(cmap=cmap, color_values=source_pixel_values)
+        self.cb.set_colorbar_using_values(cmap=cmap, color_values=source_pixel_values)
 
         for region, index in zip(regions_SP, range(mapper.pixels)):
             polygon = vertices_SP[region]
@@ -1675,22 +1404,6 @@ class MapperPlotter(GridPlotter):
             plt.plot([x, x], [ys[0], ys[-1]], color="black", linestyle="-")
         for y in ys:
             plt.plot([xs[0], xs[-1]], [y, y], color="black", linestyle="-")
-
-    def set_colorbar(self, color_values):
-
-        cax = cm.ScalarMappable(cmap=self.cmap)
-        cax.set_array(color_values)
-
-        if self.cb_tick_values is None and self.cb_tick_labels is None:
-            plt.colorbar(mappable=cax, fraction=self.cb_fraction, pad=self.cb_pad)
-        elif self.cb_tick_values is not None and self.cb_tick_labels is not None:
-            cb = plt.colorbar(
-                mappable=cax,
-                fraction=self.cb_fraction,
-                pad=self.cb_pad,
-                ticks=self.cb_tick_values,
-            )
-            cb.ax.set_yticklabels(self.cb_tick_labels)
 
     def plot_centres(self, mapper, include_centres):
 
@@ -1940,14 +1653,17 @@ class Include(object):
             value=inversion_border, name="inversion_border"
         )
         self.inversion_image_pixelization_grid = self.load_include(
-            value=inversion_image_pixelization_grid, name="inversion_image_pixelization_grid"
+            value=inversion_image_pixelization_grid,
+            name="inversion_image_pixelization_grid",
         )
 
     @staticmethod
     def load_include(value, name):
 
         return (
-            conf.instance.visualize_general.get(section_name="include", attribute_name=name, attribute_type=bool)
+            conf.instance.visualize_general.get(
+                section_name="include", attribute_name=name, attribute_type=bool
+            )
             if value is None
             else value
         )
@@ -2045,7 +1761,9 @@ def set_subplot_filename(func):
         plotter = kwargs[plotter_key]
 
         if not isinstance(plotter, SubPlotter):
-            raise exc.PlottingException("The decorator set_subplot_title was applied to a function without a SubPlotter class")
+            raise exc.PlottingException(
+                "The decorator set_subplot_title was applied to a function without a SubPlotter class"
+            )
 
         filename = plotter.output.filename_from_func(func=func)
 

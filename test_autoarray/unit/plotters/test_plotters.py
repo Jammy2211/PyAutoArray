@@ -22,9 +22,8 @@ def set_config_path():
     )
 
 
-class TestAbstractPlotter:
-
-    def test__plotter_settings_plot_in_kpc__use_config_if_available(self):
+class TestAbstractPlotterAttributes:
+    def test__plot_in_kpc__from_config_or_via_manual_input(self):
 
         plotter = plotters.Plotter()
 
@@ -34,7 +33,61 @@ class TestAbstractPlotter:
 
         assert plotter.plot_in_kpc == True
 
-    def test__ticks_are_setup_correctly(self):
+    def test__colormap__from_config_or_via_manual_input(self):
+        plotter = plotters.Plotter()
+
+        assert plotter.cmap.cmap == "jet"
+        assert plotter.cmap.norm == "linear"
+        assert plotter.cmap.norm_min == None
+        assert plotter.cmap.norm_max == None
+        assert plotter.cmap.linthresh == 1.0
+        assert plotter.cmap.linscale == 2.0
+
+        plotter = plotters.Plotter(
+            cmap=mat_objs.ColorMap(
+                cmap="cold",
+                norm="log",
+                norm_min=0.1,
+                norm_max=1.0,
+                linthresh=1.5,
+                linscale=2.0,
+            )
+        )
+
+        assert plotter.cmap.cmap == "cold"
+        assert plotter.cmap.norm == "log"
+        assert plotter.cmap.norm_min == 0.1
+        assert plotter.cmap.norm_max == 1.0
+        assert plotter.cmap.linthresh == 1.5
+        assert plotter.cmap.linscale == 2.0
+
+    def test__colorbar__from_config_or_via_manual_input(self):
+
+        plotter = plotters.Plotter()
+
+        assert plotter.cb.ticksize == 1
+        assert plotter.cb.fraction == 3.0
+        assert plotter.cb.pad == 4.0
+        assert plotter.cb.tick_values == None
+        assert plotter.cb.tick_labels == None
+
+        plotter = plotters.Plotter(
+            cb=mat_objs.ColorBar(
+                ticksize=20,
+                fraction=0.001,
+                pad=10.0,
+                tick_values=(1.0, 2.0),
+                tick_labels=(3.0, 4.0),
+            )
+        )
+
+        assert plotter.cb.ticksize == 20
+        assert plotter.cb.fraction == 0.001
+        assert plotter.cb.pad == 10.0
+        assert plotter.cb.tick_values == (1.0, 2.0)
+        assert plotter.cb.tick_labels == (3.0, 4.0)
+
+    def test__ticks__from_config_or_via_manual_input(self):
 
         plotter = plotters.Plotter()
 
@@ -54,7 +107,7 @@ class TestAbstractPlotter:
         assert plotter.ticks.y_manual == [1.0, 2.0]
         assert plotter.ticks.x_manual == [3.0, 4.0]
 
-    def test__labels_are_setup_correctly(self):
+    def test__labels__from_config_or_via_manual_input(self):
 
         plotter = plotters.Plotter()
 
@@ -69,13 +122,8 @@ class TestAbstractPlotter:
         plotter = plotters.Plotter(
             use_scaled_units=False,
             labels=mat_objs.Labels(
-                title="OMG",
-                yunits="hi",
-                xunits="hi2",
-                titlesize=1,
-                ysize=2,
-                xsize=3,
-            )
+                title="OMG", yunits="hi", xunits="hi2", titlesize=1, ysize=2, xsize=3
+            ),
         )
 
         assert plotter.labels.title == "OMG"
@@ -86,18 +134,33 @@ class TestAbstractPlotter:
         assert plotter.labels.xsize == 3
         assert plotter.use_scaled_units == False
 
+    def test__output__correctly(self):
+
+        plotter = plotters.Plotter()
+
+        assert plotter.output.path == None
+        assert plotter.output._format == None
+        assert plotter.output.format == "show"
+        assert plotter.output.filename == None
+
+        plotter = plotters.Plotter(
+            output=mat_objs.Output(path="Path", format="png", filename="file")
+        )
+
+        assert plotter.output.path == "Path"
+        assert plotter.output._format == "png"
+        assert plotter.output.format == "png"
+        assert plotter.output.filename == "file"
+
+
+class TestAbstractPlotter:
     def test__plotter_with_new_labels__new_labels_if_input__sizes_dont_change(self):
 
         plotter = plotters.Plotter(
             use_scaled_units=False,
             labels=mat_objs.Labels(
-                title="OMG",
-                yunits="hi",
-                xunits="hi2",
-                titlesize=1,
-                ysize=2,
-                xsize=3,
-            )
+                title="OMG", yunits="hi", xunits="hi2", titlesize=1, ysize=2, xsize=3
+            ),
         )
 
         plotter = plotter.plotter_with_new_labels()
@@ -118,7 +181,8 @@ class TestAbstractPlotter:
                 titlesize=10,
                 ysize=20,
                 xsize=30,
-        ))
+            )
+        )
 
         assert plotter.labels.title == "OMG0"
         assert plotter.labels._yunits == "hi0"
@@ -127,24 +191,6 @@ class TestAbstractPlotter:
         assert plotter.labels.ysize == 20
         assert plotter.labels.xsize == 30
         assert plotter.use_scaled_units == False
-
-    def test__plotter_outputs_are_setup_correctly(self):
-
-        plotter = plotters.Plotter()
-
-        assert plotter.output.path == None
-        assert plotter.output._format == None
-        assert plotter.output.format == "show"
-        assert plotter.output.filename == None
-
-        plotter = plotters.Plotter(
-            output=mat_objs.Output(path="Path", format="png", filename="file")
-        )
-
-        assert plotter.output.path == "Path"
-        assert plotter.output._format == "png"
-        assert plotter.output.format == "png"
-        assert plotter.output.filename == "file"
 
     def test__plotter_with_new_outputs__new_outputs_are_setup_correctly_if_input(self):
 
@@ -159,25 +205,29 @@ class TestAbstractPlotter:
         assert plotter.output.format == "png"
         assert plotter.output.filename == "file"
 
-        plotter = plotter.plotter_with_new_output(output=mat_objs.Output(path="Path0", filename="file0"))
+        plotter = plotter.plotter_with_new_output(
+            output=mat_objs.Output(path="Path0", filename="file0")
+        )
 
         assert plotter.output.path == "Path0"
         assert plotter.output._format == "png"
         assert plotter.output.format == "png"
         assert plotter.output.filename == "file0"
 
-        plotter = plotter.plotter_with_new_output(output=mat_objs.Output(path="Path1", filename="file1", format="fits"))
+        plotter = plotter.plotter_with_new_output(
+            output=mat_objs.Output(path="Path1", filename="file1", format="fits")
+        )
 
         assert plotter.output.path == "Path1"
         assert plotter.output._format == "fits"
         assert plotter.output.format == "fits"
         assert plotter.output.filename == "file1"
 
-    def test__plotter_with_new_unit_conversion_factor__new_outputs_are_setup_correctly_if_input(self):
+    def test__plotter_with_new_unit_conversion_factor__new_outputs_are_setup_correctly_if_input(
+        self
+    ):
 
-        plotter = plotters.Plotter(
-            unit_conversion_factor=1.0
-        )
+        plotter = plotters.Plotter(unit_conversion_factor=1.0)
 
         assert plotter.unit_conversion_factor == 1.0
 
@@ -185,7 +235,9 @@ class TestAbstractPlotter:
 
         assert plotter.unit_conversion_factor == 1.0
 
-        plotter = plotter.plotter_with_new_unit_conversion_factor(unit_conversion_factor=2.0)
+        plotter = plotter.plotter_with_new_unit_conversion_factor(
+            unit_conversion_factor=2.0
+        )
 
         assert plotter.unit_conversion_factor == 2.0
 
@@ -195,17 +247,20 @@ class TestAbstractPlotter:
 
         assert plotter.array.figsize == (7, 7)
         assert plotter.array.aspect == "auto"
-        assert plotter.array.cmap == "jet"
-        assert plotter.array.norm == "linear"
-        assert plotter.array.norm_min == None
-        assert plotter.array.norm_max == None
-        assert plotter.array.linthresh == 1.0
-        assert plotter.array.linscale == 2.0
-        assert plotter.array.cb_ticksize == 1
-        assert plotter.array.cb_fraction == 3.0
-        assert plotter.array.cb_pad == 4.0
-        assert plotter.array.cb_tick_values == None
-        assert plotter.array.cb_tick_labels == None
+
+        assert plotter.array.cmap.cmap == "jet"
+        assert plotter.array.cmap.norm == "linear"
+        assert plotter.array.cmap.norm_min == None
+        assert plotter.array.cmap.norm_max == None
+        assert plotter.array.cmap.linthresh == 1.0
+        assert plotter.array.cmap.linscale == 2.0
+
+        assert plotter.array.cb.ticksize == 1
+        assert plotter.array.cb.fraction == 3.0
+        assert plotter.array.cb.pad == 4.0
+        assert plotter.array.cb.tick_values == None
+        assert plotter.array.cb.tick_labels == None
+
         assert plotter.array.mask_pointsize == 2
         assert plotter.array.border_pointsize == 3
         assert plotter.array.point_pointsize == 4
@@ -230,15 +285,21 @@ class TestAbstractPlotter:
         plotter = plotters.Plotter(
             figsize=(6, 6),
             aspect="auto",
-            cmap="cold",
-            norm="log",
-            norm_min=0.1,
-            norm_max=1.0,
-            linthresh=1.5,
-            linscale=2.0,
-            cb_ticksize=20,
-            cb_fraction=0.001,
-            cb_pad=10.0,
+            cmap=mat_objs.ColorMap(
+                cmap="cold",
+                norm="log",
+                norm_min=0.1,
+                norm_max=1.0,
+                linthresh=1.5,
+                linscale=2.0,
+            ),
+            cb=mat_objs.ColorBar(
+                ticksize=20,
+                fraction=0.001,
+                pad=10.0,
+                tick_values=[5.0, 6.0],
+                tick_labels=[7.0, 8.0],
+            ),
             mask_pointsize=24,
             border_pointsize=25,
             point_pointsize=26,
@@ -255,24 +316,24 @@ class TestAbstractPlotter:
                 xsize=3,
                 use_scaled_units=True,
             ),
-            cb_tick_values=[5.0, 6.0],
-            cb_tick_labels=[7.0, 8.0],
             output=mat_objs.Output(path="Path", format="png", filename="file"),
         )
 
         assert plotter.array.figsize == (6, 6)
         assert plotter.array.aspect == "auto"
-        assert plotter.array.cmap == "cold"
-        assert plotter.array.norm == "log"
-        assert plotter.array.norm_min == 0.1
-        assert plotter.array.norm_max == 1.0
-        assert plotter.array.linthresh == 1.5
-        assert plotter.array.linscale == 2.0
-        assert plotter.array.cb_ticksize == 20
-        assert plotter.array.cb_fraction == 0.001
-        assert plotter.array.cb_pad == 10.0
-        assert plotter.array.cb_tick_values == [5.0, 6.0]
-        assert plotter.array.cb_tick_labels == [7.0, 8.0]
+
+        assert plotter.array.cmap.cmap == "cold"
+        assert plotter.array.cmap.norm == "log"
+        assert plotter.array.cmap.norm_min == 0.1
+        assert plotter.array.cmap.norm_max == 1.0
+        assert plotter.array.cmap.linthresh == 1.5
+        assert plotter.array.cmap.linscale == 2.0
+
+        assert plotter.array.cb.ticksize == 20
+        assert plotter.array.cb.fraction == 0.001
+        assert plotter.array.cb.pad == 10.0
+        assert plotter.array.cb.tick_values == [5.0, 6.0]
+        assert plotter.array.cb.tick_labels == [7.0, 8.0]
 
         assert plotter.array.mask_pointsize == 24
         assert plotter.array.border_pointsize == 25
@@ -301,17 +362,20 @@ class TestAbstractPlotter:
 
         assert plotter.grid.figsize == (7, 7)
         assert plotter.grid.aspect == "auto"
-        assert plotter.grid.cmap == "jet"
-        assert plotter.grid.norm == "linear"
-        assert plotter.grid.norm_min == None
-        assert plotter.grid.norm_max == None
-        assert plotter.grid.linthresh == 1.0
-        assert plotter.grid.linscale == 2.0
-        assert plotter.grid.cb_ticksize == 1
-        assert plotter.grid.cb_fraction == 3.0
-        assert plotter.grid.cb_pad == 4.0
-        assert plotter.grid.cb_tick_values == None
-        assert plotter.grid.cb_tick_labels == None
+        
+        assert plotter.grid.cmap.cmap == "jet"
+        assert plotter.grid.cmap.norm == "linear"
+        assert plotter.grid.cmap.norm_min == None
+        assert plotter.grid.cmap.norm_max == None
+        assert plotter.grid.cmap.linthresh == 1.0
+        assert plotter.grid.cmap.linscale == 2.0
+        
+        assert plotter.grid.cb.ticksize == 1
+        assert plotter.grid.cb.fraction == 3.0
+        assert plotter.grid.cb.pad == 4.0
+        assert plotter.grid.cb.tick_values == None
+        assert plotter.grid.cb.tick_labels == None
+        
         assert plotter.grid.grid_pointsize == 5
 
         assert plotter.grid.ticks.y_manual == None
@@ -333,15 +397,21 @@ class TestAbstractPlotter:
         plotter = plotters.Plotter(
             figsize=(6, 6),
             aspect="auto",
-            cmap="cold",
-            norm="log",
-            norm_min=0.1,
-            norm_max=1.0,
-            linthresh=1.5,
-            linscale=2.0,
-            cb_ticksize=20,
-            cb_fraction=0.001,
-            cb_pad=10.0,
+            cmap=mat_objs.ColorMap(
+                cmap="cold",
+                norm="log",
+                norm_min=0.1,
+                norm_max=1.0,
+                linthresh=1.5,
+                linscale=2.0,
+            ),
+            cb=mat_objs.ColorBar(
+                ticksize=20,
+                fraction=0.001,
+                pad=10.0,
+                tick_values=[5.0, 6.0],
+                tick_labels=[7.0, 8.0],
+            ),
             grid_pointsize=27,
             ticks=mat_objs.Ticks(
                 ysize=23, xsize=24, y_manual=[1.0, 2.0], x_manual=[3.0, 4.0]
@@ -355,24 +425,24 @@ class TestAbstractPlotter:
                 xsize=3,
                 use_scaled_units=True,
             ),
-            cb_tick_values=[5.0, 6.0],
-            cb_tick_labels=[7.0, 8.0],
             output=mat_objs.Output(path="Path", format="png", filename="file"),
         )
 
         assert plotter.grid.figsize == (6, 6)
         assert plotter.grid.aspect == "auto"
-        assert plotter.grid.cmap == "cold"
-        assert plotter.grid.norm == "log"
-        assert plotter.grid.norm_min == 0.1
-        assert plotter.grid.norm_max == 1.0
-        assert plotter.grid.linthresh == 1.5
-        assert plotter.grid.linscale == 2.0
-        assert plotter.grid.cb_ticksize == 20
-        assert plotter.grid.cb_fraction == 0.001
-        assert plotter.grid.cb_pad == 10.0
-        assert plotter.grid.cb_tick_values == [5.0, 6.0]
-        assert plotter.grid.cb_tick_labels == [7.0, 8.0]
+        
+        assert plotter.grid.cmap.cmap == "cold"
+        assert plotter.grid.cmap.norm == "log"
+        assert plotter.grid.cmap.norm_min == 0.1
+        assert plotter.grid.cmap.norm_max == 1.0
+        assert plotter.grid.cmap.linthresh == 1.5
+        assert plotter.grid.cmap.linscale == 2.0
+        
+        assert plotter.grid.cb.ticksize == 20
+        assert plotter.grid.cb.fraction == 0.001
+        assert plotter.grid.cb.pad == 10.0
+        assert plotter.grid.cb.tick_values == [5.0, 6.0]
+        assert plotter.grid.cb.tick_labels == [7.0, 8.0]
 
         assert plotter.grid.grid_pointsize == 27
         assert plotter.grid.grid_pointcolor == "k"
@@ -399,17 +469,20 @@ class TestAbstractPlotter:
 
         assert plotter.mapper.figsize == (7, 7)
         assert plotter.mapper.aspect == "auto"
-        assert plotter.mapper.cmap == "jet"
-        assert plotter.mapper.norm == "linear"
-        assert plotter.mapper.norm_min == None
-        assert plotter.mapper.norm_max == None
-        assert plotter.mapper.linthresh == 1.0
-        assert plotter.mapper.linscale == 2.0
-        assert plotter.mapper.cb_ticksize == 1
-        assert plotter.mapper.cb_fraction == 3.0
-        assert plotter.mapper.cb_pad == 4.0
-        assert plotter.mapper.cb_tick_values == None
-        assert plotter.mapper.cb_tick_labels == None
+
+        assert plotter.mapper.cmap.cmap == "jet"
+        assert plotter.mapper.cmap.norm == "linear"
+        assert plotter.mapper.cmap.norm_min == None
+        assert plotter.mapper.cmap.norm_max == None
+        assert plotter.mapper.cmap.linthresh == 1.0
+        assert plotter.mapper.cmap.linscale == 2.0
+        
+        assert plotter.mapper.cb.ticksize == 1
+        assert plotter.mapper.cb.fraction == 3.0
+        assert plotter.mapper.cb.pad == 4.0
+        assert plotter.mapper.cb.tick_values == None
+        assert plotter.mapper.cb.tick_labels == None
+        
         assert plotter.mapper.grid_pointsize == 5
         assert plotter.mapper.grid_pointcolor == "k"
 
@@ -432,15 +505,21 @@ class TestAbstractPlotter:
         plotter = plotters.Plotter(
             figsize=(6, 6),
             aspect="auto",
-            cmap="cold",
-            norm="log",
-            norm_min=0.1,
-            norm_max=1.0,
-            linthresh=1.5,
-            linscale=2.0,
-            cb_ticksize=20,
-            cb_fraction=0.001,
-            cb_pad=10.0,
+            cmap=mat_objs.ColorMap(
+                cmap="cold",
+                norm="log",
+                norm_min=0.1,
+                norm_max=1.0,
+                linthresh=1.5,
+                linscale=2.0,
+            ),
+            cb=mat_objs.ColorBar(
+                ticksize=20,
+                fraction=0.001,
+                pad=10.0,
+                tick_values=[5.0, 6.0],
+                tick_labels=[7.0, 8.0],
+            ),
             grid_pointsize=27,
             ticks=mat_objs.Ticks(
                 ysize=23, xsize=24, y_manual=[1.0, 2.0], x_manual=[3.0, 4.0]
@@ -454,24 +533,24 @@ class TestAbstractPlotter:
                 xsize=3,
                 use_scaled_units=True,
             ),
-            cb_tick_values=[5.0, 6.0],
-            cb_tick_labels=[7.0, 8.0],
             output=mat_objs.Output(path="Path", format="png", filename="file"),
         )
 
         assert plotter.mapper.figsize == (6, 6)
         assert plotter.mapper.aspect == "auto"
-        assert plotter.mapper.cmap == "cold"
-        assert plotter.mapper.norm == "log"
-        assert plotter.mapper.norm_min == 0.1
-        assert plotter.mapper.norm_max == 1.0
-        assert plotter.mapper.linthresh == 1.5
-        assert plotter.mapper.linscale == 2.0
-        assert plotter.mapper.cb_ticksize == 20
-        assert plotter.mapper.cb_fraction == 0.001
-        assert plotter.mapper.cb_pad == 10.0
-        assert plotter.mapper.cb_tick_values == [5.0, 6.0]
-        assert plotter.mapper.cb_tick_labels == [7.0, 8.0]
+        
+        assert plotter.mapper.cmap.cmap == "cold"
+        assert plotter.mapper.cmap.norm == "log"
+        assert plotter.mapper.cmap.norm_min == 0.1
+        assert plotter.mapper.cmap.norm_max == 1.0
+        assert plotter.mapper.cmap.linthresh == 1.5
+        assert plotter.mapper.cmap.linscale == 2.0
+        
+        assert plotter.mapper.cb.ticksize == 20
+        assert plotter.mapper.cb.fraction == 0.001
+        assert plotter.mapper.cb.pad == 10.0
+        assert plotter.mapper.cb.tick_values == [5.0, 6.0]
+        assert plotter.mapper.cb.tick_labels == [7.0, 8.0]
 
         assert plotter.mapper.grid_pointsize == 27
         assert plotter.mapper.grid_pointcolor == "k"
@@ -532,10 +611,9 @@ class TestAbstractPlotter:
                 xsize=3,
                 use_scaled_units=True,
             ),
-            cb_tick_values=[5.0, 6.0],
-            cb_tick_labels=[7.0, 8.0],
             output=mat_objs.Output(path="Path", format="png", filename="file"),
-            include_legend=True, legend_fontsize=30,
+            include_legend=True,
+            legend_fontsize=30,
         )
 
         assert plotter.line.figsize == (6, 6)
@@ -595,15 +673,6 @@ class TestPlotter:
 
         assert plotter.figsize == (7, 7)
         assert plotter.aspect == "auto"
-        assert plotter.cmap == "jet"
-        assert plotter.norm == "linear"
-        assert plotter.norm_min == None
-        assert plotter.norm_max == None
-        assert plotter.linthresh == 1.0
-        assert plotter.linscale == 2.0
-        assert plotter.cb_ticksize == 1
-        assert plotter.cb_fraction == 3.0
-        assert plotter.cb_pad == 4.0
         assert plotter.mask_pointsize == 2
         assert plotter.border_pointsize == 3
         assert plotter.point_pointsize == 4
@@ -612,15 +681,6 @@ class TestPlotter:
         plotter = plotters.Plotter(
             figsize=(6, 6),
             aspect="auto",
-            cmap="cold",
-            norm="log",
-            norm_min=0.1,
-            norm_max=1.0,
-            linthresh=1.5,
-            linscale=2.0,
-            cb_ticksize=20,
-            cb_fraction=0.001,
-            cb_pad=10.0,
             mask_pointsize=24,
             border_pointsize=25,
             point_pointsize=26,
@@ -629,15 +689,6 @@ class TestPlotter:
 
         assert plotter.figsize == (6, 6)
         assert plotter.aspect == "auto"
-        assert plotter.cmap == "cold"
-        assert plotter.norm == "log"
-        assert plotter.norm_min == 0.1
-        assert plotter.norm_max == 1.0
-        assert plotter.linthresh == 1.5
-        assert plotter.linscale == 2.0
-        assert plotter.cb_ticksize == 20
-        assert plotter.cb_fraction == 0.001
-        assert plotter.cb_pad == 10.0
         assert plotter.mask_pointsize == 24
         assert plotter.border_pointsize == 25
         assert plotter.point_pointsize == 26
@@ -645,22 +696,24 @@ class TestPlotter:
 
 
 class TestSubPlotter:
-
     def test__plotter_settings_use_subplot_config_if_not_manually_input(self):
 
         plotter = plotters.SubPlotter()
 
         assert plotter.figsize == None
         assert plotter.aspect == "square"
-        assert plotter.cmap == "jet"
-        assert plotter.norm == "linear"
-        assert plotter.norm_min == None
-        assert plotter.norm_max == None
-        assert plotter.linthresh == 1.0
-        assert plotter.linscale == 2.0
-        assert plotter.cb_ticksize == 1
-        assert plotter.cb_fraction == 3.0
-        assert plotter.cb_pad == 4.0
+        
+        assert plotter.cmap.cmap == "jet"
+        assert plotter.cmap.norm == "linear"
+        assert plotter.cmap.norm_min == None
+        assert plotter.cmap.norm_max == None
+        assert plotter.cmap.linthresh == 1.0
+        assert plotter.cmap.linscale == 2.0
+        
+        assert plotter.cb.ticksize == 1
+        assert plotter.cb.fraction == 3.0
+        assert plotter.cb.pad == 4.0
+        
         assert plotter.mask_pointsize == 2
         assert plotter.border_pointsize == 3
         assert plotter.point_pointsize == 4
@@ -669,15 +722,17 @@ class TestSubPlotter:
         plotter = plotters.SubPlotter(
             figsize=(6, 6),
             aspect="auto",
+            cmap=mat_objs.ColorMap(
             cmap="cold",
             norm="log",
             norm_min=0.1,
             norm_max=1.0,
             linthresh=1.5,
-            linscale=2.0,
-            cb_ticksize=20,
-            cb_fraction=0.001,
-            cb_pad=10.0,
+            linscale=2.0),
+            cb=mat_objs.ColorBar(
+            ticksize=20,
+            fraction=0.001,
+            pad=10.0),
             mask_pointsize=24,
             border_pointsize=25,
             point_pointsize=26,
@@ -686,15 +741,18 @@ class TestSubPlotter:
 
         assert plotter.figsize == (6, 6)
         assert plotter.aspect == "auto"
-        assert plotter.cmap == "cold"
-        assert plotter.norm == "log"
-        assert plotter.norm_min == 0.1
-        assert plotter.norm_max == 1.0
-        assert plotter.linthresh == 1.5
-        assert plotter.linscale == 2.0
-        assert plotter.cb_ticksize == 20
-        assert plotter.cb_fraction == 0.001
-        assert plotter.cb_pad == 10.0
+
+        assert plotter.cmap.cmap == "cold"
+        assert plotter.cmap.norm == "log"
+        assert plotter.cmap.norm_min == 0.1
+        assert plotter.cmap.norm_max == 1.0
+        assert plotter.cmap.linthresh == 1.5
+        assert plotter.cmap.linscale == 2.0
+
+        assert plotter.cb.ticksize == 20
+        assert plotter.cb.fraction == 0.001
+        assert plotter.cb.pad == 10.0
+
         assert plotter.mask_pointsize == 24
         assert plotter.border_pointsize == 25
         assert plotter.point_pointsize == 26
@@ -704,23 +762,17 @@ class TestSubPlotter:
 
         plotter = plotters.SubPlotter()
 
-        figsize = plotter.get_subplot_figsize(
-            number_subplots=1
-        )
+        figsize = plotter.get_subplot_figsize(number_subplots=1)
 
         assert figsize == (18, 8)
 
-        figsize = plotter.get_subplot_figsize(
-            number_subplots=4
-        )
+        figsize = plotter.get_subplot_figsize(number_subplots=4)
 
         assert figsize == (13, 10)
 
         plotter = plotters.SubPlotter(figsize=(20, 20))
 
-        figsize = plotter.get_subplot_figsize(
-            number_subplots=4
-        )
+        figsize = plotter.get_subplot_figsize(number_subplots=4)
 
         assert figsize == (20, 20)
 
@@ -728,29 +780,27 @@ class TestSubPlotter:
 
         plotter = plotters.SubPlotter()
 
-        rows, columns = plotter.get_subplot_rows_columns(
-            number_subplots=1
-        )
+        rows, columns = plotter.get_subplot_rows_columns(number_subplots=1)
 
         assert rows == 1
         assert columns == 2
 
-        rows, columns = plotter.get_subplot_rows_columns(
-            number_subplots=4
-        )
+        rows, columns = plotter.get_subplot_rows_columns(number_subplots=4)
 
         assert rows == 2
         assert columns == 2
 
 
 class TestArrayPlotter:
-
     def test__plot_lines__can_take_inputs_of_correct_form(self):
 
         plotter = plotters.Plotter()
 
         plotter.array.plot_lines(lines=[(1.0, 1.0), (2.0, 2.0)])
-        plotter.array.plot_lines(lines=[[(1.0, 1.0), (2.0, 2.0)], [(3.0, 3.0), (4.0, 4.0)]])
+        plotter.array.plot_lines(
+            lines=[[(1.0, 1.0), (2.0, 2.0)], [(3.0, 3.0), (4.0, 4.0)]]
+        )
+
 
 class TestDecorator:
     def test__kpc_per_arcsec_extacted_from_object_if_available(self):

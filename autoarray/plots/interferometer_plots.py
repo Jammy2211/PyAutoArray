@@ -1,11 +1,10 @@
 from autoarray.plotters import plotters
 from autoarray.structures import grids
 
+
 @plotters.set_subplot_filename
 def subplot_interferometer(
-    interferometer,
-    include=plotters.Include(),
-    sub_plotter=plotters.SubPlotter(),
+    interferometer, include=plotters.Include(), sub_plotter=plotters.SubPlotter()
 ):
     """Plot the interferometer data_type as a sub-plotters of all its quantites (e.g. the dataset, noise_map-map, PSF, Signal-to_noise-map, \
      etc).
@@ -26,21 +25,17 @@ def subplot_interferometer(
         config file is ignored.
     """
 
-    number_subplots=4
+    number_subplots = 4
 
     sub_plotter.setup_subplot_figure(number_subplots=number_subplots)
 
     sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index=1)
 
-    uv_wavelengths(
-        interferometer=interferometer, include=include, plotter=sub_plotter
-    )
+    uv_wavelengths(interferometer=interferometer, include=include, plotter=sub_plotter)
 
     sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index=2)
 
-    visibilities(
-        interferometer=interferometer, include=include, plotter=sub_plotter
-    )
+    visibilities(interferometer=interferometer, include=include, plotter=sub_plotter)
 
     sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index=3)
 
@@ -87,33 +82,23 @@ def individual(
 
     if plot_visibilities:
 
-        visibilities(
-            interferometer=interferometer, include=include, plotter=plotter
-        )
+        visibilities(interferometer=interferometer, include=include, plotter=plotter)
 
     if plot_noise_map:
 
-        noise_map(
-            interferometer=interferometer, include=include, plotter=plotter
-        )
+        noise_map(interferometer=interferometer, include=include, plotter=plotter)
 
     if plot_u_wavelengths:
 
-        uv_wavelengths(
-            interferometer=interferometer, include=include, plotter=plotter
-        )
+        uv_wavelengths(interferometer=interferometer, include=include, plotter=plotter)
 
     if plot_v_wavelengths:
 
-        v_wavelengths(
-            interferometer=interferometer, include=include, plotter=plotter
-        )
+        v_wavelengths(interferometer=interferometer, include=include, plotter=plotter)
 
     if plot_uv_wavelengths:
 
-        uv_wavelengths(
-            interferometer=interferometer, include=include, plotter=plotter
-        )
+        uv_wavelengths(interferometer=interferometer, include=include, plotter=plotter)
 
     if plot_amplitudes_vs_uv_distances:
 
@@ -129,9 +114,7 @@ def individual(
 
     if plot_primary_beam:
 
-        primary_beam(
-            interferometer=interferometer, include=include, plotter=plotter
-        )
+        primary_beam(interferometer=interferometer, include=include, plotter=plotter)
 
 
 @plotters.set_labels
@@ -157,9 +140,7 @@ def visibilities(
 
 
 @plotters.set_labels
-def noise_map(
-    interferometer, include=plotters.Include(), plotter=plotters.Plotter()
-):
+def noise_map(interferometer, include=plotters.Include(), plotter=plotters.Plotter()):
     """Plot the observed image of the imaging data_type.
 
     Set *autolens.data_type.array.plotters.plotters* for a description of all input parameters not described below.
@@ -308,9 +289,7 @@ def phases_vs_uv_distances(
 
 @plotters.set_labels
 def primary_beam(
-    interferometer,
-    include=plotters.Include(),
-    plotter=plotters.Plotter(),
+    interferometer, include=plotters.Include(), plotter=plotters.Plotter()
 ):
     """Plot the PSF of the interferometer data_type.
 
@@ -324,6 +303,4 @@ def primary_beam(
         If true, the origin of the dataset's coordinate system is plotted as a 'x'.
     """
 
-    plotter.array.plot(
-        array=interferometer.primary_beam, include_origin=include.origin
-    )
+    plotter.array.plot(array=interferometer.primary_beam, include_origin=include.origin)

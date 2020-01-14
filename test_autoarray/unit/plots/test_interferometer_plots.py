@@ -106,9 +106,8 @@ def test__individual_attributes_are_output(
 
     assert interferometer_plotter_path + "primary_beam.png" in plot_patch.paths
 
-def test__subplot_is_output(
-        interferometer_7, interferometer_plotter_path, plot_patch
-):
+
+def test__subplot_is_output(interferometer_7, interferometer_plotter_path, plot_patch):
 
     aa.plot.interferometer.subplot_interferometer(
         interferometer=interferometer_7,
@@ -117,7 +116,9 @@ def test__subplot_is_output(
         ),
     )
 
-    assert interferometer_plotter_path + "subplot_interferometer.png" in plot_patch.paths
+    assert (
+        interferometer_plotter_path + "subplot_interferometer.png" in plot_patch.paths
+    )
 
 
 def test__individuals__output_dependent_on_input(

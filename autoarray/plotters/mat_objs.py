@@ -4,6 +4,8 @@ import matplotlib
 backend = conf.get_matplotlib_backend()
 matplotlib.use(backend)
 import matplotlib.pyplot as plt
+import matplotlib.colors as colors
+import matplotlib.cm as cm
 import numpy as np
 import inspect
 import os
@@ -11,14 +13,217 @@ import os
 from autoarray import exc
 
 
+class ColorMap(object):
+    def __init__(
+        self,
+        cmap=None,
+        norm=None,
+        norm_max=None,
+        norm_min=None,
+        linthresh=None,
+        linscale=None,
+    ):
+
+        self.cmap = cmap
+        self.norm = norm
+        self.norm_min = norm_min
+        self.norm_max = norm_max
+        self.linthresh = linthresh
+        self.linscale = linscale
+
+    @classmethod
+    def from_instance_and_config(cls, colormap, load_func):
+
+        cmap = (
+            colormap.cmap
+            if colormap.cmap is not None
+            else load_func("colormap", "cmap", str)
+        )
+        norm = (
+            colormap.norm
+            if colormap.norm is not None
+            else load_func("colormap", "norm", str)
+        )
+        norm_min = (
+            colormap.norm_min
+            if colormap.norm_min is not None
+            else load_func("colormap", "norm_min", float)
+        )
+        norm_max = (
+            colormap.norm_max
+            if colormap.norm_max is not None
+            else load_func("colormap", "norm_max", float)
+        )
+        linthresh = (
+            colormap.linthresh
+            if colormap.linthresh is not None
+            else load_func("colormap", "linthresh", float)
+        )
+        linscale = (
+            colormap.linscale
+            if colormap.linscale is not None
+            else load_func("colormap", "linscale", float)
+        )
+
+        return ColorMap(
+                cmap=cmap,
+                norm=norm,
+                norm_min=norm_min,
+                norm_max=norm_max,
+                linthresh=linthresh,
+                linscale=linscale,
+            )
+
+    def get_normalization_scale(self, array):
+        """Get the normalization scale of the colormap. This will be hyper based on the input min / max normalization \
+        values.
+
+        For a 'symmetric_log' colormap, linthesh and linscale also change the colormap.
+
+        If norm_min / norm_max are not supplied, the minimum / maximum values of the array of data_type are used.
+
+        Parameters
+        -----------
+        array : data_type.array.aa.Scaled
+            The 2D array of data_type which is plotted.
+        norm_min : float or None
+            The minimum array value the colormap map spans (all values below this value are plotted the same color).
+        norm_max : float or None
+            The maximum array value the colormap map spans (all values above this value are plotted the same color).
+        linthresh : float
+            For the 'symmetric_log' colormap normalization ,this specifies the range of values within which the colormap \
+            is linear.
+        linscale : float
+            For the 'symmetric_log' colormap normalization, this allowws the linear range set by linthresh to be stretched \
+            relative to the logarithmic range.
+        """
+
+        if self.norm_min is None:
+            norm_min = array.min()
+        else:
+            norm_min = self.norm_min
+
+        if self.norm_max is None:
+            norm_max = array.max()
+        else:
+            norm_max = self.norm_max
+
+        if self.norm in "linear":
+            return colors.Normalize(vmin=norm_min, vmax=norm_max)
+        elif self.norm in "log":
+            if self.norm_min == 0.0:
+                norm_min = 1.0e-4
+            return colors.LogNorm(vmin=norm_min, vmax=norm_max)
+        elif self.norm in "symmetric_log":
+            return colors.SymLogNorm(
+                linthresh=self.linthresh,
+                linscale=self.linscale,
+                vmin=norm_min,
+                vmax=norm_max,
+            )
+        else:
+            raise exc.PlottingException(
+                "The normalization (norm) supplied to the plotter is not a valid string (must be "
+                "linear | log | symmetric_log"
+            )
+
+
+class ColorBar(object):
+    def __init__(
+        self, ticksize=None, fraction=None, pad=None, tick_values=None, tick_labels=None
+    ):
+
+        self.ticksize = ticksize
+        self.fraction = fraction
+        self.pad = pad
+        self.tick_values = tick_values
+        self.tick_labels = tick_labels
+
+    @classmethod
+    def from_instance_and_config(cls, cb, load_func):
+
+        ticksize = (
+            cb.ticksize
+            if cb.ticksize is not None
+            else load_func("colorbar", "ticksize", int)
+        )
+        fraction = (
+            cb.fraction
+            if cb.fraction is not None
+            else load_func("colorbar", "fraction", float)
+        )
+        pad = (
+            cb.pad
+            if cb.pad is not None
+            else load_func("colorbar", "pad", float)
+        )
+        tick_values = cb.tick_values
+        tick_labels = cb.tick_labels
+
+        return ColorBar(
+            ticksize=ticksize,
+            fraction=fraction,
+            pad=pad,
+            tick_values=tick_values,
+            tick_labels=tick_labels,
+        )
+
+    def set_colorbar(self):
+        """Setup the colorbar of the figure, specifically its ticksize and the size is appears relative to the figure.
+
+        Parameters
+        -----------
+        cb_ticksize : int
+            The size of the tick labels on the colorbar.
+        cb_fraction : float
+            The fraction of the figure that the colorbar takes up, which resizes the colorbar relative to the figure.
+        cb_pad : float
+            Pads the color bar in the figure, which resizes the colorbar relative to the figure.
+        cb_tick_values : [float]
+            Manually specified values of where the colorbar tick labels appear on the colorbar.
+        cb_tick_labels : [float]
+            Manually specified labels of the color bar tick labels, which appear where specified by cb_tick_values.
+        """
+
+        if self.tick_values is None and self.tick_labels is None:
+            cb = plt.colorbar(fraction=self.fraction, pad=self.pad)
+        elif self.tick_values is not None and self.tick_labels is not None:
+            cb = plt.colorbar(
+                fraction=self.fraction, pad=self.pad, ticks=self.tick_values
+            )
+            cb.ax.set_yticklabels(labels=self.tick_labels)
+        else:
+            raise exc.PlottingException(
+                "Only 1 entry of tick_values or tick_labels was input. You must either supply"
+                "both the values and labels, or neither."
+            )
+
+        cb.ax.tick_params(labelsize=self.ticksize)
+
+    def set_colorbar_using_values(self, cmap, color_values):
+
+        cax = cm.ScalarMappable(cmap=cmap)
+        cax.set_array(color_values)
+
+        if self.tick_values is None and self.tick_labels is None:
+            plt.colorbar(mappable=cax, fraction=self.fraction, pad=self.pad)
+        elif self.tick_values is not None and self.tick_labels is not None:
+            cb = plt.colorbar(
+                mappable=cax,
+                fraction=self.fraction,
+                pad=self.pad,
+                ticks=self.tick_values,
+            )
+            cb.ax.set_yticklabels(self.tick_labels)
+
 class Ticks(object):
     def __init__(
-            self,
-            ysize=None,
-            xsize=None,
-            unit_conversion_factor=None,
-            y_manual=None,
-            x_manual=None,
+        self,
+        ysize=None,
+        xsize=None,
+        unit_conversion_factor=None,
+        y_manual=None,
+        x_manual=None,
     ):
 
         self.ysize = ysize
@@ -29,13 +234,35 @@ class Ticks(object):
         self.y_manual = y_manual
         self.x_manual = x_manual
 
+    @classmethod
+    def from_instance_and_config(cls, ticks, load_func):
+
+        ysize = (
+            ticks.ysize
+            if ticks.ysize is not None
+            else load_func("ticks", "ysize", int)
+        )
+
+        xsize = (
+            ticks.xsize
+            if ticks.xsize is not None
+            else load_func("ticks", "xsize", int)
+        )
+
+        return Ticks(
+            ysize=ysize,
+            xsize=xsize,
+            y_manual=ticks.y_manual,
+            x_manual=ticks.x_manual,
+        )
+
     def set_yticks(
-            self,
-            array,
-            extent,
-            use_scaled_units,
-            unit_conversion_factor,
-            symmetric_around_centre=False,
+        self,
+        array,
+        extent,
+        use_scaled_units,
+        unit_conversion_factor,
+        symmetric_around_centre=False,
     ):
         """Get the extent of the dimensions of the array in the unit_label of the figure (e.g. arc-seconds or kpc).
 
@@ -86,12 +313,12 @@ class Ticks(object):
         plt.yticks(ticks=yticks, labels=ytick_labels)
 
     def set_xticks(
-            self,
-            array,
-            extent,
-            use_scaled_units,
-            unit_conversion_factor,
-            symmetric_around_centre=False,
+        self,
+        array,
+        extent,
+        use_scaled_units,
+        unit_conversion_factor,
+        symmetric_around_centre=False,
     ):
         """Get the extent of the dimensions of the array in the unit_label of the figure (e.g. arc-seconds or kpc).
 
@@ -144,15 +371,15 @@ class Ticks(object):
 
 class Labels(object):
     def __init__(
-            self,
-            title=None,
-            yunits=None,
-            xunits=None,
-            titlesize=None,
-            ysize=None,
-            xsize=None,
-            use_scaled_units=None,
-            plot_in_kpc=None,
+        self,
+        title=None,
+        yunits=None,
+        xunits=None,
+        titlesize=None,
+        ysize=None,
+        xsize=None,
+        use_scaled_units=None,
+        plot_in_kpc=None,
     ):
 
         self.title = title
@@ -165,6 +392,37 @@ class Labels(object):
 
         self.plot_in_kpc = plot_in_kpc
         self.use_scaled_units = use_scaled_units
+
+    @classmethod
+    def from_instance_and_config(cls, labels, load_func, use_scaled_units):
+
+        titlesize = (
+            labels.titlesize
+            if labels.titlesize is not None
+            else load_func("labels", "titlesize", int)
+        )
+
+        ysize = (
+            labels.ysize
+            if labels.ysize is not None
+            else load_func("labels", "ysize", int)
+        )
+
+        xsize = (
+            labels.xsize
+            if labels.xsize is not None
+            else load_func("labels", "xsize", int)
+        )
+
+        return Labels(
+            title=labels.title,
+            yunits=labels._yunits,
+            xunits=labels._xunits,
+            titlesize=titlesize,
+            ysize=ysize,
+            xsize=xsize,
+            use_scaled_units=use_scaled_units,
+        )
 
     def title_from_func(self, func):
         if self.title is None:
@@ -332,6 +590,17 @@ class Output(object):
         self.filename = filename
         self._format = format
         self.bypass = bypass
+
+    @classmethod
+    def from_instance_and_config(cls, output, load_func, is_sub_plotter):
+
+        return Output(
+            path=output.path,
+            format=output._format,
+            filename=output.filename,
+            bypass=is_sub_plotter,
+        )
+
 
     @property
     def format(self):

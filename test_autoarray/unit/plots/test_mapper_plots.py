@@ -73,9 +73,7 @@ def test__image_and_rectangular_mapper_is_output(
     assert plotter_path + "subplot_image_and_mapper.png" in plot_patch.paths
 
 
-def test__rectangular_mapper_is_output(
-    rectangular_mapper, plotter_path, plot_patch
-):
+def test__rectangular_mapper_is_output(rectangular_mapper, plotter_path, plot_patch):
     aa.plot.mapper.mapper_grid(
         mapper=rectangular_mapper,
         include=aa.plotter.Include(

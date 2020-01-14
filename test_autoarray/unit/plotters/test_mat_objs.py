@@ -18,7 +18,13 @@ def set_config_path():
 class TestTicks:
     def test__tick_settings_setup_correctly_from_config(self):
 
-        ticks = mat_objs.Ticks(ysize=34, xsize=35, y_manual=[1.0, 2.0], x_manual=[3.0, 4.0], unit_conversion_factor=2.0)
+        ticks = mat_objs.Ticks(
+            ysize=34,
+            xsize=35,
+            y_manual=[1.0, 2.0],
+            x_manual=[3.0, 4.0],
+            unit_conversion_factor=2.0,
+        )
 
         assert ticks.ysize == 34
         assert ticks.xsize == 35
@@ -31,7 +37,14 @@ class TestLabels:
     def test__title__yx_units_setup_correctly_from_config(self):
 
         labels = mat_objs.Labels(
-            title="OMG", yunits="hi", xunits="hi2", use_scaled_units=True, titlesize=30, ysize=31, xsize=32)
+            title="OMG",
+            yunits="hi",
+            xunits="hi2",
+            use_scaled_units=True,
+            titlesize=30,
+            ysize=31,
+            xsize=32,
+        )
 
         assert labels.use_scaled_units == True
         assert labels.title == "OMG"
@@ -145,7 +158,6 @@ class TestLabels:
 
 
 class TestOutput:
-
     def test__input_path_is_created(self):
 
         test_path = path.join(directory, "../test_files/output_path")
@@ -174,5 +186,3 @@ class TestOutput:
         filename_from_func = output.filename_from_func(func=toy_func)
 
         assert filename_from_func == "Hi"
-
-

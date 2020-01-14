@@ -71,8 +71,9 @@ def test__individual_attributes_are_output(
 
     assert imaging_plotter_path + "signal_to_noise_map.png" in plot_patch.paths
 
+
 def test__subplot_is_output(
-        imaging_7x7, positions_7x7, mask_7x7, imaging_plotter_path, plot_patch
+    imaging_7x7, positions_7x7, mask_7x7, imaging_plotter_path, plot_patch
 ):
 
     aa.plot.imaging.subplot_imaging(
