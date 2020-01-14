@@ -1,6 +1,7 @@
 from autoarray.plotters import plotters
 from autoarray.operators.inversion import mappers
 
+
 @plotters.set_subplot_filename
 def subplot_inversion(
     inversion,
@@ -46,7 +47,9 @@ def subplot_inversion(
         plotter=sub_plotter,
     )
 
-    sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index= 2, aspect=float(aspect_inv))
+    sub_plotter.setup_subplot(
+        number_subplots=number_subplots, subplot_index=2, aspect=float(aspect_inv)
+    )
 
     reconstruction(
         inversion=inversion,
@@ -56,40 +59,34 @@ def subplot_inversion(
         plotter=sub_plotter,
     )
 
-    sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index= 3, aspect=float(aspect_inv))
-
-    errors(
-        inversion=inversion,
-        positions=None,
-        include=include,
-        plotter=sub_plotter,
+    sub_plotter.setup_subplot(
+        number_subplots=number_subplots, subplot_index=3, aspect=float(aspect_inv)
     )
 
-    sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index= 4, aspect=float(aspect_inv))
+    errors(inversion=inversion, positions=None, include=include, plotter=sub_plotter)
+
+    sub_plotter.setup_subplot(
+        number_subplots=number_subplots, subplot_index=4, aspect=float(aspect_inv)
+    )
 
     residual_map(
-        inversion=inversion,
-        positions=None,
-        include=include,
-        plotter=sub_plotter,
+        inversion=inversion, positions=None, include=include, plotter=sub_plotter
     )
 
-    sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index= 5, aspect=float(aspect_inv))
+    sub_plotter.setup_subplot(
+        number_subplots=number_subplots, subplot_index=5, aspect=float(aspect_inv)
+    )
 
     chi_squared_map(
-        inversion=inversion,
-        positions=None,
-        include=include,
-        plotter=sub_plotter,
+        inversion=inversion, positions=None, include=include, plotter=sub_plotter
     )
 
-    sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index= 6, aspect=float(aspect_inv))
+    sub_plotter.setup_subplot(
+        number_subplots=number_subplots, subplot_index=6, aspect=float(aspect_inv)
+    )
 
     regularization_weights(
-        inversion=inversion,
-        positions=None,
-        include=include,
-        plotter=sub_plotter,
+        inversion=inversion, positions=None, include=include, plotter=sub_plotter
     )
 
     sub_plotter.output.subplot_to_figure()
@@ -128,9 +125,7 @@ def individuals(
 
     if plot_inversion_reconstruction:
 
-        reconstruction(
-            inversion=inversion, include=include, plotter=plotter
-        )
+        reconstruction(inversion=inversion, include=include, plotter=plotter)
 
     if plot_inversion_errors:
 
@@ -138,44 +133,30 @@ def individuals(
 
     if plot_inversion_residual_map:
 
-        residual_map(
-            inversion=inversion, include=include, plotter=plotter
-        )
+        residual_map(inversion=inversion, include=include, plotter=plotter)
 
     if plot_inversion_normalized_residual_map:
 
-        normalized_residual_map(
-            inversion=inversion, include=include, plotter=plotter
-        )
+        normalized_residual_map(inversion=inversion, include=include, plotter=plotter)
 
     if plot_inversion_chi_squared_map:
 
-        chi_squared_map(
-            inversion=inversion, include=include, plotter=plotter
-        )
+        chi_squared_map(inversion=inversion, include=include, plotter=plotter)
 
     if plot_inversion_regularization_weight_map:
 
-        regularization_weights(
-            inversion=inversion, include=include, plotter=plotter
-        )
+        regularization_weights(inversion=inversion, include=include, plotter=plotter)
 
     if plot_inversion_interpolated_reconstruction:
 
         interpolated_reconstruction(
-            inversion=inversion,
-            lines=lines,
-            include=include,
-            plotter=plotter,
+            inversion=inversion, lines=lines, include=include, plotter=plotter
         )
 
     if plot_inversion_interpolated_errors:
 
         interpolated_errors(
-            inversion=inversion,
-            lines=lines,
-            include=include,
-            plotter=plotter,
+            inversion=inversion, lines=lines, include=include, plotter=plotter
         )
 
 

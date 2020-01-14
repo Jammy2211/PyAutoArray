@@ -43,7 +43,7 @@ def subplot_image_and_mapper(
         point_colors=point_colors,
     )
 
-    sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index= 2)
+    sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index=2)
 
     mapper_grid(
         mapper=mapper,

@@ -4,9 +4,7 @@ from autoarray.plots import inversion_plots
 
 @plotters.set_subplot_filename
 def subplot_fit_interferometer(
-    fit,
-    include=plotters.Include(),
-    sub_plotter=plotters.SubPlotter(),
+    fit, include=plotters.Include(), sub_plotter=plotters.SubPlotter()
 ):
 
     number_subplots = 6
@@ -17,29 +15,29 @@ def subplot_fit_interferometer(
 
     residual_map_vs_uv_distances(fit=fit, include=include, plotter=sub_plotter)
 
-    sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index= 2)
+    sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index=2)
 
     normalized_residual_map_vs_uv_distances(
         fit=fit, include=include, plotter=sub_plotter
     )
 
-    sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index= 3)
+    sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index=3)
 
     chi_squared_map_vs_uv_distances(fit=fit, include=include, plotter=sub_plotter)
 
-    sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index= 4)
+    sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index=4)
 
     residual_map_vs_uv_distances(
         fit=fit, plot_real=False, include=include, plotter=sub_plotter
     )
 
-    sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index= 5)
+    sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index=5)
 
     normalized_residual_map_vs_uv_distances(
         fit=fit, plot_real=False, include=include, plotter=sub_plotter
     )
 
-    sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index= 6)
+    sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index=6)
 
     chi_squared_map_vs_uv_distances(
         fit=fit, plot_real=False, include=include, plotter=sub_plotter
@@ -149,9 +147,7 @@ def individuals(
 
 
 @plotters.set_labels
-def visibilities(
-    fit, include=plotters.Include(), plotter=plotters.Plotter()
-):
+def visibilities(fit, include=plotters.Include(), plotter=plotters.Plotter()):
     """Plot the visibilities of a lens fit.
 
     Set *autolens.datas.grid.plotters.plotters* for a description of all input parameters not described below.
@@ -167,9 +163,7 @@ def visibilities(
 
 
 @plotters.set_labels
-def noise_map(
-    fit, include=plotters.Include(), plotter=plotters.Plotter()
-):
+def noise_map(fit, include=plotters.Include(), plotter=plotters.Plotter()):
     """Plot the noise-map of a lens fit.
 
     Set *autolens.datas.grid.plotters.plotters* for a description of all input parameters not described below.
@@ -185,9 +179,7 @@ def noise_map(
 
 
 @plotters.set_labels
-def signal_to_noise_map(
-    fit, include=plotters.Include(), plotter=plotters.Plotter()
-):
+def signal_to_noise_map(fit, include=plotters.Include(), plotter=plotters.Plotter()):
     """Plot the noise-map of a lens fit.
 
     Set *autolens.datas.grid.plotters.plotters* for a description of all input parameters not described below.
@@ -203,9 +195,7 @@ def signal_to_noise_map(
 
 
 @plotters.set_labels
-def model_visibilities(
-    fit, include=plotters.Include(), plotter=plotters.Plotter()
-):
+def model_visibilities(fit, include=plotters.Include(), plotter=plotters.Plotter()):
     """Plot the model visibilities of a fit.
 
     Set *autolens.datas.grid.plotters.plotters* for a description of all input parameters not described below.
@@ -255,8 +245,8 @@ def residual_map_vs_uv_distances(
             labels=mat_objs.Labels(title=plotter.labels.title + " Imag")
         )
         plotter = plotter.plotter_with_new_output(
-            output=mat_objs.Output(filename=plotter.output.filename + "_imag"
-        ))
+            output=mat_objs.Output(filename=plotter.output.filename + "_imag")
+        )
 
     plotter.line.plot(
         y=y,
@@ -292,16 +282,16 @@ def normalized_residual_map_vs_uv_distances(
             labels=mat_objs.Labels(title=plotter.labels.title + " Real")
         )
         plotter = plotter.plotter_with_new_output(
-            output=mat_objs.Output(filename=plotter.output.filename + "_real"
-        ))
+            output=mat_objs.Output(filename=plotter.output.filename + "_real")
+        )
     else:
         y = fit.residual_map[:, 1]
         plotter = plotter.plotter_with_new_labels(
             labels=mat_objs.Labels(title=plotter.labels.title + " Imag")
         )
         plotter = plotter.plotter_with_new_output(
-            output=mat_objs.Output(filename=plotter.output.filename + "_imag"
-        ))
+            output=mat_objs.Output(filename=plotter.output.filename + "_imag")
+        )
 
     plotter.line.plot(
         y=y,
@@ -337,16 +327,16 @@ def chi_squared_map_vs_uv_distances(
             labels=mat_objs.Labels(title=plotter.labels.title + " Real")
         )
         plotter = plotter.plotter_with_new_output(
-            output=mat_objs.Output(filename=plotter.output.filename + "_real"
-        ))
+            output=mat_objs.Output(filename=plotter.output.filename + "_real")
+        )
     else:
         y = fit.residual_map[:, 1]
         plotter = plotter.plotter_with_new_labels(
             labels=mat_objs.Labels(title=plotter.labels.title + " Imag")
         )
         plotter = plotter.plotter_with_new_output(
-            output=mat_objs.Output(filename=plotter.output.filename + "_imag"
-        ))
+            output=mat_objs.Output(filename=plotter.output.filename + "_imag")
+        )
 
     plotter.line.plot(
         y=y,

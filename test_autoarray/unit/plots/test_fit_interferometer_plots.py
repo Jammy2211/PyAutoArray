@@ -31,7 +31,9 @@ def test__fit_sub_plot(fit_interferometer_7, fit_interferometer_path, plot_patch
         ),
     )
 
-    assert fit_interferometer_path + "subplot_fit_interferometer.png" in plot_patch.paths
+    assert (
+        fit_interferometer_path + "subplot_fit_interferometer.png" in plot_patch.paths
+    )
 
 
 def test__fit_individuals__dependent_on_input(

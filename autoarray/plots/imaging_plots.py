@@ -1,5 +1,6 @@
 from autoarray.plotters import plotters
 
+
 @plotters.set_subplot_filename
 def subplot_imaging(
     imaging,
@@ -28,7 +29,6 @@ def subplot_imaging(
         config file is ignored.
     """
 
-
     number_subplots = 6
 
     sub_plotter.setup_subplot_figure(number_subplots=number_subplots)
@@ -44,7 +44,7 @@ def subplot_imaging(
         plotter=sub_plotter,
     )
 
-    sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index= 2)
+    sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index=2)
 
     noise_map(
         imaging=imaging,
@@ -54,7 +54,7 @@ def subplot_imaging(
         plotter=sub_plotter,
     )
 
-    sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index= 3)
+    sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index=3)
 
     psf(
         imaging=imaging,
@@ -64,7 +64,7 @@ def subplot_imaging(
         plotter=sub_plotter,
     )
 
-    sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index= 4)
+    sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index=4)
 
     signal_to_noise_map(
         imaging=imaging,
@@ -74,7 +74,7 @@ def subplot_imaging(
         plotter=sub_plotter,
     )
 
-    sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index= 5)
+    sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index=5)
 
     absolute_signal_to_noise_map(
         imaging=imaging,
@@ -84,7 +84,7 @@ def subplot_imaging(
         plotter=sub_plotter,
     )
 
-    sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index= 6)
+    sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index=6)
 
     potential_chi_squared_map(
         imaging=imaging,
@@ -139,9 +139,7 @@ def individual(
 
     if plot_noise_map:
 
-        noise_map(
-            imaging=imaging, mask=mask, include=include, plotter=plotter
-        )
+        noise_map(imaging=imaging, mask=mask, include=include, plotter=plotter)
 
     if plot_psf:
 
