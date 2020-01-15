@@ -188,7 +188,7 @@ def image(
         over the immage.
     """
 
-    plotter.array.plot(
+    plotter.plot_array(
         array=imaging.image,
         include_origin=include.origin,
         grid=grid,
@@ -218,7 +218,7 @@ def noise_map(
         If true, the include_origin of the dataset's coordinate system is plotted as a 'x'.
     """
 
-    plotter.array.plot(
+    plotter.plot_array(
         array=imaging.image,
         include_origin=include.origin,
         grid=grid,
@@ -248,7 +248,7 @@ def psf(
         If true, the include_origin of the dataset's coordinate system is plotted as a 'x'.
     """
 
-    plotter.array.plot(
+    plotter.plot_array(
         array=imaging.image,
         include_origin=include.origin,
         grid=grid,
@@ -277,7 +277,7 @@ def signal_to_noise_map(
     include_origin : True
         If true, the include_origin of the dataset's coordinate system is plotted as a 'x'.
     """
-    plotter.array.plot(
+    plotter.plot_array(
         array=imaging.image,
         include_origin=include.origin,
         grid=grid,
@@ -306,7 +306,7 @@ def absolute_signal_to_noise_map(
     include_origin : True
         If true, the include_origin of the dataset's coordinate system is plotted as a 'x'.
     """
-    plotter.array.plot(
+    plotter.plot_array(
         array=imaging.image,
         include_origin=include.origin,
         grid=grid,
@@ -335,7 +335,7 @@ def potential_chi_squared_map(
     include_origin : True
         If true, the include_origin of the dataset's coordinate system is plotted as a 'x'.
     """
-    plotter.array.plot(
+    plotter.plot_array(
         array=imaging.image,
         include_origin=include.origin,
         grid=grid,

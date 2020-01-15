@@ -239,7 +239,7 @@ class ColorBar(object):
             tick_labels=tick_labels,
         )
 
-    def plot(self):
+    def set(self):
         """Setup the colorbar of the figure, specifically its ticksize and the size is appears relative to the figure.
 
         Parameters
@@ -271,7 +271,7 @@ class ColorBar(object):
 
         cb.ax.tick_params(labelsize=self.ticksize)
 
-    def plot_with_values(self, cmap, color_values):
+    def set_with_values(self, cmap, color_values):
 
         cax = cm.ScalarMappable(cmap=cmap)
         cax.set_array(color_values)
@@ -729,3 +729,45 @@ class Output(object):
             plt.show()
         elif self.format is "png":
             plt.savefig(self.path + self.filename + ".png", bbox_inches="tight")
+
+
+class Scatterer(object):
+
+    def __init__(self, size=None, marker=None, color=None):
+
+        self.size = size
+        self.marker = marker
+        self.color = color
+
+    @classmethod
+    def from_instance_and_config(cls, scatterer, load_func):
+
+        size = (
+            scatterer.size
+            if scatterer.size is not None
+            else load_func("mask", "size", int)
+        )
+
+        marker = (
+            scatterer.marker
+            if scatterer.marker is not None
+            else load_func("mask", "marker", str)
+        )
+
+        color = (
+            scatterer.color
+            if scatterer.color is not None
+            else load_func("mask", "color", str)
+        )
+
+        return Scatterer(size=size, marker=marker, color=color)
+
+    def plot(self, grid):
+
+        plt.scatter(
+            y=np.asarray(grid)[:, 0],
+            x=np.asarray(grid)[:, 1],
+            s=self.size,
+            c=self.color,
+            marker=self.marker
+        )
