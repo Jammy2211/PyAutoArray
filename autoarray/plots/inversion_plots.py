@@ -171,7 +171,7 @@ def reconstructed_image(
     plotter=plotters.Plotter(),
 ):
 
-    plotter.array.plot(
+    plotter.plot_array(
         array=inversion.mapped_reconstructed_image,
         mask=mask,
         lines=lines,
@@ -203,7 +203,7 @@ def plot_values(
             solution_vector=source_pixel_values
         )
 
-        plotter.array.plot(
+        plotter.plot_array(
             array=reconstructed_pixelization,
             lines=lines,
             points=positions,
@@ -393,7 +393,7 @@ def interpolated_reconstruction(
     plotter=plotters.Plotter(),
 ):
 
-    plotter.array.plot(
+    plotter.plot_array(
         array=inversion.interpolated_reconstruction_from_shape_2d(),
         lines=lines,
         points=positions,
@@ -412,7 +412,7 @@ def interpolated_errors(
     plotter=plotters.Plotter(),
 ):
 
-    plotter.array.plot(
+    plotter.plot_array(
         array=inversion.interpolated_errors_from_shape_2d(),
         lines=lines,
         points=positions,

@@ -42,7 +42,7 @@ class AbstractPlotter(object):
         figure=mat_objs.Figure(),
         cmap=mat_objs.ColorMap(),
         cb=mat_objs.ColorBar(),
-        mask_pointsize=None,
+        mask_scatterer=mat_objs.Scatterer(),
         border_pointsize=None,
         point_pointsize=None,
         grid_pointsize=None,
@@ -71,11 +71,6 @@ class AbstractPlotter(object):
             cb=cb, load_func=load_setting_func
         )
 
-        self.mask_pointsize = (
-            mask_pointsize
-            if mask_pointsize is not None
-            else load_setting_func("settings", "mask_pointsize", int)
-        )
         self.border_pointsize = (
             border_pointsize
             if border_pointsize is not None
@@ -100,6 +95,10 @@ class AbstractPlotter(object):
             load_func=load_setting_func,
             units=self.units,
         )
+
+        self.mask_scatterer = mat_objs.Scatterer.from_instance_and_config(
+            scatterer=mask_scatterer, load_func=load_setting_func)
+
         self.output = mat_objs.Output.from_instance_and_config(
             output=output,
             load_func=load_setting_func,
@@ -110,69 +109,911 @@ class AbstractPlotter(object):
         self.include_legend = include_legend
         self.legend_fontsize = legend_fontsize
 
-    @property
-    def array(self):
-        return ArrayPlotter(
-            units=self.units,
-            figure=self.figure,
-            cmap=self.cmap,
-            cb=self.cb,
-            mask_pointsize=self.mask_pointsize,
-            border_pointsize=self.border_pointsize,
-            point_pointsize=self.point_pointsize,
-            grid_pointsize=self.grid_pointsize,
-            ticks=self.ticks,
-            labels=self.labels,
-            output=self.output,
-        )
-
-    @property
-    def grid(self):
-        return GridPlotter(
-            units=self.units,
-            figure=self.figure,
-            cmap=self.cmap,
-            cb=self.cb,
-            grid_pointsize=self.grid_pointsize,
-            grid_pointcolor="k",
-            ticks=self.ticks,
-            labels=self.labels,
-            output=self.output,
-        )
-
-    @property
-    def mapper(self):
-        return MapperPlotter(
-            units=self.units,
-            figure=self.figure,
-            cmap=self.cmap,
-            cb=self.cb,
-            grid_pointsize=self.grid_pointsize,
-            grid_pointcolor="k",
-            ticks=self.ticks,
-            labels=self.labels,
-            output=self.output,
-        )
-
-    @property
-    def line(self):
-        return LinePlotter(
-            units=self.units,
-            figure=self.figure,
-            line_pointsize=self.line_pointsize,
-            include_legend=self.include_legend,
-            legend_fontsize=self.legend_fontsize,
-            ticks=self.ticks,
-            labels=self.labels,
-            output=self.output,
-        )
 
     @property
     def is_sub_plotter(self):
         raise NotImplementedError()
 
+    def plot_array(
+        self,
+        array,
+        include_origin=False,
+        mask=None,
+        border=None,
+        lines=None,
+        points=None,
+        centres=None,
+        grid=None,
+    ):
+        """Plot an array of data_type as a figure.
+
+        Parameters
+        -----------
+        settings : PlotterSettings
+            Settings
+        include : PlotterInclude
+            Include
+        labels : PlotterLabels
+            labels
+        outputs : PlotterOutputs
+            outputs
+        array : data_type.array.aa.Scaled
+            The 2D array of data_type which is plotted.
+        origin : (float, float).
+            The origin of the coordinate system of the array, which is plotted as an 'x' on the image if input.
+        mask : data_type.array.mask.Mask
+            The mask applied to the array, the edge of which is plotted as a set of points over the plotted array.
+        extract_array_from_mask : bool
+            The plotter array is extracted using the mask, such that masked values are plotted as zeros. This ensures \
+            bright features outside the mask do not impact the color map of the plotters.
+        zoom_around_mask : bool
+            If True, the 2D region of the array corresponding to the rectangle encompassing all unmasked values is \
+            plotted, thereby zooming into the region of interest.
+        border : bool
+            If a mask is supplied, its borders pixels (e.g. the exterior edge) is plotted if this is *True*.
+        points : [[]]
+            Lists of (y,x) coordinates on the image which are plotted as colored dots, to highlight specific pixels.
+        grid : data_type.array.aa.Grid
+            A grid of (y,x) coordinates which may be plotted over the plotted array.
+        as_subplot : bool
+            Whether the array is plotted as part of a subplot, in which case the grid figure is not opened / closed.
+        unit_label : str
+            The label for the unit_label of the y / x axis of the plots.
+        unit_conversion_factor : float or None
+            The conversion factor between arc-seconds and kiloparsecs, required to plotters the unit_label in kpc.
+        figsize : (int, int)
+            The size of the figure in (rows, columns).
+        aspect : str
+            The aspect ratio of the array, specifically whether it is forced to be square ('equal') or adapts its size to \
+            the figure size ('auto').
+        cmap : str
+            The colormap the array is plotted using, which may be chosen from the standard matplotlib colormaps.
+        norm : str
+            The normalization of the colormap used to plotters the image, specifically whether it is linear ('linear'), log \
+            ('log') or a symmetric log normalization ('symmetric_log').
+        norm_min : float or None
+            The minimum array value the colormap map spans (all values below this value are plotted the same color).
+        norm_max : float or None
+            The maximum array value the colormap map spans (all values above this value are plotted the same color).
+        linthresh : float
+            For the 'symmetric_log' colormap normalization ,this specifies the range of values within which the colormap \
+            is linear.
+        linscale : float
+            For the 'symmetric_log' colormap normalization, this allowws the linear range set by linthresh to be stretched \
+            relative to the logarithmic range.
+        cb_ticksize : int
+            The size of the tick labels on the colorbar.
+        cb_fraction : float
+            The fraction of the figure that the colorbar takes up, which resizes the colorbar relative to the figure.
+        cb_pad : float
+            Pads the color bar in the figure, which resizes the colorbar relative to the figure.
+        xsize : int
+            The fontsize of the x axes label.
+        ysize : int
+            The fontsize of the y axes label.
+        xyticksize : int
+            The font size of the x and y ticks on the figure axes.
+        mask_scatterer : int
+            The size of the points plotted to show the mask.
+        border_pointsize : int
+            The size of the points plotted to show the borders.
+        point_pointsize : int
+            The size of the points plotted to show points on the image.
+        grid_pointsize : int
+            The size of the points plotted to show the grid.
+        xticks_manual :  [] or None
+            If input, the xticks do not use the array's default xticks but instead overwrite them as these values.
+        yticks_manual :  [] or None
+            If input, the yticks do not use the array's default yticks but instead overwrite them as these values.
+        output_path : str
+            The path on the hard-disk where the figure is output.
+        output_filename : str
+            The filename of the figure that is output.
+        output_format : str
+            The format the figue is output:
+            'show' - display on computer screen.
+            'png' - output to hard-disk as a png.
+            'fits' - output to hard-disk as a fits file.'
+
+        Returns
+        --------
+        None
+
+        Examples
+        --------
+            plotters.plot_array(
+            array=image, origin=(0.0, 0.0), mask=circular_mask,
+            border=False, points=[[1.0, 1.0], [2.0, 2.0]], grid=None, as_subplot=False,
+            unit_label='scaled', kpc_per_arcsec=None, figsize=(7,7), aspect='auto',
+            cmap='jet', norm='linear, norm_min=None, norm_max=None, linthresh=None, linscale=None,
+            cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01, cb_tick_values=None, cb_tick_labels=None,
+            title='Image', titlesize=16, xsize=16, ysize=16, xyticksize=16,
+            mask_scatterer=10, border_pointsize=2, position_pointsize=10, grid_pointsize=10,
+            xticks_manual=None, yticks_manual=None,
+            output_path='/path/to/output', output_format='png', output_filename='image')
+        """
+
+        if array is None or np.all(array == 0):
+            return
+
+        if array.pixel_scales is None and self.units.use_scaled:
+            raise exc.ArrayException(
+                "You cannot plot an array using its scaled unit_label if the input array does not have "
+                "a pixel scales attribute."
+            )
+
+        array = array.in_1d_binned
+
+        if array.mask.is_all_false:
+            buffer = 0
+        else:
+            buffer = 1
+
+        extent = array.extent_of_zoomed_array(buffer=buffer)
+        array = array.zoomed_around_mask(buffer=buffer)
+
+        self.figure.open()
+        aspect = self.figure.aspect_from_shape_2d(shape_2d=array.shape_2d)
+        norm_scale = self.cmap.norm_from_array(array=array)
+
+        plt.imshow(
+            X=array.in_2d,
+            aspect=aspect,
+            cmap=self.cmap.cmap,
+            norm=norm_scale,
+            extent=extent,
+        )
+
+        self.ticks.set_yticks(
+            array=array,
+            extent=extent,
+        )
+        self.ticks.set_xticks(
+            array=array,
+            extent=extent,
+        )
+
+        self.labels.set_title()
+        self.labels.set_yunits(include_brackets=True)
+        self.labels.set_xunits(include_brackets=True)
+
+        self.cb.set()
+        self.scatter_origin(array=array, include_origin=include_origin)
+        self.scatter_mask(mask=mask)
+        self.scatter_border(mask=mask, border=border)
+        self.scatter_grid(grid=grid)
+        self.draw_lines(lines=lines)
+        self.scatter_points(points=points)
+        self.scatter_centres(centres=centres)
+        self.output.to_figure(structure=array)
+        self.figure.close()
+
+    def plot_grid(
+        self,
+        grid,
+        colors=None,
+        axis_limits=None,
+        points=None,
+        lines=None,
+        symmetric_around_centre=True,
+        bypass_limits=False,
+    ):
+        """Plot a grid of (y,x) Cartesian coordinates as a scatter plotters of points.
+
+        Parameters
+        -----------
+        grid : data_type.array.aa.Grid
+            The (y,x) coordinates of the grid, in an array of shape (total_coordinates, 2).
+        axis_limits : []
+            The axis limits of the figure on which the grid is plotted, following [xmin, xmax, ymin, ymax].
+        points : []
+            A set of points that are plotted in a different colour for emphasis (e.g. to show the mappings between \
+            different planes).
+        as_subplot : bool
+            Whether the grid is plotted as part of a subplot, in which case the grid figure is not opened / closed.
+        label_yunits : str
+            The label of the unit_label of the y / x axis of the plots.
+        unit_conversion_factor : float
+            The conversion factor between arc-seconds and kiloparsecs, required to plotters the unit_label in kpc.
+        figsize : (int, int)
+            The size of the figure in (rows, columns).
+        pointsize : int
+            The size of the points plotted on the grid.
+        xyticksize : int
+            The font size of the x and y ticks on the figure axes.
+        title : str
+            The text of the title.
+        titlesize : int
+            The size of of the title of the figure.
+        xsize : int
+            The fontsize of the x axes label.
+        ysize : int
+            The fontsize of the y axes label.
+        output_path : str
+            The path on the hard-disk where the figure is output.
+        output_filename : str
+            The filename of the figure that is output.
+        output_format : str
+            The format the figue is output:
+            'show' - display on computer screen.
+            'png' - output to hard-disk as a png.
+        """
+
+        self.figure.open()
+
+        if colors is not None:
+
+            plt.cm.get_cmap(self.cmap.cmap)
+
+        plt.scatter(
+            y=np.asarray(grid[:, 0]),
+            x=np.asarray(grid[:, 1]),
+            c=colors,
+            s=self.grid_pointsize,
+            marker=".",
+            cmap=self.cmap.cmap,
+        )
+
+        if colors is not None:
+
+            self.cb.set()
+
+        self.labels.set_title()
+        self.labels.set_yunits(include_brackets=True)
+        self.labels.set_xunits(include_brackets=True)
+
+        if not bypass_limits:
+
+            self.set_axis_limits(
+                axis_limits=axis_limits,
+                grid=grid,
+                symmetric_around_centre=symmetric_around_centre,
+            )
+
+        self.ticks.set_yticks(
+            array=None,
+            extent=grid.extent,
+            symmetric_around_centre=symmetric_around_centre,
+        )
+        self.ticks.set_xticks(
+            array=None,
+            extent=grid.extent,
+            symmetric_around_centre=symmetric_around_centre,
+        )
+
+        self.scatter_points_on_grid(grid=grid, points=points)
+        self.draw_lines(lines=lines)
+
+        self.output.to_figure(structure=grid)
+        self.figure.close()
+
+    def plot_line(
+        self,
+        y,
+        x,
+        label=None,
+        plot_axis_type="semilogy",
+        vertical_lines=None,
+        vertical_line_labels=None,
+    ):
+
+        if y is None:
+            return
+
+        self.figure.open()
+        self.labels.set_title()
+
+        if x is None:
+            x = np.arange(len(y))
+
+        self.draw_y_vs_x(y=y, x=x, plot_axis_type=plot_axis_type, label=label)
+
+        self.labels.set_yunits(include_brackets=False)
+        self.labels.set_xunits(include_brackets=False)
+
+        self.draw_vertical_lines(
+            vertical_lines=vertical_lines, vertical_line_labels=vertical_line_labels
+        )
+
+        self.set_legend()
+
+        self.ticks.set_xticks(
+            array=None,
+            extent=[np.min(x), np.max(x)],
+        )
+
+        self.output.to_figure(structure=None)
+
+        self.figure.close()
+
+    def plot_mapper(
+        self,
+        mapper,
+        include_centres=False,
+        include_grid=False,
+        include_border=False,
+        image_pixels=None,
+        source_pixels=None,
+    ):
+
+        if isinstance(mapper, mappers.MapperRectangular):
+
+            self.plot_rectangular_mapper(
+                mapper=mapper,
+                include_centres=include_centres,
+                include_grid=include_grid,
+                include_border=include_border,
+                image_pixels=image_pixels,
+                source_pixels=source_pixels,
+            )
+
+        else:
+
+            self.plot_voronoi_mapper(
+                mapper=mapper,
+                include_centres=include_centres,
+                include_grid=include_grid,
+                include_border=include_border,
+                image_pixels=image_pixels,
+                source_pixels=source_pixels,
+            )
+
+    def plot_rectangular_mapper(
+        self,
+        mapper,
+        include_centres=False,
+        include_grid=False,
+        include_border=False,
+        image_pixels=None,
+        source_pixels=None,
+    ):
+
+        self.figure.open()
+
+        self.set_axis_limits(
+            axis_limits=mapper.pixelization_grid.extent,
+            grid=None,
+            symmetric_around_centre=False,
+        )
+
+        self.ticks.set_yticks(
+            array=None,
+            extent=mapper.pixelization_grid.extent,
+        )
+        self.ticks.set_xticks(
+            array=None,
+            extent=mapper.pixelization_grid.extent,
+        )
+
+        self.draw_grid_lines(mapper=mapper)
+
+        self.labels.set_title()
+        self.labels.set_yunits(include_brackets=True)
+        self.labels.set_xunits(include_brackets=True)
+
+        # self.scatter_centres(mapper=mapper, include_centres=include_centres)
+        #
+        # self.scatter_grid(include_grid=include_grid, mapper=mapper)
+        #
+        # self.scatter_border(include_border=include_border, mapper=mapper)
+
+        point_colors = itertools.cycle(["y", "r", "k", "g", "m"])
+        self.scatter_source_plane_image_pixels(
+            grid=mapper.grid, image_pixels=image_pixels, point_colors=point_colors
+        )
+        self.scatter_source_plane_source_pixels(
+            grid=mapper.grid,
+            mapper=mapper,
+            source_pixels=source_pixels,
+            point_colors=point_colors,
+        )
+
+        self.output.to_figure(structure=None)
+        self.figure.close()
+
+    def plot_voronoi_mapper(
+        self,
+        mapper,
+        source_pixel_values,
+        include_centres=True,
+        include_grid=True,
+        include_border=False,
+        lines=None,
+        image_pixels=None,
+        source_pixels=None,
+    ):
+
+        self.figure.open()
+
+        self.set_axis_limits(
+            axis_limits=mapper.pixelization_grid.extent,
+            grid=None,
+            symmetric_around_centre=False,
+        )
+
+        self.ticks.set_yticks(
+            array=None,
+            extent=mapper.pixelization_grid.extent,
+        )
+        self.ticks.set_xticks(
+            array=None,
+            extent=mapper.pixelization_grid.extent,
+        )
+
+        regions_SP, vertices_SP = self.voronoi_finite_polygons_2d(
+            voronoi=mapper.voronoi
+        )
+
+        color_values = source_pixel_values[:] / np.max(source_pixel_values)
+        cmap = plt.get_cmap("jet")
+
+        self.cb.set_with_values(cmap=cmap, color_values=source_pixel_values)
+
+        for region, index in zip(regions_SP, range(mapper.pixels)):
+            polygon = vertices_SP[region]
+            col = cmap(color_values[index])
+            plt.fill(*zip(*polygon), alpha=0.7, facecolor=col, lw=0.0)
+
+        self.labels.set_title()
+        self.labels.set_yunits(include_brackets=True)
+        self.labels.set_xunits(include_brackets=True)
+
+        self.plot_centres(mapper=mapper, include_centres=include_centres)
+
+        self.plot_mapper_grid(include_grid=include_grid, mapper=mapper)
+
+        self.plot_border(include_border=include_border, mapper=mapper)
+
+        self.draw_lines(lines=lines)
+
+        point_colors = itertools.cycle(["y", "r", "k", "g", "m"])
+        self.plot_source_plane_image_pixels(
+            grid=mapper.grid, image_pixels=image_pixels, point_colors=point_colors
+        )
+        self.plot_source_plane_source_pixels(
+            grid=mapper.grid,
+            mapper=mapper,
+            source_pixels=source_pixels,
+            point_colors=point_colors,
+        )
+
+        self.output.to_figure(structure=None)
+        self.figure.close()
+
+    def scatter_origin(self, array, include_origin):
+        """Plot the (y,x) origin ofo the array's coordinates as a 'x'.
+
+        Parameters
+        -----------
+        array : data_type.array.aa.Scaled
+            The 2D array of data_type which is plotted.
+        origin : (float, float).
+            The origin of the coordinate system of the array, which is plotted as an 'x' on the image if input.
+        unit_label : str
+            The label for the unit_label of the y / x axis of the plots.
+        unit_conversion_factor : float or None
+            The conversion factor between arc-seconds and kiloparsecs, required to plotters the unit_label in kpc.
+        """
+        if include_origin:
+            plt.scatter(
+                y=np.asarray(array.origin[0]),
+                x=np.asarray(array.origin[1]),
+                s=80,
+                c="k",
+                marker="x",
+            )
+
+    def scatter_mask(self, mask):
+        """Plot the mask of the array on the figure.
+
+        Parameters
+        -----------
+        mask : ndarray of data_type.array.mask.Mask
+            The mask applied to the array, the edge of which is plotted as a set of points over the plotted array.
+        use_scaled_units_label : str
+            The label for the unit_label of the y / x axis of the plots.
+        unit_conversion_factor : float or None
+            The conversion factor between arc-seconds and kiloparsecs, required to plotters the unit_label in kpc.
+        pointsize : int
+            The size of the points plotted to show the mask.
+        """
+
+        if mask is not None:
+
+            plt.gca()
+            edge_grid = mask.geometry.edge_grid.in_1d_binned
+
+    def scatter_border(self, mask, border):
+        """Plot the borders of the mask or the array on the figure.
+
+        Parameters
+        -----------t.
+        mask : ndarray of data_type.array.mask.Mask
+            The mask applied to the array, the edge of which is plotted as a set of points over the plotted array.
+        border : bool
+            If a mask is supplied, its borders pixels (e.g. the exterior edge) is plotted if this is *True*.
+        unit_label : str
+            The label for the unit_label of the y / x axis of the plots.
+        kpc_per_arcsec : float or None
+            The conversion factor between arc-seconds and kiloparsecs, required to plotters the unit_label in kpc.
+        border_pointsize : int
+            The size of the points plotted to show the borders.
+        """
+        if border and mask is not None:
+            plt.gca()
+            border_grid = mask.geometry.border_grid.in_1d_binned
+
+            plt.scatter(
+                y=np.asarray(border_grid[:, 0]),
+                x=np.asarray(border_grid[:, 1]),
+                s=self.border_pointsize,
+                c="y",
+            )
+
+    def scatter_grid(self, grid):
+        """Plot a grid of points over the array of data_type on the figure.
+
+         Parameters
+         -----------.
+         grid_arcsec : ndarray or data_type.array.aa.Grid
+             A grid of (y,x) coordinates in arc-seconds which may be plotted over the array.
+         array : data_type.array.aa.Scaled
+            The 2D array of data_type which is plotted.
+         unit_label : str
+             The label for the unit_label of the y / x axis of the plots.
+         kpc_per_arcsec : float or None
+             The conversion factor between arc-seconds and kiloparsecs, required to plotters the unit_label in kpc.
+         grid_pointsize : int
+             The size of the points plotted to show the grid.
+         """
+        if grid is not None:
+
+            plt.scatter(
+                y=np.asarray(grid[:, 0]),
+                x=np.asarray(grid[:, 1]),
+                s=self.grid_pointsize,
+                c="k",
+            )
+
+    def scatter_centres(self, centres):
+        """Plot the (y,x) centres (e.g. of a mass profile) on the array as an 'x'.
+
+        Parameters
+        -----------
+        array : data_type.array.aa.Scaled
+            The 2D array of data_type which is plotted.
+        centres : [[tuple]]
+            The list of centres; centres in the same list entry are colored the same.
+        use_scaled_units_label : str
+            The label for the unit_label of the y / x axis of the plots.
+        unit_conversion_factor : float or None
+            The conversion factor between arc-seconds and kiloparsecs, required to plotters the unit_label in kpc.
+        """
+        if centres is not None:
+
+            if not any(isinstance(el, list) for el in centres):
+
+                for centre in centres:
+                    plt.scatter(y=centre[0], x=centre[1], s=300, marker="x")
+
+            else:
+
+                colors = itertools.cycle(["m", "y", "r", "w", "c", "b", "g", "k"])
+
+                for centres_of_galaxy in centres:
+                    color = next(colors)
+                    for centre in centres_of_galaxy:
+                        plt.scatter(
+                            y=centre[0], x=centre[1], s=300, c=color, marker="x"
+                        )
+
+    def scatter_points(self, points):
+        """Plot a set of points over the array of data_type on the figure.
+
+        Parameters
+        -----------
+        points : [[]]
+            Lists of (y,x) coordinates on the image which are plotted as colored dots, to highlight specific pixels.
+        array : data_type.array.aa.Scaled
+            The 2D array of data_type which is plotted.
+        use_scaled_units_label : str
+            The label for the unit_label of the y / x axis of the plots.
+        unit_conversion_factor : float or None
+            The conversion factor between arc-seconds and kiloparsecs, required to plotters the unit_label in kpc.
+        pointsize : int
+            The size of the points plotted to show the input points.
+        """
+
+        if points is not None:
+
+            points = list(map(lambda position_set: np.asarray(position_set), points))
+            point_colors = itertools.cycle(["m", "y", "r", "w", "c", "b", "g", "k"])
+            for point_set in points:
+                plt.scatter(
+                    y=point_set[:, 0],
+                    x=point_set[:, 1],
+                    color=next(point_colors),
+                    s=self.point_pointsize,
+                )
+
+    def scatter_points_on_grid(self, grid, points):
+        """Plot a subset of points in a different color, to highlight a specifc region of the grid (e.g. how certain \
+        pixels map between different planes).
+
+        Parameters
+        -----------
+        grid : ndarray or data_type.array.aa.Grid
+            The (y,x) coordinates of the grid, in an array of shape (total_coordinates, 2).
+        points : []
+            A set of points that are plotted in a different colour for emphasis (e.g. to show the mappings between \
+            different planes).
+        pointcolor : str or None
+            The color the points should be plotted. If None, the points are iterated through a cycle of colors.
+        """
+        if points is not None:
+
+            if self.grid_pointcolor is None:
+
+                point_colors = itertools.cycle(["y", "r", "k", "g", "m"])
+                for point_set in points:
+                    plt.scatter(
+                        y=np.asarray(grid[point_set, 0]),
+                        x=np.asarray(grid[point_set, 1]),
+                        s=8,
+                        color=next(point_colors),
+                    )
+
+            else:
+
+                for point_set in points:
+                    plt.scatter(
+                        y=np.asarray(grid[point_set, 0]),
+                        x=np.asarray(grid[point_set, 1]),
+                        s=8,
+                        color=self.grid_pointcolor,
+                    )
+
+    def set_axis_limits(self, axis_limits, grid, symmetric_around_centre):
+        """Set the axis limits of the figure the grid is plotted on.
+
+        Parameters
+        -----------
+        axis_limits : []
+            The axis limits of the figure on which the grid is plotted, following [xmin, xmax, ymin, ymax].
+        """
+        if axis_limits is not None:
+            plt.axis(axis_limits)
+        elif symmetric_around_centre:
+            ymin = np.min(grid[:, 0])
+            ymax = np.max(grid[:, 0])
+            xmin = np.min(grid[:, 1])
+            xmax = np.max(grid[:, 1])
+            x = np.max([np.abs(xmin), np.abs(xmax)])
+            y = np.max([np.abs(ymin), np.abs(ymax)])
+            axis_limits = [-x, x, -y, y]
+            plt.axis(axis_limits)
+
+    def voronoi_finite_polygons_2d(self, vor, radius=None):
+        """
+        Reconstruct infinite voronoi regions in a 2D diagram to finite
+        regions.
+        Parameters
+        ----------
+        vor : Voronoi
+            Input diagram
+        radius : float, optional
+            Distance to 'points at infinity'.
+        Returns
+        -------
+        regions : list of tuples
+            Indices of vertices in each revised Voronoi regions.
+        vertices : list of tuples
+            Coordinates for revised Voronoi vertices. Same as coordinates
+            of input vertices, with 'points at infinity' appended to the
+            end.
+        """
+
+        if vor.points.shape[1] != 2:
+            raise ValueError("Requires 2D input")
+
+        new_regions = []
+        new_vertices = vor.vertices.tolist()
+
+        center = vor.points.mean(axis=0)
+        if radius is None:
+            radius = vor.points.ptp().max() * 2
+
+        # Construct a map containing all ridges for a given point
+        all_ridges = {}
+        for (p1, p2), (v1, v2) in zip(vor.ridge_points, vor.ridge_vertices):
+            all_ridges.setdefault(p1, []).append((p2, v1, v2))
+            all_ridges.setdefault(p2, []).append((p1, v1, v2))
+
+        # Reconstruct infinite regions
+        for p1, region in enumerate(vor.point_region):
+            vertices = vor.regions[region]
+
+            if all(v >= 0 for v in vertices):
+                # finite region
+                new_regions.append(vertices)
+                continue
+
+            # reconstruct a non-finite region
+            ridges = all_ridges[p1]
+            new_region = [v for v in vertices if v >= 0]
+
+            for p2, v1, v2 in ridges:
+                if v2 < 0:
+                    v1, v2 = v2, v1
+                if v1 >= 0:
+                    # finite ridge: already in the region
+                    continue
+
+                # Compute the missing endpoint of an infinite ridge
+
+                t = vor.points[p2] - vor.points[p1]  # tangent
+                t /= np.linalg.norm(t)
+                n = np.array([-t[1], t[0]])  # hyper
+
+                midpoint = vor.points[[p1, p2]].mean(axis=0)
+                direction = np.sign(np.dot(midpoint - center, n)) * n
+                far_point = vor.vertices[v2] + direction * radius
+
+                new_region.append(len(new_vertices))
+                new_vertices.append(far_point.tolist())
+
+            # sort region counterclockwise
+            vs = np.asarray([new_vertices[v] for v in new_region])
+            c = vs.mean(axis=0)
+            angles = np.arctan2(vs[:, 1] - c[1], vs[:, 0] - c[0])
+            new_region = np.array(new_region)[np.argsort(angles)]
+
+            # finish
+            new_regions.append(new_region.tolist())
+
+        return new_regions, np.asarray(new_vertices)
+
+    def draw_grid_lines(self, mapper):
+
+        ys = np.linspace(
+            mapper.pixelization_grid.scaled_minima[0],
+            mapper.pixelization_grid.scaled_maxima[0],
+            mapper.pixelization_grid.shape_2d[0] + 1,
+        )
+        xs = np.linspace(
+            mapper.pixelization_grid.scaled_minima[1],
+            mapper.pixelization_grid.scaled_maxima[1],
+            mapper.pixelization_grid.shape_2d[1] + 1,
+        )
+
+        # grid lines
+        for x in xs:
+            plt.plot([x, x], [ys[0], ys[-1]], color="black", linestyle="-")
+        for y in ys:
+            plt.plot([xs[0], xs[-1]], [y, y], color="black", linestyle="-")
+
+    def scatter_image_pixels(self, grid, image_pixels, point_colors):
+
+        if image_pixels is not None:
+
+            for image_pixel_set in image_pixels:
+                color = next(point_colors)
+                plt.scatter(
+                    y=np.asarray(grid[image_pixel_set, 0]),
+                    x=np.asarray(grid[image_pixel_set, 1]),
+                    color=color,
+                    s=10.0,
+                )
+
+    def scatter_image_plane_source_pixels(self, grid, mapper, source_pixels, point_colors):
+
+        if source_pixels is not None:
+
+            for source_pixel_set in source_pixels:
+                color = next(point_colors)
+                for source_pixel in source_pixel_set:
+                    plt.scatter(
+                        y=np.asarray(
+                            grid[
+                                mapper.all_sub_mask_1d_indexes_for_pixelization_1d_index[
+                                    source_pixel
+                                ],
+                                0,
+                            ]
+                        ),
+                        x=np.asarray(
+                            grid[
+                                mapper.all_sub_mask_1d_indexes_for_pixelization_1d_index[
+                                    source_pixel
+                                ],
+                                1,
+                            ]
+                        ),
+                        s=8,
+                        color=color,
+                    )
+
+    def scatter_source_plane_image_pixels(self, grid, image_pixels, point_colors):
+
+        if image_pixels is not None:
+
+            for image_pixel_set in image_pixels:
+                color = next(point_colors)
+                plt.scatter(
+                    y=np.asarray(grid[[image_pixel_set], 0]),
+                    x=np.asarray(grid[[image_pixel_set], 1]),
+                    s=8,
+                    color=color,
+                )
+
+    def scatter_source_plane_source_pixels(
+            self, grid, mapper, source_pixels, point_colors
+    ):
+
+        if source_pixels is not None:
+
+            for source_pixel_set in source_pixels:
+                color = next(point_colors)
+                for source_pixel in source_pixel_set:
+                    plt.scatter(
+                        y=np.asarray(
+                            grid[
+                                mapper.all_sub_mask_1d_indexes_for_pixelization_1d_index[
+                                    source_pixel
+                                ],
+                                0,
+                            ]
+                        ),
+                        x=np.asarray(
+                            grid[
+                                mapper.all_sub_mask_1d_indexes_for_pixelization_1d_index[
+                                    source_pixel
+                                ],
+                                1,
+                            ]
+                        ),
+                        s=8,
+                        color=color,
+                    )
+
+    def draw_y_vs_x(self, y, x, plot_axis_type, label):
+
+        if plot_axis_type is "linear":
+            plt.plot(x, y, label=label)
+        elif plot_axis_type is "semilogy":
+            plt.semilogy(x, y, label=label)
+        elif plot_axis_type is "loglog":
+            plt.loglog(x, y, label=label)
+        elif plot_axis_type is "scatter":
+            plt.scatter(x, y, label=label, s=self.line_pointsize)
+        else:
+            raise exc.PlottingException(
+                "The plot_axis_type supplied to the plotter is not a valid string (must be linear "
+                "| semilogy | loglog)"
+            )
+
+    def draw_vertical_lines(self, vertical_lines, vertical_line_labels):
+
+        if vertical_lines is [] or vertical_lines is None:
+            return
+
+        for vertical_line, vertical_line_label in zip(
+            vertical_lines, vertical_line_labels
+        ):
+
+            if self.units.conversion_factor is None:
+                x_value_plot = vertical_line
+            else:
+                x_value_plot = vertical_line * self.units.conversion_factor
+
+            plt.axvline(x=x_value_plot, label=vertical_line_label, linestyle="--")
+
+    def set_legend(self):
+        if self.include_legend:
+            plt.legend(fontsize=self.legend_fontsize)
+
     @staticmethod
-    def plot_lines(lines):
+    def draw_lines(lines):
         """Plot the liness of the mask or the array on the figure.
 
         Parameters
@@ -298,7 +1139,7 @@ class Plotter(AbstractPlotter):
         figure=mat_objs.Figure(),
         cmap=mat_objs.ColorMap(),
         cb=mat_objs.ColorBar(),
-        mask_pointsize=None,
+        mask_scatterer=mat_objs.Scatterer(),
         border_pointsize=None,
         point_pointsize=None,
         grid_pointsize=None,
@@ -315,7 +1156,7 @@ class Plotter(AbstractPlotter):
             figure=figure,
             cmap=cmap,
             cb=cb,
-            mask_pointsize=mask_pointsize,
+            mask_scatterer=mask_scatterer,
             border_pointsize=border_pointsize,
             point_pointsize=point_pointsize,
             grid_pointsize=grid_pointsize,
@@ -339,7 +1180,7 @@ class SubPlotter(AbstractPlotter):
         figure=mat_objs.Figure(),
         cmap=mat_objs.ColorMap(),
         cb=mat_objs.ColorBar(),
-        mask_pointsize=None,
+        mask_scatterer=mat_objs.Scatterer(),
         border_pointsize=None,
         point_pointsize=None,
         grid_pointsize=None,
@@ -356,7 +1197,7 @@ class SubPlotter(AbstractPlotter):
             figure=figure,
             cmap=cmap,
             cb=cb,
-            mask_pointsize=mask_pointsize,
+            mask_scatterer=mask_scatterer,
             border_pointsize=border_pointsize,
             point_pointsize=point_pointsize,
             grid_pointsize=grid_pointsize,
@@ -444,1101 +1285,6 @@ class SubPlotter(AbstractPlotter):
     @property
     def is_sub_plotter(self):
         return True
-
-
-class ArrayPlotter(AbstractPlotter):
-    def __init__(
-        self,
-        units,
-        figure,
-        cmap,
-        cb,
-        mask_pointsize,
-        border_pointsize,
-        point_pointsize,
-        grid_pointsize,
-        ticks,
-        labels,
-        output,
-    ):
-
-        self.units = units
-        self.figure = figure
-
-        self.cmap = cmap
-        self.cb = cb
-
-        self.mask_pointsize = mask_pointsize
-        self.border_pointsize = border_pointsize
-        self.point_pointsize = point_pointsize
-        self.grid_pointsize = grid_pointsize
-
-        self.ticks = ticks
-
-        self.labels = labels
-
-        self.output = output
-
-    def plot(
-        self,
-        array,
-        include_origin=False,
-        mask=None,
-        border=None,
-        lines=None,
-        points=None,
-        centres=None,
-        grid=None,
-    ):
-        """Plot an array of data_type as a figure.
-
-        Parameters
-        -----------
-        settings : PlotterSettings
-            Settings
-        include : PlotterInclude
-            Include
-        labels : PlotterLabels
-            labels
-        outputs : PlotterOutputs
-            outputs
-        array : data_type.array.aa.Scaled
-            The 2D array of data_type which is plotted.
-        origin : (float, float).
-            The origin of the coordinate system of the array, which is plotted as an 'x' on the image if input.
-        mask : data_type.array.mask.Mask
-            The mask applied to the array, the edge of which is plotted as a set of points over the plotted array.
-        extract_array_from_mask : bool
-            The plotter array is extracted using the mask, such that masked values are plotted as zeros. This ensures \
-            bright features outside the mask do not impact the color map of the plotters.
-        zoom_around_mask : bool
-            If True, the 2D region of the array corresponding to the rectangle encompassing all unmasked values is \
-            plotted, thereby zooming into the region of interest.
-        border : bool
-            If a mask is supplied, its borders pixels (e.g. the exterior edge) is plotted if this is *True*.
-        points : [[]]
-            Lists of (y,x) coordinates on the image which are plotted as colored dots, to highlight specific pixels.
-        grid : data_type.array.aa.Grid
-            A grid of (y,x) coordinates which may be plotted over the plotted array.
-        as_subplot : bool
-            Whether the array is plotted as part of a subplot, in which case the grid figure is not opened / closed.
-        unit_label : str
-            The label for the unit_label of the y / x axis of the plots.
-        unit_conversion_factor : float or None
-            The conversion factor between arc-seconds and kiloparsecs, required to plotters the unit_label in kpc.
-        figsize : (int, int)
-            The size of the figure in (rows, columns).
-        aspect : str
-            The aspect ratio of the array, specifically whether it is forced to be square ('equal') or adapts its size to \
-            the figure size ('auto').
-        cmap : str
-            The colormap the array is plotted using, which may be chosen from the standard matplotlib colormaps.
-        norm : str
-            The normalization of the colormap used to plotters the image, specifically whether it is linear ('linear'), log \
-            ('log') or a symmetric log normalization ('symmetric_log').
-        norm_min : float or None
-            The minimum array value the colormap map spans (all values below this value are plotted the same color).
-        norm_max : float or None
-            The maximum array value the colormap map spans (all values above this value are plotted the same color).
-        linthresh : float
-            For the 'symmetric_log' colormap normalization ,this specifies the range of values within which the colormap \
-            is linear.
-        linscale : float
-            For the 'symmetric_log' colormap normalization, this allowws the linear range set by linthresh to be stretched \
-            relative to the logarithmic range.
-        cb_ticksize : int
-            The size of the tick labels on the colorbar.
-        cb_fraction : float
-            The fraction of the figure that the colorbar takes up, which resizes the colorbar relative to the figure.
-        cb_pad : float
-            Pads the color bar in the figure, which resizes the colorbar relative to the figure.
-        xsize : int
-            The fontsize of the x axes label.
-        ysize : int
-            The fontsize of the y axes label.
-        xyticksize : int
-            The font size of the x and y ticks on the figure axes.
-        mask_pointsize : int
-            The size of the points plotted to show the mask.
-        border_pointsize : int
-            The size of the points plotted to show the borders.
-        point_pointsize : int
-            The size of the points plotted to show points on the image.
-        grid_pointsize : int
-            The size of the points plotted to show the grid.
-        xticks_manual :  [] or None
-            If input, the xticks do not use the array's default xticks but instead overwrite them as these values.
-        yticks_manual :  [] or None
-            If input, the yticks do not use the array's default yticks but instead overwrite them as these values.
-        output_path : str
-            The path on the hard-disk where the figure is output.
-        output_filename : str
-            The filename of the figure that is output.
-        output_format : str
-            The format the figue is output:
-            'show' - display on computer screen.
-            'png' - output to hard-disk as a png.
-            'fits' - output to hard-disk as a fits file.'
-
-        Returns
-        --------
-        None
-
-        Examples
-        --------
-            plotters.plot_array(
-            array=image, origin=(0.0, 0.0), mask=circular_mask,
-            border=False, points=[[1.0, 1.0], [2.0, 2.0]], grid=None, as_subplot=False,
-            unit_label='scaled', kpc_per_arcsec=None, figsize=(7,7), aspect='auto',
-            cmap='jet', norm='linear, norm_min=None, norm_max=None, linthresh=None, linscale=None,
-            cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01, cb_tick_values=None, cb_tick_labels=None,
-            title='Image', titlesize=16, xsize=16, ysize=16, xyticksize=16,
-            mask_pointsize=10, border_pointsize=2, position_pointsize=10, grid_pointsize=10,
-            xticks_manual=None, yticks_manual=None,
-            output_path='/path/to/output', output_format='png', output_filename='image')
-        """
-
-        if array is None or np.all(array == 0):
-            return
-
-        if array.pixel_scales is None and self.units.use_scaled:
-            raise exc.ArrayException(
-                "You cannot plot an array using its scaled unit_label if the input array does not have "
-                "a pixel scales attribute."
-            )
-
-        array = array.in_1d_binned
-
-        if array.mask.is_all_false:
-            buffer = 0
-        else:
-            buffer = 1
-
-        extent = array.extent_of_zoomed_array(buffer=buffer)
-        array = array.zoomed_around_mask(buffer=buffer)
-
-        self.plot_figure(array=array, extent=extent)
-
-        self.ticks.set_yticks(
-            array=array,
-            extent=extent,
-        )
-        self.ticks.set_xticks(
-            array=array,
-            extent=extent,
-        )
-
-        self.labels.set_title()
-        self.labels.set_yunits(include_brackets=True)
-        self.labels.set_xunits(include_brackets=True)
-
-        self.cb.plot()
-        self.plot_origin(array=array, include_origin=include_origin)
-        self.plot_mask(mask=mask)
-        self.plot_border(mask=mask, border=border)
-        self.plot_grid(grid=grid)
-        self.plot_lines(lines=lines)
-        self.plot_points(points=points)
-        self.plot_centres(centres=centres)
-        self.output.to_figure(structure=array)
-        self.figure.close()
-
-    def plot_figure(self, array, extent):
-        """Open a matplotlib figure and plotters the array of data_type on it.
-
-        Parameters
-        -----------
-        array : data_type.array.aa.Scaled
-            The 2D array of data_type which is plotted.
-        as_subplot : bool
-            Whether the array is plotted as part of a subplot, in which case the grid figure is not opened / closed.
-        unit_label : str
-            The label for the unit_label of the y / x axis of the plots.
-        unit_conversion_factor : float or None
-            The conversion factor between arc-seconds and kiloparsecs, required to plotters the unit_label in kpc.
-        figsize : (int, int)
-            The size of the figure in (rows, columns).
-        aspect : str
-            The aspect ratio of the array, specifically whether it is forced to be square ('equal') or adapts its size to \
-            the figure size ('auto').
-        cmap : str
-            The colormap the array is plotted using, which may be chosen from the standard matplotlib colormaps.
-        norm : str
-            The normalization of the colormap used to plotters the image, specifically whether it is linear ('linear'), log \
-            ('log') or a symmetric log normalization ('symmetric_log').
-        norm_min : float or None
-            The minimum array value the colormap map spans (all values below this value are plotted the same color).
-        norm_max : float or None
-            The maximum array value the colormap map spans (all values above this value are plotted the same color).
-        linthresh : float
-            For the 'symmetric_log' colormap normalization ,this specifies the range of values within which the colormap \
-            is linear.
-        linscale : float
-            For the 'symmetric_log' colormap normalization, this allowws the linear range set by linthresh to be stretched \
-            relative to the logarithmic range.
-        xticks_manual :  [] or None
-            If input, the xticks do not use the array's default xticks but instead overwrite them as these values.
-        yticks_manual :  [] or None
-            If input, the yticks do not use the array's default yticks but instead overwrite them as these values.
-        """
-
-        self.figure.open()
-        aspect = self.figure.aspect_from_shape_2d(shape_2d=array.shape_2d)
-        norm_scale = self.cmap.norm_from_array(array=array)
-
-        plt.imshow(
-            X=array.in_2d,
-            aspect=aspect,
-            cmap=self.cmap.cmap,
-            norm=norm_scale,
-            extent=extent,
-        )
-
-    def plot_origin(self, array, include_origin):
-        """Plot the (y,x) origin ofo the array's coordinates as a 'x'.
-
-        Parameters
-        -----------
-        array : data_type.array.aa.Scaled
-            The 2D array of data_type which is plotted.
-        origin : (float, float).
-            The origin of the coordinate system of the array, which is plotted as an 'x' on the image if input.
-        unit_label : str
-            The label for the unit_label of the y / x axis of the plots.
-        unit_conversion_factor : float or None
-            The conversion factor between arc-seconds and kiloparsecs, required to plotters the unit_label in kpc.
-        """
-        if include_origin:
-            plt.scatter(
-                y=np.asarray(array.origin[0]),
-                x=np.asarray(array.origin[1]),
-                s=80,
-                c="k",
-                marker="x",
-            )
-
-    def plot_mask(self, mask):
-        """Plot the mask of the array on the figure.
-
-        Parameters
-        -----------
-        mask : ndarray of data_type.array.mask.Mask
-            The mask applied to the array, the edge of which is plotted as a set of points over the plotted array.
-        use_scaled_units_label : str
-            The label for the unit_label of the y / x axis of the plots.
-        unit_conversion_factor : float or None
-            The conversion factor between arc-seconds and kiloparsecs, required to plotters the unit_label in kpc.
-        pointsize : int
-            The size of the points plotted to show the mask.
-        """
-
-        if mask is not None:
-
-            plt.gca()
-            edge_grid = mask.geometry.edge_grid.in_1d_binned
-
-            plt.scatter(
-                y=np.asarray(edge_grid[:, 0]),
-                x=np.asarray(edge_grid[:, 1]),
-                s=self.mask_pointsize,
-                c="k",
-            )
-
-    def plot_border(self, mask, border):
-        """Plot the borders of the mask or the array on the figure.
-
-        Parameters
-        -----------t.
-        mask : ndarray of data_type.array.mask.Mask
-            The mask applied to the array, the edge of which is plotted as a set of points over the plotted array.
-        border : bool
-            If a mask is supplied, its borders pixels (e.g. the exterior edge) is plotted if this is *True*.
-        unit_label : str
-            The label for the unit_label of the y / x axis of the plots.
-        kpc_per_arcsec : float or None
-            The conversion factor between arc-seconds and kiloparsecs, required to plotters the unit_label in kpc.
-        border_pointsize : int
-            The size of the points plotted to show the borders.
-        """
-        if border and mask is not None:
-            plt.gca()
-            border_grid = mask.geometry.border_grid.in_1d_binned
-
-            plt.scatter(
-                y=np.asarray(border_grid[:, 0]),
-                x=np.asarray(border_grid[:, 1]),
-                s=self.border_pointsize,
-                c="y",
-            )
-
-    def plot_grid(self, grid):
-        """Plot a grid of points over the array of data_type on the figure.
-
-         Parameters
-         -----------.
-         grid_arcsec : ndarray or data_type.array.aa.Grid
-             A grid of (y,x) coordinates in arc-seconds which may be plotted over the array.
-         array : data_type.array.aa.Scaled
-            The 2D array of data_type which is plotted.
-         unit_label : str
-             The label for the unit_label of the y / x axis of the plots.
-         kpc_per_arcsec : float or None
-             The conversion factor between arc-seconds and kiloparsecs, required to plotters the unit_label in kpc.
-         grid_pointsize : int
-             The size of the points plotted to show the grid.
-         """
-        if grid is not None:
-
-            plt.scatter(
-                y=np.asarray(grid[:, 0]),
-                x=np.asarray(grid[:, 1]),
-                s=self.grid_pointsize,
-                c="k",
-            )
-
-    def plot_centres(self, centres):
-        """Plot the (y,x) centres (e.g. of a mass profile) on the array as an 'x'.
-
-        Parameters
-        -----------
-        array : data_type.array.aa.Scaled
-            The 2D array of data_type which is plotted.
-        centres : [[tuple]]
-            The list of centres; centres in the same list entry are colored the same.
-        use_scaled_units_label : str
-            The label for the unit_label of the y / x axis of the plots.
-        unit_conversion_factor : float or None
-            The conversion factor between arc-seconds and kiloparsecs, required to plotters the unit_label in kpc.
-        """
-        if centres is not None:
-
-            if not any(isinstance(el, list) for el in centres):
-
-                for centre in centres:
-                    plt.scatter(y=centre[0], x=centre[1], s=300, marker="x")
-
-            else:
-
-                colors = itertools.cycle(["m", "y", "r", "w", "c", "b", "g", "k"])
-
-                for centres_of_galaxy in centres:
-                    color = next(colors)
-                    for centre in centres_of_galaxy:
-                        plt.scatter(
-                            y=centre[0], x=centre[1], s=300, c=color, marker="x"
-                        )
-
-    def plot_points(self, points):
-        """Plot a set of points over the array of data_type on the figure.
-
-        Parameters
-        -----------
-        points : [[]]
-            Lists of (y,x) coordinates on the image which are plotted as colored dots, to highlight specific pixels.
-        array : data_type.array.aa.Scaled
-            The 2D array of data_type which is plotted.
-        use_scaled_units_label : str
-            The label for the unit_label of the y / x axis of the plots.
-        unit_conversion_factor : float or None
-            The conversion factor between arc-seconds and kiloparsecs, required to plotters the unit_label in kpc.
-        pointsize : int
-            The size of the points plotted to show the input points.
-        """
-
-        if points is not None:
-
-            points = list(map(lambda position_set: np.asarray(position_set), points))
-            point_colors = itertools.cycle(["m", "y", "r", "w", "c", "b", "g", "k"])
-            for point_set in points:
-                plt.scatter(
-                    y=point_set[:, 0],
-                    x=point_set[:, 1],
-                    color=next(point_colors),
-                    s=self.point_pointsize,
-                )
-
-
-class GridPlotter(AbstractPlotter):
-    def __init__(
-        self,
-        units,
-        figure,
-        cmap,
-        cb,
-        grid_pointsize,
-        grid_pointcolor,
-        ticks,
-        labels,
-        output,
-    ):
-
-        self.figure = figure
-
-        self.units = units
-
-        self.cmap = cmap
-        self.cb = cb
-
-        self.grid_pointsize = grid_pointsize
-        self.grid_pointcolor = grid_pointcolor
-
-        self.ticks = ticks
-
-        self.labels = labels
-
-        self.output = output
-
-        self.grid_pointcolor = grid_pointcolor
-
-    def plot(
-        self,
-        grid,
-        colors=None,
-        axis_limits=None,
-        points=None,
-        lines=None,
-        symmetric_around_centre=True,
-        bypass_limits=False,
-    ):
-        """Plot a grid of (y,x) Cartesian coordinates as a scatter plotters of points.
-
-        Parameters
-        -----------
-        grid : data_type.array.aa.Grid
-            The (y,x) coordinates of the grid, in an array of shape (total_coordinates, 2).
-        axis_limits : []
-            The axis limits of the figure on which the grid is plotted, following [xmin, xmax, ymin, ymax].
-        points : []
-            A set of points that are plotted in a different colour for emphasis (e.g. to show the mappings between \
-            different planes).
-        as_subplot : bool
-            Whether the grid is plotted as part of a subplot, in which case the grid figure is not opened / closed.
-        label_yunits : str
-            The label of the unit_label of the y / x axis of the plots.
-        unit_conversion_factor : float
-            The conversion factor between arc-seconds and kiloparsecs, required to plotters the unit_label in kpc.
-        figsize : (int, int)
-            The size of the figure in (rows, columns).
-        pointsize : int
-            The size of the points plotted on the grid.
-        xyticksize : int
-            The font size of the x and y ticks on the figure axes.
-        title : str
-            The text of the title.
-        titlesize : int
-            The size of of the title of the figure.
-        xsize : int
-            The fontsize of the x axes label.
-        ysize : int
-            The fontsize of the y axes label.
-        output_path : str
-            The path on the hard-disk where the figure is output.
-        output_filename : str
-            The filename of the figure that is output.
-        output_format : str
-            The format the figue is output:
-            'show' - display on computer screen.
-            'png' - output to hard-disk as a png.
-        """
-
-        self.figure.open()
-
-        if colors is not None:
-
-            plt.cm.get_cmap(self.cmap.cmap)
-
-        plt.scatter(
-            y=np.asarray(grid[:, 0]),
-            x=np.asarray(grid[:, 1]),
-            c=colors,
-            s=self.grid_pointsize,
-            marker=".",
-            cmap=self.cmap.cmap,
-        )
-
-        if colors is not None:
-
-            self.cb.plot()
-
-        self.labels.set_title()
-        self.labels.set_yunits(include_brackets=True)
-        self.labels.set_xunits(include_brackets=True)
-
-        if not bypass_limits:
-
-            self.set_axis_limits(
-                axis_limits=axis_limits,
-                grid=grid,
-                symmetric_around_centre=symmetric_around_centre,
-            )
-
-        self.ticks.set_yticks(
-            array=None,
-            extent=grid.extent,
-            symmetric_around_centre=symmetric_around_centre,
-        )
-        self.ticks.set_xticks(
-            array=None,
-            extent=grid.extent,
-            symmetric_around_centre=symmetric_around_centre,
-        )
-
-        self.plot_points(grid=grid, points=points)
-        self.plot_lines(lines=lines)
-
-        self.output.to_figure(structure=grid)
-        self.figure.close()
-
-    def set_axis_limits(self, axis_limits, grid, symmetric_around_centre):
-        """Set the axis limits of the figure the grid is plotted on.
-
-        Parameters
-        -----------
-        axis_limits : []
-            The axis limits of the figure on which the grid is plotted, following [xmin, xmax, ymin, ymax].
-        """
-        if axis_limits is not None:
-            plt.axis(axis_limits)
-        elif symmetric_around_centre:
-            ymin = np.min(grid[:, 0])
-            ymax = np.max(grid[:, 0])
-            xmin = np.min(grid[:, 1])
-            xmax = np.max(grid[:, 1])
-            x = np.max([np.abs(xmin), np.abs(xmax)])
-            y = np.max([np.abs(ymin), np.abs(ymax)])
-            axis_limits = [-x, x, -y, y]
-            plt.axis(axis_limits)
-
-    def plot_points(self, grid, points):
-        """Plot a subset of points in a different color, to highlight a specifc region of the grid (e.g. how certain \
-        pixels map between different planes).
-
-        Parameters
-        -----------
-        grid : ndarray or data_type.array.aa.Grid
-            The (y,x) coordinates of the grid, in an array of shape (total_coordinates, 2).
-        points : []
-            A set of points that are plotted in a different colour for emphasis (e.g. to show the mappings between \
-            different planes).
-        pointcolor : str or None
-            The color the points should be plotted. If None, the points are iterated through a cycle of colors.
-        """
-        if points is not None:
-
-            if self.grid_pointcolor is None:
-
-                point_colors = itertools.cycle(["y", "r", "k", "g", "m"])
-                for point_set in points:
-                    plt.scatter(
-                        y=np.asarray(grid[point_set, 0]),
-                        x=np.asarray(grid[point_set, 1]),
-                        s=8,
-                        color=next(point_colors),
-                    )
-
-            else:
-
-                for point_set in points:
-                    plt.scatter(
-                        y=np.asarray(grid[point_set, 0]),
-                        x=np.asarray(grid[point_set, 1]),
-                        s=8,
-                        color=self.grid_pointcolor,
-                    )
-
-
-class MapperPlotter(GridPlotter):
-    def __init__(
-        self,
-        units,
-        figure,
-        cmap,
-        cb,
-        grid_pointsize,
-        grid_pointcolor,
-        ticks,
-        labels,
-        output,
-    ):
-
-        self.figure = figure
-
-        self.units = units
-
-        self.cmap = cmap
-        self.cb = cb
-
-        self.grid_pointsize = grid_pointsize
-        self.grid_pointcolor = grid_pointcolor
-
-        self.ticks = ticks
-
-        self.labels = labels
-
-        self.output = output
-
-    def plot(
-        self,
-        mapper,
-        include_centres=False,
-        include_grid=False,
-        include_border=False,
-        image_pixels=None,
-        source_pixels=None,
-    ):
-
-        if isinstance(mapper, mappers.MapperRectangular):
-
-            self.plot_rectangular_mapper(
-                mapper=mapper,
-                include_centres=include_centres,
-                include_grid=include_grid,
-                include_border=include_border,
-                image_pixels=image_pixels,
-                source_pixels=source_pixels,
-            )
-
-        else:
-
-            self.plot_voronoi_mapper(
-                mapper=mapper,
-                include_centres=include_centres,
-                include_grid=include_grid,
-                include_border=include_border,
-                image_pixels=image_pixels,
-                source_pixels=source_pixels,
-            )
-
-    def plot_rectangular_mapper(
-        self,
-        mapper,
-        include_centres=False,
-        include_grid=False,
-        include_border=False,
-        image_pixels=None,
-        source_pixels=None,
-    ):
-
-        self.figure.open()
-
-        self.set_axis_limits(
-            axis_limits=mapper.pixelization_grid.extent,
-            grid=None,
-            symmetric_around_centre=False,
-        )
-
-        self.ticks.set_yticks(
-            array=None,
-            extent=mapper.pixelization_grid.extent,
-        )
-        self.ticks.set_xticks(
-            array=None,
-            extent=mapper.pixelization_grid.extent,
-        )
-
-        self.plot_rectangular_pixelization_lines(mapper=mapper)
-
-        self.labels.set_title()
-        self.labels.set_yunits(include_brackets=True)
-        self.labels.set_xunits(include_brackets=True)
-
-        self.plot_centres(mapper=mapper, include_centres=include_centres)
-
-        self.plot_mapper_grid(include_grid=include_grid, mapper=mapper)
-
-        self.plot_border(include_border=include_border, mapper=mapper)
-
-        point_colors = itertools.cycle(["y", "r", "k", "g", "m"])
-        self.plot_source_plane_image_pixels(
-            grid=mapper.grid, image_pixels=image_pixels, point_colors=point_colors
-        )
-        self.plot_source_plane_source_pixels(
-            grid=mapper.grid,
-            mapper=mapper,
-            source_pixels=source_pixels,
-            point_colors=point_colors,
-        )
-
-        self.output.to_figure(structure=None)
-        self.figure.close()
-
-    def plot_voronoi_mapper(
-        self,
-        mapper,
-        source_pixel_values,
-        include_centres=True,
-        include_grid=True,
-        include_border=False,
-        lines=None,
-        image_pixels=None,
-        source_pixels=None,
-    ):
-
-        self.figure.open()
-
-        self.set_axis_limits(
-            axis_limits=mapper.pixelization_grid.extent,
-            grid=None,
-            symmetric_around_centre=False,
-        )
-
-        self.ticks.set_yticks(
-            array=None,
-            extent=mapper.pixelization_grid.extent,
-        )
-        self.ticks.set_xticks(
-            array=None,
-            extent=mapper.pixelization_grid.extent,
-        )
-
-        regions_SP, vertices_SP = self.voronoi_finite_polygons_2d(
-            voronoi=mapper.voronoi
-        )
-
-        color_values = source_pixel_values[:] / np.max(source_pixel_values)
-        cmap = plt.get_cmap("jet")
-
-        self.cb.plot_with_values(cmap=cmap, color_values=source_pixel_values)
-
-        for region, index in zip(regions_SP, range(mapper.pixels)):
-            polygon = vertices_SP[region]
-            col = cmap(color_values[index])
-            plt.fill(*zip(*polygon), alpha=0.7, facecolor=col, lw=0.0)
-
-        self.labels.set_title()
-        self.labels.set_yunits(include_brackets=True)
-        self.labels.set_xunits(include_brackets=True)
-
-        self.plot_centres(mapper=mapper, include_centres=include_centres)
-
-        self.plot_mapper_grid(include_grid=include_grid, mapper=mapper)
-
-        self.plot_border(include_border=include_border, mapper=mapper)
-
-        self.plot_lines(lines=lines)
-
-        point_colors = itertools.cycle(["y", "r", "k", "g", "m"])
-        self.plot_source_plane_image_pixels(
-            grid=mapper.grid, image_pixels=image_pixels, point_colors=point_colors
-        )
-        self.plot_source_plane_source_pixels(
-            grid=mapper.grid,
-            mapper=mapper,
-            source_pixels=source_pixels,
-            point_colors=point_colors,
-        )
-
-        self.output.to_figure(structure=None)
-        self.figure.close()
-
-    def voronoi_finite_polygons_2d(self, vor, radius=None):
-        """
-        Reconstruct infinite voronoi regions in a 2D diagram to finite
-        regions.
-        Parameters
-        ----------
-        vor : Voronoi
-            Input diagram
-        radius : float, optional
-            Distance to 'points at infinity'.
-        Returns
-        -------
-        regions : list of tuples
-            Indices of vertices in each revised Voronoi regions.
-        vertices : list of tuples
-            Coordinates for revised Voronoi vertices. Same as coordinates
-            of input vertices, with 'points at infinity' appended to the
-            end.
-        """
-
-        if vor.points.shape[1] != 2:
-            raise ValueError("Requires 2D input")
-
-        new_regions = []
-        new_vertices = vor.vertices.tolist()
-
-        center = vor.points.mean(axis=0)
-        if radius is None:
-            radius = vor.points.ptp().max() * 2
-
-        # Construct a map containing all ridges for a given point
-        all_ridges = {}
-        for (p1, p2), (v1, v2) in zip(vor.ridge_points, vor.ridge_vertices):
-            all_ridges.setdefault(p1, []).append((p2, v1, v2))
-            all_ridges.setdefault(p2, []).append((p1, v1, v2))
-
-        # Reconstruct infinite regions
-        for p1, region in enumerate(vor.point_region):
-            vertices = vor.regions[region]
-
-            if all(v >= 0 for v in vertices):
-                # finite region
-                new_regions.append(vertices)
-                continue
-
-            # reconstruct a non-finite region
-            ridges = all_ridges[p1]
-            new_region = [v for v in vertices if v >= 0]
-
-            for p2, v1, v2 in ridges:
-                if v2 < 0:
-                    v1, v2 = v2, v1
-                if v1 >= 0:
-                    # finite ridge: already in the region
-                    continue
-
-                # Compute the missing endpoint of an infinite ridge
-
-                t = vor.points[p2] - vor.points[p1]  # tangent
-                t /= np.linalg.norm(t)
-                n = np.array([-t[1], t[0]])  # hyper
-
-                midpoint = vor.points[[p1, p2]].mean(axis=0)
-                direction = np.sign(np.dot(midpoint - center, n)) * n
-                far_point = vor.vertices[v2] + direction * radius
-
-                new_region.append(len(new_vertices))
-                new_vertices.append(far_point.tolist())
-
-            # sort region counterclockwise
-            vs = np.asarray([new_vertices[v] for v in new_region])
-            c = vs.mean(axis=0)
-            angles = np.arctan2(vs[:, 1] - c[1], vs[:, 0] - c[0])
-            new_region = np.array(new_region)[np.argsort(angles)]
-
-            # finish
-            new_regions.append(new_region.tolist())
-
-        return new_regions, np.asarray(new_vertices)
-
-    def plot_rectangular_pixelization_lines(self, mapper):
-
-        ys = np.linspace(
-            mapper.pixelization_grid.scaled_minima[0],
-            mapper.pixelization_grid.scaled_maxima[0],
-            mapper.pixelization_grid.shape_2d[0] + 1,
-        )
-        xs = np.linspace(
-            mapper.pixelization_grid.scaled_minima[1],
-            mapper.pixelization_grid.scaled_maxima[1],
-            mapper.pixelization_grid.shape_2d[1] + 1,
-        )
-
-        # grid lines
-        for x in xs:
-            plt.plot([x, x], [ys[0], ys[-1]], color="black", linestyle="-")
-        for y in ys:
-            plt.plot([xs[0], xs[-1]], [y, y], color="black", linestyle="-")
-
-    def plot_centres(self, mapper, include_centres):
-
-        if include_centres:
-
-            pixelization_grid = mapper.pixelization_grid
-
-            plt.scatter(
-                y=pixelization_grid[:, 0], x=pixelization_grid[:, 1], s=3, c="r"
-            )
-
-    def plot_mapper_grid(self, mapper, include_grid):
-
-        if include_grid:
-
-            super(MapperPlotter, self).plot(grid=mapper.grid, bypass_limits=True)
-
-    def plot_border(self, mapper, include_border):
-
-        if include_border:
-
-            border = mapper.grid[mapper.grid.mask.regions._sub_border_1d_indexes]
-
-            self.plot(grid=border)
-
-    def plot_image_pixels(self, grid, image_pixels, point_colors):
-
-        if image_pixels is not None:
-
-            for image_pixel_set in image_pixels:
-                color = next(point_colors)
-                plt.scatter(
-                    y=np.asarray(grid[image_pixel_set, 0]),
-                    x=np.asarray(grid[image_pixel_set, 1]),
-                    color=color,
-                    s=10.0,
-                )
-
-    def plot_image_plane_source_pixels(self, grid, mapper, source_pixels, point_colors):
-
-        if source_pixels is not None:
-
-            for source_pixel_set in source_pixels:
-                color = next(point_colors)
-                for source_pixel in source_pixel_set:
-                    plt.scatter(
-                        y=np.asarray(
-                            grid[
-                                mapper.all_sub_mask_1d_indexes_for_pixelization_1d_index[
-                                    source_pixel
-                                ],
-                                0,
-                            ]
-                        ),
-                        x=np.asarray(
-                            grid[
-                                mapper.all_sub_mask_1d_indexes_for_pixelization_1d_index[
-                                    source_pixel
-                                ],
-                                1,
-                            ]
-                        ),
-                        s=8,
-                        color=color,
-                    )
-
-    def plot_source_plane_image_pixels(self, grid, image_pixels, point_colors):
-
-        if image_pixels is not None:
-
-            for image_pixel_set in image_pixels:
-                color = next(point_colors)
-                plt.scatter(
-                    y=np.asarray(grid[[image_pixel_set], 0]),
-                    x=np.asarray(grid[[image_pixel_set], 1]),
-                    s=8,
-                    color=color,
-                )
-
-    def plot_source_plane_source_pixels(
-        self, grid, mapper, source_pixels, point_colors
-    ):
-
-        if source_pixels is not None:
-
-            for source_pixel_set in source_pixels:
-                color = next(point_colors)
-                for source_pixel in source_pixel_set:
-                    plt.scatter(
-                        y=np.asarray(
-                            grid[
-                                mapper.all_sub_mask_1d_indexes_for_pixelization_1d_index[
-                                    source_pixel
-                                ],
-                                0,
-                            ]
-                        ),
-                        x=np.asarray(
-                            grid[
-                                mapper.all_sub_mask_1d_indexes_for_pixelization_1d_index[
-                                    source_pixel
-                                ],
-                                1,
-                            ]
-                        ),
-                        s=8,
-                        color=color,
-                    )
-
-
-class LinePlotter(AbstractPlotter):
-    def __init__(
-        self,
-        units,
-        include_legend,
-        legend_fontsize,
-        figure,
-        line_pointsize,
-        ticks,
-        labels,
-        output,
-    ):
-
-        self.units = units
-        self.figure = figure
-
-        self.ticks = ticks
-
-        self.labels = labels
-
-        self.output = output
-
-        self.line_pointsize = line_pointsize
-        self.include_legend = include_legend
-        self.legend_fontsize = legend_fontsize
-
-    def plot(
-        self,
-        y,
-        x,
-        label=None,
-        plot_axis_type="semilogy",
-        vertical_lines=None,
-        vertical_line_labels=None,
-    ):
-
-        if y is None:
-            return
-
-        self.figure.open()
-        self.labels.set_title()
-
-        if x is None:
-            x = np.arange(len(y))
-
-        self.plot_y_vs_x(y=y, x=x, plot_axis_type=plot_axis_type, label=label)
-
-        self.labels.set_yunits(include_brackets=False)
-        self.labels.set_xunits(include_brackets=False)
-
-        self.plot_vertical_lines(
-            vertical_lines=vertical_lines, vertical_line_labels=vertical_line_labels
-        )
-
-        self.set_legend()
-
-        self.ticks.set_xticks(
-            array=None,
-            extent=[np.min(x), np.max(x)],
-        )
-
-        self.output.to_figure(structure=None)
-
-        self.figure.close()
-
-    def plot_y_vs_x(self, y, x, plot_axis_type, label):
-
-        if plot_axis_type is "linear":
-            plt.plot(x, y, label=label)
-        elif plot_axis_type is "semilogy":
-            plt.semilogy(x, y, label=label)
-        elif plot_axis_type is "loglog":
-            plt.loglog(x, y, label=label)
-        elif plot_axis_type is "scatter":
-            plt.scatter(x, y, label=label, s=self.line_pointsize)
-        else:
-            raise exc.PlottingException(
-                "The plot_axis_type supplied to the plotter is not a valid string (must be linear "
-                "| semilogy | loglog)"
-            )
-
-    def plot_vertical_lines(self, vertical_lines, vertical_line_labels):
-
-        if vertical_lines is [] or vertical_lines is None:
-            return
-
-        for vertical_line, vertical_line_label in zip(
-            vertical_lines, vertical_line_labels
-        ):
-
-            if self.units.conversion_factor is None:
-                x_value_plot = vertical_line
-            else:
-                x_value_plot = vertical_line * self.units.conversion_factor
-
-            plt.axvline(x=x_value_plot, label=vertical_line_label, linestyle="--")
-
-    def set_legend(self):
-        if self.include_legend:
-            plt.legend(fontsize=self.legend_fontsize)
 
 
 class Include(object):

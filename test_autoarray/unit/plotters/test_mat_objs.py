@@ -43,8 +43,6 @@ class TestFigure:
 
         figure = mat_objs.Figure()
 
-        assert plt.fignum_exists(num=1) == False
-
         figure.open()
 
         assert plt.fignum_exists(num=1) == True
@@ -123,20 +121,20 @@ class TestColorBar:
         figure.open()
         plt.imshow(np.ones((2,2)))
         cb = mat_objs.ColorBar(ticksize=1, fraction=1.0, pad=2.0)
-        cb.plot()
+        cb.set()
         figure.close()
 
         figure.open()
         plt.imshow(np.ones((2,2)))
         cb = mat_objs.ColorBar(ticksize=1, fraction=0.1, pad=0.5, tick_values=[0.25, 0.5, 0.75],
                                tick_labels=[1.0, 2.0, 3.0])
-        cb.plot()
+        cb.set()
         figure.close()
 
         figure.open()
         plt.imshow(np.ones((2,2)))
         cb = mat_objs.ColorBar(ticksize=1, fraction=0.1, pad=0.5)
-        cb.plot_with_values(cmap=mat_objs.ColorMap().cmap, color_values=[1.0, 2.0, 3.0])
+        cb.set_with_values(cmap=mat_objs.ColorMap().cmap, color_values=[1.0, 2.0, 3.0])
         figure.close()
 
 
@@ -187,6 +185,7 @@ class TestTicks:
         ticks.set_xticks(array=array, extent=array.extent_of_zoomed_array(buffer=1), symmetric_around_centre=False)
         ticks.set_yticks(array=array, extent=array.extent_of_zoomed_array(buffer=1), symmetric_around_centre=True)
         ticks.set_xticks(array=array, extent=array.extent_of_zoomed_array(buffer=1), symmetric_around_centre=True)
+
 
 class TestLabels:
 
@@ -320,3 +319,13 @@ class TestOutput:
         filename_from_func = output.filename_from_func(func=toy_func)
 
         assert filename_from_func == "Hi"
+
+
+class TestScatterer:
+
+    def test__works_for_sensible_grids(self):
+
+        scatterer = mat_objs.Scatterer(size=2, marker="x", color="k")
+
+        scatterer.plot(grid=[(1.0, 1.0), (2.0, 2.0)])
+        scatterer.plot(grid=aa.grid.uniform(shape_2d=(3,3), pixel_scales=1.0))

@@ -31,12 +31,12 @@ def subplot_image_and_mapper(
     )
 
     point_colors = itertools.cycle(["y", "r", "k", "g", "m"])
-    sub_plotter.mapper.plot_image_pixels(
+    sub_plotter.scatter_image_pixels(
         grid=mapper.grid.geometry.unmasked_grid,
         image_pixels=image_pixels,
         point_colors=point_colors,
     )
-    sub_plotter.mapper.plot_image_plane_source_pixels(
+    sub_plotter.scatter_image_plane_source_pixels(
         mapper=mapper,
         grid=mapper.grid.geometry.unmasked_grid,
         source_pixels=source_pixels,
@@ -66,7 +66,7 @@ def mapper_grid(
     plotter=plotters.Plotter(),
 ):
 
-    plotter.mapper.plot(
+    plotter.plot_mapper(
         mapper=mapper,
         image_pixels=image_pixels,
         source_pixels=source_pixels,

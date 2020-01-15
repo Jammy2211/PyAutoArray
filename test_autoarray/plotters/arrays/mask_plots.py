@@ -12,4 +12,4 @@ mask = aa.mask.circular(
     centre=(2.0, 2.0),
 )
 
-plotter.array.plot(array=array, mask=mask)
+plotter.plot_array(array=array, mask=mask)

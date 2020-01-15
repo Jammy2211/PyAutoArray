@@ -148,7 +148,7 @@ def image(
     origin : True
         If true, the origin of the datas's coordinate system is plotted as a 'x'.
     """
-    plotter.array.plot(
+    plotter.plot_array(
         array=fit.data,
         grid=grid,
         mask=include.mask_from_fit(fit=fit),
@@ -170,7 +170,7 @@ def noise_map(fit, points=None, include=plotters.Include(), plotter=plotters.Plo
     origin : True
         If true, the origin of the datas's coordinate system is plotted as a 'x'.
     """
-    plotter.array.plot(
+    plotter.plot_array(
         array=fit.noise_map, mask=include.mask_from_fit(fit=fit), points=points
     )
 
@@ -190,7 +190,7 @@ def signal_to_noise_map(
     origin : True
     If true, the origin of the datas's coordinate system is plotted as a 'x'.
     """
-    plotter.array.plot(
+    plotter.plot_array(
         array=fit.signal_to_noise_map,
         mask=include.mask_from_fit(fit=fit),
         points=points,
@@ -212,7 +212,7 @@ def model_image(
     image_index : int
         The index of the datas in the datas-set of which the model image is plotted.
     """
-    plotter.array.plot(
+    plotter.plot_array(
         array=fit.model_data,
         mask=include.mask_from_fit(fit=fit),
         lines=lines,
@@ -235,7 +235,7 @@ def residual_map(
     image_index : int
         The index of the datas in the datas-set of which the residual_map are plotted.
     """
-    plotter.array.plot(
+    plotter.plot_array(
         array=fit.residual_map, mask=include.mask_from_fit(fit=fit), points=points
     )
 
@@ -255,7 +255,7 @@ def normalized_residual_map(
     image_index : int
         The index of the datas in the datas-set of which the normalized_residual_map are plotted.
     """
-    plotter.array.plot(
+    plotter.plot_array(
         array=fit.normalized_residual_map,
         mask=include.mask_from_fit(fit=fit),
         points=points,
@@ -277,6 +277,6 @@ def chi_squared_map(
     image_index : int
         The index of the datas in the datas-set of which the chi-squareds are plotted.
     """
-    plotter.array.plot(
+    plotter.plot_array(
         array=fit.chi_squared_map, mask=include.mask_from_fit(fit=fit), points=points
     )

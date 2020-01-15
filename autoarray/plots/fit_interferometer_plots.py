@@ -159,7 +159,7 @@ def visibilities(fit, include=plotters.Include(), plotter=plotters.Plotter()):
     origin : True
         If true, the origin of the datas's coordinate system is plotted as a 'x'.
     """
-    plotter.grid.plot(grid=fit.visibilities)
+    plotter.plot_grid(grid=fit.visibilities)
 
 
 @plotters.set_labels
@@ -175,7 +175,7 @@ def noise_map(fit, include=plotters.Include(), plotter=plotters.Plotter()):
     origin : True
         If true, the origin of the datas's coordinate system is plotted as a 'x'.
     """
-    plotter.grid.plot(grid=fit.visibilities, colors=fit.noise_map[:, 0])
+    plotter.plot_grid(grid=fit.visibilities, colors=fit.noise_map[:, 0])
 
 
 @plotters.set_labels
@@ -191,7 +191,7 @@ def signal_to_noise_map(fit, include=plotters.Include(), plotter=plotters.Plotte
     origin : True
     If true, the origin of the datas's coordinate system is plotted as a 'x'.
     """
-    plotter.grid.plot(grid=fit.visibilities, colors=fit.signal_to_noise_map[:, 0])
+    plotter.plot_grid(grid=fit.visibilities, colors=fit.signal_to_noise_map[:, 0])
 
 
 @plotters.set_labels
@@ -207,7 +207,7 @@ def model_visibilities(fit, include=plotters.Include(), plotter=plotters.Plotter
     visibilities_index : int
         The index of the datas in the datas-set of which the model visibilities is plotted.
     """
-    plotter.grid.plot(grid=fit.visibilities)
+    plotter.plot_grid(grid=fit.visibilities)
 
 
 @plotters.set_labels
@@ -248,7 +248,7 @@ def residual_map_vs_uv_distances(
             output=mat_objs.Output(filename=plotter.output.filename + "_imag")
         )
 
-    plotter.line.plot(
+    plotter.plot_line(
         y=y,
         x=fit.masked_interferometer.interferometer.uv_distances / 10 ** 3.0,
         plot_axis_type="scatter",
@@ -293,7 +293,7 @@ def normalized_residual_map_vs_uv_distances(
             output=mat_objs.Output(filename=plotter.output.filename + "_imag")
         )
 
-    plotter.line.plot(
+    plotter.plot_line(
         y=y,
         x=fit.masked_interferometer.interferometer.uv_distances / 10 ** 3.0,
         plot_axis_type="scatter",
@@ -338,7 +338,7 @@ def chi_squared_map_vs_uv_distances(
             output=mat_objs.Output(filename=plotter.output.filename + "_imag")
         )
 
-    plotter.line.plot(
+    plotter.plot_line(
         y=y,
         x=fit.masked_interferometer.interferometer.uv_distances / 10 ** 3.0,
         plot_axis_type="scatter",
