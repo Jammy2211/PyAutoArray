@@ -4,6 +4,7 @@ from os import path
 import matplotlib.pyplot as plt
 import os
 import pytest
+import numpy as np
 
 directory = path.dirname(path.realpath(__file__))
 
@@ -567,7 +568,6 @@ class TestAbstractPlotterPlots:
     ):
 
         array = aa.array.ones(shape_2d=(31, 31), pixel_scales=(1.0, 1.0), sub_size=2)
-        array[0] = 3.0
 
         mask = aa.mask.circular(
             shape_2d=array.shape_2d,
@@ -624,6 +624,54 @@ class TestAbstractPlotterPlots:
         )
 
         assert plotter_path + "array3.png" in plot_patch.paths
+
+    def test__plot_grid__works_with_all_extras_included(self, plotter_path, plot_patch):
+        grid = aa.grid.uniform(shape_2d=(11, 11), pixel_scales=1.0)
+        color_array = np.linspace(start=0.0, stop=1.0, num=grid.shape_1d)
+
+        plotter = aplt.Plotter(
+            output=aplt.Output(path=plotter_path, filename="grid1", format="png")
+        )
+
+        plotter.plot_grid(
+            grid=grid,
+            color_array=color_array,
+            axis_limits=[-1.5, 1.5, -2.5, 2.5],
+            lines=[[(1.0, 1.0), (2.0, 2.0)], [(2.0, 4.0), (5.0, 6.0)]],
+            indexes=[0, 1, 2, 14],
+            symmetric_around_centre=False,
+        )
+
+        assert plotter_path + "grid1.png" in plot_patch.paths
+
+        plotter = aplt.Plotter(
+            output=aplt.Output(path=plotter_path, filename="grid2", format="png")
+        )
+
+        plotter.plot_grid(
+            grid=grid,
+            color_array=color_array,
+            axis_limits=[-1.5, 1.5, -2.5, 2.5],
+            lines=[[(1.0, 1.0), (2.0, 2.0)], [(2.0, 4.0), (5.0, 6.0)]],
+            indexes=[0, 1, 2, 14],
+            symmetric_around_centre=True,
+        )
+
+        assert plotter_path + "grid2.png" in plot_patch.paths
+
+        aplt.grid(
+            grid=grid,
+            color_array=color_array,
+            axis_limits=[-1.5, 1.5, -2.5, 2.5],
+            lines=[[(1.0, 1.0), (2.0, 2.0)], [(2.0, 4.0), (5.0, 6.0)]],
+            indexes=[0, 1, 2, 14],
+            symmetric_around_centre=True,
+            plotter=aplt.Plotter(
+                output=aplt.Output(path=plotter_path, filename="grid3", format="png")
+            ),
+        )
+
+        assert plotter_path + "grid3.png" in plot_patch.paths
 
 
 class TestAbstractPlotterNew:
