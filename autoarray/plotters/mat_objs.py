@@ -668,6 +668,7 @@ class Legend(object):
         if self.include:
             plt.legend(fontsize=self.fontsize)
 
+
 class Output(object):
     def __init__(self, path=None, filename=None, format=None, bypass=False):
 
@@ -1002,3 +1003,22 @@ class Liner(object):
                             lw=self.width,
                             ls=self.style,
                         )
+
+    def draw_rectangular_grid_lines(self, extent, shape_2d):
+
+        ys = np.linspace(
+            extent[0],
+            extent[1],
+            shape_2d[0] + 1,
+        )
+        xs = np.linspace(
+            extent[2],
+            extent[3],
+            shape_2d[1] + 1,
+        )
+
+        # grid lines
+        for x in xs:
+            plt.plot([x, x], [ys[0], ys[-1]], color=self.color, lw=self.width, ls=self.style)
+        for y in ys:
+            plt.plot([xs[0], xs[-1]], [y, y], color=self.color, lw=self.width, ls=self.style)

@@ -420,3 +420,10 @@ class TestLiner:
         liner.draw_grids(grids=[[(1.0, 1.0), (2.0, 2.0)], [None]])
         liner.draw_grids(grids=[aa.grid.uniform(shape_2d=(3, 3), pixel_scales=1.0),
                                        aa.grid.uniform(shape_2d=(3, 3), pixel_scales=1.0)])
+
+    def test__draw_rectangular_grid_lines__draws_for_valid_extent_and_shape(self):
+
+        liner = mat_objs.Liner(width=2, style="--", color="k")
+
+        liner.draw_rectangular_grid_lines(extent=[0.0, 1.0, 0.0, 1.0], shape_2d=(3,2))
+        liner.draw_rectangular_grid_lines(extent=[-4.0, 8.0, -3.0, 10.0], shape_2d=(8,3))

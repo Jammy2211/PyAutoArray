@@ -119,7 +119,6 @@ class AbstractPlotter(object):
         mask=None,
         lines=None,
         positions=None,
-        centres=None,
         grid=None,
         include_origin=False,
         include_border=False,
@@ -485,7 +484,7 @@ class AbstractPlotter(object):
             extent=mapper.pixelization_grid.extent,
         )
 
-        self.draw_grid_lines(mapper=mapper)
+        self.liner.draw_rectangular_grid_lines(extent=mapper.pixelization_grid.extent, shape_2d=mapper.shape_2d)
 
         self.labels.set_title()
         self.labels.set_yunits(include_brackets=True)
@@ -680,25 +679,6 @@ class AbstractPlotter(object):
             new_regions.append(new_region.tolist())
 
         return new_regions, np.asarray(new_vertices)
-
-    def draw_grid_lines(self, mapper):
-
-        ys = np.linspace(
-            mapper.pixelization_grid.scaled_minima[0],
-            mapper.pixelization_grid.scaled_maxima[0],
-            mapper.pixelization_grid.shape_2d[0] + 1,
-        )
-        xs = np.linspace(
-            mapper.pixelization_grid.scaled_minima[1],
-            mapper.pixelization_grid.scaled_maxima[1],
-            mapper.pixelization_grid.shape_2d[1] + 1,
-        )
-
-        # grid lines
-        for x in xs:
-            plt.plot([x, x], [ys[0], ys[-1]], color="black", linestyle="-")
-        for y in ys:
-            plt.plot([xs[0], xs[-1]], [y, y], color="black", linestyle="-")
 
     def scatter_image_pixels(self, grid, image_pixels, point_colors):
 
