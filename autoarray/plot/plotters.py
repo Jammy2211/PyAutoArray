@@ -34,6 +34,7 @@ def load_figure_setting(section, name, python_type):
 def load_subplot_setting(section, name, python_type):
     return conf.instance.visualize_subplots.get(section, name, python_type)
 
+
 class AbstractPlotter(object):
     def __init__(
         self,
@@ -41,15 +42,16 @@ class AbstractPlotter(object):
         figure=mat_objs.Figure(),
         cmap=mat_objs.ColorMap(),
         cb=mat_objs.ColorBar(),
-            legend=mat_objs.Legend(),
-            ticks=mat_objs.Ticks(),
-            labels=mat_objs.Labels(),
-            output=mat_objs.Output(),
+        legend=mat_objs.Legend(),
+        ticks=mat_objs.Ticks(),
+        labels=mat_objs.Labels(),
+        output=mat_objs.Output(),
         origin_scatterer=mat_objs.Scatterer(),
         mask_scatterer=mat_objs.Scatterer(),
         border_scatterer=mat_objs.Scatterer(),
         grid_scatterer=mat_objs.Scatterer(),
         positions_scatterer=mat_objs.Scatterer(),
+        index_scatterer=mat_objs.Scatterer(),
         liner=mat_objs.Liner(),
     ):
 
@@ -71,17 +73,14 @@ class AbstractPlotter(object):
         )
 
         self.ticks = mat_objs.Ticks.from_instance_and_config(
-            ticks=ticks, load_func=load_setting_func, units=self.units,
+            ticks=ticks, load_func=load_setting_func, units=self.units
         )
         self.labels = mat_objs.Labels.from_instance_and_config(
-            labels=labels,
-            load_func=load_setting_func,
-            units=self.units,
+            labels=labels, load_func=load_setting_func, units=self.units
         )
 
         self.legend = mat_objs.Legend.from_instance_and_config(
-            legend=legend,
-            load_func=load_setting_func,
+            legend=legend, load_func=load_setting_func
         )
 
         self.output = mat_objs.Output.from_instance_and_config(
@@ -91,22 +90,34 @@ class AbstractPlotter(object):
         )
 
         self.origin_scatterer = mat_objs.Scatterer.from_instance_and_config(
-            scatterer=origin_scatterer, section="origin", load_func=load_setting_func)
+            scatterer=origin_scatterer, section="origin", load_func=load_setting_func
+        )
 
         self.mask_scatterer = mat_objs.Scatterer.from_instance_and_config(
-            scatterer=mask_scatterer, section="mask", load_func=load_setting_func)
+            scatterer=mask_scatterer, section="mask", load_func=load_setting_func
+        )
 
         self.border_scatterer = mat_objs.Scatterer.from_instance_and_config(
-            scatterer=border_scatterer, section="border", load_func=load_setting_func)
+            scatterer=border_scatterer, section="border", load_func=load_setting_func
+        )
 
         self.grid_scatterer = mat_objs.Scatterer.from_instance_and_config(
-            scatterer=grid_scatterer, section="grid", load_func=load_setting_func)
+            scatterer=grid_scatterer, section="grid", load_func=load_setting_func
+        )
 
         self.positions_scatterer = mat_objs.Scatterer.from_instance_and_config(
-            scatterer=positions_scatterer, section="positions", load_func=load_setting_func)
+            scatterer=positions_scatterer,
+            section="positions",
+            load_func=load_setting_func,
+        )
 
-        self.liner = mat_objs.Liner.from_instance_and_config(liner=liner, section="liner", load_func=load_setting_func)
+        self.index_scatterer = mat_objs.Scatterer.from_instance_and_config(
+            scatterer=index_scatterer, section="index", load_func=load_setting_func
+        )
 
+        self.liner = mat_objs.Liner.from_instance_and_config(
+            liner=liner, section="liner", load_func=load_setting_func
+        )
 
     @property
     def is_sub_plotter(self):
@@ -255,14 +266,8 @@ class AbstractPlotter(object):
             extent=extent,
         )
 
-        self.ticks.set_yticks(
-            array=array,
-            extent=extent,
-        )
-        self.ticks.set_xticks(
-            array=array,
-            extent=extent,
-        )
+        self.ticks.set_yticks(array=array, extent=extent)
+        self.ticks.set_xticks(array=array, extent=extent)
 
         self.labels.set_title()
         self.labels.set_yunits(include_brackets=True)
@@ -273,10 +278,14 @@ class AbstractPlotter(object):
             self.origin_scatterer.scatter_grids(grids=[array.origin])
 
         if mask is not None:
-            self.mask_scatterer.scatter_grids(grids=mask.geometry.edge_grid.in_1d_binned)
+            self.mask_scatterer.scatter_grids(
+                grids=mask.geometry.edge_grid.in_1d_binned
+            )
 
         if include_border and mask is not None:
-            self.border_scatterer.scatter_grids(grids=mask.geometry.border_grid.in_1d_binned)
+            self.border_scatterer.scatter_grids(
+                grids=mask.geometry.border_grid.in_1d_binned
+            )
 
         if grid is not None:
             self.grid_scatterer.scatter_grids(grids=grid)
@@ -350,7 +359,9 @@ class AbstractPlotter(object):
         elif color_array is not None:
 
             plt.cm.get_cmap(self.cmap.cmap)
-            self.grid_scatterer.scatter_colored_grid(grid=grid, color_array=color_array, cmap=self.cmap.cmap)
+            self.grid_scatterer.scatter_colored_grid(
+                grid=grid, color_array=color_array, cmap=self.cmap.cmap
+            )
             self.cb.set()
 
         self.labels.set_title()
@@ -377,7 +388,7 @@ class AbstractPlotter(object):
         )
 
         if indexes is not None:
-            self.grid_scatterer.scatter_grid_indexes(grid=grid, indexes=indexes)
+            self.index_scatterer.scatter_grid_indexes(grid=grid, indexes=indexes)
 
         if lines is not None:
             self.liner.draw_grids(grids=lines)
@@ -415,10 +426,7 @@ class AbstractPlotter(object):
 
         self.legend.set()
 
-        self.ticks.set_xticks(
-            array=None,
-            extent=[np.min(x), np.max(x)],
-        )
+        self.ticks.set_xticks(array=None, extent=[np.min(x), np.max(x)])
 
         self.output.to_figure(structure=None)
 
@@ -474,16 +482,12 @@ class AbstractPlotter(object):
             symmetric_around_centre=False,
         )
 
-        self.ticks.set_yticks(
-            array=None,
-            extent=mapper.pixelization_grid.extent,
-        )
-        self.ticks.set_xticks(
-            array=None,
-            extent=mapper.pixelization_grid.extent,
-        )
+        self.ticks.set_yticks(array=None, extent=mapper.pixelization_grid.extent)
+        self.ticks.set_xticks(array=None, extent=mapper.pixelization_grid.extent)
 
-        self.liner.draw_rectangular_grid_lines(extent=mapper.pixelization_grid.extent, shape_2d=mapper.shape_2d)
+        self.liner.draw_rectangular_grid_lines(
+            extent=mapper.pixelization_grid.extent, shape_2d=mapper.shape_2d
+        )
 
         self.labels.set_title()
         self.labels.set_yunits(include_brackets=True)
@@ -529,14 +533,8 @@ class AbstractPlotter(object):
             symmetric_around_centre=False,
         )
 
-        self.ticks.set_yticks(
-            array=None,
-            extent=mapper.pixelization_grid.extent,
-        )
-        self.ticks.set_xticks(
-            array=None,
-            extent=mapper.pixelization_grid.extent,
-        )
+        self.ticks.set_yticks(array=None, extent=mapper.pixelization_grid.extent)
+        self.ticks.set_xticks(array=None, extent=mapper.pixelization_grid.extent)
 
         regions_SP, vertices_SP = self.voronoi_finite_polygons_2d(
             voronoi=mapper.voronoi
@@ -692,7 +690,9 @@ class AbstractPlotter(object):
                     s=10.0,
                 )
 
-    def scatter_image_plane_source_pixels(self, grid, mapper, source_pixels, point_colors):
+    def scatter_image_plane_source_pixels(
+        self, grid, mapper, source_pixels, point_colors
+    ):
 
         if source_pixels is not None:
 
@@ -734,7 +734,7 @@ class AbstractPlotter(object):
                 )
 
     def scatter_source_plane_source_pixels(
-            self, grid, mapper, source_pixels, point_colors
+        self, grid, mapper, source_pixels, point_colors
     ):
 
         if source_pixels is not None:
@@ -795,15 +795,11 @@ class AbstractPlotter(object):
         new_units = mat_objs.Units()
 
         new_units.use_scaled = units.use_scaled = (
-            units.use_scaled
-            if units.use_scaled is not None
-            else self.units.use_scaled
+            units.use_scaled if units.use_scaled is not None else self.units.use_scaled
         )
 
         new_units.in_kpc = units.in_kpc = (
-            units.in_kpc
-            if units.in_kpc is not None
-            else self.units.in_kpc
+            units.in_kpc if units.in_kpc is not None else self.units.in_kpc
         )
 
         new_units.conversion_factor = units.conversion_factor = (
@@ -855,6 +851,7 @@ class Plotter(AbstractPlotter):
         border_scatterer=mat_objs.Scatterer(),
         grid_scatterer=mat_objs.Scatterer(),
         positions_scatterer=mat_objs.Scatterer(),
+        index_scatterer=mat_objs.Scatterer(),
         liner=mat_objs.Liner(),
     ):
 
@@ -872,6 +869,7 @@ class Plotter(AbstractPlotter):
             border_scatterer=border_scatterer,
             grid_scatterer=grid_scatterer,
             positions_scatterer=positions_scatterer,
+            index_scatterer=index_scatterer,
             liner=liner,
         )
 
@@ -883,19 +881,20 @@ class Plotter(AbstractPlotter):
 class SubPlotter(AbstractPlotter):
     def __init__(
         self,
-            units=mat_objs.Units(),
+        units=mat_objs.Units(),
         figure=mat_objs.Figure(),
         cmap=mat_objs.ColorMap(),
         cb=mat_objs.ColorBar(),
-            legend=mat_objs.Legend(),
-            ticks=mat_objs.Ticks(),
-            labels=mat_objs.Labels(),
-            output=mat_objs.Output(),
+        legend=mat_objs.Legend(),
+        ticks=mat_objs.Ticks(),
+        labels=mat_objs.Labels(),
+        output=mat_objs.Output(),
         origin_scatterer=mat_objs.Scatterer(),
         mask_scatterer=mat_objs.Scatterer(),
         border_scatterer=mat_objs.Scatterer(),
-            grid_scatterer=mat_objs.Scatterer(),
+        grid_scatterer=mat_objs.Scatterer(),
         positions_scatterer=mat_objs.Scatterer(),
+        index_scatterer=mat_objs.Scatterer(),
         liner=mat_objs.Liner(),
     ):
 
@@ -913,6 +912,7 @@ class SubPlotter(AbstractPlotter):
             border_scatterer=border_scatterer,
             grid_scatterer=grid_scatterer,
             positions_scatterer=positions_scatterer,
+            index_scatterer=index_scatterer,
             liner=liner,
         )
 
@@ -1185,7 +1185,7 @@ def set_labels(func):
         kpc_per_arcsec = kpc_per_arcsec_of_object_from_dictionary(dictionary=kwargs)
 
         plotter = plotter.plotter_with_new_units(
-            units=mat_objs.Units(conversion_factor=kpc_per_arcsec),
+            units=mat_objs.Units(conversion_factor=kpc_per_arcsec)
         )
 
         kwargs[plotter_key] = plotter
@@ -1196,13 +1196,43 @@ def set_labels(func):
 
 
 def plot_array(
-        array,
-        mask=None,
-        lines=None,
-        positions=None,
-        grid=None,
-        include_origin=False,
-        include_border=False,
-        plotter=Plotter()):
+    array,
+    mask=None,
+    lines=None,
+    positions=None,
+    grid=None,
+    include_origin=False,
+    include_border=False,
+    plotter=Plotter(),
+):
 
-    plotter.plot_array(array=array, mask=mask, lines=lines, positions=positions, grid=grid, include_origin=include_origin, include_border=include_border)
+    plotter.plot_array(
+        array=array,
+        mask=mask,
+        lines=lines,
+        positions=positions,
+        grid=grid,
+        include_origin=include_origin,
+        include_border=include_border,
+    )
+
+def plot_grid(
+    grid,
+        color_array=None,
+        axis_limits=None,
+        indexes=None,
+        lines=None,
+        symmetric_around_centre=True,
+        bypass_limits=False,
+    plotter=Plotter(),
+):
+
+    plotter.plot_grid(
+        grid=grid,
+        color_array=color_array,
+        axis_limits=axis_limits,
+        indexes=indexes,
+        lines=lines,
+        symmetric_around_centre=symmetric_around_centre,
+        bypass_limits=bypass_limits,
+    )

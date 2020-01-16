@@ -1,7 +1,5 @@
 import autoarray as aa
-import autoarray.plotters as aplt
-
-plotter = aplt.Plotter(mask_scatterer=aplt.Scatterer(size=10, marker="x", color="k"))
+import autoarray.plot as aplt
 
 array = aa.array.ones(shape_2d=(31, 31), pixel_scales=(1.0, 1.0), sub_size=2)
 array[0] = 3.0
@@ -13,4 +11,4 @@ mask = aa.mask.circular(
     centre=(2.0, 2.0),
 )
 
-plotter.plot_array(array=array, mask=mask)
+aplt.array(array=array, mask=mask, include_border=True)

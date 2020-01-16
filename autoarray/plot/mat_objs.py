@@ -15,7 +15,6 @@ from autoarray import exc
 
 
 class Units(object):
-
     def __init__(self, use_scaled=None, conversion_factor=None, in_kpc=None):
 
         self.use_scaled = use_scaled
@@ -42,8 +41,11 @@ class Units(object):
         except:
             in_kpc = None
 
-
-        return Units(use_scaled=use_scaled, conversion_factor=units.conversion_factor, in_kpc=in_kpc)
+        return Units(
+            use_scaled=use_scaled,
+            conversion_factor=units.conversion_factor,
+            in_kpc=in_kpc,
+        )
 
 
 class Figure(object):
@@ -291,12 +293,7 @@ class ColorBar(object):
 
 class Ticks(object):
     def __init__(
-        self,
-        ysize=None,
-        xsize=None,
-        y_manual=None,
-        x_manual=None,
-        units=Units(),
+        self, ysize=None, xsize=None, y_manual=None, x_manual=None, units=Units()
     ):
 
         self.ysize = ysize
@@ -318,15 +315,14 @@ class Ticks(object):
         )
 
         return Ticks(
-            ysize=ysize, xsize=xsize, y_manual=ticks.y_manual, x_manual=ticks.x_manual, units=units,
+            ysize=ysize,
+            xsize=xsize,
+            y_manual=ticks.y_manual,
+            x_manual=ticks.x_manual,
+            units=units,
         )
 
-    def set_yticks(
-        self,
-        array,
-        extent,
-        symmetric_around_centre=False,
-    ):
+    def set_yticks(self, array, extent, symmetric_around_centre=False):
         """Get the extent of the dimensions of the array in the unit_label of the figure (e.g. arc-seconds or kpc).
 
         This is used to set the extent of the array and thus the y / x axis limits.
@@ -375,12 +371,7 @@ class Ticks(object):
 
         plt.yticks(ticks=yticks, labels=ytick_labels)
 
-    def set_xticks(
-        self,
-        array,
-        extent,
-        symmetric_around_centre=False,
-    ):
+    def set_xticks(self, array, extent, symmetric_around_centre=False):
         """Get the extent of the dimensions of the array in the unit_label of the figure (e.g. arc-seconds or kpc).
 
         This is used to set the extent of the array and thus the y / x axis limits.
@@ -636,11 +627,7 @@ class Labels(object):
 
 
 class Legend(object):
-    
-    def __init__(
-        self,
-        include=None, fontsize=None,
-    ):
+    def __init__(self, include=None, fontsize=None):
 
         self.include = include
         self.fontsize = fontsize
@@ -660,9 +647,7 @@ class Legend(object):
             else load_func("legend", "fontsize", int)
         )
 
-        return Legend(
-            include=include, fontsize=fontsize
-        )
+        return Legend(include=include, fontsize=fontsize)
 
     def set(self):
         if self.include:
@@ -769,25 +754,32 @@ class Output(object):
 def is_grids_list_of_grids(grids):
 
     if isinstance(grids, list):
-        if any(isinstance(i, tuple) for i in grids) or any(isinstance(i, np.ndarray) for i in grids):
+        if any(isinstance(i, tuple) for i in grids) or any(
+            isinstance(i, np.ndarray) for i in grids
+        ):
             return False
         elif any(isinstance(i, list) for i in grids):
             return True
         else:
-            raise exc.PlottingException("The grid entered into scatter_grid is a list of values, but its data-structure"
-                                        "cannot be determined so as to make a scatter plot")
+            raise exc.PlottingException(
+                "The grid entered into scatter_grid is a list of values, but its data-structure"
+                "cannot be determined so as to make a scatter plot"
+            )
     elif isinstance(grids, np.ndarray):
         if len(grids.shape) == 2:
             return False
         else:
-            raise exc.PlottingException("The input grid into scatter_Grid is not 2D and therefore "
-                                        "cannot be plotted using scatter.")
+            raise exc.PlottingException(
+                "The input grid into scatter_Grid is not 2D and therefore "
+                "cannot be plotted using scatter."
+            )
     else:
-        raise exc.PlottingException("The grid passed into scatter_grid is not a list or a ndarray.")
+        raise exc.PlottingException(
+            "The grid passed into scatter_grid is not a list or a ndarray."
+        )
 
 
 class Scatterer(object):
-
     def __init__(self, size=None, marker=None, color=None):
 
         self.size = size
@@ -828,7 +820,7 @@ class Scatterer(object):
                 x=np.asarray(grids)[:, 1],
                 s=self.size,
                 c=self.color,
-                marker=self.marker
+                marker=self.marker,
             )
 
         else:
@@ -859,22 +851,28 @@ class Scatterer(object):
                 s=self.size,
                 c=color_array,
                 marker=self.marker,
-                cmap=cmap
+                cmap=cmap,
             )
 
         else:
 
-            raise exc.PlottingException("Cannot plot colorred grid if input grid is a list of grids.")
+            raise exc.PlottingException(
+                "Cannot plot colorred grid if input grid is a list of grids."
+            )
 
     def scatter_grid_indexes(self, grid, indexes):
 
         if not isinstance(grid, np.ndarray):
-            raise exc.PlottingException("The grid passed into scatter_grid_indexes is not a ndarray and thus its"
-                                        "1D indexes cannot be marked and plotted.")
+            raise exc.PlottingException(
+                "The grid passed into scatter_grid_indexes is not a ndarray and thus its"
+                "1D indexes cannot be marked and plotted."
+            )
 
         if len(grid.shape) != 2:
-            raise exc.PlottingException("The grid passed into scatter_grid_indexes is not 2D (e.g. a flattened 1D"
-                                        "grid) and thus its 1D indexes cannot be marked.")
+            raise exc.PlottingException(
+                "The grid passed into scatter_grid_indexes is not 2D (e.g. a flattened 1D"
+                "grid) and thus its 1D indexes cannot be marked."
+            )
 
         if isinstance(indexes, list):
             if not any(isinstance(i, list) for i in indexes):
@@ -887,38 +885,31 @@ class Scatterer(object):
                 x=np.asarray(grid[index_list, 1]),
                 s=self.size,
                 color=next(color),
-                marker=self.marker
+                marker=self.marker,
             )
 
 
 class Liner(object):
-
     def __init__(self, width=None, style=None, color=None, pointsize=None):
-        
+
         self.width = width
         self.style = style
         self.color = color
         self.pointsize = pointsize
-        
+
     @classmethod
     def from_instance_and_config(cls, liner, section, load_func):
 
         width = (
-            liner.width
-            if liner.width is not None
-            else load_func(section, "width", int)
+            liner.width if liner.width is not None else load_func(section, "width", int)
         )
 
         style = (
-            liner.style
-            if liner.style is not None
-            else load_func(section, "style", str)
+            liner.style if liner.style is not None else load_func(section, "style", str)
         )
 
         color = (
-            liner.color
-            if liner.color is not None
-            else load_func(section, "color", str)
+            liner.color if liner.color is not None else load_func(section, "color", str)
         )
 
         pointsize = (
@@ -957,7 +948,13 @@ class Liner(object):
             vertical_lines, vertical_line_labels
         ):
 
-            plt.axvline(x=vertical_line, label=vertical_line_label, c=self.color, lw=self.width, ls=self.style)
+            plt.axvline(
+                x=vertical_line,
+                label=vertical_line_label,
+                c=self.color,
+                lw=self.width,
+                ls=self.style,
+            )
 
     def draw_grids(self, grids):
         """Plot the liness of the mask or the array on the figure.
@@ -985,7 +982,7 @@ class Liner(object):
                 np.asarray(grids)[:, 0],
                 c=self.color,
                 lw=self.width,
-                ls=self.style
+                ls=self.style,
             )
 
         else:
@@ -1006,19 +1003,15 @@ class Liner(object):
 
     def draw_rectangular_grid_lines(self, extent, shape_2d):
 
-        ys = np.linspace(
-            extent[0],
-            extent[1],
-            shape_2d[0] + 1,
-        )
-        xs = np.linspace(
-            extent[2],
-            extent[3],
-            shape_2d[1] + 1,
-        )
+        ys = np.linspace(extent[0], extent[1], shape_2d[0] + 1)
+        xs = np.linspace(extent[2], extent[3], shape_2d[1] + 1)
 
         # grid lines
         for x in xs:
-            plt.plot([x, x], [ys[0], ys[-1]], color=self.color, lw=self.width, ls=self.style)
+            plt.plot(
+                [x, x], [ys[0], ys[-1]], color=self.color, lw=self.width, ls=self.style
+            )
         for y in ys:
-            plt.plot([xs[0], xs[-1]], [y, y], color=self.color, lw=self.width, ls=self.style)
+            plt.plot(
+                [xs[0], xs[-1]], [y, y], color=self.color, lw=self.width, ls=self.style
+            )

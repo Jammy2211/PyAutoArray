@@ -21,12 +21,11 @@ def set_config_path():
 
 
 class TestFigure:
-
     def test__aspect_from_shape_2d(self):
 
         figure = aplt.Figure(aspect="auto")
 
-        aspect = figure.aspect_from_shape_2d(shape_2d=(2,2))
+        aspect = figure.aspect_from_shape_2d(shape_2d=(2, 2))
 
         assert aspect == "auto"
 
@@ -54,7 +53,6 @@ class TestFigure:
 
 
 class TestColorMap:
-
     def test__norm_from_array__uses_input_norm_min_and_max_if_input(self):
 
         cmap = aplt.ColorMap(norm_min=0.0, norm_max=1.0, norm="linear")
@@ -70,10 +68,16 @@ class TestColorMap:
         norm = cmap.norm_from_array(array=None)
 
         assert isinstance(norm, colors.LogNorm)
-        assert norm.vmin == 1.0e-4 # Increased from 0.0 to ensure min isn't inf
+        assert norm.vmin == 1.0e-4  # Increased from 0.0 to ensure min isn't inf
         assert norm.vmax == 1.0
 
-        cmap = aplt.ColorMap(norm_min=0.0, norm_max=1.0, linthresh=2.0, linscale=3.0, norm="symmetric_log")
+        cmap = aplt.ColorMap(
+            norm_min=0.0,
+            norm_max=1.0,
+            linthresh=2.0,
+            linscale=3.0,
+            norm="symmetric_log",
+        )
 
         norm = cmap.norm_from_array(array=None)
 
@@ -82,9 +86,11 @@ class TestColorMap:
         assert norm.vmax == 1.0
         assert norm.linthresh == 2.0
 
-    def test__norm_from_array__uses_array_to_get_norm_min_and_max_if_no_manual_input(self):
+    def test__norm_from_array__uses_array_to_get_norm_min_and_max_if_no_manual_input(
+        self
+    ):
 
-        array = aa.array.ones(shape_2d=(2,2))
+        array = aa.array.ones(shape_2d=(2, 2))
         array[0] = 0.0
 
         cmap = aplt.ColorMap(norm_min=None, norm_max=None, norm="linear")
@@ -100,10 +106,16 @@ class TestColorMap:
         norm = cmap.norm_from_array(array=array)
 
         assert isinstance(norm, colors.LogNorm)
-        assert norm.vmin == 1.0e-4 # Increased from 0.0 to ensure min isn't inf
+        assert norm.vmin == 1.0e-4  # Increased from 0.0 to ensure min isn't inf
         assert norm.vmax == 1.0
 
-        cmap = aplt.ColorMap(norm_min=None, norm_max=None, linthresh=2.0, linscale=3.0, norm="symmetric_log")
+        cmap = aplt.ColorMap(
+            norm_min=None,
+            norm_max=None,
+            linthresh=2.0,
+            linscale=3.0,
+            norm="symmetric_log",
+        )
 
         norm = cmap.norm_from_array(array=array)
 
@@ -114,82 +126,148 @@ class TestColorMap:
 
 
 class TestColorBar:
-
     def test__plot__works_for_reasonable_range_of_values(self):
 
         figure = aplt.Figure()
 
         figure.open()
-        plt.imshow(np.ones((2,2)))
+        plt.imshow(np.ones((2, 2)))
         cb = aplt.ColorBar(ticksize=1, fraction=1.0, pad=2.0)
         cb.set()
         figure.close()
 
         figure.open()
-        plt.imshow(np.ones((2,2)))
-        cb = aplt.ColorBar(ticksize=1, fraction=0.1, pad=0.5, tick_values=[0.25, 0.5, 0.75],
-                               tick_labels=[1.0, 2.0, 3.0])
+        plt.imshow(np.ones((2, 2)))
+        cb = aplt.ColorBar(
+            ticksize=1,
+            fraction=0.1,
+            pad=0.5,
+            tick_values=[0.25, 0.5, 0.75],
+            tick_labels=[1.0, 2.0, 3.0],
+        )
         cb.set()
         figure.close()
 
         figure.open()
-        plt.imshow(np.ones((2,2)))
+        plt.imshow(np.ones((2, 2)))
         cb = aplt.ColorBar(ticksize=1, fraction=0.1, pad=0.5)
         cb.set_with_values(cmap=aplt.ColorMap().cmap, color_values=[1.0, 2.0, 3.0])
         figure.close()
 
 
 class TestTicks:
-
     def test__set_yx_ticks__works_for_good_values(self):
 
-        array = aa.array.ones(shape_2d=(2,2), pixel_scales=1.0)
+        array = aa.array.ones(shape_2d=(2, 2), pixel_scales=1.0)
 
         ticks = aplt.Ticks(
             ysize=34,
             xsize=35,
-            units=aplt.Units(use_scaled=True, conversion_factor=None)
+            units=aplt.Units(use_scaled=True, conversion_factor=None),
         )
 
-        ticks.set_yticks(array=array, extent=array.extent_of_zoomed_array(buffer=1), symmetric_around_centre=False)
-        ticks.set_xticks(array=array, extent=array.extent_of_zoomed_array(buffer=1), symmetric_around_centre=False)
-        ticks.set_yticks(array=array, extent=array.extent_of_zoomed_array(buffer=1), symmetric_around_centre=True)
-        ticks.set_xticks(array=array, extent=array.extent_of_zoomed_array(buffer=1), symmetric_around_centre=True)
-
-        ticks = aplt.Ticks(
-            ysize=34,
-            xsize=35,
-            units=aplt.Units(use_scaled=False, conversion_factor=None)
+        ticks.set_yticks(
+            array=array,
+            extent=array.extent_of_zoomed_array(buffer=1),
+            symmetric_around_centre=False,
+        )
+        ticks.set_xticks(
+            array=array,
+            extent=array.extent_of_zoomed_array(buffer=1),
+            symmetric_around_centre=False,
+        )
+        ticks.set_yticks(
+            array=array,
+            extent=array.extent_of_zoomed_array(buffer=1),
+            symmetric_around_centre=True,
+        )
+        ticks.set_xticks(
+            array=array,
+            extent=array.extent_of_zoomed_array(buffer=1),
+            symmetric_around_centre=True,
         )
 
-        ticks.set_yticks(array=array, extent=array.extent_of_zoomed_array(buffer=1), symmetric_around_centre=False)
-        ticks.set_xticks(array=array, extent=array.extent_of_zoomed_array(buffer=1), symmetric_around_centre=False)
-        ticks.set_yticks(array=array, extent=array.extent_of_zoomed_array(buffer=1), symmetric_around_centre=True)
-        ticks.set_xticks(array=array, extent=array.extent_of_zoomed_array(buffer=1), symmetric_around_centre=True)
+        ticks = aplt.Ticks(
+            ysize=34,
+            xsize=35,
+            units=aplt.Units(use_scaled=False, conversion_factor=None),
+        )
+
+        ticks.set_yticks(
+            array=array,
+            extent=array.extent_of_zoomed_array(buffer=1),
+            symmetric_around_centre=False,
+        )
+        ticks.set_xticks(
+            array=array,
+            extent=array.extent_of_zoomed_array(buffer=1),
+            symmetric_around_centre=False,
+        )
+        ticks.set_yticks(
+            array=array,
+            extent=array.extent_of_zoomed_array(buffer=1),
+            symmetric_around_centre=True,
+        )
+        ticks.set_xticks(
+            array=array,
+            extent=array.extent_of_zoomed_array(buffer=1),
+            symmetric_around_centre=True,
+        )
+
+        ticks = aplt.Ticks(
+            ysize=34, xsize=35, units=aplt.Units(use_scaled=True, conversion_factor=2.0)
+        )
+
+        ticks.set_yticks(
+            array=array,
+            extent=array.extent_of_zoomed_array(buffer=1),
+            symmetric_around_centre=False,
+        )
+        ticks.set_xticks(
+            array=array,
+            extent=array.extent_of_zoomed_array(buffer=1),
+            symmetric_around_centre=False,
+        )
+        ticks.set_yticks(
+            array=array,
+            extent=array.extent_of_zoomed_array(buffer=1),
+            symmetric_around_centre=True,
+        )
+        ticks.set_xticks(
+            array=array,
+            extent=array.extent_of_zoomed_array(buffer=1),
+            symmetric_around_centre=True,
+        )
 
         ticks = aplt.Ticks(
             ysize=34,
             xsize=35,
-            units=aplt.Units(use_scaled=True, conversion_factor=2.0))
+            units=aplt.Units(use_scaled=False, conversion_factor=2.0),
+        )
 
-        ticks.set_yticks(array=array, extent=array.extent_of_zoomed_array(buffer=1), symmetric_around_centre=False)
-        ticks.set_xticks(array=array, extent=array.extent_of_zoomed_array(buffer=1), symmetric_around_centre=False)
-        ticks.set_yticks(array=array, extent=array.extent_of_zoomed_array(buffer=1), symmetric_around_centre=True)
-        ticks.set_xticks(array=array, extent=array.extent_of_zoomed_array(buffer=1), symmetric_around_centre=True)
-
-        ticks = aplt.Ticks(
-            ysize=34,
-            xsize=35,
-            units=aplt.Units(use_scaled=False, conversion_factor=2.0))
-
-        ticks.set_yticks(array=array, extent=array.extent_of_zoomed_array(buffer=1), symmetric_around_centre=False)
-        ticks.set_xticks(array=array, extent=array.extent_of_zoomed_array(buffer=1), symmetric_around_centre=False)
-        ticks.set_yticks(array=array, extent=array.extent_of_zoomed_array(buffer=1), symmetric_around_centre=True)
-        ticks.set_xticks(array=array, extent=array.extent_of_zoomed_array(buffer=1), symmetric_around_centre=True)
+        ticks.set_yticks(
+            array=array,
+            extent=array.extent_of_zoomed_array(buffer=1),
+            symmetric_around_centre=False,
+        )
+        ticks.set_xticks(
+            array=array,
+            extent=array.extent_of_zoomed_array(buffer=1),
+            symmetric_around_centre=False,
+        )
+        ticks.set_yticks(
+            array=array,
+            extent=array.extent_of_zoomed_array(buffer=1),
+            symmetric_around_centre=True,
+        )
+        ticks.set_xticks(
+            array=array,
+            extent=array.extent_of_zoomed_array(buffer=1),
+            symmetric_around_centre=True,
+        )
 
 
 class TestLabels:
-
     def test__yx_units_use_plot_in_kpc_if_it_is_passed(self):
 
         labels = aplt.Labels(units=aplt.Units(in_kpc=True))
@@ -292,7 +370,6 @@ class TestLabels:
 
 
 class TestLegend:
-
     def test__set_legend_works_for_plot(self):
 
         figure = aplt.Figure(aspect="auto")
@@ -301,7 +378,9 @@ class TestLegend:
 
         liner = aplt.Liner(width=2, style="-", color="k", pointsize=2)
 
-        liner.draw_y_vs_x(y=[1.0, 2.0, 3.0], x=[1.0, 2.0, 3.0], plot_axis_type="linear", label="hi")
+        liner.draw_y_vs_x(
+            y=[1.0, 2.0, 3.0], x=[1.0, 2.0, 3.0], plot_axis_type="linear", label="hi"
+        )
 
         legend = aplt.Legend(include=True, fontsize=1)
 
@@ -342,13 +421,14 @@ class TestOutput:
 
 
 class TestScatterer:
-
     def test__scatter_grid__lists_of_coordinates_or_equivalent_2d_grids(self):
 
         scatterer = aplt.Scatterer(size=2, marker="x", color="k")
 
         scatterer.scatter_grids(grids=[(1.0, 1.0), (2.0, 2.0)])
-        scatterer.scatter_grids(grids=aa.grid.uniform(shape_2d=(3, 3), pixel_scales=1.0))
+        scatterer.scatter_grids(
+            grids=aa.grid.uniform(shape_2d=(3, 3), pixel_scales=1.0)
+        )
 
     def test__scatter_grid__lists_of_lists_of_coordinates_or_equivalent_2d_grids(self):
 
@@ -358,42 +438,63 @@ class TestScatterer:
         scatterer.scatter_grids(grids=[[(1.0, 1.0), (2.0, 2.0)], [(3.0, 3.0)]])
         scatterer.scatter_grids(grids=[[(1.0, 1.0), (2.0, 2.0)], []])
         scatterer.scatter_grids(grids=[[(1.0, 1.0), (2.0, 2.0)], [None]])
-        scatterer.scatter_grids(grids=[aa.grid.uniform(shape_2d=(3, 3), pixel_scales=1.0),
-                                       aa.grid.uniform(shape_2d=(3, 3), pixel_scales=1.0)])
+        scatterer.scatter_grids(
+            grids=[
+                aa.grid.uniform(shape_2d=(3, 3), pixel_scales=1.0),
+                aa.grid.uniform(shape_2d=(3, 3), pixel_scales=1.0),
+            ]
+        )
 
-    def test__scatter_colored_grid__lists_of_coordinates_or_equivalent_2d_grids__with_color_array(self):
+    def test__scatter_colored_grid__lists_of_coordinates_or_equivalent_2d_grids__with_color_array(
+        self
+    ):
 
         scatterer = aplt.Scatterer(size=2, marker="x", color="k")
 
         cmap = plt.get_cmap("jet")
 
-        scatterer.scatter_colored_grid(grid=[(1.0, 1.0), (2.0, 2.0), (3.0, 3.0), (4.0, 4.0), (5.0, 5.0)], color_array=np.array([2.0, 2.0,2.0, 2.0, 2.0]), cmap=cmap)
-        scatterer.scatter_colored_grid(grid=aa.grid.uniform(shape_2d=(3, 2), pixel_scales=1.0), color_array=np.array([2.0, 2.0, 2.0, 2.0, 2.0, 2.0]), cmap=cmap)
+        scatterer.scatter_colored_grid(
+            grid=[(1.0, 1.0), (2.0, 2.0), (3.0, 3.0), (4.0, 4.0), (5.0, 5.0)],
+            color_array=np.array([2.0, 2.0, 2.0, 2.0, 2.0]),
+            cmap=cmap,
+        )
+        scatterer.scatter_colored_grid(
+            grid=aa.grid.uniform(shape_2d=(3, 2), pixel_scales=1.0),
+            color_array=np.array([2.0, 2.0, 2.0, 2.0, 2.0, 2.0]),
+            cmap=cmap,
+        )
 
     def test__scatter_grid_indexes__input_grid_is_ndarray_and_indexes_are_valid(self):
 
         scatterer = aplt.Scatterer(size=2, marker="x", color="k")
 
         scatterer.scatter_grid_indexes(
-            grid=aa.grid.uniform(shape_2d=(3, 3), pixel_scales=1.0), indexes=[0, 1, 2])
+            grid=aa.grid.uniform(shape_2d=(3, 3), pixel_scales=1.0), indexes=[0, 1, 2]
+        )
 
         scatterer.scatter_grid_indexes(
-            grid=aa.grid.uniform(shape_2d=(3, 3), pixel_scales=1.0), indexes=[[0, 1, 2]])
+            grid=aa.grid.uniform(shape_2d=(3, 3), pixel_scales=1.0), indexes=[[0, 1, 2]]
+        )
 
         scatterer.scatter_grid_indexes(
-            grid=aa.grid.uniform(shape_2d=(3, 3), pixel_scales=1.0), indexes=[[0, 1], [2]])
-        
+            grid=aa.grid.uniform(shape_2d=(3, 3), pixel_scales=1.0),
+            indexes=[[0, 1], [2]],
+        )
+
 
 class TestLiner:
-
     def test__draw_y_vs_x__works_for_reasonable_values(self):
 
         liner = aplt.Liner(width=2, style="-", color="k", pointsize=2)
 
         liner.draw_y_vs_x(y=[1.0, 2.0, 3.0], x=[1.0, 2.0, 3.0], plot_axis_type="linear")
-        liner.draw_y_vs_x(y=[1.0, 2.0, 3.0], x=[1.0, 2.0, 3.0], plot_axis_type="semilogy")
+        liner.draw_y_vs_x(
+            y=[1.0, 2.0, 3.0], x=[1.0, 2.0, 3.0], plot_axis_type="semilogy"
+        )
         liner.draw_y_vs_x(y=[1.0, 2.0, 3.0], x=[1.0, 2.0, 3.0], plot_axis_type="loglog")
-        liner.draw_y_vs_x(y=[1.0, 2.0, 3.0], x=[1.0, 2.0, 3.0], plot_axis_type="scatter")
+        liner.draw_y_vs_x(
+            y=[1.0, 2.0, 3.0], x=[1.0, 2.0, 3.0], plot_axis_type="scatter"
+        )
 
     def test__draw_vertical_lines__works_for_reasonable_values(self):
 
@@ -402,7 +503,9 @@ class TestLiner:
         liner.draw_vertical_lines(vertical_lines=[[0.0]])
         liner.draw_vertical_lines(vertical_lines=[[1.0], [2.0]])
         liner.draw_vertical_lines(vertical_lines=[[0.0]], vertical_line_labels=["hi"])
-        liner.draw_vertical_lines(vertical_lines=[[1.0], [2.0]], vertical_line_labels=["hi1", "hi2"])
+        liner.draw_vertical_lines(
+            vertical_lines=[[1.0], [2.0]], vertical_line_labels=["hi1", "hi2"]
+        )
 
     def test__draw_grid__lists_of_coordinates_or_equivalent_2d_grids(self):
 
@@ -411,7 +514,12 @@ class TestLiner:
         liner.draw_grids(grids=[(1.0, 1.0), (2.0, 2.0)])
         liner.draw_grids(grids=aa.grid.uniform(shape_2d=(3, 3), pixel_scales=1.0))
         liner.draw_grids(grids=[[(1.0, 1.0), (2.0, 2.0)], [(3.0, 3.0), (4.0, 4.0)]])
-        liner.draw_grids(grids=[aa.grid.uniform(shape_2d=(3, 3), pixel_scales=1.0), aa.grid.uniform(shape_2d=(3, 3), pixel_scales=1.0)])
+        liner.draw_grids(
+            grids=[
+                aa.grid.uniform(shape_2d=(3, 3), pixel_scales=1.0),
+                aa.grid.uniform(shape_2d=(3, 3), pixel_scales=1.0),
+            ]
+        )
 
     def test__draw_grid__lists_of_lists_of_coordinates_or_equivalent_2d_grids(self):
 
@@ -421,12 +529,18 @@ class TestLiner:
         liner.draw_grids(grids=[[(1.0, 1.0), (2.0, 2.0)], [(3.0, 3.0)]])
         liner.draw_grids(grids=[[(1.0, 1.0), (2.0, 2.0)], []])
         liner.draw_grids(grids=[[(1.0, 1.0), (2.0, 2.0)], [None]])
-        liner.draw_grids(grids=[aa.grid.uniform(shape_2d=(3, 3), pixel_scales=1.0),
-                                       aa.grid.uniform(shape_2d=(3, 3), pixel_scales=1.0)])
+        liner.draw_grids(
+            grids=[
+                aa.grid.uniform(shape_2d=(3, 3), pixel_scales=1.0),
+                aa.grid.uniform(shape_2d=(3, 3), pixel_scales=1.0),
+            ]
+        )
 
     def test__draw_rectangular_grid_lines__draws_for_valid_extent_and_shape(self):
 
         liner = aplt.Liner(width=2, style="--", color="k")
 
-        liner.draw_rectangular_grid_lines(extent=[0.0, 1.0, 0.0, 1.0], shape_2d=(3,2))
-        liner.draw_rectangular_grid_lines(extent=[-4.0, 8.0, -3.0, 10.0], shape_2d=(8,3))
+        liner.draw_rectangular_grid_lines(extent=[0.0, 1.0, 0.0, 1.0], shape_2d=(3, 2))
+        liner.draw_rectangular_grid_lines(
+            extent=[-4.0, 8.0, -3.0, 10.0], shape_2d=(8, 3)
+        )
