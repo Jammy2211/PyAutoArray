@@ -46,6 +46,7 @@ class AbstractPlotter(object):
             ticks=mat_objs.Ticks(),
             labels=mat_objs.Labels(),
             output=mat_objs.Output(),
+        origin_scatterer=mat_objs.Scatterer(),
         mask_scatterer=mat_objs.Scatterer(),
         border_scatterer=mat_objs.Scatterer(),
         grid_scatterer=mat_objs.Scatterer(),
@@ -89,6 +90,9 @@ class AbstractPlotter(object):
             load_func=load_setting_func,
             is_sub_plotter=self.is_sub_plotter,
         )
+
+        self.origin_scatterer = mat_objs.Scatterer.from_instance_and_config(
+            scatterer=origin_scatterer, section="origin", load_func=load_setting_func)
 
         self.mask_scatterer = mat_objs.Scatterer.from_instance_and_config(
             scatterer=mask_scatterer, section="mask", load_func=load_setting_func)
@@ -267,7 +271,8 @@ class AbstractPlotter(object):
         self.labels.set_xunits(include_brackets=True)
 
         self.cb.set()
-        self.scatter_origin(array=array, include_origin=include_origin)
+        if include_origin:
+            self.origin_scatterer.scatter_grids(grids=[array.origin])
 
         if mask is not None:
             self.mask_scatterer.scatter_grids(grids=mask.geometry.edge_grid.in_1d_binned)
@@ -283,7 +288,7 @@ class AbstractPlotter(object):
 
         if lines is not None:
             self.liner.draw_grids(grids=lines)
-        self.scatter_centres(centres=centres)
+
         self.output.to_figure(structure=array)
         self.figure.close()
 
@@ -576,61 +581,6 @@ class AbstractPlotter(object):
         self.output.to_figure(structure=None)
         self.figure.close()
 
-    def scatter_origin(self, array, include_origin):
-        """Plot the (y,x) origin ofo the array's coordinates as a 'x'.
-
-        Parameters
-        -----------
-        array : data_type.array.aa.Scaled
-            The 2D array of data_type which is plotted.
-        origin : (float, float).
-            The origin of the coordinate system of the array, which is plotted as an 'x' on the image if input.
-        unit_label : str
-            The label for the unit_label of the y / x axis of the plots.
-        unit_conversion_factor : float or None
-            The conversion factor between arc-seconds and kiloparsecs, required to plotters the unit_label in kpc.
-        """
-        if include_origin:
-            plt.scatter(
-                y=np.asarray(array.origin[0]),
-                x=np.asarray(array.origin[1]),
-                s=80,
-                c="k",
-                marker="x",
-            )
-
-    def scatter_centres(self, centres):
-        """Plot the (y,x) centres (e.g. of a mass profile) on the array as an 'x'.
-
-        Parameters
-        -----------
-        array : data_type.array.aa.Scaled
-            The 2D array of data_type which is plotted.
-        centres : [[tuple]]
-            The list of centres; centres in the same list entry are colored the same.
-        use_scaled_units_label : str
-            The label for the unit_label of the y / x axis of the plots.
-        unit_conversion_factor : float or None
-            The conversion factor between arc-seconds and kiloparsecs, required to plotters the unit_label in kpc.
-        """
-        if centres is not None:
-
-            if not any(isinstance(el, list) for el in centres):
-
-                for centre in centres:
-                    plt.scatter(y=centre[0], x=centre[1], s=300, marker="x")
-
-            else:
-
-                colors = itertools.cycle(["m", "y", "r", "w", "cy", "b", "g", "k"])
-
-                for centres_of_galaxy in centres:
-                    color = next(colors)
-                    for centre in centres_of_galaxy:
-                        plt.scatter(
-                            y=centre[0], x=centre[1], s=300, c=color, marker="x"
-                        )
-
     def set_axis_limits(self, axis_limits, grid, symmetric_around_centre):
         """Set the axis limits of the figure the grid is plotted on.
 
@@ -921,6 +871,7 @@ class Plotter(AbstractPlotter):
         labels=mat_objs.Labels(),
         legend=mat_objs.Legend(),
         output=mat_objs.Output(),
+        origin_scatterer=mat_objs.Scatterer(),
         mask_scatterer=mat_objs.Scatterer(),
         border_scatterer=mat_objs.Scatterer(),
         grid_scatterer=mat_objs.Scatterer(),
@@ -937,6 +888,7 @@ class Plotter(AbstractPlotter):
             ticks=ticks,
             labels=labels,
             output=output,
+            origin_scatterer=origin_scatterer,
             mask_scatterer=mask_scatterer,
             border_scatterer=border_scatterer,
             grid_scatterer=grid_scatterer,
@@ -960,6 +912,7 @@ class SubPlotter(AbstractPlotter):
             ticks=mat_objs.Ticks(),
             labels=mat_objs.Labels(),
             output=mat_objs.Output(),
+        origin_scatterer=mat_objs.Scatterer(),
         mask_scatterer=mat_objs.Scatterer(),
         border_scatterer=mat_objs.Scatterer(),
             grid_scatterer=mat_objs.Scatterer(),
@@ -976,6 +929,7 @@ class SubPlotter(AbstractPlotter):
             ticks=ticks,
             labels=labels,
             output=output,
+            origin_scatterer=origin_scatterer,
             mask_scatterer=mask_scatterer,
             border_scatterer=border_scatterer,
             grid_scatterer=grid_scatterer,
