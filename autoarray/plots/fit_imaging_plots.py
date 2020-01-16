@@ -153,7 +153,7 @@ def image(
         grid=grid,
         mask=include.mask_from_fit(fit=fit),
         lines=lines,
-        points=points,
+        positions=points,
     )
 
 
@@ -171,7 +171,7 @@ def noise_map(fit, points=None, include=plotters.Include(), plotter=plotters.Plo
         If true, the origin of the datas's coordinate system is plotted as a 'x'.
     """
     plotter.plot_array(
-        array=fit.noise_map, mask=include.mask_from_fit(fit=fit), points=points
+        array=fit.noise_map, mask=include.mask_from_fit(fit=fit), positions=points
     )
 
 
@@ -193,7 +193,7 @@ def signal_to_noise_map(
     plotter.plot_array(
         array=fit.signal_to_noise_map,
         mask=include.mask_from_fit(fit=fit),
-        points=points,
+        positions=points,
     )
 
 
@@ -216,7 +216,7 @@ def model_image(
         array=fit.model_data,
         mask=include.mask_from_fit(fit=fit),
         lines=lines,
-        points=points,
+        positions=points,
     )
 
 
@@ -236,7 +236,7 @@ def residual_map(
         The index of the datas in the datas-set of which the residual_map are plotted.
     """
     plotter.plot_array(
-        array=fit.residual_map, mask=include.mask_from_fit(fit=fit), points=points
+        array=fit.residual_map, mask=include.mask_from_fit(fit=fit), positions=points
     )
 
 
@@ -258,7 +258,7 @@ def normalized_residual_map(
     plotter.plot_array(
         array=fit.normalized_residual_map,
         mask=include.mask_from_fit(fit=fit),
-        points=points,
+        positions=points,
     )
 
 
@@ -278,5 +278,5 @@ def chi_squared_map(
         The index of the datas in the datas-set of which the chi-squareds are plotted.
     """
     plotter.plot_array(
-        array=fit.chi_squared_map, mask=include.mask_from_fit(fit=fit), points=points
+        array=fit.chi_squared_map, mask=include.mask_from_fit(fit=fit), positions=points
     )

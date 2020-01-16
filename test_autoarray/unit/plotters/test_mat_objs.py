@@ -1,6 +1,6 @@
 from os import path
-import autoarray as aa
 from autoarray import conf
+import autoarray as aa
 from autoarray.plotters import mat_objs
 
 import matplotlib.pyplot as plt
@@ -323,9 +323,81 @@ class TestOutput:
 
 class TestScatterer:
 
-    def test__works_for_sensible_grids(self):
+    def test__scatter_grid__lists_of_coordinates_or_equivalent_2d_grids(self):
 
         scatterer = mat_objs.Scatterer(size=2, marker="x", color="k")
 
-        scatterer.plot(grid=[(1.0, 1.0), (2.0, 2.0)])
-        scatterer.plot(grid=aa.grid.uniform(shape_2d=(3,3), pixel_scales=1.0))
+        scatterer.scatter_grids(grids=[(1.0, 1.0), (2.0, 2.0)])
+        scatterer.scatter_grids(grids=aa.grid.uniform(shape_2d=(3, 3), pixel_scales=1.0))
+
+    def test__scatter_grid__lists_of_lists_of_coordinates_or_equivalent_2d_grids(self):
+
+        scatterer = mat_objs.Scatterer(size=2, marker="x", color="k")
+
+        scatterer.scatter_grids(grids=[[(1.0, 1.0), (2.0, 2.0)]])
+        scatterer.scatter_grids(grids=[[(1.0, 1.0), (2.0, 2.0)], [(3.0, 3.0)]])
+        scatterer.scatter_grids(grids=[[(1.0, 1.0), (2.0, 2.0)], []])
+        scatterer.scatter_grids(grids=[[(1.0, 1.0), (2.0, 2.0)], [None]])
+        scatterer.scatter_grids(grids=[aa.grid.uniform(shape_2d=(3, 3), pixel_scales=1.0),
+                                       aa.grid.uniform(shape_2d=(3, 3), pixel_scales=1.0)])
+
+    def test__scatter_colored_grid__lists_of_coordinates_or_equivalent_2d_grids__with_color_array(self):
+
+        scatterer = mat_objs.Scatterer(size=2, marker="x", color="k")
+
+        cmap = plt.get_cmap("jet")
+
+        scatterer.scatter_colored_grid(grid=[(1.0, 1.0), (2.0, 2.0), (3.0, 3.0), (4.0, 4.0), (5.0, 5.0)], color_array=np.array([2.0, 2.0,2.0, 2.0, 2.0]), cmap=cmap)
+        scatterer.scatter_colored_grid(grid=aa.grid.uniform(shape_2d=(3, 2), pixel_scales=1.0), color_array=np.array([2.0, 2.0, 2.0, 2.0, 2.0, 2.0]), cmap=cmap)
+
+    def test__scatter_grid_indexes__input_grid_is_ndarray_and_indexes_are_valid(self):
+
+        scatterer = mat_objs.Scatterer(size=2, marker="x", color="k")
+
+        scatterer.scatter_grid_indexes(
+            grid=aa.grid.uniform(shape_2d=(3, 3), pixel_scales=1.0), indexes=[0, 1, 2])
+
+        scatterer.scatter_grid_indexes(
+            grid=aa.grid.uniform(shape_2d=(3, 3), pixel_scales=1.0), indexes=[[0, 1, 2]])
+
+        scatterer.scatter_grid_indexes(
+            grid=aa.grid.uniform(shape_2d=(3, 3), pixel_scales=1.0), indexes=[[0, 1], [2]])
+        
+
+class TestLiner:
+
+    def test__draw_y_vs_x__works_for_reasonable_values(self):
+
+        liner = mat_objs.Liner(width=2, style="-", color="k", pointsize=2)
+
+        liner.draw_y_vs_x(y=[1.0, 2.0, 3.0], x=[1.0, 2.0, 3.0], plot_axis_type="linear")
+        liner.draw_y_vs_x(y=[1.0, 2.0, 3.0], x=[1.0, 2.0, 3.0], plot_axis_type="semilogy")
+        liner.draw_y_vs_x(y=[1.0, 2.0, 3.0], x=[1.0, 2.0, 3.0], plot_axis_type="loglog")
+        liner.draw_y_vs_x(y=[1.0, 2.0, 3.0], x=[1.0, 2.0, 3.0], plot_axis_type="scatter")
+
+    def test__draw_vertical_lines__works_for_reasonable_values(self):
+
+        liner = mat_objs.Liner(width=2, style="-", color="k", pointsize=2)
+
+        liner.draw_vertical_lines(vertical_lines=[[0.0]])
+        liner.draw_vertical_lines(vertical_lines=[[1.0], [2.0]])
+        liner.draw_vertical_lines(vertical_lines=[[0.0]], vertical_line_labels=["hi"])
+        liner.draw_vertical_lines(vertical_lines=[[1.0], [2.0]], vertical_line_labels=["hi1", "hi2"])
+
+    def test__draw_grid__lists_of_coordinates_or_equivalent_2d_grids(self):
+
+        liner = mat_objs.Liner(width=2, style="-", color="k")
+
+        liner.draw_grids(grids=[(1.0, 1.0), (2.0, 2.0)])
+        liner.draw_grids(grids=aa.grid.uniform(shape_2d=(3, 3), pixel_scales=1.0))
+
+    def test__draw_grid__lists_of_lists_of_coordinates_or_equivalent_2d_grids(self):
+
+        liner = mat_objs.Liner(width=2, style="--", color="k")
+
+        liner.draw_grids(grids=[[(1.0, 1.0), (2.0, 2.0)]])
+        liner.draw_grids(grids=[[(1.0, 1.0), (2.0, 2.0)], [(3.0, 3.0)]])
+        liner.draw_grids(grids=[[(1.0, 1.0), (2.0, 2.0)], []])
+        liner.draw_grids(grids=[[(1.0, 1.0), (2.0, 2.0)], [None]])
+        liner.draw_grids(grids=[aa.grid.uniform(shape_2d=(3, 3), pixel_scales=1.0),
+                                       aa.grid.uniform(shape_2d=(3, 3), pixel_scales=1.0)])

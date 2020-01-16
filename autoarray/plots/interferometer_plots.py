@@ -157,7 +157,7 @@ def noise_map(interferometer, include=plotters.Include(), plotter=plotters.Plott
     """
 
     plotter.plot_grid(
-        grid=interferometer.visibilities, colors=interferometer.noise_map[:, 0]
+        grid=interferometer.visibilities, color_array=interferometer.noise_map[:, 0]
     )
 
 

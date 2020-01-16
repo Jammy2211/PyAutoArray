@@ -193,7 +193,7 @@ def image(
         include_origin=include.origin,
         grid=grid,
         mask=mask,
-        points=positions,
+        positions=positions,
     )
 
 
@@ -223,7 +223,7 @@ def noise_map(
         include_origin=include.origin,
         grid=grid,
         mask=mask,
-        points=positions,
+        positions=positions,
     )
 
 
@@ -253,7 +253,7 @@ def psf(
         include_origin=include.origin,
         grid=grid,
         mask=mask,
-        points=positions,
+        positions=positions,
     )
 
 
@@ -282,7 +282,7 @@ def signal_to_noise_map(
         include_origin=include.origin,
         grid=grid,
         mask=mask,
-        points=positions,
+        positions=positions,
     )
 
 
@@ -311,7 +311,7 @@ def absolute_signal_to_noise_map(
         include_origin=include.origin,
         grid=grid,
         mask=mask,
-        points=positions,
+        positions=positions,
     )
 
 
@@ -340,5 +340,5 @@ def potential_chi_squared_map(
         include_origin=include.origin,
         grid=grid,
         mask=mask,
-        points=positions,
+        positions=positions,
     )

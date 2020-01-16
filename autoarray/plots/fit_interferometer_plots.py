@@ -175,7 +175,7 @@ def noise_map(fit, include=plotters.Include(), plotter=plotters.Plotter()):
     origin : True
         If true, the origin of the datas's coordinate system is plotted as a 'x'.
     """
-    plotter.plot_grid(grid=fit.visibilities, colors=fit.noise_map[:, 0])
+    plotter.plot_grid(grid=fit.visibilities, color_array=fit.noise_map[:, 0])
 
 
 @plotters.set_labels
@@ -191,7 +191,7 @@ def signal_to_noise_map(fit, include=plotters.Include(), plotter=plotters.Plotte
     origin : True
     If true, the origin of the datas's coordinate system is plotted as a 'x'.
     """
-    plotter.plot_grid(grid=fit.visibilities, colors=fit.signal_to_noise_map[:, 0])
+    plotter.plot_grid(grid=fit.visibilities, color_array=fit.signal_to_noise_map[:, 0])
 
 
 @plotters.set_labels
