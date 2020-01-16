@@ -43,10 +43,10 @@ class AbstractPlotter(object):
         cmap=mat_objs.ColorMap(),
         cb=mat_objs.ColorBar(),
         mask_scatterer=mat_objs.Scatterer(),
-        border_pointsize=None,
-        point_pointsize=None,
-        grid_pointsize=None,
-        line_pointsize=None,
+        border_scatterer=mat_objs.Scatterer(),
+        grid_scatterer=mat_objs.Scatterer(),
+        positions_scatterer=mat_objs.Scatterer(),
+        liner=mat_objs.Liner(),
         include_legend=None,
         legend_fontsize=None,
         ticks=mat_objs.Ticks(),
@@ -71,22 +71,6 @@ class AbstractPlotter(object):
             cb=cb, load_func=load_setting_func
         )
 
-        self.border_pointsize = (
-            border_pointsize
-            if border_pointsize is not None
-            else load_setting_func("settings", "border_pointsize", int)
-        )
-        self.point_pointsize = (
-            point_pointsize
-            if point_pointsize is not None
-            else load_setting_func("settings", "point_pointsize", int)
-        )
-        self.grid_pointsize = (
-            grid_pointsize
-            if grid_pointsize is not None
-            else load_setting_func("settings", "grid_pointsize", int)
-        )
-
         self.ticks = mat_objs.Ticks.from_instance_and_config(
             ticks=ticks, load_func=load_setting_func, units=self.units,
         )
@@ -97,7 +81,18 @@ class AbstractPlotter(object):
         )
 
         self.mask_scatterer = mat_objs.Scatterer.from_instance_and_config(
-            scatterer=mask_scatterer, load_func=load_setting_func)
+            scatterer=mask_scatterer, section="mask", load_func=load_setting_func)
+
+        self.border_scatterer = mat_objs.Scatterer.from_instance_and_config(
+            scatterer=border_scatterer, section="border", load_func=load_setting_func)
+
+        self.grid_scatterer = mat_objs.Scatterer.from_instance_and_config(
+            scatterer=grid_scatterer, section="grid", load_func=load_setting_func)
+
+        self.positions_scatterer = mat_objs.Scatterer.from_instance_and_config(
+            scatterer=positions_scatterer, section="positions", load_func=load_setting_func)
+
+        self.liner = mat_objs.Liner.from_instance_and_config(liner=liner, section="liner", load_func=load_setting_func)
 
         self.output = mat_objs.Output.from_instance_and_config(
             output=output,
@@ -105,7 +100,6 @@ class AbstractPlotter(object):
             is_sub_plotter=self.is_sub_plotter,
         )
 
-        self.line_pointsize = line_pointsize
         self.include_legend = include_legend
         self.legend_fontsize = legend_fontsize
 
@@ -117,13 +111,13 @@ class AbstractPlotter(object):
     def plot_array(
         self,
         array,
-        include_origin=False,
         mask=None,
-        border=None,
         lines=None,
-        points=None,
+        positions=None,
         centres=None,
         grid=None,
+        include_origin=False,
+        include_border=False,
     ):
         """Plot an array of data_type as a figure.
 
@@ -151,7 +145,7 @@ class AbstractPlotter(object):
             plotted, thereby zooming into the region of interest.
         border : bool
             If a mask is supplied, its borders pixels (e.g. the exterior edge) is plotted if this is *True*.
-        points : [[]]
+        positions : [[]]
             Lists of (y,x) coordinates on the image which are plotted as colored dots, to highlight specific pixels.
         grid : data_type.array.aa.Grid
             A grid of (y,x) coordinates which may be plotted over the plotted array.
@@ -195,12 +189,6 @@ class AbstractPlotter(object):
             The font size of the x and y ticks on the figure axes.
         mask_scatterer : int
             The size of the points plotted to show the mask.
-        border_pointsize : int
-            The size of the points plotted to show the borders.
-        point_pointsize : int
-            The size of the points plotted to show points on the image.
-        grid_pointsize : int
-            The size of the points plotted to show the grid.
         xticks_manual :  [] or None
             If input, the xticks do not use the array's default xticks but instead overwrite them as these values.
         yticks_manual :  [] or None
@@ -279,11 +267,21 @@ class AbstractPlotter(object):
 
         self.cb.set()
         self.scatter_origin(array=array, include_origin=include_origin)
-        self.scatter_mask(mask=mask)
-        self.scatter_border(mask=mask, border=border)
-        self.scatter_grid(grid=grid)
-        self.draw_lines(lines=lines)
-        self.scatter_points(points=points)
+
+        if mask is not None:
+            self.mask_scatterer.scatter_grids(grids=mask.geometry.edge_grid.in_1d_binned)
+
+        if include_border and mask is not None:
+            self.border_scatterer.scatter_grids(grids=mask.geometry.border_grid.in_1d_binned)
+
+        if grid is not None:
+            self.grid_scatterer.scatter_grids(grids=grid)
+
+        if positions is not None:
+            self.positions_scatterer.scatter_grids(grids=positions)
+
+        if lines is not None:
+            self.liner.draw_grids(grids=lines)
         self.scatter_centres(centres=centres)
         self.output.to_figure(structure=array)
         self.figure.close()
@@ -291,9 +289,9 @@ class AbstractPlotter(object):
     def plot_grid(
         self,
         grid,
-        colors=None,
+        color_array=None,
         axis_limits=None,
-        points=None,
+        indexes=None,
         lines=None,
         symmetric_around_centre=True,
         bypass_limits=False,
@@ -306,7 +304,7 @@ class AbstractPlotter(object):
             The (y,x) coordinates of the grid, in an array of shape (total_coordinates, 2).
         axis_limits : []
             The axis limits of the figure on which the grid is plotted, following [xmin, xmax, ymin, ymax].
-        points : []
+        indexes : []
             A set of points that are plotted in a different colour for emphasis (e.g. to show the mappings between \
             different planes).
         as_subplot : bool
@@ -341,21 +339,14 @@ class AbstractPlotter(object):
 
         self.figure.open()
 
-        if colors is not None:
+        if color_array is None:
+
+            self.grid_scatterer.scatter_grids(grids=grid)
+
+        elif color_array is not None:
 
             plt.cm.get_cmap(self.cmap.cmap)
-
-        plt.scatter(
-            y=np.asarray(grid[:, 0]),
-            x=np.asarray(grid[:, 1]),
-            c=colors,
-            s=self.grid_pointsize,
-            marker=".",
-            cmap=self.cmap.cmap,
-        )
-
-        if colors is not None:
-
+            self.grid_scatterer.scatter_colored_grid(grid=grid, color_array=color_array, cmap=self.cmap.cmap)
             self.cb.set()
 
         self.labels.set_title()
@@ -381,8 +372,11 @@ class AbstractPlotter(object):
             symmetric_around_centre=symmetric_around_centre,
         )
 
-        self.scatter_points_on_grid(grid=grid, points=points)
-        self.draw_lines(lines=lines)
+        if indexes is not None:
+            self.grid_scatterer.scatter_grid_indexes(grid=grid, indexes=indexes)
+
+        if lines is not None:
+            self.liner.draw_grids(grids=lines)
 
         self.output.to_figure(structure=grid)
         self.figure.close()
@@ -406,12 +400,12 @@ class AbstractPlotter(object):
         if x is None:
             x = np.arange(len(y))
 
-        self.draw_y_vs_x(y=y, x=x, plot_axis_type=plot_axis_type, label=label)
+        self.liner.draw_y_vs_x(y=y, x=x, plot_axis_type=plot_axis_type, label=label)
 
         self.labels.set_yunits(include_brackets=False)
         self.labels.set_xunits(include_brackets=False)
 
-        self.draw_vertical_lines(
+        self.liner.draw_vertical_lines(
             vertical_lines=vertical_lines, vertical_line_labels=vertical_line_labels
         )
 
@@ -564,7 +558,8 @@ class AbstractPlotter(object):
 
         self.plot_border(include_border=include_border, mapper=mapper)
 
-        self.draw_lines(lines=lines)
+        if lines is not None:
+            self.liner.draw_grids(grids=lines)
 
         point_colors = itertools.cycle(["y", "r", "k", "g", "m"])
         self.plot_source_plane_image_pixels(
@@ -603,78 +598,6 @@ class AbstractPlotter(object):
                 marker="x",
             )
 
-    def scatter_mask(self, mask):
-        """Plot the mask of the array on the figure.
-
-        Parameters
-        -----------
-        mask : ndarray of data_type.array.mask.Mask
-            The mask applied to the array, the edge of which is plotted as a set of points over the plotted array.
-        use_scaled_units_label : str
-            The label for the unit_label of the y / x axis of the plots.
-        unit_conversion_factor : float or None
-            The conversion factor between arc-seconds and kiloparsecs, required to plotters the unit_label in kpc.
-        pointsize : int
-            The size of the points plotted to show the mask.
-        """
-
-        if mask is not None:
-
-            plt.gca()
-            edge_grid = mask.geometry.edge_grid.in_1d_binned
-
-    def scatter_border(self, mask, border):
-        """Plot the borders of the mask or the array on the figure.
-
-        Parameters
-        -----------t.
-        mask : ndarray of data_type.array.mask.Mask
-            The mask applied to the array, the edge of which is plotted as a set of points over the plotted array.
-        border : bool
-            If a mask is supplied, its borders pixels (e.g. the exterior edge) is plotted if this is *True*.
-        unit_label : str
-            The label for the unit_label of the y / x axis of the plots.
-        kpc_per_arcsec : float or None
-            The conversion factor between arc-seconds and kiloparsecs, required to plotters the unit_label in kpc.
-        border_pointsize : int
-            The size of the points plotted to show the borders.
-        """
-        if border and mask is not None:
-            plt.gca()
-            border_grid = mask.geometry.border_grid.in_1d_binned
-
-            plt.scatter(
-                y=np.asarray(border_grid[:, 0]),
-                x=np.asarray(border_grid[:, 1]),
-                s=self.border_pointsize,
-                c="y",
-            )
-
-    def scatter_grid(self, grid):
-        """Plot a grid of points over the array of data_type on the figure.
-
-         Parameters
-         -----------.
-         grid_arcsec : ndarray or data_type.array.aa.Grid
-             A grid of (y,x) coordinates in arc-seconds which may be plotted over the array.
-         array : data_type.array.aa.Scaled
-            The 2D array of data_type which is plotted.
-         unit_label : str
-             The label for the unit_label of the y / x axis of the plots.
-         kpc_per_arcsec : float or None
-             The conversion factor between arc-seconds and kiloparsecs, required to plotters the unit_label in kpc.
-         grid_pointsize : int
-             The size of the points plotted to show the grid.
-         """
-        if grid is not None:
-
-            plt.scatter(
-                y=np.asarray(grid[:, 0]),
-                x=np.asarray(grid[:, 1]),
-                s=self.grid_pointsize,
-                c="k",
-            )
-
     def scatter_centres(self, centres):
         """Plot the (y,x) centres (e.g. of a mass profile) on the array as an 'x'.
 
@@ -698,7 +621,7 @@ class AbstractPlotter(object):
 
             else:
 
-                colors = itertools.cycle(["m", "y", "r", "w", "c", "b", "g", "k"])
+                colors = itertools.cycle(["m", "y", "r", "w", "cy", "b", "g", "k"])
 
                 for centres_of_galaxy in centres:
                     color = next(colors)
@@ -706,72 +629,6 @@ class AbstractPlotter(object):
                         plt.scatter(
                             y=centre[0], x=centre[1], s=300, c=color, marker="x"
                         )
-
-    def scatter_points(self, points):
-        """Plot a set of points over the array of data_type on the figure.
-
-        Parameters
-        -----------
-        points : [[]]
-            Lists of (y,x) coordinates on the image which are plotted as colored dots, to highlight specific pixels.
-        array : data_type.array.aa.Scaled
-            The 2D array of data_type which is plotted.
-        use_scaled_units_label : str
-            The label for the unit_label of the y / x axis of the plots.
-        unit_conversion_factor : float or None
-            The conversion factor between arc-seconds and kiloparsecs, required to plotters the unit_label in kpc.
-        pointsize : int
-            The size of the points plotted to show the input points.
-        """
-
-        if points is not None:
-
-            points = list(map(lambda position_set: np.asarray(position_set), points))
-            point_colors = itertools.cycle(["m", "y", "r", "w", "c", "b", "g", "k"])
-            for point_set in points:
-                plt.scatter(
-                    y=point_set[:, 0],
-                    x=point_set[:, 1],
-                    color=next(point_colors),
-                    s=self.point_pointsize,
-                )
-
-    def scatter_points_on_grid(self, grid, points):
-        """Plot a subset of points in a different color, to highlight a specifc region of the grid (e.g. how certain \
-        pixels map between different planes).
-
-        Parameters
-        -----------
-        grid : ndarray or data_type.array.aa.Grid
-            The (y,x) coordinates of the grid, in an array of shape (total_coordinates, 2).
-        points : []
-            A set of points that are plotted in a different colour for emphasis (e.g. to show the mappings between \
-            different planes).
-        pointcolor : str or None
-            The color the points should be plotted. If None, the points are iterated through a cycle of colors.
-        """
-        if points is not None:
-
-            if self.grid_pointcolor is None:
-
-                point_colors = itertools.cycle(["y", "r", "k", "g", "m"])
-                for point_set in points:
-                    plt.scatter(
-                        y=np.asarray(grid[point_set, 0]),
-                        x=np.asarray(grid[point_set, 1]),
-                        s=8,
-                        color=next(point_colors),
-                    )
-
-            else:
-
-                for point_set in points:
-                    plt.scatter(
-                        y=np.asarray(grid[point_set, 0]),
-                        x=np.asarray(grid[point_set, 1]),
-                        s=8,
-                        color=self.grid_pointcolor,
-                    )
 
     def set_axis_limits(self, axis_limits, grid, symmetric_around_centre):
         """Set the axis limits of the figure the grid is plotted on.
@@ -976,85 +833,9 @@ class AbstractPlotter(object):
                         color=color,
                     )
 
-    def draw_y_vs_x(self, y, x, plot_axis_type, label):
-
-        if plot_axis_type is "linear":
-            plt.plot(x, y, label=label)
-        elif plot_axis_type is "semilogy":
-            plt.semilogy(x, y, label=label)
-        elif plot_axis_type is "loglog":
-            plt.loglog(x, y, label=label)
-        elif plot_axis_type is "scatter":
-            plt.scatter(x, y, label=label, s=self.line_pointsize)
-        else:
-            raise exc.PlottingException(
-                "The plot_axis_type supplied to the plotter is not a valid string (must be linear "
-                "| semilogy | loglog)"
-            )
-
-    def draw_vertical_lines(self, vertical_lines, vertical_line_labels):
-
-        if vertical_lines is [] or vertical_lines is None:
-            return
-
-        for vertical_line, vertical_line_label in zip(
-            vertical_lines, vertical_line_labels
-        ):
-
-            if self.units.conversion_factor is None:
-                x_value_plot = vertical_line
-            else:
-                x_value_plot = vertical_line * self.units.conversion_factor
-
-            plt.axvline(x=x_value_plot, label=vertical_line_label, linestyle="--")
-
     def set_legend(self):
         if self.include_legend:
             plt.legend(fontsize=self.legend_fontsize)
-
-    @staticmethod
-    def draw_lines(lines):
-        """Plot the liness of the mask or the array on the figure.
-
-        Parameters
-        -----------t.
-        mask : ndarray of data_type.array.mask.Mask
-            The mask applied to the array, the edge of which is plotted as a set of points over the plotted array.
-        plot_lines : bool
-            If a mask is supplied, its liness pixels (e.g. the exterior edge) is plotted if this is *True*.
-        unit_label : str
-            The unit_label of the y / x axis of the plots.
-        kpc_per_arcsec : float or None
-            The conversion factor between arc-seconds and kiloparsecs, required to plotters the unit_label in kpc.
-        lines_pointsize : int
-            The size of the points plotted to show the liness.
-        """
-        if lines is not None:
-
-            if not any(isinstance(el, list) for el in lines) and not any(
-                isinstance(el, np.ndarray) for el in lines
-            ):
-                if len(lines) != 0:
-                    plt.plot(
-                        np.asarray(lines)[:, 1],
-                        np.asarray(lines)[:, 0],
-                        c="w",
-                        lw=2.0,
-                        zorder=200,
-                    )
-
-            else:
-
-                for line_list in lines:
-                    if line_list is not None:
-                        if len(line_list) != 0:
-                            plt.plot(
-                                np.asarray(line_list)[:, 1],
-                                np.asarray(line_list)[:, 0],
-                                c="w",
-                                lw=2.0,
-                                zorder=200,
-                            )
 
     def plotter_with_new_labels(self, labels=mat_objs.Labels()):
 
@@ -1140,10 +921,10 @@ class Plotter(AbstractPlotter):
         cmap=mat_objs.ColorMap(),
         cb=mat_objs.ColorBar(),
         mask_scatterer=mat_objs.Scatterer(),
-        border_pointsize=None,
-        point_pointsize=None,
-        grid_pointsize=None,
-        line_pointsize=None,
+        border_scatterer=mat_objs.Scatterer(),
+        grid_scatterer=mat_objs.Scatterer(),
+        positions_scatterer=mat_objs.Scatterer(),
+        liner=mat_objs.Liner(),
         include_legend=None,
         legend_fontsize=None,
         ticks=mat_objs.Ticks(),
@@ -1157,10 +938,10 @@ class Plotter(AbstractPlotter):
             cmap=cmap,
             cb=cb,
             mask_scatterer=mask_scatterer,
-            border_pointsize=border_pointsize,
-            point_pointsize=point_pointsize,
-            grid_pointsize=grid_pointsize,
-            line_pointsize=line_pointsize,
+            border_scatterer=border_scatterer,
+            grid_scatterer=grid_scatterer,
+            positions_scatterer=positions_scatterer,
+            liner=liner,
             include_legend=include_legend,
             legend_fontsize=legend_fontsize,
             ticks=ticks,
@@ -1181,10 +962,10 @@ class SubPlotter(AbstractPlotter):
         cmap=mat_objs.ColorMap(),
         cb=mat_objs.ColorBar(),
         mask_scatterer=mat_objs.Scatterer(),
-        border_pointsize=None,
-        point_pointsize=None,
-        grid_pointsize=None,
-        line_pointsize=None,
+        border_scatterer=mat_objs.Scatterer(),
+            grid_scatterer=mat_objs.Scatterer(),
+        positions_scatterer=mat_objs.Scatterer(),
+        liner=mat_objs.Liner(),
         include_legend=None,
         legend_fontsize=None,
         ticks=mat_objs.Ticks(),
@@ -1198,10 +979,10 @@ class SubPlotter(AbstractPlotter):
             cmap=cmap,
             cb=cb,
             mask_scatterer=mask_scatterer,
-            border_pointsize=border_pointsize,
-            point_pointsize=point_pointsize,
-            grid_pointsize=grid_pointsize,
-            line_pointsize=line_pointsize,
+            border_scatterer=border_scatterer,
+            grid_scatterer=grid_scatterer,
+            positions_scatterer=positions_scatterer,
+            liner=liner,
             include_legend=include_legend,
             legend_fontsize=legend_fontsize,
             ticks=ticks,

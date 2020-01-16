@@ -8,6 +8,7 @@ import matplotlib.colors as colors
 import matplotlib.cm as cm
 import numpy as np
 import inspect
+import itertools
 import os
 
 from autoarray import exc
@@ -731,6 +732,26 @@ class Output(object):
             plt.savefig(self.path + self.filename + ".png", bbox_inches="tight")
 
 
+def is_grids_list_of_grids(grids):
+
+    if isinstance(grids, list):
+        if any(isinstance(i, tuple) for i in grids) or any(isinstance(i, np.ndarray) for i in grids):
+            return False
+        elif any(isinstance(i, list) for i in grids):
+            return True
+        else:
+            raise exc.PlottingException("The grid entered into scatter_grid is a list of values, but its data-structure"
+                                        "cannot be determined so as to make a scatter plot")
+    elif isinstance(grids, np.ndarray):
+        if len(grids.shape) == 2:
+            return False
+        else:
+            raise exc.PlottingException("The input grid into scatter_Grid is not 2D and therefore "
+                                        "cannot be plotted using scatter.")
+    else:
+        raise exc.PlottingException("The grid passed into scatter_grid is not a list or a ndarray.")
+
+
 class Scatterer(object):
 
     def __init__(self, size=None, marker=None, color=None):
@@ -740,34 +761,211 @@ class Scatterer(object):
         self.color = color
 
     @classmethod
-    def from_instance_and_config(cls, scatterer, load_func):
+    def from_instance_and_config(cls, scatterer, section, load_func):
 
         size = (
             scatterer.size
             if scatterer.size is not None
-            else load_func("mask", "size", int)
+            else load_func(section, "size", int)
         )
 
         marker = (
             scatterer.marker
             if scatterer.marker is not None
-            else load_func("mask", "marker", str)
+            else load_func(section, "marker", str)
         )
 
         color = (
             scatterer.color
             if scatterer.color is not None
-            else load_func("mask", "color", str)
+            else load_func(section, "color", str)
         )
 
         return Scatterer(size=size, marker=marker, color=color)
 
-    def plot(self, grid):
+    def scatter_grids(self, grids):
 
-        plt.scatter(
-            y=np.asarray(grid)[:, 0],
-            x=np.asarray(grid)[:, 1],
-            s=self.size,
-            c=self.color,
-            marker=self.marker
+        list_of_grids = is_grids_list_of_grids(grids=grids)
+
+        if not list_of_grids:
+
+            plt.scatter(
+                y=np.asarray(grids)[:, 0],
+                x=np.asarray(grids)[:, 1],
+                s=self.size,
+                c=self.color,
+                marker=self.marker
+            )
+
+        else:
+
+            for grid in grids:
+
+                color = itertools.cycle(["m", "y", "r", "w", "cy", "b", "g", "k"])
+
+                if not None in grid:
+                    if len(grid) != 0:
+                        plt.scatter(
+                            y=np.asarray(grid)[:, 0],
+                            x=np.asarray(grid)[:, 1],
+                            s=self.size,
+                            c=next(color),
+                            marker=self.marker,
+                        )
+
+    def scatter_colored_grid(self, grid, color_array, cmap):
+
+        list_of_grids = is_grids_list_of_grids(grids=grid)
+
+        if not list_of_grids:
+
+            plt.scatter(
+                y=np.asarray(grid)[:, 0],
+                x=np.asarray(grid)[:, 1],
+                s=self.size,
+                c=color_array,
+                marker=self.marker,
+                cmap=cmap
+            )
+
+        else:
+
+            raise exc.PlottingException("Cannot plot colorred grid if input grid is a list of grids.")
+
+    def scatter_grid_indexes(self, grid, indexes):
+
+        if not isinstance(grid, np.ndarray):
+            raise exc.PlottingException("The grid passed into scatter_grid_indexes is not a ndarray and thus its"
+                                        "1D indexes cannot be marked and plotted.")
+
+        if len(grid.shape) != 2:
+            raise exc.PlottingException("The grid passed into scatter_grid_indexes is not 2D (e.g. a flattened 1D"
+                                        "grid) and thus its 1D indexes cannot be marked.")
+
+        if isinstance(indexes, list):
+            if not any(isinstance(i, list) for i in indexes):
+                indexes = [indexes]
+
+        color = itertools.cycle(["m", "y", "r", "w", "cy", "b", "g", "k"])
+        for index_list in indexes:
+            plt.scatter(
+                y=np.asarray(grid[index_list, 0]),
+                x=np.asarray(grid[index_list, 1]),
+                s=self.size,
+                color=next(color),
+                marker=self.marker
+            )
+
+
+class Liner(object):
+
+    def __init__(self, width=None, style=None, color=None, pointsize=None):
+        
+        self.width = width
+        self.style = style
+        self.color = color
+        self.pointsize = pointsize
+        
+    @classmethod
+    def from_instance_and_config(cls, liner, section, load_func):
+
+        width = (
+            liner.width
+            if liner.width is not None
+            else load_func(section, "width", int)
         )
+
+        style = (
+            liner.style
+            if liner.style is not None
+            else load_func(section, "style", str)
+        )
+
+        color = (
+            liner.color
+            if liner.color is not None
+            else load_func(section, "color", str)
+        )
+
+        pointsize = (
+            liner.pointsize
+            if liner.pointsize is not None
+            else load_func(section, "pointsize", int)
+        )
+
+        return Liner(width=width, style=style, color=color, pointsize=pointsize)
+
+    def draw_y_vs_x(self, y, x, plot_axis_type, label=None):
+
+        if plot_axis_type is "linear":
+            plt.plot(x, y, c=self.color, lw=self.width, ls=self.style, label=label)
+        elif plot_axis_type is "semilogy":
+            plt.semilogy(x, y, c=self.color, lw=self.width, ls=self.style, label=label)
+        elif plot_axis_type is "loglog":
+            plt.loglog(x, y, c=self.color, lw=self.width, ls=self.style, label=label)
+        elif plot_axis_type is "scatter":
+            plt.scatter(x, y, c=self.color, s=self.pointsize, label=label)
+        else:
+            raise exc.PlottingException(
+                "The plot_axis_type supplied to the plotter is not a valid string (must be linear "
+                "| semilogy | loglog)"
+            )
+
+    def draw_vertical_lines(self, vertical_lines, vertical_line_labels=None):
+
+        if vertical_lines is [] or vertical_lines is None:
+            return
+
+        if vertical_line_labels is None:
+            vertical_line_labels = [None for i in range(len(vertical_lines))]
+
+        for vertical_line, vertical_line_label in zip(
+            vertical_lines, vertical_line_labels
+        ):
+
+            plt.axvline(x=vertical_line, label=vertical_line_label, c=self.color, lw=self.width, ls=self.style)
+
+    def draw_grids(self, grids):
+        """Plot the liness of the mask or the array on the figure.
+
+        Parameters
+        -----------t.
+        mask : ndarray of data_type.array.mask.Mask
+            The mask applied to the array, the edge of which is plotted as a set of points over the plotted array.
+        plot_lines : bool
+            If a mask is supplied, its liness pixels (e.g. the exterior edge) is plotted if this is *True*.
+        unit_label : str
+            The unit_label of the y / x axis of the plots.
+        kpc_per_arcsec : float or None
+            The conversion factor between arc-seconds and kiloparsecs, required to plotters the unit_label in kpc.
+        lines_pointsize : int
+            The size of the points plotted to show the liness.
+        """
+
+        list_of_grids = is_grids_list_of_grids(grids=grids)
+
+        if not list_of_grids:
+
+            plt.plot(
+                np.asarray(grids)[:, 1],
+                np.asarray(grids)[:, 0],
+                c=self.color,
+                lw=self.width,
+                ls=self.style
+            )
+
+        else:
+
+            for grid in grids:
+
+                color = itertools.cycle(["m", "y", "r", "w", "cy", "b", "g", "k"])
+
+                if not None in grid:
+                    if len(grid) != 0:
+                        plt.plot(
+                            np.asarray(grid)[:, 1],
+                            np.asarray(grid)[:, 0],
+                            c=color,
+                            lw=self.width,
+                            ls=self.style,
+                        )
