@@ -81,9 +81,7 @@ def test__rectangular_mapper_is_output(rectangular_mapper, plotter_path, plot_pa
         ),
         image_pixels=[[0, 1, 2], [3]],
         source_pixels=[[1, 2], [0]],
-        plotter=aplt.Plotter(
-            output=aplt.Output(path=plotter_path, format="png")
-        ),
+        plotter=aplt.Plotter(output=aplt.Output(path=plotter_path, format="png")),
     )
 
     assert plotter_path + "mapper_grid.png" in plot_patch.paths
