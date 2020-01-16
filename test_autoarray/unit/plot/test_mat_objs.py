@@ -464,7 +464,9 @@ class TestScatterer:
             cmap=cmap,
         )
 
-    def test__scatter_grid_indexes__input_grid_is_ndarray_and_indexes_are_valid(self):
+    def test__scatter_grid_indexes_1d__input_grid_is_ndarray_and_indexes_are_valid(
+        self
+    ):
 
         scatterer = aplt.Scatterer(size=2, marker="x", color="k")
 
@@ -479,6 +481,32 @@ class TestScatterer:
         scatterer.scatter_grid_indexes(
             grid=aa.grid.uniform(shape_2d=(3, 3), pixel_scales=1.0),
             indexes=[[0, 1], [2]],
+        )
+
+    def test__scatter_grid_indexes_2d__input_grid_is_ndarray_and_indexes_are_valid(
+        self
+    ):
+
+        scatterer = aplt.Scatterer(size=2, marker="x", color="k")
+
+        scatterer.scatter_grid_indexes(
+            grid=aa.grid.uniform(shape_2d=(3, 3), pixel_scales=1.0),
+            indexes=[(0, 0), (0, 1), (0, 2)],
+        )
+
+        scatterer.scatter_grid_indexes(
+            grid=aa.grid.uniform(shape_2d=(3, 3), pixel_scales=1.0),
+            indexes=[[(0, 0), (0, 1), (0, 2)]],
+        )
+
+        scatterer.scatter_grid_indexes(
+            grid=aa.grid.uniform(shape_2d=(3, 3), pixel_scales=1.0),
+            indexes=[[(0, 0), (0, 1)], [(0, 2)]],
+        )
+
+        scatterer.scatter_grid_indexes(
+            grid=aa.grid.uniform(shape_2d=(3, 3), pixel_scales=1.0),
+            indexes=[[[0, 0], [0, 1]], [[0, 2]]],
         )
 
 
