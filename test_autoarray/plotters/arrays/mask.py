@@ -1,5 +1,5 @@
 import autoarray as aa
-from autoarray import plotter as aplt
+import autoarray.plotters as aplt
 
 plotter = aplt.Plotter(mask_scatterer=aplt.Scatterer(size=10, marker="x", color="k"))
 

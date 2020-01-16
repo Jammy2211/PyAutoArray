@@ -1,7 +1,7 @@
 from os import path
-from autoarray import conf
 
 import autoarray as aa
+import autoarray.plot as aplt
 import os
 
 import numpy as np
@@ -19,8 +19,8 @@ def make_plotter_setup():
 
 @pytest.fixture(autouse=True)
 def set_config_path():
-    conf.instance = conf.Config(
-        path.join(directory, "../test_files/plotters"), path.join(directory, "output")
+    aa.conf.instance = aa.conf.Config(
+        path.join(directory, "../test_files/plot"), path.join(directory, "output")
     )
 
 
@@ -61,13 +61,13 @@ def test__image_and_rectangular_mapper_is_output(
     aa.plot.mapper.subplot_image_and_mapper(
         imaging=image,
         mapper=rectangular_mapper,
-        include=aa.plotter.Include(
+        include=aplt.Include(
             inversion_centres=True, inversion_grid=True, inversion_border=False
         ),
         image_pixels=[[0, 1, 2], [3]],
         source_pixels=[[1, 2], [0]],
-        sub_plotter=aa.plotter.SubPlotter(
-            output=aa.plotter.Output(path=plotter_path, format="png")
+        sub_plotter=aplt.SubPlotter(
+            output=aplt.Output(path=plotter_path, format="png")
         ),
     )
     assert plotter_path + "subplot_image_and_mapper.png" in plot_patch.paths
@@ -76,13 +76,13 @@ def test__image_and_rectangular_mapper_is_output(
 def test__rectangular_mapper_is_output(rectangular_mapper, plotter_path, plot_patch):
     aa.plot.mapper.mapper_grid(
         mapper=rectangular_mapper,
-        include=aa.plotter.Include(
+        include=aplt.Include(
             inversion_centres=True, inversion_grid=True, inversion_border=False
         ),
         image_pixels=[[0, 1, 2], [3]],
         source_pixels=[[1, 2], [0]],
-        plotter=aa.plotter.Plotter(
-            output=aa.plotter.Output(path=plotter_path, format="png")
+        plotter=aplt.Plotter(
+            output=aplt.Output(path=plotter_path, format="png")
         ),
     )
 

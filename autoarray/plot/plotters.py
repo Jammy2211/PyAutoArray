@@ -10,7 +10,7 @@ from functools import wraps
 import copy
 
 from autoarray import exc
-from autoarray.plotters import mat_objs
+from autoarray.plot import mat_objs
 import itertools
 from autoarray.operators.inversion import mappers
 

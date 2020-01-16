@@ -1,7 +1,7 @@
 import itertools
 
-from autoarray.plotters import plotters
-from autoarray.plots import imaging_plots
+from autoarray.plot import plotters
+from autoarray.plot import imaging_plots
 
 
 @plotters.set_labels
