@@ -833,9 +833,9 @@ class Scatterer(object):
 
         else:
 
-            for grid in grids:
+            color = itertools.cycle(["m", "y", "r", "w", "cy", "b", "g", "k"])
 
-                color = itertools.cycle(["m", "y", "r", "w", "cy", "b", "g", "k"])
+            for grid in grids:
 
                 if not None in grid:
                     if len(grid) != 0:
@@ -990,16 +990,16 @@ class Liner(object):
 
         else:
 
-            for grid in grids:
+            color = itertools.cycle(["m", "y", "r", "w", "cy", "b", "g", "k"])
 
-                color = itertools.cycle(["m", "y", "r", "w", "cy", "b", "g", "k"])
+            for grid in grids:
 
                 if not None in grid:
                     if len(grid) != 0:
                         plt.plot(
                             np.asarray(grid)[:, 1],
                             np.asarray(grid)[:, 0],
-                            c=color,
+                            c=next(color),
                             lw=self.width,
                             ls=self.style,
                         )

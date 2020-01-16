@@ -1,10 +1,9 @@
 from os import path
-from autoarray import conf
 import os
-
 import pytest
 
 import autoarray as aa
+import autoarray.plot as aplt
 
 
 directory = path.dirname(path.realpath(__file__))
@@ -21,8 +20,8 @@ def make_imaging_plotter_setup():
 
 @pytest.fixture(autouse=True)
 def set_config_path():
-    conf.instance = conf.Config(
-        path.join(directory, "../test_files/plotters"), path.join(directory, "output")
+    aa.conf.instance = aa.conf.Config(
+        path.join(directory, "../test_files/plot"), path.join(directory, "output")
     )
 
 
@@ -34,9 +33,9 @@ def test__individual_attributes_are_output(
         imaging=imaging_7x7,
         positions=positions_7x7,
         mask=mask_7x7,
-        include=aa.plotter.Include(mask=True),
-        plotter=aa.plotter.Plotter(
-            output=aa.plotter.Output(imaging_plotter_path, format="png")
+        include=aplt.Include(mask=True),
+        plotter=aplt.Plotter(
+            output=aplt.Output(imaging_plotter_path, format="png")
         ),
     )
 
@@ -45,8 +44,8 @@ def test__individual_attributes_are_output(
     aa.plot.imaging.noise_map(
         imaging=imaging_7x7,
         mask=mask_7x7,
-        plotter=aa.plotter.Plotter(
-            output=aa.plotter.Output(imaging_plotter_path, format="png")
+        plotter=aplt.Plotter(
+            output=aplt.Output(imaging_plotter_path, format="png")
         ),
     )
 
@@ -54,8 +53,8 @@ def test__individual_attributes_are_output(
 
     aa.plot.imaging.psf(
         imaging=imaging_7x7,
-        plotter=aa.plotter.Plotter(
-            output=aa.plotter.Output(imaging_plotter_path, format="png")
+        plotter=aplt.Plotter(
+            output=aplt.Output(imaging_plotter_path, format="png")
         ),
     )
 
@@ -64,8 +63,8 @@ def test__individual_attributes_are_output(
     aa.plot.imaging.signal_to_noise_map(
         imaging=imaging_7x7,
         mask=mask_7x7,
-        plotter=aa.plotter.Plotter(
-            output=aa.plotter.Output(imaging_plotter_path, format="png")
+        plotter=aplt.Plotter(
+            output=aplt.Output(imaging_plotter_path, format="png")
         ),
     )
 
@@ -78,8 +77,8 @@ def test__subplot_is_output(
 
     aa.plot.imaging.subplot_imaging(
         imaging=imaging_7x7,
-        sub_plotter=aa.plotter.SubPlotter(
-            output=aa.plotter.Output(imaging_plotter_path, format="png")
+        sub_plotter=aplt.SubPlotter(
+            output=aplt.Output(imaging_plotter_path, format="png")
         ),
     )
 
@@ -94,8 +93,8 @@ def test__imaging_individuals__output_dependent_on_input(
         plot_image=True,
         plot_psf=True,
         plot_absolute_signal_to_noise_map=True,
-        plotter=aa.plotter.Plotter(
-            output=aa.plotter.Output(imaging_plotter_path, format="png")
+        plotter=aplt.Plotter(
+            output=aplt.Output(imaging_plotter_path, format="png")
         ),
     )
 

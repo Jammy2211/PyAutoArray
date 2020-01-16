@@ -1,5 +1,5 @@
-from autoarray.plotters import plotters, mat_objs
-from autoarray.plots import inversion_plots
+from autoarray.plot import plotters
+from autoarray.plot import inversion_plots, mat_objs
 
 
 @plotters.set_subplot_filename

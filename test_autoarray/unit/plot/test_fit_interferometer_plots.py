@@ -1,9 +1,9 @@
 import autoarray as aa
+import autoarray.plot as aplt
 import pytest
 import os
 
 from os import path
-from autoarray import conf
 
 directory = path.dirname(path.realpath(__file__))
 
@@ -17,8 +17,8 @@ def make_fit_interferometer_path_setup():
 
 @pytest.fixture(autouse=True)
 def set_config_path():
-    conf.instance = conf.Config(
-        path.join(directory, "../test_files/plotters"), path.join(directory, "output")
+    aa.conf.instance = aa.conf.Config(
+        path.join(directory, "../test_files/plot"), path.join(directory, "output")
     )
 
 
@@ -26,8 +26,8 @@ def test__fit_sub_plot(fit_interferometer_7, fit_interferometer_path, plot_patch
 
     aa.plot.fit_interferometer.subplot_fit_interferometer(
         fit=fit_interferometer_7,
-        sub_plotter=aa.plotter.SubPlotter(
-            output=aa.plotter.Output(fit_interferometer_path, format="png")
+        sub_plotter=aplt.SubPlotter(
+            output=aplt.Output(fit_interferometer_path, format="png")
         ),
     )
 
@@ -47,8 +47,8 @@ def test__fit_individuals__dependent_on_input(
         plot_signal_to_noise_map=False,
         plot_model_visibilities=True,
         plot_chi_squared_map=True,
-        plotter=aa.plotter.Plotter(
-            output=aa.plotter.Output(fit_interferometer_path, format="png")
+        plotter=aplt.Plotter(
+            output=aplt.Output(fit_interferometer_path, format="png")
         ),
     )
 
@@ -97,8 +97,8 @@ def test__fit_quantities_are_output(
 
     aa.plot.fit_interferometer.visibilities(
         fit=fit_interferometer_7,
-        plotter=aa.plotter.Plotter(
-            output=aa.plotter.Output(path=fit_interferometer_path, format="png")
+        plotter=aplt.Plotter(
+            output=aplt.Output(path=fit_interferometer_path, format="png")
         ),
     )
 
@@ -106,8 +106,8 @@ def test__fit_quantities_are_output(
 
     aa.plot.fit_interferometer.noise_map(
         fit=fit_interferometer_7,
-        plotter=aa.plotter.Plotter(
-            output=aa.plotter.Output(path=fit_interferometer_path, format="png")
+        plotter=aplt.Plotter(
+            output=aplt.Output(path=fit_interferometer_path, format="png")
         ),
     )
 
@@ -115,8 +115,8 @@ def test__fit_quantities_are_output(
 
     aa.plot.fit_interferometer.signal_to_noise_map(
         fit=fit_interferometer_7,
-        plotter=aa.plotter.Plotter(
-            output=aa.plotter.Output(path=fit_interferometer_path, format="png")
+        plotter=aplt.Plotter(
+            output=aplt.Output(path=fit_interferometer_path, format="png")
         ),
     )
 
@@ -124,8 +124,8 @@ def test__fit_quantities_are_output(
 
     aa.plot.fit_interferometer.model_visibilities(
         fit=fit_interferometer_7,
-        plotter=aa.plotter.Plotter(
-            output=aa.plotter.Output(path=fit_interferometer_path, format="png")
+        plotter=aplt.Plotter(
+            output=aplt.Output(path=fit_interferometer_path, format="png")
         ),
     )
 
@@ -133,8 +133,8 @@ def test__fit_quantities_are_output(
 
     aa.plot.fit_interferometer.residual_map_vs_uv_distances(
         fit=fit_interferometer_7,
-        plotter=aa.plotter.Plotter(
-            output=aa.plotter.Output(path=fit_interferometer_path, format="png")
+        plotter=aplt.Plotter(
+            output=aplt.Output(path=fit_interferometer_path, format="png")
         ),
     )
 
@@ -146,8 +146,8 @@ def test__fit_quantities_are_output(
     aa.plot.fit_interferometer.residual_map_vs_uv_distances(
         fit=fit_interferometer_7,
         plot_real=False,
-        plotter=aa.plotter.Plotter(
-            output=aa.plotter.Output(path=fit_interferometer_path, format="png")
+        plotter=aplt.Plotter(
+            output=aplt.Output(path=fit_interferometer_path, format="png")
         ),
     )
 
@@ -158,8 +158,8 @@ def test__fit_quantities_are_output(
 
     aa.plot.fit_interferometer.normalized_residual_map_vs_uv_distances(
         fit=fit_interferometer_7,
-        plotter=aa.plotter.Plotter(
-            output=aa.plotter.Output(path=fit_interferometer_path, format="png")
+        plotter=aplt.Plotter(
+            output=aplt.Output(path=fit_interferometer_path, format="png")
         ),
     )
 
@@ -171,8 +171,8 @@ def test__fit_quantities_are_output(
     aa.plot.fit_interferometer.normalized_residual_map_vs_uv_distances(
         fit=fit_interferometer_7,
         plot_real=False,
-        plotter=aa.plotter.Plotter(
-            output=aa.plotter.Output(path=fit_interferometer_path, format="png")
+        plotter=aplt.Plotter(
+            output=aplt.Output(path=fit_interferometer_path, format="png")
         ),
     )
 
@@ -183,8 +183,8 @@ def test__fit_quantities_are_output(
 
     aa.plot.fit_interferometer.chi_squared_map_vs_uv_distances(
         fit=fit_interferometer_7,
-        plotter=aa.plotter.Plotter(
-            output=aa.plotter.Output(path=fit_interferometer_path, format="png")
+        plotter=aplt.Plotter(
+            output=aplt.Output(path=fit_interferometer_path, format="png")
         ),
     )
 
@@ -196,8 +196,8 @@ def test__fit_quantities_are_output(
     aa.plot.fit_interferometer.chi_squared_map_vs_uv_distances(
         fit=fit_interferometer_7,
         plot_real=False,
-        plotter=aa.plotter.Plotter(
-            output=aa.plotter.Output(path=fit_interferometer_path, format="png")
+        plotter=aplt.Plotter(
+            output=aplt.Output(path=fit_interferometer_path, format="png")
         ),
     )
 

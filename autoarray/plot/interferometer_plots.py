@@ -1,4 +1,4 @@
-from autoarray.plotters import plotters
+from autoarray.plot import plotters
 from autoarray.structures import grids
 
 

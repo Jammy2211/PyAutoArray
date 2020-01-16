@@ -1,8 +1,8 @@
 import autoarray as aa
+import autoarray.plot as aplt
 import pytest
 import os
 from os import path
-from autoarray import conf
 
 directory = path.dirname(path.realpath(__file__))
 
@@ -16,8 +16,8 @@ def make_fit_imaging_path_setup():
 
 @pytest.fixture(autouse=True)
 def set_config_path():
-    conf.instance = conf.Config(
-        path.join(directory, "../test_files/plotters"), path.join(directory, "output")
+    aa.conf.instance = aa.conf.Config(
+        path.join(directory, "../test_files/plot"), path.join(directory, "output")
     )
 
 
@@ -25,9 +25,9 @@ def test__fit_quantities_are_output(fit_imaging_7x7, fit_imaging_path, plot_patc
 
     aa.plot.fit_imaging.image(
         fit=fit_imaging_7x7,
-        include=aa.plotter.Include(mask=True),
-        plotter=aa.plotter.Plotter(
-            output=aa.plotter.Output(path=fit_imaging_path, format="png")
+        include=aplt.Include(mask=True),
+        plotter=aplt.Plotter(
+            output=aplt.Output(path=fit_imaging_path, format="png")
         ),
     )
 
@@ -35,9 +35,9 @@ def test__fit_quantities_are_output(fit_imaging_7x7, fit_imaging_path, plot_patc
 
     aa.plot.fit_imaging.noise_map(
         fit=fit_imaging_7x7,
-        include=aa.plotter.Include(mask=True),
-        plotter=aa.plotter.Plotter(
-            output=aa.plotter.Output(path=fit_imaging_path, format="png")
+        include=aplt.Include(mask=True),
+        plotter=aplt.Plotter(
+            output=aplt.Output(path=fit_imaging_path, format="png")
         ),
     )
 
@@ -45,9 +45,9 @@ def test__fit_quantities_are_output(fit_imaging_7x7, fit_imaging_path, plot_patc
 
     aa.plot.fit_imaging.signal_to_noise_map(
         fit=fit_imaging_7x7,
-        include=aa.plotter.Include(mask=True),
-        plotter=aa.plotter.Plotter(
-            output=aa.plotter.Output(path=fit_imaging_path, format="png")
+        include=aplt.Include(mask=True),
+        plotter=aplt.Plotter(
+            output=aplt.Output(path=fit_imaging_path, format="png")
         ),
     )
 
@@ -55,9 +55,9 @@ def test__fit_quantities_are_output(fit_imaging_7x7, fit_imaging_path, plot_patc
 
     aa.plot.fit_imaging.model_image(
         fit=fit_imaging_7x7,
-        include=aa.plotter.Include(mask=True),
-        plotter=aa.plotter.Plotter(
-            output=aa.plotter.Output(path=fit_imaging_path, format="png")
+        include=aplt.Include(mask=True),
+        plotter=aplt.Plotter(
+            output=aplt.Output(path=fit_imaging_path, format="png")
         ),
     )
 
@@ -65,9 +65,9 @@ def test__fit_quantities_are_output(fit_imaging_7x7, fit_imaging_path, plot_patc
 
     aa.plot.fit_imaging.residual_map(
         fit=fit_imaging_7x7,
-        include=aa.plotter.Include(mask=True),
-        plotter=aa.plotter.Plotter(
-            output=aa.plotter.Output(path=fit_imaging_path, format="png")
+        include=aplt.Include(mask=True),
+        plotter=aplt.Plotter(
+            output=aplt.Output(path=fit_imaging_path, format="png")
         ),
     )
 
@@ -75,9 +75,9 @@ def test__fit_quantities_are_output(fit_imaging_7x7, fit_imaging_path, plot_patc
 
     aa.plot.fit_imaging.normalized_residual_map(
         fit=fit_imaging_7x7,
-        include=aa.plotter.Include(mask=True),
-        plotter=aa.plotter.Plotter(
-            output=aa.plotter.Output(path=fit_imaging_path, format="png")
+        include=aplt.Include(mask=True),
+        plotter=aplt.Plotter(
+            output=aplt.Output(path=fit_imaging_path, format="png")
         ),
     )
 
@@ -85,9 +85,9 @@ def test__fit_quantities_are_output(fit_imaging_7x7, fit_imaging_path, plot_patc
 
     aa.plot.fit_imaging.chi_squared_map(
         fit=fit_imaging_7x7,
-        include=aa.plotter.Include(mask=True),
-        plotter=aa.plotter.Plotter(
-            output=aa.plotter.Output(path=fit_imaging_path, format="png")
+        include=aplt.Include(mask=True),
+        plotter=aplt.Plotter(
+            output=aplt.Output(path=fit_imaging_path, format="png")
         ),
     )
 
@@ -98,9 +98,9 @@ def test__fit_sub_plot(fit_imaging_7x7, fit_imaging_path, plot_patch):
 
     aa.plot.fit_imaging.subplot_fit_imaging(
         fit=fit_imaging_7x7,
-        include=aa.plotter.Include(mask=True),
-        sub_plotter=aa.plotter.SubPlotter(
-            output=aa.plotter.Output(path=fit_imaging_path, format="png")
+        include=aplt.Include(mask=True),
+        sub_plotter=aplt.SubPlotter(
+            output=aplt.Output(path=fit_imaging_path, format="png")
         ),
     )
 
@@ -113,14 +113,14 @@ def test__fit_individuals__source_and_lens__depedent_on_input(
 
     aa.plot.fit_imaging.individuals(
         fit=fit_imaging_7x7,
-        include=aa.plotter.Include(mask=True),
+        include=aplt.Include(mask=True),
         plot_image=True,
         plot_noise_map=False,
         plot_signal_to_noise_map=False,
         plot_model_image=True,
         plot_chi_squared_map=True,
-        plotter=aa.plotter.Plotter(
-            output=aa.plotter.Output(path=fit_imaging_path, format="png")
+        plotter=aplt.Plotter(
+            output=aplt.Output(path=fit_imaging_path, format="png")
         ),
     )
 
@@ -145,8 +145,8 @@ def test__fit_individuals__source_and_lens__depedent_on_input(
         plot_signal_to_noise_map=False,
         plot_model_image=True,
         plot_chi_squared_map=True,
-        plotter=aa.plotter.Plotter(
-            output=aa.plotter.Output(path=fit_imaging_path, format="png")
+        plotter=aplt.Plotter(
+            output=aplt.Output(path=fit_imaging_path, format="png")
         ),
     )
 

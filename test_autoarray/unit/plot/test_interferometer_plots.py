@@ -1,10 +1,10 @@
 from os import path
-from autoarray import conf
 import os
 
 import pytest
 
 import autoarray as aa
+import autoarray.plot as aplt
 
 directory = path.dirname(path.realpath(__file__))
 
@@ -20,8 +20,8 @@ def make_interferometer_plotter_setup():
 
 @pytest.fixture(autouse=True)
 def set_config_path():
-    conf.instance = conf.Config(
-        path.join(directory, "../test_files/plotters"), path.join(directory, "output")
+    aa.conf.instance = aa.conf.Config(
+        path.join(directory, "../test_files/plot"), path.join(directory, "output")
     )
 
 
@@ -31,8 +31,8 @@ def test__individual_attributes_are_output(
 
     aa.plot.interferometer.visibilities(
         interferometer=interferometer_7,
-        plotter=aa.plotter.Plotter(
-            output=aa.plotter.Output(path=interferometer_plotter_path, format="png")
+        plotter=aplt.Plotter(
+            output=aplt.Output(path=interferometer_plotter_path, format="png")
         ),
     )
 
@@ -40,8 +40,8 @@ def test__individual_attributes_are_output(
 
     aa.plot.interferometer.noise_map(
         interferometer=interferometer_7,
-        plotter=aa.plotter.Plotter(
-            output=aa.plotter.Output(path=interferometer_plotter_path, format="png")
+        plotter=aplt.Plotter(
+            output=aplt.Output(path=interferometer_plotter_path, format="png")
         ),
     )
 
@@ -49,8 +49,8 @@ def test__individual_attributes_are_output(
 
     aa.plot.interferometer.u_wavelengths(
         interferometer=interferometer_7,
-        plotter=aa.plotter.Plotter(
-            output=aa.plotter.Output(path=interferometer_plotter_path, format="png")
+        plotter=aplt.Plotter(
+            output=aplt.Output(path=interferometer_plotter_path, format="png")
         ),
     )
 
@@ -58,8 +58,8 @@ def test__individual_attributes_are_output(
 
     aa.plot.interferometer.v_wavelengths(
         interferometer=interferometer_7,
-        plotter=aa.plotter.Plotter(
-            output=aa.plotter.Output(path=interferometer_plotter_path, format="png")
+        plotter=aplt.Plotter(
+            output=aplt.Output(path=interferometer_plotter_path, format="png")
         ),
     )
 
@@ -67,8 +67,8 @@ def test__individual_attributes_are_output(
 
     aa.plot.interferometer.uv_wavelengths(
         interferometer=interferometer_7,
-        plotter=aa.plotter.Plotter(
-            output=aa.plotter.Output(path=interferometer_plotter_path, format="png")
+        plotter=aplt.Plotter(
+            output=aplt.Output(path=interferometer_plotter_path, format="png")
         ),
     )
 
@@ -76,8 +76,8 @@ def test__individual_attributes_are_output(
 
     aa.plot.interferometer.amplitudes_vs_uv_distances(
         interferometer=interferometer_7,
-        plotter=aa.plotter.Plotter(
-            output=aa.plotter.Output(path=interferometer_plotter_path, format="png")
+        plotter=aplt.Plotter(
+            output=aplt.Output(path=interferometer_plotter_path, format="png")
         ),
     )
 
@@ -88,8 +88,8 @@ def test__individual_attributes_are_output(
 
     aa.plot.interferometer.phases_vs_uv_distances(
         interferometer=interferometer_7,
-        plotter=aa.plotter.Plotter(
-            output=aa.plotter.Output(path=interferometer_plotter_path, format="png")
+        plotter=aplt.Plotter(
+            output=aplt.Output(path=interferometer_plotter_path, format="png")
         ),
     )
 
@@ -99,8 +99,8 @@ def test__individual_attributes_are_output(
 
     aa.plot.interferometer.primary_beam(
         interferometer=interferometer_7,
-        plotter=aa.plotter.Plotter(
-            output=aa.plotter.Output(interferometer_plotter_path, format="png")
+        plotter=aplt.Plotter(
+            output=aplt.Output(interferometer_plotter_path, format="png")
         ),
     )
 
@@ -111,8 +111,8 @@ def test__subplot_is_output(interferometer_7, interferometer_plotter_path, plot_
 
     aa.plot.interferometer.subplot_interferometer(
         interferometer=interferometer_7,
-        sub_plotter=aa.plotter.SubPlotter(
-            output=aa.plotter.Output(path=interferometer_plotter_path, format="png")
+        sub_plotter=aplt.SubPlotter(
+            output=aplt.Output(path=interferometer_plotter_path, format="png")
         ),
     )
 
@@ -131,8 +131,8 @@ def test__individuals__output_dependent_on_input(
         plot_v_wavelengths=True,
         plot_primary_beam=True,
         plot_amplitudes_vs_uv_distances=True,
-        plotter=aa.plotter.Plotter(
-            output=aa.plotter.Output(path=interferometer_plotter_path, format="png")
+        plotter=aplt.Plotter(
+            output=aplt.Output(path=interferometer_plotter_path, format="png")
         ),
     )
 
