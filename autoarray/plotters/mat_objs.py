@@ -635,6 +635,39 @@ class Labels(object):
             plt.xlabel(self.xunits, fontsize=self.xsize)
 
 
+class Legend(object):
+    
+    def __init__(
+        self,
+        include=None, fontsize=None,
+    ):
+
+        self.include = include
+        self.fontsize = fontsize
+
+    @classmethod
+    def from_instance_and_config(cls, legend, load_func):
+
+        include = (
+            legend.include
+            if legend.include is not None
+            else load_func("legend", "include", bool)
+        )
+
+        fontsize = (
+            legend.fontsize
+            if legend.fontsize is not None
+            else load_func("legend", "fontsize", int)
+        )
+
+        return Legend(
+            include=include, fontsize=fontsize
+        )
+
+    def set(self):
+        if self.include:
+            plt.legend(fontsize=self.fontsize)
+
 class Output(object):
     def __init__(self, path=None, filename=None, format=None, bypass=False):
 

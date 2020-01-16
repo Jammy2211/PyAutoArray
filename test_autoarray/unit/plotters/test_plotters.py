@@ -290,6 +290,33 @@ class TestAbstractPlotterAttributes:
         assert sub_plotter.labels.xsize == 3
         assert sub_plotter.labels.units.use_scaled == False
 
+    def test__legend__from_config_or_via_manual_input(self):
+
+        plotter = plotters.Plotter()
+
+        assert plotter.legend.include == True
+        assert plotter.legend.fontsize == 12
+
+        plotter = plotters.Plotter(
+            legend=mat_objs.Legend(
+                include=False, fontsize=11
+        ))
+
+        assert plotter.legend.include == False
+        assert plotter.legend.fontsize == 11
+
+        sub_plotter = plotters.SubPlotter()
+
+        assert sub_plotter.legend.include == False
+        assert sub_plotter.legend.fontsize == 13
+
+        sub_plotter = plotters.SubPlotter(
+            legend=mat_objs.Legend(
+                include=True, fontsize=10))
+
+        assert sub_plotter.legend.include == True
+        assert sub_plotter.legend.fontsize == 10
+
     def test__mask_scatterer__from_config_or_via_manual_input(self):
 
         plotter = plotters.Plotter()
