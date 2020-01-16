@@ -290,6 +290,25 @@ class TestLabels:
         assert xunits_from_func == "Hi2"
 
 
+class TestLegend:
+
+    def test__set_legend_works_for_plot(self):
+
+        figure = mat_objs.Figure(aspect="auto")
+
+        figure.open()
+
+        liner = mat_objs.Liner(width=2, style="-", color="k", pointsize=2)
+
+        liner.draw_y_vs_x(y=[1.0, 2.0, 3.0], x=[1.0, 2.0, 3.0], plot_axis_type="linear", label="hi")
+
+        legend = mat_objs.Legend(include=True, fontsize=1)
+
+        legend.set()
+
+        figure.close()
+
+
 class TestOutput:
     def test__input_path_is_created(self):
 

@@ -42,16 +42,15 @@ class AbstractPlotter(object):
         figure=mat_objs.Figure(),
         cmap=mat_objs.ColorMap(),
         cb=mat_objs.ColorBar(),
+            legend=mat_objs.Legend(),
+            ticks=mat_objs.Ticks(),
+            labels=mat_objs.Labels(),
+            output=mat_objs.Output(),
         mask_scatterer=mat_objs.Scatterer(),
         border_scatterer=mat_objs.Scatterer(),
         grid_scatterer=mat_objs.Scatterer(),
         positions_scatterer=mat_objs.Scatterer(),
         liner=mat_objs.Liner(),
-        include_legend=None,
-        legend_fontsize=None,
-        ticks=mat_objs.Ticks(),
-        labels=mat_objs.Labels(),
-        output=mat_objs.Output(),
     ):
 
         if not self.is_sub_plotter:
@@ -80,6 +79,17 @@ class AbstractPlotter(object):
             units=self.units,
         )
 
+        self.legend = mat_objs.Legend.from_instance_and_config(
+            legend=legend,
+            load_func=load_setting_func,
+        )
+
+        self.output = mat_objs.Output.from_instance_and_config(
+            output=output,
+            load_func=load_setting_func,
+            is_sub_plotter=self.is_sub_plotter,
+        )
+
         self.mask_scatterer = mat_objs.Scatterer.from_instance_and_config(
             scatterer=mask_scatterer, section="mask", load_func=load_setting_func)
 
@@ -93,15 +103,6 @@ class AbstractPlotter(object):
             scatterer=positions_scatterer, section="positions", load_func=load_setting_func)
 
         self.liner = mat_objs.Liner.from_instance_and_config(liner=liner, section="liner", load_func=load_setting_func)
-
-        self.output = mat_objs.Output.from_instance_and_config(
-            output=output,
-            load_func=load_setting_func,
-            is_sub_plotter=self.is_sub_plotter,
-        )
-
-        self.include_legend = include_legend
-        self.legend_fontsize = legend_fontsize
 
 
     @property
@@ -409,7 +410,7 @@ class AbstractPlotter(object):
             vertical_lines=vertical_lines, vertical_line_labels=vertical_line_labels
         )
 
-        self.set_legend()
+        self.legend.set()
 
         self.ticks.set_xticks(
             array=None,
@@ -833,10 +834,6 @@ class AbstractPlotter(object):
                         color=color,
                     )
 
-    def set_legend(self):
-        if self.include_legend:
-            plt.legend(fontsize=self.legend_fontsize)
-
     def plotter_with_new_labels(self, labels=mat_objs.Labels()):
 
         plotter = copy.deepcopy(self)
@@ -920,16 +917,15 @@ class Plotter(AbstractPlotter):
         figure=mat_objs.Figure(),
         cmap=mat_objs.ColorMap(),
         cb=mat_objs.ColorBar(),
+        ticks=mat_objs.Ticks(),
+        labels=mat_objs.Labels(),
+        legend=mat_objs.Legend(),
+        output=mat_objs.Output(),
         mask_scatterer=mat_objs.Scatterer(),
         border_scatterer=mat_objs.Scatterer(),
         grid_scatterer=mat_objs.Scatterer(),
         positions_scatterer=mat_objs.Scatterer(),
         liner=mat_objs.Liner(),
-        include_legend=None,
-        legend_fontsize=None,
-        ticks=mat_objs.Ticks(),
-        labels=mat_objs.Labels(),
-        output=mat_objs.Output(),
     ):
 
         super(Plotter, self).__init__(
@@ -937,16 +933,15 @@ class Plotter(AbstractPlotter):
             figure=figure,
             cmap=cmap,
             cb=cb,
+            legend=legend,
+            ticks=ticks,
+            labels=labels,
+            output=output,
             mask_scatterer=mask_scatterer,
             border_scatterer=border_scatterer,
             grid_scatterer=grid_scatterer,
             positions_scatterer=positions_scatterer,
             liner=liner,
-            include_legend=include_legend,
-            legend_fontsize=legend_fontsize,
-            ticks=ticks,
-            labels=labels,
-            output=output,
         )
 
     @property
@@ -961,16 +956,15 @@ class SubPlotter(AbstractPlotter):
         figure=mat_objs.Figure(),
         cmap=mat_objs.ColorMap(),
         cb=mat_objs.ColorBar(),
+            legend=mat_objs.Legend(),
+            ticks=mat_objs.Ticks(),
+            labels=mat_objs.Labels(),
+            output=mat_objs.Output(),
         mask_scatterer=mat_objs.Scatterer(),
         border_scatterer=mat_objs.Scatterer(),
             grid_scatterer=mat_objs.Scatterer(),
         positions_scatterer=mat_objs.Scatterer(),
         liner=mat_objs.Liner(),
-        include_legend=None,
-        legend_fontsize=None,
-        ticks=mat_objs.Ticks(),
-        labels=mat_objs.Labels(),
-        output=mat_objs.Output(),
     ):
 
         super(SubPlotter, self).__init__(
@@ -978,16 +972,15 @@ class SubPlotter(AbstractPlotter):
             figure=figure,
             cmap=cmap,
             cb=cb,
+            legend=legend,
+            ticks=ticks,
+            labels=labels,
+            output=output,
             mask_scatterer=mask_scatterer,
             border_scatterer=border_scatterer,
             grid_scatterer=grid_scatterer,
             positions_scatterer=positions_scatterer,
             liner=liner,
-            include_legend=include_legend,
-            legend_fontsize=legend_fontsize,
-            ticks=ticks,
-            labels=labels,
-            output=output,
         )
 
     def open_subplot_figure(self, number_subplots):
