@@ -14,6 +14,7 @@ from autoarray.plot.plotters import Plotter, SubPlotter, Include
 
 from autoarray.plot.plotters import plot_array as array
 from autoarray.plot.plotters import plot_grid as grid
+from autoarray.plot.plotters import plot_line as line
 
 from autoarray.plot import imaging_plots as imaging
 from autoarray.plot import interferometer_plots as interferometer
