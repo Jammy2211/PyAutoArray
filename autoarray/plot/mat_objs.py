@@ -880,13 +880,31 @@ class Scatterer(object):
 
         color = itertools.cycle(["m", "y", "r", "w", "cy", "b", "g", "k"])
         for index_list in indexes:
-            plt.scatter(
-                y=np.asarray(grid[index_list, 0]),
-                x=np.asarray(grid[index_list, 1]),
-                s=self.size,
-                color=next(color),
-                marker=self.marker,
-            )
+
+            if all([isinstance(index, float) for index in index_list]):
+
+                plt.scatter(
+                    y=np.asarray(grid[index_list, 0]),
+                    x=np.asarray(grid[index_list, 1]),
+                    s=self.size,
+                    color=next(color),
+                    marker=self.marker,
+                )
+
+            elif all([isinstance(index, tuple) for index in index_list]) or all(
+                [isinstance(index, list) for index in index_list]
+            ):
+
+                ys = [index[0] for index in index_list]
+                xs = [index[1] for index in index_list]
+
+                plt.scatter(
+                    y=np.asarray(grid.in_2d[ys, xs, 0]),
+                    x=np.asarray(grid.in_2d[ys, xs, 1]),
+                    s=self.size,
+                    color=next(color),
+                    marker=self.marker,
+                )
 
 
 class Liner(object):
