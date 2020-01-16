@@ -673,6 +673,52 @@ class TestAbstractPlotterPlots:
 
         assert plotter_path + "grid3.png" in plot_patch.paths
 
+    def test__plot_line__works_with_all_extras_included(self, plotter_path, plot_patch):
+
+        plotter = aplt.Plotter(
+            output=aplt.Output(path=plotter_path, filename="line1", format="png")
+        )
+
+        plotter.plot_line(
+            y=np.array([1.0, 2.0, 3.0]),
+            x=np.array([0.5, 1.0, 1.5]),
+            plot_axis_type="loglog",
+            vertical_lines=[1.0, 2.0],
+            label="line0",
+            vertical_line_labels=["line1", "line2"],
+        )
+
+        assert plotter_path + "line1.png" in plot_patch.paths
+
+        plotter = aplt.Plotter(
+            output=aplt.Output(path=plotter_path, filename="line2", format="png")
+        )
+
+        plotter.plot_line(
+            y=np.array([1.0, 2.0, 3.0]),
+            x=np.array([0.5, 1.0, 1.5]),
+            plot_axis_type="semilogy",
+            vertical_lines=[1.0, 2.0],
+            label="line0",
+            vertical_line_labels=["line1", "line2"],
+        )
+
+        assert plotter_path + "line2.png" in plot_patch.paths
+
+        aplt.line(
+            y=np.array([1.0, 2.0, 3.0]),
+            x=np.array([0.5, 1.0, 1.5]),
+            plot_axis_type="loglog",
+            vertical_lines=[1.0, 2.0],
+            label="line0",
+            vertical_line_labels=["line1", "line2"],
+            plotter=aplt.Plotter(
+                output=aplt.Output(path=plotter_path, filename="line3", format="png")
+            ),
+        )
+
+        assert plotter_path + "line3.png" in plot_patch.paths
+
 
 class TestAbstractPlotterNew:
     def test__plotter_with_new_labels__new_labels_if_input__sizes_dont_change(self):

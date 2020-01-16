@@ -423,7 +423,8 @@ class AbstractPlotter(object):
             vertical_lines=vertical_lines, vertical_line_labels=vertical_line_labels
         )
 
-        self.legend.set()
+        if label is not None or vertical_line_labels is not None:
+            self.legend.set()
 
         self.ticks.set_xticks(array=None, extent=[np.min(x), np.max(x)])
 
@@ -1233,4 +1234,24 @@ def plot_grid(
         indexes=indexes,
         lines=lines,
         symmetric_around_centre=symmetric_around_centre,
+    )
+
+
+def plot_line(
+    y,
+    x,
+    label=None,
+    plot_axis_type="semilogy",
+    vertical_lines=None,
+    vertical_line_labels=None,
+    plotter=Plotter(),
+):
+
+    plotter.plot_line(
+        y=y,
+        x=x,
+        label=label,
+        plot_axis_type=plot_axis_type,
+        vertical_lines=vertical_lines,
+        vertical_line_labels=vertical_line_labels,
     )
