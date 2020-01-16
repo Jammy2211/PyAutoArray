@@ -34,7 +34,6 @@ def load_figure_setting(section, name, python_type):
 def load_subplot_setting(section, name, python_type):
     return conf.instance.visualize_subplots.get(section, name, python_type)
 
-
 class AbstractPlotter(object):
     def __init__(
         self,
@@ -1194,3 +1193,16 @@ def set_labels(func):
         return func(*args, **kwargs)
 
     return wrapper
+
+
+def plot_array(
+        array,
+        mask=None,
+        lines=None,
+        positions=None,
+        grid=None,
+        include_origin=False,
+        include_border=False,
+        plotter=Plotter()):
+
+    plotter.plot_array(array=array, mask=mask, lines=lines, positions=positions, grid=grid, include_origin=include_origin, include_border=include_border)

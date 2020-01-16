@@ -566,6 +566,11 @@ class TestAbstractPlotterPlots:
 
         assert plotter_path + "array2.png" in plot_patch.paths
 
+        aplt.array(array=array, mask=mask, grid=grid, positions=[(-1.0, -1.0)],
+                           lines=[(1.0, 1.0), (2.0, 2.0)], include_origin=True, include_border=True,
+                   plotter=aplt.Plotter(output=aplt.Output(path=plotter_path, filename="array3", format="png")))
+
+        assert plotter_path + "array3.png" in plot_patch.paths
 
 class TestAbstractPlotterNew:
     def test__plotter_with_new_labels__new_labels_if_input__sizes_dont_change(self):
