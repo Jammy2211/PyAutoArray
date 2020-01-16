@@ -307,7 +307,6 @@ class AbstractPlotter(object):
         indexes=None,
         lines=None,
         symmetric_around_centre=True,
-        bypass_limits=False,
     ):
         """Plot a grid of (y,x) Cartesian coordinates as a scatter plotters of points.
 
@@ -368,7 +367,7 @@ class AbstractPlotter(object):
         self.labels.set_yunits(include_brackets=True)
         self.labels.set_xunits(include_brackets=True)
 
-        if not bypass_limits:
+        if axis_limits is not None:
 
             self.set_axis_limits(
                 axis_limits=axis_limits,
@@ -1216,14 +1215,14 @@ def plot_array(
         include_border=include_border,
     )
 
+
 def plot_grid(
     grid,
-        color_array=None,
-        axis_limits=None,
-        indexes=None,
-        lines=None,
-        symmetric_around_centre=True,
-        bypass_limits=False,
+    color_array=None,
+    axis_limits=None,
+    indexes=None,
+    lines=None,
+    symmetric_around_centre=True,
     plotter=Plotter(),
 ):
 
@@ -1234,5 +1233,4 @@ def plot_grid(
         indexes=indexes,
         lines=lines,
         symmetric_around_centre=symmetric_around_centre,
-        bypass_limits=bypass_limits,
     )
