@@ -317,6 +317,36 @@ class TestAbstractPlotterAttributes:
         assert sub_plotter.legend.include == True
         assert sub_plotter.legend.fontsize == 10
 
+    def test__origin_scatterer__from_config_or_via_manual_input(self):
+
+        plotter = plotters.Plotter()
+
+        assert plotter.origin_scatterer.size == 80
+        assert plotter.origin_scatterer.marker == "x"
+        assert plotter.origin_scatterer.color == "k"
+
+        plotter = plotters.Plotter(
+            origin_scatterer=mat_objs.Scatterer(size=1, marker=".", color="k")
+        )
+
+        assert plotter.origin_scatterer.size == 1
+        assert plotter.origin_scatterer.marker == "."
+        assert plotter.origin_scatterer.color == "k"
+
+        sub_plotter = plotters.SubPlotter()
+
+        assert sub_plotter.origin_scatterer.size == 81
+        assert sub_plotter.origin_scatterer.marker == "."
+        assert sub_plotter.origin_scatterer.color == "r"
+
+        sub_plotter = plotters.SubPlotter(
+            origin_scatterer=mat_objs.Scatterer(size=24, marker="o", color="r"),
+        )
+
+        assert sub_plotter.origin_scatterer.size == 24
+        assert sub_plotter.origin_scatterer.marker == "o"
+        assert sub_plotter.origin_scatterer.color == "r"
+
     def test__mask_scatterer__from_config_or_via_manual_input(self):
 
         plotter = plotters.Plotter()
