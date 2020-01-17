@@ -3,7 +3,6 @@ import itertools
 from autoarray.plot import plotters
 from autoarray.plot import imaging_plots
 
-
 @plotters.set_labels
 def subplot_image_and_mapper(
     imaging,
@@ -68,9 +67,9 @@ def mapper_grid(
 
     plotter.plot_mapper(
         mapper=mapper,
-        image_pixels=image_pixels,
-        source_pixels=source_pixels,
-        include_centres=include.inversion_centres,
+        image_pixel_indexes=image_pixels,
+        source_pixel_indexes=source_pixels,
+        include_pixelization_grid=include.inversion_pixelization_grid,
         include_grid=include.inversion_grid,
         include_border=include.inversion_border,
     )

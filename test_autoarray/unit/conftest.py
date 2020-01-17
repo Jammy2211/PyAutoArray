@@ -313,3 +313,15 @@ def make_masked_interferometer_fit_x1_plane_7(masked_interferometer_7):
     )
     fit_interferometer.masked_dataset = masked_interferometer_7
     return fit_interferometer
+
+
+@pytest.fixture(name="rectangular_pixelization_grid_3x3")
+def make_rectangular_pixelization_grid_3x3():
+    grid_3x3 = aa.grid.uniform(shape_2d=(3,3), pixel_scales=1.0)
+    return aa.grid_rectangular.overlay_grid(grid=grid_3x3, shape_2d=(3,3))
+
+
+@pytest.fixture(name="rectangular_mapper_7x7_3x3")
+def make_rectangular_mapper_7x7_3x3(grid_7x7, rectangular_pixelization_grid_3x3):
+    return aa.mapper(grid=grid_7x7, pixelization_grid=rectangular_pixelization_grid_3x3)
+
