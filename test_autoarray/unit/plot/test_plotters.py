@@ -493,6 +493,36 @@ class TestAbstractPlotterAttributes:
         assert sub_plotter.index_scatterer.marker == "o"
         assert sub_plotter.index_scatterer.color == "r"
 
+    def test__pixelization_grid_scatterer__from_config_or_via_manual_input(self):
+
+        plotter = aplt.Plotter()
+
+        assert plotter.pixelization_grid_scatterer.size == 5
+        assert plotter.pixelization_grid_scatterer.marker == "."
+        assert plotter.pixelization_grid_scatterer.color == "r"
+
+        plotter = aplt.Plotter(
+            pixelization_grid_scatterer=aplt.Scatterer(size=1, marker="x", color="k")
+        )
+
+        assert plotter.pixelization_grid_scatterer.size == 1
+        assert plotter.pixelization_grid_scatterer.marker == "x"
+        assert plotter.pixelization_grid_scatterer.color == "k"
+
+        sub_plotter = aplt.SubPlotter()
+
+        assert sub_plotter.pixelization_grid_scatterer.size == 6
+        assert sub_plotter.pixelization_grid_scatterer.marker == "o"
+        assert sub_plotter.pixelization_grid_scatterer.color == "g"
+
+        sub_plotter = aplt.SubPlotter(
+            pixelization_grid_scatterer=aplt.Scatterer(size=24, marker="o", color="r")
+        )
+
+        assert sub_plotter.pixelization_grid_scatterer.size == 24
+        assert sub_plotter.pixelization_grid_scatterer.marker == "o"
+        assert sub_plotter.pixelization_grid_scatterer.color == "r"
+
     def test__liner__from_config_or_via_manual_input(self):
 
         plotter = aplt.Plotter()
@@ -719,6 +749,51 @@ class TestAbstractPlotterPlots:
 
         assert plotter_path + "line3.png" in plot_patch.paths
 
+    def test__plot_rectangular_mapper__works_with_all_extras_included(self, rectangular_mapper_7x7_3x3, plotter_path, plot_patch):
+
+        plotter = aplt.Plotter(
+            output=aplt.Output(path=plotter_path, filename="mapper1", format="png")
+        )
+
+        plotter.plot_rectangular_mapper(
+            mapper=rectangular_mapper_7x7_3x3,
+            include_pixelization_grid=True,
+            include_grid=True,
+            include_border=True,
+            image_pixel_indexes=[[(0, 0), (0, 1)], [(1, 2)]],
+            source_pixel_indexes=[[0, 1], [2]]
+        )
+
+        assert plotter_path + "mapper1.png" in plot_patch.paths
+
+        plotter = aplt.Plotter(
+            output=aplt.Output(path=plotter_path, filename="mapper2", format="png")
+        )
+
+        plotter.plot_rectangular_mapper(
+            mapper=rectangular_mapper_7x7_3x3,
+            include_pixelization_grid=True,
+            include_grid=True,
+            include_border=True,
+            image_pixel_indexes=[[(0, 0), (0, 1)], [(1, 2)]],
+            source_pixel_indexes=[[0, 1], [2]]
+        )
+
+        assert plotter_path + "mapper2.png" in plot_patch.paths
+
+        aplt.rectangular_mapper(
+            mapper=rectangular_mapper_7x7_3x3,
+            include_pixelization_grid=True,
+            include_grid=True,
+            include_border=True,
+            image_pixel_indexes=[[(0, 0), (0, 1)], [(1, 2)]],
+            source_pixel_indexes=[[0, 1], [2]],
+            plotter=aplt.Plotter(
+                output=aplt.Output(path=plotter_path, filename="mapper3", format="png")
+            ),
+        )
+
+        assert plotter_path + "mapper3.png" in plot_patch.paths
 
 class TestAbstractPlotterNew:
     def test__plotter_with_new_labels__new_labels_if_input__sizes_dont_change(self):

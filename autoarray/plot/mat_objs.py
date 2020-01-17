@@ -881,7 +881,7 @@ class Scatterer(object):
         color = itertools.cycle(["m", "y", "r", "w", "cy", "b", "g", "k"])
         for index_list in indexes:
 
-            if all([isinstance(index, float) for index in index_list]):
+            if all([isinstance(index, float) for index in index_list]) or all([isinstance(index, int) for index in index_list]):
 
                 plt.scatter(
                     y=np.asarray(grid[index_list, 0]),
@@ -905,6 +905,11 @@ class Scatterer(object):
                     color=next(color),
                     marker=self.marker,
                 )
+
+            else:
+
+                raise exc.PlottingException("The indexes input into the grid_scatter_index method do not conform to a "
+                                            "useable type")
 
 
 class Liner(object):

@@ -212,9 +212,9 @@ def plot_values(
 
         plotter.plot_rectangular_mapper(
             mapper=inversion.mapper,
-            image_pixels=image_pixels,
-            source_pixels=source_pixels,
-            include_centres=include.centres,
+            image_pixel_indexes=image_pixels,
+            source_pixel_indexes=source_pixels,
+            include_pixelization_grid=include.centres,
             include_grid=include.grid,
             include_border=include.border,
         )
@@ -227,9 +227,9 @@ def plot_values(
             mapper=inversion.mapper,
             source_pixel_values=source_pixel_values,
             lines=lines,
-            image_pixels=image_pixels,
-            source_pixels=source_pixels,
-            include_centres=include.inversion_centres,
+            image_pixel_indexes=image_pixels,
+            source_pixel_indexes=source_pixels,
+            include_pixelization_grid=include.inversion_pixelization_grid,
             include_grid=include.inversion_grid,
             include_border=include.inversion_border,
         )

@@ -52,6 +52,7 @@ class AbstractPlotter(object):
         grid_scatterer=mat_objs.Scatterer(),
         positions_scatterer=mat_objs.Scatterer(),
         index_scatterer=mat_objs.Scatterer(),
+        pixelization_grid_scatterer=mat_objs.Scatterer(),
         liner=mat_objs.Liner(),
     ):
 
@@ -113,6 +114,10 @@ class AbstractPlotter(object):
 
         self.index_scatterer = mat_objs.Scatterer.from_instance_and_config(
             scatterer=index_scatterer, section="index", load_func=load_setting_func
+        )
+
+        self.pixelization_grid_scatterer = mat_objs.Scatterer.from_instance_and_config(
+            scatterer=pixelization_grid_scatterer, section="pixelization_grid", load_func=load_setting_func
         )
 
         self.liner = mat_objs.Liner.from_instance_and_config(
@@ -435,43 +440,43 @@ class AbstractPlotter(object):
     def plot_mapper(
         self,
         mapper,
-        include_centres=False,
         include_grid=False,
+        include_pixelization_grid=False,
         include_border=False,
-        image_pixels=None,
-        source_pixels=None,
+        image_pixel_indexes=None,
+        source_pixel_indexes=None,
     ):
 
         if isinstance(mapper, mappers.MapperRectangular):
 
             self.plot_rectangular_mapper(
                 mapper=mapper,
-                include_centres=include_centres,
                 include_grid=include_grid,
+                include_pixelization_grid=include_pixelization_grid,
                 include_border=include_border,
-                image_pixels=image_pixels,
-                source_pixels=source_pixels,
+                image_pixel_indexes=image_pixel_indexes,
+                source_pixel_indexes=source_pixel_indexes,
             )
 
         else:
 
             self.plot_voronoi_mapper(
                 mapper=mapper,
-                include_centres=include_centres,
                 include_grid=include_grid,
+                include_pixelization_grid=include_pixelization_grid,
                 include_border=include_border,
-                image_pixels=image_pixels,
-                source_pixels=source_pixels,
+                image_pixel_indexes=image_pixel_indexes,
+                source_pixel_indexes=source_pixel_indexes,
             )
 
     def plot_rectangular_mapper(
         self,
         mapper,
-        include_centres=False,
+        include_pixelization_grid=False,
         include_grid=False,
         include_border=False,
-        image_pixels=None,
-        source_pixels=None,
+        image_pixel_indexes=None,
+        source_pixel_indexes=None,
     ):
 
         self.figure.open()
@@ -493,22 +498,34 @@ class AbstractPlotter(object):
         self.labels.set_yunits(include_brackets=True)
         self.labels.set_xunits(include_brackets=True)
 
-        # self.scatter_centres(mapper=mapper, include_centres=include_centres)
-        #
-        # self.scatter_grid(include_grid=include_grid, mapper=mapper)
-        #
-        # self.scatter_border(include_border=include_border, mapper=mapper)
+        if include_pixelization_grid:
+            self.pixelization_grid_scatterer.scatter_grids(grids=mapper.pixelization_grid)
 
-        point_colors = itertools.cycle(["y", "r", "k", "g", "m"])
-        self.scatter_source_plane_image_pixels(
-            grid=mapper.grid, image_pixels=image_pixels, point_colors=point_colors
-        )
-        self.scatter_source_plane_source_pixels(
-            grid=mapper.grid,
-            mapper=mapper,
-            source_pixels=source_pixels,
-            point_colors=point_colors,
-        )
+        if include_grid:
+            self.grid_scatterer.scatter_grids(grids=mapper.grid)
+
+        if include_border:
+            sub_border_1d_indexes = mapper.grid.mask.regions._sub_border_1d_indexes
+            sub_border_grid = mapper.grid[sub_border_1d_indexes, :]
+            self.border_scatterer.scatter_grids(grids=sub_border_grid)
+
+        if image_pixel_indexes is not None:
+            self.index_scatterer.scatter_grid_indexes(
+                grid=mapper.grid, indexes=image_pixel_indexes,
+            )
+
+        if source_pixel_indexes is not None:
+
+            image_for_source = mapper.all_sub_mask_1d_indexes_for_pixelization_1d_index
+
+            if not any(isinstance(i, list) for i in source_pixel_indexes):
+                indexes = list(itertools.chain.from_iterable([image_for_source[index] for index in source_pixel_indexes]))
+            else:
+                indexes = []
+                for source_pixel_index_list in source_pixel_indexes:
+                    indexes.append(list(itertools.chain.from_iterable([image_for_source[index] for index in source_pixel_index_list])))
+
+            self.index_scatterer.scatter_grid_indexes(grid=mapper.grid, indexes=indexes)
 
         self.output.to_figure(structure=None)
         self.figure.close()
@@ -517,12 +534,12 @@ class AbstractPlotter(object):
         self,
         mapper,
         source_pixel_values,
-        include_centres=True,
+        include_pixelization_grid=True,
         include_grid=True,
         include_border=False,
         lines=None,
-        image_pixels=None,
-        source_pixels=None,
+        image_pixel_indexes=None,
+        source_pixel_indexes=None,
     ):
 
         self.figure.open()
@@ -554,7 +571,7 @@ class AbstractPlotter(object):
         self.labels.set_yunits(include_brackets=True)
         self.labels.set_xunits(include_brackets=True)
 
-        self.plot_centres(mapper=mapper, include_centres=include_centres)
+        self.plot_centres(mapper=mapper, include_centres=include_pixelization_grid)
 
         self.plot_mapper_grid(include_grid=include_grid, mapper=mapper)
 
@@ -565,12 +582,12 @@ class AbstractPlotter(object):
 
         point_colors = itertools.cycle(["y", "r", "k", "g", "m"])
         self.plot_source_plane_image_pixels(
-            grid=mapper.grid, image_pixels=image_pixels, point_colors=point_colors
+            grid=mapper.grid, image_pixels=image_pixel_indexes, point_colors=point_colors
         )
         self.plot_source_plane_source_pixels(
             grid=mapper.grid,
             mapper=mapper,
-            source_pixels=source_pixels,
+            source_pixels=source_pixel_indexes,
             point_colors=point_colors,
         )
 
@@ -733,36 +750,6 @@ class AbstractPlotter(object):
                     color=color,
                 )
 
-    def scatter_source_plane_source_pixels(
-        self, grid, mapper, source_pixels, point_colors
-    ):
-
-        if source_pixels is not None:
-
-            for source_pixel_set in source_pixels:
-                color = next(point_colors)
-                for source_pixel in source_pixel_set:
-                    plt.scatter(
-                        y=np.asarray(
-                            grid[
-                                mapper.all_sub_mask_1d_indexes_for_pixelization_1d_index[
-                                    source_pixel
-                                ],
-                                0,
-                            ]
-                        ),
-                        x=np.asarray(
-                            grid[
-                                mapper.all_sub_mask_1d_indexes_for_pixelization_1d_index[
-                                    source_pixel
-                                ],
-                                1,
-                            ]
-                        ),
-                        s=8,
-                        color=color,
-                    )
-
     def plotter_with_new_labels(self, labels=mat_objs.Labels()):
 
         plotter = copy.deepcopy(self)
@@ -852,6 +839,7 @@ class Plotter(AbstractPlotter):
         grid_scatterer=mat_objs.Scatterer(),
         positions_scatterer=mat_objs.Scatterer(),
         index_scatterer=mat_objs.Scatterer(),
+        pixelization_grid_scatterer=mat_objs.Scatterer(),
         liner=mat_objs.Liner(),
     ):
 
@@ -870,6 +858,7 @@ class Plotter(AbstractPlotter):
             grid_scatterer=grid_scatterer,
             positions_scatterer=positions_scatterer,
             index_scatterer=index_scatterer,
+            pixelization_grid_scatterer=pixelization_grid_scatterer,
             liner=liner,
         )
 
@@ -895,6 +884,7 @@ class SubPlotter(AbstractPlotter):
         grid_scatterer=mat_objs.Scatterer(),
         positions_scatterer=mat_objs.Scatterer(),
         index_scatterer=mat_objs.Scatterer(),
+        pixelization_grid_scatterer=mat_objs.Scatterer(),
         liner=mat_objs.Liner(),
     ):
 
@@ -913,6 +903,7 @@ class SubPlotter(AbstractPlotter):
             grid_scatterer=grid_scatterer,
             positions_scatterer=positions_scatterer,
             index_scatterer=index_scatterer,
+            pixelization_grid_scatterer=pixelization_grid_scatterer,
             liner=liner,
         )
 
@@ -1001,7 +992,7 @@ class Include(object):
         mask=None,
         grid=None,
         border=None,
-        inversion_centres=None,
+        inversion_pixelization_grid=None,
         inversion_grid=None,
         inversion_border=None,
         inversion_image_pixelization_grid=None,
@@ -1011,8 +1002,8 @@ class Include(object):
         self.mask = self.load_include(value=mask, name="mask")
         self.grid = self.load_include(value=grid, name="grid")
         self.border = self.load_include(value=border, name="border")
-        self.inversion_centres = self.load_include(
-            value=inversion_centres, name="inversion_centres"
+        self.inversion_pixelization_grid = self.load_include(
+            value=inversion_pixelization_grid, name="inversion_pixelization_grid"
         )
         self.inversion_grid = self.load_include(
             value=inversion_grid, name="inversion_grid"
@@ -1254,4 +1245,24 @@ def plot_line(
         plot_axis_type=plot_axis_type,
         vertical_lines=vertical_lines,
         vertical_line_labels=vertical_line_labels,
+    )
+
+
+def plot_rectangular_mapper(
+    mapper,
+        include_pixelization_grid=False,
+        include_grid=False,
+        include_border=False,
+        image_pixel_indexes=None,
+        source_pixel_indexes=None,
+    plotter=Plotter(),
+):
+
+    plotter.plot_rectangular_mapper(
+        mapper=mapper,
+        include_pixelization_grid=include_pixelization_grid,
+        include_grid=include_grid,
+        include_border=include_border,
+        image_pixel_indexes=image_pixel_indexes,
+        source_pixel_indexes=source_pixel_indexes,
     )
