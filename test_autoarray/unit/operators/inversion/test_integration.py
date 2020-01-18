@@ -510,7 +510,7 @@ class TestVoronoiMagnification:
 
         pixelization_grid = aa.grid_voronoi(
             grid_1d=sparse_grid.sparse,
-            nearest_irregular_1d_index_for_mask_1d_index=sparse_grid.sparse_1d_index_for_mask_1d_index,
+            nearest_pixelization_1d_index_for_mask_1d_index=sparse_grid.sparse_1d_index_for_mask_1d_index,
         )
 
         mapper = pix.mapper_from_grid_and_sparse_grid(
@@ -610,7 +610,7 @@ class TestVoronoiMagnification:
 
         pixelization_grid = aa.grid_voronoi(
             grid_1d=sparse_grid.sparse,
-            nearest_irregular_1d_index_for_mask_1d_index=sparse_grid.sparse_1d_index_for_mask_1d_index,
+            nearest_pixelization_1d_index_for_mask_1d_index=sparse_grid.sparse_1d_index_for_mask_1d_index,
         )
 
         mapper = pix.mapper_from_grid_and_sparse_grid(
@@ -721,7 +721,7 @@ class TestVoronoiMagnification:
 
         pixelization_grid = aa.grid_voronoi(
             grid_1d=sparse_grid.sparse,
-            nearest_irregular_1d_index_for_mask_1d_index=sparse_grid.sparse_1d_index_for_mask_1d_index,
+            nearest_pixelization_1d_index_for_mask_1d_index=sparse_grid.sparse_1d_index_for_mask_1d_index,
         )
 
         mapper = pix.mapper_from_grid_and_sparse_grid(
@@ -809,7 +809,7 @@ class TestVoronoiMagnification:
 
         pixelization_grid = aa.grid_voronoi(
             grid_1d=sparse_grid.sparse,
-            nearest_irregular_1d_index_for_mask_1d_index=sparse_grid.sparse_1d_index_for_mask_1d_index,
+            nearest_pixelization_1d_index_for_mask_1d_index=sparse_grid.sparse_1d_index_for_mask_1d_index,
         )
 
         mapper = pix.mapper_from_grid_and_sparse_grid(

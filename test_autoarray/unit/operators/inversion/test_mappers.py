@@ -725,13 +725,13 @@ class TestVoronoiMapper:
                 grid_7x7, pixelization_grid
             )
 
-            nearest_irregular_1d_index_for_mask_1d_index = np.array(
+            nearest_pixelization_1d_index_for_mask_1d_index = np.array(
                 [0, 0, 1, 0, 0, 1, 2, 2, 3]
             )
 
             pixelization_grid = aa.grid_voronoi(
                 grid_1d=pixelization_grid,
-                nearest_irregular_1d_index_for_mask_1d_index=nearest_irregular_1d_index_for_mask_1d_index,
+                nearest_pixelization_1d_index_for_mask_1d_index=nearest_pixelization_1d_index_for_mask_1d_index,
             )
 
             mapper = aa.mapper(grid=grid_7x7, pixelization_grid=pixelization_grid)
@@ -747,13 +747,13 @@ class TestVoronoiMapper:
                 [[0.1, 0.1], [1.1, 0.1], [2.1, 0.1], [0.1, 1.1], [1.1, 1.1], [2.1, 1.1]]
             )
 
-            nearest_irregular_1d_index_for_mask_1d_index = np.array(
+            nearest_pixelization_1d_index_for_mask_1d_index = np.array(
                 [0, 0, 1, 0, 0, 1, 2, 2, 3]
             )
 
             pixelization_grid = aa.grid_voronoi(
                 grid_1d=pixelization_grid,
-                nearest_irregular_1d_index_for_mask_1d_index=nearest_irregular_1d_index_for_mask_1d_index,
+                nearest_pixelization_1d_index_for_mask_1d_index=nearest_pixelization_1d_index_for_mask_1d_index,
             )
 
             mapper = aa.mapper(

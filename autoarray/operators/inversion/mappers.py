@@ -119,15 +119,14 @@ class Mapper(object):
 
         The pixelization's pixels map to different number of sub-grid pixels, thus a list of lists is used to \
         represent these mappings"""
-
         all_sub_mask_1d_indexes_for_pixelization_1d_index = [
             [] for _ in range(self.pixels)
         ]
 
-        for mask_1d_index, pix_1_index in enumerate(
+        for mask_1d_index, pix_1d_index in enumerate(
             self.pixelization_1d_index_for_sub_mask_1d_index
         ):
-            all_sub_mask_1d_indexes_for_pixelization_1d_index[pix_1_index].append(
+            all_sub_mask_1d_indexes_for_pixelization_1d_index[pix_1d_index].append(
                 mask_1d_index
             )
 
@@ -238,9 +237,10 @@ class MapperVoronoi(Mapper):
     @property
     def pixelization_1d_index_for_sub_mask_1d_index(self):
         """  The 1D index mappings between the sub pixels and Voronoi pixelization pixels. """
+
         return mapper_util.pixelization_1d_index_for_voronoi_sub_mask_1d_index_from_grids_and_geometry(
             grid=self.grid,
-            nearest_irregular_1d_index_for_mask_1d_index=self.pixelization_grid.nearest_irregular_1d_index_for_mask_1d_index,
+            nearest_pixelization_1d_index_for_mask_1d_index=self.pixelization_grid.nearest_pixelization_1d_index_for_mask_1d_index,
             mask_1d_index_for_sub_mask_1d_index=self.grid.regions._mask_1d_index_for_sub_mask_1d_index,
             pixelization_grid=self.pixelization_grid,
             pixel_neighbors=self.pixelization_grid.pixel_neighbors,

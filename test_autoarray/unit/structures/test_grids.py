@@ -1415,13 +1415,13 @@ class TestGridIrregular:
     def test__pixelization_grid__attributes(self):
         pix_grid = grids.GridIrregular(
             grid=np.array([[1.0, 1.0], [2.0, 2.0]]),
-            nearest_irregular_1d_index_for_mask_1d_index=np.array([0, 1]),
+            nearest_pixelization_1d_index_for_mask_1d_index=np.array([0, 1]),
         )
 
         assert type(pix_grid) == grids.GridIrregular
         assert (pix_grid == np.array([[1.0, 1.0], [2.0, 2.0]])).all()
         assert (
-            pix_grid.nearest_irregular_1d_index_for_mask_1d_index == np.array([0, 1])
+            pix_grid.nearest_pixelization_1d_index_for_mask_1d_index == np.array([0, 1])
         ).all()
 
     def test__from_unmasked_sparse_shape_and_grid(self):
@@ -1446,7 +1446,7 @@ class TestGridIrregular:
         assert (sparse_grid.sparse == pixelization_grid).all()
         assert (
             sparse_grid.sparse_1d_index_for_mask_1d_index
-            == pixelization_grid.nearest_irregular_1d_index_for_mask_1d_index
+            == pixelization_grid.nearest_pixelization_1d_index_for_mask_1d_index
         ).all()
 
 

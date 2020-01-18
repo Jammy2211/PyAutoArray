@@ -54,6 +54,7 @@ class AbstractPlotter(object):
         index_scatterer=mat_objs.Scatterer(),
         pixelization_grid_scatterer=mat_objs.Scatterer(),
         liner=mat_objs.Liner(),
+        voronoi_drawer=mat_objs.VoronoiDrawer(),
     ):
 
         if not self.is_sub_plotter:
@@ -117,11 +118,19 @@ class AbstractPlotter(object):
         )
 
         self.pixelization_grid_scatterer = mat_objs.Scatterer.from_instance_and_config(
-            scatterer=pixelization_grid_scatterer, section="pixelization_grid", load_func=load_setting_func
+            scatterer=pixelization_grid_scatterer,
+            section="pixelization_grid",
+            load_func=load_setting_func,
         )
 
         self.liner = mat_objs.Liner.from_instance_and_config(
             liner=liner, section="liner", load_func=load_setting_func
+        )
+
+        self.voronoi_drawer = mat_objs.VoronoiDrawer.from_instance_and_config(
+            voronoi_drawer=voronoi_drawer,
+            section="voronoi_drawer",
+            load_func=load_setting_func,
         )
 
     @property
@@ -499,7 +508,9 @@ class AbstractPlotter(object):
         self.labels.set_xunits(include_brackets=True)
 
         if include_pixelization_grid:
-            self.pixelization_grid_scatterer.scatter_grids(grids=mapper.pixelization_grid)
+            self.pixelization_grid_scatterer.scatter_grids(
+                grids=mapper.pixelization_grid
+            )
 
         if include_grid:
             self.grid_scatterer.scatter_grids(grids=mapper.grid)
@@ -511,7 +522,7 @@ class AbstractPlotter(object):
 
         if image_pixel_indexes is not None:
             self.index_scatterer.scatter_grid_indexes(
-                grid=mapper.grid, indexes=image_pixel_indexes,
+                grid=mapper.grid, indexes=image_pixel_indexes
             )
 
         if source_pixel_indexes is not None:
@@ -519,11 +530,24 @@ class AbstractPlotter(object):
             image_for_source = mapper.all_sub_mask_1d_indexes_for_pixelization_1d_index
 
             if not any(isinstance(i, list) for i in source_pixel_indexes):
-                indexes = list(itertools.chain.from_iterable([image_for_source[index] for index in source_pixel_indexes]))
+                indexes = list(
+                    itertools.chain.from_iterable(
+                        [image_for_source[index] for index in source_pixel_indexes]
+                    )
+                )
             else:
                 indexes = []
                 for source_pixel_index_list in source_pixel_indexes:
-                    indexes.append(list(itertools.chain.from_iterable([image_for_source[index] for index in source_pixel_index_list])))
+                    indexes.append(
+                        list(
+                            itertools.chain.from_iterable(
+                                [
+                                    image_for_source[index]
+                                    for index in source_pixel_index_list
+                                ]
+                            )
+                        )
+                    )
 
             self.index_scatterer.scatter_grid_indexes(grid=mapper.grid, indexes=indexes)
 
@@ -533,7 +557,7 @@ class AbstractPlotter(object):
     def plot_voronoi_mapper(
         self,
         mapper,
-        source_pixel_values,
+        source_pixel_values=None,
         include_pixelization_grid=True,
         include_grid=True,
         include_border=False,
@@ -553,43 +577,60 @@ class AbstractPlotter(object):
         self.ticks.set_yticks(array=None, extent=mapper.pixelization_grid.extent)
         self.ticks.set_xticks(array=None, extent=mapper.pixelization_grid.extent)
 
-        regions_SP, vertices_SP = self.voronoi_finite_polygons_2d(
-            voronoi=mapper.voronoi
+        self.voronoi_drawer.draw_voronoi_pixels(
+            mapper=mapper, values=source_pixel_values, cmap=self.cmap.cmap, cb=self.cb
         )
-
-        color_values = source_pixel_values[:] / np.max(source_pixel_values)
-        cmap = plt.get_cmap("jet")
-
-        self.cb.set_with_values(cmap=cmap, color_values=source_pixel_values)
-
-        for region, index in zip(regions_SP, range(mapper.pixels)):
-            polygon = vertices_SP[region]
-            col = cmap(color_values[index])
-            plt.fill(*zip(*polygon), alpha=0.7, facecolor=col, lw=0.0)
 
         self.labels.set_title()
         self.labels.set_yunits(include_brackets=True)
         self.labels.set_xunits(include_brackets=True)
 
-        self.plot_centres(mapper=mapper, include_centres=include_pixelization_grid)
+        if include_pixelization_grid:
+            self.pixelization_grid_scatterer.scatter_grids(
+                grids=mapper.pixelization_grid
+            )
 
-        self.plot_mapper_grid(include_grid=include_grid, mapper=mapper)
+        if include_grid:
+            self.grid_scatterer.scatter_grids(grids=mapper.grid)
 
-        self.plot_border(include_border=include_border, mapper=mapper)
+        if include_border:
+            sub_border_1d_indexes = mapper.grid.mask.regions._sub_border_1d_indexes
+            sub_border_grid = mapper.grid[sub_border_1d_indexes, :]
+            self.border_scatterer.scatter_grids(grids=sub_border_grid)
 
         if lines is not None:
             self.liner.draw_grids(grids=lines)
 
-        point_colors = itertools.cycle(["y", "r", "k", "g", "m"])
-        self.plot_source_plane_image_pixels(
-            grid=mapper.grid, image_pixels=image_pixel_indexes, point_colors=point_colors
-        )
-        self.plot_source_plane_source_pixels(
-            grid=mapper.grid,
-            mapper=mapper,
-            source_pixels=source_pixel_indexes,
-            point_colors=point_colors,
-        )
+        if image_pixel_indexes is not None:
+            self.index_scatterer.scatter_grid_indexes(
+                grid=mapper.grid, indexes=image_pixel_indexes
+            )
+
+        if source_pixel_indexes is not None:
+
+            image_for_source = mapper.all_sub_mask_1d_indexes_for_pixelization_1d_index
+
+            if not any(isinstance(i, list) for i in source_pixel_indexes):
+                indexes = list(
+                    itertools.chain.from_iterable(
+                        [image_for_source[index] for index in source_pixel_indexes]
+                    )
+                )
+            else:
+                indexes = []
+                for source_pixel_index_list in source_pixel_indexes:
+                    indexes.append(
+                        list(
+                            itertools.chain.from_iterable(
+                                [
+                                    image_for_source[index]
+                                    for index in source_pixel_index_list
+                                ]
+                            )
+                        )
+                    )
+
+            self.index_scatterer.scatter_grid_indexes(grid=mapper.grid, indexes=indexes)
 
         self.output.to_figure(structure=None)
         self.figure.close()
@@ -613,86 +654,6 @@ class AbstractPlotter(object):
             y = np.max([np.abs(ymin), np.abs(ymax)])
             axis_limits = [-x, x, -y, y]
             plt.axis(axis_limits)
-
-    def voronoi_finite_polygons_2d(self, vor, radius=None):
-        """
-        Reconstruct infinite voronoi regions in a 2D diagram to finite
-        regions.
-        Parameters
-        ----------
-        vor : Voronoi
-            Input diagram
-        radius : float, optional
-            Distance to 'points at infinity'.
-        Returns
-        -------
-        regions : list of tuples
-            Indices of vertices in each revised Voronoi regions.
-        vertices : list of tuples
-            Coordinates for revised Voronoi vertices. Same as coordinates
-            of input vertices, with 'points at infinity' appended to the
-            end.
-        """
-
-        if vor.points.shape[1] != 2:
-            raise ValueError("Requires 2D input")
-
-        new_regions = []
-        new_vertices = vor.vertices.tolist()
-
-        center = vor.points.mean(axis=0)
-        if radius is None:
-            radius = vor.points.ptp().max() * 2
-
-        # Construct a map containing all ridges for a given point
-        all_ridges = {}
-        for (p1, p2), (v1, v2) in zip(vor.ridge_points, vor.ridge_vertices):
-            all_ridges.setdefault(p1, []).append((p2, v1, v2))
-            all_ridges.setdefault(p2, []).append((p1, v1, v2))
-
-        # Reconstruct infinite regions
-        for p1, region in enumerate(vor.point_region):
-            vertices = vor.regions[region]
-
-            if all(v >= 0 for v in vertices):
-                # finite region
-                new_regions.append(vertices)
-                continue
-
-            # reconstruct a non-finite region
-            ridges = all_ridges[p1]
-            new_region = [v for v in vertices if v >= 0]
-
-            for p2, v1, v2 in ridges:
-                if v2 < 0:
-                    v1, v2 = v2, v1
-                if v1 >= 0:
-                    # finite ridge: already in the region
-                    continue
-
-                # Compute the missing endpoint of an infinite ridge
-
-                t = vor.points[p2] - vor.points[p1]  # tangent
-                t /= np.linalg.norm(t)
-                n = np.array([-t[1], t[0]])  # hyper
-
-                midpoint = vor.points[[p1, p2]].mean(axis=0)
-                direction = np.sign(np.dot(midpoint - center, n)) * n
-                far_point = vor.vertices[v2] + direction * radius
-
-                new_region.append(len(new_vertices))
-                new_vertices.append(far_point.tolist())
-
-            # sort region counterclockwise
-            vs = np.asarray([new_vertices[v] for v in new_region])
-            c = vs.mean(axis=0)
-            angles = np.arctan2(vs[:, 1] - c[1], vs[:, 0] - c[0])
-            new_region = np.array(new_region)[np.argsort(angles)]
-
-            # finish
-            new_regions.append(new_region.tolist())
-
-        return new_regions, np.asarray(new_vertices)
 
     def scatter_image_pixels(self, grid, image_pixels, point_colors):
 
@@ -841,6 +802,7 @@ class Plotter(AbstractPlotter):
         index_scatterer=mat_objs.Scatterer(),
         pixelization_grid_scatterer=mat_objs.Scatterer(),
         liner=mat_objs.Liner(),
+        voronoi_drawer=mat_objs.VoronoiDrawer(),
     ):
 
         super(Plotter, self).__init__(
@@ -860,6 +822,7 @@ class Plotter(AbstractPlotter):
             index_scatterer=index_scatterer,
             pixelization_grid_scatterer=pixelization_grid_scatterer,
             liner=liner,
+            voronoi_drawer=voronoi_drawer,
         )
 
     @property
@@ -886,6 +849,7 @@ class SubPlotter(AbstractPlotter):
         index_scatterer=mat_objs.Scatterer(),
         pixelization_grid_scatterer=mat_objs.Scatterer(),
         liner=mat_objs.Liner(),
+        voronoi_drawer=mat_objs.VoronoiDrawer(),
     ):
 
         super(SubPlotter, self).__init__(
@@ -905,6 +869,7 @@ class SubPlotter(AbstractPlotter):
             index_scatterer=index_scatterer,
             pixelization_grid_scatterer=pixelization_grid_scatterer,
             liner=liner,
+            voronoi_drawer=voronoi_drawer,
         )
 
     def open_subplot_figure(self, number_subplots):
@@ -1250,15 +1215,35 @@ def plot_line(
 
 def plot_rectangular_mapper(
     mapper,
-        include_pixelization_grid=False,
-        include_grid=False,
-        include_border=False,
-        image_pixel_indexes=None,
-        source_pixel_indexes=None,
+    include_pixelization_grid=False,
+    include_grid=False,
+    include_border=False,
+    image_pixel_indexes=None,
+    source_pixel_indexes=None,
     plotter=Plotter(),
 ):
 
     plotter.plot_rectangular_mapper(
+        mapper=mapper,
+        include_pixelization_grid=include_pixelization_grid,
+        include_grid=include_grid,
+        include_border=include_border,
+        image_pixel_indexes=image_pixel_indexes,
+        source_pixel_indexes=source_pixel_indexes,
+    )
+
+
+def plot_voronoi_mapper(
+    mapper,
+    include_pixelization_grid=False,
+    include_grid=False,
+    include_border=False,
+    image_pixel_indexes=None,
+    source_pixel_indexes=None,
+    plotter=Plotter(),
+):
+
+    plotter.plot_voronoi_mapper(
         mapper=mapper,
         include_pixelization_grid=include_pixelization_grid,
         include_grid=include_grid,
