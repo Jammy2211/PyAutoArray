@@ -546,7 +546,7 @@ class TestAbstractPlotterAttributes:
         assert sub_plotter.liner.width == 1
         assert sub_plotter.liner.style == "-"
         assert sub_plotter.liner.color == "k"
-        assert plotter.liner.pointsize == 3
+        assert sub_plotter.liner.pointsize == 20
 
         sub_plotter = aplt.SubPlotter(
             liner=aplt.Liner(width=24, style=".", color="r", pointsize=21)
