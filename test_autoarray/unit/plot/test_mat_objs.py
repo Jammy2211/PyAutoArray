@@ -572,3 +572,20 @@ class TestLiner:
         liner.draw_rectangular_grid_lines(
             extent=[-4.0, 8.0, -3.0, 10.0], shape_2d=(8, 3)
         )
+
+
+class TestVoronoiDrawer:
+    def test__draws_voronoi_pixels_for_sensible_input(self, voronoi_mapper_9_3x3):
+
+        voronoi_drawer = aplt.VoronoiDrawer(edgewidth=0.5, edgecolor="r", alpha=1.0)
+
+        voronoi_drawer.draw_voronoi_pixels(
+            mapper=voronoi_mapper_9_3x3, values=None, cmap=None, cb=None
+        )
+
+        voronoi_drawer.draw_voronoi_pixels(
+            mapper=voronoi_mapper_9_3x3,
+            values=np.ones(9),
+            cmap="jet",
+            cb=aplt.ColorBar(ticksize=1, fraction=0.1, pad=0.05),
+        )

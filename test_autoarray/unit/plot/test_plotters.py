@@ -557,6 +557,36 @@ class TestAbstractPlotterAttributes:
         assert sub_plotter.liner.color == "r"
         assert sub_plotter.liner.pointsize == 21
 
+    def test__voronoi_drawer__from_config_or_via_manual_input(self):
+
+        plotter = aplt.Plotter()
+
+        assert plotter.voronoi_drawer.edgewidth == 0.3
+        assert plotter.voronoi_drawer.edgecolor == "k"
+        assert plotter.voronoi_drawer.alpha == 0.7
+
+        plotter = aplt.Plotter(
+            voronoi_drawer=aplt.VoronoiDrawer(edgewidth=0.5, edgecolor="r", alpha=1.0)
+        )
+
+        assert plotter.voronoi_drawer.edgewidth == 0.5
+        assert plotter.voronoi_drawer.edgecolor == "r"
+        assert plotter.voronoi_drawer.alpha == 1.0
+
+        sub_plotter = aplt.SubPlotter()
+
+        assert sub_plotter.voronoi_drawer.edgewidth == 1.0
+        assert sub_plotter.voronoi_drawer.edgecolor == "r"
+        assert sub_plotter.voronoi_drawer.alpha == 2.0
+
+        sub_plotter = aplt.SubPlotter(
+            voronoi_drawer=aplt.VoronoiDrawer(edgewidth=0.5, edgecolor="r", alpha=1.0)
+        )
+
+        assert sub_plotter.voronoi_drawer.edgewidth == 0.5
+        assert sub_plotter.voronoi_drawer.edgecolor == "r"
+        assert sub_plotter.voronoi_drawer.alpha == 1.0
+
     def test__output__correctly(self):
 
         plotter = aplt.Plotter()
@@ -749,7 +779,9 @@ class TestAbstractPlotterPlots:
 
         assert plotter_path + "line3.png" in plot_patch.paths
 
-    def test__plot_rectangular_mapper__works_with_all_extras_included(self, rectangular_mapper_7x7_3x3, plotter_path, plot_patch):
+    def test__plot_rectangular_mapper__works_with_all_extras_included(
+        self, rectangular_mapper_7x7_3x3, plotter_path, plot_patch
+    ):
 
         plotter = aplt.Plotter(
             output=aplt.Output(path=plotter_path, filename="mapper1", format="png")
@@ -761,7 +793,7 @@ class TestAbstractPlotterPlots:
             include_grid=True,
             include_border=True,
             image_pixel_indexes=[[(0, 0), (0, 1)], [(1, 2)]],
-            source_pixel_indexes=[[0, 1], [2]]
+            source_pixel_indexes=[[0, 1], [2]],
         )
 
         assert plotter_path + "mapper1.png" in plot_patch.paths
@@ -776,7 +808,7 @@ class TestAbstractPlotterPlots:
             include_grid=True,
             include_border=True,
             image_pixel_indexes=[[(0, 0), (0, 1)], [(1, 2)]],
-            source_pixel_indexes=[[0, 1], [2]]
+            source_pixel_indexes=[[0, 1], [2]],
         )
 
         assert plotter_path + "mapper2.png" in plot_patch.paths
@@ -794,6 +826,55 @@ class TestAbstractPlotterPlots:
         )
 
         assert plotter_path + "mapper3.png" in plot_patch.paths
+
+    def test__plot_voronoi_mapper__works_with_all_extras_included(
+        self, voronoi_mapper_9_3x3, plotter_path, plot_patch
+    ):
+
+        plotter = aplt.Plotter(
+            output=aplt.Output(path=plotter_path, filename="mapper1", format="png")
+        )
+
+        plotter.plot_voronoi_mapper(
+            mapper=voronoi_mapper_9_3x3,
+            include_pixelization_grid=True,
+            include_grid=True,
+            include_border=True,
+            image_pixel_indexes=[[(0, 0), (0, 1)], [(1, 2)]],
+            source_pixel_indexes=[[0, 1], [2]],
+        )
+
+        assert plotter_path + "mapper1.png" in plot_patch.paths
+
+        plotter = aplt.Plotter(
+            output=aplt.Output(path=plotter_path, filename="mapper2", format="png")
+        )
+
+        plotter.plot_voronoi_mapper(
+            mapper=voronoi_mapper_9_3x3,
+            include_pixelization_grid=True,
+            include_grid=True,
+            include_border=True,
+            image_pixel_indexes=[[(0, 0), (0, 1)], [(1, 2)]],
+            source_pixel_indexes=[[0, 1], [2]],
+        )
+
+        assert plotter_path + "mapper2.png" in plot_patch.paths
+
+        aplt.voronoi_mapper(
+            mapper=voronoi_mapper_9_3x3,
+            include_pixelization_grid=True,
+            include_grid=True,
+            include_border=True,
+            image_pixel_indexes=[[(0, 0), (0, 1)], [(1, 2)]],
+            source_pixel_indexes=[[0, 1], [2]],
+            plotter=aplt.Plotter(
+                output=aplt.Output(path=plotter_path, filename="mapper3", format="png")
+            ),
+        )
+
+        assert plotter_path + "mapper3.png" in plot_patch.paths
+
 
 class TestAbstractPlotterNew:
     def test__plotter_with_new_labels__new_labels_if_input__sizes_dont_change(self):

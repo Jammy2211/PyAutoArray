@@ -130,7 +130,7 @@ class Voronoi(Pixelization):
         try:
             pixelization_grid = grids.GridVoronoi(
                 grid_1d=relocated_pixelization_grid,
-                nearest_irregular_1d_index_for_mask_1d_index=sparse_grid.nearest_irregular_1d_index_for_mask_1d_index,
+                nearest_pixelization_1d_index_for_mask_1d_index=sparse_grid.nearest_pixelization_1d_index_for_mask_1d_index,
             )
 
             return mappers.MapperVoronoi(
@@ -164,7 +164,7 @@ class VoronoiMagnification(Voronoi):
 
         return grids.GridIrregular(
             grid=sparse_grid.sparse,
-            nearest_irregular_1d_index_for_mask_1d_index=sparse_grid.sparse_1d_index_for_mask_1d_index,
+            nearest_pixelization_1d_index_for_mask_1d_index=sparse_grid.sparse_1d_index_for_mask_1d_index,
         )
 
 
@@ -198,5 +198,5 @@ class VoronoiBrightnessImage(Voronoi):
 
         return grids.GridIrregular(
             grid=sparse_grid.sparse,
-            nearest_irregular_1d_index_for_mask_1d_index=sparse_grid.sparse_1d_index_for_mask_1d_index,
+            nearest_pixelization_1d_index_for_mask_1d_index=sparse_grid.sparse_1d_index_for_mask_1d_index,
         )

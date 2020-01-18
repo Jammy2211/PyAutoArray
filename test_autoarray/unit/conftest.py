@@ -317,11 +317,40 @@ def make_masked_interferometer_fit_x1_plane_7(masked_interferometer_7):
 
 @pytest.fixture(name="rectangular_pixelization_grid_3x3")
 def make_rectangular_pixelization_grid_3x3():
-    grid_3x3 = aa.grid.uniform(shape_2d=(3,3), pixel_scales=1.0)
-    return aa.grid_rectangular.overlay_grid(grid=grid_3x3, shape_2d=(3,3))
+    grid_3x3 = aa.grid.uniform(shape_2d=(3, 3), pixel_scales=1.0)
+    return aa.grid_rectangular.overlay_grid(grid=grid_3x3, shape_2d=(3, 3))
 
 
 @pytest.fixture(name="rectangular_mapper_7x7_3x3")
 def make_rectangular_mapper_7x7_3x3(grid_7x7, rectangular_pixelization_grid_3x3):
     return aa.mapper(grid=grid_7x7, pixelization_grid=rectangular_pixelization_grid_3x3)
 
+
+@pytest.fixture(name="voronoi_pixelization_grid_9")
+def make_voronoi_pixelization_grid_9(grid_7x7):
+    grid_9 = aa.grid.manual_1d(
+        grid=[
+            [0.6, -0.3],
+            [0.5, -0.8],
+            [0.2, 0.1],
+            [0.0, 0.5],
+            [-0.3, -0.8],
+            [-0.6, -0.5],
+            [-0.4, -1.1],
+            [-1.2, 0.8],
+            [-1.5, 0.9],
+        ],
+        shape_2d=(3, 3),
+        pixel_scales=1.0,
+    )
+    return aa.grid_voronoi(
+        grid_1d=grid_9,
+        nearest_pixelization_1d_index_for_mask_1d_index=np.zeros(
+            shape=grid_7x7.shape_1d, dtype="int"
+        ),
+    )
+
+
+@pytest.fixture(name="voronoi_mapper_9_3x3")
+def make_voronoi_mapper_9_3x3(grid_7x7, voronoi_pixelization_grid_9):
+    return aa.mapper(grid=grid_7x7, pixelization_grid=voronoi_pixelization_grid_9)

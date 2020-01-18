@@ -62,7 +62,9 @@ def test__image_and_rectangular_mapper_is_output(
         imaging=image,
         mapper=rectangular_mapper,
         include=aplt.Include(
-            inversion_pixelization_grid=True, inversion_grid=True, inversion_border=False
+            inversion_pixelization_grid=True,
+            inversion_grid=True,
+            inversion_border=False,
         ),
         image_pixels=[[0, 1, 2], [3]],
         source_pixels=[[1, 2], [0]],
@@ -77,7 +79,9 @@ def test__rectangular_mapper_is_output(rectangular_mapper, plotter_path, plot_pa
     aa.plot.mapper.mapper_grid(
         mapper=rectangular_mapper,
         include=aplt.Include(
-            inversion_pixelization_grid=True, inversion_grid=True, inversion_border=False
+            inversion_pixelization_grid=True,
+            inversion_grid=True,
+            inversion_border=False,
         ),
         image_pixels=[[0, 1, 2], [3]],
         source_pixels=[[1, 2], [0]],

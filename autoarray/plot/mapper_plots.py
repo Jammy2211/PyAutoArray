@@ -3,6 +3,7 @@ import itertools
 from autoarray.plot import plotters
 from autoarray.plot import imaging_plots
 
+
 @plotters.set_labels
 def subplot_image_and_mapper(
     imaging,

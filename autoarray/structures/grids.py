@@ -453,7 +453,7 @@ class AbstractGrid(abstract_structure.AbstractStructure):
             grid=self.relocated_grid_from_grid_jit(
                 grid=pixelization_grid, border_grid=self.sub_border_grid
             ),
-            nearest_irregular_1d_index_for_mask_1d_index=pixelization_grid.nearest_irregular_1d_index_for_mask_1d_index,
+            nearest_pixelization_1d_index_for_mask_1d_index=pixelization_grid.nearest_pixelization_1d_index_for_mask_1d_index,
         )
 
     def output_to_fits(self, file_path, overwrite=False):
@@ -751,7 +751,7 @@ class Grid(AbstractGrid):
 
 class GridIrregular(np.ndarray):
     def __new__(
-        cls, grid, nearest_irregular_1d_index_for_mask_1d_index=None, *args, **kwargs
+        cls, grid, nearest_pixelization_1d_index_for_mask_1d_index=None, *args, **kwargs
     ):
         """A pixelization-grid of (y,x) coordinates which are used to form the pixel centres of adaptive pixelizations in the \
         *pixelizations* module.
@@ -768,14 +768,14 @@ class GridIrregular(np.ndarray):
         pix_grid : ndarray
             The grid of (y,x) scaled coordinates of every image-plane pixelization grid used for adaptive source \
             -plane pixelizations.
-        nearest_irregular_1d_index_for_mask_1d_index : ndarray
+        nearest_pixelization_1d_index_for_mask_1d_index : ndarray
             A 1D array that maps every grid pixel to its nearest pixelization-grid pixel.
         """
         if type(grid) is list:
             grid = np.asarray(grid)
         obj = grid.view(cls)
-        obj.nearest_irregular_1d_index_for_mask_1d_index = (
-            nearest_irregular_1d_index_for_mask_1d_index
+        obj.nearest_pixelization_1d_index_for_mask_1d_index = (
+            nearest_pixelization_1d_index_for_mask_1d_index
         )
         obj.interpolator = None
         return obj
@@ -797,13 +797,13 @@ class GridIrregular(np.ndarray):
 
         return GridIrregular(
             grid=sparse_grid.sparse,
-            nearest_irregular_1d_index_for_mask_1d_index=sparse_grid.sparse_1d_index_for_mask_1d_index,
+            nearest_pixelization_1d_index_for_mask_1d_index=sparse_grid.sparse_1d_index_for_mask_1d_index,
         )
 
     def __array_finalize__(self, obj):
-        if hasattr(obj, "nearest_irregular_1d_index_for_mask_1d_index"):
-            self.nearest_irregular_1d_index_for_mask_1d_index = (
-                obj.nearest_irregular_1d_index_for_mask_1d_index
+        if hasattr(obj, "nearest_pixelization_1d_index_for_mask_1d_index"):
+            self.nearest_pixelization_1d_index_for_mask_1d_index = (
+                obj.nearest_pixelization_1d_index_for_mask_1d_index
             )
         if hasattr(obj, "interpolator"):
             self.interpolator = obj.interpolator
@@ -1049,7 +1049,7 @@ class GridRectangular(Grid):
         pix_grid : ndarray
             The grid of (y,x) scaled coordinates of every image-plane pixelization grid used for adaptive source \
             -plane pixelizations.
-        nearest_irregular_1d_index_for_mask_1d_index : ndarray
+        nearest_pixelization_1d_index_for_mask_1d_index : ndarray
             A 1D array that maps every grid pixel to its nearest pixelization-grid pixel.
         """
 
@@ -1143,7 +1143,11 @@ class GridVoronoi(GridIrregular):
     """
 
     def __new__(
-        cls, grid_1d, nearest_irregular_1d_index_for_mask_1d_index=None, *args, **kwargs
+        cls,
+        grid_1d,
+        nearest_pixelization_1d_index_for_mask_1d_index=None,
+        *args,
+        **kwargs
     ):
         """A pixelization-grid of (y,x) coordinates which are used to form the pixel centres of adaptive pixelizations in the \
         *pixelizations* module.
@@ -1160,7 +1164,7 @@ class GridVoronoi(GridIrregular):
         pix_grid : ndarray
             The grid of (y,x) scaled coordinates of every image-plane pixelization grid used for adaptive source \
             -plane pixelizations.
-        nearest_irregular_1d_index_for_mask_1d_index : ndarray
+        nearest_pixelization_1d_index_for_mask_1d_index : ndarray
             A 1D array that maps every grid pixel to its nearest pixelization-grid pixel.
         """
 
@@ -1182,8 +1186,8 @@ class GridVoronoi(GridIrregular):
 
         obj.pixel_neighbors = pixel_neighbors.astype("int")
         obj.pixel_neighbors_size = pixel_neighbors_size.astype("int")
-        obj.nearest_irregular_1d_index_for_mask_1d_index = (
-            nearest_irregular_1d_index_for_mask_1d_index
+        obj.nearest_pixelization_1d_index_for_mask_1d_index = (
+            nearest_pixelization_1d_index_for_mask_1d_index
         )
 
         return obj
