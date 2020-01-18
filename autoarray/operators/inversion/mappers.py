@@ -168,6 +168,7 @@ class Mapper(object):
                 )
             return indexes
 
+
 class MapperRectangular(Mapper):
     def __init__(self, grid, pixelization_grid, hyper_image=None):
         """ Class representing a rectangular mapper, which maps unmasked pixels on a masked 2D array (in the form of \
@@ -277,3 +278,6 @@ class MapperVoronoi(Mapper):
     @property
     def voronoi(self):
         return self.pixelization_grid.voronoi
+
+    def reconstructed_pixelization_from_solution_vector(self, solution_vector):
+        return solution_vector

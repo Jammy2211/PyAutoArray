@@ -6,7 +6,7 @@ from autoarray.plot import plotters
 def subplot_fit_imaging(
     fit,
     grid=None,
-    points=None,
+    positions=None,
     lines=None,
     include=plotters.Include(),
     sub_plotter=plotters.SubPlotter(),
@@ -18,7 +18,7 @@ def subplot_fit_imaging(
 
     sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index=1)
 
-    image(fit=fit, grid=grid, include=include, points=points, plotter=sub_plotter)
+    image(fit=fit, grid=grid, positions=positions, include=include, plotter=sub_plotter)
 
     sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index=2)
 
@@ -26,7 +26,7 @@ def subplot_fit_imaging(
 
     sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index=3)
 
-    model_image(fit=fit, include=include, lines=lines, plotter=sub_plotter)
+    model_image(fit=fit, lines=lines, include=include, plotter=sub_plotter)
 
     sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index=4)
 
@@ -49,7 +49,7 @@ def individuals(
     fit,
     lines=None,
     grid=None,
-    points=None,
+    positions=None,
     plot_image=False,
     plot_noise_map=False,
     plot_signal_to_noise_map=False,
@@ -85,7 +85,7 @@ def individuals(
 
     if plot_image:
 
-        image(fit=fit, include=include, points=points, grid=grid, plotter=plotter)
+        image(fit=fit, include=include, positions=positions, grid=grid, plotter=plotter)
 
     if plot_noise_map:
 
@@ -116,14 +116,14 @@ def individuals(
         inversion_plots.individuals(
             inversion=fit.inversion,
             lines=lines,
-            plot_inversion_reconstruction=plot_inversion_reconstruction,
-            plot_inversion_errors=plot_inversion_errors,
-            plot_inversion_residual_map=plot_inversion_residual_map,
-            plot_inversion_normalized_residual_map=plot_inversion_normalized_residual_map,
-            plot_inversion_chi_squared_map=plot_inversion_chi_squared_map,
-            plot_inversion_regularization_weight_map=plot_inversion_regularization_weight_map,
-            plot_inversion_interpolated_reconstruction=plot_inversion_interpolated_reconstruction,
-            plot_inversion_interpolated_errors=plot_inversion_interpolated_errors,
+            plot_reconstruction=plot_inversion_reconstruction,
+            plot_errors=plot_inversion_errors,
+            plot_residual_map=plot_inversion_residual_map,
+            plot_normalized_residual_map=plot_inversion_normalized_residual_map,
+            plot_chi_squared_map=plot_inversion_chi_squared_map,
+            plot_regularization_weight_map=plot_inversion_regularization_weight_map,
+            plot_interpolated_reconstruction=plot_inversion_interpolated_reconstruction,
+            plot_interpolated_errors=plot_inversion_interpolated_errors,
             plotter=plotter,
         )
 
@@ -131,7 +131,7 @@ def individuals(
 @plotters.set_labels
 def image(
     fit,
-    points=None,
+    positions=None,
     grid=None,
     lines=None,
     include=plotters.Include(),
@@ -153,12 +153,14 @@ def image(
         grid=grid,
         mask=include.mask_from_fit(fit=fit),
         lines=lines,
-        positions=points,
+        positions=positions,
     )
 
 
 @plotters.set_labels
-def noise_map(fit, points=None, include=plotters.Include(), plotter=plotters.Plotter()):
+def noise_map(
+    fit, positions=None, include=plotters.Include(), plotter=plotters.Plotter()
+):
     """Plot the noise-map of a lens fit.
 
     Set *autolens.datas.array.plotters.plotters* for a description of all input parameters not described below.
@@ -171,13 +173,13 @@ def noise_map(fit, points=None, include=plotters.Include(), plotter=plotters.Plo
         If true, the origin of the datas's coordinate system is plotted as a 'x'.
     """
     plotter.plot_array(
-        array=fit.noise_map, mask=include.mask_from_fit(fit=fit), positions=points
+        array=fit.noise_map, mask=include.mask_from_fit(fit=fit), positions=positions
     )
 
 
 @plotters.set_labels
 def signal_to_noise_map(
-    fit, points=None, include=plotters.Include(), plotter=plotters.Plotter()
+    fit, positions=None, include=plotters.Include(), plotter=plotters.Plotter()
 ):
     """Plot the noise-map of a lens fit.
 
@@ -193,13 +195,17 @@ def signal_to_noise_map(
     plotter.plot_array(
         array=fit.signal_to_noise_map,
         mask=include.mask_from_fit(fit=fit),
-        positions=points,
+        positions=positions,
     )
 
 
 @plotters.set_labels
 def model_image(
-    fit, lines=None, points=None, include=plotters.Include(), plotter=plotters.Plotter()
+    fit,
+    lines=None,
+    positions=None,
+    include=plotters.Include(),
+    plotter=plotters.Plotter(),
 ):
     """Plot the model image of a fit.
 
@@ -216,13 +222,13 @@ def model_image(
         array=fit.model_data,
         mask=include.mask_from_fit(fit=fit),
         lines=lines,
-        positions=points,
+        positions=positions,
     )
 
 
 @plotters.set_labels
 def residual_map(
-    fit, points=None, include=plotters.Include(), plotter=plotters.Plotter()
+    fit, positions=None, include=plotters.Include(), plotter=plotters.Plotter()
 ):
     """Plot the residual-map of a lens fit.
 
@@ -236,13 +242,13 @@ def residual_map(
         The index of the datas in the datas-set of which the residual_map are plotted.
     """
     plotter.plot_array(
-        array=fit.residual_map, mask=include.mask_from_fit(fit=fit), positions=points
+        array=fit.residual_map, mask=include.mask_from_fit(fit=fit), positions=positions
     )
 
 
 @plotters.set_labels
 def normalized_residual_map(
-    fit, points=None, include=plotters.Include(), plotter=plotters.Plotter()
+    fit, positions=None, include=plotters.Include(), plotter=plotters.Plotter()
 ):
     """Plot the residual-map of a lens fit.
 
@@ -258,13 +264,13 @@ def normalized_residual_map(
     plotter.plot_array(
         array=fit.normalized_residual_map,
         mask=include.mask_from_fit(fit=fit),
-        positions=points,
+        positions=positions,
     )
 
 
 @plotters.set_labels
 def chi_squared_map(
-    fit, points=None, include=plotters.Include(), plotter=plotters.Plotter()
+    fit, positions=None, include=plotters.Include(), plotter=plotters.Plotter()
 ):
     """Plot the chi-squared map of a lens fit.
 
@@ -278,5 +284,7 @@ def chi_squared_map(
         The index of the datas in the datas-set of which the chi-squareds are plotted.
     """
     plotter.plot_array(
-        array=fit.chi_squared_map, mask=include.mask_from_fit(fit=fit), positions=points
+        array=fit.chi_squared_map,
+        mask=include.mask_from_fit(fit=fit),
+        positions=positions,
     )

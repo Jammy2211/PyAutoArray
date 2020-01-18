@@ -133,14 +133,14 @@ def individuals(
 
         inversion_plots.individuals(
             inversion=fit.inversion,
-            plot_inversion_reconstruction=plot_inversion_reconstruction,
-            plot_inversion_errors=plot_inversion_errors,
-            plot_inversion_residual_map=plot_inversion_residual_map,
-            plot_inversion_normalized_residual_map=plot_inversion_normalized_residual_map,
-            plot_inversion_chi_squared_map=plot_inversion_chi_squared_map,
-            plot_inversion_regularization_weight_map=plot_inversion_regularization_weight_map,
-            plot_inversion_interpolated_reconstruction=plot_inversion_interpolated_reconstruction,
-            plot_inversion_interpolated_errors=plot_inversion_interpolated_errors,
+            plot_reconstruction=plot_inversion_reconstruction,
+            plot_errors=plot_inversion_errors,
+            plot_residual_map=plot_inversion_residual_map,
+            plot_normalized_residual_map=plot_inversion_normalized_residual_map,
+            plot_chi_squared_map=plot_inversion_chi_squared_map,
+            plot_regularization_weight_map=plot_inversion_regularization_weight_map,
+            plot_interpolated_reconstruction=plot_inversion_interpolated_reconstruction,
+            plot_interpolated_errors=plot_inversion_interpolated_errors,
             include=include,
             plotter=plotter,
         )
