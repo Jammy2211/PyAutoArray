@@ -11,7 +11,7 @@ import copy
 
 from autoarray import exc
 from autoarray.plot import mat_objs
-import itertools
+import inspect
 from autoarray.operators.inversion import mappers
 
 
@@ -57,7 +57,7 @@ class AbstractPlotter(object):
         voronoi_drawer=mat_objs.VoronoiDrawer(),
     ):
 
-        if not self.is_sub_plotter:
+        if isinstance(self, Plotter):
             load_setting_func = load_figure_setting
         else:
             load_setting_func = load_subplot_setting
@@ -88,7 +88,7 @@ class AbstractPlotter(object):
         self.output = mat_objs.Output.from_instance_and_config(
             output=output,
             load_func=load_setting_func,
-            is_sub_plotter=self.is_sub_plotter,
+            is_sub_plotter=isinstance(self, SubPlotter),
         )
 
         self.origin_scatterer = mat_objs.Scatterer.from_instance_and_config(
@@ -132,10 +132,6 @@ class AbstractPlotter(object):
             section="voronoi_drawer",
             load_func=load_setting_func,
         )
-
-    @property
-    def is_sub_plotter(self):
-        raise NotImplementedError()
 
     def plot_array(
         self,
@@ -311,7 +307,9 @@ class AbstractPlotter(object):
             self.liner.draw_grids(grids=lines)
 
         self.output.to_figure(structure=array)
-        self.figure.close()
+
+        if not isinstance(self, SubPlotter):
+            self.figure.close()
 
     def plot_grid(
         self,
@@ -407,7 +405,9 @@ class AbstractPlotter(object):
             self.liner.draw_grids(grids=lines)
 
         self.output.to_figure(structure=grid)
-        self.figure.close()
+
+        if not isinstance(self, SubPlotter):
+            self.figure.close()
 
     def plot_line(
         self,
@@ -444,7 +444,8 @@ class AbstractPlotter(object):
 
         self.output.to_figure(structure=None)
 
-        self.figure.close()
+        if not isinstance(self, SubPlotter):
+            self.figure.close()
 
     def plot_mapper(
         self,
@@ -527,32 +528,15 @@ class AbstractPlotter(object):
 
         if source_pixel_indexes is not None:
 
-            image_for_source = mapper.all_sub_mask_1d_indexes_for_pixelization_1d_index
-
-            if not any(isinstance(i, list) for i in source_pixel_indexes):
-                indexes = list(
-                    itertools.chain.from_iterable(
-                        [image_for_source[index] for index in source_pixel_indexes]
-                    )
-                )
-            else:
-                indexes = []
-                for source_pixel_index_list in source_pixel_indexes:
-                    indexes.append(
-                        list(
-                            itertools.chain.from_iterable(
-                                [
-                                    image_for_source[index]
-                                    for index in source_pixel_index_list
-                                ]
-                            )
-                        )
-                    )
+            indexes = mapper.image_pixel_indexes_from_source_pixel_indexes(
+                source_pixel_indexes=source_pixel_indexes)
 
             self.index_scatterer.scatter_grid_indexes(grid=mapper.grid, indexes=indexes)
 
         self.output.to_figure(structure=None)
-        self.figure.close()
+
+        if not isinstance(self, SubPlotter):
+            self.figure.close()
 
     def plot_voronoi_mapper(
         self,
@@ -608,32 +592,15 @@ class AbstractPlotter(object):
 
         if source_pixel_indexes is not None:
 
-            image_for_source = mapper.all_sub_mask_1d_indexes_for_pixelization_1d_index
-
-            if not any(isinstance(i, list) for i in source_pixel_indexes):
-                indexes = list(
-                    itertools.chain.from_iterable(
-                        [image_for_source[index] for index in source_pixel_indexes]
-                    )
-                )
-            else:
-                indexes = []
-                for source_pixel_index_list in source_pixel_indexes:
-                    indexes.append(
-                        list(
-                            itertools.chain.from_iterable(
-                                [
-                                    image_for_source[index]
-                                    for index in source_pixel_index_list
-                                ]
-                            )
-                        )
-                    )
+            indexes = mapper.image_pixel_indexes_from_source_pixel_indexes(
+                source_pixel_indexes=source_pixel_indexes)
 
             self.index_scatterer.scatter_grid_indexes(grid=mapper.grid, indexes=indexes)
 
         self.output.to_figure(structure=None)
-        self.figure.close()
+
+        if not isinstance(self, SubPlotter):
+            self.figure.close()
 
     def set_axis_limits(self, axis_limits, grid, symmetric_around_centre):
         """Set the axis limits of the figure the grid is plotted on.
@@ -654,62 +621,6 @@ class AbstractPlotter(object):
             y = np.max([np.abs(ymin), np.abs(ymax)])
             axis_limits = [-x, x, -y, y]
             plt.axis(axis_limits)
-
-    def scatter_image_pixels(self, grid, image_pixels, point_colors):
-
-        if image_pixels is not None:
-
-            for image_pixel_set in image_pixels:
-                color = next(point_colors)
-                plt.scatter(
-                    y=np.asarray(grid[image_pixel_set, 0]),
-                    x=np.asarray(grid[image_pixel_set, 1]),
-                    color=color,
-                    s=10.0,
-                )
-
-    def scatter_image_plane_source_pixels(
-        self, grid, mapper, source_pixels, point_colors
-    ):
-
-        if source_pixels is not None:
-
-            for source_pixel_set in source_pixels:
-                color = next(point_colors)
-                for source_pixel in source_pixel_set:
-                    plt.scatter(
-                        y=np.asarray(
-                            grid[
-                                mapper.all_sub_mask_1d_indexes_for_pixelization_1d_index[
-                                    source_pixel
-                                ],
-                                0,
-                            ]
-                        ),
-                        x=np.asarray(
-                            grid[
-                                mapper.all_sub_mask_1d_indexes_for_pixelization_1d_index[
-                                    source_pixel
-                                ],
-                                1,
-                            ]
-                        ),
-                        s=8,
-                        color=color,
-                    )
-
-    def scatter_source_plane_image_pixels(self, grid, image_pixels, point_colors):
-
-        if image_pixels is not None:
-
-            for image_pixel_set in image_pixels:
-                color = next(point_colors)
-                plt.scatter(
-                    y=np.asarray(grid[[image_pixel_set], 0]),
-                    x=np.asarray(grid[[image_pixel_set], 1]),
-                    s=8,
-                    color=color,
-                )
 
     def plotter_with_new_labels(self, labels=mat_objs.Labels()):
 
@@ -825,10 +736,6 @@ class Plotter(AbstractPlotter):
             voronoi_drawer=voronoi_drawer,
         )
 
-    @property
-    def is_sub_plotter(self):
-        return False
-
 
 class SubPlotter(AbstractPlotter):
     def __init__(
@@ -881,9 +788,8 @@ class SubPlotter(AbstractPlotter):
             The size of the figure in (rows, columns).
         as_subplot : bool
             If the figure is a subplot, the setup_figure function is omitted to ensure that each subplot does not create a \
-            new figure and so that it can be output using the *output.output_figure(structure=None, is_sub_plotter=False)* function.
+            new figure and so that it can be output using the *output.output_figure(structure=None)* function.
         """
-
         figsize = self.get_subplot_figsize(number_subplots=number_subplots)
         plt.figure(figsize=figsize)
 
@@ -944,10 +850,6 @@ class SubPlotter(AbstractPlotter):
             return (25, 20)
         else:
             return (25, 20)
-
-    @property
-    def is_sub_plotter(self):
-        return True
 
 
 class Include(object):
@@ -1038,14 +940,19 @@ def plotter_key_from_dictionary(dictionary):
         if isinstance(value, AbstractPlotter):
             plotter_key = key
 
-    if plotter_key is None:
-        raise exc.PlottingException(
-            "The plot function called could not locate a Plotter in the kwarg arguments"
-            "in order to set the labels."
-        )
-
     return plotter_key
 
+def plotter_and_plotter_key_from_func(func):
+
+    defaults = inspect.getfullargspec(func).defaults
+    plotter = [value for value in defaults if isinstance(value, AbstractPlotter)][0]
+
+    if isinstance(plotter, Plotter):
+        plotter_key = "plotter"
+    else:
+        plotter_key = "sub_plotter"
+
+    return plotter, plotter_key
 
 def kpc_per_arcsec_of_object_from_dictionary(dictionary):
 
@@ -1082,7 +989,11 @@ def set_subplot_filename(func):
     def wrapper(*args, **kwargs):
 
         plotter_key = plotter_key_from_dictionary(dictionary=kwargs)
-        plotter = kwargs[plotter_key]
+
+        if plotter_key is not None:
+            plotter = kwargs[plotter_key]
+        else:
+            plotter, plotter_key = plotter_and_plotter_key_from_func(func=func)
 
         if not isinstance(plotter, SubPlotter):
             raise exc.PlottingException(
@@ -1124,7 +1035,11 @@ def set_labels(func):
     def wrapper(*args, **kwargs):
 
         plotter_key = plotter_key_from_dictionary(dictionary=kwargs)
-        plotter = kwargs[plotter_key]
+
+        if plotter_key is not None:
+            plotter = kwargs[plotter_key]
+        else:
+            plotter, plotter_key = plotter_and_plotter_key_from_func(func=func)
 
         title = plotter.labels.title_from_func(func=func)
         yunits = plotter.labels.yunits_from_func(func=func)

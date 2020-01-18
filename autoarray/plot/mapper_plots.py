@@ -10,8 +10,8 @@ def subplot_image_and_mapper(
     mapper,
     mask=None,
     positions=None,
-    image_pixels=None,
-    source_pixels=None,
+    image_pixel_indexes=None,
+    source_pixel_indexes=None,
     include=plotters.Include(),
     sub_plotter=plotters.SubPlotter(),
 ):
@@ -30,47 +30,31 @@ def subplot_image_and_mapper(
         plotter=sub_plotter,
     )
 
-    point_colors = itertools.cycle(["y", "r", "k", "g", "m"])
-    sub_plotter.scatter_image_pixels(
-        grid=mapper.grid.geometry.unmasked_grid,
-        image_pixels=image_pixels,
-        point_colors=point_colors,
-    )
-    sub_plotter.scatter_image_plane_source_pixels(
-        mapper=mapper,
-        grid=mapper.grid.geometry.unmasked_grid,
-        source_pixels=source_pixels,
-        point_colors=point_colors,
-    )
+    if image_pixel_indexes is not None:
+
+        sub_plotter.index_scatterer.scatter_grid_indexes(
+            grid=mapper.grid.geometry.unmasked_grid,
+            indexes=image_pixel_indexes)
+
+    if source_pixel_indexes is not None:
+
+        indexes = mapper.image_pixel_indexes_from_source_pixel_indexes(
+            source_pixel_indexes=source_pixel_indexes)
+
+        sub_plotter.index_scatterer.scatter_grid_indexes(
+            grid=mapper.grid.geometry.unmasked_grid,
+            indexes=indexes)
 
     sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index=2)
 
-    mapper_grid(
+    sub_plotter.plot_mapper(
         mapper=mapper,
-        image_pixels=image_pixels,
-        source_pixels=source_pixels,
-        include=include,
-        plotter=sub_plotter,
+        image_pixel_indexes=image_pixel_indexes,
+        source_pixel_indexes=source_pixel_indexes,
+        include_grid=include.inversion_grid,
+        include_pixelization_grid=include.inversion_pixelization_grid,
+        include_border=include.inversion_border,
     )
 
     sub_plotter.output.subplot_to_figure()
     sub_plotter.figure.close()
-
-
-@plotters.set_labels
-def mapper_grid(
-    mapper,
-    image_pixels=None,
-    source_pixels=None,
-    include=plotters.Include(),
-    plotter=plotters.Plotter(),
-):
-
-    plotter.plot_mapper(
-        mapper=mapper,
-        image_pixel_indexes=image_pixels,
-        source_pixel_indexes=source_pixels,
-        include_pixelization_grid=include.inversion_pixelization_grid,
-        include_grid=include.inversion_grid,
-        include_border=include.inversion_border,
-    )
