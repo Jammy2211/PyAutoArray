@@ -577,7 +577,7 @@ class TestAbstractPlotterAttributes:
 
         assert sub_plotter.voronoi_drawer.edgewidth == 1.0
         assert sub_plotter.voronoi_drawer.edgecolor == "r"
-        assert sub_plotter.voronoi_drawer.alpha == 2.0
+        assert sub_plotter.voronoi_drawer.alpha == 0.5
 
         sub_plotter = aplt.SubPlotter(
             voronoi_drawer=aplt.VoronoiDrawer(edgewidth=0.5, edgecolor="r", alpha=1.0)

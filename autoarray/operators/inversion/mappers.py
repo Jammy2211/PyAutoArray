@@ -1,6 +1,7 @@
 from autoarray.structures import arrays, grids
 from autoarray.util import array_util, grid_util, mapper_util
 
+import itertools
 import numpy as np
 
 
@@ -142,6 +143,30 @@ class Mapper(object):
             hyper_image=self.hyper_image,
         )
 
+    def image_pixel_indexes_from_source_pixel_indexes(self, source_pixel_indexes):
+
+        image_for_source = self.all_sub_mask_1d_indexes_for_pixelization_1d_index
+
+        if not any(isinstance(i, list) for i in source_pixel_indexes):
+            return list(
+                itertools.chain.from_iterable(
+                    [image_for_source[index] for index in source_pixel_indexes]
+                )
+            )
+        else:
+            indexes = []
+            for source_pixel_index_list in source_pixel_indexes:
+                indexes.append(
+                    list(
+                        itertools.chain.from_iterable(
+                            [
+                                image_for_source[index]
+                                for index in source_pixel_index_list
+                            ]
+                        )
+                    )
+                )
+            return indexes
 
 class MapperRectangular(Mapper):
     def __init__(self, grid, pixelization_grid, hyper_image=None):
