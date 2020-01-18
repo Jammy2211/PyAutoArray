@@ -142,6 +142,7 @@ class AbstractPlotter(object):
         grid=None,
         include_origin=False,
         include_border=False,
+        bypass_output=False,
     ):
         """Plot an array of data_type as a figure.
 
@@ -306,9 +307,10 @@ class AbstractPlotter(object):
         if lines is not None:
             self.liner.draw_grids(grids=lines)
 
-        self.output.to_figure(structure=array)
+        if not bypass_output:
+            self.output.to_figure(structure=array)
 
-        if not isinstance(self, SubPlotter):
+        if not isinstance(self, SubPlotter) and not bypass_output:
             self.figure.close()
 
     def plot_grid(
@@ -319,6 +321,7 @@ class AbstractPlotter(object):
         indexes=None,
         lines=None,
         symmetric_around_centre=True,
+        bypass_output=False,
     ):
         """Plot a grid of (y,x) Cartesian coordinates as a scatter plotters of points.
 
@@ -404,9 +407,10 @@ class AbstractPlotter(object):
         if lines is not None:
             self.liner.draw_grids(grids=lines)
 
-        self.output.to_figure(structure=grid)
+        if not bypass_output:
+            self.output.to_figure(structure=grid)
 
-        if not isinstance(self, SubPlotter):
+        if not isinstance(self, SubPlotter) and not bypass_output:
             self.figure.close()
 
     def plot_line(
@@ -417,6 +421,7 @@ class AbstractPlotter(object):
         plot_axis_type="semilogy",
         vertical_lines=None,
         vertical_line_labels=None,
+        bypass_output=False,
     ):
 
         if y is None:
@@ -442,25 +447,35 @@ class AbstractPlotter(object):
 
         self.ticks.set_xticks(array=None, extent=[np.min(x), np.max(x)])
 
-        self.output.to_figure(structure=None)
+        if not bypass_output:
+            self.output.to_figure(structure=None)
 
-        if not isinstance(self, SubPlotter):
+        if not isinstance(self, SubPlotter) and not bypass_output:
             self.figure.close()
 
     def plot_mapper(
         self,
         mapper,
-        include_grid=False,
+        source_pixel_values=None,
+        positions=None,
+        lines=None,
+        include_origin=False,
         include_pixelization_grid=False,
+        include_grid=False,
         include_border=False,
         image_pixel_indexes=None,
         source_pixel_indexes=None,
+        bypass_output=False,
     ):
 
         if isinstance(mapper, mappers.MapperRectangular):
 
             self.plot_rectangular_mapper(
                 mapper=mapper,
+                source_pixel_values=source_pixel_values,
+                positions=positions,
+                lines=lines,
+                include_origin=include_origin,
                 include_grid=include_grid,
                 include_pixelization_grid=include_pixelization_grid,
                 include_border=include_border,
@@ -472,6 +487,10 @@ class AbstractPlotter(object):
 
             self.plot_voronoi_mapper(
                 mapper=mapper,
+                source_pixel_values=source_pixel_values,
+                positions=positions,
+                lines=lines,
+                include_origin=include_origin,
                 include_grid=include_grid,
                 include_pixelization_grid=include_pixelization_grid,
                 include_border=include_border,
@@ -482,14 +501,29 @@ class AbstractPlotter(object):
     def plot_rectangular_mapper(
         self,
         mapper,
+        source_pixel_values=None,
+        positions=None,
+        lines=None,
+        include_origin=False,
         include_pixelization_grid=False,
         include_grid=False,
         include_border=False,
         image_pixel_indexes=None,
         source_pixel_indexes=None,
+        bypass_output=False,
     ):
 
         self.figure.open()
+
+        if source_pixel_values is not None:
+
+            self.plot_array(
+                array=source_pixel_values,
+                lines=lines,
+                positions=positions,
+                include_origin=include_origin,
+                bypass_output=True,
+            )
 
         self.set_axis_limits(
             axis_limits=mapper.pixelization_grid.extent,
@@ -507,6 +541,9 @@ class AbstractPlotter(object):
         self.labels.set_title()
         self.labels.set_yunits(include_brackets=True)
         self.labels.set_xunits(include_brackets=True)
+
+        if include_origin:
+            self.origin_scatterer.scatter_grids(grids=[mapper.grid.origin])
 
         if include_pixelization_grid:
             self.pixelization_grid_scatterer.scatter_grids(
@@ -529,25 +566,30 @@ class AbstractPlotter(object):
         if source_pixel_indexes is not None:
 
             indexes = mapper.image_pixel_indexes_from_source_pixel_indexes(
-                source_pixel_indexes=source_pixel_indexes)
+                source_pixel_indexes=source_pixel_indexes
+            )
 
             self.index_scatterer.scatter_grid_indexes(grid=mapper.grid, indexes=indexes)
 
-        self.output.to_figure(structure=None)
+        if not bypass_output:
+            self.output.to_figure(structure=None)
 
-        if not isinstance(self, SubPlotter):
+        if not isinstance(self, SubPlotter) and not bypass_output:
             self.figure.close()
 
     def plot_voronoi_mapper(
         self,
         mapper,
         source_pixel_values=None,
-        include_pixelization_grid=True,
-        include_grid=True,
-        include_border=False,
+        positions=None,
         lines=None,
+        include_origin=False,
+        include_pixelization_grid=False,
+        include_grid=False,
+        include_border=False,
         image_pixel_indexes=None,
         source_pixel_indexes=None,
+        bypass_output=False,
     ):
 
         self.figure.open()
@@ -569,6 +611,9 @@ class AbstractPlotter(object):
         self.labels.set_yunits(include_brackets=True)
         self.labels.set_xunits(include_brackets=True)
 
+        if include_origin:
+            self.origin_scatterer.scatter_grids(grids=[mapper.grid.origin])
+
         if include_pixelization_grid:
             self.pixelization_grid_scatterer.scatter_grids(
                 grids=mapper.pixelization_grid
@@ -582,6 +627,9 @@ class AbstractPlotter(object):
             sub_border_grid = mapper.grid[sub_border_1d_indexes, :]
             self.border_scatterer.scatter_grids(grids=sub_border_grid)
 
+        if positions is not None:
+            self.positions_scatterer.scatter_grids(grids=positions)
+
         if lines is not None:
             self.liner.draw_grids(grids=lines)
 
@@ -593,13 +641,15 @@ class AbstractPlotter(object):
         if source_pixel_indexes is not None:
 
             indexes = mapper.image_pixel_indexes_from_source_pixel_indexes(
-                source_pixel_indexes=source_pixel_indexes)
+                source_pixel_indexes=source_pixel_indexes
+            )
 
             self.index_scatterer.scatter_grid_indexes(grid=mapper.grid, indexes=indexes)
 
-        self.output.to_figure(structure=None)
+        if not bypass_output:
+            self.output.to_figure(structure=None)
 
-        if not isinstance(self, SubPlotter):
+        if not isinstance(self, SubPlotter) and not bypass_output:
             self.figure.close()
 
     def set_axis_limits(self, axis_limits, grid, symmetric_around_centre):
@@ -793,9 +843,12 @@ class SubPlotter(AbstractPlotter):
         figsize = self.get_subplot_figsize(number_subplots=number_subplots)
         plt.figure(figsize=figsize)
 
-    def setup_subplot(self, number_subplots, subplot_index):
+    def setup_subplot(self, number_subplots, subplot_index, aspect=None):
         rows, columns = self.get_subplot_rows_columns(number_subplots=number_subplots)
-        plt.subplot(rows, columns, subplot_index)
+        if aspect is None:
+            plt.subplot(rows, columns, subplot_index)
+        else:
+            plt.subplot(rows, columns, subplot_index, aspect=float(aspect))
 
     def get_subplot_rows_columns(self, number_subplots):
         """Get the size of a sub plotters in (rows, columns), based on the number of subplots that are going to be plotted.
@@ -942,6 +995,7 @@ def plotter_key_from_dictionary(dictionary):
 
     return plotter_key
 
+
 def plotter_and_plotter_key_from_func(func):
 
     defaults = inspect.getfullargspec(func).defaults
@@ -953,6 +1007,7 @@ def plotter_and_plotter_key_from_func(func):
         plotter_key = "sub_plotter"
 
     return plotter, plotter_key
+
 
 def kpc_per_arcsec_of_object_from_dictionary(dictionary):
 
@@ -1128,7 +1183,7 @@ def plot_line(
     )
 
 
-def plot_rectangular_mapper(
+def plot_mapper_obj(
     mapper,
     include_pixelization_grid=False,
     include_grid=False,
@@ -1138,27 +1193,7 @@ def plot_rectangular_mapper(
     plotter=Plotter(),
 ):
 
-    plotter.plot_rectangular_mapper(
-        mapper=mapper,
-        include_pixelization_grid=include_pixelization_grid,
-        include_grid=include_grid,
-        include_border=include_border,
-        image_pixel_indexes=image_pixel_indexes,
-        source_pixel_indexes=source_pixel_indexes,
-    )
-
-
-def plot_voronoi_mapper(
-    mapper,
-    include_pixelization_grid=False,
-    include_grid=False,
-    include_border=False,
-    image_pixel_indexes=None,
-    source_pixel_indexes=None,
-    plotter=Plotter(),
-):
-
-    plotter.plot_voronoi_mapper(
+    plotter.plot_mapper(
         mapper=mapper,
         include_pixelization_grid=include_pixelization_grid,
         include_grid=include_grid,

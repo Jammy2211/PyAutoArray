@@ -26,7 +26,7 @@ voronoi_grid = aa.grid_voronoi(
 )
 voronoi_mapper = aa.mapper(grid=grid_7x7, pixelization_grid=voronoi_grid)
 
-aplt.voronoi_mapper(
+aplt.mapper_obj(
     mapper=voronoi_mapper,
     include_grid=True,
     include_pixelization_grid=True,
@@ -34,4 +34,4 @@ aplt.voronoi_mapper(
     image_pixel_indexes=[[(0, 0), (0, 1)], [(2, 2)]],
     source_pixel_indexes=[0, 1, 2, 3, 4, 5, 6, 7, 8],
 )
-aplt.voronoi_mapper(mapper=voronoi_mapper, source_pixel_indexes=[[3, 4], [5]])
+aplt.mapper_obj(mapper=voronoi_mapper, source_pixel_indexes=[[3, 4], [5]])

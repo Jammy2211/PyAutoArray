@@ -9,7 +9,7 @@ import numpy as np
 directory = path.dirname(path.realpath(__file__))
 
 
-@pytest.fixture(name="plotter_path")
+@pytest.fixture(name="plot_path")
 def make_plotter_setup():
     return "{}/..//test_files/plot/".format(os.path.dirname(os.path.realpath(__file__)))
 
@@ -623,9 +623,7 @@ class TestAbstractPlotterAttributes:
 
 
 class TestAbstractPlotterPlots:
-    def test__plot_array__works_with_all_extras_included(
-        self, plotter_path, plot_patch
-    ):
+    def test__plot_array__works_with_all_extras_included(self, plot_path, plot_patch):
 
         array = aa.array.ones(shape_2d=(31, 31), pixel_scales=(1.0, 1.0), sub_size=2)
 
@@ -639,7 +637,7 @@ class TestAbstractPlotterPlots:
         grid = aa.grid.uniform(shape_2d=(11, 11), pixel_scales=0.5)
 
         plotter = aplt.Plotter(
-            output=aplt.Output(path=plotter_path, filename="array1", format="png")
+            output=aplt.Output(path=plot_path, filename="array1", format="png")
         )
 
         plotter.plot_array(
@@ -652,10 +650,10 @@ class TestAbstractPlotterPlots:
             include_border=True,
         )
 
-        assert plotter_path + "array1.png" in plot_patch.paths
+        assert plot_path + "array1.png" in plot_patch.paths
 
         plotter = aplt.Plotter(
-            output=aplt.Output(path=plotter_path, filename="array2", format="png")
+            output=aplt.Output(path=plot_path, filename="array2", format="png")
         )
 
         plotter.plot_array(
@@ -668,7 +666,7 @@ class TestAbstractPlotterPlots:
             include_border=True,
         )
 
-        assert plotter_path + "array2.png" in plot_patch.paths
+        assert plot_path + "array2.png" in plot_patch.paths
 
         aplt.array(
             array=array,
@@ -679,18 +677,18 @@ class TestAbstractPlotterPlots:
             include_origin=True,
             include_border=True,
             plotter=aplt.Plotter(
-                output=aplt.Output(path=plotter_path, filename="array3", format="png")
+                output=aplt.Output(path=plot_path, filename="array3", format="png")
             ),
         )
 
-        assert plotter_path + "array3.png" in plot_patch.paths
+        assert plot_path + "array3.png" in plot_patch.paths
 
-    def test__plot_grid__works_with_all_extras_included(self, plotter_path, plot_patch):
+    def test__plot_grid__works_with_all_extras_included(self, plot_path, plot_patch):
         grid = aa.grid.uniform(shape_2d=(11, 11), pixel_scales=1.0)
         color_array = np.linspace(start=0.0, stop=1.0, num=grid.shape_1d)
 
         plotter = aplt.Plotter(
-            output=aplt.Output(path=plotter_path, filename="grid1", format="png")
+            output=aplt.Output(path=plot_path, filename="grid1", format="png")
         )
 
         plotter.plot_grid(
@@ -702,10 +700,10 @@ class TestAbstractPlotterPlots:
             symmetric_around_centre=False,
         )
 
-        assert plotter_path + "grid1.png" in plot_patch.paths
+        assert plot_path + "grid1.png" in plot_patch.paths
 
         plotter = aplt.Plotter(
-            output=aplt.Output(path=plotter_path, filename="grid2", format="png")
+            output=aplt.Output(path=plot_path, filename="grid2", format="png")
         )
 
         plotter.plot_grid(
@@ -717,7 +715,7 @@ class TestAbstractPlotterPlots:
             symmetric_around_centre=True,
         )
 
-        assert plotter_path + "grid2.png" in plot_patch.paths
+        assert plot_path + "grid2.png" in plot_patch.paths
 
         aplt.grid(
             grid=grid,
@@ -727,16 +725,16 @@ class TestAbstractPlotterPlots:
             indexes=[0, 1, 2, 14],
             symmetric_around_centre=True,
             plotter=aplt.Plotter(
-                output=aplt.Output(path=plotter_path, filename="grid3", format="png")
+                output=aplt.Output(path=plot_path, filename="grid3", format="png")
             ),
         )
 
-        assert plotter_path + "grid3.png" in plot_patch.paths
+        assert plot_path + "grid3.png" in plot_patch.paths
 
-    def test__plot_line__works_with_all_extras_included(self, plotter_path, plot_patch):
+    def test__plot_line__works_with_all_extras_included(self, plot_path, plot_patch):
 
         plotter = aplt.Plotter(
-            output=aplt.Output(path=plotter_path, filename="line1", format="png")
+            output=aplt.Output(path=plot_path, filename="line1", format="png")
         )
 
         plotter.plot_line(
@@ -748,10 +746,10 @@ class TestAbstractPlotterPlots:
             vertical_line_labels=["line1", "line2"],
         )
 
-        assert plotter_path + "line1.png" in plot_patch.paths
+        assert plot_path + "line1.png" in plot_patch.paths
 
         plotter = aplt.Plotter(
-            output=aplt.Output(path=plotter_path, filename="line2", format="png")
+            output=aplt.Output(path=plot_path, filename="line2", format="png")
         )
 
         plotter.plot_line(
@@ -763,7 +761,7 @@ class TestAbstractPlotterPlots:
             vertical_line_labels=["line1", "line2"],
         )
 
-        assert plotter_path + "line2.png" in plot_patch.paths
+        assert plot_path + "line2.png" in plot_patch.paths
 
         aplt.line(
             y=np.array([1.0, 2.0, 3.0]),
@@ -773,18 +771,18 @@ class TestAbstractPlotterPlots:
             label="line0",
             vertical_line_labels=["line1", "line2"],
             plotter=aplt.Plotter(
-                output=aplt.Output(path=plotter_path, filename="line3", format="png")
+                output=aplt.Output(path=plot_path, filename="line3", format="png")
             ),
         )
 
-        assert plotter_path + "line3.png" in plot_patch.paths
+        assert plot_path + "line3.png" in plot_patch.paths
 
     def test__plot_rectangular_mapper__works_with_all_extras_included(
-        self, rectangular_mapper_7x7_3x3, plotter_path, plot_patch
+        self, rectangular_mapper_7x7_3x3, plot_path, plot_patch
     ):
 
         plotter = aplt.Plotter(
-            output=aplt.Output(path=plotter_path, filename="mapper1", format="png")
+            output=aplt.Output(path=plot_path, filename="mapper1", format="png")
         )
 
         plotter.plot_rectangular_mapper(
@@ -796,10 +794,10 @@ class TestAbstractPlotterPlots:
             source_pixel_indexes=[[0, 1], [2]],
         )
 
-        assert plotter_path + "mapper1.png" in plot_patch.paths
+        assert plot_path + "mapper1.png" in plot_patch.paths
 
         plotter = aplt.Plotter(
-            output=aplt.Output(path=plotter_path, filename="mapper2", format="png")
+            output=aplt.Output(path=plot_path, filename="mapper2", format="png")
         )
 
         plotter.plot_rectangular_mapper(
@@ -811,9 +809,9 @@ class TestAbstractPlotterPlots:
             source_pixel_indexes=[[0, 1], [2]],
         )
 
-        assert plotter_path + "mapper2.png" in plot_patch.paths
+        assert plot_path + "mapper2.png" in plot_patch.paths
 
-        aplt.rectangular_mapper(
+        aplt.mapper_obj(
             mapper=rectangular_mapper_7x7_3x3,
             include_pixelization_grid=True,
             include_grid=True,
@@ -821,18 +819,18 @@ class TestAbstractPlotterPlots:
             image_pixel_indexes=[[(0, 0), (0, 1)], [(1, 2)]],
             source_pixel_indexes=[[0, 1], [2]],
             plotter=aplt.Plotter(
-                output=aplt.Output(path=plotter_path, filename="mapper3", format="png")
+                output=aplt.Output(path=plot_path, filename="mapper3", format="png")
             ),
         )
 
-        assert plotter_path + "mapper3.png" in plot_patch.paths
+        assert plot_path + "mapper3.png" in plot_patch.paths
 
     def test__plot_voronoi_mapper__works_with_all_extras_included(
-        self, voronoi_mapper_9_3x3, plotter_path, plot_patch
+        self, voronoi_mapper_9_3x3, plot_path, plot_patch
     ):
 
         plotter = aplt.Plotter(
-            output=aplt.Output(path=plotter_path, filename="mapper1", format="png")
+            output=aplt.Output(path=plot_path, filename="mapper1", format="png")
         )
 
         plotter.plot_voronoi_mapper(
@@ -844,10 +842,10 @@ class TestAbstractPlotterPlots:
             source_pixel_indexes=[[0, 1], [2]],
         )
 
-        assert plotter_path + "mapper1.png" in plot_patch.paths
+        assert plot_path + "mapper1.png" in plot_patch.paths
 
         plotter = aplt.Plotter(
-            output=aplt.Output(path=plotter_path, filename="mapper2", format="png")
+            output=aplt.Output(path=plot_path, filename="mapper2", format="png")
         )
 
         plotter.plot_voronoi_mapper(
@@ -859,9 +857,9 @@ class TestAbstractPlotterPlots:
             source_pixel_indexes=[[0, 1], [2]],
         )
 
-        assert plotter_path + "mapper2.png" in plot_patch.paths
+        assert plot_path + "mapper2.png" in plot_patch.paths
 
-        aplt.voronoi_mapper(
+        aplt.mapper_obj(
             mapper=voronoi_mapper_9_3x3,
             include_pixelization_grid=True,
             include_grid=True,
@@ -869,11 +867,11 @@ class TestAbstractPlotterPlots:
             image_pixel_indexes=[[(0, 0), (0, 1)], [(1, 2)]],
             source_pixel_indexes=[[0, 1], [2]],
             plotter=aplt.Plotter(
-                output=aplt.Output(path=plotter_path, filename="mapper3", format="png")
+                output=aplt.Output(path=plot_path, filename="mapper3", format="png")
             ),
         )
 
-        assert plotter_path + "mapper3.png" in plot_patch.paths
+        assert plot_path + "mapper3.png" in plot_patch.paths
 
 
 class TestAbstractPlotterNew:
