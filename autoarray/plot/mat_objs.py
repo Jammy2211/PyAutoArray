@@ -754,10 +754,15 @@ class Output(object):
 def is_grids_list_of_grids(grids):
 
     if isinstance(grids, list):
-        if any(isinstance(i, tuple) for i in grids) or any(
+        if any(isinstance(i, tuple) for i in grids):
+            return False
+        elif any(
             isinstance(i, np.ndarray) for i in grids
         ):
-            return False
+            if len(grids) == 1:
+                return False
+            else:
+                return True
         elif any(isinstance(i, list) for i in grids):
             return True
         else:
@@ -778,13 +783,20 @@ def is_grids_list_of_grids(grids):
             "The grid passed into scatter_grid is not a list or a ndarray."
         )
 
+def remove_spaces_and_commas_from_colors(colors):
+
+    colors = [color.strip(",") for color in colors]
+    colors = [color.strip(" ") for color in colors]
+    return list(filter(None, colors))
 
 class Scatterer(object):
-    def __init__(self, size=None, marker=None, color=None):
+    def __init__(self, size=None, marker=None, colors=None):
 
         self.size = size
         self.marker = marker
-        self.color = color
+        if isinstance(colors, str):
+            colors = [colors]
+        self.colors = colors
 
     @classmethod
     def from_instance_and_config(cls, scatterer, section, load_func):
@@ -801,13 +813,15 @@ class Scatterer(object):
             else load_func(section, "marker", str)
         )
 
-        color = (
-            scatterer.color
-            if scatterer.color is not None
-            else load_func(section, "color", str)
+        colors = (
+            scatterer.colors
+            if scatterer.colors is not None
+            else load_func(section, "colors", list)
         )
 
-        return Scatterer(size=size, marker=marker, color=color)
+        colors = remove_spaces_and_commas_from_colors(colors=colors)
+
+        return Scatterer(size=size, marker=marker, colors=colors)
 
     def scatter_grids(self, grids):
 
@@ -819,13 +833,13 @@ class Scatterer(object):
                 y=np.asarray(grids)[:, 0],
                 x=np.asarray(grids)[:, 1],
                 s=self.size,
-                c=self.color,
+                c=self.colors[0],
                 marker=self.marker,
             )
 
         else:
 
-            color = itertools.cycle(["m", "y", "r", "w", "cy", "b", "g", "k"])
+            color = itertools.cycle(self.colors)
 
             for grid in grids:
 
@@ -878,7 +892,7 @@ class Scatterer(object):
             if not any(isinstance(i, list) for i in indexes):
                 indexes = [indexes]
 
-        color = itertools.cycle(["m", "y", "r", "w", "cy", "b", "g", "k"])
+        color = itertools.cycle(self.colors)
         for index_list in indexes:
 
             if all([isinstance(index, float) for index in index_list]) or all(
@@ -917,11 +931,13 @@ class Scatterer(object):
 
 
 class Liner(object):
-    def __init__(self, width=None, style=None, color=None, pointsize=None):
+    def __init__(self, width=None, style=None, colors=None, pointsize=None):
 
         self.width = width
         self.style = style
-        self.color = color
+        if isinstance(colors, str):
+            colors = [colors]
+        self.colors = colors
         self.pointsize = pointsize
 
     @classmethod
@@ -935,9 +951,11 @@ class Liner(object):
             liner.style if liner.style is not None else load_func(section, "style", str)
         )
 
-        color = (
-            liner.color if liner.color is not None else load_func(section, "color", str)
+        colors = (
+            liner.colors if liner.colors is not None else load_func(section, "colors", list)
         )
+
+        colors = remove_spaces_and_commas_from_colors(colors=colors)
 
         pointsize = (
             liner.pointsize
@@ -945,18 +963,18 @@ class Liner(object):
             else load_func(section, "pointsize", int)
         )
 
-        return Liner(width=width, style=style, color=color, pointsize=pointsize)
+        return Liner(width=width, style=style, colors=colors, pointsize=pointsize)
 
     def draw_y_vs_x(self, y, x, plot_axis_type, label=None):
 
         if plot_axis_type is "linear":
-            plt.plot(x, y, c=self.color, lw=self.width, ls=self.style, label=label)
+            plt.plot(x, y, c=self.colors[0], lw=self.width, ls=self.style, label=label)
         elif plot_axis_type is "semilogy":
-            plt.semilogy(x, y, c=self.color, lw=self.width, ls=self.style, label=label)
+            plt.semilogy(x, y, c=self.colors[0], lw=self.width, ls=self.style, label=label)
         elif plot_axis_type is "loglog":
-            plt.loglog(x, y, c=self.color, lw=self.width, ls=self.style, label=label)
+            plt.loglog(x, y, c=self.colors[0], lw=self.width, ls=self.style, label=label)
         elif plot_axis_type is "scatter":
-            plt.scatter(x, y, c=self.color, s=self.pointsize, label=label)
+            plt.scatter(x, y, c=self.colors[0], s=self.pointsize, label=label)
         else:
             raise exc.PlottingException(
                 "The plot_axis_type supplied to the plotter is not a valid string (must be linear "
@@ -978,7 +996,7 @@ class Liner(object):
             plt.axvline(
                 x=vertical_line,
                 label=vertical_line_label,
-                c=self.color,
+                c=self.colors[0],
                 lw=self.width,
                 ls=self.style,
             )
@@ -1007,14 +1025,14 @@ class Liner(object):
             plt.plot(
                 np.asarray(grids)[:, 1],
                 np.asarray(grids)[:, 0],
-                c=self.color,
+                c=self.colors[0],
                 lw=self.width,
                 ls=self.style,
             )
 
         else:
 
-            color = itertools.cycle(["m", "y", "r", "w", "cy", "b", "g", "k"])
+            color = itertools.cycle(self.colors)
 
             for grid in grids:
 
@@ -1036,11 +1054,11 @@ class Liner(object):
         # grid lines
         for x in xs:
             plt.plot(
-                [x, x], [ys[0], ys[-1]], color=self.color, lw=self.width, ls=self.style
+                [x, x], [ys[0], ys[-1]], color=self.colors[0], lw=self.width, ls=self.style
             )
         for y in ys:
             plt.plot(
-                [xs[0], xs[-1]], [y, y], color=self.color, lw=self.width, ls=self.style
+                [xs[0], xs[-1]], [y, y], color=self.colors[0], lw=self.width, ls=self.style
             )
 
 

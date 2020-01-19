@@ -376,7 +376,7 @@ class TestLegend:
 
         figure.open()
 
-        liner = aplt.Liner(width=2, style="-", color="k", pointsize=2)
+        liner = aplt.Liner(width=2, style="-", colors="k", pointsize=2)
 
         liner.draw_y_vs_x(
             y=[1.0, 2.0, 3.0], x=[1.0, 2.0, 3.0], plot_axis_type="linear", label="hi"
@@ -423,7 +423,7 @@ class TestOutput:
 class TestScatterer:
     def test__scatter_grid__lists_of_coordinates_or_equivalent_2d_grids(self):
 
-        scatterer = aplt.Scatterer(size=2, marker="x", color="k")
+        scatterer = aplt.Scatterer(size=2, marker="x", colors="k")
 
         scatterer.scatter_grids(grids=[(1.0, 1.0), (2.0, 2.0)])
         scatterer.scatter_grids(
@@ -432,7 +432,7 @@ class TestScatterer:
 
     def test__scatter_grid__lists_of_lists_of_coordinates_or_equivalent_2d_grids(self):
 
-        scatterer = aplt.Scatterer(size=2, marker="x", color="k")
+        scatterer = aplt.Scatterer(size=2, marker="x", colors="k")
 
         scatterer.scatter_grids(grids=[[(1.0, 1.0), (2.0, 2.0)]])
         scatterer.scatter_grids(grids=[[(1.0, 1.0), (2.0, 2.0)], [(3.0, 3.0)]])
@@ -449,7 +449,7 @@ class TestScatterer:
         self
     ):
 
-        scatterer = aplt.Scatterer(size=2, marker="x", color="k")
+        scatterer = aplt.Scatterer(size=2, marker="x", colors="k")
 
         cmap = plt.get_cmap("jet")
 
@@ -468,7 +468,7 @@ class TestScatterer:
         self
     ):
 
-        scatterer = aplt.Scatterer(size=2, marker="x", color="k")
+        scatterer = aplt.Scatterer(size=2, marker="x", colors="k")
 
         scatterer.scatter_grid_indexes(
             grid=aa.grid.uniform(shape_2d=(3, 3), pixel_scales=1.0), indexes=[0, 1, 2]
@@ -487,7 +487,7 @@ class TestScatterer:
         self
     ):
 
-        scatterer = aplt.Scatterer(size=2, marker="x", color="k")
+        scatterer = aplt.Scatterer(size=2, marker="x", colors="k")
 
         scatterer.scatter_grid_indexes(
             grid=aa.grid.uniform(shape_2d=(3, 3), pixel_scales=1.0),
@@ -513,7 +513,7 @@ class TestScatterer:
 class TestLiner:
     def test__draw_y_vs_x__works_for_reasonable_values(self):
 
-        liner = aplt.Liner(width=2, style="-", color="k", pointsize=2)
+        liner = aplt.Liner(width=2, style="-", colors="k", pointsize=2)
 
         liner.draw_y_vs_x(y=[1.0, 2.0, 3.0], x=[1.0, 2.0, 3.0], plot_axis_type="linear")
         liner.draw_y_vs_x(
@@ -526,7 +526,7 @@ class TestLiner:
 
     def test__draw_vertical_lines__works_for_reasonable_values(self):
 
-        liner = aplt.Liner(width=2, style="-", color="k", pointsize=2)
+        liner = aplt.Liner(width=2, style="-", colors="k", pointsize=2)
 
         liner.draw_vertical_lines(vertical_lines=[[0.0]])
         liner.draw_vertical_lines(vertical_lines=[[1.0], [2.0]])
@@ -537,7 +537,7 @@ class TestLiner:
 
     def test__draw_grid__lists_of_coordinates_or_equivalent_2d_grids(self):
 
-        liner = aplt.Liner(width=2, style="-", color="k")
+        liner = aplt.Liner(width=2, style="-", colors="k")
 
         liner.draw_grids(grids=[(1.0, 1.0), (2.0, 2.0)])
         liner.draw_grids(grids=aa.grid.uniform(shape_2d=(3, 3), pixel_scales=1.0))
@@ -551,7 +551,7 @@ class TestLiner:
 
     def test__draw_grid__lists_of_lists_of_coordinates_or_equivalent_2d_grids(self):
 
-        liner = aplt.Liner(width=2, style="--", color="k")
+        liner = aplt.Liner(width=2, style="--", colors="k")
 
         liner.draw_grids(grids=[[(1.0, 1.0), (2.0, 2.0)]])
         liner.draw_grids(grids=[[(1.0, 1.0), (2.0, 2.0)], [(3.0, 3.0)]])
@@ -566,7 +566,7 @@ class TestLiner:
 
     def test__draw_rectangular_grid_lines__draws_for_valid_extent_and_shape(self):
 
-        liner = aplt.Liner(width=2, style="--", color="k")
+        liner = aplt.Liner(width=2, style="--", colors="k")
 
         liner.draw_rectangular_grid_lines(extent=[0.0, 1.0, 0.0, 1.0], shape_2d=(3, 2))
         liner.draw_rectangular_grid_lines(

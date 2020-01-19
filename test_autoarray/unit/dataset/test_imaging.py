@@ -804,7 +804,7 @@ class TestSNRLimit:
         )
 
         assert (
-            imaging_capped.image.in_2d == np.array([[20.0, 20.0], [20.0, 5.0]])
+                imaging_capped.image.in_2d == np.array([[20.0, 20.0], [20.0, 5.0]])
         ).all()
 
         assert (
@@ -826,7 +826,7 @@ class TestSNRLimit:
         )
 
         assert (
-            imaging_capped.image.in_2d == np.array([[20.0, 20.0], [20.0, 5.0]])
+                imaging_capped.image.in_2d == np.array([[20.0, 20.0], [20.0, 5.0]])
         ).all()
 
         assert (
