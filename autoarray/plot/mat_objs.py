@@ -759,9 +759,7 @@ def is_grids_list_of_grids(grids):
     if isinstance(grids, list):
         if any(isinstance(i, tuple) for i in grids):
             return False
-        elif any(
-            isinstance(i, np.ndarray) for i in grids
-        ):
+        elif any(isinstance(i, np.ndarray) for i in grids):
             if len(grids) == 1:
                 return False
             else:
@@ -786,11 +784,13 @@ def is_grids_list_of_grids(grids):
             "The grid passed into scatter_grid is not a list or a ndarray."
         )
 
+
 def remove_spaces_and_commas_from_colors(colors):
 
     colors = [color.strip(",") for color in colors]
     colors = [color.strip(" ") for color in colors]
     return list(filter(None, colors))
+
 
 class Scatterer(object):
     def __init__(self, size=None, marker=None, colors=None):
@@ -955,7 +955,9 @@ class Liner(object):
         )
 
         colors = (
-            liner.colors if liner.colors is not None else load_func(section, "colors", list)
+            liner.colors
+            if liner.colors is not None
+            else load_func(section, "colors", list)
         )
 
         colors = remove_spaces_and_commas_from_colors(colors=colors)
@@ -973,9 +975,13 @@ class Liner(object):
         if plot_axis_type is "linear":
             plt.plot(x, y, c=self.colors[0], lw=self.width, ls=self.style, label=label)
         elif plot_axis_type is "semilogy":
-            plt.semilogy(x, y, c=self.colors[0], lw=self.width, ls=self.style, label=label)
+            plt.semilogy(
+                x, y, c=self.colors[0], lw=self.width, ls=self.style, label=label
+            )
         elif plot_axis_type is "loglog":
-            plt.loglog(x, y, c=self.colors[0], lw=self.width, ls=self.style, label=label)
+            plt.loglog(
+                x, y, c=self.colors[0], lw=self.width, ls=self.style, label=label
+            )
         elif plot_axis_type is "scatter":
             plt.scatter(x, y, c=self.colors[0], s=self.pointsize, label=label)
         else:
@@ -1057,11 +1063,19 @@ class Liner(object):
         # grid lines
         for x in xs:
             plt.plot(
-                [x, x], [ys[0], ys[-1]], color=self.colors[0], lw=self.width, ls=self.style
+                [x, x],
+                [ys[0], ys[-1]],
+                color=self.colors[0],
+                lw=self.width,
+                ls=self.style,
             )
         for y in ys:
             plt.plot(
-                [xs[0], xs[-1]], [y, y], color=self.colors[0], lw=self.width, ls=self.style
+                [xs[0], xs[-1]],
+                [y, y],
+                color=self.colors[0],
+                lw=self.width,
+                ls=self.style,
             )
 
 

@@ -148,7 +148,12 @@ def individuals(
 
     if plot_reconstructed_image:
 
-        reconstructed_image(inversion=inversion, image_positions=image_positions, include=include, plotter=plotter)
+        reconstructed_image(
+            inversion=inversion,
+            image_positions=image_positions,
+            include=include,
+            plotter=plotter,
+        )
 
     if plot_reconstruction:
 
