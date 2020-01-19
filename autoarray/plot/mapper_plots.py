@@ -4,7 +4,7 @@ from autoarray.plot import imaging_plots
 
 @plotters.set_labels
 def subplot_image_and_mapper(
-    imaging,
+    image,
     mapper,
     image_positions=None,
     source_positions=None,
@@ -20,12 +20,11 @@ def subplot_image_and_mapper(
 
     sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index=1)
 
-    imaging_plots.image(
-        imaging=imaging,
+    sub_plotter.plot_array(
+        array=image,
         mask=include.mask_from_grid(grid=mapper.grid),
         positions=image_positions,
-        include=include,
-        plotter=sub_plotter,
+        include_origin=include.origin,
     )
 
     if image_pixel_indexes is not None:

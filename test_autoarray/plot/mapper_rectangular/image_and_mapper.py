@@ -11,7 +11,7 @@ noise_map = aa.array.ones(shape_2d=(7, 7), pixel_scales=1.0)
 imaging = aa.imaging(image=image, noise_map=noise_map)
 
 aplt.mapper.subplot_image_and_mapper(
-    imaging=imaging,
+    image=imaging,
     mapper=rectangular_mapper,
     include=aplt.Include(
         inversion_grid=False, inversion_border=True, inversion_pixelization_grid=False

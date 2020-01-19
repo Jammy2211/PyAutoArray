@@ -27,56 +27,56 @@ def set_config_path():
 
 def test__individual_attributes_are_output(interferometer_7, plot_path, plot_patch):
 
-    aa.plot.interferometer.visibilities(
+    aplt.interferometer.visibilities(
         interferometer=interferometer_7,
         plotter=aplt.Plotter(output=aplt.Output(path=plot_path, format="png")),
     )
 
     assert plot_path + "visibilities.png" in plot_patch.paths
 
-    aa.plot.interferometer.noise_map(
+    aplt.interferometer.noise_map(
         interferometer=interferometer_7,
         plotter=aplt.Plotter(output=aplt.Output(path=plot_path, format="png")),
     )
 
     assert plot_path + "noise_map.png" in plot_patch.paths
 
-    aa.plot.interferometer.u_wavelengths(
+    aplt.interferometer.u_wavelengths(
         interferometer=interferometer_7,
         plotter=aplt.Plotter(output=aplt.Output(path=plot_path, format="png")),
     )
 
     assert plot_path + "u_wavelengths.png" in plot_patch.paths
 
-    aa.plot.interferometer.v_wavelengths(
+    aplt.interferometer.v_wavelengths(
         interferometer=interferometer_7,
         plotter=aplt.Plotter(output=aplt.Output(path=plot_path, format="png")),
     )
 
     assert plot_path + "v_wavelengths.png" in plot_patch.paths
 
-    aa.plot.interferometer.uv_wavelengths(
+    aplt.interferometer.uv_wavelengths(
         interferometer=interferometer_7,
         plotter=aplt.Plotter(output=aplt.Output(path=plot_path, format="png")),
     )
 
     assert plot_path + "uv_wavelengths.png" in plot_patch.paths
 
-    aa.plot.interferometer.amplitudes_vs_uv_distances(
+    aplt.interferometer.amplitudes_vs_uv_distances(
         interferometer=interferometer_7,
         plotter=aplt.Plotter(output=aplt.Output(path=plot_path, format="png")),
     )
 
     assert plot_path + "amplitudes_vs_uv_distances.png" in plot_patch.paths
 
-    aa.plot.interferometer.phases_vs_uv_distances(
+    aplt.interferometer.phases_vs_uv_distances(
         interferometer=interferometer_7,
         plotter=aplt.Plotter(output=aplt.Output(path=plot_path, format="png")),
     )
 
     assert plot_path + "phases_vs_uv_distances.png" in plot_patch.paths
 
-    aa.plot.interferometer.primary_beam(
+    aplt.interferometer.primary_beam(
         interferometer=interferometer_7,
         plotter=aplt.Plotter(output=aplt.Output(plot_path, format="png")),
     )
@@ -86,7 +86,7 @@ def test__individual_attributes_are_output(interferometer_7, plot_path, plot_pat
 
 def test__subplot_is_output(interferometer_7, plot_path, plot_patch):
 
-    aa.plot.interferometer.subplot_interferometer(
+    aplt.interferometer.subplot_interferometer(
         interferometer=interferometer_7,
         sub_plotter=aplt.SubPlotter(output=aplt.Output(path=plot_path, format="png")),
     )
@@ -97,7 +97,7 @@ def test__subplot_is_output(interferometer_7, plot_path, plot_patch):
 def test__individuals__output_dependent_on_input(
     interferometer_7, plot_path, plot_patch
 ):
-    aa.plot.interferometer.individual(
+    aplt.interferometer.individual(
         interferometer=interferometer_7,
         plot_visibilities=True,
         plot_u_wavelengths=False,

@@ -22,9 +22,91 @@ def set_config_path():
     )
 
 
+def test__fit_quantities_are_output(fit_interferometer_7, plot_path, plot_patch):
+
+    aplt.fit_interferometer.visibilities(
+        fit=fit_interferometer_7,
+        plotter=aplt.Plotter(output=aplt.Output(path=plot_path, format="png")),
+    )
+
+    assert plot_path + "visibilities.png" in plot_patch.paths
+
+    aplt.fit_interferometer.noise_map(
+        fit=fit_interferometer_7,
+        plotter=aplt.Plotter(output=aplt.Output(path=plot_path, format="png")),
+    )
+
+    assert plot_path + "noise_map.png" in plot_patch.paths
+
+    aplt.fit_interferometer.signal_to_noise_map(
+        fit=fit_interferometer_7,
+        plotter=aplt.Plotter(output=aplt.Output(path=plot_path, format="png")),
+    )
+
+    assert plot_path + "signal_to_noise_map.png" in plot_patch.paths
+
+    aplt.fit_interferometer.model_visibilities(
+        fit=fit_interferometer_7,
+        plotter=aplt.Plotter(output=aplt.Output(path=plot_path, format="png")),
+    )
+
+    assert plot_path + "model_visibilities.png" in plot_patch.paths
+
+    aplt.fit_interferometer.residual_map_vs_uv_distances(
+        fit=fit_interferometer_7,
+        plotter=aplt.Plotter(output=aplt.Output(path=plot_path, format="png")),
+    )
+
+    assert plot_path + "residual_map_vs_uv_distances_real.png" in plot_patch.paths
+
+    aplt.fit_interferometer.residual_map_vs_uv_distances(
+        fit=fit_interferometer_7,
+        plot_real=False,
+        plotter=aplt.Plotter(output=aplt.Output(path=plot_path, format="png")),
+    )
+
+    assert plot_path + "residual_map_vs_uv_distances_imag.png" in plot_patch.paths
+
+    aplt.fit_interferometer.normalized_residual_map_vs_uv_distances(
+        fit=fit_interferometer_7,
+        plotter=aplt.Plotter(output=aplt.Output(path=plot_path, format="png")),
+    )
+
+    assert (
+        plot_path + "normalized_residual_map_vs_uv_distances_real.png"
+        in plot_patch.paths
+    )
+
+    aplt.fit_interferometer.normalized_residual_map_vs_uv_distances(
+        fit=fit_interferometer_7,
+        plot_real=False,
+        plotter=aplt.Plotter(output=aplt.Output(path=plot_path, format="png")),
+    )
+
+    assert (
+        plot_path + "normalized_residual_map_vs_uv_distances_imag.png"
+        in plot_patch.paths
+    )
+
+    aplt.fit_interferometer.chi_squared_map_vs_uv_distances(
+        fit=fit_interferometer_7,
+        plotter=aplt.Plotter(output=aplt.Output(path=plot_path, format="png")),
+    )
+
+    assert plot_path + "chi_squared_map_vs_uv_distances_real.png" in plot_patch.paths
+
+    aplt.fit_interferometer.chi_squared_map_vs_uv_distances(
+        fit=fit_interferometer_7,
+        plot_real=False,
+        plotter=aplt.Plotter(output=aplt.Output(path=plot_path, format="png")),
+    )
+
+    assert plot_path + "chi_squared_map_vs_uv_distances_imag.png" in plot_patch.paths
+
+
 def test__fit_sub_plot(fit_interferometer_7, plot_path, plot_patch):
 
-    aa.plot.fit_interferometer.subplot_fit_interferometer(
+    aplt.fit_interferometer.subplot_fit_interferometer(
         fit=fit_interferometer_7,
         sub_plotter=aplt.SubPlotter(output=aplt.Output(plot_path, format="png")),
     )
@@ -36,7 +118,7 @@ def test__fit_individuals__dependent_on_input(
     fit_interferometer_7, plot_path, plot_patch
 ):
 
-    aa.plot.fit_interferometer.individuals(
+    aplt.fit_interferometer.individuals(
         fit=fit_interferometer_7,
         plot_visibilities=True,
         plot_noise_map=False,
@@ -69,87 +151,5 @@ def test__fit_individuals__dependent_on_input(
     )
 
     assert plot_path + "chi_squared_map_vs_uv_distances_real.png" in plot_patch.paths
-
-    assert plot_path + "chi_squared_map_vs_uv_distances_imag.png" in plot_patch.paths
-
-
-def test__fit_quantities_are_output(fit_interferometer_7, plot_path, plot_patch):
-
-    aa.plot.fit_interferometer.visibilities(
-        fit=fit_interferometer_7,
-        plotter=aplt.Plotter(output=aplt.Output(path=plot_path, format="png")),
-    )
-
-    assert plot_path + "visibilities.png" in plot_patch.paths
-
-    aa.plot.fit_interferometer.noise_map(
-        fit=fit_interferometer_7,
-        plotter=aplt.Plotter(output=aplt.Output(path=plot_path, format="png")),
-    )
-
-    assert plot_path + "noise_map.png" in plot_patch.paths
-
-    aa.plot.fit_interferometer.signal_to_noise_map(
-        fit=fit_interferometer_7,
-        plotter=aplt.Plotter(output=aplt.Output(path=plot_path, format="png")),
-    )
-
-    assert plot_path + "signal_to_noise_map.png" in plot_patch.paths
-
-    aa.plot.fit_interferometer.model_visibilities(
-        fit=fit_interferometer_7,
-        plotter=aplt.Plotter(output=aplt.Output(path=plot_path, format="png")),
-    )
-
-    assert plot_path + "model_visibilities.png" in plot_patch.paths
-
-    aa.plot.fit_interferometer.residual_map_vs_uv_distances(
-        fit=fit_interferometer_7,
-        plotter=aplt.Plotter(output=aplt.Output(path=plot_path, format="png")),
-    )
-
-    assert plot_path + "residual_map_vs_uv_distances_real.png" in plot_patch.paths
-
-    aa.plot.fit_interferometer.residual_map_vs_uv_distances(
-        fit=fit_interferometer_7,
-        plot_real=False,
-        plotter=aplt.Plotter(output=aplt.Output(path=plot_path, format="png")),
-    )
-
-    assert plot_path + "residual_map_vs_uv_distances_imag.png" in plot_patch.paths
-
-    aa.plot.fit_interferometer.normalized_residual_map_vs_uv_distances(
-        fit=fit_interferometer_7,
-        plotter=aplt.Plotter(output=aplt.Output(path=plot_path, format="png")),
-    )
-
-    assert (
-        plot_path + "normalized_residual_map_vs_uv_distances_real.png"
-        in plot_patch.paths
-    )
-
-    aa.plot.fit_interferometer.normalized_residual_map_vs_uv_distances(
-        fit=fit_interferometer_7,
-        plot_real=False,
-        plotter=aplt.Plotter(output=aplt.Output(path=plot_path, format="png")),
-    )
-
-    assert (
-        plot_path + "normalized_residual_map_vs_uv_distances_imag.png"
-        in plot_patch.paths
-    )
-
-    aa.plot.fit_interferometer.chi_squared_map_vs_uv_distances(
-        fit=fit_interferometer_7,
-        plotter=aplt.Plotter(output=aplt.Output(path=plot_path, format="png")),
-    )
-
-    assert plot_path + "chi_squared_map_vs_uv_distances_real.png" in plot_patch.paths
-
-    aa.plot.fit_interferometer.chi_squared_map_vs_uv_distances(
-        fit=fit_interferometer_7,
-        plot_real=False,
-        plotter=aplt.Plotter(output=aplt.Output(path=plot_path, format="png")),
-    )
 
     assert plot_path + "chi_squared_map_vs_uv_distances_imag.png" in plot_patch.paths

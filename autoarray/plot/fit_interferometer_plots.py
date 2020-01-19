@@ -57,14 +57,6 @@ def individuals(
     plot_residual_map=False,
     plot_normalized_residual_map=False,
     plot_chi_squared_map=False,
-    plot_inversion_reconstruction=False,
-    plot_inversion_errors=False,
-    plot_inversion_residual_map=False,
-    plot_inversion_normalized_residual_map=False,
-    plot_inversion_chi_squared_map=False,
-    plot_inversion_regularization_weight_map=False,
-    plot_inversion_interpolated_reconstruction=False,
-    plot_inversion_interpolated_errors=False,
     include=plotters.Include(),
     plotter=plotters.Plotter(),
 ):
@@ -127,22 +119,6 @@ def individuals(
 
         chi_squared_map_vs_uv_distances(
             fit=fit, plot_real=False, include=include, plotter=plotter
-        )
-
-    if fit.total_inversions == 1:
-
-        inversion_plots.individuals(
-            inversion=fit.inversion,
-            plot_reconstruction=plot_inversion_reconstruction,
-            plot_errors=plot_inversion_errors,
-            plot_residual_map=plot_inversion_residual_map,
-            plot_normalized_residual_map=plot_inversion_normalized_residual_map,
-            plot_chi_squared_map=plot_inversion_chi_squared_map,
-            plot_regularization_weight_map=plot_inversion_regularization_weight_map,
-            plot_interpolated_reconstruction=plot_inversion_interpolated_reconstruction,
-            plot_interpolated_errors=plot_inversion_interpolated_errors,
-            include=include,
-            plotter=plotter,
         )
 
 
