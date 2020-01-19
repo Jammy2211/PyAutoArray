@@ -1,5 +1,3 @@
-import itertools
-
 from autoarray.plot import plotters
 from autoarray.plot import imaging_plots
 
@@ -8,8 +6,8 @@ from autoarray.plot import imaging_plots
 def subplot_image_and_mapper(
     imaging,
     mapper,
-    mask=None,
-    positions=None,
+    image_positions=None,
+    source_positions=None,
     image_pixel_indexes=None,
     source_pixel_indexes=None,
     include=plotters.Include(),
@@ -24,8 +22,8 @@ def subplot_image_and_mapper(
 
     imaging_plots.image(
         imaging=imaging,
-        mask=mask,
-        positions=positions,
+        mask=include.mask_from_grid(grid=mapper.grid),
+        positions=image_positions,
         include=include,
         plotter=sub_plotter,
     )
@@ -50,8 +48,10 @@ def subplot_image_and_mapper(
 
     sub_plotter.plot_mapper(
         mapper=mapper,
+        positions=source_positions,
         image_pixel_indexes=image_pixel_indexes,
         source_pixel_indexes=source_pixel_indexes,
+        include_origin=include.origin,
         include_grid=include.inversion_grid,
         include_pixelization_grid=include.inversion_pixelization_grid,
         include_border=include.inversion_border,

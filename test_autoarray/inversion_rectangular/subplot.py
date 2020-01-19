@@ -25,7 +25,7 @@ inversion = aa.inversion(
 
 aplt.inversion.subplot_inversion(
     inversion=inversion,
-    positions=[(0.05, 0.05)],
+    image_positions=[(0.05, 0.05)],
     lines=[(0.0, 0.0), (0.1, 0.1)],
     image_pixel_indexes=[0],
     source_pixel_indexes=[5],
