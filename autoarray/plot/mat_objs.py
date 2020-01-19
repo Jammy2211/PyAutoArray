@@ -753,7 +753,7 @@ class Output(object):
 
 def is_grids_list_of_grids(grids):
 
-    if grids is []:
+    if len(grids) == 0:
         return "pass"
 
     if isinstance(grids, list):
