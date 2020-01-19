@@ -4,7 +4,6 @@ import autoarray as aa
 import autoarray.plot as aplt
 import os
 
-import numpy as np
 import pytest
 
 directory = path.dirname(path.realpath(__file__))
@@ -25,7 +24,7 @@ def set_config_path():
 
 
 def test__individual_attributes_are_output_for_rectangular_inversion(
-    rectangular_inversion_7x7_3x3, positions_7x7, mask_7x7, plot_path, plot_patch
+    rectangular_inversion_7x7_3x3, positions_7x7, plot_path, plot_patch
 ):
 
     lines = [(0.0, 0.0), (0.1, 0.1)]
@@ -33,7 +32,6 @@ def test__individual_attributes_are_output_for_rectangular_inversion(
     aplt.inversion.reconstructed_image(
         inversion=rectangular_inversion_7x7_3x3,
         positions=positions_7x7,
-        mask=mask_7x7,
         lines=lines,
         plotter=aplt.Plotter(output=aplt.Output(path=plot_path, format="png")),
     )
@@ -134,7 +132,6 @@ def test__individual_attributes_are_output_for_voronoi_inversion(
     aplt.inversion.reconstructed_image(
         inversion=voronoi_inversion_9_3x3,
         positions=positions_7x7,
-        mask=mask_7x7,
         lines=lines,
         plotter=aplt.Plotter(output=aplt.Output(path=plot_path, format="png")),
     )

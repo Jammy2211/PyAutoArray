@@ -4,9 +4,9 @@ from autoarray.plot import plotters
 @plotters.set_subplot_filename
 def subplot_inversion(
     inversion,
-    mask=None,
     lines=None,
     positions=None,
+    source_positions=None,
     grid=None,
     image_pixel_indexes=None,
     source_pixel_indexes=None,
@@ -40,7 +40,6 @@ def subplot_inversion(
 
     reconstructed_image(
         inversion=inversion,
-        mask=mask,
         lines=lines,
         positions=positions,
         grid=grid,
@@ -54,7 +53,7 @@ def subplot_inversion(
 
     reconstruction(
         inversion=inversion,
-        positions=None,
+        positions=source_positions,
         lines=lines,
         include=include,
         plotter=sub_plotter,
@@ -68,7 +67,6 @@ def subplot_inversion(
 
     errors(
         inversion=inversion,
-        positions=None,
         image_pixel_indexes=image_pixel_indexes,
         source_pixel_indexes=source_pixel_indexes,
         include=include,
@@ -81,7 +79,6 @@ def subplot_inversion(
 
     residual_map(
         inversion=inversion,
-        positions=None,
         image_pixel_indexes=image_pixel_indexes,
         source_pixel_indexes=source_pixel_indexes,
         include=include,
@@ -94,7 +91,6 @@ def subplot_inversion(
 
     chi_squared_map(
         inversion=inversion,
-        positions=None,
         image_pixel_indexes=image_pixel_indexes,
         source_pixel_indexes=source_pixel_indexes,
         include=include,
@@ -107,7 +103,6 @@ def subplot_inversion(
 
     regularization_weights(
         inversion=inversion,
-        positions=None,
         image_pixel_indexes=image_pixel_indexes,
         source_pixel_indexes=source_pixel_indexes,
         include=include,
@@ -123,6 +118,7 @@ def individuals(
     inversion,
     lines=None,
     positions=None,
+    source_positions=None,
     plot_reconstructed_image=False,
     plot_reconstruction=False,
     plot_errors=False,
@@ -152,13 +148,13 @@ def individuals(
 
     if plot_reconstructed_image:
 
-        reconstructed_image(inversion=inversion, include=include, plotter=plotter)
+        reconstructed_image(inversion=inversion, positions=positions, include=include, plotter=plotter)
 
     if plot_reconstruction:
 
         reconstruction(
             inversion=inversion,
-            positions=positions,
+            positions=source_positions,
             lines=lines,
             include=include,
             plotter=plotter,
@@ -188,7 +184,7 @@ def individuals(
 
         interpolated_reconstruction(
             inversion=inversion,
-            positions=positions,
+            positions=source_positions,
             lines=lines,
             include=include,
             plotter=plotter,
@@ -204,7 +200,6 @@ def individuals(
 @plotters.set_labels
 def reconstructed_image(
     inversion,
-    mask=None,
     grid=None,
     lines=None,
     positions=None,
@@ -214,7 +209,7 @@ def reconstructed_image(
 
     plotter.plot_array(
         array=inversion.mapped_reconstructed_image,
-        mask=mask,
+        mask=include.mask_from_grid(grid=inversion.mapper.grid),
         lines=lines,
         positions=positions,
         grid=grid,

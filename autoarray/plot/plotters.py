@@ -964,6 +964,13 @@ class Include(object):
         else:
             return None
 
+    def mask_from_grid(self, grid):
+
+        if self.mask:
+            return grid.mask
+        else:
+            return None
+
     def mask_from_fit(self, fit):
         """Get the masks of the fit if the masks should be plotted on the fit.
 
