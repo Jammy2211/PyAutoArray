@@ -407,9 +407,7 @@ class AbstractPlotter(object):
             self.origin_scatterer.scatter_grids(grids=[grid.origin])
 
         if include_border:
-            self.border_scatterer.scatter_grids(
-                grids=grid.sub_border_grid
-            )
+            self.border_scatterer.scatter_grids(grids=grid.sub_border_grid)
 
         if indexes is not None:
             self.index_scatterer.scatter_grid_indexes(grid=grid, indexes=indexes)
@@ -971,6 +969,13 @@ class Include(object):
         else:
             return None
 
+    def mask_from_masked_dataset(self, masked_dataset):
+
+        if self.mask:
+            return masked_dataset.mask
+        else:
+            return None
+
     def mask_from_fit(self, fit):
         """Get the masks of the fit if the masks should be plotted on the fit.
 
@@ -1167,8 +1172,8 @@ def plot_grid(
     indexes=None,
     lines=None,
     symmetric_around_centre=True,
-        include_origin=False,
-        include_border=False,
+    include_origin=False,
+    include_border=False,
     plotter=Plotter(),
 ):
 
