@@ -31,7 +31,7 @@ def test__individual_attributes_are_output_for_rectangular_inversion(
 
     aplt.inversion.reconstructed_image(
         inversion=rectangular_inversion_7x7_3x3,
-        positions=positions_7x7,
+        image_positions=positions_7x7,
         lines=lines,
         plotter=aplt.Plotter(output=aplt.Output(path=plot_path, format="png")),
     )
@@ -40,7 +40,7 @@ def test__individual_attributes_are_output_for_rectangular_inversion(
 
     aplt.inversion.reconstruction(
         inversion=rectangular_inversion_7x7_3x3,
-        positions=positions_7x7,
+        source_positions=positions_7x7,
         lines=lines,
         image_pixel_indexes=[0],
         source_pixel_indexes=[1],
@@ -51,7 +51,7 @@ def test__individual_attributes_are_output_for_rectangular_inversion(
 
     aplt.inversion.errors(
         inversion=rectangular_inversion_7x7_3x3,
-        positions=positions_7x7,
+        source_positions=positions_7x7,
         lines=lines,
         image_pixel_indexes=[0],
         source_pixel_indexes=[1],
@@ -62,7 +62,7 @@ def test__individual_attributes_are_output_for_rectangular_inversion(
 
     aplt.inversion.residual_map(
         inversion=rectangular_inversion_7x7_3x3,
-        positions=positions_7x7,
+        source_positions=positions_7x7,
         lines=lines,
         image_pixel_indexes=[0],
         source_pixel_indexes=[1],
@@ -73,7 +73,7 @@ def test__individual_attributes_are_output_for_rectangular_inversion(
 
     aplt.inversion.normalized_residual_map(
         inversion=rectangular_inversion_7x7_3x3,
-        positions=positions_7x7,
+        source_positions=positions_7x7,
         lines=lines,
         image_pixel_indexes=[0],
         source_pixel_indexes=[1],
@@ -84,7 +84,7 @@ def test__individual_attributes_are_output_for_rectangular_inversion(
 
     aplt.inversion.chi_squared_map(
         inversion=rectangular_inversion_7x7_3x3,
-        positions=positions_7x7,
+        source_positions=positions_7x7,
         lines=lines,
         image_pixel_indexes=[0],
         source_pixel_indexes=[1],
@@ -95,7 +95,7 @@ def test__individual_attributes_are_output_for_rectangular_inversion(
 
     aplt.inversion.regularization_weights(
         inversion=rectangular_inversion_7x7_3x3,
-        positions=positions_7x7,
+        source_positions=positions_7x7,
         lines=lines,
         image_pixel_indexes=[0],
         source_pixel_indexes=[1],
@@ -106,7 +106,7 @@ def test__individual_attributes_are_output_for_rectangular_inversion(
 
     aplt.inversion.interpolated_reconstruction(
         inversion=rectangular_inversion_7x7_3x3,
-        positions=positions_7x7,
+        source_positions=positions_7x7,
         lines=lines,
         plotter=aplt.Plotter(output=aplt.Output(path=plot_path, format="png")),
     )
@@ -115,7 +115,7 @@ def test__individual_attributes_are_output_for_rectangular_inversion(
 
     aplt.inversion.interpolated_errors(
         inversion=rectangular_inversion_7x7_3x3,
-        positions=positions_7x7,
+        source_positions=positions_7x7,
         lines=lines,
         plotter=aplt.Plotter(output=aplt.Output(path=plot_path, format="png")),
     )
@@ -131,7 +131,7 @@ def test__individual_attributes_are_output_for_voronoi_inversion(
 
     aplt.inversion.reconstructed_image(
         inversion=voronoi_inversion_9_3x3,
-        positions=positions_7x7,
+        image_positions=positions_7x7,
         lines=lines,
         plotter=aplt.Plotter(output=aplt.Output(path=plot_path, format="png")),
     )
@@ -140,7 +140,7 @@ def test__individual_attributes_are_output_for_voronoi_inversion(
 
     aplt.inversion.reconstruction(
         inversion=voronoi_inversion_9_3x3,
-        positions=positions_7x7,
+        source_positions=positions_7x7,
         lines=lines,
         image_pixel_indexes=[0],
         source_pixel_indexes=[1],
@@ -151,7 +151,7 @@ def test__individual_attributes_are_output_for_voronoi_inversion(
 
     aplt.inversion.errors(
         inversion=voronoi_inversion_9_3x3,
-        positions=positions_7x7,
+        source_positions=positions_7x7,
         lines=lines,
         image_pixel_indexes=[0],
         source_pixel_indexes=[1],
@@ -162,7 +162,7 @@ def test__individual_attributes_are_output_for_voronoi_inversion(
 
     aplt.inversion.residual_map(
         inversion=voronoi_inversion_9_3x3,
-        positions=positions_7x7,
+        source_positions=positions_7x7,
         lines=lines,
         image_pixel_indexes=[0],
         source_pixel_indexes=[1],
@@ -173,7 +173,7 @@ def test__individual_attributes_are_output_for_voronoi_inversion(
 
     aplt.inversion.normalized_residual_map(
         inversion=voronoi_inversion_9_3x3,
-        positions=positions_7x7,
+        source_positions=positions_7x7,
         lines=lines,
         image_pixel_indexes=[0],
         source_pixel_indexes=[1],
@@ -184,7 +184,7 @@ def test__individual_attributes_are_output_for_voronoi_inversion(
 
     aplt.inversion.chi_squared_map(
         inversion=voronoi_inversion_9_3x3,
-        positions=positions_7x7,
+        source_positions=positions_7x7,
         lines=lines,
         image_pixel_indexes=[0],
         source_pixel_indexes=[1],
@@ -195,7 +195,7 @@ def test__individual_attributes_are_output_for_voronoi_inversion(
 
     aplt.inversion.regularization_weights(
         inversion=voronoi_inversion_9_3x3,
-        positions=positions_7x7,
+        source_positions=positions_7x7,
         lines=lines,
         image_pixel_indexes=[0],
         source_pixel_indexes=[1],
@@ -206,7 +206,7 @@ def test__individual_attributes_are_output_for_voronoi_inversion(
 
     aplt.inversion.interpolated_reconstruction(
         inversion=voronoi_inversion_9_3x3,
-        positions=positions_7x7,
+        source_positions=positions_7x7,
         lines=lines,
         plotter=aplt.Plotter(output=aplt.Output(path=plot_path, format="png")),
     )
@@ -215,7 +215,7 @@ def test__individual_attributes_are_output_for_voronoi_inversion(
 
     aplt.inversion.interpolated_errors(
         inversion=voronoi_inversion_9_3x3,
-        positions=positions_7x7,
+        source_positions=positions_7x7,
         lines=lines,
         plotter=aplt.Plotter(output=aplt.Output(path=plot_path, format="png")),
     )
