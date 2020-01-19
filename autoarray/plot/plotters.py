@@ -321,6 +321,8 @@ class AbstractPlotter(object):
         indexes=None,
         lines=None,
         symmetric_around_centre=True,
+        include_origin=False,
+        include_border=False,
         bypass_output=False,
     ):
         """Plot a grid of (y,x) Cartesian coordinates as a scatter plotters of points.
@@ -400,6 +402,14 @@ class AbstractPlotter(object):
             extent=grid.extent,
             symmetric_around_centre=symmetric_around_centre,
         )
+
+        if include_origin:
+            self.origin_scatterer.scatter_grids(grids=[grid.origin])
+
+        if include_border:
+            self.border_scatterer.scatter_grids(
+                grids=grid.sub_border_grid
+            )
 
         if indexes is not None:
             self.index_scatterer.scatter_grid_indexes(grid=grid, indexes=indexes)
@@ -1150,6 +1160,8 @@ def plot_grid(
     indexes=None,
     lines=None,
     symmetric_around_centre=True,
+        include_origin=False,
+        include_border=False,
     plotter=Plotter(),
 ):
 
@@ -1160,6 +1172,8 @@ def plot_grid(
         indexes=indexes,
         lines=lines,
         symmetric_around_centre=symmetric_around_centre,
+        include_origin=include_origin,
+        include_border=include_border,
     )
 
 
