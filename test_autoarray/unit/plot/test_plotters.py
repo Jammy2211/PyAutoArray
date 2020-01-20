@@ -30,29 +30,13 @@ class TestAbstractPlotterAttributes:
         assert plotter.units.in_kpc == False
         assert plotter.units.conversion_factor == None
 
-        assert plotter.ticks.units.use_scaled == True
-        assert plotter.ticks.units.in_kpc == False
-        assert plotter.ticks.units.conversion_factor == None
-
-        assert plotter.labels.units.use_scaled == True
-        assert plotter.labels.units.in_kpc == False
-        assert plotter.labels.units.conversion_factor == None
-
         plotter = aplt.Plotter(
-            units=aplt.Units(in_kpc=True, use_scaled=False, conversion_factor=2.0)
+            units=aplt.Units(in_kpc=True, conversion_factor=2.0)
         )
 
-        assert plotter.units.use_scaled == False
+        assert plotter.units.use_scaled == True
         assert plotter.units.in_kpc == True
         assert plotter.units.conversion_factor == 2.0
-
-        assert plotter.ticks.units.use_scaled == False
-        assert plotter.ticks.units.in_kpc == True
-        assert plotter.ticks.units.conversion_factor == 2.0
-
-        assert plotter.labels.units.use_scaled == False
-        assert plotter.labels.units.in_kpc == True
-        assert plotter.labels.units.conversion_factor == 2.0
 
         sub_plotter = aplt.SubPlotter()
 
@@ -60,29 +44,13 @@ class TestAbstractPlotterAttributes:
         assert sub_plotter.units.in_kpc == False
         assert sub_plotter.units.conversion_factor == None
 
-        assert sub_plotter.ticks.units.use_scaled == True
-        assert sub_plotter.ticks.units.in_kpc == False
-        assert sub_plotter.ticks.units.conversion_factor == None
-
-        assert sub_plotter.labels.units.use_scaled == True
-        assert sub_plotter.labels.units.in_kpc == False
-        assert sub_plotter.labels.units.conversion_factor == None
-
         sub_plotter = aplt.SubPlotter(
-            units=aplt.Units(in_kpc=True, use_scaled=False, conversion_factor=2.0)
+            units=aplt.Units(use_scaled=False, conversion_factor=2.0)
         )
 
         assert sub_plotter.units.use_scaled == False
-        assert sub_plotter.units.in_kpc == True
+        assert sub_plotter.units.in_kpc == False
         assert sub_plotter.units.conversion_factor == 2.0
-
-        assert sub_plotter.ticks.units.use_scaled == False
-        assert sub_plotter.ticks.units.in_kpc == True
-        assert sub_plotter.ticks.units.conversion_factor == 2.0
-
-        assert sub_plotter.labels.units.use_scaled == False
-        assert sub_plotter.labels.units.in_kpc == True
-        assert sub_plotter.labels.units.conversion_factor == 2.0
 
     def test__figure__from_config_or_via_manual_input(self):
 
@@ -91,9 +59,9 @@ class TestAbstractPlotterAttributes:
         assert plotter.figure.figsize == (7, 7)
         assert plotter.figure.aspect == "auto"
 
-        plotter = aplt.Plotter(figure=aplt.Figure(figsize=(6, 6), aspect="auto"))
+        plotter = aplt.Plotter(figure=aplt.Figure(aspect="auto"))
 
-        assert plotter.figure.figsize == (6, 6)
+        assert plotter.figure.figsize == (7, 7)
         assert plotter.figure.aspect == "auto"
 
         sub_plotter = aplt.SubPlotter()
@@ -101,10 +69,10 @@ class TestAbstractPlotterAttributes:
         assert sub_plotter.figure.figsize == None
         assert sub_plotter.figure.aspect == "square"
 
-        sub_plotter = aplt.SubPlotter(figure=aplt.Figure(figsize=(6, 6), aspect="auto"))
+        sub_plotter = aplt.SubPlotter(figure=aplt.Figure.sub(figsize=(6, 6)))
 
         assert sub_plotter.figure.figsize == (6, 6)
-        assert sub_plotter.figure.aspect == "auto"
+        assert sub_plotter.figure.aspect == "square"
 
     def test__colormap__from_config_or_via_manual_input(self):
         plotter = aplt.Plotter()
@@ -144,12 +112,11 @@ class TestAbstractPlotterAttributes:
         assert sub_plotter.cmap.linscale == 2.0
 
         sub_plotter = aplt.SubPlotter(
-            cmap=aplt.ColorMap(
+            cmap=aplt.ColorMap.sub(
                 cmap="cold",
                 norm="log",
                 norm_min=0.1,
                 norm_max=1.0,
-                linthresh=1.5,
                 linscale=2.0,
             )
         )
@@ -158,7 +125,7 @@ class TestAbstractPlotterAttributes:
         assert sub_plotter.cmap.norm == "log"
         assert sub_plotter.cmap.norm_min == 0.1
         assert sub_plotter.cmap.norm_max == 1.0
-        assert sub_plotter.cmap.linthresh == 1.5
+        assert sub_plotter.cmap.linthresh == 1.0
         assert sub_plotter.cmap.linscale == 2.0
 
     def test__colorbar__from_config_or_via_manual_input(self):
@@ -194,10 +161,10 @@ class TestAbstractPlotterAttributes:
         assert sub_plotter.cb.pad == 4.0
 
         sub_plotter = aplt.SubPlotter(
-            cb=aplt.ColorBar(ticksize=20, fraction=0.001, pad=10.0)
+            cb=aplt.ColorBar.sub(fraction=0.001, pad=10.0)
         )
 
-        assert sub_plotter.cb.ticksize == 20
+        assert sub_plotter.cb.ticksize == 1
         assert sub_plotter.cb.fraction == 0.001
         assert sub_plotter.cb.pad == 10.0
 
@@ -229,8 +196,8 @@ class TestAbstractPlotterAttributes:
         assert sub_plotter.ticks.x_manual == None
 
         sub_plotter = aplt.SubPlotter(
-            ticks=aplt.Ticks(
-                ysize=24, xsize=25, y_manual=[1.0, 2.0], x_manual=[3.0, 4.0]
+            ticks=aplt.Ticks.sub(
+                xsize=25, y_manual=[1.0, 2.0], x_manual=[3.0, 4.0]
             )
         )
 
@@ -249,13 +216,11 @@ class TestAbstractPlotterAttributes:
         assert plotter.labels.titlesize == 11
         assert plotter.labels.ysize == 12
         assert plotter.labels.xsize == 13
-        assert plotter.labels.units.use_scaled == True
 
         plotter = aplt.Plotter(
             labels=aplt.Labels(
                 title="OMG", yunits="hi", xunits="hi2", titlesize=1, ysize=2, xsize=3
             ),
-            units=aplt.Units(use_scaled=False),
         )
 
         assert plotter.labels.title == "OMG"
@@ -264,7 +229,6 @@ class TestAbstractPlotterAttributes:
         assert plotter.labels.titlesize == 1
         assert plotter.labels.ysize == 2
         assert plotter.labels.xsize == 3
-        assert plotter.labels.units.use_scaled == False
 
         sub_plotter = aplt.SubPlotter()
 
@@ -274,22 +238,19 @@ class TestAbstractPlotterAttributes:
         assert sub_plotter.labels.titlesize == 15
         assert sub_plotter.labels.ysize == 22
         assert sub_plotter.labels.xsize == 23
-        assert sub_plotter.labels.units.use_scaled == True
 
         sub_plotter = aplt.SubPlotter(
-            labels=aplt.Labels(
-                title="OMG", yunits="hi", xunits="hi2", titlesize=1, ysize=2, xsize=3
+            labels=aplt.Labels.sub(
+                title="OMG", yunits="hi", xunits="hi2", ysize=2, xsize=3
             ),
-            units=aplt.Units(use_scaled=False),
         )
 
         assert sub_plotter.labels.title == "OMG"
         assert sub_plotter.labels._yunits == "hi"
         assert sub_plotter.labels._xunits == "hi2"
-        assert sub_plotter.labels.titlesize == 1
+        assert sub_plotter.labels.titlesize == 15
         assert sub_plotter.labels.ysize == 2
         assert sub_plotter.labels.xsize == 3
-        assert sub_plotter.labels.units.use_scaled == False
 
     def test__legend__from_config_or_via_manual_input(self):
 
@@ -308,10 +269,10 @@ class TestAbstractPlotterAttributes:
         assert sub_plotter.legend.include == False
         assert sub_plotter.legend.fontsize == 13
 
-        sub_plotter = aplt.SubPlotter(legend=aplt.Legend(include=True, fontsize=10))
+        sub_plotter = aplt.SubPlotter(legend=aplt.Legend.sub(include=True))
 
         assert sub_plotter.legend.include == True
-        assert sub_plotter.legend.fontsize == 10
+        assert sub_plotter.legend.fontsize == 13
 
     def test__origin_scatterer__from_config_or_via_manual_input(self):
 
@@ -322,7 +283,7 @@ class TestAbstractPlotterAttributes:
         assert plotter.origin_scatterer.colors == ["k"]
 
         plotter = aplt.Plotter(
-            origin_scatterer=aplt.Scatterer(size=1, marker=".", colors="k")
+            origin_scatterer=aplt.OriginScatterer(size=1, marker=".", colors="k")
         )
 
         assert plotter.origin_scatterer.size == 1
@@ -336,10 +297,10 @@ class TestAbstractPlotterAttributes:
         assert sub_plotter.origin_scatterer.colors == ["r"]
 
         sub_plotter = aplt.SubPlotter(
-            origin_scatterer=aplt.Scatterer(size=24, marker="o", colors=["r", "b"])
+            origin_scatterer=aplt.OriginScatterer.sub(marker="o", colors=["r", "b"])
         )
 
-        assert sub_plotter.origin_scatterer.size == 24
+        assert sub_plotter.origin_scatterer.size == 81
         assert sub_plotter.origin_scatterer.marker == "o"
         assert sub_plotter.origin_scatterer.colors == ["r", "b"]
 
@@ -352,7 +313,7 @@ class TestAbstractPlotterAttributes:
         assert plotter.mask_scatterer.colors == ["g"]
 
         plotter = aplt.Plotter(
-            mask_scatterer=aplt.Scatterer(size=1, marker="x", colors="k")
+            mask_scatterer=aplt.MaskScatterer(size=1, marker="x", colors="k")
         )
 
         assert plotter.mask_scatterer.size == 1
@@ -366,10 +327,10 @@ class TestAbstractPlotterAttributes:
         assert sub_plotter.mask_scatterer.colors == ["w"]
 
         sub_plotter = aplt.SubPlotter(
-            mask_scatterer=aplt.Scatterer(size=24, marker="o", colors=["r", "b"])
+            mask_scatterer=aplt.MaskScatterer.sub(marker="o", colors=["r", "b"])
         )
 
-        assert sub_plotter.mask_scatterer.size == 24
+        assert sub_plotter.mask_scatterer.size == 8
         assert sub_plotter.mask_scatterer.marker == "o"
         assert sub_plotter.mask_scatterer.colors == ["r", "b"]
 
@@ -382,7 +343,7 @@ class TestAbstractPlotterAttributes:
         assert plotter.border_scatterer.colors == ["c"]
 
         plotter = aplt.Plotter(
-            border_scatterer=aplt.Scatterer(size=1, marker="x", colors="k")
+            border_scatterer=aplt.BorderScatterer(size=1, marker="x", colors="k")
         )
 
         assert plotter.border_scatterer.size == 1
@@ -396,10 +357,10 @@ class TestAbstractPlotterAttributes:
         assert sub_plotter.border_scatterer.colors == ["k"]
 
         sub_plotter = aplt.SubPlotter(
-            border_scatterer=aplt.Scatterer(size=24, marker="o", colors=["r", "b"])
+            border_scatterer=aplt.BorderScatterer.sub(marker="o", colors=["r", "b"])
         )
 
-        assert sub_plotter.border_scatterer.size == 24
+        assert sub_plotter.border_scatterer.size == 7
         assert sub_plotter.border_scatterer.marker == "o"
         assert sub_plotter.border_scatterer.colors == ["r", "b"]
 
@@ -412,7 +373,7 @@ class TestAbstractPlotterAttributes:
         assert plotter.grid_scatterer.colors == ["y"]
 
         plotter = aplt.Plotter(
-            grid_scatterer=aplt.Scatterer(size=1, marker="x", colors="k")
+            grid_scatterer=aplt.GridScatterer(size=1, marker="x", colors="k")
         )
 
         assert plotter.grid_scatterer.size == 1
@@ -426,10 +387,10 @@ class TestAbstractPlotterAttributes:
         assert sub_plotter.grid_scatterer.colors == ["r"]
 
         sub_plotter = aplt.SubPlotter(
-            grid_scatterer=aplt.Scatterer(size=24, marker="o", colors=["r", "b"])
+            grid_scatterer=aplt.GridScatterer.sub(marker="o", colors=["r", "b"])
         )
 
-        assert sub_plotter.grid_scatterer.size == 24
+        assert sub_plotter.grid_scatterer.size == 6
         assert sub_plotter.grid_scatterer.marker == "o"
         assert sub_plotter.grid_scatterer.colors == ["r", "b"]
 
@@ -442,7 +403,7 @@ class TestAbstractPlotterAttributes:
         assert plotter.positions_scatterer.colors == ["r", "g", "b"]
 
         plotter = aplt.Plotter(
-            positions_scatterer=aplt.Scatterer(size=1, marker="x", colors="k")
+            positions_scatterer=aplt.PositionsScatterer(size=1, marker="x", colors="k")
         )
 
         assert plotter.positions_scatterer.size == 1
@@ -456,10 +417,10 @@ class TestAbstractPlotterAttributes:
         assert sub_plotter.positions_scatterer.colors == ["c", "g", "b"]
 
         sub_plotter = aplt.SubPlotter(
-            positions_scatterer=aplt.Scatterer(size=24, marker="o", colors=["r", "b"])
+            positions_scatterer=aplt.PositionsScatterer.sub(marker="o", colors=["r", "b"])
         )
 
-        assert sub_plotter.positions_scatterer.size == 24
+        assert sub_plotter.positions_scatterer.size == 5
         assert sub_plotter.positions_scatterer.marker == "o"
         assert sub_plotter.positions_scatterer.colors == ["r", "b"]
 
@@ -472,7 +433,7 @@ class TestAbstractPlotterAttributes:
         assert plotter.index_scatterer.colors == ["r", "g", "b", "y", "k", "w"]
 
         plotter = aplt.Plotter(
-            index_scatterer=aplt.Scatterer(size=1, marker="x", colors="k")
+            index_scatterer=aplt.IndexScatterer(size=1, marker="x", colors="k")
         )
 
         assert plotter.index_scatterer.size == 1
@@ -486,10 +447,10 @@ class TestAbstractPlotterAttributes:
         assert sub_plotter.index_scatterer.colors == ["r", "g", "b", "y", "w", "k"]
 
         sub_plotter = aplt.SubPlotter(
-            index_scatterer=aplt.Scatterer(size=24, marker="o", colors="r")
+            index_scatterer=aplt.IndexScatterer.sub(marker="o", colors="r")
         )
 
-        assert sub_plotter.index_scatterer.size == 24
+        assert sub_plotter.index_scatterer.size == 21
         assert sub_plotter.index_scatterer.marker == "o"
         assert sub_plotter.index_scatterer.colors == ["r"]
 
@@ -502,7 +463,7 @@ class TestAbstractPlotterAttributes:
         assert plotter.pixelization_grid_scatterer.colors == ["r"]
 
         plotter = aplt.Plotter(
-            pixelization_grid_scatterer=aplt.Scatterer(size=1, marker="x", colors="k")
+            pixelization_grid_scatterer=aplt.PixelizationGridScatterer(size=1, marker="x", colors="k")
         )
 
         assert plotter.pixelization_grid_scatterer.size == 1
@@ -516,10 +477,10 @@ class TestAbstractPlotterAttributes:
         assert sub_plotter.pixelization_grid_scatterer.colors == ["g"]
 
         sub_plotter = aplt.SubPlotter(
-            pixelization_grid_scatterer=aplt.Scatterer(size=24, marker="o", colors="r")
+            pixelization_grid_scatterer=aplt.PixelizationGridScatterer.sub(marker="o", colors="r")
         )
 
-        assert sub_plotter.pixelization_grid_scatterer.size == 24
+        assert sub_plotter.pixelization_grid_scatterer.size == 6
         assert sub_plotter.pixelization_grid_scatterer.marker == "o"
         assert sub_plotter.pixelization_grid_scatterer.colors == ["r"]
 
@@ -549,10 +510,10 @@ class TestAbstractPlotterAttributes:
         assert sub_plotter.liner.pointsize == 20
 
         sub_plotter = aplt.SubPlotter(
-            liner=aplt.Liner(width=24, style=".", colors="r", pointsize=21)
+            liner=aplt.Liner.sub(style=".", colors="r", pointsize=21)
         )
 
-        assert sub_plotter.liner.width == 24
+        assert sub_plotter.liner.width == 1
         assert sub_plotter.liner.style == "."
         assert sub_plotter.liner.colors == ["r"]
         assert sub_plotter.liner.pointsize == 21
@@ -580,10 +541,10 @@ class TestAbstractPlotterAttributes:
         assert sub_plotter.voronoi_drawer.alpha == 0.5
 
         sub_plotter = aplt.SubPlotter(
-            voronoi_drawer=aplt.VoronoiDrawer(edgewidth=0.5, edgecolor="r", alpha=1.0)
+            voronoi_drawer=aplt.VoronoiDrawer.sub(edgecolor="r", alpha=1.0)
         )
 
-        assert sub_plotter.voronoi_drawer.edgewidth == 0.5
+        assert sub_plotter.voronoi_drawer.edgewidth == 1.0
         assert sub_plotter.voronoi_drawer.edgecolor == "r"
         assert sub_plotter.voronoi_drawer.alpha == 1.0
 
@@ -881,7 +842,6 @@ class TestAbstractPlotterNew:
             labels=aplt.Labels(
                 title="OMG", yunits="hi", xunits="hi2", titlesize=1, ysize=2, xsize=3
             ),
-            units=aplt.Units(use_scaled=False),
         )
 
         plotter = plotter.plotter_with_new_labels()
@@ -892,17 +852,14 @@ class TestAbstractPlotterNew:
         assert plotter.labels.titlesize == 1
         assert plotter.labels.ysize == 2
         assert plotter.labels.xsize == 3
-        assert plotter.labels.units.use_scaled == False
 
         plotter = plotter.plotter_with_new_labels(
-            labels=aplt.Labels(
                 title="OMG0",
                 yunits="hi0",
                 xunits="hi20",
                 titlesize=10,
                 ysize=20,
-                xsize=30,
-            )
+                xsize=30
         )
 
         assert plotter.labels.title == "OMG0"
@@ -911,7 +868,21 @@ class TestAbstractPlotterNew:
         assert plotter.labels.titlesize == 10
         assert plotter.labels.ysize == 20
         assert plotter.labels.xsize == 30
-        assert plotter.labels.units.use_scaled == False
+
+        plotter = plotter.plotter_with_new_labels(
+                title="OMG0",
+                yunits="hi0",
+                xunits="hi20",
+                titlesize=10,
+        )
+
+        assert plotter.labels.title == "OMG0"
+        assert plotter.labels._yunits == "hi0"
+        assert plotter.labels._xunits == "hi20"
+        assert plotter.labels.titlesize == 10
+        assert plotter.labels.ysize == 20
+        assert plotter.labels.xsize == 30
+
 
     def test__plotter_with_new_outputs__new_outputs_are_setup_correctly_if_input(self):
 
@@ -926,8 +897,7 @@ class TestAbstractPlotterNew:
         assert plotter.output.format == "png"
         assert plotter.output.filename == "file"
 
-        plotter = plotter.plotter_with_new_output(
-            output=aplt.Output(path="Path0", filename="file0")
+        plotter = plotter.plotter_with_new_output(path="Path0", filename="file0"
         )
 
         assert plotter.output.path == "Path0"
@@ -935,8 +905,7 @@ class TestAbstractPlotterNew:
         assert plotter.output.format == "png"
         assert plotter.output.filename == "file0"
 
-        plotter = plotter.plotter_with_new_output(
-            output=aplt.Output(path="Path1", filename="file1", format="fits")
+        plotter = plotter.plotter_with_new_output(path="Path1", filename="file1", format="fits"
         )
 
         assert plotter.output.path == "Path1"
@@ -946,37 +915,24 @@ class TestAbstractPlotterNew:
 
     def test__plotter_with_new_units__new_outputs_are_setup_correctly_if_input(self):
 
-        plotter = aplt.Plotter(
-            units=aplt.Units(use_scaled=True, in_kpc=True, conversion_factor=1.0)
-        )
+        plotter = aplt.Plotter(aplt.Units(use_scaled=True, in_kpc=True, conversion_factor=1.0))
 
         assert plotter.units.use_scaled == True
         assert plotter.units.in_kpc == True
         assert plotter.units.conversion_factor == 1.0
 
-        assert plotter.labels.units.use_scaled == True
-        assert plotter.labels.units.in_kpc == True
-        assert plotter.labels.units.conversion_factor == 1.0
-
-        assert plotter.ticks.units.use_scaled == True
-        assert plotter.ticks.units.in_kpc == True
-        assert plotter.ticks.units.conversion_factor == 1.0
-
-        plotter = plotter.plotter_with_new_units(
-            units=aplt.Units(use_scaled=False, in_kpc=False, conversion_factor=2.0)
-        )
+        plotter = plotter.plotter_with_new_units(use_scaled=False, in_kpc=False, conversion_factor=2.0)
 
         assert plotter.units.use_scaled == False
         assert plotter.units.in_kpc == False
         assert plotter.units.conversion_factor == 2.0
 
-        assert plotter.labels.units.use_scaled == False
-        assert plotter.labels.units.in_kpc == False
-        assert plotter.labels.units.conversion_factor == 2.0
+        plotter = plotter.plotter_with_new_units(conversion_factor=3.0)
 
-        assert plotter.ticks.units.use_scaled == False
-        assert plotter.ticks.units.in_kpc == False
-        assert plotter.ticks.units.conversion_factor == 2.0
+        assert plotter.units.use_scaled == False
+        assert plotter.units.in_kpc == False
+        assert plotter.units.conversion_factor == 3.0
+
 
     def test__open_and_close_subplot_figures(self):
 
