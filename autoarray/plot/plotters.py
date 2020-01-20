@@ -35,7 +35,6 @@ def load_subplot_setting(section, name, python_type):
     return conf.instance.visualize_subplots.get(section, name, python_type)
 
 
-
 class AbstractPlotter(object):
     def __init__(
         self,
@@ -65,34 +64,98 @@ class AbstractPlotter(object):
 
         self.units = units if units is not None else mat_objs.Units()
 
-        self.figure = figure if figure is not None else mat_objs.Figure(from_subplot_config=from_subplot_config)
-
-        self.cmap = cmap if cmap is not None else mat_objs.ColorMap(from_subplot_config=from_subplot_config)
-
-        self.cb = cb if cb is not None else mat_objs.ColorBar(from_subplot_config=from_subplot_config)
-
-        self.ticks = ticks if ticks is not None else mat_objs.Ticks(from_subplot_config=from_subplot_config)
-
-        self.labels = labels if labels is not None else mat_objs.Labels(from_subplot_config=from_subplot_config)
-
-        self.legend = legend if legend is not None else mat_objs.Legend(from_subplot_config=from_subplot_config)
-
-        self.output = output if output is not None else mat_objs.Output(bypass=isinstance(self, SubPlotter))
-
-        self.origin_scatterer = origin_scatterer if origin_scatterer is not None else mat_objs.OriginScatterer(from_subplot_config=from_subplot_config)
-        self.mask_scatterer = mask_scatterer if mask_scatterer is not None else mat_objs.Scatterer(section="mask", from_subplot_config=from_subplot_config)
-        self.border_scatterer = border_scatterer if border_scatterer is not None else mat_objs.Scatterer(section="border", from_subplot_config=from_subplot_config)
-        self.grid_scatterer = grid_scatterer if grid_scatterer is not None else mat_objs.Scatterer(section="grid", from_subplot_config=from_subplot_config)
-        self.positions_scatterer = positions_scatterer if positions_scatterer is not None else mat_objs.Scatterer(section="positions", from_subplot_config=from_subplot_config)
-        self.index_scatterer = index_scatterer if index_scatterer is not None else mat_objs.Scatterer(section="index", from_subplot_config=from_subplot_config)
-        self.pixelization_grid_scatterer = pixelization_grid_scatterer if pixelization_grid_scatterer is not None else mat_objs.Scatterer(section="pixelization_grid", from_subplot_config=from_subplot_config)
-
-        self.liner = liner if liner is not None else mat_objs.Liner(
-            section="liner", from_subplot_config=from_subplot_config
+        self.figure = (
+            figure
+            if figure is not None
+            else mat_objs.Figure(from_subplot_config=from_subplot_config)
         )
 
-        self.voronoi_drawer = voronoi_drawer if voronoi_drawer is not None else mat_objs.VoronoiDrawer(
-            from_subplot_config=from_subplot_config
+        self.cmap = (
+            cmap
+            if cmap is not None
+            else mat_objs.ColorMap(from_subplot_config=from_subplot_config)
+        )
+
+        self.cb = (
+            cb
+            if cb is not None
+            else mat_objs.ColorBar(from_subplot_config=from_subplot_config)
+        )
+
+        self.ticks = (
+            ticks
+            if ticks is not None
+            else mat_objs.Ticks(from_subplot_config=from_subplot_config)
+        )
+
+        self.labels = (
+            labels
+            if labels is not None
+            else mat_objs.Labels(from_subplot_config=from_subplot_config)
+        )
+
+        self.legend = (
+            legend
+            if legend is not None
+            else mat_objs.Legend(from_subplot_config=from_subplot_config)
+        )
+
+        self.output = (
+            output
+            if output is not None
+            else mat_objs.Output(bypass=isinstance(self, SubPlotter))
+        )
+
+        self.origin_scatterer = (
+            origin_scatterer
+            if origin_scatterer is not None
+            else mat_objs.OriginScatterer(from_subplot_config=from_subplot_config)
+        )
+        self.mask_scatterer = (
+            mask_scatterer
+            if mask_scatterer is not None
+            else mat_objs.MaskScatterer(from_subplot_config=from_subplot_config)
+        )
+        self.border_scatterer = (
+            border_scatterer
+            if border_scatterer is not None
+            else mat_objs.BorderScatterer(from_subplot_config=from_subplot_config)
+        )
+        self.grid_scatterer = (
+            grid_scatterer
+            if grid_scatterer is not None
+            else mat_objs.GridScatterer(from_subplot_config=from_subplot_config)
+        )
+        self.positions_scatterer = (
+            positions_scatterer
+            if positions_scatterer is not None
+            else mat_objs.PositionsScatterer(from_subplot_config=from_subplot_config)
+        )
+        self.index_scatterer = (
+            index_scatterer
+            if index_scatterer is not None
+            else mat_objs.IndexScatterer(from_subplot_config=from_subplot_config)
+        )
+        self.pixelization_grid_scatterer = (
+            pixelization_grid_scatterer
+            if pixelization_grid_scatterer is not None
+            else mat_objs.PixelizationGridScatterer(
+                from_subplot_config=from_subplot_config
+            )
+        )
+
+        self.liner = (
+            liner
+            if liner is not None
+            else mat_objs.Liner(
+                section="liner", from_subplot_config=from_subplot_config
+            )
+        )
+
+        self.voronoi_drawer = (
+            voronoi_drawer
+            if voronoi_drawer is not None
+            else mat_objs.VoronoiDrawer(from_subplot_config=from_subplot_config)
         )
 
     def plot_array(
@@ -417,7 +480,9 @@ class AbstractPlotter(object):
         if label is not None or vertical_line_labels is not None:
             self.legend.set()
 
-        self.ticks.set_xticks(array=None, extent=[np.min(x), np.max(x)], units=self.units)
+        self.ticks.set_xticks(
+            array=None, extent=[np.min(x), np.max(x)], units=self.units
+        )
 
         if not bypass_output:
             self.output.to_figure(structure=None)
@@ -503,8 +568,12 @@ class AbstractPlotter(object):
             symmetric_around_centre=False,
         )
 
-        self.ticks.set_yticks(array=None, extent=mapper.pixelization_grid.extent, units=self.units)
-        self.ticks.set_xticks(array=None, extent=mapper.pixelization_grid.extent, units=self.units)
+        self.ticks.set_yticks(
+            array=None, extent=mapper.pixelization_grid.extent, units=self.units
+        )
+        self.ticks.set_xticks(
+            array=None, extent=mapper.pixelization_grid.extent, units=self.units
+        )
 
         self.liner.draw_rectangular_grid_lines(
             extent=mapper.pixelization_grid.extent, shape_2d=mapper.shape_2d
@@ -572,8 +641,12 @@ class AbstractPlotter(object):
             symmetric_around_centre=False,
         )
 
-        self.ticks.set_yticks(array=None, extent=mapper.pixelization_grid.extent, units=self.units)
-        self.ticks.set_xticks(array=None, extent=mapper.pixelization_grid.extent, units=self.units)
+        self.ticks.set_yticks(
+            array=None, extent=mapper.pixelization_grid.extent, units=self.units
+        )
+        self.ticks.set_xticks(
+            array=None, extent=mapper.pixelization_grid.extent, units=self.units
+        )
 
         self.voronoi_drawer.draw_voronoi_pixels(
             mapper=mapper, values=source_pixel_values, cmap=self.cmap.cmap, cb=self.cb
@@ -644,46 +717,46 @@ class AbstractPlotter(object):
             axis_limits = [-x, x, -y, y]
             plt.axis(axis_limits)
 
-    def plotter_with_new_labels(self,         
-                                title=None,
+    def plotter_with_new_labels(
+        self,
+        title=None,
         yunits=None,
         xunits=None,
         titlesize=None,
         ysize=None,
-        xsize=None):
+        xsize=None,
+    ):
 
         plotter = copy.deepcopy(self)
 
-        plotter.labels.title = (
-            title if title is not None else self.labels.title
-        )
-        plotter.labels._yunits = (
-            yunits if yunits is not None else self.labels._yunits
-        )
-        plotter.labels._xunits = (
-            xunits if xunits is not None else self.labels._xunits
-        )
+        plotter.labels.title = title if title is not None else self.labels.title
+        plotter.labels._yunits = yunits if yunits is not None else self.labels._yunits
+        plotter.labels._xunits = xunits if xunits is not None else self.labels._xunits
         plotter.labels.titlesize = (
             titlesize if titlesize is not None else self.labels.titlesize
         )
-        plotter.labels.ysize = (
-            ysize if ysize is not None else self.labels.ysize
-        )
-        plotter.labels.xsize = (
-            xsize if xsize is not None else self.labels.xsize
-        )
+        plotter.labels.ysize = ysize if ysize is not None else self.labels.ysize
+        plotter.labels.xsize = xsize if xsize is not None else self.labels.xsize
 
         return plotter
 
-    def plotter_with_new_units(self, use_scaled=None, conversion_factor=None, in_kpc=None):
+    def plotter_with_new_units(
+        self, use_scaled=None, conversion_factor=None, in_kpc=None
+    ):
 
         plotter = copy.deepcopy(self)
 
-        plotter.units.use_scaled = use_scaled if use_scaled is not None else self.units.use_scaled
+        plotter.units.use_scaled = (
+            use_scaled if use_scaled is not None else self.units.use_scaled
+        )
 
         plotter.units.in_kpc = in_kpc if in_kpc is not None else self.units.in_kpc
 
-        plotter.units.conversion_factor = conversion_factor if conversion_factor is not None else self.units.conversion_factor
+        plotter.units.conversion_factor = (
+            conversion_factor
+            if conversion_factor is not None
+            else self.units.conversion_factor
+        )
 
         return plotter
 
@@ -691,17 +764,13 @@ class AbstractPlotter(object):
 
         plotter = copy.deepcopy(self)
 
-        plotter.output.path = (
-            path if path is not None else self.output.path
-        )
+        plotter.output.path = path if path is not None else self.output.path
 
         plotter.output.filename = (
             filename if filename is not None else self.output.filename
         )
 
-        plotter.output._format = (
-            format if format is not None else self.output._format
-        )
+        plotter.output._format = format if format is not None else self.output._format
 
         return plotter
 
@@ -752,23 +821,23 @@ class Plotter(AbstractPlotter):
 class SubPlotter(AbstractPlotter):
     def __init__(
         self,
-            units=None,
-            figure=None,
-            cmap=None,
-            cb=None,
-            ticks=None,
-            labels=None,
-            legend=None,
-            output=None,
-            origin_scatterer=None,
-            mask_scatterer=None,
-            border_scatterer=None,
-            grid_scatterer=None,
-            positions_scatterer=None,
-            index_scatterer=None,
-            pixelization_grid_scatterer=None,
-            liner=None,
-            voronoi_drawer=None,
+        units=None,
+        figure=None,
+        cmap=None,
+        cb=None,
+        ticks=None,
+        labels=None,
+        legend=None,
+        output=None,
+        origin_scatterer=None,
+        mask_scatterer=None,
+        border_scatterer=None,
+        grid_scatterer=None,
+        positions_scatterer=None,
+        index_scatterer=None,
+        pixelization_grid_scatterer=None,
+        liner=None,
+        voronoi_drawer=None,
     ):
 
         super(SubPlotter, self).__init__(
@@ -1076,7 +1145,9 @@ def set_labels(func):
         yunits = plotter.labels.yunits_from_func(func=func)
         xunits = plotter.labels.xunits_from_func(func=func)
 
-        plotter = plotter.plotter_with_new_labels(title=title, yunits=yunits, xunits=xunits)
+        plotter = plotter.plotter_with_new_labels(
+            title=title, yunits=yunits, xunits=xunits
+        )
 
         filename = plotter.output.filename_from_func(func=func)
 

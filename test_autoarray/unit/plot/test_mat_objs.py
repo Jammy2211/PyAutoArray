@@ -163,10 +163,7 @@ class TestTicks:
 
         units = aplt.Units(use_scaled=True, conversion_factor=None)
 
-        ticks = aplt.Ticks(
-            ysize=34,
-            xsize=35,
-        )
+        ticks = aplt.Ticks(ysize=34, xsize=35)
 
         ticks.set_yticks(
             array=array,
@@ -193,10 +190,7 @@ class TestTicks:
             symmetric_around_centre=True,
         )
 
-        ticks = aplt.Ticks(
-            ysize=34,
-            xsize=35,
-        )
+        ticks = aplt.Ticks(ysize=34, xsize=35)
 
         units = aplt.Units(use_scaled=False, conversion_factor=None)
 
@@ -225,9 +219,7 @@ class TestTicks:
             symmetric_around_centre=True,
         )
 
-        ticks = aplt.Ticks(
-            ysize=34, xsize=35, 
-        )
+        ticks = aplt.Ticks(ysize=34, xsize=35)
 
         units = aplt.Units(use_scaled=True, conversion_factor=2.0)
 
@@ -256,10 +248,7 @@ class TestTicks:
             symmetric_around_centre=True,
         )
 
-        ticks = aplt.Ticks(
-            ysize=34,
-            xsize=35,
-        )
+        ticks = aplt.Ticks(ysize=34, xsize=35)
 
         units = aplt.Units(use_scaled=False, conversion_factor=2.0)
 
@@ -304,7 +293,7 @@ class TestLabels:
         labels = aplt.Labels()
 
         units = aplt.Units(in_kpc=False)
-        
+
         assert labels._yunits == None
         assert labels._xunits == None
         assert labels.yunits_from_units(units=units) == "arcsec"

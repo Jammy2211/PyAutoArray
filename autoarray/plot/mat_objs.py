@@ -30,7 +30,6 @@ def load_subplot_setting(section, name, python_type):
     return conf.instance.visualize_subplots.get(section, name, python_type)
 
 
-
 class Units(object):
     def __init__(self, use_scaled=None, conversion_factor=None, in_kpc=None):
 
@@ -42,7 +41,9 @@ class Units(object):
             self.use_scaled = use_scaled
         else:
             try:
-                self.use_scaled = conf.instance.visualize_general.get("general", "use_scaled", bool)
+                self.use_scaled = conf.instance.visualize_general.get(
+                    "general", "use_scaled", bool
+                )
             except:
                 self.use_scaled = True
 
@@ -145,15 +146,24 @@ class ColorMap(object):
         )
 
     @classmethod
-    def sub(cls,
-            cmap=None,
-            norm=None,
-            norm_max=None,
-            norm_min=None,
-            linthresh=None,
-            linscale=None,
-            ):
-        return ColorMap(cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale, from_subplot_config=True)
+    def sub(
+        cls,
+        cmap=None,
+        norm=None,
+        norm_max=None,
+        norm_min=None,
+        linthresh=None,
+        linscale=None,
+    ):
+        return ColorMap(
+            cmap=cmap,
+            norm=norm,
+            norm_min=norm_min,
+            norm_max=norm_max,
+            linthresh=linthresh,
+            linscale=linscale,
+            from_subplot_config=True,
+        )
 
     def norm_from_array(self, array):
         """Get the normalization scale of the colormap. This will be hyper based on the input min / max normalization \
@@ -211,7 +221,13 @@ class ColorMap(object):
 
 class ColorBar(object):
     def __init__(
-        self, ticksize=None, fraction=None, pad=None, tick_values=None, tick_labels=None, from_subplot_config=False
+        self,
+        ticksize=None,
+        fraction=None,
+        pad=None,
+        tick_values=None,
+        tick_labels=None,
+        from_subplot_config=False,
     ):
 
         self.from_subplot_config = from_subplot_config
@@ -221,21 +237,34 @@ class ColorBar(object):
             if ticksize is not None
             else load_setting("colorbar", "ticksize", int, from_subplot_config)
         )
-        
+
         self.fraction = (
             fraction
             if fraction is not None
             else load_setting("colorbar", "fraction", float, from_subplot_config)
         )
-        
-        self.pad = pad if pad is not None else load_setting("colorbar", "pad", float, from_subplot_config)
+
+        self.pad = (
+            pad
+            if pad is not None
+            else load_setting("colorbar", "pad", float, from_subplot_config)
+        )
 
         self.tick_values = tick_values
         self.tick_labels = tick_labels
 
     @classmethod
-    def sub(cls, ticksize=None, fraction=None, pad=None, tick_values=None, tick_labels=None):
-        return ColorBar(ticksize=ticksize, fraction=fraction, pad=pad, tick_values=tick_values, tick_labels=tick_labels, from_subplot_config=True)
+    def sub(
+        cls, ticksize=None, fraction=None, pad=None, tick_values=None, tick_labels=None
+    ):
+        return ColorBar(
+            ticksize=ticksize,
+            fraction=fraction,
+            pad=pad,
+            tick_values=tick_values,
+            tick_labels=tick_labels,
+            from_subplot_config=True,
+        )
 
     def set(self):
         """Setup the colorbar of the figure, specifically its ticksize and the size is appears relative to the figure.
@@ -288,17 +317,26 @@ class ColorBar(object):
 
 class Ticks(object):
     def __init__(
-        self, ysize=None, xsize=None, y_manual=None, x_manual=None, from_subplot_config=False,
+        self,
+        ysize=None,
+        xsize=None,
+        y_manual=None,
+        x_manual=None,
+        from_subplot_config=False,
     ):
 
         self.from_subplot_config = from_subplot_config
 
         self.ysize = (
-            ysize if ysize is not None else load_setting("ticks", "ysize", int, from_subplot_config)
+            ysize
+            if ysize is not None
+            else load_setting("ticks", "ysize", int, from_subplot_config)
         )
 
         self.xsize = (
-            xsize if xsize is not None else load_setting("ticks", "xsize", int, from_subplot_config)
+            xsize
+            if xsize is not None
+            else load_setting("ticks", "xsize", int, from_subplot_config)
         )
 
         self.y_manual = y_manual
@@ -306,7 +344,13 @@ class Ticks(object):
 
     @classmethod
     def sub(cls, ysize=None, xsize=None, y_manual=None, x_manual=None):
-        return Ticks(ysize=ysize, xsize=xsize, y_manual=y_manual, x_manual=x_manual, from_subplot_config=True)
+        return Ticks(
+            ysize=ysize,
+            xsize=xsize,
+            y_manual=y_manual,
+            x_manual=x_manual,
+            from_subplot_config=True,
+        )
 
     def set_yticks(self, array, extent, units, symmetric_around_centre=False):
         """Get the extent of the dimensions of the array in the unit_label of the figure (e.g. arc-seconds or kpc).
@@ -444,14 +488,24 @@ class Labels(object):
         )
 
     @classmethod
-    def sub(cls,         title=None,
+    def sub(
+        cls,
+        title=None,
         yunits=None,
         xunits=None,
         titlesize=None,
         ysize=None,
-        xsize=None):
-        return Labels(title=title, yunits=yunits, xunits=xunits, titlesize=titlesize, ysize=ysize, xsize=xsize, from_subplot_config=True)
-
+        xsize=None,
+    ):
+        return Labels(
+            title=title,
+            yunits=yunits,
+            xunits=xunits,
+            titlesize=titlesize,
+            ysize=ysize,
+            xsize=xsize,
+            from_subplot_config=True,
+        )
 
     def title_from_func(self, func):
         if self.title is None:
@@ -574,7 +628,9 @@ class Labels(object):
             The font size of the x and y ticks on the figure axes.
         """
         if include_brackets:
-            plt.ylabel("y (" + self.yunits_from_units(units=units) + ")", fontsize=self.ysize)
+            plt.ylabel(
+                "y (" + self.yunits_from_units(units=units) + ")", fontsize=self.ysize
+            )
         else:
             plt.ylabel(self.yunits_from_units(units=units), fontsize=self.ysize)
 
@@ -598,7 +654,9 @@ class Labels(object):
             The font size of the x and y ticks on the figure axes.
         """
         if include_brackets:
-            plt.xlabel("x (" + self.xunits_from_units(units=units) + ")", fontsize=self.xsize)
+            plt.xlabel(
+                "x (" + self.xunits_from_units(units=units) + ")", fontsize=self.xsize
+            )
         else:
             plt.xlabel(self.xunits_from_units(units=units), fontsize=self.xsize)
 
@@ -758,10 +816,17 @@ def remove_spaces_and_commas_from_colors(colors):
 
 
 class Scatterer(object):
-    def __init__(self, size=None, marker=None, colors=None, section=None, from_subplot_config=False):
+    def __init__(
+        self,
+        size=None,
+        marker=None,
+        colors=None,
+        section=None,
+        from_subplot_config=False,
+    ):
 
         self.from_subplot_config = from_subplot_config
-        
+
         self.size = (
             size
             if size is not None
@@ -893,89 +958,141 @@ class Scatterer(object):
 
 
 class OriginScatterer(Scatterer):
-
     def __init__(self, size=None, marker=None, colors=None, from_subplot_config=False):
 
-        super(OriginScatterer, self).__init__(size=size, marker=marker, colors=colors, section="origin",
-                                              from_subplot_config=from_subplot_config)
+        super(OriginScatterer, self).__init__(
+            size=size,
+            marker=marker,
+            colors=colors,
+            section="origin",
+            from_subplot_config=from_subplot_config,
+        )
 
     @classmethod
     def sub(cls, size=None, marker=None, colors=None):
-        return OriginScatterer(size=size, marker=marker, colors=colors, from_subplot_config=True)
+        return OriginScatterer(
+            size=size, marker=marker, colors=colors, from_subplot_config=True
+        )
+
 
 class MaskScatterer(Scatterer):
-
     def __init__(self, size=None, marker=None, colors=None, from_subplot_config=False):
 
-        super(MaskScatterer, self).__init__(size=size, marker=marker, colors=colors, section="mask",
-                                              from_subplot_config=from_subplot_config)
+        super(MaskScatterer, self).__init__(
+            size=size,
+            marker=marker,
+            colors=colors,
+            section="mask",
+            from_subplot_config=from_subplot_config,
+        )
 
     @classmethod
     def sub(cls, size=None, marker=None, colors=None):
-        return MaskScatterer(size=size, marker=marker, colors=colors, from_subplot_config=True)
+        return MaskScatterer(
+            size=size, marker=marker, colors=colors, from_subplot_config=True
+        )
+
 
 class BorderScatterer(Scatterer):
-
     def __init__(self, size=None, marker=None, colors=None, from_subplot_config=False):
 
-        super(BorderScatterer, self).__init__(size=size, marker=marker, colors=colors, section="border",
-                                              from_subplot_config=from_subplot_config)
+        super(BorderScatterer, self).__init__(
+            size=size,
+            marker=marker,
+            colors=colors,
+            section="border",
+            from_subplot_config=from_subplot_config,
+        )
 
     @classmethod
     def sub(cls, size=None, marker=None, colors=None):
-        return BorderScatterer(size=size, marker=marker, colors=colors, from_subplot_config=True)
+        return BorderScatterer(
+            size=size, marker=marker, colors=colors, from_subplot_config=True
+        )
 
 
 class GridScatterer(Scatterer):
-
     def __init__(self, size=None, marker=None, colors=None, from_subplot_config=False):
 
-        super(GridScatterer, self).__init__(size=size, marker=marker, colors=colors, section="grid",
-                                              from_subplot_config=from_subplot_config)
+        super(GridScatterer, self).__init__(
+            size=size,
+            marker=marker,
+            colors=colors,
+            section="grid",
+            from_subplot_config=from_subplot_config,
+        )
 
     @classmethod
     def sub(cls, size=None, marker=None, colors=None):
-        return GridScatterer(size=size, marker=marker, colors=colors, from_subplot_config=True)
+        return GridScatterer(
+            size=size, marker=marker, colors=colors, from_subplot_config=True
+        )
 
 
 class PositionsScatterer(Scatterer):
-
     def __init__(self, size=None, marker=None, colors=None, from_subplot_config=False):
 
-        super(PositionsScatterer, self).__init__(size=size, marker=marker, colors=colors, section="positions",
-                                              from_subplot_config=from_subplot_config)
+        super(PositionsScatterer, self).__init__(
+            size=size,
+            marker=marker,
+            colors=colors,
+            section="positions",
+            from_subplot_config=from_subplot_config,
+        )
 
     @classmethod
     def sub(cls, size=None, marker=None, colors=None):
-        return PositionsScatterer(size=size, marker=marker, colors=colors, from_subplot_config=True)
+        return PositionsScatterer(
+            size=size, marker=marker, colors=colors, from_subplot_config=True
+        )
 
 
 class IndexScatterer(Scatterer):
-
     def __init__(self, size=None, marker=None, colors=None, from_subplot_config=False):
 
-        super(IndexScatterer, self).__init__(size=size, marker=marker, colors=colors, section="index",
-                                              from_subplot_config=from_subplot_config)
+        super(IndexScatterer, self).__init__(
+            size=size,
+            marker=marker,
+            colors=colors,
+            section="index",
+            from_subplot_config=from_subplot_config,
+        )
 
     @classmethod
     def sub(cls, size=None, marker=None, colors=None):
-        return IndexScatterer(size=size, marker=marker, colors=colors, from_subplot_config=True)
-    
-    
+        return IndexScatterer(
+            size=size, marker=marker, colors=colors, from_subplot_config=True
+        )
+
+
 class PixelizationGridScatterer(Scatterer):
-
     def __init__(self, size=None, marker=None, colors=None, from_subplot_config=False):
 
-        super(PixelizationGridScatterer, self).__init__(size=size, marker=marker, colors=colors, section="pixelization_grid",
-                                              from_subplot_config=from_subplot_config)
+        super(PixelizationGridScatterer, self).__init__(
+            size=size,
+            marker=marker,
+            colors=colors,
+            section="pixelization_grid",
+            from_subplot_config=from_subplot_config,
+        )
 
     @classmethod
     def sub(cls, size=None, marker=None, colors=None):
-        return PixelizationGridScatterer(size=size, marker=marker, colors=colors, from_subplot_config=True)
+        return PixelizationGridScatterer(
+            size=size, marker=marker, colors=colors, from_subplot_config=True
+        )
 
 
 class Liner(object):
-    def __init__(self, width=None, style=None, colors=None, pointsize=None, section=None, from_subplot_config=False):
+    def __init__(
+        self,
+        width=None,
+        style=None,
+        colors=None,
+        pointsize=None,
+        section=None,
+        from_subplot_config=False,
+    ):
 
         if section is None:
             section = "liner"
@@ -983,11 +1100,15 @@ class Liner(object):
         self.from_subplot_config = from_subplot_config
 
         self.width = (
-            width if width is not None else load_setting(section, "width", int, from_subplot_config)
+            width
+            if width is not None
+            else load_setting(section, "width", int, from_subplot_config)
         )
 
         self.style = (
-            style if style is not None else load_setting(section, "style", str, from_subplot_config)
+            style
+            if style is not None
+            else load_setting(section, "style", str, from_subplot_config)
         )
 
         self.colors = (
@@ -1006,7 +1127,14 @@ class Liner(object):
 
     @classmethod
     def sub(cls, width=None, style=None, colors=None, pointsize=None, section=None):
-        return Liner(width=width, style=style, colors=colors, pointsize=pointsize, section=section, from_subplot_config=True)
+        return Liner(
+            width=width,
+            style=style,
+            colors=colors,
+            pointsize=pointsize,
+            section=section,
+            from_subplot_config=True,
+        )
 
     def draw_y_vs_x(self, y, x, plot_axis_type, label=None):
 
@@ -1118,7 +1246,9 @@ class Liner(object):
 
 
 class VoronoiDrawer(object):
-    def __init__(self, edgewidth=None, edgecolor=None, alpha=None, from_subplot_config=False):
+    def __init__(
+        self, edgewidth=None, edgecolor=None, alpha=None, from_subplot_config=False
+    ):
 
         self.from_subplot_config = from_subplot_config
 
@@ -1142,7 +1272,12 @@ class VoronoiDrawer(object):
 
     @classmethod
     def sub(cls, edgewidth=None, edgecolor=None, alpha=None):
-        return VoronoiDrawer(edgewidth=edgewidth, edgecolor=edgecolor, alpha=alpha, from_subplot_config=True)
+        return VoronoiDrawer(
+            edgewidth=edgewidth,
+            edgecolor=edgecolor,
+            alpha=alpha,
+            from_subplot_config=True,
+        )
 
     def draw_voronoi_pixels(self, mapper, values, cmap, cb):
 
