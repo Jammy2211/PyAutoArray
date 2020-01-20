@@ -1,5 +1,6 @@
 import autoarray as aa
 import autoarray.plot as aplt
+from autoarray.plot import mat_objs
 
 from os import path
 
@@ -160,109 +161,130 @@ class TestTicks:
 
         array = aa.array.ones(shape_2d=(2, 2), pixel_scales=1.0)
 
-        ticks = aplt.Ticks(
-            ysize=34,
-            xsize=35,
-            units=aplt.Units(use_scaled=True, conversion_factor=None),
-        )
-
-        ticks.set_yticks(
-            array=array,
-            extent=array.extent_of_zoomed_array(buffer=1),
-            symmetric_around_centre=False,
-        )
-        ticks.set_xticks(
-            array=array,
-            extent=array.extent_of_zoomed_array(buffer=1),
-            symmetric_around_centre=False,
-        )
-        ticks.set_yticks(
-            array=array,
-            extent=array.extent_of_zoomed_array(buffer=1),
-            symmetric_around_centre=True,
-        )
-        ticks.set_xticks(
-            array=array,
-            extent=array.extent_of_zoomed_array(buffer=1),
-            symmetric_around_centre=True,
-        )
+        units = aplt.Units(use_scaled=True, conversion_factor=None)
 
         ticks = aplt.Ticks(
             ysize=34,
             xsize=35,
-            units=aplt.Units(use_scaled=False, conversion_factor=None),
         )
 
         ticks.set_yticks(
             array=array,
             extent=array.extent_of_zoomed_array(buffer=1),
+            units=units,
             symmetric_around_centre=False,
         )
         ticks.set_xticks(
             array=array,
             extent=array.extent_of_zoomed_array(buffer=1),
-            symmetric_around_centre=False,
-        )
-        ticks.set_yticks(
-            array=array,
-            extent=array.extent_of_zoomed_array(buffer=1),
-            symmetric_around_centre=True,
-        )
-        ticks.set_xticks(
-            array=array,
-            extent=array.extent_of_zoomed_array(buffer=1),
-            symmetric_around_centre=True,
-        )
-
-        ticks = aplt.Ticks(
-            ysize=34, xsize=35, units=aplt.Units(use_scaled=True, conversion_factor=2.0)
-        )
-
-        ticks.set_yticks(
-            array=array,
-            extent=array.extent_of_zoomed_array(buffer=1),
-            symmetric_around_centre=False,
-        )
-        ticks.set_xticks(
-            array=array,
-            extent=array.extent_of_zoomed_array(buffer=1),
+            units=units,
             symmetric_around_centre=False,
         )
         ticks.set_yticks(
             array=array,
             extent=array.extent_of_zoomed_array(buffer=1),
+            units=units,
             symmetric_around_centre=True,
         )
         ticks.set_xticks(
             array=array,
             extent=array.extent_of_zoomed_array(buffer=1),
+            units=units,
             symmetric_around_centre=True,
         )
 
         ticks = aplt.Ticks(
             ysize=34,
             xsize=35,
-            units=aplt.Units(use_scaled=False, conversion_factor=2.0),
         )
+
+        units = aplt.Units(use_scaled=False, conversion_factor=None)
 
         ticks.set_yticks(
             array=array,
             extent=array.extent_of_zoomed_array(buffer=1),
+            units=units,
             symmetric_around_centre=False,
         )
         ticks.set_xticks(
             array=array,
             extent=array.extent_of_zoomed_array(buffer=1),
+            units=units,
             symmetric_around_centre=False,
         )
         ticks.set_yticks(
             array=array,
             extent=array.extent_of_zoomed_array(buffer=1),
+            units=units,
             symmetric_around_centre=True,
         )
         ticks.set_xticks(
             array=array,
             extent=array.extent_of_zoomed_array(buffer=1),
+            units=units,
+            symmetric_around_centre=True,
+        )
+
+        ticks = aplt.Ticks(
+            ysize=34, xsize=35, 
+        )
+
+        units = aplt.Units(use_scaled=True, conversion_factor=2.0)
+
+        ticks.set_yticks(
+            array=array,
+            extent=array.extent_of_zoomed_array(buffer=1),
+            units=units,
+            symmetric_around_centre=False,
+        )
+        ticks.set_xticks(
+            array=array,
+            extent=array.extent_of_zoomed_array(buffer=1),
+            units=units,
+            symmetric_around_centre=False,
+        )
+        ticks.set_yticks(
+            array=array,
+            extent=array.extent_of_zoomed_array(buffer=1),
+            units=units,
+            symmetric_around_centre=True,
+        )
+        ticks.set_xticks(
+            array=array,
+            extent=array.extent_of_zoomed_array(buffer=1),
+            units=units,
+            symmetric_around_centre=True,
+        )
+
+        ticks = aplt.Ticks(
+            ysize=34,
+            xsize=35,
+        )
+
+        units = aplt.Units(use_scaled=False, conversion_factor=2.0)
+
+        ticks.set_yticks(
+            array=array,
+            extent=array.extent_of_zoomed_array(buffer=1),
+            units=units,
+            symmetric_around_centre=False,
+        )
+        ticks.set_xticks(
+            array=array,
+            extent=array.extent_of_zoomed_array(buffer=1),
+            units=units,
+            symmetric_around_centre=False,
+        )
+        ticks.set_yticks(
+            array=array,
+            extent=array.extent_of_zoomed_array(buffer=1),
+            units=units,
+            symmetric_around_centre=True,
+        )
+        ticks.set_xticks(
+            array=array,
+            extent=array.extent_of_zoomed_array(buffer=1),
+            units=units,
             symmetric_around_centre=True,
         )
 
@@ -270,37 +292,41 @@ class TestTicks:
 class TestLabels:
     def test__yx_units_use_plot_in_kpc_if_it_is_passed(self):
 
-        labels = aplt.Labels(units=aplt.Units(in_kpc=True))
+        labels = aplt.Labels()
 
-        assert labels.units.in_kpc == True
+        units = aplt.Units(in_kpc=True)
+
         assert labels._yunits == None
         assert labels._xunits == None
-        assert labels.yunits == "kpc"
-        assert labels.xunits == "kpc"
+        assert labels.yunits_from_units(units=units) == "kpc"
+        assert labels.xunits_from_units(units=units) == "kpc"
 
-        labels = aplt.Labels(units=aplt.Units(in_kpc=False))
+        labels = aplt.Labels()
 
-        assert labels.units.in_kpc == False
+        units = aplt.Units(in_kpc=False)
+        
         assert labels._yunits == None
         assert labels._xunits == None
-        assert labels.yunits == "arcsec"
-        assert labels.xunits == "arcsec"
+        assert labels.yunits_from_units(units=units) == "arcsec"
+        assert labels.xunits_from_units(units=units) == "arcsec"
 
-        labels = aplt.Labels(yunits="hi", xunits="hi2", units=aplt.Units(in_kpc=True))
+        labels = aplt.Labels(yunits="hi", xunits="hi2")
 
-        assert labels.units.in_kpc == True
+        units = aplt.Units(in_kpc=True)
+
         assert labels._yunits == "hi"
         assert labels._xunits == "hi2"
-        assert labels.yunits == "hi"
-        assert labels.xunits == "hi2"
+        assert labels.yunits_from_units(units=units) == "hi"
+        assert labels.xunits_from_units(units=units) == "hi2"
 
-        labels = aplt.Labels(yunits="hi", xunits="hi2", units=aplt.Units(in_kpc=False))
+        labels = aplt.Labels(yunits="hi", xunits="hi2")
 
-        assert labels.units.in_kpc == False
+        units = aplt.Units(in_kpc=False)
+
         assert labels._yunits == "hi"
         assert labels._xunits == "hi2"
-        assert labels.yunits == "hi"
-        assert labels.xunits == "hi2"
+        assert labels.yunits_from_units(units=units) == "hi"
+        assert labels.xunits_from_units(units=units) == "hi2"
 
     def test__title_from_func__uses_func_name_if_title_is_none(self):
         def toy_func():
@@ -423,7 +449,7 @@ class TestOutput:
 class TestScatterer:
     def test__scatter_grid__lists_of_coordinates_or_equivalent_2d_grids(self):
 
-        scatterer = aplt.Scatterer(size=2, marker="x", colors="k")
+        scatterer = mat_objs.Scatterer(size=2, marker="x", colors="k")
 
         scatterer.scatter_grids(grids=[(1.0, 1.0), (2.0, 2.0)])
         scatterer.scatter_grids(
@@ -432,7 +458,7 @@ class TestScatterer:
 
     def test__scatter_grid__lists_of_lists_of_coordinates_or_equivalent_2d_grids(self):
 
-        scatterer = aplt.Scatterer(size=2, marker="x", colors="k")
+        scatterer = mat_objs.Scatterer(size=2, marker="x", colors="k")
 
         scatterer.scatter_grids(grids=[[(1.0, 1.0), (2.0, 2.0)]])
         scatterer.scatter_grids(grids=[[(1.0, 1.0), (2.0, 2.0)], [(3.0, 3.0)]])
@@ -449,7 +475,7 @@ class TestScatterer:
         self
     ):
 
-        scatterer = aplt.Scatterer(size=2, marker="x", colors="k")
+        scatterer = mat_objs.Scatterer(size=2, marker="x", colors="k")
 
         cmap = plt.get_cmap("jet")
 
@@ -468,7 +494,7 @@ class TestScatterer:
         self
     ):
 
-        scatterer = aplt.Scatterer(size=2, marker="x", colors="k")
+        scatterer = mat_objs.Scatterer(size=2, marker="x", colors="k")
 
         scatterer.scatter_grid_indexes(
             grid=aa.grid.uniform(shape_2d=(3, 3), pixel_scales=1.0), indexes=[0, 1, 2]
@@ -487,7 +513,7 @@ class TestScatterer:
         self
     ):
 
-        scatterer = aplt.Scatterer(size=2, marker="x", colors="k")
+        scatterer = mat_objs.Scatterer(size=2, marker="x", colors="k")
 
         scatterer.scatter_grid_indexes(
             grid=aa.grid.uniform(shape_2d=(3, 3), pixel_scales=1.0),

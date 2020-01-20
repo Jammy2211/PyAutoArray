@@ -14,6 +14,23 @@ import os
 from autoarray import exc
 
 
+def load_setting(section, name, python_type, from_subplot_config):
+
+    if not from_subplot_config:
+        return load_figure_setting(section, name, python_type)
+    else:
+        return load_subplot_setting(section, name, python_type)
+
+
+def load_figure_setting(section, name, python_type):
+    return conf.instance.visualize_figures.get(section, name, python_type)
+
+
+def load_subplot_setting(section, name, python_type):
+    return conf.instance.visualize_subplots.get(section, name, python_type)
+
+
+
 class Units(object):
     def __init__(self, use_scaled=None, conversion_factor=None, in_kpc=None):
 
@@ -21,59 +38,51 @@ class Units(object):
         self.conversion_factor = conversion_factor
         self.in_kpc = in_kpc
 
-    @classmethod
-    def from_instance_and_config(cls, units):
-
-        if units.use_scaled is not None:
-            use_scaled = units.use_scaled
+        if use_scaled is not None:
+            self.use_scaled = use_scaled
         else:
             try:
-                conf.instance.visualize_general.get("general", "use_scaled", bool)
+                self.use_scaled = conf.instance.visualize_general.get("general", "use_scaled", bool)
             except:
-                use_scaled = True
+                self.use_scaled = True
 
         try:
-            in_kpc = (
-                units.in_kpc
-                if units.in_kpc is not None
+            self.in_kpc = (
+                in_kpc
+                if in_kpc is not None
                 else conf.instance.visualize_general.get("units", "in_kpc", bool)
             )
         except:
-            in_kpc = None
-
-        return Units(
-            use_scaled=use_scaled,
-            conversion_factor=units.conversion_factor,
-            in_kpc=in_kpc,
-        )
+            self.in_kpc = None
 
 
 class Figure(object):
-    def __init__(self, figsize=None, aspect=None):
+    def __init__(self, figsize=None, aspect=None, from_subplot_config=False):
+
+        self.from_subplot_config = from_subplot_config
 
         self.figsize = figsize
         self.aspect = aspect
 
+        self.figsize = (
+            figsize
+            if figsize is not None
+            else load_setting("figures", "figsize", str, from_subplot_config)
+        )
+        if self.figsize == "auto":
+            self.figsize = None
+        elif isinstance(self.figsize, str):
+            self.figsize = tuple(map(int, self.figsize[1:-1].split(",")))
+
+        self.aspect = (
+            aspect
+            if aspect is not None
+            else load_setting("figures", "aspect", str, from_subplot_config)
+        )
+
     @classmethod
-    def from_instance_and_config(cls, figure, load_func):
-
-        figsize = (
-            figure.figsize
-            if figure.figsize is not None
-            else load_func("figures", "figsize", str)
-        )
-        if figsize == "auto":
-            figsize = None
-        elif isinstance(figsize, str):
-            figsize = tuple(map(int, figsize[1:-1].split(",")))
-
-        aspect = (
-            figure.aspect
-            if figure.aspect is not None
-            else load_func("figures", "aspect", str)
-        )
-
-        return Figure(figsize=figsize, aspect=aspect)
+    def sub(cls, figsize=None, aspect=None):
+        return Figure(figsize=figsize, aspect=aspect, from_subplot_config=True)
 
     def aspect_from_shape_2d(self, shape_2d):
 
@@ -100,57 +109,51 @@ class ColorMap(object):
         norm_min=None,
         linthresh=None,
         linscale=None,
+        from_subplot_config=False,
     ):
+        self.from_subplot_config = from_subplot_config
 
-        self.cmap = cmap
-        self.norm = norm
-        self.norm_min = norm_min
-        self.norm_max = norm_max
-        self.linthresh = linthresh
-        self.linscale = linscale
+        self.cmap = (
+            cmap
+            if cmap is not None
+            else load_setting("colormap", "cmap", str, from_subplot_config)
+        )
+        self.norm = (
+            norm
+            if norm is not None
+            else load_setting("colormap", "norm", str, from_subplot_config)
+        )
+        self.norm_min = (
+            norm_min
+            if norm_min is not None
+            else load_setting("colormap", "norm_min", float, from_subplot_config)
+        )
+        self.norm_max = (
+            norm_max
+            if norm_max is not None
+            else load_setting("colormap", "norm_max", float, from_subplot_config)
+        )
+        self.linthresh = (
+            linthresh
+            if linthresh is not None
+            else load_setting("colormap", "linthresh", float, from_subplot_config)
+        )
+        self.linscale = (
+            linscale
+            if linscale is not None
+            else load_setting("colormap", "linscale", float, from_subplot_config)
+        )
 
     @classmethod
-    def from_instance_and_config(cls, colormap, load_func):
-
-        cmap = (
-            colormap.cmap
-            if colormap.cmap is not None
-            else load_func("colormap", "cmap", str)
-        )
-        norm = (
-            colormap.norm
-            if colormap.norm is not None
-            else load_func("colormap", "norm", str)
-        )
-        norm_min = (
-            colormap.norm_min
-            if colormap.norm_min is not None
-            else load_func("colormap", "norm_min", float)
-        )
-        norm_max = (
-            colormap.norm_max
-            if colormap.norm_max is not None
-            else load_func("colormap", "norm_max", float)
-        )
-        linthresh = (
-            colormap.linthresh
-            if colormap.linthresh is not None
-            else load_func("colormap", "linthresh", float)
-        )
-        linscale = (
-            colormap.linscale
-            if colormap.linscale is not None
-            else load_func("colormap", "linscale", float)
-        )
-
-        return ColorMap(
-            cmap=cmap,
-            norm=norm,
-            norm_min=norm_min,
-            norm_max=norm_max,
-            linthresh=linthresh,
-            linscale=linscale,
-        )
+    def sub(cls,
+            cmap=None,
+            norm=None,
+            norm_max=None,
+            norm_min=None,
+            linthresh=None,
+            linscale=None,
+            ):
+        return ColorMap(cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale, from_subplot_config=True)
 
     def norm_from_array(self, array):
         """Get the normalization scale of the colormap. This will be hyper based on the input min / max normalization \
@@ -208,39 +211,31 @@ class ColorMap(object):
 
 class ColorBar(object):
     def __init__(
-        self, ticksize=None, fraction=None, pad=None, tick_values=None, tick_labels=None
+        self, ticksize=None, fraction=None, pad=None, tick_values=None, tick_labels=None, from_subplot_config=False
     ):
 
-        self.ticksize = ticksize
-        self.fraction = fraction
-        self.pad = pad
+        self.from_subplot_config = from_subplot_config
+
+        self.ticksize = (
+            ticksize
+            if ticksize is not None
+            else load_setting("colorbar", "ticksize", int, from_subplot_config)
+        )
+        
+        self.fraction = (
+            fraction
+            if fraction is not None
+            else load_setting("colorbar", "fraction", float, from_subplot_config)
+        )
+        
+        self.pad = pad if pad is not None else load_setting("colorbar", "pad", float, from_subplot_config)
+
         self.tick_values = tick_values
         self.tick_labels = tick_labels
 
     @classmethod
-    def from_instance_and_config(cls, cb, load_func):
-
-        ticksize = (
-            cb.ticksize
-            if cb.ticksize is not None
-            else load_func("colorbar", "ticksize", int)
-        )
-        fraction = (
-            cb.fraction
-            if cb.fraction is not None
-            else load_func("colorbar", "fraction", float)
-        )
-        pad = cb.pad if cb.pad is not None else load_func("colorbar", "pad", float)
-        tick_values = cb.tick_values
-        tick_labels = cb.tick_labels
-
-        return ColorBar(
-            ticksize=ticksize,
-            fraction=fraction,
-            pad=pad,
-            tick_values=tick_values,
-            tick_labels=tick_labels,
-        )
+    def sub(cls, ticksize=None, fraction=None, pad=None, tick_values=None, tick_labels=None):
+        return ColorBar(ticksize=ticksize, fraction=fraction, pad=pad, tick_values=tick_values, tick_labels=tick_labels, from_subplot_config=True)
 
     def set(self):
         """Setup the colorbar of the figure, specifically its ticksize and the size is appears relative to the figure.
@@ -293,36 +288,27 @@ class ColorBar(object):
 
 class Ticks(object):
     def __init__(
-        self, ysize=None, xsize=None, y_manual=None, x_manual=None, units=Units()
+        self, ysize=None, xsize=None, y_manual=None, x_manual=None, from_subplot_config=False,
     ):
 
-        self.ysize = ysize
+        self.from_subplot_config = from_subplot_config
 
-        self.xsize = xsize
+        self.ysize = (
+            ysize if ysize is not None else load_setting("ticks", "ysize", int, from_subplot_config)
+        )
+
+        self.xsize = (
+            xsize if xsize is not None else load_setting("ticks", "xsize", int, from_subplot_config)
+        )
+
         self.y_manual = y_manual
         self.x_manual = x_manual
-        self.units = units
 
     @classmethod
-    def from_instance_and_config(cls, ticks, load_func, units=Units()):
+    def sub(cls, ysize=None, xsize=None, y_manual=None, x_manual=None):
+        return Ticks(ysize=ysize, xsize=xsize, y_manual=y_manual, x_manual=x_manual, from_subplot_config=True)
 
-        ysize = (
-            ticks.ysize if ticks.ysize is not None else load_func("ticks", "ysize", int)
-        )
-
-        xsize = (
-            ticks.xsize if ticks.xsize is not None else load_func("ticks", "xsize", int)
-        )
-
-        return Ticks(
-            ysize=ysize,
-            xsize=xsize,
-            y_manual=ticks.y_manual,
-            x_manual=ticks.x_manual,
-            units=units,
-        )
-
-    def set_yticks(self, array, extent, symmetric_around_centre=False):
+    def set_yticks(self, array, extent, units, symmetric_around_centre=False):
         """Get the extent of the dimensions of the array in the unit_label of the figure (e.g. arc-seconds or kpc).
 
         This is used to set the extent of the array and thus the y / x axis limits.
@@ -350,15 +336,15 @@ class Ticks(object):
 
         if self.y_manual is not None:
             ytick_labels = np.asarray([self.y_manual[0], self.y_manual[3]])
-        elif not self.units.use_scaled:
+        elif not units.use_scaled:
             ytick_labels = np.linspace(0, array.shape_2d[0], 5).astype("int")
-        elif self.units.use_scaled and self.units.conversion_factor is None:
+        elif units.use_scaled and units.conversion_factor is None:
             ytick_labels = np.round(np.linspace(extent[2], extent[3], 5), 2)
-        elif self.units.use_scaled and self.units.conversion_factor is not None:
+        elif units.use_scaled and units.conversion_factor is not None:
             ytick_labels = np.round(
                 np.linspace(
-                    extent[2] * self.units.conversion_factor,
-                    extent[3] * self.units.conversion_factor,
+                    extent[2] * units.conversion_factor,
+                    extent[3] * units.conversion_factor,
                     5,
                 ),
                 2,
@@ -371,7 +357,7 @@ class Ticks(object):
 
         plt.yticks(ticks=yticks, labels=ytick_labels)
 
-    def set_xticks(self, array, extent, symmetric_around_centre=False):
+    def set_xticks(self, array, extent, units, symmetric_around_centre=False):
         """Get the extent of the dimensions of the array in the unit_label of the figure (e.g. arc-seconds or kpc).
 
         This is used to set the extent of the array and thus the y / x axis limits.
@@ -399,15 +385,15 @@ class Ticks(object):
 
         if self.x_manual is not None:
             xtick_labels = np.asarray([self.x_manual[0], self.x_manual[3]])
-        elif not self.units.use_scaled:
+        elif not units.use_scaled:
             xtick_labels = np.linspace(0, array.shape_2d[0], 5).astype("int")
-        elif self.units.use_scaled and self.units.conversion_factor is None:
+        elif units.use_scaled and units.conversion_factor is None:
             xtick_labels = np.round(np.linspace(extent[0], extent[1], 5), 2)
-        elif self.units.use_scaled and self.units.conversion_factor is not None:
+        elif units.use_scaled and units.conversion_factor is not None:
             xtick_labels = np.round(
                 np.linspace(
-                    extent[0] * self.units.conversion_factor,
-                    extent[1] * self.units.conversion_factor,
+                    extent[0] * units.conversion_factor,
+                    extent[1] * units.conversion_factor,
                     5,
                 ),
                 2,
@@ -430,49 +416,42 @@ class Labels(object):
         titlesize=None,
         ysize=None,
         xsize=None,
-        units=Units(),
+        from_subplot_config=False,
     ):
+
+        self.from_subplot_config = from_subplot_config
 
         self.title = title
         self._yunits = yunits
         self._xunits = xunits
 
-        self.titlesize = titlesize
-        self.ysize = ysize
-        self.xsize = xsize
+        self.titlesize = (
+            titlesize
+            if titlesize is not None
+            else load_setting("labels", "titlesize", int, from_subplot_config)
+        )
 
-        self.units = units
+        self.ysize = (
+            ysize
+            if ysize is not None
+            else load_setting("labels", "ysize", int, from_subplot_config)
+        )
+
+        self.xsize = (
+            xsize
+            if xsize is not None
+            else load_setting("labels", "xsize", int, from_subplot_config)
+        )
 
     @classmethod
-    def from_instance_and_config(cls, labels, load_func, units=Units()):
+    def sub(cls,         title=None,
+        yunits=None,
+        xunits=None,
+        titlesize=None,
+        ysize=None,
+        xsize=None):
+        return Labels(title=title, yunits=yunits, xunits=xunits, titlesize=titlesize, ysize=ysize, xsize=xsize, from_subplot_config=True)
 
-        titlesize = (
-            labels.titlesize
-            if labels.titlesize is not None
-            else load_func("labels", "titlesize", int)
-        )
-
-        ysize = (
-            labels.ysize
-            if labels.ysize is not None
-            else load_func("labels", "ysize", int)
-        )
-
-        xsize = (
-            labels.xsize
-            if labels.xsize is not None
-            else load_func("labels", "xsize", int)
-        )
-
-        return Labels(
-            title=labels.title,
-            yunits=labels._yunits,
-            xunits=labels._xunits,
-            titlesize=titlesize,
-            ysize=ysize,
-            xsize=xsize,
-            units=units,
-        )
 
     def title_from_func(self, func):
         if self.title is None:
@@ -525,18 +504,17 @@ class Labels(object):
 
             return self._xunits
 
-    @property
-    def yunits(self):
+    def yunits_from_units(self, units):
 
         if self._yunits is None:
 
-            if self.units.in_kpc is not None:
-                if self.units.in_kpc:
+            if units.in_kpc is not None:
+                if units.in_kpc:
                     return "kpc"
                 else:
                     return "arcsec"
 
-            if self.units.use_scaled:
+            if units.use_scaled:
                 return "scaled"
             else:
                 return "pixels"
@@ -545,18 +523,17 @@ class Labels(object):
 
             return self._yunits
 
-    @property
-    def xunits(self):
+    def xunits_from_units(self, units):
 
         if self._xunits is None:
 
-            if self.units.in_kpc is not None:
-                if self.units.in_kpc:
+            if units.in_kpc is not None:
+                if units.in_kpc:
                     return "kpc"
                 else:
                     return "arcsec"
 
-            if self.units.use_scaled:
+            if units.use_scaled:
                 return "scaled"
             else:
                 return "pixels"
@@ -577,7 +554,7 @@ class Labels(object):
         """
         plt.title(label=self.title, fontsize=self.titlesize)
 
-    def set_yunits(self, include_brackets):
+    def set_yunits(self, units, include_brackets):
         """Set the x and y labels of the figure, and set the fontsize of those self.label_
 
         The x and y labels are always the distance scales, thus the labels are either arc-seconds or kpc and depend on the \
@@ -597,11 +574,11 @@ class Labels(object):
             The font size of the x and y ticks on the figure axes.
         """
         if include_brackets:
-            plt.ylabel("y (" + self.yunits + ")", fontsize=self.ysize)
+            plt.ylabel("y (" + self.yunits_from_units(units=units) + ")", fontsize=self.ysize)
         else:
-            plt.ylabel(self.yunits, fontsize=self.ysize)
+            plt.ylabel(self.yunits_from_units(units=units), fontsize=self.ysize)
 
-    def set_xunits(self, include_brackets):
+    def set_xunits(self, units, include_brackets):
         """Set the x and y labels of the figure, and set the fontsize of those self.label_
 
         The x and y labels are always the distance scales, thus the labels are either arc-seconds or kpc and depend on the \
@@ -621,33 +598,31 @@ class Labels(object):
             The font size of the x and y ticks on the figure axes.
         """
         if include_brackets:
-            plt.xlabel("x (" + self.xunits + ")", fontsize=self.xsize)
+            plt.xlabel("x (" + self.xunits_from_units(units=units) + ")", fontsize=self.xsize)
         else:
-            plt.xlabel(self.xunits, fontsize=self.xsize)
+            plt.xlabel(self.xunits_from_units(units=units), fontsize=self.xsize)
 
 
 class Legend(object):
-    def __init__(self, include=None, fontsize=None):
+    def __init__(self, include=None, fontsize=None, from_subplot_config=False):
 
-        self.include = include
-        self.fontsize = fontsize
+        self.from_subplot_config = from_subplot_config
+
+        self.include = (
+            include
+            if include is not None
+            else load_setting("legend", "include", bool, from_subplot_config)
+        )
+
+        self.fontsize = (
+            fontsize
+            if fontsize is not None
+            else load_setting("legend", "fontsize", int, from_subplot_config)
+        )
 
     @classmethod
-    def from_instance_and_config(cls, legend, load_func):
-
-        include = (
-            legend.include
-            if legend.include is not None
-            else load_func("legend", "include", bool)
-        )
-
-        fontsize = (
-            legend.fontsize
-            if legend.fontsize is not None
-            else load_func("legend", "fontsize", int)
-        )
-
-        return Legend(include=include, fontsize=fontsize)
+    def sub(cls, include=None, fontsize=None):
+        return Legend(include=include, fontsize=fontsize, from_subplot_config=True)
 
     def set(self):
         if self.include:
@@ -668,16 +643,6 @@ class Output(object):
         self.filename = filename
         self._format = format
         self.bypass = bypass
-
-    @classmethod
-    def from_instance_and_config(cls, output, load_func, is_sub_plotter):
-
-        return Output(
-            path=output.path,
-            format=output._format,
-            filename=output.filename,
-            bypass=is_sub_plotter,
-        )
 
     @property
     def format(self):
@@ -793,38 +758,32 @@ def remove_spaces_and_commas_from_colors(colors):
 
 
 class Scatterer(object):
-    def __init__(self, size=None, marker=None, colors=None):
+    def __init__(self, size=None, marker=None, colors=None, section=None, from_subplot_config=False):
 
-        self.size = size
-        self.marker = marker
-        if isinstance(colors, str):
-            colors = [colors]
-        self.colors = colors
-
-    @classmethod
-    def from_instance_and_config(cls, scatterer, section, load_func):
-
-        size = (
-            scatterer.size
-            if scatterer.size is not None
-            else load_func(section, "size", int)
+        self.from_subplot_config = from_subplot_config
+        
+        self.size = (
+            size
+            if size is not None
+            else load_setting(section, "size", int, from_subplot_config)
         )
 
-        marker = (
-            scatterer.marker
-            if scatterer.marker is not None
-            else load_func(section, "marker", str)
+        self.marker = (
+            marker
+            if marker is not None
+            else load_setting(section, "marker", str, from_subplot_config)
         )
 
-        colors = (
-            scatterer.colors
-            if scatterer.colors is not None
-            else load_func(section, "colors", list)
+        self.colors = (
+            colors
+            if colors is not None
+            else load_setting(section, "colors", list, from_subplot_config)
         )
 
-        colors = remove_spaces_and_commas_from_colors(colors=colors)
+        self.colors = remove_spaces_and_commas_from_colors(colors=self.colors)
 
-        return Scatterer(size=size, marker=marker, colors=colors)
+        if isinstance(self.colors, str):
+            self.colors = [self.colors]
 
     def scatter_grids(self, grids):
 
@@ -933,42 +892,121 @@ class Scatterer(object):
                 )
 
 
-class Liner(object):
-    def __init__(self, width=None, style=None, colors=None, pointsize=None):
+class OriginScatterer(Scatterer):
 
-        self.width = width
-        self.style = style
-        if isinstance(colors, str):
-            colors = [colors]
-        self.colors = colors
-        self.pointsize = pointsize
+    def __init__(self, size=None, marker=None, colors=None, from_subplot_config=False):
+
+        super(OriginScatterer, self).__init__(size=size, marker=marker, colors=colors, section="origin",
+                                              from_subplot_config=from_subplot_config)
 
     @classmethod
-    def from_instance_and_config(cls, liner, section, load_func):
+    def sub(cls, size=None, marker=None, colors=None):
+        return OriginScatterer(size=size, marker=marker, colors=colors, from_subplot_config=True)
 
-        width = (
-            liner.width if liner.width is not None else load_func(section, "width", int)
+class MaskScatterer(Scatterer):
+
+    def __init__(self, size=None, marker=None, colors=None, from_subplot_config=False):
+
+        super(MaskScatterer, self).__init__(size=size, marker=marker, colors=colors, section="mask",
+                                              from_subplot_config=from_subplot_config)
+
+    @classmethod
+    def sub(cls, size=None, marker=None, colors=None):
+        return MaskScatterer(size=size, marker=marker, colors=colors, from_subplot_config=True)
+
+class BorderScatterer(Scatterer):
+
+    def __init__(self, size=None, marker=None, colors=None, from_subplot_config=False):
+
+        super(BorderScatterer, self).__init__(size=size, marker=marker, colors=colors, section="border",
+                                              from_subplot_config=from_subplot_config)
+
+    @classmethod
+    def sub(cls, size=None, marker=None, colors=None):
+        return BorderScatterer(size=size, marker=marker, colors=colors, from_subplot_config=True)
+
+
+class GridScatterer(Scatterer):
+
+    def __init__(self, size=None, marker=None, colors=None, from_subplot_config=False):
+
+        super(GridScatterer, self).__init__(size=size, marker=marker, colors=colors, section="grid",
+                                              from_subplot_config=from_subplot_config)
+
+    @classmethod
+    def sub(cls, size=None, marker=None, colors=None):
+        return GridScatterer(size=size, marker=marker, colors=colors, from_subplot_config=True)
+
+
+class PositionsScatterer(Scatterer):
+
+    def __init__(self, size=None, marker=None, colors=None, from_subplot_config=False):
+
+        super(PositionsScatterer, self).__init__(size=size, marker=marker, colors=colors, section="positions",
+                                              from_subplot_config=from_subplot_config)
+
+    @classmethod
+    def sub(cls, size=None, marker=None, colors=None):
+        return PositionsScatterer(size=size, marker=marker, colors=colors, from_subplot_config=True)
+
+
+class IndexScatterer(Scatterer):
+
+    def __init__(self, size=None, marker=None, colors=None, from_subplot_config=False):
+
+        super(IndexScatterer, self).__init__(size=size, marker=marker, colors=colors, section="index",
+                                              from_subplot_config=from_subplot_config)
+
+    @classmethod
+    def sub(cls, size=None, marker=None, colors=None):
+        return IndexScatterer(size=size, marker=marker, colors=colors, from_subplot_config=True)
+    
+    
+class PixelizationGridScatterer(Scatterer):
+
+    def __init__(self, size=None, marker=None, colors=None, from_subplot_config=False):
+
+        super(PixelizationGridScatterer, self).__init__(size=size, marker=marker, colors=colors, section="pixelization_grid",
+                                              from_subplot_config=from_subplot_config)
+
+    @classmethod
+    def sub(cls, size=None, marker=None, colors=None):
+        return PixelizationGridScatterer(size=size, marker=marker, colors=colors, from_subplot_config=True)
+
+
+class Liner(object):
+    def __init__(self, width=None, style=None, colors=None, pointsize=None, section=None, from_subplot_config=False):
+
+        if section is None:
+            section = "liner"
+
+        self.from_subplot_config = from_subplot_config
+
+        self.width = (
+            width if width is not None else load_setting(section, "width", int, from_subplot_config)
         )
 
-        style = (
-            liner.style if liner.style is not None else load_func(section, "style", str)
+        self.style = (
+            style if style is not None else load_setting(section, "style", str, from_subplot_config)
         )
 
-        colors = (
-            liner.colors
-            if liner.colors is not None
-            else load_func(section, "colors", list)
+        self.colors = (
+            colors
+            if colors is not None
+            else load_setting(section, "colors", list, from_subplot_config)
         )
 
-        colors = remove_spaces_and_commas_from_colors(colors=colors)
+        self.colors = remove_spaces_and_commas_from_colors(colors=self.colors)
 
-        pointsize = (
-            liner.pointsize
-            if liner.pointsize is not None
-            else load_func(section, "pointsize", int)
+        self.pointsize = (
+            pointsize
+            if pointsize is not None
+            else load_setting(section, "pointsize", int, from_subplot_config)
         )
 
-        return Liner(width=width, style=style, colors=colors, pointsize=pointsize)
+    @classmethod
+    def sub(cls, width=None, style=None, colors=None, pointsize=None, section=None):
+        return Liner(width=width, style=style, colors=colors, pointsize=pointsize, section=section, from_subplot_config=True)
 
     def draw_y_vs_x(self, y, x, plot_axis_type, label=None):
 
@@ -1080,34 +1118,31 @@ class Liner(object):
 
 
 class VoronoiDrawer(object):
-    def __init__(self, edgewidth=None, edgecolor=None, alpha=None):
+    def __init__(self, edgewidth=None, edgecolor=None, alpha=None, from_subplot_config=False):
 
-        self.edgewidth = edgewidth
-        self.edgecolor = edgecolor
-        self.alpha = alpha
+        self.from_subplot_config = from_subplot_config
+
+        self.edgewidth = (
+            edgewidth
+            if edgewidth is not None
+            else load_setting("voronoi_drawer", "edgewidth", float, from_subplot_config)
+        )
+
+        self.edgecolor = (
+            edgecolor
+            if edgecolor is not None
+            else load_setting("voronoi_drawer", "edgecolor", str, from_subplot_config)
+        )
+
+        self.alpha = (
+            alpha
+            if alpha is not None
+            else load_setting("voronoi_drawer", "alpha", float, from_subplot_config)
+        )
 
     @classmethod
-    def from_instance_and_config(cls, voronoi_drawer, section, load_func):
-
-        edgewidth = (
-            voronoi_drawer.edgewidth
-            if voronoi_drawer.edgewidth is not None
-            else load_func(section, "edgewidth", float)
-        )
-
-        edgecolor = (
-            voronoi_drawer.edgecolor
-            if voronoi_drawer.edgecolor is not None
-            else load_func(section, "edgecolor", str)
-        )
-
-        alpha = (
-            voronoi_drawer.alpha
-            if voronoi_drawer.alpha is not None
-            else load_func(section, "alpha", float)
-        )
-
-        return VoronoiDrawer(edgewidth=edgewidth, edgecolor=edgecolor, alpha=alpha)
+    def sub(cls, edgewidth=None, edgecolor=None, alpha=None):
+        return VoronoiDrawer(edgewidth=edgewidth, edgecolor=edgecolor, alpha=alpha, from_subplot_config=True)
 
     def draw_voronoi_pixels(self, mapper, values, cmap, cb):
 
