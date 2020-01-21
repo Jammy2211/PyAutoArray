@@ -12,6 +12,7 @@ import copy
 from autoarray import exc
 from autoarray.plot import mat_objs
 import inspect
+import os
 from autoarray.operators.inversion import mappers
 
 
@@ -765,6 +766,12 @@ class AbstractPlotter(object):
         plotter = copy.deepcopy(self)
 
         plotter.output.path = path if path is not None else self.output.path
+
+        if path is not None and path:
+            try:
+                os.makedirs(path)
+            except FileExistsError:
+                pass
 
         plotter.output.filename = (
             filename if filename is not None else self.output.filename
