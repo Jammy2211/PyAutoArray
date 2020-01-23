@@ -1,4 +1,4 @@
-from autoconfig import conf
+from autoconf import conf
 dir(conf)
 from autoarray import exc
 from autoarray import masked
