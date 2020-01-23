@@ -1,4 +1,5 @@
-from autoarray import conf
+from autoconfig import conf
+dir(conf)
 from autoarray import exc
 from autoarray import masked
 from autoarray import plotters as plot
