@@ -1248,67 +1248,67 @@ class Interpolator(object):
         return np.einsum("nj,nj->n", np.take(values, self.vtx), self.wts)
 
 
-class Positions(list):
-    def __init__(self, positions, mask=None):
+class Coordinates(list):
+    def __init__(self, coordinates, mask=None):
 
-        super(Positions, self).__init__(positions)
+        super(Coordinates, self).__init__(coordinates)
 
         self.mask = mask
 
     @classmethod
     def from_pixels_and_mask(cls, pixels, mask):
-        positions = []
-        for position_set in pixels:
-            positions.append(
+        coordinates = []
+        for coordinate_set in pixels:
+            coordinates.append(
                 [
                     mask.geometry.scaled_coordinates_from_pixel_coordinates(
                         pixel_coordinates=coordinates
                     )
-                    for coordinates in position_set
+                    for coordinates in coordinate_set
                 ]
             )
-        return cls(positions=positions, mask=mask)
+        return cls(coordinates=coordinates, mask=mask)
 
     @property
     def in_1d(self):
 
-        total_positions = sum([len(position_set) for position_set in self])
+        total_coordinates = sum([len(coordinate_set) for coordinate_set in self])
 
-        grid_1d = np.zeros(shape=(total_positions, 2))
+        grid_1d = np.zeros(shape=(total_coordinates, 2))
 
-        position_index = 0
+        coordinate_index = 0
 
-        for position_set in self:
-            for position in position_set:
-                grid_1d[position_index, :] = position
-                position_index += 1
+        for coordinate_set in self:
+            for coordinate in coordinate_set:
+                grid_1d[coordinate_index, :] = coordinate
+                coordinate_index += 1
 
         return GridIrregular.manual_1d(grid=grid_1d)
 
     @property
     def list_in_1d(self):
 
-        positions_list = []
+        coordinates_list = []
 
-        for position_set in self:
-            positions_list.append(GridIrregular(grid=position_set))
+        for coordinate_set in self:
+            coordinates_list.append(GridIrregular(grid=coordinate_set))
 
-        return positions_list
+        return coordinates_list
 
-    def from_1d_positions(self, positions_1d):
+    def from_1d_coordinates(self, coordinates_1d):
 
-        position_1d_index = 0
+        coordinate_1d_index = 0
 
-        new_positions = []
+        new_coordinates = []
 
-        for position_set_index in range(len(self)):
-            new_position_set_list = []
-            for positions_index in range(len(self[position_set_index])):
-                new_position_set_list.append(tuple(positions_1d[position_1d_index, :]))
-                position_1d_index += 1
-            new_positions.append(new_position_set_list)
+        for coordinate_set_index in range(len(self)):
+            new_coordinate_set_list = []
+            for coordinates_index in range(len(self[coordinate_set_index])):
+                new_coordinate_set_list.append(tuple(coordinates_1d[coordinate_1d_index, :]))
+                coordinate_1d_index += 1
+            new_coordinates.append(new_coordinate_set_list)
 
-        return Positions(positions=new_positions, mask=self.mask)
+        return Coordinates(coordinates=new_coordinates, mask=self.mask)
 
     def from_1d_values(self, values_1d):
 
@@ -1316,9 +1316,9 @@ class Positions(list):
 
         new_values_list = []
 
-        for position_set_index in range(len(self)):
+        for coordinate_set_index in range(len(self)):
             new_values_set_list = []
-            for positions_index in range(len(self[position_set_index])):
+            for coordinates_index in range(len(self[coordinate_set_index])):
                 new_values_set_list.append(values_1d[values_1d_index])
                 values_1d_index += 1
             new_values_list.append(new_values_set_list)
@@ -1331,71 +1331,71 @@ class Positions(list):
 
     @property
     def pixels(self):
-        positions = []
-        for position_set in self:
-            positions.append(
+        coordinates = []
+        for coordinate_set in self:
+            coordinates.append(
                 [
                     self.mask.geometry.pixel_coordinates_from_scaled_coordinates(
                         scaled_coordinates=coordinates
                     )
-                    for coordinates in position_set
+                    for coordinates in coordinate_set
                 ]
             )
-        return self.__class__(positions=positions, mask=self.mask)
+        return self.__class__(coordinates=coordinates, mask=self.mask)
 
     @classmethod
-    def from_file(cls, positions_path):
-        """Load the positions of an image.
+    def from_file(cls, coordinates_path):
+        """Load the coordinates of an image.
 
-        Positions correspond to a set of pixels in the lensed source galaxy that are anticipated to come from the same \
+        Coordinates correspond to a set of pixels in the lensed source galaxy that are anticipated to come from the same \
         multiply-imaged region of the source-plane. Mass models which do not trace the pixels within a threshold value of \
         one another are resampled during the non-linear search.
 
-        Positions are stored in a .dat file, where each line of the file gives a list of list of (y,x) positions which \
+        Coordinates are stored in a .dat file, where each line of the file gives a list of list of (y,x) coordinates which \
         correspond to the same region of the source-plane. Thus, multiple source-plane regions can be input over multiple \
-        lines of the same positions file.
+        lines of the same coordinates file.
 
         Parameters
         ----------
-        positions_path : str
-            The path to the positions .dat file containing the positions (e.g. '/path/to/positions.dat')
+        coordinates_path : str
+            The path to the coordinates .dat file containing the coordinates (e.g. '/path/to/coordinates.dat')
         """
-        with open(positions_path) as f:
-            position_string = f.readlines()
+        with open(coordinates_path) as f:
+            coordinate_string = f.readlines()
 
-        positions = []
+        coordinates = []
 
-        for line in position_string:
-            position_list = ast.literal_eval(line)
-            positions.append(position_list)
+        for line in coordinate_string:
+            coordinate_list = ast.literal_eval(line)
+            coordinates.append(coordinate_list)
 
-        return positions
+        return coordinates
 
-    def output_to_file(self, positions_path):
-        """Output the positions of an image to a positions.dat file.
+    def output_to_file(self, coordinates_path):
+        """Output the coordinates of an image to a coordinates.dat file.
 
-        Positions correspond to a set of pixels in the lensed source galaxy that are anticipated to come from the same \
+        Coordinates correspond to a set of pixels in the lensed source galaxy that are anticipated to come from the same \
         multiply-imaged region of the source-plane. Mass models which do not trace the pixels within a threshold value of \
         one another are resampled during the non-linear search.
 
-        Positions are stored in a .dat file, where each line of the file gives a list of list of (y,x) positions which \
+        Coordinates are stored in a .dat file, where each line of the file gives a list of list of (y,x) coordinates which \
         correspond to the same region of the source-plane. Thus, multiple source-plane regions can be input over multiple \
-        lines of the same positions file.
+        lines of the same coordinates file.
 
         Parameters
         ----------
-        positions : [[()]]
-            The lists of positions (e.g. [[(1.0, 1.0), (2.0, 2.0)], [(3.0, 3.0), (4.0, 4.0)]])
-        positions_path : str
-            The path to the positions .dat file containing the positions (e.g. '/path/to/positions.dat')
+        coordinates : [[()]]
+            The lists of coordinates (e.g. [[(1.0, 1.0), (2.0, 2.0)], [(3.0, 3.0), (4.0, 4.0)]])
+        coordinates_path : str
+            The path to the coordinates .dat file containing the coordinates (e.g. '/path/to/coordinates.dat')
         """
 
-        with open(positions_path, "w") as f:
-            for position in self:
-                f.write("%s\n" % position)
+        with open(coordinates_path, "w") as f:
+            for coordinate in self:
+                f.write("%s\n" % coordinate)
 
 
-def convert_positions_to_grid(func):
+def convert_coordinates_to_grid(func):
     """ Checks whether any coordinates in the grid are radially near (0.0, 0.0), which can lead to numerical faults in \
     the evaluation of a light or mass profiles. If any coordinates are radially within the the radial minimum \
     threshold, their (y,x) coordinates are shifted to that value to ensure they are evaluated correctly.
@@ -1431,13 +1431,13 @@ def convert_positions_to_grid(func):
             A value or coordinate in the same coordinate system as those passed in.
         """
 
-        if isinstance(grid, Positions):
+        if isinstance(grid, Coordinates):
             values_1d = func(profile, grid.in_1d, *args, **kwargs)
             if isinstance(values_1d, np.ndarray):
                 if len(values_1d.shape) == 1:
                     return grid.from_1d_values(values_1d=values_1d)
                 elif len(values_1d.shape) == 2:
-                    return grid.from_1d_positions(positions_1d=values_1d)
+                    return grid.from_1d_coordinates(coordinates_1d=values_1d)
             elif isinstance(values_1d, list):
                 if len(values_1d[0].shape) == 1:
                     return [
@@ -1446,7 +1446,7 @@ def convert_positions_to_grid(func):
                     ]
                 elif len(values_1d[0].shape) == 2:
                     return [
-                        grid.from_1d_positions(positions_1d=value_1d)
+                        grid.from_1d_coordinates(coordinates_1d=value_1d)
                         for value_1d in values_1d
                     ]
         else:

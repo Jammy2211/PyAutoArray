@@ -20,7 +20,7 @@ from autoarray.structures.grids import (
     GridIrregular as grid_irregular,
     GridRectangular as grid_rectangular,
     GridVoronoi as grid_voronoi,
-    Positions as positions,
+    Coordinates as coordinates,
 )
 from autoarray.structures.kernel import Kernel as kernel
 from autoarray.structures.visibilities import Visibilities as visibilities
