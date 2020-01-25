@@ -1304,7 +1304,9 @@ class Coordinates(list):
         for coordinate_set_index in range(len(self)):
             new_coordinate_set_list = []
             for coordinates_index in range(len(self[coordinate_set_index])):
-                new_coordinate_set_list.append(tuple(coordinates_1d[coordinate_1d_index, :]))
+                new_coordinate_set_list.append(
+                    tuple(coordinates_1d[coordinate_1d_index, :])
+                )
                 coordinate_1d_index += 1
             new_coordinates.append(new_coordinate_set_list)
 
@@ -1344,7 +1346,7 @@ class Coordinates(list):
         return self.__class__(coordinates=coordinates, mask=self.mask)
 
     @classmethod
-    def from_file(cls, coordinates_path):
+    def from_file(cls, file_path):
         """Load the coordinates of an image.
 
         Coordinates correspond to a set of pixels in the lensed source galaxy that are anticipated to come from the same \
@@ -1357,10 +1359,10 @@ class Coordinates(list):
 
         Parameters
         ----------
-        coordinates_path : str
+        file_path : str
             The path to the coordinates .dat file containing the coordinates (e.g. '/path/to/coordinates.dat')
         """
-        with open(coordinates_path) as f:
+        with open(file_path) as f:
             coordinate_string = f.readlines()
 
         coordinates = []
@@ -1371,7 +1373,7 @@ class Coordinates(list):
 
         return coordinates
 
-    def output_to_file(self, coordinates_path):
+    def output_to_file(self, file_path):
         """Output the coordinates of an image to a coordinates.dat file.
 
         Coordinates correspond to a set of pixels in the lensed source galaxy that are anticipated to come from the same \
@@ -1386,11 +1388,11 @@ class Coordinates(list):
         ----------
         coordinates : [[()]]
             The lists of coordinates (e.g. [[(1.0, 1.0), (2.0, 2.0)], [(3.0, 3.0), (4.0, 4.0)]])
-        coordinates_path : str
+        file_path : str
             The path to the coordinates .dat file containing the coordinates (e.g. '/path/to/coordinates.dat')
         """
 
-        with open(coordinates_path, "w") as f:
+        with open(file_path, "w") as f:
             for coordinate in self:
                 f.write("%s\n" % coordinate)
 
