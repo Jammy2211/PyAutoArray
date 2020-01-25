@@ -2660,11 +2660,15 @@ class TestCoordinates:
         assert (coordinates.in_1d == np.array([[1.0, 1.0], [2.0, 2.0]])).all()
         assert (coordinates.list_in_1d[0] == np.array([[1.0, 1.0], [2.0, 2.0]])).all()
 
-        coordinates = aa.coordinates(coordinates=[[(1.0, 1.0), (2.0, 2.0)], [(3.0, 3.0)]])
+        coordinates = aa.coordinates(
+            coordinates=[[(1.0, 1.0), (2.0, 2.0)], [(3.0, 3.0)]]
+        )
 
         assert coordinates == [[(1.0, 1.0), (2.0, 2.0)], [(3.0, 3.0)]]
         assert type(coordinates.in_1d) == grids.GridIrregular
-        assert (coordinates.in_1d == np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0]])).all()
+        assert (
+            coordinates.in_1d == np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0]])
+        ).all()
         assert (coordinates.list_in_1d[0] == np.array([[1.0, 1.0], [2.0, 2.0]])).all()
         assert (coordinates.list_in_1d[1] == np.array([[3.0, 3.0]])).all()
 
@@ -2679,7 +2683,9 @@ class TestCoordinates:
         assert type(coordinates_from_1d) == grids.Coordinates
         assert coordinates_from_1d == [[(1.0, 1.0), (2.0, 2.0)]]
 
-        coordinates = aa.coordinates(coordinates=[[(1.0, 1.0), (2.0, 2.0)], [(3.0, 3.0)]])
+        coordinates = aa.coordinates(
+            coordinates=[[(1.0, 1.0), (2.0, 2.0)], [(3.0, 3.0)]]
+        )
 
         coordinates_from_1d = coordinates.from_1d_coordinates(
             coordinates_1d=np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0]])
@@ -2696,7 +2702,9 @@ class TestCoordinates:
 
         assert values_from_1d == [[1.0, 2.0]]
 
-        coordinates = aa.coordinates(coordinates=[[(1.0, 1.0), (2.0, 2.0)], [(3.0, 3.0)]])
+        coordinates = aa.coordinates(
+            coordinates=[[(1.0, 1.0), (2.0, 2.0)], [(3.0, 3.0)]]
+        )
 
         values_from_1d = coordinates.from_1d_values(values_1d=np.array([1.0, 2.0, 3.0]))
 
@@ -2704,7 +2712,7 @@ class TestCoordinates:
 
     def test__load_coordinates__retains_list_structure(self):
         coordinates = aa.coordinates.from_file(
-            coordinates_path=test_coordinates_dir + "coordinates_test.dat"
+            file_path=test_coordinates_dir + "coordinates_test.dat"
         )
 
         assert coordinates == [
@@ -2725,10 +2733,10 @@ class TestCoordinates:
 
         os.makedirs(output_data_dir)
 
-        coordinates.output_to_file(coordinates_path=output_data_dir + "coordinates_test.dat")
+        coordinates.output_to_file(file_path=output_data_dir + "coordinates_test.dat")
 
         coordinates = aa.coordinates.from_file(
-            coordinates_path=output_data_dir + "coordinates_test.dat"
+            file_path=output_data_dir + "coordinates_test.dat"
         )
 
         assert coordinates == [
@@ -2742,7 +2750,9 @@ class TestCoordinates:
 
         coordinates_input = MockCoordinateInput()
 
-        coordinates = aa.coordinates(coordinates=[[(1.0, 2.0), (3.0, 4.0)], [(5.0, 6.0)]])
+        coordinates = aa.coordinates(
+            coordinates=[[(1.0, 2.0), (3.0, 4.0)], [(5.0, 6.0)]]
+        )
 
         coordinates_output = coordinates_input.float_values_from_grid(grid=coordinates)
 
@@ -2756,7 +2766,9 @@ class TestCoordinates:
 
         coordinates_input = MockCoordinateInput()
 
-        coordinates = aa.coordinates(coordinates=[[(1.0, 2.0), (3.0, 4.0)], [(5.0, 6.0)]])
+        coordinates = aa.coordinates(
+            coordinates=[[(1.0, 2.0), (3.0, 4.0)], [(5.0, 6.0)]]
+        )
 
         coordinates_output = coordinates_input.float_values_from_grid_returns_list(
             grid=coordinates
