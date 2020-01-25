@@ -1037,6 +1037,17 @@ class Include(object):
             return None
 
 
+def include_key_from_dictionary(dictionary):
+
+    include_key = None
+
+    for key, value in dictionary.items():
+        if isinstance(value, Include):
+            include_key = key
+
+    return include_key
+
+
 def plotter_key_from_dictionary(dictionary):
 
     plotter_key = None
@@ -1072,6 +1083,66 @@ def kpc_per_arcsec_of_object_from_dictionary(dictionary):
     return kpc_per_arcsec
 
 
+def set_include_and_plotter(func):
+
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+
+        include_key = include_key_from_dictionary(dictionary=kwargs)
+
+        if include_key is not None:
+            include = kwargs[include_key]
+        else:
+            include = Include()
+            include_key = "include"
+
+        kwargs[include_key] = include
+
+        plotter_key = plotter_key_from_dictionary(dictionary=kwargs)
+
+        if plotter_key is not None:
+            plotter = kwargs[plotter_key]
+        else:
+            plotter = Plotter()
+            plotter_key = "plotter"
+
+        kwargs[plotter_key] = plotter
+
+        return func(*args, **kwargs)
+
+    return wrapper
+
+
+def set_include_and_sub_plotter(func):
+
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+
+        include_key = include_key_from_dictionary(dictionary=kwargs)
+
+        if include_key is not None:
+            include = kwargs[include_key]
+        else:
+            include = Include()
+            include_key = "include"
+
+        kwargs[include_key] = include
+
+        plotter_key = plotter_key_from_dictionary(dictionary=kwargs)
+
+        if plotter_key is not None:
+            plotter = kwargs[plotter_key]
+        else:
+            plotter = SubPlotter()
+            plotter_key = "sub_plotter"
+
+        kwargs[plotter_key] = plotter
+
+        return func(*args, **kwargs)
+
+    return wrapper
+
+
 def set_subplot_filename(func):
     """
     Decorate a profile method that accepts a coordinate grid and returns a data_type grid.
@@ -1096,11 +1167,7 @@ def set_subplot_filename(func):
     def wrapper(*args, **kwargs):
 
         plotter_key = plotter_key_from_dictionary(dictionary=kwargs)
-
-        if plotter_key is not None:
-            plotter = kwargs[plotter_key]
-        else:
-            plotter, plotter_key = plotter_and_plotter_key_from_func(func=func)
+        plotter = kwargs[plotter_key]
 
         if not isinstance(plotter, SubPlotter):
             raise exc.PlottingException(
@@ -1142,11 +1209,7 @@ def set_labels(func):
     def wrapper(*args, **kwargs):
 
         plotter_key = plotter_key_from_dictionary(dictionary=kwargs)
-
-        if plotter_key is not None:
-            plotter = kwargs[plotter_key]
-        else:
-            plotter, plotter_key = plotter_and_plotter_key_from_func(func=func)
+        plotter = kwargs[plotter_key]
 
         title = plotter.labels.title_from_func(func=func)
         yunits = plotter.labels.yunits_from_func(func=func)

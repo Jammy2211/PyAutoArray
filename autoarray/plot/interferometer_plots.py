@@ -1,10 +1,9 @@
 from autoarray.plot import plotters
 from autoarray.structures import grids
-
-
+@plotters.set_include_and_sub_plotter
 @plotters.set_subplot_filename
 def subplot_interferometer(
-    interferometer, include=plotters.Include(), sub_plotter=plotters.SubPlotter()
+    interferometer, include=None, sub_plotter=None
 ):
     """Plot the interferometer data_type as a sub-plotters of all its quantites (e.g. the dataset, noise_map-map, PSF, Signal-to_noise-map, \
      etc).
@@ -64,8 +63,8 @@ def individual(
     plot_amplitudes_vs_uv_distances=False,
     plot_phases_vs_uv_distances=False,
     plot_primary_beam=False,
-    include=plotters.Include(),
-    plotter=plotters.Plotter(),
+    include=None,
+    plotter=None,
 ):
     """Plot each attribute of the interferometer data_type as individual figures one by one (e.g. the dataset, noise_map-map, PSF, \
      Signal-to_noise-map, etc).
@@ -115,11 +114,10 @@ def individual(
     if plot_primary_beam:
 
         primary_beam(interferometer=interferometer, include=include, plotter=plotter)
-
-
+@plotters.set_include_and_plotter
 @plotters.set_labels
 def visibilities(
-    interferometer, include=plotters.Include(), plotter=plotters.Plotter()
+    interferometer, include=None, plotter=None
 ):
     """Plot the observed image of the imaging data_type.
 
@@ -137,10 +135,9 @@ def visibilities(
     """
 
     plotter.plot_grid(grid=interferometer.visibilities)
-
-
+@plotters.set_include_and_plotter
 @plotters.set_labels
-def noise_map(interferometer, include=plotters.Include(), plotter=plotters.Plotter()):
+def noise_map(interferometer, include=None, plotter=None):
     """Plot the observed image of the imaging data_type.
 
     Set *autolens.data_type.array.plotters.plotters* for a description of all input parameters not described below.
@@ -159,15 +156,14 @@ def noise_map(interferometer, include=plotters.Include(), plotter=plotters.Plott
     plotter.plot_grid(
         grid=interferometer.visibilities, color_array=interferometer.noise_map[:, 0]
     )
-
-
+@plotters.set_include_and_plotter
 @plotters.set_labels
 def u_wavelengths(
     interferometer,
     label="Wavelengths",
     plot_axis_type="linear",
-    include=plotters.Include(),
-    plotter=plotters.Plotter(),
+    include=None,
+    plotter=None,
 ):
     """Plot the observed image of the imaging data_type.
 
@@ -190,15 +186,14 @@ def u_wavelengths(
         label=label,
         plot_axis_type=plot_axis_type,
     )
-
-
+@plotters.set_include_and_plotter
 @plotters.set_labels
 def v_wavelengths(
     interferometer,
     label="Wavelengths",
     plot_axis_type="linear",
-    include=plotters.Include(),
-    plotter=plotters.Plotter(),
+    include=None,
+    plotter=None,
 ):
     """Plot the observed image of the imaging data_type.
 
@@ -221,15 +216,14 @@ def v_wavelengths(
         label=label,
         plot_axis_type=plot_axis_type,
     )
-
-
+@plotters.set_include_and_plotter
 @plotters.set_labels
 def uv_wavelengths(
     interferometer,
     label_yunits="V-Wavelengths ($\lambda$)",
     label_xunits="U-Wavelengths ($\lambda$)",
-    include=plotters.Include(),
-    plotter=plotters.Plotter(),
+    include=None,
+    plotter=None,
 ):
     """Plot the observed image of the imaging data_type.
 
@@ -253,15 +247,14 @@ def uv_wavelengths(
         ),
         symmetric_around_centre=True,
     )
-
-
+@plotters.set_include_and_plotter
 @plotters.set_labels
 def amplitudes_vs_uv_distances(
     interferometer,
     label_yunits="amplitude (Jy)",
     label_xunits=r"UV$_{distance}$ (k$\lambda$)",
-    include=plotters.Include(),
-    plotter=plotters.Plotter(),
+    include=None,
+    plotter=None,
 ):
 
     plotter.plot_line(
@@ -269,15 +262,14 @@ def amplitudes_vs_uv_distances(
         x=interferometer.uv_distances / 10 ** 3.0,
         plot_axis_type="scatter",
     )
-
-
+@plotters.set_include_and_plotter
 @plotters.set_labels
 def phases_vs_uv_distances(
     interferometer,
     label_yunits="phase (deg)",
     label_xunits=r"UV$_{distance}$ (k$\lambda$)",
-    include=plotters.Include(),
-    plotter=plotters.Plotter(),
+    include=None,
+    plotter=None,
 ):
 
     plotter.plot_line(
@@ -285,11 +277,10 @@ def phases_vs_uv_distances(
         x=interferometer.uv_distances / 10 ** 3.0,
         plot_axis_type="scatter",
     )
-
-
+@plotters.set_include_and_plotter
 @plotters.set_labels
 def primary_beam(
-    interferometer, include=plotters.Include(), plotter=plotters.Plotter()
+    interferometer, include=None, plotter=None
 ):
     """Plot the PSF of the interferometer data_type.
 

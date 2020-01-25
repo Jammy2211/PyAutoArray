@@ -1,10 +1,9 @@
 from autoarray.plot import plotters
 from autoarray.plot import inversion_plots, mat_objs
-
-
+@plotters.set_include_and_sub_plotter
 @plotters.set_subplot_filename
 def subplot_fit_interferometer(
-    fit, include=plotters.Include(), sub_plotter=plotters.SubPlotter()
+    fit, include=None, sub_plotter=None
 ):
 
     number_subplots = 6
@@ -57,8 +56,8 @@ def individuals(
     plot_residual_map=False,
     plot_normalized_residual_map=False,
     plot_chi_squared_map=False,
-    include=plotters.Include(),
-    plotter=plotters.Plotter(),
+    include=None,
+    plotter=None,
 ):
     """Plot the model datas_ of an analysis, using the *Fitter* class object.
 
@@ -120,10 +119,9 @@ def individuals(
         chi_squared_map_vs_uv_distances(
             fit=fit, plot_real=False, include=include, plotter=plotter
         )
-
-
+@plotters.set_include_and_plotter
 @plotters.set_labels
-def visibilities(fit, include=plotters.Include(), plotter=plotters.Plotter()):
+def visibilities(fit, include=None, plotter=None):
     """Plot the visibilities of a lens fit.
 
     Set *autolens.datas.grid.plotters.plotters* for a description of all input parameters not described below.
@@ -136,10 +134,9 @@ def visibilities(fit, include=plotters.Include(), plotter=plotters.Plotter()):
         If true, the origin of the datas's coordinate system is plotted as a 'x'.
     """
     plotter.plot_grid(grid=fit.visibilities)
-
-
+@plotters.set_include_and_plotter
 @plotters.set_labels
-def noise_map(fit, include=plotters.Include(), plotter=plotters.Plotter()):
+def noise_map(fit, include=None, plotter=None):
     """Plot the noise-map of a lens fit.
 
     Set *autolens.datas.grid.plotters.plotters* for a description of all input parameters not described below.
@@ -152,10 +149,9 @@ def noise_map(fit, include=plotters.Include(), plotter=plotters.Plotter()):
         If true, the origin of the datas's coordinate system is plotted as a 'x'.
     """
     plotter.plot_grid(grid=fit.visibilities, color_array=fit.noise_map[:, 0])
-
-
+@plotters.set_include_and_plotter
 @plotters.set_labels
-def signal_to_noise_map(fit, include=plotters.Include(), plotter=plotters.Plotter()):
+def signal_to_noise_map(fit, include=None, plotter=None):
     """Plot the noise-map of a lens fit.
 
     Set *autolens.datas.grid.plotters.plotters* for a description of all input parameters not described below.
@@ -168,10 +164,9 @@ def signal_to_noise_map(fit, include=plotters.Include(), plotter=plotters.Plotte
     If true, the origin of the datas's coordinate system is plotted as a 'x'.
     """
     plotter.plot_grid(grid=fit.visibilities, color_array=fit.signal_to_noise_map[:, 0])
-
-
+@plotters.set_include_and_plotter
 @plotters.set_labels
-def model_visibilities(fit, include=plotters.Include(), plotter=plotters.Plotter()):
+def model_visibilities(fit, include=None, plotter=None):
     """Plot the model visibilities of a fit.
 
     Set *autolens.datas.grid.plotters.plotters* for a description of all input parameters not described below.
@@ -184,16 +179,15 @@ def model_visibilities(fit, include=plotters.Include(), plotter=plotters.Plotter
         The index of the datas in the datas-set of which the model visibilities is plotted.
     """
     plotter.plot_grid(grid=fit.visibilities)
-
-
+@plotters.set_include_and_plotter
 @plotters.set_labels
 def residual_map_vs_uv_distances(
     fit,
     plot_real=True,
     label_yunits="V$_{R,data}$ - V$_{R,model}$",
     label_xunits=r"UV$_{distance}$ (k$\lambda$)",
-    include=plotters.Include(),
-    plotter=plotters.Plotter(),
+    include=None,
+    plotter=None,
 ):
     """Plot the residual-map of a lens fit.
 
@@ -225,16 +219,15 @@ def residual_map_vs_uv_distances(
         x=fit.masked_interferometer.interferometer.uv_distances / 10 ** 3.0,
         plot_axis_type="scatter",
     )
-
-
+@plotters.set_include_and_plotter
 @plotters.set_labels
 def normalized_residual_map_vs_uv_distances(
     fit,
     plot_real=True,
     label_yunits="V$_{R,data}$ - V$_{R,model}$",
     label_xunits=r"UV$_{distance}$ (k$\lambda$)",
-    include=plotters.Include(),
-    plotter=plotters.Plotter(),
+    include=None,
+    plotter=None,
 ):
     """Plot the residual-map of a lens fit.
 
@@ -266,16 +259,15 @@ def normalized_residual_map_vs_uv_distances(
         x=fit.masked_interferometer.interferometer.uv_distances / 10 ** 3.0,
         plot_axis_type="scatter",
     )
-
-
+@plotters.set_include_and_plotter
 @plotters.set_labels
 def chi_squared_map_vs_uv_distances(
     fit,
     plot_real=True,
     label_yunits="V$_{R,data}$ - V$_{R,model}$",
     label_xunits=r"UV$_{distance}$ (k$\lambda$)",
-    include=plotters.Include(),
-    plotter=plotters.Plotter(),
+    include=None,
+    plotter=None,
 ):
     """Plot the residual-map of a lens fit.
 
