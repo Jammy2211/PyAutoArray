@@ -1,7 +1,6 @@
 from autoarray.plot import plotters
 from autoarray.plot import imaging_plots
-
-
+@plotters.set_include_and_plotter
 @plotters.set_labels
 def subplot_image_and_mapper(
     image,
@@ -10,8 +9,8 @@ def subplot_image_and_mapper(
     source_positions=None,
     image_pixel_indexes=None,
     source_pixel_indexes=None,
-    include=plotters.Include(),
-    sub_plotter=plotters.SubPlotter(),
+    include=None,
+    sub_plotter=None,
 ):
 
     number_subplots = 2
