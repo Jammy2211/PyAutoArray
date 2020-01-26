@@ -228,7 +228,10 @@ def make_imaging_6x6():
 
 @pytest.fixture(name="visibilities_7x2")
 def make_visibilities_7():
-    return aa.visibilities.full(shape_1d=(7,), fill_value=1.0)
+    visibilities = aa.visibilities.full(shape_1d=(7,), fill_value=1.0)
+    visibilities[6, 0] = -1.0
+    visibilities[6, 1] = -1.0
+    return visibilities
 
 
 @pytest.fixture(name="noise_map_7x2")

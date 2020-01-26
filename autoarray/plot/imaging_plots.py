@@ -175,6 +175,7 @@ def image(imaging, grid=None, mask=None, positions=None, include=None, plotter=N
     plotter.plot_array(
         array=imaging.image,
         include_origin=include.origin,
+        include_border=include.border,
         grid=grid,
         mask=mask,
         positions=positions,
@@ -201,6 +202,7 @@ def noise_map(
     plotter.plot_array(
         array=imaging.noise_map,
         include_origin=include.origin,
+        include_border=include.border,
         grid=grid,
         mask=mask,
         positions=positions,
@@ -246,6 +248,7 @@ def signal_to_noise_map(
     plotter.plot_array(
         array=imaging.signal_to_noise_map,
         include_origin=include.origin,
+        include_border=include.border,
         grid=grid,
         mask=mask,
         positions=positions,
@@ -271,6 +274,7 @@ def absolute_signal_to_noise_map(
     plotter.plot_array(
         array=imaging.absolute_signal_to_noise_map,
         include_origin=include.origin,
+        include_border=include.border,
         grid=grid,
         mask=mask,
         positions=positions,
@@ -296,6 +300,7 @@ def potential_chi_squared_map(
     plotter.plot_array(
         array=imaging.potential_chi_squared_map,
         include_origin=include.origin,
+        include_border=include.border,
         grid=grid,
         mask=mask,
         positions=positions,

@@ -8,9 +8,9 @@ rectangular_mapper = aa.mapper(grid=grid_7x7, pixelization_grid=rectangular_grid
 
 aplt.mapper_obj(
     mapper=rectangular_mapper,
-    include_pixelization_grid=True,
-    include_grid=True,
-    include_border=True,
+    include=aplt.Include(
+        inversion_pixelization_grid=True, inversion_grid=True, inversion_border=True
+    ),
     image_pixel_indexes=[[(0, 0), (0, 1)], [(1, 2)]],
     source_pixel_indexes=[[0, 1], [2]],
 )
