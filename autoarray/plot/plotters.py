@@ -303,6 +303,8 @@ class AbstractPlotter(object):
             extent=extent,
         )
 
+        plt.axis(extent)
+
         self.ticks.set_yticks(array=array, extent=extent, units=self.units)
         self.ticks.set_xticks(array=array, extent=extent, units=self.units)
 
@@ -345,6 +347,7 @@ class AbstractPlotter(object):
         color_array=None,
         axis_limits=None,
         indexes=None,
+        positions=None,
         lines=None,
         symmetric_around_centre=True,
         include_origin=False,
@@ -418,6 +421,12 @@ class AbstractPlotter(object):
                 symmetric_around_centre=symmetric_around_centre,
             )
 
+        else:
+            try:
+                plt.axis(grid.extent)
+            except UserWarning:
+                pass
+
         self.ticks.set_yticks(
             array=None,
             extent=grid.extent,
@@ -439,6 +448,9 @@ class AbstractPlotter(object):
 
         if indexes is not None:
             self.index_scatterer.scatter_grid_indexes(grid=grid, indexes=indexes)
+
+        if positions is not None:
+            self.positions_scatterer.scatter_grids(grids=positions)
 
         if lines is not None:
             self.liner.draw_grids(grids=lines)
@@ -1084,7 +1096,6 @@ def kpc_per_arcsec_of_object_from_dictionary(dictionary):
 
 
 def set_include_and_plotter(func):
-
     @wraps(func)
     def wrapper(*args, **kwargs):
 
@@ -1114,7 +1125,6 @@ def set_include_and_plotter(func):
 
 
 def set_include_and_sub_plotter(func):
-
     @wraps(func)
     def wrapper(*args, **kwargs):
 
@@ -1242,8 +1252,11 @@ def plot_array(
     grid=None,
     include_origin=False,
     include_border=False,
-    plotter=Plotter(),
+    plotter=None,
 ):
+
+    if plotter is None:
+        plotter = Plotter()
 
     plotter.plot_array(
         array=array,
@@ -1261,18 +1274,23 @@ def plot_grid(
     color_array=None,
     axis_limits=None,
     indexes=None,
+    positions=None,
     lines=None,
     symmetric_around_centre=True,
     include_origin=False,
     include_border=False,
-    plotter=Plotter(),
+    plotter=None,
 ):
+
+    if plotter is None:
+        plotter = Plotter()
 
     plotter.plot_grid(
         grid=grid,
         color_array=color_array,
         axis_limits=axis_limits,
         indexes=indexes,
+        positions=positions,
         lines=lines,
         symmetric_around_centre=symmetric_around_centre,
         include_origin=include_origin,
@@ -1287,8 +1305,11 @@ def plot_line(
     plot_axis_type="semilogy",
     vertical_lines=None,
     vertical_line_labels=None,
-    plotter=Plotter(),
+    plotter=None,
 ):
+
+    if plotter is None:
+        plotter = Plotter()
 
     plotter.plot_line(
         y=y,
@@ -1307,8 +1328,10 @@ def plot_mapper_obj(
     include_border=False,
     image_pixel_indexes=None,
     source_pixel_indexes=None,
-    plotter=Plotter(),
+    plotter=None,
 ):
+    if plotter is None:
+        plotter = Plotter()
 
     plotter.plot_mapper(
         mapper=mapper,

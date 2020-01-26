@@ -1,4 +1,6 @@
 from autoarray.plot import plotters
+
+
 @plotters.set_include_and_sub_plotter
 @plotters.set_subplot_filename
 def subplot_inversion(
@@ -199,15 +201,12 @@ def individuals(
         interpolated_errors(
             inversion=inversion, lines=lines, include=include, plotter=plotter
         )
+
+
 @plotters.set_include_and_plotter
 @plotters.set_labels
 def reconstructed_image(
-    inversion,
-    grid=None,
-    lines=None,
-    image_positions=None,
-    include=None,
-    plotter=None,
+    inversion, grid=None, lines=None, image_positions=None, include=None, plotter=None
 ):
 
     plotter.plot_array(
@@ -218,6 +217,8 @@ def reconstructed_image(
         grid=grid,
         include_origin=include.origin,
     )
+
+
 @plotters.set_include_and_plotter
 @plotters.set_labels
 def reconstruction(
@@ -246,6 +247,8 @@ def reconstruction(
         include_grid=include.inversion_grid,
         include_border=include.inversion_border,
     )
+
+
 @plotters.set_include_and_plotter
 @plotters.set_labels
 def errors(
@@ -274,6 +277,8 @@ def errors(
         include_grid=include.inversion_grid,
         include_border=include.inversion_border,
     )
+
+
 @plotters.set_include_and_plotter
 @plotters.set_labels
 def residual_map(
@@ -302,6 +307,8 @@ def residual_map(
         include_grid=include.inversion_grid,
         include_border=include.inversion_border,
     )
+
+
 @plotters.set_include_and_plotter
 @plotters.set_labels
 def normalized_residual_map(
@@ -330,6 +337,8 @@ def normalized_residual_map(
         include_grid=include.inversion_grid,
         include_border=include.inversion_border,
     )
+
+
 @plotters.set_include_and_plotter
 @plotters.set_labels
 def chi_squared_map(
@@ -358,6 +367,8 @@ def chi_squared_map(
         include_grid=include.inversion_grid,
         include_border=include.inversion_border,
     )
+
+
 @plotters.set_include_and_plotter
 @plotters.set_labels
 def regularization_weights(
@@ -386,15 +397,12 @@ def regularization_weights(
         include_grid=include.inversion_grid,
         include_border=include.inversion_border,
     )
+
+
 @plotters.set_include_and_plotter
 @plotters.set_labels
 def interpolated_reconstruction(
-    inversion,
-    lines=None,
-    source_positions=None,
-    grid=None,
-    include=None,
-    plotter=None,
+    inversion, lines=None, source_positions=None, grid=None, include=None, plotter=None
 ):
 
     plotter.plot_array(
@@ -404,15 +412,12 @@ def interpolated_reconstruction(
         grid=grid,
         include_origin=include.origin,
     )
+
+
 @plotters.set_include_and_plotter
 @plotters.set_labels
 def interpolated_errors(
-    inversion,
-    lines=None,
-    source_positions=None,
-    grid=None,
-    include=None,
-    plotter=None,
+    inversion, lines=None, source_positions=None, grid=None, include=None, plotter=None
 ):
 
     plotter.plot_array(
