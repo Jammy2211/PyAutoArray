@@ -422,10 +422,7 @@ class AbstractPlotter(object):
             )
 
         else:
-            try:
-                plt.axis(grid.extent)
-            except UserWarning:
-                pass
+            plt.axis(grid.extent)
 
         self.ticks.set_yticks(
             array=None,
@@ -1245,15 +1242,11 @@ def set_labels(func):
 
 
 def plot_array(
-    array,
-    mask=None,
-    lines=None,
-    positions=None,
-    grid=None,
-    include_origin=False,
-    include_border=False,
-    plotter=None,
+    array, mask=None, lines=None, positions=None, grid=None, include=None, plotter=None
 ):
+
+    if include is None:
+        include = Include()
 
     if plotter is None:
         plotter = Plotter()
@@ -1264,8 +1257,8 @@ def plot_array(
         lines=lines,
         positions=positions,
         grid=grid,
-        include_origin=include_origin,
-        include_border=include_border,
+        include_origin=include.origin,
+        include_border=include.border,
     )
 
 
@@ -1277,10 +1270,12 @@ def plot_grid(
     positions=None,
     lines=None,
     symmetric_around_centre=True,
-    include_origin=False,
-    include_border=False,
+    include=None,
     plotter=None,
 ):
+
+    if include is None:
+        include = Include()
 
     if plotter is None:
         plotter = Plotter()
@@ -1293,8 +1288,8 @@ def plot_grid(
         positions=positions,
         lines=lines,
         symmetric_around_centre=symmetric_around_centre,
-        include_origin=include_origin,
-        include_border=include_border,
+        include_origin=include.origin,
+        include_border=include.border,
     )
 
 
@@ -1323,21 +1318,23 @@ def plot_line(
 
 def plot_mapper_obj(
     mapper,
-    include_pixelization_grid=False,
-    include_grid=False,
-    include_border=False,
     image_pixel_indexes=None,
     source_pixel_indexes=None,
+    include=None,
     plotter=None,
 ):
+
+    if include is None:
+        include = Include()
+
     if plotter is None:
         plotter = Plotter()
 
     plotter.plot_mapper(
         mapper=mapper,
-        include_pixelization_grid=include_pixelization_grid,
-        include_grid=include_grid,
-        include_border=include_border,
+        include_pixelization_grid=include.inversion_pixelization_grid,
+        include_grid=include.inversion_grid,
+        include_border=include.inversion_border,
         image_pixel_indexes=image_pixel_indexes,
         source_pixel_indexes=source_pixel_indexes,
     )

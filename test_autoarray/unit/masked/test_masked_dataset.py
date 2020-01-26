@@ -246,7 +246,9 @@ class TestMaskedImaging(object):
 
 
 class TestMaskedInterferometer(object):
-    def test__masked_dataset(self, interferometer_7, sub_mask_7x7):
+    def test__masked_dataset(
+        self, interferometer_7, sub_mask_7x7, visibilities_7x2, noise_map_7x2
+    ):
 
         masked_interferometer_7 = aa.masked.interferometer.manual(
             interferometer=interferometer_7, real_space_mask=sub_mask_7x7
@@ -255,9 +257,9 @@ class TestMaskedInterferometer(object):
         assert (
             masked_interferometer_7.visibilities == interferometer_7.visibilities
         ).all()
-        assert (masked_interferometer_7.visibilities == np.ones((7, 2))).all()
+        assert (masked_interferometer_7.visibilities == visibilities_7x2).all()
 
-        assert (masked_interferometer_7.noise_map == 2.0 * np.ones((7, 2))).all()
+        assert (masked_interferometer_7.noise_map == noise_map_7x2).all()
 
         assert (
             masked_interferometer_7.visibilities_mask
