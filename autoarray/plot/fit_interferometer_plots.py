@@ -1,10 +1,10 @@
 from autoarray.plot import plotters
 from autoarray.plot import inversion_plots, mat_objs
+
+
 @plotters.set_include_and_sub_plotter
 @plotters.set_subplot_filename
-def subplot_fit_interferometer(
-    fit, include=None, sub_plotter=None
-):
+def subplot_fit_interferometer(fit, include=None, sub_plotter=None):
 
     number_subplots = 6
 
@@ -119,6 +119,8 @@ def individuals(
         chi_squared_map_vs_uv_distances(
             fit=fit, plot_real=False, include=include, plotter=plotter
         )
+
+
 @plotters.set_include_and_plotter
 @plotters.set_labels
 def visibilities(fit, include=None, plotter=None):
@@ -134,6 +136,8 @@ def visibilities(fit, include=None, plotter=None):
         If true, the origin of the datas's coordinate system is plotted as a 'x'.
     """
     plotter.plot_grid(grid=fit.visibilities)
+
+
 @plotters.set_include_and_plotter
 @plotters.set_labels
 def noise_map(fit, include=None, plotter=None):
@@ -149,6 +153,8 @@ def noise_map(fit, include=None, plotter=None):
         If true, the origin of the datas's coordinate system is plotted as a 'x'.
     """
     plotter.plot_grid(grid=fit.visibilities, color_array=fit.noise_map[:, 0])
+
+
 @plotters.set_include_and_plotter
 @plotters.set_labels
 def signal_to_noise_map(fit, include=None, plotter=None):
@@ -164,6 +170,8 @@ def signal_to_noise_map(fit, include=None, plotter=None):
     If true, the origin of the datas's coordinate system is plotted as a 'x'.
     """
     plotter.plot_grid(grid=fit.visibilities, color_array=fit.signal_to_noise_map[:, 0])
+
+
 @plotters.set_include_and_plotter
 @plotters.set_labels
 def model_visibilities(fit, include=None, plotter=None):
@@ -179,6 +187,8 @@ def model_visibilities(fit, include=None, plotter=None):
         The index of the datas in the datas-set of which the model visibilities is plotted.
     """
     plotter.plot_grid(grid=fit.visibilities)
+
+
 @plotters.set_include_and_plotter
 @plotters.set_labels
 def residual_map_vs_uv_distances(
@@ -219,6 +229,8 @@ def residual_map_vs_uv_distances(
         x=fit.masked_interferometer.interferometer.uv_distances / 10 ** 3.0,
         plot_axis_type="scatter",
     )
+
+
 @plotters.set_include_and_plotter
 @plotters.set_labels
 def normalized_residual_map_vs_uv_distances(
@@ -259,6 +271,8 @@ def normalized_residual_map_vs_uv_distances(
         x=fit.masked_interferometer.interferometer.uv_distances / 10 ** 3.0,
         plot_axis_type="scatter",
     )
+
+
 @plotters.set_include_and_plotter
 @plotters.set_labels
 def chi_squared_map_vs_uv_distances(

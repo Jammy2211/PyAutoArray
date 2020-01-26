@@ -1,10 +1,10 @@
 from autoarray.plot import plotters
 from autoarray.structures import grids
+
+
 @plotters.set_include_and_sub_plotter
 @plotters.set_subplot_filename
-def subplot_interferometer(
-    interferometer, include=None, sub_plotter=None
-):
+def subplot_interferometer(interferometer, include=None, sub_plotter=None):
     """Plot the interferometer data_type as a sub-plotters of all its quantites (e.g. the dataset, noise_map-map, PSF, Signal-to_noise-map, \
      etc).
 
@@ -114,11 +114,11 @@ def individual(
     if plot_primary_beam:
 
         primary_beam(interferometer=interferometer, include=include, plotter=plotter)
+
+
 @plotters.set_include_and_plotter
 @plotters.set_labels
-def visibilities(
-    interferometer, include=None, plotter=None
-):
+def visibilities(interferometer, include=None, plotter=None):
     """Plot the observed image of the imaging data_type.
 
     Set *autolens.data_type.array.plotters.plotters* for a description of all input parameters not described below.
@@ -135,6 +135,8 @@ def visibilities(
     """
 
     plotter.plot_grid(grid=interferometer.visibilities)
+
+
 @plotters.set_include_and_plotter
 @plotters.set_labels
 def noise_map(interferometer, include=None, plotter=None):
@@ -156,6 +158,8 @@ def noise_map(interferometer, include=None, plotter=None):
     plotter.plot_grid(
         grid=interferometer.visibilities, color_array=interferometer.noise_map[:, 0]
     )
+
+
 @plotters.set_include_and_plotter
 @plotters.set_labels
 def u_wavelengths(
@@ -186,6 +190,8 @@ def u_wavelengths(
         label=label,
         plot_axis_type=plot_axis_type,
     )
+
+
 @plotters.set_include_and_plotter
 @plotters.set_labels
 def v_wavelengths(
@@ -216,6 +222,8 @@ def v_wavelengths(
         label=label,
         plot_axis_type=plot_axis_type,
     )
+
+
 @plotters.set_include_and_plotter
 @plotters.set_labels
 def uv_wavelengths(
@@ -247,6 +255,8 @@ def uv_wavelengths(
         ),
         symmetric_around_centre=True,
     )
+
+
 @plotters.set_include_and_plotter
 @plotters.set_labels
 def amplitudes_vs_uv_distances(
@@ -262,6 +272,8 @@ def amplitudes_vs_uv_distances(
         x=interferometer.uv_distances / 10 ** 3.0,
         plot_axis_type="scatter",
     )
+
+
 @plotters.set_include_and_plotter
 @plotters.set_labels
 def phases_vs_uv_distances(
@@ -277,11 +289,11 @@ def phases_vs_uv_distances(
         x=interferometer.uv_distances / 10 ** 3.0,
         plot_axis_type="scatter",
     )
+
+
 @plotters.set_include_and_plotter
 @plotters.set_labels
-def primary_beam(
-    interferometer, include=None, plotter=None
-):
+def primary_beam(interferometer, include=None, plotter=None):
     """Plot the PSF of the interferometer data_type.
 
     Set *autolens.data_type.array.plotters.plotters* for a description of all innput parameters not described below.

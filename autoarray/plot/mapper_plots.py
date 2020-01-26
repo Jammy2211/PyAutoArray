@@ -1,5 +1,7 @@
 from autoarray.plot import plotters
 from autoarray.plot import imaging_plots
+
+
 @plotters.set_include_and_plotter
 @plotters.set_labels
 def subplot_image_and_mapper(
