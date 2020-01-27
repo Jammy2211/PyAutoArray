@@ -226,6 +226,11 @@ def make_imaging_6x6():
     )
 
 
+@pytest.fixture(name="visibilities_mask_7x2")
+def make_visibilities_7():
+    return np.full(fill_value=False, shape=(7, 2))
+
+
 @pytest.fixture(name="visibilities_7x2")
 def make_visibilities_7():
     visibilities = aa.visibilities.full(shape_1d=(7,), fill_value=1.0)
@@ -289,10 +294,12 @@ def make_masked_imaging_7x7(imaging_7x7, sub_mask_7x7):
 
 @pytest.fixture(name="masked_interferometer_7")
 def make_masked_interferometer_7(
-    interferometer_7, mask_7x7, sub_grid_7x7, transformer_7x7_7
+    interferometer_7, visibilities_mask_7x2, mask_7x7, sub_grid_7x7, transformer_7x7_7
 ):
     return aa.masked.interferometer.manual(
-        interferometer=interferometer_7, real_space_mask=mask_7x7
+        interferometer=interferometer_7,
+        visibilities_mask=visibilities_mask_7x2,
+        real_space_mask=mask_7x7,
     )
 
 
