@@ -176,7 +176,7 @@ def make_background_sky_map_7x7():
 
 @pytest.fixture(name="positions_7x7")
 def make_positions_7x7():
-    return aa.positions(positions=[[(0.1, 0.1), (0.2, 0.2)], [(0.3, 0.3)]])
+    return aa.coordinates(coordinates=[[(0.1, 0.1), (0.2, 0.2)], [(0.3, 0.3)]])
 
 
 @pytest.fixture(name="imaging_7x7")
@@ -226,9 +226,17 @@ def make_imaging_6x6():
     )
 
 
+@pytest.fixture(name="visibilities_mask_7x2")
+def make_visibilities_mask_7x2():
+    return np.full(fill_value=False, shape=(7, 2))
+
+
 @pytest.fixture(name="visibilities_7x2")
 def make_visibilities_7():
-    return aa.visibilities.full(shape_1d=(7,), fill_value=1.0)
+    visibilities = aa.visibilities.full(shape_1d=(7,), fill_value=1.0)
+    visibilities[6, 0] = -1.0
+    visibilities[6, 1] = -1.0
+    return visibilities
 
 
 @pytest.fixture(name="noise_map_7x2")
@@ -286,10 +294,12 @@ def make_masked_imaging_7x7(imaging_7x7, sub_mask_7x7):
 
 @pytest.fixture(name="masked_interferometer_7")
 def make_masked_interferometer_7(
-    interferometer_7, mask_7x7, sub_grid_7x7, transformer_7x7_7
+    interferometer_7, visibilities_mask_7x2, mask_7x7, sub_grid_7x7, transformer_7x7_7
 ):
     return aa.masked.interferometer.manual(
-        interferometer=interferometer_7, real_space_mask=mask_7x7
+        interferometer=interferometer_7,
+        visibilities_mask=visibilities_mask_7x2,
+        real_space_mask=mask_7x7,
     )
 
 
@@ -313,3 +323,64 @@ def make_masked_interferometer_fit_x1_plane_7(masked_interferometer_7):
     )
     fit_interferometer.masked_dataset = masked_interferometer_7
     return fit_interferometer
+
+
+@pytest.fixture(name="rectangular_pixelization_grid_3x3")
+def make_rectangular_pixelization_grid_3x3(grid_7x7):
+    return aa.grid_rectangular.overlay_grid(grid=grid_7x7, shape_2d=(3, 3))
+
+
+@pytest.fixture(name="rectangular_mapper_7x7_3x3")
+def make_rectangular_mapper_7x7_3x3(grid_7x7, rectangular_pixelization_grid_3x3):
+    return aa.mapper(grid=grid_7x7, pixelization_grid=rectangular_pixelization_grid_3x3)
+
+
+@pytest.fixture(name="voronoi_pixelization_grid_9")
+def make_voronoi_pixelization_grid_9(grid_7x7):
+    grid_9 = aa.grid.manual_1d(
+        grid=[
+            [0.6, -0.3],
+            [0.5, -0.8],
+            [0.2, 0.1],
+            [0.0, 0.5],
+            [-0.3, -0.8],
+            [-0.6, -0.5],
+            [-0.4, -1.1],
+            [-1.2, 0.8],
+            [-1.5, 0.9],
+        ],
+        shape_2d=(3, 3),
+        pixel_scales=1.0,
+    )
+    return aa.grid_voronoi(
+        grid_1d=grid_9,
+        nearest_pixelization_1d_index_for_mask_1d_index=np.zeros(
+            shape=grid_7x7.shape_1d, dtype="int"
+        ),
+    )
+
+
+@pytest.fixture(name="voronoi_mapper_9_3x3")
+def make_voronoi_mapper_9_3x3(grid_7x7, voronoi_pixelization_grid_9):
+    return aa.mapper(grid=grid_7x7, pixelization_grid=voronoi_pixelization_grid_9)
+
+
+@pytest.fixture(name="rectangular_inversion_7x7_3x3")
+def make_rectangular_inversion_7x7_3x3(masked_imaging_7x7, rectangular_mapper_7x7_3x3):
+    regularization = aa.reg.Constant(coefficient=1.0)
+
+    return aa.inversion(
+        masked_dataset=masked_imaging_7x7,
+        mapper=rectangular_mapper_7x7_3x3,
+        regularization=regularization,
+    )
+
+
+@pytest.fixture(name="voronoi_inversion_9_3x3")
+def make_voronoi_inversion_9_3x3(masked_imaging_7x7, voronoi_mapper_9_3x3):
+    regularization = aa.reg.Constant(coefficient=1.0)
+    return aa.inversion(
+        masked_dataset=masked_imaging_7x7,
+        mapper=voronoi_mapper_9_3x3,
+        regularization=regularization,
+    )

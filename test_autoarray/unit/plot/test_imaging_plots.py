@@ -1,0 +1,99 @@
+from os import path
+import os
+import pytest
+
+import autoarray as aa
+import autoarray.plot as aplt
+
+
+directory = path.dirname(path.realpath(__file__))
+
+
+@pytest.fixture(name="plot_path")
+def make_imaging_plotter_setup():
+    plot_path = "{}/../test_files/plotting/imaging/".format(
+        os.path.dirname(os.path.realpath(__file__))
+    )
+
+    return plot_path
+
+
+@pytest.fixture(autouse=True)
+def set_config_path():
+    aa.conf.instance = aa.conf.Config(
+        path.join(directory, "../test_files/plot"), path.join(directory, "output")
+    )
+
+
+def test__individual_attributes_are_output(
+    imaging_7x7, positions_7x7, mask_7x7, plot_path, plot_patch
+):
+
+    aplt.imaging.image(
+        imaging=imaging_7x7,
+        positions=positions_7x7,
+        mask=mask_7x7,
+        include=aplt.Include(mask=True),
+        plotter=aplt.Plotter(output=aplt.Output(plot_path, format="png")),
+    )
+
+    assert plot_path + "image.png" in plot_patch.paths
+
+    aplt.imaging.noise_map(
+        imaging=imaging_7x7,
+        mask=mask_7x7,
+        plotter=aplt.Plotter(output=aplt.Output(plot_path, format="png")),
+    )
+
+    assert plot_path + "noise_map.png" in plot_patch.paths
+
+    aplt.imaging.psf(
+        imaging=imaging_7x7,
+        plotter=aplt.Plotter(output=aplt.Output(plot_path, format="png")),
+    )
+
+    assert plot_path + "psf.png" in plot_patch.paths
+
+    aplt.imaging.signal_to_noise_map(
+        imaging=imaging_7x7,
+        mask=mask_7x7,
+        plotter=aplt.Plotter(output=aplt.Output(plot_path, format="png")),
+    )
+
+    assert plot_path + "signal_to_noise_map.png" in plot_patch.paths
+
+
+def test__subplot_is_output(
+    imaging_7x7, positions_7x7, mask_7x7, plot_path, plot_patch
+):
+
+    aplt.imaging.subplot_imaging(
+        imaging=imaging_7x7,
+        sub_plotter=aplt.SubPlotter(output=aplt.Output(plot_path, format="png")),
+    )
+
+    assert plot_path + "subplot_imaging.png" in plot_patch.paths
+
+
+def test__imaging_individuals__output_dependent_on_input(
+    imaging_7x7, plot_path, plot_patch
+):
+    aplt.imaging.individual(
+        imaging=imaging_7x7,
+        plot_image=True,
+        plot_psf=True,
+        plot_absolute_signal_to_noise_map=True,
+        plotter=aplt.Plotter(output=aplt.Output(plot_path, format="png")),
+    )
+
+    assert plot_path + "image.png" in plot_patch.paths
+
+    assert not plot_path + "noise_map.png" in plot_patch.paths
+
+    assert plot_path + "psf.png" in plot_patch.paths
+
+    assert not plot_path + "signal_to_noise_map.png" in plot_patch.paths
+
+    assert plot_path + "absolute_signal_to_noise_map.png" in plot_patch.paths
+
+    assert not plot_path + "potential_chi_squared_map.png" in plot_patch.paths

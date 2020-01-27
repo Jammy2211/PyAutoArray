@@ -1,8 +1,9 @@
 from autoconf import conf
+
 dir(conf)
 from autoarray import exc
 from autoarray import masked
-from autoarray import plotters as plot
+from autoarray import plot
 from autoarray import simulator
 from autoarray import util
 from autoarray.dataset import data_converter
@@ -21,9 +22,9 @@ from autoarray.structures.grids import (
     GridIrregular as grid_irregular,
     GridRectangular as grid_rectangular,
     GridVoronoi as grid_voronoi,
-    Positions as positions,
+    Coordinates as coordinates,
 )
 from autoarray.structures.kernel import Kernel as kernel
 from autoarray.structures.visibilities import Visibilities as visibilities
 
-__version__ = '0.6.0'
+__version__ = "0.6.0"

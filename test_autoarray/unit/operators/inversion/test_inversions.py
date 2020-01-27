@@ -280,7 +280,9 @@ class TestInterpolatedReconstruction:
             interpolated_reconstruction.in_2d
             == np.array([[1.0, 1.0, 1.0], [1.0, 1.0, 1.0], [1.0, 1.0, 1.0]])
         ).all()
-        assert interpolated_reconstruction.pixel_scales == pytest.approx((0.66666, 0.66666), 1.0e-4)
+        assert interpolated_reconstruction.pixel_scales == pytest.approx(
+            (0.66666, 0.66666), 1.0e-4
+        )
 
         interpolated_reconstruction = inversion.interpolated_reconstruction_from_shape_2d(
             shape_2d=(2, 2)
@@ -292,7 +294,9 @@ class TestInterpolatedReconstruction:
         assert (
             interpolated_reconstruction.in_2d == np.array([[1.0, 1.0], [1.0, 1.0]])
         ).all()
-        assert interpolated_reconstruction.pixel_scales == pytest.approx((1.0, 1.0), 1.0e-4)
+        assert interpolated_reconstruction.pixel_scales == pytest.approx(
+            (1.0, 1.0), 1.0e-4
+        )
 
         inversion.reconstruction = np.array(
             [1.0, 1.0, 1.0, 5.0, 5.0, 5.0, 5.0, 1.0, 1.0]
@@ -358,7 +362,9 @@ class TestInterpolatedReconstruction:
             interpolated_errors.in_2d
             == np.array([[1.0, 1.0, 1.0], [1.0, 1.0, 1.0], [1.0, 1.0, 1.0]])
         ).all()
-        assert interpolated_errors.pixel_scales == pytest.approx((0.66666, 0.66666), 1.0e-4)
+        assert interpolated_errors.pixel_scales == pytest.approx(
+            (0.66666, 0.66666), 1.0e-4
+        )
 
 
 #

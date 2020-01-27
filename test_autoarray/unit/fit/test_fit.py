@@ -176,7 +176,9 @@ class TestInterferometerFit:
         self
     ):
 
-        mask = aa.mask.manual(
+        visibilities_mask = np.full(fill_value=False, shape=(2, 2))
+
+        real_space_mask = aa.mask.manual(
             mask_2d=np.array([[False, False], [False, False]]),
             sub_size=1,
             pixel_scales=(1.0, 1.0),
@@ -190,7 +192,9 @@ class TestInterferometerFit:
         )
 
         masked_interferometer = aa.masked.interferometer(
-            interferometer=interferometer, real_space_mask=mask
+            interferometer=interferometer,
+            visibilities_mask=visibilities_mask,
+            real_space_mask=real_space_mask,
         )
 
         model_data = aa.visibilities.manual_1d(visibilities=[[1.0, 2.0], [3.0, 4.0]])
@@ -230,7 +234,9 @@ class TestInterferometerFit:
         self
     ):
 
-        mask = aa.mask.manual(
+        visibilities_mask = np.full(fill_value=False, shape=(2, 2))
+
+        real_space_mask = aa.mask.manual(
             mask_2d=np.array([[False, False], [False, False]]),
             sub_size=1,
             pixel_scales=(1.0, 1.0),
@@ -244,7 +250,9 @@ class TestInterferometerFit:
         )
 
         masked_interferometer = aa.masked.interferometer(
-            interferometer=interferometer, real_space_mask=mask
+            interferometer=interferometer,
+            visibilities_mask=visibilities_mask,
+            real_space_mask=real_space_mask,
         )
 
         model_data = aa.visibilities.manual_1d(visibilities=[[1.0, 2.0], [3.0, 3.0]])
@@ -284,7 +292,9 @@ class TestInterferometerFit:
         self
     ):
 
-        mask = aa.mask.manual(
+        visibilities_mask = np.full(fill_value=False, shape=(2, 2))
+
+        real_space_mask = aa.mask.manual(
             mask_2d=np.array([[False, False], [False, False]]),
             sub_size=1,
             pixel_scales=(1.0, 1.0),
@@ -298,7 +308,9 @@ class TestInterferometerFit:
         )
 
         masked_interferometer = aa.masked.interferometer(
-            interferometer=interferometer, real_space_mask=mask
+            interferometer=interferometer,
+            visibilities_mask=visibilities_mask,
+            real_space_mask=real_space_mask,
         )
 
         model_data = aa.visibilities.manual_1d(visibilities=[[1.0, 2.0], [3.0, 4.0]])
