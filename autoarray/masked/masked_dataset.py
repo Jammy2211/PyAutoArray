@@ -189,6 +189,7 @@ class MaskedInterferometer(AbstractMaskedDataset):
     def __init__(
         self,
         interferometer,
+        visibilities_mask,
         real_space_mask,
         primary_beam_shape_2d=None,
         pixel_scale_interpolation_grid=None,
@@ -258,9 +259,7 @@ class MaskedInterferometer(AbstractMaskedDataset):
 
         self.visibilities = interferometer.visibilities
         self.noise_map = interferometer.noise_map
-        self.visibilities_mask = np.full(
-            fill_value=False, shape=self.interferometer.uv_wavelengths.shape
-        )
+        self.visibilities_mask = visibilities_mask
 
     @property
     def uv_distances(self):
@@ -274,6 +273,7 @@ class MaskedInterferometer(AbstractMaskedDataset):
     def manual(
         cls,
         interferometer,
+        visibilities_mask,
         real_space_mask,
         primary_beam_shape_2d=None,
         pixel_scale_interpolation_grid=None,
@@ -281,7 +281,8 @@ class MaskedInterferometer(AbstractMaskedDataset):
         inversion_uses_border=True,
     ):
         return cls(
-            interferometer,
+            interferometer=interferometer,
+            visibilities_mask=visibilities_mask,
             real_space_mask=real_space_mask,
             primary_beam_shape_2d=primary_beam_shape_2d,
             pixel_scale_interpolation_grid=pixel_scale_interpolation_grid,
