@@ -3,9 +3,7 @@ import matplotlib
 
 backend = conf.get_matplotlib_backend()
 matplotlib.use(backend)
-import matplotlib.pyplot as plt
 import numpy as np
-from autoarray import exc
 
 
 def get_real_space_mask_from_fit(mask, fit):
