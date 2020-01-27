@@ -227,7 +227,7 @@ def make_imaging_6x6():
 
 
 @pytest.fixture(name="visibilities_mask_7x2")
-def make_visibilities_7():
+def make_visibilities_mask_7x2():
     return np.full(fill_value=False, shape=(7, 2))
 
 
