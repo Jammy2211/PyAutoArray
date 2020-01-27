@@ -1415,13 +1415,13 @@ class TestGridIrregular:
     def test__pixelization_grid__attributes(self):
         pix_grid = grids.GridIrregular(
             grid=np.array([[1.0, 1.0], [2.0, 2.0]]),
-            nearest_irregular_1d_index_for_mask_1d_index=np.array([0, 1]),
+            nearest_pixelization_1d_index_for_mask_1d_index=np.array([0, 1]),
         )
 
         assert type(pix_grid) == grids.GridIrregular
         assert (pix_grid == np.array([[1.0, 1.0], [2.0, 2.0]])).all()
         assert (
-            pix_grid.nearest_irregular_1d_index_for_mask_1d_index == np.array([0, 1])
+            pix_grid.nearest_pixelization_1d_index_for_mask_1d_index == np.array([0, 1])
         ).all()
 
     def test__from_unmasked_sparse_shape_and_grid(self):
@@ -1446,7 +1446,7 @@ class TestGridIrregular:
         assert (sparse_grid.sparse == pixelization_grid).all()
         assert (
             sparse_grid.sparse_1d_index_for_mask_1d_index
-            == pixelization_grid.nearest_irregular_1d_index_for_mask_1d_index
+            == pixelization_grid.nearest_pixelization_1d_index_for_mask_1d_index
         ).all()
 
 
@@ -2605,119 +2605,127 @@ class TestInterpolator:
         assert np.max(true_grid_radii[:, 1] - interpolated_grid_radii_x) < 0.1
 
 
-test_positions_dir = "{}/../test_files/positions/".format(
+test_coordinates_dir = "{}/../test_files/coordinates/".format(
     os.path.dirname(os.path.realpath(__file__))
 )
 
 
-class MockPositionInput(object):
+class MockCoordinateInput(object):
     def __init__(self):
         pass
 
-    @grids.convert_positions_to_grid
+    @grids.convert_coordinates_to_grid
     def float_values_from_grid(self, grid):
         return np.ones(shape=grid.shape[0])
 
-    @grids.convert_positions_to_grid
+    @grids.convert_coordinates_to_grid
     def tuple_values_from_grid(self, grid):
         return np.multiply(2.0, grid)
 
-    @grids.convert_positions_to_grid
+    @grids.convert_coordinates_to_grid
     def float_values_from_grid_returns_list(self, grid):
         return [np.ones(shape=grid.shape[0]), 2.0 * np.ones(shape=grid.shape[0])]
 
-    @grids.convert_positions_to_grid
+    @grids.convert_coordinates_to_grid
     def tuple_values_from_grid_returns_list(self, grid):
         return [np.multiply(1.0, grid), np.multiply(2.0, grid)]
 
 
-class TestPositions:
+class TestCoordinates:
     def test__converts_to_and_from_pixels(self):
 
         mask = aa.mask.manual(
             mask_2d=np.full(fill_value=False, shape=(2, 2)), pixel_scales=(2.0, 2.0)
         )
 
-        positions = aa.positions(positions=[[(1.0, -1.0), (1.0, 1.0)]], mask=mask)
+        coordinates = aa.coordinates(coordinates=[[(1.0, -1.0), (1.0, 1.0)]], mask=mask)
 
-        assert type(positions.scaled) == grids.Positions
-        assert positions.scaled == [[(1.0, -1.0), (1.0, 1.0)]]
-        assert positions.pixels == [[(0, 0), (0, 1)]]
+        assert type(coordinates.scaled) == grids.Coordinates
+        assert coordinates.scaled == [[(1.0, -1.0), (1.0, 1.0)]]
+        assert coordinates.pixels == [[(0, 0), (0, 1)]]
 
-        positions = aa.positions.from_pixels_and_mask(
+        coordinates = aa.coordinates.from_pixels_and_mask(
             pixels=[[(0, 0), (0, 1)]], mask=mask
         )
 
-        assert positions.scaled == [[(1.0, -1.0), (1.0, 1.0)]]
-        assert positions.pixels == [[(0, 0), (0, 1)]]
+        assert coordinates.scaled == [[(1.0, -1.0), (1.0, 1.0)]]
+        assert coordinates.pixels == [[(0, 0), (0, 1)]]
 
     def test__input_is_list_of_tuples__converts_to_irregular_1d_grid(self):
 
-        positions = aa.positions(positions=[[(1.0, 1.0), (2.0, 2.0)]])
+        coordinates = aa.coordinates(coordinates=[[(1.0, 1.0), (2.0, 2.0)]])
 
-        assert positions == [[(1.0, 1.0), (2.0, 2.0)]]
-        assert type(positions.in_1d) == grids.GridIrregular
-        assert (positions.in_1d == np.array([[1.0, 1.0], [2.0, 2.0]])).all()
-        assert (positions.list_in_1d[0] == np.array([[1.0, 1.0], [2.0, 2.0]])).all()
+        assert coordinates == [[(1.0, 1.0), (2.0, 2.0)]]
+        assert type(coordinates.in_1d) == grids.GridIrregular
+        assert (coordinates.in_1d == np.array([[1.0, 1.0], [2.0, 2.0]])).all()
+        assert (coordinates.list_in_1d[0] == np.array([[1.0, 1.0], [2.0, 2.0]])).all()
 
-        positions = aa.positions(positions=[[(1.0, 1.0), (2.0, 2.0)], [(3.0, 3.0)]])
+        coordinates = aa.coordinates(
+            coordinates=[[(1.0, 1.0), (2.0, 2.0)], [(3.0, 3.0)]]
+        )
 
-        assert positions == [[(1.0, 1.0), (2.0, 2.0)], [(3.0, 3.0)]]
-        assert type(positions.in_1d) == grids.GridIrregular
-        assert (positions.in_1d == np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0]])).all()
-        assert (positions.list_in_1d[0] == np.array([[1.0, 1.0], [2.0, 2.0]])).all()
-        assert (positions.list_in_1d[1] == np.array([[3.0, 3.0]])).all()
+        assert coordinates == [[(1.0, 1.0), (2.0, 2.0)], [(3.0, 3.0)]]
+        assert type(coordinates.in_1d) == grids.GridIrregular
+        assert (
+            coordinates.in_1d == np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0]])
+        ).all()
+        assert (coordinates.list_in_1d[0] == np.array([[1.0, 1.0], [2.0, 2.0]])).all()
+        assert (coordinates.list_in_1d[1] == np.array([[3.0, 3.0]])).all()
 
     def test__retain_original_list_of_tuples_from_a_1d_grid(self):
 
-        positions = aa.positions(positions=[[(1.0, 1.0), (2.0, 2.0)]])
+        coordinates = aa.coordinates(coordinates=[[(1.0, 1.0), (2.0, 2.0)]])
 
-        positions_from_1d = positions.from_1d_positions(
-            positions_1d=np.array([[1.0, 1.0], [2.0, 2.0]])
+        coordinates_from_1d = coordinates.from_1d_coordinates(
+            coordinates_1d=np.array([[1.0, 1.0], [2.0, 2.0]])
         )
 
-        assert type(positions_from_1d) == grids.Positions
-        assert positions_from_1d == [[(1.0, 1.0), (2.0, 2.0)]]
+        assert type(coordinates_from_1d) == grids.Coordinates
+        assert coordinates_from_1d == [[(1.0, 1.0), (2.0, 2.0)]]
 
-        positions = aa.positions(positions=[[(1.0, 1.0), (2.0, 2.0)], [(3.0, 3.0)]])
-
-        positions_from_1d = positions.from_1d_positions(
-            positions_1d=np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0]])
+        coordinates = aa.coordinates(
+            coordinates=[[(1.0, 1.0), (2.0, 2.0)], [(3.0, 3.0)]]
         )
 
-        assert type(positions_from_1d) == grids.Positions
-        assert positions_from_1d == [[(1.0, 1.0), (2.0, 2.0)], [(3.0, 3.0)]]
+        coordinates_from_1d = coordinates.from_1d_coordinates(
+            coordinates_1d=np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0]])
+        )
+
+        assert type(coordinates_from_1d) == grids.Coordinates
+        assert coordinates_from_1d == [[(1.0, 1.0), (2.0, 2.0)], [(3.0, 3.0)]]
 
     def test__retain_origin_list_but_as_floats_for_single_values(self):
 
-        positions = aa.positions(positions=[[(1.0, 1.0), (2.0, 2.0)]])
+        coordinates = aa.coordinates(coordinates=[[(1.0, 1.0), (2.0, 2.0)]])
 
-        values_from_1d = positions.from_1d_values(values_1d=np.array([1.0, 2.0]))
+        values_from_1d = coordinates.from_1d_values(values_1d=np.array([1.0, 2.0]))
 
         assert values_from_1d == [[1.0, 2.0]]
 
-        positions = aa.positions(positions=[[(1.0, 1.0), (2.0, 2.0)], [(3.0, 3.0)]])
+        coordinates = aa.coordinates(
+            coordinates=[[(1.0, 1.0), (2.0, 2.0)], [(3.0, 3.0)]]
+        )
 
-        values_from_1d = positions.from_1d_values(values_1d=np.array([1.0, 2.0, 3.0]))
+        values_from_1d = coordinates.from_1d_values(values_1d=np.array([1.0, 2.0, 3.0]))
 
         assert values_from_1d == [[1.0, 2.0], [3.0]]
 
-    def test__load_positions__retains_list_structure(self):
-        positions = aa.positions.from_file(
-            positions_path=test_positions_dir + "positions_test.dat"
+    def test__load_coordinates__retains_list_structure(self):
+        coordinates = aa.coordinates.from_file(
+            file_path=test_coordinates_dir + "coordinates_test.dat"
         )
 
-        assert positions == [
+        assert coordinates == [
             [(1.0, 1.0), (2.0, 2.0)],
             [(3.0, 3.0), (4.0, 4.0), (5.0, 6.0)],
         ]
 
-    def test__output_positions(self):
-        positions = aa.positions(
+    def test__output_coordinates(self):
+        coordinates = aa.coordinates(
             [[(4.0, 4.0), (5.0, 5.0)], [(6.0, 6.0), (7.0, 7.0), (8.0, 8.0)]]
         )
 
-        output_data_dir = "{}/../test_files/positions/output_test/".format(
+        output_data_dir = "{}/../test_files/coordinates/output_test/".format(
             os.path.dirname(os.path.realpath(__file__))
         )
         if os.path.exists(output_data_dir):
@@ -2725,50 +2733,54 @@ class TestPositions:
 
         os.makedirs(output_data_dir)
 
-        positions.output_to_file(positions_path=output_data_dir + "positions_test.dat")
+        coordinates.output_to_file(file_path=output_data_dir + "coordinates_test.dat")
 
-        positions = aa.positions.from_file(
-            positions_path=output_data_dir + "positions_test.dat"
+        coordinates = aa.coordinates.from_file(
+            file_path=output_data_dir + "coordinates_test.dat"
         )
 
-        assert positions == [
+        assert coordinates == [
             [(4.0, 4.0), (5.0, 5.0)],
             [(6.0, 6.0), (7.0, 7.0), (8.0, 8.0)],
         ]
 
-    def test__convert_positions_decorator__positions_are_input__output_in_same_format(
+    def test__convert_coordinates_decorator__coordinates_are_input__output_in_same_format(
         self
     ):
 
-        positions_input = MockPositionInput()
+        coordinates_input = MockCoordinateInput()
 
-        positions = aa.positions(positions=[[(1.0, 2.0), (3.0, 4.0)], [(5.0, 6.0)]])
-
-        positions_output = positions_input.float_values_from_grid(grid=positions)
-
-        assert positions_output == [[1.0, 1.0], [1.0]]
-
-        positions_output = positions_input.tuple_values_from_grid(grid=positions)
-
-        assert positions_output == [[(2.0, 4.0), (6.0, 8.0)], [(10.0, 12.0)]]
-
-    def test__convert_positions_decorator__same_as_above_but_output_is_a_list(self):
-
-        positions_input = MockPositionInput()
-
-        positions = aa.positions(positions=[[(1.0, 2.0), (3.0, 4.0)], [(5.0, 6.0)]])
-
-        positions_output = positions_input.float_values_from_grid_returns_list(
-            grid=positions
+        coordinates = aa.coordinates(
+            coordinates=[[(1.0, 2.0), (3.0, 4.0)], [(5.0, 6.0)]]
         )
 
-        assert positions_output == [[[1.0, 1.0], [1.0]], [[2.0, 2.0], [2.0]]]
+        coordinates_output = coordinates_input.float_values_from_grid(grid=coordinates)
 
-        positions_output = positions_input.tuple_values_from_grid_returns_list(
-            grid=positions
+        assert coordinates_output == [[1.0, 1.0], [1.0]]
+
+        coordinates_output = coordinates_input.tuple_values_from_grid(grid=coordinates)
+
+        assert coordinates_output == [[(2.0, 4.0), (6.0, 8.0)], [(10.0, 12.0)]]
+
+    def test__convert_coordinates_decorator__same_as_above_but_output_is_a_list(self):
+
+        coordinates_input = MockCoordinateInput()
+
+        coordinates = aa.coordinates(
+            coordinates=[[(1.0, 2.0), (3.0, 4.0)], [(5.0, 6.0)]]
         )
 
-        assert positions_output == [
+        coordinates_output = coordinates_input.float_values_from_grid_returns_list(
+            grid=coordinates
+        )
+
+        assert coordinates_output == [[[1.0, 1.0], [1.0]], [[2.0, 2.0], [2.0]]]
+
+        coordinates_output = coordinates_input.tuple_values_from_grid_returns_list(
+            grid=coordinates
+        )
+
+        assert coordinates_output == [
             [[(1.0, 2.0), (3.0, 4.0)], [(5.0, 6.0)]],
             [[(2.0, 4.0), (6.0, 8.0)], [(10.0, 12.0)]],
         ]

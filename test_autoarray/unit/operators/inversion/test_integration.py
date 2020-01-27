@@ -410,7 +410,9 @@ class TestRectangular:
 
     def test__interferometer(self):
 
-        mask = np.array(
+        visibilities_mask = np.full(fill_value=False, shape=(7, 2))
+
+        real_space_mask = np.array(
             [
                 [False, False, False, False, False, False, False],
                 [False, False, False, False, False, False, False],
@@ -422,9 +424,11 @@ class TestRectangular:
             ]
         )
 
-        mask = aa.mask.manual(mask_2d=mask, pixel_scales=0.1, sub_size=1)
+        real_space_mask = aa.mask.manual(
+            mask_2d=real_space_mask, pixel_scales=0.1, sub_size=1
+        )
 
-        grid = aa.masked.grid.from_mask(mask=mask)
+        grid = aa.masked.grid.from_mask(mask=real_space_mask)
 
         pix = aa.pix.Rectangular(shape=(7, 7))
 
@@ -455,7 +459,9 @@ class TestRectangular:
         )
 
         masked_data = aa.masked.interferometer(
-            interferometer=interferometer, real_space_mask=mask
+            interferometer=interferometer,
+            visibilities_mask=visibilities_mask,
+            real_space_mask=real_space_mask,
         )
 
         inversion = aa.inversion(
@@ -510,7 +516,7 @@ class TestVoronoiMagnification:
 
         pixelization_grid = aa.grid_voronoi(
             grid_1d=sparse_grid.sparse,
-            nearest_irregular_1d_index_for_mask_1d_index=sparse_grid.sparse_1d_index_for_mask_1d_index,
+            nearest_pixelization_1d_index_for_mask_1d_index=sparse_grid.sparse_1d_index_for_mask_1d_index,
         )
 
         mapper = pix.mapper_from_grid_and_sparse_grid(
@@ -610,7 +616,7 @@ class TestVoronoiMagnification:
 
         pixelization_grid = aa.grid_voronoi(
             grid_1d=sparse_grid.sparse,
-            nearest_irregular_1d_index_for_mask_1d_index=sparse_grid.sparse_1d_index_for_mask_1d_index,
+            nearest_pixelization_1d_index_for_mask_1d_index=sparse_grid.sparse_1d_index_for_mask_1d_index,
         )
 
         mapper = pix.mapper_from_grid_and_sparse_grid(
@@ -721,7 +727,7 @@ class TestVoronoiMagnification:
 
         pixelization_grid = aa.grid_voronoi(
             grid_1d=sparse_grid.sparse,
-            nearest_irregular_1d_index_for_mask_1d_index=sparse_grid.sparse_1d_index_for_mask_1d_index,
+            nearest_pixelization_1d_index_for_mask_1d_index=sparse_grid.sparse_1d_index_for_mask_1d_index,
         )
 
         mapper = pix.mapper_from_grid_and_sparse_grid(
@@ -809,7 +815,7 @@ class TestVoronoiMagnification:
 
         pixelization_grid = aa.grid_voronoi(
             grid_1d=sparse_grid.sparse,
-            nearest_irregular_1d_index_for_mask_1d_index=sparse_grid.sparse_1d_index_for_mask_1d_index,
+            nearest_pixelization_1d_index_for_mask_1d_index=sparse_grid.sparse_1d_index_for_mask_1d_index,
         )
 
         mapper = pix.mapper_from_grid_and_sparse_grid(
@@ -872,7 +878,9 @@ class TestVoronoiMagnification:
 
     def test__interferometer(self):
 
-        mask = np.array(
+        visibilities_mask = np.full(fill_value=False, shape=(7, 2))
+
+        real_space_mask = np.array(
             [
                 [False, False, False, False, False, False, False],
                 [False, False, False, False, False, False, False],
@@ -884,9 +892,11 @@ class TestVoronoiMagnification:
             ]
         )
 
-        mask = aa.mask.manual(mask_2d=mask, pixel_scales=0.1, sub_size=1)
+        real_space_mask = aa.mask.manual(
+            mask_2d=real_space_mask, pixel_scales=0.1, sub_size=1
+        )
 
-        grid = aa.masked.grid.from_mask(mask=mask)
+        grid = aa.masked.grid.from_mask(mask=real_space_mask)
 
         pix = aa.pix.VoronoiMagnification(shape=(7, 7))
 
@@ -919,7 +929,9 @@ class TestVoronoiMagnification:
         )
 
         masked_data = aa.masked.interferometer(
-            interferometer=interferometer, real_space_mask=mask
+            interferometer=interferometer,
+            visibilities_mask=visibilities_mask,
+            real_space_mask=real_space_mask,
         )
 
         inversion = aa.inversion(

@@ -1,6 +1,7 @@
 from autoarray.structures import arrays, grids
 from autoarray.util import array_util, grid_util, mapper_util
 
+import itertools
 import numpy as np
 
 
@@ -39,7 +40,7 @@ class Mapper(object):
         border : grid.GridBorder
             The border of the grid's grid.
         hyper_image : ndarray
-            A pre-computed hyper_galaxies-image of the image the mapper is expected to reconstruct, used for adaptive analysis.
+            A pre-computed hyper-image of the image the mapper is expected to reconstruct, used for adaptive analysis.
         """
         self.grid = grid
         self.pixelization_grid = pixelization_grid
@@ -119,15 +120,14 @@ class Mapper(object):
 
         The pixelization's pixels map to different number of sub-grid pixels, thus a list of lists is used to \
         represent these mappings"""
-
         all_sub_mask_1d_indexes_for_pixelization_1d_index = [
             [] for _ in range(self.pixels)
         ]
 
-        for mask_1d_index, pix_1_index in enumerate(
+        for mask_1d_index, pix_1d_index in enumerate(
             self.pixelization_1d_index_for_sub_mask_1d_index
         ):
-            all_sub_mask_1d_indexes_for_pixelization_1d_index[pix_1_index].append(
+            all_sub_mask_1d_indexes_for_pixelization_1d_index[pix_1d_index].append(
                 mask_1d_index
             )
 
@@ -142,6 +142,31 @@ class Mapper(object):
             mask_1d_index_for_sub_mask_1d_index=self.grid.regions._mask_1d_index_for_sub_mask_1d_index,
             hyper_image=self.hyper_image,
         )
+
+    def image_pixel_indexes_from_source_pixel_indexes(self, source_pixel_indexes):
+
+        image_for_source = self.all_sub_mask_1d_indexes_for_pixelization_1d_index
+
+        if not any(isinstance(i, list) for i in source_pixel_indexes):
+            return list(
+                itertools.chain.from_iterable(
+                    [image_for_source[index] for index in source_pixel_indexes]
+                )
+            )
+        else:
+            indexes = []
+            for source_pixel_index_list in source_pixel_indexes:
+                indexes.append(
+                    list(
+                        itertools.chain.from_iterable(
+                            [
+                                image_for_source[index]
+                                for index in source_pixel_index_list
+                            ]
+                        )
+                    )
+                )
+            return indexes
 
 
 class MapperRectangular(Mapper):
@@ -225,7 +250,7 @@ class MapperVoronoi(Mapper):
         geometry : pixelization.Voronoi.Geometry
             The geometry (e.g. y / x edge locations, pixel-scales) of the Vornoi pixelization.
         hyper_image : ndarray
-            A pre-computed hyper_galaxies-image of the image the mapper is expected to reconstruct, used for adaptive analysis.
+            A pre-computed hyper-image of the image the mapper is expected to reconstruct, used for adaptive analysis.
         """
         super(MapperVoronoi, self).__init__(
             grid=grid, pixelization_grid=pixelization_grid, hyper_image=hyper_image
@@ -238,9 +263,10 @@ class MapperVoronoi(Mapper):
     @property
     def pixelization_1d_index_for_sub_mask_1d_index(self):
         """  The 1D index mappings between the sub pixels and Voronoi pixelization pixels. """
+
         return mapper_util.pixelization_1d_index_for_voronoi_sub_mask_1d_index_from_grids_and_geometry(
             grid=self.grid,
-            nearest_irregular_1d_index_for_mask_1d_index=self.pixelization_grid.nearest_irregular_1d_index_for_mask_1d_index,
+            nearest_pixelization_1d_index_for_mask_1d_index=self.pixelization_grid.nearest_pixelization_1d_index_for_mask_1d_index,
             mask_1d_index_for_sub_mask_1d_index=self.grid.regions._mask_1d_index_for_sub_mask_1d_index,
             pixelization_grid=self.pixelization_grid,
             pixel_neighbors=self.pixelization_grid.pixel_neighbors,
@@ -252,3 +278,6 @@ class MapperVoronoi(Mapper):
     @property
     def voronoi(self):
         return self.pixelization_grid.voronoi
+
+    def reconstructed_pixelization_from_solution_vector(self, solution_vector):
+        return solution_vector

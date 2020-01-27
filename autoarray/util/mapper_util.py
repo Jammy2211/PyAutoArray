@@ -40,7 +40,7 @@ def mapping_matrix_from_pixelization_1d_index_for_sub_mask_1d_index(
 @decorator_util.jit()
 def pixelization_1d_index_for_voronoi_sub_mask_1d_index_from_grids_and_geometry(
     grid,
-    nearest_irregular_1d_index_for_mask_1d_index,
+    nearest_pixelization_1d_index_for_mask_1d_index,
     mask_1d_index_for_sub_mask_1d_index,
     pixelization_grid,
     pixel_neighbors,
@@ -59,7 +59,7 @@ def pixelization_1d_index_for_voronoi_sub_mask_1d_index_from_grids_and_geometry(
     grid : Grid
         The grid of (y,x) arc-second coordinates at the centre of every unmasked pixel, which has been traced to \
         to an irgrid via lens.
-    nearest_irregular_1d_index_for_mask_1d_index : ndarray
+    nearest_pixelization_1d_index_for_mask_1d_index : ndarray
         A 1D array that maps every grid pixel to its nearest pix-grid pixel (as determined on the unlensed \
         2D array).
     pixelization_grid : (float, float)
@@ -76,7 +76,7 @@ def pixelization_1d_index_for_voronoi_sub_mask_1d_index_from_grids_and_geometry(
 
     for sub_mask_1d_index in range(grid.shape[0]):
 
-        nearest_pixelization_1d_index = nearest_irregular_1d_index_for_mask_1d_index[
+        nearest_pixelization_1d_index = nearest_pixelization_1d_index_for_mask_1d_index[
             mask_1d_index_for_sub_mask_1d_index[sub_mask_1d_index]
         ]
 

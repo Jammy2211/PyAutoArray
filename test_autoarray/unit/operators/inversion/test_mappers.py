@@ -632,6 +632,28 @@ class TestRectangularMapper:
 
             assert (pixel_signals == pixel_signals_util).all()
 
+    class TestImagePixelIndexesFromSourcePixelIndexes:
+        def test__image_from_source__different_types_of_lists_input(self, sub_grid_7x7):
+
+            rectangular_pixelization_grid = aa.grid_rectangular.overlay_grid(
+                grid=sub_grid_7x7, shape_2d=(3, 3)
+            )
+            rectangular_mapper = aa.mapper(
+                grid=sub_grid_7x7, pixelization_grid=rectangular_pixelization_grid
+            )
+
+            image_pixel_indexes = rectangular_mapper.image_pixel_indexes_from_source_pixel_indexes(
+                source_pixel_indexes=[0, 1]
+            )
+
+            assert image_pixel_indexes == [0, 1, 2, 3, 4, 5, 6, 7]
+
+            image_pixel_indexes = rectangular_mapper.image_pixel_indexes_from_source_pixel_indexes(
+                source_pixel_indexes=[[0], [4]]
+            )
+
+            assert image_pixel_indexes == [[0, 1, 2, 3], [16, 17, 18, 19]]
+
 
 class TestVoronoiMapper:
     class TestSubToPixelizationViaNearestNeighborsForTesting:
@@ -725,13 +747,13 @@ class TestVoronoiMapper:
                 grid_7x7, pixelization_grid
             )
 
-            nearest_irregular_1d_index_for_mask_1d_index = np.array(
+            nearest_pixelization_1d_index_for_mask_1d_index = np.array(
                 [0, 0, 1, 0, 0, 1, 2, 2, 3]
             )
 
             pixelization_grid = aa.grid_voronoi(
                 grid_1d=pixelization_grid,
-                nearest_irregular_1d_index_for_mask_1d_index=nearest_irregular_1d_index_for_mask_1d_index,
+                nearest_pixelization_1d_index_for_mask_1d_index=nearest_pixelization_1d_index_for_mask_1d_index,
             )
 
             mapper = aa.mapper(grid=grid_7x7, pixelization_grid=pixelization_grid)
@@ -747,13 +769,13 @@ class TestVoronoiMapper:
                 [[0.1, 0.1], [1.1, 0.1], [2.1, 0.1], [0.1, 1.1], [1.1, 1.1], [2.1, 1.1]]
             )
 
-            nearest_irregular_1d_index_for_mask_1d_index = np.array(
+            nearest_pixelization_1d_index_for_mask_1d_index = np.array(
                 [0, 0, 1, 0, 0, 1, 2, 2, 3]
             )
 
             pixelization_grid = aa.grid_voronoi(
                 grid_1d=pixelization_grid,
-                nearest_irregular_1d_index_for_mask_1d_index=nearest_irregular_1d_index_for_mask_1d_index,
+                nearest_pixelization_1d_index_for_mask_1d_index=nearest_pixelization_1d_index_for_mask_1d_index,
             )
 
             mapper = aa.mapper(
