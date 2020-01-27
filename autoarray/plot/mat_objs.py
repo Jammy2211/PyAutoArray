@@ -1223,8 +1223,8 @@ class Liner(object):
 
     def draw_rectangular_grid_lines(self, extent, shape_2d):
 
-        ys = np.linspace(extent[0], extent[1], shape_2d[0] + 1)
-        xs = np.linspace(extent[2], extent[3], shape_2d[1] + 1)
+        ys = np.linspace(extent[2], extent[3], shape_2d[1] + 1)
+        xs = np.linspace(extent[0], extent[1], shape_2d[0] + 1)
 
         # grid lines
         for x in xs:
