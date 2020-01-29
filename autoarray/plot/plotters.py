@@ -750,6 +750,29 @@ class AbstractPlotter(object):
 
         return plotter
 
+    def plotter_with_new_cmap(
+        self,
+        cmap=None,
+        norm=None,
+        norm_max=None,
+        norm_min=None,
+        linthresh=None,
+        linscale=None,
+    ):
+
+        plotter = copy.deepcopy(self)
+
+        plotter.cmap.cmap = cmap if cmap is not None else self.cmap.cmap
+        plotter.cmap.norm = norm if norm is not None else self.cmap.norm
+        plotter.cmap.norm_max = norm_max if norm_max is not None else self.cmap.norm_max
+        plotter.cmap.norm_min = norm_min if norm_min is not None else self.cmap.norm_min
+        plotter.cmap.linthresh = (
+            linthresh if linthresh is not None else self.cmap.linthresh
+        )
+        plotter.cmap.linscale = linscale if linscale is not None else self.cmap.linscale
+
+        return plotter
+
     def plotter_with_new_units(
         self, use_scaled=None, conversion_factor=None, in_kpc=None
     ):

@@ -1170,7 +1170,7 @@ class TestArray:
                 array_2d.binned_from_bin_up_factor(bin_up_factor=4, method="wrong")
 
     class TestOutputToFits:
-        def test__output_to_files(self):
+        def test__output_to_fits(self):
 
             arr = aa.array.from_fits(file_path=test_data_dir + "3x3_ones.fits", hdu=0)
 
@@ -1189,3 +1189,35 @@ class TestArray:
             )
 
             assert (array_from_out.in_2d == np.ones((3, 3))).all()
+
+        def test__output_to_fits__shapes_of_arrays_are_2d(self):
+
+            arr = aa.array.from_fits(file_path=test_data_dir + "3x3_ones.fits", hdu=0)
+
+            output_data_dir = "{}/../test_files/array/output_test/".format(
+                os.path.dirname(os.path.realpath(__file__))
+            )
+            if os.path.exists(output_data_dir):
+                shutil.rmtree(output_data_dir)
+
+            os.makedirs(output_data_dir)
+
+            arr.output_to_fits(file_path=output_data_dir + "array.fits")
+
+            array_from_out = aa.util.array.numpy_array_2d_from_fits(
+                file_path=output_data_dir + "array.fits", hdu=0
+            )
+
+            assert (array_from_out == np.ones((3, 3))).all()
+
+            mask = aa.mask.unmasked(shape_2d=(3, 3), pixel_scales=0.1)
+
+            masked_array = aa.masked.array(array=arr, mask=mask)
+
+            masked_array.output_to_fits(file_path=output_data_dir + "masked_array.fits")
+
+            masked_array_from_out = aa.util.array.numpy_array_2d_from_fits(
+                file_path=output_data_dir + "masked_array.fits", hdu=0
+            )
+
+            assert (masked_array_from_out == np.ones((3, 3))).all()

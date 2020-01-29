@@ -1,10 +1,10 @@
 import numpy as np
 
+from autoconf import conf
 from autoarray import exc
 from autoarray.structures import arrays, grids, visibilities as vis
 from autoarray.masked import masked_dataset as md
 from autoarray.util import inversion_util
-
 from scipy.interpolate import griddata
 
 
@@ -61,15 +61,45 @@ class Inversion(object):
 
     def interpolated_values_from_shape_2d(self, values, shape_2d=None):
 
-        if shape_2d is None:
+        if shape_2d is not None:
+
+            grid = grids.Grid.bounding_box(
+                bounding_box=self.mapper.pixelization_grid.extent,
+                shape_2d=shape_2d,
+                buffer_around_corners=False,
+            )
+
+        elif (
+            conf.instance.general.get(
+                "inversion", "interpolated_reconstruction_shape", str
+            )
+            in "image_grid"
+        ):
+
+            grid = self.mapper.grid
+
+        elif (
+            conf.instance.general.get(
+                "inversion", "interpolated_reconstruction_shape", str
+            )
+            in "source_grid"
+        ):
+
             dimension = int(np.sqrt(self.mapper.pixels))
             shape_2d = (dimension, dimension)
 
-        grid = grids.Grid.bounding_box(
-            bounding_box=self.mapper.pixelization_grid.extent,
-            shape_2d=shape_2d,
-            buffer_around_corners=False,
-        )
+            grid = grids.Grid.bounding_box(
+                bounding_box=self.mapper.pixelization_grid.extent,
+                shape_2d=shape_2d,
+                buffer_around_corners=False,
+            )
+
+        else:
+
+            raise exc.InversionException(
+                "In the genenal.ini config file a valid option was not found for the"
+                "interpolated_reconstruction_shape. Must be {image_grid, source_grid}"
+            )
 
         interpolated_reconstruction = griddata(
             points=self.mapper.pixelization_grid,
