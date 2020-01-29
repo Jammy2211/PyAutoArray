@@ -144,6 +144,7 @@ def test__fit_individuals__source_and_lens__depedent_on_input(
 
     assert plot_path + "chi_squared_map.png" in plot_patch.paths
 
+
 def test__output_as_fits__correct_output_format(
     fit_imaging_7x7, positions_7x7, mask_7x7, plot_path, plot_patch
 ):
@@ -155,6 +156,8 @@ def test__output_as_fits__correct_output_format(
         plotter=aplt.Plotter(output=aplt.Output(path=plot_path, format="fits")),
     )
 
-    image_from_plot = aa.util.array.numpy_array_2d_from_fits(file_path=plot_path + "image.fits", hdu=0)
+    image_from_plot = aa.util.array.numpy_array_2d_from_fits(
+        file_path=plot_path + "image.fits", hdu=0
+    )
 
     assert image_from_plot.shape == (5, 5)

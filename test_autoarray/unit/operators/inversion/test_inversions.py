@@ -236,29 +236,30 @@ from os import path
 import pytest
 
 
-
 directory = path.dirname(path.realpath(__file__))
 
 
 class TestInterpolatedReconstruction:
-    
     def test__interpolation_reconstruction__config_is_image_grid__grid_as_mapper_with_good_interpolation(
         self
     ):
 
         conf.instance = aa.conf.Config(
-            path.join(directory, "../../test_files/inversion_image_grid"), path.join(directory, "output")
+            path.join(directory, "../../test_files/inversion_image_grid"),
+            path.join(directory, "output"),
         )
 
         matrix_shape = (3, 3)
 
         mask = aa.mask.manual(
             mask_2d=np.array(
-                [[True, True, True, True, True],
-                [True, True, False, False, True],
-                 [True, False, False, False, True],
-                 [True, False, False, True, True],
-                  [True, True, True, True, True]]
+                [
+                    [True, True, True, True, True],
+                    [True, True, False, False, True],
+                    [True, False, False, False, True],
+                    [True, False, False, True, True],
+                    [True, True, True, True, True],
+                ]
             ),
             pixel_scales=1.0,
             sub_size=1,
@@ -292,29 +293,34 @@ class TestInterpolatedReconstruction:
 
         assert interpolated_reconstruction.shape_2d == (5, 5)
 
-        assert interpolated_reconstruction.in_1d == pytest.approx(np.ones(shape=(25,)), 1.0e-4)
-        assert interpolated_reconstruction.in_2d == pytest.approx(np.ones(shape=(5,5)), 1.0e-4)
+        assert interpolated_reconstruction.in_1d == pytest.approx(
+            np.ones(shape=(25,)), 1.0e-4
+        )
+        assert interpolated_reconstruction.in_2d == pytest.approx(
+            np.ones(shape=(5, 5)), 1.0e-4
+        )
         assert interpolated_reconstruction.pixel_scales == pytest.approx(
             (1.0, 1.0), 1.0e-4
         )
 
-    def test__interpolation_errors__also_on_image_grid__interpolates_values(
-        self
-    ):
+    def test__interpolation_errors__also_on_image_grid__interpolates_values(self):
 
         conf.instance = aa.conf.Config(
-            path.join(directory, "../../test_files/inversion_image_grid"), path.join(directory, "output")
+            path.join(directory, "../../test_files/inversion_image_grid"),
+            path.join(directory, "output"),
         )
 
         matrix_shape = (3, 3)
 
         mask = aa.mask.manual(
             mask_2d=np.array(
-                [[True, True, True, True, True],
-                [True, True, False, False, True],
-                 [True, False, False, False, True],
-                 [True, False, False, True, True],
-                  [True, True, True, True, True]]
+                [
+                    [True, True, True, True, True],
+                    [True, True, False, False, True],
+                    [True, False, False, False, True],
+                    [True, False, False, True, True],
+                    [True, True, True, True, True],
+                ]
             ),
             pixel_scales=1.0,
             sub_size=1,
@@ -349,27 +355,28 @@ class TestInterpolatedReconstruction:
         assert interpolated_errors.shape_2d == (5, 5)
 
         assert interpolated_errors.in_1d == pytest.approx(np.ones(shape=(25,)), 1.0e-4)
-        assert interpolated_errors.in_2d == pytest.approx(np.ones(shape=(5,5)), 1.0e-4)
-        assert interpolated_errors.pixel_scales == pytest.approx(
-            (1.0, 1.0), 1.0e-4
-        )
-    
+        assert interpolated_errors.in_2d == pytest.approx(np.ones(shape=(5, 5)), 1.0e-4)
+        assert interpolated_errors.pixel_scales == pytest.approx((1.0, 1.0), 1.0e-4)
+
     def test__interpolation_reconsruction__config_is_source_grid__grid_is_zoomed_as_uses_mapper_grid(
         self
     ):
         conf.instance = aa.conf.Config(
-            path.join(directory, "../../test_files/inversion_source_grid"), path.join(directory, "output")
+            path.join(directory, "../../test_files/inversion_source_grid"),
+            path.join(directory, "output"),
         )
 
         matrix_shape = (3, 3)
 
         mask = aa.mask.manual(
             mask_2d=np.array(
-                [[True, True, True, True, True],
-                [True, True, False, False, True],
-                 [True, False, False, False, True],
-                 [True, False, False, True, True],
-                  [True, True, True, True, True]]
+                [
+                    [True, True, True, True, True],
+                    [True, True, False, False, True],
+                    [True, False, False, False, True],
+                    [True, False, False, True, True],
+                    [True, True, True, True, True],
+                ]
             ),
             pixel_scales=1.0,
             sub_size=1,
@@ -443,20 +450,19 @@ class TestInterpolatedReconstruction:
         ).all()
         assert interpolated_reconstruction.pixel_scales == (1.0, 1.0)
 
-
-    def test__interpolation__manual_shape_2d__uses_input_shape_2d(
-        self
-    ):
+    def test__interpolation__manual_shape_2d__uses_input_shape_2d(self):
 
         matrix_shape = (3, 3)
 
         mask = aa.mask.manual(
             mask_2d=np.array(
-                [[True, True, True, True, True],
-                [True, True, False, False, True],
-                 [True, False, False, False, True],
-                 [True, False, False, True, True],
-                  [True, True, True, True, True]]
+                [
+                    [True, True, True, True, True],
+                    [True, True, False, False, True],
+                    [True, False, False, False, True],
+                    [True, False, False, True, True],
+                    [True, True, True, True, True],
+                ]
             ),
             pixel_scales=1.0,
             sub_size=1,
@@ -513,6 +519,7 @@ class TestInterpolatedReconstruction:
             interpolated_reconstruction.in_2d == np.array([[3.0, 3.0], [3.0, 3.0]])
         ).all()
         assert interpolated_reconstruction.pixel_scales == (1.0, 1.0)
+
 
 #
 # class TestPixelizationQuantities:

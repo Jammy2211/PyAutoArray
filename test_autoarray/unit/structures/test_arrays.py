@@ -1204,11 +1204,13 @@ class TestArray:
 
             arr.output_to_fits(file_path=output_data_dir + "array.fits")
 
-            array_from_out = aa.util.array.numpy_array_2d_from_fits(file_path=output_data_dir + "array.fits", hdu=0)
+            array_from_out = aa.util.array.numpy_array_2d_from_fits(
+                file_path=output_data_dir + "array.fits", hdu=0
+            )
 
             assert (array_from_out == np.ones((3, 3))).all()
 
-            mask = aa.mask.unmasked(shape_2d=(3,3), pixel_scales=0.1)
+            mask = aa.mask.unmasked(shape_2d=(3, 3), pixel_scales=0.1)
 
             masked_array = aa.masked.array(array=arr, mask=mask)
 

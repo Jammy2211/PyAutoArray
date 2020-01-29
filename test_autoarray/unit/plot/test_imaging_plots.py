@@ -111,6 +111,8 @@ def test__output_as_fits__correct_output_format(
         plotter=aplt.Plotter(output=aplt.Output(path=plot_path, format="fits")),
     )
 
-    image_from_plot = aa.util.array.numpy_array_2d_from_fits(file_path=plot_path + "image.fits", hdu=0)
+    image_from_plot = aa.util.array.numpy_array_2d_from_fits(
+        file_path=plot_path + "image.fits", hdu=0
+    )
 
     assert image_from_plot.shape == (7, 7)
