@@ -4,6 +4,7 @@ import scipy.spatial
 import scipy.spatial.qhull as qhull
 from functools import wraps
 from sklearn.cluster import KMeans
+import os
 
 from autoarray import decorator_util
 from autoarray import exc
@@ -1371,9 +1372,9 @@ class Coordinates(list):
             coordinate_list = ast.literal_eval(line)
             coordinates.append(coordinate_list)
 
-        return coordinates
+        return Coordinates(coordinates=coordinates)
 
-    def output_to_file(self, file_path):
+    def output_to_file(self, file_path, overwrite=False):
         """Output the coordinates of an image to a coordinates.dat file.
 
         Coordinates correspond to a set of pixels in the lensed source galaxy that are anticipated to come from the same \
@@ -1391,6 +1392,15 @@ class Coordinates(list):
         file_path : str
             The path to the coordinates .dat file containing the coordinates (e.g. '/path/to/coordinates.dat')
         """
+
+        if overwrite and os.path.exists(file_path):
+            os.remove(file_path)
+        elif not overwrite and os.path.exists(file_path):
+            raise FileExistsError(
+                "The file ",
+                file_path,
+                " already exists. Set overwrite=True to overwrite this" "file",
+            )
 
         with open(file_path, "w") as f:
             for coordinate in self:

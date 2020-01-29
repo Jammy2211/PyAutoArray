@@ -2720,7 +2720,7 @@ class TestCoordinates:
             [(3.0, 3.0), (4.0, 4.0), (5.0, 6.0)],
         ]
 
-    def test__output_coordinates(self):
+    def test__output_coordinates_to_file(self):
         coordinates = aa.coordinates(
             [[(4.0, 4.0), (5.0, 5.0)], [(6.0, 6.0), (7.0, 7.0), (8.0, 8.0)]]
         )
@@ -2743,6 +2743,15 @@ class TestCoordinates:
             [(4.0, 4.0), (5.0, 5.0)],
             [(6.0, 6.0), (7.0, 7.0), (8.0, 8.0)],
         ]
+
+        with pytest.raises(FileExistsError):
+            coordinates.output_to_file(
+                file_path=output_data_dir + "coordinates_test.dat"
+            )
+
+        coordinates.output_to_file(
+            file_path=output_data_dir + "coordinates_test.dat", overwrite=True
+        )
 
     def test__convert_coordinates_decorator__coordinates_are_input__output_in_same_format(
         self
