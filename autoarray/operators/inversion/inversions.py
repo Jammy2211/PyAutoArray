@@ -69,11 +69,21 @@ class Inversion(object):
                 buffer_around_corners=False,
             )
 
-        elif conf.instance.general.get("inversion", "interpolated_reconstruction_shape", str) in "image_grid":
+        elif (
+            conf.instance.general.get(
+                "inversion", "interpolated_reconstruction_shape", str
+            )
+            in "image_grid"
+        ):
 
             grid = self.mapper.grid
 
-        elif conf.instance.general.get("inversion", "interpolated_reconstruction_shape", str) in "source_grid":
+        elif (
+            conf.instance.general.get(
+                "inversion", "interpolated_reconstruction_shape", str
+            )
+            in "source_grid"
+        ):
 
             dimension = int(np.sqrt(self.mapper.pixels))
             shape_2d = (dimension, dimension)
@@ -86,8 +96,10 @@ class Inversion(object):
 
         else:
 
-            raise exc.InversionException("In the genenal.ini config file a valid option was not found for the"
-                                         "interpolated_reconstruction_shape. Must be {image_grid, source_grid}")
+            raise exc.InversionException(
+                "In the genenal.ini config file a valid option was not found for the"
+                "interpolated_reconstruction_shape. Must be {image_grid, source_grid}"
+            )
 
         interpolated_reconstruction = griddata(
             points=self.mapper.pixelization_grid,
