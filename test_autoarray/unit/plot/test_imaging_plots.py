@@ -97,3 +97,20 @@ def test__imaging_individuals__output_dependent_on_input(
     assert plot_path + "absolute_signal_to_noise_map.png" in plot_patch.paths
 
     assert not plot_path + "potential_chi_squared_map.png" in plot_patch.paths
+
+
+def test__output_as_fits__correct_output_format(
+    imaging_7x7, positions_7x7, mask_7x7, plot_path, plot_patch
+):
+
+    aplt.imaging.individual(
+        imaging=imaging_7x7,
+        plot_image=True,
+        plot_psf=True,
+        plot_absolute_signal_to_noise_map=True,
+        plotter=aplt.Plotter(output=aplt.Output(path=plot_path, format="fits")),
+    )
+
+    image_from_plot = aa.util.array.numpy_array_2d_from_fits(file_path=plot_path + "image.fits", hdu=0)
+
+    assert image_from_plot.shape == (7, 7)
