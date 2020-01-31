@@ -29,7 +29,7 @@ class Transformer(object):
 
         if self.preload_transform:
 
-            return transformer_util.real_visibilities_from_image_via_preload(
+            return transformer_util.real_visibilities_from_image_via_preload_jit(
                 image_1d=image.in_1d_binned,
                 preloaded_reals=self.preload_real_transforms,
             )
@@ -46,7 +46,7 @@ class Transformer(object):
 
         if self.preload_transform:
 
-            return transformer_util.imag_visibilities_via_preload_jit(
+            return transformer_util.imag_visibilities_from_image_via_preload_jit(
                 image_1d=image.in_1d_binned,
                 preloaded_imags=self.preload_imag_transforms,
             )
