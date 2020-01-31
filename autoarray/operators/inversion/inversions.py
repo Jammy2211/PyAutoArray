@@ -70,18 +70,14 @@ class Inversion(object):
             )
 
         elif (
-            conf.instance.general.get(
-                "inversion", "interpolated_reconstruction_shape", str
-            )
+            conf.instance.general.get("inversion", "interpolated_grid_shape", str)
             in "image_grid"
         ):
 
             grid = self.mapper.grid
 
         elif (
-            conf.instance.general.get(
-                "inversion", "interpolated_reconstruction_shape", str
-            )
+            conf.instance.general.get("inversion", "interpolated_grid_shape", str)
             in "source_grid"
         ):
 
@@ -98,13 +94,13 @@ class Inversion(object):
 
             raise exc.InversionException(
                 "In the genenal.ini config file a valid option was not found for the"
-                "interpolated_reconstruction_shape. Must be {image_grid, source_grid}"
+                "interpolated_grid_shape. Must be {image_grid, source_grid}"
             )
 
         interpolated_reconstruction = griddata(
             points=self.mapper.pixelization_grid,
             values=values,
-            xi=grid.in_2d,
+            xi=grid.in_2d_binned,
             method="linear",
         )
 
