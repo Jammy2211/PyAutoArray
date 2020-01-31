@@ -262,7 +262,7 @@ class TestInterpolatedReconstruction:
                 ]
             ),
             pixel_scales=1.0,
-            sub_size=1,
+            sub_size=2,
         )
 
         grid = aa.masked.grid.from_mask(mask=mask)
