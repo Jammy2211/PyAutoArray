@@ -266,7 +266,7 @@ class TestPixelizationNormalizedResiduals(object):
 
         pixelization_normalized_residuals = aa.util.inversion.inversion_normalized_residual_map_from_pixelization_values_and_reconstructed_data_1d(
             pixelization_values=pixelization_values,
-            mapped_reconstructed_data=reconstructed_data_1d,
+            data=reconstructed_data_1d,
             noise_map_1d=noise_map_1d,
             mask_1d_index_for_sub_mask_1d_index=mask_1d_index_for_sub_mask_1d_index,
             all_sub_mask_1d_indexes_for_pixelization_1d_index=all_sub_mask_1d_indexes_for_pixelization_1d_index,
@@ -288,7 +288,7 @@ class TestPixelizationNormalizedResiduals(object):
 
         pixelization_normalized_residuals = aa.util.inversion.inversion_normalized_residual_map_from_pixelization_values_and_reconstructed_data_1d(
             pixelization_values=pixelization_values,
-            mapped_reconstructed_data=reconstructed_data_1d,
+            data=reconstructed_data_1d,
             noise_map_1d=noise_map_1d,
             mask_1d_index_for_sub_mask_1d_index=mask_1d_index_for_sub_mask_1d_index,
             all_sub_mask_1d_indexes_for_pixelization_1d_index=all_sub_mask_1d_indexes_for_pixelization_1d_index,
@@ -308,7 +308,7 @@ class TestPixelizationNormalizedResiduals(object):
 
         pixelization_normalized_residuals = aa.util.inversion.inversion_normalized_residual_map_from_pixelization_values_and_reconstructed_data_1d(
             pixelization_values=pixelization_values,
-            mapped_reconstructed_data=reconstructed_data_1d,
+            data=reconstructed_data_1d,
             noise_map_1d=noise_map_1d,
             mask_1d_index_for_sub_mask_1d_index=mask_1d_index_for_sub_mask_1d_index,
             all_sub_mask_1d_indexes_for_pixelization_1d_index=all_sub_mask_1d_indexes_for_pixelization_1d_index,
@@ -334,7 +334,7 @@ class TestPixelizationChiSquareds(object):
 
         pixelization_chi_squareds = aa.util.inversion.inversion_chi_squared_map_from_pixelization_values_and_reconstructed_data_1d(
             pixelization_values=pixelization_values,
-            mapped_reconstructed_data=reconstructed_data_1d,
+            data=reconstructed_data_1d,
             noise_map_1d=noise_map_1d,
             mask_1d_index_for_sub_mask_1d_index=mask_1d_index_for_sub_mask_1d_index,
             all_sub_mask_1d_indexes_for_pixelization_1d_index=all_sub_mask_1d_indexes_for_pixelization_1d_index,
@@ -356,7 +356,7 @@ class TestPixelizationChiSquareds(object):
 
         pixelization_chi_squareds = aa.util.inversion.inversion_chi_squared_map_from_pixelization_values_and_reconstructed_data_1d(
             pixelization_values=pixelization_values,
-            mapped_reconstructed_data=reconstructed_data_1d,
+            data=reconstructed_data_1d,
             noise_map_1d=noise_map_1d,
             mask_1d_index_for_sub_mask_1d_index=mask_1d_index_for_sub_mask_1d_index,
             all_sub_mask_1d_indexes_for_pixelization_1d_index=all_sub_mask_1d_indexes_for_pixelization_1d_index,
@@ -376,7 +376,7 @@ class TestPixelizationChiSquareds(object):
 
         pixelization_chi_squareds = aa.util.inversion.inversion_chi_squared_map_from_pixelization_values_and_reconstructed_data_1d(
             pixelization_values=pixelization_values,
-            mapped_reconstructed_data=reconstructed_data_1d,
+            data=reconstructed_data_1d,
             noise_map_1d=noise_map_1d,
             mask_1d_index_for_sub_mask_1d_index=mask_1d_index_for_sub_mask_1d_index,
             all_sub_mask_1d_indexes_for_pixelization_1d_index=all_sub_mask_1d_indexes_for_pixelization_1d_index,
