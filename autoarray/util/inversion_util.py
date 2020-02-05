@@ -204,6 +204,7 @@ def inversion_residual_map_from_pixelization_values_and_data(
     for pix_1_index, sub_mask_1d_indexes in enumerate(
         all_sub_mask_1d_indexes_for_pixelization_1d_index
     ):
+
         sub_mask_total = 0
         for sub_mask_1d_index in sub_mask_1d_indexes:
             sub_mask_total += 1
@@ -214,12 +215,12 @@ def inversion_residual_map_from_pixelization_values_and_data(
         if sub_mask_total > 0:
             residual_map[pix_1_index] /= sub_mask_total
 
-    return residual_map
+    return residual_map.copy()
 
 
 def inversion_normalized_residual_map_from_pixelization_values_and_reconstructed_data_1d(
     pixelization_values,
-    mapped_reconstructed_data,
+    data,
     noise_map_1d,
     mask_1d_index_for_sub_mask_1d_index,
     all_sub_mask_1d_indexes_for_pixelization_1d_index,
@@ -229,8 +230,6 @@ def inversion_normalized_residual_map_from_pixelization_values_and_reconstructed
         shape=len(all_sub_mask_1d_indexes_for_pixelization_1d_index)
     )
 
-    mapped_reconstructed_data = mapped_reconstructed_data
-
     for pix_1_index, sub_mask_1d_indexes in enumerate(
         all_sub_mask_1d_indexes_for_pixelization_1d_index
     ):
@@ -239,8 +238,8 @@ def inversion_normalized_residual_map_from_pixelization_values_and_reconstructed
             sub_mask_total += 1
             mask_1d_index = mask_1d_index_for_sub_mask_1d_index[sub_mask_1d_index]
             residual = (
-                mapped_reconstructed_data[mask_1d_index]
-                - pixelization_values[pix_1_index]
+                    data[mask_1d_index]
+                    - pixelization_values[pix_1_index]
             )
             normalized_residual_map[pix_1_index] += np.abs(
                 (residual / noise_map_1d[mask_1d_index])
@@ -249,12 +248,12 @@ def inversion_normalized_residual_map_from_pixelization_values_and_reconstructed
         if sub_mask_total > 0:
             normalized_residual_map[pix_1_index] /= sub_mask_total
 
-    return normalized_residual_map
+    return normalized_residual_map.copy()
 
 
 def inversion_chi_squared_map_from_pixelization_values_and_reconstructed_data_1d(
     pixelization_values,
-    mapped_reconstructed_data,
+    data,
     noise_map_1d,
     mask_1d_index_for_sub_mask_1d_index,
     all_sub_mask_1d_indexes_for_pixelization_1d_index,
@@ -272,8 +271,8 @@ def inversion_chi_squared_map_from_pixelization_values_and_reconstructed_data_1d
             sub_mask_total += 1
             mask_1d_index = mask_1d_index_for_sub_mask_1d_index[sub_mask_1d_index]
             residual = (
-                mapped_reconstructed_data[mask_1d_index]
-                - pixelization_values[pix_1_index]
+                    data[mask_1d_index]
+                    - pixelization_values[pix_1_index]
             )
             chi_squared_map[pix_1_index] += (
                 residual / noise_map_1d[mask_1d_index]
@@ -282,4 +281,4 @@ def inversion_chi_squared_map_from_pixelization_values_and_reconstructed_data_1d
         if sub_mask_total > 0:
             chi_squared_map[pix_1_index] /= sub_mask_total
 
-    return chi_squared_map
+    return chi_squared_map.copy()
