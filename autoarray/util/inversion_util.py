@@ -174,9 +174,9 @@ def curvature_matrix_from_transformed_mapping_matrix(
         (transformed_mapping_matrix.shape[1], transformed_mapping_matrix.shape[1])
     )
 
-    for pix_1d_index_0 in range(transformed_mapping_matrix.shape[1]):
-        for pix_1d_index_1 in range(pix_1d_index_0 + 1):
-            for vis_1d_index in range(transformed_mapping_matrix.shape[0]):
+    for vis_1d_index in range(transformed_mapping_matrix.shape[0]):
+        for pix_1d_index_0 in range(transformed_mapping_matrix.shape[1]):
+            for pix_1d_index_1 in range(pix_1d_index_0 + 1):
                 curvature_matrix[pix_1d_index_0, pix_1d_index_1] += (
                     transformed_mapping_matrix[vis_1d_index, pix_1d_index_0]
                     * transformed_mapping_matrix[vis_1d_index, pix_1d_index_1]
@@ -237,10 +237,7 @@ def inversion_normalized_residual_map_from_pixelization_values_and_reconstructed
         for sub_mask_1d_index in sub_mask_1d_indexes:
             sub_mask_total += 1
             mask_1d_index = mask_1d_index_for_sub_mask_1d_index[sub_mask_1d_index]
-            residual = (
-                    data[mask_1d_index]
-                    - pixelization_values[pix_1_index]
-            )
+            residual = data[mask_1d_index] - pixelization_values[pix_1_index]
             normalized_residual_map[pix_1_index] += np.abs(
                 (residual / noise_map_1d[mask_1d_index])
             )
@@ -270,10 +267,7 @@ def inversion_chi_squared_map_from_pixelization_values_and_reconstructed_data_1d
         for sub_mask_1d_index in sub_mask_1d_indexes:
             sub_mask_total += 1
             mask_1d_index = mask_1d_index_for_sub_mask_1d_index[sub_mask_1d_index]
-            residual = (
-                    data[mask_1d_index]
-                    - pixelization_values[pix_1_index]
-            )
+            residual = data[mask_1d_index] - pixelization_values[pix_1_index]
             chi_squared_map[pix_1_index] += (
                 residual / noise_map_1d[mask_1d_index]
             ) ** 2.0
