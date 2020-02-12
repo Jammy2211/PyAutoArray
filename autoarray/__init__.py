@@ -27,4 +27,4 @@ from autoarray.structures.grids import (
 from autoarray.structures.kernel import Kernel as kernel
 from autoarray.structures.visibilities import Visibilities as visibilities
 
-__version__ = '0.7.5'
+__version__ = '0.7.6'

@@ -152,7 +152,6 @@ def data_vector_from_transformed_mapping_matrix_and_data(
     return data_vector
 
 
-@decorator_util.jit()
 def curvature_matrix_from_transformed_mapping_matrix(
     transformed_mapping_matrix, noise_map
 ):
@@ -170,18 +169,9 @@ def curvature_matrix_from_transformed_mapping_matrix(
     iflist : ndarray
         NumPy array of integers used to store mappings for efficienctly calculation.
     """
-    curvature_matrix = np.zeros(
-        (transformed_mapping_matrix.shape[1], transformed_mapping_matrix.shape[1])
-    )
 
-    for vis_1d_index in range(transformed_mapping_matrix.shape[0]):
-        for pix_1d_index_0 in range(transformed_mapping_matrix.shape[1]):
-            for pix_1d_index_1 in range(pix_1d_index_0 + 1):
-                curvature_matrix[pix_1d_index_0, pix_1d_index_1] += (
-                    transformed_mapping_matrix[vis_1d_index, pix_1d_index_0]
-                    * transformed_mapping_matrix[vis_1d_index, pix_1d_index_1]
-                    / noise_map[vis_1d_index] ** 2
-                )
+    array = transformed_mapping_matrix / noise_map[:, None]
+    curvature_matrix = np.dot(array.T, np.matrix.transpose(array.T))
 
     for i in range(transformed_mapping_matrix.shape[1]):
         for j in range(transformed_mapping_matrix.shape[1]):
