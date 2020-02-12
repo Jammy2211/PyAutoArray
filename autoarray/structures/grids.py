@@ -1020,7 +1020,7 @@ class SparseGrid(object):
 
         try:
             kmeans = kmeans.fit(X=grid.in_1d_binned, sample_weight=weight_map)
-        except ValueError:
+        except ValueError or OverflowError:
             raise exc.InversionException()
 
         return SparseGrid(
