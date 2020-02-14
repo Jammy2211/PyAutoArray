@@ -3,7 +3,7 @@ import numpy as np
 from autoarray.util import array_util, grid_util
 
 
-class Geometry(object):
+class Geometry:
     def __init__(self, mask):
 
         self.mask = mask

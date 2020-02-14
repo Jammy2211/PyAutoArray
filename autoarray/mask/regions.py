@@ -5,7 +5,7 @@ from autoarray.mask import mask as msk
 from autoarray.util import array_util, mask_util
 
 
-class Regions(object):
+class Regions:
     def __init__(self, mask):
 
         self.mask = mask

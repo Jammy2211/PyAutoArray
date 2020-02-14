@@ -738,7 +738,7 @@ class TestBinUpMask2d:
         assert (binned_2d_mask == np.array([[True, False]])).all()
 
 
-class TestMask1DIndexForPaddedMask2dIndex(object):
+class TestMask1DIndexForPaddedMask2dIndex:
     def test__no_padding__mask_is_full_of_false__returns_indexes_in_ascending_order(
         self
     ):

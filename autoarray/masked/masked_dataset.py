@@ -5,7 +5,7 @@ from autoarray.operators import convolver, transformer
 import numpy as np
 
 
-class AbstractMaskedDataset(object):
+class AbstractMaskedDataset:
     def __init__(
         self,
         mask,

@@ -4,7 +4,7 @@ import numpy as np
 import pytest
 
 
-class TestVisiblities(object):
+class TestVisiblities:
     def test__real_visibilities__intensity_image_all_ones__simple_cases(self):
 
         uv_wavelengths = np.ones(shape=(4, 2))
@@ -227,7 +227,7 @@ class TestVisiblities(object):
         assert (visibilities[:, 1] == imag_visibilities).all()
 
 
-class TestVisiblitiesMappingMatrix(object):
+class TestVisiblitiesMappingMatrix:
     def test__real_visibilities__mapping_matrix_all_ones__simple_cases(self):
 
         uv_wavelengths = np.ones(shape=(4, 2))

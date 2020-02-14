@@ -36,7 +36,7 @@ def load_subplot_setting(section, name, python_type):
     return conf.instance.visualize_subplots.get(section, name, python_type)
 
 
-class AbstractPlotter(object):
+class AbstractPlotter:
     def __init__(
         self,
         units=None,
@@ -975,7 +975,7 @@ class SubPlotter(AbstractPlotter):
             return (25, 20)
 
 
-class Include(object):
+class Include:
     def __init__(
         self,
         origin=None,

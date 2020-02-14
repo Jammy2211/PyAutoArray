@@ -99,7 +99,7 @@ def make_simple_kernel():
     return aa.kernel.manual_2d([[0, 0.1, 0], [0.1, 0.6, 0.1], [0, 0.1, 0]])
 
 
-class TestNumbering(object):
+class TestNumbering:
     def test_simple_numbering(self, simple_mask_5x5, simple_mask_index_array):
 
         convolver = aa.convolver(
@@ -148,7 +148,7 @@ class TestNumbering(object):
             )
 
 
-class TestFrameExtraction(object):
+class TestFrameExtraction:
     def test__frame_at_coords(self, simple_mask_5x5, simple_convolver):
         frame, kernel_frame = simple_convolver.frame_at_coordinates_jit(
             coordinates=(2, 2),
@@ -337,7 +337,7 @@ class TestFrameExtraction(object):
         ).all()
 
 
-class TestImageFrameIndexes(object):
+class TestImageFrameIndexes:
     def test__masked_cross__3x3_kernel(self, cross_convolver):
         assert 5 == len(cross_convolver.image_frame_1d_indexes)
 
@@ -745,7 +745,7 @@ class TestImageFrameIndexes(object):
         ).all()
 
 
-class TestImageFrameKernels(object):
+class TestImageFrameKernels:
     def test_simple_square(self, simple_convolver):
         assert 9 == len(simple_convolver.image_frame_1d_indexes)
 
@@ -927,7 +927,7 @@ class TestImageFrameKernels(object):
         ).all()
 
 
-class TestBlurringFrameIndxes(object):
+class TestBlurringFrameIndxes:
     def test__blurring_region_3x3_kernel(self, cross_mask):
 
         convolver = aa.convolver(
@@ -952,7 +952,7 @@ class TestBlurringFrameIndxes(object):
         ).all()
 
 
-class TestBlurringFrameKernels(object):
+class TestBlurringFrameKernels:
     def test__blurring_region_3x3_kernel(self, cross_mask):
 
         convolver = aa.convolver(
@@ -980,7 +980,7 @@ class TestBlurringFrameKernels(object):
         ).all()
 
 
-class TestFrameLengths(object):
+class TestFrameLengths:
     def test__frames_are_from_examples_above__lengths_are_right(self, simple_mask_7x7):
         convolver = aa.convolver(
             mask=simple_mask_7x7, kernel=aa.kernel.ones(shape_2d=(3, 5))
@@ -1001,7 +1001,7 @@ class TestFrameLengths(object):
         ).all()
 
 
-class TestConvolveMappingMatrix(object):
+class TestConvolveMappingMatrix:
     def test__asymetric_convolver__matrix_blurred_correctly(self):
 
         mask = np.array(
@@ -1143,7 +1143,7 @@ class TestConvolveMappingMatrix(object):
         )
 
 
-class TestConvolution(object):
+class TestConvolution:
     def test__cross_mask_with_blurring_entries__returns_scaled_array(self):
 
         mask = np.full((5, 5), True)

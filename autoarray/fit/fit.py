@@ -29,7 +29,7 @@ def fit(masked_dataset, model_data, inversion=None):
         )
 
 
-class DatasetFit(object):
+class DatasetFit:
 
     # noinspection PyUnresolvedReferences
     def __init__(self, mask, data, noise_map, model_data, inversion=None):
