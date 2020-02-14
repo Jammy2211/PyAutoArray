@@ -31,7 +31,7 @@ def inversion(masked_dataset, mapper, regularization):
         )
 
 
-class Inversion(object):
+class Inversion:
     def __init__(
         self,
         noise_map,

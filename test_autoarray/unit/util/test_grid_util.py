@@ -10,7 +10,7 @@ test_data_dir = "{}/../test_files/array/".format(
 )
 
 
-class TestGrid1DFromMask(object):
+class TestGrid1DFromMask:
     def test__from_3x3_mask__sub_size_1(self):
 
         mask = np.array([[True, True, True], [True, False, True], [True, True, True]])
@@ -504,7 +504,7 @@ class TestGrid1DFromMask(object):
         )
 
 
-class TestGrid2DFromMask(object):
+class TestGrid2DFromMask:
     def test__same_as_1d_grids(self):
 
         mask = np.array([[False, True, True], [True, True, False], [True, True, True]])
@@ -834,7 +834,7 @@ class TestGrid2DFromShape:
         ).all()
 
 
-class TestGridConversions(object):
+class TestGridConversions:
     def test__pixel_grid_1d_from_arcsec_grid_1d__coordinates_in_origins_of_pixels(self):
 
         grid_arcsec = np.array([[1.0, -2.0], [1.0, 2.0], [-1.0, -2.0], [-1.0, 2.0]])
@@ -1618,7 +1618,7 @@ class TestGridConversions(object):
         ).all()
 
 
-class TestSubGrid1DFromSubGrid2D(object):
+class TestSubGrid1DFromSubGrid2D:
     def test__map_simple_grids__sub_grid_1(self):
 
         grid_2d = np.array(
@@ -1743,7 +1743,7 @@ class TestSubGrid1DFromSubGrid2D(object):
         ).all()
 
 
-class TestSubGrid2DFromSubGrid1d(object):
+class TestSubGrid2DFromSubGrid1d:
     def test__simple_2d_array__is_masked_and_mapped__sub_size_1(self):
 
         grid_1d = np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0]])
@@ -1842,7 +1842,7 @@ class TestSubGrid2DFromSubGrid1d(object):
         ).all()
 
 
-class TestPositionsAtCoordinate(object):
+class TestPositionsAtCoordinate:
     def test__uniform_grid__locates_pixels_correctly(self):
 
         grid = aa.grid.uniform(shape_2d=(5, 5), pixel_scales=1.0)

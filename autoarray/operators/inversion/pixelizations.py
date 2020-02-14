@@ -6,7 +6,7 @@ from autoarray.structures import grids
 from autoarray.operators.inversion import mappers
 
 
-class Pixelization(object):
+class Pixelization:
     def __init__(self):
         """ Abstract base class for a pixelization, which discretizes grid of (y,x) coordinates into pixels.
         """

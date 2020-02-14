@@ -1080,7 +1080,7 @@ class TestDecorator:
 
         assert kpc_per_arcsec == None
 
-        class MockObj(object):
+        class MockObj:
             def __init__(self, param1):
 
                 self.param1 = param1
@@ -1095,7 +1095,7 @@ class TestDecorator:
 
         assert kpc_per_arcsec == None
 
-        class MockObj(object):
+        class MockObj:
             def __init__(self, param1, kpc_per_arcsec):
 
                 self.param1 = param1
