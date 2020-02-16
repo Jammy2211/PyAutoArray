@@ -15,7 +15,7 @@ def make_memoizer():
     return aa.util.array.Memoizer()
 
 
-class TestMemoizer(object):
+class TestMemoizer:
     def test_storing(self, memoizer):
         @memoizer
         def func(arg):
@@ -75,7 +75,7 @@ class TestMemoizer(object):
         assert memoizer.calls == 2
 
     def test_methods(self, memoizer):
-        class Class(object):
+        class Class:
             def __init__(self, value):
                 self.value = value
 
@@ -550,7 +550,7 @@ class TestReplaceNegativeNoise:
         assert (noise_map_2d == np.array([[1.0, 0.5], [0.5, 0.5], [0.5, 2.0]])).all()
 
 
-class Test2dIndexesfrom1dIndex(object):
+class Test2dIndexesfrom1dIndex:
     def test__9_1d_indexes_from_0_to_8__map_to_shape_3x3(self):
 
         indexes_1d = np.array([0, 1, 2, 3, 4, 5, 6, 7, 8])
@@ -607,7 +607,7 @@ class Test2dIndexesfrom1dIndex(object):
         ).all()
 
 
-class Test1dIndexFromIndex2D(object):
+class Test1dIndexFromIndex2D:
     def test__9_2d_indexes_from_0_0_to_2_2__map_to_shape_3x3(self):
 
         indexes_2d = np.array(
@@ -653,7 +653,7 @@ class Test1dIndexFromIndex2D(object):
         assert (index_1d_for_index_2d == np.array([1, 4, 7, 8, 0, 2, 3, 5, 6])).all()
 
 
-class TestArray1DFromArray2d(object):
+class TestArray1DFromArray2d:
     def test__map_simple_data__sub_size_1(self):
 
         array_2d = np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
@@ -855,7 +855,7 @@ class TestArray1DFromArray2d(object):
         ).all()
 
 
-class TestArray2dForArray1d(object):
+class TestArray2dForArray1d:
     def test__simple_2d_array__is_masked_and_mapped__sub_size_1(self):
 
         array_1d = np.array([1.0, 2.0, 3.0, 4.0])

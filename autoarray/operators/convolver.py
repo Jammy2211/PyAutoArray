@@ -4,7 +4,7 @@ from autoarray import exc
 from autoarray.util import mask_util
 
 
-class Convolver(object):
+class Convolver:
     def __init__(self, mask, kernel):
         """ Class to setup the 1D convolution of an / util matrix.
 

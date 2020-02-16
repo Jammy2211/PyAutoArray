@@ -2,7 +2,7 @@ import autoarray as aa
 import numpy as np
 
 
-class TestDataVectorFromData(object):
+class TestDataVectorFromData:
     def test__simple_blurred_mapping_matrix__correct_data_vector(self):
 
         blurred_mapping_matrix = np.array(
@@ -110,7 +110,7 @@ class TestDataVectorFromData(object):
         assert (data_vector_via_blurred == data_vector_via_transformed).all()
 
 
-class TestCurvatureMatrixFromBlurred(object):
+class TestCurvatureMatrixFromBlurred:
     def test__simple_blurred_mapping_matrix(self):
 
         blurred_mapping_matrix = np.array(
@@ -187,7 +187,7 @@ class TestCurvatureMatrixFromBlurred(object):
         assert (curvature_matrix_via_blurred == curvature_matrix_via_transformed).all()
 
 
-class TestPixelizationResiduals(object):
+class TestPixelizationResiduals:
     def test__pixelization_perfectly_reconstructed_data__quantities_like_residuals_all_zeros(
         self
     ):
@@ -249,7 +249,7 @@ class TestPixelizationResiduals(object):
         assert (pixelization_residuals == np.array([0.0, 1.0, 2.0])).all()
 
 
-class TestPixelizationNormalizedResiduals(object):
+class TestPixelizationNormalizedResiduals:
     def test__pixelization_perfectly_reconstructed_data__quantities_like_residuals_all_zeros(
         self
     ):
@@ -317,7 +317,7 @@ class TestPixelizationNormalizedResiduals(object):
         assert (pixelization_normalized_residuals == np.array([0.0, 1.0, 1.0])).all()
 
 
-class TestPixelizationChiSquareds(object):
+class TestPixelizationChiSquareds:
     def test__pixelization_perfectly_reconstructed_data__quantities_like_residuals_all_zeros(
         self
     ):

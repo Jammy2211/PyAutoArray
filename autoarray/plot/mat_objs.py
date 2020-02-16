@@ -30,7 +30,7 @@ def load_subplot_setting(section, name, python_type):
     return conf.instance.visualize_subplots.get(section, name, python_type)
 
 
-class Units(object):
+class Units:
     def __init__(self, use_scaled=None, conversion_factor=None, in_kpc=None):
 
         self.use_scaled = use_scaled
@@ -57,7 +57,7 @@ class Units(object):
             self.in_kpc = None
 
 
-class Figure(object):
+class Figure:
     def __init__(self, figsize=None, aspect=None, from_subplot_config=False):
 
         self.from_subplot_config = from_subplot_config
@@ -101,7 +101,7 @@ class Figure(object):
             plt.close()
 
 
-class ColorMap(object):
+class ColorMap:
     def __init__(
         self,
         cmap=None,
@@ -219,7 +219,7 @@ class ColorMap(object):
             )
 
 
-class ColorBar(object):
+class ColorBar:
     def __init__(
         self,
         ticksize=None,
@@ -315,7 +315,7 @@ class ColorBar(object):
             cb.ax.set_yticklabels(self.tick_labels)
 
 
-class Ticks(object):
+class Ticks:
     def __init__(
         self,
         ysize=None,
@@ -451,7 +451,7 @@ class Ticks(object):
         plt.xticks(ticks=xticks, labels=xtick_labels)
 
 
-class Labels(object):
+class Labels:
     def __init__(
         self,
         title=None,
@@ -661,7 +661,7 @@ class Labels(object):
             plt.xlabel(self.xunits_from_units(units=units), fontsize=self.xsize)
 
 
-class Legend(object):
+class Legend:
     def __init__(self, include=None, fontsize=None, from_subplot_config=False):
 
         self.from_subplot_config = from_subplot_config
@@ -687,7 +687,7 @@ class Legend(object):
             plt.legend(fontsize=self.fontsize)
 
 
-class Output(object):
+class Output:
     def __init__(self, path=None, filename=None, format=None, bypass=False):
 
         self.path = path
@@ -815,7 +815,7 @@ def remove_spaces_and_commas_from_colors(colors):
     return list(filter(None, colors))
 
 
-class Scatterer(object):
+class Scatterer:
     def __init__(
         self,
         size=None,
@@ -1083,7 +1083,7 @@ class PixelizationGridScatterer(Scatterer):
         )
 
 
-class Liner(object):
+class Liner:
     def __init__(
         self,
         width=None,
@@ -1245,7 +1245,7 @@ class Liner(object):
             )
 
 
-class VoronoiDrawer(object):
+class VoronoiDrawer:
     def __init__(
         self, edgewidth=None, edgecolor=None, alpha=None, from_subplot_config=False
     ):

@@ -1241,7 +1241,7 @@ class TestGrid:
         assert (square_distances.mask == mask).all()
 
 
-class TestGridBorder(object):
+class TestGridBorder:
     def test__sub_border_grid_for_simple_mask(self):
         mask = np.array(
             [
@@ -2610,7 +2610,7 @@ test_coordinates_dir = "{}/../test_files/coordinates/".format(
 )
 
 
-class MockCoordinateInput(object):
+class MockCoordinateInput:
     def __init__(self):
         pass
 

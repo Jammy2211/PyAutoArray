@@ -8,7 +8,7 @@ from astropy.io import fits
 from functools import wraps
 
 
-class Memoizer(object):
+class Memoizer:
     def __init__(self):
         """
         Class to store the results of a function given a set of inputs.
