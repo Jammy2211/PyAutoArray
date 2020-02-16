@@ -17,7 +17,7 @@ def mapper(grid, pixelization_grid, hyper_image=None):
         )
 
 
-class Mapper(object):
+class Mapper:
     def __init__(self, grid, pixelization_grid, hyper_image=None):
         """ Abstract base class representing a mapper, which maps unmasked pixels on a masked 2D array (in the form of \
         a grid, see the *hyper_galaxies.array.grid* module) to discretized pixels in a pixelization.

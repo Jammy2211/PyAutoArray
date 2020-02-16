@@ -827,7 +827,7 @@ class GridIrregular(np.ndarray):
 
     @property
     def mask(self):
-        class IrregularMask(object):
+        class IrregularMask:
             def __init__(self, sub_shape_1d):
 
                 self.sub_shape_1d = sub_shape_1d
@@ -839,7 +839,7 @@ class GridIrregular(np.ndarray):
 
     @property
     def mapping(self):
-        class IrregularMapping(object):
+        class IrregularMapping:
             def __init__(self):
                 pass
 
@@ -878,7 +878,7 @@ class GridIrregular(np.ndarray):
         )
 
 
-class SparseGrid(object):
+class SparseGrid:
     def __init__(self, sparse_grid, sparse_1d_index_for_mask_1d_index):
         """A sparse grid of coordinates, where each entry corresponds to the (y,x) coordinates at the centre of a \
         pixel on the sparse grid. To setup the sparse-grid, it is laid over a grid of unmasked pixels, such \
@@ -1194,7 +1194,7 @@ class GridVoronoi(GridIrregular):
         return obj
 
 
-class Interpolator(object):
+class Interpolator:
     def __init__(self, grid, interp_grid, pixel_scale_interpolation_grid):
         self.grid = grid
         self.interp_grid = interp_grid

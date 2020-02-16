@@ -13,7 +13,7 @@ test_data_dir = "{}/../test_files/array/".format(
 )
 
 
-class TestInterferometerMethods(object):
+class TestInterferometerMethods:
     def test__data_with_resized_primary_beam(self):
 
         interferometer = aa.interferometer.manual(
@@ -51,7 +51,7 @@ class TestInterferometerMethods(object):
         assert interferometer.uv_wavelengths == 3
 
 
-class TestSimulateInterferometer(object):
+class TestSimulateInterferometer:
     def test__setup_with_all_features_off(self, transformer_7x7_7):
         image = aa.array.manual_2d([[2.0, 0.0, 0.0], [0.0, 1.0, 0.0], [3.0, 0.0, 0.0]])
 
@@ -152,7 +152,7 @@ class TestSimulateInterferometer(object):
 
         assert (interferometer_simulated.noise_map == 0.1 * np.ones((7, 2))).all()
 
-    class TestCreateGaussianNoiseMap(object):
+    class TestCreateGaussianNoiseMap:
         def test__gaussian_noise_sigma_0__gaussian_noise_map_all_0__image_is_identical_to_input(
             self
         ):
@@ -177,7 +177,7 @@ class TestSimulateInterferometer(object):
             )
 
 
-class TestInterferometerFromFits(object):
+class TestInterferometerFromFits:
     def test__no_settings_just_pass_fits(self):
 
         interferometer = aa.interferometer.from_fits(
