@@ -25,7 +25,7 @@ set -e
 
 pytest $p
 
-python setup.py sdist bdist_wheel
+python setup.py test sdist bdist_wheel
 twine upload dist/* --skip-existing --username $PYPI_USERNAME --password $PYPI_PASSWORD
 
 git flow release finish $VERSION
