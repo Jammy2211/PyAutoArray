@@ -82,7 +82,7 @@ class TestAPI:
 
             assert (kernel.in_2d == np.ones((4, 3))).all()
 
-    class TestFromKernelNoBlurring(object):
+    class TestFromKernelNoBlurring:
         def test__correct_kernel(self):
             kernel = aa.kernel.no_blur(pixel_scales=1.0)
 
@@ -101,7 +101,7 @@ class TestAPI:
             assert kernel.pixel_scales == (2.0, 2.0)
 
 
-class TestRenormalize(object):
+class TestRenormalize:
     def test__input_is_already_normalized__no_change(self):
 
         kernel_data = np.ones((3, 3)) / 9.0
@@ -131,7 +131,7 @@ class TestRenormalize(object):
         assert kernel.in_2d == pytest.approx(np.ones((3, 3)), 1e-3)
 
 
-class TestBinnedUp(object):
+class TestBinnedUp:
     def test__kernel_is_even_x_even__rescaled_to_odd_x_odd__no_use_of_dimension_trimming(
         self
     ):
@@ -268,7 +268,7 @@ class TestBinnedUp(object):
         assert (kernel.in_2d == (1.0 / 15.0) * np.ones((5, 3))).all()
 
 
-class TestConvolve(object):
+class TestConvolve:
     def test__kernel_is_not_odd_x_odd__raises_error(self):
         kernel = np.array([[0.0, 1.0], [1.0, 2.0]])
 
@@ -453,7 +453,7 @@ class TestConvolve(object):
         ).all()
 
 
-class TestFromGaussian(object):
+class TestFromGaussian:
     def test__identical_to_gaussian_light_profile(self):
 
         kernel = kern.Kernel.from_gaussian(
@@ -477,7 +477,7 @@ class TestFromGaussian(object):
         )
 
 
-class TestFromAlmaGaussian(object):
+class TestFromAlmaGaussian:
     def test__identical_to_astropy_gaussian_model__circular_no_rotation(self):
         pixel_scales = 0.1
 

@@ -5,7 +5,7 @@ from autoarray.masked import masked_dataset as md
 import numpy as np
 
 
-class TestAbstractMaskedData(object):
+class TestAbstractMaskedData:
     def test__grids_are_setup_if_input_mask_has_pixel_scale(
         self, imaging_7x7, sub_mask_7x7, grid_7x7, sub_grid_7x7, blurring_grid_7x7
     ):
@@ -71,7 +71,7 @@ class TestAbstractMaskedData(object):
         assert masked_imaging_7x7.inversion_uses_border == False
 
 
-class TestMaskedImaging(object):
+class TestMaskedImaging:
     def test__masked_dataset(self, imaging_7x7, sub_mask_7x7):
 
         masked_imaging_7x7 = aa.masked.imaging.manual(
@@ -245,7 +245,7 @@ class TestMaskedImaging(object):
         assert (masked_dataset_snr_limit.noise_map.in_1d == 4.0 * np.ones(9)).all()
 
 
-class TestMaskedInterferometer(object):
+class TestMaskedInterferometer:
     def test__masked_dataset(
         self, interferometer_7, sub_mask_7x7, visibilities_7x2, noise_map_7x2
     ):

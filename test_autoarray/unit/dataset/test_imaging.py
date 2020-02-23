@@ -351,7 +351,7 @@ class TestEstimateNoiseFromImage:
         )
 
 
-class TestEstimateDataGrid(object):
+class TestEstimateDataGrid:
     def test__via_edges__input_all_ones__sky_bg_level_1(self):
         imaging = aa.imaging(
             image=aa.array.manual_2d(np.ones((3, 3))),
@@ -929,7 +929,7 @@ class TestImageWithPoissonNoiseAdded:
         assert (imaging_with_noise.image == mock_image_with_noise).all()
 
 
-class TestImagingFromFits(object):
+class TestImagingFromFits:
     def test__no_settings_just_pass_fits(self):
         imaging = aa.imaging.from_fits(
             pixel_scales=0.1,
@@ -2033,7 +2033,7 @@ class TestImagingFromFits(object):
         assert imaging.background_sky_map.mask.pixel_scales == (0.1, 0.1)
 
 
-class TestSimulateImaging(object):
+class TestSimulateImaging:
     def test__setup_with_all_features_off(self):
 
         image = aa.array.manual_2d(
@@ -2381,7 +2381,7 @@ class TestSimulateImaging(object):
             )
 
 
-class TestSimulatePoissonNoise(object):
+class TestSimulatePoissonNoise:
     def test__input_image_all_0s__exposure_time_all_1s__all_noise_values_are_0s(self):
 
         image = aa.array.zeros(shape_2d=(2, 2))

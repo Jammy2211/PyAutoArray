@@ -71,7 +71,7 @@ class TestPotentialChiSquaredMap:
         assert dataset.potential_chi_squared_max == 1.0
 
 
-class TestExposureTimeMap(object):
+class TestExposureTimeMap:
     def test__from_background_noise_map__covnerts_to_exposure_times(self):
         background_noise_map = aa.array.manual_2d([[1.0, 4.0, 8.0], [1.0, 4.0, 8.0]])
 

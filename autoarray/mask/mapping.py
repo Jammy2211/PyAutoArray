@@ -6,7 +6,7 @@ from autoarray.structures import grids, arrays
 from autoarray.util import binning_util, array_util, grid_util, mask_util
 
 
-class Mapping(object):
+class Mapping:
     def __init__(self, mask):
 
         self.mask = mask

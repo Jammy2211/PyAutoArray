@@ -3,7 +3,7 @@ import numpy as np
 from autoarray.util import regularization_util
 
 
-class Regularization(object):
+class Regularization:
     def __init__(self):
         """ Abstract base class for a regularization-scheme, which is applied to a pixelization to enforce a \
         smooth-source solution and prevent over-fitting noise_map in the hyper_galaxies. This is achieved by computing a \
