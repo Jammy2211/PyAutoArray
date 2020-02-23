@@ -156,7 +156,7 @@ class TestRegularizationinstanceMatrix:
         assert abs(np.linalg.det(regularization_matrix)) > 1e-8
 
 
-class TestRegularizationWeightedRegularizationWeights(object):
+class TestRegularizationWeightedRegularizationWeights:
     def test__pixel_signals_all_1s__coefficients_all_1s__weights_all_1s(self):
 
         pixel_signals = np.array([1.0, 1.0, 1.0])

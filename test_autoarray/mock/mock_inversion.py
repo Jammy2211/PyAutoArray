@@ -1,7 +1,7 @@
 import numpy as np
 
 
-class MockFitInversion(object):
+class MockFitInversion:
     def __init__(
         self,
         regularization_term,
@@ -14,7 +14,7 @@ class MockFitInversion(object):
         self.log_det_regularization_matrix_term = log_det_regularization_matrix_term
 
 
-class MockPixelization(object):
+class MockPixelization:
     def __init__(self, value, grid=None):
         self.value = value
         self.grid = grid
@@ -32,7 +32,7 @@ class MockPixelization(object):
             return self.grid * hyper_image
 
 
-class MockRegularization(object):
+class MockRegularization:
     def __init__(self, matrix_shape):
         self.shape = matrix_shape
 
@@ -45,14 +45,14 @@ class MockRegularization(object):
         return np.array([[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]])
 
 
-class MockPixelizationGrid(object):
+class MockPixelizationGrid:
     def __init__(self, pixel_neighbors=None, pixel_neighbors_size=None):
 
         self.pixel_neighbors = pixel_neighbors
         self.pixel_neighbors_size = pixel_neighbors_size
 
 
-class MockRegMapper(object):
+class MockRegMapper:
     def __init__(self, pixelization_grid=None, pixel_signals=None):
 
         self.pixelization_grid = pixelization_grid
@@ -62,7 +62,7 @@ class MockRegMapper(object):
         return self.pixel_signals
 
 
-class MockMapper(object):
+class MockMapper:
     def __init__(self, matrix_shape, grid=None, pixelization_grid=None):
 
         self.grid = grid
@@ -74,7 +74,7 @@ class MockMapper(object):
             self.pixels = None
 
 
-class MockConvolver(object):
+class MockConvolver:
     def __init__(self, matrix_shape):
         self.shape = matrix_shape
 
@@ -82,7 +82,7 @@ class MockConvolver(object):
         return np.ones(self.shape)
 
 
-class MockInversion(object):
+class MockInversion:
     def __init__(self):
         self.blurred_mapping_matrix = np.zeros((1, 1))
         self.regularization_matrix = np.zeros((1, 1))
