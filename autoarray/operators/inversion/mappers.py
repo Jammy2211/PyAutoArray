@@ -52,8 +52,8 @@ class Mapper:
 
     @property
     def mapping_matrix(self):
-        """The util matrix is a matrix representing the util between every unmasked pixel of a grid and \
-        the pixels of a pixelization. Non-zero entries signify a util, whereas zeros signify no util.
+        """The mapping matrix is a matrix representing the mapping between every unmasked pixel of a grid and \
+        the pixels of a pixelization. Non-zero entries signify a mapping, whereas zeros signify no mapping.
 
         For example, if the grid has 5 pixels and the pixelization 3 pixels, with the following mappings:
 
@@ -63,7 +63,7 @@ class Mapper:
         pixel 3 -> pixelization pixel 1
         pixel 4 -> pixelization pixel 2
 
-        The util matrix (which is of dimensions regular_pixels x pixelization_pixels) would appear as follows:
+        The mapping matrix (which is of dimensions regular_pixels x pixelization_pixels) would appear as follows:
 
         [1, 0, 0] [0->0]
         [1, 0, 0] [1->0]
@@ -71,9 +71,9 @@ class Mapper:
         [0, 1, 0] [3->1]
         [0, 0, 1] [4->2]
 
-        The util matrix is in fact built using the sub-grid of the grid, whereby each pixel is \
+        The mapping matrix is in fact built using the sub-grid of the grid, whereby each pixel is \
         divided into a grid of sub-pixels which are all paired to pixels in the pixelization. The entires \
-        in the util matrix now become fractional values dependent on the sub-grid size. For example, for a 2x2 \
+        in the mapping matrix now become fractional values dependent on the sub-grid size. For example, for a 2x2 \
         sub-grid in each pixel (which means the fraction value is 1.0/(2.0^2) = 0.25, if we have the following mappings:
 
         pixel 0 -> sub pixel 0 -> pixelization pixel 0
@@ -89,7 +89,7 @@ class Mapper:
         pixel 2 -> sub pixel 2 -> pixelization pixel 3
         pixel 2 -> sub pixel 3 -> pixelization pixel 3
 
-        The util matrix (which is still of dimensions regular_pixels x source_pixels) would appear as follows:
+        The mapping matrix (which is still of dimensions regular_pixels x source_pixels) would appear as follows:
 
         [0.25, 0.75, 0.0, 0.0] [1 sub-pixel maps to pixel 0, 3 map to pixel 1]
         [ 0.0,  1.0, 0.0, 0.0] [All sub-pixels map to pixel 1]

@@ -173,10 +173,6 @@ def curvature_matrix_from_transformed_mapping_matrix(
     array = transformed_mapping_matrix / noise_map[:, None]
     curvature_matrix = np.dot(array.T, np.matrix.transpose(array.T))
 
-    for i in range(transformed_mapping_matrix.shape[1]):
-        for j in range(transformed_mapping_matrix.shape[1]):
-            curvature_matrix[i, j] = curvature_matrix[j, i]
-
     return curvature_matrix
 
 
