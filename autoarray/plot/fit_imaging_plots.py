@@ -177,6 +177,7 @@ def model_image(fit, lines=None, positions=None, include=None, plotter=None):
     image_index : int
         The index of the datas in the datas-set of which the model image is plotted.
     """
+
     plotter.plot_array(
         array=fit.model_data,
         mask=include.mask_from_fit(fit=fit),
