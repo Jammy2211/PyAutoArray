@@ -781,6 +781,32 @@ class GridIrregular(np.ndarray):
         obj.interpolator = None
         return obj
 
+    def __array_finalize__(self, obj):
+        if hasattr(obj, "nearest_pixelization_1d_index_for_mask_1d_index"):
+            self.nearest_pixelization_1d_index_for_mask_1d_index = (
+                obj.nearest_pixelization_1d_index_for_mask_1d_index
+            )
+        if hasattr(obj, "interpolator"):
+            self.interpolator = obj.interpolator
+
+    def __reduce__(self):
+        # Get the parent's __reduce__ tuple
+        pickled_state = super(GridIrregular, self).__reduce__()
+        # Create our own tuple to pass to __setstate__
+        class_dict = {}
+        for key, value in self.__dict__.items():
+            class_dict[key] = value
+        new_state = pickled_state[2] + (class_dict,)
+        # Return a tuple that replaces the parent's __setstate__ tuple with our own
+        return pickled_state[0], pickled_state[1], new_state
+
+    # noinspection PyMethodOverriding
+    def __setstate__(self, state):
+
+        for key, value in state[-1].items():
+            setattr(self, key, value)
+        super(GridIrregular, self).__setstate__(state[0:-1])
+
     @classmethod
     def manual_1d(cls, grid):
         return GridIrregular(grid=grid)
@@ -800,14 +826,6 @@ class GridIrregular(np.ndarray):
             grid=sparse_grid.sparse,
             nearest_pixelization_1d_index_for_mask_1d_index=sparse_grid.sparse_1d_index_for_mask_1d_index,
         )
-
-    def __array_finalize__(self, obj):
-        if hasattr(obj, "nearest_pixelization_1d_index_for_mask_1d_index"):
-            self.nearest_pixelization_1d_index_for_mask_1d_index = (
-                obj.nearest_pixelization_1d_index_for_mask_1d_index
-            )
-        if hasattr(obj, "interpolator"):
-            self.interpolator = obj.interpolator
 
     def squared_distances_from_coordinate(self, coordinate=(0.0, 0.0)):
         squared_distances = np.square(self[:, 0] - coordinate[0]) + np.square(
@@ -1069,6 +1087,24 @@ class GridRectangular(Grid):
     def __array_finalize__(self, obj):
         pass
 
+    def __reduce__(self):
+        # Get the parent's __reduce__ tuple
+        pickled_state = super(GridRectangular, self).__reduce__()
+        # Create our own tuple to pass to __setstate__
+        class_dict = {}
+        for key, value in self.__dict__.items():
+            class_dict[key] = value
+        new_state = pickled_state[2] + (class_dict,)
+        # Return a tuple that replaces the parent's __setstate__ tuple with our own
+        return pickled_state[0], pickled_state[1], new_state
+
+    # noinspection PyMethodOverriding
+    def __setstate__(self, state):
+
+        for key, value in state[-1].items():
+            setattr(self, key, value)
+        super(GridRectangular, self).__setstate__(state[0:-1])
+
     @classmethod
     def overlay_grid(cls, shape_2d, grid, buffer=1e-8):
         """The geometry of a rectangular grid.
@@ -1192,6 +1228,37 @@ class GridVoronoi(GridIrregular):
         )
 
         return obj
+
+    def __array_finalize__(self, obj):
+
+        if hasattr(obj, "pixel_neighbors"):
+            self.pixel_neighbors = obj.pixel_neighbors
+
+        if hasattr(obj, "pixel_neighbors_size"):
+            self.pixel_neighbors_size = obj.pixel_neighbors_size
+
+        if hasattr(obj, "nearest_pixelization_1d_index_for_mask_1d_index"):
+            self.nearest_pixelization_1d_index_for_mask_1d_index = (
+                obj.nearest_pixelization_1d_index_for_mask_1d_index
+            )
+
+    def __reduce__(self):
+        # Get the parent's __reduce__ tuple
+        pickled_state = super(GridVoronoi, self).__reduce__()
+        # Create our own tuple to pass to __setstate__
+        class_dict = {}
+        for key, value in self.__dict__.items():
+            class_dict[key] = value
+        new_state = pickled_state[2] + (class_dict,)
+        # Return a tuple that replaces the parent's __setstate__ tuple with our own
+        return pickled_state[0], pickled_state[1], new_state
+
+    # noinspection PyMethodOverriding
+    def __setstate__(self, state):
+
+        for key, value in state[-1].items():
+            setattr(self, key, value)
+        super(GridVoronoi, self).__setstate__(state[0:-1])
 
 
 class Interpolator:
