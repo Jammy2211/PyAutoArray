@@ -38,9 +38,9 @@ class DatasetFit:
         Parameters
         -----------
         data : ndarray
-            The observed simulator that is fitted.
+            The observed dataset that is fitted.
         noise_map : ndarray
-            The noise_map-map of the observed simulator.
+            The noise_map-map of the observed dataset.
         mask: msk.Mask
             The masks that is applied to the dataset.
         model_data : ndarray
@@ -155,9 +155,9 @@ class ImagingFit(DatasetFit):
         Parameters
         -----------
         simulator : ndarray
-            The observed simulator that is fitted.
+            The observed dataset that is fitted.
         noise_map : ndarray
-            The noise_map-map of the observed simulator.
+            The noise_map-map of the observed dataset.
         mask: msk.Mask
             The masks that is applied to the dataset.
         model_data : ndarray
@@ -215,9 +215,9 @@ class InterferometerFit(DatasetFit):
         Parameters
         -----------
         simulator : ndarray
-            The observed simulator that is fitted.
+            The observed dataset that is fitted.
         noise_map : ndarray
-            The noise_map-map of the observed simulator.
+            The noise_map-map of the observed dataset.
         visibilities_mask: msk.Mask
             The masks that is applied to the dataset.
         model_data : ndarray
