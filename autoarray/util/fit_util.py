@@ -49,9 +49,6 @@ def chi_squared_map_from_residual_map_noise_map_and_mask(residual_map, noise_map
 
     Chi_Squared = ((Residuals) / (Noise)) ** 2.0 = ((Data - Model)**2.0)/(Variances)
 
-    Although noise-maps should not contain zero values, it is possible that masking leads to zeros which when \
-    divided by create NaNs. Thus, nan_to_num is used to replace these entries with zeros.
-
     Parameters
     -----------
     residual_map : np.ndarray
@@ -72,7 +69,7 @@ def chi_squared_map_from_residual_map_noise_map_and_mask(residual_map, noise_map
 
 
 def chi_squared_from_chi_squared_map_and_mask(chi_squared_map, mask):
-    """Compute the chi-squared terms of each model's simulator-set's fit to an observed dataset-set, by summing the masked
+    """Compute the chi-squared terms of each model data's fit to an observed dataset, by summing the masked
     chi-squared map of the fit.
 
     Parameters
@@ -86,8 +83,7 @@ def chi_squared_from_chi_squared_map_and_mask(chi_squared_map, mask):
 
 
 def noise_normalization_from_noise_map_and_mask(noise_map, mask):
-    """Compute the noise-map normalization terms of a list of masked 1D noise-maps, summing the noise_map vale in every
-    pixel as:
+    """Compute the noise-map normalization terms of masked noise-map, summing the noise_map value in every pixel as:
 
     [Noise_Term] = sum(log(2*pi*[Noise]**2.0))
 
@@ -158,7 +154,7 @@ def chi_squared_map_from_residual_map_and_noise_map(residual_map, noise_map):
 
 
 def chi_squared_from_chi_squared_map(chi_squared_map):
-    """Compute the chi-squared terms of each model's simulator-set's fit to an observed dataset-set, by summing the masked
+    """Compute the chi-squared terms of each model data's fit to an observed dataset, by summing the masked
     chi-squared map of the fit.
 
     Parameters

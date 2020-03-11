@@ -33,18 +33,18 @@ class DatasetFit:
 
     # noinspection PyUnresolvedReferences
     def __init__(self, mask, data, noise_map, model_data, inversion=None):
-        """Class to fit simulator where the dataset structures are any dimension.
+        """Class to fit data where the dataset structures are any dimension.
 
         Parameters
         -----------
         data : ndarray
             The observed dataset that is fitted.
         noise_map : ndarray
-            The noise_map-map of the observed dataset.
+            The noise_map of the observed dataset.
         mask: msk.Mask
-            The masks that is applied to the dataset.
+            The mask that is applied to the dataset.
         model_data : ndarray
-            The model simulate the fitting image is fitted with.
+            The model data the data is fitted with.
 
         Attributes
         -----------
@@ -58,7 +58,7 @@ class DatasetFit:
             The reduced chi-squared of the model's fit to simulate (chi_squared / number of datas points), summed over \
             every simulator-point.
         noise_normalization : float
-            The overall normalization term of the noise_map-map, summed over every simulator-point.
+            The overall normalization term of the noise_map, summed over every simulator-point.
         likelihood : float
             The overall likelihood of the model's fit to the dataset, summed over evey simulator-point.
         """
@@ -150,18 +150,18 @@ class DatasetFit:
 
 class ImagingFit(DatasetFit):
     def __init__(self, mask, image, noise_map, model_image, inversion=None):
-        """Class to fit simulator where the dataset structures are any dimension.
+        """Class to fit data where the dataset structures are any dimension.
 
         Parameters
         -----------
         simulator : ndarray
             The observed dataset that is fitted.
         noise_map : ndarray
-            The noise_map-map of the observed dataset.
+            The noise_map of the observed dataset.
         mask: msk.Mask
             The masks that is applied to the dataset.
         model_data : ndarray
-            The model simulate the fitting image is fitted with.
+            The model data the data is fitted with.
 
         Attributes
         -----------
@@ -175,7 +175,7 @@ class ImagingFit(DatasetFit):
             The reduced chi-squared of the model's fit to simulate (chi_squared / number of datas points), summed over \
             every simulator-point.
         noise_normalization : float
-            The overall normalization term of the noise_map-map, summed over every simulator-point.
+            The overall normalization term of the noise_map, summed over every simulator-point.
         likelihood : float
             The overall likelihood of the model's fit to the dataset, summed over evey simulator-point.
         """
@@ -210,18 +210,18 @@ class InterferometerFit(DatasetFit):
         model_visibilities,
         inversion=None,
     ):
-        """Class to fit simulator where the dataset structures are any dimension.
+        """Class to fit data where the dataset structures are any dimension.
 
         Parameters
         -----------
         simulator : ndarray
             The observed dataset that is fitted.
         noise_map : ndarray
-            The noise_map-map of the observed dataset.
+            The noise_map of the observed dataset.
         visibilities_mask: msk.Mask
             The masks that is applied to the dataset.
         model_data : ndarray
-            The model simulate the fitting image is fitted with.
+            The model data the data is fitted with.
 
         Attributes
         -----------
@@ -235,7 +235,7 @@ class InterferometerFit(DatasetFit):
             The reduced chi-squared of the model's fit to simulate (chi_squared / number of datas points), summed over \
             every simulator-point.
         noise_normalization : float
-            The overall normalization term of the noise_map-map, summed over every simulator-point.
+            The overall normalization term of the noise_map, summed over every simulator-point.
         likelihood : float
             The overall likelihood of the model's fit to the dataset, summed over evey simulator-point.
         """

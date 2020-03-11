@@ -110,7 +110,7 @@ def image(fit, positions=None, grid=None, lines=None, include=None, plotter=None
     Parameters
     -----------
     image : datas.imaging.datas.Imaging
-        The datas-datas, which include the observed datas, noise_map-map, PSF, signal-to-noise_map-map, etc.
+        The datas-datas, which include the observed datas, noise_map, PSF, signal-to-noise_map, etc.
     origin : True
         If true, the origin of the datas's coordinate system is plotted as a 'x'.
     """
@@ -133,7 +133,7 @@ def noise_map(fit, positions=None, include=None, plotter=None):
     Parameters
     -----------
     image : datas.imaging.datas.Imaging
-        The datas-datas, which include the observed datas, noise_map-map, PSF, signal-to-noise_map-map, etc.
+        The datas-datas, which include the observed datas, noise_map, PSF, signal-to-noise_map, etc.
     origin : True
         If true, the origin of the datas's coordinate system is plotted as a 'x'.
     """
@@ -152,7 +152,7 @@ def signal_to_noise_map(fit, positions=None, include=None, plotter=None):
     Parameters
     -----------
     image : datas.imaging.datas.Imaging
-    The datas-datas, which include the observed datas, signal_to_noise_map-map, PSF, signal-to-signal_to_noise_map-map, etc.
+    The datas-datas, which include the observed datas, signal_to_noise_map, PSF, signal-to-signal_to_noise_map, etc.
     origin : True
     If true, the origin of the datas's coordinate system is plotted as a 'x'.
     """
