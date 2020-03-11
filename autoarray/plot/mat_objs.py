@@ -2,7 +2,10 @@ from autoarray import conf
 import matplotlib
 
 backend = conf.get_matplotlib_backend()
-matplotlib.use(backend)
+
+if not backend in "default":
+    matplotlib.use(backend)
+
 import matplotlib.pyplot as plt
 import matplotlib.colors as colors
 import matplotlib.cm as cm
