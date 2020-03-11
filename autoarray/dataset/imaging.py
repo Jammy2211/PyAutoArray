@@ -33,6 +33,10 @@ class AbstractImagingDataSet(abstract_dataset.AbstractDataset):
     def shape_2d(self):
         return self.image.shape_2d
 
+    @property
+    def grid(self):
+        return self.image.mask.geometry.masked_grid
+
     def binned_from_bin_up_factor(self, bin_up_factor):
 
         image = self.image.binned_from_bin_up_factor(

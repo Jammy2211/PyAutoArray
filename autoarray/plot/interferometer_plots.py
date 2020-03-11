@@ -5,7 +5,7 @@ from autoarray.structures import grids
 @plotters.set_include_and_sub_plotter
 @plotters.set_subplot_filename
 def subplot_interferometer(interferometer, include=None, sub_plotter=None):
-    """Plot the interferometer data_type as a sub-plotters of all its quantites (e.g. the dataset, noise_map-map, PSF, Signal-to_noise-map, \
+    """Plot the interferometer data_type as a sub-plotters of all its quantites (e.g. the dataset, noise_map, PSF, Signal-to_noise-map, \
      etc).
 
     Set *autolens.data_type.array.plotters.plotters* for a description of all innput parameters not described below.
@@ -13,7 +13,7 @@ def subplot_interferometer(interferometer, include=None, sub_plotter=None):
     Parameters
     -----------
     interferometer : data_type.UVPlaneData
-        The interferometer data_type, which include the observed data_type, noise_map-map, PSF, signal-to-noise_map-map, etc.
+        The interferometer data_type, which include the observed data_type, noise_map, PSF, signal-to-noise_map, etc.
     origin : True
         If true, the origin of the dataset's coordinate system is plotted as a 'x'.
     image_plane_pix_grid : ndarray or data_type.array.grid_stacks.PixGrid
@@ -66,7 +66,7 @@ def individual(
     include=None,
     plotter=None,
 ):
-    """Plot each attribute of the interferometer data_type as individual figures one by one (e.g. the dataset, noise_map-map, PSF, \
+    """Plot each attribute of the interferometer data_type as individual figures one by one (e.g. the dataset, noise_map, PSF, \
      Signal-to_noise-map, etc).
 
     Set *autolens.data_type.array.plotters.plotters* for a description of all innput parameters not described below.
@@ -74,7 +74,7 @@ def individual(
     Parameters
     -----------
     interferometer : data_type.UVPlaneData
-        The interferometer data_type, which include the observed data_type, noise_map-map, PSF, signal-to-noise_map-map, etc.
+        The interferometer data_type, which include the observed data_type, noise_map, PSF, signal-to-noise_map, etc.
     origin : True
         If true, the origin of the dataset's coordinate system is plotted as a 'x'.
     """
@@ -301,7 +301,7 @@ def primary_beam(interferometer, include=None, plotter=None):
     Parameters
     -----------
     image : data_type.ImagingData
-        The interferometer data_type, which include the observed data_type, noise_map-map, PSF, signal-to-noise_map-map, etc.
+        The interferometer data_type, which include the observed data_type, noise_map, PSF, signal-to-noise_map, etc.
     origin : True
         If true, the origin of the dataset's coordinate system is plotted as a 'x'.
     """
