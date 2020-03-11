@@ -1,8 +1,3 @@
-from autoarray import conf
-import matplotlib
-
-backend = conf.get_matplotlib_backend()
-matplotlib.use(backend)
 import numpy as np
 
 

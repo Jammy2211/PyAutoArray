@@ -6,7 +6,7 @@ from autoarray.plot import plotters
 def subplot_imaging(
     imaging, grid=None, mask=None, positions=None, include=None, sub_plotter=None
 ):
-    """Plot the imaging data_type as a sub-plotters of all its quantites (e.g. the dataset, noise_map-map, PSF, Signal-to_noise-map, \
+    """Plot the imaging data_type as a sub-plotters of all its quantites (e.g. the dataset, noise_map, PSF, Signal-to_noise-map, \
      etc).
 
     Set *autolens.data_type.array.plotters.plotters* for a description of all innput parameters not described below.
@@ -14,7 +14,7 @@ def subplot_imaging(
     Parameters
     -----------
     imaging : data_type.ImagingData
-        The imaging data_type, which includes the observed data_type, noise_map-map, PSF, signal-to-noise_map-map, etc.
+        The imaging data_type, which includes the observed data_type, noise_map, PSF, signal-to-noise_map, etc.
     include_origin : True
         If true, the include_origin of the dataset's coordinate system is plotted as a 'x'.
     image_plane_pix_grid : ndarray or data_type.array.grid_stacks.PixGrid
@@ -103,7 +103,7 @@ def individual(
     include=None,
     plotter=None,
 ):
-    """Plot each attribute of the imaging data_type as individual figures one by one (e.g. the dataset, noise_map-map, PSF, \
+    """Plot each attribute of the imaging data_type as individual figures one by one (e.g. the dataset, noise_map, PSF, \
      Signal-to_noise-map, etc).
 
     Set *autolens.data_type.array.plotters.plotters* for a description of all innput parameters not described below.
@@ -111,7 +111,7 @@ def individual(
     Parameters
     -----------
     imaging : data_type.ImagingData
-        The imaging data_type, which includes the observed data_type, noise_map-map, PSF, signal-to-noise_map-map, etc.
+        The imaging data_type, which includes the observed data_type, noise_map, PSF, signal-to-noise_map, etc.
     include_origin : True
         If true, the include_origin of the dataset's coordinate system is plotted as a 'x'.
     """
@@ -164,7 +164,7 @@ def image(imaging, grid=None, mask=None, positions=None, include=None, plotter=N
     Parameters
     -----------
     image : data_type.ImagingData
-        The imaging data_type, which includes the observed data_type, noise_map-map, PSF, signal-to-noise_map-map, etc.
+        The imaging data_type, which includes the observed data_type, noise_map, PSF, signal-to-noise_map, etc.
     include_origin : True
         If true, the include_origin of the dataset's coordinate system is plotted as a 'x'.
     image_plane_pix_grid : ndarray or data_type.array.grid_stacks.PixGrid
@@ -187,14 +187,14 @@ def image(imaging, grid=None, mask=None, positions=None, include=None, plotter=N
 def noise_map(
     imaging, grid=None, mask=None, positions=None, include=None, plotter=None
 ):
-    """Plot the noise_map-map of the imaging data_type.
+    """Plot the noise_map of the imaging data_type.
 
     Set *autolens.data_type.array.plotters.plotters* for a description of all innput parameters not described below.
 
     Parameters
     -----------
     image : data_type.ImagingData
-        The imaging data_type, which includes the observed data_type, noise_map-map, PSF, signal-to-noise_map-map, etc.
+        The imaging data_type, which includes the observed data_type, noise_map, PSF, signal-to-noise_map, etc.
     include_origin : True
         If true, the include_origin of the dataset's coordinate system is plotted as a 'x'.
     """
@@ -219,7 +219,7 @@ def psf(imaging, grid=None, positions=None, include=None, plotter=None):
     Parameters
     -----------
     image : data_type.ImagingData
-        The imaging data_type, which includes the observed data_type, noise_map-map, PSF, signal-to-noise_map-map, etc.
+        The imaging data_type, which includes the observed data_type, noise_map, PSF, signal-to-noise_map, etc.
     include_origin : True
         If true, the include_origin of the dataset's coordinate system is plotted as a 'x'.
     """
@@ -234,14 +234,14 @@ def psf(imaging, grid=None, positions=None, include=None, plotter=None):
 def signal_to_noise_map(
     imaging, grid=None, mask=None, positions=None, include=None, plotter=None
 ):
-    """Plot the signal-to-noise_map-map of the imaging data_type.
+    """Plot the signal-to-noise_map of the imaging data_type.
 
     Set *autolens.data_type.array.plotters.plotters* for a description of all innput parameters not described below.
 
     Parameters
     -----------
     image : data_type.ImagingData
-        The imaging data_type, which includes the observed image, noise_map-map, PSF, signal-to-noise_map-map, etc.
+        The imaging data_type, which includes the observed image, noise_map, PSF, signal-to-noise_map, etc.
     include_origin : True
         If true, the include_origin of the dataset's coordinate system is plotted as a 'x'.
     """
@@ -260,14 +260,14 @@ def signal_to_noise_map(
 def absolute_signal_to_noise_map(
     imaging, grid=None, mask=None, positions=None, include=None, plotter=None
 ):
-    """Plot the signal-to-noise_map-map of the imaging data_type.
+    """Plot the signal-to-noise_map of the imaging data_type.
 
     Set *autolens.data_type.array.plotters.plotters* for a description of all innput parameters not described below.
 
     Parameters
     -----------
     image : data_type.ImagingData
-        The imaging data_type, which includes the observed image, noise_map-map, PSF, signal-to-noise_map-map, etc.
+        The imaging data_type, which includes the observed image, noise_map, PSF, signal-to-noise_map, etc.
     include_origin : True
         If true, the include_origin of the dataset's coordinate system is plotted as a 'x'.
     """
@@ -286,14 +286,14 @@ def absolute_signal_to_noise_map(
 def potential_chi_squared_map(
     imaging, grid=None, mask=None, positions=None, include=None, plotter=None
 ):
-    """Plot the signal-to-noise_map-map of the imaging data_type.
+    """Plot the signal-to-noise_map of the imaging data_type.
 
     Set *autolens.data_type.array.plotters.plotters* for a description of all innput parameters not described below.
 
     Parameters
     -----------
     image : data_type.ImagingData
-        The imaging data_type, which includes the observed image, noise_map-map, PSF, signal-to-noise_map-map, etc.
+        The imaging data_type, which includes the observed image, noise_map, PSF, signal-to-noise_map, etc.
     include_origin : True
         If true, the include_origin of the dataset's coordinate system is plotted as a 'x'.
     """
