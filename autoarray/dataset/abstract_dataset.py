@@ -59,6 +59,7 @@ class AbstractDataset:
         self.noise_map = noise_map
         self.exposure_time_map = exposure_time_map
         self._name = name
+        self.metadata = dict()
 
     @property
     def mapping(self):
@@ -175,13 +176,13 @@ def load_image(image_path, image_hdu, pixel_scales):
 
 
 def load_exposure_time_map(
-    exposure_time_map_path,
-    exposure_time_map_hdu,
-    pixel_scales,
-    shape=None,
-    exposure_time=None,
-    exposure_time_map_from_inverse_noise_map=False,
-    inverse_noise_map=None,
+        exposure_time_map_path,
+        exposure_time_map_hdu,
+        pixel_scales,
+        shape=None,
+        exposure_time=None,
+        exposure_time_map_from_inverse_noise_map=False,
+        inverse_noise_map=None,
 ):
     """Factory for loading the exposure time map from a .fits file.
 
