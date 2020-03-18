@@ -9,7 +9,7 @@ from autoarray.structures import arrays
 class AbstractDataset:
     @property
     def name(self) -> str:
-        return "data"  #  TODO: this should have a 'real' name
+        return self._name
 
     def save(self, directory: str):
         """
@@ -40,34 +40,25 @@ class AbstractDataset:
         with open(filename, "rb") as f:
             return pickle.load(f)
 
-    def __init__(self, data, noise_map, exposure_time_map=None):
+    def __init__(
+            self,
+            data,
+            noise_map,
+            exposure_time_map=None,
+            name=None
+    ):
         """A collection of abstract 2D for different data_type classes (an image, pixel-scale, noise-map, etc.)
 
         Parameters
         ----------
         data : arrays.Array
             The array of the image data_type, in unit_label of electrons per second.
-        pixel_scales : float
-            The size of each pixel in arc seconds.
-        psf : PSF
-            An array describing the PSF kernel of the image.
-        noise_map : NoiseMap | float | ndarray
-            An array describing the RMS standard deviation error in each pixel, preferably in unit_label of electrons per
-            second.
-        background_noise_map : NoiseMap
-            An array describing the RMS standard deviation error in each pixel due to the background sky noise_map,
-            preferably in unit_label of electrons per second.
-        poisson_noise_map : NoiseMap
-            An array describing the RMS standard deviation error in each pixel due to the Poisson counts of the source,
-            preferably in unit_label of electrons per second.
-        exposure_time_map : arrays.Array
-            An array describing the effective exposure time in each imaging pixel.
-        background_sky_map : aa.Scaled
-            An array describing the background sky.
+
         """
         self.data = data
         self.noise_map = noise_map
         self.exposure_time_map = exposure_time_map
+        self._name = name
 
     @property
     def mapping(self):
