@@ -401,19 +401,17 @@ class Imaging(AbstractImagingDataSet):
             An array describing the background sky.
         """
 
-        super(Imaging, self).__init__(
-            data=image, noise_map=noise_map, exposure_time_map=exposure_time_map
+        super().__init__(
+            data=image,
+            noise_map=noise_map,
+            exposure_time_map=exposure_time_map,
+            name=name
         )
 
         self.psf = psf
-        self.__name = name
         self.background_noise_map = background_noise_map
         self.poisson_noise_map = poisson_noise_map
         self.background_sky_map = background_sky_map
-
-    @property
-    def name(self) -> str:
-        return self.__name
 
     @classmethod
     def manual(
