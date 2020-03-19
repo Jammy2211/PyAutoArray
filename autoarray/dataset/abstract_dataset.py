@@ -9,7 +9,7 @@ from autoarray.structures import arrays
 class AbstractDataset:
     @property
     def name(self) -> str:
-        return "data"  #  TODO: this should have a 'real' name
+        return self._name
 
     def save(self, directory: str):
         """
@@ -40,7 +40,13 @@ class AbstractDataset:
         with open(filename, "rb") as f:
             return pickle.load(f)
 
-    def __init__(self, data, noise_map, exposure_time_map=None):
+    def __init__(
+            self,
+            data,
+            noise_map,
+            exposure_time_map=None,
+            name=None
+    ):
         """A collection of abstract 2D for different data_type classes (an image, pixel-scale, noise-map, etc.)
 
         Parameters
@@ -54,20 +60,12 @@ class AbstractDataset:
         noise_map : NoiseMap | float | ndarray
             An array describing the RMS standard deviation error in each pixel, preferably in units of electrons per
             second.
-        background_noise_map : NoiseMap
-            An array describing the RMS standard deviation error in each pixel due to the background sky noise_map,
-            preferably in units of electrons per second.
-        poisson_noise_map : NoiseMap
-            An array describing the RMS standard deviation error in each pixel due to the Poisson counts of the source,
-            preferably in units of electrons per second.
-        exposure_time_map : arrays.Array
-            An array describing the effective exposure time in each imaging pixel.
-        background_sky_map : aa.Scaled
-            An array describing the background sky.
         """
         self.data = data
         self.noise_map = noise_map
         self.exposure_time_map = exposure_time_map
+        self._name = name
+        self.metadata = dict()
 
     @property
     def mapping(self):
@@ -184,13 +182,13 @@ def load_image(image_path, image_hdu, pixel_scales):
 
 
 def load_exposure_time_map(
-    exposure_time_map_path,
-    exposure_time_map_hdu,
-    pixel_scales,
-    shape=None,
-    exposure_time=None,
-    exposure_time_map_from_inverse_noise_map=False,
-    inverse_noise_map=None,
+        exposure_time_map_path,
+        exposure_time_map_hdu,
+        pixel_scales,
+        shape=None,
+        exposure_time=None,
+        exposure_time_map_from_inverse_noise_map=False,
+        inverse_noise_map=None,
 ):
     """Factory for loading the exposure time map from a .fits file.
 
