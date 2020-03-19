@@ -97,14 +97,14 @@ class Interferometer(AbstractInterferometerSet):
         uv_wavelengths,
         primary_beam=None,
         exposure_time_map=None,
-        name=None
+        name=None,
     ):
 
         super().__init__(
             data=visibilities,
             noise_map=noise_map,
             exposure_time_map=exposure_time_map,
-            name=name
+            name=name,
         )
 
         self.uv_wavelengths = uv_wavelengths
@@ -370,7 +370,7 @@ class Interferometer(AbstractInterferometerSet):
             uv_wavelengths=transformer.uv_wavelengths,
             primary_beam=primary_beam,
             noise_map_realization=noise_map_realization,
-            exposure_time_map=exposure_time_map
+            exposure_time_map=exposure_time_map,
         )
 
 
@@ -385,7 +385,7 @@ class SimulatedInterferometer(Interferometer):
         primary_beam,
         noise_map_realization,
         exposure_time_map=None,
-        name=None
+        name=None,
     ):
 
         super().__init__(
@@ -394,7 +394,7 @@ class SimulatedInterferometer(Interferometer):
             uv_wavelengths=uv_wavelengths,
             primary_beam=primary_beam,
             exposure_time_map=exposure_time_map,
-            name=name
+            name=name,
         )
 
         self.real_space_shape_2d = real_space_shape_2d

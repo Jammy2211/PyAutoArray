@@ -153,7 +153,7 @@ class TestReconstructedDataVectorAndImage:
             sub_size=1,
         )
 
-        grid = aa.masked.grid.from_mask(mask=mask)
+        grid = aa.masked_grid.from_mask(mask=mask)
 
         inversion = inversions.InversionImaging.from_data_mapper_and_regularization(
             image=np.ones(9),
@@ -197,7 +197,7 @@ class TestReconstructedDataVectorAndImage:
             sub_size=1,
         )
 
-        grid = aa.masked.grid.from_mask(mask=mask)
+        grid = aa.masked_grid.from_mask(mask=mask)
 
         inversion = inversions.InversionImaging.from_data_mapper_and_regularization(
             image=np.ones(9),
@@ -265,7 +265,7 @@ class TestInterpolatedReconstruction:
             sub_size=2,
         )
 
-        grid = aa.masked.grid.from_mask(mask=mask)
+        grid = aa.masked_grid.from_mask(mask=mask)
 
         pixelization_grid = aa.grid.uniform(
             shape_2d=(3, 3), pixel_scales=1.0, sub_size=1
@@ -326,7 +326,7 @@ class TestInterpolatedReconstruction:
             sub_size=1,
         )
 
-        grid = aa.masked.grid.from_mask(mask=mask)
+        grid = aa.masked_grid.from_mask(mask=mask)
 
         pixelization_grid = aa.grid.uniform(
             shape_2d=(3, 3), pixel_scales=1.0, sub_size=1
@@ -382,7 +382,7 @@ class TestInterpolatedReconstruction:
             sub_size=1,
         )
 
-        grid = aa.masked.grid.from_mask(mask=mask)
+        grid = aa.masked_grid.from_mask(mask=mask)
 
         pixelization_grid = aa.grid.uniform(
             shape_2d=(3, 3), pixel_scales=1.0, sub_size=1
@@ -468,7 +468,7 @@ class TestInterpolatedReconstruction:
             sub_size=1,
         )
 
-        grid = aa.masked.grid.from_mask(mask=mask)
+        grid = aa.masked_grid.from_mask(mask=mask)
 
         pixelization_grid = aa.grid.uniform(
             shape_2d=(3, 3), pixel_scales=1.0, sub_size=1
