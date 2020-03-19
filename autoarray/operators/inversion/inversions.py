@@ -3,7 +3,7 @@ import numpy as np
 from autoconf import conf
 from autoarray import exc
 from autoarray.structures import arrays, grids, visibilities as vis
-from autoarray.masked import masked_dataset as md
+from autoarray.dataset import masked_dataset as md
 from autoarray.util import inversion_util
 from scipy.interpolate import griddata
 

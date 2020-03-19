@@ -1,8 +1,5 @@
-from autoarray.structures import kernel
-from autoarray.masked import masked_structures
+from autoarray.structures import kernel, grids
 from autoarray.operators import convolver, transformer
-
-import numpy as np
 
 
 class AbstractMaskedDataset:
@@ -20,7 +17,7 @@ class AbstractMaskedDataset:
 
         if mask.pixel_scales is not None:
 
-            self.grid = masked_structures.MaskedGrid.from_mask(mask=mask)
+            self.grid = grids.MaskedGrid.from_mask(mask=mask)
 
             if pixel_scale_interpolation_grid is not None:
 

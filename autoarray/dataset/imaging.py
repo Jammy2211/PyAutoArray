@@ -6,7 +6,6 @@ from scipy.stats import norm
 from autoarray import exc
 from autoarray.dataset import abstract_dataset, data_converter
 from autoarray.mask import mask as msk
-from autoarray.masked import masked_structures
 from autoarray.structures import kernel, arrays
 
 logger = logging.getLogger(__name__)
@@ -248,7 +247,7 @@ class AbstractImagingDataSet(abstract_dataset.AbstractDataset):
             self.noise_map,
         )
 
-        noise_map_limit = masked_structures.MaskedArray.manual_1d(
+        noise_map_limit = arrays.MaskedArray.manual_1d(
             array=noise_map_limit, mask=self.image.mask
         )
 
@@ -405,7 +404,7 @@ class Imaging(AbstractImagingDataSet):
             data=image,
             noise_map=noise_map,
             exposure_time_map=exposure_time_map,
-            name=name
+            name=name,
         )
 
         self.psf = psf
@@ -745,7 +744,7 @@ class Imaging(AbstractImagingDataSet):
             image += noise_realization
             image_counts = np.multiply(image, exposure_time_map)
             noise_map = np.divide(np.sqrt(image_counts), exposure_time_map)
-            noise_map = masked_structures.MaskedArray.manual_1d(
+            noise_map = arrays.MaskedArray.manual_1d(
                 array=noise_map, mask=noise_map.mask
             )
         else:
@@ -780,11 +779,11 @@ class Imaging(AbstractImagingDataSet):
             shape_2d=image.shape_2d, pixel_scales=image.pixel_scales
         )
 
-        image = masked_structures.MaskedArray.manual_1d(array=image, mask=mask)
-        background_noise_map = masked_structures.MaskedArray.manual_1d(
+        image = arrays.MaskedArray.manual_1d(array=image, mask=mask)
+        background_noise_map = arrays.MaskedArray.manual_1d(
             array=background_noise_map, mask=mask
         )
-        poisson_noise_map = masked_structures.MaskedArray.manual_1d(
+        poisson_noise_map = arrays.MaskedArray.manual_1d(
             array=poisson_noise_map, mask=mask
         )
 

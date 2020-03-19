@@ -40,13 +40,7 @@ class AbstractDataset:
         with open(filename, "rb") as f:
             return pickle.load(f)
 
-    def __init__(
-            self,
-            data,
-            noise_map,
-            exposure_time_map=None,
-            name=None
-    ):
+    def __init__(self, data, noise_map, exposure_time_map=None, name=None):
         """A collection of abstract 2D for different data_type classes (an image, pixel-scale, noise-map, etc.)
 
         Parameters
@@ -182,13 +176,13 @@ def load_image(image_path, image_hdu, pixel_scales):
 
 
 def load_exposure_time_map(
-        exposure_time_map_path,
-        exposure_time_map_hdu,
-        pixel_scales,
-        shape=None,
-        exposure_time=None,
-        exposure_time_map_from_inverse_noise_map=False,
-        inverse_noise_map=None,
+    exposure_time_map_path,
+    exposure_time_map_hdu,
+    pixel_scales,
+    shape=None,
+    exposure_time=None,
+    exposure_time_map_from_inverse_noise_map=False,
+    inverse_noise_map=None,
 ):
     """Factory for loading the exposure time map from a .fits file.
 

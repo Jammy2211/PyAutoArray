@@ -1,6 +1,6 @@
 import numpy as np
 
-from autoarray.masked import masked_dataset as md
+from autoarray.dataset import masked_dataset as md
 from autoarray.util import fit_util
 
 

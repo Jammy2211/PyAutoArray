@@ -6,10 +6,11 @@ from functools import wraps
 from sklearn.cluster import KMeans
 import os
 
+import autoarray as aa
+
 from autoarray import decorator_util
 from autoarray import exc
 from autoarray.structures import abstract_structure
-from autoarray.masked import masked_structures
 from autoarray.mask import mask as msk
 from autoarray.util import (
     sparse_util,
@@ -219,13 +220,13 @@ class AbstractGrid(abstract_structure.AbstractStructure):
         squared_distances = np.square(self[:, 0] - coordinate[0]) + np.square(
             self[:, 1] - coordinate[1]
         )
-        return masked_structures.MaskedArray(array=squared_distances, mask=self.mask)
+        return aa.masked_array(array=squared_distances, mask=self.mask)
 
     def distances_from_coordinate(self, coordinate=(0.0, 0.0)):
         distances = np.sqrt(
             self.squared_distances_from_coordinate(coordinate=coordinate)
         )
-        return masked_structures.MaskedArray(array=distances, mask=self.mask)
+        return aa.masked_array(array=distances, mask=self.mask)
 
     def blurring_grid_from_kernel_shape(self, kernel_shape_2d):
 
@@ -831,13 +832,13 @@ class GridIrregular(np.ndarray):
         squared_distances = np.square(self[:, 0] - coordinate[0]) + np.square(
             self[:, 1] - coordinate[1]
         )
-        return masked_structures.MaskedArray(array=squared_distances, mask=self.mask)
+        return aa.masked_array(array=squared_distances, mask=self.mask)
 
     def distances_from_coordinate(self, coordinate=(0.0, 0.0)):
         distances = np.sqrt(
             self.squared_distances_from_coordinate(coordinate=coordinate)
         )
-        return masked_structures.MaskedArray(array=distances, mask=self.mask)
+        return aa.masked_array(array=distances, mask=self.mask)
 
     @property
     def sub_shape_1d(self):
@@ -1579,3 +1580,65 @@ def grid_interpolate(func):
         return func(profile, grid, grid_radial_minimum, *args, **kwargs)
 
     return wrapper
+
+
+class MaskedGrid(AbstractGrid):
+    @classmethod
+    def manual_1d(cls, grid, mask, store_in_1d=True):
+
+        if type(grid) is list:
+            grid = np.asarray(grid)
+
+        if grid.shape[0] != mask.sub_pixels_in_mask:
+            raise exc.GridException(
+                "The input 1D grid does not have the same number of entries as sub-pixels in"
+                "the mask."
+            )
+
+        if store_in_1d:
+            return mask.mapping.grid_stored_1d_from_sub_grid_1d(sub_grid_1d=grid)
+        else:
+            return mask.mapping.grid_stored_2d_from_sub_grid_1d(sub_grid_1d=grid)
+
+    @classmethod
+    def manual_2d(cls, grid, mask, store_in_1d=True):
+
+        if type(grid) is list:
+            grid = np.asarray(grid)
+
+        if (grid.shape[0], grid.shape[1]) != mask.sub_shape_2d:
+            raise exc.GridException(
+                "The input grid is 2D but not the same dimensions as the sub-mask "
+                "(e.g. the mask 2D shape multipled by its sub size."
+            )
+
+        if store_in_1d:
+            return mask.mapping.grid_stored_1d_from_sub_grid_2d(sub_grid_2d=grid)
+        else:
+            sub_grid_1d = mask.mapping.grid_stored_1d_from_sub_grid_2d(sub_grid_2d=grid)
+            return mask.mapping.grid_stored_2d_from_sub_grid_1d(sub_grid_1d=sub_grid_1d)
+
+    @classmethod
+    def from_mask(cls, mask, store_in_1d=True):
+        """Setup a sub-grid of the unmasked pixels, using a mask and a specified sub-grid size. The center of \
+        every unmasked pixel's sub-pixels give the grid's (y,x) arc-second coordinates.
+
+        Parameters
+        -----------
+        mask : Mask
+            The mask whose masked pixels are used to setup the sub-pixel grid.
+        sub_size : int
+            The size (sub_size x sub_size) of each unmasked pixels sub-grid.
+        """
+
+        sub_grid_1d = grid_util.grid_1d_via_mask_2d(
+            mask_2d=mask,
+            pixel_scales=mask.pixel_scales,
+            sub_size=mask.sub_size,
+            origin=mask.origin,
+        )
+
+        if store_in_1d:
+            return mask.mapping.grid_stored_1d_from_sub_grid_1d(sub_grid_1d=sub_grid_1d)
+        else:
+            return mask.mapping.grid_stored_2d_from_sub_grid_1d(sub_grid_1d=sub_grid_1d)

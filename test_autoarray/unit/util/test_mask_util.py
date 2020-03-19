@@ -26,8 +26,7 @@ class TestTotalPixels:
         )
 
         assert (
-            util.mask.total_sub_pixels_from_mask_2d_and_sub_size(mask, sub_size=2)
-            == 20
+            util.mask.total_sub_pixels_from_mask_2d_and_sub_size(mask, sub_size=2) == 20
         )
 
     def test__total_edge_pixels_from_mask(self):

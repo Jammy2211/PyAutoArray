@@ -1,7 +1,7 @@
 import autoarray as aa
 from autoarray.structures import kernel as kern
 from autoarray.operators import convolver, transformer
-from autoarray.masked import masked_dataset as md
+from autoarray.dataset import masked_dataset as md
 import numpy as np
 
 
@@ -21,7 +21,7 @@ class TestAbstractMaskedData:
 
         assert masked_dataset.grid is None
 
-    def test__pixel_scale_interpolation_grid_input__grids_nclude_interpolators(
+    def test__pixel_scale_interpolation_grid_input__grids_include_interpolators(
         self, sub_mask_7x7
     ):
 
@@ -29,7 +29,7 @@ class TestAbstractMaskedData:
             mask=sub_mask_7x7, pixel_scale_interpolation_grid=1.0
         )
 
-        grid = aa.masked.grid.from_mask(mask=sub_mask_7x7)
+        grid = aa.masked_grid.from_mask(mask=sub_mask_7x7)
         new_grid = grid.new_grid_with_interpolator(pixel_scale_interpolation_grid=1.0)
 
         assert (masked_imaging_7x7.grid == new_grid).all()
@@ -74,7 +74,7 @@ class TestAbstractMaskedData:
 class TestMaskedImaging:
     def test__masked_dataset(self, imaging_7x7, sub_mask_7x7):
 
-        masked_imaging_7x7 = aa.masked.imaging.manual(
+        masked_imaging_7x7 = aa.masked_imaging.manual(
             imaging=imaging_7x7, mask=sub_mask_7x7
         )
 
@@ -97,7 +97,7 @@ class TestMaskedImaging:
     def test__blurring_grid(
         self, imaging_7x7, sub_mask_7x7, grid_7x7, sub_grid_7x7, blurring_grid_7x7
     ):
-        masked_imaging_7x7 = aa.masked.imaging.manual(
+        masked_imaging_7x7 = aa.masked_imaging.manual(
             imaging=imaging_7x7, mask=sub_mask_7x7
         )
 
@@ -109,11 +109,11 @@ class TestMaskedImaging:
         self, imaging_7x7, sub_mask_7x7
     ):
 
-        masked_imaging_7x7 = aa.masked.imaging.manual(
+        masked_imaging_7x7 = aa.masked_imaging.manual(
             imaging=imaging_7x7, mask=sub_mask_7x7, pixel_scale_interpolation_grid=1.0
         )
 
-        grid = aa.masked.grid.from_mask(mask=sub_mask_7x7)
+        grid = aa.masked_grid.from_mask(mask=sub_mask_7x7)
         new_grid = grid.new_grid_with_interpolator(pixel_scale_interpolation_grid=1.0)
 
         blurring_grid = grid.blurring_grid_from_kernel_shape(kernel_shape_2d=(3, 3))
@@ -141,7 +141,7 @@ class TestMaskedImaging:
 
     def test__psf_and_convolvers(self, imaging_7x7, sub_mask_7x7):
 
-        masked_imaging_7x7 = aa.masked.imaging.manual(
+        masked_imaging_7x7 = aa.masked_imaging.manual(
             imaging=imaging_7x7, mask=sub_mask_7x7
         )
 
@@ -165,7 +165,7 @@ class TestMaskedImaging:
         )
         mask[9, 9] = False
 
-        masked_imaging = aa.masked.imaging.manual(
+        masked_imaging = aa.masked_imaging.manual(
             imaging=imaging, mask=mask, psf_shape_2d=(7, 7)
         )
 
@@ -178,7 +178,7 @@ class TestMaskedImaging:
 
     def test__masked_imaging_6x6_with_binned_up_imaging(self, imaging_6x6, mask_6x6):
 
-        masked_imaging_6x6 = aa.masked.imaging.manual(
+        masked_imaging_6x6 = aa.masked_imaging.manual(
             imaging=imaging_6x6, mask=mask_6x6
         )
 
@@ -210,7 +210,7 @@ class TestMaskedImaging:
         self, imaging_7x7, mask_7x7
     ):
 
-        masked_imaging_7x7 = aa.masked.imaging.manual(
+        masked_imaging_7x7 = aa.masked_imaging.manual(
             imaging=imaging_7x7, mask=mask_7x7
         )
 
@@ -250,7 +250,7 @@ class TestMaskedInterferometer:
         self, interferometer_7, sub_mask_7x7, visibilities_7x2, noise_map_7x2
     ):
 
-        masked_interferometer_7 = aa.masked.interferometer.manual(
+        masked_interferometer_7 = aa.masked_interferometer.manual(
             interferometer=interferometer_7,
             visibilities_mask=np.full(fill_value=False, shape=(7, 2)),
             real_space_mask=sub_mask_7x7,
@@ -284,7 +284,7 @@ class TestMaskedInterferometer:
 
         visibilities_mask = np.full(fill_value=False, shape=(7, 2))
 
-        masked_interferometer_7 = aa.masked.interferometer.manual(
+        masked_interferometer_7 = aa.masked_interferometer.manual(
             interferometer=interferometer_7,
             visibilities_mask=visibilities_mask,
             real_space_mask=sub_mask_7x7,
@@ -312,7 +312,7 @@ class TestMaskedInterferometer:
         )
         real_space_mask[9, 9] = False
 
-        masked_interferometer_7 = aa.masked.interferometer.manual(
+        masked_interferometer_7 = aa.masked_interferometer.manual(
             interferometer=interferometer,
             visibilities_mask=visibilities_mask,
             real_space_mask=real_space_mask,
