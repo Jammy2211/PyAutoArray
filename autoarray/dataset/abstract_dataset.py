@@ -46,20 +46,20 @@ class AbstractDataset:
         Parameters
         ----------
         data : arrays.Array
-            The array of the image data_type, in unit_label of electrons per second.
+            The array of the image data, in units of electrons per second.
         pixel_scales : float
             The size of each pixel in arc seconds.
         psf : PSF
             An array describing the PSF kernel of the image.
         noise_map : NoiseMap | float | ndarray
-            An array describing the RMS standard deviation error in each pixel, preferably in unit_label of electrons per
+            An array describing the RMS standard deviation error in each pixel, preferably in units of electrons per
             second.
         background_noise_map : NoiseMap
             An array describing the RMS standard deviation error in each pixel due to the background sky noise_map,
-            preferably in unit_label of electrons per second.
+            preferably in units of electrons per second.
         poisson_noise_map : NoiseMap
             An array describing the RMS standard deviation error in each pixel due to the Poisson counts of the source,
-            preferably in unit_label of electrons per second.
+            preferably in units of electrons per second.
         exposure_time_map : arrays.Array
             An array describing the effective exposure time in each imaging pixel.
         background_sky_map : aa.Scaled
@@ -116,7 +116,7 @@ class AbstractDataset:
 
     def array_from_electrons_per_second_to_counts(self, array):
         """
-        For an array (in electrons per second) and an exposure time mappers, return an array in unit_label counts.
+        For an array (in electrons per second) and an exposure time mappers, return an array in units counts.
 
         Parameters
         ----------
@@ -155,7 +155,7 @@ class AbstractDataset:
 
     @property
     def image_counts(self):
-        """The image in unit_label of counts."""
+        """The image in units of counts."""
         return self.array_from_electrons_per_second_to_counts(self.data)
 
 

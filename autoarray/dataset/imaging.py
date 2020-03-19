@@ -265,7 +265,7 @@ class AbstractImagingDataSet(abstract_dataset.AbstractDataset):
 
     @property
     def background_noise_map_counts(self):
-        """ The background noise_maps mappers in unit_label of counts."""
+        """ The background noise_maps mappers in units of counts."""
         return self.array_from_electrons_per_second_to_counts(self.background_noise_map)
 
     @property
@@ -383,18 +383,18 @@ class Imaging(AbstractImagingDataSet):
         Parameters
         ----------
         image : aa.Array
-            The array of the image data_type, in unit_label of electrons per second.
+            The array of the image data, in units of electrons per second.
         psf : PSF
             An array describing the PSF kernel of the image.
         noise_map : NoiseMap | float | ndarray
-            An array describing the RMS standard deviation error in each pixel, preferably in unit_label of electrons per
+            An array describing the RMS standard deviation error in each pixel, preferably in units of electrons per
             second.
         background_noise_map : NoiseMap
             An array describing the RMS standard deviation error in each pixel due to the background sky noise_map,
-            preferably in unit_label of electrons per second.
+            preferably in units of electrons per second.
         poisson_noise_map : NoiseMap
             An array describing the RMS standard deviation error in each pixel due to the Poisson counts of the source,
-            preferably in unit_label of electrons per second.
+            preferably in units of electrons per second.
         exposure_time_map : aa.Array
             An array describing the effective exposure time in each imaging pixel.
         background_sky_map : aa.Scaled
@@ -558,12 +558,12 @@ class Imaging(AbstractImagingDataSet):
         background_sky_map_hdu : int
             The hdu the background_sky_map is contained in the .fits file specified by *background_sky_map_path*.
         convert_from_electrons : bool
-            If True, the input unblurred_image_1d are in unit_label of electrons and all converted to electrons / second using the exposure \
+            If True, the input unblurred_image_1d are in units of electrons and all converted to electrons / second using the exposure \
             time map.
         gain : float
             The image gain, used for convert from ADUs.
         convert_from_adus : bool
-            If True, the input unblurred_image_1d are in unit_label of adus and all converted to electrons / second using the exposure \
+            If True, the input unblurred_image_1d are in units of adus and all converted to electrons / second using the exposure \
             time map and gain.
         """
 
@@ -887,7 +887,7 @@ def generate_poisson_noise(image, exposure_time_map, seed=-1):
     """
     Generate a two-dimensional poisson noise_maps-mappers from an image.
 
-    Values are computed from a Poisson distribution using the image's input values in unit_label of counts.
+    Values are computed from a Poisson distribution using the image's input values in units of counts.
 
     Parameters
     ----------
@@ -963,12 +963,12 @@ def load_noise_map(
         If True, the noise-map is computed from the observed image and background noise-map \
         (see NoiseMap.from_image_and_background_noise_map).
     convert_from_electrons : bool
-        If True, the input unblurred_image_1d are in unit_label of electrons and all converted to electrons / second using the exposure \
+        If True, the input unblurred_image_1d are in units of electrons and all converted to electrons / second using the exposure \
         time map.
     gain : float
         The image gain, used for convert from ADUs.
     convert_from_adus : bool
-        If True, the input unblurred_image_1d are in unit_label of adus and all converted to electrons / second using the exposure \
+        If True, the input unblurred_image_1d are in units of adus and all converted to electrons / second using the exposure \
         time map and gain.
     """
     noise_map_options = sum(
@@ -1149,12 +1149,12 @@ def load_poisson_noise_map(
     exposure_time_map : ndarray
         The exposure-time map, which the Poisson noise-map can be calculated using.
     convert_from_electrons : bool
-        If True, the input unblurred_image_1d are in unit_label of electrons and all converted to electrons / second using the exposure \
+        If True, the input unblurred_image_1d are in units of electrons and all converted to electrons / second using the exposure \
         time map.
     gain : float
         The image gain, used for convert from ADUs.
     convert_from_adus : bool
-        If True, the input unblurred_image_1d are in unit_label of adus and all converted to electrons / second using the exposure \
+        If True, the input unblurred_image_1d are in units of adus and all converted to electrons / second using the exposure \
         time map and gain.
     """
     poisson_noise_map_options = sum(

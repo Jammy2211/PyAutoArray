@@ -16,7 +16,7 @@ class Mask(np.ndarray):
     def __new__(
         cls, mask_2d, pixel_scales=None, sub_size=1, origin=(0.0, 0.0), *args, **kwargs
     ):
-        """ A mask, which is applied to a 2D array of hyper_galaxies to extract a set of unmasked image pixels (i.e. mask entry \
+        """ A mask, which is applied to data to extract a set of unmasked image pixels (i.e. mask entry \
         is *False* or 0) which are then fitted in an analysis.
 
         The mask retains the pixel scale of the array and has a centre and origin.
@@ -112,7 +112,7 @@ class Mask(np.ndarray):
         Parameters
         ----------
         shape : (int, int)
-            The (y,x) shape of the mask in unit_label of pixels.
+            The (y,x) shape of the mask in units of pixels.
         pixel_scales : float or (float, float)
             The arc-second to pixel conversion factor of each pixel.
         """
@@ -148,7 +148,7 @@ class Mask(np.ndarray):
         Parameters
         ----------
         shape: (int, int)
-            The (y,x) shape of the mask in unit_label of pixels.
+            The (y,x) shape of the mask in units of pixels.
         pixel_scales : (float, float)
             The arc-second to pixel conversion factor of each pixel.
         radius : float
@@ -191,7 +191,7 @@ class Mask(np.ndarray):
         Parameters
         ----------
         shape : (int, int)
-            The (y,x) shape of the mask in unit_label of pixels.
+            The (y,x) shape of the mask in units of pixels.
         pixel_scales : (float, float)
             The arc-second to pixel conversion factor of each pixel.
         inner_radius : float
@@ -244,7 +244,7 @@ class Mask(np.ndarray):
         Parameters
         ----------
         shape : (int, int)
-            The (y,x) shape of the mask in unit_label of pixels.
+            The (y,x) shape of the mask in units of pixels.
         pixel_scales : (float, float)
             The arc-second to pixel conversion factor of each pixel.
         inner_radius : float
@@ -298,7 +298,7 @@ class Mask(np.ndarray):
         Parameters
         ----------
         shape: (int, int)
-            The (y,x) shape of the mask in unit_label of pixels.
+            The (y,x) shape of the mask in units of pixels.
         pixel_scales : (float, float)
             The arc-second to pixel conversion factor of each pixel.
         major_axis_radius : float
@@ -355,7 +355,7 @@ class Mask(np.ndarray):
         Parameters
         ----------
         shape: (int, int)
-            The (y,x) shape of the mask in unit_label of pixels.
+            The (y,x) shape of the mask in units of pixels.
         pixel_scales : (float, float)
             The arc-second to pixel conversion factor of each pixel.
         inner_major_axis_radius : float

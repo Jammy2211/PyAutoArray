@@ -223,12 +223,12 @@ class Interferometer(AbstractInterferometerSet):
         background_sky_map_hdu : int
             The hdu the background_sky_map is contained in the .fits file specified by *background_sky_map_path*.
         convert_from_electrons : bool
-            If True, the input unblurred_image_1d are in unit_label of electrons and all converted to electrons / second using the exposure \
+            If True, the input unblurred_image_1d are in units of electrons and all converted to electrons / second using the exposure \
             time map.
         gain : float
             The image gain, used for convert from ADUs.
         convert_from_adus : bool
-            If True, the input unblurred_image_1d are in unit_label of adus and all converted to electrons / second using the exposure \
+            If True, the input unblurred_image_1d are in units of adus and all converted to electrons / second using the exposure \
             time map and gain.
         """
 
