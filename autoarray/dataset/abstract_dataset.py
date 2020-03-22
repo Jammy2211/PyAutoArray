@@ -3,7 +3,7 @@ import pickle
 import numpy as np
 
 from autoarray import exc
-from autoarray.structures import arrays
+from autoarray.structures import arrays, grids
 
 
 class AbstractDataset:
@@ -235,3 +235,36 @@ def load_exposure_time_map(
             return ExposureTimeMap.from_exposure_time_and_inverse_noise_map(
                 exposure_time=exposure_time, inverse_noise_map=inverse_noise_map
             )
+
+
+class AbstractMaskedDataset:
+    def __init__(
+        self,
+        mask,
+        pixel_scale_interpolation_grid=None,
+        inversion_pixel_limit=None,
+        inversion_uses_border=True,
+    ):
+
+        self.mask = mask
+
+        ### GRIDS ###
+
+        if mask.pixel_scales is not None:
+
+            self.grid = grids.MaskedGrid.from_mask(mask=mask)
+
+            if pixel_scale_interpolation_grid is not None:
+
+                self.pixel_scale_interpolation_grid = pixel_scale_interpolation_grid
+
+                self.grid = self.grid.new_grid_with_interpolator(
+                    pixel_scale_interpolation_grid=pixel_scale_interpolation_grid
+                )
+
+        else:
+
+            self.grid = None
+
+        self.inversion_pixel_limit = inversion_pixel_limit
+        self.inversion_uses_border = inversion_uses_border

@@ -3,14 +3,14 @@ import numpy as np
 from autoconf import conf
 from autoarray import exc
 from autoarray.structures import arrays, grids, visibilities as vis
-from autoarray.dataset import masked_dataset as md
+from autoarray.dataset import imaging, interferometer
 from autoarray.util import inversion_util
 from scipy.interpolate import griddata
 
 
 def inversion(masked_dataset, mapper, regularization):
 
-    if isinstance(masked_dataset, md.MaskedImaging):
+    if isinstance(masked_dataset, imaging.MaskedImaging):
 
         return InversionImaging.from_data_mapper_and_regularization(
             image=masked_dataset.image,
@@ -20,7 +20,7 @@ def inversion(masked_dataset, mapper, regularization):
             regularization=regularization,
         )
 
-    elif isinstance(masked_dataset, md.MaskedInterferometer):
+    elif isinstance(masked_dataset, interferometer.MaskedInterferometer):
 
         return InversionInterferometer.from_data_mapper_and_regularization(
             visibilities=masked_dataset.visibilities,
