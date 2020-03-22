@@ -32,4 +32,4 @@ from autoarray.structures.visibilities import Visibilities as visibilities
 from autoarray.structures.arrays import MaskedArray as masked_array
 from autoarray.structures.grids import MaskedGrid as masked_grid
 
-__version__ = '0.8.1'
+__version__ = '0.8.2'
