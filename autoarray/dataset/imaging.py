@@ -6,8 +6,8 @@ from scipy.stats import norm
 from autoarray import exc
 from autoarray.dataset import abstract_dataset, data_converter
 from autoarray.mask import mask as msk
-from autoarray.masked import masked_structures
 from autoarray.structures import kernel, arrays
+from autoarray.operators import convolver
 
 logger = logging.getLogger(__name__)
 
@@ -248,7 +248,7 @@ class AbstractImagingDataSet(abstract_dataset.AbstractDataset):
             self.noise_map,
         )
 
-        noise_map_limit = masked_structures.MaskedArray.manual_1d(
+        noise_map_limit = arrays.MaskedArray.manual_1d(
             array=noise_map_limit, mask=self.image.mask
         )
 
@@ -265,7 +265,7 @@ class AbstractImagingDataSet(abstract_dataset.AbstractDataset):
 
     @property
     def background_noise_map_counts(self):
-        """ The background noise_maps mappers in unit_label of counts."""
+        """ The background noise_maps mappers in units of counts."""
         return self.array_from_electrons_per_second_to_counts(self.background_noise_map)
 
     @property
@@ -383,37 +383,35 @@ class Imaging(AbstractImagingDataSet):
         Parameters
         ----------
         image : aa.Array
-            The array of the image data_type, in unit_label of electrons per second.
+            The array of the image data, in units of electrons per second.
         psf : PSF
             An array describing the PSF kernel of the image.
         noise_map : NoiseMap | float | ndarray
-            An array describing the RMS standard deviation error in each pixel, preferably in unit_label of electrons per
+            An array describing the RMS standard deviation error in each pixel, preferably in units of electrons per
             second.
         background_noise_map : NoiseMap
             An array describing the RMS standard deviation error in each pixel due to the background sky noise_map,
-            preferably in unit_label of electrons per second.
+            preferably in units of electrons per second.
         poisson_noise_map : NoiseMap
             An array describing the RMS standard deviation error in each pixel due to the Poisson counts of the source,
-            preferably in unit_label of electrons per second.
+            preferably in units of electrons per second.
         exposure_time_map : aa.Array
             An array describing the effective exposure time in each imaging pixel.
         background_sky_map : aa.Scaled
             An array describing the background sky.
         """
 
-        super(Imaging, self).__init__(
-            data=image, noise_map=noise_map, exposure_time_map=exposure_time_map
+        super().__init__(
+            data=image,
+            noise_map=noise_map,
+            exposure_time_map=exposure_time_map,
+            name=name,
         )
 
         self.psf = psf
-        self.__name = name
         self.background_noise_map = background_noise_map
         self.poisson_noise_map = poisson_noise_map
         self.background_sky_map = background_sky_map
-
-    @property
-    def name(self) -> str:
-        return self.__name
 
     @classmethod
     def manual(
@@ -558,12 +556,12 @@ class Imaging(AbstractImagingDataSet):
         background_sky_map_hdu : int
             The hdu the background_sky_map is contained in the .fits file specified by *background_sky_map_path*.
         convert_from_electrons : bool
-            If True, the input unblurred_image_1d are in unit_label of electrons and all converted to electrons / second using the exposure \
+            If True, the input unblurred_image_1d are in units of electrons and all converted to electrons / second using the exposure \
             time map.
         gain : float
             The image gain, used for convert from ADUs.
         convert_from_adus : bool
-            If True, the input unblurred_image_1d are in unit_label of adus and all converted to electrons / second using the exposure \
+            If True, the input unblurred_image_1d are in units of adus and all converted to electrons / second using the exposure \
             time map and gain.
         """
 
@@ -747,7 +745,7 @@ class Imaging(AbstractImagingDataSet):
             image += noise_realization
             image_counts = np.multiply(image, exposure_time_map)
             noise_map = np.divide(np.sqrt(image_counts), exposure_time_map)
-            noise_map = masked_structures.MaskedArray.manual_1d(
+            noise_map = arrays.MaskedArray.manual_1d(
                 array=noise_map, mask=noise_map.mask
             )
         else:
@@ -782,11 +780,11 @@ class Imaging(AbstractImagingDataSet):
             shape_2d=image.shape_2d, pixel_scales=image.pixel_scales
         )
 
-        image = masked_structures.MaskedArray.manual_1d(array=image, mask=mask)
-        background_noise_map = masked_structures.MaskedArray.manual_1d(
+        image = arrays.MaskedArray.manual_1d(array=image, mask=mask)
+        background_noise_map = arrays.MaskedArray.manual_1d(
             array=background_noise_map, mask=mask
         )
-        poisson_noise_map = masked_structures.MaskedArray.manual_1d(
+        poisson_noise_map = arrays.MaskedArray.manual_1d(
             array=poisson_noise_map, mask=mask
         )
 
@@ -887,7 +885,7 @@ def generate_poisson_noise(image, exposure_time_map, seed=-1):
     """
     Generate a two-dimensional poisson noise_maps-mappers from an image.
 
-    Values are computed from a Poisson distribution using the image's input values in unit_label of counts.
+    Values are computed from a Poisson distribution using the image's input values in units of counts.
 
     Parameters
     ----------
@@ -963,12 +961,12 @@ def load_noise_map(
         If True, the noise-map is computed from the observed image and background noise-map \
         (see NoiseMap.from_image_and_background_noise_map).
     convert_from_electrons : bool
-        If True, the input unblurred_image_1d are in unit_label of electrons and all converted to electrons / second using the exposure \
+        If True, the input unblurred_image_1d are in units of electrons and all converted to electrons / second using the exposure \
         time map.
     gain : float
         The image gain, used for convert from ADUs.
     convert_from_adus : bool
-        If True, the input unblurred_image_1d are in unit_label of adus and all converted to electrons / second using the exposure \
+        If True, the input unblurred_image_1d are in units of adus and all converted to electrons / second using the exposure \
         time map and gain.
     """
     noise_map_options = sum(
@@ -1149,12 +1147,12 @@ def load_poisson_noise_map(
     exposure_time_map : ndarray
         The exposure-time map, which the Poisson noise-map can be calculated using.
     convert_from_electrons : bool
-        If True, the input unblurred_image_1d are in unit_label of electrons and all converted to electrons / second using the exposure \
+        If True, the input unblurred_image_1d are in units of electrons and all converted to electrons / second using the exposure \
         time map.
     gain : float
         The image gain, used for convert from ADUs.
     convert_from_adus : bool
-        If True, the input unblurred_image_1d are in unit_label of adus and all converted to electrons / second using the exposure \
+        If True, the input unblurred_image_1d are in units of adus and all converted to electrons / second using the exposure \
         time map and gain.
     """
     poisson_noise_map_options = sum(
@@ -1244,3 +1242,150 @@ def load_background_sky_map(
         )
     else:
         return None
+
+
+class MaskedImaging(abstract_dataset.AbstractMaskedDataset):
+    def __init__(
+        self,
+        imaging,
+        mask,
+        psf_shape_2d=None,
+        pixel_scale_interpolation_grid=None,
+        inversion_pixel_limit=None,
+        inversion_uses_border=True,
+    ):
+        """
+        The lens dataset is the collection of data_type (image, noise-map, PSF), a mask, grid, convolver \
+        and other utilities that are used for modeling and fitting an image of a strong lens.
+
+        Whilst the image, noise-map, etc. are loaded in 2D, the lens dataset creates reduced 1D arrays of each \
+        for lens calculations.
+
+        Parameters
+        ----------
+        imaging: im.Imaging
+            The imaging data_type all in 2D (the image, noise-map, PSF, etc.)
+        mask: msk.Mask
+            The 2D mask that is applied to the image.
+        sub_size : int
+            The size of the sub-grid used for each lens SubGrid. E.g. a value of 2 grid each image-pixel on a 2x2 \
+            sub-grid.
+        psf_shape_2d : (int, int)
+            The shape of the PSF used for convolving model image generated using analytic light profiles. A smaller \
+            shape will trim the PSF relative to the input image PSF, giving a faster analysis run-time.
+        positions : [[]]
+            Lists of image-pixel coordinates (arc-seconds) that mappers close to one another in the source-plane(s), \
+            used to speed up the non-linear sampling.
+        pixel_scale_interpolation_grid : float
+            If *True*, expensive to compute mass profile deflection angles will be computed on a sparse grid and \
+            interpolated to the grid, sub and blurring grids.
+        inversion_pixel_limit : int or None
+            The maximum number of pixels that can be used by an inversion, with the limit placed primarily to speed \
+            up run.
+        """
+
+        self.imaging = imaging
+
+        super(MaskedImaging, self).__init__(
+            mask=mask,
+            pixel_scale_interpolation_grid=pixel_scale_interpolation_grid,
+            inversion_pixel_limit=inversion_pixel_limit,
+            inversion_uses_border=inversion_uses_border,
+        )
+
+        self.image = mask.mapping.array_stored_1d_from_array_2d(
+            array_2d=imaging.image.in_2d
+        )
+        self.noise_map = mask.mapping.array_stored_1d_from_array_2d(
+            array_2d=imaging.noise_map.in_2d
+        )
+
+        self.pixel_scale_interpolation_grid = pixel_scale_interpolation_grid
+
+        ### PSF TRIMMING + CONVOLVER ###
+
+        if imaging.psf is not None:
+
+            if psf_shape_2d is None:
+                self.psf_shape_2d = imaging.psf.shape_2d
+            else:
+                self.psf_shape_2d = psf_shape_2d
+
+            self.psf = kernel.Kernel.manual_2d(
+                array=imaging.psf.resized_from_new_shape(
+                    new_shape=self.psf_shape_2d
+                ).in_2d
+            )
+
+            self.convolver = convolver.Convolver(mask=mask, kernel=self.psf)
+
+            if mask.pixel_scales is not None:
+
+                self.blurring_grid = self.grid.blurring_grid_from_kernel_shape(
+                    kernel_shape_2d=self.psf_shape_2d
+                )
+
+                if pixel_scale_interpolation_grid is not None:
+
+                    self.blurring_grid = self.blurring_grid.new_grid_with_interpolator(
+                        pixel_scale_interpolation_grid=self.pixel_scale_interpolation_grid
+                    )
+
+    @property
+    def data(self):
+        return self.image
+
+    @classmethod
+    def manual(
+        cls,
+        imaging,
+        mask,
+        psf_shape_2d=None,
+        pixel_scale_interpolation_grid=None,
+        inversion_pixel_limit=None,
+        inversion_uses_border=True,
+    ):
+        return cls(
+            imaging=imaging,
+            mask=mask,
+            psf_shape_2d=psf_shape_2d,
+            pixel_scale_interpolation_grid=pixel_scale_interpolation_grid,
+            inversion_pixel_limit=inversion_pixel_limit,
+            inversion_uses_border=inversion_uses_border,
+        )
+
+    def signal_to_noise_map(self):
+        return self.image / self.noise_map
+
+    def binned_from_bin_up_factor(self, bin_up_factor):
+
+        binned_imaging = self.imaging.binned_from_bin_up_factor(
+            bin_up_factor=bin_up_factor
+        )
+        binned_mask = self.mask.mapping.binned_mask_from_bin_up_factor(
+            bin_up_factor=bin_up_factor
+        )
+
+        return self.__class__(
+            imaging=binned_imaging,
+            mask=binned_mask,
+            psf_shape_2d=self.psf_shape_2d,
+            pixel_scale_interpolation_grid=self.pixel_scale_interpolation_grid,
+            inversion_pixel_limit=self.inversion_pixel_limit,
+            inversion_uses_border=self.inversion_uses_border,
+        )
+
+    def signal_to_noise_limited_from_signal_to_noise_limit(self, signal_to_noise_limit):
+
+        imaging_with_signal_to_noise_limit = self.imaging.signal_to_noise_limited_from_signal_to_noise_limit(
+            signal_to_noise_limit=signal_to_noise_limit
+        )
+
+        return self.__class__(
+            imaging=imaging_with_signal_to_noise_limit,
+            mask=self.mask,
+            psf_shape_2d=self.psf_shape_2d,
+            pixel_scale_interpolation_grid=self.pixel_scale_interpolation_grid,
+            inversion_pixel_limit=self.inversion_pixel_limit,
+            inversion_uses_border=self.inversion_uses_border,
+        )

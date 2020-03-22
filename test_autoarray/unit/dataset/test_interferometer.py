@@ -6,6 +6,8 @@ import pytest
 
 import autoarray as aa
 from autoarray.dataset import interferometer
+from autoarray.structures import kernel as kern
+from autoarray.operators import convolver, transformer
 from autoarray import exc
 
 test_data_dir = "{}/../test_files/array/".format(
@@ -386,3 +388,88 @@ class TestInterferometerFromFits:
         assert (interferometer.uv_wavelengths[:, 1] == 6.0 * np.ones(3)).all()
         assert (interferometer.primary_beam.in_2d == 5.0 * np.ones((3, 3))).all()
         assert (interferometer.exposure_time_map == 6.0 * np.ones((3,))).all()
+
+
+class TestMaskedInterferometer:
+    def test__masked_dataset(
+        self, interferometer_7, sub_mask_7x7, visibilities_7x2, noise_map_7x2
+    ):
+
+        masked_interferometer_7 = aa.masked_interferometer.manual(
+            interferometer=interferometer_7,
+            visibilities_mask=np.full(fill_value=False, shape=(7, 2)),
+            real_space_mask=sub_mask_7x7,
+        )
+
+        assert (
+            masked_interferometer_7.visibilities == interferometer_7.visibilities
+        ).all()
+        assert (masked_interferometer_7.visibilities == visibilities_7x2).all()
+
+        assert (masked_interferometer_7.noise_map == noise_map_7x2).all()
+
+        assert (
+            masked_interferometer_7.visibilities_mask
+            == np.full(fill_value=False, shape=(7, 2))
+        ).all()
+
+        assert (masked_interferometer_7.primary_beam.in_2d == np.ones((3, 3))).all()
+        assert masked_interferometer_7.primary_beam_shape_2d == (3, 3)
+
+        assert (
+            masked_interferometer_7.interferometer.uv_wavelengths
+            == interferometer_7.uv_wavelengths
+        ).all()
+        assert (
+            masked_interferometer_7.interferometer.uv_wavelengths[0, 0]
+            == -55636.4609375
+        )
+
+    def test__primary_beam_and_transformer(self, interferometer_7, sub_mask_7x7):
+
+        visibilities_mask = np.full(fill_value=False, shape=(7, 2))
+
+        masked_interferometer_7 = aa.masked_interferometer.manual(
+            interferometer=interferometer_7,
+            visibilities_mask=visibilities_mask,
+            real_space_mask=sub_mask_7x7,
+        )
+
+        assert type(masked_interferometer_7.primary_beam) == kern.Kernel
+        assert type(masked_interferometer_7.transformer) == transformer.Transformer
+
+    def test__different_interferometer_without_mock_objects__customize_constructor_inputs(
+        self
+    ):
+        primary_beam = aa.kernel.ones(shape_2d=(7, 7), pixel_scales=1.0)
+
+        interferometer = aa.interferometer(
+            visibilities=aa.visibilities.ones(shape_1d=(19,)),
+            primary_beam=primary_beam,
+            noise_map=2.0 * aa.visibilities.ones(shape_1d=(19,)),
+            uv_wavelengths=3.0 * np.ones((19, 2)),
+        )
+
+        visibilities_mask = np.full(fill_value=False, shape=(19, 2))
+
+        real_space_mask = aa.mask.unmasked(
+            shape_2d=(19, 19), pixel_scales=1.0, invert=True, sub_size=8
+        )
+        real_space_mask[9, 9] = False
+
+        masked_interferometer_7 = aa.masked_interferometer.manual(
+            interferometer=interferometer,
+            visibilities_mask=visibilities_mask,
+            real_space_mask=real_space_mask,
+            primary_beam_shape_2d=(7, 7),
+        )
+
+        assert (masked_interferometer_7.visibilities == np.ones((19, 2))).all()
+        assert (masked_interferometer_7.noise_map == 2.0 * np.ones((19, 2))).all()
+        assert (
+            masked_interferometer_7.interferometer.uv_wavelengths
+            == 3.0 * np.ones((19, 2))
+        ).all()
+        assert (masked_interferometer_7.primary_beam.in_2d == np.ones((7, 7))).all()
+
+        assert masked_interferometer_7.primary_beam_shape_2d == (7, 7)

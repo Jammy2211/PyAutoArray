@@ -1,6 +1,6 @@
 import numpy as np
 
-from autoarray.masked import masked_dataset as md
+from autoarray.dataset import imaging, interferometer
 from autoarray.util import fit_util
 
 
@@ -11,7 +11,7 @@ def fit_masked_dataset(masked_dataset, model_data, inversion=None):
 
 
 def fit(masked_dataset, model_data, inversion=None):
-    if isinstance(masked_dataset, md.MaskedImaging):
+    if isinstance(masked_dataset, imaging.MaskedImaging):
         return ImagingFit(
             mask=masked_dataset.mask,
             image=masked_dataset.image,
@@ -19,7 +19,7 @@ def fit(masked_dataset, model_data, inversion=None):
             model_image=model_data,
             inversion=inversion,
         )
-    elif isinstance(masked_dataset, md.MaskedInterferometer):
+    elif isinstance(masked_dataset, interferometer.MaskedInterferometer):
         return InterferometerFit(
             visibilities_mask=masked_dataset.visibilities_mask,
             visibilities=masked_dataset.visibilities,
