@@ -7,9 +7,9 @@ from autoarray import simulator
 from autoarray import util
 from autoarray.dataset import data_converter
 from autoarray.dataset.imaging import Imaging as imaging
+from autoarray.dataset.imaging import MaskedImaging as masked_imaging
 from autoarray.dataset.interferometer import Interferometer as interferometer
-from autoarray.dataset.masked_dataset import (
-    MaskedImaging as masked_imaging,
+from autoarray.dataset.interferometer import (
     MaskedInterferometer as masked_interferometer,
 )
 from autoarray.fit.fit import fit
