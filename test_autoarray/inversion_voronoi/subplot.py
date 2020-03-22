@@ -10,7 +10,7 @@ imaging = aa.imaging(
     psf=aa.kernel.ones(shape_2d=(3, 3), pixel_scales=0.3),
 )
 
-masked_imaging = aa.masked.imaging(imaging=imaging, mask=mask)
+masked_imaging = aa.masked_imaging(imaging=imaging, mask=mask)
 
 grid_7x7 = aa.grid.from_mask(mask=mask)
 

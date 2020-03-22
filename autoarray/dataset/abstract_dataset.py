@@ -3,13 +3,13 @@ import pickle
 import numpy as np
 
 from autoarray import exc
-from autoarray.structures import arrays
+from autoarray.structures import arrays, grids
 
 
 class AbstractDataset:
     @property
     def name(self) -> str:
-        return "data"  #  TODO: this should have a 'real' name
+        return self._name
 
     def save(self, directory: str):
         """
@@ -40,34 +40,26 @@ class AbstractDataset:
         with open(filename, "rb") as f:
             return pickle.load(f)
 
-    def __init__(self, data, noise_map, exposure_time_map=None):
+    def __init__(self, data, noise_map, exposure_time_map=None, name=None):
         """A collection of abstract 2D for different data_type classes (an image, pixel-scale, noise-map, etc.)
 
         Parameters
         ----------
         data : arrays.Array
-            The array of the image data_type, in unit_label of electrons per second.
+            The array of the image data, in units of electrons per second.
         pixel_scales : float
             The size of each pixel in arc seconds.
         psf : PSF
             An array describing the PSF kernel of the image.
         noise_map : NoiseMap | float | ndarray
-            An array describing the RMS standard deviation error in each pixel, preferably in unit_label of electrons per
+            An array describing the RMS standard deviation error in each pixel, preferably in units of electrons per
             second.
-        background_noise_map : NoiseMap
-            An array describing the RMS standard deviation error in each pixel due to the background sky noise_map,
-            preferably in unit_label of electrons per second.
-        poisson_noise_map : NoiseMap
-            An array describing the RMS standard deviation error in each pixel due to the Poisson counts of the source,
-            preferably in unit_label of electrons per second.
-        exposure_time_map : arrays.Array
-            An array describing the effective exposure time in each imaging pixel.
-        background_sky_map : aa.Scaled
-            An array describing the background sky.
         """
         self.data = data
         self.noise_map = noise_map
         self.exposure_time_map = exposure_time_map
+        self._name = name
+        self.metadata = dict()
 
     @property
     def mapping(self):
@@ -116,7 +108,7 @@ class AbstractDataset:
 
     def array_from_electrons_per_second_to_counts(self, array):
         """
-        For an array (in electrons per second) and an exposure time mappers, return an array in unit_label counts.
+        For an array (in electrons per second) and an exposure time mappers, return an array in units counts.
 
         Parameters
         ----------
@@ -155,7 +147,7 @@ class AbstractDataset:
 
     @property
     def image_counts(self):
-        """The image in unit_label of counts."""
+        """The image in units of counts."""
         return self.array_from_electrons_per_second_to_counts(self.data)
 
 
@@ -243,3 +235,36 @@ def load_exposure_time_map(
             return ExposureTimeMap.from_exposure_time_and_inverse_noise_map(
                 exposure_time=exposure_time, inverse_noise_map=inverse_noise_map
             )
+
+
+class AbstractMaskedDataset:
+    def __init__(
+        self,
+        mask,
+        pixel_scale_interpolation_grid=None,
+        inversion_pixel_limit=None,
+        inversion_uses_border=True,
+    ):
+
+        self.mask = mask
+
+        ### GRIDS ###
+
+        if mask.pixel_scales is not None:
+
+            self.grid = grids.MaskedGrid.from_mask(mask=mask)
+
+            if pixel_scale_interpolation_grid is not None:
+
+                self.pixel_scale_interpolation_grid = pixel_scale_interpolation_grid
+
+                self.grid = self.grid.new_grid_with_interpolator(
+                    pixel_scale_interpolation_grid=pixel_scale_interpolation_grid
+                )
+
+        else:
+
+            self.grid = None
+
+        self.inversion_pixel_limit = inversion_pixel_limit
+        self.inversion_uses_border = inversion_uses_border
