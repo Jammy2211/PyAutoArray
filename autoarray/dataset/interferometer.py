@@ -99,6 +99,7 @@ class Interferometer(AbstractInterferometerSet):
         primary_beam=None,
         exposure_time_map=None,
         name=None,
+        metadata=None,
     ):
 
         super().__init__(
@@ -106,6 +107,7 @@ class Interferometer(AbstractInterferometerSet):
             noise_map=noise_map,
             exposure_time_map=exposure_time_map,
             name=name,
+            metadata=metadata,
         )
 
         self.uv_wavelengths = uv_wavelengths

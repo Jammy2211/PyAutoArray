@@ -376,6 +376,7 @@ class Imaging(AbstractImagingDataSet):
         exposure_time_map=None,
         background_sky_map=None,
         name=None,
+        metadata=None,
         **kwargs
     ):
         """A collection of 2D imaging dataset(an image, noise-map, psf, etc.)
@@ -406,6 +407,7 @@ class Imaging(AbstractImagingDataSet):
             noise_map=noise_map,
             exposure_time_map=exposure_time_map,
             name=name,
+            metadata=metadata,
         )
 
         self.psf = psf
@@ -423,6 +425,8 @@ class Imaging(AbstractImagingDataSet):
         poisson_noise_map=None,
         exposure_time_map=None,
         background_sky_map=None,
+        name=None,
+        metadata=None,
     ):
         return Imaging(
             image=image,
@@ -432,6 +436,8 @@ class Imaging(AbstractImagingDataSet):
             poisson_noise_map=poisson_noise_map,
             exposure_time_map=exposure_time_map,
             background_sky_map=background_sky_map,
+            name=name,
+            metadata=metadata,
         )
 
     @classmethod
@@ -469,7 +475,8 @@ class Imaging(AbstractImagingDataSet):
         convert_from_electrons=False,
         gain=None,
         convert_from_adus=False,
-        lens_name=None,
+        name=None,
+        metadata=None,
     ):
         """Factory for loading the imaging data_type from .fits files, as well as computing properties like the noise-map,
         exposure-time map, etc. from the imaging-data.
@@ -479,7 +486,7 @@ class Imaging(AbstractImagingDataSet):
 
         Parameters
         ----------
-        lens_name
+        name
         image_path : str
             The path to the image .fits file containing the image (e.g. '/path/to/image.fits')
         pixel_scales : float
@@ -656,7 +663,8 @@ class Imaging(AbstractImagingDataSet):
             exposure_time_map=exposure_time_map,
             background_sky_map=background_sky_map,
             gain=gain,
-            name=lens_name,
+            name=name,
+            metadata=metadata,
         )
 
         if resized_imaging_shape is not None:
@@ -685,6 +693,7 @@ class Imaging(AbstractImagingDataSet):
         noise_if_add_noise_false=0.1,
         noise_seed=-1,
         name=None,
+        metadata=None,
     ):
         """
         Create a realistic simulated image by applying effects to a plain simulated image.
@@ -798,6 +807,7 @@ class Imaging(AbstractImagingDataSet):
             background_sky_map=background_sky_map,
             noise_realization=noise_realization,
             name=name,
+            metadata=metadata,
         )
 
     def __array_finalize__(self, obj):
@@ -829,6 +839,7 @@ class SimulatedImaging(Imaging):
         background_sky_map=None,
         noise_realization=None,
         name=None,
+        metadata=None,
         **kwargs
     ):
 
@@ -841,6 +852,7 @@ class SimulatedImaging(Imaging):
             exposure_time_map=exposure_time_map,
             background_sky_map=background_sky_map,
             name=name,
+            metadata=metadata,
             kwargs=kwargs,
         )
 
