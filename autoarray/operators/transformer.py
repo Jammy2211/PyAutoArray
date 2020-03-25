@@ -166,7 +166,7 @@ class TransformerFFT(object):
         """
 
         # NOTE: The input image is flipped to account for the way autolens is generating images
-        z_fft = np.fft.fftshift(np.fft.fft2(np.fft.fftshift(image.in_2d[::-1, :])))
+        z_fft = np.fft.fftshift(np.fft.fft2(np.fft.fftshift(image.in_2d_binned[::-1, :])))
 
         # ...
         z_fft_shifted = z_fft * self.shift
@@ -283,7 +283,7 @@ class TransformerNUFFT(NUFFT_cpu):
         """
 
         # NOTE: Flip the image the autolens produces.
-        visibilities = self.forward(image.in_2d[::-1, :])
+        visibilities = self.forward(image.in_2d_binned[::-1, :])
 
         # ... NOTE:
         visibilities *= self.shift
@@ -307,7 +307,6 @@ class TransformerNUFFT(NUFFT_cpu):
                 array=mapping_matrix[:, source_pixel_1d_index],
                 shape_2d=self.grid.shape_2d,
                 pixel_scales=self.grid.pixel_scales,
-                store_in_1d=False,
             )
 
             visibilities = self.visibilities_from_image(image=image)
