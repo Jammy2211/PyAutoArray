@@ -1,5 +1,5 @@
 from autoarray.util import transformer_util
-from autoarray.structures import visibilities as vis
+from autoarray.structures import arrays, visibilities as vis
 from astropy import units
 from scipy import interpolate
 from pynufft import NUFFT_cpu
@@ -165,11 +165,8 @@ class TransformerFFT(object):
         Generate visibilities from an image (in this case the image was created using autolens).
         """
 
-        if len(image.shape) != 2:
-            raise exc.ArrayException("Transformer image must be 2D")
-
         # NOTE: The input image is flipped to account for the way autolens is generating images
-        z_fft = np.fft.fftshift(np.fft.fft2(np.fft.fftshift(image[::-1, :])))
+        z_fft = np.fft.fftshift(np.fft.fft2(np.fft.fftshift(image.in_2d[::-1, :])))
 
         # ...
         z_fft_shifted = z_fft * self.shift
@@ -211,8 +208,12 @@ class TransformerFFT(object):
         )
 
         for source_pixel_1d_index in range(mapping_matrix.shape[1]):
-            image = mapping_matrix[:, source_pixel_1d_index].reshape(
-                self.grid.shape_2d[0], self.grid.shape_2d[1]
+
+            image = arrays.Array.manual_1d(
+                array=mapping_matrix[:, source_pixel_1d_index],
+                shape_2d=self.grid.shape_2d,
+                pixel_scales=self.grid.pixel_scales,
+                store_in_1d=False,
             )
 
             visibilities = self.visibilities_from_image(image=image)
@@ -281,11 +282,8 @@ class TransformerNUFFT(NUFFT_cpu):
         ...
         """
 
-        if len(image.shape) != 2:
-            raise exc.ArrayException("Transformer image must be 2D")
-
         # NOTE: Flip the image the autolens produces.
-        visibilities = self.forward(image[::-1, :])
+        visibilities = self.forward(image.in_2d[::-1, :])
 
         # ... NOTE:
         visibilities *= self.shift
@@ -304,8 +302,12 @@ class TransformerNUFFT(NUFFT_cpu):
         )
 
         for source_pixel_1d_index in range(mapping_matrix.shape[1]):
-            image = mapping_matrix[:, source_pixel_1d_index].reshape(
-                self.grid.shape_2d[0], self.grid.shape_2d[1]
+
+            image = arrays.Array.manual_1d(
+                array=mapping_matrix[:, source_pixel_1d_index],
+                shape_2d=self.grid.shape_2d,
+                pixel_scales=self.grid.pixel_scales,
+                store_in_1d=False,
             )
 
             visibilities = self.visibilities_from_image(image=image)
