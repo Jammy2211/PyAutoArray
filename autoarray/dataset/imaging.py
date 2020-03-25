@@ -94,6 +94,7 @@ class AbstractImagingDataSet(abstract_dataset.AbstractDataset):
             exposure_time_map=exposure_time_map,
             background_sky_map=background_sky_map,
             name=self.name,
+            metadata=self.metadata
         )
 
     def resized_from_new_shape(self, new_shape):
@@ -139,6 +140,7 @@ class AbstractImagingDataSet(abstract_dataset.AbstractDataset):
             exposure_time_map=exposure_time_map,
             background_sky_map=background_sky_map,
             name=self.name,
+            metadata=self.metadata
         )
 
     def resized_psf_from_new_shape(self, new_shape):
@@ -211,6 +213,7 @@ class AbstractImagingDataSet(abstract_dataset.AbstractDataset):
             exposure_time_map=self.exposure_time_map,
             background_sky_map=background_sky_map,
             name=self.name,
+            metadata=self.metadata
         )
 
     def data_in_adus_from_gain(self, gain):
@@ -240,6 +243,7 @@ class AbstractImagingDataSet(abstract_dataset.AbstractDataset):
             exposure_time_map=self.exposure_time_map,
             background_sky_map=background_sky_map,
             name=self.name,
+            metadata=self.metadata
         )
 
     def signal_to_noise_limited_from_signal_to_noise_limit(self, signal_to_noise_limit):
@@ -263,6 +267,7 @@ class AbstractImagingDataSet(abstract_dataset.AbstractDataset):
             exposure_time_map=self.exposure_time_map,
             background_sky_map=self.background_sky_map,
             name=self.name,
+            metadata=self.metadata
         )
 
     @property
