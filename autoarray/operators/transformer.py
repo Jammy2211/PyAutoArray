@@ -9,25 +9,25 @@ import numpy as np
 from autoarray import exc
 
 
-class Transformer:
-    def __init__(self, uv_wavelengths, grid_radians, preload_transform=True):
+class TransformerDFT:
+    def __init__(self, uv_wavelengths, grid, preload_transform=True):
 
         self.uv_wavelengths = uv_wavelengths.astype("float")
-        self.grid_radians = grid_radians.in_1d_binned
+        self.grid = grid.in_1d_binned
 
         self.total_visibilities = uv_wavelengths.shape[0]
-        self.total_image_pixels = grid_radians.shape_1d
+        self.total_image_pixels = grid.shape_1d
 
         self.preload_transform = preload_transform
 
         if preload_transform:
 
             self.preload_real_transforms = transformer_util.preload_real_transforms(
-                grid_radians=self.grid_radians, uv_wavelengths=self.uv_wavelengths
+                grid_radians=self.grid, uv_wavelengths=self.uv_wavelengths
             )
 
             self.preload_imag_transforms = transformer_util.preload_imag_transforms(
-                grid_radians=self.grid_radians, uv_wavelengths=self.uv_wavelengths
+                grid_radians=self.grid, uv_wavelengths=self.uv_wavelengths
             )
 
     def real_visibilities_from_image(self, image):
@@ -43,7 +43,7 @@ class Transformer:
 
             return transformer_util.real_visibilities_jit(
                 image_1d=image.in_1d_binned,
-                grid_radians=self.grid_radians,
+                grid_radians=self.grid,
                 uv_wavelengths=self.uv_wavelengths,
             )
 
@@ -60,7 +60,7 @@ class Transformer:
 
             return transformer_util.imag_visibilities_jit(
                 image_1d=image.in_1d_binned,
-                grid_radians=self.grid_radians,
+                grid_radians=self.grid,
                 uv_wavelengths=self.uv_wavelengths,
             )
 
@@ -86,7 +86,7 @@ class Transformer:
 
             return transformer_util.real_transformed_mapping_matrix_jit(
                 mapping_matrix=mapping_matrix,
-                grid_radians=self.grid_radians,
+                grid_radians=self.grid,
                 uv_wavelengths=self.uv_wavelengths,
             )
 
@@ -103,7 +103,7 @@ class Transformer:
 
             return transformer_util.imag_transformed_mapping_matrix_jit(
                 mapping_matrix=mapping_matrix,
-                grid_radians=self.grid_radians,
+                grid_radians=self.grid,
                 uv_wavelengths=self.uv_wavelengths,
             )
 
@@ -125,7 +125,7 @@ class TransformerFFT(object):
         super(TransformerFFT, self).__init__()
 
         self.uv_wavelengths = uv_wavelengths.astype("float")
-        self.grid = grid
+        self.grid = grid.in_1d_binned
 
         self.u_fft = np.fft.fftshift(
             np.fft.fftfreq(
@@ -229,7 +229,7 @@ class TransformerNUFFT(NUFFT_cpu):
         super(TransformerNUFFT, self).__init__()
 
         self.uv_wavelengths = uv_wavelengths
-        self.grid = grid
+        self.grid = grid.in_1d_binned
 
         # NOTE: The plan need only be initialized once
         self.initialize_plan()

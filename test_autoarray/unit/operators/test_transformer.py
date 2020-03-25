@@ -11,9 +11,7 @@ class TestVisiblities:
         grid_radians = aa.grid.manual_2d([[[1.0, 1.0]]], pixel_scales=1.0)
 
         transformer = aa.transformer_dft(
-            uv_wavelengths=uv_wavelengths,
-            grid_radians=grid_radians,
-            preload_transform=False,
+            uv_wavelengths=uv_wavelengths, grid=grid_radians, preload_transform=False
         )
 
         image = aa.array.ones(shape_2d=(1, 1))
@@ -27,9 +25,7 @@ class TestVisiblities:
         grid_radians = aa.grid.manual_2d([[[0.1, 0.2], [0.3, 0.4]]], pixel_scales=1.0)
 
         transformer = aa.transformer_dft(
-            uv_wavelengths=uv_wavelengths,
-            grid_radians=grid_radians,
-            preload_transform=False,
+            uv_wavelengths=uv_wavelengths, grid=grid_radians, preload_transform=False
         )
 
         image = aa.array.ones(shape_2d=(1, 2))
@@ -46,9 +42,7 @@ class TestVisiblities:
         grid_radians = aa.grid.manual_2d([[[1.0, 1.0]]], pixel_scales=1.0)
 
         transformer = aa.transformer_dft(
-            uv_wavelengths=uv_wavelengths,
-            grid_radians=grid_radians,
-            preload_transform=False,
+            uv_wavelengths=uv_wavelengths, grid=grid_radians, preload_transform=False
         )
 
         image = aa.array.manual_2d([[2.0]])
@@ -62,9 +56,7 @@ class TestVisiblities:
         grid_radians = aa.grid.manual_2d([[[0.1, 0.2], [0.3, 0.4]]], pixel_scales=1.0)
 
         transformer = aa.transformer_dft(
-            uv_wavelengths=uv_wavelengths,
-            grid_radians=grid_radians,
-            preload_transform=False,
+            uv_wavelengths=uv_wavelengths, grid=grid_radians, preload_transform=False
         )
 
         image = aa.array.manual_2d([[3.0, 6.0]])
@@ -81,14 +73,10 @@ class TestVisiblities:
         grid_radians = aa.grid.manual_2d([[[0.1, 0.2], [0.3, 0.4]]], pixel_scales=1.0)
 
         transformer_preload = aa.transformer_dft(
-            uv_wavelengths=uv_wavelengths,
-            grid_radians=grid_radians,
-            preload_transform=True,
+            uv_wavelengths=uv_wavelengths, grid=grid_radians, preload_transform=True
         )
         transformer = aa.transformer_dft(
-            uv_wavelengths=uv_wavelengths,
-            grid_radians=grid_radians,
-            preload_transform=False,
+            uv_wavelengths=uv_wavelengths, grid=grid_radians, preload_transform=False
         )
 
         image = aa.array.manual_2d([[2.0, 6.0]])
@@ -106,9 +94,7 @@ class TestVisiblities:
         grid_radians = aa.grid.manual_2d([[[1.0, 1.0]]], pixel_scales=1.0)
 
         transformer = aa.transformer_dft(
-            uv_wavelengths=uv_wavelengths,
-            grid_radians=grid_radians,
-            preload_transform=False,
+            uv_wavelengths=uv_wavelengths, grid=grid_radians, preload_transform=False
         )
 
         image = aa.array.ones(shape_2d=(1, 1))
@@ -122,9 +108,7 @@ class TestVisiblities:
         grid_radians = aa.grid.manual_2d([[[0.1, 0.2], [0.3, 0.4]]], pixel_scales=1.0)
 
         transformer = aa.transformer_dft(
-            uv_wavelengths=uv_wavelengths,
-            grid_radians=grid_radians,
-            preload_transform=False,
+            uv_wavelengths=uv_wavelengths, grid=grid_radians, preload_transform=False
         )
 
         image = aa.array.ones(shape_2d=(2, 1))
@@ -141,9 +125,7 @@ class TestVisiblities:
         grid_radians = aa.grid.manual_2d([[[1.0, 1.0]]], pixel_scales=1.0)
 
         transformer = aa.transformer_dft(
-            uv_wavelengths=uv_wavelengths,
-            grid_radians=grid_radians,
-            preload_transform=False,
+            uv_wavelengths=uv_wavelengths, grid=grid_radians, preload_transform=False
         )
 
         image = aa.array.manual_2d([[2.0]])
@@ -157,9 +139,7 @@ class TestVisiblities:
         grid_radians = aa.grid.manual_2d([[[0.1, 0.2], [0.3, 0.4]]], pixel_scales=1.0)
 
         transformer = aa.transformer_dft(
-            uv_wavelengths=uv_wavelengths,
-            grid_radians=grid_radians,
-            preload_transform=False,
+            uv_wavelengths=uv_wavelengths, grid=grid_radians, preload_transform=False
         )
 
         image = aa.array.manual_2d([[3.0, 6.0]])
@@ -176,14 +156,10 @@ class TestVisiblities:
         grid_radians = aa.grid.manual_2d([[[0.1, 0.2], [0.3, 0.4]]], pixel_scales=1.0)
 
         transformer_preload = aa.transformer_dft(
-            uv_wavelengths=uv_wavelengths,
-            grid_radians=grid_radians,
-            preload_transform=True,
+            uv_wavelengths=uv_wavelengths, grid=grid_radians, preload_transform=True
         )
         transformer = aa.transformer_dft(
-            uv_wavelengths=uv_wavelengths,
-            grid_radians=grid_radians,
-            preload_transform=False,
+            uv_wavelengths=uv_wavelengths, grid=grid_radians, preload_transform=False
         )
 
         image = aa.array.manual_2d([[2.0, 6.0]])
@@ -202,9 +178,7 @@ class TestVisiblities:
         grid_radians = aa.grid.manual_2d([[[0.1, 0.2], [0.3, 0.4]]], pixel_scales=1.0)
 
         transformer = aa.transformer_dft(
-            uv_wavelengths=uv_wavelengths,
-            grid_radians=grid_radians,
-            preload_transform=False,
+            uv_wavelengths=uv_wavelengths, grid=grid_radians, preload_transform=False
         )
 
         image = aa.array.manual_2d([[3.0, 6.0]])
@@ -232,9 +206,7 @@ class TestVisiblitiesMappingMatrix:
         grid_radians = aa.grid.manual_2d([[[1.0, 1.0]]], pixel_scales=1.0)
 
         transformer = aa.transformer_dft(
-            uv_wavelengths=uv_wavelengths,
-            grid_radians=grid_radians,
-            preload_transform=False,
+            uv_wavelengths=uv_wavelengths, grid=grid_radians, preload_transform=False
         )
 
         mapping_matrix = np.ones(shape=(1, 1))
@@ -250,9 +222,7 @@ class TestVisiblitiesMappingMatrix:
         grid_radians = aa.grid.manual_2d([[[0.1, 0.2], [0.3, 0.4]]], pixel_scales=1.0)
 
         transformer = aa.transformer_dft(
-            uv_wavelengths=uv_wavelengths,
-            grid_radians=grid_radians,
-            preload_transform=False,
+            uv_wavelengths=uv_wavelengths, grid=grid_radians, preload_transform=False
         )
 
         mapping_matrix = np.ones(shape=(2, 1))
@@ -287,9 +257,7 @@ class TestVisiblitiesMappingMatrix:
         uv_wavelengths = np.array([[0.7, 0.8], [0.9, 1.0]])
 
         transformer = aa.transformer_dft(
-            uv_wavelengths=uv_wavelengths,
-            grid_radians=grid_radians,
-            preload_transform=False,
+            uv_wavelengths=uv_wavelengths, grid=grid_radians, preload_transform=False
         )
 
         mapping_matrix = np.array([[1.0], [0.0], [0.0]])
@@ -328,15 +296,11 @@ class TestVisiblitiesMappingMatrix:
         grid_radians = aa.grid.manual_2d([[[0.1, 0.2], [0.3, 0.4]]], pixel_scales=1.0)
 
         transformer_preload = aa.transformer_dft(
-            uv_wavelengths=uv_wavelengths,
-            grid_radians=grid_radians,
-            preload_transform=True,
+            uv_wavelengths=uv_wavelengths, grid=grid_radians, preload_transform=True
         )
 
         transformer = aa.transformer_dft(
-            uv_wavelengths=uv_wavelengths,
-            grid_radians=grid_radians,
-            preload_transform=False,
+            uv_wavelengths=uv_wavelengths, grid=grid_radians, preload_transform=False
         )
 
         mapping_matrix = np.array([[3.0, 5.0], [1.0, 2.0]])
@@ -357,9 +321,7 @@ class TestVisiblitiesMappingMatrix:
         grid_radians = aa.grid.manual_2d([[[1.0, 1.0]]], pixel_scales=1.0)
 
         transformer = aa.transformer_dft(
-            uv_wavelengths=uv_wavelengths,
-            grid_radians=grid_radians,
-            preload_transform=False,
+            uv_wavelengths=uv_wavelengths, grid=grid_radians, preload_transform=False
         )
 
         mapping_matrix = np.ones(shape=(1, 1))
@@ -377,9 +339,7 @@ class TestVisiblitiesMappingMatrix:
         grid_radians = aa.grid.manual_2d([[[0.1, 0.2], [0.3, 0.4]]], pixel_scales=1.0)
 
         transformer = aa.transformer_dft(
-            uv_wavelengths=uv_wavelengths,
-            grid_radians=grid_radians,
-            preload_transform=False,
+            uv_wavelengths=uv_wavelengths, grid=grid_radians, preload_transform=False
         )
 
         mapping_matrix = np.ones(shape=(2, 1))
@@ -414,9 +374,7 @@ class TestVisiblitiesMappingMatrix:
         uv_wavelengths = np.array([[0.7, 0.8], [0.9, 1.0]])
 
         transformer = aa.transformer_dft(
-            uv_wavelengths=uv_wavelengths,
-            grid_radians=grid_radians,
-            preload_transform=False,
+            uv_wavelengths=uv_wavelengths, grid=grid_radians, preload_transform=False
         )
 
         mapping_matrix = np.array([[1.0], [0.0], [0.0]])
@@ -455,15 +413,11 @@ class TestVisiblitiesMappingMatrix:
         grid_radians = aa.grid.manual_2d([[[0.1, 0.2], [0.3, 0.4]]], pixel_scales=1.0)
 
         transformer_preload = aa.transformer_dft(
-            uv_wavelengths=uv_wavelengths,
-            grid_radians=grid_radians,
-            preload_transform=True,
+            uv_wavelengths=uv_wavelengths, grid=grid_radians, preload_transform=True
         )
 
         transformer = aa.transformer_dft(
-            uv_wavelengths=uv_wavelengths,
-            grid_radians=grid_radians,
-            preload_transform=False,
+            uv_wavelengths=uv_wavelengths, grid=grid_radians, preload_transform=False
         )
 
         mapping_matrix = np.array([[3.0, 5.0], [1.0, 2.0]])
@@ -486,9 +440,7 @@ class TestVisiblitiesMappingMatrix:
         grid_radians = aa.grid.manual_2d([[[0.1, 0.2], [0.3, 0.4]]], pixel_scales=1.0)
 
         transformer = aa.transformer_dft(
-            uv_wavelengths=uv_wavelengths,
-            grid_radians=grid_radians,
-            preload_transform=False,
+            uv_wavelengths=uv_wavelengths, grid=grid_radians, preload_transform=False
         )
 
         mapping_matrix = np.ones(shape=(2, 1))
@@ -517,9 +469,7 @@ class TestTransformerFFT:
         )
 
         transformer_dft = aa.transformer_dft(
-            uv_wavelengths=uv_wavelengths,
-            grid_radians=grid_radians,
-            preload_transform=False,
+            uv_wavelengths=uv_wavelengths, grid=grid_radians, preload_transform=False
         )
 
         visibilities_dft = transformer_dft.visibilities_from_image(image=image.in_2d)
@@ -543,9 +493,7 @@ class TestTransformerFFT:
         mapping_matrix = np.ones(shape=(25, 3))
 
         transformer_dft = aa.transformer_dft(
-            uv_wavelengths=uv_wavelengths,
-            grid_radians=grid_radians,
-            preload_transform=False,
+            uv_wavelengths=uv_wavelengths, grid=grid_radians, preload_transform=False
         )
 
         transformed_mapping_matrices_dft = transformer_dft.transformed_mapping_matrices_from_mapping_matrix(
@@ -585,9 +533,7 @@ class TestTransformerNUFFT:
         )
 
         transformer_dft = aa.transformer_dft(
-            uv_wavelengths=uv_wavelengths,
-            grid_radians=grid_radians,
-            preload_transform=False,
+            uv_wavelengths=uv_wavelengths, grid=grid_radians, preload_transform=False
         )
 
         visibilities_dft = transformer_dft.visibilities_from_image(image=image.in_2d)
@@ -613,9 +559,7 @@ class TestTransformerNUFFT:
         mapping_matrix = np.ones(shape=(25, 3))
 
         transformer_dft = aa.transformer_dft(
-            uv_wavelengths=uv_wavelengths,
-            grid_radians=grid_radians,
-            preload_transform=False,
+            uv_wavelengths=uv_wavelengths, grid=grid_radians, preload_transform=False
         )
 
         transformed_mapping_matrices_dft = transformer_dft.transformed_mapping_matrices_from_mapping_matrix(
