@@ -245,7 +245,7 @@ class ImagingSimulator:
         noise_seed: int
             A seed for random noise_maps generation
         """
-        return imaging.SimulatedImaging.simulate(
+        return imaging.Imaging.simulate(
             image=image,
             exposure_time=self.exposure_time,
             psf=self.psf,
