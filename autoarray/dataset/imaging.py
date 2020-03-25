@@ -152,6 +152,7 @@ class AbstractImagingDataSet(abstract_dataset.AbstractDataset):
             exposure_time_map=self.exposure_time_map,
             background_sky_map=self.background_sky_map,
             name=self.name,
+            metadata=self.metadata
         )
 
     def modified_image_from_image(self, image):
@@ -165,6 +166,7 @@ class AbstractImagingDataSet(abstract_dataset.AbstractDataset):
             exposure_time_map=self.exposure_time_map,
             background_sky_map=self.background_sky_map,
             name=self.name,
+            metadata=self.metadata
         )
 
     def add_poisson_noise_to_data(self, seed=-1):
