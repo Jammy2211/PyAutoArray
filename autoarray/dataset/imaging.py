@@ -12,7 +12,56 @@ from autoarray.structures import kernel, arrays
 logger = logging.getLogger(__name__)
 
 
-class AbstractImagingDataSet(abstract_dataset.AbstractDataset):
+class Imaging(abstract_dataset.AbstractDataset):
+    def __init__(
+            self,
+            image,
+            noise_map,
+            psf=None,
+            background_noise_map=None,
+            poisson_noise_map=None,
+            exposure_time_map=None,
+            background_sky_map=None,
+            name=None,
+            metadata=None,
+            **kwargs
+    ):
+        """A collection of 2D imaging dataset(an image, noise-map, psf, etc.)
+
+        Parameters
+        ----------
+        image : aa.Array
+            The array of the image data, in units of electrons per second.
+        psf : PSF
+            An array describing the PSF kernel of the image.
+        noise_map : NoiseMap | float | ndarray
+            An array describing the RMS standard deviation error in each pixel, preferably in units of electrons per
+            second.
+        background_noise_map : NoiseMap
+            An array describing the RMS standard deviation error in each pixel due to the background sky noise_map,
+            preferably in units of electrons per second.
+        poisson_noise_map : NoiseMap
+            An array describing the RMS standard deviation error in each pixel due to the Poisson counts of the source,
+            preferably in units of electrons per second.
+        exposure_time_map : aa.Array
+            An array describing the effective exposure time in each imaging pixel.
+        background_sky_map : aa.Scaled
+            An array describing the background sky.
+        """
+
+        super().__init__(
+            data=image,
+            noise_map=noise_map,
+            exposure_time_map=exposure_time_map,
+            name=name,
+            metadata=metadata,
+        )
+
+        self.psf = psf
+        self.background_noise_map = background_noise_map
+        self.poisson_noise_map = poisson_noise_map
+        self.background_sky_map = background_sky_map
+
     @property
     def image(self):
         return self.data
@@ -20,22 +69,6 @@ class AbstractImagingDataSet(abstract_dataset.AbstractDataset):
     @property
     def pixel_scales(self):
         return self.data.pixel_scales
-
-    @property
-    def pixel_scale(self):
-        return self.data.pixel_scale
-
-    @property
-    def shape(self):
-        return self.image.shape_2d
-
-    @property
-    def shape_2d(self):
-        return self.image.shape_2d
-
-    @property
-    def grid(self):
-        return self.image.mask.geometry.masked_grid
 
     def binned_from_bin_up_factor(self, bin_up_factor):
 
@@ -370,82 +403,6 @@ class AbstractImagingDataSet(abstract_dataset.AbstractDataset):
             self.background_sky_map.output_to_fits(
                 file_path=background_sky_map_path, overwrite=overwrite
             )
-
-
-class Imaging(AbstractImagingDataSet):
-    def __init__(
-            self,
-            image,
-            noise_map,
-            psf=None,
-            background_noise_map=None,
-            poisson_noise_map=None,
-            exposure_time_map=None,
-            background_sky_map=None,
-            name=None,
-            metadata=None,
-            **kwargs
-    ):
-        """A collection of 2D imaging dataset(an image, noise-map, psf, etc.)
-
-        Parameters
-        ----------
-        image : aa.Array
-            The array of the image data, in units of electrons per second.
-        psf : PSF
-            An array describing the PSF kernel of the image.
-        noise_map : NoiseMap | float | ndarray
-            An array describing the RMS standard deviation error in each pixel, preferably in units of electrons per
-            second.
-        background_noise_map : NoiseMap
-            An array describing the RMS standard deviation error in each pixel due to the background sky noise_map,
-            preferably in units of electrons per second.
-        poisson_noise_map : NoiseMap
-            An array describing the RMS standard deviation error in each pixel due to the Poisson counts of the source,
-            preferably in units of electrons per second.
-        exposure_time_map : aa.Array
-            An array describing the effective exposure time in each imaging pixel.
-        background_sky_map : aa.Scaled
-            An array describing the background sky.
-        """
-
-        super().__init__(
-            data=image,
-            noise_map=noise_map,
-            exposure_time_map=exposure_time_map,
-            name=name,
-            metadata=metadata,
-        )
-
-        self.psf = psf
-        self.background_noise_map = background_noise_map
-        self.poisson_noise_map = poisson_noise_map
-        self.background_sky_map = background_sky_map
-
-    @classmethod
-    def manual(
-            cls,
-            image,
-            noise_map,
-            psf=None,
-            background_noise_map=None,
-            poisson_noise_map=None,
-            exposure_time_map=None,
-            background_sky_map=None,
-            name=None,
-            metadata=None,
-    ):
-        return Imaging(
-            image=image,
-            psf=psf,
-            noise_map=noise_map,
-            background_noise_map=background_noise_map,
-            poisson_noise_map=poisson_noise_map,
-            exposure_time_map=exposure_time_map,
-            background_sky_map=background_sky_map,
-            name=name,
-            metadata=metadata,
-        )
 
     @classmethod
     def from_fits(
