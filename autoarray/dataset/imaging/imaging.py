@@ -1,4 +1,5 @@
 import logging
+from typing import Dict
 
 import numpy as np
 from scipy.stats import norm
@@ -12,8 +13,8 @@ from autoarray.dataset.imaging.load import (
     load_background_sky_map
 )
 from autoarray.mask import mask as msk
-from autoarray.operators import convolver
 from autoarray.structures import kernel, arrays
+from autoarray.structures.arrays import AbstractArray
 
 logger = logging.getLogger(__name__)
 
@@ -136,66 +137,6 @@ class Imaging(abstract_dataset.AbstractDataset):
             metadata=self.metadata
         )
 
-    def resized_from_new_shape(self, new_shape):
-
-        image = self.image.resized_from_new_shape(new_shape=new_shape)
-
-        noise_map = (
-            self.noise_map.resized_from_new_shape(new_shape=new_shape)
-            if self.noise_map is not None
-            else None
-        )
-
-        background_noise_map = (
-            self.background_noise_map.resized_from_new_shape(new_shape=new_shape)
-            if self.background_noise_map is not None
-            else None
-        )
-
-        poisson_noise_map = (
-            self.poisson_noise_map.resized_from_new_shape(new_shape=new_shape)
-            if self.poisson_noise_map is not None
-            else None
-        )
-
-        exposure_time_map = (
-            self.exposure_time_map.resized_from_new_shape(new_shape=new_shape)
-            if self.exposure_time_map is not None
-            else None
-        )
-
-        background_sky_map = (
-            self.background_sky_map.resized_from_new_shape(new_shape=new_shape)
-            if self.background_sky_map is not None
-            else None
-        )
-
-        return Imaging(
-            image=image,
-            psf=self.psf,
-            noise_map=noise_map,
-            background_noise_map=background_noise_map,
-            poisson_noise_map=poisson_noise_map,
-            exposure_time_map=exposure_time_map,
-            background_sky_map=background_sky_map,
-            name=self.name,
-            metadata=self.metadata
-        )
-
-    def resized_psf_from_new_shape(self, new_shape):
-        psf = self.psf.resized_from_new_shape(new_shape=new_shape)
-        return Imaging(
-            image=self.image,
-            psf=psf,
-            noise_map=self.noise_map,
-            background_noise_map=self.background_noise_map,
-            poisson_noise_map=self.poisson_noise_map,
-            exposure_time_map=self.exposure_time_map,
-            background_sky_map=self.background_sky_map,
-            name=self.name,
-            metadata=self.metadata
-        )
-
     def modified_image_from_image(self, image):
 
         return Imaging(
@@ -227,62 +168,6 @@ class Imaging(abstract_dataset.AbstractDataset):
             background_noise_map=self.background_noise_map,
             poisson_noise_map=self.poisson_noise_map,
             name=self.name,
-        )
-
-    def data_in_electrons(self):
-
-        image = self.array_from_counts_to_electrons_per_second(array=self.image)
-        noise_map = self.array_from_counts_to_electrons_per_second(array=self.noise_map)
-        background_noise_map = self.array_from_counts_to_electrons_per_second(
-            array=self.background_noise_map
-        )
-        poisson_noise_map = self.array_from_counts_to_electrons_per_second(
-            array=self.poisson_noise_map
-        )
-        background_sky_map = self.array_from_counts_to_electrons_per_second(
-            array=self.background_sky_map
-        )
-
-        return Imaging(
-            image=image,
-            psf=self.psf,
-            noise_map=noise_map,
-            background_noise_map=background_noise_map,
-            poisson_noise_map=poisson_noise_map,
-            exposure_time_map=self.exposure_time_map,
-            background_sky_map=background_sky_map,
-            name=self.name,
-            metadata=self.metadata
-        )
-
-    def data_in_adus_from_gain(self, gain):
-
-        image = self.array_from_adus_to_electrons_per_second(
-            array=self.image, gain=gain
-        )
-        noise_map = self.array_from_adus_to_electrons_per_second(
-            array=self.noise_map, gain=gain
-        )
-        background_noise_map = self.array_from_adus_to_electrons_per_second(
-            array=self.background_noise_map, gain=gain
-        )
-        poisson_noise_map = self.array_from_adus_to_electrons_per_second(
-            array=self.poisson_noise_map, gain=gain
-        )
-        background_sky_map = self.array_from_adus_to_electrons_per_second(
-            array=self.background_sky_map, gain=gain
-        )
-
-        return Imaging(
-            image=image,
-            psf=self.psf,
-            noise_map=noise_map,
-            background_noise_map=background_noise_map,
-            poisson_noise_map=poisson_noise_map,
-            exposure_time_map=self.exposure_time_map,
-            background_sky_map=background_sky_map,
-            name=self.name,
-            metadata=self.metadata
         )
 
     def signal_to_noise_limited_from_signal_to_noise_limit(self, signal_to_noise_limit):
@@ -367,6 +252,62 @@ class Imaging(abstract_dataset.AbstractDataset):
             )
 
         return norm.fit(edges)[1]
+
+    def data_in_electrons(self):
+
+        image = self.array_from_counts_to_electrons_per_second(array=self.image)
+        noise_map = self.array_from_counts_to_electrons_per_second(array=self.noise_map)
+        background_noise_map = self.array_from_counts_to_electrons_per_second(
+            array=self.background_noise_map
+        )
+        poisson_noise_map = self.array_from_counts_to_electrons_per_second(
+            array=self.poisson_noise_map
+        )
+        background_sky_map = self.array_from_counts_to_electrons_per_second(
+            array=self.background_sky_map
+        )
+
+        return Imaging(
+            image=image,
+            psf=self.psf,
+            noise_map=noise_map,
+            background_noise_map=background_noise_map,
+            poisson_noise_map=poisson_noise_map,
+            exposure_time_map=self.exposure_time_map,
+            background_sky_map=background_sky_map,
+            name=self.name,
+            metadata=self.metadata
+        )
+
+    def data_in_adus_from_gain(self, gain):
+
+        image = self.array_from_adus_to_electrons_per_second(
+            array=self.image, gain=gain
+        )
+        noise_map = self.array_from_adus_to_electrons_per_second(
+            array=self.noise_map, gain=gain
+        )
+        background_noise_map = self.array_from_adus_to_electrons_per_second(
+            array=self.background_noise_map, gain=gain
+        )
+        poisson_noise_map = self.array_from_adus_to_electrons_per_second(
+            array=self.poisson_noise_map, gain=gain
+        )
+        background_sky_map = self.array_from_adus_to_electrons_per_second(
+            array=self.background_sky_map, gain=gain
+        )
+
+        return Imaging(
+            image=image,
+            psf=self.psf,
+            noise_map=noise_map,
+            background_noise_map=background_noise_map,
+            poisson_noise_map=poisson_noise_map,
+            exposure_time_map=self.exposure_time_map,
+            background_sky_map=background_sky_map,
+            name=self.name,
+            metadata=self.metadata
+        )
 
     def output_to_fits(
             self,
@@ -456,6 +397,8 @@ class Imaging(abstract_dataset.AbstractDataset):
 
         Parameters
         ----------
+        renormalize_psf
+        noise_map_non_constant
         name
         image_path : str
             The path to the image .fits file containing the image (e.g. '/path/to/image.fits')
@@ -467,18 +410,12 @@ class Imaging(abstract_dataset.AbstractDataset):
             The hdu the image is contained in the .fits file that *image_path* points too.
         resized_imaging_shape : (int, int) | None
             If input, the imaging structures that are image sized, e.g. the image, noise-maps) are resized to these dimensions.
-        resized_imaging_origin_pixels : (int, int) | None
-            If the imaging structures are resized, this defines a new origin (in pixels) around which recentering occurs.
-        resized_imaging_origin_arcsec : (float, float) | None
-            If the imaging structures are resized, this defines a new origin (in arc-seconds) around which recentering occurs.
         psf_path : str
             The path to the psf .fits file containing the psf (e.g. '/path/to/psf.fits')
         psf_hdu : int
             The hdu the psf is contained in the .fits file specified by *psf_path*.
         resized_psf_shape : (int, int) | None
             If input, the psf is resized to these dimensions.
-        renormalize_psf : bool
-            If True, the PSF is renoralized such that all elements sum to 1.0.
         noise_map_path : str
             The path to the noise_map .fits file containing the noise_map (e.g. '/path/to/noise_map.fits')
         noise_map_hdu : int
@@ -498,7 +435,7 @@ class Imaging(abstract_dataset.AbstractDataset):
         background_noise_map_hdu : int
             The hdu the background_noise_map is contained in the .fits file specified by *background_noise_map_path*.
         convert_background_noise_map_from_weight_map : bool
-            If True, the bacground noise-map loaded from the .fits file is converted from a weight-map to a noise-map (see \
+            If True, the background noise-map loaded from the .fits file is converted from a weight-map to a noise-map (see \
             *NoiseMap.from_weight_map).
         convert_background_noise_map_from_inverse_noise_map : bool
             If True, the background noise-map loaded from the .fits file is converted from an inverse noise-map to a \
@@ -604,18 +541,16 @@ class Imaging(abstract_dataset.AbstractDataset):
                         0.001 * noise_map[0] * np.random.uniform(size=noise_map.shape_1d)
                 )
 
+        psf = None
         if psf_path is not None:
-
             psf = kernel.Kernel.from_fits(
                 file_path=psf_path,
                 hdu=psf_hdu,
                 pixel_scales=pixel_scales,
                 renormalize=renormalize_psf,
             )
-
-        else:
-
-            psf = None
+            if resized_psf_shape is not None:
+                psf = psf.resized_from_new_shape(resized_psf_shape)
 
         background_sky_map = load_background_sky_map(
             background_sky_map_path=background_sky_map_path,
@@ -623,30 +558,36 @@ class Imaging(abstract_dataset.AbstractDataset):
             pixel_scales=pixel_scales,
         )
 
+        array_args: Dict[str, AbstractArray] = {
+            "image": image,
+            "noise_map": noise_map,
+            "background_noise_map": background_noise_map,
+            "poisson_noise_map": poisson_noise_map,
+            "exposure_time_map": exposure_time_map,
+            "background_sky_map": background_sky_map,
+        }
+
+        if resized_imaging_shape:
+            array_args = {
+                key: value.resized_from_new_shape(
+                    resized_imaging_shape
+                ) if value is not None else value
+                for key, value in array_args.items()
+            }
+
         imaging = Imaging(
-            image=image,
+            **array_args,
             pixel_scales=pixel_scales,
             psf=psf,
-            noise_map=noise_map,
-            background_noise_map=background_noise_map,
-            poisson_noise_map=poisson_noise_map,
-            exposure_time_map=exposure_time_map,
-            background_sky_map=background_sky_map,
             gain=gain,
             name=name,
             metadata=metadata,
         )
 
-        if resized_imaging_shape is not None:
-            imaging = imaging.resized_from_new_shape(new_shape=resized_imaging_shape)
-
-        if resized_psf_shape is not None and imaging.psf is not None:
-            imaging = imaging.resized_psf_from_new_shape(new_shape=resized_psf_shape)
-
+        if convert_from_adus:
+            imaging = imaging.data_in_adus_from_gain(gain)
         if convert_from_electrons:
             imaging = imaging.data_in_electrons()
-        elif convert_from_adus:
-            imaging = imaging.data_in_adus_from_gain(gain=gain)
 
         return imaging
 
@@ -670,11 +611,13 @@ class Imaging(abstract_dataset.AbstractDataset):
 
         Parameters
         ----------
+        metadata
+        noise_if_add_noise_false
+        background_level
+        exposure_time
         name
         image : ndarray
             The image before simulating (e.g. the lens and source galaxies before optics blurring and Imaging read-out).
-        pixel_scales: float
-            The scale of each pixel in arc seconds
         exposure_time_map : ndarray
             An array representing the effective exposure time of each pixel.
         psf: PSF
@@ -733,7 +676,6 @@ class Imaging(abstract_dataset.AbstractDataset):
                 shape_2d=image.shape_2d,
                 pixel_scales=image.pixel_scales,
             )
-            noise_realization = None
 
         if np.isnan(noise_map).any():
             raise exc.DataException(
@@ -788,152 +730,6 @@ class Imaging(abstract_dataset.AbstractDataset):
                 logger.debug(
                     "Original object in Imaging.__array_finalize__ missing one or more attributes"
                 )
-
-
-class MaskedImaging(abstract_dataset.AbstractMaskedDataset):
-    def __init__(
-            self,
-            imaging,
-            mask,
-            psf_shape_2d=None,
-            pixel_scale_interpolation_grid=None,
-            inversion_pixel_limit=None,
-            inversion_uses_border=True,
-    ):
-        """
-        The lens dataset is the collection of data_type (image, noise-map, PSF), a mask, grid, convolver \
-        and other utilities that are used for modeling and fitting an image of a strong lens.
-
-        Whilst the image, noise-map, etc. are loaded in 2D, the lens dataset creates reduced 1D arrays of each \
-        for lens calculations.
-
-        Parameters
-        ----------
-        imaging: im.Imaging
-            The imaging data_type all in 2D (the image, noise-map, PSF, etc.)
-        mask: msk.Mask
-            The 2D mask that is applied to the image.
-        sub_size : int
-            The size of the sub-grid used for each lens SubGrid. E.g. a value of 2 grid each image-pixel on a 2x2 \
-            sub-grid.
-        psf_shape_2d : (int, int)
-            The shape of the PSF used for convolving model image generated using analytic light profiles. A smaller \
-            shape will trim the PSF relative to the input image PSF, giving a faster analysis run-time.
-        positions : [[]]
-            Lists of image-pixel coordinates (arc-seconds) that mappers close to one another in the source-plane(s), \
-            used to speed up the non-linear sampling.
-        pixel_scale_interpolation_grid : float
-            If *True*, expensive to compute mass profile deflection angles will be computed on a sparse grid and \
-            interpolated to the grid, sub and blurring grids.
-        inversion_pixel_limit : int or None
-            The maximum number of pixels that can be used by an inversion, with the limit placed primarily to speed \
-            up run.
-        """
-
-        self.imaging = imaging
-
-        super(MaskedImaging, self).__init__(
-            mask=mask,
-            pixel_scale_interpolation_grid=pixel_scale_interpolation_grid,
-            inversion_pixel_limit=inversion_pixel_limit,
-            inversion_uses_border=inversion_uses_border,
-        )
-
-        self.image = mask.mapping.array_stored_1d_from_array_2d(
-            array_2d=imaging.image.in_2d
-        )
-        self.noise_map = mask.mapping.array_stored_1d_from_array_2d(
-            array_2d=imaging.noise_map.in_2d
-        )
-
-        self.pixel_scale_interpolation_grid = pixel_scale_interpolation_grid
-
-        ### PSF TRIMMING + CONVOLVER ###
-
-        if imaging.psf is not None:
-
-            if psf_shape_2d is None:
-                self.psf_shape_2d = imaging.psf.shape_2d
-            else:
-                self.psf_shape_2d = psf_shape_2d
-
-            self.psf = kernel.Kernel.manual_2d(
-                array=imaging.psf.resized_from_new_shape(
-                    new_shape=self.psf_shape_2d
-                ).in_2d
-            )
-
-            self.convolver = convolver.Convolver(mask=mask, kernel=self.psf)
-
-            if mask.pixel_scales is not None:
-
-                self.blurring_grid = self.grid.blurring_grid_from_kernel_shape(
-                    kernel_shape_2d=self.psf_shape_2d
-                )
-
-                if pixel_scale_interpolation_grid is not None:
-                    self.blurring_grid = self.blurring_grid.new_grid_with_interpolator(
-                        pixel_scale_interpolation_grid=self.pixel_scale_interpolation_grid
-                    )
-
-    @property
-    def data(self):
-        return self.image
-
-    @classmethod
-    def manual(
-            cls,
-            imaging,
-            mask,
-            psf_shape_2d=None,
-            pixel_scale_interpolation_grid=None,
-            inversion_pixel_limit=None,
-            inversion_uses_border=True,
-    ):
-        return cls(
-            imaging=imaging,
-            mask=mask,
-            psf_shape_2d=psf_shape_2d,
-            pixel_scale_interpolation_grid=pixel_scale_interpolation_grid,
-            inversion_pixel_limit=inversion_pixel_limit,
-            inversion_uses_border=inversion_uses_border,
-        )
-
-    def signal_to_noise_map(self):
-        return self.image / self.noise_map
-
-    def binned_from_bin_up_factor(self, bin_up_factor):
-
-        binned_imaging = self.imaging.binned_from_bin_up_factor(
-            bin_up_factor=bin_up_factor
-        )
-        binned_mask = self.mask.mapping.binned_mask_from_bin_up_factor(
-            bin_up_factor=bin_up_factor
-        )
-
-        return self.__class__(
-            imaging=binned_imaging,
-            mask=binned_mask,
-            psf_shape_2d=self.psf_shape_2d,
-            pixel_scale_interpolation_grid=self.pixel_scale_interpolation_grid,
-            inversion_pixel_limit=self.inversion_pixel_limit,
-            inversion_uses_border=self.inversion_uses_border,
-        )
-
-    def signal_to_noise_limited_from_signal_to_noise_limit(self, signal_to_noise_limit):
-
-        imaging_with_signal_to_noise_limit = self.imaging.signal_to_noise_limited_from_signal_to_noise_limit(
-            signal_to_noise_limit=signal_to_noise_limit
-        )
-
-        return self.__class__(
-            imaging=imaging_with_signal_to_noise_limit,
-            mask=self.mask,
-            psf_shape_2d=self.psf_shape_2d,
-            pixel_scale_interpolation_grid=self.pixel_scale_interpolation_grid,
-            inversion_pixel_limit=self.inversion_pixel_limit,
-            inversion_uses_border=self.inversion_uses_border,
-        )
 
 
 def setup_random_seed(seed):
