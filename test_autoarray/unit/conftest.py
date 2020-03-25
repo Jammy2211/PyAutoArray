@@ -278,7 +278,7 @@ def make_interferometer_7(
 
 @pytest.fixture(name="transformer_7x7_7")
 def make_transformer_7x7_7(uv_wavelengths_7x2, grid_7x7):
-    return aa.transformer(
+    return aa.transformer_dft(
         uv_wavelengths=uv_wavelengths_7x2,
         grid_radians=grid_7x7.mask.geometry.masked_grid.in_radians,
     )
