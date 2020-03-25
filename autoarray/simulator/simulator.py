@@ -298,9 +298,8 @@ class InterferometerSimulator:
         self.uv_wavelengths = uv_wavelengths
         self.sub_size = sub_size
         self.origin = origin
-        self.transformer = transformer.Transformer(
-            uv_wavelengths=self.uv_wavelengths,
-            grid_radians=self.grid.in_1d_binned.in_radians,
+        self.transformer = transformer.TransformerDFT(
+            uv_wavelengths=self.uv_wavelengths, grid=self.grid.in_1d_binned.in_radians
         )
         self.exposure_time = exposure_time
         self.background_level = background_level

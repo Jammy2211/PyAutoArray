@@ -490,6 +490,7 @@ class MaskedInterferometer(abstract_dataset.AbstractMaskedDataset):
         interferometer,
         visibilities_mask,
         real_space_mask,
+        transformer_class=transformer.TransformerNUFFT,
         primary_beam_shape_2d=None,
         pixel_scale_interpolation_grid=None,
         inversion_pixel_limit=None,
@@ -551,9 +552,9 @@ class MaskedInterferometer(abstract_dataset.AbstractMaskedDataset):
                 ).in_2d
             )
 
-        self.transformer = transformer.Transformer(
+        self.transformer = transformer_class(
             uv_wavelengths=interferometer.uv_wavelengths,
-            grid_radians=self.grid.in_1d_binned.in_radians,
+            grid=self.grid.in_1d_binned.in_radians,
         )
 
         self.visibilities = interferometer.visibilities
@@ -574,6 +575,7 @@ class MaskedInterferometer(abstract_dataset.AbstractMaskedDataset):
         interferometer,
         visibilities_mask,
         real_space_mask,
+        transformer_class=transformer.TransformerNUFFT,
         primary_beam_shape_2d=None,
         pixel_scale_interpolation_grid=None,
         inversion_pixel_limit=None,
@@ -583,6 +585,7 @@ class MaskedInterferometer(abstract_dataset.AbstractMaskedDataset):
             interferometer=interferometer,
             visibilities_mask=visibilities_mask,
             real_space_mask=real_space_mask,
+            transformer_class=transformer_class,
             primary_beam_shape_2d=primary_beam_shape_2d,
             pixel_scale_interpolation_grid=pixel_scale_interpolation_grid,
             inversion_pixel_limit=inversion_pixel_limit,
