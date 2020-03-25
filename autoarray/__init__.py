@@ -18,7 +18,9 @@ from autoarray.operators.convolver import Convolver as convolver
 from autoarray.operators.inversion import pixelizations as pix, regularization as reg
 from autoarray.operators.inversion.inversions import inversion
 from autoarray.operators.inversion.mappers import mapper
-from autoarray.operators.transformer import Transformer as transformer
+from autoarray.operators.transformer import Transformer as transformer_dft
+from autoarray.operators.transformer import TransformerFFT as transformer_fft
+from autoarray.operators.transformer import TransformerNUFFT as transformer_nufft
 from autoarray.structures.arrays import Array as array
 from autoarray.structures.grids import (
     Grid as grid,
