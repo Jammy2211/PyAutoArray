@@ -13,7 +13,7 @@ mask = aa.Mask.circular(
 
 grid = aa.Grid.uniform(shape_2d=(11, 11), pixel_scales=0.5)
 
-aplt.array(
+aplt.Array(
     array=array,
     mask=mask,
     grid=grid,
@@ -23,7 +23,7 @@ aplt.array(
     include_border=True,
 )
 
-aplt.array(
+aplt.Array(
     array=array,
     mask=mask,
     grid=grid,

@@ -9,6 +9,6 @@ kernel[0] = 3.0
 
 imaging = aa.Imaging(image=array, noise_map=array, psf=kernel)
 
-# aplt.imaging.image(imaging=imaging)
+# aplt.Imaging.image(imaging=imaging)
 
-aplt.imaging.subplot_imaging(imaging=imaging)
+aplt.Imaging.subplot_imaging(imaging=imaging)
