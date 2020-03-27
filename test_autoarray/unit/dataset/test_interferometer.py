@@ -18,10 +18,10 @@ test_data_dir = "{}/../test_files/array/".format(
 class TestInterferometerMethods:
     def test__data_with_resized_primary_beam(self):
 
-        interferometer = aa.interferometer.manual(
-            visibilities=aa.visibilities.manual_1d(visibilities=[[1, 1]]),
-            primary_beam=aa.kernel.zeros(shape_2d=(5, 5), pixel_scales=1.0),
-            noise_map=aa.visibilities.manual_1d(visibilities=[[2, 2]]),
+        interferometer = aa.Interferometer.manual(
+            visibilities=aa.Visibilities.manual_1d(visibilities=[[1, 1]]),
+            primary_beam=aa.Kernel.zeros(shape_2d=(5, 5), pixel_scales=1.0),
+            noise_map=aa.Visibilities.manual_1d(visibilities=[[2, 2]]),
             exposure_time_map=1,
             uv_wavelengths=1,
         )
@@ -34,9 +34,9 @@ class TestInterferometerMethods:
 
     def test__data_with_modified_visibilities(self):
 
-        interferometer = aa.interferometer.manual(
+        interferometer = aa.Interferometer.manual(
             visibilities=np.array([[1, 1]]),
-            primary_beam=aa.kernel.zeros(shape_2d=(5, 5), pixel_scales=1.0),
+            primary_beam=aa.Kernel.zeros(shape_2d=(5, 5), pixel_scales=1.0),
             noise_map=1,
             exposure_time_map=2,
             uv_wavelengths=3,
@@ -55,13 +55,13 @@ class TestInterferometerMethods:
 
 class TestSimulateInterferometer:
     def test__setup_with_all_features_off(self, transformer_7x7_7):
-        image = aa.array.manual_2d([[2.0, 0.0, 0.0], [0.0, 1.0, 0.0], [3.0, 0.0, 0.0]])
+        image = aa.Array.manual_2d([[2.0, 0.0, 0.0], [0.0, 1.0, 0.0], [3.0, 0.0, 0.0]])
 
-        exposure_time_map = aa.array.full(
+        exposure_time_map = aa.Array.full(
             fill_value=1.0, pixel_scales=0.1, shape_2d=image.shape_2d
         )
 
-        interferometer_simulated = aa.interferometer.simulate(
+        interferometer_simulated = aa.Interferometer.simulate(
             real_space_image=image,
             exposure_time=1.0,
             exposure_time_map=exposure_time_map,
@@ -80,17 +80,17 @@ class TestSimulateInterferometer:
     def test__setup_with_background_sky_on__noise_off__no_noise_in_image__noise_map_is_noise_value(
         self, transformer_7x7_7
     ):
-        image = aa.array.manual_2d([[2.0, 0.0, 0.0], [0.0, 1.0, 0.0], [3.0, 0.0, 0.0]])
+        image = aa.Array.manual_2d([[2.0, 0.0, 0.0], [0.0, 1.0, 0.0], [3.0, 0.0, 0.0]])
 
-        exposure_time_map = aa.array.full(
+        exposure_time_map = aa.Array.full(
             fill_value=1.0, pixel_scales=0.1, shape_2d=image.shape_2d
         )
 
-        background_sky_map = aa.array.full(
+        background_sky_map = aa.Array.full(
             fill_value=2.0, pixel_scales=0.1, shape_2d=image.shape_2d
         )
 
-        interferometer_simulated = aa.interferometer.simulate(
+        interferometer_simulated = aa.Interferometer.simulate(
             real_space_image=image,
             real_space_pixel_scales=0.1,
             exposure_time=1.0,
@@ -118,13 +118,13 @@ class TestSimulateInterferometer:
 
     def test__setup_with_noise(self, transformer_7x7_7):
 
-        image = aa.array.manual_2d([[2.0, 0.0, 0.0], [0.0, 1.0, 0.0], [3.0, 0.0, 0.0]])
+        image = aa.Array.manual_2d([[2.0, 0.0, 0.0], [0.0, 1.0, 0.0], [3.0, 0.0, 0.0]])
 
-        exposure_time_map = aa.array.full(
+        exposure_time_map = aa.Array.full(
             fill_value=20.0, pixel_scales=0.1, shape_2d=image.shape_2d
         )
 
-        interferometer_simulated = aa.interferometer.simulate(
+        interferometer_simulated = aa.Interferometer.simulate(
             real_space_image=image,
             real_space_pixel_scales=0.1,
             exposure_time=20.0,
@@ -182,7 +182,7 @@ class TestSimulateInterferometer:
 class TestInterferometerFromFits:
     def test__no_settings_just_pass_fits(self):
 
-        interferometer = aa.interferometer.from_fits(
+        interferometer = aa.Interferometer.from_fits(
             visibilities_path=test_data_dir + "3x2_ones_twos.fits",
             noise_map_path=test_data_dir + "3x2_threes_fours.fits",
             uv_wavelengths_path=test_data_dir + "3x2_fives_sixes.fits",
@@ -207,7 +207,7 @@ class TestInterferometerFromFits:
 
     def test__optional_array_paths_included__loads_optional_array(self):
 
-        interferometer = aa.interferometer.from_fits(
+        interferometer = aa.Interferometer.from_fits(
             visibilities_path=test_data_dir + "3x2_ones_twos.fits",
             noise_map_path=test_data_dir + "3x2_threes_fours.fits",
             uv_wavelengths_path=test_data_dir + "3x2_fives_sixes.fits",
@@ -221,7 +221,7 @@ class TestInterferometerFromFits:
 
     def test__all_files_in_one_fits__load_using_different_hdus(self):
 
-        interferometer = aa.interferometer.from_fits(
+        interferometer = aa.Interferometer.from_fits(
             visibilities_path=test_data_dir + "3x2_multiple_hdu.fits",
             visibilities_hdu=0,
             noise_map_path=test_data_dir + "3x2_multiple_hdu.fits",
@@ -248,7 +248,7 @@ class TestInterferometerFromFits:
         self
     ):
 
-        interferometer = aa.interferometer.from_fits(
+        interferometer = aa.Interferometer.from_fits(
             visibilities_path=test_data_dir + "3x2_ones_twos.fits",
             noise_map_path=test_data_dir + "3x2_threes_fours.fits",
             uv_wavelengths_path=test_data_dir + "3x2_fives_sixes.fits",
@@ -260,7 +260,7 @@ class TestInterferometerFromFits:
 
     def test__pad_shape_of_primary_beam(self):
 
-        interferometer = aa.interferometer.from_fits(
+        interferometer = aa.Interferometer.from_fits(
             visibilities_path=test_data_dir + "3x2_ones_twos.fits",
             noise_map_path=test_data_dir + "3x2_threes_fours.fits",
             uv_wavelengths_path=test_data_dir + "3x2_fives_sixes.fits",
@@ -288,7 +288,7 @@ class TestInterferometerFromFits:
 
     def test__trim_shape_of_primary_beam(self):
 
-        interferometer = aa.interferometer.from_fits(
+        interferometer = aa.Interferometer.from_fits(
             visibilities_path=test_data_dir + "3x2_ones_twos.fits",
             noise_map_path=test_data_dir + "3x2_threes_fours.fits",
             uv_wavelengths_path=test_data_dir + "3x2_fives_sixes.fits",
@@ -304,7 +304,7 @@ class TestInterferometerFromFits:
 
     def test__primary_beam_renormalized_false__does_not_renormalize_primary_beam(self):
 
-        interferometer = aa.interferometer.from_fits(
+        interferometer = aa.Interferometer.from_fits(
             visibilities_path=test_data_dir + "3x2_ones_twos.fits",
             noise_map_path=test_data_dir + "3x2_threes_fours.fits",
             uv_wavelengths_path=test_data_dir + "3x2_fives_sixes.fits",
@@ -318,7 +318,7 @@ class TestInterferometerFromFits:
 
     def test__primary_beam_renormalized_true__renormalized_primary_beam(self):
 
-        interferometer = aa.interferometer.from_fits(
+        interferometer = aa.Interferometer.from_fits(
             visibilities_path=test_data_dir + "3x2_ones_twos.fits",
             noise_map_path=test_data_dir + "3x2_threes_fours.fits",
             uv_wavelengths_path=test_data_dir + "3x2_fives_sixes.fits",
@@ -335,7 +335,7 @@ class TestInterferometerFromFits:
     def test__exposure_time_and_exposure_time_map_included__raies_imaging_error(self):
 
         with pytest.raises(exc.DataException):
-            aa.interferometer.from_fits(
+            aa.Interferometer.from_fits(
                 visibilities_path=test_data_dir + "3x2_ones_twos.fits",
                 noise_map_path=test_data_dir + "3x3_threes.fits",
                 uv_wavelengths_path=test_data_dir + "3x2_fives_sixes.fits",
@@ -345,7 +345,7 @@ class TestInterferometerFromFits:
 
     def test__output_all_arrays(self):
 
-        interferometer = aa.interferometer.from_fits(
+        interferometer = aa.Interferometer.from_fits(
             visibilities_path=test_data_dir + "3x2_ones_twos.fits",
             noise_map_path=test_data_dir + "3x2_threes_fours.fits",
             uv_wavelengths_path=test_data_dir + "3x2_fives_sixes.fits",
@@ -371,7 +371,7 @@ class TestInterferometerFromFits:
             overwrite=True,
         )
 
-        interferometer = aa.interferometer.from_fits(
+        interferometer = aa.Interferometer.from_fits(
             visibilities_path=output_data_dir + "visibilities.fits",
             noise_map_path=output_data_dir + "noise_map.fits",
             primary_beam_path=output_data_dir + "primary_beam.fits",
@@ -395,7 +395,7 @@ class TestMaskedInterferometer:
         self, interferometer_7, sub_mask_7x7, visibilities_7x2, noise_map_7x2
     ):
 
-        masked_interferometer_7 = aa.masked_interferometer.manual(
+        masked_interferometer_7 = aa.MaskedInterferometer.manual(
             interferometer=interferometer_7,
             visibilities_mask=np.full(fill_value=False, shape=(7, 2)),
             real_space_mask=sub_mask_7x7,
@@ -429,7 +429,7 @@ class TestMaskedInterferometer:
 
         visibilities_mask = np.full(fill_value=False, shape=(7, 2))
 
-        masked_interferometer_7 = aa.masked_interferometer.manual(
+        masked_interferometer_7 = aa.MaskedInterferometer.manual(
             interferometer=interferometer_7,
             visibilities_mask=visibilities_mask,
             real_space_mask=sub_mask_7x7,
@@ -439,7 +439,7 @@ class TestMaskedInterferometer:
         assert type(masked_interferometer_7.primary_beam) == kern.Kernel
         assert type(masked_interferometer_7.transformer) == transformer.TransformerDFT
 
-        masked_interferometer_7 = aa.masked_interferometer.manual(
+        masked_interferometer_7 = aa.MaskedInterferometer.manual(
             interferometer=interferometer_7,
             visibilities_mask=visibilities_mask,
             real_space_mask=sub_mask_7x7,
@@ -449,7 +449,7 @@ class TestMaskedInterferometer:
         assert type(masked_interferometer_7.primary_beam) == kern.Kernel
         assert type(masked_interferometer_7.transformer) == transformer.TransformerFFT
 
-        masked_interferometer_7 = aa.masked_interferometer.manual(
+        masked_interferometer_7 = aa.MaskedInterferometer.manual(
             interferometer=interferometer_7,
             visibilities_mask=visibilities_mask,
             real_space_mask=sub_mask_7x7,
@@ -462,23 +462,23 @@ class TestMaskedInterferometer:
     def test__different_interferometer_without_mock_objects__customize_constructor_inputs(
         self
     ):
-        primary_beam = aa.kernel.ones(shape_2d=(7, 7), pixel_scales=1.0)
+        primary_beam = aa.Kernel.ones(shape_2d=(7, 7), pixel_scales=1.0)
 
-        interferometer = aa.interferometer(
-            visibilities=aa.visibilities.ones(shape_1d=(19,)),
+        interferometer = aa.Interferometer(
+            visibilities=aa.Visibilities.ones(shape_1d=(19,)),
             primary_beam=primary_beam,
-            noise_map=2.0 * aa.visibilities.ones(shape_1d=(19,)),
+            noise_map=2.0 * aa.Visibilities.ones(shape_1d=(19,)),
             uv_wavelengths=3.0 * np.ones((19, 2)),
         )
 
         visibilities_mask = np.full(fill_value=False, shape=(19, 2))
 
-        real_space_mask = aa.mask.unmasked(
+        real_space_mask = aa.Mask.unmasked(
             shape_2d=(19, 19), pixel_scales=1.0, invert=True, sub_size=8
         )
         real_space_mask[9, 9] = False
 
-        masked_interferometer_7 = aa.masked_interferometer.manual(
+        masked_interferometer_7 = aa.MaskedInterferometer.manual(
             interferometer=interferometer,
             visibilities_mask=visibilities_mask,
             real_space_mask=real_space_mask,

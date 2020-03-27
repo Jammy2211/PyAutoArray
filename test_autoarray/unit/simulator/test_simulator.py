@@ -12,7 +12,7 @@ test_data_dir = "{}/../test_files/arrays/".format(
 class TestImagingSimulator:
     def test__simulator_grid_is_uniform_grid_with_same_inputs(self):
 
-        grid = aa.grid.uniform(
+        grid = aa.Grid.uniform(
             shape_2d=(31, 31), pixel_scales=0.05, sub_size=1, origin=(0.1, 0.1)
         )
 
@@ -30,7 +30,7 @@ class TestImagingSimulator:
 
     def test__constructor_and_specific_instrument_class_methods(self):
 
-        psf = aa.kernel.from_gaussian(shape_2d=(11, 11), sigma=0.1, pixel_scales=0.1)
+        psf = aa.Kernel.from_gaussian(shape_2d=(11, 11), sigma=0.1, pixel_scales=0.1)
 
         simulator = aa.simulator.imaging(
             shape_2d=(51, 51),
@@ -49,7 +49,7 @@ class TestImagingSimulator:
 
         lsst = aa.simulator.imaging.lsst()
 
-        lsst_psf = aa.kernel.from_gaussian(
+        lsst_psf = aa.Kernel.from_gaussian(
             shape_2d=(31, 31), sigma=0.5, pixel_scales=0.2
         )
 
@@ -61,7 +61,7 @@ class TestImagingSimulator:
 
         euclid = aa.simulator.imaging.euclid()
 
-        euclid_psf = aa.kernel.from_gaussian(
+        euclid_psf = aa.Kernel.from_gaussian(
             shape_2d=(31, 31), sigma=0.1, pixel_scales=0.1
         )
 
@@ -73,7 +73,7 @@ class TestImagingSimulator:
 
         hst = aa.simulator.imaging.hst()
 
-        hst_psf = aa.kernel.from_gaussian(
+        hst_psf = aa.Kernel.from_gaussian(
             shape_2d=(31, 31), sigma=0.05, pixel_scales=0.05
         )
 
@@ -85,7 +85,7 @@ class TestImagingSimulator:
 
         hst_up_sampled = aa.simulator.imaging.hst_up_sampled()
 
-        hst_up_sampled_psf = aa.kernel.from_gaussian(
+        hst_up_sampled_psf = aa.Kernel.from_gaussian(
             shape_2d=(31, 31), sigma=0.05, pixel_scales=0.03
         )
 
@@ -97,7 +97,7 @@ class TestImagingSimulator:
 
         adaptive_optics = aa.simulator.imaging.keck_adaptive_optics()
 
-        adaptive_optics_psf = aa.kernel.from_gaussian(
+        adaptive_optics_psf = aa.Kernel.from_gaussian(
             shape_2d=(31, 31), sigma=0.025, pixel_scales=0.01
         )
 
@@ -109,12 +109,12 @@ class TestImagingSimulator:
 
     def test__from_image_same_as_manual_image_input(self):
 
-        psf = aa.kernel.manual_2d(
+        psf = aa.Kernel.manual_2d(
             array=np.array([[0.0, 1.0, 0.0], [1.0, 2.0, 1.0], [0.0, 1.0, 0.0]]),
             pixel_scales=1.0,
         )
 
-        image = aa.array.manual_2d([[1.0, 2.0, 3.0], [4.0, 5.0, 6.0]])
+        image = aa.Array.manual_2d([[1.0, 2.0, 3.0], [4.0, 5.0, 6.0]])
 
         simulator = aa.simulator.imaging(
             shape_2d=(20, 20),
@@ -129,7 +129,7 @@ class TestImagingSimulator:
 
         imaging_simulated = simulator.from_image(image=image)
 
-        imaging_manual = aa.imaging.simulate(
+        imaging_manual = aa.Imaging.simulate(
             image=image,
             exposure_time=10000.0,
             psf=psf,
@@ -152,7 +152,7 @@ class TestImagingSimulator:
 class TestInterferometerSimulator:
     def test__simulator_grid_is_uniform_grid_with_same_inputs(self):
 
-        grid = aa.grid.uniform(
+        grid = aa.Grid.uniform(
             shape_2d=(31, 31), pixel_scales=0.05, sub_size=1, origin=(0.1, 0.1)
         )
 
@@ -191,12 +191,12 @@ class TestInterferometerSimulator:
 
     def test__from_real_space_image_same_as_manual_image_input(self):
 
-        primary_beam = aa.kernel.manual_2d(
+        primary_beam = aa.Kernel.manual_2d(
             array=np.array([[0.0, 1.0, 0.0], [1.0, 2.0, 1.0], [0.0, 1.0, 0.0]]),
             pixel_scales=1.0,
         )
 
-        real_space_image = aa.array.manual_2d([[1.0, 2.0, 3.0], [4.0, 5.0, 6.0]])
+        real_space_image = aa.Array.manual_2d([[1.0, 2.0, 3.0], [4.0, 5.0, 6.0]])
 
         simulator = aa.simulator.interferometer(
             real_space_shape_2d=(2, 3),
@@ -214,7 +214,7 @@ class TestInterferometerSimulator:
             real_space_image=real_space_image
         )
 
-        interferometer_manual = aa.interferometer.simulate(
+        interferometer_manual = aa.Interferometer.simulate(
             real_space_image=real_space_image,
             real_space_pixel_scales=0.05,
             transformer=simulator.transformer,

@@ -20,11 +20,11 @@ class TestRectangular:
             ]
         )
 
-        mask = aa.mask.manual(mask_2d=mask, pixel_scales=1.0, sub_size=1)
+        mask = aa.Mask.manual(mask_2d=mask, pixel_scales=1.0, sub_size=1)
 
         # Source-plane comprises 5 grid, so 5 masked_image pixels traced to the pix-plane.
 
-        grid = aa.masked_grid.manual_1d(
+        grid = aa.MaskedGrid.manual_1d(
             grid=np.array(
                 [[1.0, -1.0], [1.0, 1.0], [0.0, 0.0], [-1.0, -1.0], [-1.0, 1.0]]
             ),
@@ -82,13 +82,13 @@ class TestRectangular:
             )
         ).all()
 
-        image = aa.array.ones(shape_2d=(7, 7))
-        noise_map = aa.array.ones(shape_2d=(7, 7))
-        psf = aa.kernel.no_blur()
+        image = aa.Array.ones(shape_2d=(7, 7))
+        noise_map = aa.Array.ones(shape_2d=(7, 7))
+        psf = aa.Kernel.no_blur()
 
-        imaging = aa.imaging(image=image, noise_map=noise_map, psf=psf)
+        imaging = aa.Imaging(image=image, noise_map=noise_map, psf=psf)
 
-        masked_data = aa.masked_imaging(imaging=imaging, mask=mask)
+        masked_data = aa.MaskedImaging(imaging=imaging, mask=mask)
 
         inversion = aa.inversion(
             masked_dataset=masked_data, mapper=mapper, regularization=reg
@@ -112,11 +112,11 @@ class TestRectangular:
             ]
         )
 
-        mask = aa.mask.manual(mask_2d=mask, pixel_scales=1.0, sub_size=1)
+        mask = aa.Mask.manual(mask_2d=mask, pixel_scales=1.0, sub_size=1)
 
         # There is no sub-grid, so our grid are just the masked_image grid (note the NumPy weighted_data structure
         # ensures this has no sub-gridding)
-        grid = aa.masked_grid.manual_1d(
+        grid = aa.MaskedGrid.manual_1d(
             grid=np.array(
                 [
                     [0.9, -0.9],
@@ -195,13 +195,13 @@ class TestRectangular:
             )
         ).all()
 
-        image = aa.array.ones(shape_2d=(7, 7))
-        noise_map = aa.array.ones(shape_2d=(7, 7))
-        psf = aa.kernel.no_blur()
+        image = aa.Array.ones(shape_2d=(7, 7))
+        noise_map = aa.Array.ones(shape_2d=(7, 7))
+        psf = aa.Kernel.no_blur()
 
-        imaging = aa.imaging(image=image, noise_map=noise_map, psf=psf)
+        imaging = aa.Imaging(image=image, noise_map=noise_map, psf=psf)
 
-        masked_data = aa.masked_imaging(imaging=imaging, mask=mask)
+        masked_data = aa.MaskedImaging(imaging=imaging, mask=mask)
 
         inversion = aa.inversion(
             masked_dataset=masked_data, mapper=mapper, regularization=reg
@@ -227,13 +227,13 @@ class TestRectangular:
             ]
         )
 
-        mask = aa.mask.manual(mask_2d=mask, pixel_scales=2.0, sub_size=2)
+        mask = aa.Mask.manual(mask_2d=mask, pixel_scales=2.0, sub_size=2)
 
         # Assume a 2x2 sub-grid, so each of our 5 masked_image-pixels are split into 4.
         # The grid below is unphysical in that the (0.0, 0.0) terms on the end of each sub-grid probably couldn't
         # happen for a real lens calculation. This is to make a mapping_matrix matrix which explicitly tests the
         # sub-grid.
-        grid = aa.masked_grid.manual_1d(
+        grid = aa.MaskedGrid.manual_1d(
             grid=np.array(
                 [
                     [1.0, -1.0],
@@ -307,13 +307,13 @@ class TestRectangular:
             )
         ).all()
 
-        image = aa.array.ones(shape_2d=(7, 7))
-        noise_map = aa.array.ones(shape_2d=(7, 7))
-        psf = aa.kernel.no_blur()
+        image = aa.Array.ones(shape_2d=(7, 7))
+        noise_map = aa.Array.ones(shape_2d=(7, 7))
+        psf = aa.Kernel.no_blur()
 
-        imaging = aa.imaging(image=image, noise_map=noise_map, psf=psf)
+        imaging = aa.Imaging(image=image, noise_map=noise_map, psf=psf)
 
-        masked_data = aa.masked_imaging(imaging=imaging, mask=mask)
+        masked_data = aa.MaskedImaging(imaging=imaging, mask=mask)
 
         inversion = aa.inversion(
             masked_dataset=masked_data, mapper=mapper, regularization=reg
@@ -337,9 +337,9 @@ class TestRectangular:
             ]
         )
 
-        mask = aa.mask.manual(mask_2d=mask, pixel_scales=1.0, sub_size=1)
+        mask = aa.Mask.manual(mask_2d=mask, pixel_scales=1.0, sub_size=1)
 
-        grid = aa.masked_grid.manual_1d(
+        grid = aa.MaskedGrid.manual_1d(
             grid=np.array(
                 [[1.0, 1.0], [1.0, 1.0], [1.0, 1.0], [1.0, 1.0], [-1.0, -1.0]]
             ),
@@ -392,13 +392,13 @@ class TestRectangular:
             )
         ).all()
 
-        image = aa.array.ones(shape_2d=(7, 7))
-        noise_map = aa.array.ones(shape_2d=(7, 7))
-        psf = aa.kernel.no_blur()
+        image = aa.Array.ones(shape_2d=(7, 7))
+        noise_map = aa.Array.ones(shape_2d=(7, 7))
+        psf = aa.Kernel.no_blur()
 
-        imaging = aa.imaging(image=image, noise_map=noise_map, psf=psf)
+        imaging = aa.Imaging(image=image, noise_map=noise_map, psf=psf)
 
-        masked_data = aa.masked_imaging(imaging=imaging, mask=mask)
+        masked_data = aa.MaskedImaging(imaging=imaging, mask=mask)
 
         inversion = aa.inversion(
             masked_dataset=masked_data, mapper=mapper, regularization=reg
@@ -424,11 +424,11 @@ class TestRectangular:
             ]
         )
 
-        real_space_mask = aa.mask.manual(
+        real_space_mask = aa.Mask.manual(
             mask_2d=real_space_mask, pixel_scales=0.1, sub_size=1
         )
 
-        grid = aa.masked_grid.from_mask(mask=real_space_mask)
+        grid = aa.MaskedGrid.from_mask(mask=real_space_mask)
 
         pix = aa.pix.Rectangular(shape=(7, 7))
 
@@ -438,7 +438,7 @@ class TestRectangular:
 
         reg = aa.reg.Constant(coefficient=0.0)
 
-        visibilities = aa.visibilities.manual_1d(
+        visibilities = aa.Visibilities.manual_1d(
             visibilities=[
                 [1.0, 0.0],
                 [1.0, 0.0],
@@ -449,16 +449,16 @@ class TestRectangular:
                 [1.0, 0.0],
             ]
         )
-        noise_map = aa.visibilities.ones(shape_1d=(7,))
+        noise_map = aa.Visibilities.ones(shape_1d=(7,))
         uv_wavelengths = np.ones(shape=(7, 2))
 
-        interferometer = aa.interferometer(
+        interferometer = aa.Interferometer(
             visibilities=visibilities,
             noise_map=noise_map,
             uv_wavelengths=uv_wavelengths,
         )
 
-        masked_data = aa.masked_interferometer(
+        masked_data = aa.MaskedInterferometer(
             interferometer=interferometer,
             visibilities_mask=visibilities_mask,
             real_space_mask=real_space_mask,
@@ -479,7 +479,7 @@ class TestRectangular:
 class TestVoronoiMagnification:
     def test__3x3_simple_grid(self):
 
-        mask = aa.mask.manual(
+        mask = aa.Mask.manual(
             mask_2d=np.array(
                 [
                     [True, True, True, True, True],
@@ -507,14 +507,14 @@ class TestVoronoiMagnification:
             ]
         )
 
-        grid = aa.masked_grid.manual_1d(grid=grid, mask=mask)
+        grid = aa.MaskedGrid.manual_1d(grid=grid, mask=mask)
 
         pix = aa.pix.VoronoiMagnification(shape=(3, 3))
         sparse_grid = grids.SparseGrid.from_grid_and_unmasked_2d_grid_shape(
             grid=grid, unmasked_sparse_shape=pix.shape
         )
 
-        pixelization_grid = aa.grid_voronoi(
+        pixelization_grid = aa.GridVoronoi(
             grid_1d=sparse_grid.sparse,
             nearest_pixelization_1d_index_for_mask_1d_index=sparse_grid.sparse_1d_index_for_mask_1d_index,
         )
@@ -573,13 +573,13 @@ class TestVoronoiMagnification:
             )
         ).all()
 
-        image = aa.array.ones(shape_2d=(5, 5))
-        noise_map = aa.array.ones(shape_2d=(5, 5))
-        psf = aa.kernel.no_blur()
+        image = aa.Array.ones(shape_2d=(5, 5))
+        noise_map = aa.Array.ones(shape_2d=(5, 5))
+        psf = aa.Kernel.no_blur()
 
-        imaging = aa.imaging(image=image, noise_map=noise_map, psf=psf)
+        imaging = aa.Imaging(image=image, noise_map=noise_map, psf=psf)
 
-        masked_data = aa.masked_imaging(imaging=imaging, mask=mask)
+        masked_data = aa.MaskedImaging(imaging=imaging, mask=mask)
 
         inversion = aa.inversion(
             masked_dataset=masked_data, mapper=mapper, regularization=reg
@@ -591,7 +591,7 @@ class TestVoronoiMagnification:
 
     def test__3x3_simple_grid__include_mask(self):
 
-        mask = aa.mask.manual(
+        mask = aa.Mask.manual(
             mask_2d=np.array(
                 [
                     [True, True, True, True, True],
@@ -607,14 +607,14 @@ class TestVoronoiMagnification:
 
         grid = np.array([[1.0, 0.0], [0.0, -1.0], [0.0, 0.0], [0.0, 1.0], [-1.0, 0.0]])
 
-        grid = aa.masked_grid.manual_1d(grid=grid, mask=mask)
+        grid = aa.MaskedGrid.manual_1d(grid=grid, mask=mask)
 
         pix = aa.pix.VoronoiMagnification(shape=(3, 3))
         sparse_grid = grids.SparseGrid.from_grid_and_unmasked_2d_grid_shape(
             grid=grid, unmasked_sparse_shape=pix.shape
         )
 
-        pixelization_grid = aa.grid_voronoi(
+        pixelization_grid = aa.GridVoronoi(
             grid_1d=sparse_grid.sparse,
             nearest_pixelization_1d_index_for_mask_1d_index=sparse_grid.sparse_1d_index_for_mask_1d_index,
         )
@@ -661,13 +661,13 @@ class TestVoronoiMagnification:
             )
         ).all()
 
-        image = aa.array.ones(shape_2d=(5, 5))
-        noise_map = aa.array.ones(shape_2d=(5, 5))
-        psf = aa.kernel.no_blur()
+        image = aa.Array.ones(shape_2d=(5, 5))
+        noise_map = aa.Array.ones(shape_2d=(5, 5))
+        psf = aa.Kernel.no_blur()
 
-        imaging = aa.imaging(image=image, noise_map=noise_map, psf=psf)
+        imaging = aa.Imaging(image=image, noise_map=noise_map, psf=psf)
 
-        masked_data = aa.masked_imaging(imaging=imaging, mask=mask)
+        masked_data = aa.MaskedImaging(imaging=imaging, mask=mask)
 
         inversion = aa.inversion(
             masked_dataset=masked_data, mapper=mapper, regularization=reg
@@ -679,7 +679,7 @@ class TestVoronoiMagnification:
 
     def test__3x3_simple_grid__include_mask_and_sub_grid(self):
 
-        mask = aa.mask.manual(
+        mask = aa.Mask.manual(
             mask_2d=np.array(
                 [
                     [True, True, True, True, True],
@@ -718,14 +718,14 @@ class TestVoronoiMagnification:
             ]
         )
 
-        grid = aa.masked_grid.manual_1d(grid=grid, mask=mask)
+        grid = aa.MaskedGrid.manual_1d(grid=grid, mask=mask)
 
         pix = aa.pix.VoronoiMagnification(shape=(3, 3))
         sparse_grid = grids.SparseGrid.from_grid_and_unmasked_2d_grid_shape(
             grid=grid, unmasked_sparse_shape=pix.shape
         )
 
-        pixelization_grid = aa.grid_voronoi(
+        pixelization_grid = aa.GridVoronoi(
             grid_1d=sparse_grid.sparse,
             nearest_pixelization_1d_index_for_mask_1d_index=sparse_grid.sparse_1d_index_for_mask_1d_index,
         )
@@ -770,13 +770,13 @@ class TestVoronoiMagnification:
             )
         ).all()
 
-        image = aa.array.ones(shape_2d=(5, 5))
-        noise_map = aa.array.ones(shape_2d=(5, 5))
-        psf = aa.kernel.no_blur()
+        image = aa.Array.ones(shape_2d=(5, 5))
+        noise_map = aa.Array.ones(shape_2d=(5, 5))
+        psf = aa.Kernel.no_blur()
 
-        imaging = aa.imaging(image=image, noise_map=noise_map, psf=psf)
+        imaging = aa.Imaging(image=image, noise_map=noise_map, psf=psf)
 
-        masked_data = aa.masked_imaging(imaging=imaging, mask=mask)
+        masked_data = aa.MaskedImaging(imaging=imaging, mask=mask)
 
         inversion = aa.inversion(
             masked_dataset=masked_data, mapper=mapper, regularization=reg
@@ -788,7 +788,7 @@ class TestVoronoiMagnification:
 
     def test__3x3_simple_grid__include_mask_with_offset_centre(self):
 
-        mask = aa.mask.manual(
+        mask = aa.Mask.manual(
             mask_2d=np.array(
                 [
                     [True, True, True, True, True, True, True],
@@ -806,14 +806,14 @@ class TestVoronoiMagnification:
 
         grid = np.array([[2.0, 1.0], [1.0, 0.0], [1.0, 1.0], [1.0, 2.0], [0.0, 1.0]])
 
-        grid = aa.masked_grid.manual_1d(grid=grid, mask=mask)
+        grid = aa.MaskedGrid.manual_1d(grid=grid, mask=mask)
 
         pix = aa.pix.VoronoiMagnification(shape=(3, 3))
         sparse_grid = grids.SparseGrid.from_grid_and_unmasked_2d_grid_shape(
             grid=grid, unmasked_sparse_shape=pix.shape
         )
 
-        pixelization_grid = aa.grid_voronoi(
+        pixelization_grid = aa.GridVoronoi(
             grid_1d=sparse_grid.sparse,
             nearest_pixelization_1d_index_for_mask_1d_index=sparse_grid.sparse_1d_index_for_mask_1d_index,
         )
@@ -860,13 +860,13 @@ class TestVoronoiMagnification:
             )
         ).all()
 
-        image = aa.array.ones(shape_2d=(7, 7))
-        noise_map = aa.array.ones(shape_2d=(7, 7))
-        psf = aa.kernel.no_blur()
+        image = aa.Array.ones(shape_2d=(7, 7))
+        noise_map = aa.Array.ones(shape_2d=(7, 7))
+        psf = aa.Kernel.no_blur()
 
-        imaging = aa.imaging(image=image, noise_map=noise_map, psf=psf)
+        imaging = aa.Imaging(image=image, noise_map=noise_map, psf=psf)
 
-        masked_data = aa.masked_imaging(imaging=imaging, mask=mask)
+        masked_data = aa.MaskedImaging(imaging=imaging, mask=mask)
 
         inversion = aa.inversion(
             masked_dataset=masked_data, mapper=mapper, regularization=reg
@@ -892,11 +892,11 @@ class TestVoronoiMagnification:
             ]
         )
 
-        real_space_mask = aa.mask.manual(
+        real_space_mask = aa.Mask.manual(
             mask_2d=real_space_mask, pixel_scales=0.1, sub_size=1
         )
 
-        grid = aa.masked_grid.from_mask(mask=real_space_mask)
+        grid = aa.MaskedGrid.from_mask(mask=real_space_mask)
 
         pix = aa.pix.VoronoiMagnification(shape=(7, 7))
 
@@ -908,7 +908,7 @@ class TestVoronoiMagnification:
 
         reg = aa.reg.Constant(coefficient=0.0)
 
-        visibilities = aa.visibilities.manual_1d(
+        visibilities = aa.Visibilities.manual_1d(
             visibilities=[
                 [1.0, 0.0],
                 [1.0, 0.0],
@@ -919,16 +919,16 @@ class TestVoronoiMagnification:
                 [1.0, 0.0],
             ]
         )
-        noise_map = aa.visibilities.ones(shape_1d=(7,))
+        noise_map = aa.Visibilities.ones(shape_1d=(7,))
         uv_wavelengths = np.ones(shape=(7, 2))
 
-        interferometer = aa.interferometer(
+        interferometer = aa.Interferometer(
             visibilities=visibilities,
             noise_map=noise_map,
             uv_wavelengths=uv_wavelengths,
         )
 
-        masked_data = aa.masked_interferometer(
+        masked_data = aa.MaskedInterferometer(
             interferometer=interferometer,
             visibilities_mask=visibilities_mask,
             real_space_mask=real_space_mask,

@@ -373,7 +373,7 @@ class Mapping:
 
         Parameters
         ----------
-        psf : aa.kernel
+        psf : aa.Kernel
             The PSF of the image used for convolution.
         unmasked_image_1d : ndarray
             The 1D unmasked image which is blurred.

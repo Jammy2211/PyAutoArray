@@ -6,13 +6,13 @@ from autoarray.structures import kernel
 
 class MaskedImaging(abstract_dataset.AbstractMaskedDataset):
     def __init__(
-            self,
-            imaging,
-            mask,
-            psf_shape_2d=None,
-            pixel_scale_interpolation_grid=None,
-            inversion_pixel_limit=None,
-            inversion_uses_border=True,
+        self,
+        imaging,
+        mask,
+        psf_shape_2d=None,
+        pixel_scale_interpolation_grid=None,
+        inversion_pixel_limit=None,
+        inversion_uses_border=True,
     ):
         """
         The lens dataset is the collection of data_type (image, noise-map, PSF), a mask, grid, convolver \
@@ -90,13 +90,13 @@ class MaskedImaging(abstract_dataset.AbstractMaskedDataset):
 
     @classmethod
     def manual(
-            cls,
-            imaging,
-            mask,
-            psf_shape_2d=None,
-            pixel_scale_interpolation_grid=None,
-            inversion_pixel_limit=None,
-            inversion_uses_border=True,
+        cls,
+        imaging,
+        mask,
+        psf_shape_2d=None,
+        pixel_scale_interpolation_grid=None,
+        inversion_pixel_limit=None,
+        inversion_uses_border=True,
     ):
         return cls(
             imaging=imaging,

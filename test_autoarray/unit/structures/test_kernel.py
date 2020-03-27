@@ -20,7 +20,7 @@ class TestAPI:
         def test__init__input_kernel__all_attributes_correct_including_data_inheritance(
             self
         ):
-            kernel = aa.kernel.manual_2d(
+            kernel = aa.Kernel.manual_2d(
                 array=np.ones((3, 3)), pixel_scales=1.0, renormalize=False
             )
 
@@ -29,7 +29,7 @@ class TestAPI:
             assert kernel.pixel_scales == (1.0, 1.0)
             assert kernel.origin == (0.0, 0.0)
 
-            kernel = aa.kernel.manual_1d(
+            kernel = aa.Kernel.manual_1d(
                 array=np.ones((12,)),
                 shape_2d=(4, 3),
                 pixel_scales=1.0,
@@ -43,7 +43,7 @@ class TestAPI:
 
     class TestFull:
         def test__kernel_is_set_of_full_values(self):
-            kernel = aa.kernel.full(fill_value=3.0, shape_2d=(3, 3), pixel_scales=1.0)
+            kernel = aa.Kernel.full(fill_value=3.0, shape_2d=(3, 3), pixel_scales=1.0)
 
             assert kernel.shape_2d == (3, 3)
             assert (kernel.in_2d == 3.0 * np.ones((3, 3))).all()
@@ -52,14 +52,14 @@ class TestAPI:
 
     class TestOnesZeros:
         def test__kernel_is_set_of_full_values(self):
-            kernel = aa.kernel.ones(shape_2d=(3, 3), pixel_scales=1.0)
+            kernel = aa.Kernel.ones(shape_2d=(3, 3), pixel_scales=1.0)
 
             assert kernel.shape_2d == (3, 3)
             assert (kernel.in_2d == np.ones((3, 3))).all()
             assert kernel.pixel_scales == (1.0, 1.0)
             assert kernel.origin == (0.0, 0.0)
 
-            kernel = aa.kernel.zeros(shape_2d=(3, 3), pixel_scales=1.0)
+            kernel = aa.Kernel.zeros(shape_2d=(3, 3), pixel_scales=1.0)
 
             assert kernel.shape_2d == (3, 3)
             assert (kernel.in_2d == np.zeros((3, 3))).all()
@@ -70,13 +70,13 @@ class TestAPI:
         def test__from_fits__input_kernel_3x3__all_attributes_correct_including_data_inheritance(
             self
         ):
-            kernel = aa.kernel.from_fits(
+            kernel = aa.Kernel.from_fits(
                 file_path=test_data_dir + "3x3_ones.fits", hdu=0, pixel_scales=1.0
             )
 
             assert (kernel.in_2d == np.ones((3, 3))).all()
 
-            kernel = aa.kernel.from_fits(
+            kernel = aa.Kernel.from_fits(
                 file_path=test_data_dir + "4x3_ones.fits", hdu=0, pixel_scales=1.0
             )
 
@@ -84,7 +84,7 @@ class TestAPI:
 
     class TestFromKernelNoBlurring:
         def test__correct_kernel(self):
-            kernel = aa.kernel.no_blur(pixel_scales=1.0)
+            kernel = aa.Kernel.no_blur(pixel_scales=1.0)
 
             assert (
                 kernel.in_2d
@@ -92,7 +92,7 @@ class TestAPI:
             ).all()
             assert kernel.pixel_scales == (1.0, 1.0)
 
-            kernel = aa.kernel.no_blur(pixel_scales=2.0)
+            kernel = aa.Kernel.no_blur(pixel_scales=2.0)
 
             assert (
                 kernel.in_2d

@@ -6,32 +6,30 @@ from autoarray import plot
 from autoarray import simulator
 from autoarray import util
 from autoarray.dataset import data_converter
-from autoarray.dataset.imaging import Imaging as imaging
-from autoarray.dataset.imaging import MaskedImaging as masked_imaging
-from autoarray.dataset.interferometer import Interferometer as interferometer
-from autoarray.dataset.interferometer import (
-    MaskedInterferometer as masked_interferometer,
-)
-from autoarray.fit.fit import fit
-from autoarray.mask.mask import Mask as mask
-from autoarray.operators.convolver import Convolver as convolver
+from autoarray.dataset.imaging import Imaging
+from autoarray.dataset.imaging import MaskedImaging
+from autoarray.dataset.interferometer import Interferometer
+from autoarray.dataset.interferometer import MaskedInterferometer
+from autoarray.fit.fit import FitImaging, FitInterferometer
+from autoarray.mask.mask import Mask
+from autoarray.operators.convolver import Convolver
 from autoarray.operators.inversion import pixelizations as pix, regularization as reg
 from autoarray.operators.inversion.inversions import inversion
 from autoarray.operators.inversion.mappers import mapper
-from autoarray.operators.transformer import TransformerDFT as transformer_dft
-from autoarray.operators.transformer import TransformerFFT as transformer_fft
-from autoarray.operators.transformer import TransformerNUFFT as transformer_nufft
-from autoarray.structures.arrays import Array as array
+from autoarray.operators.transformer import TransformerDFT
+from autoarray.operators.transformer import TransformerFFT
+from autoarray.operators.transformer import TransformerNUFFT
+from autoarray.structures.arrays import Array
 from autoarray.structures.grids import (
-    Grid as grid,
-    GridIrregular as grid_irregular,
-    GridRectangular as grid_rectangular,
-    GridVoronoi as grid_voronoi,
-    Coordinates as coordinates,
+    Grid,
+    GridIrregular,
+    GridRectangular,
+    GridVoronoi,
+    Coordinates,
 )
-from autoarray.structures.kernel import Kernel as kernel
-from autoarray.structures.visibilities import Visibilities as visibilities
-from autoarray.structures.arrays import MaskedArray as masked_array
-from autoarray.structures.grids import MaskedGrid as masked_grid
+from autoarray.structures.kernel import Kernel
+from autoarray.structures.visibilities import Visibilities
+from autoarray.structures.arrays import MaskedArray
+from autoarray.structures.grids import MaskedGrid
 
 __version__ = "0.8.2"
