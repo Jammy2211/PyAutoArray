@@ -245,7 +245,7 @@ class TestInterpolatedReconstruction:
     ):
 
         conf.instance = aa.conf.Config(
-            path.join(directory, "../../test_files/inversion_image_grid"),
+            path.join(directory, "../files/inversion_image_grid"),
             path.join(directory, "output"),
         )
 
@@ -306,7 +306,7 @@ class TestInterpolatedReconstruction:
     def test__interpolation_errors__also_on_image_grid__interpolates_values(self):
 
         conf.instance = aa.conf.Config(
-            path.join(directory, "../../test_files/inversion_image_grid"),
+            path.join(directory, "../files/inversion_image_grid"),
             path.join(directory, "output"),
         )
 
@@ -362,7 +362,7 @@ class TestInterpolatedReconstruction:
         self
     ):
         conf.instance = aa.conf.Config(
-            path.join(directory, "../../test_files/inversion_source_grid"),
+            path.join(directory, "../files/inversion_source_grid"),
             path.join(directory, "output"),
         )
 

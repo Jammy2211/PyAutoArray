@@ -5,11 +5,6 @@ import numpy as np
 import pytest
 
 
-test_data_dir = "{}/../test_files/array/".format(
-    os.path.dirname(os.path.realpath(__file__))
-)
-
-
 class TestGrid1DFromMask:
     def test__from_3x3_mask__sub_size_1(self):
 

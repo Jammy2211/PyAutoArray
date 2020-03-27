@@ -8,9 +8,7 @@ import autoarray as aa
 from autoarray.mask import mask as msk
 from autoarray import exc
 
-test_data_dir = "{}/../test_files/array/".format(
-    os.path.dirname(os.path.realpath(__file__))
-)
+test_data_dir = "{}/files/mask/".format(os.path.dirname(os.path.realpath(__file__)))
 
 
 class TestMask:
@@ -508,7 +506,7 @@ class TestFromAndToFits:
             pixel_scales=(1.0, 1.0),
         )
 
-        output_data_dir = "{}/../../test_files/array/output_test/".format(
+        output_data_dir = "{}/files/array/output_test/".format(
             os.path.dirname(os.path.realpath(__file__))
         )
 

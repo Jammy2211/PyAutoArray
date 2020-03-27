@@ -10,9 +10,7 @@ import autoarray as aa
 from autoarray.structures import kernel as kern, arrays
 from autoarray import exc
 
-test_data_dir = "{}/../test_files/array/".format(
-    os.path.dirname(os.path.realpath(__file__))
-)
+test_data_dir = "{}/files/array/".format(os.path.dirname(os.path.realpath(__file__)))
 
 
 class TestAPI:

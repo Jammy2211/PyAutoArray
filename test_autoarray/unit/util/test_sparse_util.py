@@ -4,11 +4,6 @@ import os
 import numpy as np
 
 
-test_data_dir = "{}/../test_files/array/".format(
-    os.path.dirname(os.path.realpath(__file__))
-)
-
-
 class TestUnmaskedSparseForSparse:
     def test__mask_full_false__image_mask_and_pixel_centres_fully_overlap__each_sparse_maps_to_unmaked_sparse(
         self

@@ -6,10 +6,6 @@ import pytest
 from autoarray import exc
 import autoarray as aa
 
-test_data_dir = "{}/../test_files/array/".format(
-    os.path.dirname(os.path.realpath(__file__))
-)
-
 
 class TestMapping:
     def test__array_stored_1d_from_array_1d__compare_to_util(self):

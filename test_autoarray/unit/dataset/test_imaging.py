@@ -10,9 +10,7 @@ from autoarray.dataset import imaging
 from autoarray.structures import kernel as kern
 from autoarray.operators import convolver
 
-test_data_dir = "{}/../test_files/array/".format(
-    os.path.dirname(os.path.realpath(__file__))
-)
+test_data_dir = "{}/files/imaging/".format(os.path.dirname(os.path.realpath(__file__)))
 
 
 class TestConstructor:
@@ -1885,7 +1883,7 @@ class TestImagingFromFits:
             renormalize_psf=False,
         )
 
-        output_data_dir = "{}/../test_files/array/output_test/".format(
+        output_data_dir = "{}/files/array/output_test/".format(
             os.path.dirname(os.path.realpath(__file__))
         )
         if os.path.exists(output_data_dir):

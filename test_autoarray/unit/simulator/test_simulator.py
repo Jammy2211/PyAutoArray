@@ -4,10 +4,6 @@ import pytest
 import numpy as np
 import os
 
-test_data_dir = "{}/../test_files/arrays/".format(
-    os.path.dirname(os.path.realpath(__file__))
-)
-
 
 class TestSimulatorImaging:
     def test__simulator_grid_is_uniform_grid_with_same_inputs(self):

@@ -7,7 +7,7 @@ import shutil
 import autoarray as aa
 from autoarray.structures import visibilities as vis
 
-test_data_dir = "{}/../test_files/array/".format(
+test_data_dir = "{}/files/visibilities/".format(
     os.path.dirname(os.path.realpath(__file__))
 )
 
@@ -93,7 +93,7 @@ class TestVisibilities:
                 file_path=test_data_dir + "3x2_ones.fits", hdu=0
             )
 
-            output_data_dir = "{}/../test_files/visibilities/output_test/".format(
+            output_data_dir = "{}/files/visibilities/output_test/".format(
                 os.path.dirname(os.path.realpath(__file__))
             )
             if os.path.exists(output_data_dir):

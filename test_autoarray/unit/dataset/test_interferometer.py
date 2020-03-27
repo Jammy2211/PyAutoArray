@@ -7,10 +7,10 @@ import pytest
 import autoarray as aa
 from autoarray.dataset import interferometer
 from autoarray.structures import kernel as kern
-from autoarray.operators import convolver, transformer
+from autoarray.operators import transformer
 from autoarray import exc
 
-test_data_dir = "{}/../test_files/array/".format(
+test_data_dir = "{}/files/interferometer/".format(
     os.path.dirname(os.path.realpath(__file__))
 )
 
@@ -354,7 +354,7 @@ class TestInterferometerFromFits:
             renormalize_primary_beam=False,
         )
 
-        output_data_dir = "{}/../test_files/array/output_test/".format(
+        output_data_dir = "{}/files/array/output_test/".format(
             os.path.dirname(os.path.realpath(__file__))
         )
         if os.path.exists(output_data_dir):

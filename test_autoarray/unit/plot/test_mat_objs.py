@@ -17,7 +17,7 @@ directory = path.dirname(path.realpath(__file__))
 @pytest.fixture(autouse=True)
 def set_config_path():
     aa.conf.instance = aa.conf.Config(
-        path.join(directory, "../test_files/plot"), path.join(directory, "output")
+        path.join(directory, "files/plotter"), path.join(directory, "output")
     )
 
 
@@ -407,7 +407,7 @@ class TestLegend:
 class TestOutput:
     def test__input_path_is_created(self):
 
-        test_path = path.join(directory, "../test_files/output_path")
+        test_path = path.join(directory, "files/output_path")
 
         if os.path.exists(test_path):
             shutil.rmtree(test_path)
