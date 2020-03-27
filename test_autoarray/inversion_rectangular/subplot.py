@@ -1,18 +1,18 @@
 import autoarray as aa
 import autoarray.plot as aplt
 
-mask = aa.mask.circular(shape_2d=(7, 7), pixel_scales=0.3, radius=0.6)
+mask = aa.Mask.circular(shape_2d=(7, 7), pixel_scales=0.3, radius=0.6)
 
-imaging = aa.imaging(
-    image=aa.array.ones(shape_2d=(7, 7), pixel_scales=0.3),
-    noise_map=aa.array.ones(shape_2d=(7, 7), pixel_scales=0.3),
-    psf=aa.kernel.ones(shape_2d=(3, 3), pixel_scales=0.3),
+imaging = aa.Imaging(
+    image=aa.Array.ones(shape_2d=(7, 7), pixel_scales=0.3),
+    noise_map=aa.Array.ones(shape_2d=(7, 7), pixel_scales=0.3),
+    psf=aa.Kernel.ones(shape_2d=(3, 3), pixel_scales=0.3),
 )
 
-masked_imaging = aa.masked_imaging(imaging=imaging, mask=mask)
+masked_imaging = aa.MaskedImaging(imaging=imaging, mask=mask)
 
-grid_7x7 = aa.grid.from_mask(mask=mask)
-rectangular_grid = aa.grid_rectangular.overlay_grid(grid=grid_7x7, shape_2d=(3, 3))
+grid_7x7 = aa.Grid.from_mask(mask=mask)
+rectangular_grid = aa.GridRectangular.overlay_grid(grid=grid_7x7, shape_2d=(3, 3))
 rectangular_mapper = aa.mapper(grid=grid_7x7, pixelization_grid=rectangular_grid)
 
 regularization = aa.reg.Constant(coefficient=1.0)

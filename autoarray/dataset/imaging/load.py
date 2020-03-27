@@ -6,18 +6,18 @@ from autoarray.structures import arrays
 
 
 def load_noise_map(
-        noise_map_path,
-        noise_map_hdu,
-        pixel_scales,
-        image=None,
-        background_noise_map=None,
-        exposure_time_map=None,
-        convert_noise_map_from_weight_map=False,
-        convert_noise_map_from_inverse_noise_map=False,
-        noise_map_from_image_and_background_noise_map=False,
-        convert_from_electrons=False,
-        gain=None,
-        convert_from_adus=False,
+    noise_map_path,
+    noise_map_hdu,
+    pixel_scales,
+    image=None,
+    background_noise_map=None,
+    exposure_time_map=None,
+    convert_noise_map_from_weight_map=False,
+    convert_noise_map_from_inverse_noise_map=False,
+    noise_map_from_image_and_background_noise_map=False,
+    convert_from_electrons=False,
+    gain=None,
+    convert_from_adus=False,
 ):
     """Factory for loading the noise-map from a .fits file.
 
@@ -97,8 +97,8 @@ def load_noise_map(
             )
 
         if (
-                not (convert_from_electrons or convert_from_adus)
-                and exposure_time_map is None
+            not (convert_from_electrons or convert_from_adus)
+            and exposure_time_map is None
         ):
             raise exc.DataException(
                 "Cannot compute the noise-map from the image and background noise_map map if an "
@@ -126,11 +126,11 @@ def load_noise_map(
 
 
 def load_background_noise_map(
-        background_noise_map_path,
-        background_noise_map_hdu,
-        pixel_scales,
-        convert_background_noise_map_from_weight_map=False,
-        convert_background_noise_map_from_inverse_noise_map=False,
+    background_noise_map_path,
+    background_noise_map_hdu,
+    pixel_scales,
+    convert_background_noise_map_from_weight_map=False,
+    convert_background_noise_map_from_inverse_noise_map=False,
 ):
     """Factory for loading the background noise-map from a .fits file.
 
@@ -167,8 +167,8 @@ def load_background_noise_map(
             pixel_scales=pixel_scales,
         )
     elif (
-            convert_background_noise_map_from_weight_map
-            and background_noise_map_path is not None
+        convert_background_noise_map_from_weight_map
+        and background_noise_map_path is not None
     ):
         weight_map = arrays.Array.from_fits(
             file_path=background_noise_map_path,
@@ -177,8 +177,8 @@ def load_background_noise_map(
         )
         return data_converter.noise_map_from_weight_map(weight_map=weight_map)
     elif (
-            convert_background_noise_map_from_inverse_noise_map
-            and background_noise_map_path is not None
+        convert_background_noise_map_from_inverse_noise_map
+        and background_noise_map_path is not None
     ):
         inverse_noise_map = arrays.Array.from_fits(
             file_path=background_noise_map_path,
@@ -193,17 +193,17 @@ def load_background_noise_map(
 
 
 def load_poisson_noise_map(
-        poisson_noise_map_path,
-        poisson_noise_map_hdu,
-        pixel_scales,
-        convert_poisson_noise_map_from_weight_map=False,
-        convert_poisson_noise_map_from_inverse_noise_map=False,
-        poisson_noise_map_from_image=False,
-        image=None,
-        exposure_time_map=None,
-        convert_from_electrons=False,
-        gain=None,
-        convert_from_adus=False,
+    poisson_noise_map_path,
+    poisson_noise_map_hdu,
+    pixel_scales,
+    convert_poisson_noise_map_from_weight_map=False,
+    convert_poisson_noise_map_from_inverse_noise_map=False,
+    poisson_noise_map_from_image=False,
+    image=None,
+    exposure_time_map=None,
+    convert_from_electrons=False,
+    gain=None,
+    convert_from_adus=False,
 ):
     """Factory for loading the Poisson noise-map from a .fits file.
 
@@ -257,8 +257,8 @@ def load_poisson_noise_map(
     elif poisson_noise_map_from_image:
 
         if (
-                not (convert_from_electrons or convert_from_adus)
-                and exposure_time_map is None
+            not (convert_from_electrons or convert_from_adus)
+            and exposure_time_map is None
         ):
             raise exc.DataException(
                 "Cannot compute the Poisson noise-map from the image if an "
@@ -280,7 +280,7 @@ def load_poisson_noise_map(
         )
 
     elif (
-            convert_poisson_noise_map_from_weight_map and poisson_noise_map_path is not None
+        convert_poisson_noise_map_from_weight_map and poisson_noise_map_path is not None
     ):
         weight_map = arrays.Array.from_fits(
             file_path=poisson_noise_map_path,
@@ -289,8 +289,8 @@ def load_poisson_noise_map(
         )
         return data_converter.noise_map_from_weight_map(weight_map=weight_map)
     elif (
-            convert_poisson_noise_map_from_inverse_noise_map
-            and poisson_noise_map_path is not None
+        convert_poisson_noise_map_from_inverse_noise_map
+        and poisson_noise_map_path is not None
     ):
         inverse_noise_map = arrays.Array.from_fits(
             file_path=poisson_noise_map_path,
@@ -305,7 +305,7 @@ def load_poisson_noise_map(
 
 
 def load_background_sky_map(
-        background_sky_map_path, background_sky_map_hdu, pixel_scales
+    background_sky_map_path, background_sky_map_hdu, pixel_scales
 ):
     """Factory for loading the background sky from a .fits file.
 

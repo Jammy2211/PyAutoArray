@@ -52,7 +52,7 @@ class TestRectangularMapper:
                 ]
             )
 
-            pixelization_grid = aa.grid_rectangular(
+            pixelization_grid = aa.GridRectangular(
                 grid=np.ones((2, 2)), shape_2d=(3, 3), pixel_scales=(1.0, 1.0)
             )
 
@@ -97,7 +97,7 @@ class TestRectangularMapper:
                 ]
             )
 
-            pixelization_grid = aa.grid_rectangular.overlay_grid(
+            pixelization_grid = aa.GridRectangular.overlay_grid(
                 shape_2d=(3, 3), grid=grid
             )
 
@@ -140,7 +140,7 @@ class TestRectangularMapper:
                 ]
             )
 
-            pixelization_grid = aa.grid_rectangular.overlay_grid(
+            pixelization_grid = aa.GridRectangular.overlay_grid(
                 shape_2d=(3, 3), grid=grid
             )
 
@@ -190,7 +190,7 @@ class TestRectangularMapper:
                 ]
             )
 
-            pixelization_grid = aa.grid_rectangular.overlay_grid(
+            pixelization_grid = aa.GridRectangular.overlay_grid(
                 shape_2d=(4, 3), grid=grid
             )
 
@@ -242,7 +242,7 @@ class TestRectangularMapper:
                 ]
             )
 
-            pixelization_grid = aa.grid_rectangular.overlay_grid(
+            pixelization_grid = aa.GridRectangular.overlay_grid(
                 shape_2d=(3, 4), grid=grid
             )
 
@@ -280,7 +280,7 @@ class TestRectangularMapper:
                 [[1.5, -1.5], [1.0, 0.0], [1.0, 0.6], [-1.4, 0.0], [-1.5, 1.5]]
             )
 
-            pixelization_grid = aa.grid_rectangular.overlay_grid(
+            pixelization_grid = aa.GridRectangular.overlay_grid(
                 shape_2d=(3, 3), grid=grid
             )
 
@@ -313,7 +313,7 @@ class TestRectangularMapper:
                 [[1.0, -1.5], [1.0, -0.49], [0.32, -1.5], [0.32, 0.51], [-1.0, 1.5]]
             )
 
-            pixelization_grid = aa.grid_rectangular.overlay_grid(
+            pixelization_grid = aa.GridRectangular.overlay_grid(
                 shape_2d=(3, 3), grid=grid
             )
 
@@ -347,7 +347,7 @@ class TestRectangularMapper:
                 [[1.0, -1.5], [1.0, -0.49], [0.49, -1.5], [-0.6, 0.0], [-1.0, 1.5]]
             )
 
-            pixelization_grid = aa.grid_rectangular.overlay_grid(
+            pixelization_grid = aa.GridRectangular.overlay_grid(
                 shape_2d=(4, 3), grid=grid
             )
 
@@ -383,7 +383,7 @@ class TestRectangularMapper:
                 [[1.0, -1.5], [1.0, -0.49], [0.32, -1.5], [-0.34, 0.49], [-1.0, 1.5]]
             )
 
-            pixelization_grid = aa.grid_rectangular.overlay_grid(
+            pixelization_grid = aa.GridRectangular.overlay_grid(
                 shape_2d=(3, 4), grid=grid
             )
 
@@ -429,7 +429,7 @@ class TestRectangularMapper:
                 ]
             )
 
-            pixelization_grid = aa.grid_rectangular.overlay_grid(
+            pixelization_grid = aa.GridRectangular.overlay_grid(
                 shape_2d=(3, 3), grid=grid
             )
 
@@ -474,7 +474,7 @@ class TestRectangularMapper:
                 ]
             )
 
-            pixelization_grid = aa.grid_rectangular.overlay_grid(
+            pixelization_grid = aa.GridRectangular.overlay_grid(
                 shape_2d=(3, 3), grid=grid
             )
 
@@ -508,7 +508,7 @@ class TestRectangularMapper:
                 [[3.0, -0.5], [3.0, 0.51], [2.49, -0.5], [1.4, 1.0], [1.0, 2.5]]
             )
 
-            pixelization_grid = aa.grid_rectangular.overlay_grid(
+            pixelization_grid = aa.GridRectangular.overlay_grid(
                 shape_2d=(4, 3), grid=grid
             )
 
@@ -549,7 +549,7 @@ class TestRectangularMapper:
                 ]
             )
 
-            pixelization_grid = aa.grid_rectangular.overlay_grid(
+            pixelization_grid = aa.GridRectangular.overlay_grid(
                 shape_2d=(3, 3), grid=grid
             )
 
@@ -568,7 +568,7 @@ class TestRectangularMapper:
 
         def test__compare_to_imaging_util(self):
 
-            pixelization_grid = aa.grid_rectangular.overlay_grid(
+            pixelization_grid = aa.GridRectangular.overlay_grid(
                 shape_2d=(4, 3), grid=np.ones((2, 2))
             )
 
@@ -588,7 +588,7 @@ class TestRectangularMapper:
             assert (recon_pix.in_2d == recon_pix_util).all()
             assert recon_pix.shape_2d == (4, 3)
 
-            pixelization_grid = aa.grid_rectangular.overlay_grid(
+            pixelization_grid = aa.GridRectangular.overlay_grid(
                 shape_2d=(3, 4), grid=np.ones((2, 2))
             )
 
@@ -610,7 +610,7 @@ class TestRectangularMapper:
 
     class TestPixelSignals:
         def test__pixel_signals__compare_to_mapper_util(self, grid_7x7, image_7x7):
-            pixelization_grid = aa.grid_rectangular.overlay_grid(
+            pixelization_grid = aa.GridRectangular.overlay_grid(
                 shape_2d=(3, 3), grid=grid_7x7
             )
 
@@ -635,7 +635,7 @@ class TestRectangularMapper:
     class TestImagePixelIndexesFromSourcePixelIndexes:
         def test__image_from_source__different_types_of_lists_input(self, sub_grid_7x7):
 
-            rectangular_pixelization_grid = aa.grid_rectangular.overlay_grid(
+            rectangular_pixelization_grid = aa.GridRectangular.overlay_grid(
                 grid=sub_grid_7x7, shape_2d=(3, 3)
             )
             rectangular_mapper = aa.mapper(
@@ -751,7 +751,7 @@ class TestVoronoiMapper:
                 [0, 0, 1, 0, 0, 1, 2, 2, 3]
             )
 
-            pixelization_grid = aa.grid_voronoi(
+            pixelization_grid = aa.GridVoronoi(
                 grid_1d=pixelization_grid,
                 nearest_pixelization_1d_index_for_mask_1d_index=nearest_pixelization_1d_index_for_mask_1d_index,
             )
@@ -773,7 +773,7 @@ class TestVoronoiMapper:
                 [0, 0, 1, 0, 0, 1, 2, 2, 3]
             )
 
-            pixelization_grid = aa.grid_voronoi(
+            pixelization_grid = aa.GridVoronoi(
                 grid_1d=pixelization_grid,
                 nearest_pixelization_1d_index_for_mask_1d_index=nearest_pixelization_1d_index_for_mask_1d_index,
             )
