@@ -26,7 +26,7 @@ def set_config_path():
 def test__image_and_mapper_subplot_is_output_for_all_mappers(
     imaging_7x7, rectangular_mapper_7x7_3x3, voronoi_mapper_9_3x3, plot_path, plot_patch
 ):
-    aplt.mapper.subplot_image_and_mapper(
+    aplt.Mapper.subplot_image_and_mapper(
         image=imaging_7x7.image,
         mapper=rectangular_mapper_7x7_3x3,
         include=aplt.Include(
@@ -38,7 +38,7 @@ def test__image_and_mapper_subplot_is_output_for_all_mappers(
     )
     assert plot_path + "subplot_image_and_mapper.png" in plot_patch.paths
 
-    aplt.mapper.subplot_image_and_mapper(
+    aplt.Mapper.subplot_image_and_mapper(
         image=imaging_7x7.image,
         mapper=voronoi_mapper_9_3x3,
         include=aplt.Include(

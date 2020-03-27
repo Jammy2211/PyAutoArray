@@ -56,7 +56,7 @@ class TestRectangularMapper:
                 grid=np.ones((2, 2)), shape_2d=(3, 3), pixel_scales=(1.0, 1.0)
             )
 
-            mapper = aa.mapper(grid=grid, pixelization_grid=pixelization_grid)
+            mapper = aa.Mapper(grid=grid, pixelization_grid=pixelization_grid)
 
             assert (
                 mapper.pixelization_1d_index_for_sub_mask_1d_index
@@ -101,7 +101,7 @@ class TestRectangularMapper:
                 shape_2d=(3, 3), grid=grid
             )
 
-            mapper = aa.mapper(grid=grid, pixelization_grid=pixelization_grid)
+            mapper = aa.Mapper(grid=grid, pixelization_grid=pixelization_grid)
 
             assert (
                 mapper.pixelization_1d_index_for_sub_mask_1d_index
@@ -144,7 +144,7 @@ class TestRectangularMapper:
                 shape_2d=(3, 3), grid=grid
             )
 
-            mapper = aa.mapper(grid=grid, pixelization_grid=pixelization_grid)
+            mapper = aa.Mapper(grid=grid, pixelization_grid=pixelization_grid)
 
             assert (
                 mapper.pixelization_1d_index_for_sub_mask_1d_index
@@ -194,7 +194,7 @@ class TestRectangularMapper:
                 shape_2d=(4, 3), grid=grid
             )
 
-            mapper = aa.mapper(grid=grid, pixelization_grid=pixelization_grid)
+            mapper = aa.Mapper(grid=grid, pixelization_grid=pixelization_grid)
 
             assert (
                 mapper.pixelization_1d_index_for_sub_mask_1d_index
@@ -246,7 +246,7 @@ class TestRectangularMapper:
                 shape_2d=(3, 4), grid=grid
             )
 
-            mapper = aa.mapper(grid=grid, pixelization_grid=pixelization_grid)
+            mapper = aa.Mapper(grid=grid, pixelization_grid=pixelization_grid)
 
             assert (
                 mapper.pixelization_1d_index_for_sub_mask_1d_index
@@ -284,7 +284,7 @@ class TestRectangularMapper:
                 shape_2d=(3, 3), grid=grid
             )
 
-            mapper = aa.mapper(grid=grid, pixelization_grid=pixelization_grid)
+            mapper = aa.Mapper(grid=grid, pixelization_grid=pixelization_grid)
 
             assert (
                 mapper.pixelization_1d_index_for_sub_mask_1d_index
@@ -317,7 +317,7 @@ class TestRectangularMapper:
                 shape_2d=(3, 3), grid=grid
             )
 
-            mapper = aa.mapper(grid=grid, pixelization_grid=pixelization_grid)
+            mapper = aa.Mapper(grid=grid, pixelization_grid=pixelization_grid)
 
             assert (
                 mapper.pixelization_1d_index_for_sub_mask_1d_index
@@ -351,7 +351,7 @@ class TestRectangularMapper:
                 shape_2d=(4, 3), grid=grid
             )
 
-            mapper = aa.mapper(grid=grid, pixelization_grid=pixelization_grid)
+            mapper = aa.Mapper(grid=grid, pixelization_grid=pixelization_grid)
 
             assert (
                 mapper.pixelization_1d_index_for_sub_mask_1d_index
@@ -387,7 +387,7 @@ class TestRectangularMapper:
                 shape_2d=(3, 4), grid=grid
             )
 
-            mapper = aa.mapper(grid=grid, pixelization_grid=pixelization_grid)
+            mapper = aa.Mapper(grid=grid, pixelization_grid=pixelization_grid)
 
             assert (
                 mapper.pixelization_1d_index_for_sub_mask_1d_index
@@ -433,7 +433,7 @@ class TestRectangularMapper:
                 shape_2d=(3, 3), grid=grid
             )
 
-            mapper = aa.mapper(grid=grid, pixelization_grid=pixelization_grid)
+            mapper = aa.Mapper(grid=grid, pixelization_grid=pixelization_grid)
 
             assert (
                 mapper.pixelization_1d_index_for_sub_mask_1d_index
@@ -478,7 +478,7 @@ class TestRectangularMapper:
                 shape_2d=(3, 3), grid=grid
             )
 
-            mapper = aa.mapper(grid=grid, pixelization_grid=pixelization_grid)
+            mapper = aa.Mapper(grid=grid, pixelization_grid=pixelization_grid)
 
             assert (
                 mapper.pixelization_1d_index_for_sub_mask_1d_index
@@ -512,7 +512,7 @@ class TestRectangularMapper:
                 shape_2d=(4, 3), grid=grid
             )
 
-            mapper = aa.mapper(grid=grid, pixelization_grid=pixelization_grid)
+            mapper = aa.Mapper(grid=grid, pixelization_grid=pixelization_grid)
 
             assert (
                 mapper.pixelization_1d_index_for_sub_mask_1d_index
@@ -553,7 +553,7 @@ class TestRectangularMapper:
                 shape_2d=(3, 3), grid=grid
             )
 
-            mapper = aa.mapper(grid=grid, pixelization_grid=pixelization_grid)
+            mapper = aa.Mapper(grid=grid, pixelization_grid=pixelization_grid)
 
             recon_pix = mapper.reconstructed_pixelization_from_solution_vector(
                 solution_vector=np.array([1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0])
@@ -572,7 +572,7 @@ class TestRectangularMapper:
                 shape_2d=(4, 3), grid=np.ones((2, 2))
             )
 
-            mapper = aa.mapper(grid=None, pixelization_grid=pixelization_grid)
+            mapper = aa.Mapper(grid=None, pixelization_grid=pixelization_grid)
 
             solution = np.array(
                 [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 1.0, 2.0, 3.0]
@@ -592,7 +592,7 @@ class TestRectangularMapper:
                 shape_2d=(3, 4), grid=np.ones((2, 2))
             )
 
-            mapper = aa.mapper(grid=None, pixelization_grid=pixelization_grid)
+            mapper = aa.Mapper(grid=None, pixelization_grid=pixelization_grid)
 
             solution = np.array(
                 [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 1.0, 2.0, 3.0]
@@ -614,7 +614,7 @@ class TestRectangularMapper:
                 shape_2d=(3, 3), grid=grid_7x7
             )
 
-            mapper = aa.mapper(
+            mapper = aa.Mapper(
                 grid=grid_7x7,
                 pixelization_grid=pixelization_grid,
                 hyper_image=image_7x7,
@@ -638,7 +638,7 @@ class TestRectangularMapper:
             rectangular_pixelization_grid = aa.GridRectangular.overlay_grid(
                 grid=sub_grid_7x7, shape_2d=(3, 3)
             )
-            rectangular_mapper = aa.mapper(
+            rectangular_mapper = aa.Mapper(
                 grid=sub_grid_7x7, pixelization_grid=rectangular_pixelization_grid
             )
 
@@ -756,7 +756,7 @@ class TestVoronoiMapper:
                 nearest_pixelization_1d_index_for_mask_1d_index=nearest_pixelization_1d_index_for_mask_1d_index,
             )
 
-            mapper = aa.mapper(grid=grid_7x7, pixelization_grid=pixelization_grid)
+            mapper = aa.Mapper(grid=grid_7x7, pixelization_grid=pixelization_grid)
 
             assert (
                 mapper.pixelization_1d_index_for_sub_mask_1d_index
@@ -778,7 +778,7 @@ class TestVoronoiMapper:
                 nearest_pixelization_1d_index_for_mask_1d_index=nearest_pixelization_1d_index_for_mask_1d_index,
             )
 
-            mapper = aa.mapper(
+            mapper = aa.Mapper(
                 grid=grid_7x7,
                 pixelization_grid=pixelization_grid,
                 hyper_image=image_7x7,

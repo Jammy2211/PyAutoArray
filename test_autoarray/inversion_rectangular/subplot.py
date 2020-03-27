@@ -13,17 +13,17 @@ masked_imaging = aa.MaskedImaging(imaging=imaging, mask=mask)
 
 grid_7x7 = aa.Grid.from_mask(mask=mask)
 rectangular_grid = aa.GridRectangular.overlay_grid(grid=grid_7x7, shape_2d=(3, 3))
-rectangular_mapper = aa.mapper(grid=grid_7x7, pixelization_grid=rectangular_grid)
+rectangular_mapper = aa.Mapper(grid=grid_7x7, pixelization_grid=rectangular_grid)
 
 regularization = aa.reg.Constant(coefficient=1.0)
 
-inversion = aa.inversion(
+inversion = aa.Inversion(
     masked_dataset=masked_imaging,
     mapper=rectangular_mapper,
     regularization=regularization,
 )
 
-aplt.inversion.subplot_inversion(
+aplt.Inversion.subplot_inversion(
     inversion=inversion,
     image_positions=[(0.05, 0.05)],
     lines=[(0.0, 0.0), (0.1, 0.1)],

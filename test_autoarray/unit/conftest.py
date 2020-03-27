@@ -328,7 +328,7 @@ def make_rectangular_pixelization_grid_3x3(grid_7x7):
 
 @pytest.fixture(name="rectangular_mapper_7x7_3x3")
 def make_rectangular_mapper_7x7_3x3(grid_7x7, rectangular_pixelization_grid_3x3):
-    return aa.mapper(grid=grid_7x7, pixelization_grid=rectangular_pixelization_grid_3x3)
+    return aa.Mapper(grid=grid_7x7, pixelization_grid=rectangular_pixelization_grid_3x3)
 
 
 @pytest.fixture(name="voronoi_pixelization_grid_9")
@@ -358,14 +358,14 @@ def make_voronoi_pixelization_grid_9(grid_7x7):
 
 @pytest.fixture(name="voronoi_mapper_9_3x3")
 def make_voronoi_mapper_9_3x3(grid_7x7, voronoi_pixelization_grid_9):
-    return aa.mapper(grid=grid_7x7, pixelization_grid=voronoi_pixelization_grid_9)
+    return aa.Mapper(grid=grid_7x7, pixelization_grid=voronoi_pixelization_grid_9)
 
 
 @pytest.fixture(name="rectangular_inversion_7x7_3x3")
 def make_rectangular_inversion_7x7_3x3(masked_imaging_7x7, rectangular_mapper_7x7_3x3):
     regularization = aa.reg.Constant(coefficient=1.0)
 
-    return aa.inversion(
+    return aa.Inversion(
         masked_dataset=masked_imaging_7x7,
         mapper=rectangular_mapper_7x7_3x3,
         regularization=regularization,
@@ -375,7 +375,7 @@ def make_rectangular_inversion_7x7_3x3(masked_imaging_7x7, rectangular_mapper_7x
 @pytest.fixture(name="voronoi_inversion_9_3x3")
 def make_voronoi_inversion_9_3x3(masked_imaging_7x7, voronoi_mapper_9_3x3):
     regularization = aa.reg.Constant(coefficient=1.0)
-    return aa.inversion(
+    return aa.Inversion(
         masked_dataset=masked_imaging_7x7,
         mapper=voronoi_mapper_9_3x3,
         regularization=regularization,

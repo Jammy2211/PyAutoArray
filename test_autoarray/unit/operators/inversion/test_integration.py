@@ -90,7 +90,7 @@ class TestRectangular:
 
         masked_data = aa.MaskedImaging(imaging=imaging, mask=mask)
 
-        inversion = aa.inversion(
+        inversion = aa.Inversion(
             masked_dataset=masked_data, mapper=mapper, regularization=reg
         )
 
@@ -203,7 +203,7 @@ class TestRectangular:
 
         masked_data = aa.MaskedImaging(imaging=imaging, mask=mask)
 
-        inversion = aa.inversion(
+        inversion = aa.Inversion(
             masked_dataset=masked_data, mapper=mapper, regularization=reg
         )
 
@@ -315,7 +315,7 @@ class TestRectangular:
 
         masked_data = aa.MaskedImaging(imaging=imaging, mask=mask)
 
-        inversion = aa.inversion(
+        inversion = aa.Inversion(
             masked_dataset=masked_data, mapper=mapper, regularization=reg
         )
 
@@ -400,7 +400,7 @@ class TestRectangular:
 
         masked_data = aa.MaskedImaging(imaging=imaging, mask=mask)
 
-        inversion = aa.inversion(
+        inversion = aa.Inversion(
             masked_dataset=masked_data, mapper=mapper, regularization=reg
         )
 
@@ -464,7 +464,7 @@ class TestRectangular:
             real_space_mask=real_space_mask,
         )
 
-        inversion = aa.inversion(
+        inversion = aa.Inversion(
             masked_dataset=masked_data, mapper=mapper, regularization=reg
         )
 
@@ -581,7 +581,7 @@ class TestVoronoiMagnification:
 
         masked_data = aa.MaskedImaging(imaging=imaging, mask=mask)
 
-        inversion = aa.inversion(
+        inversion = aa.Inversion(
             masked_dataset=masked_data, mapper=mapper, regularization=reg
         )
 
@@ -669,7 +669,7 @@ class TestVoronoiMagnification:
 
         masked_data = aa.MaskedImaging(imaging=imaging, mask=mask)
 
-        inversion = aa.inversion(
+        inversion = aa.Inversion(
             masked_dataset=masked_data, mapper=mapper, regularization=reg
         )
 
@@ -778,7 +778,7 @@ class TestVoronoiMagnification:
 
         masked_data = aa.MaskedImaging(imaging=imaging, mask=mask)
 
-        inversion = aa.inversion(
+        inversion = aa.Inversion(
             masked_dataset=masked_data, mapper=mapper, regularization=reg
         )
 
@@ -868,7 +868,7 @@ class TestVoronoiMagnification:
 
         masked_data = aa.MaskedImaging(imaging=imaging, mask=mask)
 
-        inversion = aa.inversion(
+        inversion = aa.Inversion(
             masked_dataset=masked_data, mapper=mapper, regularization=reg
         )
 
@@ -934,7 +934,7 @@ class TestVoronoiMagnification:
             real_space_mask=real_space_mask,
         )
 
-        inversion = aa.inversion(
+        inversion = aa.Inversion(
             masked_dataset=masked_data, mapper=mapper, regularization=reg
         )
 

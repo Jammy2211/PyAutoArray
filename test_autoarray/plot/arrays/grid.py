@@ -6,4 +6,4 @@ array[0] = 3.0
 
 grid = aa.Grid.uniform(shape_2d=(11, 11), pixel_scales=0.5)
 
-aplt.array(array=array, grid=grid)
+aplt.Array(array=array, grid=grid)

@@ -9,14 +9,14 @@ test_data_dir = "{}/../test_files/arrays/".format(
 )
 
 
-class TestImagingSimulator:
+class TestSimulatorImaging:
     def test__simulator_grid_is_uniform_grid_with_same_inputs(self):
 
         grid = aa.Grid.uniform(
             shape_2d=(31, 31), pixel_scales=0.05, sub_size=1, origin=(0.1, 0.1)
         )
 
-        simulator = aa.simulator.imaging(
+        simulator = aa.SimulatorImaging(
             shape_2d=(31, 31),
             pixel_scales=0.05,
             sub_size=1,
@@ -32,7 +32,7 @@ class TestImagingSimulator:
 
         psf = aa.Kernel.from_gaussian(shape_2d=(11, 11), sigma=0.1, pixel_scales=0.1)
 
-        simulator = aa.simulator.imaging(
+        simulator = aa.SimulatorImaging(
             shape_2d=(51, 51),
             pixel_scales=0.1,
             sub_size=1,
@@ -47,7 +47,7 @@ class TestImagingSimulator:
         assert simulator.exposure_time == 20.0
         assert simulator.background_level == 10.0
 
-        lsst = aa.simulator.imaging.lsst()
+        lsst = aa.SimulatorImaging.lsst()
 
         lsst_psf = aa.Kernel.from_gaussian(
             shape_2d=(31, 31), sigma=0.5, pixel_scales=0.2
@@ -59,7 +59,7 @@ class TestImagingSimulator:
         assert lsst.exposure_time == 100.0
         assert lsst.background_level == 1.0
 
-        euclid = aa.simulator.imaging.euclid()
+        euclid = aa.SimulatorImaging.euclid()
 
         euclid_psf = aa.Kernel.from_gaussian(
             shape_2d=(31, 31), sigma=0.1, pixel_scales=0.1
@@ -71,7 +71,7 @@ class TestImagingSimulator:
         assert euclid.exposure_time == 565.0
         assert euclid.background_level == 1.0
 
-        hst = aa.simulator.imaging.hst()
+        hst = aa.SimulatorImaging.hst()
 
         hst_psf = aa.Kernel.from_gaussian(
             shape_2d=(31, 31), sigma=0.05, pixel_scales=0.05
@@ -83,7 +83,7 @@ class TestImagingSimulator:
         assert hst.exposure_time == 2000.0
         assert hst.background_level == 1.0
 
-        hst_up_sampled = aa.simulator.imaging.hst_up_sampled()
+        hst_up_sampled = aa.SimulatorImaging.hst_up_sampled()
 
         hst_up_sampled_psf = aa.Kernel.from_gaussian(
             shape_2d=(31, 31), sigma=0.05, pixel_scales=0.03
@@ -95,7 +95,7 @@ class TestImagingSimulator:
         assert hst_up_sampled.exposure_time == 2000.0
         assert hst_up_sampled.background_level == 1.0
 
-        adaptive_optics = aa.simulator.imaging.keck_adaptive_optics()
+        adaptive_optics = aa.SimulatorImaging.keck_adaptive_optics()
 
         adaptive_optics_psf = aa.Kernel.from_gaussian(
             shape_2d=(31, 31), sigma=0.025, pixel_scales=0.01
@@ -116,7 +116,7 @@ class TestImagingSimulator:
 
         image = aa.Array.manual_2d([[1.0, 2.0, 3.0], [4.0, 5.0, 6.0]])
 
-        simulator = aa.simulator.imaging(
+        simulator = aa.SimulatorImaging(
             shape_2d=(20, 20),
             pixel_scales=0.05,
             sub_size=1,
@@ -149,14 +149,14 @@ class TestImagingSimulator:
         ).all()
 
 
-class TestInterferometerSimulator:
+class TestSimulatorInterferometer:
     def test__simulator_grid_is_uniform_grid_with_same_inputs(self):
 
         grid = aa.Grid.uniform(
             shape_2d=(31, 31), pixel_scales=0.05, sub_size=1, origin=(0.1, 0.1)
         )
 
-        simulator = aa.simulator.interferometer(
+        simulator = aa.SimulatorInterferometer(
             real_space_shape_2d=(31, 31),
             real_space_pixel_scales=0.05,
             uv_wavelengths=np.ones((7, 2)),
@@ -170,7 +170,7 @@ class TestInterferometerSimulator:
 
     def test__constructor_and_specific_instrument_class_methods(self):
 
-        sma = aa.simulator.interferometer.sma()
+        sma = aa.SimulatorInterferometer.sma()
 
         uv_wavelengths_path = "{}/dataset/sma_uv_wavelengths.fits".format(
             os.path.dirname(os.path.realpath(__file__))
@@ -198,7 +198,7 @@ class TestInterferometerSimulator:
 
         real_space_image = aa.Array.manual_2d([[1.0, 2.0, 3.0], [4.0, 5.0, 6.0]])
 
-        simulator = aa.simulator.interferometer(
+        simulator = aa.SimulatorInterferometer(
             real_space_shape_2d=(2, 3),
             real_space_pixel_scales=0.05,
             uv_wavelengths=np.ones((7, 2)),

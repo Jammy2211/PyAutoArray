@@ -36,15 +36,15 @@ voronoi_grid = aa.GridVoronoi(
     ),
 )
 
-voronoi_mapper = aa.mapper(grid=grid_7x7, pixelization_grid=voronoi_grid)
+voronoi_mapper = aa.Mapper(grid=grid_7x7, pixelization_grid=voronoi_grid)
 
 regularization = aa.reg.Constant(coefficient=1.0)
 
-inversion = aa.inversion(
+inversion = aa.Inversion(
     masked_dataset=masked_imaging, mapper=voronoi_mapper, regularization=regularization
 )
 
-aplt.inversion.subplot_inversion(
+aplt.Inversion.subplot_inversion(
     inversion=inversion,
     image_positions=[(0.05, 0.05)],
     lines=[(0.0, 0.0), (0.1, 0.1)],

@@ -626,7 +626,7 @@ class TestAbstractPlotterPlots:
 
         assert plot_path + "array2.png" in plot_patch.paths
 
-        aplt.array(
+        aplt.Array(
             array=array,
             mask=mask,
             grid=grid,
@@ -709,7 +709,7 @@ class TestAbstractPlotterPlots:
 
         assert plot_path + "grid2.png" in plot_patch.paths
 
-        aplt.grid(
+        aplt.Grid(
             grid=grid,
             color_array=color_array,
             axis_limits=[-1.5, 1.5, -2.5, 2.5],
@@ -755,7 +755,7 @@ class TestAbstractPlotterPlots:
 
         assert plot_path + "line2.png" in plot_patch.paths
 
-        aplt.line(
+        aplt.Line(
             y=np.array([1.0, 2.0, 3.0]),
             x=np.array([0.5, 1.0, 1.5]),
             plot_axis_type="loglog",
@@ -803,7 +803,7 @@ class TestAbstractPlotterPlots:
 
         assert plot_path + "mapper2.png" in plot_patch.paths
 
-        aplt.mapper_obj(
+        aplt.MapperObj(
             mapper=rectangular_mapper_7x7_3x3,
             include=aplt.Include(
                 inversion_pixelization_grid=True,
@@ -853,7 +853,7 @@ class TestAbstractPlotterPlots:
 
         assert plot_path + "mapper2.png" in plot_patch.paths
 
-        aplt.mapper_obj(
+        aplt.MapperObj(
             mapper=voronoi_mapper_9_3x3,
             include=aplt.Include(
                 inversion_pixelization_grid=True,

@@ -6,7 +6,7 @@ grid = aa.Grid.uniform(shape_2d=(11, 11), pixel_scales=1.0)
 
 color_array = np.linspace(start=0.0, stop=1.0, num=grid.shape_1d)
 
-aplt.grid(
+aplt.Grid(
     grid=grid,
     color_array=color_array,
     axis_limits=[-1.5, 1.5, -2.5, 2.5],
@@ -15,7 +15,7 @@ aplt.grid(
     symmetric_around_centre=False,
 )
 
-aplt.grid(
+aplt.Grid(
     grid=grid,
     color_array=color_array,
     axis_limits=[-1.5, 1.5, -2.5, 2.5],

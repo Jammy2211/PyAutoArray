@@ -11,4 +11,4 @@ mask = aa.Mask.circular(
     centre=(2.0, 2.0),
 )
 
-aplt.array(array=array, mask=mask, include_border=True)
+aplt.Array(array=array, mask=mask, include_border=True)

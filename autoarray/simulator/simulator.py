@@ -6,7 +6,7 @@ from autoarray.dataset import imaging, interferometer
 from autoarray.operators import transformer
 
 
-class ImagingSimulator:
+class SimulatorImaging:
     def __init__(
         self,
         shape_2d,
@@ -257,7 +257,7 @@ class ImagingSimulator:
         )
 
 
-class InterferometerSimulator:
+class SimulatorInterferometer:
     def __init__(
         self,
         real_space_shape_2d,

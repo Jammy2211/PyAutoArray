@@ -24,42 +24,42 @@ def set_config_path():
 
 def test__fit_quantities_are_output(fit_interferometer_7, plot_path, plot_patch):
 
-    aplt.fit_interferometer.visibilities(
+    aplt.FitInterferometer.visibilities(
         fit=fit_interferometer_7,
         plotter=aplt.Plotter(output=aplt.Output(path=plot_path, format="png")),
     )
 
     assert plot_path + "visibilities.png" in plot_patch.paths
 
-    aplt.fit_interferometer.noise_map(
+    aplt.FitInterferometer.noise_map(
         fit=fit_interferometer_7,
         plotter=aplt.Plotter(output=aplt.Output(path=plot_path, format="png")),
     )
 
     assert plot_path + "noise_map.png" in plot_patch.paths
 
-    aplt.fit_interferometer.signal_to_noise_map(
+    aplt.FitInterferometer.signal_to_noise_map(
         fit=fit_interferometer_7,
         plotter=aplt.Plotter(output=aplt.Output(path=plot_path, format="png")),
     )
 
     assert plot_path + "signal_to_noise_map.png" in plot_patch.paths
 
-    aplt.fit_interferometer.model_visibilities(
+    aplt.FitInterferometer.model_visibilities(
         fit=fit_interferometer_7,
         plotter=aplt.Plotter(output=aplt.Output(path=plot_path, format="png")),
     )
 
     assert plot_path + "model_visibilities.png" in plot_patch.paths
 
-    aplt.fit_interferometer.residual_map_vs_uv_distances(
+    aplt.FitInterferometer.residual_map_vs_uv_distances(
         fit=fit_interferometer_7,
         plotter=aplt.Plotter(output=aplt.Output(path=plot_path, format="png")),
     )
 
     assert plot_path + "residual_map_vs_uv_distances_real.png" in plot_patch.paths
 
-    aplt.fit_interferometer.residual_map_vs_uv_distances(
+    aplt.FitInterferometer.residual_map_vs_uv_distances(
         fit=fit_interferometer_7,
         plot_real=False,
         plotter=aplt.Plotter(output=aplt.Output(path=plot_path, format="png")),
@@ -67,7 +67,7 @@ def test__fit_quantities_are_output(fit_interferometer_7, plot_path, plot_patch)
 
     assert plot_path + "residual_map_vs_uv_distances_imag.png" in plot_patch.paths
 
-    aplt.fit_interferometer.normalized_residual_map_vs_uv_distances(
+    aplt.FitInterferometer.normalized_residual_map_vs_uv_distances(
         fit=fit_interferometer_7,
         plotter=aplt.Plotter(output=aplt.Output(path=plot_path, format="png")),
     )
@@ -77,7 +77,7 @@ def test__fit_quantities_are_output(fit_interferometer_7, plot_path, plot_patch)
         in plot_patch.paths
     )
 
-    aplt.fit_interferometer.normalized_residual_map_vs_uv_distances(
+    aplt.FitInterferometer.normalized_residual_map_vs_uv_distances(
         fit=fit_interferometer_7,
         plot_real=False,
         plotter=aplt.Plotter(output=aplt.Output(path=plot_path, format="png")),
@@ -88,14 +88,14 @@ def test__fit_quantities_are_output(fit_interferometer_7, plot_path, plot_patch)
         in plot_patch.paths
     )
 
-    aplt.fit_interferometer.chi_squared_map_vs_uv_distances(
+    aplt.FitInterferometer.chi_squared_map_vs_uv_distances(
         fit=fit_interferometer_7,
         plotter=aplt.Plotter(output=aplt.Output(path=plot_path, format="png")),
     )
 
     assert plot_path + "chi_squared_map_vs_uv_distances_real.png" in plot_patch.paths
 
-    aplt.fit_interferometer.chi_squared_map_vs_uv_distances(
+    aplt.FitInterferometer.chi_squared_map_vs_uv_distances(
         fit=fit_interferometer_7,
         plot_real=False,
         plotter=aplt.Plotter(output=aplt.Output(path=plot_path, format="png")),
@@ -106,7 +106,7 @@ def test__fit_quantities_are_output(fit_interferometer_7, plot_path, plot_patch)
 
 def test__fit_sub_plot(fit_interferometer_7, plot_path, plot_patch):
 
-    aplt.fit_interferometer.subplot_fit_interferometer(
+    aplt.FitInterferometer.subplot_fit_interferometer(
         fit=fit_interferometer_7,
         sub_plotter=aplt.SubPlotter(output=aplt.Output(plot_path, format="png")),
     )
@@ -118,7 +118,7 @@ def test__fit_individuals__dependent_on_input(
     fit_interferometer_7, plot_path, plot_patch
 ):
 
-    aplt.fit_interferometer.individuals(
+    aplt.FitInterferometer.individuals(
         fit=fit_interferometer_7,
         plot_visibilities=True,
         plot_noise_map=False,
