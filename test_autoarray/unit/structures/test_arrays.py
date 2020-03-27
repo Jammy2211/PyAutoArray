@@ -8,9 +8,7 @@ import autoarray as aa
 from autoarray.structures import arrays
 from autoarray import exc
 
-test_data_dir = "{}/../test_files/array/".format(
-    os.path.dirname(os.path.realpath(__file__))
-)
+test_data_dir = "{}/files/array/".format(os.path.dirname(os.path.realpath(__file__)))
 
 
 class TestArrayAPI:
@@ -1174,7 +1172,7 @@ class TestArray:
 
             arr = aa.Array.from_fits(file_path=test_data_dir + "3x3_ones.fits", hdu=0)
 
-            output_data_dir = "{}/../test_files/array/output_test/".format(
+            output_data_dir = "{}/files/array/output_test/".format(
                 os.path.dirname(os.path.realpath(__file__))
             )
             if os.path.exists(output_data_dir):
@@ -1194,7 +1192,7 @@ class TestArray:
 
             arr = aa.Array.from_fits(file_path=test_data_dir + "3x3_ones.fits", hdu=0)
 
-            output_data_dir = "{}/../test_files/array/output_test/".format(
+            output_data_dir = "{}/files/array/output_test/".format(
                 os.path.dirname(os.path.realpath(__file__))
             )
             if os.path.exists(output_data_dir):

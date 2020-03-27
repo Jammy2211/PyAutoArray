@@ -11,7 +11,7 @@ directory = path.dirname(path.realpath(__file__))
 
 @pytest.fixture(name="plot_path")
 def make_interferometer_plotter_setup():
-    plot_path = "{}/../../test_files/plotting/interferometer/".format(
+    plot_path = "{}/files/plots/interferometer/".format(
         os.path.dirname(os.path.realpath(__file__))
     )
 
@@ -21,7 +21,7 @@ def make_interferometer_plotter_setup():
 @pytest.fixture(autouse=True)
 def set_config_path():
     aa.conf.instance = aa.conf.Config(
-        path.join(directory, "../test_files/plot"), path.join(directory, "output")
+        path.join(directory, "files/plotter"), path.join(directory, "output")
     )
 
 

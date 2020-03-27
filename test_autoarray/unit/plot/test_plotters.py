@@ -12,13 +12,13 @@ directory = path.dirname(path.realpath(__file__))
 
 @pytest.fixture(name="plot_path")
 def make_plotter_setup():
-    return "{}/..//test_files/plot/".format(os.path.dirname(os.path.realpath(__file__)))
+    return "{}/files/plotter/".format(os.path.dirname(os.path.realpath(__file__)))
 
 
 @pytest.fixture(autouse=True)
 def set_config_path():
     aa.conf.instance = aa.conf.Config(
-        path.join(directory, "../test_files/plot"), path.join(directory, "output")
+        path.join(directory, "files/plotter"), path.join(directory, "output")
     )
 
 
@@ -555,10 +555,12 @@ class TestAbstractPlotterAttributes:
         assert plotter.output.filename == None
 
         plotter = aplt.Plotter(
-            output=aplt.Output(path="Path", format="png", filename="file")
+            output=aplt.Output(
+                path="plot/files/plotter/Path", format="png", filename="file"
+            )
         )
 
-        assert plotter.output.path == "Path"
+        assert plotter.output.path == "plot/files/plotter/Path"
         assert plotter.output._format == "png"
         assert plotter.output.format == "png"
         assert plotter.output.filename == "file"
@@ -571,10 +573,12 @@ class TestAbstractPlotterAttributes:
         assert sub_plotter.output.filename == None
 
         sub_plotter = aplt.SubPlotter(
-            output=aplt.Output(path="Path", format="png", filename="file")
+            output=aplt.Output(
+                path="plot/files/plotter/Path", format="png", filename="file"
+            )
         )
 
-        assert sub_plotter.output.path == "Path"
+        assert sub_plotter.output.path == "plot/files/plotter/Path"
         assert sub_plotter.output._format == "png"
         assert sub_plotter.output.format == "png"
         assert sub_plotter.output.filename == "file"
@@ -958,28 +962,32 @@ class TestAbstractPlotterNew:
     def test__plotter_with_new_outputs__new_outputs_are_setup_correctly_if_input(self):
 
         plotter = aplt.Plotter(
-            output=aplt.Output(path="Path", format="png", filename="file")
+            output=aplt.Output(
+                path="plot/files/plotter/Path", format="png", filename="file"
+            )
         )
 
         plotter = plotter.plotter_with_new_output()
 
-        assert plotter.output.path == "Path"
+        assert plotter.output.path == "plot/files/plotter/Path"
         assert plotter.output._format == "png"
         assert plotter.output.format == "png"
         assert plotter.output.filename == "file"
 
-        plotter = plotter.plotter_with_new_output(path="Path0", filename="file0")
+        plotter = plotter.plotter_with_new_output(
+            path="plot/files/plotter/Path0", filename="file0"
+        )
 
-        assert plotter.output.path == "Path0"
+        assert plotter.output.path == "plot/files/plotter/Path0"
         assert plotter.output._format == "png"
         assert plotter.output.format == "png"
         assert plotter.output.filename == "file0"
 
         plotter = plotter.plotter_with_new_output(
-            path="Path1", filename="file1", format="fits"
+            path="plot/files/plotter/Path1", filename="file1", format="fits"
         )
 
-        assert plotter.output.path == "Path1"
+        assert plotter.output.path == "plot/files/plotter/Path1"
         assert plotter.output._format == "fits"
         assert plotter.output.format == "fits"
         assert plotter.output.filename == "file1"

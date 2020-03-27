@@ -1,15 +1,10 @@
 import logging
-import os
 
 import autoarray as aa
 from autoarray.dataset import abstract_dataset
 import numpy as np
 
 logger = logging.getLogger(__name__)
-
-test_data_dir = "{}/../test_files/array/".format(
-    os.path.dirname(os.path.realpath(__file__))
-)
 
 
 class TestSignalToNoise:

@@ -7,11 +7,6 @@ import numpy as np
 import pytest
 
 
-test_data_dir = "{}/../test_files/array/".format(
-    os.path.dirname(os.path.realpath(__file__))
-)
-
-
 class TestTotalPixels:
     def test__total_image_pixels_from_mask(self):
         mask = np.array(

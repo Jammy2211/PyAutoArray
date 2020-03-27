@@ -2605,7 +2605,7 @@ class TestInterpolator:
         assert np.max(true_grid_radii[:, 1] - interpolated_grid_radii_x) < 0.1
 
 
-test_coordinates_dir = "{}/../test_files/coordinates/".format(
+test_coordinates_dir = "{}/files/coordinates/".format(
     os.path.dirname(os.path.realpath(__file__))
 )
 
@@ -2725,7 +2725,7 @@ class TestCoordinates:
             [[(4.0, 4.0), (5.0, 5.0)], [(6.0, 6.0), (7.0, 7.0), (8.0, 8.0)]]
         )
 
-        output_data_dir = "{}/../test_files/coordinates/output_test/".format(
+        output_data_dir = "{}/files/coordinates/output_test/".format(
             os.path.dirname(os.path.realpath(__file__))
         )
         if os.path.exists(output_data_dir):
