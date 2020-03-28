@@ -385,7 +385,7 @@ class SimulatorImaging:
                 shape_2d=image.shape_2d, pixel_scales=image.pixel_scales
             )
 
-        image += background_sky_map
+        image = image + background_sky_map
 
         if self.psf is not None:
             psf = self.psf
@@ -424,7 +424,7 @@ class SimulatorImaging:
                 "background sky levels are too low, creating signal counts at or close to 0.0."
             )
 
-        image -= background_sky_map
+        image = image - background_sky_map
 
         mask = msk.Mask.unmasked(
             shape_2d=image.shape_2d, pixel_scales=image.pixel_scales

@@ -248,7 +248,7 @@ def make_masked_imaging_7x7(imaging_7x7, sub_mask_7x7):
 def make_masked_interferometer_7(
     interferometer_7, visibilities_mask_7x2, mask_7x7, sub_grid_7x7, transformer_7x7_7
 ):
-    return aa.MaskedInterferometer.manual(
+    return aa.MaskedInterferometer(
         interferometer=interferometer_7,
         visibilities_mask=visibilities_mask_7x2,
         real_space_mask=mask_7x7,

@@ -310,3 +310,29 @@ def data_with_poisson_noise_added(data, exposure_time_map, seed=-1):
     return data + poisson_noise_from_data(
         data=data, exposure_time_map=exposure_time_map, seed=seed
     )
+
+
+def gaussian_noise_from_shape_and_sigma(shape, sigma, seed=-1):
+    """Generate a two-dimensional read noises-map, generating values from a Gaussian distribution with mean 0.0.
+
+    Params
+    ----------
+    shape : (int, int)
+        The (x,y) image_shape of the generated Gaussian noises map.
+    read_noise : float
+        Standard deviation of the 1D Gaussian that each noises value is drawn from
+    seed : int
+        The seed of the random number generator, used for the random noises maps.
+    """
+    if seed == -1:
+        # Use one seed, so all regions have identical column non-uniformity.
+        seed = np.random.randint(0, int(1e9))
+    np.random.seed(seed)
+    read_noise_map = np.random.normal(loc=0.0, scale=sigma, size=shape)
+    return read_noise_map
+
+
+def data_with_gaussian_noise_added(data, sigma, seed=-1):
+    return data + gaussian_noise_from_shape_and_sigma(
+        shape=data.shape, sigma=sigma, seed=seed
+    )

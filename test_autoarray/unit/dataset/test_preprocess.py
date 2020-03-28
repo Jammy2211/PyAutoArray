@@ -488,3 +488,52 @@ def test__data_with_poisson_noised_added():
     assert (
         data_with_poisson_noise.in_2d == np.array([[10000743, 0.0], [0.0, 10003783.0]])
     ).all()
+
+
+def test__gaussian_noise_from_shape_and_sigma():
+
+    gaussian_noise = aa.preprocess.gaussian_noise_from_shape_and_sigma(
+        shape=(9,), sigma=0.0, seed=1
+    )
+
+    assert (gaussian_noise == np.zeros((9,))).all()
+
+    gaussian_noise = aa.preprocess.gaussian_noise_from_shape_and_sigma(
+        shape=(9,), sigma=1.0, seed=1
+    )
+
+    assert gaussian_noise == pytest.approx(
+        np.array([1.62, -0.61, -0.53, -1.07, 0.87, -2.30, 1.74, -0.76, 0.32]), 1e-2
+    )
+
+
+def test__data_with_gaussian_noise_added():
+
+    data = aa.Array.ones(shape_2d=(3, 3))
+
+    data_with_noise = aa.preprocess.data_with_gaussian_noise_added(
+        data=data, sigma=0.0, seed=1
+    )
+
+    assert (data_with_noise.in_1d == np.ones((9,))).all()
+
+    data_with_noise = aa.preprocess.data_with_gaussian_noise_added(
+        data=data, sigma=1.0, seed=1
+    )
+
+    assert data_with_noise.in_1d == pytest.approx(
+        np.array(
+            [
+                1 + 1.62,
+                1 - 0.61,
+                1 - 0.53,
+                1 - 1.07,
+                1 + 0.87,
+                1 - 2.30,
+                1 + 1.74,
+                1 - 0.76,
+                1 + 0.32,
+            ]
+        ),
+        1e-1,
+    )
