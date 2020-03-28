@@ -66,11 +66,9 @@ class TestSimulatorInterferometer:
             noise_seed=1,
         )
 
-        interferometer_simulated = simulator.from_real_space_image(
-            real_space_image=real_space_image
-        )
+        interferometer_simulated = simulator.from_image(image=real_space_image)
 
-        interferometer_manual = aa.Interferometer.simulate(
+        interferometer_manual = aa.Interferometer.from_image(
             real_space_image=real_space_image,
             real_space_pixel_scales=0.05,
             transformer=simulator.transformer,

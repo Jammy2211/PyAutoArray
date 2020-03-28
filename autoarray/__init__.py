@@ -6,7 +6,11 @@ from autoarray import plot
 from autoarray import util
 from autoarray.dataset import preprocess
 from autoarray.dataset.imaging import Imaging, MaskedImaging, SimulatorImaging
-from autoarray.dataset.interferometer import Interferometer, MaskedInterferometer
+from autoarray.dataset.interferometer import (
+    Interferometer,
+    MaskedInterferometer,
+    SimulatorInterferometer,
+)
 from autoarray.fit.fit import FitImaging, FitInterferometer
 from autoarray.mask.mask import Mask
 from autoarray.operators.convolver import Convolver
