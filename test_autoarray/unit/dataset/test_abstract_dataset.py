@@ -65,27 +65,6 @@ class TestPotentialChiSquaredMap:
         assert dataset.potential_chi_squared_max == 1.0
 
 
-class TestExposureTimeMap:
-    def test__from_background_noise_map__covnerts_to_exposure_times(self):
-        background_noise_map = aa.Array.manual_2d([[1.0, 4.0, 8.0], [1.0, 4.0, 8.0]])
-
-        exposure_time_map = abstract_dataset.ExposureTimeMap.from_exposure_time_and_inverse_noise_map(
-            exposure_time=1.0, inverse_noise_map=background_noise_map
-        )
-
-        assert (
-            exposure_time_map.in_2d == np.array([[0.125, 0.5, 1.0], [0.125, 0.5, 1.0]])
-        ).all()
-
-        exposure_time_map = abstract_dataset.ExposureTimeMap.from_exposure_time_and_inverse_noise_map(
-            exposure_time=3.0, inverse_noise_map=background_noise_map
-        )
-
-        assert (
-            exposure_time_map.in_2d == np.array([[0.375, 1.5, 3.0], [0.375, 1.5, 3.0]])
-        ).all()
-
-
 class TestAbstractMaskedData:
     def test__grids_are_setup_if_input_mask_has_pixel_scale(
         self, imaging_7x7, sub_mask_7x7, grid_7x7, sub_grid_7x7, blurring_grid_7x7

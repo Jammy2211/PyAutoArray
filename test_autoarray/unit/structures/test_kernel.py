@@ -86,7 +86,7 @@ class TestAPI:
 
             assert (
                 kernel.in_2d
-                == np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]])
+                == np.array([[1.0]])
             ).all()
             assert kernel.pixel_scales == (1.0, 1.0)
 
@@ -94,7 +94,7 @@ class TestAPI:
 
             assert (
                 kernel.in_2d
-                == np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]])
+                == np.array([[1.0]])
             ).all()
             assert kernel.pixel_scales == (2.0, 2.0)
 
