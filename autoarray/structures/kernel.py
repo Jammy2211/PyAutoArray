@@ -82,7 +82,7 @@ class Kernel(arrays.AbstractArray):
     @classmethod
     def no_blur(cls, pixel_scales=None):
 
-        array = np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]])
+        array = np.array([[1.0]])
 
         return Kernel.manual_2d(array=array, pixel_scales=pixel_scales)
 
