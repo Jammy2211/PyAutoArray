@@ -141,12 +141,12 @@ def make_convolver_7x7(mask_7x7, blurring_mask_7x7, psf_3x3):
 
 @pytest.fixture(name="image_7x7")
 def make_image_7x7():
-    return aa.Array.full(fill_value=1.0, shape_2d=(7, 7), pixel_scales=(1.0, 1.0))
+    return aa.Array.ones(shape_2d=(7, 7), pixel_scales=(1.0, 1.0))
 
 
 @pytest.fixture(name="psf_3x3")
 def make_psf_3x3():
-    return aa.Kernel.full(fill_value=1.0, shape_2d=(3, 3), pixel_scales=(1.0, 1.0))
+    return aa.Kernel.ones(shape_2d=(3, 3), pixel_scales=(1.0, 1.0))
 
 
 @pytest.fixture(name="noise_map_7x7")
@@ -198,7 +198,7 @@ def make_noise_map_7():
 
 @pytest.fixture(name="primary_beam_3x3")
 def make_primary_beam_3x3():
-    return aa.Kernel.full(fill_value=1.0, shape_2d=(3, 3), pixel_scales=(1.0, 1.0))
+    return aa.Kernel.ones(shape_2d=(3, 3), pixel_scales=(1.0, 1.0))
 
 
 @pytest.fixture(name="uv_wavelengths_7x2")
