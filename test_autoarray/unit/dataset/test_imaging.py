@@ -14,50 +14,6 @@ test_data_dir = "{}/files/imaging/".format(os.path.dirname(os.path.realpath(__fi
 
 
 class TestImaging:
-    def test__new_imaging_with_modified_image(self):
-
-        image = aa.Array.manual_2d(array=np.ones((4, 4)), pixel_scales=1.0)
-        image[10] = 2.0
-
-        noise_map_array = aa.Array.ones(shape_2d=(4, 4))
-        noise_map_array[10] = 3.0
-
-        imaging = aa.Imaging(
-            image=image, psf=aa.Kernel.zeros(shape_2d=(3, 3)), noise_map=noise_map_array
-        )
-
-        modified_image = aa.Array.ones(shape_2d=(4, 4), pixel_scales=1.0)
-        modified_image[10] = 10.0
-
-        imaging = imaging.modified_image_from_image(image=modified_image)
-
-        assert (
-            imaging.image.in_2d
-            == np.array(
-                [
-                    [1.0, 1.0, 1.0, 1.0],
-                    [1.0, 1.0, 1.0, 1.0],
-                    [1.0, 1.0, 10.0, 1.0],
-                    [1.0, 1.0, 1.0, 1.0],
-                ]
-            )
-        ).all()
-        assert (
-            imaging.noise_map.in_2d
-            == np.array(
-                [
-                    [1.0, 1.0, 1.0, 1.0],
-                    [1.0, 1.0, 1.0, 1.0],
-                    [1.0, 1.0, 3.0, 1.0],
-                    [1.0, 1.0, 1.0, 1.0],
-                ]
-            )
-        ).all()
-
-        assert imaging.pixel_scales == (1.0, 1.0)
-        assert (imaging.psf.in_2d == np.zeros((3, 3))).all()
-        assert imaging.geometry.origin == (0.0, 0.0)
-
     def test__new_imaging_binned(self):
 
         image = aa.Array.manual_2d(array=np.ones((6, 6)), pixel_scales=1.0)

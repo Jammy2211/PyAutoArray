@@ -131,7 +131,7 @@ class TestArrayAPI:
     class TestFull:
         def test__array__makes_array_without_other_inputs(self):
 
-            arr = aa.Array.full(fill_value=1.0, shape_2d=(2, 2))
+            arr = aa.Array.ones(shape_2d=(2, 2))
 
             assert type(arr) == arrays.Array
             assert (arr.in_2d == np.array([[1.0, 1.0], [1.0, 1.0]])).all()
@@ -153,7 +153,7 @@ class TestArrayAPI:
 
         def test__array__makes_scaled_array_with_pixel_scale(self):
 
-            arr = aa.Array.full(fill_value=1.0, shape_2d=(2, 2), pixel_scales=1.0)
+            arr = aa.Array.ones(shape_2d=(2, 2), pixel_scales=1.0)
 
             assert type(arr) == arrays.Array
             assert (arr.in_2d == np.array([[1.0, 1.0], [1.0, 1.0]])).all()
@@ -468,7 +468,7 @@ class TestMaskedArrayAPI:
         def test__makes_array_using_mask(self):
 
             mask = aa.Mask.unmasked(shape_2d=(2, 2), pixel_scales=1.0)
-            arr = aa.MaskedArray.full(fill_value=1.0, mask=mask)
+            arr = aa.MaskedArray.ones(mask=mask)
 
             assert type(arr) == arrays.Array
             assert (arr.in_2d == np.array([[1.0, 1.0], [1.0, 1.0]])).all()
@@ -912,7 +912,48 @@ class TestArray:
             assert (arr.in_2d == arr_resized_manual).all()
             assert arr.mask.pixel_scales == (1.0, 1.0)
 
-        def test__kernel_trim__trim_edges_where_extra_psf_blurring_is_performed(self):
+        def test__padded_from_kernel_shape__padded_edge_of_zeros_where_extra_psf_blurring_is_performed(
+            self
+        ):
+
+            array_2d = np.ones((5, 5))
+            array_2d[2, 2] = 2.0
+
+            arr = arrays.Array.manual_2d(
+                array=array_2d, sub_size=1, pixel_scales=(1.0, 1.0)
+            )
+
+            new_arr = arr.padded_from_kernel_shape(kernel_shape_2d=(3, 3))
+
+            assert type(new_arr) == arrays.Array
+            assert new_arr.in_2d[0, 0] == 0.0
+            assert new_arr.shape_2d == (7, 7)
+            assert new_arr.mask.pixel_scales == (1.0, 1.0)
+
+            new_arr = arr.padded_from_kernel_shape(kernel_shape_2d=(5, 5))
+
+            assert type(new_arr) == arrays.Array
+            assert new_arr.in_2d[0, 0] == 0.0
+            assert new_arr.shape_2d == (9, 9)
+            assert new_arr.mask.pixel_scales == (1.0, 1.0)
+
+            array_2d = np.ones((9, 9))
+            array_2d[4, 4] = 2.0
+
+            arr = arrays.Array.manual_2d(
+                array=array_2d, sub_size=1, pixel_scales=(1.0, 1.0)
+            )
+
+            new_arr = arr.padded_from_kernel_shape(kernel_shape_2d=(7, 7))
+
+            assert type(new_arr) == arrays.Array
+            assert new_arr.in_2d[0, 0] == 0.0
+            assert new_arr.shape_2d == (15, 15)
+            assert new_arr.mask.pixel_scales == (1.0, 1.0)
+
+        def test__trimmed_from_kernel_shape__trim_edges_where_extra_psf_blurring_is_performed(
+            self
+        ):
             array_2d = np.ones((5, 5))
             array_2d[2, 2] = 2.0
 

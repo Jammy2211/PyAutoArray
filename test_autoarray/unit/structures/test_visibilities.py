@@ -44,7 +44,7 @@ class TestVisibilitiesAPI:
     class TestFull:
         def test__visibilities__makes_visibilities_without_other_inputs(self):
 
-            visibilities = aa.Visibilities.full(fill_value=1.0, shape_1d=(2,))
+            visibilities = aa.Visibilities.ones(shape_1d=(2,))
 
             assert type(visibilities) == vis.Visibilities
             assert (visibilities.in_1d == np.array([[1.0, 1.0], [1.0, 1.0]])).all()

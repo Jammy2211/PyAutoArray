@@ -62,11 +62,6 @@ class Imaging(abstract_dataset.AbstractDataset):
 
         return imaging
 
-    def modified_image_from_image(self, image):
-        imaging = copy.deepcopy(self)
-        imaging.data = image
-        return imaging
-
     def signal_to_noise_limited_from_signal_to_noise_limit(self, signal_to_noise_limit):
 
         imaging = copy.deepcopy(self)
