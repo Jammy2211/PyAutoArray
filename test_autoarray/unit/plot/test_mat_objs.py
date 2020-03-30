@@ -17,7 +17,7 @@ directory = path.dirname(path.realpath(__file__))
 @pytest.fixture(autouse=True)
 def set_config_path():
     aa.conf.instance = aa.conf.Config(
-        path.join(directory, "../test_files/plot"), path.join(directory, "output")
+        path.join(directory, "files/plotter"), path.join(directory, "output")
     )
 
 
@@ -91,7 +91,7 @@ class TestColorMap:
         self
     ):
 
-        array = aa.array.ones(shape_2d=(2, 2))
+        array = aa.Array.ones(shape_2d=(2, 2))
         array[0] = 0.0
 
         cmap = aplt.ColorMap(norm_min=None, norm_max=None, norm="linear")
@@ -159,7 +159,7 @@ class TestColorBar:
 class TestTicks:
     def test__set_yx_ticks__works_for_good_values(self):
 
-        array = aa.array.ones(shape_2d=(2, 2), pixel_scales=1.0)
+        array = aa.Array.ones(shape_2d=(2, 2), pixel_scales=1.0)
 
         units = aplt.Units(use_scaled=True, conversion_factor=None)
 
@@ -407,7 +407,7 @@ class TestLegend:
 class TestOutput:
     def test__input_path_is_created(self):
 
-        test_path = path.join(directory, "../test_files/output_path")
+        test_path = path.join(directory, "files/output_path")
 
         if os.path.exists(test_path):
             shutil.rmtree(test_path)
@@ -442,7 +442,7 @@ class TestScatterer:
 
         scatterer.scatter_grids(grids=[(1.0, 1.0), (2.0, 2.0)])
         scatterer.scatter_grids(
-            grids=aa.grid.uniform(shape_2d=(3, 3), pixel_scales=1.0)
+            grids=aa.Grid.uniform(shape_2d=(3, 3), pixel_scales=1.0)
         )
 
     def test__scatter_grid__lists_of_lists_of_coordinates_or_equivalent_2d_grids(self):
@@ -455,8 +455,8 @@ class TestScatterer:
         scatterer.scatter_grids(grids=[[(1.0, 1.0), (2.0, 2.0)], [None]])
         scatterer.scatter_grids(
             grids=[
-                aa.grid.uniform(shape_2d=(3, 3), pixel_scales=1.0),
-                aa.grid.uniform(shape_2d=(3, 3), pixel_scales=1.0),
+                aa.Grid.uniform(shape_2d=(3, 3), pixel_scales=1.0),
+                aa.Grid.uniform(shape_2d=(3, 3), pixel_scales=1.0),
             ]
         )
 
@@ -474,7 +474,7 @@ class TestScatterer:
             cmap=cmap,
         )
         scatterer.scatter_colored_grid(
-            grid=aa.grid.uniform(shape_2d=(3, 2), pixel_scales=1.0),
+            grid=aa.Grid.uniform(shape_2d=(3, 2), pixel_scales=1.0),
             color_array=np.array([2.0, 2.0, 2.0, 2.0, 2.0, 2.0]),
             cmap=cmap,
         )
@@ -486,15 +486,15 @@ class TestScatterer:
         scatterer = mat_objs.Scatterer(size=2, marker="x", colors="k")
 
         scatterer.scatter_grid_indexes(
-            grid=aa.grid.uniform(shape_2d=(3, 3), pixel_scales=1.0), indexes=[0, 1, 2]
+            grid=aa.Grid.uniform(shape_2d=(3, 3), pixel_scales=1.0), indexes=[0, 1, 2]
         )
 
         scatterer.scatter_grid_indexes(
-            grid=aa.grid.uniform(shape_2d=(3, 3), pixel_scales=1.0), indexes=[[0, 1, 2]]
+            grid=aa.Grid.uniform(shape_2d=(3, 3), pixel_scales=1.0), indexes=[[0, 1, 2]]
         )
 
         scatterer.scatter_grid_indexes(
-            grid=aa.grid.uniform(shape_2d=(3, 3), pixel_scales=1.0),
+            grid=aa.Grid.uniform(shape_2d=(3, 3), pixel_scales=1.0),
             indexes=[[0, 1], [2]],
         )
 
@@ -505,22 +505,22 @@ class TestScatterer:
         scatterer = mat_objs.Scatterer(size=2, marker="x", colors="k")
 
         scatterer.scatter_grid_indexes(
-            grid=aa.grid.uniform(shape_2d=(3, 3), pixel_scales=1.0),
+            grid=aa.Grid.uniform(shape_2d=(3, 3), pixel_scales=1.0),
             indexes=[(0, 0), (0, 1), (0, 2)],
         )
 
         scatterer.scatter_grid_indexes(
-            grid=aa.grid.uniform(shape_2d=(3, 3), pixel_scales=1.0),
+            grid=aa.Grid.uniform(shape_2d=(3, 3), pixel_scales=1.0),
             indexes=[[(0, 0), (0, 1), (0, 2)]],
         )
 
         scatterer.scatter_grid_indexes(
-            grid=aa.grid.uniform(shape_2d=(3, 3), pixel_scales=1.0),
+            grid=aa.Grid.uniform(shape_2d=(3, 3), pixel_scales=1.0),
             indexes=[[(0, 0), (0, 1)], [(0, 2)]],
         )
 
         scatterer.scatter_grid_indexes(
-            grid=aa.grid.uniform(shape_2d=(3, 3), pixel_scales=1.0),
+            grid=aa.Grid.uniform(shape_2d=(3, 3), pixel_scales=1.0),
             indexes=[[[0, 0], [0, 1]], [[0, 2]]],
         )
 
@@ -555,12 +555,12 @@ class TestLiner:
         liner = aplt.Liner(width=2, style="-", colors="k")
 
         liner.draw_grids(grids=[(1.0, 1.0), (2.0, 2.0)])
-        liner.draw_grids(grids=aa.grid.uniform(shape_2d=(3, 3), pixel_scales=1.0))
+        liner.draw_grids(grids=aa.Grid.uniform(shape_2d=(3, 3), pixel_scales=1.0))
         liner.draw_grids(grids=[[(1.0, 1.0), (2.0, 2.0)], [(3.0, 3.0), (4.0, 4.0)]])
         liner.draw_grids(
             grids=[
-                aa.grid.uniform(shape_2d=(3, 3), pixel_scales=1.0),
-                aa.grid.uniform(shape_2d=(3, 3), pixel_scales=1.0),
+                aa.Grid.uniform(shape_2d=(3, 3), pixel_scales=1.0),
+                aa.Grid.uniform(shape_2d=(3, 3), pixel_scales=1.0),
             ]
         )
 
@@ -574,8 +574,8 @@ class TestLiner:
         liner.draw_grids(grids=[[(1.0, 1.0), (2.0, 2.0)], [None]])
         liner.draw_grids(
             grids=[
-                aa.grid.uniform(shape_2d=(3, 3), pixel_scales=1.0),
-                aa.grid.uniform(shape_2d=(3, 3), pixel_scales=1.0),
+                aa.Grid.uniform(shape_2d=(3, 3), pixel_scales=1.0),
+                aa.Grid.uniform(shape_2d=(3, 3), pixel_scales=1.0),
             ]
         )
 

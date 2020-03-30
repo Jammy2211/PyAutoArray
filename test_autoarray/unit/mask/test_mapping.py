@@ -6,14 +6,10 @@ import pytest
 from autoarray import exc
 import autoarray as aa
 
-test_data_dir = "{}/../test_files/array/".format(
-    os.path.dirname(os.path.realpath(__file__))
-)
-
 
 class TestMapping:
     def test__array_stored_1d_from_array_1d__compare_to_util(self):
-        mask = aa.mask.manual(
+        mask = aa.Mask.manual(
             [
                 [True, True, False, False],
                 [True, False, True, True],
@@ -47,7 +43,7 @@ class TestMapping:
 
         array_2d = np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9], [10, 11, 12]])
 
-        mask = aa.mask.manual(
+        mask = aa.Mask.manual(
             [
                 [True, False, True],
                 [False, False, False],
@@ -72,7 +68,7 @@ class TestMapping:
 
     def test__array_stored_1d_from_sub_array_1d(self):
 
-        mask = aa.mask.manual([[False, True], [False, False]], sub_size=2)
+        mask = aa.Mask.manual([[False, True], [False, False]], sub_size=2)
 
         sub_array_1d = np.array(
             [1.0, 2.0, 3.0, 4.0, 9.0, 10.0, 11.0, 12.0, 13.0, 14.0, 15.0, 16.0]
@@ -105,7 +101,7 @@ class TestMapping:
             ]
         )
 
-        mask = aa.mask.manual([[False, False, True], [False, True, False]], sub_size=2)
+        mask = aa.Mask.manual([[False, False, True], [False, True, False]], sub_size=2)
 
         arr = mask.mapping.array_stored_1d_from_sub_array_2d(sub_array_2d=sub_array_2d)
 
@@ -160,7 +156,7 @@ class TestMapping:
         assert (arr.in_2d == sub_array_2d).all()
 
     def test__array_stored_1d_binned_from_sub_array_1d_by_binning_up(self):
-        mask = aa.mask.manual(
+        mask = aa.Mask.manual(
             [[False, False, True], [False, True, False]],
             pixel_scales=(3.0, 3.0),
             sub_size=2,
@@ -198,7 +194,7 @@ class TestMapping:
         assert arr.mask.origin == (0.0, 0.0)
 
     def test__array_stored_2d_from_array_1d__compare_to_util(self):
-        mask = aa.mask.manual(
+        mask = aa.Mask.manual(
             [
                 [True, True, False, False],
                 [True, False, True, True],
@@ -230,7 +226,7 @@ class TestMapping:
 
     def test__array_stored_2d_from_sub_array_1d__use_2x3_mask(self):
 
-        mask = aa.mask.manual([[False, False, True], [False, True, False]], sub_size=2)
+        mask = aa.Mask.manual([[False, False, True], [False, True, False]], sub_size=2)
 
         sub_array_1d = np.array(
             [
@@ -279,7 +275,7 @@ class TestMapping:
         ).all()
 
     def test__array_stored_2d_binned_from_sub_array_1d(self):
-        mask = aa.mask.manual([[False, False, True], [False, True, False]], sub_size=2)
+        mask = aa.Mask.manual([[False, False, True], [False, True, False]], sub_size=2)
 
         sub_array_1d = np.array(
             [
@@ -310,7 +306,7 @@ class TestMapping:
         assert (arr.in_2d == np.array([[3.5, 2.0, 0.0], [3.0, 0.0, 2.0]])).all()
 
     def test__grid_stored_1d_from_grid_1d__compare_to_util(self):
-        mask = aa.mask.manual(
+        mask = aa.Mask.manual(
             [
                 [True, True, False, False],
                 [True, False, True, True],
@@ -343,7 +339,7 @@ class TestMapping:
             ]
         )
 
-        mask = aa.mask.manual(
+        mask = aa.Mask.manual(
             [
                 [True, False, True, True],
                 [False, False, False, True],
@@ -366,7 +362,7 @@ class TestMapping:
         assert grid.sub_size == 1
 
     def test__grid_stored_1d_from_sub_grid_1d(self):
-        mask = aa.mask.manual([[False, True], [False, False]], sub_size=2)
+        mask = aa.Mask.manual([[False, True], [False, False]], sub_size=2)
 
         sub_grid_1d = np.array(
             [
@@ -440,7 +436,7 @@ class TestMapping:
             ]
         )
 
-        mask = aa.mask.manual([[False, False, True], [False, True, False]], sub_size=2)
+        mask = aa.Mask.manual([[False, False, True], [False, True, False]], sub_size=2)
 
         grid = mask.mapping.grid_stored_1d_from_sub_grid_2d(sub_grid_2d=sub_grid_2d)
 
@@ -495,7 +491,7 @@ class TestMapping:
         assert (grid.in_2d == sub_grid_2d).all()
 
     def test__grid_stored_1d_binned_from_sub_grid_1d(self):
-        mask = aa.mask.manual([[False, True], [False, False]], sub_size=2)
+        mask = aa.Mask.manual([[False, True], [False, False]], sub_size=2)
 
         grid_1d = np.array(
             [
@@ -525,7 +521,7 @@ class TestMapping:
         ).all()
 
     def test__grid_stored_2d_from_sub_grid_1d(self):
-        mask = aa.mask.manual([[False, False, True], [False, True, False]], sub_size=2)
+        mask = aa.Mask.manual([[False, False, True], [False, True, False]], sub_size=2)
 
         sub_grid_1d = np.array(
             [
@@ -630,7 +626,7 @@ class TestMapping:
         ).all()
 
     def test__grid_stored_2d_binned_from_sub_grid_1d(self):
-        mask = aa.mask.manual([[False, False, True], [False, True, False]], sub_size=2)
+        mask = aa.Mask.manual([[False, False, True], [False, True, False]], sub_size=2)
 
         sub_grid_1d = np.array(
             [
@@ -689,9 +685,9 @@ class TestMapping:
 
     def test__trimmed_array_2d_from_padded_array_1d_and_image_shape(self):
 
-        mask = aa.mask.unmasked(shape_2d=(4, 4))
+        mask = aa.Mask.unmasked(shape_2d=(4, 4))
 
-        array_1d = aa.masked_array.manual_1d(
+        array_1d = aa.MaskedArray.manual_1d(
             [
                 1.0,
                 2.0,
@@ -719,9 +715,9 @@ class TestMapping:
 
         assert (array.in_2d == np.array([[6.0, 7.0], [1.0, 2.0]])).all()
 
-        mask = aa.mask.unmasked(shape_2d=(5, 3))
+        mask = aa.Mask.unmasked(shape_2d=(5, 3))
 
-        array_1d = aa.masked_array.manual_1d(
+        array_1d = aa.MaskedArray.manual_1d(
             [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0],
             mask=mask,
         )
@@ -732,9 +728,9 @@ class TestMapping:
 
         assert (array.in_2d == np.array([[5.0], [8.0], [2.0]])).all()
 
-        mask = aa.mask.unmasked(shape_2d=(3, 5))
+        mask = aa.Mask.unmasked(shape_2d=(3, 5))
 
-        array_1d = aa.masked_array.manual_1d(
+        array_1d = aa.MaskedArray.manual_1d(
             [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0],
             mask=mask,
         )
@@ -749,7 +745,7 @@ class TestMapping:
 class TestNewMask:
     def test__new_mask_with_new_sub_size(self):
 
-        mask = aa.mask.unmasked(shape_2d=(3, 3), sub_size=4)
+        mask = aa.Mask.unmasked(shape_2d=(3, 3), sub_size=4)
 
         mask_new = mask.mapping.mask_new_sub_size_from_mask(mask=mask)
 
@@ -766,7 +762,7 @@ class TestMappingExceptions:
     def test__array_2d_from_array_1d__raises_exception_if_input_array_1d_is_not_shape_of_pixels_in_mask(
         self
     ):
-        mask = aa.mask.manual(
+        mask = aa.Mask.manual(
             [
                 [True, True, False, False],
                 [True, False, True, True],
@@ -789,7 +785,7 @@ class TestMappingExceptions:
     def test__array_from_array_1d__raises_exception_if_input_array_1d_is_not_shape_of_pixels_in_mask(
         self
     ):
-        mask = aa.mask.manual(
+        mask = aa.Mask.manual(
             [
                 [True, True, False, False],
                 [True, False, True, True],
@@ -812,7 +808,7 @@ class TestMappingExceptions:
     def test__array_from_array_2d__raises_exception_if_input_array_2d_is_not_shape_2d_of_mask(
         self
     ):
-        mask = aa.mask.manual(
+        mask = aa.Mask.manual(
             [
                 [True, True, False, False],
                 [True, False, True, True],
@@ -838,7 +834,7 @@ class TestMappingExceptions:
 class TestResizedMask:
     def test__resized_mask__pad__compare_to_manual_mask(self):
 
-        mask = aa.mask.unmasked(shape_2d=(5, 5))
+        mask = aa.Mask.unmasked(shape_2d=(5, 5))
         mask[2, 2] = True
 
         mask_resized = mask.mapping.resized_mask_from_new_shape(new_shape=(7, 7))
@@ -850,7 +846,7 @@ class TestResizedMask:
 
     def test__resized_mask__trim__compare_to_manual_mask(self):
 
-        mask = aa.mask.unmasked(shape_2d=(5, 5))
+        mask = aa.Mask.unmasked(shape_2d=(5, 5))
         mask[2, 2] = True
 
         mask_resized = mask.mapping.resized_mask_from_new_shape(new_shape=(3, 3))
@@ -862,7 +858,7 @@ class TestResizedMask:
 
     def test__rescaled_mask_from_rescale_factor__compare_to_manual_mask(self):
 
-        mask = aa.mask.unmasked(shape_2d=(5, 5))
+        mask = aa.Mask.unmasked(shape_2d=(5, 5))
         mask[2, 2] = True
 
         mask_rescaled = mask.mapping.rescaled_mask_from_rescale_factor(
@@ -880,7 +876,7 @@ class TestResizedMask:
 
     def test__edged_buffed_mask__compare_to_manual_mask(self):
 
-        mask = aa.mask.unmasked(shape_2d=(5, 5))
+        mask = aa.Mask.unmasked(shape_2d=(5, 5))
         mask[2, 2] = True
 
         edge_buffed_mask_manual = aa.util.mask.buffed_mask_2d_from_mask_2d(
@@ -893,7 +889,7 @@ class TestResizedMask:
 class TestBinnedMask:
     def test__compare_to_mask_via_util(self):
 
-        mask = aa.mask.unmasked(shape_2d=(14, 19), invert=True)
+        mask = aa.Mask.unmasked(shape_2d=(14, 19), invert=True)
         mask[1, 5] = False
         mask[6, 5] = False
         mask[4, 9] = False
@@ -908,7 +904,7 @@ class TestBinnedMask:
         assert (mask == binned_up_mask_via_util).all()
         assert mask.pixel_scales == None
 
-        mask = aa.mask.unmasked(shape_2d=(14, 19), pixel_scales=(1.0, 2.0), invert=True)
+        mask = aa.Mask.unmasked(shape_2d=(14, 19), pixel_scales=(1.0, 2.0), invert=True)
         mask[1, 5] = False
         mask[6, 5] = False
         mask[4, 9] = False

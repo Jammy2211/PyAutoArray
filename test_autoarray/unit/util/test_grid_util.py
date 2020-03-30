@@ -5,11 +5,6 @@ import numpy as np
 import pytest
 
 
-test_data_dir = "{}/../test_files/array/".format(
-    os.path.dirname(os.path.realpath(__file__))
-)
-
-
 class TestGrid1DFromMask:
     def test__from_3x3_mask__sub_size_1(self):
 
@@ -1845,7 +1840,7 @@ class TestSubGrid2DFromSubGrid1d:
 class TestPositionsAtCoordinate:
     def test__uniform_grid__locates_pixels_correctly(self):
 
-        grid = aa.grid.uniform(shape_2d=(5, 5), pixel_scales=1.0)
+        grid = aa.Grid.uniform(shape_2d=(5, 5), pixel_scales=1.0)
 
         pixels_at_coordinate = aa.util.grid.positions_at_coordinate_from_grid_2d(
             grid_2d=grid.in_2d, coordinate=(0.3, 0.3)
@@ -1873,9 +1868,9 @@ class TestPositionsAtCoordinate:
 
     def test__uniform_grid__mask_remove_points(self):
 
-        grid = aa.grid.uniform(shape_2d=(5, 5), pixel_scales=1.0)
+        grid = aa.Grid.uniform(shape_2d=(5, 5), pixel_scales=1.0)
 
-        mask_2d = aa.mask.manual(
+        mask_2d = aa.Mask.manual(
             mask_2d=[
                 [True, True, False, False, False],
                 [True, True, False, False, False],
@@ -1893,7 +1888,7 @@ class TestPositionsAtCoordinate:
 
     def test__non_uniform_grid__locates_multiple_pixels_correctly(self):
 
-        grid = aa.grid.manual_2d(
+        grid = aa.Grid.manual_2d(
             grid=[
                 [
                     [3.0, 1.0],

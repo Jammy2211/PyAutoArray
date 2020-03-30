@@ -6,7 +6,7 @@ from autoarray.dataset import imaging, interferometer
 from autoarray.operators import transformer
 
 
-class ImagingSimulator:
+class SimulatorImaging:
     def __init__(
         self,
         shape_2d,
@@ -245,7 +245,7 @@ class ImagingSimulator:
         noise_seed: int
             A seed for random noise_maps generation
         """
-        return imaging.SimulatedImaging.simulate(
+        return imaging.Imaging.simulate(
             image=image,
             exposure_time=self.exposure_time,
             psf=self.psf,
@@ -257,7 +257,7 @@ class ImagingSimulator:
         )
 
 
-class InterferometerSimulator:
+class SimulatorInterferometer:
     def __init__(
         self,
         real_space_shape_2d,
@@ -266,6 +266,7 @@ class InterferometerSimulator:
         sub_size,
         exposure_time,
         background_level,
+        transformer_class=transformer.TransformerDFT,
         primary_beam=None,
         noise_sigma=0.1,
         noise_if_add_noise_false=0.1,
@@ -298,9 +299,8 @@ class InterferometerSimulator:
         self.uv_wavelengths = uv_wavelengths
         self.sub_size = sub_size
         self.origin = origin
-        self.transformer = transformer.Transformer(
-            uv_wavelengths=self.uv_wavelengths,
-            grid_radians=self.grid.in_1d_binned.in_radians,
+        self.transformer = transformer_class(
+            uv_wavelengths=self.uv_wavelengths, grid=self.grid.in_1d_binned.in_radians
         )
         self.exposure_time = exposure_time
         self.background_level = background_level

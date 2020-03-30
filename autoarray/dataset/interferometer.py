@@ -99,6 +99,7 @@ class Interferometer(AbstractInterferometerSet):
         primary_beam=None,
         exposure_time_map=None,
         name=None,
+        metadata=None,
     ):
 
         super().__init__(
@@ -106,6 +107,7 @@ class Interferometer(AbstractInterferometerSet):
             noise_map=noise_map,
             exposure_time_map=exposure_time_map,
             name=name,
+            metadata=metadata,
         )
 
         self.uv_wavelengths = uv_wavelengths
@@ -237,7 +239,7 @@ class Interferometer(AbstractInterferometerSet):
             time map and gain.
         """
 
-        visibilities = aa.visibilities.from_fits(
+        visibilities = aa.Visibilities.from_fits(
             file_path=visibilities_path, hdu=visibilities_hdu
         )
 
@@ -248,7 +250,7 @@ class Interferometer(AbstractInterferometerSet):
             exposure_time=exposure_time_map_from_single_value,
         )
 
-        noise_map = aa.visibilities.from_fits(
+        noise_map = aa.Visibilities.from_fits(
             file_path=noise_map_path, hdu=noise_map_hdu
         )
 
@@ -257,7 +259,7 @@ class Interferometer(AbstractInterferometerSet):
         )
 
         if primary_beam_path is not None:
-            primary_beam = aa.kernel.from_fits(
+            primary_beam = aa.Kernel.from_fits(
                 file_path=primary_beam_path,
                 hdu=primary_beam_hdu,
                 renormalize=renormalize_primary_beam,
@@ -323,7 +325,7 @@ class Interferometer(AbstractInterferometerSet):
 
         if exposure_time_map is None:
 
-            exposure_time_map = aa.array.full(
+            exposure_time_map = aa.Array.full(
                 fill_value=exposure_time,
                 shape_2d=real_space_image.shape_2d,
                 pixel_scales=real_space_pixel_scales,
@@ -331,7 +333,7 @@ class Interferometer(AbstractInterferometerSet):
 
         if background_sky_map is None:
 
-            background_sky_map = aa.array.full(
+            background_sky_map = aa.Array.full(
                 fill_value=background_level,
                 shape_2d=real_space_image.shape_2d,
                 pixel_scales=real_space_pixel_scales,
@@ -488,6 +490,7 @@ class MaskedInterferometer(abstract_dataset.AbstractMaskedDataset):
         interferometer,
         visibilities_mask,
         real_space_mask,
+        transformer_class=transformer.TransformerNUFFT,
         primary_beam_shape_2d=None,
         pixel_scale_interpolation_grid=None,
         inversion_pixel_limit=None,
@@ -549,14 +552,18 @@ class MaskedInterferometer(abstract_dataset.AbstractMaskedDataset):
                 ).in_2d
             )
 
-        self.transformer = transformer.Transformer(
+        self.transformer = transformer_class(
             uv_wavelengths=interferometer.uv_wavelengths,
-            grid_radians=self.grid.in_1d_binned.in_radians,
+            grid=self.grid.in_1d_binned.in_radians,
         )
 
         self.visibilities = interferometer.visibilities
         self.noise_map = interferometer.noise_map
         self.visibilities_mask = visibilities_mask
+
+    @property
+    def data(self):
+        return self.visibilities
 
     @property
     def uv_distances(self):
@@ -572,6 +579,7 @@ class MaskedInterferometer(abstract_dataset.AbstractMaskedDataset):
         interferometer,
         visibilities_mask,
         real_space_mask,
+        transformer_class=transformer.TransformerNUFFT,
         primary_beam_shape_2d=None,
         pixel_scale_interpolation_grid=None,
         inversion_pixel_limit=None,
@@ -581,6 +589,7 @@ class MaskedInterferometer(abstract_dataset.AbstractMaskedDataset):
             interferometer=interferometer,
             visibilities_mask=visibilities_mask,
             real_space_mask=real_space_mask,
+            transformer_class=transformer_class,
             primary_beam_shape_2d=primary_beam_shape_2d,
             pixel_scale_interpolation_grid=pixel_scale_interpolation_grid,
             inversion_pixel_limit=inversion_pixel_limit,

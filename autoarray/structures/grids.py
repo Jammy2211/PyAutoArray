@@ -220,13 +220,13 @@ class AbstractGrid(abstract_structure.AbstractStructure):
         squared_distances = np.square(self[:, 0] - coordinate[0]) + np.square(
             self[:, 1] - coordinate[1]
         )
-        return aa.masked_array(array=squared_distances, mask=self.mask)
+        return aa.MaskedArray(array=squared_distances, mask=self.mask)
 
     def distances_from_coordinate(self, coordinate=(0.0, 0.0)):
         distances = np.sqrt(
             self.squared_distances_from_coordinate(coordinate=coordinate)
         )
-        return aa.masked_array(array=distances, mask=self.mask)
+        return aa.MaskedArray(array=distances, mask=self.mask)
 
     def blurring_grid_from_kernel_shape(self, kernel_shape_2d):
 
@@ -832,13 +832,13 @@ class GridIrregular(np.ndarray):
         squared_distances = np.square(self[:, 0] - coordinate[0]) + np.square(
             self[:, 1] - coordinate[1]
         )
-        return aa.masked_array(array=squared_distances, mask=self.mask)
+        return aa.MaskedArray(array=squared_distances, mask=self.mask)
 
     def distances_from_coordinate(self, coordinate=(0.0, 0.0)):
         distances = np.sqrt(
             self.squared_distances_from_coordinate(coordinate=coordinate)
         )
-        return aa.masked_array(array=distances, mask=self.mask)
+        return aa.MaskedArray(array=distances, mask=self.mask)
 
     @property
     def sub_shape_1d(self):
