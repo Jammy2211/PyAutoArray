@@ -141,37 +141,17 @@ def make_convolver_7x7(mask_7x7, blurring_mask_7x7, psf_3x3):
 
 @pytest.fixture(name="image_7x7")
 def make_image_7x7():
-    return aa.Array.full(fill_value=1.0, shape_2d=(7, 7), pixel_scales=(1.0, 1.0))
+    return aa.Array.ones(shape_2d=(7, 7), pixel_scales=(1.0, 1.0))
 
 
 @pytest.fixture(name="psf_3x3")
 def make_psf_3x3():
-    return aa.Kernel.full(fill_value=1.0, shape_2d=(3, 3), pixel_scales=(1.0, 1.0))
+    return aa.Kernel.ones(shape_2d=(3, 3), pixel_scales=(1.0, 1.0))
 
 
 @pytest.fixture(name="noise_map_7x7")
 def make_noise_map_7x7():
     return aa.Array.full(fill_value=2.0, shape_2d=(7, 7), pixel_scales=(1.0, 1.0))
-
-
-@pytest.fixture(name="background_noise_map_7x7")
-def make_background_noise_map_7x7():
-    return aa.Array.full(fill_value=3.0, shape_2d=(7, 7), pixel_scales=(1.0, 1.0))
-
-
-@pytest.fixture(name="poisson_noise_map_7x7")
-def make_poisson_noise_map_7x7():
-    return aa.Array.full(fill_value=4.0, shape_2d=(7, 7), pixel_scales=(1.0, 1.0))
-
-
-@pytest.fixture(name="exposure_time_map_7x7")
-def make_exposure_time_map_7x7():
-    return aa.Array.full(fill_value=5.0, shape_2d=(7, 7), pixel_scales=(1.0, 1.0))
-
-
-@pytest.fixture(name="background_sky_map_7x7")
-def make_background_sky_map_7x7():
-    return aa.Array.full(fill_value=6.0, shape_2d=(7, 7), pixel_scales=(1.0, 1.0))
 
 
 @pytest.fixture(name="positions_7x7")
@@ -180,25 +160,9 @@ def make_positions_7x7():
 
 
 @pytest.fixture(name="imaging_7x7")
-def make_imaging_7x7(
-    image_7x7,
-    psf_3x3,
-    noise_map_7x7,
-    background_noise_map_7x7,
-    poisson_noise_map_7x7,
-    exposure_time_map_7x7,
-    background_sky_map_7x7,
-):
+def make_imaging_7x7(image_7x7, psf_3x3, noise_map_7x7):
     return aa.Imaging(
-        image=image_7x7,
-        pixel_scales=image_7x7.pixel_scales,
-        psf=psf_3x3,
-        noise_map=noise_map_7x7,
-        background_noise_map=background_noise_map_7x7,
-        poisson_noise_map=poisson_noise_map_7x7,
-        exposure_time_map=exposure_time_map_7x7,
-        background_sky_map=background_sky_map_7x7,
-        name="mock_imaging_7x7",
+        image=image_7x7, psf=psf_3x3, noise_map=noise_map_7x7, name="mock_imaging_7x7"
     )
 
 
@@ -208,21 +172,9 @@ def make_imaging_6x6():
     image = aa.Array.full(shape_2d=(6, 6), fill_value=1.0)
     psf = aa.Kernel.full(shape_2d=(3, 3), fill_value=1.0)
     noise_map = aa.Array.full(shape_2d=(6, 6), fill_value=2.0)
-    background_noise_map = aa.Array.full(shape_2d=(6, 6), fill_value=3.0)
-    poisson_noise_map = aa.Array.full(shape_2d=(6, 6), fill_value=4.0)
-    exposure_time_map = aa.Array.full(shape_2d=(6, 6), fill_value=5.0)
-    background_sky_map = aa.Array.full(shape_2d=(6, 6), fill_value=6.0)
 
     return aa.Imaging(
-        image=image,
-        pixel_scales=1.0,
-        psf=psf,
-        noise_map=noise_map,
-        background_noise_map=background_noise_map,
-        poisson_noise_map=poisson_noise_map,
-        exposure_time_map=exposure_time_map,
-        background_sky_map=background_sky_map,
-        name="mock_imaging_6x6",
+        image=image, psf=psf, noise_map=noise_map, name="mock_imaging_6x6"
     )
 
 
@@ -246,7 +198,7 @@ def make_noise_map_7():
 
 @pytest.fixture(name="primary_beam_3x3")
 def make_primary_beam_3x3():
-    return aa.Kernel.full(fill_value=1.0, shape_2d=(3, 3), pixel_scales=(1.0, 1.0))
+    return aa.Kernel.ones(shape_2d=(3, 3), pixel_scales=(1.0, 1.0))
 
 
 @pytest.fixture(name="uv_wavelengths_7x2")
@@ -289,14 +241,14 @@ def make_transformer_7x7_7(uv_wavelengths_7x2, grid_7x7):
 
 @pytest.fixture(name="masked_imaging_7x7")
 def make_masked_imaging_7x7(imaging_7x7, sub_mask_7x7):
-    return aa.MaskedImaging.manual(imaging=imaging_7x7, mask=sub_mask_7x7)
+    return aa.MaskedImaging(imaging=imaging_7x7, mask=sub_mask_7x7)
 
 
 @pytest.fixture(name="masked_interferometer_7")
 def make_masked_interferometer_7(
     interferometer_7, visibilities_mask_7x2, mask_7x7, sub_grid_7x7, transformer_7x7_7
 ):
-    return aa.MaskedInterferometer.manual(
+    return aa.MaskedInterferometer(
         interferometer=interferometer_7,
         visibilities_mask=visibilities_mask_7x2,
         real_space_mask=mask_7x7,
