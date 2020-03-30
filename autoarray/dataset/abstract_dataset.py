@@ -40,7 +40,9 @@ class AbstractDataset:
         with open(filename, "rb") as f:
             return pickle.load(f)
 
-    def __init__(self, data, noise_map, exposure_time_map=None, name=None):
+    def __init__(
+        self, data, noise_map, exposure_time_map=None, name=None, metadata=None
+    ):
         """A collection of abstract 2D for different data_type classes (an image, pixel-scale, noise-map, etc.)
 
         Parameters
@@ -59,7 +61,7 @@ class AbstractDataset:
         self.noise_map = noise_map
         self.exposure_time_map = exposure_time_map
         self._name = name
-        self.metadata = dict()
+        self.metadata = dict() if metadata is None else metadata
 
     @property
     def mapping(self):

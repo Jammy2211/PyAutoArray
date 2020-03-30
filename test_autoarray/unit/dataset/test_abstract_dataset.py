@@ -1,5 +1,4 @@
 import logging
-import os
 
 import autoarray as aa
 from autoarray.dataset import abstract_dataset
@@ -7,15 +6,11 @@ import numpy as np
 
 logger = logging.getLogger(__name__)
 
-test_data_dir = "{}/../test_files/array/".format(
-    os.path.dirname(os.path.realpath(__file__))
-)
-
 
 class TestSignalToNoise:
     def test__image_and_noise_are_values__signal_to_noise_is_ratio_of_each(self):
-        array = aa.array.manual_2d([[1.0, 2.0], [3.0, 4.0]])
-        noise_map = aa.array.manual_2d([[10.0, 10.0], [30.0, 4.0]])
+        array = aa.Array.manual_2d([[1.0, 2.0], [3.0, 4.0]])
+        noise_map = aa.Array.manual_2d([[10.0, 10.0], [30.0, 4.0]])
 
         dataset = abstract_dataset.AbstractDataset(data=array, noise_map=noise_map)
 
@@ -25,9 +20,9 @@ class TestSignalToNoise:
         assert dataset.signal_to_noise_max == 1.0
 
     def test__same_as_above__but_image_has_negative_values__replaced_with_zeros(self):
-        array = aa.array.manual_2d([[-1.0, 2.0], [3.0, -4.0]])
+        array = aa.Array.manual_2d([[-1.0, 2.0], [3.0, -4.0]])
 
-        noise_map = aa.array.manual_2d([[10.0, 10.0], [30.0, 4.0]])
+        noise_map = aa.Array.manual_2d([[10.0, 10.0], [30.0, 4.0]])
 
         dataset = abstract_dataset.AbstractDataset(data=array, noise_map=noise_map)
 
@@ -41,9 +36,9 @@ class TestAbsoluteSignalToNoise:
     def test__image_and_noise_are_values__signal_to_noise_is_absolute_image_value_over_noise(
         self
     ):
-        array = aa.array.manual_2d([[-1.0, 2.0], [3.0, -4.0]])
+        array = aa.Array.manual_2d([[-1.0, 2.0], [3.0, -4.0]])
 
-        noise_map = aa.array.manual_2d([[10.0, 10.0], [30.0, 4.0]])
+        noise_map = aa.Array.manual_2d([[10.0, 10.0], [30.0, 4.0]])
 
         dataset = abstract_dataset.AbstractDataset(data=array, noise_map=noise_map)
 
@@ -58,8 +53,8 @@ class TestPotentialChiSquaredMap:
     def test__image_and_noise_are_values__signal_to_noise_is_absolute_image_value_over_noise(
         self
     ):
-        array = aa.array.manual_2d([[-1.0, 2.0], [3.0, -4.0]])
-        noise_map = aa.array.manual_2d([[10.0, 10.0], [30.0, 4.0]])
+        array = aa.Array.manual_2d([[-1.0, 2.0], [3.0, -4.0]])
+        noise_map = aa.Array.manual_2d([[10.0, 10.0], [30.0, 4.0]])
 
         dataset = abstract_dataset.AbstractDataset(data=array, noise_map=noise_map)
 
@@ -72,7 +67,7 @@ class TestPotentialChiSquaredMap:
 
 class TestExposureTimeMap:
     def test__from_background_noise_map__covnerts_to_exposure_times(self):
-        background_noise_map = aa.array.manual_2d([[1.0, 4.0, 8.0], [1.0, 4.0, 8.0]])
+        background_noise_map = aa.Array.manual_2d([[1.0, 4.0, 8.0], [1.0, 4.0, 8.0]])
 
         exposure_time_map = abstract_dataset.ExposureTimeMap.from_exposure_time_and_inverse_noise_map(
             exposure_time=1.0, inverse_noise_map=background_noise_map
@@ -115,7 +110,7 @@ class TestAbstractMaskedData:
             mask=sub_mask_7x7, pixel_scale_interpolation_grid=1.0
         )
 
-        grid = aa.masked_grid.from_mask(mask=sub_mask_7x7)
+        grid = aa.MaskedGrid.from_mask(mask=sub_mask_7x7)
         new_grid = grid.new_grid_with_interpolator(pixel_scale_interpolation_grid=1.0)
 
         assert (masked_imaging_7x7.grid == new_grid).all()

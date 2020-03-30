@@ -11,7 +11,7 @@ directory = path.dirname(path.realpath(__file__))
 
 @pytest.fixture(name="plot_path")
 def make_imaging_plotter_setup():
-    plot_path = "{}/../test_files/plotting/imaging/".format(
+    plot_path = "{}/files/plots/imaging/".format(
         os.path.dirname(os.path.realpath(__file__))
     )
 
@@ -21,7 +21,7 @@ def make_imaging_plotter_setup():
 @pytest.fixture(autouse=True)
 def set_config_path():
     aa.conf.instance = aa.conf.Config(
-        path.join(directory, "../test_files/plot"), path.join(directory, "output")
+        path.join(directory, "files/plotter"), path.join(directory, "output")
     )
 
 
@@ -29,7 +29,7 @@ def test__individual_attributes_are_output(
     imaging_7x7, positions_7x7, mask_7x7, plot_path, plot_patch
 ):
 
-    aplt.imaging.image(
+    aplt.Imaging.image(
         imaging=imaging_7x7,
         positions=positions_7x7,
         mask=mask_7x7,
@@ -39,7 +39,7 @@ def test__individual_attributes_are_output(
 
     assert plot_path + "image.png" in plot_patch.paths
 
-    aplt.imaging.noise_map(
+    aplt.Imaging.noise_map(
         imaging=imaging_7x7,
         mask=mask_7x7,
         plotter=aplt.Plotter(output=aplt.Output(plot_path, format="png")),
@@ -47,14 +47,14 @@ def test__individual_attributes_are_output(
 
     assert plot_path + "noise_map.png" in plot_patch.paths
 
-    aplt.imaging.psf(
+    aplt.Imaging.psf(
         imaging=imaging_7x7,
         plotter=aplt.Plotter(output=aplt.Output(plot_path, format="png")),
     )
 
     assert plot_path + "psf.png" in plot_patch.paths
 
-    aplt.imaging.signal_to_noise_map(
+    aplt.Imaging.signal_to_noise_map(
         imaging=imaging_7x7,
         mask=mask_7x7,
         plotter=aplt.Plotter(output=aplt.Output(plot_path, format="png")),
@@ -67,7 +67,7 @@ def test__subplot_is_output(
     imaging_7x7, positions_7x7, mask_7x7, plot_path, plot_patch
 ):
 
-    aplt.imaging.subplot_imaging(
+    aplt.Imaging.subplot_imaging(
         imaging=imaging_7x7,
         sub_plotter=aplt.SubPlotter(output=aplt.Output(plot_path, format="png")),
     )
@@ -78,7 +78,7 @@ def test__subplot_is_output(
 def test__imaging_individuals__output_dependent_on_input(
     imaging_7x7, plot_path, plot_patch
 ):
-    aplt.imaging.individual(
+    aplt.Imaging.individual(
         imaging=imaging_7x7,
         plot_image=True,
         plot_psf=True,
@@ -103,7 +103,7 @@ def test__output_as_fits__correct_output_format(
     imaging_7x7, positions_7x7, mask_7x7, plot_path, plot_patch
 ):
 
-    aplt.imaging.individual(
+    aplt.Imaging.individual(
         imaging=imaging_7x7,
         plot_image=True,
         plot_psf=True,

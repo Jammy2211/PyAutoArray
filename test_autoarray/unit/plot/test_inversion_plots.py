@@ -11,7 +11,7 @@ directory = path.dirname(path.realpath(__file__))
 
 @pytest.fixture(name="plot_path")
 def make_plotter_setup():
-    return "{}/../../../test_files/plotting/inversion/".format(
+    return "{}/files/plots/inversion/".format(
         os.path.dirname(os.path.realpath(__file__))
     )
 
@@ -19,7 +19,7 @@ def make_plotter_setup():
 @pytest.fixture(autouse=True)
 def set_config_path():
     aa.conf.instance = aa.conf.Config(
-        path.join(directory, "../test_files/plot"), path.join(directory, "output")
+        path.join(directory, "files/plotter"), path.join(directory, "output")
     )
 
 
@@ -29,7 +29,7 @@ def test__individual_attributes_are_output_for_rectangular_inversion(
 
     lines = [(0.0, 0.0), (0.1, 0.1)]
 
-    aplt.inversion.reconstructed_image(
+    aplt.Inversion.reconstructed_image(
         inversion=rectangular_inversion_7x7_3x3,
         image_positions=positions_7x7,
         lines=lines,
@@ -38,7 +38,7 @@ def test__individual_attributes_are_output_for_rectangular_inversion(
 
     assert plot_path + "reconstructed_image.png" in plot_patch.paths
 
-    aplt.inversion.reconstruction(
+    aplt.Inversion.reconstruction(
         inversion=rectangular_inversion_7x7_3x3,
         source_positions=positions_7x7,
         lines=lines,
@@ -49,7 +49,7 @@ def test__individual_attributes_are_output_for_rectangular_inversion(
 
     assert plot_path + "reconstruction.png" in plot_patch.paths
 
-    aplt.inversion.errors(
+    aplt.Inversion.errors(
         inversion=rectangular_inversion_7x7_3x3,
         source_positions=positions_7x7,
         lines=lines,
@@ -60,7 +60,7 @@ def test__individual_attributes_are_output_for_rectangular_inversion(
 
     assert plot_path + "errors.png" in plot_patch.paths
 
-    aplt.inversion.residual_map(
+    aplt.Inversion.residual_map(
         inversion=rectangular_inversion_7x7_3x3,
         source_positions=positions_7x7,
         lines=lines,
@@ -71,7 +71,7 @@ def test__individual_attributes_are_output_for_rectangular_inversion(
 
     assert plot_path + "residual_map.png" in plot_patch.paths
 
-    aplt.inversion.normalized_residual_map(
+    aplt.Inversion.normalized_residual_map(
         inversion=rectangular_inversion_7x7_3x3,
         source_positions=positions_7x7,
         lines=lines,
@@ -82,7 +82,7 @@ def test__individual_attributes_are_output_for_rectangular_inversion(
 
     assert plot_path + "normalized_residual_map.png" in plot_patch.paths
 
-    aplt.inversion.chi_squared_map(
+    aplt.Inversion.chi_squared_map(
         inversion=rectangular_inversion_7x7_3x3,
         source_positions=positions_7x7,
         lines=lines,
@@ -93,7 +93,7 @@ def test__individual_attributes_are_output_for_rectangular_inversion(
 
     assert plot_path + "chi_squared_map.png" in plot_patch.paths
 
-    aplt.inversion.regularization_weights(
+    aplt.Inversion.regularization_weights(
         inversion=rectangular_inversion_7x7_3x3,
         source_positions=positions_7x7,
         lines=lines,
@@ -104,7 +104,7 @@ def test__individual_attributes_are_output_for_rectangular_inversion(
 
     assert plot_path + "regularization_weights.png" in plot_patch.paths
 
-    aplt.inversion.interpolated_reconstruction(
+    aplt.Inversion.interpolated_reconstruction(
         inversion=rectangular_inversion_7x7_3x3,
         source_positions=positions_7x7,
         lines=lines,
@@ -113,7 +113,7 @@ def test__individual_attributes_are_output_for_rectangular_inversion(
 
     assert plot_path + "interpolated_reconstruction.png" in plot_patch.paths
 
-    aplt.inversion.interpolated_errors(
+    aplt.Inversion.interpolated_errors(
         inversion=rectangular_inversion_7x7_3x3,
         source_positions=positions_7x7,
         lines=lines,
@@ -129,7 +129,7 @@ def test__individual_attributes_are_output_for_voronoi_inversion(
 
     lines = [(0.0, 0.0), (0.1, 0.1)]
 
-    aplt.inversion.reconstructed_image(
+    aplt.Inversion.reconstructed_image(
         inversion=voronoi_inversion_9_3x3,
         image_positions=positions_7x7,
         lines=lines,
@@ -138,7 +138,7 @@ def test__individual_attributes_are_output_for_voronoi_inversion(
 
     assert plot_path + "reconstructed_image.png" in plot_patch.paths
 
-    aplt.inversion.reconstruction(
+    aplt.Inversion.reconstruction(
         inversion=voronoi_inversion_9_3x3,
         source_positions=positions_7x7,
         lines=lines,
@@ -149,7 +149,7 @@ def test__individual_attributes_are_output_for_voronoi_inversion(
 
     assert plot_path + "reconstruction.png" in plot_patch.paths
 
-    aplt.inversion.errors(
+    aplt.Inversion.errors(
         inversion=voronoi_inversion_9_3x3,
         source_positions=positions_7x7,
         lines=lines,
@@ -160,7 +160,7 @@ def test__individual_attributes_are_output_for_voronoi_inversion(
 
     assert plot_path + "errors.png" in plot_patch.paths
 
-    aplt.inversion.residual_map(
+    aplt.Inversion.residual_map(
         inversion=voronoi_inversion_9_3x3,
         source_positions=positions_7x7,
         lines=lines,
@@ -171,7 +171,7 @@ def test__individual_attributes_are_output_for_voronoi_inversion(
 
     assert plot_path + "residual_map.png" in plot_patch.paths
 
-    aplt.inversion.normalized_residual_map(
+    aplt.Inversion.normalized_residual_map(
         inversion=voronoi_inversion_9_3x3,
         source_positions=positions_7x7,
         lines=lines,
@@ -182,7 +182,7 @@ def test__individual_attributes_are_output_for_voronoi_inversion(
 
     assert plot_path + "normalized_residual_map.png" in plot_patch.paths
 
-    aplt.inversion.chi_squared_map(
+    aplt.Inversion.chi_squared_map(
         inversion=voronoi_inversion_9_3x3,
         source_positions=positions_7x7,
         lines=lines,
@@ -193,7 +193,7 @@ def test__individual_attributes_are_output_for_voronoi_inversion(
 
     assert plot_path + "chi_squared_map.png" in plot_patch.paths
 
-    aplt.inversion.regularization_weights(
+    aplt.Inversion.regularization_weights(
         inversion=voronoi_inversion_9_3x3,
         source_positions=positions_7x7,
         lines=lines,
@@ -204,7 +204,7 @@ def test__individual_attributes_are_output_for_voronoi_inversion(
 
     assert plot_path + "regularization_weights.png" in plot_patch.paths
 
-    aplt.inversion.interpolated_reconstruction(
+    aplt.Inversion.interpolated_reconstruction(
         inversion=voronoi_inversion_9_3x3,
         source_positions=positions_7x7,
         lines=lines,
@@ -213,7 +213,7 @@ def test__individual_attributes_are_output_for_voronoi_inversion(
 
     assert plot_path + "interpolated_reconstruction.png" in plot_patch.paths
 
-    aplt.inversion.interpolated_errors(
+    aplt.Inversion.interpolated_errors(
         inversion=voronoi_inversion_9_3x3,
         source_positions=positions_7x7,
         lines=lines,
@@ -230,7 +230,7 @@ def test__inversion_subplot_is_output_for_all_inversions(
     plot_path,
     plot_patch,
 ):
-    aplt.inversion.subplot_inversion(
+    aplt.Inversion.subplot_inversion(
         inversion=rectangular_inversion_7x7_3x3,
         image_pixel_indexes=[[0, 1, 2], [3]],
         source_pixel_indexes=[[1, 2], [0]],
@@ -238,7 +238,7 @@ def test__inversion_subplot_is_output_for_all_inversions(
     )
     assert plot_path + "subplot_inversion.png" in plot_patch.paths
 
-    aplt.inversion.subplot_inversion(
+    aplt.Inversion.subplot_inversion(
         inversion=voronoi_inversion_9_3x3,
         image_pixel_indexes=[[0, 1, 2], [3]],
         source_pixel_indexes=[[1, 2], [0]],
@@ -251,7 +251,7 @@ def test__inversion_individuals__output_dependent_on_input(
     rectangular_inversion_7x7_3x3, positions_7x7, mask_7x7, plot_path, plot_patch
 ):
 
-    aplt.inversion.individuals(
+    aplt.Inversion.individuals(
         inversion=rectangular_inversion_7x7_3x3,
         plot_reconstructed_image=True,
         plot_errors=True,

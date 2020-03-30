@@ -4,35 +4,10 @@ from autoarray.dataset import imaging, interferometer
 from autoarray.util import fit_util
 
 
-def fit_masked_dataset(masked_dataset, model_data, inversion=None):
-    return fit(
-        masked_dataset=masked_dataset, model_data=model_data, inversion=inversion
-    )
-
-
-def fit(masked_dataset, model_data, inversion=None):
-    if isinstance(masked_dataset, imaging.MaskedImaging):
-        return ImagingFit(
-            mask=masked_dataset.mask,
-            image=masked_dataset.image,
-            noise_map=masked_dataset.noise_map,
-            model_image=model_data,
-            inversion=inversion,
-        )
-    elif isinstance(masked_dataset, interferometer.MaskedInterferometer):
-        return InterferometerFit(
-            visibilities_mask=masked_dataset.visibilities_mask,
-            visibilities=masked_dataset.visibilities,
-            noise_map=masked_dataset.noise_map,
-            model_visibilities=model_data,
-            inversion=inversion,
-        )
-
-
-class DatasetFit:
+class FitDataset:
 
     # noinspection PyUnresolvedReferences
-    def __init__(self, mask, data, noise_map, model_data, inversion=None):
+    def __init__(self, masked_dataset, model_data, inversion=None):
         """Class to fit data where the dataset structures are any dimension.
 
         Parameters
@@ -62,11 +37,22 @@ class DatasetFit:
         likelihood : float
             The overall likelihood of the model's fit to the dataset, summed over evey simulator-point.
         """
-        self.mask = mask
-        self.data = data
-        self.noise_map = noise_map
+
+        self.masked_dataset = masked_dataset
         self.model_data = model_data
         self.inversion = inversion
+
+    @property
+    def mask(self):
+        return self.masked_dataset.mask
+
+    @property
+    def data(self):
+        return self.masked_dataset.data
+
+    @property
+    def noise_map(self):
+        return self.masked_dataset.noise_map
 
     @property
     def residual_map(self):
@@ -148,8 +134,8 @@ class DatasetFit:
             return 1
 
 
-class ImagingFit(DatasetFit):
-    def __init__(self, mask, image, noise_map, model_image, inversion=None):
+class FitImaging(FitDataset):
+    def __init__(self, masked_imaging, model_image, inversion=None):
         """Class to fit data where the dataset structures are any dimension.
 
         Parameters
@@ -180,12 +166,8 @@ class ImagingFit(DatasetFit):
             The overall likelihood of the model's fit to the dataset, summed over evey simulator-point.
         """
 
-        super(ImagingFit, self).__init__(
-            mask=mask,
-            data=image,
-            noise_map=noise_map,
-            model_data=model_image,
-            inversion=inversion,
+        super(FitImaging, self).__init__(
+            masked_dataset=masked_imaging, model_data=model_image, inversion=inversion
         )
 
     @property
@@ -201,15 +183,8 @@ class ImagingFit(DatasetFit):
         return self.model_data
 
 
-class InterferometerFit(DatasetFit):
-    def __init__(
-        self,
-        visibilities_mask,
-        visibilities,
-        noise_map,
-        model_visibilities,
-        inversion=None,
-    ):
+class FitInterferometer(FitDataset):
+    def __init__(self, masked_interferometer, model_visibilities, inversion=None):
         """Class to fit data where the dataset structures are any dimension.
 
         Parameters
@@ -240,10 +215,8 @@ class InterferometerFit(DatasetFit):
             The overall likelihood of the model's fit to the dataset, summed over evey simulator-point.
         """
 
-        super(InterferometerFit, self).__init__(
-            mask=visibilities_mask,
-            data=visibilities,
-            noise_map=noise_map,
+        super(FitInterferometer, self).__init__(
+            masked_dataset=masked_interferometer,
             model_data=model_visibilities,
             inversion=inversion,
         )
@@ -253,8 +226,12 @@ class InterferometerFit(DatasetFit):
         return self.masked_dataset
 
     @property
+    def mask(self):
+        return self.masked_interferometer.visibilities_mask
+
+    @property
     def visibilities_mask(self):
-        return self.mask
+        return self.masked_interferometer.visibilities_mask
 
     @property
     def visibilities(self):
