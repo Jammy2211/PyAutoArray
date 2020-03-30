@@ -167,7 +167,9 @@ class TestMaskedInterferometer:
             == np.full(fill_value=False, shape=(7, 2))
         ).all()
 
-        assert (masked_interferometer_7.primary_beam.in_2d == np.ones((3, 3))).all()
+        assert (
+            masked_interferometer_7.primary_beam.in_2d == (1.0 / 9.0) * np.ones((3, 3))
+        ).all()
         assert masked_interferometer_7.primary_beam_shape_2d == (3, 3)
 
         assert (
@@ -245,7 +247,9 @@ class TestMaskedInterferometer:
             masked_interferometer_7.interferometer.uv_wavelengths
             == 3.0 * np.ones((19, 2))
         ).all()
-        assert (masked_interferometer_7.primary_beam.in_2d == np.ones((7, 7))).all()
+        assert (
+            masked_interferometer_7.primary_beam.in_2d == (1.0 / 49.0) * np.ones((7, 7))
+        ).all()
 
         assert masked_interferometer_7.primary_beam_shape_2d == (7, 7)
 

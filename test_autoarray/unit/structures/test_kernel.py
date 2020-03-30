@@ -455,6 +455,7 @@ class TestFromGaussian:
             axis_ratio=0.9,
             phi=45.0,
             sigma=1.0,
+            renormalize=True,
         )
 
         assert kernel.in_2d == pytest.approx(
@@ -506,6 +507,7 @@ class TestFromAlmaGaussian:
             y_stddev=2.0e-5,
             x_stddev=2.0e-5,
             theta=0.0,
+            renormalize=True,
         )
 
         assert kernel_astropy == pytest.approx(kernel.in_2d, 1e-4)
@@ -548,6 +550,7 @@ class TestFromAlmaGaussian:
             y_stddev=2.0e-5,
             x_stddev=2.0e-5,
             theta=0.0,
+            renormalize=True,
         )
 
         assert kernel_astropy == pytest.approx(kernel.in_2d, 1e-4)
@@ -593,6 +596,7 @@ class TestFromAlmaGaussian:
             y_stddev=2.0e-5,
             x_stddev=1.0e-5,
             theta=theta_deg,
+            renormalize=True,
         )
 
         assert kernel_astropy == pytest.approx(kernel.in_2d, 1e-4)
@@ -638,6 +642,7 @@ class TestFromAlmaGaussian:
             y_stddev=2.0e-5,
             x_stddev=3.0e-5,
             theta=theta_deg,
+            renormalize=True,
         )
 
         assert kernel_astropy == pytest.approx(kernel.in_2d, 1e-4)
@@ -681,6 +686,7 @@ class TestFromAlmaGaussian:
             y_stddev=2.0e-5,
             x_stddev=1.0e-5,
             theta=theta_deg,
+            renormalize=True,
         )
 
         assert kernel_astropy == pytest.approx(kernel.in_2d, 1e-4)
@@ -724,6 +730,7 @@ class TestFromAlmaGaussian:
             y_stddev=2.0e-5,
             x_stddev=1.0e-5,
             theta=theta_deg,
+            renormalize=True,
         )
 
         assert kernel_astropy == pytest.approx(kernel.in_2d, 1e-4)

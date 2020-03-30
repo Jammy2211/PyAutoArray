@@ -220,6 +220,10 @@ def background_noise_map_from_edges_of_image(image, no_edges):
     return arrays.Array.full(fill_value=norm.fit(edges)[1], shape_2d=image.shape_2d)
 
 
+def psf_with_odd_dimensions_from_psf(psf):
+    return psf.rescaled_with_odd_dimensions_from_rescale_factor(rescale_factor=1.0)
+
+
 def exposure_time_map_from_exposure_time_and_background_noise_map(
     exposure_time, background_noise_map
 ):
