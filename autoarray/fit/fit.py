@@ -1,6 +1,5 @@
 import numpy as np
 
-from autoarray.dataset import imaging, interferometer
 from autoarray.util import fit_util
 
 
