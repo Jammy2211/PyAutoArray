@@ -127,7 +127,7 @@ class Interferometer(abstract_dataset.AbstractDataset):
             The exposure time of the interferometer imaging, which is used to compute the exposure-time map as a single value \
             (see *ExposureTimeMap.from_single_value*).
         exposure_time_map_from_inverse_noise_map : bool
-            If True, the exposure-time map is computed from the background noise_map map \
+            If True, the exposure-time map is computed from the background noise-map \
             (see *ExposureTimeMap.from_background_noise_map*)
         background_sky_map_path : str
             The path to the background_sky_map .fits file containing the background sky map \
@@ -297,7 +297,8 @@ class MaskedInterferometer(abstract_dataset.AbstractMaskedDataset):
             self.primary_beam = kernel.Kernel.manual_2d(
                 array=interferometer.primary_beam.resized_from_new_shape(
                     new_shape=self.primary_beam_shape_2d
-                ).in_2d
+                ).in_2d,
+                renormalize=True,
             )
 
         self.transformer = transformer_class(

@@ -175,7 +175,7 @@ class Imaging(abstract_dataset.AbstractDataset):
             The exposure time of the imaging, which is used to compute the exposure-time map as a single value \
             (see *ExposureTimeMap.from_single_value*).
         exposure_time_map_from_inverse_noise_map : bool
-            If True, the exposure-time map is computed from the background noise_map map \
+            If True, the exposure-time map is computed from the background noise-map \
             (see *ExposureTimeMap.from_background_noise_map*)
         background_sky_map_path : str
             The path to the background_sky_map .fits file containing the background sky map \
@@ -288,7 +288,8 @@ class MaskedImaging(abstract_dataset.AbstractMaskedDataset):
             self.psf = kernel.Kernel.manual_2d(
                 array=imaging.psf.resized_from_new_shape(
                     new_shape=self.psf_shape_2d
-                ).in_2d
+                ).in_2d,
+                renormalize=True,
             )
 
             self.convolver = convolver.Convolver(mask=mask, kernel=self.psf)

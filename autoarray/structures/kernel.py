@@ -55,7 +55,13 @@ class Kernel(arrays.AbstractArray):
 
     @classmethod
     def full(
-        cls, fill_value, shape_2d, pixel_scales=None, sub_size=1, origin=(0.0, 0.0)
+        cls,
+        fill_value,
+        shape_2d,
+        pixel_scales=None,
+        sub_size=1,
+        origin=(0.0, 0.0),
+        renormalize=False,
     ):
 
         if sub_size is not None:
@@ -65,18 +71,27 @@ class Kernel(arrays.AbstractArray):
             array=np.full(fill_value=fill_value, shape=shape_2d),
             pixel_scales=pixel_scales,
             origin=origin,
+            renormalize=renormalize,
         )
 
     @classmethod
-    def ones(cls, shape_2d, pixel_scales=None, origin=(0.0, 0.0)):
+    def ones(cls, shape_2d, pixel_scales=None, origin=(0.0, 0.0), renormalize=False):
         return Kernel.full(
-            fill_value=1.0, shape_2d=shape_2d, pixel_scales=pixel_scales, origin=origin
+            fill_value=1.0,
+            shape_2d=shape_2d,
+            pixel_scales=pixel_scales,
+            origin=origin,
+            renormalize=renormalize,
         )
 
     @classmethod
-    def zeros(cls, shape_2d, pixel_scales=None, origin=(0.0, 0.0)):
+    def zeros(cls, shape_2d, pixel_scales=None, origin=(0.0, 0.0), renormalize=False):
         return Kernel.full(
-            fill_value=0.0, shape_2d=shape_2d, pixel_scales=pixel_scales, origin=origin
+            fill_value=0.0,
+            shape_2d=shape_2d,
+            pixel_scales=pixel_scales,
+            origin=origin,
+            renormalize=renormalize,
         )
 
     @classmethod
@@ -88,7 +103,14 @@ class Kernel(arrays.AbstractArray):
 
     @classmethod
     def from_gaussian(
-        cls, shape_2d, pixel_scales, sigma, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0
+        cls,
+        shape_2d,
+        pixel_scales,
+        sigma,
+        centre=(0.0, 0.0),
+        axis_ratio=1.0,
+        phi=0.0,
+        renormalize=False,
     ):
         """Simulate the Kernel as an elliptical Gaussian profile."""
 
@@ -121,12 +143,19 @@ class Kernel(arrays.AbstractArray):
             array=gaussian,
             shape_2d=shape_2d,
             pixel_scales=pixel_scales,
-            renormalize=True,
+            renormalize=renormalize,
         )
 
     @classmethod
     def from_as_gaussian_via_alma_fits_header_parameters(
-        cls, shape_2d, pixel_scales, y_stddev, x_stddev, theta, centre=(0.0, 0.0)
+        cls,
+        shape_2d,
+        pixel_scales,
+        y_stddev,
+        x_stddev,
+        theta,
+        centre=(0.0, 0.0),
+        renormalize=False,
     ):
 
         x_stddev = (
@@ -145,6 +174,7 @@ class Kernel(arrays.AbstractArray):
             axis_ratio=axis_ratio,
             phi=90.0 - theta,
             centre=centre,
+            renormalize=renormalize,
         )
 
     @classmethod

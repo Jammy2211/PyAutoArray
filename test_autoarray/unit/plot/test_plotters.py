@@ -555,15 +555,16 @@ class TestAbstractPlotterAttributes:
         assert plotter.output.filename == None
 
         plotter = aplt.Plotter(
-            output=aplt.Output(
-                path="plot/files/plotter/Path", format="png", filename="file"
-            )
+            output=aplt.Output(path="Path", format="png", filename="file")
         )
 
-        assert plotter.output.path == "plot/files/plotter/Path"
+        assert plotter.output.path == "Path"
         assert plotter.output._format == "png"
         assert plotter.output.format == "png"
         assert plotter.output.filename == "file"
+
+        if os.path.exists(plotter.output.path):
+            shutil.rmtree(plotter.output.path)
 
         sub_plotter = aplt.SubPlotter()
 
@@ -573,15 +574,16 @@ class TestAbstractPlotterAttributes:
         assert sub_plotter.output.filename == None
 
         sub_plotter = aplt.SubPlotter(
-            output=aplt.Output(
-                path="plot/files/plotter/Path", format="png", filename="file"
-            )
+            output=aplt.Output(path="Path", format="png", filename="file")
         )
 
-        assert sub_plotter.output.path == "plot/files/plotter/Path"
+        assert sub_plotter.output.path == "Path"
         assert sub_plotter.output._format == "png"
         assert sub_plotter.output.format == "png"
         assert sub_plotter.output.filename == "file"
+
+        if os.path.exists(plotter.output.path):
+            shutil.rmtree(plotter.output.path)
 
 
 class TestAbstractPlotterPlots:
@@ -962,35 +964,43 @@ class TestAbstractPlotterNew:
     def test__plotter_with_new_outputs__new_outputs_are_setup_correctly_if_input(self):
 
         plotter = aplt.Plotter(
-            output=aplt.Output(
-                path="plot/files/plotter/Path", format="png", filename="file"
-            )
+            output=aplt.Output(path="Path", format="png", filename="file")
         )
 
         plotter = plotter.plotter_with_new_output()
 
-        assert plotter.output.path == "plot/files/plotter/Path"
+        assert plotter.output.path == "Path"
         assert plotter.output._format == "png"
         assert plotter.output.format == "png"
         assert plotter.output.filename == "file"
 
-        plotter = plotter.plotter_with_new_output(
-            path="plot/files/plotter/Path0", filename="file0"
-        )
+        if os.path.exists(plotter.output.path):
+            shutil.rmtree(plotter.output.path)
 
-        assert plotter.output.path == "plot/files/plotter/Path0"
+        plotter = plotter.plotter_with_new_output(path="Path0", filename="file0")
+
+        if os.path.exists(plotter.output.path):
+            shutil.rmtree(plotter.output.path)
+
+        assert plotter.output.path == "Path0"
         assert plotter.output._format == "png"
         assert plotter.output.format == "png"
         assert plotter.output.filename == "file0"
 
+        if os.path.exists(plotter.output.path):
+            shutil.rmtree(plotter.output.path)
+
         plotter = plotter.plotter_with_new_output(
-            path="plot/files/plotter/Path1", filename="file1", format="fits"
+            path="Path1", filename="file1", format="fits"
         )
 
-        assert plotter.output.path == "plot/files/plotter/Path1"
+        assert plotter.output.path == "Path1"
         assert plotter.output._format == "fits"
         assert plotter.output.format == "fits"
         assert plotter.output.filename == "file1"
+
+        if os.path.exists(plotter.output.path):
+            shutil.rmtree(plotter.output.path)
 
     def test__plotter_with_new_units__new_outputs_are_setup_correctly_if_input(self):
 
