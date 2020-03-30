@@ -154,6 +154,13 @@ class AbstractArray(abstract_structure.AbstractStructure):
             array_2d=resized_array_2d
         )
 
+    def padded_from_kernel_shape(self, kernel_shape_2d):
+        new_shape = (
+            self.shape_2d[0] + (kernel_shape_2d[0] - 1),
+            self.shape_2d[1] + (kernel_shape_2d[1] - 1),
+        )
+        return self.resized_from_new_shape(new_shape=new_shape)
+
     def trimmed_from_kernel_shape(self, kernel_shape_2d):
         psf_cut_y = np.int(np.ceil(kernel_shape_2d[0] / 2)) - 1
         psf_cut_x = np.int(np.ceil(kernel_shape_2d[1] / 2)) - 1
