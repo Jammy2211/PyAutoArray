@@ -233,6 +233,7 @@ class MaskedImaging(abstract_dataset.AbstractMaskedDataset):
         pixel_scale_interpolation_grid=None,
         inversion_pixel_limit=None,
         inversion_uses_border=True,
+        renormalize_psf=True,
     ):
         """
         The lens dataset is the collection of data_type (image, noise-map, PSF), a mask, grid, convolver \
@@ -289,7 +290,7 @@ class MaskedImaging(abstract_dataset.AbstractMaskedDataset):
                 array=imaging.psf.resized_from_new_shape(
                     new_shape=self.psf_shape_2d
                 ).in_2d,
-                renormalize=True,
+                renormalize=renormalize_psf,
             )
 
             self.convolver = convolver.Convolver(mask=mask, kernel=self.psf)
@@ -319,6 +320,7 @@ class SimulatorImaging:
         exposure_time_map,
         background_sky_map=None,
         psf=None,
+        renormalize_psf=True,
         add_noise=True,
         noise_if_add_noise_false=0.1,
         noise_seed=-1,
@@ -342,6 +344,10 @@ class SimulatorImaging:
         """
 
         self.exposure_time_map = exposure_time_map
+
+        if psf is not None and renormalize_psf:
+            psf = psf.renormalized
+
         self.psf = psf
         self.background_sky_map = background_sky_map
         self.add_noise = add_noise

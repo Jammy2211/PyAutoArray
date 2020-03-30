@@ -243,6 +243,7 @@ class MaskedInterferometer(abstract_dataset.AbstractMaskedDataset):
         pixel_scale_interpolation_grid=None,
         inversion_pixel_limit=None,
         inversion_uses_border=True,
+        renormalize_primary_beam=True,
     ):
         """
         The lens dataset is the collection of data_type (image, noise-map, primary_beam), a mask, grid, convolver \
@@ -298,7 +299,7 @@ class MaskedInterferometer(abstract_dataset.AbstractMaskedDataset):
                 array=interferometer.primary_beam.resized_from_new_shape(
                     new_shape=self.primary_beam_shape_2d
                 ).in_2d,
-                renormalize=True,
+                renormalize=renormalize_primary_beam,
             )
 
         self.transformer = transformer_class(
@@ -334,6 +335,7 @@ class SimulatorInterferometer:
         background_sky_map=None,
         transformer_class=transformer.TransformerDFT,
         primary_beam=None,
+        renormalize_primary_beam=True,
         noise_sigma=0.1,
         noise_if_add_noise_false=0.1,
         noise_seed=-1,
@@ -360,6 +362,10 @@ class SimulatorInterferometer:
         self.exposure_time_map = exposure_time_map
         self.background_sky_map = background_sky_map
         self.transformer_class = transformer_class
+
+        if primary_beam is not None and renormalize_primary_beam:
+            primary_beam = primary_beam.renormalized
+
         self.primary_beam = primary_beam
         self.noise_sigma = noise_sigma
         self.noise_if_add_noise_false = noise_if_add_noise_false
