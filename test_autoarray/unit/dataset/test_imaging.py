@@ -367,7 +367,10 @@ class TestSimulatorImaging:
         exposure_time_map = aa.Array.ones(shape_2d=image.shape_2d)
 
         simulator = aa.SimulatorImaging(
-            exposure_time_map=exposure_time_map, psf=psf, add_noise=False, renormalize_psf=False
+            exposure_time_map=exposure_time_map,
+            psf=psf,
+            add_noise=False,
+            renormalize_psf=False,
         )
 
         imaging = simulator.from_image(image=image)
@@ -450,7 +453,11 @@ class TestSimulatorImaging:
         exposure_time_map = aa.Array.full(fill_value=20.0, shape_2d=image.shape_2d)
 
         simulator = aa.SimulatorImaging(
-            exposure_time_map=exposure_time_map, psf=psf, add_noise=True, noise_seed=1, renormalize_psf=False
+            exposure_time_map=exposure_time_map,
+            psf=psf,
+            add_noise=True,
+            noise_seed=1,
+            renormalize_psf=False,
         )
 
         imaging = simulator.from_image(image=image)
