@@ -263,7 +263,7 @@ class Kernel(arrays.AbstractArray):
     @property
     def renormalized(self):
         """Renormalize the Kernel such that its data_vector values sum to unity."""
-        return Kernel(array=self, mask=self.mask, renormalize=False)
+        return Kernel(array=self, mask=self.mask, renormalize=True)
 
     def convolved_array_from_array(self, array):
         """
