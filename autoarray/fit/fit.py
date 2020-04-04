@@ -42,6 +42,10 @@ class FitDataset:
         self.inversion = inversion
 
     @property
+    def name(self):
+        return self.masked_dataset.dataset.name
+
+    @property
     def mask(self):
         return self.masked_dataset.mask
 

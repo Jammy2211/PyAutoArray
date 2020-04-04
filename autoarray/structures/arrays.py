@@ -134,12 +134,18 @@ class AbstractArray(abstract_structure.AbstractStructure):
         return mask.geometry.extent
 
     def resized_from_new_shape(self, new_shape):
-        """resized the array to a new shape and at a new origin.
+        """Resize the array around its centre to a new input shape.
+
+        If a new_shape dimension is smaller than the current dimension, the data at the edges is trimmed and removed.
+        If it is larger, the data is padded with zeros.
+
+        If the array has even sized dimensions, the central pixel around which data is trimmed / padded is chosen as
+        the top-left pixel of the central quadrant of pixels.
 
         Parameters
         -----------
         new_shape : (int, int)
-            The new two-dimensional shape of the array.
+            The new 2D shape of the array.
         """
 
         resized_array_2d = array_util.resized_array_2d_from_array_2d(

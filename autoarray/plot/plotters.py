@@ -11,6 +11,7 @@ from functools import wraps
 import copy
 
 from autoarray import exc
+from autoarray.dataset import abstract_dataset
 from autoarray.plot import mat_objs
 import inspect
 import os
