@@ -233,6 +233,7 @@ class MaskedInterferometer(abstract_dataset.AbstractMaskedDataset):
     def dataset(self):
         return self.interferometer
 
+    @property
     def data(self):
         return self.visibilities
 
