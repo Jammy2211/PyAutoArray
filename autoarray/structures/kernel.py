@@ -202,6 +202,25 @@ class Kernel(arrays.AbstractArray):
     def rescaled_with_odd_dimensions_from_rescale_factor(
         self, rescale_factor, renormalize=False
     ):
+        """
+        If the PSF kernel has one or two even-sized dimensions, return a PSF object where the kernel has odd-sized
+        dimensions (odd-sized dimensions are required by a *Convolver*).
+
+        The PSF can be scaled to larger / smaller sizes than the input size, if the rescale factor uses values that
+        deviate furher from 1.0.
+
+        Kernels are rescald using the scikit-image routine rescale, which performs rescaling via an interpolation
+        routine. This may lead to loss of accuracy in the PSF kernel and it is advised that users, where possible,
+        create their PSF on an odd-sized array using their data reduction pipelines that remove this approximation.
+
+        Parameters
+        ----------
+        rescale_factor : float
+            The factor by which the kernel is rescaled. If this has a value of 1.0, the kernel is rescaled to the
+            closest odd-sized dimensions (e.g. 20 -> 19). Higher / lower values scale to higher / lower dimensions.
+        renormalize : bool
+            Whether the PSF should be renormalized after being rescaled.
+        """
 
         kernel_rescaled = rescale(
             self.in_2d,
