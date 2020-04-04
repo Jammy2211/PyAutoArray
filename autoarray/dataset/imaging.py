@@ -307,6 +307,10 @@ class MaskedImaging(abstract_dataset.AbstractMaskedDataset):
                     )
 
     @property
+    def dataset(self):
+        return self.imaging
+
+    @property
     def data(self):
         return self.image
 

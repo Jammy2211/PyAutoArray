@@ -2,7 +2,6 @@ import pickle
 
 import numpy as np
 
-from autoarray import exc
 from autoarray.structures import arrays, grids
 
 
