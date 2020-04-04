@@ -291,8 +291,8 @@ def test__noise_map_with_offset_values_added():
 
     noise_map = aa.Array.full(fill_value=3.0, shape_2d=(3, 3))
 
-    noise_map = aa.preprocess.noise_map_with_offset_values_added(
-        noise_map=noise_map, scatter=0.001
+    noise_map = aa.preprocess.array_with_random_uniform_values_added(
+        array=noise_map, upper_limit=0.001
     )
 
     assert noise_map.in_2d == pytest.approx(
