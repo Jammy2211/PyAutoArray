@@ -391,14 +391,14 @@ class SimulatorImaging:
                 shape_2d=image.shape_2d, pixel_scales=image.pixel_scales
             )
 
-        image = image + background_sky_map
-
         if self.psf is not None:
             psf = self.psf
         else:
             psf = kernel.Kernel.no_blur(pixel_scales=image.pixel_scales)
 
         image = psf.convolved_array_from_array(array=image)
+
+        image = image + background_sky_map
 
         image = image.trimmed_from_kernel_shape(kernel_shape_2d=psf.shape_2d)
         exposure_time_map = self.exposure_time_map.trimmed_from_kernel_shape(
