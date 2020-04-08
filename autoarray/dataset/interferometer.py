@@ -15,18 +15,10 @@ logger = logging.getLogger(__name__)
 
 class Interferometer(abstract_dataset.AbstractDataset):
     def __init__(
-        self,
-        visibilities,
-        noise_map,
-        uv_wavelengths,
-        primary_beam=None,
-        name=None,
-        metadata=None,
+        self, visibilities, noise_map, uv_wavelengths, primary_beam=None, name=None
     ):
 
-        super().__init__(
-            data=visibilities, noise_map=noise_map, name=name, metadata=metadata
-        )
+        super().__init__(data=visibilities, noise_map=noise_map, name=name)
 
         self.uv_wavelengths = uv_wavelengths
         self.primary_beam = primary_beam
@@ -293,7 +285,7 @@ class SimulatorInterferometer:
         self.noise_if_add_noise_false = noise_if_add_noise_false
         self.noise_seed = noise_seed
 
-    def from_image(self, image, name=None, metadata=None):
+    def from_image(self, image, name=None):
         """
         Create a realistic simulated image by applying effects to a plain simulated image.
 
@@ -358,5 +350,4 @@ class SimulatorInterferometer:
             uv_wavelengths=transformer.uv_wavelengths,
             primary_beam=self.primary_beam,
             name=name,
-            metadata=metadata,
         )
