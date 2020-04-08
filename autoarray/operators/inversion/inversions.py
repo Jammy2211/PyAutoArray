@@ -165,6 +165,14 @@ class Inversion:
         except np.linalg.LinAlgError:
             raise exc.InversionException()
 
+    @property
+    def brightest_reconstruction_pixel(self):
+        return np.argmax(self.reconstruction)
+
+    @property
+    def brightest_reconstruction_pixel_centre(self):
+        return tuple(self.mapper.pixelization_grid[self.brightest_reconstruction_pixel])
+
 
 class InversionImaging(Inversion):
     def __init__(

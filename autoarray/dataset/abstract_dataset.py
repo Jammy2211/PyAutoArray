@@ -23,7 +23,7 @@ class AbstractDataset:
         """
         self.data = data
         self.noise_map = noise_map
-        self._name = name
+        self._name = name if name is not None else "dataset"
         self.metadata = dict() if metadata is None else metadata
 
     @property

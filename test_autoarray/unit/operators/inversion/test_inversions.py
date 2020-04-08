@@ -231,6 +231,30 @@ class TestReconstructedDataVectorAndImage:
         assert inversion.errors == pytest.approx(np.array([0.7, 0.7, 0.7]), 1.0e-4)
 
 
+class TestBrightestPixel:
+    def test__brightest_reconstruction_pixel_and_centre(self):
+
+        matrix_shape = (3, 3)
+
+        inversion = inversions.InversionImaging.from_data_mapper_and_regularization(
+            image=np.ones(9),
+            noise_map=np.ones(9),
+            convolver=mock_inversion.MockConvolver(matrix_shape),
+            mapper=mock_inversion.MockMapper(
+                matrix_shape,
+                pixelization_grid=aa.GridIrregular.manual_1d(
+                    [[1.0, 2.0], [3.0, 4.0], [5.0, 6.0]]
+                ),
+            ),
+            regularization=mock_inversion.MockRegularization(matrix_shape),
+        )
+
+        inversion.reconstruction = np.array([2.0, 3.0, 5.0])
+
+        assert inversion.brightest_reconstruction_pixel == 2
+        assert inversion.brightest_reconstruction_pixel_centre == (5.0, 6.0)
+
+
 from autoconf import conf
 from os import path
 import pytest
