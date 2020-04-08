@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 
 class Imaging(abstract_dataset.AbstractDataset):
-    def __init__(self, image, noise_map, psf=None, name=None, metadata=None):
+    def __init__(self, image, noise_map, psf=None, name=None):
         """A class containing the data, noise-map and point spread function of a 2D imaging dataset.
 
         Parameters
@@ -26,7 +26,7 @@ class Imaging(abstract_dataset.AbstractDataset):
             An array describing the Point Spread Function kernel of the image.
         """
 
-        super().__init__(data=image, noise_map=noise_map, name=name, metadata=metadata)
+        super().__init__(data=image, noise_map=noise_map, name=name)
 
         self.psf = psf
 
@@ -100,7 +100,6 @@ class Imaging(abstract_dataset.AbstractDataset):
         psf_path=None,
         psf_hdu=0,
         name=None,
-        metadata=None,
     ):
         """Factory for loading the imaging data_type from .fits files, as well as computing properties like the noise-map,
         exposure-time map, etc. from the imaging-data.
@@ -150,9 +149,7 @@ class Imaging(abstract_dataset.AbstractDataset):
 
             psf = None
 
-        return Imaging(
-            image=image, noise_map=noise_map, psf=psf, name=name, metadata=metadata
-        )
+        return Imaging(image=image, noise_map=noise_map, psf=psf, name=name)
 
     def __array_finalize__(self, obj):
         if isinstance(obj, Imaging):
@@ -303,13 +300,12 @@ class SimulatorImaging:
         self.noise_if_add_noise_false = noise_if_add_noise_false
         self.noise_seed = noise_seed
 
-    def from_image(self, image, name=None, metadata=None):
+    def from_image(self, image, name=None):
         """
         Create a realistic simulated image by applying effects to a plain simulated image.
 
         Parameters
         ----------
-        metadata
         noise_if_add_noise_false
         background_level
         exposure_time_
@@ -383,6 +379,4 @@ class SimulatorImaging:
 
         image = arrays.MaskedArray.manual_1d(array=image, mask=mask)
 
-        return Imaging(
-            image=image, psf=self.psf, noise_map=noise_map, name=name, metadata=metadata
-        )
+        return Imaging(image=image, psf=self.psf, noise_map=noise_map, name=name)
