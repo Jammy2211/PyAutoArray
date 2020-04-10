@@ -95,12 +95,14 @@ class AbstractDataset:
 class AbstractMaskedDataset:
     def __init__(
         self,
+        dataset,
         mask,
         pixel_scale_interpolation_grid=None,
         inversion_pixel_limit=None,
         inversion_uses_border=True,
     ):
 
+        self.dataset = dataset
         self.mask = mask
 
         ### GRIDS ###
@@ -123,3 +125,7 @@ class AbstractMaskedDataset:
 
         self.inversion_pixel_limit = inversion_pixel_limit
         self.inversion_uses_border = inversion_uses_border
+
+    @property
+    def name(self) -> str:
+        return self.dataset.name

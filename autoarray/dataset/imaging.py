@@ -197,9 +197,8 @@ class MaskedImaging(abstract_dataset.AbstractMaskedDataset):
             up run.
         """
 
-        self.imaging = imaging
-
         super().__init__(
+            dataset=imaging,
             mask=mask,
             pixel_scale_interpolation_grid=pixel_scale_interpolation_grid,
             inversion_pixel_limit=inversion_pixel_limit,
@@ -249,8 +248,8 @@ class MaskedImaging(abstract_dataset.AbstractMaskedDataset):
             self.psf = None
 
     @property
-    def dataset(self):
-        return self.imaging
+    def imaging(self):
+        return self.dataset
 
     @property
     def data(self):
