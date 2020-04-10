@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 
 class Imaging(abstract_dataset.AbstractDataset):
-    def __init__(self, image, noise_map, psf=None, name=None, metadata=None):
+    def __init__(self, image, noise_map, psf=None, name=None):
         """A class containing the data, noise-map and point spread function of a 2D imaging dataset.
 
         Parameters
@@ -26,7 +26,7 @@ class Imaging(abstract_dataset.AbstractDataset):
             An array describing the Point Spread Function kernel of the image.
         """
 
-        super().__init__(data=image, noise_map=noise_map, name=name, metadata=metadata)
+        super().__init__(data=image, noise_map=noise_map, name=name)
 
         self.psf = psf
 
@@ -100,7 +100,6 @@ class Imaging(abstract_dataset.AbstractDataset):
         psf_path=None,
         psf_hdu=0,
         name=None,
-        metadata=None,
     ):
         """Factory for loading the imaging data_type from .fits files, as well as computing properties like the noise-map,
         exposure-time map, etc. from the imaging-data.
@@ -119,77 +118,14 @@ class Imaging(abstract_dataset.AbstractDataset):
             The size of each pixel in arc seconds.
         image_hdu : int
             The hdu the image is contained in the .fits file specified by *image_path*.
-        image_hdu : int
-            The hdu the image is contained in the .fits file that *image_path* points too.
-        resized_imaging_shape : (int, int) | None
-            If input, the imaging structures that are image sized, e.g. the image, noise-maps) are resized to these dimensions.
         psf_path : str
             The path to the psf .fits file containing the psf (e.g. '/path/to/psf.fits')
         psf_hdu : int
             The hdu the psf is contained in the .fits file specified by *psf_path*.
-        resized_psf_shape : (int, int) | None
-            If input, the psf is resized to these dimensions.
         noise_map_path : str
             The path to the noise_map .fits file containing the noise_map (e.g. '/path/to/noise_map.fits')
         noise_map_hdu : int
             The hdu the noise_map is contained in the .fits file specified by *noise_map_path*.
-        noise_map_from_image_and_background_noise_map : bool
-            If True, the noise-map is computed from the observed image and background noise-map \
-            (see NoiseMap.from_image_and_background_noise_map).
-        convert_noise_map_from_weight_map : bool
-            If True, the noise-map loaded from the .fits file is converted from a weight-map to a noise-map (see \
-            *NoiseMap.from_weight_map).
-        convert_noise_map_from_inverse_noise_map : bool
-            If True, the noise-map loaded from the .fits file is converted from an inverse noise-map to a noise-map (see \
-            *NoiseMap.from_inverse_noise_map).
-        background_noise_map_path : str
-            The path to the background_noise_map .fits file containing the background noise-map \
-            (e.g. '/path/to/background_noise_map.fits')
-        background_noise_map_hdu : int
-            The hdu the background_noise_map is contained in the .fits file specified by *background_noise_map_path*.
-        convert_background_noise_map_from_weight_map : bool
-            If True, the background noise-map loaded from the .fits file is converted from a weight-map to a noise-map (see \
-            *NoiseMap.from_weight_map).
-        convert_background_noise_map_from_inverse_noise_map : bool
-            If True, the background noise-map loaded from the .fits file is converted from an inverse noise-map to a \
-            noise-map (see *NoiseMap.from_inverse_noise_map).
-        poisson_noise_map_path : str
-            The path to the poisson_noise_map .fits file containing the Poisson noise-map \
-             (e.g. '/path/to/poisson_noise_map.fits')
-        poisson_noise_map_hdu : int
-            The hdu the poisson_noise_map is contained in the .fits file specified by *poisson_noise_map_path*.
-        poisson_noise_map_from_image : bool
-            If True, the Poisson noise-map is estimated using the image.
-        convert_poisson_noise_map_from_weight_map : bool
-            If True, the Poisson noise-map loaded from the .fits file is converted from a weight-map to a noise-map (see \
-            *NoiseMap.from_weight_map).
-        convert_poisson_noise_map_from_inverse_noise_map : bool
-            If True, the Poisson noise-map loaded from the .fits file is converted from an inverse noise-map to a \
-            noise-map (see *NoiseMap.from_inverse_noise_map).
-        exposure_time_map_path : str
-            The path to the exposure_time_map .fits file containing the exposure time map \
-            (e.g. '/path/to/exposure_time_map.fits')
-        exposure_time_map_hdu : int
-            The hdu the exposure_time_map is contained in the .fits file specified by *exposure_time_map_path*.
-        exposure_time_map_from_single_value : float
-            The exposure time of the imaging, which is used to compute the exposure-time map as a single value \
-            (see *ExposureTimeMap.from_single_value*).
-        exposure_time_map_from_inverse_noise_map : bool
-            If True, the exposure-time map is computed from the background noise-map \
-            (see *ExposureTimeMap.from_background_noise_map*)
-        background_sky_map_path : str
-            The path to the background_sky_map .fits file containing the background sky map \
-            (e.g. '/path/to/background_sky_map.fits').
-        background_sky_map_hdu : int
-            The hdu the background_sky_map is contained in the .fits file specified by *background_sky_map_path*.
-        convert_from_electrons : bool
-            If True, the input unblurred_image_1d are in units of electrons and all converted to electrons / second using the exposure \
-            time map.
-        gain : float
-            The image gain, used for convert from ADUs.
-        convert_from_adus : bool
-            If True, the input unblurred_image_1d are in units of adus and all converted to electrons / second using the exposure \
-            time map and gain.
         """
 
         image = arrays.Array.from_fits(
@@ -209,9 +145,11 @@ class Imaging(abstract_dataset.AbstractDataset):
                 renormalize=True,
             )
 
-        return Imaging(
-            image=image, noise_map=noise_map, psf=psf, name=name, metadata=metadata
-        )
+        else:
+
+            psf = None
+
+        return Imaging(image=image, noise_map=noise_map, psf=psf, name=name)
 
     def __array_finalize__(self, obj):
         if isinstance(obj, Imaging):
@@ -259,9 +197,8 @@ class MaskedImaging(abstract_dataset.AbstractMaskedDataset):
             up run.
         """
 
-        self.imaging = imaging
-
         super().__init__(
+            dataset=imaging,
             mask=mask,
             pixel_scale_interpolation_grid=pixel_scale_interpolation_grid,
             inversion_pixel_limit=inversion_pixel_limit,
@@ -306,9 +243,13 @@ class MaskedImaging(abstract_dataset.AbstractMaskedDataset):
                         pixel_scale_interpolation_grid=self.pixel_scale_interpolation_grid
                     )
 
+        else:
+
+            self.psf = None
+
     @property
-    def dataset(self):
-        return self.imaging
+    def imaging(self):
+        return self.dataset
 
     @property
     def data(self):
@@ -358,13 +299,12 @@ class SimulatorImaging:
         self.noise_if_add_noise_false = noise_if_add_noise_false
         self.noise_seed = noise_seed
 
-    def from_image(self, image, name=None, metadata=None):
+    def from_image(self, image, name=None):
         """
         Create a realistic simulated image by applying effects to a plain simulated image.
 
         Parameters
         ----------
-        metadata
         noise_if_add_noise_false
         background_level
         exposure_time_
@@ -438,6 +378,4 @@ class SimulatorImaging:
 
         image = arrays.MaskedArray.manual_1d(array=image, mask=mask)
 
-        return Imaging(
-            image=image, psf=self.psf, noise_map=noise_map, name=name, metadata=metadata
-        )
+        return Imaging(image=image, psf=self.psf, noise_map=noise_map, name=name)

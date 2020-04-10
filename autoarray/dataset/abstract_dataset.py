@@ -6,7 +6,7 @@ from autoarray.structures import arrays, grids
 
 
 class AbstractDataset:
-    def __init__(self, data, noise_map, name=None, metadata=None):
+    def __init__(self, data, noise_map, name=None):
         """A collection of abstract 2D for different data_type classes (an image, pixel-scale, noise-map, etc.)
 
         Parameters
@@ -23,24 +23,11 @@ class AbstractDataset:
         """
         self.data = data
         self.noise_map = noise_map
-        self._name = name
-        self.metadata = dict() if metadata is None else metadata
+        self._name = name if name is not None else "dataset"
 
     @property
     def name(self) -> str:
         return self._name
-
-    def save(self, directory: str):
-        """
-        Save this instance as a pickle with the dataset name in the given directory.
-
-        Parameters
-        ----------
-        directory
-            The directory to save into
-        """
-        with open(f"{directory}/{self.name}.pickle", "wb") as f:
-            pickle.dump(self, f)
 
     @classmethod
     def load(cls, filename) -> "AbstractDataset":
@@ -108,12 +95,14 @@ class AbstractDataset:
 class AbstractMaskedDataset:
     def __init__(
         self,
+        dataset,
         mask,
         pixel_scale_interpolation_grid=None,
         inversion_pixel_limit=None,
         inversion_uses_border=True,
     ):
 
+        self.dataset = dataset
         self.mask = mask
 
         ### GRIDS ###
@@ -136,3 +125,7 @@ class AbstractMaskedDataset:
 
         self.inversion_pixel_limit = inversion_pixel_limit
         self.inversion_uses_border = inversion_uses_border
+
+    @property
+    def name(self) -> str:
+        return self.dataset.name
