@@ -185,9 +185,8 @@ class MaskedInterferometer(abstract_dataset.AbstractMaskedDataset):
             up run.
         """
 
-        self.interferometer = interferometer
-
         super(MaskedInterferometer, self).__init__(
+            dataset=interferometer,
             mask=real_space_mask,
             pixel_scale_interpolation_grid=pixel_scale_interpolation_grid,
             inversion_pixel_limit=inversion_pixel_limit,
@@ -222,8 +221,8 @@ class MaskedInterferometer(abstract_dataset.AbstractMaskedDataset):
         self.visibilities_mask = visibilities_mask
 
     @property
-    def dataset(self):
-        return self.interferometer
+    def interferometer(self):
+        return self.dataset
 
     @property
     def data(self):
