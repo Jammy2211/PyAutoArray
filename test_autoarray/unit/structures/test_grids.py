@@ -2694,6 +2694,13 @@ class TestCoordinates:
         assert type(coordinates_from_1d) == grids.Coordinates
         assert coordinates_from_1d == [[(1.0, 1.0), (2.0, 2.0)], [(3.0, 3.0)]]
 
+        coordinates_from_1d = coordinates.from_1d_coordinates(
+            coordinates_1d=np.array([(1.0, 1.0), (2.0, 2.0), (3.0, 3.0)])
+        )
+
+        assert type(coordinates_from_1d) == grids.Coordinates
+        assert coordinates_from_1d == [[(1.0, 1.0), (2.0, 2.0)], [(3.0, 3.0)]]
+
     def test__retain_origin_list_but_as_floats_for_single_values(self):
 
         coordinates = aa.Coordinates(coordinates=[[(1.0, 1.0), (2.0, 2.0)]])

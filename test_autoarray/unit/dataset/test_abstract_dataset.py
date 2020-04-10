@@ -70,23 +70,27 @@ class TestAbstractMaskedData:
         self, imaging_7x7, sub_mask_7x7, grid_7x7, sub_grid_7x7, blurring_grid_7x7
     ):
 
-        masked_dataset = abstract_dataset.AbstractMaskedDataset(mask=sub_mask_7x7)
+        masked_dataset = abstract_dataset.AbstractMaskedDataset(
+            dataset=imaging_7x7, mask=sub_mask_7x7
+        )
 
         assert (masked_dataset.grid.in_1d_binned == grid_7x7).all()
         assert (masked_dataset.grid.in_1d == sub_grid_7x7).all()
 
         sub_mask_7x7.pixel_scales = None
 
-        masked_dataset = abstract_dataset.AbstractMaskedDataset(mask=sub_mask_7x7)
+        masked_dataset = abstract_dataset.AbstractMaskedDataset(
+            dataset=imaging_7x7, mask=sub_mask_7x7
+        )
 
         assert masked_dataset.grid is None
 
     def test__pixel_scale_interpolation_grid_input__grids_include_interpolators(
-        self, sub_mask_7x7
+        self, imaging_7x7, sub_mask_7x7
     ):
 
         masked_imaging_7x7 = abstract_dataset.AbstractMaskedDataset(
-            mask=sub_mask_7x7, pixel_scale_interpolation_grid=1.0
+            dataset=imaging_7x7, mask=sub_mask_7x7, pixel_scale_interpolation_grid=1.0
         )
 
         grid = aa.MaskedGrid.from_mask(mask=sub_mask_7x7)
@@ -100,32 +104,34 @@ class TestAbstractMaskedData:
             masked_imaging_7x7.grid.interpolator.wts == new_grid.interpolator.wts
         ).all()
 
-        masked_imaging_7x7 = abstract_dataset.AbstractMaskedDataset(mask=sub_mask_7x7)
+        masked_imaging_7x7 = abstract_dataset.AbstractMaskedDataset(
+            dataset=imaging_7x7, mask=sub_mask_7x7
+        )
 
         assert masked_imaging_7x7.grid.interpolator is None
 
-    def test__inversion_pixel_limit(self, sub_mask_7x7):
+    def test__inversion_pixel_limit(self, imaging_7x7, sub_mask_7x7):
         masked_imaging_7x7 = abstract_dataset.AbstractMaskedDataset(
-            mask=sub_mask_7x7, inversion_pixel_limit=2
+            dataset=imaging_7x7, mask=sub_mask_7x7, inversion_pixel_limit=2
         )
 
         assert masked_imaging_7x7.inversion_pixel_limit == 2
 
         masked_imaging_7x7 = abstract_dataset.AbstractMaskedDataset(
-            mask=sub_mask_7x7, inversion_pixel_limit=5
+            dataset=imaging_7x7, mask=sub_mask_7x7, inversion_pixel_limit=5
         )
 
         assert masked_imaging_7x7.inversion_pixel_limit == 5
 
-    def test__inversion_uses_border(self, sub_mask_7x7):
+    def test__inversion_uses_border(self, imaging_7x7, sub_mask_7x7):
         masked_imaging_7x7 = abstract_dataset.AbstractMaskedDataset(
-            mask=sub_mask_7x7, inversion_uses_border=True
+            dataset=imaging_7x7, mask=sub_mask_7x7, inversion_uses_border=True
         )
 
         assert masked_imaging_7x7.inversion_uses_border == True
 
         masked_imaging_7x7 = abstract_dataset.AbstractMaskedDataset(
-            mask=sub_mask_7x7, inversion_uses_border=False
+            dataset=imaging_7x7, mask=sub_mask_7x7, inversion_uses_border=False
         )
 
         assert masked_imaging_7x7.inversion_uses_border == False
