@@ -129,7 +129,7 @@ class Voronoi(Pixelization):
 
         try:
             pixelization_grid = grids.GridVoronoi(
-                grid_1d=relocated_pixelization_grid,
+                grid=relocated_pixelization_grid,
                 nearest_pixelization_1d_index_for_mask_1d_index=sparse_grid.nearest_pixelization_1d_index_for_mask_1d_index,
             )
 

@@ -21,13 +21,7 @@ from autoarray.operators.transformer import TransformerDFT
 from autoarray.operators.transformer import TransformerFFT
 from autoarray.operators.transformer import TransformerNUFFT
 from autoarray.structures.arrays import Array
-from autoarray.structures.grids import (
-    Grid,
-    GridIrregular,
-    GridRectangular,
-    GridVoronoi,
-    Coordinates,
-)
+from autoarray.structures.grids import Grid, GridRectangular, GridVoronoi, Coordinates
 from autoarray.structures.kernel import Kernel
 from autoarray.structures.visibilities import Visibilities
 from autoarray.structures.arrays import MaskedArray
