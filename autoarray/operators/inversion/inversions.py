@@ -81,7 +81,7 @@ class Inversion:
             in "source_grid"
         ):
 
-            dimension = int(np.sqrt(self.mapper.pixels))
+            dimension = int(np.sqrt(self.mapper.in_pixels))
             shape_2d = (dimension, dimension)
 
             grid = grids.Grid.bounding_box(

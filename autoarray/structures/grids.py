@@ -1320,7 +1320,17 @@ class Interpolator:
 class Coordinates(list):
     def __init__(self, coordinates, mask=None):
 
-        super(Coordinates, self).__init__(coordinates)
+        if isinstance(coordinates[0], tuple) or isinstance(coordinates[0], np.ndarray):
+            coordinates = [(coordinates)]
+
+        if isinstance(coordinates[0][0], list) or isinstance(
+            coordinates[0][0], np.ndarray
+        ):
+            coordinates = [
+                [tuple(coord) for coord in coord_list] for coord_list in coordinates
+            ]
+
+        super().__init__(coordinates)
 
         self.mask = mask
 
@@ -1339,69 +1349,43 @@ class Coordinates(list):
         return cls(coordinates=coordinates, mask=mask)
 
     @property
-    def in_1d(self):
+    def upper_indexes(self):
 
-        total_coordinates = sum([len(coordinate_set) for coordinate_set in self])
+        upper_indexes = []
 
-        grid_1d = np.zeros(shape=(total_coordinates, 2))
+        a = 0
 
-        coordinate_index = 0
+        for coords in self:
+            a = a + len(coords)
+            upper_indexes.append(a)
 
-        for coordinate_set in self:
-            for coordinate in coordinate_set:
-                grid_1d[coordinate_index, :] = coordinate
-                coordinate_index += 1
-
-        return GridIrregular.manual_1d(grid=grid_1d)
+        return upper_indexes
 
     @property
-    def list_in_1d(self):
-
-        coordinates_list = []
-
-        for coordinate_set in self:
-            coordinates_list.append(GridIrregular(grid=coordinate_set))
-
-        return coordinates_list
-
-    def from_1d_coordinates(self, coordinates_1d):
-
-        coordinate_1d_index = 0
-
-        new_coordinates = []
-
-        for coordinate_set_index in range(len(self)):
-            new_coordinate_set_list = []
-            for coordinates_index in range(len(self[coordinate_set_index])):
-                new_coordinate_set_list.append(
-                    tuple(coordinates_1d[coordinate_1d_index, :])
-                )
-                coordinate_1d_index += 1
-            new_coordinates.append(new_coordinate_set_list)
-
-        return Coordinates(coordinates=new_coordinates, mask=self.mask)
-
-    def from_1d_values(self, values_1d):
-
-        values_1d_index = 0
-
-        new_values_list = []
-
-        for coordinate_set_index in range(len(self)):
-            new_values_set_list = []
-            for coordinates_index in range(len(self[coordinate_set_index])):
-                new_values_set_list.append(values_1d[values_1d_index])
-                values_1d_index += 1
-            new_values_list.append(new_values_set_list)
-
-        return new_values_list
+    def lower_indexes(self):
+        return [0] + self.upper_indexes[:-1]
 
     @property
-    def scaled(self):
-        return self
+    def arr_1d(self):
+        return np.concatenate([np.array(i) for i in self])
+
+    def values_from_arr_1d(self, arr_1d):
+        return [
+            list(map(float, arr_1d[i:j]))
+            for i, j in zip(self.lower_indexes, self.upper_indexes)
+        ]
+
+    def coordinates_from_grid_1d(self, grid_1d):
+
+        coordinates_1d = [
+            list(map(tuple, grid_1d[i:j, :]))
+            for i, j in zip(self.lower_indexes, self.upper_indexes)
+        ]
+
+        return Coordinates(coordinates=coordinates_1d, mask=self.mask)
 
     @property
-    def pixels(self):
+    def in_pixels(self):
         coordinates = []
         for coordinate_set in self:
             coordinates.append(
@@ -1512,21 +1496,21 @@ def convert_coordinates_to_grid(func):
         """
 
         if isinstance(grid, Coordinates):
-            values_1d = func(profile, grid.in_1d, *args, **kwargs)
+            values_1d = func(profile, grid.arr_1d, *args, **kwargs)
             if isinstance(values_1d, np.ndarray):
                 if len(values_1d.shape) == 1:
-                    return grid.from_1d_values(values_1d=values_1d)
+                    return grid.values_from_arr_1d(arr_1d=values_1d)
                 elif len(values_1d.shape) == 2:
-                    return grid.from_1d_coordinates(coordinates_1d=values_1d)
+                    return grid.coordinates_from_grid_1d(grid_1d=values_1d)
             elif isinstance(values_1d, list):
                 if len(values_1d[0].shape) == 1:
                     return [
-                        grid.from_1d_values(values_1d=value_1d)
+                        grid.values_from_arr_1d(arr_1d=value_1d)
                         for value_1d in values_1d
                     ]
                 elif len(values_1d[0].shape) == 2:
                     return [
-                        grid.from_1d_coordinates(coordinates_1d=value_1d)
+                        grid.coordinates_from_grid_1d(grid_1d=value_1d)
                         for value_1d in values_1d
                     ]
         else:

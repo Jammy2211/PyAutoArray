@@ -2632,52 +2632,112 @@ class MockCoordinateInput:
 
 
 class TestCoordinates:
-    def test__converts_to_and_from_pixels(self):
+    def test__input_as_list_and_list_of_lists__both_work_and_convert(self):
 
-        mask = aa.Mask.manual(
-            mask_2d=np.full(fill_value=False, shape=(2, 2)), pixel_scales=(2.0, 2.0)
+        coordinates = aa.Coordinates(coordinates=[(1.0, -1.0), (1.0, 1.0)])
+
+        assert type(coordinates) == grids.Coordinates
+        assert coordinates == [[(1.0, -1.0), (1.0, 1.0)]]
+
+        coordinates = aa.Coordinates(
+            coordinates=[np.array([1.0, -1.0]), np.array([1.0, 1.0])]
         )
 
-        coordinates = aa.Coordinates(coordinates=[[(1.0, -1.0), (1.0, 1.0)]], mask=mask)
+        assert type(coordinates) == grids.Coordinates
+        assert coordinates == [[(1.0, -1.0), (1.0, 1.0)]]
 
-        assert type(coordinates.scaled) == grids.Coordinates
-        assert coordinates.scaled == [[(1.0, -1.0), (1.0, 1.0)]]
-        assert coordinates.pixels == [[(0, 0), (0, 1)]]
+        coordinates = aa.Coordinates(coordinates=[[(1.0, -1.0), (1.0, 1.0)]])
 
-        coordinates = aa.Coordinates.from_pixels_and_mask(
-            pixels=[[(0, 0), (0, 1)]], mask=mask
+        assert type(coordinates) == grids.Coordinates
+        assert coordinates == [[(1.0, -1.0), (1.0, 1.0)]]
+
+    def test__input_inner_values_are_converted_to_tuples(self):
+
+        coordinates = aa.Coordinates(coordinates=[[[1.0, -1.0], [1.0, 1.0]]])
+
+        assert type(coordinates) == grids.Coordinates
+        assert coordinates == [[(1.0, -1.0), (1.0, 1.0)]]
+
+        coordinates = aa.Coordinates(
+            coordinates=[[np.array([1.0, -1.0]), np.array([1.0, 1.0])]]
         )
 
-        assert coordinates.scaled == [[(1.0, -1.0), (1.0, 1.0)]]
-        assert coordinates.pixels == [[(0, 0), (0, 1)]]
+        assert type(coordinates) == grids.Coordinates
+        assert coordinates == [[(1.0, -1.0), (1.0, 1.0)]]
 
-    def test__input_is_list_of_tuples__converts_to_irregular_1d_grid(self):
+    def test__indexes_give_entries_where_list_begin_and_end(self):
+
+        coordinates = aa.Coordinates(coordinates=[[(0.0, 0.0)]])
+
+        assert coordinates.lower_indexes == [0]
+        assert coordinates.upper_indexes == [1]
+
+        coordinates = aa.Coordinates(coordinates=[[(0.0, 0.0), (0.0, 0.0)]])
+
+        assert coordinates.lower_indexes == [0]
+        assert coordinates.upper_indexes == [2]
+
+        coordinates = aa.Coordinates(
+            coordinates=[[(0.0, 0.0), (0.0, 0.0)], [(0.0, 0.0)]]
+        )
+
+        assert coordinates.lower_indexes == [0, 2]
+        assert coordinates.upper_indexes == [2, 3]
+
+        coordinates = aa.Coordinates(
+            coordinates=[
+                [(0.0, 0.0), (0.0, 0.0)],
+                [(0.0, 0.0), (0.0, 0.0), (0.0, 0.0)],
+                [(0.0, 0.0), (0.0, 0.0)],
+                [(0.0, 0.0)],
+            ]
+        )
+
+        assert coordinates.lower_indexes == [0, 2, 5, 7]
+        assert coordinates.upper_indexes == [2, 5, 7, 8]
+
+    def test__input_is_list_of_tuples__arr_1d_converts_to_2d_numpy_array(self):
 
         coordinates = aa.Coordinates(coordinates=[[(1.0, 1.0), (2.0, 2.0)]])
 
         assert coordinates == [[(1.0, 1.0), (2.0, 2.0)]]
-        assert type(coordinates.in_1d) == grids.GridIrregular
-        assert (coordinates.in_1d == np.array([[1.0, 1.0], [2.0, 2.0]])).all()
-        assert (coordinates.list_in_1d[0] == np.array([[1.0, 1.0], [2.0, 2.0]])).all()
+        assert type(coordinates.arr_1d) == np.ndarray
+        assert (coordinates.arr_1d == np.array([[1.0, 1.0], [2.0, 2.0]])).all()
 
         coordinates = aa.Coordinates(
             coordinates=[[(1.0, 1.0), (2.0, 2.0)], [(3.0, 3.0)]]
         )
 
         assert coordinates == [[(1.0, 1.0), (2.0, 2.0)], [(3.0, 3.0)]]
-        assert type(coordinates.in_1d) == grids.GridIrregular
+        assert type(coordinates.arr_1d) == np.ndarray
         assert (
-            coordinates.in_1d == np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0]])
+            coordinates.arr_1d == np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0]])
         ).all()
-        assert (coordinates.list_in_1d[0] == np.array([[1.0, 1.0], [2.0, 2.0]])).all()
-        assert (coordinates.list_in_1d[1] == np.array([[3.0, 3.0]])).all()
 
-    def test__retain_original_list_of_tuples_from_a_1d_grid(self):
+    def test__values_from_arr_1d(self):
 
         coordinates = aa.Coordinates(coordinates=[[(1.0, 1.0), (2.0, 2.0)]])
 
-        coordinates_from_1d = coordinates.from_1d_coordinates(
-            coordinates_1d=np.array([[1.0, 1.0], [2.0, 2.0]])
+        values_from_1d = coordinates.values_from_arr_1d(arr_1d=np.array([1.0, 2.0]))
+
+        assert values_from_1d == [[1.0, 2.0]]
+
+        coordinates = aa.Coordinates(
+            coordinates=[[(1.0, 1.0), (2.0, 2.0)], [(3.0, 3.0)]]
+        )
+
+        values_from_1d = coordinates.values_from_arr_1d(
+            arr_1d=np.array([1.0, 2.0, 3.0])
+        )
+
+        assert values_from_1d == [[1.0, 2.0], [3.0]]
+
+    def test__from_grid_1d_and_indexes(self):
+
+        coordinates = aa.Coordinates(coordinates=[[(1.0, 1.0), (2.0, 2.0)]])
+
+        coordinates_from_1d = coordinates.coordinates_from_grid_1d(
+            grid_1d=np.array([[1.0, 1.0], [2.0, 2.0]])
         )
 
         assert type(coordinates_from_1d) == grids.Coordinates
@@ -2687,35 +2747,37 @@ class TestCoordinates:
             coordinates=[[(1.0, 1.0), (2.0, 2.0)], [(3.0, 3.0)]]
         )
 
-        coordinates_from_1d = coordinates.from_1d_coordinates(
-            coordinates_1d=np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0]])
+        coordinates_from_1d = coordinates.coordinates_from_grid_1d(
+            grid_1d=np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0]])
         )
 
         assert type(coordinates_from_1d) == grids.Coordinates
         assert coordinates_from_1d == [[(1.0, 1.0), (2.0, 2.0)], [(3.0, 3.0)]]
 
-        coordinates_from_1d = coordinates.from_1d_coordinates(
-            coordinates_1d=np.array([(1.0, 1.0), (2.0, 2.0), (3.0, 3.0)])
+        coordinates_from_1d = coordinates.coordinates_from_grid_1d(
+            grid_1d=np.array([(1.0, 1.0), (2.0, 2.0), (3.0, 3.0)])
         )
 
         assert type(coordinates_from_1d) == grids.Coordinates
         assert coordinates_from_1d == [[(1.0, 1.0), (2.0, 2.0)], [(3.0, 3.0)]]
 
-    def test__retain_origin_list_but_as_floats_for_single_values(self):
+    def test__converts_to_and_from_pixels(self):
 
-        coordinates = aa.Coordinates(coordinates=[[(1.0, 1.0), (2.0, 2.0)]])
-
-        values_from_1d = coordinates.from_1d_values(values_1d=np.array([1.0, 2.0]))
-
-        assert values_from_1d == [[1.0, 2.0]]
-
-        coordinates = aa.Coordinates(
-            coordinates=[[(1.0, 1.0), (2.0, 2.0)], [(3.0, 3.0)]]
+        mask = aa.Mask.manual(
+            mask_2d=np.full(fill_value=False, shape=(2, 2)), pixel_scales=(2.0, 2.0)
         )
 
-        values_from_1d = coordinates.from_1d_values(values_1d=np.array([1.0, 2.0, 3.0]))
+        coordinates = aa.Coordinates(coordinates=[[(1.0, -1.0), (1.0, 1.0)]], mask=mask)
 
-        assert values_from_1d == [[1.0, 2.0], [3.0]]
+        assert coordinates == [[(1.0, -1.0), (1.0, 1.0)]]
+        assert coordinates.in_pixels == [[(0, 0), (0, 1)]]
+
+        coordinates = aa.Coordinates.from_pixels_and_mask(
+            pixels=[[(0, 0), (0, 1)]], mask=mask
+        )
+
+        assert coordinates == [[(1.0, -1.0), (1.0, 1.0)]]
+        assert coordinates.in_pixels == [[(0, 0), (0, 1)]]
 
     def test__load_coordinates__retains_list_structure(self):
         coordinates = aa.Coordinates.from_file(
