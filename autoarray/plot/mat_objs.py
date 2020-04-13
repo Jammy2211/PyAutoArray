@@ -1292,9 +1292,9 @@ class VoronoiDrawer:
             cb.set_with_values(cmap=cmap, color_values=values)
         else:
             cmap = plt.get_cmap("Greys")
-            color_array = np.zeros(shape=mapper.in_pixels)
+            color_array = np.zeros(shape=mapper.pixels)
 
-        for region, index in zip(regions, range(mapper.in_pixels)):
+        for region, index in zip(regions, range(mapper.pixels)):
             polygon = vertices[region]
             col = cmap(color_array[index])
             plt.fill(

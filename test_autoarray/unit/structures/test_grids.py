@@ -2704,17 +2704,17 @@ class TestCoordinates:
         coordinates = aa.Coordinates(coordinates=[[(1.0, 1.0), (2.0, 2.0)]])
 
         assert coordinates == [[(1.0, 1.0), (2.0, 2.0)]]
-        assert type(coordinates.arr_1d) == np.ndarray
-        assert (coordinates.arr_1d == np.array([[1.0, 1.0], [2.0, 2.0]])).all()
+        assert type(coordinates.in_1d) == np.ndarray
+        assert (coordinates.in_1d == np.array([[1.0, 1.0], [2.0, 2.0]])).all()
 
         coordinates = aa.Coordinates(
             coordinates=[[(1.0, 1.0), (2.0, 2.0)], [(3.0, 3.0)]]
         )
 
         assert coordinates == [[(1.0, 1.0), (2.0, 2.0)], [(3.0, 3.0)]]
-        assert type(coordinates.arr_1d) == np.ndarray
+        assert type(coordinates.in_1d) == np.ndarray
         assert (
-            coordinates.arr_1d == np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0]])
+            coordinates.in_1d == np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0]])
         ).all()
 
     def test__values_from_arr_1d(self):
@@ -2781,6 +2781,18 @@ class TestCoordinates:
 
         assert coordinates == [[(1.0, -1.0), (1.0, 1.0)]]
         assert coordinates.in_pixels == [[(0, 0), (0, 1)]]
+
+    def test__from_yx_1d(self):
+
+        coordinates = aa.Coordinates.from_yx_1d(y=[1.0, 1.0], x=[-1.0, 1.0])
+
+        assert coordinates == [[(1.0, -1.0), (1.0, 1.0)]]
+
+        coordinates = aa.Coordinates.from_yx_1d(
+            y=[1.0, 1.0, 2.0, 4.0], x=[-1.0, 1.0, 3.0, 5.0]
+        )
+
+        assert coordinates == [[(1.0, -1.0), (1.0, 1.0), (2.0, 3.0), (4.0, 5.0)]]
 
     def test__load_coordinates__retains_list_structure(self):
         coordinates = aa.Coordinates.from_file(

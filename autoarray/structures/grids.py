@@ -451,12 +451,16 @@ class AbstractGrid(abstract_structure.AbstractStructure):
             The grid, whose grid coordinates are relocated.
         """
 
-        return GridIrregular(
-            grid=self.relocated_grid_from_grid_jit(
-                grid=pixelization_grid, border_grid=self.sub_border_grid
-            ),
-            nearest_pixelization_1d_index_for_mask_1d_index=pixelization_grid.nearest_pixelization_1d_index_for_mask_1d_index,
-        )
+        if isinstance(pixelization_grid, GridVoronoi):
+
+            return GridVoronoi(
+                grid=self.relocated_grid_from_grid_jit(
+                    grid=pixelization_grid, border_grid=self.sub_border_grid
+                ),
+                nearest_pixelization_1d_index_for_mask_1d_index=pixelization_grid.nearest_pixelization_1d_index_for_mask_1d_index,
+            )
+
+        return pixelization_grid
 
     def output_to_fits(self, file_path, overwrite=False):
 
@@ -777,6 +781,7 @@ class GridRectangular(Grid):
         )
 
         obj = super().__new__(cls=cls, grid=grid, mask=mask)
+
         pixel_neighbors, pixel_neighbors_size = pixelization_util.rectangular_neighbors_from_shape(
             shape=shape_2d
         )
@@ -967,10 +972,6 @@ class GridVoronoi(np.ndarray):
         return GridVoronoi(grid=grid)
 
     @classmethod
-    def manual_yx_1d(cls, y, x):
-        return GridVoronoi(grid=np.stack((y, x), axis=-1))
-
-    @classmethod
     def from_grid_and_unmasked_2d_grid_shape(cls, unmasked_sparse_shape, grid):
 
         sparse_grid = SparseGrid.from_grid_and_unmasked_2d_grid_shape(
@@ -980,6 +981,32 @@ class GridVoronoi(np.ndarray):
         return GridVoronoi(
             grid=sparse_grid.sparse,
             nearest_pixelization_1d_index_for_mask_1d_index=sparse_grid.sparse_1d_index_for_mask_1d_index,
+        )
+
+    @property
+    def shape_2d_scaled(self):
+        return (
+            np.amax(self[:, 0]) - np.amin(self[:, 0]),
+            np.amax(self[:, 1]) - np.amin(self[:, 1]),
+        )
+
+    @property
+    def scaled_maxima(self):
+        return (np.amax(self[:, 0]), np.amax(self[:, 1]))
+
+    @property
+    def scaled_minima(self):
+        return (np.amin(self[:, 0]), np.amin(self[:, 1]))
+
+    @property
+    def extent(self):
+        return np.asarray(
+            [
+                self.scaled_minima[1],
+                self.scaled_maxima[1],
+                self.scaled_minima[0],
+                self.scaled_maxima[0],
+            ]
         )
 
 
@@ -1211,6 +1238,10 @@ class Coordinates(list):
         self.mask = mask
 
     @classmethod
+    def from_yx_1d(cls, y, x):
+        return Coordinates(coordinates=np.stack((y, x), axis=-1))
+
+    @classmethod
     def from_pixels_and_mask(cls, pixels, mask):
         coordinates = []
         for coordinate_set in pixels:
@@ -1242,7 +1273,7 @@ class Coordinates(list):
         return [0] + self.upper_indexes[:-1]
 
     @property
-    def arr_1d(self):
+    def in_1d(self):
         return np.concatenate([np.array(i) for i in self])
 
     def values_from_arr_1d(self, arr_1d):
@@ -1353,17 +1384,17 @@ class Coordinates(list):
     @property
     def shape_2d_scaled(self):
         return (
-            np.amax(self[:, 0]) - np.amin(self[:, 0]),
-            np.amax(self[:, 1]) - np.amin(self[:, 1]),
+            np.amax(self.in_1d[:, 0]) - np.amin(self.in_1d[:, 0]),
+            np.amax(self.in_1d[:, 1]) - np.amin(self.in_1d[:, 1]),
         )
 
     @property
     def scaled_maxima(self):
-        return (np.amax(self[:, 0]), np.amax(self[:, 1]))
+        return (np.amax(self.in_1d[:, 0]), np.amax(self.in_1d[:, 1]))
 
     @property
     def scaled_minima(self):
-        return (np.amin(self[:, 0]), np.amin(self[:, 1]))
+        return (np.amin(self.in_1d[:, 0]), np.amin(self.in_1d[:, 1]))
 
     @property
     def extent(self):
@@ -1414,7 +1445,7 @@ def convert_coordinates_to_grid(func):
         """
 
         if isinstance(grid, Coordinates):
-            values_1d = func(profile, grid.arr_1d, *args, **kwargs)
+            values_1d = func(profile, grid.in_1d, *args, **kwargs)
             if isinstance(values_1d, np.ndarray):
                 if len(values_1d.shape) == 1:
                     return grid.values_from_arr_1d(arr_1d=values_1d)

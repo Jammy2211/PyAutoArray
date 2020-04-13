@@ -4,7 +4,7 @@ import numpy as np
 
 
 class TestRectangular:
-    class TestGridIrregular:
+    class TestGridVoronoi:
         def test__pixelization_grid_returns_none_as_not_used(self, sub_grid_7x7):
 
             pix = aa.pix.Rectangular(shape=(3, 3))
@@ -27,7 +27,7 @@ class TestVoronoiMagnification:
 
         pixelization_grid = pix.sparse_grid_from_grid(grid=sub_grid_7x7)
 
-        pixelization_grid_manual = grids.GridIrregular.from_grid_and_unmasked_2d_grid_shape(
+        pixelization_grid_manual = grids.GridVoronoi.from_grid_and_unmasked_2d_grid_shape(
             unmasked_sparse_shape=(3, 3), grid=sub_grid_7x7
         )
 
@@ -123,7 +123,7 @@ class TestVoronoiBrightness:
             total_pixels=pix.pixels, grid=sub_grid_7x7, weight_map=weight_map, seed=1
         )
 
-        pixelization_grid_manual = grids.GridIrregular(
+        pixelization_grid_manual = grids.GridVoronoi(
             grid=sparse_grid.sparse,
             nearest_pixelization_1d_index_for_mask_1d_index=sparse_grid.sparse_1d_index_for_mask_1d_index,
         )
