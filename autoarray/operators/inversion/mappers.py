@@ -48,7 +48,7 @@ class Mapper:
 
     @property
     def pixels(self):
-        return self.pixelization_grid.in_pixels
+        return self.pixelization_grid.pixels
 
     @property
     def mapping_matrix(self):

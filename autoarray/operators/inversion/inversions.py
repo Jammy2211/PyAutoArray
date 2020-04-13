@@ -81,7 +81,7 @@ class Inversion:
             in "source_grid"
         ):
 
-            dimension = int(np.sqrt(self.mapper.in_pixels))
+            dimension = int(np.sqrt(self.mapper.pixels))
             shape_2d = (dimension, dimension)
 
             grid = grids.Grid.bounding_box(
@@ -173,9 +173,7 @@ class Inversion:
     def brightest_reconstruction_pixel_centre(self):
         return grids.Coordinates(
             coordinates=[
-                tuple(
-                    self.mapper.pixelization_grid[self.brightest_reconstruction_pixel]
-                )
+                self.mapper.pixelization_grid[self.brightest_reconstruction_pixel]
             ]
         )
 
