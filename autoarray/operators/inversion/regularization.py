@@ -147,7 +147,7 @@ class Constant(Regularization):
 
     def regularization_weights_from_mapper(self, mapper):
         regularization_weights = self.coefficient * np.ones(
-            mapper.pixelization_grid.pixels
+            mapper.pixelization_grid.in_pixels
         )
         return mapper.reconstructed_pixelization_from_solution_vector(
             solution_vector=regularization_weights
