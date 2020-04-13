@@ -20,7 +20,7 @@ grid_9 = aa.Grid.manual_1d(
     pixel_scales=1.0,
 )
 voronoi_grid = aa.GridVoronoi(
-    grid_1d=grid_9,
+    grid=grid_9,
     nearest_pixelization_1d_index_for_mask_1d_index=np.zeros(
         shape=grid_7x7.shape_1d, dtype="int"
     ),
