@@ -1220,29 +1220,78 @@ class Interpolator:
         return np.einsum("nj,nj->n", np.take(values, self.vtx), self.wts)
 
 
-class Coordinates(list):
-    def __init__(self, coordinates, mask=None):
+class Coordinates(np.ndarray):
+    def __new__(cls, coordinates, mask=None):
+        """ A collection of (y,x) coordinates structured in a way defining groups of coordinates which share a common
+        origin (for example coordinates may be grouped iff they are from a specific region of a dataset).
+
+        Coordinate grouping is structured as follows:
+
+        [[(y0,x0), (y1,x1)], [(y0,x0), (y1,x1), (y2,x2)]]
+
+        Here, we have two groups of coordinates, where each group is associated.
+
+        The coordinate object does not store the coordinates as a list of list of tuples, but instead a 2D NumPy array
+        of shape [total_coordinates, 2]. Index information is stored so that this array can be mapped to the list of
+        list of tuple stucture above. They are stored as a NumPy array so the coordinates can be used efficiently for
+        calculations.
+
+        The coordinates input to this function can have any of the following forms:
+
+        [[(y0,x0), (y1,x1)], [(y0,x0)]]
+        [[[y0,x0], [y1,x1]], [[y0,x0)]]
+        [(y0,x0), (y1,x1)]
+        [[y0,x0], [y1,x1]]
+
+        In all cases, they will be converted to a list of list of tuples followed by a 2D NumPy array.
+
+        Print methods are overiden so a user always "sees" the coordinates as the list structure.
+
+        In contrast to a *Grid* structure, *Coordinates* so not have to lie on a uniform grid or correspond to a set of
+        values that can be traced back to a uniform grid. Therefore, when handling irregular data-sets *Coordinates*
+        should be used.
+
+        Parameters
+        ----------
+        coordinates : [[tuple]] or equivalent
+            A collectiion of (y,x) coordinates that are grouped if they correpsond to a shared origin.
+        mask : aa.Mask
+            The mask whose attributes are used to perform coordinate conversions.
+        """
 
         if isinstance(coordinates[0], tuple) or isinstance(coordinates[0], np.ndarray):
             coordinates = [(coordinates)]
+        elif isinstance(coordinates[0], list) and isinstance(coordinates[0][0], list):
+            coordinates = [(coordinates)]
 
-        if isinstance(coordinates[0][0], list) or isinstance(
-            coordinates[0][0], np.ndarray
-        ):
-            coordinates = [
-                [tuple(coord) for coord in coord_list] for coord_list in coordinates
-            ]
+        upper_indexes = []
 
-        super().__init__(coordinates)
+        a = 0
 
-        self.mask = mask
+        for coords in coordinates:
+            a = a + len(coords)
+            upper_indexes.append(a)
+
+        coordinates_arr = np.concatenate([np.array(i) for i in coordinates])
+
+        obj = coordinates_arr.view(cls)
+        obj.upper_indexes = upper_indexes
+        obj.lower_indexes = [0] + upper_indexes[:-1]
+        obj.mask = mask
+
+        return obj
 
     @classmethod
     def from_yx_1d(cls, y, x):
+        """Create *Coordinates* from a list of y and x values.
+
+        This function omits coordinate grouping."""
         return Coordinates(coordinates=np.stack((y, x), axis=-1))
 
     @classmethod
     def from_pixels_and_mask(cls, pixels, mask):
+        """Create *Coordinates* from a list of coordinates in pixel units and a mask which allows these coordinates to
+        be converted to scaled units."""
         coordinates = []
         for coordinate_set in pixels:
             coordinates.append(
@@ -1256,34 +1305,28 @@ class Coordinates(list):
         return cls(coordinates=coordinates, mask=mask)
 
     @property
-    def upper_indexes(self):
-
-        upper_indexes = []
-
-        a = 0
-
-        for coords in self:
-            a = a + len(coords)
-            upper_indexes.append(a)
-
-        return upper_indexes
-
-    @property
-    def lower_indexes(self):
-        return [0] + self.upper_indexes[:-1]
-
-    @property
     def in_1d(self):
-        return np.concatenate([np.array(i) for i in self])
+        return self
+
+    @property
+    def in_list(self):
+        """Return the coordinates on a structured list which groups coordinates with a common origin."""
+        return [
+            list(map(tuple, self[i:j, :]))
+            for i, j in zip(self.lower_indexes, self.upper_indexes)
+        ]
 
     def values_from_arr_1d(self, arr_1d):
+        """Create a *Values* object from a 1D NumPy array of values of shape [total_coordinates]. The
+        *Values* are structured and grouped following this *Coordinate* instance."""
         return [
             list(map(float, arr_1d[i:j]))
             for i, j in zip(self.lower_indexes, self.upper_indexes)
         ]
 
     def coordinates_from_grid_1d(self, grid_1d):
-
+        """Create a *Coordinates* object from a 2D NumPy array of values of shape [total_coordinates, 2]. The
+        *Coordinates* are structured and grouped following this *Coordinate* instance."""
         coordinates_1d = [
             list(map(tuple, grid_1d[i:j, :]))
             for i, j in zip(self.lower_indexes, self.upper_indexes)
@@ -1294,7 +1337,7 @@ class Coordinates(list):
     @property
     def in_pixels(self):
         coordinates = []
-        for coordinate_set in self:
+        for coordinate_set in self.in_list:
             coordinates.append(
                 [
                     self.mask.geometry.pixel_coordinates_from_scaled_coordinates(
@@ -1307,15 +1350,7 @@ class Coordinates(list):
 
     @classmethod
     def from_file(cls, file_path):
-        """Load the coordinates of an image.
-
-        Coordinates correspond to a set of pixels in the lensed source galaxy that are anticipated to come from the same \
-        multiply-imaged region of the source-plane. Mass models which do not trace the pixels within a threshold value of \
-        one another are resampled during the non-linear search.
-
-        Coordinates are stored in a .dat file, where each line of the file gives a list of list of (y,x) coordinates which \
-        correspond to the same region of the source-plane. Thus, multiple source-plane regions can be input over multiple \
-        lines of the same coordinates file.
+        """Create a *Coordinates* object from a file which stores the coordinates as a list of list of tuples.
 
         Parameters
         ----------
@@ -1334,22 +1369,14 @@ class Coordinates(list):
         return Coordinates(coordinates=coordinates)
 
     def output_to_file(self, file_path, overwrite=False):
-        """Output the coordinates of an image to a coordinates.dat file.
-
-        Coordinates correspond to a set of pixels in the lensed source galaxy that are anticipated to come from the same \
-        multiply-imaged region of the source-plane. Mass models which do not trace the pixels within a threshold value of \
-        one another are resampled during the non-linear search.
-
-        Coordinates are stored in a .dat file, where each line of the file gives a list of list of (y,x) coordinates which \
-        correspond to the same region of the source-plane. Thus, multiple source-plane regions can be input over multiple \
-        lines of the same coordinates file.
+        """Output this instance of the *Coordinates* object to a list of list of tuples.
 
         Parameters
         ----------
-        coordinates : [[()]]
-            The lists of coordinates (e.g. [[(1.0, 1.0), (2.0, 2.0)], [(3.0, 3.0), (4.0, 4.0)]])
         file_path : str
             The path to the coordinates .dat file containing the coordinates (e.g. '/path/to/coordinates.dat')
+        overwrite : bool
+            If there is as exsiting file it will be overwritten if this is *True*.
         """
 
         if overwrite and os.path.exists(file_path):
@@ -1362,16 +1389,31 @@ class Coordinates(list):
             )
 
         with open(file_path, "w") as f:
-            for coordinate in self:
+            for coordinate in self.in_list:
                 f.write("%s\n" % coordinate)
 
     def squared_distances_from_coordinate(self, coordinate=(0.0, 0.0)):
+        """Compute the squared distance of every (y,x) coordinate in this *Coordinate* instance from an input
+        coordinate.
+
+        Parameters
+        ----------
+        coordinate : (float, float)
+            The (y,x) coordinate from which the squared distance of every *Coordinate* is computed.
+        """
         squared_distances = np.square(self[:, 0] - coordinate[0]) + np.square(
             self[:, 1] - coordinate[1]
         )
         return aa.MaskedArray(array=squared_distances, mask=self.mask)
 
     def distances_from_coordinate(self, coordinate=(0.0, 0.0)):
+        """Compute the distance of every (y,x) coordinate in this *Coordinate* instance from an input coordinate.
+
+        Parameters
+        ----------
+        coordinate : (float, float)
+            The (y,x) coordinate from which the distance of every *Coordinate* is computed.
+        """
         distances = np.sqrt(
             self.squared_distances_from_coordinate(coordinate=coordinate)
         )
@@ -1408,7 +1450,7 @@ class Coordinates(list):
         )
 
 
-def convert_coordinates_to_grid(func):
+def grid_like_to_numpy(func):
     """ Checks whether any coordinates in the grid are radially near (0.0, 0.0), which can lead to numerical faults in \
     the evaluation of a light or mass profiles. If any coordinates are radially within the the radial minimum \
     threshold, their (y,x) coordinates are shifted to that value to ensure they are evaluated correctly.
@@ -1428,42 +1470,71 @@ def convert_coordinates_to_grid(func):
 
     @wraps(func)
     def wrapper(profile, grid, *args, **kwargs):
-        """
+        """ This decorator homogenizes the input array of *Grid* and *Coordinate* structures into a function, so that
+        both can be input interchangeably into functions which evalute values on points of the grid. The outputs are
+        converted back to *Grid* or *Coordinate* objects, where applicable.
+
+        The grid_like objects (*Grid* and *Coordinates*) are converted to a flattened 2D NumPy array, where the
+        first array dimension is the coordinate index and the second dimension stores the (y,x) values. For example,
+        for 100 coordinates, this NumPy array has shape (100, 2).
+
+        The decorator converts the result of the function back as follows:
+
+        - If the function returns (y,x) coordinates at every input point, the returned results are  *Grid* or
+          *Coordinates* object of the same structure as the input.
+
+        - If the function returns scalar values at every input point and a *Grid* is input, the returned results are an
+          *Array* structure which uses the same dimensions and mask as the *Grid*.
+
+        - If the function returns scalar values at every input point and *Coordinates* are input, the returned results
+          are a list of list of floats structure that resembles the *Coordinates*..
+
+        If the input array is 2D NumPy array of the form after conversion, it is input unchanged.
 
         Parameters
         ----------
-        profile : SphericalProfile
-            The profiles that owns the function
-        grid : ndarray
-            PlaneCoordinates in either cartesian or profiles coordinate system
-        args
-        kwargs
+        profile : Profile
+            A Profile object which uses grid_like inputs to compute quantities at every coordinate on the grid.
+        grid : Grid or Coordinates
+            A grid_like object of (y,x) coordinates on which the function values are evaluated.
 
         Returns
         -------
-            A value or coordinate in the same coordinate system as those passed in.
+            The function values evaluated on the grid with the same structure as the input grid_like object.
         """
 
-        if isinstance(grid, Coordinates):
-            values_1d = func(profile, grid.in_1d, *args, **kwargs)
-            if isinstance(values_1d, np.ndarray):
-                if len(values_1d.shape) == 1:
-                    return grid.values_from_arr_1d(arr_1d=values_1d)
-                elif len(values_1d.shape) == 2:
-                    return grid.coordinates_from_grid_1d(grid_1d=values_1d)
-            elif isinstance(values_1d, list):
-                if len(values_1d[0].shape) == 1:
+        def result_to_coordinates(result, grid):
+            """Convert the result of the Profile function back to a *Coordinates* object or list of list of float."""
+            if isinstance(result, np.ndarray):
+                if len(result.shape) == 1:
+                    return grid.values_from_arr_1d(arr_1d=result)
+                elif len(result.shape) == 2:
+                    return grid.coordinates_from_grid_1d(grid_1d=result)
+            elif isinstance(result, list):
+                if len(result[0].shape) == 1:
+                    return [grid.values_from_arr_1d(arr_1d=value) for value in result]
+                elif len(result[0].shape) == 2:
                     return [
-                        grid.values_from_arr_1d(arr_1d=value_1d)
-                        for value_1d in values_1d
+                        grid.coordinates_from_grid_1d(grid_1d=value) for value in result
                     ]
-                elif len(values_1d[0].shape) == 2:
-                    return [
-                        grid.coordinates_from_grid_1d(grid_1d=value_1d)
-                        for value_1d in values_1d
-                    ]
-        else:
+
+        def result_to_grid(result, grid):
+            """Convert the result of the Profile function back to a *Grid* or *Array* object."""
+            if len(result.shape) == 1:
+                return grid.mapping.array_stored_1d_from_sub_array_1d(
+                    sub_array_1d=result
+                )
+            else:
+                return grid.mapping.grid_stored_1d_from_sub_grid_1d(sub_grid_1d=result)
+
+        if not isinstance(grid, Coordinates) and not isinstance(grid, Grid):
             return func(profile, grid, *args, **kwargs)
+        if isinstance(grid, Coordinates):
+            result = func(profile, grid, *args, **kwargs)
+            return result_to_coordinates(result=result, grid=grid)
+        elif isinstance(grid, Grid):
+            result = func(profile, grid, *args, **kwargs)
+            return result_to_grid(result=result, grid=grid)
 
     return wrapper
 
