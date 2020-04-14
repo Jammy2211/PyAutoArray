@@ -1329,6 +1329,11 @@ class Coordinates(np.ndarray):
             for i, j in zip(self.lower_indexes, self.upper_indexes)
         ]
 
+    @property
+    def in_list_1d(self):
+        """Return the coordinates in a list without structured groups."""
+        return [tuple(self[i, :]) for i in range(self.shape[0])]
+
     def values_from_arr_1d(self, arr_1d):
         """Create a *Values* object from a 1D NumPy array of values of shape [total_coordinates]. The
         *Values* are structured and grouped following this *Coordinate* instance."""
