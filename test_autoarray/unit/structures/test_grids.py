@@ -2802,18 +2802,20 @@ class TestCoordinates:
             [[(4.0, 4.0), (5.0, 5.0)], [(6.0, 6.0), (7.0, 7.0), (8.0, 8.0)]]
         )
 
-        output_data_dir = "{}/files/coordinates/output_test/".format(
+        output_coordinates_dir = "{}/files/coordinates/output_test/".format(
             os.path.dirname(os.path.realpath(__file__))
         )
-        if os.path.exists(output_data_dir):
-            shutil.rmtree(output_data_dir)
+        if os.path.exists(output_coordinates_dir):
+            shutil.rmtree(output_coordinates_dir)
 
-        os.makedirs(output_data_dir)
+        os.makedirs(output_coordinates_dir)
 
-        coordinates.output_to_file(file_path=output_data_dir + "coordinates_test.dat")
+        coordinates.output_to_file(
+            file_path=output_coordinates_dir + "coordinates_test.dat"
+        )
 
         coordinates = aa.Coordinates.from_file(
-            file_path=output_data_dir + "coordinates_test.dat"
+            file_path=output_coordinates_dir + "coordinates_test.dat"
         )
 
         assert coordinates.in_list == [
@@ -2823,11 +2825,11 @@ class TestCoordinates:
 
         with pytest.raises(FileExistsError):
             coordinates.output_to_file(
-                file_path=output_data_dir + "coordinates_test.dat"
+                file_path=output_coordinates_dir + "coordinates_test.dat"
             )
 
         coordinates.output_to_file(
-            file_path=output_data_dir + "coordinates_test.dat", overwrite=True
+            file_path=output_coordinates_dir + "coordinates_test.dat", overwrite=True
         )
 
     def test__convert_coordinates_decorator__coordinates_are_input__output_in_same_format(
