@@ -10,7 +10,7 @@ import autoarray as aa
 
 from autoarray import decorator_util
 from autoarray import exc
-from autoarray.structures import abstract_structure
+from autoarray.structures import abstract_structure, arrays
 from autoarray.mask import mask as msk
 from autoarray.util import (
     sparse_util,
@@ -1318,10 +1318,10 @@ class Coordinates(np.ndarray):
     def values_from_arr_1d(self, arr_1d):
         """Create a *Values* object from a 1D NumPy array of values of shape [total_coordinates]. The
         *Values* are structured and grouped following this *Coordinate* instance."""
-        return [
-            list(map(float, arr_1d[i:j]))
-            for i, j in zip(self.lower_indexes, self.upper_indexes)
+        values_1d = [
+            list(arr_1d[i:j]) for i, j in zip(self.lower_indexes, self.upper_indexes)
         ]
+        return arrays.Values(values=values_1d, mask=self.mask)
 
     def coordinates_from_grid_1d(self, grid_1d):
         """Create a *Coordinates* object from a 2D NumPy array of values of shape [total_coordinates, 2]. The
@@ -1502,22 +1502,25 @@ def grid_like_to_numpy(func):
             The function values evaluated on the grid with the same structure as the input grid_like object.
         """
 
-        def result_to_coordinates(result, grid):
+        def result_from_coordinates(result, coordinates):
             """Convert the result of the Profile function back to a *Coordinates* object or list of list of float."""
             if isinstance(result, np.ndarray):
                 if len(result.shape) == 1:
-                    return grid.values_from_arr_1d(arr_1d=result)
+                    return coordinates.values_from_arr_1d(arr_1d=result)
                 elif len(result.shape) == 2:
-                    return grid.coordinates_from_grid_1d(grid_1d=result)
+                    return coordinates.coordinates_from_grid_1d(grid_1d=result)
             elif isinstance(result, list):
                 if len(result[0].shape) == 1:
-                    return [grid.values_from_arr_1d(arr_1d=value) for value in result]
+                    return [
+                        coordinates.values_from_arr_1d(arr_1d=value) for value in result
+                    ]
                 elif len(result[0].shape) == 2:
                     return [
-                        grid.coordinates_from_grid_1d(grid_1d=value) for value in result
+                        coordinates.coordinates_from_grid_1d(grid_1d=value)
+                        for value in result
                     ]
 
-        def result_to_grid(result, grid):
+        def result_from_grid(result, grid):
             """Convert the result of the Profile function back to a *Grid* or *Array* object."""
             if len(result.shape) == 1:
                 return grid.mapping.array_stored_1d_from_sub_array_1d(
@@ -1530,10 +1533,10 @@ def grid_like_to_numpy(func):
             return func(profile, grid, *args, **kwargs)
         if isinstance(grid, Coordinates):
             result = func(profile, grid, *args, **kwargs)
-            return result_to_coordinates(result=result, grid=grid)
+            return result_from_coordinates(result=result, coordinates=grid)
         elif isinstance(grid, Grid):
             result = func(profile, grid, *args, **kwargs)
-            return result_to_grid(result=result, grid=grid)
+            return result_from_grid(result=result, grid=grid)
 
     return wrapper
 
