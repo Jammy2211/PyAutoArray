@@ -2714,7 +2714,7 @@ class TestCoordinates:
 
         values_from_1d = coordinates.values_from_arr_1d(arr_1d=np.array([1.0, 2.0]))
 
-        assert values_from_1d == [[1.0, 2.0]]
+        assert values_from_1d.in_list == [[1.0, 2.0]]
 
         coordinates = aa.Coordinates(
             coordinates=[[(1.0, 1.0), (2.0, 2.0)], [(3.0, 3.0)]]
@@ -2724,7 +2724,7 @@ class TestCoordinates:
             arr_1d=np.array([1.0, 2.0, 3.0])
         )
 
-        assert values_from_1d == [[1.0, 2.0], [3.0]]
+        assert values_from_1d.in_list == [[1.0, 2.0], [3.0]]
 
     def test__coordinates_from_grid_1d(self):
 
