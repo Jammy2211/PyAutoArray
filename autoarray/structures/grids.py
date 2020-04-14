@@ -1258,6 +1258,9 @@ class Coordinates(np.ndarray):
             The mask whose attributes are used to perform coordinate conversions.
         """
 
+        if coordinates == []:
+            return []
+
         if isinstance(coordinates[0], tuple) or isinstance(coordinates[0], np.ndarray):
             coordinates = [(coordinates)]
         elif isinstance(coordinates[0], list) and isinstance(coordinates[0][0], list):
@@ -1279,6 +1282,17 @@ class Coordinates(np.ndarray):
         obj.mask = mask
 
         return obj
+
+    def __array_finalize__(self, obj):
+
+        if hasattr(obj, "lower_indexes"):
+            self.lower_indexes = obj.lower_indexes
+
+        if hasattr(obj, "upper_indexes"):
+            self.upper_indexes = obj.upper_indexes
+
+        if hasattr(obj, "mask"):
+            self.mask = obj.mask
 
     @classmethod
     def from_yx_1d(cls, y, x):
@@ -1522,21 +1536,38 @@ def grid_like_to_numpy(func):
 
         def result_from_grid(result, grid):
             """Convert the result of the Profile function back to a *Grid* or *Array* object."""
-            if len(result.shape) == 1:
-                return grid.mapping.array_stored_1d_from_sub_array_1d(
-                    sub_array_1d=result
-                )
-            else:
-                return grid.mapping.grid_stored_1d_from_sub_grid_1d(sub_grid_1d=result)
+            if isinstance(result, np.ndarray):
+                if len(result.shape) == 1:
+                    return grid.mapping.array_stored_1d_from_sub_array_1d(
+                        sub_array_1d=result
+                    )
+                else:
+                    return grid.mapping.grid_stored_1d_from_sub_grid_1d(
+                        sub_grid_1d=result
+                    )
+            elif isinstance(result, list):
+                if len(result[0].shape) == 1:
+                    return [
+                        grid.mapping.array_stored_1d_from_sub_array_1d(
+                            sub_array_1d=value
+                        )
+                        for value in result
+                    ]
+                elif len(result[0].shape) == 2:
+                    return [
+                        grid.mapping.grid_stored_1d_from_sub_grid_1d(sub_grid_1d=value)
+                        for value in result
+                    ]
 
-        if not isinstance(grid, Coordinates) and not isinstance(grid, Grid):
-            return func(profile, grid, *args, **kwargs)
         if isinstance(grid, Coordinates):
             result = func(profile, grid, *args, **kwargs)
             return result_from_coordinates(result=result, coordinates=grid)
         elif isinstance(grid, Grid):
             result = func(profile, grid, *args, **kwargs)
             return result_from_grid(result=result, grid=grid)
+
+        if not isinstance(grid, Coordinates) and not isinstance(grid, Grid):
+            return func(profile, grid, *args, **kwargs)
 
     return wrapper
 
