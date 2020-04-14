@@ -20,7 +20,7 @@ from autoarray.operators.inversion.mappers import mapper as Mapper
 from autoarray.operators.transformer import TransformerDFT
 from autoarray.operators.transformer import TransformerFFT
 from autoarray.operators.transformer import TransformerNUFFT
-from autoarray.structures.arrays import Array
+from autoarray.structures.arrays import Array, Values
 from autoarray.structures.grids import Grid, GridRectangular, GridVoronoi, Coordinates
 from autoarray.structures.kernel import Kernel
 from autoarray.structures.visibilities import Visibilities

@@ -1223,17 +1223,17 @@ class Interpolator:
 class Coordinates(np.ndarray):
     def __new__(cls, coordinates, mask=None):
         """ A collection of (y,x) coordinates structured in a way defining groups of coordinates which share a common
-        origin (for example coordinates may be grouped iff they are from a specific region of a dataset).
+        origin (for example coordinates may be grouped if they are from a specific region of a dataset).
 
-        Coordinate grouping is structured as follows:
+        Grouping is structured as follows:
 
-        [[(y0,x0), (y1,x1)], [(y0,x0), (y1,x1), (y2,x2)]]
+        [[x0, x1], [x0, x1, x2]]
 
         Here, we have two groups of coordinates, where each group is associated.
 
         The coordinate object does not store the coordinates as a list of list of tuples, but instead a 2D NumPy array
         of shape [total_coordinates, 2]. Index information is stored so that this array can be mapped to the list of
-        list of tuple stucture above. They are stored as a NumPy array so the coordinates can be used efficiently for
+        list of tuple structure above. They are stored as a NumPy array so the coordinates can be used efficiently for
         calculations.
 
         The coordinates input to this function can have any of the following forms:
@@ -1245,16 +1245,15 @@ class Coordinates(np.ndarray):
 
         In all cases, they will be converted to a list of list of tuples followed by a 2D NumPy array.
 
-        Print methods are overiden so a user always "sees" the coordinates as the list structure.
+        Print methods are overidden so a user always "sees" the coordinates as the list structure.
 
-        In contrast to a *Grid* structure, *Coordinates* so not have to lie on a uniform grid or correspond to a set of
-        values that can be traced back to a uniform grid. Therefore, when handling irregular data-sets *Coordinates*
-        should be used.
+        In contrast to a *Grid* structure, *Coordinates* do not lie on a uniform grid or correspond to values that
+        originate from a uniform grid. Therefore, when handling irregular data-sets *Coordinates* should be used.
 
         Parameters
         ----------
         coordinates : [[tuple]] or equivalent
-            A collectiion of (y,x) coordinates that are grouped if they correpsond to a shared origin.
+            A collection of (y,x) coordinates that are grouped if they correpsond to a shared origin.
         mask : aa.Mask
             The mask whose attributes are used to perform coordinate conversions.
         """
