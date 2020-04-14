@@ -518,6 +518,9 @@ class Values(np.ndarray):
             The mask whose attributes are used to perform coordinate conversions.
         """
 
+        if values == []:
+            return []
+
         if isinstance(values[0], float):
             values = [values]
 
@@ -537,6 +540,17 @@ class Values(np.ndarray):
         obj.mask = mask
 
         return obj
+
+    def __array_finalize__(self, obj):
+
+        if hasattr(obj, "lower_indexes"):
+            self.lower_indexes = obj.lower_indexes
+
+        if hasattr(obj, "upper_indexes"):
+            self.upper_indexes = obj.upper_indexes
+
+        if hasattr(obj, "mask"):
+            self.mask = obj.mask
 
     @classmethod
     def from_pixels_and_mask(cls, pixels, mask):
