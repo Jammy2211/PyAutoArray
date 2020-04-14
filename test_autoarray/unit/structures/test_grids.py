@@ -2736,6 +2736,7 @@ class TestCoordinates:
 
         assert type(coordinates_from_1d) == grids.Coordinates
         assert coordinates_from_1d.in_list == [[(1.0, 1.0), (2.0, 2.0)]]
+        assert coordinates_from_1d.in_list_1d == [(1.0, 1.0), (2.0, 2.0)]
 
         coordinates = aa.Coordinates(
             coordinates=[[(1.0, 1.0), (2.0, 2.0)], [(3.0, 3.0)]]
@@ -2747,6 +2748,7 @@ class TestCoordinates:
 
         assert type(coordinates_from_1d) == grids.Coordinates
         assert coordinates_from_1d.in_list == [[(1.0, 1.0), (2.0, 2.0)], [(3.0, 3.0)]]
+        assert coordinates_from_1d.in_list_1d == [(1.0, 1.0), (2.0, 2.0), (3.0, 3.0)]
 
         coordinates_from_1d = coordinates.coordinates_from_grid_1d(
             grid_1d=np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0]])
@@ -2754,6 +2756,7 @@ class TestCoordinates:
 
         assert type(coordinates_from_1d) == grids.Coordinates
         assert coordinates_from_1d.in_list == [[(1.0, 1.0), (2.0, 2.0)], [(3.0, 3.0)]]
+        assert coordinates_from_1d.in_list_1d == [(1.0, 1.0), (2.0, 2.0), (3.0, 3.0)]
 
     def test__with_mask__converts_to_and_from_pixels(self):
 

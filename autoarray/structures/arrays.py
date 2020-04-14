@@ -575,6 +575,11 @@ class Values(np.ndarray):
         """Return the values on a structured list which groups values with a common origin."""
         return [list(self[i:j]) for i, j in zip(self.lower_indexes, self.upper_indexes)]
 
+    @property
+    def in_list_1d(self):
+        """Return the values in a list without structured grouping."""
+        return list(self)
+
     def values_from_arr_1d(self, arr_1d):
         """Create a *Values* object from a 1D NumPy array of values of shape [total_values]. The
         *Values* are structured and grouped following this *Coordinate* instance."""
