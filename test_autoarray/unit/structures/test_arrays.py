@@ -1295,14 +1295,12 @@ class TestValues:
         assert type(values) == arrays.Values
         assert (values == np.array([1.0, -1.0])).all()
         assert values.in_list == [[1.0, -1.0]]
-        assert values.in_list_1d == [1.0, -1.0]
 
         values = aa.Values(values=[[1.0], [-1.0]])
 
         assert type(values) == arrays.Values
         assert (values == np.array([1.0, -1.0])).all()
         assert values.in_list == [[1.0], [-1.0]]
-        assert values.in_list_1d == [1.0, -1.0]
 
     def test__values_from_arr_1d(self):
 

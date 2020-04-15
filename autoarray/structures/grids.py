@@ -158,7 +158,7 @@ class AbstractGrid(abstract_structure.AbstractStructure):
 
     def __reduce__(self):
         # Get the parent's __reduce__ tuple
-        pickled_state = super(AbstractGrid, self).__reduce__()
+        pickled_state = super().__reduce__()
         # Create our own tuple to pass to __setstate__
         class_dict = {}
         for key, value in self.__dict__.items():
@@ -172,7 +172,7 @@ class AbstractGrid(abstract_structure.AbstractStructure):
 
         for key, value in state[-1].items():
             setattr(self, key, value)
-        super(AbstractGrid, self).__setstate__(state[0:-1])
+        super().__setstate__(state[0:-1])
 
     @property
     def in_1d(self):
@@ -278,6 +278,8 @@ class AbstractGrid(abstract_structure.AbstractStructure):
 
     @property
     def shape_2d_scaled(self):
+        """The two dimensional shape of the grid in scaled units, computed by taking the minimum and maximum values of
+        the grid."""
         return (
             np.amax(self[:, 0]) - np.amin(self[:, 0]),
             np.amax(self[:, 1]) - np.amin(self[:, 1]),
@@ -285,6 +287,7 @@ class AbstractGrid(abstract_structure.AbstractStructure):
 
     @property
     def scaled_maxima(self):
+        """The maximum values of the grid in scaled coordinates returned as a tuple (y_max, x_max)."""
         return (
             self.origin[0] + (self.shape_2d_scaled[0] / 2.0),
             self.origin[1] + (self.shape_2d_scaled[1] / 2.0),
@@ -292,6 +295,7 @@ class AbstractGrid(abstract_structure.AbstractStructure):
 
     @property
     def scaled_minima(self):
+        """The minium values of the grid in scaled coordinates returned as a tuple (y_min, x_min)."""
         return (
             (self.origin[0] - (self.shape_2d_scaled[0] / 2.0)),
             (self.origin[1] - (self.shape_2d_scaled[1] / 2.0)),
@@ -299,6 +303,10 @@ class AbstractGrid(abstract_structure.AbstractStructure):
 
     @property
     def extent(self):
+        """The extent of the grid in scaled units returned as a NumPy array [x_min, x_max, y_min, y_max].
+
+        This follows the format of the extent input parameter in the matplotlib method imshow (and other methods) and
+        is used for visualization in the plot module."""
         return np.asarray(
             [
                 self.scaled_minima[1],
@@ -789,12 +797,9 @@ class GridRectangular(Grid):
         obj.pixel_neighbors_size = pixel_neighbors_size.astype("int")
         return obj
 
-    def __array_finalize__(self, obj):
-        pass
-
     def __reduce__(self):
         # Get the parent's __reduce__ tuple
-        pickled_state = super(GridRectangular, self).__reduce__()
+        pickled_state = super().__reduce__()
         # Create our own tuple to pass to __setstate__
         class_dict = {}
         for key, value in self.__dict__.items():
@@ -808,7 +813,7 @@ class GridRectangular(Grid):
 
         for key, value in state[-1].items():
             setattr(self, key, value)
-        super(GridRectangular, self).__setstate__(state[0:-1])
+        super().__setstate__(state[0:-1])
 
     @classmethod
     def overlay_grid(cls, shape_2d, grid, buffer=1e-8):
@@ -906,7 +911,7 @@ class GridVoronoi(np.ndarray):
             A 1D array that maps every grid pixel to its nearest pixelization-grid pixel.
         """
 
-        if type(grid) is list:
+        if isinstance(grid, list):
             grid = np.asarray(grid)
 
         obj = grid.view(cls)
@@ -951,7 +956,7 @@ class GridVoronoi(np.ndarray):
 
     def __reduce__(self):
         # Get the parent's __reduce__ tuple
-        pickled_state = super(GridVoronoi, self).__reduce__()
+        pickled_state = super().__reduce__()
         # Create our own tuple to pass to __setstate__
         class_dict = {}
         for key, value in self.__dict__.items():
@@ -965,7 +970,7 @@ class GridVoronoi(np.ndarray):
 
         for key, value in state[-1].items():
             setattr(self, key, value)
-        super(GridVoronoi, self).__setstate__(state[0:-1])
+        super().__setstate__(state[0:-1])
 
     @classmethod
     def manual_1d(cls, grid):
@@ -1221,7 +1226,7 @@ class Interpolator:
 
 
 class Coordinates(np.ndarray):
-    def __new__(cls, coordinates, mask=None):
+    def __new__(cls, coordinates):
         """ A collection of (y,x) coordinates structured in a way defining groups of coordinates which share a common
         origin (for example coordinates may be grouped if they are from a specific region of a dataset).
 
@@ -1261,7 +1266,7 @@ class Coordinates(np.ndarray):
         if len(coordinates) == 0:
             return []
 
-        if isinstance(coordinates[0], tuple) or isinstance(coordinates[0], np.ndarray):
+        if isinstance(coordinates[0], (tuple, np.ndarray)):
             coordinates = [(coordinates)]
         elif isinstance(coordinates[0], list) and isinstance(coordinates[0][0], list):
             coordinates = [(coordinates)]
@@ -1279,7 +1284,6 @@ class Coordinates(np.ndarray):
         obj = coordinates_arr.view(cls)
         obj.upper_indexes = upper_indexes
         obj.lower_indexes = [0] + upper_indexes[:-1]
-        obj.mask = mask
 
         return obj
 
@@ -1290,9 +1294,6 @@ class Coordinates(np.ndarray):
 
         if hasattr(obj, "upper_indexes"):
             self.upper_indexes = obj.upper_indexes
-
-        if hasattr(obj, "mask"):
-            self.mask = obj.mask
 
     @classmethod
     def from_yx_1d(cls, y, x):
@@ -1315,7 +1316,7 @@ class Coordinates(np.ndarray):
                     for coordinates in coordinate_set
                 ]
             )
-        return cls(coordinates=coordinates, mask=mask)
+        return cls(coordinates=coordinates)
 
     @property
     def in_1d(self):
@@ -1329,18 +1330,13 @@ class Coordinates(np.ndarray):
             for i, j in zip(self.lower_indexes, self.upper_indexes)
         ]
 
-    @property
-    def in_list_1d(self):
-        """Return the coordinates in a list without structured groups."""
-        return [tuple(self[i, :]) for i in range(self.shape[0])]
-
     def values_from_arr_1d(self, arr_1d):
         """Create a *Values* object from a 1D NumPy array of values of shape [total_coordinates]. The
         *Values* are structured and grouped following this *Coordinate* instance."""
         values_1d = [
             list(arr_1d[i:j]) for i, j in zip(self.lower_indexes, self.upper_indexes)
         ]
-        return arrays.Values(values=values_1d, mask=self.mask)
+        return arrays.Values(values=values_1d)
 
     def coordinates_from_grid_1d(self, grid_1d):
         """Create a *Coordinates* object from a 2D NumPy array of values of shape [total_coordinates, 2]. The
@@ -1350,21 +1346,7 @@ class Coordinates(np.ndarray):
             for i, j in zip(self.lower_indexes, self.upper_indexes)
         ]
 
-        return Coordinates(coordinates=coordinates_1d, mask=self.mask)
-
-    @property
-    def in_pixels(self):
-        coordinates = []
-        for coordinate_set in self.in_list:
-            coordinates.append(
-                [
-                    self.mask.geometry.pixel_coordinates_from_scaled_coordinates(
-                        scaled_coordinates=coordinates
-                    )
-                    for coordinates in coordinate_set
-                ]
-            )
-        return self.__class__(coordinates=coordinates, mask=self.mask)
+        return Coordinates(coordinates=coordinates_1d)
 
     @classmethod
     def from_file(cls, file_path):
@@ -1408,7 +1390,7 @@ class Coordinates(np.ndarray):
 
         with open(file_path, "w") as f:
             for coordinate in self.in_list:
-                f.write("%s\n" % coordinate)
+                f.write(f"{coordinate}\n")
 
     def squared_distances_from_coordinate(self, coordinate=(0.0, 0.0)):
         """Compute the squared distance of every (y,x) coordinate in this *Coordinate* instance from an input
@@ -1422,7 +1404,7 @@ class Coordinates(np.ndarray):
         squared_distances = np.square(self[:, 0] - coordinate[0]) + np.square(
             self[:, 1] - coordinate[1]
         )
-        return aa.MaskedArray(array=squared_distances, mask=self.mask)
+        return self.values_from_arr_1d(arr_1d=squared_distances)
 
     def distances_from_coordinate(self, coordinate=(0.0, 0.0)):
         """Compute the distance of every (y,x) coordinate in this *Coordinate* instance from an input coordinate.
@@ -1435,29 +1417,33 @@ class Coordinates(np.ndarray):
         distances = np.sqrt(
             self.squared_distances_from_coordinate(coordinate=coordinate)
         )
-        return aa.MaskedArray(array=distances, mask=self.mask)
-
-    @property
-    def mapping(self):
-        return self.mask.mapping
+        return self.values_from_arr_1d(arr_1d=distances)
 
     @property
     def shape_2d_scaled(self):
+        """The two dimensional shape of the coordinates spain in scaled units, computed by taking the minimum and
+        maximum values of the coordinates."""
         return (
-            np.amax(self.in_1d[:, 0]) - np.amin(self.in_1d[:, 0]),
-            np.amax(self.in_1d[:, 1]) - np.amin(self.in_1d[:, 1]),
+            np.amax(self[:, 0]) - np.amin(self[:, 0]),
+            np.amax(self[:, 1]) - np.amin(self[:, 1]),
         )
 
     @property
     def scaled_maxima(self):
-        return (np.amax(self.in_1d[:, 0]), np.amax(self.in_1d[:, 1]))
+        """The maximum values of the coordinates returned as a tuple (y_max, x_max)."""
+        return (np.amax(self[:, 0]), np.amax(self[:, 1]))
 
     @property
     def scaled_minima(self):
-        return (np.amin(self.in_1d[:, 0]), np.amin(self.in_1d[:, 1]))
+        """The minimum values of the coordinates returned as a tuple (y_max, x_max)."""
+        return (np.amin(self[:, 0]), np.amin(self[:, 1]))
 
     @property
     def extent(self):
+        """The extent of the coordinates returned as a NumPy array [x_min, x_max, y_min, y_max].
+
+        This follows the format of the extent input parameter in the matplotlib method imshow (and other methods) and
+        is used for visualization in the plot module."""
         return np.asarray(
             [
                 self.scaled_minima[1],
@@ -1607,7 +1593,7 @@ def grid_interpolate(func):
                     interpolator.interp_grid,
                     grid_radial_minimum,
                     *args,
-                    **kwargs
+                    **kwargs,
                 )
                 if values.ndim == 1:
                     return interpolator.interpolated_values_from_values(values=values)

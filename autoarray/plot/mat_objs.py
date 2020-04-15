@@ -898,6 +898,9 @@ class Scatterer:
 
     def scatter_coordinates(self, coordinates):
 
+        if len(coordinates) == 0:
+            return
+
         color = itertools.cycle(self.colors)
 
         for coordinate_group in grids.Coordinates(coordinates).in_list:
@@ -1194,6 +1197,9 @@ class Liner:
         lines_pointsize : int
             The size of the points plotted to show the liness.
         """
+
+        if len(coordinates) == 0:
+            return
 
         color = itertools.cycle(self.colors)
 
