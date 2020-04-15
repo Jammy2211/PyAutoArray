@@ -2847,7 +2847,7 @@ class TestCoordinates:
 
         coordinates_output = coordinates_input.float_values_from_grid(grid=coordinates)
 
-        assert coordinates_output == [[1.0, 1.0], [1.0]]
+        assert coordinates_output.in_list == [[1.0, 1.0], [1.0]]
 
         coordinates_output = coordinates_input.tuple_values_from_grid(grid=coordinates)
 
@@ -2865,7 +2865,7 @@ class TestCoordinates:
             grid=coordinates
         )
 
-        assert coordinates_output == [[[1.0, 1.0], [1.0]], [[2.0, 2.0], [2.0]]]
+        assert coordinates_output[0].in_list == [[1.0, 1.0], [1.0]], [[2.0, 2.0], [2.0]]
 
         coordinates_output = coordinates_input.tuple_values_from_grid_returns_list(
             grid=coordinates

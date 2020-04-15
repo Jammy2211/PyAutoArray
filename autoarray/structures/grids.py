@@ -1258,7 +1258,7 @@ class Coordinates(np.ndarray):
             The mask whose attributes are used to perform coordinate conversions.
         """
 
-        if coordinates == []:
+        if len(coordinates) == 0:
             return []
 
         if isinstance(coordinates[0], tuple) or isinstance(coordinates[0], np.ndarray):
