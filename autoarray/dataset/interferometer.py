@@ -185,7 +185,7 @@ class MaskedInterferometer(abstract_dataset.AbstractMaskedDataset):
             up run.
         """
 
-        super(MaskedInterferometer, self).__init__(
+        super().__init__(
             dataset=interferometer,
             mask=real_space_mask,
             pixel_scale_interpolation_grid=pixel_scale_interpolation_grid,
