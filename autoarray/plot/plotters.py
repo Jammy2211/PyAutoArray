@@ -11,7 +11,7 @@ from functools import wraps
 import copy
 
 from autoarray import exc
-from autoarray.dataset import abstract_dataset
+from autoarray.structures import grids
 from autoarray.plot import mat_objs
 import inspect
 import os
@@ -316,26 +316,24 @@ class AbstractPlotter:
 
         self.cb.set()
         if include_origin:
-            self.origin_scatterer.scatter_grids(grids=[array.origin])
+            self.origin_scatterer.scatter_grid(grid=[array.origin])
 
         if mask is not None:
-            self.mask_scatterer.scatter_grids(
-                grids=mask.geometry.edge_grid.in_1d_binned
-            )
+            self.mask_scatterer.scatter_grid(grid=mask.geometry.edge_grid.in_1d_binned)
 
         if include_border and mask is not None:
-            self.border_scatterer.scatter_grids(
-                grids=mask.geometry.border_grid.in_1d_binned
+            self.border_scatterer.scatter_grid(
+                grid=mask.geometry.border_grid.in_1d_binned
             )
 
         if grid is not None:
-            self.grid_scatterer.scatter_grids(grids=grid)
+            self.grid_scatterer.scatter_grid(grid=grid)
 
         if positions is not None:
-            self.positions_scatterer.scatter_grids(grids=positions)
+            self.positions_scatterer.scatter_coordinates(coordinates=positions)
 
         if lines is not None:
-            self.liner.draw_grids(grids=lines)
+            self.liner.draw_coordinates(coordinates=lines)
 
         if not bypass_output:
             self.output.to_figure(structure=array)
@@ -401,7 +399,7 @@ class AbstractPlotter:
 
         if color_array is None:
 
-            self.grid_scatterer.scatter_grids(grids=grid)
+            self.grid_scatterer.scatter_grid(grid=grid)
 
         elif color_array is not None:
 
@@ -440,19 +438,19 @@ class AbstractPlotter:
         )
 
         if include_origin:
-            self.origin_scatterer.scatter_grids(grids=[grid.origin])
+            self.origin_scatterer.scatter_grid(grid=[grid.origin])
 
         if include_border:
-            self.border_scatterer.scatter_grids(grids=grid.sub_border_grid)
+            self.border_scatterer.scatter_grid(grid=grid.sub_border_grid)
 
         if indexes is not None:
             self.index_scatterer.scatter_grid_indexes(grid=grid, indexes=indexes)
 
         if positions is not None:
-            self.positions_scatterer.scatter_grids(grids=positions)
+            self.positions_scatterer.scatter_grid(grid=positions)
 
         if lines is not None:
-            self.liner.draw_grids(grids=lines)
+            self.liner.draw_grid(grid=lines)
 
         if not bypass_output:
             self.output.to_figure(structure=grid)
@@ -596,20 +594,18 @@ class AbstractPlotter:
         self.labels.set_xunits(units=self.units, include_brackets=True)
 
         if include_origin:
-            self.origin_scatterer.scatter_grids(grids=[mapper.grid.origin])
+            self.origin_scatterer.scatter_grid(grid=[mapper.grid.origin])
 
         if include_pixelization_grid:
-            self.pixelization_grid_scatterer.scatter_grids(
-                grids=mapper.pixelization_grid
-            )
+            self.pixelization_grid_scatterer.scatter_grid(grid=mapper.pixelization_grid)
 
         if include_grid:
-            self.grid_scatterer.scatter_grids(grids=mapper.grid)
+            self.grid_scatterer.scatter_grid(grid=mapper.grid)
 
         if include_border:
             sub_border_1d_indexes = mapper.grid.mask.regions._sub_border_1d_indexes
             sub_border_grid = mapper.grid[sub_border_1d_indexes, :]
-            self.border_scatterer.scatter_grids(grids=sub_border_grid)
+            self.border_scatterer.scatter_grid(grid=sub_border_grid)
 
         if image_pixel_indexes is not None:
             self.index_scatterer.scatter_grid_indexes(
@@ -669,26 +665,24 @@ class AbstractPlotter:
         self.labels.set_xunits(units=self.units, include_brackets=True)
 
         if include_origin:
-            self.origin_scatterer.scatter_grids(grids=[mapper.grid.origin])
+            self.origin_scatterer.scatter_grid(grid=[mapper.grid.origin])
 
         if include_pixelization_grid:
-            self.pixelization_grid_scatterer.scatter_grids(
-                grids=mapper.pixelization_grid
-            )
+            self.pixelization_grid_scatterer.scatter_grid(grid=mapper.pixelization_grid)
 
         if include_grid:
-            self.grid_scatterer.scatter_grids(grids=mapper.grid)
+            self.grid_scatterer.scatter_grid(grid=mapper.grid)
 
         if include_border:
             sub_border_1d_indexes = mapper.grid.mask.regions._sub_border_1d_indexes
             sub_border_grid = mapper.grid[sub_border_1d_indexes, :]
-            self.border_scatterer.scatter_grids(grids=sub_border_grid)
+            self.border_scatterer.scatter_grid(grid=sub_border_grid)
 
         if positions is not None:
-            self.positions_scatterer.scatter_grids(grids=positions)
+            self.positions_scatterer.scatter_coordinates(coordinates=positions)
 
         if lines is not None:
-            self.liner.draw_grids(grids=lines)
+            self.liner.draw_grid(grid=lines)
 
         if image_pixel_indexes is not None:
             self.index_scatterer.scatter_grid_indexes(
