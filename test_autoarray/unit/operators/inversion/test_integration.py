@@ -515,7 +515,7 @@ class TestVoronoiMagnification:
         )
 
         pixelization_grid = aa.GridVoronoi(
-            grid_1d=sparse_grid.sparse,
+            grid=sparse_grid.sparse,
             nearest_pixelization_1d_index_for_mask_1d_index=sparse_grid.sparse_1d_index_for_mask_1d_index,
         )
 
@@ -615,7 +615,7 @@ class TestVoronoiMagnification:
         )
 
         pixelization_grid = aa.GridVoronoi(
-            grid_1d=sparse_grid.sparse,
+            grid=sparse_grid.sparse,
             nearest_pixelization_1d_index_for_mask_1d_index=sparse_grid.sparse_1d_index_for_mask_1d_index,
         )
 
@@ -726,7 +726,7 @@ class TestVoronoiMagnification:
         )
 
         pixelization_grid = aa.GridVoronoi(
-            grid_1d=sparse_grid.sparse,
+            grid=sparse_grid.sparse,
             nearest_pixelization_1d_index_for_mask_1d_index=sparse_grid.sparse_1d_index_for_mask_1d_index,
         )
 
@@ -814,7 +814,7 @@ class TestVoronoiMagnification:
         )
 
         pixelization_grid = aa.GridVoronoi(
-            grid_1d=sparse_grid.sparse,
+            grid=sparse_grid.sparse,
             nearest_pixelization_1d_index_for_mask_1d_index=sparse_grid.sparse_1d_index_for_mask_1d_index,
         )
 

@@ -1,5 +1,4 @@
 import numpy as np
-import scipy.spatial
 
 from autoarray import exc
 from autoarray.structures import grids
@@ -129,7 +128,7 @@ class Voronoi(Pixelization):
 
         try:
             pixelization_grid = grids.GridVoronoi(
-                grid_1d=relocated_pixelization_grid,
+                grid=relocated_pixelization_grid,
                 nearest_pixelization_1d_index_for_mask_1d_index=sparse_grid.nearest_pixelization_1d_index_for_mask_1d_index,
             )
 
@@ -162,7 +161,7 @@ class VoronoiMagnification(Voronoi):
             grid=grid, unmasked_sparse_shape=self.shape
         )
 
-        return grids.GridIrregular(
+        return grids.GridVoronoi(
             grid=sparse_grid.sparse,
             nearest_pixelization_1d_index_for_mask_1d_index=sparse_grid.sparse_1d_index_for_mask_1d_index,
         )
@@ -196,7 +195,7 @@ class VoronoiBrightnessImage(Voronoi):
             total_pixels=self.pixels, grid=grid, weight_map=weight_map, seed=seed
         )
 
-        return grids.GridIrregular(
+        return grids.GridVoronoi(
             grid=sparse_grid.sparse,
             nearest_pixelization_1d_index_for_mask_1d_index=sparse_grid.sparse_1d_index_for_mask_1d_index,
         )

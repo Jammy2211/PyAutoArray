@@ -10,7 +10,7 @@ import autoarray as aa
 
 from autoarray import decorator_util
 from autoarray import exc
-from autoarray.structures import abstract_structure
+from autoarray.structures import abstract_structure, arrays
 from autoarray.mask import mask as msk
 from autoarray.util import (
     sparse_util,
@@ -158,7 +158,7 @@ class AbstractGrid(abstract_structure.AbstractStructure):
 
     def __reduce__(self):
         # Get the parent's __reduce__ tuple
-        pickled_state = super(AbstractGrid, self).__reduce__()
+        pickled_state = super().__reduce__()
         # Create our own tuple to pass to __setstate__
         class_dict = {}
         for key, value in self.__dict__.items():
@@ -172,7 +172,7 @@ class AbstractGrid(abstract_structure.AbstractStructure):
 
         for key, value in state[-1].items():
             setattr(self, key, value)
-        super(AbstractGrid, self).__setstate__(state[0:-1])
+        super().__setstate__(state[0:-1])
 
     @property
     def in_1d(self):
@@ -278,6 +278,8 @@ class AbstractGrid(abstract_structure.AbstractStructure):
 
     @property
     def shape_2d_scaled(self):
+        """The two dimensional shape of the grid in scaled units, computed by taking the minimum and maximum values of
+        the grid."""
         return (
             np.amax(self[:, 0]) - np.amin(self[:, 0]),
             np.amax(self[:, 1]) - np.amin(self[:, 1]),
@@ -285,6 +287,7 @@ class AbstractGrid(abstract_structure.AbstractStructure):
 
     @property
     def scaled_maxima(self):
+        """The maximum values of the grid in scaled coordinates returned as a tuple (y_max, x_max)."""
         return (
             self.origin[0] + (self.shape_2d_scaled[0] / 2.0),
             self.origin[1] + (self.shape_2d_scaled[1] / 2.0),
@@ -292,6 +295,7 @@ class AbstractGrid(abstract_structure.AbstractStructure):
 
     @property
     def scaled_minima(self):
+        """The minium values of the grid in scaled coordinates returned as a tuple (y_min, x_min)."""
         return (
             (self.origin[0] - (self.shape_2d_scaled[0] / 2.0)),
             (self.origin[1] - (self.shape_2d_scaled[1] / 2.0)),
@@ -299,6 +303,10 @@ class AbstractGrid(abstract_structure.AbstractStructure):
 
     @property
     def extent(self):
+        """The extent of the grid in scaled units returned as a NumPy array [x_min, x_max, y_min, y_max].
+
+        This follows the format of the extent input parameter in the matplotlib method imshow (and other methods) and
+        is used for visualization in the plot module."""
         return np.asarray(
             [
                 self.scaled_minima[1],
@@ -451,12 +459,16 @@ class AbstractGrid(abstract_structure.AbstractStructure):
             The grid, whose grid coordinates are relocated.
         """
 
-        return GridIrregular(
-            grid=self.relocated_grid_from_grid_jit(
-                grid=pixelization_grid, border_grid=self.sub_border_grid
-            ),
-            nearest_pixelization_1d_index_for_mask_1d_index=pixelization_grid.nearest_pixelization_1d_index_for_mask_1d_index,
-        )
+        if isinstance(pixelization_grid, GridVoronoi):
+
+            return GridVoronoi(
+                grid=self.relocated_grid_from_grid_jit(
+                    grid=pixelization_grid, border_grid=self.sub_border_grid
+                ),
+                nearest_pixelization_1d_index_for_mask_1d_index=pixelization_grid.nearest_pixelization_1d_index_for_mask_1d_index,
+            )
+
+        return pixelization_grid
 
     def output_to_fits(self, file_path, overwrite=False):
 
@@ -751,7 +763,132 @@ class Grid(AbstractGrid):
             )
 
 
-class GridIrregular(np.ndarray):
+class GridRectangular(Grid):
+    def __new__(cls, grid, shape_2d, pixel_scales, origin=(0.0, 0.0), *args, **kwargs):
+        """A pixelization-grid of (y,x) coordinates which are used to form the pixel centres of adaptive pixelizations in the \
+        *pixelizations* module.
+
+        A *PixGrid* is ordered such pixels begin from the top-row of the mask and go rightwards and then \
+        downwards. Therefore, it is a ndarray of shape [total_pix_pixels, 2]. The first element of the ndarray \
+        thus corresponds to the pixelization pixel index and second element the y or x arc -econd coordinates. For example:
+
+        - pix_grid[3,0] = the 4th unmasked pixel's y-coordinate.
+        - pix_grid[6,1] = the 7th unmasked pixel's x-coordinate.
+
+        Parameters
+        -----------
+        pix_grid : ndarray
+            The grid of (y,x) scaled coordinates of every image-plane pixelization grid used for adaptive source \
+            -plane pixelizations.
+        nearest_pixelization_1d_index_for_mask_1d_index : ndarray
+            A 1D array that maps every grid pixel to its nearest pixelization-grid pixel.
+        """
+
+        mask = msk.Mask.unmasked(
+            shape_2d=shape_2d, pixel_scales=pixel_scales, sub_size=1, origin=origin
+        )
+
+        obj = super().__new__(cls=cls, grid=grid, mask=mask)
+
+        pixel_neighbors, pixel_neighbors_size = pixelization_util.rectangular_neighbors_from_shape(
+            shape=shape_2d
+        )
+        obj.pixel_neighbors = pixel_neighbors.astype("int")
+        obj.pixel_neighbors_size = pixel_neighbors_size.astype("int")
+        return obj
+
+    def __reduce__(self):
+        # Get the parent's __reduce__ tuple
+        pickled_state = super().__reduce__()
+        # Create our own tuple to pass to __setstate__
+        class_dict = {}
+        for key, value in self.__dict__.items():
+            class_dict[key] = value
+        new_state = pickled_state[2] + (class_dict,)
+        # Return a tuple that replaces the parent's __setstate__ tuple with our own
+        return pickled_state[0], pickled_state[1], new_state
+
+    # noinspection PyMethodOverriding
+    def __setstate__(self, state):
+
+        for key, value in state[-1].items():
+            setattr(self, key, value)
+        super().__setstate__(state[0:-1])
+
+    @classmethod
+    def overlay_grid(cls, shape_2d, grid, buffer=1e-8):
+        """The geometry of a rectangular grid.
+
+        This is used to map grid of (y,x) scaled coordinates to the pixels on the rectangular grid.
+
+        Parameters
+        -----------
+        shape_2d : (int, int)
+            The dimensions of the rectangular grid of pixels (y_pixels, x_pixel)
+        pixel_scales : (float, float)
+            The pixel conversion scale of a pixel in the y and x directions.
+        origin : (float, float)
+            The scaled origin of the rectangular pixelization's coordinate system.
+        pixel_neighbors : ndarray
+            An array of length (y_pixels*x_pixels) which provides the index of all neighbors of every pixel in \
+            the rectangular grid (entries of -1 correspond to no neighbor).
+        pixel_neighbors_size : ndarrayy
+            An array of length (y_pixels*x_pixels) which gives the number of neighbors of every pixel in the \
+            rectangular grid.
+        """
+
+        y_min = np.min(grid[:, 0]) - buffer
+        y_max = np.max(grid[:, 0]) + buffer
+        x_min = np.min(grid[:, 1]) - buffer
+        x_max = np.max(grid[:, 1]) + buffer
+
+        pixel_scales = (
+            float((y_max - y_min) / shape_2d[0]),
+            float((x_max - x_min) / shape_2d[1]),
+        )
+
+        origin = ((y_max + y_min) / 2.0, (x_max + x_min) / 2.0)
+
+        grid_1d = grid_util.grid_1d_via_shape_2d(
+            shape_2d=shape_2d, pixel_scales=pixel_scales, sub_size=1, origin=origin
+        )
+
+        return GridRectangular(
+            grid=grid_1d, shape_2d=shape_2d, pixel_scales=pixel_scales, origin=origin
+        )
+
+    @property
+    def pixels(self):
+        return self.shape_2d[0] * self.shape_2d[1]
+
+    @property
+    def shape_2d_scaled(self):
+        return (
+            (self.shape_2d[0] * self.pixel_scales[0]),
+            (self.shape_2d[1] * self.pixel_scales[1]),
+        )
+
+
+class GridVoronoi(np.ndarray):
+    """Determine the geometry of the Voronoi pixelization, by alligning it with the outer-most coordinates on a \
+    grid plus a small buffer.
+
+    Parameters
+    -----------
+    grid : ndarray
+        The (y,x) grid of coordinates which determine the Voronoi pixelization's
+    pixelization_grid : ndarray
+        The (y,x) centre of every Voronoi pixel in scaleds.
+    origin : (float, float)
+        The scaled origin of the Voronoi pixelization's coordinate system.
+    pixel_neighbors : ndarray
+        An array of length (voronoi_pixels) which provides the index of all neighbors of every pixel in \
+        the Voronoi grid (entries of -1 correspond to no neighbor).
+    pixel_neighbors_size : ndarrayy
+        An array of length (voronoi_pixels) which gives the number of neighbors of every pixel in the \
+        Voronoi grid.
+    """
+
     def __new__(
         cls, grid, nearest_pixelization_1d_index_for_mask_1d_index=None, *args, **kwargs
     ):
@@ -773,26 +910,53 @@ class GridIrregular(np.ndarray):
         nearest_pixelization_1d_index_for_mask_1d_index : ndarray
             A 1D array that maps every grid pixel to its nearest pixelization-grid pixel.
         """
-        if type(grid) is list:
+
+        if isinstance(grid, list):
             grid = np.asarray(grid)
+
         obj = grid.view(cls)
         obj.nearest_pixelization_1d_index_for_mask_1d_index = (
             nearest_pixelization_1d_index_for_mask_1d_index
         )
         obj.interpolator = None
+
+        obj.pixels = grid.shape[0]
+
+        try:
+            obj.voronoi = scipy.spatial.Voronoi(
+                np.asarray([grid[:, 1], grid[:, 0]]).T, qhull_options="Qbb Qc Qx Qm"
+            )
+        except ValueError or OverflowError or scipy.spatial.qhull.QhullError:
+            raise exc.PixelizationException()
+
+        pixel_neighbors, pixel_neighbors_size = pixelization_util.voronoi_neighbors_from_pixels_and_ridge_points(
+            pixels=obj.pixels, ridge_points=np.asarray(obj.voronoi.ridge_points)
+        )
+
+        obj.pixel_neighbors = pixel_neighbors.astype("int")
+        obj.pixel_neighbors_size = pixel_neighbors_size.astype("int")
+        obj.nearest_pixelization_1d_index_for_mask_1d_index = (
+            nearest_pixelization_1d_index_for_mask_1d_index
+        )
+
         return obj
 
     def __array_finalize__(self, obj):
+
+        if hasattr(obj, "pixel_neighbors"):
+            self.pixel_neighbors = obj.pixel_neighbors
+
+        if hasattr(obj, "pixel_neighbors_size"):
+            self.pixel_neighbors_size = obj.pixel_neighbors_size
+
         if hasattr(obj, "nearest_pixelization_1d_index_for_mask_1d_index"):
             self.nearest_pixelization_1d_index_for_mask_1d_index = (
                 obj.nearest_pixelization_1d_index_for_mask_1d_index
             )
-        if hasattr(obj, "interpolator"):
-            self.interpolator = obj.interpolator
 
     def __reduce__(self):
         # Get the parent's __reduce__ tuple
-        pickled_state = super(GridIrregular, self).__reduce__()
+        pickled_state = super().__reduce__()
         # Create our own tuple to pass to __setstate__
         class_dict = {}
         for key, value in self.__dict__.items():
@@ -806,15 +970,11 @@ class GridIrregular(np.ndarray):
 
         for key, value in state[-1].items():
             setattr(self, key, value)
-        super(GridIrregular, self).__setstate__(state[0:-1])
+        super().__setstate__(state[0:-1])
 
     @classmethod
     def manual_1d(cls, grid):
-        return GridIrregular(grid=grid)
-
-    @classmethod
-    def manual_yx_1d(cls, y, x):
-        return GridIrregular(grid=np.stack((y, x), axis=-1))
+        return GridVoronoi(grid=grid)
 
     @classmethod
     def from_grid_and_unmasked_2d_grid_shape(cls, unmasked_sparse_shape, grid):
@@ -823,52 +983,10 @@ class GridIrregular(np.ndarray):
             unmasked_sparse_shape=unmasked_sparse_shape, grid=grid
         )
 
-        return GridIrregular(
+        return GridVoronoi(
             grid=sparse_grid.sparse,
             nearest_pixelization_1d_index_for_mask_1d_index=sparse_grid.sparse_1d_index_for_mask_1d_index,
         )
-
-    def squared_distances_from_coordinate(self, coordinate=(0.0, 0.0)):
-        squared_distances = np.square(self[:, 0] - coordinate[0]) + np.square(
-            self[:, 1] - coordinate[1]
-        )
-        return aa.MaskedArray(array=squared_distances, mask=self.mask)
-
-    def distances_from_coordinate(self, coordinate=(0.0, 0.0)):
-        distances = np.sqrt(
-            self.squared_distances_from_coordinate(coordinate=coordinate)
-        )
-        return aa.MaskedArray(array=distances, mask=self.mask)
-
-    @property
-    def sub_shape_1d(self):
-        return self.mask.sub_shape_1d
-
-    @property
-    def mask(self):
-        class IrregularMask:
-            def __init__(self, sub_shape_1d):
-
-                self.sub_shape_1d = sub_shape_1d
-
-            def grid_from_sub_grid_1d(self, sub_grid_1d):
-                return GridIrregular(grid=sub_grid_1d)
-
-        return IrregularMask(sub_shape_1d=self.shape[0])
-
-    @property
-    def mapping(self):
-        class IrregularMapping:
-            def __init__(self):
-                pass
-
-            def array_stored_1d_from_sub_array_1d(self, sub_array_1d):
-                return sub_array_1d
-
-            def grid_stored_1d_from_sub_grid_1d(self, sub_grid_1d):
-                return GridIrregular(grid=sub_grid_1d)
-
-        return IrregularMapping()
 
     @property
     def shape_2d_scaled(self):
@@ -1052,216 +1170,6 @@ class SparseGrid:
         return len(self.sparse)
 
 
-class GridRectangular(Grid):
-    def __new__(cls, grid, shape_2d, pixel_scales, origin=(0.0, 0.0), *args, **kwargs):
-        """A pixelization-grid of (y,x) coordinates which are used to form the pixel centres of adaptive pixelizations in the \
-        *pixelizations* module.
-
-        A *PixGrid* is ordered such pixels begin from the top-row of the mask and go rightwards and then \
-        downwards. Therefore, it is a ndarray of shape [total_pix_pixels, 2]. The first element of the ndarray \
-        thus corresponds to the pixelization pixel index and second element the y or x arc -econd coordinates. For example:
-
-        - pix_grid[3,0] = the 4th unmasked pixel's y-coordinate.
-        - pix_grid[6,1] = the 7th unmasked pixel's x-coordinate.
-
-        Parameters
-        -----------
-        pix_grid : ndarray
-            The grid of (y,x) scaled coordinates of every image-plane pixelization grid used for adaptive source \
-            -plane pixelizations.
-        nearest_pixelization_1d_index_for_mask_1d_index : ndarray
-            A 1D array that maps every grid pixel to its nearest pixelization-grid pixel.
-        """
-
-        mask = msk.Mask.unmasked(
-            shape_2d=shape_2d, pixel_scales=pixel_scales, sub_size=1, origin=origin
-        )
-
-        obj = super(GridRectangular, cls).__new__(cls=cls, grid=grid, mask=mask)
-        pixel_neighbors, pixel_neighbors_size = pixelization_util.rectangular_neighbors_from_shape(
-            shape=shape_2d
-        )
-        obj.pixel_neighbors = pixel_neighbors.astype("int")
-        obj.pixel_neighbors_size = pixel_neighbors_size.astype("int")
-        return obj
-
-    def __array_finalize__(self, obj):
-        pass
-
-    def __reduce__(self):
-        # Get the parent's __reduce__ tuple
-        pickled_state = super(GridRectangular, self).__reduce__()
-        # Create our own tuple to pass to __setstate__
-        class_dict = {}
-        for key, value in self.__dict__.items():
-            class_dict[key] = value
-        new_state = pickled_state[2] + (class_dict,)
-        # Return a tuple that replaces the parent's __setstate__ tuple with our own
-        return pickled_state[0], pickled_state[1], new_state
-
-    # noinspection PyMethodOverriding
-    def __setstate__(self, state):
-
-        for key, value in state[-1].items():
-            setattr(self, key, value)
-        super(GridRectangular, self).__setstate__(state[0:-1])
-
-    @classmethod
-    def overlay_grid(cls, shape_2d, grid, buffer=1e-8):
-        """The geometry of a rectangular grid.
-
-        This is used to map grid of (y,x) scaled coordinates to the pixels on the rectangular grid.
-
-        Parameters
-        -----------
-        shape_2d : (int, int)
-            The dimensions of the rectangular grid of pixels (y_pixels, x_pixel)
-        pixel_scales : (float, float)
-            The pixel conversion scale of a pixel in the y and x directions.
-        origin : (float, float)
-            The scaled origin of the rectangular pixelization's coordinate system.
-        pixel_neighbors : ndarray
-            An array of length (y_pixels*x_pixels) which provides the index of all neighbors of every pixel in \
-            the rectangular grid (entries of -1 correspond to no neighbor).
-        pixel_neighbors_size : ndarrayy
-            An array of length (y_pixels*x_pixels) which gives the number of neighbors of every pixel in the \
-            rectangular grid.
-        """
-
-        y_min = np.min(grid[:, 0]) - buffer
-        y_max = np.max(grid[:, 0]) + buffer
-        x_min = np.min(grid[:, 1]) - buffer
-        x_max = np.max(grid[:, 1]) + buffer
-
-        pixel_scales = (
-            float((y_max - y_min) / shape_2d[0]),
-            float((x_max - x_min) / shape_2d[1]),
-        )
-
-        origin = ((y_max + y_min) / 2.0, (x_max + x_min) / 2.0)
-
-        grid_1d = grid_util.grid_1d_via_shape_2d(
-            shape_2d=shape_2d, pixel_scales=pixel_scales, sub_size=1, origin=origin
-        )
-
-        return GridRectangular(
-            grid=grid_1d, shape_2d=shape_2d, pixel_scales=pixel_scales, origin=origin
-        )
-
-    @property
-    def pixels(self):
-        return self.shape_2d[0] * self.shape_2d[1]
-
-    @property
-    def shape_2d_scaled(self):
-        return (
-            (self.shape_2d[0] * self.pixel_scales[0]),
-            (self.shape_2d[1] * self.pixel_scales[1]),
-        )
-
-
-class GridVoronoi(GridIrregular):
-    """Determine the geometry of the Voronoi pixelization, by alligning it with the outer-most coordinates on a \
-    grid plus a small buffer.
-
-    Parameters
-    -----------
-    grid : ndarray
-        The (y,x) grid of coordinates which determine the Voronoi pixelization's
-    pixelization_grid : ndarray
-        The (y,x) centre of every Voronoi pixel in scaleds.
-    origin : (float, float)
-        The scaled origin of the Voronoi pixelization's coordinate system.
-    pixel_neighbors : ndarray
-        An array of length (voronoi_pixels) which provides the index of all neighbors of every pixel in \
-        the Voronoi grid (entries of -1 correspond to no neighbor).
-    pixel_neighbors_size : ndarrayy
-        An array of length (voronoi_pixels) which gives the number of neighbors of every pixel in the \
-        Voronoi grid.
-    """
-
-    def __new__(
-        cls,
-        grid_1d,
-        nearest_pixelization_1d_index_for_mask_1d_index=None,
-        *args,
-        **kwargs
-    ):
-        """A pixelization-grid of (y,x) coordinates which are used to form the pixel centres of adaptive pixelizations in the \
-        *pixelizations* module.
-
-        A *PixGrid* is ordered such pixels begin from the top-row of the mask and go rightwards and then \
-        downwards. Therefore, it is a ndarray of shape [total_pix_pixels, 2]. The first element of the ndarray \
-        thus corresponds to the pixelization pixel index and second element the y or x arc -econd coordinates. For example:
-
-        - pix_grid[3,0] = the 4th unmasked pixel's y-coordinate.
-        - pix_grid[6,1] = the 7th unmasked pixel's x-coordinate.
-
-        Parameters
-        -----------
-        pix_grid : ndarray
-            The grid of (y,x) scaled coordinates of every image-plane pixelization grid used for adaptive source \
-            -plane pixelizations.
-        nearest_pixelization_1d_index_for_mask_1d_index : ndarray
-            A 1D array that maps every grid pixel to its nearest pixelization-grid pixel.
-        """
-
-        obj = super(GridVoronoi, cls).__new__(cls=cls, grid=grid_1d)
-
-        obj.pixels = grid_1d.shape[0]
-
-        try:
-            obj.voronoi = scipy.spatial.Voronoi(
-                np.asarray([grid_1d[:, 1], grid_1d[:, 0]]).T,
-                qhull_options="Qbb Qc Qx Qm",
-            )
-        except ValueError or OverflowError or scipy.spatial.qhull.QhullError:
-            raise exc.PixelizationException()
-
-        pixel_neighbors, pixel_neighbors_size = pixelization_util.voronoi_neighbors_from_pixels_and_ridge_points(
-            pixels=obj.pixels, ridge_points=np.asarray(obj.voronoi.ridge_points)
-        )
-
-        obj.pixel_neighbors = pixel_neighbors.astype("int")
-        obj.pixel_neighbors_size = pixel_neighbors_size.astype("int")
-        obj.nearest_pixelization_1d_index_for_mask_1d_index = (
-            nearest_pixelization_1d_index_for_mask_1d_index
-        )
-
-        return obj
-
-    def __array_finalize__(self, obj):
-
-        if hasattr(obj, "pixel_neighbors"):
-            self.pixel_neighbors = obj.pixel_neighbors
-
-        if hasattr(obj, "pixel_neighbors_size"):
-            self.pixel_neighbors_size = obj.pixel_neighbors_size
-
-        if hasattr(obj, "nearest_pixelization_1d_index_for_mask_1d_index"):
-            self.nearest_pixelization_1d_index_for_mask_1d_index = (
-                obj.nearest_pixelization_1d_index_for_mask_1d_index
-            )
-
-    def __reduce__(self):
-        # Get the parent's __reduce__ tuple
-        pickled_state = super(GridVoronoi, self).__reduce__()
-        # Create our own tuple to pass to __setstate__
-        class_dict = {}
-        for key, value in self.__dict__.items():
-            class_dict[key] = value
-        new_state = pickled_state[2] + (class_dict,)
-        # Return a tuple that replaces the parent's __setstate__ tuple with our own
-        return pickled_state[0], pickled_state[1], new_state
-
-    # noinspection PyMethodOverriding
-    def __setstate__(self, state):
-
-        for key, value in state[-1].items():
-            setattr(self, key, value)
-        super(GridVoronoi, self).__setstate__(state[0:-1])
-
-
 class Interpolator:
     def __init__(self, grid, interp_grid, pixel_scale_interpolation_grid):
         self.grid = grid
@@ -1317,15 +1225,88 @@ class Interpolator:
         return np.einsum("nj,nj->n", np.take(values, self.vtx), self.wts)
 
 
-class Coordinates(list):
-    def __init__(self, coordinates, mask=None):
+class Coordinates(np.ndarray):
+    def __new__(cls, coordinates):
+        """ A collection of (y,x) coordinates structured in a way defining groups of coordinates which share a common
+        origin (for example coordinates may be grouped if they are from a specific region of a dataset).
 
-        super(Coordinates, self).__init__(coordinates)
+        Grouping is structured as follows:
 
-        self.mask = mask
+        [[x0, x1], [x0, x1, x2]]
+
+        Here, we have two groups of coordinates, where each group is associated.
+
+        The coordinate object does not store the coordinates as a list of list of tuples, but instead a 2D NumPy array
+        of shape [total_coordinates, 2]. Index information is stored so that this array can be mapped to the list of
+        list of tuple structure above. They are stored as a NumPy array so the coordinates can be used efficiently for
+        calculations.
+
+        The coordinates input to this function can have any of the following forms:
+
+        [[(y0,x0), (y1,x1)], [(y0,x0)]]
+        [[[y0,x0], [y1,x1]], [[y0,x0)]]
+        [(y0,x0), (y1,x1)]
+        [[y0,x0], [y1,x1]]
+
+        In all cases, they will be converted to a list of list of tuples followed by a 2D NumPy array.
+
+        Print methods are overidden so a user always "sees" the coordinates as the list structure.
+
+        In contrast to a *Grid* structure, *Coordinates* do not lie on a uniform grid or correspond to values that
+        originate from a uniform grid. Therefore, when handling irregular data-sets *Coordinates* should be used.
+
+        Parameters
+        ----------
+        coordinates : [[tuple]] or equivalent
+            A collection of (y,x) coordinates that are grouped if they correpsond to a shared origin.
+        """
+
+        if len(coordinates) == 0:
+            return []
+
+        if isinstance(coordinates[0], tuple):
+            coordinates = [coordinates]
+        elif isinstance(coordinates[0], np.ndarray):
+            if len(coordinates[0].shape) == 1:
+                coordinates = [coordinates]
+        elif isinstance(coordinates[0], list) and isinstance(coordinates[0][0], list):
+            coordinates = [coordinates]
+
+        upper_indexes = []
+
+        a = 0
+
+        for coords in coordinates:
+            a = a + len(coords)
+            upper_indexes.append(a)
+
+        coordinates_arr = np.concatenate([np.array(i) for i in coordinates])
+
+        obj = coordinates_arr.view(cls)
+        obj.upper_indexes = upper_indexes
+        obj.lower_indexes = [0] + upper_indexes[:-1]
+
+        return obj
+
+    def __array_finalize__(self, obj):
+
+        if hasattr(obj, "lower_indexes"):
+            self.lower_indexes = obj.lower_indexes
+
+        if hasattr(obj, "upper_indexes"):
+            self.upper_indexes = obj.upper_indexes
+
+    @classmethod
+    def from_yx_1d(cls, y, x):
+        """Create *Coordinates* from a list of y and x values.
+
+        This function omits coordinate grouping."""
+        return Coordinates(coordinates=np.stack((y, x), axis=-1))
 
     @classmethod
     def from_pixels_and_mask(cls, pixels, mask):
+        """Create *Coordinates* from a list of coordinates in pixel units and a mask which allows these coordinates to
+        be converted to scaled units."""
         coordinates = []
         for coordinate_set in pixels:
             coordinates.append(
@@ -1336,95 +1317,41 @@ class Coordinates(list):
                     for coordinates in coordinate_set
                 ]
             )
-        return cls(coordinates=coordinates, mask=mask)
+        return cls(coordinates=coordinates)
 
     @property
     def in_1d(self):
-
-        total_coordinates = sum([len(coordinate_set) for coordinate_set in self])
-
-        grid_1d = np.zeros(shape=(total_coordinates, 2))
-
-        coordinate_index = 0
-
-        for coordinate_set in self:
-            for coordinate in coordinate_set:
-                grid_1d[coordinate_index, :] = coordinate
-                coordinate_index += 1
-
-        return GridIrregular.manual_1d(grid=grid_1d)
-
-    @property
-    def list_in_1d(self):
-
-        coordinates_list = []
-
-        for coordinate_set in self:
-            coordinates_list.append(GridIrregular(grid=coordinate_set))
-
-        return coordinates_list
-
-    def from_1d_coordinates(self, coordinates_1d):
-
-        coordinate_1d_index = 0
-
-        new_coordinates = []
-
-        for coordinate_set_index in range(len(self)):
-            new_coordinate_set_list = []
-            for coordinates_index in range(len(self[coordinate_set_index])):
-                new_coordinate_set_list.append(
-                    tuple(coordinates_1d[coordinate_1d_index, :])
-                )
-                coordinate_1d_index += 1
-            new_coordinates.append(new_coordinate_set_list)
-
-        return Coordinates(coordinates=new_coordinates, mask=self.mask)
-
-    def from_1d_values(self, values_1d):
-
-        values_1d_index = 0
-
-        new_values_list = []
-
-        for coordinate_set_index in range(len(self)):
-            new_values_set_list = []
-            for coordinates_index in range(len(self[coordinate_set_index])):
-                new_values_set_list.append(values_1d[values_1d_index])
-                values_1d_index += 1
-            new_values_list.append(new_values_set_list)
-
-        return new_values_list
-
-    @property
-    def scaled(self):
         return self
 
     @property
-    def pixels(self):
-        coordinates = []
-        for coordinate_set in self:
-            coordinates.append(
-                [
-                    self.mask.geometry.pixel_coordinates_from_scaled_coordinates(
-                        scaled_coordinates=coordinates
-                    )
-                    for coordinates in coordinate_set
-                ]
-            )
-        return self.__class__(coordinates=coordinates, mask=self.mask)
+    def in_list(self):
+        """Return the coordinates on a structured list which groups coordinates with a common origin."""
+        return [
+            list(map(tuple, self[i:j, :]))
+            for i, j in zip(self.lower_indexes, self.upper_indexes)
+        ]
+
+    def values_from_arr_1d(self, arr_1d):
+        """Create a *Values* object from a 1D NumPy array of values of shape [total_coordinates]. The
+        *Values* are structured and grouped following this *Coordinate* instance."""
+        values_1d = [
+            list(arr_1d[i:j]) for i, j in zip(self.lower_indexes, self.upper_indexes)
+        ]
+        return arrays.Values(values=values_1d)
+
+    def coordinates_from_grid_1d(self, grid_1d):
+        """Create a *Coordinates* object from a 2D NumPy array of values of shape [total_coordinates, 2]. The
+        *Coordinates* are structured and grouped following this *Coordinate* instance."""
+        coordinates_1d = [
+            list(map(tuple, grid_1d[i:j, :]))
+            for i, j in zip(self.lower_indexes, self.upper_indexes)
+        ]
+
+        return Coordinates(coordinates=coordinates_1d)
 
     @classmethod
     def from_file(cls, file_path):
-        """Load the coordinates of an image.
-
-        Coordinates correspond to a set of pixels in the lensed source galaxy that are anticipated to come from the same \
-        multiply-imaged region of the source-plane. Mass models which do not trace the pixels within a threshold value of \
-        one another are resampled during the non-linear search.
-
-        Coordinates are stored in a .dat file, where each line of the file gives a list of list of (y,x) coordinates which \
-        correspond to the same region of the source-plane. Thus, multiple source-plane regions can be input over multiple \
-        lines of the same coordinates file.
+        """Create a *Coordinates* object from a file which stores the coordinates as a list of list of tuples.
 
         Parameters
         ----------
@@ -1443,22 +1370,14 @@ class Coordinates(list):
         return Coordinates(coordinates=coordinates)
 
     def output_to_file(self, file_path, overwrite=False):
-        """Output the coordinates of an image to a coordinates.dat file.
-
-        Coordinates correspond to a set of pixels in the lensed source galaxy that are anticipated to come from the same \
-        multiply-imaged region of the source-plane. Mass models which do not trace the pixels within a threshold value of \
-        one another are resampled during the non-linear search.
-
-        Coordinates are stored in a .dat file, where each line of the file gives a list of list of (y,x) coordinates which \
-        correspond to the same region of the source-plane. Thus, multiple source-plane regions can be input over multiple \
-        lines of the same coordinates file.
+        """Output this instance of the *Coordinates* object to a list of list of tuples.
 
         Parameters
         ----------
-        coordinates : [[()]]
-            The lists of coordinates (e.g. [[(1.0, 1.0), (2.0, 2.0)], [(3.0, 3.0), (4.0, 4.0)]])
         file_path : str
             The path to the coordinates .dat file containing the coordinates (e.g. '/path/to/coordinates.dat')
+        overwrite : bool
+            If there is as exsiting file it will be overwritten if this is *True*.
         """
 
         if overwrite and os.path.exists(file_path):
@@ -1471,11 +1390,72 @@ class Coordinates(list):
             )
 
         with open(file_path, "w") as f:
-            for coordinate in self:
-                f.write("%s\n" % coordinate)
+            for coordinate in self.in_list:
+                f.write(f"{coordinate}\n")
+
+    def squared_distances_from_coordinate(self, coordinate=(0.0, 0.0)):
+        """Compute the squared distance of every (y,x) coordinate in this *Coordinate* instance from an input
+        coordinate.
+
+        Parameters
+        ----------
+        coordinate : (float, float)
+            The (y,x) coordinate from which the squared distance of every *Coordinate* is computed.
+        """
+        squared_distances = np.square(self[:, 0] - coordinate[0]) + np.square(
+            self[:, 1] - coordinate[1]
+        )
+        return self.values_from_arr_1d(arr_1d=squared_distances)
+
+    def distances_from_coordinate(self, coordinate=(0.0, 0.0)):
+        """Compute the distance of every (y,x) coordinate in this *Coordinate* instance from an input coordinate.
+
+        Parameters
+        ----------
+        coordinate : (float, float)
+            The (y,x) coordinate from which the distance of every *Coordinate* is computed.
+        """
+        distances = np.sqrt(
+            self.squared_distances_from_coordinate(coordinate=coordinate)
+        )
+        return self.values_from_arr_1d(arr_1d=distances)
+
+    @property
+    def shape_2d_scaled(self):
+        """The two dimensional shape of the coordinates spain in scaled units, computed by taking the minimum and
+        maximum values of the coordinates."""
+        return (
+            np.amax(self[:, 0]) - np.amin(self[:, 0]),
+            np.amax(self[:, 1]) - np.amin(self[:, 1]),
+        )
+
+    @property
+    def scaled_maxima(self):
+        """The maximum values of the coordinates returned as a tuple (y_max, x_max)."""
+        return (np.amax(self[:, 0]), np.amax(self[:, 1]))
+
+    @property
+    def scaled_minima(self):
+        """The minimum values of the coordinates returned as a tuple (y_max, x_max)."""
+        return (np.amin(self[:, 0]), np.amin(self[:, 1]))
+
+    @property
+    def extent(self):
+        """The extent of the coordinates returned as a NumPy array [x_min, x_max, y_min, y_max].
+
+        This follows the format of the extent input parameter in the matplotlib method imshow (and other methods) and
+        is used for visualization in the plot module."""
+        return np.asarray(
+            [
+                self.scaled_minima[1],
+                self.scaled_maxima[1],
+                self.scaled_minima[0],
+                self.scaled_maxima[0],
+            ]
+        )
 
 
-def convert_coordinates_to_grid(func):
+def grid_like_to_numpy(func):
     """ Checks whether any coordinates in the grid are radially near (0.0, 0.0), which can lead to numerical faults in \
     the evaluation of a light or mass profiles. If any coordinates are radially within the the radial minimum \
     threshold, their (y,x) coordinates are shifted to that value to ensure they are evaluated correctly.
@@ -1495,41 +1475,90 @@ def convert_coordinates_to_grid(func):
 
     @wraps(func)
     def wrapper(profile, grid, *args, **kwargs):
-        """
+        """ This decorator homogenizes the input array of *Grid* and *Coordinate* structures into a function, so that
+        both can be input interchangeably into functions which evalute values on points of the grid. The outputs are
+        converted back to *Grid* or *Coordinate* objects, where applicable.
+
+        The grid_like objects (*Grid* and *Coordinates*) are converted to a flattened 2D NumPy array, where the
+        first array dimension is the coordinate index and the second dimension stores the (y,x) values. For example,
+        for 100 coordinates, this NumPy array has shape (100, 2).
+
+        The decorator converts the result of the function back as follows:
+
+        - If the function returns (y,x) coordinates at every input point, the returned results are  *Grid* or
+          *Coordinates* object of the same structure as the input.
+
+        - If the function returns scalar values at every input point and a *Grid* is input, the returned results are an
+          *Array* structure which uses the same dimensions and mask as the *Grid*.
+
+        - If the function returns scalar values at every input point and *Coordinates* are input, the returned results
+          are a list of list of floats structure that resembles the *Coordinates*..
+
+        If the input array is 2D NumPy array of the form after conversion, it is input unchanged.
 
         Parameters
         ----------
-        profile : SphericalProfile
-            The profiles that owns the function
-        grid : ndarray
-            PlaneCoordinates in either cartesian or profiles coordinate system
-        args
-        kwargs
+        profile : Profile
+            A Profile object which uses grid_like inputs to compute quantities at every coordinate on the grid.
+        grid : Grid or Coordinates
+            A grid_like object of (y,x) coordinates on which the function values are evaluated.
 
         Returns
         -------
-            A value or coordinate in the same coordinate system as those passed in.
+            The function values evaluated on the grid with the same structure as the input grid_like object.
         """
 
+        def result_from_coordinates(result, coordinates):
+            """Convert the result of the Profile function back to a *Coordinates* object or list of list of float."""
+            if isinstance(result, np.ndarray):
+                if len(result.shape) == 1:
+                    return coordinates.values_from_arr_1d(arr_1d=result)
+                elif len(result.shape) == 2:
+                    return coordinates.coordinates_from_grid_1d(grid_1d=result)
+            elif isinstance(result, list):
+                if len(result[0].shape) == 1:
+                    return [
+                        coordinates.values_from_arr_1d(arr_1d=value) for value in result
+                    ]
+                elif len(result[0].shape) == 2:
+                    return [
+                        coordinates.coordinates_from_grid_1d(grid_1d=value)
+                        for value in result
+                    ]
+
+        def result_from_grid(result, grid):
+            """Convert the result of the Profile function back to a *Grid* or *Array* object."""
+            if isinstance(result, np.ndarray):
+                if len(result.shape) == 1:
+                    return grid.mapping.array_stored_1d_from_sub_array_1d(
+                        sub_array_1d=result
+                    )
+                else:
+                    return grid.mapping.grid_stored_1d_from_sub_grid_1d(
+                        sub_grid_1d=result
+                    )
+            elif isinstance(result, list):
+                if len(result[0].shape) == 1:
+                    return [
+                        grid.mapping.array_stored_1d_from_sub_array_1d(
+                            sub_array_1d=value
+                        )
+                        for value in result
+                    ]
+                elif len(result[0].shape) == 2:
+                    return [
+                        grid.mapping.grid_stored_1d_from_sub_grid_1d(sub_grid_1d=value)
+                        for value in result
+                    ]
+
         if isinstance(grid, Coordinates):
-            values_1d = func(profile, grid.in_1d, *args, **kwargs)
-            if isinstance(values_1d, np.ndarray):
-                if len(values_1d.shape) == 1:
-                    return grid.from_1d_values(values_1d=values_1d)
-                elif len(values_1d.shape) == 2:
-                    return grid.from_1d_coordinates(coordinates_1d=values_1d)
-            elif isinstance(values_1d, list):
-                if len(values_1d[0].shape) == 1:
-                    return [
-                        grid.from_1d_values(values_1d=value_1d)
-                        for value_1d in values_1d
-                    ]
-                elif len(values_1d[0].shape) == 2:
-                    return [
-                        grid.from_1d_coordinates(coordinates_1d=value_1d)
-                        for value_1d in values_1d
-                    ]
-        else:
+            result = func(profile, grid, *args, **kwargs)
+            return result_from_coordinates(result=result, coordinates=grid)
+        elif isinstance(grid, Grid):
+            result = func(profile, grid, *args, **kwargs)
+            return result_from_grid(result=result, grid=grid)
+
+        if not isinstance(grid, Coordinates) and not isinstance(grid, Grid):
             return func(profile, grid, *args, **kwargs)
 
     return wrapper
@@ -1565,7 +1594,7 @@ def grid_interpolate(func):
                     interpolator.interp_grid,
                     grid_radial_minimum,
                     *args,
-                    **kwargs
+                    **kwargs,
                 )
                 if values.ndim == 1:
                     return interpolator.interpolated_values_from_values(values=values)

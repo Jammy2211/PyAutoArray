@@ -173,9 +173,7 @@ class Inversion:
     def brightest_reconstruction_pixel_centre(self):
         return grids.Coordinates(
             coordinates=[
-                tuple(
-                    self.mapper.pixelization_grid[self.brightest_reconstruction_pixel]
-                )
+                self.mapper.pixelization_grid[self.brightest_reconstruction_pixel]
             ]
         )
 

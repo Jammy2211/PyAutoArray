@@ -1,9 +1,11 @@
+import ast
 import logging
 
 import numpy as np
+import os
 
 from autoarray import exc
-from autoarray.structures import abstract_structure
+from autoarray.structures import abstract_structure, grids
 from autoarray.mask import mask as msk
 from autoarray.util import binning_util, array_util
 
@@ -478,3 +480,141 @@ class MaskedArray(AbstractArray):
     def from_fits(cls, file_path, hdu, mask, store_in_1d=True):
         array_2d = array_util.numpy_array_2d_from_fits(file_path=file_path, hdu=hdu)
         return cls.manual_2d(array=array_2d, mask=mask, store_in_1d=store_in_1d)
+
+
+class Values(np.ndarray):
+    def __new__(cls, values):
+        """ A collection of values structured in a way defining groups of values which share a common origin (for
+        example values may be grouped if they are from a specific region of a dataset).
+
+        Grouping is structured as follows:
+
+        [[(y0,x0), (y1,x1)], [(y0,x0), (y1,x1), (y2,x2)]]
+
+        Here, we have two groups of values, where each group is associated.
+
+        The values object does not store the values as a list of list of floats, but instead a 1D NumPy array
+        of shape [total_values]. Index information is stored so that this array can be mapped to the list of
+        list of float structure above. They are stored as a NumPy array so the values can be used efficiently for
+        calculations.
+
+        The values input to this function can have any of the following forms:
+
+        [[x0, x1], [x0]]
+        [[[x0, x1]], [x0]]
+
+        In all cases, they will be converted to a list of list of floats followed by a 1D NumPy array.
+
+        Print methods are overridden so a user always "sees" the values as the list structure.
+
+        In contrast to a *Array* structure, *Values* do not lie on a uniform grid or correspond to values that
+        originate from a uniform grid. Therefore, when handling irregular data-sets *Values* should be used.
+
+        Parameters
+        ----------
+        values : [[float]] or equivalent
+            A collection of values that are grouped if they correpsond to a shared origin.
+        mask : aa.Mask
+            The mask whose attributes are used to perform coordinate conversions.
+        """
+
+        if len(values) == 0:
+            return []
+
+        if isinstance(values[0], float):
+            values = [values]
+
+        upper_indexes = []
+
+        a = 0
+
+        for coords in values:
+            a = a + len(coords)
+            upper_indexes.append(a)
+
+        values_arr = np.concatenate([np.array(i) for i in values])
+
+        obj = values_arr.view(cls)
+        obj.upper_indexes = upper_indexes
+        obj.lower_indexes = [0] + upper_indexes[:-1]
+
+        return obj
+
+    def __array_finalize__(self, obj):
+
+        if hasattr(obj, "lower_indexes"):
+            self.lower_indexes = obj.lower_indexes
+
+        if hasattr(obj, "upper_indexes"):
+            self.upper_indexes = obj.upper_indexes
+
+    @property
+    def in_1d(self):
+        return self
+
+    @property
+    def in_list(self):
+        """Return the values on a structured list which groups values with a common origin."""
+        return [list(self[i:j]) for i, j in zip(self.lower_indexes, self.upper_indexes)]
+
+    def values_from_arr_1d(self, arr_1d):
+        """Create a *Values* object from a 1D NumPy array of values of shape [total_values]. The
+        *Values* are structured and grouped following this *Coordinate* instance."""
+        values_1d = [
+            list(arr_1d[i:j]) for i, j in zip(self.lower_indexes, self.upper_indexes)
+        ]
+        return Values(values=values_1d)
+
+    def coordinates_from_grid_1d(self, grid_1d):
+        """Create a *Coordinates* object from a 2D NumPy array of values of shape [total_values, 2]. The
+        *Coordinates* are structured and grouped following this *Coordinate* instance."""
+        coordinates_1d = [
+            list(map(tuple, grid_1d[i:j, :]))
+            for i, j in zip(self.lower_indexes, self.upper_indexes)
+        ]
+
+        return grids.Coordinates(coordinates=coordinates_1d)
+
+    @classmethod
+    def from_file(cls, file_path):
+        """Create a *Coordinates* object from a file which stores the values as a list of list of tuples.
+
+        Parameters
+        ----------
+        file_path : str
+            The path to the values .dat file containing the values (e.g. '/path/to/values.dat')
+        """
+        with open(file_path) as f:
+            values_lines = f.readlines()
+
+        values = []
+
+        for line in values_lines:
+            values_list = ast.literal_eval(line)
+            values.append(values_list)
+
+        return Values(values=values)
+
+    def output_to_file(self, file_path, overwrite=False):
+        """Output this instance of the *Coordinates* object to a list of list of tuples.
+
+        Parameters
+        ----------
+        file_path : str
+            The path to the values .dat file containing the values (e.g. '/path/to/values.dat')
+        overwrite : bool
+            If there is as exsiting file it will be overwritten if this is *True*.
+        """
+
+        if os.path.exists(file_path):
+            if overwrite:
+                os.remove(file_path)
+            else:
+                raise FileExistsError(
+                    f"The file {file_path} already exists. Set overwrite=True to overwrite this"
+                    "file"
+                )
+
+        with open(file_path, "w+") as f:
+            for value in self.in_list:
+                f.write("%s\n" % value)
