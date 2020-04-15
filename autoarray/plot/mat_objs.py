@@ -15,6 +15,7 @@ import itertools
 import os
 
 from autoarray import exc
+from autoarray.structures import grids
 
 
 def load_setting(section, name, python_type, from_subplot_config):
@@ -899,7 +900,7 @@ class Scatterer:
 
         color = itertools.cycle(self.colors)
 
-        for coordinate_group in coordinates.in_list:
+        for coordinate_group in grids.Coordinates(coordinates).in_list:
 
             plt.scatter(
                 y=np.asarray(coordinate_group)[:, 0],
@@ -1196,7 +1197,7 @@ class Liner:
 
         color = itertools.cycle(self.colors)
 
-        for coordinate_group in coordinates.in_list:
+        for coordinate_group in grids.Coordinates(coordinates).in_list:
 
             plt.plot(
                 np.asarray(coordinate_group)[:, 1],
