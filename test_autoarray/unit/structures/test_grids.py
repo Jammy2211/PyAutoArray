@@ -2708,6 +2708,12 @@ class TestCoordinates:
         assert (coordinates == np.array([[[1.0, -1.0], [1.0, 1.0]]])).all()
         assert coordinates.in_list == [[(1.0, -1.0), (1.0, 1.0)]]
 
+        coordinates = aa.Coordinates(coordinates=[np.array([[1.0, -1.0], [1.0, 1.0]])])
+
+        assert type(coordinates) == grids.Coordinates
+        assert (coordinates == np.array([[[1.0, -1.0], [1.0, 1.0]]])).all()
+        assert coordinates.in_list == [[(1.0, -1.0), (1.0, 1.0)]]
+
     def test__values_from_arr_1d(self):
 
         coordinates = aa.Coordinates(coordinates=[[(1.0, 1.0), (2.0, 2.0)]])

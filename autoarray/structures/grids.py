@@ -1259,17 +1259,18 @@ class Coordinates(np.ndarray):
         ----------
         coordinates : [[tuple]] or equivalent
             A collection of (y,x) coordinates that are grouped if they correpsond to a shared origin.
-        mask : aa.Mask
-            The mask whose attributes are used to perform coordinate conversions.
         """
 
         if len(coordinates) == 0:
             return []
 
-        if isinstance(coordinates[0], (tuple, np.ndarray)):
-            coordinates = [(coordinates)]
+        if isinstance(coordinates[0], tuple):
+            coordinates = [coordinates]
+        elif isinstance(coordinates[0], np.ndarray):
+            if len(coordinates[0].shape) == 1:
+                coordinates = [coordinates]
         elif isinstance(coordinates[0], list) and isinstance(coordinates[0][0], list):
-            coordinates = [(coordinates)]
+            coordinates = [coordinates]
 
         upper_indexes = []
 
