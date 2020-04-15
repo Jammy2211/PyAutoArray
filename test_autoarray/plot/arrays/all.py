@@ -17,18 +17,16 @@ aplt.Array(
     array=array,
     mask=mask,
     grid=grid,
-    positions=[(-1.0, -1.0)],
-    lines=[(1.0, 1.0), (2.0, 2.0)],
-    include_origin=True,
-    include_border=True,
+    positions=aa.Coordinates([(-1.0, -1.0)]),
+    lines=aa.Coordinates([(1.0, 1.0), (2.0, 2.0)]),
+    include=aplt.Include(origin=True, border=True),
 )
 
 aplt.Array(
     array=array,
     mask=mask,
     grid=grid,
-    positions=[[(1.0, 1.0), (2.0, 2.0)], [(-1.0, -1.0)]],
-    lines=[[(1.0, 1.0), (2.0, 2.0)], [(2.0, 4.0), (5.0, 6.0)]],
-    include_origin=True,
-    include_border=True,
+    positions=aa.Coordinates([[(1.0, 1.0), (2.0, 2.0)], [(-1.0, -1.0)]]),
+    lines=aa.Coordinates([[(1.0, 1.0), (2.0, 2.0)], [(2.0, 4.0), (5.0, 6.0)]]),
+    include=aplt.Include(origin=True, border=True),
 )

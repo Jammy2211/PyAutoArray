@@ -27,7 +27,7 @@ def test__individual_attributes_are_output_for_rectangular_inversion(
     rectangular_inversion_7x7_3x3, positions_7x7, plot_path, plot_patch
 ):
 
-    lines = [(0.0, 0.0), (0.1, 0.1)]
+    lines = aa.Coordinates([(0.0, 0.0), (0.1, 0.1)])
 
     aplt.Inversion.reconstructed_image(
         inversion=rectangular_inversion_7x7_3x3,
@@ -127,7 +127,7 @@ def test__individual_attributes_are_output_for_voronoi_inversion(
     voronoi_inversion_9_3x3, positions_7x7, mask_7x7, plot_path, plot_patch
 ):
 
-    lines = [(0.0, 0.0), (0.1, 0.1)]
+    lines = aa.Coordinates([(0.0, 0.0), (0.1, 0.1)])
 
     aplt.Inversion.reconstructed_image(
         inversion=voronoi_inversion_9_3x3,
