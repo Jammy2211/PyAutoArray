@@ -483,7 +483,7 @@ class MaskedArray(AbstractArray):
 
 
 class Values(np.ndarray):
-    def __new__(cls, values, mask=None):
+    def __new__(cls, values):
         """ A collection of values structured in a way defining groups of values which share a common origin (for
         example values may be grouped if they are from a specific region of a dataset).
 
@@ -518,7 +518,7 @@ class Values(np.ndarray):
             The mask whose attributes are used to perform coordinate conversions.
         """
 
-        if values == []:
+        if len(values) == 0:
             return []
 
         if isinstance(values[0], float):
@@ -537,7 +537,6 @@ class Values(np.ndarray):
         obj = values_arr.view(cls)
         obj.upper_indexes = upper_indexes
         obj.lower_indexes = [0] + upper_indexes[:-1]
-        obj.mask = mask
 
         return obj
 
@@ -549,23 +548,6 @@ class Values(np.ndarray):
         if hasattr(obj, "upper_indexes"):
             self.upper_indexes = obj.upper_indexes
 
-        if hasattr(obj, "mask"):
-            self.mask = obj.mask
-
-    @classmethod
-    def from_pixels_and_mask(cls, pixels, mask):
-        """Create *Coordinates* from a list of values in pixel units and a mask which allows these values to
-        be converted to scaled units."""
-        values = []
-        for coordinate_set in pixels:
-            values.append(
-                [
-                    mask.geometry.scaled_values_from_pixel_values(pixel_values=values)
-                    for values in coordinate_set
-                ]
-            )
-        return cls(values=values, mask=mask)
-
     @property
     def in_1d(self):
         return self
@@ -575,18 +557,13 @@ class Values(np.ndarray):
         """Return the values on a structured list which groups values with a common origin."""
         return [list(self[i:j]) for i, j in zip(self.lower_indexes, self.upper_indexes)]
 
-    @property
-    def in_list_1d(self):
-        """Return the values in a list without structured grouping."""
-        return list(self)
-
     def values_from_arr_1d(self, arr_1d):
         """Create a *Values* object from a 1D NumPy array of values of shape [total_values]. The
         *Values* are structured and grouped following this *Coordinate* instance."""
         values_1d = [
             list(arr_1d[i:j]) for i, j in zip(self.lower_indexes, self.upper_indexes)
         ]
-        return Values(values=values_1d, mask=self.mask)
+        return Values(values=values_1d)
 
     def coordinates_from_grid_1d(self, grid_1d):
         """Create a *Coordinates* object from a 2D NumPy array of values of shape [total_values, 2]. The
@@ -596,7 +573,7 @@ class Values(np.ndarray):
             for i, j in zip(self.lower_indexes, self.upper_indexes)
         ]
 
-        return grids.Coordinates(coordinates=coordinates_1d, mask=self.mask)
+        return grids.Coordinates(coordinates=coordinates_1d)
 
     @classmethod
     def from_file(cls, file_path):
@@ -608,11 +585,11 @@ class Values(np.ndarray):
             The path to the values .dat file containing the values (e.g. '/path/to/values.dat')
         """
         with open(file_path) as f:
-            values_string = f.readlines()
+            values_lines = f.readlines()
 
         values = []
 
-        for line in values_string:
+        for line in values_lines:
             values_list = ast.literal_eval(line)
             values.append(values_list)
 
@@ -629,45 +606,15 @@ class Values(np.ndarray):
             If there is as exsiting file it will be overwritten if this is *True*.
         """
 
-        if overwrite and os.path.exists(file_path):
-            os.remove(file_path)
-        elif not overwrite and os.path.exists(file_path):
-            raise FileExistsError(
-                "The file ",
-                file_path,
-                " already exists. Set overwrite=True to overwrite this" "file",
-            )
+        if os.path.exists(file_path):
+            if overwrite:
+                os.remove(file_path)
+            else:
+                raise FileExistsError(
+                    f"The file {file_path} already exists. Set overwrite=True to overwrite this"
+                    "file"
+                )
 
-        with open(file_path, "w") as f:
+        with open(file_path, "w+") as f:
             for value in self.in_list:
                 f.write("%s\n" % value)
-
-    @property
-    def mapping(self):
-        return self.mask.mapping
-
-    @property
-    def shape_2d_scaled(self):
-        return (
-            np.amax(self.in_1d[:, 0]) - np.amin(self.in_1d[:, 0]),
-            np.amax(self.in_1d[:, 1]) - np.amin(self.in_1d[:, 1]),
-        )
-
-    @property
-    def scaled_maxima(self):
-        return (np.amax(self.in_1d[:, 0]), np.amax(self.in_1d[:, 1]))
-
-    @property
-    def scaled_minima(self):
-        return (np.amin(self.in_1d[:, 0]), np.amin(self.in_1d[:, 1]))
-
-    @property
-    def extent(self):
-        return np.asarray(
-            [
-                self.scaled_minima[1],
-                self.scaled_maxima[1],
-                self.scaled_minima[0],
-                self.scaled_maxima[0],
-            ]
-        )
