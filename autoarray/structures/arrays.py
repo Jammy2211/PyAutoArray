@@ -22,7 +22,7 @@ class AbstractArray(abstract_structure.AbstractStructure):
         Parameters
         ----------
         array: ndarray
-            An array representing image (e.g. an image, noise-map, etc.)
+            An array representing image (e.g. an image, noise map, etc.)
         pixel_scales: (float, float)
             The arc-second to pixel conversion factor of each pixel.
         origin : (float, float)

@@ -576,6 +576,20 @@ class TestLiner:
         )
 
 
+class TestArrayOverlayer:
+    def test__overlay_array__works_for_reasonable_values(self):
+
+        array_overlay = aa.Array.manual_2d(
+            array=[[1.0, 2.0], [3.0, 4.0]], pixel_scales=0.5
+        )
+
+        figure = aplt.Figure(aspect="auto")
+
+        array_overlayer = aplt.ArrayOverlayer(alpha=0.5)
+
+        array_overlayer.overlay_array(array_overlay=array_overlay, figure=figure)
+
+
 class TestVoronoiDrawer:
     def test__draws_voronoi_pixels_for_sensible_input(self, voronoi_mapper_9_3x3):
 

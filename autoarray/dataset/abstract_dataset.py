@@ -7,7 +7,7 @@ from autoarray.structures import arrays, grids
 
 class AbstractDataset:
     def __init__(self, data, noise_map, name=None):
-        """A collection of abstract 2D for different data_type classes (an image, pixel-scale, noise-map, etc.)
+        """A collection of abstract 2D for different data_type classes (an image, pixel-scale, noise map, etc.)
 
         Parameters
         ----------

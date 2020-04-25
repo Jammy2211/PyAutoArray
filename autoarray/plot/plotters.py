@@ -57,6 +57,7 @@ class AbstractPlotter:
         index_scatterer=None,
         pixelization_grid_scatterer=None,
         liner=None,
+        array_overlayer=None,
         voronoi_drawer=None,
     ):
 
@@ -155,6 +156,12 @@ class AbstractPlotter:
             )
         )
 
+        self.array_overlayer = (
+            array_overlayer
+            if array_overlayer is not None
+            else mat_objs.ArrayOverlayer(from_subplot_config=from_subplot_config)
+        )
+
         self.voronoi_drawer = (
             voronoi_drawer
             if voronoi_drawer is not None
@@ -168,6 +175,7 @@ class AbstractPlotter:
         lines=None,
         positions=None,
         grid=None,
+        array_overlay=None,
         include_origin=False,
         include_border=False,
         bypass_output=False,
@@ -304,6 +312,11 @@ class AbstractPlotter:
             norm=norm_scale,
             extent=extent,
         )
+
+        if array_overlay is not None:
+            self.array_overlayer.overlay_array(
+                array_overlay=array_overlay, figure=self.figure
+            )
 
         plt.axis(extent)
 
@@ -829,6 +842,7 @@ class Plotter(AbstractPlotter):
         index_scatterer=None,
         pixelization_grid_scatterer=None,
         liner=None,
+        array_overlayer=None,
         voronoi_drawer=None,
     ):
 
@@ -849,6 +863,7 @@ class Plotter(AbstractPlotter):
             index_scatterer=index_scatterer,
             pixelization_grid_scatterer=pixelization_grid_scatterer,
             liner=liner,
+            array_overlayer=array_overlayer,
             voronoi_drawer=voronoi_drawer,
         )
 
@@ -872,6 +887,7 @@ class SubPlotter(AbstractPlotter):
         index_scatterer=None,
         pixelization_grid_scatterer=None,
         liner=None,
+        array_overlayer=None,
         voronoi_drawer=None,
     ):
 
@@ -892,6 +908,7 @@ class SubPlotter(AbstractPlotter):
             index_scatterer=index_scatterer,
             pixelization_grid_scatterer=pixelization_grid_scatterer,
             liner=liner,
+            array_overlayer=array_overlayer,
             voronoi_drawer=voronoi_drawer,
         )
 
@@ -1261,7 +1278,14 @@ def set_labels(func):
 
 
 def plot_array(
-    array, mask=None, lines=None, positions=None, grid=None, include=None, plotter=None
+    array,
+    mask=None,
+    lines=None,
+    positions=None,
+    grid=None,
+    array_overlay=None,
+    include=None,
+    plotter=None,
 ):
 
     if include is None:
@@ -1276,6 +1300,7 @@ def plot_array(
         lines=lines,
         positions=positions,
         grid=grid,
+        array_overlay=array_overlay,
         include_origin=include.origin,
         include_border=include.border,
     )

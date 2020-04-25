@@ -515,6 +515,26 @@ class TestAbstractPlotterAttributes:
         assert sub_plotter.liner.colors == ["r"]
         assert sub_plotter.liner.pointsize == 21
 
+    def test__array_overlayer__from_config_or_via_manual_input(self):
+
+        plotter = aplt.Plotter()
+
+        assert plotter.array_overlayer.alpha == 0.5
+
+        plotter = aplt.Plotter(array_overlayer=aplt.ArrayOverlayer(alpha=0.6))
+
+        assert plotter.array_overlayer.alpha == 0.6
+
+        sub_plotter = aplt.SubPlotter()
+
+        assert sub_plotter.array_overlayer.alpha == 0.7
+
+        sub_plotter = aplt.SubPlotter(
+            array_overlayer=aplt.ArrayOverlayer.sub(alpha=0.8)
+        )
+
+        assert sub_plotter.array_overlayer.alpha == 0.8
+
     def test__voronoi_drawer__from_config_or_via_manual_input(self):
 
         plotter = aplt.Plotter()
@@ -610,6 +630,7 @@ class TestAbstractPlotterPlots:
             grid=grid,
             positions=aa.Coordinates([(-1.0, -1.0)]),
             lines=aa.Coordinates([(1.0, 1.0), (2.0, 2.0)]),
+            array_overlay=array,
             include_origin=True,
             include_border=True,
         )
@@ -626,6 +647,7 @@ class TestAbstractPlotterPlots:
             grid=grid,
             positions=aa.Coordinates([[(1.0, 1.0), (2.0, 2.0)], [(-1.0, -1.0)]]),
             lines=aa.Coordinates([[(1.0, 1.0), (2.0, 2.0)], [(2.0, 4.0), (5.0, 6.0)]]),
+            array_overlay=array,
             include_origin=True,
             include_border=True,
         )
@@ -638,6 +660,7 @@ class TestAbstractPlotterPlots:
             grid=grid,
             positions=aa.Coordinates([(-1.0, -1.0)]),
             lines=aa.Coordinates([(1.0, 1.0), (2.0, 2.0)]),
+            array_overlay=array,
             include=aplt.Include(origin=True, border=True),
             plotter=aplt.Plotter(
                 output=aplt.Output(path=plot_path, filename="array3", format="png")

@@ -6,7 +6,7 @@ from autoarray.plot import plotters
 def subplot_imaging(
     imaging, grid=None, mask=None, positions=None, include=None, sub_plotter=None
 ):
-    """Plot the imaging data_type as a sub-plotters of all its quantites (e.g. the dataset, noise_map, PSF, Signal-to_noise-map, \
+    """Plot the imaging data_type as a sub-plotters of all its quantites (e.g. the dataset, noise_map, PSF, Signal-to_noise map, \
      etc).
 
     Set *autolens.data_type.array.plotters.plotters* for a description of all innput parameters not described below.
@@ -104,7 +104,7 @@ def individual(
     plotter=None,
 ):
     """Plot each attribute of the imaging data_type as individual figures one by one (e.g. the dataset, noise_map, PSF, \
-     Signal-to_noise-map, etc).
+     Signal-to_noise map, etc).
 
     Set *autolens.data_type.array.plotters.plotters* for a description of all innput parameters not described below.
 
