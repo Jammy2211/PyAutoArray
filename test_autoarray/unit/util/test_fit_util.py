@@ -209,7 +209,7 @@ class TestLikelihood:
             noise_map=noise_map
         )
 
-        likelihood = aa.util.fit.likelihood_from_chi_squared_and_noise_normalization(
+        log_likelihood = aa.util.fit.likelihood_from_chi_squared_and_noise_normalization(
             chi_squared=chi_squared, noise_normalization=noise_normalization
         )
 
@@ -221,7 +221,7 @@ class TestLikelihood:
             + np.log(2.0 * np.pi * (2.0 ** 2.0))
         )
 
-        assert likelihood == -0.5 * (chi_squared + noise_normalization)
+        assert log_likelihood == -0.5 * (chi_squared + noise_normalization)
 
     def test__model_data_mismatch__no_masking__chi_squared_and_noise_normalization_are_lh(
         self
@@ -247,12 +247,12 @@ class TestLikelihood:
             noise_map=noise_map
         )
 
-        likelihood = aa.util.fit.likelihood_from_chi_squared_and_noise_normalization(
+        log_likelihood = aa.util.fit.likelihood_from_chi_squared_and_noise_normalization(
             chi_squared=chi_squared, noise_normalization=noise_normalization
         )
 
         # chi squared = 0.25, 0, 0.25, 1.0
-        # likelihood = -0.5*(0.25+0+0.25+1.0)
+        # log_likelihood = -0.5*(0.25+0+0.25+1.0)
 
         chi_squared = (
             ((1.0 / 2.0) ** 2.0) + 0.0 + ((1.0 / 2.0) ** 2.0) + ((2.0 / 2.0) ** 2.0)
@@ -264,7 +264,7 @@ class TestLikelihood:
             + np.log(2.0 * np.pi * (2.0 ** 2.0))
         )
 
-        assert likelihood == -0.5 * (chi_squared + noise_normalization)
+        assert log_likelihood == -0.5 * (chi_squared + noise_normalization)
 
     def test__same_as_above_but_different_noise_in_each_pixel(self):
 
@@ -288,7 +288,7 @@ class TestLikelihood:
             noise_map=noise_map
         )
 
-        likelihood = aa.util.fit.likelihood_from_chi_squared_and_noise_normalization(
+        log_likelihood = aa.util.fit.likelihood_from_chi_squared_and_noise_normalization(
             chi_squared=chi_squared, noise_normalization=noise_normalization
         )
 
@@ -302,7 +302,7 @@ class TestLikelihood:
             + np.log(2 * np.pi * (4.0 ** 2.0))
         )
 
-        assert likelihood == pytest.approx(
+        assert log_likelihood == pytest.approx(
             -0.5 * (chi_squared + noise_normalization), 1e-4
         )
 
@@ -329,7 +329,7 @@ class TestLikelihood:
             mask=mask, noise_map=noise_map
         )
 
-        likelihood = aa.util.fit.likelihood_from_chi_squared_and_noise_normalization(
+        log_likelihood = aa.util.fit.likelihood_from_chi_squared_and_noise_normalization(
             chi_squared=chi_squared, noise_normalization=noise_normalization
         )
 
@@ -340,7 +340,7 @@ class TestLikelihood:
             2 * np.pi * (3.0 ** 2.0)
         )
 
-        assert likelihood == pytest.approx(
+        assert log_likelihood == pytest.approx(
             -0.5 * (chi_squared + noise_normalization), 1e-4
         )
 
@@ -367,7 +367,7 @@ class TestLikelihood:
             mask=mask, noise_map=noise_map
         )
 
-        likelihood = aa.util.fit.likelihood_from_chi_squared_and_noise_normalization(
+        log_likelihood = aa.util.fit.likelihood_from_chi_squared_and_noise_normalization(
             chi_squared=chi_squared, noise_normalization=noise_normalization
         )
 
@@ -378,7 +378,7 @@ class TestLikelihood:
             2 * np.pi * (3.0 ** 2.0)
         )
 
-        assert likelihood == pytest.approx(
+        assert log_likelihood == pytest.approx(
             -0.5 * (chi_squared + noise_normalization), 1e-4
         )
 

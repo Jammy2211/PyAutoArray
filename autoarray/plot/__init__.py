@@ -15,6 +15,7 @@ from autoarray.plot.mat_objs import (
     IndexScatterer,
     PixelizationGridScatterer,
     Liner,
+    ArrayOverlayer,
     VoronoiDrawer,
 )
 from autoarray.plot.plotters import Plotter, SubPlotter, Include

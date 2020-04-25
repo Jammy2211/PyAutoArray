@@ -1214,6 +1214,37 @@ class Liner:
             )
 
 
+class ArrayOverlayer:
+    def __init__(self, alpha=None, section=None, from_subplot_config=False):
+
+        if section is None:
+            section = "array_overlayer"
+
+        self.from_subplot_config = from_subplot_config
+
+        self.alpha = (
+            alpha
+            if alpha is not None
+            else load_setting(section, "alpha", float, from_subplot_config)
+        )
+
+    @classmethod
+    def sub(cls, alpha, section=None):
+        return ArrayOverlayer(alpha=alpha, section=section, from_subplot_config=True)
+
+    def overlay_array(self, array_overlay, figure):
+
+        aspect_overlay = figure.aspect_from_shape_2d(shape_2d=array_overlay.shape_2d)
+        extent_overlay = array_overlay.extent_of_zoomed_array(buffer=0)
+
+        plt.imshow(
+            X=array_overlay.in_2d,
+            aspect=aspect_overlay,
+            extent=extent_overlay,
+            alpha=self.alpha,
+        )
+
+
 class VoronoiDrawer:
     def __init__(
         self, edgewidth=None, edgecolor=None, alpha=None, from_subplot_config=False
