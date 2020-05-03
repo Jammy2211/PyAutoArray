@@ -414,12 +414,14 @@ class InversionInterferometer(Inversion):
             mapper=mapper
         )
 
-        real_curvature_reg_matrix = np.add(real_curvature_matrix, regularization_matrix)
-        imag_curvature_reg_matrix = np.add(imag_curvature_matrix, regularization_matrix)
-
         data_vector = np.add(real_data_vector, imag_data_vector)
+
+        curvature_matrix = np.add(
+            real_curvature_matrix, imag_curvature_matrix
+        )
+
         curvature_reg_matrix = np.add(
-            real_curvature_reg_matrix, imag_curvature_reg_matrix
+            curvature_matrix, regularization_matrix
         )
 
         try:
