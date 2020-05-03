@@ -6,14 +6,14 @@ import copy
 from autoarray import exc
 from autoarray.dataset import abstract_dataset, preprocess
 from autoarray.mask import mask as msk
-from autoarray.structures import kernel, arrays
+from autoarray.structures import arrays, grids, kernel
 from autoarray.operators import convolver
 
 logger = logging.getLogger(__name__)
 
 
 class Imaging(abstract_dataset.AbstractDataset):
-    def __init__(self, image, noise_map, psf=None, name=None):
+    def __init__(self, image, noise_map, psf=None, positions=None, name=None):
         """A class containing the data, noise map and point spread function of a 2D imaging dataset.
 
         Parameters
@@ -26,7 +26,9 @@ class Imaging(abstract_dataset.AbstractDataset):
             An array describing the Point Spread Function kernel of the image.
         """
 
-        super().__init__(data=image, noise_map=noise_map, name=name)
+        super().__init__(
+            data=image, noise_map=noise_map, positions=positions, name=name
+        )
 
         self.psf = psf
 
@@ -99,6 +101,7 @@ class Imaging(abstract_dataset.AbstractDataset):
         noise_map_hdu=0,
         psf_path=None,
         psf_hdu=0,
+        positions_path=None,
         name=None,
     ):
         """Factory for loading the imaging data_type from .fits files, as well as computing properties like the noise map,
@@ -149,7 +152,17 @@ class Imaging(abstract_dataset.AbstractDataset):
 
             psf = None
 
-        return Imaging(image=image, noise_map=noise_map, psf=psf, name=name)
+        if positions_path is not None:
+
+            positions = grids.Coordinates.from_file(file_path=positions_path)
+
+        else:
+
+            positions = None
+
+        return Imaging(
+            image=image, noise_map=noise_map, psf=psf, positions=positions, name=name
+        )
 
     def __array_finalize__(self, obj):
         if isinstance(obj, Imaging):
@@ -208,6 +221,7 @@ class MaskedImaging(abstract_dataset.AbstractMaskedDataset):
         self.image = mask.mapping.array_stored_1d_from_array_2d(
             array_2d=imaging.image.in_2d
         )
+
         self.noise_map = mask.mapping.array_stored_1d_from_array_2d(
             array_2d=imaging.noise_map.in_2d
         )
@@ -257,6 +271,15 @@ class MaskedImaging(abstract_dataset.AbstractMaskedDataset):
 
     def signal_to_noise_map(self):
         return self.image / self.noise_map
+
+    def modify_image_and_noise_map(self, image, noise_map):
+
+        masked_imaging = copy.deepcopy(self)
+
+        masked_imaging.image = image
+        masked_imaging.noise_map = noise_map
+
+        return masked_imaging
 
 
 class SimulatorImaging:

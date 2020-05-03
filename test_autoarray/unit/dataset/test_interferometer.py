@@ -5,10 +5,8 @@ import numpy as np
 import pytest
 
 import autoarray as aa
-from autoarray.dataset import interferometer
 from autoarray.structures import kernel as kern
 from autoarray.operators import transformer
-from autoarray import exc
 
 test_data_dir = "{}/files/interferometer/".format(
     os.path.dirname(os.path.realpath(__file__))
@@ -59,6 +57,7 @@ class TestInterferometer:
             noise_map_path=test_data_dir + "3x2_threes_fours.fits",
             uv_wavelengths_path=test_data_dir + "3x2_fives_sixes.fits",
             primary_beam_path=test_data_dir + "3x3_fives.fits",
+            positions_path=test_data_dir + "positions.dat",
         )
 
         assert (interferometer.visibilities.real == np.ones(3)).all()
@@ -77,6 +76,7 @@ class TestInterferometer:
         assert (
             interferometer.primary_beam.in_2d == (1.0 / 9.0) * np.ones((3, 3))
         ).all()
+        assert interferometer.positions.in_list == [[(1.0, 1.0), (2.0, 2.0)]]
 
     def test__from_fits__all_files_in_one_fits__load_using_different_hdus(self):
 
@@ -252,6 +252,25 @@ class TestMaskedInterferometer:
         ).all()
 
         assert masked_interferometer_7.primary_beam_shape_2d == (7, 7)
+
+    def test__modified_noise_map(
+        self, noise_map_7x2, interferometer_7, sub_mask_7x7, visibilities_mask_7x2
+    ):
+
+        masked_interferometer_7 = aa.MaskedInterferometer(
+            interferometer=interferometer_7,
+            visibilities_mask=visibilities_mask_7x2,
+            real_space_mask=sub_mask_7x7,
+            transformer_class=aa.TransformerDFT,
+        )
+
+        noise_map_7x2[0, 0] = 10.0
+
+        masked_interferometer_7 = masked_interferometer_7.modify_noise_map(
+            noise_map=noise_map_7x2
+        )
+
+        assert masked_interferometer_7.noise_map[0, 0] == 10.0
 
 
 class TestSimulatorInterferometer:

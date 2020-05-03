@@ -132,11 +132,13 @@ class TestImaging:
             image_path=test_data_dir + "3x3_ones.fits",
             psf_path=test_data_dir + "3x3_twos.fits",
             noise_map_path=test_data_dir + "3x3_threes.fits",
+            positions_path=test_data_dir + "positions.dat",
         )
 
         assert (imaging.image.in_2d == np.ones((3, 3))).all()
         assert (imaging.psf.in_2d == (1.0 / 9.0) * np.ones((3, 3))).all()
         assert (imaging.noise_map.in_2d == 3.0 * np.ones((3, 3))).all()
+        assert imaging.positions.in_list == [[(1.0, 1.0), (2.0, 2.0)]]
 
         assert imaging.pixel_scales == (0.1, 0.1)
         assert imaging.psf.mask.pixel_scales == (0.1, 0.1)
@@ -299,6 +301,24 @@ class TestMaskedImaging:
         assert masked_imaging.convolver.kernel.shape_2d == (7, 7)
         assert (masked_imaging.image == np.array([1.0])).all()
         assert (masked_imaging.noise_map == np.array([2.0])).all()
+
+    def test__modified_image_and_noise_map(
+        self, image_7x7, noise_map_7x7, imaging_7x7, sub_mask_7x7
+    ):
+
+        masked_imaging_7x7 = aa.MaskedImaging(imaging=imaging_7x7, mask=sub_mask_7x7)
+
+        image_7x7[0] = 10.0
+        noise_map_7x7[0] = 11.0
+
+        masked_imaging_7x7 = masked_imaging_7x7.modify_image_and_noise_map(
+            image=image_7x7, noise_map=noise_map_7x7
+        )
+
+        assert masked_imaging_7x7.image.in_1d[0] == 10.0
+        assert masked_imaging_7x7.image.in_2d[0, 0] == 10.0
+        assert masked_imaging_7x7.noise_map.in_1d[0] == 11.0
+        assert masked_imaging_7x7.noise_map.in_2d[0, 0] == 11.0
 
 
 class TestSimulatorImaging:

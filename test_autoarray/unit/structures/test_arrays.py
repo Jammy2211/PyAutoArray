@@ -1127,6 +1127,73 @@ class TestArray:
                 )
             ).all()
 
+        def test__zoomed_2d_array_zoomed__centre_is_updated_using_original_mask(self):
+
+            array_2d = np.ones(shape=(4, 4))
+
+            mask = aa.Mask.manual(
+                mask_2d=np.array(
+                    [
+                        [True, True, True, True],
+                        [True, False, False, True],
+                        [True, False, False, True],
+                        [True, True, True, True],
+                    ]
+                ),
+                pixel_scales=(1.0, 1.0),
+                sub_size=1,
+            )
+
+            arr_masked = aa.MaskedArray.manual_2d(array=array_2d, mask=mask)
+
+            arr_zoomed = arr_masked.zoomed_around_mask(buffer=0)
+
+            assert arr_zoomed.mask.geometry.origin == (0.0, 0.0)
+
+            array_2d = np.ones(shape=(6, 6))
+
+            mask = aa.Mask.manual(
+                mask_2d=np.array(
+                    [
+                        [True, True, True, True, True, True],
+                        [True, True, True, False, False, True],
+                        [True, True, True, False, False, True],
+                        [True, True, True, True, True, True],
+                        [True, True, True, True, True, True],
+                        [True, True, True, True, True, True],
+                    ]
+                ),
+                pixel_scales=(1.0, 1.0),
+                sub_size=1,
+            )
+
+            arr_masked = aa.MaskedArray.manual_2d(array=array_2d, mask=mask)
+
+            arr_zoomed = arr_masked.zoomed_around_mask(buffer=0)
+
+            assert arr_zoomed.mask.geometry.origin == (1.0, 1.0)
+
+            mask = aa.Mask.manual(
+                mask_2d=np.array(
+                    [
+                        [True, True, True, True, True, True],
+                        [True, True, True, True, True, True],
+                        [True, True, True, False, False, True],
+                        [True, True, True, False, False, True],
+                        [True, True, True, True, True, True],
+                        [True, True, True, True, True, True],
+                    ]
+                ),
+                pixel_scales=(1.0, 1.0),
+                sub_size=1,
+            )
+
+            arr_masked = aa.MaskedArray.manual_2d(array=array_2d, mask=mask)
+
+            arr_zoomed = arr_masked.zoomed_around_mask(buffer=0)
+
+            assert arr_zoomed.mask.geometry.origin == (0.0, 1.0)
+
         def test__zoomed__array_extent__uses_the_limits_of_the_unzoomed_mask(self):
 
             array_2d = np.array(

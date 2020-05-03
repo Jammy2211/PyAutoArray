@@ -6,7 +6,7 @@ import autoarray as aa
 
 from autoarray import exc
 from autoarray.dataset import abstract_dataset, preprocess
-from autoarray.structures import arrays, visibilities as vis, kernel
+from autoarray.structures import arrays, grids, visibilities as vis, kernel
 from autoarray.operators import transformer
 
 
@@ -15,22 +15,21 @@ logger = logging.getLogger(__name__)
 
 class Interferometer(abstract_dataset.AbstractDataset):
     def __init__(
-        self, visibilities, noise_map, uv_wavelengths, primary_beam=None, name=None
+        self,
+        visibilities,
+        noise_map,
+        uv_wavelengths,
+        primary_beam=None,
+        positions=None,
+        name=None,
     ):
 
-        super().__init__(data=visibilities, noise_map=noise_map, name=name)
+        super().__init__(
+            data=visibilities, noise_map=noise_map, positions=positions, name=name
+        )
 
         self.uv_wavelengths = uv_wavelengths
         self.primary_beam = primary_beam
-
-    @classmethod
-    def manual(cls, visibilities, noise_map, uv_wavelengths, primary_beam=None):
-        return Interferometer(
-            visibilities=visibilities,
-            noise_map=noise_map,
-            uv_wavelengths=uv_wavelengths,
-            primary_beam=primary_beam,
-        )
 
     @classmethod
     def from_fits(
@@ -43,6 +42,7 @@ class Interferometer(abstract_dataset.AbstractDataset):
         uv_wavelengths_hdu=0,
         primary_beam_path=None,
         primary_beam_hdu=0,
+        positions_path=None,
     ):
         """Factory for loading the interferometer data_type from .fits files, as well as computing properties like the noise map,
         exposure-time map, etc. from the interferometer-data_type.
@@ -73,11 +73,20 @@ class Interferometer(abstract_dataset.AbstractDataset):
         else:
             primary_beam = None
 
+        if positions_path is not None:
+
+            positions = grids.Coordinates.from_file(file_path=positions_path)
+
+        else:
+
+            positions = None
+
         return Interferometer(
             visibilities=visibilities,
             primary_beam=primary_beam,
             noise_map=noise_map,
             uv_wavelengths=uv_wavelengths,
+            positions=positions,
         )
 
     @property
@@ -238,6 +247,14 @@ class MaskedInterferometer(abstract_dataset.AbstractMaskedDataset):
 
     def signal_to_noise_map(self):
         return self.visibilities / self.noise_map
+
+    def modify_noise_map(self, noise_map):
+
+        masked_interferometer = copy.deepcopy(self)
+
+        masked_interferometer.noise_map = noise_map
+
+        return masked_interferometer
 
 
 class SimulatorInterferometer:
