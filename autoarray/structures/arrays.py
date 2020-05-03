@@ -111,7 +111,7 @@ class AbstractArray(abstract_structure.AbstractStructure):
             shape_2d=extracted_array_2d.shape,
             pixel_scales=self.pixel_scales,
             sub_size=self.sub_size,
-            origin=self.origin,
+            origin=self.mask.geometry.mask_centre,
         )
 
         return mask.mapping.array_stored_1d_from_array_2d(array_2d=extracted_array_2d)
