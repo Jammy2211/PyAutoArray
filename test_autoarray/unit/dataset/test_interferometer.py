@@ -16,7 +16,7 @@ test_data_dir = "{}/files/interferometer/".format(
 class TestInterferometer:
     def test__new_interferometer_with_resized_primary_beam(self):
 
-        interferometer = aa.Interferometer.manual(
+        interferometer = aa.Interferometer(
             visibilities=aa.Visibilities.manual_1d(visibilities=[[1, 1]]),
             primary_beam=aa.Kernel.zeros(shape_2d=(5, 5), pixel_scales=1.0),
             noise_map=1,
@@ -34,7 +34,7 @@ class TestInterferometer:
 
     def test__new_interferometer_with_with_modified_visibilities(self):
 
-        interferometer = aa.Interferometer.manual(
+        interferometer = aa.Interferometer(
             visibilities=np.array([[1, 1]]),
             primary_beam=aa.Kernel.zeros(shape_2d=(5, 5), pixel_scales=1.0),
             noise_map=1,

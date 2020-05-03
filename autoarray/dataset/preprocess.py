@@ -240,7 +240,7 @@ def background_noise_map_from_edges_of_image(image, no_edges):
         edges = np.concatenate((edges, top_edge, bottom_edge, right_edge, left_edge))
 
     return arrays.Array.full(
-        fill_value=norm.log_likelihood_function(edges)[1], shape_2d=image.shape_2d
+        fill_value=norm.fit(edges)[1], shape_2d=image.shape_2d
     )
 
 
