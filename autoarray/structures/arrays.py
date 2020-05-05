@@ -7,7 +7,7 @@ import os
 from autoarray import exc
 from autoarray.structures import abstract_structure, grids
 from autoarray.mask import mask as msk
-from autoarray.util import binning_util, array_util
+from autoarray.util import binning_util, array_util, grid_util
 
 logging.basicConfig()
 logger = logging.getLogger(__name__)
@@ -417,6 +417,32 @@ class Array(AbstractArray):
             sub_size=sub_size,
             origin=origin,
             store_in_1d=store_in_1d,
+        )
+
+    @classmethod
+    def manual_yx_and_values(cls, y, x, values, shape_2d, sub_size=1, pixel_scales=None):
+
+        if type(pixel_scales) is float:
+            pixel_scales = (pixel_scales, pixel_scales)
+
+        grid = grids.Grid.manual_yx_1d(y=y, x=x, shape_2d=shape_2d, pixel_scales=pixel_scales, sub_size=1)
+
+        grid_pixels = grid_util.grid_pixel_indexes_1d_from_grid_scaled_1d_shape_2d_and_pixel_scales(
+            grid_scaled_1d=grid.in_1d,
+            shape_2d=shape_2d,
+            pixel_scales=pixel_scales
+        )
+
+        array_1d = np.zeros(shape=shape_2d[0] * shape_2d[1])
+
+        for i in range(grid_pixels.shape[0]):
+            array_1d[i] = values[int(grid_pixels[i])]
+
+        return cls.manual_1d(
+            array=array_1d,
+            pixel_scales=pixel_scales,
+            shape_2d=shape_2d,
+            sub_size=sub_size,
         )
 
 
