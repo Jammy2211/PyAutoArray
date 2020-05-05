@@ -345,6 +345,70 @@ class TestArrayAPI:
             assert arr.geometry.origin == (0.0, 1.0)
             assert arr.mask.sub_size == 1
 
+    class TestFromYXValues:
+
+        def test__use_manual_array_values__returns_input_array(self):
+
+            arr = aa.Array.manual_2d(array=[[1.0, 2.0], [3.0, 4.0]], pixel_scales=1.0)
+
+            y = arr.mask.geometry.unmasked_grid[:,0]
+            x = arr.mask.geometry.unmasked_grid[:,1]
+            arr_via_yx = aa.Array.manual_yx_and_values(y=y, x=x, values=arr, shape_2d=arr.shape_2d, pixel_scales=1.0)
+
+            assert (arr == arr_via_yx).all()
+
+            arr = aa.Array.manual_2d(array=[[1.0, 2.0], [3.0, 4.0], [5.0, 6.0]], pixel_scales=1.0)
+
+            y = arr.mask.geometry.unmasked_grid[:,0]
+            x = arr.mask.geometry.unmasked_grid[:,1]
+
+            print(y,x)
+
+            arr_via_yx = aa.Array.manual_yx_and_values(y=y, x=x, values=arr, shape_2d=arr.shape_2d, pixel_scales=1.0)
+
+            assert (arr == arr_via_yx).all()
+
+            arr = aa.Array.manual_2d(array=[[1.0, 2.0, 3.0],
+                                            [3.0, 4.0, 6.0]], pixel_scales=1.0)
+
+            y = arr.mask.geometry.unmasked_grid[:,0]
+            x = arr.mask.geometry.unmasked_grid[:,1]
+
+            arr_via_yx = aa.Array.manual_yx_and_values(y=y, x=x, values=arr, shape_2d=arr.shape_2d, pixel_scales=1.0)
+
+            assert (arr == arr_via_yx).all()
+
+        def test__use_input_values_which_swap_values_from_top_left_notation(self):
+
+            arr = aa.Array.manual_yx_and_values(y=[0.5, 0.5, -0.5, -0.5], x=[-0.5, 0.5, -0.5, 0.5], values=[1.0, 2.0, 3.0, 4.0], shape_2d=(2,2), pixel_scales=1.0)
+
+            assert (arr.in_2d == np.array([[1.0, 2.0],
+                                           [3.0, 4.0]])).all()
+
+            arr = aa.Array.manual_yx_and_values(y=[-0.5, 0.5, 0.5, -0.5], x=[-0.5, 0.5, -0.5, 0.5], values=[1.0, 2.0, 3.0, 4.0], shape_2d=(2,2), pixel_scales=1.0)
+
+            assert (arr.in_2d == np.array([[3.0, 2.0],
+                                           [1.0, 4.0]])).all()
+
+            arr = aa.Array.manual_yx_and_values(y=[-0.5, 0.5, 0.5, -0.5], x=[0.5, 0.5, -0.5, -0.5], values=[1.0, 2.0, 3.0, 4.0], shape_2d=(2,2), pixel_scales=1.0)
+
+            assert (arr.in_2d == np.array([[4.0, 2.0],
+                                           [1.0, 3.0]])).all()
+
+            arr = aa.Array.manual_yx_and_values(y=[1.0, 1.0, 0.0, 0.0, -1.0, -1.0],
+                                                x=[-0.5, 0.5, -0.5, 0.5, -0.5, 0.5], values=[1.0, 2.0, 3.0, 4.0, 5.0, 6.0], shape_2d=(3,2), pixel_scales=1.0)
+
+            assert (arr.in_2d == np.array([[1.0, 2.0],
+                                           [3.0, 4.0],
+                                           [5.0, 6.0]])).all()
+
+            arr = aa.Array.manual_yx_and_values(y=[0.0, 1.0, -1.0, 0.0, -1.0, 1.0],
+                                                x=[-0.5, 0.5, 0.5, 0.5, -0.5, -0.5],
+                                                values=[1.0, 2.0, 3.0, 4.0, 5.0, 6.0], shape_2d=(3,2), pixel_scales=1.0)
+
+            assert (arr.in_2d == np.array([[3.0, 2.0],
+                                           [6.0, 4.0],
+                                           [5.0, 1.0]])).all()
 
 class TestMaskedArrayAPI:
     class TestManual:
