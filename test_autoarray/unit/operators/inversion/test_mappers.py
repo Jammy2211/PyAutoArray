@@ -752,7 +752,7 @@ class TestVoronoiMapper:
             )
 
             pixelization_grid = aa.GridVoronoi(
-                grid_1d=pixelization_grid,
+                grid=pixelization_grid,
                 nearest_pixelization_1d_index_for_mask_1d_index=nearest_pixelization_1d_index_for_mask_1d_index,
             )
 
@@ -774,7 +774,7 @@ class TestVoronoiMapper:
             )
 
             pixelization_grid = aa.GridVoronoi(
-                grid_1d=pixelization_grid,
+                grid=pixelization_grid,
                 nearest_pixelization_1d_index_for_mask_1d_index=nearest_pixelization_1d_index_for_mask_1d_index,
             )
 

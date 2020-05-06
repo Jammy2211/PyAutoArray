@@ -436,29 +436,11 @@ class TestOutput:
 
 
 class TestScatterer:
-    def test__scatter_grid__lists_of_coordinates_or_equivalent_2d_grids(self):
+    def test__scatter_grid(self):
 
         scatterer = mat_objs.Scatterer(size=2, marker="x", colors="k")
 
-        scatterer.scatter_grids(grids=[(1.0, 1.0), (2.0, 2.0)])
-        scatterer.scatter_grids(
-            grids=aa.Grid.uniform(shape_2d=(3, 3), pixel_scales=1.0)
-        )
-
-    def test__scatter_grid__lists_of_lists_of_coordinates_or_equivalent_2d_grids(self):
-
-        scatterer = mat_objs.Scatterer(size=2, marker="x", colors="k")
-
-        scatterer.scatter_grids(grids=[[(1.0, 1.0), (2.0, 2.0)]])
-        scatterer.scatter_grids(grids=[[(1.0, 1.0), (2.0, 2.0)], [(3.0, 3.0)]])
-        scatterer.scatter_grids(grids=[[(1.0, 1.0), (2.0, 2.0)], []])
-        scatterer.scatter_grids(grids=[[(1.0, 1.0), (2.0, 2.0)], [None]])
-        scatterer.scatter_grids(
-            grids=[
-                aa.Grid.uniform(shape_2d=(3, 3), pixel_scales=1.0),
-                aa.Grid.uniform(shape_2d=(3, 3), pixel_scales=1.0),
-            ]
-        )
+        scatterer.scatter_grid(grid=aa.Grid.uniform(shape_2d=(3, 3), pixel_scales=1.0))
 
     def test__scatter_colored_grid__lists_of_coordinates_or_equivalent_2d_grids__with_color_array(
         self
@@ -469,7 +451,7 @@ class TestScatterer:
         cmap = plt.get_cmap("jet")
 
         scatterer.scatter_colored_grid(
-            grid=[(1.0, 1.0), (2.0, 2.0), (3.0, 3.0), (4.0, 4.0), (5.0, 5.0)],
+            grid=[[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0], [5.0, 5.0]],
             color_array=np.array([2.0, 2.0, 2.0, 2.0, 2.0]),
             cmap=cmap,
         )
@@ -524,6 +506,17 @@ class TestScatterer:
             indexes=[[[0, 0], [0, 1]], [[0, 2]]],
         )
 
+    def test__scatter_coordinates(self):
+
+        scatterer = mat_objs.Scatterer(size=2, marker="x", colors="k")
+
+        scatterer.scatter_coordinates(
+            coordinates=aa.Coordinates([(1.0, 1.0), (2.0, 2.0)])
+        )
+        scatterer.scatter_coordinates(
+            coordinates=aa.Coordinates([[(1.0, 1.0), (2.0, 2.0)], [(3.0, 3.0)]])
+        )
+
 
 class TestLiner:
     def test__draw_y_vs_x__works_for_reasonable_values(self):
@@ -554,29 +547,23 @@ class TestLiner:
 
         liner = aplt.Liner(width=2, style="-", colors="k")
 
-        liner.draw_grids(grids=[(1.0, 1.0), (2.0, 2.0)])
-        liner.draw_grids(grids=aa.Grid.uniform(shape_2d=(3, 3), pixel_scales=1.0))
-        liner.draw_grids(grids=[[(1.0, 1.0), (2.0, 2.0)], [(3.0, 3.0), (4.0, 4.0)]])
-        liner.draw_grids(
-            grids=[
+        liner.draw_grid(grid=[[1.0, 1.0], [2.0, 2.0]])
+        liner.draw_grid(grid=aa.Grid.uniform(shape_2d=(3, 3), pixel_scales=1.0))
+        liner.draw_grid(grid=[[[1.0, 1.0], [2.0, 2.0]], [[3.0, 3.0], [4.0, 4.0]]])
+        liner.draw_grid(
+            grid=[
                 aa.Grid.uniform(shape_2d=(3, 3), pixel_scales=1.0),
                 aa.Grid.uniform(shape_2d=(3, 3), pixel_scales=1.0),
             ]
         )
 
-    def test__draw_grid__lists_of_lists_of_coordinates_or_equivalent_2d_grids(self):
+    def test__draw_coordinates(self):
 
         liner = aplt.Liner(width=2, style="--", colors="k")
 
-        liner.draw_grids(grids=[[(1.0, 1.0), (2.0, 2.0)]])
-        liner.draw_grids(grids=[[(1.0, 1.0), (2.0, 2.0)], [(3.0, 3.0)]])
-        liner.draw_grids(grids=[[(1.0, 1.0), (2.0, 2.0)], []])
-        liner.draw_grids(grids=[[(1.0, 1.0), (2.0, 2.0)], [None]])
-        liner.draw_grids(
-            grids=[
-                aa.Grid.uniform(shape_2d=(3, 3), pixel_scales=1.0),
-                aa.Grid.uniform(shape_2d=(3, 3), pixel_scales=1.0),
-            ]
+        liner.draw_coordinates(coordinates=aa.Coordinates([[(1.0, 1.0), (2.0, 2.0)]]))
+        liner.draw_coordinates(
+            coordinates=aa.Coordinates([[(1.0, 1.0), (2.0, 2.0)], [(3.0, 3.0)]])
         )
 
     def test__draw_rectangular_grid_lines__draws_for_valid_extent_and_shape(self):
@@ -587,6 +574,20 @@ class TestLiner:
         liner.draw_rectangular_grid_lines(
             extent=[-4.0, 8.0, -3.0, 10.0], shape_2d=(8, 3)
         )
+
+
+class TestArrayOverlayer:
+    def test__overlay_array__works_for_reasonable_values(self):
+
+        array_overlay = aa.Array.manual_2d(
+            array=[[1.0, 2.0], [3.0, 4.0]], pixel_scales=0.5
+        )
+
+        figure = aplt.Figure(aspect="auto")
+
+        array_overlayer = aplt.ArrayOverlayer(alpha=0.5)
+
+        array_overlayer.overlay_array(array_overlay=array_overlay, figure=figure)
 
 
 class TestVoronoiDrawer:

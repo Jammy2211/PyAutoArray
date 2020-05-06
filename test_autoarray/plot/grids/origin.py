@@ -4,4 +4,4 @@ import numpy as np
 
 grid = aa.Grid.uniform(shape_2d=(11, 11), pixel_scales=1.0)
 
-aplt.Grid(grid=grid, include_origin=True)
+aplt.Grid(grid=grid, include=aplt.Include(origin=True))

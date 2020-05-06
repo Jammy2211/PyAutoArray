@@ -301,7 +301,7 @@ def make_voronoi_pixelization_grid_9(grid_7x7):
         pixel_scales=1.0,
     )
     return aa.GridVoronoi(
-        grid_1d=grid_9,
+        grid=grid_9,
         nearest_pixelization_1d_index_for_mask_1d_index=np.zeros(
             shape=grid_7x7.shape_1d, dtype="int"
         ),

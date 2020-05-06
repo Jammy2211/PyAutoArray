@@ -242,17 +242,17 @@ class TestBrightestPixel:
             convolver=mock_inversion.MockConvolver(matrix_shape),
             mapper=mock_inversion.MockMapper(
                 matrix_shape,
-                pixelization_grid=aa.GridIrregular.manual_1d(
-                    [[1.0, 2.0], [3.0, 4.0], [5.0, 6.0]]
+                pixelization_grid=aa.GridVoronoi.manual_1d(
+                    [[1.0, 2.0], [3.0, 4.0], [5.0, 6.0], [5.0, 0.0]]
                 ),
             ),
             regularization=mock_inversion.MockRegularization(matrix_shape),
         )
 
-        inversion.reconstruction = np.array([2.0, 3.0, 5.0])
+        inversion.reconstruction = np.array([2.0, 3.0, 5.0, 0.0])
 
         assert inversion.brightest_reconstruction_pixel == 2
-        assert inversion.brightest_reconstruction_pixel_centre == [(5.0, 6.0)]
+        assert inversion.brightest_reconstruction_pixel_centre.in_list == [[(5.0, 6.0)]]
 
 
 from autoconf import conf

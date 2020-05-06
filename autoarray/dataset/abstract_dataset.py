@@ -6,8 +6,8 @@ from autoarray.structures import arrays, grids
 
 
 class AbstractDataset:
-    def __init__(self, data, noise_map, name=None):
-        """A collection of abstract 2D for different data_type classes (an image, pixel-scale, noise-map, etc.)
+    def __init__(self, data, noise_map, positions=None, name=None):
+        """A collection of abstract 2D for different data_type classes (an image, pixel-scale, noise map, etc.)
 
         Parameters
         ----------
@@ -23,6 +23,7 @@ class AbstractDataset:
         """
         self.data = data
         self.noise_map = noise_map
+        self.positions = positions
         self._name = name if name is not None else "dataset"
 
     @property
@@ -129,3 +130,7 @@ class AbstractMaskedDataset:
     @property
     def name(self) -> str:
         return self.dataset.name
+
+    @property
+    def positions(self):
+        return self.dataset.positions
