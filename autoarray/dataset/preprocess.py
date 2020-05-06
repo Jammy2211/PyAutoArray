@@ -239,9 +239,7 @@ def background_noise_map_from_edges_of_image(image, no_edges):
 
         edges = np.concatenate((edges, top_edge, bottom_edge, right_edge, left_edge))
 
-    return arrays.Array.full(
-        fill_value=norm.fit(edges)[1], shape_2d=image.shape_2d
-    )
+    return arrays.Array.full(fill_value=norm.fit(edges)[1], shape_2d=image.shape_2d)
 
 
 def psf_with_odd_dimensions_from_psf(psf):

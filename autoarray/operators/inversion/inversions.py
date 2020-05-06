@@ -416,13 +416,9 @@ class InversionInterferometer(Inversion):
 
         data_vector = np.add(real_data_vector, imag_data_vector)
 
-        curvature_matrix = np.add(
-            real_curvature_matrix, imag_curvature_matrix
-        )
+        curvature_matrix = np.add(real_curvature_matrix, imag_curvature_matrix)
 
-        curvature_reg_matrix = np.add(
-            curvature_matrix, regularization_matrix
-        )
+        curvature_reg_matrix = np.add(curvature_matrix, regularization_matrix)
 
         try:
             values = np.linalg.solve(curvature_reg_matrix, data_vector)
