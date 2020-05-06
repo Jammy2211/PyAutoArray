@@ -420,17 +420,19 @@ class Array(AbstractArray):
         )
 
     @classmethod
-    def manual_yx_and_values(cls, y, x, values, shape_2d, sub_size=1, pixel_scales=None):
+    def manual_yx_and_values(
+        cls, y, x, values, shape_2d, sub_size=1, pixel_scales=None
+    ):
 
         if type(pixel_scales) is float:
             pixel_scales = (pixel_scales, pixel_scales)
 
-        grid = grids.Grid.manual_yx_1d(y=y, x=x, shape_2d=shape_2d, pixel_scales=pixel_scales, sub_size=1)
+        grid = grids.Grid.manual_yx_1d(
+            y=y, x=x, shape_2d=shape_2d, pixel_scales=pixel_scales, sub_size=1
+        )
 
         grid_pixels = grid_util.grid_pixel_indexes_1d_from_grid_scaled_1d_shape_2d_and_pixel_scales(
-            grid_scaled_1d=grid.in_1d,
-            shape_2d=shape_2d,
-            pixel_scales=pixel_scales
+            grid_scaled_1d=grid.in_1d, shape_2d=shape_2d, pixel_scales=pixel_scales
         )
 
         array_1d = np.zeros(shape=shape_2d[0] * shape_2d[1])
