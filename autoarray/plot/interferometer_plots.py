@@ -5,7 +5,7 @@ from autoarray.structures import grids
 @plotters.set_include_and_sub_plotter
 @plotters.set_subplot_filename
 def subplot_interferometer(interferometer, include=None, sub_plotter=None):
-    """Plot the interferometer data_type as a sub-plotters of all its quantites (e.g. the dataset, noise_map, PSF, Signal-to_noise-map, \
+    """Plot the interferometer data_type as a sub-plotters of all its quantites (e.g. the dataset, noise_map, PSF, Signal-to_noise map, \
      etc).
 
     Set *autolens.data_type.array.plotters.plotters* for a description of all innput parameters not described below.
@@ -67,7 +67,7 @@ def individual(
     plotter=None,
 ):
     """Plot each attribute of the interferometer data_type as individual figures one by one (e.g. the dataset, noise_map, PSF, \
-     Signal-to_noise-map, etc).
+     Signal-to_noise map, etc).
 
     Set *autolens.data_type.array.plotters.plotters* for a description of all innput parameters not described below.
 
@@ -249,7 +249,7 @@ def uv_wavelengths(
     """
 
     plotter.plot_grid(
-        grid=grids.GridIrregular.manual_yx_1d(
+        grid=grids.Coordinates.from_yx_1d(
             y=interferometer.uv_wavelengths[:, 1] / 10 ** 3.0,
             x=interferometer.uv_wavelengths[:, 0] / 10 ** 3.0,
         ),

@@ -8,7 +8,7 @@ import os
 def data_vector_from_blurred_mapping_matrix_and_data(
     blurred_mapping_matrix, image, noise_map
 ):
-    """Compute the hyper_galaxies vector *D* from a blurred util matrix *f* and the 1D image *d* and 1D noise-map *\sigma* \
+    """Compute the hyper_galaxies vector *D* from a blurred util matrix *f* and the 1D image *d* and 1D noise map *\sigma* \
     (see Warren & Dye 2003).
     
     Parameters
@@ -18,7 +18,7 @@ def data_vector_from_blurred_mapping_matrix_and_data(
     image : ndarray
         Flattened 1D array of the observed image the inversion is fitting.
     noise_map : ndarray
-        Flattened 1D array of the noise-map used by the inversion during the fit.
+        Flattened 1D array of the noise map used by the inversion during the fit.
     """
 
     mapping_shape = blurred_mapping_matrix.shape
@@ -37,7 +37,7 @@ def data_vector_from_blurred_mapping_matrix_and_data(
 
 
 def curvature_matrix_from_blurred_mapping_matrix(blurred_mapping_matrix, noise_map):
-    """Compute the curvature matrix *F* from a blurred util matrix *f* and the 1D noise-map *\sigma* \
+    """Compute the curvature matrix *F* from a blurred util matrix *f* and the 1D noise map *\sigma* \
      (see Warren & Dye 2003).
 
     Parameters
@@ -45,7 +45,7 @@ def curvature_matrix_from_blurred_mapping_matrix(blurred_mapping_matrix, noise_m
     blurred_mapping_matrix : ndarray
         The matrix representing the blurred mappings between sub-grid pixels and pixelization pixels.
     noise_map : ndarray
-        Flattened 1D array of the noise-map used by the inversion during the fit.
+        Flattened 1D array of the noise map used by the inversion during the fit.
     """
 
     flist = np.zeros(blurred_mapping_matrix.shape[1])
@@ -59,7 +59,7 @@ def curvature_matrix_from_blurred_mapping_matrix(blurred_mapping_matrix, noise_m
 def curvature_matrix_from_blurred_mapping_matrix_jit(
     blurred_mapping_matrix, noise_map, flist, iflist
 ):
-    """Compute the curvature matrix *F* from a blurred util matrix *f* and the 1D noise-map *\sigma* \
+    """Compute the curvature matrix *F* from a blurred util matrix *f* and the 1D noise map *\sigma* \
     (see Warren & Dye 2003).
 
     Parameters
@@ -67,7 +67,7 @@ def curvature_matrix_from_blurred_mapping_matrix_jit(
     blurred_mapping_matrix : ndarray
         The matrix representing the blurred mappings between sub-grid pixels and pixelization pixels.
     noise_map : ndarray
-        Flattened 1D array of the noise-map used by the inversion during the fit.
+        Flattened 1D array of the noise map used by the inversion during the fit.
     flist : ndarray
         NumPy array of floats used to store mappings for efficienctly calculation.
     iflist : ndarray
@@ -126,7 +126,7 @@ def mapped_reconstructed_data_from_mapping_matrix_and_reconstruction(
 def data_vector_from_transformed_mapping_matrix_and_data(
     transformed_mapping_matrix, visibilities, noise_map
 ):
-    """Compute the hyper_galaxies vector *D* from a transformed util matrix *f* and the 1D image *d* and 1D noise-map *\sigma* \
+    """Compute the hyper_galaxies vector *D* from a transformed util matrix *f* and the 1D image *d* and 1D noise map *\sigma* \
     (see Warren & Dye 2003).
 
     Parameters
@@ -136,7 +136,7 @@ def data_vector_from_transformed_mapping_matrix_and_data(
     image : ndarray
         Flattened 1D array of the observed image the inversion is fitting.
     noise_map : ndarray
-        Flattened 1D array of the noise-map used by the inversion during the fit.
+        Flattened 1D array of the noise map used by the inversion during the fit.
     """
 
     data_vector = np.zeros(transformed_mapping_matrix.shape[1])
@@ -155,7 +155,7 @@ def data_vector_from_transformed_mapping_matrix_and_data(
 def curvature_matrix_from_transformed_mapping_matrix(
     transformed_mapping_matrix, noise_map
 ):
-    """Compute the curvature matrix *F* from a transformed util matrix *f* and the 1D noise-map *\sigma* \
+    """Compute the curvature matrix *F* from a transformed util matrix *f* and the 1D noise map *\sigma* \
     (see Warren & Dye 2003).
 
     Parameters
@@ -163,7 +163,7 @@ def curvature_matrix_from_transformed_mapping_matrix(
     transformed_mapping_matrix : ndarray
         The matrix representing the transformed mappings between sub-grid pixels and pixelization pixels.
     noise_map : ndarray
-        Flattened 1D array of the noise-map used by the inversion during the fit.
+        Flattened 1D array of the noise map used by the inversion during the fit.
     flist : ndarray
         NumPy array of floats used to store mappings for efficienctly calculation.
     iflist : ndarray

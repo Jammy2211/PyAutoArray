@@ -15,6 +15,7 @@ import itertools
 import os
 
 from autoarray import exc
+from autoarray.structures import grids
 
 
 def load_setting(section, name, python_type, from_subplot_config):
@@ -777,40 +778,6 @@ class Output:
             plt.savefig(self.path + self.filename + ".png", bbox_inches="tight")
 
 
-def is_grids_list_of_grids(grids):
-
-    if len(grids) == 0:
-        return "pass"
-
-    if isinstance(grids, list):
-        if any(isinstance(i, tuple) for i in grids):
-            return False
-        elif any(isinstance(i, np.ndarray) for i in grids):
-            if len(grids) == 1:
-                return False
-            else:
-                return True
-        elif any(isinstance(i, list) for i in grids):
-            return True
-        else:
-            raise exc.PlottingException(
-                "The grid entered into scatter_grid is a list of values, but its data-structure"
-                "cannot be determined so as to make a scatter plot"
-            )
-    elif isinstance(grids, np.ndarray):
-        if len(grids.shape) == 2:
-            return False
-        else:
-            raise exc.PlottingException(
-                "The input grid into scatter_Grid is not 2D and therefore "
-                "cannot be plotted using scatter."
-            )
-    else:
-        raise exc.PlottingException(
-            "The grid passed into scatter_grid is not a list or a ndarray."
-        )
-
-
 def remove_spaces_and_commas_from_colors(colors):
 
     colors = [color.strip(",") for color in colors]
@@ -853,56 +820,26 @@ class Scatterer:
         if isinstance(self.colors, str):
             self.colors = [self.colors]
 
-    def scatter_grids(self, grids):
+    def scatter_grid(self, grid):
 
-        list_of_grids = is_grids_list_of_grids(grids=grids)
-
-        if not list_of_grids:
-
-            plt.scatter(
-                y=np.asarray(grids)[:, 0],
-                x=np.asarray(grids)[:, 1],
-                s=self.size,
-                c=self.colors[0],
-                marker=self.marker,
-            )
-
-        else:
-
-            color = itertools.cycle(self.colors)
-
-            for grid in grids:
-
-                if not None in grid:
-                    if len(grid) != 0:
-                        plt.scatter(
-                            y=np.asarray(grid)[:, 0],
-                            x=np.asarray(grid)[:, 1],
-                            s=self.size,
-                            c=next(color),
-                            marker=self.marker,
-                        )
+        plt.scatter(
+            y=np.asarray(grid)[:, 0],
+            x=np.asarray(grid)[:, 1],
+            s=self.size,
+            c=self.colors[0],
+            marker=self.marker,
+        )
 
     def scatter_colored_grid(self, grid, color_array, cmap):
 
-        list_of_grids = is_grids_list_of_grids(grids=grid)
-
-        if not list_of_grids:
-
-            plt.scatter(
-                y=np.asarray(grid)[:, 0],
-                x=np.asarray(grid)[:, 1],
-                s=self.size,
-                c=color_array,
-                marker=self.marker,
-                cmap=cmap,
-            )
-
-        else:
-
-            raise exc.PlottingException(
-                "Cannot plot colorred grid if input grid is a list of grids."
-            )
+        plt.scatter(
+            y=np.asarray(grid)[:, 0],
+            x=np.asarray(grid)[:, 1],
+            s=self.size,
+            c=color_array,
+            marker=self.marker,
+            cmap=cmap,
+        )
 
     def scatter_grid_indexes(self, grid, indexes):
 
@@ -958,6 +895,23 @@ class Scatterer:
                     "The indexes input into the grid_scatter_index method do not conform to a "
                     "useable type"
                 )
+
+    def scatter_coordinates(self, coordinates):
+
+        if len(coordinates) == 0:
+            return
+
+        color = itertools.cycle(self.colors)
+
+        for coordinate_group in coordinates.in_list:
+
+            plt.scatter(
+                y=np.asarray(coordinate_group)[:, 0],
+                x=np.asarray(coordinate_group)[:, 1],
+                s=self.size,
+                c=next(color),
+                marker=self.marker,
+            )
 
 
 class OriginScatterer(Scatterer):
@@ -1179,7 +1133,7 @@ class Liner:
                 ls=self.style,
             )
 
-    def draw_grids(self, grids):
+    def draw_grid(self, grid):
         """Plot the liness of the mask or the array on the figure.
 
         Parameters
@@ -1196,33 +1150,13 @@ class Liner:
             The size of the points plotted to show the liness.
         """
 
-        list_of_grids = is_grids_list_of_grids(grids=grids)
-
-        if not list_of_grids:
-
-            plt.plot(
-                np.asarray(grids)[:, 1],
-                np.asarray(grids)[:, 0],
-                c=self.colors[0],
-                lw=self.width,
-                ls=self.style,
-            )
-
-        else:
-
-            color = itertools.cycle(self.colors)
-
-            for grid in grids:
-
-                if not None in grid:
-                    if len(grid) != 0:
-                        plt.plot(
-                            np.asarray(grid)[:, 1],
-                            np.asarray(grid)[:, 0],
-                            c=next(color),
-                            lw=self.width,
-                            ls=self.style,
-                        )
+        plt.plot(
+            np.asarray(grid)[:, 1],
+            np.asarray(grid)[:, 0],
+            c=self.colors[0],
+            lw=self.width,
+            ls=self.style,
+        )
 
     def draw_rectangular_grid_lines(self, extent, shape_2d):
 
@@ -1246,6 +1180,69 @@ class Liner:
                 lw=self.width,
                 ls=self.style,
             )
+
+    def draw_coordinates(self, coordinates):
+        """Plot the liness of the mask or the array on the figure.
+
+        Parameters
+        -----------t.
+        mask : ndarray of data_type.array.mask.Mask
+            The mask applied to the array, the edge of which is plotted as a set of points over the plotted array.
+        plot_lines : bool
+            If a mask is supplied, its liness pixels (e.g. the exterior edge) is plotted if this is *True*.
+        unit_label : str
+            The unit_label of the y / x axis of the plots.
+        kpc_per_arcsec : float or None
+            The conversion factor between arc-seconds and kiloparsecs, required to plotters the unit_label in kpc.
+        lines_pointsize : int
+            The size of the points plotted to show the liness.
+        """
+
+        if len(coordinates) == 0:
+            return
+
+        color = itertools.cycle(self.colors)
+
+        for coordinate_group in coordinates.in_list:
+
+            plt.plot(
+                np.asarray(coordinate_group)[:, 1],
+                np.asarray(coordinate_group)[:, 0],
+                c=next(color),
+                lw=self.width,
+                ls=self.style,
+            )
+
+
+class ArrayOverlayer:
+    def __init__(self, alpha=None, section=None, from_subplot_config=False):
+
+        if section is None:
+            section = "array_overlayer"
+
+        self.from_subplot_config = from_subplot_config
+
+        self.alpha = (
+            alpha
+            if alpha is not None
+            else load_setting(section, "alpha", float, from_subplot_config)
+        )
+
+    @classmethod
+    def sub(cls, alpha, section=None):
+        return ArrayOverlayer(alpha=alpha, section=section, from_subplot_config=True)
+
+    def overlay_array(self, array_overlay, figure):
+
+        aspect_overlay = figure.aspect_from_shape_2d(shape_2d=array_overlay.shape_2d)
+        extent_overlay = array_overlay.extent_of_zoomed_array(buffer=0)
+
+        plt.imshow(
+            X=array_overlay.in_2d,
+            aspect=aspect_overlay,
+            extent=extent_overlay,
+            alpha=self.alpha,
+        )
 
 
 class VoronoiDrawer:

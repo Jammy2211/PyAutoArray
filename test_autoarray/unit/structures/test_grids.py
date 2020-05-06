@@ -1411,20 +1411,211 @@ class TestGridBorder:
         assert relocated_grid.sub_size == 2
 
 
-class TestGridIrregular:
+class TestGridRectangular:
+    class TestGridNeighbors:
+        def test__3x3_grid__buffer_is_small__grid_give_min_minus_1_max_1__sets_up_geometry_correctly(
+            self
+        ):
+            grid = np.array(
+                [
+                    [1.0, -1.0],
+                    [1.0, 0.0],
+                    [1.0, 1.0],
+                    [0.0, -1.0],
+                    [0.0, 0.0],
+                    [0.0, 1.0],
+                    [-1.0, -1.0],
+                    [-1.0, 0.0],
+                    [-1.0, 1.0],
+                ]
+            )
+
+            pix_grid = aa.GridRectangular.overlay_grid(
+                shape_2d=(3, 3), grid=grid, buffer=1e-8
+            )
+
+            assert pix_grid.shape_2d == (3, 3)
+            assert pix_grid.pixel_scales == pytest.approx((2.0 / 3.0, 2.0 / 3.0), 1e-2)
+            assert (pix_grid.pixel_neighbors[0] == [1, 3, -1, -1]).all()
+            assert (pix_grid.pixel_neighbors[1] == [0, 2, 4, -1]).all()
+            assert (pix_grid.pixel_neighbors[2] == [1, 5, -1, -1]).all()
+            assert (pix_grid.pixel_neighbors[3] == [0, 4, 6, -1]).all()
+            assert (pix_grid.pixel_neighbors[4] == [1, 3, 5, 7]).all()
+            assert (pix_grid.pixel_neighbors[5] == [2, 4, 8, -1]).all()
+            assert (pix_grid.pixel_neighbors[6] == [3, 7, -1, -1]).all()
+            assert (pix_grid.pixel_neighbors[7] == [4, 6, 8, -1]).all()
+            assert (pix_grid.pixel_neighbors[8] == [5, 7, -1, -1]).all()
+
+            assert (
+                pix_grid.pixel_neighbors_size == np.array([2, 3, 2, 3, 4, 3, 2, 3, 2])
+            ).all()
+
+        def test__3x3_grid__same_as_above_change_buffer(self):
+            grid = np.array(
+                [
+                    [-1.0, -1.0],
+                    [-1.0, 0.0],
+                    [-1.0, 1.0],
+                    [0.0, -1.0],
+                    [0.0, 0.0],
+                    [0.0, 1.0],
+                    [1.0, -1.0],
+                    [1.0, 0.0],
+                    [1.0, 1.0],
+                ]
+            )
+
+            pix_grid = aa.GridRectangular.overlay_grid(
+                shape_2d=(3, 3), grid=grid, buffer=1e-8
+            )
+
+            assert pix_grid.shape_2d == (3, 3)
+            assert pix_grid.pixel_scales == pytest.approx((2.0 / 3.0, 2.0 / 3.0), 1e-2)
+
+        def test__5x4_grid__buffer_is_small(self):
+            grid = np.array(
+                [
+                    [1.0, -1.0],
+                    [1.0, 0.0],
+                    [1.0, 1.0],
+                    [0.0, -1.0],
+                    [0.0, 0.0],
+                    [0.0, 1.0],
+                    [-1.0, -1.0],
+                    [-1.0, 0.0],
+                    [-1.0, 1.0],
+                ]
+            )
+
+            pix_grid = aa.GridRectangular.overlay_grid(
+                shape_2d=(5, 4), grid=grid, buffer=1e-8
+            )
+
+            assert pix_grid.shape_2d == (5, 4)
+            assert pix_grid.pixel_scales == pytest.approx((2.0 / 5.0, 2.0 / 4.0), 1e-2)
+
+        def test__3x3_grid__larger_range_of_grid(self):
+            grid = np.array([[2.0, 1.0], [4.0, 3.0], [6.0, 5.0], [8.0, 7.0]])
+
+            pix_grid = aa.GridRectangular.overlay_grid(
+                shape_2d=(3, 3), grid=grid, buffer=1e-8
+            )
+
+            assert pix_grid.shape_2d == (3, 3)
+            assert pix_grid.pixel_scales == pytest.approx((6.0 / 3.0, 6.0 / 3.0), 1e-2)
+
+    class TestPixelCentres:
+        def test__3x3_grid__pixel_centres(self):
+            grid = np.array(
+                [
+                    [1.0, -1.0],
+                    [1.0, 0.0],
+                    [1.0, 1.0],
+                    [0.0, -1.0],
+                    [0.0, 0.0],
+                    [0.0, 1.0],
+                    [-1.0, -1.0],
+                    [-1.0, 0.0],
+                    [-1.0, 1.0],
+                ]
+            )
+
+            pix_grid = aa.GridRectangular.overlay_grid(
+                shape_2d=(3, 3), grid=grid, buffer=1e-8
+            )
+
+            assert pix_grid == pytest.approx(
+                np.array(
+                    [
+                        [2.0 / 3.0, -2.0 / 3.0],
+                        [2.0 / 3.0, 0.0],
+                        [2.0 / 3.0, 2.0 / 3.0],
+                        [0.0, -2.0 / 3.0],
+                        [0.0, 0.0],
+                        [0.0, 2.0 / 3.0],
+                        [-2.0 / 3.0, -2.0 / 3.0],
+                        [-2.0 / 3.0, 0.0],
+                        [-2.0 / 3.0, 2.0 / 3.0],
+                    ]
+                )
+            )
+
+        def test__4x3_grid__pixel_centres(self):
+            grid = np.array(
+                [
+                    [1.0, -1.0],
+                    [1.0, 0.0],
+                    [1.0, 1.0],
+                    [0.0, -1.0],
+                    [0.0, 0.0],
+                    [0.0, 1.0],
+                    [-1.0, -1.0],
+                    [-1.0, 0.0],
+                    [-1.0, 1.0],
+                ]
+            )
+
+            pix_grid = aa.GridRectangular.overlay_grid(
+                shape_2d=(4, 3), grid=grid, buffer=1e-8
+            )
+
+            assert pix_grid == pytest.approx(
+                np.array(
+                    [
+                        [0.75, -2.0 / 3.0],
+                        [0.75, 0.0],
+                        [0.75, 2.0 / 3.0],
+                        [0.25, -2.0 / 3.0],
+                        [0.25, 0.0],
+                        [0.25, 2.0 / 3.0],
+                        [-0.25, -2.0 / 3.0],
+                        [-0.25, 0.0],
+                        [-0.25, 2.0 / 3.0],
+                        [-0.75, -2.0 / 3.0],
+                        [-0.75, 0.0],
+                        [-0.75, 2.0 / 3.0],
+                    ]
+                )
+            )
+
+    class TestPixelNeighbors:
+        def test__compare_to_pixelization_util(self):
+            # |0 | 1| 2| 3|
+            # |4 | 5| 6| 7|
+            # |8 | 9|10|11|
+            # |12|13|14|15|
+
+            pix_grid = aa.GridRectangular.overlay_grid(
+                shape_2d=(7, 5), grid=np.zeros((2, 2)), buffer=1e-8
+            )
+
+            pixel_neighbors_util, pixel_neighbors_size_util = aa.util.pixelization.rectangular_neighbors_from_shape(
+                shape=(7, 5)
+            )
+
+            assert (pix_grid.pixel_neighbors == pixel_neighbors_util).all()
+            assert (pix_grid.pixel_neighbors_size == pixel_neighbors_size_util).all()
+
+
+class TestGridVoronoi:
     def test__pixelization_grid__attributes(self):
-        pix_grid = grids.GridIrregular(
-            grid=np.array([[1.0, 1.0], [2.0, 2.0]]),
-            nearest_pixelization_1d_index_for_mask_1d_index=np.array([0, 1]),
+
+        pix_grid = grids.GridVoronoi(
+            grid=np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [1.0, 4.0]]),
+            nearest_pixelization_1d_index_for_mask_1d_index=np.array([0, 1, 2, 3]),
         )
 
-        assert type(pix_grid) == grids.GridIrregular
-        assert (pix_grid == np.array([[1.0, 1.0], [2.0, 2.0]])).all()
+        assert type(pix_grid) == grids.GridVoronoi
         assert (
-            pix_grid.nearest_pixelization_1d_index_for_mask_1d_index == np.array([0, 1])
+            pix_grid == np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [1.0, 4.0]])
+        ).all()
+        assert (
+            pix_grid.nearest_pixelization_1d_index_for_mask_1d_index
+            == np.array([0, 1, 2, 3])
         ).all()
 
     def test__from_unmasked_sparse_shape_and_grid(self):
+
         mask = aa.Mask.manual(
             mask_2d=np.array(
                 [[True, False, True], [False, False, False], [True, False, True]]
@@ -1439,7 +1630,7 @@ class TestGridIrregular:
             unmasked_sparse_shape=(10, 10), grid=grid
         )
 
-        pixelization_grid = grids.GridIrregular.from_grid_and_unmasked_2d_grid_shape(
+        pixelization_grid = grids.GridVoronoi.from_grid_and_unmasked_2d_grid_shape(
             unmasked_sparse_shape=(10, 10), grid=grid
         )
 
@@ -1448,6 +1639,246 @@ class TestGridIrregular:
             sparse_grid.sparse_1d_index_for_mask_1d_index
             == pixelization_grid.nearest_pixelization_1d_index_for_mask_1d_index
         ).all()
+
+    class TestVoronoiGrid:
+        def test__9_points___check_voronoi_swaps_axis_from_y_x__to_x_y(self):
+            # 9 points in a square - makes a square (this is the example int he scipy documentaiton page)
+
+            grid = np.array(
+                [
+                    [2.0, 0.0],
+                    [2.0, 1.0],
+                    [2.0, 2.0],
+                    [1.0, 0.0],
+                    [1.0, 1.0],
+                    [1.0, 2.0],
+                    [0.0, 0.0],
+                    [0.0, 1.0],
+                    [0.0, 2.0],
+                ]
+            )
+
+            pix = aa.GridVoronoi(grid=grid)
+
+            assert (
+                pix.voronoi.points
+                == np.array(
+                    [
+                        [0.0, 2.0],
+                        [1.0, 2.0],
+                        [2.0, 2.0],
+                        [0.0, 1.0],
+                        [1.0, 1.0],
+                        [2.0, 1.0],
+                        [0.0, 0.0],
+                        [1.0, 0.0],
+                        [2.0, 0.0],
+                    ]
+                )
+            ).all()
+
+        def test__points_in_x_cross_shape__sets_up_diamond_voronoi_vertices(self):
+            # 5 points in the shape of the face of a 5 on a die - makes a diamond Voronoi diagram
+
+            grid = np.array(
+                [[-1.0, 1.0], [1.0, 1.0], [0.0, 0.0], [-1.0, -1.0], [1.0, -1.0]]
+            )
+
+            pix = aa.GridVoronoi(grid=grid)
+
+            pix.voronoi.vertices = list(map(lambda x: list(x), pix.voronoi.vertices))
+
+            assert [0, 1.0] in pix.voronoi.vertices
+            assert [-1.0, 0.0] in pix.voronoi.vertices
+            assert [1.0, 0.0] in pix.voronoi.vertices
+            assert [0.0, -1.0] in pix.voronoi.vertices
+
+        def test__9_points_in_square___sets_up_square_of_voronoi_vertices(self):
+            # 9 points in a square - makes a square (this is the example int he scipy documentaiton page)
+
+            grid = np.array(
+                [
+                    [2.0, 0.0],
+                    [2.0, 1.0],
+                    [2.0, 2.0],
+                    [1.0, 0.0],
+                    [1.0, 1.0],
+                    [1.0, 2.0],
+                    [0.0, 0.0],
+                    [0.0, 1.0],
+                    [0.0, 2.0],
+                ]
+            )
+
+            pix = aa.GridVoronoi(grid=grid)
+
+            # ridge points is a numpy array for speed, but convert to list for the comparisons below so we can use in
+            # to look for each list
+
+            pix.voronoi.vertices = list(map(lambda x: list(x), pix.voronoi.vertices))
+
+            assert [0.5, 1.5] in pix.voronoi.vertices
+            assert [1.5, 0.5] in pix.voronoi.vertices
+            assert [0.5, 0.5] in pix.voronoi.vertices
+            assert [1.5, 1.5] in pix.voronoi.vertices
+
+        def test__points_in_x_cross_shape__sets_up_pairs_of_voronoi_cells(self):
+            # 5 points in the shape of the face of a 5 on a die - makes a diamond Voronoi diagram
+
+            grid = np.array(
+                [[1.0, -1.0], [1.0, 1.0], [0.0, 0.0], [-1.0, -1.0], [-1.0, 1.0]]
+            )
+
+            pix = aa.GridVoronoi(grid=grid)
+            # ridge points is a numpy array for speed, but convert to list for the comparisons below so we can use in
+            # to look for each list
+
+            pix.voronoi.ridge_grid = list(
+                map(lambda x: list(x), pix.voronoi.ridge_points)
+            )
+
+            assert len(pix.voronoi.ridge_points) == 8
+
+            assert [2, 0] in pix.voronoi.ridge_points or [
+                0,
+                2,
+            ] in pix.voronoi.ridge_points
+            assert [2, 1] in pix.voronoi.ridge_points or [
+                1,
+                2,
+            ] in pix.voronoi.ridge_points
+            assert [2, 3] in pix.voronoi.ridge_points or [
+                3,
+                2,
+            ] in pix.voronoi.ridge_points
+            assert [2, 4] in pix.voronoi.ridge_points or [
+                4,
+                2,
+            ] in pix.voronoi.ridge_points
+            assert [0, 1] in pix.voronoi.ridge_points or [
+                1,
+                0,
+            ] in pix.voronoi.ridge_points
+            assert [0.3] in pix.voronoi.ridge_points or [
+                3,
+                0,
+            ] in pix.voronoi.ridge_points
+            assert [3, 4] in pix.voronoi.ridge_points or [
+                4,
+                3,
+            ] in pix.voronoi.ridge_points
+            assert [4, 1] in pix.voronoi.ridge_points or [
+                1,
+                4,
+            ] in pix.voronoi.ridge_points
+
+        def test__9_points_in_square___sets_up_pairs_of_voronoi_cells(self):
+            # 9 points in a square - makes a square (this is the example int he scipy documentaiton page)
+
+            grid = np.array(
+                [
+                    [2.0, 0.0],
+                    [2.0, 1.0],
+                    [2.0, 2.0],
+                    [1.0, 0.0],
+                    [1.0, 1.0],
+                    [1.0, 2.0],
+                    [0.0, 0.0],
+                    [0.0, 1.0],
+                    [0.0, 2.0],
+                ]
+            )
+
+            pix = aa.GridVoronoi(grid=grid)
+
+            # ridge points is a numpy array for speed, but convert to list for the comparisons below so we can use in
+            # to look for each list
+
+            pix.voronoi.ridge_grid = list(
+                map(lambda x: list(x), pix.voronoi.ridge_points)
+            )
+
+            assert len(pix.voronoi.ridge_points) == 12
+
+            assert [0, 1] in pix.voronoi.ridge_points or [
+                1,
+                0,
+            ] in pix.voronoi.ridge_points
+            assert [1, 2] in pix.voronoi.ridge_points or [
+                2,
+                1,
+            ] in pix.voronoi.ridge_points
+            assert [3, 4] in pix.voronoi.ridge_points or [
+                4,
+                3,
+            ] in pix.voronoi.ridge_points
+            assert [4, 5] in pix.voronoi.ridge_points or [
+                5,
+                4,
+            ] in pix.voronoi.ridge_points
+            assert [6, 7] in pix.voronoi.ridge_points or [
+                7,
+                6,
+            ] in pix.voronoi.ridge_points
+            assert [7, 8] in pix.voronoi.ridge_points or [
+                8,
+                7,
+            ] in pix.voronoi.ridge_points
+
+            assert [0, 3] in pix.voronoi.ridge_points or [
+                3,
+                0,
+            ] in pix.voronoi.ridge_points
+            assert [1, 4] in pix.voronoi.ridge_points or [
+                4,
+                1,
+            ] in pix.voronoi.ridge_points
+            assert [4, 7] in pix.voronoi.ridge_points or [
+                7,
+                4,
+            ] in pix.voronoi.ridge_points
+            assert [2, 5] in pix.voronoi.ridge_points or [
+                5,
+                2,
+            ] in pix.voronoi.ridge_points
+            assert [5, 8] in pix.voronoi.ridge_points or [
+                8,
+                5,
+            ] in pix.voronoi.ridge_points
+            assert [3, 6] in pix.voronoi.ridge_points or [
+                6,
+                3,
+            ] in pix.voronoi.ridge_points
+
+    class TestNeighbors:
+        def test__compare_to_pixelization_util(self):
+            # 9 points in a square - makes a square (this is the example int he scipy documentaiton page)
+
+            grid = np.array(
+                [
+                    [3.0, 0.0],
+                    [2.0, 1.0],
+                    [2.0, 2.0],
+                    [8.0, 3.0],
+                    [1.0, 3.0],
+                    [1.0, 9.0],
+                    [6.0, 31.0],
+                    [0.0, 2.0],
+                    [3.0, 5.0],
+                ]
+            )
+
+            pix = aa.GridVoronoi(grid=grid)
+
+            voronoi = scipy.spatial.Voronoi(
+                np.asarray([grid[:, 1], grid[:, 0]]).T, qhull_options="Qbb Qc Qx Qm"
+            )
+            pixel_neighbors_util, pixel_neighbors_size_util = aa.util.pixelization.voronoi_neighbors_from_pixels_and_ridge_points(
+                pixels=9, ridge_points=np.array(voronoi.ridge_points)
+            )
+
+            assert (pix.pixel_neighbors == pixel_neighbors_util).all()
+            assert (pix.pixel_neighbors_size == pixel_neighbors_size_util).all()
 
 
 class TestSparseGrid:
@@ -1941,434 +2372,6 @@ class TestSparseGrid:
             ).all()
 
 
-class TestGridRectangular:
-    class TestGridNeighbors:
-        def test__3x3_grid__buffer_is_small__grid_give_min_minus_1_max_1__sets_up_geometry_correctly(
-            self
-        ):
-            grid = np.array(
-                [
-                    [1.0, -1.0],
-                    [1.0, 0.0],
-                    [1.0, 1.0],
-                    [0.0, -1.0],
-                    [0.0, 0.0],
-                    [0.0, 1.0],
-                    [-1.0, -1.0],
-                    [-1.0, 0.0],
-                    [-1.0, 1.0],
-                ]
-            )
-
-            pix_grid = aa.GridRectangular.overlay_grid(
-                shape_2d=(3, 3), grid=grid, buffer=1e-8
-            )
-
-            assert pix_grid.shape_2d == (3, 3)
-            assert pix_grid.pixel_scales == pytest.approx((2.0 / 3.0, 2.0 / 3.0), 1e-2)
-            assert (pix_grid.pixel_neighbors[0] == [1, 3, -1, -1]).all()
-            assert (pix_grid.pixel_neighbors[1] == [0, 2, 4, -1]).all()
-            assert (pix_grid.pixel_neighbors[2] == [1, 5, -1, -1]).all()
-            assert (pix_grid.pixel_neighbors[3] == [0, 4, 6, -1]).all()
-            assert (pix_grid.pixel_neighbors[4] == [1, 3, 5, 7]).all()
-            assert (pix_grid.pixel_neighbors[5] == [2, 4, 8, -1]).all()
-            assert (pix_grid.pixel_neighbors[6] == [3, 7, -1, -1]).all()
-            assert (pix_grid.pixel_neighbors[7] == [4, 6, 8, -1]).all()
-            assert (pix_grid.pixel_neighbors[8] == [5, 7, -1, -1]).all()
-
-            assert (
-                pix_grid.pixel_neighbors_size == np.array([2, 3, 2, 3, 4, 3, 2, 3, 2])
-            ).all()
-
-        def test__3x3_grid__same_as_above_change_buffer(self):
-            grid = np.array(
-                [
-                    [-1.0, -1.0],
-                    [-1.0, 0.0],
-                    [-1.0, 1.0],
-                    [0.0, -1.0],
-                    [0.0, 0.0],
-                    [0.0, 1.0],
-                    [1.0, -1.0],
-                    [1.0, 0.0],
-                    [1.0, 1.0],
-                ]
-            )
-
-            pix_grid = aa.GridRectangular.overlay_grid(
-                shape_2d=(3, 3), grid=grid, buffer=1e-8
-            )
-
-            assert pix_grid.shape_2d == (3, 3)
-            assert pix_grid.pixel_scales == pytest.approx((2.0 / 3.0, 2.0 / 3.0), 1e-2)
-
-        def test__5x4_grid__buffer_is_small(self):
-            grid = np.array(
-                [
-                    [1.0, -1.0],
-                    [1.0, 0.0],
-                    [1.0, 1.0],
-                    [0.0, -1.0],
-                    [0.0, 0.0],
-                    [0.0, 1.0],
-                    [-1.0, -1.0],
-                    [-1.0, 0.0],
-                    [-1.0, 1.0],
-                ]
-            )
-
-            pix_grid = aa.GridRectangular.overlay_grid(
-                shape_2d=(5, 4), grid=grid, buffer=1e-8
-            )
-
-            assert pix_grid.shape_2d == (5, 4)
-            assert pix_grid.pixel_scales == pytest.approx((2.0 / 5.0, 2.0 / 4.0), 1e-2)
-
-        def test__3x3_grid__larger_range_of_grid(self):
-            grid = np.array([[2.0, 1.0], [4.0, 3.0], [6.0, 5.0], [8.0, 7.0]])
-
-            pix_grid = aa.GridRectangular.overlay_grid(
-                shape_2d=(3, 3), grid=grid, buffer=1e-8
-            )
-
-            assert pix_grid.shape_2d == (3, 3)
-            assert pix_grid.pixel_scales == pytest.approx((6.0 / 3.0, 6.0 / 3.0), 1e-2)
-
-    class TestPixelCentres:
-        def test__3x3_grid__pixel_centres(self):
-            grid = np.array(
-                [
-                    [1.0, -1.0],
-                    [1.0, 0.0],
-                    [1.0, 1.0],
-                    [0.0, -1.0],
-                    [0.0, 0.0],
-                    [0.0, 1.0],
-                    [-1.0, -1.0],
-                    [-1.0, 0.0],
-                    [-1.0, 1.0],
-                ]
-            )
-
-            pix_grid = aa.GridRectangular.overlay_grid(
-                shape_2d=(3, 3), grid=grid, buffer=1e-8
-            )
-
-            assert pix_grid == pytest.approx(
-                np.array(
-                    [
-                        [2.0 / 3.0, -2.0 / 3.0],
-                        [2.0 / 3.0, 0.0],
-                        [2.0 / 3.0, 2.0 / 3.0],
-                        [0.0, -2.0 / 3.0],
-                        [0.0, 0.0],
-                        [0.0, 2.0 / 3.0],
-                        [-2.0 / 3.0, -2.0 / 3.0],
-                        [-2.0 / 3.0, 0.0],
-                        [-2.0 / 3.0, 2.0 / 3.0],
-                    ]
-                )
-            )
-
-        def test__4x3_grid__pixel_centres(self):
-            grid = np.array(
-                [
-                    [1.0, -1.0],
-                    [1.0, 0.0],
-                    [1.0, 1.0],
-                    [0.0, -1.0],
-                    [0.0, 0.0],
-                    [0.0, 1.0],
-                    [-1.0, -1.0],
-                    [-1.0, 0.0],
-                    [-1.0, 1.0],
-                ]
-            )
-
-            pix_grid = aa.GridRectangular.overlay_grid(
-                shape_2d=(4, 3), grid=grid, buffer=1e-8
-            )
-
-            assert pix_grid == pytest.approx(
-                np.array(
-                    [
-                        [0.75, -2.0 / 3.0],
-                        [0.75, 0.0],
-                        [0.75, 2.0 / 3.0],
-                        [0.25, -2.0 / 3.0],
-                        [0.25, 0.0],
-                        [0.25, 2.0 / 3.0],
-                        [-0.25, -2.0 / 3.0],
-                        [-0.25, 0.0],
-                        [-0.25, 2.0 / 3.0],
-                        [-0.75, -2.0 / 3.0],
-                        [-0.75, 0.0],
-                        [-0.75, 2.0 / 3.0],
-                    ]
-                )
-            )
-
-    class TestPixelNeighbors:
-        def test__compare_to_pixelization_util(self):
-            # |0 | 1| 2| 3|
-            # |4 | 5| 6| 7|
-            # |8 | 9|10|11|
-            # |12|13|14|15|
-
-            pix_grid = aa.GridRectangular.overlay_grid(
-                shape_2d=(7, 5), grid=np.zeros((2, 2)), buffer=1e-8
-            )
-
-            pixel_neighbors_util, pixel_neighbors_size_util = aa.util.pixelization.rectangular_neighbors_from_shape(
-                shape=(7, 5)
-            )
-
-            assert (pix_grid.pixel_neighbors == pixel_neighbors_util).all()
-            assert (pix_grid.pixel_neighbors_size == pixel_neighbors_size_util).all()
-
-
-class TestVoronoi:
-    class TestVoronoiGrid:
-        def test__9_points___check_voronoi_swaps_axis_from_y_x__to_x_y(self):
-            # 9 points in a square - makes a square (this is the example int he scipy documentaiton page)
-
-            grid = np.array(
-                [
-                    [2.0, 0.0],
-                    [2.0, 1.0],
-                    [2.0, 2.0],
-                    [1.0, 0.0],
-                    [1.0, 1.0],
-                    [1.0, 2.0],
-                    [0.0, 0.0],
-                    [0.0, 1.0],
-                    [0.0, 2.0],
-                ]
-            )
-
-            pix = aa.GridVoronoi(grid_1d=grid)
-
-            assert (
-                pix.voronoi.points
-                == np.array(
-                    [
-                        [0.0, 2.0],
-                        [1.0, 2.0],
-                        [2.0, 2.0],
-                        [0.0, 1.0],
-                        [1.0, 1.0],
-                        [2.0, 1.0],
-                        [0.0, 0.0],
-                        [1.0, 0.0],
-                        [2.0, 0.0],
-                    ]
-                )
-            ).all()
-
-        def test__points_in_x_cross_shape__sets_up_diamond_voronoi_vertices(self):
-            # 5 points in the shape of the face of a 5 on a die - makes a diamond Voronoi diagram
-
-            grid = np.array(
-                [[-1.0, 1.0], [1.0, 1.0], [0.0, 0.0], [-1.0, -1.0], [1.0, -1.0]]
-            )
-
-            pix = aa.GridVoronoi(grid_1d=grid)
-
-            pix.voronoi.vertices = list(map(lambda x: list(x), pix.voronoi.vertices))
-
-            assert [0, 1.0] in pix.voronoi.vertices
-            assert [-1.0, 0.0] in pix.voronoi.vertices
-            assert [1.0, 0.0] in pix.voronoi.vertices
-            assert [0.0, -1.0] in pix.voronoi.vertices
-
-        def test__9_points_in_square___sets_up_square_of_voronoi_vertices(self):
-            # 9 points in a square - makes a square (this is the example int he scipy documentaiton page)
-
-            grid = np.array(
-                [
-                    [2.0, 0.0],
-                    [2.0, 1.0],
-                    [2.0, 2.0],
-                    [1.0, 0.0],
-                    [1.0, 1.0],
-                    [1.0, 2.0],
-                    [0.0, 0.0],
-                    [0.0, 1.0],
-                    [0.0, 2.0],
-                ]
-            )
-
-            pix = aa.GridVoronoi(grid_1d=grid)
-
-            # ridge points is a numpy array for speed, but convert to list for the comparisons below so we can use in
-            # to look for each list
-
-            pix.voronoi.vertices = list(map(lambda x: list(x), pix.voronoi.vertices))
-
-            assert [0.5, 1.5] in pix.voronoi.vertices
-            assert [1.5, 0.5] in pix.voronoi.vertices
-            assert [0.5, 0.5] in pix.voronoi.vertices
-            assert [1.5, 1.5] in pix.voronoi.vertices
-
-        def test__points_in_x_cross_shape__sets_up_pairs_of_voronoi_cells(self):
-            # 5 points in the shape of the face of a 5 on a die - makes a diamond Voronoi diagram
-
-            grid = np.array(
-                [[1.0, -1.0], [1.0, 1.0], [0.0, 0.0], [-1.0, -1.0], [-1.0, 1.0]]
-            )
-
-            pix = aa.GridVoronoi(grid_1d=grid)
-            # ridge points is a numpy array for speed, but convert to list for the comparisons below so we can use in
-            # to look for each list
-
-            pix.voronoi.ridge_grid = list(
-                map(lambda x: list(x), pix.voronoi.ridge_points)
-            )
-
-            assert len(pix.voronoi.ridge_points) == 8
-
-            assert [2, 0] in pix.voronoi.ridge_points or [
-                0,
-                2,
-            ] in pix.voronoi.ridge_points
-            assert [2, 1] in pix.voronoi.ridge_points or [
-                1,
-                2,
-            ] in pix.voronoi.ridge_points
-            assert [2, 3] in pix.voronoi.ridge_points or [
-                3,
-                2,
-            ] in pix.voronoi.ridge_points
-            assert [2, 4] in pix.voronoi.ridge_points or [
-                4,
-                2,
-            ] in pix.voronoi.ridge_points
-            assert [0, 1] in pix.voronoi.ridge_points or [
-                1,
-                0,
-            ] in pix.voronoi.ridge_points
-            assert [0.3] in pix.voronoi.ridge_points or [
-                3,
-                0,
-            ] in pix.voronoi.ridge_points
-            assert [3, 4] in pix.voronoi.ridge_points or [
-                4,
-                3,
-            ] in pix.voronoi.ridge_points
-            assert [4, 1] in pix.voronoi.ridge_points or [
-                1,
-                4,
-            ] in pix.voronoi.ridge_points
-
-        def test__9_points_in_square___sets_up_pairs_of_voronoi_cells(self):
-            # 9 points in a square - makes a square (this is the example int he scipy documentaiton page)
-
-            grid = np.array(
-                [
-                    [2.0, 0.0],
-                    [2.0, 1.0],
-                    [2.0, 2.0],
-                    [1.0, 0.0],
-                    [1.0, 1.0],
-                    [1.0, 2.0],
-                    [0.0, 0.0],
-                    [0.0, 1.0],
-                    [0.0, 2.0],
-                ]
-            )
-
-            pix = aa.GridVoronoi(grid_1d=grid)
-
-            # ridge points is a numpy array for speed, but convert to list for the comparisons below so we can use in
-            # to look for each list
-
-            pix.voronoi.ridge_grid = list(
-                map(lambda x: list(x), pix.voronoi.ridge_points)
-            )
-
-            assert len(pix.voronoi.ridge_points) == 12
-
-            assert [0, 1] in pix.voronoi.ridge_points or [
-                1,
-                0,
-            ] in pix.voronoi.ridge_points
-            assert [1, 2] in pix.voronoi.ridge_points or [
-                2,
-                1,
-            ] in pix.voronoi.ridge_points
-            assert [3, 4] in pix.voronoi.ridge_points or [
-                4,
-                3,
-            ] in pix.voronoi.ridge_points
-            assert [4, 5] in pix.voronoi.ridge_points or [
-                5,
-                4,
-            ] in pix.voronoi.ridge_points
-            assert [6, 7] in pix.voronoi.ridge_points or [
-                7,
-                6,
-            ] in pix.voronoi.ridge_points
-            assert [7, 8] in pix.voronoi.ridge_points or [
-                8,
-                7,
-            ] in pix.voronoi.ridge_points
-
-            assert [0, 3] in pix.voronoi.ridge_points or [
-                3,
-                0,
-            ] in pix.voronoi.ridge_points
-            assert [1, 4] in pix.voronoi.ridge_points or [
-                4,
-                1,
-            ] in pix.voronoi.ridge_points
-            assert [4, 7] in pix.voronoi.ridge_points or [
-                7,
-                4,
-            ] in pix.voronoi.ridge_points
-            assert [2, 5] in pix.voronoi.ridge_points or [
-                5,
-                2,
-            ] in pix.voronoi.ridge_points
-            assert [5, 8] in pix.voronoi.ridge_points or [
-                8,
-                5,
-            ] in pix.voronoi.ridge_points
-            assert [3, 6] in pix.voronoi.ridge_points or [
-                6,
-                3,
-            ] in pix.voronoi.ridge_points
-
-    class TestNeighbors:
-        def test__compare_to_pixelization_util(self):
-            # 9 points in a square - makes a square (this is the example int he scipy documentaiton page)
-
-            grid = np.array(
-                [
-                    [3.0, 0.0],
-                    [2.0, 1.0],
-                    [2.0, 2.0],
-                    [8.0, 3.0],
-                    [1.0, 3.0],
-                    [1.0, 9.0],
-                    [6.0, 31.0],
-                    [0.0, 2.0],
-                    [3.0, 5.0],
-                ]
-            )
-
-            pix = aa.GridVoronoi(grid_1d=grid)
-
-            voronoi = scipy.spatial.Voronoi(
-                np.asarray([grid[:, 1], grid[:, 0]]).T, qhull_options="Qbb Qc Qx Qm"
-            )
-            pixel_neighbors_util, pixel_neighbors_size_util = aa.util.pixelization.voronoi_neighbors_from_pixels_and_ridge_points(
-                pixels=9, ridge_points=np.array(voronoi.ridge_points)
-            )
-
-            assert (pix.pixel_neighbors == pixel_neighbors_util).all()
-            assert (pix.pixel_neighbors_size == pixel_neighbors_size_util).all()
-
-
 @grids.grid_interpolate
 def grid_radii_from_grid(profile, grid, grid_radial_minimum=None):
     """
@@ -2614,115 +2617,186 @@ class MockCoordinateInput:
     def __init__(self):
         pass
 
-    @grids.convert_coordinates_to_grid
+    @grids.grid_like_to_numpy
     def float_values_from_grid(self, grid):
         return np.ones(shape=grid.shape[0])
 
-    @grids.convert_coordinates_to_grid
+    @grids.grid_like_to_numpy
     def tuple_values_from_grid(self, grid):
         return np.multiply(2.0, grid)
 
-    @grids.convert_coordinates_to_grid
+    @grids.grid_like_to_numpy
     def float_values_from_grid_returns_list(self, grid):
         return [np.ones(shape=grid.shape[0]), 2.0 * np.ones(shape=grid.shape[0])]
 
-    @grids.convert_coordinates_to_grid
+    @grids.grid_like_to_numpy
     def tuple_values_from_grid_returns_list(self, grid):
         return [np.multiply(1.0, grid), np.multiply(2.0, grid)]
 
 
 class TestCoordinates:
-    def test__converts_to_and_from_pixels(self):
+    def test__indexes_give_entries_where_list_begin_and_end(self):
+
+        coordinates = aa.Coordinates(coordinates=[[(0.0, 0.0)]])
+
+        assert coordinates.lower_indexes == [0]
+        assert coordinates.upper_indexes == [1]
+
+        coordinates = aa.Coordinates(coordinates=[[(0.0, 0.0), (0.0, 0.0)]])
+
+        assert coordinates.lower_indexes == [0]
+        assert coordinates.upper_indexes == [2]
+
+        coordinates = aa.Coordinates(
+            coordinates=[[(0.0, 0.0), (0.0, 0.0)], [(0.0, 0.0)]]
+        )
+
+        assert coordinates.lower_indexes == [0, 2]
+        assert coordinates.upper_indexes == [2, 3]
+
+        coordinates = aa.Coordinates(
+            coordinates=[
+                [(0.0, 0.0), (0.0, 0.0)],
+                [(0.0, 0.0), (0.0, 0.0), (0.0, 0.0)],
+                [(0.0, 0.0), (0.0, 0.0)],
+                [(0.0, 0.0)],
+            ]
+        )
+
+        assert coordinates.lower_indexes == [0, 2, 5, 7]
+        assert coordinates.upper_indexes == [2, 5, 7, 8]
+
+    def test__input_as_list_or_list_of_other_types__all_convert_correctly(self):
+
+        coordinates = aa.Coordinates(coordinates=[(1.0, -1.0), (1.0, 1.0)])
+
+        assert type(coordinates) == grids.Coordinates
+        assert (coordinates == np.array([[[1.0, -1.0], [1.0, 1.0]]])).all()
+        assert coordinates.in_list == [[(1.0, -1.0), (1.0, 1.0)]]
+
+        coordinates = aa.Coordinates(coordinates=[[(1.0, -1.0), (1.0, 1.0)]])
+
+        assert type(coordinates) == grids.Coordinates
+        assert (coordinates == np.array([[[1.0, -1.0], [1.0, 1.0]]])).all()
+        assert coordinates.in_list == [[(1.0, -1.0), (1.0, 1.0)]]
+
+        coordinates = aa.Coordinates(
+            coordinates=[np.array([1.0, -1.0]), np.array([1.0, 1.0])]
+        )
+
+        assert type(coordinates) == grids.Coordinates
+        assert (coordinates == np.array([[[1.0, -1.0], [1.0, 1.0]]])).all()
+        assert coordinates.in_list == [[(1.0, -1.0), (1.0, 1.0)]]
+
+        coordinates = aa.Coordinates(
+            coordinates=[[np.array([1.0, -1.0]), np.array([1.0, 1.0])]]
+        )
+
+        assert type(coordinates) == grids.Coordinates
+        assert (coordinates == np.array([[[1.0, -1.0], [1.0, 1.0]]])).all()
+        assert coordinates.in_list == [[(1.0, -1.0), (1.0, 1.0)]]
+
+        coordinates = aa.Coordinates(coordinates=[(1.0, -1.0), (1.0, 1.0)])
+
+        assert type(coordinates) == grids.Coordinates
+        assert (coordinates == np.array([[[1.0, -1.0], [1.0, 1.0]]])).all()
+        assert coordinates.in_list == [[(1.0, -1.0), (1.0, 1.0)]]
+
+        coordinates = aa.Coordinates(coordinates=[[(1.0, -1.0), (1.0, 1.0)]])
+
+        assert type(coordinates) == grids.Coordinates
+        assert (coordinates == np.array([[[1.0, -1.0], [1.0, 1.0]]])).all()
+        assert coordinates.in_list == [[(1.0, -1.0), (1.0, 1.0)]]
+
+        coordinates = aa.Coordinates(coordinates=[np.array([[1.0, -1.0], [1.0, 1.0]])])
+
+        assert type(coordinates) == grids.Coordinates
+        assert (coordinates == np.array([[[1.0, -1.0], [1.0, 1.0]]])).all()
+        assert coordinates.in_list == [[(1.0, -1.0), (1.0, 1.0)]]
+
+    def test__values_from_arr_1d(self):
+
+        coordinates = aa.Coordinates(coordinates=[[(1.0, 1.0), (2.0, 2.0)]])
+
+        values_from_1d = coordinates.values_from_arr_1d(arr_1d=np.array([1.0, 2.0]))
+
+        assert values_from_1d.in_list == [[1.0, 2.0]]
+
+        coordinates = aa.Coordinates(
+            coordinates=[[(1.0, 1.0), (2.0, 2.0)], [(3.0, 3.0)]]
+        )
+
+        values_from_1d = coordinates.values_from_arr_1d(
+            arr_1d=np.array([1.0, 2.0, 3.0])
+        )
+
+        assert values_from_1d.in_list == [[1.0, 2.0], [3.0]]
+
+    def test__coordinates_from_grid_1d(self):
+
+        coordinates = aa.Coordinates(coordinates=[[(1.0, 1.0), (2.0, 2.0)]])
+
+        coordinates_from_1d = coordinates.coordinates_from_grid_1d(
+            grid_1d=np.array([[1.0, 1.0], [2.0, 2.0]])
+        )
+
+        assert type(coordinates_from_1d) == grids.Coordinates
+        assert coordinates_from_1d.in_list == [[(1.0, 1.0), (2.0, 2.0)]]
+
+        coordinates = aa.Coordinates(
+            coordinates=[[(1.0, 1.0), (2.0, 2.0)], [(3.0, 3.0)]]
+        )
+
+        coordinates_from_1d = coordinates.coordinates_from_grid_1d(
+            grid_1d=np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0]])
+        )
+
+        assert type(coordinates_from_1d) == grids.Coordinates
+        assert coordinates_from_1d.in_list == [[(1.0, 1.0), (2.0, 2.0)], [(3.0, 3.0)]]
+
+        coordinates_from_1d = coordinates.coordinates_from_grid_1d(
+            grid_1d=np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0]])
+        )
+
+        assert type(coordinates_from_1d) == grids.Coordinates
+        assert coordinates_from_1d.in_list == [[(1.0, 1.0), (2.0, 2.0)], [(3.0, 3.0)]]
+
+    def test__with_mask__converts_to_and_from_pixels(self):
 
         mask = aa.Mask.manual(
             mask_2d=np.full(fill_value=False, shape=(2, 2)), pixel_scales=(2.0, 2.0)
         )
 
-        coordinates = aa.Coordinates(coordinates=[[(1.0, -1.0), (1.0, 1.0)]], mask=mask)
+        coordinates = aa.Coordinates(coordinates=[[(1.0, -1.0), (1.0, 1.0)]])
 
-        assert type(coordinates.scaled) == grids.Coordinates
-        assert coordinates.scaled == [[(1.0, -1.0), (1.0, 1.0)]]
-        assert coordinates.pixels == [[(0, 0), (0, 1)]]
+        assert coordinates.in_list == [[(1.0, -1.0), (1.0, 1.0)]]
 
         coordinates = aa.Coordinates.from_pixels_and_mask(
             pixels=[[(0, 0), (0, 1)]], mask=mask
         )
 
-        assert coordinates.scaled == [[(1.0, -1.0), (1.0, 1.0)]]
-        assert coordinates.pixels == [[(0, 0), (0, 1)]]
+        assert coordinates.in_list == [[(1.0, -1.0), (1.0, 1.0)]]
 
-    def test__input_is_list_of_tuples__converts_to_irregular_1d_grid(self):
+    def test__from_yx_1d(self):
 
-        coordinates = aa.Coordinates(coordinates=[[(1.0, 1.0), (2.0, 2.0)]])
+        coordinates = aa.Coordinates.from_yx_1d(y=[1.0, 1.0], x=[-1.0, 1.0])
 
-        assert coordinates == [[(1.0, 1.0), (2.0, 2.0)]]
-        assert type(coordinates.in_1d) == grids.GridIrregular
-        assert (coordinates.in_1d == np.array([[1.0, 1.0], [2.0, 2.0]])).all()
-        assert (coordinates.list_in_1d[0] == np.array([[1.0, 1.0], [2.0, 2.0]])).all()
+        assert coordinates.in_list == [[(1.0, -1.0), (1.0, 1.0)]]
 
-        coordinates = aa.Coordinates(
-            coordinates=[[(1.0, 1.0), (2.0, 2.0)], [(3.0, 3.0)]]
+        coordinates = aa.Coordinates.from_yx_1d(
+            y=[1.0, 1.0, 2.0, 4.0], x=[-1.0, 1.0, 3.0, 5.0]
         )
 
-        assert coordinates == [[(1.0, 1.0), (2.0, 2.0)], [(3.0, 3.0)]]
-        assert type(coordinates.in_1d) == grids.GridIrregular
-        assert (
-            coordinates.in_1d == np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0]])
-        ).all()
-        assert (coordinates.list_in_1d[0] == np.array([[1.0, 1.0], [2.0, 2.0]])).all()
-        assert (coordinates.list_in_1d[1] == np.array([[3.0, 3.0]])).all()
-
-    def test__retain_original_list_of_tuples_from_a_1d_grid(self):
-
-        coordinates = aa.Coordinates(coordinates=[[(1.0, 1.0), (2.0, 2.0)]])
-
-        coordinates_from_1d = coordinates.from_1d_coordinates(
-            coordinates_1d=np.array([[1.0, 1.0], [2.0, 2.0]])
-        )
-
-        assert type(coordinates_from_1d) == grids.Coordinates
-        assert coordinates_from_1d == [[(1.0, 1.0), (2.0, 2.0)]]
-
-        coordinates = aa.Coordinates(
-            coordinates=[[(1.0, 1.0), (2.0, 2.0)], [(3.0, 3.0)]]
-        )
-
-        coordinates_from_1d = coordinates.from_1d_coordinates(
-            coordinates_1d=np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0]])
-        )
-
-        assert type(coordinates_from_1d) == grids.Coordinates
-        assert coordinates_from_1d == [[(1.0, 1.0), (2.0, 2.0)], [(3.0, 3.0)]]
-
-        coordinates_from_1d = coordinates.from_1d_coordinates(
-            coordinates_1d=np.array([(1.0, 1.0), (2.0, 2.0), (3.0, 3.0)])
-        )
-
-        assert type(coordinates_from_1d) == grids.Coordinates
-        assert coordinates_from_1d == [[(1.0, 1.0), (2.0, 2.0)], [(3.0, 3.0)]]
-
-    def test__retain_origin_list_but_as_floats_for_single_values(self):
-
-        coordinates = aa.Coordinates(coordinates=[[(1.0, 1.0), (2.0, 2.0)]])
-
-        values_from_1d = coordinates.from_1d_values(values_1d=np.array([1.0, 2.0]))
-
-        assert values_from_1d == [[1.0, 2.0]]
-
-        coordinates = aa.Coordinates(
-            coordinates=[[(1.0, 1.0), (2.0, 2.0)], [(3.0, 3.0)]]
-        )
-
-        values_from_1d = coordinates.from_1d_values(values_1d=np.array([1.0, 2.0, 3.0]))
-
-        assert values_from_1d == [[1.0, 2.0], [3.0]]
+        assert coordinates.in_list == [
+            [(1.0, -1.0), (1.0, 1.0), (2.0, 3.0), (4.0, 5.0)]
+        ]
 
     def test__load_coordinates__retains_list_structure(self):
         coordinates = aa.Coordinates.from_file(
             file_path=test_coordinates_dir + "coordinates_test.dat"
         )
 
-        assert coordinates == [
+        assert coordinates.in_list == [
             [(1.0, 1.0), (2.0, 2.0)],
             [(3.0, 3.0), (4.0, 4.0), (5.0, 6.0)],
         ]
@@ -2732,32 +2806,34 @@ class TestCoordinates:
             [[(4.0, 4.0), (5.0, 5.0)], [(6.0, 6.0), (7.0, 7.0), (8.0, 8.0)]]
         )
 
-        output_data_dir = "{}/files/coordinates/output_test/".format(
+        output_coordinates_dir = "{}/files/coordinates/output_test/".format(
             os.path.dirname(os.path.realpath(__file__))
         )
-        if os.path.exists(output_data_dir):
-            shutil.rmtree(output_data_dir)
+        if os.path.exists(output_coordinates_dir):
+            shutil.rmtree(output_coordinates_dir)
 
-        os.makedirs(output_data_dir)
+        os.makedirs(output_coordinates_dir)
 
-        coordinates.output_to_file(file_path=output_data_dir + "coordinates_test.dat")
-
-        coordinates = aa.Coordinates.from_file(
-            file_path=output_data_dir + "coordinates_test.dat"
+        coordinates.output_to_file(
+            file_path=output_coordinates_dir + "coordinates_test.dat"
         )
 
-        assert coordinates == [
+        coordinates = aa.Coordinates.from_file(
+            file_path=output_coordinates_dir + "coordinates_test.dat"
+        )
+
+        assert coordinates.in_list == [
             [(4.0, 4.0), (5.0, 5.0)],
             [(6.0, 6.0), (7.0, 7.0), (8.0, 8.0)],
         ]
 
         with pytest.raises(FileExistsError):
             coordinates.output_to_file(
-                file_path=output_data_dir + "coordinates_test.dat"
+                file_path=output_coordinates_dir + "coordinates_test.dat"
             )
 
         coordinates.output_to_file(
-            file_path=output_data_dir + "coordinates_test.dat", overwrite=True
+            file_path=output_coordinates_dir + "coordinates_test.dat", overwrite=True
         )
 
     def test__convert_coordinates_decorator__coordinates_are_input__output_in_same_format(
@@ -2772,11 +2848,11 @@ class TestCoordinates:
 
         coordinates_output = coordinates_input.float_values_from_grid(grid=coordinates)
 
-        assert coordinates_output == [[1.0, 1.0], [1.0]]
+        assert coordinates_output.in_list == [[1.0, 1.0], [1.0]]
 
         coordinates_output = coordinates_input.tuple_values_from_grid(grid=coordinates)
 
-        assert coordinates_output == [[(2.0, 4.0), (6.0, 8.0)], [(10.0, 12.0)]]
+        assert coordinates_output.in_list == [[(2.0, 4.0), (6.0, 8.0)], [(10.0, 12.0)]]
 
     def test__convert_coordinates_decorator__same_as_above_but_output_is_a_list(self):
 
@@ -2790,13 +2866,13 @@ class TestCoordinates:
             grid=coordinates
         )
 
-        assert coordinates_output == [[[1.0, 1.0], [1.0]], [[2.0, 2.0], [2.0]]]
+        assert coordinates_output[0].in_list == [[1.0, 1.0], [1.0]], [[2.0, 2.0], [2.0]]
 
         coordinates_output = coordinates_input.tuple_values_from_grid_returns_list(
             grid=coordinates
         )
 
-        assert coordinates_output == [
-            [[(1.0, 2.0), (3.0, 4.0)], [(5.0, 6.0)]],
-            [[(2.0, 4.0), (6.0, 8.0)], [(10.0, 12.0)]],
-        ]
+        assert coordinates_output[0].in_list == [
+            [(1.0, 2.0), (3.0, 4.0)],
+            [(5.0, 6.0)],
+        ], [[(2.0, 4.0), (6.0, 8.0)], [(10.0, 12.0)]]

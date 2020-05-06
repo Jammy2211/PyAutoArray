@@ -15,7 +15,7 @@ class Regularization:
            linearly invert and fit the hyper_galaxies. Thus, it changes the pixelization in a linear manner, ensuring that \
            the minimum chi-squared solution is achieved accounting for the penalty term.
 
-        2) The likelihood of the pixelization's fit to the hyper_galaxies changes from L = -0.5 *(chi^2 + noise_normalization) \
+        2) The log likelihood of the pixelization's fit to the hyper_galaxies changes from L = -0.5 *(chi^2 + noise_normalization) \
            to L = -0.5 (chi^2 + coefficients * regularization_term + noise_normalization). The regularization \
            coefficient is a 'hyper_galaxies-parameter' which determines how strongly we smooth the pixelization's reconstruction.
 
