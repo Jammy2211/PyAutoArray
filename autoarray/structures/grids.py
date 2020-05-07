@@ -1269,7 +1269,9 @@ class Coordinates(np.ndarray):
         elif isinstance(coordinates[0], np.ndarray):
             if len(coordinates[0].shape) == 1:
                 coordinates = [coordinates]
-        elif isinstance(coordinates[0], list) and isinstance(coordinates[0][0], list):
+        elif isinstance(coordinates[0], list) and isinstance(
+            coordinates[0][0], (float)
+        ):
             coordinates = [coordinates]
 
         upper_indexes = []
