@@ -763,6 +763,34 @@ class Grid(AbstractGrid):
             )
 
 
+class GridIterator(AbstractGrid):
+    @classmethod
+    def manual_1d(
+        cls,
+        grid,
+        shape_2d,
+        pixel_scales,
+        origin=(0.0, 0.0),
+        store_in_1d=True,
+    ):
+
+        grid = Grid.manual_1d(
+            grid=grid,
+            shape_2d=shape_2d,
+            pixel_scales=pixel_scales,
+            sub_size=1,
+            origin=origin,
+            store_in_1d=store_in_1d
+        )
+
+        return GridIterator(
+            grid=np.asarray(grid),
+            mask=grid.mask,
+            store_in_1d=store_in_1d,
+            binned=grid.binned,
+        )
+
+
 class GridRectangular(Grid):
     def __new__(cls, grid, shape_2d, pixel_scales, origin=(0.0, 0.0), *args, **kwargs):
         """A pixelization-grid of (y,x) coordinates which are used to form the pixel centres of adaptive pixelizations in the \
