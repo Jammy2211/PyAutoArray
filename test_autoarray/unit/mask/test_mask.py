@@ -18,11 +18,13 @@ class TestMask:
 
         assert type(mask) == msk.Mask
         assert (mask == np.array([[False, False], [False, False]])).all()
+        assert (mask.neighbors == np.array([1, 3, 3, 2])).all()
 
         mask = aa.Mask.manual(mask_2d=[[False, False, True], [True, True, False]])
 
         assert type(mask) == msk.Mask
         assert (mask == np.array([[False, False, True], [True, True, False]])).all()
+        assert (mask.neighbors == np.array([1, 0, -1])).all()
 
     def test__mask__makes_mask_with_pixel_scale(self):
 
