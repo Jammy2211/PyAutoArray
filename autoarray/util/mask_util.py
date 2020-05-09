@@ -935,6 +935,7 @@ def sub_mask_2d_index_for_sub_mask_1d_index_via_mask_2d(mask_2d, sub_size):
     return sub_mask_2d_index_for_sub_mask_1d_index
 
 
+@decorator_util.jit()
 def mask_2d_neighbors_from_mask_2d(mask_2d):
     """Compute a 1D array that maps every unmasked pixel to the 1D index of a neighboring unmasked pixel.
 
@@ -979,22 +980,35 @@ def mask_2d_neighbors_from_mask_2d(mask_2d):
     for y in range(mask_2d.shape[0]):
         for x in range(mask_2d.shape[1]):
             if not mask_2d[y, x]:
-                if not mask_2d[y, x + 1]:
-                    mask_2d_neighbors[
-                        mask_index
-                    ] = sub_mask_1d_index_for_sub_mask_2d_index[y, x + 1]
-                elif not mask_2d[y + 1, x]:
-                    mask_2d_neighbors[
-                        mask_index
-                    ] = sub_mask_1d_index_for_sub_mask_2d_index[y + 1, x]
-                elif not mask_2d[y, x - 1]:
-                    mask_2d_neighbors[
-                        mask_index
-                    ] = sub_mask_1d_index_for_sub_mask_2d_index[y, x - 1]
-                elif not mask_2d[y - 1, x]:
-                    mask_2d_neighbors[
-                        mask_index
-                    ] = sub_mask_1d_index_for_sub_mask_2d_index[y - 1, x]
+
+                flag = True
+
+                if x + 1 < mask_2d.shape[1]:
+                    if not mask_2d[y, x + 1]:
+                        mask_2d_neighbors[
+                            mask_index
+                        ] = sub_mask_1d_index_for_sub_mask_2d_index[y, x + 1]
+                        flag = False
+
+                if y + 1 < mask_2d.shape[0] and flag:
+                    if not mask_2d[y + 1, x]:
+                        mask_2d_neighbors[
+                            mask_index
+                        ] = sub_mask_1d_index_for_sub_mask_2d_index[y + 1, x]
+                        flag = False
+
+                if x - 1 >= 0 and flag:
+                    if not mask_2d[y, x - 1]:
+                        mask_2d_neighbors[
+                            mask_index
+                        ] = sub_mask_1d_index_for_sub_mask_2d_index[y, x - 1]
+                        flag = False
+
+                if y - 1 >= 0 and flag:
+                    if not mask_2d[y - 1, x]:
+                        mask_2d_neighbors[
+                            mask_index
+                        ] = sub_mask_1d_index_for_sub_mask_2d_index[y - 1, x]
 
                 mask_index += 1
 

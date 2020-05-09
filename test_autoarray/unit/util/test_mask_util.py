@@ -3312,3 +3312,23 @@ class TestMaskNeighbors:
         mask_2d_neighbors = util.mask.mask_2d_neighbors_from_mask_2d(mask_2d=mask)
 
         assert (mask_2d_neighbors == np.array([1, 3, 3, 5, 5, 4])).all()
+
+    def test__mask_has_false_entries_on_edge__does_not_raise_error(self):
+
+        mask = np.array([[False, False], [False, False]])
+
+        mask_2d_neighbors = util.mask.mask_2d_neighbors_from_mask_2d(mask_2d=mask)
+
+        assert (mask_2d_neighbors == np.array([1, 3, 3, 2])).all()
+
+        mask = np.array([[False, False, False], [False, False, False]])
+
+        mask_2d_neighbors = util.mask.mask_2d_neighbors_from_mask_2d(mask_2d=mask)
+
+        assert (mask_2d_neighbors == np.array([1, 2, 5, 4, 5, 4])).all()
+
+        mask = np.array([[False, False], [False, False], [False, False]])
+
+        mask_2d_neighbors = util.mask.mask_2d_neighbors_from_mask_2d(mask_2d=mask)
+
+        assert (mask_2d_neighbors == np.array([1, 3, 3, 5, 5, 4])).all()
