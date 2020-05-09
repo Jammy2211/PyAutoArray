@@ -969,7 +969,7 @@ def mask_2d_neighbors_from_mask_2d(mask_2d):
 
     total_pixels = total_pixels_from_mask_2d(mask_2d=mask_2d)
 
-    mask_2d_neighbors = np.zeros(shape=total_pixels)
+    mask_2d_neighbors = -1 * np.ones(shape=total_pixels)
 
     sub_mask_1d_index_for_sub_mask_2d_index = sub_mask_1d_index_for_sub_mask_2d_index_from_sub_mask_2d(
         sub_mask_2d=mask_2d

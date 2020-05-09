@@ -3332,3 +3332,18 @@ class TestMaskNeighbors:
         mask_2d_neighbors = util.mask.mask_2d_neighbors_from_mask_2d(mask_2d=mask)
 
         assert (mask_2d_neighbors == np.array([1, 3, 3, 5, 5, 4])).all()
+
+    def test__pixel_with_no_adjacent_neighbor__gives_minus_1(self):
+
+        mask = np.array(
+            [
+                [True, True, True, True],
+                [True, False, True, False],
+                [True, False, False, True],
+                [True, True, True, True],
+            ]
+        )
+
+        mask_2d_neighbors = util.mask.mask_2d_neighbors_from_mask_2d(mask_2d=mask)
+
+        assert (mask_2d_neighbors == np.array([2, -1, 3, 2])).all()

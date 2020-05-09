@@ -85,7 +85,7 @@ class Mask(np.ndarray):
             self.sub_size = 1
             self.origin = (0.0, 0.0)
             self.pixel_scales = None
-            self.neighbors = obj.neighbors
+            self.neighbors = None
 
     @classmethod
     def manual(
