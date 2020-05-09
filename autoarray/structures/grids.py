@@ -766,12 +766,7 @@ class Grid(AbstractGrid):
 class GridIterator(AbstractGrid):
     @classmethod
     def manual_1d(
-        cls,
-        grid,
-        shape_2d,
-        pixel_scales,
-        origin=(0.0, 0.0),
-        store_in_1d=True,
+        cls, grid, shape_2d, pixel_scales, origin=(0.0, 0.0), store_in_1d=True
     ):
 
         grid = Grid.manual_1d(
@@ -780,7 +775,7 @@ class GridIterator(AbstractGrid):
             pixel_scales=pixel_scales,
             sub_size=1,
             origin=origin,
-            store_in_1d=store_in_1d
+            store_in_1d=store_in_1d,
         )
 
         return GridIterator(
@@ -789,6 +784,9 @@ class GridIterator(AbstractGrid):
             store_in_1d=store_in_1d,
             binned=grid.binned,
         )
+
+
+#    def threshold_mask_from_sub_size_1_values(self, values):
 
 
 class GridRectangular(Grid):

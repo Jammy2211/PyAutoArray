@@ -3268,3 +3268,47 @@ class TestBuffedMaskFromMask:
                 ]
             )
         ).all()
+
+
+class TestMaskNeighbors:
+    def test__gives_right_neighbor_then_down_if_not_available(self):
+
+        mask = np.array(
+            [
+                [True, True, True, True],
+                [True, False, False, True],
+                [True, False, False, True],
+                [True, True, True, True],
+            ]
+        )
+
+        mask_2d_neighbors = util.mask.mask_2d_neighbors_from_mask_2d(mask_2d=mask)
+
+        assert (mask_2d_neighbors == np.array([1, 3, 3, 2])).all()
+
+        mask = np.array(
+            [
+                [True, True, True, True, True],
+                [True, False, False, False, True],
+                [True, False, False, False, True],
+                [True, True, True, True, True],
+            ]
+        )
+
+        mask_2d_neighbors = util.mask.mask_2d_neighbors_from_mask_2d(mask_2d=mask)
+
+        assert (mask_2d_neighbors == np.array([1, 2, 5, 4, 5, 4])).all()
+
+        mask = np.array(
+            [
+                [True, True, True, True],
+                [True, False, False, True],
+                [True, False, False, True],
+                [True, False, False, True],
+                [True, True, True, True],
+            ]
+        )
+
+        mask_2d_neighbors = util.mask.mask_2d_neighbors_from_mask_2d(mask_2d=mask)
+
+        assert (mask_2d_neighbors == np.array([1, 3, 3, 5, 5, 4])).all()
