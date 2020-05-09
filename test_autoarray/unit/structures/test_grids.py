@@ -1241,6 +1241,29 @@ class TestGrid:
         assert (square_distances.mask == mask).all()
 
 
+class TestGridIterator:
+
+    def test__setup_via_manual_1d(self):
+
+        grid = aa.GridIterator.manual_1d(
+            grid=[[1.0, 2.0], [3.0, 4.0], [5.0, 6.0], [7.0, 8.0]],
+            shape_2d=(2, 2),
+            pixel_scales=1.0,
+            origin=(0.0, 1.0),
+        )
+
+        assert type(grid) == grids.GridIterator
+        assert (
+                grid.in_2d
+                == np.array([[[1.0, 2.0], [3.0, 4.0]], [[5.0, 6.0], [7.0, 8.0]]])
+        ).all()
+        assert (
+                grid.in_1d == np.array([[1.0, 2.0], [3.0, 4.0], [5.0, 6.0], [7.0, 8.0]])
+        ).all()
+        assert grid.pixel_scales == (1.0, 1.0)
+        assert grid.origin == (0.0, 1.0)
+
+
 class TestGridBorder:
     def test__sub_border_grid_for_simple_mask(self):
         mask = np.array(
