@@ -1196,6 +1196,78 @@ class SparseGrid:
         return len(self.sparse)
 
 
+class MaskedGrid(AbstractGrid):
+    @classmethod
+    def manual_1d(cls, grid, mask, store_in_1d=True):
+
+        if type(grid) is list:
+            grid = np.asarray(grid)
+
+        if grid.shape[0] != mask.sub_pixels_in_mask:
+            raise exc.GridException(
+                "The input 1D grid does not have the same number of entries as sub-pixels in"
+                "the mask."
+            )
+
+        if store_in_1d:
+            return mask.mapping.grid_stored_1d_from_sub_grid_1d(sub_grid_1d=grid)
+        else:
+            return mask.mapping.grid_stored_2d_from_sub_grid_1d(sub_grid_1d=grid)
+
+    @classmethod
+    def manual_2d(cls, grid, mask, store_in_1d=True):
+
+        if type(grid) is list:
+            grid = np.asarray(grid)
+
+        if (grid.shape[0], grid.shape[1]) != mask.sub_shape_2d:
+            raise exc.GridException(
+                "The input grid is 2D but not the same dimensions as the sub-mask "
+                "(e.g. the mask 2D shape multipled by its sub size."
+            )
+
+        if store_in_1d:
+            return mask.mapping.grid_stored_1d_from_sub_grid_2d(sub_grid_2d=grid)
+        else:
+            sub_grid_1d = mask.mapping.grid_stored_1d_from_sub_grid_2d(sub_grid_2d=grid)
+            return mask.mapping.grid_stored_2d_from_sub_grid_1d(sub_grid_1d=sub_grid_1d)
+
+    @classmethod
+    def from_mask(cls, mask, store_in_1d=True):
+        """Setup a sub-grid of the unmasked pixels, using a mask and a specified sub-grid size. The center of \
+        every unmasked pixel's sub-pixels give the grid's (y,x) arc-second coordinates.
+
+        Parameters
+        -----------
+        mask : Mask
+            The mask whose masked pixels are used to setup the sub-pixel grid.
+        sub_size : int
+            The size (sub_size x sub_size) of each unmasked pixels sub-grid.
+        """
+
+        sub_grid_1d = grid_util.grid_1d_via_mask_2d(
+            mask_2d=mask,
+            pixel_scales=mask.pixel_scales,
+            sub_size=mask.sub_size,
+            origin=mask.origin,
+        )
+
+        if store_in_1d:
+            return mask.mapping.grid_stored_1d_from_sub_grid_1d(sub_grid_1d=sub_grid_1d)
+        else:
+            return mask.mapping.grid_stored_2d_from_sub_grid_1d(sub_grid_1d=sub_grid_1d)
+
+
+class TransformedGrid(Grid):
+
+    pass
+
+
+class TransformedGridNumpy(np.ndarray):
+    def __new__(cls, grid, *args, **kwargs):
+        return grid.view(cls)
+
+
 class Interpolator:
     def __init__(self, grid, interp_grid, pixel_scale_interpolation_grid):
         self.grid = grid
@@ -1563,7 +1635,8 @@ def grid_like_to_numpy(func):
                     )
                 else:
                     return grid.mapping.grid_stored_1d_from_sub_grid_1d(
-                        sub_grid_1d=result
+                        sub_grid_1d=result,
+                        is_transformed=isinstance(result, TransformedGridNumpy),
                     )
             elif isinstance(result, list):
                 if len(result[0].shape) == 1:
@@ -1639,63 +1712,129 @@ def grid_interpolate(func):
     return wrapper
 
 
-class MaskedGrid(AbstractGrid):
-    @classmethod
-    def manual_1d(cls, grid, mask, store_in_1d=True):
+def transform_grid(func):
+    """Wrap the function in a function that checks whether the coordinates have been transformed. If they have not \ 
+    been transformed then they are transformed.
 
-        if type(grid) is list:
-            grid = np.asarray(grid)
+    Parameters
+    ----------
+    func : (profile, grid *args, **kwargs) -> Object
+        A function where the input grid is the grid whose coordinates are transformed.
 
-        if grid.shape[0] != mask.sub_pixels_in_mask:
-            raise exc.GridException(
-                "The input 1D grid does not have the same number of entries as sub-pixels in"
-                "the mask."
-            )
+    Returns
+    -------
+        A function that can except cartesian or transformed coordinates
+    """
 
-        if store_in_1d:
-            return mask.mapping.grid_stored_1d_from_sub_grid_1d(sub_grid_1d=grid)
-        else:
-            return mask.mapping.grid_stored_2d_from_sub_grid_1d(sub_grid_1d=grid)
-
-    @classmethod
-    def manual_2d(cls, grid, mask, store_in_1d=True):
-
-        if type(grid) is list:
-            grid = np.asarray(grid)
-
-        if (grid.shape[0], grid.shape[1]) != mask.sub_shape_2d:
-            raise exc.GridException(
-                "The input grid is 2D but not the same dimensions as the sub-mask "
-                "(e.g. the mask 2D shape multipled by its sub size."
-            )
-
-        if store_in_1d:
-            return mask.mapping.grid_stored_1d_from_sub_grid_2d(sub_grid_2d=grid)
-        else:
-            sub_grid_1d = mask.mapping.grid_stored_1d_from_sub_grid_2d(sub_grid_2d=grid)
-            return mask.mapping.grid_stored_2d_from_sub_grid_1d(sub_grid_1d=sub_grid_1d)
-
-    @classmethod
-    def from_mask(cls, mask, store_in_1d=True):
-        """Setup a sub-grid of the unmasked pixels, using a mask and a specified sub-grid size. The center of \
-        every unmasked pixel's sub-pixels give the grid's (y,x) arc-second coordinates.
-
-        Parameters
-        -----------
-        mask : Mask
-            The mask whose masked pixels are used to setup the sub-pixel grid.
-        sub_size : int
-            The size (sub_size x sub_size) of each unmasked pixels sub-grid.
+    @wraps(func)
+    def wrapper(profile, grid, *args, **kwargs):
         """
 
-        sub_grid_1d = grid_util.grid_1d_via_mask_2d(
-            mask_2d=mask,
-            pixel_scales=mask.pixel_scales,
-            sub_size=mask.sub_size,
-            origin=mask.origin,
+        Parameters
+        ----------
+        profile : GeometryProfile
+            The profiles that owns the function.
+        grid : grid_like
+            The (y, x) coordinates in the original reference frame of the grid.
+
+        Returns
+        -------
+            A grid_like object whose coordinates may be transformed.
+        """
+
+        if not isinstance(grid, TransformedGrid) and not isinstance(grid, TransformedGridNumpy):
+            result = func(
+                profile,
+                profile.transform_grid_to_reference_frame(grid),
+                *args,
+                **kwargs,
+            )
+
+            return result
+
+        else:
+            return func(profile, grid, *args, **kwargs)
+
+    return wrapper
+
+
+def cache(func):
+    """
+    Caches results of a call to a grid function. If a grid that evaluates to the same byte value is passed into the same
+    function of the same instance as previously then the cached result is returned.
+
+    Parameters
+    ----------
+    func
+        Some instance method that takes a grid as its argument
+
+    Returns
+    -------
+    result
+        Some result, either newly calculated or recovered from the cache
+    """
+
+    def wrapper(instance, grid: np.ndarray, *args, **kwargs):
+        if not hasattr(instance, "cache"):
+            instance.cache = {}
+        key = (func.__name__, grid.tobytes())
+        if key not in instance.cache:
+            instance.cache[key] = func(instance, grid)
+        return instance.cache[key]
+
+    return wrapper
+
+
+def move_grid_to_radial_minimum(func):
+    """ Checks whether any coordinates in the grid are radially near (0.0, 0.0), which can lead to numerical faults in \
+    the evaluation of a light or mass profiles. If any coordinates are radially within the the radial minimum \
+    threshold, their (y,x) coordinates are shifted to that value to ensure they are evaluated correctly.
+
+    By default this radial minimum is not used, and users should be certain they use a value that does not impact \
+    results.
+
+    Parameters
+    ----------
+    func : (profile, *args, **kwargs) -> Object
+        A function that takes a grid of coordinates which may have a singularity as (0.0, 0.0)
+
+    Returns
+    -------
+        A function that can except cartesian or transformed coordinates
+    """
+
+    @wraps(func)
+    def wrapper(profile, grid, *args, **kwargs):
+        """
+
+        Parameters
+        ----------
+        profile : SphericalProfile
+            The profiles that owns the function
+        grid : grid_like
+            The (y, x) coordinates which are to be radially moved from (0.0, 0.0).
+
+        Returns
+        -------
+            The grid_like object whose coordinates are radially moved from (0.0, 0.0).
+        """
+        radial_minimum_config = aa.conf.NamedConfig(
+            f"{aa.conf.instance.config_path}/radial_minimum.ini"
+        )
+        grid_radial_minimum = radial_minimum_config.get(
+            "radial_minimum", profile.__class__.__name__, float
         )
 
-        if store_in_1d:
-            return mask.mapping.grid_stored_1d_from_sub_grid_1d(sub_grid_1d=sub_grid_1d)
-        else:
-            return mask.mapping.grid_stored_2d_from_sub_grid_1d(sub_grid_1d=sub_grid_1d)
+        with np.errstate(all="ignore"):  # Division by zero fixed via isnan
+
+            grid_radii = profile.grid_to_grid_radii(grid=grid)
+
+            grid_radial_scale = np.where(
+                grid_radii < grid_radial_minimum, grid_radial_minimum / grid_radii, 1.0
+            )
+            grid = np.multiply(grid, grid_radial_scale[:, None])
+        grid[np.isnan(grid)] = grid_radial_minimum
+
+        return func(profile, grid, *args, **kwargs)
+
+    return wrapper
