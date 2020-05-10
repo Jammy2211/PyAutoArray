@@ -206,7 +206,7 @@ class Mapping:
         )
         return self.grid_stored_1d_from_grid_1d(grid_1d=grid_1d)
 
-    def grid_stored_1d_from_sub_grid_1d(self, sub_grid_1d):
+    def grid_stored_1d_from_sub_grid_1d(self, sub_grid_1d, is_transformed=False):
         """ Map a 1D sub-grid the same dimension as the sub-grid (e.g. including sub-pixels) to its original masked
         2D sub grid.
 
@@ -215,7 +215,12 @@ class Mapping:
         sub_grid_1d : ndgrid
             The 1D sub_grid which is mapped to its masked 2D sub-grid.
         """
-        return grids.Grid(grid=sub_grid_1d, mask=self.mask, store_in_1d=True)
+        if not is_transformed:
+            return grids.Grid(grid=sub_grid_1d, mask=self.mask, store_in_1d=True)
+        else:
+            return grids.TransformedGrid(
+                grid=sub_grid_1d, mask=self.mask, store_in_1d=True
+            )
 
     def grid_stored_1d_from_sub_grid_2d(self, sub_grid_2d):
         """ Map a 2D sub-grid to its masked 1D sub-grid.
