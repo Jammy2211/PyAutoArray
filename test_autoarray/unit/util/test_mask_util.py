@@ -3268,3 +3268,82 @@ class TestBuffedMaskFromMask:
                 ]
             )
         ).all()
+
+
+class TestMaskNeighbors:
+    def test__gives_right_neighbor_then_down_if_not_available(self):
+
+        mask = np.array(
+            [
+                [True, True, True, True],
+                [True, False, False, True],
+                [True, False, False, True],
+                [True, True, True, True],
+            ]
+        )
+
+        mask_2d_neighbors = util.mask.mask_2d_neighbors_from_mask_2d(mask_2d=mask)
+
+        assert (mask_2d_neighbors == np.array([1, 3, 3, 2])).all()
+
+        mask = np.array(
+            [
+                [True, True, True, True, True],
+                [True, False, False, False, True],
+                [True, False, False, False, True],
+                [True, True, True, True, True],
+            ]
+        )
+
+        mask_2d_neighbors = util.mask.mask_2d_neighbors_from_mask_2d(mask_2d=mask)
+
+        assert (mask_2d_neighbors == np.array([1, 2, 5, 4, 5, 4])).all()
+
+        mask = np.array(
+            [
+                [True, True, True, True],
+                [True, False, False, True],
+                [True, False, False, True],
+                [True, False, False, True],
+                [True, True, True, True],
+            ]
+        )
+
+        mask_2d_neighbors = util.mask.mask_2d_neighbors_from_mask_2d(mask_2d=mask)
+
+        assert (mask_2d_neighbors == np.array([1, 3, 3, 5, 5, 4])).all()
+
+    def test__mask_has_false_entries_on_edge__does_not_raise_error(self):
+
+        mask = np.array([[False, False], [False, False]])
+
+        mask_2d_neighbors = util.mask.mask_2d_neighbors_from_mask_2d(mask_2d=mask)
+
+        assert (mask_2d_neighbors == np.array([1, 3, 3, 2])).all()
+
+        mask = np.array([[False, False, False], [False, False, False]])
+
+        mask_2d_neighbors = util.mask.mask_2d_neighbors_from_mask_2d(mask_2d=mask)
+
+        assert (mask_2d_neighbors == np.array([1, 2, 5, 4, 5, 4])).all()
+
+        mask = np.array([[False, False], [False, False], [False, False]])
+
+        mask_2d_neighbors = util.mask.mask_2d_neighbors_from_mask_2d(mask_2d=mask)
+
+        assert (mask_2d_neighbors == np.array([1, 3, 3, 5, 5, 4])).all()
+
+    def test__pixel_with_no_adjacent_neighbor__gives_minus_1(self):
+
+        mask = np.array(
+            [
+                [True, True, True, True],
+                [True, False, True, False],
+                [True, False, False, True],
+                [True, True, True, True],
+            ]
+        )
+
+        mask_2d_neighbors = util.mask.mask_2d_neighbors_from_mask_2d(mask_2d=mask)
+
+        assert (mask_2d_neighbors == np.array([2, -1, 3, 2])).all()

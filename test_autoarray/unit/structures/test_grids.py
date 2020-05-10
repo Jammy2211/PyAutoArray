@@ -1241,6 +1241,27 @@ class TestGrid:
         assert (square_distances.mask == mask).all()
 
 
+class TestGridIterator:
+    def test__setup_via_manual_1d(self):
+
+        grid = aa.GridIterator.manual_1d(
+            grid=[[1.0, 2.0], [3.0, 4.0], [5.0, 6.0], [7.0, 8.0]],
+            shape_2d=(2, 2),
+            pixel_scales=1.0,
+            origin=(0.0, 1.0),
+        )
+
+        assert type(grid) == grids.GridIterator
+        assert (
+            grid.in_2d == np.array([[[1.0, 2.0], [3.0, 4.0]], [[5.0, 6.0], [7.0, 8.0]]])
+        ).all()
+        assert (
+            grid.in_1d == np.array([[1.0, 2.0], [3.0, 4.0], [5.0, 6.0], [7.0, 8.0]])
+        ).all()
+        assert grid.pixel_scales == (1.0, 1.0)
+        assert grid.origin == (0.0, 1.0)
+
+
 class TestGridBorder:
     def test__sub_border_grid_for_simple_mask(self):
         mask = np.array(
@@ -2900,3 +2921,102 @@ class TestCoordinates:
             [(1.0, 2.0), (3.0, 4.0)],
             [(5.0, 6.0)],
         ], [[(2.0, 4.0), (6.0, 8.0)], [(10.0, 12.0)]]
+
+
+class TestMemoize:
+    def test_add_to_cache(self):
+        class MyProfile:
+            # noinspection PyMethodMayBeStatic
+            @grids.cache
+            def my_method(self, grid, grid_radial_minimum=None):
+                return grid
+
+        profile = MyProfile()
+        other_profile = MyProfile()
+        assert not hasattr(profile, "cache")
+
+        profile.my_method(np.array([0]))
+        assert hasattr(profile, "cache")
+        assert not hasattr(other_profile, "cache")
+        assert len(profile.cache) == 1
+
+        profile.my_method(np.array([0]))
+        assert len(profile.cache) == 1
+
+        profile.my_method(np.array([1]))
+        assert len(profile.cache) == 2
+
+    def test_get_from_cache(self):
+        class CountingProfile:
+            def __init__(self):
+                self.count = 0
+
+            @grids.cache
+            def my_method(self, grid, grid_radial_minimum=None):
+                self.count += 1
+                return self.count
+
+        profile = CountingProfile()
+
+        assert profile.my_method(grid=np.array([0]), grid_radial_minimum=None) == 1
+        assert profile.my_method(grid=np.array([1]), grid_radial_minimum=None) == 2
+        assert profile.my_method(grid=np.array([2]), grid_radial_minimum=None) == 3
+        assert profile.my_method(grid=np.array([0]), grid_radial_minimum=None) == 1
+        assert profile.my_method(grid=np.array([1]), grid_radial_minimum=None) == 2
+
+    def test_multiple_cached_methods(self):
+        class MultiMethodProfile:
+            @grids.cache
+            def method_one(self, grid, grid_radial_minimum=None):
+                return grid
+
+            @grids.cache
+            def method_two(self, grid, grid_radial_minimum=None):
+                return grid
+
+        profile = MultiMethodProfile()
+
+        array = np.array([0])
+        profile.method_one(array)
+        assert profile.method_one(array) is array
+        assert profile.method_two(np.array([0])) is not array
+
+
+class MockGridRadialMinimum:
+    def __init__(self):
+        pass
+
+    def grid_to_grid_radii(self, grid):
+        return np.sqrt(np.add(np.square(grid[:, 0]), np.square(grid[:, 1])))
+
+    @grids.move_grid_to_radial_minimum
+    def deflections_from_grid(self, grid):
+        return grid
+
+
+# class TestGridRadialMinimum:
+#
+#     def test__mock_profile__grid_radial_minimum_is_0_or_below_radial_coordinates__no_changes(self):
+#         grid = np.arrays([[2.5, 0.0], [4.0, 0.0], [6.0, 0.0]])
+#         mock_profile = MockGridRadialMinimum()
+#
+#         deflections = mock_profile.deflections_from_grid(grid=grid)
+#         assert (deflections == grid).all()
+#
+#     def test__mock_profile__grid_radial_minimum_is_above_some_radial_coordinates__moves_them_grid_radial_minimum(self):
+#         grid = np.arrays([[2.0, 0.0], [1.0, 0.0], [6.0, 0.0]])
+#         mock_profile = MockGridRadialMinimum()
+#
+#         deflections = mock_profile.deflections_from_grid(grid=grid)
+#
+#         assert (deflections == np.arrays([[2.5, 0.0], [2.5, 0.0], [6.0, 0.0]])).all()
+#
+#     def test__mock_profile__same_as_above_but_diagonal_coordinates(self):
+#         grid = np.arrays([[np.sqrt(2.0), np.sqrt(2.0)], [1.0, np.sqrt(8.0)], [np.sqrt(8.0), np.sqrt(8.0)]])
+#
+#         mock_profile = MockGridRadialMinimum()
+#
+#         deflections = mock_profile.deflections_from_grid(grid=grid)
+#
+#         assert deflections == pytest.approx(np.arrays([[1.7677, 1.7677], [1.0, np.sqrt(8.0)],
+#                                                       [np.sqrt(8), np.sqrt(8.0)]]), 1.0e-4)
