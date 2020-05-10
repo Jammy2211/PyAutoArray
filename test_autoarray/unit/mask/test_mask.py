@@ -113,6 +113,24 @@ class TestMask:
 
             aa.Mask.manual(mask_2d=[False, False, True], pixel_scales=False, sub_size=1)
 
+    def test__is_all_true(self):
+
+        mask = aa.Mask.manual(mask_2d=[[False, False], [False, False]])
+
+        assert mask.is_all_true == False
+
+        mask = aa.Mask.manual(mask_2d=[[False, False]])
+
+        assert mask.is_all_true == False
+
+        mask = aa.Mask.manual(mask_2d=[[False, True], [False, False]])
+
+        assert mask.is_all_true == False
+
+        mask = aa.Mask.manual(mask_2d=[[True, True], [True, True]])
+
+        assert mask.is_all_true == True
+
     def test__is_all_false(self):
 
         mask = aa.Mask.manual(mask_2d=[[False, False], [False, False]])
