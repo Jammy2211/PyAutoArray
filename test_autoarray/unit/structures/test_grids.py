@@ -1248,6 +1248,7 @@ class TestGridIterator:
             grid=[[1.0, 2.0], [3.0, 4.0], [5.0, 6.0], [7.0, 8.0]],
             shape_2d=(2, 2),
             pixel_scales=1.0,
+            fractional_accuracy=0.1,
             origin=(0.0, 1.0),
         )
 
@@ -1259,7 +1260,127 @@ class TestGridIterator:
             grid.in_1d == np.array([[1.0, 2.0], [3.0, 4.0], [5.0, 6.0], [7.0, 8.0]])
         ).all()
         assert grid.pixel_scales == (1.0, 1.0)
+        assert grid.fractional_accuracy == 0.1
         assert grid.origin == (0.0, 1.0)
+
+    def test__setup_from_mask(self):
+
+        mask = np.array(
+            [
+                [True, True, False, False],
+                [True, False, True, True],
+                [True, True, False, False],
+            ]
+        )
+        mask = aa.Mask.manual(mask_2d=mask, pixel_scales=(2.0, 2.0), sub_size=2)
+
+        grid_via_util = aa.util.grid.grid_1d_via_mask_2d(
+            mask_2d=mask, sub_size=1, pixel_scales=(2.0, 2.0)
+        )
+
+        grid = aa.GridIterator.from_mask(mask=mask, fractional_accuracy=0.1)
+
+        assert type(grid) == grids.GridIterator
+        assert grid == pytest.approx(grid_via_util, 1e-4)
+        assert grid.pixel_scales == (2.0, 2.0)
+        assert grid.interpolator == None
+        assert grid.sub_size == 1
+
+    def test__fractional_mask_from_result_array_1d(self):
+
+        mask = aa.Mask.manual(
+            mask_2d=[
+                [True, True, True, True],
+                [True, False, False, True],
+                [True, False, False, True],
+                [True, True, True, True],
+            ],
+            pixel_scales=(1.0, 1.0),
+        )
+
+        grid = aa.GridIterator.from_mask(mask=mask, fractional_accuracy=0.9999)
+
+        # Neighbors are compared as follows: 0 -> 1, 1 -> 3, 2 -> 3, 3 -> 1
+
+        result_array = aa.MaskedArray.manual_2d(
+            [
+                [0.0, 0.0, 0.0, 0.0],
+                [0.0, 1.0, 1.0, 0.0],
+                [0.0, 1.0, 1.0, 0.0],
+                [0.0, 0.0, 0.0, 0.0],
+            ],
+            mask=mask,
+        )
+
+        fractional_mask = grid.fractional_mask_from_result_array(
+            result_array=result_array
+        )
+
+        assert (
+            fractional_mask
+            == np.array(
+                [
+                    [True, True, True, True],
+                    [True, True, True, True],
+                    [True, True, True, True],
+                    [True, True, True, True],
+                ]
+            )
+        ).all()
+
+        result_array = aa.MaskedArray.manual_2d(
+            [
+                [0.0, 0.0, 0.0, 0.0],
+                [0.0, 1.0, 2.0, 0.0],
+                [0.0, 3.0, 4.0, 0.0],
+                [0.0, 0.0, 0.0, 0.0],
+            ],
+            mask=mask,
+        )
+
+        fractional_mask = grid.fractional_mask_from_result_array(
+            result_array=result_array
+        )
+
+        assert (
+            fractional_mask
+            == np.array(
+                [
+                    [True, True, True, True],
+                    [True, False, False, True],
+                    [True, False, False, True],
+                    [True, True, True, True],
+                ]
+            )
+        ).all()
+
+        grid = aa.GridIterator.from_mask(mask=mask, fractional_accuracy=0.95)
+
+        result_array = aa.MaskedArray.manual_2d(
+            [
+                [0.0, 0.0, 0.0, 0.0],
+                [0.0, 1.0, 1.00001, 0.0],
+                [0.0, 3.0, 2.0, 0.0],
+                [0.0, 0.0, 0.0, 0.0],
+            ],
+            mask=mask,
+        )
+
+        fractional_mask = grid.fractional_mask_from_result_array(
+            result_array=result_array
+        )
+
+        assert (
+            fractional_mask
+            == np.array(
+                [
+                    [True, True, True, True],
+                    [True, True, False, True],
+                    [True, False, False, True],
+                    [True, True, True, True],
+                ]
+            )
+        ).all()
 
 
 class TestGridBorder:

@@ -764,9 +764,136 @@ class Grid(AbstractGrid):
 
 
 class GridIterator(AbstractGrid):
+    def __new__(
+        cls, grid, mask, fractional_accuracy=0.9999, store_in_1d=True, *args, **kwargs
+    ):
+        """A grid of coordinates, where each entry corresponds to the (y,x) coordinates at the centre of an \
+        unmasked pixel. The positive y-axis is upwards and poitive x-axis to the right.
+
+        A *Grid* is ordered such pixels begin from the top-row of the mask and go rightwards and then \
+        downwards. Therefore, it is a ndarray of shape [total_unmasked_pixels, 2]. The first element of the ndarray \
+        thus corresponds to the pixel index and second element the y or x arc -econd coordinates. For example:
+
+        - grid[3,0] = the 4th unmasked pixel's y-coordinate.
+        - grid[6,1] = the 7th unmasked pixel's x-coordinate.
+
+        Below is a visual illustration of a grid, where a total of 10 pixels are unmasked and are included in \
+        the grid.
+
+        |x|x|x|x|x|x|x|x|x|x|
+        |x|x|x|x|x|x|x|x|x|x|     This is an example mask.Mask, where:
+        |x|x|x|x|x|x|x|x|x|x|
+        |x|x|x|x|o|o|x|x|x|x|     x = True (Pixel is masked and excluded from the grid)
+        |x|x|x|o|o|o|o|x|x|x|     o = False (Pixel is not masked and included in the grid)
+        |x|x|x|o|o|o|o|x|x|x|
+        |x|x|x|x|x|x|x|x|x|x|
+        |x|x|x|x|x|x|x|x|x|x|
+        |x|x|x|x|x|x|x|x|x|x|
+        |x|x|x|x|x|x|x|x|x|x|
+
+        The mask pixel index's will come out like this (and the direction of scaled coordinates is highlighted
+        around the mask.
+
+        pixel_scales = 1.0"
+
+        <--- -ve  x  +ve -->
+                                                        y      x
+        |x|x|x|x|x|x|x|x|x|x|  ^   grid[0] = [ 1.5, -0.5]
+        |x|x|x|x|x|x|x|x|x|x|  |   grid[1] = [ 1.5,  0.5]
+        |x|x|x|x|x|x|x|x|x|x|  |   grid[2] = [ 0.5, -1.5]
+        |x|x|x|x|0|1|x|x|x|x| +ve  grid[3] = [ 0.5, -0.5]
+        |x|x|x|2|3|4|5|x|x|x|  y   grid[4] = [ 0.5,  0.5]
+        |x|x|x|6|7|8|9|x|x|x| -ve  grid[5] = [ 0.5,  1.5]
+        |x|x|x|x|x|x|x|x|x|x|  |   grid[6] = [-0.5, -1.5]
+        |x|x|x|x|x|x|x|x|x|x|  |   grid[7] = [-0.5, -0.5]
+        |x|x|x|x|x|x|x|x|x|x| \/   grid[8] = [-0.5,  0.5]
+        |x|x|x|x|x|x|x|x|x|x|      grid[9] = [-0.5,  1.5]
+
+        A sub-grid of coordinates, where each entry corresponds to the (y,x) coordinates at the centre of each \
+        sub-pixel of an unmasked pixel (e.g. the pixels of a grid). The positive y-axis is upwards and poitive \
+        x-axis to the right, and this convention is followed for the sub-pixels in each unmasked pixel.
+
+        A *ScaledSubGrid* is ordered such that pixels begin from the first (top-left) sub-pixel in the first unmasked pixel. \
+        Indexes then go over the sub-pixels in each unmasked pixel, for every unmasked pixel. Therefore, \
+        the sub-grid is an ndarray of shape [total_unmasked_pixels*(sub_grid_shape)**2, 2]. For example:
+
+        - grid[9, 1] - using a 2x2 sub-grid, gives the 3rd unmasked pixel's 2nd sub-pixel x-coordinate.
+        - grid[9, 1] - using a 3x3 sub-grid, gives the 2nd unmasked pixel's 1st sub-pixel x-coordinate.
+        - grid[27, 0] - using a 3x3 sub-grid, gives the 4th unmasked pixel's 1st sub-pixel y-coordinate.
+
+        Below is a visual illustration of a sub grid. Like the grid, the indexing of each sub-pixel goes from \
+        the top-left corner. In contrast to the grid above, our illustration below restricts the mask to just \
+        2 pixels, to keep the illustration brief.
+
+        |x|x|x|x|x|x|x|x|x|x|
+        |x|x|x|x|x|x|x|x|x|x|     This is an example mask.Mask, where:
+        |x|x|x|x|x|x|x|x|x|x|
+        |x|x|x|x|x|x|x|x|x|x|     x = True (Pixel is masked and excluded from lens)
+        |x|x|x|x|o|o|x|x|x|x|     o = False (Pixel is not masked and included in lens)
+        |x|x|x|x|x|x|x|x|x|x|
+        |x|x|x|x|x|x|x|x|x|x|
+        |x|x|x|x|x|x|x|x|x|x|
+        |x|x|x|x|x|x|x|x|x|x|
+        |x|x|x|x|x|x|x|x|x|x|
+
+        Our grid looks like it did before:
+
+        pixel_scales = 1.0"
+
+        <--- -ve  x  +ve -->
+
+        |x|x|x|x|x|x|x|x|x|x|  ^
+        |x|x|x|x|x|x|x|x|x|x|  |
+        |x|x|x|x|x|x|x|x|x|x|  |                        y     x
+        |x|x|x|x|x|x|x|x|x|x| +ve  grid[0] = [0.5,  -1.5]
+        |x|x|x|0|1|x|x|x|x|x|  y   grid[1] = [0.5,  -0.5]
+        |x|x|x|x|x|x|x|x|x|x| -ve
+        |x|x|x|x|x|x|x|x|x|x|  |
+        |x|x|x|x|x|x|x|x|x|x|  |
+        |x|x|x|x|x|x|x|x|x|x| \/
+        |x|x|x|x|x|x|x|x|x|x|
+
+        However, we now go to each unmasked pixel and derive a sub-pixel grid for it. For example, for pixel 0,
+        if *sub_size=2*, we use a 2x2 sub-grid:
+
+        Pixel 0 - (2x2):
+                                y      x
+               grid[0] = [0.66, -1.66]
+        |0|1|  grid[1] = [0.66, -1.33]
+        |2|3|  grid[2] = [0.33, -1.66]
+               grid[3] = [0.33, -1.33]
+
+        Now, we'd normally sub-grid all pixels using the same *sub_size*, but for this illustration lets
+        pretend we used a sub_size of 3x3 for pixel 1:
+
+                                  y      x
+                 grid[0] = [0.75, -0.75]
+                 grid[1] = [0.75, -0.5]
+                 grid[2] = [0.75, -0.25]
+        |0|1|2|  grid[3] = [0.5,  -0.75]
+        |3|4|5|  grid[4] = [0.5,  -0.5]
+        |6|7|8|  grid[5] = [0.5,  -0.25]
+                 grid[6] = [0.25, -0.75]
+                 grid[7] = [0.25, -0.5]
+                 grid[8] = [0.25, -0.25]
+
+        """
+        obj = super(GridIterator, cls).__new__(
+            cls=cls, grid=grid, mask=mask, store_in_1d=store_in_1d
+        )
+        obj.fractional_accuracy = fractional_accuracy
+        obj.binned = True
+        return obj
+
     @classmethod
     def manual_1d(
-        cls, grid, shape_2d, pixel_scales, origin=(0.0, 0.0), store_in_1d=True
+        cls,
+        grid,
+        shape_2d,
+        pixel_scales,
+        origin=(0.0, 0.0),
+        fractional_accuracy=0.9999,
+        store_in_1d=True,
     ):
 
         grid = Grid.manual_1d(
@@ -781,12 +908,74 @@ class GridIterator(AbstractGrid):
         return GridIterator(
             grid=np.asarray(grid),
             mask=grid.mask,
+            fractional_accuracy=fractional_accuracy,
             store_in_1d=store_in_1d,
-            binned=grid.binned,
         )
 
+    @classmethod
+    def from_mask(cls, mask, fractional_accuracy=1e-4, store_in_1d=True):
+        """Setup a sub-grid of the unmasked pixels, using a mask and a specified sub-grid size. The center of \
+        every unmasked pixel's sub-pixels give the grid's (y,x) scaled coordinates.
 
-#    def threshold_mask_from_sub_size_1_values(self, values):
+        Parameters
+        -----------
+        mask : Mask
+            The mask whose masked pixels are used to setup the sub-pixel grid.
+        sub_size : int
+            The size (sub_size x sub_size) of each unmasked pixels sub-grid.
+        """
+
+        grid = Grid.from_mask(mask=mask.mask_sub_1, store_in_1d=store_in_1d)
+
+        return GridIterator(
+            grid=np.asarray(grid),
+            mask=grid.mask,
+            fractional_accuracy=fractional_accuracy,
+            store_in_1d=store_in_1d,
+        )
+
+    def fractional_mask_from_result_array(self, result_array):
+        """ Compute a fractional mask from a result array, where the fractional mask describes whether the evaluated
+        value in the result array is within the *GridIterator*'s specified fractional accuracy. The fractional mask thus
+        determines whether a pixel on the grid needs to be reevaluated at a higher level of sub-gridding to meet the
+        specified fractional accuracy. If it must be re-evaluated, the fractional masks's entry is *False*.
+
+        For most iterations of the *GridIterator* the fractional mask is computed by comparing the results evaluate
+        at one level of sub-gridding to another (see *fractional_mask_from_x2_result_arrays). However, the first
+        iteration of the iterative grid (which uses no sub-gridding) has no higher resolution sub-grid result to
+        compare to. This function deals with this scenario, where neighboring pixels on the grid are compared
+        instead.
+
+        Parameters
+        ----------
+        result_array : arrays.Array
+            The set of results computed by a function using a sub-grid size of 1.
+        """
+
+        fractional_mask = aa.Mask.unmasked(shape_2d=result_array.shape_2d, invert=True)
+
+        result_array_2d = result_array.in_2d
+
+        mask_index = 0
+
+        for y in range(fractional_mask.shape_2d[0]):
+            for x in range(fractional_mask.shape_2d[1]):
+                if not result_array.mask[y, x]:
+
+                    neighbor_index = result_array.mask.neighbors[mask_index]
+                    fractional_accuracy = (
+                        result_array_2d[y, x] / result_array[neighbor_index]
+                    )
+
+                    if fractional_accuracy > 1.0:
+                        fractional_accuracy = 1.0 / fractional_accuracy
+
+                    if fractional_accuracy < self.fractional_accuracy:
+                        fractional_mask[y, x] = False
+
+                    mask_index += 1
+
+        return fractional_mask
 
 
 class GridRectangular(Grid):
@@ -1742,7 +1931,9 @@ def transform_grid(func):
             A grid_like object whose coordinates may be transformed.
         """
 
-        if not isinstance(grid, TransformedGrid) and not isinstance(grid, TransformedGridNumpy):
+        if not isinstance(grid, TransformedGrid) and not isinstance(
+            grid, TransformedGridNumpy
+        ):
             result = func(
                 profile,
                 profile.transform_grid_to_reference_frame(grid),
