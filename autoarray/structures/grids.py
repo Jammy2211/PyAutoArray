@@ -771,7 +771,7 @@ class GridIterator(Grid):
         grid,
         mask,
         fractional_accuracy=0.9999,
-        sub_steps=[2, 4, 8, 16],
+        sub_steps=[1, 2, 4, 8, 16],
         store_in_1d=True,
         *args,
         **kwargs,
@@ -903,7 +903,7 @@ class GridIterator(Grid):
         pixel_scales,
         origin=(0.0, 0.0),
         fractional_accuracy=0.9999,
-        sub_steps=[2, 4, 8, 16],
+        sub_steps=[1, 2, 4, 8, 16],
         store_in_1d=True,
     ):
 
@@ -926,7 +926,7 @@ class GridIterator(Grid):
 
     @classmethod
     def from_mask(
-        cls, mask, fractional_accuracy=1e-4, sub_steps=[2, 4, 8, 16], store_in_1d=True
+        cls, mask, fractional_accuracy=1e-4, sub_steps=[1, 2, 4, 8, 16], store_in_1d=True
     ):
         """Setup a sub-grid of the unmasked pixels, using a mask and a specified sub-grid size. The center of \
         every unmasked pixel's sub-pixels give the grid's (y,x) scaled coordinates.
@@ -1794,31 +1794,14 @@ def grid_like_to_numpy(func):
             The function values evaluated on the grid with the same structure as the input grid_like object.
         """
 
-        def result_from_coordinates(func, profile, coordinates):
-            """Convert the result of the Profile function back to a *GridCoordinates* object or list of list of float."""
-
-            result = func(profile, coordinates, *args, **kwargs)
-
-            if isinstance(result, np.ndarray):
-                if len(result.shape) == 1:
-                    return coordinates.values_from_arr_1d(arr_1d=result)
-                elif len(result.shape) == 2:
-                    return coordinates.coordinates_from_grid_1d(grid_1d=result)
-            elif isinstance(result, list):
-                if len(result[0].shape) == 1:
-                    return [
-                        coordinates.values_from_arr_1d(arr_1d=value) for value in result
-                    ]
-                elif len(result[0].shape) == 2:
-                    return [
-                        coordinates.coordinates_from_grid_1d(grid_1d=value)
-                        for value in result
-                    ]
-
         def result_from_grid(func, profile, grid):
             """Convert the result of the Profile function back to a *Grid* or *Array* object."""
 
             result = func(profile, grid, *args, **kwargs)
+
+            return result_as_structure_from_grid(result=result, grid=grid)
+
+        def result_as_structure_from_grid(result, grid):
 
             if isinstance(result, np.ndarray):
                 if len(result.shape) == 1:
@@ -1844,10 +1827,18 @@ def grid_like_to_numpy(func):
                         for value in result
                     ]
 
-        def result_from_grid_iterator(func, grid_iterator):
+        def result_from_grid_iterator(func, profile, grid):
             """Convert the result of the Profile function back to a *Grid* or *Array* object."""
 
             result = func(profile, grid, *args, **kwargs)
+            result = result_as_structure_from_grid(result=result, grid=grid)
+
+            fractional_mask = grid.fractional_mask_from_result_array(result_array=result)
+
+            for sub_size in grid.sub_steps:
+
+                if fractional_mask.is_all_true:
+                    return result
 
             if isinstance(result, np.ndarray):
                 if len(result.shape) == 1:
@@ -1855,12 +1846,33 @@ def grid_like_to_numpy(func):
                         sub_array_1d=result
                     )
 
+        def result_from_coordinates(func, profile, grid):
+            """Convert the result of the Profile function back to a *GridCoordinates* object or list of list of float."""
+
+            result = func(profile, grid, *args, **kwargs)
+
+            if isinstance(result, np.ndarray):
+                if len(result.shape) == 1:
+                    return grid.values_from_arr_1d(arr_1d=result)
+                elif len(result.shape) == 2:
+                    return grid.coordinates_from_grid_1d(grid_1d=result)
+            elif isinstance(result, list):
+                if len(result[0].shape) == 1:
+                    return [
+                        grid.values_from_arr_1d(arr_1d=value) for value in result
+                    ]
+                elif len(result[0].shape) == 2:
+                    return [
+                        grid.coordinates_from_grid_1d(grid_1d=value)
+                        for value in result
+                    ]
+
         if isinstance(grid, GridIterator):
             return result_from_grid_iterator(
-                func=func, profile=profile, grid_iterator=grid
+                func=func, profile=profile, grid=grid
             )
         elif isinstance(grid, GridCoordinates):
-            return result_from_coordinates(func=func, profile=profile, coordinates=grid)
+            return result_from_coordinates(func=func, profile=profile, grid=grid)
         elif isinstance(grid, Grid):
             return result_from_grid(func=func, profile=profile, grid=grid)
 
