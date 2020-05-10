@@ -156,7 +156,7 @@ def make_noise_map_7x7():
 
 @pytest.fixture(name="positions_7x7")
 def make_positions_7x7():
-    return aa.Coordinates(coordinates=[[(0.1, 0.1), (0.2, 0.2)], [(0.3, 0.3)]])
+    return aa.GridCoordinates(coordinates=[[(0.1, 0.1), (0.2, 0.2)], [(0.3, 0.3)]])
 
 
 @pytest.fixture(name="imaging_7x7")

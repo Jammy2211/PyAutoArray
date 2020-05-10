@@ -510,7 +510,7 @@ class TestVoronoiMagnification:
         grid = aa.MaskedGrid.manual_1d(grid=grid, mask=mask)
 
         pix = aa.pix.VoronoiMagnification(shape=(3, 3))
-        sparse_grid = grids.SparseGrid.from_grid_and_unmasked_2d_grid_shape(
+        sparse_grid = grids.GridSparse.from_grid_and_unmasked_2d_grid_shape(
             grid=grid, unmasked_sparse_shape=pix.shape
         )
 
@@ -610,7 +610,7 @@ class TestVoronoiMagnification:
         grid = aa.MaskedGrid.manual_1d(grid=grid, mask=mask)
 
         pix = aa.pix.VoronoiMagnification(shape=(3, 3))
-        sparse_grid = grids.SparseGrid.from_grid_and_unmasked_2d_grid_shape(
+        sparse_grid = grids.GridSparse.from_grid_and_unmasked_2d_grid_shape(
             grid=grid, unmasked_sparse_shape=pix.shape
         )
 
@@ -721,7 +721,7 @@ class TestVoronoiMagnification:
         grid = aa.MaskedGrid.manual_1d(grid=grid, mask=mask)
 
         pix = aa.pix.VoronoiMagnification(shape=(3, 3))
-        sparse_grid = grids.SparseGrid.from_grid_and_unmasked_2d_grid_shape(
+        sparse_grid = grids.GridSparse.from_grid_and_unmasked_2d_grid_shape(
             grid=grid, unmasked_sparse_shape=pix.shape
         )
 
@@ -809,7 +809,7 @@ class TestVoronoiMagnification:
         grid = aa.MaskedGrid.manual_1d(grid=grid, mask=mask)
 
         pix = aa.pix.VoronoiMagnification(shape=(3, 3))
-        sparse_grid = grids.SparseGrid.from_grid_and_unmasked_2d_grid_shape(
+        sparse_grid = grids.GridSparse.from_grid_and_unmasked_2d_grid_shape(
             grid=grid, unmasked_sparse_shape=pix.shape
         )
 

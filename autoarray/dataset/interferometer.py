@@ -75,7 +75,7 @@ class Interferometer(abstract_dataset.AbstractDataset):
 
         if positions_path is not None:
 
-            positions = grids.Coordinates.from_file(file_path=positions_path)
+            positions = grids.GridCoordinates.from_file(file_path=positions_path)
 
         else:
 

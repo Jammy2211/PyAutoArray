@@ -628,8 +628,8 @@ class TestAbstractPlotterPlots:
             array=array,
             mask=mask,
             grid=grid,
-            positions=aa.Coordinates([(-1.0, -1.0)]),
-            lines=aa.Coordinates([(1.0, 1.0), (2.0, 2.0)]),
+            positions=aa.GridCoordinates([(-1.0, -1.0)]),
+            lines=aa.GridCoordinates([(1.0, 1.0), (2.0, 2.0)]),
             array_overlay=array,
             include_origin=True,
             include_border=True,
@@ -645,8 +645,10 @@ class TestAbstractPlotterPlots:
             array=array,
             mask=mask,
             grid=grid,
-            positions=aa.Coordinates([[(1.0, 1.0), (2.0, 2.0)], [(-1.0, -1.0)]]),
-            lines=aa.Coordinates([[(1.0, 1.0), (2.0, 2.0)], [(2.0, 4.0), (5.0, 6.0)]]),
+            positions=aa.GridCoordinates([[(1.0, 1.0), (2.0, 2.0)], [(-1.0, -1.0)]]),
+            lines=aa.GridCoordinates(
+                [[(1.0, 1.0), (2.0, 2.0)], [(2.0, 4.0), (5.0, 6.0)]]
+            ),
             array_overlay=array,
             include_origin=True,
             include_border=True,
@@ -658,8 +660,8 @@ class TestAbstractPlotterPlots:
             array=array,
             mask=mask,
             grid=grid,
-            positions=aa.Coordinates([(-1.0, -1.0)]),
-            lines=aa.Coordinates([(1.0, 1.0), (2.0, 2.0)]),
+            positions=aa.GridCoordinates([(-1.0, -1.0)]),
+            lines=aa.GridCoordinates([(1.0, 1.0), (2.0, 2.0)]),
             array_overlay=array,
             include=aplt.Include(origin=True, border=True),
             plotter=aplt.Plotter(
@@ -716,7 +718,9 @@ class TestAbstractPlotterPlots:
             grid=grid,
             color_array=color_array,
             axis_limits=[-1.5, 1.5, -2.5, 2.5],
-            lines=aa.Coordinates([[(1.0, 1.0), (2.0, 2.0)], [(2.0, 4.0), (5.0, 6.0)]]),
+            lines=aa.GridCoordinates(
+                [[(1.0, 1.0), (2.0, 2.0)], [(2.0, 4.0), (5.0, 6.0)]]
+            ),
             indexes=[0, 1, 2, 14],
             symmetric_around_centre=False,
         )
@@ -731,7 +735,9 @@ class TestAbstractPlotterPlots:
             grid=grid,
             color_array=color_array,
             axis_limits=[-1.5, 1.5, -2.5, 2.5],
-            lines=aa.Coordinates([[(1.0, 1.0), (2.0, 2.0)], [(2.0, 4.0), (5.0, 6.0)]]),
+            lines=aa.GridCoordinates(
+                [[(1.0, 1.0), (2.0, 2.0)], [(2.0, 4.0), (5.0, 6.0)]]
+            ),
             indexes=[0, 1, 2, 14],
             symmetric_around_centre=True,
         )
@@ -742,7 +748,9 @@ class TestAbstractPlotterPlots:
             grid=grid,
             color_array=color_array,
             axis_limits=[-1.5, 1.5, -2.5, 2.5],
-            lines=aa.Coordinates([[(1.0, 1.0), (2.0, 2.0)], [(2.0, 4.0), (5.0, 6.0)]]),
+            lines=aa.GridCoordinates(
+                [[(1.0, 1.0), (2.0, 2.0)], [(2.0, 4.0), (5.0, 6.0)]]
+            ),
             indexes=[0, 1, 2, 14],
             symmetric_around_centre=True,
             plotter=aplt.Plotter(

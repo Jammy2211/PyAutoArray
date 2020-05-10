@@ -171,7 +171,7 @@ class Inversion:
 
     @property
     def brightest_reconstruction_pixel_centre(self):
-        return grids.Coordinates(
+        return grids.GridCoordinates(
             coordinates=[
                 self.mapper.pixelization_grid[self.brightest_reconstruction_pixel]
             ]
