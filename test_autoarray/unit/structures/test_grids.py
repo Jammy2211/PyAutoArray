@@ -1382,6 +1382,183 @@ class TestGridIterator:
             )
         ).all()
 
+    def test__fractional_mask_from_x2_result_arrays(self):
+
+        mask = aa.Mask.manual(
+            mask_2d=[
+                [True, True, True, True],
+                [True, False, False, True],
+                [True, False, False, True],
+                [True, True, True, True],
+            ],
+            pixel_scales=(1.0, 1.0),
+        )
+
+        grid = aa.GridIterator.from_mask(mask=mask, fractional_accuracy=0.9999)
+
+        result_array = aa.MaskedArray.manual_2d(
+            [
+                [0.0, 0.0, 0.0, 0.0],
+                [0.0, 1.0, 1.0, 0.0],
+                [0.0, 1.0, 1.0, 0.0],
+                [0.0, 0.0, 0.0, 0.0],
+            ],
+            mask=mask,
+        )
+
+        fractional_mask = grid.fractional_mask_from_x2_result_arrays(
+            result_array_lower_sub=result_array, result_array_higher_sub=result_array
+        )
+
+        assert (
+            fractional_mask
+            == np.array(
+                [
+                    [True, True, True, True],
+                    [True, True, True, True],
+                    [True, True, True, True],
+                    [True, True, True, True],
+                ]
+            )
+        ).all()
+
+        result_array_lower_sub = aa.MaskedArray.manual_2d(
+            [
+                [0.0, 0.0, 0.0, 0.0],
+                [0.0, 1.0, 1.0, 0.0],
+                [0.0, 1.0, 1.0, 0.0],
+                [0.0, 0.0, 0.0, 0.0],
+            ],
+            mask=mask,
+        )
+
+        result_array_higher_sub = aa.MaskedArray.manual_2d(
+            [
+                [0.0, 0.0, 0.0, 0.0],
+                [0.0, 2.0, 2.0, 0.0],
+                [0.0, 2.0, 2.0, 0.0],
+                [0.0, 0.0, 0.0, 0.0],
+            ],
+            mask=mask,
+        )
+
+        fractional_mask = grid.fractional_mask_from_x2_result_arrays(
+            result_array_lower_sub=result_array_lower_sub,
+            result_array_higher_sub=result_array_higher_sub,
+        )
+
+        assert (
+            fractional_mask
+            == np.array(
+                [
+                    [True, True, True, True],
+                    [True, False, False, True],
+                    [True, False, False, True],
+                    [True, True, True, True],
+                ]
+            )
+        ).all()
+
+        grid = aa.GridIterator.from_mask(mask=mask, fractional_accuracy=0.5)
+
+        result_array_lower_sub = aa.MaskedArray.manual_2d(
+            [
+                [0.0, 0.0, 0.0, 0.0],
+                [0.0, 1.9, 0.001, 0.0],
+                [0.0, 0.999, 1.9, 0.0],
+                [0.0, 0.0, 0.0, 0.0],
+            ],
+            mask=mask,
+        )
+
+        result_array_higher_sub = aa.MaskedArray.manual_2d(
+            [
+                [0.0, 0.0, 0.0, 0.0],
+                [0.0, 2.0, 2.0, 0.0],
+                [0.0, 2.0, 2.0, 0.0],
+                [0.0, 0.0, 0.0, 0.0],
+            ],
+            mask=mask,
+        )
+
+        fractional_mask = grid.fractional_mask_from_x2_result_arrays(
+            result_array_lower_sub=result_array_lower_sub,
+            result_array_higher_sub=result_array_higher_sub,
+        )
+
+        assert (
+            fractional_mask
+            == np.array(
+                [
+                    [True, True, True, True],
+                    [True, True, False, True],
+                    [True, False, True, True],
+                    [True, True, True, True],
+                ]
+            )
+        ).all()
+
+    def test__fractional_mask_from_x2_result_arrays__uses_higher_sub_grids_mask(self):
+
+        mask_lower_sub = aa.Mask.manual(
+            mask_2d=[
+                [True, True, True, True],
+                [True, False, False, True],
+                [True, False, False, True],
+                [True, True, True, True],
+            ],
+            pixel_scales=(1.0, 1.0),
+        )
+
+        mask_higher_sub = aa.Mask.manual(
+            mask_2d=[
+                [True, True, True, True],
+                [True, False, True, True],
+                [True, False, False, True],
+                [True, True, True, True],
+            ],
+            pixel_scales=(1.0, 1.0),
+        )
+
+        grid = aa.GridIterator.from_mask(mask=mask_lower_sub, fractional_accuracy=0.5)
+
+        result_array_lower_sub = aa.MaskedArray.manual_2d(
+            [
+                [0.0, 0.0, 0.0, 0.0],
+                [0.0, 2.0, 2.0, 0.0],
+                [0.0, 2.0, 2.0, 0.0],
+                [0.0, 0.0, 0.0, 0.0],
+            ],
+            mask=mask_lower_sub,
+        )
+
+        result_array_higher_sub = aa.MaskedArray.manual_2d(
+            [
+                [0.0, 0.0, 0.0, 0.0],
+                [0.0, 0.1, 0.1, 0.0],
+                [0.0, 0.1, 0.1, 0.0],
+                [0.0, 0.0, 0.0, 0.0],
+            ],
+            mask=mask_higher_sub,
+        )
+
+        fractional_mask = grid.fractional_mask_from_x2_result_arrays(
+            result_array_lower_sub=result_array_lower_sub,
+            result_array_higher_sub=result_array_higher_sub,
+        )
+
+        assert (
+            fractional_mask
+            == np.array(
+                [
+                    [True, True, True, True],
+                    [True, False, True, True],
+                    [True, False, False, True],
+                    [True, True, True, True],
+                ]
+            )
+        ).all()
+
 
 class TestGridBorder:
     def test__sub_border_grid_for_simple_mask(self):

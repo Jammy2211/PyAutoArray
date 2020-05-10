@@ -6,6 +6,8 @@ from functools import wraps
 from sklearn.cluster import KMeans
 import os
 
+import copy
+
 import autoarray as aa
 
 from autoarray import decorator_util
@@ -949,7 +951,7 @@ class GridIterator(AbstractGrid):
         Parameters
         ----------
         result_array : arrays.Array
-            The set of results computed by a function using a sub-grid size of 1.
+            The results computed by a function using a sub-grid size of 1.
         """
 
         fractional_mask = aa.Mask.unmasked(shape_2d=result_array.shape_2d, invert=True)
@@ -974,6 +976,50 @@ class GridIterator(AbstractGrid):
                         fractional_mask[y, x] = False
 
                     mask_index += 1
+
+        return fractional_mask
+
+    def fractional_mask_from_x2_result_arrays(
+        self, result_array_lower_sub, result_array_higher_sub
+    ):
+        """ Compute a fractional mask from a result array, where the fractional mask describes whether the evaluated
+        value in the result array is within the *GridIterator*'s specified fractional accuracy. The fractional mask thus
+        determines whether a pixel on the grid needs to be reevaluated at a higher level of sub-gridding to meet the
+        specified fractional accuracy. If it must be re-evaluated, the fractional masks's entry is *False*.
+
+        The fractional mask is computed by comparing the results evaluated at one level of sub-gridding to another
+        at a higher level of sub-griding. Thus, the sub-grid size in chosen on a per-pixel basis until the function
+        is evaluated at the specified fractional accuracy.
+
+        Parameters
+        ----------
+        result_array_lower_sub : arrays.Array
+            The results computed by a function using a lower sub-grid size
+        result_array_lower_sub : arrays.Array
+            The results computed by a function using a lower sub-grid size.
+        """
+
+        fractional_mask = aa.Mask.unmasked(
+            shape_2d=result_array_lower_sub.shape_2d, invert=True
+        )
+
+        result_array_lower_sub_2d = result_array_lower_sub.in_2d_binned
+        result_array_higher_sub_2d = result_array_higher_sub.in_2d_binned
+
+        for y in range(fractional_mask.shape_2d[0]):
+            for x in range(fractional_mask.shape_2d[1]):
+                if not result_array_higher_sub.mask[y, x]:
+
+                    fractional_accuracy = (
+                        result_array_lower_sub_2d[y, x]
+                        / result_array_higher_sub_2d[y, x]
+                    )
+
+                    if fractional_accuracy > 1.0:
+                        fractional_accuracy = 1.0 / fractional_accuracy
+
+                    if fractional_accuracy < self.fractional_accuracy:
+                        fractional_mask[y, x] = False
 
         return fractional_mask
 
