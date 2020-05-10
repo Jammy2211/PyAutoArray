@@ -1317,7 +1317,7 @@ class VoronoiDrawer:
         regions : list of tuples
             Indices of vertices in each revised Voronoi regions.
         vertices : list of tuples
-            Coordinates for revised Voronoi vertices. Same as coordinates
+            GridCoordinates for revised Voronoi vertices. Same as coordinates
             of input vertices, with 'points at infinity' appended to the
             end.
         """

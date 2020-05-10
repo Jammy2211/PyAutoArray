@@ -258,7 +258,7 @@ class AbstractGrid(abstract_structure.AbstractStructure):
         # noinspection PyAttributeOutsideInit
         # TODO: This function doesn't do what it says on the tin. The returned grid would be the same as the grid
         # TODO: on which the function was called but with a new interpolator set.
-        self.interpolator = Interpolator.from_mask_grid_and_pixel_scale_interpolation_grids(
+        self.interpolator = GridInterpolator.from_mask_grid_and_pixel_scale_interpolation_grids(
             mask=self.mask,
             grid=self[:, :],
             pixel_scale_interpolation_grid=pixel_scale_interpolation_grid,
@@ -765,9 +765,16 @@ class Grid(AbstractGrid):
             )
 
 
-class GridIterator(AbstractGrid):
+class GridIterator(Grid):
     def __new__(
-        cls, grid, mask, fractional_accuracy=0.9999, store_in_1d=True, *args, **kwargs
+        cls,
+        grid,
+        mask,
+        fractional_accuracy=0.9999,
+        sub_steps=[2, 4, 8, 16],
+        store_in_1d=True,
+        *args,
+        **kwargs,
     ):
         """A grid of coordinates, where each entry corresponds to the (y,x) coordinates at the centre of an \
         unmasked pixel. The positive y-axis is upwards and poitive x-axis to the right.
@@ -884,6 +891,7 @@ class GridIterator(AbstractGrid):
             cls=cls, grid=grid, mask=mask, store_in_1d=store_in_1d
         )
         obj.fractional_accuracy = fractional_accuracy
+        obj.sub_steps = sub_steps
         obj.binned = True
         return obj
 
@@ -895,6 +903,7 @@ class GridIterator(AbstractGrid):
         pixel_scales,
         origin=(0.0, 0.0),
         fractional_accuracy=0.9999,
+        sub_steps=[2, 4, 8, 16],
         store_in_1d=True,
     ):
 
@@ -911,11 +920,14 @@ class GridIterator(AbstractGrid):
             grid=np.asarray(grid),
             mask=grid.mask,
             fractional_accuracy=fractional_accuracy,
+            sub_steps=sub_steps,
             store_in_1d=store_in_1d,
         )
 
     @classmethod
-    def from_mask(cls, mask, fractional_accuracy=1e-4, store_in_1d=True):
+    def from_mask(
+        cls, mask, fractional_accuracy=1e-4, sub_steps=[2, 4, 8, 16], store_in_1d=True
+    ):
         """Setup a sub-grid of the unmasked pixels, using a mask and a specified sub-grid size. The center of \
         every unmasked pixel's sub-pixels give the grid's (y,x) scaled coordinates.
 
@@ -933,6 +945,7 @@ class GridIterator(AbstractGrid):
             grid=np.asarray(grid),
             mask=grid.mask,
             fractional_accuracy=fractional_accuracy,
+            sub_steps=sub_steps,
             store_in_1d=store_in_1d,
         )
 
@@ -1022,6 +1035,293 @@ class GridIterator(AbstractGrid):
                         fractional_mask[y, x] = False
 
         return fractional_mask
+
+
+class GridInterpolator:
+    def __init__(self, grid, interp_grid, pixel_scale_interpolation_grid):
+        self.grid = grid
+        self.interp_grid = interp_grid
+        self.pixel_scale_interpolation_grid = pixel_scale_interpolation_grid
+        self.vtx, self.wts = self.interp_weights
+
+    @property
+    def interp_weights(self):
+        tri = qhull.Delaunay(self.interp_grid)
+        simplex = tri.find_simplex(self.grid)
+        # noinspection PyUnresolvedReferences
+        vertices = np.take(tri.simplices, simplex, axis=0)
+        temp = np.take(tri.transform, simplex, axis=0)
+        delta = self.grid - temp[:, 2]
+        bary = np.einsum("njk,nk->nj", temp[:, :2, :], delta)
+        return vertices, np.hstack((bary, 1 - bary.sum(axis=1, keepdims=True)))
+
+    @classmethod
+    def from_mask_grid_and_pixel_scale_interpolation_grids(
+        cls, mask, grid, pixel_scale_interpolation_grid
+    ):
+
+        rescale_factor = mask.pixel_scale / pixel_scale_interpolation_grid
+
+        mask = mask.mapping.mask_sub_1
+
+        rescaled_mask = mask.mapping.rescaled_mask_from_rescale_factor(
+            rescale_factor=rescale_factor
+        )
+
+        interp_mask = rescaled_mask.mapping.edge_buffed_mask
+
+        interp_grid = grid_util.grid_1d_via_mask_2d(
+            mask_2d=interp_mask,
+            pixel_scales=(
+                pixel_scale_interpolation_grid,
+                pixel_scale_interpolation_grid,
+            ),
+            sub_size=1,
+            origin=mask.origin,
+        )
+
+        return GridInterpolator(
+            grid=grid,
+            interp_grid=interp_mask.mapping.grid_stored_1d_from_grid_1d(
+                grid_1d=interp_grid
+            ),
+            pixel_scale_interpolation_grid=pixel_scale_interpolation_grid,
+        )
+
+    def interpolated_values_from_values(self, values):
+        return np.einsum("nj,nj->n", np.take(values, self.vtx), self.wts)
+
+
+class GridCoordinates(np.ndarray):
+    def __new__(cls, coordinates):
+        """ A collection of (y,x) coordinates structured in a way defining groups of coordinates which share a common
+        origin (for example coordinates may be grouped if they are from a specific region of a dataset).
+
+        Grouping is structured as follows:
+
+        [[x0, x1], [x0, x1, x2]]
+
+        Here, we have two groups of coordinates, where each group is associated.
+
+        The coordinate object does not store the coordinates as a list of list of tuples, but instead a 2D NumPy array
+        of shape [total_coordinates, 2]. Index information is stored so that this array can be mapped to the list of
+        list of tuple structure above. They are stored as a NumPy array so the coordinates can be used efficiently for
+        calculations.
+
+        The coordinates input to this function can have any of the following forms:
+
+        [[(y0,x0), (y1,x1)], [(y0,x0)]]
+        [[[y0,x0], [y1,x1]], [[y0,x0)]]
+        [(y0,x0), (y1,x1)]
+        [[y0,x0], [y1,x1]]
+
+        In all cases, they will be converted to a list of list of tuples followed by a 2D NumPy array.
+
+        Print methods are overidden so a user always "sees" the coordinates as the list structure.
+
+        In contrast to a *Grid* structure, *GridCoordinates* do not lie on a uniform grid or correspond to values that
+        originate from a uniform grid. Therefore, when handling irregular data-sets *GridCoordinates* should be used.
+
+        Parameters
+        ----------
+        coordinates : [[tuple]] or equivalent
+            A collection of (y,x) coordinates that are grouped if they correpsond to a shared origin.
+        """
+
+        if len(coordinates) == 0:
+            return []
+
+        if isinstance(coordinates[0], tuple):
+            coordinates = [coordinates]
+        elif isinstance(coordinates[0], np.ndarray):
+            if len(coordinates[0].shape) == 1:
+                coordinates = [coordinates]
+        elif isinstance(coordinates[0], list) and isinstance(
+            coordinates[0][0], (float)
+        ):
+            coordinates = [coordinates]
+
+        upper_indexes = []
+
+        a = 0
+
+        for coords in coordinates:
+            a = a + len(coords)
+            upper_indexes.append(a)
+
+        coordinates_arr = np.concatenate([np.array(i) for i in coordinates])
+
+        obj = coordinates_arr.view(cls)
+        obj.upper_indexes = upper_indexes
+        obj.lower_indexes = [0] + upper_indexes[:-1]
+
+        return obj
+
+    def __array_finalize__(self, obj):
+
+        if hasattr(obj, "lower_indexes"):
+            self.lower_indexes = obj.lower_indexes
+
+        if hasattr(obj, "upper_indexes"):
+            self.upper_indexes = obj.upper_indexes
+
+    @classmethod
+    def from_yx_1d(cls, y, x):
+        """Create *GridCoordinates* from a list of y and x values.
+
+        This function omits coordinate grouping."""
+        return GridCoordinates(coordinates=np.stack((y, x), axis=-1))
+
+    @classmethod
+    def from_pixels_and_mask(cls, pixels, mask):
+        """Create *GridCoordinates* from a list of coordinates in pixel units and a mask which allows these coordinates to
+        be converted to scaled units."""
+        coordinates = []
+        for coordinate_set in pixels:
+            coordinates.append(
+                [
+                    mask.geometry.scaled_coordinates_from_pixel_coordinates(
+                        pixel_coordinates=coordinates
+                    )
+                    for coordinates in coordinate_set
+                ]
+            )
+        return cls(coordinates=coordinates)
+
+    @property
+    def in_1d(self):
+        return self
+
+    @property
+    def in_list(self):
+        """Return the coordinates on a structured list which groups coordinates with a common origin."""
+        return [
+            list(map(tuple, self[i:j, :]))
+            for i, j in zip(self.lower_indexes, self.upper_indexes)
+        ]
+
+    def values_from_arr_1d(self, arr_1d):
+        """Create a *Values* object from a 1D NumPy array of values of shape [total_coordinates]. The
+        *Values* are structured and grouped following this *Coordinate* instance."""
+        values_1d = [
+            list(arr_1d[i:j]) for i, j in zip(self.lower_indexes, self.upper_indexes)
+        ]
+        return arrays.Values(values=values_1d)
+
+    def coordinates_from_grid_1d(self, grid_1d):
+        """Create a *GridCoordinates* object from a 2D NumPy array of values of shape [total_coordinates, 2]. The
+        *GridCoordinates* are structured and grouped following this *Coordinate* instance."""
+        coordinates_1d = [
+            list(map(tuple, grid_1d[i:j, :]))
+            for i, j in zip(self.lower_indexes, self.upper_indexes)
+        ]
+
+        return GridCoordinates(coordinates=coordinates_1d)
+
+    @classmethod
+    def from_file(cls, file_path):
+        """Create a *GridCoordinates* object from a file which stores the coordinates as a list of list of tuples.
+
+        Parameters
+        ----------
+        file_path : str
+            The path to the coordinates .dat file containing the coordinates (e.g. '/path/to/coordinates.dat')
+        """
+        with open(file_path) as f:
+            coordinate_string = f.readlines()
+
+        coordinates = []
+
+        for line in coordinate_string:
+            coordinate_list = ast.literal_eval(line)
+            coordinates.append(coordinate_list)
+
+        return GridCoordinates(coordinates=coordinates)
+
+    def output_to_file(self, file_path, overwrite=False):
+        """Output this instance of the *GridCoordinates* object to a list of list of tuples.
+
+        Parameters
+        ----------
+        file_path : str
+            The path to the coordinates .dat file containing the coordinates (e.g. '/path/to/coordinates.dat')
+        overwrite : bool
+            If there is as exsiting file it will be overwritten if this is *True*.
+        """
+
+        if overwrite and os.path.exists(file_path):
+            os.remove(file_path)
+        elif not overwrite and os.path.exists(file_path):
+            raise FileExistsError(
+                "The file ",
+                file_path,
+                " already exists. Set overwrite=True to overwrite this" "file",
+            )
+
+        with open(file_path, "w") as f:
+            for coordinate in self.in_list:
+                f.write(f"{coordinate}\n")
+
+    def squared_distances_from_coordinate(self, coordinate=(0.0, 0.0)):
+        """Compute the squared distance of every (y,x) coordinate in this *Coordinate* instance from an input
+        coordinate.
+
+        Parameters
+        ----------
+        coordinate : (float, float)
+            The (y,x) coordinate from which the squared distance of every *Coordinate* is computed.
+        """
+        squared_distances = np.square(self[:, 0] - coordinate[0]) + np.square(
+            self[:, 1] - coordinate[1]
+        )
+        return self.values_from_arr_1d(arr_1d=squared_distances)
+
+    def distances_from_coordinate(self, coordinate=(0.0, 0.0)):
+        """Compute the distance of every (y,x) coordinate in this *Coordinate* instance from an input coordinate.
+
+        Parameters
+        ----------
+        coordinate : (float, float)
+            The (y,x) coordinate from which the distance of every *Coordinate* is computed.
+        """
+        distances = np.sqrt(
+            self.squared_distances_from_coordinate(coordinate=coordinate)
+        )
+        return self.values_from_arr_1d(arr_1d=distances)
+
+    @property
+    def shape_2d_scaled(self):
+        """The two dimensional shape of the coordinates spain in scaled units, computed by taking the minimum and
+        maximum values of the coordinates."""
+        return (
+            np.amax(self[:, 0]) - np.amin(self[:, 0]),
+            np.amax(self[:, 1]) - np.amin(self[:, 1]),
+        )
+
+    @property
+    def scaled_maxima(self):
+        """The maximum values of the coordinates returned as a tuple (y_max, x_max)."""
+        return (np.amax(self[:, 0]), np.amax(self[:, 1]))
+
+    @property
+    def scaled_minima(self):
+        """The minimum values of the coordinates returned as a tuple (y_max, x_max)."""
+        return (np.amin(self[:, 0]), np.amin(self[:, 1]))
+
+    @property
+    def extent(self):
+        """The extent of the coordinates returned as a NumPy array [x_min, x_max, y_min, y_max].
+
+        This follows the format of the extent input parameter in the matplotlib method imshow (and other methods) and
+        is used for visualization in the plot module."""
+        return np.asarray(
+            [
+                self.scaled_minima[1],
+                self.scaled_maxima[1],
+                self.scaled_minima[0],
+                self.scaled_maxima[0],
+            ]
+        )
 
 
 class GridRectangular(Grid):
@@ -1240,7 +1540,7 @@ class GridVoronoi(np.ndarray):
     @classmethod
     def from_grid_and_unmasked_2d_grid_shape(cls, unmasked_sparse_shape, grid):
 
-        sparse_grid = SparseGrid.from_grid_and_unmasked_2d_grid_shape(
+        sparse_grid = GridSparse.from_grid_and_unmasked_2d_grid_shape(
             unmasked_sparse_shape=unmasked_sparse_shape, grid=grid
         )
 
@@ -1276,7 +1576,7 @@ class GridVoronoi(np.ndarray):
         )
 
 
-class SparseGrid:
+class GridSparse:
     def __init__(self, sparse_grid, sparse_1d_index_for_mask_1d_index):
         """A sparse grid of coordinates, where each entry corresponds to the (y,x) coordinates at the centre of a \
         pixel on the sparse grid. To setup the sparse-grid, it is laid over a grid of unmasked pixels, such \
@@ -1316,7 +1616,7 @@ class SparseGrid:
     def from_grid_and_unmasked_2d_grid_shape(cls, grid, unmasked_sparse_shape):
         """Calculate the image-plane pixelization from a grid of coordinates (and its mask).
 
-        See *grid_stacks.SparseGrid* for details on how this grid is calculated.
+        See *grid_stacks.GridSparse* for details on how this grid is calculated.
 
         Parameters
         -----------
@@ -1390,7 +1690,7 @@ class SparseGrid:
             unmasked_sparse_for_sparse=unmasked_sparse_for_sparse,
         )
 
-        return SparseGrid(
+        return GridSparse(
             sparse_grid=sparse_grid,
             sparse_1d_index_for_mask_1d_index=sparse_1d_index_for_mask_1d_index,
         )
@@ -1401,7 +1701,7 @@ class SparseGrid:
     ):
         """Calculate the image-plane pixelization from a grid of coordinates (and its mask).
 
-        See *grid_stacks.SparseGrid* for details on how this grid is calculated.
+        See *grid_stacks.GridSparse* for details on how this grid is calculated.
 
         Parameters
         -----------
@@ -1421,7 +1721,7 @@ class SparseGrid:
         except ValueError or OverflowError:
             raise exc.InversionException()
 
-        return SparseGrid(
+        return GridSparse(
             sparse_grid=kmeans.cluster_centers_,
             sparse_1d_index_for_mask_1d_index=kmeans.labels_.astype("int"),
         )
@@ -1429,6 +1729,322 @@ class SparseGrid:
     @property
     def total_sparse_pixels(self):
         return len(self.sparse)
+
+
+class GridTransformed(Grid):
+
+    pass
+
+
+class GridTransformedNumpy(np.ndarray):
+    def __new__(cls, grid, *args, **kwargs):
+        return grid.view(cls)
+
+
+def grid_like_to_numpy(func):
+    """ Checks whether any coordinates in the grid are radially near (0.0, 0.0), which can lead to numerical faults in \
+    the evaluation of a light or mass profiles. If any coordinates are radially within the the radial minimum \
+    threshold, their (y,x) coordinates are shifted to that value to ensure they are evaluated correctly.
+
+    By default this radial minimum is not used, and users should be certain they use a value that does not impact \
+    results.
+
+    Parameters
+    ----------
+    func : (profile, *args, **kwargs) -> Object
+        A function that takes a grid of coordinates which may have a singularity as (0.0, 0.0)
+
+    Returns
+    -------
+        A function that can except cartesian or transformed coordinates
+    """
+
+    @wraps(func)
+    def wrapper(profile, grid, *args, **kwargs):
+        """ This decorator homogenizes the input array of *Grid* and *Coordinate* structures into a function, so that
+        both can be input interchangeably into functions which evalute values on points of the grid. The outputs are
+        converted back to *Grid* or *Coordinate* objects, where applicable.
+
+        The grid_like objects (*Grid* and *GridCoordinates*) are converted to a flattened 2D NumPy array, where the
+        first array dimension is the coordinate index and the second dimension stores the (y,x) values. For example,
+        for 100 coordinates, this NumPy array has shape (100, 2).
+
+        The decorator converts the result of the function back as follows:
+
+        - If the function returns (y,x) coordinates at every input point, the returned results are  *Grid* or
+          *GridCoordinates* object of the same structure as the input.
+
+        - If the function returns scalar values at every input point and a *Grid* is input, the returned results are an
+          *Array* structure which uses the same dimensions and mask as the *Grid*.
+
+        - If the function returns scalar values at every input point and *GridCoordinates* are input, the returned results
+          are a list of list of floats structure that resembles the *GridCoordinates*..
+
+        If the input array is 2D NumPy array of the form after conversion, it is input unchanged.
+
+        Parameters
+        ----------
+        profile : Profile
+            A Profile object which uses grid_like inputs to compute quantities at every coordinate on the grid.
+        grid : Grid or GridCoordinates
+            A grid_like object of (y,x) coordinates on which the function values are evaluated.
+
+        Returns
+        -------
+            The function values evaluated on the grid with the same structure as the input grid_like object.
+        """
+
+        def result_from_coordinates(func, profile, coordinates):
+            """Convert the result of the Profile function back to a *GridCoordinates* object or list of list of float."""
+
+            result = func(profile, coordinates, *args, **kwargs)
+
+            if isinstance(result, np.ndarray):
+                if len(result.shape) == 1:
+                    return coordinates.values_from_arr_1d(arr_1d=result)
+                elif len(result.shape) == 2:
+                    return coordinates.coordinates_from_grid_1d(grid_1d=result)
+            elif isinstance(result, list):
+                if len(result[0].shape) == 1:
+                    return [
+                        coordinates.values_from_arr_1d(arr_1d=value) for value in result
+                    ]
+                elif len(result[0].shape) == 2:
+                    return [
+                        coordinates.coordinates_from_grid_1d(grid_1d=value)
+                        for value in result
+                    ]
+
+        def result_from_grid(func, profile, grid):
+            """Convert the result of the Profile function back to a *Grid* or *Array* object."""
+
+            result = func(profile, grid, *args, **kwargs)
+
+            if isinstance(result, np.ndarray):
+                if len(result.shape) == 1:
+                    return grid.mapping.array_stored_1d_from_sub_array_1d(
+                        sub_array_1d=result
+                    )
+                else:
+                    return grid.mapping.grid_stored_1d_from_sub_grid_1d(
+                        sub_grid_1d=result,
+                        is_transformed=isinstance(result, GridTransformedNumpy),
+                    )
+            elif isinstance(result, list):
+                if len(result[0].shape) == 1:
+                    return [
+                        grid.mapping.array_stored_1d_from_sub_array_1d(
+                            sub_array_1d=value
+                        )
+                        for value in result
+                    ]
+                elif len(result[0].shape) == 2:
+                    return [
+                        grid.mapping.grid_stored_1d_from_sub_grid_1d(sub_grid_1d=value)
+                        for value in result
+                    ]
+
+        def result_from_grid_iterator(func, grid_iterator):
+            """Convert the result of the Profile function back to a *Grid* or *Array* object."""
+
+            result = func(profile, grid, *args, **kwargs)
+
+            if isinstance(result, np.ndarray):
+                if len(result.shape) == 1:
+                    return grid.mapping.array_stored_1d_from_sub_array_1d(
+                        sub_array_1d=result
+                    )
+
+        if isinstance(grid, GridIterator):
+            return result_from_grid_iterator(
+                func=func, profile=profile, grid_iterator=grid
+            )
+        elif isinstance(grid, GridCoordinates):
+            return result_from_coordinates(func=func, profile=profile, coordinates=grid)
+        elif isinstance(grid, Grid):
+            return result_from_grid(func=func, profile=profile, grid=grid)
+
+        if not isinstance(grid, GridCoordinates) and not isinstance(grid, Grid):
+            return func(profile, grid, *args, **kwargs)
+
+    return wrapper
+
+
+def interpolate(func):
+    """
+    Decorate a profile method that accepts a coordinate grid and returns a data_type grid.
+
+    If an interpolator attribute is associated with the input grid then that interpolator is used to down sample the
+    coordinate grid prior to calling the function and up sample the result of the function.
+
+    If no interpolator attribute is associated with the input grid then the function is called as hyper.
+
+    Parameters
+    ----------
+    func
+        Some method that accepts a grid
+
+    Returns
+    -------
+    decorated_function
+        The function with optional interpolation
+    """
+
+    @wraps(func)
+    def wrapper(profile, grid, grid_radial_minimum=None, *args, **kwargs):
+        if hasattr(grid, "interpolator"):
+            interpolator = grid.interpolator
+            if grid.interpolator is not None:
+                values = func(
+                    profile,
+                    interpolator.interp_grid,
+                    grid_radial_minimum,
+                    *args,
+                    **kwargs,
+                )
+                if values.ndim == 1:
+                    return interpolator.interpolated_values_from_values(values=values)
+                elif values.ndim == 2:
+                    y_values = interpolator.interpolated_values_from_values(
+                        values=values[:, 0]
+                    )
+                    x_values = interpolator.interpolated_values_from_values(
+                        values=values[:, 1]
+                    )
+                    return np.asarray([y_values, x_values]).T
+        return func(profile, grid, grid_radial_minimum, *args, **kwargs)
+
+    return wrapper
+
+
+def transform(func):
+    """Wrap the function in a function that checks whether the coordinates have been transformed. If they have not \ 
+    been transformed then they are transformed.
+
+    Parameters
+    ----------
+    func : (profile, grid *args, **kwargs) -> Object
+        A function where the input grid is the grid whose coordinates are transformed.
+
+    Returns
+    -------
+        A function that can except cartesian or transformed coordinates
+    """
+
+    @wraps(func)
+    def wrapper(profile, grid, *args, **kwargs):
+        """
+
+        Parameters
+        ----------
+        profile : GeometryProfile
+            The profiles that owns the function.
+        grid : grid_like
+            The (y, x) coordinates in the original reference frame of the grid.
+
+        Returns
+        -------
+            A grid_like object whose coordinates may be transformed.
+        """
+
+        if not isinstance(grid, GridTransformed) and not isinstance(
+            grid, GridTransformedNumpy
+        ):
+            result = func(
+                profile,
+                profile.transform_grid_to_reference_frame(grid),
+                *args,
+                **kwargs,
+            )
+
+            return result
+
+        else:
+            return func(profile, grid, *args, **kwargs)
+
+    return wrapper
+
+
+def cache(func):
+    """
+    Caches results of a call to a grid function. If a grid that evaluates to the same byte value is passed into the same
+    function of the same instance as previously then the cached result is returned.
+
+    Parameters
+    ----------
+    func
+        Some instance method that takes a grid as its argument
+
+    Returns
+    -------
+    result
+        Some result, either newly calculated or recovered from the cache
+    """
+
+    def wrapper(instance, grid: np.ndarray, *args, **kwargs):
+        if not hasattr(instance, "cache"):
+            instance.cache = {}
+        key = (func.__name__, grid.tobytes())
+        if key not in instance.cache:
+            instance.cache[key] = func(instance, grid)
+        return instance.cache[key]
+
+    return wrapper
+
+
+def relocate_to_radial_minimum(func):
+    """ Checks whether any coordinates in the grid are radially near (0.0, 0.0), which can lead to numerical faults in \
+    the evaluation of a light or mass profiles. If any coordinates are radially within the the radial minimum \
+    threshold, their (y,x) coordinates are shifted to that value to ensure they are evaluated correctly.
+
+    By default this radial minimum is not used, and users should be certain they use a value that does not impact \
+    results.
+
+    Parameters
+    ----------
+    func : (profile, *args, **kwargs) -> Object
+        A function that takes a grid of coordinates which may have a singularity as (0.0, 0.0)
+
+    Returns
+    -------
+        A function that can except cartesian or transformed coordinates
+    """
+
+    @wraps(func)
+    def wrapper(profile, grid, *args, **kwargs):
+        """
+
+        Parameters
+        ----------
+        profile : SphericalProfile
+            The profiles that owns the function
+        grid : grid_like
+            The (y, x) coordinates which are to be radially moved from (0.0, 0.0).
+
+        Returns
+        -------
+            The grid_like object whose coordinates are radially moved from (0.0, 0.0).
+        """
+        radial_minimum_config = aa.conf.NamedConfig(
+            f"{aa.conf.instance.config_path}/radial_minimum.ini"
+        )
+        grid_radial_minimum = radial_minimum_config.get(
+            "radial_minimum", profile.__class__.__name__, float
+        )
+
+        with np.errstate(all="ignore"):  # Division by zero fixed via isnan
+
+            grid_radii = profile.grid_to_grid_radii(grid=grid)
+
+            grid_radial_scale = np.where(
+                grid_radii < grid_radial_minimum, grid_radial_minimum / grid_radii, 1.0
+            )
+            grid = np.multiply(grid, grid_radial_scale[:, None])
+        grid[np.isnan(grid)] = grid_radial_minimum
+
+        return func(profile, grid, *args, **kwargs)
+
+    return wrapper
 
 
 class MaskedGrid(AbstractGrid):
@@ -1491,587 +2107,3 @@ class MaskedGrid(AbstractGrid):
             return mask.mapping.grid_stored_1d_from_sub_grid_1d(sub_grid_1d=sub_grid_1d)
         else:
             return mask.mapping.grid_stored_2d_from_sub_grid_1d(sub_grid_1d=sub_grid_1d)
-
-
-class TransformedGrid(Grid):
-
-    pass
-
-
-class TransformedGridNumpy(np.ndarray):
-    def __new__(cls, grid, *args, **kwargs):
-        return grid.view(cls)
-
-
-class Interpolator:
-    def __init__(self, grid, interp_grid, pixel_scale_interpolation_grid):
-        self.grid = grid
-        self.interp_grid = interp_grid
-        self.pixel_scale_interpolation_grid = pixel_scale_interpolation_grid
-        self.vtx, self.wts = self.interp_weights
-
-    @property
-    def interp_weights(self):
-        tri = qhull.Delaunay(self.interp_grid)
-        simplex = tri.find_simplex(self.grid)
-        # noinspection PyUnresolvedReferences
-        vertices = np.take(tri.simplices, simplex, axis=0)
-        temp = np.take(tri.transform, simplex, axis=0)
-        delta = self.grid - temp[:, 2]
-        bary = np.einsum("njk,nk->nj", temp[:, :2, :], delta)
-        return vertices, np.hstack((bary, 1 - bary.sum(axis=1, keepdims=True)))
-
-    @classmethod
-    def from_mask_grid_and_pixel_scale_interpolation_grids(
-        cls, mask, grid, pixel_scale_interpolation_grid
-    ):
-
-        rescale_factor = mask.pixel_scale / pixel_scale_interpolation_grid
-
-        mask = mask.mapping.mask_sub_1
-
-        rescaled_mask = mask.mapping.rescaled_mask_from_rescale_factor(
-            rescale_factor=rescale_factor
-        )
-
-        interp_mask = rescaled_mask.mapping.edge_buffed_mask
-
-        interp_grid = grid_util.grid_1d_via_mask_2d(
-            mask_2d=interp_mask,
-            pixel_scales=(
-                pixel_scale_interpolation_grid,
-                pixel_scale_interpolation_grid,
-            ),
-            sub_size=1,
-            origin=mask.origin,
-        )
-
-        return Interpolator(
-            grid=grid,
-            interp_grid=interp_mask.mapping.grid_stored_1d_from_grid_1d(
-                grid_1d=interp_grid
-            ),
-            pixel_scale_interpolation_grid=pixel_scale_interpolation_grid,
-        )
-
-    def interpolated_values_from_values(self, values):
-        return np.einsum("nj,nj->n", np.take(values, self.vtx), self.wts)
-
-
-class Coordinates(np.ndarray):
-    def __new__(cls, coordinates):
-        """ A collection of (y,x) coordinates structured in a way defining groups of coordinates which share a common
-        origin (for example coordinates may be grouped if they are from a specific region of a dataset).
-
-        Grouping is structured as follows:
-
-        [[x0, x1], [x0, x1, x2]]
-
-        Here, we have two groups of coordinates, where each group is associated.
-
-        The coordinate object does not store the coordinates as a list of list of tuples, but instead a 2D NumPy array
-        of shape [total_coordinates, 2]. Index information is stored so that this array can be mapped to the list of
-        list of tuple structure above. They are stored as a NumPy array so the coordinates can be used efficiently for
-        calculations.
-
-        The coordinates input to this function can have any of the following forms:
-
-        [[(y0,x0), (y1,x1)], [(y0,x0)]]
-        [[[y0,x0], [y1,x1]], [[y0,x0)]]
-        [(y0,x0), (y1,x1)]
-        [[y0,x0], [y1,x1]]
-
-        In all cases, they will be converted to a list of list of tuples followed by a 2D NumPy array.
-
-        Print methods are overidden so a user always "sees" the coordinates as the list structure.
-
-        In contrast to a *Grid* structure, *Coordinates* do not lie on a uniform grid or correspond to values that
-        originate from a uniform grid. Therefore, when handling irregular data-sets *Coordinates* should be used.
-
-        Parameters
-        ----------
-        coordinates : [[tuple]] or equivalent
-            A collection of (y,x) coordinates that are grouped if they correpsond to a shared origin.
-        """
-
-        if len(coordinates) == 0:
-            return []
-
-        if isinstance(coordinates[0], tuple):
-            coordinates = [coordinates]
-        elif isinstance(coordinates[0], np.ndarray):
-            if len(coordinates[0].shape) == 1:
-                coordinates = [coordinates]
-        elif isinstance(coordinates[0], list) and isinstance(
-            coordinates[0][0], (float)
-        ):
-            coordinates = [coordinates]
-
-        upper_indexes = []
-
-        a = 0
-
-        for coords in coordinates:
-            a = a + len(coords)
-            upper_indexes.append(a)
-
-        coordinates_arr = np.concatenate([np.array(i) for i in coordinates])
-
-        obj = coordinates_arr.view(cls)
-        obj.upper_indexes = upper_indexes
-        obj.lower_indexes = [0] + upper_indexes[:-1]
-
-        return obj
-
-    def __array_finalize__(self, obj):
-
-        if hasattr(obj, "lower_indexes"):
-            self.lower_indexes = obj.lower_indexes
-
-        if hasattr(obj, "upper_indexes"):
-            self.upper_indexes = obj.upper_indexes
-
-    @classmethod
-    def from_yx_1d(cls, y, x):
-        """Create *Coordinates* from a list of y and x values.
-
-        This function omits coordinate grouping."""
-        return Coordinates(coordinates=np.stack((y, x), axis=-1))
-
-    @classmethod
-    def from_pixels_and_mask(cls, pixels, mask):
-        """Create *Coordinates* from a list of coordinates in pixel units and a mask which allows these coordinates to
-        be converted to scaled units."""
-        coordinates = []
-        for coordinate_set in pixels:
-            coordinates.append(
-                [
-                    mask.geometry.scaled_coordinates_from_pixel_coordinates(
-                        pixel_coordinates=coordinates
-                    )
-                    for coordinates in coordinate_set
-                ]
-            )
-        return cls(coordinates=coordinates)
-
-    @property
-    def in_1d(self):
-        return self
-
-    @property
-    def in_list(self):
-        """Return the coordinates on a structured list which groups coordinates with a common origin."""
-        return [
-            list(map(tuple, self[i:j, :]))
-            for i, j in zip(self.lower_indexes, self.upper_indexes)
-        ]
-
-    def values_from_arr_1d(self, arr_1d):
-        """Create a *Values* object from a 1D NumPy array of values of shape [total_coordinates]. The
-        *Values* are structured and grouped following this *Coordinate* instance."""
-        values_1d = [
-            list(arr_1d[i:j]) for i, j in zip(self.lower_indexes, self.upper_indexes)
-        ]
-        return arrays.Values(values=values_1d)
-
-    def coordinates_from_grid_1d(self, grid_1d):
-        """Create a *Coordinates* object from a 2D NumPy array of values of shape [total_coordinates, 2]. The
-        *Coordinates* are structured and grouped following this *Coordinate* instance."""
-        coordinates_1d = [
-            list(map(tuple, grid_1d[i:j, :]))
-            for i, j in zip(self.lower_indexes, self.upper_indexes)
-        ]
-
-        return Coordinates(coordinates=coordinates_1d)
-
-    @classmethod
-    def from_file(cls, file_path):
-        """Create a *Coordinates* object from a file which stores the coordinates as a list of list of tuples.
-
-        Parameters
-        ----------
-        file_path : str
-            The path to the coordinates .dat file containing the coordinates (e.g. '/path/to/coordinates.dat')
-        """
-        with open(file_path) as f:
-            coordinate_string = f.readlines()
-
-        coordinates = []
-
-        for line in coordinate_string:
-            coordinate_list = ast.literal_eval(line)
-            coordinates.append(coordinate_list)
-
-        return Coordinates(coordinates=coordinates)
-
-    def output_to_file(self, file_path, overwrite=False):
-        """Output this instance of the *Coordinates* object to a list of list of tuples.
-
-        Parameters
-        ----------
-        file_path : str
-            The path to the coordinates .dat file containing the coordinates (e.g. '/path/to/coordinates.dat')
-        overwrite : bool
-            If there is as exsiting file it will be overwritten if this is *True*.
-        """
-
-        if overwrite and os.path.exists(file_path):
-            os.remove(file_path)
-        elif not overwrite and os.path.exists(file_path):
-            raise FileExistsError(
-                "The file ",
-                file_path,
-                " already exists. Set overwrite=True to overwrite this" "file",
-            )
-
-        with open(file_path, "w") as f:
-            for coordinate in self.in_list:
-                f.write(f"{coordinate}\n")
-
-    def squared_distances_from_coordinate(self, coordinate=(0.0, 0.0)):
-        """Compute the squared distance of every (y,x) coordinate in this *Coordinate* instance from an input
-        coordinate.
-
-        Parameters
-        ----------
-        coordinate : (float, float)
-            The (y,x) coordinate from which the squared distance of every *Coordinate* is computed.
-        """
-        squared_distances = np.square(self[:, 0] - coordinate[0]) + np.square(
-            self[:, 1] - coordinate[1]
-        )
-        return self.values_from_arr_1d(arr_1d=squared_distances)
-
-    def distances_from_coordinate(self, coordinate=(0.0, 0.0)):
-        """Compute the distance of every (y,x) coordinate in this *Coordinate* instance from an input coordinate.
-
-        Parameters
-        ----------
-        coordinate : (float, float)
-            The (y,x) coordinate from which the distance of every *Coordinate* is computed.
-        """
-        distances = np.sqrt(
-            self.squared_distances_from_coordinate(coordinate=coordinate)
-        )
-        return self.values_from_arr_1d(arr_1d=distances)
-
-    @property
-    def shape_2d_scaled(self):
-        """The two dimensional shape of the coordinates spain in scaled units, computed by taking the minimum and
-        maximum values of the coordinates."""
-        return (
-            np.amax(self[:, 0]) - np.amin(self[:, 0]),
-            np.amax(self[:, 1]) - np.amin(self[:, 1]),
-        )
-
-    @property
-    def scaled_maxima(self):
-        """The maximum values of the coordinates returned as a tuple (y_max, x_max)."""
-        return (np.amax(self[:, 0]), np.amax(self[:, 1]))
-
-    @property
-    def scaled_minima(self):
-        """The minimum values of the coordinates returned as a tuple (y_max, x_max)."""
-        return (np.amin(self[:, 0]), np.amin(self[:, 1]))
-
-    @property
-    def extent(self):
-        """The extent of the coordinates returned as a NumPy array [x_min, x_max, y_min, y_max].
-
-        This follows the format of the extent input parameter in the matplotlib method imshow (and other methods) and
-        is used for visualization in the plot module."""
-        return np.asarray(
-            [
-                self.scaled_minima[1],
-                self.scaled_maxima[1],
-                self.scaled_minima[0],
-                self.scaled_maxima[0],
-            ]
-        )
-
-
-def grid_like_to_numpy(func):
-    """ Checks whether any coordinates in the grid are radially near (0.0, 0.0), which can lead to numerical faults in \
-    the evaluation of a light or mass profiles. If any coordinates are radially within the the radial minimum \
-    threshold, their (y,x) coordinates are shifted to that value to ensure they are evaluated correctly.
-
-    By default this radial minimum is not used, and users should be certain they use a value that does not impact \
-    results.
-
-    Parameters
-    ----------
-    func : (profile, *args, **kwargs) -> Object
-        A function that takes a grid of coordinates which may have a singularity as (0.0, 0.0)
-
-    Returns
-    -------
-        A function that can except cartesian or transformed coordinates
-    """
-
-    @wraps(func)
-    def wrapper(profile, grid, *args, **kwargs):
-        """ This decorator homogenizes the input array of *Grid* and *Coordinate* structures into a function, so that
-        both can be input interchangeably into functions which evalute values on points of the grid. The outputs are
-        converted back to *Grid* or *Coordinate* objects, where applicable.
-
-        The grid_like objects (*Grid* and *Coordinates*) are converted to a flattened 2D NumPy array, where the
-        first array dimension is the coordinate index and the second dimension stores the (y,x) values. For example,
-        for 100 coordinates, this NumPy array has shape (100, 2).
-
-        The decorator converts the result of the function back as follows:
-
-        - If the function returns (y,x) coordinates at every input point, the returned results are  *Grid* or
-          *Coordinates* object of the same structure as the input.
-
-        - If the function returns scalar values at every input point and a *Grid* is input, the returned results are an
-          *Array* structure which uses the same dimensions and mask as the *Grid*.
-
-        - If the function returns scalar values at every input point and *Coordinates* are input, the returned results
-          are a list of list of floats structure that resembles the *Coordinates*..
-
-        If the input array is 2D NumPy array of the form after conversion, it is input unchanged.
-
-        Parameters
-        ----------
-        profile : Profile
-            A Profile object which uses grid_like inputs to compute quantities at every coordinate on the grid.
-        grid : Grid or Coordinates
-            A grid_like object of (y,x) coordinates on which the function values are evaluated.
-
-        Returns
-        -------
-            The function values evaluated on the grid with the same structure as the input grid_like object.
-        """
-
-        def result_from_coordinates(result, coordinates):
-            """Convert the result of the Profile function back to a *Coordinates* object or list of list of float."""
-            if isinstance(result, np.ndarray):
-                if len(result.shape) == 1:
-                    return coordinates.values_from_arr_1d(arr_1d=result)
-                elif len(result.shape) == 2:
-                    return coordinates.coordinates_from_grid_1d(grid_1d=result)
-            elif isinstance(result, list):
-                if len(result[0].shape) == 1:
-                    return [
-                        coordinates.values_from_arr_1d(arr_1d=value) for value in result
-                    ]
-                elif len(result[0].shape) == 2:
-                    return [
-                        coordinates.coordinates_from_grid_1d(grid_1d=value)
-                        for value in result
-                    ]
-
-        def result_from_grid(result, grid):
-            """Convert the result of the Profile function back to a *Grid* or *Array* object."""
-            if isinstance(result, np.ndarray):
-                if len(result.shape) == 1:
-                    return grid.mapping.array_stored_1d_from_sub_array_1d(
-                        sub_array_1d=result
-                    )
-                else:
-                    return grid.mapping.grid_stored_1d_from_sub_grid_1d(
-                        sub_grid_1d=result,
-                        is_transformed=isinstance(result, TransformedGridNumpy),
-                    )
-            elif isinstance(result, list):
-                if len(result[0].shape) == 1:
-                    return [
-                        grid.mapping.array_stored_1d_from_sub_array_1d(
-                            sub_array_1d=value
-                        )
-                        for value in result
-                    ]
-                elif len(result[0].shape) == 2:
-                    return [
-                        grid.mapping.grid_stored_1d_from_sub_grid_1d(sub_grid_1d=value)
-                        for value in result
-                    ]
-
-        if isinstance(grid, Coordinates):
-            result = func(profile, grid, *args, **kwargs)
-            return result_from_coordinates(result=result, coordinates=grid)
-        elif isinstance(grid, Grid):
-            result = func(profile, grid, *args, **kwargs)
-            return result_from_grid(result=result, grid=grid)
-
-        if not isinstance(grid, Coordinates) and not isinstance(grid, Grid):
-            return func(profile, grid, *args, **kwargs)
-
-    return wrapper
-
-
-def grid_interpolate(func):
-    """
-    Decorate a profile method that accepts a coordinate grid and returns a data_type grid.
-
-    If an interpolator attribute is associated with the input grid then that interpolator is used to down sample the
-    coordinate grid prior to calling the function and up sample the result of the function.
-
-    If no interpolator attribute is associated with the input grid then the function is called as hyper.
-
-    Parameters
-    ----------
-    func
-        Some method that accepts a grid
-
-    Returns
-    -------
-    decorated_function
-        The function with optional interpolation
-    """
-
-    @wraps(func)
-    def wrapper(profile, grid, grid_radial_minimum=None, *args, **kwargs):
-        if hasattr(grid, "interpolator"):
-            interpolator = grid.interpolator
-            if grid.interpolator is not None:
-                values = func(
-                    profile,
-                    interpolator.interp_grid,
-                    grid_radial_minimum,
-                    *args,
-                    **kwargs,
-                )
-                if values.ndim == 1:
-                    return interpolator.interpolated_values_from_values(values=values)
-                elif values.ndim == 2:
-                    y_values = interpolator.interpolated_values_from_values(
-                        values=values[:, 0]
-                    )
-                    x_values = interpolator.interpolated_values_from_values(
-                        values=values[:, 1]
-                    )
-                    return np.asarray([y_values, x_values]).T
-        return func(profile, grid, grid_radial_minimum, *args, **kwargs)
-
-    return wrapper
-
-
-def transform_grid(func):
-    """Wrap the function in a function that checks whether the coordinates have been transformed. If they have not \ 
-    been transformed then they are transformed.
-
-    Parameters
-    ----------
-    func : (profile, grid *args, **kwargs) -> Object
-        A function where the input grid is the grid whose coordinates are transformed.
-
-    Returns
-    -------
-        A function that can except cartesian or transformed coordinates
-    """
-
-    @wraps(func)
-    def wrapper(profile, grid, *args, **kwargs):
-        """
-
-        Parameters
-        ----------
-        profile : GeometryProfile
-            The profiles that owns the function.
-        grid : grid_like
-            The (y, x) coordinates in the original reference frame of the grid.
-
-        Returns
-        -------
-            A grid_like object whose coordinates may be transformed.
-        """
-
-        if not isinstance(grid, TransformedGrid) and not isinstance(
-            grid, TransformedGridNumpy
-        ):
-            result = func(
-                profile,
-                profile.transform_grid_to_reference_frame(grid),
-                *args,
-                **kwargs,
-            )
-
-            return result
-
-        else:
-            return func(profile, grid, *args, **kwargs)
-
-    return wrapper
-
-
-def cache(func):
-    """
-    Caches results of a call to a grid function. If a grid that evaluates to the same byte value is passed into the same
-    function of the same instance as previously then the cached result is returned.
-
-    Parameters
-    ----------
-    func
-        Some instance method that takes a grid as its argument
-
-    Returns
-    -------
-    result
-        Some result, either newly calculated or recovered from the cache
-    """
-
-    def wrapper(instance, grid: np.ndarray, *args, **kwargs):
-        if not hasattr(instance, "cache"):
-            instance.cache = {}
-        key = (func.__name__, grid.tobytes())
-        if key not in instance.cache:
-            instance.cache[key] = func(instance, grid)
-        return instance.cache[key]
-
-    return wrapper
-
-
-def move_grid_to_radial_minimum(func):
-    """ Checks whether any coordinates in the grid are radially near (0.0, 0.0), which can lead to numerical faults in \
-    the evaluation of a light or mass profiles. If any coordinates are radially within the the radial minimum \
-    threshold, their (y,x) coordinates are shifted to that value to ensure they are evaluated correctly.
-
-    By default this radial minimum is not used, and users should be certain they use a value that does not impact \
-    results.
-
-    Parameters
-    ----------
-    func : (profile, *args, **kwargs) -> Object
-        A function that takes a grid of coordinates which may have a singularity as (0.0, 0.0)
-
-    Returns
-    -------
-        A function that can except cartesian or transformed coordinates
-    """
-
-    @wraps(func)
-    def wrapper(profile, grid, *args, **kwargs):
-        """
-
-        Parameters
-        ----------
-        profile : SphericalProfile
-            The profiles that owns the function
-        grid : grid_like
-            The (y, x) coordinates which are to be radially moved from (0.0, 0.0).
-
-        Returns
-        -------
-            The grid_like object whose coordinates are radially moved from (0.0, 0.0).
-        """
-        radial_minimum_config = aa.conf.NamedConfig(
-            f"{aa.conf.instance.config_path}/radial_minimum.ini"
-        )
-        grid_radial_minimum = radial_minimum_config.get(
-            "radial_minimum", profile.__class__.__name__, float
-        )
-
-        with np.errstate(all="ignore"):  # Division by zero fixed via isnan
-
-            grid_radii = profile.grid_to_grid_radii(grid=grid)
-
-            grid_radial_scale = np.where(
-                grid_radii < grid_radial_minimum, grid_radial_minimum / grid_radii, 1.0
-            )
-            grid = np.multiply(grid, grid_radial_scale[:, None])
-        grid[np.isnan(grid)] = grid_radial_minimum
-
-        return func(profile, grid, *args, **kwargs)
-
-    return wrapper

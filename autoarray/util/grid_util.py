@@ -48,7 +48,7 @@ def grid_1d_via_mask_2d(mask_2d, pixel_scales, sub_size, origin=(0.0, 0.0)):
     uniform grid of shape (sub_size, sub_size). This routine computes the (y,x) arc second coordinates at \
     the centre of every sub-pixel defined by this 2D mask array.
 
-    Coordinates are defined from the top-left corner, where the first unmasked sub-pixel corresponds to index 0. \
+    GridCoordinates are defined from the top-left corner, where the first unmasked sub-pixel corresponds to index 0. \
     Sub-pixels that are part of the same mask array pixel are indexed next to one another, such that the second \
     sub-pixel in the first pixel has index 1, its next sub-pixel has index 2, and so forth.
 
@@ -126,7 +126,7 @@ def grid_2d_via_mask_2d(mask_2d, pixel_scales, sub_size, origin=(0.0, 0.0)):
     uniform grid of shape (sub_size, sub_size). This routine computes the (y,x) arc second coordinates at \
     the centre of every sub-pixel defined by this 2D mask array.
 
-    Coordinates are defined from the top-left corner, where the first unmasked sub-pixel corresponds to index 0. \
+    GridCoordinates are defined from the top-left corner, where the first unmasked sub-pixel corresponds to index 0. \
     Sub-pixels that are part of the same mask array pixel are indexed next to one another, such that the second \
     sub-pixel in the first pixel has index 1, its next sub-pixel has index 2, and so forth.
 
@@ -173,7 +173,7 @@ def grid_1d_via_shape_2d(shape_2d, pixel_scales, sub_size, origin=(0.0, 0.0)):
     uniform grid of shape (sub_size, sub_size). This routine computes the (y,x) arc second coordinates at \
     the centre of every sub-pixel defined by this 2D mask array.
 
-    Coordinates are defined from the top-left corner, where the first sub-pixel corresponds to index [0,0]. \
+    GridCoordinates are defined from the top-left corner, where the first sub-pixel corresponds to index [0,0]. \
     Sub-pixels that are part of the same mask array pixel are indexed next to one another, such that the second \
     sub-pixel in the first pixel has index 1, its next sub-pixel has index 2, and so forth.
 
@@ -217,7 +217,7 @@ def grid_2d_via_shape_2d(shape_2d, pixel_scales, sub_size, origin=(0.0, 0.0)):
     uniform grid of shape (sub_size, sub_size). This routine computes the (y,x) arc second coordinates at \
     the centre of every sub-pixel defined by this 2D mask array.
 
-    Coordinates are defined from the top-left corner, where the first sub-pixel corresponds to index [0,0]. \
+    GridCoordinates are defined from the top-left corner, where the first sub-pixel corresponds to index [0,0]. \
     Sub-pixels that are part of the same mask array pixel are indexed next to one another, such that the second \
     sub-pixel in the first pixel has index 1, its next sub-pixel has index 2, and so forth.
 

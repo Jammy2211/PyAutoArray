@@ -26,7 +26,7 @@ from autoarray.structures.grids import (
     GridIterator,
     GridRectangular,
     GridVoronoi,
-    Coordinates,
+    GridCoordinates,
 )
 from autoarray.structures.kernel import Kernel
 from autoarray.structures.visibilities import Visibilities

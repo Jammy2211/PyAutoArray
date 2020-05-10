@@ -218,7 +218,7 @@ class Mapping:
         if not is_transformed:
             return grids.Grid(grid=sub_grid_1d, mask=self.mask, store_in_1d=True)
         else:
-            return grids.TransformedGrid(
+            return grids.GridTransformed(
                 grid=sub_grid_1d, mask=self.mask, store_in_1d=True
             )
 

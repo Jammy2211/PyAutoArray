@@ -594,18 +594,18 @@ class Values(np.ndarray):
         return Values(values=values_1d)
 
     def coordinates_from_grid_1d(self, grid_1d):
-        """Create a *Coordinates* object from a 2D NumPy array of values of shape [total_values, 2]. The
-        *Coordinates* are structured and grouped following this *Coordinate* instance."""
+        """Create a *GridCoordinates* object from a 2D NumPy array of values of shape [total_values, 2]. The
+        *GridCoordinates* are structured and grouped following this *Coordinate* instance."""
         coordinates_1d = [
             list(map(tuple, grid_1d[i:j, :]))
             for i, j in zip(self.lower_indexes, self.upper_indexes)
         ]
 
-        return grids.Coordinates(coordinates=coordinates_1d)
+        return grids.GridCoordinates(coordinates=coordinates_1d)
 
     @classmethod
     def from_file(cls, file_path):
-        """Create a *Coordinates* object from a file which stores the values as a list of list of tuples.
+        """Create a *GridCoordinates* object from a file which stores the values as a list of list of tuples.
 
         Parameters
         ----------
@@ -624,7 +624,7 @@ class Values(np.ndarray):
         return Values(values=values)
 
     def output_to_file(self, file_path, overwrite=False):
-        """Output this instance of the *Coordinates* object to a list of list of tuples.
+        """Output this instance of the *GridCoordinates* object to a list of list of tuples.
 
         Parameters
         ----------

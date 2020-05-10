@@ -119,7 +119,7 @@ class TestVoronoiBrightness:
 
         weight_map = pix.weight_map_from_hyper_image(hyper_image=hyper_image)
 
-        sparse_grid = grids.SparseGrid.from_total_pixels_grid_and_weight_map(
+        sparse_grid = grids.GridSparse.from_total_pixels_grid_and_weight_map(
             total_pixels=pix.pixels, grid=sub_grid_7x7, weight_map=weight_map, seed=1
         )
 
