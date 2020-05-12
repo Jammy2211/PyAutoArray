@@ -3,15 +3,37 @@ import numpy as np
 from autoarray.structures import grids
 
 
+def grid_to_grid_radii(grid):
+    return np.sqrt(np.add(np.square(grid[:, 0]), np.square(grid[:, 1])))
+
+
+def float_values_from_grid(profile, grid):
+
+    sersic_constant = (
+        (2 * 2.0)
+        - (1.0 / 3.0)
+        + (4.0 / (405.0 * 2.0))
+        + (46.0 / (25515.0 * 2.0 ** 2))
+        + (131.0 / (1148175.0 * 2.0 ** 3))
+        - (2194697.0 / (30690717750.0 * 2.0 ** 4))
+    )
+
+    grid_radii = grid_to_grid_radii(grid=grid)
+
+    return np.exp(
+        np.multiply(
+            -sersic_constant,
+            np.add(np.power(np.divide(grid_radii, 0.2), 1.0 / 2.0), -1),
+        )
+    )
+
+
 class MockGridIteratorObj:
     def __init__(self):
         pass
 
     @property
     def sersic_constant(self):
-        """ A parameter derived from Sersic index which ensures that effective radius contains 50% of the profile's
-        total integrated light.
-        """
         return (
             (2 * 2.0)
             - (1.0 / 3.0)
@@ -22,15 +44,6 @@ class MockGridIteratorObj:
         )
 
     def grid_to_grid_radii(self, grid):
-        """Convert a grid of (y, x) coordinates to a grid of their circular radii.
-
-        If the coordinates have not been transformed to the profile's centre, this is performed automatically.
-
-        Parameters
-        ----------
-        grid : grid_like
-            The (y, x) coordinates in the reference frame of the profile.
-        """
         return np.sqrt(np.add(np.square(grid[:, 0]), np.square(grid[:, 1])))
 
     @grids.grid_like_to_structure
