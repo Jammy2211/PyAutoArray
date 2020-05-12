@@ -764,6 +764,46 @@ class Grid(AbstractGrid):
                 grid_1d=blurring_grid_1d
             )
 
+    def structure_from_result(self, result):
+        """Convert a result from a non autoarray structure to the appropriate autoarray structure, where the conversion
+        depends on the type that *result* is as follows:
+
+        - 1D np.ndarray   -> aa.Array
+        - 2D np.ndarray   -> aa.Grid
+        - [1D np.ndarray] -> [aa.Array]
+        - [2D np.ndarray] -> [aa.Grid]
+
+        This function is used by the grid_like_to_structure decorator to convert the output result of a function
+        to an autoarray structure when a *Grid* instance is passed to the decorated function.
+
+        Parameters
+        ----------
+        result : np.ndarray
+            The input result (e.g. of a decorated function) that is converted to a PyAutoArray structure.
+        """
+
+        if isinstance(result, np.ndarray):
+            if len(result.shape) == 1:
+                return self.mapping.array_stored_1d_from_sub_array_1d(
+                    sub_array_1d=result
+                )
+            else:
+                return self.mapping.grid_stored_1d_from_sub_grid_1d(
+                    sub_grid_1d=result,
+                    is_transformed=isinstance(result, GridTransformedNumpy),
+                )
+        elif isinstance(result, list):
+            if len(result[0].shape) == 1:
+                return [
+                    self.mapping.array_stored_1d_from_sub_array_1d(sub_array_1d=value)
+                    for value in result
+                ]
+            elif len(result[0].shape) == 2:
+                return [
+                    self.mapping.grid_stored_1d_from_sub_grid_1d(sub_grid_1d=value)
+                    for value in result
+                ]
+
 
 class GridIterator(Grid):
     def __new__(
@@ -771,7 +811,7 @@ class GridIterator(Grid):
         grid,
         mask,
         fractional_accuracy=0.9999,
-        sub_steps=[1, 2, 4, 8, 16],
+        sub_steps=[2, 4, 8, 16],
         store_in_1d=True,
         *args,
         **kwargs,
@@ -903,7 +943,7 @@ class GridIterator(Grid):
         pixel_scales,
         origin=(0.0, 0.0),
         fractional_accuracy=0.9999,
-        sub_steps=[1, 2, 4, 8, 16],
+        sub_steps=[2, 4, 8, 16],
         store_in_1d=True,
     ):
 
@@ -926,7 +966,7 @@ class GridIterator(Grid):
 
     @classmethod
     def from_mask(
-        cls, mask, fractional_accuracy=1e-4, sub_steps=[1, 2, 4, 8, 16], store_in_1d=True
+        cls, mask, fractional_accuracy=1e-4, sub_steps=[2, 4, 8, 16], store_in_1d=True
     ):
         """Setup a sub-grid of the unmasked pixels, using a mask and a specified sub-grid size. The center of \
         every unmasked pixel's sub-pixels give the grid's (y,x) scaled coordinates.
@@ -985,12 +1025,14 @@ class GridIterator(Grid):
                     if fractional_accuracy > 1.0:
                         fractional_accuracy = 1.0 / fractional_accuracy
 
+                    print(fractional_accuracy)
+
                     if fractional_accuracy < self.fractional_accuracy:
                         fractional_mask[y, x] = False
 
                     mask_index += 1
 
-        return fractional_mask
+        return aa.Mask(mask_2d=fractional_mask, pixel_scales=result_array.pixel_scales)
 
     def fractional_mask_from_x2_result_arrays(
         self, result_array_lower_sub, result_array_higher_sub
@@ -1034,7 +1076,43 @@ class GridIterator(Grid):
                     if fractional_accuracy < self.fractional_accuracy:
                         fractional_mask[y, x] = False
 
-        return fractional_mask
+        return aa.Mask(
+            mask_2d=fractional_mask,
+            pixel_scales=result_array_higher_sub.pixel_scales,
+            origin=result_array_higher_sub.origin,
+        )
+
+    # def iterated_array_from_func(self, func, profile):
+    #
+    #     result_lower_sub = func(profile, self)
+    #     result_lower_sub = result_as_structure_from_grid(result=result_lower_sub, grid=grid)
+    #
+    #     fractional_mask = grid.mask
+    #
+    #     #     print(fractional_mask)
+    #
+    #     for sub_size in grid.sub_steps:
+    #
+    #         mask_higher_sub = fractional_mask.mapping.mask_new_sub_size_from_mask(
+    #             mask=fractional_mask,
+    #             sub_size=sub_size
+    #         )
+    #
+    #         grid_higher_sub = Grid.from_mask(mask=mask_higher_sub)
+    #         result_higher_sub = func(profile, grid_higher_sub, *args, **kwargs)
+    #         result_higher_sub = result_as_structure_from_grid(result=result_higher_sub, grid=grid)
+    #
+    #         fractional_mask = grid.fractional_mask_from_x2_result_arrays(
+    #             result_array_lower_sub=result_lower_sub,
+    #             result_array_higher_sub=result_higher_sub
+    #         )
+    #
+    #         #       print(fractional_mask)
+    #
+    #         if fractional_mask.is_all_true:
+    #             return result_higher_sub
+    #
+    #         result_lower_sub = result_higher_sub
 
 
 class GridInterpolator:
@@ -1741,7 +1819,7 @@ class GridTransformedNumpy(np.ndarray):
         return grid.view(cls)
 
 
-def grid_like_to_numpy(func):
+def grid_like_to_structure(func):
     """ Checks whether any coordinates in the grid are radially near (0.0, 0.0), which can lead to numerical faults in \
     the evaluation of a light or mass profiles. If any coordinates are radially within the the radial minimum \
     threshold, their (y,x) coordinates are shifted to that value to ensure they are evaluated correctly.
@@ -1794,62 +1872,13 @@ def grid_like_to_numpy(func):
             The function values evaluated on the grid with the same structure as the input grid_like object.
         """
 
-        def result_from_grid(func, profile, grid):
-            """Convert the result of the Profile function back to a *Grid* or *Array* object."""
-
-            result = func(profile, grid, *args, **kwargs)
-
-            return result_as_structure_from_grid(result=result, grid=grid)
-
-        def result_as_structure_from_grid(result, grid):
-
-            if isinstance(result, np.ndarray):
-                if len(result.shape) == 1:
-                    return grid.mapping.array_stored_1d_from_sub_array_1d(
-                        sub_array_1d=result
-                    )
-                else:
-                    return grid.mapping.grid_stored_1d_from_sub_grid_1d(
-                        sub_grid_1d=result,
-                        is_transformed=isinstance(result, GridTransformedNumpy),
-                    )
-            elif isinstance(result, list):
-                if len(result[0].shape) == 1:
-                    return [
-                        grid.mapping.array_stored_1d_from_sub_array_1d(
-                            sub_array_1d=value
-                        )
-                        for value in result
-                    ]
-                elif len(result[0].shape) == 2:
-                    return [
-                        grid.mapping.grid_stored_1d_from_sub_grid_1d(sub_grid_1d=value)
-                        for value in result
-                    ]
-
-        def result_from_grid_iterator(func, profile, grid):
-            """Convert the result of the Profile function back to a *Grid* or *Array* object."""
-
-            result = func(profile, grid, *args, **kwargs)
-            result = result_as_structure_from_grid(result=result, grid=grid)
-
-            fractional_mask = grid.fractional_mask_from_result_array(result_array=result)
-
-            for sub_size in grid.sub_steps:
-
-                if fractional_mask.is_all_true:
-                    return result
-
-            if isinstance(result, np.ndarray):
-                if len(result.shape) == 1:
-                    return grid.mapping.array_stored_1d_from_sub_array_1d(
-                        sub_array_1d=result
-                    )
-
+        # def result_from_grid_iterator(func, profile, grid):
+        #     """Convert the result of the Profile function back to a *Grid* or *Array* object."""
+        #
+        #     return result_higher_sub
+        #
         def result_from_coordinates(func, profile, grid):
             """Convert the result of the Profile function back to a *GridCoordinates* object or list of list of float."""
-
-            result = func(profile, grid, *args, **kwargs)
 
             if isinstance(result, np.ndarray):
                 if len(result.shape) == 1:
@@ -1858,23 +1887,20 @@ def grid_like_to_numpy(func):
                     return grid.coordinates_from_grid_1d(grid_1d=result)
             elif isinstance(result, list):
                 if len(result[0].shape) == 1:
-                    return [
-                        grid.values_from_arr_1d(arr_1d=value) for value in result
-                    ]
+                    return [grid.values_from_arr_1d(arr_1d=value) for value in result]
                 elif len(result[0].shape) == 2:
                     return [
-                        grid.coordinates_from_grid_1d(grid_1d=value)
-                        for value in result
+                        grid.coordinates_from_grid_1d(grid_1d=value) for value in result
                     ]
 
         if isinstance(grid, GridIterator):
-            return result_from_grid_iterator(
-                func=func, profile=profile, grid=grid
-            )
+            return result_from_grid_iterator(func=func, profile=profile, grid=grid)
         elif isinstance(grid, GridCoordinates):
+            result = func(profile, grid, *args, **kwargs)
             return result_from_coordinates(func=func, profile=profile, grid=grid)
         elif isinstance(grid, Grid):
-            return result_from_grid(func=func, profile=profile, grid=grid)
+            result = func(profile, grid, *args, **kwargs)
+            return grid.structure_from_result(result=result)
 
         if not isinstance(grid, GridCoordinates) and not isinstance(grid, Grid):
             return func(profile, grid, *args, **kwargs)
