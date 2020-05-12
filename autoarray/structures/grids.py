@@ -765,8 +765,8 @@ class Grid(AbstractGrid):
             )
 
     def structure_from_result(self, result):
-        """Convert a result from a non autoarray structure to the appropriate autoarray structure, where the conversion
-        depends on the type that *result* is as follows:
+        """Convert a result from a non autoarray structure to an aa.Array or aa.Grid structure, where the conversion
+        depends on type(result) as follows:
 
         - 1D np.ndarray   -> aa.Array
         - 2D np.ndarray   -> aa.Grid
@@ -778,7 +778,7 @@ class Grid(AbstractGrid):
 
         Parameters
         ----------
-        result : np.ndarray
+        result : np.ndarray or [np.ndarray]
             The input result (e.g. of a decorated function) that is converted to a PyAutoArray structure.
         """
 
@@ -1401,6 +1401,37 @@ class GridCoordinates(np.ndarray):
             ]
         )
 
+    def structure_from_result(self, result):
+        """Convert a result from a non autoarray structure to an aa.Values or aa.GridCoordinates structure, where
+        the conversion depends on type(result) as follows:
+
+        - 1D np.ndarray   -> aa.Values
+        - 2D np.ndarray   -> aa.GridCoordinates
+        - [1D np.ndarray] -> [aa.Values]
+        - [2D np.ndarray] -> [aa.GridCoordinates]
+
+        This function is used by the grid_like_to_structure decorator to convert the output result of a function
+        to an autoarray structure when a *GridCoordinates* instance is passed to the decorated function.
+
+        Parameters
+        ----------
+        result : np.ndarray or [np.ndarray]
+            The input result (e.g. of a decorated function) that is converted to a PyAutoArray structure.
+        """
+
+        if isinstance(result, np.ndarray):
+            if len(result.shape) == 1:
+                return self.values_from_arr_1d(arr_1d=result)
+            elif len(result.shape) == 2:
+                return self.coordinates_from_grid_1d(grid_1d=result)
+        elif isinstance(result, list):
+            if len(result[0].shape) == 1:
+                return [self.values_from_arr_1d(arr_1d=value) for value in result]
+            elif len(result[0].shape) == 2:
+                return [
+                    self.coordinates_from_grid_1d(grid_1d=value) for value in result
+                ]
+
 
 class GridRectangular(Grid):
     def __new__(cls, grid, shape_2d, pixel_scales, origin=(0.0, 0.0), *args, **kwargs):
@@ -1877,27 +1908,12 @@ def grid_like_to_structure(func):
         #
         #     return result_higher_sub
         #
-        def result_from_coordinates(func, profile, grid):
-            """Convert the result of the Profile function back to a *GridCoordinates* object or list of list of float."""
-
-            if isinstance(result, np.ndarray):
-                if len(result.shape) == 1:
-                    return grid.values_from_arr_1d(arr_1d=result)
-                elif len(result.shape) == 2:
-                    return grid.coordinates_from_grid_1d(grid_1d=result)
-            elif isinstance(result, list):
-                if len(result[0].shape) == 1:
-                    return [grid.values_from_arr_1d(arr_1d=value) for value in result]
-                elif len(result[0].shape) == 2:
-                    return [
-                        grid.coordinates_from_grid_1d(grid_1d=value) for value in result
-                    ]
 
         if isinstance(grid, GridIterator):
             return result_from_grid_iterator(func=func, profile=profile, grid=grid)
         elif isinstance(grid, GridCoordinates):
             result = func(profile, grid, *args, **kwargs)
-            return result_from_coordinates(func=func, profile=profile, grid=grid)
+            return grid.structure_from_result(result=result)
         elif isinstance(grid, Grid):
             result = func(profile, grid, *args, **kwargs)
             return grid.structure_from_result(result=result)
