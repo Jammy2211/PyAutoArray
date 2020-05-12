@@ -424,7 +424,7 @@ class TestGrid:
             ).all()
             assert (square_distances.mask == mask).all()
 
-        def test__result_as_structure__all_mappings_from_numpy_or_list__to_auto_array_or_grid(
+        def test__structure_from_result__all_mappings_from_numpy_or_list__to_auto_array_or_grid(
             self
         ):
 
@@ -1977,6 +1977,36 @@ class TestGridCoordinates:
         coordinates.output_to_file(
             file_path=output_coordinates_dir + "coordinates_test.dat", overwrite=True
         )
+
+    def test__structure_from_result__all_mappings_from_numpy_or_list__to_auto_array_or_grid(
+        self
+    ):
+
+        coordinates = aa.GridCoordinates(coordinates=[(1.0, -1.0), (1.0, 1.0)])
+
+        result = coordinates.structure_from_result(result=np.array([1.0, 2.0]))
+
+        assert isinstance(result, aa.Values)
+        assert result.in_list == [[1.0, 2.0]]
+
+        result = coordinates.structure_from_result(
+            result=np.array([[1.0, 1.0], [2.0, 2.0]])
+        )
+
+        assert isinstance(result, aa.GridCoordinates)
+        assert result.in_list == [[(1.0, 1.0), (2.0, 2.0)]]
+
+        result = coordinates.structure_from_result(result=[np.array([1.0, 2.0])])
+
+        assert isinstance(result[0], aa.Values)
+        assert result[0].in_list == [[1.0, 2.0]]
+
+        result = coordinates.structure_from_result(
+            result=[np.array([[1.0, 1.0], [2.0, 2.0]])]
+        )
+
+        assert isinstance(result[0], aa.GridCoordinates)
+        assert result[0].in_list == [[(1.0, 1.0), (2.0, 2.0)]]
 
     def test__convert_coordinates_decorator__coordinates_are_input__output_in_same_format(
         self
