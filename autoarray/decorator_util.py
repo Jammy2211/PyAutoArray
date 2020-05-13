@@ -1,5 +1,5 @@
 import numba
-from autoarray import conf
+from autoconf import conf
 
 """
 Depending on if we're using a super computer, we want two different numba decorators:
