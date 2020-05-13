@@ -1,4 +1,4 @@
-from autoarray import conf
+from autoconf import conf
 import matplotlib
 
 backend = conf.get_matplotlib_backend()

@@ -1503,36 +1503,28 @@ class TestGridIterator:
             )
 
             grid = aa.GridIterator.from_mask(
-                mask=mask, fractional_accuracy=0.75, sub_steps=[2, 4]
+                mask=mask, fractional_accuracy=0.5, sub_steps=[2, 4]
             )
 
             iterator_obj = MockGridIteratorObj()
 
             values = iterator_obj.float_values_from_grid(grid=grid)
 
-            grid_sub_1 = aa.Grid.from_mask(mask=mask)
-            values_sub_1 = iterator_obj.float_values_from_grid(grid=grid_sub_1)
-
             mask_sub_2 = mask.mapping.mask_new_sub_size_from_mask(mask=mask, sub_size=2)
             grid_sub_2 = aa.Grid.from_mask(mask=mask_sub_2)
-            values_sub_2 = iterator_obj.float_values_from_grid(grid=grid_sub_2)
-
-            fractional_accuracies = (
-                values_sub_1.in_1d_binned / values_sub_2.in_1d_binned
-            )
-            fractional_accuracies[fractional_accuracies > 1.0] = (
-                1.0 / fractional_accuracies[fractional_accuracies > 1.0]
-            )
-
-            assert values[0] == values_sub_2[0]
-            assert values[4] != values_sub_2[4]
+            values_sub_2 = float_values_from_grid(grid=grid_sub_2, profile=None)
+            values_sub_2 = grid_sub_2.structure_from_result(result=values_sub_2)
 
             mask_sub_4 = mask.mapping.mask_new_sub_size_from_mask(mask=mask, sub_size=4)
             grid_sub_4 = aa.Grid.from_mask(mask=mask_sub_4)
-            values_sub_4 = iterator_obj.float_values_from_grid(grid=grid_sub_4)
+            values_sub_4 = float_values_from_grid(grid=grid_sub_4, profile=None)
+            values_sub_4 = grid_sub_4.structure_from_result(result=values_sub_4)
 
-            assert values[0] != values_sub_4[0]
-            assert values[4] == values_sub_4[4]
+            assert values.in_2d[1, 1] == values_sub_2.in_2d_binned[1, 1]
+            assert values.in_2d[2, 2] != values_sub_2.in_2d_binned[2, 2]
+
+            assert values.in_2d[1, 1] != values_sub_4.in_2d_binned[1, 1]
+            assert values.in_2d[2, 2] == values_sub_4.in_2d_binned[2, 2]
 
     class TestAPI:
         def test__manual_1d(self):
