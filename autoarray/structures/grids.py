@@ -930,6 +930,7 @@ class GridIterator(Grid):
         obj = super(GridIterator, cls).__new__(
             cls=cls, grid=grid, mask=mask, store_in_1d=store_in_1d
         )
+        obj.grid = MaskedGrid.manual_1d(grid=grid, mask=mask)
         obj.fractional_accuracy = fractional_accuracy
         obj.sub_steps = sub_steps
         obj.binned = True
@@ -1099,7 +1100,7 @@ class GridIterator(Grid):
 
         iterated_array = np.zeros(shape=self.shape_2d)
 
-        result_lower_sub = func(profile, self)
+        result_lower_sub = func(profile, self.grid)
         result_lower_sub = self.structure_from_result(
             result=result_lower_sub
         ).in_2d_binned
