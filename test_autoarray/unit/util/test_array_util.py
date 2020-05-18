@@ -555,7 +555,7 @@ class Test2dIndexesfrom1dIndex:
 
         indexes_1d = np.array([0, 1, 2, 3, 4, 5, 6, 7, 8])
 
-        index_2d_for_index_1d = util.array.index_2d_for_index_1d_from_shape(
+        index_2d_for_index_1d = util.array.index_2d_for_index_1d_from(
             indexes_1d=indexes_1d, shape=(3, 3)
         )
 
@@ -570,7 +570,7 @@ class Test2dIndexesfrom1dIndex:
 
         indexes_1d = np.array([0, 1, 2, 3, 4, 5])
 
-        index_2d_for_index_1d = util.array.index_2d_for_index_1d_from_shape(
+        index_2d_for_index_1d = util.array.index_2d_for_index_1d_from(
             indexes_1d=indexes_1d, shape=(2, 3)
         )
 
@@ -583,7 +583,7 @@ class Test2dIndexesfrom1dIndex:
 
         indexes_1d = np.array([0, 1, 2, 3, 4, 5])
 
-        indexes_2d = util.array.index_2d_for_index_1d_from_shape(
+        indexes_2d = util.array.index_2d_for_index_1d_from(
             indexes_1d=indexes_1d, shape=(3, 2)
         )
 
@@ -595,7 +595,7 @@ class Test2dIndexesfrom1dIndex:
 
         indexes_1d = np.array([1, 4, 7, 8, 0, 2, 3, 5, 6])
 
-        index_2d_for_index_1d = util.array.index_2d_for_index_1d_from_shape(
+        index_2d_for_index_1d = util.array.index_2d_for_index_1d_from(
             indexes_1d=indexes_1d, shape=(3, 3)
         )
 
@@ -614,7 +614,7 @@ class Test1dIndexFromIndex2D:
             [[0, 0], [0, 1], [0, 2], [1, 0], [1, 1], [1, 2], [2, 0], [2, 1], [2, 2]]
         )
 
-        index_1d_for_index_2d = util.array.index_1d_for_index_2d_from_shape(
+        index_1d_for_index_2d = util.array.index_1d_for_index_2d_from(
             indexes_2d=indexes_2d, shape=(3, 3)
         )
 
@@ -624,7 +624,7 @@ class Test1dIndexFromIndex2D:
 
         indexes_2d = np.array([[0, 0], [0, 1], [0, 2], [1, 0], [1, 1], [1, 2]])
 
-        index_1d_for_index_2d = util.array.index_1d_for_index_2d_from_shape(
+        index_1d_for_index_2d = util.array.index_1d_for_index_2d_from(
             indexes_2d=indexes_2d, shape=(2, 3)
         )
 
@@ -634,7 +634,7 @@ class Test1dIndexFromIndex2D:
 
         indexes_2d = np.array([[0, 0], [0, 1], [1, 0], [1, 1], [2, 0], [2, 1]])
 
-        index_1d_for_index_2d = util.array.index_1d_for_index_2d_from_shape(
+        index_1d_for_index_2d = util.array.index_1d_for_index_2d_from(
             indexes_2d=indexes_2d, shape=(3, 2)
         )
 
@@ -646,7 +646,7 @@ class Test1dIndexFromIndex2D:
             [[0, 1], [1, 1], [2, 1], [2, 2], [0, 0], [0, 2], [1, 0], [1, 2], [2, 0]]
         )
 
-        index_1d_for_index_2d = util.array.index_1d_for_index_2d_from_shape(
+        index_1d_for_index_2d = util.array.index_1d_for_index_2d_from(
             indexes_2d=indexes_2d, shape=(3, 3)
         )
 
@@ -660,7 +660,7 @@ class TestArray1DFromArray2d:
 
         mask = np.array([[True, True, True], [True, False, True], [True, True, True]])
 
-        array_1d = util.array.sub_array_1d_from_sub_array_2d(
+        array_1d = util.array.sub_array_1d_from(
             mask=mask, sub_array_2d=array_2d, sub_size=1
         )
 
@@ -672,7 +672,7 @@ class TestArray1DFromArray2d:
             [[True, False, True], [False, False, False], [True, False, True]]
         )
 
-        array_1d = util.array.sub_array_1d_from_sub_array_2d(
+        array_1d = util.array.sub_array_1d_from(
             mask=mask, sub_array_2d=array_2d, sub_size=1
         )
 
@@ -688,7 +688,7 @@ class TestArray1DFromArray2d:
             ]
         )
 
-        array_1d = util.array.sub_array_1d_from_sub_array_2d(
+        array_1d = util.array.sub_array_1d_from(
             mask=mask, sub_array_2d=array_2d, sub_size=1
         )
 
@@ -705,7 +705,7 @@ class TestArray1DFromArray2d:
             ]
         )
 
-        array_1d = util.array.sub_array_1d_from_sub_array_2d(
+        array_1d = util.array.sub_array_1d_from(
             mask=mask, sub_array_2d=array_2d, sub_size=1
         )
 
@@ -726,7 +726,7 @@ class TestArray1DFromArray2d:
 
         mask = np.array([[True, True, True], [True, False, True], [True, True, True]])
 
-        sub_array_1d = util.array.sub_array_1d_from_sub_array_2d(
+        sub_array_1d = util.array.sub_array_1d_from(
             sub_array_2d=sub_array_2d, mask=mask, sub_size=2
         )
 
@@ -734,7 +734,7 @@ class TestArray1DFromArray2d:
 
         mask = np.array([[True, False, True], [True, False, True], [True, True, False]])
 
-        sub_array_1d = util.array.sub_array_1d_from_sub_array_2d(
+        sub_array_1d = util.array.sub_array_1d_from(
             sub_array_2d=sub_array_2d, mask=mask, sub_size=2
         )
 
@@ -761,7 +761,7 @@ class TestArray1DFromArray2d:
             ]
         )
 
-        sub_array_1d = util.array.sub_array_1d_from_sub_array_2d(
+        sub_array_1d = util.array.sub_array_1d_from(
             sub_array_2d=sub_array_2d, mask=mask, sub_size=2
         )
 
@@ -819,7 +819,7 @@ class TestArray1DFromArray2d:
             ]
         )
 
-        sub_array_1d = util.array.sub_array_1d_from_sub_array_2d(
+        sub_array_1d = util.array.sub_array_1d_from(
             sub_array_2d=sub_array_2d, mask=mask, sub_size=2
         )
 
@@ -845,7 +845,7 @@ class TestArray1DFromArray2d:
 
         mask = np.array([[False, True], [True, False]])
 
-        sub_array_1d = util.array.sub_array_1d_from_sub_array_2d(
+        sub_array_1d = util.array.sub_array_1d_from(
             sub_array_2d=sub_array_2d, mask=mask, sub_size=3
         )
 
@@ -862,7 +862,7 @@ class TestArray2dForArray1d:
 
         mask = np.full(fill_value=False, shape=(2, 2))
 
-        array_2d = util.array.sub_array_2d_from_sub_array_1d(
+        array_2d = util.array.sub_array_2d_from(
             sub_array_1d=array_1d, mask=mask, sub_size=1
         )
 
@@ -872,7 +872,7 @@ class TestArray2dForArray1d:
 
         mask = np.array([[False, False], [False, True]])
 
-        array_2d = util.array.sub_array_2d_from_sub_array_1d(
+        array_2d = util.array.sub_array_2d_from(
             sub_array_1d=array_1d, mask=mask, sub_size=1
         )
 
@@ -888,7 +888,7 @@ class TestArray2dForArray1d:
             ]
         )
 
-        array_2d = util.array.sub_array_2d_from_sub_array_1d(
+        array_2d = util.array.sub_array_2d_from(
             sub_array_1d=array_1d, mask=mask, sub_size=1
         )
 
@@ -907,7 +907,7 @@ class TestArray2dForArray1d:
 
         mask = np.array([[False, False], [False, True]])
 
-        array_2d = util.array.sub_array_2d_from_sub_array_1d(
+        array_2d = util.array.sub_array_2d_from(
             sub_array_1d=array_1d, mask=mask, sub_size=2
         )
 
@@ -937,7 +937,7 @@ class TestPeakPixels:
             ]
         )
 
-        peak_pixels = util.array.peak_pixels_from_array_2d(array_2d=array.in_2d)
+        peak_pixels = util.array.peak_pixels_from(array_2d=array.in_2d)
 
         assert peak_pixels == [[2, 2]]
 
@@ -951,7 +951,7 @@ class TestPeakPixels:
             ]
         )
 
-        peak_pixels = util.array.peak_pixels_from_array_2d(array_2d=array.in_2d)
+        peak_pixels = util.array.peak_pixels_from(array_2d=array.in_2d)
 
         assert peak_pixels == [[2, 1], [2, 3]]
 
@@ -965,7 +965,7 @@ class TestPeakPixels:
             ]
         )
 
-        peak_pixels = util.array.peak_pixels_from_array_2d(array_2d=array.in_2d)
+        peak_pixels = util.array.peak_pixels_from(array_2d=array.in_2d)
 
         assert peak_pixels == [[2, 1]]
 
@@ -979,7 +979,7 @@ class TestPeakPixels:
             ]
         )
 
-        peak_pixels = util.array.peak_pixels_from_array_2d(array_2d=array.in_2d)
+        peak_pixels = util.array.peak_pixels_from(array_2d=array.in_2d)
 
         assert peak_pixels == [[1, 3], [2, 1]]
 
@@ -993,7 +993,7 @@ class TestPeakPixels:
             ]
         )
 
-        peak_pixels = util.array.peak_pixels_from_array_2d(array_2d=array.in_2d)
+        peak_pixels = util.array.peak_pixels_from(array_2d=array.in_2d)
 
         assert peak_pixels == [[2, 3]]
 
@@ -1007,7 +1007,7 @@ class TestPeakPixels:
             ]
         )
 
-        peak_pixels = util.array.peak_pixels_from_array_2d(array_2d=array.in_2d)
+        peak_pixels = util.array.peak_pixels_from(array_2d=array.in_2d)
 
         assert peak_pixels == [[2, 1], [3, 3]]
 
@@ -1033,9 +1033,7 @@ class TestPeakPixels:
             ]
         )
 
-        peak_pixels = util.array.peak_pixels_from_array_2d(
-            array_2d=array.in_2d, mask_2d=mask_2d
-        )
+        peak_pixels = util.array.peak_pixels_from(array_2d=array.in_2d, mask_2d=mask_2d)
 
         assert peak_pixels == [[2, 3]]
 
@@ -1059,9 +1057,7 @@ class TestPeakPixels:
             ]
         )
 
-        peak_pixels = util.array.peak_pixels_from_array_2d(
-            array_2d=array.in_2d, mask_2d=mask_2d
-        )
+        peak_pixels = util.array.peak_pixels_from(array_2d=array.in_2d, mask_2d=mask_2d)
 
         assert peak_pixels == []
 
@@ -1085,9 +1081,7 @@ class TestPeakPixels:
             ]
         )
 
-        peak_pixels = util.array.peak_pixels_from_array_2d(
-            array_2d=array.in_2d, mask_2d=mask_2d
-        )
+        peak_pixels = util.array.peak_pixels_from(array_2d=array.in_2d, mask_2d=mask_2d)
 
         assert peak_pixels == [[3, 3]]
 
@@ -1105,7 +1099,7 @@ class TestTroughPixels:
             ]
         )
 
-        trough_pixels = util.array.trough_pixels_from_array_2d(array_2d=array.in_2d)
+        trough_pixels = util.array.trough_pixels_from(array_2d=array.in_2d)
 
         assert trough_pixels == [[2, 2]]
 
@@ -1119,7 +1113,7 @@ class TestTroughPixels:
             ]
         )
 
-        trough_pixels = util.array.trough_pixels_from_array_2d(array_2d=array.in_2d)
+        trough_pixels = util.array.trough_pixels_from(array_2d=array.in_2d)
 
         assert trough_pixels == [[2, 1], [2, 3]]
 
@@ -1133,7 +1127,7 @@ class TestTroughPixels:
             ]
         )
 
-        trough_pixels = util.array.trough_pixels_from_array_2d(array_2d=array.in_2d)
+        trough_pixels = util.array.trough_pixels_from(array_2d=array.in_2d)
 
         assert trough_pixels == [[2, 1]]
 
@@ -1147,7 +1141,7 @@ class TestTroughPixels:
             ]
         )
 
-        trough_pixels = util.array.trough_pixels_from_array_2d(array_2d=array.in_2d)
+        trough_pixels = util.array.trough_pixels_from(array_2d=array.in_2d)
 
         assert trough_pixels == [[1, 3], [2, 1]]
 
@@ -1161,7 +1155,7 @@ class TestTroughPixels:
             ]
         )
 
-        trough_pixels = util.array.trough_pixels_from_array_2d(array_2d=array.in_2d)
+        trough_pixels = util.array.trough_pixels_from(array_2d=array.in_2d)
 
         assert trough_pixels == [[2, 3]]
 
@@ -1175,7 +1169,7 @@ class TestTroughPixels:
             ]
         )
 
-        trough_pixels = util.array.trough_pixels_from_array_2d(array_2d=array.in_2d)
+        trough_pixels = util.array.trough_pixels_from(array_2d=array.in_2d)
 
         assert trough_pixels == [[2, 1], [3, 3]]
 
@@ -1201,7 +1195,7 @@ class TestTroughPixels:
             ]
         )
 
-        trough_pixels = util.array.trough_pixels_from_array_2d(
+        trough_pixels = util.array.trough_pixels_from(
             array_2d=array.in_2d, mask_2d=mask_2d
         )
 
@@ -1227,7 +1221,7 @@ class TestTroughPixels:
             ]
         )
 
-        trough_pixels = util.array.trough_pixels_from_array_2d(
+        trough_pixels = util.array.trough_pixels_from(
             array_2d=array.in_2d, mask_2d=mask_2d
         )
 
@@ -1253,7 +1247,7 @@ class TestTroughPixels:
             ]
         )
 
-        trough_pixels = util.array.trough_pixels_from_array_2d(
+        trough_pixels = util.array.trough_pixels_from(
             array_2d=array.in_2d, mask_2d=mask_2d
         )
 

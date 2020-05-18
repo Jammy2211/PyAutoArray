@@ -39,9 +39,7 @@ class Mask(np.ndarray):
         obj.sub_size = sub_size
         obj.pixel_scales = pixel_scales
         obj.origin = origin
-        obj.neighbors = mask_util.mask_2d_neighbors_from_mask_2d(
-            mask_2d=mask_2d
-        ).astype("int")
+        obj.neighbors = mask_util.mask_2d_neighbors_from(mask_2d=mask_2d).astype("int")
         return obj
 
     def __reduce__(self):
@@ -166,7 +164,7 @@ class Mask(np.ndarray):
             if type(pixel_scales) is float or int:
                 pixel_scales = (float(pixel_scales), float(pixel_scales))
 
-        mask_2d = mask_util.mask_2d_circular_from_shape_2d_pixel_scales_and_radius(
+        mask_2d = mask_util.mask_2d_circular_from(
             shape_2d=shape_2d, pixel_scales=pixel_scales, radius=radius, centre=centre
         )
 
@@ -211,7 +209,7 @@ class Mask(np.ndarray):
             if type(pixel_scales) is float or int:
                 pixel_scales = (float(pixel_scales), float(pixel_scales))
 
-        mask_2d = mask_util.mask_2d_circular_annular_from_shape_2d_pixel_scales_and_radii(
+        mask_2d = mask_util.mask_2d_circular_annular_from(
             shape_2d=shape_2d,
             pixel_scales=pixel_scales,
             inner_radius=inner_radius,
@@ -268,7 +266,7 @@ class Mask(np.ndarray):
             if type(pixel_scales) is float or int:
                 pixel_scales = (float(pixel_scales), float(pixel_scales))
 
-        mask_2d = mask_util.mask_2d_circular_anti_annular_from_shape_2d_pixel_scales_and_radii(
+        mask_2d = mask_util.mask_2d_circular_anti_annular_from(
             shape_2d=shape_2d,
             pixel_scales=pixel_scales,
             inner_radius=inner_radius,
@@ -321,7 +319,7 @@ class Mask(np.ndarray):
             if type(pixel_scales) is float or int:
                 pixel_scales = (float(pixel_scales), float(pixel_scales))
 
-        mask_2d = mask_util.mask_2d_elliptical_from_shape_2d_pixel_scales_and_radius(
+        mask_2d = mask_util.mask_2d_elliptical_from(
             shape_2d=shape_2d,
             pixel_scales=pixel_scales,
             major_axis_radius=major_axis_radius,
@@ -385,7 +383,7 @@ class Mask(np.ndarray):
             if type(pixel_scales) is float or int:
                 pixel_scales = (float(pixel_scales), float(pixel_scales))
 
-        mask_2d = mask_util.mask_2d_elliptical_annular_from_shape_2d_pixel_scales_and_radius(
+        mask_2d = mask_util.mask_2d_elliptical_annular_from(
             shape_2d=shape_2d,
             pixel_scales=pixel_scales,
             inner_major_axis_radius=inner_major_axis_radius,
@@ -417,7 +415,7 @@ class Mask(np.ndarray):
         invert=False,
     ):
 
-        mask_2d = mask_util.mask_2d_from_pixel_coordinates(
+        mask_2d = mask_util.mask_2d_via_pixel_coordinates_from(
             shape_2d=shape_2d, pixel_coordinates=pixel_coordinates, buffer=buffer
         )
 
@@ -526,7 +524,7 @@ class Mask(np.ndarray):
 
         sub_shape = (self.shape[0] * self.sub_size, self.shape[1] * self.sub_size)
 
-        return mask_util.mask_2d_from_shape_2d_and_mask_2d_index_for_mask_1d_index(
+        return mask_util.mask_2d_via_shape_2d_and_mask_2d_index_for_mask_1d_index_from(
             shape_2d=sub_shape,
             mask_2d_index_for_mask_1d_index=self.regions._sub_mask_2d_index_for_sub_mask_1d_index,
         ).astype("bool")

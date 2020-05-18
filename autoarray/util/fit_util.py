@@ -1,7 +1,7 @@
 import numpy as np
 
 
-def residual_map_from_data_mask_and_model_data(data, mask, model_data):
+def residual_map_with_mask_from(*, data, mask, model_data):
     """Compute the residual map between a masked dataset and model data, where:
 
     Residuals = (Data - Model_Data).
@@ -22,9 +22,7 @@ def residual_map_from_data_mask_and_model_data(data, mask, model_data):
     )
 
 
-def normalized_residual_map_from_residual_map_noise_map_and_mask(
-    residual_map, noise_map, mask
-):
+def normalized_residual_map_with_mask_from(*, residual_map, noise_map, mask):
     """Compute the normalized residual map between a masked dataset and model data, where:
 
     Normalized_Residual = (Data - Model_Data) / Noise
@@ -48,7 +46,7 @@ def normalized_residual_map_from_residual_map_noise_map_and_mask(
     )
 
 
-def chi_squared_map_from_residual_map_noise_map_and_mask(residual_map, noise_map, mask):
+def chi_squared_map_with_mask_from(*, residual_map, noise_map, mask):
     """Computes the chi-squared map between a masked residual-map and noise map, where:
 
     Chi_Squared = ((Residuals) / (Noise)) ** 2.0 = ((Data - Model)**2.0)/(Variances)
@@ -74,7 +72,7 @@ def chi_squared_map_from_residual_map_noise_map_and_mask(residual_map, noise_map
     )
 
 
-def chi_squared_from_chi_squared_map_and_mask(chi_squared_map, mask):
+def chi_squared_with_mask_from(*, chi_squared_map, mask):
     """Compute the chi-squared terms of each model data's fit to a masked dataset, by summing the masked
     chi-squared map of the fit.
 
@@ -90,7 +88,7 @@ def chi_squared_from_chi_squared_map_and_mask(chi_squared_map, mask):
     return np.sum(chi_squared_map[np.asarray(mask) == 0])
 
 
-def noise_normalization_from_noise_map_and_mask(noise_map, mask):
+def noise_normalization_with_mask_from(*, noise_map, mask):
     """Compute the noise map normalization terms of masked noise map, summing the noise_map value in every pixel as:
 
     [Noise_Term] = sum(log(2*pi*[Noise]**2.0))
@@ -107,7 +105,7 @@ def noise_normalization_from_noise_map_and_mask(noise_map, mask):
     return np.sum(np.log(2 * np.pi * noise_map[np.asarray(mask) == 0] ** 2.0))
 
 
-def residual_map_from_data_and_model_data(data, model_data):
+def residual_map_from(*, data, model_data):
     """Compute the residual map between a masked dataset and model data, where:
 
     Residuals = (Data - Model_Data).
@@ -124,7 +122,7 @@ def residual_map_from_data_and_model_data(data, model_data):
     return np.subtract(data, model_data, out=np.zeros_like(data))
 
 
-def normalized_residual_map_from_residual_map_and_noise_map(residual_map, noise_map):
+def normalized_residual_map_from(*, residual_map, noise_map):
     """Compute the normalized residual map between a masked dataset and model data, where:
 
     Normalized_Residual = (Data - Model_Data) / Noise
@@ -141,7 +139,7 @@ def normalized_residual_map_from_residual_map_and_noise_map(residual_map, noise_
     return np.divide(residual_map, noise_map, out=np.zeros_like(residual_map))
 
 
-def chi_squared_map_from_residual_map_and_noise_map(residual_map, noise_map):
+def chi_squared_map_from(*, residual_map, noise_map):
     """Compute the chi-squared map between a residual-map and noise map, where:
 
     Chi_Squared = ((Residuals) / (Noise)) ** 2.0 = ((Data - Model)**2.0)/(Variances)
@@ -158,7 +156,7 @@ def chi_squared_map_from_residual_map_and_noise_map(residual_map, noise_map):
     )
 
 
-def chi_squared_from_chi_squared_map(chi_squared_map):
+def chi_squared_from(*, chi_squared_map):
     """Compute the chi-squared terms of a model data's fit to an dataset, by summing the chi-squared map.
 
     Parameters
@@ -169,7 +167,7 @@ def chi_squared_from_chi_squared_map(chi_squared_map):
     return np.sum(chi_squared_map)
 
 
-def noise_normalization_from_noise_map(noise_map):
+def noise_normalization_from(*, noise_map):
     """Compute the noise map normalization term of the noise map, summing the noise_map value in every pixel as:
 
     [Noise_Term] = sum(log(2*pi*[Noise]**2.0))
@@ -182,9 +180,7 @@ def noise_normalization_from_noise_map(noise_map):
     return np.sum(np.log(2 * np.pi * noise_map ** 2.0))
 
 
-def likelihood_from_chi_squared_and_noise_normalization(
-    chi_squared, noise_normalization
-):
+def likelihood_from(*, chi_squared, noise_normalization):
     """Compute the log likelihood of each model data point's fit to the dataset, where:
 
     Log Likelihood = -0.5*[Chi_Squared_Term + Noise_Term] (see functions above for these definitions)
@@ -199,8 +195,8 @@ def likelihood_from_chi_squared_and_noise_normalization(
     return -0.5 * (chi_squared + noise_normalization)
 
 
-def likelihood_with_regularization_from_inversion_terms(
-    chi_squared, regularization_term, noise_normalization
+def likelihood_with_regularization_from(
+    *, chi_squared, regularization_term, noise_normalization
 ):
     """Compute the log likelihood of an inversion's fit to the dataset, including a regularization term which \
     comes from an inversion:
@@ -220,7 +216,8 @@ def likelihood_with_regularization_from_inversion_terms(
     return -0.5 * (chi_squared + regularization_term + noise_normalization)
 
 
-def evidence_from_inversion_terms(
+def log_evidence_from(
+    *,
     chi_squared,
     regularization_term,
     log_curvature_regularization_term,

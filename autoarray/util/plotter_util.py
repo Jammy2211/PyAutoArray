@@ -1,7 +1,7 @@
 import numpy as np
 
 
-def get_real_space_mask_from_fit(mask, fit):
+def get_real_space_mask_from(mask, fit):
     """Get the masks of the fit if the masks should be plotted on the fit.
 
     Parameters

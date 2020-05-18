@@ -580,7 +580,7 @@ class TestRectangularMapper:
             recon_pix = mapper.reconstructed_pixelization_from_solution_vector(
                 solution_vector=solution
             )
-            recon_pix_util = aa.util.array.sub_array_2d_from_sub_array_1d(
+            recon_pix_util = aa.util.array.sub_array_2d_from(
                 sub_array_1d=solution,
                 mask=np.full(fill_value=False, shape=(4, 3)),
                 sub_size=1,
@@ -600,7 +600,7 @@ class TestRectangularMapper:
             recon_pix = mapper.reconstructed_pixelization_from_solution_vector(
                 solution_vector=solution
             )
-            recon_pix_util = aa.util.array.sub_array_2d_from_sub_array_1d(
+            recon_pix_util = aa.util.array.sub_array_2d_from(
                 sub_array_1d=solution,
                 mask=np.full(fill_value=False, shape=(3, 4)),
                 sub_size=1,
@@ -622,7 +622,7 @@ class TestRectangularMapper:
 
             pixel_signals = mapper.pixel_signals_from_signal_scale(signal_scale=2.0)
 
-            pixel_signals_util = aa.util.mapper.adaptive_pixel_signals_from_images(
+            pixel_signals_util = aa.util.mapper.adaptive_pixel_signals_from(
                 pixels=9,
                 signal_scale=2.0,
                 pixelization_1d_index_for_sub_mask_1d_index=mapper.pixelization_1d_index_for_sub_mask_1d_index,
@@ -786,7 +786,7 @@ class TestVoronoiMapper:
 
             pixel_signals = mapper.pixel_signals_from_signal_scale(signal_scale=2.0)
 
-            pixel_signals_util = aa.util.mapper.adaptive_pixel_signals_from_images(
+            pixel_signals_util = aa.util.mapper.adaptive_pixel_signals_from(
                 pixels=6,
                 signal_scale=2.0,
                 pixelization_1d_index_for_sub_mask_1d_index=mapper.pixelization_1d_index_for_sub_mask_1d_index,

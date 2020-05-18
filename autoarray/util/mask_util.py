@@ -7,7 +7,7 @@ from autoarray.util import grid_util
 
 
 @decorator_util.jit()
-def mask_2d_centres_from_shape_pixel_scale_and_centre(shape, pixel_scales, centre):
+def mask_2d_centres_from(shape, pixel_scales, centre):
     """Determine the (y,x) arc-second central coordinates of a mask from its shape, pixel-scales and centre.
 
      The coordinate system is defined such that the positive y axis is up and positive x axis is right.
@@ -37,7 +37,7 @@ def mask_2d_centres_from_shape_pixel_scale_and_centre(shape, pixel_scales, centr
 
 
 @decorator_util.jit()
-def total_pixels_from_mask_2d(mask_2d):
+def total_pixels_from(mask_2d):
     """Compute the total number of unmasked pixels in a mask.
 
     Parameters
@@ -71,7 +71,7 @@ def total_pixels_from_mask_2d(mask_2d):
 
 
 @decorator_util.jit()
-def total_sub_pixels_from_mask_2d_and_sub_size(mask_2d, sub_size):
+def total_sub_pixels_from(mask_2d, sub_size):
     """Compute the total number of sub-pixels in unmasked pixels in a mask.
     
     Parameters
@@ -95,11 +95,11 @@ def total_sub_pixels_from_mask_2d_and_sub_size(mask_2d, sub_size):
 
     total_sub_pixels = total_sub_pixels_from_mask(mask=mask, sub_size=2)
     """
-    return total_pixels_from_mask_2d(mask_2d) * sub_size ** 2
+    return total_pixels_from(mask_2d) * sub_size ** 2
 
 
 @decorator_util.jit()
-def total_sparse_pixels_from_mask_2d(mask_2d, unmasked_sparse_grid_pixel_centres):
+def total_sparse_pixels_from(mask_2d, unmasked_sparse_grid_pixel_centres):
     """Given the full (i.e. without removing pixels which are outside the mask) pixelization grid's pixel \ 
     center and the mask, compute the total number of pixels which are within the mask and thus used \ \
     by the pixelization grid.
@@ -128,9 +128,7 @@ def total_sparse_pixels_from_mask_2d(mask_2d, unmasked_sparse_grid_pixel_centres
 
 
 @decorator_util.jit()
-def mask_2d_circular_from_shape_2d_pixel_scales_and_radius(
-    shape_2d, pixel_scales, radius, centre=(0.0, 0.0)
-):
+def mask_2d_circular_from(shape_2d, pixel_scales, radius, centre=(0.0, 0.0)):
     """Compute a circular mask from the 2D mask array shape and radius of the circle.
 
     This creates a 2D array where all values within the mask radius are unmasked and therefore *False*.
@@ -159,7 +157,7 @@ def mask_2d_circular_from_shape_2d_pixel_scales_and_radius(
 
     mask = np.full(shape_2d, True)
 
-    centres_arcsec = mask_2d_centres_from_shape_pixel_scale_and_centre(
+    centres_arcsec = mask_2d_centres_from(
         shape=mask.shape, pixel_scales=pixel_scales, centre=centre
     )
 
@@ -178,7 +176,7 @@ def mask_2d_circular_from_shape_2d_pixel_scales_and_radius(
 
 
 @decorator_util.jit()
-def mask_2d_circular_annular_from_shape_2d_pixel_scales_and_radii(
+def mask_2d_circular_annular_from(
     shape_2d, pixel_scales, inner_radius, outer_radius, centre=(0.0, 0.0)
 ):
     """Compute an annular mask from an input inner and outer mask radius and shape.
@@ -211,7 +209,7 @@ def mask_2d_circular_annular_from_shape_2d_pixel_scales_and_radii(
 
     mask = np.full(shape_2d, True)
 
-    centres_arcsec = mask_2d_centres_from_shape_pixel_scale_and_centre(
+    centres_arcsec = mask_2d_centres_from(
         shape=mask.shape, pixel_scales=pixel_scales, centre=centre
     )
 
@@ -230,7 +228,7 @@ def mask_2d_circular_annular_from_shape_2d_pixel_scales_and_radii(
 
 
 @decorator_util.jit()
-def mask_2d_circular_anti_annular_from_shape_2d_pixel_scales_and_radii(
+def mask_2d_circular_anti_annular_from(
     shape_2d,
     pixel_scales,
     inner_radius,
@@ -242,7 +240,7 @@ def mask_2d_circular_anti_annular_from_shape_2d_pixel_scales_and_radii(
 
     mask = np.full(shape_2d, True)
 
-    centres_arcsec = mask_2d_centres_from_shape_pixel_scale_and_centre(
+    centres_arcsec = mask_2d_centres_from(
         shape=mask.shape, pixel_scales=pixel_scales, centre=centre
     )
 
@@ -263,7 +261,7 @@ def mask_2d_circular_anti_annular_from_shape_2d_pixel_scales_and_radii(
     return mask
 
 
-def mask_2d_from_pixel_coordinates(shape_2d, pixel_coordinates, buffer=0):
+def mask_2d_via_pixel_coordinates_from(shape_2d, pixel_coordinates, buffer=0):
     """Compute an annular mask from an input inner and outer mask radius and shape."""
 
     mask_2d = np.full(shape=shape_2d, fill_value=True)
@@ -275,11 +273,11 @@ def mask_2d_from_pixel_coordinates(shape_2d, pixel_coordinates, buffer=0):
     if buffer == 0:
         return mask_2d
     else:
-        return buffed_mask_2d_from_mask_2d(mask_2d=mask_2d, buffer=buffer)
+        return buffed_mask_2d_from(mask_2d=mask_2d, buffer=buffer)
 
 
 @decorator_util.jit()
-def elliptical_radius_from_y_x_phi_and_axis_ratio(y_arcsec, x_arcsec, phi, axis_ratio):
+def elliptical_radius_from(y_arcsec, x_arcsec, phi, axis_ratio):
     r_arcsec = np.sqrt(x_arcsec ** 2 + y_arcsec ** 2)
 
     theta_rotated = np.arctan2(y_arcsec, x_arcsec) + np.radians(phi)
@@ -293,7 +291,7 @@ def elliptical_radius_from_y_x_phi_and_axis_ratio(y_arcsec, x_arcsec, phi, axis_
 
 
 @decorator_util.jit()
-def mask_2d_elliptical_from_shape_2d_pixel_scales_and_radius(
+def mask_2d_elliptical_from(
     shape_2d, pixel_scales, major_axis_radius, axis_ratio, phi, centre=(0.0, 0.0)
 ):
     """Compute an elliptical mask from an input major-axis mask radius, axis-ratio, rotational angle phi, shape and \
@@ -330,7 +328,7 @@ def mask_2d_elliptical_from_shape_2d_pixel_scales_and_radius(
 
     mask = np.full(shape_2d, True)
 
-    centres_arcsec = mask_2d_centres_from_shape_pixel_scale_and_centre(
+    centres_arcsec = mask_2d_centres_from(
         shape=mask.shape, pixel_scales=pixel_scales, centre=centre
     )
 
@@ -340,7 +338,7 @@ def mask_2d_elliptical_from_shape_2d_pixel_scales_and_radius(
             y_arcsec = (y - centres_arcsec[0]) * pixel_scales[0]
             x_arcsec = (x - centres_arcsec[1]) * pixel_scales[1]
 
-            r_arcsec_elliptical = elliptical_radius_from_y_x_phi_and_axis_ratio(
+            r_arcsec_elliptical = elliptical_radius_from(
                 y_arcsec, x_arcsec, phi, axis_ratio
             )
 
@@ -351,7 +349,7 @@ def mask_2d_elliptical_from_shape_2d_pixel_scales_and_radius(
 
 
 @decorator_util.jit()
-def mask_2d_elliptical_annular_from_shape_2d_pixel_scales_and_radius(
+def mask_2d_elliptical_annular_from(
     shape_2d,
     pixel_scales,
     inner_major_axis_radius,
@@ -406,7 +404,7 @@ def mask_2d_elliptical_annular_from_shape_2d_pixel_scales_and_radius(
 
     mask = np.full(shape_2d, True)
 
-    centres_arcsec = mask_2d_centres_from_shape_pixel_scale_and_centre(
+    centres_arcsec = mask_2d_centres_from(
         shape=mask.shape, pixel_scales=pixel_scales, centre=centre
     )
 
@@ -416,11 +414,11 @@ def mask_2d_elliptical_annular_from_shape_2d_pixel_scales_and_radius(
             y_arcsec = (y - centres_arcsec[0]) * pixel_scales[0]
             x_arcsec = (x - centres_arcsec[1]) * pixel_scales[1]
 
-            inner_r_arcsec_elliptical = elliptical_radius_from_y_x_phi_and_axis_ratio(
+            inner_r_arcsec_elliptical = elliptical_radius_from(
                 y_arcsec, x_arcsec, inner_phi, inner_axis_ratio
             )
 
-            outer_r_arcsec_elliptical = elliptical_radius_from_y_x_phi_and_axis_ratio(
+            outer_r_arcsec_elliptical = elliptical_radius_from(
                 y_arcsec, x_arcsec, outer_phi, outer_axis_ratio
             )
 
@@ -434,7 +432,7 @@ def mask_2d_elliptical_annular_from_shape_2d_pixel_scales_and_radius(
 
 
 @decorator_util.jit()
-def blurring_mask_2d_from_mask_2d_and_kernel_shape_2d(mask_2d, kernel_shape_2d):
+def blurring_mask_2d_from(mask_2d, kernel_shape_2d):
     """Compute a blurring mask from an input mask and psf shape.
 
     The blurring mask corresponds to all pixels which are outside of the mask but will have a fraction of their \
@@ -493,7 +491,7 @@ def blurring_mask_2d_from_mask_2d_and_kernel_shape_2d(mask_2d, kernel_shape_2d):
 
 
 @decorator_util.jit()
-def mask_2d_from_shape_2d_and_mask_2d_index_for_mask_1d_index(
+def mask_2d_via_shape_2d_and_mask_2d_index_for_mask_1d_index_from(
     shape_2d, mask_2d_index_for_mask_1d_index
 ):
     """For a 1D array that was computed by util unmasked values from a 2D array of shape (rows, columns), map its \
@@ -554,7 +552,7 @@ def check_if_edge_pixel(mask_2d, y, x):
 
 
 @decorator_util.jit()
-def total_edge_pixels_from_mask_2d(mask_2d):
+def total_edge_pixels_from(mask_2d):
     """Compute the total number of borders-pixels in a mask."""
 
     edge_pixel_total = 0
@@ -569,11 +567,11 @@ def total_edge_pixels_from_mask_2d(mask_2d):
 
 
 @decorator_util.jit()
-def edge_1d_indexes_from_mask_2d(mask_2d):
+def edge_1d_indexes_from(mask_2d):
     """Compute a 1D array listing all edge pixel indexes in the mask. An edge pixel is a pixel which is not fully \
     surrounding by False mask values i.e. it is on an edge."""
 
-    edge_pixel_total = total_edge_pixels_from_mask_2d(mask_2d)
+    edge_pixel_total = total_edge_pixels_from(mask_2d)
 
     edge_pixels = np.zeros(edge_pixel_total)
     edge_index = 0
@@ -619,9 +617,7 @@ def check_if_border_pixel(mask_2d, edge_pixel_1d, mask_2d_index_for_mask_1d_inde
 
 
 @decorator_util.jit()
-def total_border_pixels_from_mask_2d_and_edge_pixels(
-    mask_2d, edge_pixels, mask_2d_index_for_mask_1d_index
-):
+def total_border_pixels_from(mask_2d, edge_pixels, mask_2d_index_for_mask_1d_index):
     """Compute the total number of borders-pixels in a mask."""
 
     border_pixel_total = 0
@@ -637,7 +633,7 @@ def total_border_pixels_from_mask_2d_and_edge_pixels(
 
 
 @decorator_util.jit()
-def border_1d_indexes_from_mask_2d(mask_2d):
+def border_1d_indexes_from(mask_2d):
     """Compute a 1D array listing all borders pixel indexes in the mask. A borders pixel is a pixel which:
 
      1) is not fully surrounding by False mask values.
@@ -647,12 +643,12 @@ def border_1d_indexes_from_mask_2d(mask_2d):
      The borders pixels are thus pixels which are on the exterior edge of the mask. For example, the inner ring of edge \
      pixels in an annular mask are edge pixels but not borders pixels."""
 
-    edge_pixels = edge_1d_indexes_from_mask_2d(mask_2d=mask_2d)
-    mask_2d_index_for_mask_1d_index = sub_mask_2d_index_for_sub_mask_1d_index_via_mask_2d(
+    edge_pixels = edge_1d_indexes_from(mask_2d=mask_2d)
+    mask_2d_index_for_mask_1d_index = sub_mask_2d_index_for_sub_mask_1d_index_via_mask_2d_from(
         mask_2d=mask_2d, sub_size=1
     )
 
-    border_pixel_total = total_border_pixels_from_mask_2d_and_edge_pixels(
+    border_pixel_total = total_border_pixels_from(
         mask_2d=mask_2d,
         edge_pixels=edge_pixels,
         mask_2d_index_for_mask_1d_index=mask_2d_index_for_mask_1d_index,
@@ -676,7 +672,7 @@ def border_1d_indexes_from_mask_2d(mask_2d):
     return border_pixels
 
 
-def sub_border_pixel_1d_indexes_from_mask_2d_and_sub_size(mask_2d, sub_size):
+def sub_border_pixel_1d_indexes_from(mask_2d, sub_size):
     """Compute a 1D array listing all borders pixel indexes in the mask. A borders pixel is a pixel which:
 
      1) is not fully surrounding by False mask values.
@@ -686,27 +682,25 @@ def sub_border_pixel_1d_indexes_from_mask_2d_and_sub_size(mask_2d, sub_size):
      The borders pixels are thus pixels which are on the exterior edge of the mask. For example, the inner ring of edge \
      pixels in an annular mask are edge pixels but not borders pixels."""
 
-    border_pixels = border_1d_indexes_from_mask_2d(mask_2d=mask_2d)
+    border_pixels = border_1d_indexes_from(mask_2d=mask_2d)
 
     sub_border_pixels = np.zeros(shape=border_pixels.shape[0])
 
-    mask_1d_index_to_sub_mask_2d_indexes = sub_mask_1d_indexes_for_mask_1d_index_via_mask_2d(
+    mask_1d_index_to_sub_mask_2d_indexes = sub_mask_1d_indexes_for_mask_1d_index_via_mask_2d_from(
         mask_2d=mask_2d, sub_size=sub_size
     )
 
-    masked_sub_grid_1d = grid_util.grid_1d_via_mask_2d(
+    masked_sub_grid_1d = grid_util.grid_1d_via_mask_2d_from(
         mask_2d=mask_2d, pixel_scales=(1.0, 1.0), sub_size=sub_size, origin=(0.0, 0.0)
     )
-    mask_centre = grid_util.grid_centre_from_grid_1d(grid_1d=masked_sub_grid_1d)
+    mask_centre = grid_util.grid_centre_from(grid_1d=masked_sub_grid_1d)
 
     for (border_1d_index, border_pixel) in enumerate(border_pixels):
         sub_border_pixels_of_border_pixel = mask_1d_index_to_sub_mask_2d_indexes[
             int(border_pixel)
         ]
 
-        sub_border_pixels[
-            border_1d_index
-        ] = grid_util.furthest_grid_1d_index_from_grid_1d_indexes_and_centre(
+        sub_border_pixels[border_1d_index] = grid_util.furthest_grid_1d_index_from(
             grid_1d=masked_sub_grid_1d,
             grid_1d_indexes=sub_border_pixels_of_border_pixel,
             coordinate=mask_centre,
@@ -716,7 +710,7 @@ def sub_border_pixel_1d_indexes_from_mask_2d_and_sub_size(mask_2d, sub_size):
 
 
 @decorator_util.jit()
-def buffed_mask_2d_from_mask_2d(mask_2d, buffer=1):
+def buffed_mask_2d_from(mask_2d, buffer=1):
 
     buffed_mask_2d = mask_2d.copy()
 
@@ -737,7 +731,7 @@ def buffed_mask_2d_from_mask_2d(mask_2d, buffer=1):
     return buffed_mask_2d
 
 
-def rescaled_mask_2d_from_mask_2d_and_rescale_factor(mask_2d, rescale_factor):
+def rescaled_mask_2d_from(mask_2d, rescale_factor):
     rescaled_mask_2d = rescale(
         image=mask_2d,
         scale=rescale_factor,
@@ -754,7 +748,7 @@ def rescaled_mask_2d_from_mask_2d_and_rescale_factor(mask_2d, rescale_factor):
 
 
 @decorator_util.jit()
-def mask_1d_index_for_sub_mask_1d_index_via_mask_2d(mask_2d, sub_size):
+def mask_1d_index_for_sub_mask_1d_index_via_mask_2d_from(mask_2d, sub_size):
     """"For pixels on a 2D array of shape (rows, colums), compute a 1D array which, for every unmasked pixel on \
     this 2D array, maps the 1D sub-pixel indexes to their 1D pixel indexes.
 
@@ -772,9 +766,7 @@ def mask_1d_index_for_sub_mask_1d_index_via_mask_2d(mask_2d, sub_size):
     mask_1d_index_for_sub_mask_1d_index = mask_1d_index_for_sub_mask_1d_index_from_mask(mask=mask, sub_size=2)
     """
 
-    total_sub_pixels = total_sub_pixels_from_mask_2d_and_sub_size(
-        mask_2d=mask_2d, sub_size=sub_size
-    )
+    total_sub_pixels = total_sub_pixels_from(mask_2d=mask_2d, sub_size=sub_size)
 
     mask_1d_index_for_sub_mask_1d_index = np.zeros(shape=total_sub_pixels)
     mask_1d_index = 0
@@ -795,7 +787,7 @@ def mask_1d_index_for_sub_mask_1d_index_via_mask_2d(mask_2d, sub_size):
     return mask_1d_index_for_sub_mask_1d_index
 
 
-def sub_mask_1d_indexes_for_mask_1d_index_via_mask_2d(mask_2d, sub_size):
+def sub_mask_1d_indexes_for_mask_1d_index_via_mask_2d_from(mask_2d, sub_size):
     """"For pixels on a 2D array of shape (rows, colums), compute a 1D array which, for every unmasked pixel on \
     this 2D array, maps the 1D sub-pixel indexes to their 1D pixel indexes.
 
@@ -813,11 +805,11 @@ def sub_mask_1d_indexes_for_mask_1d_index_via_mask_2d(mask_2d, sub_size):
     mask_1d_index_for_sub_mask_1d_index = mask_1d_index_for_sub_mask_1d_index_from_mask(mask=mask, sub_size=2)
     """
 
-    total_pixels = total_pixels_from_mask_2d(mask_2d=mask_2d)
+    total_pixels = total_pixels_from(mask_2d=mask_2d)
 
     sub_mask_1d_indexes_for_mask_1d_index = [[] for _ in range(total_pixels)]
 
-    mask_1d_index_for_sub_mask_1d_index = mask_1d_index_for_sub_mask_1d_index_via_mask_2d(
+    mask_1d_index_for_sub_mask_1d_index = mask_1d_index_for_sub_mask_1d_index_via_mask_2d_from(
         mask_2d=mask_2d, sub_size=sub_size
     ).astype(
         "int"
@@ -832,7 +824,7 @@ def sub_mask_1d_indexes_for_mask_1d_index_via_mask_2d(mask_2d, sub_size):
 
 
 @decorator_util.jit()
-def sub_mask_1d_index_for_sub_mask_2d_index_from_sub_mask_2d(sub_mask_2d):
+def sub_mask_1d_index_for_sub_mask_2d_index_from_sub_mask_2d_from(sub_mask_2d):
     """Create a 2D array which maps every False entry of a 2D mask to its 1D mask array index 2D binned mask. Every \
     True entry is given a value -1.
 
@@ -884,7 +876,7 @@ def sub_mask_1d_index_for_sub_mask_2d_index_from_sub_mask_2d(sub_mask_2d):
 
 
 @decorator_util.jit()
-def sub_mask_2d_index_for_sub_mask_1d_index_via_mask_2d(mask_2d, sub_size):
+def sub_mask_2d_index_for_sub_mask_1d_index_via_mask_2d_from(mask_2d, sub_size):
     """Compute a 1D array that maps every unmasked sub-pixel to its corresponding 2d pixel using its (y,x) pixel indexes.
 
     For example, for a sub-grid size of 2, f pixel [2,5] corresponds to the first pixel in the masked 1D array:
@@ -916,9 +908,7 @@ def sub_mask_2d_index_for_sub_mask_1d_index_via_mask_2d(mask_2d, sub_size):
 
     """
 
-    total_sub_pixels = total_sub_pixels_from_mask_2d_and_sub_size(
-        mask_2d=mask_2d, sub_size=sub_size
-    )
+    total_sub_pixels = total_sub_pixels_from(mask_2d=mask_2d, sub_size=sub_size)
     sub_mask_2d_index_for_sub_mask_1d_index = np.zeros(shape=(total_sub_pixels, 2))
     sub_mask_1d_index = 0
 
@@ -936,7 +926,7 @@ def sub_mask_2d_index_for_sub_mask_1d_index_via_mask_2d(mask_2d, sub_size):
 
 
 @decorator_util.jit()
-def mask_2d_neighbors_from_mask_2d(mask_2d):
+def mask_2d_neighbors_from(mask_2d):
     """Compute a 1D array that maps every unmasked pixel to the 1D index of a neighboring unmasked pixel.
 
     Neighbors are chosen to the right of every unmasked pixel, and then down, left and up if there is no unmasked pixel
@@ -967,11 +957,11 @@ def mask_2d_neighbors_from_mask_2d(mask_2d):
 
     """
 
-    total_pixels = total_pixels_from_mask_2d(mask_2d=mask_2d)
+    total_pixels = total_pixels_from(mask_2d=mask_2d)
 
     mask_2d_neighbors = -1 * np.ones(shape=total_pixels)
 
-    sub_mask_1d_index_for_sub_mask_2d_index = sub_mask_1d_index_for_sub_mask_2d_index_from_sub_mask_2d(
+    sub_mask_1d_index_for_sub_mask_2d_index = sub_mask_1d_index_for_sub_mask_2d_index_from_sub_mask_2d_from(
         sub_mask_2d=mask_2d
     )
 

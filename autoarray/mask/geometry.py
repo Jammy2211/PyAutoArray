@@ -67,7 +67,7 @@ class Geometry:
     @property
     @array_util.Memoizer()
     def mask_centre(self):
-        return grid_util.grid_centre_from_grid_1d(grid_1d=self.masked_grid)
+        return grid_util.grid_centre_from(grid_1d=self.masked_grid)
 
     @property
     def shape_2d_scaled(self):
@@ -118,7 +118,7 @@ class Geometry:
         This is defined from the top-left corner, such that the first pixel at location [0, 0] will have a negative x \
         value y value in arc seconds.
         """
-        grid_1d = grid_util.grid_1d_via_shape_2d(
+        grid_1d = grid_util.grid_1d_via_shape_2d_from(
             shape_2d=self.mask.shape,
             pixel_scales=self.mask.pixel_scales,
             sub_size=1,
@@ -132,7 +132,7 @@ class Geometry:
     @property
     def masked_grid(self):
 
-        grid_1d = grid_util.grid_1d_via_mask_2d(
+        grid_1d = grid_util.grid_1d_via_mask_2d_from(
             mask_2d=self.mask,
             pixel_scales=self.mask.pixel_scales,
             sub_size=1,
@@ -177,7 +177,7 @@ class Geometry:
         grid_scaled_1d: ndarray
             A grid of (y,x) coordinates in arc seconds.
         """
-        grid_pixels_1d = grid_util.grid_pixels_1d_from_grid_scaled_1d_shape_2d_and_pixel_scales(
+        grid_pixels_1d = grid_util.grid_pixels_1d_from(
             grid_scaled_1d=grid_scaled_1d,
             shape_2d=self.mask.shape,
             pixel_scales=self.mask.pixel_scales,
@@ -200,14 +200,12 @@ class Geometry:
         grid_scaled_1d: ndarray
             The grid of (y,x) coordinates in arc seconds.
         """
-        grid_pixel_centres_1d = grid_util.grid_pixel_centres_1d_from_grid_scaled_1d_shape_2d_and_pixel_scales(
+        grid_pixel_centres_1d = grid_util.grid_pixel_centres_1d_from(
             grid_scaled_1d=grid_scaled_1d,
             shape_2d=self.mask.shape,
             pixel_scales=self.mask.pixel_scales,
             origin=self.mask.origin,
-        ).astype(
-            "int"
-        )
+        ).astype("int")
         return self.mask.mapping.grid_stored_1d_from_grid_1d(
             grid_1d=grid_pixel_centres_1d
         )
@@ -231,14 +229,12 @@ class Geometry:
         grid_scaled_1d: ndarray
             The grid of (y,x) coordinates in arc seconds.
         """
-        grid_pixel_indexes_1d = grid_util.grid_pixel_indexes_1d_from_grid_scaled_1d_shape_2d_and_pixel_scales(
+        grid_pixel_indexes_1d = grid_util.grid_pixel_indexes_1d_from(
             grid_scaled_1d=grid_scaled_1d,
             shape_2d=self.mask.shape,
             pixel_scales=self.mask.pixel_scales,
             origin=self.mask.origin,
-        ).astype(
-            "int"
-        )
+        ).astype("int")
         return self.mask.mapping.grid_stored_1d_from_grid_1d(
             grid_1d=grid_pixel_indexes_1d
         )
@@ -257,7 +253,7 @@ class Geometry:
         grid_pixels_1d : ndarray
             The grid of (y,x) coordinates in pixels.
         """
-        grid_scaled_1d = grid_util.grid_scaled_1d_from_grid_pixels_1d_shape_2d_and_pixel_scales(
+        grid_scaled_1d = grid_util.grid_scaled_1d_from(
             grid_pixels_1d=grid_pixels_1d,
             shape_2d=self.mask.shape,
             pixel_scales=self.mask.pixel_scales,
@@ -273,7 +269,7 @@ class Geometry:
         self, grid_pixels_1d, shape_2d
     ):
 
-        grid_scaled_1d = grid_util.grid_scaled_1d_from_grid_pixels_1d_shape_2d_and_pixel_scales(
+        grid_scaled_1d = grid_util.grid_scaled_1d_from(
             grid_pixels_1d=grid_pixels_1d,
             shape_2d=shape_2d,
             pixel_scales=(
@@ -290,7 +286,7 @@ class Geometry:
 
     @property
     def masked_sub_grid(self):
-        sub_grid_1d = grid_util.grid_1d_via_mask_2d(
+        sub_grid_1d = grid_util.grid_1d_via_mask_2d_from(
             mask_2d=self.mask,
             pixel_scales=self.mask.pixel_scales,
             sub_size=self.mask.sub_size,

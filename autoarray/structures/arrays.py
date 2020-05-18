@@ -99,7 +99,7 @@ class AbstractArray(abstract_structure.AbstractStructure):
             The buffer of pixels around the extraction.
         """
 
-        extracted_array_2d = array_util.extracted_array_2d_from_array_2d(
+        extracted_array_2d = array_util.extracted_array_2d_from(
             array_2d=self.in_2d,
             y0=self.geometry._zoom_region[0] - buffer,
             y1=self.geometry._zoom_region[1] + buffer,
@@ -118,7 +118,7 @@ class AbstractArray(abstract_structure.AbstractStructure):
 
     def extent_of_zoomed_array(self, buffer=1):
 
-        extracted_array_2d = array_util.extracted_array_2d_from_array_2d(
+        extracted_array_2d = array_util.extracted_array_2d_from(
             array_2d=self.in_2d,
             y0=self.geometry._zoom_region[0] - buffer,
             y1=self.geometry._zoom_region[1] + buffer,
@@ -431,7 +431,7 @@ class Array(AbstractArray):
             y=y, x=x, shape_2d=shape_2d, pixel_scales=pixel_scales, sub_size=1
         )
 
-        grid_pixels = grid_util.grid_pixel_indexes_1d_from_grid_scaled_1d_shape_2d_and_pixel_scales(
+        grid_pixels = grid_util.grid_pixel_indexes_1d_from(
             grid_scaled_1d=grid.in_1d, shape_2d=shape_2d, pixel_scales=pixel_scales
         )
 

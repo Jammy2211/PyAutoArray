@@ -59,9 +59,7 @@ class FitDataset:
 
         Residuals = (Data - Model_Data).
         """
-        return fit_util.residual_map_from_data_and_model_data(
-            data=self.data, model_data=self.model_data
-        )
+        return fit_util.residual_map_from(data=self.data, model_data=self.model_data)
 
     @property
     def normalized_residual_map(self):
@@ -69,7 +67,7 @@ class FitDataset:
 
         Normalized_Residual = (Data - Model_Data) / Noise
         """
-        return fit_util.normalized_residual_map_from_residual_map_and_noise_map(
+        return fit_util.normalized_residual_map_from(
             residual_map=self.residual_map, noise_map=self.noise_map
         )
 
@@ -79,7 +77,7 @@ class FitDataset:
 
         Chi_Squared = ((Residuals) / (Noise)) ** 2.0 = ((Data - Model)**2.0)/(Variances)
         """
-        return fit_util.chi_squared_map_from_residual_map_and_noise_map(
+        return fit_util.chi_squared_map_from(
             residual_map=self.residual_map, noise_map=self.noise_map
         )
 
@@ -94,9 +92,7 @@ class FitDataset:
     def chi_squared(self):
         """Compute the chi-squared terms of the model data's fit to an dataset, by summing the chi-squared map.
         """
-        return fit_util.chi_squared_from_chi_squared_map(
-            chi_squared_map=self.chi_squared_map
-        )
+        return fit_util.chi_squared_from(chi_squared_map=self.chi_squared_map)
 
     @property
     def reduced_chi_squared(self):
@@ -108,7 +104,7 @@ class FitDataset:
 
         [Noise_Term] = sum(log(2*pi*[Noise]**2.0))
         """
-        return fit_util.noise_normalization_from_noise_map(noise_map=self.noise_map)
+        return fit_util.noise_normalization_from(noise_map=self.noise_map)
 
     @property
     def log_likelihood(self):
@@ -116,7 +112,7 @@ class FitDataset:
 
         Log Likelihood = -0.5*[Chi_Squared_Term + Noise_Term] (see functions above for these definitions)
         """
-        return fit_util.likelihood_from_chi_squared_and_noise_normalization(
+        return fit_util.likelihood_from(
             chi_squared=self.chi_squared, noise_normalization=self.noise_normalization
         )
 
@@ -128,7 +124,7 @@ class FitDataset:
         Log Likelihood = -0.5*[Chi_Squared_Term + Regularization_Term + Noise_Term] (see functions above for these definitions)
         """
         if self.inversion is not None:
-            return fit_util.likelihood_with_regularization_from_inversion_terms(
+            return fit_util.likelihood_with_regularization_from(
                 chi_squared=self.chi_squared,
                 regularization_term=self.inversion.regularization_term,
                 noise_normalization=self.noise_normalization,
@@ -157,7 +153,7 @@ class FitDataset:
             The normalization noise_map-term for the data's noise map.
         """
         if self.inversion is not None:
-            return fit_util.evidence_from_inversion_terms(
+            return fit_util.log_evidence_from(
                 chi_squared=self.chi_squared,
                 regularization_term=self.inversion.regularization_term,
                 log_curvature_regularization_term=self.inversion.log_det_curvature_reg_matrix_term,
