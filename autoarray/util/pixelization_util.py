@@ -3,34 +3,34 @@ from autoarray import decorator_util
 
 
 @decorator_util.jit()
-def rectangular_neighbors_from_shape(shape):
+def rectangular_neighbors_from(shape_2d):
     """Compute the neighbors of every pixel as a list of the pixel index's each pixel shares a vertex with.
 
     The uniformity of the rectangular grid's geometry is used to compute this.
     """
 
-    pixels = shape[0] * shape[1]
+    pixels = shape_2d[0] * shape_2d[1]
 
     pixel_neighbors = -1 * np.ones(shape=(pixels, 4))
     pixel_neighbors_size = np.zeros(pixels)
 
     pixel_neighbors, pixel_neighbors_size = rectangular_corner_neighbors(
-        pixel_neighbors, pixel_neighbors_size, shape, pixels
+        pixel_neighbors, pixel_neighbors_size, shape_2d, pixels
     )
     pixel_neighbors, pixel_neighbors_size = rectangular_top_edge_neighbors(
-        pixel_neighbors, pixel_neighbors_size, shape, pixels
+        pixel_neighbors, pixel_neighbors_size, shape_2d, pixels
     )
     pixel_neighbors, pixel_neighbors_size = rectangular_left_edge_neighbors(
-        pixel_neighbors, pixel_neighbors_size, shape, pixels
+        pixel_neighbors, pixel_neighbors_size, shape_2d, pixels
     )
     pixel_neighbors, pixel_neighbors_size = rectangular_right_edge_neighbors(
-        pixel_neighbors, pixel_neighbors_size, shape, pixels
+        pixel_neighbors, pixel_neighbors_size, shape_2d, pixels
     )
     pixel_neighbors, pixel_neighbors_size = rectangular_bottom_edge_neighbors(
-        pixel_neighbors, pixel_neighbors_size, shape, pixels
+        pixel_neighbors, pixel_neighbors_size, shape_2d, pixels
     )
     pixel_neighbors, pixel_neighbors_size = rectangular_central_neighbors(
-        pixel_neighbors, pixel_neighbors_size, shape, pixels
+        pixel_neighbors, pixel_neighbors_size, shape_2d, pixels
     )
 
     return pixel_neighbors, pixel_neighbors_size
@@ -138,7 +138,7 @@ def rectangular_central_neighbors(pixel_neighbors, pixel_neighbors_size, shape, 
 
 
 @decorator_util.jit()
-def voronoi_neighbors_from_pixels_and_ridge_points(pixels, ridge_points):
+def voronoi_neighbors_from(pixels, ridge_points):
     """Compute the neighbors of every pixel as a list of the pixel index's each pixel shares a vertex with.
 
     The ridge points of the Voronoi grid are used to derive this.

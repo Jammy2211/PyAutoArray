@@ -95,7 +95,7 @@ class Mapper:
         [ 0.0,  1.0, 0.0, 0.0] [All sub-pixels map to pixel 1]
         [ 0.0,  0.0, 0.5, 0.5] [2 sub-pixels map to pixel 2, 2 map to pixel 3]
         """
-        return mapper_util.mapping_matrix_from_pixelization_1d_index_for_sub_mask_1d_index(
+        return mapper_util.mapping_matrix_from(
             pixelization_1d_index_for_sub_mask_1d_index=self.pixelization_1d_index_for_sub_mask_1d_index,
             pixels=self.pixels,
             total_mask_pixels=self.grid.mask.pixels_in_mask,
@@ -135,7 +135,7 @@ class Mapper:
 
     def pixel_signals_from_signal_scale(self, signal_scale):
 
-        return mapper_util.adaptive_pixel_signals_from_images(
+        return mapper_util.adaptive_pixel_signals_from(
             pixels=self.pixels,
             signal_scale=signal_scale,
             pixelization_1d_index_for_sub_mask_1d_index=self.pixelization_1d_index_for_sub_mask_1d_index,
@@ -204,19 +204,17 @@ class MapperRectangular(Mapper):
     @property
     def pixelization_1d_index_for_sub_mask_1d_index(self):
         """The 1D index mappings between the sub grid's pixels and rectangular pixelization's pixels"""
-        return grid_util.grid_pixel_indexes_1d_from_grid_scaled_1d_shape_2d_and_pixel_scales(
+        return grid_util.grid_pixel_indexes_1d_from(
             grid_scaled_1d=self.grid,
             shape_2d=self.pixelization_grid.shape_2d,
             pixel_scales=self.pixelization_grid.pixel_scales,
             origin=self.pixelization_grid.origin,
-        ).astype(
-            "int"
-        )
+        ).astype("int")
 
     def reconstructed_pixelization_from_solution_vector(self, solution_vector):
         """Given the solution vector of an inversion (see *inversions.Inversion*), determine the reconstructed \
         pixelization of the rectangular pixelization by using the mapper."""
-        recon = array_util.sub_array_2d_from_sub_array_1d(
+        recon = array_util.sub_array_2d_from(
             sub_array_1d=solution_vector,
             mask=np.full(fill_value=False, shape=self.pixelization_grid.shape_2d),
             sub_size=1,
@@ -264,16 +262,14 @@ class MapperVoronoi(Mapper):
     def pixelization_1d_index_for_sub_mask_1d_index(self):
         """  The 1D index mappings between the sub pixels and Voronoi pixelization pixels. """
 
-        return mapper_util.pixelization_1d_index_for_voronoi_sub_mask_1d_index_from_grids_and_geometry(
+        return mapper_util.pixelization_1d_index_for_voronoi_sub_mask_1d_index_from(
             grid=self.grid,
             nearest_pixelization_1d_index_for_mask_1d_index=self.pixelization_grid.nearest_pixelization_1d_index_for_mask_1d_index,
             mask_1d_index_for_sub_mask_1d_index=self.grid.regions._mask_1d_index_for_sub_mask_1d_index,
             pixelization_grid=self.pixelization_grid,
             pixel_neighbors=self.pixelization_grid.pixel_neighbors,
             pixel_neighbors_size=self.pixelization_grid.pixel_neighbors_size,
-        ).astype(
-            "int"
-        )
+        ).astype("int")
 
     @property
     def voronoi(self):

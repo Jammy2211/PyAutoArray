@@ -3,7 +3,7 @@ from autoarray import decorator_util
 
 
 @decorator_util.jit()
-def mapping_matrix_from_pixelization_1d_index_for_sub_mask_1d_index(
+def mapping_matrix_from(
     pixelization_1d_index_for_sub_mask_1d_index,
     pixels,
     total_mask_pixels,
@@ -38,7 +38,7 @@ def mapping_matrix_from_pixelization_1d_index_for_sub_mask_1d_index(
 
 
 @decorator_util.jit()
-def pixelization_1d_index_for_voronoi_sub_mask_1d_index_from_grids_and_geometry(
+def pixelization_1d_index_for_voronoi_sub_mask_1d_index_from(
     grid,
     nearest_pixelization_1d_index_for_mask_1d_index,
     mask_1d_index_for_sub_mask_1d_index,
@@ -140,7 +140,7 @@ def pixelization_1d_index_for_voronoi_sub_mask_1d_index_from_grids_and_geometry(
 
 
 @decorator_util.jit()
-def adaptive_pixel_signals_from_images(
+def adaptive_pixel_signals_from(
     pixels,
     signal_scale,
     pixelization_1d_index_for_sub_mask_1d_index,

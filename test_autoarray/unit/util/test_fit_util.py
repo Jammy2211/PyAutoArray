@@ -10,9 +10,7 @@ class TestResiduals:
         data = np.array([10.0, 10.0, 10.0, 10.0])
         model_data = np.array([10.0, 10.0, 10.0, 10.0])
 
-        residual_map = aa.util.fit.residual_map_from_data_and_model_data(
-            data=data, model_data=model_data
-        )
+        residual_map = aa.util.fit.residual_map_from(data=data, model_data=model_data)
 
         assert (residual_map == np.array([0.0, 0.0, 0.0, 0.0])).all()
 
@@ -21,9 +19,7 @@ class TestResiduals:
         data = np.array([10.0, 10.0, 10.0, 10.0])
         model_data = np.array([11.0, 10.0, 9.0, 8.0])
 
-        residual_map = aa.util.fit.residual_map_from_data_and_model_data(
-            data=data, model_data=model_data
-        )
+        residual_map = aa.util.fit.residual_map_from(data=data, model_data=model_data)
 
         assert (residual_map == np.array([-1.0, 0.0, 1.0, 2.0])).all()
 
@@ -33,7 +29,7 @@ class TestResiduals:
         mask = np.array([True, False, False, True])
         model_data = np.array([11.0, 10.0, 9.0, 8.0])
 
-        residual_map = aa.util.fit.residual_map_from_data_mask_and_model_data(
+        residual_map = aa.util.fit.residual_map_with_mask_from(
             data=data, mask=mask, model_data=model_data
         )
 
@@ -47,11 +43,9 @@ class TestNormalizedResidualMap:
         noise_map = np.array([2.0, 2.0, 2.0, 2.0])
         model_data = np.array([10.0, 10.0, 10.0, 10.0])
 
-        residual_map = aa.util.fit.residual_map_from_data_and_model_data(
-            data=data, model_data=model_data
-        )
+        residual_map = aa.util.fit.residual_map_from(data=data, model_data=model_data)
 
-        normalized_residual_map = aa.util.fit.normalized_residual_map_from_residual_map_and_noise_map(
+        normalized_residual_map = aa.util.fit.normalized_residual_map_from(
             residual_map=residual_map, noise_map=noise_map
         )
 
@@ -63,11 +57,9 @@ class TestNormalizedResidualMap:
         noise_map = np.array([2.0, 2.0, 2.0, 2.0])
         model_data = np.array([11.0, 10.0, 9.0, 8.0])
 
-        residual_map = aa.util.fit.residual_map_from_data_and_model_data(
-            data=data, model_data=model_data
-        )
+        residual_map = aa.util.fit.residual_map_from(data=data, model_data=model_data)
 
-        normalized_residual_map = aa.util.fit.normalized_residual_map_from_residual_map_and_noise_map(
+        normalized_residual_map = aa.util.fit.normalized_residual_map_from(
             residual_map=residual_map, noise_map=noise_map
         )
 
@@ -85,11 +77,11 @@ class TestNormalizedResidualMap:
         noise_map = np.array([2.0, 2.0, 2.0, 2.0])
         model_data = np.array([11.0, 10.0, 9.0, 8.0])
 
-        residual_map = aa.util.fit.residual_map_from_data_mask_and_model_data(
+        residual_map = aa.util.fit.residual_map_with_mask_from(
             data=data, mask=mask, model_data=model_data
         )
 
-        normalized_residual_map = aa.util.fit.normalized_residual_map_from_residual_map_noise_map_and_mask(
+        normalized_residual_map = aa.util.fit.normalized_residual_map_with_mask_from(
             residual_map=residual_map, mask=mask, noise_map=noise_map
         )
 
@@ -102,11 +94,11 @@ class TestNormalizedResidualMap:
         noise_map = np.array([2.0, 2.0, 2.0, 0.0])
         model_data = np.array([11.0, 10.0, 9.0, 8.0])
 
-        residual_map = aa.util.fit.residual_map_from_data_mask_and_model_data(
+        residual_map = aa.util.fit.residual_map_with_mask_from(
             data=data, mask=mask, model_data=model_data
         )
 
-        normalized_residual_map = aa.util.fit.normalized_residual_map_from_residual_map_noise_map_and_mask(
+        normalized_residual_map = aa.util.fit.normalized_residual_map_with_mask_from(
             residual_map=residual_map, mask=mask, noise_map=noise_map
         )
 
@@ -120,11 +112,9 @@ class TestChiSquareds:
         noise_map = np.array([2.0, 2.0, 2.0, 2.0])
         model_data = np.array([10.0, 10.0, 10.0, 10.0])
 
-        residual_map = aa.util.fit.residual_map_from_data_and_model_data(
-            data=data, model_data=model_data
-        )
+        residual_map = aa.util.fit.residual_map_from(data=data, model_data=model_data)
 
-        chi_squared_map = aa.util.fit.chi_squared_map_from_residual_map_and_noise_map(
+        chi_squared_map = aa.util.fit.chi_squared_map_from(
             residual_map=residual_map, noise_map=noise_map
         )
 
@@ -136,11 +126,9 @@ class TestChiSquareds:
         noise_map = np.array([2.0, 2.0, 2.0, 2.0])
         model_data = np.array([11.0, 10.0, 9.0, 8.0])
 
-        residual_map = aa.util.fit.residual_map_from_data_and_model_data(
-            data=data, model_data=model_data
-        )
+        residual_map = aa.util.fit.residual_map_from(data=data, model_data=model_data)
 
-        chi_squared_map = aa.util.fit.chi_squared_map_from_residual_map_and_noise_map(
+        chi_squared_map = aa.util.fit.chi_squared_map_from(
             residual_map=residual_map, noise_map=noise_map
         )
 
@@ -158,11 +146,11 @@ class TestChiSquareds:
         noise_map = np.array([2.0, 2.0, 2.0, 2.0])
         model_data = np.array([11.0, 10.0, 9.0, 8.0])
 
-        residual_map = aa.util.fit.residual_map_from_data_mask_and_model_data(
+        residual_map = aa.util.fit.residual_map_with_mask_from(
             data=data, mask=mask, model_data=model_data
         )
 
-        chi_squared_map = aa.util.fit.chi_squared_map_from_residual_map_noise_map_and_mask(
+        chi_squared_map = aa.util.fit.chi_squared_map_with_mask_from(
             residual_map=residual_map, mask=mask, noise_map=noise_map
         )
 
@@ -175,11 +163,11 @@ class TestChiSquareds:
         noise_map = np.array([2.0, 2.0, 2.0, 0.0])
         model_data = np.array([11.0, 10.0, 9.0, 8.0])
 
-        residual_map = aa.util.fit.residual_map_from_data_mask_and_model_data(
+        residual_map = aa.util.fit.residual_map_with_mask_from(
             data=data, mask=mask, model_data=model_data
         )
 
-        chi_squared_map = aa.util.fit.chi_squared_map_from_residual_map_noise_map_and_mask(
+        chi_squared_map = aa.util.fit.chi_squared_map_with_mask_from(
             residual_map=residual_map, mask=mask, noise_map=noise_map
         )
 
@@ -193,23 +181,17 @@ class TestLikelihood:
         noise_map = np.array([2.0, 2.0, 2.0, 2.0])
         model_data = np.array([10.0, 10.0, 10.0, 10.0])
 
-        residual_map = aa.util.fit.residual_map_from_data_and_model_data(
-            data=data, model_data=model_data
-        )
+        residual_map = aa.util.fit.residual_map_from(data=data, model_data=model_data)
 
-        chi_squared_map = aa.util.fit.chi_squared_map_from_residual_map_and_noise_map(
+        chi_squared_map = aa.util.fit.chi_squared_map_from(
             residual_map=residual_map, noise_map=noise_map
         )
 
-        chi_squared = aa.util.fit.chi_squared_from_chi_squared_map(
-            chi_squared_map=chi_squared_map
-        )
+        chi_squared = aa.util.fit.chi_squared_from(chi_squared_map=chi_squared_map)
 
-        noise_normalization = aa.util.fit.noise_normalization_from_noise_map(
-            noise_map=noise_map
-        )
+        noise_normalization = aa.util.fit.noise_normalization_from(noise_map=noise_map)
 
-        log_likelihood = aa.util.fit.likelihood_from_chi_squared_and_noise_normalization(
+        log_likelihood = aa.util.fit.likelihood_from(
             chi_squared=chi_squared, noise_normalization=noise_normalization
         )
 
@@ -231,23 +213,17 @@ class TestLikelihood:
         noise_map = np.array([2.0, 2.0, 2.0, 2.0])
         model_data = np.array([11.0, 10.0, 9.0, 8.0])
 
-        residual_map = aa.util.fit.residual_map_from_data_and_model_data(
-            data=data, model_data=model_data
-        )
+        residual_map = aa.util.fit.residual_map_from(data=data, model_data=model_data)
 
-        chi_squared_map = aa.util.fit.chi_squared_map_from_residual_map_and_noise_map(
+        chi_squared_map = aa.util.fit.chi_squared_map_from(
             residual_map=residual_map, noise_map=noise_map
         )
 
-        chi_squared = aa.util.fit.chi_squared_from_chi_squared_map(
-            chi_squared_map=chi_squared_map
-        )
+        chi_squared = aa.util.fit.chi_squared_from(chi_squared_map=chi_squared_map)
 
-        noise_normalization = aa.util.fit.noise_normalization_from_noise_map(
-            noise_map=noise_map
-        )
+        noise_normalization = aa.util.fit.noise_normalization_from(noise_map=noise_map)
 
-        log_likelihood = aa.util.fit.likelihood_from_chi_squared_and_noise_normalization(
+        log_likelihood = aa.util.fit.likelihood_from(
             chi_squared=chi_squared, noise_normalization=noise_normalization
         )
 
@@ -272,23 +248,17 @@ class TestLikelihood:
         noise_map = np.array([1.0, 2.0, 3.0, 4.0])
         model_data = np.array([11.0, 10.0, 9.0, 8.0])
 
-        residual_map = aa.util.fit.residual_map_from_data_and_model_data(
-            data=data, model_data=model_data
-        )
+        residual_map = aa.util.fit.residual_map_from(data=data, model_data=model_data)
 
-        chi_squared_map = aa.util.fit.chi_squared_map_from_residual_map_and_noise_map(
+        chi_squared_map = aa.util.fit.chi_squared_map_from(
             residual_map=residual_map, noise_map=noise_map
         )
 
-        chi_squared = aa.util.fit.chi_squared_from_chi_squared_map(
-            chi_squared_map=chi_squared_map
-        )
+        chi_squared = aa.util.fit.chi_squared_from(chi_squared_map=chi_squared_map)
 
-        noise_normalization = aa.util.fit.noise_normalization_from_noise_map(
-            noise_map=noise_map
-        )
+        noise_normalization = aa.util.fit.noise_normalization_from(noise_map=noise_map)
 
-        log_likelihood = aa.util.fit.likelihood_from_chi_squared_and_noise_normalization(
+        log_likelihood = aa.util.fit.likelihood_from(
             chi_squared=chi_squared, noise_normalization=noise_normalization
         )
 
@@ -313,23 +283,23 @@ class TestLikelihood:
         noise_map = np.array([1.0, 2.0, 3.0, 4.0])
         model_data = np.array([11.0, 10.0, 9.0, 8.0])
 
-        residual_map = aa.util.fit.residual_map_from_data_mask_and_model_data(
+        residual_map = aa.util.fit.residual_map_with_mask_from(
             data=data, mask=mask, model_data=model_data
         )
 
-        chi_squared_map = aa.util.fit.chi_squared_map_from_residual_map_noise_map_and_mask(
+        chi_squared_map = aa.util.fit.chi_squared_map_with_mask_from(
             residual_map=residual_map, mask=mask, noise_map=noise_map
         )
 
-        chi_squared = aa.util.fit.chi_squared_from_chi_squared_map_and_mask(
+        chi_squared = aa.util.fit.chi_squared_with_mask_from(
             mask=mask, chi_squared_map=chi_squared_map
         )
 
-        noise_normalization = aa.util.fit.noise_normalization_from_noise_map_and_mask(
+        noise_normalization = aa.util.fit.noise_normalization_with_mask_from(
             mask=mask, noise_map=noise_map
         )
 
-        log_likelihood = aa.util.fit.likelihood_from_chi_squared_and_noise_normalization(
+        log_likelihood = aa.util.fit.likelihood_from(
             chi_squared=chi_squared, noise_normalization=noise_normalization
         )
 
@@ -351,23 +321,23 @@ class TestLikelihood:
         noise_map = np.array([[1.0, 2.0], [3.0, 4.0]])
         model_data = np.array([[11.0, 10.0], [9.0, 8.0]])
 
-        residual_map = aa.util.fit.residual_map_from_data_mask_and_model_data(
+        residual_map = aa.util.fit.residual_map_with_mask_from(
             data=data, mask=mask, model_data=model_data
         )
 
-        chi_squared_map = aa.util.fit.chi_squared_map_from_residual_map_noise_map_and_mask(
+        chi_squared_map = aa.util.fit.chi_squared_map_with_mask_from(
             residual_map=residual_map, mask=mask, noise_map=noise_map
         )
 
-        chi_squared = aa.util.fit.chi_squared_from_chi_squared_map_and_mask(
+        chi_squared = aa.util.fit.chi_squared_with_mask_from(
             mask=mask, chi_squared_map=chi_squared_map
         )
 
-        noise_normalization = aa.util.fit.noise_normalization_from_noise_map_and_mask(
+        noise_normalization = aa.util.fit.noise_normalization_with_mask_from(
             mask=mask, noise_map=noise_map
         )
 
-        log_likelihood = aa.util.fit.likelihood_from_chi_squared_and_noise_normalization(
+        log_likelihood = aa.util.fit.likelihood_from(
             chi_squared=chi_squared, noise_normalization=noise_normalization
         )
 
@@ -386,13 +356,13 @@ class TestLikelihood:
 class TestInversionEvidence:
     def test__simple_values(self):
 
-        likelihood_with_regularization_terms = aa.util.fit.likelihood_with_regularization_from_inversion_terms(
+        likelihood_with_regularization_terms = aa.util.fit.likelihood_with_regularization_from(
             chi_squared=3.0, regularization_term=6.0, noise_normalization=2.0
         )
 
         assert likelihood_with_regularization_terms == -0.5 * (3.0 + 6.0 + 2.0)
 
-        evidences = aa.util.fit.evidence_from_inversion_terms(
+        evidences = aa.util.fit.log_evidence_from(
             chi_squared=3.0,
             regularization_term=6.0,
             log_curvature_regularization_term=9.0,

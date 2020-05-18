@@ -5,7 +5,7 @@ import os
 
 
 @decorator_util.jit()
-def data_vector_from_blurred_mapping_matrix_and_data(
+def data_vector_via_blurred_mapping_matrix_from(
     blurred_mapping_matrix, image, noise_map
 ):
     """Compute the hyper_galaxies vector *D* from a blurred util matrix *f* and the 1D image *d* and 1D noise map *\sigma* \
@@ -36,7 +36,7 @@ def data_vector_from_blurred_mapping_matrix_and_data(
     return data_vector
 
 
-def curvature_matrix_from_blurred_mapping_matrix(blurred_mapping_matrix, noise_map):
+def curvature_matrix_via_blurred_mapping_matrix_from(blurred_mapping_matrix, noise_map):
     """Compute the curvature matrix *F* from a blurred util matrix *f* and the 1D noise map *\sigma* \
      (see Warren & Dye 2003).
 
@@ -50,13 +50,13 @@ def curvature_matrix_from_blurred_mapping_matrix(blurred_mapping_matrix, noise_m
 
     flist = np.zeros(blurred_mapping_matrix.shape[1])
     iflist = np.zeros(blurred_mapping_matrix.shape[1], dtype="int")
-    return curvature_matrix_from_blurred_mapping_matrix_jit(
+    return curvature_matrix_via_blurred_mapping_matrix_jit(
         blurred_mapping_matrix, noise_map, flist, iflist
     )
 
 
 @decorator_util.jit()
-def curvature_matrix_from_blurred_mapping_matrix_jit(
+def curvature_matrix_via_blurred_mapping_matrix_jit(
     blurred_mapping_matrix, noise_map, flist, iflist
 ):
     """Compute the curvature matrix *F* from a blurred util matrix *f* and the 1D noise map *\sigma* \
@@ -103,9 +103,7 @@ def curvature_matrix_from_blurred_mapping_matrix_jit(
 
 
 @decorator_util.jit()
-def mapped_reconstructed_data_from_mapping_matrix_and_reconstruction(
-    mapping_matrix, reconstruction
-):
+def mapped_reconstructed_data_from(mapping_matrix, reconstruction):
     """ Compute the reconstructed hyper_galaxies vector from the blurrred util matrix *f* and solution vector *S*.
 
     Parameters
@@ -123,7 +121,7 @@ def mapped_reconstructed_data_from_mapping_matrix_and_reconstruction(
 
 
 @decorator_util.jit()
-def data_vector_from_transformed_mapping_matrix_and_data(
+def data_vector_via_transformed_mapping_matrix_from(
     transformed_mapping_matrix, visibilities, noise_map
 ):
     """Compute the hyper_galaxies vector *D* from a transformed util matrix *f* and the 1D image *d* and 1D noise map *\sigma* \
@@ -152,7 +150,7 @@ def data_vector_from_transformed_mapping_matrix_and_data(
     return data_vector
 
 
-def curvature_matrix_from_transformed_mapping_matrix(
+def curvature_matrix_via_transformed_mapping_matrix_from(
     transformed_mapping_matrix, noise_map
 ):
     """Compute the curvature matrix *F* from a transformed util matrix *f* and the 1D noise map *\sigma* \
@@ -176,7 +174,8 @@ def curvature_matrix_from_transformed_mapping_matrix(
     return curvature_matrix
 
 
-def inversion_residual_map_from_pixelization_values_and_data(
+def inversion_residual_map_from(
+    *,
     pixelization_values,
     data,
     mask_1d_index_for_sub_mask_1d_index,
@@ -204,7 +203,8 @@ def inversion_residual_map_from_pixelization_values_and_data(
     return residual_map.copy()
 
 
-def inversion_normalized_residual_map_from_pixelization_values_and_reconstructed_data_1d(
+def inversion_normalized_residual_map_from(
+    *,
     pixelization_values,
     data,
     noise_map_1d,
@@ -234,7 +234,8 @@ def inversion_normalized_residual_map_from_pixelization_values_and_reconstructed
     return normalized_residual_map.copy()
 
 
-def inversion_chi_squared_map_from_pixelization_values_and_reconstructed_data_1d(
+def inversion_chi_squared_map_from(
+    *,
     pixelization_values,
     data,
     noise_map_1d,

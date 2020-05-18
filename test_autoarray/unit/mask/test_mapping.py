@@ -21,7 +21,7 @@ class TestMapping:
 
         array_1d = np.array([1.0, 6.0, 4.0, 5.0, 2.0])
 
-        array_2d_util = aa.util.array.sub_array_2d_from_sub_array_1d(
+        array_2d_util = aa.util.array.sub_array_2d_from(
             sub_array_1d=array_1d, mask=mask, sub_size=1
         )
 
@@ -55,7 +55,7 @@ class TestMapping:
 
         masked_array_2d = array_2d * np.invert(mask)
 
-        array_1d_util = aa.util.array.sub_array_1d_from_sub_array_2d(
+        array_1d_util = aa.util.array.sub_array_1d_from(
             mask=mask, sub_array_2d=array_2d, sub_size=1
         )
 
@@ -206,7 +206,7 @@ class TestMapping:
 
         array_1d = np.array([1.0, 6.0, 4.0, 5.0, 2.0])
 
-        array_2d_util = aa.util.array.sub_array_2d_from_sub_array_1d(
+        array_2d_util = aa.util.array.sub_array_2d_from(
             sub_array_1d=array_1d, mask=mask, sub_size=1
         )
 
@@ -317,7 +317,7 @@ class TestMapping:
 
         grid_1d = np.array([[1.0, 1.0], [6.0, 6.0], [4.0, 4.0], [5.0, 5.0], [2.0, 2.0]])
 
-        grid_2d_util = aa.util.grid.sub_grid_2d_from_sub_grid_1d(
+        grid_2d_util = aa.util.grid.sub_grid_2d_from(
             sub_grid_1d=grid_1d, mask_2d=mask, sub_size=1
         )
 
@@ -350,7 +350,7 @@ class TestMapping:
 
         masked_grid_2d = grid_2d * np.invert(mask[:, :, None])
 
-        grid_1d_util = aa.util.grid.sub_grid_1d_from_sub_grid_2d(
+        grid_1d_util = aa.util.grid.sub_grid_1d_from(
             sub_grid_2d=masked_grid_2d, mask_2d=mask, sub_size=1
         )
 
@@ -868,7 +868,7 @@ class TestResizedMask:
         mask_rescaled_manual = np.full(fill_value=False, shape=(3, 3))
         mask_rescaled_manual[1, 1] = True
 
-        mask_rescaled_manual = aa.util.mask.rescaled_mask_2d_from_mask_2d_and_rescale_factor(
+        mask_rescaled_manual = aa.util.mask.rescaled_mask_2d_from(
             mask_2d=mask, rescale_factor=2.0
         )
 
@@ -879,9 +879,9 @@ class TestResizedMask:
         mask = aa.Mask.unmasked(shape_2d=(5, 5))
         mask[2, 2] = True
 
-        edge_buffed_mask_manual = aa.util.mask.buffed_mask_2d_from_mask_2d(
-            mask_2d=mask
-        ).astype("bool")
+        edge_buffed_mask_manual = aa.util.mask.buffed_mask_2d_from(mask_2d=mask).astype(
+            "bool"
+        )
 
         assert (mask.mapping.edge_buffed_mask == edge_buffed_mask_manual).all()
 

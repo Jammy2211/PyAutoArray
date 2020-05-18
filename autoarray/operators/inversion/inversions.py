@@ -247,13 +247,13 @@ class InversionImaging(Inversion):
             mapping_matrix=mapper.mapping_matrix
         )
 
-        data_vector = inversion_util.data_vector_from_blurred_mapping_matrix_and_data(
+        data_vector = inversion_util.data_vector_via_blurred_mapping_matrix_from(
             blurred_mapping_matrix=blurred_mapping_matrix,
             image=image,
             noise_map=noise_map,
         )
 
-        curvature_matrix = inversion_util.curvature_matrix_from_blurred_mapping_matrix(
+        curvature_matrix = inversion_util.curvature_matrix_via_blurred_mapping_matrix_from(
             blurred_mapping_matrix=blurred_mapping_matrix, noise_map=noise_map
         )
 
@@ -281,7 +281,7 @@ class InversionImaging(Inversion):
 
     @property
     def mapped_reconstructed_image(self):
-        reconstructed_image = inversion_util.mapped_reconstructed_data_from_mapping_matrix_and_reconstruction(
+        reconstructed_image = inversion_util.mapped_reconstructed_data_from(
             mapping_matrix=self.blurred_mapping_matrix,
             reconstruction=self.reconstruction,
         )
@@ -291,7 +291,7 @@ class InversionImaging(Inversion):
 
     @property
     def residual_map(self):
-        return inversion_util.inversion_residual_map_from_pixelization_values_and_data(
+        return inversion_util.inversion_residual_map_from(
             pixelization_values=self.reconstruction,
             data=self.image,
             mask_1d_index_for_sub_mask_1d_index=self.mapper.grid.mask.regions._mask_1d_index_for_sub_mask_1d_index,
@@ -300,7 +300,7 @@ class InversionImaging(Inversion):
 
     @property
     def normalized_residual_map(self):
-        return inversion_util.inversion_normalized_residual_map_from_pixelization_values_and_reconstructed_data_1d(
+        return inversion_util.inversion_normalized_residual_map_from(
             pixelization_values=self.reconstruction,
             data=self.image,
             noise_map_1d=self.noise_map,
@@ -310,7 +310,7 @@ class InversionImaging(Inversion):
 
     @property
     def chi_squared_map(self):
-        return inversion_util.inversion_chi_squared_map_from_pixelization_values_and_reconstructed_data_1d(
+        return inversion_util.inversion_chi_squared_map_from(
             pixelization_values=self.reconstruction,
             data=self.image,
             noise_map_1d=self.noise_map,
@@ -388,24 +388,24 @@ class InversionInterferometer(Inversion):
             mapping_matrix=mapper.mapping_matrix
         )
 
-        real_data_vector = inversion_util.data_vector_from_transformed_mapping_matrix_and_data(
+        real_data_vector = inversion_util.data_vector_via_transformed_mapping_matrix_from(
             transformed_mapping_matrix=transformed_mapping_matrices[0],
             visibilities=visibilities[:, 0],
             noise_map=noise_map[:, 0],
         )
 
-        imag_data_vector = inversion_util.data_vector_from_transformed_mapping_matrix_and_data(
+        imag_data_vector = inversion_util.data_vector_via_transformed_mapping_matrix_from(
             transformed_mapping_matrix=transformed_mapping_matrices[1],
             visibilities=visibilities[:, 1],
             noise_map=noise_map[:, 1],
         )
 
-        real_curvature_matrix = inversion_util.curvature_matrix_from_transformed_mapping_matrix(
+        real_curvature_matrix = inversion_util.curvature_matrix_via_transformed_mapping_matrix_from(
             transformed_mapping_matrix=transformed_mapping_matrices[0],
             noise_map=noise_map[:, 0],
         )
 
-        imag_curvature_matrix = inversion_util.curvature_matrix_from_transformed_mapping_matrix(
+        imag_curvature_matrix = inversion_util.curvature_matrix_via_transformed_mapping_matrix_from(
             transformed_mapping_matrix=transformed_mapping_matrices[1],
             noise_map=noise_map[:, 1],
         )
@@ -438,7 +438,7 @@ class InversionInterferometer(Inversion):
 
     @property
     def mapped_reconstructed_image(self):
-        mapped_reconstructed_image = inversion_util.mapped_reconstructed_data_from_mapping_matrix_and_reconstruction(
+        mapped_reconstructed_image = inversion_util.mapped_reconstructed_data_from(
             mapping_matrix=self.mapper.mapping_matrix,
             reconstruction=self.reconstruction,
         )
@@ -449,12 +449,12 @@ class InversionInterferometer(Inversion):
 
     @property
     def mapped_reconstructed_visibilities(self):
-        real_visibilities = inversion_util.mapped_reconstructed_data_from_mapping_matrix_and_reconstruction(
+        real_visibilities = inversion_util.mapped_reconstructed_data_from(
             mapping_matrix=self.transformed_mapping_matrices[0],
             reconstruction=self.reconstruction,
         )
 
-        imag_visibilities = inversion_util.mapped_reconstructed_data_from_mapping_matrix_and_reconstruction(
+        imag_visibilities = inversion_util.mapped_reconstructed_data_from(
             mapping_matrix=self.transformed_mapping_matrices[1],
             reconstruction=self.reconstruction,
         )

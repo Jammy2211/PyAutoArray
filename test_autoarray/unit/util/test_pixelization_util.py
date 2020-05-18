@@ -11,8 +11,8 @@ class TestRectangular:
             # |3|4|5|
             # |6|7|8|
 
-            pixel_neighbors, pixel_neighbors_size = aa.util.pixelization.rectangular_neighbors_from_shape(
-                shape=(3, 3)
+            pixel_neighbors, pixel_neighbors_size = aa.util.pixelization.rectangular_neighbors_from(
+                shape_2d=(3, 3)
             )
 
             assert (pixel_neighbors[0] == [1, 3, -1, -1]).all()
@@ -33,8 +33,8 @@ class TestRectangular:
             # |4|5| 6| 7|
             # |8|9|10|11|
 
-            pixel_neighbors, pixel_neighbors_size = aa.util.pixelization.rectangular_neighbors_from_shape(
-                shape=(3, 4)
+            pixel_neighbors, pixel_neighbors_size = aa.util.pixelization.rectangular_neighbors_from(
+                shape_2d=(3, 4)
             )
 
             assert (pixel_neighbors[0] == [1, 4, -1, -1]).all()
@@ -61,8 +61,8 @@ class TestRectangular:
             # |6| 7| 8|
             # |9|10|11|
 
-            pixel_neighbors, pixel_neighbors_size = aa.util.pixelization.rectangular_neighbors_from_shape(
-                shape=(4, 3)
+            pixel_neighbors, pixel_neighbors_size = aa.util.pixelization.rectangular_neighbors_from(
+                shape_2d=(4, 3)
             )
 
             assert (pixel_neighbors[0] == [1, 3, -1, -1]).all()
@@ -89,8 +89,8 @@ class TestRectangular:
             # |8 | 9|10|11|
             # |12|13|14|15|
 
-            pixel_neighbors, pixel_neighbors_size = aa.util.pixelization.rectangular_neighbors_from_shape(
-                shape=(4, 4)
+            pixel_neighbors, pixel_neighbors_size = aa.util.pixelization.rectangular_neighbors_from(
+                shape_2d=(4, 4)
             )
 
             assert (pixel_neighbors[0] == [1, 4, -1, -1]).all()
@@ -125,7 +125,7 @@ class TestVoronoi:
             )
 
             voronoi = scipy.spatial.Voronoi(points, qhull_options="Qbb Qc Qx Qm")
-            pixel_neighbors, pixel_neighbors_size = aa.util.pixelization.voronoi_neighbors_from_pixels_and_ridge_points(
+            pixel_neighbors, pixel_neighbors_size = aa.util.pixelization.voronoi_neighbors_from(
                 pixels=5, ridge_points=np.array(voronoi.ridge_points)
             )
 
@@ -156,7 +156,7 @@ class TestVoronoi:
             )
 
             voronoi = scipy.spatial.Voronoi(points, qhull_options="Qbb Qc Qx Qm")
-            pixel_neighbors, pixel_neighbors_size = aa.util.pixelization.voronoi_neighbors_from_pixels_and_ridge_points(
+            pixel_neighbors, pixel_neighbors_size = aa.util.pixelization.voronoi_neighbors_from(
                 pixels=9, ridge_points=np.array(voronoi.ridge_points)
             )
 

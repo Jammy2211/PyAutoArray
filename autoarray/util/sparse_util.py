@@ -9,7 +9,7 @@ logger.level = logging.DEBUG
 
 
 @decorator_util.jit()
-def unmasked_sparse_for_sparse_from_mask_2d_and_pixel_centres(
+def unmasked_sparse_for_sparse_from(
     total_sparse_pixels, mask_2d, unmasked_sparse_grid_pixel_centres
 ):
     """Determine the util between every masked pixelization-grid pixel and pixelization-grid pixel. This is \
@@ -42,7 +42,7 @@ def unmasked_sparse_for_sparse_from_mask_2d_and_pixel_centres(
 
 
 @decorator_util.jit()
-def sparse_for_unmasked_sparse_from_mask_2d_and_pixel_centres(
+def sparse_for_unmasked_sparse_from(
     mask_2d, unmasked_sparse_grid_pixel_centres, total_sparse_pixels
 ):
     """Determine the util between every pixelization-grid pixel and masked pixelization-grid pixel. This is \
@@ -82,7 +82,7 @@ def sparse_for_unmasked_sparse_from_mask_2d_and_pixel_centres(
 
 
 @decorator_util.jit()
-def sparse_1d_index_for_mask_1d_index_from_sparse_mappings(
+def sparse_1d_index_for_mask_1d_index_from(
     regular_to_unmasked_sparse, sparse_for_unmasked_sparse
 ):
     """Using the util between the grid and unmasked pixelization grid, compute the util between each \
@@ -108,9 +108,7 @@ def sparse_1d_index_for_mask_1d_index_from_sparse_mappings(
 
 
 @decorator_util.jit()
-def sparse_grid_from_unmasked_sparse_grid(
-    unmasked_sparse_grid, unmasked_sparse_for_sparse
-):
+def sparse_grid_via_unmasked_from(unmasked_sparse_grid, unmasked_sparse_for_sparse):
     """Use the central arc-second coordinate of every unmasked pixelization grid's pixels and util between each \
     pixelization pixel and unmasked pixelization pixel to compute the central arc-second coordinate of every masked \
     pixelization grid pixel.
@@ -138,7 +136,7 @@ def sparse_grid_from_unmasked_sparse_grid(
 
 
 @decorator_util.jit()
-def sparse_1d_index_for_mask_1d_index_from_binned_grid(
+def sparse_1d_index_for_mask_1d_index_via_binned_from(
     sparse_labels,
     binned_mask_1d_index_to_mask_1d_indexes,
     binned_mask_1d_index_to_mask_1d_sizes,

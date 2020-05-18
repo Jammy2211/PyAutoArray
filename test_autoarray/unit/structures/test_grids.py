@@ -38,11 +38,11 @@ class TestGrid:
 
             mask = aa.Mask.manual(mask_2d=mask, pixel_scales=(2.0, 2.0), sub_size=2)
 
-            blurring_mask_util = aa.util.mask.blurring_mask_2d_from_mask_2d_and_kernel_shape_2d(
+            blurring_mask_util = aa.util.mask.blurring_mask_2d_from(
                 mask_2d=mask, kernel_shape_2d=(3, 5)
             )
 
-            blurring_grid_util = aa.util.grid.grid_1d_via_mask_2d(
+            blurring_grid_util = aa.util.grid.grid_1d_via_mask_2d_from(
                 mask_2d=blurring_mask_util, pixel_scales=(2.0, 2.0), sub_size=1
             )
 
@@ -70,11 +70,11 @@ class TestGrid:
 
             mask = aa.Mask.manual(mask_2d=mask, pixel_scales=(2.0, 2.0), sub_size=2)
 
-            blurring_mask_util = aa.util.mask.blurring_mask_2d_from_mask_2d_and_kernel_shape_2d(
+            blurring_mask_util = aa.util.mask.blurring_mask_2d_from(
                 mask_2d=mask, kernel_shape_2d=(3, 5)
             )
 
-            blurring_grid_util = aa.util.grid.grid_1d_via_mask_2d(
+            blurring_grid_util = aa.util.grid.grid_1d_via_mask_2d_from(
                 mask_2d=blurring_mask_util, pixel_scales=(2.0, 2.0), sub_size=1
             )
 
@@ -233,7 +233,7 @@ class TestGrid:
 
             padded_grid = grid.padded_grid_from_kernel_shape(kernel_shape_2d=(3, 3))
 
-            padded_grid_util = aa.util.grid.grid_1d_via_mask_2d(
+            padded_grid_util = aa.util.grid.grid_1d_via_mask_2d_from(
                 mask_2d=np.full((6, 6), False), pixel_scales=(3.0, 3.0), sub_size=1
             )
 
@@ -246,7 +246,7 @@ class TestGrid:
 
             padded_grid = grid.padded_grid_from_kernel_shape(kernel_shape_2d=(3, 3))
 
-            padded_grid_util = aa.util.grid.grid_1d_via_mask_2d(
+            padded_grid_util = aa.util.grid.grid_1d_via_mask_2d_from(
                 mask_2d=np.full((6, 7), False), pixel_scales=(2.0, 2.0), sub_size=1
             )
 
@@ -257,7 +257,7 @@ class TestGrid:
 
             padded_grid = grid.padded_grid_from_kernel_shape(kernel_shape_2d=(3, 3))
 
-            padded_grid_util = aa.util.grid.grid_1d_via_mask_2d(
+            padded_grid_util = aa.util.grid.grid_1d_via_mask_2d_from(
                 mask_2d=np.full((7, 6), False), pixel_scales=(1.0, 1.0), sub_size=1
             )
 
@@ -268,7 +268,7 @@ class TestGrid:
 
             padded_grid = grid.padded_grid_from_kernel_shape(kernel_shape_2d=(2, 5))
 
-            padded_grid_util = aa.util.grid.grid_1d_via_mask_2d(
+            padded_grid_util = aa.util.grid.grid_1d_via_mask_2d_from(
                 mask_2d=np.full((6, 9), False), pixel_scales=(8.0, 8.0), sub_size=1
             )
 
@@ -283,7 +283,7 @@ class TestGrid:
 
             padded_grid = grid.padded_grid_from_kernel_shape(kernel_shape_2d=(3, 3))
 
-            padded_grid_util = aa.util.grid.grid_1d_via_mask_2d(
+            padded_grid_util = aa.util.grid.grid_1d_via_mask_2d_from(
                 mask_2d=np.full((7, 6), False), pixel_scales=(2.0, 2.0), sub_size=2
             )
 
@@ -300,7 +300,7 @@ class TestGrid:
 
             padded_grid = grid.padded_grid_from_kernel_shape(kernel_shape_2d=(5, 5))
 
-            padded_grid_util = aa.util.grid.grid_1d_via_mask_2d(
+            padded_grid_util = aa.util.grid.grid_1d_via_mask_2d_from(
                 mask_2d=np.full((6, 9), False), pixel_scales=(8.0, 8.0), sub_size=4
             )
 
@@ -370,7 +370,7 @@ class TestGrid:
 
             mask = aa.Mask.manual(mask_2d=mask, pixel_scales=(2.0, 2.0), sub_size=2)
 
-            sub_border_1d_indexes_util = aa.util.mask.sub_border_pixel_1d_indexes_from_mask_2d_and_sub_size(
+            sub_border_1d_indexes_util = aa.util.mask.sub_border_pixel_1d_indexes_from(
                 mask_2d=mask, sub_size=2
             )
 
@@ -1560,7 +1560,7 @@ class TestGridIterator:
             )
             mask = aa.Mask.manual(mask_2d=mask, pixel_scales=(2.0, 2.0), sub_size=2)
 
-            grid_via_util = aa.util.grid.grid_1d_via_mask_2d(
+            grid_via_util = aa.util.grid.grid_1d_via_mask_2d_from(
                 mask_2d=mask, sub_size=1, pixel_scales=(2.0, 2.0)
             )
 
@@ -2284,8 +2284,8 @@ class TestGridRectangular:
                 shape_2d=(7, 5), grid=np.zeros((2, 2)), buffer=1e-8
             )
 
-            pixel_neighbors_util, pixel_neighbors_size_util = aa.util.pixelization.rectangular_neighbors_from_shape(
-                shape=(7, 5)
+            pixel_neighbors_util, pixel_neighbors_size_util = aa.util.pixelization.rectangular_neighbors_from(
+                shape_2d=(7, 5)
             )
 
             assert (pix_grid.pixel_neighbors == pixel_neighbors_util).all()
@@ -2568,7 +2568,7 @@ class TestGridVoronoi:
             voronoi = scipy.spatial.Voronoi(
                 np.asarray([grid[:, 1], grid[:, 0]]).T, qhull_options="Qbb Qc Qx Qm"
             )
-            pixel_neighbors_util, pixel_neighbors_size_util = aa.util.pixelization.voronoi_neighbors_from_pixels_and_ridge_points(
+            pixel_neighbors_util, pixel_neighbors_size_util = aa.util.pixelization.voronoi_neighbors_from(
                 pixels=9, ridge_points=np.array(voronoi.ridge_points)
             )
 
@@ -2593,14 +2593,14 @@ class TestGridSparse:
                 unmasked_sparse_shape=(10, 10), grid=grid
             )
 
-            unmasked_sparse_grid_util = aa.util.grid.grid_1d_via_shape_2d(
+            unmasked_sparse_grid_util = aa.util.grid.grid_1d_via_shape_2d_from(
                 shape_2d=(10, 10),
                 pixel_scales=(0.15, 0.15),
                 sub_size=1,
                 origin=(0.0, 0.0),
             )
 
-            unmasked_sparse_grid_pixel_centres = aa.util.grid.grid_pixel_centres_1d_from_grid_scaled_1d_shape_2d_and_pixel_scales(
+            unmasked_sparse_grid_pixel_centres = aa.util.grid.grid_pixel_centres_1d_from(
                 grid_scaled_1d=unmasked_sparse_grid_util,
                 shape_2d=grid.mask.shape,
                 pixel_scales=grid.pixel_scales,
@@ -2608,21 +2608,19 @@ class TestGridSparse:
                 "int"
             )
 
-            total_sparse_pixels = aa.util.mask.total_sparse_pixels_from_mask_2d(
+            total_sparse_pixels = aa.util.mask.total_sparse_pixels_from(
                 mask_2d=mask,
                 unmasked_sparse_grid_pixel_centres=unmasked_sparse_grid_pixel_centres,
             )
 
-            regular_to_unmasked_sparse_util = aa.util.grid.grid_pixel_indexes_1d_from_grid_scaled_1d_shape_2d_and_pixel_scales(
+            regular_to_unmasked_sparse_util = aa.util.grid.grid_pixel_indexes_1d_from(
                 grid_scaled_1d=grid,
                 shape_2d=(10, 10),
                 pixel_scales=(0.15, 0.15),
                 origin=(0.0, 0.0),
-            ).astype(
-                "int"
-            )
+            ).astype("int")
 
-            unmasked_sparse_for_sparse_util = aa.util.sparse.unmasked_sparse_for_sparse_from_mask_2d_and_pixel_centres(
+            unmasked_sparse_for_sparse_util = aa.util.sparse.unmasked_sparse_for_sparse_from(
                 total_sparse_pixels=total_sparse_pixels,
                 mask_2d=mask,
                 unmasked_sparse_grid_pixel_centres=unmasked_sparse_grid_pixel_centres,
@@ -2630,7 +2628,7 @@ class TestGridSparse:
                 "int"
             )
 
-            sparse_for_unmasked_sparse_util = aa.util.sparse.sparse_for_unmasked_sparse_from_mask_2d_and_pixel_centres(
+            sparse_for_unmasked_sparse_util = aa.util.sparse.sparse_for_unmasked_sparse_from(
                 mask_2d=mask,
                 unmasked_sparse_grid_pixel_centres=unmasked_sparse_grid_pixel_centres,
                 total_sparse_pixels=total_sparse_pixels,
@@ -2638,12 +2636,12 @@ class TestGridSparse:
                 "int"
             )
 
-            sparse_1d_index_for_mask_1d_index_util = aa.util.sparse.sparse_1d_index_for_mask_1d_index_from_sparse_mappings(
+            sparse_1d_index_for_mask_1d_index_util = aa.util.sparse.sparse_1d_index_for_mask_1d_index_from(
                 regular_to_unmasked_sparse=regular_to_unmasked_sparse_util,
                 sparse_for_unmasked_sparse=sparse_for_unmasked_sparse_util,
             )
 
-            sparse_grid_util = aa.util.sparse.sparse_grid_from_unmasked_sparse_grid(
+            sparse_grid_util = aa.util.sparse.sparse_grid_via_unmasked_from(
                 unmasked_sparse_grid=unmasked_sparse_grid_util,
                 unmasked_sparse_for_sparse=unmasked_sparse_for_sparse_util,
             )
@@ -3510,7 +3508,7 @@ class TestMaskedGrid:
             )
             mask = aa.Mask.manual(mask_2d=mask, pixel_scales=(2.0, 2.0), sub_size=1)
 
-            grid_via_util = aa.util.grid.grid_1d_via_mask_2d(
+            grid_via_util = aa.util.grid.grid_1d_via_mask_2d_from(
                 mask_2d=mask, sub_size=1, pixel_scales=(2.0, 2.0)
             )
 
@@ -3531,7 +3529,7 @@ class TestMaskedGrid:
 
             mask = aa.Mask.manual(mask, pixel_scales=(3.0, 3.0), sub_size=2)
 
-            grid_via_util = aa.util.grid.grid_1d_via_mask_2d(
+            grid_via_util = aa.util.grid.grid_1d_via_mask_2d_from(
                 mask_2d=mask, pixel_scales=(3.0, 3.0), sub_size=2
             )
 
@@ -3555,7 +3553,7 @@ class TestMaskedGrid:
             )
             mask = aa.Mask.manual(mask_2d=mask, pixel_scales=(2.0, 2.0), sub_size=1)
 
-            grid_via_util = aa.util.grid.grid_1d_via_mask_2d(
+            grid_via_util = aa.util.grid.grid_1d_via_mask_2d_from(
                 mask_2d=mask, sub_size=1, pixel_scales=(2.0, 2.0)
             )
 

@@ -7,7 +7,7 @@ class TestBinnedPaddingArray:
 
         array_2d = np.array([[1.0, 2.0, 3.0], [4.0, 5.0, 6.0], [7.0, 8.0, 9.0]])
 
-        array_2d_padded = aa.util.binning.padded_binning_array_2d_from_array_2d(
+        array_2d_padded = aa.util.binning.padded_binning_array_2d_from(
             array_2d=array_2d, bin_up_factor=1
         )
 
@@ -17,82 +17,82 @@ class TestBinnedPaddingArray:
 
         array_2d = np.ones(shape=(6, 6))
 
-        array_2d_padded = aa.util.binning.padded_binning_array_2d_from_array_2d(
+        array_2d_padded = aa.util.binning.padded_binning_array_2d_from(
             array_2d=array_2d, bin_up_factor=2
         )
         assert array_2d_padded.shape == (6, 6)
 
-        array_2d_padded = aa.util.binning.padded_binning_array_2d_from_array_2d(
+        array_2d_padded = aa.util.binning.padded_binning_array_2d_from(
             array_2d=array_2d, bin_up_factor=3
         )
         assert array_2d_padded.shape == (6, 6)
 
-        array_2d_padded = aa.util.binning.padded_binning_array_2d_from_array_2d(
+        array_2d_padded = aa.util.binning.padded_binning_array_2d_from(
             array_2d=array_2d, bin_up_factor=6
         )
         assert array_2d_padded.shape == (6, 6)
 
         array_2d = np.ones(shape=(8, 8))
 
-        array_2d_padded = aa.util.binning.padded_binning_array_2d_from_array_2d(
+        array_2d_padded = aa.util.binning.padded_binning_array_2d_from(
             array_2d=array_2d, bin_up_factor=2
         )
         assert array_2d_padded.shape == (8, 8)
 
-        array_2d_padded = aa.util.binning.padded_binning_array_2d_from_array_2d(
+        array_2d_padded = aa.util.binning.padded_binning_array_2d_from(
             array_2d=array_2d, bin_up_factor=4
         )
         assert array_2d_padded.shape == (8, 8)
 
-        array_2d_padded = aa.util.binning.padded_binning_array_2d_from_array_2d(
+        array_2d_padded = aa.util.binning.padded_binning_array_2d_from(
             array_2d=array_2d, bin_up_factor=8
         )
         assert array_2d_padded.shape == (8, 8)
 
         array_2d = np.ones(shape=(9, 9))
 
-        array_2d_padded = aa.util.binning.padded_binning_array_2d_from_array_2d(
+        array_2d_padded = aa.util.binning.padded_binning_array_2d_from(
             array_2d=array_2d, bin_up_factor=3
         )
         assert array_2d_padded.shape == (9, 9)
 
         array_2d = np.ones(shape=(16, 16))
 
-        array_2d_padded = aa.util.binning.padded_binning_array_2d_from_array_2d(
+        array_2d_padded = aa.util.binning.padded_binning_array_2d_from(
             array_2d=array_2d, bin_up_factor=2
         )
         assert array_2d_padded.shape == (16, 16)
 
-        array_2d_padded = aa.util.binning.padded_binning_array_2d_from_array_2d(
+        array_2d_padded = aa.util.binning.padded_binning_array_2d_from(
             array_2d=array_2d, bin_up_factor=4
         )
         assert array_2d_padded.shape == (16, 16)
 
-        array_2d_padded = aa.util.binning.padded_binning_array_2d_from_array_2d(
+        array_2d_padded = aa.util.binning.padded_binning_array_2d_from(
             array_2d=array_2d, bin_up_factor=8
         )
         assert array_2d_padded.shape == (16, 16)
 
         array_2d = np.ones(shape=(12, 16))
 
-        array_2d_padded = aa.util.binning.padded_binning_array_2d_from_array_2d(
+        array_2d_padded = aa.util.binning.padded_binning_array_2d_from(
             array_2d=array_2d, bin_up_factor=2
         )
         assert array_2d_padded.shape == (12, 16)
 
-        array_2d_padded = aa.util.binning.padded_binning_array_2d_from_array_2d(
+        array_2d_padded = aa.util.binning.padded_binning_array_2d_from(
             array_2d=array_2d, bin_up_factor=4
         )
         assert array_2d_padded.shape == (12, 16)
 
         array_2d = np.ones(shape=(16, 12))
 
-        array_2d_padded = aa.util.binning.padded_binning_array_2d_from_array_2d(
+        array_2d_padded = aa.util.binning.padded_binning_array_2d_from(
             array_2d=array_2d, bin_up_factor=2
         )
         assert array_2d_padded.shape == (16, 12)
 
-        array_2d_padded = aa.util.binning.padded_binning_array_2d_from_array_2d(
+        array_2d_padded = aa.util.binning.padded_binning_array_2d_from(
             array_2d=array_2d, bin_up_factor=4
         )
         assert array_2d_padded.shape == (16, 12)
@@ -101,56 +101,56 @@ class TestBinnedPaddingArray:
 
         array_2d = np.ones(shape=(6, 6))
 
-        array_2d_padded = aa.util.binning.padded_binning_array_2d_from_array_2d(
+        array_2d_padded = aa.util.binning.padded_binning_array_2d_from(
             array_2d=array_2d, bin_up_factor=4
         )
         assert array_2d_padded.shape == (8, 8)
 
-        array_2d_padded = aa.util.binning.padded_binning_array_2d_from_array_2d(
+        array_2d_padded = aa.util.binning.padded_binning_array_2d_from(
             array_2d=array_2d, bin_up_factor=5
         )
         assert array_2d_padded.shape == (10, 10)
 
-        array_2d_padded = aa.util.binning.padded_binning_array_2d_from_array_2d(
+        array_2d_padded = aa.util.binning.padded_binning_array_2d_from(
             array_2d=array_2d, bin_up_factor=7
         )
         assert array_2d_padded.shape == (7, 7)
 
         array_2d = np.ones(shape=(10, 10))
 
-        array_2d_padded = aa.util.binning.padded_binning_array_2d_from_array_2d(
+        array_2d_padded = aa.util.binning.padded_binning_array_2d_from(
             array_2d=array_2d, bin_up_factor=3
         )
         assert array_2d_padded.shape == (12, 12)
 
-        array_2d_padded = aa.util.binning.padded_binning_array_2d_from_array_2d(
+        array_2d_padded = aa.util.binning.padded_binning_array_2d_from(
             array_2d=array_2d, bin_up_factor=4
         )
         assert array_2d_padded.shape == (12, 12)
 
-        array_2d_padded = aa.util.binning.padded_binning_array_2d_from_array_2d(
+        array_2d_padded = aa.util.binning.padded_binning_array_2d_from(
             array_2d=array_2d, bin_up_factor=6
         )
         assert array_2d_padded.shape == (12, 12)
 
-        array_2d_padded = aa.util.binning.padded_binning_array_2d_from_array_2d(
+        array_2d_padded = aa.util.binning.padded_binning_array_2d_from(
             array_2d=array_2d, bin_up_factor=7
         )
         assert array_2d_padded.shape == (14, 14)
 
         array_2d = np.ones(shape=(7, 10))
 
-        array_2d_padded = aa.util.binning.padded_binning_array_2d_from_array_2d(
+        array_2d_padded = aa.util.binning.padded_binning_array_2d_from(
             array_2d=array_2d, bin_up_factor=3
         )
         assert array_2d_padded.shape == (9, 12)
 
-        array_2d_padded = aa.util.binning.padded_binning_array_2d_from_array_2d(
+        array_2d_padded = aa.util.binning.padded_binning_array_2d_from(
             array_2d=array_2d, bin_up_factor=5
         )
         assert array_2d_padded.shape == (10, 10)
 
-        array_2d_padded = aa.util.binning.padded_binning_array_2d_from_array_2d(
+        array_2d_padded = aa.util.binning.padded_binning_array_2d_from(
             array_2d=array_2d, bin_up_factor=7
         )
         assert array_2d_padded.shape == (7, 14)
@@ -160,7 +160,7 @@ class TestBinnedPaddingArray:
         array_2d = np.ones(shape=(4, 4))
         array_2d[1, 1] = 2.0
 
-        array_2d_padded = aa.util.binning.padded_binning_array_2d_from_array_2d(
+        array_2d_padded = aa.util.binning.padded_binning_array_2d_from(
             array_2d=array_2d, bin_up_factor=3
         )
         assert array_2d_padded.shape == (6, 6)
@@ -178,7 +178,7 @@ class TestBinnedPaddingArray:
             )
         ).all()
 
-        array_2d_padded = aa.util.binning.padded_binning_array_2d_from_array_2d(
+        array_2d_padded = aa.util.binning.padded_binning_array_2d_from(
             array_2d=array_2d, bin_up_factor=5
         )
         assert array_2d_padded.shape == (5, 5)
@@ -197,7 +197,7 @@ class TestBinnedPaddingArray:
 
         array_2d = np.ones(shape=(2, 3))
         array_2d[1, 1] = 2.0
-        array_2d_padded = aa.util.binning.padded_binning_array_2d_from_array_2d(
+        array_2d_padded = aa.util.binning.padded_binning_array_2d_from(
             array_2d=array_2d, bin_up_factor=2
         )
         assert array_2d_padded.shape == (2, 4)
@@ -207,7 +207,7 @@ class TestBinnedPaddingArray:
 
         array_2d = np.ones(shape=(3, 2))
         array_2d[1, 1] = 2.0
-        array_2d_padded = aa.util.binning.padded_binning_array_2d_from_array_2d(
+        array_2d_padded = aa.util.binning.padded_binning_array_2d_from(
             array_2d=array_2d, bin_up_factor=2
         )
         assert array_2d_padded.shape == (4, 2)
@@ -745,7 +745,7 @@ class TestMask1DIndexForPaddedMask2dIndex:
 
         mask_2d = np.full(fill_value=False, shape=(4, 4))
 
-        mask_1d_index_for_padded_mask_2d_index = aa.util.binning.mask_1d_index_for_padded_mask_2d_index_via_mask_2d(
+        mask_1d_index_for_padded_mask_2d_index = aa.util.binning.mask_1d_index_for_padded_mask_2d_index_from(
             mask_2d=mask_2d, bin_up_factor=1
         )
 
@@ -756,7 +756,7 @@ class TestMask1DIndexForPaddedMask2dIndex:
 
         mask_2d = np.array([[False, False], [True, False], [True, False]])
 
-        mask_1d_index_for_padded_mask_2d_index = aa.util.binning.mask_1d_index_for_padded_mask_2d_index_via_mask_2d(
+        mask_1d_index_for_padded_mask_2d_index = aa.util.binning.mask_1d_index_for_padded_mask_2d_index_from(
             mask_2d=mask_2d, bin_up_factor=1
         )
 
@@ -769,7 +769,7 @@ class TestMask1DIndexForPaddedMask2dIndex:
 
         mask_2d = np.full(fill_value=False, shape=(4, 4))
 
-        mask_1d_index_for_padded_mask_2d_index = aa.util.binning.mask_1d_index_for_padded_mask_2d_index_via_mask_2d(
+        mask_1d_index_for_padded_mask_2d_index = aa.util.binning.mask_1d_index_for_padded_mask_2d_index_from(
             mask_2d=mask_2d, bin_up_factor=3
         )
 
@@ -789,7 +789,7 @@ class TestMask1DIndexForPaddedMask2dIndex:
 
         mask_2d = np.array([[False, False], [True, False], [True, False]])
 
-        mask_1d_index_for_padded_mask_2d_index = aa.util.binning.mask_1d_index_for_padded_mask_2d_index_via_mask_2d(
+        mask_1d_index_for_padded_mask_2d_index = aa.util.binning.mask_1d_index_for_padded_mask_2d_index_from(
             mask_2d=mask_2d, bin_up_factor=2
         )
 
@@ -804,7 +804,7 @@ class TestBinnedMask1dIndexesForMask2dIndex:
 
         mask_2d = np.full(fill_value=False, shape=(4, 4))
 
-        binned_mask_1d_index_for_mask_2d_index = aa.util.binning.binned_mask_1d_index_for_padded_mask_2d_index_via_mask_2d(
+        binned_mask_1d_index_for_mask_2d_index = aa.util.binning.binned_mask_1d_index_for_padded_mask_2d_index_from(
             mask_2d=mask_2d, bin_up_factor=2
         )
 
@@ -815,7 +815,7 @@ class TestBinnedMask1dIndexesForMask2dIndex:
 
         mask_2d = np.full(fill_value=False, shape=(9, 9))
 
-        binned_mask_1d_index_for_mask_2d_index = aa.util.binning.binned_mask_1d_index_for_padded_mask_2d_index_via_mask_2d(
+        binned_mask_1d_index_for_mask_2d_index = aa.util.binning.binned_mask_1d_index_for_padded_mask_2d_index_from(
             mask_2d=mask_2d, bin_up_factor=3
         )
 
@@ -847,7 +847,7 @@ class TestBinnedMask1dIndexesForMask2dIndex:
             ]
         )
 
-        binned_mask_1d_index_for_mask_2d_index = aa.util.binning.binned_mask_1d_index_for_padded_mask_2d_index_via_mask_2d(
+        binned_mask_1d_index_for_mask_2d_index = aa.util.binning.binned_mask_1d_index_for_padded_mask_2d_index_from(
             mask_2d=mask_2d, bin_up_factor=2
         )
 
@@ -867,7 +867,7 @@ class TestBinnedMask1dIndexesForMask2dIndex:
             ]
         )
 
-        binned_mask_1d_index_for_mask_2d_index = aa.util.binning.binned_mask_1d_index_for_padded_mask_2d_index_via_mask_2d(
+        binned_mask_1d_index_for_mask_2d_index = aa.util.binning.binned_mask_1d_index_for_padded_mask_2d_index_from(
             mask_2d=mask_2d, bin_up_factor=2
         )
 
@@ -880,7 +880,7 @@ class TestBinnedMask1dIndexesForMask2dIndex:
 
         mask_2d = np.full(fill_value=False, shape=(5, 5))
 
-        binned_mask_1d_index_for_mask_2d_index = aa.util.binning.binned_mask_1d_index_for_padded_mask_2d_index_via_mask_2d(
+        binned_mask_1d_index_for_mask_2d_index = aa.util.binning.binned_mask_1d_index_for_padded_mask_2d_index_from(
             mask_2d=mask_2d, bin_up_factor=2
         )
 
@@ -904,7 +904,7 @@ class TestMaskedArray1DToBininedMaskedArray1d:
 
         mask_2d = np.full(fill_value=False, shape=(4, 4))
 
-        binned_masked_array_1d_for_masked_array_1d = aa.util.binning.binned_masked_array_1d_for_masked_array_1d_via_mask_2d(
+        binned_masked_array_1d_for_masked_array_1d = aa.util.binning.binned_masked_array_1d_for_masked_array_1d_from(
             mask_2d=mask_2d, bin_up_factor=2
         )
 
@@ -915,7 +915,7 @@ class TestMaskedArray1DToBininedMaskedArray1d:
 
         mask_2d = np.full(fill_value=False, shape=(9, 9))
 
-        binned_masked_array_1d_for_masked_array_1d = aa.util.binning.binned_masked_array_1d_for_masked_array_1d_via_mask_2d(
+        binned_masked_array_1d_for_masked_array_1d = aa.util.binning.binned_masked_array_1d_for_masked_array_1d_from(
             mask_2d=mask_2d, bin_up_factor=3
         )
 
@@ -1019,7 +1019,7 @@ class TestMaskedArray1DToBininedMaskedArray1d:
             ]
         )
 
-        binned_masked_array_1d_for_masked_array_1d = aa.util.binning.binned_masked_array_1d_for_masked_array_1d_via_mask_2d(
+        binned_masked_array_1d_for_masked_array_1d = aa.util.binning.binned_masked_array_1d_for_masked_array_1d_from(
             mask_2d=mask_2d, bin_up_factor=2
         )
 
@@ -1038,7 +1038,7 @@ class TestMaskedArray1DToBininedMaskedArray1d:
             ]
         )
 
-        binned_masked_array_1d_for_masked_array_1d = aa.util.binning.binned_masked_array_1d_for_masked_array_1d_via_mask_2d(
+        binned_masked_array_1d_for_masked_array_1d = aa.util.binning.binned_masked_array_1d_for_masked_array_1d_from(
             mask_2d=mask_2d, bin_up_factor=2
         )
 
@@ -1050,7 +1050,7 @@ class TestMaskedArray1DToBininedMaskedArray1d:
 
         mask_2d = np.full(fill_value=False, shape=(5, 5))
 
-        binned_masked_array_1d_for_masked_array_1d = aa.util.binning.binned_masked_array_1d_for_masked_array_1d_via_mask_2d(
+        binned_masked_array_1d_for_masked_array_1d = aa.util.binning.binned_masked_array_1d_for_masked_array_1d_from(
             mask_2d=mask_2d, bin_up_factor=2
         )
 
@@ -1093,7 +1093,7 @@ class TestBinnedMaskArrayToMaskedArray:
 
         mask_2d = np.full(fill_value=False, shape=(4, 4))
 
-        masked_array_1d_for_binned_masked_array_1d = aa.util.binning.masked_array_1d_for_binned_masked_array_1d_via_mask_2d(
+        masked_array_1d_for_binned_masked_array_1d = aa.util.binning.masked_array_1d_for_binned_masked_array_1d_from(
             mask_2d=mask_2d, bin_up_factor=2
         )
 
@@ -1103,7 +1103,7 @@ class TestBinnedMaskArrayToMaskedArray:
 
         mask_2d = np.full(fill_value=False, shape=(9, 9))
 
-        masked_array_1d_for_binned_masked_array_1d = aa.util.binning.masked_array_1d_for_binned_masked_array_1d_via_mask_2d(
+        masked_array_1d_for_binned_masked_array_1d = aa.util.binning.masked_array_1d_for_binned_masked_array_1d_from(
             mask_2d=mask_2d, bin_up_factor=3
         )
 
@@ -1123,7 +1123,7 @@ class TestBinnedMaskArrayToMaskedArray:
             ]
         )
 
-        masked_array_1d_for_binned_masked_array_1d = aa.util.binning.masked_array_1d_for_binned_masked_array_1d_via_mask_2d(
+        masked_array_1d_for_binned_masked_array_1d = aa.util.binning.masked_array_1d_for_binned_masked_array_1d_from(
             mask_2d=mask_2d, bin_up_factor=2
         )
 
@@ -1140,7 +1140,7 @@ class TestBinnedMaskArrayToMaskedArray:
             ]
         )
 
-        masked_array_1d_for_binned_masked_array_1d = aa.util.binning.masked_array_1d_for_binned_masked_array_1d_via_mask_2d(
+        masked_array_1d_for_binned_masked_array_1d = aa.util.binning.masked_array_1d_for_binned_masked_array_1d_from(
             mask_2d=mask_2d, bin_up_factor=2
         )
 
@@ -1150,7 +1150,7 @@ class TestBinnedMaskArrayToMaskedArray:
 
         mask_2d = np.full(fill_value=False, shape=(5, 5))
 
-        masked_array_1d_for_binned_masked_array_1d = aa.util.binning.masked_array_1d_for_binned_masked_array_1d_via_mask_2d(
+        masked_array_1d_for_binned_masked_array_1d = aa.util.binning.masked_array_1d_for_binned_masked_array_1d_from(
             mask_2d=mask_2d, bin_up_factor=2
         )
 
@@ -1165,7 +1165,7 @@ class TestBinnedMaskArrayToMaskedArrayAll:
 
         mask_2d = np.full(fill_value=False, shape=(4, 4))
 
-        masked_array_1d_for_binned_masked_array_1d_all, binned_masked_array_1d_sizes = aa.util.binning.masked_array_1d_for_binned_masked_array_1d_all_via_mask_2d(
+        masked_array_1d_for_binned_masked_array_1d_all, binned_masked_array_1d_sizes = aa.util.binning.masked_array_1d_for_binned_masked_array_1d_all_from(
             mask_2d=mask_2d, bin_up_factor=2
         )
 
@@ -1178,7 +1178,7 @@ class TestBinnedMaskArrayToMaskedArrayAll:
 
         mask_2d = np.full(fill_value=False, shape=(9, 9))
 
-        masked_array_1d_for_binned_masked_array_1d_all, binned_masked_array_1d_sizes = aa.util.binning.masked_array_1d_for_binned_masked_array_1d_all_via_mask_2d(
+        masked_array_1d_for_binned_masked_array_1d_all, binned_masked_array_1d_sizes = aa.util.binning.masked_array_1d_for_binned_masked_array_1d_all_from(
             mask_2d=mask_2d, bin_up_factor=3
         )
 
@@ -1214,7 +1214,7 @@ class TestBinnedMaskArrayToMaskedArrayAll:
             ]
         )
 
-        masked_array_1d_for_binned_masked_array_1d_all, binned_masked_array_1d_sizes = aa.util.binning.masked_array_1d_for_binned_masked_array_1d_all_via_mask_2d(
+        masked_array_1d_for_binned_masked_array_1d_all, binned_masked_array_1d_sizes = aa.util.binning.masked_array_1d_for_binned_masked_array_1d_all_from(
             mask_2d=mask_2d, bin_up_factor=2
         )
 
@@ -1236,7 +1236,7 @@ class TestBinnedMaskArrayToMaskedArrayAll:
             ]
         )
 
-        masked_array_1d_for_binned_masked_array_1d_all, binned_masked_array_1d_sizes = aa.util.binning.masked_array_1d_for_binned_masked_array_1d_all_via_mask_2d(
+        masked_array_1d_for_binned_masked_array_1d_all, binned_masked_array_1d_sizes = aa.util.binning.masked_array_1d_for_binned_masked_array_1d_all_from(
             mask_2d=mask_2d, bin_up_factor=2
         )
 
@@ -1251,7 +1251,7 @@ class TestBinnedMaskArrayToMaskedArrayAll:
 
         mask_2d = np.full(fill_value=False, shape=(5, 5))
 
-        masked_array_1d_for_binned_masked_array_1d_all, binned_masked_array_1d_sizes = aa.util.binning.masked_array_1d_for_binned_masked_array_1d_all_via_mask_2d(
+        masked_array_1d_for_binned_masked_array_1d_all, binned_masked_array_1d_sizes = aa.util.binning.masked_array_1d_for_binned_masked_array_1d_all_from(
             mask_2d=mask_2d, bin_up_factor=2
         )
 

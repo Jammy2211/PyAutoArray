@@ -208,7 +208,7 @@ class TestUnmasked:
 class TestCircular:
     def test__mask_circular__compare_to_array_util(self):
 
-        mask_via_util = aa.util.mask.mask_2d_circular_from_shape_2d_pixel_scales_and_radius(
+        mask_via_util = aa.util.mask.mask_2d_circular_from(
             shape_2d=(5, 4), pixel_scales=(2.7, 2.7), radius=3.5, centre=(0.0, 0.0)
         )
 
@@ -225,7 +225,7 @@ class TestCircular:
         assert mask.geometry.mask_centre == pytest.approx((0.0, 0.0), 1.0e-8)
 
     def test__mask_circular__inverted__compare_to_array_util(self):
-        mask_via_util = aa.util.mask.mask_2d_circular_from_shape_2d_pixel_scales_and_radius(
+        mask_via_util = aa.util.mask.mask_2d_circular_from(
             shape_2d=(5, 4), pixel_scales=(2.7, 2.7), radius=3.5, centre=(0.0, 0.0)
         )
 
@@ -245,7 +245,7 @@ class TestCircular:
 
 class TestAnnular:
     def test__mask_annulus__compare_to_array_util(self):
-        mask_via_util = aa.util.mask.mask_2d_circular_annular_from_shape_2d_pixel_scales_and_radii(
+        mask_via_util = aa.util.mask.mask_2d_circular_annular_from(
             shape_2d=(5, 4),
             pixel_scales=(2.7, 2.7),
             inner_radius=0.8,
@@ -267,7 +267,7 @@ class TestAnnular:
         assert mask.geometry.mask_centre == pytest.approx((0.0, 0.0), 1.0e-8)
 
     def test__mask_annulus_inverted__compare_to_array_util(self):
-        mask_via_util = aa.util.mask.mask_2d_circular_annular_from_shape_2d_pixel_scales_and_radii(
+        mask_via_util = aa.util.mask.mask_2d_circular_annular_from(
             shape_2d=(5, 4),
             pixel_scales=(2.7, 2.7),
             inner_radius=0.8,
@@ -292,7 +292,7 @@ class TestAnnular:
 
 class TestAntiAnnular:
     def test__mask_anti_annulus__compare_to_array_util(self):
-        mask_via_util = aa.util.mask.mask_2d_circular_anti_annular_from_shape_2d_pixel_scales_and_radii(
+        mask_via_util = aa.util.mask.mask_2d_circular_anti_annular_from(
             shape_2d=(9, 9),
             pixel_scales=(1.2, 1.2),
             inner_radius=0.8,
@@ -316,7 +316,7 @@ class TestAntiAnnular:
         assert mask.geometry.mask_centre == (0.0, 0.0)
 
     def test__mask_anti_annulus_inverted__compare_to_array_util(self):
-        mask_via_util = aa.util.mask.mask_2d_circular_anti_annular_from_shape_2d_pixel_scales_and_radii(
+        mask_via_util = aa.util.mask.mask_2d_circular_anti_annular_from(
             shape_2d=(9, 9),
             pixel_scales=(1.2, 1.2),
             inner_radius=0.8,
@@ -343,7 +343,7 @@ class TestAntiAnnular:
 
 class TestElliptical:
     def test__mask_elliptical__compare_to_array_util(self):
-        mask_via_util = aa.util.mask.mask_2d_elliptical_from_shape_2d_pixel_scales_and_radius(
+        mask_via_util = aa.util.mask.mask_2d_elliptical_from(
             shape_2d=(8, 5),
             pixel_scales=(2.7, 2.7),
             major_axis_radius=5.7,
@@ -367,7 +367,7 @@ class TestElliptical:
         assert mask.geometry.mask_centre == pytest.approx((0.0, 0.0), 1.0e-8)
 
     def test__mask_elliptical_inverted__compare_to_array_util(self):
-        mask_via_util = aa.util.mask.mask_2d_elliptical_from_shape_2d_pixel_scales_and_radius(
+        mask_via_util = aa.util.mask.mask_2d_elliptical_from(
             shape_2d=(8, 5),
             pixel_scales=(2.7, 2.7),
             major_axis_radius=5.7,
@@ -394,7 +394,7 @@ class TestElliptical:
 
 class TestEllipiticalAnnular:
     def test__mask_elliptical_annular__compare_to_array_util(self):
-        mask_via_util = aa.util.mask.mask_2d_elliptical_annular_from_shape_2d_pixel_scales_and_radius(
+        mask_via_util = aa.util.mask.mask_2d_elliptical_annular_from(
             shape_2d=(8, 5),
             pixel_scales=(2.7, 2.7),
             inner_major_axis_radius=2.1,
@@ -425,7 +425,7 @@ class TestEllipiticalAnnular:
 
     def test__mask_elliptical_annular_inverted__compare_to_array_util(self):
 
-        mask_via_util = aa.util.mask.mask_2d_elliptical_annular_from_shape_2d_pixel_scales_and_radius(
+        mask_via_util = aa.util.mask.mask_2d_elliptical_annular_from(
             shape_2d=(8, 5),
             pixel_scales=(2.7, 2.7),
             inner_major_axis_radius=2.1,
