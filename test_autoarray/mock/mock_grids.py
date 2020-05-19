@@ -28,7 +28,7 @@ def float_values_from_grid(profile, grid):
     )
 
 
-class MockGridIteratorObj:
+class MockGridLikeIteratorObj:
     def __init__(self):
         pass
 
@@ -60,16 +60,25 @@ class MockGridIteratorObj:
     # def tuple_values_from_grid(self, grid):
     #     return np.multiply(2.0, grid)
     #
-    # @grids.grid_like_to_structure
-    # def float_values_from_grid_returns_list(self, grid):
-    #     return [np.ones(shape=grid.shape[0]), 2.0 * np.ones(shape=grid.shape[0])]
-    #
+
+    @grids.grid_like_to_structure_list
+    def float_values_from_grid_returns_list(self, grid):
+        grid_radii = self.grid_to_grid_radii(grid=grid)
+        return [
+            np.exp(
+                np.multiply(
+                    -self.sersic_constant,
+                    np.add(np.power(np.divide(grid_radii, 0.2), 1.0 / 2.0), -1),
+                )
+            )
+        ]
+
     # @grids.grid_like_to_structure
     # def tuple_values_from_grid_returns_list(self, grid):
     #     return [np.multiply(1.0, grid), np.multiply(2.0, grid)]
 
 
-class MockGridLikeObject:
+class MockGridLikeObj:
     def __init__(self):
         pass
 

@@ -8,8 +8,8 @@ import autoarray as aa
 from autoarray import exc
 from autoarray.structures import grids
 from test_autoarray.mock.mock_grids import (
-    MockGridIteratorObj,
-    MockGridLikeObject,
+    MockGridLikeIteratorObj,
+    MockGridLikeObj,
     MockGridRadialMinimum,
     float_values_from_grid,
 )
@@ -1096,103 +1096,8 @@ class TestGrid:
 
 class TestGridIterator:
     class TestObj:
-        def test__fractional_mask_from_result_array_1d(self):
 
-            mask = aa.Mask.manual(
-                mask_2d=[
-                    [True, True, True, True],
-                    [True, False, False, True],
-                    [True, False, False, True],
-                    [True, True, True, True],
-                ],
-                pixel_scales=(1.0, 1.0),
-            )
-
-            grid = aa.GridIterator.from_mask(mask=mask, fractional_accuracy=0.9999)
-
-            # Neighbors are compared as follows: 0 -> 1, 1 -> 3, 2 -> 3, 3 -> 1
-
-            result_array = aa.MaskedArray.manual_2d(
-                [
-                    [0.0, 0.0, 0.0, 0.0],
-                    [0.0, 1.0, 1.0, 0.0],
-                    [0.0, 1.0, 1.0, 0.0],
-                    [0.0, 0.0, 0.0, 0.0],
-                ],
-                mask=mask,
-            )
-
-            fractional_mask = grid.fractional_mask_from_result_array(
-                result_array=result_array
-            )
-
-            assert (
-                fractional_mask
-                == np.array(
-                    [
-                        [True, True, True, True],
-                        [True, True, True, True],
-                        [True, True, True, True],
-                        [True, True, True, True],
-                    ]
-                )
-            ).all()
-
-            result_array = aa.MaskedArray.manual_2d(
-                [
-                    [0.0, 0.0, 0.0, 0.0],
-                    [0.0, 1.0, 2.0, 0.0],
-                    [0.0, 3.0, 4.0, 0.0],
-                    [0.0, 0.0, 0.0, 0.0],
-                ],
-                mask=mask,
-            )
-
-            fractional_mask = grid.fractional_mask_from_result_array(
-                result_array=result_array
-            )
-
-            assert (
-                fractional_mask
-                == np.array(
-                    [
-                        [True, True, True, True],
-                        [True, False, False, True],
-                        [True, False, False, True],
-                        [True, True, True, True],
-                    ]
-                )
-            ).all()
-
-            grid = aa.GridIterator.from_mask(mask=mask, fractional_accuracy=0.95)
-
-            result_array = aa.MaskedArray.manual_2d(
-                [
-                    [0.0, 0.0, 0.0, 0.0],
-                    [0.0, 1.0, 1.00001, 0.0],
-                    [0.0, 3.0, 2.0, 0.0],
-                    [0.0, 0.0, 0.0, 0.0],
-                ],
-                mask=mask,
-            )
-
-            fractional_mask = grid.fractional_mask_from_result_array(
-                result_array=result_array
-            )
-
-            assert (
-                fractional_mask
-                == np.array(
-                    [
-                        [True, True, True, True],
-                        [True, True, False, True],
-                        [True, False, False, True],
-                        [True, True, True, True],
-                    ]
-                )
-            ).all()
-
-        def test__fractional_mask_from_x2_result_arrays(self):
+        def test__fractional_mask_from_result_arrays(self):
 
             mask = aa.Mask.manual(
                 mask_2d=[
@@ -1216,9 +1121,9 @@ class TestGridIterator:
                 mask=mask,
             )
 
-            fractional_mask = grid.fractional_mask_from_x2_result_arrays(
-                result_array_lower_2d=result_array.in_2d_binned,
-                result_array_higher_2d=result_array.in_2d_binned,
+            fractional_mask = grid.fractional_mask_from_arrays(
+                array_lower_sub_2d=result_array.in_2d_binned,
+                result_higher_sub_2d=result_array.in_2d_binned,
             )
 
             assert (
@@ -1253,9 +1158,9 @@ class TestGridIterator:
                 mask=mask,
             )
 
-            fractional_mask = grid.fractional_mask_from_x2_result_arrays(
-                result_array_lower_2d=result_array_lower_sub.in_2d_binned,
-                result_array_higher_2d=result_array_higher_sub.in_2d_binned,
+            fractional_mask = grid.fractional_mask_from_arrays(
+                array_lower_sub_2d=result_array_lower_sub.in_2d_binned,
+                result_higher_sub_2d=result_array_higher_sub.in_2d_binned,
             )
 
             assert (
@@ -1292,9 +1197,9 @@ class TestGridIterator:
                 mask=mask,
             )
 
-            fractional_mask = grid.fractional_mask_from_x2_result_arrays(
-                result_array_lower_2d=result_array_lower_sub.in_2d_binned,
-                result_array_higher_2d=result_array_higher_sub.in_2d_binned,
+            fractional_mask = grid.fractional_mask_from_arrays(
+                array_lower_sub_2d=result_array_lower_sub.in_2d_binned,
+                result_higher_sub_2d=result_array_higher_sub.in_2d_binned,
             )
 
             assert (
@@ -1309,7 +1214,7 @@ class TestGridIterator:
                 )
             ).all()
 
-        def test__fractional_mask_from_x2_result_arrays__uses_higher_sub_grids_mask(
+        def test__fractional_mask_from_result_arrays__uses_higher_sub_grids_mask(
             self
         ):
 
@@ -1357,9 +1262,9 @@ class TestGridIterator:
                 mask=mask_higher_sub,
             )
 
-            fractional_mask = grid.fractional_mask_from_x2_result_arrays(
-                result_array_lower_2d=result_array_lower_sub.in_2d_binned,
-                result_array_higher_2d=result_array_higher_sub.in_2d_binned,
+            fractional_mask = grid.fractional_mask_from_arrays(
+                array_lower_sub_2d=result_array_lower_sub.in_2d_binned,
+                result_higher_sub_2d=result_array_higher_sub.in_2d_binned,
             )
 
             assert (
@@ -1458,91 +1363,6 @@ class TestGridIterator:
             assert values.in_2d[1, 1] != values_sub_4.in_2d_binned[1, 1]
             assert values.in_2d[2, 2] == values_sub_4.in_2d_binned[2, 2]
 
-    class TestDecorator:
-        def test__return_values__extreme_fractional_accuracies_uses_last_or_first_grid(
-            self
-        ):
-
-            mask = aa.Mask.manual(
-                mask_2d=[
-                    [True, True, True, True, True],
-                    [True, False, False, False, True],
-                    [True, False, False, False, True],
-                    [True, False, False, False, True],
-                    [True, True, True, True, True],
-                ],
-                pixel_scales=(1.0, 1.0),
-                origin=(0.001, 0.001),
-            )
-
-            grid = aa.GridIterator.from_mask(
-                mask=mask, fractional_accuracy=1.0, sub_steps=[2, 3]
-            )
-
-            iterator_obj = MockGridIteratorObj()
-
-            values = iterator_obj.float_values_from_grid(grid=grid)
-
-            mask_sub_3 = mask.mapping.mask_new_sub_size_from_mask(mask=mask, sub_size=3)
-            grid_sub_3 = aa.Grid.from_mask(mask=mask_sub_3)
-            values_sub_3 = float_values_from_grid(grid=grid_sub_3, profile=None)
-            values_sub_3 = grid_sub_3.structure_from_result(result=values_sub_3)
-
-            assert (values == values_sub_3.in_1d_binned).all()
-
-            grid = aa.GridIterator.from_mask(
-                mask=mask, fractional_accuracy=0.000001, sub_steps=[2, 4, 8, 16, 32]
-            )
-
-            iterator_obj = MockGridIteratorObj()
-
-            values = iterator_obj.float_values_from_grid(grid=grid)
-
-            mask_sub_2 = mask.mapping.mask_new_sub_size_from_mask(mask=mask, sub_size=2)
-            grid_sub_2 = aa.Grid.from_mask(mask=mask_sub_2)
-            values_sub_2 = float_values_from_grid(grid=grid_sub_2, profile=None)
-            values_sub_2 = grid_sub_2.structure_from_result(result=values_sub_2)
-
-            assert (values == values_sub_2.in_1d_binned).all()
-
-        def test__return_values__check_values_computed_to_fractional_accuracy(self):
-
-            mask = aa.Mask.manual(
-                mask_2d=[
-                    [True, True, True, True, True],
-                    [True, False, False, False, True],
-                    [True, False, False, False, True],
-                    [True, False, False, False, True],
-                    [True, True, True, True, True],
-                ],
-                pixel_scales=(1.0, 1.0),
-                origin=(0.001, 0.001),
-            )
-
-            grid = aa.GridIterator.from_mask(
-                mask=mask, fractional_accuracy=0.5, sub_steps=[2, 4]
-            )
-
-            iterator_obj = MockGridIteratorObj()
-
-            values = iterator_obj.float_values_from_grid(grid=grid)
-
-            mask_sub_2 = mask.mapping.mask_new_sub_size_from_mask(mask=mask, sub_size=2)
-            grid_sub_2 = aa.Grid.from_mask(mask=mask_sub_2)
-            values_sub_2 = float_values_from_grid(grid=grid_sub_2, profile=None)
-            values_sub_2 = grid_sub_2.structure_from_result(result=values_sub_2)
-
-            mask_sub_4 = mask.mapping.mask_new_sub_size_from_mask(mask=mask, sub_size=4)
-            grid_sub_4 = aa.Grid.from_mask(mask=mask_sub_4)
-            values_sub_4 = float_values_from_grid(grid=grid_sub_4, profile=None)
-            values_sub_4 = grid_sub_4.structure_from_result(result=values_sub_4)
-
-            assert values.in_2d[1, 1] == values_sub_2.in_2d_binned[1, 1]
-            assert values.in_2d[2, 2] != values_sub_2.in_2d_binned[2, 2]
-
-            assert values.in_2d[1, 1] != values_sub_4.in_2d_binned[1, 1]
-            assert values.in_2d[2, 2] == values_sub_4.in_2d_binned[2, 2]
-
     class TestAPI:
         def test__manual_1d(self):
             grid = aa.GridIterator.manual_1d(
@@ -1588,6 +1408,24 @@ class TestGridIterator:
             assert grid.pixel_scales == (2.0, 2.0)
             assert grid.interpolator == None
             assert grid.sub_size == 1
+
+        def test__uniform(self):
+
+            grid = aa.GridIterator.uniform(
+                shape_2d=(2, 2), pixel_scales=2.0, fractional_accuracy=0.1
+            )
+
+            assert type(grid) == grids.GridIterator
+            assert (
+                grid.in_2d
+                == np.array([[[1.0, -1.0], [1.0, 1.0]], [[-1.0, -1.0], [-1.0, 1.0]]])
+            ).all()
+            assert (
+                grid.in_1d
+                == np.array([[1.0, -1.0], [1.0, 1.0], [-1.0, -1.0], [-1.0, 1.0]])
+            ).all()
+            assert grid.pixel_scales == (2.0, 2.0)
+            assert grid.origin == (0.0, 0.0)
 
 
 class TestGridInterpolator:
@@ -3562,7 +3400,7 @@ class TestGridLikeDecorators:
 
         grid = aa.Grid.from_mask(mask=mask)
 
-        grid_like_object = MockGridLikeObject()
+        grid_like_object = MockGridLikeObj()
 
         array_output = grid_like_object.float_values_from_grid(grid=grid)
 
@@ -3608,7 +3446,7 @@ class TestGridLikeDecorators:
 
         grid = aa.Grid.from_mask(mask=mask)
 
-        grid_like_object = MockGridLikeObject()
+        grid_like_object = MockGridLikeObj()
 
         array_output = grid_like_object.float_values_from_grid_returns_list(grid=grid)
 
@@ -3668,7 +3506,7 @@ class TestGridLikeDecorators:
 
     def test__grid_coordinates_input__output_values_same_format(self):
 
-        grid_like_object = MockGridLikeObject()
+        grid_like_object = MockGridLikeObj()
 
         coordinates = aa.GridCoordinates(
             coordinates=[[(1.0, 2.0), (3.0, 4.0)], [(5.0, 6.0)]]
@@ -3684,7 +3522,7 @@ class TestGridLikeDecorators:
 
     def test__grid_coordinates_input__output_is_list__list_of_same_format(self):
 
-        grid_like_object = MockGridLikeObject()
+        grid_like_object = MockGridLikeObj()
 
         coordinates = aa.GridCoordinates(
             coordinates=[[(1.0, 2.0), (3.0, 4.0)], [(5.0, 6.0)]]
@@ -3704,3 +3542,104 @@ class TestGridLikeDecorators:
             [(1.0, 2.0), (3.0, 4.0)],
             [(5.0, 6.0)],
         ], [[(2.0, 4.0), (6.0, 8.0)], [(10.0, 12.0)]]
+
+    def test__grid_iterator__output_values__use_iterated_array_function(self):
+
+        mask = aa.Mask.manual(
+            mask_2d=[
+                [True, True, True, True, True],
+                [True, False, False, False, True],
+                [True, False, False, False, True],
+                [True, False, False, False, True],
+                [True, True, True, True, True],
+            ],
+            pixel_scales=(1.0, 1.0),
+            origin=(0.001, 0.001),
+        )
+
+        grid = aa.GridIterator.from_mask(
+            mask=mask, fractional_accuracy=1.0, sub_steps=[2, 3]
+        )
+
+        grid_like_iterator_obj = MockGridLikeIteratorObj()
+
+        values = grid_like_iterator_obj.float_values_from_grid(grid=grid)
+
+        mask_sub_3 = mask.mapping.mask_new_sub_size_from_mask(mask=mask, sub_size=3)
+        grid_sub_3 = aa.Grid.from_mask(mask=mask_sub_3)
+        values_sub_3 = float_values_from_grid(grid=grid_sub_3, profile=None)
+        values_sub_3 = grid_sub_3.structure_from_result(result=values_sub_3)
+
+        assert (values == values_sub_3.in_1d_binned).all()
+
+        grid = aa.GridIterator.from_mask(
+            mask=mask, fractional_accuracy=0.000001, sub_steps=[2, 4, 8, 16, 32]
+        )
+
+        grid_like_iterator_obj = MockGridLikeIteratorObj()
+
+        values = grid_like_iterator_obj.float_values_from_grid(grid=grid)
+
+        mask_sub_2 = mask.mapping.mask_new_sub_size_from_mask(mask=mask, sub_size=2)
+        grid_sub_2 = aa.Grid.from_mask(mask=mask_sub_2)
+        values_sub_2 = float_values_from_grid(grid=grid_sub_2, profile=None)
+        values_sub_2 = grid_sub_2.structure_from_result(result=values_sub_2)
+
+        assert (values == values_sub_2.in_1d_binned).all()
+
+        grid = aa.GridIterator.from_mask(
+            mask=mask, fractional_accuracy=0.5, sub_steps=[2, 4]
+        )
+
+        iterator_obj = MockGridLikeIteratorObj()
+
+        values = iterator_obj.float_values_from_grid(grid=grid)
+
+        mask_sub_2 = mask.mapping.mask_new_sub_size_from_mask(mask=mask, sub_size=2)
+        grid_sub_2 = aa.Grid.from_mask(mask=mask_sub_2)
+        values_sub_2 = float_values_from_grid(grid=grid_sub_2, profile=None)
+        values_sub_2 = grid_sub_2.structure_from_result(result=values_sub_2)
+
+        mask_sub_4 = mask.mapping.mask_new_sub_size_from_mask(mask=mask, sub_size=4)
+        grid_sub_4 = aa.Grid.from_mask(mask=mask_sub_4)
+        values_sub_4 = float_values_from_grid(grid=grid_sub_4, profile=None)
+        values_sub_4 = grid_sub_4.structure_from_result(result=values_sub_4)
+
+        assert values.in_2d[1, 1] == values_sub_2.in_2d_binned[1, 1]
+        assert values.in_2d[2, 2] != values_sub_2.in_2d_binned[2, 2]
+
+        assert values.in_2d[1, 1] != values_sub_4.in_2d_binned[1, 1]
+        assert values.in_2d[2, 2] == values_sub_4.in_2d_binned[2, 2]
+
+    def test__grid_iterator__output_is_list_of_values__use_maximum_sub_size_in_all_pixels(
+        self
+    ):
+
+        mask = aa.Mask.manual(
+            mask_2d=[
+                [True, True, True, True, True],
+                [True, False, False, False, True],
+                [True, False, False, False, True],
+                [True, False, False, False, True],
+                [True, True, True, True, True],
+            ],
+            pixel_scales=(1.0, 1.0),
+            origin=(0.001, 0.001),
+        )
+
+        grid = aa.GridIterator.from_mask(
+            mask=mask, fractional_accuracy=0.05, sub_steps=[2, 3]
+        )
+
+        grid_like_iterator_obj = MockGridLikeIteratorObj()
+
+        values = grid_like_iterator_obj.float_values_from_grid_returns_list(grid=grid)
+
+        mask_sub_3 = mask.mapping.mask_new_sub_size_from_mask(mask=mask, sub_size=3)
+        grid_sub_3 = aa.Grid.from_mask(mask=mask_sub_3)
+        values_sub_3 = float_values_from_grid(grid=grid_sub_3, profile=None)
+        values_sub_3 = grid_sub_3.structure_from_result(result=values_sub_3)
+
+        print(values)
+
+        assert (values[0] == values_sub_3.in_1d_binned).all()
