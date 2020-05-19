@@ -39,7 +39,6 @@ class Mask(np.ndarray):
         obj.sub_size = sub_size
         obj.pixel_scales = pixel_scales
         obj.origin = origin
-        obj.neighbors = mask_util.mask_2d_neighbors_from(mask_2d=mask_2d).astype("int")
         return obj
 
     def __reduce__(self):
