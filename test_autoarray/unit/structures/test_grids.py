@@ -9,7 +9,7 @@ from autoarray import exc
 from autoarray.structures import grids
 from test_autoarray.mock.mock_grids import (
     MockGridIteratorObj,
-    MockGridCoordinateInput,
+    MockGridLikeObject,
     MockGridRadialMinimum,
     float_values_from_grid,
 )
@@ -425,9 +425,7 @@ class TestGrid:
             ).all()
             assert (square_distances.mask == mask).all()
 
-        def test__structure_from_result__all_mappings_from_numpy_or_list__to_auto_array_or_grid(
-            self
-        ):
+        def test__structure_from_result__maps_numpy_array_to__auto_array_or_grid(self):
 
             mask = np.array(
                 [
@@ -474,7 +472,26 @@ class TestGrid:
                 )
             ).all()
 
-            result = grid.structure_from_result(result=[np.array([1.0, 2.0, 3.0, 4.0])])
+        def test__structure_list_from_result_list__maps_list_to_auto_arrays_or_grids(
+            self
+        ):
+
+            mask = np.array(
+                [
+                    [True, True, True, True],
+                    [True, False, False, True],
+                    [True, False, False, True],
+                    [True, True, True, True],
+                ]
+            )
+
+            mask = aa.Mask.manual(mask_2d=mask, pixel_scales=(1.0, 1.0), sub_size=1)
+
+            grid = aa.Grid.from_mask(mask=mask)
+
+            result = grid.structure_list_from_result_list(
+                result_list=[np.array([1.0, 2.0, 3.0, 4.0])]
+            )
 
             assert isinstance(result[0], aa.Array)
             assert (
@@ -489,8 +506,8 @@ class TestGrid:
                 )
             ).all()
 
-            result = grid.structure_from_result(
-                result=[np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0]])]
+            result = grid.structure_list_from_result_list(
+                result_list=[np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0]])]
             )
 
             assert isinstance(result[0], aa.Grid)
@@ -2034,9 +2051,7 @@ class TestGridCoordinates:
             file_path=output_coordinates_dir + "coordinates_test.dat", overwrite=True
         )
 
-    def test__structure_from_result__all_mappings_from_numpy_or_list__to_auto_array_or_grid(
-        self
-    ):
+    def test__structure_from_result__maps_numpy_array_to__auto_array_or_grid(self):
 
         coordinates = aa.GridCoordinates(coordinates=[(1.0, -1.0), (1.0, 1.0)])
 
@@ -2052,6 +2067,10 @@ class TestGridCoordinates:
         assert isinstance(result, aa.GridCoordinates)
         assert result.in_list == [[(1.0, 1.0), (2.0, 2.0)]]
 
+    def test__structure_list_from_result_list__maps_list_to_auto_arrays_or_grids(self):
+
+        coordinates = aa.GridCoordinates(coordinates=[(1.0, -1.0), (1.0, 1.0)])
+
         result = coordinates.structure_from_result(result=[np.array([1.0, 2.0])])
 
         assert isinstance(result[0], aa.Values)
@@ -2063,47 +2082,6 @@ class TestGridCoordinates:
 
         assert isinstance(result[0], aa.GridCoordinates)
         assert result[0].in_list == [[(1.0, 1.0), (2.0, 2.0)]]
-
-    def test__convert_coordinates_decorator__coordinates_are_input__output_in_same_format(
-        self
-    ):
-
-        coordinates_input = MockGridCoordinateInput()
-
-        coordinates = aa.GridCoordinates(
-            coordinates=[[(1.0, 2.0), (3.0, 4.0)], [(5.0, 6.0)]]
-        )
-
-        coordinates_output = coordinates_input.float_values_from_grid(grid=coordinates)
-
-        assert coordinates_output.in_list == [[1.0, 1.0], [1.0]]
-
-        coordinates_output = coordinates_input.tuple_values_from_grid(grid=coordinates)
-
-        assert coordinates_output.in_list == [[(2.0, 4.0), (6.0, 8.0)], [(10.0, 12.0)]]
-
-    def test__convert_coordinates_decorator__same_as_above_but_output_is_a_list(self):
-
-        coordinates_input = MockGridCoordinateInput()
-
-        coordinates = aa.GridCoordinates(
-            coordinates=[[(1.0, 2.0), (3.0, 4.0)], [(5.0, 6.0)]]
-        )
-
-        coordinates_output = coordinates_input.float_values_from_grid_returns_list(
-            grid=coordinates
-        )
-
-        assert coordinates_output[0].in_list == [[1.0, 1.0], [1.0]], [[2.0, 2.0], [2.0]]
-
-        coordinates_output = coordinates_input.tuple_values_from_grid_returns_list(
-            grid=coordinates
-        )
-
-        assert coordinates_output[0].in_list == [
-            [(1.0, 2.0), (3.0, 4.0)],
-            [(5.0, 6.0)],
-        ], [[(2.0, 4.0), (6.0, 8.0)], [(10.0, 12.0)]]
 
 
 class TestGridRectangular:
@@ -3567,3 +3545,162 @@ class TestMaskedGrid:
             grid_2d = mask.mapping.grid_stored_2d_from_sub_grid_1d(sub_grid_1d=grid)
 
             assert (grid.in_2d == grid_2d).all()
+
+
+class TestGridLikeDecorators:
+    def test__grid_input__output_values_same_format(self):
+        mask = np.array(
+            [
+                [True, True, True, True],
+                [True, False, False, True],
+                [True, False, False, True],
+                [True, True, True, True],
+            ]
+        )
+
+        mask = aa.Mask.manual(mask_2d=mask, pixel_scales=(1.0, 1.0), sub_size=1)
+
+        grid = aa.Grid.from_mask(mask=mask)
+
+        grid_like_object = MockGridLikeObject()
+
+        array_output = grid_like_object.float_values_from_grid(grid=grid)
+
+        assert isinstance(array_output, aa.Array)
+        assert (
+            array_output.in_2d
+            == np.array(
+                [
+                    [0.0, 0.0, 0.0, 0.0],
+                    [0.0, 1.0, 1.0, 0.0],
+                    [0.0, 1.0, 1.0, 0.0],
+                    [0.0, 0.0, 0.0, 0.0],
+                ]
+            )
+        ).all()
+
+        grid_output = grid_like_object.tuple_values_from_grid(grid=grid)
+
+        assert isinstance(grid_output, aa.Grid)
+        assert (
+            grid_output.in_2d
+            == np.array(
+                [
+                    [[0.0, 0.0], [0.0, 0.0], [0.0, 0.0], [0.0, 0.0]],
+                    [[0.0, 0.0], [1.0, -1.0], [1.0, 1.0], [0.0, 0.0]],
+                    [[0.0, 0.0], [-1.0, -1.0], [-1.0, 1.0], [0.0, 0.0]],
+                    [[0.0, 0.0], [0.0, 0.0], [0.0, 0.0], [0.0, 0.0]],
+                ]
+            )
+        ).all()
+
+    def test__grid_input__output_is_list__list_of_same_format(self):
+        mask = np.array(
+            [
+                [True, True, True, True],
+                [True, False, False, True],
+                [True, False, False, True],
+                [True, True, True, True],
+            ]
+        )
+
+        mask = aa.Mask.manual(mask_2d=mask, pixel_scales=(1.0, 1.0), sub_size=1)
+
+        grid = aa.Grid.from_mask(mask=mask)
+
+        grid_like_object = MockGridLikeObject()
+
+        array_output = grid_like_object.float_values_from_grid_returns_list(grid=grid)
+
+        assert isinstance(array_output[0], aa.Array)
+        assert (
+            array_output[0].in_2d
+            == np.array(
+                [
+                    [0.0, 0.0, 0.0, 0.0],
+                    [0.0, 1.0, 1.0, 0.0],
+                    [0.0, 1.0, 1.0, 0.0],
+                    [0.0, 0.0, 0.0, 0.0],
+                ]
+            )
+        ).all()
+
+        assert isinstance(array_output[1], aa.Array)
+        assert (
+            array_output[1].in_2d
+            == np.array(
+                [
+                    [0.0, 0.0, 0.0, 0.0],
+                    [0.0, 2.0, 2.0, 0.0],
+                    [0.0, 2.0, 2.0, 0.0],
+                    [0.0, 0.0, 0.0, 0.0],
+                ]
+            )
+        ).all()
+
+        grid_output = grid_like_object.tuple_values_from_grid_returns_list(grid=grid)
+
+        assert isinstance(grid_output[0], aa.Grid)
+        assert (
+            grid_output[0].in_2d
+            == np.array(
+                [
+                    [[0.0, 0.0], [0.0, 0.0], [0.0, 0.0], [0.0, 0.0]],
+                    [[0.0, 0.0], [0.5, -0.5], [0.5, 0.5], [0.0, 0.0]],
+                    [[0.0, 0.0], [-0.5, -0.5], [-0.5, 0.5], [0.0, 0.0]],
+                    [[0.0, 0.0], [0.0, 0.0], [0.0, 0.0], [0.0, 0.0]],
+                ]
+            )
+        ).all()
+
+        assert isinstance(grid_output[1], aa.Grid)
+        assert (
+            grid_output[1].in_2d
+            == np.array(
+                [
+                    [[0.0, 0.0], [0.0, 0.0], [0.0, 0.0], [0.0, 0.0]],
+                    [[0.0, 0.0], [1.0, -1.0], [1.0, 1.0], [0.0, 0.0]],
+                    [[0.0, 0.0], [-1.0, -1.0], [-1.0, 1.0], [0.0, 0.0]],
+                    [[0.0, 0.0], [0.0, 0.0], [0.0, 0.0], [0.0, 0.0]],
+                ]
+            )
+        ).all()
+
+    def test__grid_coordinates_input__output_values_same_format(self):
+
+        grid_like_object = MockGridLikeObject()
+
+        coordinates = aa.GridCoordinates(
+            coordinates=[[(1.0, 2.0), (3.0, 4.0)], [(5.0, 6.0)]]
+        )
+
+        values_output = grid_like_object.float_values_from_grid(grid=coordinates)
+
+        assert values_output.in_list == [[1.0, 1.0], [1.0]]
+
+        coordinates_output = grid_like_object.tuple_values_from_grid(grid=coordinates)
+
+        assert coordinates_output.in_list == [[(2.0, 4.0), (6.0, 8.0)], [(10.0, 12.0)]]
+
+    def test__grid_coordinates_input__output_is_list__list_of_same_format(self):
+
+        grid_like_object = MockGridLikeObject()
+
+        coordinates = aa.GridCoordinates(
+            coordinates=[[(1.0, 2.0), (3.0, 4.0)], [(5.0, 6.0)]]
+        )
+
+        coordinates_output = grid_like_object.float_values_from_grid_returns_list(
+            grid=coordinates
+        )
+
+        assert coordinates_output[0].in_list == [[1.0, 1.0], [1.0]], [[2.0, 2.0], [2.0]]
+
+        coordinates_output = grid_like_object.tuple_values_from_grid_returns_list(
+            grid=coordinates
+        )
+
+        assert coordinates_output[0].in_list == [
+            [(1.0, 2.0), (3.0, 4.0)],
+            [(5.0, 6.0)],
+        ], [[(2.0, 4.0), (6.0, 8.0)], [(10.0, 12.0)]]

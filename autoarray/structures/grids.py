@@ -852,16 +852,12 @@ class Grid(AbstractGrid):
                 grid_1d=blurring_grid_1d
             )
 
-    def structure_from_result(
-        self, result: np.ndarray or list
-    ) -> typing.Union[arrays.Array, list]:
+    def structure_from_result(self, result: np.ndarray) -> typing.Union[arrays.Array]:
         """Convert a result from a non autoarray structure to an aa.Array or aa.Grid structure, where the conversion
         depends on type(result) as follows:
 
         - 1D np.ndarray   -> aa.Array
         - 2D np.ndarray   -> aa.Grid
-        - [1D np.ndarray] -> [aa.Array]
-        - [2D np.ndarray] -> [aa.Grid]
 
         This function is used by the grid_like_to_structure decorator to convert the output result of a function
         to an autoarray structure when a *Grid* instance is passed to the decorated function.
@@ -871,28 +867,41 @@ class Grid(AbstractGrid):
         result : np.ndarray or [np.ndarray]
             The input result (e.g. of a decorated function) that is converted to a PyAutoArray structure.
         """
+        if len(result.shape) == 1:
+            return self.mapping.array_stored_1d_from_sub_array_1d(sub_array_1d=result)
+        else:
+            return self.mapping.grid_stored_1d_from_sub_grid_1d(
+                sub_grid_1d=result,
+                is_transformed=isinstance(result, GridTransformedNumpy),
+            )
 
-        if isinstance(result, np.ndarray):
-            if len(result.shape) == 1:
-                return self.mapping.array_stored_1d_from_sub_array_1d(
-                    sub_array_1d=result
-                )
-            else:
-                return self.mapping.grid_stored_1d_from_sub_grid_1d(
-                    sub_grid_1d=result,
-                    is_transformed=isinstance(result, GridTransformedNumpy),
-                )
-        elif isinstance(result, list):
-            if len(result[0].shape) == 1:
-                return [
-                    self.mapping.array_stored_1d_from_sub_array_1d(sub_array_1d=value)
-                    for value in result
-                ]
-            elif len(result[0].shape) == 2:
-                return [
-                    self.mapping.grid_stored_1d_from_sub_grid_1d(sub_grid_1d=value)
-                    for value in result
-                ]
+    def structure_list_from_result_list(
+        self, result_list: list
+    ) -> typing.Union[arrays.Array, list]:
+        """Convert a result from a list of non autoarray structures to an aa.Array or aa.Grid structure, where the
+        conversion depends on type(result) as follows:
+
+        - [1D np.ndarray] -> [aa.Array]
+        - [2D np.ndarray] -> [aa.Grid]
+
+        This function is used by the grid_like_list_to_structure-list decorator to convert the output result of a
+        function to a list of autoarray structure when a *Grid* instance is passed to the decorated function.
+
+        Parameters
+        ----------
+        result_list : np.ndarray or [np.ndarray]
+            The input result (e.g. of a decorated function) that is converted to a PyAutoArray structure.
+        """
+        if len(result_list[0].shape) == 1:
+            return [
+                self.mapping.array_stored_1d_from_sub_array_1d(sub_array_1d=value)
+                for value in result_list
+            ]
+        elif len(result_list[0].shape) == 2:
+            return [
+                self.mapping.grid_stored_1d_from_sub_grid_1d(sub_grid_1d=value)
+                for value in result_list
+            ]
 
 
 class GridIterator(Grid):
@@ -1464,6 +1473,28 @@ class GridCoordinates(np.ndarray):
                     self.coordinates_from_grid_1d(grid_1d=value) for value in result
                 ]
 
+    def structure_list_from_result_list(self, result_list: list) -> typing.Union[list]:
+        """Convert a result from a list of non autoarray structures to a list of aa.Values or aa.GridCoordinates
+        structures, where the conversion depends on type(result) as follows:
+
+        - [1D np.ndarray] -> [aa.Values]
+        - [2D np.ndarray] -> [aa.GridCoordinates]
+
+        This function is used by the grid_like_list_to_structure_list decorator to convert the output result of a
+        function to a list of autoarray structure when a *GridCoordinates* instance is passed to the decorated function.
+
+        Parameters
+        ----------
+        result_list : np.ndarray or [np.ndarray]
+            The input result (e.g. of a decorated function) that is converted to a PyAutoArray structure.
+        """
+        if len(result_list[0].shape) == 1:
+            return [self.values_from_arr_1d(arr_1d=value) for value in result_list]
+        elif len(result_list[0].shape) == 2:
+            return [
+                self.coordinates_from_grid_1d(grid_1d=value) for value in result_list
+            ]
+
 
 class GridRectangular(Grid):
     def __new__(cls, grid, shape_2d, pixel_scales, origin=(0.0, 0.0), *args, **kwargs):
@@ -1613,7 +1644,7 @@ class GridVoronoi(np.ndarray):
             A 1D array that maps every grid pixel to its nearest pixelization-grid pixel.
         """
 
-        if isinstance(grid, list):
+        if type(grid) is list:
             grid = np.asarray(grid)
 
         obj = grid.view(cls)
@@ -1894,26 +1925,27 @@ def grid_like_to_structure(func):
 
     @wraps(func)
     def wrapper(profile, grid, *args, **kwargs):
-        """ This decorator homogenizes the input array of *Grid* and *Coordinate* structures into a function, so that
-        both can be input interchangeably into functions which evalute values on points of the grid. The outputs are
-        converted back to *Grid* or *Coordinate* objects, where applicable.
+        """ This decorator homogenizes the input of a "grid_like" structure (*Grid*, *GridIterator*, *GridInterpolator*
+        or  *GridCoordinate*) into a function. It allows these classes to be interchangeably input into a function,
+        such that the grid is used to evalaute the function as every (y,x) coordinates of the grid.
 
-        The grid_like objects (*Grid* and *GridCoordinates*) are converted to a flattened 2D NumPy array, where the
-        first array dimension is the coordinate index and the second dimension stores the (y,x) values. For example,
-        for 100 coordinates, this NumPy array has shape (100, 2).
+        The grid_like objects *Grid* and *GridCoordinates* are input into the function as a flattened 2D NumPy array
+        of shape [total_coordinates, 2] where second dimension stores the (y,x) values. If a *GridIterator* is input,
+        the function is evaluated using the appropriate iterated_*_from_func* function.
 
-        The decorator converts the result of the function back as follows:
+        The outputs of the function are converted from a 1D or 2D NumPy Array to an *Array*, *Grid*, *Values* or
+        *GridCoordinate* objects, whichever is applicable as follows:
 
-        - If the function returns (y,x) coordinates at every input point, the returned results are  *Grid* or
-          *GridCoordinates* object of the same structure as the input.
+        - If the function returns (y,x) coordinates at every input point, the returned results are returned as a
+         *Grid* or *GridCoordinates* structure - the same structure as the input.
 
-        - If the function returns scalar values at every input point and a *Grid* is input, the returned results are an
-          *Array* structure which uses the same dimensions and mask as the *Grid*.
+        - If the function returns scalar values at every input point and a *Grid* is input, the returned results are
+          an *Array* structure which uses the same dimensions and mask as the *Grid*.
 
-        - If the function returns scalar values at every input point and *GridCoordinates* are input, the returned results
-          are a list of list of floats structure that resembles the *GridCoordinates*..
+        - If the function returns scalar values at every input point and *GridCoordinates* are input, the returned
+          results are a *Values* object with structure resembling that of the *GridCoordinates*..
 
-        If the input array is 2D NumPy array of the form after conversion, it is input unchanged.
+        If the input array is not a *Grid* structure (e.g. it is a 2D NumPy array) the output is a NumPy array.
 
         Parameters
         ----------
@@ -1935,6 +1967,78 @@ def grid_like_to_structure(func):
         elif isinstance(grid, Grid):
             result = func(profile, grid, *args, **kwargs)
             return grid.structure_from_result(result=result)
+
+        if not isinstance(grid, GridCoordinates) and not isinstance(grid, Grid):
+            return func(profile, grid, *args, **kwargs)
+
+    return wrapper
+
+
+def grid_like_to_structure_list(func):
+    """ Checks whether any coordinates in the grid are radially near (0.0, 0.0), which can lead to numerical faults in \
+    the evaluation of a light or mass profiles. If any coordinates are radially within the the radial minimum \
+    threshold, their (y,x) coordinates are shifted to that value to ensure they are evaluated correctly.
+
+    By default this radial minimum is not used, and users should be certain they use a value that does not impact \
+    results.
+
+    Parameters
+    ----------
+    func : (profile, *args, **kwargs) -> Object
+        A function that takes a grid of coordinates which may have a singularity as (0.0, 0.0)
+
+    Returns
+    -------
+        A function that can except cartesian or transformed coordinates
+    """
+
+    @wraps(func)
+    def wrapper(profile, grid, *args, **kwargs):
+        """ This decorator homogenizes the input of a "grid_like" structure (*Grid*, *GridIterator*, *GridInterpolator*
+        or  *GridCoordinate*) into a function. It allows these classes to be interchangeably input into a function,
+        such that the grid is used to evalaute the function as every (y,x) coordinates of the grid.
+
+        The grid_like objects *Grid* and *GridCoordinates* are input into the function as a flattened 2D NumPy array
+        of shape [total_coordinates, 2] where second dimension stores the (y,x) values. If a *GridIterator* is input,
+        the function is evaluated using the appropriate iterated_*_from_func* function.
+
+        If a *GridIterator* is not input the outputs of the function are converted from a list of 1D or 2D NumPy Arrays
+        to a list of *Array*, *Grid*,  *Values* or  *GridCoordinate* objects, whichever is applicable as follows:
+
+        - If the function returns (y,x) coordinates at every input point, the returned results are returned as a
+         *Grid* or *GridCoordinates* structure - the same structure as the input.
+
+        - If the function returns scalar values at every input point and a *Grid* is input, the returned results are
+          an *Array* structure which uses the same dimensions and mask as the *Grid*.
+
+        - If the function returns scalar values at every input point and *GridCoordinates* are input, the returned
+          results are a *Values* object with structure resembling that of the *GridCoordinates*.
+
+        if a *GridIterator* is input, the iterated grid calculation is not applicable. Thus, the highest resolution
+        sub_size grid in the *GridIterator* is used instead.
+
+        If the input array is not a *Grid* structure (e.g. it is a 2D NumPy array) the output is a NumPy array.
+
+        Parameters
+        ----------
+        profile : Profile
+            A Profile object which uses grid_like inputs to compute quantities at every coordinate on the grid.
+        grid : Grid or GridCoordinates
+            A grid_like object of (y,x) coordinates on which the function values are evaluated.
+
+        Returns
+        -------
+            The function values evaluated on the grid with the same structure as the input grid_like object.
+        """
+
+        if isinstance(grid, GridIterator):
+            return grid.iterated_array_from_func(func=func, profile=profile)
+        elif isinstance(grid, GridCoordinates):
+            result_list = func(profile, grid, *args, **kwargs)
+            return grid.structure_list_from_result_list(result_list=result_list)
+        elif isinstance(grid, Grid):
+            result_list = func(profile, grid, *args, **kwargs)
+            return grid.structure_list_from_result_list(result_list=result_list)
 
         if not isinstance(grid, GridCoordinates) and not isinstance(grid, Grid):
             return func(profile, grid, *args, **kwargs)
@@ -1990,7 +2094,7 @@ def interpolate(func):
 
 
 def transform(func):
-    """Wrap the function in a function that checks whether the coordinates have been transformed. If they have not \ 
+    """Wrap the function in a function that checks whether the coordinates have been transformed. If they have not \
     been transformed then they are transformed.
 
     Parameters
@@ -2019,9 +2123,7 @@ def transform(func):
             A grid_like object whose coordinates may be transformed.
         """
 
-        if not isinstance(grid, GridTransformed) and not isinstance(
-            grid, GridTransformedNumpy
-        ):
+        if not isinstance(grid, (GridTransformed, GridTransformedNumpy)):
             result = func(
                 profile,
                 profile.transform_grid_to_reference_frame(grid),
@@ -2134,8 +2236,7 @@ class MaskedGrid(AbstractGrid):
 
         if store_in_1d:
             return mask.mapping.grid_stored_1d_from_sub_grid_1d(sub_grid_1d=grid)
-        else:
-            return mask.mapping.grid_stored_2d_from_sub_grid_1d(sub_grid_1d=grid)
+        return mask.mapping.grid_stored_2d_from_sub_grid_1d(sub_grid_1d=grid)
 
     @classmethod
     def manual_2d(cls, grid, mask, store_in_1d=True):
@@ -2151,9 +2252,8 @@ class MaskedGrid(AbstractGrid):
 
         if store_in_1d:
             return mask.mapping.grid_stored_1d_from_sub_grid_2d(sub_grid_2d=grid)
-        else:
-            sub_grid_1d = mask.mapping.grid_stored_1d_from_sub_grid_2d(sub_grid_2d=grid)
-            return mask.mapping.grid_stored_2d_from_sub_grid_1d(sub_grid_1d=sub_grid_1d)
+        sub_grid_1d = mask.mapping.grid_stored_1d_from_sub_grid_2d(sub_grid_2d=grid)
+        return mask.mapping.grid_stored_2d_from_sub_grid_1d(sub_grid_1d=sub_grid_1d)
 
     @classmethod
     def from_mask(cls, mask, store_in_1d=True):
@@ -2177,5 +2277,4 @@ class MaskedGrid(AbstractGrid):
 
         if store_in_1d:
             return mask.mapping.grid_stored_1d_from_sub_grid_1d(sub_grid_1d=sub_grid_1d)
-        else:
-            return mask.mapping.grid_stored_2d_from_sub_grid_1d(sub_grid_1d=sub_grid_1d)
+        return mask.mapping.grid_stored_2d_from_sub_grid_1d(sub_grid_1d=sub_grid_1d)
