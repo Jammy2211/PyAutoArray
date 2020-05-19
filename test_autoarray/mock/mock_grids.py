@@ -69,7 +69,7 @@ class MockGridIteratorObj:
     #     return [np.multiply(1.0, grid), np.multiply(2.0, grid)]
 
 
-class MockGridCoordinateInput:
+class MockGridLikeObject:
     def __init__(self):
         pass
 
@@ -81,11 +81,11 @@ class MockGridCoordinateInput:
     def tuple_values_from_grid(self, grid):
         return np.multiply(2.0, grid)
 
-    @grids.grid_like_to_structure
+    @grids.grid_like_to_structure_list
     def float_values_from_grid_returns_list(self, grid):
         return [np.ones(shape=grid.shape[0]), 2.0 * np.ones(shape=grid.shape[0])]
 
-    @grids.grid_like_to_structure
+    @grids.grid_like_to_structure_list
     def tuple_values_from_grid_returns_list(self, grid):
         return [np.multiply(1.0, grid), np.multiply(2.0, grid)]
 
