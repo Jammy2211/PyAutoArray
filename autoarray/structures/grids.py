@@ -162,7 +162,6 @@ class AbstractGrid(abstract_structure.AbstractStructure):
             cls=cls, structure=grid, mask=mask, store_in_1d=store_in_1d
         )
         obj.interpolator = None
-        obj.binned = None
         return obj
 
     def __array_finalize__(self, obj):
@@ -173,9 +172,6 @@ class AbstractGrid(abstract_structure.AbstractStructure):
 
             if hasattr(obj, "interpolator"):
                 self.interpolator = obj.interpolator
-
-            if hasattr(obj, "binned"):
-                self.binned = obj.binned
 
         if hasattr(obj, "_sub_border_1d_indexes"):
             self._sub_border_1d_indexes = obj._sub_border_1d_indexes
@@ -296,13 +292,6 @@ class AbstractGrid(abstract_structure.AbstractStructure):
         return blurring_mask.mapping.grid_stored_1d_from_grid_1d(
             grid_1d=blurring_grid_1d
         )
-
-    def new_grid_with_binned_grid(self, binned_grid):
-        # noinspection PyAttributeOutsideInit
-        # TODO: This function doesn't do what it says on the tin. The returned grid would be the same as the grid
-        # TODO: on which the function was called but with a new interpolator set.
-        self.binned = binned_grid
-        return self
 
     def new_grid_with_interpolator(self, pixel_scale_interpolation_grid):
         # noinspection PyAttributeOutsideInit
@@ -483,21 +472,16 @@ class AbstractGrid(abstract_structure.AbstractStructure):
             sub_size=self.mask.sub_size,
         )
 
-        padded_grid_1d = grid_util.grid_1d_via_mask_2d_from(
-            mask_2d=padded_mask,
-            pixel_scales=padded_mask.pixel_scales,
-            sub_size=padded_mask.sub_size,
-            origin=padded_mask.origin,
-        )
-
-        padded_sub_grid = padded_mask.mapping.grid_stored_1d_from_sub_grid_1d(
-            sub_grid_1d=padded_grid_1d
-        )
-
-        if self.interpolator is None:
-            return padded_sub_grid
+        if self.interpolator is None and not isinstance(self, GridIterator):
+            return Grid.from_mask(mask=padded_mask)
+        elif self.interpolator is None and isinstance(self, GridIterator):
+            return GridIterator.from_mask(
+                mask=padded_mask,
+                fractional_accuracy=self.fractional_accuracy,
+                sub_steps=self.sub_steps,
+            )
         else:
-            return padded_sub_grid.new_grid_with_interpolator(
+            return Grid.from_mask(mask=padded_mask).new_grid_with_interpolator(
                 pixel_scale_interpolation_grid=self.interpolator.pixel_scale_interpolation_grid
             )
 
@@ -999,7 +983,7 @@ class GridIterator(Grid):
 
     @classmethod
     def from_mask(
-        cls, mask, fractional_accuracy=1e-4, sub_steps=[2, 4, 8, 16], store_in_1d=True
+        cls, mask, fractional_accuracy=0.9999, sub_steps=[2, 4, 8, 16], store_in_1d=True
     ):
         """Setup a sub-grid of the unmasked pixels, using a mask and a specified sub-grid size. The center of \
         every unmasked pixel's sub-pixels give the grid's (y,x) scaled coordinates.
@@ -1021,6 +1005,16 @@ class GridIterator(Grid):
             sub_steps=sub_steps,
             store_in_1d=store_in_1d,
         )
+
+    def __array_finalize__(self, obj):
+
+        super(GridIterator, self).__array_finalize__(obj)
+
+        if hasattr(obj, "fractional_accuracy"):
+            self.fractional_accuracy = obj.fractional_accuracy
+
+        if hasattr(obj, "sub_steps"):
+            self.sub_steps = obj.sub_steps
 
     def fractional_mask_from_arrays(
         self, array_lower_sub_2d, array_higher_sub_2d

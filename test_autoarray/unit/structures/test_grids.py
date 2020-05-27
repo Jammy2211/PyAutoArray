@@ -213,22 +213,6 @@ class TestGrid:
             assert (grid.interpolator.vtx == interpolator_manual.vtx).all()
             assert (grid.interpolator.wts == interpolator_manual.wts).all()
 
-        def test__new_grid__with_binned__returns_grid_with_binned(self):
-            mask = np.array(
-                [
-                    [True, True, False, False],
-                    [True, False, True, True],
-                    [True, True, False, False],
-                ]
-            )
-            mask = aa.Mask.manual(mask_2d=mask, pixel_scales=(2.0, 2.0))
-
-            grid = aa.MaskedGrid.from_mask(mask=mask)
-
-            grid.new_grid_with_binned_grid(binned_grid=1)
-
-            assert grid.binned == 1
-
         def test__padded_grid_from_kernel_shape__matches_grid_2d_after_padding(self):
             grid = grids.Grid.uniform(shape_2d=(4, 4), pixel_scales=3.0, sub_size=1)
 
@@ -238,6 +222,7 @@ class TestGrid:
                 mask_2d=np.full((6, 6), False), pixel_scales=(3.0, 3.0), sub_size=1
             )
 
+            assert isinstance(padded_grid, grids.Grid)
             assert padded_grid.shape == (36, 2)
             assert (padded_grid.mask == np.full(fill_value=False, shape=(6, 6))).all()
             assert (padded_grid == padded_grid_util).all()
@@ -308,6 +293,25 @@ class TestGrid:
             assert padded_grid.shape == (864, 2)
             assert (padded_grid.mask == np.full(fill_value=False, shape=(6, 9))).all()
             assert padded_grid == pytest.approx(padded_grid_util, 1e-4)
+
+            grid = grids.GridIterator.uniform(
+                shape_2d=(5, 5),
+                pixel_scales=8.0,
+                fractional_accuracy=0.6,
+                sub_steps=[2, 4],
+            )
+
+            padded_grid = grid.padded_grid_from_kernel_shape(kernel_shape_2d=(2, 5))
+
+            padded_grid_util = aa.util.grid.grid_1d_via_mask_2d_from(
+                mask_2d=np.full((6, 9), False), pixel_scales=(8.0, 8.0), sub_size=1
+            )
+
+            assert isinstance(grid, grids.GridIterator)
+            assert padded_grid.shape == (54, 2)
+            assert (padded_grid == padded_grid_util).all()
+            assert padded_grid.fractional_accuracy == 0.6
+            assert padded_grid.sub_steps == [2, 4]
 
         def test__padded_grid_from_kernel_shape__has_interpolator_grid_if_had_one_before(
             self
@@ -3916,6 +3920,37 @@ class TestGridLikeDecorators:
         assert values.in_2d[1, 1] != values_sub_4.in_2d_binned[1, 1]
         assert values.in_2d[2, 2] == values_sub_4.in_2d_binned[2, 2]
 
+    def test__grid_iterator__output_is_list_of_arrays__use_maximum_sub_size_in_all_pixels(
+        self
+    ):
+
+        mask = aa.Mask.manual(
+            mask_2d=[
+                [True, True, True, True, True],
+                [True, False, False, False, True],
+                [True, False, False, False, True],
+                [True, False, False, False, True],
+                [True, True, True, True, True],
+            ],
+            pixel_scales=(1.0, 1.0),
+            origin=(0.001, 0.001),
+        )
+
+        grid = aa.GridIterator.from_mask(
+            mask=mask, fractional_accuracy=0.05, sub_steps=[2, 3]
+        )
+
+        grid_like_iterator_obj = MockGridLikeIteratorObj()
+
+        values = grid_like_iterator_obj.ndarray_1d_list_from_grid(grid=grid)
+
+        mask_sub_3 = mask.mapping.mask_new_sub_size_from_mask(mask=mask, sub_size=3)
+        grid_sub_3 = aa.Grid.from_mask(mask=mask_sub_3)
+        values_sub_3 = ndarray_1d_from_grid(grid=grid_sub_3, profile=None)
+        values_sub_3 = grid_sub_3.structure_from_result(result=values_sub_3)
+
+        assert (values[0] == values_sub_3.in_1d_binned).all()
+
     def test__grid_iterator__output_values__use_iterated_grid_function(self):
 
         mask = aa.Mask.manual(
@@ -3990,7 +4025,7 @@ class TestGridLikeDecorators:
         assert values.in_2d[1, 1, 1] != values_sub_4.in_2d_binned[1, 1, 1]
         assert values.in_2d[2, 2, 1] == values_sub_4.in_2d_binned[2, 2, 1]
 
-    def test__grid_iterator__output_is_list_of_values__use_maximum_sub_size_in_all_pixels(
+    def test__grid_iterator__output_is_list_of_grids__use_maximum_sub_size_in_all_pixels(
         self
     ):
 
@@ -4012,11 +4047,12 @@ class TestGridLikeDecorators:
 
         grid_like_iterator_obj = MockGridLikeIteratorObj()
 
-        values = grid_like_iterator_obj.ndarray_1d_list_from_grid(grid=grid)
+        values = grid_like_iterator_obj.ndarray_2d_list_from_grid(grid=grid)
 
         mask_sub_3 = mask.mapping.mask_new_sub_size_from_mask(mask=mask, sub_size=3)
         grid_sub_3 = aa.Grid.from_mask(mask=mask_sub_3)
-        values_sub_3 = ndarray_1d_from_grid(grid=grid_sub_3, profile=None)
+        values_sub_3 = ndarray_2d_from_grid(grid=grid_sub_3, profile=None)
         values_sub_3 = grid_sub_3.structure_from_result(result=values_sub_3)
 
-        assert (values[0] == values_sub_3.in_1d_binned).all()
+        assert (values[0][0] == values_sub_3.in_1d_binned[0]).all()
+        assert (values[0][1] == values_sub_3.in_1d_binned[1]).all()
