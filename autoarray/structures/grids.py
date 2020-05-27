@@ -1023,7 +1023,7 @@ class GridIterator(Grid):
         )
 
     def fractional_mask_from_arrays(
-        self, array_lower_sub_2d, result_higher_sub_2d
+        self, array_lower_sub_2d, array_higher_sub_2d
     ) -> msk.Mask:
         """ Compute a fractional mask from a result array, where the fractional mask describes whether the evaluated
         value in the result array is within the *GridIterator*'s specified fractional accuracy. The fractional mask thus
@@ -1046,28 +1046,28 @@ class GridIterator(Grid):
             shape_2d=array_lower_sub_2d.shape_2d, invert=True
         )
 
-        fractional_mask = self.fractional_mask_jit_from(
+        fractional_mask = self.fractional_mask_jit_from_array(
             fractional_accuracy_threshold=self.fractional_accuracy,
             fractional_mask=fractional_mask,
-            result_array_higher_2d=result_higher_sub_2d,
-            result_array_lower_2d=array_lower_sub_2d,
-            result_array_higher_mask_2d=result_higher_sub_2d.mask,
+            array_higher_sub_2d=array_higher_sub_2d,
+            array_lower_sub_2d=array_lower_sub_2d,
+            array_higher_mask_2d=array_higher_sub_2d.mask,
         )
 
         return msk.Mask(
             mask_2d=fractional_mask,
-            pixel_scales=result_higher_sub_2d.pixel_scales,
-            origin=result_higher_sub_2d.origin,
+            pixel_scales=array_higher_sub_2d.pixel_scales,
+            origin=array_higher_sub_2d.origin,
         )
 
     @staticmethod
     @decorator_util.jit()
-    def fractional_mask_jit_from(
+    def fractional_mask_jit_from_array(
         fractional_accuracy_threshold,
         fractional_mask,
-        result_array_higher_2d,
-        result_array_lower_2d,
-        result_array_higher_mask_2d,
+        array_higher_sub_2d,
+        array_lower_sub_2d,
+        array_higher_mask_2d,
     ):
         """Jitted functioon to determine the fractional mask, which is a mask where:
 
@@ -1079,10 +1079,10 @@ class GridIterator(Grid):
 
         for y in range(fractional_mask.shape[0]):
             for x in range(fractional_mask.shape[1]):
-                if not result_array_higher_mask_2d[y, x]:
+                if not array_higher_mask_2d[y, x]:
 
                     fractional_accuracy = (
-                        result_array_lower_2d[y, x] / result_array_higher_2d[y, x]
+                        array_lower_sub_2d[y, x] / array_higher_sub_2d[y, x]
                     )
 
                     if fractional_accuracy > 1.0:
@@ -1093,14 +1093,16 @@ class GridIterator(Grid):
 
         return fractional_mask
 
-    def iterated_array_from_func(self, func, profile) -> arrays.Array:
+    def iterated_array_from_func(
+        self, func, profile, array_lower_sub_2d
+    ) -> arrays.Array:
         """Iterate over a function that returns an array of values until the it meets a specified fractional accuracy.
-        The function returns a result on a pixel-grid that by evaluating on more points on a higher resolution sub-grid
-        followed by binning lead to a more precise evaluation of the function.
+        The function returns a result on a pixel-grid where evaluating it on more points on a higher resolution
+        sub-grid followed by binning lead to a more precise evaluation of the function.
 
         The function is first called for a sub-grid size of 1 and a higher resolution grid. The ratio of values give
-        the fractional accuracy of each functioon evaluation. Pixels which do not meet the fractional accuracy are
-        iterative revaluated on higher resolution sub-grids. This is repeated until all pixels meet the fractional
+        the fractional accuracy of each function evaluation. Pixels which do not meet the fractional accuracy are
+        iteratively revaluated on higher resolution sub-grids. This is repeated until all pixels meet the fractional
         accuracy or the highest sub-size specified in the *sub_steps* attribute is computed.
 
         An example use case of this function is when a "profile_image_from_grid" methods in **PyAutoGalaxy**'s
@@ -1114,11 +1116,6 @@ class GridIterator(Grid):
 
         iterated_array = np.zeros(shape=self.shape_2d)
 
-        result_lower_sub = func(profile, self.grid)
-        result_lower_sub = self.structure_from_result(
-            result=result_lower_sub
-        ).in_2d_binned
-
         fractional_mask_lower_sub = self.mask
 
         for sub_size in self.sub_steps:
@@ -1127,22 +1124,22 @@ class GridIterator(Grid):
                 mask=fractional_mask_lower_sub, sub_size=sub_size
             )
 
-            grid_higher_sub = Grid.from_mask(mask=mask_higher_sub)
-            result_higher_sub = func(profile, grid_higher_sub)
-            result_higher_sub = grid_higher_sub.structure_from_result(
-                result=result_higher_sub
+            grid_compute = Grid.from_mask(mask=mask_higher_sub)
+            array_higher_sub = func(profile, grid_compute)
+            array_higher_sub = grid_compute.structure_from_result(
+                result=array_higher_sub
             ).in_2d_binned
 
             fractional_mask_higher_sub = self.fractional_mask_from_arrays(
-                array_lower_sub_2d=result_lower_sub,
-                result_higher_sub_2d=result_higher_sub,
+                array_lower_sub_2d=array_lower_sub_2d,
+                array_higher_sub_2d=array_higher_sub,
             )
 
             iterated_array = self.iterated_array_jit_from(
                 iterated_array=iterated_array,
                 fractional_mask_higher_sub=fractional_mask_higher_sub,
                 fractional_mask_lower_sub=fractional_mask_lower_sub,
-                result_array_higher_sub_2d=result_higher_sub,
+                array_higher_sub_2d=array_higher_sub,
             )
 
             if fractional_mask_higher_sub.is_all_true:
@@ -1150,11 +1147,11 @@ class GridIterator(Grid):
                     array_2d=iterated_array
                 )
 
-            result_lower_sub = result_higher_sub
+            array_lower_sub_2d = array_higher_sub
             fractional_mask_lower_sub = fractional_mask_higher_sub
 
         return self.mask.mapping.array_stored_1d_from_array_2d(
-            array_2d=iterated_array + result_higher_sub.in_2d_binned
+            array_2d=iterated_array + array_higher_sub.in_2d_binned
         )
 
     @staticmethod
@@ -1163,7 +1160,7 @@ class GridIterator(Grid):
         iterated_array,
         fractional_mask_higher_sub,
         fractional_mask_lower_sub,
-        result_array_higher_sub_2d,
+        array_higher_sub_2d,
     ):
         """Create the iterated array from a result array that is computed at a higher sub size leel than the previous grid.
 
@@ -1175,9 +1172,200 @@ class GridIterator(Grid):
                     fractional_mask_higher_sub[y, x]
                     and not fractional_mask_lower_sub[y, x]
                 ):
-                    iterated_array[y, x] = result_array_higher_sub_2d[y, x]
+                    iterated_array[y, x] = array_higher_sub_2d[y, x]
 
         return iterated_array
+
+    def fractional_mask_from_grids(
+        self, grid_lower_sub_2d, grid_higher_sub_2d
+    ) -> msk.Mask:
+        """ Compute a fractional mask from a result array, where the fractional mask describes whether the evaluated
+        value in the result array is within the *GridIterator*'s specified fractional accuracy. The fractional mask thus
+        determines whether a pixel on the grid needs to be reevaluated at a higher level of sub-gridding to meet the
+        specified fractional accuracy. If it must be re-evaluated, the fractional masks's entry is *False*.
+
+        The fractional mask is computed by comparing the results evaluated at one level of sub-gridding to another
+        at a higher level of sub-griding. Thus, the sub-grid size in chosen on a per-pixel basis until the function
+        is evaluated at the specified fractional accuracy.
+
+        Parameters
+        ----------
+        result_array_lower_sub : arrays.Array
+            The results computed by a function using a lower sub-grid size
+        result_array_lower_sub : grids.Array
+            The results computed by a function using a lower sub-grid size.
+        """
+
+        fractional_mask = msk.Mask.unmasked(
+            shape_2d=grid_lower_sub_2d.shape_2d, invert=True
+        )
+
+        fractional_mask = self.fractional_mask_jit_from_grid(
+            fractional_accuracy_threshold=self.fractional_accuracy,
+            fractional_mask=fractional_mask,
+            grid_higher_sub_2d=grid_higher_sub_2d,
+            grid_lower_sub_2d=grid_lower_sub_2d,
+            grid_higher_mask_2d=grid_higher_sub_2d.mask,
+        )
+
+        return msk.Mask(
+            mask_2d=fractional_mask,
+            pixel_scales=grid_higher_sub_2d.pixel_scales,
+            origin=grid_higher_sub_2d.origin,
+        )
+
+    @staticmethod
+    @decorator_util.jit()
+    def fractional_mask_jit_from_grid(
+        fractional_accuracy_threshold,
+        fractional_mask,
+        grid_higher_sub_2d,
+        grid_lower_sub_2d,
+        grid_higher_mask_2d,
+    ):
+        """Jitted functioon to determine the fractional mask, which is a mask where:
+
+        - *True* entries signify the function has been evaluated in that pixel to desired fractional accuracy and
+           therefore does not need to be iteratively computed at higher levels of sub-gridding.
+
+        - *False* entries signify the function has not been evaluated in that pixel to desired fractional accuracy and
+           therefore must be iterative computed at higher levels of sub-gridding to meet this accuracy."""
+
+        for y in range(fractional_mask.shape[0]):
+            for x in range(fractional_mask.shape[1]):
+                if not grid_higher_mask_2d[y, x]:
+
+                    fractional_accuracy_y = (
+                        grid_lower_sub_2d[y, x, 0] / grid_higher_sub_2d[y, x, 0]
+                    )
+
+                    fractional_accuracy_x = (
+                        grid_lower_sub_2d[y, x, 1] / grid_higher_sub_2d[y, x, 1]
+                    )
+
+                    if fractional_accuracy_y > 1.0:
+                        fractional_accuracy_y = 1.0 / fractional_accuracy_y
+
+                    if fractional_accuracy_x > 1.0:
+                        fractional_accuracy_x = 1.0 / fractional_accuracy_x
+
+                    fractional_accuracy = min(
+                        fractional_accuracy_y, fractional_accuracy_x
+                    )
+
+                    if fractional_accuracy < fractional_accuracy_threshold:
+                        fractional_mask[y, x] = False
+
+        return fractional_mask
+
+    def iterated_grid_from_func(self, func, profile, grid_lower_sub_2d):
+        """Iterate over a function that returns a grid of values until the it meets a specified fractional accuracy.
+        The function returns a result on a pixel-grid where evaluating it on more points on a higher resolution
+        sub-grid followed by binning lead to a more precise evaluation of the function. For the fractional accuracy of
+        the grid to be met, both the y and x values must meet it.
+
+        The function is first called for a sub-grid size of 1 and a higher resolution grid. The ratio of values give
+        the fractional accuracy of each function evaluation. Pixels which do not meet the fractional accuracy are
+        iteratively revaulated on higher resolution sub-grids. This is repeated until all pixels meet the fractional
+        accuracy or the highest sub-size specified in the *sub_steps* attribute is computed.
+
+        An example use case of this function is when a "deflections_from_grid" methods in **PyAutoLens**'s *MassProfile*
+        module is computed, which by evaluating the function on a higher resolution sub-grid samples the analytic
+        mass profile at more points and thus more precisely.
+
+        Parameters
+        ----------
+        func : func
+            The function which is iterated over to compute a more precise evaluation."""
+
+        iterated_grid = np.zeros(shape=(self.shape_2d[0], self.shape_2d[1], 2))
+
+        fractional_mask_lower_sub = self.mask
+
+        for sub_size in self.sub_steps:
+
+            mask_higher_sub = fractional_mask_lower_sub.mapping.mask_new_sub_size_from_mask(
+                mask=fractional_mask_lower_sub, sub_size=sub_size
+            )
+
+            grid_compute = Grid.from_mask(mask=mask_higher_sub)
+            grid_higher_sub = func(profile, grid_compute)
+            grid_higher_sub = grid_compute.structure_from_result(
+                result=grid_higher_sub
+            ).in_2d_binned
+
+            fractional_mask_higher_sub = self.fractional_mask_from_grids(
+                grid_lower_sub_2d=grid_lower_sub_2d, grid_higher_sub_2d=grid_higher_sub
+            )
+
+            iterated_grid = self.iterated_grid_jit_from(
+                iterated_grid=iterated_grid,
+                fractional_mask_higher_sub=fractional_mask_higher_sub,
+                fractional_mask_lower_sub=fractional_mask_lower_sub,
+                grid_higher_sub_2d=grid_higher_sub,
+            )
+
+            if fractional_mask_higher_sub.is_all_true:
+                return self.mask.mapping.grid_stored_1d_from_grid_2d(
+                    grid_2d=iterated_grid
+                )
+
+            grid_lower_sub_2d = grid_higher_sub
+            fractional_mask_lower_sub = fractional_mask_higher_sub
+
+        return self.mask.mapping.grid_stored_1d_from_grid_2d(
+            grid_2d=iterated_grid + grid_higher_sub.in_2d_binned
+        )
+
+    @staticmethod
+    @decorator_util.jit()
+    def iterated_grid_jit_from(
+        iterated_grid,
+        fractional_mask_higher_sub,
+        fractional_mask_lower_sub,
+        grid_higher_sub_2d,
+    ):
+        """Create the iterated grid from a result grid that is computed at a higher sub size level than the previous
+        grid.
+
+        The iterated grid is only updated for pixels where the fractional accuracy is met in both the (y,x) coodinates."""
+
+        for y in range(iterated_grid.shape[0]):
+            for x in range(iterated_grid.shape[1]):
+                if (
+                    fractional_mask_higher_sub[y, x]
+                    and not fractional_mask_lower_sub[y, x]
+                ):
+                    iterated_grid[y, x, :] = grid_higher_sub_2d[y, x, :]
+
+        return iterated_grid
+
+    def iterated_result_from_func(self, func, profile):
+        """Iterate over a function that returns an array or grid of values until the it meets a specified fractional
+        accuracy. The function returns a result on a pixel-grid where evaluating it on more points on a higher
+        resolution sub-grid followed by binning lead to a more precise evaluation of the function.
+
+        A full description of the iteration method can be found in the functions *iterated_array_from_func* and
+        *iterated_grid_from_func*. This function computes the result on a grid with a sub-size of 1, and uses its
+        shape to call the correct function.
+
+        Parameters
+        ----------
+        func : func
+            The function which is iterated over to compute a more precise evaluation."""
+        result_sub_1_1d = func(profile, self.grid)
+        result_sub_1_2d = self.structure_from_result(
+            result=result_sub_1_1d
+        ).in_2d_binned
+
+        if len(result_sub_1_2d.shape) == 2:
+            return self.iterated_array_from_func(
+                func=func, profile=profile, array_lower_sub_2d=result_sub_1_2d
+            )
+        elif len(result_sub_1_2d.shape) == 3:
+            return self.iterated_grid_from_func(
+                func=func, profile=profile, grid_lower_sub_2d=result_sub_1_2d
+            )
 
 
 class GridInterpolator:
@@ -1305,6 +1493,24 @@ class GridCoordinates(np.ndarray):
         obj.lower_indexes = [0] + upper_indexes[:-1]
 
         return obj
+
+    def __reduce__(self):
+        # Get the parent's __reduce__ tuple
+        pickled_state = super().__reduce__()
+        # Create our own tuple to pass to __setstate__
+        class_dict = {}
+        for key, value in self.__dict__.items():
+            class_dict[key] = value
+        new_state = pickled_state[2] + (class_dict,)
+        # Return a tuple that replaces the parent's __setstate__ tuple with our own
+        return pickled_state[0], pickled_state[1], new_state
+
+    # noinspection PyMethodOverriding
+    def __setstate__(self, state):
+
+        for key, value in state[-1].items():
+            setattr(self, key, value)
+        super().__setstate__(state[0:-1])
 
     def __array_finalize__(self, obj):
 
@@ -1992,7 +2198,7 @@ def grid_like_to_structure(func):
         """
 
         if isinstance(grid, GridIterator):
-            return grid.iterated_array_from_func(func=func, profile=profile)
+            return grid.iterated_result_from_func(func=func, profile=profile)
         elif isinstance(grid, GridCoordinates):
             result = func(profile, grid, *args, **kwargs)
             return grid.structure_from_result(result=result)
