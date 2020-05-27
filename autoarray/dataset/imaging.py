@@ -180,8 +180,12 @@ class MaskedImaging(abstract_dataset.AbstractMaskedDataset):
         self,
         imaging,
         mask,
+        grid_class=grids.GridIterator,
+        grid_fractional_accuracy=0.9999,
+        grid_sub_steps=[2, 4, 8, 16],
+        grid_interpolate_pixel_scale=None,
+        grid_inversion_class=grids.Grid,
         psf_shape_2d=None,
-        pixel_scale_interpolation_grid=None,
         inversion_pixel_limit=None,
         inversion_uses_border=True,
         renormalize_psf=True,
@@ -202,7 +206,7 @@ class MaskedImaging(abstract_dataset.AbstractMaskedDataset):
         psf_shape_2d : (int, int)
             The shape of the PSF used for convolving model image generated using analytic light profiles. A smaller \
             shape will trim the PSF relative to the input image PSF, giving a faster analysis run-time.
-        pixel_scale_interpolation_grid : float
+        grid_interpolate_pixel_scale : float
             If *True*, expensive to compute mass profile deflection angles will be computed on a sparse grid and \
             interpolated to the grid, sub and blurring grids.
         inversion_pixel_limit : int or None
@@ -213,7 +217,11 @@ class MaskedImaging(abstract_dataset.AbstractMaskedDataset):
         super().__init__(
             dataset=imaging,
             mask=mask,
-            pixel_scale_interpolation_grid=pixel_scale_interpolation_grid,
+            grid_class=grid_class,
+            grid_fractional_accuracy=grid_fractional_accuracy,
+            grid_sub_steps=grid_sub_steps,
+            grid_interpolate_pixel_scale=grid_interpolate_pixel_scale,
+            grid_inversion_class=grid_inversion_class,
             inversion_pixel_limit=inversion_pixel_limit,
             inversion_uses_border=inversion_uses_border,
         )
@@ -226,7 +234,7 @@ class MaskedImaging(abstract_dataset.AbstractMaskedDataset):
             array_2d=imaging.noise_map.in_2d
         )
 
-        self.pixel_scale_interpolation_grid = pixel_scale_interpolation_grid
+        self.pixel_scale_interpolation_grid = grid_interpolate_pixel_scale
 
         ### PSF TRIMMING + CONVOLVER ###
 
@@ -252,7 +260,7 @@ class MaskedImaging(abstract_dataset.AbstractMaskedDataset):
                     kernel_shape_2d=self.psf_shape_2d
                 )
 
-                if pixel_scale_interpolation_grid is not None:
+                if grid_interpolate_pixel_scale is not None:
                     self.blurring_grid = self.blurring_grid.new_grid_with_interpolator(
                         pixel_scale_interpolation_grid=self.pixel_scale_interpolation_grid
                     )

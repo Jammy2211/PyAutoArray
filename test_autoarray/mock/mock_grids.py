@@ -132,9 +132,11 @@ class MockGridLikeIteratorObj:
             )
         ]
 
-    # @grids.grid_like_to_structure
-    # def tuple_values_from_grid_returns_list(self, grid):
-    #     return [np.multiply(1.0, grid), np.multiply(2.0, grid)]
+    @grids.grid_like_to_structure_list
+    def ndarray_2d_list_from_grid(self, grid):
+        return [
+            self.grid_to_grid_cartesian(grid=grid, radius=np.full(grid.shape[0], 2.0))
+        ]
 
 
 class MockGridLikeObj:

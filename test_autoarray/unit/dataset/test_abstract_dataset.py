@@ -66,36 +66,41 @@ class TestPotentialChiSquaredMap:
 
 
 class TestAbstractMaskedData:
-    def test__grids_are_setup_if_input_mask_has_pixel_scale(
-        self, imaging_7x7, sub_mask_7x7, grid_7x7, sub_grid_7x7, blurring_grid_7x7
+    def test__grid(
+        self,
+        imaging_7x7,
+        sub_mask_7x7,
+        grid_7x7,
+        sub_grid_7x7,
+        blurring_grid_7x7,
+        grid_iterator_7x7,
     ):
-
-        masked_dataset = abstract_dataset.AbstractMaskedDataset(
-            dataset=imaging_7x7, mask=sub_mask_7x7
+        masked_imaging_7x7 = abstract_dataset.AbstractMaskedDataset(
+            dataset=imaging_7x7, mask=sub_mask_7x7, grid_class=aa.Grid
         )
 
-        assert (masked_dataset.grid.in_1d_binned == grid_7x7).all()
-        assert (masked_dataset.grid.in_1d == sub_grid_7x7).all()
-
-        sub_mask_7x7.pixel_scales = None
-
-        masked_dataset = abstract_dataset.AbstractMaskedDataset(
-            dataset=imaging_7x7, mask=sub_mask_7x7
-        )
-
-        assert masked_dataset.grid is None
-
-    def test__pixel_scale_interpolation_grid_input__grids_include_interpolators(
-        self, imaging_7x7, sub_mask_7x7
-    ):
+        assert isinstance(masked_imaging_7x7.grid, aa.Grid)
+        assert (masked_imaging_7x7.grid.in_1d_binned == grid_7x7).all()
+        assert (masked_imaging_7x7.grid.in_1d == sub_grid_7x7).all()
 
         masked_imaging_7x7 = abstract_dataset.AbstractMaskedDataset(
-            dataset=imaging_7x7, mask=sub_mask_7x7, pixel_scale_interpolation_grid=1.0
+            dataset=imaging_7x7, mask=sub_mask_7x7, grid_class=aa.GridIterator
+        )
+
+        assert isinstance(masked_imaging_7x7.grid, aa.GridIterator)
+        assert (masked_imaging_7x7.grid.in_1d_binned == grid_iterator_7x7).all()
+
+        masked_imaging_7x7 = abstract_dataset.AbstractMaskedDataset(
+            dataset=imaging_7x7,
+            mask=sub_mask_7x7,
+            grid_class=aa.Grid,
+            grid_interpolate_pixel_scale=1.0,
         )
 
         grid = aa.MaskedGrid.from_mask(mask=sub_mask_7x7)
         new_grid = grid.new_grid_with_interpolator(pixel_scale_interpolation_grid=1.0)
 
+        assert isinstance(masked_imaging_7x7.grid, aa.Grid)
         assert (masked_imaging_7x7.grid == new_grid).all()
         assert (
             masked_imaging_7x7.grid.interpolator.vtx == new_grid.interpolator.vtx
@@ -104,11 +109,37 @@ class TestAbstractMaskedData:
             masked_imaging_7x7.grid.interpolator.wts == new_grid.interpolator.wts
         ).all()
 
+    def test__grid_inversion(
+        self, imaging_7x7, sub_mask_7x7, grid_7x7, sub_grid_7x7, blurring_grid_7x7
+    ):
         masked_imaging_7x7 = abstract_dataset.AbstractMaskedDataset(
-            dataset=imaging_7x7, mask=sub_mask_7x7
+            dataset=imaging_7x7, mask=sub_mask_7x7, grid_inversion_class=aa.Grid
         )
 
-        assert masked_imaging_7x7.grid.interpolator is None
+        assert isinstance(masked_imaging_7x7.grid_inversion, aa.Grid)
+        assert (masked_imaging_7x7.grid_inversion.in_1d_binned == grid_7x7).all()
+        assert (masked_imaging_7x7.grid_inversion.in_1d == sub_grid_7x7).all()
+
+        masked_imaging_7x7 = abstract_dataset.AbstractMaskedDataset(
+            dataset=imaging_7x7,
+            mask=sub_mask_7x7,
+            grid_inversion_class=aa.Grid,
+            grid_interpolate_pixel_scale=1.0,
+        )
+
+        grid = aa.MaskedGrid.from_mask(mask=sub_mask_7x7)
+        new_grid = grid.new_grid_with_interpolator(pixel_scale_interpolation_grid=1.0)
+
+        assert isinstance(masked_imaging_7x7.grid_inversion, aa.Grid)
+        assert (masked_imaging_7x7.grid_inversion == new_grid).all()
+        assert (
+            masked_imaging_7x7.grid_inversion.interpolator.vtx
+            == new_grid.interpolator.vtx
+        ).all()
+        assert (
+            masked_imaging_7x7.grid_inversion.interpolator.wts
+            == new_grid.interpolator.wts
+        ).all()
 
     def test__inversion_pixel_limit(self, imaging_7x7, sub_mask_7x7):
         masked_imaging_7x7 = abstract_dataset.AbstractMaskedDataset(
