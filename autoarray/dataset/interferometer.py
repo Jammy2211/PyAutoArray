@@ -158,10 +158,10 @@ class MaskedInterferometer(abstract_dataset.AbstractMaskedDataset):
         visibilities_mask,
         real_space_mask,
         grid_class=grids.GridIterator,
-        grid_fractional_accuracy=0.9999,
-        grid_sub_steps=[2, 4, 8, 16],
-        grid_interpolate_pixel_scale=None,
         grid_inversion_class=grids.Grid,
+        fractional_accuracy=0.9999,
+        sub_steps=None,
+        interpolate_pixel_scale=None,
         transformer_class=transformer.TransformerNUFFT,
         primary_beam_shape_2d=None,
         inversion_pixel_limit=None,
@@ -190,7 +190,7 @@ class MaskedInterferometer(abstract_dataset.AbstractMaskedDataset):
         positions : [[]]
             Lists of image-pixel coordinates (arc-seconds) that mappers close to one another in the source-plane(s), \
             used to speed up the non-linear sampling.
-        grid_interpolate_pixel_scale : float
+        interpolate_pixel_scale : float
             If *True*, expensive to compute mass profile deflection angles will be computed on a sparse grid and \
             interpolated to the grid, sub and blurring grids.
         inversion_pixel_limit : int or None
@@ -202,10 +202,10 @@ class MaskedInterferometer(abstract_dataset.AbstractMaskedDataset):
             dataset=interferometer,
             mask=real_space_mask,
             grid_class=grid_class,
-            grid_fractional_accuracy=grid_fractional_accuracy,
-            grid_sub_steps=grid_sub_steps,
-            grid_interpolate_pixel_scale=grid_interpolate_pixel_scale,
             grid_inversion_class=grid_inversion_class,
+            fractional_accuracy=fractional_accuracy,
+            sub_steps=sub_steps,
+            interpolate_pixel_scale=interpolate_pixel_scale,
             inversion_pixel_limit=inversion_pixel_limit,
             inversion_uses_border=inversion_uses_border,
         )
