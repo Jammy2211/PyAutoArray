@@ -100,17 +100,20 @@ class AbstractMaskedDataset:
         mask,
         grid_class=grids.GridIterator,
         grid_inversion_class=grids.Grid,
-        grid_fractional_accuracy=0.9999,
-        grid_sub_steps=[2, 4, 8, 16],
-        grid_interpolate_pixel_scale=None,
+        fractional_accuracy=0.9999,
+        sub_steps=None,
+        interpolate_pixel_scale=None,
         inversion_pixel_limit=None,
         inversion_uses_border=True,
     ):
 
+        if sub_steps is None:
+            sub_steps = [2, 4, 8, 16]
+
         self.dataset = dataset
         self.mask = mask
 
-        self.grid_interpolation_pixel_scale = grid_interpolate_pixel_scale
+        self.interpolation_pixel_scale = interpolate_pixel_scale
 
         ### GRIDS ###
 
@@ -120,28 +123,28 @@ class AbstractMaskedDataset:
 
                 self.grid = grids.Grid.from_mask(mask=mask)
 
-                if grid_interpolate_pixel_scale is not None:
+                if interpolate_pixel_scale is not None:
 
                     self.grid = self.grid.new_grid_with_interpolator(
-                        pixel_scale_interpolation_grid=grid_interpolate_pixel_scale
+                        interpolation_pixel_scale=interpolate_pixel_scale
                     )
 
             elif grid_class is grids.GridIterator:
 
                 self.grid = grids.GridIterator.from_mask(
                     mask=mask,
-                    fractional_accuracy=grid_fractional_accuracy,
-                    sub_steps=grid_sub_steps,
+                    fractional_accuracy=fractional_accuracy,
+                    sub_steps=sub_steps,
                 )
 
             if grid_inversion_class is grids.Grid:
 
                 self.grid_inversion = grids.Grid.from_mask(mask=mask)
 
-                if grid_interpolate_pixel_scale is not None:
+                if interpolate_pixel_scale is not None:
 
                     self.grid_inversion = self.grid_inversion.new_grid_with_interpolator(
-                        pixel_scale_interpolation_grid=grid_interpolate_pixel_scale
+                        interpolation_pixel_scale=interpolate_pixel_scale
                     )
 
         else:
