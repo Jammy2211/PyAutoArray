@@ -1,26 +1,7 @@
-import ast
 import numpy as np
-import scipy.spatial
 import scipy.spatial.qhull as qhull
-from functools import wraps
-from sklearn.cluster import KMeans
-import os
-
-import typing
-
-import autoarray as aa
-
-from autoarray import decorator_util
-from autoarray import exc
-from autoarray.structures import abstract_structure, arrays
-from autoarray.mask import mask as msk
-from autoarray.util import (
-    sparse_util,
-    array_util,
-    grid_util,
-    mask_util,
-    pixelization_util,
-)
+from autoarray.structures import grids
+from autoarray.util import grid_util
 
 
 class GridInterpolate:
@@ -48,16 +29,16 @@ class GridInterpolate:
 
         rescale_factor = mask.pixel_scale / interpolation_pixel_scale
 
-        mask = mask.mapping.mask_sub_1
+        mask = mask.mask_sub_1
 
-        rescaled_mask = mask.mapping.rescaled_mask_from_rescale_factor(
+        rescaled_mask = mask.rescaled_mask_from_rescale_factor(
             rescale_factor=rescale_factor
         )
 
-        interp_mask = rescaled_mask.mapping.edge_buffed_mask
+        interp_mask = rescaled_mask.edge_buffed_mask
 
-        interp_grid = grid_util.grid_1d_via_mask_2d_from(
-            mask_2d=interp_mask,
+        interp_grid = grid_util.grid_1d_via_mask_from(
+            mask=interp_mask,
             pixel_scales=(interpolation_pixel_scale, interpolation_pixel_scale),
             sub_size=1,
             origin=mask.origin,
@@ -65,9 +46,7 @@ class GridInterpolate:
 
         return GridInterpolate(
             grid=grid,
-            interp_grid=interp_mask.mapping.grid_stored_1d_from_grid_1d(
-                grid_1d=interp_grid
-            ),
+            interp_grid=grids.Grid(grid=interp_grid, mask=interp_mask.mask_sub_1),
             interpolation_pixel_scale=interpolation_pixel_scale,
         )
 

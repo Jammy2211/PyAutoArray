@@ -1023,8 +1023,8 @@ class TestPeakPixels:
             ]
         )
 
-        mask_2d = msk.Mask.manual(
-            mask_2d=[
+        mask = msk.Mask.manual(
+            mask=[
                 [True, True, True, True, True],
                 [True, True, True, True, True],
                 [True, True, True, False, True],
@@ -1033,7 +1033,7 @@ class TestPeakPixels:
             ]
         )
 
-        peak_pixels = util.array.peak_pixels_from(array_2d=array.in_2d, mask_2d=mask_2d)
+        peak_pixels = util.array.peak_pixels_from(array_2d=array.in_2d, mask=mask)
 
         assert peak_pixels == [[2, 3]]
 
@@ -1047,8 +1047,8 @@ class TestPeakPixels:
             ]
         )
 
-        mask_2d = msk.Mask.manual(
-            mask_2d=[
+        mask = msk.Mask.manual(
+            mask=[
                 [True, True, True, True, True],
                 [True, True, True, True, True],
                 [True, True, True, True, True],
@@ -1057,7 +1057,7 @@ class TestPeakPixels:
             ]
         )
 
-        peak_pixels = util.array.peak_pixels_from(array_2d=array.in_2d, mask_2d=mask_2d)
+        peak_pixels = util.array.peak_pixels_from(array_2d=array.in_2d, mask=mask)
 
         assert peak_pixels == []
 
@@ -1071,8 +1071,8 @@ class TestPeakPixels:
             ]
         )
 
-        mask_2d = msk.Mask.manual(
-            mask_2d=[
+        mask = msk.Mask.manual(
+            mask=[
                 [True, True, True, True, True],
                 [True, True, True, True, True],
                 [True, True, True, True, True],
@@ -1081,7 +1081,7 @@ class TestPeakPixels:
             ]
         )
 
-        peak_pixels = util.array.peak_pixels_from(array_2d=array.in_2d, mask_2d=mask_2d)
+        peak_pixels = util.array.peak_pixels_from(array_2d=array.in_2d, mask=mask)
 
         assert peak_pixels == [[3, 3]]
 
@@ -1185,8 +1185,8 @@ class TestTroughPixels:
             ]
         )
 
-        mask_2d = msk.Mask.manual(
-            mask_2d=[
+        mask = msk.Mask.manual(
+            mask=[
                 [True, True, True, True, True],
                 [True, True, True, True, True],
                 [True, True, True, False, True],
@@ -1195,9 +1195,7 @@ class TestTroughPixels:
             ]
         )
 
-        trough_pixels = util.array.trough_pixels_from(
-            array_2d=array.in_2d, mask_2d=mask_2d
-        )
+        trough_pixels = util.array.trough_pixels_from(array_2d=array.in_2d, mask=mask)
 
         assert trough_pixels == [[2, 3]]
 
@@ -1211,8 +1209,8 @@ class TestTroughPixels:
             ]
         )
 
-        mask_2d = msk.Mask.manual(
-            mask_2d=[
+        mask = msk.Mask.manual(
+            mask=[
                 [True, True, True, True, True],
                 [True, True, True, True, True],
                 [True, True, True, True, True],
@@ -1221,9 +1219,7 @@ class TestTroughPixels:
             ]
         )
 
-        trough_pixels = util.array.trough_pixels_from(
-            array_2d=array.in_2d, mask_2d=mask_2d
-        )
+        trough_pixels = util.array.trough_pixels_from(array_2d=array.in_2d, mask=mask)
 
         assert trough_pixels == []
 
@@ -1237,8 +1233,8 @@ class TestTroughPixels:
             ]
         )
 
-        mask_2d = msk.Mask.manual(
-            mask_2d=[
+        mask = msk.Mask.manual(
+            mask=[
                 [True, True, True, True, True],
                 [True, True, True, True, True],
                 [True, True, True, True, True],
@@ -1247,8 +1243,6 @@ class TestTroughPixels:
             ]
         )
 
-        trough_pixels = util.array.trough_pixels_from(
-            array_2d=array.in_2d, mask_2d=mask_2d
-        )
+        trough_pixels = util.array.trough_pixels_from(array_2d=array.in_2d, mask=mask)
 
         assert trough_pixels == [[3, 3]]

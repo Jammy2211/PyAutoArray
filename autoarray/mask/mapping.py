@@ -11,26 +11,6 @@ class Mapping:
 
         self.mask = mask
 
-    def resized_mask_from_new_shape(self, new_shape):
-        """resized the array to a new shape and at a new origin.
-
-        Parameters
-        -----------
-        new_shape : (int, int)
-            The new two-dimensional shape of the array.
-        """
-
-        resized_mask_2d = array_util.resized_array_2d_from_array_2d(
-            array_2d=self.mask, resized_shape=new_shape
-        ).astype("bool")
-
-        return msk.Mask(
-            mask_2d=resized_mask_2d,
-            pixel_scales=self.mask.pixel_scales,
-            sub_size=self.mask.sub_size,
-            origin=self.mask.origin,
-        )
-
     def array_stored_1d_from_array_1d(self, array_1d):
         """ Map a 1D array the same dimension as the grid to its original 2D array.
 
@@ -202,7 +182,7 @@ class Mapping:
             The 2D grid to be mapped to a masked 1D grid.
         """
         grid_1d = grid_util.sub_grid_1d_from(
-            mask_2d=self.mask, sub_grid_2d=grid_2d, sub_size=1
+            mask=self.mask, sub_grid_2d=grid_2d, sub_size=1
         )
         return self.grid_stored_1d_from_grid_1d(grid_1d=grid_1d)
 
@@ -233,7 +213,7 @@ class Mapping:
             The 2D sub-grid which is mapped to its masked 1D sub-grid.
         """
         sub_grid_1d = grid_util.sub_grid_1d_from(
-            sub_grid_2d=sub_grid_2d, mask_2d=self.mask, sub_size=self.mask.sub_size
+            sub_grid_2d=sub_grid_2d, mask=self.mask, sub_size=self.mask.sub_size
         )
         return self.grid_stored_1d_from_sub_grid_1d(sub_grid_1d=sub_grid_1d)
 
@@ -272,7 +252,7 @@ class Mapping:
             The 1D sub_grid which is mapped to its masked 2D sub-grid.
         """
         grid_2d = grid_util.sub_grid_2d_from(
-            sub_grid_1d=grid_1d, mask_2d=self.mask, sub_size=1
+            sub_grid_1d=grid_1d, mask=self.mask, sub_size=1
         )
         return grids.Grid(grid=grid_2d, mask=self.mask_sub_1, store_in_1d=False)
 
@@ -286,7 +266,7 @@ class Mapping:
             The 1D sub_grid which is mapped to its masked 2D sub-grid.
         """
         sub_grid_2d = grid_util.sub_grid_2d_from(
-            sub_grid_1d=sub_grid_1d, mask_2d=self.mask, sub_size=self.mask.sub_size
+            sub_grid_1d=sub_grid_1d, mask=self.mask, sub_size=self.mask.sub_size
         )
         return grids.Grid(grid=sub_grid_2d, mask=self.mask, store_in_1d=False)
 
@@ -313,143 +293,6 @@ class Mapping:
         binned_grid_1d = np.stack((grid_1d_y, grid_1d_x), axis=-1)
 
         binned_grid_2d = grid_util.sub_grid_2d_from(
-            sub_grid_1d=binned_grid_1d, mask_2d=self.mask, sub_size=1
+            sub_grid_1d=binned_grid_1d, mask=self.mask, sub_size=1
         )
         return grids.Grid(grid=binned_grid_2d, mask=self.mask_sub_1, store_in_1d=False)
-
-    def trimmed_array_from_padded_array_and_image_shape(
-        self, padded_array, image_shape
-    ):
-        """ Map a padded 1D array of values to its original 2D array, trimming all edge values.
-
-        Parameters
-        -----------
-        padded_array : ndarray
-            A 1D array of values which were computed using a padded grid
-        """
-
-        pad_size_0 = self.mask.shape[0] - image_shape[0]
-        pad_size_1 = self.mask.shape[1] - image_shape[1]
-        trimmed_array = padded_array.in_2d_binned[
-            pad_size_0 // 2 : self.mask.shape[0] - pad_size_0 // 2,
-            pad_size_1 // 2 : self.mask.shape[1] - pad_size_1 // 2,
-        ]
-        return arrays.Array.manual_2d(
-            array=trimmed_array,
-            pixel_scales=self.mask.pixel_scales,
-            sub_size=1,
-            origin=self.mask.origin,
-        )
-
-    def convolve_padded_array_1d_with_psf(self, padded_array_1d, psf):
-        """Convolve a 1d padded array of values (e.g. image before PSF blurring) with a PSF, and then trim \
-        the convolved array to its original 2D shape.
-
-        Parameters
-        -----------
-        padded_array_1d: ndarray
-            A 1D array of values which were computed using the a padded grid.
-        psf : ndarray
-            An array describing the PSF kernel of the image.
-        """
-
-        padded_array_2d = array_util.sub_array_2d_from(
-            sub_array_1d=padded_array_1d,
-            mask=np.full(fill_value=False, shape=self.mask.shape),
-            sub_size=1,
-        )
-
-        # noinspection PyUnresolvedReferences
-        blurred_padded_array_2d = psf.convolved_array_from_array(array=padded_array_2d)
-
-        return array_util.sub_array_1d_from(
-            sub_array_2d=blurred_padded_array_2d,
-            mask=np.full(self.mask.shape, False),
-            sub_size=1,
-        )
-
-    def unmasked_blurred_array_from_padded_array_psf_and_image_shape(
-        self, padded_array, psf, image_shape
-    ):
-        """For a padded grid and psf, compute an unmasked blurred image from an unmasked unblurred image.
-
-        This relies on using the lens dataset's padded-grid, which is a grid of (y,x) coordinates which extends over the \
-        entire image as opposed to just the masked region.
-
-        Parameters
-        ----------
-        psf : aa.Kernel
-            The PSF of the image used for convolution.
-        unmasked_image_1d : ndarray
-            The 1D unmasked image which is blurred.
-        """
-
-        blurred_image = psf.convolved_array_from_array(array=padded_array)
-
-        return self.trimmed_array_from_padded_array_and_image_shape(
-            padded_array=blurred_image, image_shape=image_shape
-        )
-
-    def rescaled_mask_from_rescale_factor(self, rescale_factor):
-        rescaled_mask = mask_util.rescaled_mask_2d_from(
-            mask_2d=self.mask, rescale_factor=rescale_factor
-        )
-        return msk.Mask(
-            mask_2d=rescaled_mask,
-            pixel_scales=self.mask.pixel_scales,
-            sub_size=self.mask.sub_size,
-            origin=self.mask.origin,
-        )
-
-    @property
-    def edge_buffed_mask(self):
-        edge_buffed_mask = mask_util.buffed_mask_2d_from(mask_2d=self.mask).astype(
-            "bool"
-        )
-        return msk.Mask(
-            mask_2d=edge_buffed_mask,
-            pixel_scales=self.mask.pixel_scales,
-            sub_size=self.mask.sub_size,
-            origin=self.mask.origin,
-        )
-
-    @property
-    def mask_sub_1(self):
-        return msk.Mask(
-            mask_2d=self.mask,
-            sub_size=1,
-            pixel_scales=self.mask.pixel_scales,
-            origin=self.mask.origin,
-        )
-
-    def mask_new_sub_size_from_mask(self, mask, sub_size=1):
-        return msk.Mask(
-            mask_2d=mask,
-            sub_size=sub_size,
-            pixel_scales=self.mask.pixel_scales,
-            origin=self.mask.origin,
-        )
-
-    def binned_pixel_scales_from_bin_up_factor(self, bin_up_factor):
-        if self.mask.pixel_scales is not None:
-            return (
-                self.mask.pixel_scales[0] * bin_up_factor,
-                self.mask.pixel_scales[1] * bin_up_factor,
-            )
-        else:
-            return None
-
-    def binned_mask_from_bin_up_factor(self, bin_up_factor):
-
-        binned_up_mask = binning_util.bin_mask_2d(
-            mask_2d=self.mask, bin_up_factor=bin_up_factor
-        )
-
-        return msk.Mask(
-            mask_2d=binned_up_mask,
-            pixel_scales=self.binned_pixel_scales_from_bin_up_factor(
-                bin_up_factor=bin_up_factor
-            ),
-            sub_size=self.mask.sub_size,
-            origin=self.mask.origin,
-        )

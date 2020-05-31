@@ -217,14 +217,14 @@ class TestGridVoronoi:
     def test__from_unmasked_sparse_shape_and_grid(self):
 
         mask = aa.Mask.manual(
-            mask_2d=np.array(
+            mask=np.array(
                 [[True, False, True], [False, False, False], [True, False, True]]
             ),
             pixel_scales=(0.5, 0.5),
             sub_size=1,
         )
 
-        grid = aa.MaskedGrid.from_mask(mask=mask)
+        grid = aa.Grid.from_mask(mask=mask)
 
         sparse_grid = grids.GridSparse.from_grid_and_unmasked_2d_grid_shape(
             unmasked_sparse_shape=(10, 10), grid=grid

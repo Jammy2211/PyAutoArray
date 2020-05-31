@@ -307,6 +307,8 @@ class TestConvolve:
 
         blurred_image = kernel.convolved_array_from_array(image)
 
+        print(blurred_image.in_2d)
+
         assert (
             blurred_image.in_2d
             == np.array(

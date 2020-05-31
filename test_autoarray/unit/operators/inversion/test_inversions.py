@@ -146,14 +146,14 @@ class TestReconstructedDataVectorAndImage:
         matrix_shape = (3, 3)
 
         mask = aa.Mask.manual(
-            mask_2d=np.array(
+            mask=np.array(
                 [[True, True, True], [False, False, False], [True, True, True]]
             ),
             pixel_scales=1.0,
             sub_size=1,
         )
 
-        grid = aa.MaskedGrid.from_mask(mask=mask)
+        grid = aa.Grid.from_mask(mask=mask)
 
         inversion = inversions.InversionImaging.from_data_mapper_and_regularization(
             image=np.ones(9),
@@ -190,14 +190,14 @@ class TestReconstructedDataVectorAndImage:
         matrix_shape = (3, 3)
 
         mask = aa.Mask.manual(
-            mask_2d=np.array(
+            mask=np.array(
                 [[True, True, True], [False, False, False], [True, True, True]]
             ),
             pixel_scales=1.0,
             sub_size=1,
         )
 
-        grid = aa.MaskedGrid.from_mask(mask=mask)
+        grid = aa.Grid.from_mask(mask=mask)
 
         inversion = inversions.InversionImaging.from_data_mapper_and_regularization(
             image=np.ones(9),
@@ -276,7 +276,7 @@ class TestInterpolatedReconstruction:
         matrix_shape = (3, 3)
 
         mask = aa.Mask.manual(
-            mask_2d=np.array(
+            mask=np.array(
                 [
                     [True, True, True, True, True],
                     [True, True, False, False, True],
@@ -289,7 +289,7 @@ class TestInterpolatedReconstruction:
             sub_size=2,
         )
 
-        grid = aa.MaskedGrid.from_mask(mask=mask)
+        grid = aa.Grid.from_mask(mask=mask)
 
         pixelization_grid = aa.Grid.uniform(
             shape_2d=(3, 3), pixel_scales=1.0, sub_size=1
@@ -337,7 +337,7 @@ class TestInterpolatedReconstruction:
         matrix_shape = (3, 3)
 
         mask = aa.Mask.manual(
-            mask_2d=np.array(
+            mask=np.array(
                 [
                     [True, True, True, True, True],
                     [True, True, False, False, True],
@@ -350,7 +350,7 @@ class TestInterpolatedReconstruction:
             sub_size=1,
         )
 
-        grid = aa.MaskedGrid.from_mask(mask=mask)
+        grid = aa.Grid.from_mask(mask=mask)
 
         pixelization_grid = aa.Grid.uniform(
             shape_2d=(3, 3), pixel_scales=1.0, sub_size=1
@@ -393,7 +393,7 @@ class TestInterpolatedReconstruction:
         matrix_shape = (3, 3)
 
         mask = aa.Mask.manual(
-            mask_2d=np.array(
+            mask=np.array(
                 [
                     [True, True, True, True, True],
                     [True, True, False, False, True],
@@ -406,7 +406,7 @@ class TestInterpolatedReconstruction:
             sub_size=1,
         )
 
-        grid = aa.MaskedGrid.from_mask(mask=mask)
+        grid = aa.Grid.from_mask(mask=mask)
 
         pixelization_grid = aa.Grid.uniform(
             shape_2d=(3, 3), pixel_scales=1.0, sub_size=1
@@ -479,7 +479,7 @@ class TestInterpolatedReconstruction:
         matrix_shape = (3, 3)
 
         mask = aa.Mask.manual(
-            mask_2d=np.array(
+            mask=np.array(
                 [
                     [True, True, True, True, True],
                     [True, True, False, False, True],
@@ -492,7 +492,7 @@ class TestInterpolatedReconstruction:
             sub_size=1,
         )
 
-        grid = aa.MaskedGrid.from_mask(mask=mask)
+        grid = aa.Grid.from_mask(mask=mask)
 
         pixelization_grid = aa.Grid.uniform(
             shape_2d=(3, 3), pixel_scales=1.0, sub_size=1

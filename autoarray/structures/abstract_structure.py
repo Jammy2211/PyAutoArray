@@ -161,10 +161,6 @@ class AbstractStructure(np.ndarray):
         return self.mask.sub_size
 
     @property
-    def mapping(self):
-        return self.mask.mapping
-
-    @property
     def regions(self):
         return self.mask.regions
 

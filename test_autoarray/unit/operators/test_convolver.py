@@ -20,7 +20,7 @@ def make_simple_mask_7x7():
         ]
     )
 
-    return aa.Mask.manual(mask_2d=mask, sub_size=1)
+    return aa.Mask.manual(mask=mask, sub_size=1)
 
 
 @pytest.fixture(name="simple_mask_5x5")
@@ -36,7 +36,7 @@ def make_simple_mask_5x5():
         ]
     )
 
-    return aa.Mask.manual(mask_2d=mask, sub_size=1)
+    return aa.Mask.manual(mask=mask, sub_size=1)
 
 
 @pytest.fixture(name="simple_mask_index_array")
@@ -54,7 +54,7 @@ def make_cross_mask():
     mask[2, 1] = False
     mask[2, 3] = False
 
-    return aa.Mask.manual(mask_2d=mask, sub_size=1)
+    return aa.Mask.manual(mask=mask, sub_size=1)
 
 
 @pytest.fixture(name="cross_mask_index_array")
@@ -1154,7 +1154,7 @@ class TestConvolution:
         mask[2, 1] = False
         mask[2, 3] = False
 
-        cross_mask = aa.Mask.manual(mask_2d=mask, pixel_scales=(1.0, 1.0), sub_size=1)
+        cross_mask = aa.Mask.manual(mask=mask, pixel_scales=(1.0, 1.0), sub_size=1)
 
         kernel = aa.Kernel.manual_2d(array=[[0, 0.2, 0], [0.2, 0.4, 0.2], [0, 0.2, 0]])
 
@@ -1187,9 +1187,12 @@ class TestCompareToFull2dConv:
             shape_2d=(30, 30), pixel_scales=(1.0, 1.0), sub_size=1, radius=4.0
         )
 
-        masked_image = mask.mapping.array_stored_1d_from_array_2d(array_2d=image.in_2d)
-        blurred_masked_image = mask.mapping.array_stored_1d_from_array_2d(
-            array_2d=blurred_image.in_2d
+        masked_image = aa.MaskedArray.manual_2d(
+            array=image.in_2d, mask=mask, store_in_1d=True
+        )
+
+        blurred_masked_image = aa.MaskedArray.manual_2d(
+            array=blurred_image.in_2d, mask=mask, store_in_1d=True
         )
 
         # Now reproduce this datas_ using the frame convolver_image
@@ -1198,9 +1201,11 @@ class TestCompareToFull2dConv:
             kernel_shape_2d=kernel.shape_2d
         )
         convolver = aa.Convolver(mask=mask, kernel=kernel)
-        blurring_image = blurring_mask.mapping.array_stored_1d_from_array_2d(
-            array_2d=image.in_2d
+
+        blurring_image = aa.MaskedArray.manual_2d(
+            array=image.in_2d, mask=blurring_mask, store_in_1d=True
         )
+
         blurred_masked_im_1 = convolver.convolved_image_from_image_and_blurring_image(
             image=masked_image, blurring_image=blurring_image
         )

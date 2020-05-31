@@ -1,5 +1,6 @@
 from autoarray.util import transformer_util
 from autoarray.structures import arrays, visibilities as vis
+from autoarray.util import array_util
 from astropy import units
 from scipy import interpolate
 from pynufft import NUFFT_cpu
@@ -305,9 +306,13 @@ class TransformerNUFFT(NUFFT_cpu):
 
         for source_pixel_1d_index in range(mapping_matrix.shape[1]):
 
-            image = self.grid.mask.mapping.array_stored_2d_from_array_1d(
-                array_1d=mapping_matrix[:, source_pixel_1d_index]
+            image_2d = array_util.sub_array_2d_from(
+                sub_array_1d=mapping_matrix[:, source_pixel_1d_index],
+                mask=self.grid.mask,
+                sub_size=1,
             )
+
+            image = arrays.Array(array=image_2d, mask=self.grid.mask, store_in_1d=False)
 
             visibilities = self.visibilities_from_image(image=image)
 

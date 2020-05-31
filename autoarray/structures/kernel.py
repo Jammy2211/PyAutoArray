@@ -5,27 +5,30 @@ from skimage.transform import resize, rescale
 import numpy as np
 
 from autoarray.structures import grids, arrays
+from autoarray.util import array_util
 from autoarray import exc
 
 
-class Kernel(arrays.AbstractArray):
+class Kernel(arrays.Array):
 
     # noinspection PyUnusedLocal
     def __new__(cls, array, mask, renormalize=False, *args, **kwargs):
-        """ A hyper array with square-pixels.
+        """An array of values, which are paired to a uniform 2D mask of pixels and sub-pixels. Each entry
+        on the array corresponds to a value at the centre of a sub-pixel in an unmasked pixel. See the *Array* class
+        for a full description of how Arrays work.
+        
+        The *Kernel* class is an *Array* but with additioonal methods that allow it to be convolved with data. 
 
         Parameters
         ----------
-        array: ndarray
-            An array representing image (e.g. an image, noise map, etc.)
-        pixel_scales: (float, float)
-            The arc-second to pixel conversion factor of each pixel.
-        origin : (float, float)
-            The arc-second origin of the hyper array's coordinate system.
+        array : np.ndarray
+            The values of the array.
+        mask : msk.Mask
+            The 2D mask associated with the array, defining the pixels each array value is paired with and
+            originates from.
+        renormalize : bool
+            If True, the Kernel's array values are renormalized such that they sum to 1.0.
         """
-
-        #        obj = arrays.Scaled(array_1d=sub_array_1d, mask=mask)
-
         obj = super(Kernel, cls).__new__(cls=cls, array=array, mask=mask)
 
         if renormalize:
@@ -37,7 +40,32 @@ class Kernel(arrays.AbstractArray):
     def manual_1d(
         cls, array, shape_2d, pixel_scales=None, origin=(0.0, 0.0), renormalize=False
     ):
+        """Create a Kernel (see *Kernel.__new__*) by inputting the kernel values in 1D, for example:
 
+        kernel=np.array([1.0, 2.0, 3.0, 4.0])
+
+        kernel=[1.0, 2.0, 3.0, 4.0]
+
+        From 1D input the method cannot determine the 2D shape of the array and its mask, thus the shape_2d must be
+        input into this method. The mask is setup as a unmasked *Mask* of shape_2d.
+
+        Parameters
+        ----------
+        array : np.ndarray or list
+            The values of the array input as an ndarray of shape [total_unmasked_pixels*(sub_size**2)] or a list of
+            lists.
+        shape_2d : (float, float)
+            The 2D shape of the mask the array is paired with.
+        pixel_scales : (float, float) or float
+            The pixel conversion scale of a pixel in the y and x directions. If input as a float, the pixel_scales
+            are converted to the format (float, float).
+        sub_size : int
+            The size (sub_size x sub_size) of each unmasked pixels sub-array.
+        origin : (float, float)
+            The origin of the array's mask.
+        renormalize : bool
+            If True, the Kernel's array values are renormalized such that they sum to 1.0.
+        """
         array = arrays.Array.manual_1d(
             array=array, shape_2d=shape_2d, pixel_scales=pixel_scales, origin=origin
         )
@@ -46,7 +74,32 @@ class Kernel(arrays.AbstractArray):
 
     @classmethod
     def manual_2d(cls, array, pixel_scales=None, origin=(0.0, 0.0), renormalize=False):
+        """Create an Kernel (see *Kernel.__new__*) by inputting the kernel values in 2D, for example:
 
+        kernel=np.ndarray([[1.0, 2.0],
+                         [3.0, 4.0]])
+
+        kernel=[[1.0, 2.0],
+              [3.0, 4.0]]
+
+        The 2D shape of the array and its mask are determined from the input array and the mask is setup as an
+        unmasked *Mask* of shape_2d.
+
+        Parameters
+        ----------
+        array : np.ndarray or list
+            The values of the array input as an ndarray of shape [total_y_pixels*sub_size, total_x_pixel*sub_size] or a
+             list of lists.
+        pixel_scales : (float, float) or float
+            The pixel conversion scale of a pixel in the y and x directions. If input as a float, the pixel_scales
+            are converted to the format (float, float).
+        sub_size : int
+            The size (sub_size x sub_size) of each unmasked pixels sub-array.
+        origin : (float, float)
+            The origin of the array's mask.
+        renormalize : bool
+            If True, the Kernel's array values are renormalized such that they sum to 1.0.
+        """
         array = arrays.Array.manual_2d(
             array=array, pixel_scales=pixel_scales, origin=origin
         )
@@ -63,7 +116,28 @@ class Kernel(arrays.AbstractArray):
         origin=(0.0, 0.0),
         renormalize=False,
     ):
+        """Create a Kernel (see *Kernel.__new__*) where all values are filled with an input fill value, analogous to
+         the method numpy ndarray.full.
 
+        From 1D input the method cannot determine the 2D shape of the array and its mask, thus the shape_2d must be
+        input into this method. The mask is setup as a unmasked *Mask* of shape_2d.
+
+        Parameters
+        ----------
+        fill_value : float
+            The value all array elements are filled with.
+        shape_2d : (float, float)
+            The 2D shape of the mask the array is paired with.
+        pixel_scales : (float, float) or float
+            The pixel conversion scale of a pixel in the y and x directions. If input as a float, the pixel_scales
+            are converted to the format (float, float).
+        sub_size : int
+            The size (sub_size x sub_size) of each unmasked pixels sub-array.
+        origin : (float, float)
+            The origin of the array's mask.
+        renormalize : bool
+            If True, the Kernel's array values are renormalized such that they sum to 1.0.
+        """
         if sub_size is not None:
             shape_2d = (shape_2d[0] * sub_size, shape_2d[1] * sub_size)
 
@@ -76,6 +150,26 @@ class Kernel(arrays.AbstractArray):
 
     @classmethod
     def ones(cls, shape_2d, pixel_scales=None, origin=(0.0, 0.0), renormalize=False):
+        """Create an Kernel (see *Kernel.__new__*) where all values are filled with ones, analogous to the method numpy
+        ndarray.ones.
+
+        From 1D input the method cannot determine the 2D shape of the array and its mask, thus the shape_2d must be
+        input into this method. The mask is setup as a unmasked *Mask* of shape_2d.
+
+        Parameters
+        ----------
+        shape_2d : (float, float)
+            The 2D shape of the mask the array is paired with.
+        pixel_scales : (float, float) or float
+            The pixel conversion scale of a pixel in the y and x directions. If input as a float, the pixel_scales
+            are converted to the format (float, float).
+        sub_size : int
+            The size (sub_size x sub_size) of each unmasked pixels sub-array.
+        origin : (float, float)
+            The origin of the array's mask.
+        renormalize : bool
+            If True, the Kernel's array values are renormalized such that they sum to 1.0.
+        """
         return Kernel.full(
             fill_value=1.0,
             shape_2d=shape_2d,
@@ -86,6 +180,26 @@ class Kernel(arrays.AbstractArray):
 
     @classmethod
     def zeros(cls, shape_2d, pixel_scales=None, origin=(0.0, 0.0), renormalize=False):
+        """Create an Kernel (see *Kernel.__new__*) where all values are filled with zeros, analogous to the method numpy
+        ndarray.ones.
+
+        From 1D input the method cannot determine the 2D shape of the array and its mask, thus the shape_2d must be
+        input into this method. The mask is setup as a unmasked *Mask* of shape_2d.
+
+        Parameters
+        ----------
+        shape_2d : (float, float)
+            The 2D shape of the mask the array is paired with.
+        pixel_scales : (float, float) or float
+            The pixel conversion scale of a pixel in the y and x directions. If input as a float, the pixel_scales
+            are converted to the format (float, float).
+        sub_size : int
+            The size (sub_size x sub_size) of each unmasked pixels sub-array.
+        origin : (float, float)
+            The origin of the array's mask.
+        renormalize : bool
+            If True, the Kernel's array values are renormalized such that they sum to 1.0.
+        """
         return Kernel.full(
             fill_value=0.0,
             shape_2d=shape_2d,
@@ -96,6 +210,15 @@ class Kernel(arrays.AbstractArray):
 
     @classmethod
     def no_blur(cls, pixel_scales=None):
+        """Setup the Kernel as a kernel which does not convolve any signal, which is simply an array of shape (1, 1)
+        with value 1.
+
+        Parameters
+        ----------
+        pixel_scales : (float, float) or float
+            The pixel conversion scale of a pixel in the y and x directions. If input as a float, the pixel_scales
+            are converted to the format (float, float).
+        """
 
         array = np.array([[1.0]])
 
@@ -112,7 +235,29 @@ class Kernel(arrays.AbstractArray):
         phi=0.0,
         renormalize=False,
     ):
-        """Simulate the Kernel as an elliptical Gaussian profile."""
+        """Setup the Kernel as a 2D symmetric elliptical Gaussian profile, according to the equation:
+
+        (1.0 / (sigma * sqrt(2.0*pi))) * exp(-0.5 * (r/sigma)**2)
+
+
+        Parameters
+        ----------
+        shape_2d : (float, float)
+            The 2D shape of the mask the array is paired with.
+        pixel_scales : (float, float) or float
+            The pixel conversion scale of a pixel in the y and x directions. If input as a float, the pixel_scales
+            are converted to the format (float, float).
+        sigma : float
+            The value of sigma in the equation, describing the size and full-width half maximum of the Gaussian.
+        centre : (float, float)
+            The (y,x) central coordinates of the Gaussian.
+        axis_ratio : float
+            The axis-ratio of the elliptical Gaussian.
+        phi : float
+            The rotational angle of the Gaussian's ellipse defined counter clockwise from the positive x-axis.
+        renormalize : bool
+            If True, the Kernel's array values are renormalized such that they sum to 1.0.
+        """
 
         grid = grids.Grid.uniform(shape_2d=shape_2d, pixel_scales=pixel_scales)
         grid_shifted = np.subtract(grid, centre)
@@ -186,11 +331,18 @@ class Kernel(arrays.AbstractArray):
 
         Parameters
         ----------
-        pixel_scales
-        file_path: String
-            The path to the file containing the Kernel
+        file_path : str
+            The path the file is output to, including the filename and the '.fits' extension,
+            e.g. '/path/to/filename.fits'
         hdu : int
-            The HDU the Kernel is stored in the .fits file.
+            The Header-Data Unit of the .fits file the array data is loaded from.
+        pixel_scales : (float, float) or float
+            The pixel conversion scale of a pixel in the y and x directions. If input as a float, the pixel_scales
+            are converted to the format (float, float).
+        origin : (float, float)
+            The origin of the array's mask.
+        renormalize : bool
+            If True, the Kernel's array values are renormalized such that they sum to 1.0.
         """
 
         array = arrays.Array.from_fits(
@@ -277,7 +429,13 @@ class Kernel(arrays.AbstractArray):
 
     @property
     def in_2d(self):
-        return self.mask.mapping.array_stored_2d_from_sub_array_1d(sub_array_1d=self)
+        """Convenience method to access the kerne;'s 2D representation, which is an ndarray of shape
+        [sub_size*total_y_pixels, sub_size*total_x_pixels, 2] where all masked values are given values (0.0, 0.0).
+
+        If the array is stored in 2D it is return as is. If it is stored in 1D, it must first be mapped from 1D to 2D."""
+        return array_util.sub_array_2d_from(
+            sub_array_1d=self, mask=self.mask, sub_size=self.mask.sub_size
+        )
 
     @property
     def renormalized(self):
@@ -305,10 +463,18 @@ class Kernel(arrays.AbstractArray):
         if self.mask.shape[0] % 2 == 0 or self.mask.shape[1] % 2 == 0:
             raise exc.KernelException("Kernel Kernel must be odd")
 
-        return array.mapping.array_stored_1d_from_array_2d(
-            array_2d=scipy.signal.convolve2d(
-                array.in_2d_binned, self.in_2d, mode="same"
-            )
+        array_binned_2d = array.in_2d_binned
+
+        convolved_array_2d = scipy.signal.convolve2d(
+            array_binned_2d, self.in_2d, mode="same"
+        )
+
+        convolved_array_1d = array_util.sub_array_1d_from(
+            mask=array_binned_2d.mask, sub_array_2d=convolved_array_2d, sub_size=1
+        )
+
+        return arrays.Array(
+            array=convolved_array_1d, mask=array_binned_2d.mask, store_in_1d=True
         )
 
     def convolved_array_from_array_2d_and_mask(self, array_2d, mask):
@@ -333,8 +499,12 @@ class Kernel(arrays.AbstractArray):
         if self.mask.shape[0] % 2 == 0 or self.mask.shape[1] % 2 == 0:
             raise exc.KernelException("Kernel Kernel must be odd")
 
-        mask_sub_1 = mask.mapping.mask_sub_1
+        convolved_array_2d = scipy.signal.convolve2d(array_2d, self.in_2d, mode="same")
 
-        return mask_sub_1.mapping.array_stored_1d_from_array_2d(
-            scipy.signal.convolve2d(array_2d, self.in_2d, mode="same")
+        convolved_array_1d = array_util.sub_array_1d_from(
+            mask=mask, sub_array_2d=convolved_array_2d, sub_size=1
+        )
+
+        return arrays.Array(
+            array=convolved_array_1d, mask=mask.mask_sub_1, store_in_1d=True
         )

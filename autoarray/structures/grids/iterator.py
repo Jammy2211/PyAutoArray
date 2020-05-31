@@ -3,8 +3,15 @@ import numpy as np
 from autoarray import decorator_util
 from autoarray.structures import arrays, grids
 from autoarray.mask import mask as msk
-from autoarray.util import grid_util
+from autoarray.util import array_util, grid_util
 from autoarray import exc
+
+
+def sub_steps_from_none(sub_steps):
+
+    if sub_steps is None:
+        return [2, 4, 8, 16]
+    return sub_steps
 
 
 class GridIterator(grids.Grid):
@@ -13,7 +20,7 @@ class GridIterator(grids.Grid):
         grid,
         mask,
         fractional_accuracy=0.9999,
-        sub_steps=[2, 4, 8, 16],
+        sub_steps=None,
         store_in_1d=True,
         *args,
         **kwargs,
@@ -35,13 +42,28 @@ class GridIterator(grids.Grid):
         sub-gridding to be evaluated accuracy, the entire grid would require this sub-grid size thus leading to
         unecessary expensive function evaluations.
 
-
+        Parameters
+        ----------
+        grid : np.ndarray
+            The (y,x) coordinates of the grid.
+        mask : msk.Mask
+            The 2D mask associated with the grid, defining the pixels each grid coordinate is paired with and
+            originates from.
+        fractional_accuracy : float
+            The fractional accuracy the function evaluated must meet to be accepted, where this accuracy is the ratio
+            of the value at a higher sub_size to othe value computed using the previous sub_size.
+        sub_steps : [int] or None
+            The sub-size values used to iteratively evaluated the function at high levels of sub-gridding. If None,
+            they are setup as the default values [2, 4, 8, 16].
+        store_in_1d : bool
+            If True, the grid is stored in 1D as an ndarray of shape [total_unmasked_pixels, 2]. If False, it is
+            stored in 2D as an ndarray of shape [total_y_pixels, total_x_pixels, 2].
         """
+        sub_steps = sub_steps_from_none(sub_steps=sub_steps)
         obj = super().__new__(cls=cls, grid=grid, mask=mask, store_in_1d=store_in_1d)
         obj.grid = grids.MaskedGrid.manual_1d(grid=grid, mask=mask)
         obj.fractional_accuracy = fractional_accuracy
         obj.sub_steps = sub_steps
-        obj.binned = True
         return obj
 
     @classmethod
@@ -52,32 +74,60 @@ class GridIterator(grids.Grid):
         pixel_scales,
         origin=(0.0, 0.0),
         fractional_accuracy=0.9999,
-        sub_steps=[2, 4, 8, 16],
+        sub_steps=None,
         store_in_1d=True,
     ):
+        """Create a GridIterator (see *GridIterator.__new__*) by inputting the grid coordinates in 1D, for example:
 
-        if type(grid) is list:
-            grid = np.asarray(grid)
+        grid=np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0]])
 
-        if type(pixel_scales) is float:
-            pixel_scales = (pixel_scales, pixel_scales)
+        grid=[[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0]]
 
-        if grid.shape[-1] != 2:
-            raise exc.GridException(
-                "The final dimension of the input grid is not equal to 2 (e.g. the (y,x) coordinates)"
-            )
+        From 1D input the method cannot determine the 2D shape of the grid and its mask, thus the shape_2d must be
+        input into this method. The mask is setup as a unmasked *Mask* of shape_2d.
 
-        if 2 < len(grid.shape) > 3:
-            raise exc.GridException(
-                "The dimensions of the input grid array is not 2 or 3"
-            )
+        Parameters
+        ----------
+        grid : np.ndarray or list
+            The (y,x) coordinates of the grid input as an ndarray of shape [total_unmasked_pixells*(sub_size**2), 2]
+            or a list of lists.
+        shape_2d : (float, float)
+            The 2D shape of the mask the grid is paired with.
+        pixel_scales : (float, float) or float
+            The pixel conversion scale of a pixel in the y and x directions. If input as a float, the pixel_scales
+            are converted to the format (float, float).
+        fractional_accuracy : float
+            The fractional accuracy the function evaluated must meet to be accepted, where this accuracy is the ratio
+            of the value at a higher sub_size to othe value computed using the previous sub_size.
+        sub_steps : [int] or None
+            The sub-size values used to iteratively evaluated the function at high levels of sub-gridding. If None,
+            they are setup as the default values [2, 4, 8, 16].
+        origin : (float, float)
+            The origin of the grid's mask.
+        store_in_1d : bool
+            If True, the grid is stored in 1D as an ndarray of shape [total_unmasked_pixels, 2]. If False, it is
+            stored in 2D as an ndarray of shape [total_y_pixels, total_x_pixels, 2].
+        """
+        grid = grids.convert_and_check_grid(grid=grid)
+        pixel_scales = grids.convert_pixel_scales(pixel_scales=pixel_scales)
 
         mask = msk.Mask.unmasked(
             shape_2d=shape_2d, pixel_scales=pixel_scales, sub_size=1, origin=origin
         )
 
+        if store_in_1d:
+            return GridIterator(
+                grid=grid,
+                mask=mask,
+                fractional_accuracy=fractional_accuracy,
+                sub_steps=sub_steps,
+                store_in_1d=store_in_1d,
+            )
+
+        grid_2d = grid_util.sub_grid_2d_from(sub_grid_1d=grid, mask=mask, sub_size=1)
+
         return GridIterator(
-            grid=grid,
+            grid=grid_2d,
             mask=mask,
             fractional_accuracy=fractional_accuracy,
             sub_steps=sub_steps,
@@ -91,9 +141,33 @@ class GridIterator(grids.Grid):
         pixel_scales,
         origin=(0.0, 0.0),
         fractional_accuracy=0.9999,
-        sub_steps=[2, 4, 8, 16],
+        sub_steps=None,
         store_in_1d=True,
     ):
+        """Create a GridIterator (see *GridIterator.__new__*) as a uniform grid of (y,x) values given an input
+        shape_2d and pixel scale of the grid:
+
+        Parameters
+        ----------
+        shape_2d : (float, float)
+            The 2D shape of the uniform grid and the mask that it is paired with.
+        pixel_scales : (float, float) or float
+            The pixel conversion scale of a pixel in the y and x directions. If input as a float, the pixel_scales
+            are converted to the format (float, float).
+        fractional_accuracy : float
+            The fractional accuracy the function evaluated must meet to be accepted, where this accuracy is the ratio
+            of the value at a higher sub_size to othe value computed using the previous sub_size.
+        sub_steps : [int] or None
+            The sub-size values used to iteratively evaluated the function at high levels of sub-gridding. If None,
+            they are setup as the default values [2, 4, 8, 16].
+        origin : (float, float)
+            The origin of the grid's mask.
+        store_in_1d : bool
+            If True, the grid is stored in 1D as an ndarray of shape [total_unmasked_pixels, 2]. If False, it is
+            stored in 2D as an ndarray of shape [total_y_pixels, total_x_pixels, 2].
+        """
+
+        pixel_scales = grids.convert_pixel_scales(pixel_scales=pixel_scales)
 
         grid_1d = grid_util.grid_1d_via_shape_2d_from(
             shape_2d=shape_2d, pixel_scales=pixel_scales, sub_size=1, origin=origin
@@ -101,32 +175,57 @@ class GridIterator(grids.Grid):
 
         return GridIterator.manual_1d(
             grid=grid_1d,
+            shape_2d=shape_2d,
+            pixel_scales=pixel_scales,
             fractional_accuracy=fractional_accuracy,
             sub_steps=sub_steps,
+            origin=origin,
             store_in_1d=store_in_1d,
         )
 
     @classmethod
     def from_mask(
-        cls, mask, fractional_accuracy=0.9999, sub_steps=[2, 4, 8, 16], store_in_1d=True
+        cls, mask, fractional_accuracy=0.9999, sub_steps=None, store_in_1d=True
     ):
-        """Setup a sub-grid of the unmasked pixels, using a mask and a specified sub-grid size. The center of \
-        every unmasked pixel's sub-pixels give the grid's (y,x) scaled coordinates.
+        """Create a GridIterator (see *GridIterator.__new__*) from a mask, where only unmasked pixels are included in
+        the grid (if the grid is represented in 2D masked values are (0.0, 0.0)).
+
+        The mask's pixel_scales and origin properties are used to compute the grid (y,x) coordinates.
 
         Parameters
-        -----------
+        ----------
         mask : Mask
             The mask whose masked pixels are used to setup the sub-pixel grid.
-        sub_size : int
-            The size (sub_size x sub_size) of each unmasked pixels sub-grid.
+        fractional_accuracy : float
+            The fractional accuracy the function evaluated must meet to be accepted, where this accuracy is the ratio
+            of the value at a higher sub_size to othe value computed using the previous sub_size.
+        sub_steps : [int] or None
+            The sub-size values used to iteratively evaluated the function at high levels of sub-gridding. If None,
+            they are setup as the default values [2, 4, 8, 16].
+        store_in_1d : bool
+            If True, the grid is stored in 1D as an ndarray of shape [total_unmasked_pixels, 2]. If False, it is
+            stored in 2D as an ndarray of shape [total_y_pixels, total_x_pixels, 2].
         """
 
-        grid_1d = grid_util.grid_1d_via_mask_2d_from(
-            mask_2d=mask, pixel_scales=mask.pixel_scales, sub_size=1, origin=mask.origin
+        grid_1d = grid_util.grid_1d_via_mask_from(
+            mask=mask, pixel_scales=mask.pixel_scales, sub_size=1, origin=mask.origin
         )
 
-        return GridIterator(
-            grid=grid_1d,
+        if store_in_1d:
+            return grids.GridIterator(
+                grid=grid_1d,
+                mask=mask.mask_sub_1,
+                fractional_accuracy=fractional_accuracy,
+                sub_steps=sub_steps,
+                store_in_1d=store_in_1d,
+            )
+
+        grid_2d = grid_util.sub_grid_2d_from(
+            sub_grid_1d=grid_1d, mask=mask.mask_sub_1, sub_size=1
+        )
+
+        return grids.GridIterator(
+            grid=grid_2d,
             mask=mask.mask_sub_1,
             fractional_accuracy=fractional_accuracy,
             sub_steps=sub_steps,
@@ -139,72 +238,39 @@ class GridIterator(grids.Grid):
         mask,
         kernel_shape_2d,
         fractional_accuracy=0.9999,
-        sub_steps=[2, 4, 8, 16],
+        sub_steps=None,
         store_in_1d=True,
     ):
-        """Setup a blurring-grid from a mask, where a blurring grid consists of all pixels that are masked, but they \
-        are close enough to the unmasked pixels that a fraction of their light will be blurred into those pixels \
-        via PSF convolution. For example, if our mask is as follows:
+        """Setup a blurring-grid from a mask, where a blurring grid consists of all pixels that are masked (and
+        therefore have their values set to (0.0, 0.0)), but are close enough to the unmasked pixels that their values
+        will be convolved into the unmasked those pixels. This occurs in *PyAutoGalaxy* when computing images from
+        light profile objects.
 
-        |x|x|x|x|x|x|x|x|x|x|
-        |x|x|x|x|x|x|x|x|x|x|     This is an imaging.Mask, where:
-        |x|x|x|x|x|x|x|x|x|x|
-        |x|x|x|x|x|x|x|x|x|x|     x = True (Pixel is masked and excluded from lens)
-        |x|x|x|o|o|o|x|x|x|x|     o = False (Pixel is not masked and included in lens)
-        |x|x|x|o|o|o|x|x|x|x|
-        |x|x|x|o|o|o|x|x|x|x|
-        |x|x|x|x|x|x|x|x|x|x|
-        |x|x|x|x|x|x|x|x|x|x|
-        |x|x|x|x|x|x|x|x|x|x|
+        See *grids.Grid.blurring_grid_from_mask_and_kernel_shape* for a full description of a blurring grid. This
+        method creates the blurring grid as a GridIterator.
 
-        For a PSF of shape (3,3), the following blurring mask is computed (noting that only pixels that are direct \
-        neighbors of the unmasked pixels above will blur light into an unmasked pixel):
-
-        |x|x|x|x|x|x|x|x|x|     This is an example grid.Mask, where:
-        |x|x|x|x|x|x|x|x|x|
-        |x|x|o|o|o|o|o|x|x|     x = True (Pixel is masked and excluded from lens)
-        |x|x|o|x|x|x|o|x|x|     o = False (Pixel is not masked and included in lens)
-        |x|x|o|x|x|x|o|x|x|
-        |x|x|o|x|x|x|o|x|x|
-        |x|x|o|o|o|o|o|x|x|
-        |x|x|x|x|x|x|x|x|x|
-        |x|x|x|x|x|x|x|x|x|
-
-        Thus, the blurring grid coordinates and indexes will be as follows:
-
-        pixel_scales = 1.0"
-
-        <--- -ve  x  +ve -->
-                                                            y     x
-        |x|x|x |x |x |x |x |x|x|  |   blurring_grid[0] = [2.0, -2.0]  blurring_grid[9] =  [-1.0, -2.0]
-        |x|x|x |x |x |x |x |x|x|  |   blurring_grid[1] = [2.0, -1.0]  blurring_grid[10] = [-1.0,  2.0]
-        |x|x|0 |1 |2 |3 |4 |x|x| +ve  blurring_grid[2] = [2.0,  0.0]  blurring_grid[11] = [-2.0, -2.0]
-        |x|x|5 |x |x |x |6 |x|x|  y   blurring_grid[3] = [2.0,  1.0]  blurring_grid[12] = [-2.0, -1.0]
-        |x|x|7 |x |x |x |8 |x|x| -ve  blurring_grid[4] = [2.0,  2.0]  blurring_grid[13] = [-2.0,  0.0]
-        |x|x|9 |x |x |x |10|x|x|  |   blurring_grid[5] = [1.0, -2.0]  blurring_grid[14] = [-2.0,  1.0]
-        |x|x|11|12|13|14|15|x|x|  |   blurring_grid[6] = [1.0,  2.0]  blurring_grid[15] = [-2.0,  2.0]
-        |x|x|x |x |x |x |x |x|x| \/   blurring_grid[7] = [0.0, -2.0]
-        |x|x|x |x |x |x |x |x|x|      blurring_grid[8] = [0.0,  2.0]
-
-        For a PSF of shape (5,5), the following blurring mask is computed (noting that pixels that are 2 pixels from an
-        direct unmasked pixels now blur light into an unmasked pixel):
-
-        |x|x|x|x|x|x|x|x|x|     This is an example grid.Mask, where:
-        |x|o|o|o|o|o|o|o|x|
-        |x|o|o|o|o|o|o|o|x|     x = True (Pixel is masked and excluded from lens)
-        |x|o|o|x|x|x|o|o|x|     o = False (Pixel is not masked and included in lens)
-        |x|o|o|x|x|x|o|o|x|
-        |x|o|o|x|x|x|o|o|x|
-        |x|o|o|o|o|o|o|o|x|
-        |x|o|o|o|o|o|o|o|x|
-        |x|x|x|x|x|x|x|x|x|
+        Parameters
+        ----------
+        mask : Mask
+            The mask whose masked pixels are used to setup the blurring grid.
+        kernel_shape_2d : (float, float)
+            The 2D shape of the kernel which convolves signal from masked pixels to unmasked pixels.
+        fractional_accuracy : float
+            The fractional accuracy the function evaluated must meet to be accepted, where this accuracy is the ratio
+            of the value at a higher sub_size to othe value computed using the previous sub_size.
+        sub_steps : [int] or None
+            The sub-size values used to iteratively evaluated the function at high levels of sub-gridding. If None,
+            they are setup as the default values [2, 4, 8, 16].
+        store_in_1d : bool
+            If True, the grid is stored in 1D as an ndarray of shape [total_unmasked_pixels, 2]. If False, it is
+            stored in 2D as an ndarray of shape [total_y_pixels, total_x_pixels, 2].
         """
 
         blurring_mask = mask.regions.blurring_mask_from_kernel_shape(
             kernel_shape_2d=kernel_shape_2d
         )
 
-        return GridIterator.from_mask(
+        return cls.from_mask(
             mask=blurring_mask,
             fractional_accuracy=fractional_accuracy,
             sub_steps=sub_steps,
@@ -212,25 +278,19 @@ class GridIterator(grids.Grid):
         )
 
     def blurring_grid_from_kernel_shape(self, kernel_shape_2d):
-        """From this grid, determine the blurring grid.
+        """Compute the blurring grid from a grid and create it as a GridIterator, via an input 2D kernel shape.
 
-        The blurring grid gives the (y,x) coordinates of all pixels which are masked but whose light will be blurred
-        into unmasked due to 2D convolution. These pixels are determined by this grid's mask and the 2D shape of
-        the *Kernel*.
+        For a full description of blurring grids, checkout *blurring_grid_from_mask_and_kernel_shape*.
 
         Parameters
         ----------
-        kernel_shape_2d : (int, int)
-            The 2D shape of the Kernel used to determine which masked pixel's values will be blurred into the grid's
-            unmasked pixels by 2D convolution.
+        kernel_shape_2d : (float, float)
+            The 2D shape of the kernel which convolves signal from masked pixels to unmasked pixels.
         """
 
-        blurring_mask = self.mask.regions.blurring_mask_from_kernel_shape(
-            kernel_shape_2d=kernel_shape_2d
-        )
-
-        return GridIterator.from_mask(
-            mask=blurring_mask,
+        return GridIterator.blurring_grid_from_mask_and_kernel_shape(
+            mask=self.mask,
+            kernel_shape_2d=kernel_shape_2d,
             fractional_accuracy=self.fractional_accuracy,
             sub_steps=self.sub_steps,
             store_in_1d=self.store_in_1d,
@@ -278,11 +338,11 @@ class GridIterator(grids.Grid):
             fractional_mask=fractional_mask,
             array_higher_sub_2d=array_higher_sub_2d,
             array_lower_sub_2d=array_lower_sub_2d,
-            array_higher_mask_2d=array_higher_sub_2d.mask,
+            array_higher_mask=array_higher_sub_2d.mask,
         )
 
         return msk.Mask(
-            mask_2d=fractional_mask,
+            mask=fractional_mask,
             pixel_scales=array_higher_sub_2d.pixel_scales,
             origin=array_higher_sub_2d.origin,
         )
@@ -294,7 +354,7 @@ class GridIterator(grids.Grid):
         fractional_mask,
         array_higher_sub_2d,
         array_lower_sub_2d,
-        array_higher_mask_2d,
+        array_higher_mask,
     ):
         """Jitted functioon to determine the fractional mask, which is a mask where:
 
@@ -306,7 +366,7 @@ class GridIterator(grids.Grid):
 
         for y in range(fractional_mask.shape[0]):
             for x in range(fractional_mask.shape[1]):
-                if not array_higher_mask_2d[y, x]:
+                if not array_higher_mask[y, x]:
 
                     if array_higher_sub_2d[y, x] > 0:
 
@@ -359,7 +419,7 @@ class GridIterator(grids.Grid):
 
         for sub_size in self.sub_steps:
 
-            mask_higher_sub = fractional_mask_lower_sub.mapping.mask_new_sub_size_from_mask(
+            mask_higher_sub = fractional_mask_lower_sub.mask_new_sub_size_from_mask(
                 mask=fractional_mask_lower_sub, sub_size=sub_size
             )
 
@@ -382,15 +442,26 @@ class GridIterator(grids.Grid):
             )
 
             if fractional_mask_higher_sub.is_all_true:
-                return self.mask.mapping.array_stored_1d_from_array_2d(
-                    array_2d=iterated_array
+
+                iterated_array_1d = array_util.sub_array_1d_from(
+                    mask=self.mask, sub_array_2d=iterated_array, sub_size=1
+                )
+
+                return arrays.Array(
+                    array=iterated_array_1d, mask=self.mask.mask_sub_1, store_in_1d=True
                 )
 
             array_lower_sub_2d = array_higher_sub
             fractional_mask_lower_sub = fractional_mask_higher_sub
 
-        return self.mask.mapping.array_stored_1d_from_array_2d(
-            array_2d=iterated_array + array_higher_sub.in_2d_binned
+        iterated_array_2d = iterated_array + array_higher_sub.in_2d_binned
+
+        iterated_array_1d = array_util.sub_array_1d_from(
+            mask=self.mask, sub_array_2d=iterated_array_2d, sub_size=1
+        )
+
+        return arrays.Array(
+            array=iterated_array_1d, mask=self.mask.mask_sub_1, store_in_1d=True
         )
 
     @staticmethod
@@ -444,11 +515,11 @@ class GridIterator(grids.Grid):
             fractional_mask=fractional_mask,
             grid_higher_sub_2d=grid_higher_sub_2d,
             grid_lower_sub_2d=grid_lower_sub_2d,
-            grid_higher_mask_2d=grid_higher_sub_2d.mask,
+            grid_higher_mask=grid_higher_sub_2d.mask,
         )
 
         return msk.Mask(
-            mask_2d=fractional_mask,
+            mask=fractional_mask,
             pixel_scales=grid_higher_sub_2d.pixel_scales,
             origin=grid_higher_sub_2d.origin,
         )
@@ -460,7 +531,7 @@ class GridIterator(grids.Grid):
         fractional_mask,
         grid_higher_sub_2d,
         grid_lower_sub_2d,
-        grid_higher_mask_2d,
+        grid_higher_mask,
     ):
         """Jitted functioon to determine the fractional mask, which is a mask where:
 
@@ -472,7 +543,7 @@ class GridIterator(grids.Grid):
 
         for y in range(fractional_mask.shape[0]):
             for x in range(fractional_mask.shape[1]):
-                if not grid_higher_mask_2d[y, x]:
+                if not grid_higher_mask[y, x]:
 
                     if abs(grid_higher_sub_2d[y, x, 0]) > 0:
 
@@ -540,7 +611,7 @@ class GridIterator(grids.Grid):
 
         for sub_size in self.sub_steps:
 
-            mask_higher_sub = fractional_mask_lower_sub.mapping.mask_new_sub_size_from_mask(
+            mask_higher_sub = fractional_mask_lower_sub.mask_new_sub_size_from_mask(
                 mask=fractional_mask_lower_sub, sub_size=sub_size
             )
 
@@ -562,15 +633,26 @@ class GridIterator(grids.Grid):
             )
 
             if fractional_mask_higher_sub.is_all_true:
-                return self.mask.mapping.grid_stored_1d_from_grid_2d(
-                    grid_2d=iterated_grid
+
+                iterated_grid_1d = grid_util.sub_grid_1d_from(
+                    mask=self.mask, sub_grid_2d=iterated_grid, sub_size=1
+                )
+
+                return grids.Grid(
+                    grid=iterated_grid_1d, mask=self.mask.mask_sub_1, store_in_1d=True
                 )
 
             grid_lower_sub_2d = grid_higher_sub
             fractional_mask_lower_sub = fractional_mask_higher_sub
 
-        return self.mask.mapping.grid_stored_1d_from_grid_2d(
-            grid_2d=iterated_grid + grid_higher_sub.in_2d_binned
+        iterated_grid_2d = iterated_grid + grid_higher_sub.in_2d_binned
+
+        iterated_grid_1d = grid_util.sub_grid_1d_from(
+            mask=self.mask, sub_grid_2d=iterated_grid_2d, sub_size=1
+        )
+
+        return grids.Grid(
+            grid=iterated_grid_1d, mask=self.mask.mask_sub_1, store_in_1d=True
         )
 
     @staticmethod

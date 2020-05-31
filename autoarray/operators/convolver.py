@@ -1,6 +1,7 @@
 from autoarray import decorator_util
 import numpy as np
 from autoarray import exc
+from autoarray.structures import arrays
 from autoarray.util import mask_util
 
 
@@ -219,8 +220,8 @@ class Convolver:
                     ].shape[0]
                     mask_1d_index += 1
 
-        self.blurring_mask = mask_util.blurring_mask_2d_from(
-            mask_2d=mask, kernel_shape_2d=kernel.shape_2d
+        self.blurring_mask = mask_util.blurring_mask_from(
+            mask=mask, kernel_shape_2d=kernel.shape_2d
         )
 
         self.pixels_in_blurring_mask = int(
@@ -325,7 +326,9 @@ class Convolver:
             blurring_frame_1d_lengths=self.blurring_frame_1d_lengths,
         )
 
-        return self.mask.mapping.array_stored_1d_from_array_1d(array_1d=convolved_image)
+        return arrays.Array(
+            array=convolved_image, mask=self.mask.mask_sub_1, store_in_1d=True
+        )
 
     @staticmethod
     @decorator_util.jit()

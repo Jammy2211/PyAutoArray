@@ -166,7 +166,7 @@ def test__coordinates_from_grid_1d():
 def test__with_mask__converts_to_and_from_pixels():
 
     mask = aa.Mask.manual(
-        mask_2d=np.full(fill_value=False, shape=(2, 2)), pixel_scales=(2.0, 2.0)
+        mask=np.full(fill_value=False, shape=(2, 2)), pixel_scales=(2.0, 2.0)
     )
 
     coordinates = aa.GridCoordinates(coordinates=[[(1.0, -1.0), (1.0, 1.0)]])

@@ -9,7 +9,7 @@ class TestFitImaging:
     def test__image_and_model_are_identical__no_masking__check_values_are_correct(self):
 
         mask = aa.Mask.manual(
-            mask_2d=np.array([[False, False], [False, False]]),
+            mask=np.array([[False, False], [False, False]]),
             sub_size=1,
             pixel_scales=(1.0, 1.0),
         )
@@ -68,7 +68,7 @@ class TestFitImaging:
     ):
 
         mask = aa.Mask.manual(
-            mask_2d=np.array([[False, False], [True, False]]),
+            mask=np.array([[False, False], [True, False]]),
             sub_size=1,
             pixel_scales=(1.0, 1.0),
         )
@@ -123,7 +123,7 @@ class TestFitImaging:
     ):
 
         mask = aa.Mask.manual(
-            mask_2d=np.array([[False, False], [False, False]]),
+            mask=np.array([[False, False], [False, False]]),
             sub_size=1,
             pixel_scales=(1.0, 1.0),
         )
@@ -173,7 +173,7 @@ class TestFitInterferometer:
         visibilities_mask = np.full(fill_value=False, shape=(2, 2))
 
         real_space_mask = aa.Mask.manual(
-            mask_2d=np.array([[False, False], [False, False]]),
+            mask=np.array([[False, False], [False, False]]),
             sub_size=1,
             pixel_scales=(1.0, 1.0),
         )
@@ -236,7 +236,7 @@ class TestFitInterferometer:
         visibilities_mask = np.full(fill_value=False, shape=(2, 2))
 
         real_space_mask = aa.Mask.manual(
-            mask_2d=np.array([[False, False], [False, False]]),
+            mask=np.array([[False, False], [False, False]]),
             sub_size=1,
             pixel_scales=(1.0, 1.0),
         )
@@ -299,7 +299,7 @@ class TestFitInterferometer:
         visibilities_mask = np.full(fill_value=False, shape=(2, 2))
 
         real_space_mask = aa.Mask.manual(
-            mask_2d=np.array([[False, False], [False, False]]),
+            mask=np.array([[False, False], [False, False]]),
             sub_size=1,
             pixel_scales=(1.0, 1.0),
         )

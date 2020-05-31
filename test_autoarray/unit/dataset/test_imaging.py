@@ -259,7 +259,7 @@ class TestMaskedImaging:
             interpolate_pixel_scale=1.0,
         )
 
-        grid = aa.MaskedGrid.from_mask(mask=sub_mask_7x7)
+        grid = aa.Grid.from_mask(mask=sub_mask_7x7)
         new_grid = grid.new_grid_with_interpolator(interpolation_pixel_scale=1.0)
 
         blurring_grid = grid.blurring_grid_from_kernel_shape(kernel_shape_2d=(3, 3))
@@ -305,7 +305,7 @@ class TestMaskedImaging:
             interpolate_pixel_scale=1.0,
         )
 
-        grid = aa.MaskedGrid.from_mask(mask=sub_mask_7x7)
+        grid = aa.Grid.from_mask(mask=sub_mask_7x7)
         new_grid = grid.new_grid_with_interpolator(interpolation_pixel_scale=1.0)
 
         assert isinstance(masked_imaging_7x7.grid_inversion, aa.Grid)
