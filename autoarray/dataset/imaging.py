@@ -226,12 +226,12 @@ class MaskedImaging(abstract_dataset.AbstractMaskedDataset):
             inversion_uses_border=inversion_uses_border,
         )
 
-        self.image = mask.mapping.array_stored_1d_from_array_2d(
-            array_2d=imaging.image.in_2d
+        self.image = arrays.MaskedArray.manual_2d(
+            array=imaging.image.in_2d, mask=mask.mask_sub_1
         )
 
-        self.noise_map = mask.mapping.array_stored_1d_from_array_2d(
-            array_2d=imaging.noise_map.in_2d
+        self.noise_map = arrays.MaskedArray.manual_2d(
+            array=imaging.noise_map.in_2d, mask=mask.mask_sub_1
         )
 
         self.interpolation_pixel_scale = interpolate_pixel_scale

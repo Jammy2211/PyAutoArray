@@ -10,7 +10,7 @@ class TestUnmaskedSparseForSparse:
     ):
 
         ma = aa.Mask.manual(
-            mask_2d=np.array(
+            mask=np.array(
                 [[False, False, False], [False, False, False], [False, False, False]]
             ),
             pixel_scales=(1.0, 1.0),
@@ -22,13 +22,13 @@ class TestUnmaskedSparseForSparse:
         )
 
         total_masked_pixels = aa.util.mask.total_sparse_pixels_from(
-            mask_2d=ma,
+            mask=ma,
             unmasked_sparse_grid_pixel_centres=unmasked_sparse_grid_pixel_centres,
         )
 
         unmasked_sparse_for_sparse = aa.util.sparse.unmasked_sparse_for_sparse_from(
             total_sparse_pixels=total_masked_pixels,
-            mask_2d=ma,
+            mask=ma,
             unmasked_sparse_grid_pixel_centres=unmasked_sparse_grid_pixel_centres,
         )
 
@@ -41,7 +41,7 @@ class TestUnmaskedSparseForSparse:
     ):
 
         ma = aa.Mask.manual(
-            mask_2d=np.array(
+            mask=np.array(
                 [[False, False, False], [False, False, False], [False, False, False]]
             ),
             pixel_scales=(1.0, 1.0),
@@ -53,13 +53,13 @@ class TestUnmaskedSparseForSparse:
         )
 
         total_masked_pixels = aa.util.mask.total_sparse_pixels_from(
-            mask_2d=ma,
+            mask=ma,
             unmasked_sparse_grid_pixel_centres=unmasked_sparse_grid_pixel_centres,
         )
 
         unmasked_sparse_for_sparse = aa.util.sparse.unmasked_sparse_for_sparse_from(
             total_sparse_pixels=total_masked_pixels,
-            mask_2d=ma,
+            mask=ma,
             unmasked_sparse_grid_pixel_centres=unmasked_sparse_grid_pixel_centres,
         )
 
@@ -68,7 +68,7 @@ class TestUnmaskedSparseForSparse:
     def test__mask_is_cross__some_pix_pixels_are_masked__omitted_from_mapping(self):
 
         ma = aa.Mask.manual(
-            mask_2d=np.array(
+            mask=np.array(
                 [[True, False, True], [False, False, False], [True, False, True]]
             ),
             pixel_scales=(1.0, 1.0),
@@ -80,13 +80,13 @@ class TestUnmaskedSparseForSparse:
         )
 
         total_masked_pixels = aa.util.mask.total_sparse_pixels_from(
-            mask_2d=ma,
+            mask=ma,
             unmasked_sparse_grid_pixel_centres=unmasked_sparse_grid_pixel_centres,
         )
 
         unmasked_sparse_for_sparse = aa.util.sparse.unmasked_sparse_for_sparse_from(
             total_sparse_pixels=total_masked_pixels,
-            mask_2d=ma,
+            mask=ma,
             unmasked_sparse_grid_pixel_centres=unmasked_sparse_grid_pixel_centres,
         )
 
@@ -95,7 +95,7 @@ class TestUnmaskedSparseForSparse:
     def test__same_as_above__different_mask_and_centres(self):
 
         ma = aa.Mask.manual(
-            mask_2d=np.array(
+            mask=np.array(
                 [[False, False, True], [False, False, False], [True, False, False]]
             ),
             pixel_scales=(1.0, 1.0),
@@ -107,13 +107,13 @@ class TestUnmaskedSparseForSparse:
         )
 
         total_masked_pixels = aa.util.mask.total_sparse_pixels_from(
-            mask_2d=ma,
+            mask=ma,
             unmasked_sparse_grid_pixel_centres=unmasked_sparse_grid_pixel_centres,
         )
 
         unmasked_sparse_for_sparse = aa.util.sparse.unmasked_sparse_for_sparse_from(
             total_sparse_pixels=total_masked_pixels,
-            mask_2d=ma,
+            mask=ma,
             unmasked_sparse_grid_pixel_centres=unmasked_sparse_grid_pixel_centres,
         )
 
@@ -122,7 +122,7 @@ class TestUnmaskedSparseForSparse:
     def test__same_as_above__but_3x4_mask(self):
 
         ma = aa.Mask.manual(
-            mask_2d=np.array(
+            mask=np.array(
                 [
                     [True, True, False, True],
                     [False, False, False, False],
@@ -138,13 +138,13 @@ class TestUnmaskedSparseForSparse:
         )
 
         total_masked_pixels = aa.util.mask.total_sparse_pixels_from(
-            mask_2d=ma,
+            mask=ma,
             unmasked_sparse_grid_pixel_centres=unmasked_sparse_grid_pixel_centres,
         )
 
         unmasked_sparse_for_sparse = aa.util.sparse.unmasked_sparse_for_sparse_from(
             total_sparse_pixels=total_masked_pixels,
-            mask_2d=ma,
+            mask=ma,
             unmasked_sparse_grid_pixel_centres=unmasked_sparse_grid_pixel_centres,
         )
 
@@ -153,7 +153,7 @@ class TestUnmaskedSparseForSparse:
     def test__same_as_above__but_4x3_mask(self):
 
         ma = aa.Mask.manual(
-            mask_2d=np.array(
+            mask=np.array(
                 [
                     [True, False, True],
                     [True, False, True],
@@ -170,13 +170,13 @@ class TestUnmaskedSparseForSparse:
         )
 
         total_masked_pixels = aa.util.mask.total_sparse_pixels_from(
-            mask_2d=ma,
+            mask=ma,
             unmasked_sparse_grid_pixel_centres=unmasked_sparse_grid_pixel_centres,
         )
 
         unmasked_sparse_for_sparse = aa.util.sparse.unmasked_sparse_for_sparse_from(
             total_sparse_pixels=total_masked_pixels,
-            mask_2d=ma,
+            mask=ma,
             unmasked_sparse_grid_pixel_centres=unmasked_sparse_grid_pixel_centres,
         )
 
@@ -189,7 +189,7 @@ class TestSparseForUnmaskedSparse:
     ):
 
         ma = aa.Mask.manual(
-            mask_2d=np.array(
+            mask=np.array(
                 [[False, False, False], [False, False, False], [False, False, False]]
             ),
             pixel_scales=(1.0, 1.0),
@@ -201,7 +201,7 @@ class TestSparseForUnmaskedSparse:
         )
 
         sparse_for_unmasked_sparse = aa.util.sparse.sparse_for_unmasked_sparse_from(
-            mask_2d=ma,
+            mask=ma,
             unmasked_sparse_grid_pixel_centres=unmasked_sparse_grid_pixel_centres,
             total_sparse_pixels=9,
         )
@@ -215,7 +215,7 @@ class TestSparseForUnmaskedSparse:
     ):
 
         ma = aa.Mask.manual(
-            mask_2d=np.array(
+            mask=np.array(
                 [[False, False, False], [False, False, False], [False, False, False]]
             ),
             pixel_scales=(1.0, 1.0),
@@ -227,7 +227,7 @@ class TestSparseForUnmaskedSparse:
         )
 
         sparse_for_unmasked_sparse = aa.util.sparse.sparse_for_unmasked_sparse_from(
-            mask_2d=ma,
+            mask=ma,
             unmasked_sparse_grid_pixel_centres=unmasked_sparse_grid_pixel_centres,
             total_sparse_pixels=9,
         )
@@ -237,7 +237,7 @@ class TestSparseForUnmaskedSparse:
     def test__mask_is_cross__some_pix_pixels_are_masked__omitted_from_mapping(self):
 
         ma = aa.Mask.manual(
-            mask_2d=np.array(
+            mask=np.array(
                 [[True, False, True], [False, False, False], [True, False, True]]
             ),
             pixel_scales=(1.0, 1.0),
@@ -249,7 +249,7 @@ class TestSparseForUnmaskedSparse:
         )
 
         sparse_for_unmasked_sparse = aa.util.sparse.sparse_for_unmasked_sparse_from(
-            mask_2d=ma,
+            mask=ma,
             unmasked_sparse_grid_pixel_centres=unmasked_sparse_grid_pixel_centres,
             total_sparse_pixels=5,
         )
@@ -261,7 +261,7 @@ class TestSparseForUnmaskedSparse:
     def test__same_as_above__different_mask_and_centres(self):
 
         ma = aa.Mask.manual(
-            mask_2d=np.array(
+            mask=np.array(
                 [[False, False, True], [False, False, False], [True, False, False]]
             ),
             pixel_scales=(1.0, 1.0),
@@ -273,7 +273,7 @@ class TestSparseForUnmaskedSparse:
         )
 
         sparse_for_unmasked_sparse = aa.util.sparse.sparse_for_unmasked_sparse_from(
-            mask_2d=ma,
+            mask=ma,
             unmasked_sparse_grid_pixel_centres=unmasked_sparse_grid_pixel_centres,
             total_sparse_pixels=4,
         )
@@ -283,7 +283,7 @@ class TestSparseForUnmaskedSparse:
     def test__same_as_above__but_3x4_mask(self):
 
         ma = aa.Mask.manual(
-            mask_2d=np.array(
+            mask=np.array(
                 [
                     [True, True, False, True],
                     [False, False, False, False],
@@ -299,7 +299,7 @@ class TestSparseForUnmaskedSparse:
         )
 
         sparse_for_unmasked_sparse = aa.util.sparse.sparse_for_unmasked_sparse_from(
-            mask_2d=ma,
+            mask=ma,
             unmasked_sparse_grid_pixel_centres=unmasked_sparse_grid_pixel_centres,
             total_sparse_pixels=5,
         )
@@ -309,7 +309,7 @@ class TestSparseForUnmaskedSparse:
     def test__same_as_above__but_4x3_mask(self):
 
         ma = aa.Mask.manual(
-            mask_2d=np.array(
+            mask=np.array(
                 [
                     [True, False, True],
                     [True, False, True],
@@ -326,7 +326,7 @@ class TestSparseForUnmaskedSparse:
         )
 
         sparse_for_unmasked_sparse = aa.util.sparse.sparse_for_unmasked_sparse_from(
-            mask_2d=ma,
+            mask=ma,
             unmasked_sparse_grid_pixel_centres=unmasked_sparse_grid_pixel_centres,
             total_sparse_pixels=6,
         )

@@ -285,8 +285,11 @@ class InversionImaging(Inversion):
             mapping_matrix=self.blurred_mapping_matrix,
             reconstruction=self.reconstruction,
         )
-        return self.mapper.grid.mapping.array_stored_1d_from_array_1d(
-            array_1d=reconstructed_image
+
+        return arrays.Array(
+            array=reconstructed_image,
+            mask=self.mapper.grid.mask.mask_sub_1,
+            store_in_1d=True,
         )
 
     @property
@@ -443,8 +446,10 @@ class InversionInterferometer(Inversion):
             reconstruction=self.reconstruction,
         )
 
-        return self.mapper.grid.mapping.array_stored_1d_from_array_1d(
-            array_1d=mapped_reconstructed_image
+        return arrays.Array(
+            array=mapped_reconstructed_image,
+            mask=self.mapper.grid.mask.mask_sub_1,
+            store_in_1d=True,
         )
 
     @property

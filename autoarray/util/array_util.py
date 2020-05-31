@@ -491,7 +491,7 @@ def sub_array_1d_from(sub_array_2d, mask, sub_size):
         mask=mask, array_2d=array_2d)
     """
 
-    total_sub_pixels = mask_util.total_sub_pixels_from(mask_2d=mask, sub_size=sub_size)
+    total_sub_pixels = mask_util.total_sub_pixels_from(mask=mask, sub_size=sub_size)
 
     sub_array_1d = np.zeros(shape=total_sub_pixels)
     index = 0
@@ -546,44 +546,44 @@ def sub_array_2d_from(sub_array_1d, mask, sub_size):
 
     sub_shape = (mask.shape[0] * sub_size, mask.shape[1] * sub_size)
 
-    sub_one_to_two = mask_util.sub_mask_2d_index_for_sub_mask_1d_index_via_mask_2d_from(
-        mask_2d=mask, sub_size=sub_size
+    sub_one_to_two = mask_util.sub_mask_index_for_sub_mask_1d_index_via_mask_from(
+        mask=mask, sub_size=sub_size
     ).astype("int")
 
     return sub_array_2d_via_sub_indexes_from(
         sub_array_1d=sub_array_1d,
         sub_shape=sub_shape,
-        sub_mask_2d_index_for_sub_mask_1d_index=sub_one_to_two,
+        sub_mask_index_for_sub_mask_1d_index=sub_one_to_two,
     )
 
 
 @decorator_util.jit()
 def sub_array_2d_via_sub_indexes_from(
-    sub_array_1d, sub_shape, sub_mask_2d_index_for_sub_mask_1d_index
+    sub_array_1d, sub_shape, sub_mask_index_for_sub_mask_1d_index
 ):
 
     array_2d = np.zeros(sub_shape)
 
-    for index in range(len(sub_mask_2d_index_for_sub_mask_1d_index)):
+    for index in range(len(sub_mask_index_for_sub_mask_1d_index)):
         array_2d[
-            sub_mask_2d_index_for_sub_mask_1d_index[index, 0],
-            sub_mask_2d_index_for_sub_mask_1d_index[index, 1],
+            sub_mask_index_for_sub_mask_1d_index[index, 0],
+            sub_mask_index_for_sub_mask_1d_index[index, 1],
         ] = sub_array_1d[index]
 
     return array_2d
 
 
 @decorator_util.jit()
-def peak_pixels_from(array_2d, mask_2d=None):
+def peak_pixels_from(array_2d, mask=None):
 
-    if mask_2d is None:
-        mask_2d = np.full(fill_value=False, shape=array_2d.shape)
+    if mask is None:
+        mask = np.full(fill_value=False, shape=array_2d.shape)
 
     peak_pixels = []
 
     for y in range(1, array_2d.shape[0] - 1):
         for x in range(1, array_2d.shape[1] - 1):
-            if not mask_2d[y, x]:
+            if not mask[y, x]:
                 if (
                     array_2d[y, x] > array_2d[y + 1, x]
                     and array_2d[y, x] > array_2d[y + 1, x + 1]
@@ -601,16 +601,16 @@ def peak_pixels_from(array_2d, mask_2d=None):
 
 
 @decorator_util.jit()
-def trough_pixels_from(array_2d, mask_2d=None):
+def trough_pixels_from(array_2d, mask=None):
 
-    if mask_2d is None:
-        mask_2d = np.full(fill_value=False, shape=array_2d.shape)
+    if mask is None:
+        mask = np.full(fill_value=False, shape=array_2d.shape)
 
     trough_pixels = []
 
     for y in range(1, array_2d.shape[0] - 1):
         for x in range(1, array_2d.shape[1] - 1):
-            if not mask_2d[y, x]:
+            if not mask[y, x]:
                 if (
                     array_2d[y, x] < array_2d[y + 1, x]
                     and array_2d[y, x] < array_2d[y + 1, x + 1]

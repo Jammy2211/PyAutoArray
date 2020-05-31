@@ -10,8 +10,8 @@ class TestGrid1DFromMask:
 
         mask = np.array([[True, True, True], [True, False, True], [True, True, True]])
 
-        grid = aa.util.grid.grid_1d_via_mask_2d_from(
-            mask_2d=mask, pixel_scales=(3.0, 6.0), sub_size=1
+        grid = aa.util.grid.grid_1d_via_mask_from(
+            mask=mask, pixel_scales=(3.0, 6.0), sub_size=1
         )
 
         assert (grid[0] == np.array([0.0, 0.0])).all()
@@ -20,8 +20,8 @@ class TestGrid1DFromMask:
             [[True, False, True], [False, False, False], [True, False, True]]
         )
 
-        grid = aa.util.grid.grid_1d_via_mask_2d_from(
-            mask_2d=mask, pixel_scales=(6.0, 3.0), sub_size=1
+        grid = aa.util.grid.grid_1d_via_mask_from(
+            mask=mask, pixel_scales=(6.0, 3.0), sub_size=1
         )
 
         assert (
@@ -40,8 +40,8 @@ class TestGrid1DFromMask:
             ]
         )
 
-        grid = aa.util.grid.grid_1d_via_mask_2d_from(
-            mask_2d=mask, pixel_scales=(1.0, 1.0), sub_size=1
+        grid = aa.util.grid.grid_1d_via_mask_from(
+            mask=mask, pixel_scales=(1.0, 1.0), sub_size=1
         )
 
         assert (
@@ -70,8 +70,8 @@ class TestGrid1DFromMask:
             ]
         )
 
-        grid = aa.util.grid.grid_1d_via_mask_2d_from(
-            mask_2d=mask, pixel_scales=(3.0, 3.0), sub_size=1
+        grid = aa.util.grid.grid_1d_via_mask_from(
+            mask=mask, pixel_scales=(3.0, 3.0), sub_size=1
         )
 
         assert (
@@ -93,8 +93,8 @@ class TestGrid1DFromMask:
             [[True, False, True], [False, False, False], [True, False, True]]
         )
 
-        grid = aa.util.grid.grid_1d_via_mask_2d_from(
-            mask_2d=mask, pixel_scales=(6.0, 3.0), sub_size=1, origin=(1.0, 1.0)
+        grid = aa.util.grid.grid_1d_via_mask_from(
+            mask=mask, pixel_scales=(6.0, 3.0), sub_size=1, origin=(1.0, 1.0)
         )
 
         assert grid == pytest.approx(
@@ -110,8 +110,8 @@ class TestGrid1DFromMask:
             ]
         )
 
-        grid = aa.util.grid.grid_1d_via_mask_2d_from(
-            mask_2d=mask, pixel_scales=(3.0, 3.0), sub_size=1, origin=(1.0, 2.0)
+        grid = aa.util.grid.grid_1d_via_mask_from(
+            mask=mask, pixel_scales=(3.0, 3.0), sub_size=1, origin=(1.0, 2.0)
         )
 
         assert grid == pytest.approx(
@@ -132,8 +132,8 @@ class TestGrid1DFromMask:
 
         mask = np.array([[True, True, True], [True, False, True], [True, True, True]])
 
-        grid = aa.util.grid.grid_1d_via_mask_2d_from(
-            mask_2d=mask, pixel_scales=(3.0, 6.0), sub_size=2
+        grid = aa.util.grid.grid_1d_via_mask_from(
+            mask=mask, pixel_scales=(3.0, 6.0), sub_size=2
         )
 
         assert (
@@ -143,8 +143,8 @@ class TestGrid1DFromMask:
 
         mask = np.array([[True, True, True], [False, False, False], [True, True, True]])
 
-        grid = aa.util.grid.grid_1d_via_mask_2d_from(
-            mask_2d=mask, pixel_scales=(3.0, 3.0), sub_size=2
+        grid = aa.util.grid.grid_1d_via_mask_from(
+            mask=mask, pixel_scales=(3.0, 3.0), sub_size=2
         )
 
         assert (
@@ -166,8 +166,8 @@ class TestGrid1DFromMask:
             [[True, True, False], [False, False, False], [True, True, False]]
         )
 
-        grid = aa.util.grid.grid_1d_via_mask_2d_from(
-            mask_2d=mask, pixel_scales=(3.0, 3.0), sub_size=2
+        grid = aa.util.grid.grid_1d_via_mask_from(
+            mask=mask, pixel_scales=(3.0, 3.0), sub_size=2
         )
 
         assert (
@@ -202,8 +202,8 @@ class TestGrid1DFromMask:
             [[True, True, False], [False, False, False], [True, True, False]]
         )
 
-        grid = aa.util.grid.grid_1d_via_mask_2d_from(
-            mask_2d=mask, pixel_scales=(0.3, 0.3), sub_size=2
+        grid = aa.util.grid.grid_1d_via_mask_from(
+            mask=mask, pixel_scales=(0.3, 0.3), sub_size=2
         )
 
         grid = np.round(grid, decimals=3)
@@ -239,8 +239,8 @@ class TestGrid1DFromMask:
     def test__3x3_mask_with_one_pixel__3x3_and_4x4_sub_grids(self):
         mask = np.array([[True, True, True], [True, False, True], [True, True, True]])
 
-        grid = aa.util.grid.grid_1d_via_mask_2d_from(
-            mask_2d=mask, pixel_scales=(3.0, 3.0), sub_size=3
+        grid = aa.util.grid.grid_1d_via_mask_from(
+            mask=mask, pixel_scales=(3.0, 3.0), sub_size=3
         )
 
         assert (
@@ -271,8 +271,8 @@ class TestGrid1DFromMask:
             ]
         )
 
-        grid = aa.util.grid.grid_1d_via_mask_2d_from(
-            mask_2d=mask, pixel_scales=(2.0, 2.0), sub_size=4
+        grid = aa.util.grid.grid_1d_via_mask_from(
+            mask=mask, pixel_scales=(2.0, 2.0), sub_size=4
         )
 
         grid = np.round(grid, decimals=2)
@@ -375,8 +375,8 @@ class TestGrid1DFromMask:
             ]
         )
 
-        grid = aa.util.grid.grid_1d_via_mask_2d_from(
-            mask_2d=mask, pixel_scales=(3.0, 3.0), sub_size=2
+        grid = aa.util.grid.grid_1d_via_mask_from(
+            mask=mask, pixel_scales=(3.0, 3.0), sub_size=2
         )
 
         assert (
@@ -411,8 +411,8 @@ class TestGrid1DFromMask:
             ]
         )
 
-        grid = aa.util.grid.grid_1d_via_mask_2d_from(
-            mask_2d=mask, pixel_scales=(3.0, 3.0), sub_size=2
+        grid = aa.util.grid.grid_1d_via_mask_from(
+            mask=mask, pixel_scales=(3.0, 3.0), sub_size=2
         )
 
         assert (
@@ -449,8 +449,8 @@ class TestGrid1DFromMask:
 
         mask = np.array([[True, True, True], [True, False, True], [True, True, True]])
 
-        grid = aa.util.grid.grid_1d_via_mask_2d_from(
-            mask_2d=mask, pixel_scales=(3.0, 6.0), sub_size=2, origin=(1.0, 1.0)
+        grid = aa.util.grid.grid_1d_via_mask_from(
+            mask=mask, pixel_scales=(3.0, 6.0), sub_size=2, origin=(1.0, 1.0)
         )
 
         assert grid[0:4] == pytest.approx(
@@ -459,8 +459,8 @@ class TestGrid1DFromMask:
 
         mask = np.array([[True, True, False], [True, False, True], [True, True, False]])
 
-        grid = aa.util.grid.grid_1d_via_mask_2d_from(
-            mask_2d=mask, pixel_scales=(3.0, 3.0), sub_size=3, origin=(1.0, -1.0)
+        grid = aa.util.grid.grid_1d_via_mask_from(
+            mask=mask, pixel_scales=(3.0, 3.0), sub_size=3, origin=(1.0, -1.0)
         )
 
         assert grid == pytest.approx(
@@ -504,8 +504,8 @@ class TestGrid2DFromMask:
 
         mask = np.array([[False, True, True], [True, True, False], [True, True, True]])
 
-        grid_2d = aa.util.grid.grid_2d_via_mask_2d_from(
-            mask_2d=mask, pixel_scales=(3.0, 6.0), sub_size=1
+        grid_2d = aa.util.grid.grid_2d_via_mask_from(
+            mask=mask, pixel_scales=(3.0, 6.0), sub_size=1
         )
 
         assert (
@@ -521,8 +521,8 @@ class TestGrid2DFromMask:
 
         mask = np.array([[False, True], [True, False]])
 
-        grid_2d = aa.util.grid.grid_2d_via_mask_2d_from(
-            mask_2d=mask, pixel_scales=(3.0, 6.0), sub_size=2
+        grid_2d = aa.util.grid.grid_2d_via_mask_from(
+            mask=mask, pixel_scales=(3.0, 6.0), sub_size=2
         )
 
         assert (
@@ -723,8 +723,8 @@ class TestGrid1dFromShape:
             shape_2d=(2, 4), pixel_scales=(2.0, 1.0), sub_size=3, origin=(0.5, 0.6)
         )
 
-        sub_grid_mask = aa.util.grid.grid_1d_via_mask_2d_from(
-            mask_2d=np.full(fill_value=False, shape=(2, 4)),
+        sub_grid_mask = aa.util.grid.grid_1d_via_mask_from(
+            mask=np.full(fill_value=False, shape=(2, 4)),
             pixel_scales=(2.0, 1.0),
             sub_size=3,
             origin=(0.5, 0.6),
@@ -1627,7 +1627,7 @@ class TestSubGrid1DFromSubGrid2D:
         mask = np.array([[True, True, True], [True, False, True], [True, True, True]])
 
         grid_1d = aa.util.grid.sub_grid_1d_from(
-            sub_grid_2d=grid_2d, mask_2d=mask, sub_size=1
+            sub_grid_2d=grid_2d, mask=mask, sub_size=1
         )
 
         assert (grid_1d == np.array([[5, 5]])).all()
@@ -1645,7 +1645,7 @@ class TestSubGrid1DFromSubGrid2D:
         )
 
         grid_1d = aa.util.grid.sub_grid_1d_from(
-            sub_grid_2d=grid_2d, mask_2d=mask, sub_size=1
+            sub_grid_2d=grid_2d, mask=mask, sub_size=1
         )
 
         assert (grid_1d == np.array([[2, 2], [4, 4], [5, 5], [6, 6], [8, 8]])).all()
@@ -1667,7 +1667,7 @@ class TestSubGrid1DFromSubGrid2D:
         )
 
         grid_1d = aa.util.grid.sub_grid_1d_from(
-            sub_grid_2d=grid_2d, mask_2d=mask, sub_size=1
+            sub_grid_2d=grid_2d, mask=mask, sub_size=1
         )
 
         assert (
@@ -1693,7 +1693,7 @@ class TestSubGrid1DFromSubGrid2D:
         )
 
         grid_1d = aa.util.grid.sub_grid_1d_from(
-            sub_grid_2d=grid_2d, mask_2d=mask, sub_size=1
+            sub_grid_2d=grid_2d, mask=mask, sub_size=1
         )
 
         assert (grid_1d == np.array([[2, 2], [4, 4], [5, 5], [6, 6], [8, 8]])).all()
@@ -1714,7 +1714,7 @@ class TestSubGrid1DFromSubGrid2D:
         mask = np.array([[True, False, True], [True, False, True], [True, True, False]])
 
         sub_array_1d = aa.util.grid.sub_grid_1d_from(
-            sub_grid_2d=sub_grid_2d, mask_2d=mask, sub_size=2
+            sub_grid_2d=sub_grid_2d, mask=mask, sub_size=2
         )
 
         assert (
@@ -1746,7 +1746,7 @@ class TestSubGrid2DFromSubGrid1d:
         mask = np.full(fill_value=False, shape=(2, 2))
 
         grid_2d = aa.util.grid.sub_grid_2d_from(
-            sub_grid_1d=grid_1d, mask_2d=mask, sub_size=1
+            sub_grid_1d=grid_1d, mask=mask, sub_size=1
         )
 
         assert (
@@ -1758,7 +1758,7 @@ class TestSubGrid2DFromSubGrid1d:
         mask = np.array([[False, False], [False, True]])
 
         grid_2d = aa.util.grid.sub_grid_2d_from(
-            sub_grid_1d=grid_1d, mask_2d=mask, sub_size=1
+            sub_grid_1d=grid_1d, mask=mask, sub_size=1
         )
 
         assert (
@@ -1785,7 +1785,7 @@ class TestSubGrid2DFromSubGrid1d:
         )
 
         grid_2d = aa.util.grid.sub_grid_2d_from(
-            sub_grid_1d=grid_1d, mask_2d=mask, sub_size=1
+            sub_grid_1d=grid_1d, mask=mask, sub_size=1
         )
 
         assert (
@@ -1821,7 +1821,7 @@ class TestSubGrid2DFromSubGrid1d:
         mask = np.array([[False, False], [False, True]])
 
         grid_2d = aa.util.grid.sub_grid_2d_from(
-            sub_grid_1d=grid_1d, mask_2d=mask, sub_size=2
+            sub_grid_1d=grid_1d, mask=mask, sub_size=2
         )
 
         assert (
@@ -1870,8 +1870,8 @@ class TestPositionsAtCoordinate:
 
         grid = aa.Grid.uniform(shape_2d=(5, 5), pixel_scales=1.0)
 
-        mask_2d = aa.Mask.manual(
-            mask_2d=[
+        mask = aa.Mask.manual(
+            mask=[
                 [True, True, False, False, False],
                 [True, True, False, False, False],
                 [True, True, False, False, False],
@@ -1881,7 +1881,7 @@ class TestPositionsAtCoordinate:
         )
 
         pixels_at_coordinate = aa.util.grid.positions_at_coordinate_from(
-            grid_2d=grid.in_2d, coordinate=(0.3, 0.3), mask_2d=mask_2d
+            grid_2d=grid.in_2d, coordinate=(0.3, 0.3), mask=mask
         )
 
         assert pixels_at_coordinate == [(1, 3)]

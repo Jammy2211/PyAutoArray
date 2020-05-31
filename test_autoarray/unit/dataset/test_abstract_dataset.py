@@ -97,7 +97,7 @@ class TestAbstractMaskedData:
             interpolate_pixel_scale=1.0,
         )
 
-        grid = aa.MaskedGrid.from_mask(mask=sub_mask_7x7)
+        grid = aa.Grid.from_mask(mask=sub_mask_7x7)
         new_grid = grid.new_grid_with_interpolator(interpolation_pixel_scale=1.0)
 
         assert isinstance(masked_imaging_7x7.grid, aa.Grid)
@@ -127,7 +127,7 @@ class TestAbstractMaskedData:
             interpolate_pixel_scale=1.0,
         )
 
-        grid = aa.MaskedGrid.from_mask(mask=sub_mask_7x7)
+        grid = aa.Grid.from_mask(mask=sub_mask_7x7)
         new_grid = grid.new_grid_with_interpolator(interpolation_pixel_scale=1.0)
 
         assert isinstance(masked_imaging_7x7.grid_inversion, aa.Grid)

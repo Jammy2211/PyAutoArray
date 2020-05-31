@@ -19,7 +19,7 @@ def test_decorated_function__values_from_function_has_1_dimensions__returns_1d_r
         result[0] = 1
         return result
 
-    grid = aa.MaskedGrid.from_mask(
+    grid = aa.Grid.from_mask(
         mask=aa.Mask.unmasked(shape_2d=(3, 3), pixel_scales=(1.0, 1.0), sub_size=1)
     )
 
@@ -29,7 +29,7 @@ def test_decorated_function__values_from_function_has_1_dimensions__returns_1d_r
     assert values.shape == (9,)
     assert (values == np.array([[1, 0, 0, 0, 0, 0, 0, 0, 0]])).all()
 
-    grid = aa.MaskedGrid.from_mask(
+    grid = aa.Grid.from_mask(
         mask=aa.Mask.unmasked(shape_2d=(3, 3), pixel_scales=(1.0, 1.0), sub_size=1)
     )
     grid.interpolator = grids.GridInterpolate.from_mask_grid_and_interpolation_pixel_scales(
@@ -49,7 +49,7 @@ def test_decorated_function__values_from_function_has_2_dimensions__returns_2d_r
         result[0, :] = 1
         return result
 
-    grid = aa.MaskedGrid.from_mask(
+    grid = aa.Grid.from_mask(
         mask=aa.Mask.unmasked(shape_2d=(3, 3), pixel_scales=(1.0, 1.0), sub_size=1)
     )
 
@@ -64,7 +64,7 @@ def test_decorated_function__values_from_function_has_2_dimensions__returns_2d_r
         )
     ).all()
 
-    grid = aa.MaskedGrid.from_mask(
+    grid = aa.Grid.from_mask(
         mask=aa.Mask.unmasked(shape_2d=(3, 3), pixel_scales=(1.0, 1.0), sub_size=1)
     )
     grid.interpolator = grids.GridInterpolate.from_mask_grid_and_interpolation_pixel_scales(
@@ -98,7 +98,7 @@ def test__20x20_deflection_angles_no_central_pixels__interpolated_accurately():
         outer_radius=8.0,
     )
 
-    grid = aa.MaskedGrid.from_mask(mask=mask)
+    grid = aa.Grid.from_mask(mask=mask)
 
     true_grid_radii = grid_radii_from_grid(profile=None, grid=grid)
 
@@ -136,7 +136,7 @@ def test__move_centre_of_galaxy__interpolated_accurately():
         centre=(3.0, 3.0),
     )
 
-    grid = aa.MaskedGrid.from_mask(mask=mask)
+    grid = aa.Grid.from_mask(mask=mask)
 
     true_grid_radii = grid_radii_from_grid(profile=None, grid=grid)
 
@@ -174,7 +174,7 @@ def test__different_interpolation_pixel_scales_still_works():
         centre=(3.0, 3.0),
     )
 
-    grid = aa.MaskedGrid.from_mask(mask=mask)
+    grid = aa.Grid.from_mask(mask=mask)
 
     true_grid_radii = grid_radii_from_grid(profile=None, grid=grid)
 

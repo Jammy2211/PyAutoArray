@@ -14,19 +14,19 @@ test_data_dir = "{}/files/mask/".format(os.path.dirname(os.path.realpath(__file_
 class TestMask:
     def test__mask__makes_mask_without_other_inputs(self):
 
-        mask = aa.Mask.manual(mask_2d=[[False, False], [False, False]])
+        mask = aa.Mask.manual(mask=[[False, False], [False, False]])
 
         assert type(mask) == msk.Mask
         assert (mask == np.array([[False, False], [False, False]])).all()
 
-        mask = aa.Mask.manual(mask_2d=[[False, False, True], [True, True, False]])
+        mask = aa.Mask.manual(mask=[[False, False, True], [True, True, False]])
 
         assert type(mask) == msk.Mask
         assert (mask == np.array([[False, False, True], [True, True, False]])).all()
 
     def test__mask__makes_mask_with_pixel_scale(self):
 
-        mask = aa.Mask.manual(mask_2d=[[False, False], [True, True]], pixel_scales=1.0)
+        mask = aa.Mask.manual(mask=[[False, False], [True, True]], pixel_scales=1.0)
 
         assert type(mask) == msk.Mask
         assert (mask == np.array([[False, False], [True, True]])).all()
@@ -34,7 +34,7 @@ class TestMask:
         assert mask.origin == (0.0, 0.0)
 
         mask = aa.Mask.manual(
-            mask_2d=[[False, False, True], [True, True, False]],
+            mask=[[False, False, True], [True, True, False]],
             pixel_scales=(2.0, 3.0),
             origin=(0.0, 1.0),
         )
@@ -47,7 +47,7 @@ class TestMask:
     def test__mask__makes_mask_with_pixel_scale_and_sub_size(self):
 
         mask = aa.Mask.manual(
-            mask_2d=[[False, False], [True, True]], pixel_scales=1.0, sub_size=1
+            mask=[[False, False], [True, True]], pixel_scales=1.0, sub_size=1
         )
 
         assert type(mask) == msk.Mask
@@ -57,7 +57,7 @@ class TestMask:
         assert mask.sub_size == 1
 
         mask = aa.Mask.manual(
-            mask_2d=[[False, False], [True, True]],
+            mask=[[False, False], [True, True]],
             pixel_scales=(2.0, 3.0),
             sub_size=2,
             origin=(0.0, 1.0),
@@ -70,7 +70,7 @@ class TestMask:
         assert mask.sub_size == 2
 
         mask = aa.Mask.manual(
-            mask_2d=[[False, False], [True, True], [True, False], [False, True]],
+            mask=[[False, False], [True, True], [True, False], [False, True]],
             pixel_scales=1.0,
             sub_size=2,
         )
@@ -87,7 +87,7 @@ class TestMask:
     def test__mask__invert_is_true_inverts_the_mask(self):
 
         mask = aa.Mask.manual(
-            mask_2d=[[False, False, True], [True, True, False]], invert=True
+            mask=[[False, False, True], [True, True, False]], invert=True
         )
 
         assert type(mask) == msk.Mask
@@ -97,53 +97,53 @@ class TestMask:
 
         with pytest.raises(exc.MaskException):
 
-            aa.Mask.manual(mask_2d=[False, False, True])
+            aa.Mask.manual(mask=[False, False, True])
 
         with pytest.raises(exc.MaskException):
 
-            aa.Mask.manual(mask_2d=[False, False, True], pixel_scales=False)
+            aa.Mask.manual(mask=[False, False, True], pixel_scales=False)
 
         with pytest.raises(exc.MaskException):
 
-            aa.Mask.manual(mask_2d=[False, False, True], sub_size=1)
+            aa.Mask.manual(mask=[False, False, True], sub_size=1)
 
         with pytest.raises(exc.MaskException):
 
-            aa.Mask.manual(mask_2d=[False, False, True], pixel_scales=False, sub_size=1)
+            aa.Mask.manual(mask=[False, False, True], pixel_scales=False, sub_size=1)
 
     def test__is_all_true(self):
 
-        mask = aa.Mask.manual(mask_2d=[[False, False], [False, False]])
+        mask = aa.Mask.manual(mask=[[False, False], [False, False]])
 
         assert mask.is_all_true == False
 
-        mask = aa.Mask.manual(mask_2d=[[False, False]])
+        mask = aa.Mask.manual(mask=[[False, False]])
 
         assert mask.is_all_true == False
 
-        mask = aa.Mask.manual(mask_2d=[[False, True], [False, False]])
+        mask = aa.Mask.manual(mask=[[False, True], [False, False]])
 
         assert mask.is_all_true == False
 
-        mask = aa.Mask.manual(mask_2d=[[True, True], [True, True]])
+        mask = aa.Mask.manual(mask=[[True, True], [True, True]])
 
         assert mask.is_all_true == True
 
     def test__is_all_false(self):
 
-        mask = aa.Mask.manual(mask_2d=[[False, False], [False, False]])
+        mask = aa.Mask.manual(mask=[[False, False], [False, False]])
 
         assert mask.is_all_false == True
 
-        mask = aa.Mask.manual(mask_2d=[[False, False]])
+        mask = aa.Mask.manual(mask=[[False, False]])
 
         assert mask.is_all_false == True
 
-        mask = aa.Mask.manual(mask_2d=[[False, True], [False, False]])
+        mask = aa.Mask.manual(mask=[[False, True], [False, False]])
 
         assert mask.is_all_false == False
 
-        mask = aa.Mask.manual(mask_2d=[[True, True], [False, False]])
+        mask = aa.Mask.manual(mask=[[True, True], [False, False]])
 
         assert mask.is_all_false == False
 
@@ -206,7 +206,7 @@ class TestUnmasked:
 class TestCircular:
     def test__mask_circular__compare_to_array_util(self):
 
-        mask_via_util = aa.util.mask.mask_2d_circular_from(
+        mask_via_util = aa.util.mask.mask_circular_from(
             shape_2d=(5, 4), pixel_scales=(2.7, 2.7), radius=3.5, centre=(0.0, 0.0)
         )
 
@@ -223,7 +223,7 @@ class TestCircular:
         assert mask.geometry.mask_centre == pytest.approx((0.0, 0.0), 1.0e-8)
 
     def test__mask_circular__inverted__compare_to_array_util(self):
-        mask_via_util = aa.util.mask.mask_2d_circular_from(
+        mask_via_util = aa.util.mask.mask_circular_from(
             shape_2d=(5, 4), pixel_scales=(2.7, 2.7), radius=3.5, centre=(0.0, 0.0)
         )
 
@@ -243,7 +243,7 @@ class TestCircular:
 
 class TestAnnular:
     def test__mask_annulus__compare_to_array_util(self):
-        mask_via_util = aa.util.mask.mask_2d_circular_annular_from(
+        mask_via_util = aa.util.mask.mask_circular_annular_from(
             shape_2d=(5, 4),
             pixel_scales=(2.7, 2.7),
             inner_radius=0.8,
@@ -265,7 +265,7 @@ class TestAnnular:
         assert mask.geometry.mask_centre == pytest.approx((0.0, 0.0), 1.0e-8)
 
     def test__mask_annulus_inverted__compare_to_array_util(self):
-        mask_via_util = aa.util.mask.mask_2d_circular_annular_from(
+        mask_via_util = aa.util.mask.mask_circular_annular_from(
             shape_2d=(5, 4),
             pixel_scales=(2.7, 2.7),
             inner_radius=0.8,
@@ -290,7 +290,7 @@ class TestAnnular:
 
 class TestAntiAnnular:
     def test__mask_anti_annulus__compare_to_array_util(self):
-        mask_via_util = aa.util.mask.mask_2d_circular_anti_annular_from(
+        mask_via_util = aa.util.mask.mask_circular_anti_annular_from(
             shape_2d=(9, 9),
             pixel_scales=(1.2, 1.2),
             inner_radius=0.8,
@@ -314,7 +314,7 @@ class TestAntiAnnular:
         assert mask.geometry.mask_centre == (0.0, 0.0)
 
     def test__mask_anti_annulus_inverted__compare_to_array_util(self):
-        mask_via_util = aa.util.mask.mask_2d_circular_anti_annular_from(
+        mask_via_util = aa.util.mask.mask_circular_anti_annular_from(
             shape_2d=(9, 9),
             pixel_scales=(1.2, 1.2),
             inner_radius=0.8,
@@ -341,7 +341,7 @@ class TestAntiAnnular:
 
 class TestElliptical:
     def test__mask_elliptical__compare_to_array_util(self):
-        mask_via_util = aa.util.mask.mask_2d_elliptical_from(
+        mask_via_util = aa.util.mask.mask_elliptical_from(
             shape_2d=(8, 5),
             pixel_scales=(2.7, 2.7),
             major_axis_radius=5.7,
@@ -365,7 +365,7 @@ class TestElliptical:
         assert mask.geometry.mask_centre == pytest.approx((0.0, 0.0), 1.0e-8)
 
     def test__mask_elliptical_inverted__compare_to_array_util(self):
-        mask_via_util = aa.util.mask.mask_2d_elliptical_from(
+        mask_via_util = aa.util.mask.mask_elliptical_from(
             shape_2d=(8, 5),
             pixel_scales=(2.7, 2.7),
             major_axis_radius=5.7,
@@ -392,7 +392,7 @@ class TestElliptical:
 
 class TestEllipiticalAnnular:
     def test__mask_elliptical_annular__compare_to_array_util(self):
-        mask_via_util = aa.util.mask.mask_2d_elliptical_annular_from(
+        mask_via_util = aa.util.mask.mask_elliptical_annular_from(
             shape_2d=(8, 5),
             pixel_scales=(2.7, 2.7),
             inner_major_axis_radius=2.1,
@@ -423,7 +423,7 @@ class TestEllipiticalAnnular:
 
     def test__mask_elliptical_annular_inverted__compare_to_array_util(self):
 
-        mask_via_util = aa.util.mask.mask_2d_elliptical_annular_from(
+        mask_via_util = aa.util.mask.mask_elliptical_annular_from(
             shape_2d=(8, 5),
             pixel_scales=(2.7, 2.7),
             inner_major_axis_radius=2.1,
@@ -604,7 +604,7 @@ class TestSubQuantities:
         mask = aa.Mask.manual([[False, True], [False, False]], sub_size=2)
 
         assert (
-            mask.sub_mask_2d
+            mask.sub_mask
             == np.array(
                 [
                     [False, False, True, True],
@@ -618,7 +618,7 @@ class TestSubQuantities:
         mask = aa.Mask.manual([[False, False, True], [False, True, False]], sub_size=2)
 
         assert (
-            mask.sub_mask_2d
+            mask.sub_mask
             == np.array(
                 [
                     [False, False, False, False, True, True],
@@ -630,6 +630,22 @@ class TestSubQuantities:
         ).all()
 
 
+class TestNewMask:
+    def test__new_mask_with_new_sub_size(self):
+
+        mask = aa.Mask.unmasked(shape_2d=(3, 3), sub_size=4)
+
+        mask_new = mask.mask_new_sub_size_from_mask(mask=mask)
+
+        assert (mask_new == np.full(fill_value=False, shape=(3, 3))).all()
+        assert mask_new.sub_size == 1
+
+        mask_new = mask.mask_new_sub_size_from_mask(mask=mask, sub_size=8)
+
+        assert (mask_new == np.full(fill_value=False, shape=(3, 3))).all()
+        assert mask_new.sub_size == 8
+
+
 class TestBinnedMask:
     def test__compare_to_mask_via_util(self):
 
@@ -639,11 +655,9 @@ class TestBinnedMask:
         mask[4, 9] = False
         mask[11, 10] = False
 
-        binned_up_mask_via_util = aa.util.binning.bin_mask_2d(
-            mask_2d=mask, bin_up_factor=2
-        )
+        binned_up_mask_via_util = aa.util.binning.bin_mask(mask=mask, bin_up_factor=2)
 
-        mask = mask.mapping.binned_mask_from_bin_up_factor(bin_up_factor=2)
+        mask = mask.binned_mask_from_bin_up_factor(bin_up_factor=2)
         assert (mask == binned_up_mask_via_util).all()
         assert mask.pixel_scales == (2.0, 2.0)
 
@@ -653,10 +667,61 @@ class TestBinnedMask:
         mask[4, 9] = False
         mask[11, 10] = False
 
-        binned_up_mask_via_util = aa.util.binning.bin_mask_2d(
-            mask_2d=mask, bin_up_factor=3
-        )
+        binned_up_mask_via_util = aa.util.binning.bin_mask(mask=mask, bin_up_factor=3)
 
-        mask = mask.mapping.binned_mask_from_bin_up_factor(bin_up_factor=3)
+        mask = mask.binned_mask_from_bin_up_factor(bin_up_factor=3)
         assert (mask == binned_up_mask_via_util).all()
         assert mask.pixel_scales == (6.0, 6.0)
+
+
+class TestResizedMask:
+    def test__resized_mask__pad__compare_to_manual_mask(self):
+
+        mask = aa.Mask.unmasked(shape_2d=(5, 5))
+        mask[2, 2] = True
+
+        mask_resized = mask.resized_mask_from_new_shape(new_shape=(7, 7))
+
+        mask_resized_manual = np.full(fill_value=False, shape=(7, 7))
+        mask_resized_manual[3, 3] = True
+
+        assert (mask_resized == mask_resized_manual).all()
+
+    def test__resized_mask__trim__compare_to_manual_mask(self):
+
+        mask = aa.Mask.unmasked(shape_2d=(5, 5))
+        mask[2, 2] = True
+
+        mask_resized = mask.resized_mask_from_new_shape(new_shape=(3, 3))
+
+        mask_resized_manual = np.full(fill_value=False, shape=(3, 3))
+        mask_resized_manual[1, 1] = True
+
+        assert (mask_resized == mask_resized_manual).all()
+
+    def test__rescaled_mask_from_rescale_factor__compare_to_manual_mask(self):
+
+        mask = aa.Mask.unmasked(shape_2d=(5, 5))
+        mask[2, 2] = True
+
+        mask_rescaled = mask.rescaled_mask_from_rescale_factor(rescale_factor=2.0)
+
+        mask_rescaled_manual = np.full(fill_value=False, shape=(3, 3))
+        mask_rescaled_manual[1, 1] = True
+
+        mask_rescaled_manual = aa.util.mask.rescaled_mask_from(
+            mask=mask, rescale_factor=2.0
+        )
+
+        assert (mask_rescaled == mask_rescaled_manual).all()
+
+    def test__edged_buffed_mask__compare_to_manual_mask(self):
+
+        mask = aa.Mask.unmasked(shape_2d=(5, 5))
+        mask[2, 2] = True
+
+        edge_buffed_mask_manual = aa.util.mask.buffed_mask_from(mask=mask).astype(
+            "bool"
+        )
+
+        assert (mask.edge_buffed_mask == edge_buffed_mask_manual).all()

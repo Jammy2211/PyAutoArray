@@ -22,7 +22,7 @@ def set_config_path():
 
 @pytest.fixture(name="mask_7x7")
 def make_mask_7x7():
-    mask_2d = np.array(
+    mask = np.array(
         [
             [True, True, True, True, True, True, True],
             [True, True, True, True, True, True, True],
@@ -34,12 +34,12 @@ def make_mask_7x7():
         ]
     )
 
-    return aa.Mask.manual(mask_2d=mask_2d, pixel_scales=(1.0, 1.0), sub_size=1)
+    return aa.Mask.manual(mask=mask, pixel_scales=(1.0, 1.0), sub_size=1)
 
 
 @pytest.fixture(name="sub_mask_7x7")
 def make_sub_mask_7x7():
-    mask_2d = np.array(
+    mask = np.array(
         [
             [True, True, True, True, True, True, True],
             [True, True, True, True, True, True, True],
@@ -51,12 +51,12 @@ def make_sub_mask_7x7():
         ]
     )
 
-    return aa.Mask.manual(mask_2d=mask_2d, sub_size=2, pixel_scales=(1.0, 1.0))
+    return aa.Mask.manual(mask=mask, sub_size=2, pixel_scales=(1.0, 1.0))
 
 
 @pytest.fixture(name="mask_7x7_1_pix")
 def make_mask_7x7_1_pix():
-    mask_2d = np.array(
+    mask = np.array(
         [
             [True, True, True, True, True, True, True],
             [True, True, True, True, True, True, True],
@@ -68,12 +68,12 @@ def make_mask_7x7_1_pix():
         ]
     )
 
-    return aa.Mask.manual(mask_2d=mask_2d, pixel_scales=(1.0, 1.0))
+    return aa.Mask.manual(mask=mask, pixel_scales=(1.0, 1.0))
 
 
 @pytest.fixture(name="blurring_mask_7x7")
 def make_blurring_mask_7x7():
-    blurring_mask_2d = np.array(
+    blurring_mask = np.array(
         [
             [True, True, True, True, True, True, True],
             [True, False, False, False, False, False, True],
@@ -85,12 +85,12 @@ def make_blurring_mask_7x7():
         ]
     )
 
-    return aa.Mask.manual(mask_2d=blurring_mask_2d, pixel_scales=(1.0, 1.0))
+    return aa.Mask.manual(mask=blurring_mask, pixel_scales=(1.0, 1.0))
 
 
 @pytest.fixture(name="mask_6x6")
 def make_mask_6x6():
-    mask_2d = np.array(
+    mask = np.array(
         [
             [True, True, True, True, True, True],
             [True, True, True, True, True, True],
@@ -101,7 +101,7 @@ def make_mask_6x6():
         ]
     )
 
-    return aa.Mask.manual(mask_2d=mask_2d, pixel_scales=(1.0, 1.0))
+    return aa.Mask.manual(mask=mask, pixel_scales=(1.0, 1.0))
 
 
 # GRIDS #
@@ -109,12 +109,12 @@ def make_mask_6x6():
 
 @pytest.fixture(name="grid_7x7")
 def make_grid_7x7(mask_7x7):
-    return aa.MaskedGrid.from_mask(mask=mask_7x7)
+    return aa.Grid.from_mask(mask=mask_7x7)
 
 
 @pytest.fixture(name="sub_grid_7x7")
 def make_sub_grid_7x7(sub_mask_7x7):
-    return aa.MaskedGrid.from_mask(mask=sub_mask_7x7)
+    return aa.Grid.from_mask(mask=sub_mask_7x7)
 
 
 @pytest.fixture(name="grid_iterator_7x7")
@@ -135,7 +135,7 @@ def make_sub_grid_7x7_simple(mask_7x7, sub_grid_7x7):
 
 @pytest.fixture(name="blurring_grid_7x7")
 def make_blurring_grid_7x7(blurring_mask_7x7):
-    return aa.MaskedGrid.from_mask(mask=blurring_mask_7x7)
+    return aa.Grid.from_mask(mask=blurring_mask_7x7)
 
 
 # CONVOLVERS #

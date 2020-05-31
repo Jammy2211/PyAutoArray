@@ -24,7 +24,7 @@ def test__grid_in__output_values_same_format():
         ]
     )
 
-    mask = aa.Mask.manual(mask_2d=mask, pixel_scales=(1.0, 1.0), sub_size=1)
+    mask = aa.Mask.manual(mask=mask, pixel_scales=(1.0, 1.0), sub_size=1)
 
     grid = aa.Grid.from_mask(mask=mask)
 
@@ -71,7 +71,7 @@ def test__grid_in__output_is_list__list_of_same_format():
         ]
     )
 
-    mask = aa.Mask.manual(mask_2d=mask, pixel_scales=(1.0, 1.0), sub_size=1)
+    mask = aa.Mask.manual(mask=mask, pixel_scales=(1.0, 1.0), sub_size=1)
 
     grid = aa.Grid.from_mask(mask=mask)
 
@@ -174,7 +174,7 @@ def test__grid_coordinates_in__output_is_list__list_of_same_format():
 def test__grid_iterator_in__output_values__use_iterated_array_function():
 
     mask = aa.Mask.manual(
-        mask_2d=[
+        mask=[
             [True, True, True, True, True],
             [True, False, False, False, True],
             [True, False, False, False, True],
@@ -193,7 +193,7 @@ def test__grid_iterator_in__output_values__use_iterated_array_function():
 
     values = grid_like_iterator_obj.ndarray_1d_from_grid(grid=grid)
 
-    mask_sub_3 = mask.mapping.mask_new_sub_size_from_mask(mask=mask, sub_size=3)
+    mask_sub_3 = mask.mask_new_sub_size_from_mask(mask=mask, sub_size=3)
     grid_sub_3 = aa.Grid.from_mask(mask=mask_sub_3)
     values_sub_3 = ndarray_1d_from_grid(grid=grid_sub_3, profile=None)
     values_sub_3 = grid_sub_3.structure_from_result(result=values_sub_3)
@@ -208,7 +208,7 @@ def test__grid_iterator_in__output_values__use_iterated_array_function():
 
     values = grid_like_iterator_obj.ndarray_1d_from_grid(grid=grid)
 
-    mask_sub_2 = mask.mapping.mask_new_sub_size_from_mask(mask=mask, sub_size=2)
+    mask_sub_2 = mask.mask_new_sub_size_from_mask(mask=mask, sub_size=2)
     grid_sub_2 = aa.Grid.from_mask(mask=mask_sub_2)
     values_sub_2 = ndarray_1d_from_grid(grid=grid_sub_2, profile=None)
     values_sub_2 = grid_sub_2.structure_from_result(result=values_sub_2)
@@ -223,12 +223,12 @@ def test__grid_iterator_in__output_values__use_iterated_array_function():
 
     values = iterator_obj.ndarray_1d_from_grid(grid=grid)
 
-    mask_sub_2 = mask.mapping.mask_new_sub_size_from_mask(mask=mask, sub_size=2)
+    mask_sub_2 = mask.mask_new_sub_size_from_mask(mask=mask, sub_size=2)
     grid_sub_2 = aa.Grid.from_mask(mask=mask_sub_2)
     values_sub_2 = ndarray_1d_from_grid(grid=grid_sub_2, profile=None)
     values_sub_2 = grid_sub_2.structure_from_result(result=values_sub_2)
 
-    mask_sub_4 = mask.mapping.mask_new_sub_size_from_mask(mask=mask, sub_size=4)
+    mask_sub_4 = mask.mask_new_sub_size_from_mask(mask=mask, sub_size=4)
     grid_sub_4 = aa.Grid.from_mask(mask=mask_sub_4)
     values_sub_4 = ndarray_1d_from_grid(grid=grid_sub_4, profile=None)
     values_sub_4 = grid_sub_4.structure_from_result(result=values_sub_4)
@@ -243,7 +243,7 @@ def test__grid_iterator_in__output_values__use_iterated_array_function():
 def test__grid_iterator_in__output_is_list_of_arrays__use_maximum_sub_size_in_all_pixels():
 
     mask = aa.Mask.manual(
-        mask_2d=[
+        mask=[
             [True, True, True, True, True],
             [True, False, False, False, True],
             [True, False, False, False, True],
@@ -262,7 +262,7 @@ def test__grid_iterator_in__output_is_list_of_arrays__use_maximum_sub_size_in_al
 
     values = grid_like_iterator_obj.ndarray_1d_list_from_grid(grid=grid)
 
-    mask_sub_3 = mask.mapping.mask_new_sub_size_from_mask(mask=mask, sub_size=3)
+    mask_sub_3 = mask.mask_new_sub_size_from_mask(mask=mask, sub_size=3)
     grid_sub_3 = aa.Grid.from_mask(mask=mask_sub_3)
     values_sub_3 = ndarray_1d_from_grid(grid=grid_sub_3, profile=None)
     values_sub_3 = grid_sub_3.structure_from_result(result=values_sub_3)
@@ -273,7 +273,7 @@ def test__grid_iterator_in__output_is_list_of_arrays__use_maximum_sub_size_in_al
 def test__grid_iterator_in__output_values__use_iterated_grid_function():
 
     mask = aa.Mask.manual(
-        mask_2d=[
+        mask=[
             [True, True, True, True, True],
             [True, False, False, False, True],
             [True, False, False, False, True],
@@ -292,7 +292,7 @@ def test__grid_iterator_in__output_values__use_iterated_grid_function():
 
     values = grid_like_iterator_obj.ndarray_2d_from_grid(grid=grid)
 
-    mask_sub_3 = mask.mapping.mask_new_sub_size_from_mask(mask=mask, sub_size=3)
+    mask_sub_3 = mask.mask_new_sub_size_from_mask(mask=mask, sub_size=3)
     grid_sub_3 = aa.Grid.from_mask(mask=mask_sub_3)
     values_sub_3 = ndarray_2d_from_grid(grid=grid_sub_3, profile=None)
     values_sub_3 = grid_sub_3.structure_from_result(result=values_sub_3)
@@ -307,7 +307,7 @@ def test__grid_iterator_in__output_values__use_iterated_grid_function():
 
     values = grid_like_iterator_obj.ndarray_2d_from_grid(grid=grid)
 
-    mask_sub_2 = mask.mapping.mask_new_sub_size_from_mask(mask=mask, sub_size=2)
+    mask_sub_2 = mask.mask_new_sub_size_from_mask(mask=mask, sub_size=2)
     grid_sub_2 = aa.Grid.from_mask(mask=mask_sub_2)
     values_sub_2 = ndarray_2d_from_grid(grid=grid_sub_2, profile=None)
     values_sub_2 = grid_sub_2.structure_from_result(result=values_sub_2)
@@ -322,12 +322,12 @@ def test__grid_iterator_in__output_values__use_iterated_grid_function():
 
     values = iterator_obj.ndarray_2d_from_grid(grid=grid)
 
-    mask_sub_2 = mask.mapping.mask_new_sub_size_from_mask(mask=mask, sub_size=2)
+    mask_sub_2 = mask.mask_new_sub_size_from_mask(mask=mask, sub_size=2)
     grid_sub_2 = aa.Grid.from_mask(mask=mask_sub_2)
     values_sub_2 = ndarray_2d_from_grid(grid=grid_sub_2, profile=None)
     values_sub_2 = grid_sub_2.structure_from_result(result=values_sub_2)
 
-    mask_sub_4 = mask.mapping.mask_new_sub_size_from_mask(mask=mask, sub_size=4)
+    mask_sub_4 = mask.mask_new_sub_size_from_mask(mask=mask, sub_size=4)
     grid_sub_4 = aa.Grid.from_mask(mask=mask_sub_4)
     values_sub_4 = ndarray_2d_from_grid(grid=grid_sub_4, profile=None)
     values_sub_4 = grid_sub_4.structure_from_result(result=values_sub_4)
@@ -348,7 +348,7 @@ def test__grid_iterator_in__output_values__use_iterated_grid_function():
 def test__grid_iterator_in__output_is_list_of_grids__use_maximum_sub_size_in_all_pixels():
 
     mask = aa.Mask.manual(
-        mask_2d=[
+        mask=[
             [True, True, True, True, True],
             [True, False, False, False, True],
             [True, False, False, False, True],
@@ -367,7 +367,7 @@ def test__grid_iterator_in__output_is_list_of_grids__use_maximum_sub_size_in_all
 
     values = grid_like_iterator_obj.ndarray_2d_list_from_grid(grid=grid)
 
-    mask_sub_3 = mask.mapping.mask_new_sub_size_from_mask(mask=mask, sub_size=3)
+    mask_sub_3 = mask.mask_new_sub_size_from_mask(mask=mask, sub_size=3)
     grid_sub_3 = aa.Grid.from_mask(mask=mask_sub_3)
     values_sub_3 = ndarray_2d_from_grid(grid=grid_sub_3, profile=None)
     values_sub_3 = grid_sub_3.structure_from_result(result=values_sub_3)
