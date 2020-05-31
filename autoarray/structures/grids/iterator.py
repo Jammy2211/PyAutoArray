@@ -309,6 +309,49 @@ class GridIterator(grids.Grid):
         if hasattr(obj, "sub_steps"):
             self.sub_steps = obj.sub_steps
 
+    def _new_grid(self, grid, mask, store_in_1d):
+        """Conveninence method for creating a new instance of the GridIterator class from this grid.
+
+        This method is used in the 'in_1d', 'in_2d', etc. convenience methods. By overwritin this method such that a
+        GridIterator is created the in_1d and in_2d methods will return instances of the GridIterator.
+
+        Parameters
+        ----------
+        grid : np.ndarray or list
+            The (y,x) coordinates of the grid input as an ndarray of shape [total_sub_coordinates, 2] or list of lists.
+        mask : msk.Mask
+            The 2D mask associated with the grid, defining the pixels each grid coordinate is paired with and
+            originates from.
+        store_in_1d : bool
+            If True, the grid is stored in 1D as an ndarray of shape [total_unmasked_pixels, 2]. If False, it is
+            stored in 2D as an ndarray of shape [total_y_pixels, total_x_pixels, 2].
+            """
+        return GridIterator(
+            grid=grid,
+            mask=mask,
+            fractional_accuracy=self.fractional_accuracy,
+            sub_steps=self.sub_steps,
+            store_in_1d=store_in_1d,
+        )
+
+    @staticmethod
+    def array_at_sub_size_from_func_and_mask(func, profile, mask, sub_size):
+
+        mask_higher_sub = mask.mask_new_sub_size_from_mask(mask=mask, sub_size=sub_size)
+
+        grid_compute = grids.Grid.from_mask(mask=mask_higher_sub)
+        array_higher_sub = func(profile, grid_compute)
+        return grid_compute.structure_from_result(result=array_higher_sub).in_2d_binned
+
+    @staticmethod
+    def grid_at_sub_size_from_func_and_mask(func, profile, mask, sub_size):
+
+        mask_higher_sub = mask.mask_new_sub_size_from_mask(mask=mask, sub_size=sub_size)
+
+        grid_compute = grids.Grid.from_mask(mask=mask_higher_sub)
+        grid_higher_sub = func(profile, grid_compute)
+        return grid_compute.structure_from_result(result=grid_higher_sub).in_2d_binned
+
     def fractional_mask_from_arrays(
         self, array_lower_sub_2d, array_higher_sub_2d
     ) -> msk.Mask:
@@ -368,18 +411,18 @@ class GridIterator(grids.Grid):
             for x in range(fractional_mask.shape[1]):
                 if not array_higher_mask[y, x]:
 
-                    if array_higher_sub_2d[y, x] > 0:
+                    if array_lower_sub_2d[y, x] > 0:
 
                         fractional_accuracy = (
                             array_lower_sub_2d[y, x] / array_higher_sub_2d[y, x]
                         )
 
+                        if fractional_accuracy > 1.0:
+                            fractional_accuracy = 1.0 / fractional_accuracy
+
                     else:
 
-                        fractional_accuracy = 1.0
-
-                    if fractional_accuracy > 1.0:
-                        fractional_accuracy = 1.0 / fractional_accuracy
+                        fractional_accuracy = 0.0
 
                     if fractional_accuracy < fractional_accuracy_threshold:
                         fractional_mask[y, x] = False
@@ -417,17 +460,14 @@ class GridIterator(grids.Grid):
 
         fractional_mask_lower_sub = self.mask
 
-        for sub_size in self.sub_steps:
+        for sub_size in self.sub_steps[:-1]:
 
-            mask_higher_sub = fractional_mask_lower_sub.mask_new_sub_size_from_mask(
-                mask=fractional_mask_lower_sub, sub_size=sub_size
+            array_higher_sub = self.array_at_sub_size_from_func_and_mask(
+                func=func,
+                profile=profile,
+                mask=fractional_mask_lower_sub,
+                sub_size=sub_size,
             )
-
-            grid_compute = grids.Grid.from_mask(mask=mask_higher_sub)
-            array_higher_sub = func(profile, grid_compute)
-            array_higher_sub = grid_compute.structure_from_result(
-                result=array_higher_sub
-            ).in_2d_binned
 
             fractional_mask_higher_sub = self.fractional_mask_from_arrays(
                 array_lower_sub_2d=array_lower_sub_2d,
@@ -453,6 +493,13 @@ class GridIterator(grids.Grid):
 
             array_lower_sub_2d = array_higher_sub
             fractional_mask_lower_sub = fractional_mask_higher_sub
+
+        array_higher_sub = self.array_at_sub_size_from_func_and_mask(
+            func=func,
+            profile=profile,
+            mask=fractional_mask_lower_sub,
+            sub_size=self.sub_steps[-1],
+        )
 
         iterated_array_2d = iterated_array + array_higher_sub.in_2d_binned
 
@@ -609,17 +656,14 @@ class GridIterator(grids.Grid):
 
         fractional_mask_lower_sub = self.mask
 
-        for sub_size in self.sub_steps:
+        for sub_size in self.sub_steps[:-1]:
 
-            mask_higher_sub = fractional_mask_lower_sub.mask_new_sub_size_from_mask(
-                mask=fractional_mask_lower_sub, sub_size=sub_size
+            grid_higher_sub = self.grid_at_sub_size_from_func_and_mask(
+                func=func,
+                profile=profile,
+                mask=fractional_mask_lower_sub,
+                sub_size=sub_size,
             )
-
-            grid_compute = grids.Grid.from_mask(mask=mask_higher_sub)
-            grid_higher_sub = func(profile, grid_compute)
-            grid_higher_sub = grid_compute.structure_from_result(
-                result=grid_higher_sub
-            ).in_2d_binned
 
             fractional_mask_higher_sub = self.fractional_mask_from_grids(
                 grid_lower_sub_2d=grid_lower_sub_2d, grid_higher_sub_2d=grid_higher_sub
@@ -644,6 +688,13 @@ class GridIterator(grids.Grid):
 
             grid_lower_sub_2d = grid_higher_sub
             fractional_mask_lower_sub = fractional_mask_higher_sub
+
+        grid_higher_sub = self.grid_at_sub_size_from_func_and_mask(
+            func=func,
+            profile=profile,
+            mask=fractional_mask_lower_sub,
+            sub_size=self.sub_steps[-1],
+        )
 
         iterated_grid_2d = iterated_grid + grid_higher_sub.in_2d_binned
 
