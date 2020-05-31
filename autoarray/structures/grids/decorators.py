@@ -316,6 +316,7 @@ def relocate_to_radial_minimum(func):
         radial_minimum_config = conf.NamedConfig(
             f"{conf.instance.config_path}/radial_minimum.ini"
         )
+
         grid_radial_minimum = radial_minimum_config.get(
             "radial_minimum", profile.__class__.__name__, float
         )

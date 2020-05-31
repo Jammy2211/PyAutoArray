@@ -611,17 +611,17 @@ class Mask(np.ndarray):
             A 1D array of values which were computed using a padded grid
         """
 
-        pad_size_0 = self.mask.shape[0] - image_shape[0]
-        pad_size_1 = self.mask.shape[1] - image_shape[1]
+        pad_size_0 = self.shape[0] - image_shape[0]
+        pad_size_1 = self.shape[1] - image_shape[1]
         trimmed_array = padded_array.in_2d_binned[
-            pad_size_0 // 2 : self.mask.shape[0] - pad_size_0 // 2,
-            pad_size_1 // 2 : self.mask.shape[1] - pad_size_1 // 2,
+            pad_size_0 // 2 : self.shape[0] - pad_size_0 // 2,
+            pad_size_1 // 2 : self.shape[1] - pad_size_1 // 2,
         ]
         return arrays.Array.manual_2d(
             array=trimmed_array,
-            pixel_scales=self.mask.pixel_scales,
+            pixel_scales=self.pixel_scales,
             sub_size=1,
-            origin=self.mask.origin,
+            origin=self.origin,
         )
 
     def unmasked_blurred_array_from_padded_array_psf_and_image_shape(
