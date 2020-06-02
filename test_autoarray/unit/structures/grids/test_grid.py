@@ -203,15 +203,13 @@ class TestGrid:
 
         grid = aa.Grid.from_mask(mask=mask)
 
-        grid_with_interp = grid.new_grid_with_interpolator(
-            interpolation_pixel_scale=1.0
-        )
+        grid_with_interp = grid.new_grid_with_interpolator(pixel_scales_interp=1.0)
 
         assert (grid[:, :] == grid_with_interp[:, :]).all()
         assert (grid.mask == grid_with_interp.mask).all()
 
-        interpolator_manual = grids.GridInterpolate.from_mask_grid_and_interpolation_pixel_scales(
-            mask=mask, grid=grid, interpolation_pixel_scale=1.0
+        interpolator_manual = grids.GridInterpolate.from_mask_grid_and_pixel_scales_interps(
+            mask=mask, grid=grid, pixel_scales_interp=1.0
         )
 
         assert (grid.interpolator.vtx == interpolator_manual.vtx).all()
@@ -230,7 +228,6 @@ class TestGrid:
         assert padded_grid.shape == (36, 2)
         assert (padded_grid.mask == np.full(fill_value=False, shape=(6, 6))).all()
         assert (padded_grid == padded_grid_util).all()
-        assert padded_grid.interpolator is None
 
         grid = grids.Grid.uniform(shape_2d=(4, 5), pixel_scales=2.0, sub_size=1)
 
@@ -280,7 +277,6 @@ class TestGrid:
         assert padded_grid.shape == (168, 2)
         assert (padded_grid.mask == np.full(fill_value=False, shape=(7, 6))).all()
         assert padded_grid == pytest.approx(padded_grid_util, 1e-4)
-        assert padded_grid.interpolator is None
 
         mask = aa.Mask.manual(
             mask=np.full((2, 5), False), pixel_scales=(8.0, 8.0), sub_size=4
@@ -297,49 +293,6 @@ class TestGrid:
         assert padded_grid.shape == (864, 2)
         assert (padded_grid.mask == np.full(fill_value=False, shape=(6, 9))).all()
         assert padded_grid == pytest.approx(padded_grid_util, 1e-4)
-
-    def test__padded_grid_from_kernel_shape__has_interpolator_grid_if_had_one_before(
-        self
-    ):
-        grid = grids.Grid.uniform(shape_2d=(4, 4), pixel_scales=3.0, sub_size=1)
-
-        grid = grid.new_grid_with_interpolator(interpolation_pixel_scale=0.1)
-
-        padded_grid = grid.padded_grid_from_kernel_shape(kernel_shape_2d=(3, 3))
-
-        assert padded_grid.interpolator is not None
-        assert padded_grid.interpolator.interpolation_pixel_scale == 0.1
-
-        mask = aa.Mask.unmasked(shape_2d=(6, 6), pixel_scales=(3.0, 3.0), sub_size=1)
-
-        interpolator = grids.GridInterpolate.from_mask_grid_and_interpolation_pixel_scales(
-            mask=mask, grid=padded_grid, interpolation_pixel_scale=0.1
-        )
-
-        assert (padded_grid.interpolator.vtx == interpolator.vtx).all()
-        assert (padded_grid.interpolator.wts == interpolator.wts).all()
-
-        mask = aa.Mask.manual(
-            mask=np.full((5, 4), False), pixel_scales=(2.0, 2.0), sub_size=2
-        )
-
-        grid = aa.Grid.from_mask(mask=mask)
-
-        grid = grid.new_grid_with_interpolator(interpolation_pixel_scale=0.1)
-
-        padded_grid = grid.padded_grid_from_kernel_shape(kernel_shape_2d=(3, 3))
-
-        assert padded_grid.interpolator is not None
-        assert padded_grid.interpolator.interpolation_pixel_scale == 0.1
-
-        mask = aa.Mask.unmasked(shape_2d=(7, 6), pixel_scales=(2.0, 2.0), sub_size=2)
-
-        interpolator = grids.GridInterpolate.from_mask_grid_and_interpolation_pixel_scales(
-            mask=mask, grid=padded_grid, interpolation_pixel_scale=0.1
-        )
-
-        assert (padded_grid.interpolator.vtx == interpolator.vtx).all()
-        assert (padded_grid.interpolator.wts == interpolator.wts).all()
 
     def test__sub_border_1d_indexes__compare_to_array_util(self):
         mask = np.array(
@@ -1610,8 +1563,9 @@ class TestMemoize:
 
 
 class TestGridRadialMinimum:
-
-    def test__mock_profile__grid_radial_minimum_is_0_or_below_radial_coordinates__no_changes(self):
+    def test__mock_profile__grid_radial_minimum_is_0_or_below_radial_coordinates__no_changes(
+        self
+    ):
 
         grid = np.array([[2.5, 0.0], [4.0, 0.0], [6.0, 0.0]])
         mock_profile = MockGridRadialMinimum()
@@ -1619,7 +1573,9 @@ class TestGridRadialMinimum:
         deflections = mock_profile.deflections_from_grid(grid=grid)
         assert (deflections == grid).all()
 
-    def test__mock_profile__grid_radial_minimum_is_above_some_radial_coordinates__moves_them_grid_radial_minimum(self):
+    def test__mock_profile__grid_radial_minimum_is_above_some_radial_coordinates__moves_them_grid_radial_minimum(
+        self
+    ):
         grid = np.array([[2.0, 0.0], [1.0, 0.0], [6.0, 0.0]])
         mock_profile = MockGridRadialMinimum()
 
@@ -1628,14 +1584,24 @@ class TestGridRadialMinimum:
         assert (deflections == np.array([[2.5, 0.0], [2.5, 0.0], [6.0, 0.0]])).all()
 
     def test__mock_profile__same_as_above_but_diagonal_coordinates(self):
-        grid = np.array([[np.sqrt(2.0), np.sqrt(2.0)], [1.0, np.sqrt(8.0)], [np.sqrt(8.0), np.sqrt(8.0)]])
+        grid = np.array(
+            [
+                [np.sqrt(2.0), np.sqrt(2.0)],
+                [1.0, np.sqrt(8.0)],
+                [np.sqrt(8.0), np.sqrt(8.0)],
+            ]
+        )
 
         mock_profile = MockGridRadialMinimum()
 
         deflections = mock_profile.deflections_from_grid(grid=grid)
 
-        assert deflections == pytest.approx(np.array([[1.7677, 1.7677], [1.0, np.sqrt(8.0)],
-                                                      [np.sqrt(8), np.sqrt(8.0)]]), 1.0e-4)
+        assert deflections == pytest.approx(
+            np.array(
+                [[1.7677, 1.7677], [1.0, np.sqrt(8.0)], [np.sqrt(8), np.sqrt(8.0)]]
+            ),
+            1.0e-4,
+        )
 
 
 class TestMaskedGrid:

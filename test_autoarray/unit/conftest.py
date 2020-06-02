@@ -117,9 +117,9 @@ def make_sub_grid_7x7(sub_mask_7x7):
     return aa.Grid.from_mask(mask=sub_mask_7x7)
 
 
-@pytest.fixture(name="grid_iterator_7x7")
-def make_grid_iterator_7x7(mask_7x7):
-    return aa.GridIterator.from_mask(
+@pytest.fixture(name="grid_iterate_7x7")
+def make_grid_iterate_7x7(mask_7x7):
+    return aa.GridIterate.from_mask(
         mask=mask_7x7, fractional_accuracy=0.9999, sub_steps=[2, 4, 8, 16]
     )
 

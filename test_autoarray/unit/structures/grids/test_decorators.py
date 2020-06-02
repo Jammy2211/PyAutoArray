@@ -8,6 +8,7 @@ from test_autoarray.mock.mock_grids import (
     ndarray_1d_from_grid,
     ndarray_2d_from_grid,
 )
+import pytest
 
 test_coordinates_dir = "{}/files/coordinates/".format(
     os.path.dirname(os.path.realpath(__file__))
@@ -171,7 +172,7 @@ def test__grid_coordinates_in__output_is_list__list_of_same_format():
     ]
 
 
-def test__grid_iterator_in__output_values__use_iterated_array_function():
+def test__grid_iterate_in__output_values__use_iterated_array_function():
 
     mask = aa.Mask.manual(
         mask=[
@@ -185,13 +186,13 @@ def test__grid_iterator_in__output_values__use_iterated_array_function():
         origin=(0.001, 0.001),
     )
 
-    grid = aa.GridIterator.from_mask(
+    grid = aa.GridIterate.from_mask(
         mask=mask, fractional_accuracy=1.0, sub_steps=[2, 3]
     )
 
-    grid_like_iterator_obj = MockGridLikeIteratorObj()
+    grid_like_obj = MockGridLikeIteratorObj()
 
-    values = grid_like_iterator_obj.ndarray_1d_from_grid(grid=grid)
+    values = grid_like_obj.ndarray_1d_from_grid(grid=grid)
 
     mask_sub_3 = mask.mask_new_sub_size_from_mask(mask=mask, sub_size=3)
     grid_sub_3 = aa.Grid.from_mask(mask=mask_sub_3)
@@ -200,13 +201,13 @@ def test__grid_iterator_in__output_values__use_iterated_array_function():
 
     assert (values == values_sub_3.in_1d_binned).all()
 
-    grid = aa.GridIterator.from_mask(
+    grid = aa.GridIterate.from_mask(
         mask=mask, fractional_accuracy=0.000001, sub_steps=[2, 4, 8, 16, 32]
     )
 
-    grid_like_iterator_obj = MockGridLikeIteratorObj()
+    grid_like_obj = MockGridLikeIteratorObj()
 
-    values = grid_like_iterator_obj.ndarray_1d_from_grid(grid=grid)
+    values = grid_like_obj.ndarray_1d_from_grid(grid=grid)
 
     mask_sub_2 = mask.mask_new_sub_size_from_mask(mask=mask, sub_size=2)
     grid_sub_2 = aa.Grid.from_mask(mask=mask_sub_2)
@@ -215,13 +216,13 @@ def test__grid_iterator_in__output_values__use_iterated_array_function():
 
     assert (values == values_sub_2.in_1d_binned).all()
 
-    grid = aa.GridIterator.from_mask(
+    grid = aa.GridIterate.from_mask(
         mask=mask, fractional_accuracy=0.5, sub_steps=[2, 4]
     )
 
-    iterator_obj = MockGridLikeIteratorObj()
+    iterate_obj = MockGridLikeIteratorObj()
 
-    values = iterator_obj.ndarray_1d_from_grid(grid=grid)
+    values = iterate_obj.ndarray_1d_from_grid(grid=grid)
 
     mask_sub_2 = mask.mask_new_sub_size_from_mask(mask=mask, sub_size=2)
     grid_sub_2 = aa.Grid.from_mask(mask=mask_sub_2)
@@ -240,7 +241,7 @@ def test__grid_iterator_in__output_values__use_iterated_array_function():
     assert values.in_2d[2, 2] == values_sub_4.in_2d_binned[2, 2]
 
 
-def test__grid_iterator_in__output_is_list_of_arrays__use_maximum_sub_size_in_all_pixels():
+def test__grid_iterate_in__output_is_list_of_arrays__use_maximum_sub_size_in_all_pixels():
 
     mask = aa.Mask.manual(
         mask=[
@@ -254,13 +255,13 @@ def test__grid_iterator_in__output_is_list_of_arrays__use_maximum_sub_size_in_al
         origin=(0.001, 0.001),
     )
 
-    grid = aa.GridIterator.from_mask(
+    grid = aa.GridIterate.from_mask(
         mask=mask, fractional_accuracy=0.05, sub_steps=[2, 3]
     )
 
-    grid_like_iterator_obj = MockGridLikeIteratorObj()
+    grid_like_obj = MockGridLikeIteratorObj()
 
-    values = grid_like_iterator_obj.ndarray_1d_list_from_grid(grid=grid)
+    values = grid_like_obj.ndarray_1d_list_from_grid(grid=grid)
 
     mask_sub_3 = mask.mask_new_sub_size_from_mask(mask=mask, sub_size=3)
     grid_sub_3 = aa.Grid.from_mask(mask=mask_sub_3)
@@ -270,7 +271,7 @@ def test__grid_iterator_in__output_is_list_of_arrays__use_maximum_sub_size_in_al
     assert (values[0] == values_sub_3.in_1d_binned).all()
 
 
-def test__grid_iterator_in__output_values__use_iterated_grid_function():
+def test__grid_iterate_in__output_values__use_iterated_grid_function():
 
     mask = aa.Mask.manual(
         mask=[
@@ -284,13 +285,13 @@ def test__grid_iterator_in__output_values__use_iterated_grid_function():
         origin=(0.001, 0.001),
     )
 
-    grid = aa.GridIterator.from_mask(
+    grid = aa.GridIterate.from_mask(
         mask=mask, fractional_accuracy=1.0, sub_steps=[2, 3]
     )
 
-    grid_like_iterator_obj = MockGridLikeIteratorObj()
+    grid_like_obj = MockGridLikeIteratorObj()
 
-    values = grid_like_iterator_obj.ndarray_2d_from_grid(grid=grid)
+    values = grid_like_obj.ndarray_2d_from_grid(grid=grid)
 
     mask_sub_3 = mask.mask_new_sub_size_from_mask(mask=mask, sub_size=3)
     grid_sub_3 = aa.Grid.from_mask(mask=mask_sub_3)
@@ -299,13 +300,13 @@ def test__grid_iterator_in__output_values__use_iterated_grid_function():
 
     assert (values == values_sub_3.in_1d_binned).all()
 
-    grid = aa.GridIterator.from_mask(
+    grid = aa.GridIterate.from_mask(
         mask=mask, fractional_accuracy=0.000001, sub_steps=[2, 4, 8, 16, 32]
     )
 
-    grid_like_iterator_obj = MockGridLikeIteratorObj()
+    grid_like_obj = MockGridLikeIteratorObj()
 
-    values = grid_like_iterator_obj.ndarray_2d_from_grid(grid=grid)
+    values = grid_like_obj.ndarray_2d_from_grid(grid=grid)
 
     mask_sub_2 = mask.mask_new_sub_size_from_mask(mask=mask, sub_size=2)
     grid_sub_2 = aa.Grid.from_mask(mask=mask_sub_2)
@@ -314,13 +315,13 @@ def test__grid_iterator_in__output_values__use_iterated_grid_function():
 
     assert (values == values_sub_2.in_1d_binned).all()
 
-    grid = aa.GridIterator.from_mask(
+    grid = aa.GridIterate.from_mask(
         mask=mask, fractional_accuracy=0.5, sub_steps=[2, 4]
     )
 
-    iterator_obj = MockGridLikeIteratorObj()
+    iterate_obj = MockGridLikeIteratorObj()
 
-    values = iterator_obj.ndarray_2d_from_grid(grid=grid)
+    values = iterate_obj.ndarray_2d_from_grid(grid=grid)
 
     mask_sub_2 = mask.mask_new_sub_size_from_mask(mask=mask, sub_size=2)
     grid_sub_2 = aa.Grid.from_mask(mask=mask_sub_2)
@@ -345,7 +346,7 @@ def test__grid_iterator_in__output_values__use_iterated_grid_function():
     assert values.in_2d[2, 2, 1] == values_sub_4.in_2d_binned[2, 2, 1]
 
 
-def test__grid_iterator_in__output_is_list_of_grids__use_maximum_sub_size_in_all_pixels():
+def test__grid_iterate_in__output_is_list_of_grids__use_maximum_sub_size_in_all_pixels():
 
     mask = aa.Mask.manual(
         mask=[
@@ -359,13 +360,13 @@ def test__grid_iterator_in__output_is_list_of_grids__use_maximum_sub_size_in_all
         origin=(0.001, 0.001),
     )
 
-    grid = aa.GridIterator.from_mask(
+    grid = aa.GridIterate.from_mask(
         mask=mask, fractional_accuracy=0.05, sub_steps=[2, 3]
     )
 
-    grid_like_iterator_obj = MockGridLikeIteratorObj()
+    grid_like_obj = MockGridLikeIteratorObj()
 
-    values = grid_like_iterator_obj.ndarray_2d_list_from_grid(grid=grid)
+    values = grid_like_obj.ndarray_2d_list_from_grid(grid=grid)
 
     mask_sub_3 = mask.mask_new_sub_size_from_mask(mask=mask, sub_size=3)
     grid_sub_3 = aa.Grid.from_mask(mask=mask_sub_3)
@@ -374,3 +375,57 @@ def test__grid_iterator_in__output_is_list_of_grids__use_maximum_sub_size_in_all
 
     assert (values[0][0] == values_sub_3.in_1d_binned[0]).all()
     assert (values[0][1] == values_sub_3.in_1d_binned[1]).all()
+
+
+def test__grid_interpolate_in__output_values__interpolation_used_and_accurate():
+
+    mask = aa.Mask.circular_annular(
+        shape_2d=(20, 20),
+        pixel_scales=(1.0, 1.0),
+        sub_size=1,
+        inner_radius=3.0,
+        outer_radius=8.0,
+    )
+
+    grid_like_obj = MockGridLikeIteratorObj()
+
+    grid = aa.Grid.from_mask(mask=mask)
+
+    true_array = grid_like_obj.ndarray_1d_from_grid(grid=grid)
+
+    grid = aa.GridInterpolate.from_mask(mask=mask, pixel_scales_interp=1.0)
+
+    interpolated_array = grid_like_obj.ndarray_1d_from_grid(grid=grid)
+
+    assert interpolated_array.shape[0] == mask.pixels_in_mask
+    assert (true_array == interpolated_array).all()
+
+    grid = aa.GridInterpolate.from_mask(mask=mask, pixel_scales_interp=0.1)
+
+    interpolated_array = grid_like_obj.ndarray_1d_from_grid(grid=grid)
+
+    assert interpolated_array.shape[0] == mask.pixels_in_mask
+    assert true_array[0] != interpolated_array[0]
+    assert np.max(true_array - interpolated_array) < 0.001
+
+    grid = aa.Grid.from_mask(mask=mask)
+
+    true_grid = grid_like_obj.ndarray_2d_from_grid(grid=grid)
+
+    grid = aa.GridInterpolate.from_mask(mask=mask, pixel_scales_interp=1.0)
+
+    interpolated_grid = grid_like_obj.ndarray_2d_from_grid(grid=grid)
+
+    assert interpolated_grid.shape[0] == mask.pixels_in_mask
+    assert interpolated_grid.shape[1] == 2
+    assert (true_grid == interpolated_grid).all()
+
+    grid = aa.GridInterpolate.from_mask(mask=mask, pixel_scales_interp=0.1)
+
+    interpolated_grid = grid_like_obj.ndarray_2d_from_grid(grid=grid)
+
+    assert interpolated_grid.shape[0] == mask.pixels_in_mask
+    assert interpolated_grid.shape[1] == 2
+    assert true_grid[0, 0] != interpolated_grid[0, 0]
+    assert np.max(true_grid[:, 0] - interpolated_grid[:, 0]) < 0.001
+    assert np.max(true_grid[:, 1] - interpolated_grid[:, 1]) < 0.001

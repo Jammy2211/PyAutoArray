@@ -365,8 +365,6 @@ class TestArrayAPI:
             y = arr.mask.geometry.unmasked_grid[:, 0]
             x = arr.mask.geometry.unmasked_grid[:, 1]
 
-            print(y, x)
-
             arr_via_yx = aa.Array.manual_yx_and_values(
                 y=y, x=x, values=arr, shape_2d=arr.shape_2d, pixel_scales=1.0
             )

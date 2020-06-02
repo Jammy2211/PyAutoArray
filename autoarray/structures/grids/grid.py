@@ -5,6 +5,7 @@ import typing
 
 import autoarray as aa
 
+from autoconf import conf
 from autoarray import decorator_util
 from autoarray import exc
 from autoarray.structures import abstract_structure, arrays, grids
@@ -242,7 +243,6 @@ class Grid(abstract_structure.AbstractStructure):
         obj = super(Grid, cls).__new__(
             cls=cls, structure=grid, mask=mask, store_in_1d=store_in_1d
         )
-        obj.interpolator = None
         return obj
 
     @classmethod
@@ -691,11 +691,6 @@ class Grid(abstract_structure.AbstractStructure):
 
         super(Grid, self).__array_finalize__(obj)
 
-        if isinstance(obj, Grid):
-
-            if hasattr(obj, "interpolator"):
-                self.interpolator = obj.interpolator
-
         if hasattr(obj, "_sub_border_1d_indexes"):
             self._sub_border_1d_indexes = obj._sub_border_1d_indexes
 
@@ -720,7 +715,7 @@ class Grid(abstract_structure.AbstractStructure):
     def _new_grid(self, grid, mask, store_in_1d):
         """Conveninence method for creating a new instance of the Grid class from this grid.
 
-        This method is over-written by other grids (e.g. GridIterator) such that the in_1d and in_2d methods return
+        This method is over-written by other grids (e.g. GridIterate) such that the in_1d and in_2d methods return
         instances of that Grid's type.
 
         Parameters
@@ -893,17 +888,6 @@ class Grid(abstract_structure.AbstractStructure):
         )
         return aa.MaskedArray(array=distances, mask=self.mask)
 
-    def new_grid_with_interpolator(self, interpolation_pixel_scale):
-        # noinspection PyAttributeOutsideInit
-        # TODO: This function doesn't do what it says on the tin. The returned grid would be the same as the grid
-        # TODO: on which the function was called but with a new interpolator set.
-        self.interpolator = grids.GridInterpolate.from_mask_grid_and_interpolation_pixel_scales(
-            mask=self.mask,
-            grid=self[:, :],
-            interpolation_pixel_scale=interpolation_pixel_scale,
-        )
-        return self
-
     @property
     def shape_2d_scaled(self) -> (float, float):
         """The two dimensional shape of the grid in scaled units, computed by taking the minimum and maximum values of
@@ -1058,18 +1042,7 @@ class Grid(abstract_structure.AbstractStructure):
             sub_size=self.mask.sub_size,
         )
 
-        if self.interpolator is None and not isinstance(self, grids.GridIterator):
-            return Grid.from_mask(mask=padded_mask)
-        elif self.interpolator is None and isinstance(self, grids.GridIterator):
-            return grids.GridIterator.from_mask(
-                mask=padded_mask,
-                fractional_accuracy=self.fractional_accuracy,
-                sub_steps=self.sub_steps,
-            )
-        else:
-            return Grid.from_mask(mask=padded_mask).new_grid_with_interpolator(
-                interpolation_pixel_scale=self.interpolator.interpolation_pixel_scale
-            )
+        return Grid.from_mask(mask=padded_mask)
 
     @property
     def sub_border_grid(self):
@@ -1328,6 +1301,13 @@ class GridSparse:
         seed : int or None
             The random number seed, which can be used to reproduce GridSparse's for the same inputs.
         """
+
+        stochastic_mode = conf.instance.general.get(
+            "inversion", "stochastic_mode", bool
+        )
+
+        if stochastic_mode:
+            seed = np.random.randint(low=1, high=2 ** 32)
 
         if total_pixels > grid.shape[0]:
             raise exc.GridException

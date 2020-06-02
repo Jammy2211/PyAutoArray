@@ -180,7 +180,7 @@ class MaskedImaging(abstract_dataset.AbstractMaskedDataset):
         self,
         imaging,
         mask,
-        grid_class=grids.GridIterator,
+        grid_class=grids.GridIterate,
         grid_inversion_class=grids.Grid,
         fractional_accuracy=0.9999,
         sub_steps=None,
@@ -234,7 +234,7 @@ class MaskedImaging(abstract_dataset.AbstractMaskedDataset):
             array=imaging.noise_map.in_2d, mask=mask.mask_sub_1
         )
 
-        self.interpolation_pixel_scale = interpolate_pixel_scale
+        self.pixel_scales_interp = interpolate_pixel_scale
 
         ### PSF TRIMMING + CONVOLVER ###
 
@@ -262,7 +262,7 @@ class MaskedImaging(abstract_dataset.AbstractMaskedDataset):
 
                 if interpolate_pixel_scale is not None:
                     self.blurring_grid = self.blurring_grid.new_grid_with_interpolator(
-                        interpolation_pixel_scale=self.interpolation_pixel_scale
+                        pixel_scales_interp=self.pixel_scales_interp
                     )
 
         else:
