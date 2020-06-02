@@ -255,7 +255,7 @@ class TransformerNUFFT(NUFFT_cpu):
             )
         )
 
-    def initialize_plan(self, ratio=2, interpolation_kernel=(6, 6)):
+    def initialize_plan(self, ratio=2, interp_kernel=(6, 6)):
 
         if not isinstance(ratio, int):
             ratio = int(ratio)
@@ -277,7 +277,7 @@ class TransformerNUFFT(NUFFT_cpu):
             visibilities_normalized,
             self.grid.shape_2d,
             (ratio * self.grid.shape_2d[0], ratio * self.grid.shape_2d[1]),
-            interpolation_kernel,
+            interp_kernel,
         )
 
     def visibilities_from_image(self, image):

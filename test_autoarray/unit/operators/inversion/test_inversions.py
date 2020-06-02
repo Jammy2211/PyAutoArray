@@ -264,7 +264,7 @@ directory = path.dirname(path.realpath(__file__))
 
 
 class TestInterpolatedReconstruction:
-    def test__interpolation_reconstruction__config_is_image_grid__grid_as_mapper_with_good_interpolation(
+    def test__interp_reconstruction__config_is_image_grid__grid_as_mapper_with_good_interp(
         self
     ):
 
@@ -327,7 +327,7 @@ class TestInterpolatedReconstruction:
             (1.0, 1.0), 1.0e-4
         )
 
-    def test__interpolation_errors__also_on_image_grid__interpolates_values(self):
+    def test__interp_errors__also_on_image_grid__interpolates_values(self):
 
         conf.instance = aa.conf.Config(
             path.join(directory, "../files/inversion_image_grid"),
@@ -382,7 +382,7 @@ class TestInterpolatedReconstruction:
         assert interpolated_errors.in_2d == pytest.approx(np.ones(shape=(5, 5)), 1.0e-4)
         assert interpolated_errors.pixel_scales == pytest.approx((1.0, 1.0), 1.0e-4)
 
-    def test__interpolation_reconsruction__config_is_source_grid__grid_is_zoomed_as_uses_mapper_grid(
+    def test__interp_reconsruction__config_is_source_grid__grid_is_zoomed_as_uses_mapper_grid(
         self
     ):
         conf.instance = aa.conf.Config(
@@ -474,7 +474,7 @@ class TestInterpolatedReconstruction:
         ).all()
         assert interpolated_reconstruction.pixel_scales == (1.0, 1.0)
 
-    def test__interpolation__manual_shape_2d__uses_input_shape_2d(self):
+    def test__interp__manual_shape_2d__uses_input_shape_2d(self):
 
         matrix_shape = (3, 3)
 

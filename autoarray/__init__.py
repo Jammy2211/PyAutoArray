@@ -23,7 +23,8 @@ from autoarray.operators.transformer import TransformerNUFFT
 from autoarray.structures.arrays import Array, Values
 from autoarray.structures.grids import (
     Grid,
-    GridIterator,
+    GridIterate,
+    GridInterpolate,
     GridRectangular,
     GridVoronoi,
     GridCoordinates,

@@ -157,7 +157,7 @@ class MaskedInterferometer(abstract_dataset.AbstractMaskedDataset):
         interferometer,
         visibilities_mask,
         real_space_mask,
-        grid_class=grids.GridIterator,
+        grid_class=grids.GridIterate,
         grid_inversion_class=grids.Grid,
         fractional_accuracy=0.9999,
         sub_steps=None,

@@ -73,7 +73,7 @@ class TestAbstractMaskedData:
         grid_7x7,
         sub_grid_7x7,
         blurring_grid_7x7,
-        grid_iterator_7x7,
+        grid_iterate_7x7,
     ):
         masked_imaging_7x7 = abstract_dataset.AbstractMaskedDataset(
             dataset=imaging_7x7, mask=sub_mask_7x7, grid_class=aa.Grid
@@ -84,11 +84,11 @@ class TestAbstractMaskedData:
         assert (masked_imaging_7x7.grid.in_1d == sub_grid_7x7).all()
 
         masked_imaging_7x7 = abstract_dataset.AbstractMaskedDataset(
-            dataset=imaging_7x7, mask=sub_mask_7x7, grid_class=aa.GridIterator
+            dataset=imaging_7x7, mask=sub_mask_7x7, grid_class=aa.GridIterate
         )
 
-        assert isinstance(masked_imaging_7x7.grid, aa.GridIterator)
-        assert (masked_imaging_7x7.grid.in_1d_binned == grid_iterator_7x7).all()
+        assert isinstance(masked_imaging_7x7.grid, aa.GridIterate)
+        assert (masked_imaging_7x7.grid.in_1d_binned == grid_iterate_7x7).all()
 
         masked_imaging_7x7 = abstract_dataset.AbstractMaskedDataset(
             dataset=imaging_7x7,
@@ -98,7 +98,7 @@ class TestAbstractMaskedData:
         )
 
         grid = aa.Grid.from_mask(mask=sub_mask_7x7)
-        new_grid = grid.new_grid_with_interpolator(interpolation_pixel_scale=1.0)
+        new_grid = grid.new_grid_with_interpolator(pixel_scales_interp=1.0)
 
         assert isinstance(masked_imaging_7x7.grid, aa.Grid)
         assert (masked_imaging_7x7.grid == new_grid).all()
@@ -128,7 +128,7 @@ class TestAbstractMaskedData:
         )
 
         grid = aa.Grid.from_mask(mask=sub_mask_7x7)
-        new_grid = grid.new_grid_with_interpolator(interpolation_pixel_scale=1.0)
+        new_grid = grid.new_grid_with_interpolator(pixel_scales_interp=1.0)
 
         assert isinstance(masked_imaging_7x7.grid_inversion, aa.Grid)
         assert (masked_imaging_7x7.grid_inversion == new_grid).all()
