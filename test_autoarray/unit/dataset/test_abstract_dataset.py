@@ -93,21 +93,17 @@ class TestAbstractMaskedData:
         masked_imaging_7x7 = abstract_dataset.AbstractMaskedDataset(
             dataset=imaging_7x7,
             mask=sub_mask_7x7,
-            grid_class=aa.Grid,
-            interpolate_pixel_scale=1.0,
+            grid_class=aa.GridInterpolate,
+            pixel_scales_interp=1.0,
         )
 
-        grid = aa.Grid.from_mask(mask=sub_mask_7x7)
-        new_grid = grid.new_grid_with_interpolator(pixel_scales_interp=1.0)
+        grid = aa.GridInterpolate.from_mask(mask=sub_mask_7x7, pixel_scales_interp=1.0)
 
-        assert isinstance(masked_imaging_7x7.grid, aa.Grid)
-        assert (masked_imaging_7x7.grid == new_grid).all()
-        assert (
-            masked_imaging_7x7.grid.interpolator.vtx == new_grid.interpolator.vtx
-        ).all()
-        assert (
-            masked_imaging_7x7.grid.interpolator.wts == new_grid.interpolator.wts
-        ).all()
+        assert isinstance(masked_imaging_7x7.grid, aa.GridInterpolate)
+        assert (masked_imaging_7x7.grid == grid).all()
+        assert (masked_imaging_7x7.grid.grid_interp == grid.grid_interp).all()
+        assert (masked_imaging_7x7.grid.vtx == grid.vtx).all()
+        assert (masked_imaging_7x7.grid.wts == grid.wts).all()
 
     def test__grid_inversion(
         self, imaging_7x7, sub_mask_7x7, grid_7x7, sub_grid_7x7, blurring_grid_7x7
@@ -123,23 +119,16 @@ class TestAbstractMaskedData:
         masked_imaging_7x7 = abstract_dataset.AbstractMaskedDataset(
             dataset=imaging_7x7,
             mask=sub_mask_7x7,
-            grid_inversion_class=aa.Grid,
-            interpolate_pixel_scale=1.0,
+            grid_inversion_class=aa.GridInterpolate,
+            pixel_scales_interp=1.0,
         )
 
-        grid = aa.Grid.from_mask(mask=sub_mask_7x7)
-        new_grid = grid.new_grid_with_interpolator(pixel_scales_interp=1.0)
+        grid = aa.GridInterpolate.from_mask(mask=sub_mask_7x7, pixel_scales_interp=1.0)
 
         assert isinstance(masked_imaging_7x7.grid_inversion, aa.Grid)
-        assert (masked_imaging_7x7.grid_inversion == new_grid).all()
-        assert (
-            masked_imaging_7x7.grid_inversion.interpolator.vtx
-            == new_grid.interpolator.vtx
-        ).all()
-        assert (
-            masked_imaging_7x7.grid_inversion.interpolator.wts
-            == new_grid.interpolator.wts
-        ).all()
+        assert (masked_imaging_7x7.grid_inversion == grid).all()
+        assert (masked_imaging_7x7.grid_inversion.vtx == grid.vtx).all()
+        assert (masked_imaging_7x7.grid_inversion.wts == grid.wts).all()
 
     def test__inversion_pixel_limit(self, imaging_7x7, sub_mask_7x7):
         masked_imaging_7x7 = abstract_dataset.AbstractMaskedDataset(

@@ -102,7 +102,7 @@ class AbstractMaskedDataset:
         grid_inversion_class=grids.Grid,
         fractional_accuracy=0.9999,
         sub_steps=None,
-        interpolate_pixel_scale=None,
+        pixel_scales_interp=None,
         inversion_pixel_limit=None,
         inversion_uses_border=True,
     ):
@@ -113,7 +113,7 @@ class AbstractMaskedDataset:
         self.dataset = dataset
         self.mask = mask
 
-        self.pixel_scales_interp = interpolate_pixel_scale
+        self.pixel_scales_interp = pixel_scales_interp
 
         ### GRIDS ###
 
@@ -123,12 +123,6 @@ class AbstractMaskedDataset:
 
                 self.grid = grids.Grid.from_mask(mask=mask)
 
-                if interpolate_pixel_scale is not None:
-
-                    self.grid = self.grid.new_grid_with_interpolator(
-                        pixel_scales_interp=interpolate_pixel_scale
-                    )
-
             elif grid_class is grids.GridIterate:
 
                 self.grid = grids.GridIterate.from_mask(
@@ -137,15 +131,21 @@ class AbstractMaskedDataset:
                     sub_steps=sub_steps,
                 )
 
+            elif grid_class is grids.GridInterpolate:
+
+                self.grid = grids.GridInterpolate.from_mask(
+                    mask=mask, pixel_scales_interp=pixel_scales_interp
+                )
+
             if grid_inversion_class is grids.Grid:
 
                 self.grid_inversion = grids.Grid.from_mask(mask=mask)
 
-                if interpolate_pixel_scale is not None:
+            elif grid_inversion_class is grids.GridInterpolate:
 
-                    self.grid_inversion = self.grid_inversion.new_grid_with_interpolator(
-                        pixel_scales_interp=interpolate_pixel_scale
-                    )
+                self.grid_inversion = grids.GridInterpolate.from_mask(
+                    mask=mask, pixel_scales_interp=pixel_scales_interp
+                )
 
         else:
 

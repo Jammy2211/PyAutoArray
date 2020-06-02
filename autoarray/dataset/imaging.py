@@ -184,7 +184,7 @@ class MaskedImaging(abstract_dataset.AbstractMaskedDataset):
         grid_inversion_class=grids.Grid,
         fractional_accuracy=0.9999,
         sub_steps=None,
-        interpolate_pixel_scale=None,
+        pixel_scales_interp=None,
         psf_shape_2d=None,
         inversion_pixel_limit=None,
         inversion_uses_border=True,
@@ -206,7 +206,7 @@ class MaskedImaging(abstract_dataset.AbstractMaskedDataset):
         psf_shape_2d : (int, int)
             The shape of the PSF used for convolving model image generated using analytic light profiles. A smaller \
             shape will trim the PSF relative to the input image PSF, giving a faster analysis run-time.
-        interpolate_pixel_scale : float
+        pixel_scales_interp : float
             If *True*, expensive to compute mass profile deflection angles will be computed on a sparse grid and \
             interpolated to the grid, sub and blurring grids.
         inversion_pixel_limit : int or None
@@ -221,7 +221,7 @@ class MaskedImaging(abstract_dataset.AbstractMaskedDataset):
             grid_inversion_class=grid_inversion_class,
             fractional_accuracy=fractional_accuracy,
             sub_steps=sub_steps,
-            interpolate_pixel_scale=interpolate_pixel_scale,
+            pixel_scales_interp=pixel_scales_interp,
             inversion_pixel_limit=inversion_pixel_limit,
             inversion_uses_border=inversion_uses_border,
         )
@@ -234,7 +234,7 @@ class MaskedImaging(abstract_dataset.AbstractMaskedDataset):
             array=imaging.noise_map.in_2d, mask=mask.mask_sub_1
         )
 
-        self.pixel_scales_interp = interpolate_pixel_scale
+        self.pixel_scales_interp = pixel_scales_interp
 
         ### PSF TRIMMING + CONVOLVER ###
 
@@ -259,11 +259,6 @@ class MaskedImaging(abstract_dataset.AbstractMaskedDataset):
                 self.blurring_grid = self.grid.blurring_grid_from_kernel_shape(
                     kernel_shape_2d=self.psf_shape_2d
                 )
-
-                if interpolate_pixel_scale is not None:
-                    self.blurring_grid = self.blurring_grid.new_grid_with_interpolator(
-                        pixel_scales_interp=self.pixel_scales_interp
-                    )
 
         else:
 
