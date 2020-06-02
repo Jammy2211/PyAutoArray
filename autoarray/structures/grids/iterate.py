@@ -60,9 +60,15 @@ class GridIterate(grids.Grid):
         """
         sub_steps = sub_steps_from_none(sub_steps=sub_steps)
         obj = super().__new__(cls=cls, grid=grid, mask=mask, store_in_1d=store_in_1d)
-        obj.grid = grids.MaskedGrid.manual_1d(
-            grid=grid, mask=mask, store_in_1d=store_in_1d
-        )
+
+        if len(obj.shape) == 2:
+            obj.grid = grids.MaskedGrid.manual_1d(
+                grid=np.asarray(obj), mask=mask, store_in_1d=store_in_1d
+            )
+        elif len(obj.shape) == 3:
+            obj.grid = grids.MaskedGrid.manual_2d(
+                grid=np.asarray(obj), mask=mask, store_in_1d=store_in_1d
+            )
         obj.fractional_accuracy = fractional_accuracy
         obj.sub_steps = sub_steps
         return obj

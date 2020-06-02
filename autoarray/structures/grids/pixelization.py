@@ -163,7 +163,6 @@ class GridVoronoi(np.ndarray):
         obj.nearest_pixelization_1d_index_for_mask_1d_index = (
             nearest_pixelization_1d_index_for_mask_1d_index
         )
-        obj.interpolator = None
 
         obj.pixels = grid.shape[0]
 

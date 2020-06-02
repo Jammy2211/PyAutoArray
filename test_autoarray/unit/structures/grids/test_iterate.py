@@ -864,7 +864,6 @@ class TestAPI:
         assert grid == pytest.approx(grid_via_util, 1e-4)
         assert grid.pixel_scales == (2.0, 2.0)
         assert grid.sub_steps == [2, 3, 4]
-        assert grid.interpolator == None
         assert grid.sub_size == 1
 
         grid_via_util = aa.util.grid.grid_2d_via_mask_from(
@@ -881,7 +880,6 @@ class TestAPI:
         assert grid == pytest.approx(grid_via_util, 1e-4)
         assert grid.pixel_scales == (2.0, 2.0)
         assert grid.sub_steps == [2, 3, 4]
-        assert grid.interpolator == None
         assert grid.sub_size == 1
 
     def test__uniform(self):

@@ -245,6 +245,63 @@ class GridInterpolate(grids.Grid):
             store_in_1d=store_in_1d,
         )
 
+    @classmethod
+    def blurring_grid_from_mask_and_kernel_shape(
+        cls, mask, kernel_shape_2d, pixel_scales_interp, store_in_1d=True
+    ):
+        """Setup a blurring-grid from a mask, where a blurring grid consists of all pixels that are masked (and
+        therefore have their values set to (0.0, 0.0)), but are close enough to the unmasked pixels that their values
+        will be convolved into the unmasked those pixels. This occurs in *PyAutoGalaxy* when computing images from
+        light profile objects.
+
+        See *grids.Grid.blurring_grid_from_mask_and_kernel_shape* for a full description of a blurring grid. This
+        method creates the blurring grid as a GridIterate.
+
+        Parameters
+        ----------
+        mask : Mask
+            The mask whose masked pixels are used to setup the blurring grid.
+        kernel_shape_2d : (float, float)
+            The 2D shape of the kernel which convolves signal from masked pixels to unmasked pixels.
+        fractional_accuracy : float
+            The fractional accuracy the function evaluated must meet to be accepted, where this accuracy is the ratio
+            of the value at a higher sub_size to othe value computed using the previous sub_size.
+        sub_steps : [int] or None
+            The sub-size values used to iteratively evaluated the function at high levels of sub-gridding. If None,
+            they are setup as the default values [2, 4, 8, 16].
+        store_in_1d : bool
+            If True, the grid is stored in 1D as an ndarray of shape [total_unmasked_pixels, 2]. If False, it is
+            stored in 2D as an ndarray of shape [total_y_pixels, total_x_pixels, 2].
+        """
+
+        blurring_mask = mask.regions.blurring_mask_from_kernel_shape(
+            kernel_shape_2d=kernel_shape_2d
+        )
+
+        return cls.from_mask(
+            mask=blurring_mask,
+            pixel_scales_interp=pixel_scales_interp,
+            store_in_1d=store_in_1d,
+        )
+
+    def blurring_grid_from_kernel_shape(self, kernel_shape_2d):
+        """Compute the blurring grid from a grid and create it as a GridIterate, via an input 2D kernel shape.
+
+        For a full description of blurring grids, checkout *blurring_grid_from_mask_and_kernel_shape*.
+
+        Parameters
+        ----------
+        kernel_shape_2d : (float, float)
+            The 2D shape of the kernel which convolves signal from masked pixels to unmasked pixels.
+        """
+
+        return GridInterpolate.blurring_grid_from_mask_and_kernel_shape(
+            mask=self.mask,
+            kernel_shape_2d=kernel_shape_2d,
+            pixel_scales_interp=self.pixel_scales_interp,
+            store_in_1d=self.store_in_1d,
+        )
+
     def padded_grid_from_kernel_shape(self, kernel_shape_2d):
         """When the edge pixels of a mask are unmasked and a convolution is to occur, the signal of edge pixels will be
         'missing' if the grid is used to evaluate the signal via an analytic function.
@@ -273,6 +330,22 @@ class GridInterpolate(grids.Grid):
         return grids.GridInterpolate.from_mask(
             mask=padded_mask, pixel_scales_interp=self.pixel_scales_interp
         )
+
+    def __array_finalize__(self, obj):
+
+        super(GridInterpolate, self).__array_finalize__(obj)
+
+        if hasattr(obj, "pixel_scales_interp"):
+            self.pixel_scales_interp = obj.pixel_scales_interp
+
+        if hasattr(obj, "grid_interp"):
+            self.grid_interp = obj.grid_interp
+
+        if hasattr(obj, "vtx"):
+            self.vtx = obj.vtx
+
+        if hasattr(obj, "wts"):
+            self.wts = obj.wts
 
     def _new_grid(self, grid, mask, store_in_1d):
         """Conveninence method for creating a new instance of the GridInterpolate class from this grid.

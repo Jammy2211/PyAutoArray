@@ -752,6 +752,7 @@ class Grid(abstract_structure.AbstractStructure):
         [sub_size*total_y_pixels, sub_size*total_x_pixels, 2] where all masked values are given values (0.0, 0.0).
 
         If the grid is stored in 2D it is return as is. If it is stored in 1D, it must first be mapped from 1D to 2D."""
+
         if self.store_in_1d:
             sub_grid_2d = grid_util.sub_grid_2d_from(
                 sub_grid_1d=self, mask=self.mask, sub_size=self.mask.sub_size

@@ -191,30 +191,6 @@ class TestGrid:
         grid = grids.Grid(grid=np.array([[3.5, 2.0], [-1.0, 5.0]]), mask=mask)
         assert grid.xticks == pytest.approx(np.array([2.0, 3.0, 4.0, 5.0]), 1e-3)
 
-    def test__new_grid__with_interpolator__returns_grid_with_interpolator(self):
-        mask = np.array(
-            [
-                [True, True, False, False],
-                [True, False, True, True],
-                [True, True, False, False],
-            ]
-        )
-        mask = aa.Mask.manual(mask=mask, pixel_scales=(2.0, 2.0))
-
-        grid = aa.Grid.from_mask(mask=mask)
-
-        grid_with_interp = grid.new_grid_with_interpolator(pixel_scales_interp=1.0)
-
-        assert (grid[:, :] == grid_with_interp[:, :]).all()
-        assert (grid.mask == grid_with_interp.mask).all()
-
-        interpolator_manual = grids.GridInterpolate.from_mask_grid_and_pixel_scales_interps(
-            mask=mask, grid=grid, pixel_scales_interp=1.0
-        )
-
-        assert (grid.interpolator.vtx == interpolator_manual.vtx).all()
-        assert (grid.interpolator.wts == interpolator_manual.wts).all()
-
     def test__padded_grid_from_kernel_shape__matches_grid_2d_after_padding(self):
         grid = grids.Grid.uniform(shape_2d=(4, 4), pixel_scales=3.0, sub_size=1)
 
@@ -1966,7 +1942,6 @@ class TestMaskedGrid:
             assert type(grid) == grids.Grid
             assert grid == pytest.approx(grid_via_util, 1e-4)
             assert grid.pixel_scales == (2.0, 2.0)
-            assert grid.interpolator == None
 
             grid_2d = aa.util.grid.sub_grid_2d_from(
                 sub_grid_1d=grid, mask=mask, sub_size=mask.sub_size

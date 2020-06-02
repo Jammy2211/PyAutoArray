@@ -255,69 +255,23 @@ class TestMaskedImaging:
         masked_imaging_7x7 = aa.MaskedImaging(
             imaging=imaging_7x7,
             mask=sub_mask_7x7,
-            grid_class=aa.Grid,
-            interpolate_pixel_scale=1.0,
+            grid_class=aa.GridInterpolate,
+            pixel_scales_interp=1.0,
         )
 
-        grid = aa.Grid.from_mask(mask=sub_mask_7x7)
-        new_grid = grid.new_grid_with_interpolator(pixel_scales_interp=1.0)
+        grid = aa.GridInterpolate.from_mask(mask=sub_mask_7x7, pixel_scales_interp=1.0)
 
         blurring_grid = grid.blurring_grid_from_kernel_shape(kernel_shape_2d=(3, 3))
-        new_blurring_grid = blurring_grid.new_grid_with_interpolator(
-            pixel_scales_interp=1.0
-        )
 
-        assert isinstance(masked_imaging_7x7.grid, aa.Grid)
-        assert (masked_imaging_7x7.grid == new_grid).all()
-        assert (
-            masked_imaging_7x7.grid.interpolator.vtx == new_grid.interpolator.vtx
-        ).all()
-        assert (
-            masked_imaging_7x7.grid.interpolator.wts == new_grid.interpolator.wts
-        ).all()
+        assert isinstance(masked_imaging_7x7.grid, aa.GridInterpolate)
+        assert (masked_imaging_7x7.grid == grid).all()
+        assert (masked_imaging_7x7.grid.vtx == grid.vtx).all()
+        assert (masked_imaging_7x7.grid.wts == grid.wts).all()
 
-        assert isinstance(masked_imaging_7x7.blurring_grid, aa.Grid)
-        assert (masked_imaging_7x7.blurring_grid == new_blurring_grid).all()
-        assert (
-            masked_imaging_7x7.blurring_grid.interpolator.vtx
-            == new_blurring_grid.interpolator.vtx
-        ).all()
-        assert (
-            masked_imaging_7x7.blurring_grid.interpolator.wts
-            == new_blurring_grid.interpolator.wts
-        ).all()
-
-    def test__grid_inversion(
-        self, imaging_7x7, sub_mask_7x7, grid_7x7, sub_grid_7x7, blurring_grid_7x7
-    ):
-        masked_imaging_7x7 = aa.MaskedImaging(
-            imaging=imaging_7x7, mask=sub_mask_7x7, grid_inversion_class=aa.Grid
-        )
-
-        assert isinstance(masked_imaging_7x7.grid_inversion, aa.Grid)
-        assert (masked_imaging_7x7.grid_inversion.in_1d_binned == grid_7x7).all()
-        assert (masked_imaging_7x7.grid_inversion.in_1d == sub_grid_7x7).all()
-
-        masked_imaging_7x7 = aa.MaskedImaging(
-            imaging=imaging_7x7,
-            mask=sub_mask_7x7,
-            grid_inversion_class=aa.Grid,
-            interpolate_pixel_scale=1.0,
-        )
-
-        grid = aa.Grid.from_mask(mask=sub_mask_7x7)
-        new_grid = grid.new_grid_with_interpolator(pixel_scales_interp=1.0)
-
-        assert isinstance(masked_imaging_7x7.grid_inversion, aa.Grid)
-        assert (masked_imaging_7x7.grid_inversion == new_grid).all()
-        assert (
-            masked_imaging_7x7.grid_inversion.interpolator.vtx
-            == new_grid.interpolator.vtx
-        ).all()
-        assert (
-            masked_imaging_7x7.grid_inversion.interpolator.wts
-            == new_grid.interpolator.wts
-        ).all()
+        assert isinstance(masked_imaging_7x7.blurring_grid, aa.GridInterpolate)
+        assert (masked_imaging_7x7.blurring_grid == blurring_grid).all()
+        assert (masked_imaging_7x7.blurring_grid.vtx == blurring_grid.vtx).all()
+        assert (masked_imaging_7x7.blurring_grid.wts == blurring_grid.wts).all()
 
     def test__psf_and_convolvers(self, imaging_7x7, sub_mask_7x7):
 

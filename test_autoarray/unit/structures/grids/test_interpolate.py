@@ -1,7 +1,6 @@
 import numpy as np
 import pytest
 
-from autoconf import conf
 import autoarray as aa
 from autoarray.structures import grids
 
@@ -9,6 +8,90 @@ from test_autoarray.mock.mock_grids import ndarray_1d_from_grid, ndarray_2d_from
 
 
 class TestObj:
+    def test__blurring_grid_from_mask__compare_to_array_util(self):
+        mask = np.array(
+            [
+                [True, True, True, True, True, True, True, True, True],
+                [True, True, True, True, True, True, True, True, True],
+                [True, True, True, True, True, True, True, True, True],
+                [True, True, True, True, True, True, True, True, True],
+                [True, True, True, True, False, True, True, True, True],
+                [True, True, True, True, True, True, True, True, True],
+                [True, True, True, True, True, True, True, True, True],
+                [True, True, True, True, True, True, True, True, True],
+                [True, True, True, True, True, True, True, True, True],
+            ]
+        )
+
+        mask = aa.Mask.manual(mask=mask, pixel_scales=(2.0, 2.0), sub_size=2)
+
+        blurring_mask_util = aa.util.mask.blurring_mask_from(
+            mask=mask, kernel_shape_2d=(3, 5)
+        )
+
+        blurring_grid_util = aa.util.grid.grid_1d_via_mask_from(
+            mask=blurring_mask_util, pixel_scales=(2.0, 2.0), sub_size=1
+        )
+
+        grid = aa.GridInterpolate.from_mask(mask=mask, pixel_scales_interp=0.1)
+
+        blurring_grid = grid.blurring_grid_from_kernel_shape(kernel_shape_2d=(3, 5))
+
+        assert isinstance(blurring_grid, grids.GridInterpolate)
+        assert len(blurring_grid.shape) == 2
+        assert blurring_grid == pytest.approx(blurring_grid_util, 1e-4)
+        assert blurring_grid.pixel_scales == (2.0, 2.0)
+        assert blurring_grid.pixel_scales_interp == (0.1, 0.1)
+
+    def test__blurring_grid_from_kernel_shape__compare_to_array_util(self):
+        mask = np.array(
+            [
+                [True, True, True, True, True, True, True, True, True],
+                [True, True, True, True, True, True, True, True, True],
+                [True, True, False, True, True, True, False, True, True],
+                [True, True, True, True, True, True, True, True, True],
+                [True, True, True, True, True, True, True, True, True],
+                [True, True, True, True, True, True, True, True, True],
+                [True, True, False, True, True, True, False, True, True],
+                [True, True, True, True, True, True, True, True, True],
+                [True, True, True, True, True, True, True, True, True],
+            ]
+        )
+
+        mask = aa.Mask.manual(mask=mask, pixel_scales=(2.0, 2.0))
+
+        blurring_mask_util = aa.util.mask.blurring_mask_from(
+            mask=mask, kernel_shape_2d=(3, 5)
+        )
+
+        blurring_grid_util = aa.util.grid.grid_1d_via_mask_from(
+            mask=blurring_mask_util, pixel_scales=(2.0, 2.0), sub_size=1
+        )
+
+        mask = aa.Mask.manual(mask=mask, pixel_scales=(2.0, 2.0))
+
+        blurring_grid = grids.GridInterpolate.blurring_grid_from_mask_and_kernel_shape(
+            mask=mask, kernel_shape_2d=(3, 5), pixel_scales_interp=0.1
+        )
+
+        assert isinstance(blurring_grid, grids.GridInterpolate)
+        assert len(blurring_grid.shape) == 2
+        assert blurring_grid == pytest.approx(blurring_grid_util, 1e-4)
+        assert blurring_grid.pixel_scales == (2.0, 2.0)
+        assert blurring_grid.pixel_scales_interp == (0.1, 0.1)
+
+        blurring_grid = grids.GridInterpolate.blurring_grid_from_mask_and_kernel_shape(
+            mask=mask,
+            kernel_shape_2d=(3, 5),
+            pixel_scales_interp=0.1,
+            store_in_1d=False,
+        )
+
+        assert isinstance(blurring_grid, grids.GridInterpolate)
+        assert len(blurring_grid.shape) == 3
+        assert blurring_grid.pixel_scales == (2.0, 2.0)
+        assert blurring_grid.pixel_scales_interp == (0.1, 0.1)
+
     def test__padded_grid_from_kernel_shape(self):
         grid = grids.GridInterpolate.uniform(
             shape_2d=(4, 4), pixel_scales=3.0, pixel_scales_interp=0.1
@@ -100,16 +183,21 @@ class TestInterpolatedResult:
     def test__function_returns_binary_ndarray_2d__returns_interpolated_grid(self):
 
         # noinspection PyUnusedLocal
-        def func(profile, grid, grid_radial_minimum=None):
-            result = np.zeros((grid.shape[0], 2))
-            result[0, :] = 1
-            return result
+        class MockInterpolateClass:
+            def func(self, profile, grid):
+                result = np.zeros((grid.shape[0], 2))
+                result[0, :] = 1
+                return result
 
         mask = aa.Mask.unmasked(shape_2d=(3, 3), pixel_scales=(1.0, 1.0), sub_size=1)
 
         grid = aa.GridInterpolate.from_mask(mask=mask, pixel_scales_interp=0.5)
 
-        interp_grid = grid.result_from_func(func=func, profile=None)
+        cls = MockInterpolateClass()
+
+        interp_grid = grid.result_from_func(
+            func=cls.func, profile=MockInterpolateClass()
+        )
 
         assert isinstance(interp_grid, aa.Grid)
         assert interp_grid.ndim == 2
@@ -135,6 +223,13 @@ class TestInterpolatedResult:
 
     def test__function_returns_ndarray_1d__interpolation_used_and_accurate(self):
 
+        # noinspection PyUnusedLocal
+        class MockInterpolateObj:
+            def ndarray_1d_from_grid(self, profile, grid):
+                return ndarray_1d_from_grid(profile=profile, grid=grid)
+
+        cls = MockInterpolateObj()
+
         mask = aa.Mask.circular_annular(
             shape_2d=(20, 20),
             pixel_scales=(1.0, 1.0),
@@ -150,7 +245,7 @@ class TestInterpolatedResult:
         grid = aa.GridInterpolate.from_mask(mask=mask, pixel_scales_interp=1.0)
 
         interpolated_array = grid.result_from_func(
-            func=ndarray_1d_from_grid, profile=None
+            func=cls.ndarray_1d_from_grid, profile=MockInterpolateObj()
         )
 
         assert interpolated_array.shape[0] == mask.pixels_in_mask
@@ -159,7 +254,7 @@ class TestInterpolatedResult:
         grid = aa.GridInterpolate.from_mask(mask=mask, pixel_scales_interp=0.1)
 
         interpolated_array = grid.result_from_func(
-            func=ndarray_1d_from_grid, profile=None
+            func=cls.ndarray_1d_from_grid, profile=MockInterpolateObj()
         )
 
         assert interpolated_array.shape[0] == mask.pixels_in_mask
@@ -182,7 +277,7 @@ class TestInterpolatedResult:
         grid = aa.GridInterpolate.from_mask(mask=mask, pixel_scales_interp=0.1)
 
         interpolated_array = grid.result_from_func(
-            func=ndarray_1d_from_grid, profile=None
+            func=cls.ndarray_1d_from_grid, profile=MockInterpolateObj()
         )
 
         assert interpolated_array.shape[0] == mask.pixels_in_mask
@@ -190,6 +285,13 @@ class TestInterpolatedResult:
         assert np.max(true_array - interpolated_array) < 0.001
 
     def test__function_returns_ndarray_2d__interpolation_used_and_accurate(self):
+
+        # noinspection PyUnusedLocal
+        class MockInterpolateObj:
+            def ndarray_2d_from_grid(self, profile, grid):
+                return ndarray_2d_from_grid(profile=profile, grid=grid)
+
+        cls = MockInterpolateObj()
 
         mask = aa.Mask.circular_annular(
             shape_2d=(20, 20),
@@ -206,7 +308,7 @@ class TestInterpolatedResult:
         grid = aa.GridInterpolate.from_mask(mask=mask, pixel_scales_interp=1.0)
 
         interpolated_grid = grid.result_from_func(
-            func=ndarray_2d_from_grid, profile=None
+            func=cls.ndarray_2d_from_grid, profile=MockInterpolateObj()
         )
 
         assert interpolated_grid.shape[0] == mask.pixels_in_mask
@@ -216,7 +318,7 @@ class TestInterpolatedResult:
         grid = aa.GridInterpolate.from_mask(mask=mask, pixel_scales_interp=0.1)
 
         interpolated_grid = grid.result_from_func(
-            func=ndarray_2d_from_grid, profile=None
+            func=cls.ndarray_2d_from_grid, profile=MockInterpolateObj()
         )
 
         assert interpolated_grid.shape[0] == mask.pixels_in_mask
@@ -241,7 +343,7 @@ class TestInterpolatedResult:
         grid = aa.GridInterpolate.from_mask(mask=mask, pixel_scales_interp=0.1)
 
         interpolated_grid = grid.result_from_func(
-            func=ndarray_2d_from_grid, profile=None
+            func=cls.ndarray_2d_from_grid, profile=MockInterpolateObj()
         )
 
         assert interpolated_grid.shape[0] == mask.pixels_in_mask
