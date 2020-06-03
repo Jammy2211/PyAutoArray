@@ -5,6 +5,27 @@ import numpy as np
 from autoarray.structures import arrays, grids
 
 
+def grid_from_mask_and_grid_class(
+    mask, grid_class, fractional_accuracy, sub_steps, pixel_scales_interp
+):
+
+    if grid_class is grids.Grid:
+
+        return grids.Grid.from_mask(mask=mask)
+
+    elif grid_class is grids.GridIterate:
+
+        return grids.GridIterate.from_mask(
+            mask=mask, fractional_accuracy=fractional_accuracy, sub_steps=sub_steps
+        )
+
+    elif grid_class is grids.GridInterpolate:
+
+        return grids.GridInterpolate.from_mask(
+            mask=mask, pixel_scales_interp=pixel_scales_interp
+        )
+
+
 class AbstractDataset:
     def __init__(self, data, noise_map, positions=None, name=None):
         """A collection of abstract 2D for different data_type classes (an image, pixel-scale, noise map, etc.)
@@ -119,33 +140,21 @@ class AbstractMaskedDataset:
 
         if mask.pixel_scales is not None:
 
-            if grid_class is grids.Grid:
+            self.grid = grid_from_mask_and_grid_class(
+                mask=mask,
+                grid_class=grid_class,
+                fractional_accuracy=fractional_accuracy,
+                sub_steps=sub_steps,
+                pixel_scales_interp=pixel_scales_interp,
+            )
 
-                self.grid = grids.Grid.from_mask(mask=mask)
-
-            elif grid_class is grids.GridIterate:
-
-                self.grid = grids.GridIterate.from_mask(
-                    mask=mask,
-                    fractional_accuracy=fractional_accuracy,
-                    sub_steps=sub_steps,
-                )
-
-            elif grid_class is grids.GridInterpolate:
-
-                self.grid = grids.GridInterpolate.from_mask(
-                    mask=mask, pixel_scales_interp=pixel_scales_interp
-                )
-
-            if grid_inversion_class is grids.Grid:
-
-                self.grid_inversion = grids.Grid.from_mask(mask=mask)
-
-            elif grid_inversion_class is grids.GridInterpolate:
-
-                self.grid_inversion = grids.GridInterpolate.from_mask(
-                    mask=mask, pixel_scales_interp=pixel_scales_interp
-                )
+            self.grid_inversion = grid_from_mask_and_grid_class(
+                mask=mask,
+                grid_class=grid_inversion_class,
+                fractional_accuracy=fractional_accuracy,
+                sub_steps=sub_steps,
+                pixel_scales_interp=pixel_scales_interp,
+            )
 
         else:
 

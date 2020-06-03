@@ -12,6 +12,67 @@ test_coordinates_dir = "{}/files/coordinates/".format(
 
 
 class TestObj:
+    def test__grid_from_deflection_grid(self):
+
+        grid = aa.GridIterate.uniform(
+            shape_2d=(2, 2),
+            pixel_scales=2.0,
+            fractional_accuracy=0.1,
+            sub_steps=[2, 3],
+            store_in_1d=True,
+        )
+
+        grid_deflected = grid.grid_from_deflection_grid(deflection_grid=grid)
+
+        assert type(grid_deflected) == grids.GridIterate
+        assert (
+            grid_deflected == np.array([[0.0, 0.0], [0.0, 0.0], [0.0, 0.0], [0.0, 0.0]])
+        ).all()
+        assert (
+            grid_deflected.in_2d
+            == np.array([[[0.0, 0.0], [0.0, 0.0]], [[0.0, 0.0], [0.0, 0.0]]])
+        ).all()
+        assert (
+            grid_deflected.in_1d
+            == np.array([[0.0, 0.0], [0.0, 0.0], [0.0, 0.0], [0.0, 0.0]])
+        ).all()
+        assert (grid_deflected.mask == grid.mask).all()
+        assert grid_deflected.pixel_scales == (2.0, 2.0)
+        assert grid_deflected.origin == (0.0, 0.0)
+        assert grid_deflected.fractional_accuracy == 0.1
+        assert grid_deflected.sub_steps == [2, 3]
+        assert grid.store_in_1d == True
+
+        grid = aa.GridIterate.uniform(
+            shape_2d=(2, 2),
+            pixel_scales=2.0,
+            fractional_accuracy=0.1,
+            sub_steps=[2, 3],
+            store_in_1d=False,
+        )
+
+        grid_deflected = grid.grid_from_deflection_grid(deflection_grid=grid)
+
+        assert type(grid_deflected) == grids.GridIterate
+        assert (
+            grid_deflected
+            == np.array([[[0.0, 0.0], [0.0, 0.0]], [[0.0, 0.0], [0.0, 0.0]]])
+        ).all()
+        assert (
+            grid_deflected.in_2d
+            == np.array([[[0.0, 0.0], [0.0, 0.0]], [[0.0, 0.0], [0.0, 0.0]]])
+        ).all()
+        assert (
+            grid_deflected.in_1d
+            == np.array([[0.0, 0.0], [0.0, 0.0], [0.0, 0.0], [0.0, 0.0]])
+        ).all()
+        assert (grid_deflected.mask == grid.mask).all()
+        assert grid_deflected.pixel_scales == (2.0, 2.0)
+        assert grid_deflected.origin == (0.0, 0.0)
+        assert grid_deflected.fractional_accuracy == 0.1
+        assert grid_deflected.sub_steps == [2, 3]
+        assert grid.store_in_1d == False
+
     def test__blurring_grid_from_mask__compare_to_array_util(self):
         mask = np.array(
             [

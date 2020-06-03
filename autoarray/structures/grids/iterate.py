@@ -284,6 +284,25 @@ class GridIterate(grids.Grid):
             store_in_1d=store_in_1d,
         )
 
+    def grid_from_deflection_grid(self, deflection_grid):
+        """Compute a new GridIterate from this grid, where the (y,x) coordinates of this grid have a grid of (y,x) values,
+         termed the deflection grid, subtracted from them to determine the new grid of (y,x) values.
+
+        This is used by PyAutoLens to perform grid ray-tracing.
+
+        Parameters
+        ----------
+        deflection_grid : ndarray
+            The grid of (y,x) coordinates which is subtracted from this grid.
+        """
+        return GridIterate(
+            grid=self - deflection_grid,
+            mask=self.mask,
+            fractional_accuracy=self.fractional_accuracy,
+            sub_steps=self.sub_steps,
+            store_in_1d=self.store_in_1d,
+        )
+
     def blurring_grid_from_kernel_shape(self, kernel_shape_2d):
         """Compute the blurring grid from a grid and create it as a GridIterate, via an input 2D kernel shape.
 

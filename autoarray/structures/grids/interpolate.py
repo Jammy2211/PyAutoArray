@@ -1,3 +1,4 @@
+import configparser
 import numpy as np
 import scipy.spatial.qhull as qhull
 from autoconf import conf
@@ -388,9 +389,15 @@ class GridInterpolate(grids.Grid):
             f"{conf.instance.config_path}/interpolate.ini"
         )
 
-        interpolate = interpolate_config.get(
-            func.__name__, profile.__class__.__name__, bool
-        )
+        try:
+
+            interpolate = interpolate_config.get(
+                func.__name__, profile.__class__.__name__, bool
+            )
+
+        except Exception:
+
+            interpolate = False
 
         if interpolate:
 
