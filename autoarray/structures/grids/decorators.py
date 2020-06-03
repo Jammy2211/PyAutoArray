@@ -147,6 +147,9 @@ def grid_like_to_structure_list(func):
             ]
             result_list = [result.in_1d_binned for result in result_list]
             return grid.structure_list_from_result_list(result_list=result_list)
+        elif isinstance(grid, grids.GridInterpolate):
+            return func(profile, grid, *args, **kwargs)
+        #     return grid.structure_list_from_result_list(result_list=result_list)
         elif isinstance(grid, grids.GridCoordinates):
             result_list = func(profile, grid, *args, **kwargs)
             return grid.structure_list_from_result_list(result_list=result_list)
