@@ -385,13 +385,9 @@ class GridInterpolate(grids.Grid):
 
     def result_from_func(self, func, profile):
 
-        interpolate_config = conf.NamedConfig(
-            f"{conf.instance.config_path}/interpolate.ini"
-        )
-
         try:
 
-            interpolate = interpolate_config.get(
+            interpolate = conf.instance.interpolate.get(
                 func.__name__, profile.__class__.__name__, bool
             )
 

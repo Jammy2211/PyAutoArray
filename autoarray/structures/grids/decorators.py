@@ -211,33 +211,6 @@ def transform(func):
     return wrapper
 
 
-def cache(func):
-    """
-    Caches results of a call to a grid function. If a grid that evaluates to the same byte value is passed into the same
-    function of the same instance as previously then the cached result is returned.
-
-    Parameters
-    ----------
-    func
-        Some instance method that takes a grid as its argument
-
-    Returns
-    -------
-    result
-        Some result, either newly calculated or recovered from the cache
-    """
-
-    def wrapper(instance, grid: np.ndarray, *args, **kwargs):
-        if not hasattr(instance, "cache"):
-            instance.cache = {}
-        key = (func.__name__, grid.tobytes())
-        if key not in instance.cache:
-            instance.cache[key] = func(instance, grid)
-        return instance.cache[key]
-
-    return wrapper
-
-
 def relocate_to_radial_minimum(func):
     """ Checks whether any coordinates in the grid are radially near (0.0, 0.0), which can lead to numerical faults in \
     the evaluation of a light or mass profiles. If any coordinates are radially within the the radial minimum \
@@ -271,11 +244,8 @@ def relocate_to_radial_minimum(func):
         -------
             The grid_like object whose coordinates are radially moved from (0.0, 0.0).
         """
-        radial_minimum_config = conf.NamedConfig(
-            f"{conf.instance.config_path}/radial_minimum.ini"
-        )
 
-        grid_radial_minimum = radial_minimum_config.get(
+        grid_radial_minimum = conf.instance.radial_min.get(
             "radial_minimum", profile.__class__.__name__, float
         )
 
