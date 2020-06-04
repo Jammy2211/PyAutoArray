@@ -1524,65 +1524,6 @@ class TestGridSparse:
             ).all()
 
 
-class TestMemoize:
-    def test_add_to_cache(self):
-        class MyProfile:
-            # noinspection PyMethodMayBeStatic
-            @grids.cache
-            def my_method(self, grid, grid_radial_minimum=None):
-                return grid
-
-        profile = MyProfile()
-        other_profile = MyProfile()
-        assert not hasattr(profile, "cache")
-
-        profile.my_method(np.array([0]))
-        assert hasattr(profile, "cache")
-        assert not hasattr(other_profile, "cache")
-        assert len(profile.cache) == 1
-
-        profile.my_method(np.array([0]))
-        assert len(profile.cache) == 1
-
-        profile.my_method(np.array([1]))
-        assert len(profile.cache) == 2
-
-    def test_get_from_cache(self):
-        class CountingProfile:
-            def __init__(self):
-                self.count = 0
-
-            @grids.cache
-            def my_method(self, grid, grid_radial_minimum=None):
-                self.count += 1
-                return self.count
-
-        profile = CountingProfile()
-
-        assert profile.my_method(grid=np.array([0]), grid_radial_minimum=None) == 1
-        assert profile.my_method(grid=np.array([1]), grid_radial_minimum=None) == 2
-        assert profile.my_method(grid=np.array([2]), grid_radial_minimum=None) == 3
-        assert profile.my_method(grid=np.array([0]), grid_radial_minimum=None) == 1
-        assert profile.my_method(grid=np.array([1]), grid_radial_minimum=None) == 2
-
-    def test_multiple_cached_methods(self):
-        class MultiMethodProfile:
-            @grids.cache
-            def method_one(self, grid, grid_radial_minimum=None):
-                return grid
-
-            @grids.cache
-            def method_two(self, grid, grid_radial_minimum=None):
-                return grid
-
-        profile = MultiMethodProfile()
-
-        array = np.array([0])
-        profile.method_one(array)
-        assert profile.method_one(array) is array
-        assert profile.method_two(np.array([0])) is not array
-
-
 class TestGridRadialMinimum:
     def test__mock_profile__grid_radial_minimum_is_0_or_below_radial_coordinates__no_changes(
         self
