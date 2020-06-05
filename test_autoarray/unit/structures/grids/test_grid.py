@@ -1523,6 +1523,68 @@ class TestGridSparse:
                 == np.array([5, 1, 0, 0, 5, 1, 1, 4, 3, 6, 7, 4, 3, 6, 2, 2])
             ).all()
 
+        def test__stochastic_true__every_grid_different(self):
+
+            mask = aa.Mask.manual(
+                mask=np.array(
+                    [
+                        [False, False, False, False],
+                        [False, False, False, False],
+                        [False, False, False, False],
+                        [False, False, False, False],
+                    ]
+                ),
+                pixel_scales=(0.5, 0.5),
+                sub_size=1,
+            )
+
+            grid = aa.Grid.from_mask(mask=mask)
+
+            weight_map = np.ones(mask.pixels_in_mask)
+
+            sparse_grid_weight_0 = grids.GridSparse.from_total_pixels_grid_and_weight_map(
+                total_pixels=8,
+                grid=grid,
+                weight_map=weight_map,
+                n_iter=1,
+                max_iter=2,
+                seed=1,
+                stochastic=False
+            )
+
+            sparse_grid_weight_1 = grids.GridSparse.from_total_pixels_grid_and_weight_map(
+                total_pixels=8,
+                grid=grid,
+                weight_map=weight_map,
+                n_iter=1,
+                max_iter=2,
+                seed=1,
+                stochastic=False
+            )
+
+            assert (sparse_grid_weight_0.sparse == sparse_grid_weight_1.sparse).all()
+
+            sparse_grid_weight_0 = grids.GridSparse.from_total_pixels_grid_and_weight_map(
+                total_pixels=8,
+                grid=grid,
+                weight_map=weight_map,
+                n_iter=1,
+                max_iter=2,
+                seed=1,
+                stochastic=True
+            )
+
+            sparse_grid_weight_1 = grids.GridSparse.from_total_pixels_grid_and_weight_map(
+                total_pixels=8,
+                grid=grid,
+                weight_map=weight_map,
+                n_iter=1,
+                max_iter=2,
+                seed=1,
+                stochastic=True
+            )
+
+            assert (sparse_grid_weight_0.sparse != sparse_grid_weight_1.sparse).any()
 
 class TestGridRadialMinimum:
     def test__mock_profile__grid_radial_minimum_is_0_or_below_radial_coordinates__no_changes(

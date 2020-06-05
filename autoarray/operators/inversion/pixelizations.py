@@ -78,7 +78,7 @@ class Rectangular(Pixelization):
             hyper_image=hyper_image,
         )
 
-    def sparse_grid_from_grid(self, grid, hyper_image=None, seed=1):
+    def sparse_grid_from_grid(self, grid, hyper_image=None, inversion_stochastic=False, seed=1):
         return None
 
 
@@ -156,7 +156,7 @@ class VoronoiMagnification(Voronoi):
         self.shape = (int(shape[0]), int(shape[1]))
         self.pixels = self.shape[0] * self.shape[1]
 
-    def sparse_grid_from_grid(self, grid, hyper_image=None, seed=1):
+    def sparse_grid_from_grid(self, grid, hyper_image=None, inversion_stochastic=False, seed=1):
         sparse_grid = grids.GridSparse.from_grid_and_unmasked_2d_grid_shape(
             grid=grid, unmasked_sparse_shape=self.shape
         )
@@ -188,11 +188,11 @@ class VoronoiBrightnessImage(Voronoi):
 
         return np.power(weight_map, self.weight_power)
 
-    def sparse_grid_from_grid(self, grid, hyper_image, seed=0):
+    def sparse_grid_from_grid(self, grid, hyper_image, inversion_stochastic=False, seed=0):
         weight_map = self.weight_map_from_hyper_image(hyper_image=hyper_image)
 
         sparse_grid = grids.GridSparse.from_total_pixels_grid_and_weight_map(
-            total_pixels=self.pixels, grid=grid, weight_map=weight_map, seed=seed
+            total_pixels=self.pixels, grid=grid, weight_map=weight_map, seed=seed, stochastic=inversion_stochastic
         )
 
         return grids.GridVoronoi(

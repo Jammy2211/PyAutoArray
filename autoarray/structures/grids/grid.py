@@ -1293,7 +1293,7 @@ class GridSparse:
 
     @classmethod
     def from_total_pixels_grid_and_weight_map(
-        cls, total_pixels, grid, weight_map, n_iter=1, max_iter=5, seed=None
+        cls, total_pixels, grid, weight_map, n_iter=1, max_iter=5, seed=None, stochastic=False
     ):
         """Calculate a GridSparse from a Grid and weight map.
 
@@ -1316,13 +1316,12 @@ class GridSparse:
             The maximum number of iterations in one run of the KMeans algorithm.
         seed : int or None
             The random number seed, which can be used to reproduce GridSparse's for the same inputs.
+        stochastic : bool
+            If True, the random number seed is randommly chosen every time the function is called, ensuring every
+            pixel-grid is randomly determined and thus stochastic.
         """
 
-        stochastic_mode = conf.instance.general.get(
-            "inversion", "stochastic_mode", bool
-        )
-
-        if stochastic_mode:
+        if stochastic:
             seed = np.random.randint(low=1, high=2 ** 32)
 
         if total_pixels > grid.shape[0]:

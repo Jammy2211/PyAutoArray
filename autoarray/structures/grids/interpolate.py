@@ -1,10 +1,9 @@
-import configparser
 import numpy as np
 import scipy.spatial.qhull as qhull
 from autoconf import conf
 from autoarray.structures import arrays, grids
 from autoarray.mask import mask as msk
-from autoarray.util import array_util, grid_util
+from autoarray.util import grid_util
 
 
 class GridInterpolate(grids.Grid):
