@@ -25,7 +25,7 @@ class MockPixelization:
     ):
         return self.value
 
-    def sparse_grid_from_grid(self, grid, hyper_image):
+    def sparse_grid_from_grid(self, grid, hyper_image, inversion_stochastic=False):
         if hyper_image is None:
             return self.grid
         else:
