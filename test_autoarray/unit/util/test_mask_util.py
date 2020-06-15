@@ -1,7 +1,6 @@
 from autoarray import exc
 from autoarray.mask import mask as msk
 from autoarray import util
-import os
 
 import numpy as np
 import pytest

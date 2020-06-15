@@ -10,7 +10,7 @@ from autoarray.util import grid_util, pixelization_util
 
 class GridRectangular(grids.Grid):
     def __new__(cls, grid, shape_2d, pixel_scales, origin=(0.0, 0.0), *args, **kwargs):
-        """A pixelization-grid of (y,x) coordinates which are used to form the pixel centres of adaptive pixelizations in the \
+        """A grid of (y,x) coordinates which reprsent a rectangular grid of pixels which are used to form the pixel centres of adaptive pixelizations in the \
         *pixelizations* module.
 
         A *PixGrid* is ordered such pixels begin from the top-row of the mask and go rightwards and then \

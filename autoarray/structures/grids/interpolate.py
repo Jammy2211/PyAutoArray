@@ -10,18 +10,19 @@ class GridInterpolate(grids.Grid):
     def __new__(
         cls, grid, mask, pixel_scales_interp, store_in_1d=True, *args, **kwargs
     ):
-        """Represents a grid of coordinates as described for the *Grid* class, but allows for a sparse grid to be used
+        """Represents a grid of coordinates as described in the *Grid* class, but allows for a sparse grid to be used
          to evaluate functions on the grid, the results of which are then interpolated to the grid's native resolution.
 
-         This sparse grid, termed the 'interpolatin grid', is computed from the full resolution grid and an
+         This sparse grid, termed the 'interpolation grid', is computed from the full resolution grid and an input
          pixel_scales_interp. The interpolation grid is laid over the full resolution grid, with all unmasked
-         pixels used to set up the interpolation grid.
+         pixels used to set up the interpolation grid. The neighbors of masked pixels are also included, to ensure the
+         interpolation evaluate pixels at the edge of the mask
 
          The decision whether to evaluate the function using the sparse grid and interpolate to th full resolution grid
          is made in the *grid_like_to_grid* decorator. For every function that can receive a GridInterpolate, there is
-         a corresponding config file with a bool determining if the interpolation is used.
+         an entry in the 'interpolate.ini' config file where a bool determines if the interpolation is used.
 
-         For functions which can be evaluated fast the interpolation will be turned off, ensuring the calculation is
+         For functions which can be evaluated fast the interpolation should be turned off, ensuring the calculation is
          accurate and precise. However, if the function is slow to evaluate (e.g. it requires numerical integration)
          its bool in this config file should be True, such that the interpolation method is used instead.
 
@@ -84,7 +85,8 @@ class GridInterpolate(grids.Grid):
         origin=(0.0, 0.0),
         store_in_1d=True,
     ):
-        """Create a GridInterpolate (see *GridInterpolate.__new__*) by inputting the grid coordinates in 1D, for example:
+        """Create a GridInterpolate (see *GridInterpolate.__new__*) by inputting the grid coordinates in 1D, for
+        example:
 
         grid=np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0]])
 
@@ -255,7 +257,7 @@ class GridInterpolate(grids.Grid):
         light profile objects.
 
         See *grids.Grid.blurring_grid_from_mask_and_kernel_shape* for a full description of a blurring grid. This
-        method creates the blurring grid as a GridIterate.
+        method creates the blurring grid as a GridInterpolate.
 
         Parameters
         ----------
@@ -263,12 +265,9 @@ class GridInterpolate(grids.Grid):
             The mask whose masked pixels are used to setup the blurring grid.
         kernel_shape_2d : (float, float)
             The 2D shape of the kernel which convolves signal from masked pixels to unmasked pixels.
-        fractional_accuracy : float
-            The fractional accuracy the function evaluated must meet to be accepted, where this accuracy is the ratio
-            of the value at a higher sub_size to othe value computed using the previous sub_size.
-        sub_steps : [int] or None
-            The sub-size values used to iteratively evaluated the function at high levels of sub-gridding. If None,
-            they are setup as the default values [2, 4, 8, 16].
+        pixel_scales_interp : float
+            The resolution of the sparse grid used to evaluate the function, from which the results are interpolated
+            to the full resolution grid.
         store_in_1d : bool
             If True, the grid is stored in 1D as an ndarray of shape [total_unmasked_pixels, 2]. If False, it is
             stored in 2D as an ndarray of shape [total_y_pixels, total_x_pixels, 2].
@@ -285,7 +284,7 @@ class GridInterpolate(grids.Grid):
         )
 
     def blurring_grid_from_kernel_shape(self, kernel_shape_2d):
-        """Compute the blurring grid from a grid and create it as a GridIterate, via an input 2D kernel shape.
+        """Compute the blurring grid from a grid and create it as a GridItnterpolate, via an input 2D kernel shape.
 
         For a full description of blurring grids, checkout *blurring_grid_from_mask_and_kernel_shape*.
 
@@ -350,7 +349,7 @@ class GridInterpolate(grids.Grid):
     def _new_grid(self, grid, mask, store_in_1d):
         """Conveninence method for creating a new instance of the GridInterpolate class from this grid.
 
-        This method is used in the 'in_1d', 'in_2d', etc. convenience methods. By overwritin this method such that a
+        This method is used in the 'in_1d', 'in_2d', etc. convenience methods. By overwriting this method such that a
         GridInterpolate is created the in_1d and in_2d methods will return instances of the GridInterpolate.
 
         Parameters
@@ -373,6 +372,7 @@ class GridInterpolate(grids.Grid):
 
     @property
     def interp_weights(self):
+        """The weights of the interpolation scheme between the interpolation grid and grid at native resolution."""
         tri = qhull.Delaunay(self.grid_interp.in_1d)
         simplex = tri.find_simplex(self.in_1d)
         # noinspection PyUnresolvedReferences
@@ -382,12 +382,31 @@ class GridInterpolate(grids.Grid):
         bary = np.einsum("njk,nk->nj", temp[:, :2, :], delta)
         return vertices, np.hstack((bary, 1 - bary.sum(axis=1, keepdims=True)))
 
-    def result_from_func(self, func, profile):
+    def result_from_func(self, func, cls):
+        """Return the result of a function evaluation for a function which uses the grid to return either an
+        Array or a Grid. The function uses the input GridInterpolate as follows:
+
+        1) If the function's entry in the 'interpolate.ini' config file is False, the function will not be evaluated
+        using the interpolation grid and simply use the Grid at native resolution.
+
+        2) If the function's entry in the 'interpolate.ini' config file is True, the function will be evaluated using
+        the interpolation grid, with this result then interpolated to the Grid at native resolution.
+
+        The function may return either an Array or Grid object, in both cases the interpolation may be used, where
+        for the later two independent interpolations are performed on the y and x coordinate Grids.
+
+        Parameters
+        ----------
+        func : func
+            The function which may be evaluated using the interpolation grid.
+        cls : object
+            The class the function belongs to.
+        """
 
         try:
 
             interpolate = conf.instance.interpolate.get(
-                func.__name__, profile.__class__.__name__, bool
+                func.__name__, cls.__class__.__name__, bool
             )
 
         except Exception:
@@ -396,7 +415,7 @@ class GridInterpolate(grids.Grid):
 
         if interpolate:
 
-            result_interp = func(profile, self.grid_interp)
+            result_interp = func(cls, self.grid_interp)
             if len(result_interp.shape) == 1:
                 return self.interpolated_array_from_array_interp(
                     array_interp=result_interp
@@ -408,24 +427,43 @@ class GridInterpolate(grids.Grid):
 
         else:
 
-            result = func(profile, self)
+            result = func(cls, self)
 
             return self.structure_from_result(result=result)
 
     def interpolated_array_from_array_interp(self, array_interp) -> arrays.Array:
-        """This function uses the precomputed vertexes and weights of a Delaunay gridding to interpolate a set of
-        values computed on the interpolation grid to the GridInterpolate's full grid.
+        """Use the precomputed vertexes and weights of a Delaunay gridding to interpolate a set of values computed on
+        the interpolation grid to the GridInterpolate's full grid.
 
         This function is taken from the SciPy interpolation method griddata
         (see https://docs.scipy.org/doc/scipy/reference/generated/scipy.interpolate.griddata.html). It is adapted here
-        to reuse pre-computed interpolation vertexes and weights for efficiency. """
+        to reuse pre-computed interpolation vertexes and weights for efficiency.
+
+        Parameters
+        ----------
+        array_interp : Array
+            The results of the function evaluated using the interpolation grid, which is interpolated to the native
+            resolution Array.
+        """
         interpolated_array = np.einsum(
             "nj,nj->n", np.take(array_interp, self.vtx), self.wts
         )
         return arrays.Array(array=interpolated_array, mask=self.mask, store_in_1d=True)
 
     def interpolated_grid_from_grid_interp(self, grid_interp) -> grids.Grid:
+        """Use the precomputed vertexes and weights of a Delaunay gridding to interpolate a grid of (y,x) values values
+        computed on  the interpolation grid to the GridInterpolate's full grid.
 
+        This function is taken from the SciPy interpolation method griddata
+        (see https://docs.scipy.org/doc/scipy/reference/generated/scipy.interpolate.griddata.html). It is adapted here
+        to reuse pre-computed interpolation vertexes and weights for efficiency.
+
+        Parameters
+        ----------
+        grid_interp : Grid
+            The results of the function evaluated using the interpolation grid, which is interpolated to the native
+            resolution Grid.
+        """
         y_values = self.interpolated_array_from_array_interp(
             array_interp=grid_interp[:, 0]
         )

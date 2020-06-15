@@ -396,7 +396,7 @@ class TestIteratedArray:
 
         values = grid.iterated_array_from_func(
             func=ndarray_1d_from_grid,
-            profile=None,
+            cls=None,
             array_lower_sub_2d=values_sub_1.in_2d_binned,
         )
 
@@ -417,7 +417,7 @@ class TestIteratedArray:
 
         values = grid.iterated_array_from_func(
             func=ndarray_1d_from_grid,
-            profile=None,
+            cls=None,
             array_lower_sub_2d=values_sub_1.in_2d_binned,
         )
 
@@ -429,7 +429,7 @@ class TestIteratedArray:
 
         values = grid.iterated_array_from_func(
             func=ndarray_1d_from_grid,
-            profile=None,
+            cls=None,
             array_lower_sub_2d=values_sub_1.in_2d_binned,
         )
 
@@ -467,7 +467,7 @@ class TestIteratedArray:
 
         values = grid.iterated_array_from_func(
             func=ndarray_1d_from_grid,
-            profile=None,
+            cls=None,
             array_lower_sub_2d=values_sub_1.in_2d_binned,
         )
 
@@ -508,7 +508,7 @@ class TestIteratedArray:
         arr = aa.MaskedArray(array=np.zeros(9), mask=mask)
 
         values = grid.iterated_array_from_func(
-            func=ndarray_1d_from_grid, profile=None, array_lower_sub_2d=arr
+            func=ndarray_1d_from_grid, cls=None, array_lower_sub_2d=arr
         )
 
         assert (values == np.zeros((9,))).all()
@@ -719,7 +719,7 @@ class TestIteratedGrid:
 
         values = grid.iterated_grid_from_func(
             func=ndarray_2d_from_grid,
-            profile=None,
+            cls=None,
             grid_lower_sub_2d=values_sub_1.in_2d_binned,
         )
 
@@ -740,7 +740,7 @@ class TestIteratedGrid:
 
         values = grid.iterated_grid_from_func(
             func=ndarray_2d_from_grid,
-            profile=None,
+            cls=None,
             grid_lower_sub_2d=values_sub_1.in_2d_binned,
         )
 
@@ -752,7 +752,7 @@ class TestIteratedGrid:
 
         values = grid.iterated_grid_from_func(
             func=ndarray_2d_from_grid,
-            profile=None,
+            cls=None,
             grid_lower_sub_2d=values_sub_1.in_2d_binned,
         )
 
@@ -790,7 +790,7 @@ class TestIteratedGrid:
 
         values = grid.iterated_grid_from_func(
             func=ndarray_2d_from_grid,
-            profile=None,
+            cls=None,
             grid_lower_sub_2d=values_sub_1.in_2d_binned,
         )
 
@@ -837,7 +837,7 @@ class TestIteratedGrid:
         grid_lower = aa.MaskedGrid(grid=np.zeros((9, 2)), mask=mask)
 
         values = grid.iterated_grid_from_func(
-            func=ndarray_1d_from_grid, profile=None, grid_lower_sub_2d=grid_lower
+            func=ndarray_1d_from_grid, cls=None, grid_lower_sub_2d=grid_lower
         )
 
         assert (values == np.zeros((9, 2))).all()

@@ -148,9 +148,7 @@ class TestInterpolatedResult:
 
         cls = MockInterpolateClass()
 
-        interp_array = grid.result_from_func(
-            func=cls.func, profile=MockInterpolateClass()
-        )
+        interp_array = grid.result_from_func(func=cls.func, cls=MockInterpolateClass())
 
         assert isinstance(interp_array, aa.Array)
         assert interp_array.ndim == 1
@@ -173,7 +171,7 @@ class TestInterpolatedResult:
 
         cls = MockInterpolateClass()
 
-        arr = grid.result_from_func(func=cls.func_off, profile=MockInterpolateClass())
+        arr = grid.result_from_func(func=cls.func_off, cls=MockInterpolateClass())
 
         assert isinstance(arr, aa.Array)
         assert arr.ndim == 1
@@ -195,9 +193,7 @@ class TestInterpolatedResult:
 
         cls = MockInterpolateClass()
 
-        interp_grid = grid.result_from_func(
-            func=cls.func, profile=MockInterpolateClass()
-        )
+        interp_grid = grid.result_from_func(func=cls.func, cls=MockInterpolateClass())
 
         assert isinstance(interp_grid, aa.Grid)
         assert interp_grid.ndim == 2
@@ -245,7 +241,7 @@ class TestInterpolatedResult:
         grid = aa.GridInterpolate.from_mask(mask=mask, pixel_scales_interp=1.0)
 
         interpolated_array = grid.result_from_func(
-            func=cls.ndarray_1d_from_grid, profile=MockInterpolateObj()
+            func=cls.ndarray_1d_from_grid, cls=MockInterpolateObj()
         )
 
         assert interpolated_array.shape[0] == mask.pixels_in_mask
@@ -254,7 +250,7 @@ class TestInterpolatedResult:
         grid = aa.GridInterpolate.from_mask(mask=mask, pixel_scales_interp=0.1)
 
         interpolated_array = grid.result_from_func(
-            func=cls.ndarray_1d_from_grid, profile=MockInterpolateObj()
+            func=cls.ndarray_1d_from_grid, cls=MockInterpolateObj()
         )
 
         assert interpolated_array.shape[0] == mask.pixels_in_mask
@@ -277,7 +273,7 @@ class TestInterpolatedResult:
         grid = aa.GridInterpolate.from_mask(mask=mask, pixel_scales_interp=0.1)
 
         interpolated_array = grid.result_from_func(
-            func=cls.ndarray_1d_from_grid, profile=MockInterpolateObj()
+            func=cls.ndarray_1d_from_grid, cls=MockInterpolateObj()
         )
 
         assert interpolated_array.shape[0] == mask.pixels_in_mask
@@ -308,7 +304,7 @@ class TestInterpolatedResult:
         grid = aa.GridInterpolate.from_mask(mask=mask, pixel_scales_interp=1.0)
 
         interpolated_grid = grid.result_from_func(
-            func=cls.ndarray_2d_from_grid, profile=MockInterpolateObj()
+            func=cls.ndarray_2d_from_grid, cls=MockInterpolateObj()
         )
 
         assert interpolated_grid.shape[0] == mask.pixels_in_mask
@@ -318,7 +314,7 @@ class TestInterpolatedResult:
         grid = aa.GridInterpolate.from_mask(mask=mask, pixel_scales_interp=0.1)
 
         interpolated_grid = grid.result_from_func(
-            func=cls.ndarray_2d_from_grid, profile=MockInterpolateObj()
+            func=cls.ndarray_2d_from_grid, cls=MockInterpolateObj()
         )
 
         assert interpolated_grid.shape[0] == mask.pixels_in_mask
@@ -343,7 +339,7 @@ class TestInterpolatedResult:
         grid = aa.GridInterpolate.from_mask(mask=mask, pixel_scales_interp=0.1)
 
         interpolated_grid = grid.result_from_func(
-            func=cls.ndarray_2d_from_grid, profile=MockInterpolateObj()
+            func=cls.ndarray_2d_from_grid, cls=MockInterpolateObj()
         )
 
         assert interpolated_grid.shape[0] == mask.pixels_in_mask

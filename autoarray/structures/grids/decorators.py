@@ -60,9 +60,9 @@ def grid_like_to_structure(func):
         """
 
         if isinstance(grid, grids.GridIterate):
-            return grid.iterated_result_from_func(func=func, profile=profile)
+            return grid.iterated_result_from_func(func=func, cls=profile)
         elif isinstance(grid, grids.GridInterpolate):
-            return grid.result_from_func(func=func, profile=profile)
+            return grid.result_from_func(func=func, cls=profile)
         elif isinstance(grid, grids.GridCoordinates):
             result = func(profile, grid, *args, **kwargs)
             return grid.structure_from_result(result=result)
@@ -166,7 +166,7 @@ def grid_like_to_structure_list(func):
 
 
 def transform(func):
-    """Wrap the function in a function that checks whether the coordinates have been transformed. If they have not \
+    """Checks whether the input Grid of (y,x) coordinates have previously been transformed. If they have not \
     been transformed then they are transformed.
 
     Parameters
@@ -180,13 +180,13 @@ def transform(func):
     """
 
     @wraps(func)
-    def wrapper(profile, grid, *args, **kwargs):
+    def wrapper(cls, grid, *args, **kwargs):
         """
 
         Parameters
         ----------
-        profile : GeometryProfile
-            The profiles that owns the function.
+        cls : Profile
+            The class that owns the function.
         grid : grid_like
             The (y, x) coordinates in the original reference frame of the grid.
 
@@ -197,27 +197,24 @@ def transform(func):
 
         if not isinstance(grid, (grids.GridTransformed, grids.GridTransformedNumpy)):
             result = func(
-                profile,
-                profile.transform_grid_to_reference_frame(grid),
-                *args,
-                **kwargs,
+                cls, cls.transform_grid_to_reference_frame(grid), *args, **kwargs
             )
 
             return result
 
         else:
-            return func(profile, grid, *args, **kwargs)
+            return func(cls, grid, *args, **kwargs)
 
     return wrapper
 
 
 def relocate_to_radial_minimum(func):
     """ Checks whether any coordinates in the grid are radially near (0.0, 0.0), which can lead to numerical faults in \
-    the evaluation of a light or mass profiles. If any coordinates are radially within the the radial minimum \
-    threshold, their (y,x) coordinates are shifted to that value to ensure they are evaluated correctly.
+    the evaluation of a function (e.g. numerical integration reaching a singularity at (0.0, 0.0)). If any coordinates
+    are radially within the the radial minimum threshold, their (y,x) coordinates are shifted to that value to ensure
+    they are evaluated at that coordinate.
 
-    By default this radial minimum is not used, and users should be certain they use a value that does not impact \
-    results.
+    The value the (y,x) coordinates are rounded to is set in the 'radial_min.ini' config.
 
     Parameters
     ----------
@@ -230,13 +227,13 @@ def relocate_to_radial_minimum(func):
     """
 
     @wraps(func)
-    def wrapper(profile, grid, *args, **kwargs):
+    def wrapper(cls, grid, *args, **kwargs):
         """
 
         Parameters
         ----------
-        profile : SphericalProfile
-            The profiles that owns the function
+        cls : Profile
+            The class that owns the function.
         grid : grid_like
             The (y, x) coordinates which are to be radially moved from (0.0, 0.0).
 
@@ -246,12 +243,12 @@ def relocate_to_radial_minimum(func):
         """
 
         grid_radial_minimum = conf.instance.radial_min.get(
-            "radial_minimum", profile.__class__.__name__, float
+            "radial_minimum", cls.__class__.__name__, float
         )
 
         with np.errstate(all="ignore"):  # Division by zero fixed via isnan
 
-            grid_radii = profile.grid_to_grid_radii(grid=grid)
+            grid_radii = cls.grid_to_grid_radii(grid=grid)
 
             grid_radial_scale = np.where(
                 grid_radii < grid_radial_minimum, grid_radial_minimum / grid_radii, 1.0
@@ -259,6 +256,6 @@ def relocate_to_radial_minimum(func):
             grid = np.multiply(grid, grid_radial_scale[:, None])
         grid[np.isnan(grid)] = grid_radial_minimum
 
-        return func(profile, grid, *args, **kwargs)
+        return func(cls, grid, *args, **kwargs)
 
     return wrapper
