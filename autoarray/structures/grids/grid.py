@@ -1293,7 +1293,14 @@ class GridSparse:
 
     @classmethod
     def from_total_pixels_grid_and_weight_map(
-        cls, total_pixels, grid, weight_map, n_iter=1, max_iter=5, seed=None, stochastic=False
+        cls,
+        total_pixels,
+        grid,
+        weight_map,
+        n_iter=1,
+        max_iter=5,
+        seed=None,
+        stochastic=False,
     ):
         """Calculate a GridSparse from a Grid and weight map.
 

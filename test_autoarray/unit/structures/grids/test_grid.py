@@ -1549,7 +1549,7 @@ class TestGridSparse:
                 n_iter=1,
                 max_iter=2,
                 seed=1,
-                stochastic=False
+                stochastic=False,
             )
 
             sparse_grid_weight_1 = grids.GridSparse.from_total_pixels_grid_and_weight_map(
@@ -1559,7 +1559,7 @@ class TestGridSparse:
                 n_iter=1,
                 max_iter=2,
                 seed=1,
-                stochastic=False
+                stochastic=False,
             )
 
             assert (sparse_grid_weight_0.sparse == sparse_grid_weight_1.sparse).all()
@@ -1571,7 +1571,7 @@ class TestGridSparse:
                 n_iter=1,
                 max_iter=2,
                 seed=1,
-                stochastic=True
+                stochastic=True,
             )
 
             sparse_grid_weight_1 = grids.GridSparse.from_total_pixels_grid_and_weight_map(
@@ -1581,10 +1581,11 @@ class TestGridSparse:
                 n_iter=1,
                 max_iter=2,
                 seed=1,
-                stochastic=True
+                stochastic=True,
             )
 
             assert (sparse_grid_weight_0.sparse != sparse_grid_weight_1.sparse).any()
+
 
 class TestGridRadialMinimum:
     def test__mock_profile__grid_radial_minimum_is_0_or_below_radial_coordinates__no_changes(
