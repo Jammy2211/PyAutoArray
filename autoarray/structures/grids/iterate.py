@@ -501,7 +501,7 @@ class GridIterate(grids.Grid):
         return zeros. This occurs when a function is missing optional objects that contribute to the calculation.
 
         An example use case of this function is when a "image_from_grid" methods in **PyAutoGalaxy**'s
-        *LightProfile* module is comomputed, which by evaluating the function on a higher resolution sub-grids sample
+        _LightProfile_ module is comomputed, which by evaluating the function on a higher resolution sub-grids sample
         the analytic light profile at more points and thus more precisely.
 
         Parameters
@@ -698,7 +698,7 @@ class GridIterate(grids.Grid):
         If the function return all zeros, the iteration is terminated early given that all levels of sub-gridding will
         return zeros. This occurs when a function is missing optional objects that contribute to the calculation.
 
-        An example use case of this function is when a "deflections_from_grid" methods in **PyAutoLens**'s *MassProfile*
+        An example use case of this function is when a "deflections_from_grid" methods in **PyAutoLens**'s _MassProfile_
         module is computed, which by evaluating the function on a higher resolution sub-grid samples the analytic
         mass profile at more points and thus more precisely.
 
