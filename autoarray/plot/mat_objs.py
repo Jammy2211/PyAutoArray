@@ -15,7 +15,6 @@ import itertools
 import os
 
 from autoarray import exc
-from autoarray.structures import grids
 
 
 def load_setting(section, name, python_type, from_subplot_config):
