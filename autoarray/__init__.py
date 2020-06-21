@@ -34,4 +34,4 @@ from autoarray.structures.visibilities import Visibilities
 from autoarray.structures.arrays import MaskedArray
 from autoarray.structures.grids import MaskedGrid
 
-__version__ = '0.11.1'
+__version__ = '0.11.2'
