@@ -385,7 +385,7 @@ class Ticks:
             ytick_labels = np.asarray([self.y_manual[0], self.y_manual[3]])
         elif not units.use_scaled:
             ytick_labels = np.linspace(0, array.shape_2d[0], 5).astype("int")
-        elif units.use_scaled and units.conversion_factor is None:
+        elif (units.use_scaled and units.conversion_factor is None) or not units.in_kpc:
             ytick_labels = np.round(np.linspace(extent[2], extent[3], 5), 2)
         elif units.use_scaled and units.conversion_factor is not None:
             ytick_labels = np.round(
@@ -434,7 +434,7 @@ class Ticks:
             xtick_labels = np.asarray([self.x_manual[0], self.x_manual[3]])
         elif not units.use_scaled:
             xtick_labels = np.linspace(0, array.shape_2d[0], 5).astype("int")
-        elif units.use_scaled and units.conversion_factor is None:
+        elif (units.use_scaled and units.conversion_factor is None) or not units.in_kpc:
             xtick_labels = np.round(np.linspace(extent[0], extent[1], 5), 2)
         elif units.use_scaled and units.conversion_factor is not None:
             xtick_labels = np.round(
