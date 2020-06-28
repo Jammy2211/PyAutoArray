@@ -54,6 +54,14 @@ def test__individual_attributes_are_output(
 
     assert plot_path + "psf.png" in plot_patch.paths
 
+    aplt.Imaging.inverse_noise_map(
+        imaging=imaging_7x7,
+        mask=mask_7x7,
+        plotter=aplt.Plotter(output=aplt.Output(plot_path, format="png")),
+    )
+
+    assert plot_path + "inverse_noise_map.png" in plot_patch.paths
+
     aplt.Imaging.signal_to_noise_map(
         imaging=imaging_7x7,
         mask=mask_7x7,
@@ -82,6 +90,7 @@ def test__imaging_individuals__output_dependent_on_input(
         imaging=imaging_7x7,
         plot_image=True,
         plot_psf=True,
+        plot_inverse_noise_map=True,
         plot_absolute_signal_to_noise_map=True,
         plotter=aplt.Plotter(output=aplt.Output(plot_path, format="png")),
     )
@@ -91,6 +100,8 @@ def test__imaging_individuals__output_dependent_on_input(
     assert not plot_path + "noise_map.png" in plot_patch.paths
 
     assert plot_path + "psf.png" in plot_patch.paths
+
+    assert plot_path + "inverse_noise_map.png" in plot_patch.paths
 
     assert not plot_path + "signal_to_noise_map.png" in plot_patch.paths
 
