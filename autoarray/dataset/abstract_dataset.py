@@ -77,6 +77,10 @@ class AbstractDataset:
         return self.data.mask.geometry
 
     @property
+    def inverse_noise_map(self):
+        return 1.0 / self.noise_map
+
+    @property
     def signal_to_noise_map(self):
         """The estimated signal-to-noise_maps mappers of the image."""
         signal_to_noise_map = np.divide(self.data, self.noise_map)

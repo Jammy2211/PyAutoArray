@@ -66,7 +66,7 @@ def subplot_imaging(
 
     sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index=5)
 
-    absolute_signal_to_noise_map(
+    inverse_noise_map(
         imaging=imaging,
         mask=mask,
         positions=positions,
@@ -97,6 +97,7 @@ def individual(
     plot_image=False,
     plot_noise_map=False,
     plot_psf=False,
+    plot_inverse_noise_map=False,
     plot_signal_to_noise_map=False,
     plot_absolute_signal_to_noise_map=False,
     plot_potential_chi_squared_map=False,
@@ -134,6 +135,10 @@ def individual(
     if plot_psf:
 
         psf(imaging=imaging, include=include, plotter=plotter)
+
+    if plot_inverse_noise_map:
+
+        inverse_noise_map(imaging=imaging, include=include, plotter=plotter)
 
     if plot_signal_to_noise_map:
 
@@ -226,6 +231,33 @@ def psf(imaging, grid=None, positions=None, include=None, plotter=None):
 
     plotter.plot_array(
         array=imaging.psf, include_origin=include.origin, grid=grid, positions=positions
+    )
+
+
+@plotters.set_include_and_plotter
+@plotters.set_labels
+def inverse_noise_map(
+    imaging, grid=None, mask=None, positions=None, include=None, plotter=None
+):
+    """Plot the noise_map of the imaging data_type.
+
+    Set *autolens.data_type.array.plotters.plotters* for a description of all innput parameters not described below.
+
+    Parameters
+    -----------
+    image : data_type.ImagingData
+        The imaging data_type, which includes the observed data_type, noise_map, PSF, signal-to-noise_map, etc.
+    include_origin : True
+        If true, the include_origin of the dataset's coordinate system is plotted as a 'x'.
+    """
+
+    plotter.plot_array(
+        array=imaging.inverse_noise_map,
+        include_origin=include.origin,
+        include_border=include.border,
+        grid=grid,
+        mask=mask,
+        positions=positions,
     )
 
 
