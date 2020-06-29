@@ -4,6 +4,10 @@ import matplotlib
 backend = conf.get_matplotlib_backend()
 if not backend in "default":
     matplotlib.use(backend)
+
+if conf.instance.general.get("hpc", "hpc_mode", bool):
+    matplotlib.use("Agg")
+
 import matplotlib.pyplot as plt
 
 import numpy as np
