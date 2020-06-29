@@ -8,14 +8,15 @@ logger = logging.getLogger(__name__)
 
 
 class TestInversionNoiseMap:
-
     def test__inverse_noise_is_one_over_noise(self):
         array = aa.Array.manual_2d([[1.0, 2.0], [3.0, 4.0]])
         noise_map = aa.Array.manual_2d([[1.0, 2.0], [4.0, 8.0]])
 
         dataset = abstract_dataset.AbstractDataset(data=array, noise_map=noise_map)
 
-        assert (dataset.inverse_noise_map.in_2d == np.array([[1.0, 0.5], [0.25, 0.125]])).all()
+        assert (
+            dataset.inverse_noise_map.in_2d == np.array([[1.0, 0.5], [0.25, 0.125]])
+        ).all()
 
 
 class TestSignalToNoise:
