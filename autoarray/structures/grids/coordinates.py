@@ -3,7 +3,7 @@ import numpy as np
 import os
 
 import typing
-from autoarray.structures import abstract_structure, arrays
+from autoarray.structures import arrays
 
 
 class GridCoordinates(np.ndarray):

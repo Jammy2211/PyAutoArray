@@ -13,471 +13,6 @@ test_coordinates_dir = "{}/files/coordinates/".format(
 )
 
 
-class TestGrid:
-    def test__grid_from_deflection_grid(self):
-
-        grid = aa.Grid.uniform(shape_2d=(2, 2), pixel_scales=2.0, store_in_1d=True)
-
-        grid_deflected = grid.grid_from_deflection_grid(deflection_grid=grid)
-
-        assert type(grid_deflected) == grids.Grid
-        assert (
-            grid_deflected == np.array([[0.0, 0.0], [0.0, 0.0], [0.0, 0.0], [0.0, 0.0]])
-        ).all()
-        assert (
-            grid_deflected.in_2d
-            == np.array([[[0.0, 0.0], [0.0, 0.0]], [[0.0, 0.0], [0.0, 0.0]]])
-        ).all()
-        assert (
-            grid_deflected.in_1d
-            == np.array([[0.0, 0.0], [0.0, 0.0], [0.0, 0.0], [0.0, 0.0]])
-        ).all()
-        assert (grid_deflected.mask == grid.mask).all()
-        assert grid_deflected.pixel_scales == (2.0, 2.0)
-        assert grid_deflected.origin == (0.0, 0.0)
-        assert grid.store_in_1d == True
-
-        grid = aa.Grid.uniform(shape_2d=(2, 2), pixel_scales=2.0, store_in_1d=False)
-
-        grid_deflected = grid.grid_from_deflection_grid(deflection_grid=grid)
-
-        assert type(grid_deflected) == grids.Grid
-        assert (
-            grid_deflected
-            == np.array([[[0.0, 0.0], [0.0, 0.0]], [[0.0, 0.0], [0.0, 0.0]]])
-        ).all()
-        assert (
-            grid_deflected.in_2d
-            == np.array([[[0.0, 0.0], [0.0, 0.0]], [[0.0, 0.0], [0.0, 0.0]]])
-        ).all()
-        assert (
-            grid_deflected.in_1d
-            == np.array([[0.0, 0.0], [0.0, 0.0], [0.0, 0.0], [0.0, 0.0]])
-        ).all()
-        assert (grid_deflected.mask == grid.mask).all()
-        assert grid_deflected.pixel_scales == (2.0, 2.0)
-        assert grid_deflected.origin == (0.0, 0.0)
-        assert grid.store_in_1d == False
-
-    def test__blurring_grid_from_mask_and_kernel_shape__compare_to_array_util(self):
-        mask = np.array(
-            [
-                [True, True, True, True, True, True, True, True, True],
-                [True, True, True, True, True, True, True, True, True],
-                [True, True, False, True, True, True, False, True, True],
-                [True, True, True, True, True, True, True, True, True],
-                [True, True, True, True, True, True, True, True, True],
-                [True, True, True, True, True, True, True, True, True],
-                [True, True, False, True, True, True, False, True, True],
-                [True, True, True, True, True, True, True, True, True],
-                [True, True, True, True, True, True, True, True, True],
-            ]
-        )
-
-        mask = aa.Mask.manual(mask=mask, pixel_scales=(2.0, 2.0), sub_size=2)
-
-        blurring_mask_util = aa.util.mask.blurring_mask_from(
-            mask=mask, kernel_shape_2d=(3, 5)
-        )
-
-        blurring_grid_util = aa.util.grid.grid_1d_via_mask_from(
-            mask=blurring_mask_util, pixel_scales=(2.0, 2.0), sub_size=1
-        )
-
-        mask = aa.Mask.manual(mask=mask, pixel_scales=(2.0, 2.0), sub_size=2)
-
-        blurring_grid = grids.Grid.blurring_grid_from_mask_and_kernel_shape(
-            mask=mask, kernel_shape_2d=(3, 5)
-        )
-
-        assert isinstance(blurring_grid, grids.Grid)
-        assert len(blurring_grid.shape) == 2
-        assert blurring_grid == pytest.approx(blurring_grid_util, 1e-4)
-        assert blurring_grid.pixel_scales == (2.0, 2.0)
-
-        blurring_grid = grids.Grid.blurring_grid_from_mask_and_kernel_shape(
-            mask=mask, kernel_shape_2d=(3, 5), store_in_1d=False
-        )
-
-        assert isinstance(blurring_grid, grids.Grid)
-        assert len(blurring_grid.shape) == 3
-        assert blurring_grid.pixel_scales == (2.0, 2.0)
-
-    def test__blurring_grid_from_kernel_shape__compare_to_array_util(self):
-        mask = np.array(
-            [
-                [True, True, True, True, True, True, True, True, True],
-                [True, True, True, True, True, True, True, True, True],
-                [True, True, True, True, True, True, True, True, True],
-                [True, True, True, True, True, True, True, True, True],
-                [True, True, True, True, False, True, True, True, True],
-                [True, True, True, True, True, True, True, True, True],
-                [True, True, True, True, True, True, True, True, True],
-                [True, True, True, True, True, True, True, True, True],
-                [True, True, True, True, True, True, True, True, True],
-            ]
-        )
-
-        mask = aa.Mask.manual(mask=mask, pixel_scales=(2.0, 2.0), sub_size=2)
-
-        blurring_mask_util = aa.util.mask.blurring_mask_from(
-            mask=mask, kernel_shape_2d=(3, 5)
-        )
-
-        blurring_grid_util = aa.util.grid.grid_1d_via_mask_from(
-            mask=blurring_mask_util, pixel_scales=(2.0, 2.0), sub_size=1
-        )
-
-        grid = aa.Grid.from_mask(mask=mask)
-
-        blurring_grid = grid.blurring_grid_from_kernel_shape(kernel_shape_2d=(3, 5))
-
-        assert isinstance(blurring_grid, grids.Grid)
-        assert len(blurring_grid.shape) == 2
-        assert blurring_grid == pytest.approx(blurring_grid_util, 1e-4)
-        assert blurring_grid.pixel_scales == (2.0, 2.0)
-
-    def test__masked_shape_2d_arcsec(self):
-        mask = aa.Mask.circular(
-            shape_2d=(3, 3), radius=1.0, pixel_scales=(1.0, 1.0), sub_size=1
-        )
-
-        grid = grids.Grid(grid=np.array([[1.5, 1.0], [-1.5, -1.0]]), mask=mask)
-        assert grid.shape_2d_scaled == (3.0, 2.0)
-
-        grid = grids.Grid(
-            grid=np.array([[1.5, 1.0], [-1.5, -1.0], [0.1, 0.1]]), mask=mask
-        )
-        assert grid.shape_2d_scaled == (3.0, 2.0)
-
-        grid = grids.Grid(
-            grid=np.array([[1.5, 1.0], [-1.5, -1.0], [3.0, 3.0]]), mask=mask
-        )
-        assert grid.shape_2d_scaled == (4.5, 4.0)
-
-        grid = grids.Grid(
-            grid=np.array([[1.5, 1.0], [-1.5, -1.0], [3.0, 3.0], [7.0, -5.0]]),
-            mask=mask,
-        )
-        assert grid.shape_2d_scaled == (8.5, 8.0)
-
-    def test__flipped_property__returns_grid_as_x_then_y(self):
-        grid = aa.Grid.manual_2d(
-            grid=[[[1.0, 2.0], [3.0, 4.0]], [[5.0, 6.0], [7.0, 8.0]]], pixel_scales=1.0
-        )
-
-        assert (
-            grid.in_1d_flipped
-            == np.array([[2.0, 1.0], [4.0, 3.0], [6.0, 5.0], [8.0, 7.0]])
-        ).all()
-        assert (
-            grid.in_2d_flipped
-            == np.array([[[2.0, 1.0], [4.0, 3.0]], [[6.0, 5.0], [8.0, 7.0]]])
-        ).all()
-
-        grid = aa.Grid.manual_2d(
-            grid=[[[1.0, 2.0], [3.0, 4.0], [5.0, 6.0]]], pixel_scales=1.0
-        )
-
-        assert (
-            grid.in_1d_flipped == np.array([[2.0, 1.0], [4.0, 3.0], [6.0, 5.0]])
-        ).all()
-        assert (
-            grid.in_2d_flipped == np.array([[[2.0, 1.0], [4.0, 3.0], [6.0, 5.0]]])
-        ).all()
-
-    def test__in_radians(self):
-        mask = np.array(
-            [
-                [True, True, False, False],
-                [True, False, True, True],
-                [True, True, False, False],
-            ]
-        )
-        mask = aa.Mask.manual(mask=mask, pixel_scales=(2.0, 2.0))
-
-        grid = aa.Grid.from_mask(mask=mask)
-
-        assert grid.in_radians[0, 0] == pytest.approx(0.00000969627362, 1.0e-8)
-        assert grid.in_radians[0, 1] == pytest.approx(0.00000484813681, 1.0e-8)
-
-        assert grid.in_radians[0, 0] == pytest.approx(
-            2.0 * np.pi / (180 * 3600), 1.0e-8
-        )
-        assert grid.in_radians[0, 1] == pytest.approx(
-            1.0 * np.pi / (180 * 3600), 1.0e-8
-        )
-
-    def test__yticks(self):
-        mask = aa.Mask.circular(
-            shape_2d=(3, 3), radius=1.0, pixel_scales=(1.0, 1.0), sub_size=1
-        )
-
-        grid = grids.Grid(grid=np.array([[1.5, 1.0], [-1.5, -1.0]]), mask=mask)
-        assert grid.yticks == pytest.approx(np.array([-1.5, -0.5, 0.5, 1.5]), 1e-3)
-
-        grid = grids.Grid(grid=np.array([[3.0, 1.0], [-3.0, -1.0]]), mask=mask)
-        assert grid.yticks == pytest.approx(np.array([-3.0, -1, 1.0, 3.0]), 1e-3)
-
-        grid = grids.Grid(grid=np.array([[5.0, 3.5], [2.0, -1.0]]), mask=mask)
-        assert grid.yticks == pytest.approx(np.array([2.0, 3.0, 4.0, 5.0]), 1e-3)
-
-    def test__xticks(self):
-        mask = aa.Mask.circular(
-            shape_2d=(3, 3), radius=1.0, pixel_scales=(1.0, 1.0), sub_size=1
-        )
-
-        grid = grids.Grid(grid=np.array([[1.0, 1.5], [-1.0, -1.5]]), mask=mask)
-        assert grid.xticks == pytest.approx(np.array([-1.5, -0.5, 0.5, 1.5]), 1e-3)
-
-        grid = grids.Grid(grid=np.array([[1.0, 3.0], [-1.0, -3.0]]), mask=mask)
-        assert grid.xticks == pytest.approx(np.array([-3.0, -1, 1.0, 3.0]), 1e-3)
-
-        grid = grids.Grid(grid=np.array([[3.5, 2.0], [-1.0, 5.0]]), mask=mask)
-        assert grid.xticks == pytest.approx(np.array([2.0, 3.0, 4.0, 5.0]), 1e-3)
-
-    def test__padded_grid_from_kernel_shape__matches_grid_2d_after_padding(self):
-        grid = grids.Grid.uniform(shape_2d=(4, 4), pixel_scales=3.0, sub_size=1)
-
-        padded_grid = grid.padded_grid_from_kernel_shape(kernel_shape_2d=(3, 3))
-
-        padded_grid_util = aa.util.grid.grid_1d_via_mask_from(
-            mask=np.full((6, 6), False), pixel_scales=(3.0, 3.0), sub_size=1
-        )
-
-        assert isinstance(padded_grid, grids.Grid)
-        assert padded_grid.shape == (36, 2)
-        assert (padded_grid.mask == np.full(fill_value=False, shape=(6, 6))).all()
-        assert (padded_grid == padded_grid_util).all()
-
-        grid = grids.Grid.uniform(shape_2d=(4, 5), pixel_scales=2.0, sub_size=1)
-
-        padded_grid = grid.padded_grid_from_kernel_shape(kernel_shape_2d=(3, 3))
-
-        padded_grid_util = aa.util.grid.grid_1d_via_mask_from(
-            mask=np.full((6, 7), False), pixel_scales=(2.0, 2.0), sub_size=1
-        )
-
-        assert padded_grid.shape == (42, 2)
-        assert (padded_grid == padded_grid_util).all()
-
-        grid = grids.Grid.uniform(shape_2d=(5, 4), pixel_scales=1.0, sub_size=1)
-
-        padded_grid = grid.padded_grid_from_kernel_shape(kernel_shape_2d=(3, 3))
-
-        padded_grid_util = aa.util.grid.grid_1d_via_mask_from(
-            mask=np.full((7, 6), False), pixel_scales=(1.0, 1.0), sub_size=1
-        )
-
-        assert padded_grid.shape == (42, 2)
-        assert (padded_grid == padded_grid_util).all()
-
-        grid = grids.Grid.uniform(shape_2d=(5, 5), pixel_scales=8.0, sub_size=1)
-
-        padded_grid = grid.padded_grid_from_kernel_shape(kernel_shape_2d=(2, 5))
-
-        padded_grid_util = aa.util.grid.grid_1d_via_mask_from(
-            mask=np.full((6, 9), False), pixel_scales=(8.0, 8.0), sub_size=1
-        )
-
-        assert padded_grid.shape == (54, 2)
-        assert (padded_grid == padded_grid_util).all()
-
-        mask = aa.Mask.manual(
-            mask=np.full((5, 4), False), pixel_scales=(2.0, 2.0), sub_size=2
-        )
-
-        grid = aa.Grid.from_mask(mask=mask)
-
-        padded_grid = grid.padded_grid_from_kernel_shape(kernel_shape_2d=(3, 3))
-
-        padded_grid_util = aa.util.grid.grid_1d_via_mask_from(
-            mask=np.full((7, 6), False), pixel_scales=(2.0, 2.0), sub_size=2
-        )
-
-        assert padded_grid.shape == (168, 2)
-        assert (padded_grid.mask == np.full(fill_value=False, shape=(7, 6))).all()
-        assert padded_grid == pytest.approx(padded_grid_util, 1e-4)
-
-        mask = aa.Mask.manual(
-            mask=np.full((2, 5), False), pixel_scales=(8.0, 8.0), sub_size=4
-        )
-
-        grid = aa.Grid.from_mask(mask=mask)
-
-        padded_grid = grid.padded_grid_from_kernel_shape(kernel_shape_2d=(5, 5))
-
-        padded_grid_util = aa.util.grid.grid_1d_via_mask_from(
-            mask=np.full((6, 9), False), pixel_scales=(8.0, 8.0), sub_size=4
-        )
-
-        assert padded_grid.shape == (864, 2)
-        assert (padded_grid.mask == np.full(fill_value=False, shape=(6, 9))).all()
-        assert padded_grid == pytest.approx(padded_grid_util, 1e-4)
-
-    def test__sub_border_1d_indexes__compare_to_array_util(self):
-        mask = np.array(
-            [
-                [False, False, False, False, False, False, False, True],
-                [False, True, True, True, True, True, False, True],
-                [False, True, False, False, False, True, False, True],
-                [False, True, False, True, False, True, False, True],
-                [False, True, False, False, False, True, False, True],
-                [False, True, True, True, True, True, False, True],
-                [False, False, False, False, False, False, False, True],
-            ]
-        )
-
-        mask = aa.Mask.manual(mask=mask, pixel_scales=(2.0, 2.0), sub_size=2)
-
-        sub_border_1d_indexes_util = aa.util.mask.sub_border_pixel_1d_indexes_from(
-            mask=mask, sub_size=2
-        )
-
-        grid = aa.Grid.from_mask(mask=mask)
-
-        assert grid.regions._sub_border_1d_indexes == pytest.approx(
-            sub_border_1d_indexes_util, 1e-4
-        )
-
-    def test__square_distance_from_coordinate_array(self):
-        mask = aa.Mask.manual(
-            [[True, False], [False, False]], pixel_scales=1.0, origin=(0.0, 1.0)
-        )
-        grid = aa.MaskedGrid.manual_1d(
-            grid=[[1.0, 1.0], [2.0, 3.0], [1.0, 2.0]], mask=mask
-        )
-
-        square_distances = grid.squared_distances_from_coordinate(coordinate=(0.0, 0.0))
-
-        assert (square_distances.in_1d == np.array([2.0, 13.0, 5.0])).all()
-        assert (square_distances.mask == mask).all()
-
-        square_distances = grid.squared_distances_from_coordinate(coordinate=(0.0, 1.0))
-
-        assert (square_distances.in_1d == np.array([1.0, 8.0, 2.0])).all()
-        assert (square_distances.mask == mask).all()
-
-    def test__distance_from_coordinate_array(self):
-        mask = aa.Mask.manual(
-            [[True, False], [False, False]], pixel_scales=1.0, origin=(0.0, 1.0)
-        )
-        grid = aa.MaskedGrid.manual_1d(
-            grid=[[1.0, 1.0], [2.0, 3.0], [1.0, 2.0]], mask=mask
-        )
-
-        square_distances = grid.distances_from_coordinate(coordinate=(0.0, 0.0))
-
-        assert (
-            square_distances.in_1d
-            == np.array([np.sqrt(2.0), np.sqrt(13.0), np.sqrt(5.0)])
-        ).all()
-        assert (square_distances.mask == mask).all()
-
-        square_distances = grid.distances_from_coordinate(coordinate=(0.0, 1.0))
-
-        assert (
-            square_distances.in_1d == np.array([1.0, np.sqrt(8.0), np.sqrt(2.0)])
-        ).all()
-        assert (square_distances.mask == mask).all()
-
-    def test__structure_from_result__maps_numpy_array_to__auto_array_or_grid(self):
-
-        mask = np.array(
-            [
-                [True, True, True, True],
-                [True, False, False, True],
-                [True, False, False, True],
-                [True, True, True, True],
-            ]
-        )
-
-        mask = aa.Mask.manual(mask=mask, pixel_scales=(1.0, 1.0), sub_size=1)
-
-        grid = aa.Grid.from_mask(mask=mask)
-
-        result = grid.structure_from_result(result=np.array([1.0, 2.0, 3.0, 4.0]))
-
-        assert isinstance(result, aa.Array)
-        assert (
-            result.in_2d
-            == np.array(
-                [
-                    [0.0, 0.0, 0.0, 0.0],
-                    [0.0, 1.0, 2.0, 0.0],
-                    [0.0, 3.0, 4.0, 0.0],
-                    [0.0, 0.0, 0.0, 0.0],
-                ]
-            )
-        ).all()
-
-        result = grid.structure_from_result(
-            result=np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0]])
-        )
-
-        assert isinstance(result, aa.Grid)
-        assert (
-            result.in_2d
-            == np.array(
-                [
-                    [[0.0, 0.0], [0.0, 0.0], [0.0, 0.0], [0.0, 0.0]],
-                    [[0.0, 0.0], [1.0, 1.0], [2.0, 2.0], [0.0, 0.0]],
-                    [[0.0, 0.0], [3.0, 3.0], [4.0, 4.0], [0.0, 0.0]],
-                    [[0.0, 0.0], [0.0, 0.0], [0.0, 0.0], [0.0, 0.0]],
-                ]
-            )
-        ).all()
-
-    def test__structure_list_from_result_list__maps_list_to_auto_arrays_or_grids(self):
-
-        mask = np.array(
-            [
-                [True, True, True, True],
-                [True, False, False, True],
-                [True, False, False, True],
-                [True, True, True, True],
-            ]
-        )
-
-        mask = aa.Mask.manual(mask=mask, pixel_scales=(1.0, 1.0), sub_size=1)
-
-        grid = aa.Grid.from_mask(mask=mask)
-
-        result = grid.structure_list_from_result_list(
-            result_list=[np.array([1.0, 2.0, 3.0, 4.0])]
-        )
-
-        assert isinstance(result[0], aa.Array)
-        assert (
-            result[0].in_2d
-            == np.array(
-                [
-                    [0.0, 0.0, 0.0, 0.0],
-                    [0.0, 1.0, 2.0, 0.0],
-                    [0.0, 3.0, 4.0, 0.0],
-                    [0.0, 0.0, 0.0, 0.0],
-                ]
-            )
-        ).all()
-
-        result = grid.structure_list_from_result_list(
-            result_list=[np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0]])]
-        )
-
-        assert isinstance(result[0], aa.Grid)
-        assert (
-            result[0].in_2d
-            == np.array(
-                [
-                    [[0.0, 0.0], [0.0, 0.0], [0.0, 0.0], [0.0, 0.0]],
-                    [[0.0, 0.0], [1.0, 1.0], [2.0, 2.0], [0.0, 0.0]],
-                    [[0.0, 0.0], [3.0, 3.0], [4.0, 4.0], [0.0, 0.0]],
-                    [[0.0, 0.0], [0.0, 0.0], [0.0, 0.0], [0.0, 0.0]],
-                ]
-            )
-        ).all()
-
-
 class TestAPI:
     def test__manual__makes_grid_with_pixel_scale(self):
 
@@ -1035,6 +570,227 @@ class TestAPI:
         assert grid.origin == (9.0, 0.5)
 
 
+class TestGrid:
+    def test__grid_from_deflection_grid(self):
+
+        grid = aa.Grid.uniform(shape_2d=(2, 2), pixel_scales=2.0, store_in_1d=True)
+
+        grid_deflected = grid.grid_from_deflection_grid(deflection_grid=grid)
+
+        assert type(grid_deflected) == grids.Grid
+        assert (
+            grid_deflected == np.array([[0.0, 0.0], [0.0, 0.0], [0.0, 0.0], [0.0, 0.0]])
+        ).all()
+        assert (
+            grid_deflected.in_2d
+            == np.array([[[0.0, 0.0], [0.0, 0.0]], [[0.0, 0.0], [0.0, 0.0]]])
+        ).all()
+        assert (
+            grid_deflected.in_1d
+            == np.array([[0.0, 0.0], [0.0, 0.0], [0.0, 0.0], [0.0, 0.0]])
+        ).all()
+        assert (grid_deflected.mask == grid.mask).all()
+        assert grid_deflected.pixel_scales == (2.0, 2.0)
+        assert grid_deflected.origin == (0.0, 0.0)
+        assert grid.store_in_1d == True
+
+        grid = aa.Grid.uniform(shape_2d=(2, 2), pixel_scales=2.0, store_in_1d=False)
+
+        grid_deflected = grid.grid_from_deflection_grid(deflection_grid=grid)
+
+        assert type(grid_deflected) == grids.Grid
+        assert (
+            grid_deflected
+            == np.array([[[0.0, 0.0], [0.0, 0.0]], [[0.0, 0.0], [0.0, 0.0]]])
+        ).all()
+        assert (
+            grid_deflected.in_2d
+            == np.array([[[0.0, 0.0], [0.0, 0.0]], [[0.0, 0.0], [0.0, 0.0]]])
+        ).all()
+        assert (
+            grid_deflected.in_1d
+            == np.array([[0.0, 0.0], [0.0, 0.0], [0.0, 0.0], [0.0, 0.0]])
+        ).all()
+        assert (grid_deflected.mask == grid.mask).all()
+        assert grid_deflected.pixel_scales == (2.0, 2.0)
+        assert grid_deflected.origin == (0.0, 0.0)
+        assert grid.store_in_1d == False
+
+    def test__blurring_grid_from_mask_and_kernel_shape__compare_to_array_util(self):
+        mask = np.array(
+            [
+                [True, True, True, True, True, True, True, True, True],
+                [True, True, True, True, True, True, True, True, True],
+                [True, True, False, True, True, True, False, True, True],
+                [True, True, True, True, True, True, True, True, True],
+                [True, True, True, True, True, True, True, True, True],
+                [True, True, True, True, True, True, True, True, True],
+                [True, True, False, True, True, True, False, True, True],
+                [True, True, True, True, True, True, True, True, True],
+                [True, True, True, True, True, True, True, True, True],
+            ]
+        )
+
+        mask = aa.Mask.manual(mask=mask, pixel_scales=(2.0, 2.0), sub_size=2)
+
+        blurring_mask_util = aa.util.mask.blurring_mask_from(
+            mask=mask, kernel_shape_2d=(3, 5)
+        )
+
+        blurring_grid_util = aa.util.grid.grid_1d_via_mask_from(
+            mask=blurring_mask_util, pixel_scales=(2.0, 2.0), sub_size=1
+        )
+
+        mask = aa.Mask.manual(mask=mask, pixel_scales=(2.0, 2.0), sub_size=2)
+
+        blurring_grid = grids.Grid.blurring_grid_from_mask_and_kernel_shape(
+            mask=mask, kernel_shape_2d=(3, 5)
+        )
+
+        assert isinstance(blurring_grid, grids.Grid)
+        assert len(blurring_grid.shape) == 2
+        assert blurring_grid == pytest.approx(blurring_grid_util, 1e-4)
+        assert blurring_grid.pixel_scales == (2.0, 2.0)
+
+        blurring_grid = grids.Grid.blurring_grid_from_mask_and_kernel_shape(
+            mask=mask, kernel_shape_2d=(3, 5), store_in_1d=False
+        )
+
+        assert isinstance(blurring_grid, grids.Grid)
+        assert len(blurring_grid.shape) == 3
+        assert blurring_grid.pixel_scales == (2.0, 2.0)
+
+    def test__blurring_grid_from_kernel_shape__compare_to_array_util(self):
+        mask = np.array(
+            [
+                [True, True, True, True, True, True, True, True, True],
+                [True, True, True, True, True, True, True, True, True],
+                [True, True, True, True, True, True, True, True, True],
+                [True, True, True, True, True, True, True, True, True],
+                [True, True, True, True, False, True, True, True, True],
+                [True, True, True, True, True, True, True, True, True],
+                [True, True, True, True, True, True, True, True, True],
+                [True, True, True, True, True, True, True, True, True],
+                [True, True, True, True, True, True, True, True, True],
+            ]
+        )
+
+        mask = aa.Mask.manual(mask=mask, pixel_scales=(2.0, 2.0), sub_size=2)
+
+        blurring_mask_util = aa.util.mask.blurring_mask_from(
+            mask=mask, kernel_shape_2d=(3, 5)
+        )
+
+        blurring_grid_util = aa.util.grid.grid_1d_via_mask_from(
+            mask=blurring_mask_util, pixel_scales=(2.0, 2.0), sub_size=1
+        )
+
+        grid = aa.Grid.from_mask(mask=mask)
+
+        blurring_grid = grid.blurring_grid_from_kernel_shape(kernel_shape_2d=(3, 5))
+
+        assert isinstance(blurring_grid, grids.Grid)
+        assert len(blurring_grid.shape) == 2
+        assert blurring_grid == pytest.approx(blurring_grid_util, 1e-4)
+        assert blurring_grid.pixel_scales == (2.0, 2.0)
+
+    def test__structure_from_result__maps_numpy_array_to__auto_array_or_grid(self):
+
+        mask = np.array(
+            [
+                [True, True, True, True],
+                [True, False, False, True],
+                [True, False, False, True],
+                [True, True, True, True],
+            ]
+        )
+
+        mask = aa.Mask.manual(mask=mask, pixel_scales=(1.0, 1.0), sub_size=1)
+
+        grid = aa.Grid.from_mask(mask=mask)
+
+        result = grid.structure_from_result(result=np.array([1.0, 2.0, 3.0, 4.0]))
+
+        assert isinstance(result, aa.Array)
+        assert (
+            result.in_2d
+            == np.array(
+                [
+                    [0.0, 0.0, 0.0, 0.0],
+                    [0.0, 1.0, 2.0, 0.0],
+                    [0.0, 3.0, 4.0, 0.0],
+                    [0.0, 0.0, 0.0, 0.0],
+                ]
+            )
+        ).all()
+
+        result = grid.structure_from_result(
+            result=np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0]])
+        )
+
+        assert isinstance(result, aa.Grid)
+        assert (
+            result.in_2d
+            == np.array(
+                [
+                    [[0.0, 0.0], [0.0, 0.0], [0.0, 0.0], [0.0, 0.0]],
+                    [[0.0, 0.0], [1.0, 1.0], [2.0, 2.0], [0.0, 0.0]],
+                    [[0.0, 0.0], [3.0, 3.0], [4.0, 4.0], [0.0, 0.0]],
+                    [[0.0, 0.0], [0.0, 0.0], [0.0, 0.0], [0.0, 0.0]],
+                ]
+            )
+        ).all()
+
+    def test__structure_list_from_result_list__maps_list_to_auto_arrays_or_grids(self):
+
+        mask = np.array(
+            [
+                [True, True, True, True],
+                [True, False, False, True],
+                [True, False, False, True],
+                [True, True, True, True],
+            ]
+        )
+
+        mask = aa.Mask.manual(mask=mask, pixel_scales=(1.0, 1.0), sub_size=1)
+
+        grid = aa.Grid.from_mask(mask=mask)
+
+        result = grid.structure_list_from_result_list(
+            result_list=[np.array([1.0, 2.0, 3.0, 4.0])]
+        )
+
+        assert isinstance(result[0], aa.Array)
+        assert (
+            result[0].in_2d
+            == np.array(
+                [
+                    [0.0, 0.0, 0.0, 0.0],
+                    [0.0, 1.0, 2.0, 0.0],
+                    [0.0, 3.0, 4.0, 0.0],
+                    [0.0, 0.0, 0.0, 0.0],
+                ]
+            )
+        ).all()
+
+        result = grid.structure_list_from_result_list(
+            result_list=[np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0]])]
+        )
+
+        assert isinstance(result[0], aa.Grid)
+        assert (
+            result[0].in_2d
+            == np.array(
+                [
+                    [[0.0, 0.0], [0.0, 0.0], [0.0, 0.0], [0.0, 0.0]],
+                    [[0.0, 0.0], [1.0, 1.0], [2.0, 2.0], [0.0, 0.0]],
+                    [[0.0, 0.0], [3.0, 3.0], [4.0, 4.0], [0.0, 0.0]],
+                    [[0.0, 0.0], [0.0, 0.0], [0.0, 0.0], [0.0, 0.0]],
+                ]
+            )
+        ).all()
+
+
 class TestGridSparse:
     class TestUnmaskedShape:
         def test__properties_consistent_with_util(self):
@@ -1585,48 +1341,6 @@ class TestGridSparse:
             )
 
             assert (sparse_grid_weight_0.sparse != sparse_grid_weight_1.sparse).any()
-
-
-class TestGridRadialMinimum:
-    def test__mock_profile__grid_radial_minimum_is_0_or_below_radial_coordinates__no_changes(
-        self
-    ):
-
-        grid = np.array([[2.5, 0.0], [4.0, 0.0], [6.0, 0.0]])
-        mock_profile = MockGridRadialMinimum()
-
-        deflections = mock_profile.deflections_from_grid(grid=grid)
-        assert (deflections == grid).all()
-
-    def test__mock_profile__grid_radial_minimum_is_above_some_radial_coordinates__moves_them_grid_radial_minimum(
-        self
-    ):
-        grid = np.array([[2.0, 0.0], [1.0, 0.0], [6.0, 0.0]])
-        mock_profile = MockGridRadialMinimum()
-
-        deflections = mock_profile.deflections_from_grid(grid=grid)
-
-        assert (deflections == np.array([[2.5, 0.0], [2.5, 0.0], [6.0, 0.0]])).all()
-
-    def test__mock_profile__same_as_above_but_diagonal_coordinates(self):
-        grid = np.array(
-            [
-                [np.sqrt(2.0), np.sqrt(2.0)],
-                [1.0, np.sqrt(8.0)],
-                [np.sqrt(8.0), np.sqrt(8.0)],
-            ]
-        )
-
-        mock_profile = MockGridRadialMinimum()
-
-        deflections = mock_profile.deflections_from_grid(grid=grid)
-
-        assert deflections == pytest.approx(
-            np.array(
-                [[1.7677, 1.7677], [1.0, np.sqrt(8.0)], [np.sqrt(8), np.sqrt(8.0)]]
-            ),
-            1.0e-4,
-        )
 
 
 class TestMaskedGrid:
