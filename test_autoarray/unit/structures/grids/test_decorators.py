@@ -8,7 +8,6 @@ from test_autoarray.mock.mock_grids import (
     ndarray_1d_from_grid,
     ndarray_2d_from_grid,
 )
-import pytest
 
 test_coordinates_dir = "{}/files/coordinates/".format(
     os.path.dirname(os.path.realpath(__file__))

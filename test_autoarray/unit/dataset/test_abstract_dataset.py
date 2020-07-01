@@ -137,7 +137,7 @@ class TestAbstractMaskedData:
 
         grid = aa.GridInterpolate.from_mask(mask=sub_mask_7x7, pixel_scales_interp=1.0)
 
-        assert isinstance(masked_imaging_7x7.grid_inversion, aa.Grid)
+        assert isinstance(masked_imaging_7x7.grid_inversion, aa.GridInterpolate)
         assert (masked_imaging_7x7.grid_inversion == grid).all()
         assert (masked_imaging_7x7.grid_inversion.vtx == grid.vtx).all()
         assert (masked_imaging_7x7.grid_inversion.wts == grid.wts).all()

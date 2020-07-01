@@ -2,8 +2,10 @@ import numpy as np
 
 from autoarray import decorator_util
 from autoarray.structures import abstract_structure, arrays, grids
+from autoarray.structures.grids import abstract_grid
 from autoarray.mask import mask as msk
 from autoarray.util import array_util, grid_util
+from autoarray import exc
 
 
 def sub_steps_from_none(sub_steps):
@@ -13,7 +15,7 @@ def sub_steps_from_none(sub_steps):
     return sub_steps
 
 
-class GridIterate(grids.Grid):
+class GridIterate(abstract_grid.AbstractGrid):
     def __new__(
         cls,
         grid,
@@ -58,8 +60,17 @@ class GridIterate(grids.Grid):
             If True, the grid is stored in 1D as an ndarray of shape [total_unmasked_pixels, 2]. If False, it is
             stored in 2D as an ndarray of shape [total_y_pixels, total_x_pixels, 2].
         """
+
         sub_steps = sub_steps_from_none(sub_steps=sub_steps)
-        obj = super().__new__(cls=cls, grid=grid, mask=mask, store_in_1d=store_in_1d)
+        if store_in_1d and len(grid.shape) != 2:
+            raise exc.GridException(
+                "An grid input into the grids.Grid.__new__ method has store_in_1d = True but"
+                "the input shape of the array is not 1."
+            )
+
+        obj = grid.view(cls)
+        obj.mask = mask
+        obj.store_in_1d = store_in_1d
 
         if len(obj.shape) == 2:
             obj.grid = grids.MaskedGrid.manual_1d(
@@ -115,7 +126,7 @@ class GridIterate(grids.Grid):
             If True, the grid is stored in 1D as an ndarray of shape [total_unmasked_pixels, 2]. If False, it is
             stored in 2D as an ndarray of shape [total_y_pixels, total_x_pixels, 2].
         """
-        grid = grids.convert_and_check_grid(grid=grid)
+        grid = abstract_grid.convert_and_check_grid(grid=grid)
         pixel_scales = abstract_structure.convert_pixel_scales(
             pixel_scales=pixel_scales
         )
@@ -810,7 +821,7 @@ class GridIterate(grids.Grid):
             The class the function belongs to.
             """
         result_sub_1_1d = func(cls, self.grid)
-        result_sub_1_2d = self.structure_from_result(
+        result_sub_1_2d = self.grid.structure_from_result(
             result=result_sub_1_1d
         ).in_2d_binned
 

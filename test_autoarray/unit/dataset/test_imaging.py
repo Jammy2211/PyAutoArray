@@ -249,7 +249,7 @@ class TestMaskedImaging:
 
         assert isinstance(masked_imaging_7x7.grid, aa.GridIterate)
         assert (masked_imaging_7x7.grid.in_1d_binned == grid_iterate_7x7).all()
-        assert isinstance(masked_imaging_7x7.blurring_grid, aa.Grid)
+        assert isinstance(masked_imaging_7x7.blurring_grid, aa.GridIterate)
         assert (masked_imaging_7x7.blurring_grid.in_1d == blurring_grid_7x7).all()
 
         masked_imaging_7x7 = aa.MaskedImaging(
