@@ -13,38 +13,84 @@ logging.basicConfig()
 logger = logging.getLogger(__name__)
 
 
-def setup_manual_1d_array(array, mask, store_in_1d):
+def convert_array(array):
+    """If the input array input a convert is of type list, convert it to type NumPy array.
+
+    Parameters
+    ----------
+    array : list or ndarray
+        The array which may be converted to an ndarray
+    """
 
     if type(array) is list:
         array = np.asarray(array)
 
-    if array.shape[0] != mask.sub_pixels_in_mask:
+    return array
+
+
+def convert_manual_1d_array(array_1d, mask, store_in_1d):
+    """
+    Manual 1D array functions take as input a list or ndarray which is to be returned as an Array. This function
+    performs the following and checks and conversions on the input:
+
+    1) If the input is a list, convert it to a 1D ndarray.
+    2) Check that the number of sub-pixels in the array is identical to that of the mask.
+    3) Return the array in 1D if it is to be stored in 1D, else return it in 2D.
+
+    Parameters
+    ----------
+    array_1d : ndarray or list
+        The input structure which is converted to a 1D ndarray if it is a list.
+    mask : Mask
+        The mask of the output Array.
+    store_in_1d : bool
+        Whether the memory-representation of the array is in 1D or 2D.
+    """
+
+    array_1d = convert_array(array=array_1d)
+
+    if array_1d.shape[0] != mask.sub_pixels_in_mask:
         raise exc.ArrayException(
             "The input 1D array does not have the same number of entries as sub-pixels in"
             "the mask."
         )
 
     if store_in_1d:
-        return array
+        return array_1d
 
     return array_util.sub_array_2d_from(
-        sub_array_1d=array, mask=mask, sub_size=mask.sub_size
+        sub_array_1d=array_1d, mask=mask, sub_size=mask.sub_size
     )
 
 
-def setup_manual_2d_array(array, mask, store_in_1d):
+def convert_manual_2d_array(array_2d, mask, store_in_1d):
+    """
+    Manual 2D array functions take as input a list or ndarray which is to be returned as an Array. This function
+    performs the following and checks and conversions on the input:
 
-    if type(array) is list:
-        array = np.asarray(array)
+    1) If the input is a list, convert it to a 2D ndarray.
+    2) Check that the number of sub-pixels in the array is identical to that of the mask.
+    3) Return the array in 1D if it is to be stored in 1D, else return it in 2D.
 
-    if array.shape != mask.sub_shape_2d:
+    Parameters
+    ----------
+    array_1d : ndarray or list
+        The input structure which is converted to a 2D ndarray if it is a list.
+    mask : Mask
+        The mask of the output Array.
+    store_in_1d : bool
+        Whether the memory-representation of the array is in 1D or 2D.
+    """
+    array_2d = convert_array(array=array_2d)
+
+    if array_2d.shape != mask.sub_shape_2d:
         raise exc.ArrayException(
             "The input array is 2D but not the same dimensions as the sub-mask "
             "(e.g. the mask 2D shape multipled by its sub size."
         )
 
     sub_array_1d = array_util.sub_array_1d_from(
-        sub_array_2d=array, mask=mask, sub_size=mask.sub_size
+        sub_array_2d=array_2d, mask=mask, sub_size=mask.sub_size
     )
 
     if store_in_1d:
@@ -401,8 +447,8 @@ class AbstractArray(abstract_structure.AbstractStructure):
             origin=self.mask.geometry.mask_centre,
         )
 
-        array = setup_manual_2d_array(
-            array=extracted_array_2d, mask=mask, store_in_1d=self.store_in_1d
+        array = convert_manual_2d_array(
+            array_2d=extracted_array_2d, mask=mask, store_in_1d=self.store_in_1d
         )
 
         return self.__class__(array=array, mask=mask, store_in_1d=self.store_in_1d)
@@ -458,8 +504,8 @@ class AbstractArray(abstract_structure.AbstractStructure):
 
         resized_mask = self.mask.resized_mask_from_new_shape(new_shape=new_shape)
 
-        array = setup_manual_2d_array(
-            array=resized_array_2d, mask=resized_mask, store_in_1d=self.store_in_1d
+        array = convert_manual_2d_array(
+            array_2d=resized_array_2d, mask=resized_mask, store_in_1d=self.store_in_1d
         )
 
         return self.__class__(
@@ -510,8 +556,8 @@ class AbstractArray(abstract_structure.AbstractStructure):
             new_shape=trimmed_array_2d.shape
         )
 
-        array = setup_manual_2d_array(
-            array=trimmed_array_2d, mask=resized_mask, store_in_1d=self.store_in_1d
+        array = convert_manual_2d_array(
+            array_2d=trimmed_array_2d, mask=resized_mask, store_in_1d=self.store_in_1d
         )
 
         return self.__class__(
@@ -569,8 +615,8 @@ class AbstractArray(abstract_structure.AbstractStructure):
             mask=binned_mask, sub_array_2d=binned_array_2d, sub_size=1
         )
 
-        array = setup_manual_1d_array(
-            array=binned_array_1d, mask=binned_mask, store_in_1d=self.store_in_1d
+        array = convert_manual_1d_array(
+            array_1d=binned_array_1d, mask=binned_mask, store_in_1d=self.store_in_1d
         )
 
         return self.__class__(

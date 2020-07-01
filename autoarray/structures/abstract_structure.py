@@ -1,6 +1,14 @@
 import numpy as np
 
 
+def convert_pixel_scales(pixel_scales):
+
+    if type(pixel_scales) is float:
+        pixel_scales = (pixel_scales, pixel_scales)
+
+    return pixel_scales
+
+
 class AbstractStructure(np.ndarray):
     def __new__(cls, structure, mask, store_in_1d=True, *args, **kwargs):
         """A grid of coordinates, where each entry corresponds to the (y,x) coordinates at the centre of an \

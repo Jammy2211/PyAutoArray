@@ -1144,25 +1144,32 @@ class TestConvolveMappingMatrix:
 
 
 class TestConvolution:
-    def test__cross_mask_with_blurring_entries__returns_scaled_array(self):
+    def test__cross_mask_with_blurring_entries__returns_array(self):
 
-        mask = np.full((5, 5), True)
-
-        mask[2, 2] = False
-        mask[1, 2] = False
-        mask[3, 2] = False
-        mask[2, 1] = False
-        mask[2, 3] = False
-
-        cross_mask = aa.Mask.manual(mask=mask, pixel_scales=(1.0, 1.0), sub_size=1)
+        cross_mask = aa.Mask.manual(
+            mask=[
+                [True, True, True, True, True],
+                [True, True, False, True, True],
+                [True, False, False, False, True],
+                [True, True, False, True, True],
+                [True, True, True, True, True],
+            ],
+            pixel_scales=0.1,
+            sub_size=1,
+        )
 
         kernel = aa.Kernel.manual_2d(array=[[0, 0.2, 0], [0.2, 0.4, 0.2], [0, 0.2, 0]])
 
         convolver = aa.Convolver(mask=cross_mask, kernel=kernel)
 
-        image_array = aa.Array.manual_1d(array=[1, 0, 0, 0, 0], shape_2d=(5, 5))
-        blurring_array = aa.Array.manual_1d(
-            array=[0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], shape_2d=(5, 5)
+        image_array = aa.MaskedArray.manual_1d(array=[1, 0, 0, 0, 0], mask=cross_mask)
+
+        blurring_mask = cross_mask.regions.blurring_mask_from_kernel_shape(
+            kernel_shape_2d=kernel.shape_2d
+        )
+
+        blurring_array = aa.MaskedArray.manual_1d(
+            array=[0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], mask=blurring_mask
         )
 
         result = convolver.convolved_image_from_image_and_blurring_image(
