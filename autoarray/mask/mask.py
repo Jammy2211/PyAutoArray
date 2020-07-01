@@ -3,6 +3,7 @@ import logging
 import numpy as np
 
 from autoarray import exc
+from autoarray.structures import abstract_structure
 from autoarray.mask import abstract_mask
 from autoarray.util import array_util, mask_util
 
@@ -45,8 +46,9 @@ class Mask(abstract_mask.AbstractMask):
         if invert:
             mask = np.invert(mask)
 
-        if type(pixel_scales) is float:
-            pixel_scales = (pixel_scales, pixel_scales)
+        pixel_scales = abstract_structure.convert_pixel_scales(
+            pixel_scales=pixel_scales
+        )
 
         if len(mask.shape) != 2:
             raise exc.MaskException("The input mask is not a two dimensional array")

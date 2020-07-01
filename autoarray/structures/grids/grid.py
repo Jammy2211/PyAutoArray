@@ -5,7 +5,6 @@ import typing
 
 import autoarray as aa
 
-from autoconf import conf
 from autoarray import decorator_util
 from autoarray import exc
 from autoarray.structures import abstract_structure, arrays, grids
@@ -45,14 +44,6 @@ def convert_and_check_grid(grid, mask=None):
                 )
 
     return grid
-
-
-def convert_pixel_scales(pixel_scales):
-
-    if type(pixel_scales) is float:
-        pixel_scales = (pixel_scales, pixel_scales)
-
-    return pixel_scales
 
 
 class Grid(abstract_structure.AbstractStructure):
@@ -283,7 +274,9 @@ class Grid(abstract_structure.AbstractStructure):
             stored in 2D as an ndarray of shape [total_y_pixels, total_x_pixels, 2].
         """
         grid = convert_and_check_grid(grid=grid)
-        pixel_scales = convert_pixel_scales(pixel_scales=pixel_scales)
+        pixel_scales = abstract_structure.convert_pixel_scales(
+            pixel_scales=pixel_scales
+        )
 
         mask = msk.Mask.unmasked(
             shape_2d=shape_2d,
@@ -333,7 +326,9 @@ class Grid(abstract_structure.AbstractStructure):
             stored in 2D as an ndarray of shape [total_y_pixels, total_x_pixels, 2].
         """
         grid = convert_and_check_grid(grid=grid)
-        pixel_scales = convert_pixel_scales(pixel_scales=pixel_scales)
+        pixel_scales = abstract_structure.convert_pixel_scales(
+            pixel_scales=pixel_scales
+        )
 
         shape = (int(grid.shape[0] / sub_size), int(grid.shape[1] / sub_size))
 
@@ -476,7 +471,9 @@ class Grid(abstract_structure.AbstractStructure):
             If True, the grid is stored in 1D as an ndarray of shape [total_unmasked_pixels, 2]. If False, it is
             stored in 2D as an ndarray of shape [total_y_pixels, total_x_pixels, 2].
         """
-        pixel_scales = convert_pixel_scales(pixel_scales=pixel_scales)
+        pixel_scales = abstract_structure.convert_pixel_scales(
+            pixel_scales=pixel_scales
+        )
 
         grid_1d = grid_util.grid_1d_via_shape_2d_from(
             shape_2d=shape_2d,

@@ -1,12 +1,10 @@
-import ast
 import logging
 
 import numpy as np
-import os
 
 from autoarray import exc
 from autoarray.structures.arrays import abstract_array
-from autoarray.structures import grids
+from autoarray.structures import abstract_structure, grids
 from autoarray.mask import mask as msk
 from autoarray.util import array_util, grid_util
 
@@ -52,11 +50,10 @@ class Array(abstract_array.AbstractArray):
             If True, the array is stored in 1D as an ndarray of shape [total_unmasked_pixels]. If False, it is
             stored in 2D as an ndarray of shape [total_y_pixels, total_x_pixels].
         """
-        if type(array) is list:
-            array = np.asarray(array)
 
-        if type(pixel_scales) is float:
-            pixel_scales = (pixel_scales, pixel_scales)
+        pixel_scales = abstract_structure.convert_pixel_scales(
+            pixel_scales=pixel_scales
+        )
 
         if shape_2d is not None and len(shape_2d) != 2:
             raise exc.ArrayException(
@@ -70,14 +67,10 @@ class Array(abstract_array.AbstractArray):
             origin=origin,
         )
 
-        if store_in_1d:
-            return Array(array=array, mask=mask, store_in_1d=store_in_1d)
-
-        sub_array_2d = array_util.sub_array_2d_from(
-            sub_array_1d=array, mask=mask, sub_size=mask.sub_size
+        array = abstract_array.convert_manual_1d_array(
+            array_1d=array, mask=mask, store_in_1d=store_in_1d
         )
-
-        return Array(array=sub_array_2d, mask=mask, store_in_1d=store_in_1d)
+        return Array(array=array, mask=mask, store_in_1d=store_in_1d)
 
     @classmethod
     def manual_2d(
@@ -110,11 +103,12 @@ class Array(abstract_array.AbstractArray):
             If True, the array is stored in 1D as an ndarray of shape [total_unmasked_pixels]. If False, it is
             stored in 2D as an ndarray of shape [total_y_pixels, total_x_pixels].
         """
-        if type(array) is list:
-            array = np.asarray(array)
 
-        if type(pixel_scales) is float:
-            pixel_scales = (pixel_scales, pixel_scales)
+        pixel_scales = abstract_structure.convert_pixel_scales(
+            pixel_scales=pixel_scales
+        )
+
+        array = abstract_array.convert_array(array=array)
 
         shape_2d = (int(array.shape[0] / sub_size), int(array.shape[1] / sub_size))
 
@@ -125,14 +119,10 @@ class Array(abstract_array.AbstractArray):
             origin=origin,
         )
 
-        if not store_in_1d:
-            return Array(array=array, mask=mask, store_in_1d=store_in_1d)
-
-        sub_array_1d = array_util.sub_array_1d_from(
-            sub_array_2d=array, mask=mask, sub_size=mask.sub_size
+        array = abstract_array.convert_manual_2d_array(
+            array_2d=array, mask=mask, store_in_1d=store_in_1d
         )
-
-        return Array(array=sub_array_1d, mask=mask, store_in_1d=store_in_1d)
+        return Array(array=array, mask=mask, store_in_1d=store_in_1d)
 
     @classmethod
     def full(
@@ -330,8 +320,9 @@ class Array(abstract_array.AbstractArray):
             If True, the grid is stored in 1D as an ndarray of shape [total_unmasked_pixels, 2]. If False, it is
             stored in 2D as an ndarray of shape [total_y_pixels, total_x_pixels, 2].
         """
-        if type(pixel_scales) is float:
-            pixel_scales = (pixel_scales, pixel_scales)
+        pixel_scales = abstract_structure.convert_pixel_scales(
+            pixel_scales=pixel_scales
+        )
 
         grid = grids.Grid.manual_yx_1d(
             y=y, x=x, shape_2d=shape_2d, pixel_scales=pixel_scales, sub_size=1
@@ -376,8 +367,8 @@ class MaskedArray(abstract_array.AbstractArray):
             If True, the array is stored in 1D as an ndarray of shape [total_unmasked_pixels]. If False, it is
             stored in 2D as an ndarray of shape [total_y_pixels, total_x_pixels].
         """
-        array = abstract_array.setup_manual_1d_array(
-            array=array, mask=mask, store_in_1d=store_in_1d
+        array = abstract_array.convert_manual_1d_array(
+            array_1d=array, mask=mask, store_in_1d=store_in_1d
         )
         return Array(array=array, mask=mask, store_in_1d=store_in_1d)
 
@@ -405,8 +396,8 @@ class MaskedArray(abstract_array.AbstractArray):
             If True, the array is stored in 1D as an ndarray of shape [total_unmasked_pixels]. If False, it is
             stored in 2D as an ndarray of shape [total_y_pixels, total_x_pixels].
         """
-        array = abstract_array.setup_manual_2d_array(
-            array=array, mask=mask, store_in_1d=store_in_1d
+        array = abstract_array.convert_manual_2d_array(
+            array_2d=array, mask=mask, store_in_1d=store_in_1d
         )
         return Array(array=array, mask=mask, store_in_1d=store_in_1d)
 

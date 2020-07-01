@@ -4,7 +4,6 @@ from .grid import (
     GridTransformed,
     GridTransformedNumpy,
     MaskedGrid,
-    convert_pixel_scales,
     convert_and_check_grid,
 )
 from .iterate import GridIterate
