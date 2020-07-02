@@ -32,4 +32,4 @@ from .structures.visibilities import Visibilities
 from .structures.arrays import MaskedArray
 from .structures.grids import MaskedGrid
 
-__version__ = '0.11.5'
+__version__ = '0.11.6'
