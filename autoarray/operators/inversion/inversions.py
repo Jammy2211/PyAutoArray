@@ -8,7 +8,7 @@ from autoarray.util import inversion_util
 from scipy.interpolate import griddata
 
 
-def inversion(masked_dataset, mapper, regularization):
+def inversion(masked_dataset, mapper, regularization, check_solution=True):
 
     if isinstance(masked_dataset, imaging.MaskedImaging):
 
@@ -18,6 +18,7 @@ def inversion(masked_dataset, mapper, regularization):
             convolver=masked_dataset.convolver,
             mapper=mapper,
             regularization=regularization,
+            check_solution=check_solution,
         )
 
     elif isinstance(masked_dataset, interferometer.MaskedInterferometer):
@@ -28,6 +29,7 @@ def inversion(masked_dataset, mapper, regularization):
             transformer=masked_dataset.transformer,
             mapper=mapper,
             regularization=regularization,
+            check_solution=check_solution,
         )
 
 
@@ -240,7 +242,7 @@ class InversionImaging(Inversion):
 
     @classmethod
     def from_data_mapper_and_regularization(
-        cls, image, noise_map, convolver, mapper, regularization
+        cls, image, noise_map, convolver, mapper, regularization, check_solution=True
     ):
 
         blurred_mapping_matrix = convolver.convolve_mapping_matrix(
@@ -267,6 +269,11 @@ class InversionImaging(Inversion):
             values = np.linalg.solve(curvature_reg_matrix, data_vector)
         except np.linalg.LinAlgError:
             raise exc.InversionException()
+
+        if check_solution:
+            if np.isclose(a=values[0], b=values[1], atol=1e-4).all():
+                if np.isclose(a=values[0], b=values, atol=1e-4).all():
+                    raise exc.InversionException()
 
         return InversionImaging(
             image=image,
@@ -384,7 +391,13 @@ class InversionInterferometer(Inversion):
 
     @classmethod
     def from_data_mapper_and_regularization(
-        cls, visibilities, noise_map, transformer, mapper, regularization
+        cls,
+        visibilities,
+        noise_map,
+        transformer,
+        mapper,
+        regularization,
+        check_solution=True,
     ):
 
         transformed_mapping_matrices = transformer.transformed_mapping_matrices_from_mapping_matrix(
@@ -427,6 +440,11 @@ class InversionInterferometer(Inversion):
             values = np.linalg.solve(curvature_reg_matrix, data_vector)
         except np.linalg.LinAlgError:
             raise exc.InversionException()
+
+        if check_solution:
+            if np.isclose(a=values[0], b=values[1], atol=1e-4).all():
+                if np.isclose(a=values[0], b=values, atol=1e-4).all():
+                    raise exc.InversionException()
 
         return InversionInterferometer(
             visibilities=visibilities,

@@ -4,7 +4,7 @@ import pytest
 import autoarray as aa
 from autoarray.structures import grids
 
-from test_autoarray.mock.mock_grids import ndarray_1d_from_grid, ndarray_2d_from_grid
+from test_autoarray.mock import ndarray_1d_from_grid, ndarray_2d_from_grid
 
 
 class TestObj:

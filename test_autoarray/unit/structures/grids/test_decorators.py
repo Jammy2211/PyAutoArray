@@ -2,7 +2,7 @@ import os
 import numpy as np
 
 import autoarray as aa
-from test_autoarray.mock.mock_grids import (
+from test_autoarray.mock import (
     MockGridLikeIteratorObj,
     MockGridLikeObj,
     ndarray_1d_from_grid,
