@@ -2,13 +2,12 @@ import os
 import numpy as np
 
 import autoarray as aa
-from test_autoarray.mock.mock_grids import (
+from test_autoarray.mock import (
     MockGridLikeIteratorObj,
     MockGridLikeObj,
     ndarray_1d_from_grid,
     ndarray_2d_from_grid,
 )
-import pytest
 
 test_coordinates_dir = "{}/files/coordinates/".format(
     os.path.dirname(os.path.realpath(__file__))

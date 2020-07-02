@@ -2,9 +2,8 @@ import autoarray as aa
 from autoarray.operators.inversion import inversions
 from autoarray import exc
 import numpy as np
-import pytest
 
-from test_autoarray.mock import mock_inversion
+from test_autoarray import mock
 
 
 class TestRegularizationTerm:
@@ -15,9 +14,10 @@ class TestRegularizationTerm:
         inversion = inversions.InversionImaging.from_data_mapper_and_regularization(
             image=np.ones(9),
             noise_map=np.ones(9),
-            convolver=mock_inversion.MockConvolver(matrix_shape),
-            mapper=mock_inversion.MockMapper(matrix_shape=matrix_shape),
-            regularization=mock_inversion.MockRegularization(matrix_shape),
+            convolver=mock.MockConvolver(matrix_shape),
+            mapper=mock.MockMapper(matrix_shape=matrix_shape),
+            regularization=mock.MockRegularization(matrix_shape),
+            check_solution=False,
         )
 
         inversion.reconstruction = np.array([1.0, 1.0, 1.0])
@@ -49,9 +49,10 @@ class TestRegularizationTerm:
         inversion = inversions.InversionImaging.from_data_mapper_and_regularization(
             image=np.ones(9),
             noise_map=np.ones(9),
-            convolver=mock_inversion.MockConvolver(matrix_shape),
-            mapper=mock_inversion.MockMapper(matrix_shape),
-            regularization=mock_inversion.MockRegularization(matrix_shape),
+            convolver=mock.MockConvolver(matrix_shape),
+            mapper=mock.MockMapper(matrix_shape),
+            regularization=mock.MockRegularization(matrix_shape),
+            check_solution=False,
         )
 
         # G_l term, Warren & Dye 2003 / Nightingale /2015 2018
@@ -85,9 +86,10 @@ class TestLogDetMatrix:
         inversion = inversions.InversionImaging.from_data_mapper_and_regularization(
             image=np.ones(9),
             noise_map=np.ones(9),
-            convolver=mock_inversion.MockConvolver(matrix_shape),
-            mapper=mock_inversion.MockMapper(matrix_shape),
-            regularization=mock_inversion.MockRegularization(matrix_shape),
+            convolver=mock.MockConvolver(matrix_shape),
+            mapper=mock.MockMapper(matrix_shape),
+            regularization=mock.MockRegularization(matrix_shape),
+            check_solution=False,
         )
 
         matrix = np.array([[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]])
@@ -105,9 +107,10 @@ class TestLogDetMatrix:
         inversion = inversions.InversionImaging.from_data_mapper_and_regularization(
             image=np.ones(9),
             noise_map=np.ones(9),
-            convolver=mock_inversion.MockConvolver(matrix_shape),
-            mapper=mock_inversion.MockMapper(matrix_shape),
-            regularization=mock_inversion.MockRegularization(matrix_shape),
+            convolver=mock.MockConvolver(matrix_shape),
+            mapper=mock.MockMapper(matrix_shape),
+            regularization=mock.MockRegularization(matrix_shape),
+            check_solution=False,
         )
 
         matrix = np.array([[2.0, -1.0, 0.0], [-1.0, 2.0, -1.0], [0.0, -1.0, 2.0]])
@@ -125,9 +128,10 @@ class TestLogDetMatrix:
         inversion = inversions.InversionImaging.from_data_mapper_and_regularization(
             image=np.ones(9),
             noise_map=np.ones(9),
-            convolver=mock_inversion.MockConvolver(matrix_shape),
-            mapper=mock_inversion.MockMapper(matrix_shape),
-            regularization=mock_inversion.MockRegularization(matrix_shape),
+            convolver=mock.MockConvolver(matrix_shape),
+            mapper=mock.MockMapper(matrix_shape),
+            regularization=mock.MockRegularization(matrix_shape),
+            check_solution=False,
         )
 
         matrix = np.array([[2.0, 0.0, 0.0], [-1.0, 2.0, -1.0], [0.0, -1.0, 0.0]])
@@ -158,9 +162,10 @@ class TestReconstructedDataVectorAndImage:
         inversion = inversions.InversionImaging.from_data_mapper_and_regularization(
             image=np.ones(9),
             noise_map=np.ones(9),
-            convolver=mock_inversion.MockConvolver(matrix_shape),
-            mapper=mock_inversion.MockMapper(matrix_shape=matrix_shape, grid=grid),
-            regularization=mock_inversion.MockRegularization(matrix_shape),
+            convolver=mock.MockConvolver(matrix_shape),
+            mapper=mock.MockMapper(matrix_shape=matrix_shape, grid=grid),
+            regularization=mock.MockRegularization(matrix_shape),
+            check_solution=False,
         )
 
         inversion.reconstruction = np.array([1.0, 1.0, 1.0, 1.0])
@@ -202,9 +207,10 @@ class TestReconstructedDataVectorAndImage:
         inversion = inversions.InversionImaging.from_data_mapper_and_regularization(
             image=np.ones(9),
             noise_map=np.ones(9),
-            convolver=mock_inversion.MockConvolver(matrix_shape),
-            mapper=mock_inversion.MockMapper(matrix_shape=matrix_shape, grid=grid),
-            regularization=mock_inversion.MockRegularization(matrix_shape),
+            convolver=mock.MockConvolver(matrix_shape),
+            mapper=mock.MockMapper(matrix_shape=matrix_shape, grid=grid),
+            regularization=mock.MockRegularization(matrix_shape),
+            check_solution=False,
         )
 
         inversion.reconstruction = np.array([1.0, 2.0, 3.0, 4.0])
@@ -230,6 +236,30 @@ class TestReconstructedDataVectorAndImage:
         )
         assert inversion.errors == pytest.approx(np.array([0.7, 0.7, 0.7]), 1.0e-4)
 
+    def test__func_testing_range_of_reconstruction(self):
+
+        mask = aa.Mask.manual(
+            mask=np.array(
+                [[True, True, True], [False, False, False], [True, True, True]]
+            ),
+            pixel_scales=1.0,
+            sub_size=1,
+        )
+
+        grid = aa.Grid.from_mask(mask=mask)
+
+        matrix_shape = (3, 3)
+
+        with pytest.raises(exc.InversionException):
+
+            inversions.InversionImaging.from_data_mapper_and_regularization(
+                image=np.ones(9),
+                noise_map=np.ones(9),
+                convolver=mock.MockConvolver(matrix_shape),
+                mapper=mock.MockMapper(matrix_shape=matrix_shape, grid=grid),
+                regularization=mock.MockRegularization(matrix_shape),
+            )
+
 
 class TestBrightestPixel:
     def test__brightest_reconstruction_pixel_and_centre(self):
@@ -239,14 +269,15 @@ class TestBrightestPixel:
         inversion = inversions.InversionImaging.from_data_mapper_and_regularization(
             image=np.ones(9),
             noise_map=np.ones(9),
-            convolver=mock_inversion.MockConvolver(matrix_shape),
-            mapper=mock_inversion.MockMapper(
+            convolver=mock.MockConvolver(matrix_shape),
+            mapper=mock.MockMapper(
                 matrix_shape,
                 pixelization_grid=aa.GridVoronoi.manual_1d(
                     [[1.0, 2.0], [3.0, 4.0], [5.0, 6.0], [5.0, 0.0]]
                 ),
             ),
-            regularization=mock_inversion.MockRegularization(matrix_shape),
+            regularization=mock.MockRegularization(matrix_shape),
+            check_solution=False,
         )
 
         inversion.reconstruction = np.array([2.0, 3.0, 5.0, 0.0])
@@ -298,13 +329,14 @@ class TestInterpolatedReconstruction:
         inversion = inversions.InversionImaging.from_data_mapper_and_regularization(
             image=np.ones(25),
             noise_map=np.ones(25),
-            convolver=mock_inversion.MockConvolver(matrix_shape),
-            mapper=mock_inversion.MockMapper(
+            convolver=mock.MockConvolver(matrix_shape),
+            mapper=mock.MockMapper(
                 matrix_shape=matrix_shape,
                 grid=grid,
                 pixelization_grid=pixelization_grid,
             ),
-            regularization=mock_inversion.MockRegularization(matrix_shape),
+            regularization=mock.MockRegularization(matrix_shape),
+            check_solution=False,
         )
 
         inversion.reconstruction = np.array(
@@ -359,13 +391,14 @@ class TestInterpolatedReconstruction:
         inversion = inversions.InversionImaging.from_data_mapper_and_regularization(
             image=np.ones(25),
             noise_map=np.ones(25),
-            convolver=mock_inversion.MockConvolver(matrix_shape),
-            mapper=mock_inversion.MockMapper(
+            convolver=mock.MockConvolver(matrix_shape),
+            mapper=mock.MockMapper(
                 matrix_shape=matrix_shape,
                 grid=grid,
                 pixelization_grid=pixelization_grid,
             ),
-            regularization=mock_inversion.MockRegularization(matrix_shape),
+            regularization=mock.MockRegularization(matrix_shape),
+            check_solution=False,
         )
 
         inversion.reconstruction = np.array(
@@ -415,13 +448,14 @@ class TestInterpolatedReconstruction:
         inversion = inversions.InversionImaging.from_data_mapper_and_regularization(
             image=np.ones(25),
             noise_map=np.ones(25),
-            convolver=mock_inversion.MockConvolver(matrix_shape),
-            mapper=mock_inversion.MockMapper(
+            convolver=mock.MockConvolver(matrix_shape),
+            mapper=mock.MockMapper(
                 matrix_shape=matrix_shape,
                 grid=grid,
                 pixelization_grid=pixelization_grid,
             ),
-            regularization=mock_inversion.MockRegularization(matrix_shape),
+            regularization=mock.MockRegularization(matrix_shape),
+            check_solution=False,
         )
 
         inversion.reconstruction = np.array(
@@ -501,13 +535,14 @@ class TestInterpolatedReconstruction:
         inversion = inversions.InversionImaging.from_data_mapper_and_regularization(
             image=np.ones(25),
             noise_map=np.ones(25),
-            convolver=mock_inversion.MockConvolver(matrix_shape),
-            mapper=mock_inversion.MockMapper(
+            convolver=mock.MockConvolver(matrix_shape),
+            mapper=mock.MockMapper(
                 matrix_shape=matrix_shape,
                 grid=grid,
                 pixelization_grid=pixelization_grid,
             ),
-            regularization=mock_inversion.MockRegularization(matrix_shape),
+            regularization=mock.MockRegularization(matrix_shape),
+            check_solution=False,
         )
 
         inversion.reconstruction = np.array(
@@ -560,9 +595,9 @@ class TestInterpolatedReconstruction:
 #             mask=mask, sub_size=1, psf_shape_2d=(1,1))
 #
 #         inversion = inversions.Inversion(
-#             image_1d=np.ones(9), noise_map_1d=np.ones(9), convolver=mock_inversion.MockConvolver(matrix_shape),
-#             mapper=mock_inversion.MockMapper(matrix_shape, grid),
-#             regularization=mock_inversion.MockRegularization(matrix_shape))
+#             image_1d=np.ones(9), noise_map_1d=np.ones(9), convolver=mock.MockConvolver(matrix_shape),
+#             mapper=mock.MockMapper(matrix_shape, grid),
+#             regularization=mock.MockRegularization(matrix_shape))
 #
 #         inversion.reconstruction = np.array([1.0, 1.0, 1.0, 1.0])
 #

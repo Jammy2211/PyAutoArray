@@ -1,26 +1,9 @@
 import ast
 import numpy as np
-import scipy.spatial
-import scipy.spatial.qhull as qhull
-from functools import wraps
-from sklearn.cluster import KMeans
 import os
 
 import typing
-
-import autoarray as aa
-
-from autoarray import decorator_util
-from autoarray import exc
-from autoarray.structures import abstract_structure, arrays
-from autoarray.mask import mask as msk
-from autoarray.util import (
-    sparse_util,
-    array_util,
-    grid_util,
-    mask_util,
-    pixelization_util,
-)
+from autoarray.structures import arrays
 
 
 class GridCoordinates(np.ndarray):

@@ -91,7 +91,10 @@ class TestRectangular:
         masked_data = aa.MaskedImaging(imaging=imaging, mask=mask)
 
         inversion = aa.Inversion(
-            masked_dataset=masked_data, mapper=mapper, regularization=reg
+            masked_dataset=masked_data,
+            mapper=mapper,
+            regularization=reg,
+            check_solution=False,
         )
 
         assert (inversion.blurred_mapping_matrix == mapper.mapping_matrix).all()
@@ -204,7 +207,10 @@ class TestRectangular:
         masked_data = aa.MaskedImaging(imaging=imaging, mask=mask)
 
         inversion = aa.Inversion(
-            masked_dataset=masked_data, mapper=mapper, regularization=reg
+            masked_dataset=masked_data,
+            mapper=mapper,
+            regularization=reg,
+            check_solution=False,
         )
 
         assert (inversion.blurred_mapping_matrix == mapper.mapping_matrix).all()
@@ -316,7 +322,10 @@ class TestRectangular:
         masked_data = aa.MaskedImaging(imaging=imaging, mask=mask)
 
         inversion = aa.Inversion(
-            masked_dataset=masked_data, mapper=mapper, regularization=reg
+            masked_dataset=masked_data,
+            mapper=mapper,
+            regularization=reg,
+            check_solution=False,
         )
 
         assert (inversion.blurred_mapping_matrix == mapper.mapping_matrix).all()
@@ -401,7 +410,10 @@ class TestRectangular:
         masked_data = aa.MaskedImaging(imaging=imaging, mask=mask)
 
         inversion = aa.Inversion(
-            masked_dataset=masked_data, mapper=mapper, regularization=reg
+            masked_dataset=masked_data,
+            mapper=mapper,
+            regularization=reg,
+            check_solution=False,
         )
 
         assert (inversion.blurred_mapping_matrix == mapper.mapping_matrix).all()
@@ -465,7 +477,10 @@ class TestRectangular:
         )
 
         inversion = aa.Inversion(
-            masked_dataset=masked_data, mapper=mapper, regularization=reg
+            masked_dataset=masked_data,
+            mapper=mapper,
+            regularization=reg,
+            check_solution=False,
         )
 
         assert inversion.mapped_reconstructed_visibilities[:, 0] == pytest.approx(
@@ -582,7 +597,10 @@ class TestVoronoiMagnification:
         masked_data = aa.MaskedImaging(imaging=imaging, mask=mask)
 
         inversion = aa.Inversion(
-            masked_dataset=masked_data, mapper=mapper, regularization=reg
+            masked_dataset=masked_data,
+            mapper=mapper,
+            regularization=reg,
+            check_solution=False,
         )
 
         assert (inversion.blurred_mapping_matrix == mapper.mapping_matrix).all()
@@ -670,7 +688,10 @@ class TestVoronoiMagnification:
         masked_data = aa.MaskedImaging(imaging=imaging, mask=mask)
 
         inversion = aa.Inversion(
-            masked_dataset=masked_data, mapper=mapper, regularization=reg
+            masked_dataset=masked_data,
+            mapper=mapper,
+            regularization=reg,
+            check_solution=False,
         )
 
         assert (inversion.blurred_mapping_matrix == mapper.mapping_matrix).all()
@@ -779,7 +800,10 @@ class TestVoronoiMagnification:
         masked_data = aa.MaskedImaging(imaging=imaging, mask=mask)
 
         inversion = aa.Inversion(
-            masked_dataset=masked_data, mapper=mapper, regularization=reg
+            masked_dataset=masked_data,
+            mapper=mapper,
+            regularization=reg,
+            check_solution=False,
         )
 
         assert (inversion.blurred_mapping_matrix == mapper.mapping_matrix).all()
@@ -869,7 +893,10 @@ class TestVoronoiMagnification:
         masked_data = aa.MaskedImaging(imaging=imaging, mask=mask)
 
         inversion = aa.Inversion(
-            masked_dataset=masked_data, mapper=mapper, regularization=reg
+            masked_dataset=masked_data,
+            mapper=mapper,
+            regularization=reg,
+            check_solution=False,
         )
 
         assert (inversion.blurred_mapping_matrix == mapper.mapping_matrix).all()
@@ -935,7 +962,10 @@ class TestVoronoiMagnification:
         )
 
         inversion = aa.Inversion(
-            masked_dataset=masked_data, mapper=mapper, regularization=reg
+            masked_dataset=masked_data,
+            mapper=mapper,
+            regularization=reg,
+            check_solution=False,
         )
 
         assert inversion.mapped_reconstructed_visibilities[:, 0] == pytest.approx(

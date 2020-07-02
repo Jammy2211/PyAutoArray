@@ -1,12 +1,15 @@
 import numpy as np
 import scipy.spatial.qhull as qhull
+import typing
 from autoconf import conf
-from autoarray.structures import arrays, grids
+from autoarray.structures import abstract_structure, arrays, grids
+from autoarray.structures.grids import abstract_grid
 from autoarray.mask import mask as msk
 from autoarray.util import grid_util
+from autoarray import exc
 
 
-class GridInterpolate(grids.Grid):
+class GridInterpolate(abstract_grid.AbstractGrid):
     def __new__(
         cls, grid, mask, pixel_scales_interp, store_in_1d=True, *args, **kwargs
     ):
@@ -45,8 +48,15 @@ class GridInterpolate(grids.Grid):
             If True, the grid is stored in 1D as an ndarray of shape [total_unmasked_pixels, 2]. If False, it is
             stored in 2D as an ndarray of shape [total_y_pixels, total_x_pixels, 2].
         """
-        obj = super().__new__(cls=cls, grid=grid, mask=mask, store_in_1d=store_in_1d)
+        if store_in_1d and len(grid.shape) != 2:
+            raise exc.GridException(
+                "An grid input into the grids.Grid.__new__ method has store_in_1d = True but"
+                "the input shape of the array is not 1."
+            )
 
+        obj = grid.view(cls)
+        obj.mask = mask
+        obj.store_in_1d = store_in_1d
         obj.pixel_scales_interp = pixel_scales_interp
 
         rescale_factor = mask.pixel_scale / pixel_scales_interp[0]
@@ -114,9 +124,11 @@ class GridInterpolate(grids.Grid):
             If True, the grid is stored in 1D as an ndarray of shape [total_unmasked_pixels, 2]. If False, it is
             stored in 2D as an ndarray of shape [total_y_pixels, total_x_pixels, 2].
         """
-        grid = grids.convert_and_check_grid(grid=grid)
-        pixel_scales = grids.convert_pixel_scales(pixel_scales=pixel_scales)
-        pixel_scales_interp = grids.convert_pixel_scales(
+        grid = abstract_grid.convert_and_check_grid(grid=grid)
+        pixel_scales = abstract_structure.convert_pixel_scales(
+            pixel_scales=pixel_scales
+        )
+        pixel_scales_interp = abstract_structure.convert_pixel_scales(
             pixel_scales=pixel_scales_interp
         )
 
@@ -176,8 +188,10 @@ class GridInterpolate(grids.Grid):
             stored in 2D as an ndarray of shape [total_y_pixels, total_x_pixels, 2].
         """
 
-        pixel_scales = grids.convert_pixel_scales(pixel_scales=pixel_scales)
-        pixel_scales_interp = grids.convert_pixel_scales(
+        pixel_scales = abstract_structure.convert_pixel_scales(
+            pixel_scales=pixel_scales
+        )
+        pixel_scales_interp = abstract_structure.convert_pixel_scales(
             pixel_scales=pixel_scales_interp
         )
 
@@ -217,7 +231,7 @@ class GridInterpolate(grids.Grid):
             stored in 2D as an ndarray of shape [total_y_pixels, total_x_pixels, 2].
         """
 
-        pixel_scales_interp = grids.convert_pixel_scales(
+        pixel_scales_interp = abstract_structure.convert_pixel_scales(
             pixel_scales=pixel_scales_interp
         )
 
@@ -283,6 +297,46 @@ class GridInterpolate(grids.Grid):
             store_in_1d=store_in_1d,
         )
 
+    def __array_finalize__(self, obj):
+
+        super(GridInterpolate, self).__array_finalize__(obj)
+
+        if hasattr(obj, "pixel_scales_interp"):
+            self.pixel_scales_interp = obj.pixel_scales_interp
+
+        if hasattr(obj, "grid_interp"):
+            self.grid_interp = obj.grid_interp
+
+        if hasattr(obj, "vtx"):
+            self.vtx = obj.vtx
+
+        if hasattr(obj, "wts"):
+            self.wts = obj.wts
+
+    def _new_grid(self, grid, mask, store_in_1d):
+        """Conveninence method for creating a new instance of the GridInterpolate class from this grid.
+
+        This method is used in the 'in_1d', 'in_2d', etc. convenience methods. By overwriting this method such that a
+        GridInterpolate is created the in_1d and in_2d methods will return instances of the GridInterpolate.
+
+        Parameters
+        ----------
+        grid : np.ndarray or list
+            The (y,x) coordinates of the grid input as an ndarray of shape [total_sub_coordinates, 2] or list of lists.
+        mask : msk.Mask
+            The 2D mask associated with the grid, defining the pixels each grid coordinate is paired with and
+            originates from.
+        store_in_1d : bool
+            If True, the grid is stored in 1D as an ndarray of shape [total_unmasked_pixels, 2]. If False, it is
+            stored in 2D as an ndarray of shape [total_y_pixels, total_x_pixels, 2].
+            """
+        return GridInterpolate(
+            grid=grid,
+            mask=mask,
+            pixel_scales_interp=self.pixel_scales_interp,
+            store_in_1d=store_in_1d,
+        )
+
     def blurring_grid_from_kernel_shape(self, kernel_shape_2d):
         """Compute the blurring grid from a grid and create it as a GridItnterpolate, via an input 2D kernel shape.
 
@@ -328,46 +382,6 @@ class GridInterpolate(grids.Grid):
 
         return grids.GridInterpolate.from_mask(
             mask=padded_mask, pixel_scales_interp=self.pixel_scales_interp
-        )
-
-    def __array_finalize__(self, obj):
-
-        super(GridInterpolate, self).__array_finalize__(obj)
-
-        if hasattr(obj, "pixel_scales_interp"):
-            self.pixel_scales_interp = obj.pixel_scales_interp
-
-        if hasattr(obj, "grid_interp"):
-            self.grid_interp = obj.grid_interp
-
-        if hasattr(obj, "vtx"):
-            self.vtx = obj.vtx
-
-        if hasattr(obj, "wts"):
-            self.wts = obj.wts
-
-    def _new_grid(self, grid, mask, store_in_1d):
-        """Conveninence method for creating a new instance of the GridInterpolate class from this grid.
-
-        This method is used in the 'in_1d', 'in_2d', etc. convenience methods. By overwriting this method such that a
-        GridInterpolate is created the in_1d and in_2d methods will return instances of the GridInterpolate.
-
-        Parameters
-        ----------
-        grid : np.ndarray or list
-            The (y,x) coordinates of the grid input as an ndarray of shape [total_sub_coordinates, 2] or list of lists.
-        mask : msk.Mask
-            The 2D mask associated with the grid, defining the pixels each grid coordinate is paired with and
-            originates from.
-        store_in_1d : bool
-            If True, the grid is stored in 1D as an ndarray of shape [total_unmasked_pixels, 2]. If False, it is
-            stored in 2D as an ndarray of shape [total_y_pixels, total_x_pixels, 2].
-            """
-        return GridInterpolate(
-            grid=grid,
-            mask=mask,
-            pixel_scales_interp=self.pixel_scales_interp,
-            store_in_1d=store_in_1d,
         )
 
     @property
@@ -472,3 +486,48 @@ class GridInterpolate(grids.Grid):
         )
         grid = np.asarray([y_values, x_values]).T
         return grids.Grid(grid=grid, mask=self.mask, store_in_1d=True)
+
+    def structure_from_result(
+        self, result: np.ndarray
+    ) -> typing.Union[arrays.Array, "Grid"]:
+        """Convert a result from an ndarray to an aa.Array or aa.Grid structure, where the conversion depends on
+        type(result) as follows:
+
+        - 1D np.ndarray   -> aa.Array
+        - 2D np.ndarray   -> aa.Grid
+
+        This function is used by the grid_like_to_structure decorator to convert the output result of a function
+        to an autoarray structure when a *Grid* instance is passed to the decorated function.
+
+        Parameters
+        ----------
+        result : np.ndarray or [np.ndarray]
+            The input result (e.g. of a decorated function) that is converted to a PyAutoArray structure.
+        """
+        if len(result.shape) == 1:
+            return arrays.Array(array=result, mask=self.mask, store_in_1d=True)
+        else:
+            if isinstance(result, grids.GridTransformedNumpy):
+                return grids.GridTransformed(
+                    grid=result, mask=self.mask, store_in_1d=True
+                )
+            return grids.Grid(grid=result, mask=self.mask, store_in_1d=True)
+
+    def structure_list_from_result_list(
+        self, result_list: list
+    ) -> typing.Union[arrays.Array, list]:
+        """Convert a result from a list of ndarrays to a list of aa.Array or aa.Grid structure, where the conversion
+        depends on type(result) as follows:
+
+        - [1D np.ndarray] -> [aa.Array]
+        - [2D np.ndarray] -> [aa.Grid]
+
+        This function is used by the grid_like_list_to_structure-list decorator to convert the output result of a
+        function to a list of autoarray structure when a *Grid* instance is passed to the decorated function.
+
+        Parameters
+        ----------
+        result_list : np.ndarray or [np.ndarray]
+            The input result (e.g. of a decorated function) that is converted to a PyAutoArray structure.
+        """
+        return [self.structure_from_result(result=result) for result in result_list]
