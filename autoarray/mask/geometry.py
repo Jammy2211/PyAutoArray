@@ -1,6 +1,6 @@
 import numpy as np
 
-from autoarray.structures import grids
+from autoarray.structures import arrays, grids
 from autoarray.util import array_util, grid_util
 
 
@@ -241,8 +241,9 @@ class Geometry:
             pixel_scales=self.mask.pixel_scales,
             origin=self.mask.origin,
         ).astype("int")
-        return grids.Grid(
-            grid=grid_pixel_indexes_1d,
+
+        return arrays.Array(
+            array=grid_pixel_indexes_1d,
             mask=self.regions.edge_mask.mask_sub_1,
             store_in_1d=True,
         )
