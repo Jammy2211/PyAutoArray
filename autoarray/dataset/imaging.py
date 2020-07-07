@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 
 class Imaging(abstract_dataset.AbstractDataset):
     def __init__(self, image, noise_map, psf=None, positions=None, name=None):
-        """A class containing the data, noise map and point spread function of a 2D imaging dataset.
+        """A class containing the data, noise-map and point spread function of a 2D imaging dataset.
 
         Parameters
         ----------
@@ -104,7 +104,7 @@ class Imaging(abstract_dataset.AbstractDataset):
         positions_path=None,
         name=None,
     ):
-        """Factory for loading the imaging data_type from .fits files, as well as computing properties like the noise map,
+        """Factory for loading the imaging data_type from .fits files, as well as computing properties like the noise-map,
         exposure-time map, etc. from the imaging-data.
 
         This factory also includes a number of routines for converting the imaging-data from unit_label not supported by PyAutoLens \
@@ -191,16 +191,16 @@ class MaskedImaging(abstract_dataset.AbstractMaskedDataset):
         renormalize_psf=True,
     ):
         """
-        The lens dataset is the collection of data_type (image, noise map, PSF), a mask, grid, convolver \
+        The lens dataset is the collection of data_type (image, noise-map, PSF), a mask, grid, convolver \
         and other utilities that are used for modeling and fitting an image of a strong lens.
 
-        Whilst the image, noise map, etc. are loaded in 2D, the lens dataset creates reduced 1D arrays of each \
+        Whilst the image, noise-map, etc. are loaded in 2D, the lens dataset creates reduced 1D arrays of each \
         for lens calculations.
 
         Parameters
         ----------
         imaging: im.Imaging
-            The imaging data_type all in 2D (the image, noise map, PSF, etc.)
+            The imaging data_type all in 2D (the image, noise-map, PSF, etc.)
         mask: msk.Mask
             The 2D mask that is applied to the image.
         psf_shape_2d : (int, int)
@@ -392,7 +392,7 @@ class SimulatorImaging:
 
         if np.isnan(noise_map).any():
             raise exc.DataException(
-                "The noise map has NaN values in it. This suggests your exposure time and / or"
+                "The noise-map has NaN values in it. This suggests your exposure time and / or"
                 "background sky levels are too low, creating signal counts at or close to 0.0."
             )
 

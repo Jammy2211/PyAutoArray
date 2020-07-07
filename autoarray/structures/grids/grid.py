@@ -33,16 +33,16 @@ class Grid(abstract_grid.AbstractGrid):
         Below is a visual illustration of a grid, where a total of 10 pixels are unmasked and are included in \
         the grid.
 
-        |x|x|x|x|x|x|x|x|x|x|
-        |x|x|x|x|x|x|x|x|x|x|     This is an example mask.Mask, where:
-        |x|x|x|x|x|x|x|x|x|x|
-        |x|x|x|x|o|o|x|x|x|x|     x = True (Pixel is masked and excluded from the grid)
-        |x|x|x|o|o|o|o|x|x|x|     o = False (Pixel is not masked and included in the grid)
-        |x|x|x|o|o|o|o|x|x|x|
-        |x|x|x|x|x|x|x|x|x|x|
-        |x|x|x|x|x|x|x|x|x|x|
-        |x|x|x|x|x|x|x|x|x|x|
-        |x|x|x|x|x|x|x|x|x|x|
+        IxIxIxIxIxIxIxIxIxIxI
+        IxIxIxIxIxIxIxIxIxIxI     This is an example mask.Mask, where:
+        IxIxIxIxIxIxIxIxIxIxI
+        IxIxIxIxIoIoIxIxIxIxI     x = True (Pixel is masked and excluded from the grid)
+        IxIxIxIoIoIoIoIxIxIxI     o = False (Pixel is not masked and included in the grid)
+        IxIxIxIoIoIoIoIxIxIxI
+        IxIxIxIxIxIxIxIxIxIxI
+        IxIxIxIxIxIxIxIxIxIxI
+        IxIxIxIxIxIxIxIxIxIxI
+        IxIxIxIxIxIxIxIxIxIxI
 
         The mask pixel index's will come out like this (and the direction of scaled coordinates is highlighted
         around the mask.
@@ -51,16 +51,16 @@ class Grid(abstract_grid.AbstractGrid):
 
         <--- -ve  x  +ve -->
                                                         y      x
-        |x|x|x|x|x|x|x|x|x|x|  ^   grid[0] = [ 1.5, -0.5]
-        |x|x|x|x|x|x|x|x|x|x|  |   grid[1] = [ 1.5,  0.5]
-        |x|x|x|x|x|x|x|x|x|x|  |   grid[2] = [ 0.5, -1.5]
-        |x|x|x|x|0|1|x|x|x|x| +ve  grid[3] = [ 0.5, -0.5]
-        |x|x|x|2|3|4|5|x|x|x|  y   grid[4] = [ 0.5,  0.5]
-        |x|x|x|6|7|8|9|x|x|x| -ve  grid[5] = [ 0.5,  1.5]
-        |x|x|x|x|x|x|x|x|x|x|  |   grid[6] = [-0.5, -1.5]
-        |x|x|x|x|x|x|x|x|x|x|  |   grid[7] = [-0.5, -0.5]
-        |x|x|x|x|x|x|x|x|x|x| \/   grid[8] = [-0.5,  0.5]
-        |x|x|x|x|x|x|x|x|x|x|      grid[9] = [-0.5,  1.5]
+        IxIxIxIxIxIxIxIxIxIxI  ^   grid[0] = [ 1.5, -0.5]
+        IxIxIxIxIxIxIxIxIxIxI  I   grid[1] = [ 1.5,  0.5]
+        IxIxIxIxIxIxIxIxIxIxI  I   grid[2] = [ 0.5, -1.5]
+        IxIxIxIxI0I1IxIxIxIxI +ve  grid[3] = [ 0.5, -0.5]
+        IxIxIxI2I3I4I5IxIxIxI  y   grid[4] = [ 0.5,  0.5]
+        IxIxIxI6I7I8I9IxIxIxI -ve  grid[5] = [ 0.5,  1.5]
+        IxIxIxIxIxIxIxIxIxIxI  I   grid[6] = [-0.5, -1.5]
+        IxIxIxIxIxIxIxIxIxIxI  I   grid[7] = [-0.5, -0.5]
+        IxIxIxIxIxIxIxIxIxIxI \/   grid[8] = [-0.5,  0.5]
+        IxIxIxIxIxIxIxIxIxIxI      grid[9] = [-0.5,  1.5]
 
         Case 2: [sub-size>1, store_in_1d=True]:
         ------------------
@@ -80,16 +80,16 @@ class Grid(abstract_grid.AbstractGrid):
         contrast to the grid above, our illustration below restricts the mask to just 2 pixels, to keep the
         illustration brief.
 
-        |x|x|x|x|x|x|x|x|x|x|
-        |x|x|x|x|x|x|x|x|x|x|     This is an example mask.Mask, where:
-        |x|x|x|x|x|x|x|x|x|x|
-        |x|x|x|x|x|x|x|x|x|x|     x = True (Pixel is masked and excluded from lens)
-        |x|x|x|x|o|o|x|x|x|x|     o = False (Pixel is not masked and included in lens)
-        |x|x|x|x|x|x|x|x|x|x|
-        |x|x|x|x|x|x|x|x|x|x|
-        |x|x|x|x|x|x|x|x|x|x|
-        |x|x|x|x|x|x|x|x|x|x|
-        |x|x|x|x|x|x|x|x|x|x|
+        IxIxIxIxIxIxIxIxIxIxI
+        IxIxIxIxIxIxIxIxIxIxI     This is an example mask.Mask, where:
+        IxIxIxIxIxIxIxIxIxIxI
+        IxIxIxIxIxIxIxIxIxIxI     x = True (Pixel is masked and excluded from lens)
+        IxIxIxIxIoIoIxIxIxIxI     o = False (Pixel is not masked and included in lens)
+        IxIxIxIxIxIxIxIxIxIxI
+        IxIxIxIxIxIxIxIxIxIxI
+        IxIxIxIxIxIxIxIxIxIxI
+        IxIxIxIxIxIxIxIxIxIxI
+        IxIxIxIxIxIxIxIxIxIxI
 
         Our grid with a sub-size looks like it did before:
 
@@ -97,16 +97,16 @@ class Grid(abstract_grid.AbstractGrid):
 
         <--- -ve  x  +ve -->
 
-        |x|x|x|x|x|x|x|x|x|x|  ^
-        |x|x|x|x|x|x|x|x|x|x|  |
-        |x|x|x|x|x|x|x|x|x|x|  |                        y     x
-        |x|x|x|x|x|x|x|x|x|x| +ve  grid[0] = [0.5,  -1.5]
-        |x|x|x|0|1|x|x|x|x|x|  y   grid[1] = [0.5,  -0.5]
-        |x|x|x|x|x|x|x|x|x|x| -ve
-        |x|x|x|x|x|x|x|x|x|x|  |
-        |x|x|x|x|x|x|x|x|x|x|  |
-        |x|x|x|x|x|x|x|x|x|x| \/
-        |x|x|x|x|x|x|x|x|x|x|
+        IxIxIxIxIxIxIxIxIxIxI  ^
+        IxIxIxIxIxIxIxIxIxIxI  I
+        IxIxIxIxIxIxIxIxIxIxI  I                        y     x
+        IxIxIxIxIxIxIxIxIxIxI +ve  grid[0] = [0.5,  -1.5]
+        IxIxIxI0I1IxIxIxIxIxI  y   grid[1] = [0.5,  -0.5]
+        IxIxIxIxIxIxIxIxIxIxI -ve
+        IxIxIxIxIxIxIxIxIxIxI  I
+        IxIxIxIxIxIxIxIxIxIxI  I
+        IxIxIxIxIxIxIxIxIxIxI \/
+        IxIxIxIxIxIxIxIxIxIxI
 
         However, if the sub-size is 2, we go to each unmasked pixel and allocate sub-pixel coordinates for it. For
         example, for pixel 0, if *sub_size=2*, we use a 2x2 sub-grid:
@@ -114,8 +114,8 @@ class Grid(abstract_grid.AbstractGrid):
         Pixel 0 - (2x2):
                             y      x
                grid[0] = [0.66, -1.66]
-        |0|1|  grid[1] = [0.66, -1.33]
-        |2|3|  grid[2] = [0.33, -1.66]
+        I0I1I  grid[1] = [0.66, -1.33]
+        I2I3I  grid[2] = [0.33, -1.66]
                grid[3] = [0.33, -1.33]
 
         If we used a sub_size of 3, for the pixel we we would create a 3x3 sub-grid:
@@ -124,9 +124,9 @@ class Grid(abstract_grid.AbstractGrid):
                  grid[0] = [0.75, -0.75]
                  grid[1] = [0.75, -0.5]
                  grid[2] = [0.75, -0.25]
-        |0|1|2|  grid[3] = [0.5,  -0.75]
-        |3|4|5|  grid[4] = [0.5,  -0.5]
-        |6|7|8|  grid[5] = [0.5,  -0.25]
+        I0I1I2I  grid[3] = [0.5,  -0.75]
+        I3I4I5I  grid[4] = [0.5,  -0.5]
+        I6I7I8I  grid[5] = [0.5,  -0.25]
                  grid[6] = [0.25, -0.75]
                  grid[7] = [0.25, -0.5]
                  grid[8] = [0.25, -0.25]
@@ -142,16 +142,16 @@ class Grid(abstract_grid.AbstractGrid):
 
         For the following example mask:
 
-        |x|x|x|x|x|x|x|x|x|x|
-        |x|x|x|x|x|x|x|x|x|x|     This is an example mask.Mask, where:
-        |x|x|x|x|x|x|x|x|x|x|
-        |x|x|x|x|o|o|x|x|x|x|     x = True (Pixel is masked and excluded from the grid)
-        |x|x|x|o|o|o|o|x|x|x|     o = False (Pixel is not masked and included in the grid)
-        |x|x|x|o|o|o|o|x|x|x|
-        |x|x|x|x|x|x|x|x|x|x|
-        |x|x|x|x|x|x|x|x|x|x|
-        |x|x|x|x|x|x|x|x|x|x|
-        |x|x|x|x|x|x|x|x|x|x|
+        IxIxIxIxIxIxIxIxIxIxI
+        IxIxIxIxIxIxIxIxIxIxI     This is an example mask.Mask, where:
+        IxIxIxIxIxIxIxIxIxIxI
+        IxIxIxIxIoIoIxIxIxIxI     x = True (Pixel is masked and excluded from the grid)
+        IxIxIxIoIoIoIoIxIxIxI     o = False (Pixel is not masked and included in the grid)
+        IxIxIxIoIoIoIoIxIxIxI
+        IxIxIxIxIxIxIxIxIxIxI
+        IxIxIxIxIxIxIxIxIxIxI
+        IxIxIxIxIxIxIxIxIxIxI
+        IxIxIxIxIxIxIxIxIxIxI
 
         - grid[0,0,0] = 0.0 (it is masked, thus zero)
         - grid[0,0,1] = 0.0 (it is masked, thus zero)
@@ -556,7 +556,8 @@ class Grid(abstract_grid.AbstractGrid):
     def blurring_grid_from_mask_and_kernel_shape(
         cls, mask, kernel_shape_2d, store_in_1d=True
     ):
-        """Setup a blurring-grid from a mask, where a blurring grid consists of all pixels that are masked (and
+        """
+        Setup a blurring-grid from a mask, where a blurring grid consists of all pixels that are masked (and
         therefore have their values set to (0.0, 0.0)), but are close enough to the unmasked pixels that their values
         will be convolved into the unmasked those pixels. This occurs in *PyAutoGalaxy* when computing images from
         light profile objects.
@@ -566,58 +567,58 @@ class Grid(abstract_grid.AbstractGrid):
 
         For example, if our mask is as follows:
 
-        |x|x|x|x|x|x|x|x|x|x|
-        |x|x|x|x|x|x|x|x|x|x|     This is an imaging.Mask, where:
-        |x|x|x|x|x|x|x|x|x|x|
-        |x|x|x|x|x|x|x|x|x|x|     x = True (Pixel is masked and excluded from lens)
-        |x|x|x|o|o|o|x|x|x|x|     o = False (Pixel is not masked and included in lens)
-        |x|x|x|o|o|o|x|x|x|x|
-        |x|x|x|o|o|o|x|x|x|x|
-        |x|x|x|x|x|x|x|x|x|x|
-        |x|x|x|x|x|x|x|x|x|x|
-        |x|x|x|x|x|x|x|x|x|x|
+        IxIxIxIxIxIxIxIxIxIxI
+        IxIxIxIxIxIxIxIxIxIxI     This is an imaging.Mask, where
+        IxIxIxIxIxIxIxIxIxIxI
+        IxIxIxIxIxIxIxIxIxIxI     x = True (Pixel is masked and excluded from lens)
+        IxIxIxIoIoIoIxIxIxIxI     o = False (Pixel is not masked and included in lens)
+        IxIxIxIoIoIoIxIxIxIxI
+        IxIxIxIoIoIoIxIxIxIxI
+        IxIxIxIxIxIxIxIxIxIxI
+        IxIxIxIxIxIxIxIxIxIxI
+        IxIxIxIxIxIxIxIxIxIxI
 
-        For a PSF of shape (3,3), the following blurring mask is computed (noting that only pixels that are direct \
-        neighbors of the unmasked pixels above will blur light into an unmasked pixel):
+        For a PSF of shape (3,3), the following blurring mask is computed (noting that only pixels that are direct
+        neighbors of the unmasked pixels above will blur light into an unmasked pixel)
 
-        |x|x|x|x|x|x|x|x|x|     This is an example grid.Mask, where:
-        |x|x|x|x|x|x|x|x|x|
-        |x|x|o|o|o|o|o|x|x|     x = True (Pixel is masked and excluded from lens)
-        |x|x|o|x|x|x|o|x|x|     o = False (Pixel is not masked and included in lens)
-        |x|x|o|x|x|x|o|x|x|
-        |x|x|o|x|x|x|o|x|x|
-        |x|x|o|o|o|o|o|x|x|
-        |x|x|x|x|x|x|x|x|x|
-        |x|x|x|x|x|x|x|x|x|
+        IxIxIxIxIxIxIxIxIxI     This is an example grid.Mask, where
+        IxIxIxIxIxIxIxIxIxI
+        IxIxIoIoIoIoIoIxIxI     x = True (Pixel is masked and excluded from lens)
+        IxIxIoIxIxIxIoIxIxI     o = False (Pixel is not masked and included in lens)
+        IxIxIoIxIxIxIoIxIxI
+        IxIxIoIxIxIxIoIxIxI
+        IxIxIoIoIoIoIoIxIxI
+        IxIxIxIxIxIxIxIxIxI
+        IxIxIxIxIxIxIxIxIxI
 
-        Thus, the blurring grid coordinates and indexes will be as follows:
+        Thus, the blurring grid coordinates and indexes will be as follows
 
         pixel_scales = 1.0"
 
-        <--- -ve  x  +ve -->
-                                                            y     x
-        |x|x|x |x |x |x |x |x|x|  |   blurring_grid[0] = [2.0, -2.0]  blurring_grid[9] =  [-1.0, -2.0]
-        |x|x|x |x |x |x |x |x|x|  |   blurring_grid[1] = [2.0, -1.0]  blurring_grid[10] = [-1.0,  2.0]
-        |x|x|0 |1 |2 |3 |4 |x|x| +ve  blurring_grid[2] = [2.0,  0.0]  blurring_grid[11] = [-2.0, -2.0]
-        |x|x|5 |x |x |x |6 |x|x|  y   blurring_grid[3] = [2.0,  1.0]  blurring_grid[12] = [-2.0, -1.0]
-        |x|x|7 |x |x |x |8 |x|x| -ve  blurring_grid[4] = [2.0,  2.0]  blurring_grid[13] = [-2.0,  0.0]
-        |x|x|9 |x |x |x |10|x|x|  |   blurring_grid[5] = [1.0, -2.0]  blurring_grid[14] = [-2.0,  1.0]
-        |x|x|11|12|13|14|15|x|x|  |   blurring_grid[6] = [1.0,  2.0]  blurring_grid[15] = [-2.0,  2.0]
-        |x|x|x |x |x |x |x |x|x| \/   blurring_grid[7] = [0.0, -2.0]
-        |x|x|x |x |x |x |x |x|x|      blurring_grid[8] = [0.0,  2.0]
+        positive    negative
+                                                            y     x                          y     x
+        IxIxIx Ix Ix Ix Ix IxIxI  I   blurring_grid[0] = [2.0, -2.0]  blurring_grid[9] =  [-1.0, -2.0]
+        IxIxIx Ix Ix Ix Ix IxIxI  I   blurring_grid[1] = [2.0, -1.0]  blurring_grid[10] = [-1.0,  2.0]
+        IxIxI0 I1 I2 I3 I4 IxIxI pos  blurring_grid[2] = [2.0,  0.0]  blurring_grid[11] = [-2.0, -2.0]
+        IxIxI5 Ix Ix Ix I6 IxIxI  y   blurring_grid[3] = [2.0,  1.0]  blurring_grid[12] = [-2.0, -1.0]
+        IxIxI7 Ix Ix Ix I8 IxIxI  I   blurring_grid[4] = [2.0,  2.0]  blurring_grid[13] = [-2.0,  0.0]
+        IxIxI9 Ix Ix Ix I10IxIxI neg  blurring_grid[5] = [1.0, -2.0]  blurring_grid[14] = [-2.0,  1.0]
+        IxIxI11I12I13I14I15IxIxI  I   blurring_grid[6] = [1.0,  2.0]  blurring_grid[15] = [-2.0,  2.0]
+        IxIxIx Ix Ix Ix Ix IxIxI  I   blurring_grid[7] = [0.0, -2.0]
+        IxIxIx Ix Ix Ix Ix IxIxI  I   blurring_grid[8] = [0.0,  2.0]
 
         For a PSF of shape (5,5), the following blurring mask is computed (noting that pixels are 2 pixels from a
-        direct unmasked pixels now blur light into an unmasked pixel):
+        direct unmasked pixels now blur light into an unmasked pixel)
 
-        |x|x|x|x|x|x|x|x|x|     This is an example grid.Mask, where:
-        |x|o|o|o|o|o|o|o|x|
-        |x|o|o|o|o|o|o|o|x|     x = True (Pixel is masked and excluded from lens)
-        |x|o|o|x|x|x|o|o|x|     o = False (Pixel is not masked and included in lens)
-        |x|o|o|x|x|x|o|o|x|
-        |x|o|o|x|x|x|o|o|x|
-        |x|o|o|o|o|o|o|o|x|
-        |x|o|o|o|o|o|o|o|x|
-        |x|x|x|x|x|x|x|x|x|
+        IxIxIxIxIxIxIxIxIxI     This is an example grid.Mask, where
+        IxIoIoIoIoIoIoIoIxI
+        IxIoIoIoIoIoIoIoIxI     x = True (Pixel is masked and excluded from lens)
+        IxIoIoIxIxIxIoIoIxI     o = False (Pixel is not masked and included in lens)
+        IxIoIoIxIxIxIoIoIxI
+        IxIoIoIxIxIxIoIoIxI
+        IxIoIoIoIoIoIoIoIxI
+        IxIoIoIoIoIoIoIoIxI
+        IxIxIxIxIxIxIxIxIxI
 
         Parameters
         ----------

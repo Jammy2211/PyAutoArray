@@ -180,10 +180,10 @@ class TestGridRectangular:
 
     class TestPixelNeighbors:
         def test__compare_to_pixelization_util(self):
-            # |0 | 1| 2| 3|
-            # |4 | 5| 6| 7|
-            # |8 | 9|10|11|
-            # |12|13|14|15|
+            # I0 I 1I 2I 3I
+            # I4 I 5I 6I 7I
+            # I8 I 9I10I11I
+            # I12I13I14I15I
 
             pix_grid = aa.GridRectangular.overlay_grid(
                 shape_2d=(7, 5), grid=np.zeros((2, 2)), buffer=1e-8

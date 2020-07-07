@@ -44,7 +44,7 @@ class Interferometer(abstract_dataset.AbstractDataset):
         primary_beam_hdu=0,
         positions_path=None,
     ):
-        """Factory for loading the interferometer data_type from .fits files, as well as computing properties like the noise map,
+        """Factory for loading the interferometer data_type from .fits files, as well as computing properties like the noise-map,
         exposure-time map, etc. from the interferometer-data_type.
 
         This factory also includes a number of routines for converting the interferometer-data_type from unit_label not supported by PyAutoLens \
@@ -169,16 +169,16 @@ class MaskedInterferometer(abstract_dataset.AbstractMaskedDataset):
         renormalize_primary_beam=True,
     ):
         """
-        The lens dataset is the collection of data_type (image, noise map, primary_beam), a mask, grid, convolver \
+        The lens dataset is the collection of data_type (image, noise-map, primary_beam), a mask, grid, convolver \
         and other utilities that are used for modeling and fitting an image of a strong lens.
 
-        Whilst the image, noise map, etc. are loaded in 2D, the lens dataset creates reduced 1D arrays of each \
+        Whilst the image, noise-map, etc. are loaded in 2D, the lens dataset creates reduced 1D arrays of each \
         for lens calculations.
 
         Parameters
         ----------
         imaging: im.Imaging
-            The imaging data_type all in 2D (the image, noise map, primary_beam, etc.)
+            The imaging data_type all in 2D (the image, noise-map, primary_beam, etc.)
         real_space_mask: msk.Mask
             The 2D mask that is applied to the image.
         sub_size : int
@@ -364,7 +364,7 @@ class SimulatorInterferometer:
 
         if np.isnan(noise_map).any():
             raise exc.DataException(
-                "The noise map has NaN values in it. This suggests your exposure time and / or"
+                "The noise-map has NaN values in it. This suggests your exposure time and / or"
                 "background sky levels are too low, creating signal counts at or close to 0.0."
             )
 

@@ -65,6 +65,17 @@ class AbstractMask(np.ndarray):
             setattr(self, key, value)
         super(AbstractMask, self).__setstate__(state[0:-1])
 
+    def __array_finalize__(self, obj):
+
+        if isinstance(obj, AbstractMask):
+            self.sub_size = obj.sub_size
+            self.pixel_scales = obj.pixel_scales
+            self.origin = obj.origin
+        else:
+            self.sub_size = 1
+            self.origin = (0.0, 0.0)
+            self.pixel_scales = None
+
     @property
     def geometry(self):
         """The Geometry class contains methods describing the Mask's geometry, for example the Grid of unmasked
@@ -80,17 +91,6 @@ class AbstractMask(np.ndarray):
 
         See the Region class for a full description."""
         return regions.Regions(mask=self)
-
-    def __array_finalize__(self, obj):
-
-        if isinstance(obj, AbstractMask):
-            self.sub_size = obj.sub_size
-            self.pixel_scales = obj.pixel_scales
-            self.origin = obj.origin
-        else:
-            self.sub_size = 1
-            self.origin = (0.0, 0.0)
-            self.pixel_scales = None
 
     @property
     def sub_length(self):

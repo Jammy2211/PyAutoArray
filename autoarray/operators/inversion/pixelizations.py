@@ -57,7 +57,7 @@ class Rectangular(Pixelization):
         ----------
         grid : aa.Grid
             A stack of grid describing the observed image's pixel coordinates (e.g. an image-grid, sub-grid, etc.).
-        border : aa.GridBorder | None
+        border : aa.GridBorder I None
             The border of the grid's grid.
         hyper_image : ndarray
             A pre-computed hyper-image of the image the mapper is expected to reconstruct, used for adaptive analysis.
