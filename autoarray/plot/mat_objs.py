@@ -221,7 +221,7 @@ class ColorMap:
         else:
             raise exc.PlottingException(
                 "The normalization (norm) supplied to the plotter is not a valid string (must be "
-                "linear | log | symmetric_log"
+                "{linear, log, symmetric_log}"
             )
 
 
@@ -1112,7 +1112,7 @@ class Liner:
         else:
             raise exc.PlottingException(
                 "The plot_axis_type supplied to the plotter is not a valid string (must be linear "
-                "| semilogy | loglog)"
+                "{semilogy, loglog})"
             )
 
     def draw_vertical_lines(self, vertical_lines, vertical_line_labels=None):

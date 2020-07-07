@@ -28,7 +28,7 @@ def grid_from_mask_and_grid_class(
 
 class AbstractDataset:
     def __init__(self, data, noise_map, positions=None, name=None):
-        """A collection of abstract 2D for different data_type classes (an image, pixel-scale, noise map, etc.)
+        """A collection of abstract 2D for different data_type classes (an image, pixel-scale, noise-map, etc.)
 
         Parameters
         ----------
@@ -38,7 +38,7 @@ class AbstractDataset:
             The size of each pixel in arc seconds.
         psf : PSF
             An array describing the PSF kernel of the image.
-        noise_map : NoiseMap | float | ndarray
+        noise_map : ndarray
             An array describing the RMS standard deviation error in each pixel, preferably in units of electrons per
             second.
         """
@@ -106,15 +106,15 @@ class AbstractDataset:
 
     @property
     def potential_chi_squared_map(self):
-        """The potential chi-squared map of the imaging data_type. This represents how much each pixel can contribute to \
-        the chi-squared map, assuming the model fails to fit it at all (e.g. model value = 0.0)."""
+        """The potential chi-squared-map of the imaging data_type. This represents how much each pixel can contribute to \
+        the chi-squared-map, assuming the model fails to fit it at all (e.g. model value = 0.0)."""
         return arrays.Array(
             array=np.square(self.absolute_signal_to_noise_map), mask=self.data.mask
         )
 
     @property
     def potential_chi_squared_max(self):
-        """The maximum value of the potential chi-squared map"""
+        """The maximum value of the potential chi-squared-map"""
         return np.max(self.potential_chi_squared_map)
 
 
