@@ -192,7 +192,7 @@ class InversionImaging(Inversion):
         curvature_reg_matrix,
         reconstruction,
     ):
-        """ An inversion, which given an input image and noise map reconstructs the image using a linear inversion, \
+        """ An inversion, which given an input image and noise-map reconstructs the image using a linear inversion, \
         including a convolution that accounts for blurring.
 
         The inversion uses a 2D pixelization to perform the reconstruction by util each pixelization pixel to a \
@@ -204,7 +204,7 @@ class InversionImaging(Inversion):
         image_1d : ndarray
             Flattened 1D array of the observed image the inversion is fitting.
         noise_map : ndarray
-            Flattened 1D array of the noise map used by the inversion during the fit.
+            Flattened 1D array of the noise-map used by the inversion during the fit.
         convolver : imaging.convolution.Convolver
             The convolver used to blur the util matrix with the PSF.
         mapper : inversion.mappers.Mapper
@@ -341,7 +341,7 @@ class InversionInterferometer(Inversion):
         curvature_reg_matrix,
         reconstruction,
     ):
-        """ An inversion, which given an input image and noise map reconstructs the image using a linear inversion, \
+        """ An inversion, which given an input image and noise-map reconstructs the image using a linear inversion, \
         including a convolution that accounts for blurring.
 
         The inversion uses a 2D pixelization to perform the reconstruction by util each pixelization pixel to a \
@@ -353,7 +353,7 @@ class InversionInterferometer(Inversion):
         image_1d : ndarray
             Flattened 1D array of the observed image the inversion is fitting.
         noise_map : ndarray
-            Flattened 1D array of the noise map used by the inversion during the fit.
+            Flattened 1D array of the noise-map used by the inversion during the fit.
         convolver : imaging.convolution.Convolver
             The convolver used to blur the util matrix with the PSF.
         mapper : inversion.mappers.Mapper

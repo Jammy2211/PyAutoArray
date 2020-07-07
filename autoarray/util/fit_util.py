@@ -2,11 +2,11 @@ import numpy as np
 
 
 def residual_map_with_mask_from(*, data, mask, model_data):
-    """Compute the residual map between a masked dataset and model data, where:
+    """Compute the residual-map between a masked dataset and model data, where:
 
     Residuals = (Data - Model_Data).
     
-    The residual map values in masked pixels are returned as zero.
+    The residual-map values in masked pixels are returned as zero.
 
     Parameters
     -----------
@@ -23,18 +23,18 @@ def residual_map_with_mask_from(*, data, mask, model_data):
 
 
 def normalized_residual_map_with_mask_from(*, residual_map, noise_map, mask):
-    """Compute the normalized residual map between a masked dataset and model data, where:
+    """Compute the normalized residual-map between a masked dataset and model data, where:
 
     Normalized_Residual = (Data - Model_Data) / Noise
 
-    The normalized residual map values in masked pixels are returned as zero.
+    The normalized residual-map values in masked pixels are returned as zero.
 
     Parameters
     -----------
     residual_map : np.ndarray
         The residual-map of the model-simulator fit to the dataset.
     noise_map : np.ndarray
-        The noise map of the dataset.
+        The noise-map of the dataset.
     mask : np.ndarray
         The mask applied to the residual-map, where *False* entries are included in the calculation.
     """
@@ -47,18 +47,18 @@ def normalized_residual_map_with_mask_from(*, residual_map, noise_map, mask):
 
 
 def chi_squared_map_with_mask_from(*, residual_map, noise_map, mask):
-    """Computes the chi-squared map between a masked residual-map and noise map, where:
+    """Computes the chi-squared-map between a masked residual-map and noise-map, where:
 
     Chi_Squared = ((Residuals) / (Noise)) ** 2.0 = ((Data - Model)**2.0)/(Variances)
 
-    The chi-squared map values in masked pixels are returned as zero.
+    The chi-squared-map values in masked pixels are returned as zero.
 
     Parameters
     -----------
     residual_map : np.ndarray
         The residual-map of the model-simulator fit to the dataset.
     noise_map : np.ndarray
-        The noise map of the dataset.
+        The noise-map of the dataset.
     mask : np.ndarray
         The mask applied to the residual-map, where *False* entries are included in the calculation.
     """
@@ -74,39 +74,39 @@ def chi_squared_map_with_mask_from(*, residual_map, noise_map, mask):
 
 def chi_squared_with_mask_from(*, chi_squared_map, mask):
     """Compute the chi-squared terms of each model data's fit to a masked dataset, by summing the masked
-    chi-squared map of the fit.
+    chi-squared-map of the fit.
 
     The chi-squared values in masked pixels are omitted from the calculation.
 
     Parameters
     ----------
     chi_squared_map : np.ndarray
-        The chi-squared map of values of the model-simulator fit to the dataset.
+        The chi-squared-map of values of the model-simulator fit to the dataset.
     mask : np.ndarray
-        The mask applied to the chi-squared map, where *False* entries are included in the calculation.
+        The mask applied to the chi-squared-map, where *False* entries are included in the calculation.
     """
     return np.sum(chi_squared_map[np.asarray(mask) == 0])
 
 
 def noise_normalization_with_mask_from(*, noise_map, mask):
-    """Compute the noise map normalization terms of masked noise map, summing the noise_map value in every pixel as:
+    """Compute the noise-map normalization terms of masked noise-map, summing the noise_map value in every pixel as:
 
     [Noise_Term] = sum(log(2*pi*[Noise]**2.0))
 
-    The noise map values in masked pixels are omitted from the calculation.
+    The noise-map values in masked pixels are omitted from the calculation.
 
     Parameters
     ----------
     noise_map : np.ndarray
-        The masked noise map of the dataset.
+        The masked noise-map of the dataset.
     mask : np.ndarray
-        The mask applied to the noise map, where *False* entries are included in the calculation.
+        The mask applied to the noise-map, where *False* entries are included in the calculation.
     """
     return np.sum(np.log(2 * np.pi * noise_map[np.asarray(mask) == 0] ** 2.0))
 
 
 def residual_map_from(*, data, model_data):
-    """Compute the residual map between a masked dataset and model data, where:
+    """Compute the residual-map between a masked dataset and model data, where:
 
     Residuals = (Data - Model_Data).
 
@@ -123,7 +123,7 @@ def residual_map_from(*, data, model_data):
 
 
 def normalized_residual_map_from(*, residual_map, noise_map):
-    """Compute the normalized residual map between a masked dataset and model data, where:
+    """Compute the normalized residual-map between a masked dataset and model data, where:
 
     Normalized_Residual = (Data - Model_Data) / Noise
 
@@ -132,7 +132,7 @@ def normalized_residual_map_from(*, residual_map, noise_map):
     residual_map : np.ndarray
         The residual-map of the model-simulator fit to the dataset.
     noise_map : np.ndarray
-        The noise map of the dataset.
+        The noise-map of the dataset.
     mask : np.ndarray
         The mask applied to the residual-map, where *False* entries are included in the calculation.
     """
@@ -140,7 +140,7 @@ def normalized_residual_map_from(*, residual_map, noise_map):
 
 
 def chi_squared_map_from(*, residual_map, noise_map):
-    """Compute the chi-squared map between a residual-map and noise map, where:
+    """Compute the chi-squared-map between a residual-map and noise-map, where:
 
     Chi_Squared = ((Residuals) / (Noise)) ** 2.0 = ((Data - Model)**2.0)/(Variances)
 
@@ -149,7 +149,7 @@ def chi_squared_map_from(*, residual_map, noise_map):
     residual_map : np.ndarray
         The residual-map of the model-simulator fit to the dataset.
     noise_map : np.ndarray
-        The noise map of the dataset.
+        The noise-map of the dataset.
     """
     return np.square(
         np.divide(residual_map, noise_map, out=np.zeros_like(residual_map))
@@ -157,25 +157,25 @@ def chi_squared_map_from(*, residual_map, noise_map):
 
 
 def chi_squared_from(*, chi_squared_map):
-    """Compute the chi-squared terms of a model data's fit to an dataset, by summing the chi-squared map.
+    """Compute the chi-squared terms of a model data's fit to an dataset, by summing the chi-squared-map.
 
     Parameters
     ----------
     chi_squared_map : np.ndarray
-        The chi-squared map of values of the model-simulator fit to the dataset.
+        The chi-squared-map of values of the model-simulator fit to the dataset.
     """
     return np.sum(chi_squared_map)
 
 
 def noise_normalization_from(*, noise_map):
-    """Compute the noise map normalization term of the noise map, summing the noise_map value in every pixel as:
+    """Compute the noise-map normalization term of the noise-map, summing the noise_map value in every pixel as:
 
     [Noise_Term] = sum(log(2*pi*[Noise]**2.0))
 
     Parameters
     ----------
     noise_map : np.ndarray
-        The masked noise map of the dataset.
+        The masked noise-map of the dataset.
     """
     return np.sum(np.log(2 * np.pi * noise_map ** 2.0))
 
@@ -190,7 +190,7 @@ def likelihood_from(*, chi_squared, noise_normalization):
     chi_squared : float
         The chi-squared term for the model-simulator fit to the dataset.
     noise_normalization : float
-        The normalization noise_map-term for the dataset's noise map.
+        The normalization noise_map-term for the dataset's noise-map.
     """
     return -0.5 * (chi_squared + noise_normalization)
 
@@ -211,7 +211,7 @@ def likelihood_with_regularization_from(
         The regularization term of the inversion, which is the sum of the difference between reconstructed \
         flux of every pixel multiplied by the regularization coefficient.
     noise_normalization : float
-        The normalization noise_map-term for the dataset's noise map.
+        The normalization noise_map-term for the dataset's noise-map.
     """
     return -0.5 * (chi_squared + regularization_term + noise_normalization)
 
@@ -242,7 +242,7 @@ def log_evidence_from(
     log_regularization_term : float
         The log of the determinant o the regularization matrix.
     noise_normalization : float
-        The normalization noise_map-term for the dataset's noise map.
+        The normalization noise_map-term for the dataset's noise-map.
     """
     return -0.5 * (
         chi_squared

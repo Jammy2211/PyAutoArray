@@ -25,9 +25,9 @@ class Regularization:
         The regularization matrix, H, is calculated by defining a set of B matrices which describe how the \
         pixels neighbor one another. For example, lets take a 3x3 square grid:
         ______
-        |0|1|2|
-        |3|4|5|
-        |6|7|8|
+        I0I1I2I
+        I3I4I5I
+        I6I7I8I
         ^^^^^^^
 
         We want to regularize this grid such that each pixel is regularized with the pixel to its right and below it \

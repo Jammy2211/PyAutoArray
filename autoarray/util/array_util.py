@@ -207,7 +207,7 @@ def resized_array_2d_from_array_2d(
 def replace_noise_map_2d_values_where_image_2d_values_are_negative(
     image_2d, noise_map_2d, target_signal_to_noise=2.0
 ):
-    """If the values of a 2D image array are negative, this function replaces the corresponding 2D noise map array \
+    """If the values of a 2D image array are negative, this function replaces the corresponding 2D noise-map array \
     values to meet a specified target to noise value.
 
     This routine is necessary because of anomolous values in images which come from our HST ACS data_type-reduction \
@@ -217,16 +217,16 @@ def replace_noise_map_2d_values_where_image_2d_values_are_negative(
     Parameters
     ----------
     image_2d : ndarray
-        The 2D image array used to locate the pixel indexes in the noise map which are replaced.
+        The 2D image array used to locate the pixel indexes in the noise-map which are replaced.
     noise_map_2d : ndarray
-        The 2D noise map array whose values are replaced.
+        The 2D noise-map array whose values are replaced.
     target_signal_to_noise : float
-        The target signal-to-noise the noise map valueus are changed to.
+        The target signal-to-noise the noise-map valueus are changed to.
 
     Returns
     -------
     ndarray
-        The 2D noise map with values changed.
+        The 2D noise-map with values changed.
 
     Examples
     --------

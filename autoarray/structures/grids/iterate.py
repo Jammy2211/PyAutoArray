@@ -97,9 +97,9 @@ class GridIterate(abstract_grid.AbstractGrid):
     ):
         """Create a GridIterate (see *GridIterate.__new__*) by inputting the grid coordinates in 1D, for example:
 
-        grid=np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0]])
+            grid=np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0]])
 
-        grid=[[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0]]
+            grid=[[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0]]
 
         From 1D input the method cannot determine the 2D shape of the grid and its mask, thus the shape_2d must be
         input into this method. The mask is setup as a unmasked *Mask* of shape_2d.
@@ -525,9 +525,9 @@ class GridIterate(abstract_grid.AbstractGrid):
             The function which is iterated over to compute a more precise evaluation.
         cls : cls
             The class the function belongs to.
-         grid_lower_sub_2d : arrays.Array
+        grid_lower_sub_2d : arrays.Array
             The results computed by the function using a lower sub-grid size
-            """
+        """
 
         if not np.any(array_lower_sub_2d):
             return array_lower_sub_2d.in_1d
@@ -723,7 +723,7 @@ class GridIterate(abstract_grid.AbstractGrid):
             The function which is iterated over to compute a more precise evaluation.
         cls : object
             The class the function belongs to.
-         grid_lower_sub_2d : arrays.Array
+        grid_lower_sub_2d : arrays.Array
             The results computed by the function using a lower sub-grid size
         """
 
