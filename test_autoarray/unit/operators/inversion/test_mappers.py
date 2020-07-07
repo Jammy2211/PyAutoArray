@@ -34,9 +34,9 @@ class TestRectangularMapper:
             self
         ):
             #   _ _ _
-            #  |_|_|_| Boundaries for pixels x = 0 and y = 0  -1.0 to -(1/3)
-            #  |_|_|_| Boundaries for pixels x = 1 and y = 1 - (1/3) to (1/3)
-            #  |_|_|_| Boundaries for pixels x = 2 and y = 2 - (1/3)" to 1.0"
+            #  I_I_I_I Boundaries for pixels x = 0 and y = 0  -1.0 to -(1/3)
+            #  I_I_I_I Boundaries for pixels x = 1 and y = 1 - (1/3) to (1/3)
+            #  I_I_I_I Boundaries for pixels x = 2 and y = 2 - (1/3)" to 1.0"
 
             grid = np.array(
                 [
@@ -79,9 +79,9 @@ class TestRectangularMapper:
             self
         ):
             #   _ _ _
-            #  |_|_|_| Boundaries for pixels x = 0 and y = 0  -1.0 to -(1/3)
-            #  |_|_|_| Boundaries for pixels x = 1 and y = 1 - (1/3) to (1/3)
-            #  |_|_|_| Boundaries for pixels x = 2 and y = 2 - (1/3)" to 1.0"
+            #  I_I_I_I Boundaries for pixels x = 0 and y = 0  -1.0 to -(1/3)
+            #  I_I_I_I Boundaries for pixels x = 1 and y = 1 - (1/3) to (1/3)
+            #  I_I_I_I Boundaries for pixels x = 2 and y = 2 - (1/3)" to 1.0"
 
             grid = np.array(
                 [
@@ -122,9 +122,9 @@ class TestRectangularMapper:
 
         def test__3x3_grid_of_pixel_grid__add_multiple_grid_to_1_pixel_pixel(self):
             #                  _ _ _
-            # -1.0 to -(1/3)  |_|_|_|
-            # -(1/3) to (1/3) |_|_|_|
-            #  (1/3) to 1.0   |_|_|_|
+            # -1.0 to -(1/3)  I_I_I_I
+            # -(1/3) to (1/3) I_I_I_I
+            #  (1/3) to 1.0   I_I_I_I
 
             grid = np.array(
                 [
@@ -165,10 +165,10 @@ class TestRectangularMapper:
 
         def test__4x3_grid_of_pixel_grid__1_coordinate_in_each_pixel(self):
             #   _ _ _
-            #  |_|_|_|
-            #  |_|_|_|
-            #  |_|_|_|
-            #  |_|_|_|
+            #  I_I_I_I
+            #  I_I_I_I
+            #  I_I_I_I
+            #  I_I_I_I
 
             # Boundaries for column pixel 0 -1.0 to -(1/3)
             # Boundaries for column pixel 1 -(1/3) to (1/3)
@@ -218,9 +218,9 @@ class TestRectangularMapper:
 
         def test__3x4_grid_of_pixel_grid__1_coordinate_in_each_pixel(self):
             #   _ _ _ _
-            #  |_|_|_|_|
-            #  |_|_|_|_|
-            #  |_|_|_|_|
+            #  I_I_I_I_I
+            #  I_I_I_I_I
+            #  I_I_I_I_I
 
             # Boundaries for row pixel 0 -1.0 to -(1/3)
             # Boundaries for row pixel 1 -(1/3) to (1/3)
@@ -272,9 +272,9 @@ class TestRectangularMapper:
             self
         ):
             #   _ _ _
-            #  |_|_|_| Boundaries for pixels x = 0 and y = 0  -1.5 to -0.5
-            #  |_|_|_| Boundaries for pixels x = 1 and y = 1 -0.5 to 0.5
-            #  |_|_|_| Boundaries for pixels x = 2 and y = 2  0.5 to 1.5
+            #  I_I_I_I Boundaries for pixels x = 0 and y = 0  -1.5 to -0.5
+            #  I_I_I_I Boundaries for pixels x = 1 and y = 1 -0.5 to 0.5
+            #  I_I_I_I Boundaries for pixels x = 2 and y = 2  0.5 to 1.5
 
             grid = np.array(
                 [[1.5, -1.5], [1.0, 0.0], [1.0, 0.6], [-1.4, 0.0], [-1.5, 1.5]]
@@ -305,9 +305,9 @@ class TestRectangularMapper:
 
         def test__3x3_grid__change_arcsecond_dimensions__not_symmetric(self):
             #   _ _ _
-            #  |_|_|_| Boundaries for pixels x = 0 and y = 0  -1.5 to -0.5
-            #  |_|_|_| Boundaries for pixels x = 1 and y = 1 -0.5 to 0.5
-            #  |_|_|_| Boundaries for pixels x = 2 and y = 2  0.5 to 1.5
+            #  I_I_I_I Boundaries for pixels x = 0 and y = 0  -1.5 to -0.5
+            #  I_I_I_I Boundaries for pixels x = 1 and y = 1 -0.5 to 0.5
+            #  I_I_I_I Boundaries for pixels x = 2 and y = 2  0.5 to 1.5
 
             grid = np.array(
                 [[1.0, -1.5], [1.0, -0.49], [0.32, -1.5], [0.32, 0.51], [-1.0, 1.5]]
@@ -338,10 +338,10 @@ class TestRectangularMapper:
 
         def test__4x3_grid__change_arcsecond_dimensions__not_symmetric(self):
             #   _ _ _
-            #  |_|_|_|
-            #  |_|_|_|
-            #  |_|_|_|
-            #  |_|_|_|
+            #  I_I_I_I
+            #  I_I_I_I
+            #  I_I_I_I
+            #  I_I_I_I
 
             grid = np.array(
                 [[1.0, -1.5], [1.0, -0.49], [0.49, -1.5], [-0.6, 0.0], [-1.0, 1.5]]
@@ -375,9 +375,9 @@ class TestRectangularMapper:
 
         def test__3x4_grid__change_arcsecond_dimensions__not_symmetric(self):
             #   _ _ _ _
-            #  |_|_|_|_|
-            #  |_|_|_|_|
-            #  |_|_|_|_|
+            #  I_I_I_I_I
+            #  I_I_I_I_I
+            #  I_I_I_I_I
 
             grid = np.array(
                 [[1.0, -1.5], [1.0, -0.49], [0.32, -1.5], [-0.34, 0.49], [-1.0, 1.5]]
@@ -411,9 +411,9 @@ class TestRectangularMapper:
 
         def test__different_image_and_sub_grids(self):
             #                  _ _ _
-            # -1.0 to -(1/3)  |_|_|_|
-            # -(1/3) to (1/3) |_|_|_|
-            #  (1/3) to 1.0   |_|_|_|
+            # -1.0 to -(1/3)  I_I_I_I
+            # -(1/3) to (1/3) I_I_I_I
+            #  (1/3) to 1.0   I_I_I_I
 
             grid = np.array(
                 [
@@ -456,9 +456,9 @@ class TestRectangularMapper:
             self
         ):
             #   _ _ _
-            #  |_|_|_| Boundaries for pixels x = 0 and y = 0  -1.0 to -(1/3)
-            #  |_|_|_| Boundaries for pixels x = 1 and y = 1 - (1/3) to (1/3)
-            #  |_|_|_| Boundaries for pixels x = 2 and y = 2 - (1/3)" to 1.0"
+            #  I_I_I_I Boundaries for pixels x = 0 and y = 0  -1.0 to -(1/3)
+            #  I_I_I_I Boundaries for pixels x = 1 and y = 1 - (1/3) to (1/3)
+            #  I_I_I_I Boundaries for pixels x = 2 and y = 2 - (1/3)" to 1.0"
 
             grid = np.array(
                 [
@@ -499,10 +499,10 @@ class TestRectangularMapper:
 
         def test__4x3_grid__non_symmetric_centre_shift(self):
             #   _ _ _
-            #  |_|_|_|
-            #  |_|_|_|
-            #  |_|_|_|
-            #  |_|_|_|
+            #  I_I_I_I
+            #  I_I_I_I
+            #  I_I_I_I
+            #  I_I_I_I
 
             grid = np.array(
                 [[3.0, -0.5], [3.0, 0.51], [2.49, -0.5], [1.4, 1.0], [1.0, 2.5]]

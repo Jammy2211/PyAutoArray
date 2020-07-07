@@ -12,16 +12,16 @@ class FitDataset:
         Parameters
         -----------
         masked_dataset : MaskedDataset
-            The masked dataset (data, mask, noise map, etc.) that is fitted.
+            The masked dataset (data, mask, noise-map, etc.) that is fitted.
         model_data : ndarray
             The model data the masked dataset is fitted with.
 
         Attributes
         -----------
         residual_map : ndarray
-            The residual map of the fit (data - model_data).
+            The residual-map of the fit (data - model_data).
         chi_squared_map : ndarray
-            The chi-squared map of the fit ((data - model_data) / noise_maps ) **2.0
+            The chi-squared-map of the fit ((data - model_data) / noise_maps ) **2.0
         chi_squared : float
             The overall chi-squared of the model's fit to the dataset, summed over every data point.
         reduced_chi_squared : float
@@ -55,7 +55,7 @@ class FitDataset:
 
     @property
     def residual_map(self):
-        """Compute the residual map between the masked dataset and model data, where:
+        """Compute the residual-map between the masked dataset and model data, where:
 
         Residuals = (Data - Model_Data).
         """
@@ -63,7 +63,7 @@ class FitDataset:
 
     @property
     def normalized_residual_map(self):
-        """Compute the normalized residual map between the masked dataset and model data, where:
+        """Compute the normalized residual-map between the masked dataset and model data, where:
 
         Normalized_Residual = (Data - Model_Data) / Noise
         """
@@ -73,7 +73,7 @@ class FitDataset:
 
     @property
     def chi_squared_map(self):
-        """Compute the chi-squared map between the residual-map and noise map, where:
+        """Compute the chi-squared-map between the residual-map and noise-map, where:
 
         Chi_Squared = ((Residuals) / (Noise)) ** 2.0 = ((Data - Model)**2.0)/(Variances)
         """
@@ -83,14 +83,14 @@ class FitDataset:
 
     @property
     def signal_to_noise_map(self):
-        """The signal-to-noise_map of the dataset and noise map which are fitted."""
+        """The signal-to-noise_map of the dataset and noise-map which are fitted."""
         signal_to_noise_map = np.divide(self.data, self.noise_map)
         signal_to_noise_map[signal_to_noise_map < 0] = 0
         return signal_to_noise_map
 
     @property
     def chi_squared(self):
-        """Compute the chi-squared terms of the model data's fit to an dataset, by summing the chi-squared map.
+        """Compute the chi-squared terms of the model data's fit to an dataset, by summing the chi-squared-map.
         """
         return fit_util.chi_squared_from(chi_squared_map=self.chi_squared_map)
 
@@ -100,7 +100,7 @@ class FitDataset:
 
     @property
     def noise_normalization(self):
-        """Compute the noise map normalization term of the noise map, summing the noise_map value in every pixel as:
+        """Compute the noise-map normalization term of the noise-map, summing the noise_map value in every pixel as:
 
         [Noise_Term] = sum(log(2*pi*[Noise]**2.0))
         """
@@ -150,7 +150,7 @@ class FitDataset:
         log_regularization_term : float
             The log of the determinant o the regularization matrix.
         noise_normalization : float
-            The normalization noise_map-term for the data's noise map.
+            The normalization noise_map-term for the data's noise-map.
         """
         if self.inversion is not None:
             return fit_util.log_evidence_from(
@@ -190,9 +190,9 @@ class FitImaging(FitDataset):
         Attributes
         -----------
         residual_map : ndarray
-            The residual map of the fit (data - model_data).
+            The residual-map of the fit (data - model_data).
         chi_squared_map : ndarray
-            The chi-squared map of the fit ((data - model_data) / noise_maps ) **2.0
+            The chi-squared-map of the fit ((data - model_data) / noise_maps ) **2.0
         chi_squared : float
             The overall chi-squared of the model's fit to the dataset, summed over every data point.
         reduced_chi_squared : float
@@ -235,9 +235,9 @@ class FitInterferometer(FitDataset):
         Attributes
         -----------
         residual_map : ndarray
-            The residual map of the fit (data - model_data).
+            The residual-map of the fit (data - model_data).
         chi_squared_map : ndarray
-            The chi-squared map of the fit ((data - model_data) / noise_maps ) **2.0
+            The chi-squared-map of the fit ((data - model_data) / noise_maps ) **2.0
         chi_squared : float
             The overall chi-squared of the model's fit to the dataset, summed over every data point.
         reduced_chi_squared : float

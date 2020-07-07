@@ -17,7 +17,7 @@ class AbstractVisibilities(np.ndarray):
         Parameters
         ----------
         array_1d: ndarray
-            An array representing image (e.g. an image, noise map, etc.)
+            An array representing image (e.g. an image, noise-map, etc.)
         pixel_scales: (float, float)
             The arc-second to pixel conversion factor of each pixel.
         origin : (float, float)

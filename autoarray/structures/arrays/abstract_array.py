@@ -1,13 +1,11 @@
-import ast
 import logging
 
 import numpy as np
-import os
 
 from autoarray import exc
-from autoarray.structures import abstract_structure, grids
+from autoarray.structures import abstract_structure
 from autoarray.mask import mask as msk
-from autoarray.util import binning_util, array_util, grid_util
+from autoarray.util import binning_util, array_util
 
 logging.basicConfig()
 logger = logging.getLogger(__name__)
@@ -397,7 +395,7 @@ class AbstractArray(abstract_structure.AbstractStructure):
         The pixels can be combined:
 
         - By taking the mean of their values, which one may use for binning up an image.
-        - By adding them in quadranture, which one may use for binning up a noise map.
+        - By adding them in quadranture, which one may use for binning up a noise-map.
         - By summing them, which one may use for binning up an exposure time map.
 
         Parameters
@@ -434,7 +432,7 @@ class AbstractArray(abstract_structure.AbstractStructure):
 
             raise exc.ArrayException(
                 "The method used in binned_up_array_from_array is not a valid method "
-                "[mean | quadrature | sum]"
+                "[mean I quadrature I sum]"
             )
 
         binned_array_1d = array_util.sub_array_1d_from(

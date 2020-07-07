@@ -107,8 +107,8 @@ def array_from_adus_to_electrons_per_second(array, exposure_time_map, gain):
 def array_with_random_uniform_values_added(array, upper_limit=0.001):
     """ Add random values drawn from a uniform distribution between zero and an input upper limit to an array.
 
-    The current use-case of this function is adding small random values to a noise map that is constant (e.g. all noise
-    map values are the same). Constant noise maps have been found to create "broken" inversions where the source is
+    The current use-case of this function is adding small random values to a noise-map that is constant (e.g. all noise
+    map values are the same). Constant noise-maps have been found to create "broken" inversions where the source is
     reconstructed as a set of constant values.
 
     Parameters
@@ -122,13 +122,13 @@ def array_with_random_uniform_values_added(array, upper_limit=0.001):
 
 
 def noise_map_from_data_and_exposure_time_map(data, exposure_time_map):
-    """ Estimate the noise map value in every data-point, by converting the data to units of counts and taking the
+    """ Estimate the noise-map value in every data-point, by converting the data to units of counts and taking the
     square root of these values.
     
-    For datasets that may have a background noise component, this function does not return the overall noise map if the
-    data is background subtracted. In this case, the returned noise map is the Poisson noise map.
+    For datasets that may have a background noise component, this function does not return the overall noise-map if the
+    data is background subtracted. In this case, the returned noise-map is the Poisson noise-map.
 
-    This function assumes the input data is in electrons per second and returns the noise map in electrons per second.
+    This function assumes the input data is in electrons per second and returns the noise-map in electrons per second.
 
     Parameters
     ----------
@@ -141,7 +141,7 @@ def noise_map_from_data_and_exposure_time_map(data, exposure_time_map):
 
 
 def noise_map_from_weight_map(weight_map):
-    """Setup the noise map from a weight map, which is a form of noise map that comes via HST image-reduction and \
+    """Setup the noise-map from a weight map, which is a form of noise-map that comes via HST image-reduction and \
     the software package MultiDrizzle.
 
     The variance in each pixel is computed as:
@@ -165,7 +165,7 @@ def noise_map_from_weight_map(weight_map):
 
 
 def noise_map_from_inverse_noise_map(inverse_noise_map):
-    """Setup the noise map from an inverse noise map.
+    """Setup the noise-map from an inverse noise-map.
 
     The variance in each pixel is computed as:
 
@@ -182,10 +182,10 @@ def noise_map_from_inverse_noise_map(inverse_noise_map):
 def noise_map_from_data_exposure_time_map_and_background_noise_map(
     data, exposure_time_map, background_noise_map
 ):
-    """ Estimate the noise map values in every data-point, by converting the data to units of counts, adding the
-    background noise map and taking the square root of these values.
+    """ Estimate the noise-map values in every data-point, by converting the data to units of counts, adding the
+    background noise-map and taking the square root of these values.
 
-    This function assumes the input data is in electrons per second and returns the noise map in electrons per second.
+    This function assumes the input data is in electrons per second and returns the noise-map in electrons per second.
 
     Parameters
     ----------
@@ -194,7 +194,7 @@ def noise_map_from_data_exposure_time_map_and_background_noise_map(
     exposure_time_map : aa.Array
         The exposure time at every data-point of the data.
     background_noise_map : aa.Array
-        The RMS standard deviation error in every data point due to a background component of the noise map in units
+        The RMS standard deviation error in every data point due to a background component of the noise-map in units
         of electrons per second.        
     """
     return (
@@ -214,7 +214,7 @@ def background_noise_map_from_edges_of_image(image, no_edges):
     into a histogram, with a Gaussian profile fitted to this histogram, such that its standard deviation (sigma) gives
     an estimate of the background noise.
 
-    The background noise map is returned on a 2D array the same dimensions as the image.
+    The background noise-map is returned on a 2D array the same dimensions as the image.
 
     Parameters
     ----------
@@ -266,9 +266,9 @@ def exposure_time_map_from_exposure_time_and_background_noise_map(
     exposure_time, background_noise_map
 ):
     """
-    Compute the exposure time map from the exposure time of the observation and the background noise map.
+    Compute the exposure time map from the exposure time of the observation and the background noise-map.
     
-    This function assumes the only source of noise in the background noise map is due to a variable exposure time in
+    This function assumes the only source of noise in the background noise-map is due to a variable exposure time in
     every pixel due to effects like dithering, cosmic rays, etc.
 
     Parameters
@@ -276,7 +276,7 @@ def exposure_time_map_from_exposure_time_and_background_noise_map(
     exposure_time : float
         The total exposure time of the observation.
     background_noise_map : aa.Array
-        The RMS standard deviation error in every data point due to a background component of the noise map in units
+        The RMS standard deviation error in every data point due to a background component of the noise-map in units
         of electrons per second.
     """
     inverse_background_noise_map = 1.0 / background_noise_map
