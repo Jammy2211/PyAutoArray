@@ -920,6 +920,3 @@ class TestArray2dForArray1d:
                 ]
             )
         ).all()
-
-
-

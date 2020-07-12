@@ -272,3 +272,42 @@ def test__structure_list_from_result_list__maps_list_to_auto_arrays_or_grids():
 
     assert isinstance(result[0], aa.GridCoordinates)
     assert result[0].in_list == [[(1.0, 1.0), (2.0, 2.0)]]
+
+
+def test__from_sparse_uniform_upscale():
+
+    grid_sparse_uniform = aa.GridCoordinates(coordinates=[[(1.0, 1.0), (1.0, 3.0)]])
+
+    grid_upscale = grids.GridCoordinates.from_grid_sparse_uniform_upscale(
+        grid_sparse_uniform=grid_sparse_uniform, upscale_factor=2
+    )
+
+    assert (
+        grid_upscale
+        == np.array(
+            [
+                [1.5, 0.5],
+                [1.5, 1.5],
+                [0.5, 0.5],
+                [0.5, 1.5],
+                [1.5, 2.5],
+                [1.5, 3.5],
+                [0.5, 2.5],
+                [0.5, 3.5],
+            ]
+        )
+    ).all()
+
+    grid_sparse_uniform = aa.GridCoordinates(
+        coordinates=[[(1.0, 1.0), (1.0, 3.0), (1.0, 5.0), (3.0, 3.0)]]
+    )
+
+    grid_upscale = grids.GridCoordinates.from_grid_sparse_uniform_upscale(
+        grid_sparse_uniform=grid_sparse_uniform, upscale_factor=4
+    )
+
+    grid_upscale_util = aa.util.grid.grid_upscaled_1d_from(
+        grid_1d=grid_sparse_uniform, upscale_factor=4, pixel_scales=(2.0, 2.0)
+    )
+
+    assert (grid_upscale == grid_upscale_util).all()
