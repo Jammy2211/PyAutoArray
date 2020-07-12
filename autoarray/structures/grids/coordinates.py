@@ -4,6 +4,7 @@ import os
 
 import typing
 from autoarray.structures import arrays
+from autoarray.util import grid_util
 
 
 class GridCoordinates(np.ndarray):
@@ -119,6 +120,20 @@ class GridCoordinates(np.ndarray):
                 ]
             )
         return cls(coordinates=coordinates)
+
+    @classmethod
+    def from_grid_sparse_uniform_upscale(cls, grid_sparse_uniform, upscale_factor):
+
+        y_difference = abs(grid_sparse_uniform[0, 0] - grid_sparse_uniform[1, 0])
+        x_difference = abs(grid_sparse_uniform[0, 1] - grid_sparse_uniform[1, 1])
+
+        pixel_scale = max(y_difference, x_difference)
+
+        return grid_util.grid_upscaled_1d_from(
+            grid_1d=grid_sparse_uniform,
+            upscale_factor=upscale_factor,
+            pixel_scales=(pixel_scale, pixel_scale),
+        )
 
     @property
     def in_1d(self):

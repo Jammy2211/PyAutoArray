@@ -571,6 +571,3 @@ def sub_array_2d_via_sub_indexes_from(
         ] = sub_array_1d[index]
 
     return array_2d
-
-
-
