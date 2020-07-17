@@ -640,4 +640,40 @@ def sub_grid_2d_from(sub_grid_1d, mask, sub_size):
     return np.stack((sub_grid_2d_y, sub_grid_2d_x), axis=-1)
 
 
+@decorator_util.jit()
+def grid_upscaled_1d_from(grid_1d, upscale_factor, pixel_scales):
 
+    grid_upscaled_1d = np.zeros(shape=(grid_1d.shape[0] * upscale_factor ** 2, 2))
+
+    upscale_index = 0
+
+    y_upscale_half = pixel_scales[0] / 2
+    y_upscale_step = pixel_scales[0] / upscale_factor
+
+    x_upscale_half = pixel_scales[1] / 2
+    x_upscale_step = pixel_scales[1] / upscale_factor
+
+    for grid_index in range(grid_1d.shape[0]):
+
+        y_grid = grid_1d[grid_index, 0]
+        x_grid = grid_1d[grid_index, 1]
+
+        for y in range(upscale_factor):
+            for x in range(upscale_factor):
+
+                grid_upscaled_1d[upscale_index, 0] = (
+                    y_grid
+                    + y_upscale_half
+                    - y * y_upscale_step
+                    - (y_upscale_step / 2.0)
+                )
+                grid_upscaled_1d[upscale_index, 1] = (
+                    x_grid
+                    - x_upscale_half
+                    + x * x_upscale_step
+                    + (x_upscale_step / 2.0)
+                )
+
+                upscale_index += 1
+
+    return grid_upscaled_1d

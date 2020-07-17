@@ -1,6 +1,4 @@
 import autoarray as aa
-import os
-
 import numpy as np
 import pytest
 
@@ -1837,4 +1835,91 @@ class TestSubGrid2DFromSubGrid1d:
         ).all()
 
 
+class TestGridUpscaled1d:
+    def test__simple_grid_in_output_grid_is_upscaled(self):
 
+        grid_1d = np.array([[1.0, 1.0]])
+
+        grid_upscaled_1d = aa.util.grid.grid_upscaled_1d_from(
+            grid_1d=grid_1d, upscale_factor=1, pixel_scales=(2.0, 2.0)
+        )
+
+        assert (grid_upscaled_1d == np.array([[1.0, 1.0]])).all()
+
+        grid_upscaled_1d = aa.util.grid.grid_upscaled_1d_from(
+            grid_1d=grid_1d, upscale_factor=2, pixel_scales=(2.0, 2.0)
+        )
+
+        assert (
+            grid_upscaled_1d
+            == np.array([[1.5, 0.5], [1.5, 1.5], [0.5, 0.5], [0.5, 1.5]])
+        ).all()
+
+        grid_1d = np.array([[1.0, 1.0], [1.0, 3.0]])
+
+        grid_upscaled_1d = aa.util.grid.grid_upscaled_1d_from(
+            grid_1d=grid_1d, upscale_factor=2, pixel_scales=(2.0, 2.0)
+        )
+
+        assert (
+            grid_upscaled_1d
+            == np.array(
+                [
+                    [1.5, 0.5],
+                    [1.5, 1.5],
+                    [0.5, 0.5],
+                    [0.5, 1.5],
+                    [1.5, 2.5],
+                    [1.5, 3.5],
+                    [0.5, 2.5],
+                    [0.5, 3.5],
+                ]
+            )
+        ).all()
+
+        grid_1d = np.array([[1.0, 1.0], [3.0, 1.0]])
+
+        grid_upscaled_1d = aa.util.grid.grid_upscaled_1d_from(
+            grid_1d=grid_1d, upscale_factor=2, pixel_scales=(2.0, 2.0)
+        )
+
+        assert (
+            grid_upscaled_1d
+            == np.array(
+                [
+                    [1.5, 0.5],
+                    [1.5, 1.5],
+                    [0.5, 0.5],
+                    [0.5, 1.5],
+                    [3.5, 0.5],
+                    [3.5, 1.5],
+                    [2.5, 0.5],
+                    [2.5, 1.5],
+                ]
+            )
+        ).all()
+
+        grid_1d = np.array([[1.0, 1.0]])
+
+        grid_upscaled_1d = aa.util.grid.grid_upscaled_1d_from(
+            grid_1d=grid_1d, upscale_factor=2, pixel_scales=(3.0, 2.0)
+        )
+
+        assert (
+            grid_upscaled_1d
+            == np.array([[1.75, 0.5], [1.75, 1.5], [0.25, 0.5], [0.25, 1.5]])
+        ).all()
+
+        grid_upscaled_1d = aa.util.grid.grid_upscaled_1d_from(
+            grid_1d=grid_1d, upscale_factor=3, pixel_scales=(2.0, 2.0)
+        )
+
+        assert grid_upscaled_1d[0] == pytest.approx(np.array([1.666, 0.333]), 1.0e-2)
+        assert grid_upscaled_1d[1] == pytest.approx(np.array([1.666, 1.0]), 1.0e-2)
+        assert grid_upscaled_1d[2] == pytest.approx(np.array([1.666, 1.666]), 1.0e-2)
+        assert grid_upscaled_1d[3] == pytest.approx(np.array([1.0, 0.333]), 1.0e-2)
+        assert grid_upscaled_1d[4] == pytest.approx(np.array([1.0, 1.0]), 1.0e-2)
+        assert grid_upscaled_1d[5] == pytest.approx(np.array([1.0, 1.666]), 1.0e-2)
+        assert grid_upscaled_1d[6] == pytest.approx(np.array([0.333, 0.333]), 1.0e-2)
+        assert grid_upscaled_1d[7] == pytest.approx(np.array([0.333, 1.0]), 1.0e-2)
+        assert grid_upscaled_1d[8] == pytest.approx(np.array([0.333, 1.666]), 1.0e-2)

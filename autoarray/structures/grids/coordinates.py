@@ -4,6 +4,7 @@ import os
 
 import typing
 from autoarray.structures import arrays
+from autoarray.util import grid_util
 
 
 class GridCoordinates(np.ndarray):
@@ -120,6 +121,26 @@ class GridCoordinates(np.ndarray):
             )
         return cls(coordinates=coordinates)
 
+    @classmethod
+    def from_grid_sparse_uniform_upscale(
+        cls, grid_sparse_uniform, upscale_factor, pixel_scale=None
+    ):
+
+        if pixel_scale is None:
+
+            y_difference = abs(grid_sparse_uniform[0, 0] - grid_sparse_uniform[1, 0])
+            x_difference = abs(grid_sparse_uniform[0, 1] - grid_sparse_uniform[1, 1])
+
+            pixel_scale = max(y_difference, x_difference)
+
+        return cls(
+            coordinates=grid_util.grid_upscaled_1d_from(
+                grid_1d=grid_sparse_uniform,
+                upscale_factor=upscale_factor,
+                pixel_scales=(pixel_scale, pixel_scale),
+            )
+        )
+
     @property
     def in_1d(self):
         return self
@@ -193,6 +214,20 @@ class GridCoordinates(np.ndarray):
         with open(file_path, "w") as f:
             for coordinate in self.in_list:
                 f.write(f"{coordinate}\n")
+
+    def grid_from_deflection_grid(self, deflection_grid):
+        """Compute a new GridCoordinates from this grid coordinates, where the (y,x) coordinates of this grid have a
+        grid of (y,x) values, termed the deflection grid, subtracted from them to determine the new grid of (y,x)
+        values.
+
+        This is used by PyAutoLens to perform grid ray-tracing.
+
+        Parameters
+        ----------
+        deflection_grid : ndarray
+            The grid of (y,x) coordinates which is subtracted from this grid.
+        """
+        return GridCoordinates(coordinates=self - deflection_grid)
 
     def squared_distances_from_coordinate(self, coordinate=(0.0, 0.0)):
         """Compute the squared distance of every (y,x) coordinate in this *Coordinate* instance from an input
