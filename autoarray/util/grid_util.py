@@ -640,6 +640,7 @@ def sub_grid_2d_from(sub_grid_1d, mask, sub_size):
     return np.stack((sub_grid_2d_y, sub_grid_2d_x), axis=-1)
 
 
+@decorator_util.jit()
 def grid_upscaled_1d_from(grid_1d, upscale_factor, pixel_scales):
 
     grid_upscaled_1d = np.zeros(shape=(grid_1d.shape[0] * upscale_factor ** 2, 2))

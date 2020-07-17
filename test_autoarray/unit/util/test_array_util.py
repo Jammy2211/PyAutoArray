@@ -852,6 +852,24 @@ class TestArray1DFromArray2d:
             == np.array([1, 2, 3, 7, 8, 9, 13, 14, 15, 4, 5, 6, 10, 11, 12, 16, 17, 18])
         ).all()
 
+    def test__sub_array_1d_complex__sub_size_1(self):
+
+        array_2d = np.array(
+            [
+                [1 + 1j, 2 + 2j, 3 + 3],
+                [4 + 4j, 5 + 5j, 6 + 6j],
+                [7 + 7j, 8 + 8j, 9 + 9j],
+            ]
+        )
+
+        mask = np.array([[True, True, True], [True, False, True], [True, True, True]])
+
+        array_1d = util.array.sub_array_complex_1d_from(
+            mask=mask, sub_array_2d=array_2d, sub_size=1
+        )
+
+        assert (array_1d == np.array([5 + 5j])).all()
+
 
 class TestArray2dForArray1d:
     def test__simple_2d_array__is_masked_and_mapped__sub_size_1(self):
@@ -919,4 +937,22 @@ class TestArray2dForArray1d:
                     [3.0, 4.0, 0.0, 0.0],
                 ]
             )
+        ).all()
+
+    def test__simple_2d_complex_array__is_masked_and_mapped__sub_size_1(self):
+
+        array_1d = np.array(
+            [1.0 + 1j, 2.0 + 2j, 3.0 + 3j, 4.0 + 4j], dtype="complex128"
+        )
+
+        array_2d = util.array.sub_array_complex_2d_via_sub_indexes_from(
+            sub_array_1d=array_1d,
+            sub_shape=(2, 2),
+            sub_mask_index_for_sub_mask_1d_index=np.array(
+                [[0, 0], [0, 1], [1, 0], [1, 1]], dtype="int"
+            ),
+        )
+
+        assert (
+            array_2d == np.array([[1.0 + 1j, 2.0 + 2j], [3.0 + 3j, 4.0 + 4j]])
         ).all()

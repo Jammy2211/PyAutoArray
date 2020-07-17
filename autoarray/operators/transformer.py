@@ -5,9 +5,8 @@ from astropy import units
 from scipy import interpolate
 from pynufft import NUFFT_cpu
 
+import copy
 import numpy as np
-
-from autoarray import exc
 
 
 class TransformerDFT:
@@ -228,12 +227,17 @@ class TransformerFFT(object):
 
 
 class TransformerNUFFT(NUFFT_cpu):
-    def __init__(self, uv_wavelengths, grid):
+    def __init__(self, uv_wavelengths, grid, real_space_mask=None):
 
         super(TransformerNUFFT, self).__init__()
 
         self.uv_wavelengths = uv_wavelengths
         self.grid = grid.in_1d_binned
+        self.real_space_mask = real_space_mask
+        if real_space_mask is not None:
+            self._mask_index_for_mask_1d_index = copy.copy(
+                real_space_mask.regions._mask_index_for_mask_1d_index.astype("int")
+            )
 
         # NOTE: The plan need only be initialized once
         self.initialize_plan()
@@ -274,10 +278,10 @@ class TransformerNUFFT(NUFFT_cpu):
 
         # NOTE:
         self.plan(
-            visibilities_normalized,
-            self.grid.shape_2d,
-            (ratio * self.grid.shape_2d[0], ratio * self.grid.shape_2d[1]),
-            interp_kernel,
+            om=visibilities_normalized,
+            Nd=self.grid.shape_2d,
+            Kd=(ratio * self.grid.shape_2d[0], ratio * self.grid.shape_2d[1]),
+            Jd=interp_kernel,
         )
 
     def visibilities_from_image(self, image):
@@ -320,3 +324,27 @@ class TransformerNUFFT(NUFFT_cpu):
             imag_transfomed_mapping_matrix[:, source_pixel_1d_index] = visibilities.imag
 
         return [real_transfomed_mapping_matrix, imag_transfomed_mapping_matrix]
+
+    # def forward(self, x):
+    #     """
+    #     Forward NUFFT on CPU
+    #     :param x: The input numpy array, with the size of Nd or Nd + (batch,)
+    #     :type: numpy array with the dtype of numpy.complex64
+    #     :return: y: The output numpy array, with the size of (M,) or (M, batch)
+    #     :rtype: numpy array with the dtype of numpy.complex64
+    #     """
+    #     x2d = array_util.sub_array_complex_2d_via_sub_indexes_from(sub_array_1d=x, sub_shape=self.real_space_mask.shape_2d, sub_mask_index_for_sub_mask_1d_index=self._mask_index_for_mask_1d_index)
+    #
+    #     return self.k2y(self.xx2k(self.x2xx(x2d)))
+    #
+    # def adjoint(self, y):
+    #     """
+    #     Adjoint NUFFT on CPU
+    #     :param y: The input numpy array, with the size of (M,) or (M, batch)
+    #     :type: numpy array with the dtype of numpy.complex64
+    #     :return: x: The output numpy array,
+    #                 with the size of Nd or Nd + (batch, )
+    #     :rtype: numpy array with the dtype of numpy.complex64
+    #     """
+    #     x = self.xx2x(self.k2xx(self.y2k(y)))
+    #     return array_util.sub_array_complex_1d_from(sub_array_2d=x, sub_size=1, mask=self.real_space_mask)

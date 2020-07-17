@@ -116,6 +116,17 @@ def test__input_as_list_or_list_of_other_types__all_convert_correctly():
     assert coordinates.in_list == [[(1.0, -1.0), (1.0, 1.0)]]
 
 
+def test__grid_from_deflection_grid():
+
+    coordinates = aa.GridCoordinates(coordinates=[[(1.0, 1.0), (2.0, 2.0)]])
+
+    coordinates = coordinates.grid_from_deflection_grid(
+        deflection_grid=np.array([[1.0, 0.0], [1.0, 1.0]])
+    )
+
+    assert coordinates.in_list == [[(0.0, 1.0), (1.0, 1.0)]]
+
+
 def test__values_from_arr_1d():
 
     coordinates = aa.GridCoordinates(coordinates=[[(1.0, 1.0), (2.0, 2.0)]])
