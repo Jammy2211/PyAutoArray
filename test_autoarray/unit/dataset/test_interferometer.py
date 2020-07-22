@@ -199,16 +199,6 @@ class TestMaskedInterferometer:
             interferometer=interferometer_7,
             visibilities_mask=visibilities_mask,
             real_space_mask=sub_mask_7x7,
-            transformer_class=transformer.TransformerFFT,
-        )
-
-        assert type(masked_interferometer_7.primary_beam) == kern.Kernel
-        assert type(masked_interferometer_7.transformer) == transformer.TransformerFFT
-
-        masked_interferometer_7 = aa.MaskedInterferometer(
-            interferometer=interferometer_7,
-            visibilities_mask=visibilities_mask,
-            real_space_mask=sub_mask_7x7,
             transformer_class=transformer.TransformerNUFFT,
         )
 
@@ -275,7 +265,7 @@ class TestMaskedInterferometer:
 
 class TestSimulatorInterferometer:
     def test__from_image__setup_with_all_features_off(
-        self, uv_wavelengths_7x2, transformer_7x7_7
+        self, uv_wavelengths_7x2, transformer_7x7_7, mask_7x7
     ):
 
         image = aa.Array.manual_2d(
@@ -298,7 +288,9 @@ class TestSimulatorInterferometer:
 
         transformer = simulator.transformer_class(
             uv_wavelengths=uv_wavelengths_7x2,
-            grid=image.mask.geometry.unmasked_grid.in_1d_binned.in_radians,
+            real_space_mask=aa.Mask.unmasked(
+                shape_2d=(3, 3), pixel_scales=image.pixel_scales
+            ),
         )
 
         visibilities = transformer.visibilities_from_image(image=image)
@@ -338,7 +330,9 @@ class TestSimulatorInterferometer:
 
         transformer = simulator.transformer_class(
             uv_wavelengths=uv_wavelengths_7x2,
-            grid=image.mask.geometry.unmasked_grid.in_1d_binned.in_radians,
+            real_space_mask=aa.Mask.unmasked(
+                shape_2d=(3, 3), pixel_scales=image.pixel_scales
+            ),
         )
 
         visibilities = transformer.visibilities_from_image(
@@ -372,7 +366,9 @@ class TestSimulatorInterferometer:
 
         transformer = simulator.transformer_class(
             uv_wavelengths=uv_wavelengths_7x2,
-            grid=image.mask.geometry.unmasked_grid.in_1d_binned.in_radians,
+            real_space_mask=aa.Mask.unmasked(
+                shape_2d=(3, 3), pixel_scales=image.pixel_scales
+            ),
         )
 
         visibilities = transformer.visibilities_from_image(image=image)

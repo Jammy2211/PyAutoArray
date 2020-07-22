@@ -3,11 +3,12 @@ import numpy as np
 import os
 
 import typing
-from autoarray.structures import arrays
+from autoarray.structures import abstract_structure, arrays
 from autoarray.util import grid_util
+from autoarray import exc
 
 
-class GridCoordinates(np.ndarray):
+class AbstractGridCoordinates(np.ndarray):
     def __new__(cls, coordinates):
         """ A collection of (y,x) coordinates structured in a way defining groups of coordinates which share a common
         origin (for example coordinates may be grouped if they are from a specific region of a dataset).
@@ -56,21 +57,17 @@ class GridCoordinates(np.ndarray):
         ):
             coordinates = [coordinates]
 
-        upper_indexes = []
-
-        a = 0
-
-        for coords in coordinates:
-            a += len(coords)
-            upper_indexes.append(a)
-
         coordinates_arr = np.concatenate([np.array(i) for i in coordinates])
 
         obj = coordinates_arr.view(cls)
-        obj.upper_indexes = upper_indexes
-        obj.lower_indexes = [0] + upper_indexes[:-1]
+        obj._internal_list = coordinates
 
         return obj
+
+    def __array_finalize__(self, obj):
+
+        if hasattr(obj, "_internal_list"):
+            self._internal_list = obj._internal_list
 
     def __reduce__(self):
         # Get the parent's __reduce__ tuple
@@ -90,56 +87,21 @@ class GridCoordinates(np.ndarray):
             setattr(self, key, value)
         super().__setstate__(state[0:-1])
 
-    def __array_finalize__(self, obj):
+    @property
+    def upper_indexes(self):
+        upper_indexes = []
 
-        if hasattr(obj, "lower_indexes"):
-            self.lower_indexes = obj.lower_indexes
+        a = 0
 
-        if hasattr(obj, "upper_indexes"):
-            self.upper_indexes = obj.upper_indexes
+        for coords in self._internal_list:
+            a += len(coords)
+            upper_indexes.append(a)
 
-    @classmethod
-    def from_yx_1d(cls, y, x):
-        """Create *GridCoordinates* from a list of y and x values.
+        return upper_indexes
 
-        This function omits coordinate grouping."""
-        return GridCoordinates(coordinates=np.stack((y, x), axis=-1))
-
-    @classmethod
-    def from_pixels_and_mask(cls, pixels, mask):
-        """Create *GridCoordinates* from a list of coordinates in pixel units and a mask which allows these coordinates to
-        be converted to scaled units."""
-        coordinates = []
-        for coordinate_set in pixels:
-            coordinates.append(
-                [
-                    mask.geometry.scaled_coordinates_from_pixel_coordinates(
-                        pixel_coordinates=coordinates
-                    )
-                    for coordinates in coordinate_set
-                ]
-            )
-        return cls(coordinates=coordinates)
-
-    @classmethod
-    def from_grid_sparse_uniform_upscale(
-        cls, grid_sparse_uniform, upscale_factor, pixel_scale=None
-    ):
-
-        if pixel_scale is None:
-
-            y_difference = abs(grid_sparse_uniform[0, 0] - grid_sparse_uniform[1, 0])
-            x_difference = abs(grid_sparse_uniform[0, 1] - grid_sparse_uniform[1, 1])
-
-            pixel_scale = max(y_difference, x_difference)
-
-        return cls(
-            coordinates=grid_util.grid_upscaled_1d_from(
-                grid_1d=grid_sparse_uniform,
-                upscale_factor=upscale_factor,
-                pixel_scales=(pixel_scale, pixel_scale),
-            )
-        )
+    @property
+    def lower_indexes(self):
+        return [0] + self.upper_indexes[:-1]
 
     @property
     def in_1d(self):
@@ -160,36 +122,6 @@ class GridCoordinates(np.ndarray):
             list(arr_1d[i:j]) for i, j in zip(self.lower_indexes, self.upper_indexes)
         ]
         return arrays.Values(values=values_1d)
-
-    def coordinates_from_grid_1d(self, grid_1d):
-        """Create a *GridCoordinates* object from a 2D NumPy array of values of shape [total_coordinates, 2]. The
-        *GridCoordinates* are structured and grouped following this *Coordinate* instance."""
-        coordinates_1d = [
-            list(map(tuple, grid_1d[i:j, :]))
-            for i, j in zip(self.lower_indexes, self.upper_indexes)
-        ]
-
-        return GridCoordinates(coordinates=coordinates_1d)
-
-    @classmethod
-    def from_file(cls, file_path):
-        """Create a *GridCoordinates* object from a file which stores the coordinates as a list of list of tuples.
-
-        Parameters
-        ----------
-        file_path : str
-            The path to the coordinates .dat file containing the coordinates (e.g. '/path/to/coordinates.dat')
-        """
-        with open(file_path) as f:
-            coordinate_string = f.readlines()
-
-        coordinates = []
-
-        for line in coordinate_string:
-            coordinate_list = ast.literal_eval(line)
-            coordinates.append(coordinate_list)
-
-        return GridCoordinates(coordinates=coordinates)
 
     def output_to_file(self, file_path, overwrite=False):
         """Output this instance of the *GridCoordinates* object to a list of list of tuples.
@@ -214,20 +146,6 @@ class GridCoordinates(np.ndarray):
         with open(file_path, "w") as f:
             for coordinate in self.in_list:
                 f.write(f"{coordinate}\n")
-
-    def grid_from_deflection_grid(self, deflection_grid):
-        """Compute a new GridCoordinates from this grid coordinates, where the (y,x) coordinates of this grid have a
-        grid of (y,x) values, termed the deflection grid, subtracted from them to determine the new grid of (y,x)
-        values.
-
-        This is used by PyAutoLens to perform grid ray-tracing.
-
-        Parameters
-        ----------
-        deflection_grid : ndarray
-            The grid of (y,x) coordinates which is subtracted from this grid.
-        """
-        return GridCoordinates(coordinates=self - deflection_grid)
 
     def squared_distances_from_coordinate(self, coordinate=(0.0, 0.0)):
         """Compute the squared distance of every (y,x) coordinate in this *Coordinate* instance from an input
@@ -290,6 +208,75 @@ class GridCoordinates(np.ndarray):
             ]
         )
 
+
+class GridCoordinates(AbstractGridCoordinates):
+    @classmethod
+    def from_yx_1d(cls, y, x):
+        """Create *GridCoordinates* from a list of y and x values.
+
+        This function omits coordinate grouping."""
+        return GridCoordinates(coordinates=np.stack((y, x), axis=-1))
+
+    @classmethod
+    def from_pixels_and_mask(cls, pixels, mask):
+        """Create *GridCoordinates* from a list of coordinates in pixel units and a mask which allows these coordinates to
+        be converted to scaled units."""
+        coordinates = []
+        for coordinate_set in pixels:
+            coordinates.append(
+                [
+                    mask.geometry.scaled_coordinates_from_pixel_coordinates(
+                        pixel_coordinates=coordinates
+                    )
+                    for coordinates in coordinate_set
+                ]
+            )
+        return cls(coordinates=coordinates)
+
+    @classmethod
+    def from_file(cls, file_path):
+        """Create a *GridCoordinates* object from a file which stores the coordinates as a list of list of tuples.
+
+        Parameters
+        ----------
+        file_path : str
+            The path to the coordinates .dat file containing the coordinates (e.g. '/path/to/coordinates.dat')
+        """
+        with open(file_path) as f:
+            coordinate_string = f.readlines()
+
+        coordinates = []
+
+        for line in coordinate_string:
+            coordinate_list = ast.literal_eval(line)
+            coordinates.append(coordinate_list)
+
+        return cls(coordinates=coordinates)
+
+    def coordinates_from_grid_1d(self, grid_1d):
+        """Create a *GridCoordinates* object from a 2D NumPy array of values of shape [total_coordinates, 2]. The
+        *GridCoordinates* are structured and grouped following this *Coordinate* instance."""
+        coordinates_1d = [
+            list(map(tuple, grid_1d[i:j, :]))
+            for i, j in zip(self.lower_indexes, self.upper_indexes)
+        ]
+
+        return GridCoordinates(coordinates=coordinates_1d)
+
+    def grid_from_deflection_grid(self, deflection_grid):
+        """Compute a new GridCoordinates from this grid coordinates, where the (y,x) coordinates of this grid have a
+        grid of (y,x) values, termed the deflection grid, subtracted from them to determine the new grid of (y,x)
+        values.
+
+        This is used by PyAutoLens to perform grid ray-tracing.
+
+        Parameters
+        ----------
+        deflection_grid : ndarray
+            The grid of (y,x) coordinates which is subtracted from this grid.
+        """
+        return GridCoordinates(coordinates=self - deflection_grid)
+
     def structure_from_result(
         self, result: np.ndarray or list
     ) -> typing.Union[arrays.Values, list]:
@@ -344,3 +331,146 @@ class GridCoordinates(np.ndarray):
             return [
                 self.coordinates_from_grid_1d(grid_1d=value) for value in result_list
             ]
+
+
+class GridCoordinatesUniform(AbstractGridCoordinates):
+    def __new__(cls, coordinates, shape_2d=None, pixel_scales=None):
+        """ A collection of (y,x) coordinates structured in a way defining groups of coordinates which share a common
+        origin (for example coordinates may be grouped if they are from a specific region of a dataset).
+
+        Grouping is structured as follows:
+
+        [[x0, x1], [x0, x1, x2]]
+
+        Here, we have two groups of coordinates, where each group is associated.
+
+        The coordinate object does not store the coordinates as a list of list of tuples, but instead a 2D NumPy array
+        of shape [total_coordinates, 2]. Index information is stored so that this array can be mapped to the list of
+        list of tuple structure above. They are stored as a NumPy array so the coordinates can be used efficiently for
+        calculations.
+
+        The coordinates input to this function can have any of the following forms:
+
+        [[(y0,x0), (y1,x1)], [(y0,x0)]]
+        [[[y0,x0], [y1,x1]], [[y0,x0)]]
+        [(y0,x0), (y1,x1)]
+        [[y0,x0], [y1,x1]]
+
+        In all cases, they will be converted to a list of list of tuples followed by a 2D NumPy array.
+
+        Print methods are overidden so a user always "sees" the coordinates as the list structure.
+
+        Like the *Grid* structure, *GridCoordinatesUniform* lie on a uniform grid corresponding to values that
+        originate from a uniform grid. This contrasts the *GridCoordinates* class above. However, although this class
+        stores the pixel-scale and 2D shape of this grid, it does not store the mask that a *Grid* does that enables
+        the coordinates to be mapped from 1D to 2D. This is for calculations that utilize the 2d information of the
+        grid but do not want the memory overheads associated with the 2D mask.
+
+        Parameters
+        ----------
+        coordinates : [[tuple]] or equivalent
+            A collection of (y,x) coordinates that are grouped if they correpsond to a shared origin.
+        """
+
+        #    obj = super(GridCoordinatesUniform, cls).__new__(cls=cls, coordinates=coordinates)
+
+        if len(coordinates) == 0:
+            return []
+
+        if isinstance(coordinates[0], tuple):
+            coordinates = [coordinates]
+        elif isinstance(coordinates[0], np.ndarray):
+            if len(coordinates[0].shape) == 1:
+                coordinates = [coordinates]
+        elif isinstance(coordinates[0], list) and isinstance(
+            coordinates[0][0], (float)
+        ):
+            coordinates = [coordinates]
+
+        coordinates_arr = np.concatenate([np.array(i) for i in coordinates])
+
+        obj = coordinates_arr.view(cls)
+        obj._internal_list = coordinates
+
+        pixel_scales = abstract_structure.convert_pixel_scales(
+            pixel_scales=pixel_scales
+        )
+
+        obj.shape_2d = shape_2d
+        obj.pixel_scales = pixel_scales
+
+        return obj
+
+    def __array_finalize__(self, obj):
+
+        if hasattr(obj, "shape_2d"):
+            self.shape_2d = obj.shape_2d
+
+        if hasattr(obj, "pixel_scales"):
+            self.pixel_scales = obj.pixel_scales
+
+    @property
+    def pixel_scale(self):
+        if self.pixel_scales[0] == self.pixel_scales[1]:
+            return self.pixel_scales[0]
+        else:
+            raise exc.GridException(
+                "Cannot return a pixel_scale for a a grid where each dimension has a "
+                "different pixel scale (e.g. pixel_scales[0] != pixel_scales[1]"
+            )
+
+    @classmethod
+    def from_grid_sparse_uniform_upscale(
+        cls, grid_sparse_uniform, upscale_factor, pixel_scales, shape_2d=None
+    ):
+
+        pixel_scales = abstract_structure.convert_pixel_scales(
+            pixel_scales=pixel_scales
+        )
+
+        grid_upscaled_1d = grid_util.grid_upscaled_1d_from(
+            grid_1d=grid_sparse_uniform,
+            upscale_factor=upscale_factor,
+            pixel_scales=pixel_scales,
+        )
+
+        pixel_scales = (
+            pixel_scales[0] / upscale_factor,
+            pixel_scales[1] / upscale_factor,
+        )
+
+        return cls(
+            coordinates=grid_upscaled_1d, pixel_scales=pixel_scales, shape_2d=shape_2d
+        )
+
+    def coordinates_from_grid_1d(self, grid_1d):
+        """Create a *GridCoordinatesUniform* object from a 2D NumPy array of values of shape [total_coordinates, 2]. The
+        *GridCoordinatesUniform* are structured and grouped following this *Coordinate* instance."""
+        coordinates_1d = [
+            list(map(tuple, grid_1d[i:j, :]))
+            for i, j in zip(self.lower_indexes, self.upper_indexes)
+        ]
+
+        return GridCoordinatesUniform(
+            coordinates=coordinates_1d,
+            pixel_scales=self.pixel_scales,
+            shape_2d=self.shape_2d,
+        )
+
+    def grid_from_deflection_grid(self, deflection_grid):
+        """Compute a new GridCoordinates from this grid coordinates, where the (y,x) coordinates of this grid have a
+        grid of (y,x) values, termed the deflection grid, subtracted from them to determine the new grid of (y,x)
+        values.
+
+        This is used by PyAutoLens to perform grid ray-tracing.
+
+        Parameters
+        ----------
+        deflection_grid : ndarray
+            The grid of (y,x) coordinates which is subtracted from this grid.
+        """
+        return GridCoordinatesUniform(
+            coordinates=self - deflection_grid,
+            pixel_scales=self.pixel_scales,
+            shape_2d=self.shape_2d,
+        )

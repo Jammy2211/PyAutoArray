@@ -16,7 +16,6 @@ from .operators.inversion import pixelizations as pix, regularization as reg
 from .operators.inversion.inversions import inversion as Inversion
 from .operators.inversion.mappers import mapper as Mapper
 from .operators.transformer import TransformerDFT
-from .operators.transformer import TransformerFFT
 from .operators.transformer import TransformerNUFFT
 from .structures.arrays import Array, Values
 from .structures.grids import (
@@ -26,10 +25,11 @@ from .structures.grids import (
     GridRectangular,
     GridVoronoi,
     GridCoordinates,
+    GridCoordinatesUniform,
 )
 from .structures.kernel import Kernel
 from .structures.visibilities import Visibilities
 from .structures.arrays import MaskedArray
 from .structures.grids import MaskedGrid
 
-__version__ = '0.11.11'
+__version__ = "0.11.11"

@@ -1036,7 +1036,7 @@ class TestAbstractPlotterNew:
     def test__plotter_with_new_units__new_outputs_are_setup_correctly_if_input(self):
 
         plotter = aplt.Plotter(
-            aplt.Units(use_scaled=True, in_kpc=True, conversion_factor=1.0)
+            units=aplt.Units(use_scaled=True, in_kpc=True, conversion_factor=1.0)
         )
 
         assert plotter.units.use_scaled == True

@@ -230,7 +230,7 @@ class MaskedInterferometer(abstract_dataset.AbstractMaskedDataset):
 
         self.transformer = transformer_class(
             uv_wavelengths=interferometer.uv_wavelengths,
-            grid=self.grid.in_1d_binned.in_radians,
+            real_space_mask=real_space_mask,
         )
 
         self.visibilities = interferometer.visibilities
@@ -334,8 +334,7 @@ class SimulatorInterferometer:
         """
 
         transformer = self.transformer_class(
-            uv_wavelengths=self.uv_wavelengths,
-            grid=image.mask.geometry.unmasked_grid.in_1d_binned.in_radians,
+            uv_wavelengths=self.uv_wavelengths, real_space_mask=image.mask
         )
 
         if self.background_sky_map is not None:
