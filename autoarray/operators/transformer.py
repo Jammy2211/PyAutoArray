@@ -14,7 +14,7 @@ class TransformerDFT:
 
         self.uv_wavelengths = uv_wavelengths.astype("float")
         self.real_space_mask = real_space_mask.mask_sub_1
-        self.grid = self.real_space_mask.geometry.unmasked_grid.in_radians
+        self.grid = self.real_space_mask.geometry.masked_grid.in_1d_binned.in_radians
 
         self.total_visibilities = uv_wavelengths.shape[0]
         self.total_image_pixels = self.real_space_mask.pixels_in_mask
