@@ -7,6 +7,7 @@ import pytest
 class MockRealSpaceMask:
     def __init__(self, grid):
 
+        self.grid = grid
         self.geometry = MockGeometry(grid=grid)
 
     @property
@@ -15,16 +16,33 @@ class MockRealSpaceMask:
 
     @property
     def pixels_in_mask(self):
-        return self.geometry.unmasked_grid.in_radians.shape[0]
+        return self.geometry.masked_grid.in_1d_binned.in_radians.shape[0]
+
+    @property
+    def pixel_scales(self):
+        return self.grid.pixel_scales
+
+    @property
+    def sub_size(self):
+        return self.grid.sub_size
+
+    @property
+    def origin(self):
+        return self.grid.origin
 
 
 class MockGeometry:
     def __init__(self, grid):
 
-        self.unmasked_grid = MockUnmaskedGrid(grid=grid)
+        self.masked_grid = MockMaskedGrid(grid=grid)
 
 
-class MockUnmaskedGrid:
+class MockMaskedGrid:
+    def __init__(self, grid):
+        self.in_1d_binned = MockMaskedGrid2(grid=grid)
+
+
+class MockMaskedGrid2:
     def __init__(self, grid):
         self.in_radians = grid
 
