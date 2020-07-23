@@ -1,8 +1,7 @@
 from autoarray.util import transformer_util
-from autoarray.structures import arrays, visibilities as vis
+from autoarray.structures import arrays, visibilities as vis, grids
 from autoarray.util import array_util
 from astropy import units
-from scipy import interpolate
 from pynufft import NUFFT_cpu
 import pylops
 
@@ -128,7 +127,8 @@ class TransformerNUFFT(NUFFT_cpu):
 
         self.uv_wavelengths = uv_wavelengths
         self.real_space_mask = real_space_mask.mask_sub_1
-        self.grid = self.real_space_mask.geometry.unmasked_grid.in_radians
+        #        self.grid = self.real_space_mask.geometry.unmasked_grid.in_radians
+        self.grid = grids.Grid.from_mask(mask=self.real_space_mask).in_radians
         self._mask_index_for_mask_1d_index = copy.copy(
             real_space_mask.regions._mask_index_for_mask_1d_index.astype("int")
         )
@@ -221,13 +221,13 @@ class TransformerNUFFT(NUFFT_cpu):
 
 
 class TransformerNUFFTLops(TransformerNUFFT, pylops.LinearOperator):
-    def __init__(self, uv_wavelengths, grid, real_space_mask, dims_fft):
+    def __init__(self, uv_wavelengths, real_space_mask, dims_fft):
 
-        super(TransformerNUFFT, self).__init__(
-            uv_wavelengths=uv_wavelengths, grid=grid, real_space_mask=real_space_mask
+        super(TransformerNUFFTLops, self).__init__(
+            uv_wavelengths=uv_wavelengths, real_space_mask=real_space_mask
         )
 
-        self.real_space_pixels = self.real_space_mask.pixel_in_mask
+        self.real_space_pixels = self.real_space_mask.pixels_in_mask
         self.dims_fft = dims_fft
 
         self.shape = (int(np.prod(self.dims_fft)), int(np.prod(self.real_space_pixels)))

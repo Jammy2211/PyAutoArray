@@ -7,7 +7,7 @@ import autoarray as aa
 from autoarray import exc
 from autoarray.dataset import abstract_dataset, preprocess
 from autoarray.structures import arrays, grids, visibilities as vis, kernel
-from autoarray.operators import transformer
+from autoarray.operators import transformer as trans
 
 
 logger = logging.getLogger(__name__)
@@ -162,7 +162,7 @@ class MaskedInterferometer(abstract_dataset.AbstractMaskedDataset):
         fractional_accuracy=0.9999,
         sub_steps=None,
         pixel_scales_interp=None,
-        transformer_class=transformer.TransformerNUFFT,
+        transformer_class=trans.TransformerNUFFT,
         primary_beam_shape_2d=None,
         inversion_pixel_limit=None,
         inversion_uses_border=True,
@@ -228,10 +228,17 @@ class MaskedInterferometer(abstract_dataset.AbstractMaskedDataset):
                 renormalize=renormalize_primary_beam,
             )
 
-        self.transformer = transformer_class(
-            uv_wavelengths=interferometer.uv_wavelengths,
-            real_space_mask=real_space_mask,
-        )
+        if transformer_class is not trans.TransformerNUFFTLops:
+            self.transformer = transformer_class(
+                uv_wavelengths=interferometer.uv_wavelengths,
+                real_space_mask=real_space_mask,
+            )
+        else:
+            self.transformer = transformer_class(
+                uv_wavelengths=interferometer.uv_wavelengths,
+                real_space_mask=real_space_mask,
+                dims_fft=interferometer.visibilities.shape[0],
+            )
 
         self.visibilities = interferometer.visibilities
         self.noise_map = interferometer.noise_map
@@ -271,7 +278,7 @@ class SimulatorInterferometer:
         uv_wavelengths,
         exposure_time_map,
         background_sky_map=None,
-        transformer_class=transformer.TransformerDFT,
+        transformer_class=trans.TransformerDFT,
         primary_beam=None,
         renormalize_primary_beam=True,
         noise_sigma=0.1,
