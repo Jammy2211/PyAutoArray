@@ -12,7 +12,7 @@ from autoarray.operators import convolver
 logger = logging.getLogger(__name__)
 
 
-class Imaging(abstract_dataset.AbstractDataset):
+class AbstractImaging(abstract_dataset.AbstractDataset):
     def __init__(self, image, noise_map, psf=None, positions=None, name=None):
         """A class containing the data, noise-map and point spread function of a 2D imaging dataset.
 
@@ -31,79 +31,6 @@ class Imaging(abstract_dataset.AbstractDataset):
         )
 
         self.psf = psf
-
-    @classmethod
-    def from_fits(
-        cls,
-        image_path,
-        pixel_scales=None,
-        image_hdu=0,
-        noise_map_path=None,
-        noise_map_hdu=0,
-        psf_path=None,
-        psf_hdu=0,
-        positions_path=None,
-        name=None,
-    ):
-        """Factory for loading the imaging data_type from .fits files, as well as computing properties like the noise-map,
-        exposure-time map, etc. from the imaging-data.
-
-        This factory also includes a number of routines for converting the imaging-data from unit_label not supported by PyAutoLens \
-        (e.g. adus, electrons) to electrons per second.
-
-        Parameters
-        ----------
-        renormalize_psf
-        noise_map_non_constant
-        name
-        image_path : str
-            The path to the image .fits file containing the image (e.g. '/path/to/image.fits')
-        pixel_scales : float
-            The size of each pixel in arc seconds.
-        image_hdu : int
-            The hdu the image is contained in the .fits file specified by *image_path*.
-        psf_path : str
-            The path to the psf .fits file containing the psf (e.g. '/path/to/psf.fits')
-        psf_hdu : int
-            The hdu the psf is contained in the .fits file specified by *psf_path*.
-        noise_map_path : str
-            The path to the noise_map .fits file containing the noise_map (e.g. '/path/to/noise_map.fits')
-        noise_map_hdu : int
-            The hdu the noise_map is contained in the .fits file specified by *noise_map_path*.
-        """
-
-        image = arrays.Array.from_fits(
-            file_path=image_path, hdu=image_hdu, pixel_scales=pixel_scales
-        )
-
-        noise_map = arrays.Array.from_fits(
-            file_path=noise_map_path, hdu=noise_map_hdu, pixel_scales=pixel_scales
-        )
-
-        if psf_path is not None:
-
-            psf = kernel.Kernel.from_fits(
-                file_path=psf_path,
-                hdu=psf_hdu,
-                pixel_scales=pixel_scales,
-                renormalize=True,
-            )
-
-        else:
-
-            psf = None
-
-        if positions_path is not None:
-
-            positions = grids.GridCoordinates.from_file(file_path=positions_path)
-
-        else:
-
-            positions = None
-
-        return Imaging(
-            image=image, noise_map=noise_map, psf=psf, positions=positions, name=name
-        )
 
     def __array_finalize__(self, obj):
         if isinstance(obj, Imaging):
@@ -165,19 +92,8 @@ class Imaging(abstract_dataset.AbstractDataset):
 
         return imaging
 
-    def output_to_fits(
-        self, image_path, psf_path=None, noise_map_path=None, overwrite=False
-    ):
-        self.image.output_to_fits(file_path=image_path, overwrite=overwrite)
 
-        if self.psf is not None and psf_path is not None:
-            self.psf.output_to_fits(file_path=psf_path, overwrite=overwrite)
-
-        if self.noise_map is not None and noise_map_path is not None:
-            self.noise_map.output_to_fits(file_path=noise_map_path, overwrite=overwrite)
-
-
-class MaskedImaging(abstract_dataset.AbstractMaskedDataset):
+class AbstractMaskedImaging(abstract_dataset.AbstractMaskedDataset):
     def __init__(
         self,
         imaging,
@@ -229,11 +145,15 @@ class MaskedImaging(abstract_dataset.AbstractMaskedDataset):
         )
 
         self.image = arrays.MaskedArray.manual(
-            array=imaging.image.in_2d, mask=mask.mask_sub_1
+            array=imaging.image.in_2d,
+            mask=mask.mask_sub_1,
+            store_in_1d=imaging.image.store_in_1d,
         )
 
         self.noise_map = arrays.MaskedArray.manual(
-            array=imaging.noise_map.in_2d, mask=mask.mask_sub_1
+            array=imaging.noise_map.in_2d,
+            mask=mask.mask_sub_1,
+            store_in_1d=imaging.noise_map.store_in_1d,
         )
 
         self.pixel_scales_interp = pixel_scales_interp
@@ -287,7 +207,7 @@ class MaskedImaging(abstract_dataset.AbstractMaskedDataset):
         return masked_imaging
 
 
-class SimulatorImaging:
+class AbstractSimulatorImaging:
     def __init__(
         self,
         exposure_time_map,
@@ -407,3 +327,99 @@ class SimulatorImaging:
         image = arrays.MaskedArray.manual(array=image, mask=mask)
 
         return Imaging(image=image, psf=self.psf, noise_map=noise_map, name=name)
+
+
+class Imaging(AbstractImaging):
+    @classmethod
+    def from_fits(
+        cls,
+        image_path,
+        pixel_scales=None,
+        image_hdu=0,
+        noise_map_path=None,
+        noise_map_hdu=0,
+        psf_path=None,
+        psf_hdu=0,
+        positions_path=None,
+        name=None,
+    ):
+        """Factory for loading the imaging data_type from .fits files, as well as computing properties like the noise-map,
+        exposure-time map, etc. from the imaging-data.
+
+        This factory also includes a number of routines for converting the imaging-data from unit_label not supported by PyAutoLens \
+        (e.g. adus, electrons) to electrons per second.
+
+        Parameters
+        ----------
+        renormalize_psf
+        noise_map_non_constant
+        name
+        image_path : str
+            The path to the image .fits file containing the image (e.g. '/path/to/image.fits')
+        pixel_scales : float
+            The size of each pixel in arc seconds.
+        image_hdu : int
+            The hdu the image is contained in the .fits file specified by *image_path*.
+        psf_path : str
+            The path to the psf .fits file containing the psf (e.g. '/path/to/psf.fits')
+        psf_hdu : int
+            The hdu the psf is contained in the .fits file specified by *psf_path*.
+        noise_map_path : str
+            The path to the noise_map .fits file containing the noise_map (e.g. '/path/to/noise_map.fits')
+        noise_map_hdu : int
+            The hdu the noise_map is contained in the .fits file specified by *noise_map_path*.
+        """
+
+        image = arrays.Array.from_fits(
+            file_path=image_path, hdu=image_hdu, pixel_scales=pixel_scales
+        )
+
+        noise_map = arrays.Array.from_fits(
+            file_path=noise_map_path, hdu=noise_map_hdu, pixel_scales=pixel_scales
+        )
+
+        if psf_path is not None:
+
+            psf = kernel.Kernel.from_fits(
+                file_path=psf_path,
+                hdu=psf_hdu,
+                pixel_scales=pixel_scales,
+                renormalize=True,
+            )
+
+        else:
+
+            psf = None
+
+        if positions_path is not None:
+
+            positions = grids.GridCoordinates.from_file(file_path=positions_path)
+
+        else:
+
+            positions = None
+
+        return Imaging(
+            image=image, noise_map=noise_map, psf=psf, positions=positions, name=name
+        )
+
+    def output_to_fits(
+        self, image_path, psf_path=None, noise_map_path=None, overwrite=False
+    ):
+        self.image.output_to_fits(file_path=image_path, overwrite=overwrite)
+
+        if self.psf is not None and psf_path is not None:
+            self.psf.output_to_fits(file_path=psf_path, overwrite=overwrite)
+
+        if self.noise_map is not None and noise_map_path is not None:
+            self.noise_map.output_to_fits(file_path=noise_map_path, overwrite=overwrite)
+
+
+class MaskedImaging(AbstractMaskedImaging):
+
+    pass
+
+
+class SimulatorImaging(AbstractSimulatorImaging):
+
+    pass
