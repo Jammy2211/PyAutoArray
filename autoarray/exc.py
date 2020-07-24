@@ -1,3 +1,11 @@
+class RegionException(Exception):
+    pass
+
+
+class FrameException(Exception):
+    pass
+
+
 class ArrayException(Exception):
     pass
 
