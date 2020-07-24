@@ -50,10 +50,12 @@ class TestImaging:
     def test__new_imaging_with_signal_to_noise_limit__limit_above_max_signal_to_noise__signal_to_noise_map_unchanged(
         self
     ):
-        image = aa.Array.full(fill_value=20.0, shape_2d=(2, 2))
+        image = aa.Array.full(fill_value=20.0, shape_2d=(2, 2), store_in_1d=True)
         image[3] = 5.0
 
-        noise_map_array = aa.Array.full(fill_value=5.0, shape_2d=(2, 2))
+        noise_map_array = aa.Array.full(
+            fill_value=5.0, shape_2d=(2, 2), store_in_1d=True
+        )
         noise_map_array[3] = 2.0
 
         imaging = aa.Imaging(
@@ -64,15 +66,33 @@ class TestImaging:
             signal_to_noise_limit=100.0
         )
 
-        assert (imaging.image.in_2d == np.array([[20.0, 20.0], [20.0, 5.0]])).all()
+        assert (imaging.image == np.array([20.0, 20.0, 20.0, 5.0])).all()
 
-        assert (imaging.noise_map.in_2d == np.array([[5.0, 5.0], [5.0, 2.0]])).all()
+        assert (imaging.noise_map == np.array([5.0, 5.0, 5.0, 2.0])).all()
 
-        assert (
-            imaging.signal_to_noise_map.in_2d == np.array([[4.0, 4.0], [4.0, 2.5]])
-        ).all()
+        assert (imaging.signal_to_noise_map == np.array([4.0, 4.0, 4.0, 2.5])).all()
 
         assert (imaging.psf.in_2d == np.zeros((3, 3))).all()
+
+        image = aa.Array.full(fill_value=20.0, shape_2d=(2, 2), store_in_1d=False)
+        image[1, 1] = 5.0
+
+        noise_map_array = aa.Array.full(
+            fill_value=5.0, shape_2d=(2, 2), store_in_1d=False
+        )
+        noise_map_array[1, 1] = 2.0
+
+        imaging = aa.Imaging(image=image, noise_map=noise_map_array)
+
+        imaging = imaging.signal_to_noise_limited_from_signal_to_noise_limit(
+            signal_to_noise_limit=100.0
+        )
+
+        assert (imaging.image == np.array([[20.0, 20.0], [20.0, 5.0]])).all()
+
+        assert (imaging.noise_map == np.array([[5.0, 5.0], [5.0, 2.0]])).all()
+
+        assert (imaging.signal_to_noise_map == np.array([[4.0, 4.0], [4.0, 2.5]])).all()
 
     def test__new_imaging_with_signal_to_noise_limit_below_max_signal_to_noise__signal_to_noise_map_capped_to_limit(
         self
@@ -491,3 +511,15 @@ class TestSimulatorImaging:
         assert imaging.image.in_2d == pytest.approx(
             np.array([[0.0, 1.05, 0.0], [1.3, 2.35, 1.05], [0.0, 1.05, 0.0]]), 1e-2
         )
+
+    def test__modified_noise_map(self, noise_map_7x7, imaging_7x7, mask_7x7):
+
+        masked_imaging_7x7 = aa.MaskedImaging(imaging=imaging_7x7, mask=mask_7x7)
+
+        noise_map_7x7[0] = 11.0
+
+        masked_imaging_7x7 = masked_imaging_7x7.modify_noise_map(
+            noise_map=noise_map_7x7
+        )
+
+        assert masked_imaging_7x7.noise_map[0] == 11.0
