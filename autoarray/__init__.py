@@ -19,14 +19,9 @@ from .operators.transformer import TransformerDFT
 from .operators.transformer import TransformerNUFFT
 from .structures.arrays import Array, Values
 from .structures.arrays.abstract_array import ExposureInfo
-from .structures.frame import (
-    Frame,
-    MaskedFrame,
-    FrameEuclid,
-    MaskedFrameEuclid,
-    FrameACS,
-    MaskedFrameACS,
-)
+from .structures.frame import Frame, MaskedFrame
+from .structures.instruments.euclid import FrameEuclid, MaskedFrameEuclid
+from .structures.instruments.acs import FrameACS, MaskedFrameACS
 from .structures.frame.abstract_frame import Scans
 from .structures.grids import (
     Grid,
