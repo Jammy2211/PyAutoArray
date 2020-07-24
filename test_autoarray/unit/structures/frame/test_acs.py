@@ -51,7 +51,7 @@ class TestFrameAPI:
         self, acs_quadrant
     ):
 
-        acs_frame = aa.ACSFrame.left(
+        acs_frame = aa.FrameACS.left(
             array_electrons=acs_quadrant,
             parallel_size=2068,
             serial_size=2072,
@@ -65,7 +65,7 @@ class TestFrameAPI:
         assert acs_frame.scans.parallel_overscan == (2048, 2068, 24, 2072)
         assert acs_frame.scans.serial_prescan == (0, 2068, 0, 24)
 
-        acs_frame = aa.ACSFrame.left(
+        acs_frame = aa.FrameACS.left(
             array_electrons=acs_quadrant,
             parallel_size=2070,
             serial_size=2072,
@@ -79,7 +79,7 @@ class TestFrameAPI:
         assert acs_frame.scans.parallel_overscan == (2060, 2070, 28, 2072)
         assert acs_frame.scans.serial_prescan == (0, 2070, 0, 28)
 
-        acs_frame = aa.ACSFrame.right(
+        acs_frame = aa.FrameACS.right(
             array=acs_quadrant,
             parallel_size=2068,
             serial_size=2072,
@@ -93,7 +93,7 @@ class TestFrameAPI:
         assert acs_frame.scans.parallel_overscan == (2048, 2068, 24, 2072)
         assert acs_frame.scans.serial_prescan == (0, 2068, 0, 24)
 
-        acs_frame = aa.ACSFrame.right(
+        acs_frame = aa.FrameACS.right(
             array=acs_quadrant,
             parallel_size=2070,
             serial_size=2072,
@@ -109,22 +109,22 @@ class TestFrameAPI:
 
     def test__from_ccd__chooses_correct_frame_given_quadrant_letter(self, acs_ccd):
 
-        frame = aa.ACSFrame.from_ccd(array_electrons=acs_ccd, quadrant_letter="B")
+        frame = aa.FrameACS.from_ccd(array_electrons=acs_ccd, quadrant_letter="B")
 
         assert frame.original_roe_corner == (1, 0)
         assert frame.shape_2d == (2068, 2072)
 
-        frame = aa.ACSFrame.from_ccd(array_electrons=acs_ccd, quadrant_letter="C")
+        frame = aa.FrameACS.from_ccd(array_electrons=acs_ccd, quadrant_letter="C")
 
         assert frame.original_roe_corner == (1, 0)
         assert frame.shape_2d == (2068, 2072)
 
-        frame = aa.ACSFrame.from_ccd(array_electrons=acs_ccd, quadrant_letter="A")
+        frame = aa.FrameACS.from_ccd(array_electrons=acs_ccd, quadrant_letter="A")
 
         assert frame.original_roe_corner == (1, 1)
         assert frame.shape_2d == (2068, 2072)
 
-        frame = aa.ACSFrame.from_ccd(array_electrons=acs_ccd, quadrant_letter="D")
+        frame = aa.FrameACS.from_ccd(array_electrons=acs_ccd, quadrant_letter="D")
 
         assert frame.original_roe_corner == (1, 1)
         assert frame.shape_2d == (2068, 2072)
@@ -151,7 +151,7 @@ class TestFrameAPI:
             units="COUNTS",
         )
 
-        frame = aa.ACSFrame.from_fits(
+        frame = aa.FrameACS.from_fits(
             file_path=f"{fits_path}/acs_ccd.fits", quadrant_letter="B"
         )
 
@@ -160,7 +160,7 @@ class TestFrameAPI:
         assert frame.original_roe_corner == (1, 0)
         assert frame.shape_2d == (2068, 2072)
 
-        frame = aa.ACSFrame.from_fits(
+        frame = aa.FrameACS.from_fits(
             file_path=f"{fits_path}/acs_ccd.fits", quadrant_letter="A"
         )
 
@@ -168,7 +168,7 @@ class TestFrameAPI:
         assert frame.original_roe_corner == (1, 1)
         assert frame.shape_2d == (2068, 2072)
 
-        frame = aa.ACSFrame.from_fits(
+        frame = aa.FrameACS.from_fits(
             file_path=f"{fits_path}/acs_ccd.fits", quadrant_letter="C"
         )
 
@@ -176,7 +176,7 @@ class TestFrameAPI:
         assert frame.original_roe_corner == (1, 0)
         assert frame.shape_2d == (2068, 2072)
 
-        frame = aa.ACSFrame.from_fits(
+        frame = aa.FrameACS.from_fits(
             file_path=f"{fits_path}/acs_ccd.fits", quadrant_letter="D"
         )
 
@@ -206,7 +206,7 @@ class TestFrameAPI:
             units="CPS",
         )
 
-        frame = aa.ACSFrame.from_fits(
+        frame = aa.FrameACS.from_fits(
             file_path=f"{fits_path}/acs_ccd.fits", quadrant_letter="B"
         )
 
@@ -214,7 +214,7 @@ class TestFrameAPI:
         assert frame.original_roe_corner == (1, 0)
         assert frame.shape_2d == (2068, 2072)
 
-        frame = aa.ACSFrame.from_fits(
+        frame = aa.FrameACS.from_fits(
             file_path=f"{fits_path}/acs_ccd.fits", quadrant_letter="A"
         )
 
@@ -222,7 +222,7 @@ class TestFrameAPI:
         assert frame.original_roe_corner == (1, 1)
         assert frame.shape_2d == (2068, 2072)
 
-        frame = aa.ACSFrame.from_fits(
+        frame = aa.FrameACS.from_fits(
             file_path=f"{fits_path}/acs_ccd.fits", quadrant_letter="C"
         )
 
@@ -230,7 +230,7 @@ class TestFrameAPI:
         assert frame.original_roe_corner == (1, 0)
         assert frame.shape_2d == (2068, 2072)
 
-        frame = aa.ACSFrame.from_fits(
+        frame = aa.FrameACS.from_fits(
             file_path=f"{fits_path}/acs_ccd.fits", quadrant_letter="D"
         )
 
@@ -247,7 +247,7 @@ class TestMaskedFrameAPI:
         mask = np.full(shape=(2068, 2072), fill_value=False)
         mask[0, 0] = True
 
-        acs_frame = aa.MaskedACSFrame.left(
+        acs_frame = aa.MaskedFrameACS.left(
             array=acs_quadrant,
             mask=mask,
             parallel_size=2068,
@@ -264,7 +264,7 @@ class TestMaskedFrameAPI:
         assert acs_frame.mask[0, 0] == True
         assert acs_frame.mask[0, 1] == False
 
-        acs_frame = aa.MaskedACSFrame.left(
+        acs_frame = aa.MaskedFrameACS.left(
             array=acs_quadrant,
             mask=mask,
             parallel_size=2070,
@@ -281,7 +281,7 @@ class TestMaskedFrameAPI:
         assert acs_frame.mask[0, 0] == True
         assert acs_frame.mask[0, 1] == False
 
-        acs_frame = aa.MaskedACSFrame.right(
+        acs_frame = aa.MaskedFrameACS.right(
             array=acs_quadrant,
             mask=mask,
             parallel_size=2068,
@@ -298,7 +298,7 @@ class TestMaskedFrameAPI:
         assert acs_frame.mask[0, -1] == True
         assert acs_frame.mask[0, 1] == False
 
-        acs_frame = aa.MaskedACSFrame.right(
+        acs_frame = aa.MaskedFrameACS.right(
             array=acs_quadrant,
             mask=mask,
             parallel_size=2070,
@@ -321,7 +321,7 @@ class TestMaskedFrameAPI:
         mask[0, 0] = True
         mask[0, 2072] = True
 
-        frame = aa.MaskedACSFrame.from_ccd(
+        frame = aa.MaskedFrameACS.from_ccd(
             array=acs_ccd, quadrant_letter="B", mask=mask
         )
 
@@ -329,7 +329,7 @@ class TestMaskedFrameAPI:
         assert frame.shape_2d == (2068, 2072)
         assert frame.mask[0, 0] == True
 
-        frame = aa.MaskedACSFrame.from_ccd(
+        frame = aa.MaskedFrameACS.from_ccd(
             array=acs_ccd, quadrant_letter="C", mask=mask
         )
 
@@ -337,7 +337,7 @@ class TestMaskedFrameAPI:
         assert frame.shape_2d == (2068, 2072)
         assert frame.mask[0, 0] == True
 
-        frame = aa.MaskedACSFrame.from_ccd(
+        frame = aa.MaskedFrameACS.from_ccd(
             array=acs_ccd, quadrant_letter="A", mask=mask
         )
 
@@ -346,7 +346,7 @@ class TestMaskedFrameAPI:
         assert frame.mask[0, -1] == True
         assert frame.mask[0, 0] == False
 
-        frame = aa.MaskedACSFrame.from_ccd(
+        frame = aa.MaskedFrameACS.from_ccd(
             array=acs_ccd, quadrant_letter="D", mask=mask
         )
 
@@ -380,7 +380,7 @@ class TestMaskedFrameAPI:
         mask[0, 1] = True
         mask[0, 4142] = True
 
-        frame = aa.MaskedACSFrame.from_fits(
+        frame = aa.MaskedFrameACS.from_fits(
             file_path=f"{fits_path}/acs_ccd.fits", quadrant_letter="B", mask=mask
         )
 
@@ -389,7 +389,7 @@ class TestMaskedFrameAPI:
         assert frame.shape_2d == (2068, 2072)
         assert frame.mask[0, 1] == True
 
-        frame = aa.MaskedACSFrame.from_fits(
+        frame = aa.MaskedFrameACS.from_fits(
             file_path=f"{fits_path}/acs_ccd.fits", quadrant_letter="A", mask=mask
         )
 
@@ -398,7 +398,7 @@ class TestMaskedFrameAPI:
         assert frame.shape_2d == (2068, 2072)
         assert frame.mask[0, 1] == True
 
-        frame = aa.MaskedACSFrame.from_fits(
+        frame = aa.MaskedFrameACS.from_fits(
             file_path=f"{fits_path}/acs_ccd.fits", quadrant_letter="C", mask=mask
         )
 
@@ -407,7 +407,7 @@ class TestMaskedFrameAPI:
         assert frame.shape_2d == (2068, 2072)
         assert frame.mask[0, 1] == True
 
-        frame = aa.MaskedACSFrame.from_fits(
+        frame = aa.MaskedFrameACS.from_fits(
             file_path=f"{fits_path}/acs_ccd.fits", quadrant_letter="D", mask=mask
         )
 
