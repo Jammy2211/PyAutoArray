@@ -13,7 +13,7 @@ from autoarray.operators import transformer as trans
 logger = logging.getLogger(__name__)
 
 
-class Interferometer(abstract_dataset.AbstractDataset):
+class AbstractInterferometer(abstract_dataset.AbstractDataset):
     def __init__(
         self,
         visibilities,
@@ -30,64 +30,6 @@ class Interferometer(abstract_dataset.AbstractDataset):
 
         self.uv_wavelengths = uv_wavelengths
         self.primary_beam = primary_beam
-
-    @classmethod
-    def from_fits(
-        cls,
-        visibilities_path,
-        noise_map_path,
-        uv_wavelengths_path,
-        visibilities_hdu=0,
-        noise_map_hdu=0,
-        uv_wavelengths_hdu=0,
-        primary_beam_path=None,
-        primary_beam_hdu=0,
-        positions_path=None,
-    ):
-        """Factory for loading the interferometer data_type from .fits files, as well as computing properties like the noise-map,
-        exposure-time map, etc. from the interferometer-data_type.
-
-        This factory also includes a number of routines for converting the interferometer-data_type from unit_label not supported by PyAutoLens \
-        (e.g. adus, electrons) to electrons per second.
-
-        Parameters
-        ----------
-        """
-
-        visibilities = aa.Visibilities.from_fits(
-            file_path=visibilities_path, hdu=visibilities_hdu
-        )
-
-        noise_map = aa.Visibilities.from_fits(
-            file_path=noise_map_path, hdu=noise_map_hdu
-        )
-
-        uv_wavelengths = aa.util.array.numpy_array_2d_from_fits(
-            file_path=uv_wavelengths_path, hdu=uv_wavelengths_hdu
-        )
-
-        if primary_beam_path is not None:
-            primary_beam = aa.Kernel.from_fits(
-                file_path=primary_beam_path, hdu=primary_beam_hdu, renormalize=True
-            )
-        else:
-            primary_beam = None
-
-        if positions_path is not None:
-
-            positions = grids.GridCoordinates.from_file(file_path=positions_path)
-
-        else:
-
-            positions = None
-
-        return Interferometer(
-            visibilities=visibilities,
-            primary_beam=primary_beam,
-            noise_map=noise_map,
-            uv_wavelengths=uv_wavelengths,
-            positions=positions,
-        )
 
     @property
     def visibilities(self):
@@ -121,37 +63,8 @@ class Interferometer(abstract_dataset.AbstractDataset):
         )
         return interferometer
 
-    def output_to_fits(
-        self,
-        visibilities_path=None,
-        noise_map_path=None,
-        primary_beam_path=None,
-        uv_wavelengths_path=None,
-        overwrite=False,
-    ):
 
-        if primary_beam_path is not None:
-            self.primary_beam.output_to_fits(
-                file_path=primary_beam_path, overwrite=overwrite
-            )
-
-        if visibilities_path is not None:
-            self.visibilities.output_to_fits(
-                file_path=visibilities_path, overwrite=overwrite
-            )
-
-        if self.noise_map is not None and noise_map_path is not None:
-            self.noise_map.output_to_fits(file_path=noise_map_path, overwrite=overwrite)
-
-        if self.uv_wavelengths is not None and uv_wavelengths_path is not None:
-            aa.util.array.numpy_array_2d_to_fits(
-                array_2d=self.uv_wavelengths,
-                file_path=uv_wavelengths_path,
-                overwrite=overwrite,
-            )
-
-
-class MaskedInterferometer(abstract_dataset.AbstractMaskedDataset):
+class AbstractMaskedInterferometer(abstract_dataset.AbstractMaskedDataset):
     def __init__(
         self,
         interferometer,
@@ -272,7 +185,7 @@ class MaskedInterferometer(abstract_dataset.AbstractMaskedDataset):
         return masked_interferometer
 
 
-class SimulatorInterferometer:
+class AbstractSimulatorInterferometer:
     def __init__(
         self,
         uv_wavelengths,
@@ -381,3 +294,102 @@ class SimulatorInterferometer:
             primary_beam=self.primary_beam,
             name=name,
         )
+
+
+class Interferometer(AbstractInterferometer):
+    @classmethod
+    def from_fits(
+        cls,
+        visibilities_path,
+        noise_map_path,
+        uv_wavelengths_path,
+        visibilities_hdu=0,
+        noise_map_hdu=0,
+        uv_wavelengths_hdu=0,
+        primary_beam_path=None,
+        primary_beam_hdu=0,
+        positions_path=None,
+    ):
+        """Factory for loading the interferometer data_type from .fits files, as well as computing properties like the noise-map,
+        exposure-time map, etc. from the interferometer-data_type.
+
+        This factory also includes a number of routines for converting the interferometer-data_type from unit_label not supported by PyAutoLens \
+        (e.g. adus, electrons) to electrons per second.
+
+        Parameters
+        ----------
+        """
+
+        visibilities = aa.Visibilities.from_fits(
+            file_path=visibilities_path, hdu=visibilities_hdu
+        )
+
+        noise_map = aa.Visibilities.from_fits(
+            file_path=noise_map_path, hdu=noise_map_hdu
+        )
+
+        uv_wavelengths = aa.util.array.numpy_array_2d_from_fits(
+            file_path=uv_wavelengths_path, hdu=uv_wavelengths_hdu
+        )
+
+        if primary_beam_path is not None:
+            primary_beam = aa.Kernel.from_fits(
+                file_path=primary_beam_path, hdu=primary_beam_hdu, renormalize=True
+            )
+        else:
+            primary_beam = None
+
+        if positions_path is not None:
+
+            positions = grids.GridCoordinates.from_file(file_path=positions_path)
+
+        else:
+
+            positions = None
+
+        return Interferometer(
+            visibilities=visibilities,
+            primary_beam=primary_beam,
+            noise_map=noise_map,
+            uv_wavelengths=uv_wavelengths,
+            positions=positions,
+        )
+
+    def output_to_fits(
+        self,
+        visibilities_path=None,
+        noise_map_path=None,
+        primary_beam_path=None,
+        uv_wavelengths_path=None,
+        overwrite=False,
+    ):
+
+        if primary_beam_path is not None:
+            self.primary_beam.output_to_fits(
+                file_path=primary_beam_path, overwrite=overwrite
+            )
+
+        if visibilities_path is not None:
+            self.visibilities.output_to_fits(
+                file_path=visibilities_path, overwrite=overwrite
+            )
+
+        if self.noise_map is not None and noise_map_path is not None:
+            self.noise_map.output_to_fits(file_path=noise_map_path, overwrite=overwrite)
+
+        if self.uv_wavelengths is not None and uv_wavelengths_path is not None:
+            aa.util.array.numpy_array_2d_to_fits(
+                array_2d=self.uv_wavelengths,
+                file_path=uv_wavelengths_path,
+                overwrite=overwrite,
+            )
+
+
+class MaskedInterferometer(AbstractMaskedInterferometer):
+
+    pass
+
+
+class SimulatorInterferometer(AbstractSimulatorInterferometer):
+
+    pass

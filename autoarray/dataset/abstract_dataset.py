@@ -118,6 +118,14 @@ class AbstractDataset:
         """The maximum value of the potential chi-squared-map"""
         return np.max(self.potential_chi_squared_map)
 
+    def modify_noise_map(self, noise_map):
+
+        imaging = copy.deepcopy(self)
+
+        imaging.noise_map = noise_map
+
+        return imaging
+
 
 class AbstractMaskedDataset:
     def __init__(
