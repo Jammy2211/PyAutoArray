@@ -338,3 +338,24 @@ def make_voronoi_inversion_9_3x3(masked_imaging_7x7, voronoi_mapper_9_3x3):
         mapper=voronoi_mapper_9_3x3,
         regularization=regularization,
     )
+
+
+### EUCLID DATA ####
+
+
+@pytest.fixture(name="euclid_data")
+def make_euclid_data():
+    return np.zeros((2086, 2119))
+
+
+### ACS DATA ####
+
+
+@pytest.fixture(name="acs_ccd")
+def make_acs_ccd():
+    return np.zeros((2068, 4144))
+
+
+@pytest.fixture(name="acs_quadrant")
+def make_acs_quadrant():
+    return np.zeros((2068, 2072))
