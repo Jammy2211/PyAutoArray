@@ -18,15 +18,16 @@ from .operators.inversion.mappers import mapper as Mapper
 from .operators.transformer import TransformerDFT
 from .operators.transformer import TransformerNUFFT
 from .structures.arrays import Array, Values
-from .structures.frame.abstract_frame import Scans, ExposureInfo
+from .structures.arrays.abstract_array import ExposureInfo
 from .structures.frame import (
     Frame,
     MaskedFrame,
-    EuclidFrame,
-    MaskedEuclidFrame,
-    ACSFrame,
-    MaskedACSFrame,
+    FrameEuclid,
+    MaskedFrameEuclid,
+    FrameACS,
+    MaskedFrameACS,
 )
+from .structures.frame.abstract_frame import Scans
 from .structures.grids import (
     Grid,
     GridIterate,

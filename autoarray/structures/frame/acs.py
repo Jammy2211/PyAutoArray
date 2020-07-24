@@ -1,3 +1,4 @@
+from autoarray.structures.arrays import abstract_array
 from autoarray.structures.frame import abstract_frame
 from autoarray.structures import frame as f
 from autoarray.structures import region as reg
@@ -14,7 +15,7 @@ def fits_hdu_from_quadrant_letter(quadrant_letter):
     elif quadrant_letter is "C" or quadrant_letter is "D":
         return 4
     else:
-        raise exc.FrameException("Quadrant letter for ACSFrame must be A, B, C or D.")
+        raise exc.FrameException("Quadrant letter for FrameACS must be A, B, C or D.")
 
 
 def exposure_info_from_fits(file_path, hdu):
@@ -27,7 +28,7 @@ def exposure_info_from_fits(file_path, hdu):
     bzero = ext_header["BZERO"]
     exposure_time = ext_header["EXPTIME"]
 
-    return abstract_frame.ExposureInfo(
+    return abstract_array.ExposureInfo(
         original_units=units, bscale=bscale, bzero=bzero, exposure_time=exposure_time
     )
 
@@ -46,7 +47,7 @@ def array_converted_to_electrons_from_fits(file_path, hdu, exposure_info):
         ) + exposure_info.bzero
 
 
-class ACSFrame(f.Frame):
+class FrameACS(f.Frame):
     """An ACS frame consists of four quadrants ('A', 'B', 'C', 'D') which have the following layout:
 
        <--------S-----------   ---------S----------->
@@ -71,7 +72,7 @@ class ACSFrame(f.Frame):
         the rotations required to give correct arctic clocking and convert the image from units of COUNTS / CPS to
         ELECTRONS.
 
-        See the docstring of the _ACSFrame_ class for a complete description of the Euclid FPA, quadrants and
+        See the docstring of the _FrameACS_ class for a complete description of the Euclid FPA, quadrants and
         rotations.
         """
 
@@ -104,7 +105,7 @@ class ACSFrame(f.Frame):
         Using an input array of both quadrants in electrons, use the quadrant letter to extract the quadrant from the
         full CCD and perform the rotations required to give correct arctic.
 
-        See the docstring of the _ACSFrame_ class for a complete description of the Euclid FPA, quadrants and
+        See the docstring of the _FrameACS_ class for a complete description of the Euclid FPA, quadrants and
         rotations.
         """
         if quadrant_letter is "B" or quadrant_letter is "C":
@@ -128,7 +129,7 @@ class ACSFrame(f.Frame):
             )
         else:
             raise exc.FrameException(
-                "Quadrant letter for ACSFrame must be A, B, C or D."
+                "Quadrant letter for FrameACS must be A, B, C or D."
             )
 
     @classmethod
@@ -145,7 +146,7 @@ class ACSFrame(f.Frame):
         Use an input array of the left quadrant in electrons and perform the rotations required to give correct
         arctic clocking.
 
-        See the docstring of the _ACSFrame_ class for a complete description of the Euclid FPA, quadrants and
+        See the docstring of the _FrameACS_ class for a complete description of the Euclid FPA, quadrants and
         rotations.
         """
         parallel_overscan = reg.Region(
@@ -183,7 +184,7 @@ class ACSFrame(f.Frame):
         Use an input array of the right quadrant in electrons and perform the rotations required to give correct
         arctic clocking.
 
-        See the docstring of the _ACSFrame_ class for a complete description of the Euclid FPA, quadrants and
+        See the docstring of the _FrameACS_ class for a complete description of the Euclid FPA, quadrants and
         rotations.
         """
         parallel_overscan = reg.Region(
@@ -210,7 +211,7 @@ class ACSFrame(f.Frame):
         )
 
 
-class MaskedACSFrame(abstract_frame.AbstractFrame):
+class MaskedFrameACS(abstract_frame.AbstractFrame):
     @classmethod
     def from_fits(cls, file_path, quadrant_letter, mask):
         """
@@ -220,7 +221,7 @@ class MaskedACSFrame(abstract_frame.AbstractFrame):
 
         A mask is input which is subject to the same extraction and rotations.
 
-        See the docstring of the _ACSFrame_ class for a complete description of the Euclid FPA, quadrants and
+        See the docstring of the _FrameACS_ class for a complete description of the Euclid FPA, quadrants and
         rotations.
         """
         hdu = fits_hdu_from_quadrant_letter(quadrant_letter=quadrant_letter)
@@ -256,7 +257,7 @@ class MaskedACSFrame(abstract_frame.AbstractFrame):
 
         A mask is input which is subject to the same extraction and rotations.
 
-        See the docstring of the _ACSFrame_ class for a complete description of the Euclid FPA, quadrants and
+        See the docstring of the _FrameACS_ class for a complete description of the Euclid FPA, quadrants and
         rotations.
         """
         if quadrant_letter is "B" or quadrant_letter is "C":
@@ -282,7 +283,7 @@ class MaskedACSFrame(abstract_frame.AbstractFrame):
             )
         else:
             raise exc.FrameException(
-                "Quadrant letter for ACSFrame must be A, B, C or D."
+                "Quadrant letter for FrameACS must be A, B, C or D."
             )
 
     @classmethod
@@ -302,7 +303,7 @@ class MaskedACSFrame(abstract_frame.AbstractFrame):
 
         A mask is input which is subject to the same extraction and rotations.
 
-        See the docstring of the _ACSFrame_ class for a complete description of the Euclid FPA, quadrants and
+        See the docstring of the _FrameACS_ class for a complete description of the Euclid FPA, quadrants and
         rotations.
         """
         parallel_overscan = reg.Region(
@@ -343,7 +344,7 @@ class MaskedACSFrame(abstract_frame.AbstractFrame):
 
         A mask is input which is subject to the same extraction and rotations.
 
-        See the docstring of the _ACSFrame_ class for a complete description of the Euclid FPA, quadrants and
+        See the docstring of the _FrameACS_ class for a complete description of the Euclid FPA, quadrants and
         rotations.
         """
         parallel_overscan = reg.Region(

@@ -210,10 +210,11 @@ class AbstractMaskedImaging(abstract_dataset.AbstractMaskedDataset):
 class AbstractSimulatorImaging:
     def __init__(
         self,
-        exposure_time_map,
+        exposure_time_map=None,
         background_sky_map=None,
         psf=None,
         renormalize_psf=True,
+        read_noise=None,
         add_noise=True,
         noise_if_add_noise_false=0.1,
         noise_seed=-1,
@@ -243,90 +244,10 @@ class AbstractSimulatorImaging:
 
         self.psf = psf
         self.background_sky_map = background_sky_map
+        self.read_noise = read_noise
         self.add_noise = add_noise
         self.noise_if_add_noise_false = noise_if_add_noise_false
         self.noise_seed = noise_seed
-
-    def from_image(self, image, name=None):
-        """
-        Create a realistic simulated image by applying effects to a plain simulated image.
-
-        Parameters
-        ----------
-        noise_if_add_noise_false
-        background_level
-        exposure_time_
-        name
-        image : ndarray
-            The image before simulating (e.g. the lens and source galaxies before optics blurring and Imaging read-out).
-        exposure_time_map : ndarray
-            An array representing the effective exposure time of each pixel.
-        psf: PSF
-            An array describing the PSF the simulated image is blurred with.
-        background_sky_map : ndarray
-            The value of background sky in every image pixel (electrons per second).
-        add_noise: Bool
-            If True poisson noise_maps is simulated and added to the image, based on the total counts in each image
-            pixel
-        noise_seed: int
-            A seed for random noise_maps generation
-        """
-
-        if self.background_sky_map is not None:
-            background_sky_map = self.background_sky_map
-        else:
-            background_sky_map = arrays.Array.zeros(
-                shape_2d=image.shape_2d, pixel_scales=image.pixel_scales
-            )
-
-        if self.psf is not None:
-            psf = self.psf
-        else:
-            psf = kernel.Kernel.no_blur(pixel_scales=image.pixel_scales)
-
-        image = psf.convolved_array_from_array(array=image)
-
-        image = image + background_sky_map
-
-        image = image.trimmed_from_kernel_shape(kernel_shape_2d=psf.shape_2d)
-        exposure_time_map = self.exposure_time_map.trimmed_from_kernel_shape(
-            kernel_shape_2d=psf.shape_2d
-        )
-        background_sky_map = background_sky_map.trimmed_from_kernel_shape(
-            kernel_shape_2d=psf.shape_2d
-        )
-
-        if self.add_noise is True:
-            image = preprocess.data_with_poisson_noise_added(
-                data=image, exposure_time_map=exposure_time_map, seed=self.noise_seed
-            )
-
-            noise_map = preprocess.noise_map_from_data_and_exposure_time_map(
-                data=image, exposure_time_map=exposure_time_map
-            )
-
-        else:
-            noise_map = arrays.Array.full(
-                fill_value=self.noise_if_add_noise_false,
-                shape_2d=image.shape_2d,
-                pixel_scales=image.pixel_scales,
-            )
-
-        if np.isnan(noise_map).any():
-            raise exc.DataException(
-                "The noise-map has NaN values in it. This suggests your exposure time and / or"
-                "background sky levels are too low, creating signal counts at or close to 0.0."
-            )
-
-        image = image - background_sky_map
-
-        mask = msk.Mask.unmasked(
-            shape_2d=image.shape_2d, pixel_scales=image.pixel_scales
-        )
-
-        image = arrays.MaskedArray.manual(array=image, mask=mask)
-
-        return Imaging(image=image, psf=self.psf, noise_map=noise_map, name=name)
 
 
 class Imaging(AbstractImaging):
@@ -421,5 +342,83 @@ class MaskedImaging(AbstractMaskedImaging):
 
 
 class SimulatorImaging(AbstractSimulatorImaging):
+    def from_image(self, image, name=None):
+        """
+        Create a realistic simulated image by applying effects to a plain simulated image.
 
-    pass
+        Parameters
+        ----------
+        noise_if_add_noise_false
+        background_level
+        exposure_time_
+        name
+        image : ndarray
+            The image before simulating (e.g. the lens and source galaxies before optics blurring and Imaging read-out).
+        exposure_time_map : ndarray
+            An array representing the effective exposure time of each pixel.
+        psf: PSF
+            An array describing the PSF the simulated image is blurred with.
+        background_sky_map : ndarray
+            The value of background sky in every image pixel (electrons per second).
+        add_noise: Bool
+            If True poisson noise_maps is simulated and added to the image, based on the total counts in each image
+            pixel
+        noise_seed: int
+            A seed for random noise_maps generation
+        """
+
+        if self.background_sky_map is not None:
+            background_sky_map = self.background_sky_map
+        else:
+            background_sky_map = arrays.Array.zeros(
+                shape_2d=image.shape_2d, pixel_scales=image.pixel_scales
+            )
+
+        if self.psf is not None:
+            psf = self.psf
+        else:
+            psf = kernel.Kernel.no_blur(pixel_scales=image.pixel_scales)
+
+        image = psf.convolved_array_from_array(array=image)
+
+        image = image + background_sky_map
+
+        image = image.trimmed_from_kernel_shape(kernel_shape_2d=psf.shape_2d)
+        exposure_time_map = self.exposure_time_map.trimmed_from_kernel_shape(
+            kernel_shape_2d=psf.shape_2d
+        )
+        background_sky_map = background_sky_map.trimmed_from_kernel_shape(
+            kernel_shape_2d=psf.shape_2d
+        )
+
+        if self.add_noise is True:
+            image = preprocess.data_with_poisson_noise_added(
+                data=image, exposure_time_map=exposure_time_map, seed=self.noise_seed
+            )
+
+            noise_map = preprocess.noise_map_from_data_and_exposure_time_map(
+                data=image, exposure_time_map=exposure_time_map
+            )
+
+        else:
+            noise_map = arrays.Array.full(
+                fill_value=self.noise_if_add_noise_false,
+                shape_2d=image.shape_2d,
+                pixel_scales=image.pixel_scales,
+            )
+
+        if np.isnan(noise_map).any():
+            raise exc.DataException(
+                "The noise-map has NaN values in it. This suggests your exposure time and / or"
+                "background sky levels are too low, creating signal counts at or close to 0.0."
+            )
+
+        image = image - background_sky_map
+
+        mask = msk.Mask.unmasked(
+            shape_2d=image.shape_2d, pixel_scales=image.pixel_scales
+        )
+
+        image = arrays.MaskedArray.manual(array=image, mask=mask)
+
+        return Imaging(image=image, psf=self.psf, noise_map=noise_map, name=name)

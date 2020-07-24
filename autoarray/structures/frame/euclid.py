@@ -3,7 +3,7 @@ from autoarray.structures import frame as f
 from autoarray.structures import region as reg
 
 
-class EuclidFrame(f.Frame):
+class FrameEuclid(f.Frame):
     """
     In the Euclid FPA, the quadrant id ('E', 'F', 'G', 'H') depends on whether the CCD is located
     on the left side (rows 1-3) or right side (rows 4-6) of the FPA:
@@ -60,7 +60,7 @@ class EuclidFrame(f.Frame):
         Use an input array of a Euclid quadrant and its corresponding .fits file header to rotate the quadrant to
         the correct orientation for arCTIc clocking.
 
-        See the docstring of the _EuclidFrame_ class for a complete description of the Euclid FPA, quadrants and
+        See the docstring of the _FrameEuclid_ class for a complete description of the Euclid FPA, quadrants and
         rotations.
         """
 
@@ -102,14 +102,14 @@ class EuclidFrame(f.Frame):
         Use an input array of a Euclid quadrant, its ccd_id and quadrant_id  to rotate the quadrant to
         the correct orientation for arCTIc clocking.
 
-        See the docstring of the _EuclidFrame_ class for a complete description of the Euclid FPA, quadrants and
+        See the docstring of the _FrameEuclid_ class for a complete description of the Euclid FPA, quadrants and
         rotations.
         """
 
         row_index = ccd_id[-1]
 
         if (row_index in "123") and (quadrant_id == "E"):
-            return EuclidFrame.bottom_left(
+            return FrameEuclid.bottom_left(
                 array=array,
                 parallel_size=parallel_size,
                 serial_size=serial_size,
@@ -118,7 +118,7 @@ class EuclidFrame(f.Frame):
                 parallel_overscan_size=parallel_overscan_size,
             )
         elif (row_index in "123") and (quadrant_id == "F"):
-            return EuclidFrame.bottom_right(
+            return FrameEuclid.bottom_right(
                 array=array,
                 parallel_size=parallel_size,
                 serial_size=serial_size,
@@ -127,7 +127,7 @@ class EuclidFrame(f.Frame):
                 parallel_overscan_size=parallel_overscan_size,
             )
         elif (row_index in "123") and (quadrant_id == "G"):
-            return EuclidFrame.top_right(
+            return FrameEuclid.top_right(
                 array=array,
                 parallel_size=parallel_size,
                 serial_size=serial_size,
@@ -136,7 +136,7 @@ class EuclidFrame(f.Frame):
                 parallel_overscan_size=parallel_overscan_size,
             )
         elif (row_index in "123") and (quadrant_id == "H"):
-            return EuclidFrame.top_left(
+            return FrameEuclid.top_left(
                 array_electrons=array,
                 parallel_size=parallel_size,
                 serial_size=serial_size,
@@ -145,7 +145,7 @@ class EuclidFrame(f.Frame):
                 parallel_overscan_size=parallel_overscan_size,
             )
         elif (row_index in "456") and (quadrant_id == "E"):
-            return EuclidFrame.top_right(
+            return FrameEuclid.top_right(
                 array=array,
                 parallel_size=parallel_size,
                 serial_size=serial_size,
@@ -154,7 +154,7 @@ class EuclidFrame(f.Frame):
                 parallel_overscan_size=parallel_overscan_size,
             )
         elif (row_index in "456") and (quadrant_id == "F"):
-            return EuclidFrame.top_left(
+            return FrameEuclid.top_left(
                 array_electrons=array,
                 parallel_size=parallel_size,
                 serial_size=serial_size,
@@ -163,7 +163,7 @@ class EuclidFrame(f.Frame):
                 parallel_overscan_size=parallel_overscan_size,
             )
         elif (row_index in "456") and (quadrant_id == "G"):
-            return EuclidFrame.bottom_left(
+            return FrameEuclid.bottom_left(
                 array=array,
                 parallel_size=parallel_size,
                 serial_size=serial_size,
@@ -172,7 +172,7 @@ class EuclidFrame(f.Frame):
                 parallel_overscan_size=parallel_overscan_size,
             )
         elif (row_index in "456") and (quadrant_id == "H"):
-            return EuclidFrame.bottom_right(
+            return FrameEuclid.bottom_right(
                 array=array,
                 parallel_size=parallel_size,
                 serial_size=serial_size,
@@ -195,7 +195,7 @@ class EuclidFrame(f.Frame):
         Use an input array of a Euclid quadrant corresponding to the top-left of a Euclid CCD and rotate the quadrant
         to the correct orientation for arCTIc clocking.
 
-        See the docstring of the _EuclidFrame_ class for a complete description of the Euclid FPA, quadrants and
+        See the docstring of the _FrameEuclid_ class for a complete description of the Euclid FPA, quadrants and
         rotations.
         """
 
@@ -223,7 +223,7 @@ class EuclidFrame(f.Frame):
         Use an input array of a Euclid quadrant corresponding the top-left of a Euclid CCD and rotate the  quadrant to
         the correct orientation for arCTIc clocking.
 
-        See the docstring of the _EuclidFrame_ class for a complete description of the Euclid FPA, quadrants and
+        See the docstring of the _FrameEuclid_ class for a complete description of the Euclid FPA, quadrants and
         rotations.
         """
 
@@ -251,7 +251,7 @@ class EuclidFrame(f.Frame):
         Use an input array of a Euclid quadrant corresponding to the bottom-left of a Euclid CCD and rotate the
         quadrant to the correct orientation for arCTIc clocking.
 
-        See the docstring of the _EuclidFrame_ class for a complete description of the Euclid FPA, quadrants and
+        See the docstring of the _FrameEuclid_ class for a complete description of the Euclid FPA, quadrants and
         rotations.
         """
 
@@ -279,7 +279,7 @@ class EuclidFrame(f.Frame):
         Use an input array of a Euclid quadrant corresponding to the bottom-right of a Euclid CCD and rotate the
         quadrant to the correct orientation for arCTIc clocking.
 
-        See the docstring of the _EuclidFrame_ class for a complete description of the Euclid FPA, quadrants and
+        See the docstring of the _FrameEuclid_ class for a complete description of the Euclid FPA, quadrants and
         rotations.
         """
 
@@ -294,7 +294,7 @@ class EuclidFrame(f.Frame):
         return f.Frame.manual(array=array, roe_corner=(1, 1), scans=scans)
 
 
-class MaskedEuclidFrame(abstract_frame.AbstractFrame):
+class MaskedFrameEuclid(abstract_frame.AbstractFrame):
     @classmethod
     def from_ccd_and_quadrant_id(
         cls,
@@ -314,14 +314,14 @@ class MaskedEuclidFrame(abstract_frame.AbstractFrame):
         
         A mask is also input which is subject to the same rotations.
 
-        See the docstring of the _EuclidFrame_ class for a complete description of the Euclid FPA, quadrants and
+        See the docstring of the _FrameEuclid_ class for a complete description of the Euclid FPA, quadrants and
         rotations.
         """
 
         row_index = ccd_id[-1]
 
         if (row_index in "123") and (quadrant_id == "E"):
-            return MaskedEuclidFrame.bottom_left(
+            return MaskedFrameEuclid.bottom_left(
                 array=array,
                 mask=mask,
                 parallel_size=parallel_size,
@@ -331,7 +331,7 @@ class MaskedEuclidFrame(abstract_frame.AbstractFrame):
                 parallel_overscan_size=parallel_overscan_size,
             )
         elif (row_index in "123") and (quadrant_id == "F"):
-            return MaskedEuclidFrame.bottom_right(
+            return MaskedFrameEuclid.bottom_right(
                 array=array,
                 mask=mask,
                 parallel_size=parallel_size,
@@ -341,7 +341,7 @@ class MaskedEuclidFrame(abstract_frame.AbstractFrame):
                 parallel_overscan_size=parallel_overscan_size,
             )
         elif (row_index in "123") and (quadrant_id == "G"):
-            return MaskedEuclidFrame.top_right(
+            return MaskedFrameEuclid.top_right(
                 array=array,
                 mask=mask,
                 parallel_size=parallel_size,
@@ -351,7 +351,7 @@ class MaskedEuclidFrame(abstract_frame.AbstractFrame):
                 parallel_overscan_size=parallel_overscan_size,
             )
         elif (row_index in "123") and (quadrant_id == "H"):
-            return MaskedEuclidFrame.top_left(
+            return MaskedFrameEuclid.top_left(
                 array=array,
                 mask=mask,
                 parallel_size=parallel_size,
@@ -361,7 +361,7 @@ class MaskedEuclidFrame(abstract_frame.AbstractFrame):
                 parallel_overscan_size=parallel_overscan_size,
             )
         elif (row_index in "456") and (quadrant_id == "E"):
-            return MaskedEuclidFrame.top_right(
+            return MaskedFrameEuclid.top_right(
                 array=array,
                 mask=mask,
                 parallel_size=parallel_size,
@@ -371,7 +371,7 @@ class MaskedEuclidFrame(abstract_frame.AbstractFrame):
                 parallel_overscan_size=parallel_overscan_size,
             )
         elif (row_index in "456") and (quadrant_id == "F"):
-            return MaskedEuclidFrame.top_left(
+            return MaskedFrameEuclid.top_left(
                 array=array,
                 mask=mask,
                 parallel_size=parallel_size,
@@ -381,7 +381,7 @@ class MaskedEuclidFrame(abstract_frame.AbstractFrame):
                 parallel_overscan_size=parallel_overscan_size,
             )
         elif (row_index in "456") and (quadrant_id == "G"):
-            return MaskedEuclidFrame.bottom_left(
+            return MaskedFrameEuclid.bottom_left(
                 array=array,
                 mask=mask,
                 parallel_size=parallel_size,
@@ -391,7 +391,7 @@ class MaskedEuclidFrame(abstract_frame.AbstractFrame):
                 parallel_overscan_size=parallel_overscan_size,
             )
         elif (row_index in "456") and (quadrant_id == "H"):
-            return MaskedEuclidFrame.bottom_right(
+            return MaskedFrameEuclid.bottom_right(
                 array=array,
                 mask=mask,
                 parallel_size=parallel_size,
@@ -418,7 +418,7 @@ class MaskedEuclidFrame(abstract_frame.AbstractFrame):
 
         A mask is also input which is subject to the same rotations.
 
-        See the docstring of the _EuclidFrame_ class for a complete description of the Euclid FPA, quadrants and
+        See the docstring of the _FrameEuclid_ class for a complete description of the Euclid FPA, quadrants and
         rotations.
         """
 
@@ -475,7 +475,7 @@ class MaskedEuclidFrame(abstract_frame.AbstractFrame):
         
         A mask is also input which is subject to the same rotations.
 
-        See the docstring of the _EuclidFrame_ class for a complete description of the Euclid FPA, quadrants and
+        See the docstring of the _FrameEuclid_ class for a complete description of the Euclid FPA, quadrants and
         rotations.
         """
 
@@ -529,7 +529,7 @@ class MaskedEuclidFrame(abstract_frame.AbstractFrame):
 
         A mask is also input which is subject to the same rotations.
 
-        See the docstring of the _EuclidFrame_ class for a complete description of the Euclid FPA, quadrants and
+        See the docstring of the _FrameEuclid_ class for a complete description of the Euclid FPA, quadrants and
         rotations.
         """
 
@@ -586,7 +586,7 @@ class MaskedEuclidFrame(abstract_frame.AbstractFrame):
 
 
 
-        See the docstring of the _EuclidFrame_ class for a complete description of the Euclid FPA, quadrants and
+        See the docstring of the _FrameEuclid_ class for a complete description of the Euclid FPA, quadrants and
         rotations.
         """
 
