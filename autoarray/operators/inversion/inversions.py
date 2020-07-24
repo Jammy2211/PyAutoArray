@@ -111,7 +111,7 @@ class Inversion:
 
         interpolated_reconstruction[np.isnan(interpolated_reconstruction)] = 0.0
 
-        return arrays.Array.manual_2d(
+        return arrays.Array.manual(
             array=interpolated_reconstruction, pixel_scales=grid.pixel_scales
         )
 

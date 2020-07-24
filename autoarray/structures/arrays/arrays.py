@@ -304,6 +304,56 @@ class Array(abstract_array.AbstractArray):
         return Array(array=array, mask=mask, store_in_1d=store_in_1d)
 
     @classmethod
+    def manual(
+        cls,
+        array,
+        shape_2d=None,
+        pixel_scales=None,
+        sub_size=1,
+        origin=(0.0, 0.0),
+        store_in_1d=True,
+    ):
+        """Create an Array (see *AbstractArray.__new__*) by inputting the array values in 1D or 2D, automatically
+        determining whether to use the 'manual_1d' or 'manual_2d' methods.
+
+        See the manual_1d and manual_2d methods for examples.
+
+        Parameters
+        ----------
+        array : np.ndarray or list
+            The values of the array input as an ndarray of shape [total_unmasked_pixels*(sub_size**2)] or a list of
+            lists.
+        shape_2d : (float, float)
+            The 2D shape of the mask the array is paired with.
+        pixel_scales : (float, float) or float
+            The pixel conversion scale of a pixel in the y and x directions. If input as a float, the pixel_scales
+            are converted to the format (float, float).
+        sub_size : int
+            The size (sub_size x sub_size) of each unmasked pixels sub-array.
+        origin : (float, float)
+            The origin of the array's mask.
+        store_in_1d : bool
+            If True, the array is stored in 1D as an ndarray of shape [total_unmasked_pixels]. If False, it is
+            stored in 2D as an ndarray of shape [total_y_pixels, total_x_pixels].
+        """
+        if len(array.shape) == 1:
+            return cls.manual_1d(
+                array=array,
+                shape_2d=shape_2d,
+                pixel_scales=pixel_scales,
+                sub_size=sub_size,
+                origin=origin,
+                store_in_1d=store_in_1d,
+            )
+        return cls.manual_2d(
+            array=array,
+            pixel_scales=pixel_scales,
+            sub_size=sub_size,
+            origin=origin,
+            store_in_1d=store_in_1d,
+        )
+
+    @classmethod
     def full(
         cls,
         fill_value,
@@ -595,6 +645,22 @@ class MaskedArray(abstract_array.AbstractArray):
 
     @classmethod
     def manual(cls, array, mask, store_in_1d=True):
+        """Create a Array (see *AbstractArray.__new__*) by inputting the array values in 1D or 2D with its mask,
+        automatically determining whether to use the 'manual_1d' or 'manual_2d' methods.
+
+        See the manual_1d and manual_2d methods for examples.
+
+        Parameters
+        ----------
+        array : np.ndarray or list
+            The values of the array input as an ndarray of shape [total_unmasked_pixels*(sub_size**2)] or a list of
+            lists.
+        mask : Mask
+            The mask whose masked pixels are used to setup the sub-pixel grid.
+        store_in_1d : bool
+            If True, the array is stored in 1D as an ndarray of shape [total_unmasked_pixels]. If False, it is
+            stored in 2D as an ndarray of shape [total_y_pixels, total_x_pixels].
+        """
         if len(array.shape) == 1:
             return cls.manual_1d(array=array, mask=mask, store_in_1d=store_in_1d)
         return cls.manual_2d(array=array, mask=mask, store_in_1d=store_in_1d)
