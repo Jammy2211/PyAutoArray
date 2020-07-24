@@ -261,7 +261,7 @@ class AbstractMask(np.ndarray):
             pad_size_0 // 2 : self.shape[0] - pad_size_0 // 2,
             pad_size_1 // 2 : self.shape[1] - pad_size_1 // 2,
         ]
-        return arrays.Array.manual_2d(
+        return arrays.Array.manual(
             array=trimmed_array,
             pixel_scales=self.pixel_scales,
             sub_size=1,

@@ -404,6 +404,6 @@ class SimulatorImaging:
             shape_2d=image.shape_2d, pixel_scales=image.pixel_scales
         )
 
-        image = arrays.MaskedArray.manual_1d(array=image, mask=mask)
+        image = arrays.MaskedArray.manual(array=image, mask=mask)
 
         return Imaging(image=image, psf=self.psf, noise_map=noise_map, name=name)

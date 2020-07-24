@@ -76,7 +76,7 @@ class GridInterpolate(abstract_grid.AbstractGrid):
             origin=mask.origin,
         )
 
-        obj.grid_interp = grids.MaskedGrid.manual_1d(
+        obj.grid_interp = grids.MaskedGrid.manual(
             grid=grid_interp, mask=mask_interp, store_in_1d=store_in_1d
         )
 
