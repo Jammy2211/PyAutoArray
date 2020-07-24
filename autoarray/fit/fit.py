@@ -112,7 +112,7 @@ class FitDataset:
 
         Log Likelihood = -0.5*[Chi_Squared_Term + Noise_Term] (see functions above for these definitions)
         """
-        return fit_util.likelihood_from(
+        return fit_util.log_likelihood_from(
             chi_squared=self.chi_squared, noise_normalization=self.noise_normalization
         )
 
@@ -124,7 +124,7 @@ class FitDataset:
         Log Likelihood = -0.5*[Chi_Squared_Term + Regularization_Term + Noise_Term] (see functions above for these definitions)
         """
         if self.inversion is not None:
-            return fit_util.likelihood_with_regularization_from(
+            return fit_util.log_likelihood_with_regularization_from(
                 chi_squared=self.chi_squared,
                 regularization_term=self.inversion.regularization_term,
                 noise_normalization=self.noise_normalization,

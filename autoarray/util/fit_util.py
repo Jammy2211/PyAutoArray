@@ -180,7 +180,7 @@ def noise_normalization_from(*, noise_map):
     return np.sum(np.log(2 * np.pi * noise_map ** 2.0))
 
 
-def likelihood_from(*, chi_squared, noise_normalization):
+def log_likelihood_from(*, chi_squared, noise_normalization):
     """Compute the log likelihood of each model data point's fit to the dataset, where:
 
     Log Likelihood = -0.5*[Chi_Squared_Term + Noise_Term] (see functions above for these definitions)
@@ -195,7 +195,7 @@ def likelihood_from(*, chi_squared, noise_normalization):
     return -0.5 * (chi_squared + noise_normalization)
 
 
-def likelihood_with_regularization_from(
+def log_likelihood_with_regularization_from(
     *, chi_squared, regularization_term, noise_normalization
 ):
     """Compute the log likelihood of an inversion's fit to the dataset, including a regularization term which \

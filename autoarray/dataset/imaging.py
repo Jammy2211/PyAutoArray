@@ -32,65 +32,6 @@ class Imaging(abstract_dataset.AbstractDataset):
 
         self.psf = psf
 
-    @property
-    def shape_2d(self):
-        return self.data.shape_2d
-
-    @property
-    def image(self):
-        return self.data
-
-    @property
-    def pixel_scales(self):
-        return self.data.pixel_scales
-
-    def binned_from_bin_up_factor(self, bin_up_factor):
-
-        imaging = copy.deepcopy(self)
-
-        imaging.data = self.image.binned_from_bin_up_factor(
-            bin_up_factor=bin_up_factor, method="mean"
-        )
-        imaging.psf = self.psf.rescaled_with_odd_dimensions_from_rescale_factor(
-            rescale_factor=1.0 / bin_up_factor, renormalize=False
-        )
-        imaging.noise_map = (
-            self.noise_map.binned_from_bin_up_factor(
-                bin_up_factor=bin_up_factor, method="quadrature"
-            )
-            if self.noise_map is not None
-            else None
-        )
-
-        return imaging
-
-    def signal_to_noise_limited_from_signal_to_noise_limit(self, signal_to_noise_limit):
-
-        imaging = copy.deepcopy(self)
-
-        noise_map_limit = np.where(
-            self.signal_to_noise_map > signal_to_noise_limit,
-            np.abs(self.image) / signal_to_noise_limit,
-            self.noise_map,
-        )
-
-        imaging.noise_map = arrays.MaskedArray.manual_1d(
-            array=noise_map_limit, mask=self.image.mask
-        )
-
-        return imaging
-
-    def output_to_fits(
-        self, image_path, psf_path=None, noise_map_path=None, overwrite=False
-    ):
-        self.image.output_to_fits(file_path=image_path, overwrite=overwrite)
-
-        if self.psf is not None and psf_path is not None:
-            self.psf.output_to_fits(file_path=psf_path, overwrite=overwrite)
-
-        if self.noise_map is not None and noise_map_path is not None:
-            self.noise_map.output_to_fits(file_path=noise_map_path, overwrite=overwrite)
-
     @classmethod
     def from_fits(
         cls,
@@ -174,6 +115,67 @@ class Imaging(abstract_dataset.AbstractDataset):
                     "Original object in Imaging.__array_finalize__ missing one or more attributes"
                 )
 
+    @property
+    def shape_2d(self):
+        return self.data.shape_2d
+
+    @property
+    def image(self):
+        return self.data
+
+    @property
+    def pixel_scales(self):
+        return self.data.pixel_scales
+
+    def binned_from_bin_up_factor(self, bin_up_factor):
+
+        imaging = copy.deepcopy(self)
+
+        imaging.data = self.image.binned_from_bin_up_factor(
+            bin_up_factor=bin_up_factor, method="mean"
+        )
+        imaging.psf = self.psf.rescaled_with_odd_dimensions_from_rescale_factor(
+            rescale_factor=1.0 / bin_up_factor, renormalize=False
+        )
+        imaging.noise_map = (
+            self.noise_map.binned_from_bin_up_factor(
+                bin_up_factor=bin_up_factor, method="quadrature"
+            )
+            if self.noise_map is not None
+            else None
+        )
+
+        return imaging
+
+    def signal_to_noise_limited_from_signal_to_noise_limit(self, signal_to_noise_limit):
+
+        imaging = copy.deepcopy(self)
+
+        noise_map_limit = np.where(
+            self.signal_to_noise_map > signal_to_noise_limit,
+            np.abs(self.image) / signal_to_noise_limit,
+            self.noise_map,
+        )
+
+        imaging.noise_map = arrays.MaskedArray.manual(
+            array=noise_map_limit,
+            mask=self.image.mask,
+            store_in_1d=self.noise_map.store_in_1d,
+        )
+
+        return imaging
+
+    def output_to_fits(
+        self, image_path, psf_path=None, noise_map_path=None, overwrite=False
+    ):
+        self.image.output_to_fits(file_path=image_path, overwrite=overwrite)
+
+        if self.psf is not None and psf_path is not None:
+            self.psf.output_to_fits(file_path=psf_path, overwrite=overwrite)
+
+        if self.noise_map is not None and noise_map_path is not None:
+            self.noise_map.output_to_fits(file_path=noise_map_path, overwrite=overwrite)
+
 
 class MaskedImaging(abstract_dataset.AbstractMaskedDataset):
     def __init__(
@@ -226,11 +228,11 @@ class MaskedImaging(abstract_dataset.AbstractMaskedDataset):
             inversion_uses_border=inversion_uses_border,
         )
 
-        self.image = arrays.MaskedArray.manual_2d(
+        self.image = arrays.MaskedArray.manual(
             array=imaging.image.in_2d, mask=mask.mask_sub_1
         )
 
-        self.noise_map = arrays.MaskedArray.manual_2d(
+        self.noise_map = arrays.MaskedArray.manual(
             array=imaging.noise_map.in_2d, mask=mask.mask_sub_1
         )
 

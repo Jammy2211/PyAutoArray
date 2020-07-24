@@ -1,6 +1,7 @@
 import pickle
 
 import numpy as np
+import copy
 
 from autoarray.structures import arrays, grids
 
@@ -175,3 +176,11 @@ class AbstractMaskedDataset:
     @property
     def positions(self):
         return self.dataset.positions
+
+    def modify_noise_map(self, noise_map):
+
+        masked_imaging = copy.deepcopy(self)
+
+        masked_imaging.noise_map = noise_map
+
+        return masked_imaging

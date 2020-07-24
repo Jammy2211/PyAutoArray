@@ -594,6 +594,12 @@ class MaskedArray(abstract_array.AbstractArray):
         return Array(array=array, mask=mask, store_in_1d=store_in_1d)
 
     @classmethod
+    def manual(cls, array, mask, store_in_1d=True):
+        if len(array.shape) == 1:
+            return cls.manual_1d(array=array, mask=mask, store_in_1d=store_in_1d)
+        return cls.manual_2d(array=array, mask=mask, store_in_1d=store_in_1d)
+
+    @classmethod
     def full(cls, fill_value, mask, store_in_1d=True):
         """Create an Array (see *AbstractArray.__new__*) where all values are filled with an input fill value, with the
          corresponding mask input.
