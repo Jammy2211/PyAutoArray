@@ -194,15 +194,12 @@ class Grid(abstract_grid.AbstractGrid):
             stored in 2D as an ndarray of shape [total_y_pixels, total_x_pixels, 2].
         """
 
-        if store_in_1d and len(grid.shape) != 2:
-            raise exc.GridException(
-                "An grid input into the grids.Grid.__new__ method has store_in_1d = True but"
-                "the input shape of the array is not 1."
-            )
-
         obj = grid.view(cls)
         obj.mask = mask
         obj.store_in_1d = store_in_1d
+
+        abstract_grid.check_grid(grid=obj)
+
         return obj
 
     @classmethod
@@ -242,7 +239,7 @@ class Grid(abstract_grid.AbstractGrid):
             If True, the grid is stored in 1D as an ndarray of shape [total_unmasked_pixels, 2]. If False, it is
             stored in 2D as an ndarray of shape [total_y_pixels, total_x_pixels, 2].
         """
-        grid = abstract_grid.convert_and_check_grid(grid=grid)
+
         pixel_scales = abstract_structure.convert_pixel_scales(
             pixel_scales=pixel_scales
         )
@@ -254,14 +251,11 @@ class Grid(abstract_grid.AbstractGrid):
             origin=origin,
         )
 
-        if store_in_1d:
-            return Grid(grid=grid, mask=mask, store_in_1d=store_in_1d)
-
-        grid_2d = grid_util.sub_grid_2d_from(
-            sub_grid_1d=grid, mask=mask, sub_size=sub_size
+        grid = abstract_grid.convert_manual_1d_grid(
+            grid_1d=grid, mask=mask, store_in_1d=store_in_1d
         )
 
-        return Grid(grid=grid_2d, mask=mask, store_in_1d=store_in_1d)
+        return Grid(grid=grid, mask=mask, store_in_1d=store_in_1d)
 
     @classmethod
     def manual_2d(
@@ -294,7 +288,9 @@ class Grid(abstract_grid.AbstractGrid):
             If True, the grid is stored in 1D as an ndarray of shape [total_unmasked_pixels, 2]. If False, it is
             stored in 2D as an ndarray of shape [total_y_pixels, total_x_pixels, 2].
         """
-        grid = abstract_grid.convert_and_check_grid(grid=grid)
+
+        grid = abstract_grid.convert_grid(grid=grid)
+
         pixel_scales = abstract_structure.convert_pixel_scales(
             pixel_scales=pixel_scales
         )
@@ -305,14 +301,11 @@ class Grid(abstract_grid.AbstractGrid):
             shape_2d=shape, pixel_scales=pixel_scales, sub_size=sub_size, origin=origin
         )
 
-        if not store_in_1d:
-            return Grid(grid=grid, mask=mask, store_in_1d=store_in_1d)
-
-        grid_1d = grid_util.sub_grid_1d_from(
-            sub_grid_2d=grid, mask=mask, sub_size=sub_size
+        grid = abstract_grid.convert_manual_2d_grid(
+            grid_2d=grid, mask=mask, store_in_1d=store_in_1d
         )
 
-        return Grid(grid=grid_1d, mask=mask, store_in_1d=store_in_1d)
+        return Grid(grid=grid, mask=mask, store_in_1d=store_in_1d)
 
     @classmethod
     def manual(
@@ -363,6 +356,34 @@ class Grid(abstract_grid.AbstractGrid):
             origin=origin,
             store_in_1d=store_in_1d,
         )
+
+    @classmethod
+    def manual_mask(cls, grid, mask, store_in_1d=True):
+        """Create a Grid (see *Grid.__new__*) by inputting the grid coordinate in 1D or 2D, automatically
+        determining whether to use the 'manual_1d' or 'manual_2d' methods.
+
+        See the manual_1d and manual_2d methods for examples.
+
+        Parameters
+        ----------
+        grid : np.ndarray or list
+            The (y,x) coordinates of the grid input as an ndarray of shape [total_sub_coordinates, 2] or list of lists.
+        mask : msk.Mask
+            The 2D mask associated with the grid, defining the pixels each grid coordinate is paired with and
+            originates from.
+        store_in_1d : bool
+            If True, the grid is stored in 1D as an ndarray of shape [total_unmasked_pixels, 2]. If False, it is
+            stored in 2D as an ndarray of shape [total_y_pixels, total_x_pixels, 2].
+        """
+
+        grid = abstract_grid.convert_grid(grid=grid)
+        abstract_grid.check_grid_and_mask(grid=grid, mask=mask)
+
+        grid = abstract_grid.convert_manual_grid(
+            grid=grid, mask=mask, store_in_1d=store_in_1d
+        )
+
+        return Grid(grid=grid, mask=mask, store_in_1d=store_in_1d)
 
     @classmethod
     def manual_yx_1d(
@@ -964,111 +985,3 @@ class GridTransformed(Grid):
 class GridTransformedNumpy(np.ndarray):
     def __new__(cls, grid, *args, **kwargs):
         return grid.view(cls)
-
-
-class MaskedGrid(abstract_grid.AbstractGrid):
-    def __new__(cls, grid, mask, store_in_1d=True, *args, **kwargs):
-
-        if store_in_1d and len(grid.shape) != 2:
-            raise exc.GridException(
-                "An grid input into the grids.Grid.__new__ method has store_in_1d = True but"
-                "the input shape of the array is not 1."
-            )
-
-        obj = grid.view(cls)
-        obj.mask = mask
-        obj.store_in_1d = store_in_1d
-        return obj
-
-    @classmethod
-    def manual_1d(cls, grid, mask, store_in_1d=True):
-        """Create a Grid (see *Grid.__new__*) by inputting the grid coordinates in 1D with their paired mask, for 
-        example:
-
-        mask = Mask([[True, False, False, False])
-        grid=np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0]])
-        grid=[[1.0, 1.0], [2.0, 2.0], [3.0, 3.0]]
-
-        Parameters
-        ----------
-        grid : np.ndarray or list
-            The (y,x) coordinates of the grid input as an ndarray of shape [total_sub_coordinates, 2] or list of lists.
-        mask : msk.Mask
-            The 2D mask associated with the grid, defining the pixels each grid coordinate is paired with and
-            originates from.
-        store_in_1d : bool
-            If True, the grid is stored in 1D as an ndarray of shape [total_unmasked_pixels, 2]. If False, it is
-            stored in 2D as an ndarray of shape [total_y_pixels, total_x_pixels, 2].
-        """
-        grid = abstract_grid.convert_and_check_grid(grid=grid, mask=mask)
-
-        if store_in_1d:
-            return Grid(grid=grid, mask=mask, store_in_1d=store_in_1d)
-
-        sub_grid_2d = grid_util.sub_grid_2d_from(
-            sub_grid_1d=grid, mask=mask, sub_size=mask.sub_size
-        )
-
-        return Grid(grid=sub_grid_2d, mask=mask, store_in_1d=store_in_1d)
-
-    @classmethod
-    def manual_2d(cls, grid, mask, store_in_1d=True):
-        """Create a Grid (see *Grid.__new__*) by inputting the grid coordinates in 2D with their paired mask, for
-        example:
-
-        mask = Mask([[True, False, False, False])
-        grid=np.array([[[1.0, 1.0], [2.0, 2.0]],
-                       [[3.0, 3.0], [4.0, 4.0]]])
-        grid=[[[1.0, 1.0], [2.0, 2.0]],
-              [[3.0, 3.0], [4.0, 4.0]]]
-
-        Mask values are removed, such that the grid in 1D will be of length 3, omitting the values [1.0, 1.0].
-
-        Parameters
-        ----------
-        grid : np.ndarray or list
-            The (y,x) coordinates of the grid input as an ndarray of shape
-            [total_y_pixels*sub_size, total_x_pixels*sub_size, 2] or a list of lists.
-        mask : msk.Mask
-            The 2D mask associated with the grid, defining the pixels each grid coordinate is paired with and
-            originates from.
-        store_in_1d : bool
-            If True, the grid is stored in 1D as an ndarray of shape [total_unmasked_pixels, 2]. If False, it is
-            stored in 2D as an ndarray of shape [total_y_pixels, total_x_pixels, 2].
-        """
-        grid = abstract_grid.convert_and_check_grid(grid=grid, mask=mask)
-
-        sub_grid_1d = grid_util.sub_grid_1d_from(
-            sub_grid_2d=grid, mask=mask, sub_size=mask.sub_size
-        )
-
-        if store_in_1d:
-            return Grid(grid=sub_grid_1d, mask=mask, store_in_1d=store_in_1d)
-
-        sub_grid_2d = grid_util.sub_grid_2d_from(
-            sub_grid_1d=sub_grid_1d, mask=mask, sub_size=mask.sub_size
-        )
-
-        return Grid(grid=sub_grid_2d, mask=mask, store_in_1d=store_in_1d)
-
-    @classmethod
-    def manual(cls, grid, mask, store_in_1d=True):
-        """Create a Grid (see *Grid.__new__*) by inputting the grid coordinate in 1D or 2D, automatically
-        determining whether to use the 'manual_1d' or 'manual_2d' methods.
-
-        See the manual_1d and manual_2d methods for examples.
-
-        Parameters
-        ----------
-        grid : np.ndarray or list
-            The (y,x) coordinates of the grid input as an ndarray of shape [total_sub_coordinates, 2] or list of lists.
-        mask : msk.Mask
-            The 2D mask associated with the grid, defining the pixels each grid coordinate is paired with and
-            originates from.
-        store_in_1d : bool
-            If True, the grid is stored in 1D as an ndarray of shape [total_unmasked_pixels, 2]. If False, it is
-            stored in 2D as an ndarray of shape [total_y_pixels, total_x_pixels, 2].
-        """
-        if len(grid.shape) == 2:
-            return cls.manual_1d(grid=grid, mask=mask, store_in_1d=store_in_1d)
-        return cls.manual_2d(grid=grid, mask=mask, store_in_1d=store_in_1d)
