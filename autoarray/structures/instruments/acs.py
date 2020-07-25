@@ -317,7 +317,7 @@ class MaskedFrameACS(abstract_frame.AbstractFrame):
 
         serial_prescan = reg.Region((0, parallel_size, 0, serial_prescan_size))
 
-        return f.MaskedFrame.manual(
+        return f.Frame.manual_mask(
             array=array,
             mask=mask,
             roe_corner=(1, 0),
@@ -360,7 +360,7 @@ class MaskedFrameACS(abstract_frame.AbstractFrame):
             (0, parallel_size, serial_size - serial_prescan_size, serial_size)
         )
 
-        return f.MaskedFrame.manual(
+        return f.Frame.manual_mask(
             array=array,
             mask=mask,
             roe_corner=(1, 1),
