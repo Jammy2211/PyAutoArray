@@ -206,7 +206,7 @@ class TestIteratedArray:
 
         grid = aa.GridIterate.from_mask(mask=mask, fractional_accuracy=0.9999)
 
-        arr = aa.MaskedArray.manual_2d(
+        arr = aa.Array.manual_mask(
             [
                 [0.0, 0.0, 0.0, 0.0],
                 [0.0, 1.0, 1.0, 0.0],
@@ -232,7 +232,7 @@ class TestIteratedArray:
             )
         ).all()
 
-        result_array_lower_sub = aa.MaskedArray.manual_2d(
+        result_array_lower_sub = aa.Array.manual_mask(
             [
                 [0.0, 0.0, 0.0, 0.0],
                 [0.0, 1.0, 1.0, 0.0],
@@ -242,7 +242,7 @@ class TestIteratedArray:
             mask=mask,
         )
 
-        result_array_higher_sub = aa.MaskedArray.manual_2d(
+        result_array_higher_sub = aa.Array.manual_mask(
             [
                 [0.0, 0.0, 0.0, 0.0],
                 [0.0, 2.0, 2.0, 0.0],
@@ -271,7 +271,7 @@ class TestIteratedArray:
 
         grid = aa.GridIterate.from_mask(mask=mask, fractional_accuracy=0.5)
 
-        result_array_lower_sub = aa.MaskedArray.manual_2d(
+        result_array_lower_sub = aa.Array.manual_mask(
             [
                 [0.0, 0.0, 0.0, 0.0],
                 [0.0, 1.9, 0.001, 0.0],
@@ -281,7 +281,7 @@ class TestIteratedArray:
             mask=mask,
         )
 
-        result_array_higher_sub = aa.MaskedArray.manual_2d(
+        result_array_higher_sub = aa.Array.manual_mask(
             [
                 [0.0, 0.0, 0.0, 0.0],
                 [0.0, 2.0, 2.0, 0.0],
@@ -332,7 +332,7 @@ class TestIteratedArray:
 
         grid = aa.GridIterate.from_mask(mask=mask_lower_sub, fractional_accuracy=0.5)
 
-        array_lower_sub = aa.MaskedArray.manual_2d(
+        array_lower_sub = aa.Array.manual_mask(
             [
                 [0.0, 0.0, 0.0, 0.0],
                 [0.0, 2.0, 2.0, 0.0],
@@ -342,7 +342,7 @@ class TestIteratedArray:
             mask=mask_lower_sub,
         )
 
-        array_higher_sub = aa.MaskedArray.manual_2d(
+        array_higher_sub = aa.Array.manual_mask(
             [
                 [0.0, 0.0, 0.0, 0.0],
                 [0.0, 5.0, 5.0, 0.0],
@@ -505,7 +505,7 @@ class TestIteratedArray:
             mask=mask, fractional_accuracy=1.0, sub_steps=[2, 3]
         )
 
-        arr = aa.MaskedArray(array=np.zeros(9), mask=mask)
+        arr = aa.Array.manual_mask(array=np.zeros(9), mask=mask)
 
         values = grid.iterated_array_from_func(
             func=ndarray_1d_from_grid, cls=None, array_lower_sub_2d=arr

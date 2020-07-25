@@ -14,8 +14,8 @@ class TestFitImaging:
             pixel_scales=(1.0, 1.0),
         )
 
-        data = aa.MaskedArray.manual_1d(array=np.array([1.0, 2.0, 3.0, 4.0]), mask=mask)
-        noise_map = aa.MaskedArray.manual_1d(
+        data = aa.Array.manual_mask(array=np.array([1.0, 2.0, 3.0, 4.0]), mask=mask)
+        noise_map = aa.Array.manual_mask(
             array=np.array([2.0, 2.0, 2.0, 2.0]), mask=mask
         )
 
@@ -23,7 +23,7 @@ class TestFitImaging:
 
         masked_imaging = aa.MaskedImaging(imaging=imaging, mask=mask)
 
-        model_image = aa.MaskedArray.manual_1d(
+        model_image = aa.Array.manual_mask(
             array=np.array([1.0, 2.0, 3.0, 4.0]), mask=mask
         )
 
@@ -73,16 +73,14 @@ class TestFitImaging:
             pixel_scales=(1.0, 1.0),
         )
 
-        data = aa.MaskedArray.manual_1d(array=np.array([1.0, 2.0, 4.0]), mask=mask)
-        noise_map = aa.MaskedArray.manual_1d(array=np.array([2.0, 2.0, 2.0]), mask=mask)
+        data = aa.Array.manual_mask(array=np.array([1.0, 2.0, 4.0]), mask=mask)
+        noise_map = aa.Array.manual_mask(array=np.array([2.0, 2.0, 2.0]), mask=mask)
 
         imaging = aa.Imaging(image=data, noise_map=noise_map)
 
         masked_imaging = aa.MaskedImaging(imaging=imaging, mask=mask)
 
-        model_image = aa.MaskedArray.manual_1d(
-            array=np.array([1.0, 2.0, 3.0]), mask=mask
-        )
+        model_image = aa.Array.manual_mask(array=np.array([1.0, 2.0, 3.0]), mask=mask)
 
         fit = aa.FitImaging(masked_imaging=masked_imaging, model_image=model_image)
 
@@ -128,8 +126,8 @@ class TestFitImaging:
             pixel_scales=(1.0, 1.0),
         )
 
-        data = aa.MaskedArray.manual_1d(array=np.array([1.0, 2.0, 3.0, 4.0]), mask=mask)
-        noise_map = aa.MaskedArray.manual_1d(
+        data = aa.Array.manual_mask(array=np.array([1.0, 2.0, 3.0, 4.0]), mask=mask)
+        noise_map = aa.Array.manual_mask(
             array=np.array([2.0, 2.0, 2.0, 2.0]), mask=mask
         )
 
@@ -137,7 +135,7 @@ class TestFitImaging:
 
         masked_imaging = aa.MaskedImaging(imaging=imaging, mask=mask)
 
-        model_image = aa.MaskedArray.manual_1d(
+        model_image = aa.Array.manual_mask(
             array=np.array([1.0, 2.0, 3.0, 4.0]), mask=mask
         )
 

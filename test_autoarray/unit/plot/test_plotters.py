@@ -696,7 +696,7 @@ class TestAbstractPlotterPlots:
             shape_2d=(31, 31), pixel_scales=(1.0, 1.0), radius=5.0, centre=(2.0, 2.0)
         )
 
-        masked_array = aa.MaskedArray.manual_2d(array=arr, mask=mask)
+        masked_array = aa.Array.manual_mask(array=arr, mask=mask)
 
         plotter.plot_array(array=masked_array)
 

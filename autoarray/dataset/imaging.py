@@ -84,7 +84,7 @@ class AbstractImaging(abstract_dataset.AbstractDataset):
             self.noise_map,
         )
 
-        imaging.noise_map = arrays.MaskedArray.manual(
+        imaging.noise_map = arrays.Array.manual_mask(
             array=noise_map_limit,
             mask=self.image.mask,
             store_in_1d=self.noise_map.store_in_1d,
@@ -144,13 +144,13 @@ class AbstractMaskedImaging(abstract_dataset.AbstractMaskedDataset):
             inversion_uses_border=inversion_uses_border,
         )
 
-        self.image = arrays.MaskedArray.manual(
+        self.image = arrays.Array.manual_mask(
             array=imaging.image.in_2d,
             mask=mask.mask_sub_1,
             store_in_1d=imaging.image.store_in_1d,
         )
 
-        self.noise_map = arrays.MaskedArray.manual(
+        self.noise_map = arrays.Array.manual_mask(
             array=imaging.noise_map.in_2d,
             mask=mask.mask_sub_1,
             store_in_1d=imaging.noise_map.store_in_1d,
@@ -419,6 +419,6 @@ class SimulatorImaging(AbstractSimulatorImaging):
             shape_2d=image.shape_2d, pixel_scales=image.pixel_scales
         )
 
-        image = arrays.MaskedArray.manual(array=image, mask=mask)
+        image = arrays.Array.manual_mask(array=image, mask=mask)
 
         return Imaging(image=image, psf=self.psf, noise_map=noise_map, name=name)

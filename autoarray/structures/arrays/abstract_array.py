@@ -99,6 +99,34 @@ def convert_manual_2d_array(array_2d, mask, store_in_1d):
     )
 
 
+def convert_manual_array(array, mask, store_in_1d):
+    """
+    Manual array functions take as input a list or ndarray which is to be returned as an Array. This function
+    performs the following and checks and conversions on the input:
+
+    1) If the input is a list, convert it to a 1D ndarray.
+    2) Check that the number of sub-pixels in the array is identical to that of the mask.
+    3) Return the array in 1D if it is to be stored in 1D, else return it in 2D.
+
+    Parameters
+    ----------
+    array : ndarray or list
+        The input structure which is converted to an ndarray if it is a list.
+    mask : Mask
+        The mask of the output Array.
+    store_in_1d : bool
+        Whether the memory-representation of the array is in 1D or 2D.
+    """
+
+    array = convert_array(array=array)
+
+    if len(array.shape) == 1:
+        return convert_manual_1d_array(
+            array_1d=array, mask=mask, store_in_1d=store_in_1d
+        )
+    return convert_manual_2d_array(array_2d=array, mask=mask, store_in_1d=store_in_1d)
+
+
 class AbstractArray(abstract_structure.AbstractStructure):
     def __new__(
         cls, array, mask, exposure_info=None, store_in_1d=True, *args, **kwargs

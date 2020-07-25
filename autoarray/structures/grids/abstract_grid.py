@@ -1,6 +1,4 @@
 import numpy as np
-import autoarray as aa
-import typing
 
 from autoarray import decorator_util
 from autoarray import exc
@@ -218,9 +216,7 @@ class AbstractGrid(abstract_structure.AbstractStructure):
         This grid is used by the interferometer module."""
         return (self * np.pi) / 648000.0
 
-    def squared_distances_from_coordinate(
-        self, coordinate=(0.0, 0.0)
-    ) -> arrays.MaskedArray:
+    def squared_distances_from_coordinate(self, coordinate=(0.0, 0.0)) -> arrays.Array:
         """Compute the squared distance of every coordinate on the grid from an input coordinate.
 
         Parameters
@@ -231,9 +227,9 @@ class AbstractGrid(abstract_structure.AbstractStructure):
         squared_distances = np.square(self[:, 0] - coordinate[0]) + np.square(
             self[:, 1] - coordinate[1]
         )
-        return aa.MaskedArray(array=squared_distances, mask=self.mask)
+        return arrays.Array.manual_mask(array=squared_distances, mask=self.mask)
 
-    def distances_from_coordinate(self, coordinate=(0.0, 0.0)) -> arrays.MaskedArray:
+    def distances_from_coordinate(self, coordinate=(0.0, 0.0)) -> arrays.Array:
         """Compute the distance of every coordinate on the grid from an input (y,x) coordinate.
 
         Parameters
@@ -244,7 +240,7 @@ class AbstractGrid(abstract_structure.AbstractStructure):
         distances = np.sqrt(
             self.squared_distances_from_coordinate(coordinate=coordinate)
         )
-        return aa.MaskedArray(array=distances, mask=self.mask)
+        return arrays.Array.manual_mask(array=distances, mask=self.mask)
 
     @property
     def shape_2d_scaled(self) -> (float, float):
