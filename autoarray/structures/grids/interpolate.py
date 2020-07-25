@@ -76,7 +76,7 @@ class GridInterpolate(abstract_grid.AbstractGrid):
             origin=mask.origin,
         )
 
-        obj.grid_interp = grids.MaskedGrid.manual(
+        obj.grid_interp = grids.Grid.manual_mask(
             grid=grid_interp, mask=mask_interp, store_in_1d=store_in_1d
         )
 
@@ -124,7 +124,7 @@ class GridInterpolate(abstract_grid.AbstractGrid):
             If True, the grid is stored in 1D as an ndarray of shape [total_unmasked_pixels, 2]. If False, it is
             stored in 2D as an ndarray of shape [total_y_pixels, total_x_pixels, 2].
         """
-        grid = abstract_grid.convert_and_check_grid(grid=grid)
+        grid = abstract_grid.convert_grid(grid=grid)
         pixel_scales = abstract_structure.convert_pixel_scales(
             pixel_scales=pixel_scales
         )
