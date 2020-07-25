@@ -20,8 +20,8 @@ from .operators.transformer import TransformerNUFFT
 from .structures.arrays import Array, Values
 from .structures.arrays.abstract_array import ExposureInfo
 from .structures.frame import Frame
-from .structures.instruments.euclid import FrameEuclid, MaskedFrameEuclid
-from .structures.instruments.acs import FrameACS, MaskedFrameACS
+from .structures.instruments.euclid import FrameEuclid
+from .structures.instruments.acs import FrameACS
 from .structures.frame.abstract_frame import Scans
 from .structures.grids import (
     Grid,
