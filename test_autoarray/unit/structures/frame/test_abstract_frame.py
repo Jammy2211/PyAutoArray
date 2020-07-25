@@ -34,7 +34,7 @@ class TestBinnedAcross:
             [[False, False, False], [False, False, False], [True, False, False]]
         )
 
-        frame = aa.MaskedFrame.manual(
+        frame = aa.Frame.manual_mask(
             array=np.array([[1.0, 6.0, 9.0], [2.0, 6.0, 9.0], [3.0, 6.0, 9.0]]),
             mask=mask,
         )
@@ -67,7 +67,7 @@ class TestBinnedAcross:
             [[False, False, True], [False, False, False], [False, False, False]]
         )
 
-        frame = aa.MaskedFrame.manual(
+        frame = aa.Frame.manual_mask(
             array=np.array([[1.0, 2.0, 3.0], [6.0, 6.0, 6.0], [9.0, 9.0, 9.0]]),
             mask=mask,
         )

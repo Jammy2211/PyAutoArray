@@ -447,7 +447,7 @@ class MaskedFrameEuclid(abstract_frame.AbstractFrame):
             )
         )
 
-        return f.MaskedFrame.manual(
+        return f.Frame.manual_mask(
             array=array,
             mask=mask,
             roe_corner=(0, 0),
@@ -501,7 +501,7 @@ class MaskedFrameEuclid(abstract_frame.AbstractFrame):
             (0, parallel_size - parallel_overscan_size, 0, serial_overscan_size)
         )
 
-        return f.MaskedFrame.manual(
+        return f.Frame.manual_mask(
             array=array,
             mask=mask,
             roe_corner=(0, 1),
@@ -558,7 +558,7 @@ class MaskedFrameEuclid(abstract_frame.AbstractFrame):
             )
         )
 
-        return f.MaskedFrame.manual(
+        return f.Frame.manual_mask(
             array=array,
             mask=mask,
             roe_corner=(1, 0),
@@ -612,7 +612,7 @@ class MaskedFrameEuclid(abstract_frame.AbstractFrame):
             (0, parallel_size - parallel_overscan_size, 0, serial_overscan_size)
         )
 
-        return f.MaskedFrame.manual(
+        return f.Frame.manual_mask(
             array=array,
             mask=mask,
             roe_corner=(1, 1),
