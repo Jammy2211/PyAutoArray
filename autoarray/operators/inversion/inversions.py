@@ -16,9 +16,7 @@ def inversion(masked_dataset, mapper, regularization, check_solution=True):
     if isinstance(masked_dataset, imaging.MaskedImaging):
 
         return InversionImaging.from_data_mapper_and_regularization(
-            image=masked_dataset.image,
-            noise_map=masked_dataset.noise_map,
-            convolver=masked_dataset.convolver,
+            masked_imaging=masked_dataset,
             mapper=mapper,
             regularization=regularization,
             check_solution=check_solution,
@@ -27,9 +25,7 @@ def inversion(masked_dataset, mapper, regularization, check_solution=True):
     elif isinstance(masked_dataset, interferometer.MaskedInterferometer):
 
         return InversionInterferometer.from_data_mapper_and_regularization(
-            visibilities=masked_dataset.visibilities,
-            noise_map=masked_dataset.noise_map,
-            transformer=masked_dataset.transformer,
+            masked_interferometer=masked_dataset,
             mapper=mapper,
             regularization=regularization,
             check_solution=check_solution,
@@ -39,7 +35,7 @@ def inversion(masked_dataset, mapper, regularization, check_solution=True):
 class Inversion:
     def __init__(
         self,
-        noise_map,
+        masked_dataset,
         mapper,
         regularization,
         regularization_matrix,
@@ -47,7 +43,7 @@ class Inversion:
         reconstruction,
     ):
 
-        self.noise_map = noise_map
+        self.masked_dataset = masked_dataset
         self.mapper = mapper
         self.regularization = regularization
         self.regularization_matrix = regularization_matrix
@@ -186,8 +182,7 @@ class Inversion:
 class InversionImaging(Inversion):
     def __init__(
         self,
-        image,
-        noise_map,
+        masked_imaging,
         mapper,
         regularization,
         blurred_mapping_matrix,
@@ -232,7 +227,7 @@ class InversionImaging(Inversion):
         """
 
         super(InversionImaging, self).__init__(
-            noise_map=noise_map,
+            masked_dataset=masked_imaging,
             mapper=mapper,
             regularization=regularization,
             regularization_matrix=regularization_matrix,
@@ -240,26 +235,30 @@ class InversionImaging(Inversion):
             reconstruction=reconstruction,
         )
 
-        self.image = image
         self.blurred_mapping_matrix = blurred_mapping_matrix
+
+    @property
+    def masked_imaging(self):
+        return self.masked_dataset
 
     @classmethod
     def from_data_mapper_and_regularization(
-        cls, image, noise_map, convolver, mapper, regularization, check_solution=True
+        cls, masked_imaging, mapper, regularization, check_solution=True
     ):
 
-        blurred_mapping_matrix = convolver.convolve_mapping_matrix(
+        blurred_mapping_matrix = masked_imaging.convolver.convolve_mapping_matrix(
             mapping_matrix=mapper.mapping_matrix
         )
 
         data_vector = inversion_util.data_vector_via_blurred_mapping_matrix_from(
             blurred_mapping_matrix=blurred_mapping_matrix,
-            image=image,
-            noise_map=noise_map,
+            image=masked_imaging.image,
+            noise_map=masked_imaging.noise_map,
         )
 
         curvature_matrix = inversion_util.curvature_matrix_via_blurred_mapping_matrix_from(
-            blurred_mapping_matrix=blurred_mapping_matrix, noise_map=noise_map
+            blurred_mapping_matrix=blurred_mapping_matrix,
+            noise_map=masked_imaging.noise_map,
         )
 
         regularization_matrix = regularization.regularization_matrix_from_mapper(
@@ -279,8 +278,7 @@ class InversionImaging(Inversion):
                     raise exc.InversionException()
 
         return InversionImaging(
-            image=image,
-            noise_map=noise_map,
+            masked_imaging=masked_imaging,
             mapper=mapper,
             regularization=regularization,
             blurred_mapping_matrix=blurred_mapping_matrix,
@@ -306,7 +304,7 @@ class InversionImaging(Inversion):
     def residual_map(self):
         return inversion_util.inversion_residual_map_from(
             pixelization_values=self.reconstruction,
-            data=self.image,
+            data=self.masked_dataset.image,
             mask_1d_index_for_sub_mask_1d_index=self.mapper.grid.mask.regions._mask_1d_index_for_sub_mask_1d_index,
             all_sub_mask_1d_indexes_for_pixelization_1d_index=self.mapper.all_sub_mask_1d_indexes_for_pixelization_1d_index,
         )
@@ -315,8 +313,8 @@ class InversionImaging(Inversion):
     def normalized_residual_map(self):
         return inversion_util.inversion_normalized_residual_map_from(
             pixelization_values=self.reconstruction,
-            data=self.image,
-            noise_map_1d=self.noise_map,
+            data=self.masked_dataset.image,
+            noise_map_1d=self.masked_dataset.noise_map,
             mask_1d_index_for_sub_mask_1d_index=self.mapper.grid.mask.regions._mask_1d_index_for_sub_mask_1d_index,
             all_sub_mask_1d_indexes_for_pixelization_1d_index=self.mapper.all_sub_mask_1d_indexes_for_pixelization_1d_index,
         )
@@ -325,8 +323,8 @@ class InversionImaging(Inversion):
     def chi_squared_map(self):
         return inversion_util.inversion_chi_squared_map_from(
             pixelization_values=self.reconstruction,
-            data=self.image,
-            noise_map_1d=self.noise_map,
+            data=self.masked_dataset.image,
+            noise_map_1d=self.masked_dataset.noise_map,
             mask_1d_index_for_sub_mask_1d_index=self.mapper.grid.mask.regions._mask_1d_index_for_sub_mask_1d_index,
             all_sub_mask_1d_indexes_for_pixelization_1d_index=self.mapper.all_sub_mask_1d_indexes_for_pixelization_1d_index,
         )
@@ -335,8 +333,7 @@ class InversionImaging(Inversion):
 class InversionInterferometer(Inversion):
     def __init__(
         self,
-        visibilities,
-        noise_map,
+        masked_interferometer,
         mapper,
         regularization,
         transformed_mapping_matrices,
@@ -381,7 +378,7 @@ class InversionInterferometer(Inversion):
         """
 
         super(InversionInterferometer, self).__init__(
-            noise_map=noise_map,
+            masked_dataset=masked_interferometer,
             mapper=mapper,
             regularization=regularization,
             regularization_matrix=regularization_matrix,
@@ -389,34 +386,27 @@ class InversionInterferometer(Inversion):
             reconstruction=reconstruction,
         )
 
-        self.visibilities = visibilities
         self.transformed_mapping_matrices = transformed_mapping_matrices
+
+    @property
+    def masked_interferometer(self):
+        return self.masked_dataset
 
     @classmethod
     def from_data_mapper_and_regularization(
-        cls,
-        visibilities,
-        noise_map,
-        transformer,
-        mapper,
-        regularization,
-        check_solution=True,
+        cls, masked_interferometer, mapper, regularization, check_solution=True
     ):
 
-        if not isinstance(transformer, pylops.LinearOperator):
+        if not isinstance(masked_interferometer.transformer, pylops.LinearOperator):
             return cls.from_data_mapper_and_regularization_matrices(
-                visibilities=visibilities,
-                noise_map=noise_map,
-                transformer=transformer,
+                masked_interferometer=masked_interferometer,
                 mapper=mapper,
                 regularization=regularization,
                 check_solution=check_solution,
             )
         else:
             return cls.from_data_mapper_and_regularization_lops(
-                visibilities=visibilities,
-                noise_map=noise_map,
-                transformer=transformer,
+                masked_interferometer=masked_interferometer,
                 mapper=mapper,
                 regularization=regularization,
                 check_solution=check_solution,
@@ -424,39 +414,33 @@ class InversionInterferometer(Inversion):
 
     @classmethod
     def from_data_mapper_and_regularization_matrices(
-        cls,
-        visibilities,
-        noise_map,
-        transformer,
-        mapper,
-        regularization,
-        check_solution=True,
+        cls, masked_interferometer, mapper, regularization, check_solution=True
     ):
 
-        transformed_mapping_matrices = transformer.transformed_mapping_matrices_from_mapping_matrix(
+        transformed_mapping_matrices = masked_interferometer.transformer.transformed_mapping_matrices_from_mapping_matrix(
             mapping_matrix=mapper.mapping_matrix
         )
 
         real_data_vector = inversion_util.data_vector_via_transformed_mapping_matrix_from(
             transformed_mapping_matrix=transformed_mapping_matrices[0],
-            visibilities=visibilities[:, 0],
-            noise_map=noise_map[:, 0],
+            visibilities=masked_interferometer.visibilities[:, 0],
+            noise_map=masked_interferometer.noise_map[:, 0],
         )
 
         imag_data_vector = inversion_util.data_vector_via_transformed_mapping_matrix_from(
             transformed_mapping_matrix=transformed_mapping_matrices[1],
-            visibilities=visibilities[:, 1],
-            noise_map=noise_map[:, 1],
+            visibilities=masked_interferometer.visibilities[:, 1],
+            noise_map=masked_interferometer.noise_map[:, 1],
         )
 
         real_curvature_matrix = inversion_util.curvature_matrix_via_transformed_mapping_matrix_from(
             transformed_mapping_matrix=transformed_mapping_matrices[0],
-            noise_map=noise_map[:, 0],
+            noise_map=masked_interferometer.noise_map[:, 0],
         )
 
         imag_curvature_matrix = inversion_util.curvature_matrix_via_transformed_mapping_matrix_from(
             transformed_mapping_matrix=transformed_mapping_matrices[1],
-            noise_map=noise_map[:, 1],
+            noise_map=masked_interferometer.noise_map[:, 1],
         )
 
         regularization_matrix = regularization.regularization_matrix_from_mapper(
@@ -480,8 +464,7 @@ class InversionInterferometer(Inversion):
                     raise exc.InversionException()
 
         return InversionInterferometer(
-            visibilities=visibilities,
-            noise_map=noise_map,
+            masked_interferometer=masked_interferometer,
             mapper=mapper,
             regularization=regularization,
             transformed_mapping_matrices=transformed_mapping_matrices,
@@ -492,17 +475,8 @@ class InversionInterferometer(Inversion):
 
     @classmethod
     def from_data_mapper_and_regularization_lops(
-        cls,
-        visibilities,
-        noise_map,
-        transformer,
-        mapper,
-        regularization,
-        check_solution=True,
+        cls, masked_interferometer, mapper, regularization, check_solution=True
     ):
-
-        # TODO : SLOW, STORE IN MEMORY :)
-        y = np.apply_along_axis(lambda args: [complex(*args)], 1, visibilities)
 
         regularization_matrix = regularization.regularization_matrix_from_mapper(
             mapper=mapper
@@ -511,14 +485,18 @@ class InversionInterferometer(Inversion):
         Aop = pylops.MatrixMult(
             sparse.bsr_matrix(mapper.mapping_matrix), dtype="complex64"
         )
-        Fop = transformer
+        Fop = masked_interferometer.transformer
 
         Op = Fop * Aop
 
         Rop = reg.RegularizationLop(regularization_matrix=regularization_matrix)
 
         reconstruction = pylops.NormalEquationsInversion(
-            Op=Op, Regs=None, epsNRs=[1.0], NRegs=[Rop], data=y
+            Op=Op,
+            Regs=None,
+            epsNRs=[1.0],
+            NRegs=[Rop],
+            data=masked_interferometer.visibilities_complex,
         )
 
         # if check_solution:
@@ -527,8 +505,8 @@ class InversionInterferometer(Inversion):
         #             raise exc.InversionException()
 
         return InversionInterferometer(
-            visibilities=visibilities,
-            noise_map=noise_map,
+            visibilities=masked_interferometer.visibilities,
+            noise_map=masked_interferometer.noise_map,
             mapper=mapper,
             regularization=regularization,
             transformed_mapping_matrices=None,

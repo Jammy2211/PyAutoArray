@@ -154,6 +154,9 @@ class AbstractMaskedInterferometer(abstract_dataset.AbstractMaskedDataset):
             )
 
         self.visibilities = interferometer.visibilities
+        self.visibilities_complex = np.apply_along_axis(
+            lambda args: [complex(*args)], 1, interferometer.visibilities
+        )
         self.noise_map = interferometer.noise_map
         self.visibilities_mask = visibilities_mask
 

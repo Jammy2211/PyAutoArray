@@ -641,7 +641,7 @@ def sub_grid_2d_from(sub_grid_1d, mask, sub_size):
 
 
 @decorator_util.jit()
-def grid_pixel_centres_1d_via_grid_1d_overlap(grid_1d, pixel_scales):
+def grid_pixel_centres_1d_via_grid_1d_overlap(grid_1d, pixel_scales, buffer=0):
     """Take a 1D grid of irregular (y,x) coordinates and over-lay a uniform square grid defined by an input pixel scale,
     where:
 
@@ -664,11 +664,11 @@ def grid_pixel_centres_1d_via_grid_1d_overlap(grid_1d, pixel_scales):
         The pixel scale of the uniform grid that laid over the irregular grid of (y,x) coordinates.
     """
 
-    y_size = np.max(grid_1d[:, 0]) - np.min(grid_1d[:, 0])
-    x_size = np.max(grid_1d[:, 1]) - np.min(grid_1d[:, 1])
+    y_size = np.max(grid_1d[:, 0]) - np.min(grid_1d[:, 0]) + (pixel_scales[0])
+    x_size = np.max(grid_1d[:, 1]) - np.min(grid_1d[:, 1]) + (pixel_scales[1])
 
-    y_shape = int(y_size / pixel_scales[0]) + 3
-    x_shape = int(x_size / pixel_scales[1]) + 3
+    y_shape = int(y_size / pixel_scales[0]) + (buffer * 2)
+    x_shape = int(x_size / pixel_scales[1]) + (buffer * 2)
 
     y_origin = (np.max(grid_1d[:, 0]) + np.min(grid_1d[:, 0])) / 2.0
     x_origin = (np.max(grid_1d[:, 1]) + np.min(grid_1d[:, 1])) / 2.0
@@ -699,7 +699,7 @@ def grid_buffed_from(grid_1d, pixel_scales, buffer):
         The pixel scale of the uniform grid that laid over the irregular grid of (y,x) coordinates.
     """
     grid_pixel_centres_1d, y_shape, x_shape = grid_pixel_centres_1d_via_grid_1d_overlap(
-        grid_1d=grid_1d, pixel_scales=pixel_scales
+        grid_1d=grid_1d, pixel_scales=pixel_scales, buffer=buffer
     )
 
     mask_2d = np.full(shape=(y_shape, x_shape), fill_value=True)
