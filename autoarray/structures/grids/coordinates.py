@@ -1,8 +1,9 @@
 import ast
 import numpy as np
 import os
-
+import pickle
 import typing
+
 from autoarray.structures import abstract_structure, arrays
 from autoarray.util import grid_util
 from autoarray import exc
@@ -207,6 +208,18 @@ class AbstractGridCoordinates(np.ndarray):
                 self.scaled_maxima[0],
             ]
         )
+
+    @classmethod
+    def load(cls, file_path, filename):
+        with open(f"{file_path}/{filename}.pickle", "rb") as f:
+            return pickle.load(f)
+
+    def save(self, file_path, filename):
+        """
+        Save the tracer by serializing it with pickle.
+        """
+        with open(f"{file_path}/{filename}.pickle", "wb") as f:
+            pickle.dump(self, f)
 
 
 class GridCoordinates(AbstractGridCoordinates):

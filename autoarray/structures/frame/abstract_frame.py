@@ -1,56 +1,12 @@
 import numpy as np
 
-from autoarray.structures import arrays
+from autoarray.structures.arrays import abstract_array
 from autoarray.structures import frame as f
 from autoarray.structures import region as reg
 from autoarray.util import frame_util
 
-from autoarray import exc
 
-
-class AbstractFrame(arrays.Array):
-    def __new__(
-        cls, array, mask, original_roe_corner=(1, 0), scans=None, exposure_info=None
-    ):
-        """Abstract class for the geometry of a CTI Image.
-
-        A f.FrameArray is stored as a 2D NumPy arrays. When this immage is passed to arctic, clocking goes towards
-        the 'top' of the NumPy arrays (e.g. towards row 0). Trails therefore appear towards the 'bottom' of the arrays
-        (e.g. the final row).
-
-        Arctic has no in-built functionality for changing the direction of clocking depending on the input
-        configuration file. Therefore, image rotations are handled before arctic is called, using the functions
-        defined in this class (and its children). These routines define how an image is rotated before parallel
-        and serial clocking and how to reorient the image back to its original orientation after clocking is performed.
-
-        Currently, only four geometries are available, which are specific to Euclid (and documented in the
-        *QuadGeometryEuclid* class).
-
-        Parameters
-        -----------
-        parallel_overscan : frame.Region
-            The parallel overscan region of the ci_frame.
-        serial_prescan : frame.Region
-            The serial prescan region of the ci_frame.
-        serial_overscan : frame.Region
-            The serial overscan region of the ci_frame.
-        """
-
-        if type(array) is list:
-            array = np.asarray(array)
-
-        array[mask == True] = 0.0
-
-        obj = super(AbstractFrame, cls).__new__(
-            cls=cls, array=array, mask=mask, store_in_1d=False
-        )
-
-        obj.original_roe_corner = original_roe_corner
-        obj.scans = scans or Scans()
-        obj.exposure_info = exposure_info
-
-        return obj
-
+class AbstractFrame(abstract_array.AbstractArray):
     def __array_finalize__(self, obj):
 
         super(AbstractFrame, self).__array_finalize__(obj)

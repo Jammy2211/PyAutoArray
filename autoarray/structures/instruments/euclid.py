@@ -199,7 +199,7 @@ class FrameEuclid(f.Frame):
         rotations.
         """
 
-        scans = EuclidScans.top_left(
+        scans = ScansEuclid.top_left(
             parallel_size=parallel_size,
             serial_size=serial_size,
             serial_prescan_size=serial_prescan_size,
@@ -227,7 +227,7 @@ class FrameEuclid(f.Frame):
         rotations.
         """
 
-        scans = EuclidScans.top_right(
+        scans = ScansEuclid.top_right(
             parallel_size=parallel_size,
             serial_size=serial_size,
             serial_prescan_size=serial_prescan_size,
@@ -255,7 +255,7 @@ class FrameEuclid(f.Frame):
         rotations.
         """
 
-        scans = EuclidScans.bottom_left(
+        scans = ScansEuclid.bottom_left(
             parallel_size=parallel_size,
             serial_size=serial_size,
             serial_prescan_size=serial_prescan_size,
@@ -283,7 +283,7 @@ class FrameEuclid(f.Frame):
         rotations.
         """
 
-        scans = EuclidScans.bottom_right(
+        scans = ScansEuclid.bottom_right(
             parallel_size=parallel_size,
             serial_size=serial_size,
             serial_prescan_size=serial_prescan_size,
@@ -294,7 +294,7 @@ class FrameEuclid(f.Frame):
         return f.Frame.manual(array=array, roe_corner=(1, 1), scans=scans)
 
 
-class EuclidScans(abstract_frame.Scans):
+class ScansEuclid(abstract_frame.Scans):
     @classmethod
     def top_left(
         cls,
