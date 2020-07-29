@@ -1835,6 +1835,179 @@ class TestSubGrid2DFromSubGrid1d:
         ).all()
 
 
+class TestGridPixelCentres1dViaOverlay:
+    def test__overlays_grid_using_pixel_scale(self):
+
+        grid_1d = np.array(
+            [
+                [1.0, -1.0],
+                [1.0, 0.0],
+                [1.0, 1.0],
+                [0.0, -1.0],
+                [0.0, 0.0],
+                [0.0, 1.0],
+                [-1.0, -1.0],
+                [-1.0, 0.0],
+                [-1.0, 1.0],
+            ]
+        )
+
+        grid_pixel_centres_1d, y_shape, x_shape = aa.util.grid.grid_pixel_centres_1d_via_grid_1d_overlap(
+            grid_1d=grid_1d, pixel_scales=(1.0, 1.0), buffer=1
+        )
+
+        assert (
+            grid_pixel_centres_1d
+            == np.array(
+                [[1, 1], [1, 2], [1, 3], [2, 1], [2, 2], [2, 3], [3, 1], [3, 2], [3, 3]]
+            )
+        ).all()
+        assert (y_shape, x_shape) == (5, 5)
+
+        grid_1d = np.array(
+            [
+                [3.0, 1.0],
+                [3.0, 2.0],
+                [3.0, 3.0],
+                [2.0, 1.0],
+                [2.0, 2.0],
+                [2.0, 3.0],
+                [1.0, 1.0],
+                [1.0, 2.0],
+                [1.0, 3.0],
+            ]
+        )
+
+        grid_pixel_centres_1d, y_shape, x_shape = aa.util.grid.grid_pixel_centres_1d_via_grid_1d_overlap(
+            grid_1d=grid_1d, pixel_scales=(1.0, 1.0), buffer=1
+        )
+
+        assert (
+            grid_pixel_centres_1d
+            == np.array(
+                [[1, 1], [1, 2], [1, 3], [2, 1], [2, 2], [2, 3], [3, 1], [3, 2], [3, 3]]
+            )
+        ).all()
+        assert (y_shape, x_shape) == (5, 5)
+
+        grid_1d = np.array([[3.0, 3.0], [3.0, 1.0], [0.0, 3.0], [2.0, 2.0]])
+
+        grid_pixel_centres_1d, y_shape, x_shape = aa.util.grid.grid_pixel_centres_1d_via_grid_1d_overlap(
+            grid_1d=grid_1d, pixel_scales=(1.0, 1.0), buffer=1
+        )
+
+        assert (
+            grid_pixel_centres_1d == np.array([[1, 3], [1, 1], [4, 3], [2, 2]])
+        ).all()
+        assert (y_shape, x_shape) == (6, 5)
+
+
+class TestGridBuffedFrom:
+    def test__simple_grids_buffed_correctly(self):
+
+        grid_1d = np.array([[0.0, 0.0]])
+
+        grid_buffed_1d, y_shape, x_shape = aa.util.grid.grid_buffed_from(
+            grid_1d=grid_1d, pixel_scales=(1.0, 1.0), buffer=1
+        )
+
+        assert (
+            grid_buffed_1d
+            == np.array(
+                [
+                    [1.0, -1.0],
+                    [1.0, 0.0],
+                    [1.0, 1.0],
+                    [0.0, -1.0],
+                    [0.0, 0.0],
+                    [0.0, 1.0],
+                    [-1.0, -1.0],
+                    [-1.0, 0.0],
+                    [-1.0, 1.0],
+                ]
+            )
+        ).all()
+
+        grid_1d = np.array([[1.0, 1.0]])
+
+        grid_buffed_1d, y_shape, x_shape = aa.util.grid.grid_buffed_from(
+            grid_1d=grid_1d, pixel_scales=(1.0, 1.0), buffer=1
+        )
+
+        assert (
+            grid_buffed_1d
+            == np.array(
+                [
+                    [2.0, 0.0],
+                    [2.0, 1.0],
+                    [2.0, 2.0],
+                    [1.0, 0.0],
+                    [1.0, 1.0],
+                    [1.0, 2.0],
+                    [0.0, 0.0],
+                    [0.0, 1.0],
+                    [0.0, 2.0],
+                ]
+            )
+        ).all()
+
+        grid_1d = np.array([[1.0, 1.0], [2.0, 2.0]])
+
+        grid_buffed_1d, y_shape, x_shape = aa.util.grid.grid_buffed_from(
+            grid_1d=grid_1d, pixel_scales=(1.0, 1.0), buffer=1
+        )
+
+        assert (
+            grid_buffed_1d
+            == np.array(
+                [
+                    [3.0, 1.0],
+                    [3.0, 2.0],
+                    [3.0, 3.0],
+                    [2.0, 0.0],
+                    [2.0, 1.0],
+                    [2.0, 2.0],
+                    [2.0, 3.0],
+                    [1.0, 0.0],
+                    [1.0, 1.0],
+                    [1.0, 2.0],
+                    [1.0, 3.0],
+                    [0.0, 0.0],
+                    [0.0, 1.0],
+                    [0.0, 2.0],
+                ]
+            )
+        ).all()
+
+        grid_1d = np.array([[1.0, 1.0], [3.0, 3.0]])
+
+        grid_buffed_1d, y_shape, x_shape = aa.util.grid.grid_buffed_from(
+            grid_1d=grid_1d, pixel_scales=(2.0, 2.0), buffer=1
+        )
+
+        assert (
+            grid_buffed_1d
+            == np.array(
+                [
+                    [5.0, 1.0],
+                    [5.0, 3.0],
+                    [5.0, 5.0],
+                    [3.0, -1.0],
+                    [3.0, 1.0],
+                    [3.0, 3.0],
+                    [3.0, 5.0],
+                    [1.0, -1.0],
+                    [1.0, 1.0],
+                    [1.0, 3.0],
+                    [1.0, 5.0],
+                    [-1.0, -1.0],
+                    [-1.0, 1.0],
+                    [-1.0, 3.0],
+                ]
+            )
+        ).all()
+
+
 class TestGridUpscaled1d:
     def test__simple_grid_in_output_grid_is_upscaled(self):
 

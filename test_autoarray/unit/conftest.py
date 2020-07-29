@@ -236,10 +236,9 @@ def make_interferometer_7(
 
 
 @pytest.fixture(name="transformer_7x7_7")
-def make_transformer_7x7_7(uv_wavelengths_7x2, grid_7x7):
+def make_transformer_7x7_7(uv_wavelengths_7x2, mask_7x7):
     return aa.TransformerDFT(
-        uv_wavelengths=uv_wavelengths_7x2,
-        grid=grid_7x7.mask.geometry.masked_grid.in_radians,
+        uv_wavelengths=uv_wavelengths_7x2, real_space_mask=mask_7x7
     )
 
 
@@ -339,3 +338,24 @@ def make_voronoi_inversion_9_3x3(masked_imaging_7x7, voronoi_mapper_9_3x3):
         mapper=voronoi_mapper_9_3x3,
         regularization=regularization,
     )
+
+
+### EUCLID DATA ####
+
+
+@pytest.fixture(name="euclid_data")
+def make_euclid_data():
+    return np.zeros((2086, 2119))
+
+
+### ACS DATA ####
+
+
+@pytest.fixture(name="acs_ccd")
+def make_acs_ccd():
+    return np.zeros((2068, 4144))
+
+
+@pytest.fixture(name="acs_quadrant")
+def make_acs_quadrant():
+    return np.zeros((2068, 2072))

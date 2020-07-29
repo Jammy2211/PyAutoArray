@@ -306,7 +306,7 @@ def numpy_array_1d_from_fits(file_path, hdu):
     return np.array(hdu_list[hdu].data)
 
 
-def numpy_array_2d_to_fits(array_2d, file_path, overwrite=False):
+def numpy_array_2d_to_fits(array_2d, file_path, overwrite=False, flip_for_ds9=False):
     """Write a 2D NumPy array to a .fits file.
 
     Before outputting a NumPy array, the array is flipped upside-down using np.flipud. This is so that the structures \
@@ -318,6 +318,9 @@ def numpy_array_2d_to_fits(array_2d, file_path, overwrite=False):
         The 2D array that is written to fits.
     file_path : str
         The full path of the file that is output, including the file name and '.fits' extension.
+    flip_for_ds9 : bool
+        If True, a np.flipud() is applied so that matplotlib figures display in the same orientation as when loaded in
+        DS9.
     overwrite : bool
         If True and a file already exists with the input file_path the .fits file is overwritten. If False, an error \
         will be raised.
@@ -335,11 +338,16 @@ def numpy_array_2d_to_fits(array_2d, file_path, overwrite=False):
         os.remove(file_path)
 
     new_hdr = fits.Header()
-    hdu = fits.PrimaryHDU(np.flipud(array_2d), new_hdr)
+    if flip_for_ds9:
+        hdu = fits.PrimaryHDU(np.flipud(array_2d), new_hdr)
+    else:
+        hdu = fits.PrimaryHDU(array_2d, new_hdr)
     hdu.writeto(file_path)
 
 
-def numpy_array_2d_from_fits(file_path, hdu):
+def numpy_array_2d_from_fits(
+    file_path, hdu, flip_for_ds9=False, do_not_scale_image_data=False
+):
     """Read a 2D NumPy array to a .fits file.
 
     After loading the NumPy array, the array is flipped upside-down using np.flipud. This is so that the structures \
@@ -351,6 +359,11 @@ def numpy_array_2d_from_fits(file_path, hdu):
         The full path of the file that is loaded, including the file name and '.fits' extension.
     hdu : int
         The HDU extension of the array that is loaded from the .fits file.
+    flip_for_ds9 : bool
+        If True, a np.flipud() is applied so that matplotlib figures display in the same orientation as when loaded in
+        DS9.
+    do_not_scale_image_data : bool
+        If True, the .fits file is not rescaled automatically based on the .fits header info.
 
     Returns
     -------
@@ -361,8 +374,11 @@ def numpy_array_2d_from_fits(file_path, hdu):
     --------
     array_2d = numpy_array_from_fits(file_path='/path/to/file/filename.fits', hdu=0)
     """
-    hdu_list = fits.open(file_path)
-    return np.flipud(np.array(hdu_list[hdu].data)).astype("float64")
+    hdu_list = fits.open(file_path, do_not_scale_image_data=do_not_scale_image_data)
+    if flip_for_ds9:
+        return np.flipud(np.array(hdu_list[hdu].data)).astype("float64")
+    else:
+        return np.array(hdu_list[hdu].data).astype("float64")
 
 
 @decorator_util.jit()

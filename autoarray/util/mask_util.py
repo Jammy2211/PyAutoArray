@@ -536,6 +536,7 @@ def mask_via_shape_2d_and_mask_index_for_mask_1d_index_from(
 
 @decorator_util.jit()
 def check_if_edge_pixel(mask, y, x):
+
     if (
         mask[y + 1, x]
         or mask[y - 1, x]

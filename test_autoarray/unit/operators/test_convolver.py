@@ -1162,13 +1162,13 @@ class TestConvolution:
 
         convolver = aa.Convolver(mask=cross_mask, kernel=kernel)
 
-        image_array = aa.MaskedArray.manual_1d(array=[1, 0, 0, 0, 0], mask=cross_mask)
+        image_array = aa.Array.manual_mask(array=[1, 0, 0, 0, 0], mask=cross_mask)
 
         blurring_mask = cross_mask.regions.blurring_mask_from_kernel_shape(
             kernel_shape_2d=kernel.shape_2d
         )
 
-        blurring_array = aa.MaskedArray.manual_1d(
+        blurring_array = aa.Array.manual_mask(
             array=[0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], mask=blurring_mask
         )
 
@@ -1194,11 +1194,11 @@ class TestCompareToFull2dConv:
             shape_2d=(30, 30), pixel_scales=(1.0, 1.0), sub_size=1, radius=4.0
         )
 
-        masked_image = aa.MaskedArray.manual_2d(
+        masked_image = aa.Array.manual_mask(
             array=image.in_2d, mask=mask, store_in_1d=True
         )
 
-        blurred_masked_image = aa.MaskedArray.manual_2d(
+        blurred_masked_image = aa.Array.manual_mask(
             array=blurred_image.in_2d, mask=mask, store_in_1d=True
         )
 
@@ -1209,7 +1209,7 @@ class TestCompareToFull2dConv:
         )
         convolver = aa.Convolver(mask=mask, kernel=kernel)
 
-        blurring_image = aa.MaskedArray.manual_2d(
+        blurring_image = aa.Array.manual_mask(
             array=image.in_2d, mask=blurring_mask, store_in_1d=True
         )
 

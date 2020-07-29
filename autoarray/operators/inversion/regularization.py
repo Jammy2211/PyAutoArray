@@ -1,4 +1,5 @@
 import numpy as np
+import pylops
 
 from autoarray.util import regularization_util
 
@@ -231,3 +232,20 @@ class AdaptiveBrightness(Regularization):
             pixel_neighbors=mapper.pixelization_grid.pixel_neighbors,
             pixel_neighbors_size=mapper.pixelization_grid.pixel_neighbors_size,
         )
+
+
+class RegularizationLop(pylops.LinearOperator):
+    def __init__(self, regularization_matrix, dtype="float64"):
+
+        self.regularization_matrix = regularization_matrix
+        self.pixels = regularization_matrix.shape[0]
+        self.dims = self.pixels
+        self.shape = (self.pixels, self.pixels)
+        self.dtype = dtype
+        self.explicit = False
+
+    def _matvec(self, x):
+        return x
+
+    def _rmatvec(self, x):
+        return self.regularization_matrix

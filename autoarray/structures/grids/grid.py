@@ -33,16 +33,16 @@ class Grid(abstract_grid.AbstractGrid):
         Below is a visual illustration of a grid, where a total of 10 pixels are unmasked and are included in \
         the grid.
 
-        IxIxIxIxIxIxIxIxIxIxI
-        IxIxIxIxIxIxIxIxIxIxI     This is an example mask.Mask, where:
-        IxIxIxIxIxIxIxIxIxIxI
-        IxIxIxIxIoIoIxIxIxIxI     x = True (Pixel is masked and excluded from the grid)
-        IxIxIxIoIoIoIoIxIxIxI     o = False (Pixel is not masked and included in the grid)
-        IxIxIxIoIoIoIoIxIxIxI
-        IxIxIxIxIxIxIxIxIxIxI
-        IxIxIxIxIxIxIxIxIxIxI
-        IxIxIxIxIxIxIxIxIxIxI
-        IxIxIxIxIxIxIxIxIxIxI
+         x x x x x x x x x x
+         x x x x x x x x x x     This is an example mask.Mask, where:
+         x x x x x x x x x x
+         x x x xIoIo x x x x     x = True (Pixel is masked and excluded from the grid)
+         x x xIoIoIoIo x x x     o = False (Pixel is not masked and included in the grid)
+         x x xIoIoIoIo x x x
+         x x x x x x x x x x
+         x x x x x x x x x x
+         x x x x x x x x x x
+         x x x x x x x x x x
 
         The mask pixel index's will come out like this (and the direction of scaled coordinates is highlighted
         around the mask.
@@ -51,16 +51,16 @@ class Grid(abstract_grid.AbstractGrid):
 
         <--- -ve  x  +ve -->
                                                         y      x
-        IxIxIxIxIxIxIxIxIxIxI  ^   grid[0] = [ 1.5, -0.5]
-        IxIxIxIxIxIxIxIxIxIxI  I   grid[1] = [ 1.5,  0.5]
-        IxIxIxIxIxIxIxIxIxIxI  I   grid[2] = [ 0.5, -1.5]
-        IxIxIxIxI0I1IxIxIxIxI +ve  grid[3] = [ 0.5, -0.5]
-        IxIxIxI2I3I4I5IxIxIxI  y   grid[4] = [ 0.5,  0.5]
-        IxIxIxI6I7I8I9IxIxIxI -ve  grid[5] = [ 0.5,  1.5]
-        IxIxIxIxIxIxIxIxIxIxI  I   grid[6] = [-0.5, -1.5]
-        IxIxIxIxIxIxIxIxIxIxI  I   grid[7] = [-0.5, -0.5]
-        IxIxIxIxIxIxIxIxIxIxI \/   grid[8] = [-0.5,  0.5]
-        IxIxIxIxIxIxIxIxIxIxI      grid[9] = [-0.5,  1.5]
+         x x x x x x x x x x  ^   grid[0] = [ 1.5, -0.5]
+         x x x x x x x x x x  I   grid[1] = [ 1.5,  0.5]
+         x x x x x x x x x x  I   grid[2] = [ 0.5, -1.5]
+         x x x xI0I1 x x x x +ve  grid[3] = [ 0.5, -0.5]
+         x x xI2I3I4I5 x x x  y   grid[4] = [ 0.5,  0.5]
+         x x xI6I7I8I9 x x x -ve  grid[5] = [ 0.5,  1.5]
+         x x x x x x x x x x  I   grid[6] = [-0.5, -1.5]
+         x x x x x x x x x x  I   grid[7] = [-0.5, -0.5]
+         x x x x x x x x x x \/   grid[8] = [-0.5,  0.5]
+         x x x x x x x x x x      grid[9] = [-0.5,  1.5]
 
         Case 2: [sub-size>1, store_in_1d=True]:
         ------------------
@@ -80,16 +80,16 @@ class Grid(abstract_grid.AbstractGrid):
         contrast to the grid above, our illustration below restricts the mask to just 2 pixels, to keep the
         illustration brief.
 
-        IxIxIxIxIxIxIxIxIxIxI
-        IxIxIxIxIxIxIxIxIxIxI     This is an example mask.Mask, where:
-        IxIxIxIxIxIxIxIxIxIxI
-        IxIxIxIxIxIxIxIxIxIxI     x = True (Pixel is masked and excluded from lens)
-        IxIxIxIxIoIoIxIxIxIxI     o = False (Pixel is not masked and included in lens)
-        IxIxIxIxIxIxIxIxIxIxI
-        IxIxIxIxIxIxIxIxIxIxI
-        IxIxIxIxIxIxIxIxIxIxI
-        IxIxIxIxIxIxIxIxIxIxI
-        IxIxIxIxIxIxIxIxIxIxI
+         x x x x x x x x x x
+         x x x x x x x x x x     This is an example mask.Mask, where:
+         x x x x x x x x x x
+         x x x x x x x x x x     x = True (Pixel is masked and excluded from lens)
+         x x x xIoIo x x x x     o = False (Pixel is not masked and included in lens)
+         x x x x x x x x x x
+         x x x x x x x x x x
+         x x x x x x x x x x
+         x x x x x x x x x x
+         x x x x x x x x x x
 
         Our grid with a sub-size looks like it did before:
 
@@ -97,16 +97,16 @@ class Grid(abstract_grid.AbstractGrid):
 
         <--- -ve  x  +ve -->
 
-        IxIxIxIxIxIxIxIxIxIxI  ^
-        IxIxIxIxIxIxIxIxIxIxI  I
-        IxIxIxIxIxIxIxIxIxIxI  I                        y     x
-        IxIxIxIxIxIxIxIxIxIxI +ve  grid[0] = [0.5,  -1.5]
-        IxIxIxI0I1IxIxIxIxIxI  y   grid[1] = [0.5,  -0.5]
-        IxIxIxIxIxIxIxIxIxIxI -ve
-        IxIxIxIxIxIxIxIxIxIxI  I
-        IxIxIxIxIxIxIxIxIxIxI  I
-        IxIxIxIxIxIxIxIxIxIxI \/
-        IxIxIxIxIxIxIxIxIxIxI
+         x x x x x x x x x x  ^
+         x x x x x x x x x x  I
+         x x x x x x x x x x  I                        y     x
+         x x x x x x x x x x +ve  grid[0] = [0.5,  -1.5]
+         x x xI0I1 x x x x x  y   grid[1] = [0.5,  -0.5]
+         x x x x x x x x x x -ve
+         x x x x x x x x x x  I
+         x x x x x x x x x x  I
+         x x x x x x x x x x \/
+         x x x x x x x x x x
 
         However, if the sub-size is 2, we go to each unmasked pixel and allocate sub-pixel coordinates for it. For
         example, for pixel 0, if *sub_size=2*, we use a 2x2 sub-grid:
@@ -142,16 +142,16 @@ class Grid(abstract_grid.AbstractGrid):
 
         For the following example mask:
 
-        IxIxIxIxIxIxIxIxIxIxI
-        IxIxIxIxIxIxIxIxIxIxI     This is an example mask.Mask, where:
-        IxIxIxIxIxIxIxIxIxIxI
-        IxIxIxIxIoIoIxIxIxIxI     x = True (Pixel is masked and excluded from the grid)
-        IxIxIxIoIoIoIoIxIxIxI     o = False (Pixel is not masked and included in the grid)
-        IxIxIxIoIoIoIoIxIxIxI
-        IxIxIxIxIxIxIxIxIxIxI
-        IxIxIxIxIxIxIxIxIxIxI
-        IxIxIxIxIxIxIxIxIxIxI
-        IxIxIxIxIxIxIxIxIxIxI
+         x x x x x x x x x xI
+         x x x x x x x x x xI     This is an example mask.Mask, where:
+         x x x x x x x x x xI
+         x x x xIoIo x x x xI     x = True (Pixel is masked and excluded from the grid)
+         x x xIoIoIoIo x x xI     o = False (Pixel is not masked and included in the grid)
+         x x xIoIoIoIo x x xI
+         x x x x x x x x x xI
+         x x x x x x x x x xI
+         x x x x x x x x x xI
+         x x x x x x x x x xI
 
         - grid[0,0,0] = 0.0 (it is masked, thus zero)
         - grid[0,0,1] = 0.0 (it is masked, thus zero)
@@ -194,15 +194,12 @@ class Grid(abstract_grid.AbstractGrid):
             stored in 2D as an ndarray of shape [total_y_pixels, total_x_pixels, 2].
         """
 
-        if store_in_1d and len(grid.shape) != 2:
-            raise exc.GridException(
-                "An grid input into the grids.Grid.__new__ method has store_in_1d = True but"
-                "the input shape of the array is not 1."
-            )
-
         obj = grid.view(cls)
         obj.mask = mask
         obj.store_in_1d = store_in_1d
+
+        abstract_grid.check_grid(grid=obj)
+
         return obj
 
     @classmethod
@@ -242,7 +239,7 @@ class Grid(abstract_grid.AbstractGrid):
             If True, the grid is stored in 1D as an ndarray of shape [total_unmasked_pixels, 2]. If False, it is
             stored in 2D as an ndarray of shape [total_y_pixels, total_x_pixels, 2].
         """
-        grid = abstract_grid.convert_and_check_grid(grid=grid)
+
         pixel_scales = abstract_structure.convert_pixel_scales(
             pixel_scales=pixel_scales
         )
@@ -254,14 +251,11 @@ class Grid(abstract_grid.AbstractGrid):
             origin=origin,
         )
 
-        if store_in_1d:
-            return Grid(grid=grid, mask=mask, store_in_1d=store_in_1d)
-
-        grid_2d = grid_util.sub_grid_2d_from(
-            sub_grid_1d=grid, mask=mask, sub_size=sub_size
+        grid = abstract_grid.convert_manual_1d_grid(
+            grid_1d=grid, mask=mask, store_in_1d=store_in_1d
         )
 
-        return Grid(grid=grid_2d, mask=mask, store_in_1d=store_in_1d)
+        return Grid(grid=grid, mask=mask, store_in_1d=store_in_1d)
 
     @classmethod
     def manual_2d(
@@ -294,7 +288,9 @@ class Grid(abstract_grid.AbstractGrid):
             If True, the grid is stored in 1D as an ndarray of shape [total_unmasked_pixels, 2]. If False, it is
             stored in 2D as an ndarray of shape [total_y_pixels, total_x_pixels, 2].
         """
-        grid = abstract_grid.convert_and_check_grid(grid=grid)
+
+        grid = abstract_grid.convert_grid(grid=grid)
+
         pixel_scales = abstract_structure.convert_pixel_scales(
             pixel_scales=pixel_scales
         )
@@ -305,14 +301,89 @@ class Grid(abstract_grid.AbstractGrid):
             shape_2d=shape, pixel_scales=pixel_scales, sub_size=sub_size, origin=origin
         )
 
-        if not store_in_1d:
-            return Grid(grid=grid, mask=mask, store_in_1d=store_in_1d)
-
-        grid_1d = grid_util.sub_grid_1d_from(
-            sub_grid_2d=grid, mask=mask, sub_size=sub_size
+        grid = abstract_grid.convert_manual_2d_grid(
+            grid_2d=grid, mask=mask, store_in_1d=store_in_1d
         )
 
-        return Grid(grid=grid_1d, mask=mask, store_in_1d=store_in_1d)
+        return Grid(grid=grid, mask=mask, store_in_1d=store_in_1d)
+
+    @classmethod
+    def manual(
+        cls,
+        grid,
+        pixel_scales,
+        shape_2d=None,
+        sub_size=1,
+        origin=(0.0, 0.0),
+        store_in_1d=True,
+    ):
+        """Create a Grid (see *Grid.__new__*) by inputting the grid coordinates in 1D or 2D, automatically
+        determining whether to use the 'manual_1d' or 'manual_2d' methods.
+
+        See the manual_1d and manual_2d methods for examples.
+
+        Parameters
+        ----------
+        grid : np.ndarray or list
+            The (y,x) coordinates of the grid input as an ndarray of shape [total_unmasked_pixells*(sub_size**2), 2]
+            or a list of lists.
+        shape_2d : (float, float)
+            The 2D shape of the mask the grid is paired with.
+        pixel_scales : (float, float) or float
+            The pixel conversion scale of a pixel in the y and x directions. If input as a float, the pixel_scales
+            are converted to the format (float, float).
+        sub_size : int
+            The size (sub_size x sub_size) of each unmasked pixels sub-grid.
+        origin : (float, float)
+            The origin of the grid's mask.
+        store_in_1d : bool
+            If True, the grid is stored in 1D as an ndarray of shape [total_unmasked_pixels, 2]. If False, it is
+            stored in 2D as an ndarray of shape [total_y_pixels, total_x_pixels, 2].
+        """
+        if len(grid.shape) == 2:
+            return cls.manual_1d(
+                grid=grid,
+                shape_2d=shape_2d,
+                pixel_scales=pixel_scales,
+                sub_size=sub_size,
+                origin=origin,
+                store_in_1d=store_in_1d,
+            )
+        return cls.manual_2d(
+            grid=grid,
+            pixel_scales=pixel_scales,
+            sub_size=sub_size,
+            origin=origin,
+            store_in_1d=store_in_1d,
+        )
+
+    @classmethod
+    def manual_mask(cls, grid, mask, store_in_1d=True):
+        """Create a Grid (see *Grid.__new__*) by inputting the grid coordinate in 1D or 2D, automatically
+        determining whether to use the 'manual_1d' or 'manual_2d' methods.
+
+        See the manual_1d and manual_2d methods for examples.
+
+        Parameters
+        ----------
+        grid : np.ndarray or list
+            The (y,x) coordinates of the grid input as an ndarray of shape [total_sub_coordinates, 2] or list of lists.
+        mask : msk.Mask
+            The 2D mask associated with the grid, defining the pixels each grid coordinate is paired with and
+            originates from.
+        store_in_1d : bool
+            If True, the grid is stored in 1D as an ndarray of shape [total_unmasked_pixels, 2]. If False, it is
+            stored in 2D as an ndarray of shape [total_y_pixels, total_x_pixels, 2].
+        """
+
+        grid = abstract_grid.convert_grid(grid=grid)
+        abstract_grid.check_grid_and_mask(grid=grid, mask=mask)
+
+        grid = abstract_grid.convert_manual_grid(
+            grid=grid, mask=mask, store_in_1d=store_in_1d
+        )
+
+        return Grid(grid=grid, mask=mask, store_in_1d=store_in_1d)
 
     @classmethod
     def manual_yx_1d(
@@ -567,29 +638,29 @@ class Grid(abstract_grid.AbstractGrid):
 
         For example, if our mask is as follows:
 
-        IxIxIxIxIxIxIxIxIxIxI
-        IxIxIxIxIxIxIxIxIxIxI     This is an imaging.Mask, where
-        IxIxIxIxIxIxIxIxIxIxI
-        IxIxIxIxIxIxIxIxIxIxI     x = True (Pixel is masked and excluded from lens)
-        IxIxIxIoIoIoIxIxIxIxI     o = False (Pixel is not masked and included in lens)
-        IxIxIxIoIoIoIxIxIxIxI
-        IxIxIxIoIoIoIxIxIxIxI
-        IxIxIxIxIxIxIxIxIxIxI
-        IxIxIxIxIxIxIxIxIxIxI
-        IxIxIxIxIxIxIxIxIxIxI
+         x x x x x x x x x xI
+         x x x x x x x x x xI     This is an imaging.Mask, where
+         x x x x x x x x x xI
+         x x x x x x x x x xI     x = True (Pixel is masked and excluded from lens)
+         x x xIoIoIo x x x xI     o = False (Pixel is not masked and included in lens)
+         x x xIoIoIo x x x xI
+         x x xIoIoIo x x x xI
+         x x x x x x x x x xI
+         x x x x x x x x x xI
+         x x x x x x x x x xI
 
         For a PSF of shape (3,3), the following blurring mask is computed (noting that only pixels that are direct
         neighbors of the unmasked pixels above will blur light into an unmasked pixel)
 
-        IxIxIxIxIxIxIxIxIxI     This is an example grid.Mask, where
-        IxIxIxIxIxIxIxIxIxI
-        IxIxIoIoIoIoIoIxIxI     x = True (Pixel is masked and excluded from lens)
-        IxIxIoIxIxIxIoIxIxI     o = False (Pixel is not masked and included in lens)
-        IxIxIoIxIxIxIoIxIxI
-        IxIxIoIxIxIxIoIxIxI
-        IxIxIoIoIoIoIoIxIxI
-        IxIxIxIxIxIxIxIxIxI
-        IxIxIxIxIxIxIxIxIxI
+         x x x x x x x x xI     This is an example grid.Mask, where
+         x x x x x x x x xI
+         x xIoIoIoIoIo x xI     x = True (Pixel is masked and excluded from lens)
+         x xIo x x xIo x xI     o = False (Pixel is not masked and included in lens)
+         x xIo x x xIo x xI
+         x xIo x x xIo x xI
+         x xIoIoIoIoIo x xI
+         x x x x x x x x xI
+         x x x x x x x x xI
 
         Thus, the blurring grid coordinates and indexes will be as follows
 
@@ -597,28 +668,28 @@ class Grid(abstract_grid.AbstractGrid):
 
         positive    negative
                                                             y     x                          y     x
-        IxIxIx Ix Ix Ix Ix IxIxI  I   blurring_grid[0] = [2.0, -2.0]  blurring_grid[9] =  [-1.0, -2.0]
-        IxIxIx Ix Ix Ix Ix IxIxI  I   blurring_grid[1] = [2.0, -1.0]  blurring_grid[10] = [-1.0,  2.0]
-        IxIxI0 I1 I2 I3 I4 IxIxI pos  blurring_grid[2] = [2.0,  0.0]  blurring_grid[11] = [-2.0, -2.0]
-        IxIxI5 Ix Ix Ix I6 IxIxI  y   blurring_grid[3] = [2.0,  1.0]  blurring_grid[12] = [-2.0, -1.0]
-        IxIxI7 Ix Ix Ix I8 IxIxI  I   blurring_grid[4] = [2.0,  2.0]  blurring_grid[13] = [-2.0,  0.0]
-        IxIxI9 Ix Ix Ix I10IxIxI neg  blurring_grid[5] = [1.0, -2.0]  blurring_grid[14] = [-2.0,  1.0]
-        IxIxI11I12I13I14I15IxIxI  I   blurring_grid[6] = [1.0,  2.0]  blurring_grid[15] = [-2.0,  2.0]
-        IxIxIx Ix Ix Ix Ix IxIxI  I   blurring_grid[7] = [0.0, -2.0]
-        IxIxIx Ix Ix Ix Ix IxIxI  I   blurring_grid[8] = [0.0,  2.0]
+         x x x  x  x  x  x  x xI  I   blurring_grid[0] = [2.0, -2.0]  blurring_grid[9] =  [-1.0, -2.0]
+         x x x  x  x  x  x  x xI  I   blurring_grid[1] = [2.0, -1.0]  blurring_grid[10] = [-1.0,  2.0]
+         x xI0 I1 I2 I3 I4  x xI pos  blurring_grid[2] = [2.0,  0.0]  blurring_grid[11] = [-2.0, -2.0]
+         x xI5  x  x  x I6  x xI  y   blurring_grid[3] = [2.0,  1.0]  blurring_grid[12] = [-2.0, -1.0]
+         x xI7  x  x  x I8  x xI  I   blurring_grid[4] = [2.0,  2.0]  blurring_grid[13] = [-2.0,  0.0]
+         x xI9  x  x  x I10 x xI neg  blurring_grid[5] = [1.0, -2.0]  blurring_grid[14] = [-2.0,  1.0]
+         x xI11I12I13I14I15 x xI  I   blurring_grid[6] = [1.0,  2.0]  blurring_grid[15] = [-2.0,  2.0]
+         x x x  x  x  x  x  x xI  I   blurring_grid[7] = [0.0, -2.0]
+         x x x  x  x  x  x  x xI  I   blurring_grid[8] = [0.0,  2.0]
 
         For a PSF of shape (5,5), the following blurring mask is computed (noting that pixels are 2 pixels from a
         direct unmasked pixels now blur light into an unmasked pixel)
 
-        IxIxIxIxIxIxIxIxIxI     This is an example grid.Mask, where
-        IxIoIoIoIoIoIoIoIxI
-        IxIoIoIoIoIoIoIoIxI     x = True (Pixel is masked and excluded from lens)
-        IxIoIoIxIxIxIoIoIxI     o = False (Pixel is not masked and included in lens)
-        IxIoIoIxIxIxIoIoIxI
-        IxIoIoIxIxIxIoIoIxI
-        IxIoIoIoIoIoIoIoIxI
-        IxIoIoIoIoIoIoIoIxI
-        IxIxIxIxIxIxIxIxIxI
+         x x x x x x x x xI     This is an example grid.Mask, where
+         xIoIoIoIoIoIoIo xI
+         xIoIoIoIoIoIoIo xI     x = True (Pixel is masked and excluded from lens)
+         xIoIo x x xIoIo xI     o = False (Pixel is not masked and included in lens)
+         xIoIo x x xIoIo xI
+         xIoIo x x xIoIo xI
+         xIoIoIoIoIoIoIo xI
+         xIoIoIoIoIoIoIo xI
+         x x x x x x x x xI
 
         Parameters
         ----------
@@ -914,89 +985,3 @@ class GridTransformed(Grid):
 class GridTransformedNumpy(np.ndarray):
     def __new__(cls, grid, *args, **kwargs):
         return grid.view(cls)
-
-
-class MaskedGrid(abstract_grid.AbstractGrid):
-    def __new__(cls, grid, mask, store_in_1d=True, *args, **kwargs):
-
-        if store_in_1d and len(grid.shape) != 2:
-            raise exc.GridException(
-                "An grid input into the grids.Grid.__new__ method has store_in_1d = True but"
-                "the input shape of the array is not 1."
-            )
-
-        obj = grid.view(cls)
-        obj.mask = mask
-        obj.store_in_1d = store_in_1d
-        return obj
-
-    @classmethod
-    def manual_1d(cls, grid, mask, store_in_1d=True):
-        """Create a Grid (see *Grid.__new__*) by inputting the grid coordinates in 1D with their paired mask, for 
-        example:
-
-        mask = Mask([[True, False, False, False])
-        grid=np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0]])
-        grid=[[1.0, 1.0], [2.0, 2.0], [3.0, 3.0]]
-
-        Parameters
-        ----------
-        grid : np.ndarray or list
-            The (y,x) coordinates of the grid input as an ndarray of shape [total_sub_coordinates, 2] or list of lists.
-        mask : msk.Mask
-            The 2D mask associated with the grid, defining the pixels each grid coordinate is paired with and
-            originates from.
-        store_in_1d : bool
-            If True, the grid is stored in 1D as an ndarray of shape [total_unmasked_pixels, 2]. If False, it is
-            stored in 2D as an ndarray of shape [total_y_pixels, total_x_pixels, 2].
-        """
-        grid = abstract_grid.convert_and_check_grid(grid=grid, mask=mask)
-
-        if store_in_1d:
-            return Grid(grid=grid, mask=mask, store_in_1d=store_in_1d)
-
-        sub_grid_2d = grid_util.sub_grid_2d_from(
-            sub_grid_1d=grid, mask=mask, sub_size=mask.sub_size
-        )
-
-        return Grid(grid=sub_grid_2d, mask=mask, store_in_1d=store_in_1d)
-
-    @classmethod
-    def manual_2d(cls, grid, mask, store_in_1d=True):
-        """Create a Grid (see *Grid.__new__*) by inputting the grid coordinates in 2D with their paired mask, for
-        example:
-
-        mask = Mask([[True, False, False, False])
-        grid=np.array([[[1.0, 1.0], [2.0, 2.0]],
-                       [[3.0, 3.0], [4.0, 4.0]]])
-        grid=[[[1.0, 1.0], [2.0, 2.0]],
-              [[3.0, 3.0], [4.0, 4.0]]]
-
-        Mask values are removed, such that the grid in 1D will be of length 3, omitting the values [1.0, 1.0].
-
-        Parameters
-        ----------
-        grid : np.ndarray or list
-            The (y,x) coordinates of the grid input as an ndarray of shape
-            [total_y_pixels*sub_size, total_x_pixels*sub_size, 2] or a list of lists.
-        mask : msk.Mask
-            The 2D mask associated with the grid, defining the pixels each grid coordinate is paired with and
-            originates from.
-        store_in_1d : bool
-            If True, the grid is stored in 1D as an ndarray of shape [total_unmasked_pixels, 2]. If False, it is
-            stored in 2D as an ndarray of shape [total_y_pixels, total_x_pixels, 2].
-        """
-        grid = abstract_grid.convert_and_check_grid(grid=grid, mask=mask)
-
-        sub_grid_1d = grid_util.sub_grid_1d_from(
-            sub_grid_2d=grid, mask=mask, sub_size=mask.sub_size
-        )
-
-        if store_in_1d:
-            return Grid(grid=sub_grid_1d, mask=mask, store_in_1d=store_in_1d)
-
-        sub_grid_2d = grid_util.sub_grid_2d_from(
-            sub_grid_1d=sub_grid_1d, mask=mask, sub_size=mask.sub_size
-        )
-
-        return Grid(grid=sub_grid_2d, mask=mask, store_in_1d=store_in_1d)

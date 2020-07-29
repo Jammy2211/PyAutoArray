@@ -641,7 +641,108 @@ def sub_grid_2d_from(sub_grid_1d, mask, sub_size):
 
 
 @decorator_util.jit()
+def grid_pixel_centres_1d_via_grid_1d_overlap(grid_1d, pixel_scales, buffer=0):
+    """Take a 1D grid of irregular (y,x) coordinates and over-lay a uniform square grid defined by an input pixel scale,
+    where:
+
+    1) The overlaid grid uses the extrema (y,x) coordinates of the irregular grid at the top-left, top-right,
+    bottom-left and bottom-right.
+
+    2) The over-laid grid is buffed by 1 pixel on every side of the grid.
+
+    The (y,x) 2D pixel centres of the overlaid grid are then computed for every irregular (y,x) coordinate and returned
+    along with the shape of the buffed overlaid grid.
+
+    This is used to create small regular grids defined by a pixel scale around irregular (y,x) grid coordinates, for
+    example when creating an upscaled subset of coordinates around the point.
+
+    Parameters
+    ----------
+    grid_1d : ndarray
+        The irregular 1D grid of (y,x) coordinates over which a square uniform grid is overlaid.
+    pixel_scales : (float, float)
+        The pixel scale of the uniform grid that laid over the irregular grid of (y,x) coordinates.
+    """
+
+    y_size = np.max(grid_1d[:, 0]) - np.min(grid_1d[:, 0]) + (pixel_scales[0])
+    x_size = np.max(grid_1d[:, 1]) - np.min(grid_1d[:, 1]) + (pixel_scales[1])
+
+    y_shape = int(y_size / pixel_scales[0]) + (buffer * 2)
+    x_shape = int(x_size / pixel_scales[1]) + (buffer * 2)
+
+    y_origin = (np.max(grid_1d[:, 0]) + np.min(grid_1d[:, 0])) / 2.0
+    x_origin = (np.max(grid_1d[:, 1]) + np.min(grid_1d[:, 1])) / 2.0
+
+    grid_pixel_centres_1d = grid_pixel_centres_1d_from(
+        grid_scaled_1d=grid_1d,
+        shape_2d=(y_shape, x_shape),
+        pixel_scales=pixel_scales,
+        origin=(y_origin, x_origin),
+    )
+
+    return grid_pixel_centres_1d, y_shape, x_shape
+
+
+@decorator_util.jit()
+def grid_buffed_from(grid_1d, pixel_scales, buffer):
+    """From an input 1D grid, return a 1D buffed grid where (y,x) coordinates are added next to all grid pixels whose
+    neighbors in the 8 neighboring directions were masked and not included in the grid.
+
+    This is performed by determining the 1D grid's mask in 2D, adding the entries to the 2D mask to the eight
+    neighboring pixels and using this buffed mask to create the new 1D buffed grid.
+
+    Parameters
+    ----------
+    grid_1d : ndarray
+        The irregular 1D grid of (y,x) coordinates over which a square uniform grid is overlaid.
+    pixel_scales : (float, float)
+        The pixel scale of the uniform grid that laid over the irregular grid of (y,x) coordinates.
+    """
+    grid_pixel_centres_1d, y_shape, x_shape = grid_pixel_centres_1d_via_grid_1d_overlap(
+        grid_1d=grid_1d, pixel_scales=pixel_scales, buffer=buffer
+    )
+
+    mask_2d = np.full(shape=(y_shape, x_shape), fill_value=True)
+
+    for grid_index in range(grid_1d.shape[0]):
+
+        y_pixel = int(grid_pixel_centres_1d[grid_index, 0])
+        x_pixel = int(grid_pixel_centres_1d[grid_index, 1])
+
+        mask_2d[y_pixel, x_pixel] = False
+
+    if buffer > 0:
+        mask_2d = mask_util.buffed_mask_from(mask=mask_2d, buffer=buffer)
+
+    y_origin = (np.max(grid_1d[:, 0]) + np.min(grid_1d[:, 0])) / 2.0
+    x_origin = (np.max(grid_1d[:, 1]) + np.min(grid_1d[:, 1])) / 2.0
+
+    return (
+        grid_1d_via_mask_from(
+            mask=mask_2d,
+            pixel_scales=pixel_scales,
+            sub_size=1,
+            origin=(y_origin, x_origin),
+        ),
+        y_shape,
+        x_shape,
+    )
+
+
+@decorator_util.jit()
 def grid_upscaled_1d_from(grid_1d, upscale_factor, pixel_scales):
+    """From an input 1D grid, return an upscaled 1D grid where (y,x) coordinates are added at an upscaled resolution
+    to each grid coordinate, analogous to a sub-grid.
+
+    Parameters
+    ----------
+    grid_1d : ndarray
+        The irregular 1D grid of (y,x) coordinates over which a square uniform grid is overlaid.
+    upscale_factor : int
+        The upscaled resolution at which the new grid coordinates are computed.
+    pixel_scales : (float, float)
+        The pixel scale of the uniform grid that laid over the irregular grid of (y,x) coordinates.
+    """
 
     grid_upscaled_1d = np.zeros(shape=(grid_1d.shape[0] * upscale_factor ** 2, 2))
 

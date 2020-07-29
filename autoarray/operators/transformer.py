@@ -1,22 +1,23 @@
 from autoarray.util import transformer_util
-from autoarray.structures import arrays, visibilities as vis
+from autoarray.structures import arrays, visibilities as vis, grids
 from autoarray.util import array_util
 from astropy import units
-from scipy import interpolate
 from pynufft import NUFFT_cpu
+import pylops
 
 import copy
 import numpy as np
 
 
 class TransformerDFT:
-    def __init__(self, uv_wavelengths, grid, preload_transform=True):
+    def __init__(self, uv_wavelengths, real_space_mask, preload_transform=True):
 
         self.uv_wavelengths = uv_wavelengths.astype("float")
-        self.grid = grid.in_1d_binned
+        self.real_space_mask = real_space_mask.mask_sub_1
+        self.grid = self.real_space_mask.geometry.masked_grid.in_1d_binned.in_radians
 
         self.total_visibilities = uv_wavelengths.shape[0]
-        self.total_image_pixels = grid.shape_1d
+        self.total_image_pixels = self.real_space_mask.pixels_in_mask
 
         self.preload_transform = preload_transform
 
@@ -119,125 +120,18 @@ class TransformerDFT:
         return [real_transformed_mapping_matrix, imag_transformed_mapping_matrix]
 
 
-class TransformerFFT(object):
-    def __init__(self, uv_wavelengths, grid):
-
-        super(TransformerFFT, self).__init__()
-
-        self.uv_wavelengths = uv_wavelengths.astype("float")
-        self.grid = grid.in_1d_binned
-
-        self.u_fft = np.fft.fftshift(
-            np.fft.fftfreq(
-                grid.shape_2d[0], grid.pixel_scales[0] * units.arcsec.to(units.rad)
-            )
-        )
-        self.v_fft = np.fft.fftshift(
-            np.fft.fftfreq(
-                grid.shape_2d[1], grid.pixel_scales[1] * units.arcsec.to(units.rad)
-            )
-        )
-        u_fft_meshgrid, v_fft_meshgrid = np.meshgrid(self.u_fft, self.v_fft)
-
-        # ... This is nessesary due to the way the grid in autolens is set up.
-        self.shift = np.exp(
-            -2.0
-            * np.pi
-            * 1j
-            * (
-                self.grid.pixel_scales[0]
-                / 2.0
-                * units.arcsec.to(units.rad)
-                * u_fft_meshgrid
-                + self.grid.pixel_scales[0]
-                / 2.0
-                * units.arcsec.to(units.rad)
-                * v_fft_meshgrid
-            )
-        )
-
-        self.uv = np.array(
-            list(zip(self.uv_wavelengths[:, 0], self.uv_wavelengths[:, 1]))
-        )
-
-    def visibilities_from_image(self, image):
-        """
-        Generate visibilities from an image (in this case the image was created using autolens).
-        """
-
-        # NOTE: The input image is flipped to account for the way autolens is generating images
-        z_fft = np.fft.fftshift(
-            np.fft.fft2(np.fft.fftshift(image.in_2d_binned[::-1, :]))
-        )
-
-        # ...
-        z_fft_shifted = z_fft * self.shift
-
-        # ...
-
-        real_interp = interpolate.RegularGridInterpolator(
-            points=(self.u_fft, self.v_fft),
-            values=z_fft_shifted.real.T,
-            method="linear",
-            bounds_error=False,
-            fill_value=0.0,
-        )
-        imag_interp = interpolate.RegularGridInterpolator(
-            points=(self.u_fft, self.v_fft),
-            values=z_fft_shifted.imag.T,
-            method="linear",
-            bounds_error=False,
-            fill_value=0.0,
-        )
-
-        real_visibilities = real_interp(self.uv)
-        imag_visibilities = imag_interp(self.uv)
-
-        return vis.Visibilities(
-            visibilities_1d=np.stack((real_visibilities, imag_visibilities), axis=-1)
-        )
-
-    def transformed_mapping_matrices_from_mapping_matrix(self, mapping_matrix):
-        """
-        ...
-        """
-
-        real_transfomed_mapping_matrix = np.zeros(
-            (self.uv_wavelengths.shape[0], mapping_matrix.shape[1])
-        )
-        imag_transfomed_mapping_matrix = np.zeros(
-            (self.uv_wavelengths.shape[0], mapping_matrix.shape[1])
-        )
-
-        for source_pixel_1d_index in range(mapping_matrix.shape[1]):
-
-            image = arrays.Array.manual_1d(
-                array=mapping_matrix[:, source_pixel_1d_index],
-                shape_2d=self.grid.shape_2d,
-                pixel_scales=self.grid.pixel_scales,
-                store_in_1d=False,
-            )
-
-            visibilities = self.visibilities_from_image(image=image)
-
-            real_transfomed_mapping_matrix[:, source_pixel_1d_index] = visibilities.real
-            imag_transfomed_mapping_matrix[:, source_pixel_1d_index] = visibilities.imag
-
-        return [real_transfomed_mapping_matrix, imag_transfomed_mapping_matrix]
-
-
 class TransformerNUFFT(NUFFT_cpu):
-    def __init__(self, uv_wavelengths, grid, real_space_mask=None):
+    def __init__(self, uv_wavelengths, real_space_mask):
 
         super(TransformerNUFFT, self).__init__()
 
         self.uv_wavelengths = uv_wavelengths
-        self.grid = grid.in_1d_binned
-        self.real_space_mask = real_space_mask
-        if real_space_mask is not None:
-            self._mask_index_for_mask_1d_index = copy.copy(
-                real_space_mask.regions._mask_index_for_mask_1d_index.astype("int")
-            )
+        self.real_space_mask = real_space_mask.mask_sub_1
+        #        self.grid = self.real_space_mask.geometry.unmasked_grid.in_radians
+        self.grid = grids.Grid.from_mask(mask=self.real_space_mask).in_radians
+        self._mask_index_for_mask_1d_index = copy.copy(
+            real_space_mask.regions._mask_index_for_mask_1d_index.astype("int")
+        )
 
         # NOTE: The plan need only be initialized once
         self.initialize_plan()
@@ -325,26 +219,53 @@ class TransformerNUFFT(NUFFT_cpu):
 
         return [real_transfomed_mapping_matrix, imag_transfomed_mapping_matrix]
 
-    # def forward(self, x):
-    #     """
-    #     Forward NUFFT on CPU
-    #     :param x: The input numpy array, with the size of Nd or Nd + (batch,)
-    #     :type: numpy array with the dtype of numpy.complex64
-    #     :return: y: The output numpy array, with the size of (M,) or (M, batch)
-    #     :rtype: numpy array with the dtype of numpy.complex64
-    #     """
-    #     x2d = array_util.sub_array_complex_2d_via_sub_indexes_from(sub_array_1d=x, sub_shape=self.real_space_mask.shape_2d, sub_mask_index_for_sub_mask_1d_index=self._mask_index_for_mask_1d_index)
-    #
-    #     return self.k2y(self.xx2k(self.x2xx(x2d)))
-    #
-    # def adjoint(self, y):
-    #     """
-    #     Adjoint NUFFT on CPU
-    #     :param y: The input numpy array, with the size of (M,) or (M, batch)
-    #     :type: numpy array with the dtype of numpy.complex64
-    #     :return: x: The output numpy array,
-    #                 with the size of Nd or Nd + (batch, )
-    #     :rtype: numpy array with the dtype of numpy.complex64
-    #     """
-    #     x = self.xx2x(self.k2xx(self.y2k(y)))
-    #     return array_util.sub_array_complex_1d_from(sub_array_2d=x, sub_size=1, mask=self.real_space_mask)
+
+class TransformerNUFFTLops(TransformerNUFFT, pylops.LinearOperator):
+    def __init__(self, uv_wavelengths, real_space_mask, dims_fft):
+
+        super(TransformerNUFFTLops, self).__init__(
+            uv_wavelengths=uv_wavelengths, real_space_mask=real_space_mask
+        )
+
+        self.real_space_pixels = self.real_space_mask.pixels_in_mask
+        self.dims_fft = dims_fft
+
+        self.shape = (int(np.prod(self.dims_fft)), int(np.prod(self.real_space_pixels)))
+        self.dtype = "complex128"
+        self.explicit = False
+
+    def forward(self, x):
+        """
+        Forward NUFFT on CPU
+        :param x: The input numpy array, with the size of Nd or Nd + (batch,)
+        :type: numpy array with the dtype of numpy.complex64
+        :return: y: The output numpy array, with the size of (M,) or (M, batch)
+        :rtype: numpy array with the dtype of numpy.complex64
+        """
+        x2d = array_util.sub_array_complex_2d_via_sub_indexes_from(
+            sub_array_1d=x,
+            sub_shape=self.real_space_mask.shape_2d,
+            sub_mask_index_for_sub_mask_1d_index=self._mask_index_for_mask_1d_index,
+        )
+
+        return self.k2y(self.xx2k(self.x2xx(x2d)))
+
+    def adjoint(self, y):
+        """
+        Adjoint NUFFT on CPU
+        :param y: The input numpy array, with the size of (M,) or (M, batch)
+        :type: numpy array with the dtype of numpy.complex64
+        :return: x: The output numpy array,
+                    with the size of Nd or Nd + (batch, )
+        :rtype: numpy array with the dtype of numpy.complex64
+        """
+        x = self.xx2x(self.k2xx(self.y2k(y)))
+        return array_util.sub_array_complex_1d_from(
+            sub_array_2d=x, sub_size=1, mask=self.real_space_mask
+        )
+
+    def _matvec(self, x):
+        return self.forward(x)
+
+    def _rmatvec(self, x):
+        return self.adjoint(x)

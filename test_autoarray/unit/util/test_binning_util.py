@@ -898,7 +898,7 @@ class TestBinnedMask1dIndexesForMask2dIndex:
         ).all()
 
 
-class TestMaskedArray1DToBininedMaskedArray1d:
+class TestArray1DToBininedArray1d:
     def test__masks_are_full_arrays_and_bin_up_factor_2__mapping_is_correct(self):
 
         mask = np.full(fill_value=False, shape=(4, 4))
@@ -1087,7 +1087,7 @@ class TestMaskedArray1DToBininedMaskedArray1d:
         ).all()
 
 
-class TestBinnedMaskArrayToMaskedArray:
+class TestBinnedMaskArrayToArray:
     def test__masks_are_full_arrays_and_bin_up_factor_2__mapping_is_correct(self):
 
         mask = np.full(fill_value=False, shape=(4, 4))
@@ -1159,7 +1159,7 @@ class TestBinnedMaskArrayToMaskedArray:
         ).all()
 
 
-class TestBinnedMaskArrayToMaskedArrayAll:
+class TestBinnedMaskArrayToArrayAll:
     def test__masks_are_full_arrays_and_bin_up_factor_2__mapping_is_correct(self):
 
         mask = np.full(fill_value=False, shape=(4, 4))

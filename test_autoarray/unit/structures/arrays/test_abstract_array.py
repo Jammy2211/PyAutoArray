@@ -343,7 +343,7 @@ class TestNewArrays:
             sub_size=1,
         )
 
-        arr_masked = aa.MaskedArray.manual_2d(array=array_2d, mask=mask)
+        arr_masked = aa.Array.manual_mask(array=array_2d, mask=mask)
 
         arr_zoomed = arr_masked.zoomed_around_mask(buffer=0)
 
@@ -362,7 +362,7 @@ class TestNewArrays:
             sub_size=1,
         )
 
-        arr_masked = aa.MaskedArray.manual_2d(array=array_2d, mask=mask)
+        arr_masked = aa.Array.manual_mask(array=array_2d, mask=mask)
         arr_zoomed = arr_masked.zoomed_around_mask(buffer=0)
         assert (
             arr_zoomed.in_2d == np.array([[6.0, 7.0, 8.0], [10.0, 11.0, 12.0]])
@@ -381,7 +381,7 @@ class TestNewArrays:
             sub_size=1,
         )
 
-        arr_masked = aa.MaskedArray.manual_2d(array=array_2d, mask=mask)
+        arr_masked = aa.Array.manual_mask(array=array_2d, mask=mask)
         arr_zoomed = arr_masked.zoomed_around_mask(buffer=0)
         assert (
             arr_zoomed.in_2d == np.array([[6.0, 7.0], [10.0, 11.0], [14.0, 15.0]])
@@ -400,7 +400,7 @@ class TestNewArrays:
             sub_size=1,
         )
 
-        arr_masked = aa.MaskedArray.manual_2d(array=array_2d, mask=mask)
+        arr_masked = aa.Array.manual_mask(array=array_2d, mask=mask)
         arr_zoomed = arr_masked.zoomed_around_mask(buffer=0)
 
         assert (
@@ -420,7 +420,7 @@ class TestNewArrays:
             sub_size=1,
         )
 
-        arr_masked = aa.MaskedArray.manual_2d(array=array_2d, mask=mask)
+        arr_masked = aa.Array.manual_mask(array=array_2d, mask=mask)
         arr_zoomed = arr_masked.zoomed_around_mask(buffer=0)
         assert (
             arr_zoomed.in_2d == np.array([[2.0, 0.0], [6.0, 7.0], [10.0, 11.0]])
@@ -439,7 +439,7 @@ class TestNewArrays:
             sub_size=1,
         )
 
-        arr_masked = aa.MaskedArray.manual_2d(array=array_2d, mask=mask)
+        arr_masked = aa.Array.manual_mask(array=array_2d, mask=mask)
         arr_zoomed = arr_masked.zoomed_around_mask(buffer=1)
 
         assert (
@@ -471,7 +471,7 @@ class TestNewArrays:
             sub_size=1,
         )
 
-        arr_masked = aa.MaskedArray.manual_2d(array=array_2d, mask=mask)
+        arr_masked = aa.Array.manual_mask(array=array_2d, mask=mask)
 
         arr_zoomed = arr_masked.zoomed_around_mask(buffer=0)
 
@@ -494,7 +494,7 @@ class TestNewArrays:
             sub_size=1,
         )
 
-        arr_masked = aa.MaskedArray.manual_2d(array=array_2d, mask=mask)
+        arr_masked = aa.Array.manual_mask(array=array_2d, mask=mask)
 
         arr_zoomed = arr_masked.zoomed_around_mask(buffer=0)
 
@@ -515,7 +515,7 @@ class TestNewArrays:
             sub_size=1,
         )
 
-        arr_masked = aa.MaskedArray.manual_2d(array=array_2d, mask=mask)
+        arr_masked = aa.Array.manual_mask(array=array_2d, mask=mask)
 
         arr_zoomed = arr_masked.zoomed_around_mask(buffer=0)
 
@@ -545,7 +545,7 @@ class TestNewArrays:
             sub_size=1,
         )
 
-        arr_masked = aa.MaskedArray.manual_2d(array=array_2d, mask=mask)
+        arr_masked = aa.Array.manual_mask(array=array_2d, mask=mask)
 
         extent = arr_masked.extent_of_zoomed_array(buffer=1)
 
@@ -642,7 +642,7 @@ class TestOutputToFits:
 
         mask = aa.Mask.unmasked(shape_2d=(3, 3), pixel_scales=0.1)
 
-        masked_array = aa.MaskedArray(array=arr, mask=mask)
+        masked_array = aa.Array.manual_mask(array=arr, mask=mask)
 
         masked_array.output_to_fits(file_path=output_data_dir + "masked_array.fits")
 

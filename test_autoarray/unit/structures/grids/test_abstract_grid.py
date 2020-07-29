@@ -220,9 +220,7 @@ class TestGrid:
         mask = aa.Mask.manual(
             [[True, False], [False, False]], pixel_scales=1.0, origin=(0.0, 1.0)
         )
-        grid = aa.MaskedGrid.manual_1d(
-            grid=[[1.0, 1.0], [2.0, 3.0], [1.0, 2.0]], mask=mask
-        )
+        grid = aa.Grid.manual_mask(grid=[[1.0, 1.0], [2.0, 3.0], [1.0, 2.0]], mask=mask)
 
         square_distances = grid.squared_distances_from_coordinate(coordinate=(0.0, 0.0))
 
@@ -238,9 +236,7 @@ class TestGrid:
         mask = aa.Mask.manual(
             [[True, False], [False, False]], pixel_scales=1.0, origin=(0.0, 1.0)
         )
-        grid = aa.MaskedGrid.manual_1d(
-            grid=[[1.0, 1.0], [2.0, 3.0], [1.0, 2.0]], mask=mask
-        )
+        grid = aa.Grid.manual_mask(grid=[[1.0, 1.0], [2.0, 3.0], [1.0, 2.0]], mask=mask)
 
         square_distances = grid.distances_from_coordinate(coordinate=(0.0, 0.0))
 

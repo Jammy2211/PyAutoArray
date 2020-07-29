@@ -191,7 +191,7 @@ class TestLikelihood:
 
         noise_normalization = aa.util.fit.noise_normalization_from(noise_map=noise_map)
 
-        log_likelihood = aa.util.fit.likelihood_from(
+        log_likelihood = aa.util.fit.log_likelihood_from(
             chi_squared=chi_squared, noise_normalization=noise_normalization
         )
 
@@ -223,7 +223,7 @@ class TestLikelihood:
 
         noise_normalization = aa.util.fit.noise_normalization_from(noise_map=noise_map)
 
-        log_likelihood = aa.util.fit.likelihood_from(
+        log_likelihood = aa.util.fit.log_likelihood_from(
             chi_squared=chi_squared, noise_normalization=noise_normalization
         )
 
@@ -258,7 +258,7 @@ class TestLikelihood:
 
         noise_normalization = aa.util.fit.noise_normalization_from(noise_map=noise_map)
 
-        log_likelihood = aa.util.fit.likelihood_from(
+        log_likelihood = aa.util.fit.log_likelihood_from(
             chi_squared=chi_squared, noise_normalization=noise_normalization
         )
 
@@ -299,7 +299,7 @@ class TestLikelihood:
             mask=mask, noise_map=noise_map
         )
 
-        log_likelihood = aa.util.fit.likelihood_from(
+        log_likelihood = aa.util.fit.log_likelihood_from(
             chi_squared=chi_squared, noise_normalization=noise_normalization
         )
 
@@ -337,7 +337,7 @@ class TestLikelihood:
             mask=mask, noise_map=noise_map
         )
 
-        log_likelihood = aa.util.fit.likelihood_from(
+        log_likelihood = aa.util.fit.log_likelihood_from(
             chi_squared=chi_squared, noise_normalization=noise_normalization
         )
 
@@ -356,7 +356,7 @@ class TestLikelihood:
 class TestInversionEvidence:
     def test__simple_values(self):
 
-        likelihood_with_regularization_terms = aa.util.fit.likelihood_with_regularization_from(
+        likelihood_with_regularization_terms = aa.util.fit.log_likelihood_with_regularization_from(
             chi_squared=3.0, regularization_term=6.0, noise_normalization=2.0
         )
 

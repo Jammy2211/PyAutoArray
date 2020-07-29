@@ -470,7 +470,7 @@ class Mask1D(np.ndarray):
 
         mask = mask.astype("bool")
         obj = mask.view(cls)
-        obj.pixel_scale = pixel_scale
+        obj.pixel_scales = pixel_scale
         obj.origin = origin
         return obj
 

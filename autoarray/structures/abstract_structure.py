@@ -1,4 +1,5 @@
 import numpy as np
+import pickle
 
 
 def convert_pixel_scales(pixel_scales):
@@ -70,3 +71,15 @@ class AbstractStructure(np.ndarray):
     @property
     def binned_pixel_scales_from_bin_up_factor(self):
         return self.mask.binned_pixel_scales_from_bin_up_factor
+
+    @classmethod
+    def load(cls, file_path, filename):
+        with open(f"{file_path}/{filename}.pickle", "rb") as f:
+            return pickle.load(f)
+
+    def save(self, file_path, filename):
+        """
+        Save the tracer by serializing it with pickle.
+        """
+        with open(f"{file_path}/{filename}.pickle", "wb") as f:
+            pickle.dump(self, f)

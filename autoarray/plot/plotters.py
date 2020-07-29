@@ -45,6 +45,7 @@ def load_subplot_setting(section, name, python_type):
 class AbstractPlotter:
     def __init__(
         self,
+        module=None,
         units=None,
         figure=None,
         cmap=None,
@@ -81,7 +82,9 @@ class AbstractPlotter:
         self.cmap = (
             cmap
             if cmap is not None
-            else mat_objs.ColorMap(from_subplot_config=from_subplot_config)
+            else mat_objs.ColorMap(
+                module=module, from_subplot_config=from_subplot_config
+            )
         )
 
         self.cb = (
@@ -830,6 +833,7 @@ class AbstractPlotter:
 class Plotter(AbstractPlotter):
     def __init__(
         self,
+        module=None,
         units=None,
         figure=None,
         cmap=None,
@@ -851,6 +855,7 @@ class Plotter(AbstractPlotter):
     ):
 
         super(Plotter, self).__init__(
+            module=module,
             units=units,
             figure=figure,
             cmap=cmap,
@@ -875,6 +880,7 @@ class Plotter(AbstractPlotter):
 class SubPlotter(AbstractPlotter):
     def __init__(
         self,
+        module=None,
         units=None,
         figure=None,
         cmap=None,
@@ -896,6 +902,7 @@ class SubPlotter(AbstractPlotter):
     ):
 
         super(SubPlotter, self).__init__(
+            module=module,
             units=units,
             figure=figure,
             cmap=cmap,
@@ -1151,7 +1158,7 @@ def set_include_and_plotter(func):
         if plotter_key is not None:
             plotter = kwargs[plotter_key]
         else:
-            plotter = Plotter()
+            plotter = Plotter(module=inspect.getmodule(func))
             plotter_key = "plotter"
 
         kwargs[plotter_key] = plotter
@@ -1175,15 +1182,15 @@ def set_include_and_sub_plotter(func):
 
         kwargs[include_key] = include
 
-        plotter_key = plotter_key_from_dictionary(dictionary=kwargs)
+        sub_plotter_key = plotter_key_from_dictionary(dictionary=kwargs)
 
-        if plotter_key is not None:
-            plotter = kwargs[plotter_key]
+        if sub_plotter_key is not None:
+            sub_plotter = kwargs[sub_plotter_key]
         else:
-            plotter = SubPlotter()
-            plotter_key = "sub_plotter"
+            sub_plotter = SubPlotter(module=inspect.getmodule(func))
+            sub_plotter_key = "sub_plotter"
 
-        kwargs[plotter_key] = plotter
+        kwargs[sub_plotter_key] = sub_plotter
 
         return func(*args, **kwargs)
 
