@@ -1,6 +1,4 @@
 import numpy as np
-import autoarray as aa
-import typing
 
 from autoarray import decorator_util
 from autoarray import exc
@@ -9,10 +7,7 @@ from autoarray.mask import mask as msk
 from autoarray.util import array_util, grid_util
 
 
-def convert_and_check_grid(grid, mask=None):
-
-    if type(grid) is list:
-        grid = np.asarray(grid)
+def check_grid(grid):
 
     if grid.shape[-1] != 2:
         raise exc.GridException(
@@ -22,25 +17,130 @@ def convert_and_check_grid(grid, mask=None):
     if 2 < len(grid.shape) > 3:
         raise exc.GridException("The dimensions of the input grid array is not 2 or 3")
 
-    if mask is not None:
+    if grid.store_in_1d and len(grid.shape) != 2:
+        raise exc.GridException(
+            "An grid input into the grids.Grid.__new__ method has store_in_1d = True but"
+            "the input shape of the array is not 1."
+        )
 
-        if len(grid.shape) == 2:
 
-            if grid.shape[0] != mask.sub_pixels_in_mask:
-                raise exc.GridException(
-                    "The input 1D grid does not have the same number of entries as sub-pixels in"
-                    "the mask."
-                )
+def check_grid_and_mask(grid, mask):
 
-        elif len(grid.shape) == 3:
+    if len(grid.shape) == 2:
 
-            if (grid.shape[0], grid.shape[1]) != mask.sub_shape_2d:
-                raise exc.GridException(
-                    "The input grid is 2D but not the same dimensions as the sub-mask "
-                    "(e.g. the mask 2D shape multipled by its sub size."
-                )
+        if grid.shape[0] != mask.sub_pixels_in_mask:
+            raise exc.GridException(
+                "The input 1D grid does not have the same number of entries as sub-pixels in"
+                "the mask."
+            )
+
+    elif len(grid.shape) == 3:
+
+        if (grid.shape[0], grid.shape[1]) != mask.sub_shape_2d:
+            raise exc.GridException(
+                "The input grid is 2D but not the same dimensions as the sub-mask "
+                "(e.g. the mask 2D shape multipled by its sub size."
+            )
+
+
+def convert_grid(grid):
+
+    if type(grid) is list:
+        grid = np.asarray(grid)
 
     return grid
+
+
+def convert_manual_1d_grid(grid_1d, mask, store_in_1d):
+    """
+    Manual 1D Grid functions take as input a list or ndarray which is to be returned as an Grid. This function
+    performs the following and checks and conversions on the input:
+
+    1) If the input is a list, convert it to a 2D ndarray of shape [total_coordinates, 2].
+    2) Check that the number of sub-pixels in the grid is identical to that of the mask.
+    3) Return the grid in 1D if it is to be stored in 1D, else return it in 2D.
+
+    For Grids, `1D' refers to a 2D NumPy array of shape [total_coordinates ,2] and '2D' a 3D NumPy array of shape
+    [total_y_coordinates, total_x_coordinates, 2].
+
+    Parameters
+    ----------
+    grid_1d : ndarray or list
+        The input structure which is converted to a 2D ndarray if it is a list.
+    mask : Mask
+        The mask of the output Array.
+    store_in_1d : bool
+        Whether the memory-representation of the grid is in 1D or 2D.
+    """
+
+    grid_1d = convert_grid(grid=grid_1d)
+
+    if store_in_1d:
+        return grid_1d
+
+    return grid_util.sub_grid_2d_from(
+        sub_grid_1d=grid_1d, mask=mask, sub_size=mask.sub_size
+    )
+
+
+def convert_manual_2d_grid(grid_2d, mask, store_in_1d):
+    """
+    Manual 2D Grid functions take as input a list or ndarray which is to be returned as a Grid. This function
+    performs the following and checks and conversions on the input:
+
+    1) If the input is a list, convert it to a 3D ndarray of shape  [total_y_coordinates, total_x_coordinates, 2]
+    2) Check that the number of sub-pixels in the array is identical to that of the mask.
+    3) Return the array in 1D if it is to be stored in 1D, else return it in 2D.
+
+    For Grids, `1D' refers to a 2D NumPy array of shape [total_coordinates ,2] and '2D' a 3D NumPy array of shape
+    [total_y_coordinates, total_x_coordinates, 2]
+
+    Parameters
+    ----------
+    grid_2d : ndarray or list
+        The input structure which is converted to a 3D ndarray if it is a list.
+    mask : Mask
+        The mask of the output Grid.
+    store_in_1d : bool
+        Whether the memory-representation of the array is in 1D or 2D.
+    """
+
+    grid_1d = grid_util.sub_grid_1d_from(
+        sub_grid_2d=grid_2d, mask=mask, sub_size=mask.sub_size
+    )
+
+    if store_in_1d:
+        return grid_1d
+
+    return grid_util.sub_grid_2d_from(
+        sub_grid_1d=grid_1d, mask=mask, sub_size=mask.sub_size
+    )
+
+
+def convert_manual_grid(grid, mask, store_in_1d):
+    """
+    Manual Grid functions take as input a list or ndarray which is to be returned as an Grid. This function
+    performs the following and checks and conversions on the input:
+
+    1) If the input is a list, convert it to an ndarray.
+    2) Check that the number of sub-pixels in the array is identical to that of the mask.
+    3) Return the array in 1D if it is to be stored in 1D, else return it in 2D.
+
+    Parameters
+    ----------
+    array : ndarray or list
+        The input structure which is converted to an ndarray if it is a list.
+    mask : Mask
+        The mask of the output Array.
+    store_in_1d : bool
+        Whether the memory-representation of the array is in 1D or 2D.
+    """
+
+    grid = convert_grid(grid=grid)
+
+    if len(grid.shape) == 2:
+        return convert_manual_1d_grid(grid_1d=grid, mask=mask, store_in_1d=store_in_1d)
+    return convert_manual_2d_grid(grid_2d=grid, mask=mask, store_in_1d=store_in_1d)
 
 
 class AbstractGrid(abstract_structure.AbstractStructure):
@@ -218,9 +318,7 @@ class AbstractGrid(abstract_structure.AbstractStructure):
         This grid is used by the interferometer module."""
         return (self * np.pi) / 648000.0
 
-    def squared_distances_from_coordinate(
-        self, coordinate=(0.0, 0.0)
-    ) -> arrays.MaskedArray:
+    def squared_distances_from_coordinate(self, coordinate=(0.0, 0.0)) -> arrays.Array:
         """Compute the squared distance of every coordinate on the grid from an input coordinate.
 
         Parameters
@@ -231,9 +329,9 @@ class AbstractGrid(abstract_structure.AbstractStructure):
         squared_distances = np.square(self[:, 0] - coordinate[0]) + np.square(
             self[:, 1] - coordinate[1]
         )
-        return aa.MaskedArray(array=squared_distances, mask=self.mask)
+        return arrays.Array.manual_mask(array=squared_distances, mask=self.mask)
 
-    def distances_from_coordinate(self, coordinate=(0.0, 0.0)) -> arrays.MaskedArray:
+    def distances_from_coordinate(self, coordinate=(0.0, 0.0)) -> arrays.Array:
         """Compute the distance of every coordinate on the grid from an input (y,x) coordinate.
 
         Parameters
@@ -244,7 +342,7 @@ class AbstractGrid(abstract_structure.AbstractStructure):
         distances = np.sqrt(
             self.squared_distances_from_coordinate(coordinate=coordinate)
         )
-        return aa.MaskedArray(array=distances, mask=self.mask)
+        return arrays.Array.manual_mask(array=distances, mask=self.mask)
 
     @property
     def shape_2d_scaled(self) -> (float, float):

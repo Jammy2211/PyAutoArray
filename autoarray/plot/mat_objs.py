@@ -16,6 +16,8 @@ import numpy as np
 import inspect
 import itertools
 import os
+import colorcet
+import configparser
 
 from autoarray import exc
 
@@ -110,6 +112,7 @@ class Figure:
 class ColorMap:
     def __init__(
         self,
+        module=None,
         cmap=None,
         norm=None,
         norm_max=None,
@@ -120,11 +123,27 @@ class ColorMap:
     ):
         self.from_subplot_config = from_subplot_config
 
-        self.cmap = (
+        cmap = (
             cmap
             if cmap is not None
             else load_setting("colormap", "cmap", str, from_subplot_config)
         )
+
+        if module is not None:
+
+            module_name = module.__name__.split(".")[-1]
+            try:
+                cmap = conf.instance.visualize_general.get(
+                    "colormaps", module_name, str
+                )
+            except configparser.NoOptionError:
+                cmap = conf.instance.visualize_general.get("colormaps", "default", str)
+
+        try:
+            self.cmap = colorcet.cm[cmap]
+        except KeyError:
+            self.cmap = cmap
+
         self.norm = (
             norm
             if norm is not None

@@ -206,7 +206,7 @@ class TestIteratedArray:
 
         grid = aa.GridIterate.from_mask(mask=mask, fractional_accuracy=0.9999)
 
-        arr = aa.MaskedArray.manual_2d(
+        arr = aa.Array.manual_mask(
             [
                 [0.0, 0.0, 0.0, 0.0],
                 [0.0, 1.0, 1.0, 0.0],
@@ -232,7 +232,7 @@ class TestIteratedArray:
             )
         ).all()
 
-        result_array_lower_sub = aa.MaskedArray.manual_2d(
+        result_array_lower_sub = aa.Array.manual_mask(
             [
                 [0.0, 0.0, 0.0, 0.0],
                 [0.0, 1.0, 1.0, 0.0],
@@ -242,7 +242,7 @@ class TestIteratedArray:
             mask=mask,
         )
 
-        result_array_higher_sub = aa.MaskedArray.manual_2d(
+        result_array_higher_sub = aa.Array.manual_mask(
             [
                 [0.0, 0.0, 0.0, 0.0],
                 [0.0, 2.0, 2.0, 0.0],
@@ -271,7 +271,7 @@ class TestIteratedArray:
 
         grid = aa.GridIterate.from_mask(mask=mask, fractional_accuracy=0.5)
 
-        result_array_lower_sub = aa.MaskedArray.manual_2d(
+        result_array_lower_sub = aa.Array.manual_mask(
             [
                 [0.0, 0.0, 0.0, 0.0],
                 [0.0, 1.9, 0.001, 0.0],
@@ -281,7 +281,7 @@ class TestIteratedArray:
             mask=mask,
         )
 
-        result_array_higher_sub = aa.MaskedArray.manual_2d(
+        result_array_higher_sub = aa.Array.manual_mask(
             [
                 [0.0, 0.0, 0.0, 0.0],
                 [0.0, 2.0, 2.0, 0.0],
@@ -332,7 +332,7 @@ class TestIteratedArray:
 
         grid = aa.GridIterate.from_mask(mask=mask_lower_sub, fractional_accuracy=0.5)
 
-        array_lower_sub = aa.MaskedArray.manual_2d(
+        array_lower_sub = aa.Array.manual_mask(
             [
                 [0.0, 0.0, 0.0, 0.0],
                 [0.0, 2.0, 2.0, 0.0],
@@ -342,7 +342,7 @@ class TestIteratedArray:
             mask=mask_lower_sub,
         )
 
-        array_higher_sub = aa.MaskedArray.manual_2d(
+        array_higher_sub = aa.Array.manual_mask(
             [
                 [0.0, 0.0, 0.0, 0.0],
                 [0.0, 5.0, 5.0, 0.0],
@@ -505,7 +505,7 @@ class TestIteratedArray:
             mask=mask, fractional_accuracy=1.0, sub_steps=[2, 3]
         )
 
-        arr = aa.MaskedArray(array=np.zeros(9), mask=mask)
+        arr = aa.Array.manual_mask(array=np.zeros(9), mask=mask)
 
         values = grid.iterated_array_from_func(
             func=ndarray_1d_from_grid, cls=None, array_lower_sub_2d=arr
@@ -529,7 +529,7 @@ class TestIteratedGrid:
 
         iterate = aa.GridIterate.from_mask(mask=mask, fractional_accuracy=0.9999)
 
-        grid = aa.MaskedGrid.manual_2d(
+        grid = aa.Grid.manual_mask(
             [
                 [[0.0, 0.0], [0.0, 0.0], [0.0, 0.0], [0.0, 0.0]],
                 [[0.0, 0.0], [1.0, 1.0], [1.0, 1.0], [0.0, 0.0]],
@@ -555,7 +555,7 @@ class TestIteratedGrid:
             )
         ).all()
 
-        grid_lower_sub = aa.MaskedGrid.manual_2d(
+        grid_lower_sub = aa.Grid.manual_mask(
             [
                 [[0.0, 0.0], [0.0, 0.0], [0.0, 0.0], [0.0, 0.0]],
                 [[0.0, 0.0], [1.0, 1.0], [1.0, 1.0], [0.0, 0.0]],
@@ -565,7 +565,7 @@ class TestIteratedGrid:
             mask=mask,
         )
 
-        grid_higher_sub = aa.MaskedGrid.manual_2d(
+        grid_higher_sub = aa.Grid.manual_mask(
             [
                 [[0.0, 0.0], [0.0, 0.0], [0.0, 0.0], [0.0, 0.0]],
                 [[0.0, 0.0], [2.0, 2.0], [2.0, 2.0], [0.0, 0.0]],
@@ -594,7 +594,7 @@ class TestIteratedGrid:
 
         iterate = aa.GridIterate.from_mask(mask=mask, fractional_accuracy=0.5)
 
-        grid_lower_sub = aa.MaskedGrid.manual_2d(
+        grid_lower_sub = aa.Grid.manual_mask(
             [
                 [[0.0, 0.0], [0.0, 0.0], [0.0, 0.0], [0.0, 0.0]],
                 [[0.0, 0.0], [1.9, 1.9], [0.001, 0.001], [0.0, 0.0]],
@@ -604,7 +604,7 @@ class TestIteratedGrid:
             mask=mask,
         )
 
-        grid_higher_sub = aa.MaskedGrid.manual_2d(
+        grid_higher_sub = aa.Grid.manual_mask(
             [
                 [[0.0, 0.0], [0.0, 0.0], [0.0, 0.0], [0.0, 0.0]],
                 [[0.0, 0.0], [2.0, 2.0], [2.0, 2.0], [0.0, 0.0]],
@@ -655,7 +655,7 @@ class TestIteratedGrid:
 
         iterate = aa.GridIterate.from_mask(mask=mask_lower_sub, fractional_accuracy=0.5)
 
-        grid_lower_sub = aa.MaskedGrid.manual_2d(
+        grid_lower_sub = aa.Grid.manual_mask(
             [
                 [[0.0, 0.0], [0.0, 0.0], [0.0, 0.0], [0.0, 0.0]],
                 [[0.0, 0.0], [2.0, 2.0], [2.0, 2.0], [0.0, 0.0]],
@@ -665,7 +665,7 @@ class TestIteratedGrid:
             mask=mask_lower_sub,
         )
 
-        grid_higher_sub = aa.MaskedGrid.manual_2d(
+        grid_higher_sub = aa.Grid.manual_mask(
             [
                 [[0.0, 0.0], [0.0, 0.0], [0.0, 0.0], [0.0, 0.0]],
                 [[0.0, 0.0], [0.1, 2.0], [0.1, 0.1], [0.0, 0.0]],
@@ -834,7 +834,7 @@ class TestIteratedGrid:
             mask=mask, fractional_accuracy=1.0, sub_steps=[2, 3]
         )
 
-        grid_lower = aa.MaskedGrid(grid=np.zeros((9, 2)), mask=mask)
+        grid_lower = aa.Grid.manual_mask(grid=np.zeros((9, 2)), mask=mask)
 
         values = grid.iterated_grid_from_func(
             func=ndarray_1d_from_grid, cls=None, grid_lower_sub_2d=grid_lower

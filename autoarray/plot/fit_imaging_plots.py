@@ -1,4 +1,3 @@
-from autoarray.plot import inversion_plots
 from autoarray.plot import plotters
 
 

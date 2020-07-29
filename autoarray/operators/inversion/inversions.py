@@ -3,9 +3,12 @@ import numpy as np
 from autoconf import conf
 from autoarray import exc
 from autoarray.structures import arrays, grids, visibilities as vis
+from autoarray.operators.inversion import regularization as reg
 from autoarray.dataset import imaging, interferometer
 from autoarray.util import inversion_util
 from scipy.interpolate import griddata
+from scipy import sparse
+import pylops
 
 
 def inversion(masked_dataset, mapper, regularization, check_solution=True):
@@ -108,7 +111,7 @@ class Inversion:
 
         interpolated_reconstruction[np.isnan(interpolated_reconstruction)] = 0.0
 
-        return arrays.Array.manual_2d(
+        return arrays.Array.manual(
             array=interpolated_reconstruction, pixel_scales=grid.pixel_scales
         )
 
@@ -397,6 +400,37 @@ class InversionInterferometer(Inversion):
         transformer,
         mapper,
         regularization,
+        visibilities_complex=None,
+        check_solution=True,
+    ):
+
+        if not isinstance(transformer, pylops.LinearOperator):
+            return cls.from_data_mapper_and_regularization_matrices(
+                visibilities=visibilities,
+                noise_map=noise_map,
+                transformer=transformer,
+                mapper=mapper,
+                regularization=regularization,
+                check_solution=check_solution,
+            )
+        else:
+            return cls.from_data_mapper_and_regularization_lops(
+                visibilities=visibilities_complex,
+                noise_map=noise_map,
+                transformer=transformer,
+                mapper=mapper,
+                regularization=regularization,
+                check_solution=check_solution,
+            )
+
+    @classmethod
+    def from_data_mapper_and_regularization_matrices(
+        cls,
+        visibilities,
+        noise_map,
+        transformer,
+        mapper,
+        regularization,
         check_solution=True,
     ):
 
@@ -455,6 +489,50 @@ class InversionInterferometer(Inversion):
             regularization_matrix=regularization_matrix,
             curvature_reg_matrix=curvature_reg_matrix,
             reconstruction=values,
+        )
+
+    @classmethod
+    def from_data_mapper_and_regularization_lops(
+        cls,
+        visibilities,
+        noise_map,
+        transformer,
+        mapper,
+        regularization,
+        check_solution=True,
+    ):
+
+        regularization_matrix = regularization.regularization_matrix_from_mapper(
+            mapper=mapper
+        )
+
+        Aop = pylops.MatrixMult(
+            sparse.bsr_matrix(mapper.mapping_matrix), dtype="complex64"
+        )
+        Fop = transformer
+
+        Op = Fop * Aop
+
+        Rop = reg.RegularizationLop(regularization_matrix=regularization_matrix)
+
+        reconstruction = pylops.NormalEquationsInversion(
+            Op=Op, Regs=None, epsNRs=[1.0], NRegs=[Rop], data=visibilities
+        )
+
+        # if check_solution:
+        #     if np.isclose(a=reconstruction[0], b=reconstruction[1], atol=1e-4).all():
+        #         if np.isclose(a=reconstruction[0], b=reconstruction, atol=1e-4).all():
+        #             raise exc.InversionException()
+
+        return InversionInterferometer(
+            visibilities=visibilities,
+            noise_map=noise_map,
+            mapper=mapper,
+            regularization=regularization,
+            transformed_mapping_matrices=None,
+            regularization_matrix=regularization_matrix,
+            curvature_reg_matrix=None,
+            reconstruction=np.real(reconstruction),
         )
 
     @property

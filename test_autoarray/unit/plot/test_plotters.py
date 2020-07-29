@@ -696,7 +696,7 @@ class TestAbstractPlotterPlots:
             shape_2d=(31, 31), pixel_scales=(1.0, 1.0), radius=5.0, centre=(2.0, 2.0)
         )
 
-        masked_array = aa.MaskedArray.manual_2d(array=arr, mask=mask)
+        masked_array = aa.Array.manual_mask(array=arr, mask=mask)
 
         plotter.plot_array(array=masked_array)
 
@@ -1036,7 +1036,7 @@ class TestAbstractPlotterNew:
     def test__plotter_with_new_units__new_outputs_are_setup_correctly_if_input(self):
 
         plotter = aplt.Plotter(
-            aplt.Units(use_scaled=True, in_kpc=True, conversion_factor=1.0)
+            units=aplt.Units(use_scaled=True, in_kpc=True, conversion_factor=1.0)
         )
 
         assert plotter.units.use_scaled == True

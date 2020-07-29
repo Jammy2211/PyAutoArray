@@ -219,7 +219,7 @@ class MapperRectangular(Mapper):
             mask=np.full(fill_value=False, shape=self.pixelization_grid.shape_2d),
             sub_size=1,
         )
-        return arrays.Array.manual_2d(
+        return arrays.Array.manual(
             array=recon,
             sub_size=1,
             pixel_scales=self.pixelization_grid.pixel_scales,

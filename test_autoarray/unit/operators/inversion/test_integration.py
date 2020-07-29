@@ -24,7 +24,7 @@ class TestRectangular:
 
         # Source-plane comprises 5 grid, so 5 masked_image pixels traced to the pix-plane.
 
-        grid = aa.MaskedGrid.manual_1d(
+        grid = aa.Grid.manual_mask(
             grid=np.array(
                 [[1.0, -1.0], [1.0, 1.0], [0.0, 0.0], [-1.0, -1.0], [-1.0, 1.0]]
             ),
@@ -119,7 +119,7 @@ class TestRectangular:
 
         # There is no sub-grid, so our grid are just the masked_image grid (note the NumPy weighted_data structure
         # ensures this has no sub-gridding)
-        grid = aa.MaskedGrid.manual_1d(
+        grid = aa.Grid.manual_mask(
             grid=np.array(
                 [
                     [0.9, -0.9],
@@ -239,7 +239,7 @@ class TestRectangular:
         # The grid below is unphysical in that the (0.0, 0.0) terms on the end of each sub-grid probably couldn't
         # happen for a real lens calculation. This is to make a mapping_matrix matrix which explicitly tests the
         # sub-grid.
-        grid = aa.MaskedGrid.manual_1d(
+        grid = aa.Grid.manual_mask(
             grid=np.array(
                 [
                     [1.0, -1.0],
@@ -348,7 +348,7 @@ class TestRectangular:
 
         mask = aa.Mask.manual(mask=mask, pixel_scales=1.0, sub_size=1)
 
-        grid = aa.MaskedGrid.manual_1d(
+        grid = aa.Grid.manual_mask(
             grid=np.array(
                 [[1.0, 1.0], [1.0, 1.0], [1.0, 1.0], [1.0, 1.0], [-1.0, -1.0]]
             ),
@@ -522,7 +522,7 @@ class TestVoronoiMagnification:
             ]
         )
 
-        grid = aa.MaskedGrid.manual_1d(grid=grid, mask=mask)
+        grid = aa.Grid.manual_mask(grid=grid, mask=mask)
 
         pix = aa.pix.VoronoiMagnification(shape=(3, 3))
         sparse_grid = grids.GridSparse.from_grid_and_unmasked_2d_grid_shape(
@@ -625,7 +625,7 @@ class TestVoronoiMagnification:
 
         grid = np.array([[1.0, 0.0], [0.0, -1.0], [0.0, 0.0], [0.0, 1.0], [-1.0, 0.0]])
 
-        grid = aa.MaskedGrid.manual_1d(grid=grid, mask=mask)
+        grid = aa.Grid.manual_mask(grid=grid, mask=mask)
 
         pix = aa.pix.VoronoiMagnification(shape=(3, 3))
         sparse_grid = grids.GridSparse.from_grid_and_unmasked_2d_grid_shape(
@@ -739,7 +739,7 @@ class TestVoronoiMagnification:
             ]
         )
 
-        grid = aa.MaskedGrid.manual_1d(grid=grid, mask=mask)
+        grid = aa.Grid.manual_mask(grid=grid, mask=mask)
 
         pix = aa.pix.VoronoiMagnification(shape=(3, 3))
         sparse_grid = grids.GridSparse.from_grid_and_unmasked_2d_grid_shape(
@@ -830,7 +830,7 @@ class TestVoronoiMagnification:
 
         grid = np.array([[2.0, 1.0], [1.0, 0.0], [1.0, 1.0], [1.0, 2.0], [0.0, 1.0]])
 
-        grid = aa.MaskedGrid.manual_1d(grid=grid, mask=mask)
+        grid = aa.Grid.manual_mask(grid=grid, mask=mask)
 
         pix = aa.pix.VoronoiMagnification(shape=(3, 3))
         sparse_grid = grids.GridSparse.from_grid_and_unmasked_2d_grid_shape(

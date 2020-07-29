@@ -11,6 +11,15 @@ logging.basicConfig()
 logger = logging.getLogger(__name__)
 
 
+def check_array(array):
+
+    if array.store_in_1d and len(array.shape) != 1:
+        raise exc.ArrayException(
+            "An array input into the arrays.Array.__new__ method has store_in_1d = True but"
+            "the input shape of the array is not 1."
+        )
+
+
 def convert_array(array):
     """If the input array input a convert is of type list, convert it to type NumPy array.
 
@@ -28,12 +37,15 @@ def convert_array(array):
 
 def convert_manual_1d_array(array_1d, mask, store_in_1d):
     """
-    Manual 1D array functions take as input a list or ndarray which is to be returned as an Array. This function
+    Manual 1D Array functions take as input a list or ndarray which is to be returned as an Array. This function
     performs the following and checks and conversions on the input:
 
-    1) If the input is a list, convert it to a 1D ndarray.
+    1) If the input is a list, convert it to a 1D ndarray of shape [total_values].
     2) Check that the number of sub-pixels in the array is identical to that of the mask.
     3) Return the array in 1D if it is to be stored in 1D, else return it in 2D.
+
+    For Arrays, `1d' refers to a 1D NumPy array of shape [total_values] and '2d' a 2D NumPy array of shape
+    [total_y_values, total_values].
 
     Parameters
     ----------
@@ -63,16 +75,19 @@ def convert_manual_1d_array(array_1d, mask, store_in_1d):
 
 def convert_manual_2d_array(array_2d, mask, store_in_1d):
     """
-    Manual 2D array functions take as input a list or ndarray which is to be returned as an Array. This function
+    Manual 2D Array functions take as input a list or ndarray which is to be returned as an Array. This function
     performs the following and checks and conversions on the input:
 
     1) If the input is a list, convert it to a 2D ndarray.
     2) Check that the number of sub-pixels in the array is identical to that of the mask.
     3) Return the array in 1D if it is to be stored in 1D, else return it in 2D.
 
+    For Arrays, `1d' refers to a 1D NumPy array of shape [total_values] and '2d' a 2D NumPy array of shape
+    [total_y_values, total_values].
+
     Parameters
     ----------
-    array_1d : ndarray or list
+    array_2d : ndarray or list
         The input structure which is converted to a 2D ndarray if it is a list.
     mask : Mask
         The mask of the output Array.
@@ -97,6 +112,34 @@ def convert_manual_2d_array(array_2d, mask, store_in_1d):
     return array_util.sub_array_2d_from(
         sub_array_1d=sub_array_1d, mask=mask, sub_size=mask.sub_size
     )
+
+
+def convert_manual_array(array, mask, store_in_1d):
+    """
+    Manual array functions take as input a list or ndarray which is to be returned as an Array. This function
+    performs the following and checks and conversions on the input:
+
+    1) If the input is a list, convert it to an ndarray.
+    2) Check that the number of sub-pixels in the array is identical to that of the mask.
+    3) Return the array in 1D if it is to be stored in 1D, else return it in 2D.
+
+    Parameters
+    ----------
+    array : ndarray or list
+        The input structure which is converted to an ndarray if it is a list.
+    mask : Mask
+        The mask of the output Array.
+    store_in_1d : bool
+        Whether the memory-representation of the array is in 1D or 2D.
+    """
+
+    array = convert_array(array=array)
+
+    if len(array.shape) == 1:
+        return convert_manual_1d_array(
+            array_1d=array, mask=mask, store_in_1d=store_in_1d
+        )
+    return convert_manual_2d_array(array_2d=array, mask=mask, store_in_1d=store_in_1d)
 
 
 class AbstractArray(abstract_structure.AbstractStructure):
@@ -223,6 +266,29 @@ class AbstractArray(abstract_structure.AbstractStructure):
     @property
     def extent(self):
         return self.mask.geometry.extent
+
+    @property
+    def in_counts(self):
+        if self.exposure_info.bscale is None:
+            raise exc.FrameException(
+                "Cannot convert a Frame to units COUNTS without a bscale attribute (bscale = None)."
+            )
+
+        return (self - self.exposure_info.bzero) / self.exposure_info.bscale
+
+    @property
+    def in_counts_per_second(self):
+        if self.exposure_info.bscale is None:
+            raise exc.FrameException(
+                "Cannot convert a Frame to units counts without a bscale attribute (bscale = None)."
+            )
+
+        if self.exposure_info.exposure_time is None:
+            raise exc.FrameException(
+                "Cannot convert a Frame to units counts per second without an exposure time attribute (exposure_time = None)."
+            )
+
+        return self.in_counts / self.exposure_info.exposure_time
 
     def new_with_array(self, array):
         """
@@ -460,3 +526,12 @@ class AbstractArray(abstract_structure.AbstractStructure):
         array_util.numpy_array_2d_to_fits(
             array_2d=self.in_2d, file_path=file_path, overwrite=overwrite
         )
+
+
+class ExposureInfo:
+    def __init__(self, original_units=None, bscale=None, bzero=0.0, exposure_time=None):
+
+        self.original_units = original_units
+        self.bscale = bscale
+        self.bzero = bzero
+        self.exposure_time = exposure_time

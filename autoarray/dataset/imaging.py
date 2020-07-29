@@ -12,7 +12,7 @@ from autoarray.operators import convolver
 logger = logging.getLogger(__name__)
 
 
-class Imaging(abstract_dataset.AbstractDataset):
+class AbstractImaging(abstract_dataset.AbstractDataset):
     def __init__(self, image, noise_map, psf=None, positions=None, name=None):
         """A class containing the data, noise-map and point spread function of a 2D imaging dataset.
 
@@ -31,6 +31,16 @@ class Imaging(abstract_dataset.AbstractDataset):
         )
 
         self.psf = psf
+
+    def __array_finalize__(self, obj):
+        if isinstance(obj, Imaging):
+            try:
+                for key, value in obj.__dict__.items():
+                    setattr(self, key, value)
+            except AttributeError:
+                logger.debug(
+                    "Original object in Imaging.__array_finalize__ missing one or more attributes"
+                )
 
     @property
     def shape_2d(self):
@@ -74,23 +84,173 @@ class Imaging(abstract_dataset.AbstractDataset):
             self.noise_map,
         )
 
-        imaging.noise_map = arrays.MaskedArray.manual_1d(
-            array=noise_map_limit, mask=self.image.mask
+        imaging.noise_map = arrays.Array.manual_mask(
+            array=noise_map_limit,
+            mask=self.image.mask,
+            store_in_1d=self.noise_map.store_in_1d,
         )
 
         return imaging
 
-    def output_to_fits(
-        self, image_path, psf_path=None, noise_map_path=None, overwrite=False
+
+class AbstractMaskedImaging(abstract_dataset.AbstractMaskedDataset):
+    def __init__(
+        self,
+        imaging,
+        mask,
+        grid_class=grids.Grid,
+        grid_inversion_class=grids.Grid,
+        fractional_accuracy=0.9999,
+        sub_steps=None,
+        pixel_scales_interp=None,
+        psf_shape_2d=None,
+        inversion_pixel_limit=None,
+        inversion_uses_border=True,
+        renormalize_psf=True,
     ):
-        self.image.output_to_fits(file_path=image_path, overwrite=overwrite)
+        """
+        The lens dataset is the collection of data_type (image, noise-map, PSF), a mask, grid, convolver \
+        and other utilities that are used for modeling and fitting an image of a strong lens.
 
-        if self.psf is not None and psf_path is not None:
-            self.psf.output_to_fits(file_path=psf_path, overwrite=overwrite)
+        Whilst the image, noise-map, etc. are loaded in 2D, the lens dataset creates reduced 1D arrays of each \
+        for lens calculations.
 
-        if self.noise_map is not None and noise_map_path is not None:
-            self.noise_map.output_to_fits(file_path=noise_map_path, overwrite=overwrite)
+        Parameters
+        ----------
+        imaging: im.Imaging
+            The imaging data_type all in 2D (the image, noise-map, PSF, etc.)
+        mask: msk.Mask
+            The 2D mask that is applied to the image.
+        psf_shape_2d : (int, int)
+            The shape of the PSF used for convolving model image generated using analytic light profiles. A smaller \
+            shape will trim the PSF relative to the input image PSF, giving a faster analysis run-time.
+        pixel_scales_interp : float
+            If *True*, expensive to compute mass profile deflection angles will be computed on a sparse grid and \
+            interpolated to the grid, sub and blurring grids.
+        inversion_pixel_limit : int or None
+            The maximum number of pixels that can be used by an inversion, with the limit placed primarily to speed \
+            up run.
+        """
 
+        super().__init__(
+            dataset=imaging,
+            mask=mask,
+            grid_class=grid_class,
+            grid_inversion_class=grid_inversion_class,
+            fractional_accuracy=fractional_accuracy,
+            sub_steps=sub_steps,
+            pixel_scales_interp=pixel_scales_interp,
+            inversion_pixel_limit=inversion_pixel_limit,
+            inversion_uses_border=inversion_uses_border,
+        )
+
+        self.image = arrays.Array.manual_mask(
+            array=imaging.image.in_2d,
+            mask=mask.mask_sub_1,
+            store_in_1d=imaging.image.store_in_1d,
+        )
+
+        self.noise_map = arrays.Array.manual_mask(
+            array=imaging.noise_map.in_2d,
+            mask=mask.mask_sub_1,
+            store_in_1d=imaging.noise_map.store_in_1d,
+        )
+
+        self.pixel_scales_interp = pixel_scales_interp
+
+        ### PSF TRIMMING + CONVOLVER ###
+
+        if imaging.psf is not None:
+
+            if psf_shape_2d is None:
+                self.psf_shape_2d = imaging.psf.shape_2d
+            else:
+                self.psf_shape_2d = psf_shape_2d
+
+            self.psf = kernel.Kernel.manual_2d(
+                array=imaging.psf.resized_from_new_shape(
+                    new_shape=self.psf_shape_2d
+                ).in_2d,
+                renormalize=renormalize_psf,
+            )
+
+            self.convolver = convolver.Convolver(mask=mask, kernel=self.psf)
+
+            if mask.pixel_scales is not None:
+
+                self.blurring_grid = self.grid.blurring_grid_from_kernel_shape(
+                    kernel_shape_2d=self.psf_shape_2d
+                )
+
+        else:
+
+            self.psf = None
+
+    @property
+    def imaging(self):
+        return self.dataset
+
+    @property
+    def data(self):
+        return self.image
+
+    def signal_to_noise_map(self):
+        return self.image / self.noise_map
+
+    def modify_image_and_noise_map(self, image, noise_map):
+
+        masked_imaging = copy.deepcopy(self)
+
+        masked_imaging.image = image
+        masked_imaging.noise_map = noise_map
+
+        return masked_imaging
+
+
+class AbstractSimulatorImaging:
+    def __init__(
+        self,
+        exposure_time_map=None,
+        background_sky_map=None,
+        psf=None,
+        renormalize_psf=True,
+        read_noise=None,
+        add_noise=True,
+        noise_if_add_noise_false=0.1,
+        noise_seed=-1,
+    ):
+        """A class representing a Imaging observation, using the shape of the image, the pixel scale,
+        psf, exposure time, etc.
+
+        Parameters
+        ----------
+        shape_2d : (int, int)
+            The shape of the observation. Note that we do not simulator a full Imaging frame (e.g. 2000 x 2000 pixels for \
+            Hubble imaging), but instead just a cut-out around the strong lens.
+        pixel_scales : float
+            The size of each pixel in arc seconds.
+        psf : PSF
+            An arrays describing the PSF kernel of the image.
+        exposure_time_map : float
+            The exposure time of an observation using this data_type.
+        background_sky_map : float
+            The level of the background sky of an observationg using this data_type.
+        """
+
+        self.exposure_time_map = exposure_time_map
+
+        if psf is not None and renormalize_psf:
+            psf = psf.renormalized
+
+        self.psf = psf
+        self.background_sky_map = background_sky_map
+        self.read_noise = read_noise
+        self.add_noise = add_noise
+        self.noise_if_add_noise_false = noise_if_add_noise_false
+        self.noise_seed = noise_seed
+
+
+class Imaging(AbstractImaging):
     @classmethod
     def from_fits(
         cls,
@@ -164,167 +324,24 @@ class Imaging(abstract_dataset.AbstractDataset):
             image=image, noise_map=noise_map, psf=psf, positions=positions, name=name
         )
 
-    def __array_finalize__(self, obj):
-        if isinstance(obj, Imaging):
-            try:
-                for key, value in obj.__dict__.items():
-                    setattr(self, key, value)
-            except AttributeError:
-                logger.debug(
-                    "Original object in Imaging.__array_finalize__ missing one or more attributes"
-                )
-
-
-class MaskedImaging(abstract_dataset.AbstractMaskedDataset):
-    def __init__(
-        self,
-        imaging,
-        mask,
-        grid_class=grids.Grid,
-        grid_inversion_class=grids.Grid,
-        fractional_accuracy=0.9999,
-        sub_steps=None,
-        pixel_scales_interp=None,
-        psf_shape_2d=None,
-        inversion_pixel_limit=None,
-        inversion_uses_border=True,
-        renormalize_psf=True,
+    def output_to_fits(
+        self, image_path, psf_path=None, noise_map_path=None, overwrite=False
     ):
-        """
-        The lens dataset is the collection of data_type (image, noise-map, PSF), a mask, grid, convolver \
-        and other utilities that are used for modeling and fitting an image of a strong lens.
+        self.image.output_to_fits(file_path=image_path, overwrite=overwrite)
 
-        Whilst the image, noise-map, etc. are loaded in 2D, the lens dataset creates reduced 1D arrays of each \
-        for lens calculations.
+        if self.psf is not None and psf_path is not None:
+            self.psf.output_to_fits(file_path=psf_path, overwrite=overwrite)
 
-        Parameters
-        ----------
-        imaging: im.Imaging
-            The imaging data_type all in 2D (the image, noise-map, PSF, etc.)
-        mask: msk.Mask
-            The 2D mask that is applied to the image.
-        psf_shape_2d : (int, int)
-            The shape of the PSF used for convolving model image generated using analytic light profiles. A smaller \
-            shape will trim the PSF relative to the input image PSF, giving a faster analysis run-time.
-        pixel_scales_interp : float
-            If *True*, expensive to compute mass profile deflection angles will be computed on a sparse grid and \
-            interpolated to the grid, sub and blurring grids.
-        inversion_pixel_limit : int or None
-            The maximum number of pixels that can be used by an inversion, with the limit placed primarily to speed \
-            up run.
-        """
-
-        super().__init__(
-            dataset=imaging,
-            mask=mask,
-            grid_class=grid_class,
-            grid_inversion_class=grid_inversion_class,
-            fractional_accuracy=fractional_accuracy,
-            sub_steps=sub_steps,
-            pixel_scales_interp=pixel_scales_interp,
-            inversion_pixel_limit=inversion_pixel_limit,
-            inversion_uses_border=inversion_uses_border,
-        )
-
-        self.image = arrays.MaskedArray.manual_2d(
-            array=imaging.image.in_2d, mask=mask.mask_sub_1
-        )
-
-        self.noise_map = arrays.MaskedArray.manual_2d(
-            array=imaging.noise_map.in_2d, mask=mask.mask_sub_1
-        )
-
-        self.pixel_scales_interp = pixel_scales_interp
-
-        ### PSF TRIMMING + CONVOLVER ###
-
-        if imaging.psf is not None:
-
-            if psf_shape_2d is None:
-                self.psf_shape_2d = imaging.psf.shape_2d
-            else:
-                self.psf_shape_2d = psf_shape_2d
-
-            self.psf = kernel.Kernel.manual_2d(
-                array=imaging.psf.resized_from_new_shape(
-                    new_shape=self.psf_shape_2d
-                ).in_2d,
-                renormalize=renormalize_psf,
-            )
-
-            self.convolver = convolver.Convolver(mask=mask, kernel=self.psf)
-
-            if mask.pixel_scales is not None:
-
-                self.blurring_grid = self.grid.blurring_grid_from_kernel_shape(
-                    kernel_shape_2d=self.psf_shape_2d
-                )
-
-        else:
-
-            self.psf = None
-
-    @property
-    def imaging(self):
-        return self.dataset
-
-    @property
-    def data(self):
-        return self.image
-
-    def signal_to_noise_map(self):
-        return self.image / self.noise_map
-
-    def modify_image_and_noise_map(self, image, noise_map):
-
-        masked_imaging = copy.deepcopy(self)
-
-        masked_imaging.image = image
-        masked_imaging.noise_map = noise_map
-
-        return masked_imaging
+        if self.noise_map is not None and noise_map_path is not None:
+            self.noise_map.output_to_fits(file_path=noise_map_path, overwrite=overwrite)
 
 
-class SimulatorImaging:
-    def __init__(
-        self,
-        exposure_time_map,
-        background_sky_map=None,
-        psf=None,
-        renormalize_psf=True,
-        add_noise=True,
-        noise_if_add_noise_false=0.1,
-        noise_seed=-1,
-    ):
-        """A class representing a Imaging observation, using the shape of the image, the pixel scale,
-        psf, exposure time, etc.
+class MaskedImaging(AbstractMaskedImaging):
 
-        Parameters
-        ----------
-        shape_2d : (int, int)
-            The shape of the observation. Note that we do not simulator a full Imaging frame (e.g. 2000 x 2000 pixels for \
-            Hubble imaging), but instead just a cut-out around the strong lens.
-        pixel_scales : float
-            The size of each pixel in arc seconds.
-        psf : PSF
-            An arrays describing the PSF kernel of the image.
-        exposure_time_map : float
-            The exposure time of an observation using this data_type.
-        background_sky_map : float
-            The level of the background sky of an observationg using this data_type.
-        """
+    pass
 
-        self.exposure_time_map = exposure_time_map
 
-        if psf is not None and renormalize_psf:
-            psf = psf.renormalized
-
-        self.psf = psf
-        self.background_sky_map = background_sky_map
-        self.add_noise = add_noise
-        self.noise_if_add_noise_false = noise_if_add_noise_false
-        self.noise_seed = noise_seed
-
+class SimulatorImaging(AbstractSimulatorImaging):
     def from_image(self, image, name=None):
         """
         Create a realistic simulated image by applying effects to a plain simulated image.
@@ -402,6 +419,6 @@ class SimulatorImaging:
             shape_2d=image.shape_2d, pixel_scales=image.pixel_scales
         )
 
-        image = arrays.MaskedArray.manual_1d(array=image, mask=mask)
+        image = arrays.Array.manual_mask(array=image, mask=mask)
 
         return Imaging(image=image, psf=self.psf, noise_map=noise_map, name=name)
