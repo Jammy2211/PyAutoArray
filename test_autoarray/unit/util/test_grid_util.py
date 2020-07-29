@@ -1853,7 +1853,7 @@ class TestGridPixelCentres1dViaOverlay:
         )
 
         grid_pixel_centres_1d, y_shape, x_shape = aa.util.grid.grid_pixel_centres_1d_via_grid_1d_overlap(
-            grid_1d=grid_1d, pixel_scales=(1.0, 1.0)
+            grid_1d=grid_1d, pixel_scales=(1.0, 1.0), buffer=1
         )
 
         assert (
@@ -1879,7 +1879,7 @@ class TestGridPixelCentres1dViaOverlay:
         )
 
         grid_pixel_centres_1d, y_shape, x_shape = aa.util.grid.grid_pixel_centres_1d_via_grid_1d_overlap(
-            grid_1d=grid_1d, pixel_scales=(1.0, 1.0)
+            grid_1d=grid_1d, pixel_scales=(1.0, 1.0), buffer=1
         )
 
         assert (
@@ -1893,7 +1893,7 @@ class TestGridPixelCentres1dViaOverlay:
         grid_1d = np.array([[3.0, 3.0], [3.0, 1.0], [0.0, 3.0], [2.0, 2.0]])
 
         grid_pixel_centres_1d, y_shape, x_shape = aa.util.grid.grid_pixel_centres_1d_via_grid_1d_overlap(
-            grid_1d=grid_1d, pixel_scales=(1.0, 1.0)
+            grid_1d=grid_1d, pixel_scales=(1.0, 1.0), buffer=1
         )
 
         assert (
