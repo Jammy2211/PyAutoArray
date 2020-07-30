@@ -36,4 +36,4 @@ from .structures.region import Region
 from .structures.kernel import Kernel
 from .structures.visibilities import Visibilities
 
-__version__ = '0.12.0'
+__version__ = '0.12.1'
