@@ -740,6 +740,42 @@ class Grid(abstract_grid.AbstractGrid):
             store_in_1d=self.store_in_1d,
         )
 
+    def grid_with_coordinates_within_distance_removed(
+        self, coordinates, distance
+    ) -> "Grid":
+        """Remove all coordinates from this Grid which are within a certain distance of an input list of coordinates.
+
+        For example, if the grid has the coordinate (0.0, 0.0) and coordinates=[(0.0, 0.0)], distance=0.1 is input into
+        this function, a new Grid will be created which removes the coordinate (0.0, 0.0).
+
+        Parameters
+        ----------
+        coordinates : [(float, float)]
+            The list of coordinates which are removed from the grid if they are within the distance threshold.
+        distance : float
+            The distance threshold that coordinates are removed if they are within that of the input coordinates.
+        """
+
+        if not isinstance(coordinates, list):
+            coordinates = [coordinates]
+
+        distance_mask = np.full(fill_value=False, shape=self.shape_2d)
+
+        for coordinate in coordinates:
+
+            distances = self.distances_from_coordinate(coordinate=coordinate)
+
+            distance_mask += distances.in_2d < distance
+
+        mask = msk.Mask.manual(
+            mask=distance_mask,
+            pixel_scales=self.pixel_scales,
+            sub_size=self.sub_size,
+            origin=self.origin,
+        )
+
+        return Grid.from_mask(mask=mask, store_in_1d=self.store_in_1d)
+
     def _new_grid(self, grid, mask, store_in_1d):
         """Conveninence method for creating a new instance of the Grid class from this grid.
 
