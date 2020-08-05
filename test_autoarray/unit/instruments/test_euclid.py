@@ -12,7 +12,7 @@ class TestFrameAPI:
         self, euclid_data
     ):
 
-        euclid_frame = aa.FrameEuclid.top_left(
+        euclid_frame = aa.euclid.FrameEuclid.top_left(
             array_electrons=euclid_data,
             parallel_size=2086,
             serial_size=2119,
@@ -28,7 +28,7 @@ class TestFrameAPI:
         assert euclid_frame.scans.serial_prescan == (0, 2086, 0, 51)
         assert euclid_frame.scans.serial_overscan == (20, 2086, 2099, 2119)
 
-        euclid_frame = aa.FrameEuclid.top_left(
+        euclid_frame = aa.euclid.FrameEuclid.top_left(
             array_electrons=euclid_data,
             parallel_size=2086,
             serial_size=2119,
@@ -44,7 +44,7 @@ class TestFrameAPI:
         assert euclid_frame.scans.serial_prescan == (0, 2086, 0, 41)
         assert euclid_frame.scans.serial_overscan == (15, 2086, 2109, 2119)
 
-        euclid_frame = aa.FrameEuclid.top_right(
+        euclid_frame = aa.euclid.FrameEuclid.top_right(
             array=euclid_data,
             parallel_size=2086,
             serial_size=2119,
@@ -60,7 +60,7 @@ class TestFrameAPI:
         assert euclid_frame.scans.serial_prescan == (0, 2086, 0, 51)
         assert euclid_frame.scans.serial_overscan == (20, 2086, 2099, 2119)
 
-        euclid_frame = aa.FrameEuclid.top_right(
+        euclid_frame = aa.euclid.FrameEuclid.top_right(
             array=euclid_data,
             parallel_size=2086,
             serial_size=2119,
@@ -76,7 +76,7 @@ class TestFrameAPI:
         assert euclid_frame.scans.serial_prescan == (0, 2086, 0, 41)
         assert euclid_frame.scans.serial_overscan == (15, 2086, 2109, 2119)
 
-        euclid_frame = aa.FrameEuclid.bottom_left(
+        euclid_frame = aa.euclid.FrameEuclid.bottom_left(
             array=euclid_data,
             parallel_size=2086,
             serial_size=2119,
@@ -92,7 +92,7 @@ class TestFrameAPI:
         assert euclid_frame.scans.serial_prescan == (0, 2086, 0, 51)
         assert euclid_frame.scans.serial_overscan == (0, 2066, 2099, 2119)
 
-        euclid_frame = aa.FrameEuclid.bottom_left(
+        euclid_frame = aa.euclid.FrameEuclid.bottom_left(
             array=euclid_data,
             parallel_size=2086,
             serial_size=2119,
@@ -108,7 +108,7 @@ class TestFrameAPI:
         assert euclid_frame.scans.serial_prescan == (0, 2086, 0, 41)
         assert euclid_frame.scans.serial_overscan == (0, 2071, 2109, 2119)
 
-        euclid_frame = aa.FrameEuclid.bottom_right(
+        euclid_frame = aa.euclid.FrameEuclid.bottom_right(
             array=euclid_data,
             parallel_size=2086,
             serial_size=2119,
@@ -124,7 +124,7 @@ class TestFrameAPI:
         assert euclid_frame.scans.serial_prescan == (0, 2086, 0, 51)
         assert euclid_frame.scans.serial_overscan == (0, 2066, 2099, 2119)
 
-        euclid_frame = aa.FrameEuclid.bottom_right(
+        euclid_frame = aa.euclid.FrameEuclid.bottom_right(
             array=euclid_data,
             parallel_size=2086,
             serial_size=2119,
@@ -141,146 +141,146 @@ class TestFrameAPI:
         assert euclid_frame.scans.serial_overscan == (0, 2071, 2109, 2119)
 
     def test__left_side__chooses_correct_frame_given_input(self, euclid_data):
-        frame = aa.FrameEuclid.from_ccd_and_quadrant_id(
+        frame = aa.euclid.FrameEuclid.from_ccd_and_quadrant_id(
             array=euclid_data, ccd_id="text1", quadrant_id="E"
         )
 
         assert frame.original_roe_corner == (1, 0)
 
-        frame = aa.FrameEuclid.from_ccd_and_quadrant_id(
+        frame = aa.euclid.FrameEuclid.from_ccd_and_quadrant_id(
             array=euclid_data, ccd_id="text2", quadrant_id="E"
         )
 
         assert frame.original_roe_corner == (1, 0)
 
-        frame = aa.FrameEuclid.from_ccd_and_quadrant_id(
+        frame = aa.euclid.FrameEuclid.from_ccd_and_quadrant_id(
             array=euclid_data, ccd_id="text3", quadrant_id="E"
         )
 
         assert frame.original_roe_corner == (1, 0)
 
-        frame = aa.FrameEuclid.from_ccd_and_quadrant_id(
+        frame = aa.euclid.FrameEuclid.from_ccd_and_quadrant_id(
             array=euclid_data, ccd_id="text1", quadrant_id="F"
         )
 
         assert frame.original_roe_corner == (1, 1)
 
-        frame = aa.FrameEuclid.from_ccd_and_quadrant_id(
+        frame = aa.euclid.FrameEuclid.from_ccd_and_quadrant_id(
             array=euclid_data, ccd_id="text2", quadrant_id="F"
         )
 
         assert frame.original_roe_corner == (1, 1)
 
-        frame = aa.FrameEuclid.from_ccd_and_quadrant_id(
+        frame = aa.euclid.FrameEuclid.from_ccd_and_quadrant_id(
             array=euclid_data, ccd_id="text3", quadrant_id="F"
         )
 
         assert frame.original_roe_corner == (1, 1)
 
-        frame = aa.FrameEuclid.from_ccd_and_quadrant_id(
+        frame = aa.euclid.FrameEuclid.from_ccd_and_quadrant_id(
             array=euclid_data, ccd_id="text1", quadrant_id="G"
         )
 
         assert frame.original_roe_corner == (0, 1)
 
-        frame = aa.FrameEuclid.from_ccd_and_quadrant_id(
+        frame = aa.euclid.FrameEuclid.from_ccd_and_quadrant_id(
             array=euclid_data, ccd_id="text2", quadrant_id="G"
         )
 
         assert frame.original_roe_corner == (0, 1)
 
-        frame = aa.FrameEuclid.from_ccd_and_quadrant_id(
+        frame = aa.euclid.FrameEuclid.from_ccd_and_quadrant_id(
             array=euclid_data, ccd_id="text3", quadrant_id="G"
         )
 
         assert frame.original_roe_corner == (0, 1)
 
-        frame = aa.FrameEuclid.from_ccd_and_quadrant_id(
+        frame = aa.euclid.FrameEuclid.from_ccd_and_quadrant_id(
             array=euclid_data, ccd_id="text1", quadrant_id="H"
         )
 
         assert frame.original_roe_corner == (0, 0)
 
-        frame = aa.FrameEuclid.from_ccd_and_quadrant_id(
+        frame = aa.euclid.FrameEuclid.from_ccd_and_quadrant_id(
             array=euclid_data, ccd_id="text2", quadrant_id="H"
         )
 
         assert frame.original_roe_corner == (0, 0)
 
-        frame = aa.FrameEuclid.from_ccd_and_quadrant_id(
+        frame = aa.euclid.FrameEuclid.from_ccd_and_quadrant_id(
             array=euclid_data, ccd_id="text3", quadrant_id="H"
         )
 
         assert frame.original_roe_corner == (0, 0)
 
     def test__right_side__chooses_correct_frame_given_input(self, euclid_data):
-        frame = aa.FrameEuclid.from_ccd_and_quadrant_id(
+        frame = aa.euclid.FrameEuclid.from_ccd_and_quadrant_id(
             array=euclid_data, ccd_id="text4", quadrant_id="E"
         )
 
         assert frame.original_roe_corner == (0, 1)
 
-        frame = aa.FrameEuclid.from_ccd_and_quadrant_id(
+        frame = aa.euclid.FrameEuclid.from_ccd_and_quadrant_id(
             array=euclid_data, ccd_id="text5", quadrant_id="E"
         )
 
         assert frame.original_roe_corner == (0, 1)
 
-        frame = aa.FrameEuclid.from_ccd_and_quadrant_id(
+        frame = aa.euclid.FrameEuclid.from_ccd_and_quadrant_id(
             array=euclid_data, ccd_id="text6", quadrant_id="E"
         )
 
         assert frame.original_roe_corner == (0, 1)
 
-        frame = aa.FrameEuclid.from_ccd_and_quadrant_id(
+        frame = aa.euclid.FrameEuclid.from_ccd_and_quadrant_id(
             array=euclid_data, ccd_id="text4", quadrant_id="F"
         )
 
         assert frame.original_roe_corner == (0, 0)
 
-        frame = aa.FrameEuclid.from_ccd_and_quadrant_id(
+        frame = aa.euclid.FrameEuclid.from_ccd_and_quadrant_id(
             array=euclid_data, ccd_id="text5", quadrant_id="F"
         )
 
         assert frame.original_roe_corner == (0, 0)
 
-        frame = aa.FrameEuclid.from_ccd_and_quadrant_id(
+        frame = aa.euclid.FrameEuclid.from_ccd_and_quadrant_id(
             array=euclid_data, ccd_id="text6", quadrant_id="F"
         )
 
         assert frame.original_roe_corner == (0, 0)
 
-        frame = aa.FrameEuclid.from_ccd_and_quadrant_id(
+        frame = aa.euclid.FrameEuclid.from_ccd_and_quadrant_id(
             array=euclid_data, ccd_id="text4", quadrant_id="G"
         )
 
         assert frame.original_roe_corner == (1, 0)
 
-        frame = aa.FrameEuclid.from_ccd_and_quadrant_id(
+        frame = aa.euclid.FrameEuclid.from_ccd_and_quadrant_id(
             array=euclid_data, ccd_id="text5", quadrant_id="G"
         )
 
         assert frame.original_roe_corner == (1, 0)
 
-        frame = aa.FrameEuclid.from_ccd_and_quadrant_id(
+        frame = aa.euclid.FrameEuclid.from_ccd_and_quadrant_id(
             array=euclid_data, ccd_id="text6", quadrant_id="G"
         )
 
         assert frame.original_roe_corner == (1, 0)
 
-        frame = aa.FrameEuclid.from_ccd_and_quadrant_id(
+        frame = aa.euclid.FrameEuclid.from_ccd_and_quadrant_id(
             array=euclid_data, ccd_id="text4", quadrant_id="H"
         )
 
         assert frame.original_roe_corner == (1, 1)
 
-        frame = aa.FrameEuclid.from_ccd_and_quadrant_id(
+        frame = aa.euclid.FrameEuclid.from_ccd_and_quadrant_id(
             array=euclid_data, ccd_id="text5", quadrant_id="H"
         )
 
         assert frame.original_roe_corner == (1, 1)
 
-        frame = aa.FrameEuclid.from_ccd_and_quadrant_id(
+        frame = aa.euclid.FrameEuclid.from_ccd_and_quadrant_id(
             array=euclid_data, ccd_id="text6", quadrant_id="H"
         )
 

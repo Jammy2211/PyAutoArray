@@ -220,10 +220,10 @@ class TransformerNUFFT(NUFFT_cpu):
         return [real_transfomed_mapping_matrix, imag_transfomed_mapping_matrix]
 
 
-class TransformerNUFFTLops(TransformerNUFFT, pylops.LinearOperator):
+class TransformerNUFFTLinearOperator(TransformerNUFFT, pylops.LinearOperator):
     def __init__(self, uv_wavelengths, real_space_mask, dims_fft):
 
-        super(TransformerNUFFTLops, self).__init__(
+        super(TransformerNUFFTLinearOperator, self).__init__(
             uv_wavelengths=uv_wavelengths, real_space_mask=real_space_mask
         )
 
@@ -234,7 +234,7 @@ class TransformerNUFFTLops(TransformerNUFFT, pylops.LinearOperator):
         self.dtype = "complex128"
         self.explicit = False
 
-    def forward(self, x):
+    def forward_lop(self, x):
         """
         Forward NUFFT on CPU
         :param x: The input numpy array, with the size of Nd or Nd + (batch,)
@@ -250,7 +250,7 @@ class TransformerNUFFTLops(TransformerNUFFT, pylops.LinearOperator):
 
         return self.k2y(self.xx2k(self.x2xx(x2d)))
 
-    def adjoint(self, y):
+    def adjoint_lop(self, y):
         """
         Adjoint NUFFT on CPU
         :param y: The input numpy array, with the size of (M,) or (M, batch)
@@ -265,7 +265,7 @@ class TransformerNUFFTLops(TransformerNUFFT, pylops.LinearOperator):
         )
 
     def _matvec(self, x):
-        return self.forward(x)
+        return self.forward_lop(x)
 
     def _rmatvec(self, x):
-        return self.adjoint(x)
+        return self.adjoint_lop(x)

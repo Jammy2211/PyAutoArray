@@ -43,7 +43,6 @@ class Frame(abstract_frame.AbstractFrame):
 
         obj = array.view(cls)
         obj.mask = mask
-        obj.exposure_info = exposure_info
         obj.store_in_1d = False
         obj.original_roe_corner = original_roe_corner
         obj.scans = scans or abstract_frame.Scans()

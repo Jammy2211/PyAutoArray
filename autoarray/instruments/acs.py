@@ -1,5 +1,6 @@
 from autoarray.structures.arrays import abstract_array
 from autoarray.structures.frame import abstract_frame
+from autoarray.structures import arrays
 from autoarray.structures import frame as f
 from autoarray.structures import region as reg
 from autoarray.util import array_util
@@ -27,9 +28,16 @@ def exposure_info_from_fits(file_path, hdu):
     bscale = ext_header["BSCALE"]
     bzero = ext_header["BZERO"]
     exposure_time = ext_header["EXPTIME"]
+    date_of_observation = ext_header["DATE-OBS"]
+    time_of_observation = ext_header["TIME-OBS"]
 
-    return abstract_array.ExposureInfo(
-        original_units=units, bscale=bscale, bzero=bzero, exposure_time=exposure_time
+    return ExposureInfoACS(
+        original_units=units,
+        bscale=bscale,
+        bzero=bzero,
+        exposure_time=exposure_time,
+        date_of_observation=date_of_observation,
+        time_of_observation=time_of_observation,
     )
 
 
@@ -47,7 +55,22 @@ def array_converted_to_electrons_from_fits(file_path, hdu, exposure_info):
         ) + exposure_info.bzero
 
 
-class FrameACS(f.Frame):
+def array_eps_to_counts(array_eps, bscale, bzero):
+
+    if bscale is None:
+        raise exc.FrameException(
+            "Cannot convert a Frame to units COUNTS without a bscale attribute (bscale = None)."
+        )
+
+    return (array_eps - bzero) / bscale
+
+
+class ArrayACS(arrays.Array):
+
+    pass
+
+
+class FrameACS(f.Frame, ArrayACS):
     """An ACS frame consists of four quadrants ('A', 'B', 'C', 'D') which have the following layout:
 
        <--------S-----------   ---------S----------->
@@ -208,4 +231,31 @@ class FrameACS(f.Frame):
             ),
             exposure_info=exposure_info,
             pixel_scales=0.05,
+        )
+
+
+class ExposureInfoACS(abstract_array.ExposureInfo):
+    def __init__(
+        self,
+        original_units=None,
+        bscale=None,
+        bzero=0.0,
+        exposure_time=None,
+        date_of_observation=None,
+        time_of_observation=None,
+    ):
+
+        super(ExposureInfoACS, self).__init__(
+            exposure_time=exposure_time,
+            date_of_observation=date_of_observation,
+            time_of_observation=time_of_observation,
+        )
+
+        self.original_units = original_units
+        self.bscale = bscale
+        self.bzero = bzero
+
+    def array_eps_to_counts(self, array_eps):
+        return array_eps_to_counts(
+            array_eps=array_eps, bscale=self.bscale, bzero=self.bzero
         )

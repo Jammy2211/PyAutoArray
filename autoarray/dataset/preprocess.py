@@ -2,6 +2,7 @@ import numpy as np
 from scipy.stats import norm
 
 from autoarray.structures import arrays
+from autoarray import exc
 
 
 def array_with_new_shape(array, new_shape):
@@ -24,7 +25,7 @@ def array_with_new_shape(array, new_shape):
     return array.resized_from_new_shape(new_shape=new_shape)
 
 
-def array_from_electrons_per_second_to_counts(array, exposure_time_map):
+def array_eps_to_counts(array_eps, exposure_time_map):
     """
     Convert an array in units of electrons per second to counts, using an exposure time map containing the exposure
     time at every point in the array.
@@ -35,15 +36,15 @@ def array_from_electrons_per_second_to_counts(array, exposure_time_map):
 
     Parameters
     ----------
-    array : aa.Array
+    array_eps : aa.Array
         The array which is converted from electrons per seconds to counts.
     exposure_time_map : aa.Array
         The exposure time at every data-point of the array.
     """
-    return np.multiply(array, exposure_time_map)
+    return np.multiply(array_eps, exposure_time_map)
 
 
-def array_from_counts_to_electrons_per_second(array, exposure_time_map):
+def array_counts_to_eps(array_counts, exposure_time_map):
     """
     Convert an array in units of electrons per second to counts, using an exposure time map containing the exposure
     time at every point in the array.
@@ -54,15 +55,15 @@ def array_from_counts_to_electrons_per_second(array, exposure_time_map):
 
     Parameters
     ----------
-    array  : aa.Array
+    array_counts  : aa.Array
         The array which is converted from counts to electrons per seconds.
     exposure_time_map : aa.Array
         The exposure time at every data-point of the array.
     """
-    return np.divide(array, exposure_time_map)
+    return np.divide(array_counts, exposure_time_map)
 
 
-def array_from_electrons_per_second_to_adus(array, exposure_time_map, gain):
+def array_eps_to_adus(array_eps, exposure_time_map, gain):
     """
     Convert an array in units of electrons per second to adus, using an exposure time map containing the exposure
     time at every point in the array and the instrument gain.
@@ -73,17 +74,17 @@ def array_from_electrons_per_second_to_adus(array, exposure_time_map, gain):
 
     Parameters
     ----------
-    array  : aa.Array
+    array_eps  : aa.Array
         The array which is converted from electrons per seconds to adus.
     exposure_time_map : aa.Array
         The exposure time at every data-point of the array.
     gain : float
         The gain of the instrument used in the conversion to / from counts and ADUs.
     """
-    return np.multiply(array, exposure_time_map) / gain
+    return np.multiply(array_eps, exposure_time_map) / gain
 
 
-def array_from_adus_to_electrons_per_second(array, exposure_time_map, gain):
+def array_adus_to_eps(array_adus, exposure_time_map, gain):
     """
     Convert an array in units of electrons per second to adus, using an exposure time map containing the exposure
     time at every point in the array and the instrument gain.
@@ -94,14 +95,24 @@ def array_from_adus_to_electrons_per_second(array, exposure_time_map, gain):
 
     Parameters
     ----------
-    array  : aa.Array
+    array_adus  : aa.Array
         The array which is converted from adus to electrons per seconds
     exposure_time_map : aa.Array
         The exposure time at every data-point of the array.
     gain : float
         The gain of the instrument used in the conversion to / from counts and ADUs.
     """
-    return np.divide(gain * array, exposure_time_map)
+    return np.divide(gain * array_adus, exposure_time_map)
+
+
+def array_counts_to_counts_per_second(array_counts, exposure_time):
+
+    if exposure_time is None:
+        raise exc.FrameException(
+            "Cannot convert a Frame to units counts per second without an exposure time attribute (exposure_time = None)."
+        )
+
+    return array_counts / exposure_time
 
 
 def array_with_random_uniform_values_added(array, upper_limit=0.001):
@@ -121,7 +132,7 @@ def array_with_random_uniform_values_added(array, upper_limit=0.001):
     return array + upper_limit * np.random.uniform(size=array.shape_1d)
 
 
-def noise_map_from_data_and_exposure_time_map(data, exposure_time_map):
+def noise_map_from_data_eps_and_exposure_time_map(data_eps, exposure_time_map):
     """ Estimate the noise-map value in every data-point, by converting the data to units of counts and taking the
     square root of these values.
     
@@ -132,12 +143,12 @@ def noise_map_from_data_and_exposure_time_map(data, exposure_time_map):
 
     Parameters
     ----------
-    data : aa.Array
+    data_eps : aa.Array
         The data in electrons second used to estimate the Poisson noise in every data point.
     exposure_time_map : aa.Array
         The exposure time at every data-point of the data.
     """
-    return np.sqrt(np.abs(data * exposure_time_map)) / exposure_time_map
+    return np.sqrt(np.abs(data_eps * exposure_time_map)) / exposure_time_map
 
 
 def noise_map_from_weight_map(weight_map):
@@ -179,8 +190,8 @@ def noise_map_from_inverse_noise_map(inverse_noise_map):
     return 1.0 / inverse_noise_map
 
 
-def noise_map_from_data_exposure_time_map_and_background_noise_map(
-    data, exposure_time_map, background_noise_map
+def noise_map_from_data_eps_exposure_time_map_and_background_noise_map(
+    data_eps, exposure_time_map, background_noise_map
 ):
     """ Estimate the noise-map values in every data-point, by converting the data to units of counts, adding the
     background noise-map and taking the square root of these values.
@@ -189,7 +200,7 @@ def noise_map_from_data_exposure_time_map_and_background_noise_map(
 
     Parameters
     ----------
-    data : aa.Array
+    data_eps : aa.Array
         The data in electrons second used to estimate the Poisson noise in every data point.
     exposure_time_map : aa.Array
         The exposure time at every data-point of the data.
@@ -200,7 +211,7 @@ def noise_map_from_data_exposure_time_map_and_background_noise_map(
     return (
         np.sqrt(
             (
-                np.abs(data * exposure_time_map)
+                np.abs(data_eps * exposure_time_map)
                 + np.square(background_noise_map * exposure_time_map)
             )
         )
@@ -302,7 +313,7 @@ def setup_random_seed(seed):
     np.random.seed(seed)
 
 
-def poisson_noise_from_data(data, exposure_time_map, seed=-1):
+def poisson_noise_from_data_eps(data_eps, exposure_time_map, seed=-1):
     """
     Generate a two-dimensional poisson noise_maps-mappers from an image.
 
@@ -310,7 +321,7 @@ def poisson_noise_from_data(data, exposure_time_map, seed=-1):
 
     Parameters
     ----------
-    data : ndarray
+    data_eps : ndarray
         The 2D image, whose values in counts are used to draw Poisson noise_maps values.
     exposure_time_map : Union(ndarray, int)
         2D array of the exposure time in each pixel used to convert to / from counts and electrons per second.
@@ -323,13 +334,13 @@ def poisson_noise_from_data(data, exposure_time_map, seed=-1):
         An array describing simulated poisson noise_maps
     """
     setup_random_seed(seed)
-    image_counts = np.multiply(data, exposure_time_map)
-    return data - np.divide(
-        np.random.poisson(image_counts, data.shape), exposure_time_map
+    image_counts = np.multiply(data_eps, exposure_time_map)
+    return data_eps - np.divide(
+        np.random.poisson(image_counts, data_eps.shape), exposure_time_map
     )
 
 
-def data_with_poisson_noise_added(data, exposure_time_map, seed=-1):
+def data_eps_with_poisson_noise_added(data_eps, exposure_time_map, seed=-1):
     """
     Generate a two-dimensional poisson noise_maps-mappers from an image.
 
@@ -337,7 +348,7 @@ def data_with_poisson_noise_added(data, exposure_time_map, seed=-1):
 
     Parameters
     ----------
-    data : ndarray
+    data_eps : ndarray
         The 2D image, whose values in counts are used to draw Poisson noise_maps values.
     exposure_time_map : Union(ndarray, int)
         2D array of the exposure time in each pixel used to convert to / from counts and electrons per second.
@@ -349,8 +360,8 @@ def data_with_poisson_noise_added(data, exposure_time_map, seed=-1):
     poisson_noise_map: ndarray
         An array describing simulated poisson noise_maps
     """
-    return data + poisson_noise_from_data(
-        data=data, exposure_time_map=exposure_time_map, seed=seed
+    return data_eps + poisson_noise_from_data_eps(
+        data_eps=data_eps, exposure_time_map=exposure_time_map, seed=seed
     )
 
 

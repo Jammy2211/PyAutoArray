@@ -35,8 +35,8 @@ def test__array_from_electrons_per_second_to_counts():
     arr_eps = aa.Array.ones(shape_2d=(3, 3))
     exposure_time_map = aa.Array.full(fill_value=2.0, shape_2d=(3, 3))
 
-    arr_counts = aa.preprocess.array_from_electrons_per_second_to_counts(
-        array=arr_eps, exposure_time_map=exposure_time_map
+    arr_counts = aa.preprocess.array_eps_to_counts(
+        array_eps=arr_eps, exposure_time_map=exposure_time_map
     )
 
     assert (arr_counts.in_2d == 2.0 * np.ones((3, 3))).all()
@@ -47,8 +47,8 @@ def test__array_from_counts_to_electrons_per_second():
     arr_counts = aa.Array.ones(shape_2d=(3, 3))
     exposure_time_map = aa.Array.full(fill_value=2.0, shape_2d=(3, 3))
 
-    arr_eps = aa.preprocess.array_from_counts_to_electrons_per_second(
-        array=arr_counts, exposure_time_map=exposure_time_map
+    arr_eps = aa.preprocess.array_counts_to_eps(
+        array_counts=arr_counts, exposure_time_map=exposure_time_map
     )
 
     assert (arr_eps.in_2d == 0.5 * np.ones((3, 3))).all()
@@ -59,14 +59,14 @@ def test__array_from_electrons_per_second_to_adus():
     arr_eps = aa.Array.ones(shape_2d=(3, 3))
     exposure_time_map = aa.Array.full(fill_value=2.0, shape_2d=(3, 3))
 
-    arr_adus = aa.preprocess.array_from_electrons_per_second_to_adus(
-        array=arr_eps, exposure_time_map=exposure_time_map, gain=2.0
+    arr_adus = aa.preprocess.array_eps_to_adus(
+        array_eps=arr_eps, exposure_time_map=exposure_time_map, gain=2.0
     )
 
     assert arr_adus.in_2d == pytest.approx(0.5 * (2.0 * np.ones((3, 3))), 1.0e-4)
 
-    arr_adus = aa.preprocess.array_from_electrons_per_second_to_adus(
-        array=arr_eps, exposure_time_map=exposure_time_map, gain=4.0
+    arr_adus = aa.preprocess.array_eps_to_adus(
+        array_eps=arr_eps, exposure_time_map=exposure_time_map, gain=4.0
     )
 
     assert arr_adus.in_2d == pytest.approx(0.25 * (2.0 * np.ones((3, 3))), 1.0e-4)
@@ -77,14 +77,14 @@ def test__array_from_adus_to_electrons_per_second():
     arr_adus = aa.Array.ones(shape_2d=(3, 3))
     exposure_time_map = aa.Array.full(fill_value=2.0, shape_2d=(3, 3))
 
-    arr_eps = aa.preprocess.array_from_adus_to_electrons_per_second(
-        array=arr_adus, exposure_time_map=exposure_time_map, gain=2.0
+    arr_eps = aa.preprocess.array_adus_to_eps(
+        array_adus=arr_adus, exposure_time_map=exposure_time_map, gain=2.0
     )
 
     assert (arr_eps.in_2d == 0.5 * 2.0 * np.ones((3, 3))).all()
 
-    arr_eps = aa.preprocess.array_from_adus_to_electrons_per_second(
-        array=arr_adus, exposure_time_map=exposure_time_map, gain=4.0
+    arr_eps = aa.preprocess.array_adus_to_eps(
+        array_adus=arr_adus, exposure_time_map=exposure_time_map, gain=4.0
     )
 
     assert (arr_eps.in_2d == 0.5 * 4.0 * np.ones((3, 3))).all()
@@ -94,32 +94,32 @@ def test__noise_map_from_image_exposure_time_map():
 
     image = aa.Array.ones(shape_2d=(3, 3))
     exposure_time_map = aa.Array.ones(shape_2d=(3, 3))
-    poisson_noise_map = aa.preprocess.noise_map_from_data_and_exposure_time_map(
-        data=image, exposure_time_map=exposure_time_map
+    poisson_noise_map = aa.preprocess.noise_map_from_data_eps_and_exposure_time_map(
+        data_eps=image, exposure_time_map=exposure_time_map
     )
 
     assert (poisson_noise_map.in_2d == np.ones((3, 3))).all()
 
     image = aa.Array.full(fill_value=4.0, shape_2d=(4, 2))
     exposure_time_map = aa.Array.ones(shape_2d=(4, 2))
-    poisson_noise_map = aa.preprocess.noise_map_from_data_and_exposure_time_map(
-        data=image, exposure_time_map=exposure_time_map
+    poisson_noise_map = aa.preprocess.noise_map_from_data_eps_and_exposure_time_map(
+        data_eps=image, exposure_time_map=exposure_time_map
     )
 
     assert (poisson_noise_map.in_2d == 2.0 * np.ones((4, 2))).all()
 
     image = aa.Array.ones(shape_2d=(1, 5))
     exposure_time_map = aa.Array.full(fill_value=4.0, shape_2d=(1, 5))
-    poisson_noise_map = aa.preprocess.noise_map_from_data_and_exposure_time_map(
-        data=image, exposure_time_map=exposure_time_map
+    poisson_noise_map = aa.preprocess.noise_map_from_data_eps_and_exposure_time_map(
+        data_eps=image, exposure_time_map=exposure_time_map
     )
 
     assert (poisson_noise_map.in_2d == 0.5 * np.ones((1, 5))).all()
 
     image = aa.Array.manual_2d(array=np.array([[5.0, 3.0], [10.0, 20.0]]))
     exposure_time_map = aa.Array.manual_2d(np.array([[1.0, 2.0], [3.0, 4.0]]))
-    poisson_noise_map = aa.preprocess.noise_map_from_data_and_exposure_time_map(
-        data=image, exposure_time_map=exposure_time_map
+    poisson_noise_map = aa.preprocess.noise_map_from_data_eps_and_exposure_time_map(
+        data_eps=image, exposure_time_map=exposure_time_map
     )
 
     assert (
@@ -139,8 +139,8 @@ def test__noise_map_from_image_exposure_time_map_and_background_noise_map():
     exposure_time_map = aa.Array.ones(shape_2d=(3, 3))
     background_noise_map = aa.Array.full(fill_value=3.0 ** 0.5, shape_2d=(3, 3))
 
-    noise_map = aa.preprocess.noise_map_from_data_exposure_time_map_and_background_noise_map(
-        data=image,
+    noise_map = aa.preprocess.noise_map_from_data_eps_exposure_time_map_and_background_noise_map(
+        data_eps=image,
         exposure_time_map=exposure_time_map,
         background_noise_map=background_noise_map,
     )
@@ -151,8 +151,8 @@ def test__noise_map_from_image_exposure_time_map_and_background_noise_map():
     exposure_time_map = aa.Array.ones(shape_2d=(2, 3))
     background_noise_map = aa.Array.full(fill_value=5.0, shape_2d=(2, 3))
 
-    noise_map = aa.preprocess.noise_map_from_data_exposure_time_map_and_background_noise_map(
-        data=image,
+    noise_map = aa.preprocess.noise_map_from_data_eps_exposure_time_map_and_background_noise_map(
+        data_eps=image,
         exposure_time_map=exposure_time_map,
         background_noise_map=background_noise_map,
     )
@@ -171,8 +171,8 @@ def test__noise_map_from_image_exposure_time_map_and_background_noise_map():
     exposure_time_map = aa.Array.full(fill_value=2.0, shape_2d=(2, 3))
     background_noise_map = aa.Array.full(fill_value=5.0, shape_2d=(2, 3))
 
-    noise_map = aa.preprocess.noise_map_from_data_exposure_time_map_and_background_noise_map(
-        data=image,
+    noise_map = aa.preprocess.noise_map_from_data_eps_exposure_time_map_and_background_noise_map(
+        data_eps=image,
         exposure_time_map=exposure_time_map,
         background_noise_map=background_noise_map,
     )
@@ -199,8 +199,8 @@ def test__noise_map_from_image_exposure_time_map_and_background_noise_map():
     exposure_time_map = aa.Array.ones(shape_2d=(3, 2))
     background_noise_map = aa.Array.full(fill_value=12.0, shape_2d=(3, 2))
 
-    noise_map = aa.preprocess.noise_map_from_data_exposure_time_map_and_background_noise_map(
-        data=image,
+    noise_map = aa.preprocess.noise_map_from_data_eps_exposure_time_map_and_background_noise_map(
+        data_eps=image,
         exposure_time_map=exposure_time_map,
         background_noise_map=background_noise_map,
     )
@@ -220,8 +220,8 @@ def test__noise_map_from_image_exposure_time_map_and_background_noise_map():
     exposure_time_map = aa.Array.manual_2d(array=[[1.0, 2.0], [3.0, 4.0]])
     background_noise_map = aa.Array.full(fill_value=9.0, shape_2d=((2, 2)))
 
-    noise_map = aa.preprocess.noise_map_from_data_exposure_time_map_and_background_noise_map(
-        data=image,
+    noise_map = aa.preprocess.noise_map_from_data_eps_exposure_time_map_and_background_noise_map(
+        data_eps=image,
         exposure_time_map=exposure_time_map,
         background_noise_map=background_noise_map,
     )
@@ -240,8 +240,8 @@ def test__noise_map_from_image_exposure_time_map_and_background_noise_map():
     exposure_time_map = aa.Array.manual_2d(array=[[1.0, 2.0], [3.0, 4.0]])
     background_noise_map = aa.Array.manual_2d(array=[[5.0, 6.0], [7.0, 8.0]])
 
-    noise_map = aa.preprocess.noise_map_from_data_exposure_time_map_and_background_noise_map(
-        data=image,
+    noise_map = aa.preprocess.noise_map_from_data_eps_exposure_time_map_and_background_noise_map(
+        data_eps=image,
         exposure_time_map=exposure_time_map,
         background_noise_map=background_noise_map,
     )
@@ -412,8 +412,8 @@ def test__poisson_noise_from_data():
     data = aa.Array.zeros(shape_2d=(2, 2))
     exposure_time_map = aa.Array.ones(shape_2d=(2, 2))
 
-    poisson_noise = aa.preprocess.poisson_noise_from_data(
-        data=data, exposure_time_map=exposure_time_map, seed=1
+    poisson_noise = aa.preprocess.poisson_noise_from_data_eps(
+        data_eps=data, exposure_time_map=exposure_time_map, seed=1
     )
 
     assert (poisson_noise.in_2d == np.zeros((2, 2))).all()
@@ -421,8 +421,8 @@ def test__poisson_noise_from_data():
     data = aa.Array.manual_2d([[10.0, 0.0], [0.0, 10.0]])
     exposure_time_map = aa.Array.ones(shape_2d=(2, 2))
 
-    poisson_noise = aa.preprocess.poisson_noise_from_data(
-        data=data, exposure_time_map=exposure_time_map, seed=1
+    poisson_noise = aa.preprocess.poisson_noise_from_data_eps(
+        data_eps=data, exposure_time_map=exposure_time_map, seed=1
     )
 
     assert (
@@ -432,8 +432,8 @@ def test__poisson_noise_from_data():
     data = aa.Array.full(fill_value=10.0, shape_2d=(2, 2))
     exposure_time_map = aa.Array.ones(shape_2d=(2, 2))
 
-    poisson_noise = aa.preprocess.poisson_noise_from_data(
-        data=data, exposure_time_map=exposure_time_map, seed=1
+    poisson_noise = aa.preprocess.poisson_noise_from_data_eps(
+        data_eps=data, exposure_time_map=exposure_time_map, seed=1
     )
 
     # Use known noise_map_1d map for given seed.
@@ -442,8 +442,8 @@ def test__poisson_noise_from_data():
     data = aa.Array.manual_2d([[10000000.0, 0.0], [0.0, 10000000.0]])
     exposure_time_map = aa.Array.ones(shape_2d=(2, 2))
 
-    poisson_noise = aa.preprocess.poisson_noise_from_data(
-        data=data, exposure_time_map=exposure_time_map, seed=1
+    poisson_noise = aa.preprocess.poisson_noise_from_data_eps(
+        data_eps=data, exposure_time_map=exposure_time_map, seed=1
     )
 
     assert (poisson_noise.in_2d == np.array([[743, 0], [0, 3783]])).all()
@@ -453,8 +453,8 @@ def test__data_with_poisson_noised_added():
 
     data = aa.Array.zeros(shape_2d=(2, 2))
     exposure_time_map = aa.Array.ones(shape_2d=(2, 2))
-    data_with_poisson_noise = aa.preprocess.data_with_poisson_noise_added(
-        data=data, exposure_time_map=exposure_time_map, seed=1
+    data_with_poisson_noise = aa.preprocess.data_eps_with_poisson_noise_added(
+        data_eps=data, exposure_time_map=exposure_time_map, seed=1
     )
 
     assert (data_with_poisson_noise.in_2d == np.zeros((2, 2))).all()
@@ -462,8 +462,8 @@ def test__data_with_poisson_noised_added():
     data = aa.Array.manual_2d([[10.0, 0.0], [0.0, 10.0]])
 
     exposure_time_map = aa.Array.ones(shape_2d=(2, 2))
-    data_with_poisson_noise = aa.preprocess.data_with_poisson_noise_added(
-        data=data, exposure_time_map=exposure_time_map, seed=1
+    data_with_poisson_noise = aa.preprocess.data_eps_with_poisson_noise_added(
+        data_eps=data, exposure_time_map=exposure_time_map, seed=1
     )
 
     assert (data_with_poisson_noise.in_2d == np.array([[11, 0], [0, 14]])).all()
@@ -471,8 +471,8 @@ def test__data_with_poisson_noised_added():
     data = aa.Array.full(fill_value=10.0, shape_2d=(2, 2))
 
     exposure_time_map = aa.Array.ones(shape_2d=(2, 2))
-    data_with_poisson_noise = aa.preprocess.data_with_poisson_noise_added(
-        data=data, exposure_time_map=exposure_time_map, seed=1
+    data_with_poisson_noise = aa.preprocess.data_eps_with_poisson_noise_added(
+        data_eps=data, exposure_time_map=exposure_time_map, seed=1
     )
 
     assert (data_with_poisson_noise.in_2d == np.array([[11, 14], [13, 11]])).all()
@@ -481,8 +481,8 @@ def test__data_with_poisson_noised_added():
 
     exposure_time_map = aa.Array.ones(shape_2d=(2, 2))
 
-    data_with_poisson_noise = aa.preprocess.data_with_poisson_noise_added(
-        data=data, exposure_time_map=exposure_time_map, seed=1
+    data_with_poisson_noise = aa.preprocess.data_eps_with_poisson_noise_added(
+        data_eps=data, exposure_time_map=exposure_time_map, seed=1
     )
 
     assert (

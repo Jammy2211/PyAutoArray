@@ -17,11 +17,12 @@ from .operators.inversion.inversions import inversion as Inversion
 from .operators.inversion.mappers import mapper as Mapper
 from .operators.transformer import TransformerDFT
 from .operators.transformer import TransformerNUFFT
+from .operators.transformer import TransformerNUFFTLinearOperator
 from .structures.arrays import Array, Values
 from .structures.arrays.abstract_array import ExposureInfo
 from .structures.frame import Frame
-from .structures.instruments.euclid import FrameEuclid
-from .structures.instruments.acs import FrameACS
+from .instruments import acs
+from .instruments import euclid
 from .structures.frame.abstract_frame import Scans
 from .structures.grids import (
     Grid,

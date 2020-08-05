@@ -47,6 +47,12 @@ class Values(np.ndarray):
         if len(values) == 0:
             return []
 
+        if isinstance(values, dict):
+            values_dict = values
+            values = [value for value in values.values()]
+        else:
+            values_dict = None
+
         if isinstance(values[0], float):
             values = [values]
 
@@ -54,8 +60,8 @@ class Values(np.ndarray):
 
         a = 0
 
-        for coords in values:
-            a = a + len(coords)
+        for value in values:
+            a = a + len(value)
             upper_indexes.append(a)
 
         values_arr = np.concatenate([np.array(i) for i in values])
@@ -63,6 +69,9 @@ class Values(np.ndarray):
         obj = values_arr.view(cls)
         obj.upper_indexes = upper_indexes
         obj.lower_indexes = [0] + upper_indexes[:-1]
+
+        if values_dict is not None:
+            obj.as_dict = values_dict
 
         return obj
 
@@ -84,6 +93,11 @@ class Values(np.ndarray):
     def in_list(self):
         """Convenience method to access the Values in their list representation, whcih is a list of lists of floatss."""
         return [list(self[i:j]) for i, j in zip(self.lower_indexes, self.upper_indexes)]
+
+    @property
+    def in_1d_list(self):
+        """Return the coordinates on a structured list which groups coordinates with a common origin."""
+        return [value for value in self.in_1d]
 
     def values_from_arr_1d(self, arr_1d):
         """Create a *Values* object from a 1D ndarray of values of shape [total_values].

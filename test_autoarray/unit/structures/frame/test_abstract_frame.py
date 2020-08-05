@@ -340,39 +340,3 @@ class TestFrameRegions:
         serial_region = frame.serial_entire_rows_of_region(region=region)
 
         assert serial_region == (3, 5, 0, 55)
-
-
-class TestUnitConversion:
-    def test__conversions_to_counts_and_counts_per_second_use_correct_values(self):
-
-        frame = aa.Frame.ones(
-            shape_2d=(3, 3),
-            exposure_info=aa.ExposureInfo(bscale=1.0, bzero=0.0, exposure_time=1.0),
-        )
-
-        assert (frame.in_counts == np.ones(shape=(3, 3))).all()
-        assert (frame.in_counts_per_second == np.ones(shape=(3, 3))).all()
-
-        frame = aa.Frame.ones(
-            shape_2d=(3, 3),
-            exposure_info=aa.ExposureInfo(bscale=2.0, bzero=0.0, exposure_time=1.0),
-        )
-
-        assert (frame.in_counts == 0.5 * np.ones(shape=(3, 3))).all()
-        assert (frame.in_counts_per_second == 0.5 * np.ones(shape=(3, 3))).all()
-
-        frame = aa.Frame.ones(
-            shape_2d=(3, 3),
-            exposure_info=aa.ExposureInfo(bscale=2.0, bzero=0.1, exposure_time=1.0),
-        )
-
-        assert (frame.in_counts == 0.45 * np.ones(shape=(3, 3))).all()
-        assert (frame.in_counts_per_second == 0.45 * np.ones(shape=(3, 3))).all()
-
-        frame = aa.Frame.ones(
-            shape_2d=(3, 3),
-            exposure_info=aa.ExposureInfo(bscale=2.0, bzero=0.1, exposure_time=2.0),
-        )
-
-        assert (frame.in_counts == 0.45 * np.ones(shape=(3, 3))).all()
-        assert (frame.in_counts_per_second == 0.225 * np.ones(shape=(3, 3))).all()
