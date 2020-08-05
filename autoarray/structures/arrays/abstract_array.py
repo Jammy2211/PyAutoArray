@@ -3,6 +3,7 @@ import logging
 import numpy as np
 
 from autoarray import exc
+from autoarray.dataset import preprocess
 from autoarray.structures import abstract_structure
 from autoarray.mask import mask as msk
 from autoarray.util import binning_util, array_util
@@ -143,6 +144,9 @@ def convert_manual_array(array, mask, store_in_1d):
 
 
 class AbstractArray(abstract_structure.AbstractStructure):
+
+    exposure_info = None
+
     def __reduce__(self):
         # Get the parent's __reduce__ tuple
         pickled_state = super(AbstractArray, self).__reduce__()
@@ -269,26 +273,13 @@ class AbstractArray(abstract_structure.AbstractStructure):
 
     @property
     def in_counts(self):
-        if self.exposure_info.bscale is None:
-            raise exc.FrameException(
-                "Cannot convert a Frame to units COUNTS without a bscale attribute (bscale = None)."
-            )
-
-        return (self - self.exposure_info.bzero) / self.exposure_info.bscale
+        return self.exposure_info.array_eps_to_counts(array_eps=self)
 
     @property
     def in_counts_per_second(self):
-        if self.exposure_info.bscale is None:
-            raise exc.FrameException(
-                "Cannot convert a Frame to units counts without a bscale attribute (bscale = None)."
-            )
-
-        if self.exposure_info.exposure_time is None:
-            raise exc.FrameException(
-                "Cannot convert a Frame to units counts per second without an exposure time attribute (exposure_time = None)."
-            )
-
-        return self.in_counts / self.exposure_info.exposure_time
+        return self.exposure_info.array_counts_to_counts_per_second(
+            array_counts=self.in_counts
+        )
 
     def new_with_array(self, array):
         """
@@ -529,9 +520,18 @@ class AbstractArray(abstract_structure.AbstractStructure):
 
 
 class ExposureInfo:
-    def __init__(self, original_units=None, bscale=None, bzero=0.0, exposure_time=None):
+    def __init__(
+        self, date_of_observation=None, time_of_observation=None, exposure_time=None
+    ):
 
-        self.original_units = original_units
-        self.bscale = bscale
-        self.bzero = bzero
+        self.date_of_observation = date_of_observation
+        self.time_of_observation = time_of_observation
         self.exposure_time = exposure_time
+
+    def array_eps_to_counts(self, array_eps):
+        raise NotImplementedError()
+
+    def array_counts_to_counts_per_second(self, array_counts):
+        return preprocess.array_counts_to_counts_per_second(
+            array_counts=array_counts, exposure_time=self.exposure_time
+        )

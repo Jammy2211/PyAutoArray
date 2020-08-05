@@ -15,7 +15,7 @@ def inversion(masked_dataset, mapper, regularization, check_solution=True):
 
     if isinstance(masked_dataset, imaging.MaskedImaging):
 
-        return InversionImaging.from_data_mapper_and_regularization(
+        return InversionImagingMatrix.from_data_mapper_and_regularization(
             image=masked_dataset.image,
             noise_map=masked_dataset.noise_map,
             convolver=masked_dataset.convolver,
@@ -26,7 +26,7 @@ def inversion(masked_dataset, mapper, regularization, check_solution=True):
 
     elif isinstance(masked_dataset, interferometer.MaskedInterferometer):
 
-        return InversionInterferometer.from_data_mapper_and_regularization(
+        return AbstractInversionInterferometer.from_data_mapper_and_regularization(
             visibilities=masked_dataset.visibilities,
             noise_map=masked_dataset.noise_map,
             transformer=masked_dataset.transformer,
@@ -36,22 +36,56 @@ def inversion(masked_dataset, mapper, regularization, check_solution=True):
         )
 
 
-class Inversion:
+def log_determinant_of_matrix_cholesky(matrix):
+    """There are two terms in the inversion's Bayesian log likelihood function which require the log determinant of \
+    a matrix. These are (Nightingale & Dye 2015, Nightingale, Dye and Massey 2018):
+
+    ln[det(F + H)] = ln[det(curvature_reg_matrix)]
+    ln[det(H)]     = ln[det(regularization_matrix)]
+
+    The curvature_reg_matrix is positive-definite, which means the above log determinants can be computed \
+    efficiently (compared to using np.det) by using a Cholesky decomposition first and summing the log of each \
+    diagonal term.
+
+    Parameters
+    -----------
+    matrix : ndarray
+        The positive-definite matrix the log determinant is computed for.
+    """
+    try:
+        return 2.0 * np.sum(np.log(np.diag(np.linalg.cholesky(matrix))))
+    except np.linalg.LinAlgError:
+        raise exc.InversionException()
+
+
+class AbstractInversionMatrix:
+    def __init__(self, curvature_reg_matrix, regularization_matrix):
+
+        self.curvature_reg_matrix = curvature_reg_matrix
+        self.regularization_matrix = regularization_matrix
+
+    @property
+    def log_det_curvature_reg_matrix_term(self):
+        return log_determinant_of_matrix_cholesky(self.curvature_reg_matrix)
+
+    @property
+    def errors_with_covariance(self):
+        return np.linalg.inv(self.curvature_reg_matrix)
+
+    @property
+    def errors(self):
+        return np.diagonal(self.errors_with_covariance)
+
+
+class AbstractInversion:
     def __init__(
-        self,
-        noise_map,
-        mapper,
-        regularization,
-        regularization_matrix,
-        curvature_reg_matrix,
-        reconstruction,
+        self, noise_map, mapper, regularization, regularization_matrix, reconstruction
     ):
 
         self.noise_map = noise_map
         self.mapper = mapper
         self.regularization = regularization
         self.regularization_matrix = regularization_matrix
-        self.curvature_reg_matrix = curvature_reg_matrix
         self.reconstruction = reconstruction
 
     def interpolated_reconstruction_from_shape_2d(self, shape_2d=None):
@@ -116,14 +150,6 @@ class Inversion:
         )
 
     @property
-    def errors_with_covariance(self):
-        return np.linalg.inv(self.curvature_reg_matrix)
-
-    @property
-    def errors(self):
-        return np.diagonal(self.errors_with_covariance)
-
-    @property
     def regularization_term(self):
         """ Compute the regularization term of an inversion. This term represents the sum of the difference in flux \
         between every pair of neighboring pixels. This is computed as:
@@ -141,34 +167,8 @@ class Inversion:
         )
 
     @property
-    def log_det_curvature_reg_matrix_term(self):
-        return self.log_determinant_of_matrix_cholesky(self.curvature_reg_matrix)
-
-    @property
     def log_det_regularization_matrix_term(self):
-        return self.log_determinant_of_matrix_cholesky(self.regularization_matrix)
-
-    @staticmethod
-    def log_determinant_of_matrix_cholesky(matrix):
-        """There are two terms in the inversion's Bayesian log likelihood function which require the log determinant of \
-        a matrix. These are (Nightingale & Dye 2015, Nightingale, Dye and Massey 2018):
-
-        ln[det(F + H)] = ln[det(curvature_reg_matrix)]
-        ln[det(H)]     = ln[det(regularization_matrix)]
-
-        The curvature_reg_matrix is positive-definite, which means the above log determinants can be computed \
-        efficiently (compared to using np.det) by using a Cholesky decomposition first and summing the log of each \
-        diagonal term.
-
-        Parameters
-        -----------
-        matrix : ndarray
-            The positive-definite matrix the log determinant is computed for.
-        """
-        try:
-            return 2.0 * np.sum(np.log(np.diag(np.linalg.cholesky(matrix))))
-        except np.linalg.LinAlgError:
-            raise exc.InversionException()
+        return log_determinant_of_matrix_cholesky(self.regularization_matrix)
 
     @property
     def brightest_reconstruction_pixel(self):
@@ -183,11 +183,12 @@ class Inversion:
         )
 
 
-class InversionImaging(Inversion):
+class InversionImagingMatrix(AbstractInversion, AbstractInversionMatrix):
     def __init__(
         self,
         image,
         noise_map,
+        convolver,
         mapper,
         regularization,
         blurred_mapping_matrix,
@@ -231,16 +232,22 @@ class InversionImaging(Inversion):
             The vector containing the reconstructed fit to the hyper_galaxies.
         """
 
-        super(InversionImaging, self).__init__(
+        super(InversionImagingMatrix, self).__init__(
             noise_map=noise_map,
             mapper=mapper,
             regularization=regularization,
             regularization_matrix=regularization_matrix,
-            curvature_reg_matrix=curvature_reg_matrix,
             reconstruction=reconstruction,
         )
 
+        AbstractInversionMatrix.__init__(
+            self=self,
+            curvature_reg_matrix=curvature_reg_matrix,
+            regularization_matrix=regularization_matrix,
+        )
+
         self.image = image
+        self.convolver = convolver
         self.blurred_mapping_matrix = blurred_mapping_matrix
 
     @classmethod
@@ -278,9 +285,10 @@ class InversionImaging(Inversion):
                 if np.isclose(a=values[0], b=values, atol=1e-4).all():
                     raise exc.InversionException()
 
-        return InversionImaging(
+        return InversionImagingMatrix(
             image=image,
             noise_map=noise_map,
+            convolver=convolver,
             mapper=mapper,
             regularization=regularization,
             blurred_mapping_matrix=blurred_mapping_matrix,
@@ -332,11 +340,81 @@ class InversionImaging(Inversion):
         )
 
 
-class InversionInterferometer(Inversion):
+class AbstractInversionInterferometer(AbstractInversion):
     def __init__(
         self,
         visibilities,
         noise_map,
+        transformer,
+        mapper,
+        regularization,
+        regularization_matrix,
+        reconstruction,
+    ):
+
+        super(AbstractInversionInterferometer, self).__init__(
+            noise_map=noise_map,
+            mapper=mapper,
+            regularization=regularization,
+            regularization_matrix=regularization_matrix,
+            reconstruction=reconstruction,
+        )
+
+        self.visibilities = visibilities
+        self.transformer = transformer
+
+    @classmethod
+    def from_data_mapper_and_regularization(
+        cls,
+        visibilities,
+        noise_map,
+        transformer,
+        mapper,
+        regularization,
+        check_solution=True,
+    ):
+
+        if not isinstance(transformer, pylops.LinearOperator):
+            return InversionInterferometerMatrix.from_data_mapper_and_regularization(
+                visibilities=visibilities,
+                noise_map=noise_map,
+                transformer=transformer,
+                mapper=mapper,
+                regularization=regularization,
+                check_solution=check_solution,
+            )
+        else:
+            return InversionInterferometerLinearOperator.from_data_mapper_and_regularization(
+                visibilities=visibilities,
+                noise_map=noise_map,
+                transformer=transformer,
+                mapper=mapper,
+                regularization=regularization,
+                check_solution=check_solution,
+            )
+
+    @property
+    def mapped_reconstructed_image(self):
+        mapped_reconstructed_image = inversion_util.mapped_reconstructed_data_from(
+            mapping_matrix=self.mapper.mapping_matrix,
+            reconstruction=self.reconstruction,
+        )
+
+        return arrays.Array(
+            array=mapped_reconstructed_image,
+            mask=self.mapper.grid.mask.mask_sub_1,
+            store_in_1d=True,
+        )
+
+
+class InversionInterferometerMatrix(
+    AbstractInversionInterferometer, AbstractInversionMatrix
+):
+    def __init__(
+        self,
+        visibilities,
+        noise_map,
+        transformer,
         mapper,
         regularization,
         transformed_mapping_matrices,
@@ -380,51 +458,27 @@ class InversionInterferometer(Inversion):
             The vector containing the reconstructed fit to the hyper_galaxies.
         """
 
-        super(InversionInterferometer, self).__init__(
+        super(InversionInterferometerMatrix, self).__init__(
+            visibilities=visibilities,
             noise_map=noise_map,
+            transformer=transformer,
             mapper=mapper,
             regularization=regularization,
             regularization_matrix=regularization_matrix,
-            curvature_reg_matrix=curvature_reg_matrix,
             reconstruction=reconstruction,
         )
 
-        self.visibilities = visibilities
+        AbstractInversionMatrix.__init__(
+            self=self,
+            curvature_reg_matrix=curvature_reg_matrix,
+            regularization_matrix=regularization_matrix,
+        )
+
+        self.curvature_reg_matrix = curvature_reg_matrix
         self.transformed_mapping_matrices = transformed_mapping_matrices
 
     @classmethod
     def from_data_mapper_and_regularization(
-        cls,
-        visibilities,
-        noise_map,
-        transformer,
-        mapper,
-        regularization,
-        visibilities_complex=None,
-        check_solution=True,
-    ):
-
-        if not isinstance(transformer, pylops.LinearOperator):
-            return cls.from_data_mapper_and_regularization_matrices(
-                visibilities=visibilities,
-                noise_map=noise_map,
-                transformer=transformer,
-                mapper=mapper,
-                regularization=regularization,
-                check_solution=check_solution,
-            )
-        else:
-            return cls.from_data_mapper_and_regularization_lops(
-                visibilities=visibilities_complex,
-                noise_map=noise_map,
-                transformer=transformer,
-                mapper=mapper,
-                regularization=regularization,
-                check_solution=check_solution,
-            )
-
-    @classmethod
-    def from_data_mapper_and_regularization_matrices(
         cls,
         visibilities,
         noise_map,
@@ -480,9 +534,10 @@ class InversionInterferometer(Inversion):
                 if np.isclose(a=values[0], b=values, atol=1e-4).all():
                     raise exc.InversionException()
 
-        return InversionInterferometer(
+        return InversionInterferometerMatrix(
             visibilities=visibilities,
             noise_map=noise_map,
+            transformer=transformer,
             mapper=mapper,
             regularization=regularization,
             transformed_mapping_matrices=transformed_mapping_matrices,
@@ -491,8 +546,82 @@ class InversionInterferometer(Inversion):
             reconstruction=values,
         )
 
+    @property
+    def mapped_reconstructed_visibilities(self):
+        real_visibilities = inversion_util.mapped_reconstructed_data_from(
+            mapping_matrix=self.transformed_mapping_matrices[0],
+            reconstruction=self.reconstruction,
+        )
+
+        imag_visibilities = inversion_util.mapped_reconstructed_data_from(
+            mapping_matrix=self.transformed_mapping_matrices[1],
+            reconstruction=self.reconstruction,
+        )
+
+        return vis.Visibilities(
+            visibilities_1d=np.stack((real_visibilities, imag_visibilities), axis=-1)
+        )
+
+
+class InversionInterferometerLinearOperator(AbstractInversionInterferometer):
+    def __init__(
+        self,
+        visibilities,
+        noise_map,
+        transformer,
+        mapper,
+        regularization,
+        regularization_matrix,
+        reconstruction,
+    ):
+        """ An inversion, which given an input image and noise-map reconstructs the image using a linear inversion, \
+        including a convolution that accounts for blurring.
+
+        The inversion uses a 2D pixelization to perform the reconstruction by util each pixelization pixel to a \
+        set of image pixels via a mapper. The reconstructed pixelization is smoothed via a regularization scheme to \
+        prevent over-fitting noise.
+
+        Parameters
+        -----------
+        image_1d : ndarray
+            Flattened 1D array of the observed image the inversion is fitting.
+        noise_map : ndarray
+            Flattened 1D array of the noise-map used by the inversion during the fit.
+        convolver : imaging.convolution.Convolver
+            The convolver used to blur the util matrix with the PSF.
+        mapper : inversion.mappers.Mapper
+            The util between the image-pixels (via its / sub-grid) and pixelization pixels.
+        regularization : inversion.regularization.Regularization
+            The regularization scheme applied to smooth the pixelization used to reconstruct the image for the \
+            inversion
+
+        Attributes
+        -----------
+        blurred_mapping_matrix : ndarray
+            The matrix representing the blurred mappings between the image's sub-grid of pixels and the pixelization \
+            pixels.
+        regularization_matrix : ndarray
+            The matrix defining how the pixelization's pixels are regularized with one another for smoothing (H).
+        curvature_matrix : ndarray
+            The curvature_matrix between each pixelization pixel and all other pixelization pixels (F).
+        curvature_reg_matrix : ndarray
+            The curvature_matrix + regularization matrix.
+        solution_vector : ndarray
+            The vector containing the reconstructed fit to the hyper_galaxies.
+        """
+
+        super(InversionInterferometerLinearOperator, self).__init__(
+            visibilities=visibilities,
+            noise_map=noise_map,
+            transformer=transformer,
+            mapper=mapper,
+            regularization=regularization,
+            regularization_matrix=regularization_matrix,
+            reconstruction=reconstruction,
+        )
+
     @classmethod
-    def from_data_mapper_and_regularization_lops(
+    def from_data_mapper_and_regularization(
         cls,
         visibilities,
         noise_map,
@@ -515,8 +644,17 @@ class InversionInterferometer(Inversion):
 
         Rop = reg.RegularizationLop(regularization_matrix=regularization_matrix)
 
+        Wop = WeightOperator(
+            noise_map=noise_map.as_complex, source_pixels=mapper.pixels
+        )
+
         reconstruction = pylops.NormalEquationsInversion(
-            Op=Op, Regs=None, epsNRs=[1.0], NRegs=[Rop], data=visibilities
+            Op=Op,
+            Regs=None,
+            epsNRs=[1.0],
+            NRegs=[Rop],
+            data=visibilities.as_complex,
+            Weight=Wop,
         )
 
         # if check_solution:
@@ -524,42 +662,41 @@ class InversionInterferometer(Inversion):
         #         if np.isclose(a=reconstruction[0], b=reconstruction, atol=1e-4).all():
         #             raise exc.InversionException()
 
-        return InversionInterferometer(
+        return InversionInterferometerLinearOperator(
             visibilities=visibilities,
             noise_map=noise_map,
+            transformer=transformer,
             mapper=mapper,
             regularization=regularization,
-            transformed_mapping_matrices=None,
             regularization_matrix=regularization_matrix,
-            curvature_reg_matrix=None,
             reconstruction=np.real(reconstruction),
         )
 
     @property
-    def mapped_reconstructed_image(self):
-        mapped_reconstructed_image = inversion_util.mapped_reconstructed_data_from(
-            mapping_matrix=self.mapper.mapping_matrix,
-            reconstruction=self.reconstruction,
-        )
-
-        return arrays.Array(
-            array=mapped_reconstructed_image,
-            mask=self.mapper.grid.mask.mask_sub_1,
-            store_in_1d=True,
-        )
+    def log_det_curvature_reg_matrix_term(self):
+        return 0.0
 
     @property
     def mapped_reconstructed_visibilities(self):
-        real_visibilities = inversion_util.mapped_reconstructed_data_from(
-            mapping_matrix=self.transformed_mapping_matrices[0],
-            reconstruction=self.reconstruction,
+
+        return self.transformer.visibilities_from_image(
+            image=self.mapped_reconstructed_image
         )
 
-        imag_visibilities = inversion_util.mapped_reconstructed_data_from(
-            mapping_matrix=self.transformed_mapping_matrices[1],
-            reconstruction=self.reconstruction,
-        )
 
-        return vis.Visibilities(
-            visibilities_1d=np.stack((real_visibilities, imag_visibilities), axis=-1)
-        )
+class WeightOperator(pylops.LinearOperator):
+    def __init__(self, noise_map, source_pixels):
+
+        self.noise_map = noise_map
+        self.dims = noise_map.shape[0]
+        self.source_pixels = source_pixels
+        self.shape = (self.dims, self.dims)
+        self.dtype = "complex128"
+
+        self.explicit = False
+
+    def _matvec(self, x):
+        return x
+
+    def _rmatvec(self, x):
+        return x

@@ -392,12 +392,14 @@ class SimulatorImaging(AbstractSimulatorImaging):
         )
 
         if self.add_noise is True:
-            image = preprocess.data_with_poisson_noise_added(
-                data=image, exposure_time_map=exposure_time_map, seed=self.noise_seed
+            image = preprocess.data_eps_with_poisson_noise_added(
+                data_eps=image,
+                exposure_time_map=exposure_time_map,
+                seed=self.noise_seed,
             )
 
-            noise_map = preprocess.noise_map_from_data_and_exposure_time_map(
-                data=image, exposure_time_map=exposure_time_map
+            noise_map = preprocess.noise_map_from_data_eps_and_exposure_time_map(
+                data_eps=image, exposure_time_map=exposure_time_map
             )
 
         else:

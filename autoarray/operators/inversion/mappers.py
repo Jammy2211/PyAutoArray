@@ -31,29 +31,11 @@ class Mapper:
         - pix_to_image[2] = 5 tells us that the 3rd pixel of a pixelization maps to the 6th (unmasked) pixel of a \
                             grid.
 
-        Parameters
-        ----------
-        pixels : int
-            The number of pixels in the mapper's pixelization.
-        grid: gridStack
-            A stack of grid's which are mapped to the pixelization (includes an and sub grid).
-        border : grid.GridBorder
-            The border of the grid's grid.
-        hyper_image : ndarray
-            A pre-computed hyper-image of the image the mapper is expected to reconstruct, used for adaptive analysis.
-        """
-        self.grid = grid
-        self.pixelization_grid = pixelization_grid
-        self.hyper_image = hyper_image
+        Mapping Matrix:
 
-    @property
-    def pixels(self):
-        return self.pixelization_grid.pixels
-
-    @property
-    def mapping_matrix(self):
-        """The mapping matrix is a matrix representing the mapping between every unmasked pixel of a grid and \
-        the pixels of a pixelization. Non-zero entries signify a mapping, whereas zeros signify no mapping.
+        The mapper allows us to create a mapping matrix, which is a matrix representing the mapping between every
+        unmasked pixel of a grid and the pixels of a pixelization. Non-zero entries signify a mapping, whereas zeros
+        signify no mapping.
 
         For example, if the grid has 5 pixels and the pixelization 3 pixels, with the following mappings:
 
@@ -94,14 +76,34 @@ class Mapper:
         [0.25, 0.75, 0.0, 0.0] [1 sub-pixel maps to pixel 0, 3 map to pixel 1]
         [ 0.0,  1.0, 0.0, 0.0] [All sub-pixels map to pixel 1]
         [ 0.0,  0.0, 0.5, 0.5] [2 sub-pixels map to pixel 2, 2 map to pixel 3]
+
+        Parameters
+        ----------
+        pixels : int
+            The number of pixels in the mapper's pixelization.
+        grid: gridStack
+            A stack of grid's which are mapped to the pixelization (includes an and sub grid).
+        border : grid.GridBorder
+            The border of the grid's grid.
+        hyper_image : ndarray
+            A pre-computed hyper-image of the image the mapper is expected to reconstruct, used for adaptive analysis.
         """
-        return mapper_util.mapping_matrix_from(
+        self.grid = grid
+        self.pixelization_grid = pixelization_grid
+
+        self.mapping_matrix = mapper_util.mapping_matrix_from(
             pixelization_1d_index_for_sub_mask_1d_index=self.pixelization_1d_index_for_sub_mask_1d_index,
             pixels=self.pixels,
             total_mask_pixels=self.grid.mask.pixels_in_mask,
             mask_1d_index_for_sub_mask_1d_index=self._mask_1d_index_for_sub_mask_1d_index,
             sub_fraction=self.grid.mask.sub_fraction,
         )
+
+        self.hyper_image = hyper_image
+
+    @property
+    def pixels(self):
+        return self.pixelization_grid.pixels
 
     @property
     def _mask_1d_index_for_sub_mask_1d_index(self):

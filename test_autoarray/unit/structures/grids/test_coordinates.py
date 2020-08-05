@@ -126,7 +126,7 @@ class TestAbstractGridCoordinates:
         assert coordinates.in_list == [[(1.0, -1.0), (1.0, 1.0)]]
         assert coordinates.in_1d_list == [(1.0, -1.0), (1.0, 1.0)]
 
-    def test__input_as_dict__all_convert_correctly(self):
+    def test__input_as_dict__retains_dict_and_convert_correctly(self):
 
         # Input tuples
 

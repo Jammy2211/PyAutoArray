@@ -420,7 +420,7 @@ class TestRectangular:
         assert (inversion.regularization_matrix == regularization_matrix).all()
         assert inversion.mapped_reconstructed_image == pytest.approx(np.ones(5), 1.0e-4)
 
-    def test__interferometer(self):
+    def test__interferometer_matrices(self):
 
         visibilities_mask = np.full(fill_value=False, shape=(7, 2))
 
@@ -485,6 +485,77 @@ class TestRectangular:
 
         assert inversion.mapped_reconstructed_visibilities[:, 0] == pytest.approx(
             np.ones(shape=(7,)), 1.0e-4
+        )
+        assert inversion.mapped_reconstructed_visibilities[:, 1] == pytest.approx(
+            np.zeros(shape=(7,)), 1.0e-4
+        )
+
+    def test__interferometer_linear_operator(self):
+
+        visibilities_mask = np.full(fill_value=False, shape=(7, 2))
+
+        real_space_mask = np.array(
+            [
+                [False, False, False, False, False, False, False],
+                [False, False, False, False, False, False, False],
+                [False, False, False, False, False, False, False],
+                [False, False, False, False, False, False, False],
+                [False, False, False, False, False, False, False],
+                [False, False, False, False, False, False, False],
+                [False, False, False, False, False, False, False],
+            ]
+        )
+
+        real_space_mask = aa.Mask.manual(
+            mask=real_space_mask, pixel_scales=0.1, sub_size=1
+        )
+
+        grid = aa.Grid.from_mask(mask=real_space_mask)
+
+        pix = aa.pix.Rectangular(shape=(7, 7))
+
+        mapper = pix.mapper_from_grid_and_sparse_grid(
+            grid=grid, sparse_grid=None, inversion_uses_border=False
+        )
+
+        reg = aa.reg.Constant(coefficient=0.0)
+
+        visibilities = aa.Visibilities.manual_1d(
+            visibilities=[
+                [1.0, 0.0],
+                [1.0, 0.0],
+                [1.0, 0.0],
+                [1.0, 0.0],
+                [1.0, 0.0],
+                [1.0, 0.0],
+                [1.0, 0.0],
+            ]
+        )
+        noise_map = aa.Visibilities.ones(shape_1d=(7,))
+        uv_wavelengths = np.ones(shape=(7, 2))
+
+        interferometer = aa.Interferometer(
+            visibilities=visibilities,
+            noise_map=noise_map,
+            uv_wavelengths=uv_wavelengths,
+        )
+
+        masked_data = aa.MaskedInterferometer(
+            interferometer=interferometer,
+            visibilities_mask=visibilities_mask,
+            real_space_mask=real_space_mask,
+            transformer_class=aa.TransformerNUFFTLinearOperator,
+        )
+
+        inversion = aa.Inversion(
+            masked_dataset=masked_data,
+            mapper=mapper,
+            regularization=reg,
+            check_solution=False,
+        )
+
+        assert inversion.mapped_reconstructed_visibilities[:, 0] == pytest.approx(
+            0.63659 * np.ones(shape=(7,)), 1.0e-4
         )
         assert inversion.mapped_reconstructed_visibilities[:, 1] == pytest.approx(
             np.zeros(shape=(7,)), 1.0e-4

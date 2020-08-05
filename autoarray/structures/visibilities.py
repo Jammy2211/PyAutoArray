@@ -24,7 +24,13 @@ class AbstractVisibilities(np.ndarray):
             The arc-second origin of the hyper array's coordinate system.
         """
         obj = visibilities_1d.view(cls)
+        obj.as_complex = np.apply_along_axis(lambda args: [complex(*args)], 1, obj)
         return obj
+
+    def __array_finalize__(self, obj):
+
+        if hasattr(obj, "as_complex"):
+            self.as_complex = obj.as_complex
 
     def __reduce__(self):
         # Get the parent's __reduce__ tuple

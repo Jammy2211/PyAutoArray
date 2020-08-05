@@ -141,7 +141,7 @@ class AbstractMaskedInterferometer(abstract_dataset.AbstractMaskedDataset):
                 renormalize=renormalize_primary_beam,
             )
 
-        if transformer_class is not trans.TransformerNUFFTLops:
+        if transformer_class is not trans.TransformerNUFFTLinearOperator:
             self.transformer = transformer_class(
                 uv_wavelengths=interferometer.uv_wavelengths,
                 real_space_mask=real_space_mask,
@@ -154,9 +154,6 @@ class AbstractMaskedInterferometer(abstract_dataset.AbstractMaskedDataset):
             )
 
         self.visibilities = interferometer.visibilities
-        self.visibilities_complex = np.apply_along_axis(
-            lambda args: [complex(*args)], 1, interferometer.visibilities
-        )
         self.noise_map = interferometer.noise_map
         self.visibilities_mask = visibilities_mask
 
