@@ -22,22 +22,26 @@ def fits_hdu_from_quadrant_letter(quadrant_letter):
 def exposure_info_from_fits(file_path, hdu):
 
     hdulist = fits.open(file_path)
+
+    sci_header = hdulist[0].header
+
+    exposure_time = sci_header["EXPTIME"]
+    date_of_observation = sci_header["DATE-OBS"]
+    time_of_observation = sci_header["TIME-OBS"]
+
     ext_header = hdulist[hdu].header
 
     units = ext_header["BUNIT"]
     bscale = ext_header["BSCALE"]
     bzero = ext_header["BZERO"]
-    exposure_time = ext_header["EXPTIME"]
-    date_of_observation = ext_header["DATE-OBS"]
-    time_of_observation = ext_header["TIME-OBS"]
 
     return ExposureInfoACS(
-        original_units=units,
-        bscale=bscale,
-        bzero=bzero,
         exposure_time=exposure_time,
         date_of_observation=date_of_observation,
         time_of_observation=time_of_observation,
+        original_units=units,
+        bscale=bscale,
+        bzero=bzero,
     )
 
 

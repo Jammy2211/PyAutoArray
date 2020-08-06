@@ -25,6 +25,14 @@ def create_acs_fits(fits_path, acs_ccd, acs_ccd_0, acs_ccd_1, units):
     new_hdul.append(fits.ImageHDU(acs_ccd_1))
     new_hdul.append(fits.ImageHDU(acs_ccd))
 
+    new_hdul[0].header.set("EXPTIME", 1000.0, "exposure duration (seconds)--calculated")
+    new_hdul[0].header.set(
+        "DATE-OBS", "2000-01-00", "UT date of start of observation (yyyy-mm-dd)"
+    )
+    new_hdul[0].header.set(
+        "TIME-OBS", "00:00:00", "UT time of start of observation (hh:mm:ss)"
+    )
+
     if units in "COUNTS":
         new_hdul[1].header.set("BUNIT", "COUNTS", "brightness units")
         new_hdul[4].header.set("BUNIT", "COUNTS", "brightness units")
@@ -36,24 +44,10 @@ def create_acs_fits(fits_path, acs_ccd, acs_ccd_0, acs_ccd_1, units):
         "BSCALE", 2.0, "scale factor for array value to physical value"
     )
     new_hdul[1].header.set("BZERO", 10.0, "physical value for an array value of zero")
-    new_hdul[1].header.set("EXPTIME", 1000.0, "exposure duration (seconds)--calculated")
-    new_hdul[1].header.set(
-        "DATE-OBS", "2000-01-00", "UT date of start of observation (yyyy-mm-dd)"
-    )
-    new_hdul[1].header.set(
-        "TIME-OBS", "00:00:00", "UT time of start of observation (hh:mm:ss)"
-    )
     new_hdul[4].header.set(
         "BSCALE", 2.0, "scale factor for array value to physical value"
     )
     new_hdul[4].header.set("BZERO", 10.0, "physical value for an array value of zero")
-    new_hdul[4].header.set("EXPTIME", 2000.0, "exposure duration (seconds)--calculated")
-    new_hdul[4].header.set(
-        "DATE-OBS", "2000-01-01", "UT date of start of observation (yyyy-mm-dd)"
-    )
-    new_hdul[4].header.set(
-        "TIME-OBS", "00:00:01", "UT time of start of observation (hh:mm:ss)"
-    )
 
     new_hdul.writeto(f"{fits_path}/acs_ccd.fits")
 
@@ -165,9 +159,9 @@ class TestFrameACS:
             file_path=f"{fits_path}/acs_ccd.fits", quadrant_letter="C"
         )
 
-        assert frame.exposure_info.exposure_time == 2000.0
-        assert frame.exposure_info.date_of_observation == "2000-01-01"
-        assert frame.exposure_info.time_of_observation == "00:00:01"
+        assert frame.exposure_info.exposure_time == 1000.0
+        assert frame.exposure_info.date_of_observation == "2000-01-00"
+        assert frame.exposure_info.time_of_observation == "00:00:00"
 
     def test__from_fits__in_counts__uses_fits_header_correctly_converts_and_picks_correct_quadrant(
         self, acs_ccd
@@ -266,7 +260,7 @@ class TestFrameACS:
             file_path=f"{fits_path}/acs_ccd.fits", quadrant_letter="C"
         )
 
-        assert frame[0, 0] == (30.0 * 2000.0 * 2.0) + 10.0
+        assert frame[0, 0] == (30.0 * 1000.0 * 2.0) + 10.0
         assert frame.original_roe_corner == (1, 0)
         assert frame.shape_2d == (2068, 2072)
 
@@ -274,7 +268,7 @@ class TestFrameACS:
             file_path=f"{fits_path}/acs_ccd.fits", quadrant_letter="D"
         )
 
-        assert frame[0, 0] == (40.0 * 2000.0 * 2.0) + 10.0
+        assert frame[0, 0] == (40.0 * 1000.0 * 2.0) + 10.0
         assert frame.original_roe_corner == (1, 1)
         assert frame.shape_2d == (2068, 2072)
 

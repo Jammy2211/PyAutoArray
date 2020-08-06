@@ -250,7 +250,7 @@ class Array(abstract_array.AbstractArray):
         array = abstract_array.convert_manual_1d_array(
             array_1d=array, mask=mask, store_in_1d=store_in_1d
         )
-        return Array(
+        return cls(
             array=array, mask=mask, exposure_info=exposure_info, store_in_1d=store_in_1d
         )
 
@@ -310,7 +310,7 @@ class Array(abstract_array.AbstractArray):
         array = abstract_array.convert_manual_2d_array(
             array_2d=array, mask=mask, store_in_1d=store_in_1d
         )
-        return Array(array=array, mask=mask, store_in_1d=store_in_1d)
+        return cls(array=array, mask=mask, store_in_1d=store_in_1d)
 
     @classmethod
     def manual(
@@ -385,7 +385,7 @@ class Array(abstract_array.AbstractArray):
         array = abstract_array.convert_manual_array(
             array=array, mask=mask, store_in_1d=store_in_1d
         )
-        return Array(
+        return cls(
             array=array, mask=mask, exposure_info=exposure_info, store_in_1d=store_in_1d
         )
 
