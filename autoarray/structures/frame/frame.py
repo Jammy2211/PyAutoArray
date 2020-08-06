@@ -90,7 +90,7 @@ class Frame(abstract_frame.AbstractFrame):
             roe_corner=roe_corner, shape_2d=array.shape, scans=scans
         )
 
-        return Frame(
+        return cls(
             array=frame_util.rotate_array_from_roe_corner(
                 array=array, roe_corner=roe_corner
             ),
@@ -144,7 +144,7 @@ class Frame(abstract_frame.AbstractFrame):
             roe_corner=roe_corner, shape_2d=array.shape, scans=scans
         )
 
-        return Frame(
+        return cls(
             array=array,
             mask=mask,
             original_roe_corner=roe_corner,

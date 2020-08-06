@@ -1,6 +1,7 @@
 import inspect
 import os
 
+from autoconf import conf
 from autoarray import decorator_util
 from autoarray.util import mask_util
 import numpy as np
@@ -306,7 +307,7 @@ def numpy_array_1d_from_fits(file_path, hdu):
     return np.array(hdu_list[hdu].data)
 
 
-def numpy_array_2d_to_fits(array_2d, file_path, overwrite=False, flip_for_ds9=False):
+def numpy_array_2d_to_fits(array_2d, file_path, overwrite=False):
     """Write a 2D NumPy array to a .fits file.
 
     Before outputting a NumPy array, the array is flipped upside-down using np.flipud. This is so that the structures \
@@ -334,10 +335,14 @@ def numpy_array_2d_to_fits(array_2d, file_path, overwrite=False, flip_for_ds9=Fa
     array_2d = np.ones((5,5))
     numpy_array_to_fits(array_2d=array_2d, file_path='/path/to/file/filename.fits', overwrite=True)
     """
+
     if overwrite and os.path.exists(file_path):
         os.remove(file_path)
 
     new_hdr = fits.Header()
+
+    flip_for_ds9 = conf.instance.general.get("fits", "flip_for_ds9", bool)
+
     if flip_for_ds9:
         hdu = fits.PrimaryHDU(np.flipud(array_2d), new_hdr)
     else:
@@ -345,9 +350,7 @@ def numpy_array_2d_to_fits(array_2d, file_path, overwrite=False, flip_for_ds9=Fa
     hdu.writeto(file_path)
 
 
-def numpy_array_2d_from_fits(
-    file_path, hdu, flip_for_ds9=False, do_not_scale_image_data=False
-):
+def numpy_array_2d_from_fits(file_path, hdu, do_not_scale_image_data=False):
     """Read a 2D NumPy array to a .fits file.
 
     After loading the NumPy array, the array is flipped upside-down using np.flipud. This is so that the structures \
@@ -375,6 +378,9 @@ def numpy_array_2d_from_fits(
     array_2d = numpy_array_from_fits(file_path='/path/to/file/filename.fits', hdu=0)
     """
     hdu_list = fits.open(file_path, do_not_scale_image_data=do_not_scale_image_data)
+
+    flip_for_ds9 = conf.instance.general.get("fits", "flip_for_ds9", bool)
+
     if flip_for_ds9:
         return np.flipud(np.array(hdu_list[hdu].data)).astype("float64")
     else:

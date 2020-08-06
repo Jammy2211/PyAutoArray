@@ -70,7 +70,7 @@ class Kernel(arrays.Array):
             array=array, shape_2d=shape_2d, pixel_scales=pixel_scales, origin=origin
         )
 
-        return Kernel(array=array, mask=array.mask, renormalize=renormalize)
+        return cls(array=array, mask=array.mask, renormalize=renormalize)
 
     @classmethod
     def manual_2d(cls, array, pixel_scales=None, origin=(0.0, 0.0), renormalize=False):
@@ -104,7 +104,7 @@ class Kernel(arrays.Array):
             array=array, pixel_scales=pixel_scales, origin=origin
         )
 
-        return Kernel(array=array, mask=array.mask, renormalize=renormalize)
+        return cls(array=array, mask=array.mask, renormalize=renormalize)
 
     @classmethod
     def manual(
@@ -186,7 +186,7 @@ class Kernel(arrays.Array):
         if sub_size is not None:
             shape_2d = (shape_2d[0] * sub_size, shape_2d[1] * sub_size)
 
-        return Kernel.manual_2d(
+        return cls.manual_2d(
             array=np.full(fill_value=fill_value, shape=shape_2d),
             pixel_scales=pixel_scales,
             origin=origin,
@@ -215,7 +215,7 @@ class Kernel(arrays.Array):
         renormalize : bool
             If True, the Kernel's array values are renormalized such that they sum to 1.0.
         """
-        return Kernel.full(
+        return cls.full(
             fill_value=1.0,
             shape_2d=shape_2d,
             pixel_scales=pixel_scales,
@@ -245,7 +245,7 @@ class Kernel(arrays.Array):
         renormalize : bool
             If True, the Kernel's array values are renormalized such that they sum to 1.0.
         """
-        return Kernel.full(
+        return cls.full(
             fill_value=0.0,
             shape_2d=shape_2d,
             pixel_scales=pixel_scales,
@@ -267,7 +267,7 @@ class Kernel(arrays.Array):
 
         array = np.array([[1.0]])
 
-        return Kernel.manual_2d(array=array, pixel_scales=pixel_scales)
+        return cls.manual_2d(array=array, pixel_scales=pixel_scales)
 
     @classmethod
     def from_gaussian(
@@ -329,7 +329,7 @@ class Kernel(arrays.Array):
             np.exp(-0.5 * np.square(np.divide(grid_elliptical_radii, sigma))),
         )
 
-        return Kernel.manual_1d(
+        return cls.manual_1d(
             array=gaussian,
             shape_2d=shape_2d,
             pixel_scales=pixel_scales,
@@ -357,7 +357,7 @@ class Kernel(arrays.Array):
 
         axis_ratio = x_stddev / y_stddev
 
-        return Kernel.from_gaussian(
+        return cls.from_gaussian(
             shape_2d=shape_2d,
             pixel_scales=pixel_scales,
             sigma=y_stddev,
@@ -394,7 +394,7 @@ class Kernel(arrays.Array):
             file_path=file_path, hdu=hdu, pixel_scales=pixel_scales, origin=origin
         )
 
-        return Kernel(array=array[:], mask=array.mask, renormalize=renormalize)
+        return cls(array=array[:], mask=array.mask, renormalize=renormalize)
 
     def rescaled_with_odd_dimensions_from_rescale_factor(
         self, rescale_factor, renormalize=False
@@ -468,7 +468,7 @@ class Kernel(arrays.Array):
 
             pixel_scales = None
 
-        return Kernel.manual_2d(
+        return self.__class__.manual_2d(
             array=kernel_rescaled, pixel_scales=pixel_scales, renormalize=renormalize
         )
 
@@ -485,7 +485,7 @@ class Kernel(arrays.Array):
     @property
     def renormalized(self):
         """Renormalize the Kernel such that its data_vector values sum to unity."""
-        return Kernel(array=self, mask=self.mask, renormalize=True)
+        return self.__class__(array=self, mask=self.mask, renormalize=True)
 
     def convolved_array_from_array(self, array):
         """
