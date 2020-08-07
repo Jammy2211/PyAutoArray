@@ -1,5 +1,5 @@
 import logging
-
+from astropy import time
 import numpy as np
 
 from autoarray import exc
@@ -527,6 +527,16 @@ class ExposureInfo:
         self.date_of_observation = date_of_observation
         self.time_of_observation = time_of_observation
         self.exposure_time = exposure_time
+
+    @property
+    def modified_julian_date(self):
+        if (
+            self.date_of_observation is not None
+            and self.time_of_observation is not None
+        ):
+            t = time.Time(self.date_of_observation + "T" + self.time_of_observation)
+            return t.mjd
+        return None
 
     def array_eps_to_counts(self, array_eps):
         raise NotImplementedError()

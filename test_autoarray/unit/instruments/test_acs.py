@@ -27,7 +27,7 @@ def create_acs_fits(fits_path, acs_ccd, acs_ccd_0, acs_ccd_1, units):
 
     new_hdul[0].header.set("EXPTIME", 1000.0, "exposure duration (seconds)--calculated")
     new_hdul[0].header.set(
-        "DATE-OBS", "2000-01-00", "UT date of start of observation (yyyy-mm-dd)"
+        "DATE-OBS", "2000-01-01", "UT date of start of observation (yyyy-mm-dd)"
     )
     new_hdul[0].header.set(
         "TIME-OBS", "00:00:00", "UT time of start of observation (hh:mm:ss)"
@@ -152,16 +152,18 @@ class TestFrameACS:
         )
 
         assert frame.exposure_info.exposure_time == 1000.0
-        assert frame.exposure_info.date_of_observation == "2000-01-00"
+        assert frame.exposure_info.date_of_observation == "2000-01-01"
         assert frame.exposure_info.time_of_observation == "00:00:00"
+        assert frame.exposure_info.modified_julian_date == 51544.0
 
         frame = aa.acs.FrameACS.from_fits(
             file_path=f"{fits_path}/acs_ccd.fits", quadrant_letter="C"
         )
 
         assert frame.exposure_info.exposure_time == 1000.0
-        assert frame.exposure_info.date_of_observation == "2000-01-00"
+        assert frame.exposure_info.date_of_observation == "2000-01-01"
         assert frame.exposure_info.time_of_observation == "00:00:00"
+        assert frame.exposure_info.modified_julian_date == 51544.0
 
     def test__from_fits__in_counts__uses_fits_header_correctly_converts_and_picks_correct_quadrant(
         self, acs_ccd
