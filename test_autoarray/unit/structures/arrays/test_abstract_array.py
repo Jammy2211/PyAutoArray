@@ -651,3 +651,13 @@ class TestOutputToFits:
         )
 
         assert (masked_array_from_out == np.ones((3, 3))).all()
+
+
+class TestExposureInfo:
+    def test__exposure_info_has_date_and_time_of_observation__calcs_julian_date(self):
+
+        exposure_info = aa.ExposureInfo(
+            date_of_observation="2000-01-01", time_of_observation="00:00:00"
+        )
+
+        assert exposure_info.modified_julian_date == 51544.0
