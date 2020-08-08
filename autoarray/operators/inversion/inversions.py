@@ -11,7 +11,13 @@ from scipy import sparse
 import pylops
 
 
-def inversion(masked_dataset, mapper, regularization, check_solution=True):
+def inversion(
+    masked_dataset,
+    mapper,
+    regularization,
+    check_solution=True,
+    uses_linear_operators=False,
+):
 
     if isinstance(masked_dataset, imaging.MaskedImaging):
 
@@ -32,6 +38,7 @@ def inversion(masked_dataset, mapper, regularization, check_solution=True):
             transformer=masked_dataset.transformer,
             mapper=mapper,
             regularization=regularization,
+            uses_linear_operators=uses_linear_operators,
             check_solution=check_solution,
         )
 
@@ -371,10 +378,11 @@ class AbstractInversionInterferometer(AbstractInversion):
         transformer,
         mapper,
         regularization,
+        uses_linear_operators=True,
         check_solution=True,
     ):
 
-        if not isinstance(transformer, pylops.LinearOperator):
+        if not uses_linear_operators:
             return InversionInterferometerMatrix.from_data_mapper_and_regularization(
                 visibilities=visibilities,
                 noise_map=noise_map,
@@ -644,17 +652,13 @@ class InversionInterferometerLinearOperator(AbstractInversionInterferometer):
 
         Rop = reg.RegularizationLop(regularization_matrix=regularization_matrix)
 
-        Wop = WeightOperator(
-            noise_map=noise_map.as_complex, source_pixels=mapper.pixels
-        )
-
         reconstruction = pylops.NormalEquationsInversion(
             Op=Op,
             Regs=None,
             epsNRs=[1.0],
             NRegs=[Rop],
             data=visibilities.as_complex,
-            Weight=Wop,
+            Weight=noise_map.Wop,
         )
 
         # if check_solution:

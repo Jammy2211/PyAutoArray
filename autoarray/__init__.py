@@ -17,7 +17,6 @@ from .operators.inversion.inversions import inversion as Inversion
 from .operators.inversion.mappers import mapper as Mapper
 from .operators.transformer import TransformerDFT
 from .operators.transformer import TransformerNUFFT
-from .operators.transformer import TransformerNUFFTLinearOperator
 from .structures.arrays import Array, Values
 from .structures.arrays.abstract_array import ExposureInfo
 from .structures.frame import Frame
@@ -35,6 +34,6 @@ from .structures.grids import (
 )
 from .structures.region import Region
 from .structures.kernel import Kernel
-from .structures.visibilities import Visibilities
+from .structures.visibilities import Visibilities, VisibilitiesNoiseMap
 
 __version__ = "0.12.2"

@@ -461,7 +461,7 @@ class TestRectangular:
                 [1.0, 0.0],
             ]
         )
-        noise_map = aa.Visibilities.ones(shape_1d=(7,))
+        noise_map = aa.VisibilitiesNoiseMap.ones(shape_1d=(7,))
         uv_wavelengths = np.ones(shape=(7, 2))
 
         interferometer = aa.Interferometer(
@@ -531,7 +531,7 @@ class TestRectangular:
                 [1.0, 0.0],
             ]
         )
-        noise_map = aa.Visibilities.ones(shape_1d=(7,))
+        noise_map = aa.VisibilitiesNoiseMap.ones(shape_1d=(7,))
         uv_wavelengths = np.ones(shape=(7, 2))
 
         interferometer = aa.Interferometer(
@@ -544,18 +544,20 @@ class TestRectangular:
             interferometer=interferometer,
             visibilities_mask=visibilities_mask,
             real_space_mask=real_space_mask,
-            transformer_class=aa.TransformerNUFFTLinearOperator,
+            transformer_class=aa.TransformerNUFFT,
+            inversion_uses_linear_operators=True,
         )
 
         inversion = aa.Inversion(
             masked_dataset=masked_data,
             mapper=mapper,
             regularization=reg,
+            uses_linear_operators=True,
             check_solution=False,
         )
 
         assert inversion.mapped_reconstructed_visibilities[:, 0] == pytest.approx(
-            0.63659 * np.ones(shape=(7,)), 1.0e-4
+            0.56233 * np.ones(shape=(7,)), 1.0e-4
         )
         assert inversion.mapped_reconstructed_visibilities[:, 1] == pytest.approx(
             np.zeros(shape=(7,)), 1.0e-4
@@ -1017,7 +1019,7 @@ class TestVoronoiMagnification:
                 [1.0, 0.0],
             ]
         )
-        noise_map = aa.Visibilities.ones(shape_1d=(7,))
+        noise_map = aa.VisibilitiesNoiseMap.ones(shape_1d=(7,))
         uv_wavelengths = np.ones(shape=(7, 2))
 
         interferometer = aa.Interferometer(

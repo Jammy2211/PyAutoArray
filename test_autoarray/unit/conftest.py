@@ -201,7 +201,7 @@ def make_visibilities_7():
 
 @pytest.fixture(name="noise_map_7x2")
 def make_noise_map_7():
-    return aa.Visibilities.full(shape_1d=(7,), fill_value=2.0)
+    return aa.VisibilitiesNoiseMap.full(shape_1d=(7,), fill_value=2.0)
 
 
 @pytest.fixture(name="primary_beam_3x3")
