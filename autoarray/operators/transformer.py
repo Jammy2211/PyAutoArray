@@ -120,7 +120,7 @@ class TransformerDFT:
         return [real_transformed_mapping_matrix, imag_transformed_mapping_matrix]
 
 
-class TransformerNUFFT(NUFFT_cpu):
+class TransformerNUFFT(NUFFT_cpu, pylops.LinearOperator):
     def __init__(self, uv_wavelengths, real_space_mask):
 
         super(TransformerNUFFT, self).__init__()
@@ -152,6 +152,16 @@ class TransformerNUFFT(NUFFT_cpu):
                 * self.uv_wavelengths[:, 0]
             )
         )
+
+        self.real_space_pixels = self.real_space_mask.pixels_in_mask
+        self.total_visibilities = uv_wavelengths.shape[0]
+
+        self.shape = (
+            int(np.prod(self.total_visibilities)),
+            int(np.prod(self.real_space_pixels)),
+        )
+        self.dtype = "complex128"
+        self.explicit = False
 
     def initialize_plan(self, ratio=2, interp_kernel=(6, 6)):
 
@@ -218,21 +228,6 @@ class TransformerNUFFT(NUFFT_cpu):
             imag_transfomed_mapping_matrix[:, source_pixel_1d_index] = visibilities.imag
 
         return [real_transfomed_mapping_matrix, imag_transfomed_mapping_matrix]
-
-
-class TransformerNUFFTLinearOperator(TransformerNUFFT, pylops.LinearOperator):
-    def __init__(self, uv_wavelengths, real_space_mask, dims_fft):
-
-        super(TransformerNUFFTLinearOperator, self).__init__(
-            uv_wavelengths=uv_wavelengths, real_space_mask=real_space_mask
-        )
-
-        self.real_space_pixels = self.real_space_mask.pixels_in_mask
-        self.dims_fft = dims_fft
-
-        self.shape = (int(np.prod(self.dims_fft)), int(np.prod(self.real_space_pixels)))
-        self.dtype = "complex128"
-        self.explicit = False
 
     def forward_lop(self, x):
         """

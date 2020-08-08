@@ -79,6 +79,7 @@ class AbstractMaskedInterferometer(abstract_dataset.AbstractMaskedDataset):
         primary_beam_shape_2d=None,
         inversion_pixel_limit=None,
         inversion_uses_border=True,
+        inversion_uses_linear_operators=True,
         renormalize_primary_beam=True,
     ):
         """
@@ -141,21 +142,19 @@ class AbstractMaskedInterferometer(abstract_dataset.AbstractMaskedDataset):
                 renormalize=renormalize_primary_beam,
             )
 
-        if transformer_class is not trans.TransformerNUFFTLinearOperator:
-            self.transformer = transformer_class(
-                uv_wavelengths=interferometer.uv_wavelengths,
-                real_space_mask=real_space_mask,
-            )
-        else:
-            self.transformer = transformer_class(
-                uv_wavelengths=interferometer.uv_wavelengths,
-                real_space_mask=real_space_mask,
-                dims_fft=interferometer.visibilities.shape[0],
-            )
+        self.transformer = transformer_class(
+            uv_wavelengths=interferometer.uv_wavelengths,
+            real_space_mask=real_space_mask,
+        )
 
         self.visibilities = interferometer.visibilities
         self.noise_map = interferometer.noise_map
         self.visibilities_mask = visibilities_mask
+
+        if not isinstance(self.transformer, trans.TransformerDFT):
+            self.inversion_uses_linear_operators = inversion_uses_linear_operators
+        else:
+            self.inversion_uses_linear_operators = False
 
     @property
     def interferometer(self):
@@ -324,7 +323,7 @@ class Interferometer(AbstractInterferometer):
             file_path=visibilities_path, hdu=visibilities_hdu
         )
 
-        noise_map = aa.Visibilities.from_fits(
+        noise_map = aa.VisibilitiesNoiseMap.from_fits(
             file_path=noise_map_path, hdu=noise_map_hdu
         )
 
