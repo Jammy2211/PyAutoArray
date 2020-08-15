@@ -77,9 +77,6 @@ class AbstractMaskedInterferometer(abstract_dataset.AbstractMaskedDataset):
         pixel_scales_interp=None,
         transformer_class=trans.TransformerNUFFT,
         primary_beam_shape_2d=None,
-        inversion_pixel_limit=None,
-        inversion_uses_border=True,
-        inversion_uses_linear_operators=True,
         renormalize_primary_beam=True,
     ):
         """
@@ -120,8 +117,6 @@ class AbstractMaskedInterferometer(abstract_dataset.AbstractMaskedDataset):
             fractional_accuracy=fractional_accuracy,
             sub_steps=sub_steps,
             pixel_scales_interp=pixel_scales_interp,
-            inversion_pixel_limit=inversion_pixel_limit,
-            inversion_uses_border=inversion_uses_border,
         )
 
         if self.interferometer.primary_beam is None:
@@ -150,11 +145,6 @@ class AbstractMaskedInterferometer(abstract_dataset.AbstractMaskedDataset):
         self.visibilities = interferometer.visibilities
         self.noise_map = interferometer.noise_map
         self.visibilities_mask = visibilities_mask
-
-        if not isinstance(self.transformer, trans.TransformerDFT):
-            self.inversion_uses_linear_operators = inversion_uses_linear_operators
-        else:
-            self.inversion_uses_linear_operators = False
 
     @property
     def interferometer(self):

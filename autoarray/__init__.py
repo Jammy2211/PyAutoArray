@@ -13,6 +13,7 @@ from .fit.fit import FitImaging, FitInterferometer
 from .mask.mask import Mask
 from .operators.convolver import Convolver
 from .inversion import pixelizations as pix, regularization as reg
+from .inversion.pixelizations import PixelizationSettings
 from .inversion.inversions import inversion as Inversion, InversionSettings
 from .inversion.mappers import mapper as Mapper
 from .operators.transformer import TransformerDFT

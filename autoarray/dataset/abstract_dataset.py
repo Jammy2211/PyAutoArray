@@ -137,8 +137,6 @@ class AbstractMaskedDataset:
         fractional_accuracy=0.9999,
         sub_steps=None,
         pixel_scales_interp=None,
-        inversion_pixel_limit=None,
-        inversion_uses_border=True,
     ):
 
         if sub_steps is None:
@@ -173,9 +171,6 @@ class AbstractMaskedDataset:
 
             self.grid = None
             self.grid_inversion = None
-
-        self.inversion_pixel_limit = inversion_pixel_limit
-        self.inversion_uses_border = inversion_uses_border
 
     @property
     def name(self) -> str:

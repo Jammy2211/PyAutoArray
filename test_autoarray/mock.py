@@ -198,7 +198,7 @@ class MockPixelization:
 
     # noinspection PyUnusedLocal,PyShadowingNames
     def mapper_from_grid_and_sparse_grid(
-        self, grid, sparse_grid, inversion_uses_border, hyper_image=None
+        self, grid, sparse_grid, inversion_use_border, hyper_image=None
     ):
         return self.value
 

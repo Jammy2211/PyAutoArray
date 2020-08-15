@@ -104,8 +104,6 @@ class AbstractMaskedImaging(abstract_dataset.AbstractMaskedDataset):
         sub_steps=None,
         pixel_scales_interp=None,
         psf_shape_2d=None,
-        inversion_pixel_limit=None,
-        inversion_uses_border=True,
         renormalize_psf=True,
     ):
         """
@@ -140,8 +138,6 @@ class AbstractMaskedImaging(abstract_dataset.AbstractMaskedDataset):
             fractional_accuracy=fractional_accuracy,
             sub_steps=sub_steps,
             pixel_scales_interp=pixel_scales_interp,
-            inversion_pixel_limit=inversion_pixel_limit,
-            inversion_uses_border=inversion_uses_border,
         )
 
         self.image = arrays.Array.manual_mask(

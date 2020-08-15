@@ -7,7 +7,7 @@ import numpy as np
 logger = logging.getLogger(__name__)
 
 
-class TestInversionNoiseMap:
+class TestInverseNoiseMap:
     def test__inverse_noise_is_one_over_noise(self):
         array = aa.Array.manual_2d([[1.0, 2.0], [3.0, 4.0]])
         noise_map = aa.Array.manual_2d([[1.0, 2.0], [4.0, 8.0]])
@@ -141,29 +141,3 @@ class TestAbstractMaskedData:
         assert (masked_imaging_7x7.grid_inversion == grid).all()
         assert (masked_imaging_7x7.grid_inversion.vtx == grid.vtx).all()
         assert (masked_imaging_7x7.grid_inversion.wts == grid.wts).all()
-
-    def test__inversion_pixel_limit(self, imaging_7x7, sub_mask_7x7):
-        masked_imaging_7x7 = abstract_dataset.AbstractMaskedDataset(
-            dataset=imaging_7x7, mask=sub_mask_7x7, inversion_pixel_limit=2
-        )
-
-        assert masked_imaging_7x7.inversion_pixel_limit == 2
-
-        masked_imaging_7x7 = abstract_dataset.AbstractMaskedDataset(
-            dataset=imaging_7x7, mask=sub_mask_7x7, inversion_pixel_limit=5
-        )
-
-        assert masked_imaging_7x7.inversion_pixel_limit == 5
-
-    def test__inversion_uses_border(self, imaging_7x7, sub_mask_7x7):
-        masked_imaging_7x7 = abstract_dataset.AbstractMaskedDataset(
-            dataset=imaging_7x7, mask=sub_mask_7x7, inversion_uses_border=True
-        )
-
-        assert masked_imaging_7x7.inversion_uses_border == True
-
-        masked_imaging_7x7 = abstract_dataset.AbstractMaskedDataset(
-            dataset=imaging_7x7, mask=sub_mask_7x7, inversion_uses_border=False
-        )
-
-        assert masked_imaging_7x7.inversion_uses_border == False
