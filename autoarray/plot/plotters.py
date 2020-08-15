@@ -19,7 +19,7 @@ from autoarray.structures import grids
 from autoarray.plot import mat_objs
 import inspect
 import os
-from autoarray.operators.inversion import mappers
+from autoarray.inversion import mappers
 
 
 def setting(section, name, python_type):

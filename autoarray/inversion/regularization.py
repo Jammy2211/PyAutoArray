@@ -123,6 +123,12 @@ class Regularization:
             
         """
 
+    def regularization_weights_from_mapper(self, mapper):
+        raise NotImplementedError
+
+    def regularization_matrix_from_mapper(self, mapper):
+        raise NotImplementedError
+
 
 class Constant(Regularization):
     def __init__(self, coefficient=1.0):

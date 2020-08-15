@@ -25,13 +25,13 @@ class AbstractVisibilities(np.ndarray):
             The arc-second origin of the hyper array's coordinate system.
         """
         obj = visibilities_1d.view(cls)
-        obj.as_complex = np.apply_along_axis(lambda args: [complex(*args)], 1, obj)
+        obj._as_complex = None
         return obj
 
     def __array_finalize__(self, obj):
 
-        if hasattr(obj, "as_complex"):
-            self.as_complex = obj.as_complex
+        if hasattr(obj, "_as_complex"):
+            self._as_complex = obj._as_complex
 
     def __reduce__(self):
         # Get the parent's __reduce__ tuple
@@ -95,6 +95,14 @@ class AbstractVisibilities(np.ndarray):
     @array_util.Memoizer()
     def phases(self):
         return np.arctan2(self.imag, self.real)
+
+    @property
+    def as_complex(self):
+        if self._as_complex is None:
+            self._as_complex = np.apply_along_axis(
+                lambda args: [complex(*args)], 1, self
+            )
+        return self._as_complex
 
     def output_to_fits(self, file_path, overwrite=False):
         array_util.numpy_array_2d_to_fits(
@@ -175,8 +183,8 @@ class VisibilitiesNoiseMap(Visibilities):
 
     def __array_finalize__(self, obj):
 
-        if hasattr(obj, "as_complex"):
-            self.as_complex = obj.as_complex
+        if hasattr(obj, "_as_complex"):
+            self._as_complex = obj._as_complex
 
         if hasattr(obj, "Wop"):
             self.Wop = obj.Wop

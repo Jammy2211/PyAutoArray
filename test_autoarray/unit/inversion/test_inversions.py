@@ -1,5 +1,5 @@
 import autoarray as aa
-from autoarray.operators.inversion import inversions
+from autoarray.inversion import inversions
 from autoarray import exc
 import numpy as np
 
@@ -48,7 +48,7 @@ class TestAbstractInversion:
             convolver=mock.MockConvolver(matrix_shape),
             mapper=mock.MockMapper(matrix_shape=matrix_shape),
             regularization=mock.MockRegularization(matrix_shape),
-            check_solution=False,
+            settings=aa.InversionSettings(check_solution=False),
         )
 
         inversion.reconstruction = np.array([1.0, 1.0, 1.0])
@@ -85,7 +85,7 @@ class TestAbstractInversion:
             convolver=mock.MockConvolver(matrix_shape),
             mapper=mock.MockMapper(matrix_shape),
             regularization=mock.MockRegularization(matrix_shape),
-            check_solution=False,
+            settings=aa.InversionSettings(check_solution=False),
         )
 
         # G_l term, Warren & Dye 2003 / Nightingale /2015 2018
@@ -125,7 +125,7 @@ class TestAbstractInversion:
                 ),
             ),
             regularization=mock.MockRegularization(matrix_shape),
-            check_solution=False,
+            settings=aa.InversionSettings(check_solution=False),
         )
 
         inversion.reconstruction = np.array([2.0, 3.0, 5.0, 0.0])
@@ -138,7 +138,7 @@ class TestAbstractInversion:
     ):
 
         conf.instance = aa.conf.Config(
-            path.join(directory, "../files/inversion_image_grid"),
+            path.join(directory, "files/inversion_image_grid"),
             path.join(directory, "output"),
         )
 
@@ -174,7 +174,7 @@ class TestAbstractInversion:
                 pixelization_grid=pixelization_grid,
             ),
             regularization=mock.MockRegularization(matrix_shape),
-            check_solution=False,
+            settings=aa.InversionSettings(check_solution=False),
         )
 
         inversion.reconstruction = np.array(
@@ -200,7 +200,7 @@ class TestAbstractInversion:
     def test__interpolated_errors__also_on_image_grid__interpolates_values(self):
 
         conf.instance = aa.conf.Config(
-            path.join(directory, "../files/inversion_image_grid"),
+            path.join(directory, "files/inversion_image_grid"),
             path.join(directory, "output"),
         )
 
@@ -236,7 +236,7 @@ class TestAbstractInversion:
                 pixelization_grid=pixelization_grid,
             ),
             regularization=mock.MockRegularization(matrix_shape),
-            check_solution=False,
+            settings=aa.InversionSettings(check_solution=False),
         )
 
         inversion.reconstruction = np.array(
@@ -257,7 +257,7 @@ class TestAbstractInversion:
         self
     ):
         conf.instance = aa.conf.Config(
-            path.join(directory, "../files/inversion_source_grid"),
+            path.join(directory, "files/inversion_source_grid"),
             path.join(directory, "output"),
         )
 
@@ -293,7 +293,7 @@ class TestAbstractInversion:
                 pixelization_grid=pixelization_grid,
             ),
             regularization=mock.MockRegularization(matrix_shape),
-            check_solution=False,
+            settings=aa.InversionSettings(check_solution=False),
         )
 
         inversion.reconstruction = np.array(
@@ -380,7 +380,7 @@ class TestAbstractInversion:
                 pixelization_grid=pixelization_grid,
             ),
             regularization=mock.MockRegularization(matrix_shape),
-            check_solution=False,
+            settings=aa.InversionSettings(check_solution=False),
         )
 
         inversion.reconstruction = np.array(
@@ -441,7 +441,7 @@ class TestInversionImagingMatrix:
             convolver=mock.MockConvolver(matrix_shape),
             mapper=mock.MockMapper(matrix_shape=matrix_shape, grid=grid),
             regularization=mock.MockRegularization(matrix_shape),
-            check_solution=False,
+            settings=aa.InversionSettings(check_solution=False),
         )
 
         inversion.reconstruction = np.array([1.0, 1.0, 1.0, 1.0])
@@ -486,7 +486,7 @@ class TestInversionImagingMatrix:
             convolver=mock.MockConvolver(matrix_shape),
             mapper=mock.MockMapper(matrix_shape=matrix_shape, grid=grid),
             regularization=mock.MockRegularization(matrix_shape),
-            check_solution=False,
+            settings=aa.InversionSettings(check_solution=False),
         )
 
         inversion.reconstruction = np.array([1.0, 2.0, 3.0, 4.0])

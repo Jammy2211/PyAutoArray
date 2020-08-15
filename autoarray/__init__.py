@@ -12,9 +12,9 @@ from .dataset.interferometer import (
 from .fit.fit import FitImaging, FitInterferometer
 from .mask.mask import Mask
 from .operators.convolver import Convolver
-from .operators.inversion import pixelizations as pix, regularization as reg
-from .operators.inversion.inversions import inversion as Inversion
-from .operators.inversion.mappers import mapper as Mapper
+from .inversion import pixelizations as pix, regularization as reg
+from .inversion.inversions import inversion as Inversion, InversionSettings
+from .inversion.mappers import mapper as Mapper
 from .operators.transformer import TransformerDFT
 from .operators.transformer import TransformerNUFFT
 from .structures.arrays import Array, Values
