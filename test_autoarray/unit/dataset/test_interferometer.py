@@ -181,7 +181,7 @@ class TestMaskedInterferometer:
             == -55636.4609375
         )
 
-    def test__primary_beam_and_transformer(self, interferometer_7, sub_mask_7x7):
+    def test__transformer(self, interferometer_7, sub_mask_7x7):
 
         visibilities_mask = np.full(fill_value=False, shape=(7, 2))
 
@@ -190,24 +190,20 @@ class TestMaskedInterferometer:
             visibilities_mask=visibilities_mask,
             real_space_mask=sub_mask_7x7,
             transformer_class=transformer.TransformerDFT,
-            inversion_uses_linear_operators=True,
         )
 
         assert type(masked_interferometer_7.primary_beam) == kern.Kernel
         assert type(masked_interferometer_7.transformer) == transformer.TransformerDFT
-        assert masked_interferometer_7.inversion_uses_linear_operators == False
 
         masked_interferometer_7 = aa.MaskedInterferometer(
             interferometer=interferometer_7,
             visibilities_mask=visibilities_mask,
             real_space_mask=sub_mask_7x7,
             transformer_class=transformer.TransformerNUFFT,
-            inversion_uses_linear_operators=True,
         )
 
         assert type(masked_interferometer_7.primary_beam) == kern.Kernel
         assert type(masked_interferometer_7.transformer) == transformer.TransformerNUFFT
-        assert masked_interferometer_7.inversion_uses_linear_operators == True
 
     def test__different_interferometer_without_mock_objects__customize_constructor_inputs(
         self

@@ -39,7 +39,7 @@ class TestRectangular:
         mapper = pix.mapper_from_grid_and_sparse_grid(
             grid=grid,
             sparse_grid=None,
-            inversion_uses_border=False,
+            settings=aa.PixelizationSettings(use_border=False),
             hyper_image=np.ones((2, 2)),
         )
 
@@ -145,7 +145,9 @@ class TestRectangular:
         pix = aa.pix.Rectangular(shape=(3, 3))
 
         mapper = pix.mapper_from_grid_and_sparse_grid(
-            grid=grid, sparse_grid=None, inversion_uses_border=False
+            grid=grid,
+            sparse_grid=None,
+            settings=aa.PixelizationSettings(use_border=False),
         )
 
         assert mapper.is_image_plane_pixelization == False
@@ -270,7 +272,9 @@ class TestRectangular:
         pix = aa.pix.Rectangular(shape=(3, 3))
 
         mapper = pix.mapper_from_grid_and_sparse_grid(
-            grid=grid, sparse_grid=None, inversion_uses_border=False
+            grid=grid,
+            sparse_grid=None,
+            settings=aa.PixelizationSettings(use_border=False),
         )
 
         assert mapper.is_image_plane_pixelization == False
@@ -358,7 +362,9 @@ class TestRectangular:
         pix = aa.pix.Rectangular(shape=(3, 3))
 
         mapper = pix.mapper_from_grid_and_sparse_grid(
-            grid=grid, sparse_grid=None, inversion_uses_border=False
+            grid=grid,
+            sparse_grid=None,
+            settings=aa.PixelizationSettings(use_border=False),
         )
 
         assert mapper.is_image_plane_pixelization == False
@@ -445,7 +451,9 @@ class TestRectangular:
         pix = aa.pix.Rectangular(shape=(7, 7))
 
         mapper = pix.mapper_from_grid_and_sparse_grid(
-            grid=grid, sparse_grid=None, inversion_uses_border=False
+            grid=grid,
+            sparse_grid=None,
+            settings=aa.PixelizationSettings(use_border=False),
         )
 
         reg = aa.reg.Constant(coefficient=0.0)
@@ -515,7 +523,9 @@ class TestRectangular:
         pix = aa.pix.Rectangular(shape=(7, 7))
 
         mapper = pix.mapper_from_grid_and_sparse_grid(
-            grid=grid, sparse_grid=None, inversion_uses_border=False
+            grid=grid,
+            sparse_grid=None,
+            settings=aa.PixelizationSettings(use_border=False),
         )
 
         reg = aa.reg.Constant(coefficient=0.0)
@@ -545,7 +555,6 @@ class TestRectangular:
             visibilities_mask=visibilities_mask,
             real_space_mask=real_space_mask,
             transformer_class=aa.TransformerNUFFT,
-            inversion_uses_linear_operators=True,
         )
 
         inversion = aa.Inversion(
@@ -611,7 +620,7 @@ class TestVoronoiMagnification:
         mapper = pix.mapper_from_grid_and_sparse_grid(
             grid=grid,
             sparse_grid=pixelization_grid,
-            inversion_uses_border=False,
+            settings=aa.PixelizationSettings(use_border=False),
             hyper_image=np.ones((2, 2)),
         )
 
@@ -712,7 +721,9 @@ class TestVoronoiMagnification:
         )
 
         mapper = pix.mapper_from_grid_and_sparse_grid(
-            grid=grid, sparse_grid=pixelization_grid, inversion_uses_border=False
+            grid=grid,
+            sparse_grid=pixelization_grid,
+            settings=aa.PixelizationSettings(use_border=False),
         )
 
         assert mapper.is_image_plane_pixelization == True
@@ -826,7 +837,9 @@ class TestVoronoiMagnification:
         )
 
         mapper = pix.mapper_from_grid_and_sparse_grid(
-            grid=grid, sparse_grid=pixelization_grid, inversion_uses_border=False
+            grid=grid,
+            sparse_grid=pixelization_grid,
+            settings=aa.PixelizationSettings(use_border=False),
         )
 
         assert mapper.is_image_plane_pixelization == True
@@ -917,7 +930,9 @@ class TestVoronoiMagnification:
         )
 
         mapper = pix.mapper_from_grid_and_sparse_grid(
-            grid=grid, sparse_grid=pixelization_grid, inversion_uses_border=False
+            grid=grid,
+            sparse_grid=pixelization_grid,
+            settings=aa.PixelizationSettings(use_border=False),
         )
 
         assert mapper.is_image_plane_pixelization == True
@@ -1004,7 +1019,9 @@ class TestVoronoiMagnification:
         sparse_grid = pix.sparse_grid_from_grid(grid=grid)
 
         mapper = pix.mapper_from_grid_and_sparse_grid(
-            grid=grid, sparse_grid=sparse_grid, inversion_uses_border=False
+            grid=grid,
+            sparse_grid=sparse_grid,
+            settings=aa.PixelizationSettings(use_border=False),
         )
 
         reg = aa.reg.Constant(coefficient=0.0)

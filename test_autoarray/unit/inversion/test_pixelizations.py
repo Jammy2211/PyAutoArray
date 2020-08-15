@@ -4,12 +4,11 @@ import numpy as np
 
 
 class TestRectangular:
-    class TestGridVoronoi:
-        def test__pixelization_grid_returns_none_as_not_used(self, sub_grid_7x7):
+    def test__pixelization_grid_returns_none_as_not_used(self, sub_grid_7x7):
 
-            pix = aa.pix.Rectangular(shape=(3, 3))
+        pix = aa.pix.Rectangular(shape=(3, 3))
 
-            assert pix.sparse_grid_from_grid(grid=sub_grid_7x7) == None
+        assert pix.sparse_grid_from_grid(grid=sub_grid_7x7) == None
 
 
 class TestVoronoiMagnification:
@@ -114,7 +113,9 @@ class TestVoronoiBrightness:
         hyper_image = np.array([0.0, 1.0, 0.0, 1.0, 0.0, 1.0, 0.0, 1.0, 0.0])
 
         pixelization_grid = pix.sparse_grid_from_grid(
-            grid=sub_grid_7x7, hyper_image=hyper_image, seed=1
+            grid=sub_grid_7x7,
+            hyper_image=hyper_image,
+            settings=aa.PixelizationSettings(kmeans_seed=1),
         )
 
         weight_map = pix.weight_map_from_hyper_image(hyper_image=hyper_image)

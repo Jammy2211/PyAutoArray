@@ -5,12 +5,27 @@ from autoarray.structures import grids
 from autoarray.inversion import mappers
 
 
+class PixelizationSettings:
+    def __init__(
+        self,
+        use_border: bool = True,
+        pixel_limit: int = None,
+        is_stochastic: bool = False,
+        kmeans_seed: int = 0,
+    ):
+
+        self.use_border = use_border
+        self.pixel_limit = pixel_limit
+        self.is_stochastic = is_stochastic
+        self.kmeans_seed = kmeans_seed
+
+
 class Pixelization:
     def __init__(self):
         """ Abstract base class for a pixelization, which discretizes grid of (y,x) coordinates into pixels.
         """
 
-    def mapper_from_grid_and_sparse_grid(self, grid, border):
+    def mapper_from_grid_and_sparse_grid(self, grid: grids.Grid, border: np.ndarray):
         raise NotImplementedError(
             "pixelization_mapper_from_grids_and_borders should be overridden"
         )
@@ -45,7 +60,11 @@ class Rectangular(Pixelization):
         super(Rectangular, self).__init__()
 
     def mapper_from_grid_and_sparse_grid(
-        self, grid, sparse_grid=None, inversion_uses_border=False, hyper_image=None
+        self,
+        grid: grids.Grid,
+        sparse_grid: grids.Grid = None,
+        hyper_image: np.ndarray = None,
+        settings=PixelizationSettings(),
     ):
         """Setup a rectangular mapper from a rectangular pixelization, as follows:
 
@@ -63,7 +82,7 @@ class Rectangular(Pixelization):
             A pre-computed hyper-image of the image the mapper is expected to reconstruct, used for adaptive analysis.
         """
 
-        if inversion_uses_border:
+        if settings.use_border:
             relocated_grid = grid.relocated_grid_from_grid(grid=grid)
         else:
             relocated_grid = grid
@@ -79,7 +98,10 @@ class Rectangular(Pixelization):
         )
 
     def sparse_grid_from_grid(
-        self, grid, hyper_image=None, inversion_stochastic=False, seed=1
+        self,
+        grid: grids.Grid,
+        hyper_image: np.ndarray = None,
+        settings=PixelizationSettings(),
     ):
         return None
 
@@ -95,7 +117,11 @@ class Voronoi(Pixelization):
         super(Voronoi, self).__init__()
 
     def mapper_from_grid_and_sparse_grid(
-        self, grid, sparse_grid=None, inversion_uses_border=False, hyper_image=None
+        self,
+        grid: grids.Grid,
+        sparse_grid: grids.Grid = None,
+        hyper_image: np.ndarray = None,
+        settings=PixelizationSettings(),
     ):
         """Setup a Voronoi mapper from an adaptive-magnification pixelization, as follows:
 
@@ -119,7 +145,7 @@ class Voronoi(Pixelization):
             A pre-computed hyper-image of the image the mapper is expected to reconstruct, used for adaptive analysis.
         """
 
-        if inversion_uses_border:
+        if settings.use_border:
             relocated_grid = grid.relocated_grid_from_grid(grid=grid)
             relocated_pixelization_grid = grid.relocated_pixelization_grid_from_pixelization_grid(
                 pixelization_grid=sparse_grid
@@ -159,7 +185,10 @@ class VoronoiMagnification(Voronoi):
         self.pixels = self.shape[0] * self.shape[1]
 
     def sparse_grid_from_grid(
-        self, grid, hyper_image=None, inversion_stochastic=False, seed=1
+        self,
+        grid: grids.Grid,
+        hyper_image: np.ndarray = None,
+        settings=PixelizationSettings(),
     ):
         sparse_grid = grids.GridSparse.from_grid_and_unmasked_2d_grid_shape(
             grid=grid, unmasked_sparse_shape=self.shape
@@ -185,7 +214,7 @@ class VoronoiBrightnessImage(Voronoi):
         self.weight_floor = weight_floor
         self.weight_power = weight_power
 
-    def weight_map_from_hyper_image(self, hyper_image):
+    def weight_map_from_hyper_image(self, hyper_image: np.ndarray):
         weight_map = (hyper_image - np.min(hyper_image)) / (
             np.max(hyper_image) - np.min(hyper_image)
         ) + self.weight_floor * np.max(hyper_image)
@@ -193,7 +222,7 @@ class VoronoiBrightnessImage(Voronoi):
         return np.power(weight_map, self.weight_power)
 
     def sparse_grid_from_grid(
-        self, grid, hyper_image, inversion_stochastic=False, seed=0
+        self, grid: grids.Grid, hyper_image: np.ndarray, settings=PixelizationSettings()
     ):
         weight_map = self.weight_map_from_hyper_image(hyper_image=hyper_image)
 
@@ -201,8 +230,8 @@ class VoronoiBrightnessImage(Voronoi):
             total_pixels=self.pixels,
             grid=grid,
             weight_map=weight_map,
-            seed=seed,
-            stochastic=inversion_stochastic,
+            seed=settings.kmeans_seed,
+            stochastic=settings.is_stochastic,
         )
 
         return grids.GridVoronoi(
