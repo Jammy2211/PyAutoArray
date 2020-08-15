@@ -1,6 +1,6 @@
 import autoarray as aa
 from autoarray.structures import grids
-from autoarray.operators.inversion import mappers
+from autoarray.inversion import mappers
 import numpy as np
 import pytest
 
@@ -94,7 +94,7 @@ class TestRectangular:
             masked_dataset=masked_data,
             mapper=mapper,
             regularization=reg,
-            check_solution=False,
+            settings=aa.InversionSettings(check_solution=False),
         )
 
         assert (inversion.blurred_mapping_matrix == mapper.mapping_matrix).all()
@@ -210,7 +210,7 @@ class TestRectangular:
             masked_dataset=masked_data,
             mapper=mapper,
             regularization=reg,
-            check_solution=False,
+            settings=aa.InversionSettings(check_solution=False),
         )
 
         assert (inversion.blurred_mapping_matrix == mapper.mapping_matrix).all()
@@ -325,7 +325,7 @@ class TestRectangular:
             masked_dataset=masked_data,
             mapper=mapper,
             regularization=reg,
-            check_solution=False,
+            settings=aa.InversionSettings(check_solution=False),
         )
 
         assert (inversion.blurred_mapping_matrix == mapper.mapping_matrix).all()
@@ -413,7 +413,7 @@ class TestRectangular:
             masked_dataset=masked_data,
             mapper=mapper,
             regularization=reg,
-            check_solution=False,
+            settings=aa.InversionSettings(check_solution=False),
         )
 
         assert (inversion.blurred_mapping_matrix == mapper.mapping_matrix).all()
@@ -480,7 +480,7 @@ class TestRectangular:
             masked_dataset=masked_data,
             mapper=mapper,
             regularization=reg,
-            check_solution=False,
+            settings=aa.InversionSettings(check_solution=False),
         )
 
         assert inversion.mapped_reconstructed_visibilities[:, 0] == pytest.approx(
@@ -552,8 +552,9 @@ class TestRectangular:
             masked_dataset=masked_data,
             mapper=mapper,
             regularization=reg,
-            uses_linear_operators=True,
-            check_solution=False,
+            settings=aa.InversionSettings(
+                uses_linear_operators=True, check_solution=False
+            ),
         )
 
         assert inversion.mapped_reconstructed_visibilities[:, 0] == pytest.approx(
@@ -673,7 +674,7 @@ class TestVoronoiMagnification:
             masked_dataset=masked_data,
             mapper=mapper,
             regularization=reg,
-            check_solution=False,
+            settings=aa.InversionSettings(check_solution=False),
         )
 
         assert (inversion.blurred_mapping_matrix == mapper.mapping_matrix).all()
@@ -764,7 +765,7 @@ class TestVoronoiMagnification:
             masked_dataset=masked_data,
             mapper=mapper,
             regularization=reg,
-            check_solution=False,
+            settings=aa.InversionSettings(check_solution=False),
         )
 
         assert (inversion.blurred_mapping_matrix == mapper.mapping_matrix).all()
@@ -876,7 +877,7 @@ class TestVoronoiMagnification:
             masked_dataset=masked_data,
             mapper=mapper,
             regularization=reg,
-            check_solution=False,
+            settings=aa.InversionSettings(check_solution=False),
         )
 
         assert (inversion.blurred_mapping_matrix == mapper.mapping_matrix).all()
@@ -969,7 +970,7 @@ class TestVoronoiMagnification:
             masked_dataset=masked_data,
             mapper=mapper,
             regularization=reg,
-            check_solution=False,
+            settings=aa.InversionSettings(check_solution=False),
         )
 
         assert (inversion.blurred_mapping_matrix == mapper.mapping_matrix).all()
@@ -1038,7 +1039,7 @@ class TestVoronoiMagnification:
             masked_dataset=masked_data,
             mapper=mapper,
             regularization=reg,
-            check_solution=False,
+            settings=aa.InversionSettings(check_solution=False),
         )
 
         assert inversion.mapped_reconstructed_visibilities[:, 0] == pytest.approx(

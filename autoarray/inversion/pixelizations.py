@@ -2,7 +2,7 @@ import numpy as np
 
 from autoarray import exc
 from autoarray.structures import grids
-from autoarray.operators.inversion import mappers
+from autoarray.inversion import mappers
 
 
 class Pixelization:
