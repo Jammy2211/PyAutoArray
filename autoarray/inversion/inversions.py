@@ -13,13 +13,18 @@ import pylops
 
 
 class InversionSettings:
-    def __init__(
-        self, tolerance=1e-5, uses_linear_operators=False, check_solution=True
-    ):
+    def __init__(self, tolerance=1e-5, use_linear_operators=False, check_solution=True):
 
         self.tolerance = tolerance
-        self.uses_linear_operators = uses_linear_operators
+        self.use_linear_operators = use_linear_operators
         self.check_solution = check_solution
+
+    @property
+    def use_linear_operators_tag(self):
+        if not self.use_linear_operators:
+            return ""
+        else:
+            return f"__{conf.instance.tag.get('inversion', 'use_linear_operators')}"
 
 
 def inversion(masked_dataset, mapper, regularization, settings=InversionSettings()):
@@ -402,10 +407,10 @@ class AbstractInversionInterferometer(AbstractInversion):
         transformer: trans.TransformerNUFFT,
         mapper: mappers.Mapper,
         regularization: reg.Regularization,
-        settings=InversionSettings(uses_linear_operators=True),
+        settings=InversionSettings(use_linear_operators=True),
     ):
 
-        if not settings.uses_linear_operators:
+        if not settings.use_linear_operators:
             return InversionInterferometerMatrix.from_data_mapper_and_regularization(
                 visibilities=visibilities,
                 noise_map=noise_map,
@@ -689,6 +694,16 @@ class InversionInterferometerLinearOperator(AbstractInversionInterferometer):
             Weight=noise_map.Wop,
             tol=settings.tolerance,
         )
+
+        # reconstruction = pylops.RegularizedInversion(
+        #     Op=Op,
+        #     Regs=None,
+        #     #      epsNRs=[1.0],
+        #     #      NRegs=[Rop],
+        #     data=visibilities.as_complex,
+        #     Weight=noise_map.Wop,
+        #     #       tol=settings.tolerance,
+        # )
 
         return InversionInterferometerLinearOperator(
             visibilities=visibilities,

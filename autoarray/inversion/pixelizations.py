@@ -1,8 +1,10 @@
 import numpy as np
-
+from autoconf import conf
 from autoarray import exc
 from autoarray.structures import grids
 from autoarray.inversion import mappers
+
+import copy
 
 
 class PixelizationSettings:
@@ -18,6 +20,48 @@ class PixelizationSettings:
         self.pixel_limit = pixel_limit
         self.is_stochastic = is_stochastic
         self.kmeans_seed = kmeans_seed
+
+    @property
+    def use_border_tag(self):
+        """Generate a tag for whether a border is used by the inversion.
+
+        This changes the setup folder as follows (the example tags below are the default config tags):
+
+        inversion_use_border = False -> settings
+        inversion_use_border = True -> settings___no_border
+        """
+        if self.use_border:
+
+            tag = conf.instance.tag.get("pixelization", "use_border", str)
+
+            if not tag:
+                return str(tag)
+            return "__" + tag
+        elif not self.use_border:
+            return "__" + conf.instance.tag.get("pixelization", "no_border", str)
+
+    @property
+    def is_stochastic_tag(self):
+        """Generate a tag for whether the inversion is stochastic.
+
+        This changes the setup folder as follows (the example tags below are the default config tags):
+
+        inversion_stochastic = False -> settings
+        inversion_stochastic = True -> settings___stochastic
+        """
+        if not self.is_stochastic:
+
+            tag = conf.instance.tag.get("pixelization", "not_stochastic", str)
+            if not tag:
+                return tag
+            return "__" + tag
+        elif self.is_stochastic:
+            return "__" + conf.instance.tag.get("pixelization", "stochastic", str)
+
+    def settings_with_is_stochastic_true(self):
+        settings = copy.copy(self)
+        settings.is_stochastic = True
+        return settings
 
 
 class Pixelization:

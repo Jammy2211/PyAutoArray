@@ -554,7 +554,9 @@ class TestRectangular:
             interferometer=interferometer,
             visibilities_mask=visibilities_mask,
             real_space_mask=real_space_mask,
-            transformer_class=aa.TransformerNUFFT,
+            settings=aa.MaskedInterferometerSettings(
+                transformer_class=aa.TransformerNUFFT
+            ),
         )
 
         inversion = aa.Inversion(
@@ -562,7 +564,7 @@ class TestRectangular:
             mapper=mapper,
             regularization=reg,
             settings=aa.InversionSettings(
-                uses_linear_operators=True, check_solution=False
+                use_linear_operators=True, check_solution=False
             ),
         )
 

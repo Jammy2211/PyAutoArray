@@ -204,11 +204,6 @@ def make_noise_map_7():
     return aa.VisibilitiesNoiseMap.full(shape_1d=(7,), fill_value=2.0)
 
 
-@pytest.fixture(name="primary_beam_3x3")
-def make_primary_beam_3x3():
-    return aa.Kernel.ones(shape_2d=(3, 3), pixel_scales=(1.0, 1.0))
-
-
 @pytest.fixture(name="uv_wavelengths_7x2")
 def make_uv_wavelengths_7():
     return np.array(
@@ -225,14 +220,11 @@ def make_uv_wavelengths_7():
 
 
 @pytest.fixture(name="interferometer_7")
-def make_interferometer_7(
-    visibilities_7x2, noise_map_7x2, primary_beam_3x3, uv_wavelengths_7x2
-):
+def make_interferometer_7(visibilities_7x2, noise_map_7x2, uv_wavelengths_7x2):
     return aa.Interferometer(
         visibilities=visibilities_7x2,
         noise_map=noise_map_7x2,
         uv_wavelengths=uv_wavelengths_7x2,
-        primary_beam=primary_beam_3x3,
     )
 
 

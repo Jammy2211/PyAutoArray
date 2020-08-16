@@ -62,7 +62,6 @@ def individual(
     plot_uv_wavelengths=False,
     plot_amplitudes_vs_uv_distances=False,
     plot_phases_vs_uv_distances=False,
-    plot_primary_beam=False,
     include=None,
     plotter=None,
 ):
@@ -110,10 +109,6 @@ def individual(
         phases_vs_uv_distances(
             interferometer=interferometer, include=include, plotter=plotter
         )
-
-    if plot_primary_beam:
-
-        primary_beam(interferometer=interferometer, include=include, plotter=plotter)
 
 
 @plotters.set_include_and_plotter
@@ -289,21 +284,3 @@ def phases_vs_uv_distances(
         x=interferometer.uv_distances / 10 ** 3.0,
         plot_axis_type="scatter",
     )
-
-
-@plotters.set_include_and_plotter
-@plotters.set_labels
-def primary_beam(interferometer, include=None, plotter=None):
-    """Plot the PSF of the interferometer data_type.
-
-    Set *autolens.data_type.array.plotters.plotters* for a description of all innput parameters not described below.
-
-    Parameters
-    -----------
-    image : data_type.ImagingData
-        The interferometer data_type, which include the observed data_type, noise_map, PSF, signal-to-noise_map, etc.
-    origin : True
-        If true, the origin of the dataset's coordinate system is plotted as a 'x'.
-    """
-
-    plotter.plot_array(array=interferometer.primary_beam, include_origin=include.origin)

@@ -3,10 +3,16 @@ from . import exc
 from . import plot
 from . import util
 from .dataset import preprocess
-from .dataset.imaging import Imaging, MaskedImaging, SimulatorImaging
+from .dataset.imaging import (
+    Imaging,
+    MaskedImaging,
+    MaskedImagingSettings,
+    SimulatorImaging,
+)
 from .dataset.interferometer import (
     Interferometer,
     MaskedInterferometer,
+    MaskedInterferometerSettings,
     SimulatorInterferometer,
 )
 from .fit.fit import FitImaging, FitInterferometer

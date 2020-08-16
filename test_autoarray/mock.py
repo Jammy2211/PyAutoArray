@@ -1,5 +1,6 @@
 import numpy as np
 
+import autoarray as aa
 from autoarray.structures import grids
 
 
@@ -198,11 +199,13 @@ class MockPixelization:
 
     # noinspection PyUnusedLocal,PyShadowingNames
     def mapper_from_grid_and_sparse_grid(
-        self, grid, sparse_grid, inversion_use_border, hyper_image=None
+        self, grid, sparse_grid, hyper_image=None, settings=aa.PixelizationSettings()
     ):
         return self.value
 
-    def sparse_grid_from_grid(self, grid, hyper_image, inversion_stochastic=False):
+    def sparse_grid_from_grid(
+        self, grid, hyper_image, settings=aa.PixelizationSettings()
+    ):
         if hyper_image is None:
             return self.grid
         else:

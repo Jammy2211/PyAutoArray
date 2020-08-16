@@ -242,7 +242,6 @@ class TestMaskedImaging:
 
         assert (masked_imaging_7x7.psf.in_1d == (1.0 / 9.0) * np.ones(9)).all()
         assert (masked_imaging_7x7.psf.in_2d == (1.0 / 9.0) * np.ones((3, 3))).all()
-        assert masked_imaging_7x7.psf_shape_2d == (3, 3)
 
     def test__grid(
         self,
@@ -254,7 +253,9 @@ class TestMaskedImaging:
         grid_iterate_7x7,
     ):
         masked_imaging_7x7 = aa.MaskedImaging(
-            imaging=imaging_7x7, mask=sub_mask_7x7, grid_class=aa.Grid
+            imaging=imaging_7x7,
+            mask=sub_mask_7x7,
+            settings=aa.MaskedImagingSettings(grid_class=aa.Grid),
         )
 
         assert isinstance(masked_imaging_7x7.grid, aa.Grid)
@@ -264,7 +265,9 @@ class TestMaskedImaging:
         assert (masked_imaging_7x7.blurring_grid.in_1d == blurring_grid_7x7).all()
 
         masked_imaging_7x7 = aa.MaskedImaging(
-            imaging=imaging_7x7, mask=sub_mask_7x7, grid_class=aa.GridIterate
+            imaging=imaging_7x7,
+            mask=sub_mask_7x7,
+            settings=aa.MaskedImagingSettings(grid_class=aa.GridIterate),
         )
 
         assert isinstance(masked_imaging_7x7.grid, aa.GridIterate)
@@ -275,8 +278,9 @@ class TestMaskedImaging:
         masked_imaging_7x7 = aa.MaskedImaging(
             imaging=imaging_7x7,
             mask=sub_mask_7x7,
-            grid_class=aa.GridInterpolate,
-            pixel_scales_interp=1.0,
+            settings=aa.MaskedImagingSettings(
+                grid_class=aa.GridInterpolate, pixel_scales_interp=1.0
+            ),
         )
 
         grid = aa.GridInterpolate.from_mask(mask=sub_mask_7x7, pixel_scales_interp=1.0)
@@ -318,7 +322,9 @@ class TestMaskedImaging:
         mask[9, 9] = False
 
         masked_imaging = aa.MaskedImaging(
-            imaging=imaging, mask=mask, psf_shape_2d=(7, 7)
+            imaging=imaging,
+            mask=mask,
+            settings=aa.MaskedImagingSettings(psf_shape_2d=(7, 7)),
         )
 
         assert (masked_imaging.imaging.image.in_2d == np.ones((19, 19))).all()

@@ -93,11 +93,9 @@ class AbstractImaging(abstract_dataset.AbstractDataset):
         return imaging
 
 
-class AbstractMaskedImaging(abstract_dataset.AbstractMaskedDataset):
+class AbstractMaskedImagingSettings(abstract_dataset.AbstractMaskedDatasetSettings):
     def __init__(
         self,
-        imaging,
-        mask,
         grid_class=grids.Grid,
         grid_inversion_class=grids.Grid,
         fractional_accuracy=0.9999,
@@ -131,14 +129,58 @@ class AbstractMaskedImaging(abstract_dataset.AbstractMaskedDataset):
         """
 
         super().__init__(
-            dataset=imaging,
-            mask=mask,
             grid_class=grid_class,
             grid_inversion_class=grid_inversion_class,
             fractional_accuracy=fractional_accuracy,
             sub_steps=sub_steps,
             pixel_scales_interp=pixel_scales_interp,
         )
+
+        self.psf_shape_2d = psf_shape_2d
+        self.renormalize_psf = renormalize_psf
+
+    def psf_reshaped_and_renormalized_from_psf(self, psf):
+
+        if psf is not None:
+
+            if self.psf_shape_2d is None:
+                psf_shape_2d = psf.shape_2d
+            else:
+                psf_shape_2d = self.psf_shape_2d
+
+            return kernel.Kernel.manual_2d(
+                array=psf.resized_from_new_shape(new_shape=psf_shape_2d).in_2d,
+                renormalize=self.renormalize_psf,
+            )
+
+
+class AbstractMaskedImaging(abstract_dataset.AbstractMaskedDataset):
+    def __init__(self, imaging, mask, settings=AbstractMaskedImagingSettings()):
+        """
+        The lens dataset is the collection of data_type (image, noise-map, PSF), a mask, grid, convolver \
+        and other utilities that are used for modeling and fitting an image of a strong lens.
+
+        Whilst the image, noise-map, etc. are loaded in 2D, the lens dataset creates reduced 1D arrays of each \
+        for lens calculations.
+
+        Parameters
+        ----------
+        imaging: im.Imaging
+            The imaging data_type all in 2D (the image, noise-map, PSF, etc.)
+        mask: msk.Mask
+            The 2D mask that is applied to the image.
+        psf_shape_2d : (int, int)
+            The shape of the PSF used for convolving model image generated using analytic light profiles. A smaller \
+            shape will trim the PSF relative to the input image PSF, giving a faster analysis run-time.
+        pixel_scales_interp : float
+            If *True*, expensive to compute mass profile deflection angles will be computed on a sparse grid and \
+            interpolated to the grid, sub and blurring grids.
+        inversion_pixel_limit : int or None
+            The maximum number of pixels that can be used by an inversion, with the limit placed primarily to speed \
+            up run.
+        """
+
+        super().__init__(dataset=imaging, mask=mask, settings=settings)
 
         self.image = arrays.Array.manual_mask(
             array=imaging.image.in_2d,
@@ -152,35 +194,14 @@ class AbstractMaskedImaging(abstract_dataset.AbstractMaskedDataset):
             store_in_1d=imaging.noise_map.store_in_1d,
         )
 
-        self.pixel_scales_interp = pixel_scales_interp
+        self.psf = settings.psf_reshaped_and_renormalized_from_psf(psf=imaging.psf)
 
-        ### PSF TRIMMING + CONVOLVER ###
-
-        if imaging.psf is not None:
-
-            if psf_shape_2d is None:
-                self.psf_shape_2d = imaging.psf.shape_2d
-            else:
-                self.psf_shape_2d = psf_shape_2d
-
-            self.psf = kernel.Kernel.manual_2d(
-                array=imaging.psf.resized_from_new_shape(
-                    new_shape=self.psf_shape_2d
-                ).in_2d,
-                renormalize=renormalize_psf,
-            )
+        if self.psf is not None:
 
             self.convolver = convolver.Convolver(mask=mask, kernel=self.psf)
-
-            if mask.pixel_scales is not None:
-
-                self.blurring_grid = self.grid.blurring_grid_from_kernel_shape(
-                    kernel_shape_2d=self.psf_shape_2d
-                )
-
-        else:
-
-            self.psf = None
+            self.blurring_grid = self.grid.blurring_grid_from_kernel_shape(
+                kernel_shape_2d=self.psf.shape_2d
+            )
 
     @property
     def imaging(self):
@@ -244,6 +265,11 @@ class AbstractSimulatorImaging:
         self.add_noise = add_noise
         self.noise_if_add_noise_false = noise_if_add_noise_false
         self.noise_seed = noise_seed
+
+
+class MaskedImagingSettings(AbstractMaskedImagingSettings):
+
+    pass
 
 
 class Imaging(AbstractImaging):

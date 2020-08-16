@@ -15,13 +15,7 @@ logger = logging.getLogger(__name__)
 
 class AbstractInterferometer(abstract_dataset.AbstractDataset):
     def __init__(
-        self,
-        visibilities,
-        noise_map,
-        uv_wavelengths,
-        primary_beam=None,
-        positions=None,
-        name=None,
+        self, visibilities, noise_map, uv_wavelengths, positions=None, name=None
     ):
 
         super().__init__(
@@ -29,7 +23,6 @@ class AbstractInterferometer(abstract_dataset.AbstractDataset):
         )
 
         self.uv_wavelengths = uv_wavelengths
-        self.primary_beam = primary_beam
 
     @property
     def visibilities(self):
@@ -55,13 +48,55 @@ class AbstractInterferometer(abstract_dataset.AbstractDataset):
         interferometer.data = visibilities
         return interferometer
 
-    def resized_primary_beam_from_new_shape_2d(self, new_shape_2d):
 
-        interferometer = copy.deepcopy(self)
-        interferometer.primary_beam = self.primary_beam.resized_from_new_shape(
-            new_shape=new_shape_2d
+class AbstractMaskedInterferometerSettings(
+    abstract_dataset.AbstractMaskedDatasetSettings
+):
+    def __init__(
+        self,
+        grid_class=grids.Grid,
+        grid_inversion_class=grids.Grid,
+        fractional_accuracy=0.9999,
+        sub_steps=None,
+        pixel_scales_interp=None,
+        transformer_class=trans.TransformerNUFFT,
+    ):
+        """
+          The lens dataset is the collection of data_type (image, noise-map), a mask, grid, convolver \
+          and other utilities that are used for modeling and fitting an image of a strong lens.
+
+          Whilst the image, noise-map, etc. are loaded in 2D, the lens dataset creates reduced 1D arrays of each \
+          for lens calculations.
+
+          Parameters
+          ----------
+          imaging: im.Imaging
+              The imaging data_type all in 2D (the image, noise-map, etc.)
+          real_space_mask: msk.Mask
+              The 2D mask that is applied to the image.
+          sub_size : int
+              The size of the sub-grid used for each lens SubGrid. E.g. a value of 2 grid each image-pixel on a 2x2 \
+              sub-grid.
+          positions : [[]]
+              Lists of image-pixel coordinates (arc-seconds) that mappers close to one another in the source-plane(s), \
+              used to speed up the non-linear sampling.
+          pixel_scales_interp : float
+              If *True*, expensive to compute mass profile deflection angles will be computed on a sparse grid and \
+              interpolated to the grid, sub and blurring grids.
+          inversion_pixel_limit : int or None
+              The maximum number of pixels that can be used by an inversion, with the limit placed primarily to speed \
+              up run.
+          """
+
+        super().__init__(
+            grid_class=grid_class,
+            grid_inversion_class=grid_inversion_class,
+            fractional_accuracy=fractional_accuracy,
+            sub_steps=sub_steps,
+            pixel_scales_interp=pixel_scales_interp,
         )
-        return interferometer
+
+        self.transformer_class = transformer_class
 
 
 class AbstractMaskedInterferometer(abstract_dataset.AbstractMaskedDataset):
@@ -70,17 +105,10 @@ class AbstractMaskedInterferometer(abstract_dataset.AbstractMaskedDataset):
         interferometer,
         visibilities_mask,
         real_space_mask,
-        grid_class=grids.GridIterate,
-        grid_inversion_class=grids.Grid,
-        fractional_accuracy=0.9999,
-        sub_steps=None,
-        pixel_scales_interp=None,
-        transformer_class=trans.TransformerNUFFT,
-        primary_beam_shape_2d=None,
-        renormalize_primary_beam=True,
+        settings=AbstractMaskedInterferometerSettings(),
     ):
         """
-        The lens dataset is the collection of data_type (image, noise-map, primary_beam), a mask, grid, convolver \
+        The lens dataset is the collection of data_type (image, noise-map), a mask, grid, convolver \
         and other utilities that are used for modeling and fitting an image of a strong lens.
 
         Whilst the image, noise-map, etc. are loaded in 2D, the lens dataset creates reduced 1D arrays of each \
@@ -89,55 +117,16 @@ class AbstractMaskedInterferometer(abstract_dataset.AbstractMaskedDataset):
         Parameters
         ----------
         imaging: im.Imaging
-            The imaging data_type all in 2D (the image, noise-map, primary_beam, etc.)
+            The imaging data_type all in 2D (the image, noise-map, etc.)
         real_space_mask: msk.Mask
             The 2D mask that is applied to the image.
-        sub_size : int
-            The size of the sub-grid used for each lens SubGrid. E.g. a value of 2 grid each image-pixel on a 2x2 \
-            sub-grid.
-        primary_beam_shape_2d : (int, int)
-            The shape of the primary_beam used for convolving model image generated using analytic light profiles. A smaller \
-            shape will trim the primary_beam relative to the input image primary_beam, giving a faster analysis run-time.
-        positions : [[]]
-            Lists of image-pixel coordinates (arc-seconds) that mappers close to one another in the source-plane(s), \
-            used to speed up the non-linear sampling.
-        pixel_scales_interp : float
-            If *True*, expensive to compute mass profile deflection angles will be computed on a sparse grid and \
-            interpolated to the grid, sub and blurring grids.
-        inversion_pixel_limit : int or None
-            The maximum number of pixels that can be used by an inversion, with the limit placed primarily to speed \
-            up run.
         """
 
         super().__init__(
-            dataset=interferometer,
-            mask=real_space_mask,
-            grid_class=grid_class,
-            grid_inversion_class=grid_inversion_class,
-            fractional_accuracy=fractional_accuracy,
-            sub_steps=sub_steps,
-            pixel_scales_interp=pixel_scales_interp,
+            dataset=interferometer, mask=real_space_mask, settings=settings
         )
 
-        if self.interferometer.primary_beam is None:
-            self.primary_beam_shape_2d = None
-        elif (
-            primary_beam_shape_2d is None
-            and self.interferometer.primary_beam is not None
-        ):
-            self.primary_beam_shape_2d = self.interferometer.primary_beam.shape_2d
-        else:
-            self.primary_beam_shape_2d = primary_beam_shape_2d
-
-        if self.primary_beam_shape_2d is not None:
-            self.primary_beam = kernel.Kernel.manual_2d(
-                array=interferometer.primary_beam.resized_from_new_shape(
-                    new_shape=self.primary_beam_shape_2d
-                ).in_2d,
-                renormalize=renormalize_primary_beam,
-            )
-
-        self.transformer = transformer_class(
+        self.transformer = self.settings.transformer_class(
             uv_wavelengths=interferometer.uv_wavelengths,
             real_space_mask=real_space_mask,
         )
@@ -181,8 +170,6 @@ class AbstractSimulatorInterferometer:
         exposure_time_map,
         background_sky_map=None,
         transformer_class=trans.TransformerDFT,
-        primary_beam=None,
-        renormalize_primary_beam=True,
         noise_sigma=0.1,
         noise_if_add_noise_false=0.1,
         noise_seed=-1,
@@ -209,11 +196,6 @@ class AbstractSimulatorInterferometer:
         self.exposure_time_map = exposure_time_map
         self.background_sky_map = background_sky_map
         self.transformer_class = transformer_class
-
-        if primary_beam is not None and renormalize_primary_beam:
-            primary_beam = primary_beam.renormalized
-
-        self.primary_beam = primary_beam
         self.noise_sigma = noise_sigma
         self.noise_if_add_noise_false = noise_if_add_noise_false
         self.noise_seed = noise_seed
@@ -280,7 +262,6 @@ class AbstractSimulatorInterferometer:
             visibilities=visibilities,
             noise_map=noise_map,
             uv_wavelengths=transformer.uv_wavelengths,
-            primary_beam=self.primary_beam,
             name=name,
         )
 
@@ -295,8 +276,6 @@ class Interferometer(AbstractInterferometer):
         visibilities_hdu=0,
         noise_map_hdu=0,
         uv_wavelengths_hdu=0,
-        primary_beam_path=None,
-        primary_beam_hdu=0,
         positions_path=None,
     ):
         """Factory for loading the interferometer data_type from .fits files, as well as computing properties like the noise-map,
@@ -321,13 +300,6 @@ class Interferometer(AbstractInterferometer):
             file_path=uv_wavelengths_path, hdu=uv_wavelengths_hdu
         )
 
-        if primary_beam_path is not None:
-            primary_beam = aa.Kernel.from_fits(
-                file_path=primary_beam_path, hdu=primary_beam_hdu, renormalize=True
-            )
-        else:
-            primary_beam = None
-
         if positions_path is not None:
 
             positions = grids.GridCoordinates.from_file(file_path=positions_path)
@@ -338,7 +310,6 @@ class Interferometer(AbstractInterferometer):
 
         return Interferometer(
             visibilities=visibilities,
-            primary_beam=primary_beam,
             noise_map=noise_map,
             uv_wavelengths=uv_wavelengths,
             positions=positions,
@@ -348,15 +319,9 @@ class Interferometer(AbstractInterferometer):
         self,
         visibilities_path=None,
         noise_map_path=None,
-        primary_beam_path=None,
         uv_wavelengths_path=None,
         overwrite=False,
     ):
-
-        if primary_beam_path is not None:
-            self.primary_beam.output_to_fits(
-                file_path=primary_beam_path, overwrite=overwrite
-            )
 
         if visibilities_path is not None:
             self.visibilities.output_to_fits(
@@ -372,6 +337,11 @@ class Interferometer(AbstractInterferometer):
                 file_path=uv_wavelengths_path,
                 overwrite=overwrite,
             )
+
+
+class MaskedInterferometerSettings(AbstractMaskedInterferometerSettings):
+
+    pass
 
 
 class MaskedInterferometer(AbstractMaskedInterferometer):
