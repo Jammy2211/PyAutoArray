@@ -3,6 +3,7 @@ import logging
 import numpy as np
 import copy
 
+from autoconf import conf
 from autoarray import exc
 from autoarray.dataset import abstract_dataset, preprocess
 from autoarray.mask import mask as msk
@@ -101,6 +102,8 @@ class AbstractMaskedImagingSettings(abstract_dataset.AbstractMaskedDatasetSettin
         fractional_accuracy=0.9999,
         sub_steps=None,
         pixel_scales_interp=None,
+        signal_to_noise_limit=None,
+        bin_up_factor=None,
         psf_shape_2d=None,
         renormalize_psf=True,
     ):
@@ -134,8 +137,10 @@ class AbstractMaskedImagingSettings(abstract_dataset.AbstractMaskedDatasetSettin
             fractional_accuracy=fractional_accuracy,
             sub_steps=sub_steps,
             pixel_scales_interp=pixel_scales_interp,
+            signal_to_noise_limit=signal_to_noise_limit,
         )
 
+        self.bin_up_factor = bin_up_factor
         self.psf_shape_2d = psf_shape_2d
         self.renormalize_psf = renormalize_psf
 
@@ -152,6 +157,43 @@ class AbstractMaskedImagingSettings(abstract_dataset.AbstractMaskedDatasetSettin
                 array=psf.resized_from_new_shape(new_shape=psf_shape_2d).in_2d,
                 renormalize=self.renormalize_psf,
             )
+
+    @property
+    def psf_shape_tag(self):
+        """Generate an image psf shape tag, to customize phase names based on size of the image PSF that the original PSF \
+        is trimmed to for faster run times.
+
+        This changes the phase settings folder as follows:
+
+        image_psf_shape = 1 -> settings
+        image_psf_shape = 2 -> settings_image_psf_shape_2
+        image_psf_shape = 2 -> settings_image_psf_shape_2
+        """
+        if self.psf_shape_2d is None:
+            return ""
+        y = str(self.psf_shape_2d[0])
+        x = str(self.psf_shape_2d[1])
+        return "__" + conf.instance.tag.get("imaging", "psf_shape") + "_" + y + "x" + x
+
+    @property
+    def bin_up_factor_tag(self):
+        """Generate a bin up tag, to customize phase names based on the resolutioon the image is binned up by for faster \
+        run times.
+
+        This changes the phase settings folder as follows:
+
+        bin_up_factor = 1 -> settings
+        bin_up_factor = 2 -> settings_bin_up_factor_2
+        bin_up_factor = 2 -> settings_bin_up_factor_2
+        """
+        if self.bin_up_factor == 1 or self.bin_up_factor is None:
+            return ""
+        return (
+            "__"
+            + conf.instance.tag.get("imaging", "bin_up_factor")
+            + "_"
+            + str(self.bin_up_factor)
+        )
 
 
 class AbstractMaskedImaging(abstract_dataset.AbstractMaskedDataset):
@@ -179,6 +221,16 @@ class AbstractMaskedImaging(abstract_dataset.AbstractMaskedDataset):
             The maximum number of pixels that can be used by an inversion, with the limit placed primarily to speed \
             up run.
         """
+
+        if settings.bin_up_factor is not None:
+
+            imaging = imaging.binned_from_bin_up_factor(
+                bin_up_factor=settings.bin_up_factor
+            )
+
+            mask = mask.binned_mask_from_bin_up_factor(
+                bin_up_factor=settings.bin_up_factor
+            )
 
         super().__init__(dataset=imaging, mask=mask, settings=settings)
 

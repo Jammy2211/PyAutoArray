@@ -4,6 +4,7 @@ import copy
 
 import autoarray as aa
 
+from autoconf import conf
 from autoarray import exc
 from autoarray.dataset import abstract_dataset, preprocess
 from autoarray.structures import arrays, grids, visibilities as vis, kernel
@@ -97,6 +98,23 @@ class AbstractMaskedInterferometerSettings(
         )
 
         self.transformer_class = transformer_class
+
+    @property
+    def transformer_tag(self):
+        """Generate an image psf shape tag, to customize phase names based on size of the image PSF that the original PSF \
+        is trimmed to for faster run times.
+
+        This changes the phase settings folder as follows:
+
+        image_psf_shape = 1 -> settings
+        image_psf_shape = 2 -> settings_image_psf_shape_2
+        image_psf_shape = 2 -> settings_image_psf_shape_2
+        """
+        if self.transformer_class is None:
+            return ""
+        return "__" + conf.instance.tag.get(
+            "interferometer", self.transformer_class.__name__
+        )
 
 
 class AbstractMaskedInterferometer(abstract_dataset.AbstractMaskedDataset):
