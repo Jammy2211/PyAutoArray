@@ -6,6 +6,16 @@ import numpy as np
 from test_autoarray import mock
 
 
+class TestInversionSettings:
+    def test__inversion_uses_linear_operator_tag(self):
+
+        settings = aa.InversionSettings(use_linear_operators=True)
+        assert settings.use_linear_operators_tag == "__lop"
+
+        settings = aa.InversionSettings(use_linear_operators=False)
+        assert settings.use_linear_operators_tag == ""
+
+
 class TestLogDetMatrixCholesky:
     def test__determinant_of_positive_definite_matrix_via_cholesky(self):
 

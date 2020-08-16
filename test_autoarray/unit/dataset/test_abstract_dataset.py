@@ -88,7 +88,9 @@ class TestAbstractMaskedData:
         grid_iterate_7x7,
     ):
         masked_imaging_7x7 = abstract_dataset.AbstractMaskedDataset(
-            dataset=imaging_7x7, mask=sub_mask_7x7, grid_class=aa.Grid
+            dataset=imaging_7x7,
+            mask=sub_mask_7x7,
+            settings=abstract_dataset.AbstractMaskedDatasetSettings(grid_class=aa.Grid),
         )
 
         assert isinstance(masked_imaging_7x7.grid, aa.Grid)
@@ -96,7 +98,11 @@ class TestAbstractMaskedData:
         assert (masked_imaging_7x7.grid.in_1d == sub_grid_7x7).all()
 
         masked_imaging_7x7 = abstract_dataset.AbstractMaskedDataset(
-            dataset=imaging_7x7, mask=sub_mask_7x7, grid_class=aa.GridIterate
+            dataset=imaging_7x7,
+            mask=sub_mask_7x7,
+            settings=abstract_dataset.AbstractMaskedDatasetSettings(
+                grid_class=aa.GridIterate
+            ),
         )
 
         assert isinstance(masked_imaging_7x7.grid, aa.GridIterate)
@@ -105,8 +111,9 @@ class TestAbstractMaskedData:
         masked_imaging_7x7 = abstract_dataset.AbstractMaskedDataset(
             dataset=imaging_7x7,
             mask=sub_mask_7x7,
-            grid_class=aa.GridInterpolate,
-            pixel_scales_interp=1.0,
+            settings=abstract_dataset.AbstractMaskedDatasetSettings(
+                grid_class=aa.GridInterpolate, pixel_scales_interp=1.0
+            ),
         )
 
         grid = aa.GridInterpolate.from_mask(mask=sub_mask_7x7, pixel_scales_interp=1.0)
@@ -121,7 +128,11 @@ class TestAbstractMaskedData:
         self, imaging_7x7, sub_mask_7x7, grid_7x7, sub_grid_7x7, blurring_grid_7x7
     ):
         masked_imaging_7x7 = abstract_dataset.AbstractMaskedDataset(
-            dataset=imaging_7x7, mask=sub_mask_7x7, grid_inversion_class=aa.Grid
+            dataset=imaging_7x7,
+            mask=sub_mask_7x7,
+            settings=abstract_dataset.AbstractMaskedDatasetSettings(
+                grid_inversion_class=aa.Grid
+            ),
         )
 
         assert isinstance(masked_imaging_7x7.grid_inversion, aa.Grid)
@@ -131,8 +142,9 @@ class TestAbstractMaskedData:
         masked_imaging_7x7 = abstract_dataset.AbstractMaskedDataset(
             dataset=imaging_7x7,
             mask=sub_mask_7x7,
-            grid_inversion_class=aa.GridInterpolate,
-            pixel_scales_interp=1.0,
+            settings=abstract_dataset.AbstractMaskedDatasetSettings(
+                grid_inversion_class=aa.GridInterpolate, pixel_scales_interp=1.0
+            ),
         )
 
         grid = aa.GridInterpolate.from_mask(mask=sub_mask_7x7, pixel_scales_interp=1.0)

@@ -3,6 +3,32 @@ import autoarray as aa
 import numpy as np
 
 
+class TestPixelizationSettings:
+    def test__use_border_tag(self):
+
+        settings = aa.PixelizationSettings(use_border=True)
+        assert settings.use_border_tag == ""
+        settings = aa.PixelizationSettings(use_border=False)
+        assert settings.use_border_tag == "__no_border"
+
+    def test__stochastic_tag(self):
+
+        settings = aa.PixelizationSettings(is_stochastic=True)
+        assert settings.is_stochastic_tag == "__stochastic"
+        settings = aa.PixelizationSettings(is_stochastic=False)
+        assert settings.is_stochastic_tag == ""
+
+    def test__settings_with_is_stochastic_true(self):
+
+        settings = aa.PixelizationSettings(is_stochastic=False)
+        settings = settings.settings_with_is_stochastic_true()
+        assert settings.is_stochastic == True
+
+        settings = aa.PixelizationSettings(is_stochastic=True)
+        settings = settings.settings_with_is_stochastic_true()
+        assert settings.is_stochastic == True
+
+
 class TestRectangular:
     def test__pixelization_grid_returns_none_as_not_used(self, sub_grid_7x7):
 

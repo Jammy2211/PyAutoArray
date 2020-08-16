@@ -9,6 +9,8 @@ from autoarray.structures import arrays, grids
 def grid_from_mask_and_grid_class(
     mask, grid_class, fractional_accuracy, sub_steps, pixel_scales_interp
 ):
+    if mask.pixel_scales is None:
+        return None
 
     if grid_class is grids.Grid:
 
@@ -127,50 +129,76 @@ class AbstractDataset:
         return imaging
 
 
-class AbstractMaskedDataset:
+class AbstractMaskedDatasetSettings:
     def __init__(
         self,
-        dataset,
-        mask,
-        grid_class=grids.GridIterate,
+        grid_class=grids.Grid,
         grid_inversion_class=grids.Grid,
         fractional_accuracy=0.9999,
         sub_steps=None,
         pixel_scales_interp=None,
     ):
+        """
+        The lens dataset is the collection of data_type (image, noise-map, PSF), a mask, grid, convolver \
+        and other utilities that are used for modeling and fitting an image of a strong lens.
+
+        Whilst the image, noise-map, etc. are loaded in 2D, the lens dataset creates reduced 1D arrays of each \
+        for lens calculations.
+
+        Parameters
+        ----------
+        imaging: im.Imaging
+            The imaging data_type all in 2D (the image, noise-map, PSF, etc.)
+        mask: msk.Mask
+            The 2D mask that is applied to the image.
+        psf_shape_2d : (int, int)
+            The shape of the PSF used for convolving model image generated using analytic light profiles. A smaller \
+            shape will trim the PSF relative to the input image PSF, giving a faster analysis run-time.
+        pixel_scales_interp : float
+            If *True*, expensive to compute mass profile deflection angles will be computed on a sparse grid and \
+            interpolated to the grid, sub and blurring grids.
+        inversion_pixel_limit : int or None
+            The maximum number of pixels that can be used by an inversion, with the limit placed primarily to speed \
+            up run.
+        """
+
+        self.grid_class = grid_class
+        self.grid_inversion_class = grid_inversion_class
+        self.fractional_accuracy = fractional_accuracy
 
         if sub_steps is None:
             sub_steps = [2, 4, 8, 16]
 
-        self.dataset = dataset
-        self.mask = mask
-
+        self.sub_steps = sub_steps
         self.pixel_scales_interp = pixel_scales_interp
 
-        ### GRIDS ###
+    def grid_from_mask(self, mask):
+        return grid_from_mask_and_grid_class(
+            mask=mask,
+            grid_class=self.grid_class,
+            fractional_accuracy=self.fractional_accuracy,
+            sub_steps=self.sub_steps,
+            pixel_scales_interp=self.pixel_scales_interp,
+        )
 
-        if mask.pixel_scales is not None:
+    def grid_inversion_from_mask(self, mask):
+        return grid_from_mask_and_grid_class(
+            mask=mask,
+            grid_class=self.grid_inversion_class,
+            fractional_accuracy=self.fractional_accuracy,
+            sub_steps=self.sub_steps,
+            pixel_scales_interp=self.pixel_scales_interp,
+        )
 
-            self.grid = grid_from_mask_and_grid_class(
-                mask=mask,
-                grid_class=grid_class,
-                fractional_accuracy=fractional_accuracy,
-                sub_steps=sub_steps,
-                pixel_scales_interp=pixel_scales_interp,
-            )
 
-            self.grid_inversion = grid_from_mask_and_grid_class(
-                mask=mask,
-                grid_class=grid_inversion_class,
-                fractional_accuracy=fractional_accuracy,
-                sub_steps=sub_steps,
-                pixel_scales_interp=pixel_scales_interp,
-            )
+class AbstractMaskedDataset:
+    def __init__(self, dataset, mask, settings=AbstractMaskedDatasetSettings()):
 
-        else:
-
-            self.grid = None
-            self.grid_inversion = None
+        self.dataset = dataset
+        self.mask = mask
+        self.settings = settings
+        self.grid = settings.grid_from_mask(mask=mask)
+        self.grid_inversion = settings.grid_inversion_from_mask(mask=mask)
 
     @property
     def name(self) -> str:
