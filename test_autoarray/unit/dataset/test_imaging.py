@@ -223,6 +223,26 @@ class TestImaging:
         assert imaging.noise_map.mask.pixel_scales == (0.1, 0.1)
 
 
+class TestMaskedImagingSettings:
+    def test__bin_up_factor_tag(self):
+
+        settings = aa.MaskedImagingSettings(bin_up_factor=None)
+        assert settings.bin_up_factor_tag == ""
+        settings = aa.MaskedImagingSettings(bin_up_factor=1)
+        assert settings.bin_up_factor_tag == ""
+        settings = aa.MaskedImagingSettings(bin_up_factor=2)
+        assert settings.bin_up_factor_tag == "__bin_2"
+
+    def test__psf_shape_2d_tag(self):
+
+        settings = aa.MaskedImagingSettings(psf_shape_2d=None)
+        assert settings.psf_shape_tag == ""
+        settings = aa.MaskedImagingSettings(psf_shape_2d=(2, 2))
+        assert settings.psf_shape_tag == "__psf_2x2"
+        settings = aa.MaskedImagingSettings(psf_shape_2d=(3, 4))
+        assert settings.psf_shape_tag == "__psf_3x4"
+
+
 class TestMaskedImaging:
     def test__masked_dataset(self, imaging_7x7, sub_mask_7x7):
 
@@ -303,6 +323,55 @@ class TestMaskedImaging:
 
         assert type(masked_imaging_7x7.psf) == aa.Kernel
         assert type(masked_imaging_7x7.convolver) == aa.Convolver
+
+    def test__masked_imaging__uses_bin_up_factor(self, imaging_7x7, mask_7x7_1_pix):
+
+        masked_imaging_7x7 = aa.MaskedImaging(
+            imaging=imaging_7x7,
+            mask=mask_7x7_1_pix,
+            settings=aa.MaskedImagingSettings(grid_class=aa.Grid, bin_up_factor=2),
+        )
+
+        binned_up_imaging = imaging_7x7.binned_from_bin_up_factor(bin_up_factor=2)
+        binned_up_mask = mask_7x7_1_pix.binned_mask_from_bin_up_factor(bin_up_factor=2)
+
+        assert (
+            masked_imaging_7x7.image.in_2d
+            == binned_up_imaging.image.in_2d * np.invert(binned_up_mask)
+        ).all()
+
+        assert (masked_imaging_7x7.psf == (1.0 / 9.0) * binned_up_imaging.psf).all()
+        assert (
+            masked_imaging_7x7.noise_map.in_2d
+            == binned_up_imaging.noise_map.in_2d * np.invert(binned_up_mask)
+        ).all()
+
+        assert (masked_imaging_7x7.mask == binned_up_mask).all()
+
+    def test__masked_imaging__uses_signal_to_noise_limit(
+        self, imaging_7x7, mask_7x7_1_pix
+    ):
+
+        masked_imaging_7x7 = aa.MaskedImaging(
+            imaging=imaging_7x7,
+            mask=mask_7x7_1_pix,
+            settings=aa.MaskedImagingSettings(
+                grid_class=aa.Grid, signal_to_noise_limit=1.0
+            ),
+        )
+
+        imaging_snr_limit = imaging_7x7.signal_to_noise_limited_from_signal_to_noise_limit(
+            signal_to_noise_limit=1.0
+        )
+
+        assert (
+            masked_imaging_7x7.image.in_2d
+            == imaging_snr_limit.image.in_2d * np.invert(mask_7x7_1_pix)
+        ).all()
+        assert (
+            masked_imaging_7x7.noise_map.in_2d
+            == imaging_snr_limit.noise_map.in_2d * np.invert(mask_7x7_1_pix)
+        ).all()
 
     def test__different_imaging_without_mock_objects__customize_constructor_inputs(
         self

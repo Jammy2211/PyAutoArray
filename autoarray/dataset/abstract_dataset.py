@@ -3,6 +3,7 @@ import pickle
 import numpy as np
 import copy
 
+from autoconf import conf
 from autoarray.structures import arrays, grids
 
 
@@ -134,9 +135,11 @@ class AbstractMaskedDatasetSettings:
         self,
         grid_class=grids.Grid,
         grid_inversion_class=grids.Grid,
+        sub_size=2,
         fractional_accuracy=0.9999,
         sub_steps=None,
         pixel_scales_interp=None,
+        signal_to_noise_limit=None,
     ):
         """
         The lens dataset is the collection of data_type (image, noise-map, PSF), a mask, grid, convolver \
@@ -164,6 +167,7 @@ class AbstractMaskedDatasetSettings:
 
         self.grid_class = grid_class
         self.grid_inversion_class = grid_inversion_class
+        self.sub_size = sub_size
         self.fractional_accuracy = fractional_accuracy
 
         if sub_steps is None:
@@ -171,6 +175,7 @@ class AbstractMaskedDatasetSettings:
 
         self.sub_steps = sub_steps
         self.pixel_scales_interp = pixel_scales_interp
+        self.signal_to_noise_limit = signal_to_noise_limit
 
     def grid_from_mask(self, mask):
         return grid_from_mask_and_grid_class(
@@ -190,13 +195,179 @@ class AbstractMaskedDatasetSettings:
             pixel_scales_interp=self.pixel_scales_interp,
         )
 
+    @property
+    def grid_no_inversion_tag(self):
+        """Generate a tag describing the the grid and grid_inversions used by the phase.
+
+        This assumes both grids were used in the analysis.
+        """
+
+        return (
+            "__"
+            + conf.instance.tag.get("dataset", "grid")
+            + "_"
+            + self.grid_sub_size_tag
+            + self.grid_fractional_accuracy_tag
+            + self.grid_pixel_scales_interp_tag
+        )
+
+    @property
+    def grid_with_inversion_tag(self):
+        """Generate a tag describing the the grid and grid_inversions used by the phase.
+
+        This assumes both grids were used in the analysis.
+        """
+        return (
+            "__"
+            + conf.instance.tag.get("dataset", "grid")
+            + "_"
+            + self.grid_sub_size_tag
+            + self.grid_fractional_accuracy_tag
+            + self.grid_pixel_scales_interp_tag
+            + "_"
+            + conf.instance.tag.get("dataset", "grid_inversion")
+            + "_"
+            + self.grid_inversion_sub_size_tag
+            + self.grid_inversion_fractional_accuracy_tag
+            + self.grid_inversion_pixel_scales_interp_tag
+        )
+
+    @property
+    def grid_sub_size_tag(self):
+        """Generate a sub-size tag, to customize phase names based on the sub-grid size used, of the Grid class.
+
+        This changes the phase settings folder as follows:
+
+        sub_size = None -> settings
+        sub_size = 1 -> settings_sub_size_2
+        sub_size = 4 -> settings_sub_size_4
+        """
+        if not self.grid_class is grids.Grid:
+            return ""
+        return conf.instance.tag.get("dataset", "sub_size") + "_" + str(self.sub_size)
+
+    @property
+    def grid_fractional_accuracy_tag(self):
+        """Generate a fractional accuracy tag, to customize phase names based on the fractional accuracy of the
+        GridIterate class.
+
+        This changes the phase settings folder as follows:
+
+        fraction_accuracy = 0.5 -> settings__facc_0.5
+        fractional_accuracy = 0.999999 = 4 -> settings__facc_0.999999
+        """
+        if not self.grid_class is grids.GridIterate:
+            return ""
+        return (
+            conf.instance.tag.get("dataset", "fractional_accuracy")
+            + "_"
+            + str(self.fractional_accuracy)
+        )
+
+    @property
+    def grid_pixel_scales_interp_tag(self):
+        """Generate an interpolation pixel scale tag, to customize phase names based on the resolution of the
+        GridInterpolate.
+
+        This changes the phase settings folder as follows:
+
+        pixel_scales_interp = None -> settings
+        pixel_scales_interp = 0.1 -> settings___grid_interp_0.1
+        """
+        if not self.grid_class is grids.GridInterpolate:
+            return ""
+        if self.pixel_scales_interp is None:
+            return ""
+        return conf.instance.tag.get(
+            "dataset", "pixel_scales_interp"
+        ) + "_{0:.3f}".format(self.pixel_scales_interp)
+
+    @property
+    def grid_inversion_sub_size_tag(self):
+        """Generate a sub-size tag, to customize phase names based on the sub-grid size used, of the Grid class.
+
+        This changes the phase settings folder as follows:
+
+        sub_size = None -> settings
+        sub_size = 1 -> settings__grid_sub_size_2
+        sub_size = 4 -> settings__grid_inv_sub_size_4
+        """
+        if not self.grid_inversion_class is grids.Grid:
+            return ""
+        return conf.instance.tag.get("dataset", "sub_size") + "_" + str(self.sub_size)
+
+    @property
+    def grid_inversion_fractional_accuracy_tag(self):
+        """Generate a fractional accuracy tag, to customize phase names based on the fractional accuracy of the
+        GridIterate class.
+
+        This changes the phase settings folder as follows:
+
+        fraction_accuracy = 0.5 -> settings__facc_0.5
+        fractional_accuracy = 0.999999 = 4 -> settings__facc_0.999999
+        """
+        if not self.grid_inversion_class is grids.GridIterate:
+            return ""
+        return (
+            conf.instance.tag.get("dataset", "fractional_accuracy")
+            + "_"
+            + str(self.fractional_accuracy)
+        )
+
+    @property
+    def grid_inversion_pixel_scales_interp_tag(self):
+        """Generate an interpolation pixel scale tag, to customize phase names based on the resolution of the
+        GridInterpolate.
+
+        This changes the phase settings folder as follows:
+
+        pixel_scales_interp = None -> settings
+        pixel_scales_interp = 0.1 -> settings___grid_interp_0.1
+        """
+        if not self.grid_inversion_class is grids.GridInterpolate:
+            return ""
+        if self.pixel_scales_interp is None:
+            return ""
+        return conf.instance.tag.get(
+            "dataset", "pixel_scales_interp"
+        ) + "_{0:.3f}".format(self.pixel_scales_interp)
+
+    @property
+    def signal_to_noise_limit_tag(self):
+        """Generate a signal to noise limit tag, to customize phase names based on limiting the signal to noise ratio of
+        the dataset being fitted.
+
+        This changes the phase settings folder as follows:
+
+        signal_to_noise_limit = None -> settings
+        signal_to_noise_limit = 2 -> settings_snr_2
+        signal_to_noise_limit = 10 -> settings_snr_10
+        """
+        if self.signal_to_noise_limit is None:
+            return ""
+        return (
+            "__"
+            + conf.instance.tag.get("dataset", "signal_to_noise_limit")
+            + "_"
+            + str(self.signal_to_noise_limit)
+        )
+
 
 class AbstractMaskedDataset:
     def __init__(self, dataset, mask, settings=AbstractMaskedDatasetSettings()):
 
+        # TODO : Make MASK USE SETTINGS SUB SIZE.
+
+        if settings.signal_to_noise_limit is not None:
+
+            dataset = dataset.signal_to_noise_limited_from_signal_to_noise_limit(
+                signal_to_noise_limit=settings.signal_to_noise_limit
+            )
+
         self.dataset = dataset
         self.mask = mask
         self.settings = settings
+
         self.grid = settings.grid_from_mask(mask=mask)
         self.grid_inversion = settings.grid_inversion_from_mask(mask=mask)
 

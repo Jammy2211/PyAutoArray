@@ -77,6 +77,169 @@ class TestPotentialChiSquaredMap:
         assert dataset.potential_chi_squared_max == 1.0
 
 
+class TestAbstractMaskedDatasetTags:
+    def test__grids__sub_size_tags(self):
+
+        settings = abstract_dataset.AbstractMaskedDatasetSettings(
+            grid_class=aa.GridIterate, sub_size=1
+        )
+        assert settings.grid_sub_size_tag == ""
+        settings = abstract_dataset.AbstractMaskedDatasetSettings(
+            grid_class=aa.Grid, sub_size=1
+        )
+        assert settings.grid_sub_size_tag == "sub_1"
+        settings = abstract_dataset.AbstractMaskedDatasetSettings(
+            grid_class=aa.Grid, sub_size=2
+        )
+        assert settings.grid_sub_size_tag == "sub_2"
+        settings = abstract_dataset.AbstractMaskedDatasetSettings(
+            grid_class=aa.Grid, sub_size=4
+        )
+        assert settings.grid_sub_size_tag == "sub_4"
+
+        settings = abstract_dataset.AbstractMaskedDatasetSettings(
+            grid_inversion_class=aa.GridIterate, sub_size=1
+        )
+        assert settings.grid_inversion_sub_size_tag == ""
+        settings = abstract_dataset.AbstractMaskedDatasetSettings(
+            grid_inversion_class=aa.Grid, sub_size=1
+        )
+        assert settings.grid_inversion_sub_size_tag == "sub_1"
+        settings = abstract_dataset.AbstractMaskedDatasetSettings(
+            grid_inversion_class=aa.Grid, sub_size=2
+        )
+        assert settings.grid_inversion_sub_size_tag == "sub_2"
+        settings = abstract_dataset.AbstractMaskedDatasetSettings(
+            grid_inversion_class=aa.Grid, sub_size=4
+        )
+        assert settings.grid_inversion_sub_size_tag == "sub_4"
+
+    def test__grids__fractional_accuracy_tags(self):
+
+        settings = abstract_dataset.AbstractMaskedDatasetSettings(
+            grid_class=aa.Grid, fractional_accuracy=1
+        )
+        assert settings.grid_fractional_accuracy_tag == ""
+        settings = abstract_dataset.AbstractMaskedDatasetSettings(
+            grid_class=aa.GridIterate, fractional_accuracy=0.5
+        )
+        assert settings.grid_fractional_accuracy_tag == "facc_0.5"
+        settings = abstract_dataset.AbstractMaskedDatasetSettings(
+            grid_class=aa.GridIterate, fractional_accuracy=0.71
+        )
+        assert settings.grid_fractional_accuracy_tag == "facc_0.71"
+        settings = abstract_dataset.AbstractMaskedDatasetSettings(
+            grid_class=aa.GridIterate, fractional_accuracy=0.999999
+        )
+        assert settings.grid_fractional_accuracy_tag == "facc_0.999999"
+
+        settings = abstract_dataset.AbstractMaskedDatasetSettings(
+            grid_inversion_class=aa.Grid, fractional_accuracy=1
+        )
+        assert settings.grid_inversion_fractional_accuracy_tag == ""
+        settings = abstract_dataset.AbstractMaskedDatasetSettings(
+            grid_inversion_class=aa.GridIterate, fractional_accuracy=0.5
+        )
+        assert settings.grid_inversion_fractional_accuracy_tag == "facc_0.5"
+        settings = abstract_dataset.AbstractMaskedDatasetSettings(
+            grid_inversion_class=aa.GridIterate, fractional_accuracy=0.71
+        )
+        assert settings.grid_inversion_fractional_accuracy_tag == "facc_0.71"
+        settings = abstract_dataset.AbstractMaskedDatasetSettings(
+            grid_inversion_class=aa.GridIterate, fractional_accuracy=0.999999
+        )
+        assert settings.grid_inversion_fractional_accuracy_tag == "facc_0.999999"
+
+    def test__grid__pixel_scales_interp_tag(self):
+
+        settings = abstract_dataset.AbstractMaskedDatasetSettings(
+            grid_class=aa.Grid, pixel_scales_interp=0.1
+        )
+        assert settings.grid_pixel_scales_interp_tag == ""
+        settings = abstract_dataset.AbstractMaskedDatasetSettings(
+            grid_class=aa.GridInterpolate, pixel_scales_interp=None
+        )
+        assert settings.grid_pixel_scales_interp_tag == ""
+        settings = abstract_dataset.AbstractMaskedDatasetSettings(
+            grid_class=aa.GridInterpolate, pixel_scales_interp=0.5
+        )
+        assert settings.grid_pixel_scales_interp_tag == "interp_0.500"
+        settings = abstract_dataset.AbstractMaskedDatasetSettings(
+            grid_class=aa.GridInterpolate, pixel_scales_interp=0.25
+        )
+        assert settings.grid_pixel_scales_interp_tag == "interp_0.250"
+        settings = abstract_dataset.AbstractMaskedDatasetSettings(
+            grid_class=aa.GridInterpolate, pixel_scales_interp=0.234
+        )
+        assert settings.grid_pixel_scales_interp_tag == "interp_0.234"
+
+        settings = abstract_dataset.AbstractMaskedDatasetSettings(
+            grid_inversion_class=aa.Grid, pixel_scales_interp=0.1
+        )
+        assert settings.grid_inversion_pixel_scales_interp_tag == ""
+        settings = abstract_dataset.AbstractMaskedDatasetSettings(
+            grid_inversion_class=aa.GridInterpolate, pixel_scales_interp=None
+        )
+        assert settings.grid_inversion_pixel_scales_interp_tag == ""
+        settings = abstract_dataset.AbstractMaskedDatasetSettings(
+            grid_inversion_class=aa.GridInterpolate, pixel_scales_interp=0.5
+        )
+        assert settings.grid_inversion_pixel_scales_interp_tag == "interp_0.500"
+        settings = abstract_dataset.AbstractMaskedDatasetSettings(
+            grid_inversion_class=aa.GridInterpolate, pixel_scales_interp=0.25
+        )
+        assert settings.grid_inversion_pixel_scales_interp_tag == "interp_0.250"
+        settings = abstract_dataset.AbstractMaskedDatasetSettings(
+            grid_inversion_class=aa.GridInterpolate, pixel_scales_interp=0.234
+        )
+        assert settings.grid_inversion_pixel_scales_interp_tag == "interp_0.234"
+
+    def test__grid_tags(self):
+
+        settings = abstract_dataset.AbstractMaskedDatasetSettings(
+            grid_class=aa.Grid,
+            sub_size=1,
+            grid_inversion_class=aa.GridIterate,
+            fractional_accuracy=0.5,
+        )
+        assert settings.grid_no_inversion_tag == "__grid_sub_1"
+        assert settings.grid_with_inversion_tag == "__grid_sub_1_inv_facc_0.5"
+
+        settings = abstract_dataset.AbstractMaskedDatasetSettings(
+            grid_class=aa.GridInterpolate,
+            grid_inversion_class=aa.GridInterpolate,
+            pixel_scales_interp=0.5,
+        )
+        assert settings.grid_no_inversion_tag == "__grid_interp_0.500"
+        assert (
+            settings.grid_with_inversion_tag == "__grid_interp_0.500_inv_interp_0.500"
+        )
+
+        settings = abstract_dataset.AbstractMaskedDatasetSettings(
+            grid_class=aa.GridIterate,
+            fractional_accuracy=0.8,
+            grid_inversion_class=aa.Grid,
+            sub_size=2,
+        )
+        assert settings.grid_no_inversion_tag == "__grid_facc_0.8"
+        assert settings.grid_with_inversion_tag == "__grid_facc_0.8_inv_sub_2"
+
+    def test__signal_to_noise_limit_tag(self):
+
+        settings = abstract_dataset.AbstractMaskedDatasetSettings(
+            signal_to_noise_limit=None
+        )
+        assert settings.signal_to_noise_limit_tag == ""
+        settings = abstract_dataset.AbstractMaskedDatasetSettings(
+            signal_to_noise_limit=1
+        )
+        assert settings.signal_to_noise_limit_tag == "__snr_1"
+        settings = abstract_dataset.AbstractMaskedDatasetSettings(
+            signal_to_noise_limit=2
+        )
+        assert settings.signal_to_noise_limit_tag == "__snr_2"
+
+
 class TestAbstractMaskedData:
     def test__grid(
         self,
