@@ -244,10 +244,15 @@ class TestGrids:
         )
         mask[0, 0] = True
 
-        assert mask.geometry.unmasked_grid.in_1d == pytest.approx(grid_1d_util, 1e-4)
-        assert mask.geometry.unmasked_grid.in_2d == pytest.approx(grid_2d_util, 1e-4)
+        assert mask.geometry.unmasked_grid_sub_1.in_1d == pytest.approx(
+            grid_1d_util, 1e-4
+        )
+        assert mask.geometry.unmasked_grid_sub_1.in_2d == pytest.approx(
+            grid_2d_util, 1e-4
+        )
         assert (
-            mask.geometry.unmasked_grid.mask == np.full(fill_value=False, shape=(4, 7))
+            mask.geometry.unmasked_grid_sub_1.mask
+            == np.full(fill_value=False, shape=(4, 7))
         ).all()
 
         mask = aa.Mask.manual(
@@ -255,7 +260,7 @@ class TestGrids:
         )
 
         assert (
-            mask.geometry.unmasked_grid.in_2d
+            mask.geometry.unmasked_grid_sub_1.in_2d
             == np.array(
                 [
                     [[1.0, -1.0], [1.0, 0.0], [1.0, 1.0]],
@@ -277,15 +282,19 @@ class TestGrids:
             mask=np.full(fill_value=False, shape=(4, 7)), pixel_scales=(0.8, 0.56)
         )
 
-        assert mask.geometry.unmasked_grid.in_1d == pytest.approx(grid_1d_util, 1e-4)
-        assert mask.geometry.unmasked_grid.in_2d == pytest.approx(grid_2d_util, 1e-4)
+        assert mask.geometry.unmasked_grid_sub_1.in_1d == pytest.approx(
+            grid_1d_util, 1e-4
+        )
+        assert mask.geometry.unmasked_grid_sub_1.in_2d == pytest.approx(
+            grid_2d_util, 1e-4
+        )
 
         mask = aa.Mask.manual(
             mask=np.full(fill_value=False, shape=(3, 3)), pixel_scales=(1.0, 2.0)
         )
 
         assert (
-            mask.geometry.unmasked_grid.in_2d
+            mask.geometry.unmasked_grid_sub_1.in_2d
             == np.array(
                 [
                     [[1.0, -2.0], [1.0, 0.0], [1.0, 2.0]],
@@ -307,7 +316,9 @@ class TestGrids:
             origin=(1.0, 3.0),
         )
 
-        assert mask.geometry.unmasked_grid.in_2d == pytest.approx(grid_2d_util, 1e-4)
+        assert mask.geometry.unmasked_grid_sub_1.in_2d == pytest.approx(
+            grid_2d_util, 1e-4
+        )
 
         grid_1d_util = aa.util.grid.grid_1d_via_shape_2d_from(
             shape_2d=(4, 7), pixel_scales=(0.56, 0.56), origin=(-1.0, -4.0), sub_size=1
@@ -319,7 +330,9 @@ class TestGrids:
             origin=(-1.0, -4.0),
         )
 
-        assert mask.geometry.unmasked_grid.in_1d == pytest.approx(grid_1d_util, 1e-4)
+        assert mask.geometry.unmasked_grid_sub_1.in_1d == pytest.approx(
+            grid_1d_util, 1e-4
+        )
 
         grid_2d_util = aa.util.grid.grid_2d_via_shape_2d_from(
             shape_2d=(4, 7), pixel_scales=(0.8, 0.56), origin=(1.0, 2.0), sub_size=1
@@ -331,7 +344,9 @@ class TestGrids:
             origin=(1.0, 2.0),
         )
 
-        assert mask.geometry.unmasked_grid.in_2d == pytest.approx(grid_2d_util, 1e-4)
+        assert mask.geometry.unmasked_grid_sub_1.in_2d == pytest.approx(
+            grid_2d_util, 1e-4
+        )
 
         grid_1d_util = aa.util.grid.grid_1d_via_shape_2d_from(
             shape_2d=(4, 7), pixel_scales=(0.8, 0.56), origin=(-1.0, -4.0), sub_size=1
@@ -343,7 +358,9 @@ class TestGrids:
             origin=(-1.0, -4.0),
         )
 
-        assert mask.geometry.unmasked_grid.in_1d == pytest.approx(grid_1d_util, 1e-4)
+        assert mask.geometry.unmasked_grid_sub_1.in_1d == pytest.approx(
+            grid_1d_util, 1e-4
+        )
 
     def test__masked_grids_1d(self):
 
@@ -352,7 +369,7 @@ class TestGrids:
         )
 
         assert (
-            mask.geometry.masked_grid.in_1d
+            mask.geometry.masked_grid_sub_1.in_1d
             == np.array(
                 [
                     [1.0, -1.0],
@@ -374,7 +391,7 @@ class TestGrids:
         mask[1, 1] = True
 
         assert (
-            mask.geometry.masked_grid.in_1d
+            mask.geometry.masked_grid_sub_1.in_1d
             == np.array(
                 [
                     [1.0, -1.0],
@@ -396,7 +413,7 @@ class TestGrids:
         )
 
         assert (
-            mask.geometry.masked_grid.in_1d
+            mask.geometry.masked_grid_sub_1.in_1d
             == np.array([[4.0, -2.5], [3.0, -1.5], [2.0, -1.5]])
         ).all()
 
@@ -417,7 +434,7 @@ class TestGrids:
 
         mask = aa.Mask.manual(mask=mask, pixel_scales=(1.0, 1.0))
 
-        assert mask.geometry.edge_grid.in_1d[0:11] == pytest.approx(
+        assert mask.geometry.edge_grid_sub_1.in_1d[0:11] == pytest.approx(
             np.array(
                 [
                     [3.0, -3.0],
@@ -453,7 +470,7 @@ class TestGrids:
 
         mask = aa.Mask.manual(mask=mask, pixel_scales=(1.0, 1.0))
 
-        assert mask.geometry.border_grid.in_1d[0:11] == pytest.approx(
+        assert mask.geometry.border_grid_sub_1.in_1d[0:11] == pytest.approx(
             np.array(
                 [
                     [3.0, -3.0],
@@ -480,7 +497,7 @@ class TestGrids:
         )
 
         assert (
-            mask.geometry.masked_sub_grid
+            mask.geometry.masked_grid
             == np.array(
                 [
                     [1.0, -1.0],
@@ -503,7 +520,7 @@ class TestGrids:
         )
 
         assert (
-            mask.geometry.masked_sub_grid
+            mask.geometry.masked_grid
             == np.array(
                 [
                     [0.75, -0.75],
@@ -534,7 +551,7 @@ class TestGrids:
         mask[1, 1] = True
 
         assert (
-            mask.geometry.masked_sub_grid
+            mask.geometry.masked_grid
             == np.array(
                 [
                     [1.0, -1.0],
@@ -560,7 +577,7 @@ class TestGrids:
             mask=mask, pixel_scales=(1.0, 1.0), sub_size=5, origin=(3.0, -2.0)
         )
 
-        assert (mask.geometry.masked_sub_grid == masked_grid_util).all()
+        assert (mask.geometry.masked_grid == masked_grid_util).all()
 
     def test__sub_border_1d_grid__compare_numerical_values(self):
 
@@ -579,7 +596,7 @@ class TestGrids:
         mask = aa.Mask.manual(mask=mask, pixel_scales=(1.0, 1.0), sub_size=2)
 
         assert (
-            mask.geometry.sub_border_grid_1d
+            mask.geometry.border_grid_1d
             == np.array([[1.25, -2.25], [1.25, -1.25], [-0.25, 1.25]])
         ).all()
 
@@ -598,7 +615,7 @@ class TestGrids:
         mask = aa.Mask.manual(mask=mask, pixel_scales=(1.0, 1.0), sub_size=2)
 
         assert (
-            mask.geometry.sub_border_grid_1d
+            mask.geometry.border_grid_1d
             == np.array(
                 [
                     [1.25, -1.25],

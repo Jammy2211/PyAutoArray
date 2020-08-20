@@ -28,6 +28,30 @@ class TestInterferometer:
         assert interferometer.noise_map == 1
         assert interferometer.uv_wavelengths == 2
 
+    def test__new_interferometer_with_signal_to_noise_limit_below_max_signal_to_noise__signal_to_noise_map_capped_to_limit(
+        self
+    ):
+
+        interferometer = aa.Interferometer(
+            visibilities=aa.Visibilities(visibilities_1d=np.array([[1, 1]])),
+            noise_map=aa.VisibilitiesNoiseMap(visibilities_1d=np.array([[1, 5]])),
+            uv_wavelengths=2,
+        )
+
+        interferometer_capped = interferometer.signal_to_noise_limited_from_signal_to_noise_limit(
+            signal_to_noise_limit=0.5
+        )
+
+        assert (interferometer_capped.visibilities == np.array([[1.0, 1.0]])).all()
+
+        print(interferometer_capped.noise_map)
+
+        assert (interferometer_capped.noise_map == np.array([[2.0, 5.0]])).all()
+
+        assert (
+            interferometer_capped.signal_to_noise_map == np.array([[0.5, 0.2]])
+        ).all()
+
     def test__from_fits__all_files_in_one_fits__load_using_different_hdus(self):
 
         interferometer = aa.Interferometer.from_fits(
@@ -83,15 +107,15 @@ class TestInterferometer:
         assert (interferometer.uv_wavelengths[:, 1] == 6.0 * np.ones(3)).all()
 
 
-class TestMaskedInterferometerSettings:
+class TestSettingsMaskedInterferometer:
     def test__transformer_tag(self):
-        settings = aa.MaskedInterferometerSettings(transformer_class=aa.TransformerDFT)
+        settings = aa.SettingsMaskedInterferometer(transformer_class=aa.TransformerDFT)
         assert settings.transformer_tag == "__dft"
-        settings = aa.MaskedInterferometerSettings(
+        settings = aa.SettingsMaskedInterferometer(
             transformer_class=aa.TransformerNUFFT
         )
         assert settings.transformer_tag == "__nufft"
-        settings = aa.MaskedInterferometerSettings(transformer_class=None)
+        settings = aa.SettingsMaskedInterferometer(transformer_class=None)
         assert settings.transformer_tag == ""
 
 
@@ -135,7 +159,7 @@ class TestMaskedInterferometer:
             interferometer=interferometer_7,
             visibilities_mask=visibilities_mask,
             real_space_mask=sub_mask_7x7,
-            settings=aa.MaskedInterferometerSettings(
+            settings=aa.SettingsMaskedInterferometer(
                 transformer_class=transformer.TransformerDFT
             ),
         )
@@ -146,7 +170,7 @@ class TestMaskedInterferometer:
             interferometer=interferometer_7,
             visibilities_mask=visibilities_mask,
             real_space_mask=sub_mask_7x7,
-            settings=aa.MaskedInterferometerSettings(
+            settings=aa.SettingsMaskedInterferometer(
                 transformer_class=transformer.TransformerNUFFT
             ),
         )
@@ -191,7 +215,7 @@ class TestMaskedInterferometer:
             interferometer=interferometer_7,
             visibilities_mask=visibilities_mask_7x2,
             real_space_mask=sub_mask_7x7,
-            settings=aa.MaskedInterferometerSettings(
+            settings=aa.SettingsMaskedInterferometer(
                 transformer_class=aa.TransformerDFT
             ),
         )

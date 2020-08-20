@@ -46,20 +46,38 @@ class AbstractInterferometer(abstract_dataset.AbstractDataset):
     def modified_visibilities_from_visibilities(self, visibilities):
 
         interferometer = copy.deepcopy(self)
-        interferometer.data = visibilities
+        interferometer.data = vis.Visibilities(visibilities_1d=visibilities)
+        return interferometer
+
+    def signal_to_noise_limited_from_signal_to_noise_limit(self, signal_to_noise_limit):
+
+        interferometer = copy.deepcopy(self)
+
+        noise_map_limit = np.where(
+            self.signal_to_noise_map > signal_to_noise_limit,
+            np.abs(self.visibilities) / signal_to_noise_limit,
+            self.noise_map,
+        )
+
+        interferometer.noise_map = vis.VisibilitiesNoiseMap(
+            visibilities_1d=noise_map_limit
+        )
+
         return interferometer
 
 
-class AbstractMaskedInterferometerSettings(
-    abstract_dataset.AbstractMaskedDatasetSettings
+class AbstractSettingsMaskedInterferometer(
+    abstract_dataset.AbstractSettingsMaskedDataset
 ):
     def __init__(
         self,
         grid_class=grids.Grid,
         grid_inversion_class=grids.Grid,
+        sub_size=2,
         fractional_accuracy=0.9999,
         sub_steps=None,
         pixel_scales_interp=None,
+        signal_to_noise_limit=None,
         transformer_class=trans.TransformerNUFFT,
     ):
         """
@@ -71,33 +89,56 @@ class AbstractMaskedInterferometerSettings(
 
           Parameters
           ----------
-          imaging: im.Imaging
-              The imaging data_type all in 2D (the image, noise-map, etc.)
-          real_space_mask: msk.Mask
-              The 2D mask that is applied to the image.
-          sub_size : int
-              The size of the sub-grid used for each lens SubGrid. E.g. a value of 2 grid each image-pixel on a 2x2 \
-              sub-grid.
-          positions : [[]]
-              Lists of image-pixel coordinates (arc-seconds) that mappers close to one another in the source-plane(s), \
-              used to speed up the non-linear sampling.
-          pixel_scales_interp : float
-              If *True*, expensive to compute mass profile deflection angles will be computed on a sparse grid and \
-              interpolated to the grid, sub and blurring grids.
-          inversion_pixel_limit : int or None
-              The maximum number of pixels that can be used by an inversion, with the limit placed primarily to speed \
-              up run.
+        grid_class : ag.Grid
+            The type of grid used to create the image from the *Galaxy* and *Plane*. The options are *Grid*,
+            *GridIterate* and *GridInterpolate* (see the *Grids* documentation for a description of these options).
+        grid_inversion_class : ag.Grid
+            The type of grid used to create the grid that maps the *Inversion* source pixels to the data's image-pixels.
+            The options are *Grid*, *GridIterate* and *GridInterpolate* (see the *Grids* documentation for a
+            description of these options).
+        sub_size : int
+            If the grid and / or grid_inversion use a *Grid*, this sets the sub-size used by the *Grid*.
+        fractional_accuracy : float
+            If the grid and / or grid_inversion use a *GridIterate*, this sets the fractional accuracy it
+            uses when evaluating functions.
+        sub_steps : [int]
+            If the grid and / or grid_inversion use a *GridIterate*, this sets the steps the sub-size is increased by
+            to meet the fractional accuracy when evaluating functions.
+        pixel_scales_interp : float or (float, float)
+            If the grid and / or grid_inversion use a *GridInterpolate*, this sets the resolution of the interpolation
+            grid.
+        signal_to_noise_limit : float
+            If input, the dataset's noise-map is rescaled such that no pixel has a signal-to-noise above the
+            signa to noise limit.
           """
 
         super().__init__(
             grid_class=grid_class,
             grid_inversion_class=grid_inversion_class,
+            sub_size=sub_size,
             fractional_accuracy=fractional_accuracy,
             sub_steps=sub_steps,
             pixel_scales_interp=pixel_scales_interp,
+            signal_to_noise_limit=signal_to_noise_limit,
         )
 
         self.transformer_class = transformer_class
+
+    @property
+    def tag_no_inversion(self):
+        return (
+            self.grid_tag_no_inversion
+            + self.transformer_tag
+            + self.signal_to_noise_limit_tag
+        )
+
+    @property
+    def tag_with_inversion(self):
+        return (
+            self.grid_tag_with_inversion
+            + self.transformer_tag
+            + self.signal_to_noise_limit_tag
+        )
 
     @property
     def transformer_tag(self):
@@ -123,7 +164,7 @@ class AbstractMaskedInterferometer(abstract_dataset.AbstractMaskedDataset):
         interferometer,
         visibilities_mask,
         real_space_mask,
-        settings=AbstractMaskedInterferometerSettings(),
+        settings=AbstractSettingsMaskedInterferometer(),
     ):
         """
         The lens dataset is the collection of data_type (image, noise-map), a mask, grid, convolver \
@@ -357,7 +398,7 @@ class Interferometer(AbstractInterferometer):
             )
 
 
-class MaskedInterferometerSettings(AbstractMaskedInterferometerSettings):
+class SettingsMaskedInterferometer(AbstractSettingsMaskedInterferometer):
 
     pass
 

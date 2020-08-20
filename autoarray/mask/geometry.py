@@ -64,7 +64,7 @@ class Geometry:
     @property
     @array_util.Memoizer()
     def mask_centre(self):
-        return grid_util.grid_centre_from(grid_1d=self.masked_grid)
+        return grid_util.grid_centre_from(grid_1d=self.masked_grid_sub_1)
 
     @property
     def shape_2d_scaled(self):
@@ -109,7 +109,7 @@ class Geometry:
         return np.linspace(self.scaled_minima[1], self.scaled_maxima[1], 4)
 
     @property
-    def unmasked_grid(self):
+    def unmasked_grid_sub_1(self):
         """ The arc second-grid of (y,x) coordinates of every pixel.
 
         This is defined from the top-left corner, such that the first pixel at location [0, 0] will have a negative x \
@@ -129,7 +129,7 @@ class Geometry:
         )
 
     @property
-    def masked_grid(self):
+    def masked_grid_sub_1(self):
 
         grid_1d = grid_util.grid_1d_via_mask_from(
             mask=self.mask,
@@ -140,23 +140,23 @@ class Geometry:
         return grids.Grid(grid=grid_1d, mask=self.mask.mask_sub_1, store_in_1d=True)
 
     @property
-    def edge_grid(self):
+    def edge_grid_sub_1(self):
         """The indicies of the mask's border pixels, where a border pixel is any unmasked pixel on an
         exterior edge (e.g. next to at least one pixel with a *True* value but not central pixels like those within \
         an annulus mask).
         """
-        edge_grid_1d = self.masked_grid[self.regions._edge_1d_indexes]
+        edge_grid_1d = self.masked_grid_sub_1[self.regions._edge_1d_indexes]
         return grids.Grid(
             grid=edge_grid_1d, mask=self.regions.edge_mask.mask_sub_1, store_in_1d=True
         )
 
     @property
-    def border_grid(self):
+    def border_grid_sub_1(self):
         """The indicies of the mask's border pixels, where a border pixel is any unmasked pixel on an
         exterior edge (e.g. next to at least one pixel with a *True* value but not central pixels like those within \
         an annulus mask).
         """
-        border_grid_1d = self.masked_grid[self.regions._border_1d_indexes]
+        border_grid_1d = self.masked_grid_sub_1[self.regions._border_1d_indexes]
         return grids.Grid(
             grid=border_grid_1d,
             mask=self.regions.border_mask.mask_sub_1,
@@ -302,7 +302,7 @@ class Geometry:
         )
 
     @property
-    def masked_sub_grid(self):
+    def masked_grid(self):
         sub_grid_1d = grid_util.grid_1d_via_mask_from(
             mask=self.mask,
             pixel_scales=self.mask.pixel_scales,
@@ -314,18 +314,18 @@ class Geometry:
         )
 
     @property
-    def sub_border_grid_1d(self):
+    def border_grid_1d(self):
         """The indicies of the mask's border pixels, where a border pixel is any unmasked pixel on an
         exterior edge (e.g. next to at least one pixel with a *True* value but not central pixels like those within \
         an annulus mask).
         """
-        return self.masked_sub_grid[self.mask.regions._sub_border_1d_indexes]
+        return self.masked_grid[self.mask.regions._sub_border_1d_indexes]
 
     @property
     def _zoom_centre(self):
 
         extraction_grid_1d = self.mask.geometry.grid_pixels_from_grid_scaled_1d(
-            grid_scaled_1d=self.masked_grid.in_1d
+            grid_scaled_1d=self.masked_grid_sub_1.in_1d
         )
         y_pixels_max = np.max(extraction_grid_1d[:, 0])
         y_pixels_min = np.min(extraction_grid_1d[:, 0])

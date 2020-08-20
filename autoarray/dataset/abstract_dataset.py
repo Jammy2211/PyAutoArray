@@ -5,6 +5,7 @@ import copy
 
 from autoconf import conf
 from autoarray.structures import arrays, grids
+from autoarray.mask import mask as msk
 
 
 def grid_from_mask_and_grid_class(
@@ -130,7 +131,7 @@ class AbstractDataset:
         return imaging
 
 
-class AbstractMaskedDatasetSettings:
+class AbstractSettingsMaskedDataset:
     def __init__(
         self,
         grid_class=grids.Grid,
@@ -150,19 +151,27 @@ class AbstractMaskedDatasetSettings:
 
         Parameters
         ----------
-        imaging: im.Imaging
-            The imaging data_type all in 2D (the image, noise-map, PSF, etc.)
-        mask: msk.Mask
-            The 2D mask that is applied to the image.
-        psf_shape_2d : (int, int)
-            The shape of the PSF used for convolving model image generated using analytic light profiles. A smaller \
-            shape will trim the PSF relative to the input image PSF, giving a faster analysis run-time.
-        pixel_scales_interp : float
-            If *True*, expensive to compute mass profile deflection angles will be computed on a sparse grid and \
-            interpolated to the grid, sub and blurring grids.
-        inversion_pixel_limit : int or None
-            The maximum number of pixels that can be used by an inversion, with the limit placed primarily to speed \
-            up run.
+        grid_class : ag.Grid
+            The type of grid used to create the image from the *Galaxy* and *Plane*. The options are *Grid*,
+            *GridIterate* and *GridInterpolate* (see the *Grids* documentation for a description of these options).
+        grid_inversion_class : ag.Grid
+            The type of grid used to create the grid that maps the *Inversion* source pixels to the data's image-pixels.
+            The options are *Grid*, *GridIterate* and *GridInterpolate* (see the *Grids* documentation for a
+            description of these options).
+        sub_size : int
+            If the grid and / or grid_inversion use a *Grid*, this sets the sub-size used by the *Grid*.
+        fractional_accuracy : float
+            If the grid and / or grid_inversion use a *GridIterate*, this sets the fractional accuracy it
+            uses when evaluating functions.
+        sub_steps : [int]
+            If the grid and / or grid_inversion use a *GridIterate*, this sets the steps the sub-size is increased by
+            to meet the fractional accuracy when evaluating functions.
+        pixel_scales_interp : float or (float, float)
+            If the grid and / or grid_inversion use a *GridInterpolate*, this sets the resolution of the interpolation
+            grid.
+        signal_to_noise_limit : float
+            If input, the dataset's noise-map is rescaled such that no pixel has a signal-to-noise above the
+            signa to noise limit.
         """
 
         self.grid_class = grid_class
@@ -196,7 +205,15 @@ class AbstractMaskedDatasetSettings:
         )
 
     @property
-    def grid_no_inversion_tag(self):
+    def tag_no_inversion(self):
+        return self.grid_tag_no_inversion + self.signal_to_noise_limit_tag
+
+    @property
+    def tag_with_inversion(self):
+        return +self.grid_tag_with_inversion + self.signal_to_noise_limit_tag
+
+    @property
+    def grid_tag_no_inversion(self):
         """Generate a tag describing the the grid and grid_inversions used by the phase.
 
         This assumes both grids were used in the analysis.
@@ -212,7 +229,7 @@ class AbstractMaskedDatasetSettings:
         )
 
     @property
-    def grid_with_inversion_tag(self):
+    def grid_tag_with_inversion(self):
         """Generate a tag describing the the grid and grid_inversions used by the phase.
 
         This assumes both grids were used in the analysis.
@@ -354,9 +371,15 @@ class AbstractMaskedDatasetSettings:
 
 
 class AbstractMaskedDataset:
-    def __init__(self, dataset, mask, settings=AbstractMaskedDatasetSettings()):
+    def __init__(self, dataset, mask, settings=AbstractSettingsMaskedDataset()):
 
-        # TODO : Make MASK USE SETTINGS SUB SIZE.
+        if mask.sub_size != settings.sub_size:
+            mask = msk.Mask.manual(
+                mask=mask,
+                pixel_scales=mask.pixel_scales,
+                sub_size=settings.sub_size,
+                origin=mask.origin,
+            )
 
         if settings.signal_to_noise_limit is not None:
 
@@ -369,6 +392,7 @@ class AbstractMaskedDataset:
         self.settings = settings
 
         self.grid = settings.grid_from_mask(mask=mask)
+
         self.grid_inversion = settings.grid_inversion_from_mask(mask=mask)
 
     @property

@@ -12,12 +12,16 @@ from scipy import sparse
 import pylops
 
 
-class InversionSettings:
+class SettingsInversion:
     def __init__(self, tolerance=1e-5, use_linear_operators=False, check_solution=True):
 
         self.tolerance = tolerance
         self.use_linear_operators = use_linear_operators
         self.check_solution = check_solution
+
+    @property
+    def tag(self):
+        return self.use_linear_operators_tag
 
     @property
     def use_linear_operators_tag(self):
@@ -27,7 +31,7 @@ class InversionSettings:
             return f"__{conf.instance.tag.get('inversion', 'use_linear_operators')}"
 
 
-def inversion(masked_dataset, mapper, regularization, settings=InversionSettings()):
+def inversion(masked_dataset, mapper, regularization, settings=SettingsInversion()):
 
     if isinstance(masked_dataset, imaging.MaskedImaging):
 
@@ -103,7 +107,7 @@ class AbstractInversion:
         regularization: reg.Regularization,
         regularization_matrix: np.ndarray,
         reconstruction: np.ndarray,
-        settings: InversionSettings,
+        settings: SettingsInversion,
     ):
 
         self.noise_map = noise_map
@@ -220,7 +224,7 @@ class InversionImagingMatrix(AbstractInversion, AbstractInversionMatrix):
         regularization_matrix: np.ndarray,
         curvature_reg_matrix: np.ndarray,
         reconstruction: np.ndarray,
-        settings: InversionSettings,
+        settings: SettingsInversion,
     ):
         """ An inversion, which given an input image and noise-map reconstructs the image using a linear inversion, \
         including a convolution that accounts for blurring.
@@ -285,7 +289,7 @@ class InversionImagingMatrix(AbstractInversion, AbstractInversionMatrix):
         convolver: conv.Convolver,
         mapper: mappers.Mapper,
         regularization: reg.Regularization,
-        settings=InversionSettings(),
+        settings=SettingsInversion(),
     ):
 
         blurred_mapping_matrix = convolver.convolve_mapping_matrix(
@@ -384,7 +388,7 @@ class AbstractInversionInterferometer(AbstractInversion):
         regularization: reg.Regularization,
         regularization_matrix: np.ndarray,
         reconstruction: np.ndarray,
-        settings: InversionSettings,
+        settings: SettingsInversion,
     ):
 
         super(AbstractInversionInterferometer, self).__init__(
@@ -407,7 +411,7 @@ class AbstractInversionInterferometer(AbstractInversion):
         transformer: trans.TransformerNUFFT,
         mapper: mappers.Mapper,
         regularization: reg.Regularization,
-        settings=InversionSettings(use_linear_operators=True),
+        settings=SettingsInversion(use_linear_operators=True),
     ):
 
         if not settings.use_linear_operators:
@@ -457,7 +461,7 @@ class InversionInterferometerMatrix(
         reconstruction: np.ndarray,
         transformed_mapping_matrices: np.ndarray,
         curvature_reg_matrix: np.ndarray,
-        settings: InversionSettings,
+        settings: SettingsInversion,
     ):
         """ An inversion, which given an input image and noise-map reconstructs the image using a linear inversion, \
         including a convolution that accounts for blurring.
@@ -523,7 +527,7 @@ class InversionInterferometerMatrix(
         transformer: trans.TransformerNUFFT,
         mapper: mappers.Mapper,
         regularization: reg.Regularization,
-        settings=InversionSettings(),
+        settings=SettingsInversion(),
     ):
 
         transformed_mapping_matrices = transformer.transformed_mapping_matrices_from_mapping_matrix(
@@ -612,7 +616,7 @@ class InversionInterferometerLinearOperator(AbstractInversionInterferometer):
         regularization: reg.Regularization,
         regularization_matrix: np.ndarray,
         reconstruction: np.ndarray,
-        settings: InversionSettings,
+        settings: SettingsInversion,
     ):
         """ An inversion, which given an input image and noise-map reconstructs the image using a linear inversion, \
         including a convolution that accounts for blurring.
@@ -669,7 +673,7 @@ class InversionInterferometerLinearOperator(AbstractInversionInterferometer):
         transformer: trans.TransformerNUFFT,
         mapper: mappers.Mapper,
         regularization: reg.Regularization,
-        settings=InversionSettings(),
+        settings=SettingsInversion(),
     ):
 
         regularization_matrix = regularization.regularization_matrix_from_mapper(

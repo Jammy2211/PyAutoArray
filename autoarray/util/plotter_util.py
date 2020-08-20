@@ -12,7 +12,7 @@ def get_real_space_mask_from(mask, fit):
         If *True*, the masks is plotted on the fit's datas.
     """
     if mask:
-        return fit.masked_dataset.mask
+        return fit.settings_masked_dataset.mask
     else:
         return None
 

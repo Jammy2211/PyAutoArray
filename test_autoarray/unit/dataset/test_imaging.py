@@ -223,23 +223,23 @@ class TestImaging:
         assert imaging.noise_map.mask.pixel_scales == (0.1, 0.1)
 
 
-class TestMaskedImagingSettings:
+class TestSettingsMaskedImaging:
     def test__bin_up_factor_tag(self):
 
-        settings = aa.MaskedImagingSettings(bin_up_factor=None)
+        settings = aa.SettingsMaskedImaging(bin_up_factor=None)
         assert settings.bin_up_factor_tag == ""
-        settings = aa.MaskedImagingSettings(bin_up_factor=1)
+        settings = aa.SettingsMaskedImaging(bin_up_factor=1)
         assert settings.bin_up_factor_tag == ""
-        settings = aa.MaskedImagingSettings(bin_up_factor=2)
+        settings = aa.SettingsMaskedImaging(bin_up_factor=2)
         assert settings.bin_up_factor_tag == "__bin_2"
 
     def test__psf_shape_2d_tag(self):
 
-        settings = aa.MaskedImagingSettings(psf_shape_2d=None)
+        settings = aa.SettingsMaskedImaging(psf_shape_2d=None)
         assert settings.psf_shape_tag == ""
-        settings = aa.MaskedImagingSettings(psf_shape_2d=(2, 2))
+        settings = aa.SettingsMaskedImaging(psf_shape_2d=(2, 2))
         assert settings.psf_shape_tag == "__psf_2x2"
-        settings = aa.MaskedImagingSettings(psf_shape_2d=(3, 4))
+        settings = aa.SettingsMaskedImaging(psf_shape_2d=(3, 4))
         assert settings.psf_shape_tag == "__psf_3x4"
 
 
@@ -275,7 +275,7 @@ class TestMaskedImaging:
         masked_imaging_7x7 = aa.MaskedImaging(
             imaging=imaging_7x7,
             mask=sub_mask_7x7,
-            settings=aa.MaskedImagingSettings(grid_class=aa.Grid),
+            settings=aa.SettingsMaskedImaging(grid_class=aa.Grid),
         )
 
         assert isinstance(masked_imaging_7x7.grid, aa.Grid)
@@ -287,7 +287,7 @@ class TestMaskedImaging:
         masked_imaging_7x7 = aa.MaskedImaging(
             imaging=imaging_7x7,
             mask=sub_mask_7x7,
-            settings=aa.MaskedImagingSettings(grid_class=aa.GridIterate),
+            settings=aa.SettingsMaskedImaging(grid_class=aa.GridIterate),
         )
 
         assert isinstance(masked_imaging_7x7.grid, aa.GridIterate)
@@ -298,7 +298,7 @@ class TestMaskedImaging:
         masked_imaging_7x7 = aa.MaskedImaging(
             imaging=imaging_7x7,
             mask=sub_mask_7x7,
-            settings=aa.MaskedImagingSettings(
+            settings=aa.SettingsMaskedImaging(
                 grid_class=aa.GridInterpolate, pixel_scales_interp=1.0
             ),
         )
@@ -329,7 +329,7 @@ class TestMaskedImaging:
         masked_imaging_7x7 = aa.MaskedImaging(
             imaging=imaging_7x7,
             mask=mask_7x7_1_pix,
-            settings=aa.MaskedImagingSettings(grid_class=aa.Grid, bin_up_factor=2),
+            settings=aa.SettingsMaskedImaging(grid_class=aa.Grid, bin_up_factor=2),
         )
 
         binned_up_imaging = imaging_7x7.binned_from_bin_up_factor(bin_up_factor=2)
@@ -355,7 +355,7 @@ class TestMaskedImaging:
         masked_imaging_7x7 = aa.MaskedImaging(
             imaging=imaging_7x7,
             mask=mask_7x7_1_pix,
-            settings=aa.MaskedImagingSettings(
+            settings=aa.SettingsMaskedImaging(
                 grid_class=aa.Grid, signal_to_noise_limit=1.0
             ),
         )
@@ -393,7 +393,7 @@ class TestMaskedImaging:
         masked_imaging = aa.MaskedImaging(
             imaging=imaging,
             mask=mask,
-            settings=aa.MaskedImagingSettings(psf_shape_2d=(7, 7)),
+            settings=aa.SettingsMaskedImaging(psf_shape_2d=(7, 7)),
         )
 
         assert (masked_imaging.imaging.image.in_2d == np.ones((19, 19))).all()

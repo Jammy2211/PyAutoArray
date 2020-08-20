@@ -7,19 +7,25 @@ from autoarray.inversion import mappers
 import copy
 
 
-class PixelizationSettings:
+class SettingsPixelization:
     def __init__(
         self,
-        use_border: bool = True,
+        use_border: bool = False,
         pixel_limit: int = None,
         is_stochastic: bool = False,
         kmeans_seed: int = 0,
+        preload_sparse_grids_of_planes=None,
     ):
 
         self.use_border = use_border
         self.pixel_limit = pixel_limit
         self.is_stochastic = is_stochastic
         self.kmeans_seed = kmeans_seed
+        self.preload_sparse_grids_of_planes = preload_sparse_grids_of_planes
+
+    @property
+    def tag(self):
+        return self.use_border_tag + self.is_stochastic_tag
 
     @property
     def use_border_tag(self):
@@ -61,6 +67,12 @@ class PixelizationSettings:
     def settings_with_is_stochastic_true(self):
         settings = copy.copy(self)
         settings.is_stochastic = True
+        return settings
+
+    def modify_preload(self, preload_sparse_grids_of_planes):
+
+        settings = copy.copy(self)
+        settings.preload_sparse_grids_of_planes = preload_sparse_grids_of_planes
         return settings
 
 
@@ -108,7 +120,7 @@ class Rectangular(Pixelization):
         grid: grids.Grid,
         sparse_grid: grids.Grid = None,
         hyper_image: np.ndarray = None,
-        settings=PixelizationSettings(),
+        settings=SettingsPixelization(),
     ):
         """Setup a rectangular mapper from a rectangular pixelization, as follows:
 
@@ -145,7 +157,7 @@ class Rectangular(Pixelization):
         self,
         grid: grids.Grid,
         hyper_image: np.ndarray = None,
-        settings=PixelizationSettings(),
+        settings=SettingsPixelization(),
     ):
         return None
 
@@ -165,7 +177,7 @@ class Voronoi(Pixelization):
         grid: grids.Grid,
         sparse_grid: grids.Grid = None,
         hyper_image: np.ndarray = None,
-        settings=PixelizationSettings(),
+        settings=SettingsPixelization(),
     ):
         """Setup a Voronoi mapper from an adaptive-magnification pixelization, as follows:
 
@@ -232,7 +244,7 @@ class VoronoiMagnification(Voronoi):
         self,
         grid: grids.Grid,
         hyper_image: np.ndarray = None,
-        settings=PixelizationSettings(),
+        settings=SettingsPixelization(),
     ):
         sparse_grid = grids.GridSparse.from_grid_and_unmasked_2d_grid_shape(
             grid=grid, unmasked_sparse_shape=self.shape
@@ -266,7 +278,7 @@ class VoronoiBrightnessImage(Voronoi):
         return np.power(weight_map, self.weight_power)
 
     def sparse_grid_from_grid(
-        self, grid: grids.Grid, hyper_image: np.ndarray, settings=PixelizationSettings()
+        self, grid: grids.Grid, hyper_image: np.ndarray, settings=SettingsPixelization()
     ):
         weight_map = self.weight_map_from_hyper_image(hyper_image=hyper_image)
 
