@@ -16,7 +16,7 @@ class MockRealSpaceMask:
 
     @property
     def pixels_in_mask(self):
-        return self.geometry.masked_grid.in_1d_binned.in_radians.shape[0]
+        return self.geometry.masked_grid_sub_1.in_1d_binned.in_radians.shape[0]
 
     @property
     def pixel_scales(self):
@@ -34,7 +34,7 @@ class MockRealSpaceMask:
 class MockGeometry:
     def __init__(self, grid):
 
-        self.masked_grid = MockMaskedGrid(grid=grid)
+        self.masked_grid_sub_1 = MockMaskedGrid(grid=grid)
 
 
 class MockMaskedGrid:

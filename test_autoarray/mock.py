@@ -199,12 +199,12 @@ class MockPixelization:
 
     # noinspection PyUnusedLocal,PyShadowingNames
     def mapper_from_grid_and_sparse_grid(
-        self, grid, sparse_grid, hyper_image=None, settings=aa.PixelizationSettings()
+        self, grid, sparse_grid, hyper_image=None, settings=aa.SettingsPixelization()
     ):
         return self.value
 
     def sparse_grid_from_grid(
-        self, grid, hyper_image, settings=aa.PixelizationSettings()
+        self, grid, hyper_image, settings=aa.SettingsPixelization()
     ):
         if hyper_image is None:
             return self.grid

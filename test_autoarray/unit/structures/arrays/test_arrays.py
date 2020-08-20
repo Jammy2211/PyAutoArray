@@ -450,8 +450,8 @@ class TestFromYXValues:
 
         arr = aa.Array.manual_2d(array=[[1.0, 2.0], [3.0, 4.0]], pixel_scales=1.0)
 
-        y = arr.mask.geometry.unmasked_grid[:, 0]
-        x = arr.mask.geometry.unmasked_grid[:, 1]
+        y = arr.mask.geometry.unmasked_grid_sub_1[:, 0]
+        x = arr.mask.geometry.unmasked_grid_sub_1[:, 1]
         arr_via_yx = aa.Array.manual_yx_and_values(
             y=y, x=x, values=arr, shape_2d=arr.shape_2d, pixel_scales=1.0
         )
@@ -462,8 +462,8 @@ class TestFromYXValues:
             array=[[1.0, 2.0], [3.0, 4.0], [5.0, 6.0]], pixel_scales=1.0
         )
 
-        y = arr.mask.geometry.unmasked_grid[:, 0]
-        x = arr.mask.geometry.unmasked_grid[:, 1]
+        y = arr.mask.geometry.unmasked_grid_sub_1[:, 0]
+        x = arr.mask.geometry.unmasked_grid_sub_1[:, 1]
 
         arr_via_yx = aa.Array.manual_yx_and_values(
             y=y, x=x, values=arr, shape_2d=arr.shape_2d, pixel_scales=1.0
@@ -475,8 +475,8 @@ class TestFromYXValues:
             array=[[1.0, 2.0, 3.0], [3.0, 4.0, 6.0]], pixel_scales=1.0
         )
 
-        y = arr.mask.geometry.unmasked_grid[:, 0]
-        x = arr.mask.geometry.unmasked_grid[:, 1]
+        y = arr.mask.geometry.unmasked_grid_sub_1[:, 0]
+        x = arr.mask.geometry.unmasked_grid_sub_1[:, 1]
 
         arr_via_yx = aa.Array.manual_yx_and_values(
             y=y, x=x, values=arr, shape_2d=arr.shape_2d, pixel_scales=1.0

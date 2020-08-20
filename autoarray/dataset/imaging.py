@@ -94,11 +94,12 @@ class AbstractImaging(abstract_dataset.AbstractDataset):
         return imaging
 
 
-class AbstractMaskedImagingSettings(abstract_dataset.AbstractMaskedDatasetSettings):
+class AbstractSettingsMaskedImaging(abstract_dataset.AbstractSettingsMaskedDataset):
     def __init__(
         self,
         grid_class=grids.Grid,
         grid_inversion_class=grids.Grid,
+        sub_size=2,
         fractional_accuracy=0.9999,
         sub_steps=None,
         pixel_scales_interp=None,
@@ -116,24 +117,36 @@ class AbstractMaskedImagingSettings(abstract_dataset.AbstractMaskedDatasetSettin
 
         Parameters
         ----------
-        imaging: im.Imaging
-            The imaging data_type all in 2D (the image, noise-map, PSF, etc.)
-        mask: msk.Mask
-            The 2D mask that is applied to the image.
+        grid_class : ag.Grid
+            The type of grid used to create the image from the *Galaxy* and *Plane*. The options are *Grid*,
+            *GridIterate* and *GridInterpolate* (see the *Grids* documentation for a description of these options).
+        grid_inversion_class : ag.Grid
+            The type of grid used to create the grid that maps the *Inversion* source pixels to the data's image-pixels.
+            The options are *Grid*, *GridIterate* and *GridInterpolate* (see the *Grids* documentation for a
+            description of these options).
+        sub_size : int
+            If the grid and / or grid_inversion use a *Grid*, this sets the sub-size used by the *Grid*.
+        fractional_accuracy : float
+            If the grid and / or grid_inversion use a *GridIterate*, this sets the fractional accuracy it
+            uses when evaluating functions.
+        sub_steps : [int]
+            If the grid and / or grid_inversion use a *GridIterate*, this sets the steps the sub-size is increased by
+            to meet the fractional accuracy when evaluating functions.
+        pixel_scales_interp : float or (float, float)
+            If the grid and / or grid_inversion use a *GridInterpolate*, this sets the resolution of the interpolation
+            grid.
+        signal_to_noise_limit : float
+            If input, the dataset's noise-map is rescaled such that no pixel has a signal-to-noise above the
+            signa to noise limit.
         psf_shape_2d : (int, int)
             The shape of the PSF used for convolving model image generated using analytic light profiles. A smaller \
             shape will trim the PSF relative to the input image PSF, giving a faster analysis run-time.
-        pixel_scales_interp : float
-            If *True*, expensive to compute mass profile deflection angles will be computed on a sparse grid and \
-            interpolated to the grid, sub and blurring grids.
-        inversion_pixel_limit : int or None
-            The maximum number of pixels that can be used by an inversion, with the limit placed primarily to speed \
-            up run.
         """
 
         super().__init__(
             grid_class=grid_class,
             grid_inversion_class=grid_inversion_class,
+            sub_size=sub_size,
             fractional_accuracy=fractional_accuracy,
             sub_steps=sub_steps,
             pixel_scales_interp=pixel_scales_interp,
@@ -143,6 +156,24 @@ class AbstractMaskedImagingSettings(abstract_dataset.AbstractMaskedDatasetSettin
         self.bin_up_factor = bin_up_factor
         self.psf_shape_2d = psf_shape_2d
         self.renormalize_psf = renormalize_psf
+
+    @property
+    def tag_no_inversion(self):
+        return (
+            self.grid_tag_no_inversion
+            + self.signal_to_noise_limit_tag
+            + self.bin_up_factor_tag
+            + self.psf_shape_tag
+        )
+
+    @property
+    def tag_with_inversion(self):
+        return (
+            self.grid_tag_with_inversion
+            + self.signal_to_noise_limit_tag
+            + self.bin_up_factor_tag
+            + self.psf_shape_tag
+        )
 
     def psf_reshaped_and_renormalized_from_psf(self, psf):
 
@@ -197,7 +228,7 @@ class AbstractMaskedImagingSettings(abstract_dataset.AbstractMaskedDatasetSettin
 
 
 class AbstractMaskedImaging(abstract_dataset.AbstractMaskedDataset):
-    def __init__(self, imaging, mask, settings=AbstractMaskedImagingSettings()):
+    def __init__(self, imaging, mask, settings=AbstractSettingsMaskedImaging()):
         """
         The lens dataset is the collection of data_type (image, noise-map, PSF), a mask, grid, convolver \
         and other utilities that are used for modeling and fitting an image of a strong lens.
@@ -319,7 +350,7 @@ class AbstractSimulatorImaging:
         self.noise_seed = noise_seed
 
 
-class MaskedImagingSettings(AbstractMaskedImagingSettings):
+class SettingsMaskedImaging(AbstractSettingsMaskedImaging):
 
     pass
 

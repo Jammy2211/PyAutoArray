@@ -240,7 +240,11 @@ def make_transformer_7x7_7(uv_wavelengths_7x2, mask_7x7):
 
 @pytest.fixture(name="masked_imaging_7x7")
 def make_masked_imaging_7x7(imaging_7x7, sub_mask_7x7):
-    return aa.MaskedImaging(imaging=imaging_7x7, mask=sub_mask_7x7)
+    return aa.MaskedImaging(
+        imaging=imaging_7x7,
+        mask=sub_mask_7x7,
+        settings=aa.SettingsMaskedImaging(sub_size=1),
+    )
 
 
 @pytest.fixture(name="masked_interferometer_7")
@@ -251,7 +255,9 @@ def make_masked_interferometer_7(
         interferometer=interferometer_7,
         visibilities_mask=visibilities_mask_7x2,
         real_space_mask=mask_7x7,
-        settings=aa.MaskedInterferometerSettings(transformer_class=aa.TransformerDFT),
+        settings=aa.SettingsMaskedInterferometer(
+            sub_size=1, transformer_class=aa.TransformerDFT
+        ),
     )
 
 

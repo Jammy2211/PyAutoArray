@@ -39,7 +39,7 @@ class TestRectangular:
         mapper = pix.mapper_from_grid_and_sparse_grid(
             grid=grid,
             sparse_grid=None,
-            settings=aa.PixelizationSettings(use_border=False),
+            settings=aa.SettingsPixelization(use_border=False),
             hyper_image=np.ones((2, 2)),
         )
 
@@ -94,7 +94,7 @@ class TestRectangular:
             masked_dataset=masked_data,
             mapper=mapper,
             regularization=reg,
-            settings=aa.InversionSettings(check_solution=False),
+            settings=aa.SettingsInversion(check_solution=False),
         )
 
         assert (inversion.blurred_mapping_matrix == mapper.mapping_matrix).all()
@@ -147,7 +147,7 @@ class TestRectangular:
         mapper = pix.mapper_from_grid_and_sparse_grid(
             grid=grid,
             sparse_grid=None,
-            settings=aa.PixelizationSettings(use_border=False),
+            settings=aa.SettingsPixelization(use_border=False),
         )
 
         assert mapper.is_image_plane_pixelization == False
@@ -212,7 +212,7 @@ class TestRectangular:
             masked_dataset=masked_data,
             mapper=mapper,
             regularization=reg,
-            settings=aa.InversionSettings(check_solution=False),
+            settings=aa.SettingsInversion(check_solution=False),
         )
 
         assert (inversion.blurred_mapping_matrix == mapper.mapping_matrix).all()
@@ -274,7 +274,7 @@ class TestRectangular:
         mapper = pix.mapper_from_grid_and_sparse_grid(
             grid=grid,
             sparse_grid=None,
-            settings=aa.PixelizationSettings(use_border=False),
+            settings=aa.SettingsPixelization(use_border=False),
         )
 
         assert mapper.is_image_plane_pixelization == False
@@ -329,7 +329,7 @@ class TestRectangular:
             masked_dataset=masked_data,
             mapper=mapper,
             regularization=reg,
-            settings=aa.InversionSettings(check_solution=False),
+            settings=aa.SettingsInversion(check_solution=False),
         )
 
         assert (inversion.blurred_mapping_matrix == mapper.mapping_matrix).all()
@@ -364,7 +364,7 @@ class TestRectangular:
         mapper = pix.mapper_from_grid_and_sparse_grid(
             grid=grid,
             sparse_grid=None,
-            settings=aa.PixelizationSettings(use_border=False),
+            settings=aa.SettingsPixelization(use_border=False),
         )
 
         assert mapper.is_image_plane_pixelization == False
@@ -419,7 +419,7 @@ class TestRectangular:
             masked_dataset=masked_data,
             mapper=mapper,
             regularization=reg,
-            settings=aa.InversionSettings(check_solution=False),
+            settings=aa.SettingsInversion(check_solution=False),
         )
 
         assert (inversion.blurred_mapping_matrix == mapper.mapping_matrix).all()
@@ -453,7 +453,7 @@ class TestRectangular:
         mapper = pix.mapper_from_grid_and_sparse_grid(
             grid=grid,
             sparse_grid=None,
-            settings=aa.PixelizationSettings(use_border=False),
+            settings=aa.SettingsPixelization(use_border=False),
         )
 
         reg = aa.reg.Constant(coefficient=0.0)
@@ -488,7 +488,7 @@ class TestRectangular:
             masked_dataset=masked_data,
             mapper=mapper,
             regularization=reg,
-            settings=aa.InversionSettings(check_solution=False),
+            settings=aa.SettingsInversion(check_solution=False),
         )
 
         assert inversion.mapped_reconstructed_visibilities[:, 0] == pytest.approx(
@@ -525,7 +525,7 @@ class TestRectangular:
         mapper = pix.mapper_from_grid_and_sparse_grid(
             grid=grid,
             sparse_grid=None,
-            settings=aa.PixelizationSettings(use_border=False),
+            settings=aa.SettingsPixelization(use_border=False),
         )
 
         reg = aa.reg.Constant(coefficient=0.0)
@@ -554,7 +554,7 @@ class TestRectangular:
             interferometer=interferometer,
             visibilities_mask=visibilities_mask,
             real_space_mask=real_space_mask,
-            settings=aa.MaskedInterferometerSettings(
+            settings=aa.SettingsMaskedInterferometer(
                 transformer_class=aa.TransformerNUFFT
             ),
         )
@@ -563,7 +563,7 @@ class TestRectangular:
             masked_dataset=masked_data,
             mapper=mapper,
             regularization=reg,
-            settings=aa.InversionSettings(
+            settings=aa.SettingsInversion(
                 use_linear_operators=True, check_solution=False
             ),
         )
@@ -622,7 +622,7 @@ class TestVoronoiMagnification:
         mapper = pix.mapper_from_grid_and_sparse_grid(
             grid=grid,
             sparse_grid=pixelization_grid,
-            settings=aa.PixelizationSettings(use_border=False),
+            settings=aa.SettingsPixelization(use_border=False),
             hyper_image=np.ones((2, 2)),
         )
 
@@ -685,7 +685,7 @@ class TestVoronoiMagnification:
             masked_dataset=masked_data,
             mapper=mapper,
             regularization=reg,
-            settings=aa.InversionSettings(check_solution=False),
+            settings=aa.SettingsInversion(check_solution=False),
         )
 
         assert (inversion.blurred_mapping_matrix == mapper.mapping_matrix).all()
@@ -725,7 +725,7 @@ class TestVoronoiMagnification:
         mapper = pix.mapper_from_grid_and_sparse_grid(
             grid=grid,
             sparse_grid=pixelization_grid,
-            settings=aa.PixelizationSettings(use_border=False),
+            settings=aa.SettingsPixelization(use_border=False),
         )
 
         assert mapper.is_image_plane_pixelization == True
@@ -778,7 +778,7 @@ class TestVoronoiMagnification:
             masked_dataset=masked_data,
             mapper=mapper,
             regularization=reg,
-            settings=aa.InversionSettings(check_solution=False),
+            settings=aa.SettingsInversion(check_solution=False),
         )
 
         assert (inversion.blurred_mapping_matrix == mapper.mapping_matrix).all()
@@ -841,7 +841,7 @@ class TestVoronoiMagnification:
         mapper = pix.mapper_from_grid_and_sparse_grid(
             grid=grid,
             sparse_grid=pixelization_grid,
-            settings=aa.PixelizationSettings(use_border=False),
+            settings=aa.SettingsPixelization(use_border=False),
         )
 
         assert mapper.is_image_plane_pixelization == True
@@ -892,7 +892,7 @@ class TestVoronoiMagnification:
             masked_dataset=masked_data,
             mapper=mapper,
             regularization=reg,
-            settings=aa.InversionSettings(check_solution=False),
+            settings=aa.SettingsInversion(check_solution=False),
         )
 
         assert (inversion.blurred_mapping_matrix == mapper.mapping_matrix).all()
@@ -934,7 +934,7 @@ class TestVoronoiMagnification:
         mapper = pix.mapper_from_grid_and_sparse_grid(
             grid=grid,
             sparse_grid=pixelization_grid,
-            settings=aa.PixelizationSettings(use_border=False),
+            settings=aa.SettingsPixelization(use_border=False),
         )
 
         assert mapper.is_image_plane_pixelization == True
@@ -987,7 +987,7 @@ class TestVoronoiMagnification:
             masked_dataset=masked_data,
             mapper=mapper,
             regularization=reg,
-            settings=aa.InversionSettings(check_solution=False),
+            settings=aa.SettingsInversion(check_solution=False),
         )
 
         assert (inversion.blurred_mapping_matrix == mapper.mapping_matrix).all()
@@ -1023,7 +1023,7 @@ class TestVoronoiMagnification:
         mapper = pix.mapper_from_grid_and_sparse_grid(
             grid=grid,
             sparse_grid=sparse_grid,
-            settings=aa.PixelizationSettings(use_border=False),
+            settings=aa.SettingsPixelization(use_border=False),
         )
 
         reg = aa.reg.Constant(coefficient=0.0)
@@ -1058,7 +1058,7 @@ class TestVoronoiMagnification:
             masked_dataset=masked_data,
             mapper=mapper,
             regularization=reg,
-            settings=aa.InversionSettings(check_solution=False),
+            settings=aa.SettingsInversion(check_solution=False),
         )
 
         assert inversion.mapped_reconstructed_visibilities[:, 0] == pytest.approx(
