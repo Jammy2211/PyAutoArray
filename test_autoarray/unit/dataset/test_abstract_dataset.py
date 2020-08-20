@@ -7,7 +7,7 @@ import numpy as np
 logger = logging.getLogger(__name__)
 
 
-class TestInversionNoiseMap:
+class TestInverseNoiseMap:
     def test__inverse_noise_is_one_over_noise(self):
         array = aa.Array.manual_2d([[1.0, 2.0], [3.0, 4.0]])
         noise_map = aa.Array.manual_2d([[1.0, 2.0], [4.0, 8.0]])
@@ -77,6 +77,169 @@ class TestPotentialChiSquaredMap:
         assert dataset.potential_chi_squared_max == 1.0
 
 
+class TestAbstractMaskedDatasetTags:
+    def test__grids__sub_size_tags(self):
+
+        settings = abstract_dataset.AbstractSettingsMaskedDataset(
+            grid_class=aa.GridIterate, sub_size=1
+        )
+        assert settings.grid_sub_size_tag == ""
+        settings = abstract_dataset.AbstractSettingsMaskedDataset(
+            grid_class=aa.Grid, sub_size=1
+        )
+        assert settings.grid_sub_size_tag == "sub_1"
+        settings = abstract_dataset.AbstractSettingsMaskedDataset(
+            grid_class=aa.Grid, sub_size=2
+        )
+        assert settings.grid_sub_size_tag == "sub_2"
+        settings = abstract_dataset.AbstractSettingsMaskedDataset(
+            grid_class=aa.Grid, sub_size=4
+        )
+        assert settings.grid_sub_size_tag == "sub_4"
+
+        settings = abstract_dataset.AbstractSettingsMaskedDataset(
+            grid_inversion_class=aa.GridIterate, sub_size=1
+        )
+        assert settings.grid_inversion_sub_size_tag == ""
+        settings = abstract_dataset.AbstractSettingsMaskedDataset(
+            grid_inversion_class=aa.Grid, sub_size=1
+        )
+        assert settings.grid_inversion_sub_size_tag == "sub_1"
+        settings = abstract_dataset.AbstractSettingsMaskedDataset(
+            grid_inversion_class=aa.Grid, sub_size=2
+        )
+        assert settings.grid_inversion_sub_size_tag == "sub_2"
+        settings = abstract_dataset.AbstractSettingsMaskedDataset(
+            grid_inversion_class=aa.Grid, sub_size=4
+        )
+        assert settings.grid_inversion_sub_size_tag == "sub_4"
+
+    def test__grids__fractional_accuracy_tags(self):
+
+        settings = abstract_dataset.AbstractSettingsMaskedDataset(
+            grid_class=aa.Grid, fractional_accuracy=1
+        )
+        assert settings.grid_fractional_accuracy_tag == ""
+        settings = abstract_dataset.AbstractSettingsMaskedDataset(
+            grid_class=aa.GridIterate, fractional_accuracy=0.5
+        )
+        assert settings.grid_fractional_accuracy_tag == "facc_0.5"
+        settings = abstract_dataset.AbstractSettingsMaskedDataset(
+            grid_class=aa.GridIterate, fractional_accuracy=0.71
+        )
+        assert settings.grid_fractional_accuracy_tag == "facc_0.71"
+        settings = abstract_dataset.AbstractSettingsMaskedDataset(
+            grid_class=aa.GridIterate, fractional_accuracy=0.999999
+        )
+        assert settings.grid_fractional_accuracy_tag == "facc_0.999999"
+
+        settings = abstract_dataset.AbstractSettingsMaskedDataset(
+            grid_inversion_class=aa.Grid, fractional_accuracy=1
+        )
+        assert settings.grid_inversion_fractional_accuracy_tag == ""
+        settings = abstract_dataset.AbstractSettingsMaskedDataset(
+            grid_inversion_class=aa.GridIterate, fractional_accuracy=0.5
+        )
+        assert settings.grid_inversion_fractional_accuracy_tag == "facc_0.5"
+        settings = abstract_dataset.AbstractSettingsMaskedDataset(
+            grid_inversion_class=aa.GridIterate, fractional_accuracy=0.71
+        )
+        assert settings.grid_inversion_fractional_accuracy_tag == "facc_0.71"
+        settings = abstract_dataset.AbstractSettingsMaskedDataset(
+            grid_inversion_class=aa.GridIterate, fractional_accuracy=0.999999
+        )
+        assert settings.grid_inversion_fractional_accuracy_tag == "facc_0.999999"
+
+    def test__grid__pixel_scales_interp_tag(self):
+
+        settings = abstract_dataset.AbstractSettingsMaskedDataset(
+            grid_class=aa.Grid, pixel_scales_interp=0.1
+        )
+        assert settings.grid_pixel_scales_interp_tag == ""
+        settings = abstract_dataset.AbstractSettingsMaskedDataset(
+            grid_class=aa.GridInterpolate, pixel_scales_interp=None
+        )
+        assert settings.grid_pixel_scales_interp_tag == ""
+        settings = abstract_dataset.AbstractSettingsMaskedDataset(
+            grid_class=aa.GridInterpolate, pixel_scales_interp=0.5
+        )
+        assert settings.grid_pixel_scales_interp_tag == "interp_0.500"
+        settings = abstract_dataset.AbstractSettingsMaskedDataset(
+            grid_class=aa.GridInterpolate, pixel_scales_interp=0.25
+        )
+        assert settings.grid_pixel_scales_interp_tag == "interp_0.250"
+        settings = abstract_dataset.AbstractSettingsMaskedDataset(
+            grid_class=aa.GridInterpolate, pixel_scales_interp=0.234
+        )
+        assert settings.grid_pixel_scales_interp_tag == "interp_0.234"
+
+        settings = abstract_dataset.AbstractSettingsMaskedDataset(
+            grid_inversion_class=aa.Grid, pixel_scales_interp=0.1
+        )
+        assert settings.grid_inversion_pixel_scales_interp_tag == ""
+        settings = abstract_dataset.AbstractSettingsMaskedDataset(
+            grid_inversion_class=aa.GridInterpolate, pixel_scales_interp=None
+        )
+        assert settings.grid_inversion_pixel_scales_interp_tag == ""
+        settings = abstract_dataset.AbstractSettingsMaskedDataset(
+            grid_inversion_class=aa.GridInterpolate, pixel_scales_interp=0.5
+        )
+        assert settings.grid_inversion_pixel_scales_interp_tag == "interp_0.500"
+        settings = abstract_dataset.AbstractSettingsMaskedDataset(
+            grid_inversion_class=aa.GridInterpolate, pixel_scales_interp=0.25
+        )
+        assert settings.grid_inversion_pixel_scales_interp_tag == "interp_0.250"
+        settings = abstract_dataset.AbstractSettingsMaskedDataset(
+            grid_inversion_class=aa.GridInterpolate, pixel_scales_interp=0.234
+        )
+        assert settings.grid_inversion_pixel_scales_interp_tag == "interp_0.234"
+
+    def test__grid_tags(self):
+
+        settings = abstract_dataset.AbstractSettingsMaskedDataset(
+            grid_class=aa.Grid,
+            sub_size=1,
+            grid_inversion_class=aa.GridIterate,
+            fractional_accuracy=0.5,
+        )
+        assert settings.grid_tag_no_inversion == "__grid_sub_1"
+        assert settings.grid_tag_with_inversion == "__grid_sub_1_inv_facc_0.5"
+
+        settings = abstract_dataset.AbstractSettingsMaskedDataset(
+            grid_class=aa.GridInterpolate,
+            grid_inversion_class=aa.GridInterpolate,
+            pixel_scales_interp=0.5,
+        )
+        assert settings.grid_tag_no_inversion == "__grid_interp_0.500"
+        assert (
+            settings.grid_tag_with_inversion == "__grid_interp_0.500_inv_interp_0.500"
+        )
+
+        settings = abstract_dataset.AbstractSettingsMaskedDataset(
+            grid_class=aa.GridIterate,
+            fractional_accuracy=0.8,
+            grid_inversion_class=aa.Grid,
+            sub_size=2,
+        )
+        assert settings.grid_tag_no_inversion == "__grid_facc_0.8"
+        assert settings.grid_tag_with_inversion == "__grid_facc_0.8_inv_sub_2"
+
+    def test__signal_to_noise_limit_tag(self):
+
+        settings = abstract_dataset.AbstractSettingsMaskedDataset(
+            signal_to_noise_limit=None
+        )
+        assert settings.signal_to_noise_limit_tag == ""
+        settings = abstract_dataset.AbstractSettingsMaskedDataset(
+            signal_to_noise_limit=1
+        )
+        assert settings.signal_to_noise_limit_tag == "__snr_1"
+        settings = abstract_dataset.AbstractSettingsMaskedDataset(
+            signal_to_noise_limit=2
+        )
+        assert settings.signal_to_noise_limit_tag == "__snr_2"
+
+
 class TestAbstractMaskedData:
     def test__grid(
         self,
@@ -88,7 +251,9 @@ class TestAbstractMaskedData:
         grid_iterate_7x7,
     ):
         masked_imaging_7x7 = abstract_dataset.AbstractMaskedDataset(
-            dataset=imaging_7x7, mask=sub_mask_7x7, grid_class=aa.Grid
+            dataset=imaging_7x7,
+            mask=sub_mask_7x7,
+            settings=abstract_dataset.AbstractSettingsMaskedDataset(grid_class=aa.Grid),
         )
 
         assert isinstance(masked_imaging_7x7.grid, aa.Grid)
@@ -96,7 +261,11 @@ class TestAbstractMaskedData:
         assert (masked_imaging_7x7.grid.in_1d == sub_grid_7x7).all()
 
         masked_imaging_7x7 = abstract_dataset.AbstractMaskedDataset(
-            dataset=imaging_7x7, mask=sub_mask_7x7, grid_class=aa.GridIterate
+            dataset=imaging_7x7,
+            mask=sub_mask_7x7,
+            settings=abstract_dataset.AbstractSettingsMaskedDataset(
+                grid_class=aa.GridIterate
+            ),
         )
 
         assert isinstance(masked_imaging_7x7.grid, aa.GridIterate)
@@ -105,8 +274,9 @@ class TestAbstractMaskedData:
         masked_imaging_7x7 = abstract_dataset.AbstractMaskedDataset(
             dataset=imaging_7x7,
             mask=sub_mask_7x7,
-            grid_class=aa.GridInterpolate,
-            pixel_scales_interp=1.0,
+            settings=abstract_dataset.AbstractSettingsMaskedDataset(
+                grid_class=aa.GridInterpolate, pixel_scales_interp=1.0
+            ),
         )
 
         grid = aa.GridInterpolate.from_mask(mask=sub_mask_7x7, pixel_scales_interp=1.0)
@@ -121,7 +291,11 @@ class TestAbstractMaskedData:
         self, imaging_7x7, sub_mask_7x7, grid_7x7, sub_grid_7x7, blurring_grid_7x7
     ):
         masked_imaging_7x7 = abstract_dataset.AbstractMaskedDataset(
-            dataset=imaging_7x7, mask=sub_mask_7x7, grid_inversion_class=aa.Grid
+            dataset=imaging_7x7,
+            mask=sub_mask_7x7,
+            settings=abstract_dataset.AbstractSettingsMaskedDataset(
+                grid_inversion_class=aa.Grid
+            ),
         )
 
         assert isinstance(masked_imaging_7x7.grid_inversion, aa.Grid)
@@ -131,8 +305,9 @@ class TestAbstractMaskedData:
         masked_imaging_7x7 = abstract_dataset.AbstractMaskedDataset(
             dataset=imaging_7x7,
             mask=sub_mask_7x7,
-            grid_inversion_class=aa.GridInterpolate,
-            pixel_scales_interp=1.0,
+            settings=abstract_dataset.AbstractSettingsMaskedDataset(
+                grid_inversion_class=aa.GridInterpolate, pixel_scales_interp=1.0
+            ),
         )
 
         grid = aa.GridInterpolate.from_mask(mask=sub_mask_7x7, pixel_scales_interp=1.0)
@@ -142,28 +317,29 @@ class TestAbstractMaskedData:
         assert (masked_imaging_7x7.grid_inversion.vtx == grid.vtx).all()
         assert (masked_imaging_7x7.grid_inversion.wts == grid.wts).all()
 
-    def test__inversion_pixel_limit(self, imaging_7x7, sub_mask_7x7):
-        masked_imaging_7x7 = abstract_dataset.AbstractMaskedDataset(
-            dataset=imaging_7x7, mask=sub_mask_7x7, inversion_pixel_limit=2
+    def test__mask_changes_sub_size_using_settings(self, imaging_7x7):
+        # If an input mask is supplied we use mask input.
+
+        mask_input = aa.Mask.circular(
+            shape_2d=imaging_7x7.shape_2d, pixel_scales=1, sub_size=1, radius=1.5
         )
 
-        assert masked_imaging_7x7.inversion_pixel_limit == 2
-
-        masked_imaging_7x7 = abstract_dataset.AbstractMaskedDataset(
-            dataset=imaging_7x7, mask=sub_mask_7x7, inversion_pixel_limit=5
+        masked_dataset = abstract_dataset.AbstractMaskedDataset(
+            dataset=imaging_7x7,
+            mask=mask_input,
+            settings=abstract_dataset.AbstractSettingsMaskedDataset(sub_size=1),
         )
 
-        assert masked_imaging_7x7.inversion_pixel_limit == 5
+        assert (masked_dataset.mask == mask_input).all()
+        assert masked_dataset.mask.sub_size == 1
+        assert masked_dataset.mask.pixel_scales == mask_input.pixel_scales
 
-    def test__inversion_uses_border(self, imaging_7x7, sub_mask_7x7):
-        masked_imaging_7x7 = abstract_dataset.AbstractMaskedDataset(
-            dataset=imaging_7x7, mask=sub_mask_7x7, inversion_uses_border=True
+        masked_dataset = abstract_dataset.AbstractMaskedDataset(
+            dataset=imaging_7x7,
+            mask=mask_input,
+            settings=abstract_dataset.AbstractSettingsMaskedDataset(sub_size=2),
         )
 
-        assert masked_imaging_7x7.inversion_uses_border == True
-
-        masked_imaging_7x7 = abstract_dataset.AbstractMaskedDataset(
-            dataset=imaging_7x7, mask=sub_mask_7x7, inversion_uses_border=False
-        )
-
-        assert masked_imaging_7x7.inversion_uses_border == False
+        assert (masked_dataset.mask == mask_input).all()
+        assert masked_dataset.mask.sub_size == 2
+        assert masked_dataset.mask.pixel_scales == mask_input.pixel_scales

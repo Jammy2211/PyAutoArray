@@ -2,7 +2,7 @@ from os import path
 import os
 
 import pytest
-
+from autoconf import conf
 import autoarray as aa
 import autoarray.plot as aplt
 
@@ -20,7 +20,7 @@ def make_interferometer_plotter_setup():
 
 @pytest.fixture(autouse=True)
 def set_config_path():
-    aa.conf.instance = aa.conf.Config(
+    conf.instance = conf.Config(
         path.join(directory, "files/plotter"), path.join(directory, "output")
     )
 
@@ -76,13 +76,6 @@ def test__individual_attributes_are_output(interferometer_7, plot_path, plot_pat
 
     assert plot_path + "phases_vs_uv_distances.png" in plot_patch.paths
 
-    aplt.Interferometer.primary_beam(
-        interferometer=interferometer_7,
-        plotter=aplt.Plotter(output=aplt.Output(plot_path, format="png")),
-    )
-
-    assert plot_path + "primary_beam.png" in plot_patch.paths
-
 
 def test__subplot_is_output(interferometer_7, plot_path, plot_patch):
 
@@ -102,7 +95,6 @@ def test__individuals__output_dependent_on_input(
         plot_visibilities=True,
         plot_u_wavelengths=False,
         plot_v_wavelengths=True,
-        plot_primary_beam=True,
         plot_amplitudes_vs_uv_distances=True,
         plotter=aplt.Plotter(output=aplt.Output(path=plot_path, format="png")),
     )
@@ -116,5 +108,3 @@ def test__individuals__output_dependent_on_input(
     assert plot_path + "amplitudes_vs_uv_distances.png" in plot_patch.paths
 
     assert plot_path + "phases_vs_uv_distances.png" not in plot_patch.paths
-
-    assert plot_path + "primary_beam.png" in plot_patch.paths

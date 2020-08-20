@@ -62,7 +62,7 @@ class AbstractStructure(np.ndarray):
 
     @property
     def unmasked_grid(self):
-        return self.mask.geometry.unmasked_grid
+        return self.mask.geometry.unmasked_grid_sub_1
 
     @property
     def total_pixels(self):

@@ -864,6 +864,9 @@ class Scatterer:
 
     def scatter_grid_indexes(self, grid, indexes):
 
+        print(grid)
+        print(grid.shape_1d)
+
         if not isinstance(grid, np.ndarray):
             raise exc.PlottingException(
                 "The grid passed into scatter_grid_indexes is not a ndarray and thus its"

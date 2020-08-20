@@ -13,7 +13,8 @@ directory = path.dirname(path.realpath(__file__))
 @pytest.fixture(autouse=True)
 def set_config_path():
     conf.instance = conf.Config(
-        path.join(directory, "config"), path.join(directory, "output")
+        config_path=path.join(directory, "config"),
+        output_path=path.join(directory, "output"),
     )
 
 
@@ -200,12 +201,7 @@ def make_visibilities_7():
 
 @pytest.fixture(name="noise_map_7x2")
 def make_noise_map_7():
-    return aa.Visibilities.full(shape_1d=(7,), fill_value=2.0)
-
-
-@pytest.fixture(name="primary_beam_3x3")
-def make_primary_beam_3x3():
-    return aa.Kernel.ones(shape_2d=(3, 3), pixel_scales=(1.0, 1.0))
+    return aa.VisibilitiesNoiseMap.full(shape_1d=(7,), fill_value=2.0)
 
 
 @pytest.fixture(name="uv_wavelengths_7x2")
@@ -224,14 +220,11 @@ def make_uv_wavelengths_7():
 
 
 @pytest.fixture(name="interferometer_7")
-def make_interferometer_7(
-    visibilities_7x2, noise_map_7x2, primary_beam_3x3, uv_wavelengths_7x2
-):
+def make_interferometer_7(visibilities_7x2, noise_map_7x2, uv_wavelengths_7x2):
     return aa.Interferometer(
         visibilities=visibilities_7x2,
         noise_map=noise_map_7x2,
         uv_wavelengths=uv_wavelengths_7x2,
-        primary_beam=primary_beam_3x3,
     )
 
 
@@ -247,7 +240,11 @@ def make_transformer_7x7_7(uv_wavelengths_7x2, mask_7x7):
 
 @pytest.fixture(name="masked_imaging_7x7")
 def make_masked_imaging_7x7(imaging_7x7, sub_mask_7x7):
-    return aa.MaskedImaging(imaging=imaging_7x7, mask=sub_mask_7x7)
+    return aa.MaskedImaging(
+        imaging=imaging_7x7,
+        mask=sub_mask_7x7,
+        settings=aa.SettingsMaskedImaging(sub_size=1),
+    )
 
 
 @pytest.fixture(name="masked_interferometer_7")
@@ -258,7 +255,9 @@ def make_masked_interferometer_7(
         interferometer=interferometer_7,
         visibilities_mask=visibilities_mask_7x2,
         real_space_mask=mask_7x7,
-        transformer_class=aa.TransformerDFT,
+        settings=aa.SettingsMaskedInterferometer(
+            sub_size=1, transformer_class=aa.TransformerDFT
+        ),
     )
 
 

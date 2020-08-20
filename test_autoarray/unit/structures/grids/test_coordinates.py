@@ -52,18 +52,21 @@ class TestAbstractGridCoordinates:
         assert type(coordinates) == grids.GridCoordinates
         assert (coordinates == np.array([[[1.0, -1.0], [1.0, 1.0]]])).all()
         assert coordinates.in_list == [[(1.0, -1.0), (1.0, 1.0)]]
+        assert coordinates.in_1d_list == [(1.0, -1.0), (1.0, 1.0)]
 
         coordinates = aa.GridCoordinates(coordinates=[[(1.0, -1.0), (1.0, 1.0)]])
 
         assert type(coordinates) == grids.GridCoordinates
         assert (coordinates == np.array([[[1.0, -1.0], [1.0, 1.0]]])).all()
         assert coordinates.in_list == [[(1.0, -1.0), (1.0, 1.0)]]
+        assert coordinates.in_1d_list == [(1.0, -1.0), (1.0, 1.0)]
 
         coordinates = aa.GridCoordinates(coordinates=[(1.0, -1.0), (1.0, 1.0)])
 
         assert type(coordinates) == grids.GridCoordinates
         assert (coordinates == np.array([[[1.0, -1.0], [1.0, 1.0]]])).all()
         assert coordinates.in_list == [[(1.0, -1.0), (1.0, 1.0)]]
+        assert coordinates.in_1d_list == [(1.0, -1.0), (1.0, 1.0)]
 
         coordinates = aa.GridCoordinates(coordinates=[[(1.0, -1.0), (1.0, 1.0)]])
 
@@ -80,6 +83,7 @@ class TestAbstractGridCoordinates:
         assert type(coordinates) == grids.GridCoordinates
         assert (coordinates == np.array([[[1.0, -1.0], [1.0, 1.0]]])).all()
         assert coordinates.in_list == [[(1.0, -1.0), (1.0, 1.0)]]
+        assert coordinates.in_1d_list == [(1.0, -1.0), (1.0, 1.0)]
 
         coordinates = aa.GridCoordinates(
             coordinates=[[np.array([1.0, -1.0]), np.array([1.0, 1.0])]]
@@ -88,6 +92,7 @@ class TestAbstractGridCoordinates:
         assert type(coordinates) == grids.GridCoordinates
         assert (coordinates == np.array([[[1.0, -1.0], [1.0, 1.0]]])).all()
         assert coordinates.in_list == [[(1.0, -1.0), (1.0, 1.0)]]
+        assert coordinates.in_1d_list == [(1.0, -1.0), (1.0, 1.0)]
 
         coordinates = aa.GridCoordinates(
             coordinates=[np.array([[1.0, -1.0], [1.0, 1.0]])]
@@ -96,6 +101,7 @@ class TestAbstractGridCoordinates:
         assert type(coordinates) == grids.GridCoordinates
         assert (coordinates == np.array([[[1.0, -1.0], [1.0, 1.0]]])).all()
         assert coordinates.in_list == [[(1.0, -1.0), (1.0, 1.0)]]
+        assert coordinates.in_1d_list == [(1.0, -1.0), (1.0, 1.0)]
 
         # Input list
 
@@ -104,18 +110,36 @@ class TestAbstractGridCoordinates:
         assert type(coordinates) == grids.GridCoordinates
         assert (coordinates == np.array([[[1.0, -1.0], [1.0, 1.0]]])).all()
         assert coordinates.in_list == [[(1.0, -1.0), (1.0, 1.0)]]
+        assert coordinates.in_1d_list == [(1.0, -1.0), (1.0, 1.0)]
 
         coordinates = aa.GridCoordinates(coordinates=[[[1.0, -1.0]], [[1.0, 1.0]]])
 
         assert type(coordinates) == grids.GridCoordinates
         assert (coordinates == np.array([[[1.0, -1.0], [1.0, 1.0]]])).all()
         assert coordinates.in_list == [[(1.0, -1.0)], [(1.0, 1.0)]]
+        assert coordinates.in_1d_list == [(1.0, -1.0), (1.0, 1.0)]
 
         coordinates = aa.GridCoordinates(coordinates=[[[1.0, -1.0], [1.0, 1.0]]])
 
         assert type(coordinates) == grids.GridCoordinates
         assert (coordinates == np.array([[[1.0, -1.0], [1.0, 1.0]]])).all()
         assert coordinates.in_list == [[(1.0, -1.0), (1.0, 1.0)]]
+        assert coordinates.in_1d_list == [(1.0, -1.0), (1.0, 1.0)]
+
+    def test__input_as_dict__retains_dict_and_convert_correctly(self):
+
+        # Input tuples
+
+        coordinates = aa.GridCoordinates(
+            coordinates=dict(source_0=[(1.0, -1.0), (1.0, 1.0)], source_1=[(2.0, 2.0)])
+        )
+
+        assert type(coordinates) == grids.GridCoordinates
+        assert (coordinates == np.array([[[1.0, -1.0], [1.0, 1.0], [2.0, 2.0]]])).all()
+        assert coordinates.in_list == [[(1.0, -1.0), (1.0, 1.0)], [(2.0, 2.0)]]
+        assert coordinates.in_1d_list == [(1.0, -1.0), (1.0, 1.0), (2.0, 2.0)]
+        assert coordinates.as_dict["source_0"] == [(1.0, -1.0), (1.0, 1.0)]
+        assert coordinates.as_dict["source_1"] == [(2.0, 2.0)]
 
     def test__values_from_arr_1d(self):
 
