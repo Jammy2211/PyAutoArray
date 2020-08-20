@@ -1,3 +1,4 @@
+from autoconf import conf
 import autoarray as aa
 import autoarray.plot as aplt
 from autoarray.plot import mat_objs
@@ -16,7 +17,7 @@ directory = path.dirname(path.realpath(__file__))
 
 @pytest.fixture(autouse=True)
 def set_config_path():
-    aa.conf.instance = aa.conf.Config(
+    conf.instance = conf.Config(
         path.join(directory, "files/plotter"), path.join(directory, "output")
     )
 

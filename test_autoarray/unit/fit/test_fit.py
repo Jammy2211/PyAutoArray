@@ -177,7 +177,9 @@ class TestFitInterferometer:
         )
 
         data = aa.Visibilities.manual_1d(visibilities=[[1.0, 2.0], [3.0, 4.0]])
-        noise_map = aa.Visibilities.manual_1d(visibilities=[[2.0, 2.0], [2.0, 2.0]])
+        noise_map = aa.VisibilitiesNoiseMap.manual_1d(
+            visibilities=[[2.0, 2.0], [2.0, 2.0]]
+        )
 
         interferometer = aa.Interferometer(
             visibilities=data, noise_map=noise_map, uv_wavelengths=np.ones(shape=(2, 2))
@@ -240,7 +242,9 @@ class TestFitInterferometer:
         )
 
         data = aa.Visibilities.manual_1d(visibilities=[[1.0, 2.0], [3.0, 4.0]])
-        noise_map = aa.Visibilities.manual_1d(visibilities=[[2.0, 2.0], [2.0, 2.0]])
+        noise_map = aa.VisibilitiesNoiseMap.manual_1d(
+            visibilities=[[2.0, 2.0], [2.0, 2.0]]
+        )
 
         interferometer = aa.Interferometer(
             visibilities=data, noise_map=noise_map, uv_wavelengths=np.ones(shape=(2, 2))
@@ -303,7 +307,9 @@ class TestFitInterferometer:
         )
 
         data = aa.Visibilities.manual_1d(visibilities=[[1.0, 2.0], [3.0, 4.0]])
-        noise_map = aa.Visibilities.manual_1d(visibilities=[[2.0, 2.0], [2.0, 2.0]])
+        noise_map = aa.VisibilitiesNoiseMap.manual_1d(
+            visibilities=[[2.0, 2.0], [2.0, 2.0]]
+        )
 
         interferometer = aa.Interferometer(
             visibilities=data, noise_map=noise_map, uv_wavelengths=np.ones(shape=(2, 2))

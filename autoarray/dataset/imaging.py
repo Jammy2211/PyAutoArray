@@ -3,6 +3,7 @@ import logging
 import numpy as np
 import copy
 
+from autoconf import conf
 from autoarray import exc
 from autoarray.dataset import abstract_dataset, preprocess
 from autoarray.mask import mask as msk
@@ -93,21 +94,141 @@ class AbstractImaging(abstract_dataset.AbstractDataset):
         return imaging
 
 
-class AbstractMaskedImaging(abstract_dataset.AbstractMaskedDataset):
+class AbstractSettingsMaskedImaging(abstract_dataset.AbstractSettingsMaskedDataset):
     def __init__(
         self,
-        imaging,
-        mask,
         grid_class=grids.Grid,
         grid_inversion_class=grids.Grid,
+        sub_size=2,
         fractional_accuracy=0.9999,
         sub_steps=None,
         pixel_scales_interp=None,
+        signal_to_noise_limit=None,
+        bin_up_factor=None,
         psf_shape_2d=None,
-        inversion_pixel_limit=None,
-        inversion_uses_border=True,
         renormalize_psf=True,
     ):
+        """
+        The lens dataset is the collection of data_type (image, noise-map, PSF), a mask, grid, convolver \
+        and other utilities that are used for modeling and fitting an image of a strong lens.
+
+        Whilst the image, noise-map, etc. are loaded in 2D, the lens dataset creates reduced 1D arrays of each \
+        for lens calculations.
+
+        Parameters
+        ----------
+        grid_class : ag.Grid
+            The type of grid used to create the image from the *Galaxy* and *Plane*. The options are *Grid*,
+            *GridIterate* and *GridInterpolate* (see the *Grids* documentation for a description of these options).
+        grid_inversion_class : ag.Grid
+            The type of grid used to create the grid that maps the *Inversion* source pixels to the data's image-pixels.
+            The options are *Grid*, *GridIterate* and *GridInterpolate* (see the *Grids* documentation for a
+            description of these options).
+        sub_size : int
+            If the grid and / or grid_inversion use a *Grid*, this sets the sub-size used by the *Grid*.
+        fractional_accuracy : float
+            If the grid and / or grid_inversion use a *GridIterate*, this sets the fractional accuracy it
+            uses when evaluating functions.
+        sub_steps : [int]
+            If the grid and / or grid_inversion use a *GridIterate*, this sets the steps the sub-size is increased by
+            to meet the fractional accuracy when evaluating functions.
+        pixel_scales_interp : float or (float, float)
+            If the grid and / or grid_inversion use a *GridInterpolate*, this sets the resolution of the interpolation
+            grid.
+        signal_to_noise_limit : float
+            If input, the dataset's noise-map is rescaled such that no pixel has a signal-to-noise above the
+            signa to noise limit.
+        psf_shape_2d : (int, int)
+            The shape of the PSF used for convolving model image generated using analytic light profiles. A smaller \
+            shape will trim the PSF relative to the input image PSF, giving a faster analysis run-time.
+        """
+
+        super().__init__(
+            grid_class=grid_class,
+            grid_inversion_class=grid_inversion_class,
+            sub_size=sub_size,
+            fractional_accuracy=fractional_accuracy,
+            sub_steps=sub_steps,
+            pixel_scales_interp=pixel_scales_interp,
+            signal_to_noise_limit=signal_to_noise_limit,
+        )
+
+        self.bin_up_factor = bin_up_factor
+        self.psf_shape_2d = psf_shape_2d
+        self.renormalize_psf = renormalize_psf
+
+    @property
+    def tag_no_inversion(self):
+        return (
+            self.grid_tag_no_inversion
+            + self.signal_to_noise_limit_tag
+            + self.bin_up_factor_tag
+            + self.psf_shape_tag
+        )
+
+    @property
+    def tag_with_inversion(self):
+        return (
+            self.grid_tag_with_inversion
+            + self.signal_to_noise_limit_tag
+            + self.bin_up_factor_tag
+            + self.psf_shape_tag
+        )
+
+    def psf_reshaped_and_renormalized_from_psf(self, psf):
+
+        if psf is not None:
+
+            if self.psf_shape_2d is None:
+                psf_shape_2d = psf.shape_2d
+            else:
+                psf_shape_2d = self.psf_shape_2d
+
+            return kernel.Kernel.manual_2d(
+                array=psf.resized_from_new_shape(new_shape=psf_shape_2d).in_2d,
+                renormalize=self.renormalize_psf,
+            )
+
+    @property
+    def psf_shape_tag(self):
+        """Generate an image psf shape tag, to customize phase names based on size of the image PSF that the original PSF \
+        is trimmed to for faster run times.
+
+        This changes the phase settings folder as follows:
+
+        image_psf_shape = 1 -> settings
+        image_psf_shape = 2 -> settings_image_psf_shape_2
+        image_psf_shape = 2 -> settings_image_psf_shape_2
+        """
+        if self.psf_shape_2d is None:
+            return ""
+        y = str(self.psf_shape_2d[0])
+        x = str(self.psf_shape_2d[1])
+        return "__" + conf.instance.tag.get("imaging", "psf_shape") + "_" + y + "x" + x
+
+    @property
+    def bin_up_factor_tag(self):
+        """Generate a bin up tag, to customize phase names based on the resolutioon the image is binned up by for faster \
+        run times.
+
+        This changes the phase settings folder as follows:
+
+        bin_up_factor = 1 -> settings
+        bin_up_factor = 2 -> settings_bin_up_factor_2
+        bin_up_factor = 2 -> settings_bin_up_factor_2
+        """
+        if self.bin_up_factor == 1 or self.bin_up_factor is None:
+            return ""
+        return (
+            "__"
+            + conf.instance.tag.get("imaging", "bin_up_factor")
+            + "_"
+            + str(self.bin_up_factor)
+        )
+
+
+class AbstractMaskedImaging(abstract_dataset.AbstractMaskedDataset):
+    def __init__(self, imaging, mask, settings=AbstractSettingsMaskedImaging()):
         """
         The lens dataset is the collection of data_type (image, noise-map, PSF), a mask, grid, convolver \
         and other utilities that are used for modeling and fitting an image of a strong lens.
@@ -132,17 +253,17 @@ class AbstractMaskedImaging(abstract_dataset.AbstractMaskedDataset):
             up run.
         """
 
-        super().__init__(
-            dataset=imaging,
-            mask=mask,
-            grid_class=grid_class,
-            grid_inversion_class=grid_inversion_class,
-            fractional_accuracy=fractional_accuracy,
-            sub_steps=sub_steps,
-            pixel_scales_interp=pixel_scales_interp,
-            inversion_pixel_limit=inversion_pixel_limit,
-            inversion_uses_border=inversion_uses_border,
-        )
+        if settings.bin_up_factor is not None:
+
+            imaging = imaging.binned_from_bin_up_factor(
+                bin_up_factor=settings.bin_up_factor
+            )
+
+            mask = mask.binned_mask_from_bin_up_factor(
+                bin_up_factor=settings.bin_up_factor
+            )
+
+        super().__init__(dataset=imaging, mask=mask, settings=settings)
 
         self.image = arrays.Array.manual_mask(
             array=imaging.image.in_2d,
@@ -156,35 +277,14 @@ class AbstractMaskedImaging(abstract_dataset.AbstractMaskedDataset):
             store_in_1d=imaging.noise_map.store_in_1d,
         )
 
-        self.pixel_scales_interp = pixel_scales_interp
+        self.psf = settings.psf_reshaped_and_renormalized_from_psf(psf=imaging.psf)
 
-        ### PSF TRIMMING + CONVOLVER ###
-
-        if imaging.psf is not None:
-
-            if psf_shape_2d is None:
-                self.psf_shape_2d = imaging.psf.shape_2d
-            else:
-                self.psf_shape_2d = psf_shape_2d
-
-            self.psf = kernel.Kernel.manual_2d(
-                array=imaging.psf.resized_from_new_shape(
-                    new_shape=self.psf_shape_2d
-                ).in_2d,
-                renormalize=renormalize_psf,
-            )
+        if self.psf is not None:
 
             self.convolver = convolver.Convolver(mask=mask, kernel=self.psf)
-
-            if mask.pixel_scales is not None:
-
-                self.blurring_grid = self.grid.blurring_grid_from_kernel_shape(
-                    kernel_shape_2d=self.psf_shape_2d
-                )
-
-        else:
-
-            self.psf = None
+            self.blurring_grid = self.grid.blurring_grid_from_kernel_shape(
+                kernel_shape_2d=self.psf.shape_2d
+            )
 
     @property
     def imaging(self):
@@ -248,6 +348,11 @@ class AbstractSimulatorImaging:
         self.add_noise = add_noise
         self.noise_if_add_noise_false = noise_if_add_noise_false
         self.noise_seed = noise_seed
+
+
+class SettingsMaskedImaging(AbstractSettingsMaskedImaging):
+
+    pass
 
 
 class Imaging(AbstractImaging):
@@ -392,12 +497,14 @@ class SimulatorImaging(AbstractSimulatorImaging):
         )
 
         if self.add_noise is True:
-            image = preprocess.data_with_poisson_noise_added(
-                data=image, exposure_time_map=exposure_time_map, seed=self.noise_seed
+            image = preprocess.data_eps_with_poisson_noise_added(
+                data_eps=image,
+                exposure_time_map=exposure_time_map,
+                seed=self.noise_seed,
             )
 
-            noise_map = preprocess.noise_map_from_data_and_exposure_time_map(
-                data=image, exposure_time_map=exposure_time_map
+            noise_map = preprocess.noise_map_from_data_eps_and_exposure_time_map(
+                data_eps=image, exposure_time_map=exposure_time_map
             )
 
         else:

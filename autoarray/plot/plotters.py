@@ -19,7 +19,7 @@ from autoarray.structures import grids
 from autoarray.plot import mat_objs
 import inspect
 import os
-from autoarray.operators.inversion import mappers
+from autoarray.inversion import mappers
 
 
 def setting(section, name, python_type):
@@ -339,11 +339,13 @@ class AbstractPlotter:
             self.origin_scatterer.scatter_grid(grid=[array.origin])
 
         if mask is not None:
-            self.mask_scatterer.scatter_grid(grid=mask.geometry.edge_grid.in_1d_binned)
+            self.mask_scatterer.scatter_grid(
+                grid=mask.geometry.edge_grid_sub_1.in_1d_binned
+            )
 
         if include_border and mask is not None:
             self.border_scatterer.scatter_grid(
-                grid=mask.geometry.border_grid.in_1d_binned
+                grid=mask.geometry.border_grid_sub_1.in_1d_binned
             )
 
         if grid is not None:
@@ -1088,7 +1090,7 @@ class Include:
             If *True*, the masks is plotted on the fit's datas.
         """
         if self.mask:
-            return fit.masked_dataset.real_space_mask
+            return fit.settings_masked_dataset.real_space_mask
         else:
             return None
 

@@ -1,3 +1,4 @@
+from autoconf import conf
 import autoarray as aa
 import autoarray.plot as aplt
 import pytest
@@ -16,7 +17,7 @@ def make_plot_path_setup():
 
 @pytest.fixture(autouse=True)
 def set_config_path():
-    aa.conf.instance = aa.conf.Config(
+    conf.instance = conf.Config(
         path.join(directory, "files/plotter"), path.join(directory, "output")
     )
 

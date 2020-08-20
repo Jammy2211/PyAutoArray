@@ -253,6 +253,106 @@ class TestGrid:
         ).all()
         assert (square_distances.mask == mask).all()
 
+    def test__grid_with_coordinates_within_distance_removed__single_coordinates_only(
+        self
+    ):
+
+        grid = aa.Grid.uniform(shape_2d=(3, 3), pixel_scales=1.0)
+
+        grid = grid.grid_with_coordinates_within_distance_removed(
+            coordinates=(0.0, 0.0), distance=0.05
+        )
+
+        assert (
+            grid
+            == np.array(
+                [
+                    [1.0, -1.0],
+                    [1.0, 0.0],
+                    [1.0, 1.0],
+                    [0.0, -1.0],
+                    [0.0, 1.0],
+                    [-1.0, -1.0],
+                    [-1.0, 0.0],
+                    [-1.0, 1.0],
+                ]
+            )
+        ).all()
+
+        grid = grid.grid_with_coordinates_within_distance_removed(
+            coordinates=(0.0, 0.0), distance=1.1
+        )
+
+        assert (
+            grid == np.array([[1.0, -1.0], [1.0, 1.0], [-1.0, -1.0], [-1.0, 1.0]])
+        ).all()
+
+        grid = aa.Grid.uniform(shape_2d=(3, 3), pixel_scales=1.0, origin=(1.0, 1.0))
+
+        grid = grid.grid_with_coordinates_within_distance_removed(
+            coordinates=(0.0, 0.0), distance=0.05
+        )
+
+        assert (
+            grid
+            == np.array(
+                [
+                    [2.0, 0.0],
+                    [2.0, 1.0],
+                    [2.0, 2.0],
+                    [1.0, 0.0],
+                    [1.0, 1.0],
+                    [1.0, 2.0],
+                    [0.0, 1.0],
+                    [0.0, 2.0],
+                ]
+            )
+        ).all()
+
+    def test__grid_with_coordinates_within_distance_removed__multiple_coordinates(self):
+
+        grid = aa.Grid.uniform(shape_2d=(3, 3), pixel_scales=1.0)
+
+        grid = grid.grid_with_coordinates_within_distance_removed(
+            coordinates=[(0.0, 0.0), (1.0, -1.0), (-1.0, -1.0)], distance=0.05
+        )
+
+        assert (
+            grid
+            == np.array(
+                [
+                    [1.0, 0.0],
+                    [1.0, 1.0],
+                    [0.0, -1.0],
+                    [0.0, 1.0],
+                    [-1.0, 0.0],
+                    [-1.0, 1.0],
+                ]
+            )
+        ).all()
+
+        grid = aa.Grid.uniform(shape_2d=(3, 3), pixel_scales=1.0, origin=(1.0, 1.0))
+
+        grid = grid.grid_with_coordinates_within_distance_removed(
+            coordinates=[(0.0, 0.0), (1.0, -1.0), (-1.0, -1.0), (2.0, 2.0)],
+            distance=0.05,
+        )
+
+        assert (
+            grid
+            == np.array(
+                [
+                    [2.0, 0.0],
+                    [2.0, 1.0],
+                    [1.0, 0.0],
+                    [1.0, 1.0],
+                    [1.0, 2.0],
+                    [0.0, 1.0],
+                    [0.0, 2.0],
+                ]
+            )
+        ).all()
+
 
 class TestGridRadialMinimum:
     def test__mock_profile__grid_radial_minimum_is_0_or_below_radial_coordinates__no_changes(

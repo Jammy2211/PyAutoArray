@@ -45,6 +45,12 @@ class AbstractGridCoordinates(np.ndarray):
             A collection of (y,x) coordinates that are grouped if they correpsond to a shared origin.
         """
 
+        if isinstance(coordinates, dict):
+            coordinates_dict = coordinates
+            coordinates = [value for value in coordinates.values()]
+        else:
+            coordinates_dict = None
+
         if len(coordinates) == 0:
             return []
 
@@ -62,6 +68,9 @@ class AbstractGridCoordinates(np.ndarray):
 
         obj = coordinates_arr.view(cls)
         obj._internal_list = coordinates
+
+        if coordinates_dict is not None:
+            obj.as_dict = coordinates_dict
 
         return obj
 
@@ -115,6 +124,11 @@ class AbstractGridCoordinates(np.ndarray):
             list(map(tuple, self[i:j, :]))
             for i, j in zip(self.lower_indexes, self.upper_indexes)
         ]
+
+    @property
+    def in_1d_list(self):
+        """Return the coordinates on a structured list which groups coordinates with a common origin."""
+        return [tuple(coordinate) for coordinate in self.in_1d]
 
     def values_from_arr_1d(self, arr_1d):
         """Create a *Values* object from a 1D NumPy array of values of shape [total_coordinates]. The
@@ -389,6 +403,9 @@ class GridCoordinatesUniform(AbstractGridCoordinates):
 
         if len(coordinates) == 0:
             return []
+
+        if isinstance(coordinates[0], float):
+            coordinates = [coordinates]
 
         if isinstance(coordinates[0], tuple):
             coordinates = [coordinates]
