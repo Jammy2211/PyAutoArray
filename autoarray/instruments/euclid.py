@@ -1,5 +1,5 @@
-from autoarray.structures.frame import abstract_frame
-from autoarray.structures import frame as f
+from autoarray.structures.frames import abstract_frame
+from autoarray.structures import frames as f
 from autoarray.structures import region as reg
 
 
