@@ -25,10 +25,10 @@ from .operators.transformer import TransformerNUFFT
 from .structures.arrays import Array
 from .structures.arrays import Values
 from .structures.arrays.abstract_array import ExposureInfo
-from .structures.frame import Frame
+from .structures.frames import Frame
 from .instruments import acs
 from .instruments import euclid
-from .structures.frame.abstract_frame import Scans
+from .structures.frames.abstract_frame import Scans
 from .structures.grids import Grid
 from .structures.grids import GridIterate
 from .structures.grids import GridInterpolate
@@ -41,4 +41,4 @@ from .structures.kernel import Kernel
 from .structures.visibilities import Visibilities
 from .structures.visibilities import VisibilitiesNoiseMap
 
-__version__ = '0.13.0'
+__version__ = '0.13.1'

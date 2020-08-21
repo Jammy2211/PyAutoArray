@@ -2,7 +2,9 @@ import numpy as np
 import typing
 from sklearn.cluster import KMeans
 from autoarray import exc
-from autoarray.structures import abstract_structure, arrays, grids
+from autoarray.structures import abstract_structure
+from autoarray.structures import arrays
+from autoarray.structures import grids
 from autoarray.structures.grids import abstract_grid
 from autoarray.mask import mask as msk
 from autoarray.util import sparse_util, grid_util, mask_util

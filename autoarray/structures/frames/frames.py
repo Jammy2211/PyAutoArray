@@ -2,7 +2,7 @@ import numpy as np
 
 from autoarray.structures import abstract_structure
 from autoarray.structures.arrays import abstract_array
-from autoarray.structures.frame import abstract_frame
+from autoarray.structures.frames import abstract_frame
 from autoarray.mask import mask as msk
 from autoarray.util import array_util
 from autoarray.util import frame_util
