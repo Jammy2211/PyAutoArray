@@ -4,7 +4,8 @@ import numpy as np
 
 from autoarray import exc
 from autoarray.structures.arrays import abstract_array
-from autoarray.structures import abstract_structure, grids
+from autoarray.structures import abstract_structure
+from autoarray.structures import grids
 from autoarray.mask import mask as msk
 from autoarray.util import array_util, grid_util
 
