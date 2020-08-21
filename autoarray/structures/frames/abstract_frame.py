@@ -1,7 +1,7 @@
 import numpy as np
 
 from autoarray.structures.arrays import abstract_array
-from autoarray.structures import frame as f
+from autoarray.structures import frames as f
 from autoarray.structures import region as reg
 from autoarray.util import frame_util
 

@@ -1,7 +1,7 @@
 from autoarray.structures.arrays import abstract_array
-from autoarray.structures.frame import abstract_frame
+from autoarray.structures.frames import abstract_frame
 from autoarray.structures import arrays
-from autoarray.structures import frame as f
+from autoarray.structures import frames as f
 from autoarray.structures import region as reg
 from autoarray.util import array_util
 from autoarray import exc

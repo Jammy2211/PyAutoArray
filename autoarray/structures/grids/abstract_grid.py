@@ -2,7 +2,9 @@ import numpy as np
 
 from autoarray import decorator_util
 from autoarray import exc
-from autoarray.structures import abstract_structure, arrays, grids
+from autoarray.structures import abstract_structure
+from autoarray.structures import arrays
+from autoarray.structures import grids
 from autoarray.mask import mask as msk
 from autoarray.util import array_util, grid_util
 
