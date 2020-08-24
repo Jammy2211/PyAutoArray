@@ -2,7 +2,9 @@ import numpy as np
 
 from autoconf import conf
 from autoarray import exc
-from autoarray.structures import arrays, grids, visibilities as vis
+from autoarray.structures import arrays
+from autoarray.structures import grids
+from autoarray.structures import visibilities as vis
 from autoarray.operators import convolver as conv, transformer as trans
 from autoarray.inversion import regularization as reg, mappers
 from autoarray.dataset import imaging, interferometer

@@ -4,7 +4,8 @@ import os
 import pickle
 import typing
 
-from autoarray.structures import abstract_structure, arrays
+from autoarray.structures import abstract_structure
+from autoarray.structures import arrays
 from autoarray.util import grid_util
 from autoarray import exc
 
