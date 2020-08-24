@@ -1,4 +1,5 @@
-from autoarray.structures import arrays, grids
+from autoarray.structures import arrays
+from autoarray.structures import grids
 from autoarray.util import array_util, grid_util, mapper_util
 
 import itertools

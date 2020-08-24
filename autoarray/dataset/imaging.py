@@ -7,7 +7,9 @@ from autoconf import conf
 from autoarray import exc
 from autoarray.dataset import abstract_dataset, preprocess
 from autoarray.mask import mask as msk
-from autoarray.structures import arrays, grids, kernel
+from autoarray.structures import arrays
+from autoarray.structures import grids
+from autoarray.structures import kernel
 from autoarray.operators import convolver
 
 logger = logging.getLogger(__name__)
