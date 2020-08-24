@@ -7,7 +7,10 @@ import autoarray as aa
 from autoconf import conf
 from autoarray import exc
 from autoarray.dataset import abstract_dataset, preprocess
-from autoarray.structures import arrays, grids, visibilities as vis, kernel
+from autoarray.structures import arrays
+from autoarray.structures import grids
+from autoarray.structures import visibilities as vis
+from autoarray.structures import kernel
 from autoarray.operators import transformer as trans
 
 

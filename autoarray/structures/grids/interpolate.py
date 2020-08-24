@@ -2,7 +2,8 @@ import numpy as np
 import scipy.spatial.qhull as qhull
 import typing
 from autoconf import conf
-from autoarray.structures import abstract_structure, arrays, grids
+from autoarray.structures import abstract_structure
+from autoarray.structures import grids
 from autoarray.structures.grids import abstract_grid
 from autoarray.mask import mask as msk
 from autoarray.util import grid_util
@@ -445,7 +446,7 @@ class GridInterpolate(abstract_grid.AbstractGrid):
 
             return self.structure_from_result(result=result)
 
-    def interpolated_array_from_array_interp(self, array_interp) -> arrays.Array:
+    def interpolated_array_from_array_interp(self, array_interp):
         """Use the precomputed vertexes and weights of a Delaunay gridding to interpolate a set of values computed on
         the interpolation grid to the GridInterpolate's full grid.
 
@@ -459,6 +460,8 @@ class GridInterpolate(abstract_grid.AbstractGrid):
             The results of the function evaluated using the interpolation grid, which is interpolated to the native
             resolution Array.
         """
+        from autoarray.structures import arrays
+
         interpolated_array = np.einsum(
             "nj,nj->n", np.take(array_interp, self.vtx), self.wts
         )
@@ -487,9 +490,7 @@ class GridInterpolate(abstract_grid.AbstractGrid):
         grid = np.asarray([y_values, x_values]).T
         return grids.Grid(grid=grid, mask=self.mask, store_in_1d=True)
 
-    def structure_from_result(
-        self, result: np.ndarray
-    ) -> typing.Union[arrays.Array, "Grid"]:
+    def structure_from_result(self, result: np.ndarray):
         """Convert a result from an ndarray to an aa.Array or aa.Grid structure, where the conversion depends on
         type(result) as follows:
 
@@ -504,6 +505,8 @@ class GridInterpolate(abstract_grid.AbstractGrid):
         result : np.ndarray or [np.ndarray]
             The input result (e.g. of a decorated function) that is converted to a PyAutoArray structure.
         """
+        from autoarray.structures import arrays
+
         if len(result.shape) == 1:
             return arrays.Array(array=result, mask=self.mask, store_in_1d=True)
         else:
@@ -513,9 +516,7 @@ class GridInterpolate(abstract_grid.AbstractGrid):
                 )
             return grids.Grid(grid=result, mask=self.mask, store_in_1d=True)
 
-    def structure_list_from_result_list(
-        self, result_list: list
-    ) -> typing.Union[arrays.Array, list]:
+    def structure_list_from_result_list(self, result_list: list):
         """Convert a result from a list of ndarrays to a list of aa.Array or aa.Grid structure, where the conversion
         depends on type(result) as follows:
 

@@ -3,7 +3,6 @@ import numpy as np
 from autoarray import decorator_util
 from autoarray import exc
 from autoarray.structures import abstract_structure
-from autoarray.structures import arrays
 from autoarray.structures import grids
 from autoarray.mask import mask as msk
 from autoarray.util import array_util, grid_util
@@ -320,7 +319,7 @@ class AbstractGrid(abstract_structure.AbstractStructure):
         This grid is used by the interferometer module."""
         return (self * np.pi) / 648000.0
 
-    def squared_distances_from_coordinate(self, coordinate=(0.0, 0.0)) -> arrays.Array:
+    def squared_distances_from_coordinate(self, coordinate=(0.0, 0.0)):
         """Compute the squared distance of every coordinate on the grid from an input coordinate.
 
         Parameters
@@ -328,12 +327,15 @@ class AbstractGrid(abstract_structure.AbstractStructure):
         coordinate : (float, float)
             The (y,x) coordinate from which the squared distance of every grid (y,x) coordinate is computed.
         """
+
+        from autoarray.structures import arrays
+
         squared_distances = np.square(self[:, 0] - coordinate[0]) + np.square(
             self[:, 1] - coordinate[1]
         )
         return arrays.Array.manual_mask(array=squared_distances, mask=self.mask)
 
-    def distances_from_coordinate(self, coordinate=(0.0, 0.0)) -> arrays.Array:
+    def distances_from_coordinate(self, coordinate=(0.0, 0.0)):
         """Compute the distance of every coordinate on the grid from an input (y,x) coordinate.
 
         Parameters
@@ -341,6 +343,8 @@ class AbstractGrid(abstract_structure.AbstractStructure):
         coordinate : (float, float)
             The (y,x) coordinate from which the distance of every grid (y,x) coordinate is computed.
         """
+        from autoarray.structures import arrays
+
         distances = np.sqrt(
             self.squared_distances_from_coordinate(coordinate=coordinate)
         )
