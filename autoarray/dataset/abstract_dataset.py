@@ -4,7 +4,8 @@ import numpy as np
 import copy
 
 from autoconf import conf
-from autoarray.structures import arrays, grids
+from autoarray.structures import arrays
+from autoarray.structures import grids
 from autoarray.mask import mask as msk
 
 

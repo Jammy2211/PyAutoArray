@@ -1,7 +1,8 @@
 import numpy as np
 
 from autoarray import decorator_util
-from autoarray.structures import abstract_structure, arrays, grids
+from autoarray.structures import abstract_structure
+from autoarray.structures import grids
 from autoarray.structures.grids import abstract_grid
 from autoarray.mask import mask as msk
 from autoarray.util import array_util, grid_util
@@ -495,7 +496,7 @@ class GridIterate(abstract_grid.AbstractGrid):
 
         return fractional_mask
 
-    def iterated_array_from_func(self, func, cls, array_lower_sub_2d) -> arrays.Array:
+    def iterated_array_from_func(self, func, cls, array_lower_sub_2d):
         """Iterate over a function that returns an array of values until the it meets a specified fractional accuracy.
         The function returns a result on a pixel-grid where evaluating it on more points on a higher resolution
         sub-grid followed by binning lead to a more precise evaluation of the function. The function is assumed to 
@@ -522,6 +523,7 @@ class GridIterate(abstract_grid.AbstractGrid):
         grid_lower_sub_2d : arrays.Array
             The results computed by the function using a lower sub-grid size
         """
+        from autoarray.structures import arrays
 
         if not np.any(array_lower_sub_2d):
             return array_lower_sub_2d.in_1d

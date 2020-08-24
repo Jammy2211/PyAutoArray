@@ -1,10 +1,7 @@
 import numpy as np
-import typing
 from sklearn.cluster import KMeans
 from autoarray import exc
 from autoarray.structures import abstract_structure
-from autoarray.structures import arrays
-from autoarray.structures import grids
 from autoarray.structures.grids import abstract_grid
 from autoarray.mask import mask as msk
 from autoarray.util import sparse_util, grid_util, mask_util
@@ -617,13 +614,13 @@ class Grid(abstract_grid.AbstractGrid):
         )
 
         if store_in_1d:
-            return grids.Grid(grid=sub_grid_1d, mask=mask, store_in_1d=store_in_1d)
+            return Grid(grid=sub_grid_1d, mask=mask, store_in_1d=store_in_1d)
 
         sub_grid_2d = grid_util.sub_grid_2d_from(
             sub_grid_1d=sub_grid_1d, mask=mask, sub_size=mask.sub_size
         )
 
-        return grids.Grid(grid=sub_grid_2d, mask=mask, store_in_1d=store_in_1d)
+        return Grid(grid=sub_grid_2d, mask=mask, store_in_1d=store_in_1d)
 
     @classmethod
     def blurring_grid_from_mask_and_kernel_shape(
@@ -797,9 +794,7 @@ class Grid(abstract_grid.AbstractGrid):
             """
         return Grid(grid=grid, mask=mask, store_in_1d=store_in_1d)
 
-    def structure_from_result(
-        self, result: np.ndarray
-    ) -> typing.Union[arrays.Array, "Grid"]:
+    def structure_from_result(self, result: np.ndarray):
         """Convert a result from an ndarray to an aa.Array or aa.Grid structure, where the conversion depends on
         type(result) as follows:
 
@@ -814,6 +809,9 @@ class Grid(abstract_grid.AbstractGrid):
         result : np.ndarray or [np.ndarray]
             The input result (e.g. of a decorated function) that is converted to a PyAutoArray structure.
         """
+
+        from autoarray.structures import arrays
+
         if len(result.shape) == 1:
             return arrays.Array(array=result, mask=self.mask, store_in_1d=True)
         else:
@@ -821,9 +819,7 @@ class Grid(abstract_grid.AbstractGrid):
                 return GridTransformed(grid=result, mask=self.mask, store_in_1d=True)
             return Grid(grid=result, mask=self.mask, store_in_1d=True)
 
-    def structure_list_from_result_list(
-        self, result_list: list
-    ) -> typing.Union[arrays.Array, list]:
+    def structure_list_from_result_list(self, result_list: list):
         """Convert a result from a list of ndarrays to a list of aa.Array or aa.Grid structure, where the conversion
         depends on type(result) as follows:
 
