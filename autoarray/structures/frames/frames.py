@@ -50,6 +50,15 @@ class Frame(abstract_frame.AbstractFrame):
 
         return obj
 
+    def _new_structure(self, array, mask, store_in_1d):
+        return Frame(
+            array=array,
+            mask=mask,
+            original_roe_corner=self.original_roe_corner,
+            scans=self.scans,
+            exposure_info=self.exposure_info,
+        )
+
     @classmethod
     def manual(
         cls, array, roe_corner=(1, 0), scans=None, exposure_info=None, pixel_scales=None

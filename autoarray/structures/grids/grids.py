@@ -201,6 +201,25 @@ class Grid(abstract_grid.AbstractGrid):
 
         return obj
 
+    def _new_structure(self, grid, mask, store_in_1d):
+        """Conveninence method for creating a new instance of the Grid class from this grid.
+
+        This method is over-written by other grids (e.g. GridIterate) such that the in_1d and in_2d methods return
+        instances of that Grid's type.
+
+        Parameters
+        ----------
+        grid : np.ndarray or list
+            The (y,x) coordinates of the grid input as an ndarray of shape [total_sub_coordinates, 2] or list of lists.
+        mask : msk.Mask
+            The 2D mask associated with the grid, defining the pixels each grid coordinate is paired with and
+            originates from.
+        store_in_1d : bool
+            If True, the grid is stored in 1D as an ndarray of shape [total_unmasked_pixels, 2]. If False, it is
+            stored in 2D as an ndarray of shape [total_y_pixels, total_x_pixels, 2].
+            """
+        return Grid(grid=grid, mask=mask, store_in_1d=store_in_1d)
+
     @classmethod
     def manual_1d(
         cls,
@@ -774,25 +793,6 @@ class Grid(abstract_grid.AbstractGrid):
         )
 
         return Grid.from_mask(mask=mask, store_in_1d=self.store_in_1d)
-
-    def _new_grid(self, grid, mask, store_in_1d):
-        """Conveninence method for creating a new instance of the Grid class from this grid.
-
-        This method is over-written by other grids (e.g. GridIterate) such that the in_1d and in_2d methods return
-        instances of that Grid's type.
-
-        Parameters
-        ----------
-        grid : np.ndarray or list
-            The (y,x) coordinates of the grid input as an ndarray of shape [total_sub_coordinates, 2] or list of lists.
-        mask : msk.Mask
-            The 2D mask associated with the grid, defining the pixels each grid coordinate is paired with and
-            originates from.
-        store_in_1d : bool
-            If True, the grid is stored in 1D as an ndarray of shape [total_unmasked_pixels, 2]. If False, it is
-            stored in 2D as an ndarray of shape [total_y_pixels, total_x_pixels, 2].
-            """
-        return Grid(grid=grid, mask=mask, store_in_1d=store_in_1d)
 
     def structure_from_result(self, result: np.ndarray):
         """Convert a result from an ndarray to an aa.Array or aa.Grid structure, where the conversion depends on
