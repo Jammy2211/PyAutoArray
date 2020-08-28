@@ -85,6 +85,46 @@ class GridInterpolate(abstract_grid.AbstractGrid):
 
         return obj
 
+    def __array_finalize__(self, obj):
+
+        super(GridInterpolate, self).__array_finalize__(obj)
+
+        if hasattr(obj, "pixel_scales_interp"):
+            self.pixel_scales_interp = obj.pixel_scales_interp
+
+        if hasattr(obj, "grid_interp"):
+            self.grid_interp = obj.grid_interp
+
+        if hasattr(obj, "vtx"):
+            self.vtx = obj.vtx
+
+        if hasattr(obj, "wts"):
+            self.wts = obj.wts
+
+    def _new_structure(self, grid, mask, store_in_1d):
+        """Conveninence method for creating a new instance of the GridInterpolate class from this grid.
+
+        This method is used in the 'in_1d', 'in_2d', etc. convenience methods. By overwriting this method such that a
+        GridInterpolate is created the in_1d and in_2d methods will return instances of the GridInterpolate.
+
+        Parameters
+        ----------
+        grid : np.ndarray or list
+            The (y,x) coordinates of the grid input as an ndarray of shape [total_sub_coordinates, 2] or list of lists.
+        mask : msk.Mask
+            The 2D mask associated with the grid, defining the pixels each grid coordinate is paired with and
+            originates from.
+        store_in_1d : bool
+            If True, the grid is stored in 1D as an ndarray of shape [total_unmasked_pixels, 2]. If False, it is
+            stored in 2D as an ndarray of shape [total_y_pixels, total_x_pixels, 2].
+            """
+        return GridInterpolate(
+            grid=grid,
+            mask=mask,
+            pixel_scales_interp=self.pixel_scales_interp,
+            store_in_1d=store_in_1d,
+        )
+
     @classmethod
     def manual_1d(
         cls,
@@ -295,46 +335,6 @@ class GridInterpolate(abstract_grid.AbstractGrid):
         return cls.from_mask(
             mask=blurring_mask,
             pixel_scales_interp=pixel_scales_interp,
-            store_in_1d=store_in_1d,
-        )
-
-    def __array_finalize__(self, obj):
-
-        super(GridInterpolate, self).__array_finalize__(obj)
-
-        if hasattr(obj, "pixel_scales_interp"):
-            self.pixel_scales_interp = obj.pixel_scales_interp
-
-        if hasattr(obj, "grid_interp"):
-            self.grid_interp = obj.grid_interp
-
-        if hasattr(obj, "vtx"):
-            self.vtx = obj.vtx
-
-        if hasattr(obj, "wts"):
-            self.wts = obj.wts
-
-    def _new_grid(self, grid, mask, store_in_1d):
-        """Conveninence method for creating a new instance of the GridInterpolate class from this grid.
-
-        This method is used in the 'in_1d', 'in_2d', etc. convenience methods. By overwriting this method such that a
-        GridInterpolate is created the in_1d and in_2d methods will return instances of the GridInterpolate.
-
-        Parameters
-        ----------
-        grid : np.ndarray or list
-            The (y,x) coordinates of the grid input as an ndarray of shape [total_sub_coordinates, 2] or list of lists.
-        mask : msk.Mask
-            The 2D mask associated with the grid, defining the pixels each grid coordinate is paired with and
-            originates from.
-        store_in_1d : bool
-            If True, the grid is stored in 1D as an ndarray of shape [total_unmasked_pixels, 2]. If False, it is
-            stored in 2D as an ndarray of shape [total_y_pixels, total_x_pixels, 2].
-            """
-        return GridInterpolate(
-            grid=grid,
-            mask=mask,
-            pixel_scales_interp=self.pixel_scales_interp,
             store_in_1d=store_in_1d,
         )
 

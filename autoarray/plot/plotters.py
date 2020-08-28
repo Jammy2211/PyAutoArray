@@ -298,7 +298,7 @@ class AbstractPlotter:
                 "a pixel scales attribute."
             )
 
-        array = array.in_1d_binned
+        array = array.binned
 
         if array.mask.is_all_false:
             buffer = 0

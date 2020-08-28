@@ -193,6 +193,9 @@ class Array(abstract_array.AbstractArray):
 
         return obj
 
+    def _new_structure(self, array, mask, store_in_1d):
+        return Array(array=array, mask=mask, store_in_1d=store_in_1d)
+
     @classmethod
     def manual_1d(
         cls,
