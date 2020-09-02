@@ -23,14 +23,19 @@ class SettingsInversion:
 
     @property
     def tag(self):
-        return self.use_linear_operators_tag
+        return (
+            f"{conf.instance.settings_tag.get('inversion', 'inversion')}["
+            f"{self.use_linear_operators_tag}]"
+        )
 
     @property
     def use_linear_operators_tag(self):
         if not self.use_linear_operators:
             return ""
         else:
-            return f"__{conf.instance.tag.get('inversion', 'use_linear_operators')}"
+            return (
+                f"{conf.instance.settings_tag.get('inversion', 'use_linear_operators')}"
+            )
 
 
 def inversion(masked_dataset, mapper, regularization, settings=SettingsInversion()):

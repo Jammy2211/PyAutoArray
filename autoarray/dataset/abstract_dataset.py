@@ -101,8 +101,10 @@ class AbstractDataset:
     @property
     def absolute_signal_to_noise_map(self):
         """The estimated absolute_signal-to-noise_maps mappers of the image."""
-        return arrays.Array(
-            array=np.divide(np.abs(self.data), self.noise_map), mask=self.data.mask
+        return self.data._new_structure(
+            array=np.divide(np.abs(self.data), self.noise_map),
+            mask=self.data.mask,
+            store_in_1d=self.data.store_in_1d,
         )
 
     @property
@@ -114,8 +116,10 @@ class AbstractDataset:
     def potential_chi_squared_map(self):
         """The potential chi-squared-map of the imaging data_type. This represents how much each pixel can contribute to \
         the chi-squared-map, assuming the model fails to fit it at all (e.g. model value = 0.0)."""
-        return arrays.Array(
-            array=np.square(self.absolute_signal_to_noise_map), mask=self.data.mask
+        return self.data._new_structure(
+            array=np.square(self.absolute_signal_to_noise_map),
+            mask=self.data.mask,
+            store_in_1d=self.data.store_in_1d,
         )
 
     @property
@@ -207,11 +211,11 @@ class AbstractSettingsMaskedDataset:
 
     @property
     def tag_no_inversion(self):
-        return self.grid_tag_no_inversion + self.signal_to_noise_limit_tag
+        return f"{self.grid_tag_no_inversion}{self.signal_to_noise_limit_tag}"
 
     @property
     def tag_with_inversion(self):
-        return +self.grid_tag_with_inversion + self.signal_to_noise_limit_tag
+        return f"{self.grid_tag_with_inversion}{self.signal_to_noise_limit_tag}"
 
     @property
     def grid_tag_no_inversion(self):
@@ -221,12 +225,10 @@ class AbstractSettingsMaskedDataset:
         """
 
         return (
-            "__"
-            + conf.instance.tag.get("dataset", "grid")
-            + "_"
-            + self.grid_sub_size_tag
-            + self.grid_fractional_accuracy_tag
-            + self.grid_pixel_scales_interp_tag
+            f"{conf.instance.settings_tag.get('dataset', 'grid')}_"
+            f"{self.grid_sub_size_tag}"
+            f"{self.grid_fractional_accuracy_tag}"
+            f"{self.grid_pixel_scales_interp_tag}"
         )
 
     @property
@@ -236,18 +238,14 @@ class AbstractSettingsMaskedDataset:
         This assumes both grids were used in the analysis.
         """
         return (
-            "__"
-            + conf.instance.tag.get("dataset", "grid")
-            + "_"
-            + self.grid_sub_size_tag
-            + self.grid_fractional_accuracy_tag
-            + self.grid_pixel_scales_interp_tag
-            + "_"
-            + conf.instance.tag.get("dataset", "grid_inversion")
-            + "_"
-            + self.grid_inversion_sub_size_tag
-            + self.grid_inversion_fractional_accuracy_tag
-            + self.grid_inversion_pixel_scales_interp_tag
+            f"{conf.instance.settings_tag.get('dataset', 'grid')}_"
+            f"{self.grid_sub_size_tag}"
+            f"{self.grid_fractional_accuracy_tag}"
+            f"{self.grid_pixel_scales_interp_tag}_"
+            f"{conf.instance.settings_tag.get('dataset', 'grid_inversion')}_"
+            f"{self.grid_inversion_sub_size_tag}"
+            f"{self.grid_inversion_fractional_accuracy_tag}"
+            f"{self.grid_inversion_pixel_scales_interp_tag}"
         )
 
     @property
@@ -262,7 +260,10 @@ class AbstractSettingsMaskedDataset:
         """
         if not self.grid_class is grids.Grid:
             return ""
-        return conf.instance.tag.get("dataset", "sub_size") + "_" + str(self.sub_size)
+        return (
+            f"{conf.instance.settings_tag.get('dataset', 'sub_size')}_"
+            f"{str(self.sub_size)}"
+        )
 
     @property
     def grid_fractional_accuracy_tag(self):
@@ -277,9 +278,8 @@ class AbstractSettingsMaskedDataset:
         if not self.grid_class is grids.GridIterate:
             return ""
         return (
-            conf.instance.tag.get("dataset", "fractional_accuracy")
-            + "_"
-            + str(self.fractional_accuracy)
+            f"{conf.instance.settings_tag.get('dataset', 'fractional_accuracy')}_"
+            f"{str(self.fractional_accuracy)}"
         )
 
     @property
@@ -296,7 +296,7 @@ class AbstractSettingsMaskedDataset:
             return ""
         if self.pixel_scales_interp is None:
             return ""
-        return conf.instance.tag.get(
+        return conf.instance.settings_tag.get(
             "dataset", "pixel_scales_interp"
         ) + "_{0:.3f}".format(self.pixel_scales_interp)
 
@@ -312,7 +312,10 @@ class AbstractSettingsMaskedDataset:
         """
         if not self.grid_inversion_class is grids.Grid:
             return ""
-        return conf.instance.tag.get("dataset", "sub_size") + "_" + str(self.sub_size)
+        return (
+            f"{conf.instance.settings_tag.get('dataset', 'sub_size')}_"
+            f"{str(self.sub_size)}"
+        )
 
     @property
     def grid_inversion_fractional_accuracy_tag(self):
@@ -327,9 +330,8 @@ class AbstractSettingsMaskedDataset:
         if not self.grid_inversion_class is grids.GridIterate:
             return ""
         return (
-            conf.instance.tag.get("dataset", "fractional_accuracy")
-            + "_"
-            + str(self.fractional_accuracy)
+            f"{conf.instance.settings_tag.get('dataset', 'fractional_accuracy')}_"
+            f"{str(self.fractional_accuracy)}"
         )
 
     @property
@@ -346,7 +348,7 @@ class AbstractSettingsMaskedDataset:
             return ""
         if self.pixel_scales_interp is None:
             return ""
-        return conf.instance.tag.get(
+        return conf.instance.settings_tag.get(
             "dataset", "pixel_scales_interp"
         ) + "_{0:.3f}".format(self.pixel_scales_interp)
 
@@ -364,10 +366,8 @@ class AbstractSettingsMaskedDataset:
         if self.signal_to_noise_limit is None:
             return ""
         return (
-            "__"
-            + conf.instance.tag.get("dataset", "signal_to_noise_limit")
-            + "_"
-            + str(self.signal_to_noise_limit)
+            f"__{conf.instance.settings_tag.get('dataset', 'signal_to_noise_limit')}_"
+            f"{str(self.signal_to_noise_limit)}"
         )
 
 
