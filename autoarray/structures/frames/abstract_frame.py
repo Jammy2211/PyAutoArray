@@ -42,6 +42,15 @@ class AbstractFrame(abstract_array.AbstractArray):
             setattr(self, key, value)
         super(AbstractFrame, self).__setstate__(state[0:-1])
 
+    def _new_structure(self, array, mask, store_in_1d):
+        return self.__class__(
+            array=array,
+            mask=mask,
+            original_roe_corner=self.original_roe_corner,
+            scans=self.scans,
+            exposure_info=self.exposure_info,
+        )
+
     @property
     def original_orientation(self):
         return frame_util.rotate_array_from_roe_corner(

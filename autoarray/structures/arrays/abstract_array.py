@@ -175,6 +175,9 @@ class AbstractArray(abstract_structure.AbstractStructure):
         except AttributeError:
             return super_result
 
+    def _new_structure(self, array, mask, store_in_1d):
+        return self.__class__(array=array, mask=mask, store_in_1d=store_in_1d)
+
     @property
     def in_1d(self):
         """Convenience method to access the array's 1D representation, which is an ndarray of shape
@@ -341,7 +344,7 @@ class AbstractArray(abstract_structure.AbstractStructure):
             array_2d=extracted_array_2d, mask=mask, store_in_1d=self.store_in_1d
         )
 
-        return self.__class__(array=array, mask=mask, store_in_1d=self.store_in_1d)
+        return self._new_structure(array=array, mask=mask, store_in_1d=self.store_in_1d)
 
     def extent_of_zoomed_array(self, buffer=1):
         """For an extracted zoomed array computed from the method *zoomed_around_mask* compute its extent in scaled

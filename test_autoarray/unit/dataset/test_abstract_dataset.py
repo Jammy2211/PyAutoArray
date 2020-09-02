@@ -202,18 +202,16 @@ class TestAbstractMaskedDatasetTags:
             grid_inversion_class=aa.GridIterate,
             fractional_accuracy=0.5,
         )
-        assert settings.grid_tag_no_inversion == "__grid_sub_1"
-        assert settings.grid_tag_with_inversion == "__grid_sub_1_inv_facc_0.5"
+        assert settings.grid_tag_no_inversion == "grid_sub_1"
+        assert settings.grid_tag_with_inversion == "grid_sub_1_inv_facc_0.5"
 
         settings = abstract_dataset.AbstractSettingsMaskedDataset(
             grid_class=aa.GridInterpolate,
             grid_inversion_class=aa.GridInterpolate,
             pixel_scales_interp=0.5,
         )
-        assert settings.grid_tag_no_inversion == "__grid_interp_0.500"
-        assert (
-            settings.grid_tag_with_inversion == "__grid_interp_0.500_inv_interp_0.500"
-        )
+        assert settings.grid_tag_no_inversion == "grid_interp_0.500"
+        assert settings.grid_tag_with_inversion == "grid_interp_0.500_inv_interp_0.500"
 
         settings = abstract_dataset.AbstractSettingsMaskedDataset(
             grid_class=aa.GridIterate,
@@ -221,8 +219,8 @@ class TestAbstractMaskedDatasetTags:
             grid_inversion_class=aa.Grid,
             sub_size=2,
         )
-        assert settings.grid_tag_no_inversion == "__grid_facc_0.8"
-        assert settings.grid_tag_with_inversion == "__grid_facc_0.8_inv_sub_2"
+        assert settings.grid_tag_no_inversion == "grid_facc_0.8"
+        assert settings.grid_tag_with_inversion == "grid_facc_0.8_inv_sub_2"
 
     def test__signal_to_noise_limit_tag(self):
 

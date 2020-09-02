@@ -305,8 +305,14 @@ class AbstractPlotter:
         else:
             buffer = 1
 
-        extent = array.extent_of_zoomed_array(buffer=buffer)
-        array = array.zoomed_around_mask(buffer=buffer)
+        if array.zoom_for_plot:
+
+            extent = array.extent_of_zoomed_array(buffer=buffer)
+            array = array.zoomed_around_mask(buffer=buffer)
+
+        else:
+
+            extent = array.extent
 
         self.figure.open()
         aspect = self.figure.aspect_from_shape_2d(shape_2d=array.shape_2d)

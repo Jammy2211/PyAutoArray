@@ -44,20 +44,12 @@ class Frame(abstract_frame.AbstractFrame):
         obj = array.view(cls)
         obj.mask = mask
         obj.store_in_1d = False
+        obj.zoom_for_plot = False
         obj.original_roe_corner = original_roe_corner
         obj.scans = scans or abstract_frame.Scans()
         obj.exposure_info = exposure_info
 
         return obj
-
-    def _new_structure(self, array, mask, store_in_1d):
-        return Frame(
-            array=array,
-            mask=mask,
-            original_roe_corner=self.original_roe_corner,
-            scans=self.scans,
-            exposure_info=self.exposure_info,
-        )
 
     @classmethod
     def manual(
