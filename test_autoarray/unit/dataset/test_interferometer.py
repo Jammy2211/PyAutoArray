@@ -118,6 +118,22 @@ class TestSettingsMaskedInterferometer:
         settings = aa.SettingsMaskedInterferometer(transformer_class=None)
         assert settings.transformer_tag == ""
 
+    def test__tag(self):
+
+        settings = aa.SettingsMaskedInterferometer(
+            grid_class=aa.GridIterate,
+            grid_inversion_class=aa.Grid,
+            fractional_accuracy=0.1,
+            sub_size=3,
+            transformer_class=aa.TransformerDFT,
+        )
+
+        assert settings.tag_no_inversion == "interferometer[grid_facc_0.1__dft]"
+        assert (
+            settings.tag_with_inversion
+            == "interferometer[grid_facc_0.1_inv_sub_3__dft]"
+        )
+
 
 class TestMaskedInterferometer:
     def test__masked_dataset(

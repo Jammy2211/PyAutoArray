@@ -242,6 +242,23 @@ class TestSettingsMaskedImaging:
         settings = aa.SettingsMaskedImaging(psf_shape_2d=(3, 4))
         assert settings.psf_shape_tag == "__psf_3x4"
 
+    def test__tag(self):
+
+        settings_masked_imaging = aa.SettingsMaskedImaging(
+            grid_class=aa.Grid,
+            grid_inversion_class=aa.Grid,
+            sub_size=2,
+            signal_to_noise_limit=2,
+            bin_up_factor=None,
+            psf_shape_2d=None,
+        )
+
+        assert settings_masked_imaging.tag_no_inversion == "imaging[grid_sub_2__snr_2]"
+        assert (
+            settings_masked_imaging.tag_with_inversion
+            == "imaging[grid_sub_2_inv_sub_2__snr_2]"
+        )
+
 
 class TestMaskedImaging:
     def test__masked_dataset(self, imaging_7x7, sub_mask_7x7):

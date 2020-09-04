@@ -79,6 +79,44 @@ class GridIterate(abstract_grid.AbstractGrid):
         obj.sub_steps = sub_steps
         return obj
 
+    def __array_finalize__(self, obj):
+
+        super(GridIterate, self).__array_finalize__(obj)
+
+        if hasattr(obj, "grid"):
+            self.grid = obj.grid
+
+        if hasattr(obj, "fractional_accuracy"):
+            self.fractional_accuracy = obj.fractional_accuracy
+
+        if hasattr(obj, "sub_steps"):
+            self.sub_steps = obj.sub_steps
+
+    def _new_structure(self, grid, mask, store_in_1d):
+        """Conveninence method for creating a new instance of the GridIterate class from this grid.
+
+        This method is used in the 'in_1d', 'in_2d', etc. convenience methods. By overwritin this method such that a
+        GridIterate is created the in_1d and in_2d methods will return instances of the GridIterate.
+
+        Parameters
+        ----------
+        grid : np.ndarray or list
+            The (y,x) coordinates of the grid input as an ndarray of shape [total_sub_coordinates, 2] or list of lists.
+        mask : msk.Mask
+            The 2D mask associated with the grid, defining the pixels each grid coordinate is paired with and
+            originates from.
+        store_in_1d : bool
+            If True, the grid is stored in 1D as an ndarray of shape [total_unmasked_pixels, 2]. If False, it is
+            stored in 2D as an ndarray of shape [total_y_pixels, total_x_pixels, 2].
+            """
+        return GridIterate(
+            grid=grid,
+            mask=mask,
+            fractional_accuracy=self.fractional_accuracy,
+            sub_steps=self.sub_steps,
+            store_in_1d=store_in_1d,
+        )
+
     @classmethod
     def manual_1d(
         cls,
@@ -361,44 +399,6 @@ class GridIterate(abstract_grid.AbstractGrid):
             mask=padded_mask,
             fractional_accuracy=self.fractional_accuracy,
             sub_steps=self.sub_steps,
-        )
-
-    def __array_finalize__(self, obj):
-
-        super(GridIterate, self).__array_finalize__(obj)
-
-        if hasattr(obj, "grid"):
-            self.grid = obj.grid
-
-        if hasattr(obj, "fractional_accuracy"):
-            self.fractional_accuracy = obj.fractional_accuracy
-
-        if hasattr(obj, "sub_steps"):
-            self.sub_steps = obj.sub_steps
-
-    def _new_grid(self, grid, mask, store_in_1d):
-        """Conveninence method for creating a new instance of the GridIterate class from this grid.
-
-        This method is used in the 'in_1d', 'in_2d', etc. convenience methods. By overwritin this method such that a
-        GridIterate is created the in_1d and in_2d methods will return instances of the GridIterate.
-
-        Parameters
-        ----------
-        grid : np.ndarray or list
-            The (y,x) coordinates of the grid input as an ndarray of shape [total_sub_coordinates, 2] or list of lists.
-        mask : msk.Mask
-            The 2D mask associated with the grid, defining the pixels each grid coordinate is paired with and
-            originates from.
-        store_in_1d : bool
-            If True, the grid is stored in 1D as an ndarray of shape [total_unmasked_pixels, 2]. If False, it is
-            stored in 2D as an ndarray of shape [total_y_pixels, total_x_pixels, 2].
-            """
-        return GridIterate(
-            grid=grid,
-            mask=mask,
-            fractional_accuracy=self.fractional_accuracy,
-            sub_steps=self.sub_steps,
-            store_in_1d=store_in_1d,
         )
 
     @staticmethod

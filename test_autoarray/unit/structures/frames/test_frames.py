@@ -27,6 +27,8 @@ class TestFrameAPI:
         assert frame.scans.serial_overscan == (0, 2, 0, 2)
         assert (frame.mask == np.array([[False, False], [False, False]])).all()
         assert (frame.original_orientation == np.array([[1.0, 2.0], [3.0, 4.0]])).all()
+        assert (frame.in_2d == np.array([[1.0, 2.0], [3.0, 4.0]])).all()
+        assert frame.in_2d.scans.parallel_overscan == (0, 1, 0, 1)
 
         frame = aa.Frame.manual(
             array=[[1.0, 2.0], [3.0, 4.0]],

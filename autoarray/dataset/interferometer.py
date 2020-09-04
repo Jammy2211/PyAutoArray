@@ -96,7 +96,7 @@ class AbstractSettingsMaskedInterferometer(
             The type of grid used to create the image from the *Galaxy* and *Plane*. The options are *Grid*,
             *GridIterate* and *GridInterpolate* (see the *Grids* documentation for a description of these options).
         grid_inversion_class : ag.Grid
-            The type of grid used to create the grid that maps the *Inversion* source pixels to the data's image-pixels.
+            The type of grid used to create the grid that maps the _Inversion_ source pixels to the data's image-pixels.
             The options are *Grid*, *GridIterate* and *GridInterpolate* (see the *Grids* documentation for a
             description of these options).
         sub_size : int
@@ -130,17 +130,19 @@ class AbstractSettingsMaskedInterferometer(
     @property
     def tag_no_inversion(self):
         return (
-            self.grid_tag_no_inversion
-            + self.transformer_tag
-            + self.signal_to_noise_limit_tag
+            f"{conf.instance.settings_tag.get('interferometer', 'interferometer')}["
+            f"{self.grid_tag_no_inversion}"
+            f"{self.transformer_tag}"
+            f"{self.signal_to_noise_limit_tag}]"
         )
 
     @property
     def tag_with_inversion(self):
         return (
-            self.grid_tag_with_inversion
-            + self.transformer_tag
-            + self.signal_to_noise_limit_tag
+            f"{conf.instance.settings_tag.get('interferometer', 'interferometer')}["
+            f"{self.grid_tag_with_inversion}"
+            f"{self.transformer_tag}"
+            f"{self.signal_to_noise_limit_tag}]"
         )
 
     @property
@@ -156,9 +158,7 @@ class AbstractSettingsMaskedInterferometer(
         """
         if self.transformer_class is None:
             return ""
-        return "__" + conf.instance.tag.get(
-            "interferometer", self.transformer_class.__name__
-        )
+        return f"__{conf.instance.settings_tag.get('interferometer', self.transformer_class.__name__)}"
 
 
 class AbstractMaskedInterferometer(abstract_dataset.AbstractMaskedDataset):
