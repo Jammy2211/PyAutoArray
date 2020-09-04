@@ -31,7 +31,7 @@ class SettingsInversion:
     @property
     def use_linear_operators_tag(self):
         if not self.use_linear_operators:
-            return ""
+            return f"{conf.instance.settings_tag.get('inversion', 'use_matrices')}"
         else:
             return (
                 f"{conf.instance.settings_tag.get('inversion', 'use_linear_operators')}"

@@ -8,6 +8,9 @@ from autoarray import exc
 
 from astropy.io import fits
 
+import shutil
+import os
+
 
 def fits_hdu_from_quadrant_letter(quadrant_letter):
 
@@ -42,6 +45,7 @@ def exposure_info_from_fits(file_path, hdu):
         original_units=units,
         bscale=bscale,
         bzero=bzero,
+        hdu=hdu,
     )
 
 
@@ -187,7 +191,7 @@ class FrameACS(f.Frame, ArrayACS):
 
         serial_prescan = reg.Region((0, parallel_size, 0, serial_prescan_size))
 
-        return f.Frame.manual(
+        return cls.manual(
             array=array_electrons,
             roe_corner=(1, 0),
             scans=abstract_frame.Scans(
@@ -227,7 +231,7 @@ class FrameACS(f.Frame, ArrayACS):
             (0, parallel_size, serial_size - serial_prescan_size, serial_size)
         )
 
-        return f.Frame.manual(
+        return cls.manual(
             array=array,
             roe_corner=(1, 1),
             scans=abstract_frame.Scans(
@@ -236,6 +240,40 @@ class FrameACS(f.Frame, ArrayACS):
             exposure_info=exposure_info,
             pixel_scales=0.05,
         )
+
+    def update_fits(self, original_file_path, new_file_path):
+        """Output the array to a .fits file.
+
+        Parameters
+        ----------
+        file_path : str
+            The path the file is output to, including the filename and the '.fits' extension,
+            e.g. '/path/to/filename.fits'
+        overwrite : bool
+            If a file already exists at the path, if overwrite=True it is overwritten else an error is raised."""
+
+        new_file_dir = new_file_path.rsplit("/", 1)[0]
+
+        if not os.path.exists(new_file_dir):
+
+            os.makedirs(new_file_dir)
+
+        if not os.path.exists(new_file_path):
+
+            shutil.copy(original_file_path, new_file_path)
+
+        hdulist = fits.open(new_file_path)
+        print(hdulist)
+
+        hdulist[self.exposure_info.hdu].data = self.original_orientation
+
+        ext_header = hdulist[4].header
+        bscale = ext_header["BSCALE"]
+        print(bscale)
+
+        os.remove(new_file_path)
+
+        hdulist.writeto(new_file_path)
 
 
 class ExposureInfoACS(abstract_array.ExposureInfo):
@@ -247,6 +285,7 @@ class ExposureInfoACS(abstract_array.ExposureInfo):
         exposure_time=None,
         date_of_observation=None,
         time_of_observation=None,
+        hdu=None,
     ):
 
         super(ExposureInfoACS, self).__init__(
@@ -258,6 +297,7 @@ class ExposureInfoACS(abstract_array.ExposureInfo):
         self.original_units = original_units
         self.bscale = bscale
         self.bzero = bzero
+        self.hdu = hdu
 
     def array_eps_to_counts(self, array_eps):
         return array_eps_to_counts(
