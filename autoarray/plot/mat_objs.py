@@ -1,12 +1,21 @@
 from autoconf import conf
 import matplotlib
+import configparser
 
-backend = conf.get_matplotlib_backend()
+try:
+    backend = conf.get_matplotlib_backend()
+except configparser.NoSectionError:
+    backend = "default"
 
 if not backend in "default":
     matplotlib.use(backend)
 
-if conf.instance.general.get("hpc", "hpc_mode", bool):
+try:
+    hpc_mode = conf.instance.general.get("hpc", "hpc_mode", bool)
+except configparser.NoSectionError:
+    hpc_mode = False
+
+if hpc_mode:
     matplotlib.use("Agg")
 
 import matplotlib.pyplot as plt
