@@ -13,7 +13,7 @@ class TestSettingsInversion:
         assert settings.use_linear_operators_tag == "lop"
 
         settings = aa.SettingsInversion(use_linear_operators=False)
-        assert settings.use_linear_operators_tag == ""
+        assert settings.use_linear_operators_tag == "mat"
 
     def test__tag(self):
 
@@ -21,7 +21,7 @@ class TestSettingsInversion:
         assert settings.tag == "inv[lop]"
 
         settings = aa.SettingsInversion(use_linear_operators=False)
-        assert settings.tag == "inv[]"
+        assert settings.tag == "inv[mat]"
 
 
 class TestLogDetMatrixCholesky:

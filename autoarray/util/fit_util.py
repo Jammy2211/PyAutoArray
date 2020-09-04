@@ -225,7 +225,7 @@ def log_evidence_from(
     noise_normalization,
 ):
     """Compute the log evidence of an inversion's fit to a dataset, where the log evidence includes a number of terms which
-    quantify the complexity of an inversion's reconstruction (see the *inversion* module):
+    quantify the complexity of an inversion's reconstruction (see the _Inversion_ module):
 
     Log Evidence = -0.5*[Chi_Squared_Term + Regularization_Term + Log(Covariance_Regularization_Term) -
                            Log(Regularization_Matrix_Term) + Noise_Term]

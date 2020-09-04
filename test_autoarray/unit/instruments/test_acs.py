@@ -315,3 +315,47 @@ class TestFrameACS:
 
         assert (frame.in_counts == 0.45 * np.ones(shape=(3, 3))).all()
         assert (frame.in_counts_per_second == 0.225 * np.ones(shape=(3, 3))).all()
+
+    def test__update_fits__if_new_file_is_not_presnet_copies_original_file_and_updates(
+        self, acs_ccd
+    ):
+
+        fits_path = "{}/files/acs".format(os.path.dirname(os.path.realpath(__file__)))
+
+        create_acs_fits(
+            fits_path=fits_path,
+            acs_ccd=acs_ccd,
+            acs_ccd_0=acs_ccd,
+            acs_ccd_1=acs_ccd,
+            units="COUNTS",
+        )
+
+        hdulist = fits.open(f"{fits_path}/acs_ccd.fits")
+        print(hdulist[4].header)
+        ext_header = hdulist[4].header
+        bscale = ext_header["BSCALE"]
+        print(bscale)
+
+        frame = aa.acs.FrameACS.from_fits(
+            file_path=f"{fits_path}/acs_ccd.fits", quadrant_letter="B"
+        )
+
+        frame[0, 0] = 101.0
+
+        frame.update_fits(
+            original_file_path=f"{fits_path}/acs_ccd.fits",
+            new_file_path=f"{fits_path}/acs_ccd_new.fits",
+        )
+
+        hdulist = fits.open(f"{fits_path}/acs_ccd_new.fits")
+        print(hdulist[4].header)
+        ext_header = hdulist[4].header
+        bscale = ext_header["BSCALE"]
+        print(bscale)
+        stop
+
+        frame = aa.acs.FrameACS.from_fits(
+            file_path=f"{fits_path}/acs_ccd_new.fits", quadrant_letter="B"
+        )
+
+        print(frame)
