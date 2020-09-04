@@ -123,7 +123,7 @@ class AbstractSettingsMaskedImaging(abstract_dataset.AbstractSettingsMaskedDatas
             The type of grid used to create the image from the *Galaxy* and *Plane*. The options are *Grid*,
             *GridIterate* and *GridInterpolate* (see the *Grids* documentation for a description of these options).
         grid_inversion_class : ag.Grid
-            The type of grid used to create the grid that maps the *Inversion* source pixels to the data's image-pixels.
+            The type of grid used to create the grid that maps the _Inversion_ source pixels to the data's image-pixels.
             The options are *Grid*, *GridIterate* and *GridInterpolate* (see the *Grids* documentation for a
             description of these options).
         sub_size : int
@@ -162,19 +162,21 @@ class AbstractSettingsMaskedImaging(abstract_dataset.AbstractSettingsMaskedDatas
     @property
     def tag_no_inversion(self):
         return (
-            self.grid_tag_no_inversion
-            + self.signal_to_noise_limit_tag
-            + self.bin_up_factor_tag
-            + self.psf_shape_tag
+            f"{conf.instance.settings_tag.get('imaging', 'imaging')}"
+            f"[{self.grid_tag_no_inversion}"
+            f"{self.signal_to_noise_limit_tag}"
+            f"{self.bin_up_factor_tag}"
+            f"{self.psf_shape_tag}]"
         )
 
     @property
     def tag_with_inversion(self):
         return (
-            self.grid_tag_with_inversion
-            + self.signal_to_noise_limit_tag
-            + self.bin_up_factor_tag
-            + self.psf_shape_tag
+            f"{conf.instance.settings_tag.get('imaging', 'imaging')}"
+            f"[{self.grid_tag_with_inversion}"
+            f"{self.signal_to_noise_limit_tag}"
+            f"{self.bin_up_factor_tag}"
+            f"{self.psf_shape_tag}]"
         )
 
     def psf_reshaped_and_renormalized_from_psf(self, psf):
@@ -206,7 +208,14 @@ class AbstractSettingsMaskedImaging(abstract_dataset.AbstractSettingsMaskedDatas
             return ""
         y = str(self.psf_shape_2d[0])
         x = str(self.psf_shape_2d[1])
-        return "__" + conf.instance.tag.get("imaging", "psf_shape") + "_" + y + "x" + x
+        return (
+            "__"
+            + conf.instance.settings_tag.get("imaging", "psf_shape")
+            + "_"
+            + y
+            + "x"
+            + x
+        )
 
     @property
     def bin_up_factor_tag(self):
@@ -223,7 +232,7 @@ class AbstractSettingsMaskedImaging(abstract_dataset.AbstractSettingsMaskedDatas
             return ""
         return (
             "__"
-            + conf.instance.tag.get("imaging", "bin_up_factor")
+            + conf.instance.settings_tag.get("imaging", "bin_up_factor")
             + "_"
             + str(self.bin_up_factor)
         )

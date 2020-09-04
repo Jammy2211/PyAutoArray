@@ -707,6 +707,68 @@ class TestAbstractPlotterPlots:
 
         assert arr.shape == (13, 13)
 
+    def test__plot_frame__works_with_all_extras_included(self, plot_path, plot_patch):
+
+        frame = aa.Frame.ones(shape_2d=(31, 31), pixel_scales=(1.0, 1.0))
+
+        plotter = aplt.Plotter(
+            output=aplt.Output(path=plot_path, filename="frame1", format="png")
+        )
+
+        plotter.plot_frame(frame=frame, include_origin=True)
+
+        assert plot_path + "frame1.png" in plot_patch.paths
+
+        plotter = aplt.Plotter(
+            output=aplt.Output(path=plot_path, filename="frame2", format="png")
+        )
+
+        plotter.plot_frame(frame=frame, include_origin=True)
+
+        assert plot_path + "frame2.png" in plot_patch.paths
+
+        aplt.Frame(
+            frame=frame,
+            plotter=aplt.Plotter(
+                output=aplt.Output(path=plot_path, filename="frame3", format="png")
+            ),
+        )
+
+        assert plot_path + "frame3.png" in plot_patch.paths
+
+    def test__plot_frame__fits_files_output_correctly(self, plot_path):
+
+        plot_path = plot_path + "/fits/"
+
+        if os.path.exists(plot_path):
+            shutil.rmtree(plot_path)
+
+        frame = aa.Frame.ones(shape_2d=(31, 31), pixel_scales=(1.0, 1.0))
+
+        plotter = aplt.Plotter(
+            output=aplt.Output(path=plot_path, filename="frame", format="fits")
+        )
+
+        plotter.plot_frame(frame=frame)
+
+        frame = aa.util.array.numpy_array_2d_from_fits(
+            file_path=plot_path + "/frame.fits", hdu=0
+        )
+
+        assert (frame == np.ones(shape=(31, 31))).all()
+
+        mask = aa.Mask.unmasked(shape_2d=(31, 31), pixel_scales=(1.0, 1.0))
+
+        masked_frame = aa.Frame.manual_mask(array=frame, mask=mask)
+
+        plotter.plot_frame(frame=masked_frame)
+
+        frame = aa.util.array.numpy_array_2d_from_fits(
+            file_path=plot_path + "/frame.fits", hdu=0
+        )
+
+        assert frame.shape == (31, 31)
+
     def test__plot_grid__works_with_all_extras_included(self, plot_path, plot_patch):
         grid = aa.Grid.uniform(shape_2d=(11, 11), pixel_scales=1.0)
         color_array = np.linspace(start=0.0, stop=1.0, num=grid.shape_1d)

@@ -170,25 +170,6 @@ class AbstractGrid(abstract_structure.AbstractStructure):
             setattr(self, key, value)
         super().__setstate__(state[0:-1])
 
-    def _new_grid(self, grid, mask, store_in_1d):
-        """Conveninence method for creating a new instance of the Grid class from this grid.
-
-        This method is over-written by other grids (e.g. GridIterate) such that the in_1d and in_2d methods return
-        instances of that Grid's type.
-
-        Parameters
-        ----------
-        grid : np.ndarray or list
-            The (y,x) coordinates of the grid input as an ndarray of shape [total_sub_coordinates, 2] or list of lists.
-        mask : msk.Mask
-            The 2D mask associated with the grid, defining the pixels each grid coordinate is paired with and
-            originates from.
-        store_in_1d : bool
-            If True, the grid is stored in 1D as an ndarray of shape [total_unmasked_pixels, 2]. If False, it is
-            stored in 2D as an ndarray of shape [total_y_pixels, total_x_pixels, 2].
-            """
-        raise NotImplementedError
-
     @property
     def in_1d(self):
         """Convenience method to access the grid's 1D representation, which is a Grid stored as an ndarray of shape
@@ -202,7 +183,7 @@ class AbstractGrid(abstract_structure.AbstractStructure):
             sub_grid_2d=self, mask=self.mask, sub_size=self.mask.sub_size
         )
 
-        return self._new_grid(grid=sub_grid_1d, mask=self.mask, store_in_1d=True)
+        return self._new_structure(grid=sub_grid_1d, mask=self.mask, store_in_1d=True)
 
     @property
     def in_2d(self):
@@ -215,7 +196,9 @@ class AbstractGrid(abstract_structure.AbstractStructure):
             sub_grid_2d = grid_util.sub_grid_2d_from(
                 sub_grid_1d=self, mask=self.mask, sub_size=self.mask.sub_size
             )
-            return self._new_grid(grid=sub_grid_2d, mask=self.mask, store_in_1d=False)
+            return self._new_structure(
+                grid=sub_grid_2d, mask=self.mask, store_in_1d=False
+            )
 
         return self
 
@@ -249,7 +232,7 @@ class AbstractGrid(abstract_structure.AbstractStructure):
             sub_grid_1d[:, 1].reshape(-1, self.mask.sub_length).sum(axis=1),
         )
 
-        return self._new_grid(
+        return self._new_structure(
             grid=np.stack((binned_grid_1d_y, binned_grid_1d_x), axis=-1),
             mask=self.mask.mask_sub_1,
             store_in_1d=True,
@@ -291,7 +274,7 @@ class AbstractGrid(abstract_structure.AbstractStructure):
             sub_grid_1d=binned_grid_1d, mask=self.mask, sub_size=1
         )
 
-        return self._new_grid(
+        return self._new_structure(
             grid=binned_grid_2d, mask=self.mask.mask_sub_1, store_in_1d=False
         )
 

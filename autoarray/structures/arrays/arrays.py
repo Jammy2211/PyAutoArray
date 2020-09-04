@@ -15,7 +15,14 @@ logger = logging.getLogger(__name__)
 
 class Array(abstract_array.AbstractArray):
     def __new__(
-        cls, array, mask, exposure_info=None, store_in_1d=True, *args, **kwargs
+        cls,
+        array,
+        mask,
+        exposure_info=None,
+        store_in_1d=True,
+        zoom_for_plot=True,
+        *args,
+        **kwargs
     ):
         """An array of values, which are paired to a uniform 2D mask of pixels and sub-pixels. Each entry
         on the array corresponds to a value at the centre of a sub-pixel in an unmasked pixel.
@@ -188,6 +195,7 @@ class Array(abstract_array.AbstractArray):
         obj.mask = mask
         obj.exposure_info = exposure_info
         obj.store_in_1d = store_in_1d
+        obj.zoom_for_plot = zoom_for_plot
 
         abstract_array.check_array(array=obj)
 

@@ -175,6 +175,9 @@ class AbstractArray(abstract_structure.AbstractStructure):
         except AttributeError:
             return super_result
 
+    def _new_structure(self, array, mask, store_in_1d):
+        return self.__class__(array=array, mask=mask, store_in_1d=store_in_1d)
+
     @property
     def in_1d(self):
         """Convenience method to access the array's 1D representation, which is an ndarray of shape
@@ -188,7 +191,7 @@ class AbstractArray(abstract_structure.AbstractStructure):
             sub_array_2d=self, mask=self.mask, sub_size=self.mask.sub_size
         )
 
-        return self.__class__(array=sub_array_1d, mask=self.mask, store_in_1d=True)
+        return self._new_structure(array=sub_array_1d, mask=self.mask, store_in_1d=True)
 
     @property
     def in_2d(self):
@@ -200,7 +203,9 @@ class AbstractArray(abstract_structure.AbstractStructure):
             sub_array_2d = array_util.sub_array_2d_from(
                 sub_array_1d=self, mask=self.mask, sub_size=self.mask.sub_size
             )
-            return self.__class__(array=sub_array_2d, mask=self.mask, store_in_1d=False)
+            return self._new_structure(
+                array=sub_array_2d, mask=self.mask, store_in_1d=False
+            )
 
         return self
 
@@ -230,7 +235,7 @@ class AbstractArray(abstract_structure.AbstractStructure):
             sub_array_1d.reshape(-1, self.mask.sub_length).sum(axis=1),
         )
 
-        return self.__class__(
+        return self._new_structure(
             array=binned_array_1d, mask=self.mask.mask_sub_1, store_in_1d=True
         )
 
@@ -263,9 +268,16 @@ class AbstractArray(abstract_structure.AbstractStructure):
             sub_array_1d=binned_array_1d, mask=self.mask, sub_size=1
         )
 
-        return self.__class__(
+        return self._new_structure(
             array=binned_array_2d, mask=self.mask.mask_sub_1, store_in_1d=False
         )
+
+    @property
+    def binned(self):
+        if self.store_in_1d:
+            return self.in_1d_binned
+        else:
+            return self.in_2d_binned
 
     @property
     def extent(self):
@@ -332,7 +344,7 @@ class AbstractArray(abstract_structure.AbstractStructure):
             array_2d=extracted_array_2d, mask=mask, store_in_1d=self.store_in_1d
         )
 
-        return self.__class__(array=array, mask=mask, store_in_1d=self.store_in_1d)
+        return self._new_structure(array=array, mask=mask, store_in_1d=self.store_in_1d)
 
     def extent_of_zoomed_array(self, buffer=1):
         """For an extracted zoomed array computed from the method *zoomed_around_mask* compute its extent in scaled

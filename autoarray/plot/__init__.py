@@ -21,6 +21,7 @@ from autoarray.plot.mat_objs import (
 from autoarray.plot.plotters import Plotter, SubPlotter, Include
 
 from autoarray.plot.plotters import plot_array as Array
+from autoarray.plot.plotters import plot_frame as Frame
 from autoarray.plot.plotters import plot_grid as Grid
 from autoarray.plot.plotters import plot_line as Line
 from autoarray.plot.plotters import plot_mapper_obj as MapperObj
