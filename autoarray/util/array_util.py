@@ -273,6 +273,12 @@ def numpy_array_1d_to_fits(array_1d, file_path, overwrite=False):
     array_2d = np.ones((5,5))
     numpy_array_to_fits(array_2d=array_2d, file_path='/path/to/file/filename.fits', overwrite=True)
     """
+
+    file_dir = file_path.rsplit("/", 1)[0]
+
+    if not os.path.exists(file_dir):
+        os.makedirs(file_dir)
+
     if overwrite and os.path.exists(file_path):
         os.remove(file_path)
 
@@ -335,6 +341,11 @@ def numpy_array_2d_to_fits(array_2d, file_path, overwrite=False):
     array_2d = np.ones((5,5))
     numpy_array_to_fits(array_2d=array_2d, file_path='/path/to/file/filename.fits', overwrite=True)
     """
+
+    file_dir = file_path.rsplit("/", 1)[0]
+
+    if not os.path.exists(file_dir):
+        os.makedirs(file_dir)
 
     if overwrite and os.path.exists(file_path):
         os.remove(file_path)

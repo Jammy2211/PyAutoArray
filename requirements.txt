@@ -1,4 +1,4 @@
-autoconf==0.6.1
+autoconf==0.6.2
 colorcet>=2.0.2
 numba>=0.46.0
 numpy>=1.18.0
