@@ -7,7 +7,7 @@ class TestSettingsPixelization:
     def test__use_border_tag(self):
 
         settings = aa.SettingsPixelization(use_border=True)
-        assert settings.use_border_tag == ""
+        assert settings.use_border_tag == "use_border"
         settings = aa.SettingsPixelization(use_border=False)
         assert settings.use_border_tag == "no_border"
 
