@@ -8,9 +8,7 @@ from autoarray.structures import grids
 
 from test_autoarray.mock import MockGridRadialMinimum
 
-test_coordinates_dir = "{}/files/coordinates/".format(
-    os.path.dirname(os.path.realpath(__file__))
-)
+test_grid_dir = "{}/files/grid/".format(os.path.dirname(os.path.realpath(__file__)))
 
 
 class TestAPI:
@@ -977,6 +975,28 @@ class TestGrid:
         )
 
         assert (grid.in_2d == grid_2d).all()
+
+    def test__to_and_from_fits_methods(self):
+
+        grid = aa.Grid.uniform(shape_2d=(2, 2), pixel_scales=2.0)
+
+        grid.output_to_fits(file_path=f"{test_grid_dir}/grid.fits", overwrite=True)
+
+        grid_from_fits = aa.Grid.from_fits(
+            file_path=f"{test_grid_dir}/grid.fits", pixel_scales=2.0
+        )
+
+        assert type(grid) == grids.Grid
+        assert (
+            grid_from_fits.in_2d
+            == np.array([[[1.0, -1.0], [1.0, 1.0]], [[-1.0, -1.0], [-1.0, 1.0]]])
+        ).all()
+        assert (
+            grid_from_fits.in_1d
+            == np.array([[1.0, -1.0], [1.0, 1.0], [-1.0, -1.0], [-1.0, 1.0]])
+        ).all()
+        assert grid_from_fits.pixel_scales == (2.0, 2.0)
+        assert grid_from_fits.origin == (0.0, 0.0)
 
 
 class TestGridSparse:

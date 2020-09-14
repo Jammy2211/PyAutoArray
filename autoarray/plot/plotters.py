@@ -661,6 +661,7 @@ class AbstractPlotter:
             )
 
         else:
+
             plt.axis(grid.extent)
 
         self.ticks.set_yticks(

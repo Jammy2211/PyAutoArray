@@ -263,13 +263,11 @@ class FrameACS(f.Frame, ArrayACS):
             shutil.copy(original_file_path, new_file_path)
 
         hdulist = fits.open(new_file_path)
-        print(hdulist)
 
         hdulist[self.exposure_info.hdu].data = self.original_orientation
 
         ext_header = hdulist[4].header
         bscale = ext_header["BSCALE"]
-        print(bscale)
 
         os.remove(new_file_path)
 
