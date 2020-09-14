@@ -4,7 +4,7 @@ from autoarray import exc
 from autoarray.structures import abstract_structure
 from autoarray.structures.grids import abstract_grid
 from autoarray.mask import mask as msk
-from autoarray.util import sparse_util, grid_util, mask_util
+from autoarray.util import array_util, sparse_util, grid_util, mask_util
 
 
 class Grid(abstract_grid.AbstractGrid):
@@ -640,6 +640,34 @@ class Grid(abstract_grid.AbstractGrid):
         )
 
         return Grid(grid=sub_grid_2d, mask=mask, store_in_1d=store_in_1d)
+
+    @classmethod
+    def from_fits(
+        cls, file_path, pixel_scales, sub_size=1, origin=(0.0, 0.0), store_in_1d=True
+    ):
+        """Create a Grid (see *Grid.__new__*) from a mask, where only unmasked pixels are included in the grid (if the
+        grid is represented in 2D masked values are (0.0, 0.0)).
+
+        The mask's pixel_scales, sub_size and origin properties are used to compute the grid (y,x) coordinates.
+
+        Parameters
+        ----------
+        mask : Mask
+            The mask whose masked pixels are used to setup the sub-pixel grid.
+        store_in_1d : bool
+            If True, the grid is stored in 1D as an ndarray of shape [total_unmasked_pixels, 2]. If False, it is
+            stored in 2D as an ndarray of shape [total_y_pixels, total_x_pixels, 2].
+        """
+
+        sub_grid_2d = array_util.numpy_array_2d_from_fits(file_path=file_path, hdu=0)
+
+        return Grid.manual(
+            grid=sub_grid_2d,
+            pixel_scales=pixel_scales,
+            sub_size=sub_size,
+            origin=origin,
+            store_in_1d=store_in_1d,
+        )
 
     @classmethod
     def blurring_grid_from_mask_and_kernel_shape(
