@@ -2,6 +2,8 @@ from autoconf import conf
 import matplotlib
 import configparser
 
+from typing import Callable
+
 try:
     backend = conf.get_matplotlib_backend()
 except configparser.NoSectionError:
@@ -48,7 +50,26 @@ def load_subplot_setting(section, name, python_type):
 
 
 class Units:
-    def __init__(self, use_scaled=None, conversion_factor=None, in_kpc=None):
+    def __init__(
+        self,
+        use_scaled: bool = None,
+        conversion_factor: float = None,
+        in_kpc: bool = None,
+    ):
+        """The units of the figure's y and x axis.
+
+        Parameters
+        ----------
+        use_scaled : bool
+            If True, plot the y and x axis labels of the _Array_ as its scaled coordinates using its *pixel_scales*
+            attribute. If False plot them in pixel units.
+        conversion_factor : float
+            If plotting the labels in scaled units, this factor multiplies the values that are used for the labels.
+            This allows for additional unit conversions of the figure labels.
+        in_kpc : bool
+            If True, the scaled units are converted to kilo-parsecs via the input Comsology of the plot (this is only
+            relevent for the projects PyAutoGalaxy / PyAutoLens).
+        """
 
         self.use_scaled = use_scaled
         self.conversion_factor = conversion_factor
@@ -75,7 +96,32 @@ class Units:
 
 
 class Figure:
-    def __init__(self, figsize=None, aspect=None, from_subplot_config=False):
+    def __init__(
+        self,
+        figsize: (float, float) = None,
+        aspect: float or str = None,
+        from_subplot_config: bool = False,
+    ):
+        """The settings used to set up the Matplotlib Figure before plotting, see:
+
+        https://matplotlib.org/3.1.0/api/_as_gen/matplotlib.pyplot.figure.html
+
+        This object wraps the following Matplotlib methods:
+
+        - plt.figure(figsize)
+        - plt.close()
+
+        It also controls the aspect ratio of the figure plotted.
+
+        Parameters
+        ----------
+        figsize : (float, float)
+            Width, height in inches.
+        aspect : float or str
+            The aspect ratio of the figure.
+        from_subplot_config : bool
+            If True, load unspecified settings from the figures.ini visualization config, else use subplots.ini.
+        """
 
         self.from_subplot_config = from_subplot_config
 
@@ -99,21 +145,32 @@ class Figure:
         )
 
     @classmethod
-    def sub(cls, figsize=None, aspect=None):
+    def sub(cls, figsize: (float, float) = None, aspect: float or str = None):
         return Figure(figsize=figsize, aspect=aspect, from_subplot_config=True)
 
-    def aspect_from_shape_2d(self, shape_2d):
+    def aspect_from_shape_2d(self, shape_2d: (int, int)):
+        """Determine the aspect ratio of the figure from the 2D shape of an _Array_.
 
-        if self.aspect in "square":
-            return float(shape_2d[1]) / float(shape_2d[0])
-        else:
-            return self.aspect
+        This is primarily used to ensure that rectangular arrays are plotted as square figures on sub-plots.
+
+        Parameters
+        ----------
+        shape_2d : (int, int)
+            The two dimensional shape of an _Array_ that is to be plotted.
+        """
+        if isinstance(self.aspect, str):
+            if self.aspect in "square":
+                return float(shape_2d[1]) / float(shape_2d[0])
+
+        return self.aspect
 
     def open(self):
+        """Wraps the Matplotlib method 'plt.figure' for opening a figure."""
         if not plt.fignum_exists(num=1):
             plt.figure(figsize=self.figsize)
 
     def close(self):
+        """Wraps the Matplotlib method 'plt.close' for closing a figure."""
         if plt.fignum_exists(num=1):
             plt.close()
 
@@ -122,14 +179,47 @@ class ColorMap:
     def __init__(
         self,
         module=None,
-        cmap=None,
-        norm=None,
-        norm_max=None,
-        norm_min=None,
-        linthresh=None,
-        linscale=None,
-        from_subplot_config=False,
+        cmap: str = None,
+        norm: str = None,
+        norm_max: float = None,
+        norm_min: float = None,
+        linthresh: float = None,
+        linscale: float = None,
+        from_subplot_config: bool = False,
     ):
+        """The settings used to set up the Matplotlib colormap and its normalization, see:
+
+        https://matplotlib.org/3.3.1/tutorials/colors/colormaps.html
+        https://matplotlib.org/3.1.1/tutorials/colors/colormapnorms.html
+        https://matplotlib.org/3.3.0/api/_as_gen/matplotlib.colors.SymLogNorm.html
+
+        This object wraps the following Matplotlib methods:
+
+        - colors.Linear
+        - colors.LogNorm
+        - colors.SymLogNorm
+
+        Parameters
+        ----------
+        cmap : str
+            The colormap used to map normalized data values to RGBA colors (see
+            https://matplotlib.org/3.3.1/api/cm_api.html).
+        norm : str
+            The Normalize object applied to the colormap (linear / log / symmetric_log)
+        norm_max : float
+            The maximum value of the normalization range, such that all values on a plotted _Array_ above this value
+            are the same color.
+        norm_min : float
+            The minimum value of the normalization range, such that all values on a plotted _Array_ below this value
+            are the same color.
+        linthresh : float
+            The range within which the plot is linear for a symmetric_log Normalization.
+        linscale : float
+            This allows the linear range (-linthresh to linthresh) to be stretched relative to the logarithmic range.
+        from_subplot_config : bool
+            If True, load unspecified settings from the figures.ini visualization config, else use subplots.ini.
+        """
+
         self.from_subplot_config = from_subplot_config
 
         cmap = (
@@ -182,12 +272,12 @@ class ColorMap:
     @classmethod
     def sub(
         cls,
-        cmap=None,
-        norm=None,
-        norm_max=None,
-        norm_min=None,
-        linthresh=None,
-        linscale=None,
+        cmap: str = None,
+        norm: str = None,
+        norm_max: float = None,
+        norm_min: float = None,
+        linthresh: float = None,
+        linscale: float = None,
     ):
         return ColorMap(
             cmap=cmap,
@@ -200,10 +290,8 @@ class ColorMap:
         )
 
     def norm_from_array(self, array):
-        """Get the normalization scale of the colormap. This will be hyper based on the input min / max normalization \
+        """Determine the _Normalization_ object which scales of the colormap, using the input min / max normalization \
         values.
-
-        For a 'symmetric_log' colormap, linthesh and linscale also change the colormap.
 
         If norm_min / norm_max are not supplied, the minimum / maximum values of the array of data_type are used.
 
@@ -211,16 +299,6 @@ class ColorMap:
         -----------
         array : data_type.array.aa.Scaled
             The 2D array of data_type which is plotted.
-        norm_min : float or None
-            The minimum array value the colormap map spans (all values below this value are plotted the same color).
-        norm_max : float or None
-            The maximum array value the colormap map spans (all values above this value are plotted the same color).
-        linthresh : float
-            For the 'symmetric_log' colormap normalization ,this specifies the range of values within which the colormap \
-            is linear.
-        linscale : float
-            For the 'symmetric_log' colormap normalization, this allowws the linear range set by linthresh to be stretched \
-            relative to the logarithmic range.
         """
 
         if self.norm_min is None:
@@ -256,13 +334,36 @@ class ColorMap:
 class ColorBar:
     def __init__(
         self,
-        ticksize=None,
-        fraction=None,
-        pad=None,
-        tick_values=None,
-        tick_labels=None,
-        from_subplot_config=False,
+        ticksize: int = None,
+        fraction: float = None,
+        pad: float = None,
+        tick_labels: [float] = None,
+        tick_values: [float] = None,
+        from_subplot_config: bool = False,
     ):
+        """The settings used to set up the Matplotlib Colorbar, see:
+
+        https://matplotlib.org/3.1.1/api/_as_gen/matplotlib.pyplot.colorbar.html
+
+        This object wraps the following Matplotlib methods:
+
+        - plt.colorbar
+
+        Parameters
+        ----------
+        ticksize : int
+            The font size of the colorbar ticks.
+        fraction : float
+            The fraction of the figure the colorbar occupies (equivalent to plt.colorbar(fraction=fraction).
+        pad : float
+            The padding around the colorbar in the figure (equivalent to plt.colorbar(pad=pad).
+        tick_labels : [float]
+            Manually override the colorbar tick labels to display the labels as the input list of float.
+        tick_values : [float]
+            If the colorbar tick labels are manually specified the locations on the colorbar they appear running 0 -> 1.
+        from_subplot_config : bool
+            If True, load unspecified settings from the figures.ini visualization config, else use subplots.ini.
+        """
 
         self.from_subplot_config = from_subplot_config
 
@@ -289,7 +390,12 @@ class ColorBar:
 
     @classmethod
     def sub(
-        cls, ticksize=None, fraction=None, pad=None, tick_values=None, tick_labels=None
+        cls,
+        ticksize: int = None,
+        fraction: float = None,
+        pad: float = None,
+        tick_labels: [float] = None,
+        tick_values: [float] = None,
     ):
         return ColorBar(
             ticksize=ticksize,
@@ -301,20 +407,8 @@ class ColorBar:
         )
 
     def set(self):
-        """Setup the colorbar of the figure, specifically its ticksize and the size is appears relative to the figure.
-
-        Parameters
-        -----------
-        cb_ticksize : int
-            The size of the tick labels on the colorbar.
-        cb_fraction : float
-            The fraction of the figure that the colorbar takes up, which resizes the colorbar relative to the figure.
-        cb_pad : float
-            Pads the color bar in the figure, which resizes the colorbar relative to the figure.
-        cb_tick_values : [float]
-            Manually specified values of where the colorbar tick labels appear on the colorbar.
-        cb_tick_labels : [float]
-            Manually specified labels of the color bar tick labels, which appear where specified by cb_tick_values.
+        """Setup the colorbar of the figure, specifically its ticksize, figure layout and optionally overriding
+        the tick labels with manual inputs.
         """
 
         if self.tick_values is None and self.tick_labels is None:
@@ -332,7 +426,20 @@ class ColorBar:
 
         cb.ax.tick_params(labelsize=self.ticksize)
 
-    def set_with_values(self, cmap, color_values):
+    def set_with_values(self, cmap: str, color_values: np.ndarray):
+        """Set up the colorbar with a set of already known color values.
+
+        This method is used for producing the color bar on a Voronoi mesh plot, which is unable to use the in-built
+        Matplotlib colorbar method.
+
+        Parameters
+        ----------
+        cmap : str
+            The colormap used to map normalized data values to RGBA colors (see
+            https://matplotlib.org/3.3.1/api/cm_api.html).
+        color_values : ndarray
+            The values of the pixels on the Voronoi mesh which are used to create the colorbar.
+        """
 
         cax = cm.ScalarMappable(cmap=cmap)
         cax.set_array(color_values)
@@ -352,13 +459,36 @@ class ColorBar:
 class Ticks:
     def __init__(
         self,
-        ysize=None,
-        xsize=None,
-        y_manual=None,
-        x_manual=None,
-        from_subplot_config=False,
+        ysize: int = None,
+        xsize: int = None,
+        y_manual: [float] = None,
+        x_manual: [float] = None,
+        from_subplot_config: bool = False,
     ):
+        """The settings used to customize the figure's y and x ticks, see:
 
+        https://matplotlib.org/3.3.1/api/_as_gen/matplotlib.pyplot.yticks.html
+        https://matplotlib.org/3.3.1/api/_as_gen/matplotlib.pyplot.xticks.html
+
+        This object wraps the following Matplotlib methods:
+
+        - plt.tick_params.
+        - plt.yticks.
+        - plt.xticks
+
+        Parameters
+        ----------
+        ysize : int
+            The font size of y-axis ticks.
+        xsize : int
+            The font size of x-axis ticks.
+        y_manual : [float]
+            Manually override the y-axis tick labels to display the labels as the input list of floats.
+        x_manual : [float]
+            Manually override the x-axis tick labels to display the labels as the input list of floats.
+        from_subplot_config : bool
+            If True, load unspecified settings from the figures.ini visualization config, else use subplots.ini.
+        """
         self.from_subplot_config = from_subplot_config
 
         self.ysize = (
@@ -377,7 +507,13 @@ class Ticks:
         self.x_manual = x_manual
 
     @classmethod
-    def sub(cls, ysize=None, xsize=None, y_manual=None, x_manual=None):
+    def sub(
+        cls,
+        ysize: int = None,
+        xsize: int = None,
+        y_manual: [float] = None,
+        x_manual: [float] = None,
+    ):
         return Ticks(
             ysize=ysize,
             xsize=xsize,
@@ -386,23 +522,29 @@ class Ticks:
             from_subplot_config=True,
         )
 
-    def set_yticks(self, array, extent, units, symmetric_around_centre=False):
-        """Get the extent of the dimensions of the array in the unit_label of the figure (e.g. arc-seconds or kpc).
-
-        This is used to set the extent of the array and thus the y / x axis limits.
+    def set_yticks(
+        self,
+        array,
+        ymin: float,
+        ymax: float,
+        units: Units,
+        symmetric_around_centre: bool = False,
+    ):
+        """Use the extent of an input _Array_ object to set the y ticks of a figure.
 
         Parameters
         -----------
-        array : data_type.array.aa.Scaled
-            The 2D array of data_type which is plotted.
-        unit_label : str
-            The label for the unit_label of the y / x axis of the plots.
-        unit_conversion_factor : float
-            The conversion factor between arc-seconds and kiloparsecs, required to plotters the unit_label in kpc.
-        xticks_manual :  [] or None
-            If input, the xticks do not use the array's default xticks but instead overwrite them as these values.
-        yticks_manual :  [] or None
-            If input, the yticks do not use the array's default yticks but instead overwrite them as these values.
+        array : arrays.Array
+            The 2D array of data which is plotted.
+        ymin : float
+            The minimum y value of the ticks.
+        ymax : float
+            The maximum y value of the ticks.
+        units : Units
+            The units of the figure.
+        symmetric_around_centre : bool
+            If True, the figure is plotted symmetrically around a central value, which is the default behaviour of
+            Matplotlib. This is used for plotting _Mapper_'s.
         """
 
         plt.tick_params(labelsize=self.ysize)
@@ -410,20 +552,19 @@ class Ticks:
         if symmetric_around_centre:
             return
 
-        yticks = np.linspace(extent[2], extent[3], 5)
+        yticks = np.linspace(ymin, ymax, 5)
 
         if self.y_manual is not None:
-            ytick_labels = np.asarray([self.y_manual[0], self.y_manual[3]])
+            ytick_labels = np.asarray(self.y_manual)
+            yticks = np.linspace(ymin, ymax, len(self.y_manual))
         elif not units.use_scaled:
             ytick_labels = np.linspace(0, array.shape_2d[0], 5).astype("int")
         elif (units.use_scaled and units.conversion_factor is None) or not units.in_kpc:
-            ytick_labels = np.round(np.linspace(extent[2], extent[3], 5), 2)
+            ytick_labels = np.round(np.linspace(ymin, ymax, 5), 2)
         elif units.use_scaled and units.conversion_factor is not None:
             ytick_labels = np.round(
                 np.linspace(
-                    extent[2] * units.conversion_factor,
-                    extent[3] * units.conversion_factor,
-                    5,
+                    ymin * units.conversion_factor, ymax * units.conversion_factor, 5
                 ),
                 2,
             )
@@ -435,23 +576,29 @@ class Ticks:
 
         plt.yticks(ticks=yticks, labels=ytick_labels)
 
-    def set_xticks(self, array, extent, units, symmetric_around_centre=False):
-        """Get the extent of the dimensions of the array in the unit_label of the figure (e.g. arc-seconds or kpc).
-
-        This is used to set the extent of the array and thus the y / x axis limits.
+    def set_xticks(
+        self,
+        array,
+        xmin: float,
+        xmax: float,
+        units: Units,
+        symmetric_around_centre: bool = False,
+    ):
+        """Use the extent of an input _Array_ object to set the x ticks of a figure.
 
         Parameters
         -----------
-        array : data_type.array.aa.Scaled
-            The 2D array of data_type which is plotted.
-        unit_label : str
-            The label for the unit_label of the y / x axis of the plots.
-        unit_conversion_factor : float
-            The conversion factor between arc-seconds and kiloparsecs, required to plotters the unit_label in kpc.
-        xticks_manual :  [] or None
-            If input, the xticks do not use the array's default xticks but instead overwrite them as these values.
-        xticks_manual :  [] or None
-            If input, the xticks do not use the array's default xticks but instead overwrite them as these values.
+        array : arrays.Array
+            The 2D array of data which is plotted.
+        xmin : float
+            The minimum x value of the ticks.
+        xmax : float
+            The maximum x value of the ticks.
+        units : Units
+            The units of the figure.
+        symmetric_around_centre : bool
+            If True, the figure is plotted symmetrically around a central value, which is the default behaviour of
+            Matplotlib. This is used for plotting _Mapper_'s.
         """
 
         plt.tick_params(labelsize=self.xsize)
@@ -459,20 +606,19 @@ class Ticks:
         if symmetric_around_centre:
             return
 
-        xticks = np.linspace(extent[0], extent[1], 5)
+        xticks = np.linspace(xmin, xmax, 5)
 
         if self.x_manual is not None:
-            xtick_labels = np.asarray([self.x_manual[0], self.x_manual[3]])
+            xtick_labels = np.asarray(self.x_manual)
+            xticks = np.linspace(xmin, xmax, len(self.x_manual))
         elif not units.use_scaled:
             xtick_labels = np.linspace(0, array.shape_2d[0], 5).astype("int")
         elif (units.use_scaled and units.conversion_factor is None) or not units.in_kpc:
-            xtick_labels = np.round(np.linspace(extent[0], extent[1], 5), 2)
+            xtick_labels = np.round(np.linspace(xmin, xmax, 5), 2)
         elif units.use_scaled and units.conversion_factor is not None:
             xtick_labels = np.round(
                 np.linspace(
-                    extent[0] * units.conversion_factor,
-                    extent[1] * units.conversion_factor,
-                    5,
+                    xmin * units.conversion_factor, xmax * units.conversion_factor, 5
                 ),
                 2,
             )
@@ -488,15 +634,44 @@ class Ticks:
 class Labels:
     def __init__(
         self,
-        title=None,
-        yunits=None,
-        xunits=None,
-        titlesize=None,
-        ysize=None,
-        xsize=None,
-        from_subplot_config=False,
+        title: str = None,
+        yunits: str = None,
+        xunits: str = None,
+        titlesize: int = None,
+        ysize: int = None,
+        xsize: int = None,
+        from_subplot_config: bool = False,
     ):
+        """The settings used to customize the figure's title and y and x labels, see:
 
+        https://matplotlib.org/3.1.1/api/_as_gen/matplotlib.pyplot.title.html
+        https://matplotlib.org/3.1.1/api/_as_gen/matplotlib.pyplot.ylabel.html
+        https://matplotlib.org/3.1.1/api/_as_gen/matplotlib.pyplot.xlabel.html
+
+        This object wraps the following Matplotlib methods:
+
+        - plt.title
+        - plt.ylabel
+        - plt.xlabel
+
+        The title and y and x labels will automatically be set if not specified, using the name of the functin
+        used to plot the image and the _Unit_'s. object.
+
+        Parameters
+        ----------
+        title : str
+            Manually specify the figure's title text.
+        ylabel : int
+            Manually specify the figure's y label text.
+        xlabel : int
+            Manually specify the figure's xlabel text.
+        titlesize : int
+            The title text fontsize.
+        ysize : int
+            The ylabel text fontsize.
+        xsize : int
+            The xlabel text fontsize.
+        """
         self.from_subplot_config = from_subplot_config
 
         self.title = title
@@ -524,12 +699,12 @@ class Labels:
     @classmethod
     def sub(
         cls,
-        title=None,
-        yunits=None,
-        xunits=None,
-        titlesize=None,
-        ysize=None,
-        xsize=None,
+        title: str = None,
+        yunits: str = None,
+        xunits: str = None,
+        titlesize: int = None,
+        ysize: int = None,
+        xsize: int = None,
     ):
         return Labels(
             title=title,
@@ -541,7 +716,14 @@ class Labels:
             from_subplot_config=True,
         )
 
-    def title_from_func(self, func):
+    def title_from_func(self, func: Callable):
+        """If a title is not manually specified use the name of the function plotting the image to set the title.
+
+         Parameters
+         ----------
+         func : func
+            The function plotting the image.
+        """
         if self.title is None:
 
             return func.__name__.capitalize()
@@ -550,7 +732,15 @@ class Labels:
 
             return self.title
 
-    def yunits_from_func(self, func):
+    def yunits_from_func(self, func: Callable):
+        """If the y label is not manually specified use the function plotting the image to y label, assuming that it
+        represents spatial units.
+
+         Parameters
+         ----------
+         func : func
+            The function plotting the image.
+        """
 
         if self._yunits is None:
 
@@ -571,8 +761,15 @@ class Labels:
 
             return self._yunits
 
-    def xunits_from_func(self, func):
+    def xunits_from_func(self, func: Callable):
+        """If the x label is not manually specified use the function plotting the image to x label, assuming that it
+        represents spatial units.
 
+         Parameters
+         ----------
+         func : func
+            The function plotting the image.
+        """
         if self._xunits is None:
 
             args = inspect.getfullargspec(func).args
@@ -592,8 +789,14 @@ class Labels:
 
             return self._xunits
 
-    def yunits_from_units(self, units):
+    def yunits_from_units(self, units: Units):
+        """Determine the units of the y-axis to create the y label text if it is not manually specified.
 
+         Parameters
+         ----------
+         unit : Units
+            The units of the image that is plotted which informs the appropriate y label text.
+        """
         if self._yunits is None:
 
             if units.in_kpc is not None:
@@ -611,8 +814,14 @@ class Labels:
 
             return self._yunits
 
-    def xunits_from_units(self, units):
+    def xunits_from_units(self, units: Units):
+        """Determine the units of the x-axis to create the x label text if it is not manually specified.
 
+         Parameters
+         ----------
+         unit : Units
+            The units of the image that is plotted which informs the the appropriate x label text.
+        """
         if self._xunits is None:
 
             if units.in_kpc is not None:
@@ -631,35 +840,21 @@ class Labels:
             return self._xunits
 
     def set_title(self):
-        """Set the title and title size of the figure.
-
-        Parameters
-        -----------
-        title : str
-            The text of the title.
-        titlesize : int
-            The size of of the title of the figure.
-        """
+        """Set the title and title size of the figure."""
         plt.title(label=self.title, fontsize=self.titlesize)
 
-    def set_yunits(self, units, include_brackets):
-        """Set the x and y labels of the figure, and set the fontsize of those self.label_
+    def set_yunits(self, units: Units, include_brackets: bool):
+        """Set the y labels of the figure, including the fontsize.
 
-        The x and y labels are always the distance scales, thus the labels are either arc-seconds or kpc and depend on the \
-        unit_label the figure is plotted in.
+        The y labels are always the distance scales, thus the labels are either arc-seconds or kpc and depending on
+        the unit_label the figure is plotted in.
 
         Parameters
         -----------
-        unit_label : str
-            The label for the unit_label of the y / x axis of the plots.
-        unit_conversion_factor : float
-            The conversion factor between arc-seconds and kiloparsecs, required to plotters the unit_label in kpc.
-        xsize : int
-            The fontsize of the x axes label.
-        ysize : int
-            The fontsize of the y axes label.
-        xyticksize : int
-            The font size of the x and y ticks on the figure axes.
+         unit : Units
+            The units of the image that is plotted which informs the appropriate y label text.
+        include_brackets : bool
+            Whether to include brackets around the y label text of the units.
         """
         if include_brackets:
             plt.ylabel(
@@ -668,24 +863,18 @@ class Labels:
         else:
             plt.ylabel(self.yunits_from_units(units=units), fontsize=self.ysize)
 
-    def set_xunits(self, units, include_brackets):
-        """Set the x and y labels of the figure, and set the fontsize of those self.label_
+    def set_xunits(self, units: Units, include_brackets: bool):
+        """Set the x labels of the figure, including the fontsize.
 
-        The x and y labels are always the distance scales, thus the labels are either arc-seconds or kpc and depend on the \
-        unit_label the figure is plotted in.
+        The x labels are always the distance scales, thus the labels are either arc-seconds or kpc and depending on
+        the unit_label the figure is plotted in.
 
         Parameters
         -----------
-        unit_label : str
-            The label for the unit_label of the y / x axis of the plots.
-        unit_conversion_factor : float
-            The conversion factor between arc-seconds and kiloparsecs, required to plotters the unit_label in kpc.
-        xsize : int
-            The fontsize of the x axes label.
-        ysize : int
-            The fontsize of the y axes label.
-        xyticksize : int
-            The font size of the x and y ticks on the figure axes.
+         unit : Units
+            The units of the image that is plotted which informs the appropriate x label text.
+        include_brackets : bool
+            Whether to include brackets around the x label text of the units.
         """
         if include_brackets:
             plt.xlabel(
@@ -696,7 +885,27 @@ class Labels:
 
 
 class Legend:
-    def __init__(self, include=None, fontsize=None, from_subplot_config=False):
+    def __init__(
+        self, include: bool = None, fontsize: int = None, from_subplot_config=False
+    ):
+        """The settings used to include a legend on a figure and customize it, see:
+
+        https://matplotlib.org/3.1.1/api/_as_gen/matplotlib.pyplot.legend.html
+
+        This object wraps the following Matplotlib methods:
+
+        - plt.legend
+
+        The title and y and x labels will automatically be set if not specified, using the name of the functin
+        used to plot the image and the _Unit_'s. object.
+
+        Parameters
+        ----------
+        include : bool
+            Whether to include a legend on the figure oor not.
+        fontsize : int
+            The size of the font on the figure.
+        """
 
         self.from_subplot_config = from_subplot_config
 
@@ -722,8 +931,38 @@ class Legend:
 
 
 class Output:
-    def __init__(self, path=None, filename=None, format=None, bypass=False):
+    def __init__(
+        self,
+        path: str = None,
+        filename: str = None,
+        format: str = None,
+        bypass: bool = False,
+    ):
+        """An object for outputting a figure to the display or hard-disc, see:
 
+        https://matplotlib.org/3.1.1/api/_as_gen/matplotlib.pyplot.show.html
+        https://matplotlib.org/3.1.1/api/_as_gen/matplotlib.pyplot.savefig.html
+
+        This object wraps the following Matplotlib methods:
+
+        - plt.show
+        - plt.savefig
+
+        The default behaviour is the display the figure on the computer screen, as opposed to outputting to hard-disc
+        as a file.
+
+        Parameters
+        ----------
+        path : str
+            If the figure is output to hard-disc the path of the folder it is saved to.
+        filename : str
+            If the figure is output to hard-disc the filename used to save it.
+        format : str
+            The format of the output, 'show' displays on the computer screen, 'png' outputs to .png, 'fits' outputs to
+            .fits format.
+        bypass : bool
+            Whether to bypass the plt.show or plt.savefig methods, used when plotting a subplot.
+        """
         self.path = path
 
         if path is not None and path:
@@ -744,7 +983,13 @@ class Output:
             return self._format
 
     def filename_from_func(self, func):
+        """If a filename is not manually specified use the name of the function plotting the image to set it.
 
+         Parameters
+         ----------
+         func : func
+            The function plotting the image.
+        """
         if self.filename is None:
             return func.__name__
         else:
@@ -758,18 +1003,6 @@ class Output:
         -----------
         structure : ndarray
             The 2D array of image to be output, required for outputting the image as a fits file.
-        as_subplot : bool
-            Whether the figure is part of subplot, in which case the figure is not output so that the entire subplot can \
-            be output instead using the *output.output_figure(structure=None, is_sub_plotter=False)* function.
-        output_path : str
-            The path on the hard-disk where the figure is output.
-        output_filename : str
-            The filename of the figure that is output.
-        output_format : str
-            The format the figue is output:
-            'show' - display on computer screen.
-            'png' - output to hard-disk as a png.
-            'fits' - output to hard-disk as a fits file.'
         """
         if not self.bypass:
             if self.format is "show":
@@ -783,24 +1016,7 @@ class Output:
                     )
 
     def subplot_to_figure(self):
-        """Output the figure, either as an image on the screen or to the hard-disk as a .png or .fits file.
-
-        Parameters
-        -----------
-        structure : ndarray
-            The 2D array of image to be output, required for outputting the image as a fits file.
-        as_subplot : bool
-            Whether the figure is part of subplot, in which case the figure is not output so that the entire subplot can \
-            be output instead using the *output.output_figure(structure=None, is_sub_plotter=False)* function.
-        output_path : str
-            The path on the hard-disk where the figure is output.
-        output_filename : str
-            The filename of the figure that is output.
-        output_format : str
-            The format the figue is output:
-            'show' - display on computer screen.
-            'png' - output to hard-disk as a png.
-            'fits' - output to hard-disk as a fits file.'
+        """Output a subhplot figure, either as an image on the screen or to the hard-disk as a .png or .fits file.
         """
         if self.format is "show":
             plt.show()
