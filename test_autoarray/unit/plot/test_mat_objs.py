@@ -166,27 +166,33 @@ class TestTicks:
 
         ticks = aplt.Ticks(ysize=34, xsize=35)
 
+        extent = array.extent_of_zoomed_array(buffer=1)
+
         ticks.set_yticks(
             array=array,
-            extent=array.extent_of_zoomed_array(buffer=1),
+            ymin=extent[2],
+            ymax=extent[3],
             units=units,
             symmetric_around_centre=False,
         )
         ticks.set_xticks(
             array=array,
-            extent=array.extent_of_zoomed_array(buffer=1),
+            xmin=extent[0],
+            xmax=extent[1],
             units=units,
             symmetric_around_centre=False,
         )
         ticks.set_yticks(
             array=array,
-            extent=array.extent_of_zoomed_array(buffer=1),
+            ymin=extent[2],
+            ymax=extent[3],
             units=units,
             symmetric_around_centre=True,
         )
         ticks.set_xticks(
             array=array,
-            extent=array.extent_of_zoomed_array(buffer=1),
+            xmin=extent[0],
+            xmax=extent[1],
             units=units,
             symmetric_around_centre=True,
         )
@@ -197,25 +203,29 @@ class TestTicks:
 
         ticks.set_yticks(
             array=array,
-            extent=array.extent_of_zoomed_array(buffer=1),
+            ymin=extent[2],
+            ymax=extent[3],
             units=units,
             symmetric_around_centre=False,
         )
         ticks.set_xticks(
             array=array,
-            extent=array.extent_of_zoomed_array(buffer=1),
+            xmin=extent[0],
+            xmax=extent[1],
             units=units,
             symmetric_around_centre=False,
         )
         ticks.set_yticks(
             array=array,
-            extent=array.extent_of_zoomed_array(buffer=1),
+            ymin=extent[2],
+            ymax=extent[3],
             units=units,
             symmetric_around_centre=True,
         )
         ticks.set_xticks(
             array=array,
-            extent=array.extent_of_zoomed_array(buffer=1),
+            xmin=extent[0],
+            xmax=extent[1],
             units=units,
             symmetric_around_centre=True,
         )
@@ -226,25 +236,29 @@ class TestTicks:
 
         ticks.set_yticks(
             array=array,
-            extent=array.extent_of_zoomed_array(buffer=1),
+            ymin=extent[2],
+            ymax=extent[3],
             units=units,
             symmetric_around_centre=False,
         )
         ticks.set_xticks(
             array=array,
-            extent=array.extent_of_zoomed_array(buffer=1),
+            xmin=extent[0],
+            xmax=extent[1],
             units=units,
             symmetric_around_centre=False,
         )
         ticks.set_yticks(
             array=array,
-            extent=array.extent_of_zoomed_array(buffer=1),
+            ymin=extent[2],
+            ymax=extent[3],
             units=units,
             symmetric_around_centre=True,
         )
         ticks.set_xticks(
             array=array,
-            extent=array.extent_of_zoomed_array(buffer=1),
+            xmin=extent[0],
+            xmax=extent[1],
             units=units,
             symmetric_around_centre=True,
         )
@@ -255,25 +269,29 @@ class TestTicks:
 
         ticks.set_yticks(
             array=array,
-            extent=array.extent_of_zoomed_array(buffer=1),
+            ymin=extent[2],
+            ymax=extent[3],
             units=units,
             symmetric_around_centre=False,
         )
         ticks.set_xticks(
             array=array,
-            extent=array.extent_of_zoomed_array(buffer=1),
+            xmin=extent[0],
+            xmax=extent[1],
             units=units,
             symmetric_around_centre=False,
         )
         ticks.set_yticks(
             array=array,
-            extent=array.extent_of_zoomed_array(buffer=1),
+            ymin=extent[2],
+            ymax=extent[3],
             units=units,
             symmetric_around_centre=True,
         )
         ticks.set_xticks(
             array=array,
-            extent=array.extent_of_zoomed_array(buffer=1),
+            xmin=extent[0],
+            xmax=extent[1],
             units=units,
             symmetric_around_centre=True,
         )

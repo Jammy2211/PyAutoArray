@@ -288,7 +288,9 @@ class AbstractMaskedImaging(abstract_dataset.AbstractMaskedDataset):
             store_in_1d=imaging.noise_map.store_in_1d,
         )
 
-        self.psf = settings.psf_reshaped_and_renormalized_from_psf(psf=imaging.psf)
+        psf = copy.deepcopy(imaging.psf)
+
+        self.psf = settings.psf_reshaped_and_renormalized_from_psf(psf=psf)
 
         if self.psf is not None:
 

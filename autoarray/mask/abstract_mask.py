@@ -10,6 +10,8 @@ from autoarray.util import array_util, binning_util, mask_util
 logging.basicConfig()
 logger = logging.getLogger(__name__)
 
+import copy
+
 
 class AbstractMask(np.ndarray):
 
@@ -233,8 +235,10 @@ class AbstractMask(np.ndarray):
             The new two-dimensional shape of the array.
         """
 
+        mask = copy.deepcopy(self)
+
         resized_mask = array_util.resized_array_2d_from_array_2d(
-            array_2d=self, resized_shape=new_shape
+            array_2d=mask, resized_shape=new_shape
         ).astype("bool")
 
         return self.__class__(
