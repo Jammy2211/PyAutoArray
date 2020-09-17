@@ -364,8 +364,12 @@ class AbstractPlotter:
 
         plt.axis(extent)
 
-        self.ticks.set_yticks(array=array, extent=extent, units=self.units)
-        self.ticks.set_xticks(array=array, extent=extent, units=self.units)
+        self.ticks.set_yticks(
+            array=array, ymin=extent[2], ymax=extent[3], units=self.units
+        )
+        self.ticks.set_xticks(
+            array=array, xmin=extent[0], xmax=extent[1], units=self.units
+        )
 
         self.labels.set_title()
         self.labels.set_yunits(units=self.units, include_brackets=True)
@@ -535,11 +539,13 @@ class AbstractPlotter:
 
         plt.axis(frame.mask.geometry.extent)
 
+        extent = frame.mask.geometry.extent
+
         self.ticks.set_yticks(
-            array=frame, extent=frame.mask.geometry.extent, units=self.units
+            array=frame, ymin=extent[2], ymax=extent[3], units=self.units
         )
         self.ticks.set_xticks(
-            array=frame, extent=frame.mask.geometry.extent, units=self.units
+            array=frame, xmin=extent[0], xmax=extent[1], units=self.units
         )
 
         self.labels.set_title()
@@ -666,13 +672,15 @@ class AbstractPlotter:
 
         self.ticks.set_yticks(
             array=None,
-            extent=grid.extent,
+            ymin=grid.extent[2],
+            ymax=grid.extent[3],
             units=self.units,
             symmetric_around_centre=symmetric_around_centre,
         )
         self.ticks.set_xticks(
             array=None,
-            extent=grid.extent,
+            xmin=grid.extent[0],
+            xmax=grid.extent[1],
             units=self.units,
             symmetric_around_centre=symmetric_around_centre,
         )
@@ -731,7 +739,7 @@ class AbstractPlotter:
             self.legend.set()
 
         self.ticks.set_xticks(
-            array=None, extent=[np.min(x), np.max(x)], units=self.units
+            array=None, xmin=np.min(x), xmax=np.max(x), units=self.units
         )
 
         if not bypass_output:
@@ -819,10 +827,16 @@ class AbstractPlotter:
         )
 
         self.ticks.set_yticks(
-            array=None, extent=mapper.pixelization_grid.extent, units=self.units
+            array=None,
+            ymin=mapper.pixelization_grid.extent[2],
+            ymax=mapper.pixelization_grid.extent[3],
+            units=self.units,
         )
         self.ticks.set_xticks(
-            array=None, extent=mapper.pixelization_grid.extent, units=self.units
+            array=None,
+            xmin=mapper.pixelization_grid.extent[0],
+            xmax=mapper.pixelization_grid.extent[1],
+            units=self.units,
         )
 
         self.liner.draw_rectangular_grid_lines(
@@ -890,10 +904,16 @@ class AbstractPlotter:
         )
 
         self.ticks.set_yticks(
-            array=None, extent=mapper.pixelization_grid.extent, units=self.units
+            array=None,
+            ymin=mapper.pixelization_grid.extent[2],
+            ymax=mapper.pixelization_grid.extent[3],
+            units=self.units,
         )
         self.ticks.set_xticks(
-            array=None, extent=mapper.pixelization_grid.extent, units=self.units
+            array=None,
+            xmin=mapper.pixelization_grid.extent[0],
+            xmax=mapper.pixelization_grid.extent[1],
+            units=self.units,
         )
 
         self.voronoi_drawer.draw_voronoi_pixels(
