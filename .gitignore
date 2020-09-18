@@ -1,5 +1,4 @@
 .envr
-.env
 __pycache__
 *.swp
 .eggs/
@@ -11,3 +10,9 @@ build/
 dist/
 .idea/
 test_files
+test_autoarray/unit/instruments/files/acs/acs_ccd.fits
+test_autoarray/unit/plot/files/plotter/fits/frame.fits
+test_autoarray/unit/structures/files/array.fits
+test_autoarray/unit/structures/files/frame.fits
+test_autoarray/unit/structures/files/kernel.fits
+test_autoarray/unit/structures/grids/files/grid/grid.fits
