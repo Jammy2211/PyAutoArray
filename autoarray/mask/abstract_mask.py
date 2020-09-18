@@ -51,7 +51,7 @@ class AbstractMask(np.ndarray):
 
     def __reduce__(self):
         # Get the parent's __reduce__ tuple
-        pickled_state = super(AbstractMask, self).__reduce__()
+        pickled_state = super().__reduce__()
         # Create our own tuple to pass to __setstate__
         class_dict = {}
         for key, value in self.__dict__.items():
@@ -65,7 +65,7 @@ class AbstractMask(np.ndarray):
 
         for key, value in state[-1].items():
             setattr(self, key, value)
-        super(AbstractMask, self).__setstate__(state[0:-1])
+        super().__setstate__(state[0:-1])
 
     def __array_finalize__(self, obj):
 
