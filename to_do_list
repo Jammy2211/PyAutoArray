@@ -1,4 +1,6 @@
+Tests:
 
+    - Autogenerate and delete all test .fits files where possible.
 
 Ideas / Other:
 
