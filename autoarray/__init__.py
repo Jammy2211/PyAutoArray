@@ -42,4 +42,4 @@ from .structures.kernel import Kernel
 from .structures.visibilities import Visibilities
 from .structures.visibilities import VisibilitiesNoiseMap
 
-__version__ = "0.14.7"
+__version__ = '0.14.8'
