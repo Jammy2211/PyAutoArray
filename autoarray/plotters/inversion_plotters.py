@@ -2,7 +2,8 @@ import autoarray as aa
 import matplotlib
 
 backend = aa.conf.get_matplotlib_backend()
-matplotlib.use(backend)
+if "default" not in backend:
+    matplotlib.use(backend)
 from matplotlib import pyplot as plt
 
 from autoarray.plotters import mapper_plotters

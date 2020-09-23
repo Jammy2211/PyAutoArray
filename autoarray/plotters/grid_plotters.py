@@ -2,7 +2,8 @@ from autoarray import conf
 import matplotlib
 
 backend = conf.get_matplotlib_backend()
-matplotlib.use(backend)
+if "default" not in backend:
+    matplotlib.use(backend)
 from matplotlib import pyplot as plt
 import numpy as np
 import itertools

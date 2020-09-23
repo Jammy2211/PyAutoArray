@@ -2,7 +2,8 @@ import matplotlib
 from autoarray import conf
 
 backend = conf.get_matplotlib_backend()
-matplotlib.use(backend)
+if "default" not in backend:
+    matplotlib.use(backend)
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 import numpy as np
