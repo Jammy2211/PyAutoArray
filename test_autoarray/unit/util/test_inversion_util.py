@@ -2,7 +2,7 @@ import autoarray as aa
 import numpy as np
 
 
-class TestDataVectorFromData(object):
+class TestDataVectorFromData:
     def test__simple_blurred_mapping_matrix__correct_data_vector(self):
 
         blurred_mapping_matrix = np.array(
@@ -19,7 +19,7 @@ class TestDataVectorFromData(object):
         image = np.array([1.0, 1.0, 1.0, 1.0, 1.0, 1.0])
         noise_map = np.array([1.0, 1.0, 1.0, 1.0, 1.0, 1.0])
 
-        data_vector = aa.util.inversion.data_vector_from_blurred_mapping_matrix_and_data(
+        data_vector = aa.util.inversion.data_vector_via_blurred_mapping_matrix_from(
             blurred_mapping_matrix=blurred_mapping_matrix,
             image=image,
             noise_map=noise_map,
@@ -45,7 +45,7 @@ class TestDataVectorFromData(object):
         image = np.array([3.0, 1.0, 1.0, 10.0, 1.0, 1.0])
         noise_map = np.array([1.0, 1.0, 1.0, 1.0, 1.0, 1.0])
 
-        data_vector = aa.util.inversion.data_vector_from_blurred_mapping_matrix_and_data(
+        data_vector = aa.util.inversion.data_vector_via_blurred_mapping_matrix_from(
             blurred_mapping_matrix=blurred_mapping_matrix,
             image=image,
             noise_map=noise_map,
@@ -71,7 +71,7 @@ class TestDataVectorFromData(object):
         image = np.array([4.0, 1.0, 1.0, 16.0, 1.0, 1.0])
         noise_map = np.array([2.0, 1.0, 1.0, 4.0, 1.0, 1.0])
 
-        data_vector = aa.util.inversion.data_vector_from_blurred_mapping_matrix_and_data(
+        data_vector = aa.util.inversion.data_vector_via_blurred_mapping_matrix_from(
             blurred_mapping_matrix=blurred_mapping_matrix,
             image=image,
             noise_map=noise_map,
@@ -97,11 +97,11 @@ class TestDataVectorFromData(object):
         data = np.array([4.0, 1.0, 1.0, 16.0, 1.0, 1.0])
         noise_map = np.array([2.0, 1.0, 1.0, 4.0, 1.0, 1.0])
 
-        data_vector_via_blurred = aa.util.inversion.data_vector_from_blurred_mapping_matrix_and_data(
+        data_vector_via_blurred = aa.util.inversion.data_vector_via_blurred_mapping_matrix_from(
             blurred_mapping_matrix=mapping_matrix, image=data, noise_map=noise_map
         )
 
-        data_vector_via_transformed = aa.util.inversion.data_vector_from_transformed_mapping_matrix_and_data(
+        data_vector_via_transformed = aa.util.inversion.data_vector_via_transformed_mapping_matrix_from(
             transformed_mapping_matrix=mapping_matrix,
             visibilities=data,
             noise_map=noise_map,
@@ -110,7 +110,7 @@ class TestDataVectorFromData(object):
         assert (data_vector_via_blurred == data_vector_via_transformed).all()
 
 
-class TestCurvatureMatrixFromBlurred(object):
+class TestCurvatureMatrixFromBlurred:
     def test__simple_blurred_mapping_matrix(self):
 
         blurred_mapping_matrix = np.array(
@@ -126,7 +126,7 @@ class TestCurvatureMatrixFromBlurred(object):
 
         noise_map = np.array([1.0, 1.0, 1.0, 1.0, 1.0, 1.0])
 
-        curvature_matrix = aa.util.inversion.curvature_matrix_from_blurred_mapping_matrix(
+        curvature_matrix = aa.util.inversion.curvature_matrix_via_blurred_mapping_matrix_from(
             blurred_mapping_matrix=blurred_mapping_matrix, noise_map=noise_map
         )
 
@@ -150,7 +150,7 @@ class TestCurvatureMatrixFromBlurred(object):
 
         noise_map = np.array([2.0, 1.0, 1.0, 1.0, 1.0, 1.0])
 
-        curvature_matrix = aa.util.inversion.curvature_matrix_from_blurred_mapping_matrix(
+        curvature_matrix = aa.util.inversion.curvature_matrix_via_blurred_mapping_matrix_from(
             blurred_mapping_matrix=blurred_mapping_matrix, noise_map=noise_map
         )
 
@@ -176,18 +176,18 @@ class TestCurvatureMatrixFromBlurred(object):
 
         noise_map = np.array([2.0, 1.0, 1.0, 4.0, 1.0, 1.0])
 
-        curvature_matrix_via_blurred = aa.util.inversion.curvature_matrix_from_blurred_mapping_matrix(
+        curvature_matrix_via_blurred = aa.util.inversion.curvature_matrix_via_blurred_mapping_matrix_from(
             blurred_mapping_matrix=mapping_matrix, noise_map=noise_map
         )
 
-        curvature_matrix_via_transformed = aa.util.inversion.curvature_matrix_from_transformed_mapping_matrix(
+        curvature_matrix_via_transformed = aa.util.inversion.curvature_matrix_via_transformed_mapping_matrix_from(
             transformed_mapping_matrix=mapping_matrix, noise_map=noise_map
         )
 
         assert (curvature_matrix_via_blurred == curvature_matrix_via_transformed).all()
 
 
-class TestPixelizationResiduals(object):
+class TestPixelizationResiduals:
     def test__pixelization_perfectly_reconstructed_data__quantities_like_residuals_all_zeros(
         self
     ):
@@ -201,7 +201,7 @@ class TestPixelizationResiduals(object):
             [2, 2, 2],
         ]
 
-        pixelization_residuals = aa.util.inversion.inversion_residual_map_from_pixelization_values_and_data(
+        pixelization_residuals = aa.util.inversion.inversion_residual_map_from(
             pixelization_values=pixelization_values,
             data=reconstructed_data_1d,
             mask_1d_index_for_sub_mask_1d_index=mask_1d_index_for_sub_mask_1d_index,
@@ -221,7 +221,7 @@ class TestPixelizationResiduals(object):
             [6, 7, 8],
         ]
 
-        pixelization_residuals = aa.util.inversion.inversion_residual_map_from_pixelization_values_and_data(
+        pixelization_residuals = aa.util.inversion.inversion_residual_map_from(
             pixelization_values=pixelization_values,
             data=reconstructed_data_1d,
             mask_1d_index_for_sub_mask_1d_index=mask_1d_index_for_sub_mask_1d_index,
@@ -239,7 +239,7 @@ class TestPixelizationResiduals(object):
             [6, 7, 8],
         ]
 
-        pixelization_residuals = aa.util.inversion.inversion_residual_map_from_pixelization_values_and_data(
+        pixelization_residuals = aa.util.inversion.inversion_residual_map_from(
             pixelization_values=pixelization_values,
             data=reconstructed_data_1d,
             mask_1d_index_for_sub_mask_1d_index=mask_1d_index_for_sub_mask_1d_index,
@@ -249,7 +249,7 @@ class TestPixelizationResiduals(object):
         assert (pixelization_residuals == np.array([0.0, 1.0, 2.0])).all()
 
 
-class TestPixelizationNormalizedResiduals(object):
+class TestPixelizationNormalizedResiduals:
     def test__pixelization_perfectly_reconstructed_data__quantities_like_residuals_all_zeros(
         self
     ):
@@ -264,9 +264,9 @@ class TestPixelizationNormalizedResiduals(object):
             [2, 2, 2],
         ]
 
-        pixelization_normalized_residuals = aa.util.inversion.inversion_normalized_residual_map_from_pixelization_values_and_reconstructed_data_1d(
+        pixelization_normalized_residuals = aa.util.inversion.inversion_normalized_residual_map_from(
             pixelization_values=pixelization_values,
-            mapped_reconstructed_data=reconstructed_data_1d,
+            data=reconstructed_data_1d,
             noise_map_1d=noise_map_1d,
             mask_1d_index_for_sub_mask_1d_index=mask_1d_index_for_sub_mask_1d_index,
             all_sub_mask_1d_indexes_for_pixelization_1d_index=all_sub_mask_1d_indexes_for_pixelization_1d_index,
@@ -286,9 +286,9 @@ class TestPixelizationNormalizedResiduals(object):
             [6, 7, 8],
         ]
 
-        pixelization_normalized_residuals = aa.util.inversion.inversion_normalized_residual_map_from_pixelization_values_and_reconstructed_data_1d(
+        pixelization_normalized_residuals = aa.util.inversion.inversion_normalized_residual_map_from(
             pixelization_values=pixelization_values,
-            mapped_reconstructed_data=reconstructed_data_1d,
+            data=reconstructed_data_1d,
             noise_map_1d=noise_map_1d,
             mask_1d_index_for_sub_mask_1d_index=mask_1d_index_for_sub_mask_1d_index,
             all_sub_mask_1d_indexes_for_pixelization_1d_index=all_sub_mask_1d_indexes_for_pixelization_1d_index,
@@ -306,9 +306,9 @@ class TestPixelizationNormalizedResiduals(object):
             [6, 7, 8],
         ]
 
-        pixelization_normalized_residuals = aa.util.inversion.inversion_normalized_residual_map_from_pixelization_values_and_reconstructed_data_1d(
+        pixelization_normalized_residuals = aa.util.inversion.inversion_normalized_residual_map_from(
             pixelization_values=pixelization_values,
-            mapped_reconstructed_data=reconstructed_data_1d,
+            data=reconstructed_data_1d,
             noise_map_1d=noise_map_1d,
             mask_1d_index_for_sub_mask_1d_index=mask_1d_index_for_sub_mask_1d_index,
             all_sub_mask_1d_indexes_for_pixelization_1d_index=all_sub_mask_1d_indexes_for_pixelization_1d_index,
@@ -317,7 +317,7 @@ class TestPixelizationNormalizedResiduals(object):
         assert (pixelization_normalized_residuals == np.array([0.0, 1.0, 1.0])).all()
 
 
-class TestPixelizationChiSquareds(object):
+class TestPixelizationChiSquareds:
     def test__pixelization_perfectly_reconstructed_data__quantities_like_residuals_all_zeros(
         self
     ):
@@ -332,9 +332,9 @@ class TestPixelizationChiSquareds(object):
             [2, 2, 2],
         ]
 
-        pixelization_chi_squareds = aa.util.inversion.inversion_chi_squared_map_from_pixelization_values_and_reconstructed_data_1d(
+        pixelization_chi_squareds = aa.util.inversion.inversion_chi_squared_map_from(
             pixelization_values=pixelization_values,
-            mapped_reconstructed_data=reconstructed_data_1d,
+            data=reconstructed_data_1d,
             noise_map_1d=noise_map_1d,
             mask_1d_index_for_sub_mask_1d_index=mask_1d_index_for_sub_mask_1d_index,
             all_sub_mask_1d_indexes_for_pixelization_1d_index=all_sub_mask_1d_indexes_for_pixelization_1d_index,
@@ -354,9 +354,9 @@ class TestPixelizationChiSquareds(object):
             [6, 7, 8],
         ]
 
-        pixelization_chi_squareds = aa.util.inversion.inversion_chi_squared_map_from_pixelization_values_and_reconstructed_data_1d(
+        pixelization_chi_squareds = aa.util.inversion.inversion_chi_squared_map_from(
             pixelization_values=pixelization_values,
-            mapped_reconstructed_data=reconstructed_data_1d,
+            data=reconstructed_data_1d,
             noise_map_1d=noise_map_1d,
             mask_1d_index_for_sub_mask_1d_index=mask_1d_index_for_sub_mask_1d_index,
             all_sub_mask_1d_indexes_for_pixelization_1d_index=all_sub_mask_1d_indexes_for_pixelization_1d_index,
@@ -374,9 +374,9 @@ class TestPixelizationChiSquareds(object):
             [6, 7, 8],
         ]
 
-        pixelization_chi_squareds = aa.util.inversion.inversion_chi_squared_map_from_pixelization_values_and_reconstructed_data_1d(
+        pixelization_chi_squareds = aa.util.inversion.inversion_chi_squared_map_from(
             pixelization_values=pixelization_values,
-            mapped_reconstructed_data=reconstructed_data_1d,
+            data=reconstructed_data_1d,
             noise_map_1d=noise_map_1d,
             mask_1d_index_for_sub_mask_1d_index=mask_1d_index_for_sub_mask_1d_index,
             all_sub_mask_1d_indexes_for_pixelization_1d_index=all_sub_mask_1d_indexes_for_pixelization_1d_index,

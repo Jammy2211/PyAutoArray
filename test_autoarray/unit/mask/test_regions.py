@@ -5,23 +5,23 @@ import autoarray as aa
 
 
 class TestRegions:
-    def test__mask_2d_index_for_mask_1d_index__compare_to_array_util(self):
+    def test__mask_index_for_mask_1d_index__compare_to_array_util(self):
 
-        mask = aa.mask.manual(
+        mask = aa.Mask.manual(
             [[True, True, True], [True, False, False], [True, True, False]]
         )
 
-        mask_2d_index_for_mask_1d_index = aa.util.mask.sub_mask_2d_index_for_sub_mask_1d_index_via_mask_2d(
-            mask_2d=mask, sub_size=1
+        mask_index_for_mask_1d_index = aa.util.mask.sub_mask_index_for_sub_mask_1d_index_via_mask_from(
+            mask=mask, sub_size=1
         )
 
-        assert mask.regions._mask_2d_index_for_mask_1d_index == pytest.approx(
-            mask_2d_index_for_mask_1d_index, 1e-4
+        assert mask.regions._mask_index_for_mask_1d_index == pytest.approx(
+            mask_index_for_mask_1d_index, 1e-4
         )
 
     def test__unmasked_mask(self):
 
-        mask = aa.mask.manual(
+        mask = aa.Mask.manual(
             [
                 [True, True, True, True, True, True, True, True, True],
                 [True, False, False, False, False, False, False, False, True],
@@ -41,7 +41,7 @@ class TestRegions:
 
     def test__blurring_mask_for_psf_shape__compare_to_array_util(self):
 
-        mask = aa.mask.manual(
+        mask = aa.Mask.manual(
             [
                 [True, True, True, True, True, True, True, True],
                 [True, False, True, True, True, False, True, True],
@@ -55,8 +55,8 @@ class TestRegions:
             ]
         )
 
-        blurring_mask_via_util = aa.util.mask.blurring_mask_2d_from_mask_2d_and_kernel_shape_2d(
-            mask_2d=mask, kernel_shape_2d=(3, 3)
+        blurring_mask_via_util = aa.util.mask.blurring_mask_from(
+            mask=mask, kernel_shape_2d=(3, 3)
         )
 
         blurring_mask = mask.regions.blurring_mask_from_kernel_shape(
@@ -66,7 +66,7 @@ class TestRegions:
         assert (blurring_mask == blurring_mask_via_util).all()
 
     def test__edge_image_pixels__compare_to_array_util(self):
-        mask = aa.mask.manual(
+        mask = aa.Mask.manual(
             [
                 [True, True, True, True, True, True, True, True, True],
                 [True, False, False, False, False, False, False, False, True],
@@ -80,7 +80,7 @@ class TestRegions:
             ]
         )
 
-        edge_pixels_util = aa.util.mask.edge_1d_indexes_from_mask_2d(mask_2d=mask)
+        edge_pixels_util = aa.util.mask.edge_1d_indexes_from(mask=mask)
 
         assert mask.regions._edge_1d_indexes == pytest.approx(edge_pixels_util, 1e-4)
         assert mask.regions._edge_2d_indexes[0] == pytest.approx(np.array([1, 1]), 1e-4)
@@ -93,7 +93,7 @@ class TestRegions:
         )
 
     def test__edge_mask(self):
-        mask = aa.mask.manual(
+        mask = aa.Mask.manual(
             [
                 [True, True, True, True, True, True, True, True, True],
                 [True, False, False, False, False, False, False, False, True],
@@ -125,7 +125,7 @@ class TestRegions:
         ).all()
 
     def test__border_image_pixels__compare_to_array_util(self):
-        mask = aa.mask.manual(
+        mask = aa.Mask.manual(
             [
                 [True, True, True, True, True, True, True, True, True],
                 [True, False, False, False, False, False, False, False, True],
@@ -139,7 +139,7 @@ class TestRegions:
             ]
         )
 
-        border_pixels_util = aa.util.mask.border_1d_indexes_from_mask_2d(mask_2d=mask)
+        border_pixels_util = aa.util.mask.border_1d_indexes_from(mask=mask)
 
         assert mask.regions._border_1d_indexes == pytest.approx(
             border_pixels_util, 1e-4
@@ -156,7 +156,7 @@ class TestRegions:
         )
 
     def test__border_mask(self):
-        mask = aa.mask.manual(
+        mask = aa.Mask.manual(
             [
                 [True, True, True, True, True, True, True, True, True],
                 [True, False, False, False, False, False, False, False, True],
@@ -189,7 +189,7 @@ class TestRegions:
 
     def test__sub_border_1d_indexes__compare_to_array_util_and_numerics(self):
 
-        mask = aa.mask.manual(
+        mask = aa.Mask.manual(
             [
                 [False, False, False, False, False, False, False, True],
                 [False, True, True, True, True, True, False, True],
@@ -202,15 +202,15 @@ class TestRegions:
             sub_size=2,
         )
 
-        sub_border_pixels_util = aa.util.mask.sub_border_pixel_1d_indexes_from_mask_2d_and_sub_size(
-            mask_2d=mask, sub_size=2
+        sub_border_pixels_util = aa.util.mask.sub_border_pixel_1d_indexes_from(
+            mask=mask, sub_size=2
         )
 
         assert mask.regions._sub_border_1d_indexes == pytest.approx(
             sub_border_pixels_util, 1e-4
         )
 
-        mask = aa.mask.manual(
+        mask = aa.Mask.manual(
             [
                 [True, True, True, True, True, True, True],
                 [True, True, True, True, True, True, True],
@@ -229,13 +229,13 @@ class TestRegions:
         ).all()
 
     def test__mask_1d_index_for_sub_mask_1d_index__compare_to_util(self):
-        mask = aa.mask.manual(
+        mask = aa.Mask.manual(
             [[True, False, True], [False, False, False], [True, False, False]],
             sub_size=2,
         )
 
-        mask_1d_index_for_sub_mask_1d_index_util = aa.util.mask.mask_1d_index_for_sub_mask_1d_index_via_mask_2d(
-            mask_2d=mask, sub_size=2
+        mask_1d_index_for_sub_mask_1d_index_util = aa.util.mask.mask_1d_index_for_sub_mask_1d_index_via_mask_from(
+            mask=mask, sub_size=2
         )
 
         assert (
@@ -243,15 +243,15 @@ class TestRegions:
             == mask_1d_index_for_sub_mask_1d_index_util
         ).all()
 
-    def test__sub_mask_2d_index_for_sub_mask_1d_index__compare_to_array_util(self):
-        mask = aa.mask.manual(
+    def test__sub_mask_index_for_sub_mask_1d_index__compare_to_array_util(self):
+        mask = aa.Mask.manual(
             [[True, True, True], [True, False, False], [True, True, False]], sub_size=2
         )
 
-        sub_mask_2d_index_for_sub_mask_1d_index = aa.util.mask.sub_mask_2d_index_for_sub_mask_1d_index_via_mask_2d(
-            mask_2d=mask, sub_size=2
+        sub_mask_index_for_sub_mask_1d_index = aa.util.mask.sub_mask_index_for_sub_mask_1d_index_via_mask_from(
+            mask=mask, sub_size=2
         )
 
-        assert mask.regions._sub_mask_2d_index_for_sub_mask_1d_index == pytest.approx(
-            sub_mask_2d_index_for_sub_mask_1d_index, 1e-4
+        assert mask.regions._sub_mask_index_for_sub_mask_1d_index == pytest.approx(
+            sub_mask_index_for_sub_mask_1d_index, 1e-4
         )

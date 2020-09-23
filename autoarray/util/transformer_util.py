@@ -46,7 +46,7 @@ def preload_imag_transforms(grid_radians, uv_wavelengths):
 
 
 @decorator_util.jit()
-def real_visibilities_from_image_via_preload(image_1d, preloaded_reals):
+def real_visibilities_via_preload_jit_from(image_1d, preloaded_reals):
 
     real_visibilities = np.zeros(shape=(preloaded_reals.shape[1]))
 
@@ -79,7 +79,7 @@ def real_visibilities_jit(image_1d, grid_radians, uv_wavelengths):
 
 
 @decorator_util.jit()
-def imag_visibilities_via_preload_jit(image_1d, preloaded_imags):
+def imag_visibilities_from_via_preload_jit_from(image_1d, preloaded_imags):
 
     imag_visibilities = np.zeros(shape=(preloaded_imags.shape[1]))
 
@@ -112,7 +112,9 @@ def imag_visibilities_jit(image_1d, grid_radians, uv_wavelengths):
 
 
 @decorator_util.jit()
-def real_transformed_mapping_matrix_via_preload_jit(mapping_matrix, preloaded_reals):
+def real_transformed_mapping_matrix_via_preload_jit_from(
+    mapping_matrix, preloaded_reals
+):
 
     transfomed_mapping_matrix = np.zeros(
         (preloaded_reals.shape[1], mapping_matrix.shape[1])
@@ -166,7 +168,9 @@ def real_transformed_mapping_matrix_jit(mapping_matrix, grid_radians, uv_wavelen
 
 
 @decorator_util.jit()
-def imag_transformed_mapping_matrix_via_preload_jit(mapping_matrix, preloaded_imags):
+def imag_transformed_mapping_matrix_via_preload_jit_from(
+    mapping_matrix, preloaded_imags
+):
 
     transfomed_mapping_matrix = np.zeros(
         (preloaded_imags.shape[1], mapping_matrix.shape[1])

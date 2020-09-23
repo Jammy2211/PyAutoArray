@@ -26,7 +26,7 @@ class TestRegularizationinstanceMatrix:
             test_b_matrix.T, test_b_matrix
         ) + 1e-8 * np.identity(3)
 
-        regularization_matrix = aa.util.regularization.constant_regularization_matrix_from_pixel_neighbors(
+        regularization_matrix = aa.util.regularization.constant_regularization_matrix_from(
             coefficient=1.0,
             pixel_neighbors=pixel_neighbors,
             pixel_neighbors_size=pixel_neighbors_size,
@@ -53,7 +53,7 @@ class TestRegularizationinstanceMatrix:
 
         pixel_neighbors_size = np.array([2, 2, 2, 2])
 
-        regularization_matrix = aa.util.regularization.constant_regularization_matrix_from_pixel_neighbors(
+        regularization_matrix = aa.util.regularization.constant_regularization_matrix_from(
             coefficient=1.0,
             pixel_neighbors=pixel_neighbors,
             pixel_neighbors_size=pixel_neighbors_size,
@@ -80,7 +80,7 @@ class TestRegularizationinstanceMatrix:
             test_b_matrix.T, test_b_matrix
         ) + 1e-8 * np.identity(4)
 
-        regularization_matrix = aa.util.regularization.constant_regularization_matrix_from_pixel_neighbors(
+        regularization_matrix = aa.util.regularization.constant_regularization_matrix_from(
             coefficient=2.0,
             pixel_neighbors=pixel_neighbors,
             pixel_neighbors_size=pixel_neighbors_size,
@@ -146,7 +146,7 @@ class TestRegularizationinstanceMatrix:
             + 1e-8 * np.identity(9)
         )
 
-        regularization_matrix = aa.util.regularization.constant_regularization_matrix_from_pixel_neighbors(
+        regularization_matrix = aa.util.regularization.constant_regularization_matrix_from(
             coefficient=1.0,
             pixel_neighbors=pixel_neighbors,
             pixel_neighbors_size=pixel_neighbors_size,
@@ -156,12 +156,12 @@ class TestRegularizationinstanceMatrix:
         assert abs(np.linalg.det(regularization_matrix)) > 1e-8
 
 
-class TestRegularizationWeightedRegularizationWeights(object):
+class TestRegularizationWeightedRegularizationWeights:
     def test__pixel_signals_all_1s__coefficients_all_1s__weights_all_1s(self):
 
         pixel_signals = np.array([1.0, 1.0, 1.0])
 
-        weights = aa.util.regularization.adaptive_regularization_weights_from_pixel_signals(
+        weights = aa.util.regularization.adaptive_regularization_weights_from(
             inner_coefficient=1.0, outer_coefficient=1.0, pixel_signals=pixel_signals
         )
 
@@ -171,7 +171,7 @@ class TestRegularizationWeightedRegularizationWeights(object):
 
         pixel_signals = np.array([0.25, 0.5, 0.75])
 
-        weights = aa.util.regularization.adaptive_regularization_weights_from_pixel_signals(
+        weights = aa.util.regularization.adaptive_regularization_weights_from(
             inner_coefficient=1.0, outer_coefficient=1.0, pixel_signals=pixel_signals
         )
 
@@ -183,7 +183,7 @@ class TestRegularizationWeightedRegularizationWeights(object):
 
         pixel_signals = np.array([0.25, 0.5, 0.75])
 
-        weights = aa.util.regularization.adaptive_regularization_weights_from_pixel_signals(
+        weights = aa.util.regularization.adaptive_regularization_weights_from(
             inner_coefficient=1.0, outer_coefficient=0.0, pixel_signals=pixel_signals
         )
 
@@ -195,7 +195,7 @@ class TestRegularizationWeightedRegularizationWeights(object):
 
         pixel_signals = np.array([0.25, 0.5, 0.75])
 
-        weights = aa.util.regularization.adaptive_regularization_weights_from_pixel_signals(
+        weights = aa.util.regularization.adaptive_regularization_weights_from(
             inner_coefficient=0.0, outer_coefficient=1.0, pixel_signals=pixel_signals
         )
 
@@ -219,7 +219,7 @@ class TestRegularizationWeightedMatrix:
 
         regularization_weights = np.ones((4,))
 
-        regularization_matrix = aa.util.regularization.weighted_regularization_matrix_from_pixel_neighbors(
+        regularization_matrix = aa.util.regularization.weighted_regularization_matrix_from(
             regularization_weights=regularization_weights,
             pixel_neighbors=pixel_neighbors,
             pixel_neighbors_size=pixel_neighbors_size,
@@ -258,7 +258,7 @@ class TestRegularizationWeightedMatrix:
 
         regularization_weights = np.ones((3))
 
-        regularization_matrix = aa.util.regularization.weighted_regularization_matrix_from_pixel_neighbors(
+        regularization_matrix = aa.util.regularization.weighted_regularization_matrix_from(
             regularization_weights=regularization_weights,
             pixel_neighbors=pixel_neighbors,
             pixel_neighbors_size=pixel_neighbors_size,
@@ -294,7 +294,7 @@ class TestRegularizationWeightedMatrix:
 
         regularization_weights = np.ones((4,))
 
-        regularization_matrix = aa.util.regularization.weighted_regularization_matrix_from_pixel_neighbors(
+        regularization_matrix = aa.util.regularization.weighted_regularization_matrix_from(
             regularization_weights=regularization_weights,
             pixel_neighbors=pixel_neighbors,
             pixel_neighbors_size=pixel_neighbors_size,
@@ -384,7 +384,7 @@ class TestRegularizationWeightedMatrix:
 
         regularization_weights = np.ones((6))
 
-        regularization_matrix = aa.util.regularization.weighted_regularization_matrix_from_pixel_neighbors(
+        regularization_matrix = aa.util.regularization.weighted_regularization_matrix_from(
             regularization_weights=regularization_weights,
             pixel_neighbors=pixel_neighbors,
             pixel_neighbors_size=pixel_neighbors_size,
@@ -430,7 +430,7 @@ class TestRegularizationWeightedMatrix:
 
         pixel_neighbors_size = np.array([2, 3, 2, 1])
 
-        regularization_matrix = aa.util.regularization.weighted_regularization_matrix_from_pixel_neighbors(
+        regularization_matrix = aa.util.regularization.weighted_regularization_matrix_from(
             regularization_weights=regularization_weights,
             pixel_neighbors=pixel_neighbors,
             pixel_neighbors_size=pixel_neighbors_size,
@@ -519,7 +519,7 @@ class TestRegularizationWeightedMatrix:
             + test_regularization_matrix_4
         )
 
-        regularization_matrix = aa.util.regularization.weighted_regularization_matrix_from_pixel_neighbors(
+        regularization_matrix = aa.util.regularization.weighted_regularization_matrix_from(
             regularization_weights=regularization_weights,
             pixel_neighbors=pixel_neighbors,
             pixel_neighbors_size=pixel_neighbors_size,

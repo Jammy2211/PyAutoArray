@@ -1,10 +1,11 @@
 from autoarray import decorator_util
 import numpy as np
 from autoarray import exc
+from autoarray.structures import arrays
 from autoarray.util import mask_util
 
 
-class Convolver(object):
+class Convolver:
     def __init__(self, mask, kernel):
         """ Class to setup the 1D convolution of an / util matrix.
 
@@ -27,42 +28,42 @@ class Convolver(object):
         [8, 5, 7, 5, 1]
 
         Setup is required to perform 2D real-space convolution on the masked array. This module finds the \
-        relationship between the unmasked 2D datas, masked datas and kernel, so that 2D real-space convolutions \
+        relationship between the unmasked 2D data, masked data and kernel, so that 2D real-space convolutions \
         can be efficiently applied to reduced 1D masked structures.
 
         This calculation also accounts for the blurring of light outside of the masked regions which blurs into \
         the masked region.
 
         IMAGE FRAMES:
-        ------------
+        -------------
 
         For a masked in 2D, one can compute for every pixel all of the unmasked pixels it will blur light into for \
         a given PSF kernel size, e.g.:
 
-        |x|x|x|x|x|x|x|x|x|x|
-        |x|x|x|x|x|x|x|x|x|x|     This is an imaging.Mask, where:
-        |x|x|x|x|x|x|x|x|x|x|
-        |x|x|x|x|x|x|x|x|x|x|     x = True (Pixel is masked and excluded from lens)
-        |x|x|x|o|o|o|x|x|x|x|     o = False (Pixel is not masked and included in lens)
-        |x|x|x|o|o|o|x|x|x|x|
-        |x|x|x|o|o|o|x|x|x|x|
-        |x|x|x|x|x|x|x|x|x|x|
-        |x|x|x|x|x|x|x|x|x|x|
-        |x|x|x|x|x|x|x|x|x|x|
+        IxIxIxIxIxIxIxIxIxIxI
+        IxIxIxIxIxIxIxIxIxIxI     This is an imaging.Mask, where:
+        IxIxIxIxIxIxIxIxIxIxI
+        IxIxIxIxIxIxIxIxIxIxI     x = True (Pixel is masked and excluded from lens)
+        IxIxIxIoIoIoIxIxIxIxI     o = False (Pixel is not masked and included in lens)
+        IxIxIxIoIoIoIxIxIxIxI
+        IxIxIxIoIoIoIxIxIxIxI
+        IxIxIxIxIxIxIxIxIxIxI
+        IxIxIxIxIxIxIxIxIxIxI
+        IxIxIxIxIxIxIxIxIxIxI
 
         Here, there are 9 unmasked pixels. Indexing of each unmasked pixel goes from the top-left corner right and \
         downwards, therefore:
 
-        |x|x|x|x|x|x|x|x|x|x|
-        |x|x|x|x|x|x|x|x|x|x|
-        |x|x|x|x|x|x|x|x|x|x|
-        |x|x|x|x|x|x|x|x|x|x|
-        |x|x|x|0|1|2|x|x|x|x|
-        |x|x|x|3|4|5|x|x|x|x|
-        |x|x|x|6|7|8|x|x|x|x|
-        |x|x|x|x|x|x|x|x|x|x|
-        |x|x|x|x|x|x|x|x|x|x|
-        |x|x|x|x|x|x|x|x|x|x|
+        IxIxIxIxIxIxIxIxIxIxI
+        IxIxIxIxIxIxIxIxIxIxI
+        IxIxIxIxIxIxIxIxIxIxI
+        IxIxIxIxIxIxIxIxIxIxI
+        IxIxIxI0I1I2IxIxIxIxI
+        IxIxIxI3I4I5IxIxIxIxI
+        IxIxIxI6I7I8IxIxIxIxI
+        IxIxIxIxIxIxIxIxIxIxI
+        IxIxIxIxIxIxIxIxIxIxI
+        IxIxIxIxIxIxIxIxIxIxI
 
         For every unmasked pixel, the Convolver over-lays the PSF and computes three quantities;
 
@@ -72,9 +73,9 @@ class Convolver(object):
 
         For example, if we had the following 3x3 kernel:
 
-        |0.1|0.2|0.3|
-        |0.4|0.5|0.6|
-        |0.7|0.8|0.9|
+        I0.1I0.2I0.3I
+        I0.4I0.5I0.6I
+        I0.7I0.8I0.9I
 
         For pixel 0 above, when we overlap the kernel 4 unmasked pixels overlap this kernel, such that:
 
@@ -101,40 +102,40 @@ class Convolver(object):
         masked or the masked of a util in the inversion module.
 
         BLURRING FRAMES:
-        --------------
+        ---------------
 
         Whilst the scheme above accounts for all blurred light within the masks, it does not account for the fact that \
         pixels outside of the masks will also blur light into it. This effect is accounted for using blurring frames.
 
-        It is omitted for util matrix blurring, as an inversion does not fit datas outside of the masks.
+        It is omitted for util matrix blurring, as an inversion does not fit data outside of the masks.
 
         First, a blurring masks is computed from a masks, which describes all pixels which are close enough to the masks \
         to blur light into it for a given kernel size. Following the example above, the following blurring masks is \
         computed:
 
-        |x|x|x|x|x|x|x|x|x|x|
-        |x|x|x|x|x|x|x|x|x|x|     This is an example grid.Mask, where:
-        |x|x|x|x|x|x|x|x|x|x|
-        |x|x|o|o|o|o|o|x|x|x|     x = True (Pixel is masked and excluded from lens)
-        |x|x|o|x|x|x|o|x|x|x|     o = False (Pixel is not masked and included in lens)
-        |x|x|o|x|x|x|o|x|x|x|
-        |x|x|o|x|x|x|o|x|x|x|
-        |x|x|o|o|o|o|o|x|x|x|
-        |x|x|x|x|x|x|x|x|x|x|
-        |x|x|x|x|x|x|x|x|x|x|
+        IxIxIxIxIxIxIxIxIxIxI
+        IxIxIxIxIxIxIxIxIxIxI     This is an example grid.Mask, where:
+        IxIxIxIxIxIxIxIxIxIxI
+        IxIxIoIoIoIoIoIxIxIxI     x = True (Pixel is masked and excluded from lens)
+        IxIxIoIxIxIxIoIxIxIxI     o = False (Pixel is not masked and included in lens)
+        IxIxIoIxIxIxIoIxIxIxI
+        IxIxIoIxIxIxIoIxIxIxI
+        IxIxIoIoIoIoIoIxIxIxI
+        IxIxIxIxIxIxIxIxIxIxI
+        IxIxIxIxIxIxIxIxIxIxI
 
         Indexing again goes from the top-left corner right and downwards:
 
-        |x|x| x| x| x| x| x|x|x|x|
-        |x|x| x| x| x| x| x|x|x|x|
-        |x|x| x| x| x| x| x|x|x|x|
-        |x|x| 0| 1| 2| 3| 4|x|x|x|
-        |x|x| 5| x| x| x| 6|x|x|x|
-        |x|x| 7| x| x| x| 8|x|x|x|
-        |x|x| 9| x| x| x|10|x|x|x|
-        |x|x|11|12|13|14|15|x|x|x|
-        |x|x| x| x| x| x| x|x|x|x|
-        |x|x| x| x| x| x| x|x|x|x|
+        IxIxI xI xI xI xI xIxIxIxI
+        IxIxI xI xI xI xI xIxIxIxI
+        IxIxI xI xI xI xI xIxIxIxI
+        IxIxI 0I 1I 2I 3I 4IxIxIxI
+        IxIxI 5I xI xI xI 6IxIxIxI
+        IxIxI 7I xI xI xI 8IxIxIxI
+        IxIxI 9I xI xI xI10IxIxIxI
+        IxIxI11I12I13I14I15IxIxIxI
+        IxIxI xI xI xI xI xIxIxIxI
+        IxIxI xI xI xI xI xIxIxIxI
 
         For every unmasked blurring-pixel, the Convolver over-lays the PSF kernel and computes three quantities;
 
@@ -167,7 +168,7 @@ class Convolver(object):
         Parameters
         ----------
         mask : Mask
-            The masks, where True eliminates datas.
+            The mask within which the convolved signal is calculated.
         blurring_mask : Mask
             A masks of pixels outside the masks but whose light blurs into it after PSF convolution.
         kernel : grid.PSF or ndarray
@@ -219,8 +220,8 @@ class Convolver(object):
                     ].shape[0]
                     mask_1d_index += 1
 
-        self.blurring_mask = mask_util.blurring_mask_2d_from_mask_2d_and_kernel_shape_2d(
-            mask_2d=mask, kernel_shape_2d=kernel.shape_2d
+        self.blurring_mask = mask_util.blurring_mask_from(
+            mask=mask, kernel_shape_2d=kernel.shape_2d
         )
 
         self.pixels_in_blurring_mask = int(
@@ -325,7 +326,9 @@ class Convolver(object):
             blurring_frame_1d_lengths=self.blurring_frame_1d_lengths,
         )
 
-        return self.mask.mapping.array_stored_1d_from_array_1d(array_1d=convolved_image)
+        return arrays.Array(
+            array=convolved_image, mask=self.mask.mask_sub_1, store_in_1d=True
+        )
 
     @staticmethod
     @decorator_util.jit()
@@ -438,7 +441,7 @@ class Convolver(object):
         Parameters
         -----------
         mapping_matrix : ndarray
-            The 2D util matix describing how every inversion pixel maps to an datas_ pixel.
+            The 2D mapping matrix describing how every inversion pixel maps to a pixel on the data pixel.
         """
         return self.convolve_matrix_jit(
             mapping_matrix=mapping_matrix,
