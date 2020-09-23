@@ -1,21 +1,23 @@
 from os import path
+from os.path import dirname, realpath
 
 import numpy as np
 import pytest
 
 import autoarray as aa
-from autoconf import conf
 from autoarray.fit import fit
+from autoconf import conf
 
 directory = path.dirname(path.realpath(__file__))
 
 
 @pytest.fixture(autouse=True)
-def set_config_path():
-    conf.instance = conf.Config(
-        config_path=path.join(directory, "config"),
-        output_path=path.join(directory, "output"),
-    )
+def set_config_path(request):
+    if dirname(realpath(__file__)) in request.module.directory:
+        conf.instance = conf.Config(
+            config_path=path.join(directory, "config"),
+            output_path=path.join(directory, "output"),
+        )
 
 
 # MASK #
@@ -176,7 +178,6 @@ def make_imaging_7x7(image_7x7, psf_3x3, noise_map_7x7):
 
 @pytest.fixture(name="imaging_6x6")
 def make_imaging_6x6():
-
     image = aa.Array.full(shape_2d=(6, 6), fill_value=1.0)
     psf = aa.Kernel.full(shape_2d=(3, 3), fill_value=1.0)
     noise_map = aa.Array.full(shape_2d=(6, 6), fill_value=2.0)
@@ -249,7 +250,7 @@ def make_masked_imaging_7x7(imaging_7x7, sub_mask_7x7):
 
 @pytest.fixture(name="masked_interferometer_7")
 def make_masked_interferometer_7(
-    interferometer_7, visibilities_mask_7x2, mask_7x7, sub_grid_7x7, transformer_7x7_7
+        interferometer_7, visibilities_mask_7x2, mask_7x7, sub_grid_7x7, transformer_7x7_7
 ):
     return aa.MaskedInterferometer(
         interferometer=interferometer_7,
