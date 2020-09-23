@@ -24,7 +24,7 @@ def test__grid_in__output_values_same_format():
         ]
     )
 
-    mask = aa.Mask.manual(mask=mask, pixel_scales=(1.0, 1.0), sub_size=1)
+    mask = aa.Mask2D.manual(mask=mask, pixel_scales=(1.0, 1.0), sub_size=1)
 
     grid = aa.Grid.from_mask(mask=mask)
 
@@ -71,7 +71,7 @@ def test__grid_in__output_is_list__list_of_same_format():
         ]
     )
 
-    mask = aa.Mask.manual(mask=mask, pixel_scales=(1.0, 1.0), sub_size=1)
+    mask = aa.Mask2D.manual(mask=mask, pixel_scales=(1.0, 1.0), sub_size=1)
 
     grid = aa.Grid.from_mask(mask=mask)
 
@@ -173,7 +173,7 @@ def test__grid_coordinates_in__output_is_list__list_of_same_format():
 
 def test__grid_iterate_in__output_values__use_iterated_array_function():
 
-    mask = aa.Mask.manual(
+    mask = aa.Mask2D.manual(
         mask=[
             [True, True, True, True, True],
             [True, False, False, False, True],
@@ -242,7 +242,7 @@ def test__grid_iterate_in__output_values__use_iterated_array_function():
 
 def test__grid_iterate_in__output_is_list_of_arrays__use_maximum_sub_size_in_all_pixels():
 
-    mask = aa.Mask.manual(
+    mask = aa.Mask2D.manual(
         mask=[
             [True, True, True, True, True],
             [True, False, False, False, True],
@@ -272,7 +272,7 @@ def test__grid_iterate_in__output_is_list_of_arrays__use_maximum_sub_size_in_all
 
 def test__grid_iterate_in__output_values__use_iterated_grid_function():
 
-    mask = aa.Mask.manual(
+    mask = aa.Mask2D.manual(
         mask=[
             [True, True, True, True, True],
             [True, False, False, False, True],
@@ -347,7 +347,7 @@ def test__grid_iterate_in__output_values__use_iterated_grid_function():
 
 def test__grid_iterate_in__output_is_list_of_grids__use_maximum_sub_size_in_all_pixels():
 
-    mask = aa.Mask.manual(
+    mask = aa.Mask2D.manual(
         mask=[
             [True, True, True, True, True],
             [True, False, False, False, True],
@@ -378,7 +378,7 @@ def test__grid_iterate_in__output_is_list_of_grids__use_maximum_sub_size_in_all_
 
 def test__grid_interpolate_in__output_values__interpolation_used_and_accurate():
 
-    mask = aa.Mask.circular_annular(
+    mask = aa.Mask2D.circular_annular(
         shape_2d=(20, 20),
         pixel_scales=(1.0, 1.0),
         sub_size=1,

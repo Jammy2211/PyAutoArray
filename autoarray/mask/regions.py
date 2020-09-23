@@ -1,7 +1,7 @@
 import numpy as np
 
 from autoarray import exc
-from autoarray.mask import mask as msk
+from autoarray.mask import mask_2d as msk
 from autoarray.util import array_util, mask_util
 
 
@@ -75,7 +75,7 @@ class Regions:
             mask=self.mask, kernel_shape_2d=kernel_shape_2d
         )
 
-        return msk.Mask(
+        return msk.Mask2D(
             mask=blurring_mask,
             sub_size=1,
             pixel_scales=self.mask.pixel_scales,
@@ -88,7 +88,7 @@ class Regions:
         exterior edge (e.g. next to at least one pixel with a *True* value but not central pixels like those within \
         an annulus mask).
         """
-        return msk.Mask.unmasked(
+        return msk.Mask2D.unmasked(
             shape_2d=self.mask.shape_2d,
             sub_size=self.mask.sub_size,
             pixel_scales=self.mask.pixel_scales,
@@ -103,7 +103,7 @@ class Regions:
         """
         mask = np.full(fill_value=True, shape=self.mask.shape)
         mask[self._edge_2d_indexes[:, 0], self._edge_2d_indexes[:, 1]] = False
-        return msk.Mask(
+        return msk.Mask2D(
             mask=mask,
             sub_size=self.mask.sub_size,
             pixel_scales=self.mask.pixel_scales,
@@ -118,7 +118,7 @@ class Regions:
         """
         mask = np.full(fill_value=True, shape=self.mask.shape)
         mask[self._border_2d_indexes[:, 0], self._border_2d_indexes[:, 1]] = False
-        return msk.Mask(
+        return msk.Mask2D(
             mask=mask,
             sub_size=self.mask.sub_size,
             pixel_scales=self.mask.pixel_scales,
