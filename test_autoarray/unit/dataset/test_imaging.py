@@ -402,7 +402,7 @@ class TestMaskedImaging:
                 fill_value=2.0, shape_2d=(19, 19), pixel_scales=3.0
             ),
         )
-        mask = aa.Mask.unmasked(
+        mask = aa.Mask2D.unmasked(
             shape_2d=(19, 19), pixel_scales=1.0, invert=True, sub_size=8
         )
         mask[9, 9] = False

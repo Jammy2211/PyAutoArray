@@ -35,7 +35,7 @@ def make_mask_7x7():
         ]
     )
 
-    return aa.Mask.manual(mask=mask, pixel_scales=(1.0, 1.0), sub_size=1)
+    return aa.Mask2D.manual(mask=mask, pixel_scales=(1.0, 1.0), sub_size=1)
 
 
 @pytest.fixture(name="sub_mask_7x7")
@@ -52,7 +52,7 @@ def make_sub_mask_7x7():
         ]
     )
 
-    return aa.Mask.manual(mask=mask, sub_size=2, pixel_scales=(1.0, 1.0))
+    return aa.Mask2D.manual(mask=mask, sub_size=2, pixel_scales=(1.0, 1.0))
 
 
 @pytest.fixture(name="mask_7x7_1_pix")
@@ -69,7 +69,7 @@ def make_mask_7x7_1_pix():
         ]
     )
 
-    return aa.Mask.manual(mask=mask, pixel_scales=(1.0, 1.0))
+    return aa.Mask2D.manual(mask=mask, pixel_scales=(1.0, 1.0))
 
 
 @pytest.fixture(name="blurring_mask_7x7")
@@ -86,7 +86,7 @@ def make_blurring_mask_7x7():
         ]
     )
 
-    return aa.Mask.manual(mask=blurring_mask, pixel_scales=(1.0, 1.0))
+    return aa.Mask2D.manual(mask=blurring_mask, pixel_scales=(1.0, 1.0))
 
 
 @pytest.fixture(name="mask_6x6")
@@ -102,7 +102,7 @@ def make_mask_6x6():
         ]
     )
 
-    return aa.Mask.manual(mask=mask, pixel_scales=(1.0, 1.0))
+    return aa.Mask2D.manual(mask=mask, pixel_scales=(1.0, 1.0))
 
 
 # GRIDS #

@@ -318,7 +318,7 @@ class TestAbstractMaskedData:
     def test__mask_changes_sub_size_using_settings(self, imaging_7x7):
         # If an input mask is supplied we use mask input.
 
-        mask_input = aa.Mask.circular(
+        mask_input = aa.Mask2D.circular(
             shape_2d=imaging_7x7.shape_2d, pixel_scales=1, sub_size=1, radius=1.5
         )
 

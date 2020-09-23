@@ -4,7 +4,7 @@ from autoarray import decorator_util
 from autoarray import exc
 from autoarray.structures import abstract_structure
 from autoarray.structures import grids
-from autoarray.mask import mask as msk
+from autoarray.mask import mask_2d as msk
 from autoarray.util import array_util, grid_util
 
 
@@ -68,7 +68,7 @@ def convert_manual_1d_grid(grid_1d, mask, store_in_1d):
     ----------
     grid_1d : ndarray or list
         The input structure which is converted to a 2D ndarray if it is a list.
-    mask : Mask
+    mask : Mask2D
         The mask of the output Array.
     store_in_1d : bool
         Whether the memory-representation of the grid is in 1D or 2D.
@@ -100,7 +100,7 @@ def convert_manual_2d_grid(grid_2d, mask, store_in_1d):
     ----------
     grid_2d : ndarray or list
         The input structure which is converted to a 3D ndarray if it is a list.
-    mask : Mask
+    mask : Mask2D
         The mask of the output Grid.
     store_in_1d : bool
         Whether the memory-representation of the array is in 1D or 2D.
@@ -131,7 +131,7 @@ def convert_manual_grid(grid, mask, store_in_1d):
     ----------
     array : ndarray or list
         The input structure which is converted to an ndarray if it is a list.
-    mask : Mask
+    mask : Mask2D
         The mask of the output Array.
     store_in_1d : bool
         Whether the memory-representation of the array is in 1D or 2D.
@@ -481,7 +481,7 @@ class AbstractGrid(abstract_structure.AbstractStructure):
             shape[1] + kernel_shape_2d[1] - 1,
         )
 
-        padded_mask = msk.Mask.unmasked(
+        padded_mask = msk.Mask2D.unmasked(
             shape_2d=padded_shape,
             pixel_scales=self.mask.pixel_scales,
             sub_size=self.mask.sub_size,

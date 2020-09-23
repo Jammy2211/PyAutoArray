@@ -88,7 +88,7 @@ class TestObj:
             ]
         )
 
-        mask = aa.Mask.manual(mask=mask, pixel_scales=(2.0, 2.0), sub_size=2)
+        mask = aa.Mask2D.manual(mask=mask, pixel_scales=(2.0, 2.0), sub_size=2)
 
         blurring_mask_util = aa.util.mask.blurring_mask_from(
             mask=mask, kernel_shape_2d=(3, 5)
@@ -122,7 +122,7 @@ class TestObj:
             ]
         )
 
-        mask = aa.Mask.manual(mask=mask, pixel_scales=(2.0, 2.0))
+        mask = aa.Mask2D.manual(mask=mask, pixel_scales=(2.0, 2.0))
 
         blurring_mask_util = aa.util.mask.blurring_mask_from(
             mask=mask, kernel_shape_2d=(3, 5)
@@ -132,7 +132,7 @@ class TestObj:
             mask=blurring_mask_util, pixel_scales=(2.0, 2.0), sub_size=1
         )
 
-        mask = aa.Mask.manual(mask=mask, pixel_scales=(2.0, 2.0))
+        mask = aa.Mask2D.manual(mask=mask, pixel_scales=(2.0, 2.0))
 
         blurring_grid = grids.GridIterate.blurring_grid_from_mask_and_kernel_shape(
             mask=mask, kernel_shape_2d=(3, 5)
@@ -170,7 +170,7 @@ class TestObj:
         assert padded_grid.sub_steps == [2, 3]
         assert (padded_grid == padded_grid_util).all()
 
-        mask = aa.Mask.manual(
+        mask = aa.Mask2D.manual(
             mask=np.full((2, 5), False), pixel_scales=(8.0, 8.0), sub_size=1
         )
 
@@ -194,7 +194,7 @@ class TestObj:
 class TestIteratedArray:
     def test__fractional_mask_from_arrays(self):
 
-        mask = aa.Mask.manual(
+        mask = aa.Mask2D.manual(
             mask=[
                 [True, True, True, True],
                 [True, False, False, True],
@@ -310,7 +310,7 @@ class TestIteratedArray:
 
     def test__fractional_mask_from_arrays__uses_higher_sub_grids_mask(self):
 
-        mask_lower_sub = aa.Mask.manual(
+        mask_lower_sub = aa.Mask2D.manual(
             mask=[
                 [True, True, True, True],
                 [True, False, False, True],
@@ -320,7 +320,7 @@ class TestIteratedArray:
             pixel_scales=(1.0, 1.0),
         )
 
-        mask_higher_sub = aa.Mask.manual(
+        mask_higher_sub = aa.Mask2D.manual(
             mask=[
                 [True, True, True, True],
                 [True, False, True, True],
@@ -373,7 +373,7 @@ class TestIteratedArray:
         self
     ):
 
-        mask = aa.Mask.manual(
+        mask = aa.Mask2D.manual(
             mask=[
                 [True, True, True, True, True],
                 [True, False, False, False, True],
@@ -444,7 +444,7 @@ class TestIteratedArray:
         self
     ):
 
-        mask = aa.Mask.manual(
+        mask = aa.Mask2D.manual(
             mask=[
                 [True, True, True, True, True],
                 [True, False, False, False, True],
@@ -489,7 +489,7 @@ class TestIteratedArray:
 
     def test__func_returns_all_zeros__iteration_terminated(self):
 
-        mask = aa.Mask.manual(
+        mask = aa.Mask2D.manual(
             mask=[
                 [True, True, True, True, True],
                 [True, False, False, False, True],
@@ -517,7 +517,7 @@ class TestIteratedArray:
 class TestIteratedGrid:
     def test__fractional_mask_from_grids(self):
 
-        mask = aa.Mask.manual(
+        mask = aa.Mask2D.manual(
             mask=[
                 [True, True, True, True],
                 [True, False, False, True],
@@ -633,7 +633,7 @@ class TestIteratedGrid:
 
     def test__fractional_mask_from_grids__uses_higher_sub_grids_mask(self):
 
-        mask_lower_sub = aa.Mask.manual(
+        mask_lower_sub = aa.Mask2D.manual(
             mask=[
                 [True, True, True, True],
                 [True, False, False, True],
@@ -643,7 +643,7 @@ class TestIteratedGrid:
             pixel_scales=(1.0, 1.0),
         )
 
-        mask_higher_sub = aa.Mask.manual(
+        mask_higher_sub = aa.Mask2D.manual(
             mask=[
                 [True, True, True, True],
                 [True, False, True, True],
@@ -696,7 +696,7 @@ class TestIteratedGrid:
         self
     ):
 
-        mask = aa.Mask.manual(
+        mask = aa.Mask2D.manual(
             mask=[
                 [True, True, True, True, True],
                 [True, False, False, False, True],
@@ -767,7 +767,7 @@ class TestIteratedGrid:
         self
     ):
 
-        mask = aa.Mask.manual(
+        mask = aa.Mask2D.manual(
             mask=[
                 [True, True, True, True, True],
                 [True, False, False, False, True],
@@ -818,7 +818,7 @@ class TestIteratedGrid:
 
     def test__func_returns_all_zeros__iteration_terminated(self):
 
-        mask = aa.Mask.manual(
+        mask = aa.Mask2D.manual(
             mask=[
                 [True, True, True, True, True],
                 [True, False, False, False, True],
@@ -909,7 +909,7 @@ class TestAPI:
                 [True, True, False, False],
             ]
         )
-        mask = aa.Mask.manual(mask=mask, pixel_scales=(2.0, 2.0), sub_size=2)
+        mask = aa.Mask2D.manual(mask=mask, pixel_scales=(2.0, 2.0), sub_size=2)
 
         grid_via_util = aa.util.grid.grid_1d_via_mask_from(
             mask=mask, sub_size=1, pixel_scales=(2.0, 2.0)

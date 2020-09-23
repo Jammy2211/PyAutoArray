@@ -9,7 +9,7 @@ class TestUnmaskedSparseForSparse:
         self
     ):
 
-        ma = aa.Mask.manual(
+        ma = aa.Mask2D.manual(
             mask=np.array(
                 [[False, False, False], [False, False, False], [False, False, False]]
             ),
@@ -40,7 +40,7 @@ class TestUnmaskedSparseForSparse:
         self
     ):
 
-        ma = aa.Mask.manual(
+        ma = aa.Mask2D.manual(
             mask=np.array(
                 [[False, False, False], [False, False, False], [False, False, False]]
             ),
@@ -67,7 +67,7 @@ class TestUnmaskedSparseForSparse:
 
     def test__mask_is_cross__some_pix_pixels_are_masked__omitted_from_mapping(self):
 
-        ma = aa.Mask.manual(
+        ma = aa.Mask2D.manual(
             mask=np.array(
                 [[True, False, True], [False, False, False], [True, False, True]]
             ),
@@ -94,7 +94,7 @@ class TestUnmaskedSparseForSparse:
 
     def test__same_as_above__different_mask_and_centres(self):
 
-        ma = aa.Mask.manual(
+        ma = aa.Mask2D.manual(
             mask=np.array(
                 [[False, False, True], [False, False, False], [True, False, False]]
             ),
@@ -121,7 +121,7 @@ class TestUnmaskedSparseForSparse:
 
     def test__same_as_above__but_3x4_mask(self):
 
-        ma = aa.Mask.manual(
+        ma = aa.Mask2D.manual(
             mask=np.array(
                 [
                     [True, True, False, True],
@@ -152,7 +152,7 @@ class TestUnmaskedSparseForSparse:
 
     def test__same_as_above__but_4x3_mask(self):
 
-        ma = aa.Mask.manual(
+        ma = aa.Mask2D.manual(
             mask=np.array(
                 [
                     [True, False, True],
@@ -188,7 +188,7 @@ class TestSparseForUnmaskedSparse:
         self
     ):
 
-        ma = aa.Mask.manual(
+        ma = aa.Mask2D.manual(
             mask=np.array(
                 [[False, False, False], [False, False, False], [False, False, False]]
             ),
@@ -214,7 +214,7 @@ class TestSparseForUnmaskedSparse:
         self
     ):
 
-        ma = aa.Mask.manual(
+        ma = aa.Mask2D.manual(
             mask=np.array(
                 [[False, False, False], [False, False, False], [False, False, False]]
             ),
@@ -236,7 +236,7 @@ class TestSparseForUnmaskedSparse:
 
     def test__mask_is_cross__some_pix_pixels_are_masked__omitted_from_mapping(self):
 
-        ma = aa.Mask.manual(
+        ma = aa.Mask2D.manual(
             mask=np.array(
                 [[True, False, True], [False, False, False], [True, False, True]]
             ),
@@ -260,7 +260,7 @@ class TestSparseForUnmaskedSparse:
 
     def test__same_as_above__different_mask_and_centres(self):
 
-        ma = aa.Mask.manual(
+        ma = aa.Mask2D.manual(
             mask=np.array(
                 [[False, False, True], [False, False, False], [True, False, False]]
             ),
@@ -282,7 +282,7 @@ class TestSparseForUnmaskedSparse:
 
     def test__same_as_above__but_3x4_mask(self):
 
-        ma = aa.Mask.manual(
+        ma = aa.Mask2D.manual(
             mask=np.array(
                 [
                     [True, True, False, True],
@@ -308,7 +308,7 @@ class TestSparseForUnmaskedSparse:
 
     def test__same_as_above__but_4x3_mask(self):
 
-        ma = aa.Mask.manual(
+        ma = aa.Mask2D.manual(
             mask=np.array(
                 [
                     [True, False, True],

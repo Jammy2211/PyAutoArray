@@ -6,7 +6,7 @@ import copy
 from autoconf import conf
 from autoarray.structures import arrays
 from autoarray.structures import grids
-from autoarray.mask import mask as msk
+from autoarray.mask import mask_2d as msk
 
 
 def grid_from_mask_and_grid_class(
@@ -375,7 +375,7 @@ class AbstractMaskedDataset:
     def __init__(self, dataset, mask, settings=AbstractSettingsMaskedDataset()):
 
         if mask.sub_size != settings.sub_size:
-            mask = msk.Mask.manual(
+            mask = msk.Mask2D.manual(
                 mask=mask,
                 pixel_scales=mask.pixel_scales,
                 sub_size=settings.sub_size,

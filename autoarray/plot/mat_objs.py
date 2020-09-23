@@ -33,17 +33,17 @@ from autoarray import exc
 def load_setting(section, name, python_type, from_subplot_config):
 
     if not from_subplot_config:
-        return load_figure_setting(section, name, python_type)
+        return load_figure_setting(section, name)
     else:
-        return load_subplot_setting(section, name, python_type)
+        return load_subplot_setting(section, name)
 
 
-def load_figure_setting(section, name, python_type):
-    return conf.instance.visualize_figures.get(section, name, python_type)
+def load_figure_setting(section, name):
+    return conf.instance["visualize"]["figures"][section][name]
 
 
-def load_subplot_setting(section, name, python_type):
-    return conf.instance.visualize_subplots.get(section, name, python_type)
+def load_subplot_setting(section, name):
+    return conf.instance["visualize"]["subplot"][section][name]
 
 
 class Units:
@@ -1381,7 +1381,7 @@ class Liner:
 
         Parameters
         -----------t.
-        mask : ndarray of data_type.array.mask.Mask
+        mask : ndarray of data_type.array.mask.Mask2D
             The mask applied to the array, the edge of which is plotted as a set of points over the plotted array.
         plot_lines : bool
             If a mask is supplied, its liness pixels (e.g. the exterior edge) is plotted if this is *True*.
@@ -1429,7 +1429,7 @@ class Liner:
 
         Parameters
         -----------t.
-        mask : ndarray of data_type.array.mask.Mask
+        mask : ndarray of data_type.array.mask.Mask2D
             The mask applied to the array, the edge of which is plotted as a set of points over the plotted array.
         plot_lines : bool
             If a mask is supplied, its liness pixels (e.g. the exterior edge) is plotted if this is *True*.

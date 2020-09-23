@@ -22,7 +22,9 @@ from .inversion.inversions import SettingsInversion
 from .inversion.inversions import inversion as Inversion
 from .inversion.mappers import mapper as Mapper
 from .inversion.pixelizations import SettingsPixelization
-from .mask.mask import Mask
+from .mask.mask_1d import Mask1D
+from .mask.mask_2d import Mask2D
+from .operators.convolver import Convolver
 from .operators.convolver import Convolver
 from .operators.transformer import TransformerDFT
 from .operators.transformer import TransformerNUFFT
@@ -40,4 +42,4 @@ from .structures.region import Region
 from .structures.visibilities import Visibilities
 from .structures.visibilities import VisibilitiesNoiseMap
 
-__version__ = '0.14.7'
+__version__ = "0.14.7"

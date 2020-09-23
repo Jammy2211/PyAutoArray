@@ -19,7 +19,7 @@ def unmasked_sparse_for_sparse_from(
     -----------
     total_sparse_pixels : int
         The total number of pixels in the pixelization grid which fall within the masks.
-    mask : imaging.masks.Mask
+    mask : imaging.masks.Mask2D
         The masks within which pixelization pixels must be inside
     unmasked_sparse_grid_pixel_centres : ndarray
         The centres of the unmasked pixelization grid pixels.
@@ -56,7 +56,7 @@ def sparse_for_unmasked_sparse_from(
     -----------
     total_sparse_pixels : int
         The total number of pixels in the pixelization grid which fall within the masks.
-    mask : imaging.masks.Mask
+    mask : imaging.masks.Mask2D
         The masks within which pixelization pixels must be inside
     unmasked_sparse_grid_pixel_centres : ndarray
         The centres of the unmasked pixelization grid pixels.
