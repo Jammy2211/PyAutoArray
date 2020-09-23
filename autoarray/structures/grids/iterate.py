@@ -511,7 +511,7 @@ class GridIterate(abstract_grid.AbstractGrid):
         return zeros. This occurs when a function is missing optional objects that contribute to the calculation.
 
         An example use case of this function is when a "image_from_grid" methods in **PyAutoGalaxy**'s
-        _LightProfile_ module is comomputed, which by evaluating the function on a higher resolution sub-grids sample
+        `LightProfile` module is comomputed, which by evaluating the function on a higher resolution sub-grids sample
         the analytic light profile at more points and thus more precisely.
 
         Parameters

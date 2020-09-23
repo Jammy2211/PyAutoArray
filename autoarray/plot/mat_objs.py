@@ -61,7 +61,7 @@ class Units:
         Parameters
         ----------
         use_scaled : bool
-            If True, plot the y and x axis labels of the _Array_ as its scaled coordinates using its *pixel_scales*
+            If True, plot the y and x axis labels of the `Array` as its scaled coordinates using its *pixel_scales*
             attribute. If False plot them in pixel units.
         conversion_factor : float
             If plotting the labels in scaled units, this factor multiplies the values that are used for the labels.
@@ -156,7 +156,7 @@ class Figure:
         Parameters
         ----------
         shape_2d : (int, int)
-            The two dimensional shape of an _Array_ that is to be plotted.
+            The two dimensional shape of an `Array` that is to be plotted.
         """
         if isinstance(self.aspect, str):
             if self.aspect in "square":
@@ -207,10 +207,10 @@ class ColorMap:
         norm : str
             The Normalize object applied to the colormap (linear / log / symmetric_log)
         norm_max : float
-            The maximum value of the normalization range, such that all values on a plotted _Array_ above this value
+            The maximum value of the normalization range, such that all values on a plotted `Array` above this value
             are the same color.
         norm_min : float
-            The minimum value of the normalization range, such that all values on a plotted _Array_ below this value
+            The minimum value of the normalization range, such that all values on a plotted `Array` below this value
             are the same color.
         linthresh : float
             The range within which the plot is linear for a symmetric_log Normalization.
@@ -290,7 +290,7 @@ class ColorMap:
         )
 
     def norm_from_array(self, array):
-        """Determine the _Normalization_ object which scales of the colormap, using the input min / max normalization \
+        """Determine the `Normalization` object which scales of the colormap, using the input min / max normalization \
         values.
 
         If norm_min / norm_max are not supplied, the minimum / maximum values of the array of data_type are used.
@@ -530,7 +530,7 @@ class Ticks:
         units: Units,
         symmetric_around_centre: bool = False,
     ):
-        """Use the extent of an input _Array_ object to set the y ticks of a figure.
+        """Use the extent of an input `Array` object to set the y ticks of a figure.
 
         Parameters
         -----------
@@ -584,7 +584,7 @@ class Ticks:
         units: Units,
         symmetric_around_centre: bool = False,
     ):
-        """Use the extent of an input _Array_ object to set the x ticks of a figure.
+        """Use the extent of an input `Array` object to set the x ticks of a figure.
 
         Parameters
         -----------

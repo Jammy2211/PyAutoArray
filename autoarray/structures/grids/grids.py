@@ -904,7 +904,7 @@ class GridSparse:
         This is performed by overlaying the 2D sparse grid (computed from the unmaksed sparse shape) over the edge
         values of the Grid.
 
-        This function is used in the _Inversion_ package to set up the VoronoiMagnification Pixelization.
+        This function is used in the `Inversion` package to set up the VoronoiMagnification Pixelization.
 
         Parameters
         -----------
@@ -993,7 +993,7 @@ class GridSparse:
         This is performed by running a KMeans clustering algorithm on the weight map, such that GridSparse (y,x)
         coordinates cluster around the weight map values with higher values.
 
-        This function is used in the _Inversion_ package to set up the VoronoiMagnification Pixelization.
+        This function is used in the `Inversion` package to set up the VoronoiMagnification Pixelization.
 
         Parameters
         -----------

@@ -60,7 +60,7 @@ class FrameEuclid(f.Frame):
         Use an input array of a Euclid quadrant and its corresponding .fits file header to rotate the quadrant to
         the correct orientation for arCTIc clocking.
 
-        See the docstring of the _FrameEuclid_ class for a complete description of the Euclid FPA, quadrants and
+        See the docstring of the `FrameEuclid` class for a complete description of the Euclid FPA, quadrants and
         rotations.
         """
 
@@ -102,7 +102,7 @@ class FrameEuclid(f.Frame):
         Use an input array of a Euclid quadrant, its ccd_id and quadrant_id  to rotate the quadrant to
         the correct orientation for arCTIc clocking.
 
-        See the docstring of the _FrameEuclid_ class for a complete description of the Euclid FPA, quadrants and
+        See the docstring of the `FrameEuclid` class for a complete description of the Euclid FPA, quadrants and
         rotations.
         """
 
@@ -195,7 +195,7 @@ class FrameEuclid(f.Frame):
         Use an input array of a Euclid quadrant corresponding to the top-left of a Euclid CCD and rotate the quadrant
         to the correct orientation for arCTIc clocking.
 
-        See the docstring of the _FrameEuclid_ class for a complete description of the Euclid FPA, quadrants and
+        See the docstring of the `FrameEuclid` class for a complete description of the Euclid FPA, quadrants and
         rotations.
         """
 
@@ -223,7 +223,7 @@ class FrameEuclid(f.Frame):
         Use an input array of a Euclid quadrant corresponding the top-left of a Euclid CCD and rotate the  quadrant to
         the correct orientation for arCTIc clocking.
 
-        See the docstring of the _FrameEuclid_ class for a complete description of the Euclid FPA, quadrants and
+        See the docstring of the `FrameEuclid` class for a complete description of the Euclid FPA, quadrants and
         rotations.
         """
 
@@ -251,7 +251,7 @@ class FrameEuclid(f.Frame):
         Use an input array of a Euclid quadrant corresponding to the bottom-left of a Euclid CCD and rotate the
         quadrant to the correct orientation for arCTIc clocking.
 
-        See the docstring of the _FrameEuclid_ class for a complete description of the Euclid FPA, quadrants and
+        See the docstring of the `FrameEuclid` class for a complete description of the Euclid FPA, quadrants and
         rotations.
         """
 
@@ -279,7 +279,7 @@ class FrameEuclid(f.Frame):
         Use an input array of a Euclid quadrant corresponding to the bottom-right of a Euclid CCD and rotate the
         quadrant to the correct orientation for arCTIc clocking.
 
-        See the docstring of the _FrameEuclid_ class for a complete description of the Euclid FPA, quadrants and
+        See the docstring of the `FrameEuclid` class for a complete description of the Euclid FPA, quadrants and
         rotations.
         """
 
