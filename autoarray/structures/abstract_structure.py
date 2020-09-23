@@ -30,7 +30,7 @@ class AbstractStructure(np.ndarray):
         ----------
         grid : np.ndarray or list
             The (y,x) coordinates of the grid input as an ndarray of shape [total_sub_coordinates, 2] or list of lists.
-        mask : msk.Mask
+        mask : msk.Mask2D
             The 2D mask associated with the grid, defining the pixels each grid coordinate is paired with and
             originates from.
         store_in_1d : bool

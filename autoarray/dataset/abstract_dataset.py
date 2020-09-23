@@ -6,7 +6,7 @@ import copy
 from autoconf import conf
 from autoarray.structures import arrays
 from autoarray.structures import grids
-from autoarray.mask import mask as msk
+from autoarray.mask import mask_2d as msk
 
 
 def grid_from_mask_and_grid_class(
@@ -160,7 +160,7 @@ class AbstractSettingsMaskedDataset:
             The type of grid used to create the image from the *Galaxy* and *Plane*. The options are *Grid*,
             *GridIterate* and *GridInterpolate* (see the *Grids* documentation for a description of these options).
         grid_inversion_class : ag.Grid
-            The type of grid used to create the grid that maps the _Inversion_ source pixels to the data's image-pixels.
+            The type of grid used to create the grid that maps the `Inversion` source pixels to the data's image-pixels.
             The options are *Grid*, *GridIterate* and *GridInterpolate* (see the *Grids* documentation for a
             description of these options).
         sub_size : int
@@ -375,7 +375,7 @@ class AbstractMaskedDataset:
     def __init__(self, dataset, mask, settings=AbstractSettingsMaskedDataset()):
 
         if mask.sub_size != settings.sub_size:
-            mask = msk.Mask.manual(
+            mask = msk.Mask2D.manual(
                 mask=mask,
                 pixel_scales=mask.pixel_scales,
                 sub_size=settings.sub_size,

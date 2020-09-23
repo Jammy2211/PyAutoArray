@@ -24,7 +24,7 @@ class Kernel(arrays.Array):
         ----------
         array : np.ndarray
             The values of the array.
-        mask : msk.Mask
+        mask : msk.Mask2D
             The 2D mask associated with the array, defining the pixels each array value is paired with and
             originates from.
         renormalize : bool
@@ -48,7 +48,7 @@ class Kernel(arrays.Array):
         kernel=[1.0, 2.0, 3.0, 4.0]
 
         From 1D input the method cannot determine the 2D shape of the array and its mask, thus the shape_2d must be
-        input into this method. The mask is setup as a unmasked *Mask* of shape_2d.
+        input into this method. The mask is setup as a unmasked *Mask2D* of shape_2d.
 
         Parameters
         ----------
@@ -84,7 +84,7 @@ class Kernel(arrays.Array):
               [3.0, 4.0]]
 
         The 2D shape of the array and its mask are determined from the input array and the mask is setup as an
-        unmasked *Mask* of shape_2d.
+        unmasked *Mask2D* of shape_2d.
 
         Parameters
         ----------
@@ -166,7 +166,7 @@ class Kernel(arrays.Array):
          the method numpy ndarray.full.
 
         From 1D input the method cannot determine the 2D shape of the array and its mask, thus the shape_2d must be
-        input into this method. The mask is setup as a unmasked *Mask* of shape_2d.
+        input into this method. The mask is setup as a unmasked *Mask2D* of shape_2d.
 
         Parameters
         ----------
@@ -200,7 +200,7 @@ class Kernel(arrays.Array):
         ndarray.ones.
 
         From 1D input the method cannot determine the 2D shape of the array and its mask, thus the shape_2d must be
-        input into this method. The mask is setup as a unmasked *Mask* of shape_2d.
+        input into this method. The mask is setup as a unmasked *Mask2D* of shape_2d.
 
         Parameters
         ----------
@@ -230,7 +230,7 @@ class Kernel(arrays.Array):
         ndarray.ones.
 
         From 1D input the method cannot determine the 2D shape of the array and its mask, thus the shape_2d must be
-        input into this method. The mask is setup as a unmasked *Mask* of shape_2d.
+        input into this method. The mask is setup as a unmasked *Mask2D* of shape_2d.
 
         Parameters
         ----------

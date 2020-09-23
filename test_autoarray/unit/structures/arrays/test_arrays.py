@@ -126,7 +126,7 @@ class TestManual:
 
 class TestManualMask:
     def test__array__makes_array_with_pixel_scale(self):
-        mask = aa.Mask.unmasked(shape_2d=(2, 2), pixel_scales=1.0)
+        mask = aa.Mask2D.unmasked(shape_2d=(2, 2), pixel_scales=1.0)
         arr = aa.Array.manual_mask(array=[[1.0, 2.0], [3.0, 4.0]], mask=mask)
 
         assert type(arr) == aa.Array
@@ -135,7 +135,7 @@ class TestManualMask:
         assert arr.pixel_scales == (1.0, 1.0)
         assert arr.geometry.origin == (0.0, 0.0)
 
-        mask = aa.Mask.manual(
+        mask = aa.Mask2D.manual(
             mask=[[False, False], [True, False]], pixel_scales=1.0, origin=(0.0, 1.0)
         )
         arr = aa.Array.manual_mask(array=[1.0, 2.0, 4.0], mask=mask)
@@ -146,7 +146,7 @@ class TestManualMask:
         assert arr.pixel_scales == (1.0, 1.0)
         assert arr.geometry.origin == (0.0, 1.0)
 
-        mask = aa.Mask.manual(
+        mask = aa.Mask2D.manual(
             mask=[[False, False], [True, False]], pixel_scales=1.0, origin=(0.0, 1.0)
         )
         arr = aa.Array.manual_mask(array=[[1.0, 2.0], [3.0, 4.0]], mask=mask)
@@ -157,7 +157,7 @@ class TestManualMask:
         assert arr.pixel_scales == (1.0, 1.0)
         assert arr.geometry.origin == (0.0, 1.0)
 
-        mask = aa.Mask.manual(mask=[[False], [True]], pixel_scales=2.0, sub_size=2)
+        mask = aa.Mask2D.manual(mask=[[False], [True]], pixel_scales=2.0, sub_size=2)
         arr = aa.Array.manual_mask(
             array=[1.0, 2.0, 3.0, 4.0], mask=mask, store_in_1d=True
         )
@@ -194,34 +194,34 @@ class TestManualMask:
         self
     ):
         with pytest.raises(exc.ArrayException):
-            mask = aa.Mask.unmasked(shape_2d=(2, 2), pixel_scales=1.0, sub_size=1)
+            mask = aa.Mask2D.unmasked(shape_2d=(2, 2), pixel_scales=1.0, sub_size=1)
             aa.Array.manual_mask(array=[[1.0], [3.0]], mask=mask)
 
         with pytest.raises(exc.ArrayException):
-            mask = aa.Mask.unmasked(shape_2d=(2, 2), pixel_scales=1.0, sub_size=2)
+            mask = aa.Mask2D.unmasked(shape_2d=(2, 2), pixel_scales=1.0, sub_size=2)
             aa.Array.manual_mask(array=[[1.0, 2.0], [3.0, 4.0]], mask=mask)
 
         with pytest.raises(exc.ArrayException):
-            mask = aa.Mask.unmasked(shape_2d=(2, 2), pixel_scales=1.0, sub_size=2)
+            mask = aa.Mask2D.unmasked(shape_2d=(2, 2), pixel_scales=1.0, sub_size=2)
             aa.Array.manual_mask(array=[[1.0, 2.0], [3.0, 4.0], [5.0, 6.0]], mask=mask)
 
     def test__exception_raised_if_input_array_is_1d_and_not_number_of_masked_sub_pixels(
         self
     ):
         with pytest.raises(exc.ArrayException):
-            mask = aa.Mask.manual(mask=[[False, False], [True, False]], sub_size=1)
+            mask = aa.Mask2D.manual(mask=[[False, False], [True, False]], sub_size=1)
             aa.Array.manual_mask(array=[1.0, 2.0, 3.0, 4.0], mask=mask)
 
         with pytest.raises(exc.ArrayException):
-            mask = aa.Mask.manual(mask=[[False, False], [True, False]], sub_size=1)
+            mask = aa.Mask2D.manual(mask=[[False, False], [True, False]], sub_size=1)
             aa.Array.manual_mask(array=[1.0, 2.0], mask=mask)
 
         with pytest.raises(exc.ArrayException):
-            mask = aa.Mask.manual(mask=[[False, True], [True, True]], sub_size=2)
+            mask = aa.Mask2D.manual(mask=[[False, True], [True, True]], sub_size=2)
             aa.Array.manual_mask(array=[1.0, 2.0, 4.0], mask=mask)
 
         with pytest.raises(exc.ArrayException):
-            mask = aa.Mask.manual(mask=[[False, True], [True, True]], sub_size=2)
+            mask = aa.Mask2D.manual(mask=[[False, True], [True, True]], sub_size=2)
             aa.Array.manual_mask(array=[1.0, 2.0, 3.0, 4.0, 5.0], mask=mask)
 
 

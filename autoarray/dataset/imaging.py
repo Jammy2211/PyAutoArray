@@ -6,7 +6,7 @@ import copy
 from autoconf import conf
 from autoarray import exc
 from autoarray.dataset import abstract_dataset, preprocess
-from autoarray.mask import mask as msk
+from autoarray.mask import mask_2d as msk
 from autoarray.structures import arrays
 from autoarray.structures import grids
 from autoarray.structures import kernel
@@ -123,7 +123,7 @@ class AbstractSettingsMaskedImaging(abstract_dataset.AbstractSettingsMaskedDatas
             The type of grid used to create the image from the *Galaxy* and *Plane*. The options are *Grid*,
             *GridIterate* and *GridInterpolate* (see the *Grids* documentation for a description of these options).
         grid_inversion_class : ag.Grid
-            The type of grid used to create the grid that maps the _Inversion_ source pixels to the data's image-pixels.
+            The type of grid used to create the grid that maps the `Inversion` source pixels to the data's image-pixels.
             The options are *Grid*, *GridIterate* and *GridInterpolate* (see the *Grids* documentation for a
             description of these options).
         sub_size : int
@@ -251,7 +251,7 @@ class AbstractMaskedImaging(abstract_dataset.AbstractMaskedDataset):
         ----------
         imaging: im.Imaging
             The imaging data_type all in 2D (the image, noise-map, PSF, etc.)
-        mask: msk.Mask
+        mask: msk.Mask2D
             The 2D mask that is applied to the image.
         psf_shape_2d : (int, int)
             The shape of the PSF used for convolving model image generated using analytic light profiles. A smaller \
@@ -535,7 +535,7 @@ class SimulatorImaging(AbstractSimulatorImaging):
 
         image = image - background_sky_map
 
-        mask = msk.Mask.unmasked(
+        mask = msk.Mask2D.unmasked(
             shape_2d=image.shape_2d, pixel_scales=image.pixel_scales
         )
 
