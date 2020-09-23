@@ -20,7 +20,7 @@ def make_simple_mask_7x7():
         ]
     )
 
-    return aa.Mask.manual(mask=mask, sub_size=1)
+    return aa.Mask2D.manual(mask=mask, sub_size=1)
 
 
 @pytest.fixture(name="simple_mask_5x5")
@@ -36,7 +36,7 @@ def make_simple_mask_5x5():
         ]
     )
 
-    return aa.Mask.manual(mask=mask, sub_size=1)
+    return aa.Mask2D.manual(mask=mask, sub_size=1)
 
 
 @pytest.fixture(name="simple_mask_index_array")
@@ -54,7 +54,7 @@ def make_cross_mask():
     mask[2, 1] = False
     mask[2, 3] = False
 
-    return aa.Mask.manual(mask=mask, sub_size=1)
+    return aa.Mask2D.manual(mask=mask, sub_size=1)
 
 
 @pytest.fixture(name="cross_mask_index_array")
@@ -1146,7 +1146,7 @@ class TestConvolveMappingMatrix:
 class TestConvolution:
     def test__cross_mask_with_blurring_entries__returns_array(self):
 
-        cross_mask = aa.Mask.manual(
+        cross_mask = aa.Mask2D.manual(
             mask=[
                 [True, True, True, True, True],
                 [True, True, False, True, True],
@@ -1190,7 +1190,7 @@ class TestCompareToFull2dConv:
         blurred_image = scipy.signal.convolve2d(image.in_2d, kernel.in_2d, mode="same")
         blurred_image = aa.Array.manual_2d(array=blurred_image)
 
-        mask = aa.Mask.circular(
+        mask = aa.Mask2D.circular(
             shape_2d=(30, 30), pixel_scales=(1.0, 1.0), sub_size=1, radius=4.0
         )
 

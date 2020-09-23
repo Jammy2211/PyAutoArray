@@ -590,7 +590,7 @@ class TestTransformerNUFFT:
 
         visibilities_dft = transformer_dft.visibilities_from_image(image=image.in_2d)
 
-        real_space_mask = aa.Mask.unmasked(shape_2d=(5, 5), pixel_scales=0.005)
+        real_space_mask = aa.Mask2D.unmasked(shape_2d=(5, 5), pixel_scales=0.005)
 
         transformer_nufft = aa.TransformerNUFFT(
             uv_wavelengths=uv_wavelengths, real_space_mask=real_space_mask
@@ -623,7 +623,7 @@ class TestTransformerNUFFT:
             mapping_matrix=mapping_matrix
         )
 
-        real_space_mask = aa.Mask.unmasked(shape_2d=(5, 5), pixel_scales=0.005)
+        real_space_mask = aa.Mask2D.unmasked(shape_2d=(5, 5), pixel_scales=0.005)
 
         transformer_nufft = aa.TransformerNUFFT(
             uv_wavelengths=uv_wavelengths, real_space_mask=real_space_mask

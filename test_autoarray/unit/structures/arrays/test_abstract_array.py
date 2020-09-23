@@ -336,7 +336,7 @@ class TestNewArrays:
             ]
         )
 
-        mask = aa.Mask.manual(
+        mask = aa.Mask2D.manual(
             mask=np.array(
                 [
                     [True, True, True, True],
@@ -355,7 +355,7 @@ class TestNewArrays:
 
         assert (arr_zoomed.in_2d == np.array([[6.0, 7.0], [10.0, 11.0]])).all()
 
-        mask = aa.Mask.manual(
+        mask = aa.Mask2D.manual(
             mask=np.array(
                 [
                     [True, True, True, True],
@@ -374,7 +374,7 @@ class TestNewArrays:
             arr_zoomed.in_2d == np.array([[6.0, 7.0, 8.0], [10.0, 11.0, 12.0]])
         ).all()
 
-        mask = aa.Mask.manual(
+        mask = aa.Mask2D.manual(
             mask=np.array(
                 [
                     [True, True, True, True],
@@ -393,7 +393,7 @@ class TestNewArrays:
             arr_zoomed.in_2d == np.array([[6.0, 7.0], [10.0, 11.0], [14.0, 15.0]])
         ).all()
 
-        mask = aa.Mask.manual(
+        mask = aa.Mask2D.manual(
             mask=np.array(
                 [
                     [True, True, True, True],
@@ -413,7 +413,7 @@ class TestNewArrays:
             arr_zoomed.in_2d == np.array([[0.0, 6.0, 7.0], [9.0, 10.0, 11.0]])
         ).all()
 
-        mask = aa.Mask.manual(
+        mask = aa.Mask2D.manual(
             mask=np.array(
                 [
                     [True, False, True, True],
@@ -432,7 +432,7 @@ class TestNewArrays:
             arr_zoomed.in_2d == np.array([[2.0, 0.0], [6.0, 7.0], [10.0, 11.0]])
         ).all()
 
-        mask = aa.Mask.manual(
+        mask = aa.Mask2D.manual(
             mask=np.array(
                 [
                     [True, True, True, True],
@@ -464,7 +464,7 @@ class TestNewArrays:
 
         array_2d = np.ones(shape=(4, 4))
 
-        mask = aa.Mask.manual(
+        mask = aa.Mask2D.manual(
             mask=np.array(
                 [
                     [True, True, True, True],
@@ -485,7 +485,7 @@ class TestNewArrays:
 
         array_2d = np.ones(shape=(6, 6))
 
-        mask = aa.Mask.manual(
+        mask = aa.Mask2D.manual(
             mask=np.array(
                 [
                     [True, True, True, True, True, True],
@@ -506,7 +506,7 @@ class TestNewArrays:
 
         assert arr_zoomed.mask.geometry.origin == (1.0, 1.0)
 
-        mask = aa.Mask.manual(
+        mask = aa.Mask2D.manual(
             mask=np.array(
                 [
                     [True, True, True, True, True, True],
@@ -538,7 +538,7 @@ class TestNewArrays:
             ]
         )
 
-        mask = aa.Mask.manual(
+        mask = aa.Mask2D.manual(
             mask=np.array(
                 [
                     [True, True, True, False],
@@ -646,7 +646,7 @@ class TestOutputToFits:
 
         assert (array_from_out == np.ones((3, 3))).all()
 
-        mask = aa.Mask.unmasked(shape_2d=(3, 3), pixel_scales=0.1)
+        mask = aa.Mask2D.unmasked(shape_2d=(3, 3), pixel_scales=0.1)
 
         masked_array = aa.Array.manual_mask(array=arr, mask=mask)
 

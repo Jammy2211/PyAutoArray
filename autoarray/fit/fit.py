@@ -133,7 +133,7 @@ class FitDataset:
     @property
     def log_evidence(self):
         """Compute the log evidence of the inversion's fit to a dataset, where the log evidence includes a number of terms
-        which quantify the complexity of an inversion's reconstruction (see the _Inversion_ module):
+        which quantify the complexity of an inversion's reconstruction (see the `Inversion` module):
 
         Log Evidence = -0.5*[Chi_Squared_Term + Regularization_Term + Log(Covariance_Regularization_Term) -
                            Log(Regularization_Matrix_Term) + Noise_Term]

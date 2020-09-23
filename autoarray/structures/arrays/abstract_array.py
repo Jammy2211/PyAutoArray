@@ -5,7 +5,7 @@ import numpy as np
 from autoarray import exc
 from autoarray.dataset import preprocess
 from autoarray.structures import abstract_structure
-from autoarray.mask import mask as msk
+from autoarray.mask import mask_2d as msk
 from autoarray.util import binning_util, array_util
 
 logging.basicConfig()
@@ -52,7 +52,7 @@ def convert_manual_1d_array(array_1d, mask, store_in_1d):
     ----------
     array_1d : ndarray or list
         The input structure which is converted to a 1D ndarray if it is a list.
-    mask : Mask
+    mask : Mask2D
         The mask of the output Array.
     store_in_1d : bool
         Whether the memory-representation of the array is in 1D or 2D.
@@ -90,7 +90,7 @@ def convert_manual_2d_array(array_2d, mask, store_in_1d):
     ----------
     array_2d : ndarray or list
         The input structure which is converted to a 2D ndarray if it is a list.
-    mask : Mask
+    mask : Mask2D
         The mask of the output Array.
     store_in_1d : bool
         Whether the memory-representation of the array is in 1D or 2D.
@@ -128,7 +128,7 @@ def convert_manual_array(array, mask, store_in_1d):
     ----------
     array : ndarray or list
         The input structure which is converted to an ndarray if it is a list.
-    mask : Mask
+    mask : Mask2D
         The mask of the output Array.
     store_in_1d : bool
         Whether the memory-representation of the array is in 1D or 2D.
@@ -333,7 +333,7 @@ class AbstractArray(abstract_structure.AbstractStructure):
             x1=self.geometry._zoom_region[3] + buffer,
         )
 
-        mask = msk.Mask.unmasked(
+        mask = msk.Mask2D.unmasked(
             shape_2d=extracted_array_2d.shape,
             pixel_scales=self.pixel_scales,
             sub_size=self.sub_size,
@@ -367,7 +367,7 @@ class AbstractArray(abstract_structure.AbstractStructure):
             x1=self.geometry._zoom_region[3] + buffer,
         )
 
-        mask = msk.Mask.unmasked(
+        mask = msk.Mask2D.unmasked(
             shape_2d=extracted_array_2d.shape,
             pixel_scales=self.pixel_scales,
             sub_size=self.sub_size,

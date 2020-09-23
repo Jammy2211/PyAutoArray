@@ -612,7 +612,7 @@ class TestAbstractPlotterPlots:
 
         array = aa.Array.ones(shape_2d=(31, 31), pixel_scales=(1.0, 1.0), sub_size=2)
 
-        mask = aa.Mask.circular(
+        mask = aa.Mask2D.circular(
             shape_2d=array.shape_2d,
             pixel_scales=array.pixel_scales,
             radius=5.0,
@@ -693,7 +693,7 @@ class TestAbstractPlotterPlots:
 
         assert (arr == np.ones(shape=(31, 31))).all()
 
-        mask = aa.Mask.circular(
+        mask = aa.Mask2D.circular(
             shape_2d=(31, 31), pixel_scales=(1.0, 1.0), radius=5.0, centre=(2.0, 2.0)
         )
 
@@ -757,7 +757,7 @@ class TestAbstractPlotterPlots:
 
         assert (frame == np.ones(shape=(31, 31))).all()
 
-        mask = aa.Mask.unmasked(shape_2d=(31, 31), pixel_scales=(1.0, 1.0))
+        mask = aa.Mask2D.unmasked(shape_2d=(31, 31), pixel_scales=(1.0, 1.0))
 
         masked_frame = aa.Frame.manual_mask(array=frame, mask=mask)
 

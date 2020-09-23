@@ -4,7 +4,7 @@ from autoarray import decorator_util
 from autoarray.structures import abstract_structure
 from autoarray.structures import grids
 from autoarray.structures.grids import abstract_grid
-from autoarray.mask import mask as msk
+from autoarray.mask import mask_2d as msk
 from autoarray.util import array_util, grid_util
 from autoarray import exc
 
@@ -48,7 +48,7 @@ class GridIterate(abstract_grid.AbstractGrid):
         ----------
         grid : np.ndarray
             The (y,x) coordinates of the grid.
-        mask : msk.Mask
+        mask : msk.Mask2D
             The 2D mask associated with the grid, defining the pixels each grid coordinate is paired with and
             originates from.
         fractional_accuracy : float
@@ -102,7 +102,7 @@ class GridIterate(abstract_grid.AbstractGrid):
         ----------
         grid : np.ndarray or list
             The (y,x) coordinates of the grid input as an ndarray of shape [total_sub_coordinates, 2] or list of lists.
-        mask : msk.Mask
+        mask : msk.Mask2D
             The 2D mask associated with the grid, defining the pixels each grid coordinate is paired with and
             originates from.
         store_in_1d : bool
@@ -135,7 +135,7 @@ class GridIterate(abstract_grid.AbstractGrid):
             grid=[[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0]]
 
         From 1D input the method cannot determine the 2D shape of the grid and its mask, thus the shape_2d must be
-        input into this method. The mask is setup as a unmasked *Mask* of shape_2d.
+        input into this method. The mask is setup as a unmasked *Mask2D* of shape_2d.
 
         Parameters
         ----------
@@ -164,7 +164,7 @@ class GridIterate(abstract_grid.AbstractGrid):
             pixel_scales=pixel_scales
         )
 
-        mask = msk.Mask.unmasked(
+        mask = msk.Mask2D.unmasked(
             shape_2d=shape_2d, pixel_scales=pixel_scales, sub_size=1, origin=origin
         )
 
@@ -249,7 +249,7 @@ class GridIterate(abstract_grid.AbstractGrid):
 
         Parameters
         ----------
-        mask : Mask
+        mask : Mask2D
             The mask whose masked pixels are used to setup the sub-pixel grid.
         fractional_accuracy : float
             The fractional accuracy the function evaluated must meet to be accepted, where this accuracy is the ratio
@@ -306,7 +306,7 @@ class GridIterate(abstract_grid.AbstractGrid):
 
         Parameters
         ----------
-        mask : Mask
+        mask : Mask2D
             The mask whose masked pixels are used to setup the blurring grid.
         kernel_shape_2d : (float, float)
             The 2D shape of the kernel which convolves signal from masked pixels to unmasked pixels.
@@ -389,7 +389,7 @@ class GridIterate(abstract_grid.AbstractGrid):
             shape[1] + kernel_shape_2d[1] - 1,
         )
 
-        padded_mask = msk.Mask.unmasked(
+        padded_mask = msk.Mask2D.unmasked(
             shape_2d=padded_shape,
             pixel_scales=self.mask.pixel_scales,
             sub_size=self.mask.sub_size,
@@ -421,7 +421,7 @@ class GridIterate(abstract_grid.AbstractGrid):
 
     def fractional_mask_from_arrays(
         self, array_lower_sub_2d, array_higher_sub_2d
-    ) -> msk.Mask:
+    ) -> msk.Mask2D:
         """ Compute a fractional mask from a result array, where the fractional mask describes whether the evaluated
         value in the result array is within the *GridIterate*'s specified fractional accuracy. The fractional mask thus
         determines whether a pixel on the grid needs to be reevaluated at a higher level of sub-gridding to meet the
@@ -439,7 +439,7 @@ class GridIterate(abstract_grid.AbstractGrid):
             The results computed by a function using a higher sub-grid size.
         """
 
-        fractional_mask = msk.Mask.unmasked(
+        fractional_mask = msk.Mask2D.unmasked(
             shape_2d=array_lower_sub_2d.shape_2d, invert=True
         )
 
@@ -451,7 +451,7 @@ class GridIterate(abstract_grid.AbstractGrid):
             array_higher_mask=array_higher_sub_2d.mask,
         )
 
-        return msk.Mask(
+        return msk.Mask2D(
             mask=fractional_mask,
             pixel_scales=array_higher_sub_2d.pixel_scales,
             origin=array_higher_sub_2d.origin,
@@ -511,7 +511,7 @@ class GridIterate(abstract_grid.AbstractGrid):
         return zeros. This occurs when a function is missing optional objects that contribute to the calculation.
 
         An example use case of this function is when a "image_from_grid" methods in **PyAutoGalaxy**'s
-        _LightProfile_ module is comomputed, which by evaluating the function on a higher resolution sub-grids sample
+        `LightProfile` module is comomputed, which by evaluating the function on a higher resolution sub-grids sample
         the analytic light profile at more points and thus more precisely.
 
         Parameters
@@ -604,7 +604,7 @@ class GridIterate(abstract_grid.AbstractGrid):
 
     def fractional_mask_from_grids(
         self, grid_lower_sub_2d, grid_higher_sub_2d
-    ) -> msk.Mask:
+    ) -> msk.Mask2D:
         """ Compute a fractional mask from a result array, where the fractional mask describes whether the evaluated
         value in the result array is within the *GridIterate*'s specified fractional accuracy. The fractional mask thus
         determines whether a pixel on the grid needs to be reevaluated at a higher level of sub-gridding to meet the
@@ -622,7 +622,7 @@ class GridIterate(abstract_grid.AbstractGrid):
             The results computed by a function using a higher sub-grid size.
         """
 
-        fractional_mask = msk.Mask.unmasked(
+        fractional_mask = msk.Mask2D.unmasked(
             shape_2d=grid_lower_sub_2d.shape_2d, invert=True
         )
 
@@ -634,7 +634,7 @@ class GridIterate(abstract_grid.AbstractGrid):
             grid_higher_mask=grid_higher_sub_2d.mask,
         )
 
-        return msk.Mask(
+        return msk.Mask2D(
             mask=fractional_mask,
             pixel_scales=grid_higher_sub_2d.pixel_scales,
             origin=grid_higher_sub_2d.origin,

@@ -3,6 +3,7 @@ import numpy as np
 import pytest
 import scipy.spatial
 
+from autoarray import exc
 import autoarray as aa
 from autoarray.structures import grids
 
@@ -216,7 +217,7 @@ class TestGridVoronoi:
 
     def test__from_unmasked_sparse_shape_and_grid(self):
 
-        mask = aa.Mask.manual(
+        mask = aa.Mask2D.manual(
             mask=np.array(
                 [[True, False, True], [False, False, False], [True, False, True]]
             ),
@@ -473,9 +474,17 @@ class TestGridVoronoi:
             voronoi = scipy.spatial.Voronoi(
                 np.asarray([grid[:, 1], grid[:, 0]]).T, qhull_options="Qbb Qc Qx Qm"
             )
+
             pixel_neighbors_util, pixel_neighbors_size_util = aa.util.pixelization.voronoi_neighbors_from(
                 pixels=9, ridge_points=np.array(voronoi.ridge_points)
             )
 
             assert (pix.pixel_neighbors == pixel_neighbors_util).all()
             assert (pix.pixel_neighbors_size == pixel_neighbors_size_util).all()
+
+        def test__qhull_error_is_caught(self):
+
+            grid = np.array([[3.0, 0.0]])
+
+            with pytest.raises(exc.PixelizationException):
+                aa.GridVoronoi(grid=grid)

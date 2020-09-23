@@ -41,7 +41,7 @@ class Convolver:
         a given PSF kernel size, e.g.:
 
         IxIxIxIxIxIxIxIxIxIxI
-        IxIxIxIxIxIxIxIxIxIxI     This is an imaging.Mask, where:
+        IxIxIxIxIxIxIxIxIxIxI     This is an imaging.Mask2D, where:
         IxIxIxIxIxIxIxIxIxIxI
         IxIxIxIxIxIxIxIxIxIxI     x = True (Pixel is masked and excluded from lens)
         IxIxIxIoIoIoIxIxIxIxI     o = False (Pixel is not masked and included in lens)
@@ -114,7 +114,7 @@ class Convolver:
         computed:
 
         IxIxIxIxIxIxIxIxIxIxI
-        IxIxIxIxIxIxIxIxIxIxI     This is an example grid.Mask, where:
+        IxIxIxIxIxIxIxIxIxIxI     This is an example grid.Mask2D, where:
         IxIxIxIxIxIxIxIxIxIxI
         IxIxIoIoIoIoIoIxIxIxI     x = True (Pixel is masked and excluded from lens)
         IxIxIoIxIxIxIoIxIxIxI     o = False (Pixel is not masked and included in lens)
@@ -167,9 +167,9 @@ class Convolver:
 
         Parameters
         ----------
-        mask : Mask
+        mask : Mask2D
             The mask within which the convolved signal is calculated.
-        blurring_mask : Mask
+        blurring_mask : Mask2D
             A masks of pixels outside the masks but whose light blurs into it after PSF convolution.
         kernel : grid.PSF or ndarray
             An array representing a PSF.

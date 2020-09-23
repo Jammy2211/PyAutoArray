@@ -12,7 +12,8 @@ from .dataset.interferometer import SettingsMaskedInterferometer
 from .dataset.interferometer import SimulatorInterferometer
 from .fit.fit import FitImaging
 from .fit.fit import FitInterferometer
-from .mask.mask import Mask
+from .mask.mask_1d import Mask1D
+from .mask.mask_2d import Mask2D
 from .operators.convolver import Convolver
 from .inversion import pixelizations as pix
 from .inversion import regularization as reg
@@ -41,4 +42,4 @@ from .structures.kernel import Kernel
 from .structures.visibilities import Visibilities
 from .structures.visibilities import VisibilitiesNoiseMap
 
-__version__ = '0.14.7'
+__version__ = '0.14.8'

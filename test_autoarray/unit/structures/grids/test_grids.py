@@ -629,7 +629,7 @@ class TestGrid:
             ]
         )
 
-        mask = aa.Mask.manual(mask=mask, pixel_scales=(2.0, 2.0), sub_size=2)
+        mask = aa.Mask2D.manual(mask=mask, pixel_scales=(2.0, 2.0), sub_size=2)
 
         blurring_mask_util = aa.util.mask.blurring_mask_from(
             mask=mask, kernel_shape_2d=(3, 5)
@@ -639,7 +639,7 @@ class TestGrid:
             mask=blurring_mask_util, pixel_scales=(2.0, 2.0), sub_size=1
         )
 
-        mask = aa.Mask.manual(mask=mask, pixel_scales=(2.0, 2.0), sub_size=2)
+        mask = aa.Mask2D.manual(mask=mask, pixel_scales=(2.0, 2.0), sub_size=2)
 
         blurring_grid = grids.Grid.blurring_grid_from_mask_and_kernel_shape(
             mask=mask, kernel_shape_2d=(3, 5)
@@ -673,7 +673,7 @@ class TestGrid:
             ]
         )
 
-        mask = aa.Mask.manual(mask=mask, pixel_scales=(2.0, 2.0), sub_size=2)
+        mask = aa.Mask2D.manual(mask=mask, pixel_scales=(2.0, 2.0), sub_size=2)
 
         blurring_mask_util = aa.util.mask.blurring_mask_from(
             mask=mask, kernel_shape_2d=(3, 5)
@@ -703,7 +703,7 @@ class TestGrid:
             ]
         )
 
-        mask = aa.Mask.manual(mask=mask, pixel_scales=(1.0, 1.0), sub_size=1)
+        mask = aa.Mask2D.manual(mask=mask, pixel_scales=(1.0, 1.0), sub_size=1)
 
         grid = aa.Grid.from_mask(mask=mask)
 
@@ -750,7 +750,7 @@ class TestGrid:
             ]
         )
 
-        mask = aa.Mask.manual(mask=mask, pixel_scales=(1.0, 1.0), sub_size=1)
+        mask = aa.Mask2D.manual(mask=mask, pixel_scales=(1.0, 1.0), sub_size=1)
 
         grid = aa.Grid.from_mask(mask=mask)
 
@@ -790,7 +790,7 @@ class TestGrid:
 
     def test__manual__makes_grid_with_pixel_scale(self):
 
-        mask = aa.Mask.unmasked(shape_2d=(2, 2), pixel_scales=1.0)
+        mask = aa.Mask2D.unmasked(shape_2d=(2, 2), pixel_scales=1.0)
         grid = aa.Grid.manual_mask(
             grid=[[[1.0, 2.0], [3.0, 4.0]], [[5.0, 6.0], [7.0, 8.0]]], mask=mask
         )
@@ -805,7 +805,7 @@ class TestGrid:
         assert grid.pixel_scales == (1.0, 1.0)
         assert grid.origin == (0.0, 0.0)
 
-        mask = aa.Mask.manual(
+        mask = aa.Mask2D.manual(
             [[True, False], [False, False]], pixel_scales=1.0, origin=(0.0, 1.0)
         )
         grid = aa.Grid.manual_mask(grid=[[3.0, 4.0], [5.0, 6.0], [7.0, 8.0]], mask=mask)
@@ -818,7 +818,7 @@ class TestGrid:
         assert grid.pixel_scales == (1.0, 1.0)
         assert grid.origin == (0.0, 1.0)
 
-        mask = aa.Mask.manual(
+        mask = aa.Mask2D.manual(
             [[False], [True]], sub_size=2, pixel_scales=1.0, origin=(0.0, 1.0)
         )
         grid = aa.Grid.manual_mask(
@@ -904,17 +904,17 @@ class TestGrid:
     ):
 
         with pytest.raises(exc.GridException):
-            mask = aa.Mask.unmasked(shape_2d=(2, 2), pixel_scales=1.0, sub_size=1)
+            mask = aa.Mask2D.unmasked(shape_2d=(2, 2), pixel_scales=1.0, sub_size=1)
             aa.Grid.manual_mask(grid=[[[1.0, 1.0], [3.0, 3.0]]], mask=mask)
 
         with pytest.raises(exc.GridException):
-            mask = aa.Mask.unmasked(shape_2d=(2, 2), pixel_scales=1.0, sub_size=2)
+            mask = aa.Mask2D.unmasked(shape_2d=(2, 2), pixel_scales=1.0, sub_size=2)
             aa.Grid.manual_mask(
                 grid=[[[1.0, 1.0], [2.0, 2.0]], [[3.0, 3.0], [4.0, 4.0]]], mask=mask
             )
 
         with pytest.raises(exc.GridException):
-            mask = aa.Mask.unmasked(shape_2d=(2, 2), pixel_scales=1.0, sub_size=2)
+            mask = aa.Mask2D.unmasked(shape_2d=(2, 2), pixel_scales=1.0, sub_size=2)
             aa.Grid.manual_mask(
                 grid=[
                     [[1.0, 1.0], [2.0, 2.0]],
@@ -929,21 +929,21 @@ class TestGrid:
     ):
 
         with pytest.raises(exc.GridException):
-            mask = aa.Mask.manual(mask=[[False, False], [True, False]], sub_size=1)
+            mask = aa.Mask2D.manual(mask=[[False, False], [True, False]], sub_size=1)
             aa.Grid.manual_mask(
                 grid=[[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0]], mask=mask
             )
 
         with pytest.raises(exc.GridException):
-            mask = aa.Mask.manual(mask=[[False, False], [True, False]], sub_size=1)
+            mask = aa.Mask2D.manual(mask=[[False, False], [True, False]], sub_size=1)
             aa.Grid.manual_mask(grid=[[1.0, 1.0], [2.0, 2.0]], mask=mask)
 
         with pytest.raises(exc.GridException):
-            mask = aa.Mask.manual(mask=[[False, True], [True, True]], sub_size=2)
+            mask = aa.Mask2D.manual(mask=[[False, True], [True, True]], sub_size=2)
             aa.Grid.manual_mask(grid=[[[1.0, 1.0], [2.0, 2.0], [4.0, 4.0]]], mask=mask)
 
         with pytest.raises(exc.GridException):
-            mask = aa.Mask.manual(mask=[[False, True], [True, True]], sub_size=2)
+            mask = aa.Mask2D.manual(mask=[[False, True], [True, True]], sub_size=2)
             aa.Grid.manual_mask(
                 grid=[[[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0], [5.0, 5.0]]],
                 mask=mask,
@@ -958,7 +958,7 @@ class TestGrid:
                 [True, True, False, False],
             ]
         )
-        mask = aa.Mask.manual(mask=mask, pixel_scales=(2.0, 2.0), sub_size=1)
+        mask = aa.Mask2D.manual(mask=mask, pixel_scales=(2.0, 2.0), sub_size=1)
 
         grid_via_util = aa.util.grid.grid_1d_via_mask_from(
             mask=mask, sub_size=1, pixel_scales=(2.0, 2.0)
@@ -1002,7 +1002,7 @@ class TestGrid:
 class TestGridSparse:
     class TestUnmaskedShape:
         def test__properties_consistent_with_util(self):
-            mask = aa.Mask.manual(
+            mask = aa.Mask2D.manual(
                 mask=np.array(
                     [[True, False, True], [False, False, False], [True, False, True]]
                 ),
@@ -1078,7 +1078,7 @@ class TestGridSparse:
         def test__sparse_grid_overlaps_mask_perfectly__masked_pixels_in_masked_sparse_grid(
             self
         ):
-            mask = aa.Mask.manual(
+            mask = aa.Mask2D.manual(
                 mask=np.array(
                     [[True, False, True], [False, False, False], [True, False, True]]
                 ),
@@ -1104,7 +1104,7 @@ class TestGridSparse:
             ).all()
 
         def test__same_as_above_but_4x3_grid_and_mask(self):
-            mask = aa.Mask.manual(
+            mask = aa.Mask2D.manual(
                 mask=np.array(
                     [
                         [True, False, True],
@@ -1144,7 +1144,7 @@ class TestGridSparse:
             ).all()
 
         def test__same_as_above_but_3x4_grid_and_mask(self):
-            mask = aa.Mask.manual(
+            mask = aa.Mask2D.manual(
                 mask=np.array(
                     [
                         [True, False, True, True],
@@ -1183,7 +1183,7 @@ class TestGridSparse:
         def test__mask_with_offset_centre__origin_of_sparse_grid_moves_to_give_same_pairings(
             self
         ):
-            mask = aa.Mask.manual(
+            mask = aa.Mask2D.manual(
                 mask=np.array(
                     [
                         [True, True, True, False, True],
@@ -1218,7 +1218,7 @@ class TestGridSparse:
             ).all()
 
         def test__same_as_above_but_different_offset(self):
-            mask = aa.Mask.manual(
+            mask = aa.Mask2D.manual(
                 mask=np.array(
                     [
                         [True, True, True, True, True],
@@ -1283,7 +1283,7 @@ class TestGridSparse:
             ).all()
 
         def test__same_as_above__but_4x3_image(self):
-            mask = aa.Mask.manual(
+            mask = aa.Mask2D.manual(
                 mask=np.array(
                     [
                         [True, False, True],
@@ -1323,7 +1323,7 @@ class TestGridSparse:
             ).all()
 
         def test__same_as_above__but_3x4_image(self):
-            mask = aa.Mask.manual(
+            mask = aa.Mask2D.manual(
                 mask=np.array(
                     [
                         [True, False, True, True],
@@ -1360,7 +1360,7 @@ class TestGridSparse:
             ).all()
 
         def test__from_grid_and_shape__offset_mask__origin_shift_corrects(self):
-            mask = aa.Mask.manual(
+            mask = aa.Mask2D.manual(
                 mask=np.array(
                     [
                         [True, True, False, False, False],
@@ -1403,7 +1403,7 @@ class TestGridSparse:
 
     class TestUnmaskedShapeAndWeightImage:
         def test__weight_map_all_ones__kmeans_grid_is_grid_overlapping_image(self):
-            mask = aa.Mask.manual(
+            mask = aa.Mask2D.manual(
                 mask=np.array(
                     [
                         [False, False, False, False],
@@ -1451,7 +1451,7 @@ class TestGridSparse:
             ).all()
 
         def test__weight_map_changed_from_above(self):
-            mask = aa.Mask.manual(
+            mask = aa.Mask2D.manual(
                 mask=np.array(
                     [
                         [False, False, False, False],
@@ -1489,7 +1489,7 @@ class TestGridSparse:
 
         def test__stochastic_true__every_grid_different(self):
 
-            mask = aa.Mask.manual(
+            mask = aa.Mask2D.manual(
                 mask=np.array(
                     [
                         [False, False, False, False],
@@ -1565,7 +1565,7 @@ class TestBorder:
             ]
         )
 
-        mask = aa.Mask.manual(mask=mask, pixel_scales=(2.0, 2.0), sub_size=2)
+        mask = aa.Mask2D.manual(mask=mask, pixel_scales=(2.0, 2.0), sub_size=2)
 
         grid = aa.Grid.from_mask(mask=mask)
 
@@ -1588,7 +1588,7 @@ class TestBorder:
         ).all()
 
     def test__inside_border_no_relocations(self):
-        mask = aa.Mask.circular(
+        mask = aa.Mask2D.circular(
             shape_2d=(30, 30), radius=1.0, pixel_scales=(0.1, 0.1), sub_size=1
         )
 
@@ -1606,7 +1606,7 @@ class TestBorder:
         assert (relocated_grid.mask == mask).all()
         assert relocated_grid.sub_size == 1
 
-        mask = aa.Mask.circular(
+        mask = aa.Mask2D.circular(
             shape_2d=(30, 30), radius=1.0, pixel_scales=(0.1, 0.1), sub_size=2
         )
 
@@ -1625,7 +1625,7 @@ class TestBorder:
         assert relocated_grid.sub_size == 2
 
     def test__outside_border_are_relocations(self):
-        mask = aa.Mask.circular(
+        mask = aa.Mask2D.circular(
             shape_2d=(30, 30), radius=1.0, pixel_scales=(0.1, 0.1), sub_size=1
         )
 
@@ -1643,7 +1643,7 @@ class TestBorder:
         assert (relocated_grid.mask == mask).all()
         assert relocated_grid.sub_size == 1
 
-        mask = aa.Mask.circular(
+        mask = aa.Mask2D.circular(
             shape_2d=(30, 30), radius=1.0, pixel_scales=(0.1, 0.1), sub_size=2
         )
 
@@ -1664,7 +1664,7 @@ class TestBorder:
     def test__outside_border_are_relocations__positive_origin_included_in_relocate(
         self
     ):
-        mask = aa.Mask.circular(
+        mask = aa.Mask2D.circular(
             shape_2d=(60, 60),
             radius=1.0,
             pixel_scales=(0.1, 0.1),
@@ -1691,7 +1691,7 @@ class TestBorder:
         assert (relocated_grid.mask == mask).all()
         assert relocated_grid.sub_size == 1
 
-        mask = aa.Mask.circular(
+        mask = aa.Mask2D.circular(
             shape_2d=(60, 60),
             radius=1.0,
             pixel_scales=(0.1, 0.1),
