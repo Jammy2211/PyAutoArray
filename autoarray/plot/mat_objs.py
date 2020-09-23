@@ -43,7 +43,7 @@ def load_figure_setting(section, name):
 
 
 def load_subplot_setting(section, name):
-    return conf.instance["visualize"]["subplot"][section][name]
+    return conf.instance["visualize"]["subplots"][section][name]
 
 
 class Units:
@@ -76,9 +76,7 @@ class Units:
             self.use_scaled = use_scaled
         else:
             try:
-                self.use_scaled = conf.instance.visualize_general.get(
-                    "general", "use_scaled", bool
-                )
+                self.use_scaled = conf.instance["visualize"]["general"]["general"]["use_scaled"]
             except:
                 self.use_scaled = True
 
@@ -86,7 +84,7 @@ class Units:
             self.in_kpc = (
                 in_kpc
                 if in_kpc is not None
-                else conf.instance.visualize_general.get("units", "in_kpc", bool)
+                else conf.instance["visualize"]["general"]["units"]["in_kpc"]
             )
         except:
             self.in_kpc = None
@@ -229,11 +227,9 @@ class ColorMap:
 
             module_name = module.__name__.split(".")[-1]
             try:
-                cmap = conf.instance.visualize_general.get(
-                    "colormaps", module_name, str
-                )
+                cmap = conf.instance["visualize"]["general"]["colormaps"][module_name]
             except configparser.NoOptionError:
-                cmap = conf.instance.visualize_general.get("colormaps", "default", str)
+                cmap = conf.instance["visualize"]["general"]["colormaps"]["default"]
 
         try:
             self.cmap = colorcet.cm[cmap]

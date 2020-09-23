@@ -1185,7 +1185,7 @@ class SubPlotter(AbstractPlotter):
         plt.figure(figsize=figsize)
 
     def setup_subplot(
-        self, number_subplots, subplot_index, aspect=None, subplot_rows_columns=None
+            self, number_subplots, subplot_index, aspect=None, subplot_rows_columns=None
     ):
         if subplot_rows_columns is None:
             rows, columns = self.get_subplot_rows_columns(
@@ -1299,14 +1299,12 @@ class Include:
 
     @staticmethod
     def load_include(value, name):
-
-        return (
-            conf.instance.visualize_general.get(
-                section_name="include", attribute_name=name, attribute_type=bool
-            )
-            if value is None
-            else value
-        )
+        if value is not None:
+            """
+            Let is be known that Jam did this - I merely made this horror more efficient
+            """
+            return value
+        return conf.instance["visualize"]["general"]["include"][name]
 
     def grid_from_grid(self, grid):
 

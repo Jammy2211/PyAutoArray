@@ -162,7 +162,7 @@ class AbstractSettingsMaskedImaging(abstract_dataset.AbstractSettingsMaskedDatas
     @property
     def tag_no_inversion(self):
         return (
-            f"{conf.instance.settings_tag.get('imaging', 'imaging')}"
+            f"{conf.instance['notation']['settings_tags']['imaging']['imaging']}"
             f"[{self.grid_tag_no_inversion}"
             f"{self.signal_to_noise_limit_tag}"
             f"{self.bin_up_factor_tag}"
@@ -172,7 +172,7 @@ class AbstractSettingsMaskedImaging(abstract_dataset.AbstractSettingsMaskedDatas
     @property
     def tag_with_inversion(self):
         return (
-            f"{conf.instance.settings_tag.get('imaging', 'imaging')}"
+            f"{conf.instance['notation']['settings_tags']['imaging']['imaging']}"
             f"[{self.grid_tag_with_inversion}"
             f"{self.signal_to_noise_limit_tag}"
             f"{self.bin_up_factor_tag}"
@@ -210,7 +210,7 @@ class AbstractSettingsMaskedImaging(abstract_dataset.AbstractSettingsMaskedDatas
         x = str(self.psf_shape_2d[1])
         return (
             "__"
-            + conf.instance.settings_tag.get("imaging", "psf_shape")
+            + conf.instance["notation"]["settings_tags"]["imaging"]["psf_shape"]
             + "_"
             + y
             + "x"
@@ -232,7 +232,7 @@ class AbstractSettingsMaskedImaging(abstract_dataset.AbstractSettingsMaskedDatas
             return ""
         return (
             "__"
-            + conf.instance.settings_tag.get("imaging", "bin_up_factor")
+            + conf.instance["notation"]["settings_tags"]["imaging"]["bin_up_factor"]
             + "_"
             + str(self.bin_up_factor)
         )

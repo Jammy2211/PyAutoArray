@@ -225,7 +225,7 @@ class AbstractSettingsMaskedDataset:
         """
 
         return (
-            f"{conf.instance.settings_tag.get('dataset', 'grid')}_"
+            f"{conf.instance['notation']['settings_tags']['dataset']['grid']}_"
             f"{self.grid_sub_size_tag}"
             f"{self.grid_fractional_accuracy_tag}"
             f"{self.grid_pixel_scales_interp_tag}"
@@ -238,11 +238,11 @@ class AbstractSettingsMaskedDataset:
         This assumes both grids were used in the analysis.
         """
         return (
-            f"{conf.instance.settings_tag.get('dataset', 'grid')}_"
+            f"{conf.instance['notation']['settings_tags']['dataset']['grid']}_"
             f"{self.grid_sub_size_tag}"
             f"{self.grid_fractional_accuracy_tag}"
             f"{self.grid_pixel_scales_interp_tag}_"
-            f"{conf.instance.settings_tag.get('dataset', 'grid_inversion')}_"
+            f"{conf.instance['notation']['settings_tags']['dataset']['grid_inversion']}_"
             f"{self.grid_inversion_sub_size_tag}"
             f"{self.grid_inversion_fractional_accuracy_tag}"
             f"{self.grid_inversion_pixel_scales_interp_tag}"
@@ -261,7 +261,7 @@ class AbstractSettingsMaskedDataset:
         if not self.grid_class is grids.Grid:
             return ""
         return (
-            f"{conf.instance.settings_tag.get('dataset', 'sub_size')}_"
+            f"{conf.instance['notation']['settings_tags']['dataset']['sub_size']}_"
             f"{str(self.sub_size)}"
         )
 
@@ -278,7 +278,7 @@ class AbstractSettingsMaskedDataset:
         if not self.grid_class is grids.GridIterate:
             return ""
         return (
-            f"{conf.instance.settings_tag.get('dataset', 'fractional_accuracy')}_"
+            f"{conf.instance['notation']['settings_tags']['dataset']['fractional_accuracy']}_"
             f"{str(self.fractional_accuracy)}"
         )
 
@@ -296,9 +296,7 @@ class AbstractSettingsMaskedDataset:
             return ""
         if self.pixel_scales_interp is None:
             return ""
-        return conf.instance.settings_tag.get(
-            "dataset", "pixel_scales_interp"
-        ) + "_{0:.3f}".format(self.pixel_scales_interp)
+        return conf.instance["notation"]["settings_tags"]["dataset"]["pixel_scales_interp"] + "_{0:.3f}".format(self.pixel_scales_interp)
 
     @property
     def grid_inversion_sub_size_tag(self):
@@ -313,7 +311,7 @@ class AbstractSettingsMaskedDataset:
         if not self.grid_inversion_class is grids.Grid:
             return ""
         return (
-            f"{conf.instance.settings_tag.get('dataset', 'sub_size')}_"
+            f"{conf.instance['notation']['settings_tags']['dataset']['sub_size']}_"
             f"{str(self.sub_size)}"
         )
 
@@ -330,7 +328,7 @@ class AbstractSettingsMaskedDataset:
         if not self.grid_inversion_class is grids.GridIterate:
             return ""
         return (
-            f"{conf.instance.settings_tag.get('dataset', 'fractional_accuracy')}_"
+            f"{conf.instance['notation']['settings_tags']['dataset']['fractional_accuracy']}_"
             f"{str(self.fractional_accuracy)}"
         )
 
@@ -348,9 +346,7 @@ class AbstractSettingsMaskedDataset:
             return ""
         if self.pixel_scales_interp is None:
             return ""
-        return conf.instance.settings_tag.get(
-            "dataset", "pixel_scales_interp"
-        ) + "_{0:.3f}".format(self.pixel_scales_interp)
+        return conf.instance["notation"]["settings_tags"]["dataset"]["pixel_scales_interp"] + "_{0:.3f}".format(self.pixel_scales_interp)
 
     @property
     def signal_to_noise_limit_tag(self):
@@ -366,7 +362,7 @@ class AbstractSettingsMaskedDataset:
         if self.signal_to_noise_limit is None:
             return ""
         return (
-            f"__{conf.instance.settings_tag.get('dataset', 'signal_to_noise_limit')}_"
+            f"__{conf.instance['notation']['settings_tags']['dataset']['signal_to_noise_limit']}_"
             f"{str(self.signal_to_noise_limit)}"
         )
 
