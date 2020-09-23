@@ -1,6 +1,7 @@
 import inspect
 import os
 
+from autoconf import conf
 from autoarray import decorator_util
 from autoarray.util import mask_util
 import numpy as np
@@ -8,7 +9,7 @@ from astropy.io import fits
 from functools import wraps
 
 
-class Memoizer(object):
+class Memoizer:
     def __init__(self):
         """
         Class to store the results of a function given a set of inputs.
@@ -60,7 +61,7 @@ class Memoizer(object):
 
 
 @decorator_util.jit()
-def extracted_array_2d_from_array_2d(array_2d, y0, y1, x0, x1):
+def extracted_array_2d_from(array_2d, y0, y1, x0, x1):
     """Resize an array to a new size by extracting a sub-set of the array.
 
     The extracted input coordinates use NumPy convention, such that the upper values should be specified as +1 the \
@@ -272,6 +273,12 @@ def numpy_array_1d_to_fits(array_1d, file_path, overwrite=False):
     array_2d = np.ones((5,5))
     numpy_array_to_fits(array_2d=array_2d, file_path='/path/to/file/filename.fits', overwrite=True)
     """
+
+    file_dir = file_path.rsplit("/", 1)[0]
+
+    if not os.path.exists(file_dir):
+        os.makedirs(file_dir)
+
     if overwrite and os.path.exists(file_path):
         os.remove(file_path)
 
@@ -318,6 +325,9 @@ def numpy_array_2d_to_fits(array_2d, file_path, overwrite=False):
         The 2D array that is written to fits.
     file_path : str
         The full path of the file that is output, including the file name and '.fits' extension.
+    flip_for_ds9 : bool
+        If True, a np.flipud() is applied so that matplotlib figures display in the same orientation as when loaded in
+        DS9.
     overwrite : bool
         If True and a file already exists with the input file_path the .fits file is overwritten. If False, an error \
         will be raised.
@@ -331,15 +341,27 @@ def numpy_array_2d_to_fits(array_2d, file_path, overwrite=False):
     array_2d = np.ones((5,5))
     numpy_array_to_fits(array_2d=array_2d, file_path='/path/to/file/filename.fits', overwrite=True)
     """
+
+    file_dir = file_path.rsplit("/", 1)[0]
+
+    if not os.path.exists(file_dir):
+        os.makedirs(file_dir)
+
     if overwrite and os.path.exists(file_path):
         os.remove(file_path)
 
     new_hdr = fits.Header()
-    hdu = fits.PrimaryHDU(np.flipud(array_2d), new_hdr)
+
+    flip_for_ds9 = conf.instance.general.get("fits", "flip_for_ds9", bool)
+
+    if flip_for_ds9:
+        hdu = fits.PrimaryHDU(np.flipud(array_2d), new_hdr)
+    else:
+        hdu = fits.PrimaryHDU(array_2d, new_hdr)
     hdu.writeto(file_path)
 
 
-def numpy_array_2d_from_fits(file_path, hdu):
+def numpy_array_2d_from_fits(file_path, hdu, do_not_scale_image_data=False):
     """Read a 2D NumPy array to a .fits file.
 
     After loading the NumPy array, the array is flipped upside-down using np.flipud. This is so that the structures \
@@ -351,6 +373,11 @@ def numpy_array_2d_from_fits(file_path, hdu):
         The full path of the file that is loaded, including the file name and '.fits' extension.
     hdu : int
         The HDU extension of the array that is loaded from the .fits file.
+    flip_for_ds9 : bool
+        If True, a np.flipud() is applied so that matplotlib figures display in the same orientation as when loaded in
+        DS9.
+    do_not_scale_image_data : bool
+        If True, the .fits file is not rescaled automatically based on the .fits header info.
 
     Returns
     -------
@@ -361,12 +388,18 @@ def numpy_array_2d_from_fits(file_path, hdu):
     --------
     array_2d = numpy_array_from_fits(file_path='/path/to/file/filename.fits', hdu=0)
     """
-    hdu_list = fits.open(file_path)
-    return np.flipud(np.array(hdu_list[hdu].data)).astype("float64")
+    hdu_list = fits.open(file_path, do_not_scale_image_data=do_not_scale_image_data)
+
+    flip_for_ds9 = conf.instance.general.get("fits", "flip_for_ds9", bool)
+
+    if flip_for_ds9:
+        return np.flipud(np.array(hdu_list[hdu].data)).astype("float64")
+    else:
+        return np.array(hdu_list[hdu].data).astype("float64")
 
 
 @decorator_util.jit()
-def index_2d_for_index_1d_from_shape(indexes_1d, shape):
+def index_2d_for_index_1d_from(indexes_1d, shape):
     """For pixels on a 2D array of shape (rows, columns), map an array of 1D pixel indexes to 2D pixel indexes.
 
     Indexing is defined from the top-left corner rightwards and downwards, whereby the top-left pixel on the 2D array
@@ -406,7 +439,7 @@ def index_2d_for_index_1d_from_shape(indexes_1d, shape):
 
 
 @decorator_util.jit()
-def index_1d_for_index_2d_from_shape(indexes_2d, shape):
+def index_1d_for_index_2d_from(indexes_2d, shape):
     """For pixels on a 2D array of shape (rows, colums), map an array of 2D pixel indexes to 1D pixel indexes.
 
     Indexing is defined from the top-left corner rightwards and downwards, whereby the top-left pixel on the 2D array
@@ -445,7 +478,7 @@ def index_1d_for_index_2d_from_shape(indexes_2d, shape):
 
 
 @decorator_util.jit()
-def sub_array_1d_from_sub_array_2d(sub_array_2d, mask, sub_size):
+def sub_array_1d_from(sub_array_2d, mask, sub_size):
     """For a 2D sub array and mask, map the values of all unmasked pixels to a 1D sub-array.
 
     A sub-array is an array whose dimensions correspond to the hyper array (e.g. used to make the grid) \
@@ -491,9 +524,7 @@ def sub_array_1d_from_sub_array_2d(sub_array_2d, mask, sub_size):
         mask=mask, array_2d=array_2d)
     """
 
-    total_sub_pixels = mask_util.total_sub_pixels_from_mask_2d_and_sub_size(
-        mask_2d=mask, sub_size=sub_size
-    )
+    total_sub_pixels = mask_util.total_sub_pixels_from(mask=mask, sub_size=sub_size)
 
     sub_array_1d = np.zeros(shape=total_sub_pixels)
     index = 0
@@ -511,7 +542,7 @@ def sub_array_1d_from_sub_array_2d(sub_array_2d, mask, sub_size):
     return sub_array_1d
 
 
-def sub_array_2d_from_sub_array_1d(sub_array_1d, mask, sub_size):
+def sub_array_2d_from(sub_array_1d, mask, sub_size):
     """For a 1D array that was computed by util unmasked values from a 2D array of shape (rows, columns), map its \
     values back to the original 2D array where masked values are set to zero.
 
@@ -548,82 +579,109 @@ def sub_array_2d_from_sub_array_1d(sub_array_1d, mask, sub_size):
 
     sub_shape = (mask.shape[0] * sub_size, mask.shape[1] * sub_size)
 
-    sub_one_to_two = mask_util.sub_mask_2d_index_for_sub_mask_1d_index_via_mask_2d(
-        mask_2d=mask, sub_size=sub_size
+    sub_one_to_two = mask_util.sub_mask_index_for_sub_mask_1d_index_via_mask_from(
+        mask=mask, sub_size=sub_size
     ).astype("int")
 
-    return sub_array_2d_from_sub_array_1d_sub_shape_via_sub_indexes(
+    return sub_array_2d_via_sub_indexes_from(
         sub_array_1d=sub_array_1d,
         sub_shape=sub_shape,
-        sub_mask_2d_index_for_sub_mask_1d_index=sub_one_to_two,
+        sub_mask_index_for_sub_mask_1d_index=sub_one_to_two,
     )
 
 
 @decorator_util.jit()
-def sub_array_2d_from_sub_array_1d_sub_shape_via_sub_indexes(
-    sub_array_1d, sub_shape, sub_mask_2d_index_for_sub_mask_1d_index
+def sub_array_2d_via_sub_indexes_from(
+    sub_array_1d, sub_shape, sub_mask_index_for_sub_mask_1d_index
 ):
 
     array_2d = np.zeros(sub_shape)
 
-    for index in range(len(sub_mask_2d_index_for_sub_mask_1d_index)):
+    for index in range(len(sub_mask_index_for_sub_mask_1d_index)):
         array_2d[
-            sub_mask_2d_index_for_sub_mask_1d_index[index, 0],
-            sub_mask_2d_index_for_sub_mask_1d_index[index, 1],
+            sub_mask_index_for_sub_mask_1d_index[index, 0],
+            sub_mask_index_for_sub_mask_1d_index[index, 1],
         ] = sub_array_1d[index]
 
     return array_2d
 
 
 @decorator_util.jit()
-def peak_pixels_from_array_2d(array_2d, mask_2d=None):
+def sub_array_complex_1d_from(sub_array_2d, mask, sub_size):
+    """For a 2D sub array and mask, map the values of all unmasked pixels to a 1D sub-array.
 
-    if mask_2d is None:
-        mask_2d = np.full(fill_value=False, shape=array_2d.shape)
+    A sub-array is an array whose dimensions correspond to the hyper array (e.g. used to make the grid) \
+    multiplid by the sub_size. E.g., it is an array that would be generated using the sub-grid and not binning \
+    up values in sub-pixels back to the grid.
 
-    peak_pixels = []
+    The pixel coordinate origin is at the top left corner of the 2D array and goes right-wards and downwards,
+    with sub-pixels then going right and downwards in each pixel. For example, for an array of shape (3,3) and a \
+    sub-grid size of 2 where all pixels are unmasked:
 
-    for y in range(1, array_2d.shape[0] - 1):
-        for x in range(1, array_2d.shape[1] - 1):
-            if not mask_2d[y, x]:
-                if (
-                    array_2d[y, x] > array_2d[y + 1, x]
-                    and array_2d[y, x] > array_2d[y + 1, x + 1]
-                    and array_2d[y, x] > array_2d[y, x + 1]
-                    and array_2d[y, x] > array_2d[y - 1, x + 1]
-                    and array_2d[y, x] > array_2d[y - 1, x]
-                    and array_2d[y, x] > array_2d[y - 1, x - 1]
-                    and array_2d[y, x] > array_2d[y, x - 1]
-                    and array_2d[y, x] > array_2d[y + 1, x - 1]
-                ):
+    - pixel [0,0] of the 2D array will correspond to index 0 of the 1D array.
+    - pixel [0,1] of the 2D array will correspond to index 1 of the 1D array.
+    - pixel [1,0] of the 2D array will correspond to index 2 of the 1D array.
+    - pixel [2,0] of the 2D array will correspond to index 4 of the 1D array.
+    - pixel [1,0] of the 2D array will correspond to index 12 of the 1D array.
 
-                    peak_pixels.append([y, x])
+    Parameters
+    ----------
+    sub_array_2d : ndarray
+        A 2D array of values on the dimensions of the sub-grid.
+    mask : ndarray
+        A 2D array of bools, where *False* values mean unmasked and are included in the util.
+    array_2d : ndarray
+        The 2D array of values which are mapped to a 1D array.
 
-    return peak_pixels
+    Returns
+    --------
+    ndarray
+        A 1D array of values mapped from the 2D array with dimensions (total_unmasked_pixels).
+
+    Examples
+    --------
+
+    sub_array_2d = np.array([[ 1.0,  2.0,  5.0,  6.0],
+                             [ 3.0,  4.0,  7.0,  8.0],
+                             [ 9.0, 10.0, 13.0, 14.0],
+                             [11.0, 12.0, 15.0, 16.0])
+
+    mask = np.array([[True, False],
+                     [False, False]])
+
+    sub_array_1d = map_sub_array_2d_to_masked_sub_array_1d_from_sub_array_2d_mask_and_sub_size( \
+        mask=mask, array_2d=array_2d)
+    """
+
+    total_sub_pixels = mask_util.total_sub_pixels_from(mask=mask, sub_size=sub_size)
+
+    sub_array_1d = 0 + 0j * np.zeros(shape=total_sub_pixels)
+    index = 0
+
+    for y in range(mask.shape[0]):
+        for x in range(mask.shape[1]):
+            if not mask[y, x]:
+                for y1 in range(sub_size):
+                    for x1 in range(sub_size):
+                        sub_array_1d[index] = sub_array_2d[
+                            y * sub_size + y1, x * sub_size + x1
+                        ]
+                        index += 1
+
+    return sub_array_1d
 
 
 @decorator_util.jit()
-def trough_pixels_from_array_2d(array_2d, mask_2d=None):
+def sub_array_complex_2d_via_sub_indexes_from(
+    sub_array_1d, sub_shape, sub_mask_index_for_sub_mask_1d_index
+):
 
-    if mask_2d is None:
-        mask_2d = np.full(fill_value=False, shape=array_2d.shape)
+    array_2d = 0 + 0j * np.zeros(sub_shape)
 
-    trough_pixels = []
+    for index in range(len(sub_mask_index_for_sub_mask_1d_index)):
+        array_2d[
+            sub_mask_index_for_sub_mask_1d_index[index, 0],
+            sub_mask_index_for_sub_mask_1d_index[index, 1],
+        ] = sub_array_1d[index]
 
-    for y in range(1, array_2d.shape[0] - 1):
-        for x in range(1, array_2d.shape[1] - 1):
-            if not mask_2d[y, x]:
-                if (
-                    array_2d[y, x] < array_2d[y + 1, x]
-                    and array_2d[y, x] < array_2d[y + 1, x + 1]
-                    and array_2d[y, x] < array_2d[y, x + 1]
-                    and array_2d[y, x] < array_2d[y - 1, x + 1]
-                    and array_2d[y, x] < array_2d[y - 1, x]
-                    and array_2d[y, x] < array_2d[y - 1, x - 1]
-                    and array_2d[y, x] < array_2d[y, x - 1]
-                    and array_2d[y, x] < array_2d[y + 1, x - 1]
-                ):
-
-                    trough_pixels.append([y, x])
-
-    return trough_pixels
+    return array_2d

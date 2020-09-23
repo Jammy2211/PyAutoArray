@@ -3,7 +3,7 @@ from autoarray import decorator_util
 
 
 @decorator_util.jit()
-def constant_regularization_matrix_from_pixel_neighbors(
+def constant_regularization_matrix_from(
     coefficient, pixel_neighbors, pixel_neighbors_size
 ):
     """From the pixel-neighbors, setup the regularization matrix using the instance regularization scheme.
@@ -36,7 +36,7 @@ def constant_regularization_matrix_from_pixel_neighbors(
     return regularization_matrix
 
 
-def adaptive_regularization_weights_from_pixel_signals(
+def adaptive_regularization_weights_from(
     inner_coefficient, outer_coefficient, pixel_signals
 ):
     """Compute the regularization weights, which are the effective regularization coefficient of every \
@@ -62,7 +62,7 @@ def adaptive_regularization_weights_from_pixel_signals(
 
 
 @decorator_util.jit()
-def weighted_regularization_matrix_from_pixel_neighbors(
+def weighted_regularization_matrix_from(
     regularization_weights, pixel_neighbors, pixel_neighbors_size
 ):
     """From the pixel-neighbors, setup the regularization matrix using the weighted regularization scheme.

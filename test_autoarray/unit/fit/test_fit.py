@@ -2,34 +2,32 @@ import autoarray as aa
 
 import numpy as np
 
-from test_autoarray.mock import mock_inversion
+from test_autoarray import mock
 
 
-class TestImagingFit:
+class TestFitImaging:
     def test__image_and_model_are_identical__no_masking__check_values_are_correct(self):
 
-        mask = aa.mask.manual(
-            mask_2d=np.array([[False, False], [False, False]]),
+        mask = aa.Mask.manual(
+            mask=np.array([[False, False], [False, False]]),
             sub_size=1,
             pixel_scales=(1.0, 1.0),
         )
 
-        data = aa.masked.array.manual_1d(
-            array=np.array([1.0, 2.0, 3.0, 4.0]), mask=mask
-        )
-        noise_map = aa.masked.array.manual_1d(
+        data = aa.Array.manual_mask(array=np.array([1.0, 2.0, 3.0, 4.0]), mask=mask)
+        noise_map = aa.Array.manual_mask(
             array=np.array([2.0, 2.0, 2.0, 2.0]), mask=mask
         )
 
-        imaging = aa.imaging(image=data, noise_map=noise_map)
+        imaging = aa.Imaging(image=data, noise_map=noise_map)
 
-        masked_imaging = aa.masked.imaging(imaging=imaging, mask=mask)
+        masked_imaging = aa.MaskedImaging(imaging=imaging, mask=mask)
 
-        model_data = aa.masked.array.manual_1d(
+        model_image = aa.Array.manual_mask(
             array=np.array([1.0, 2.0, 3.0, 4.0]), mask=mask
         )
 
-        fit = aa.fit(masked_dataset=masked_imaging, model_data=model_data)
+        fit = aa.FitImaging(masked_imaging=masked_imaging, model_image=model_image)
 
         assert (fit.mask == np.array([[False, False], [False, False]])).all()
 
@@ -63,32 +61,28 @@ class TestImagingFit:
         assert fit.chi_squared == 0.0
         assert fit.reduced_chi_squared == 0.0
         assert fit.noise_normalization == np.sum(np.log(2 * np.pi * noise_map ** 2.0))
-        assert fit.likelihood == -0.5 * (fit.chi_squared + fit.noise_normalization)
+        assert fit.log_likelihood == -0.5 * (fit.chi_squared + fit.noise_normalization)
 
     def test__image_and_model_are_different__inclue_masking__check_values_are_correct(
         self
     ):
 
-        mask = aa.mask.manual(
-            mask_2d=np.array([[False, False], [True, False]]),
+        mask = aa.Mask.manual(
+            mask=np.array([[False, False], [True, False]]),
             sub_size=1,
             pixel_scales=(1.0, 1.0),
         )
 
-        data = aa.masked.array.manual_1d(array=np.array([1.0, 2.0, 4.0]), mask=mask)
-        noise_map = aa.masked.array.manual_1d(
-            array=np.array([2.0, 2.0, 2.0]), mask=mask
-        )
+        data = aa.Array.manual_mask(array=np.array([1.0, 2.0, 4.0]), mask=mask)
+        noise_map = aa.Array.manual_mask(array=np.array([2.0, 2.0, 2.0]), mask=mask)
 
-        imaging = aa.imaging(image=data, noise_map=noise_map)
+        imaging = aa.Imaging(image=data, noise_map=noise_map)
 
-        masked_imaging = aa.masked.imaging(imaging=imaging, mask=mask)
+        masked_imaging = aa.MaskedImaging(imaging=imaging, mask=mask)
 
-        model_data = aa.masked.array.manual_1d(
-            array=np.array([1.0, 2.0, 3.0]), mask=mask
-        )
+        model_image = aa.Array.manual_mask(array=np.array([1.0, 2.0, 3.0]), mask=mask)
 
-        fit = aa.fit(masked_dataset=masked_imaging, model_data=model_data)
+        fit = aa.FitImaging(masked_imaging=masked_imaging, model_image=model_image)
 
         assert (fit.mask == np.array([[False, False], [True, False]])).all()
 
@@ -120,82 +114,91 @@ class TestImagingFit:
         assert fit.chi_squared == 0.25
         assert fit.reduced_chi_squared == 0.25 / 3.0
         assert fit.noise_normalization == np.sum(np.log(2 * np.pi * noise_map ** 2.0))
-        assert fit.likelihood == -0.5 * (fit.chi_squared + fit.noise_normalization)
+        assert fit.log_likelihood == -0.5 * (fit.chi_squared + fit.noise_normalization)
 
     def test__image_and_model_are_identical__inversion_included__changes_certain_properties(
         self
     ):
 
-        mask = aa.mask.manual(
-            mask_2d=np.array([[False, False], [False, False]]),
+        mask = aa.Mask.manual(
+            mask=np.array([[False, False], [False, False]]),
             sub_size=1,
             pixel_scales=(1.0, 1.0),
         )
 
-        data = aa.masked.array.manual_1d(
-            array=np.array([1.0, 2.0, 3.0, 4.0]), mask=mask
-        )
-        noise_map = aa.masked.array.manual_1d(
+        data = aa.Array.manual_mask(array=np.array([1.0, 2.0, 3.0, 4.0]), mask=mask)
+        noise_map = aa.Array.manual_mask(
             array=np.array([2.0, 2.0, 2.0, 2.0]), mask=mask
         )
 
-        imaging = aa.imaging(image=data, noise_map=noise_map)
+        imaging = aa.Imaging(image=data, noise_map=noise_map)
 
-        masked_imaging = aa.masked.imaging(imaging=imaging, mask=mask)
+        masked_imaging = aa.MaskedImaging(imaging=imaging, mask=mask)
 
-        model_data = aa.masked.array.manual_1d(
+        model_image = aa.Array.manual_mask(
             array=np.array([1.0, 2.0, 3.0, 4.0]), mask=mask
         )
 
-        inversion = mock_inversion.MockFitInversion(
+        inversion = mock.MockFitInversion(
             regularization_term=2.0,
             log_det_curvature_reg_matrix_term=3.0,
             log_det_regularization_matrix_term=4.0,
         )
 
-        fit = aa.fit(
-            masked_dataset=masked_imaging, model_data=model_data, inversion=inversion
+        fit = aa.FitImaging(
+            masked_imaging=masked_imaging, model_image=model_image, inversion=inversion
         )
 
         assert fit.chi_squared == 0.0
         assert fit.reduced_chi_squared == 0.0
         assert fit.noise_normalization == np.sum(np.log(2 * np.pi * noise_map ** 2.0))
-        assert fit.likelihood == -0.5 * (fit.chi_squared + fit.noise_normalization)
+        assert fit.log_likelihood == -0.5 * (fit.chi_squared + fit.noise_normalization)
 
-        assert fit.likelihood_with_regularization == -0.5 * (
+        assert fit.log_likelihood_with_regularization == -0.5 * (
             fit.chi_squared + 2.0 + fit.noise_normalization
         )
-        assert fit.evidence == -0.5 * (
+        assert fit.log_evidence == -0.5 * (
             fit.chi_squared + 2.0 + 3.0 - 4.0 + fit.noise_normalization
         )
-        assert fit.figure_of_merit == fit.evidence
+        assert fit.figure_of_merit == fit.log_evidence
 
 
-class TestInterferometerFit:
+class TestFitInterferometer:
     def test__visibilities_and_model_are_identical__no_masking__check_values_are_correct(
         self
     ):
 
-        mask = aa.mask.manual(
-            mask_2d=np.array([[False, False], [False, False]]),
+        visibilities_mask = np.full(fill_value=False, shape=(2, 2))
+
+        real_space_mask = aa.Mask.manual(
+            mask=np.array([[False, False], [False, False]]),
             sub_size=1,
             pixel_scales=(1.0, 1.0),
         )
 
-        data = aa.visibilities.manual_1d(visibilities=[[1.0, 2.0], [3.0, 4.0]])
-        noise_map = aa.visibilities.manual_1d(visibilities=[[2.0, 2.0], [2.0, 2.0]])
+        data = aa.Visibilities.manual_1d(visibilities=[[1.0, 2.0], [3.0, 4.0]])
+        noise_map = aa.VisibilitiesNoiseMap.manual_1d(
+            visibilities=[[2.0, 2.0], [2.0, 2.0]]
+        )
 
-        interferometer = aa.interferometer(
+        interferometer = aa.Interferometer(
             visibilities=data, noise_map=noise_map, uv_wavelengths=np.ones(shape=(2, 2))
         )
 
-        masked_interferometer = aa.masked.interferometer(
-            interferometer=interferometer, real_space_mask=mask
+        masked_interferometer = aa.MaskedInterferometer(
+            interferometer=interferometer,
+            visibilities_mask=visibilities_mask,
+            real_space_mask=real_space_mask,
         )
 
-        model_data = aa.visibilities.manual_1d(visibilities=[[1.0, 2.0], [3.0, 4.0]])
+        model_visibilities = aa.Visibilities.manual_1d(
+            visibilities=[[1.0, 2.0], [3.0, 4.0]]
+        )
 
-        fit = aa.fit(masked_dataset=masked_interferometer, model_data=model_data)
+        fit = aa.FitInterferometer(
+            masked_interferometer=masked_interferometer,
+            model_visibilities=model_visibilities,
+        )
 
         assert (
             fit.visibilities_mask == np.array([[False, False], [False, False]])
@@ -224,32 +227,43 @@ class TestInterferometerFit:
         assert fit.chi_squared == 0.0
         assert fit.reduced_chi_squared == 0.0
         assert fit.noise_normalization == np.sum(np.log(2 * np.pi * noise_map ** 2.0))
-        assert fit.likelihood == -0.5 * (fit.chi_squared + fit.noise_normalization)
+        assert fit.log_likelihood == -0.5 * (fit.chi_squared + fit.noise_normalization)
 
     def test__visibilities_and_model_are_different__no_masking__check_values_are_correct(
         self
     ):
 
-        mask = aa.mask.manual(
-            mask_2d=np.array([[False, False], [False, False]]),
+        visibilities_mask = np.full(fill_value=False, shape=(2, 2))
+
+        real_space_mask = aa.Mask.manual(
+            mask=np.array([[False, False], [False, False]]),
             sub_size=1,
             pixel_scales=(1.0, 1.0),
         )
 
-        data = aa.visibilities.manual_1d(visibilities=[[1.0, 2.0], [3.0, 4.0]])
-        noise_map = aa.visibilities.manual_1d(visibilities=[[2.0, 2.0], [2.0, 2.0]])
+        data = aa.Visibilities.manual_1d(visibilities=[[1.0, 2.0], [3.0, 4.0]])
+        noise_map = aa.VisibilitiesNoiseMap.manual_1d(
+            visibilities=[[2.0, 2.0], [2.0, 2.0]]
+        )
 
-        interferometer = aa.interferometer(
+        interferometer = aa.Interferometer(
             visibilities=data, noise_map=noise_map, uv_wavelengths=np.ones(shape=(2, 2))
         )
 
-        masked_interferometer = aa.masked.interferometer(
-            interferometer=interferometer, real_space_mask=mask
+        masked_interferometer = aa.MaskedInterferometer(
+            interferometer=interferometer,
+            visibilities_mask=visibilities_mask,
+            real_space_mask=real_space_mask,
         )
 
-        model_data = aa.visibilities.manual_1d(visibilities=[[1.0, 2.0], [3.0, 3.0]])
+        model_visibilities = aa.Visibilities.manual_1d(
+            visibilities=[[1.0, 2.0], [3.0, 3.0]]
+        )
 
-        fit = aa.fit(masked_dataset=masked_interferometer, model_data=model_data)
+        fit = aa.FitInterferometer(
+            masked_interferometer=masked_interferometer,
+            model_visibilities=model_visibilities,
+        )
 
         assert (
             fit.visibilities_mask == np.array([[False, False], [False, False]])
@@ -278,52 +292,60 @@ class TestInterferometerFit:
         assert fit.chi_squared == 0.25
         assert fit.reduced_chi_squared == 0.25 / 4.0
         assert fit.noise_normalization == np.sum(np.log(2 * np.pi * noise_map ** 2.0))
-        assert fit.likelihood == -0.5 * (fit.chi_squared + fit.noise_normalization)
+        assert fit.log_likelihood == -0.5 * (fit.chi_squared + fit.noise_normalization)
 
     def test__visibilities_and_model_are_identical__inversion_included__changes_certain_properties(
         self
     ):
 
-        mask = aa.mask.manual(
-            mask_2d=np.array([[False, False], [False, False]]),
+        visibilities_mask = np.full(fill_value=False, shape=(2, 2))
+
+        real_space_mask = aa.Mask.manual(
+            mask=np.array([[False, False], [False, False]]),
             sub_size=1,
             pixel_scales=(1.0, 1.0),
         )
 
-        data = aa.visibilities.manual_1d(visibilities=[[1.0, 2.0], [3.0, 4.0]])
-        noise_map = aa.visibilities.manual_1d(visibilities=[[2.0, 2.0], [2.0, 2.0]])
+        data = aa.Visibilities.manual_1d(visibilities=[[1.0, 2.0], [3.0, 4.0]])
+        noise_map = aa.VisibilitiesNoiseMap.manual_1d(
+            visibilities=[[2.0, 2.0], [2.0, 2.0]]
+        )
 
-        interferometer = aa.interferometer(
+        interferometer = aa.Interferometer(
             visibilities=data, noise_map=noise_map, uv_wavelengths=np.ones(shape=(2, 2))
         )
 
-        masked_interferometer = aa.masked.interferometer(
-            interferometer=interferometer, real_space_mask=mask
+        masked_interferometer = aa.MaskedInterferometer(
+            interferometer=interferometer,
+            visibilities_mask=visibilities_mask,
+            real_space_mask=real_space_mask,
         )
 
-        model_data = aa.visibilities.manual_1d(visibilities=[[1.0, 2.0], [3.0, 4.0]])
+        model_visibilities = aa.Visibilities.manual_1d(
+            visibilities=[[1.0, 2.0], [3.0, 4.0]]
+        )
 
-        inversion = mock_inversion.MockFitInversion(
+        inversion = mock.MockFitInversion(
             regularization_term=2.0,
             log_det_curvature_reg_matrix_term=3.0,
             log_det_regularization_matrix_term=4.0,
         )
 
-        fit = aa.fit(
-            masked_dataset=masked_interferometer,
-            model_data=model_data,
+        fit = aa.FitInterferometer(
+            masked_interferometer=masked_interferometer,
+            model_visibilities=model_visibilities,
             inversion=inversion,
         )
 
         assert fit.chi_squared == 0.0
         assert fit.reduced_chi_squared == 0.0
         assert fit.noise_normalization == np.sum(np.log(2 * np.pi * noise_map ** 2.0))
-        assert fit.likelihood == -0.5 * (fit.chi_squared + fit.noise_normalization)
+        assert fit.log_likelihood == -0.5 * (fit.chi_squared + fit.noise_normalization)
 
-        assert fit.likelihood_with_regularization == -0.5 * (
+        assert fit.log_likelihood_with_regularization == -0.5 * (
             fit.chi_squared + 2.0 + fit.noise_normalization
         )
-        assert fit.evidence == -0.5 * (
+        assert fit.log_evidence == -0.5 * (
             fit.chi_squared + 2.0 + 3.0 - 4.0 + fit.noise_normalization
         )
-        assert fit.figure_of_merit == fit.evidence
+        assert fit.figure_of_merit == fit.log_evidence

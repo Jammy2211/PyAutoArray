@@ -3,116 +3,89 @@ import logging
 import numpy as np
 
 from autoarray import exc
-from autoarray.mask import geometry, mapping, regions
+from autoarray.structures import abstract_structure
+from autoarray.mask import abstract_mask
 from autoarray.util import array_util, mask_util
 
 logging.basicConfig()
 logger = logging.getLogger(__name__)
 
 
-class Mask(np.ndarray):
-
-    # noinspection PyUnusedLocal
-    def __new__(
-        cls, mask_2d, pixel_scales=None, sub_size=1, origin=(0.0, 0.0), *args, **kwargs
+class Mask(abstract_mask.AbstractMask):
+    @classmethod
+    def manual(
+        cls, mask, pixel_scales=None, sub_size=1, origin=(0.0, 0.0), invert=False
     ):
-        """ A mask, which is applied to a 2D array of hyper_galaxies to extract a set of unmasked image pixels (i.e. mask entry \
-        is *False* or 0) which are then fitted in an analysis.
+        """Create a Mask (see *Mask.__new__*) by inputting the array values in 2D, for example:
 
-        The mask retains the pixel scale of the array and has a centre and origin.
+        mask=np.array([[False, False],
+                       [True, False]])
+
+        mask=[[False, False],
+               [True, False]]
 
         Parameters
         ----------
-        mask_2d: ndarray
-            An array of bools representing the mask.
-        pixel_scales: (float, float)
-            The arc-second to pixel conversion factor of each pixel.
+        mask : np.ndarray or list
+            The bool values of the mask input as an ndarray of shape [total_y_pixels, total_x_pixels ]or a list of
+            lists.
+        pixel_scales : (float, float) or float
+            The pixel conversion scale of a pixel in the y and x directions. If input as a float, the pixel_scales
+            are converted to the format (float, float).
+        sub_size : int
+            The size (sub_size x sub_size) of each unmasked pixels sub-array.
         origin : (float, float)
-            The (y,x) arc-second origin of the mask's coordinate system.
-        centre : (float, float)
-            The (y,x) arc-second centre of the mask provided it is a standard geometric shape (e.g. a circle).
+            The origin of the array's mask.
+        invert : bool
+            If True, the input bools of the mask array are inverted such that previously unmasked entries containing
+            *False* become masked entries with *True*, and visa versa.
         """
-        # noinspection PyArgumentList
-
-        mask_2d = mask_2d.astype("bool")
-        obj = mask_2d.view(cls)
-        obj.sub_size = sub_size
-        obj.pixel_scales = pixel_scales
-        obj.origin = origin
-        return obj
-
-    @property
-    def mapping(self):
-        return mapping.Mapping(mask=self)
-
-    @property
-    def geometry(self):
-        return geometry.Geometry(mask=self)
-
-    @property
-    def regions(self):
-        return regions.Regions(mask=self)
-
-    def __array_finalize__(self, obj):
-
-        if isinstance(obj, Mask):
-            self.sub_size = obj.sub_size
-            self.pixel_scales = obj.pixel_scales
-            self.origin = obj.origin
-        else:
-            self.sub_size = 1
-            self.origin = (0.0, 0.0)
-            self.pixel_scales = None
-
-    @classmethod
-    def manual(
-        cls, mask_2d, pixel_scales=None, sub_size=1, origin=(0.0, 0.0), invert=False
-    ):
-
-        if type(mask_2d) is list:
-            mask_2d = np.asarray(mask_2d).astype("bool")
+        if type(mask) is list:
+            mask = np.asarray(mask).astype("bool")
 
         if invert:
-            mask_2d = np.invert(mask_2d)
+            mask = np.invert(mask)
 
-        if type(pixel_scales) is float:
-            pixel_scales = (pixel_scales, pixel_scales)
+        pixel_scales = abstract_structure.convert_pixel_scales(
+            pixel_scales=pixel_scales
+        )
 
-        if len(mask_2d.shape) != 2:
-            raise exc.MaskException("The input mask_2d is not a two dimensional array")
+        if len(mask.shape) != 2:
+            raise exc.MaskException("The input mask is not a two dimensional array")
 
-        return Mask(
-            mask_2d=mask_2d, pixel_scales=pixel_scales, sub_size=sub_size, origin=origin
+        return cls(
+            mask=mask, pixel_scales=pixel_scales, sub_size=sub_size, origin=origin
         )
 
     @classmethod
     def unmasked(
         cls, shape_2d, pixel_scales=None, sub_size=1, origin=(0.0, 0.0), invert=False
     ):
-        """Setup a mask where all pixels are unmasked.
+        """Create a mask where all pixels are *False* and therefore unmasked.
 
         Parameters
         ----------
-        shape : (int, int)
-            The (y,x) shape of the mask in unit_label of pixels.
-        pixel_scales : float or (float, float)
-            The arc-second to pixel conversion factor of each pixel.
+        mask : np.ndarray or list
+            The bool values of the mask input as an ndarray of shape [total_y_pixels, total_x_pixels ]or a list of
+            lists.
+        pixel_scales : (float, float) or float
+            The pixel conversion scale of a pixel in the y and x directions. If input as a float, the pixel_scales
+            are converted to the format (float, float).
+        sub_size : int
+            The size (sub_size x sub_size) of each unmasked pixels sub-array.
+        origin : (float, float)
+            The origin of the array's mask.
+        invert : bool
+            If True, the input bools of the mask array are inverted such that previously unmasked entries containing
+            *False* become masked entries with *True*, and visa versa.
         """
         return cls.manual(
-            mask_2d=np.full(shape=shape_2d, fill_value=False),
+            mask=np.full(shape=shape_2d, fill_value=False),
             pixel_scales=pixel_scales,
             sub_size=sub_size,
             origin=origin,
             invert=invert,
         )
-
-    @property
-    def sub_length(self):
-        return int(self.sub_size ** 2.0)
-
-    @property
-    def sub_fraction(self):
-        return 1.0 / self.sub_length
 
     @classmethod
     def circular(
@@ -125,30 +98,39 @@ class Mask(np.ndarray):
         centre=(0.0, 0.0),
         invert=False,
     ):
-        """Setup a mask where unmasked pixels are within a circle of an input arc second radius and centre.
+        """Create a Mask (see *Mask.__new__*) where all *False* entries are within a circle of input radius and
+        centre.
 
         Parameters
         ----------
-        shape: (int, int)
-            The (y,x) shape of the mask in unit_label of pixels.
-        pixel_scales : (float, float)
-            The arc-second to pixel conversion factor of each pixel.
+        shape_2d : (int, int)
+            The (y,x) shape of the mask in units of pixels.
         radius : float
-            The radius (in arc seconds) of the circle within which pixels unmasked.
+            The radius (in scaled units) of the circle within which pixels are False and unmasked.
+        pixel_scales : (float, float) or float
+            The pixel conversion scale of a pixel in the y and x directions. If input as a float, the pixel_scales
+            are converted to the format (float, float).
+        sub_size : int
+            The size (sub_size x sub_size) of each unmasked pixels sub-array.
+        origin : (float, float)
+            The origin of the array's mask.
         centre: (float, float)
             The centre of the circle used to mask pixels.
+        invert : bool
+            If True, the input bools of the mask array are inverted such that previously unmasked entries containing
+            *False* become masked entries with *True*, and visa versa.
         """
 
         if type(pixel_scales) is not tuple:
             if type(pixel_scales) is float or int:
                 pixel_scales = (float(pixel_scales), float(pixel_scales))
 
-        mask_2d = mask_util.mask_2d_circular_from_shape_2d_pixel_scales_and_radius(
+        mask = mask_util.mask_circular_from(
             shape_2d=shape_2d, pixel_scales=pixel_scales, radius=radius, centre=centre
         )
 
         return cls.manual(
-            mask_2d=mask_2d,
+            mask=mask,
             pixel_scales=pixel_scales,
             sub_size=sub_size,
             origin=origin,
@@ -167,28 +149,36 @@ class Mask(np.ndarray):
         centre=(0.0, 0.0),
         invert=False,
     ):
-        """Setup a mask where unmasked pixels are within an annulus of input inner and outer arc second radii and \
-         centre.
+        """Create a Mask (see *Mask.__new__*) where all *False* entries are within an annulus of input inner radius,
+         outer radius and centre.
 
         Parameters
         ----------
-        shape : (int, int)
-            The (y,x) shape of the mask in unit_label of pixels.
-        pixel_scales : (float, float)
-            The arc-second to pixel conversion factor of each pixel.
+        shape_2d : (int, int)
+            The (y,x) shape of the mask in units of pixels.
         inner_radius : float
-            The radius (in arc seconds) of the inner circle outside of which pixels are unmasked.
+            The inner radius (in scaled units) of the annulus within which pixels are False and unmasked.
         outer_radius : float
-            The radius (in arc seconds) of the outer circle within which pixels are unmasked.
+            The outer radius (in scaled units) of the annulus within which pixels are False and unmasked.
+        pixel_scales : (float, float) or float
+            The pixel conversion scale of a pixel in the y and x directions. If input as a float, the pixel_scales
+            are converted to the format (float, float).
+        sub_size : int
+            The size (sub_size x sub_size) of each unmasked pixels sub-array.
+        origin : (float, float)
+            The origin of the array's mask.
         centre: (float, float)
-            The centre of the annulus used to mask pixels.
+            The centre of the circle used to mask pixels.
+        invert : bool
+            If True, the input bools of the mask array are inverted such that previously unmasked entries containing
+            *False* become masked entries with *True*, and visa versa.
         """
 
         if type(pixel_scales) is not tuple:
             if type(pixel_scales) is float or int:
                 pixel_scales = (float(pixel_scales), float(pixel_scales))
 
-        mask_2d = mask_util.mask_2d_circular_annular_from_shape_2d_pixel_scales_and_radii(
+        mask = mask_util.mask_circular_annular_from(
             shape_2d=shape_2d,
             pixel_scales=pixel_scales,
             inner_radius=inner_radius,
@@ -197,7 +187,7 @@ class Mask(np.ndarray):
         )
 
         return cls.manual(
-            mask_2d=mask_2d,
+            mask=mask,
             pixel_scales=pixel_scales,
             sub_size=sub_size,
             origin=origin,
@@ -217,35 +207,39 @@ class Mask(np.ndarray):
         centre=(0.0, 0.0),
         invert=False,
     ):
-        """Setup a mask where unmasked pixels are outside an annulus of input inner and outer arc second radii, but \
-        within a second outer radius, and at a given centre.
-
-        This mask there has two distinct unmasked regions (an inner circle and outer annulus), with an inner annulus \
-        of masked pixels.
+        """Create a Mask (see *Mask.__new__*) where all *False* entries are within an inner circle and second outer
+         circle, forming an inverse annulus.
 
         Parameters
         ----------
-        shape : (int, int)
-            The (y,x) shape of the mask in unit_label of pixels.
-        pixel_scales : (float, float)
-            The arc-second to pixel conversion factor of each pixel.
+        shape_2d : (int, int)
+            The (y,x) shape of the mask in units of pixels.
         inner_radius : float
-            The radius (in arc seconds) of the inner circle inside of which pixels are unmasked.
+            The inner radius (in scaled units) of the annulus within which pixels are False and unmasked.
         outer_radius : float
-            The radius (in arc seconds) of the outer circle within which pixels are masked and outside of which they \
-            are unmasked.
+            The first outer radius (in scaled units) of the annulus within which pixels are True and masked.
         outer_radius_2 : float
-            The radius (in arc seconds) of the second outer circle within which pixels are unmasked and outside of \
-            which they masked.
+            The second outer radius (in scaled units) of the annulus within which pixels are False and unmasked and
+            outside of which all entries are True and masked..
+        pixel_scales : (float, float) or float
+            The pixel conversion scale of a pixel in the y and x directions. If input as a float, the pixel_scales
+            are converted to the format (float, float).
+        sub_size : int
+            The size (sub_size x sub_size) of each unmasked pixels sub-array.
+        origin : (float, float)
+            The origin of the array's mask.
         centre: (float, float)
-            The centre of the anti-annulus used to mask pixels.
+            The centre of the circle used to mask pixels.
+        invert : bool
+            If True, the input bools of the mask array are inverted such that previously unmasked entries containing
+            *False* become masked entries with *True*, and visa versa.
         """
 
         if type(pixel_scales) is not tuple:
             if type(pixel_scales) is float or int:
                 pixel_scales = (float(pixel_scales), float(pixel_scales))
 
-        mask_2d = mask_util.mask_2d_circular_anti_annular_from_shape_2d_pixel_scales_and_radii(
+        mask = mask_util.mask_circular_anti_annular_from(
             shape_2d=shape_2d,
             pixel_scales=pixel_scales,
             inner_radius=inner_radius,
@@ -255,7 +249,7 @@ class Mask(np.ndarray):
         )
 
         return cls.manual(
-            mask_2d=mask_2d,
+            mask=mask,
             pixel_scales=pixel_scales,
             sub_size=sub_size,
             origin=origin,
@@ -275,30 +269,38 @@ class Mask(np.ndarray):
         centre=(0.0, 0.0),
         invert=False,
     ):
-        """ Setup a mask where unmasked pixels are within an ellipse of an input arc second major-axis and centre.
+        """Create a Mask (see *Mask.__new__*) where all *False* entries are within a circle of input radius and
+        centre.
 
         Parameters
         ----------
-        shape: (int, int)
-            The (y,x) shape of the mask in unit_label of pixels.
-        pixel_scales : (float, float)
-            The arc-second to pixel conversion factor of each pixel.
+        shape_2d : (int, int)
+            The (y,x) shape of the mask in units of pixels.
         major_axis_radius : float
-            The major-axis (in arc seconds) of the ellipse within which pixels are unmasked.
+            The major-axis (in scaled units) of the ellipse within which pixels are unmasked.
         axis_ratio : float
             The axis-ratio of the ellipse within which pixels are unmasked.
         phi : float
             The rotation angle of the ellipse within which pixels are unmasked, (counter-clockwise from the positive \
              x-axis).
+        pixel_scales : (float, float) or float
+            The pixel conversion scale of a pixel in the y and x directions. If input as a float, the pixel_scales
+            are converted to the format (float, float).
+        sub_size : int
+            The size (sub_size x sub_size) of each unmasked pixels sub-array.
+        origin : (float, float)
+            The origin of the array's mask.
         centre: (float, float)
-            The centre of the ellipse used to mask pixels.
+            The centre of the circle used to mask pixels.
+        invert : bool
+            If True, the input bools of the mask array are inverted such that previously unmasked entries containing
+            *False* become masked entries with *True*, and visa versa.
         """
-
         if type(pixel_scales) is not tuple:
             if type(pixel_scales) is float or int:
                 pixel_scales = (float(pixel_scales), float(pixel_scales))
 
-        mask_2d = mask_util.mask_2d_elliptical_from_shape_2d_pixel_scales_and_radius(
+        mask = mask_util.mask_elliptical_from(
             shape_2d=shape_2d,
             pixel_scales=pixel_scales,
             major_axis_radius=major_axis_radius,
@@ -308,7 +310,7 @@ class Mask(np.ndarray):
         )
 
         return cls.manual(
-            mask_2d=mask_2d,
+            mask=mask,
             pixel_scales=pixel_scales,
             sub_size=sub_size,
             origin=origin,
@@ -337,7 +339,7 @@ class Mask(np.ndarray):
         Parameters
         ----------
         shape: (int, int)
-            The (y,x) shape of the mask in unit_label of pixels.
+            The (y,x) shape of the mask in units of pixels.
         pixel_scales : (float, float)
             The arc-second to pixel conversion factor of each pixel.
         inner_major_axis_radius : float
@@ -362,7 +364,7 @@ class Mask(np.ndarray):
             if type(pixel_scales) is float or int:
                 pixel_scales = (float(pixel_scales), float(pixel_scales))
 
-        mask_2d = mask_util.mask_2d_elliptical_annular_from_shape_2d_pixel_scales_and_radius(
+        mask = mask_util.mask_elliptical_annular_from(
             shape_2d=shape_2d,
             pixel_scales=pixel_scales,
             inner_major_axis_radius=inner_major_axis_radius,
@@ -375,7 +377,7 @@ class Mask(np.ndarray):
         )
 
         return cls.manual(
-            mask_2d=mask_2d,
+            mask=mask,
             pixel_scales=pixel_scales,
             sub_size=sub_size,
             origin=origin,
@@ -394,12 +396,12 @@ class Mask(np.ndarray):
         invert=False,
     ):
 
-        mask_2d = mask_util.mask_2d_from_pixel_coordinates(
+        mask = mask_util.mask_via_pixel_coordinates_from(
             shape_2d=shape_2d, pixel_coordinates=pixel_coordinates, buffer=buffer
         )
 
         return cls.manual(
-            mask_2d=mask_2d,
+            mask=mask,
             pixel_scales=pixel_scales,
             sub_size=sub_size,
             origin=origin,
@@ -441,27 +443,148 @@ class Mask(np.ndarray):
         )
 
         if resized_mask_shape is not None:
-            mask = mask.mapping.resized_mask_from_new_shape(
-                new_shape=resized_mask_shape
-            )
+            mask = mask.resized_mask_from_new_shape(new_shape=resized_mask_shape)
+
+        return mask
+
+
+class Mask1D(np.ndarray):
+    def __new__(cls, mask, pixel_scale=None, origin=0.0, *args, **kwargs):
+        """ A mask, which is applied to data to extract a set of unmasked image pixels (i.e. mask entry \
+        is *False* or 0) which are then fitted in an analysis.
+
+        The mask retains the pixel scale of the array and has a centre and origin.
+
+        Parameters
+        ----------
+        mask: ndarray
+            An array of bools representing the mask.
+        pixel_scales: (float, float)
+            The arc-second to pixel conversion factor of each pixel.
+        origin : (float, float)
+            The (y,x) arc-second origin of the mask's coordinate system.
+        centre : (float, float)
+            The (y,x) arc-second centre of the mask provided it is a standard geometric shape (e.g. a circle).
+        """
+        # noinspection PyArgumentList
+
+        mask = mask.astype("bool")
+        obj = mask.view(cls)
+        obj.pixel_scales = pixel_scale
+        obj.origin = origin
+        return obj
+
+    def __array_finalize__(self, obj):
+
+        if isinstance(obj, Mask):
+            self.pixel_scale = obj.pixel_scale
+            self.origin = obj.origin
+        else:
+            self.origin = 0.0
+            self.pixel_scale = None
+
+    @classmethod
+    def manual(cls, mask, pixel_scale=None, origin=0.0, invert=False):
+
+        if type(mask) is list:
+            mask = np.asarray(mask).astype("bool")
+
+        if invert:
+            mask = np.invert(mask)
+
+        if len(mask.shape) != 1:
+            raise exc.MaskException("The input mask is not a one dimensional array")
+
+        return Mask1D(mask=mask, pixel_scale=pixel_scale, origin=origin)
+
+    @classmethod
+    def unmasked(cls, shape_1d, pixel_scale=None, origin=0.0, invert=False):
+        """Setup a mask where all pixels are unmasked.
+
+        Parameters
+        ----------
+        shape : (int, int)
+            The (y,x) shape of the mask in units of pixels.
+        pixel_scales : float or (float, float)
+            The arc-second to pixel conversion factor of each pixel.
+        """
+        return cls.manual(
+            mask=np.full(shape=shape_1d, fill_value=False),
+            pixel_scale=pixel_scale,
+            origin=origin,
+            invert=invert,
+        )
+
+    @classmethod
+    def from_masked_regions(cls, shape_1d, masked_regions):
+
+        mask = cls.unmasked(shape_1d=shape_1d)
+        masked_regions = list(
+            map(lambda region: reg.Region(region=region), masked_regions)
+        )
+        for region in masked_regions:
+            mask[region.x0 : region.x1] = True
+
+        return mask
+
+    @classmethod
+    def from_cosmic_ray_map(cls, cosmic_ray_map, cosmic_ray_buffer=0):
+        """
+        Create the mask used for CTI Calibration, which is all False unless specific regions are input for masking.
+
+        Parameters
+        ----------
+        shape_2d : (int, int)
+            The dimensions of the 2D mask.
+        frame_geometry : ci_frame.CIQuadGeometry
+            The quadrant geometry of the simulated image, defining where the parallel / serial overscans are and \
+            therefore the direction of clocking and rotations before input into the cti algorithm.
+        cosmic_ray_map : Line
+            2D arrays flagging where cosmic rays on the image.
+        cosmic_ray_buffer : int
+            If a cosmic-ray mask is supplied, the number of pixels from each ray pixels are masked in the parallel \
+            direction.
+        """
+        mask = cls.unmasked(shape_1d=cosmic_ray_map.shape_1d)
+
+        cosmic_ray_mask = (cosmic_ray_map > 0.0).astype("bool")
+
+        # TODO : refactor after unit test.
+
+        for x in range(mask.shape[0]):
+            if cosmic_ray_mask[x]:
+                mask[x : x + cosmic_ray_buffer] = True
+
+        return mask
+
+    @classmethod
+    def from_fits(cls, file_path, pixel_scale, hdu=0, origin=0.0):
+        """
+        Loads the image from a .fits file.
+
+        Parameters
+        ----------
+        file_path : str
+            The full path of the fits file.
+        hdu : int
+            The HDU number in the fits file containing the image image.
+        pixel_scales : float or (float, float)
+            The arc-second to pixel conversion factor of each pixel.
+        """
+
+        mask = cls(
+            array_util.numpy_array_1d_from_fits(file_path=file_path, hdu=hdu),
+            pixel_scale=pixel_scale,
+            origin=origin,
+        )
 
         return mask
 
     def output_to_fits(self, file_path, overwrite=False):
 
-        array_util.numpy_array_2d_to_fits(
-            array_2d=self.astype("float"), file_path=file_path, overwrite=overwrite
+        array_util.numpy_array_1d_to_fits(
+            array_1d=self.astype("float"), file_path=file_path, overwrite=overwrite
         )
-
-    @property
-    def pixel_scale(self):
-        if self.pixel_scales[0] == self.pixel_scales[1]:
-            return self.pixel_scales[0]
-        else:
-            raise exc.MaskException(
-                "Cannot return a pixel_scale for a a grid where each dimension has a "
-                "different pixel scale (e.g. pixel_scales[0] != pixel_scales[1]"
-            )
 
     @property
     def pixels_in_mask(self):
@@ -469,41 +592,24 @@ class Mask(np.ndarray):
 
     @property
     def is_all_false(self):
-        return self.pixels_in_mask == self.shape_2d[0] * self.shape_2d[1]
-
-    @property
-    def sub_pixels_in_mask(self):
-        return self.sub_size ** 2 * self.pixels_in_mask
+        return self.pixels_in_mask == self.shape_1d
 
     @property
     def shape_1d(self):
-        return self.pixels_in_mask
+        return self.shape[0]
 
     @property
-    def shape_2d(self):
-        return self.shape
+    def shape_1d_scaled(self):
+        return float(self.pixel_scale * self.shape_1d)
 
     @property
-    def sub_shape_1d(self):
-        return int(self.pixels_in_mask * self.sub_size ** 2.0)
+    def scaled_maxima(self):
+        return (self.shape_1d_scaled / 2.0) + self.origin
 
     @property
-    def sub_shape_2d(self):
-        try:
-            return (self.shape[0] * self.sub_size, self.shape[1] * self.sub_size)
-        except AttributeError:
-            print("bleh")
+    def scaled_minima(self):
+        return -(self.shape_1d_scaled / 2.0) + self.origin
 
     @property
-    def sub_mask_2d(self):
-
-        sub_shape = (self.shape[0] * self.sub_size, self.shape[1] * self.sub_size)
-
-        return mask_util.mask_2d_from_shape_2d_and_mask_2d_index_for_mask_1d_index(
-            shape_2d=sub_shape,
-            mask_2d_index_for_mask_1d_index=self.regions._sub_mask_2d_index_for_sub_mask_1d_index,
-        ).astype("bool")
-
-    @property
-    def mask_sub_1(self):
-        return self.mapping.mask_sub_1
+    def extent(self):
+        return np.asarray([self.scaled_minima, self.scaled_maxima])

@@ -1,27 +1,61 @@
 import pickle
 
 import numpy as np
+import copy
 
-from autoarray import exc
+from autoconf import conf
 from autoarray.structures import arrays
+from autoarray.structures import grids
+from autoarray.mask import mask as msk
+
+
+def grid_from_mask_and_grid_class(
+    mask, grid_class, fractional_accuracy, sub_steps, pixel_scales_interp
+):
+    if mask.pixel_scales is None:
+        return None
+
+    if grid_class is grids.Grid:
+
+        return grids.Grid.from_mask(mask=mask)
+
+    elif grid_class is grids.GridIterate:
+
+        return grids.GridIterate.from_mask(
+            mask=mask, fractional_accuracy=fractional_accuracy, sub_steps=sub_steps
+        )
+
+    elif grid_class is grids.GridInterpolate:
+
+        return grids.GridInterpolate.from_mask(
+            mask=mask, pixel_scales_interp=pixel_scales_interp
+        )
 
 
 class AbstractDataset:
-    @property
-    def name(self) -> str:
-        return "data"  #  TODO: this should have a 'real' name
-
-    def save(self, directory: str):
-        """
-        Save this instance as a pickle with the dataset name in the given directory.
+    def __init__(self, data, noise_map, positions=None, name=None):
+        """A collection of abstract 2D for different data_type classes (an image, pixel-scale, noise-map, etc.)
 
         Parameters
         ----------
-        directory
-            The directory to save into
+        data : arrays.Array
+            The array of the image data, in units of electrons per second.
+        pixel_scales : float
+            The size of each pixel in arc seconds.
+        psf : PSF
+            An array describing the PSF kernel of the image.
+        noise_map : ndarray
+            An array describing the RMS standard deviation error in each pixel, preferably in units of electrons per
+            second.
         """
-        with open(f"{directory}/{self.name}.pickle", "wb") as f:
-            pickle.dump(self, f)
+        self.data = data
+        self.noise_map = noise_map
+        self.positions = positions
+        self._name = name if name is not None else "dataset"
+
+    @property
+    def name(self) -> str:
+        return self._name
 
     @classmethod
     def load(cls, filename) -> "AbstractDataset":
@@ -40,35 +74,6 @@ class AbstractDataset:
         with open(filename, "rb") as f:
             return pickle.load(f)
 
-    def __init__(self, data, noise_map, exposure_time_map=None):
-        """A collection of abstract 2D for different data_type classes (an image, pixel-scale, noise-map, etc.)
-
-        Parameters
-        ----------
-        data : arrays.Array
-            The array of the image data_type, in unit_label of electrons per second.
-        pixel_scales : float
-            The size of each pixel in arc seconds.
-        psf : PSF
-            An array describing the PSF kernel of the image.
-        noise_map : NoiseMap | float | ndarray
-            An array describing the RMS standard deviation error in each pixel, preferably in unit_label of electrons per
-            second.
-        background_noise_map : NoiseMap
-            An array describing the RMS standard deviation error in each pixel due to the background sky noise_map,
-            preferably in unit_label of electrons per second.
-        poisson_noise_map : NoiseMap
-            An array describing the RMS standard deviation error in each pixel due to the Poisson counts of the source,
-            preferably in unit_label of electrons per second.
-        exposure_time_map : arrays.Array
-            An array describing the effective exposure time in each imaging pixel.
-        background_sky_map : aa.Scaled
-            An array describing the background sky.
-        """
-        self.data = data
-        self.noise_map = noise_map
-        self.exposure_time_map = exposure_time_map
-
     @property
     def mapping(self):
         return self.data.mask.mapping
@@ -76,6 +81,10 @@ class AbstractDataset:
     @property
     def geometry(self):
         return self.data.mask.geometry
+
+    @property
+    def inverse_noise_map(self):
+        return 1.0 / self.noise_map
 
     @property
     def signal_to_noise_map(self):
@@ -92,8 +101,10 @@ class AbstractDataset:
     @property
     def absolute_signal_to_noise_map(self):
         """The estimated absolute_signal-to-noise_maps mappers of the image."""
-        return self.mapping.array_stored_1d_from_array_1d(
-            array_1d=np.divide(np.abs(self.data), self.noise_map)
+        return self.data._new_structure(
+            array=np.divide(np.abs(self.data), self.noise_map),
+            mask=self.data.mask,
+            store_in_1d=self.data.store_in_1d,
         )
 
     @property
@@ -103,143 +114,300 @@ class AbstractDataset:
 
     @property
     def potential_chi_squared_map(self):
-        """The potential chi-squared map of the imaging data_type. This represents how much each pixel can contribute to \
-        the chi-squared map, assuming the model fails to fit it at all (e.g. model value = 0.0)."""
-        return self.mapping.array_stored_1d_from_array_1d(
-            array_1d=np.square(self.absolute_signal_to_noise_map)
+        """The potential chi-squared-map of the imaging data_type. This represents how much each pixel can contribute to \
+        the chi-squared-map, assuming the model fails to fit it at all (e.g. model value = 0.0)."""
+        return self.data._new_structure(
+            array=np.square(self.absolute_signal_to_noise_map),
+            mask=self.data.mask,
+            store_in_1d=self.data.store_in_1d,
         )
 
     @property
     def potential_chi_squared_max(self):
-        """The maximum value of the potential chi-squared map"""
+        """The maximum value of the potential chi-squared-map"""
         return np.max(self.potential_chi_squared_map)
 
-    def array_from_electrons_per_second_to_counts(self, array):
+    def modify_noise_map(self, noise_map):
+
+        imaging = copy.deepcopy(self)
+
+        imaging.noise_map = noise_map
+
+        return imaging
+
+
+class AbstractSettingsMaskedDataset:
+    def __init__(
+        self,
+        grid_class=grids.Grid,
+        grid_inversion_class=grids.Grid,
+        sub_size=2,
+        fractional_accuracy=0.9999,
+        sub_steps=None,
+        pixel_scales_interp=None,
+        signal_to_noise_limit=None,
+    ):
         """
-        For an array (in electrons per second) and an exposure time mappers, return an array in unit_label counts.
+        The lens dataset is the collection of data_type (image, noise-map, PSF), a mask, grid, convolver \
+        and other utilities that are used for modeling and fitting an image of a strong lens.
+
+        Whilst the image, noise-map, etc. are loaded in 2D, the lens dataset creates reduced 1D arrays of each \
+        for lens calculations.
 
         Parameters
         ----------
-        array : ndarray
-            The array the values are to be converted from electrons per seconds to counts.
+        grid_class : ag.Grid
+            The type of grid used to create the image from the *Galaxy* and *Plane*. The options are *Grid*,
+            *GridIterate* and *GridInterpolate* (see the *Grids* documentation for a description of these options).
+        grid_inversion_class : ag.Grid
+            The type of grid used to create the grid that maps the _Inversion_ source pixels to the data's image-pixels.
+            The options are *Grid*, *GridIterate* and *GridInterpolate* (see the *Grids* documentation for a
+            description of these options).
+        sub_size : int
+            If the grid and / or grid_inversion use a *Grid*, this sets the sub-size used by the *Grid*.
+        fractional_accuracy : float
+            If the grid and / or grid_inversion use a *GridIterate*, this sets the fractional accuracy it
+            uses when evaluating functions.
+        sub_steps : [int]
+            If the grid and / or grid_inversion use a *GridIterate*, this sets the steps the sub-size is increased by
+            to meet the fractional accuracy when evaluating functions.
+        pixel_scales_interp : float or (float, float)
+            If the grid and / or grid_inversion use a *GridInterpolate*, this sets the resolution of the interpolation
+            grid.
+        signal_to_noise_limit : float
+            If input, the dataset's noise-map is rescaled such that no pixel has a signal-to-noise above the
+            signa to noise limit.
         """
-        return np.multiply(array, self.exposure_time_map)
 
-    def array_from_counts_to_electrons_per_second(self, array):
-        """
-        For an array (in counts) and an exposure time mappers, convert the array to unit_label electrons per second
+        self.grid_class = grid_class
+        self.grid_inversion_class = grid_inversion_class
+        self.sub_size = sub_size
+        self.fractional_accuracy = fractional_accuracy
 
-        Parameters
-        ----------
-        array : ndarray
-            The array the values are to be converted from counts to electrons per second.
-        """
-        if array is not None:
-            return np.divide(array, self.exposure_time_map)
-        else:
-            return None
+        if sub_steps is None:
+            sub_steps = [2, 4, 8, 16]
 
-    def array_from_adus_to_electrons_per_second(self, array, gain):
-        """
-        For an array (in counts) and an exposure time mappers, convert the array to unit_label electrons per second
+        self.sub_steps = sub_steps
+        self.pixel_scales_interp = pixel_scales_interp
+        self.signal_to_noise_limit = signal_to_noise_limit
 
-        Parameters
-        ----------
-        array : ndarray
-            The array the values are to be converted from counts to electrons per second.
-        """
-        if array is not None:
-            return np.divide(gain * array, self.exposure_time_map)
-        else:
-            return None
-
-    @property
-    def image_counts(self):
-        """The image in unit_label of counts."""
-        return self.array_from_electrons_per_second_to_counts(self.data)
-
-
-class ExposureTimeMap(arrays.Array):
-    @classmethod
-    def from_exposure_time_and_inverse_noise_map(cls, exposure_time, inverse_noise_map):
-        relative_background_noise_map = inverse_noise_map / np.max(inverse_noise_map)
-        return np.abs(exposure_time * (relative_background_noise_map))
-
-
-def load_image(image_path, image_hdu, pixel_scales):
-    """Factory for loading the image from a .fits file
-
-    Parameters
-    ----------
-    image_path : str
-        The path to the image .fits file containing the image (e.g. '/path/to/image.fits')
-    image_hdu : int
-        The hdu the image is contained in the .fits file specified by *image_path*.
-    pixel_scales : float
-        The size of each pixel in arc seconds..
-    """
-    return arrays.Array.from_fits(
-        file_path=image_path, hdu=image_hdu, pixel_scales=pixel_scales
-    )
-
-
-def load_exposure_time_map(
-    exposure_time_map_path,
-    exposure_time_map_hdu,
-    pixel_scales,
-    shape=None,
-    exposure_time=None,
-    exposure_time_map_from_inverse_noise_map=False,
-    inverse_noise_map=None,
-):
-    """Factory for loading the exposure time map from a .fits file.
-
-    This factory also includes a number of routines for computing the exposure-time map from other unblurred_image_1d \
-    (e.g. the background noise-map).
-
-    Parameters
-    ----------
-    exposure_time_map_path : str
-        The path to the exposure_time_map .fits file containing the exposure time map \
-        (e.g. '/path/to/exposure_time_map.fits')
-    exposure_time_map_hdu : int
-        The hdu the exposure_time_map is contained in the .fits file specified by *exposure_time_map_path*.
-    pixel_scales : float
-        The size of each pixel in arc seconds.
-    shape : (int, int)
-        The shape of the image, required if a single value is used to calculate the exposure time map.
-    exposure_time : float
-        The exposure-time used to compute the expsure-time map if only a single value is used.
-    exposure_time_map_from_inverse_noise_map : bool
-        If True, the exposure-time map is computed from the background noise_map map \
-        (see *ExposureTimeMap.from_background_noise_map*)
-    inverse_noise_map : ndarray
-        The background noise-map, which the Poisson noise-map can be calculated using.
-    """
-    exposure_time_map_options = sum([exposure_time_map_from_inverse_noise_map])
-
-    if exposure_time is not None and exposure_time_map_path is not None:
-        raise exc.DataException(
-            "You have supplied both a exposure_time_map_path to an exposure time map and an exposure time. Only"
-            "one quantity should be supplied."
+    def grid_from_mask(self, mask):
+        return grid_from_mask_and_grid_class(
+            mask=mask,
+            grid_class=self.grid_class,
+            fractional_accuracy=self.fractional_accuracy,
+            sub_steps=self.sub_steps,
+            pixel_scales_interp=self.pixel_scales_interp,
         )
 
-    if exposure_time_map_options == 0:
+    def grid_inversion_from_mask(self, mask):
+        return grid_from_mask_and_grid_class(
+            mask=mask,
+            grid_class=self.grid_inversion_class,
+            fractional_accuracy=self.fractional_accuracy,
+            sub_steps=self.sub_steps,
+            pixel_scales_interp=self.pixel_scales_interp,
+        )
 
-        if exposure_time is not None and exposure_time_map_path is None:
-            return ExposureTimeMap.full(
-                fill_value=exposure_time, pixel_scales=pixel_scales, shape_2d=shape
-            )
-        elif exposure_time is None and exposure_time_map_path is not None:
-            return ExposureTimeMap.from_fits(
-                file_path=exposure_time_map_path,
-                hdu=exposure_time_map_hdu,
-                pixel_scales=pixel_scales,
+    @property
+    def tag_no_inversion(self):
+        return f"{self.grid_tag_no_inversion}{self.signal_to_noise_limit_tag}"
+
+    @property
+    def tag_with_inversion(self):
+        return f"{self.grid_tag_with_inversion}{self.signal_to_noise_limit_tag}"
+
+    @property
+    def grid_tag_no_inversion(self):
+        """Generate a tag describing the the grid and grid_inversions used by the phase.
+
+        This assumes both grids were used in the analysis.
+        """
+
+        return (
+            f"{conf.instance.settings_tag.get('dataset', 'grid')}_"
+            f"{self.grid_sub_size_tag}"
+            f"{self.grid_fractional_accuracy_tag}"
+            f"{self.grid_pixel_scales_interp_tag}"
+        )
+
+    @property
+    def grid_tag_with_inversion(self):
+        """Generate a tag describing the the grid and grid_inversions used by the phase.
+
+        This assumes both grids were used in the analysis.
+        """
+        return (
+            f"{conf.instance.settings_tag.get('dataset', 'grid')}_"
+            f"{self.grid_sub_size_tag}"
+            f"{self.grid_fractional_accuracy_tag}"
+            f"{self.grid_pixel_scales_interp_tag}_"
+            f"{conf.instance.settings_tag.get('dataset', 'grid_inversion')}_"
+            f"{self.grid_inversion_sub_size_tag}"
+            f"{self.grid_inversion_fractional_accuracy_tag}"
+            f"{self.grid_inversion_pixel_scales_interp_tag}"
+        )
+
+    @property
+    def grid_sub_size_tag(self):
+        """Generate a sub-size tag, to customize phase names based on the sub-grid size used, of the Grid class.
+
+        This changes the phase settings folder as follows:
+
+        sub_size = None -> settings
+        sub_size = 1 -> settings_sub_size_2
+        sub_size = 4 -> settings_sub_size_4
+        """
+        if not self.grid_class is grids.Grid:
+            return ""
+        return (
+            f"{conf.instance.settings_tag.get('dataset', 'sub_size')}_"
+            f"{str(self.sub_size)}"
+        )
+
+    @property
+    def grid_fractional_accuracy_tag(self):
+        """Generate a fractional accuracy tag, to customize phase names based on the fractional accuracy of the
+        GridIterate class.
+
+        This changes the phase settings folder as follows:
+
+        fraction_accuracy = 0.5 -> settings__facc_0.5
+        fractional_accuracy = 0.999999 = 4 -> settings__facc_0.999999
+        """
+        if not self.grid_class is grids.GridIterate:
+            return ""
+        return (
+            f"{conf.instance.settings_tag.get('dataset', 'fractional_accuracy')}_"
+            f"{str(self.fractional_accuracy)}"
+        )
+
+    @property
+    def grid_pixel_scales_interp_tag(self):
+        """Generate an interpolation pixel scale tag, to customize phase names based on the resolution of the
+        GridInterpolate.
+
+        This changes the phase settings folder as follows:
+
+        pixel_scales_interp = None -> settings
+        pixel_scales_interp = 0.1 -> settings___grid_interp_0.1
+        """
+        if not self.grid_class is grids.GridInterpolate:
+            return ""
+        if self.pixel_scales_interp is None:
+            return ""
+        return conf.instance.settings_tag.get(
+            "dataset", "pixel_scales_interp"
+        ) + "_{0:.3f}".format(self.pixel_scales_interp)
+
+    @property
+    def grid_inversion_sub_size_tag(self):
+        """Generate a sub-size tag, to customize phase names based on the sub-grid size used, of the Grid class.
+
+        This changes the phase settings folder as follows:
+
+        sub_size = None -> settings
+        sub_size = 1 -> settings__grid_sub_size_2
+        sub_size = 4 -> settings__grid_inv_sub_size_4
+        """
+        if not self.grid_inversion_class is grids.Grid:
+            return ""
+        return (
+            f"{conf.instance.settings_tag.get('dataset', 'sub_size')}_"
+            f"{str(self.sub_size)}"
+        )
+
+    @property
+    def grid_inversion_fractional_accuracy_tag(self):
+        """Generate a fractional accuracy tag, to customize phase names based on the fractional accuracy of the
+        GridIterate class.
+
+        This changes the phase settings folder as follows:
+
+        fraction_accuracy = 0.5 -> settings__facc_0.5
+        fractional_accuracy = 0.999999 = 4 -> settings__facc_0.999999
+        """
+        if not self.grid_inversion_class is grids.GridIterate:
+            return ""
+        return (
+            f"{conf.instance.settings_tag.get('dataset', 'fractional_accuracy')}_"
+            f"{str(self.fractional_accuracy)}"
+        )
+
+    @property
+    def grid_inversion_pixel_scales_interp_tag(self):
+        """Generate an interpolation pixel scale tag, to customize phase names based on the resolution of the
+        GridInterpolate.
+
+        This changes the phase settings folder as follows:
+
+        pixel_scales_interp = None -> settings
+        pixel_scales_interp = 0.1 -> settings___grid_interp_0.1
+        """
+        if not self.grid_inversion_class is grids.GridInterpolate:
+            return ""
+        if self.pixel_scales_interp is None:
+            return ""
+        return conf.instance.settings_tag.get(
+            "dataset", "pixel_scales_interp"
+        ) + "_{0:.3f}".format(self.pixel_scales_interp)
+
+    @property
+    def signal_to_noise_limit_tag(self):
+        """Generate a signal to noise limit tag, to customize phase names based on limiting the signal to noise ratio of
+        the dataset being fitted.
+
+        This changes the phase settings folder as follows:
+
+        signal_to_noise_limit = None -> settings
+        signal_to_noise_limit = 2 -> settings_snr_2
+        signal_to_noise_limit = 10 -> settings_snr_10
+        """
+        if self.signal_to_noise_limit is None:
+            return ""
+        return (
+            f"__{conf.instance.settings_tag.get('dataset', 'signal_to_noise_limit')}_"
+            f"{str(self.signal_to_noise_limit)}"
+        )
+
+
+class AbstractMaskedDataset:
+    def __init__(self, dataset, mask, settings=AbstractSettingsMaskedDataset()):
+
+        if mask.sub_size != settings.sub_size:
+            mask = msk.Mask.manual(
+                mask=mask,
+                pixel_scales=mask.pixel_scales,
+                sub_size=settings.sub_size,
+                origin=mask.origin,
             )
 
-    else:
+        if settings.signal_to_noise_limit is not None:
 
-        if exposure_time_map_from_inverse_noise_map:
-            return ExposureTimeMap.from_exposure_time_and_inverse_noise_map(
-                exposure_time=exposure_time, inverse_noise_map=inverse_noise_map
+            dataset = dataset.signal_to_noise_limited_from_signal_to_noise_limit(
+                signal_to_noise_limit=settings.signal_to_noise_limit
             )
+
+        self.dataset = dataset
+        self.mask = mask
+        self.settings = settings
+
+        self.grid = settings.grid_from_mask(mask=mask)
+
+        self.grid_inversion = settings.grid_inversion_from_mask(mask=mask)
+
+    @property
+    def name(self) -> str:
+        return self.dataset.name
+
+    @property
+    def positions(self):
+        return self.dataset.positions
+
+    def modify_noise_map(self, noise_map):
+
+        masked_imaging = copy.deepcopy(self)
+
+        masked_imaging.noise_map = noise_map
+
+        return masked_imaging
