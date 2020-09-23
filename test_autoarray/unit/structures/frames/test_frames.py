@@ -165,7 +165,7 @@ class TestFrameAPI:
         self
     ):
 
-        mask = aa.Mask.manual(mask=[[False, True], [False, False]])
+        mask = aa.Mask2D.manual(mask=[[False, True], [False, False]])
 
         frame = aa.Frame.manual_mask(
             array=[[1.0, 2.0], [3.0, 4.0]],
@@ -241,7 +241,7 @@ class TestFrameAPI:
 
     def test__from_frame__no_rotation_as_frame_is_correct_orientation(self):
 
-        mask = aa.Mask.manual(mask=[[False, True], [False, False]])
+        mask = aa.Mask2D.manual(mask=[[False, True], [False, False]])
 
         frame = aa.Frame.manual(
             array=[[1.0, 2.0], [3.0, 4.0]],
@@ -262,7 +262,7 @@ class TestFrameAPI:
         assert frame.scans.serial_overscan == (0, 2, 0, 2)
         assert (frame.mask == np.array([[False, True], [False, False]])).all()
 
-        mask = aa.Mask.manual(mask=[[False, True], [False, False]])
+        mask = aa.Mask2D.manual(mask=[[False, True], [False, False]])
 
         frame = aa.Frame.manual(
             array=[[1.0, 2.0], [3.0, 4.0]],

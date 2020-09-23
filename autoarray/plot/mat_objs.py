@@ -1384,7 +1384,7 @@ class Liner:
 
         Parameters
         -----------t.
-        mask : ndarray of data_type.array.mask.Mask
+        mask : ndarray of data_type.array.mask.Mask2D
             The mask applied to the array, the edge of which is plotted as a set of points over the plotted array.
         plot_lines : bool
             If a mask is supplied, its liness pixels (e.g. the exterior edge) is plotted if this is *True*.
@@ -1432,7 +1432,7 @@ class Liner:
 
         Parameters
         -----------t.
-        mask : ndarray of data_type.array.mask.Mask
+        mask : ndarray of data_type.array.mask.Mask2D
             The mask applied to the array, the edge of which is plotted as a set of points over the plotted array.
         plot_lines : bool
             If a mask is supplied, its liness pixels (e.g. the exterior edge) is plotted if this is *True*.

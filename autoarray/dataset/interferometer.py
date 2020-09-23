@@ -180,7 +180,7 @@ class AbstractMaskedInterferometer(abstract_dataset.AbstractMaskedDataset):
         ----------
         imaging: im.Imaging
             The imaging data_type all in 2D (the image, noise-map, etc.)
-        real_space_mask: msk.Mask
+        real_space_mask: msk.Mask2D
             The 2D mask that is applied to the image.
         """
 
