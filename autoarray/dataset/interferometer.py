@@ -130,7 +130,7 @@ class AbstractSettingsMaskedInterferometer(
     @property
     def tag_no_inversion(self):
         return (
-            f"{conf.instance.settings_tag.get('interferometer', 'interferometer')}["
+            f"{conf.instance['notation']['settings_tags']['interferometer']['interferometer']}["
             f"{self.grid_tag_no_inversion}"
             f"{self.transformer_tag}"
             f"{self.signal_to_noise_limit_tag}]"
@@ -139,7 +139,7 @@ class AbstractSettingsMaskedInterferometer(
     @property
     def tag_with_inversion(self):
         return (
-            f"{conf.instance.settings_tag.get('interferometer', 'interferometer')}["
+            f"{conf.instance['notation']['settings_tags']['interferometer']['interferometer']}["
             f"{self.grid_tag_with_inversion}"
             f"{self.transformer_tag}"
             f"{self.signal_to_noise_limit_tag}]"
@@ -158,7 +158,7 @@ class AbstractSettingsMaskedInterferometer(
         """
         if self.transformer_class is None:
             return ""
-        return f"__{conf.instance.settings_tag.get('interferometer', self.transformer_class.__name__)}"
+        return f"__{conf.instance['notation']['settings_tags']['interferometer'][self.transformer_class.__name__]}"
 
 
 class AbstractMaskedInterferometer(abstract_dataset.AbstractMaskedDataset):

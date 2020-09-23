@@ -24,17 +24,17 @@ class SettingsInversion:
     @property
     def tag(self):
         return (
-            f"{conf.instance.settings_tag.get('inversion', 'inversion')}["
+            f"{conf.instance['notation']['settings_tags']['inversion']['inversion']}["
             f"{self.use_linear_operators_tag}]"
         )
 
     @property
     def use_linear_operators_tag(self):
         if not self.use_linear_operators:
-            return f"{conf.instance.settings_tag.get('inversion', 'use_matrices')}"
+            return f"{conf.instance['notation']['settings_tags']['inversion']['use_matrices']}"
         else:
             return (
-                f"{conf.instance.settings_tag.get('inversion', 'use_linear_operators')}"
+                f"{conf.instance['notation']['settings_tags']['inversion']['use_linear_operators']}"
             )
 
 
@@ -145,14 +145,14 @@ class AbstractInversion:
             )
 
         elif (
-            conf.instance.general.get("inversion", "interpolated_grid_shape", str)
+            conf.instance["general"]["inversion"]["interpolated_grid_shape"]
             in "image_grid"
         ):
 
             grid = self.mapper.grid
 
         elif (
-            conf.instance.general.get("inversion", "interpolated_grid_shape", str)
+            conf.instance["general"]["inversion"]["interpolated_grid_shape"]
             in "source_grid"
         ):
 
