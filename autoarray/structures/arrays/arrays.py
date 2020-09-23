@@ -6,7 +6,7 @@ from autoarray import exc
 from autoarray.structures.arrays import abstract_array
 from autoarray.structures import abstract_structure
 from autoarray.structures import grids
-from autoarray.mask import mask as msk
+from autoarray.mask import mask_2d as msk
 from autoarray.util import array_util, grid_util
 
 logging.basicConfig()
@@ -46,7 +46,7 @@ class Array(abstract_array.AbstractArray):
         the array.
 
         IxIxIxIxIxIxIxIxIxIxI
-        IxIxIxIxIxIxIxIxIxIxI     This is an example mask.Mask, where:
+        IxIxIxIxIxIxIxIxIxIxI     This is an example mask.Mask2D, where:
         IxIxIxIxIxIxIxIxIxIxI
         IxIxIxIxIoIoIxIxIxIxI     x = True (Pixel is masked and excluded from the array)
         IxIxIxIoIoIoIoIxIxIxI     o = False (Pixel is not masked and included in the array)
@@ -93,7 +93,7 @@ class Array(abstract_array.AbstractArray):
         illustration brief.
 
         IxIxIxIxIxIxIxIxIxIxI
-        IxIxIxIxIxIxIxIxIxIxI     This is an example mask.Mask, where:
+        IxIxIxIxIxIxIxIxIxIxI     This is an example mask.Mask2D, where:
         IxIxIxIxIxIxIxIxIxIxI
         IxIxIxIxIxIxIxIxIxIxI     x = True (Pixel is masked and excluded from lens)
         IxIxIxIxIoIoIxIxIxIxI     o = False (Pixel is not masked and included in lens)
@@ -154,7 +154,7 @@ class Array(abstract_array.AbstractArray):
         For the following example mask:
 
         IxIxIxIxIxIxIxIxIxIxI
-        IxIxIxIxIxIxIxIxIxIxI     This is an example mask.Mask, where:
+        IxIxIxIxIxIxIxIxIxIxI     This is an example mask.Mask2D, where:
         IxIxIxIxIxIxIxIxIxIxI
         IxIxIxIxIoIoIxIxIxIxI     x = True (Pixel is masked and excluded from the array)
         IxIxIxIoIoIoIoIxIxIxI     o = False (Pixel is not masked and included in the array)
@@ -183,7 +183,7 @@ class Array(abstract_array.AbstractArray):
         ----------
         array : np.ndarray
             The values of the array.
-        mask : msk.Mask
+        mask : msk.Mask2D
             The 2D mask associated with the array, defining the pixels each array value is paired with and
             originates from.
         store_in_1d : bool
@@ -219,7 +219,7 @@ class Array(abstract_array.AbstractArray):
         array=[1.0, 2.0, 3.0, 4.0]
 
         From 1D input the method cannot determine the 2D shape of the array and its mask, thus the shape_2d must be
-        input into this method. The mask is setup as a unmasked *Mask* of shape_2d.
+        input into this method. The mask is setup as a unmasked *Mask2D* of shape_2d.
 
         Parameters
         ----------
@@ -249,7 +249,7 @@ class Array(abstract_array.AbstractArray):
                 "The input shape_2d parameter is not a tuple of type (float, float)"
             )
 
-        mask = msk.Mask.unmasked(
+        mask = msk.Mask2D.unmasked(
             shape_2d=shape_2d,
             pixel_scales=pixel_scales,
             sub_size=sub_size,
@@ -282,7 +282,7 @@ class Array(abstract_array.AbstractArray):
               [3.0, 4.0]]
 
         The 2D shape of the array and its mask are determined from the input array and the mask is setup as an
-        unmasked *Mask* of shape_2d.
+        unmasked *Mask2D* of shape_2d.
 
         Parameters
         ----------
@@ -309,7 +309,7 @@ class Array(abstract_array.AbstractArray):
 
         shape_2d = (int(array.shape[0] / sub_size), int(array.shape[1] / sub_size))
 
-        mask = msk.Mask.unmasked(
+        mask = msk.Mask2D.unmasked(
             shape_2d=shape_2d,
             pixel_scales=pixel_scales,
             sub_size=sub_size,
@@ -377,7 +377,7 @@ class Array(abstract_array.AbstractArray):
         """Create a Array (see *AbstractArray.__new__*) by inputting the array values in 1D or 2D with its mask,
         for example:
 
-        mask = Mask([[True, False, False, False])
+        mask = Mask2D([[True, False, False, False])
         array=np.array([1.0, 2.0, 3.0])
 
         Parameters
@@ -385,7 +385,7 @@ class Array(abstract_array.AbstractArray):
         array : np.ndarray or list
             The values of the array input as an ndarray of shape [total_unmasked_pixels*(sub_size**2)] or a list of
             lists.
-        mask : Mask
+        mask : Mask2D
             The mask whose masked pixels are used to setup the sub-pixel grid.
         store_in_1d : bool
             If True, the array is stored in 1D as an ndarray of shape [total_unmasked_pixels]. If False, it is
@@ -413,7 +413,7 @@ class Array(abstract_array.AbstractArray):
          the method numpy ndarray.full.
 
         From 1D input the method cannot determine the 2D shape of the array and its mask, thus the shape_2d must be
-        input into this method. The mask is setup as a unmasked *Mask* of shape_2d.
+        input into this method. The mask is setup as a unmasked *Mask2D* of shape_2d.
 
         Parameters
         ----------
@@ -457,7 +457,7 @@ class Array(abstract_array.AbstractArray):
         ndarray.ones.
 
         From 1D input the method cannot determine the 2D shape of the array and its mask, thus the shape_2d must be
-        input into this method. The mask is setup as a unmasked *Mask* of shape_2d.
+        input into this method. The mask is setup as a unmasked *Mask2D* of shape_2d.
 
         Parameters
         ----------
@@ -497,7 +497,7 @@ class Array(abstract_array.AbstractArray):
         ndarray.ones.
 
         From 1D input the method cannot determine the 2D shape of the array and its mask, thus the shape_2d must be
-        input into this method. The mask is setup as a unmasked *Mask* of shape_2d.
+        input into this method. The mask is setup as a unmasked *Mask2D* of shape_2d.
 
         Parameters
         ----------
@@ -574,7 +574,7 @@ class Array(abstract_array.AbstractArray):
         value = [1.0, 2.0, 3.0, 4.0]
 
         From 1D input the method cannot determine the 2D shape of the grid and its mask, thus the shape_2d must be
-        input into this method. The mask is setup as a unmasked *Mask* of shape_2d.
+        input into this method. The mask is setup as a unmasked *Mask2D* of shape_2d.
 
         Parameters
         ----------

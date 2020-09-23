@@ -4,7 +4,7 @@ import scipy.spatial.qhull as qhull
 
 from autoarray import exc
 from autoarray.structures import grids
-from autoarray.mask import mask as msk
+from autoarray.mask import mask_2d as msk
 from autoarray.util import grid_util, pixelization_util
 
 
@@ -29,7 +29,7 @@ class GridRectangular(grids.Grid):
             A 1D array that maps every grid pixel to its nearest pixelization-grid pixel.
         """
 
-        mask = msk.Mask.unmasked(
+        mask = msk.Mask2D.unmasked(
             shape_2d=shape_2d, pixel_scales=pixel_scales, sub_size=1, origin=origin
         )
 
@@ -170,8 +170,8 @@ class GridVoronoi(np.ndarray):
             obj.voronoi = scipy.spatial.Voronoi(
                 np.asarray([grid[:, 1], grid[:, 0]]).T, qhull_options="Qbb Qc Qx Qm"
             )
-        except ValueError or OverflowError or scipy.spatial.qhull.QhullError:
-            raise exc.PixelizationException()
+        except (ValueError, OverflowError, scipy.spatial.qhull.QhullError) as e:
+            raise exc.PixelizationException() from e
 
         pixel_neighbors, pixel_neighbors_size = pixelization_util.voronoi_neighbors_from(
             pixels=obj.pixels, ridge_points=np.asarray(obj.voronoi.ridge_points)

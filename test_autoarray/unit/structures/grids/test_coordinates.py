@@ -161,7 +161,7 @@ class TestAbstractGridCoordinates:
 
     def test__with_mask__converts_to_and_from_pixels(self):
 
-        mask = aa.Mask.manual(
+        mask = aa.Mask2D.manual(
             mask=np.full(fill_value=False, shape=(2, 2)), pixel_scales=(2.0, 2.0)
         )
 

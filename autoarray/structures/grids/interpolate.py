@@ -5,7 +5,7 @@ from autoconf import conf
 from autoarray.structures import abstract_structure
 from autoarray.structures import grids
 from autoarray.structures.grids import abstract_grid
-from autoarray.mask import mask as msk
+from autoarray.mask import mask_2d as msk
 from autoarray.util import grid_util
 from autoarray import exc
 
@@ -39,7 +39,7 @@ class GridInterpolate(abstract_grid.AbstractGrid):
         ----------
         grid : np.ndarray
             The (y,x) coordinates of the grid.
-        mask : msk.Mask
+        mask : msk.Mask2D
             The 2D mask associated with the grid, defining the pixels each grid coordinate is paired with and
             originates from.
         pixel_scales_interp : float
@@ -111,7 +111,7 @@ class GridInterpolate(abstract_grid.AbstractGrid):
         ----------
         grid : np.ndarray or list
             The (y,x) coordinates of the grid input as an ndarray of shape [total_sub_coordinates, 2] or list of lists.
-        mask : msk.Mask
+        mask : msk.Mask2D
             The 2D mask associated with the grid, defining the pixels each grid coordinate is paired with and
             originates from.
         store_in_1d : bool
@@ -144,7 +144,7 @@ class GridInterpolate(abstract_grid.AbstractGrid):
         grid=[[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0]]
 
         From 1D input the method cannot determine the 2D shape of the grid and its mask, thus the shape_2d must be
-        input into this method. The mask is setup as a unmasked *Mask* of shape_2d.
+        input into this method. The mask is setup as a unmasked *Mask2D* of shape_2d.
 
         Parameters
         ----------
@@ -173,7 +173,7 @@ class GridInterpolate(abstract_grid.AbstractGrid):
             pixel_scales=pixel_scales_interp
         )
 
-        mask = msk.Mask.unmasked(
+        mask = msk.Mask2D.unmasked(
             shape_2d=shape_2d,
             pixel_scales=pixel_scales,
             sub_size=sub_size,
@@ -262,7 +262,7 @@ class GridInterpolate(abstract_grid.AbstractGrid):
 
         Parameters
         ----------
-        mask : Mask
+        mask : Mask2D
             The mask whose masked pixels are used to setup the sub-pixel grid.
         pixel_scales_interp : float
             The resolution of the sparse grid used to evaluate the function, from which the results are interpolated
@@ -316,7 +316,7 @@ class GridInterpolate(abstract_grid.AbstractGrid):
 
         Parameters
         ----------
-        mask : Mask
+        mask : Mask2D
             The mask whose masked pixels are used to setup the blurring grid.
         kernel_shape_2d : (float, float)
             The 2D shape of the kernel which convolves signal from masked pixels to unmasked pixels.
@@ -375,7 +375,7 @@ class GridInterpolate(abstract_grid.AbstractGrid):
             shape[1] + kernel_shape_2d[1] - 1,
         )
 
-        padded_mask = msk.Mask.unmasked(
+        padded_mask = msk.Mask2D.unmasked(
             shape_2d=padded_shape,
             pixel_scales=self.mask.pixel_scales,
             sub_size=self.mask.sub_size,

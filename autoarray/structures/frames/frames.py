@@ -3,7 +3,7 @@ import numpy as np
 from autoarray.structures import abstract_structure
 from autoarray.structures.arrays import abstract_array
 from autoarray.structures.frames import abstract_frame
-from autoarray.mask import mask as msk
+from autoarray.mask import mask_2d as msk
 from autoarray.util import array_util
 from autoarray.util import frame_util
 
@@ -85,7 +85,7 @@ class Frame(abstract_frame.AbstractFrame):
             pixel_scales=pixel_scales
         )
 
-        mask = msk.Mask.unmasked(shape_2d=array.shape, pixel_scales=pixel_scales)
+        mask = msk.Mask2D.unmasked(shape_2d=array.shape, pixel_scales=pixel_scales)
 
         scans = abstract_frame.Scans.rotated_from_roe_corner(
             roe_corner=roe_corner, shape_2d=array.shape, scans=scans

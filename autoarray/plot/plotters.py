@@ -230,7 +230,7 @@ class AbstractPlotter:
             The 2D array of data_type which is plotted.
         origin : (float, float).
             The origin of the coordinate system of the array, which is plotted as an 'x' on the image if input.
-        mask : data_type.array.mask.Mask
+        mask : data_type.array.mask.Mask2D
             The mask applied to the array, the edge of which is plotted as a set of points over the plotted array.
         extract_array_from_mask : bool
             The plotter array is extracted using the mask, such that masked values are plotted as zeros. This ensures \
@@ -426,7 +426,7 @@ class AbstractPlotter:
             The 2D array of data_type which is plotted.
         origin : (float, float).
             The origin of the coordinate system of the array, which is plotted as an 'x' on the image if input.
-        mask : data_type.array.mask.Mask
+        mask : data_type.array.mask.Mask2D
             The mask applied to the array, the edge of which is plotted as a set of points over the plotted array.
         extract_array_from_mask : bool
             The plotter array is extracted using the mask, such that masked values are plotted as zeros. This ensures \
@@ -1184,8 +1184,16 @@ class SubPlotter(AbstractPlotter):
         figsize = self.get_subplot_figsize(number_subplots=number_subplots)
         plt.figure(figsize=figsize)
 
-    def setup_subplot(self, number_subplots, subplot_index, aspect=None):
-        rows, columns = self.get_subplot_rows_columns(number_subplots=number_subplots)
+    def setup_subplot(
+        self, number_subplots, subplot_index, aspect=None, subplot_rows_columns=None
+    ):
+        if subplot_rows_columns is None:
+            rows, columns = self.get_subplot_rows_columns(
+                number_subplots=number_subplots
+            )
+        else:
+            rows = subplot_rows_columns[0]
+            columns = subplot_rows_columns[1]
         if aspect is None:
             plt.subplot(rows, columns, subplot_index)
         else:

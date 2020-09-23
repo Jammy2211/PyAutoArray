@@ -1,5 +1,5 @@
 from autoarray import exc
-from autoarray.mask import mask as msk
+from autoarray.mask import mask_2d as msk
 from autoarray import util
 
 import numpy as np
@@ -38,7 +38,7 @@ class TestTotalPixels:
     class TestTotalSparsePixels:
         def test__mask_full_false__full_pixelization_grid_pixels_in_mask(self):
 
-            ma = msk.Mask(
+            ma = msk.Mask2D(
                 mask=np.array(
                     [
                         [False, False, False],
@@ -71,7 +71,7 @@ class TestTotalPixels:
             self
         ):
 
-            ma = msk.Mask(
+            ma = msk.Mask2D(
                 mask=np.array(
                     [[True, False, True], [False, False, False], [True, False, True]]
                 ),
@@ -98,7 +98,7 @@ class TestTotalPixels:
 
         def test__same_as_above_but_3x4_mask(self):
 
-            ma = msk.Mask(
+            ma = msk.Mask2D(
                 mask=np.array(
                     [
                         [True, True, False, True],
@@ -129,7 +129,7 @@ class TestTotalPixels:
 
         def test__same_as_above_but_4x3_mask(self):
 
-            ma = msk.Mask(
+            ma = msk.Mask2D(
                 mask=np.array(
                     [
                         [True, False, True],

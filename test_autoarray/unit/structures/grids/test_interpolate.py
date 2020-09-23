@@ -23,7 +23,7 @@ class TestObj:
             ]
         )
 
-        mask = aa.Mask.manual(mask=mask, pixel_scales=(2.0, 2.0), sub_size=2)
+        mask = aa.Mask2D.manual(mask=mask, pixel_scales=(2.0, 2.0), sub_size=2)
 
         blurring_mask_util = aa.util.mask.blurring_mask_from(
             mask=mask, kernel_shape_2d=(3, 5)
@@ -58,7 +58,7 @@ class TestObj:
             ]
         )
 
-        mask = aa.Mask.manual(mask=mask, pixel_scales=(2.0, 2.0))
+        mask = aa.Mask2D.manual(mask=mask, pixel_scales=(2.0, 2.0))
 
         blurring_mask_util = aa.util.mask.blurring_mask_from(
             mask=mask, kernel_shape_2d=(3, 5)
@@ -68,7 +68,7 @@ class TestObj:
             mask=blurring_mask_util, pixel_scales=(2.0, 2.0), sub_size=1
         )
 
-        mask = aa.Mask.manual(mask=mask, pixel_scales=(2.0, 2.0))
+        mask = aa.Mask2D.manual(mask=mask, pixel_scales=(2.0, 2.0))
 
         blurring_grid = grids.GridInterpolate.blurring_grid_from_mask_and_kernel_shape(
             mask=mask, kernel_shape_2d=(3, 5), pixel_scales_interp=0.1
@@ -102,7 +102,7 @@ class TestObj:
         assert isinstance(padded_grid, grids.GridInterpolate)
         assert padded_grid.pixel_scales_interp == (0.1, 0.1)
 
-        mask = aa.Mask.unmasked(shape_2d=(6, 6), pixel_scales=(3.0, 3.0), sub_size=1)
+        mask = aa.Mask2D.unmasked(shape_2d=(6, 6), pixel_scales=(3.0, 3.0), sub_size=1)
 
         grid = grids.GridInterpolate.from_mask(mask=mask, pixel_scales_interp=0.1)
 
@@ -111,7 +111,7 @@ class TestObj:
         assert (padded_grid.vtx == grid.vtx).all()
         assert (padded_grid.wts == grid.wts).all()
 
-        mask = aa.Mask.manual(
+        mask = aa.Mask2D.manual(
             mask=np.full((2, 5), False), pixel_scales=(8.0, 8.0), sub_size=4
         )
 
@@ -142,7 +142,7 @@ class TestInterpolatedResult:
                 result[0] = 1
                 return result
 
-        mask = aa.Mask.unmasked(shape_2d=(3, 3), pixel_scales=(1.0, 1.0), sub_size=1)
+        mask = aa.Mask2D.unmasked(shape_2d=(3, 3), pixel_scales=(1.0, 1.0), sub_size=1)
 
         grid = aa.GridInterpolate.from_mask(mask=mask, pixel_scales_interp=0.5)
 
@@ -165,7 +165,7 @@ class TestInterpolatedResult:
                 result[0] = 1
                 return result
 
-        mask = aa.Mask.unmasked(shape_2d=(3, 3), pixel_scales=(1.0, 1.0), sub_size=1)
+        mask = aa.Mask2D.unmasked(shape_2d=(3, 3), pixel_scales=(1.0, 1.0), sub_size=1)
 
         grid = aa.GridInterpolate.from_mask(mask=mask, pixel_scales_interp=0.5)
 
@@ -187,7 +187,7 @@ class TestInterpolatedResult:
                 result[0, :] = 1
                 return result
 
-        mask = aa.Mask.unmasked(shape_2d=(3, 3), pixel_scales=(1.0, 1.0), sub_size=1)
+        mask = aa.Mask2D.unmasked(shape_2d=(3, 3), pixel_scales=(1.0, 1.0), sub_size=1)
 
         grid = aa.GridInterpolate.from_mask(mask=mask, pixel_scales_interp=0.5)
 
@@ -226,7 +226,7 @@ class TestInterpolatedResult:
 
         cls = MockInterpolateObj()
 
-        mask = aa.Mask.circular_annular(
+        mask = aa.Mask2D.circular_annular(
             shape_2d=(20, 20),
             pixel_scales=(1.0, 1.0),
             sub_size=1,
@@ -257,7 +257,7 @@ class TestInterpolatedResult:
         assert true_array[0] != interpolated_array[0]
         assert np.max(true_array - interpolated_array) < 0.001
 
-        mask = aa.Mask.circular_annular(
+        mask = aa.Mask2D.circular_annular(
             shape_2d=(28, 28),
             pixel_scales=(1.0, 1.0),
             sub_size=1,
@@ -289,7 +289,7 @@ class TestInterpolatedResult:
 
         cls = MockInterpolateObj()
 
-        mask = aa.Mask.circular_annular(
+        mask = aa.Mask2D.circular_annular(
             shape_2d=(20, 20),
             pixel_scales=(1.0, 1.0),
             sub_size=1,
@@ -323,7 +323,7 @@ class TestInterpolatedResult:
         assert np.max(true_grid[:, 0] - interpolated_grid[:, 0]) < 0.001
         assert np.max(true_grid[:, 1] - interpolated_grid[:, 1]) < 0.001
 
-        mask = aa.Mask.circular_annular(
+        mask = aa.Mask2D.circular_annular(
             shape_2d=(28, 28),
             pixel_scales=(1.0, 1.0),
             sub_size=1,
@@ -440,7 +440,7 @@ class TestAPI:
                 [True, True, False, False],
             ]
         )
-        mask = aa.Mask.manual(mask=mask, pixel_scales=(2.0, 2.0), sub_size=1)
+        mask = aa.Mask2D.manual(mask=mask, pixel_scales=(2.0, 2.0), sub_size=1)
 
         grid_via_util = aa.util.grid.grid_1d_via_mask_from(
             mask=mask, sub_size=1, pixel_scales=(2.0, 2.0)
@@ -479,7 +479,7 @@ class TestAPI:
                 [True, True, False, False],
             ]
         )
-        mask = aa.Mask.manual(mask=mask, pixel_scales=(2.0, 2.0), sub_size=2)
+        mask = aa.Mask2D.manual(mask=mask, pixel_scales=(2.0, 2.0), sub_size=2)
 
         grid_via_util = aa.util.grid.grid_1d_via_mask_from(
             mask=mask, sub_size=2, pixel_scales=(2.0, 2.0)

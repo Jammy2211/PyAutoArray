@@ -14,7 +14,7 @@ test_coordinates_dir = "{}/files/coordinates/".format(
 
 class TestGrid:
     def test__masked_shape_2d_arcsec(self):
-        mask = aa.Mask.circular(
+        mask = aa.Mask2D.circular(
             shape_2d=(3, 3), radius=1.0, pixel_scales=(1.0, 1.0), sub_size=1
         )
 
@@ -70,7 +70,7 @@ class TestGrid:
                 [True, True, False, False],
             ]
         )
-        mask = aa.Mask.manual(mask=mask, pixel_scales=(2.0, 2.0))
+        mask = aa.Mask2D.manual(mask=mask, pixel_scales=(2.0, 2.0))
 
         grid = aa.Grid.from_mask(mask=mask)
 
@@ -85,7 +85,7 @@ class TestGrid:
         )
 
     def test__yticks(self):
-        mask = aa.Mask.circular(
+        mask = aa.Mask2D.circular(
             shape_2d=(3, 3), radius=1.0, pixel_scales=(1.0, 1.0), sub_size=1
         )
 
@@ -99,7 +99,7 @@ class TestGrid:
         assert grid.yticks == pytest.approx(np.array([2.0, 3.0, 4.0, 5.0]), 1e-3)
 
     def test__xticks(self):
-        mask = aa.Mask.circular(
+        mask = aa.Mask2D.circular(
             shape_2d=(3, 3), radius=1.0, pixel_scales=(1.0, 1.0), sub_size=1
         )
 
@@ -159,7 +159,7 @@ class TestGrid:
         assert padded_grid.shape == (54, 2)
         assert (padded_grid == padded_grid_util).all()
 
-        mask = aa.Mask.manual(
+        mask = aa.Mask2D.manual(
             mask=np.full((5, 4), False), pixel_scales=(2.0, 2.0), sub_size=2
         )
 
@@ -175,7 +175,7 @@ class TestGrid:
         assert (padded_grid.mask == np.full(fill_value=False, shape=(7, 6))).all()
         assert padded_grid == pytest.approx(padded_grid_util, 1e-4)
 
-        mask = aa.Mask.manual(
+        mask = aa.Mask2D.manual(
             mask=np.full((2, 5), False), pixel_scales=(8.0, 8.0), sub_size=4
         )
 
@@ -204,7 +204,7 @@ class TestGrid:
             ]
         )
 
-        mask = aa.Mask.manual(mask=mask, pixel_scales=(2.0, 2.0), sub_size=2)
+        mask = aa.Mask2D.manual(mask=mask, pixel_scales=(2.0, 2.0), sub_size=2)
 
         sub_border_1d_indexes_util = aa.util.mask.sub_border_pixel_1d_indexes_from(
             mask=mask, sub_size=2
@@ -217,7 +217,7 @@ class TestGrid:
         )
 
     def test__square_distance_from_coordinate_array(self):
-        mask = aa.Mask.manual(
+        mask = aa.Mask2D.manual(
             [[True, False], [False, False]], pixel_scales=1.0, origin=(0.0, 1.0)
         )
         grid = aa.Grid.manual_mask(grid=[[1.0, 1.0], [2.0, 3.0], [1.0, 2.0]], mask=mask)
@@ -233,7 +233,7 @@ class TestGrid:
         assert (square_distances.mask == mask).all()
 
     def test__distance_from_coordinate_array(self):
-        mask = aa.Mask.manual(
+        mask = aa.Mask2D.manual(
             [[True, False], [False, False]], pixel_scales=1.0, origin=(0.0, 1.0)
         )
         grid = aa.Grid.manual_mask(grid=[[1.0, 1.0], [2.0, 3.0], [1.0, 2.0]], mask=mask)

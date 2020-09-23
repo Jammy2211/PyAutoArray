@@ -3,7 +3,7 @@ from sklearn.cluster import KMeans
 from autoarray import exc
 from autoarray.structures import abstract_structure
 from autoarray.structures.grids import abstract_grid
-from autoarray.mask import mask as msk
+from autoarray.mask import mask_2d as msk
 from autoarray.util import array_util, sparse_util, grid_util, mask_util
 
 
@@ -33,7 +33,7 @@ class Grid(abstract_grid.AbstractGrid):
         the grid.
 
          x x x x x x x x x x
-         x x x x x x x x x x     This is an example mask.Mask, where:
+         x x x x x x x x x x     This is an example mask.Mask2D, where:
          x x x x x x x x x x
          x x x xIoIo x x x x     x = True (Pixel is masked and excluded from the grid)
          x x xIoIoIoIo x x x     o = False (Pixel is not masked and included in the grid)
@@ -80,7 +80,7 @@ class Grid(abstract_grid.AbstractGrid):
         illustration brief.
 
          x x x x x x x x x x
-         x x x x x x x x x x     This is an example mask.Mask, where:
+         x x x x x x x x x x     This is an example mask.Mask2D, where:
          x x x x x x x x x x
          x x x x x x x x x x     x = True (Pixel is masked and excluded from lens)
          x x x xIoIo x x x x     o = False (Pixel is not masked and included in lens)
@@ -142,7 +142,7 @@ class Grid(abstract_grid.AbstractGrid):
         For the following example mask:
 
          x x x x x x x x x xI
-         x x x x x x x x x xI     This is an example mask.Mask, where:
+         x x x x x x x x x xI     This is an example mask.Mask2D, where:
          x x x x x x x x x xI
          x x x xIoIo x x x xI     x = True (Pixel is masked and excluded from the grid)
          x x xIoIoIoIo x x xI     o = False (Pixel is not masked and included in the grid)
@@ -185,7 +185,7 @@ class Grid(abstract_grid.AbstractGrid):
         ----------
         grid : np.ndarray
             The (y,x) coordinates of the grid.
-        mask : msk.Mask
+        mask : msk.Mask2D
             The 2D mask associated with the grid, defining the pixels each grid coordinate is paired with and
             originates from.
         store_in_1d : bool
@@ -211,7 +211,7 @@ class Grid(abstract_grid.AbstractGrid):
         ----------
         grid : np.ndarray or list
             The (y,x) coordinates of the grid input as an ndarray of shape [total_sub_coordinates, 2] or list of lists.
-        mask : msk.Mask
+        mask : msk.Mask2D
             The 2D mask associated with the grid, defining the pixels each grid coordinate is paired with and
             originates from.
         store_in_1d : bool
@@ -237,7 +237,7 @@ class Grid(abstract_grid.AbstractGrid):
         grid=[[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0]]
 
         From 1D input the method cannot determine the 2D shape of the grid and its mask, thus the shape_2d must be
-        input into this method. The mask is setup as a unmasked *Mask* of shape_2d.
+        input into this method. The mask is setup as a unmasked *Mask2D* of shape_2d.
 
         Parameters
         ----------
@@ -262,7 +262,7 @@ class Grid(abstract_grid.AbstractGrid):
             pixel_scales=pixel_scales
         )
 
-        mask = msk.Mask.unmasked(
+        mask = msk.Mask2D.unmasked(
             shape_2d=shape_2d,
             pixel_scales=pixel_scales,
             sub_size=sub_size,
@@ -288,7 +288,7 @@ class Grid(abstract_grid.AbstractGrid):
               [[3.0, 3.0], [4.0, 4.0]]]
 
         The 2D shape of the grid and its mask are determined from the input grid and the mask is setup as an
-        unmasked *Mask* of shape_2d.
+        unmasked *Mask2D* of shape_2d.
 
         Parameters
         ----------
@@ -315,7 +315,7 @@ class Grid(abstract_grid.AbstractGrid):
 
         shape = (int(grid.shape[0] / sub_size), int(grid.shape[1] / sub_size))
 
-        mask = msk.Mask.unmasked(
+        mask = msk.Mask2D.unmasked(
             shape_2d=shape, pixel_scales=pixel_scales, sub_size=sub_size, origin=origin
         )
 
@@ -386,7 +386,7 @@ class Grid(abstract_grid.AbstractGrid):
         ----------
         grid : np.ndarray or list
             The (y,x) coordinates of the grid input as an ndarray of shape [total_sub_coordinates, 2] or list of lists.
-        mask : msk.Mask
+        mask : msk.Mask2D
             The 2D mask associated with the grid, defining the pixels each grid coordinate is paired with and
             originates from.
         store_in_1d : bool
@@ -422,7 +422,7 @@ class Grid(abstract_grid.AbstractGrid):
         x = [1.0, 2.0, 3.0, 4.0]
 
         From 1D input the method cannot determine the 2D shape of the grid and its mask, thus the shape_2d must be
-        input into this method. The mask is setup as a unmasked *Mask* of shape_2d.
+        input into this method. The mask is setup as a unmasked *Mask2D* of shape_2d.
 
         Parameters
         ----------
@@ -474,7 +474,7 @@ class Grid(abstract_grid.AbstractGrid):
              [3.0, 4.0]]
 
         The 2D shape of the grid and its mask are determined from the input grid and the mask is setup as an
-        unmasked *Mask* of shape_2d.
+        unmasked *Mask2D* of shape_2d.
 
         Parameters
         ----------
@@ -618,7 +618,7 @@ class Grid(abstract_grid.AbstractGrid):
 
         Parameters
         ----------
-        mask : Mask
+        mask : Mask2D
             The mask whose masked pixels are used to setup the sub-pixel grid.
         store_in_1d : bool
             If True, the grid is stored in 1D as an ndarray of shape [total_unmasked_pixels, 2]. If False, it is
@@ -652,7 +652,7 @@ class Grid(abstract_grid.AbstractGrid):
 
         Parameters
         ----------
-        mask : Mask
+        mask : Mask2D
             The mask whose masked pixels are used to setup the sub-pixel grid.
         store_in_1d : bool
             If True, the grid is stored in 1D as an ndarray of shape [total_unmasked_pixels, 2]. If False, it is
@@ -685,7 +685,7 @@ class Grid(abstract_grid.AbstractGrid):
         For example, if our mask is as follows:
 
          x x x x x x x x x xI
-         x x x x x x x x x xI     This is an imaging.Mask, where
+         x x x x x x x x x xI     This is an imaging.Mask2D, where
          x x x x x x x x x xI
          x x x x x x x x x xI     x = True (Pixel is masked and excluded from lens)
          x x xIoIoIo x x x xI     o = False (Pixel is not masked and included in lens)
@@ -698,7 +698,7 @@ class Grid(abstract_grid.AbstractGrid):
         For a PSF of shape (3,3), the following blurring mask is computed (noting that only pixels that are direct
         neighbors of the unmasked pixels above will blur light into an unmasked pixel)
 
-         x x x x x x x x xI     This is an example grid.Mask, where
+         x x x x x x x x xI     This is an example grid.Mask2D, where
          x x x x x x x x xI
          x xIoIoIoIoIo x xI     x = True (Pixel is masked and excluded from lens)
          x xIo x x xIo x xI     o = False (Pixel is not masked and included in lens)
@@ -727,7 +727,7 @@ class Grid(abstract_grid.AbstractGrid):
         For a PSF of shape (5,5), the following blurring mask is computed (noting that pixels are 2 pixels from a
         direct unmasked pixels now blur light into an unmasked pixel)
 
-         x x x x x x x x xI     This is an example grid.Mask, where
+         x x x x x x x x xI     This is an example grid.Mask2D, where
          xIoIoIoIoIoIoIo xI
          xIoIoIoIoIoIoIo xI     x = True (Pixel is masked and excluded from lens)
          xIoIo x x xIoIo xI     o = False (Pixel is not masked and included in lens)
@@ -739,7 +739,7 @@ class Grid(abstract_grid.AbstractGrid):
 
         Parameters
         ----------
-        mask : Mask
+        mask : Mask2D
             The mask whose masked pixels are used to setup the blurring grid.
         kernel_shape_2d : (float, float)
             The 2D shape of the kernel which convolves signal from masked pixels to unmasked pixels.
@@ -813,7 +813,7 @@ class Grid(abstract_grid.AbstractGrid):
 
             distance_mask += distances.in_2d < distance
 
-        mask = msk.Mask.manual(
+        mask = msk.Mask2D.manual(
             mask=distance_mask,
             pixel_scales=self.pixel_scales,
             sub_size=self.sub_size,

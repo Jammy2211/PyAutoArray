@@ -1,7 +1,7 @@
 import autoarray as aa
 import autoarray.plot as aplt
 
-mask = aa.Mask.circular(shape_2d=(7, 7), pixel_scales=0.3, radius=0.6)
+mask = aa.Mask2D.circular(shape_2d=(7, 7), pixel_scales=0.3, radius=0.6)
 
 imaging = aa.Imaging(
     image=aa.Array.ones(shape_2d=(7, 7), pixel_scales=0.3),

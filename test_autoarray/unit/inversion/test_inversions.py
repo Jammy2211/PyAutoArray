@@ -162,7 +162,7 @@ class TestAbstractInversion:
 
         matrix_shape = (3, 3)
 
-        mask = aa.Mask.manual(
+        mask = aa.Mask2D.manual(
             mask=np.array(
                 [
                     [True, True, True, True, True],
@@ -224,7 +224,7 @@ class TestAbstractInversion:
 
         matrix_shape = (3, 3)
 
-        mask = aa.Mask.manual(
+        mask = aa.Mask2D.manual(
             mask=np.array(
                 [
                     [True, True, True, True, True],
@@ -281,7 +281,7 @@ class TestAbstractInversion:
 
         matrix_shape = (3, 3)
 
-        mask = aa.Mask.manual(
+        mask = aa.Mask2D.manual(
             mask=np.array(
                 [
                     [True, True, True, True, True],
@@ -368,7 +368,7 @@ class TestAbstractInversion:
 
         matrix_shape = (3, 3)
 
-        mask = aa.Mask.manual(
+        mask = aa.Mask2D.manual(
             mask=np.array(
                 [
                     [True, True, True, True, True],
@@ -443,7 +443,7 @@ class TestInversionImagingMatrix:
 
         matrix_shape = (3, 3)
 
-        mask = aa.Mask.manual(
+        mask = aa.Mask2D.manual(
             mask=np.array(
                 [[True, True, True], [False, False, False], [True, True, True]]
             ),
@@ -488,7 +488,7 @@ class TestInversionImagingMatrix:
 
         matrix_shape = (3, 3)
 
-        mask = aa.Mask.manual(
+        mask = aa.Mask2D.manual(
             mask=np.array(
                 [[True, True, True], [False, False, False], [True, True, True]]
             ),
@@ -532,7 +532,7 @@ class TestInversionImagingMatrix:
 
     def test__func_testing_range_of_reconstruction(self):
 
-        mask = aa.Mask.manual(
+        mask = aa.Mask2D.manual(
             mask=np.array(
                 [[True, True, True], [False, False, False], [True, True, True]]
             ),
@@ -570,7 +570,7 @@ directory = path.dirname(path.realpath(__file__))
 #
 #         matrix_shape = (3,3)
 #
-#         mask = aa.Mask.manual(array=np.array([[True, True, True],
+#         mask = aa.Mask2D.manual(array=np.array([[True, True, True],
 #                                         [False, False, False],
 #                                         [True, True, True]]), pixel_scales=1.0)
 #
