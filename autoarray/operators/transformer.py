@@ -241,7 +241,7 @@ class TransformerNUFFT(NUFFT_cpu, pylops.LinearOperator):
         """
         x2d = array_util.sub_array_complex_2d_via_sub_indexes_from(
             sub_array_1d=x,
-            sub_shape=self.real_space_mask.shape_2d,
+            sub_shape_2d=self.real_space_mask.shape_2d,
             sub_mask_index_for_sub_mask_1d_index=self._mask_index_for_mask_1d_index,
         )
 

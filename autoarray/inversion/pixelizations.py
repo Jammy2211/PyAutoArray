@@ -37,8 +37,8 @@ class SettingsPixelization:
 
         This changes the setup folder as follows (the example tags below are the default config tags):
 
-        inversion_use_border = False -> settings
-        inversion_use_border = True -> settings___no_border
+        inversion_use_border = ``False`` -> settings
+        inversion_use_border = ``True`` -> settings___no_border
         """
         if self.use_border:
 
@@ -56,8 +56,8 @@ class SettingsPixelization:
 
         This changes the setup folder as follows (the example tags below are the default config tags):
 
-        inversion_stochastic = False -> settings
-        inversion_stochastic = True -> settings___stochastic
+        inversion_stochastic = ``False`` -> settings
+        inversion_stochastic = ``True`` -> settings___stochastic
         """
         if not self.is_stochastic:
 
@@ -102,7 +102,7 @@ class Pixelization:
 class Rectangular(Pixelization):
     def __init__(self, shape=(3, 3)):
         """A rectangular pixelization, where pixels are defined on a Cartesian and uniform grid of shape \ 
-        (rows, columns).
+        (total_y_pixels, total_x_pixels).
 
         Like structures, the indexing of the rectangular grid begins in the top-left corner and goes right and down.
 
@@ -140,7 +140,7 @@ class Rectangular(Pixelization):
             A stack of grid describing the observed image's pixel coordinates (e.g. an image-grid, sub-grid, etc.).
         border : aa.GridBorder I None
             The border of the grid's grid.
-        hyper_image : ndarray
+        hyper_image : np.ndarray
             A pre-computed hyper-image of the image the mapper is expected to reconstruct, used for adaptive analysis.
         """
 
@@ -203,7 +203,7 @@ class Voronoi(Pixelization):
             A collection of grid describing the observed image's pixel coordinates (includes an image and sub grid).
         border : aa.GridBorder
             The borders of the grid_stacks (defined by their image-plane masks).
-        hyper_image : ndarray
+        hyper_image : np.ndarray
             A pre-computed hyper-image of the image the mapper is expected to reconstruct, used for adaptive analysis.
         """
 

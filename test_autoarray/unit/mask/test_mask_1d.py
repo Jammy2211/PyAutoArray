@@ -32,14 +32,16 @@ class TestMask1D:
         assert (mask == np.array([False, True])).all()
         assert mask.pixel_scale == 1.0
         assert mask.pixel_scales == (1.0,)
-        assert mask.origin == 0.0
+        assert mask.origin == (0.0,)
 
-        mask = aa.Mask1D.manual(mask=[False, False, True], pixel_scales=3.0, origin=1.0)
+        mask = aa.Mask1D.manual(
+            mask=[False, False, True], pixel_scales=3.0, origin=(1.0,)
+        )
 
         assert type(mask) == aa.Mask1D
         assert (mask == np.array([False, False, True])).all()
         assert mask.pixel_scale == 3.0
-        assert mask.origin == 1.0
+        assert mask.origin == (1.0,)
 
     def test__mask__makes_mask_with_pixel_scale_and_sub_size(self):
 
@@ -50,17 +52,17 @@ class TestMask1D:
         assert type(mask) == aa.Mask1D
         assert (mask == np.array([False, False, True, True])).all()
         assert mask.pixel_scale == 1.0
-        assert mask.origin == 0.0
+        assert mask.origin == (0.0,)
         assert mask.sub_size == 1
 
         mask = aa.Mask1D.manual(
-            mask=[False, False, True, True], pixel_scales=3.0, sub_size=2, origin=1.0
+            mask=[False, False, True, True], pixel_scales=3.0, sub_size=2, origin=(1.0,)
         )
 
         assert type(mask) == aa.Mask1D
         assert (mask == np.array([False, False, True, True])).all()
         assert mask.pixel_scale == 3.0
-        assert mask.origin == 1.0
+        assert mask.origin == (1.0,)
         assert mask.sub_size == 2
 
         mask = aa.Mask1D.manual(
@@ -74,7 +76,7 @@ class TestMask1D:
             mask == np.array([False, False, True, True, True, False, False, True])
         ).all()
         assert mask.pixel_scale == 1.0
-        assert mask.origin == 0.0
+        assert mask.origin == (0.0,)
         assert mask.sub_size == 2
 
     def test__mask__invert_is_true_inverts_the_mask(self):

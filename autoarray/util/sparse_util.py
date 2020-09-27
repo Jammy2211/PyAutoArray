@@ -12,7 +12,8 @@ logger.level = logging.DEBUG
 def unmasked_sparse_for_sparse_from(
     total_sparse_pixels, mask, unmasked_sparse_grid_pixel_centres
 ):
-    """Determine the util between every masked pixelization-grid pixel and pixelization-grid pixel. This is \
+    """
+    Returns the util between every masked pixelization-grid pixel and pixelization-grid pixel. This is \
     performed by checking whether each pixelization-grid pixel is within the masks, and util the indexes.
 
     Parameters
@@ -21,7 +22,7 @@ def unmasked_sparse_for_sparse_from(
         The total number of pixels in the pixelization grid which fall within the masks.
     mask : imaging.masks.Mask2D
         The masks within which pixelization pixels must be inside
-    unmasked_sparse_grid_pixel_centres : ndarray
+    unmasked_sparse_grid_pixel_centres : np.ndarray
         The centres of the unmasked pixelization grid pixels.
     """
 
@@ -45,7 +46,8 @@ def unmasked_sparse_for_sparse_from(
 def sparse_for_unmasked_sparse_from(
     mask, unmasked_sparse_grid_pixel_centres, total_sparse_pixels
 ):
-    """Determine the util between every pixelization-grid pixel and masked pixelization-grid pixel. This is \
+    """
+    Returns the util between every pixelization-grid pixel and masked pixelization-grid pixel. This is \
     performed by checking whether each pixelization-grid pixel is within the masks, and util the indexes.
 
     Pixelization pixels are paired with the next masked pixel index. This may mean that a pixel is not paired with a \
@@ -58,7 +60,7 @@ def sparse_for_unmasked_sparse_from(
         The total number of pixels in the pixelization grid which fall within the masks.
     mask : imaging.masks.Mask2D
         The masks within which pixelization pixels must be inside
-    unmasked_sparse_grid_pixel_centres : ndarray
+    unmasked_sparse_grid_pixel_centres : np.ndarray
         The centres of the unmasked pixelization grid pixels.
     """
 
@@ -90,9 +92,9 @@ def sparse_1d_index_for_mask_1d_index_from(
 
     Parameters
     -----------
-    regular_to_unmasked_sparse : ndarray
+    regular_to_unmasked_sparse : np.ndarray
         The index util between every pixel and masked pixelization pixel.
-    sparse_for_unmasked_sparse : ndarray
+    sparse_for_unmasked_sparse : np.ndarray
         The index util between every masked pixelization pixel and unmasked pixelization pixel.
     """
     total_regular_pixels = regular_to_unmasked_sparse.shape[0]
@@ -109,15 +111,15 @@ def sparse_1d_index_for_mask_1d_index_from(
 
 @decorator_util.jit()
 def sparse_grid_via_unmasked_from(unmasked_sparse_grid, unmasked_sparse_for_sparse):
-    """Use the central arc-second coordinate of every unmasked pixelization grid's pixels and util between each \
-    pixelization pixel and unmasked pixelization pixel to compute the central arc-second coordinate of every masked \
+    """Use the central scaled coordinate of every unmasked pixelization grid's pixels and util between each \
+    pixelization pixel and unmasked pixelization pixel to compute the central scaled coordinate of every masked \
     pixelization grid pixel.
 
     Parameters
     -----------
-    unmasked_sparse_grid : ndarray
-        The (y,x) arc-second centre of every unmasked pixelization grid pixel.
-    unmasked_sparse_for_sparse : ndarray
+    unmasked_sparse_grid : np.ndarray
+        The (y,x) scaled centre of every unmasked pixelization grid pixel.
+    unmasked_sparse_for_sparse : np.ndarray
         The index util between every pixelization pixel and masked pixelization pixel.
     """
     total_pix_pixels = unmasked_sparse_for_sparse.shape[0]

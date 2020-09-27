@@ -106,7 +106,7 @@ class Values(np.ndarray):
 
         Parameters
         ----------
-        arr_1d : ndarray
+        arr_1d : np.ndarray
             The 1D array (shape [total_values]) of values that are mapped to a *Values* object."""
         values_1d = [
             list(arr_1d[i:j]) for i, j in zip(self.lower_indexes, self.upper_indexes)
@@ -114,14 +114,14 @@ class Values(np.ndarray):
         return Values(values=values_1d)
 
     def coordinates_from_grid_1d(self, grid_1d):
-        """Create a *GridCoordinates* object from a 2D ndarray array of values of shape [total_values, 2].
+        """Create a `GridCoordinates` object from a 2D ndarray array of values of shape [total_values, 2].
 
-        The *GridCoordinates* are structured and grouped following this *Coordinate* instance.
+        The `GridCoordinates` are structured and grouped following this *Coordinate* instance.
 
         Parameters
         ----------
-        grid_1d : ndarray
-            The 2d array (shape [total_coordinates, 2]) of (y,x) coordinates that are mapped to a *GridCoordinates*
+        grid_1d : np.ndarray
+            The 2d array (shape [total_coordinates, 2]) of (y,x) coordinates that are mapped to a `GridCoordinates`
             object."""
         coordinates_1d = [
             list(map(tuple, grid_1d[i:j, :]))

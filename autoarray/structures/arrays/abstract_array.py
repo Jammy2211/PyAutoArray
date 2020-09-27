@@ -16,7 +16,7 @@ def check_array(array):
 
     if array.store_in_1d and len(array.shape) != 1:
         raise exc.ArrayException(
-            "An array input into the arrays.Array.__new__ method has store_in_1d = True but"
+            "An array input into the arrays.Array.__new__ method has store_in_1d = ``True`` but"
             "the input shape of the array is not 1."
         )
 
@@ -50,7 +50,7 @@ def convert_manual_1d_array(array_1d, mask, store_in_1d):
 
     Parameters
     ----------
-    array_1d : ndarray or list
+    array_1d : np.ndarray or list
         The input structure which is converted to a 1D ndarray if it is a list.
     mask : Mask2D
         The mask of the output Array.
@@ -88,7 +88,7 @@ def convert_manual_2d_array(array_2d, mask, store_in_1d):
 
     Parameters
     ----------
-    array_2d : ndarray or list
+    array_2d : np.ndarray or list
         The input structure which is converted to a 2D ndarray if it is a list.
     mask : Mask2D
         The mask of the output Array.
@@ -126,7 +126,7 @@ def convert_manual_array(array, mask, store_in_1d):
 
     Parameters
     ----------
-    array : ndarray or list
+    array : np.ndarray or list
         The input structure which is converted to an ndarray if it is a list.
     mask : Mask2D
         The mask of the output Array.
@@ -297,7 +297,7 @@ class AbstractArray(abstract_structure.AbstractStructure):
         """
         Parameters
         ----------
-        array: ndarray
+        array: np.ndarray
             An ndarray
 
         Returns
@@ -458,7 +458,8 @@ class AbstractArray(abstract_structure.AbstractStructure):
         )
 
     def binned_from_bin_up_factor(self, bin_up_factor, method):
-        """Compute a binned version of the Array, where binning up occurs by coming all pixel values in a set of
+        """
+    Returns a binned version of the Array, where binning up occurs by coming all pixel values in a set of
         (bin_up_factor x bin_up_factor) pixels.
 
         The pixels can be combined:
@@ -522,7 +523,7 @@ class AbstractArray(abstract_structure.AbstractStructure):
         Parameters
         ----------
         file_path : str
-            The path the file is output to, including the filename and the '.fits' extension,
+            The path the file is output to, including the filename and the ``.fits`` extension,
             e.g. '/path/to/filename.fits'
         overwrite : bool
             If a file already exists at the path, if overwrite=True it is overwritten else an error is raised."""

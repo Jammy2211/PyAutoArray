@@ -255,7 +255,7 @@ class AbstractPlotter:
         unit_conversion_factor : float or None
             The conversion factor between arc-seconds and kiloparsecs, required to plotters the unit_label in kpc.
         figsize : (int, int)
-            The size of the figure in (rows, columns).
+            The size of the figure in (total_y_pixels, total_x_pixels).
         aspect : str
             The aspect ratio of the array, specifically whether it is forced to be square ('equal') or adapts its size to \
             the figure size ('auto').
@@ -311,7 +311,7 @@ class AbstractPlotter:
             plotters.plot_array(
             array=image, origin=(0.0, 0.0), mask=circular_mask,
             border=False, points=[[1.0, 1.0], [2.0, 2.0]], grid=None, as_subplot=False,
-            unit_label='scaled', kpc_per_arcsec=None, figsize=(7,7), aspect='auto',
+            unit_label='scaled', kpc_per_scaled=None, figsize=(7,7), aspect='auto',
             cmap='jet', norm='linear, norm_min=None, norm_max=None, linthresh=None, linscale=None,
             cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01, cb_tick_values=None, cb_tick_labels=None,
             title='Image', titlesize=16, xsize=16, ysize=16, xyticksize=16,
@@ -451,7 +451,7 @@ class AbstractPlotter:
         unit_conversion_factor : float or None
             The conversion factor between arc-seconds and kiloparsecs, required to plotters the unit_label in kpc.
         figsize : (int, int)
-            The size of the figure in (rows, columns).
+            The size of the figure in (total_y_pixels, total_x_pixels).
         aspect : str
             The aspect ratio of the array, specifically whether it is forced to be square ('equal') or adapts its size to \
             the figure size ('auto').
@@ -507,7 +507,7 @@ class AbstractPlotter:
             plotter.plot_frame(
             array=image, origin=(0.0, 0.0), mask=circular_mask,
             border=False, points=[[1.0, 1.0], [2.0, 2.0]], grid=None, as_subplot=False,
-            unit_label='scaled', kpc_per_arcsec=None, figsize=(7,7), aspect='auto',
+            unit_label='scaled', kpc_per_scaled=None, figsize=(7,7), aspect='auto',
             cmap='jet', norm='linear, norm_min=None, norm_max=None, linthresh=None, linscale=None,
             cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01, cb_tick_values=None, cb_tick_labels=None,
             title='Image', titlesize=16, xsize=16, ysize=16, xyticksize=16,
@@ -617,7 +617,7 @@ class AbstractPlotter:
         unit_conversion_factor : float
             The conversion factor between arc-seconds and kiloparsecs, required to plotters the unit_label in kpc.
         figsize : (int, int)
-            The size of the figure in (rows, columns).
+            The size of the figure in (total_y_pixels, total_x_pixels).
         pointsize : int
             The size of the points plotted on the grid.
         xyticksize : int
@@ -1181,7 +1181,7 @@ class SubPlotter(AbstractPlotter):
         Parameters
         -----------
         figsize : (int, int)
-            The size of the figure in (rows, columns).
+            The size of the figure in (total_y_pixels, total_x_pixels).
         as_subplot : bool
             If the figure is a subplot, the setup_figure function is omitted to ensure that each subplot does not create a \
             new figure and so that it can be output using the *output.output_figure(structure=None)* function.
@@ -1205,7 +1205,7 @@ class SubPlotter(AbstractPlotter):
             plt.subplot(rows, columns, subplot_index, aspect=float(aspect))
 
     def get_subplot_rows_columns(self, number_subplots):
-        """Get the size of a sub plotters in (rows, columns), based on the number of subplots that are going to be plotted.
+        """Get the size of a sub plotters in (total_y_pixels, total_x_pixels), based on the number of subplots that are going to be plotted.
 
         Parameters
         -----------
@@ -1230,7 +1230,7 @@ class SubPlotter(AbstractPlotter):
             return 6, 6
 
     def get_subplot_figsize(self, number_subplots):
-        """Get the size of a sub plotters in (rows, columns), based on the number of subplots that are going to be plotted.
+        """Get the size of a sub plotters in (total_y_pixels, total_x_pixels), based on the number of subplots that are going to be plotted.
 
         Parameters
         -----------
@@ -1421,15 +1421,15 @@ def plotter_and_plotter_key_from_func(func):
     return plotter, plotter_key
 
 
-def kpc_per_arcsec_of_object_from_dictionary(dictionary):
+def kpc_per_scaled_of_object_from_dictionary(dictionary):
 
-    kpc_per_arcsec = None
+    kpc_per_scaled = None
 
     for key, value in dictionary.items():
-        if hasattr(value, "kpc_per_arcsec"):
-            return value.kpc_per_arcsec
+        if hasattr(value, "kpc_per_scaled"):
+            return value.kpc_per_scaled
 
-    return kpc_per_arcsec
+    return kpc_per_scaled
 
 
 def set_include_and_plotter(func):
@@ -1570,9 +1570,9 @@ def set_labels(func):
 
         plotter = plotter.plotter_with_new_output(filename=filename)
 
-        kpc_per_arcsec = kpc_per_arcsec_of_object_from_dictionary(dictionary=kwargs)
+        kpc_per_scaled = kpc_per_scaled_of_object_from_dictionary(dictionary=kwargs)
 
-        plotter = plotter.plotter_with_new_units(conversion_factor=kpc_per_arcsec)
+        plotter = plotter.plotter_with_new_units(conversion_factor=kpc_per_scaled)
 
         kwargs[plotter_key] = plotter
 

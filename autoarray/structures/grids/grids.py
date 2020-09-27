@@ -12,7 +12,7 @@ class Grid(abstract_grid.AbstractGrid):
         """A grid of coordinates, which are paired to a uniform 2D mask of pixels and sub-pixels. Each entry
         on the grid corresponds to the (y,x) coordinates at the centre of a sub-pixel in an unmasked pixel.
 
-        A *Grid* is ordered such that pixels begin from the top-row of the corresponding mask and go right and down.
+        A `Grid` is ordered such that pixels begin from the top-row of the corresponding mask and go right and down.
         The positive y-axis is upwards and positive x-axis to the right.
 
         The grid can be stored in 1D or 2D, as detailed below.
@@ -35,8 +35,8 @@ class Grid(abstract_grid.AbstractGrid):
          x x x x x x x x x x
          x x x x x x x x x x     This is an example mask.Mask2D, where:
          x x x x x x x x x x
-         x x x xIoIo x x x x     x = True (Pixel is masked and excluded from the grid)
-         x x xIoIoIoIo x x x     o = False (Pixel is not masked and included in the grid)
+         x x x xIoIo x x x x     x = ``True`` (Pixel is masked and excluded from the grid)
+         x x xIoIoIoIo x x x     o = ``False`` (Pixel is not masked and included in the grid)
          x x xIoIoIoIo x x x
          x x x x x x x x x x
          x x x x x x x x x x
@@ -82,8 +82,8 @@ class Grid(abstract_grid.AbstractGrid):
          x x x x x x x x x x
          x x x x x x x x x x     This is an example mask.Mask2D, where:
          x x x x x x x x x x
-         x x x x x x x x x x     x = True (Pixel is masked and excluded from lens)
-         x x x xIoIo x x x x     o = False (Pixel is not masked and included in lens)
+         x x x x x x x x x x     x = ``True`` (Pixel is masked and excluded from lens)
+         x x x xIoIo x x x x     o = ``False`` (Pixel is not masked and included in lens)
          x x x x x x x x x x
          x x x x x x x x x x
          x x x x x x x x x x
@@ -144,8 +144,8 @@ class Grid(abstract_grid.AbstractGrid):
          x x x x x x x x x xI
          x x x x x x x x x xI     This is an example mask.Mask2D, where:
          x x x x x x x x x xI
-         x x x xIoIo x x x xI     x = True (Pixel is masked and excluded from the grid)
-         x x xIoIoIoIo x x xI     o = False (Pixel is not masked and included in the grid)
+         x x x xIoIo x x x xI     x = ``True`` (Pixel is masked and excluded from the grid)
+         x x xIoIoIoIo x x xI     o = ``False`` (Pixel is not masked and included in the grid)
          x x xIoIoIoIo x x xI
          x x x x x x x x x xI
          x x x x x x x x x xI
@@ -246,9 +246,9 @@ class Grid(abstract_grid.AbstractGrid):
             or a list of lists.
         shape_2d : (float, float)
             The 2D shape of the mask the grid is paired with.
-        pixel_scales : (float, float) or float
-            The pixel conversion scale of a pixel in the y and x directions. If input as a float, the pixel_scales
-            are converted to the format (float, float).
+        pixel_scales: (float, float) or float
+            The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a ``float``,
+            it is converted to a (float, float) structure.
         sub_size : int
             The size (sub_size x sub_size) of each unmasked pixels sub-grid.
         origin : (float, float)
@@ -295,9 +295,9 @@ class Grid(abstract_grid.AbstractGrid):
         grid : np.ndarray or list
             The (y,x) coordinates of the grid input as an ndarray of shape
             [total_y_pixels*sub_size, total_x_pixel*sub_size, 2] or a list of lists.
-        pixel_scales : (float, float) or float
-            The pixel conversion scale of a pixel in the y and x directions. If input as a float, the pixel_scales
-            are converted to the format (float, float).
+        pixel_scales: (float, float) or float
+            The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a ``float``,
+            it is converted to a (float, float) structure.
         sub_size : int
             The size (sub_size x sub_size) of each unmasked pixels sub-grid.
         origin : (float, float)
@@ -347,9 +347,9 @@ class Grid(abstract_grid.AbstractGrid):
             or a list of lists.
         shape_2d : (float, float)
             The 2D shape of the mask the grid is paired with.
-        pixel_scales : (float, float) or float
-            The pixel conversion scale of a pixel in the y and x directions. If input as a float, the pixel_scales
-            are converted to the format (float, float).
+        pixel_scales: (float, float) or float
+            The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a ``float``,
+            it is converted to a (float, float) structure.
         sub_size : int
             The size (sub_size x sub_size) of each unmasked pixels sub-grid.
         origin : (float, float)
@@ -432,9 +432,9 @@ class Grid(abstract_grid.AbstractGrid):
             The x coordinates of the grid input as an ndarray of shape [total_coordinates] or list.
         shape_2d : (float, float)
             The 2D shape of the mask the grid is paired with.
-        pixel_scales : (float, float) or float
-            The pixel conversion scale of a pixel in the y and x directions. If input as a float, the pixel_scales
-            are converted to the format (float, float).
+        pixel_scales: (float, float) or float
+            The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a ``float``,
+            it is converted to a (float, float) structure.
         sub_size : int
             The size (sub_size x sub_size) of each unmasked pixels sub-grid.
         origin : (float, float)
@@ -482,9 +482,9 @@ class Grid(abstract_grid.AbstractGrid):
             The y coordinates of the grid input as an ndarray of shape [total_coordinates] or list.
         x : np.ndarray or list
             The x coordinates of the grid input as an ndarray of shape [total_coordinates] or list.
-        pixel_scales : (float, float) or float
-            The pixel conversion scale of a pixel in the y and x directions. If input as a float, the pixel_scales
-            are converted to the format (float, float).
+        pixel_scales: (float, float) or float
+            The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a ``float``,
+            it is converted to a (float, float) structure.
         sub_size : int
             The size (sub_size x sub_size) of each unmasked pixels sub-grid.
         origin : (float, float)
@@ -518,9 +518,9 @@ class Grid(abstract_grid.AbstractGrid):
         ----------
         shape_2d : (float, float)
             The 2D shape of the uniform grid and the mask that it is paired with.
-        pixel_scales : (float, float) or float
-            The pixel conversion scale of a pixel in the y and x directions. If input as a float, the pixel_scales
-            are converted to the format (float, float).
+        pixel_scales: (float, float) or float
+            The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a ``float``,
+            it is converted to a (float, float) structure.
         sub_size : int
             The size (sub_size x sub_size) of each unmasked pixels sub-grid.
         origin : (float, float)
@@ -570,9 +570,9 @@ class Grid(abstract_grid.AbstractGrid):
         ----------
         shape_2d : (float, float)
             The 2D shape of the uniform grid and the mask that it is paired with.
-        pixel_scales : (float, float) or float
-            The pixel conversion scale of a pixel in the y and x directions. If input as a float, the pixel_scales
-            are converted to the format (float, float).
+        pixel_scales: (float, float) or float
+            The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a ``float``,
+            it is converted to a (float, float) structure.
         sub_size : int
             The size (sub_size x sub_size) of each unmasked pixels sub-grid.
         origin : (float, float)
@@ -687,8 +687,8 @@ class Grid(abstract_grid.AbstractGrid):
          x x x x x x x x x xI
          x x x x x x x x x xI     This is an imaging.Mask2D, where
          x x x x x x x x x xI
-         x x x x x x x x x xI     x = True (Pixel is masked and excluded from lens)
-         x x xIoIoIo x x x xI     o = False (Pixel is not masked and included in lens)
+         x x x x x x x x x xI     x = ``True`` (Pixel is masked and excluded from lens)
+         x x xIoIoIo x x x xI     o = ``False`` (Pixel is not masked and included in lens)
          x x xIoIoIo x x x xI
          x x xIoIoIo x x x xI
          x x x x x x x x x xI
@@ -700,8 +700,8 @@ class Grid(abstract_grid.AbstractGrid):
 
          x x x x x x x x xI     This is an example grid.Mask2D, where
          x x x x x x x x xI
-         x xIoIoIoIoIo x xI     x = True (Pixel is masked and excluded from lens)
-         x xIo x x xIo x xI     o = False (Pixel is not masked and included in lens)
+         x xIoIoIoIoIo x xI     x = ``True`` (Pixel is masked and excluded from lens)
+         x xIo x x xIo x xI     o = ``False`` (Pixel is not masked and included in lens)
          x xIo x x xIo x xI
          x xIo x x xIo x xI
          x xIoIoIoIoIo x xI
@@ -729,8 +729,8 @@ class Grid(abstract_grid.AbstractGrid):
 
          x x x x x x x x xI     This is an example grid.Mask2D, where
          xIoIoIoIoIoIoIo xI
-         xIoIoIoIoIoIoIo xI     x = True (Pixel is masked and excluded from lens)
-         xIoIo x x xIoIo xI     o = False (Pixel is not masked and included in lens)
+         xIoIoIoIoIoIoIo xI     x = ``True`` (Pixel is masked and excluded from lens)
+         xIoIo x x xIoIo xI     o = ``False`` (Pixel is not masked and included in lens)
          xIoIo x x xIoIo xI
          xIoIo x x xIoIo xI
          xIoIoIoIoIoIoIo xI
@@ -755,14 +755,15 @@ class Grid(abstract_grid.AbstractGrid):
         return cls.from_mask(mask=blurring_mask, store_in_1d=store_in_1d)
 
     def grid_from_deflection_grid(self, deflection_grid):
-        """Compute a new Grid from this grid, where the (y,x) coordinates of this grid have a grid of (y,x) values,
+        """
+    Returns a new Grid from this grid, where the (y,x) coordinates of this grid have a grid of (y,x) values,
          termed the deflection grid, subtracted from them to determine the new grid of (y,x) values.
 
         This is used by PyAutoLens to perform grid ray-tracing.
 
         Parameters
         ----------
-        deflection_grid : ndarray
+        deflection_grid : np.ndarray
             The grid of (y,x) coordinates which is subtracted from this grid.
         """
         return Grid(
@@ -770,7 +771,8 @@ class Grid(abstract_grid.AbstractGrid):
         )
 
     def blurring_grid_from_kernel_shape(self, kernel_shape_2d):
-        """Compute the blurring grid from a grid, via an input 2D kernel shape.
+        """
+    Returns the blurring grid from a grid, via an input 2D kernel shape.
 
         For a full description of blurring grids, checkout *blurring_grid_from_mask_and_kernel_shape*.
 
@@ -830,7 +832,7 @@ class Grid(abstract_grid.AbstractGrid):
         - 2D np.ndarray   -> aa.Grid
 
         This function is used by the grid_like_to_structure decorator to convert the output result of a function
-        to an autoarray structure when a *Grid* instance is passed to the decorated function.
+        to an autoarray structure when a `Grid` instance is passed to the decorated function.
 
         Parameters
         ----------
@@ -855,7 +857,7 @@ class Grid(abstract_grid.AbstractGrid):
         - [2D np.ndarray] -> [aa.Grid]
 
         This function is used by the grid_like_list_to_structure-list decorator to convert the output result of a
-        function to a list of autoarray structure when a *Grid* instance is passed to the decorated function.
+        function to a list of autoarray structure when a `Grid` instance is passed to the decorated function.
 
         Parameters
         ----------
@@ -889,9 +891,9 @@ class GridSparse:
 
         Parameters
         ----------
-        sparse_grid : ndarray or Grid
+        sparse_grid : np.ndarray or Grid
             The (y,x) grid of sparse coordinates.
-        sparse_1d_index_for_mask_1d_index : ndarray
+        sparse_1d_index_for_mask_1d_index : np.ndarray
             An array whose indexes map pixels from a Grid's mask to the closest (y,x) coordinate on the sparse_grid.
         """
         self.sparse = sparse_grid
@@ -1001,7 +1003,7 @@ class GridSparse:
             The total number of pixels in the GridSparse and input into the KMeans algortihm.
         grid : Grid
             The grid of (y,x) coordinates corresponding to the weight map.
-        weight_map : ndarray
+        weight_map : np.ndarray
             The 2D array of weight values that the KMeans clustering algorithm adapts to to determine the GridSparse.
         n_iter : int
             The number of times the KMeans algorithm is repeated.
