@@ -86,7 +86,7 @@ class Mapper:
             A stack of grid's which are mapped to the pixelization (includes an and sub grid).
         border : grid.GridBorder
             The border of the grid's grid.
-        hyper_image : ndarray
+        hyper_image : np.ndarray
             A pre-computed hyper-image of the image the mapper is expected to reconstruct, used for adaptive analysis.
         """
         self.grid = grid
@@ -118,7 +118,8 @@ class Mapper:
 
     @property
     def all_sub_mask_1d_indexes_for_pixelization_1d_index(self):
-        """Compute the mappings between a pixelization's pixels and the unmasked sub-grid pixels. These mappings \
+        """
+    Returns the mappings between a pixelization's pixels and the unmasked sub-grid pixels. These mappings \
         are determined after the grid is used to determine the pixelization.
 
         The pixelization's pixels map to different number of sub-grid pixels, thus a list of lists is used to \
@@ -250,7 +251,7 @@ class MapperVoronoi(Mapper):
             Class storing the Voronoi grid's 
         geometry : pixelization.Voronoi.Geometry
             The geometry (e.g. y / x edge locations, pixel-scales) of the Vornoi pixelization.
-        hyper_image : ndarray
+        hyper_image : np.ndarray
             A pre-computed hyper-image of the image the mapper is expected to reconstruct, used for adaptive analysis.
         """
         super(MapperVoronoi, self).__init__(

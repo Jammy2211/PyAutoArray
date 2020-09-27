@@ -11,25 +11,38 @@ logger = logging.getLogger(__name__)
 
 
 class AbstractMask1d(abstract_mask.AbstractMask):
-    def __new__(cls, mask, pixel_scales=None, sub_size=1, origin=0.0, *args, **kwargs):
-        """ A mask, which is applied to data to extract a set of unmasked image pixels (i.e. mask entry \
-        is *False* or 0) which are then fitted in an analysis.
+    def __new__(
+        cls,
+        mask: np.ndarray,
+        pixel_scales: (float,) = None,
+        sub_size: int = 1,
+        origin: (float,) = (0.0,),
+        *args,
+        **kwargs
+    ):
+        """ A 1D mask, representing 1D data on a uniform line of pixels with equal spacing.
 
-        The mask retains the pixel scale of the array and has a centre and origin.
+        When applied to 1D data it extracts or masks the unmasked image pixels corresponding to mask entries that are
+        ``False`` or 0).
+
+        The mask also defines the geometry of the 1D data structure it is paired to, for example how every pixel
+        coordinate on the 1D line of data converts to physical units via the ``pixel_scales`` and ``origin``
+        parameters and a sub-grid which is used for performing calculations via super-sampling.
 
         Parameters
         ----------
-        mask: ndarray
-            An array of bools representing the mask.
+        mask: np.ndarray
+            The ``ndarray`` of shape [total_pixels] containing the ``bool'``s representing the mask, where
+            ``False`` signifies an entry is unmasked and used in calculations..
         pixel_scales: (float, float)
-            The arc-second to pixel conversion factor of each pixel.
+            The scaled units to pixel units conversion factor of each pixel.
         origin : (float, float)
-            The (y,x) arc-second origin of the mask's coordinate system.
+            The x origin of the mask's coordinate system in scaled units.
         centre : (float, float)
-            The (y,x) arc-second centre of the mask provided it is a standard geometric shape (e.g. a circle).
+            The x centre of the mask in scaled units provided it is a standard geometric shape (e.g. a circle).
         """
-        # noinspection PyArgumentList
 
+        # noinspection PyArgumentList
         return abstract_mask.AbstractMask.__new__(
             cls=cls,
             mask=mask,
@@ -45,9 +58,29 @@ class AbstractMask1d(abstract_mask.AbstractMask):
         if isinstance(obj, Mask1D):
             pass
         else:
-            self.origin = 0.0
+            self.origin = (0.0,)
 
-    def output_to_fits(self, file_path, overwrite=False):
+    def output_to_fits(self, file_path: str, overwrite: bool = False):
+        """
+        Write the 1D mask to a .fits file.
+
+        Parameters
+        ----------
+        file_path : str
+            The full path of the file that is output, including the file name and ``.fits`` extension.
+        overwrite : bool
+            If ``True`` and a file already exists with the input file_path the .fits file is overwritten. If ``False``,
+            an error is raised.
+
+        Returns
+        -------
+        None
+
+        Examples
+        --------
+        mask = Mask1D(mask=np.full(shape=(5,), fill_value=False))
+        mask.output_to_fits(file_path='/path/to/file/filename.fits', overwrite=True)
+        """
         array_util.numpy_array_1d_to_fits(
             array_2d=self.astype("float"), file_path=file_path, overwrite=overwrite
         )
@@ -55,7 +88,7 @@ class AbstractMask1d(abstract_mask.AbstractMask):
 
 class Mask1D(AbstractMask1d):
     @classmethod
-    def manual(cls, mask, pixel_scales=None, sub_size=1, origin=0.0, invert=False):
+    def manual(cls, mask, pixel_scales=None, sub_size=1, origin=(0.0,), invert=False):
 
         if type(mask) is list:
             mask = np.asarray(mask).astype("bool")
@@ -75,7 +108,7 @@ class Mask1D(AbstractMask1d):
 
     @classmethod
     def unmasked(
-        cls, shape_1d, pixel_scales=None, sub_size=1, origin=0.0, invert=False
+        cls, shape_1d, pixel_scales=None, sub_size=1, origin=(0.0,), invert=False
     ):
         """Setup a mask where all pixels are unmasked.
 
@@ -84,7 +117,7 @@ class Mask1D(AbstractMask1d):
         shape : (int, int)
             The (y,x) shape of the mask in units of pixels.
         pixel_scales : float or (float, float)
-            The arc-second to pixel conversion factor of each pixel.
+            The scaled to pixel conversion factor of each pixel.
         """
         return cls.manual(
             mask=np.full(shape=shape_1d, fill_value=False),
@@ -95,7 +128,7 @@ class Mask1D(AbstractMask1d):
         )
 
     @classmethod
-    def from_fits(cls, file_path, pixel_scales, sub_size=1, hdu=0, origin=0.0):
+    def from_fits(cls, file_path, pixel_scales, sub_size=1, hdu=0, origin=(0.0,)):
         """
         Loads the image from a .fits file.
 
@@ -106,7 +139,7 @@ class Mask1D(AbstractMask1d):
         hdu : int
             The HDU number in the fits file containing the image image.
         pixel_scales : float or (float, float)
-            The arc-second to pixel conversion factor of each pixel.
+            The scaled to pixel conversion factor of each pixel.
         """
 
         mask = cls(

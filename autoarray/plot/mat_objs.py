@@ -62,7 +62,7 @@ class Units:
         ----------
         use_scaled : bool
             If True, plot the y and x axis labels of the `Array` as its scaled coordinates using its *pixel_scales*
-            attribute. If False plot them in pixel units.
+            attribute. If ``False`` plot them in pixel units.
         conversion_factor : float
             If plotting the labels in scaled units, this factor multiplies the values that are used for the labels.
             This allows for additional unit conversions of the figure labels.
@@ -149,7 +149,8 @@ class Figure:
         return Figure(figsize=figsize, aspect=aspect, from_subplot_config=True)
 
     def aspect_from_shape_2d(self, shape_2d: (int, int)):
-        """Determine the aspect ratio of the figure from the 2D shape of an _Array_.
+        """
+    Returns the aspect ratio of the figure from the 2D shape of an _Array_.
 
         This is primarily used to ensure that rectangular arrays are plotted as square figures on sub-plots.
 
@@ -290,7 +291,8 @@ class ColorMap:
         )
 
     def norm_from_array(self, array):
-        """Determine the `Normalization` object which scales of the colormap, using the input min / max normalization \
+        """
+    Returns the `Normalization` object which scales of the colormap, using the input min / max normalization \
         values.
 
         If norm_min / norm_max are not supplied, the minimum / maximum values of the array of data_type are used.
@@ -437,7 +439,7 @@ class ColorBar:
         cmap : str
             The colormap used to map normalized data values to RGBA colors (see
             https://matplotlib.org/3.3.1/api/cm_api.html).
-        color_values : ndarray
+        color_values : np.ndarray
             The values of the pixels on the Voronoi mesh which are used to create the colorbar.
         """
 
@@ -790,7 +792,8 @@ class Labels:
             return self._xunits
 
     def yunits_from_units(self, units: Units):
-        """Determine the units of the y-axis to create the y label text if it is not manually specified.
+        """
+    Returns the units of the y-axis to create the y label text if it is not manually specified.
 
          Parameters
          ----------
@@ -815,7 +818,8 @@ class Labels:
             return self._yunits
 
     def xunits_from_units(self, units: Units):
-        """Determine the units of the x-axis to create the x label text if it is not manually specified.
+        """
+    Returns the units of the x-axis to create the x label text if it is not manually specified.
 
          Parameters
          ----------
@@ -1001,7 +1005,7 @@ class Output:
 
         Parameters
         -----------
-        structure : ndarray
+        structure : np.ndarray
             The 2D array of image to be output, required for outputting the image as a fits file.
         """
         if not self.bypass:
@@ -1384,13 +1388,13 @@ class Liner:
 
         Parameters
         -----------t.
-        mask : ndarray of data_type.array.mask.Mask2D
+        mask : np.ndarray of data_type.array.mask.Mask2D
             The mask applied to the array, the edge of which is plotted as a set of points over the plotted array.
         plot_lines : bool
             If a mask is supplied, its liness pixels (e.g. the exterior edge) is plotted if this is *True*.
         unit_label : str
             The unit_label of the y / x axis of the plots.
-        kpc_per_arcsec : float or None
+        kpc_per_scaled : float or None
             The conversion factor between arc-seconds and kiloparsecs, required to plotters the unit_label in kpc.
         lines_pointsize : int
             The size of the points plotted to show the liness.
@@ -1432,13 +1436,13 @@ class Liner:
 
         Parameters
         -----------t.
-        mask : ndarray of data_type.array.mask.Mask2D
+        mask : np.ndarray of data_type.array.mask.Mask2D
             The mask applied to the array, the edge of which is plotted as a set of points over the plotted array.
         plot_lines : bool
             If a mask is supplied, its liness pixels (e.g. the exterior edge) is plotted if this is *True*.
         unit_label : str
             The unit_label of the y / x axis of the plots.
-        kpc_per_arcsec : float or None
+        kpc_per_scaled : float or None
             The conversion factor between arc-seconds and kiloparsecs, required to plotters the unit_label in kpc.
         lines_pointsize : int
             The size of the points plotted to show the liness.

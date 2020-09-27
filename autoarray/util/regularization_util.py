@@ -6,13 +6,14 @@ from autoarray import decorator_util
 def constant_regularization_matrix_from(
     coefficient, pixel_neighbors, pixel_neighbors_size
 ):
-    """From the pixel-neighbors, setup the regularization matrix using the instance regularization scheme.
+    """
+    From the pixel-neighbors, setup the regularization matrix using the instance regularization scheme.
 
     Parameters
     ----------
     coefficients : tuple
         The regularization coefficients which controls the degree of smoothing of the inversion reconstruction.
-    pixel_neighbors : ndarray
+    pixel_neighbors : np.ndarray
         An array of length (total_pixels) which provides the index of all neighbors of every pixel in \
         the Voronoi grid (entries of -1 correspond to no neighbor).
     pixel_neighbors_size : ndarrayy
@@ -39,7 +40,8 @@ def constant_regularization_matrix_from(
 def adaptive_regularization_weights_from(
     inner_coefficient, outer_coefficient, pixel_signals
 ):
-    """Compute the regularization weights, which are the effective regularization coefficient of every \
+    """
+    Returns the regularization weights, which are the effective regularization coefficient of every \
     pixel. They are computed using the (hyper) pixel-signal of each pixel.
 
     Two regularization coefficients are used, corresponding to the:
@@ -52,7 +54,7 @@ def adaptive_regularization_weights_from(
     ----------
     coefficients : (float, float)
         The regularization coefficients which controls the degree of smoothing of the inversion reconstruction.
-    pixel_signals : ndarray
+    pixel_signals : np.ndarray
         The estimated signal in every pixelization pixel, used to change the regularization weighting of high signal \
         and low signal pixelizations.
     """
@@ -65,13 +67,14 @@ def adaptive_regularization_weights_from(
 def weighted_regularization_matrix_from(
     regularization_weights, pixel_neighbors, pixel_neighbors_size
 ):
-    """From the pixel-neighbors, setup the regularization matrix using the weighted regularization scheme.
+    """
+    From the pixel-neighbors, setup the regularization matrix using the weighted regularization scheme.
 
     Parameters
     ----------
-    regularization_weights : ndarray
+    regularization_weights : np.ndarray
         The regularization_ weight of each pixel, which governs how much smoothing is applied to that individual pixel.
-    pixel_neighbors : ndarray
+    pixel_neighbors : np.ndarray
         An array of length (total_pixels) which provides the index of all neighbors of every pixel in \
         the Voronoi grid (entries of -1 correspond to no neighbor).
     pixel_neighbors_size : ndarrayy

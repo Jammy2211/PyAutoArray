@@ -4,18 +4,19 @@ import numpy as np
 
 @decorator_util.jit()
 def data_vector_via_blurred_mapping_matrix_from(
-    blurred_mapping_matrix, image, noise_map
-):
-    """Compute the hyper_galaxies vector *D* from a blurred util matrix *f* and the 1D image *d* and 1D noise-map *\sigma* \
+    blurred_mapping_matrix: np.ndarray, image: np.ndarray, noise_map: np.ndarray
+) -> np.ndarray:
+    """
+    Returns the data vector `D` from a blurred mapping matrix `f` and the 1D image *d* and 1D noise-map *\sigma* \
     (see Warren & Dye 2003).
     
     Parameters
     -----------
-    blurred_mapping_matrix : ndarray
+    blurred_mapping_matrix : np.ndarray
         The matrix representing the blurred mappings between sub-grid pixels and pixelization pixels.
-    image : ndarray
+    image : np.ndarray
         Flattened 1D array of the observed image the inversion is fitting.
-    noise_map : ndarray
+    noise_map : np.ndarray
         Flattened 1D array of the noise-map used by the inversion during the fit.
     """
 
@@ -34,15 +35,18 @@ def data_vector_via_blurred_mapping_matrix_from(
     return data_vector
 
 
-def curvature_matrix_via_blurred_mapping_matrix_from(blurred_mapping_matrix, noise_map):
-    """Compute the curvature matrix *F* from a blurred util matrix *f* and the 1D noise-map *\sigma* \
+def curvature_matrix_via_blurred_mapping_matrix_from(
+    blurred_mapping_matrix: np.ndarray, noise_map: np.ndarray
+) -> np.ndarray:
+    """
+    Returns the curvature matrix `F` from a blurred mapping matrix `f` and the 1D noise-map *\sigma* \
      (see Warren & Dye 2003).
 
     Parameters
     -----------
-    blurred_mapping_matrix : ndarray
+    blurred_mapping_matrix : np.ndarray
         The matrix representing the blurred mappings between sub-grid pixels and pixelization pixels.
-    noise_map : ndarray
+    noise_map : np.ndarray
         Flattened 1D array of the noise-map used by the inversion during the fit.
     """
 
@@ -55,20 +59,24 @@ def curvature_matrix_via_blurred_mapping_matrix_from(blurred_mapping_matrix, noi
 
 @decorator_util.jit()
 def curvature_matrix_via_blurred_mapping_matrix_jit(
-    blurred_mapping_matrix, noise_map, flist, iflist
-):
-    """Compute the curvature matrix *F* from a blurred util matrix *f* and the 1D noise-map *\sigma* \
+    blurred_mapping_matrix: np.ndarray,
+    noise_map: np.ndarray,
+    flist: np.ndarray,
+    iflist: np.ndarray,
+) -> np.ndarray:
+    """
+    Returns the curvature matrix `F` from a blurred mapping matrix `f` and the 1D noise-map *\sigma* \
     (see Warren & Dye 2003).
 
     Parameters
     -----------
-    blurred_mapping_matrix : ndarray
+    blurred_mapping_matrix : np.ndarray
         The matrix representing the blurred mappings between sub-grid pixels and pixelization pixels.
-    noise_map : ndarray
+    noise_map : np.ndarray
         Flattened 1D array of the noise-map used by the inversion during the fit.
-    flist : ndarray
+    flist : np.ndarray
         NumPy array of floats used to store mappings for efficienctly calculation.
-    iflist : ndarray
+    iflist : np.ndarray
         NumPy array of integers used to store mappings for efficienctly calculation.
     """
     curvature_matrix = np.zeros(
@@ -101,12 +109,14 @@ def curvature_matrix_via_blurred_mapping_matrix_jit(
 
 
 @decorator_util.jit()
-def mapped_reconstructed_data_from(mapping_matrix, reconstruction):
-    """ Compute the reconstructed hyper_galaxies vector from the blurrred util matrix *f* and solution vector *S*.
+def mapped_reconstructed_data_from(
+    mapping_matrix: np.ndarray, reconstruction: np.ndarray
+) -> np.ndarray:
+    """ Compute the reconstructed data vector from the blurrred mapping matrix `f` and solution vector *S*.
 
     Parameters
     -----------
-    mapping_matrix : ndarray
+    mapping_matrix : np.ndarray
         The matrix representing the blurred mappings between sub-grid pixels and pixelization pixels.
 
     """
@@ -120,18 +130,21 @@ def mapped_reconstructed_data_from(mapping_matrix, reconstruction):
 
 @decorator_util.jit()
 def data_vector_via_transformed_mapping_matrix_from(
-    transformed_mapping_matrix, visibilities, noise_map
-):
-    """Compute the hyper_galaxies vector *D* from a transformed util matrix *f* and the 1D image *d* and 1D noise-map *\sigma* \
+    transformed_mapping_matrix: np.ndarray,
+    visibilities: np.ndarray,
+    noise_map: np.ndarray,
+) -> np.ndarray:
+    """
+    Returns the data vector `D` from a transformed mapping matrix `f` and the 1D image *d* and 1D noise-map *\sigma* \
     (see Warren & Dye 2003).
 
     Parameters
     -----------
-    transformed_mapping_matrix : ndarray
+    transformed_mapping_matrix : np.ndarray
         The matrix representing the transformed mappings between sub-grid pixels and pixelization pixels.
-    image : ndarray
+    image : np.ndarray
         Flattened 1D array of the observed image the inversion is fitting.
-    noise_map : ndarray
+    noise_map : np.ndarray
         Flattened 1D array of the noise-map used by the inversion during the fit.
     """
 
@@ -149,20 +162,21 @@ def data_vector_via_transformed_mapping_matrix_from(
 
 
 def curvature_matrix_via_transformed_mapping_matrix_from(
-    transformed_mapping_matrix, noise_map
-):
-    """Compute the curvature matrix *F* from a transformed util matrix *f* and the 1D noise-map *\sigma* \
+    transformed_mapping_matrix: np.ndarray, noise_map: np.ndarray
+) -> np.ndarray:
+    """
+    Returns the curvature matrix `F` from a transformed mapping matrix `f` and the 1D noise-map *\sigma* \
     (see Warren & Dye 2003).
 
     Parameters
     -----------
-    transformed_mapping_matrix : ndarray
+    transformed_mapping_matrix : np.ndarray
         The matrix representing the transformed mappings between sub-grid pixels and pixelization pixels.
-    noise_map : ndarray
+    noise_map : np.ndarray
         Flattened 1D array of the noise-map used by the inversion during the fit.
-    flist : ndarray
+    flist : np.ndarray
         NumPy array of floats used to store mappings for efficienctly calculation.
-    iflist : ndarray
+    iflist : np.ndarray
         NumPy array of integers used to store mappings for efficienctly calculation.
     """
 

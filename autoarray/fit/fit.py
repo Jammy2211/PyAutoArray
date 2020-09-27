@@ -13,14 +13,14 @@ class FitDataset:
         -----------
         masked_dataset : MaskedDataset
             The masked dataset (data, mask, noise-map, etc.) that is fitted.
-        model_data : ndarray
+        model_data : np.ndarray
             The model data the masked dataset is fitted with.
 
         Attributes
         -----------
-        residual_map : ndarray
+        residual_map : np.ndarray
             The residual-map of the fit (data - model_data).
-        chi_squared_map : ndarray
+        chi_squared_map : np.ndarray
             The chi-squared-map of the fit ((data - model_data) / noise_maps ) **2.0
         chi_squared : float
             The overall chi-squared of the model's fit to the dataset, summed over every data point.
@@ -55,7 +55,8 @@ class FitDataset:
 
     @property
     def residual_map(self):
-        """Compute the residual-map between the masked dataset and model data, where:
+        """
+    Returns the residual-map between the masked dataset and model data, where:
 
         Residuals = (Data - Model_Data).
         """
@@ -63,7 +64,8 @@ class FitDataset:
 
     @property
     def normalized_residual_map(self):
-        """Compute the normalized residual-map between the masked dataset and model data, where:
+        """
+    Returns the normalized residual-map between the masked dataset and model data, where:
 
         Normalized_Residual = (Data - Model_Data) / Noise
         """
@@ -73,7 +75,8 @@ class FitDataset:
 
     @property
     def chi_squared_map(self):
-        """Compute the chi-squared-map between the residual-map and noise-map, where:
+        """
+    Returns the chi-squared-map between the residual-map and noise-map, where:
 
         Chi_Squared = ((Residuals) / (Noise)) ** 2.0 = ((Data - Model)**2.0)/(Variances)
         """
@@ -90,7 +93,8 @@ class FitDataset:
 
     @property
     def chi_squared(self):
-        """Compute the chi-squared terms of the model data's fit to an dataset, by summing the chi-squared-map.
+        """
+    Returns the chi-squared terms of the model data's fit to an dataset, by summing the chi-squared-map.
         """
         return fit_util.chi_squared_from(chi_squared_map=self.chi_squared_map)
 
@@ -100,7 +104,8 @@ class FitDataset:
 
     @property
     def noise_normalization(self):
-        """Compute the noise-map normalization term of the noise-map, summing the noise_map value in every pixel as:
+        """
+    Returns the noise-map normalization term of the noise-map, summing the noise_map value in every pixel as:
 
         [Noise_Term] = sum(log(2*pi*[Noise]**2.0))
         """
@@ -108,7 +113,8 @@ class FitDataset:
 
     @property
     def log_likelihood(self):
-        """Compute the log likelihood of each model data point's fit to the dataset, where:
+        """
+    Returns the log likelihood of each model data point's fit to the dataset, where:
 
         Log Likelihood = -0.5*[Chi_Squared_Term + Noise_Term] (see functions above for these definitions)
         """
@@ -118,7 +124,8 @@ class FitDataset:
 
     @property
     def log_likelihood_with_regularization(self):
-        """Compute the log likelihood of an inversion's fit to the dataset, including a regularization term which \
+        """
+    Returns the log likelihood of an inversion's fit to the dataset, including a regularization term which \
         comes from an inversion:
 
         Log Likelihood = -0.5*[Chi_Squared_Term + Regularization_Term + Noise_Term] (see functions above for these definitions)
@@ -132,7 +139,8 @@ class FitDataset:
 
     @property
     def log_evidence(self):
-        """Compute the log evidence of the inversion's fit to a dataset, where the log evidence includes a number of terms
+        """
+    Returns the log evidence of the inversion's fit to a dataset, where the log evidence includes a number of terms
         which quantify the complexity of an inversion's reconstruction (see the `Inversion` module):
 
         Log Evidence = -0.5*[Chi_Squared_Term + Regularization_Term + Log(Covariance_Regularization_Term) -
@@ -189,9 +197,9 @@ class FitImaging(FitDataset):
 
         Attributes
         -----------
-        residual_map : ndarray
+        residual_map : np.ndarray
             The residual-map of the fit (data - model_data).
-        chi_squared_map : ndarray
+        chi_squared_map : np.ndarray
             The chi-squared-map of the fit ((data - model_data) / noise_maps ) **2.0
         chi_squared : float
             The overall chi-squared of the model's fit to the dataset, summed over every data point.
@@ -234,9 +242,9 @@ class FitInterferometer(FitDataset):
 
         Attributes
         -----------
-        residual_map : ndarray
+        residual_map : np.ndarray
             The residual-map of the fit (data - model_data).
-        chi_squared_map : ndarray
+        chi_squared_map : np.ndarray
             The chi-squared-map of the fit ((data - model_data) / noise_maps ) **2.0
         chi_squared : float
             The overall chi-squared of the model's fit to the dataset, summed over every data point.

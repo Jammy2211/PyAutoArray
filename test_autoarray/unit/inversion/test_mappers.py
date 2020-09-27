@@ -265,7 +265,7 @@ class TestRectangularMapper:
             [5],
         ]
 
-    def test__sub_to_pix__3x3_grid__change_arcsecond_dimensions_size__grid_adapts_accordingly(
+    def test__sub_to_pix__3x3_grid__change_scaledond_dimensions_size__grid_adapts_accordingly(
         self
     ):
         #   _ _ _
@@ -300,7 +300,7 @@ class TestRectangularMapper:
             [4],
         ]
 
-    def test__sub_to_pix__various_grids__change_arcsecond_dimensions__not_symmetric(
+    def test__sub_to_pix__various_grids__change_scaledond_dimensions__not_symmetric(
         self
     ):
         #   _ _ _

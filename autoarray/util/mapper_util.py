@@ -10,17 +10,17 @@ def mapping_matrix_from(
     mask_1d_index_for_sub_mask_1d_index,
     sub_fraction,
 ):
-    """Computes the util matrix, by iterating over the known mappings between the sub-grid and pixelization.
+    """Computes the mapping matrix, by iterating over the known mappings between the sub-grid and pixelization.
 
     Parameters
     -----------
-    pixelization_1d_index_for_sub_mask_1d_index : ndarray
+    pixelization_1d_index_for_sub_mask_1d_index : np.ndarray
         The mappings between the observed grid's sub-pixels and pixelization's pixels.
     pixels : int
         The number of pixels in the pixelization.
     total_mask_pixels : int
         The number of datas pixels in the observed datas and thus on the grid.
-    mask_1d_index_for_sub_mask_1d_index : ndarray
+    mask_1d_index_for_sub_mask_1d_index : np.ndarray
         The mappings between the observed grid's sub-pixels and observed grid's pixels.
     sub_fraction : float
         The fractional area each sub-pixel takes up in an pixel.
@@ -57,17 +57,17 @@ def pixelization_1d_index_for_voronoi_sub_mask_1d_index_from(
     Parameters
     ----------
     grid : Grid
-        The grid of (y,x) arc-second coordinates at the centre of every unmasked pixel, which has been traced to \
+        The grid of (y,x) scaled coordinates at the centre of every unmasked pixel, which has been traced to \
         to an irgrid via lens.
-    nearest_pixelization_1d_index_for_mask_1d_index : ndarray
+    nearest_pixelization_1d_index_for_mask_1d_index : np.ndarray
         A 1D array that maps every grid pixel to its nearest pix-grid pixel (as determined on the unlensed \
         2D array).
     pixelization_grid : (float, float)
         The (y,x) centre of every Voronoi pixel in arc-seconds.
-    pixel_neighbors : ndarray
+    pixel_neighbors : np.ndarray
         An array of length (voronoi_pixels) which provides the index of all neighbors of every pixel in \
         the Voronoi grid (entries of -1 correspond to no neighbor).
-    pixel_neighbors_size : ndarray
+    pixel_neighbors_size : np.ndarray
         An array of length (voronoi_pixels) which gives the number of neighbors of every pixel in the \
         Voronoi grid.
      """
@@ -147,7 +147,8 @@ def adaptive_pixel_signals_from(
     mask_1d_index_for_sub_mask_1d_index,
     hyper_image,
 ):
-    """Compute the (hyper) signal in each pixel, where the signal is the sum of its datas_-pixel fluxes. \
+    """
+    Returns the (hyper) signal in each pixel, where the signal is the sum of its datas_-pixel fluxes. \
     These pixel-signals are used to compute the effective regularization weight of each pixel.
 
     The pixel signals are hyper in the following ways:
@@ -168,9 +169,9 @@ def adaptive_pixel_signals_from(
     signal_scale : float
         A factor which controls how rapidly the smoothness of regularization varies from high signal regions to \
         low signal regions.
-    regular_to_pix : ndarray
+    regular_to_pix : np.ndarray
         A 1D array util every pixel on the grid to a pixel on the pixelization.
-    hyper_image : ndarray
+    hyper_image : np.ndarray
         The image of the galaxy which is used to compute the weigghted pixel signals.
     """
 
