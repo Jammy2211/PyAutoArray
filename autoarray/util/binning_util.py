@@ -5,8 +5,36 @@ from autoarray.util import array_util, mask_util
 
 
 @decorator_util.jit()
-def padded_binning_shape_2d_from(shape_2d, bin_up_factor):
+def padded_binning_shape_2d_from(
+    shape_2d: (int, int), bin_up_factor: int
+) -> (int, int):
+    """
+    Returns the padded 2D shape of a 2D array that is going to be binned up, based on the ``bin_up_factor``. This shape
+    accounts for if the array is padded first.
 
+    For example, if the array has ``shape_2d`` (5,5) and the ``bin_up_factor`` is 2, this routine will calculate that
+    the binned up array's ``shape_2d`` will becocme (6,6).
+
+    Parameters
+    ----------
+    shape_2d : (int, int)
+        The shape of the 2D array that is to binned.
+    bin_up_factor : int
+        The factor which the array is binned up by (e.g. a value of 2 bins every 2 x 2 pixels into one pixel).
+    pad_value : float
+        If the array is padded, the value the padded edge values are filled in using.
+
+    Returns
+    -------
+    ndarray
+        The 2D array that is padded before binning up.
+
+    Examples
+    --------
+    array_2d = np.ones((5,5))
+    padded_array_2d = padded_array_2d_for_binning_up_with_bin_up_factor(
+        array_2d=array_2d, bin_up_factor=2, pad_value=0.0)
+    """
     shape_remainder = (shape_2d[0] % bin_up_factor, shape_2d[1] % bin_up_factor)
 
     if shape_remainder[0] != 0 and shape_remainder[1] != 0:
@@ -25,16 +53,19 @@ def padded_binning_shape_2d_from(shape_2d, bin_up_factor):
 
 
 @decorator_util.jit()
-def padded_binning_array_2d_from(array_2d, bin_up_factor, pad_value=0.0):
-    """If an array is to be binned up, but the dimensions are not divisible by the bin-up factor, this routine pads \
+def padded_binning_array_2d_from(
+    array_2d: np.ndarray, bin_up_factor: int, pad_value: int = 0.0
+) -> np.ndarray:
+    """
+    If an array is to be binned up, but the dimensions are not divisible by the ``bin-up factor``, this routine pads
     the array to make it divisible.
 
-    For example, if the array is shape (5,5) and the bin_up_factor is 2, this routine will pad the array to shape \
-    (6,6).
+    For example, if the array has ``shape_2d`` (5,5) and the ``bin_up_factor`` is 2, this routine will pad the array
+    to shape (6,6).
 
     Parameters
     ----------
-    array_2d : ndarray
+    array_2d : np.ndarray
         The 2D array that is padded.
     bin_up_factor : int
         The factor which the array is binned up by (e.g. a value of 2 bins every 2 x 2 pixels into one pixel).
@@ -49,7 +80,7 @@ def padded_binning_array_2d_from(array_2d, bin_up_factor, pad_value=0.0):
     Examples
     --------
     array_2d = np.ones((5,5))
-    padded_array_2d = padded_array_2d_for_binning_up_with_bin_up_factor( \
+    padded_array_2d = padded_array_2d_for_binning_up_with_bin_up_factor(
         array_2d=array_2d, bin_up_factor=2, pad_value=0.0)
     """
 
@@ -63,19 +94,19 @@ def padded_binning_array_2d_from(array_2d, bin_up_factor, pad_value=0.0):
 
 
 @decorator_util.jit()
-def bin_array_2d_via_mean(array_2d, bin_up_factor):
-    """Bin up an array to coarser resolution, by binning up groups of pixels and using their mean value to determine \
+def bin_array_2d_via_mean(array_2d: np.ndarray, bin_up_factor: int) -> np.ndarray:
+    """Bin up an array to coarser resolution, by binning up groups of pixels and using their mean value to determine
      the value of the new pixel.
 
-    If an array of shape (8,8) is input and the bin up size is 2, this would return a new array of size (4,4) where \
+    If an ``array_2d`` with ``shape_2d`` (8,8) is input and the ``bin_up_factor`` is 2, this would return a new array of ``shape_2d`` (4,4) where
     every pixel was the mean of each collection of 2x2 pixels on the (8,8) array.
 
-    If binning up the array leads to an edge being cut (e.g. a (9,9) array binned up by 2), the array is first \
+    If binning up the array leads to an edge being cut (e.g. a (9,9) array binned up by 2), the array is first
     padded to make the division work. One must be careful of edge effects in this case.
 
     Parameters
     ----------
-    array_2d : ndarray
+    array_2d : np.ndarray
         The 2D array that is binned up.
     bin_up_factor : int
         The factor which the array is binned up by (e.g. a value of 2 bins every 2 x 2 pixels into one pixel).
@@ -117,19 +148,19 @@ def bin_array_2d_via_mean(array_2d, bin_up_factor):
 
 
 @decorator_util.jit()
-def bin_array_2d_via_quadrature(array_2d, bin_up_factor):
-    """Bin up an array to coarser resolution, by binning up groups of pixels and using their quadrature value to \
+def bin_array_2d_via_quadrature(array_2d: np.ndarray, bin_up_factor: int) -> np.ndarray:
+    """Bin up an array to coarser resolution, by binning up groups of pixels and using their quadrature value to
     determine the value of the new pixel.
 
-    If an array of shape (8,8) is input and the bin up size is 2, this would return a new array of size (4,4) where \
+    If an ``array_2d`` with ``shape_2d`` (8,8) is input and the ``bin_up_factor`` is 2, this would return a new array of ``shape_2d`` (4,4) where
     every pixel was the quadrature of each collection of 2x2 pixels on the (8,8) array.
 
-    If binning up the array leads to an edge being cut (e.g. a (9,9) array binned up by 2), the array is first \
+    If binning up the array leads to an edge being cut (e.g. a (9,9) array binned up by 2), the array is first
     padded to make the division work. One must be careful of edge effects in this case.
 
     Parameters
     ----------
-    array_2d : ndarray
+    array_2d : np.ndarray
         The 2D array that is binned up.
     bin_up_factor : int
         The factor which the array is binned up by (e.g. a value of 2 bins every 2 x 2 pixels into one pixel).
@@ -171,19 +202,20 @@ def bin_array_2d_via_quadrature(array_2d, bin_up_factor):
 
 
 @decorator_util.jit()
-def bin_array_2d_via_sum(array_2d, bin_up_factor):
-    """Bin up an array to coarser resolution, by binning up groups of pixels and using their sum value to determine \
-     the value of the new pixel.
+def bin_array_2d_via_sum(array_2d: np.ndarray, bin_up_factor: int) -> np.ndarray:
+    """
+    Bin up an array to coarser resolution, by binning up groups of pixels and using their sum value to determine
+    the value of the new pixel.
 
-    If an array of shape (8,8) is input and the bin up size is 2, this would return a new array of size (4,4) where \
-    every pixel was the sum of each collection of 2x2 pixels on the (8,8) array.
+    If an ``array_2d`` with ``shape_2d`` (8,8) is input and the ``bin_up_factor`` is 2, this would return a new array 
+    of ``shape_2d`` (4,4) where every pixel was the sum of each collection of 2x2 pixels on the (8,8) array.
 
-    If binning up the array leads to an edge being cut (e.g. a (9,9) array binned up by 2), the array is first \
+    If binning up the array leads to an edge being cut (e.g. a (9,9) array binned up by 2), the array is first
     padded to make the division work. One must be careful of edge effects in this case.
 
     Parameters
     ----------
-    array_2d : ndarray
+    array_2d : np.ndarray
         The 2D array that is binned up.
     bin_up_factor : int
         The factor which the array is binned up by (e.g. a value of 2 bins every 2 x 2 pixels into one pixel).
@@ -225,20 +257,20 @@ def bin_array_2d_via_sum(array_2d, bin_up_factor):
 
 
 @decorator_util.jit()
-def bin_mask(mask, bin_up_factor):
-    """Bin up an array to coarser resolution, by binning up groups of pixels and using their sum value to determine \
-     the value of the new pixel.
+def bin_mask(mask: np.ndarray, bin_up_factor: int) -> np.ndarray:
+    """
+    Bin up an array to coarser resolution, by binning up groups of pixels and using their sum value to determine
+    the value of the new pixel.
 
-    If an array of shape (8,8) is input and the bin up size is 2, this would return a new array of size (4,4) where \
-    every pixel was the sum of each collection of 2x2 pixels on the (8,8) array.
+    If an ``array_2d`` with ``shape_2d`` (8,8) is input and the ``bin_up_factor`` is 2, this would return a new array
+    of ``shape_2d`` (4,4) where every pixel was the sum of each collection of 2x2 pixels on the (8,8) array.
 
-    If binning up the array leads to an edge being cut (e.g. a (9,9) array binned up by 2), an array is first \
+    If binning up the array leads to an edge being cut (e.g. a (9,9) array binned up by 2), an ``array_2d`` is first
     extracted around the centre of that array.
-
 
     Parameters
     ----------
-    mask : ndarray
+    mask : np.ndarray
         The 2D array that is resized.
     new_shape : (int, int)
         The (y,x) new pixel dimension of the trimmed array.
@@ -283,18 +315,20 @@ def bin_mask(mask, bin_up_factor):
 
 
 @decorator_util.jit()
-def mask_1d_index_for_padded_mask_index_from(mask, bin_up_factor):
-    """Create a 2D array which maps every False entry of a 2D mask to its 1D mask array index 2D binned mask. Every \
-    True entry is given a value -1.
+def mask_1d_index_for_padded_mask_index_from(
+    mask: np.ndarray, bin_up_factor: int
+) -> np.ndarray:
+    """
+    Returns a 2D array which maps every ``False`` entry of a 2D mask to its 1D mask array index 2D binned mask. Every
+    ``True`` entry is given a value -1.
 
-    This uses the function *mask_1d_index_for_padded_mask_index*, see this method for a more detailed description of the \
-    util.
+    This uses ``mask_1d_index_for_padded_mask_index``, see this method for a more detailed description.
 
     This function first pads the mask using the same padding when computed a binned up mask.
 
     Parameters
     ----------
-    mask : ndarray
+    mask : np.ndarray
         The 2D mask that the util array is created for.
 
     Returns
@@ -318,11 +352,14 @@ def mask_1d_index_for_padded_mask_index_from(mask, bin_up_factor):
 
 
 @decorator_util.jit()
-def binned_mask_1d_index_for_padded_mask_index_from(mask, bin_up_factor):
-    """Create a 2D array which maps every False entry of a 2D mask to its 1D binned mask index (created using the \
-    *binned_upmask_from_mask_and_bin_up_factor* method).
+def binned_mask_1d_index_for_padded_mask_index_from(
+    mask: np.ndarray, bin_up_factor: int
+) -> np.ndarray:
+    """
+    Returns a 2D array which maps every ``False`` entry of a 2D mask to its 1D binned mask index (created using
+    ``binned_up_mask_from_mask_and_bin_up_factor``).
 
-    We create an array the same shape as the 2D mask (after padding for the binnning up procedure), where each entry \
+    We create an array the same shape as the 2D mask (after padding for the binnning up procedure), where each entry
     gives the binned up mask's 1D masked array index.
     
     This is used as a convenience tool for creating structures util between different grids and structures.
@@ -334,7 +371,7 @@ def binned_mask_1d_index_for_padded_mask_index_from(mask, bin_up_factor):
      [ True,  True, False, False],
      [ True,  True, False, False]]
      
-    For a bin_up_factor of 2, the resulting binned up mask is as follows (noting there is no padding in this example):
+    For a ``bin_up_factor`` of 2, the resulting binned up mask is as follows (noting there is no padding in this example):
     
     [[False, False],
       [True, False]
@@ -348,7 +385,7 @@ def binned_mask_1d_index_for_padded_mask_index_from(mask, bin_up_factor):
 
     Parameters
     ----------
-    mask : ndarray
+    mask : np.ndarray
         The 2D mask that the binned mask 1d indexes are computing using
     bin_up_factor : int
         The factor which the array is binned up by (e.g. a value of 2 bins every 2 x 2 pixels into one pixel).
@@ -395,11 +432,14 @@ def binned_mask_1d_index_for_padded_mask_index_from(mask, bin_up_factor):
 
 
 @decorator_util.jit()
-def binned_masked_array_1d_for_masked_array_1d_from(mask, bin_up_factor):
-    """Create a 1D array which maps every (padded) masked index to its corresponding 1D index in the binned 1D \
+def binned_masked_array_1d_for_masked_array_1d_from(
+    mask: np.ndarray, bin_up_factor: int
+) -> np.ndarray:
+    """
+    Returns a 1D array which maps every (padded) masked index to its corresponding 1D index in the binned 1D
     mask.
 
-    This uses the convenience tools *padded_mask_to_mask_1d* and *padded_mask_to_binned_mask_1d* to \
+    This uses the convenience tools *padded_mask_to_mask_1d* and *padded_mask_to_binned_mask_1d* to
     make the calculation simpler.
 
     For example, if we had a 4x4 mask:
@@ -409,7 +449,7 @@ def binned_masked_array_1d_for_masked_array_1d_from(mask, bin_up_factor):
      [ True,  True, False, False],
      [ True,  True, False, False]]
 
-    For a bin_up_factor of 2, the resulting binned up mask is as follows (noting there is no padding in this example):
+    For a ``bin_up_factor`` of 2, the resulting binned up mask is as follows (noting there is no padding in this example):
 
     [[False, False],
       [True, False]
@@ -439,7 +479,7 @@ def binned_masked_array_1d_for_masked_array_1d_from(mask, bin_up_factor):
 
     Parameters
     ----------
-    mask : ndarray
+    mask : np.ndarray
         The 2D mask that the binned mask 1d index mappings are computed using
     bin_up_factor : int
         The factor which the array is binned up by (e.g. a value of 2 bins every 2 x 2 pixels into one pixel).
@@ -487,14 +527,17 @@ def binned_masked_array_1d_for_masked_array_1d_from(mask, bin_up_factor):
 
 
 @decorator_util.jit()
-def masked_array_1d_for_binned_masked_array_1d_from(mask, bin_up_factor):
-    """Create a 1D array which maps every (padded) binned masked index to its correspond 1D index in the original 2D \
+def masked_array_1d_for_binned_masked_array_1d_from(
+    mask: np.ndarray, bin_up_factor: int
+) -> np.ndarray:
+    """
+    Returns a 1D array which maps every (padded) binned masked index to its correspond 1D index in the original 2D
     mask that was binned up.
 
-    Array indexing starts from the top-left and goes rightwards and downwards. The top-left pixel of each mask is \
+    Array indexing starts from the top-left and goes rightwards and downwards. The top-left pixel of each mask is
     used before binning up.
 
-    This uses the convenience tools *padded_mask_to_mask_1d* and *padded_mask_to_binned_mask_1d* to \
+    This uses the convenience tools *padded_mask_to_mask_1d* and *padded_mask_to_binned_mask_1d* to
     make the calculation simpler.
 
     For example, if we had a 4x4 mask:
@@ -504,7 +547,7 @@ def masked_array_1d_for_binned_masked_array_1d_from(mask, bin_up_factor):
      [ True,  True, False, False],
      [ True,  True, False, False]]
 
-    For a bin_up_factor of 2, the resulting binned up mask is as follows (noting there is no padding in this example):
+    For a ``bin_up_factor`` of 2, the resulting binned up mask is as follows (noting there is no padding in this example):
 
     [[False, False],
       [True, False]
@@ -534,7 +577,7 @@ def masked_array_1d_for_binned_masked_array_1d_from(mask, bin_up_factor):
 
     Parameters
     ----------
-    mask : ndarray
+    mask : np.ndarray
         The 2D mask that the binned mask 1d index mappings are computed using
     bin_up_factor : int
         The factor which the array is binned up by (e.g. a value of 2 bins every 2 x 2 pixels into one pixel).
@@ -585,14 +628,17 @@ def masked_array_1d_for_binned_masked_array_1d_from(mask, bin_up_factor):
 
 
 @decorator_util.jit()
-def masked_array_1d_for_binned_masked_array_1d_all_from(mask, bin_up_factor):
-    """Create a 2D array which maps every (padded) binned masked index to all of the corresponding 1D indexes of the \
+def masked_array_1d_for_binned_masked_array_1d_all_from(
+    mask: np.ndarray, bin_up_factor: int
+) -> np.ndarray:
+    """
+    Returns a 2D array which maps every (padded) binned masked index to all of the corresponding 1D indexes of the
     the original 2D mask that was binned up.
 
-    Array indexing starts from the top-left and goes rightwards and downwards. The top-left pixel of each mask is \
+    Array indexing starts from the top-left and goes rightwards and downwards. The top-left pixel of each mask is
     used before binning up. Minus one's are used for util which go to masked values with True.
 
-    This uses the convenience tools *padded_mask_to_mask_1d* and *padded_mask_to_binned_mask_1d* to \
+    This uses the convenience tools *padded_mask_to_mask_1d* and *padded_mask_to_binned_mask_1d* to
     make the calculation simpler.
 
     For example, if we had a 4x4 mask:
@@ -602,7 +648,7 @@ def masked_array_1d_for_binned_masked_array_1d_all_from(mask, bin_up_factor):
      [ True,  True, False, False],
      [ True,  True, True, False]]
 
-    For a bin_up_factor of 2, the resulting binned up mask is as follows (noting there is no padding in this example):
+    For a ``bin_up_factor`` of 2, the resulting binned up mask is as follows (noting there is no padding in this example):
 
     [[False, False],
       [True, False]
@@ -630,12 +676,12 @@ def masked_array_1d_for_binned_masked_array_1d_all_from(mask, bin_up_factor):
     This tells us that:
      - The first binned mask pixel maps to the first, second, fifth and sixth masked pixels.
      - The second binned mask pixel maps to the third, fourth, seventh and eighth masked pixels
-     - The third binned mask pixel maps to the ninth, tenth and eleventh masked pixels (The fourth masked pixel it \
+     - The third binned mask pixel maps to the ninth, tenth and eleventh masked pixels (The fourth masked pixel it
        maps to is a *True* value and therefore masked.)
 
     Parameters
     ----------
-    mask : ndarray
+    mask : np.ndarray
         The 2D mask that the binned mask 1d index mappings are computed using
     bin_up_factor : int
         The factor which the array is binned up by (e.g. a value of 2 bins every 2 x 2 pixels into one pixel).

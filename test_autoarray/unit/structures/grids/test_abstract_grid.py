@@ -13,7 +13,7 @@ test_coordinates_dir = "{}/files/coordinates/".format(
 
 
 class TestGrid:
-    def test__masked_shape_2d_arcsec(self):
+    def test__masked_shape_2d_scaled(self):
         mask = aa.Mask2D.circular(
             shape_2d=(3, 3), radius=1.0, pixel_scales=(1.0, 1.0), sub_size=1
         )

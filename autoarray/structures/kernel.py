@@ -57,13 +57,13 @@ class Kernel(arrays.Array):
             lists.
         shape_2d : (float, float)
             The 2D shape of the mask the array is paired with.
-        pixel_scales : (float, float) or float
-            The pixel conversion scale of a pixel in the y and x directions. If input as a float, the pixel_scales
-            are converted to the format (float, float).
+        pixel_scales: (float, float) or float
+            The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a ``float``,
+            it is converted to a (float, float) structure.
         sub_size : int
             The size (sub_size x sub_size) of each unmasked pixels sub-array.
         origin : (float, float)
-            The origin of the array's mask.
+            The (y,x) scaled units origin of the mask's coordinate system.
         renormalize : bool
             If True, the Kernel's array values are renormalized such that they sum to 1.0.
         """
@@ -91,13 +91,13 @@ class Kernel(arrays.Array):
         array : np.ndarray or list
             The values of the array input as an ndarray of shape [total_y_pixels*sub_size, total_x_pixel*sub_size] or a
              list of lists.
-        pixel_scales : (float, float) or float
-            The pixel conversion scale of a pixel in the y and x directions. If input as a float, the pixel_scales
-            are converted to the format (float, float).
+        pixel_scales: (float, float) or float
+            The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a ``float``,
+            it is converted to a (float, float) structure.
         sub_size : int
             The size (sub_size x sub_size) of each unmasked pixels sub-array.
         origin : (float, float)
-            The origin of the array's mask.
+            The (y,x) scaled units origin of the mask's coordinate system.
         renormalize : bool
             If True, the Kernel's array values are renormalized such that they sum to 1.0.
         """
@@ -127,13 +127,13 @@ class Kernel(arrays.Array):
             lists.
         shape_2d : (float, float)
             The 2D shape of the mask the array is paired with.
-        pixel_scales : (float, float) or float
-            The pixel conversion scale of a pixel in the y and x directions. If input as a float, the pixel_scales
-            are converted to the format (float, float).
+        pixel_scales: (float, float) or float
+            The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a ``float``,
+            it is converted to a (float, float) structure.
         sub_size : int
             The size (sub_size x sub_size) of each unmasked pixels sub-array.
         origin : (float, float)
-            The origin of the array's mask.
+            The (y,x) scaled units origin of the mask's coordinate system.
         renormalize : bool
             If True, the Kernel's array values are renormalized such that they sum to 1.0.
         """
@@ -174,13 +174,13 @@ class Kernel(arrays.Array):
             The value all array elements are filled with.
         shape_2d : (float, float)
             The 2D shape of the mask the array is paired with.
-        pixel_scales : (float, float) or float
-            The pixel conversion scale of a pixel in the y and x directions. If input as a float, the pixel_scales
-            are converted to the format (float, float).
+        pixel_scales: (float, float) or float
+            The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a ``float``,
+            it is converted to a (float, float) structure.
         sub_size : int
             The size (sub_size x sub_size) of each unmasked pixels sub-array.
         origin : (float, float)
-            The origin of the array's mask.
+            The (y,x) scaled units origin of the mask's coordinate system.
         renormalize : bool
             If True, the Kernel's array values are renormalized such that they sum to 1.0.
         """
@@ -206,13 +206,13 @@ class Kernel(arrays.Array):
         ----------
         shape_2d : (float, float)
             The 2D shape of the mask the array is paired with.
-        pixel_scales : (float, float) or float
-            The pixel conversion scale of a pixel in the y and x directions. If input as a float, the pixel_scales
-            are converted to the format (float, float).
+        pixel_scales: (float, float) or float
+            The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a ``float``,
+            it is converted to a (float, float) structure.
         sub_size : int
             The size (sub_size x sub_size) of each unmasked pixels sub-array.
         origin : (float, float)
-            The origin of the array's mask.
+            The (y,x) scaled units origin of the mask's coordinate system.
         renormalize : bool
             If True, the Kernel's array values are renormalized such that they sum to 1.0.
         """
@@ -236,13 +236,13 @@ class Kernel(arrays.Array):
         ----------
         shape_2d : (float, float)
             The 2D shape of the mask the array is paired with.
-        pixel_scales : (float, float) or float
-            The pixel conversion scale of a pixel in the y and x directions. If input as a float, the pixel_scales
-            are converted to the format (float, float).
+        pixel_scales: (float, float) or float
+            The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a ``float``,
+            it is converted to a (float, float) structure.
         sub_size : int
             The size (sub_size x sub_size) of each unmasked pixels sub-array.
         origin : (float, float)
-            The origin of the array's mask.
+            The (y,x) scaled units origin of the mask's coordinate system.
         renormalize : bool
             If True, the Kernel's array values are renormalized such that they sum to 1.0.
         """
@@ -261,9 +261,9 @@ class Kernel(arrays.Array):
 
         Parameters
         ----------
-        pixel_scales : (float, float) or float
-            The pixel conversion scale of a pixel in the y and x directions. If input as a float, the pixel_scales
-            are converted to the format (float, float).
+        pixel_scales: (float, float) or float
+            The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a ``float``,
+            it is converted to a (float, float) structure.
         """
 
         array = np.array([[1.0]])
@@ -290,9 +290,9 @@ class Kernel(arrays.Array):
         ----------
         shape_2d : (float, float)
             The 2D shape of the mask the array is paired with.
-        pixel_scales : (float, float) or float
-            The pixel conversion scale of a pixel in the y and x directions. If input as a float, the pixel_scales
-            are converted to the format (float, float).
+        pixel_scales: (float, float) or float
+            The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a ``float``,
+            it is converted to a (float, float) structure.
         sigma : float
             The value of sigma in the equation, describing the size and full-width half maximum of the Gaussian.
         centre : (float, float)
@@ -378,15 +378,15 @@ class Kernel(arrays.Array):
         Parameters
         ----------
         file_path : str
-            The path the file is output to, including the filename and the '.fits' extension,
+            The path the file is output to, including the filename and the ``.fits`` extension,
             e.g. '/path/to/filename.fits'
         hdu : int
             The Header-Data Unit of the .fits file the array data is loaded from.
-        pixel_scales : (float, float) or float
-            The pixel conversion scale of a pixel in the y and x directions. If input as a float, the pixel_scales
-            are converted to the format (float, float).
+        pixel_scales: (float, float) or float
+            The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a ``float``,
+            it is converted to a (float, float) structure.
         origin : (float, float)
-            The origin of the array's mask.
+            The (y,x) scaled units origin of the mask's coordinate system.
         renormalize : bool
             If True, the Kernel's array values are renormalized such that they sum to 1.0.
         """
@@ -494,12 +494,12 @@ class Kernel(arrays.Array):
 
         Parameters
         ----------
-        image : ndarray
+        image : np.ndarray
             An array representing the image the Kernel is convolved with.
 
         Returns
         -------
-        convolved_image : ndarray
+        convolved_image : np.ndarray
             An array representing the image after convolution.
 
         Raises
@@ -529,12 +529,12 @@ class Kernel(arrays.Array):
 
         Parameters
         ----------
-        image : ndarray
+        image : np.ndarray
             An array representing the image the Kernel is convolved with.
 
         Returns
         -------
-        convolved_image : ndarray
+        convolved_image : np.ndarray
             An array representing the image after convolution.
 
         Raises
