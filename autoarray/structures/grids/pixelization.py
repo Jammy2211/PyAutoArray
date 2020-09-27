@@ -13,7 +13,7 @@ class GridRectangular(grids.Grid):
         """A grid of (y,x) coordinates which reprsent a rectangular grid of pixels which are used to form the pixel centres of adaptive pixelizations in the \
         *pixelizations* module.
 
-        A *PixGrid* is ordered such pixels begin from the top-row of the mask and go rightwards and then \
+        A `GridRectangular` is ordered such pixels begin from the top-row of the mask and go rightwards and then \
         downwards. Therefore, it is a ndarray of shape [total_pix_pixels, 2]. The first element of the ndarray \
         thus corresponds to the pixelization pixel index and second element the y or x arc -econd coordinates. For example:
 
@@ -22,10 +22,10 @@ class GridRectangular(grids.Grid):
 
         Parameters
         -----------
-        pix_grid : ndarray
+        pix_grid : np.ndarray
             The grid of (y,x) scaled coordinates of every image-plane pixelization grid used for adaptive source \
             -plane pixelizations.
-        nearest_pixelization_1d_index_for_mask_1d_index : ndarray
+        nearest_pixelization_1d_index_for_mask_1d_index : np.ndarray
             A 1D array that maps every grid pixel to its nearest pixelization-grid pixel.
         """
 
@@ -74,7 +74,7 @@ class GridRectangular(grids.Grid):
             The pixel conversion scale of a pixel in the y and x directions.
         origin : (float, float)
             The scaled origin of the rectangular pixelization's coordinate system.
-        pixel_neighbors : ndarray
+        pixel_neighbors : np.ndarray
             An array of length (y_pixels*x_pixels) which provides the index of all neighbors of every pixel in \
             the rectangular grid (entries of -1 correspond to no neighbor).
         pixel_neighbors_size : ndarrayy
@@ -115,18 +115,19 @@ class GridRectangular(grids.Grid):
 
 
 class GridVoronoi(np.ndarray):
-    """Determine the geometry of the Voronoi pixelization, by alligning it with the outer-most coordinates on a \
+    """
+    Returns the geometry of the Voronoi pixelization, by alligning it with the outer-most coordinates on a \
     grid plus a small buffer.
 
     Parameters
     -----------
-    grid : ndarray
+    grid : np.ndarray
         The (y,x) grid of coordinates which determine the Voronoi pixelization's
-    pixelization_grid : ndarray
+    pixelization_grid : np.ndarray
         The (y,x) centre of every Voronoi pixel in scaleds.
     origin : (float, float)
         The scaled origin of the Voronoi pixelization's coordinate system.
-    pixel_neighbors : ndarray
+    pixel_neighbors : np.ndarray
         An array of length (voronoi_pixels) which provides the index of all neighbors of every pixel in \
         the Voronoi grid (entries of -1 correspond to no neighbor).
     pixel_neighbors_size : ndarrayy
@@ -140,7 +141,7 @@ class GridVoronoi(np.ndarray):
         """A pixelization-grid of (y,x) coordinates which are used to form the pixel centres of adaptive pixelizations in the \
         *pixelizations* module.
 
-        A *PixGrid* is ordered such pixels begin from the top-row of the mask and go rightwards and then \
+        A `GridRectangular` is ordered such pixels begin from the top-row of the mask and go rightwards and then \
         downwards. Therefore, it is a ndarray of shape [total_pix_pixels, 2]. The first element of the ndarray \
         thus corresponds to the pixelization pixel index and second element the y or x arc -econd coordinates. For example:
 
@@ -149,10 +150,10 @@ class GridVoronoi(np.ndarray):
 
         Parameters
         -----------
-        pix_grid : ndarray
+        pix_grid : np.ndarray
             The grid of (y,x) scaled coordinates of every image-plane pixelization grid used for adaptive source \
             -plane pixelizations.
-        nearest_pixelization_1d_index_for_mask_1d_index : ndarray
+        nearest_pixelization_1d_index_for_mask_1d_index : np.ndarray
             A 1D array that maps every grid pixel to its nearest pixelization-grid pixel.
         """
 

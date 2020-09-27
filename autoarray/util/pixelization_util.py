@@ -4,7 +4,8 @@ from autoarray import decorator_util
 
 @decorator_util.jit()
 def rectangular_neighbors_from(shape_2d):
-    """Compute the neighbors of every pixel as a list of the pixel index's each pixel shares a vertex with.
+    """
+    Returns the neighbors of every pixel as a list of the pixel index's each pixel shares a vertex with.
 
     The uniformity of the rectangular grid's geometry is used to compute this.
     """
@@ -139,7 +140,8 @@ def rectangular_central_neighbors(pixel_neighbors, pixel_neighbors_size, shape, 
 
 @decorator_util.jit()
 def voronoi_neighbors_from(pixels, ridge_points):
-    """Compute the neighbors of every pixel as a list of the pixel index's each pixel shares a vertex with.
+    """
+    Returns the neighbors of every pixel as a list of the pixel index's each pixel shares a vertex with.
 
     The ridge points of the Voronoi grid are used to derive this.
 

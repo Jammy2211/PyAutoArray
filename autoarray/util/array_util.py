@@ -61,10 +61,13 @@ class Memoizer:
 
 
 @decorator_util.jit()
-def extracted_array_2d_from(array_2d, y0, y1, x0, x1):
-    """Resize an array to a new size by extracting a sub-set of the array.
+def extracted_array_2d_from(
+    array_2d: np.ndarray, y0: int, y1: int, x0: int, x1: int
+) -> np.ndarray:
+    """
+    Resize an array to a new size by extracting a sub-set of the array.
 
-    The extracted input coordinates use NumPy convention, such that the upper values should be specified as +1 the \
+    The extracted input coordinates use NumPy convention, such that the upper values should be specified as +1 the
     dimensions of the extracted array.
 
     In the example below, an array of size (5,5) is extracted using the coordinates y0=1, y1=4, x0=1, x1=4. This
@@ -74,7 +77,7 @@ def extracted_array_2d_from(array_2d, y0, y1, x0, x1):
 
     Parameters
     ----------
-    array_2d : ndarray
+    array_2d : np.ndarray
         The 2D array that an array is extracted from.
     y0 : int
         The top row number (e.g. the higher y-coodinate) of the array that is extracted for the resize.
@@ -115,27 +118,31 @@ def extracted_array_2d_from(array_2d, y0, y1, x0, x1):
 
 @decorator_util.jit()
 def resized_array_2d_from_array_2d(
-    array_2d, resized_shape, origin=(-1, -1), pad_value=0.0
-):
-    """Resize an array to a new size around a central pixel.
+    array_2d: np.ndarray,
+    resized_shape: (int, int),
+    origin: (int, int) = (-1, -1),
+    pad_value: int = 0.0,
+) -> np.ndarray:
+    """
+    Resize an array to a new size around a central pixel.
 
-    If the origin (e.g. the central pixel) of the resized array is not specified, the central pixel of the array is \
-    calculated automatically. For example, a (5,5) array's central pixel is (2,2). For even dimensions the central \
+    If the origin (e.g. the central pixel) of the resized array is not specified, the central pixel of the array is
+    calculated automatically. For example, a (5,5) array's central pixel is (2,2). For even dimensions the central
     pixel is assumed to be the lower indexed value, e.g. a (6,4) array's central pixel is calculated as (2,1).
 
-    The default origin is (-1, -1) because numba requires that the function input is the same type throughout the \
+    The default origin is (-1, -1) because numba requires that the function input is the same type throughout the
     function, thus a default 'None' value cannot be used.
 
     Parameters
     ----------
-    array_2d : ndarray
+    array_2d : np.ndarray
         The 2D array that is resized.
     resized_shape : (int, int)
         The (y,x) new pixel dimension of the trimmed array.
     origin : (int, int)
         The oigin of the resized array, e.g. the central pixel around which the array is extracted.
     pad_value : float
-        If the reszied array is bigger in size than the input array, the value the padded edge values are filled in \
+        If the reszied array is bigger in size than the input array, the value the padded edge values are filled in
         using.
 
     Returns
@@ -206,20 +213,21 @@ def resized_array_2d_from_array_2d(
 
 @decorator_util.jit()
 def replace_noise_map_2d_values_where_image_2d_values_are_negative(
-    image_2d, noise_map_2d, target_signal_to_noise=2.0
-):
-    """If the values of a 2D image array are negative, this function replaces the corresponding 2D noise-map array \
+    image_2d: np.ndarray, noise_map_2d: np.ndarray, target_signal_to_noise: float = 2.0
+) -> np.ndarray:
+    """
+    If the values of a 2D image array are negative, this function replaces the corresponding 2D noise-map array
     values to meet a specified target to noise value.
 
-    This routine is necessary because of anomolous values in images which come from our HST ACS data_type-reduction \
-    pipeline, where image-pixels with negative values (e.g. due to the background sky subtraction) have extremely \
+    This routine is necessary because of anomolous values in images which come from our HST ACS data_type-reduction
+    pipeline, where image-pixels with negative values (e.g. due to the background sky subtraction) have extremely
     small noise values, which inflate their signal-to-noise values and chi-squared contributions in the modeling.
 
     Parameters
     ----------
-    image_2d : ndarray
+    image_2d : np.ndarray
         The 2D image array used to locate the pixel indexes in the noise-map which are replaced.
-    noise_map_2d : ndarray
+    noise_map_2d : np.ndarray
         The 2D noise-map array whose values are replaced.
     target_signal_to_noise : float
         The target signal-to-noise the noise-map valueus are changed to.
@@ -248,20 +256,20 @@ def replace_noise_map_2d_values_where_image_2d_values_are_negative(
     return noise_map_2d
 
 
-def numpy_array_1d_to_fits(array_1d, file_path, overwrite=False):
-    """Write a 1D NumPy array to a .fits file.
-
-    Before outputting a NumPy array, the array is flipped upside-down using np.flipud. This is so that the structures \
-    appear the same orientation as .fits files loaded in DS9.
+def numpy_array_1d_to_fits(
+    array_1d: np.ndarray, file_path: str, overwrite: bool = False
+):
+    """
+    Write a 1D NumPy array to a .fits file.
 
     Parameters
     ----------
-    array_2d : ndarray
+    array_2d : np.ndarray
         The 2D array that is written to fits.
     file_path : str
-        The full path of the file that is output, including the file name and '.fits' extension.
+        The full path of the file that is output, including the file name and ``.fits`` extension.
     overwrite : bool
-        If True and a file already exists with the input file_path the .fits file is overwritten. If False, an error \
+        If ``True`` and a file already exists with the input file_path the .fits file is overwritten. If False, an error
         will be raised.
 
     Returns
@@ -287,16 +295,17 @@ def numpy_array_1d_to_fits(array_1d, file_path, overwrite=False):
     hdu.writeto(file_path)
 
 
-def numpy_array_1d_from_fits(file_path, hdu):
-    """Read a 2D NumPy array to a .fits file.
+def numpy_array_1d_from_fits(file_path: str, hdu: int):
+    """
+    Read a 1D NumPy array from a .fits file.
 
-    After loading the NumPy array, the array is flipped upside-down using np.flipud. This is so that the structures \
+    After loading the NumPy array, the array is flipped upside-down using np.flipud. This is so that the structures
     appear the same orientation as .fits files loaded in DS9.
 
     Parameters
     ----------
     file_path : str
-        The full path of the file that is loaded, including the file name and '.fits' extension.
+        The full path of the file that is loaded, including the file name and ``.fits`` extension.
     hdu : int
         The HDU extension of the array that is loaded from the .fits file.
 
@@ -313,24 +322,25 @@ def numpy_array_1d_from_fits(file_path, hdu):
     return np.array(hdu_list[hdu].data)
 
 
-def numpy_array_2d_to_fits(array_2d, file_path, overwrite=False):
-    """Write a 2D NumPy array to a .fits file.
+def numpy_array_2d_to_fits(
+    array_2d: np.ndarray, file_path: str, overwrite: bool = False
+):
+    """
+    Write a 2D NumPy array to a .fits file.
 
-    Before outputting a NumPy array, the array is flipped upside-down using np.flipud. This is so that the structures \
-    appear the same orientation as .fits files loaded in DS9.
+    Before outputting a NumPy array, the array may be flipped upside-down using np.flipud depending on the project
+    config files. This is for Astronomy projects so that structures appear the same orientation as ``.fits`` files
+    loaded in DS9.
 
     Parameters
     ----------
-    array_2d : ndarray
+    array_2d : np.ndarray
         The 2D array that is written to fits.
     file_path : str
-        The full path of the file that is output, including the file name and '.fits' extension.
-    flip_for_ds9 : bool
-        If True, a np.flipud() is applied so that matplotlib figures display in the same orientation as when loaded in
-        DS9.
+        The full path of the file that is output, including the file name and ``.fits`` extension.
     overwrite : bool
-        If True and a file already exists with the input file_path the .fits file is overwritten. If False, an error \
-        will be raised.
+        If ``True`` and a file already exists with the input file_path the .fits file is overwritten. If ``False``, an
+        error is raised.
 
     Returns
     -------
@@ -361,21 +371,21 @@ def numpy_array_2d_to_fits(array_2d, file_path, overwrite=False):
     hdu.writeto(file_path)
 
 
-def numpy_array_2d_from_fits(file_path, hdu, do_not_scale_image_data=False):
-    """Read a 2D NumPy array to a .fits file.
+def numpy_array_2d_from_fits(
+    file_path: str, hdu: int, do_not_scale_image_data: bool = False
+):
+    """
+    Read a 2D NumPy array from a .fits file.
 
-    After loading the NumPy array, the array is flipped upside-down using np.flipud. This is so that the structures \
+    After loading the NumPy array, the array is flipped upside-down using np.flipud. This is so that the structures
     appear the same orientation as .fits files loaded in DS9.
 
     Parameters
     ----------
     file_path : str
-        The full path of the file that is loaded, including the file name and '.fits' extension.
+        The full path of the file that is loaded, including the file name and ``.fits`` extension.
     hdu : int
         The HDU extension of the array that is loaded from the .fits file.
-    flip_for_ds9 : bool
-        If True, a np.flipud() is applied so that matplotlib figures display in the same orientation as when loaded in
-        DS9.
     do_not_scale_image_data : bool
         If True, the .fits file is not rescaled automatically based on the .fits header info.
 
@@ -399,8 +409,10 @@ def numpy_array_2d_from_fits(file_path, hdu, do_not_scale_image_data=False):
 
 
 @decorator_util.jit()
-def index_2d_for_index_1d_from(indexes_1d, shape):
-    """For pixels on a 2D array of shape (rows, columns), map an array of 1D pixel indexes to 2D pixel indexes.
+def index_2d_for_index_1d_from(indexes_1d: np.ndarray, shape_2d) -> np.ndarray:
+    """
+    For pixels on a 2D array of shape (total_y_pixels, total_x_pixels), this array maps the 1D pixel indexes to their 
+    corresponding 2D pixel indexes.
 
     Indexing is defined from the top-left corner rightwards and downwards, whereby the top-left pixel on the 2D array
     corresponds to index 0, the pixel to its right pixel 1, and so on.
@@ -413,14 +425,14 @@ def index_2d_for_index_1d_from(indexes_1d, shape):
     - 1D Pixel index 8 maps -> 2D pixel index [2,2].
 
     Parameters
-     ----------
-    indexes_1d : ndarray
+    ----------
+    indexes_1d : np.ndarray
         The 1D pixel indexes which are mapped to 2D indexes.
-    shape : (int, int)
+    shape_2d : (int, int)
         The shape of the 2D array which the pixels are defined on.
 
     Returns
-    --------
+    -------
     ndarray
         An array of 2d pixel indexes with dimensions (total_indexes, 2).
 
@@ -432,15 +444,17 @@ def index_2d_for_index_1d_from(indexes_1d, shape):
     index_2d_for_index_1d = np.zeros((indexes_1d.shape[0], 2))
 
     for i, index_1d in enumerate(indexes_1d):
-        index_2d_for_index_1d[i, 0] = int(index_1d / shape[1])
-        index_2d_for_index_1d[i, 1] = int(index_1d % shape[1])
+        index_2d_for_index_1d[i, 0] = int(index_1d / shape_2d[1])
+        index_2d_for_index_1d[i, 1] = int(index_1d % shape_2d[1])
 
     return index_2d_for_index_1d
 
 
 @decorator_util.jit()
-def index_1d_for_index_2d_from(indexes_2d, shape):
-    """For pixels on a 2D array of shape (rows, colums), map an array of 2D pixel indexes to 1D pixel indexes.
+def index_1d_for_index_2d_from(indexes_2d: np.ndarray, shape_2d) -> np.ndarray:
+    """
+    For pixels on a 2D array of shape (total_y_pixels, total_x_pixels), this array maps the 2D pixel indexes to their
+    corresponding 1D pixel indexes.
 
     Indexing is defined from the top-left corner rightwards and downwards, whereby the top-left pixel on the 2D array
     corresponds to index 0, the pixel to its right pixel 1, and so on.
@@ -453,14 +467,14 @@ def index_1d_for_index_2d_from(indexes_2d, shape):
     - 2D Pixel index [2,2] maps -> 2D pixel index 8.
 
     Parameters
-     ----------
-    indexes_2d : ndarray
+    ----------
+    indexes_2d : np.ndarray
         The 2D pixel indexes which are mapped to 1D indexes.
-    shape : (int, int)
+    shape_2d : (int, int)
         The shape of the 2D array which the pixels are defined on.
 
     Returns
-    --------
+    -------
     ndarray
         An array of 1d pixel indexes with dimensions (total_indexes).
 
@@ -472,21 +486,26 @@ def index_1d_for_index_2d_from(indexes_2d, shape):
     index_1d_for_index_2d = np.zeros(indexes_2d.shape[0])
 
     for i in range(indexes_2d.shape[0]):
-        index_1d_for_index_2d[i] = int((indexes_2d[i, 0]) * shape[1] + indexes_2d[i, 1])
+        index_1d_for_index_2d[i] = int(
+            (indexes_2d[i, 0]) * shape_2d[1] + indexes_2d[i, 1]
+        )
 
     return index_1d_for_index_2d
 
 
 @decorator_util.jit()
-def sub_array_1d_from(sub_array_2d, mask, sub_size):
-    """For a 2D sub array and mask, map the values of all unmasked pixels to a 1D sub-array.
+def sub_array_1d_from(
+    sub_array_2d: np.ndarray, mask: np.ndarray, sub_size: int
+) -> np.ndarray:
+    """
+    For a 2D sub array and mask, map the values of all unmasked pixels to a 1D sub-array.
 
-    A sub-array is an array whose dimensions correspond to the hyper array (e.g. used to make the grid) \
-    multiplid by the sub_size. E.g., it is an array that would be generated using the sub-grid and not binning \
-    up values in sub-pixels back to the grid.
+    A sub-array is an array whose dimensions correspond to the normal array multiplied by the sub_size. For example
+    if an array is shape [total_y_pixels, total_x_pixels] and the ``sub_size=2``, the sub_array is shape
+    [total_y_pixels*sub_size, total_x_pixels*sub_size].
 
     The pixel coordinate origin is at the top left corner of the 2D array and goes right-wards and downwards,
-    with sub-pixels then going right and downwards in each pixel. For example, for an array of shape (3,3) and a \
+    with sub-pixels then going right and downwards in each pixel. For example, for an array of shape (3,3) and a
     sub-grid size of 2 where all pixels are unmasked:
 
     - pixel [0,0] of the 2D array will correspond to index 0 of the 1D array.
@@ -497,15 +516,15 @@ def sub_array_1d_from(sub_array_2d, mask, sub_size):
 
     Parameters
     ----------
-    sub_array_2d : ndarray
+    sub_array_2d : np.ndarray
         A 2D array of values on the dimensions of the sub-grid.
-    mask : ndarray
-        A 2D array of bools, where *False* values mean unmasked and are included in the util.
-    array_2d : ndarray
+    mask : np.ndarray
+        A 2D array of bools, where ``False`` values mean unmasked and are included in the util.
+    array_2d : np.ndarray
         The 2D array of values which are mapped to a 1D array.
 
     Returns
-    --------
+    -------
     ndarray
         A 1D array of values mapped from the 2D array with dimensions (total_unmasked_pixels).
 
@@ -520,7 +539,7 @@ def sub_array_1d_from(sub_array_2d, mask, sub_size):
     mask = np.array([[True, False],
                      [False, False]])
 
-    sub_array_1d = map_sub_array_2d_to_masked_sub_array_1d_from_sub_array_2d_mask_and_sub_size( \
+    sub_array_1d = map_sub_array_2d_to_masked_sub_array_1d_from_sub_array_2d_mask_and_sub_size(
         mask=mask, array_2d=array_2d)
     """
 
@@ -542,28 +561,31 @@ def sub_array_1d_from(sub_array_2d, mask, sub_size):
     return sub_array_1d
 
 
-def sub_array_2d_from(sub_array_1d, mask, sub_size):
-    """For a 1D array that was computed by util unmasked values from a 2D array of shape (rows, columns), map its \
-    values back to the original 2D array where masked values are set to zero.
+def sub_array_2d_from(
+    sub_array_1d: np.ndarray, mask: np.ndarray, sub_size: int
+) -> np.ndarray:
+    """
+    For a 1D array that was computed by mapping unmasked values from a 2D array of shape
+    [total_y_pixels, total_x_pixels], map its values back to the original 2D array where masked values are set to zero.
 
-    This uses a 1D array 'one_to_two' where each index gives the 2D pixel indexes of the 1D array's unmasked pixels, \
+    This uses a 1D array ``one_to_two`` where each index gives the 2D pixel indexes of the 1D array's unmasked pixels,
     for example:
 
-    - If one_to_two[0] = [0,0], the first value of the 1D array maps to the pixel [0,0] of the 2D array.
-    - If one_to_two[1] = [0,1], the second value of the 1D array maps to the pixel [0,1] of the 2D array.
-    - If one_to_two[4] = [1,1], the fifth value of the 1D array maps to the pixel [1,1] of the 2D array.
+    - If ``one_to_two[0] = [0,0]``, the first value of the 1D array maps to the pixel [0,0] of the 2D array.
+    - If ``one_to_two[1] = [0,1]``, the second value of the 1D array maps to the pixel [0,1] of the 2D array.
+    - If ``one_to_two[4] = [1,1]``, the fifth value of the 1D array maps to the pixel [1,1] of the 2D array.
 
     Parameters
-     ----------
-    sub_array_1d : ndarray
+    ----------
+    sub_array_1d : np.ndarray
         The 1D array of values which are mapped to a 2D array.
     shape : (int, int)
         The shape of the 2D array which the pixels are defined on.
-    sub_one_to_two : ndarray
+    sub_one_to_two : np.ndarray
         An array describing the 2D array index that every 1D array index maps too.
 
     Returns
-    --------
+    -------
     ndarray
         A 2D array of values mapped from the 1D array with dimensions shape.
 
@@ -573,7 +595,7 @@ def sub_array_2d_from(sub_array_1d, mask, sub_size):
 
     array_1d = np.array([[2.0, 4.0, 5.0, 6.0, 8.0])
 
-    array_2d = map_masked_1d_array_to_2d_array_from_array_1d_shape_and_one_to_two( \
+    array_2d = map_masked_1d_array_to_2d_array_from_array_1d_shape_and_one_to_two(
         array_1d=array_1d, shape=(3,3), one_to_two=one_to_two)
     """
 
@@ -592,30 +614,18 @@ def sub_array_2d_from(sub_array_1d, mask, sub_size):
 
 @decorator_util.jit()
 def sub_array_2d_via_sub_indexes_from(
-    sub_array_1d, sub_shape, sub_mask_index_for_sub_mask_1d_index
-):
+    sub_array_1d: np.ndarray,
+    sub_shape: (int, int),
+    sub_mask_index_for_sub_mask_1d_index: np.ndarray,
+) -> np.ndarray:
+    """For a 1D sub array and sub-indexes mapping the sub-array coordinates from 1D to 2D, return a 2D sub-array..
 
-    array_2d = np.zeros(sub_shape)
-
-    for index in range(len(sub_mask_index_for_sub_mask_1d_index)):
-        array_2d[
-            sub_mask_index_for_sub_mask_1d_index[index, 0],
-            sub_mask_index_for_sub_mask_1d_index[index, 1],
-        ] = sub_array_1d[index]
-
-    return array_2d
-
-
-@decorator_util.jit()
-def sub_array_complex_1d_from(sub_array_2d, mask, sub_size):
-    """For a 2D sub array and mask, map the values of all unmasked pixels to a 1D sub-array.
-
-    A sub-array is an array whose dimensions correspond to the hyper array (e.g. used to make the grid) \
-    multiplid by the sub_size. E.g., it is an array that would be generated using the sub-grid and not binning \
-    up values in sub-pixels back to the grid.
+    A sub-array is an array whose dimensions correspond to the normal array multiplied by the sub_size. For example
+    if an array is shape [total_y_pixels, total_x_pixels] and the ``sub_size=2``, the sub_array is shape
+    [total_y_pixels*sub_size, total_x_pixels*sub_size].
 
     The pixel coordinate origin is at the top left corner of the 2D array and goes right-wards and downwards,
-    with sub-pixels then going right and downwards in each pixel. For example, for an array of shape (3,3) and a \
+    with sub-pixels then going right and downwards in each pixel. For example, for an array of shape (3,3) and a
     sub-grid size of 2 where all pixels are unmasked:
 
     - pixel [0,0] of the 2D array will correspond to index 0 of the 1D array.
@@ -626,15 +636,15 @@ def sub_array_complex_1d_from(sub_array_2d, mask, sub_size):
 
     Parameters
     ----------
-    sub_array_2d : ndarray
+    sub_array_2d : np.ndarray
         A 2D array of values on the dimensions of the sub-grid.
-    mask : ndarray
-        A 2D array of bools, where *False* values mean unmasked and are included in the util.
-    array_2d : ndarray
+    mask : np.ndarray
+        A 2D array of bools, where ``False`` values mean unmasked and are included in the util.
+    array_2d : np.ndarray
         The 2D array of values which are mapped to a 1D array.
 
     Returns
-    --------
+    -------
     ndarray
         A 1D array of values mapped from the 2D array with dimensions (total_unmasked_pixels).
 
@@ -649,7 +659,66 @@ def sub_array_complex_1d_from(sub_array_2d, mask, sub_size):
     mask = np.array([[True, False],
                      [False, False]])
 
-    sub_array_1d = map_sub_array_2d_to_masked_sub_array_1d_from_sub_array_2d_mask_and_sub_size( \
+    sub_array_1d = map_sub_array_2d_to_masked_sub_array_1d_from_sub_array_2d_mask_and_sub_size(
+        mask=mask, array_2d=array_2d)
+    """
+    array_2d = np.zeros(sub_shape)
+
+    for index in range(len(sub_mask_index_for_sub_mask_1d_index)):
+        array_2d[
+            sub_mask_index_for_sub_mask_1d_index[index, 0],
+            sub_mask_index_for_sub_mask_1d_index[index, 1],
+        ] = sub_array_1d[index]
+
+    return array_2d
+
+
+@decorator_util.jit()
+def sub_array_complex_1d_from(
+    sub_array_2d: np.ndarray, mask: np.ndarray, sub_size: int
+) -> np.ndarray:
+    """For a 2D sub array and mask, map the values of all unmasked pixels to a 1D sub-array.
+
+    A sub-array is an array whose dimensions correspond to the normal array (e.g. used to make the grid)
+    multiplied by the sub_size. E.g., it is an array that would be generated using the sub-grid and not binning
+    up values in sub-pixels back to the grid.
+
+    The pixel coordinate origin is at the top left corner of the 2D array and goes right-wards and downwards,
+    with sub-pixels then going right and downwards in each pixel. For example, for an array of shape (3,3) and a
+    sub-grid size of 2 where all pixels are unmasked:
+
+    - pixel [0,0] of the 2D array will correspond to index 0 of the 1D array.
+    - pixel [0,1] of the 2D array will correspond to index 1 of the 1D array.
+    - pixel [1,0] of the 2D array will correspond to index 2 of the 1D array.
+    - pixel [2,0] of the 2D array will correspond to index 4 of the 1D array.
+    - pixel [1,0] of the 2D array will correspond to index 12 of the 1D array.
+
+    Parameters
+    ----------
+    sub_array_2d : np.ndarray
+        A 2D array of values on the dimensions of the sub-grid.
+    mask : np.ndarray
+        A 2D array of bools, where ``False`` values mean unmasked and are included in the util.
+    array_2d : np.ndarray
+        The 2D array of values which are mapped to a 1D array.
+
+    Returns
+    -------
+    ndarray
+        A 1D array of values mapped from the 2D array with dimensions (total_unmasked_pixels).
+
+    Examples
+    --------
+
+    sub_array_2d = np.array([[ 1.0,  2.0,  5.0,  6.0],
+                             [ 3.0,  4.0,  7.0,  8.0],
+                             [ 9.0, 10.0, 13.0, 14.0],
+                             [11.0, 12.0, 15.0, 16.0])
+
+    mask = np.array([[True, False],
+                     [False, False]])
+
+    sub_array_1d = map_sub_array_2d_to_masked_sub_array_1d_from_sub_array_2d_mask_and_sub_size(
         mask=mask, array_2d=array_2d)
     """
 
@@ -673,10 +742,12 @@ def sub_array_complex_1d_from(sub_array_2d, mask, sub_size):
 
 @decorator_util.jit()
 def sub_array_complex_2d_via_sub_indexes_from(
-    sub_array_1d, sub_shape, sub_mask_index_for_sub_mask_1d_index
-):
+    sub_array_1d: np.ndarray,
+    sub_shape_2d: (int, int),
+    sub_mask_index_for_sub_mask_1d_index: np.ndarray,
+) -> np.ndarray:
 
-    array_2d = 0 + 0j * np.zeros(sub_shape)
+    array_2d = 0 + 0j * np.zeros(sub_shape_2d)
 
     for index in range(len(sub_mask_index_for_sub_mask_1d_index)):
         array_2d[

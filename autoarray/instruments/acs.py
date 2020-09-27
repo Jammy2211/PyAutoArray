@@ -247,7 +247,7 @@ class FrameACS(f.Frame, ArrayACS):
         Parameters
         ----------
         file_path : str
-            The path the file is output to, including the filename and the '.fits' extension,
+            The path the file is output to, including the filename and the ``.fits`` extension,
             e.g. '/path/to/filename.fits'
         overwrite : bool
             If a file already exists at the path, if overwrite=True it is overwritten else an error is raised."""

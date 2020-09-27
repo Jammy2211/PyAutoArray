@@ -48,8 +48,8 @@ class Array(abstract_array.AbstractArray):
         IxIxIxIxIxIxIxIxIxIxI
         IxIxIxIxIxIxIxIxIxIxI     This is an example mask.Mask2D, where:
         IxIxIxIxIxIxIxIxIxIxI
-        IxIxIxIxIoIoIxIxIxIxI     x = True (Pixel is masked and excluded from the array)
-        IxIxIxIoIoIoIoIxIxIxI     o = False (Pixel is not masked and included in the array)
+        IxIxIxIxIoIoIxIxIxIxI     x = ``True`` (Pixel is masked and excluded from the array)
+        IxIxIxIoIoIoIoIxIxIxI     o = ``False`` (Pixel is not masked and included in the array)
         IxIxIxIoIoIoIoIxIxIxI
         IxIxIxIxIxIxIxIxIxIxI
         IxIxIxIxIxIxIxIxIxIxI
@@ -95,8 +95,8 @@ class Array(abstract_array.AbstractArray):
         IxIxIxIxIxIxIxIxIxIxI
         IxIxIxIxIxIxIxIxIxIxI     This is an example mask.Mask2D, where:
         IxIxIxIxIxIxIxIxIxIxI
-        IxIxIxIxIxIxIxIxIxIxI     x = True (Pixel is masked and excluded from lens)
-        IxIxIxIxIoIoIxIxIxIxI     o = False (Pixel is not masked and included in lens)
+        IxIxIxIxIxIxIxIxIxIxI     x = ``True`` (Pixel is masked and excluded from lens)
+        IxIxIxIxIoIoIxIxIxIxI     o = ``False`` (Pixel is not masked and included in lens)
         IxIxIxIxIxIxIxIxIxIxI
         IxIxIxIxIxIxIxIxIxIxI
         IxIxIxIxIxIxIxIxIxIxI
@@ -156,8 +156,8 @@ class Array(abstract_array.AbstractArray):
         IxIxIxIxIxIxIxIxIxIxI
         IxIxIxIxIxIxIxIxIxIxI     This is an example mask.Mask2D, where:
         IxIxIxIxIxIxIxIxIxIxI
-        IxIxIxIxIoIoIxIxIxIxI     x = True (Pixel is masked and excluded from the array)
-        IxIxIxIoIoIoIoIxIxIxI     o = False (Pixel is not masked and included in the array)
+        IxIxIxIxIoIoIxIxIxIxI     x = ``True`` (Pixel is masked and excluded from the array)
+        IxIxIxIoIoIoIoIxIxIxI     o = ``False`` (Pixel is not masked and included in the array)
         IxIxIxIoIoIoIoIxIxIxI
         IxIxIxIxIxIxIxIxIxIxI
         IxIxIxIxIxIxIxIxIxIxI
@@ -228,13 +228,13 @@ class Array(abstract_array.AbstractArray):
             lists.
         shape_2d : (float, float)
             The 2D shape of the mask the array is paired with.
-        pixel_scales : (float, float) or float
-            The pixel conversion scale of a pixel in the y and x directions. If input as a float, the pixel_scales
-            are converted to the format (float, float).
+        pixel_scales: (float, float) or float
+            The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a ``float``,
+            it is converted to a (float, float) structure.
         sub_size : int
             The size (sub_size x sub_size) of each unmasked pixels sub-array.
         origin : (float, float)
-            The origin of the array's mask.
+            The (y,x) scaled units origin of the mask's coordinate system.
         store_in_1d : bool
             If True, the array is stored in 1D as an ndarray of shape [total_unmasked_pixels]. If False, it is
             stored in 2D as an ndarray of shape [total_y_pixels, total_x_pixels].
@@ -289,13 +289,13 @@ class Array(abstract_array.AbstractArray):
         array : np.ndarray or list
             The values of the array input as an ndarray of shape [total_y_pixels*sub_size, total_x_pixel*sub_size] or a
              list of lists.
-        pixel_scales : (float, float) or float
-            The pixel conversion scale of a pixel in the y and x directions. If input as a float, the pixel_scales
-            are converted to the format (float, float).
+        pixel_scales: (float, float) or float
+            The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a ``float``,
+            it is converted to a (float, float) structure.
         sub_size : int
             The size (sub_size x sub_size) of each unmasked pixels sub-array.
         origin : (float, float)
-            The origin of the array's mask.
+            The (y,x) scaled units origin of the mask's coordinate system.
         store_in_1d : bool
             If True, the array is stored in 1D as an ndarray of shape [total_unmasked_pixels]. If False, it is
             stored in 2D as an ndarray of shape [total_y_pixels, total_x_pixels].
@@ -344,13 +344,13 @@ class Array(abstract_array.AbstractArray):
             lists.
         shape_2d : (float, float)
             The 2D shape of the mask the array is paired with.
-        pixel_scales : (float, float) or float
-            The pixel conversion scale of a pixel in the y and x directions. If input as a float, the pixel_scales
-            are converted to the format (float, float).
+        pixel_scales: (float, float) or float
+            The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a ``float``,
+            it is converted to a (float, float) structure.
         sub_size : int
             The size (sub_size x sub_size) of each unmasked pixels sub-array.
         origin : (float, float)
-            The origin of the array's mask.
+            The (y,x) scaled units origin of the mask's coordinate system.
         store_in_1d : bool
             If True, the array is stored in 1D as an ndarray of shape [total_unmasked_pixels]. If False, it is
             stored in 2D as an ndarray of shape [total_y_pixels, total_x_pixels].
@@ -421,13 +421,13 @@ class Array(abstract_array.AbstractArray):
             The value all array elements are filled with.
         shape_2d : (float, float)
             The 2D shape of the mask the array is paired with.
-        pixel_scales : (float, float) or float
-            The pixel conversion scale of a pixel in the y and x directions. If input as a float, the pixel_scales
-            are converted to the format (float, float).
+        pixel_scales: (float, float) or float
+            The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a ``float``,
+            it is converted to a (float, float) structure.
         sub_size : int
             The size (sub_size x sub_size) of each unmasked pixels sub-array.
         origin : (float, float)
-            The origin of the array's mask.
+            The (y,x) scaled units origin of the mask's coordinate system.
         store_in_1d : bool
             If True, the array is stored in 1D as an ndarray of shape [total_unmasked_pixels]. If False, it is
             stored in 2D as an ndarray of shape [total_y_pixels, total_x_pixels].
@@ -463,13 +463,13 @@ class Array(abstract_array.AbstractArray):
         ----------
         shape_2d : (float, float)
             The 2D shape of the mask the array is paired with.
-        pixel_scales : (float, float) or float
-            The pixel conversion scale of a pixel in the y and x directions. If input as a float, the pixel_scales
-            are converted to the format (float, float).
+        pixel_scales: (float, float) or float
+            The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a ``float``,
+            it is converted to a (float, float) structure.
         sub_size : int
             The size (sub_size x sub_size) of each unmasked pixels sub-array.
         origin : (float, float)
-            The origin of the array's mask.
+            The (y,x) scaled units origin of the mask's coordinate system.
         store_in_1d : bool
             If True, the array is stored in 1D as an ndarray of shape [total_unmasked_pixels]. If False, it is
             stored in 2D as an ndarray of shape [total_y_pixels, total_x_pixels].
@@ -503,13 +503,13 @@ class Array(abstract_array.AbstractArray):
         ----------
         shape_2d : (float, float)
             The 2D shape of the mask the array is paired with.
-        pixel_scales : (float, float) or float
-            The pixel conversion scale of a pixel in the y and x directions. If input as a float, the pixel_scales
-            are converted to the format (float, float).
+        pixel_scales: (float, float) or float
+            The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a ``float``,
+            it is converted to a (float, float) structure.
         sub_size : int
             The size (sub_size x sub_size) of each unmasked pixels sub-array.
         origin : (float, float)
-            The origin of the array's mask.
+            The (y,x) scaled units origin of the mask's coordinate system.
         store_in_1d : bool
             If True, the array is stored in 1D as an ndarray of shape [total_unmasked_pixels]. If False, it is
             stored in 2D as an ndarray of shape [total_y_pixels, total_x_pixels].
@@ -538,17 +538,17 @@ class Array(abstract_array.AbstractArray):
         Parameters
         ----------
         file_path : str
-            The path the file is output to, including the filename and the '.fits' extension,
+            The path the file is output to, including the filename and the ``.fits`` extension,
             e.g. '/path/to/filename.fits'
         hdu : int
             The Header-Data Unit of the .fits file the array data is loaded from.
-        pixel_scales : (float, float) or float
-            The pixel conversion scale of a pixel in the y and x directions. If input as a float, the pixel_scales
-            are converted to the format (float, float).
+        pixel_scales: (float, float) or float
+            The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a ``float``,
+            it is converted to a (float, float) structure.
         sub_size : int
             The size (sub_size x sub_size) of each unmasked pixels sub-array.
         origin : (float, float)
-            The origin of the array's mask.
+            The (y,x) scaled units origin of the mask's coordinate system.
         store_in_1d : bool
             If True, the array is stored in 1D as an ndarray of shape [total_unmasked_pixels]. If False, it is
             stored in 2D as an ndarray of shape [total_y_pixels, total_x_pixels].
@@ -586,9 +586,9 @@ class Array(abstract_array.AbstractArray):
             The values which are used too fill in the array.
         shape_2d : (float, float)
             The 2D shape of the mask the grid is paired with.
-        pixel_scales : (float, float) or float
-            The pixel conversion scale of a pixel in the y and x directions. If input as a float, the pixel_scales
-            are converted to the format (float, float).
+        pixel_scales: (float, float) or float
+            The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a ``float``,
+            it is converted to a (float, float) structure.
         sub_size : int
             The size (sub_size x sub_size) of each unmasked pixels sub-grid.
         origin : (float, float)

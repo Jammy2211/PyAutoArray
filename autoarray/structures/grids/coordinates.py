@@ -37,8 +37,8 @@ class AbstractGridCoordinates(np.ndarray):
 
         Print methods are overidden so a user always "sees" the coordinates as the list structure.
 
-        In contrast to a *Grid* structure, *GridCoordinates* do not lie on a uniform grid or correspond to values that
-        originate from a uniform grid. Therefore, when handling irregular data-sets *GridCoordinates* should be used.
+        In contrast to a `Grid` structure, `GridCoordinates` do not lie on a uniform grid or correspond to values that
+        originate from a uniform grid. Therefore, when handling irregular data-sets `GridCoordinates` should be used.
 
         Parameters
         ----------
@@ -140,7 +140,7 @@ class AbstractGridCoordinates(np.ndarray):
         return arrays.Values(values=values_1d)
 
     def output_to_file(self, file_path, overwrite=False):
-        """Output this instance of the *GridCoordinates* object to a list of list of tuples.
+        """Output this instance of the `GridCoordinates` object to a list of list of tuples.
 
         Parameters
         ----------
@@ -164,7 +164,8 @@ class AbstractGridCoordinates(np.ndarray):
                 f.write(f"{coordinate}\n")
 
     def squared_distances_from_coordinate(self, coordinate=(0.0, 0.0)):
-        """Compute the squared distance of every (y,x) coordinate in this *Coordinate* instance from an input
+        """
+    Returns the squared distance of every (y,x) coordinate in this *Coordinate* instance from an input
         coordinate.
 
         Parameters
@@ -178,7 +179,8 @@ class AbstractGridCoordinates(np.ndarray):
         return self.values_from_arr_1d(arr_1d=squared_distances)
 
     def distances_from_coordinate(self, coordinate=(0.0, 0.0)):
-        """Compute the distance of every (y,x) coordinate in this *Coordinate* instance from an input coordinate.
+        """
+    Returns the distance of every (y,x) coordinate in this *Coordinate* instance from an input coordinate.
 
         Parameters
         ----------
@@ -240,14 +242,14 @@ class AbstractGridCoordinates(np.ndarray):
 class GridCoordinates(AbstractGridCoordinates):
     @classmethod
     def from_yx_1d(cls, y, x):
-        """Create *GridCoordinates* from a list of y and x values.
+        """Create `GridCoordinates` from a list of y and x values.
 
         This function omits coordinate grouping."""
         return GridCoordinates(coordinates=np.stack((y, x), axis=-1))
 
     @classmethod
     def from_pixels_and_mask(cls, pixels, mask):
-        """Create *GridCoordinates* from a list of coordinates in pixel units and a mask which allows these coordinates to
+        """Create `GridCoordinates` from a list of coordinates in pixel units and a mask which allows these coordinates to
         be converted to scaled units."""
         coordinates = []
         for coordinate_set in pixels:
@@ -263,7 +265,7 @@ class GridCoordinates(AbstractGridCoordinates):
 
     @classmethod
     def from_file(cls, file_path):
-        """Create a *GridCoordinates* object from a file which stores the coordinates as a list of list of tuples.
+        """Create a `GridCoordinates` object from a file which stores the coordinates as a list of list of tuples.
 
         Parameters
         ----------
@@ -282,8 +284,8 @@ class GridCoordinates(AbstractGridCoordinates):
         return cls(coordinates=coordinates)
 
     def coordinates_from_grid_1d(self, grid_1d):
-        """Create a *GridCoordinates* object from a 2D NumPy array of values of shape [total_coordinates, 2]. The
-        *GridCoordinates* are structured and grouped following this *Coordinate* instance."""
+        """Create a `GridCoordinates` object from a 2D NumPy array of values of shape [total_coordinates, 2]. The
+        `GridCoordinates` are structured and grouped following this *Coordinate* instance."""
         coordinates_1d = [
             list(map(tuple, grid_1d[i:j, :]))
             for i, j in zip(self.lower_indexes, self.upper_indexes)
@@ -292,7 +294,8 @@ class GridCoordinates(AbstractGridCoordinates):
         return GridCoordinates(coordinates=coordinates_1d)
 
     def grid_from_deflection_grid(self, deflection_grid):
-        """Compute a new GridCoordinates from this grid coordinates, where the (y,x) coordinates of this grid have a
+        """
+    Returns a new GridCoordinates from this grid coordinates, where the (y,x) coordinates of this grid have a
         grid of (y,x) values, termed the deflection grid, subtracted from them to determine the new grid of (y,x)
         values.
 
@@ -300,7 +303,7 @@ class GridCoordinates(AbstractGridCoordinates):
 
         Parameters
         ----------
-        deflection_grid : ndarray
+        deflection_grid : np.ndarray
             The grid of (y,x) coordinates which is subtracted from this grid.
         """
         return GridCoordinates(coordinates=self - deflection_grid)
@@ -317,7 +320,7 @@ class GridCoordinates(AbstractGridCoordinates):
         - [2D np.ndarray] -> [aa.GridCoordinates]
 
         This function is used by the grid_like_to_structure decorator to convert the output result of a function
-        to an autoarray structure when a *GridCoordinates* instance is passed to the decorated function.
+        to an autoarray structure when a `GridCoordinates` instance is passed to the decorated function.
 
         Parameters
         ----------
@@ -346,7 +349,7 @@ class GridCoordinates(AbstractGridCoordinates):
         - [2D np.ndarray] -> [aa.GridCoordinates]
 
         This function is used by the grid_like_list_to_structure_list decorator to convert the output result of a
-        function to a list of autoarray structure when a *GridCoordinates* instance is passed to the decorated function.
+        function to a list of autoarray structure when a `GridCoordinates` instance is passed to the decorated function.
 
         Parameters
         ----------
@@ -388,9 +391,9 @@ class GridCoordinatesUniform(AbstractGridCoordinates):
 
         Print methods are overidden so a user always "sees" the coordinates as the list structure.
 
-        Like the *Grid* structure, *GridCoordinatesUniform* lie on a uniform grid corresponding to values that
-        originate from a uniform grid. This contrasts the *GridCoordinates* class above. However, although this class
-        stores the pixel-scale and 2D shape of this grid, it does not store the mask that a *Grid* does that enables
+        Like the `Grid` structure, `GridCoordinatesUniform` lie on a uniform grid corresponding to values that
+        originate from a uniform grid. This contrasts the `GridCoordinates` class above. However, although this class
+        stores the pixel-scale and 2D shape of this grid, it does not store the mask that a `Grid` does that enables
         the coordinates to be mapped from 1D to 2D. This is for calculations that utilize the 2d information of the
         grid but do not want the memory overheads associated with the 2D mask.
 
@@ -475,8 +478,8 @@ class GridCoordinatesUniform(AbstractGridCoordinates):
         )
 
     def coordinates_from_grid_1d(self, grid_1d):
-        """Create a *GridCoordinatesUniform* object from a 2D NumPy array of values of shape [total_coordinates, 2]. The
-        *GridCoordinatesUniform* are structured and grouped following this *Coordinate* instance."""
+        """Create a `GridCoordinatesUniform` object from a 2D NumPy array of values of shape [total_coordinates, 2]. The
+        `GridCoordinatesUniform` are structured and grouped following this *Coordinate* instance."""
         coordinates_1d = [
             list(map(tuple, grid_1d[i:j, :]))
             for i, j in zip(self.lower_indexes, self.upper_indexes)
@@ -489,7 +492,8 @@ class GridCoordinatesUniform(AbstractGridCoordinates):
         )
 
     def grid_from_deflection_grid(self, deflection_grid):
-        """Compute a new GridCoordinates from this grid coordinates, where the (y,x) coordinates of this grid have a
+        """
+    Returns a new GridCoordinates from this grid coordinates, where the (y,x) coordinates of this grid have a
         grid of (y,x) values, termed the deflection grid, subtracted from them to determine the new grid of (y,x)
         values.
 
@@ -497,7 +501,7 @@ class GridCoordinatesUniform(AbstractGridCoordinates):
 
         Parameters
         ----------
-        deflection_grid : ndarray
+        deflection_grid : np.ndarray
             The grid of (y,x) coordinates which is subtracted from this grid.
         """
         return GridCoordinatesUniform(
