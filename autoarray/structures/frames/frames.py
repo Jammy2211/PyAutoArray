@@ -14,8 +14,8 @@ class Frame(abstract_frame.AbstractFrame):
     ):
         """Abstract class for the geometry of a CTI Image.
 
-        A f.FrameArray is stored as a 2D NumPy arrays. When this immage is passed to arctic, clocking goes towards
-        the 'top' of the NumPy arrays (e.g. towards row 0). Trails therefore appear towards the 'bottom' of the arrays
+        A f.FrameArray is stored as a 2D ndarrays. When this immage is passed to arctic, clocking goes towards
+        the 'top' of the ndarrays (e.g. towards row 0). Trails therefore appear towards the 'bottom' of the arrays
         (e.g. the final row).
 
         Arctic has no in-built functionality for changing the direction of clocking depending on the input
@@ -57,8 +57,8 @@ class Frame(abstract_frame.AbstractFrame):
     ):
         """Abstract class for the geometry of a CTI Image.
 
-        A FrameArray is stored as a 2D NumPy arrays. When this immage is passed to arctic, clocking goes towards
-        the 'top' of the NumPy arrays (e.g. towards row 0). Trails therefore appear towards the 'bottom' of the arrays
+        A FrameArray is stored as a 2D ndarrays. When this immage is passed to arctic, clocking goes towards
+        the 'top' of the ndarrays (e.g. towards row 0). Trails therefore appear towards the 'bottom' of the arrays
         (e.g. the final row).
 
         Arctic has no in-built functionality for changing the direction of clocking depending on the input
@@ -108,8 +108,8 @@ class Frame(abstract_frame.AbstractFrame):
 
         """Abstract class for the geometry of a CTI Image.
 
-        A FrameArray is stored as a 2D NumPy arrays. When this immage is passed to arctic, clocking goes towards
-        the 'top' of the NumPy arrays (e.g. towards row 0). Trails therefore appear towards the 'bottom' of the arrays
+        A FrameArray is stored as a 2D ndarrays. When this immage is passed to arctic, clocking goes towards
+        the 'top' of the ndarrays (e.g. towards row 0). Trails therefore appear towards the 'bottom' of the arrays
         (e.g. the final row).
 
         Arctic has no in-built functionality for changing the direction of clocking depending on the input
