@@ -4,20 +4,23 @@ from autoarray import decorator_util
 
 @decorator_util.jit()
 def constant_regularization_matrix_from(
-    coefficient, pixel_neighbors, pixel_neighbors_size
-):
+    coefficient: float, pixel_neighbors: np.ndarray, pixel_neighbors_size: np.ndarray
+) -> np.ndarray:
     """
-    From the pixel-neighbors, setup the regularization matrix using the instance regularization scheme.
+    From the pixel-neighbors array, setup the regularization matrix using the instance regularization scheme.
+    
+    A complete description of regularizatin and the ``regularization_matrix`` can be found in the ``Regularization``
+    class in the module ``autoarray.inversion.regularization``. 
 
     Parameters
     ----------
-    coefficients : tuple
+    coefficients : float
         The regularization coefficients which controls the degree of smoothing of the inversion reconstruction.
     pixel_neighbors : np.ndarray
-        An array of length (total_pixels) which provides the index of all neighbors of every pixel in \
+        An array of length (total_pixels) which provides the index of all neighbors of every pixel in
         the Voronoi grid (entries of -1 correspond to no neighbor).
     pixel_neighbors_size : ndarrayy
-        An array of length (total_pixels) which gives the number of neighbors of every pixel in the \
+        An array of length (total_pixels) which gives the number of neighbors of every pixel in the
         Voronoi grid.
     """
 
@@ -38,16 +41,16 @@ def constant_regularization_matrix_from(
 
 
 def adaptive_regularization_weights_from(
-    inner_coefficient, outer_coefficient, pixel_signals
-):
+    inner_coefficient: float, outer_coefficient: float, pixel_signals: np.ndarray
+) -> np.ndarray:
     """
-    Returns the regularization weights, which are the effective regularization coefficient of every \
-    pixel. They are computed using the (hyper) pixel-signal of each pixel.
+    Returns the regularization weights (the effective regularization coefficient of every pixel). They are computed
+    using the pixel-signal of each pixel.
 
     Two regularization coefficients are used, corresponding to the:
 
     1) (pixel_signals) - pixels with a high pixel-signal (i.e. where the signal is located in the pixelization).
-    2) (1.0 - pixel_signals) - pixels with a low pixel-signal (i.e. where the signal is not located in the \
+    2) (1.0 - pixel_signals) - pixels with a low pixel-signal (i.e. where the signal is not located in the
      pixelization).
 
     Parameters
@@ -55,7 +58,7 @@ def adaptive_regularization_weights_from(
     coefficients : (float, float)
         The regularization coefficients which controls the degree of smoothing of the inversion reconstruction.
     pixel_signals : np.ndarray
-        The estimated signal in every pixelization pixel, used to change the regularization weighting of high signal \
+        The estimated signal in every pixelization pixel, used to change the regularization weighting of high signal
         and low signal pixelizations.
     """
     return (
@@ -75,10 +78,10 @@ def weighted_regularization_matrix_from(
     regularization_weights : np.ndarray
         The regularization_ weight of each pixel, which governs how much smoothing is applied to that individual pixel.
     pixel_neighbors : np.ndarray
-        An array of length (total_pixels) which provides the index of all neighbors of every pixel in \
+        An array of length (total_pixels) which provides the index of all neighbors of every pixel in
         the Voronoi grid (entries of -1 correspond to no neighbor).
     pixel_neighbors_size : ndarrayy
-        An array of length (total_pixels) which gives the number of neighbors of every pixel in the \
+        An array of length (total_pixels) which gives the number of neighbors of every pixel in the
         Voronoi grid.
     """
 

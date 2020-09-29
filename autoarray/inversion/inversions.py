@@ -310,8 +310,8 @@ class InversionImagingMatrix(AbstractInversion, AbstractInversionMatrix):
             noise_map=noise_map,
         )
 
-        curvature_matrix = inversion_util.curvature_matrix_via_blurred_mapping_matrix_from(
-            blurred_mapping_matrix=blurred_mapping_matrix, noise_map=noise_map
+        curvature_matrix = inversion_util.curvature_matrix_via_mapping_matrix_from(
+            mapping_matrix=blurred_mapping_matrix, noise_map=noise_map
         )
 
         regularization_matrix = regularization.regularization_matrix_from_mapper(
@@ -554,14 +554,12 @@ class InversionInterferometerMatrix(
             noise_map=noise_map[:, 1],
         )
 
-        real_curvature_matrix = inversion_util.curvature_matrix_via_transformed_mapping_matrix_from(
-            transformed_mapping_matrix=transformed_mapping_matrices[0],
-            noise_map=noise_map[:, 0],
+        real_curvature_matrix = inversion_util.curvature_matrix_via_mapping_matrix_from(
+            mapping_matrix=transformed_mapping_matrices[0], noise_map=noise_map[:, 0]
         )
 
-        imag_curvature_matrix = inversion_util.curvature_matrix_via_transformed_mapping_matrix_from(
-            transformed_mapping_matrix=transformed_mapping_matrices[1],
-            noise_map=noise_map[:, 1],
+        imag_curvature_matrix = inversion_util.curvature_matrix_via_mapping_matrix_from(
+            mapping_matrix=transformed_mapping_matrices[1], noise_map=noise_map[:, 1]
         )
 
         regularization_matrix = regularization.regularization_matrix_from_mapper(
