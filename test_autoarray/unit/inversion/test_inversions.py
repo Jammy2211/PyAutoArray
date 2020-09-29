@@ -58,7 +58,7 @@ class TestLogDetMatrixCholesky:
 class TestAbstractInversion:
     def test__regularization_term__solution_all_1s__regularization_matrix_simple(self):
 
-        matrix_shape = (3, 3)
+        matrix_shape = (9, 3)
 
         inversion = inversions.InversionImagingMatrix.from_data_mapper_and_regularization(
             image=np.ones(9),
@@ -95,7 +95,7 @@ class TestAbstractInversion:
         self
     ):
 
-        matrix_shape = (3, 3)
+        matrix_shape = (9, 3)
 
         inversion = inversions.InversionImagingMatrix.from_data_mapper_and_regularization(
             image=np.ones(9),
@@ -130,7 +130,7 @@ class TestAbstractInversion:
 
     def test__brightest_reconstruction_pixel_and_centre(self):
 
-        matrix_shape = (3, 3)
+        matrix_shape = (9, 3)
 
         inversion = inversions.InversionImagingMatrix.from_data_mapper_and_regularization(
             image=np.ones(9),
@@ -160,7 +160,7 @@ class TestAbstractInversion:
             path.join(directory, "output"),
         )
 
-        matrix_shape = (3, 3)
+        matrix_shape = (25, 3)
 
         mask = aa.Mask2D.manual(
             mask=np.array(
@@ -222,7 +222,7 @@ class TestAbstractInversion:
             path.join(directory, "output"),
         )
 
-        matrix_shape = (3, 3)
+        matrix_shape = (25, 3)
 
         mask = aa.Mask2D.manual(
             mask=np.array(
@@ -279,7 +279,7 @@ class TestAbstractInversion:
             path.join(directory, "output"),
         )
 
-        matrix_shape = (3, 3)
+        matrix_shape = (25, 3)
 
         mask = aa.Mask2D.manual(
             mask=np.array(
@@ -366,7 +366,7 @@ class TestAbstractInversion:
 
     def test__interp__manual_shape_2d__uses_input_shape_2d(self):
 
-        matrix_shape = (3, 3)
+        matrix_shape = (25, 3)
 
         mask = aa.Mask2D.manual(
             mask=np.array(
@@ -441,7 +441,7 @@ class TestInversionImagingMatrix:
         self
     ):
 
-        matrix_shape = (3, 3)
+        matrix_shape = (9, 3)
 
         mask = aa.Mask2D.manual(
             mask=np.array(
@@ -478,15 +478,24 @@ class TestInversionImagingMatrix:
         ).all()
 
         assert inversion.errors_with_covariance == pytest.approx(
-            np.array([[0.7, -0.3, -0.3], [-0.3, 0.7, -0.3], [-0.3, -0.3, 0.7]]), 1.0e-4
+            np.array(
+                [
+                    [0.6785, -0.3214, -0.3214],
+                    [-0.3214, 0.6785, -0.3214],
+                    [-0.3214, -0.3214, 0.6785],
+                ]
+            ),
+            1.0e-2,
         )
-        assert inversion.errors == pytest.approx(np.array([0.7, 0.7, 0.7]), 1.0e-4)
+        assert inversion.errors == pytest.approx(
+            np.array([0.6785, 0.6785, 0.6785]), 1.0e-3
+        )
 
     def test__reconstruction_different_values__simple_blurred_mapping_matrix__correct_reconstructed_image(
         self
     ):
 
-        matrix_shape = (3, 3)
+        matrix_shape = (9, 3)
 
         mask = aa.Mask2D.manual(
             mask=np.array(
@@ -526,9 +535,18 @@ class TestInversionImagingMatrix:
         ).all()
 
         assert inversion.errors_with_covariance == pytest.approx(
-            np.array([[0.7, -0.3, -0.3], [-0.3, 0.7, -0.3], [-0.3, -0.3, 0.7]]), 1.0e-4
+            np.array(
+                [
+                    [0.6785, -0.3214, -0.3214],
+                    [-0.3214, 0.6785, -0.3214],
+                    [-0.3214, -0.3214, 0.6785],
+                ]
+            ),
+            1.0e-2,
         )
-        assert inversion.errors == pytest.approx(np.array([0.7, 0.7, 0.7]), 1.0e-4)
+        assert inversion.errors == pytest.approx(
+            np.array([0.6785, 0.6785, 0.6785]), 1.0e-3
+        )
 
     def test__func_testing_range_of_reconstruction(self):
 
@@ -542,7 +560,7 @@ class TestInversionImagingMatrix:
 
         grid = aa.Grid.from_mask(mask=mask)
 
-        matrix_shape = (3, 3)
+        matrix_shape = (9, 3)
 
         with pytest.raises(exc.InversionException):
 
