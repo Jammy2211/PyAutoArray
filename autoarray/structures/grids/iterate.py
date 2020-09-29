@@ -424,7 +424,8 @@ class GridIterate(abstract_grid.AbstractGrid):
     def fractional_mask_from_arrays(
         self, array_lower_sub_2d, array_higher_sub_2d
     ) -> msk.Mask2D:
-        """ Compute a fractional mask from a result array, where the fractional mask describes whether the evaluated
+        """
+    Returns a fractional mask from a result array, where the fractional mask describes whether the evaluated
         value in the result array is within the `GridIterate`'s specified fractional accuracy. The fractional mask thus
         determines whether a pixel on the grid needs to be reevaluated at a higher level of sub-gridding to meet the
         specified fractional accuracy. If it must be re-evaluated, the fractional masks's entry is ``False``.
@@ -607,7 +608,8 @@ class GridIterate(abstract_grid.AbstractGrid):
     def fractional_mask_from_grids(
         self, grid_lower_sub_2d, grid_higher_sub_2d
     ) -> msk.Mask2D:
-        """ Compute a fractional mask from a result array, where the fractional mask describes whether the evaluated
+        """
+    Returns a fractional mask from a result array, where the fractional mask describes whether the evaluated
         value in the result array is within the `GridIterate`'s specified fractional accuracy. The fractional mask thus
         determines whether a pixel on the grid needs to be reevaluated at a higher level of sub-gridding to meet the
         specified fractional accuracy. If it must be re-evaluated, the fractional masks's entry is ``False``.

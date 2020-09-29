@@ -7,11 +7,13 @@ from autoarray.util import grid_util
 
 
 @decorator_util.jit()
-def mask_centres_from(shape, pixel_scales, centre):
+def mask_centres_from(
+    shape: (int, int), pixel_scales: (float, float), centre: (float, float)
+) -> (float, float):
     """
     Returns the (y,x) scaled central coordinates of a mask from its shape, pixel-scales and centre.
 
-     The coordinate system is defined such that the positive y axis is up and positive x axis is right.
+    The coordinate system is defined such that the positive y axis is up and positive x axis is right.
 
     Parameters
     ----------
@@ -38,7 +40,7 @@ def mask_centres_from(shape, pixel_scales, centre):
 
 
 @decorator_util.jit()
-def total_pixels_from(mask):
+def total_pixels_from(mask: np.ndarray) -> int:
     """
     Returns the total number of unmasked pixels in a mask.
 
@@ -73,10 +75,10 @@ def total_pixels_from(mask):
 
 
 @decorator_util.jit()
-def total_sub_pixels_from(mask, sub_size):
+def total_sub_pixels_from(mask: np.ndarray, sub_size: int) -> int:
     """
     Returns the total number of sub-pixels in unmasked pixels in a mask.
-    
+
     Parameters
     ----------
     mask : np.ndarray
@@ -102,14 +104,16 @@ def total_sub_pixels_from(mask, sub_size):
 
 
 @decorator_util.jit()
-def total_sparse_pixels_from(mask, unmasked_sparse_grid_pixel_centres):
-    """Given the full (i.e. without removing pixels which are outside the mask) pixelization grid's pixel \ 
-    center and the mask, compute the total number of pixels which are within the mask and thus used \ \
+def total_sparse_pixels_from(
+    mask: np.ndarray, unmasked_sparse_grid_pixel_centres: np.ndarray
+) -> int:
+    """Given the full (i.e. without removing pixels which are outside the mask) pixelization grid's pixel
+    center and the mask, compute the total number of pixels which are within the mask and thus used
     by the pixelization grid.
 
     Parameters
     -----------
-    mask : imaging.mask.Mask2D
+    mask : np.ndarray
         The mask within which pixelization pixels must be inside
     unmasked_sparse_grid_pixel_centres : np.ndarray
         The centres of the unmasked pixelization grid pixels.
@@ -131,7 +135,12 @@ def total_sparse_pixels_from(mask, unmasked_sparse_grid_pixel_centres):
 
 
 @decorator_util.jit()
-def mask_circular_from(shape_2d, pixel_scales, radius, centre=(0.0, 0.0)):
+def mask_circular_from(
+    shape_2d: (int, int),
+    pixel_scales: (float, float),
+    radius: float,
+    centre: (float, float) = (0.0, 0.0),
+) -> np.ndarray:
     """
     Returns a circular mask from the 2D mask array shape and radius of the circle.
 
@@ -155,7 +164,7 @@ def mask_circular_from(shape_2d, pixel_scales, radius, centre=(0.0, 0.0)):
 
     Examples
     --------
-    mask = mask_circular_from_shape_pixel_scale_and_radius( \
+    mask = mask_circular_from_shape_pixel_scale_and_radius(
         shape=(10, 10), pixel_scales=0.1, radius=0.5, centre=(0.0, 0.0))
     """
 
@@ -181,10 +190,14 @@ def mask_circular_from(shape_2d, pixel_scales, radius, centre=(0.0, 0.0)):
 
 @decorator_util.jit()
 def mask_circular_annular_from(
-    shape_2d, pixel_scales, inner_radius, outer_radius, centre=(0.0, 0.0)
-):
+    shape_2d: (int, int),
+    pixel_scales: (float, float),
+    inner_radius: float,
+    outer_radius: float,
+    centre: (float, float) = (0.0, 0.0),
+) -> np.ndarray:
     """
-    Returns an annular mask from an input inner and outer mask radius and shape.
+    Returns an circular annular mask from an input inner and outer mask radius and shape.
 
     This creates a 2D array where all values within the inner and outer radii are unmasked and therefore ``False``.
 
@@ -208,7 +221,7 @@ def mask_circular_annular_from(
 
     Examples
     --------
-    mask = mask_annnular_from_shape_pixel_scale_and_radius( \
+    mask = mask_annnular_from_shape_pixel_scale_and_radius(
         shape=(10, 10), pixel_scales=0.1, inner_radius=0.5, outer_radius=1.5, centre=(0.0, 0.0))
     """
 
@@ -234,15 +247,46 @@ def mask_circular_annular_from(
 
 @decorator_util.jit()
 def mask_circular_anti_annular_from(
-    shape_2d,
-    pixel_scales,
-    inner_radius,
-    outer_radius,
-    outer_radius_2_scaled,
-    centre=(0.0, 0.0),
-):
+    shape_2d: (int, int),
+    pixel_scales: (float, float),
+    inner_radius: float,
+    outer_radius: float,
+    outer_radius_2_scaled: float,
+    centre: (float, float) = (0.0, 0.0),
+) -> np.ndarray:
     """
-    Returns an annular mask from an input inner and outer mask radius and shape."""
+    Returns an anti-annular mask from an input inner and outer mask radius and shape. The anti-annular is analogous to
+    the annular mask but inverted, whereby its unmasked values are those inside the annulus.
+
+    This creates a 2D array where all values outside the inner and outer radii are unmasked and therefore ``False``.
+
+    Parameters
+    ----------
+    shape_2d : (int, int)
+        The (y,x) shape of the mask in units of pixels.
+    pixel_scales : (float, float)
+        The scaled to pixel conversion factor of each pixel.
+    inner_radius : float
+        The inner radius in scaled units of the annulus within which pixels are ``False`` and unmasked.
+    outer_radius : float
+        The first outer radius in scaled units of the annulus within which pixels are ``True`` and masked.
+    outer_radius_2 : float
+        The second outer radius in scaled units of the annulus within which pixels are ``False`` and unmasked and
+        outside of which all entries are ``True`` and masked.
+    centre: (float, float)
+        The centre of the annulus used to mask pixels.
+
+    Returns
+    -------
+    ndarray
+        The 2D mask array whose central pixels are masked as a annulus.
+
+    Examples
+    --------
+    mask = mask_annnular_from_shape_pixel_scale_and_radius(
+        shape=(10, 10), pixel_scales=0.1, inner_radius=0.5, outer_radius=1.5, centre=(0.0, 0.0))
+
+    """
 
     mask = np.full(shape_2d, True)
 
@@ -267,9 +311,25 @@ def mask_circular_anti_annular_from(
     return mask
 
 
-def mask_via_pixel_coordinates_from(shape_2d, pixel_coordinates, buffer=0):
+def mask_via_pixel_coordinates_from(
+    shape_2d: (int, int), pixel_coordinates: [list], buffer: int = 0
+) -> np.ndarray:
     """
-    Returns an annular mask from an input inner and outer mask radius and shape."""
+    Returns a mask where all unmasked ``False`` entries are defined from an input list of list of pixel coordinates.
+
+    These may be buffed via an input ``buffer``, whereby all entries in all 8 neighboring directions by this
+    amount.
+
+    Parameters
+    ----------
+    shape_2d (int, int)
+        The (y,x) shape of the mask in units of pixels.
+    pixel_coordinates : [[int, int]]
+        The input lists of 2D pixel coordinates where ``False`` entries are created.
+    buffer : int
+        All input ``pixel_coordinates`` are buffed with ``False`` entries in all 8 neighboring directions by this
+        amount.
+    """
 
     mask = np.full(shape=shape_2d, fill_value=True)
 
@@ -284,7 +344,32 @@ def mask_via_pixel_coordinates_from(shape_2d, pixel_coordinates, buffer=0):
 
 
 @decorator_util.jit()
-def elliptical_radius_from(y_scaled, x_scaled, phi, axis_ratio):
+def elliptical_radius_from(
+    y_scaled: float, x_scaled: float, phi: float, axis_ratio: float
+) -> float:
+    """
+    Returns the elliptical radius of an ellipse from its (y,x) scaled centre, rotation angle `phi` defined in degrees
+    counter-clockwise from the positive x-axis and its axis-ratio.
+
+    This is used by the function `mask_elliptical_from` to determine the radius of every (y,x) coordinate in elliptical
+    units when deciding if it is within the mask.
+
+    Parameters
+    ----------
+    y_scaled : float
+        The scaled y coordinate in Cartesian coordinates which is converted to elliptical coordinates.
+    x_scaled : float
+        The scaled x coordinate in Cartesian coordinates which is converted to elliptical coordinates.
+    phi : float
+        The rotation angle in degrees counter-clockwise from the positive x-axis
+    axis_ratio : float
+        The axis-ratio of the ellipse (minor axis / major axis).
+
+    Returns
+    -------
+    float
+        The radius of the input scaled (y,x) coordinate on the ellipse's ellipitcal coordinate system.
+    """
     r_scaled = np.sqrt(x_scaled ** 2 + y_scaled ** 2)
 
     theta_rotated = np.arctan2(y_scaled, x_scaled) + np.radians(phi)
@@ -299,10 +384,15 @@ def elliptical_radius_from(y_scaled, x_scaled, phi, axis_ratio):
 
 @decorator_util.jit()
 def mask_elliptical_from(
-    shape_2d, pixel_scales, major_axis_radius, axis_ratio, phi, centre=(0.0, 0.0)
-):
+    shape_2d: (int, int),
+    pixel_scales: (float, float),
+    major_axis_radius: float,
+    axis_ratio: float,
+    phi: float,
+    centre: (float, float) = (0.0, 0.0),
+) -> np.ndarray:
     """
-    Returns an elliptical mask from an input major-axis mask radius, axis-ratio, rotational angle phi, shape and \
+    Returns an elliptical mask from an input major-axis mask radius, axis-ratio, rotational angle phi, shape and
     centre.
 
     This creates a 2D array where all values within the ellipse are unmasked and therefore ``False``.
@@ -318,7 +408,7 @@ def mask_elliptical_from(
     axis_ratio : float
         The axis-ratio of the ellipse within which pixels are unmasked.
     phi : float
-        The rotation angle of the ellipse within which pixels are unmasked, (counter-clockwise from the positive \
+        The rotation angle of the ellipse within which pixels are unmasked, (counter-clockwise from the positive
          x-axis).
     centre: (float, float)
         The centre of the ellipse used to mask pixels.
@@ -330,7 +420,7 @@ def mask_elliptical_from(
 
     Examples
     --------
-    mask = mask_elliptical_from_shape_pixel_scale_and_radius( \
+    mask = mask_elliptical_from_shape_pixel_scale_and_radius(
         shape=(10, 10), pixel_scales=0.1, major_axis_radius=0.5, elliptical_comps=(0.333333, 0.0), centre=(0.0, 0.0))
     """
 
@@ -358,19 +448,19 @@ def mask_elliptical_from(
 
 @decorator_util.jit()
 def mask_elliptical_annular_from(
-    shape_2d,
-    pixel_scales,
-    inner_major_axis_radius,
-    inner_axis_ratio,
-    inner_phi,
-    outer_major_axis_radius,
-    outer_axis_ratio,
-    outer_phi,
-    centre=(0.0, 0.0),
-):
+    shape_2d: (int, int),
+    pixel_scales: (float, float),
+    inner_major_axis_radius: float,
+    inner_axis_ratio: float,
+    inner_phi: float,
+    outer_major_axis_radius: float,
+    outer_axis_ratio: float,
+    outer_phi: float,
+    centre: (float, float) = (0.0, 0.0),
+) -> np.ndarray:
     """
-    Returns an elliptical annular mask from an input major-axis mask radius, axis-ratio, rotational angle phi for \
-     both the inner and outer elliptical annuli and a shape and centre for the mask.
+    Returns an elliptical annular mask from an input major-axis mask radius, axis-ratio, rotational angle phi for
+    both the inner and outer elliptical annuli and a shape and centre for the mask.
 
     This creates a 2D array where all values within the elliptical annuli are unmasked and therefore ``False``.
 
@@ -385,14 +475,14 @@ def mask_elliptical_annular_from(
     inner_axis_ratio : float
         The axis-ratio of the inner ellipse within which pixels are masked.
     inner_phi : float
-        The rotation angle of the inner ellipse within which pixels are masked, (counter-clockwise from the \
+        The rotation angle of the inner ellipse within which pixels are masked, (counter-clockwise from the
         positive x-axis).
     outer_major_axis_radius : float
         The major-axis (in scaled units) of the outer ellipse within which pixels are unmasked.
     outer_axis_ratio : float
         The axis-ratio of the outer ellipse within which pixels are unmasked.
     outer_phi : float
-        The rotation angle of the outer ellipse within which pixels are unmasked, (counter-clockwise from the \
+        The rotation angle of the outer ellipse within which pixels are unmasked, (counter-clockwise from the
         positive x-axis).
     centre: (float, float)
         The centre of the elliptical annuli used to mask pixels.
@@ -400,11 +490,11 @@ def mask_elliptical_annular_from(
     Returns
     -------
     ndarray
-        The 2D mask array whose elliptical annuli pixels are masked
+        The 2D mask array whose elliptical annuli pixels are masked.
 
     Examples
     --------
-    mask = mask_elliptical_annuli_from_shape_pixel_scale_and_radius( \
+    mask = mask_elliptical_annuli_from_shape_pixel_scale_and_radius(
         shape=(10, 10), pixel_scales=0.1,
          inner_major_axis_radius=0.5, inner_axis_ratio=0.5, inner_phi=45.0,
          outer_major_axis_radius=1.5, outer_axis_ratio=0.8, outer_phi=90.0,
@@ -441,37 +531,37 @@ def mask_elliptical_annular_from(
 
 
 @decorator_util.jit()
-def blurring_mask_from(mask, kernel_shape_2d):
+def blurring_mask_from(mask: np.ndarray, kernel_shape_2d: (int, int)) -> np.ndarray:
     """
     Returns a blurring mask from an input mask and psf shape.
 
-    The blurring mask corresponds to all pixels which are outside of the mask but will have a fraction of their \
+    The blurring mask corresponds to all pixels which are outside of the mask but will have a fraction of their
     light blur into the masked region due to PSF convolution. The PSF shape is used to determine which pixels these are.
-    
-    If a pixel is identified which is outside the 2D dimensionos of the input mask, an error is raised and the user \
+
+    If a pixel is identified which is outside the 2D dimensions of the input mask, an error is raised and the user
     should pad the input mask (and associated images).
-    
+
     Parameters
     -----------
     mask : np.ndarray
         A 2D array of bools, where ``False`` values are unmasked.
     kernel_shape_2d : (int, int)
         The 2D shape of the PSF which is used to compute the blurring mask.
-        
+
     Returns
     -------
     ndarray
-        The 2D blurring mask array whose unmasked values (``False``) correspond to where the mask will have PSF light \
+        The 2D blurring mask array whose unmasked values (``False``) correspond to where the mask will have PSF light
         blurred into them.
 
     Examples
     --------
     mask = np.array([[True, True, True],
                      [True, False, True]
-                     [True, True, True]])      
-    
-    blurring_mask = blurring_mask_from_mask_and_psf_shape(mask=mask, psf_shape_2d=(3,3)) 
-    
+                     [True, True, True]])
+
+    blurring_mask = blurring_mask_from_mask_and_psf_shape(mask=mask, psf_shape_2d=(3,3))
+
     """
 
     blurring_mask = np.full(mask.shape, True)
@@ -502,12 +592,13 @@ def blurring_mask_from(mask, kernel_shape_2d):
 
 @decorator_util.jit()
 def mask_via_shape_2d_and_mask_index_for_mask_1d_index_from(
-    shape_2d, mask_index_for_mask_1d_index
-):
-    """For a 1D array that was computed by util unmasked values from a 2D array of shape (total_y_pixels, total_x_pixels), map its \
-    indexes back to the original 2D array to create the origianl 2D mask.
+    shape_2d: (int, int), mask_index_for_mask_1d_index: np.ndarray
+) -> np.ndarray:
+    """
+    For a 1D array that was computed by util unmasked values from a 2D array of shape (total_y_pixels, total_x_pixels),
+    map its indexes back to the original 2D array to create the origianl 2D mask.
 
-    This uses a 1D array 'one_to_two' where each index gives the 2D pixel indexes of the 1D array's unmasked pixels, \
+    This uses a 1D array 'one_to_two' where each index gives the 2D pixel indexes of the 1D array's unmasked pixels,
     for example:
 
     - If one_to_two[0] = [0,0], the first value of the 1D array maps to the pixel [0,0] of the 2D array.
@@ -545,7 +636,27 @@ def mask_via_shape_2d_and_mask_index_for_mask_1d_index_from(
 
 
 @decorator_util.jit()
-def check_if_edge_pixel(mask, y, x):
+def check_if_edge_pixel(mask: np.ndarray, y: int, x: int) -> bool:
+    """
+    Checks if an input [y,x] pixel on the input `mask` is an edge-pixel.
+
+    An edge pixel is defined as a pixel on the mask which is unmasked (has a `False`) value and at least 1 of its 8
+    direct neighbors is masked (is `True`).
+
+    Parameters
+    ----------
+    mask : np.ndarray
+        The mask for which the input pixel is checked if it is an edge pixel.
+    y : int
+        The y pixel coordinate on the mask that is checked for if it is an edge pixel.
+    x : int
+        The x pixel coordinate on the mask that is checked for if it is an edge pixel.
+
+    Returns
+    -------
+    bool
+        If `True` the pixel on the mask is an edge pixel, else a `False` is returned because it is not.
+    """
 
     if (
         mask[y + 1, x]
@@ -563,9 +674,23 @@ def check_if_edge_pixel(mask, y, x):
 
 
 @decorator_util.jit()
-def total_edge_pixels_from(mask):
+def total_edge_pixels_from(mask: np.ndarray) -> int:
     """
-    Returns the total number of borders-pixels in a mask."""
+    Returns the total number of edge-pixels in a mask.
+
+    An edge pixel is defined as a pixel on the mask which is unmasked (has a `False`) value and at least 1 of its 8
+    direct neighbors is masked (is `True`).
+
+    Parameters
+    ----------
+    mask : np.ndarray
+        The mask for which the total number of edge pixels is computed.
+
+    Returns
+    -------
+    int
+        The total number of edge pixels.
+    """
 
     edge_pixel_total = 0
 
@@ -579,10 +704,23 @@ def total_edge_pixels_from(mask):
 
 
 @decorator_util.jit()
-def edge_1d_indexes_from(mask):
+def edge_1d_indexes_from(mask: np.ndarray) -> np.ndarray:
     """
-    Returns a 1D array listing all edge pixel indexes in the mask. An edge pixel is a pixel which is not fully \
-    surrounding by ``False`` mask values i.e. it is on an edge."""
+    Returns a 1D array listing all edge pixel indexes in the mask.
+
+    An edge pixel is defined as a pixel on the mask which is unmasked (has a `False`) value and at least 1 of its 8
+    direct neighbors is masked (is `True`).
+
+    Parameters
+    ----------
+    mask : np.ndarray
+        The mask for which the 1D edge pixel indexes are computed.
+
+    Returns
+    -------
+    np.ndarray
+        The 1D indexes of all edge pixels on the mask.
+    """
 
     edge_pixel_total = total_edge_pixels_from(mask)
 
@@ -612,7 +750,36 @@ def edge_1d_indexes_from(mask):
 
 
 @decorator_util.jit()
-def check_if_border_pixel(mask, edge_pixel_1d, mask_index_for_mask_1d_index):
+def check_if_border_pixel(
+    mask: np.ndarray, edge_pixel_1d: int, mask_index_for_mask_1d_index: np.ndarray
+) -> bool:
+    """
+    Checks if an input [y,x] pixel on the input `mask` is a border-pixel.
+
+    A borders pixel is a pixel which:
+
+    1) is not fully surrounding by ``False`` mask values.
+    2) Can reach the edge of the array without hitting a masked pixel in one of four directions (upwards, downwards,
+       left, right).
+
+    The borders pixels are thus pixels which are on the exterior edge of the mask. For example, the inner ring of edge
+    pixels in an annular mask are edge pixels but not borders pixels.
+
+    Parameters
+    ----------
+    mask : np.ndarray
+        The mask for which the input pixel is checked if it is a border pixel.
+    edge_pixel_1d : int
+        The edge pixel index in 1D that is checked if it is a border pixel (this 1D index is mapped to 2d via the
+        array `mask_index_for_mask_1d_index`).
+    mask_index_for_mask_1d_index : np.ndarray
+        An array describing the 2D array index that every 1D array index maps too.
+
+    Returns
+    -------
+    bool
+        If `True` the pixel on the mask is a border pixel, else a `False` is returned because it is not.
+    """
     edge_pixel_index = int(edge_pixel_1d)
 
     y = int(mask_index_for_mask_1d_index[edge_pixel_index, 0])
@@ -632,7 +799,32 @@ def check_if_border_pixel(mask, edge_pixel_1d, mask_index_for_mask_1d_index):
 @decorator_util.jit()
 def total_border_pixels_from(mask, edge_pixels, mask_index_for_mask_1d_index):
     """
-    Returns the total number of borders-pixels in a mask."""
+    Returns the total number of border-pixels in a mask.
+
+    A borders pixel is a pixel which:
+
+    1) is not fully surrounding by ``False`` mask values.
+    2) Can reach the edge of the array without hitting a masked pixel in one of four directions (upwards, downwards,
+       left, right).
+
+    The borders pixels are thus pixels which are on the exterior edge of the mask. For example, the inner ring of edge
+    pixels in an annular mask are edge pixels but not borders pixels.
+
+    Parameters
+    ----------
+    mask : np.ndarray
+        The mask for which the total number of border pixels is computed.
+    edge_pixel_1d : int
+        The edge pixel index in 1D that is checked if it is a border pixel (this 1D index is mapped to 2d via the
+        array `mask_index_for_mask_1d_index`).
+    mask_index_for_mask_1d_index : np.ndarray
+        An array describing the 2D array index that every 1D array index maps too.
+
+    Returns
+    -------
+    int
+        The total number of border pixels.
+    """
 
     border_pixel_total = 0
 
@@ -645,16 +837,29 @@ def total_border_pixels_from(mask, edge_pixels, mask_index_for_mask_1d_index):
 
 
 @decorator_util.jit()
-def border_1d_indexes_from(mask):
+def border_1d_indexes_from(mask: np.ndarray) -> np.ndarray:
     """
-    Returns a 1D array listing all borders pixel indexes in the mask. A borders pixel is a pixel which:
+    Returns a 1D array listing all borders pixel indexes in the mask.
 
-     1) is not fully surrounding by ``False`` mask values.
-     2) Can reach the edge of the array without hitting a masked pixel in one of four directions (upwards, downwards,
-     left, right).
+    A borders pixel is a pixel which:
 
-     The borders pixels are thus pixels which are on the exterior edge of the mask. For example, the inner ring of edge \
-     pixels in an annular mask are edge pixels but not borders pixels."""
+    1) is not fully surrounding by ``False`` mask values.
+    2) Can reach the edge of the array without hitting a masked pixel in one of four directions (upwards, downwards,
+       left, right).
+
+    The borders pixels are thus pixels which are on the exterior edge of the mask. For example, the inner ring of edge
+    pixels in an annular mask are edge pixels but not borders pixels.
+
+    Parameters
+    ----------
+    mask : np.ndarray
+        The mask for which the 1D border pixel indexes are calculated.
+
+    Returns
+    -------
+    np.ndarray
+        The 1D indexes of all border pixels on the mask.
+    """
 
     edge_pixels = edge_1d_indexes_from(mask=mask)
     mask_index_for_mask_1d_index = sub_mask_index_for_sub_mask_1d_index_via_mask_from(
@@ -685,16 +890,35 @@ def border_1d_indexes_from(mask):
     return border_pixels
 
 
-def sub_border_pixel_1d_indexes_from(mask, sub_size):
+def sub_border_pixel_1d_indexes_from(mask: np.ndarray, sub_size: int) -> np.ndarray:
     """
-    Returns a 1D array listing all borders pixel indexes in the mask. A borders pixel is a pixel which:
+    Returns a 1D array listing all sub-borders pixel indexes in the mask.
 
-     1) is not fully surrounding by ``False`` mask values.
-     2) Can reach the edge of the array without hitting a masked pixel in one of four directions (upwards, downwards,
-     left, right).
+    A borders pixel is a pixel which:
 
-     The borders pixels are thus pixels which are on the exterior edge of the mask. For example, the inner ring of edge \
-     pixels in an annular mask are edge pixels but not borders pixels."""
+    1) is not fully surrounding by ``False`` mask values.
+    2) Can reach the edge of the array without hitting a masked pixel in one of four directions (upwards, downwards,
+       left, right).
+
+    The borders pixels are thus pixels which are on the exterior edge of the mask. For example, the inner ring of
+    edge pixels in an annular mask are edge pixels but not borders pixels.
+
+    A sub-border pixel is, for a border-pixel, the pixel within that border pixel which is futherest from the origin
+    of the mask.
+
+    Parameters
+    ----------
+    mask : np.ndarray
+        The mask for which the 1D border pixel indexes are calculated.
+    sub_size : int
+        The size of the sub-grid in each mask pixel.
+
+    Returns
+    -------
+    np.ndarray
+        The 1D indexes of all border pixels on the mask.
+
+    """
 
     border_pixels = border_1d_indexes_from(mask=mask)
 
@@ -724,7 +948,7 @@ def sub_border_pixel_1d_indexes_from(mask, sub_size):
 
 
 @decorator_util.jit()
-def buffed_mask_from(mask, buffer=1):
+def buffed_mask_from(mask: np.ndarray, buffer: int = 1) -> np.ndarray:
 
     buffed_mask = mask.copy()
 
@@ -745,7 +969,7 @@ def buffed_mask_from(mask, buffer=1):
     return buffed_mask
 
 
-def rescaled_mask_from(mask, rescale_factor):
+def rescaled_mask_from(mask: np.ndarray, rescale_factor: float) -> np.ndarray:
     rescaled_mask = rescale(
         image=mask,
         scale=rescale_factor,
@@ -762,8 +986,10 @@ def rescaled_mask_from(mask, rescale_factor):
 
 
 @decorator_util.jit()
-def mask_1d_index_for_sub_mask_1d_index_via_mask_from(mask, sub_size):
-    """"For pixels on a 2D array of shape (rows, colums), compute a 1D array which, for every unmasked pixel on \
+def mask_1d_index_for_sub_mask_1d_index_via_mask_from(
+    mask: np.ndarray, sub_size: int
+) -> np.ndarray:
+    """"For pixels on a 2D array of shape (rows, colums), compute a 1D array which, for every unmasked pixel on
     this 2D array, maps the 1D sub-pixel indexes to their 1D pixel indexes.
 
     For example, for a sub-grid size of 2, the following mappings from sub-pixels to 2D array pixels are:
@@ -772,7 +998,7 @@ def mask_1d_index_for_sub_mask_1d_index_via_mask_from(mask, sub_size):
     - mask_1d_index_for_sub_mask_1d_index[3] = 0 -> The fourth sub-pixel maps to the first unmasked pixel on the 2D array.
     - mask_1d_index_for_sub_mask_1d_index[7] = 1 -> The eighth sub-pixel maps to the second unmasked pixel on the 2D array.
 
-    The term 'grid' is used because the grid is defined as the grid of coordinates on the centre of every \
+    The term 'grid' is used because the grid is defined as the grid of coordinates on the centre of every
     pixel on the 2D array. Thus, this array maps sub-pixels on a sub-grid to pixels on a grid.
 
 
@@ -801,8 +1027,10 @@ def mask_1d_index_for_sub_mask_1d_index_via_mask_from(mask, sub_size):
     return mask_1d_index_for_sub_mask_1d_index
 
 
-def sub_mask_1d_indexes_for_mask_1d_index_via_mask_from(mask, sub_size):
-    """"For pixels on a 2D array of shape (rows, colums), compute a 1D array which, for every unmasked pixel on \
+def sub_mask_1d_indexes_for_mask_1d_index_via_mask_from(
+    mask: np.ndarray, sub_size: int
+) -> np.ndarray:
+    """"For pixels on a 2D array of shape (rows, colums), compute a 1D array which, for every unmasked pixel on
     this 2D array, maps the 1D sub-pixel indexes to their 1D pixel indexes.
 
     For example, for a sub-grid size of 2, the following mappings from sub-pixels to 2D array pixels are:
@@ -811,7 +1039,7 @@ def sub_mask_1d_indexes_for_mask_1d_index_via_mask_from(mask, sub_size):
     - mask_1d_index_for_sub_mask_1d_index[3] = 0 -> The fourth sub-pixel maps to the first unmasked pixel on the 2D array.
     - mask_1d_index_for_sub_mask_1d_index[7] = 1 -> The eighth sub-pixel maps to the second unmasked pixel on the 2D array.
 
-    The term 'grid' is used because the grid is defined as the grid of coordinates on the centre of every \
+    The term 'grid' is used because the grid is defined as the grid of coordinates on the centre of every
     pixel on the 2D array. Thus, this array maps sub-pixels on a sub-grid to pixels on a grid.
 
 
@@ -838,9 +1066,9 @@ def sub_mask_1d_indexes_for_mask_1d_index_via_mask_from(mask, sub_size):
 
 
 @decorator_util.jit()
-def sub_mask_1d_index_for_sub_mask_index_from_sub_mask_from(sub_mask):
+def sub_mask_1d_index_for_sub_mask_index_from_sub_mask_from(sub_mask: np.ndarray):
     """
-    Returns a 2D array which maps every ``False`` entry of a 2D mask to its 1D mask array index 2D binned mask. Every \
+    Returns a 2D array which maps every ``False`` entry of a 2D mask to its 1D mask array index 2D binned mask. Every
     True entry is given a value -1.
 
     This is used as a convenience tool for creating structures util between different grids and structures.
@@ -889,7 +1117,9 @@ def sub_mask_1d_index_for_sub_mask_index_from_sub_mask_from(sub_mask):
 
 
 @decorator_util.jit()
-def sub_mask_index_for_sub_mask_1d_index_via_mask_from(mask, sub_size):
+def sub_mask_index_for_sub_mask_1d_index_via_mask_from(
+    mask: np.ndarray, sub_size: int
+) -> np.ndarray:
     """
     Returns a 1D array that maps every unmasked sub-pixel to its corresponding 2d pixel using its (y,x) pixel indexes.
 
@@ -909,7 +1139,7 @@ def sub_mask_index_for_sub_mask_1d_index_via_mask_from(mask, sub_size):
     Returns
     -------
     ndarray
-        The 2D blurring mask array whose unmasked values (``False``) correspond to where the mask will have PSF light \
+        The 2D blurring mask array whose unmasked values (``False``) correspond to where the mask will have PSF light
         blurred into them.
 
     Examples
@@ -941,7 +1171,7 @@ def sub_mask_index_for_sub_mask_1d_index_via_mask_from(mask, sub_size):
 
 
 @decorator_util.jit()
-def mask_neighbors_from(mask):
+def mask_neighbors_from(mask: np.ndarray) -> np.ndarray:
     """
     Returns a 1D array that maps every unmasked pixel to the 1D index of a neighboring unmasked pixel.
 

@@ -187,7 +187,8 @@ class AbstractInversion:
 
     @property
     def regularization_term(self):
-        """ Compute the regularization term of an inversion. This term represents the sum of the difference in flux \
+        """
+    Returns the regularization term of an inversion. This term represents the sum of the difference in flux \
         between every pair of neighboring pixels. This is computed as:
 
         s_T * H * s = solution_vector.T * regularization_matrix * solution_vector

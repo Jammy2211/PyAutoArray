@@ -233,7 +233,7 @@ class Mask2D(AbstractMask2D):
         invert: bool = False,
     ) -> "Mask2D":
         """
-        Create a Mask2D (see ``AbstractMask2D.__new__``) by inputting the array values in 2D, for example:
+        Returns a Mask2D (see ``AbstractMask2D.__new__``) by inputting the array values in 2D, for example:
 
         mask=np.array([[False, False],
                        [True, False]])
@@ -320,7 +320,7 @@ class Mask2D(AbstractMask2D):
         invert: bool = False,
     ) -> "Mask2D":
         """
-        Create a Mask2D (see *Mask2D.__new__*) where all ``False`` entries are within a circle of input radius. 
+        Returns a Mask2D (see *Mask2D.__new__*) where all ``False`` entries are within a circle of input radius.
         
         The ``radius`` and ``centre`` are both input in scaled units.
 
@@ -373,7 +373,7 @@ class Mask2D(AbstractMask2D):
         invert: bool = False,
     ) -> "Mask2D":
         """
-        Create a Mask2D (see *Mask2D.__new__*) where all ``False`` entries are within an annulus of input 
+        Returns a Mask2D (see *Mask2D.__new__*) where all ``False`` entries are within an annulus of input
         inner radius and outer radius. 
          
         The ``inner_radius``, ``outer_radius`` and ``centre`` are all input in scaled units.
@@ -434,7 +434,7 @@ class Mask2D(AbstractMask2D):
         invert: bool = False,
     ) -> "Mask2D":
         """
-        Create a Mask2D (see *Mask2D.__new__*) where all ``False`` entries are within an inner circle and second 
+        Returns a Mask2D (see *Mask2D.__new__*) where all ``False`` entries are within an inner circle and second
         outer circle, forming an inverse annulus. 
         
         The ``inner_radius``, ``outer_radius``, ``outer_radius_2`` and ``centre`` are all input in scaled units.
@@ -449,7 +449,7 @@ class Mask2D(AbstractMask2D):
             The first outer radius in scaled units of the annulus within which pixels are ``True`` and masked.
         outer_radius_2 : float
             The second outer radius in scaled units of the annulus within which pixels are ``False`` and unmasked and
-            outside of which all entries are ``True`` and masked..
+            outside of which all entries are ``True`` and masked.
         pixel_scales: (float, float) or float
             The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a ``float``,
             it is converted to a (float, float) structure.
@@ -499,7 +499,7 @@ class Mask2D(AbstractMask2D):
         invert: bool = False,
     ) -> "Mask2D":
         """
-        Create a Mask2D (see *Mask2D.__new__*) where all ``False`` entries are within an ellipse. 
+        Returns a Mask2D (see *Mask2D.__new__*) where all ``False`` entries are within an ellipse.
         
         The ``major_axis_radius``, and ``centre`` are all input in scaled units.
 
@@ -565,7 +565,7 @@ class Mask2D(AbstractMask2D):
         invert: bool = False,
     ) -> "Mask2D":
         """
-       Create a Mask2D (see *Mask2D.__new__*) where all ``False`` entries are within an elliptical annulus of input 
+        Returns a Mask2D (see *Mask2D.__new__*) where all ``False`` entries are within an elliptical annulus of input
        inner and outer scaled major-axis and centre.
 
         The ``outer_major_axis_radius``, ``inner_major_axis_radius`` and ``centre`` are all input in scaled units.
@@ -637,10 +637,11 @@ class Mask2D(AbstractMask2D):
         invert: bool = False,
     ) -> "Mask2D":
         """
-        Create a Mask2D (see *Mask2D.__new__*) where all ``False`` entries are defined from an input list of list of
+        Returns a Mask2D (see *Mask2D.__new__*) where all ``False`` entries are defined from an input list of list of
         pixel coordinates.
 
-        These may be buffed via an input ``buffer``.
+        These may be buffed via an input ``buffer``, whereby all entries in all 8 neighboring directions by this
+        amount.
 
         Parameters
         ----------
