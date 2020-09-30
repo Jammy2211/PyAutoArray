@@ -13,7 +13,7 @@ directory = path.dirname(path.realpath(__file__))
 
 @pytest.fixture(autouse=True)
 def set_config_path(request):
-    if dirname(realpath(__file__)) in request.module.directory:
+    if dirname(realpath(__file__)) in str(request.module):
         conf.instance = conf.Config(
             config_path=path.join(directory, "config"),
             output_path=path.join(directory, "output"),
