@@ -916,8 +916,7 @@ def sub_border_pixel_1d_indexes_from(mask: np.ndarray, sub_size: int) -> np.ndar
     Returns
     -------
     np.ndarray
-        The 1D indexes of all border pixels on the mask.
-
+        The 1D indexes of all border sub-pixels on the mask.
     """
 
     border_pixels = border_1d_indexes_from(mask=mask)
@@ -949,7 +948,22 @@ def sub_border_pixel_1d_indexes_from(mask: np.ndarray, sub_size: int) -> np.ndar
 
 @decorator_util.jit()
 def buffed_mask_from(mask: np.ndarray, buffer: int = 1) -> np.ndarray:
+    """
+    Returns a buffed mask from an input mask, where the buffed mask is the input mask but all `False` entries in the
+    mask are buffed by an integer amount in all 8 surrouning pixels.
 
+    Parameters
+    ----------
+    mask : np.ndarray
+        The mask whose `False` entries are buffed.
+    buffer : int
+        The number of pixels around each `False` entry that pixel are buffed in all 8 directions.
+
+    Returns
+    -------
+    np.ndarray
+        The buffed mask.
+    """
     buffed_mask = mask.copy()
 
     for y in range(mask.shape[0]):
@@ -970,6 +984,29 @@ def buffed_mask_from(mask: np.ndarray, buffer: int = 1) -> np.ndarray:
 
 
 def rescaled_mask_from(mask: np.ndarray, rescale_factor: float) -> np.ndarray:
+    """
+    Returns a rescaled mask from an input mask, where the rescaled mask is the input mask but rescaled to a larger or
+    smaller size depending on the `rescale_factor`.
+
+    For example, a `rescale_factor` of 0.5 would reduce a 10 x 10 mask to a 5x5 mask, where the `False` entries
+    of the 5 x 5 mask corresponding to pixels which had at least one `False` entry in their correspnding location on the
+    10 x 10 mask. A rescale factor of 2.0 would increase the 10 x 10 mask in size to a 20 x 20 mask, with `False`
+    again wherever the original mask had those entries.
+
+    The edge of the rescaled mask is automatically set to all ` True` values to prevent border issues.
+
+    Parameters
+    ----------
+    mask : np.ndarray
+        The mask that is increased or decreased in size via rescaling.
+    rescale_factor : float
+        The factor by which the mask is increased in size or decreased in size.
+
+    Returns
+    -------
+    np.ndarray
+        The rescaled mask.
+    """
     rescaled_mask = rescale(
         image=mask,
         scale=rescale_factor,
@@ -989,8 +1026,9 @@ def rescaled_mask_from(mask: np.ndarray, rescale_factor: float) -> np.ndarray:
 def mask_1d_index_for_sub_mask_1d_index_via_mask_from(
     mask: np.ndarray, sub_size: int
 ) -> np.ndarray:
-    """"For pixels on a 2D array of shape (rows, colums), compute a 1D array which, for every unmasked pixel on
-    this 2D array, maps the 1D sub-pixel indexes to their 1D pixel indexes.
+    """"
+    For pixels on a 2D array of shape (total_y_pixels, total_x_pixels), compute a 1D array which, for every unmasked
+    pixel on this 2D array, maps the 1D sub-pixel indexes to their 1D pixel indexes.
 
     For example, for a sub-grid size of 2, the following mappings from sub-pixels to 2D array pixels are:
 
@@ -998,11 +1036,21 @@ def mask_1d_index_for_sub_mask_1d_index_via_mask_from(
     - mask_1d_index_for_sub_mask_1d_index[3] = 0 -> The fourth sub-pixel maps to the first unmasked pixel on the 2D array.
     - mask_1d_index_for_sub_mask_1d_index[7] = 1 -> The eighth sub-pixel maps to the second unmasked pixel on the 2D array.
 
-    The term 'grid' is used because the grid is defined as the grid of coordinates on the centre of every
-    pixel on the 2D array. Thus, this array maps sub-pixels on a sub-grid to pixels on a grid.
+    Parameters
+    ----------
+    mask : np.ndarray
+        The mask whose indexes are mapped.
+    sub_size : int
+        The sub-size of the grid on the mask, so that the sub-mask indexes can be computed correctly.
 
+    Returns
+    -------
+    np.ndarray
+        The 1D ndarray mapping every unmasked pixel on the 2D mask array to its 1D index on the sub-mask array.
 
-                     [True, False, True]])
+    Examples
+    --------
+    mask = np.array([[True, False, True]])
     mask_1d_index_for_sub_mask_1d_index = mask_1d_index_for_sub_mask_1d_index_from_mask(mask=mask, sub_size=2)
     """
 
@@ -1029,22 +1077,34 @@ def mask_1d_index_for_sub_mask_1d_index_via_mask_from(
 
 def sub_mask_1d_indexes_for_mask_1d_index_via_mask_from(
     mask: np.ndarray, sub_size: int
-) -> np.ndarray:
-    """"For pixels on a 2D array of shape (rows, colums), compute a 1D array which, for every unmasked pixel on
-    this 2D array, maps the 1D sub-pixel indexes to their 1D pixel indexes.
+) -> [list]:
+    """"
+    For pixels on a 2D array of shape (total_y_pixels, total_x_pixels), compute a list oof lists which, for every
+    unmasked pixel gives the 1D pixel indexes of its corresponding sub-pixels.
 
     For example, for a sub-grid size of 2, the following mappings from sub-pixels to 2D array pixels are:
 
-    - mask_1d_index_for_sub_mask_1d_index[0] = 0 -> The first sub-pixel maps to the first unmasked pixel on the 2D array.
-    - mask_1d_index_for_sub_mask_1d_index[3] = 0 -> The fourth sub-pixel maps to the first unmasked pixel on the 2D array.
-    - mask_1d_index_for_sub_mask_1d_index[7] = 1 -> The eighth sub-pixel maps to the second unmasked pixel on the 2D array.
+    - sub_mask_1d_index_for_mask_1d_index[0] = [0, 1, 2, 3] -> The first pixel maps to the first 4 subpixels in 1D.
+    - sub_mask_1d_index_for_mask_1d_index[1] = [4, 5, 6, 7] -> The seond pixel maps to the next 4 subpixels in 1D.
 
+    Parameters
+    ----------
+    mask : np.ndarray
+        The mask whose indexes are mapped.
+    sub_size : int
+        The sub-size of the grid on the mask, so that the sub-mask indexes can be computed correctly.
+
+    Returns
+    -------
+    [list]
+        The lists of the 1D sub-pixel indexes in every unmasked pixel in the mask.
     The term 'grid' is used because the grid is defined as the grid of coordinates on the centre of every
     pixel on the 2D array. Thus, this array maps sub-pixels on a sub-grid to pixels on a grid.
 
-
-                     [True, False, True]])
-    mask_1d_index_for_sub_mask_1d_index = mask_1d_index_for_sub_mask_1d_index_from_mask(mask=mask, sub_size=2)
+    Examples
+    --------
+    mask = ([[True, False, True]])
+    sub_mask_1d_indexes_for_mask_1d_index = sub_mask_1d_indexes_for_mask_1d_index_from(mask=mask, sub_size=2)
     """
 
     total_pixels = total_pixels_from(mask=mask)
@@ -1068,7 +1128,7 @@ def sub_mask_1d_indexes_for_mask_1d_index_via_mask_from(
 @decorator_util.jit()
 def sub_mask_1d_index_for_sub_mask_index_from_sub_mask_from(sub_mask: np.ndarray):
     """
-    Returns a 2D array which maps every ``False`` entry of a 2D mask to its 1D mask array index 2D binned mask. Every
+    Returns a 2D array which maps every ``False`` entry of a 2D mask to its 1D mask array index 2D sub mask. Every
     True entry is given a value -1.
 
     This is used as a convenience tool for creating structures util between different grids and structures.
@@ -1093,7 +1153,7 @@ def sub_mask_1d_index_for_sub_mask_index_from_sub_mask_from(sub_mask: np.ndarray
     Returns
     -------
     ndarray
-        The 2D array util 2D mask entries to their 1D masked array indexes.
+        The 2D array mapping 2D mask entries to their 1D masked array indexes.
 
     Examples
     --------
