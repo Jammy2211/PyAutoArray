@@ -22,6 +22,12 @@ def constant_regularization_matrix_from(
     pixel_neighbors_size : ndarrayy
         An array of length (total_pixels) which gives the number of neighbors of every pixel in the
         Voronoi grid.
+
+    Returns
+    -------
+    np.ndarray
+        The regularization matrix computed using a constant regularization scheme where the effective regularization
+        coefficient of every source pixel is the same.
     """
 
     pixels = len(pixel_neighbors)
@@ -60,6 +66,12 @@ def adaptive_regularization_weights_from(
     pixel_signals : np.ndarray
         The estimated signal in every pixelization pixel, used to change the regularization weighting of high signal
         and low signal pixelizations.
+
+    Returns
+    -------
+    np.ndarray
+        The weights of the adaptive regularization scheme which act as the effective regularization coefficients of
+        every source pixel.
     """
     return (
         inner_coefficient * pixel_signals + outer_coefficient * (1.0 - pixel_signals)
@@ -68,8 +80,10 @@ def adaptive_regularization_weights_from(
 
 @decorator_util.jit()
 def weighted_regularization_matrix_from(
-    regularization_weights, pixel_neighbors, pixel_neighbors_size
-):
+    regularization_weights: np.ndarray,
+    pixel_neighbors: np.ndarray,
+    pixel_neighbors_size: np.ndarray,
+) -> np.ndarray:
     """
     From the pixel-neighbors, setup the regularization matrix using the weighted regularization scheme.
 
@@ -83,6 +97,12 @@ def weighted_regularization_matrix_from(
     pixel_neighbors_size : ndarrayy
         An array of length (total_pixels) which gives the number of neighbors of every pixel in the
         Voronoi grid.
+
+    Returns
+    -------
+    np.ndarray
+        The regularization matrix computed using an adaptive regularization scheme where the effective regularization
+        coefficient of every source pixel is different.
     """
 
     pixels = len(regularization_weights)
