@@ -10,19 +10,22 @@ logger.level = logging.DEBUG
 
 @decorator_util.jit()
 def unmasked_sparse_for_sparse_from(
-    total_sparse_pixels, mask, unmasked_sparse_grid_pixel_centres
-):
-    """Determine the util between every masked pixelization-grid pixel and pixelization-grid pixel. This is \
-    performed by checking whether each pixelization-grid pixel is within the masks, and util the indexes.
+    total_sparse_pixels: int,
+    mask: np.ndarray,
+    unmasked_sparse_grid_pixel_centres: np.ndarray,
+) -> np.ndarray:
+    """
+    Returns the mapping between every masked pixel on a grid and a set of pixel centres corresponding to an unmasked
+    sparse grid. This is performed by checking whether each pixel is within the masks and then mapping their indexes.
 
     Parameters
     -----------
     total_sparse_pixels : int
-        The total number of pixels in the pixelization grid which fall within the masks.
-    mask : imaging.masks.Mask2D
-        The masks within which pixelization pixels must be inside
-    unmasked_sparse_grid_pixel_centres : ndarray
-        The centres of the unmasked pixelization grid pixels.
+        The total number of pixels in the sparse grid which fall within the masks.
+    mask : np.ndarray
+        The masks within which spare pixels must be inside
+    unmasked_sparse_grid_pixel_centres : np.ndarray
+        The centres of the unmasked sparse grid pixels.
     """
 
     unmasked_sparse_for_sparse = np.zeros(total_sparse_pixels)
@@ -43,23 +46,26 @@ def unmasked_sparse_for_sparse_from(
 
 @decorator_util.jit()
 def sparse_for_unmasked_sparse_from(
-    mask, unmasked_sparse_grid_pixel_centres, total_sparse_pixels
-):
-    """Determine the util between every pixelization-grid pixel and masked pixelization-grid pixel. This is \
-    performed by checking whether each pixelization-grid pixel is within the masks, and util the indexes.
+    mask: np.ndarray,
+    unmasked_sparse_grid_pixel_centres: np.ndarray,
+    total_sparse_pixels: int,
+) -> np.ndarray:
+    """
+    Returns the util between every sparse-rid pixel and masked pixel on a grid. This is performed by checking whether
+    each pixel is within the masks and then mapping their indexes.
 
-    Pixelization pixels are paired with the next masked pixel index. This may mean that a pixel is not paired with a \
-    pixel near it, if the next pixel is on the next row of the grid. This is not a problem, as it is only \
-    unmasked pixels that are referenced when computing image_to_pix, which is what this array is used for.
+    Spare pixels are paired with the next masked pixel index. This may mean that a pixel is not paired with a
+    pixel near it, if the next pixel is on the next row of the grid. This is not a problem, as it is only
+    unmasked pixels that are referenced when perform certain mapping where this information is not required.
 
     Parameters
     -----------
+    mask : np.ndarray
+        The masks within which pixelization pixels must be inside
+    unmasked_sparse_grid_pixel_centres : np.ndarray
+        The centres of the unmasked pixelization grid pixels.
     total_sparse_pixels : int
         The total number of pixels in the pixelization grid which fall within the masks.
-    mask : imaging.masks.Mask2D
-        The masks within which pixelization pixels must be inside
-    unmasked_sparse_grid_pixel_centres : ndarray
-        The centres of the unmasked pixelization grid pixels.
     """
 
     total_unmasked_sparse_pixels = unmasked_sparse_grid_pixel_centres.shape[0]
@@ -83,17 +89,24 @@ def sparse_for_unmasked_sparse_from(
 
 @decorator_util.jit()
 def sparse_1d_index_for_mask_1d_index_from(
-    regular_to_unmasked_sparse, sparse_for_unmasked_sparse
-):
-    """Using the util between the grid and unmasked pixelization grid, compute the util between each \
-    pixel and the masked pixelization grid.
+    regular_to_unmasked_sparse: np.ndarray, sparse_for_unmasked_sparse: np.ndarray
+) -> np.ndarray:
+    """
+    Using the mapping between a grid and unmasked sparse grid, compute the mapping of 1D indexes between the sparse
+    grid and the unmasked pixels in a mask.
 
     Parameters
-    -----------
-    regular_to_unmasked_sparse : ndarray
-        The index util between every pixel and masked pixelization pixel.
-    sparse_for_unmasked_sparse : ndarray
-        The index util between every masked pixelization pixel and unmasked pixelization pixel.
+    ----------
+    regular_to_unmasked_sparse : np.ndarray
+        The index mapping between every unmasked pixel in the mask and masked sparse-grid pixel.
+    sparse_for_unmasked_sparse : np.ndarray
+        The index mapping between every masked sparse-grid pixel and unmasked sparse-grid pixel.
+
+    Returns
+    -------
+    np.ndarray
+        The mapping of every 1D index on the unmasked sparse grid to the unmasked 1D index of pixels in the mask it is
+        compared to.
     """
     total_regular_pixels = regular_to_unmasked_sparse.shape[0]
 
@@ -108,17 +121,24 @@ def sparse_1d_index_for_mask_1d_index_from(
 
 
 @decorator_util.jit()
-def sparse_grid_via_unmasked_from(unmasked_sparse_grid, unmasked_sparse_for_sparse):
-    """Use the central arc-second coordinate of every unmasked pixelization grid's pixels and util between each \
-    pixelization pixel and unmasked pixelization pixel to compute the central arc-second coordinate of every masked \
-    pixelization grid pixel.
+def sparse_grid_via_unmasked_from(
+    unmasked_sparse_grid: np.ndarray, unmasked_sparse_for_sparse: np.ndarray
+) -> np.ndarray:
+    """
+    Use the unmasked sparse grid of (y,x) coordinates and the mapping between these grid pixels to the 1D sparse grid
+    inddexes to compute the masked spaase grid of (y,x) coordinates.
 
     Parameters
     -----------
-    unmasked_sparse_grid : ndarray
-        The (y,x) arc-second centre of every unmasked pixelization grid pixel.
-    unmasked_sparse_for_sparse : ndarray
-        The index util between every pixelization pixel and masked pixelization pixel.
+    unmasked_sparse_grid : np.ndarray
+        The (y,x) coordinate grid of every unmasked sparse grid pixel.
+    unmasked_sparse_for_sparse : np.ndarray
+        The index mapping between every unmasked sparse 1D index and masked sparse 1D index.
+
+    Returns
+    -------
+    np.ndarray
+        The masked sparse grid of (y,x) Cartesian coordinates.
     """
     total_pix_pixels = unmasked_sparse_for_sparse.shape[0]
 
@@ -133,26 +153,3 @@ def sparse_grid_via_unmasked_from(unmasked_sparse_grid, unmasked_sparse_for_spar
         ]
 
     return pix_grid
-
-
-@decorator_util.jit()
-def sparse_1d_index_for_mask_1d_index_via_binned_from(
-    sparse_labels,
-    binned_mask_1d_index_to_mask_1d_indexes,
-    binned_mask_1d_index_to_mask_1d_sizes,
-    total_unbinned_pixels,
-):
-    sparse_1d_index_for_mask_1d_index = np.zeros(total_unbinned_pixels)
-
-    for cluster_index in range(binned_mask_1d_index_to_mask_1d_indexes.shape[0]):
-        for cluster_count in range(
-            binned_mask_1d_index_to_mask_1d_sizes[cluster_index]
-        ):
-            regular_index = binned_mask_1d_index_to_mask_1d_indexes[
-                cluster_index, cluster_count
-            ]
-            sparse_1d_index_for_mask_1d_index[regular_index] = sparse_labels[
-                cluster_index
-            ]
-
-    return sparse_1d_index_for_mask_1d_index

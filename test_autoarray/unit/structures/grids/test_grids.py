@@ -1719,5 +1719,3 @@ class TestBorder:
         )
         assert (relocated_grid.mask == mask).all()
         assert relocated_grid.sub_size == 2
-
-

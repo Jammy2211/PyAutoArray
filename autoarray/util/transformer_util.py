@@ -4,7 +4,34 @@ import numpy as np
 
 
 @decorator_util.jit()
-def preload_real_transforms(grid_radians, uv_wavelengths):
+def preload_real_transforms(
+    grid_radians: np.ndarray, uv_wavelengths: np.ndarray
+) -> np.ndarray:
+    """
+    Sets up the real preloaded values used by the direct fourier transform (`TransformerDFT`) to speed up
+    the Fourier transform calculations.
+
+    The preloaded values are the cosine terms of every (y,x) radian coordinate on the real-space grid multiplied by
+    everu `uv_wavelength` value.
+
+    For large numbers of visibilities (> 100000) this array requires large amounts of memory ( > 1 GB) and it is
+    recommended this preloading is not used.
+
+    Parameters
+    ----------
+    grid_radians : np.ndarray
+        The grid in radians corresponding to real-space mask within which the image that is Fourier transformed is
+        computed.
+    uv_wavelengths : np.ndarray
+        The wavelengths of the coordinates in the uv-plane for the interferometer dataset that is to be Fourier
+        transformed.
+
+    Returns
+    -------
+    np.ndarray
+        The preloaded values of the cosine terms in the calculation of real entries of the direct Fourier transform.
+
+    """
 
     preloaded_real_transforms = np.zeros(
         shape=(grid_radians.shape[0], uv_wavelengths.shape[0])

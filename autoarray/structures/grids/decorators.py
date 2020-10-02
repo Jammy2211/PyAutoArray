@@ -25,27 +25,27 @@ def grid_like_to_structure(func):
 
     @wraps(func)
     def wrapper(profile, grid, *args, **kwargs):
-        """ This decorator homogenizes the input of a "grid_like" structure (*Grid*, *GridIterate*, *GridInterpolate*
-        or  *GridCoordinate*) into a function. It allows these classes to be interchangeably input into a function,
+        """ This decorator homogenizes the input of a "grid_like" structure (`Grid`, `GridIterate`, `GridInterpolate`
+        or  `GridCoordinates`) into a function. It allows these classes to be interchangeably input into a function,
         such that the grid is used to evalaute the function as every (y,x) coordinates of the grid.
 
-        The grid_like objects *Grid* and *GridCoordinates* are input into the function as a flattened 2D NumPy array
-        of shape [total_coordinates, 2] where second dimension stores the (y,x) values. If a *GridIterate* is input,
+        The grid_like objects `Grid` and `GridCoordinates` are input into the function as a flattened 2D NumPy array
+        of shape [total_coordinates, 2] where second dimension stores the (y,x) values. If a `GridIterate` is input,
         the function is evaluated using the appropriate iterated_*_from_func* function.
 
-        The outputs of the function are converted from a 1D or 2D NumPy Array to an *Array*, *Grid*, *Values* or
-        *GridCoordinate* objects, whichever is applicable as follows:
+        The outputs of the function are converted from a 1D or 2D NumPy Array to an *Array*, `Grid`, *Values* or
+        `GridCoordinates` objects, whichever is applicable as follows:
 
         - If the function returns (y,x) coordinates at every input point, the returned results are returned as a
-         *Grid* or *GridCoordinates* structure - the same structure as the input.
+         `Grid` or `GridCoordinates` structure - the same structure as the input.
 
-        - If the function returns scalar values at every input point and a *Grid* is input, the returned results are
-          an *Array* structure which uses the same dimensions and mask as the *Grid*.
+        - If the function returns scalar values at every input point and a `Grid` is input, the returned results are
+          an *Array* structure which uses the same dimensions and mask as the `Grid`.
 
-        - If the function returns scalar values at every input point and *GridCoordinates* are input, the returned
-          results are a *Values* object with structure resembling that of the *GridCoordinates*..
+        - If the function returns scalar values at every input point and `GridCoordinates` are input, the returned
+          results are a *Values* object with structure resembling that of the `GridCoordinates`..
 
-        If the input array is not a *Grid* structure (e.g. it is a 2D NumPy array) the output is a NumPy array.
+        If the input array is not a `Grid` structure (e.g. it is a 2D NumPy array) the output is a NumPy array.
 
         Parameters
         ----------
@@ -98,30 +98,30 @@ def grid_like_to_structure_list(func):
 
     @wraps(func)
     def wrapper(profile, grid, *args, **kwargs):
-        """ This decorator homogenizes the input of a "grid_like" structure (*Grid*, *GridIterate*, *GridInterpolate*
-        or  *GridCoordinate*) into a function. It allows these classes to be interchangeably input into a function,
+        """ This decorator homogenizes the input of a "grid_like" structure (`Grid`, `GridIterate`, `GridInterpolate`
+        or  `GridCoordinates`) into a function. It allows these classes to be interchangeably input into a function,
         such that the grid is used to evalaute the function as every (y,x) coordinates of the grid.
 
-        The grid_like objects *Grid* and *GridCoordinates* are input into the function as a flattened 2D NumPy array
-        of shape [total_coordinates, 2] where second dimension stores the (y,x) values. If a *GridIterate* is input,
+        The grid_like objects `Grid` and `GridCoordinates` are input into the function as a flattened 2D NumPy array
+        of shape [total_coordinates, 2] where second dimension stores the (y,x) values. If a `GridIterate` is input,
         the function is evaluated using the appropriate iterated_*_from_func* function.
 
-        If a *GridIterate* is not input the outputs of the function are converted from a list of 1D or 2D NumPy Arrays
-        to a list of *Array*, *Grid*,  *Values* or  *GridCoordinate* objects, whichever is applicable as follows:
+        If a `GridIterate` is not input the outputs of the function are converted from a list of 1D or 2D NumPy Arrays
+        to a list of *Array*, `Grid`,  *Values* or  `GridCoordinates` objects, whichever is applicable as follows:
 
         - If the function returns (y,x) coordinates at every input point, the returned results are returned as a
-         *Grid* or *GridCoordinates* structure - the same structure as the input.
+         `Grid` or `GridCoordinates` structure - the same structure as the input.
 
-        - If the function returns scalar values at every input point and a *Grid* is input, the returned results are
-          an *Array* structure which uses the same dimensions and mask as the *Grid*.
+        - If the function returns scalar values at every input point and a `Grid` is input, the returned results are
+          an *Array* structure which uses the same dimensions and mask as the `Grid`.
 
-        - If the function returns scalar values at every input point and *GridCoordinates* are input, the returned
-          results are a *Values* object with structure resembling that of the *GridCoordinates*.
+        - If the function returns scalar values at every input point and `GridCoordinates` are input, the returned
+          results are a *Values* object with structure resembling that of the `GridCoordinates`.
 
-        if a *GridIterate* is input, the iterated grid calculation is not applicable. Thus, the highest resolution
-        sub_size grid in the *GridIterate* is used instead.
+        if a `GridIterate` is input, the iterated grid calculation is not applicable. Thus, the highest resolution
+        sub_size grid in the `GridIterate` is used instead.
 
-        If the input array is not a *Grid* structure (e.g. it is a 2D NumPy array) the output is a NumPy array.
+        If the input array is not a `Grid` structure (e.g. it is a 2D NumPy array) the output is a NumPy array.
 
         Parameters
         ----------
