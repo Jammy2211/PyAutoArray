@@ -126,8 +126,8 @@ class TestCurvatureMatrixFromBlurred:
 
         noise_map = np.array([1.0, 1.0, 1.0, 1.0, 1.0, 1.0])
 
-        curvature_matrix = aa.util.inversion.curvature_matrix_via_blurred_mapping_matrix_from(
-            blurred_mapping_matrix=blurred_mapping_matrix, noise_map=noise_map
+        curvature_matrix = aa.util.inversion.curvature_matrix_via_mapping_matrix_from(
+            mapping_matrix=blurred_mapping_matrix, noise_map=noise_map
         )
 
         assert (
@@ -150,8 +150,8 @@ class TestCurvatureMatrixFromBlurred:
 
         noise_map = np.array([2.0, 1.0, 1.0, 1.0, 1.0, 1.0])
 
-        curvature_matrix = aa.util.inversion.curvature_matrix_via_blurred_mapping_matrix_from(
-            blurred_mapping_matrix=blurred_mapping_matrix, noise_map=noise_map
+        curvature_matrix = aa.util.inversion.curvature_matrix_via_mapping_matrix_from(
+            mapping_matrix=blurred_mapping_matrix, noise_map=noise_map
         )
 
         assert (
@@ -176,12 +176,12 @@ class TestCurvatureMatrixFromBlurred:
 
         noise_map = np.array([2.0, 1.0, 1.0, 4.0, 1.0, 1.0])
 
-        curvature_matrix_via_blurred = aa.util.inversion.curvature_matrix_via_blurred_mapping_matrix_from(
-            blurred_mapping_matrix=mapping_matrix, noise_map=noise_map
+        curvature_matrix_via_blurred = aa.util.inversion.curvature_matrix_via_mapping_matrix_from(
+            mapping_matrix=mapping_matrix, noise_map=noise_map
         )
 
-        curvature_matrix_via_transformed = aa.util.inversion.curvature_matrix_via_transformed_mapping_matrix_from(
-            transformed_mapping_matrix=mapping_matrix, noise_map=noise_map
+        curvature_matrix_via_transformed = aa.util.inversion.curvature_matrix_via_mapping_matrix_from(
+            mapping_matrix=mapping_matrix, noise_map=noise_map
         )
 
         assert (curvature_matrix_via_blurred == curvature_matrix_via_transformed).all()
@@ -383,3 +383,55 @@ class TestPixelizationChiSquareds:
         )
 
         assert (pixelization_chi_squareds == np.array([0.0, 4.0, 0.25])).all()
+
+
+class TestPreconditionerMatrix:
+    def test__simple_calculations(self):
+
+        mapping_matrix = np.array(
+            [
+                [1.0, 0.0, 0.0],
+                [1.0, 0.0, 0.0],
+                [0.0, 1.0, 0.0],
+                [0.0, 1.0, 0.0],
+                [0.0, 0.0, 1.0],
+                [0.0, 0.0, 1.0],
+            ]
+        )
+
+        preconditioner_matrix = aa.util.inversion.preconditioner_matrix_via_mapping_matrix_from(
+            mapping_matrix=mapping_matrix,
+            preconditioner_noise_normalization=1.0,
+            regularization_matrix=np.zeros((3, 3)),
+        )
+
+        assert (
+            preconditioner_matrix
+            == np.array([[2.0, 0.0, 0.0], [0.0, 2.0, 0.0], [0.0, 0.0, 2.0]])
+        ).all()
+
+        preconditioner_matrix = aa.util.inversion.preconditioner_matrix_via_mapping_matrix_from(
+            mapping_matrix=mapping_matrix,
+            preconditioner_noise_normalization=2.0,
+            regularization_matrix=np.zeros((3, 3)),
+        )
+
+        assert (
+            preconditioner_matrix
+            == np.array([[4.0, 0.0, 0.0], [0.0, 4.0, 0.0], [0.0, 0.0, 4.0]])
+        ).all()
+
+        regularization_matrix = np.array(
+            [[1.0, 2.0, 3.0], [4.0, 5.0, 6.0], [7.0, 8.0, 9.0]]
+        )
+
+        preconditioner_matrix = aa.util.inversion.preconditioner_matrix_via_mapping_matrix_from(
+            mapping_matrix=mapping_matrix,
+            preconditioner_noise_normalization=2.0,
+            regularization_matrix=regularization_matrix,
+        )
+
+        assert (
+            preconditioner_matrix
+            == np.array([[5.0, 2.0, 3.0], [4.0, 9.0, 6.0], [7.0, 8.0, 13.0]])
+        ).all()

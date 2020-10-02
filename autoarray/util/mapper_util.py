@@ -4,23 +4,24 @@ from autoarray import decorator_util
 
 @decorator_util.jit()
 def mapping_matrix_from(
-    pixelization_1d_index_for_sub_mask_1d_index,
-    pixels,
-    total_mask_pixels,
-    mask_1d_index_for_sub_mask_1d_index,
-    sub_fraction,
-):
-    """Computes the util matrix, by iterating over the known mappings between the sub-grid and pixelization.
+    pixelization_1d_index_for_sub_mask_1d_index: np.ndarray,
+    pixels: int,
+    total_mask_pixels: int,
+    mask_1d_index_for_sub_mask_1d_index: np.ndarray,
+    sub_fraction: float,
+) -> np.ndarray:
+    """
+    Returns the mapping matrix, by iterating over the known mappings between the sub-grid and pixelization.
 
     Parameters
     -----------
-    pixelization_1d_index_for_sub_mask_1d_index : ndarray
+    pixelization_1d_index_for_sub_mask_1d_index : np.ndarray
         The mappings between the observed grid's sub-pixels and pixelization's pixels.
     pixels : int
         The number of pixels in the pixelization.
     total_mask_pixels : int
         The number of datas pixels in the observed datas and thus on the grid.
-    mask_1d_index_for_sub_mask_1d_index : ndarray
+    mask_1d_index_for_sub_mask_1d_index : np.ndarray
         The mappings between the observed grid's sub-pixels and observed grid's pixels.
     sub_fraction : float
         The fractional area each sub-pixel takes up in an pixel.
@@ -39,36 +40,39 @@ def mapping_matrix_from(
 
 @decorator_util.jit()
 def pixelization_1d_index_for_voronoi_sub_mask_1d_index_from(
-    grid,
-    nearest_pixelization_1d_index_for_mask_1d_index,
-    mask_1d_index_for_sub_mask_1d_index,
-    pixelization_grid,
-    pixel_neighbors,
-    pixel_neighbors_size,
-):
-    """ Compute the mappings between a set of sub-grid pixels and pixelization pixels, using information on \
-    how the pixels hosting each sub-pixel map to their closest pixelization pixel on the image-plane pix-grid \
+    grid: np.ndarray,
+    nearest_pixelization_1d_index_for_mask_1d_index: np.ndarray,
+    mask_1d_index_for_sub_mask_1d_index: np.ndarray,
+    pixelization_grid: np.ndarray,
+    pixel_neighbors: np.ndarray,
+    pixel_neighbors_size: np.ndarray,
+) -> np.ndarray:
+    """
+    Returns the mappings between a set of sub-grid pixels and pixelization pixels, using information on
+    how the pixels hosting each sub-pixel map to their closest pixelization pixel on the image-plane pix-grid
     and the pixelization's pixel centres.
 
-    To determine the complete set of sub-pixel to pixelization pixel mappings, we must pair every sub-pixel to \
-    its nearest pixel. Using a full nearest neighbor search to do this is slow, thus the pixel neighbors (derived via \
+    To determine the complete set of sub-pixel to pixelization pixel mappings, we must pair every sub-pixel to
+    its nearest pixel. Using a full nearest neighbor search to do this is slow, thus the pixel neighbors (derived via
     the Voronoi grid) are used to localize each nearest neighbor search by using a graph search.
 
     Parameters
     ----------
     grid : Grid
-        The grid of (y,x) arc-second coordinates at the centre of every unmasked pixel, which has been traced to \
+        The grid of (y,x) scaled coordinates at the centre of every unmasked pixel, which has been traced to
         to an irgrid via lens.
-    nearest_pixelization_1d_index_for_mask_1d_index : ndarray
-        A 1D array that maps every grid pixel to its nearest pix-grid pixel (as determined on the unlensed \
+    nearest_pixelization_1d_index_for_mask_1d_index : np.ndarray
+        A 1D array that maps every grid pixel to its nearest pix-grid pixel (as determined on the unlensed
         2D array).
-    pixelization_grid : (float, float)
+    mask_1d_index_for_sub_mask_1d_index : np.ndarray
+        The mappings between the observed grid's sub-pixels and observed grid's pixels.
+    pixelization_grid : np.ndarray
         The (y,x) centre of every Voronoi pixel in arc-seconds.
-    pixel_neighbors : ndarray
-        An array of length (voronoi_pixels) which provides the index of all neighbors of every pixel in \
+    pixel_neighbors : np.ndarray
+        An array of length (voronoi_pixels) which provides the index of all neighbors of every pixel in
         the Voronoi grid (entries of -1 correspond to no neighbor).
-    pixel_neighbors_size : ndarray
-        An array of length (voronoi_pixels) which gives the number of neighbors of every pixel in the \
+    pixel_neighbors_size : np.ndarray
+        An array of length (voronoi_pixels) which gives the number of neighbors of every pixel in the
         Voronoi grid.
      """
 
@@ -141,24 +145,25 @@ def pixelization_1d_index_for_voronoi_sub_mask_1d_index_from(
 
 @decorator_util.jit()
 def adaptive_pixel_signals_from(
-    pixels,
-    signal_scale,
-    pixelization_1d_index_for_sub_mask_1d_index,
-    mask_1d_index_for_sub_mask_1d_index,
-    hyper_image,
-):
-    """Compute the (hyper) signal in each pixel, where the signal is the sum of its datas_-pixel fluxes. \
+    pixels: int,
+    signal_scale: float,
+    pixelization_1d_index_for_sub_mask_1d_index: np.ndarray,
+    mask_1d_index_for_sub_mask_1d_index: np.ndarray,
+    hyper_image: np.ndarray,
+) -> np.ndarray:
+    """
+    Returns the (hyper) signal in each pixel, where the signal is the sum of its mapped data values.
     These pixel-signals are used to compute the effective regularization weight of each pixel.
 
-    The pixel signals are hyper in the following ways:
+    The pixel signals are computed as follows:
 
-    1) Divided by the number of datas_-pixels in the pixel, to ensure all pixels have the same \
+    1) Divide by the number of mappe data points in the pixel, to ensure all pixels have the same
     'relative' signal (i.e. a pixel with 10 pixels doesn't have x2 the signal of one with 5).
 
-    2) Divided by the maximum pixel-signal, so that all signals vary between 0 and 1. This ensures that the \
-    regularizations weights are defined identically for any datas_ unit_label or signal-to-noise_map ratio.
+    2) Divided by the maximum pixel-signal, so that all signals vary between 0 and 1. This ensures that the
+    regularization weights are defined identically for any data quantity or signal-to-noise_map ratio.
 
-    3) Raised to the power of the hyper_galaxy-parameter *signal_scale*, so the method can control the relative \
+    3) Raised to the power of the hyper-parameter *signal_scale*, so the method can control the relative
     contribution regularization in different regions of pixelization.
 
     Parameters
@@ -166,11 +171,11 @@ def adaptive_pixel_signals_from(
     pixels : int
         The total number of pixels in the pixelization the regularization scheme is applied to.
     signal_scale : float
-        A factor which controls how rapidly the smoothness of regularization varies from high signal regions to \
+        A factor which controls how rapidly the smoothness of regularization varies from high signal regions to
         low signal regions.
-    regular_to_pix : ndarray
+    regular_to_pix : np.ndarray
         A 1D array util every pixel on the grid to a pixel on the pixelization.
-    hyper_image : ndarray
+    hyper_image : np.ndarray
         The image of the galaxy which is used to compute the weigghted pixel signals.
     """
 

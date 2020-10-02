@@ -20,7 +20,7 @@ def check_grid(grid):
 
     if grid.store_in_1d and len(grid.shape) != 2:
         raise exc.GridException(
-            "An grid input into the grids.Grid.__new__ method has store_in_1d = True but"
+            "An grid input into the grids.Grid.__new__ method has store_in_1d = ``True`` but"
             "the input shape of the array is not 1."
         )
 
@@ -66,7 +66,7 @@ def convert_manual_1d_grid(grid_1d, mask, store_in_1d):
 
     Parameters
     ----------
-    grid_1d : ndarray or list
+    grid_1d : np.ndarray or list
         The input structure which is converted to a 2D ndarray if it is a list.
     mask : Mask2D
         The mask of the output Array.
@@ -98,7 +98,7 @@ def convert_manual_2d_grid(grid_2d, mask, store_in_1d):
 
     Parameters
     ----------
-    grid_2d : ndarray or list
+    grid_2d : np.ndarray or list
         The input structure which is converted to a 3D ndarray if it is a list.
     mask : Mask2D
         The mask of the output Grid.
@@ -129,7 +129,7 @@ def convert_manual_grid(grid, mask, store_in_1d):
 
     Parameters
     ----------
-    array : ndarray or list
+    array : np.ndarray or list
         The input structure which is converted to an ndarray if it is a list.
     mask : Mask2D
         The mask of the output Array.
@@ -303,7 +303,8 @@ class AbstractGrid(abstract_structure.AbstractStructure):
         return (self * np.pi) / 648000.0
 
     def squared_distances_from_coordinate(self, coordinate=(0.0, 0.0)):
-        """Compute the squared distance of every coordinate on the grid from an input coordinate.
+        """
+    Returns the squared distance of every coordinate on the grid from an input coordinate.
 
         Parameters
         ----------
@@ -319,7 +320,8 @@ class AbstractGrid(abstract_structure.AbstractStructure):
         return arrays.Array.manual_mask(array=squared_distances, mask=self.mask)
 
     def distances_from_coordinate(self, coordinate=(0.0, 0.0)):
-        """Compute the distance of every coordinate on the grid from an input (y,x) coordinate.
+        """
+    Returns the distance of every coordinate on the grid from an input (y,x) coordinate.
 
         Parameters
         ----------
@@ -388,12 +390,14 @@ class AbstractGrid(abstract_structure.AbstractStructure):
 
     @property
     def yticks(self) -> np.ndarray:
-        """Returns the ytick labels of this grid, used for plotting the y-axis ticks when visualizing a grid"""
+        """
+    Returns the ytick labels of this grid, used for plotting the y-axis ticks when visualizing a grid"""
         return np.linspace(np.min(self[:, 0]), np.max(self[:, 0]), 4)
 
     @property
     def xticks(self) -> np.ndarray:
-        """Returns the xtick labels of this grid, used for plotting the x-axis ticks when visualizing a grid"""
+        """
+    Returns the xtick labels of this grid, used for plotting the x-axis ticks when visualizing a grid"""
         return np.linspace(np.min(self[:, 1]), np.max(self[:, 1]), 4)
 
     @staticmethod
@@ -533,7 +537,7 @@ class AbstractGrid(abstract_structure.AbstractStructure):
         *relocated_grid_from_grid* for a full description of grid relocation.
 
         This function operates the same as other grid relocation functions by returns the grid as a
-        *GridVoronoi* instance.
+        `GridVoronoi` instance.
 
         Parameters
         ----------
@@ -558,7 +562,7 @@ class AbstractGrid(abstract_structure.AbstractStructure):
         Parameters
         ----------
         file_path : str
-            The path the file is output to, including the filename and the '.fits' extension,
+            The path the file is output to, including the filename and the ``.fits`` extension,
             e.g. '/path/to/filename.fits'
         overwrite : bool
             If a file already exists at the path, if overwrite=True it is overwritten else an error is raised."""

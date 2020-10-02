@@ -484,11 +484,7 @@ class TestGridVoronoi:
 
         def test__qhull_error_is_caught(self):
 
-            grid = np.array(
-                [
-                    [3.0, 0.0],
-                ]
-            )
+            grid = np.array([[3.0, 0.0]])
 
             with pytest.raises(exc.PixelizationException):
                 aa.GridVoronoi(grid=grid)
