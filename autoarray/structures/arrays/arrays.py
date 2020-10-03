@@ -206,7 +206,7 @@ class Array(abstract_array.AbstractArray):
         cls,
         array,
         shape_2d,
-        pixel_scales=None,
+        pixel_scales,
         sub_size=1,
         origin=(0.0, 0.0),
         exposure_info=None,
@@ -267,7 +267,7 @@ class Array(abstract_array.AbstractArray):
     def manual_2d(
         cls,
         array,
-        pixel_scales=None,
+        pixel_scales,
         sub_size=1,
         origin=(0.0, 0.0),
         exposure_info=None,
@@ -325,8 +325,8 @@ class Array(abstract_array.AbstractArray):
     def manual(
         cls,
         array,
+        pixel_scales,
         shape_2d=None,
-        pixel_scales=None,
         sub_size=1,
         origin=(0.0, 0.0),
         exposure_info=None,
@@ -358,8 +358,8 @@ class Array(abstract_array.AbstractArray):
         if len(array.shape) == 1:
             return cls.manual_1d(
                 array=array,
-                shape_2d=shape_2d,
                 pixel_scales=pixel_scales,
+                shape_2d=shape_2d,
                 sub_size=sub_size,
                 origin=origin,
                 store_in_1d=store_in_1d,
@@ -403,7 +403,7 @@ class Array(abstract_array.AbstractArray):
         cls,
         fill_value,
         shape_2d,
-        pixel_scales=None,
+        pixel_scales,
         sub_size=1,
         origin=(0.0, 0.0),
         exposure_info=None,
@@ -447,7 +447,7 @@ class Array(abstract_array.AbstractArray):
     def ones(
         cls,
         shape_2d,
-        pixel_scales=None,
+        pixel_scales,
         sub_size=1,
         origin=(0.0, 0.0),
         exposure_info=None,
@@ -487,7 +487,7 @@ class Array(abstract_array.AbstractArray):
     def zeros(
         cls,
         shape_2d,
-        pixel_scales=None,
+        pixel_scales,
         sub_size=1,
         origin=(0.0, 0.0),
         exposure_info=None,
@@ -527,8 +527,8 @@ class Array(abstract_array.AbstractArray):
     def from_fits(
         cls,
         file_path,
+        pixel_scales,
         hdu=0,
-        pixel_scales=None,
         sub_size=1,
         origin=(0.0, 0.0),
         store_in_1d=True,
@@ -564,7 +564,7 @@ class Array(abstract_array.AbstractArray):
 
     @classmethod
     def manual_yx_and_values(
-        cls, y, x, values, shape_2d, sub_size=1, pixel_scales=None, exposure_info=None
+        cls, y, x, values, shape_2d, pixel_scales, sub_size=1, exposure_info=None
     ):
         """Create a Array (see *AbstractArray.__new__*) by inputting the y and x pixel values where the array is filled
         and the values to fill the array, for example:

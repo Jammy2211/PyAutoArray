@@ -50,16 +50,20 @@ class TestImaging:
     def test__new_imaging_with_signal_to_noise_limit__limit_above_max_signal_to_noise__signal_to_noise_map_unchanged(
         self
     ):
-        image = aa.Array.full(fill_value=20.0, shape_2d=(2, 2), store_in_1d=True)
+        image = aa.Array.full(
+            fill_value=20.0, shape_2d=(2, 2), pixel_scales=1.0, store_in_1d=True
+        )
         image[3] = 5.0
 
         noise_map_array = aa.Array.full(
-            fill_value=5.0, shape_2d=(2, 2), store_in_1d=True
+            fill_value=5.0, shape_2d=(2, 2), pixel_scales=1.0, store_in_1d=True
         )
         noise_map_array[3] = 2.0
 
         imaging = aa.Imaging(
-            image=image, psf=aa.Kernel.zeros(shape_2d=(3, 3)), noise_map=noise_map_array
+            image=image,
+            psf=aa.Kernel.zeros(shape_2d=(3, 3), pixel_scales=1.0),
+            noise_map=noise_map_array,
         )
 
         imaging = imaging.signal_to_noise_limited_from_signal_to_noise_limit(
@@ -74,11 +78,13 @@ class TestImaging:
 
         assert (imaging.psf.in_2d == np.zeros((3, 3))).all()
 
-        image = aa.Array.full(fill_value=20.0, shape_2d=(2, 2), store_in_1d=False)
+        image = aa.Array.full(
+            fill_value=20.0, shape_2d=(2, 2), pixel_scales=1.0, store_in_1d=False
+        )
         image[1, 1] = 5.0
 
         noise_map_array = aa.Array.full(
-            fill_value=5.0, shape_2d=(2, 2), store_in_1d=False
+            fill_value=5.0, shape_2d=(2, 2), pixel_scales=1.0, store_in_1d=False
         )
         noise_map_array[1, 1] = 2.0
 
@@ -97,14 +103,18 @@ class TestImaging:
     def test__new_imaging_with_signal_to_noise_limit_below_max_signal_to_noise__signal_to_noise_map_capped_to_limit(
         self
     ):
-        image = aa.Array.full(fill_value=20.0, shape_2d=(2, 2))
+        image = aa.Array.full(fill_value=20.0, shape_2d=(2, 2), pixel_scales=1.0)
         image[3] = 5.0
 
-        noise_map_array = aa.Array.full(fill_value=5.0, shape_2d=(2, 2))
+        noise_map_array = aa.Array.full(
+            fill_value=5.0, shape_2d=(2, 2), pixel_scales=1.0
+        )
         noise_map_array[3] = 2.0
 
         imaging = aa.Imaging(
-            image=image, psf=aa.Kernel.zeros(shape_2d=(3, 3)), noise_map=noise_map_array
+            image=image,
+            psf=aa.Kernel.zeros(shape_2d=(3, 3), pixel_scales=1.0),
+            noise_map=noise_map_array,
         )
 
         imaging_capped = imaging.signal_to_noise_limited_from_signal_to_noise_limit(
@@ -447,7 +457,7 @@ class TestSimulatorImaging:
             pixel_scales=0.1,
         )
 
-        exposure_time_map = aa.Array.ones(shape_2d=image.shape_2d)
+        exposure_time_map = aa.Array.ones(shape_2d=image.shape_2d, pixel_scales=0.1)
 
         simulator = aa.SimulatorImaging(
             exposure_time_map=exposure_time_map, add_noise=False
@@ -464,10 +474,11 @@ class TestSimulatorImaging:
     def test__from_image__noise_off___noise_map_is_noise_value(self):
 
         image = aa.Array.manual_2d(
-            array=np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]])
+            array=np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]]),
+            pixel_scales=1.0,
         )
 
-        exposure_time_map = aa.Array.ones(shape_2d=image.shape_2d)
+        exposure_time_map = aa.Array.ones(shape_2d=image.shape_2d, pixel_scales=1.0)
 
         simulator = aa.SimulatorImaging(
             exposure_time_map=exposure_time_map,
@@ -495,14 +506,16 @@ class TestSimulatorImaging:
                     [0.0, 0.0, 0.0, 0.0, 0.0],
                     [0.0, 0.0, 0.0, 0.0, 0.0],
                 ]
-            )
+            ),
+            pixel_scales=1.0,
         )
 
         psf = aa.Kernel.manual_2d(
-            array=np.array([[0.0, 1.0, 0.0], [1.0, 2.0, 1.0], [0.0, 1.0, 0.0]])
+            array=np.array([[0.0, 1.0, 0.0], [1.0, 2.0, 1.0], [0.0, 1.0, 0.0]]),
+            pixel_scales=1.0,
         )
 
-        exposure_time_map = aa.Array.ones(shape_2d=image.shape_2d)
+        exposure_time_map = aa.Array.ones(shape_2d=image.shape_2d, pixel_scales=1.0)
 
         simulator = aa.SimulatorImaging(
             exposure_time_map=exposure_time_map,
@@ -521,10 +534,13 @@ class TestSimulatorImaging:
     def test__setup_with_noise(self):
 
         image = aa.Array.manual_2d(
-            array=np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]])
+            array=np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]]),
+            pixel_scales=1.0,
         )
 
-        exposure_time_map = aa.Array.full(fill_value=20.0, shape_2d=image.shape_2d)
+        exposure_time_map = aa.Array.full(
+            fill_value=20.0, shape_2d=image.shape_2d, pixel_scales=1.0
+        )
 
         simulator = aa.SimulatorImaging(
             exposure_time_map=exposure_time_map, add_noise=True, noise_seed=1
@@ -548,12 +564,15 @@ class TestSimulatorImaging:
     ):
 
         image = aa.Array.manual_2d(
-            array=np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]])
+            array=np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]]),
+            pixel_scales=1.0,
         )
 
-        exposure_time_map = aa.Array.ones(shape_2d=image.shape_2d)
+        exposure_time_map = aa.Array.ones(shape_2d=image.shape_2d, pixel_scales=1.0)
 
-        background_sky_map = aa.Array.full(fill_value=16.0, shape_2d=image.shape_2d)
+        background_sky_map = aa.Array.full(
+            fill_value=16.0, shape_2d=image.shape_2d, pixel_scales=1.0
+        )
 
         simulator = aa.SimulatorImaging(
             exposure_time_map=exposure_time_map,
@@ -581,14 +600,18 @@ class TestSimulatorImaging:
                     [0.0, 0.0, 0.0, 0.0, 0.0],
                     [0.0, 0.0, 0.0, 0.0, 0.0],
                 ]
-            )
+            ),
+            pixel_scales=1.0,
         )
 
         psf = aa.Kernel.manual_2d(
-            array=np.array([[0.0, 1.0, 0.0], [1.0, 2.0, 1.0], [0.0, 1.0, 0.0]])
+            array=np.array([[0.0, 1.0, 0.0], [1.0, 2.0, 1.0], [0.0, 1.0, 0.0]]),
+            pixel_scales=1.0,
         )
 
-        exposure_time_map = aa.Array.full(fill_value=20.0, shape_2d=image.shape_2d)
+        exposure_time_map = aa.Array.full(
+            fill_value=20.0, shape_2d=image.shape_2d, pixel_scales=1.0
+        )
 
         simulator = aa.SimulatorImaging(
             exposure_time_map=exposure_time_map,

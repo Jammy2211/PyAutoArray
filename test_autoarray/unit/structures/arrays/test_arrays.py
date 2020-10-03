@@ -12,38 +12,6 @@ test_data_dir = "{}/files/array/".format(os.path.dirname(os.path.realpath(__file
 class TestManual:
     def test__array__makes_array_without_other_inputs(self):
 
-        arr = aa.Array.manual_2d(array=[[1.0, 2.0], [3.0, 4.0]])
-
-        assert type(arr) == aa.Array
-        assert (arr.in_2d == np.array([[1.0, 2.0], [3.0, 4.0]])).all()
-        assert (arr.in_1d == np.array([1.0, 2.0, 3.0, 4.0])).all()
-
-        arr = aa.Array.manual_1d(array=[1.0, 2.0, 3.0, 4.0], shape_2d=(2, 2))
-
-        assert type(arr) == aa.Array
-        assert (arr.in_2d == np.array([[1.0, 2.0], [3.0, 4.0]])).all()
-        assert (arr.in_1d == np.array([1.0, 2.0, 3.0, 4.0])).all()
-
-        arr = aa.Array.manual_1d(
-            array=[1.0, 2.0, 3.0, 4.0, 5.0, 6.0], shape_2d=(2, 3), store_in_1d=True
-        )
-
-        assert type(arr) == aa.Array
-        assert (arr == np.array([1.0, 2.0, 3.0, 4.0, 5.0, 6.0])).all()
-        assert (arr.in_2d == np.array([[1.0, 2.0, 3.0], [4.0, 5.0, 6.0]])).all()
-        assert (arr.in_1d == np.array([1.0, 2.0, 3.0, 4.0, 5.0, 6.0])).all()
-
-        arr = aa.Array.manual_1d(
-            array=[1.0, 2.0, 3.0, 4.0, 5.0, 6.0], shape_2d=(2, 3), store_in_1d=False
-        )
-
-        assert type(arr) == aa.Array
-        assert (arr == np.array([[1.0, 2.0, 3.0], [4.0, 5.0, 6.0]])).all()
-        assert (arr.in_2d == np.array([[1.0, 2.0, 3.0], [4.0, 5.0, 6.0]])).all()
-        assert (arr.in_1d == np.array([1.0, 2.0, 3.0, 4.0, 5.0, 6.0])).all()
-
-    def test__array__makes_array_with_pixel_scale(self):
-
         arr = aa.Array.manual_2d(array=[[1.0, 2.0], [3.0, 4.0]], pixel_scales=1.0)
 
         assert type(arr) == aa.Array
@@ -77,7 +45,7 @@ class TestManual:
         assert arr.pixel_scales == (2.0, 3.0)
         assert arr.geometry.origin == (0.0, 0.0)
 
-    def test__array__makes_with_pixel_scale_and_sub_size(self):
+    def test__array__makes_with_sub_size(self):
 
         arr = aa.Array.manual_2d(
             array=[[1.0, 2.0], [3.0, 4.0]], pixel_scales=1.0, sub_size=1
@@ -125,7 +93,7 @@ class TestManual:
 
 
 class TestManualMask:
-    def test__array__makes_array_with_pixel_scale(self):
+    def test__array__makes_array_without_other_inputs(self):
         mask = aa.Mask2D.unmasked(shape_2d=(2, 2), pixel_scales=1.0)
         arr = aa.Array.manual_mask(array=[[1.0, 2.0], [3.0, 4.0]], mask=mask)
 
@@ -209,39 +177,51 @@ class TestManualMask:
         self
     ):
         with pytest.raises(exc.ArrayException):
-            mask = aa.Mask2D.manual(mask=[[False, False], [True, False]], sub_size=1)
+            mask = aa.Mask2D.manual(
+                mask=[[False, False], [True, False]], pixel_scales=1.0, sub_size=1
+            )
             aa.Array.manual_mask(array=[1.0, 2.0, 3.0, 4.0], mask=mask)
 
         with pytest.raises(exc.ArrayException):
-            mask = aa.Mask2D.manual(mask=[[False, False], [True, False]], sub_size=1)
+            mask = aa.Mask2D.manual(
+                mask=[[False, False], [True, False]], pixel_scales=1.0, sub_size=1
+            )
             aa.Array.manual_mask(array=[1.0, 2.0], mask=mask)
 
         with pytest.raises(exc.ArrayException):
-            mask = aa.Mask2D.manual(mask=[[False, True], [True, True]], sub_size=2)
+            mask = aa.Mask2D.manual(
+                mask=[[False, True], [True, True]], pixel_scales=1.0, sub_size=2
+            )
             aa.Array.manual_mask(array=[1.0, 2.0, 4.0], mask=mask)
 
         with pytest.raises(exc.ArrayException):
-            mask = aa.Mask2D.manual(mask=[[False, True], [True, True]], sub_size=2)
+            mask = aa.Mask2D.manual(
+                mask=[[False, True], [True, True]], pixel_scales=1.0, sub_size=2
+            )
             aa.Array.manual_mask(array=[1.0, 2.0, 3.0, 4.0, 5.0], mask=mask)
 
 
 class TestFull:
     def test__array__makes_array_without_other_inputs(self):
 
-        arr = aa.Array.ones(shape_2d=(2, 2))
+        arr = aa.Array.ones(shape_2d=(2, 2), pixel_scales=1.0)
 
         assert type(arr) == aa.Array
         assert (arr.in_2d == np.array([[1.0, 1.0], [1.0, 1.0]])).all()
         assert (arr.in_1d == np.array([1.0, 1.0, 1.0, 1.0])).all()
 
-        arr = aa.Array.full(fill_value=2.0, shape_2d=(2, 2), store_in_1d=True)
+        arr = aa.Array.full(
+            fill_value=2.0, shape_2d=(2, 2), pixel_scales=1.0, store_in_1d=True
+        )
 
         assert type(arr) == aa.Array
         assert (arr == np.array([2.0, 2.0, 2.0, 2.0])).all()
         assert (arr.in_2d == np.array([[2.0, 2.0], [2.0, 2.0]])).all()
         assert (arr.in_1d == np.array([2.0, 2.0, 2.0, 2.0])).all()
 
-        arr = aa.Array.full(fill_value=2.0, shape_2d=(2, 2), store_in_1d=False)
+        arr = aa.Array.full(
+            fill_value=2.0, shape_2d=(2, 2), pixel_scales=1.0, store_in_1d=False
+        )
 
         assert type(arr) == aa.Array
         assert (arr == np.array([[2.0, 2.0], [2.0, 2.0]])).all()
@@ -300,20 +280,20 @@ class TestFull:
 class TestOnesZeros:
     def test__array__makes_array_without_other_inputs(self):
 
-        arr = aa.Array.ones(shape_2d=(2, 2))
+        arr = aa.Array.ones(shape_2d=(2, 2), pixel_scales=1.0)
 
         assert type(arr) == aa.Array
         assert (arr.in_2d == np.array([[1.0, 1.0], [1.0, 1.0]])).all()
         assert (arr.in_1d == np.array([1.0, 1.0, 1.0, 1.0])).all()
 
-        arr = aa.Array.zeros(shape_2d=(2, 2), store_in_1d=True)
+        arr = aa.Array.zeros(shape_2d=(2, 2), pixel_scales=1.0, store_in_1d=True)
 
         assert type(arr) == aa.Array
         assert (arr == np.array([0.0, 0.0, 0.0, 0.0])).all()
         assert (arr.in_2d == np.array([[0.0, 0.0], [0.0, 0.0]])).all()
         assert (arr.in_1d == np.array([0.0, 0.0, 0.0, 0.0])).all()
 
-        arr = aa.Array.zeros(shape_2d=(2, 2), store_in_1d=False)
+        arr = aa.Array.zeros(shape_2d=(2, 2), pixel_scales=1.0, store_in_1d=False)
 
         assert type(arr) == aa.Array
         assert (arr == np.array([[0.0, 0.0], [0.0, 0.0]])).all()
@@ -364,14 +344,19 @@ class TestOnesZeros:
 class TestFromFits:
     def test__array__makes_array_without_other_inputs(self):
 
-        arr = aa.Array.from_fits(file_path=test_data_dir + "3x3_ones.fits", hdu=0)
+        arr = aa.Array.from_fits(
+            file_path=test_data_dir + "3x3_ones.fits", hdu=0, pixel_scales=1.0
+        )
 
         assert type(arr) == aa.Array
         assert (arr.in_2d == np.ones((3, 3))).all()
         assert (arr.in_1d == np.ones(9)).all()
 
         arr = aa.Array.from_fits(
-            file_path=test_data_dir + "4x3_ones.fits", hdu=0, store_in_1d=True
+            file_path=test_data_dir + "4x3_ones.fits",
+            hdu=0,
+            pixel_scales=1.0,
+            store_in_1d=True,
         )
 
         assert type(arr) == aa.Array
@@ -380,7 +365,10 @@ class TestFromFits:
         assert (arr.in_1d == np.ones((12,))).all()
 
         arr = aa.Array.from_fits(
-            file_path=test_data_dir + "4x3_ones.fits", hdu=0, store_in_1d=False
+            file_path=test_data_dir + "4x3_ones.fits",
+            hdu=0,
+            pixel_scales=1.0,
+            store_in_1d=False,
         )
 
         assert type(arr) == aa.Array

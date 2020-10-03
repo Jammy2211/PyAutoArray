@@ -10,23 +10,9 @@ test_data_dir = "{}/files/mask/".format(os.path.dirname(os.path.realpath(__file_
 
 
 class TestMask1D:
-    def test__mask__makes_mask_without_other_inputs(self):
-
-        mask = aa.Mask1D.manual(mask=[False, False])
-
-        assert type(mask) == aa.Mask1D
-        assert (mask == np.array([False, False])).all()
-
-        mask = aa.Mask1D.manual(mask=[True, True, False])
-
-        assert type(mask) == aa.Mask1D
-        assert (mask == np.array([True, True, False])).all()
-
     def test__mask__makes_mask_with_pixel_scale(self):
 
         mask = aa.Mask1D.manual(mask=[False, True], pixel_scales=1.0)
-
-        print(mask.pixel_scales)
 
         assert type(mask) == aa.Mask1D
         assert (mask == np.array([False, True])).all()
@@ -81,7 +67,7 @@ class TestMask1D:
 
     def test__mask__invert_is_true_inverts_the_mask(self):
 
-        mask = aa.Mask1D.manual(mask=[True, True, False], invert=True)
+        mask = aa.Mask1D.manual(mask=[True, True, False], pixel_scales=1.0, invert=True)
 
         assert type(mask) == aa.Mask1D
         assert (mask == np.array([False, False, True])).all()
@@ -90,40 +76,40 @@ class TestMask1D:
 
         with pytest.raises(exc.MaskException):
 
-            aa.Mask1D.manual(mask=[[False, False, True]])
+            aa.Mask1D.manual(mask=[[False, False, True]], pixel_scales=1.0)
 
     def test__is_all_true(self):
 
-        mask = aa.Mask1D.manual(mask=[False, False, False, False])
+        mask = aa.Mask1D.manual(mask=[False, False, False, False], pixel_scales=1.0)
 
         assert mask.is_all_true == False
 
-        mask = aa.Mask1D.manual(mask=[False, False])
+        mask = aa.Mask1D.manual(mask=[False, False], pixel_scales=1.0)
 
         assert mask.is_all_true == False
 
-        mask = aa.Mask1D.manual(mask=[False, True, False, False])
+        mask = aa.Mask1D.manual(mask=[False, True, False, False], pixel_scales=1.0)
 
         assert mask.is_all_true == False
 
-        mask = aa.Mask1D.manual(mask=[True, True, True, True])
+        mask = aa.Mask1D.manual(mask=[True, True, True, True], pixel_scales=1.0)
 
         assert mask.is_all_true == True
 
     def test__is_all_false(self):
 
-        mask = aa.Mask1D.manual(mask=[False, False, False, False])
+        mask = aa.Mask1D.manual(mask=[False, False, False, False], pixel_scales=1.0)
 
         assert mask.is_all_false == True
 
-        mask = aa.Mask1D.manual(mask=[False, False])
+        mask = aa.Mask1D.manual(mask=[False, False], pixel_scales=1.0)
 
         assert mask.is_all_false == True
 
-        mask = aa.Mask1D.manual(mask=[False, True, False, False])
+        mask = aa.Mask1D.manual(mask=[False, True, False, False], pixel_scales=1.0)
 
         assert mask.is_all_false == False
 
-        mask = aa.Mask1D.manual(mask=[True, True, False, False])
+        mask = aa.Mask1D.manual(mask=[True, True, False, False], pixel_scales=1.0)
 
         assert mask.is_all_false == False

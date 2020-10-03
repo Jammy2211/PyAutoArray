@@ -7,7 +7,7 @@ import autoarray as aa
 path = "{}/".format(os.path.dirname(os.path.realpath(__file__)))
 
 
-class TestFrameAPI:
+class TestFrameEuclid:
     def test__euclid_frame_for_four_quandrants__loads_data_and_dimensions(
         self, euclid_data
     ):
