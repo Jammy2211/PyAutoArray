@@ -55,10 +55,11 @@ class TestConstructor:
             aa.Region(region=(0, 1, 2, -1))
 
 
-class TestExtractRegionFromArray:
+class TestExtractRegionFromFrame:
     def test__extracts_2x2_region_of_3x3_array(self):
         frame = aa.Frame.manual(
-            array=np.array([[1.0, 2.0, 3.0], [4.0, 5.0, 6.0], [7.0, 8.0, 9.0]])
+            array=np.array([[1.0, 2.0, 3.0], [4.0, 5.0, 6.0], [7.0, 8.0, 9.0]]),
+            pixel_scales=1.0,
         )
 
         region = aa.Region(region=(0, 2, 0, 2))
@@ -69,7 +70,8 @@ class TestExtractRegionFromArray:
 
     def test__extracts_2x3_region_of_3x3_array(self):
         frame = aa.Frame.manual(
-            array=np.array([[1.0, 2.0, 3.0], [4.0, 5.0, 6.0], [7.0, 8.0, 9.0]])
+            array=np.array([[1.0, 2.0, 3.0], [4.0, 5.0, 6.0], [7.0, 8.0, 9.0]]),
+            pixel_scales=1.0,
         )
 
         region = aa.Region(region=(1, 3, 0, 3))
@@ -81,7 +83,7 @@ class TestExtractRegionFromArray:
 
 class TestAddRegionToArrayFromImage:
     def test__array_is_all_zeros__image_goes_into_correct_region_of_array(self):
-        frame = aa.Frame.manual(array=np.zeros((2, 2)))
+        frame = aa.Frame.manual(array=np.zeros((2, 2)), pixel_scales=1.0)
         image = np.ones((2, 2))
         region = aa.Region(region=(0, 1, 0, 1))
 
@@ -92,7 +94,7 @@ class TestAddRegionToArrayFromImage:
     def test__array_is_all_1s__image_goes_into_correct_region_of_array_and_adds_to_it(
         self
     ):
-        frame = aa.Frame.manual(array=np.ones((2, 2)))
+        frame = aa.Frame.manual(array=np.ones((2, 2)), pixel_scales=1.0)
         image = np.ones((2, 2))
         region = aa.Region(region=(0, 1, 0, 1))
 
@@ -101,7 +103,7 @@ class TestAddRegionToArrayFromImage:
         assert (frame == np.array([[2.0, 1.0], [1.0, 1.0]])).all()
 
     def test__different_region(self):
-        frame = aa.Frame.manual(array=np.ones((3, 3)))
+        frame = aa.Frame.manual(array=np.ones((3, 3)), pixel_scales=1.0)
         image = np.ones((3, 3))
         region = aa.Region(region=(1, 3, 2, 3))
 
@@ -114,7 +116,7 @@ class TestAddRegionToArrayFromImage:
 
 class TestSetRegionToZeros:
     def test__region_is_corner__sets_to_0(self):
-        frame = aa.Frame.manual(array=np.ones((2, 2)))
+        frame = aa.Frame.manual(array=np.ones((2, 2)), pixel_scales=1.0)
 
         region = aa.Region(region=(0, 1, 0, 1))
 
@@ -123,7 +125,7 @@ class TestSetRegionToZeros:
         assert (frame == np.array([[0.0, 1.0], [1.0, 1.0]])).all()
 
     def test__different_region___sets_to_0(self):
-        frame = aa.Frame.manual(array=np.ones((3, 3)))
+        frame = aa.Frame.manual(array=np.ones((3, 3)), pixel_scales=1.0)
 
         region = aa.Region(region=(1, 3, 2, 3))
 

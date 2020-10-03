@@ -39,7 +39,7 @@ class Kernel(arrays.Array):
 
     @classmethod
     def manual_1d(
-        cls, array, shape_2d, pixel_scales=None, origin=(0.0, 0.0), renormalize=False
+        cls, array, shape_2d, pixel_scales, origin=(0.0, 0.0), renormalize=False
     ):
         """Create a Kernel (see *Kernel.__new__*) by inputting the kernel values in 1D, for example:
 
@@ -74,7 +74,7 @@ class Kernel(arrays.Array):
         return cls(array=array, mask=array.mask, renormalize=renormalize)
 
     @classmethod
-    def manual_2d(cls, array, pixel_scales=None, origin=(0.0, 0.0), renormalize=False):
+    def manual_2d(cls, array, pixel_scales, origin=(0.0, 0.0), renormalize=False):
         """Create an Kernel (see *Kernel.__new__*) by inputting the kernel values in 2D, for example:
 
         kernel=np.ndarray([[1.0, 2.0],
@@ -109,12 +109,7 @@ class Kernel(arrays.Array):
 
     @classmethod
     def manual(
-        cls,
-        array,
-        shape_2d=None,
-        pixel_scales=None,
-        origin=(0.0, 0.0),
-        renormalize=False,
+        cls, array, pixel_scales, shape_2d=None, origin=(0.0, 0.0), renormalize=False
     ):
         """Create a Kernel (see *Kernel.__new__*) by inputting the kernel values in 1D or 2D, automatically
         determining whether to use the 'manual_1d' or 'manual_2d' methods.
@@ -157,7 +152,7 @@ class Kernel(arrays.Array):
         cls,
         fill_value,
         shape_2d,
-        pixel_scales=None,
+        pixel_scales,
         sub_size=1,
         origin=(0.0, 0.0),
         renormalize=False,
@@ -195,7 +190,7 @@ class Kernel(arrays.Array):
         )
 
     @classmethod
-    def ones(cls, shape_2d, pixel_scales=None, origin=(0.0, 0.0), renormalize=False):
+    def ones(cls, shape_2d, pixel_scales, origin=(0.0, 0.0), renormalize=False):
         """Create an Kernel (see *Kernel.__new__*) where all values are filled with ones, analogous to the method numpy
         ndarray.ones.
 
@@ -225,7 +220,7 @@ class Kernel(arrays.Array):
         )
 
     @classmethod
-    def zeros(cls, shape_2d, pixel_scales=None, origin=(0.0, 0.0), renormalize=False):
+    def zeros(cls, shape_2d, pixel_scales, origin=(0.0, 0.0), renormalize=False):
         """Create an Kernel (see *Kernel.__new__*) where all values are filled with zeros, analogous to the method numpy
         ndarray.ones.
 
@@ -255,7 +250,7 @@ class Kernel(arrays.Array):
         )
 
     @classmethod
-    def no_blur(cls, pixel_scales=None):
+    def no_blur(cls, pixel_scales):
         """Setup the Kernel as a kernel which does not convolve any signal, which is simply an array of shape (1, 1)
         with value 1.
 
@@ -370,7 +365,7 @@ class Kernel(arrays.Array):
 
     @classmethod
     def from_fits(
-        cls, file_path, hdu, pixel_scales=None, origin=(0.0, 0.0), renormalize=False
+        cls, file_path, hdu, pixel_scales, origin=(0.0, 0.0), renormalize=False
     ):
         """
         Loads the Kernel from a .fits file.

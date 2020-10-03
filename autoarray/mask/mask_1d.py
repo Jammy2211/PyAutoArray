@@ -88,7 +88,7 @@ class AbstractMask1d(abstract_mask.AbstractMask):
 
 class Mask1D(AbstractMask1d):
     @classmethod
-    def manual(cls, mask, pixel_scales=None, sub_size=1, origin=(0.0,), invert=False):
+    def manual(cls, mask, pixel_scales, sub_size=1, origin=(0.0,), invert=False):
 
         if type(mask) is list:
             mask = np.asarray(mask).astype("bool")
@@ -107,9 +107,7 @@ class Mask1D(AbstractMask1d):
         )
 
     @classmethod
-    def unmasked(
-        cls, shape_1d, pixel_scales=None, sub_size=1, origin=(0.0,), invert=False
-    ):
+    def unmasked(cls, shape_1d, pixel_scales, sub_size=1, origin=(0.0,), invert=False):
         """Setup a mask where all pixels are unmasked.
 
         Parameters
