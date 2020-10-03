@@ -443,7 +443,9 @@ class GridIterate(abstract_grid.AbstractGrid):
         """
 
         fractional_mask = msk.Mask2D.unmasked(
-            shape_2d=array_lower_sub_2d.shape_2d, invert=True
+            shape_2d=array_lower_sub_2d.shape_2d,
+            pixel_scales=array_lower_sub_2d.pixel_scales,
+            invert=True,
         )
 
         fractional_mask = self.fractional_mask_jit_from_array(
@@ -627,7 +629,9 @@ class GridIterate(abstract_grid.AbstractGrid):
         """
 
         fractional_mask = msk.Mask2D.unmasked(
-            shape_2d=grid_lower_sub_2d.shape_2d, invert=True
+            shape_2d=grid_lower_sub_2d.shape_2d,
+            pixel_scales=grid_lower_sub_2d.pixel_scales,
+            invert=True,
         )
 
         fractional_mask = self.fractional_mask_jit_from_grid(

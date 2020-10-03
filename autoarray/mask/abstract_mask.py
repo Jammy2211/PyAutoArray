@@ -18,7 +18,7 @@ class AbstractMask(np.ndarray):
         cls,
         mask: np.ndarray,
         origin: tuple,
-        pixel_scales: tuple = None,
+        pixel_scales: tuple,
         sub_size: int = 1,
         *args,
         **kwargs
