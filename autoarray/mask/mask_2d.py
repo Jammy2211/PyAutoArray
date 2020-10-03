@@ -19,7 +19,7 @@ class AbstractMask2D(abstract_mask.AbstractMask):
     def __new__(
         cls,
         mask: np.ndarray,
-        pixel_scales: (float, float) = None,
+        pixel_scales: (float, float),
         sub_size: int = 1,
         origin: (float, float) = (0.0, 0.0),
         *args,
@@ -227,7 +227,7 @@ class Mask2D(AbstractMask2D):
     def manual(
         cls,
         mask: np.ndarray or list,
-        pixel_scales: (float, float) = None,
+        pixel_scales: (float, float),
         sub_size: int = 1,
         origin: (float, float) = (0.0, 0.0),
         invert: bool = False,
@@ -278,7 +278,7 @@ class Mask2D(AbstractMask2D):
     def unmasked(
         cls,
         shape_2d: (int, int),
-        pixel_scales: (float, float) = None,
+        pixel_scales: (float, float),
         sub_size: int = 1,
         origin: (float, float) = (0.0, 0.0),
         invert: bool = False,

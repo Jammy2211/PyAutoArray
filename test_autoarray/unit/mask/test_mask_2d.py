@@ -11,18 +11,6 @@ test_data_dir = "{}/files/mask/".format(os.path.dirname(os.path.realpath(__file_
 
 
 class TestMask:
-    def test__mask__makes_mask_without_other_inputs(self):
-
-        mask = aa.Mask2D.manual(mask=[[False, False], [False, False]])
-
-        assert type(mask) == aa.Mask2D
-        assert (mask == np.array([[False, False], [False, False]])).all()
-
-        mask = aa.Mask2D.manual(mask=[[False, False, True], [True, True, False]])
-
-        assert type(mask) == aa.Mask2D
-        assert (mask == np.array([[False, False, True], [True, True, False]])).all()
-
     def test__mask__makes_mask_with_pixel_scale(self):
 
         mask = aa.Mask2D.manual(mask=[[False, False], [True, True]], pixel_scales=1.0)
@@ -86,7 +74,9 @@ class TestMask:
     def test__mask__invert_is_true_inverts_the_mask(self):
 
         mask = aa.Mask2D.manual(
-            mask=[[False, False, True], [True, True, False]], invert=True
+            mask=[[False, False, True], [True, True, False]],
+            pixel_scales=1.0,
+            invert=True,
         )
 
         assert type(mask) == aa.Mask2D
@@ -96,7 +86,7 @@ class TestMask:
 
         with pytest.raises(exc.MaskException):
 
-            aa.Mask2D.manual(mask=[False, False, True])
+            aa.Mask2D.manual(mask=[False, False, True], pixel_scales=1.0)
 
         with pytest.raises(exc.MaskException):
 
@@ -104,7 +94,7 @@ class TestMask:
 
         with pytest.raises(exc.MaskException):
 
-            aa.Mask2D.manual(mask=[False, False, True], sub_size=1)
+            aa.Mask2D.manual(mask=[False, False, True], pixel_scales=1.0, sub_size=1)
 
         with pytest.raises(exc.MaskException):
 
@@ -112,37 +102,37 @@ class TestMask:
 
     def test__is_all_true(self):
 
-        mask = aa.Mask2D.manual(mask=[[False, False], [False, False]])
+        mask = aa.Mask2D.manual(mask=[[False, False], [False, False]], pixel_scales=1.0)
 
         assert mask.is_all_true == False
 
-        mask = aa.Mask2D.manual(mask=[[False, False]])
+        mask = aa.Mask2D.manual(mask=[[False, False]], pixel_scales=1.0)
 
         assert mask.is_all_true == False
 
-        mask = aa.Mask2D.manual(mask=[[False, True], [False, False]])
+        mask = aa.Mask2D.manual(mask=[[False, True], [False, False]], pixel_scales=1.0)
 
         assert mask.is_all_true == False
 
-        mask = aa.Mask2D.manual(mask=[[True, True], [True, True]])
+        mask = aa.Mask2D.manual(mask=[[True, True], [True, True]], pixel_scales=1.0)
 
         assert mask.is_all_true == True
 
     def test__is_all_false(self):
 
-        mask = aa.Mask2D.manual(mask=[[False, False], [False, False]])
+        mask = aa.Mask2D.manual(mask=[[False, False], [False, False]], pixel_scales=1.0)
 
         assert mask.is_all_false == True
 
-        mask = aa.Mask2D.manual(mask=[[False, False]])
+        mask = aa.Mask2D.manual(mask=[[False, False]], pixel_scales=1.0)
 
         assert mask.is_all_false == True
 
-        mask = aa.Mask2D.manual(mask=[[False, True], [False, False]])
+        mask = aa.Mask2D.manual(mask=[[False, True], [False, False]], pixel_scales=1.0)
 
         assert mask.is_all_false == False
 
-        mask = aa.Mask2D.manual(mask=[[True, True], [False, False]])
+        mask = aa.Mask2D.manual(mask=[[True, True], [False, False]], pixel_scales=1.0)
 
         assert mask.is_all_false == False
 
@@ -150,7 +140,7 @@ class TestMask:
 class TestClassMethods:
     def test__mask_all_unmasked__5x5__input__all_are_false(self):
 
-        mask = aa.Mask2D.unmasked(shape_2d=(5, 5), invert=False)
+        mask = aa.Mask2D.unmasked(shape_2d=(5, 5), pixel_scales=1.0, invert=False)
 
         assert mask.shape == (5, 5)
         assert (
@@ -562,15 +552,15 @@ class TestToFromFits:
 class TestSubQuantities:
     def test__sub_shape_is_shape_times_sub_size(self):
 
-        mask = aa.Mask2D.unmasked(shape_2d=(5, 5), sub_size=1)
+        mask = aa.Mask2D.unmasked(shape_2d=(5, 5), pixel_scales=1.0, sub_size=1)
 
         assert mask.sub_shape_2d == (5, 5)
 
-        mask = aa.Mask2D.unmasked(shape_2d=(5, 5), sub_size=2)
+        mask = aa.Mask2D.unmasked(shape_2d=(5, 5), pixel_scales=1.0, sub_size=2)
 
         assert mask.sub_shape_2d == (10, 10)
 
-        mask = aa.Mask2D.unmasked(shape_2d=(10, 5), sub_size=3)
+        mask = aa.Mask2D.unmasked(shape_2d=(10, 5), pixel_scales=1.0, sub_size=3)
 
         assert mask.sub_shape_2d == (30, 15)
 
@@ -578,7 +568,9 @@ class TestSubQuantities:
 class TestNewMasksFromMask:
     def test__sub_mask__is_mask_at_sub_grid_resolution(self):
 
-        mask = aa.Mask2D.manual([[False, True], [False, False]], sub_size=2)
+        mask = aa.Mask2D.manual(
+            mask=[[False, True], [False, False]], pixel_scales=1.0, sub_size=2
+        )
 
         assert (
             mask.sub_mask
@@ -593,7 +585,9 @@ class TestNewMasksFromMask:
         ).all()
 
         mask = aa.Mask2D.manual(
-            [[False, False, True], [False, True, False]], sub_size=2
+            mask=[[False, False, True], [False, True, False]],
+            pixel_scales=1.0,
+            sub_size=2,
         )
 
         assert (
@@ -636,7 +630,7 @@ class TestNewMasksFromMask:
 
     def test__resized_mask__pad__compare_to_manual_mask(self):
 
-        mask = aa.Mask2D.unmasked(shape_2d=(5, 5))
+        mask = aa.Mask2D.unmasked(shape_2d=(5, 5), pixel_scales=1.0)
         mask[2, 2] = True
 
         mask_resized = mask.resized_mask_from_new_shape(new_shape=(7, 7))
@@ -648,7 +642,7 @@ class TestNewMasksFromMask:
 
     def test__resized_mask__trim__compare_to_manual_mask(self):
 
-        mask = aa.Mask2D.unmasked(shape_2d=(5, 5))
+        mask = aa.Mask2D.unmasked(shape_2d=(5, 5), pixel_scales=1.0)
         mask[2, 2] = True
 
         mask_resized = mask.resized_mask_from_new_shape(new_shape=(3, 3))
@@ -660,7 +654,7 @@ class TestNewMasksFromMask:
 
     def test__rescaled_mask_from_rescale_factor__compare_to_manual_mask(self):
 
-        mask = aa.Mask2D.unmasked(shape_2d=(5, 5))
+        mask = aa.Mask2D.unmasked(shape_2d=(5, 5), pixel_scales=1.0)
         mask[2, 2] = True
 
         mask_rescaled = mask.rescaled_mask_from_rescale_factor(rescale_factor=2.0)
@@ -676,7 +670,7 @@ class TestNewMasksFromMask:
 
     def test__edged_buffed_mask__compare_to_manual_mask(self):
 
-        mask = aa.Mask2D.unmasked(shape_2d=(5, 5))
+        mask = aa.Mask2D.unmasked(shape_2d=(5, 5), pixel_scales=1.0)
         mask[2, 2] = True
 
         edge_buffed_mask_manual = aa.util.mask.buffed_mask_from(mask=mask).astype(

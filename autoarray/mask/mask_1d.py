@@ -14,7 +14,7 @@ class AbstractMask1d(abstract_mask.AbstractMask):
     def __new__(
         cls,
         mask: np.ndarray,
-        pixel_scales: (float,) = None,
+        pixel_scales: (float,),
         sub_size: int = 1,
         origin: (float,) = (0.0,),
         *args,

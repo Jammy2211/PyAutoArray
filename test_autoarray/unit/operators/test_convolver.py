@@ -18,7 +18,7 @@ def make_simple_mask_7x7():
         [True, True, True, True, True, True, True],
     ]
 
-    return aa.Mask2D.manual(mask=mask, sub_size=1)
+    return aa.Mask2D.manual(mask=mask, pixel_scales=1.0, sub_size=1)
 
 
 @pytest.fixture(name="simple_mask_5x5")
