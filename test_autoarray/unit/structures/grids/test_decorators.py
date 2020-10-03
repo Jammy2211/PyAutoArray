@@ -15,16 +15,17 @@ test_coordinates_dir = "{}/files/coordinates/".format(
 
 
 def test__grid_in__output_values_same_format():
-    mask = np.array(
-        [
-            [True, True, True, True],
-            [True, False, False, True],
-            [True, False, False, True],
-            [True, True, True, True],
-        ]
-    )
 
-    mask = aa.Mask2D.manual(mask=mask, pixel_scales=(1.0, 1.0), sub_size=1)
+    mask = aa.Mask2D.manual(
+        mask=[
+            [True, True, True, True],
+            [True, False, False, True],
+            [True, False, False, True],
+            [True, True, True, True],
+        ],
+        pixel_scales=(1.0, 1.0),
+        sub_size=1,
+    )
 
     grid = aa.Grid.from_mask(mask=mask)
 
@@ -62,16 +63,17 @@ def test__grid_in__output_values_same_format():
 
 
 def test__grid_in__output_is_list__list_of_same_format():
-    mask = np.array(
-        [
-            [True, True, True, True],
-            [True, False, False, True],
-            [True, False, False, True],
-            [True, True, True, True],
-        ]
-    )
 
-    mask = aa.Mask2D.manual(mask=mask, pixel_scales=(1.0, 1.0), sub_size=1)
+    mask = aa.Mask2D.manual(
+        mask=[
+            [True, True, True, True],
+            [True, False, False, True],
+            [True, False, False, True],
+            [True, True, True, True],
+        ],
+        pixel_scales=(1.0, 1.0),
+        sub_size=1,
+    )
 
     grid = aa.Grid.from_mask(mask=mask)
 

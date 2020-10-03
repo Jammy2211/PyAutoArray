@@ -1,11 +1,8 @@
 import os
 
 import numpy as np
-import pytest
-import shutil
 
 import autoarray as aa
-from autoarray import exc
 
 test_data_dir = "{}/files/mask/".format(os.path.dirname(os.path.realpath(__file__)))
 
@@ -13,15 +10,15 @@ test_data_dir = "{}/files/mask/".format(os.path.dirname(os.path.realpath(__file_
 class TestSubQuantities:
     def test__sub_pixels_in_mask_is_pixels_in_mask_times_sub_size_squared(self):
 
-        mask = aa.Mask2D.unmasked(shape_2d=(5, 5), sub_size=1)
+        mask = aa.Mask2D.unmasked(shape_2d=(5, 5), sub_size=1, pixel_scales=1.0)
 
         assert mask.sub_pixels_in_mask == 25
 
-        mask = aa.Mask2D.unmasked(shape_2d=(5, 5), sub_size=2)
+        mask = aa.Mask2D.unmasked(shape_2d=(5, 5), sub_size=2, pixel_scales=1.0)
 
         assert mask.sub_pixels_in_mask == 100
 
-        mask = aa.Mask2D.unmasked(shape_2d=(10, 10), sub_size=3)
+        mask = aa.Mask2D.unmasked(shape_2d=(10, 10), sub_size=3, pixel_scales=1.0)
 
         assert mask.sub_pixels_in_mask == 900
 
@@ -29,7 +26,7 @@ class TestSubQuantities:
 class TestNewMask:
     def test__new_mask_with_new_sub_size(self):
 
-        mask = aa.Mask2D.unmasked(shape_2d=(3, 3), sub_size=4)
+        mask = aa.Mask2D.unmasked(shape_2d=(3, 3), sub_size=4, pixel_scales=1.0)
 
         mask_new = mask.mask_new_sub_size_from_mask(mask=mask)
 
