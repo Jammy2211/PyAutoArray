@@ -190,6 +190,7 @@ class AbstractSettingsMaskedImaging(abstract_dataset.AbstractSettingsMaskedDatas
 
             return kernel.Kernel.manual_2d(
                 array=psf.resized_from_new_shape(new_shape=psf_shape_2d).in_2d,
+                pixel_scales=psf.pixel_scales,
                 renormalize=self.renormalize_psf,
             )
 
@@ -373,7 +374,7 @@ class Imaging(AbstractImaging):
     def from_fits(
         cls,
         image_path,
-        pixel_scales=None,
+        pixel_scales,
         image_hdu=0,
         noise_map_path=None,
         noise_map_hdu=0,

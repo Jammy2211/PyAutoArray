@@ -7,10 +7,10 @@ import numpy as np
 logger = logging.getLogger(__name__)
 
 
-class TestInverseNoiseMap:
+class TestProperties:
     def test__inverse_noise_is_one_over_noise(self):
-        array = aa.Array.manual_2d([[1.0, 2.0], [3.0, 4.0]])
-        noise_map = aa.Array.manual_2d([[1.0, 2.0], [4.0, 8.0]])
+        array = aa.Array.manual_2d([[1.0, 2.0], [3.0, 4.0]], pixel_scales=1.0)
+        noise_map = aa.Array.manual_2d([[1.0, 2.0], [4.0, 8.0]], pixel_scales=1.0)
 
         dataset = abstract_dataset.AbstractDataset(data=array, noise_map=noise_map)
 
@@ -18,11 +18,11 @@ class TestInverseNoiseMap:
             dataset.inverse_noise_map.in_2d == np.array([[1.0, 0.5], [0.25, 0.125]])
         ).all()
 
-
-class TestSignalToNoise:
-    def test__image_and_noise_are_values__signal_to_noise_is_ratio_of_each(self):
-        array = aa.Array.manual_2d([[1.0, 2.0], [3.0, 4.0]])
-        noise_map = aa.Array.manual_2d([[10.0, 10.0], [30.0, 4.0]])
+    def test__signal_to_noise_map__image_and_noise_are_values__signal_to_noise_is_ratio_of_each(
+        self
+    ):
+        array = aa.Array.manual_2d([[1.0, 2.0], [3.0, 4.0]], pixel_scales=1.0)
+        noise_map = aa.Array.manual_2d([[10.0, 10.0], [30.0, 4.0]], pixel_scales=1.0)
 
         dataset = abstract_dataset.AbstractDataset(data=array, noise_map=noise_map)
 
@@ -31,10 +31,12 @@ class TestSignalToNoise:
         ).all()
         assert dataset.signal_to_noise_max == 1.0
 
-    def test__same_as_above__but_image_has_negative_values__replaced_with_zeros(self):
-        array = aa.Array.manual_2d([[-1.0, 2.0], [3.0, -4.0]])
+    def test__signal_to_noise_map__same_as_above__but_image_has_negative_values__replaced_with_zeros(
+        self
+    ):
+        array = aa.Array.manual_2d([[-1.0, 2.0], [3.0, -4.0]], pixel_scales=1.0)
 
-        noise_map = aa.Array.manual_2d([[10.0, 10.0], [30.0, 4.0]])
+        noise_map = aa.Array.manual_2d([[10.0, 10.0], [30.0, 4.0]], pixel_scales=1.0)
 
         dataset = abstract_dataset.AbstractDataset(data=array, noise_map=noise_map)
 
@@ -43,14 +45,12 @@ class TestSignalToNoise:
         ).all()
         assert dataset.signal_to_noise_max == 0.2
 
-
-class TestAbsoluteSignalToNoise:
-    def test__image_and_noise_are_values__signal_to_noise_is_absolute_image_value_over_noise(
+    def test__absolute_signal_to_noise_map__image_and_noise_are_values__signal_to_noise_is_absolute_image_value_over_noise(
         self
     ):
-        array = aa.Array.manual_2d([[-1.0, 2.0], [3.0, -4.0]])
+        array = aa.Array.manual_2d([[-1.0, 2.0], [3.0, -4.0]], pixel_scales=1.0)
 
-        noise_map = aa.Array.manual_2d([[10.0, 10.0], [30.0, 4.0]])
+        noise_map = aa.Array.manual_2d([[10.0, 10.0], [30.0, 4.0]], pixel_scales=1.0)
 
         dataset = abstract_dataset.AbstractDataset(data=array, noise_map=noise_map)
 
@@ -60,13 +60,11 @@ class TestAbsoluteSignalToNoise:
         ).all()
         assert dataset.absolute_signal_to_noise_max == 1.0
 
-
-class TestPotentialChiSquaredMap:
-    def test__image_and_noise_are_values__signal_to_noise_is_absolute_image_value_over_noise(
+    def test__potential_chi_squared_map__image_and_noise_are_values__signal_to_noise_is_absolute_image_value_over_noise(
         self
     ):
-        array = aa.Array.manual_2d([[-1.0, 2.0], [3.0, -4.0]])
-        noise_map = aa.Array.manual_2d([[10.0, 10.0], [30.0, 4.0]])
+        array = aa.Array.manual_2d([[-1.0, 2.0], [3.0, -4.0]], pixel_scales=1.0)
+        noise_map = aa.Array.manual_2d([[10.0, 10.0], [30.0, 4.0]], pixel_scales=1.0)
 
         dataset = abstract_dataset.AbstractDataset(data=array, noise_map=noise_map)
 
