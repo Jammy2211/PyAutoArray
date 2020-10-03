@@ -512,10 +512,10 @@ class TestToFromFits:
 
         os.makedirs(output_data_dir)
 
-        mask.output_to_fits(file_path=output_data_dir + "mask.fits")
+        mask.output_to_fits(file_path=f"{output_data_dir}/mask.fits")
 
         mask = aa.Mask2D.from_fits(
-            file_path=output_data_dir + "mask.fits",
+            file_path=f"{output_data_dir}/mask.fits",
             hdu=0,
             sub_size=1,
             pixel_scales=(1.0, 1.0),
