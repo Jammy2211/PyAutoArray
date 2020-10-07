@@ -38,6 +38,11 @@ from .structures.grids import Grid
 from .structures.grids import GridInterpolate
 from .structures.grids import GridRectangular
 from .structures.grids import GridVoronoi
+from .structures.grids import GridCoordinates
+from .structures.grids import GridCoordinatesUniform
+from .structures.lines.lines import Line
+from .structures.lines.lines import LineCollection
+from .structures.region import Region
 from .structures.kernel import Kernel
 from .structures.region import Region
 from .structures.visibilities import Visibilities
