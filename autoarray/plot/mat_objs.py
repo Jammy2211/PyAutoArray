@@ -4,17 +4,14 @@ import configparser
 
 from typing import Callable
 
-try:
-    backend = conf.get_matplotlib_backend()
-except configparser.NoSectionError:
-    backend = "default"
+backend = conf.get_matplotlib_backend()
 
-if not backend in "default":
+if backend not in "default":
     matplotlib.use(backend)
 
 try:
-    hpc_mode = conf.instance.general.get("hpc", "hpc_mode", bool)
-except configparser.NoSectionError:
+    hpc_mode = conf.instance["general"]["hpc"]["hpc_mode"]
+except KeyError:
     hpc_mode = False
 
 if hpc_mode:
@@ -36,17 +33,17 @@ from autoarray import exc
 def load_setting(section, name, python_type, from_subplot_config):
 
     if not from_subplot_config:
-        return load_figure_setting(section, name, python_type)
+        return load_figure_setting(section, name)
     else:
-        return load_subplot_setting(section, name, python_type)
+        return load_subplot_setting(section, name)
 
 
-def load_figure_setting(section, name, python_type):
-    return conf.instance.visualize_figures.get(section, name, python_type)
+def load_figure_setting(section, name):
+    return conf.instance["visualize"]["figures"][section][name]
 
 
-def load_subplot_setting(section, name, python_type):
-    return conf.instance.visualize_subplots.get(section, name, python_type)
+def load_subplot_setting(section, name):
+    return conf.instance["visualize"]["subplots"][section][name]
 
 
 class Units:
@@ -79,9 +76,7 @@ class Units:
             self.use_scaled = use_scaled
         else:
             try:
-                self.use_scaled = conf.instance.visualize_general.get(
-                    "general", "use_scaled", bool
-                )
+                self.use_scaled = conf.instance["visualize"]["general"]["general"]["use_scaled"]
             except:
                 self.use_scaled = True
 
@@ -89,7 +84,7 @@ class Units:
             self.in_kpc = (
                 in_kpc
                 if in_kpc is not None
-                else conf.instance.visualize_general.get("units", "in_kpc", bool)
+                else conf.instance["visualize"]["general"]["units"]["in_kpc"]
             )
         except:
             self.in_kpc = None
@@ -233,11 +228,9 @@ class ColorMap:
 
             module_name = module.__name__.split(".")[-1]
             try:
-                cmap = conf.instance.visualize_general.get(
-                    "colormaps", module_name, str
-                )
+                cmap = conf.instance["visualize"]["general"]["colormaps"][module_name]
             except configparser.NoOptionError:
-                cmap = conf.instance.visualize_general.get("colormaps", "default", str)
+                cmap = conf.instance["visualize"]["general"]["colormaps"]["default"]
 
         try:
             self.cmap = colorcet.cm[cmap]

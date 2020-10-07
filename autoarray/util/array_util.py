@@ -362,7 +362,7 @@ def numpy_array_2d_to_fits(
 
     new_hdr = fits.Header()
 
-    flip_for_ds9 = conf.instance.general.get("fits", "flip_for_ds9", bool)
+    flip_for_ds9 = conf.instance["general"]["fits"]["flip_for_ds9"]
 
     if flip_for_ds9:
         hdu = fits.PrimaryHDU(np.flipud(array_2d), new_hdr)
@@ -400,12 +400,11 @@ def numpy_array_2d_from_fits(
     """
     hdu_list = fits.open(file_path, do_not_scale_image_data=do_not_scale_image_data)
 
-    flip_for_ds9 = conf.instance.general.get("fits", "flip_for_ds9", bool)
+    flip_for_ds9 = conf.instance["general"]["fits"]["flip_for_ds9"]
 
     if flip_for_ds9:
         return np.flipud(np.array(hdu_list[hdu].data)).astype("float64")
-    else:
-        return np.array(hdu_list[hdu].data).astype("float64")
+    return np.array(hdu_list[hdu].data).astype("float64")
 
 
 @decorator_util.jit()

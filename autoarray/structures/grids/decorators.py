@@ -242,9 +242,7 @@ def relocate_to_radial_minimum(func):
             The grid_like object whose coordinates are radially moved from (0.0, 0.0).
         """
 
-        grid_radial_minimum = conf.instance.radial_min.get(
-            "radial_minimum", cls.__class__.__name__, float
-        )
+        grid_radial_minimum = conf.instance["grids"]["radial_minimum"]["radial_minimum"][cls.__class__.__name__]
 
         with np.errstate(all="ignore"):  # Division by zero fixed via isnan
 
