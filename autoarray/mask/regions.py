@@ -59,7 +59,8 @@ class Regions:
 
     @array_util.Memoizer()
     def blurring_mask_from_kernel_shape(self, kernel_shape_2d):
-        """Compute a blurring mask, which represents all masked pixels whose light will be blurred into unmasked \
+        """
+    Returns a blurring mask, which represents all masked pixels whose light will be blurred into unmasked \
         pixels via PSF convolution (see grid.Grid.blurring_grid_from_mask_and_psf_shape).
 
         Parameters

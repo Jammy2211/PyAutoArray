@@ -103,7 +103,7 @@ class FrameACS(f.Frame, ArrayACS):
         the rotations required to give correct arctic clocking and convert the image from units of COUNTS / CPS to
         ELECTRONS.
 
-        See the docstring of the _FrameACS_ class for a complete description of the Euclid FPA, quadrants and
+        See the docstring of the `FrameACS` class for a complete description of the Euclid FPA, quadrants and
         rotations.
         """
 
@@ -136,7 +136,7 @@ class FrameACS(f.Frame, ArrayACS):
         Using an input array of both quadrants in electrons, use the quadrant letter to extract the quadrant from the
         full CCD and perform the rotations required to give correct arctic.
 
-        See the docstring of the _FrameACS_ class for a complete description of the Euclid FPA, quadrants and
+        See the docstring of the `FrameACS` class for a complete description of the Euclid FPA, quadrants and
         rotations.
         """
         if quadrant_letter is "B" or quadrant_letter is "C":
@@ -177,7 +177,7 @@ class FrameACS(f.Frame, ArrayACS):
         Use an input array of the left quadrant in electrons and perform the rotations required to give correct
         arctic clocking.
 
-        See the docstring of the _FrameACS_ class for a complete description of the Euclid FPA, quadrants and
+        See the docstring of the `FrameACS` class for a complete description of the Euclid FPA, quadrants and
         rotations.
         """
         parallel_overscan = reg.Region(
@@ -215,7 +215,7 @@ class FrameACS(f.Frame, ArrayACS):
         Use an input array of the right quadrant in electrons and perform the rotations required to give correct
         arctic clocking.
 
-        See the docstring of the _FrameACS_ class for a complete description of the Euclid FPA, quadrants and
+        See the docstring of the `FrameACS` class for a complete description of the Euclid FPA, quadrants and
         rotations.
         """
         parallel_overscan = reg.Region(
@@ -247,7 +247,7 @@ class FrameACS(f.Frame, ArrayACS):
         Parameters
         ----------
         file_path : str
-            The path the file is output to, including the filename and the '.fits' extension,
+            The path the file is output to, including the filename and the ``.fits`` extension,
             e.g. '/path/to/filename.fits'
         overwrite : bool
             If a file already exists at the path, if overwrite=True it is overwritten else an error is raised."""

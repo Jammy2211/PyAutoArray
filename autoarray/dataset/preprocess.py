@@ -165,8 +165,8 @@ def noise_map_from_weight_map(weight_map):
     Parameters
     -----------
     pixel_scales : float
-        The size of each pixel in arc seconds.
-    weight_map : ndarray
+        The size of each pixel in scaled units.
+    weight_map : np.ndarray
         The weight-value of each pixel which is converted to a variance.
     """
     np.seterr(divide="ignore")
@@ -184,7 +184,7 @@ def noise_map_from_inverse_noise_map(inverse_noise_map):
 
     Parameters
     -----------
-    inverse_noise_map : ndarray
+    inverse_noise_map : np.ndarray
         The inverse noise_map value of each pixel which is converted to a variance.
     """
     return 1.0 / inverse_noise_map
@@ -250,7 +250,11 @@ def background_noise_map_from_edges_of_image(image, no_edges):
 
         edges = np.concatenate((edges, top_edge, bottom_edge, right_edge, left_edge))
 
-    return arrays.Array.full(fill_value=norm.fit(edges)[1], shape_2d=image.shape_2d)
+    return arrays.Array.full(
+        fill_value=norm.fit(edges)[1],
+        shape_2d=image.shape_2d,
+        pixel_scales=image.pixel_scales,
+    )
 
 
 def psf_with_odd_dimensions_from_psf(psf):
@@ -321,7 +325,7 @@ def poisson_noise_from_data_eps(data_eps, exposure_time_map, seed=-1):
 
     Parameters
     ----------
-    data_eps : ndarray
+    data_eps : np.ndarray
         The 2D image, whose values in counts are used to draw Poisson noise_maps values.
     exposure_time_map : Union(ndarray, int)
         2D array of the exposure time in each pixel used to convert to / from counts and electrons per second.
@@ -330,7 +334,7 @@ def poisson_noise_from_data_eps(data_eps, exposure_time_map, seed=-1):
 
     Returns
     -------
-    poisson_noise_map: ndarray
+    poisson_noise_map: np.ndarray
         An array describing simulated poisson noise_maps
     """
     setup_random_seed(seed)
@@ -348,7 +352,7 @@ def data_eps_with_poisson_noise_added(data_eps, exposure_time_map, seed=-1):
 
     Parameters
     ----------
-    data_eps : ndarray
+    data_eps : np.ndarray
         The 2D image, whose values in counts are used to draw Poisson noise_maps values.
     exposure_time_map : Union(ndarray, int)
         2D array of the exposure time in each pixel used to convert to / from counts and electrons per second.
@@ -357,7 +361,7 @@ def data_eps_with_poisson_noise_added(data_eps, exposure_time_map, seed=-1):
 
     Returns
     -------
-    poisson_noise_map: ndarray
+    poisson_noise_map: np.ndarray
         An array describing simulated poisson noise_maps
     """
     return data_eps + poisson_noise_from_data_eps(

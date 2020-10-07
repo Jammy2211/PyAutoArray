@@ -14,8 +14,8 @@ class Frame(abstract_frame.AbstractFrame):
     ):
         """Abstract class for the geometry of a CTI Image.
 
-        A f.FrameArray is stored as a 2D NumPy arrays. When this immage is passed to arctic, clocking goes towards
-        the 'top' of the NumPy arrays (e.g. towards row 0). Trails therefore appear towards the 'bottom' of the arrays
+        A f.FrameArray is stored as a 2D ndarrays. When this immage is passed to arctic, clocking goes towards
+        the 'top' of the ndarrays (e.g. towards row 0). Trails therefore appear towards the 'bottom' of the arrays
         (e.g. the final row).
 
         Arctic has no in-built functionality for changing the direction of clocking depending on the input
@@ -53,12 +53,12 @@ class Frame(abstract_frame.AbstractFrame):
 
     @classmethod
     def manual(
-        cls, array, roe_corner=(1, 0), scans=None, exposure_info=None, pixel_scales=None
+        cls, array, pixel_scales, roe_corner=(1, 0), scans=None, exposure_info=None
     ):
         """Abstract class for the geometry of a CTI Image.
 
-        A FrameArray is stored as a 2D NumPy arrays. When this immage is passed to arctic, clocking goes towards
-        the 'top' of the NumPy arrays (e.g. towards row 0). Trails therefore appear towards the 'bottom' of the arrays
+        A FrameArray is stored as a 2D ndarrays. When this immage is passed to arctic, clocking goes towards
+        the 'top' of the ndarrays (e.g. towards row 0). Trails therefore appear towards the 'bottom' of the arrays
         (e.g. the final row).
 
         Arctic has no in-built functionality for changing the direction of clocking depending on the input
@@ -108,8 +108,8 @@ class Frame(abstract_frame.AbstractFrame):
 
         """Abstract class for the geometry of a CTI Image.
 
-        A FrameArray is stored as a 2D NumPy arrays. When this immage is passed to arctic, clocking goes towards
-        the 'top' of the NumPy arrays (e.g. towards row 0). Trails therefore appear towards the 'bottom' of the arrays
+        A FrameArray is stored as a 2D ndarrays. When this immage is passed to arctic, clocking goes towards
+        the 'top' of the ndarrays (e.g. towards row 0). Trails therefore appear towards the 'bottom' of the arrays
         (e.g. the final row).
 
         Arctic has no in-built functionality for changing the direction of clocking depending on the input
@@ -158,28 +158,23 @@ class Frame(abstract_frame.AbstractFrame):
         cls,
         fill_value,
         shape_2d,
+        pixel_scales,
         roe_corner=(1, 0),
         scans=None,
         exposure_info=None,
-        pixel_scales=None,
     ):
 
         return cls.manual(
             array=np.full(fill_value=fill_value, shape=shape_2d),
+            pixel_scales=pixel_scales,
             roe_corner=roe_corner,
             scans=scans,
             exposure_info=exposure_info,
-            pixel_scales=pixel_scales,
         )
 
     @classmethod
     def ones(
-        cls,
-        shape_2d,
-        roe_corner=(1, 0),
-        scans=None,
-        exposure_info=None,
-        pixel_scales=None,
+        cls, shape_2d, pixel_scales, roe_corner=(1, 0), scans=None, exposure_info=None
     ):
         return cls.full(
             fill_value=1.0,
@@ -192,20 +187,15 @@ class Frame(abstract_frame.AbstractFrame):
 
     @classmethod
     def zeros(
-        cls,
-        shape_2d,
-        roe_corner=(1, 0),
-        scans=None,
-        exposure_info=None,
-        pixel_scales=None,
+        cls, shape_2d, pixel_scales, roe_corner=(1, 0), scans=None, exposure_info=None
     ):
         return cls.full(
             fill_value=0.0,
             shape_2d=shape_2d,
+            pixel_scales=pixel_scales,
             roe_corner=roe_corner,
             scans=scans,
             exposure_info=exposure_info,
-            pixel_scales=pixel_scales,
         )
 
     @classmethod
@@ -228,10 +218,10 @@ class Frame(abstract_frame.AbstractFrame):
         cls,
         file_path,
         hdu,
+        pixel_scales,
         roe_corner=(1, 0),
         scans=None,
         exposure_info=None,
-        pixel_scales=None,
     ):
         """Load the image ci_data from a fits file.
 
@@ -256,10 +246,10 @@ class Frame(abstract_frame.AbstractFrame):
 
         return cls.manual(
             array=array,
+            pixel_scales=pixel_scales,
             roe_corner=roe_corner,
             scans=scans,
             exposure_info=exposure_info,
-            pixel_scales=pixel_scales,
         )
 
     @classmethod

@@ -17,12 +17,12 @@ class AbstractVisibilities(np.ndarray):
 
         Parameters
         ----------
-        array_1d: ndarray
+        array_1d: np.ndarray
             An array representing image (e.g. an image, noise-map, etc.)
         pixel_scales: (float, float)
-            The arc-second to pixel conversion factor of each pixel.
+            The scaled to pixel conversion factor of each pixel.
         origin : (float, float)
-            The arc-second origin of the hyper array's coordinate system.
+            The scaled origin of the hyper array's coordinate system.
         """
         obj = visibilities_1d.view(cls)
         obj._as_complex = None
@@ -168,15 +168,18 @@ class VisibilitiesNoiseMap(Visibilities):
 
         Parameters
         ----------
-        array_1d: ndarray
+        array_1d: np.ndarray
             An array representing image (e.g. an image, noise-map, etc.)
         pixel_scales: (float, float)
-            The arc-second to pixel conversion factor of each pixel.
+            The scaled to pixel conversion factor of each pixel.
         origin : (float, float)
-            The arc-second origin of the hyper array's coordinate system.
+            The scaled origin of the hyper array's coordinate system.
         """
         obj = super(VisibilitiesNoiseMap, cls).__new__(
             cls=cls, visibilities_1d=visibilities_1d
+        )
+        obj.preconditioner_noise_normalization = np.sum(
+            np.divide(1.0, np.square(visibilities_1d))
         )
         obj.Wop = pylops.Diagonal(1.0 / obj.as_complex.ravel())
         return obj

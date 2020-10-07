@@ -109,7 +109,7 @@ class TestVisibilities:
 
 
 class TestVisibilitiesNoiseMap:
-    def test__visibilities_noise_has_weight_operator(self):
+    def test__visibilities_noise_has_attributes(self):
 
         noise_map = aa.VisibilitiesNoiseMap.manual_1d(
             visibilities=[[1.0, 2.0], [3.0, 4.0]]
@@ -124,6 +124,9 @@ class TestVisibilitiesNoiseMap:
         assert (noise_map.amplitudes == np.array([np.sqrt(5), 5.0])).all()
         assert noise_map.phases == pytest.approx(
             np.array([1.10714872, 0.92729522]), 1.0e-4
+        )
+        assert noise_map.preconditioner_noise_normalization == pytest.approx(
+            1.4236, 1.0e-4
         )
         assert (
             noise_map.Wop.todense()
