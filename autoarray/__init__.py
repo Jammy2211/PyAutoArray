@@ -3,6 +3,7 @@ from autoarray.structures.grids.iterate import GridIterate
 from . import exc
 from . import plot
 from . import util
+from . import mock
 from .dataset import preprocess
 from .dataset.imaging import Imaging
 from .dataset.imaging import MaskedImaging
