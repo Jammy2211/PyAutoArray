@@ -40,20 +40,6 @@ def make_mask_7x7_1_pix():
 
 
 @pytest.fixture(
-    name="blurring_mask_7x7"
-)
-def make_blurring_mask_7x7():
-    return mock.make_blurring_mask_7x7()
-
-
-@pytest.fixture(
-    name="mask_6x6"
-)
-def make_mask_6x6():
-    return mock.make_mask_6x6()
-
-
-@pytest.fixture(
     name="grid_7x7"
 )
 def make_grid_7x7():
@@ -75,13 +61,6 @@ def make_grid_iterate_7x7():
 
 
 @pytest.fixture(
-    name="sub_grid_7x7_simple"
-)
-def make_sub_grid_7x7_simple():
-    return mock.make_sub_grid_7x7_simple()
-
-
-@pytest.fixture(
     name="blurring_grid_7x7"
 )
 def make_blurring_grid_7x7():
@@ -89,24 +68,10 @@ def make_blurring_grid_7x7():
 
 
 @pytest.fixture(
-    name="convolver_7x7"
-)
-def make_convolver_7x7():
-    return mock.make_convolver_7x7()
-
-
-@pytest.fixture(
     name="image_7x7"
 )
 def make_image_7x7():
     return mock.make_image_7x7()
-
-
-@pytest.fixture(
-    name="psf_3x3"
-)
-def make_psf_3x3():
-    return mock.make_psf_3x3()
 
 
 @pytest.fixture(
@@ -128,13 +93,6 @@ def make_positions_7x7():
 )
 def make_imaging_7x7():
     return mock.make_imaging_7x7()
-
-
-@pytest.fixture(
-    name="imaging_6x6"
-)
-def make_imaging_6x6():
-    return mock.make_imaging_6x6()
 
 
 @pytest.fixture(
@@ -180,20 +138,6 @@ def make_transformer_7x7_7():
 
 
 @pytest.fixture(
-    name="masked_imaging_7x7"
-)
-def make_masked_imaging_7x7():
-    return mock.make_masked_imaging_7x7()
-
-
-@pytest.fixture(
-    name="masked_interferometer_7x2"
-)
-def make_masked_interferometer_7():
-    return mock.make_masked_interferometer_7()
-
-
-@pytest.fixture(
     name="fit_imaging_7x7"
 )
 def make_masked_imaging_fit_x1_plane_7x7():
@@ -208,24 +152,10 @@ def make_masked_interferometer_fit_x1_plane_7():
 
 
 @pytest.fixture(
-    name="rectangular_pixelization_grid_3x3"
-)
-def make_rectangular_pixelization_grid_3x3():
-    return mock.make_rectangular_pixelization_grid_3x3()
-
-
-@pytest.fixture(
     name="rectangular_mapper_7x7_3x3"
 )
 def make_rectangular_mapper_7x7_3x3():
     return mock.make_rectangular_mapper_7x7_3x3()
-
-
-@pytest.fixture(
-    name="voronoi_pixelization_grid_9"
-)
-def make_voronoi_pixelization_grid_9():
-    return mock.make_voronoi_pixelization_grid_9()
 
 
 @pytest.fixture(
