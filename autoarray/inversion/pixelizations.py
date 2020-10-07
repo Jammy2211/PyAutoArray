@@ -26,7 +26,7 @@ class SettingsPixelization:
     @property
     def tag(self):
         return (
-            f"{conf.instance.settings_tag.get('pixelization', 'pixelization')}["
+            f"{conf.instance['notation']['settings_tags']['pixelization']['pixelization']}["
             f"{self.use_border_tag}"
             f"{self.is_stochastic_tag}]"
         )
@@ -42,13 +42,13 @@ class SettingsPixelization:
         """
         if self.use_border:
 
-            tag = conf.instance.settings_tag.get("pixelization", "use_border", str)
+            tag = conf.instance["notation"]["settings_tags"]["pixelization"]["use_border"]
 
             if not tag:
                 return str(tag)
             return f"{tag}"
         elif not self.use_border:
-            return f"{conf.instance.settings_tag.get('pixelization', 'no_border')}"
+            return f"{conf.instance['notation']['settings_tags']['pixelization']['no_border']}"
 
     @property
     def is_stochastic_tag(self):
@@ -61,14 +61,12 @@ class SettingsPixelization:
         """
         if not self.is_stochastic:
 
-            tag = conf.instance.settings_tag.get("pixelization", "not_stochastic", str)
+            tag = conf.instance["notation"]["settings_tags"]["pixelization"]["not_stochastic"]
             if not tag:
                 return tag
             return "__" + tag
         elif self.is_stochastic:
-            return "__" + conf.instance.settings_tag.get(
-                "pixelization", "stochastic", str
-            )
+            return "__" + conf.instance["notation"]["settings_tags"]["pixelization"]["stochastic"]
 
     def settings_with_is_stochastic_true(self):
         settings = copy.copy(self)
