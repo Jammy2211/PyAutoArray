@@ -14,7 +14,7 @@ class GridInterpolate(abstract_grid.AbstractGrid):
     def __new__(
         cls, grid, mask, pixel_scales_interp, store_in_1d=True, *args, **kwargs
     ):
-        """Represents a grid of coordinates as described in the *Grid* class, but allows for a sparse grid to be used
+        """Represents a grid of coordinates as described in the `Grid` class, but allows for a sparse grid to be used
          to evaluate functions on the grid, the results of which are then interpolated to the grid's native resolution.
 
          This sparse grid, termed the 'interpolation grid', is computed from the full resolution grid and an input
@@ -23,7 +23,7 @@ class GridInterpolate(abstract_grid.AbstractGrid):
          interpolation evaluate pixels at the edge of the mask
 
          The decision whether to evaluate the function using the sparse grid and interpolate to th full resolution grid
-         is made in the *grid_like_to_grid* decorator. For every function that can receive a GridInterpolate, there is
+         is made in the `grid_like_to_grid` decorator. For every function that can receive a GridInterpolate, there is
          an entry in the 'interpolate.ini' config file where a bool determines if the interpolation is used.
 
          For functions which can be evaluated fast the interpolation should be turned off, ensuring the calculation is
@@ -51,7 +51,7 @@ class GridInterpolate(abstract_grid.AbstractGrid):
         """
         if store_in_1d and len(grid.shape) != 2:
             raise exc.GridException(
-                "An grid input into the grids.Grid.__new__ method has store_in_1d = True but"
+                "An grid input into the grids.Grid.__new__ method has store_in_1d = ``True`` but"
                 "the input shape of the array is not 1."
             )
 
@@ -136,7 +136,7 @@ class GridInterpolate(abstract_grid.AbstractGrid):
         origin=(0.0, 0.0),
         store_in_1d=True,
     ):
-        """Create a GridInterpolate (see *GridInterpolate.__new__*) by inputting the grid coordinates in 1D, for
+        """Create a GridInterpolate (see `GridInterpolate.__new__`) by inputting the grid coordinates in 1D, for
         example:
 
         grid=np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0]])
@@ -153,9 +153,9 @@ class GridInterpolate(abstract_grid.AbstractGrid):
             or a list of lists.
         shape_2d : (float, float)
             The 2D shape of the mask the grid is paired with.
-        pixel_scales : (float, float) or float
-            The pixel conversion scale of a pixel in the y and x directions. If input as a float, the pixel_scales
-            are converted to the format (float, float).
+        pixel_scales: (float, float) or float
+            The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a ``float``,
+            it is converted to a (float, float) structure.
         pixel_scales_interp : (float, float) or float
             The resolution of the sparse grid used to evaluate the function, from which the results are interpolated
             to the full resolution grid.
@@ -209,16 +209,16 @@ class GridInterpolate(abstract_grid.AbstractGrid):
         origin=(0.0, 0.0),
         store_in_1d=True,
     ):
-        """Create a GridInterpolate (see *GridInterpolate.__new__*) as a uniform grid of (y,x) values given an input
+        """Create a GridInterpolate (see `GridInterpolate.__new__`) as a uniform grid of (y,x) values given an input
         shape_2d and pixel scale of the grid:
 
         Parameters
         ----------
         shape_2d : (float, float)
             The 2D shape of the uniform grid and the mask that it is paired with.
-        pixel_scales : (float, float) or float
-            The pixel conversion scale of a pixel in the y and x directions. If input as a float, the pixel_scales
-            are converted to the format (float, float).
+        pixel_scales: (float, float) or float
+            The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a ``float``,
+            it is converted to a (float, float) structure.
         pixel_scales_interp : float
             The resolution of the sparse grid used to evaluate the function, from which the results are interpolated
             to the full resolution grid.
@@ -255,7 +255,7 @@ class GridInterpolate(abstract_grid.AbstractGrid):
 
     @classmethod
     def from_mask(cls, mask, pixel_scales_interp, store_in_1d=True):
-        """Create a GridInterpolate (see *GridInterpolate.__new__*) from a mask, where only unmasked pixels are included in
+        """Create a GridInterpolate (see `GridInterpolate.__new__`) from a mask, where only unmasked pixels are included in
         the grid (if the grid is represented in 2D masked values are (0.0, 0.0)).
 
         The mask's pixel_scales and origin properties are used to compute the grid (y,x) coordinates.
@@ -339,7 +339,8 @@ class GridInterpolate(abstract_grid.AbstractGrid):
         )
 
     def blurring_grid_from_kernel_shape(self, kernel_shape_2d):
-        """Compute the blurring grid from a grid and create it as a GridItnterpolate, via an input 2D kernel shape.
+        """
+    Returns the blurring grid from a grid and create it as a GridItnterpolate, via an input 2D kernel shape.
 
         For a full description of blurring grids, checkout *blurring_grid_from_mask_and_kernel_shape*.
 
@@ -496,7 +497,7 @@ class GridInterpolate(abstract_grid.AbstractGrid):
         - 2D np.ndarray   -> aa.Grid
 
         This function is used by the grid_like_to_structure decorator to convert the output result of a function
-        to an autoarray structure when a *Grid* instance is passed to the decorated function.
+        to an autoarray structure when a `Grid` instance is passed to the decorated function.
 
         Parameters
         ----------
@@ -522,7 +523,7 @@ class GridInterpolate(abstract_grid.AbstractGrid):
         - [2D np.ndarray] -> [aa.Grid]
 
         This function is used by the grid_like_list_to_structure-list decorator to convert the output result of a
-        function to a list of autoarray structure when a *Grid* instance is passed to the decorated function.
+        function to a list of autoarray structure when a `Grid` instance is passed to the decorated function.
 
         Parameters
         ----------

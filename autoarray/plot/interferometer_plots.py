@@ -16,11 +16,11 @@ def subplot_interferometer(interferometer, include=None, sub_plotter=None):
         The interferometer data_type, which include the observed data_type, noise_map, PSF, signal-to-noise_map, etc.
     origin : True
         If true, the origin of the dataset's coordinate system is plotted as a 'x'.
-    image_plane_pix_grid : ndarray or data_type.array.grid_stacks.PixGrid
+    image_plane_pix_grid : np.ndarray or data_type.array.grid_stacks.PixGrid
         If an adaptive pixelization whose pixels are formed by tracing pixels from the dataset, this plots those pixels \
         over the immage.
     ignore_config : bool
-        If *False*, the config file general.ini is used to determine whether the subpot is plotted. If *True*, the \
+        If ``False``, the config file general.ini is used to determine whether the subpot is plotted. If *True*, the \
         config file is ignored.
     """
 
@@ -124,7 +124,7 @@ def visibilities(interferometer, include=None, plotter=None):
         The image of the dataset.
     origin : True
         If true, the origin of the dataset's coordinate system is plotted as a 'x'.
-    image_plane_pix_grid : ndarray or data_type.array.grid_stacks.PixGrid
+    image_plane_pix_grid : np.ndarray or data_type.array.grid_stacks.PixGrid
         If an adaptive pixelization whose pixels are formed by tracing pixels from the dataset, this plots those pixels \
         over the immage.
     """
@@ -145,7 +145,7 @@ def noise_map(interferometer, include=None, plotter=None):
         The image of the dataset.
     origin : True
         If true, the origin of the dataset's coordinate system is plotted as a 'x'.
-    image_plane_pix_grid : ndarray or data_type.array.grid_stacks.PixGrid
+    image_plane_pix_grid : np.ndarray or data_type.array.grid_stacks.PixGrid
         If an adaptive pixelization whose pixels are formed by tracing pixels from the dataset, this plots those pixels \
         over the immage.
     """
@@ -174,7 +174,7 @@ def u_wavelengths(
         The image of the dataset.
     origin : True
         If true, the origin of the dataset's coordinate system is plotted as a 'x'.
-    image_plane_pix_grid : ndarray or data_type.array.grid_stacks.PixGrid
+    image_plane_pix_grid : np.ndarray or data_type.array.grid_stacks.PixGrid
         If an adaptive pixelization whose pixels are formed by tracing pixels from the dataset, this plots those pixels \
         over the immage.
     """
@@ -206,7 +206,7 @@ def v_wavelengths(
         The image of the dataset.
     origin : True
         If true, the origin of the dataset's coordinate system is plotted as a 'x'.
-    image_plane_pix_grid : ndarray or data_type.array.grid_stacks.PixGrid
+    image_plane_pix_grid : np.ndarray or data_type.array.grid_stacks.PixGrid
         If an adaptive pixelization whose pixels are formed by tracing pixels from the dataset, this plots those pixels \
         over the immage.
     """
@@ -238,7 +238,7 @@ def uv_wavelengths(
         The image of the dataset.
     origin : True
         If true, the origin of the dataset's coordinate system is plotted as a 'x'.
-    image_plane_pix_grid : ndarray or data_type.array.grid_stacks.PixGrid
+    image_plane_pix_grid : np.ndarray or data_type.array.grid_stacks.PixGrid
         If an adaptive pixelization whose pixels are formed by tracing pixels from the dataset, this plots those pixels \
         over the immage.
     """

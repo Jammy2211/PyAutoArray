@@ -38,7 +38,7 @@ def grid_angle_to_profile(grid_thetas):
 
     Parameters
     -----------
-    grid_thetas : ndarray
+    grid_thetas : np.ndarray
         The angle theta counter-clockwise from the positive x-axis to each coordinate in radians.
     """
     return np.cos(grid_thetas), np.sin(grid_thetas)
@@ -53,7 +53,7 @@ def grid_to_grid_cartesian(grid, radius):
     ----------
     grid : grid_like
         The (y, x) coordinates in the reference frame of the profile.
-    radius : ndarray
+    radius : np.ndarray
         The circular radius of each coordinate from the profile center.
     """
     grid_thetas = np.arctan2(grid[:, 0], grid[:, 1])
@@ -88,7 +88,7 @@ class MockGridLikeIteratorObj:
 
         Parameters
         -----------
-        grid_thetas : ndarray
+        grid_thetas : np.ndarray
             The angle theta counter-clockwise from the positive x-axis to each coordinate in radians.
         """
         return np.cos(grid_thetas), np.sin(grid_thetas)
@@ -102,7 +102,7 @@ class MockGridLikeIteratorObj:
         ----------
         grid : grid_like
             The (y, x) coordinates in the reference frame of the profile.
-        radius : ndarray
+        radius : np.ndarray
             The circular radius of each coordinate from the profile center.
         """
         grid_thetas = np.arctan2(grid[:, 0], grid[:, 1])

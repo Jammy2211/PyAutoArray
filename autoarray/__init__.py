@@ -43,4 +43,4 @@ from .structures.region import Region
 from .structures.visibilities import Visibilities
 from .structures.visibilities import VisibilitiesNoiseMap
 
-__version__ = "0.14.7"
+__version__ = "0.14.9"

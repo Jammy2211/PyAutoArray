@@ -1182,15 +1182,15 @@ from autoarray.plot import plotters
 
 
 class TestDecorator:
-    def test__kpc_per_arcsec_extacted_from_object_if_available(self):
+    def test__kpc_per_scaled_extacted_from_object_if_available(self):
 
         dictionary = {"hi": 1}
 
-        kpc_per_arcsec = plotters.kpc_per_arcsec_of_object_from_dictionary(
+        kpc_per_scaled = plotters.kpc_per_scaled_of_object_from_dictionary(
             dictionary=dictionary
         )
 
-        assert kpc_per_arcsec == None
+        assert kpc_per_scaled == None
 
         class MockObj:
             def __init__(self, param1):
@@ -1201,24 +1201,24 @@ class TestDecorator:
 
         dictionary = {"hi": 1, "hello": obj}
 
-        kpc_per_arcsec = plotters.kpc_per_arcsec_of_object_from_dictionary(
+        kpc_per_scaled = plotters.kpc_per_scaled_of_object_from_dictionary(
             dictionary=dictionary
         )
 
-        assert kpc_per_arcsec == None
+        assert kpc_per_scaled == None
 
         class MockObj:
-            def __init__(self, param1, kpc_per_arcsec):
+            def __init__(self, param1, kpc_per_scaled):
 
                 self.param1 = param1
-                self.kpc_per_arcsec = kpc_per_arcsec
+                self.kpc_per_scaled = kpc_per_scaled
 
-        obj = MockObj(param1=1, kpc_per_arcsec=2)
+        obj = MockObj(param1=1, kpc_per_scaled=2)
 
         dictionary = {"hi": 1, "hello": obj}
 
-        kpc_per_arcsec = plotters.kpc_per_arcsec_of_object_from_dictionary(
+        kpc_per_scaled = plotters.kpc_per_scaled_of_object_from_dictionary(
             dictionary=dictionary
         )
 
-        assert kpc_per_arcsec == 2
+        assert kpc_per_scaled == 2

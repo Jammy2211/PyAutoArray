@@ -101,20 +101,22 @@ class Geometry:
 
     @property
     def yticks(self):
-        """Compute the yticks labels of this grid, used for plotting the y-axis ticks when visualizing an image-grid"""
+        """
+    Returns the yticks labels of this grid, used for plotting the y-axis ticks when visualizing an image-grid"""
         return np.linspace(self.scaled_minima[0], self.scaled_maxima[0], 4)
 
     @property
     def xticks(self):
-        """Compute the xticks labels of this grid, used for plotting the x-axis ticks when visualizing an image-grid"""
+        """
+    Returns the xticks labels of this grid, used for plotting the x-axis ticks when visualizing an image-grid"""
         return np.linspace(self.scaled_minima[1], self.scaled_maxima[1], 4)
 
     @property
     def unmasked_grid_sub_1(self):
-        """ The arc second-grid of (y,x) coordinates of every pixel.
+        """ The scaled-grid of (y,x) coordinates of every pixel.
 
         This is defined from the top-left corner, such that the first pixel at location [0, 0] will have a negative x \
-        value y value in arc seconds.
+        value y value in scaled units.
         """
         grid_1d = grid_util.grid_1d_via_shape_2d_from(
             shape_2d=self.mask.shape,
@@ -165,19 +167,19 @@ class Geometry:
         )
 
     def grid_pixels_from_grid_scaled_1d(self, grid_scaled_1d):
-        """Convert a grid of (y,x) arc second coordinates to a grid of (y,x) pixel values. Pixel coordinates are \
+        """Convert a grid of (y,x) scaled coordinates to a grid of (y,x) pixel values. Pixel coordinates are \
         returned as floats such that they include the decimal offset from each pixel's top-left corner.
 
         The pixel coordinate origin is at the top left corner of the grid, such that the pixel [0,0] corresponds to \
-        highest y arc-second coordinate value and lowest x arc-second coordinate.
+        highest y scaled coordinate value and lowest x scaled coordinate.
 
-        The arc-second coordinate origin is defined by the class attribute origin, and coordinates are shifted to this \
+        The scaled coordinate origin is defined by the class attribute origin, and coordinates are shifted to this \
         origin before computing their 1D grid pixel indexes.
 
         Parameters
         ----------
-        grid_scaled_1d: ndarray
-            A grid of (y,x) coordinates in arc seconds.
+        grid_scaled_1d: np.ndarray
+            A grid of (y,x) coordinates in scaled units.
         """
         grid_pixels_1d = grid_util.grid_pixels_1d_from(
             grid_scaled_1d=grid_scaled_1d,
@@ -190,19 +192,19 @@ class Geometry:
         )
 
     def grid_pixel_centres_from_grid_scaled_1d(self, grid_scaled_1d):
-        """Convert a grid of (y,x) arc second coordinates to a grid of (y,x) pixel values. Pixel coordinates are \
+        """Convert a grid of (y,x) scaled coordinates to a grid of (y,x) pixel values. Pixel coordinates are \
         returned as integers such that they map directly to the pixel they are contained within.
 
         The pixel coordinate origin is at the top left corner of the grid, such that the pixel [0,0] corresponds to \
-        higher y arc-second coordinate value and lowest x arc-second coordinate.
+        higher y scaled coordinate value and lowest x scaled coordinate.
 
-        The arc-second coordinate origin is defined by the class attribute origin, and coordinates are shifted to this \
+        The scaled coordinate origin is defined by the class attribute origin, and coordinates are shifted to this \
         origin before computing their 1D grid pixel indexes.
 
         Parameters
         ----------
-        grid_scaled_1d: ndarray
-            The grid of (y,x) coordinates in arc seconds.
+        grid_scaled_1d: np.ndarray
+            The grid of (y,x) coordinates in scaled units.
         """
         grid_pixel_centres_1d = grid_util.grid_pixel_centres_1d_from(
             grid_scaled_1d=grid_scaled_1d,
@@ -218,7 +220,7 @@ class Geometry:
         )
 
     def grid_pixel_indexes_from_grid_scaled_1d(self, grid_scaled_1d):
-        """Convert a grid of (y,x) arc second coordinates to a grid of (y,x) pixel 1D indexes. Pixel coordinates are \
+        """Convert a grid of (y,x) scaled coordinates to a grid of (y,x) pixel 1D indexes. Pixel coordinates are \
         returned as integers such that they are the pixel from the top-left of the 2D grid going rights and then \
         downwards.
 
@@ -228,13 +230,13 @@ class Geometry:
         The fifth pixel on the top row, whose 2D index is [0,5], corresponds to 1D index 4.
         The first pixel on the second row, whose 2D index is [0,1], has 1D index 10 if a row has 10 pixels.
 
-        The arc-second coordinate origin is defined by the class attribute origin, and coordinates are shifted to this \
+        The scaled coordinate origin is defined by the class attribute origin, and coordinates are shifted to this \
         origin before computing their 1D grid pixel indexes.
 
         Parameters
         ----------
-        grid_scaled_1d: ndarray
-            The grid of (y,x) coordinates in arc seconds.
+        grid_scaled_1d: np.ndarray
+            The grid of (y,x) coordinates in scaled units.
         """
         grid_pixel_indexes_1d = grid_util.grid_pixel_indexes_1d_from(
             grid_scaled_1d=grid_scaled_1d,
@@ -250,17 +252,17 @@ class Geometry:
         )
 
     def grid_scaled_from_grid_pixels_1d(self, grid_pixels_1d):
-        """Convert a grid of (y,x) pixel coordinates to a grid of (y,x) arc second values.
+        """Convert a grid of (y,x) pixel coordinates to a grid of (y,x) scaled values.
 
         The pixel coordinate origin is at the top left corner of the grid, such that the pixel [0,0] corresponds to \
-        higher y arc-second coordinate value and lowest x arc-second coordinate.
+        higher y scaled coordinate value and lowest x scaled coordinate.
 
-        The arc-second coordinate origin is defined by the class attribute origin, and coordinates are shifted to this \
+        The scaled coordinate origin is defined by the class attribute origin, and coordinates are shifted to this \
         origin before computing their 1D grid pixel indexes.
 
         Parameters
         ----------
-        grid_pixels_1d : ndarray
+        grid_pixels_1d : np.ndarray
             The grid of (y,x) coordinates in pixels.
         """
         grid_scaled_1d = grid_util.grid_scaled_1d_from(

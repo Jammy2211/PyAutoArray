@@ -327,24 +327,20 @@ class TestNewArrays:
 
     def test__zoomed__2d_array_zoomed__uses_the_limits_of_the_mask(self):
 
-        array_2d = np.array(
-            [
-                [1.0, 2.0, 3.0, 4.0],
-                [5.0, 6.0, 7.0, 8.0],
-                [9.0, 10.0, 11.0, 12.0],
-                [13.0, 14.0, 15.0, 16.0],
-            ]
-        )
+        array_2d = [
+            [1.0, 2.0, 3.0, 4.0],
+            [5.0, 6.0, 7.0, 8.0],
+            [9.0, 10.0, 11.0, 12.0],
+            [13.0, 14.0, 15.0, 16.0],
+        ]
 
         mask = aa.Mask2D.manual(
-            mask=np.array(
-                [
-                    [True, True, True, True],
-                    [True, False, False, True],
-                    [True, False, False, True],
-                    [True, True, True, True],
-                ]
-            ),
+            mask=[
+                [True, True, True, True],
+                [True, False, False, True],
+                [True, False, False, True],
+                [True, True, True, True],
+            ],
             pixel_scales=(1.0, 1.0),
             sub_size=1,
         )
@@ -529,14 +525,12 @@ class TestNewArrays:
 
     def test__zoomed__array_extent__uses_the_limits_of_the_unzoomed_mask(self):
 
-        array_2d = np.array(
-            [
-                [1.0, 2.0, 3.0, 4.0],
-                [5.0, 6.0, 7.0, 8.0],
-                [9.0, 10.0, 11.0, 12.0],
-                [13.0, 14.0, 15.0, 16.0],
-            ]
-        )
+        array_2d = [
+            [1.0, 2.0, 3.0, 4.0],
+            [5.0, 6.0, 7.0, 8.0],
+            [9.0, 10.0, 11.0, 12.0],
+            [13.0, 14.0, 15.0, 16.0],
+        ]
 
         mask = aa.Mask2D.manual(
             mask=np.array(
@@ -590,13 +584,11 @@ class TestNewArrays:
         assert arr_binned.pixel_scales == (0.4, 0.4)
 
     def test__binned_up__invalid_method__raises_exception(self):
-        array_2d = np.array(
-            [
-                [1.0, 6.0, 3.0, 7.0, 3.0, 2.0],
-                [2.0, 5.0, 3.0, 7.0, 7.0, 7.0],
-                [1.0, 2.0, 3.0, 4.0, 5.0, 6.0],
-            ]
-        )
+        array_2d = [
+            [1.0, 6.0, 3.0, 7.0, 3.0, 2.0],
+            [2.0, 5.0, 3.0, 7.0, 7.0, 7.0],
+            [1.0, 2.0, 3.0, 4.0, 5.0, 6.0],
+        ]
 
         array_2d = aa.Array.manual_2d(
             array=array_2d, sub_size=1, pixel_scales=(0.1, 0.1)
@@ -608,7 +600,9 @@ class TestNewArrays:
 class TestOutputToFits:
     def test__output_to_fits(self):
 
-        arr = aa.Array.from_fits(file_path=test_data_dir + "3x3_ones.fits", hdu=0)
+        arr = aa.Array.from_fits(
+            file_path=test_data_dir + "3x3_ones.fits", hdu=0, pixel_scales=1.0
+        )
 
         output_data_dir = "{}/files/array/output_test/".format(
             os.path.dirname(os.path.realpath(__file__))
@@ -621,14 +615,16 @@ class TestOutputToFits:
         arr.output_to_fits(file_path=output_data_dir + "array.fits")
 
         array_from_out = aa.Array.from_fits(
-            file_path=output_data_dir + "array.fits", hdu=0
+            file_path=output_data_dir + "array.fits", hdu=0, pixel_scales=1.0
         )
 
         assert (array_from_out.in_2d == np.ones((3, 3))).all()
 
     def test__output_to_fits__shapes_of_arrays_are_2d(self):
 
-        arr = aa.Array.from_fits(file_path=test_data_dir + "3x3_ones.fits", hdu=0)
+        arr = aa.Array.from_fits(
+            file_path=test_data_dir + "3x3_ones.fits", hdu=0, pixel_scales=1.0
+        )
 
         output_data_dir = "{}/files/array/output_test/".format(
             os.path.dirname(os.path.realpath(__file__))

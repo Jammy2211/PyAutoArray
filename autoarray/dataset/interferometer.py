@@ -93,22 +93,22 @@ class AbstractSettingsMaskedInterferometer(
           Parameters
           ----------
         grid_class : ag.Grid
-            The type of grid used to create the image from the *Galaxy* and *Plane*. The options are *Grid*,
-            *GridIterate* and *GridInterpolate* (see the *Grids* documentation for a description of these options).
+            The type of grid used to create the image from the `Galaxy` and `Plane`. The options are `Grid`,
+            `GridIterate` and `GridInterpolate` (see the `Grid` documentation for a description of these options).
         grid_inversion_class : ag.Grid
-            The type of grid used to create the grid that maps the _Inversion_ source pixels to the data's image-pixels.
-            The options are *Grid*, *GridIterate* and *GridInterpolate* (see the *Grids* documentation for a
+            The type of grid used to create the grid that maps the `Inversion` source pixels to the data's image-pixels.
+            The options are `Grid`, `GridIterate` and `GridInterpolate` (see the `Grid` documentation for a
             description of these options).
         sub_size : int
-            If the grid and / or grid_inversion use a *Grid*, this sets the sub-size used by the *Grid*.
+            If the grid and / or grid_inversion use a `Grid`, this sets the sub-size used by the `Grid`.
         fractional_accuracy : float
-            If the grid and / or grid_inversion use a *GridIterate*, this sets the fractional accuracy it
+            If the grid and / or grid_inversion use a `GridIterate`, this sets the fractional accuracy it
             uses when evaluating functions.
         sub_steps : [int]
-            If the grid and / or grid_inversion use a *GridIterate*, this sets the steps the sub-size is increased by
+            If the grid and / or grid_inversion use a `GridIterate`, this sets the steps the sub-size is increased by
             to meet the fractional accuracy when evaluating functions.
         pixel_scales_interp : float or (float, float)
-            If the grid and / or grid_inversion use a *GridInterpolate*, this sets the resolution of the interpolation
+            If the grid and / or grid_inversion use a `GridInterpolate`, this sets the resolution of the interpolation
             grid.
         signal_to_noise_limit : float
             If input, the dataset's noise-map is rescaled such that no pixel has a signal-to-noise above the
@@ -245,7 +245,7 @@ class AbstractSimulatorInterferometer:
             The shape of the observation. Note that we do not simulator a full Imaging frame (e.g. 2000 x 2000 pixels for \
             Hubble imaging), but instead just a cut-out around the strong lens.
         real_space_pixel_scales : float
-            The size of each pixel in arc seconds.
+            The size of each pixel in scaled units.
         psf : PSF
             An arrays describing the PSF kernel of the image.
         exposure_time_map : float
@@ -264,23 +264,23 @@ class AbstractSimulatorInterferometer:
 
     def from_image(self, image, name=None):
         """
-        Create a realistic simulated image by applying effects to a plain simulated image.
+        Returns a realistic simulated image by applying effects to a plain simulated image.
 
         Parameters
         ----------
         name
-        real_space_image : ndarray
+        real_space_image : np.ndarray
             The image before simulating (e.g. the lens and source galaxies before optics blurring and UVPlane read-out).
         real_space_pixel_scales: float
-            The scale of each pixel in arc seconds
-        exposure_time_map : ndarray
+            The scale of each pixel in scaled units
+        exposure_time_map : np.ndarray
             An array representing the effective exposure time of each pixel.
         psf: PSF
             An array describing the PSF the simulated image is blurred with.
-        background_sky_map : ndarray
+        background_sky_map : np.ndarray
             The value of background sky in every image pixel (electrons per second).
         add_noise: Bool
-            If True poisson noise_maps is simulated and added to the image, based on the total counts in each image
+            If ``True`` poisson noise_maps is simulated and added to the image, based on the total counts in each image
             pixel
         noise_seed: int
             A seed for random noise_maps generation
