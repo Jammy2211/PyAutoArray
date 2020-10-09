@@ -339,7 +339,7 @@ def numpy_array_2d_to_fits(
     file_path : str
         The full path of the file that is output, including the file name and ``.fits`` extension.
     overwrite : bool
-        If ``True`` and a file already exists with the input file_path the .fits file is overwritten. If ``False``, an
+        If ``True`` and a file already exists with the input file_path the .fits file is overwritten. If `False`, an
         error is raised.
 
     Returns
@@ -518,7 +518,7 @@ def sub_array_1d_from(
     sub_array_2d : np.ndarray
         A 2D array of values on the dimensions of the sub-grid.
     mask : np.ndarray
-        A 2D array of bools, where ``False`` values mean unmasked and are included in the util.
+        A 2D array of bools, where `False` values mean unmasked and are included in the util.
     array_2d : np.ndarray
         The 2D array of values which are mapped to a 1D array.
 
@@ -638,7 +638,7 @@ def sub_array_2d_via_sub_indexes_from(
     sub_array_2d : np.ndarray
         A 2D array of values on the dimensions of the sub-grid.
     mask : np.ndarray
-        A 2D array of bools, where ``False`` values mean unmasked and are included in the util.
+        A 2D array of bools, where `False` values mean unmasked and are included in the util.
     array_2d : np.ndarray
         The 2D array of values which are mapped to a 1D array.
 
@@ -697,7 +697,7 @@ def sub_array_complex_1d_from(
     sub_array_2d : np.ndarray
         A 2D array of values on the dimensions of the sub-grid.
     mask : np.ndarray
-        A 2D array of bools, where ``False`` values mean unmasked and are included in the util.
+        A 2D array of bools, where `False` values mean unmasked and are included in the util.
     array_2d : np.ndarray
         The 2D array of values which are mapped to a 1D array.
 

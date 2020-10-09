@@ -45,7 +45,7 @@ def subplot(
         If an adaptive pixelization whose pixels are formed by tracing pixels from the dataset, this plots those pixels \
         over the immage.
     ignore_config : bool
-        If *False*, the config file general.ini is used to determine whether the subpot is plotted. If *True*, the \
+        If *False*, the config file general.ini is used to determine whether the subpot is plotted. If `True`, the \
         config file is ignored.
     """
 

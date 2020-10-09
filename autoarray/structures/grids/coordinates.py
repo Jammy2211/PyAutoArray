@@ -147,7 +147,7 @@ class AbstractGridCoordinates(np.ndarray):
         file_path : str
             The path to the coordinates .dat file containing the coordinates (e.g. '/path/to/coordinates.dat')
         overwrite : bool
-            If there is as exsiting file it will be overwritten if this is *True*.
+            If there is as exsiting file it will be overwritten if this is `True`.
         """
 
         if overwrite and os.path.exists(file_path):

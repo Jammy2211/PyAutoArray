@@ -36,7 +36,7 @@ class Grid(abstract_grid.AbstractGrid):
          x x x x x x x x x x     This is an example mask.Mask2D, where:
          x x x x x x x x x x
          x x x xIoIo x x x x     x = ``True`` (Pixel is masked and excluded from the grid)
-         x x xIoIoIoIo x x x     o = ``False`` (Pixel is not masked and included in the grid)
+         x x xIoIoIoIo x x x     o = `False` (Pixel is not masked and included in the grid)
          x x xIoIoIoIo x x x
          x x x x x x x x x x
          x x x x x x x x x x
@@ -83,7 +83,7 @@ class Grid(abstract_grid.AbstractGrid):
          x x x x x x x x x x     This is an example mask.Mask2D, where:
          x x x x x x x x x x
          x x x x x x x x x x     x = ``True`` (Pixel is masked and excluded from lens)
-         x x x xIoIo x x x x     o = ``False`` (Pixel is not masked and included in lens)
+         x x x xIoIo x x x x     o = `False` (Pixel is not masked and included in lens)
          x x x x x x x x x x
          x x x x x x x x x x
          x x x x x x x x x x
@@ -145,7 +145,7 @@ class Grid(abstract_grid.AbstractGrid):
          x x x x x x x x x xI     This is an example mask.Mask2D, where:
          x x x x x x x x x xI
          x x x xIoIo x x x xI     x = ``True`` (Pixel is masked and excluded from the grid)
-         x x xIoIoIoIo x x xI     o = ``False`` (Pixel is not masked and included in the grid)
+         x x xIoIoIoIo x x xI     o = `False` (Pixel is not masked and included in the grid)
          x x xIoIoIoIo x x xI
          x x x x x x x x x xI
          x x x x x x x x x xI
@@ -688,7 +688,7 @@ class Grid(abstract_grid.AbstractGrid):
          x x x x x x x x x xI     This is an imaging.Mask2D, where
          x x x x x x x x x xI
          x x x x x x x x x xI     x = ``True`` (Pixel is masked and excluded from lens)
-         x x xIoIoIo x x x xI     o = ``False`` (Pixel is not masked and included in lens)
+         x x xIoIoIo x x x xI     o = `False` (Pixel is not masked and included in lens)
          x x xIoIoIo x x x xI
          x x xIoIoIo x x x xI
          x x x x x x x x x xI
@@ -701,7 +701,7 @@ class Grid(abstract_grid.AbstractGrid):
          x x x x x x x x xI     This is an example grid.Mask2D, where
          x x x x x x x x xI
          x xIoIoIoIoIo x xI     x = ``True`` (Pixel is masked and excluded from lens)
-         x xIo x x xIo x xI     o = ``False`` (Pixel is not masked and included in lens)
+         x xIo x x xIo x xI     o = `False` (Pixel is not masked and included in lens)
          x xIo x x xIo x xI
          x xIo x x xIo x xI
          x xIoIoIoIoIo x xI
@@ -730,7 +730,7 @@ class Grid(abstract_grid.AbstractGrid):
          x x x x x x x x xI     This is an example grid.Mask2D, where
          xIoIoIoIoIoIoIo xI
          xIoIoIoIoIoIoIo xI     x = ``True`` (Pixel is masked and excluded from lens)
-         xIoIo x x xIoIo xI     o = ``False`` (Pixel is not masked and included in lens)
+         xIoIo x x xIoIo xI     o = `False` (Pixel is not masked and included in lens)
          xIoIo x x xIoIo xI
          xIoIo x x xIoIo xI
          xIoIoIoIoIoIoIo xI

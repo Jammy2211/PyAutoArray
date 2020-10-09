@@ -72,7 +72,7 @@ def plot_array(
         If True, the 2D region of the array corresponding to the rectangle encompassing all unmasked values is \
         plotted, thereby zooming into the region of interest.
     include_border : bool
-        If a mask is supplied, its borders pixels (e.g. the exterior edge) is plotted if this is *True*.
+        If a mask is supplied, its borders pixels (e.g. the exterior edge) is plotted if this is `True`.
     points : [[]]
         Lists of (y,x) coordinates on the image which are plotted as colored dots, to highlight specific pixels.
     grid : data_type.array.aa.Grid
@@ -465,7 +465,7 @@ def plot_border(mask, include_border, pointsize):
     mask : ndarray of data_type.array.mask.Mask
         The mask applied to the array, the edge of which is plotted as a set of points over the plotted array.
     include_border : bool
-        If a mask is supplied, its borders pixels (e.g. the exterior edge) is plotted if this is *True*.
+        If a mask is supplied, its borders pixels (e.g. the exterior edge) is plotted if this is `True`.
     unit_label : str
         The label for the unit_label of the y / x axis of the plots.
     kpc_per_arcsec : float or None

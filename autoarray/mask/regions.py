@@ -20,21 +20,21 @@ class Regions:
     @property
     def _edge_1d_indexes(self):
         """The indicies of the mask's edge pixels, where an edge pixel is any unmasked pixel on its edge \
-        (next to at least one pixel with a *True* value).
+        (next to at least one pixel with a `True` value).
         """
         return mask_util.edge_1d_indexes_from(mask=self.mask).astype("int")
 
     @property
     def _edge_2d_indexes(self):
         """The indicies of the mask's edge pixels, where an edge pixel is any unmasked pixel on its edge \
-        (next to at least one pixel with a *True* value).
+        (next to at least one pixel with a `True` value).
         """
         return self._mask_index_for_mask_1d_index[self._edge_1d_indexes].astype("int")
 
     @property
     def _border_1d_indexes(self):
         """The indicies of the mask's border pixels, where a border pixel is any unmasked pixel on an
-        exterior edge (e.g. next to at least one pixel with a *True* value but not central pixels like those within \
+        exterior edge (e.g. next to at least one pixel with a `True` value but not central pixels like those within \
         an annulus mask).
         """
         return mask_util.border_1d_indexes_from(mask=self.mask).astype("int")
@@ -42,7 +42,7 @@ class Regions:
     @property
     def _border_2d_indexes(self):
         """The indicies of the mask's border pixels, where a border pixel is any unmasked pixel on an
-        exterior edge (e.g. next to at least one pixel with a *True* value but not central pixels like those within \
+        exterior edge (e.g. next to at least one pixel with a `True` value but not central pixels like those within \
         an annulus mask).
         """
         return self._mask_index_for_mask_1d_index[self._border_1d_indexes].astype("int")
@@ -50,7 +50,7 @@ class Regions:
     @property
     def _sub_border_1d_indexes(self):
         """The indicies of the mask's border pixels, where a border pixel is any unmasked pixel on an
-        exterior edge (e.g. next to at least one pixel with a *True* value but not central pixels like those within \
+        exterior edge (e.g. next to at least one pixel with a `True` value but not central pixels like those within \
         an annulus mask).
         """
         return mask_util.sub_border_pixel_1d_indexes_from(
@@ -86,7 +86,7 @@ class Regions:
     @property
     def unmasked_mask(self):
         """The indicies of the mask's border pixels, where a border pixel is any unmasked pixel on an
-        exterior edge (e.g. next to at least one pixel with a *True* value but not central pixels like those within \
+        exterior edge (e.g. next to at least one pixel with a `True` value but not central pixels like those within \
         an annulus mask).
         """
         return msk.Mask2D.unmasked(
@@ -99,7 +99,7 @@ class Regions:
     @property
     def edge_mask(self):
         """The indicies of the mask's border pixels, where a border pixel is any unmasked pixel on an
-        exterior edge (e.g. next to at least one pixel with a *True* value but not central pixels like those within \
+        exterior edge (e.g. next to at least one pixel with a `True` value but not central pixels like those within \
         an annulus mask).
         """
         mask = np.full(fill_value=True, shape=self.mask.shape)
@@ -114,7 +114,7 @@ class Regions:
     @property
     def border_mask(self):
         """The indicies of the mask's border pixels, where a border pixel is any unmasked pixel on an
-        exterior edge (e.g. next to at least one pixel with a *True* value but not central pixels like those within \
+        exterior edge (e.g. next to at least one pixel with a `True` value but not central pixels like those within \
         an annulus mask).
         """
         mask = np.full(fill_value=True, shape=self.mask.shape)
