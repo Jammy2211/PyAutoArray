@@ -230,7 +230,7 @@ class Frame(abstract_frame.AbstractFrame):
         path : str
             The path to the ci_data
         filename : str
-            The file phase_name of the fits image ci_data.
+            The file name of the fits image ci_data.
         hdu : int
             The HDU number in the fits file containing the image ci_data.
         frame_geometry : FrameArray.FrameGeometry

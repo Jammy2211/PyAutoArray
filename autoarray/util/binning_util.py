@@ -319,7 +319,7 @@ def mask_1d_index_for_padded_mask_index_from(
     mask: np.ndarray, bin_up_factor: int
 ) -> np.ndarray:
     """
-    Returns a 2D array which maps every ``False`` entry of a 2D mask to its 1D mask array index 2D binned mask. Every
+    Returns a 2D array which maps every `False` entry of a 2D mask to its 1D mask array index 2D binned mask. Every
     ``True`` entry is given a value -1.
 
     This uses ``mask_1d_index_for_padded_mask_index``, see this method for a more detailed description.
@@ -356,7 +356,7 @@ def binned_mask_1d_index_for_padded_mask_index_from(
     mask: np.ndarray, bin_up_factor: int
 ) -> np.ndarray:
     """
-    Returns a 2D array which maps every ``False`` entry of a 2D mask to its 1D binned mask index (created using
+    Returns a 2D array which maps every `False` entry of a 2D mask to its 1D binned mask index (created using
     ``binned_up_mask_from_mask_and_bin_up_factor``).
 
     We create an array the same shape as the 2D mask (after padding for the binnning up procedure), where each entry
@@ -677,7 +677,7 @@ def masked_array_1d_for_binned_masked_array_1d_all_from(
      - The first binned mask pixel maps to the first, second, fifth and sixth masked pixels.
      - The second binned mask pixel maps to the third, fourth, seventh and eighth masked pixels
      - The third binned mask pixel maps to the ninth, tenth and eleventh masked pixels (The fourth masked pixel it
-       maps to is a *True* value and therefore masked.)
+       maps to is a `True` value and therefore masked.)
 
     Parameters
     ----------

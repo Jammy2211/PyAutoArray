@@ -23,7 +23,7 @@ class AbstractMask1d(abstract_mask.AbstractMask):
         """ A 1D mask, representing 1D data on a uniform line of pixels with equal spacing.
 
         When applied to 1D data it extracts or masks the unmasked image pixels corresponding to mask entries that are
-        ``False`` or 0).
+        `False` or 0).
 
         The mask also defines the geometry of the 1D data structure it is paired to, for example how every pixel
         coordinate on the 1D line of data converts to physical units via the ``pixel_scales`` and ``origin``
@@ -33,7 +33,7 @@ class AbstractMask1d(abstract_mask.AbstractMask):
         ----------
         mask: np.ndarray
             The ``ndarray`` of shape [total_pixels] containing the ``bool'``s representing the mask, where
-            ``False`` signifies an entry is unmasked and used in calculations..
+            `False` signifies an entry is unmasked and used in calculations..
         pixel_scales: (float, float)
             The scaled units to pixel units conversion factor of each pixel.
         origin : (float, float)
@@ -69,7 +69,7 @@ class AbstractMask1d(abstract_mask.AbstractMask):
         file_path : str
             The full path of the file that is output, including the file name and ``.fits`` extension.
         overwrite : bool
-            If ``True`` and a file already exists with the input file_path the .fits file is overwritten. If ``False``,
+            If ``True`` and a file already exists with the input file_path the .fits file is overwritten. If `False`,
             an error is raised.
 
         Returns

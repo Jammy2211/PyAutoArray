@@ -44,7 +44,7 @@ class Convolver:
         IxIxIxIxIxIxIxIxIxIxI     This is an imaging.Mask2D, where:
         IxIxIxIxIxIxIxIxIxIxI
         IxIxIxIxIxIxIxIxIxIxI     x = ``True`` (Pixel is masked and excluded from lens)
-        IxIxIxIoIoIoIxIxIxIxI     o = ``False`` (Pixel is not masked and included in lens)
+        IxIxIxIoIoIoIxIxIxIxI     o = `False` (Pixel is not masked and included in lens)
         IxIxIxIoIoIoIxIxIxIxI
         IxIxIxIoIoIoIxIxIxIxI
         IxIxIxIxIxIxIxIxIxIxI
@@ -117,7 +117,7 @@ class Convolver:
         IxIxIxIxIxIxIxIxIxIxI     This is an example grid.Mask2D, where:
         IxIxIxIxIxIxIxIxIxIxI
         IxIxIoIoIoIoIoIxIxIxI     x = ``True`` (Pixel is masked and excluded from lens)
-        IxIxIoIxIxIxIoIxIxIxI     o = ``False`` (Pixel is not masked and included in lens)
+        IxIxIoIxIxIxIoIxIxIxI     o = `False` (Pixel is not masked and included in lens)
         IxIxIoIxIxIxIoIxIxIxI
         IxIxIoIxIxIxIoIxIxIxI
         IxIxIoIoIoIoIoIxIxIxI

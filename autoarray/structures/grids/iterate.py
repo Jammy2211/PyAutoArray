@@ -428,7 +428,7 @@ class GridIterate(abstract_grid.AbstractGrid):
     Returns a fractional mask from a result array, where the fractional mask describes whether the evaluated
         value in the result array is within the `GridIterate`'s specified fractional accuracy. The fractional mask thus
         determines whether a pixel on the grid needs to be reevaluated at a higher level of sub-gridding to meet the
-        specified fractional accuracy. If it must be re-evaluated, the fractional masks's entry is ``False``.
+        specified fractional accuracy. If it must be re-evaluated, the fractional masks's entry is `False`.
 
         The fractional mask is computed by comparing the results evaluated at one level of sub-gridding to another
         at a higher level of sub-griding. Thus, the sub-grid size in chosen on a per-pixel basis until the function
@@ -473,10 +473,10 @@ class GridIterate(abstract_grid.AbstractGrid):
     ):
         """Jitted functioon to determine the fractional mask, which is a mask where:
 
-        - *True* entries signify the function has been evaluated in that pixel to desired fractional accuracy and
+        - `True` entries signify the function has been evaluated in that pixel to desired fractional accuracy and
            therefore does not need to be iteratively computed at higher levels of sub-gridding.
 
-        - ``False`` entries signify the function has not been evaluated in that pixel to desired fractional accuracy and
+        - `False` entries signify the function has not been evaluated in that pixel to desired fractional accuracy and
            therefore must be iterative computed at higher levels of sub-gridding to meet this accuracy."""
 
         for y in range(fractional_mask.shape[0]):
@@ -614,7 +614,7 @@ class GridIterate(abstract_grid.AbstractGrid):
     Returns a fractional mask from a result array, where the fractional mask describes whether the evaluated
         value in the result array is within the `GridIterate`'s specified fractional accuracy. The fractional mask thus
         determines whether a pixel on the grid needs to be reevaluated at a higher level of sub-gridding to meet the
-        specified fractional accuracy. If it must be re-evaluated, the fractional masks's entry is ``False``.
+        specified fractional accuracy. If it must be re-evaluated, the fractional masks's entry is `False`.
 
         The fractional mask is computed by comparing the results evaluated at one level of sub-gridding to another
         at a higher level of sub-griding. Thus, the sub-grid size in chosen on a per-pixel basis until the function
@@ -659,10 +659,10 @@ class GridIterate(abstract_grid.AbstractGrid):
     ):
         """Jitted function to determine the fractional mask, which is a mask where:
 
-        - *True* entries signify the function has been evaluated in that pixel to desired fractional accuracy and
+        - `True` entries signify the function has been evaluated in that pixel to desired fractional accuracy and
            therefore does not need to be iteratively computed at higher levels of sub-gridding.
 
-        - ``False`` entries signify the function has not been evaluated in that pixel to desired fractional accuracy and
+        - `False` entries signify the function has not been evaluated in that pixel to desired fractional accuracy and
            therefore must be iterative computed at higher levels of sub-gridding to meet this accuracy."""
 
         for y in range(fractional_mask.shape[0]):

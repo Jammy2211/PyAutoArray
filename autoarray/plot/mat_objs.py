@@ -59,7 +59,7 @@ class Units:
         ----------
         use_scaled : bool
             If True, plot the y and x axis labels of the `Array` as its scaled coordinates using its *pixel_scales*
-            attribute. If ``False`` plot them in pixel units.
+            attribute. If `False` plot them in pixel units.
         conversion_factor : float
             If plotting the labels in scaled units, this factor multiplies the values that are used for the labels.
             This allows for additional unit conversions of the figure labels.
@@ -1384,7 +1384,7 @@ class Liner:
         mask : np.ndarray of data_type.array.mask.Mask2D
             The mask applied to the array, the edge of which is plotted as a set of points over the plotted array.
         plot_lines : bool
-            If a mask is supplied, its liness pixels (e.g. the exterior edge) is plotted if this is *True*.
+            If a mask is supplied, its liness pixels (e.g. the exterior edge) is plotted if this is `True`.
         unit_label : str
             The unit_label of the y / x axis of the plots.
         kpc_per_scaled : float or None
@@ -1432,7 +1432,7 @@ class Liner:
         mask : np.ndarray of data_type.array.mask.Mask2D
             The mask applied to the array, the edge of which is plotted as a set of points over the plotted array.
         plot_lines : bool
-            If a mask is supplied, its liness pixels (e.g. the exterior edge) is plotted if this is *True*.
+            If a mask is supplied, its liness pixels (e.g. the exterior edge) is plotted if this is `True`.
         unit_label : str
             The unit_label of the y / x axis of the plots.
         kpc_per_scaled : float or None

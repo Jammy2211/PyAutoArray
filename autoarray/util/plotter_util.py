@@ -19,7 +19,7 @@ def get_real_space_mask_from(mask: np.ndarray, fit: FitDataset) -> np.ndarray:
     fit : FitDataset
         The fit to the datas, which includes a lisrt of every model image, residual_map, chi-squareds, etc.
     mask : bool
-        If *True*, the masks is plotted on the fit's datas.
+        If `True`, the masks is plotted on the fit's datas.
     """
     if mask:
         return fit.masked_dataset.settings.mask

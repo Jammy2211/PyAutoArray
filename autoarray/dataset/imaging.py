@@ -258,7 +258,7 @@ class AbstractMaskedImaging(abstract_dataset.AbstractMaskedDataset):
             The shape of the PSF used for convolving model image generated using analytic light profiles. A smaller \
             shape will trim the PSF relative to the input image PSF, giving a faster analysis run-time.
         pixel_scales_interp : float
-            If *True*, expensive to compute mass profile deflection angles will be computed on a sparse grid and \
+            If `True`, expensive to compute mass profile deflection angles will be computed on a sparse grid and \
             interpolated to the grid, sub and blurring grids.
         inversion_pixel_limit : int or None
             The maximum number of pixels that can be used by an inversion, with the limit placed primarily to speed \

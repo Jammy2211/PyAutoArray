@@ -145,7 +145,7 @@ class Geometry:
     @property
     def edge_grid_sub_1(self):
         """The indicies of the mask's border pixels, where a border pixel is any unmasked pixel on an
-        exterior edge (e.g. next to at least one pixel with a *True* value but not central pixels like those within \
+        exterior edge (e.g. next to at least one pixel with a `True` value but not central pixels like those within \
         an annulus mask).
         """
         edge_grid_1d = self.masked_grid_sub_1[self.regions._edge_1d_indexes]
@@ -156,7 +156,7 @@ class Geometry:
     @property
     def border_grid_sub_1(self):
         """The indicies of the mask's border pixels, where a border pixel is any unmasked pixel on an
-        exterior edge (e.g. next to at least one pixel with a *True* value but not central pixels like those within \
+        exterior edge (e.g. next to at least one pixel with a `True` value but not central pixels like those within \
         an annulus mask).
         """
         border_grid_1d = self.masked_grid_sub_1[self.regions._border_1d_indexes]
@@ -319,7 +319,7 @@ class Geometry:
     @property
     def border_grid_1d(self):
         """The indicies of the mask's border pixels, where a border pixel is any unmasked pixel on an
-        exterior edge (e.g. next to at least one pixel with a *True* value but not central pixels like those within \
+        exterior edge (e.g. next to at least one pixel with a `True` value but not central pixels like those within \
         an annulus mask).
         """
         return self.masked_grid[self.mask.regions._sub_border_1d_indexes]

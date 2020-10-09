@@ -26,7 +26,7 @@ class AbstractMask(np.ndarray):
         """ An abstract class for a mask that represents data structure that can be in 1D, 2D or other shapes.
 
         When applied to data it extracts or masks the unmasked image pixels corresponding to mask entries that are
-       ``False`` or 0).
+       `False` or 0).
 
        The mask also defines the geometry of the data structure it is paired with, for example how its pixels convert
        to physical units via the ``pixel_scales`` and ``origin`` parameters and a sub-grid which is used for
@@ -35,7 +35,7 @@ class AbstractMask(np.ndarray):
         Parameters
         ----------
         mask : np.ndarray
-            The ``ndarray`` containing the ``bool``'s representing the ``mask``, where ``False`` signifies an entry is
+            The ``ndarray`` containing the ``bool``'s representing the ``mask``, where `False` signifies an entry is
             unmasked and used in calculations.
         pixel_scales : (float, float) or float
             The scaled units to pixel units conversion factors of every pixel. If this is input as a ``float``, it is
@@ -136,28 +136,28 @@ class AbstractMask(np.ndarray):
     @property
     def pixels_in_mask(self) -> int:
         """
-        The total number of unmasked pixels (values are ``False``) in the mask.
+        The total number of unmasked pixels (values are `False`) in the mask.
         """
         return int(np.size(self) - np.sum(self))
 
     @property
     def is_all_true(self) -> bool:
         """
-        Returns ``True`` if all pixels in a mask are ``True``, else returns ``False``.
+        Returns ``True`` if all pixels in a mask are ``True``, else returns `False`.
         """
         return self.pixels_in_mask == 0
 
     @property
     def is_all_false(self) -> bool:
         """
-        Returns ``False`` if all pixels in a mask are ``False``, else returns ``True``.
+        Returns `False` if all pixels in a mask are `False`, else returns ``True``.
         """
         return self.pixels_in_mask == np.size(self)
 
     @property
     def sub_pixels_in_mask(self) -> int:
         """
-        The total number of unmasked sub-pixels (values are ``False``) in the mask.
+        The total number of unmasked sub-pixels (values are `False`) in the mask.
         """
         return self.sub_size ** 2 * self.pixels_in_mask
 
