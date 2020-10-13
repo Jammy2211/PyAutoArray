@@ -50,29 +50,29 @@ def load_subplot_setting(section, name, python_type):
 
 class AbstractPlotter:
     def __init__(
-            self,
-            module=None,
-            units=None,
-            figure=None,
-            cmap=None,
-            cb=None,
-            ticks=None,
-            labels=None,
-            legend=None,
-            output=None,
-            origin_scatterer=None,
-            mask_scatterer=None,
-            border_scatterer=None,
-            grid_scatterer=None,
-            positions_scatterer=None,
-            index_scatterer=None,
-            pixelization_grid_scatterer=None,
-            liner=None,
-            array_overlayer=None,
-            voronoi_drawer=None,
-            parallel_overscan_liner=None,
-            serial_prescan_liner=None,
-            serial_overscan_liner=None,
+        self,
+        module=None,
+        units=None,
+        figure=None,
+        cmap=None,
+        cb=None,
+        ticks=None,
+        labels=None,
+        legend=None,
+        output=None,
+        origin_scatterer=None,
+        mask_scatterer=None,
+        border_scatterer=None,
+        grid_scatterer=None,
+        positions_scatterer=None,
+        index_scatterer=None,
+        pixelization_grid_scatterer=None,
+        liner=None,
+        array_overlayer=None,
+        voronoi_drawer=None,
+        parallel_overscan_liner=None,
+        serial_prescan_liner=None,
+        serial_overscan_liner=None,
     ):
 
         if isinstance(self, Plotter):
@@ -203,16 +203,16 @@ class AbstractPlotter:
         )
 
     def plot_array(
-            self,
-            array,
-            mask=None,
-            lines=None,
-            positions=None,
-            grid=None,
-            array_overlay=None,
-            include_origin=False,
-            include_border=False,
-            bypass_output=False,
+        self,
+        array,
+        mask=None,
+        lines=None,
+        positions=None,
+        grid=None,
+        array_overlay=None,
+        include_origin=False,
+        include_border=False,
+        bypass_output=False,
     ):
         """Plot an array of data_type as a figure.
 
@@ -401,14 +401,14 @@ class AbstractPlotter:
             self.figure.close()
 
     def plot_frame(
-            self,
-            frame,
-            lines=None,
-            include_origin=False,
-            include_parallel_overscan=False,
-            include_serial_prescan=False,
-            include_serial_overscan=False,
-            bypass_output=False,
+        self,
+        frame,
+        lines=None,
+        include_origin=False,
+        include_parallel_overscan=False,
+        include_serial_prescan=False,
+        include_serial_overscan=False,
+        bypass_output=False,
     ):
         """Plot an array of data_type as a figure.
 
@@ -553,24 +553,24 @@ class AbstractPlotter:
             self.origin_scatterer.scatter_grid(grid=[frame.origin])
 
         if (
-                include_parallel_overscan is not None
-                and frame.scans.parallel_overscan is not None
+            include_parallel_overscan is not None
+            and frame.scans.parallel_overscan is not None
         ):
             self.parallel_overscan_liner.draw_rectangular_grid_lines(
                 extent=frame.scans.parallel_overscan, shape_2d=frame.shape_2d
             )
 
         if (
-                include_serial_prescan is not None
-                and frame.scans.serial_prescan is not None
+            include_serial_prescan is not None
+            and frame.scans.serial_prescan is not None
         ):
             self.serial_prescan_liner.draw_rectangular_grid_lines(
                 extent=frame.scans.serial_prescan, shape_2d=frame.shape_2d
             )
 
         if (
-                include_serial_overscan is not None
-                and frame.scans.serial_overscan is not None
+            include_serial_overscan is not None
+            and frame.scans.serial_overscan is not None
         ):
             self.serial_overscan_liner.draw_rectangular_grid_lines(
                 extent=frame.scans.serial_overscan, shape_2d=frame.shape_2d
@@ -583,17 +583,17 @@ class AbstractPlotter:
             self.figure.close()
 
     def plot_grid(
-            self,
-            grid,
-            color_array=None,
-            axis_limits=None,
-            indexes=None,
-            positions=None,
-            lines=None,
-            symmetric_around_centre=True,
-            include_origin=False,
-            include_border=False,
-            bypass_output=False,
+        self,
+        grid,
+        color_array=None,
+        axis_limits=None,
+        indexes=None,
+        positions=None,
+        lines=None,
+        symmetric_around_centre=True,
+        include_origin=False,
+        include_border=False,
+        bypass_output=False,
     ):
         """Plot a grid of (y,x) Cartesian coordinates as a scatter plotters of points.
 
@@ -703,14 +703,14 @@ class AbstractPlotter:
             self.figure.close()
 
     def plot_line(
-            self,
-            y,
-            x,
-            label=None,
-            plot_axis_type="semilogy",
-            vertical_lines=None,
-            vertical_line_labels=None,
-            bypass_output=False,
+        self,
+        y,
+        x,
+        label=None,
+        plot_axis_type="semilogy",
+        vertical_lines=None,
+        vertical_line_labels=None,
+        bypass_output=False,
     ):
 
         if y is None:
@@ -745,18 +745,18 @@ class AbstractPlotter:
             self.figure.close()
 
     def plot_mapper(
-            self,
-            mapper,
-            source_pixel_values=None,
-            positions=None,
-            lines=None,
-            include_origin=False,
-            include_pixelization_grid=False,
-            include_grid=False,
-            include_border=False,
-            image_pixel_indexes=None,
-            source_pixel_indexes=None,
-            bypass_output=False,
+        self,
+        mapper,
+        source_pixel_values=None,
+        positions=None,
+        lines=None,
+        include_origin=False,
+        include_pixelization_grid=False,
+        include_grid=False,
+        include_border=False,
+        image_pixel_indexes=None,
+        source_pixel_indexes=None,
+        bypass_output=False,
     ):
 
         if isinstance(mapper, mappers.MapperRectangular):
@@ -790,18 +790,18 @@ class AbstractPlotter:
             )
 
     def plot_rectangular_mapper(
-            self,
-            mapper,
-            source_pixel_values=None,
-            positions=None,
-            lines=None,
-            include_origin=False,
-            include_pixelization_grid=False,
-            include_grid=False,
-            include_border=False,
-            image_pixel_indexes=None,
-            source_pixel_indexes=None,
-            bypass_output=False,
+        self,
+        mapper,
+        source_pixel_values=None,
+        positions=None,
+        lines=None,
+        include_origin=False,
+        include_pixelization_grid=False,
+        include_grid=False,
+        include_border=False,
+        image_pixel_indexes=None,
+        source_pixel_indexes=None,
+        bypass_output=False,
     ):
 
         self.figure.open()
@@ -877,18 +877,18 @@ class AbstractPlotter:
             self.figure.close()
 
     def plot_voronoi_mapper(
-            self,
-            mapper,
-            source_pixel_values=None,
-            positions=None,
-            lines=None,
-            include_origin=False,
-            include_pixelization_grid=False,
-            include_grid=False,
-            include_border=False,
-            image_pixel_indexes=None,
-            source_pixel_indexes=None,
-            bypass_output=False,
+        self,
+        mapper,
+        source_pixel_values=None,
+        positions=None,
+        lines=None,
+        include_origin=False,
+        include_pixelization_grid=False,
+        include_grid=False,
+        include_border=False,
+        image_pixel_indexes=None,
+        source_pixel_indexes=None,
+        bypass_output=False,
     ):
 
         self.figure.open()
@@ -980,13 +980,13 @@ class AbstractPlotter:
             plt.axis(axis_limits)
 
     def plotter_with_new_labels(
-            self,
-            title=None,
-            yunits=None,
-            xunits=None,
-            titlesize=None,
-            ysize=None,
-            xsize=None,
+        self,
+        title=None,
+        yunits=None,
+        xunits=None,
+        titlesize=None,
+        ysize=None,
+        xsize=None,
     ):
 
         plotter = copy.deepcopy(self)
@@ -1003,13 +1003,13 @@ class AbstractPlotter:
         return plotter
 
     def plotter_with_new_cmap(
-            self,
-            cmap=None,
-            norm=None,
-            norm_max=None,
-            norm_min=None,
-            linthresh=None,
-            linscale=None,
+        self,
+        cmap=None,
+        norm=None,
+        norm_max=None,
+        norm_min=None,
+        linthresh=None,
+        linscale=None,
     ):
 
         plotter = copy.deepcopy(self)
@@ -1026,7 +1026,7 @@ class AbstractPlotter:
         return plotter
 
     def plotter_with_new_units(
-            self, use_scaled=None, conversion_factor=None, in_kpc=None
+        self, use_scaled=None, conversion_factor=None, in_kpc=None
     ):
 
         plotter = copy.deepcopy(self)
@@ -1068,29 +1068,29 @@ class AbstractPlotter:
 
 class Plotter(AbstractPlotter):
     def __init__(
-            self,
-            module=None,
-            units=None,
-            figure=None,
-            cmap=None,
-            cb=None,
-            ticks=None,
-            labels=None,
-            legend=None,
-            output=None,
-            origin_scatterer=None,
-            mask_scatterer=None,
-            border_scatterer=None,
-            grid_scatterer=None,
-            positions_scatterer=None,
-            index_scatterer=None,
-            pixelization_grid_scatterer=None,
-            liner=None,
-            array_overlayer=None,
-            voronoi_drawer=None,
-            parallel_overscan_liner=None,
-            serial_prescan_liner=None,
-            serial_overscan_liner=None,
+        self,
+        module=None,
+        units=None,
+        figure=None,
+        cmap=None,
+        cb=None,
+        ticks=None,
+        labels=None,
+        legend=None,
+        output=None,
+        origin_scatterer=None,
+        mask_scatterer=None,
+        border_scatterer=None,
+        grid_scatterer=None,
+        positions_scatterer=None,
+        index_scatterer=None,
+        pixelization_grid_scatterer=None,
+        liner=None,
+        array_overlayer=None,
+        voronoi_drawer=None,
+        parallel_overscan_liner=None,
+        serial_prescan_liner=None,
+        serial_overscan_liner=None,
     ):
         super(Plotter, self).__init__(
             module=module,
@@ -1120,29 +1120,29 @@ class Plotter(AbstractPlotter):
 
 class SubPlotter(AbstractPlotter):
     def __init__(
-            self,
-            module=None,
-            units=None,
-            figure=None,
-            cmap=None,
-            cb=None,
-            ticks=None,
-            labels=None,
-            legend=None,
-            output=None,
-            origin_scatterer=None,
-            mask_scatterer=None,
-            border_scatterer=None,
-            grid_scatterer=None,
-            positions_scatterer=None,
-            index_scatterer=None,
-            pixelization_grid_scatterer=None,
-            liner=None,
-            array_overlayer=None,
-            voronoi_drawer=None,
-            parallel_overscan_liner=None,
-            serial_prescan_liner=None,
-            serial_overscan_liner=None,
+        self,
+        module=None,
+        units=None,
+        figure=None,
+        cmap=None,
+        cb=None,
+        ticks=None,
+        labels=None,
+        legend=None,
+        output=None,
+        origin_scatterer=None,
+        mask_scatterer=None,
+        border_scatterer=None,
+        grid_scatterer=None,
+        positions_scatterer=None,
+        index_scatterer=None,
+        pixelization_grid_scatterer=None,
+        liner=None,
+        array_overlayer=None,
+        voronoi_drawer=None,
+        parallel_overscan_liner=None,
+        serial_prescan_liner=None,
+        serial_overscan_liner=None,
     ):
 
         super(SubPlotter, self).__init__(
@@ -1185,7 +1185,7 @@ class SubPlotter(AbstractPlotter):
         plt.figure(figsize=figsize)
 
     def setup_subplot(
-            self, number_subplots, subplot_index, aspect=None, subplot_rows_columns=None
+        self, number_subplots, subplot_index, aspect=None, subplot_rows_columns=None
     ):
         if subplot_rows_columns is None:
             rows, columns = self.get_subplot_rows_columns(
@@ -1256,18 +1256,18 @@ class SubPlotter(AbstractPlotter):
 
 class Include:
     def __init__(
-            self,
-            origin=None,
-            mask=None,
-            grid=None,
-            border=None,
-            inversion_pixelization_grid=None,
-            inversion_grid=None,
-            inversion_border=None,
-            inversion_image_pixelization_grid=None,
-            parallel_overscan=None,
-            serial_prescan=None,
-            serial_overscan=None,
+        self,
+        origin=None,
+        mask=None,
+        grid=None,
+        border=None,
+        inversion_pixelization_grid=None,
+        inversion_grid=None,
+        inversion_border=None,
+        inversion_image_pixelization_grid=None,
+        parallel_overscan=None,
+        serial_prescan=None,
+        serial_overscan=None,
     ):
 
         self.origin = self.load_include(value=origin, name="origin")
@@ -1571,14 +1571,14 @@ def set_labels(func):
 
 
 def plot_array(
-        array,
-        mask=None,
-        lines=None,
-        positions=None,
-        grid=None,
-        array_overlay=None,
-        include=None,
-        plotter=None,
+    array,
+    mask=None,
+    lines=None,
+    positions=None,
+    grid=None,
+    array_overlay=None,
+    include=None,
+    plotter=None,
 ):
     if include is None:
         include = Include()
@@ -1615,15 +1615,15 @@ def plot_frame(frame, include=None, plotter=None):
 
 
 def plot_grid(
-        grid,
-        color_array=None,
-        axis_limits=None,
-        indexes=None,
-        positions=None,
-        lines=None,
-        symmetric_around_centre=True,
-        include=None,
-        plotter=None,
+    grid,
+    color_array=None,
+    axis_limits=None,
+    indexes=None,
+    positions=None,
+    lines=None,
+    symmetric_around_centre=True,
+    include=None,
+    plotter=None,
 ):
     if include is None:
         include = Include()
@@ -1645,13 +1645,13 @@ def plot_grid(
 
 
 def plot_line(
-        y,
-        x,
-        label=None,
-        plot_axis_type="semilogy",
-        vertical_lines=None,
-        vertical_line_labels=None,
-        plotter=None,
+    y,
+    x,
+    label=None,
+    plot_axis_type="semilogy",
+    vertical_lines=None,
+    vertical_line_labels=None,
+    plotter=None,
 ):
     if plotter is None:
         plotter = Plotter()
@@ -1667,11 +1667,11 @@ def plot_line(
 
 
 def plot_mapper_obj(
-        mapper,
-        image_pixel_indexes=None,
-        source_pixel_indexes=None,
-        include=None,
-        plotter=None,
+    mapper,
+    image_pixel_indexes=None,
+    source_pixel_indexes=None,
+    include=None,
+    plotter=None,
 ):
     if include is None:
         include = Include()

@@ -76,7 +76,9 @@ class Units:
             self.use_scaled = use_scaled
         else:
             try:
-                self.use_scaled = conf.instance["visualize"]["general"]["general"]["use_scaled"]
+                self.use_scaled = conf.instance["visualize"]["general"]["general"][
+                    "use_scaled"
+                ]
             except:
                 self.use_scaled = True
 

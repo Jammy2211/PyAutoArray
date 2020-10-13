@@ -90,7 +90,7 @@ class AbstractMask(np.ndarray):
         for pixel_scale in self.pixel_scales:
             if pixel_scale != self.pixel_scales[0]:
                 raise exc.MaskException(
-                    "Cannot return a pixel_scale for a a grid where each dimension has a "
+                    "Cannot return a pixel_scale for a grid where each dimension has a "
                     "different pixel scale (e.g. pixel_scales[0] != pixel_scales[1]"
                 )
 

@@ -34,7 +34,7 @@ class TestImaging:
 
         imaging = aa.Imaging(image=image, psf=psf, noise_map=noise_map_array)
 
-        imaging = imaging.binned_from_bin_up_factor(bin_up_factor=2)
+        imaging = imaging.binned_up_from(bin_up_factor=2)
 
         assert (imaging.image.in_2d == binned_image_util).all()
         assert (imaging.psf == psf_util).all()
@@ -66,9 +66,7 @@ class TestImaging:
             noise_map=noise_map_array,
         )
 
-        imaging = imaging.signal_to_noise_limited_from_signal_to_noise_limit(
-            signal_to_noise_limit=100.0
-        )
+        imaging = imaging.signal_to_noise_limited_from(signal_to_noise_limit=100.0)
 
         assert (imaging.image == np.array([20.0, 20.0, 20.0, 5.0])).all()
 
@@ -90,9 +88,7 @@ class TestImaging:
 
         imaging = aa.Imaging(image=image, noise_map=noise_map_array)
 
-        imaging = imaging.signal_to_noise_limited_from_signal_to_noise_limit(
-            signal_to_noise_limit=100.0
-        )
+        imaging = imaging.signal_to_noise_limited_from(signal_to_noise_limit=100.0)
 
         assert (imaging.image == np.array([[20.0, 20.0], [20.0, 5.0]])).all()
 
@@ -117,9 +113,7 @@ class TestImaging:
             noise_map=noise_map_array,
         )
 
-        imaging_capped = imaging.signal_to_noise_limited_from_signal_to_noise_limit(
-            signal_to_noise_limit=2.0
-        )
+        imaging_capped = imaging.signal_to_noise_limited_from(signal_to_noise_limit=2.0)
 
         assert (
             imaging_capped.image.in_2d == np.array([[20.0, 20.0], [20.0, 5.0]])
@@ -136,9 +130,7 @@ class TestImaging:
 
         assert (imaging_capped.psf.in_2d == np.zeros((3, 3))).all()
 
-        imaging_capped = imaging.signal_to_noise_limited_from_signal_to_noise_limit(
-            signal_to_noise_limit=3.0
-        )
+        imaging_capped = imaging.signal_to_noise_limited_from(signal_to_noise_limit=3.0)
 
         assert (
             imaging_capped.image.in_2d == np.array([[20.0, 20.0], [20.0, 5.0]])
@@ -359,7 +351,7 @@ class TestMaskedImaging:
             settings=aa.SettingsMaskedImaging(grid_class=aa.Grid, bin_up_factor=2),
         )
 
-        binned_up_imaging = imaging_7x7.binned_from_bin_up_factor(bin_up_factor=2)
+        binned_up_imaging = imaging_7x7.binned_up_from(bin_up_factor=2)
         binned_up_mask = mask_7x7_1_pix.binned_mask_from_bin_up_factor(bin_up_factor=2)
 
         assert (
@@ -387,7 +379,7 @@ class TestMaskedImaging:
             ),
         )
 
-        imaging_snr_limit = imaging_7x7.signal_to_noise_limited_from_signal_to_noise_limit(
+        imaging_snr_limit = imaging_7x7.signal_to_noise_limited_from(
             signal_to_noise_limit=1.0
         )
 
@@ -457,11 +449,7 @@ class TestSimulatorImaging:
             pixel_scales=0.1,
         )
 
-        exposure_time_map = aa.Array.ones(shape_2d=image.shape_2d, pixel_scales=0.1)
-
-        simulator = aa.SimulatorImaging(
-            exposure_time_map=exposure_time_map, add_noise=False
-        )
+        simulator = aa.SimulatorImaging(exposure_time=1.0, add_poisson_noise=False)
 
         imaging = simulator.from_image(image=image)
 
@@ -478,11 +466,9 @@ class TestSimulatorImaging:
             pixel_scales=1.0,
         )
 
-        exposure_time_map = aa.Array.ones(shape_2d=image.shape_2d, pixel_scales=1.0)
-
         simulator = aa.SimulatorImaging(
-            exposure_time_map=exposure_time_map,
-            add_noise=False,
+            exposure_time=1.0,
+            add_poisson_noise=False,
             noise_if_add_noise_false=0.2,
             noise_seed=1,
         )
@@ -498,15 +484,7 @@ class TestSimulatorImaging:
     def test__from_image__psf_blurs_image_with_edge_trimming(self):
 
         image = aa.Array.manual_2d(
-            array=np.array(
-                [
-                    [0.0, 0.0, 0.0, 0.0, 0.0],
-                    [0.0, 0.0, 0.0, 0.0, 0.0],
-                    [0.0, 0.0, 1.0, 0.0, 0.0],
-                    [0.0, 0.0, 0.0, 0.0, 0.0],
-                    [0.0, 0.0, 0.0, 0.0, 0.0],
-                ]
-            ),
+            array=np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]]),
             pixel_scales=1.0,
         )
 
@@ -515,13 +493,8 @@ class TestSimulatorImaging:
             pixel_scales=1.0,
         )
 
-        exposure_time_map = aa.Array.ones(shape_2d=image.shape_2d, pixel_scales=1.0)
-
         simulator = aa.SimulatorImaging(
-            exposure_time_map=exposure_time_map,
-            psf=psf,
-            add_noise=False,
-            renormalize_psf=False,
+            exposure_time=1.0, psf=psf, add_poisson_noise=False, renormalize_psf=False
         )
 
         imaging = simulator.from_image(image=image)
@@ -538,12 +511,8 @@ class TestSimulatorImaging:
             pixel_scales=1.0,
         )
 
-        exposure_time_map = aa.Array.full(
-            fill_value=20.0, shape_2d=image.shape_2d, pixel_scales=1.0
-        )
-
         simulator = aa.SimulatorImaging(
-            exposure_time_map=exposure_time_map, add_noise=True, noise_seed=1
+            exposure_time=20.0, add_poisson_noise=True, noise_seed=1
         )
 
         imaging = simulator.from_image(image=image)
@@ -568,16 +537,10 @@ class TestSimulatorImaging:
             pixel_scales=1.0,
         )
 
-        exposure_time_map = aa.Array.ones(shape_2d=image.shape_2d, pixel_scales=1.0)
-
-        background_sky_map = aa.Array.full(
-            fill_value=16.0, shape_2d=image.shape_2d, pixel_scales=1.0
-        )
-
         simulator = aa.SimulatorImaging(
-            exposure_time_map=exposure_time_map,
-            background_sky_map=background_sky_map,
-            add_noise=True,
+            exposure_time=1.0,
+            background_sky_level=16.0,
+            add_poisson_noise=True,
             noise_seed=1,
         )
 
@@ -592,15 +555,7 @@ class TestSimulatorImaging:
 
     def test__from_image__psf_and_noise__noise_added_to_blurred_image(self):
         image = aa.Array.manual_2d(
-            array=np.array(
-                [
-                    [0.0, 0.0, 0.0, 0.0, 0.0],
-                    [0.0, 0.0, 0.0, 0.0, 0.0],
-                    [0.0, 0.0, 1.0, 0.0, 0.0],
-                    [0.0, 0.0, 0.0, 0.0, 0.0],
-                    [0.0, 0.0, 0.0, 0.0, 0.0],
-                ]
-            ),
+            array=np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]]),
             pixel_scales=1.0,
         )
 
@@ -609,14 +564,10 @@ class TestSimulatorImaging:
             pixel_scales=1.0,
         )
 
-        exposure_time_map = aa.Array.full(
-            fill_value=20.0, shape_2d=image.shape_2d, pixel_scales=1.0
-        )
-
         simulator = aa.SimulatorImaging(
-            exposure_time_map=exposure_time_map,
+            exposure_time=20.0,
             psf=psf,
-            add_noise=True,
+            add_poisson_noise=True,
             noise_seed=1,
             renormalize_psf=False,
         )

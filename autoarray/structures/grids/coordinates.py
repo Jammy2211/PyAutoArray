@@ -449,7 +449,7 @@ class GridCoordinatesUniform(AbstractGridCoordinates):
             return self.pixel_scales[0]
         else:
             raise exc.GridException(
-                "Cannot return a pixel_scale for a a grid where each dimension has a "
+                "Cannot return a pixel_scale for a grid where each dimension has a "
                 "different pixel scale (e.g. pixel_scales[0] != pixel_scales[1]"
             )
 

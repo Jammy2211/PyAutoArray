@@ -30,7 +30,7 @@ class MappingException(Exception):
     pass
 
 
-class DataException(Exception):
+class DatasetException(Exception):
     pass
 
 

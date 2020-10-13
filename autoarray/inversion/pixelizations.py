@@ -42,7 +42,9 @@ class SettingsPixelization:
         """
         if self.use_border:
 
-            tag = conf.instance["notation"]["settings_tags"]["pixelization"]["use_border"]
+            tag = conf.instance["notation"]["settings_tags"]["pixelization"][
+                "use_border"
+            ]
 
             if not tag:
                 return str(tag)
@@ -61,12 +63,19 @@ class SettingsPixelization:
         """
         if not self.is_stochastic:
 
-            tag = conf.instance["notation"]["settings_tags"]["pixelization"]["not_stochastic"]
+            tag = conf.instance["notation"]["settings_tags"]["pixelization"][
+                "not_stochastic"
+            ]
             if not tag:
                 return tag
             return "__" + tag
         elif self.is_stochastic:
-            return "__" + conf.instance["notation"]["settings_tags"]["pixelization"]["stochastic"]
+            return (
+                "__"
+                + conf.instance["notation"]["settings_tags"]["pixelization"][
+                    "stochastic"
+                ]
+            )
 
     def settings_with_is_stochastic_true(self):
         settings = copy.copy(self)

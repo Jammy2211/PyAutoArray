@@ -18,183 +18,131 @@ def set_config_path(request):
         )
 
 
-@pytest.fixture(
-    name="mask_7x7"
-)
+@pytest.fixture(name="mask_7x7")
 def make_mask_7x7():
     return mock.make_mask_7x7()
 
 
-@pytest.fixture(
-    name="sub_mask_7x7"
-)
+@pytest.fixture(name="sub_mask_7x7")
 def make_sub_mask_7x7():
     return mock.make_sub_mask_7x7()
 
 
-@pytest.fixture(
-    name="mask_7x7_1_pix"
-)
+@pytest.fixture(name="mask_7x7_1_pix")
 def make_mask_7x7_1_pix():
     return mock.make_mask_7x7_1_pix()
 
 
-@pytest.fixture(
-    name="grid_7x7"
-)
+@pytest.fixture(name="grid_7x7")
 def make_grid_7x7():
     return mock.make_grid_7x7()
 
 
-@pytest.fixture(
-    name="sub_grid_7x7"
-)
+@pytest.fixture(name="sub_grid_7x7")
 def make_sub_grid_7x7():
     return mock.make_sub_grid_7x7()
 
 
-@pytest.fixture(
-    name="grid_iterate_7x7"
-)
+@pytest.fixture(name="grid_iterate_7x7")
 def make_grid_iterate_7x7():
     return mock.make_grid_iterate_7x7()
 
 
-@pytest.fixture(
-    name="blurring_grid_7x7"
-)
+@pytest.fixture(name="blurring_grid_7x7")
 def make_blurring_grid_7x7():
     return mock.make_blurring_grid_7x7()
 
 
-@pytest.fixture(
-    name="image_7x7"
-)
+@pytest.fixture(name="image_7x7")
 def make_image_7x7():
     return mock.make_image_7x7()
 
 
-@pytest.fixture(
-    name="noise_map_7x7"
-)
+@pytest.fixture(name="noise_map_7x7")
 def make_noise_map_7x7():
     return mock.make_noise_map_7x7()
 
 
-@pytest.fixture(
-    name="positions_7x7"
-)
+@pytest.fixture(name="positions_7x7")
 def make_positions_7x7():
     return mock.make_positions_7x7()
 
 
-@pytest.fixture(
-    name="imaging_7x7"
-)
+@pytest.fixture(name="imaging_7x7")
 def make_imaging_7x7():
     return mock.make_imaging_7x7()
 
 
-@pytest.fixture(
-    name="visibilities_mask_7x2"
-)
+@pytest.fixture(name="visibilities_mask_7x2")
 def make_visibilities_mask_7x2():
     return mock.make_visibilities_mask_7x2()
 
 
-@pytest.fixture(
-    name="visibilities_7x2"
-)
+@pytest.fixture(name="visibilities_7x2")
 def make_visibilities_7():
     return mock.make_visibilities_7()
 
 
-@pytest.fixture(
-    name="noise_map_7x2"
-)
+@pytest.fixture(name="noise_map_7x2")
 def make_noise_map_7():
     return mock.make_noise_map_7()
 
 
-@pytest.fixture(
-    name="uv_wavelengths_7x2"
-)
+@pytest.fixture(name="uv_wavelengths_7x2")
 def make_uv_wavelengths_7():
     return mock.make_uv_wavelengths_7()
 
 
-@pytest.fixture(
-    name="interferometer_7"
-)
+@pytest.fixture(name="interferometer_7")
 def make_interferometer_7():
     return mock.make_interferometer_7()
 
 
-@pytest.fixture(
-    name="transformer_7x7_7"
-)
+@pytest.fixture(name="transformer_7x7_7")
 def make_transformer_7x7_7():
     return mock.make_transformer_7x7_7()
 
 
-@pytest.fixture(
-    name="fit_imaging_7x7"
-)
+@pytest.fixture(name="fit_imaging_7x7")
 def make_masked_imaging_fit_x1_plane_7x7():
     return mock.make_masked_imaging_fit_x1_plane_7x7()
 
 
-@pytest.fixture(
-    name="fit_interferometer_7"
-)
+@pytest.fixture(name="fit_interferometer_7")
 def make_masked_interferometer_fit_x1_plane_7():
     return mock.make_masked_interferometer_fit_x1_plane_7()
 
 
-@pytest.fixture(
-    name="rectangular_mapper_7x7_3x3"
-)
+@pytest.fixture(name="rectangular_mapper_7x7_3x3")
 def make_rectangular_mapper_7x7_3x3():
     return mock.make_rectangular_mapper_7x7_3x3()
 
 
-@pytest.fixture(
-    name="voronoi_mapper_9_3x3"
-)
+@pytest.fixture(name="voronoi_mapper_9_3x3")
 def make_voronoi_mapper_9_3x3():
     return mock.make_voronoi_mapper_9_3x3()
 
 
-@pytest.fixture(
-    name="rectangular_inversion_7x7_3x3"
-)
+@pytest.fixture(name="rectangular_inversion_7x7_3x3")
 def make_rectangular_inversion_7x7_3x3():
     return mock.make_rectangular_inversion_7x7_3x3()
 
 
-@pytest.fixture(
-    name="voronoi_inversion_9_3x3"
-)
+@pytest.fixture(name="voronoi_inversion_9_3x3")
 def make_voronoi_inversion_9_3x3():
     return mock.make_voronoi_inversion_9_3x3()
 
 
-@pytest.fixture(
-    name="euclid_data"
-)
+@pytest.fixture(name="euclid_data")
 def make_euclid_data():
     return mock.make_euclid_data()
 
 
-@pytest.fixture(
-    name="acs_ccd"
-)
+@pytest.fixture(name="acs_ccd")
 def make_acs_ccd():
     return mock.make_acs_ccd()
 
 
-@pytest.fixture(
-    name="acs_quadrant"
-)
+@pytest.fixture(name="acs_quadrant")
 def make_acs_quadrant():
     return mock.make_acs_quadrant()
