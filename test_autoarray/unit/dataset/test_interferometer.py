@@ -38,7 +38,7 @@ class TestInterferometer:
             uv_wavelengths=2,
         )
 
-        interferometer_capped = interferometer.signal_to_noise_limited_from_signal_to_noise_limit(
+        interferometer_capped = interferometer.signal_to_noise_limited_from(
             signal_to_noise_limit=0.5
         )
 
@@ -251,16 +251,12 @@ class TestSimulatorInterferometer:
     ):
 
         image = aa.Array.manual_2d(
-            [[2.0, 0.0, 0.0], [0.0, 1.0, 0.0], [3.0, 0.0, 0.0]],
+            array=[[2.0, 0.0, 0.0], [0.0, 1.0, 0.0], [3.0, 0.0, 0.0]],
             pixel_scales=transformer_7x7_7.grid.pixel_scales,
         )
 
-        exposure_time_map = aa.Array.full(
-            fill_value=1.0, pixel_scales=0.1, shape_2d=image.shape_2d
-        )
-
         simulator = aa.SimulatorInterferometer(
-            exposure_time_map=exposure_time_map,
+            exposure_time=1.0,
             transformer_class=type(transformer_7x7_7),
             uv_wavelengths=uv_wavelengths_7x2,
             noise_sigma=None,
@@ -283,25 +279,13 @@ class TestSimulatorInterferometer:
         self, uv_wavelengths_7x2, transformer_7x7_7
     ):
         image = aa.Array.manual_2d(
-            [[2.0, 0.0, 0.0], [0.0, 1.0, 0.0], [3.0, 0.0, 0.0]],
+            array=[[2.0, 0.0, 0.0], [0.0, 1.0, 0.0], [3.0, 0.0, 0.0]],
             pixel_scales=transformer_7x7_7.grid.pixel_scales,
-        )
-
-        exposure_time_map = aa.Array.full(
-            fill_value=1.0,
-            pixel_scales=transformer_7x7_7.grid.pixel_scales,
-            shape_2d=image.shape_2d,
-        )
-
-        background_sky_map = aa.Array.full(
-            fill_value=2.0,
-            pixel_scales=transformer_7x7_7.grid.pixel_scales,
-            shape_2d=image.shape_2d,
         )
 
         simulator = aa.SimulatorInterferometer(
-            exposure_time_map=exposure_time_map,
-            background_sky_map=background_sky_map,
+            exposure_time=1.0,
+            background_sky_level=2.0,
             transformer_class=type(transformer_7x7_7),
             uv_wavelengths=uv_wavelengths_7x2,
             noise_sigma=None,
@@ -317,6 +301,12 @@ class TestSimulatorInterferometer:
             ),
         )
 
+        background_sky_map = aa.Array.full(
+            fill_value=2.0,
+            pixel_scales=transformer_7x7_7.grid.pixel_scales,
+            shape_2d=image.shape_2d,
+        )
+
         visibilities = transformer.visibilities_from_image(
             image=image + background_sky_map
         )
@@ -328,16 +318,12 @@ class TestSimulatorInterferometer:
     def test__setup_with_noise(self, uv_wavelengths_7x2, transformer_7x7_7):
 
         image = aa.Array.manual_2d(
-            [[2.0, 0.0, 0.0], [0.0, 1.0, 0.0], [3.0, 0.0, 0.0]],
+            array=[[2.0, 0.0, 0.0], [0.0, 1.0, 0.0], [3.0, 0.0, 0.0]],
             pixel_scales=transformer_7x7_7.grid.pixel_scales,
         )
 
-        exposure_time_map = aa.Array.full(
-            fill_value=20.0, pixel_scales=0.1, shape_2d=image.shape_2d
-        )
-
         simulator = aa.SimulatorInterferometer(
-            exposure_time_map=exposure_time_map,
+            exposure_time=20.0,
             transformer_class=type(transformer_7x7_7),
             uv_wavelengths=uv_wavelengths_7x2,
             noise_sigma=0.1,
@@ -352,8 +338,6 @@ class TestSimulatorInterferometer:
                 shape_2d=(3, 3), pixel_scales=image.pixel_scales
             ),
         )
-
-        visibilities = transformer.visibilities_from_image(image=image)
 
         assert interferometer.visibilities[0, :] == pytest.approx(
             [-0.005364, -2.36682], 1.0e-4

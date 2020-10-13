@@ -75,6 +75,25 @@ class TestProperties:
         assert dataset.potential_chi_squared_max == 1.0
 
 
+class TestMethods:
+    def test__new_imaging_with_arrays_trimmed_via_kernel_shape(self):
+        data = aa.Array.full(fill_value=20.0, shape_2d=(3, 3), pixel_scales=1.0)
+        data[4] = 5.0
+
+        noise_map_array = aa.Array.full(
+            fill_value=5.0, shape_2d=(3, 3), pixel_scales=1.0
+        )
+        noise_map_array[4] = 2.0
+
+        dataset = abstract_dataset.AbstractDataset(data=data, noise_map=noise_map_array)
+
+        dataset_trimmed = dataset.trimmed_after_convolution_from(kernel_shape=(3, 3))
+
+        assert (dataset_trimmed.data.in_2d == np.array([[5.0]])).all()
+
+        assert (dataset_trimmed.noise_map.in_2d == np.array([[2.0]])).all()
+
+
 class TestAbstractMaskedDatasetTags:
     def test__grids__sub_size_tags(self):
 

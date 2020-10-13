@@ -16,7 +16,14 @@ logger = logging.getLogger(__name__)
 
 
 class AbstractImaging(abstract_dataset.AbstractDataset):
-    def __init__(self, image, noise_map, psf=None, positions=None, name=None):
+    def __init__(
+        self,
+        image: arrays.Array,
+        noise_map: arrays.Array,
+        psf: kernel.Kernel = None,
+        positions: grids.GridCoordinates = None,
+        name: str = None,
+    ):
         """A class containing the data, noise-map and point spread function of a 2D imaging dataset.
 
         Parameters
@@ -57,18 +64,18 @@ class AbstractImaging(abstract_dataset.AbstractDataset):
     def pixel_scales(self):
         return self.data.pixel_scales
 
-    def binned_from_bin_up_factor(self, bin_up_factor):
+    def binned_up_from(self, bin_up_factor):
 
         imaging = copy.deepcopy(self)
 
-        imaging.data = self.image.binned_from_bin_up_factor(
+        imaging.data = self.image.binned_up_from(
             bin_up_factor=bin_up_factor, method="mean"
         )
         imaging.psf = self.psf.rescaled_with_odd_dimensions_from_rescale_factor(
             rescale_factor=1.0 / bin_up_factor, renormalize=False
         )
         imaging.noise_map = (
-            self.noise_map.binned_from_bin_up_factor(
+            self.noise_map.binned_up_from(
                 bin_up_factor=bin_up_factor, method="quadrature"
             )
             if self.noise_map is not None
@@ -77,7 +84,7 @@ class AbstractImaging(abstract_dataset.AbstractDataset):
 
         return imaging
 
-    def signal_to_noise_limited_from_signal_to_noise_limit(self, signal_to_noise_limit):
+    def signal_to_noise_limited_from(self, signal_to_noise_limit):
 
         imaging = copy.deepcopy(self)
 
@@ -189,7 +196,7 @@ class AbstractSettingsMaskedImaging(abstract_dataset.AbstractSettingsMaskedDatas
                 psf_shape_2d = self.psf_shape_2d
 
             return kernel.Kernel.manual_2d(
-                array=psf.resized_from_new_shape(new_shape=psf_shape_2d).in_2d,
+                array=psf.resized_from(new_shape=psf_shape_2d).in_2d,
                 pixel_scales=psf.pixel_scales,
                 renormalize=self.renormalize_psf,
             )
@@ -267,9 +274,7 @@ class AbstractMaskedImaging(abstract_dataset.AbstractMaskedDataset):
 
         if settings.bin_up_factor is not None:
 
-            imaging = imaging.binned_from_bin_up_factor(
-                bin_up_factor=settings.bin_up_factor
-            )
+            imaging = imaging.binned_up_from(bin_up_factor=settings.bin_up_factor)
 
             mask = mask.binned_mask_from_bin_up_factor(
                 bin_up_factor=settings.bin_up_factor
@@ -319,49 +324,6 @@ class AbstractMaskedImaging(abstract_dataset.AbstractMaskedDataset):
         masked_imaging.noise_map = noise_map
 
         return masked_imaging
-
-
-class AbstractSimulatorImaging:
-    def __init__(
-        self,
-        exposure_time_map=None,
-        background_sky_map=None,
-        psf=None,
-        renormalize_psf=True,
-        read_noise=None,
-        add_noise=True,
-        noise_if_add_noise_false=0.1,
-        noise_seed=-1,
-    ):
-        """A class representing a Imaging observation, using the shape of the image, the pixel scale,
-        psf, exposure time, etc.
-
-        Parameters
-        ----------
-        shape_2d : (int, int)
-            The shape of the observation. Note that we do not simulator a full Imaging frame (e.g. 2000 x 2000 pixels for \
-            Hubble imaging), but instead just a cut-out around the strong lens.
-        pixel_scales : float
-            The size of each pixel in scaled units.
-        psf : PSF
-            An arrays describing the PSF kernel of the image.
-        exposure_time_map : float
-            The exposure time of an observation using this data_type.
-        background_sky_map : float
-            The level of the background sky of an observationg using this data_type.
-        """
-
-        self.exposure_time_map = exposure_time_map
-
-        if psf is not None and renormalize_psf:
-            psf = psf.renormalized
-
-        self.psf = psf
-        self.background_sky_map = background_sky_map
-        self.read_noise = read_noise
-        self.add_noise = add_noise
-        self.noise_if_add_noise_false = noise_if_add_noise_false
-        self.noise_seed = noise_seed
 
 
 class SettingsMaskedImaging(AbstractSettingsMaskedImaging):
@@ -460,38 +422,79 @@ class MaskedImaging(AbstractMaskedImaging):
     pass
 
 
+class AbstractSimulatorImaging:
+    def __init__(
+        self,
+        exposure_time: float,
+        background_sky_level: float = 0.0,
+        psf: kernel.Kernel = None,
+        renormalize_psf: bool = True,
+        read_noise: float = None,
+        add_poisson_noise: bool = True,
+        noise_if_add_noise_false: float = 0.1,
+        noise_seed: int = -1,
+    ):
+        """A class representing a Imaging observation, using the shape of the image, the pixel scale,
+        psf, exposure time, etc.
+
+        Parameters
+        ----------
+        psf : Kernel
+            An arrays describing the PSF kernel of the image.
+        exposure_time : float
+            The exposure time of the simulated imaging.
+        background_sky_level : float
+            The level of the background sky of the simulated imaging.
+        renormalize_psf : bool
+            If `True`, the PSF kernel is renormalized so all values sum to 1.0.
+        read_noise : float
+            The level of read-noise added to the simulated imaging by drawing from a Gaussian distribution with 
+            sigma equal to the value `read_noise`.
+        add_poisson_noise : bool
+            Whether Poisson noise corresponding to photon count statistics on the imaging observation is added.
+        noise_if_add_noise_false : float
+            If noise is not added to the simulated dataset a `noise_map` must still be returned. This value gives
+            the value of noise assigned to every pixel in the noise-map.
+        noise_seed : int
+            The random seed used to add random noise, where -1 corresponds to a random seed every run.
+        """
+
+        if psf is not None and renormalize_psf:
+            psf = psf.renormalized
+
+        self.psf = psf
+
+        self.exposure_time = exposure_time
+        self.background_sky_level = background_sky_level
+
+        self.read_noise = read_noise
+        self.add_poisson_noise = add_poisson_noise
+        self.noise_if_add_noise_false = noise_if_add_noise_false
+        self.noise_seed = noise_seed
+
+
 class SimulatorImaging(AbstractSimulatorImaging):
-    def from_image(self, image, name=None):
+    def from_image(self, image: arrays.Array, name: str = None):
         """
         Returns a realistic simulated image by applying effects to a plain simulated image.
 
         Parameters
         ----------
-        noise_if_add_noise_false
-        background_level
-        exposure_time_
-        name
-        image : np.ndarray
-            The image before simulating (e.g. the lens and source galaxies before optics blurring and Imaging read-out).
-        exposure_time_map : np.ndarray
-            An array representing the effective exposure time of each pixel.
-        psf: PSF
-            An array describing the PSF the simulated image is blurred with.
-        background_sky_map : np.ndarray
-            The value of background sky in every image pixel (electrons per second).
-        add_noise: Bool
-            If ``True`` poisson noise_maps is simulated and added to the image, based on the total counts in each image
-            pixel
-        noise_seed: int
-            A seed for random noise_maps generation
+        image : arrays.Array
+            The image before simulating which has noise added, PSF convolution, etc performed to it.
         """
 
-        if self.background_sky_map is not None:
-            background_sky_map = self.background_sky_map
-        else:
-            background_sky_map = arrays.Array.zeros(
-                shape_2d=image.shape_2d, pixel_scales=image.pixel_scales
-            )
+        exposure_time_map = arrays.Array.full(
+            fill_value=self.exposure_time,
+            shape_2d=image.shape_2d,
+            pixel_scales=image.pixel_scales,
+        )
+
+        background_sky_map = arrays.Array.full(
+            fill_value=self.background_sky_level,
+            shape_2d=image.shape_2d,
+            pixel_scales=image.pixel_scales,
+        )
 
         if self.psf is not None:
             psf = self.psf
@@ -502,15 +505,7 @@ class SimulatorImaging(AbstractSimulatorImaging):
 
         image = image + background_sky_map
 
-        image = image.trimmed_from_kernel_shape(kernel_shape_2d=psf.shape_2d)
-        exposure_time_map = self.exposure_time_map.trimmed_from_kernel_shape(
-            kernel_shape_2d=psf.shape_2d
-        )
-        background_sky_map = background_sky_map.trimmed_from_kernel_shape(
-            kernel_shape_2d=psf.shape_2d
-        )
-
-        if self.add_noise is True:
+        if self.add_poisson_noise is True:
             image = preprocess.data_eps_with_poisson_noise_added(
                 data_eps=image,
                 exposure_time_map=exposure_time_map,
@@ -529,7 +524,7 @@ class SimulatorImaging(AbstractSimulatorImaging):
             )
 
         if np.isnan(noise_map).any():
-            raise exc.DataException(
+            raise exc.DatasetException(
                 "The noise-map has NaN values in it. This suggests your exposure time and / or"
                 "background sky levels are too low, creating signal counts at or close to 0.0."
             )

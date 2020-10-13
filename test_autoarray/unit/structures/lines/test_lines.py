@@ -4,6 +4,7 @@ import os
 
 import autoarray as aa
 
+
 class TestLine:
     def test___init_etc(self):
         line = aa.Line(
@@ -19,12 +20,7 @@ class TestLine:
         assert line.flux == 7.89
 
         line = aa.Line(
-            line=None,
-            name=None,
-            location=None,
-            date=None,
-            background=None,
-            flux=None,
+            line=None, name=None, location=None, date=None, background=None, flux=None
         )
 
         assert line.length is None
@@ -349,7 +345,7 @@ class TestLineCollection:
         )
 
         stacked_lines = lines.generate_stacked_lines_from_bins(
-            row_bins=[0, 7, 14, 999.9], flux_bins=[1, np.pi, 10], n_date_bins=1,
+            row_bins=[0, 7, 14, 999.9], flux_bins=[1, np.pi, 10], n_date_bins=1
         )
 
         assert stacked_lines.n_lines == 6

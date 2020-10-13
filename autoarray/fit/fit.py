@@ -6,7 +6,9 @@ from autoarray.util import fit_util
 class FitDataset:
 
     # noinspection PyUnresolvedReferences
-    def __init__(self, masked_dataset, model_data, inversion=None, use_mask_in_fit=True):
+    def __init__(
+        self, masked_dataset, model_data, inversion=None, use_mask_in_fit=True
+    ):
         """Class to fit a masked dataset where the dataset's data structures are any dimension.
 
         Parameters
@@ -68,7 +70,9 @@ class FitDataset:
         Residuals = (Data - Model_Data).
         """
         if self.use_mask_in_fit:
-            return fit_util.residual_map_with_mask_from(data=self.data, model_data=self.model_data, mask=self.mask)
+            return fit_util.residual_map_with_mask_from(
+                data=self.data, model_data=self.model_data, mask=self.mask
+            )
         return fit_util.residual_map_from(data=self.data, model_data=self.model_data)
 
     @property
@@ -83,7 +87,7 @@ class FitDataset:
                 residual_map=self.residual_map, noise_map=self.noise_map, mask=self.mask
             )
         return fit_util.normalized_residual_map_from(
-            residual_map=self.residual_map, noise_map=self.noise_map,
+            residual_map=self.residual_map, noise_map=self.noise_map
         )
 
     @property
@@ -98,7 +102,7 @@ class FitDataset:
                 residual_map=self.residual_map, noise_map=self.noise_map, mask=self.mask
             )
         return fit_util.chi_squared_map_from(
-            residual_map=self.residual_map, noise_map=self.noise_map,
+            residual_map=self.residual_map, noise_map=self.noise_map
         )
 
     @property
@@ -114,7 +118,9 @@ class FitDataset:
         Returns the chi-squared terms of the model data's fit to an dataset, by summing the chi-squared-map.
         """
         if self.use_mask_in_fit:
-            return fit_util.chi_squared_with_mask_from(chi_squared_map=self.chi_squared_map, mask=self.mask)
+            return fit_util.chi_squared_with_mask_from(
+                chi_squared_map=self.chi_squared_map, mask=self.mask
+            )
         return fit_util.chi_squared_from(chi_squared_map=self.chi_squared_map)
 
     @property
@@ -129,7 +135,9 @@ class FitDataset:
         [Noise_Term] = sum(log(2*pi*[Noise]**2.0))
         """
         if self.use_mask_in_fit:
-            return fit_util.noise_normalization_with_mask_from(noise_map=self.noise_map, mask=self.mask)
+            return fit_util.noise_normalization_with_mask_from(
+                noise_map=self.noise_map, mask=self.mask
+            )
         return fit_util.noise_normalization_from(noise_map=self.noise_map)
 
     @property
@@ -206,7 +214,9 @@ class FitDataset:
 
 
 class FitImaging(FitDataset):
-    def __init__(self, masked_imaging, model_image, inversion=None, use_mask_in_fit=True):
+    def __init__(
+        self, masked_imaging, model_image, inversion=None, use_mask_in_fit=True
+    ):
         """Class to fit a masked imaging dataset.
 
         Parameters
@@ -240,7 +250,10 @@ class FitImaging(FitDataset):
         """
 
         super().__init__(
-            masked_dataset=masked_imaging, model_data=model_image, inversion=inversion, use_mask_in_fit=use_mask_in_fit
+            masked_dataset=masked_imaging,
+            model_data=model_image,
+            inversion=inversion,
+            use_mask_in_fit=use_mask_in_fit,
         )
 
     @property
@@ -257,7 +270,13 @@ class FitImaging(FitDataset):
 
 
 class FitInterferometer(FitDataset):
-    def __init__(self, masked_interferometer, model_visibilities, inversion=None, use_mask_in_fit=True):
+    def __init__(
+        self,
+        masked_interferometer,
+        model_visibilities,
+        inversion=None,
+        use_mask_in_fit=True,
+    ):
         """Class to fit a masked interferometer dataset.
 
         Parameters

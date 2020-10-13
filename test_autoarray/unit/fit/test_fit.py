@@ -21,7 +21,11 @@ class TestFitImaging:
 
         model_image = aa.Array.manual_mask(array=[1.0, 2.0, 3.0, 4.0], mask=mask)
 
-        fit = aa.FitImaging(masked_imaging=masked_imaging, model_image=model_image, use_mask_in_fit=False)
+        fit = aa.FitImaging(
+            masked_imaging=masked_imaging,
+            model_image=model_image,
+            use_mask_in_fit=False,
+        )
 
         assert (fit.mask == np.array([[False, False], [False, False]])).all()
 
@@ -74,7 +78,11 @@ class TestFitImaging:
 
         model_image = aa.Array.manual_mask(array=[1.0, 2.0, 3.0], mask=mask)
 
-        fit = aa.FitImaging(masked_imaging=masked_imaging, model_image=model_image, use_mask_in_fit=False)
+        fit = aa.FitImaging(
+            masked_imaging=masked_imaging,
+            model_image=model_image,
+            use_mask_in_fit=False,
+        )
 
         assert (fit.mask == np.array([[False, False], [True, False]])).all()
 
@@ -132,7 +140,10 @@ class TestFitImaging:
         )
 
         fit = aa.FitImaging(
-            masked_imaging=masked_imaging, model_image=model_image, inversion=inversion, use_mask_in_fit=False
+            masked_imaging=masked_imaging,
+            model_image=model_image,
+            inversion=inversion,
+            use_mask_in_fit=False,
         )
 
         assert fit.chi_squared == 0.0
@@ -181,7 +192,8 @@ class TestFitInterferometer:
 
         fit = aa.FitInterferometer(
             masked_interferometer=masked_interferometer,
-            model_visibilities=model_visibilities, use_mask_in_fit=False,
+            model_visibilities=model_visibilities,
+            use_mask_in_fit=False,
         )
 
         assert (
@@ -244,7 +256,8 @@ class TestFitInterferometer:
 
         fit = aa.FitInterferometer(
             masked_interferometer=masked_interferometer,
-            model_visibilities=model_visibilities, use_mask_in_fit=False,
+            model_visibilities=model_visibilities,
+            use_mask_in_fit=False,
         )
 
         assert (
@@ -314,7 +327,8 @@ class TestFitInterferometer:
         fit = aa.FitInterferometer(
             masked_interferometer=masked_interferometer,
             model_visibilities=model_visibilities,
-            inversion=inversion, use_mask_in_fit=False,
+            inversion=inversion,
+            use_mask_in_fit=False,
         )
 
         assert fit.chi_squared == 0.0

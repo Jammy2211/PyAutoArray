@@ -138,7 +138,10 @@ def make_positions_7x7():
 
 def make_imaging_7x7():
     return aa.Imaging(
-        image=make_image_7x7(), psf=make_psf_3x3(), noise_map=make_noise_map_7x7(), name="mock_imaging_7x7"
+        image=make_image_7x7(),
+        psf=make_psf_3x3(),
+        noise_map=make_noise_map_7x7(),
+        name="mock_imaging_7x7",
     )
 
 
@@ -219,7 +222,9 @@ def make_masked_interferometer_7():
 
 def make_masked_imaging_fit_x1_plane_7x7():
     return fit.FitImaging(
-        masked_imaging=make_masked_imaging_7x7(), model_image=5.0 * make_masked_imaging_7x7().image, use_mask_in_fit=False
+        masked_imaging=make_masked_imaging_7x7(),
+        model_image=5.0 * make_masked_imaging_7x7().image,
+        use_mask_in_fit=False,
     )
 
 
@@ -239,7 +244,9 @@ def make_rectangular_pixelization_grid_3x3():
 
 
 def make_rectangular_mapper_7x7_3x3():
-    return aa.Mapper(grid=make_grid_7x7(), pixelization_grid=make_rectangular_pixelization_grid_3x3())
+    return aa.Mapper(
+        grid=make_grid_7x7(), pixelization_grid=make_rectangular_pixelization_grid_3x3()
+    )
 
 
 def make_voronoi_pixelization_grid_9():
@@ -267,7 +274,9 @@ def make_voronoi_pixelization_grid_9():
 
 
 def make_voronoi_mapper_9_3x3():
-    return aa.Mapper(grid=make_grid_7x7(), pixelization_grid=make_voronoi_pixelization_grid_9())
+    return aa.Mapper(
+        grid=make_grid_7x7(), pixelization_grid=make_voronoi_pixelization_grid_9()
+    )
 
 
 def make_rectangular_inversion_7x7_3x3():

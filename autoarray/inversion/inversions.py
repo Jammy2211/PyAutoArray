@@ -33,9 +33,7 @@ class SettingsInversion:
         if not self.use_linear_operators:
             return f"{conf.instance['notation']['settings_tags']['inversion']['use_matrices']}"
         else:
-            return (
-                f"{conf.instance['notation']['settings_tags']['inversion']['use_linear_operators']}"
-            )
+            return f"{conf.instance['notation']['settings_tags']['inversion']['use_linear_operators']}"
 
 
 def inversion(masked_dataset, mapper, regularization, settings=SettingsInversion()):

@@ -22,7 +22,7 @@ def array_with_new_shape(array, new_shape):
         The new 2D shape of the array.
     """
 
-    return array.resized_from_new_shape(new_shape=new_shape)
+    return array.resized_from(new_shape=new_shape)
 
 
 def array_eps_to_counts(array_eps, exposure_time_map):

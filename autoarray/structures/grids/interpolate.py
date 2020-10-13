@@ -421,7 +421,9 @@ class GridInterpolate(abstract_grid.AbstractGrid):
 
         try:
 
-            interpolate = conf.instance["grids"]["interpolate"][func.__name__][cls.__class__.__name__]
+            interpolate = conf.instance["grids"]["interpolate"][func.__name__][
+                cls.__class__.__name__
+            ]
 
         except Exception:
 

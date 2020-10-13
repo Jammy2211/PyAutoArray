@@ -26,13 +26,13 @@ def get_real_space_mask_from(mask: np.ndarray, fit: FitDataset) -> np.ndarray:
 
 
 def radii_bin_size_from_minimum_and_maximum_radii_and_radii_points(
-        minimum_radius, maximum_radius, radii_points
+    minimum_radius, maximum_radius, radii_points
 ):
     return (maximum_radius - minimum_radius) / radii_points
 
 
 def quantity_radii_from_minimum_and_maximum_radii_and_radii_points(
-        minimum_radius, maximum_radius, radii_points
+    minimum_radius, maximum_radius, radii_points
 ):
     return list(
         np.linspace(start=minimum_radius, stop=maximum_radius, num=radii_points + 1)
@@ -40,7 +40,7 @@ def quantity_radii_from_minimum_and_maximum_radii_and_radii_points(
 
 
 def quantity_and_annuli_radii_from_minimum_and_maximum_radii_and_radii_points(
-        minimum_radius, maximum_radius, radii_points
+    minimum_radius, maximum_radius, radii_points
 ):
     radii_bin_size = radii_bin_size_from_minimum_and_maximum_radii_and_radii_points(
         minimum_radius=minimum_radius,

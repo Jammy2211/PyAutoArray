@@ -473,7 +473,7 @@ class LineCollection(object):
                 stacked_lines[index].line = [line]
             else:
                 stacked_lines[index].line = np.append(
-                    stacked_lines[index].line, [line], axis=0,
+                    stacked_lines[index].line, [line], axis=0
                 )
             stacked_lines[index].n_stacked += 1
 
