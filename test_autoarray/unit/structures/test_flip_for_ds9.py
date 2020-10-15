@@ -22,7 +22,7 @@ def create_fits(fits_path, array):
 
 def test__from_fits__all_imaging_data_structures_are_flipped_for_ds9():
 
-    conf.instance = conf.Config(config_path=(f"{path}/files/config_flip"))
+    conf.instance.push((f"{path}/files/config_flip"))
 
     fits_path = "{}/files".format(os.path.dirname(os.path.realpath(__file__)))
 
