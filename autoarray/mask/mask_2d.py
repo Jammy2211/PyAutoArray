@@ -205,7 +205,7 @@ class AbstractMask2D(abstract_mask.AbstractMask):
         file_path : str
             The full path of the file that is output, including the file name and ``.fits`` extension.
         overwrite : bool
-            If ``True`` and a file already exists with the input file_path the .fits file is overwritten. If `False`, an
+            If `True` and a file already exists with the input file_path the .fits file is overwritten. If `False`, an
             error is raised.
 
         Returns
@@ -254,7 +254,7 @@ class Mask2D(AbstractMask2D):
         origin : (float, float)
             The (y,x) scaled units origin of the mask's coordinate system.
         invert : bool
-            If ``True``, the ``bool``'s of the input ``mask`` are inverted, for example `False`'s become ``True``
+            If `True`, the ``bool``'s of the input ``mask`` are inverted, for example `False`'s become `True`
             and visa versa.
         """
         if type(mask) is list:
@@ -297,7 +297,7 @@ class Mask2D(AbstractMask2D):
         origin : (float, float)
             The (y,x) scaled units origin of the mask's coordinate system.
         invert : bool
-            If ``True``, the ``bool``'s of the input ``mask`` are inverted, for example `False`'s become ``True``
+            If `True`, the ``bool``'s of the input ``mask`` are inverted, for example `False`'s become `True`
             and visa versa.
         """
         return cls.manual(
@@ -340,7 +340,7 @@ class Mask2D(AbstractMask2D):
         centre: (float, float)
             The (y,x) scaled units centre of the circle used to mask pixels.
         invert : bool
-            If ``True``, the ``bool``'s of the input ``mask`` are inverted, for example `False`'s become ``True``
+            If `True`, the ``bool``'s of the input ``mask`` are inverted, for example `False`'s become `True`
             and visa versa.
         """
 
@@ -396,7 +396,7 @@ class Mask2D(AbstractMask2D):
         centre: (float, float)
             The (y,x) scaled units centre of the annulus used to mask pixels.
         invert : bool
-            If ``True``, the ``bool``'s of the input ``mask`` are inverted, for example `False`'s become ``True``
+            If `True`, the ``bool``'s of the input ``mask`` are inverted, for example `False`'s become `True`
             and visa versa.
         """
 
@@ -446,10 +446,10 @@ class Mask2D(AbstractMask2D):
         inner_radius : float
             The inner radius in scaled units of the annulus within which pixels are `False` and unmasked.
         outer_radius : float
-            The first outer radius in scaled units of the annulus within which pixels are ``True`` and masked.
+            The first outer radius in scaled units of the annulus within which pixels are `True` and masked.
         outer_radius_2 : float
             The second outer radius in scaled units of the annulus within which pixels are `False` and unmasked and
-            outside of which all entries are ``True`` and masked.
+            outside of which all entries are `True` and masked.
         pixel_scales: (float, float) or float
             The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a ``float``,
             it is converted to a (float, float) structure.
@@ -460,7 +460,7 @@ class Mask2D(AbstractMask2D):
         centre: (float, float)
             The (y,x) scaled units centre of the anti-annulus used to mask pixels.
         invert : bool
-            If ``True``, the ``bool``'s of the input ``mask`` are inverted, for example `False`'s become ``True``
+            If `True`, the ``bool``'s of the input ``mask`` are inverted, for example `False`'s become `True`
             and visa versa.
         """
 
@@ -524,7 +524,7 @@ class Mask2D(AbstractMask2D):
         centre: (float, float)
             The (y,x) scaled units centred of the ellipse used to mask pixels.
         invert : bool
-            If ``True``, the ``bool``'s of the input ``mask`` are inverted, for example `False`'s become ``True``
+            If `True`, the ``bool``'s of the input ``mask`` are inverted, for example `False`'s become `True`
             and visa versa.
         """
         if type(pixel_scales) is not tuple:
@@ -597,7 +597,7 @@ class Mask2D(AbstractMask2D):
         centre: (float, float)
             The (y,x) scaled units centre of the elliptical annuli used to mask pixels.
         invert : bool
-            If ``True``, the ``bool``'s of the input ``mask`` are inverted, for example `False`'s become ``True``
+            If `True`, the ``bool``'s of the input ``mask`` are inverted, for example `False`'s become `True`
             and visa versa.
         """
 
@@ -659,7 +659,7 @@ class Mask2D(AbstractMask2D):
             All input ``pixel_coordinates`` are buffed with `False` entries in all 8 neighboring directions by this
             amount.
         invert : bool
-            If ``True``, the ``bool``'s of the input ``mask`` are inverted, for example `False`'s become ``True``
+            If `True`, the ``bool``'s of the input ``mask`` are inverted, for example `False`'s become `True`
             and visa versa.
         """
 

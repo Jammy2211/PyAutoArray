@@ -143,14 +143,14 @@ class AbstractMask(np.ndarray):
     @property
     def is_all_true(self) -> bool:
         """
-        Returns ``True`` if all pixels in a mask are ``True``, else returns `False`.
+        Returns `True` if all pixels in a mask are `True`, else returns `False`.
         """
         return self.pixels_in_mask == 0
 
     @property
     def is_all_false(self) -> bool:
         """
-        Returns `False` if all pixels in a mask are `False`, else returns ``True``.
+        Returns `False` if all pixels in a mask are `False`, else returns `True`.
         """
         return self.pixels_in_mask == np.size(self)
 
