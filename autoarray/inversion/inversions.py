@@ -24,18 +24,16 @@ class SettingsInversion:
     @property
     def tag(self):
         return (
-            f"{conf.instance.settings_tag.get('inversion', 'inversion')}["
+            f"{conf.instance['notation']['settings_tags']['inversion']['inversion']}["
             f"{self.use_linear_operators_tag}]"
         )
 
     @property
     def use_linear_operators_tag(self):
         if not self.use_linear_operators:
-            return f"{conf.instance.settings_tag.get('inversion', 'use_matrices')}"
+            return f"{conf.instance['notation']['settings_tags']['inversion']['use_matrices']}"
         else:
-            return (
-                f"{conf.instance.settings_tag.get('inversion', 'use_linear_operators')}"
-            )
+            return f"{conf.instance['notation']['settings_tags']['inversion']['use_linear_operators']}"
 
 
 def inversion(masked_dataset, mapper, regularization, settings=SettingsInversion()):
@@ -145,14 +143,14 @@ class AbstractInversion:
             )
 
         elif (
-            conf.instance.general.get("inversion", "interpolated_grid_shape", str)
+            conf.instance["general"]["inversion"]["interpolated_grid_shape"]
             in "image_grid"
         ):
 
             grid = self.mapper.grid
 
         elif (
-            conf.instance.general.get("inversion", "interpolated_grid_shape", str)
+            conf.instance["general"]["inversion"]["interpolated_grid_shape"]
             in "source_grid"
         ):
 
@@ -187,7 +185,8 @@ class AbstractInversion:
 
     @property
     def regularization_term(self):
-        """ Compute the regularization term of an inversion. This term represents the sum of the difference in flux \
+        """
+    Returns the regularization term of an inversion. This term represents the sum of the difference in flux \
         between every pair of neighboring pixels. This is computed as:
 
         s_T * H * s = solution_vector.T * regularization_matrix * solution_vector
@@ -309,8 +308,8 @@ class InversionImagingMatrix(AbstractInversion, AbstractInversionMatrix):
             noise_map=noise_map,
         )
 
-        curvature_matrix = inversion_util.curvature_matrix_via_blurred_mapping_matrix_from(
-            blurred_mapping_matrix=blurred_mapping_matrix, noise_map=noise_map
+        curvature_matrix = inversion_util.curvature_matrix_via_mapping_matrix_from(
+            mapping_matrix=blurred_mapping_matrix, noise_map=noise_map
         )
 
         regularization_matrix = regularization.regularization_matrix_from_mapper(
@@ -553,14 +552,12 @@ class InversionInterferometerMatrix(
             noise_map=noise_map[:, 1],
         )
 
-        real_curvature_matrix = inversion_util.curvature_matrix_via_transformed_mapping_matrix_from(
-            transformed_mapping_matrix=transformed_mapping_matrices[0],
-            noise_map=noise_map[:, 0],
+        real_curvature_matrix = inversion_util.curvature_matrix_via_mapping_matrix_from(
+            mapping_matrix=transformed_mapping_matrices[0], noise_map=noise_map[:, 0]
         )
 
-        imag_curvature_matrix = inversion_util.curvature_matrix_via_transformed_mapping_matrix_from(
-            transformed_mapping_matrix=transformed_mapping_matrices[1],
-            noise_map=noise_map[:, 1],
+        imag_curvature_matrix = inversion_util.curvature_matrix_via_mapping_matrix_from(
+            mapping_matrix=transformed_mapping_matrices[1], noise_map=noise_map[:, 1]
         )
 
         regularization_matrix = regularization.regularization_matrix_from_mapper(

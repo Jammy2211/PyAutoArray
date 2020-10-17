@@ -18,7 +18,7 @@ class FrameEuclid(f.Frame):
     P   [xxxxxxxxx H xxxxxxxxx] [xxxxxxxxx G xxxxxxxxx]  P         | clocks an image
     |   [xxxxxxxxxxxxxxxxxxxxx] [xxxxxxxxxxxxxxxxxxxxx]  |         | without any rotation
     |   [xxxxxxxxxxxxxxxxxxxxx] [xxxxxxxxxxxxxxxxxxxxx]  |         | (e.g. towards row 0
-                                                                   | of the NumPy arrays)
+                                                                   | of the ndarrays)
     |   [xxxxxxxxxxxxxxxxxxxxx] [xxxxxxxxxxxxxxxxxxxxx] |          |
     |   [xxxxxxxxxxxxxxxxxxxxx] [xxxxxxxxxxxxxxxxxxxxx] |          |
     P   [xxxxxxxxx E xxxxxxxxx] [xxxxxxxxx F xxxxxxxxx] P          |
@@ -39,7 +39,7 @@ class FrameEuclid(f.Frame):
     P   [xxxxxxxxx F xxxxxxxxx] [xxxxxxxxx E xxxxxxxxx]  P         | clocks an image
     |   [xxxxxxxxxxxxxxxxxxxxx] [xxxxxxxxxxxxxxxxxxxxx]  |         | without any rotation
     |   [xxxxxxxxxxxxxxxxxxxxx] [xxxxxxxxxxxxxxxxxxxxx]  |         | (e.g. towards row 0
-                                                                   | of the NumPy arrays)
+                                                                   | of the ndarrays)
     |   [xxxxxxxxxxxxxxxxxxxxx] [xxxxxxxxxxxxxxxxxxxxx] |          |
     |   [xxxxxxxxxxxxxxxxxxxxx] [xxxxxxxxxxxxxxxxxxxxx] |          |
     P   [xxxxxxxxx G xxxxxxxxx] [xxxxxxxxx H xxxxxxxxx] P          |
@@ -207,7 +207,9 @@ class FrameEuclid(f.Frame):
             parallel_overscan_size=parallel_overscan_size,
         )
 
-        return f.Frame.manual(array=array_electrons, roe_corner=(0, 0), scans=scans)
+        return cls.manual(
+            array=array_electrons, pixel_scales=0.1, roe_corner=(0, 0), scans=scans
+        )
 
     @classmethod
     def top_right(
@@ -235,7 +237,7 @@ class FrameEuclid(f.Frame):
             parallel_overscan_size=parallel_overscan_size,
         )
 
-        return f.Frame.manual(array=array, roe_corner=(0, 1), scans=scans)
+        return cls.manual(array=array, pixel_scales=0.1, roe_corner=(0, 1), scans=scans)
 
     @classmethod
     def bottom_left(
@@ -263,7 +265,7 @@ class FrameEuclid(f.Frame):
             parallel_overscan_size=parallel_overscan_size,
         )
 
-        return f.Frame.manual(array=array, roe_corner=(1, 0), scans=scans)
+        return cls.manual(array=array, pixel_scales=0.1, roe_corner=(1, 0), scans=scans)
 
     @classmethod
     def bottom_right(
@@ -291,7 +293,7 @@ class FrameEuclid(f.Frame):
             parallel_overscan_size=parallel_overscan_size,
         )
 
-        return f.Frame.manual(array=array, roe_corner=(1, 1), scans=scans)
+        return cls.manual(array=array, pixel_scales=0.1, roe_corner=(1, 1), scans=scans)
 
 
 class ScansEuclid(abstract_frame.Scans):

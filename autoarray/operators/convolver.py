@@ -43,8 +43,8 @@ class Convolver:
         IxIxIxIxIxIxIxIxIxIxI
         IxIxIxIxIxIxIxIxIxIxI     This is an imaging.Mask2D, where:
         IxIxIxIxIxIxIxIxIxIxI
-        IxIxIxIxIxIxIxIxIxIxI     x = ``True`` (Pixel is masked and excluded from lens)
-        IxIxIxIoIoIoIxIxIxIxI     o = ``False`` (Pixel is not masked and included in lens)
+        IxIxIxIxIxIxIxIxIxIxI     x = `True` (Pixel is masked and excluded from lens)
+        IxIxIxIoIoIoIxIxIxIxI     o = `False` (Pixel is not masked and included in lens)
         IxIxIxIoIoIoIxIxIxIxI
         IxIxIxIoIoIoIxIxIxIxI
         IxIxIxIxIxIxIxIxIxIxI
@@ -116,8 +116,8 @@ class Convolver:
         IxIxIxIxIxIxIxIxIxIxI
         IxIxIxIxIxIxIxIxIxIxI     This is an example grid.Mask2D, where:
         IxIxIxIxIxIxIxIxIxIxI
-        IxIxIoIoIoIoIoIxIxIxI     x = ``True`` (Pixel is masked and excluded from lens)
-        IxIxIoIxIxIxIoIxIxIxI     o = ``False`` (Pixel is not masked and included in lens)
+        IxIxIoIoIoIoIoIxIxIxI     x = `True` (Pixel is masked and excluded from lens)
+        IxIxIoIxIxIxIoIxIxIxI     o = `False` (Pixel is not masked and included in lens)
         IxIxIoIxIxIxIoIxIxIxI
         IxIxIoIxIxIxIoIxIxIxI
         IxIxIoIoIoIoIoIxIxIxI
@@ -261,7 +261,8 @@ class Convolver:
     @staticmethod
     @decorator_util.jit()
     def frame_at_coordinates_jit(coordinates, mask, mask_index_array, kernel_2d):
-        """ Compute the frame (indexes of pixels light is blurred into) and kernel_frame (kernel kernel values of those \
+        """
+    Returns the frame (indexes of pixels light is blurred into) and kernel_frame (kernel kernel values of those \
         pixels) for a given coordinate in a masks and its PSF.
 
         Parameters

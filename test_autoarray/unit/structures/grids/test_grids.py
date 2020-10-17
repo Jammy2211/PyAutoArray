@@ -929,21 +929,29 @@ class TestGrid:
     ):
 
         with pytest.raises(exc.GridException):
-            mask = aa.Mask2D.manual(mask=[[False, False], [True, False]], sub_size=1)
+            mask = aa.Mask2D.manual(
+                mask=[[False, False], [True, False]], pixel_scales=1.0, sub_size=1
+            )
             aa.Grid.manual_mask(
                 grid=[[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0]], mask=mask
             )
 
         with pytest.raises(exc.GridException):
-            mask = aa.Mask2D.manual(mask=[[False, False], [True, False]], sub_size=1)
+            mask = aa.Mask2D.manual(
+                mask=[[False, False], [True, False]], pixel_scales=1.0, sub_size=1
+            )
             aa.Grid.manual_mask(grid=[[1.0, 1.0], [2.0, 2.0]], mask=mask)
 
         with pytest.raises(exc.GridException):
-            mask = aa.Mask2D.manual(mask=[[False, True], [True, True]], sub_size=2)
+            mask = aa.Mask2D.manual(
+                mask=[[False, True], [True, True]], pixel_scales=1.0, sub_size=2
+            )
             aa.Grid.manual_mask(grid=[[[1.0, 1.0], [2.0, 2.0], [4.0, 4.0]]], mask=mask)
 
         with pytest.raises(exc.GridException):
-            mask = aa.Mask2D.manual(mask=[[False, True], [True, True]], sub_size=2)
+            mask = aa.Mask2D.manual(
+                mask=[[False, True], [True, True]], pixel_scales=1.0, sub_size=2
+            )
             aa.Grid.manual_mask(
                 grid=[[[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0], [5.0, 5.0]]],
                 mask=mask,

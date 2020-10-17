@@ -22,7 +22,7 @@ def array_with_new_shape(array, new_shape):
         The new 2D shape of the array.
     """
 
-    return array.resized_from_new_shape(new_shape=new_shape)
+    return array.resized_from(new_shape=new_shape)
 
 
 def array_eps_to_counts(array_eps, exposure_time_map):
@@ -250,7 +250,11 @@ def background_noise_map_from_edges_of_image(image, no_edges):
 
         edges = np.concatenate((edges, top_edge, bottom_edge, right_edge, left_edge))
 
-    return arrays.Array.full(fill_value=norm.fit(edges)[1], shape_2d=image.shape_2d)
+    return arrays.Array.full(
+        fill_value=norm.fit(edges)[1],
+        shape_2d=image.shape_2d,
+        pixel_scales=image.pixel_scales,
+    )
 
 
 def psf_with_odd_dimensions_from_psf(psf):

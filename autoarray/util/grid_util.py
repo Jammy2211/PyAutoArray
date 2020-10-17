@@ -80,7 +80,7 @@ def grid_1d_via_mask_from(
     Parameters
     ----------
     mask : np.ndarray
-        A 2D array of bools, where ``False`` values are unmasked and therefore included as part of the calculated
+        A 2D array of bools, where `False` values are unmasked and therefore included as part of the calculated
         sub-grid.
     pixel_scales : (float, float)
         The (y,x) scaled to pixel scales of the 2D mask array.
@@ -162,7 +162,7 @@ def grid_2d_via_mask_from(
     Parameters
     ----------
     mask : np.ndarray
-        A 2D array of bools, where ``False`` values are unmasked and therefore included as part of the calculated
+        A 2D array of bools, where `False` values are unmasked and therefore included as part of the calculated
         sub-grid.
     pixel_scales : (float, float)
         The (y,x) scaled to pixel scales of the 2D mask array.
@@ -629,7 +629,7 @@ def sub_grid_1d_from(
     Parameters
     ----------
     mask : ndgrid
-        A 2D grid of bools, where ``False`` values are unmasked and included in the util.
+        A 2D grid of bools, where `False` values are unmasked and included in the util.
     sub_grid_2d : ndgrid
         The 2D grid of values which are mapped to a 1D grid.
 

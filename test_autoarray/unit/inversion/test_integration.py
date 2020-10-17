@@ -8,8 +8,8 @@ import pytest
 class TestRectangular:
     def test__5_simple_grid__no_sub_grid(self):
 
-        mask = np.array(
-            [
+        mask = aa.Mask2D.manual(
+            mask=[
                 [True, True, True, True, True, True, True],
                 [True, True, True, True, True, True, True],
                 [True, True, True, False, True, True, True],
@@ -17,17 +17,15 @@ class TestRectangular:
                 [True, True, True, False, True, True, True],
                 [True, True, True, True, True, True, True],
                 [True, True, True, True, True, True, True],
-            ]
+            ],
+            pixel_scales=1.0,
+            sub_size=1,
         )
-
-        mask = aa.Mask2D.manual(mask=mask, pixel_scales=1.0, sub_size=1)
 
         # Source-plane comprises 5 grid, so 5 masked_image pixels traced to the pix-plane.
 
         grid = aa.Grid.manual_mask(
-            grid=np.array(
-                [[1.0, -1.0], [1.0, 1.0], [0.0, 0.0], [-1.0, -1.0], [-1.0, 1.0]]
-            ),
+            grid=[[1.0, -1.0], [1.0, 1.0], [0.0, 0.0], [-1.0, -1.0], [-1.0, 1.0]],
             mask=mask,
         )
 
@@ -82,9 +80,9 @@ class TestRectangular:
             )
         ).all()
 
-        image = aa.Array.ones(shape_2d=(7, 7))
-        noise_map = aa.Array.ones(shape_2d=(7, 7))
-        psf = aa.Kernel.no_blur()
+        image = aa.Array.ones(shape_2d=(7, 7), pixel_scales=1.0)
+        noise_map = aa.Array.ones(shape_2d=(7, 7), pixel_scales=1.0)
+        psf = aa.Kernel.no_blur(pixel_scales=1.0)
 
         imaging = aa.Imaging(image=image, noise_map=noise_map, psf=psf)
 
@@ -103,8 +101,8 @@ class TestRectangular:
 
     def test__15_grid__no_sub_grid(self):
 
-        mask = np.array(
-            [
+        mask = aa.Mask2D.manual(
+            mask=[
                 [True, True, True, True, True, True, True],
                 [True, True, True, True, True, True, True],
                 [True, False, False, False, False, False, True],
@@ -112,33 +110,31 @@ class TestRectangular:
                 [True, False, False, False, False, False, True],
                 [True, True, True, True, True, True, True],
                 [True, True, True, True, True, True, True],
-            ]
+            ],
+            pixel_scales=1.0,
+            sub_size=1,
         )
-
-        mask = aa.Mask2D.manual(mask=mask, pixel_scales=1.0, sub_size=1)
 
         # There is no sub-grid, so our grid are just the masked_image grid (note the NumPy weighted_data structure
         # ensures this has no sub-gridding)
         grid = aa.Grid.manual_mask(
-            grid=np.array(
-                [
-                    [0.9, -0.9],
-                    [1.0, -1.0],
-                    [1.1, -1.1],
-                    [0.9, 0.9],
-                    [1.0, 1.0],
-                    [1.1, 1.1],
-                    [-0.01, 0.01],
-                    [0.0, 0.0],
-                    [0.01, 0.01],
-                    [-0.9, -0.9],
-                    [-1.0, -1.0],
-                    [-1.1, -1.1],
-                    [-0.9, 0.9],
-                    [-1.0, 1.0],
-                    [-1.1, 1.1],
-                ]
-            ),
+            grid=[
+                [0.9, -0.9],
+                [1.0, -1.0],
+                [1.1, -1.1],
+                [0.9, 0.9],
+                [1.0, 1.0],
+                [1.1, 1.1],
+                [-0.01, 0.01],
+                [0.0, 0.0],
+                [0.01, 0.01],
+                [-0.9, -0.9],
+                [-1.0, -1.0],
+                [-1.1, -1.1],
+                [-0.9, 0.9],
+                [-1.0, 1.0],
+                [-1.1, 1.1],
+            ],
             mask=mask,
         )
 
@@ -200,9 +196,9 @@ class TestRectangular:
             )
         ).all()
 
-        image = aa.Array.ones(shape_2d=(7, 7))
-        noise_map = aa.Array.ones(shape_2d=(7, 7))
-        psf = aa.Kernel.no_blur()
+        image = aa.Array.ones(shape_2d=(7, 7), pixel_scales=1.0)
+        noise_map = aa.Array.ones(shape_2d=(7, 7), pixel_scales=1.0)
+        psf = aa.Kernel.no_blur(pixel_scales=1.0)
 
         imaging = aa.Imaging(image=image, noise_map=noise_map, psf=psf)
 
@@ -223,8 +219,8 @@ class TestRectangular:
 
     def test__5_simple_grid__include_sub_grid(self):
 
-        mask = np.array(
-            [
+        mask = aa.Mask2D.manual(
+            mask=[
                 [True, True, True, True, True, True, True],
                 [True, True, True, True, True, True, True],
                 [True, True, True, False, True, True, True],
@@ -232,40 +228,38 @@ class TestRectangular:
                 [True, True, True, False, True, True, True],
                 [True, True, True, True, True, True, True],
                 [True, True, True, True, True, True, True],
-            ]
+            ],
+            pixel_scales=2.0,
+            sub_size=2,
         )
-
-        mask = aa.Mask2D.manual(mask=mask, pixel_scales=2.0, sub_size=2)
 
         # Assume a 2x2 sub-grid, so each of our 5 masked_image-pixels are split into 4.
         # The grid below is unphysical in that the (0.0, 0.0) terms on the end of each sub-grid probably couldn't
         # happen for a real lens calculation. This is to make a mapping_matrix matrix which explicitly tests the
         # sub-grid.
         grid = aa.Grid.manual_mask(
-            grid=np.array(
-                [
-                    [1.0, -1.0],
-                    [1.0, -1.0],
-                    [1.0, -1.0],
-                    [1.0, 1.0],
-                    [1.0, 1.0],
-                    [1.0, 1.0],
-                    [-1.0, -1.0],
-                    [-1.0, -1.0],
-                    [-1.0, -1.0],
-                    [-1.0, 1.0],
-                    [-1.0, 1.0],
-                    [-1.0, 1.0],
-                    [0.0, 0.0],
-                    [0.0, 0.0],
-                    [0.0, 0.0],
-                    [0.0, 0.0],
-                    [0.0, 0.0],
-                    [0.0, 0.0],
-                    [0.0, 0.0],
-                    [0.0, 0.0],
-                ]
-            ),
+            grid=[
+                [1.0, -1.0],
+                [1.0, -1.0],
+                [1.0, -1.0],
+                [1.0, 1.0],
+                [1.0, 1.0],
+                [1.0, 1.0],
+                [-1.0, -1.0],
+                [-1.0, -1.0],
+                [-1.0, -1.0],
+                [-1.0, 1.0],
+                [-1.0, 1.0],
+                [-1.0, 1.0],
+                [0.0, 0.0],
+                [0.0, 0.0],
+                [0.0, 0.0],
+                [0.0, 0.0],
+                [0.0, 0.0],
+                [0.0, 0.0],
+                [0.0, 0.0],
+                [0.0, 0.0],
+            ],
             mask=mask,
         )
 
@@ -317,9 +311,9 @@ class TestRectangular:
             )
         ).all()
 
-        image = aa.Array.ones(shape_2d=(7, 7))
-        noise_map = aa.Array.ones(shape_2d=(7, 7))
-        psf = aa.Kernel.no_blur()
+        image = aa.Array.ones(shape_2d=(7, 7), pixel_scales=1.0)
+        noise_map = aa.Array.ones(shape_2d=(7, 7), pixel_scales=1.0)
+        psf = aa.Kernel.no_blur(pixel_scales=1.0)
 
         imaging = aa.Imaging(image=image, noise_map=noise_map, psf=psf)
 
@@ -338,8 +332,8 @@ class TestRectangular:
 
     def test__grid__requires_border_relocation(self):
 
-        mask = np.array(
-            [
+        mask = aa.Mask2D.manual(
+            mask=[
                 [True, True, True, True, True, True, True],
                 [True, True, True, True, True, True, True],
                 [True, True, True, False, True, True, True],
@@ -347,15 +341,13 @@ class TestRectangular:
                 [True, True, True, False, True, True, True],
                 [True, True, True, True, True, True, True],
                 [True, True, True, True, True, True, True],
-            ]
+            ],
+            pixel_scales=1.0,
+            sub_size=1,
         )
 
-        mask = aa.Mask2D.manual(mask=mask, pixel_scales=1.0, sub_size=1)
-
         grid = aa.Grid.manual_mask(
-            grid=np.array(
-                [[1.0, 1.0], [1.0, 1.0], [1.0, 1.0], [1.0, 1.0], [-1.0, -1.0]]
-            ),
+            grid=[[1.0, 1.0], [1.0, 1.0], [1.0, 1.0], [1.0, 1.0], [-1.0, -1.0]],
             mask=mask,
         )
 
@@ -407,9 +399,9 @@ class TestRectangular:
             )
         ).all()
 
-        image = aa.Array.ones(shape_2d=(7, 7))
-        noise_map = aa.Array.ones(shape_2d=(7, 7))
-        psf = aa.Kernel.no_blur()
+        image = aa.Array.ones(shape_2d=(7, 7), pixel_scales=1.0)
+        noise_map = aa.Array.ones(shape_2d=(7, 7), pixel_scales=1.0)
+        psf = aa.Kernel.no_blur(pixel_scales=1.0)
 
         imaging = aa.Imaging(image=image, noise_map=noise_map, psf=psf)
 
@@ -430,20 +422,8 @@ class TestRectangular:
 
         visibilities_mask = np.full(fill_value=False, shape=(7, 2))
 
-        real_space_mask = np.array(
-            [
-                [False, False, False, False, False, False, False],
-                [False, False, False, False, False, False, False],
-                [False, False, False, False, False, False, False],
-                [False, False, False, False, False, False, False],
-                [False, False, False, False, False, False, False],
-                [False, False, False, False, False, False, False],
-                [False, False, False, False, False, False, False],
-            ]
-        )
-
-        real_space_mask = aa.Mask2D.manual(
-            mask=real_space_mask, pixel_scales=0.1, sub_size=1
+        real_space_mask = aa.Mask2D.unmasked(
+            shape_2d=(7, 7), pixel_scales=0.1, sub_size=1
         )
 
         grid = aa.Grid.from_mask(mask=real_space_mask)
@@ -502,20 +482,8 @@ class TestRectangular:
 
         visibilities_mask = np.full(fill_value=False, shape=(7, 2))
 
-        real_space_mask = np.array(
-            [
-                [False, False, False, False, False, False, False],
-                [False, False, False, False, False, False, False],
-                [False, False, False, False, False, False, False],
-                [False, False, False, False, False, False, False],
-                [False, False, False, False, False, False, False],
-                [False, False, False, False, False, False, False],
-                [False, False, False, False, False, False, False],
-            ]
-        )
-
-        real_space_mask = aa.Mask2D.manual(
-            mask=real_space_mask, pixel_scales=0.1, sub_size=1
+        real_space_mask = aa.Mask2D.unmasked(
+            shape_2d=(7, 7), pixel_scales=0.1, sub_size=1
         )
 
         grid = aa.Grid.from_mask(mask=real_space_mask)
@@ -580,15 +548,13 @@ class TestVoronoiMagnification:
     def test__3x3_simple_grid(self):
 
         mask = aa.Mask2D.manual(
-            mask=np.array(
-                [
-                    [True, True, True, True, True],
-                    [True, False, False, False, True],
-                    [True, False, False, False, True],
-                    [True, False, False, False, True],
-                    [True, True, True, True, True],
-                ]
-            ),
+            mask=[
+                [True, True, True, True, True],
+                [True, False, False, False, True],
+                [True, False, False, False, True],
+                [True, False, False, False, True],
+                [True, True, True, True, True],
+            ],
             pixel_scales=1.0,
             sub_size=1,
         )
@@ -673,9 +639,9 @@ class TestVoronoiMagnification:
             )
         ).all()
 
-        image = aa.Array.ones(shape_2d=(5, 5))
-        noise_map = aa.Array.ones(shape_2d=(5, 5))
-        psf = aa.Kernel.no_blur()
+        image = aa.Array.ones(shape_2d=(5, 5), pixel_scales=1.0)
+        noise_map = aa.Array.ones(shape_2d=(5, 5), pixel_scales=1.0)
+        psf = aa.Kernel.no_blur(pixel_scales=1.0)
 
         imaging = aa.Imaging(image=image, noise_map=noise_map, psf=psf)
 
@@ -695,15 +661,13 @@ class TestVoronoiMagnification:
     def test__3x3_simple_grid__include_mask(self):
 
         mask = aa.Mask2D.manual(
-            mask=np.array(
-                [
-                    [True, True, True, True, True],
-                    [True, True, False, True, True],
-                    [True, False, False, False, True],
-                    [True, True, False, True, True],
-                    [True, True, True, True, True],
-                ]
-            ),
+            mask=[
+                [True, True, True, True, True],
+                [True, True, False, True, True],
+                [True, False, False, False, True],
+                [True, True, False, True, True],
+                [True, True, True, True, True],
+            ],
             pixel_scales=1.0,
             sub_size=1,
         )
@@ -766,9 +730,9 @@ class TestVoronoiMagnification:
             )
         ).all()
 
-        image = aa.Array.ones(shape_2d=(5, 5))
-        noise_map = aa.Array.ones(shape_2d=(5, 5))
-        psf = aa.Kernel.no_blur()
+        image = aa.Array.ones(shape_2d=(5, 5), pixel_scales=1.0)
+        noise_map = aa.Array.ones(shape_2d=(5, 5), pixel_scales=1.0)
+        psf = aa.Kernel.no_blur(pixel_scales=1.0)
 
         imaging = aa.Imaging(image=image, noise_map=noise_map, psf=psf)
 
@@ -788,15 +752,13 @@ class TestVoronoiMagnification:
     def test__3x3_simple_grid__include_mask_and_sub_grid(self):
 
         mask = aa.Mask2D.manual(
-            mask=np.array(
-                [
-                    [True, True, True, True, True],
-                    [True, True, False, True, True],
-                    [True, False, False, False, True],
-                    [True, True, False, True, True],
-                    [True, True, True, True, True],
-                ]
-            ),
+            mask=[
+                [True, True, True, True, True],
+                [True, True, False, True, True],
+                [True, False, False, False, True],
+                [True, True, False, True, True],
+                [True, True, True, True, True],
+            ],
             pixel_scales=1.0,
             sub_size=2,
         )
@@ -880,9 +842,9 @@ class TestVoronoiMagnification:
             )
         ).all()
 
-        image = aa.Array.ones(shape_2d=(5, 5))
-        noise_map = aa.Array.ones(shape_2d=(5, 5))
-        psf = aa.Kernel.no_blur()
+        image = aa.Array.ones(shape_2d=(5, 5), pixel_scales=1.0)
+        noise_map = aa.Array.ones(shape_2d=(5, 5), pixel_scales=1.0)
+        psf = aa.Kernel.no_blur(pixel_scales=1.0)
 
         imaging = aa.Imaging(image=image, noise_map=noise_map, psf=psf)
 
@@ -902,17 +864,15 @@ class TestVoronoiMagnification:
     def test__3x3_simple_grid__include_mask_with_offset_centre(self):
 
         mask = aa.Mask2D.manual(
-            mask=np.array(
-                [
-                    [True, True, True, True, True, True, True],
-                    [True, True, True, True, False, True, True],
-                    [True, True, True, False, False, False, True],
-                    [True, True, True, True, False, True, True],
-                    [True, True, True, True, True, True, True],
-                    [True, True, True, True, True, True, True],
-                    [True, True, True, True, True, True, True],
-                ]
-            ),
+            mask=[
+                [True, True, True, True, True, True, True],
+                [True, True, True, True, False, True, True],
+                [True, True, True, False, False, False, True],
+                [True, True, True, True, False, True, True],
+                [True, True, True, True, True, True, True],
+                [True, True, True, True, True, True, True],
+                [True, True, True, True, True, True, True],
+            ],
             pixel_scales=1.0,
             sub_size=1,
         )
@@ -975,9 +935,9 @@ class TestVoronoiMagnification:
             )
         ).all()
 
-        image = aa.Array.ones(shape_2d=(7, 7))
-        noise_map = aa.Array.ones(shape_2d=(7, 7))
-        psf = aa.Kernel.no_blur()
+        image = aa.Array.ones(shape_2d=(7, 7), pixel_scales=1.0)
+        noise_map = aa.Array.ones(shape_2d=(7, 7), pixel_scales=1.0)
+        psf = aa.Kernel.no_blur(pixel_scales=1.0)
 
         imaging = aa.Imaging(image=image, noise_map=noise_map, psf=psf)
 
@@ -998,20 +958,8 @@ class TestVoronoiMagnification:
 
         visibilities_mask = np.full(fill_value=False, shape=(7, 2))
 
-        real_space_mask = np.array(
-            [
-                [False, False, False, False, False, False, False],
-                [False, False, False, False, False, False, False],
-                [False, False, False, False, False, False, False],
-                [False, False, False, False, False, False, False],
-                [False, False, False, False, False, False, False],
-                [False, False, False, False, False, False, False],
-                [False, False, False, False, False, False, False],
-            ]
-        )
-
-        real_space_mask = aa.Mask2D.manual(
-            mask=real_space_mask, pixel_scales=0.1, sub_size=1
+        real_space_mask = aa.Mask2D.unmasked(
+            shape_2d=(7, 7), pixel_scales=0.1, sub_size=1
         )
 
         grid = aa.Grid.from_mask(mask=real_space_mask)

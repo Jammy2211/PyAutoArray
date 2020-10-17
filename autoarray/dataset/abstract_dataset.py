@@ -4,6 +4,7 @@ import numpy as np
 import copy
 
 from autoconf import conf
+from autoarray.structures import abstract_structure
 from autoarray.structures import arrays
 from autoarray.structures import grids
 from autoarray.mask import mask_2d as msk
@@ -33,18 +34,20 @@ def grid_from_mask_and_grid_class(
 
 
 class AbstractDataset:
-    def __init__(self, data, noise_map, positions=None, name=None):
+    def __init__(
+        self,
+        data: abstract_structure.AbstractStructure,
+        noise_map: abstract_structure.AbstractStructure,
+        positions: grids.GridCoordinates = None,
+        name: str = None,
+    ):
         """A collection of abstract 2D for different data_type classes (an image, pixel-scale, noise-map, etc.)
 
         Parameters
         ----------
-        data : arrays.Array
+        data : abstract_structure.AbstractStructure
             The array of the image data, in units of electrons per second.
-        pixel_scales : float
-            The size of each pixel in scaled units.
-        psf : PSF
-            An array describing the PSF kernel of the image.
-        noise_map : np.ndarray
+        noise_map : abstract_structure.AbstractStructure
             An array describing the RMS standard deviation error in each pixel, preferably in units of electrons per
             second.
         """
@@ -132,6 +135,19 @@ class AbstractDataset:
         imaging = copy.deepcopy(self)
 
         imaging.noise_map = noise_map
+
+        return imaging
+
+    def trimmed_after_convolution_from(self, kernel_shape):
+
+        imaging = copy.copy(self)
+
+        imaging.data = imaging.data.trimmed_after_convolution_from(
+            kernel_shape=kernel_shape
+        )
+        imaging.noise_map = imaging.noise_map.trimmed_after_convolution_from(
+            kernel_shape=kernel_shape
+        )
 
         return imaging
 
@@ -225,7 +241,7 @@ class AbstractSettingsMaskedDataset:
         """
 
         return (
-            f"{conf.instance.settings_tag.get('dataset', 'grid')}_"
+            f"{conf.instance['notation']['settings_tags']['dataset']['grid']}_"
             f"{self.grid_sub_size_tag}"
             f"{self.grid_fractional_accuracy_tag}"
             f"{self.grid_pixel_scales_interp_tag}"
@@ -238,11 +254,11 @@ class AbstractSettingsMaskedDataset:
         This assumes both grids were used in the analysis.
         """
         return (
-            f"{conf.instance.settings_tag.get('dataset', 'grid')}_"
+            f"{conf.instance['notation']['settings_tags']['dataset']['grid']}_"
             f"{self.grid_sub_size_tag}"
             f"{self.grid_fractional_accuracy_tag}"
             f"{self.grid_pixel_scales_interp_tag}_"
-            f"{conf.instance.settings_tag.get('dataset', 'grid_inversion')}_"
+            f"{conf.instance['notation']['settings_tags']['dataset']['grid_inversion']}_"
             f"{self.grid_inversion_sub_size_tag}"
             f"{self.grid_inversion_fractional_accuracy_tag}"
             f"{self.grid_inversion_pixel_scales_interp_tag}"
@@ -261,7 +277,7 @@ class AbstractSettingsMaskedDataset:
         if not self.grid_class is grids.Grid:
             return ""
         return (
-            f"{conf.instance.settings_tag.get('dataset', 'sub_size')}_"
+            f"{conf.instance['notation']['settings_tags']['dataset']['sub_size']}_"
             f"{str(self.sub_size)}"
         )
 
@@ -278,7 +294,7 @@ class AbstractSettingsMaskedDataset:
         if not self.grid_class is grids.GridIterate:
             return ""
         return (
-            f"{conf.instance.settings_tag.get('dataset', 'fractional_accuracy')}_"
+            f"{conf.instance['notation']['settings_tags']['dataset']['fractional_accuracy']}_"
             f"{str(self.fractional_accuracy)}"
         )
 
@@ -296,9 +312,9 @@ class AbstractSettingsMaskedDataset:
             return ""
         if self.pixel_scales_interp is None:
             return ""
-        return conf.instance.settings_tag.get(
-            "dataset", "pixel_scales_interp"
-        ) + "_{0:.3f}".format(self.pixel_scales_interp)
+        return conf.instance["notation"]["settings_tags"]["dataset"][
+            "pixel_scales_interp"
+        ] + "_{0:.3f}".format(self.pixel_scales_interp)
 
     @property
     def grid_inversion_sub_size_tag(self):
@@ -313,7 +329,7 @@ class AbstractSettingsMaskedDataset:
         if not self.grid_inversion_class is grids.Grid:
             return ""
         return (
-            f"{conf.instance.settings_tag.get('dataset', 'sub_size')}_"
+            f"{conf.instance['notation']['settings_tags']['dataset']['sub_size']}_"
             f"{str(self.sub_size)}"
         )
 
@@ -330,7 +346,7 @@ class AbstractSettingsMaskedDataset:
         if not self.grid_inversion_class is grids.GridIterate:
             return ""
         return (
-            f"{conf.instance.settings_tag.get('dataset', 'fractional_accuracy')}_"
+            f"{conf.instance['notation']['settings_tags']['dataset']['fractional_accuracy']}_"
             f"{str(self.fractional_accuracy)}"
         )
 
@@ -348,9 +364,9 @@ class AbstractSettingsMaskedDataset:
             return ""
         if self.pixel_scales_interp is None:
             return ""
-        return conf.instance.settings_tag.get(
-            "dataset", "pixel_scales_interp"
-        ) + "_{0:.3f}".format(self.pixel_scales_interp)
+        return conf.instance["notation"]["settings_tags"]["dataset"][
+            "pixel_scales_interp"
+        ] + "_{0:.3f}".format(self.pixel_scales_interp)
 
     @property
     def signal_to_noise_limit_tag(self):
@@ -366,7 +382,7 @@ class AbstractSettingsMaskedDataset:
         if self.signal_to_noise_limit is None:
             return ""
         return (
-            f"__{conf.instance.settings_tag.get('dataset', 'signal_to_noise_limit')}_"
+            f"__{conf.instance['notation']['settings_tags']['dataset']['signal_to_noise_limit']}_"
             f"{str(self.signal_to_noise_limit)}"
         )
 
@@ -384,7 +400,7 @@ class AbstractMaskedDataset:
 
         if settings.signal_to_noise_limit is not None:
 
-            dataset = dataset.signal_to_noise_limited_from_signal_to_noise_limit(
+            dataset = dataset.signal_to_noise_limited_from(
                 signal_to_noise_limit=settings.signal_to_noise_limit
             )
 

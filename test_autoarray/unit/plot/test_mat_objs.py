@@ -92,7 +92,7 @@ class TestColorMap:
         self
     ):
 
-        array = aa.Array.ones(shape_2d=(2, 2))
+        array = aa.Array.ones(shape_2d=(2, 2), pixel_scales=1.0)
         array[0] = 0.0
 
         cmap = aplt.ColorMap(norm_min=None, norm_max=None, norm="linear")

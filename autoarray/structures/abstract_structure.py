@@ -102,3 +102,15 @@ class AbstractStructure(np.ndarray):
         """
         with open(f"{file_path}/{filename}.pickle", "wb") as f:
             pickle.dump(self, f)
+
+    def resized_from(self, new_shape):
+        raise NotImplementedError
+
+    def padded_before_convolution_from(self, kernel_shape):
+        raise NotImplementedError
+
+    def trimmed_after_convolution_from(self, kernel_shape):
+        raise NotImplementedError
+
+    def binned_up_from(self, bin_up_factor, method):
+        raise NotImplementedError

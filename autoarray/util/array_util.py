@@ -269,7 +269,7 @@ def numpy_array_1d_to_fits(
     file_path : str
         The full path of the file that is output, including the file name and ``.fits`` extension.
     overwrite : bool
-        If ``True`` and a file already exists with the input file_path the .fits file is overwritten. If False, an error
+        If `True` and a file already exists with the input file_path the .fits file is overwritten. If False, an error
         will be raised.
 
     Returns
@@ -339,7 +339,7 @@ def numpy_array_2d_to_fits(
     file_path : str
         The full path of the file that is output, including the file name and ``.fits`` extension.
     overwrite : bool
-        If ``True`` and a file already exists with the input file_path the .fits file is overwritten. If ``False``, an
+        If `True` and a file already exists with the input file_path the .fits file is overwritten. If `False`, an
         error is raised.
 
     Returns
@@ -362,7 +362,7 @@ def numpy_array_2d_to_fits(
 
     new_hdr = fits.Header()
 
-    flip_for_ds9 = conf.instance.general.get("fits", "flip_for_ds9", bool)
+    flip_for_ds9 = conf.instance["general"]["fits"]["flip_for_ds9"]
 
     if flip_for_ds9:
         hdu = fits.PrimaryHDU(np.flipud(array_2d), new_hdr)
@@ -400,12 +400,11 @@ def numpy_array_2d_from_fits(
     """
     hdu_list = fits.open(file_path, do_not_scale_image_data=do_not_scale_image_data)
 
-    flip_for_ds9 = conf.instance.general.get("fits", "flip_for_ds9", bool)
+    flip_for_ds9 = conf.instance["general"]["fits"]["flip_for_ds9"]
 
     if flip_for_ds9:
         return np.flipud(np.array(hdu_list[hdu].data)).astype("float64")
-    else:
-        return np.array(hdu_list[hdu].data).astype("float64")
+    return np.array(hdu_list[hdu].data).astype("float64")
 
 
 @decorator_util.jit()
@@ -519,7 +518,7 @@ def sub_array_1d_from(
     sub_array_2d : np.ndarray
         A 2D array of values on the dimensions of the sub-grid.
     mask : np.ndarray
-        A 2D array of bools, where ``False`` values mean unmasked and are included in the util.
+        A 2D array of bools, where `False` values mean unmasked and are included in the util.
     array_2d : np.ndarray
         The 2D array of values which are mapped to a 1D array.
 
@@ -639,7 +638,7 @@ def sub_array_2d_via_sub_indexes_from(
     sub_array_2d : np.ndarray
         A 2D array of values on the dimensions of the sub-grid.
     mask : np.ndarray
-        A 2D array of bools, where ``False`` values mean unmasked and are included in the util.
+        A 2D array of bools, where `False` values mean unmasked and are included in the util.
     array_2d : np.ndarray
         The 2D array of values which are mapped to a 1D array.
 
@@ -698,7 +697,7 @@ def sub_array_complex_1d_from(
     sub_array_2d : np.ndarray
         A 2D array of values on the dimensions of the sub-grid.
     mask : np.ndarray
-        A 2D array of bools, where ``False`` values mean unmasked and are included in the util.
+        A 2D array of bools, where `False` values mean unmasked and are included in the util.
     array_2d : np.ndarray
         The 2D array of values which are mapped to a 1D array.
 

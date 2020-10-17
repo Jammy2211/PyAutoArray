@@ -147,7 +147,7 @@ class AbstractGridCoordinates(np.ndarray):
         file_path : str
             The path to the coordinates .dat file containing the coordinates (e.g. '/path/to/coordinates.dat')
         overwrite : bool
-            If there is as exsiting file it will be overwritten if this is *True*.
+            If there is as exsiting file it will be overwritten if this is `True`.
         """
 
         if overwrite and os.path.exists(file_path):
@@ -449,7 +449,7 @@ class GridCoordinatesUniform(AbstractGridCoordinates):
             return self.pixel_scales[0]
         else:
             raise exc.GridException(
-                "Cannot return a pixel_scale for a a grid where each dimension has a "
+                "Cannot return a pixel_scale for a grid where each dimension has a "
                 "different pixel scale (e.g. pixel_scales[0] != pixel_scales[1]"
             )
 

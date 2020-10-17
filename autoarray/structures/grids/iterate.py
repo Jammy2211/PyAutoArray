@@ -65,7 +65,7 @@ class GridIterate(abstract_grid.AbstractGrid):
         sub_steps = sub_steps_from_none(sub_steps=sub_steps)
         if store_in_1d and len(grid.shape) != 2:
             raise exc.GridException(
-                "An grid input into the grids.Grid.__new__ method has store_in_1d = ``True`` but"
+                "An grid input into the grids.Grid.__new__ method has store_in_1d = `True` but"
                 "the input shape of the array is not 1."
             )
 
@@ -424,10 +424,11 @@ class GridIterate(abstract_grid.AbstractGrid):
     def fractional_mask_from_arrays(
         self, array_lower_sub_2d, array_higher_sub_2d
     ) -> msk.Mask2D:
-        """ Compute a fractional mask from a result array, where the fractional mask describes whether the evaluated
+        """
+    Returns a fractional mask from a result array, where the fractional mask describes whether the evaluated
         value in the result array is within the `GridIterate`'s specified fractional accuracy. The fractional mask thus
         determines whether a pixel on the grid needs to be reevaluated at a higher level of sub-gridding to meet the
-        specified fractional accuracy. If it must be re-evaluated, the fractional masks's entry is ``False``.
+        specified fractional accuracy. If it must be re-evaluated, the fractional masks's entry is `False`.
 
         The fractional mask is computed by comparing the results evaluated at one level of sub-gridding to another
         at a higher level of sub-griding. Thus, the sub-grid size in chosen on a per-pixel basis until the function
@@ -442,7 +443,9 @@ class GridIterate(abstract_grid.AbstractGrid):
         """
 
         fractional_mask = msk.Mask2D.unmasked(
-            shape_2d=array_lower_sub_2d.shape_2d, invert=True
+            shape_2d=array_lower_sub_2d.shape_2d,
+            pixel_scales=array_lower_sub_2d.pixel_scales,
+            invert=True,
         )
 
         fractional_mask = self.fractional_mask_jit_from_array(
@@ -470,10 +473,10 @@ class GridIterate(abstract_grid.AbstractGrid):
     ):
         """Jitted functioon to determine the fractional mask, which is a mask where:
 
-        - *True* entries signify the function has been evaluated in that pixel to desired fractional accuracy and
+        - `True` entries signify the function has been evaluated in that pixel to desired fractional accuracy and
            therefore does not need to be iteratively computed at higher levels of sub-gridding.
 
-        - ``False`` entries signify the function has not been evaluated in that pixel to desired fractional accuracy and
+        - `False` entries signify the function has not been evaluated in that pixel to desired fractional accuracy and
            therefore must be iterative computed at higher levels of sub-gridding to meet this accuracy."""
 
         for y in range(fractional_mask.shape[0]):
@@ -607,10 +610,11 @@ class GridIterate(abstract_grid.AbstractGrid):
     def fractional_mask_from_grids(
         self, grid_lower_sub_2d, grid_higher_sub_2d
     ) -> msk.Mask2D:
-        """ Compute a fractional mask from a result array, where the fractional mask describes whether the evaluated
+        """
+    Returns a fractional mask from a result array, where the fractional mask describes whether the evaluated
         value in the result array is within the `GridIterate`'s specified fractional accuracy. The fractional mask thus
         determines whether a pixel on the grid needs to be reevaluated at a higher level of sub-gridding to meet the
-        specified fractional accuracy. If it must be re-evaluated, the fractional masks's entry is ``False``.
+        specified fractional accuracy. If it must be re-evaluated, the fractional masks's entry is `False`.
 
         The fractional mask is computed by comparing the results evaluated at one level of sub-gridding to another
         at a higher level of sub-griding. Thus, the sub-grid size in chosen on a per-pixel basis until the function
@@ -625,7 +629,9 @@ class GridIterate(abstract_grid.AbstractGrid):
         """
 
         fractional_mask = msk.Mask2D.unmasked(
-            shape_2d=grid_lower_sub_2d.shape_2d, invert=True
+            shape_2d=grid_lower_sub_2d.shape_2d,
+            pixel_scales=grid_lower_sub_2d.pixel_scales,
+            invert=True,
         )
 
         fractional_mask = self.fractional_mask_jit_from_grid(
@@ -653,10 +659,10 @@ class GridIterate(abstract_grid.AbstractGrid):
     ):
         """Jitted function to determine the fractional mask, which is a mask where:
 
-        - *True* entries signify the function has been evaluated in that pixel to desired fractional accuracy and
+        - `True` entries signify the function has been evaluated in that pixel to desired fractional accuracy and
            therefore does not need to be iteratively computed at higher levels of sub-gridding.
 
-        - ``False`` entries signify the function has not been evaluated in that pixel to desired fractional accuracy and
+        - `False` entries signify the function has not been evaluated in that pixel to desired fractional accuracy and
            therefore must be iterative computed at higher levels of sub-gridding to meet this accuracy."""
 
         for y in range(fractional_mask.shape[0]):
@@ -711,7 +717,7 @@ class GridIterate(abstract_grid.AbstractGrid):
         If the function return all zeros, the iteration is terminated early given that all levels of sub-gridding will
         return zeros. This occurs when a function is missing optional objects that contribute to the calculation.
 
-        An example use case of this function is when a "deflections_from_grid" methods in **PyAutoLens**'s _MassProfile_
+        An example use case of this function is when a "deflections_from_grid" methods in **PyAutoLens**'s `MassProfile`
         module is computed, which by evaluating the function on a higher resolution sub-grid samples the analytic
         mass profile at more points and thus more precisely.
 

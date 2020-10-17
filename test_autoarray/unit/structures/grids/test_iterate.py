@@ -207,7 +207,7 @@ class TestIteratedArray:
         grid = aa.GridIterate.from_mask(mask=mask, fractional_accuracy=0.9999)
 
         arr = aa.Array.manual_mask(
-            [
+            array=[
                 [0.0, 0.0, 0.0, 0.0],
                 [0.0, 1.0, 1.0, 0.0],
                 [0.0, 1.0, 1.0, 0.0],

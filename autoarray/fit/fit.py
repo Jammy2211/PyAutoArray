@@ -6,7 +6,9 @@ from autoarray.util import fit_util
 class FitDataset:
 
     # noinspection PyUnresolvedReferences
-    def __init__(self, masked_dataset, model_data, inversion=None):
+    def __init__(
+        self, masked_dataset, model_data, inversion=None, use_mask_in_fit=True
+    ):
         """Class to fit a masked dataset where the dataset's data structures are any dimension.
 
         Parameters
@@ -15,6 +17,12 @@ class FitDataset:
             The masked dataset (data, mask, noise-map, etc.) that is fitted.
         model_data : np.ndarray
             The model data the masked dataset is fitted with.
+        inversion : Inversion
+            If the fit uses an `Inversion` this is the instance of the object used to perform the fit. This determines
+            if the `log_likelihood` or `log_evidence` is used as the `figure_of_merit`.
+        use_mask_in_fit : bool
+            If `True`, masked data points are omitted from the fit. If `False` they are not (in most use cases the
+            `masked_dataset` will have been processed to remove masked points, for example the `in_1d` representation).
 
         Attributes
         -----------
@@ -36,6 +44,7 @@ class FitDataset:
         self.masked_dataset = masked_dataset
         self.model_data = model_data
         self.inversion = inversion
+        self.use_mask_in_fit = use_mask_in_fit
 
     @property
     def name(self):
@@ -60,6 +69,10 @@ class FitDataset:
 
         Residuals = (Data - Model_Data).
         """
+        if self.use_mask_in_fit:
+            return fit_util.residual_map_with_mask_from(
+                data=self.data, model_data=self.model_data, mask=self.mask
+            )
         return fit_util.residual_map_from(data=self.data, model_data=self.model_data)
 
     @property
@@ -69,6 +82,10 @@ class FitDataset:
 
         Normalized_Residual = (Data - Model_Data) / Noise
         """
+        if self.use_mask_in_fit:
+            return fit_util.normalized_residual_map_with_mask_from(
+                residual_map=self.residual_map, noise_map=self.noise_map, mask=self.mask
+            )
         return fit_util.normalized_residual_map_from(
             residual_map=self.residual_map, noise_map=self.noise_map
         )
@@ -80,6 +97,10 @@ class FitDataset:
 
         Chi_Squared = ((Residuals) / (Noise)) ** 2.0 = ((Data - Model)**2.0)/(Variances)
         """
+        if self.use_mask_in_fit:
+            return fit_util.chi_squared_map_with_mask_from(
+                residual_map=self.residual_map, noise_map=self.noise_map, mask=self.mask
+            )
         return fit_util.chi_squared_map_from(
             residual_map=self.residual_map, noise_map=self.noise_map
         )
@@ -94,8 +115,12 @@ class FitDataset:
     @property
     def chi_squared(self):
         """
-    Returns the chi-squared terms of the model data's fit to an dataset, by summing the chi-squared-map.
+        Returns the chi-squared terms of the model data's fit to an dataset, by summing the chi-squared-map.
         """
+        if self.use_mask_in_fit:
+            return fit_util.chi_squared_with_mask_from(
+                chi_squared_map=self.chi_squared_map, mask=self.mask
+            )
         return fit_util.chi_squared_from(chi_squared_map=self.chi_squared_map)
 
     @property
@@ -109,6 +134,10 @@ class FitDataset:
 
         [Noise_Term] = sum(log(2*pi*[Noise]**2.0))
         """
+        if self.use_mask_in_fit:
+            return fit_util.noise_normalization_with_mask_from(
+                noise_map=self.noise_map, mask=self.mask
+            )
         return fit_util.noise_normalization_from(noise_map=self.noise_map)
 
     @property
@@ -185,7 +214,9 @@ class FitDataset:
 
 
 class FitImaging(FitDataset):
-    def __init__(self, masked_imaging, model_image, inversion=None):
+    def __init__(
+        self, masked_imaging, model_image, inversion=None, use_mask_in_fit=True
+    ):
         """Class to fit a masked imaging dataset.
 
         Parameters
@@ -194,6 +225,12 @@ class FitImaging(FitDataset):
             The masked imaging dataset that is fitted.
         model_image : Array
             The model image the masked imaging is fitted with.
+        inversion : Inversion
+            If the fit uses an `Inversion` this is the instance of the object used to perform the fit. This determines
+            if the `log_likelihood` or `log_evidence` is used as the `figure_of_merit`.
+        use_mask_in_fit : bool
+            If `True`, masked data points are omitted from the fit. If `False` they are not (in most use cases the
+            `masked_dataset` will have been processed to remove masked points, for example the `in_1d` representation).
 
         Attributes
         -----------
@@ -213,7 +250,10 @@ class FitImaging(FitDataset):
         """
 
         super().__init__(
-            masked_dataset=masked_imaging, model_data=model_image, inversion=inversion
+            masked_dataset=masked_imaging,
+            model_data=model_image,
+            inversion=inversion,
+            use_mask_in_fit=use_mask_in_fit,
         )
 
     @property
@@ -230,7 +270,13 @@ class FitImaging(FitDataset):
 
 
 class FitInterferometer(FitDataset):
-    def __init__(self, masked_interferometer, model_visibilities, inversion=None):
+    def __init__(
+        self,
+        masked_interferometer,
+        model_visibilities,
+        inversion=None,
+        use_mask_in_fit=True,
+    ):
         """Class to fit a masked interferometer dataset.
 
         Parameters
@@ -239,6 +285,12 @@ class FitInterferometer(FitDataset):
             The masked interferometer dataset that is fitted.
         model_visibilities : Visibilities
             The model visibilities the masked imaging is fitted with.
+        inversion : Inversion
+            If the fit uses an `Inversion` this is the instance of the object used to perform the fit. This determines
+            if the `log_likelihood` or `log_evidence` is used as the `figure_of_merit`.
+        use_mask_in_fit : bool
+            If `True`, masked data points are omitted from the fit. If `False` they are not (in most use cases the
+            `masked_dataset` will have been processed to remove masked points, for example the `in_1d` representation).
 
         Attributes
         -----------
@@ -261,6 +313,7 @@ class FitInterferometer(FitDataset):
             masked_dataset=masked_interferometer,
             model_data=model_visibilities,
             inversion=inversion,
+            use_mask_in_fit=use_mask_in_fit,
         )
 
     @property

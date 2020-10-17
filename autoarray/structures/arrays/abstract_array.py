@@ -16,7 +16,7 @@ def check_array(array):
 
     if array.store_in_1d and len(array.shape) != 1:
         raise exc.ArrayException(
-            "An array input into the arrays.Array.__new__ method has store_in_1d = ``True`` but"
+            "An array input into the arrays.Array.__new__ method has store_in_1d = `True` but"
             "the input shape of the array is not 1."
         )
 
@@ -376,7 +376,7 @@ class AbstractArray(abstract_structure.AbstractStructure):
 
         return mask.geometry.extent
 
-    def resized_from_new_shape(self, new_shape):
+    def resized_from(self, new_shape):
         """Resize the array around its centre to a new input shape.
 
         If a new_shape dimension is smaller than the current dimension, the data at the edges is trimmed and removed.
@@ -405,7 +405,7 @@ class AbstractArray(abstract_structure.AbstractStructure):
             array=array, mask=resized_mask, store_in_1d=self.store_in_1d
         )
 
-    def padded_from_kernel_shape(self, kernel_shape_2d):
+    def padded_before_convolution_from(self, kernel_shape):
         """When the edge pixels of a mask are unmasked and a convolution is to occur, the signal of edge pixels will be
         'missing' if the grid is used to evaluate the signal via an analytic function.
 
@@ -415,16 +415,16 @@ class AbstractArray(abstract_structure.AbstractStructure):
 
         Parameters
         ----------
-        kernel_shape_2d : (float, float)
+        kernel_shape : (float, float)
             The 2D shape of the kernel which convolves signal from masked pixels to unmasked pixels.
         """
         new_shape = (
-            self.shape_2d[0] + (kernel_shape_2d[0] - 1),
-            self.shape_2d[1] + (kernel_shape_2d[1] - 1),
+            self.shape_2d[0] + (kernel_shape[0] - 1),
+            self.shape_2d[1] + (kernel_shape[1] - 1),
         )
-        return self.resized_from_new_shape(new_shape=new_shape)
+        return self.resized_from(new_shape=new_shape)
 
-    def trimmed_from_kernel_shape(self, kernel_shape_2d):
+    def trimmed_after_convolution_from(self, kernel_shape):
         """When the edge pixels of a mask are unmasked and a convolution is to occur, the signal of edge pixels will be
         'missing' if the grid is used to evaluate the signal via an analytic function.
 
@@ -434,11 +434,11 @@ class AbstractArray(abstract_structure.AbstractStructure):
 
         Parameters
         ----------
-        kernel_shape_2d : (float, float)
+        kernel_shape : (float, float)
             The 2D shape of the kernel which convolves signal from masked pixels to unmasked pixels.
         """
-        psf_cut_y = np.int(np.ceil(kernel_shape_2d[0] / 2)) - 1
-        psf_cut_x = np.int(np.ceil(kernel_shape_2d[1] / 2)) - 1
+        psf_cut_y = np.int(np.ceil(kernel_shape[0] / 2)) - 1
+        psf_cut_x = np.int(np.ceil(kernel_shape[1] / 2)) - 1
         array_y = np.int(self.mask.shape[0])
         array_x = np.int(self.mask.shape[1])
         trimmed_array_2d = self.in_2d[
@@ -457,7 +457,7 @@ class AbstractArray(abstract_structure.AbstractStructure):
             array=array, mask=resized_mask, store_in_1d=self.store_in_1d
         )
 
-    def binned_from_bin_up_factor(self, bin_up_factor, method):
+    def binned_up_from(self, bin_up_factor, method):
         """
     Returns a binned version of the Array, where binning up occurs by coming all pixel values in a set of
         (bin_up_factor x bin_up_factor) pixels.

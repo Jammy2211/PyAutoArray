@@ -7,7 +7,7 @@ def data_vector_via_blurred_mapping_matrix_from(
     blurred_mapping_matrix: np.ndarray, image: np.ndarray, noise_map: np.ndarray
 ) -> np.ndarray:
     """
-    Returns the data vector `D` from a blurred mapping matrix `f` and the 1D image *d* and 1D noise-map *\sigma* \
+    Returns the data vector `D` from a blurred mapping matrix `f` and the 1D image `d` and 1D noise-map $\sigma$`
     (see Warren & Dye 2003).
     
     Parameters
@@ -35,76 +35,23 @@ def data_vector_via_blurred_mapping_matrix_from(
     return data_vector
 
 
-def curvature_matrix_via_blurred_mapping_matrix_from(
-    blurred_mapping_matrix: np.ndarray, noise_map: np.ndarray
+def curvature_matrix_via_mapping_matrix_from(
+    mapping_matrix: np.ndarray, noise_map: np.ndarray
 ) -> np.ndarray:
     """
-    Returns the curvature matrix `F` from a blurred mapping matrix `f` and the 1D noise-map *\sigma* \
+    Returns the curvature matrix `F` from a blurred mapping matrix `f` and the 1D noise-map $\sigma$
      (see Warren & Dye 2003).
 
     Parameters
     -----------
-    blurred_mapping_matrix : np.ndarray
-        The matrix representing the blurred mappings between sub-grid pixels and pixelization pixels.
+    mapping_matrix : np.ndarray
+        The matrix representing the mappings (these could be blurred or transfomed) between sub-grid pixels and
+        pixelization pixels.
     noise_map : np.ndarray
         Flattened 1D array of the noise-map used by the inversion during the fit.
     """
-
-    flist = np.zeros(blurred_mapping_matrix.shape[1])
-    iflist = np.zeros(blurred_mapping_matrix.shape[1], dtype="int")
-    return curvature_matrix_via_blurred_mapping_matrix_jit(
-        blurred_mapping_matrix, noise_map, flist, iflist
-    )
-
-
-@decorator_util.jit()
-def curvature_matrix_via_blurred_mapping_matrix_jit(
-    blurred_mapping_matrix: np.ndarray,
-    noise_map: np.ndarray,
-    flist: np.ndarray,
-    iflist: np.ndarray,
-) -> np.ndarray:
-    """
-    Returns the curvature matrix `F` from a blurred mapping matrix `f` and the 1D noise-map *\sigma* \
-    (see Warren & Dye 2003).
-
-    Parameters
-    -----------
-    blurred_mapping_matrix : np.ndarray
-        The matrix representing the blurred mappings between sub-grid pixels and pixelization pixels.
-    noise_map : np.ndarray
-        Flattened 1D array of the noise-map used by the inversion during the fit.
-    flist : np.ndarray
-        NumPy array of floats used to store mappings for efficienctly calculation.
-    iflist : np.ndarray
-        NumPy array of integers used to store mappings for efficienctly calculation.
-    """
-    curvature_matrix = np.zeros(
-        (blurred_mapping_matrix.shape[1], blurred_mapping_matrix.shape[1])
-    )
-
-    for mask_1d_index in range(blurred_mapping_matrix.shape[0]):
-        index = 0
-        for pix_1_index in range(blurred_mapping_matrix.shape[1]):
-            if blurred_mapping_matrix[mask_1d_index, pix_1_index] > 0.0:
-                flist[index] = (
-                    blurred_mapping_matrix[mask_1d_index, pix_1_index]
-                    / noise_map[mask_1d_index]
-                )
-                iflist[index] = pix_1_index
-                index += 1
-
-        if index > 0:
-            for i1 in range(index):
-                for j1 in range(index):
-                    ix = iflist[i1]
-                    iy = iflist[j1]
-                    curvature_matrix[ix, iy] += flist[i1] * flist[j1]
-
-    for i in range(blurred_mapping_matrix.shape[1]):
-        for j in range(blurred_mapping_matrix.shape[1]):
-            curvature_matrix[i, j] = curvature_matrix[j, i]
-
+    array = mapping_matrix / noise_map[:, None]
+    curvature_matrix = np.dot(array.T, np.matrix.transpose(array.T))
     return curvature_matrix
 
 
@@ -112,7 +59,8 @@ def curvature_matrix_via_blurred_mapping_matrix_jit(
 def mapped_reconstructed_data_from(
     mapping_matrix: np.ndarray, reconstruction: np.ndarray
 ) -> np.ndarray:
-    """ Compute the reconstructed data vector from the blurrred mapping matrix `f` and solution vector *S*.
+    """
+    Returns the reconstructed data vector from the blurrred mapping matrix `f` and solution vector *S*.
 
     Parameters
     -----------
@@ -135,7 +83,7 @@ def data_vector_via_transformed_mapping_matrix_from(
     noise_map: np.ndarray,
 ) -> np.ndarray:
     """
-    Returns the data vector `D` from a transformed mapping matrix `f` and the 1D image *d* and 1D noise-map *\sigma* \
+    Returns the data vector `D` from a transformed mapping matrix `f` and the 1D image `d` and 1D noise-map `sigma`
     (see Warren & Dye 2003).
 
     Parameters
@@ -161,39 +109,41 @@ def data_vector_via_transformed_mapping_matrix_from(
     return data_vector
 
 
-def curvature_matrix_via_transformed_mapping_matrix_from(
-    transformed_mapping_matrix: np.ndarray, noise_map: np.ndarray
-) -> np.ndarray:
-    """
-    Returns the curvature matrix `F` from a transformed mapping matrix `f` and the 1D noise-map *\sigma* \
-    (see Warren & Dye 2003).
-
-    Parameters
-    -----------
-    transformed_mapping_matrix : np.ndarray
-        The matrix representing the transformed mappings between sub-grid pixels and pixelization pixels.
-    noise_map : np.ndarray
-        Flattened 1D array of the noise-map used by the inversion during the fit.
-    flist : np.ndarray
-        NumPy array of floats used to store mappings for efficienctly calculation.
-    iflist : np.ndarray
-        NumPy array of integers used to store mappings for efficienctly calculation.
-    """
-
-    array = transformed_mapping_matrix / noise_map[:, None]
-    curvature_matrix = np.dot(array.T, np.matrix.transpose(array.T))
-
-    return curvature_matrix
-
-
 def inversion_residual_map_from(
     *,
-    pixelization_values,
-    data,
-    mask_1d_index_for_sub_mask_1d_index,
-    all_sub_mask_1d_indexes_for_pixelization_1d_index,
+    pixelization_values: np.ndarray,
+    data: np.ndarray,
+    mask_1d_index_for_sub_mask_1d_index: np.ndarray,
+    all_sub_mask_1d_indexes_for_pixelization_1d_index: [list],
 ):
+    """
+    Returns the residual-map of the `reconstruction` of an `Inversion` on its pixel-grid.
 
+    For this residual-map, each pixel on the `reconstruction`'s pixel-grid corresponds to the sum of absolute residual
+    values in the `residual_map` of the reconstructed `data` divided by the number of data-points that it maps too,
+    (to normalize its value).
+
+    This provides information on where in the `Inversion`'s `reconstruction` it is least able to accurately fit the
+    `data`.
+
+    Parameters
+    ----------
+    pixelization_values : np.ndarray
+        The values computed by the `Inversion` for the `reconstruction`, which are used in this function to compute
+        the `residual_map` values.
+    data : np.ndarray
+        The array of `data` that the `Inversion` fits. 
+    mask_1d_index_for_sub_mask_1d_index : np.ndarray
+        The mappings between the observed grid's sub-pixels and observed grid's pixels.
+    all_sub_mask_1d_indexes_for_pixelization_1d_index : np.ndarray
+        The mapping of every pixel on the `Inversion`'s `reconstruction`'s pixel-grid to the `data` pixels.
+
+    Returns
+    -------
+    np.ndarray
+        The residuals of the `Inversion`'s `reconstruction` on its pixel-grid, computed by mapping the `residual_map`
+        from the fit to the data.
+    """
     residual_map = np.zeros(
         shape=len(all_sub_mask_1d_indexes_for_pixelization_1d_index)
     )
@@ -223,7 +173,34 @@ def inversion_normalized_residual_map_from(
     mask_1d_index_for_sub_mask_1d_index,
     all_sub_mask_1d_indexes_for_pixelization_1d_index,
 ):
+    """
+    Returns the normalized residual-map of the `reconstruction` of an `Inversion` on its pixel-grid.
 
+    For this normalized residual-map, each pixel on the `reconstruction`'s pixel-grid corresponds to the sum of 
+    absolute normalized residual values in the `normalized residual_map` of the reconstructed `data` divided by the 
+    number of data-points that it maps too (to normalize its value).
+
+    This provides information on where in the `Inversion`'s `reconstruction` it is least able to accurately fit the
+    `data`.
+
+    Parameters
+    ----------
+    pixelization_values : np.ndarray
+        The values computed by the `Inversion` for the `reconstruction`, which are used in this function to compute
+        the `normalized residual_map` values.
+    data : np.ndarray
+        The array of `data` that the `Inversion` fits. 
+    mask_1d_index_for_sub_mask_1d_index : np.ndarray
+        The mappings between the observed grid's sub-pixels and observed grid's pixels.
+    all_sub_mask_1d_indexes_for_pixelization_1d_index : np.ndarray
+        The mapping of every pixel on the `Inversion`'s `reconstruction`'s pixel-grid to the `data` pixels.
+
+    Returns
+    -------
+    np.ndarray
+        The normalized residuals of the `Inversion`'s `reconstruction` on its pixel-grid, computed by mapping the 
+        `normalized_residual_map` from the fit to the data.
+    """
     normalized_residual_map = np.zeros(
         shape=len(all_sub_mask_1d_indexes_for_pixelization_1d_index)
     )
@@ -254,7 +231,34 @@ def inversion_chi_squared_map_from(
     mask_1d_index_for_sub_mask_1d_index,
     all_sub_mask_1d_indexes_for_pixelization_1d_index,
 ):
+    """
+    Returns the chi-squared-map of the `reconstruction` of an `Inversion` on its pixel-grid.
 
+    For this chi-squared-map, each pixel on the `reconstruction`'s pixel-grid corresponds to the sum of chi-squared
+    values in the `chi_squared_map` of the reconstructed `data` divided by the number of data-points that it maps too,
+    (to normalize its value).
+
+    This provides information on where in the `Inversion`'s `reconstruction` it is least able to accurately fit the
+    `data`.
+
+    Parameters
+    ----------
+    pixelization_values : np.ndarray
+        The values computed by the `Inversion` for the `reconstruction`, which are used in this function to compute
+        the `chi_squared_map` values.
+    data : np.ndarray
+        The array of `data` that the `Inversion` fits. 
+    mask_1d_index_for_sub_mask_1d_index : np.ndarray
+        The mappings between the observed grid's sub-pixels and observed grid's pixels.
+    all_sub_mask_1d_indexes_for_pixelization_1d_index : np.ndarray
+        The mapping of every pixel on the `Inversion`'s `reconstruction`'s pixel-grid to the `data` pixels.
+
+    Returns
+    -------
+    np.ndarray
+        The chi-squareds of the `Inversion`'s `reconstruction` on its pixel-grid, computed by mapping the `chi-squared_map`
+        from the fit to the data.
+    """
     chi_squared_map = np.zeros(
         shape=len(all_sub_mask_1d_indexes_for_pixelization_1d_index)
     )
@@ -275,3 +279,32 @@ def inversion_chi_squared_map_from(
             chi_squared_map[pix_1_index] /= sub_mask_total
 
     return chi_squared_map.copy()
+
+
+def preconditioner_matrix_via_mapping_matrix_from(
+    mapping_matrix: np.ndarray,
+    regularization_matrix: np.ndarray,
+    preconditioner_noise_normalization: float,
+) -> np.ndarray:
+    """
+    Returns the preconditioner matrix `{` from a mapping matrix `f` and the sum of the inverse of the 1D noise-map
+    values squared (see Powell et al. 2020).
+
+    Parameters
+    -----------
+    mapping_matrix : np.ndarray
+        The matrix representing the mappings between sub-grid pixels and pixelization pixels.
+    regularization_matrix : np.ndarray
+        The matrix defining how the pixelization's pixels are regularized with one another for smoothing (H).
+    preconditioner_noise_normalization : np.ndarray
+        The sum of (1.0 / noise-map**2.0) every value in the noise-map.
+    """
+
+    curvature_matrix = curvature_matrix_via_mapping_matrix_from(
+        mapping_matrix=mapping_matrix,
+        noise_map=np.ones(shape=(mapping_matrix.shape[0])),
+    )
+
+    return (
+        preconditioner_noise_normalization * curvature_matrix
+    ) + regularization_matrix

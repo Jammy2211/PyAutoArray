@@ -9,25 +9,23 @@ class TestFitImaging:
     def test__image_and_model_are_identical__no_masking__check_values_are_correct(self):
 
         mask = aa.Mask2D.manual(
-            mask=np.array([[False, False], [False, False]]),
-            sub_size=1,
-            pixel_scales=(1.0, 1.0),
+            mask=[[False, False], [False, False]], sub_size=1, pixel_scales=(1.0, 1.0)
         )
 
-        data = aa.Array.manual_mask(array=np.array([1.0, 2.0, 3.0, 4.0]), mask=mask)
-        noise_map = aa.Array.manual_mask(
-            array=np.array([2.0, 2.0, 2.0, 2.0]), mask=mask
-        )
+        data = aa.Array.manual_mask(array=[1.0, 2.0, 3.0, 4.0], mask=mask)
+        noise_map = aa.Array.manual_mask(array=[2.0, 2.0, 2.0, 2.0], mask=mask)
 
         imaging = aa.Imaging(image=data, noise_map=noise_map)
 
         masked_imaging = aa.MaskedImaging(imaging=imaging, mask=mask)
 
-        model_image = aa.Array.manual_mask(
-            array=np.array([1.0, 2.0, 3.0, 4.0]), mask=mask
-        )
+        model_image = aa.Array.manual_mask(array=[1.0, 2.0, 3.0, 4.0], mask=mask)
 
-        fit = aa.FitImaging(masked_imaging=masked_imaging, model_image=model_image)
+        fit = aa.FitImaging(
+            masked_imaging=masked_imaging,
+            model_image=model_image,
+            use_mask_in_fit=False,
+        )
 
         assert (fit.mask == np.array([[False, False], [False, False]])).all()
 
@@ -68,21 +66,23 @@ class TestFitImaging:
     ):
 
         mask = aa.Mask2D.manual(
-            mask=np.array([[False, False], [True, False]]),
-            sub_size=1,
-            pixel_scales=(1.0, 1.0),
+            mask=[[False, False], [True, False]], sub_size=1, pixel_scales=(1.0, 1.0)
         )
 
-        data = aa.Array.manual_mask(array=np.array([1.0, 2.0, 4.0]), mask=mask)
-        noise_map = aa.Array.manual_mask(array=np.array([2.0, 2.0, 2.0]), mask=mask)
+        data = aa.Array.manual_mask(array=[1.0, 2.0, 4.0], mask=mask)
+        noise_map = aa.Array.manual_mask(array=[2.0, 2.0, 2.0], mask=mask)
 
         imaging = aa.Imaging(image=data, noise_map=noise_map)
 
         masked_imaging = aa.MaskedImaging(imaging=imaging, mask=mask)
 
-        model_image = aa.Array.manual_mask(array=np.array([1.0, 2.0, 3.0]), mask=mask)
+        model_image = aa.Array.manual_mask(array=[1.0, 2.0, 3.0], mask=mask)
 
-        fit = aa.FitImaging(masked_imaging=masked_imaging, model_image=model_image)
+        fit = aa.FitImaging(
+            masked_imaging=masked_imaging,
+            model_image=model_image,
+            use_mask_in_fit=False,
+        )
 
         assert (fit.mask == np.array([[False, False], [True, False]])).all()
 
@@ -121,23 +121,17 @@ class TestFitImaging:
     ):
 
         mask = aa.Mask2D.manual(
-            mask=np.array([[False, False], [False, False]]),
-            sub_size=1,
-            pixel_scales=(1.0, 1.0),
+            mask=[[False, False], [False, False]], sub_size=1, pixel_scales=(1.0, 1.0)
         )
 
-        data = aa.Array.manual_mask(array=np.array([1.0, 2.0, 3.0, 4.0]), mask=mask)
-        noise_map = aa.Array.manual_mask(
-            array=np.array([2.0, 2.0, 2.0, 2.0]), mask=mask
-        )
+        data = aa.Array.manual_mask(array=[1.0, 2.0, 3.0, 4.0], mask=mask)
+        noise_map = aa.Array.manual_mask(array=[2.0, 2.0, 2.0, 2.0], mask=mask)
 
         imaging = aa.Imaging(image=data, noise_map=noise_map)
 
         masked_imaging = aa.MaskedImaging(imaging=imaging, mask=mask)
 
-        model_image = aa.Array.manual_mask(
-            array=np.array([1.0, 2.0, 3.0, 4.0]), mask=mask
-        )
+        model_image = aa.Array.manual_mask(array=[1.0, 2.0, 3.0, 4.0], mask=mask)
 
         inversion = mock.MockFitInversion(
             regularization_term=2.0,
@@ -146,7 +140,10 @@ class TestFitImaging:
         )
 
         fit = aa.FitImaging(
-            masked_imaging=masked_imaging, model_image=model_image, inversion=inversion
+            masked_imaging=masked_imaging,
+            model_image=model_image,
+            inversion=inversion,
+            use_mask_in_fit=False,
         )
 
         assert fit.chi_squared == 0.0
@@ -171,9 +168,7 @@ class TestFitInterferometer:
         visibilities_mask = np.full(fill_value=False, shape=(2, 2))
 
         real_space_mask = aa.Mask2D.manual(
-            mask=np.array([[False, False], [False, False]]),
-            sub_size=1,
-            pixel_scales=(1.0, 1.0),
+            mask=[[False, False], [False, False]], sub_size=1, pixel_scales=(1.0, 1.0)
         )
 
         data = aa.Visibilities.manual_1d(visibilities=[[1.0, 2.0], [3.0, 4.0]])
@@ -198,6 +193,7 @@ class TestFitInterferometer:
         fit = aa.FitInterferometer(
             masked_interferometer=masked_interferometer,
             model_visibilities=model_visibilities,
+            use_mask_in_fit=False,
         )
 
         assert (
@@ -236,9 +232,7 @@ class TestFitInterferometer:
         visibilities_mask = np.full(fill_value=False, shape=(2, 2))
 
         real_space_mask = aa.Mask2D.manual(
-            mask=np.array([[False, False], [False, False]]),
-            sub_size=1,
-            pixel_scales=(1.0, 1.0),
+            mask=[[False, False], [False, False]], sub_size=1, pixel_scales=(1.0, 1.0)
         )
 
         data = aa.Visibilities.manual_1d(visibilities=[[1.0, 2.0], [3.0, 4.0]])
@@ -263,6 +257,7 @@ class TestFitInterferometer:
         fit = aa.FitInterferometer(
             masked_interferometer=masked_interferometer,
             model_visibilities=model_visibilities,
+            use_mask_in_fit=False,
         )
 
         assert (
@@ -301,9 +296,7 @@ class TestFitInterferometer:
         visibilities_mask = np.full(fill_value=False, shape=(2, 2))
 
         real_space_mask = aa.Mask2D.manual(
-            mask=np.array([[False, False], [False, False]]),
-            sub_size=1,
-            pixel_scales=(1.0, 1.0),
+            mask=[[False, False], [False, False]], sub_size=1, pixel_scales=(1.0, 1.0)
         )
 
         data = aa.Visibilities.manual_1d(visibilities=[[1.0, 2.0], [3.0, 4.0]])
@@ -335,6 +328,7 @@ class TestFitInterferometer:
             masked_interferometer=masked_interferometer,
             model_visibilities=model_visibilities,
             inversion=inversion,
+            use_mask_in_fit=False,
         )
 
         assert fit.chi_squared == 0.0
