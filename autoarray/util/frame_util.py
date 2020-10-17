@@ -9,7 +9,7 @@ def rotate_array_from_roe_corner(
 ) -> np.ndarray:
     """
     Rotates an input array such that its read-out electronics corner (``roe_corner``) are positioned at the
-    'bottom-left' (e.g. [1,0]) of the NumPy array data structure.
+    'bottom-left' (e.g. [1,0]) of the ndarray data structure.
 
     This is used to homogenize frames to a common observation orientation, especially for the project **PyAutoCTI**
     which performs clocking for Charge Transfer Inefficiency.

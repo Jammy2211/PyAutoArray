@@ -52,7 +52,7 @@ class TestVisiblities:
 
         uv_wavelengths = np.ones(shape=(4, 2))
 
-        grid_radians = aa.Grid.manual_2d([[[1.0, 1.0]]], pixel_scales=1.0)
+        grid_radians = aa.Grid.manual_2d(grid=[[[1.0, 1.0]]], pixel_scales=1.0)
 
         real_space_mask = MockRealSpaceMask(grid=grid_radians)
 
@@ -62,7 +62,7 @@ class TestVisiblities:
             preload_transform=False,
         )
 
-        image = aa.Array.ones(shape_2d=(1, 1))
+        image = aa.Array.ones(shape_2d=(1, 1), pixel_scales=1.0)
 
         real_visibilities = transformer.real_visibilities_from_image(image=image)
 
@@ -70,7 +70,9 @@ class TestVisiblities:
 
         uv_wavelengths = np.array([[0.2, 1.0], [0.5, 1.1], [0.8, 1.2]])
 
-        grid_radians = aa.Grid.manual_2d([[[0.1, 0.2], [0.3, 0.4]]], pixel_scales=1.0)
+        grid_radians = aa.Grid.manual_2d(
+            grid=[[[0.1, 0.2], [0.3, 0.4]]], pixel_scales=1.0
+        )
 
         real_space_mask = MockRealSpaceMask(grid=grid_radians)
 
@@ -80,7 +82,7 @@ class TestVisiblities:
             preload_transform=False,
         )
 
-        image = aa.Array.ones(shape_2d=(1, 2))
+        image = aa.Array.ones(shape_2d=(1, 2), pixel_scales=1.0)
 
         real_visibilities = transformer.real_visibilities_from_image(image=image)
 
@@ -91,7 +93,7 @@ class TestVisiblities:
     def test__real_visibilities__intensity_image_varies__simple_cases(self):
 
         uv_wavelengths = np.ones(shape=(4, 2))
-        grid_radians = aa.Grid.manual_2d([[[1.0, 1.0]]], pixel_scales=1.0)
+        grid_radians = aa.Grid.manual_2d(grid=[[[1.0, 1.0]]], pixel_scales=1.0)
         real_space_mask = MockRealSpaceMask(grid=grid_radians)
 
         transformer = aa.TransformerDFT(
@@ -100,7 +102,7 @@ class TestVisiblities:
             preload_transform=False,
         )
 
-        image = aa.Array.manual_2d([[2.0]])
+        image = aa.Array.manual_2d([[2.0]], pixel_scales=1.0)
 
         real_visibilities = transformer.real_visibilities_from_image(image=image)
 
@@ -108,7 +110,9 @@ class TestVisiblities:
 
         uv_wavelengths = np.array([[0.2, 1.0], [0.5, 1.1], [0.8, 1.2]])
 
-        grid_radians = aa.Grid.manual_2d([[[0.1, 0.2], [0.3, 0.4]]], pixel_scales=1.0)
+        grid_radians = aa.Grid.manual_2d(
+            grid=[[[0.1, 0.2], [0.3, 0.4]]], pixel_scales=1.0
+        )
         real_space_mask = MockRealSpaceMask(grid=grid_radians)
 
         transformer = aa.TransformerDFT(
@@ -117,7 +121,7 @@ class TestVisiblities:
             preload_transform=False,
         )
 
-        image = aa.Array.manual_2d([[3.0, 6.0]])
+        image = aa.Array.manual_2d([[3.0, 6.0]], pixel_scales=1.0)
 
         real_visibilities = transformer.real_visibilities_from_image(image=image)
 
@@ -128,7 +132,9 @@ class TestVisiblities:
     def test__real_visibilities__preload_and_non_preload_give_same_answer(self):
 
         uv_wavelengths = np.array([[0.2, 1.0], [0.5, 1.1], [0.8, 1.2]])
-        grid_radians = aa.Grid.manual_2d([[[0.1, 0.2], [0.3, 0.4]]], pixel_scales=1.0)
+        grid_radians = aa.Grid.manual_2d(
+            grid=[[[0.1, 0.2], [0.3, 0.4]]], pixel_scales=1.0
+        )
         real_space_mask = MockRealSpaceMask(grid=grid_radians)
 
         transformer_preload = aa.TransformerDFT(
@@ -142,7 +148,7 @@ class TestVisiblities:
             preload_transform=False,
         )
 
-        image = aa.Array.manual_2d([[2.0, 6.0]])
+        image = aa.Array.manual_2d([[2.0, 6.0]], pixel_scales=1.0)
 
         real_visibilities_via_preload = transformer_preload.real_visibilities_from_image(
             image=image
@@ -154,7 +160,7 @@ class TestVisiblities:
     def test__imag_visibilities__intensity_image_all_ones__simple_cases(self):
 
         uv_wavelengths = np.ones(shape=(4, 2))
-        grid_radians = aa.Grid.manual_2d([[[1.0, 1.0]]], pixel_scales=1.0)
+        grid_radians = aa.Grid.manual_2d(grid=[[[1.0, 1.0]]], pixel_scales=1.0)
         real_space_mask = MockRealSpaceMask(grid=grid_radians)
 
         transformer = aa.TransformerDFT(
@@ -163,7 +169,7 @@ class TestVisiblities:
             preload_transform=False,
         )
 
-        image = aa.Array.ones(shape_2d=(1, 1))
+        image = aa.Array.ones(shape_2d=(1, 1), pixel_scales=1.0)
 
         imag_visibilities = transformer.imag_visibilities_from_image(image=image)
 
@@ -171,7 +177,9 @@ class TestVisiblities:
 
         uv_wavelengths = np.array([[0.2, 1.0], [0.5, 1.1], [0.8, 1.2]])
 
-        grid_radians = aa.Grid.manual_2d([[[0.1, 0.2], [0.3, 0.4]]], pixel_scales=1.0)
+        grid_radians = aa.Grid.manual_2d(
+            grid=[[[0.1, 0.2], [0.3, 0.4]]], pixel_scales=1.0
+        )
         real_space_mask = MockRealSpaceMask(grid=grid_radians)
 
         transformer = aa.TransformerDFT(
@@ -180,7 +188,7 @@ class TestVisiblities:
             preload_transform=False,
         )
 
-        image = aa.Array.ones(shape_2d=(2, 1))
+        image = aa.Array.ones(shape_2d=(2, 1), pixel_scales=1.0)
 
         imag_visibilities = transformer.imag_visibilities_from_image(image=image)
 
@@ -191,7 +199,7 @@ class TestVisiblities:
     def test__imag_visibilities__intensity_image_varies__simple_cases(self):
 
         uv_wavelengths = np.ones(shape=(4, 2))
-        grid_radians = aa.Grid.manual_2d([[[1.0, 1.0]]], pixel_scales=1.0)
+        grid_radians = aa.Grid.manual_2d(grid=[[[1.0, 1.0]]], pixel_scales=1.0)
         real_space_mask = MockRealSpaceMask(grid=grid_radians)
 
         transformer = aa.TransformerDFT(
@@ -200,7 +208,7 @@ class TestVisiblities:
             preload_transform=False,
         )
 
-        image = aa.Array.manual_2d([[2.0]])
+        image = aa.Array.manual_2d([[2.0]], pixel_scales=1.0)
 
         imag_visibilities = transformer.imag_visibilities_from_image(image=image)
 
@@ -208,7 +216,9 @@ class TestVisiblities:
 
         uv_wavelengths = np.array([[0.2, 1.0], [0.5, 1.1], [0.8, 1.2]])
 
-        grid_radians = aa.Grid.manual_2d([[[0.1, 0.2], [0.3, 0.4]]], pixel_scales=1.0)
+        grid_radians = aa.Grid.manual_2d(
+            grid=[[[0.1, 0.2], [0.3, 0.4]]], pixel_scales=1.0
+        )
         real_space_mask = MockRealSpaceMask(grid=grid_radians)
 
         transformer = aa.TransformerDFT(
@@ -217,7 +227,7 @@ class TestVisiblities:
             preload_transform=False,
         )
 
-        image = aa.Array.manual_2d([[3.0, 6.0]])
+        image = aa.Array.manual_2d([[3.0, 6.0]], pixel_scales=1.0)
 
         imag_visibilities = transformer.imag_visibilities_from_image(image=image)
 
@@ -228,7 +238,9 @@ class TestVisiblities:
     def test__imag_visibilities__preload_and_non_preload_give_same_answer(self):
 
         uv_wavelengths = np.array([[0.2, 1.0], [0.5, 1.1], [0.8, 1.2]])
-        grid_radians = aa.Grid.manual_2d([[[0.1, 0.2], [0.3, 0.4]]], pixel_scales=1.0)
+        grid_radians = aa.Grid.manual_2d(
+            grid=[[[0.1, 0.2], [0.3, 0.4]]], pixel_scales=1.0
+        )
         real_space_mask = MockRealSpaceMask(grid=grid_radians)
 
         transformer_preload = aa.TransformerDFT(
@@ -242,7 +254,7 @@ class TestVisiblities:
             preload_transform=False,
         )
 
-        image = aa.Array.manual_2d([[2.0, 6.0]])
+        image = aa.Array.manual_2d([[2.0, 6.0]], pixel_scales=1.0)
 
         imag_visibilities_via_preload = transformer_preload.imag_visibilities_from_image(
             image=image
@@ -255,7 +267,9 @@ class TestVisiblities:
 
         uv_wavelengths = np.array([[0.2, 1.0], [0.5, 1.1], [0.8, 1.2]])
 
-        grid_radians = aa.Grid.manual_2d([[[0.1, 0.2], [0.3, 0.4]]], pixel_scales=1.0)
+        grid_radians = aa.Grid.manual_2d(
+            grid=[[[0.1, 0.2], [0.3, 0.4]]], pixel_scales=1.0
+        )
         real_space_mask = MockRealSpaceMask(grid=grid_radians)
 
         transformer = aa.TransformerDFT(
@@ -264,7 +278,7 @@ class TestVisiblities:
             preload_transform=False,
         )
 
-        image = aa.Array.manual_2d([[3.0, 6.0]])
+        image = aa.Array.manual_2d([[3.0, 6.0]], pixel_scales=1.0)
 
         visibilities = transformer.visibilities_from_image(image=image)
 
@@ -286,7 +300,7 @@ class TestVisiblitiesMappingMatrix:
     def test__real_visibilities__mapping_matrix_all_ones__simple_cases(self):
 
         uv_wavelengths = np.ones(shape=(4, 2))
-        grid_radians = aa.Grid.manual_2d([[[1.0, 1.0]]], pixel_scales=1.0)
+        grid_radians = aa.Grid.manual_2d(grid=[[[1.0, 1.0]]], pixel_scales=1.0)
         real_space_mask = MockRealSpaceMask(grid=grid_radians)
 
         transformer = aa.TransformerDFT(
@@ -305,7 +319,9 @@ class TestVisiblitiesMappingMatrix:
 
         uv_wavelengths = np.array([[0.2, 1.0], [0.5, 1.1], [0.8, 1.2]])
 
-        grid_radians = aa.Grid.manual_2d([[[0.1, 0.2], [0.3, 0.4]]], pixel_scales=1.0)
+        grid_radians = aa.Grid.manual_2d(
+            grid=[[[0.1, 0.2], [0.3, 0.4]]], pixel_scales=1.0
+        )
         real_space_mask = MockRealSpaceMask(grid=grid_radians)
 
         transformer = aa.TransformerDFT(
@@ -385,7 +401,9 @@ class TestVisiblitiesMappingMatrix:
     def test__real_visibilities__preload_and_non_preload_give_same_answer(self):
 
         uv_wavelengths = np.array([[0.2, 1.0], [0.5, 1.1], [0.8, 1.2]])
-        grid_radians = aa.Grid.manual_2d([[[0.1, 0.2], [0.3, 0.4]]], pixel_scales=1.0)
+        grid_radians = aa.Grid.manual_2d(
+            grid=[[[0.1, 0.2], [0.3, 0.4]]], pixel_scales=1.0
+        )
         real_space_mask = MockRealSpaceMask(grid=grid_radians)
 
         transformer_preload = aa.TransformerDFT(
@@ -415,7 +433,7 @@ class TestVisiblitiesMappingMatrix:
     def test__imag_visibilities__mapping_matrix_all_ones__simple_cases(self):
 
         uv_wavelengths = np.ones(shape=(4, 2))
-        grid_radians = aa.Grid.manual_2d([[[1.0, 1.0]]], pixel_scales=1.0)
+        grid_radians = aa.Grid.manual_2d(grid=[[[1.0, 1.0]]], pixel_scales=1.0)
         real_space_mask = MockRealSpaceMask(grid=grid_radians)
 
         transformer = aa.TransformerDFT(
@@ -435,7 +453,9 @@ class TestVisiblitiesMappingMatrix:
         )
 
         uv_wavelengths = np.array([[0.2, 1.0], [0.5, 1.1], [0.8, 1.2]])
-        grid_radians = aa.Grid.manual_2d([[[0.1, 0.2], [0.3, 0.4]]], pixel_scales=1.0)
+        grid_radians = aa.Grid.manual_2d(
+            grid=[[[0.1, 0.2], [0.3, 0.4]]], pixel_scales=1.0
+        )
         real_space_mask = MockRealSpaceMask(grid=grid_radians)
 
         transformer = aa.TransformerDFT(
@@ -515,7 +535,9 @@ class TestVisiblitiesMappingMatrix:
     def test__imag_visibilities__preload_and_non_preload_give_same_answer(self):
 
         uv_wavelengths = np.array([[0.2, 1.0], [0.5, 1.1], [0.8, 1.2]])
-        grid_radians = aa.Grid.manual_2d([[[0.1, 0.2], [0.3, 0.4]]], pixel_scales=1.0)
+        grid_radians = aa.Grid.manual_2d(
+            grid=[[[0.1, 0.2], [0.3, 0.4]]], pixel_scales=1.0
+        )
         real_space_mask = MockRealSpaceMask(grid=grid_radians)
 
         transformer_preload = aa.TransformerDFT(
@@ -547,7 +569,9 @@ class TestVisiblitiesMappingMatrix:
     ):
 
         uv_wavelengths = np.array([[0.2, 1.0], [0.5, 1.1], [0.8, 1.2]])
-        grid_radians = aa.Grid.manual_2d([[[0.1, 0.2], [0.3, 0.4]]], pixel_scales=1.0)
+        grid_radians = aa.Grid.manual_2d(
+            grid=[[[0.1, 0.2], [0.3, 0.4]]], pixel_scales=1.0
+        )
         real_space_mask = MockRealSpaceMask(grid=grid_radians)
 
         transformer = aa.TransformerDFT(

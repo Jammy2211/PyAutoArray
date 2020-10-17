@@ -1,18 +1,15 @@
-from autoconf import conf
 import matplotlib
-import configparser
 
-try:
-    backend = conf.get_matplotlib_backend()
-except configparser.NoSectionError:
-    backend = "default"
+from autoconf import conf
 
-if not backend in "default":
+backend = conf.get_matplotlib_backend()
+
+if backend not in "default":
     matplotlib.use(backend)
 
 try:
-    hpc_mode = conf.instance.general.get("hpc", "hpc_mode", bool)
-except configparser.NoSectionError:
+    hpc_mode = conf.instance["general"]["hpc"]["hpc_mode"]
+except KeyError:
     hpc_mode = False
 
 if hpc_mode:
@@ -25,7 +22,6 @@ from functools import wraps
 import copy
 
 from autoarray import exc
-from autoarray.structures import grids
 from autoarray.plot import mat_objs
 import inspect
 import os
@@ -243,7 +239,7 @@ class AbstractPlotter:
             If True, the 2D region of the array corresponding to the rectangle encompassing all unmasked values is \
             plotted, thereby zooming into the region of interest.
         border : bool
-            If a mask is supplied, its borders pixels (e.g. the exterior edge) is plotted if this is *True*.
+            If a mask is supplied, its borders pixels (e.g. the exterior edge) is plotted if this is `True`.
         positions : [[]]
             Lists of (y,x) coordinates on the image which are plotted as colored dots, to highlight specific pixels.
         grid : data_type.array.aa.Grid
@@ -439,7 +435,7 @@ class AbstractPlotter:
             If True, the 2D region of the array corresponding to the rectangle encompassing all unmasked values is \
             plotted, thereby zooming into the region of interest.
         border : bool
-            If a mask is supplied, its borders pixels (e.g. the exterior edge) is plotted if this is *True*.
+            If a mask is supplied, its borders pixels (e.g. the exterior edge) is plotted if this is `True`.
         positions : [[]]
             Lists of (y,x) coordinates on the image which are plotted as colored dots, to highlight specific pixels.
         grid : data_type.array.aa.Grid
@@ -1096,7 +1092,6 @@ class Plotter(AbstractPlotter):
         serial_prescan_liner=None,
         serial_overscan_liner=None,
     ):
-
         super(Plotter, self).__init__(
             module=module,
             units=units,
@@ -1304,14 +1299,12 @@ class Include:
 
     @staticmethod
     def load_include(value, name):
-
-        return (
-            conf.instance.visualize_general.get(
-                section_name="include", attribute_name=name, attribute_type=bool
-            )
-            if value is None
-            else value
-        )
+        if value is not None:
+            """
+            Let is be known that Jam did this - I merely made this horror more efficient
+            """
+            return value
+        return conf.instance["visualize"]["general"]["include"][name]
 
     def grid_from_grid(self, grid):
 
@@ -1342,7 +1335,7 @@ class Include:
         fit : datas.fitting.fitting.AbstractLensHyperFit
             The fit to the datas, which includes a lisrt of every model image, residual_map, chi-squareds, etc.
         include_mask : bool
-            If *True*, the masks is plotted on the fit's datas.
+            If `True`, the masks is plotted on the fit's datas.
         """
         if self.mask:
             return fit.mask
@@ -1357,7 +1350,7 @@ class Include:
         fit : datas.fitting.fitting.AbstractLensHyperFit
             The fit to the datas, which includes a lisrt of every model image, residual_map, chi-squareds, etc.
         include_mask : bool
-            If *True*, the masks is plotted on the fit's datas.
+            If `True`, the masks is plotted on the fit's datas.
         """
         if self.mask:
             return fit.settings_masked_dataset.real_space_mask
@@ -1387,7 +1380,6 @@ class Include:
 
 
 def include_key_from_dictionary(dictionary):
-
     include_key = None
 
     for key, value in dictionary.items():
@@ -1398,7 +1390,6 @@ def include_key_from_dictionary(dictionary):
 
 
 def plotter_key_from_dictionary(dictionary):
-
     plotter_key = None
 
     for key, value in dictionary.items():
@@ -1409,7 +1400,6 @@ def plotter_key_from_dictionary(dictionary):
 
 
 def plotter_and_plotter_key_from_func(func):
-
     defaults = inspect.getfullargspec(func).defaults
     plotter = [value for value in defaults if isinstance(value, AbstractPlotter)][0]
 
@@ -1554,7 +1544,6 @@ def set_labels(func):
 
     @wraps(func)
     def wrapper(*args, **kwargs):
-
         plotter_key = plotter_key_from_dictionary(dictionary=kwargs)
         plotter = kwargs[plotter_key]
 
@@ -1591,7 +1580,6 @@ def plot_array(
     include=None,
     plotter=None,
 ):
-
     if include is None:
         include = Include()
 
@@ -1611,7 +1599,6 @@ def plot_array(
 
 
 def plot_frame(frame, include=None, plotter=None):
-
     if include is None:
         include = Include()
 
@@ -1638,7 +1625,6 @@ def plot_grid(
     include=None,
     plotter=None,
 ):
-
     if include is None:
         include = Include()
 
@@ -1667,7 +1653,6 @@ def plot_line(
     vertical_line_labels=None,
     plotter=None,
 ):
-
     if plotter is None:
         plotter = Plotter()
 
@@ -1688,7 +1673,6 @@ def plot_mapper_obj(
     include=None,
     plotter=None,
 ):
-
     if include is None:
         include = Include()
 

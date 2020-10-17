@@ -132,7 +132,7 @@ class Regularization:
 
 class Constant(Regularization):
     def __init__(self, coefficient=1.0):
-        """A instance-regularization scheme (regularization is described in the *Regularization* class above).
+        """A instance-regularization scheme (regularization is described in the `Regularization` class above).
 
         For the instance regularization_matrix scheme, there is only 1 regularization coefficient that is applied to \
         all neighboring pixels. This means that we when write B, we only need to regularize pixels in one direction \
@@ -170,7 +170,7 @@ class Constant(Regularization):
 
 class AdaptiveBrightness(Regularization):
     def __init__(self, inner_coefficient=1.0, outer_coefficient=1.0, signal_scale=1.0):
-        """ A instance-regularization scheme (regularization is described in the *Regularization* class above).
+        """ A instance-regularization scheme (regularization is described in the `Regularization` class above).
 
         For the weighted regularization scheme, each pixel is given an 'effective regularization weight', which is \
         applied when each set of pixel neighbors are regularized with one another. The motivation of this is that \

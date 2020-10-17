@@ -38,15 +38,8 @@ class TestTotalPixels:
     class TestTotalSparsePixels:
         def test__mask_full_false__full_pixelization_grid_pixels_in_mask(self):
 
-            ma = msk.Mask2D(
-                mask=np.array(
-                    [
-                        [False, False, False],
-                        [False, False, False],
-                        [False, False, False],
-                    ]
-                ),
-                sub_size=1,
+            ma = np.array(
+                [[False, False, False], [False, False, False], [False, False, False]]
             )
 
             full_pix_grid_pixel_centres = np.array([[0, 0], [0, 1], [0, 2], [1, 0]])
@@ -71,11 +64,8 @@ class TestTotalPixels:
             self
         ):
 
-            ma = msk.Mask2D(
-                mask=np.array(
-                    [[True, False, True], [False, False, False], [True, False, True]]
-                ),
-                sub_size=1,
+            ma = np.array(
+                [[True, False, True], [False, False, False], [True, False, True]]
             )
 
             full_pix_grid_pixel_centres = np.array([[0, 0], [0, 1], [0, 2], [1, 0]])
@@ -98,15 +88,12 @@ class TestTotalPixels:
 
         def test__same_as_above_but_3x4_mask(self):
 
-            ma = msk.Mask2D(
-                mask=np.array(
-                    [
-                        [True, True, False, True],
-                        [False, False, False, False],
-                        [True, True, False, True],
-                    ]
-                ),
-                sub_size=1,
+            ma = np.array(
+                [
+                    [True, True, False, True],
+                    [False, False, False, False],
+                    [True, True, False, True],
+                ]
             )
 
             full_pix_grid_pixel_centres = np.array([[0, 0], [0, 1], [0, 2], [1, 0]])
@@ -129,16 +116,13 @@ class TestTotalPixels:
 
         def test__same_as_above_but_4x3_mask(self):
 
-            ma = msk.Mask2D(
-                mask=np.array(
-                    [
-                        [True, False, True],
-                        [True, False, True],
-                        [False, False, False],
-                        [True, False, True],
-                    ]
-                ),
-                sub_size=1,
+            ma = np.array(
+                [
+                    [True, False, True],
+                    [True, False, True],
+                    [False, False, False],
+                    [True, False, True],
+                ]
             )
 
             full_pix_grid_pixel_centres = np.array([[0, 0], [0, 1], [0, 2], [1, 1]])

@@ -4,17 +4,14 @@ import configparser
 
 from typing import Callable
 
-try:
-    backend = conf.get_matplotlib_backend()
-except configparser.NoSectionError:
-    backend = "default"
+backend = conf.get_matplotlib_backend()
 
-if not backend in "default":
+if backend not in "default":
     matplotlib.use(backend)
 
 try:
-    hpc_mode = conf.instance.general.get("hpc", "hpc_mode", bool)
-except configparser.NoSectionError:
+    hpc_mode = conf.instance["general"]["hpc"]["hpc_mode"]
+except KeyError:
     hpc_mode = False
 
 if hpc_mode:
@@ -36,17 +33,17 @@ from autoarray import exc
 def load_setting(section, name, python_type, from_subplot_config):
 
     if not from_subplot_config:
-        return load_figure_setting(section, name, python_type)
+        return load_figure_setting(section, name)
     else:
-        return load_subplot_setting(section, name, python_type)
+        return load_subplot_setting(section, name)
 
 
-def load_figure_setting(section, name, python_type):
-    return conf.instance.visualize_figures.get(section, name, python_type)
+def load_figure_setting(section, name):
+    return conf.instance["visualize"]["figures"][section][name]
 
 
-def load_subplot_setting(section, name, python_type):
-    return conf.instance.visualize_subplots.get(section, name, python_type)
+def load_subplot_setting(section, name):
+    return conf.instance["visualize"]["subplots"][section][name]
 
 
 class Units:
@@ -62,7 +59,7 @@ class Units:
         ----------
         use_scaled : bool
             If True, plot the y and x axis labels of the `Array` as its scaled coordinates using its *pixel_scales*
-            attribute. If ``False`` plot them in pixel units.
+            attribute. If `False` plot them in pixel units.
         conversion_factor : float
             If plotting the labels in scaled units, this factor multiplies the values that are used for the labels.
             This allows for additional unit conversions of the figure labels.
@@ -79,9 +76,9 @@ class Units:
             self.use_scaled = use_scaled
         else:
             try:
-                self.use_scaled = conf.instance.visualize_general.get(
-                    "general", "use_scaled", bool
-                )
+                self.use_scaled = conf.instance["visualize"]["general"]["general"][
+                    "use_scaled"
+                ]
             except:
                 self.use_scaled = True
 
@@ -89,7 +86,7 @@ class Units:
             self.in_kpc = (
                 in_kpc
                 if in_kpc is not None
-                else conf.instance.visualize_general.get("units", "in_kpc", bool)
+                else conf.instance["visualize"]["general"]["units"]["in_kpc"]
             )
         except:
             self.in_kpc = None
@@ -233,11 +230,9 @@ class ColorMap:
 
             module_name = module.__name__.split(".")[-1]
             try:
-                cmap = conf.instance.visualize_general.get(
-                    "colormaps", module_name, str
-                )
+                cmap = conf.instance["visualize"]["general"]["colormaps"][module_name]
             except configparser.NoOptionError:
-                cmap = conf.instance.visualize_general.get("colormaps", "default", str)
+                cmap = conf.instance["visualize"]["general"]["colormaps"]["default"]
 
         try:
             self.cmap = colorcet.cm[cmap]
@@ -1391,7 +1386,7 @@ class Liner:
         mask : np.ndarray of data_type.array.mask.Mask2D
             The mask applied to the array, the edge of which is plotted as a set of points over the plotted array.
         plot_lines : bool
-            If a mask is supplied, its liness pixels (e.g. the exterior edge) is plotted if this is *True*.
+            If a mask is supplied, its liness pixels (e.g. the exterior edge) is plotted if this is `True`.
         unit_label : str
             The unit_label of the y / x axis of the plots.
         kpc_per_scaled : float or None
@@ -1439,7 +1434,7 @@ class Liner:
         mask : np.ndarray of data_type.array.mask.Mask2D
             The mask applied to the array, the edge of which is plotted as a set of points over the plotted array.
         plot_lines : bool
-            If a mask is supplied, its liness pixels (e.g. the exterior edge) is plotted if this is *True*.
+            If a mask is supplied, its liness pixels (e.g. the exterior edge) is plotted if this is `True`.
         unit_label : str
             The unit_label of the y / x axis of the plots.
         kpc_per_scaled : float or None

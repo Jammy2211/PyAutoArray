@@ -51,7 +51,7 @@ class GridInterpolate(abstract_grid.AbstractGrid):
         """
         if store_in_1d and len(grid.shape) != 2:
             raise exc.GridException(
-                "An grid input into the grids.Grid.__new__ method has store_in_1d = ``True`` but"
+                "An grid input into the grids.Grid.__new__ method has store_in_1d = `True` but"
                 "the input shape of the array is not 1."
             )
 
@@ -421,9 +421,9 @@ class GridInterpolate(abstract_grid.AbstractGrid):
 
         try:
 
-            interpolate = conf.instance.interpolate.get(
-                func.__name__, cls.__class__.__name__, bool
-            )
+            interpolate = conf.instance["grids"]["interpolate"][func.__name__][
+                cls.__class__.__name__
+            ]
 
         except Exception:
 

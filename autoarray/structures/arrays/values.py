@@ -158,7 +158,7 @@ class Values(np.ndarray):
         file_path : str
             The path to the values .dat file containing the values (e.g. '/path/to/values.dat')
         overwrite : bool
-            If there is as exsiting file it will be overwritten if this is *True*.
+            If there is as exsiting file it will be overwritten if this is `True`.
         """
 
         if os.path.exists(file_path):

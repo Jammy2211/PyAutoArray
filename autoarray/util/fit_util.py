@@ -16,7 +16,7 @@ def residual_map_with_mask_from(
     data : np.ndarray
         The data that is fitted.
     mask : np.ndarray
-        The mask applied to the dataset, where ``False`` entries are included in the calculation.
+        The mask applied to the dataset, where `False` entries are included in the calculation.
     model_data : np.ndarray
         The model data used to fit the data.
     """
@@ -42,7 +42,7 @@ def normalized_residual_map_with_mask_from(
     noise_map : np.ndarray
         The noise-map of the dataset.
     mask : np.ndarray
-        The mask applied to the residual-map, where ``False`` entries are included in the calculation.
+        The mask applied to the residual-map, where `False` entries are included in the calculation.
     """
     return np.divide(
         residual_map,
@@ -69,7 +69,7 @@ def chi_squared_map_with_mask_from(
     noise_map : np.ndarray
         The noise-map of the dataset.
     mask : np.ndarray
-        The mask applied to the residual-map, where ``False`` entries are included in the calculation.
+        The mask applied to the residual-map, where `False` entries are included in the calculation.
     """
     return np.square(
         np.divide(
@@ -95,7 +95,7 @@ def chi_squared_with_mask_from(
     chi_squared_map : np.ndarray
         The chi-squared-map of values of the model-simulator fit to the dataset.
     mask : np.ndarray
-        The mask applied to the chi-squared-map, where ``False`` entries are included in the calculation.
+        The mask applied to the chi-squared-map, where `False` entries are included in the calculation.
     """
     return np.sum(chi_squared_map[np.asarray(mask) == 0])
 
@@ -115,7 +115,7 @@ def noise_normalization_with_mask_from(
     noise_map : np.ndarray
         The masked noise-map of the dataset.
     mask : np.ndarray
-        The mask applied to the noise-map, where ``False`` entries are included in the calculation.
+        The mask applied to the noise-map, where `False` entries are included in the calculation.
     """
     return np.sum(np.log(2 * np.pi * noise_map[np.asarray(mask) == 0] ** 2.0))
 
@@ -131,7 +131,7 @@ def residual_map_from(*, data: np.ndarray, model_data: np.ndarray) -> np.ndarray
     data : np.ndarray
         The data that is fitted.
     mask : np.ndarray
-        The mask applied to the dataset, where ``False`` entries are included in the calculation.
+        The mask applied to the dataset, where `False` entries are included in the calculation.
     model_data : np.ndarray
         The model data used to fit the data.
     """
@@ -153,7 +153,7 @@ def normalized_residual_map_from(
     noise_map : np.ndarray
         The noise-map of the dataset.
     mask : np.ndarray
-        The mask applied to the residual-map, where ``False`` entries are included in the calculation.
+        The mask applied to the residual-map, where `False` entries are included in the calculation.
     """
     return np.divide(residual_map, noise_map, out=np.zeros_like(residual_map))
 

@@ -6,7 +6,8 @@ import autoarray as aa
 
 def grid_to_pixel_pixels_via_nearest_neighbour(grid, pixel_centers):
     def compute_squared_separation(coordinate1, coordinate2):
-        """Computes the squared separation of two grid (no square root for efficiency)"""
+        """
+    Returns the squared separation of two grid (no square root for efficiency)"""
         return (coordinate1[0] - coordinate2[0]) ** 2 + (
             coordinate1[1] - coordinate2[1]
         ) ** 2
