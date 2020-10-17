@@ -13,8 +13,7 @@ directory = path.dirname(path.realpath(__file__))
 def set_config_path(request):
     if dirname(realpath(__file__)) in str(request.module):
         conf.instance.push(
-path.join(directory, "config"),
-            output_path=path.join(directory, "output"),
+            path.join(directory, "config"), output_path=path.join(directory, "output")
         )
 
 

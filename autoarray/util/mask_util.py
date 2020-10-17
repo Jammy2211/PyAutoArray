@@ -269,10 +269,10 @@ def mask_circular_anti_annular_from(
     inner_radius : float
         The inner radius in scaled units of the annulus within which pixels are `False` and unmasked.
     outer_radius : float
-        The first outer radius in scaled units of the annulus within which pixels are ``True`` and masked.
+        The first outer radius in scaled units of the annulus within which pixels are `True` and masked.
     outer_radius_2 : float
         The second outer radius in scaled units of the annulus within which pixels are `False` and unmasked and
-        outside of which all entries are ``True`` and masked.
+        outside of which all entries are `True` and masked.
     centre: (float, float)
         The centre of the annulus used to mask pixels.
 

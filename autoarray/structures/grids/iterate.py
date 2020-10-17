@@ -65,7 +65,7 @@ class GridIterate(abstract_grid.AbstractGrid):
         sub_steps = sub_steps_from_none(sub_steps=sub_steps)
         if store_in_1d and len(grid.shape) != 2:
             raise exc.GridException(
-                "An grid input into the grids.Grid.__new__ method has store_in_1d = ``True`` but"
+                "An grid input into the grids.Grid.__new__ method has store_in_1d = `True` but"
                 "the input shape of the array is not 1."
             )
 
@@ -717,7 +717,7 @@ class GridIterate(abstract_grid.AbstractGrid):
         If the function return all zeros, the iteration is terminated early given that all levels of sub-gridding will
         return zeros. This occurs when a function is missing optional objects that contribute to the calculation.
 
-        An example use case of this function is when a "deflections_from_grid" methods in **PyAutoLens**'s _MassProfile_
+        An example use case of this function is when a "deflections_from_grid" methods in **PyAutoLens**'s `MassProfile`
         module is computed, which by evaluating the function on a higher resolution sub-grid samples the analytic
         mass profile at more points and thus more precisely.
 

@@ -320,7 +320,7 @@ def mask_1d_index_for_padded_mask_index_from(
 ) -> np.ndarray:
     """
     Returns a 2D array which maps every `False` entry of a 2D mask to its 1D mask array index 2D binned mask. Every
-    ``True`` entry is given a value -1.
+    `True` entry is given a value -1.
 
     This uses ``mask_1d_index_for_padded_mask_index``, see this method for a more detailed description.
 

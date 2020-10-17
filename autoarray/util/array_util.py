@@ -269,7 +269,7 @@ def numpy_array_1d_to_fits(
     file_path : str
         The full path of the file that is output, including the file name and ``.fits`` extension.
     overwrite : bool
-        If ``True`` and a file already exists with the input file_path the .fits file is overwritten. If False, an error
+        If `True` and a file already exists with the input file_path the .fits file is overwritten. If False, an error
         will be raised.
 
     Returns
@@ -339,7 +339,7 @@ def numpy_array_2d_to_fits(
     file_path : str
         The full path of the file that is output, including the file name and ``.fits`` extension.
     overwrite : bool
-        If ``True`` and a file already exists with the input file_path the .fits file is overwritten. If `False`, an
+        If `True` and a file already exists with the input file_path the .fits file is overwritten. If `False`, an
         error is raised.
 
     Returns

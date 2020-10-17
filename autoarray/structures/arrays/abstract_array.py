@@ -16,7 +16,7 @@ def check_array(array):
 
     if array.store_in_1d and len(array.shape) != 1:
         raise exc.ArrayException(
-            "An array input into the arrays.Array.__new__ method has store_in_1d = ``True`` but"
+            "An array input into the arrays.Array.__new__ method has store_in_1d = `True` but"
             "the input shape of the array is not 1."
         )
 

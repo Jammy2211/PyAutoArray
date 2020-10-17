@@ -38,7 +38,7 @@ class SettingsPixelization:
         This changes the setup folder as follows (the example tags below are the default config tags):
 
         inversion_use_border = `False` -> settings
-        inversion_use_border = ``True`` -> settings___no_border
+        inversion_use_border = `True` -> settings___no_border
         """
         if self.use_border:
 
@@ -59,7 +59,7 @@ class SettingsPixelization:
         This changes the setup folder as follows (the example tags below are the default config tags):
 
         inversion_stochastic = `False` -> settings
-        inversion_stochastic = ``True`` -> settings___stochastic
+        inversion_stochastic = `True` -> settings___stochastic
         """
         if not self.is_stochastic:
 

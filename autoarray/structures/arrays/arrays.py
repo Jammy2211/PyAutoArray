@@ -48,7 +48,7 @@ class Array(abstract_array.AbstractArray):
         IxIxIxIxIxIxIxIxIxIxI
         IxIxIxIxIxIxIxIxIxIxI     This is an example mask.Mask2D, where:
         IxIxIxIxIxIxIxIxIxIxI
-        IxIxIxIxIoIoIxIxIxIxI     x = ``True`` (Pixel is masked and excluded from the array)
+        IxIxIxIxIoIoIxIxIxIxI     x = `True` (Pixel is masked and excluded from the array)
         IxIxIxIoIoIoIoIxIxIxI     o = `False` (Pixel is not masked and included in the array)
         IxIxIxIoIoIoIoIxIxIxI
         IxIxIxIxIxIxIxIxIxIxI
@@ -95,7 +95,7 @@ class Array(abstract_array.AbstractArray):
         IxIxIxIxIxIxIxIxIxIxI
         IxIxIxIxIxIxIxIxIxIxI     This is an example mask.Mask2D, where:
         IxIxIxIxIxIxIxIxIxIxI
-        IxIxIxIxIxIxIxIxIxIxI     x = ``True`` (Pixel is masked and excluded from lens)
+        IxIxIxIxIxIxIxIxIxIxI     x = `True` (Pixel is masked and excluded from lens)
         IxIxIxIxIoIoIxIxIxIxI     o = `False` (Pixel is not masked and included in lens)
         IxIxIxIxIxIxIxIxIxIxI
         IxIxIxIxIxIxIxIxIxIxI
@@ -156,7 +156,7 @@ class Array(abstract_array.AbstractArray):
         IxIxIxIxIxIxIxIxIxIxI
         IxIxIxIxIxIxIxIxIxIxI     This is an example mask.Mask2D, where:
         IxIxIxIxIxIxIxIxIxIxI
-        IxIxIxIxIoIoIxIxIxIxI     x = ``True`` (Pixel is masked and excluded from the array)
+        IxIxIxIxIoIoIxIxIxIxI     x = `True` (Pixel is masked and excluded from the array)
         IxIxIxIoIoIoIoIxIxIxI     o = `False` (Pixel is not masked and included in the array)
         IxIxIxIoIoIoIoIxIxIxI
         IxIxIxIxIxIxIxIxIxIxI
