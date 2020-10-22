@@ -6,7 +6,7 @@ import autoarray as aa
 from autoarray import exc
 from autoarray.structures import grids
 
-from test_autoarray.mock import MockGridRadialMinimum
+from autoarray.mock.mock import MockGridRadialMinimum
 
 test_grid_dir = "{}/files/grid/".format(os.path.dirname(os.path.realpath(__file__)))
 

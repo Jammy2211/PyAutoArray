@@ -179,6 +179,12 @@ class AbstractArray(abstract_structure.AbstractStructure):
         return self.__class__(array=array, mask=mask, store_in_1d=store_in_1d)
 
     @property
+    def readout_offsets(self):
+        if self.exposure_info is not None:
+            return self.exposure_info.readout_offsets
+        return (0, 0)
+
+    @property
     def in_1d(self):
         """Convenience method to access the array's 1D representation, which is an ndarray of shape
         [total_unmasked_pixels*(sub_size**2)].
@@ -401,7 +407,7 @@ class AbstractArray(abstract_structure.AbstractStructure):
             array_2d=resized_array_2d, mask=resized_mask, store_in_1d=self.store_in_1d
         )
 
-        return self.__class__(
+        return self._new_structure(
             array=array, mask=resized_mask, store_in_1d=self.store_in_1d
         )
 
@@ -534,12 +540,13 @@ class AbstractArray(abstract_structure.AbstractStructure):
 
 class ExposureInfo:
     def __init__(
-        self, date_of_observation=None, time_of_observation=None, exposure_time=None
+        self, date_of_observation=None, time_of_observation=None, exposure_time=None, readout_offsets: (int, int) = (0, 0)
     ):
 
         self.date_of_observation = date_of_observation
         self.time_of_observation = time_of_observation
         self.exposure_time = exposure_time
+        self.readout_offsets = readout_offsets
 
     @property
     def modified_julian_date(self):

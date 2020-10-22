@@ -1,7 +1,5 @@
-from autoarray.structures.grids.coordinates import (
-    GridCoordinates,
-    GridCoordinatesUniform,
-)
+from autoarray.structures.grids.coordinates import GridCoordinates
+from autoarray.structures.grids.coordinates import GridCoordinatesUniform
 from autoarray.structures.grids.iterate import GridIterate
 from . import exc
 from . import plot

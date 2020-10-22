@@ -2,7 +2,7 @@ import autoarray as aa
 
 import numpy as np
 
-from test_autoarray import mock
+from autoarray.mock import mock
 
 
 class TestFitImaging:
