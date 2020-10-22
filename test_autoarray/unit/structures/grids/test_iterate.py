@@ -4,7 +4,7 @@ import pytest
 
 import autoarray as aa
 from autoarray.structures import grids
-from test_autoarray.mock import ndarray_1d_from_grid, ndarray_2d_from_grid
+from autoarray.mock.mock import ndarray_1d_from_grid, ndarray_2d_from_grid
 
 test_coordinates_dir = "{}/files/coordinates/".format(
     os.path.dirname(os.path.realpath(__file__))

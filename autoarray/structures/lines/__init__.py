@@ -1,1 +1,2 @@
-from .lines import Line, LineCollection
+from .lines import Line
+from .lines import LineCollection
