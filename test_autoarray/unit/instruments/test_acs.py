@@ -183,7 +183,6 @@ class TestFrameACS:
 
 
 class TestImageACS:
-
     def test__from_fits__reads_exposure_info_from_header_correctly(self, acs_ccd):
 
         fits_path = "{}/files/acs/".format(os.path.dirname(os.path.realpath(__file__)))
@@ -322,8 +321,6 @@ class TestImageACS:
         assert frame[0, 0] == (40.0 * 1000.0 * 2.0) + 10.0
         assert frame.original_roe_corner == (1, 1)
         assert frame.shape_2d == (2068, 2072)
-
-
 
     # def test__update_fits__if_new_file_is_not_presnet_copies_original_file_and_updates(
     #     self, acs_ccd

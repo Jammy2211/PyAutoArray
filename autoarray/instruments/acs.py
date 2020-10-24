@@ -17,6 +17,7 @@ logging.basicConfig()
 logger = logging.getLogger()
 logger.setLevel("INFO")
 
+
 def fits_hdu_from_quadrant_letter(quadrant_letter):
 
     if quadrant_letter is "A" or quadrant_letter is "B":
@@ -25,6 +26,7 @@ def fits_hdu_from_quadrant_letter(quadrant_letter):
         return 4
     else:
         raise exc.FrameException("Quadrant letter for FrameACS must be A, B, C or D.")
+
 
 def array_eps_to_counts(array_eps, bscale, bzero):
 
@@ -74,10 +76,7 @@ class FrameACS(f.Frame, ArrayACS):
 
         array = array_util.numpy_array_2d_from_fits(file_path=file_path, hdu=hdu)
 
-        return cls.from_ccd(
-            array_electrons=array,
-            quadrant_letter=quadrant_letter,
-        )
+        return cls.from_ccd(array_electrons=array, quadrant_letter=quadrant_letter)
 
     @classmethod
     def from_ccd(
@@ -302,8 +301,8 @@ class ImageACS(FrameACS, ArrayACS):
             return (array * exposure_info.bscale) + exposure_info.bzero
         elif exposure_info.original_units in "CPS":
             return (
-                           array * exposure_info.exposure_time * exposure_info.bscale
-                   ) + exposure_info.bzero
+                array * exposure_info.exposure_time * exposure_info.bscale
+            ) + exposure_info.bzero
 
 
 class ExposureInfoACS(abstract_array.ExposureInfo):

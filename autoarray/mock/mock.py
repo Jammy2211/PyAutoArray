@@ -1,6 +1,5 @@
 import numpy as np
 
-
 from autoarray.structures.grids import decorators
 
 ### Grids ###
@@ -61,6 +60,7 @@ def grid_to_grid_cartesian(grid, radius):
 
 def ndarray_2d_from_grid(profile, grid):
     return grid_to_grid_cartesian(grid=grid, radius=np.full(grid.shape[0], 2.0))
+
 
 class MockGridLikeIteratorObj:
     def __init__(self):
@@ -201,9 +201,7 @@ class MockPixelization:
     ):
         return self.value
 
-    def sparse_grid_from_grid(
-        self, grid, hyper_image, settings=None
-    ):
+    def sparse_grid_from_grid(self, grid, hyper_image, settings=None):
         if hyper_image is None:
             return self.grid
         else:
