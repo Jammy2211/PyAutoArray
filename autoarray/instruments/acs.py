@@ -11,6 +11,12 @@ from astropy.io import fits
 import shutil
 import os
 
+import logging
+
+logging.basicConfig()
+logger = logging.getLogger()
+logger.setLevel("INFO")
+
 
 def fits_hdu_from_quadrant_letter(quadrant_letter):
 
@@ -20,47 +26,6 @@ def fits_hdu_from_quadrant_letter(quadrant_letter):
         return 4
     else:
         raise exc.FrameException("Quadrant letter for FrameACS must be A, B, C or D.")
-
-
-def exposure_info_from_fits(file_path, hdu):
-
-    hdulist = fits.open(file_path)
-
-    sci_header = hdulist[0].header
-
-    exposure_time = sci_header["EXPTIME"]
-    date_of_observation = sci_header["DATE-OBS"]
-    time_of_observation = sci_header["TIME-OBS"]
-
-    ext_header = hdulist[hdu].header
-
-    units = ext_header["BUNIT"]
-    bscale = ext_header["BSCALE"]
-    bzero = ext_header["BZERO"]
-
-    return ExposureInfoACS(
-        exposure_time=exposure_time,
-        date_of_observation=date_of_observation,
-        time_of_observation=time_of_observation,
-        original_units=units,
-        bscale=bscale,
-        bzero=bzero,
-        hdu=hdu,
-    )
-
-
-def array_converted_to_electrons_from_fits(file_path, hdu, exposure_info):
-
-    array = array_util.numpy_array_2d_from_fits(
-        file_path=file_path, hdu=hdu, do_not_scale_image_data=True
-    )
-
-    if exposure_info.original_units in "COUNTS":
-        return (array * exposure_info.bscale) + exposure_info.bzero
-    elif exposure_info.original_units in "CPS":
-        return (
-            array * exposure_info.exposure_time * exposure_info.bscale
-        ) + exposure_info.bzero
 
 
 def array_eps_to_counts(array_eps, bscale, bzero):
@@ -109,17 +74,9 @@ class FrameACS(f.Frame, ArrayACS):
 
         hdu = fits_hdu_from_quadrant_letter(quadrant_letter=quadrant_letter)
 
-        exposure_info = exposure_info_from_fits(file_path=file_path, hdu=hdu)
+        array = array_util.numpy_array_2d_from_fits(file_path=file_path, hdu=hdu)
 
-        array = array_converted_to_electrons_from_fits(
-            file_path=file_path, hdu=hdu, exposure_info=exposure_info
-        )
-
-        return cls.from_ccd(
-            array_electrons=array,
-            quadrant_letter=quadrant_letter,
-            exposure_info=exposure_info,
-        )
+        return cls.from_ccd(array_electrons=array, quadrant_letter=quadrant_letter)
 
     @classmethod
     def from_ccd(
@@ -272,6 +229,80 @@ class FrameACS(f.Frame, ArrayACS):
         os.remove(new_file_path)
 
         hdulist.writeto(new_file_path)
+
+
+class ImageACS(FrameACS, ArrayACS):
+    """The layout of an ACS frame and image is given in `FrameACS`.
+
+    This class handles specifically the image of an ACS observation, assuming that it contains specific
+    header info.
+    """
+
+    @classmethod
+    def from_fits(cls, file_path, quadrant_letter):
+        """
+        Use the input .fits file and quadrant letter to extract the quadrant from the full CCD, perform
+        the rotations required to give correct arctic clocking and convert the image from units of COUNTS / CPS to
+        ELECTRONS.
+
+        See the docstring of the `FrameACS` class for a complete description of the Euclid FPA, quadrants and
+        rotations.
+        """
+
+        hdu = fits_hdu_from_quadrant_letter(quadrant_letter=quadrant_letter)
+
+        exposure_info = cls.exposure_info_from_fits(file_path=file_path, hdu=hdu)
+
+        array = cls.array_converted_to_electrons_from_fits(
+            file_path=file_path, hdu=hdu, exposure_info=exposure_info
+        )
+
+        return cls.from_ccd(
+            array_electrons=array,
+            quadrant_letter=quadrant_letter,
+            exposure_info=exposure_info,
+        )
+
+    @staticmethod
+    def exposure_info_from_fits(file_path, hdu):
+
+        hdulist = fits.open(file_path)
+
+        sci_header = hdulist[0].header
+
+        exposure_time = sci_header["EXPTIME"]
+        date_of_observation = sci_header["DATE-OBS"]
+        time_of_observation = sci_header["TIME-OBS"]
+
+        ext_header = hdulist[hdu].header
+
+        units = ext_header["BUNIT"]
+        bscale = ext_header["BSCALE"]
+        bzero = ext_header["BZERO"]
+
+        return ExposureInfoACS(
+            exposure_time=exposure_time,
+            date_of_observation=date_of_observation,
+            time_of_observation=time_of_observation,
+            original_units=units,
+            bscale=bscale,
+            bzero=bzero,
+            hdu=hdu,
+        )
+
+    @staticmethod
+    def array_converted_to_electrons_from_fits(file_path, hdu, exposure_info):
+
+        array = array_util.numpy_array_2d_from_fits(
+            file_path=file_path, hdu=hdu, do_not_scale_image_data=True
+        )
+
+        if exposure_info.original_units in "COUNTS":
+            return (array * exposure_info.bscale) + exposure_info.bzero
+        elif exposure_info.original_units in "CPS":
+            return (
+                array * exposure_info.exposure_time * exposure_info.bscale
+            ) + exposure_info.bzero
 
 
 class ExposureInfoACS(abstract_array.ExposureInfo):

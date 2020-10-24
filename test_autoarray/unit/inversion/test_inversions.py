@@ -3,7 +3,7 @@ from autoarray.inversion import inversions
 from autoarray import exc
 import numpy as np
 
-from test_autoarray import mock
+from autoarray.mock import mock
 
 
 class TestSettingsInversion:

@@ -1,7 +1,7 @@
 import autoarray as aa
 import numpy as np
 
-from test_autoarray.mock import MockPixelizationGrid, MockRegMapper
+from autoarray.mock.mock import MockPixelizationGrid, MockRegMapper
 
 
 class TestRegularizationinstance:

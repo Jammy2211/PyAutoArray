@@ -5,7 +5,7 @@ import pytest
 import autoarray as aa
 from autoarray.structures import grids
 
-from test_autoarray.mock import MockGridRadialMinimum
+from autoarray.mock.mock import MockGridRadialMinimum
 
 test_coordinates_dir = "{}/files/coordinates/".format(
     os.path.dirname(os.path.realpath(__file__))
