@@ -55,4 +55,4 @@ from autoconf import conf
 
 conf.instance.register(__file__)
 
-__version__ = "0.14.11"
+__version__ = '0.14.12'
