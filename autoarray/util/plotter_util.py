@@ -1,9 +1,10 @@
 import matplotlib
 
-from autofit import conf
+from autoconf import conf
 
 backend = conf.get_matplotlib_backend()
-if "default" not in backend:
+
+if backend not in "default":
     matplotlib.use(backend)
 
 import numpy as np

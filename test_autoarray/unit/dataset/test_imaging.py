@@ -375,12 +375,12 @@ class TestMaskedImaging:
             imaging=imaging_7x7,
             mask=mask_7x7_1_pix,
             settings=aa.SettingsMaskedImaging(
-                grid_class=aa.Grid, signal_to_noise_limit=1.0
+                grid_class=aa.Grid, signal_to_noise_limit=0.1
             ),
         )
 
         imaging_snr_limit = imaging_7x7.signal_to_noise_limited_from(
-            signal_to_noise_limit=1.0
+            signal_to_noise_limit=0.1
         )
 
         assert (

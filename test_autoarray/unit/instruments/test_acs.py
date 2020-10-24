@@ -135,145 +135,6 @@ class TestFrameACS:
         assert frame.original_roe_corner == (1, 1)
         assert frame.shape_2d == (2068, 2072)
 
-    def test__from_fits__reads_exposure_info_from_header_correctly(self, acs_ccd):
-
-        fits_path = "{}/files/acs/".format(os.path.dirname(os.path.realpath(__file__)))
-
-        create_acs_fits(
-            fits_path=fits_path,
-            acs_ccd=acs_ccd,
-            acs_ccd_0=acs_ccd,
-            acs_ccd_1=acs_ccd,
-            units="COUNTS",
-        )
-
-        frame = aa.acs.FrameACS.from_fits(
-            file_path=f"{fits_path}/acs_ccd.fits", quadrant_letter="B"
-        )
-
-        assert frame.exposure_info.exposure_time == 1000.0
-        assert frame.exposure_info.date_of_observation == "2000-01-01"
-        assert frame.exposure_info.time_of_observation == "00:00:00"
-        assert frame.exposure_info.modified_julian_date == 51544.0
-
-        frame = aa.acs.FrameACS.from_fits(
-            file_path=f"{fits_path}/acs_ccd.fits", quadrant_letter="C"
-        )
-
-        assert frame.exposure_info.exposure_time == 1000.0
-        assert frame.exposure_info.date_of_observation == "2000-01-01"
-        assert frame.exposure_info.time_of_observation == "00:00:00"
-        assert frame.exposure_info.modified_julian_date == 51544.0
-
-    def test__from_fits__in_counts__uses_fits_header_correctly_converts_and_picks_correct_quadrant(
-        self, acs_ccd
-    ):
-
-        fits_path = "{}/files/acs/".format(os.path.dirname(os.path.realpath(__file__)))
-
-        acs_ccd_0 = copy.copy(acs_ccd)
-        acs_ccd_0[0, 0] = 10.0
-        acs_ccd_0[0, 4143] = 20.0
-
-        acs_ccd_1 = copy.copy(acs_ccd)
-        acs_ccd_1[0, 0] = 30.0
-        acs_ccd_1[0, 4143] = 40.0
-
-        create_acs_fits(
-            fits_path=fits_path,
-            acs_ccd=acs_ccd,
-            acs_ccd_0=acs_ccd_0,
-            acs_ccd_1=acs_ccd_1,
-            units="COUNTS",
-        )
-
-        frame = aa.acs.FrameACS.from_fits(
-            file_path=f"{fits_path}/acs_ccd.fits", quadrant_letter="B"
-        )
-
-        assert frame[0, 0] == (10.0 * 2.0) + 10.0
-        assert frame.in_counts[0, 0] == 10.0
-        assert frame.original_roe_corner == (1, 0)
-        assert frame.shape_2d == (2068, 2072)
-
-        frame = aa.acs.FrameACS.from_fits(
-            file_path=f"{fits_path}/acs_ccd.fits", quadrant_letter="A"
-        )
-
-        assert frame[0, 0] == (20.0 * 2.0) + 10.0
-        assert frame.original_roe_corner == (1, 1)
-        assert frame.shape_2d == (2068, 2072)
-
-        frame = aa.acs.FrameACS.from_fits(
-            file_path=f"{fits_path}/acs_ccd.fits", quadrant_letter="C"
-        )
-
-        assert frame[0, 0] == (30.0 * 2.0) + 10.0
-        assert frame.original_roe_corner == (1, 0)
-        assert frame.shape_2d == (2068, 2072)
-
-        frame = aa.acs.FrameACS.from_fits(
-            file_path=f"{fits_path}/acs_ccd.fits", quadrant_letter="D"
-        )
-
-        assert frame[0, 0] == (40.0 * 2.0) + 10.0
-        assert frame.original_roe_corner == (1, 1)
-        assert frame.shape_2d == (2068, 2072)
-
-    def test__from_fits__in_counts_per_second__uses_fits_header_correctly_converts_and_picks_correct_quadrant(
-        self, acs_ccd
-    ):
-
-        fits_path = "{}/files/acs/".format(os.path.dirname(os.path.realpath(__file__)))
-
-        acs_ccd_0 = copy.copy(acs_ccd)
-        acs_ccd_0[0, 0] = 10.0
-        acs_ccd_0[0, 4143] = 20.0
-
-        acs_ccd_1 = copy.copy(acs_ccd)
-        acs_ccd_1[0, 0] = 30.0
-        acs_ccd_1[0, 4143] = 40.0
-
-        create_acs_fits(
-            fits_path=fits_path,
-            acs_ccd=acs_ccd,
-            acs_ccd_0=acs_ccd_0,
-            acs_ccd_1=acs_ccd_1,
-            units="CPS",
-        )
-
-        frame = aa.acs.FrameACS.from_fits(
-            file_path=f"{fits_path}/acs_ccd.fits", quadrant_letter="B"
-        )
-
-        assert frame[0, 0] == (10.0 * 1000.0 * 2.0) + 10.0
-        assert frame.original_roe_corner == (1, 0)
-        assert frame.shape_2d == (2068, 2072)
-
-        frame = aa.acs.FrameACS.from_fits(
-            file_path=f"{fits_path}/acs_ccd.fits", quadrant_letter="A"
-        )
-
-        assert frame[0, 0] == (20.0 * 1000.0 * 2.0) + 10.0
-        assert frame.original_roe_corner == (1, 1)
-        assert frame.shape_2d == (2068, 2072)
-
-        frame = aa.acs.FrameACS.from_fits(
-            file_path=f"{fits_path}/acs_ccd.fits", quadrant_letter="C"
-        )
-
-        assert frame[0, 0] == (30.0 * 1000.0 * 2.0) + 10.0
-        assert frame.original_roe_corner == (1, 0)
-        assert frame.shape_2d == (2068, 2072)
-
-        frame = aa.acs.FrameACS.from_fits(
-            file_path=f"{fits_path}/acs_ccd.fits", quadrant_letter="D"
-        )
-
-        assert frame[0, 0] == (40.0 * 1000.0 * 2.0) + 10.0
-        assert frame.original_roe_corner == (1, 1)
-        assert frame.shape_2d == (2068, 2072)
-
     def test__conversions_to_counts_and_counts_per_second_use_correct_values(self):
 
         frame = aa.Frame.ones(
@@ -319,6 +180,147 @@ class TestFrameACS:
 
         assert (frame.in_counts == 0.45 * np.ones(shape=(3, 3))).all()
         assert (frame.in_counts_per_second == 0.225 * np.ones(shape=(3, 3))).all()
+
+
+class TestImageACS:
+    def test__from_fits__reads_exposure_info_from_header_correctly(self, acs_ccd):
+
+        fits_path = "{}/files/acs/".format(os.path.dirname(os.path.realpath(__file__)))
+
+        create_acs_fits(
+            fits_path=fits_path,
+            acs_ccd=acs_ccd,
+            acs_ccd_0=acs_ccd,
+            acs_ccd_1=acs_ccd,
+            units="COUNTS",
+        )
+
+        frame = aa.acs.ImageACS.from_fits(
+            file_path=f"{fits_path}/acs_ccd.fits", quadrant_letter="B"
+        )
+
+        assert frame.exposure_info.exposure_time == 1000.0
+        assert frame.exposure_info.date_of_observation == "2000-01-01"
+        assert frame.exposure_info.time_of_observation == "00:00:00"
+        assert frame.exposure_info.modified_julian_date == 51544.0
+
+        frame = aa.acs.ImageACS.from_fits(
+            file_path=f"{fits_path}/acs_ccd.fits", quadrant_letter="C"
+        )
+
+        assert frame.exposure_info.exposure_time == 1000.0
+        assert frame.exposure_info.date_of_observation == "2000-01-01"
+        assert frame.exposure_info.time_of_observation == "00:00:00"
+        assert frame.exposure_info.modified_julian_date == 51544.0
+
+    def test__from_fits__in_counts__uses_fits_header_correctly_converts_and_picks_correct_quadrant(
+        self, acs_ccd
+    ):
+
+        fits_path = "{}/files/acs/".format(os.path.dirname(os.path.realpath(__file__)))
+
+        acs_ccd_0 = copy.copy(acs_ccd)
+        acs_ccd_0[0, 0] = 10.0
+        acs_ccd_0[0, 4143] = 20.0
+
+        acs_ccd_1 = copy.copy(acs_ccd)
+        acs_ccd_1[0, 0] = 30.0
+        acs_ccd_1[0, 4143] = 40.0
+
+        create_acs_fits(
+            fits_path=fits_path,
+            acs_ccd=acs_ccd,
+            acs_ccd_0=acs_ccd_0,
+            acs_ccd_1=acs_ccd_1,
+            units="COUNTS",
+        )
+
+        frame = aa.acs.ImageACS.from_fits(
+            file_path=f"{fits_path}/acs_ccd.fits", quadrant_letter="B"
+        )
+
+        assert frame[0, 0] == (10.0 * 2.0) + 10.0
+        assert frame.in_counts[0, 0] == 10.0
+        assert frame.original_roe_corner == (1, 0)
+        assert frame.shape_2d == (2068, 2072)
+
+        frame = aa.acs.FrameACS.from_fits(
+            file_path=f"{fits_path}/acs_ccd.fits", quadrant_letter="A"
+        )
+
+        assert frame[0, 0] == (20.0 * 2.0) + 10.0
+        assert frame.original_roe_corner == (1, 1)
+        assert frame.shape_2d == (2068, 2072)
+
+        frame = aa.acs.ImageACS.from_fits(
+            file_path=f"{fits_path}/acs_ccd.fits", quadrant_letter="C"
+        )
+
+        assert frame[0, 0] == (30.0 * 2.0) + 10.0
+        assert frame.original_roe_corner == (1, 0)
+        assert frame.shape_2d == (2068, 2072)
+
+        frame = aa.acs.ImageACS.from_fits(
+            file_path=f"{fits_path}/acs_ccd.fits", quadrant_letter="D"
+        )
+
+        assert frame[0, 0] == (40.0 * 2.0) + 10.0
+        assert frame.original_roe_corner == (1, 1)
+        assert frame.shape_2d == (2068, 2072)
+
+    def test__from_fits__in_counts_per_second__uses_fits_header_correctly_converts_and_picks_correct_quadrant(
+        self, acs_ccd
+    ):
+
+        fits_path = "{}/files/acs/".format(os.path.dirname(os.path.realpath(__file__)))
+
+        acs_ccd_0 = copy.copy(acs_ccd)
+        acs_ccd_0[0, 0] = 10.0
+        acs_ccd_0[0, 4143] = 20.0
+
+        acs_ccd_1 = copy.copy(acs_ccd)
+        acs_ccd_1[0, 0] = 30.0
+        acs_ccd_1[0, 4143] = 40.0
+
+        create_acs_fits(
+            fits_path=fits_path,
+            acs_ccd=acs_ccd,
+            acs_ccd_0=acs_ccd_0,
+            acs_ccd_1=acs_ccd_1,
+            units="CPS",
+        )
+
+        frame = aa.acs.ImageACS.from_fits(
+            file_path=f"{fits_path}/acs_ccd.fits", quadrant_letter="B"
+        )
+
+        assert frame[0, 0] == (10.0 * 1000.0 * 2.0) + 10.0
+        assert frame.original_roe_corner == (1, 0)
+        assert frame.shape_2d == (2068, 2072)
+
+        frame = aa.acs.ImageACS.from_fits(
+            file_path=f"{fits_path}/acs_ccd.fits", quadrant_letter="A"
+        )
+
+        assert frame[0, 0] == (20.0 * 1000.0 * 2.0) + 10.0
+        assert frame.original_roe_corner == (1, 1)
+        assert frame.shape_2d == (2068, 2072)
+
+        frame = aa.acs.ImageACS.from_fits(
+            file_path=f"{fits_path}/acs_ccd.fits", quadrant_letter="C"
+        )
+
+        assert frame[0, 0] == (30.0 * 1000.0 * 2.0) + 10.0
+        assert frame.original_roe_corner == (1, 0)
+        assert frame.shape_2d == (2068, 2072)
+
+        frame = aa.acs.ImageACS.from_fits(
+            file_path=f"{fits_path}/acs_ccd.fits", quadrant_letter="D"
+        )
+
+        assert frame[0, 0] == (40.0 * 1000.0 * 2.0) + 10.0
+        assert frame.original_roe_corner == (1, 1)
+        assert frame.shape_2d == (2068, 2072)
 
     # def test__update_fits__if_new_file_is_not_presnet_copies_original_file_and_updates(
     #     self, acs_ccd
