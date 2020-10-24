@@ -283,13 +283,13 @@ class AbstractMaskedImaging(abstract_dataset.AbstractMaskedDataset):
         super().__init__(dataset=imaging, mask=mask, settings=settings)
 
         self.image = arrays.Array.manual_mask(
-            array=imaging.image.in_2d,
+            array=self.dataset.image.in_2d,
             mask=mask.mask_sub_1,
             store_in_1d=imaging.image.store_in_1d,
         )
 
         self.noise_map = arrays.Array.manual_mask(
-            array=imaging.noise_map.in_2d,
+            array=self.dataset.noise_map.in_2d,
             mask=mask.mask_sub_1,
             store_in_1d=imaging.noise_map.store_in_1d,
         )
@@ -313,8 +313,9 @@ class AbstractMaskedImaging(abstract_dataset.AbstractMaskedDataset):
     def data(self):
         return self.image
 
+    @property
     def signal_to_noise_map(self):
-        return self.image / self.noise_map
+        return self.data / self.noise_map
 
     def modify_image_and_noise_map(self, image, noise_map):
 

@@ -72,6 +72,11 @@ def make_imaging_7x7():
     return fixtures.make_imaging_7x7()
 
 
+@pytest.fixture(name="fit_imaging_7x7")
+def make_masked_imaging_fit_x1_plane_7x7():
+    return fixtures.make_masked_imaging_fit_x1_plane_7x7()
+
+
 @pytest.fixture(name="visibilities_mask_7x2")
 def make_visibilities_mask_7x2():
     return fixtures.make_visibilities_mask_7x2()
@@ -92,19 +97,14 @@ def make_uv_wavelengths_7():
     return fixtures.make_uv_wavelengths_7()
 
 
-@pytest.fixture(name="interferometer_7")
-def make_interferometer_7():
-    return fixtures.make_interferometer_7()
-
-
 @pytest.fixture(name="transformer_7x7_7")
 def make_transformer_7x7_7():
     return fixtures.make_transformer_7x7_7()
 
 
-@pytest.fixture(name="fit_imaging_7x7")
-def make_masked_imaging_fit_x1_plane_7x7():
-    return fixtures.make_masked_imaging_fit_x1_plane_7x7()
+@pytest.fixture(name="interferometer_7")
+def make_interferometer_7():
+    return fixtures.make_interferometer_7()
 
 
 @pytest.fixture(name="fit_interferometer_7")

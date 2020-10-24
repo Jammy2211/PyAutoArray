@@ -519,7 +519,7 @@ class AbstractArray(abstract_structure.AbstractStructure):
             array_1d=binned_array_1d, mask=binned_mask, store_in_1d=self.store_in_1d
         )
 
-        return self.__class__(
+        return self._new_structure(
             array=array, mask=binned_mask, store_in_1d=self.store_in_1d
         )
 
@@ -540,7 +540,11 @@ class AbstractArray(abstract_structure.AbstractStructure):
 
 class ExposureInfo:
     def __init__(
-        self, date_of_observation=None, time_of_observation=None, exposure_time=None, readout_offsets: (int, int) = (0, 0)
+        self,
+        date_of_observation=None,
+        time_of_observation=None,
+        exposure_time=None,
+        readout_offsets: (int, int) = (0, 0),
     ):
 
         self.date_of_observation = date_of_observation

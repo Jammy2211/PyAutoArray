@@ -1,10 +1,10 @@
 import numpy as np
 
 import autoarray as aa
-from autoarray.fit import fit
 
 
 def make_mask_7x7():
+
     mask = np.array(
         [
             [True, True, True, True, True, True, True],
@@ -221,7 +221,7 @@ def make_masked_interferometer_7():
 
 
 def make_masked_imaging_fit_x1_plane_7x7():
-    return fit.FitImaging(
+    return aa.FitImaging(
         masked_imaging=make_masked_imaging_7x7(),
         model_image=5.0 * make_masked_imaging_7x7().image,
         use_mask_in_fit=False,
@@ -230,7 +230,7 @@ def make_masked_imaging_fit_x1_plane_7x7():
 
 def make_masked_interferometer_fit_x1_plane_7():
     masked_interferometer_7 = make_masked_interferometer_7()
-    fit_interferometer = fit.FitInterferometer(
+    fit_interferometer = aa.FitInterferometer(
         masked_interferometer=masked_interferometer_7,
         model_visibilities=5.0 * masked_interferometer_7.visibilities,
         use_mask_in_fit=False,
