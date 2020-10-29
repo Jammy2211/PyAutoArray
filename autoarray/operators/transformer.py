@@ -9,8 +9,10 @@ import copy
 import numpy as np
 
 
-class TransformerDFT:
+class TransformerDFT(pylops.LinearOperator):
     def __init__(self, uv_wavelengths, real_space_mask, preload_transform=True):
+
+        super(TransformerDFT, self).__init__()
 
         self.uv_wavelengths = uv_wavelengths.astype("float")
         self.real_space_mask = real_space_mask.mask_sub_1
@@ -32,6 +34,15 @@ class TransformerDFT:
             self.preload_imag_transforms = transformer_util.preload_imag_transforms(
                 grid_radians=self.grid, uv_wavelengths=self.uv_wavelengths
             )
+
+        self.real_space_pixels = self.real_space_mask.pixels_in_mask
+
+        self.shape = (
+            int(np.prod(self.total_visibilities)),
+            int(np.prod(self.real_space_pixels)),
+        )
+        self.dtype = "complex128"
+        self.explicit = False
 
     def real_visibilities_from_image(self, image):
 
