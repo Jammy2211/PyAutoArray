@@ -93,9 +93,9 @@ class FrameEuclid(f.Frame):
         ccd_id,
         quadrant_id,
         parallel_size=2086,
-        serial_size=2119,
+        serial_size=2128,
         serial_prescan_size=51,
-        serial_overscan_size=20,
+        serial_overscan_size=29,
         parallel_overscan_size=20,
     ):
         """
@@ -186,9 +186,9 @@ class FrameEuclid(f.Frame):
         cls,
         array_electrons,
         parallel_size=2086,
-        serial_size=2119,
+        serial_size=2128,
         serial_prescan_size=51,
-        serial_overscan_size=20,
+        serial_overscan_size=29,
         parallel_overscan_size=20,
     ):
         """
@@ -216,10 +216,10 @@ class FrameEuclid(f.Frame):
         cls,
         array,
         parallel_size=2086,
-        serial_size=2119,
+        serial_size=2128,
         parallel_overscan_size=20,
         serial_prescan_size=51,
-        serial_overscan_size=20,
+        serial_overscan_size=29,
     ):
         """
         Use an input array of a Euclid quadrant corresponding the top-left of a Euclid CCD and rotate the  quadrant to
@@ -244,9 +244,9 @@ class FrameEuclid(f.Frame):
         cls,
         array,
         parallel_size=2086,
-        serial_size=2119,
+        serial_size=2128,
         serial_prescan_size=51,
-        serial_overscan_size=20,
+        serial_overscan_size=29,
         parallel_overscan_size=20,
     ):
         """
@@ -272,9 +272,9 @@ class FrameEuclid(f.Frame):
         cls,
         array,
         parallel_size=2086,
-        serial_size=2119,
+        serial_size=2128,
         serial_prescan_size=51,
-        serial_overscan_size=20,
+        serial_overscan_size=29,
         parallel_overscan_size=20,
     ):
         """
@@ -301,9 +301,9 @@ class ScansEuclid(abstract_frame.Scans):
     def top_left(
         cls,
         parallel_size=2086,
-        serial_size=2119,
+        serial_size=2128,
         serial_prescan_size=51,
-        serial_overscan_size=20,
+        serial_overscan_size=29,
         parallel_overscan_size=20,
     ):
 
@@ -342,9 +342,9 @@ class ScansEuclid(abstract_frame.Scans):
     def top_right(
         cls,
         parallel_size=2086,
-        serial_size=2119,
+        serial_size=2128,
         serial_prescan_size=51,
-        serial_overscan_size=20,
+        serial_overscan_size=29,
         parallel_overscan_size=20,
     ):
 
@@ -380,9 +380,9 @@ class ScansEuclid(abstract_frame.Scans):
     def bottom_left(
         cls,
         parallel_size=2086,
-        serial_size=2119,
+        serial_size=2128,
         serial_prescan_size=51,
-        serial_overscan_size=20,
+        serial_overscan_size=29,
         parallel_overscan_size=20,
     ):
 
@@ -421,9 +421,9 @@ class ScansEuclid(abstract_frame.Scans):
     def bottom_right(
         cls,
         parallel_size=2086,
-        serial_size=2119,
+        serial_size=2128,
         serial_prescan_size=51,
-        serial_overscan_size=20,
+        serial_overscan_size=29,
         parallel_overscan_size=20,
     ):
 
