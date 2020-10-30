@@ -17,7 +17,7 @@ import pylops
 class SettingsInversion:
     def __init__(
         self,
-        tolerance=1e-5,
+        tolerance=1e-6,
         use_linear_operators=False,
         use_preconditioner=False,
         check_solution=True,
@@ -657,6 +657,7 @@ class InversionInterferometerLinearOperator(AbstractInversionInterferometer):
         regularization: reg.Regularization,
         regularization_matrix: np.ndarray,
         reconstruction: np.ndarray,
+        log_det_curvature_reg_matrix_term: float,
         settings: SettingsInversion,
     ):
         """ An inversion, which given an input image and noise-map reconstructs the image using a linear inversion, \
@@ -695,6 +696,8 @@ class InversionInterferometerLinearOperator(AbstractInversionInterferometer):
             The vector containing the reconstructed fit to the hyper_galaxies.
         """
 
+        self._log_det_curvature_reg_matrix_term = log_det_curvature_reg_matrix_term
+
         super(InversionInterferometerLinearOperator, self).__init__(
             visibilities=visibilities,
             noise_map=noise_map,
@@ -722,13 +725,28 @@ class InversionInterferometerLinearOperator(AbstractInversionInterferometer):
         )
 
         Aop = pylops.MatrixMult(
-            sparse.bsr_matrix(mapper.mapping_matrix), dtype="complex64"
+            sparse.bsr_matrix(mapper.mapping_matrix), dtype="complex128"
         )
         Fop = transformer
 
         Op = Fop * Aop
 
-        Rop = reg.RegularizationLop(regularization_matrix=regularization_matrix)
+        Rop = reg.RegularizationLop(
+            regularization_matrix=regularization_matrix, dtype="complex128"
+        )
+
+        preconditioner_matrix = inversion_util.preconditioner_matrix_via_mapping_matrix_from(
+            mapping_matrix=mapper.mapping_matrix,
+            regularization_matrix=regularization_matrix,
+            preconditioner_noise_normalization=3000.0
+            * np.sum(1.0 / np.hypot(noise_map[:, 0], noise_map[:, 1])),
+        )
+
+        preconditioner_cholesky = np.linalg.inv(preconditioner_matrix)
+
+        log_det_curvature_reg_matrix_term = 2.0 * np.sum(
+            np.log(np.diag(np.linalg.cholesky(preconditioner_matrix)))
+        )
 
         if not settings.use_preconditioner:
 
@@ -744,15 +762,9 @@ class InversionInterferometerLinearOperator(AbstractInversionInterferometer):
 
         else:
 
-            preconditioner_matrix = inversion_util.preconditioner_matrix_via_mapping_matrix_from(
-                mapping_matrix=mapper.mapping_matrix,
-                regularization_matrix=regularization_matrix,
-                preconditioner_noise_normalization=np.sum(1.0 / noise_map ** 2),
+            Mop = pylops.MatrixMult(
+                sparse.bsr_matrix(preconditioner_cholesky), dtype="complex128"
             )
-
-            preconditioner_cholesky = np.linalg.cholesky(preconditioner_matrix)
-
-            Mop = pylops.MatrixMult(preconditioner_cholesky, dtype="complex64")
 
             reconstruction = pylops.NormalEquationsInversion(
                 Op=Op,
@@ -774,11 +786,12 @@ class InversionInterferometerLinearOperator(AbstractInversionInterferometer):
             regularization_matrix=regularization_matrix,
             reconstruction=np.real(reconstruction),
             settings=settings,
+            log_det_curvature_reg_matrix_term=log_det_curvature_reg_matrix_term,
         )
 
     @property
     def log_det_curvature_reg_matrix_term(self):
-        return 0.0
+        return self._log_det_curvature_reg_matrix_term
 
     @property
     def mapped_reconstructed_visibilities(self):
