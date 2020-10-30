@@ -15,6 +15,14 @@ class TestSettingsInversion:
         settings = aa.SettingsInversion(use_linear_operators=False)
         assert settings.use_linear_operators_tag == "mat"
 
+    def test__inversion_use_preconditioner_tag(self):
+
+        settings = aa.SettingsInversion(use_preconditioner=True)
+        assert settings.use_preconditioner_tag == "__precon"
+
+        settings = aa.SettingsInversion(use_preconditioner=False)
+        assert settings.use_preconditioner_tag == ""
+
     def test__tag(self):
 
         settings = aa.SettingsInversion(use_linear_operators=True)
@@ -22,6 +30,11 @@ class TestSettingsInversion:
 
         settings = aa.SettingsInversion(use_linear_operators=False)
         assert settings.tag == "inv[mat]"
+
+        settings = aa.SettingsInversion(
+            use_linear_operators=False, use_preconditioner=True
+        )
+        assert settings.tag == "inv[mat__precon]"
 
 
 class TestLogDetMatrixCholesky:

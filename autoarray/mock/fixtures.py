@@ -302,7 +302,7 @@ def make_voronoi_inversion_9_3x3():
 
 
 def make_euclid_data():
-    return np.zeros((2086, 2119))
+    return np.zeros((2086, 2128))
 
 
 ### ACS DATA ####

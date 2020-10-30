@@ -25,13 +25,15 @@ class AbstractVisibilities(np.ndarray):
             The scaled origin of the hyper array's coordinate system.
         """
         obj = visibilities_1d.view(cls)
-        obj._as_complex = None
+        obj.as_complex = np.apply_along_axis(
+            lambda args: [complex(*args)], 1, visibilities_1d
+        ).astype("complex128")
         return obj
 
     def __array_finalize__(self, obj):
 
-        if hasattr(obj, "_as_complex"):
-            self._as_complex = obj._as_complex
+        if hasattr(obj, "as_complex"):
+            self.as_complex = obj.as_complex
 
     def __reduce__(self):
         # Get the parent's __reduce__ tuple
@@ -96,13 +98,13 @@ class AbstractVisibilities(np.ndarray):
     def phases(self):
         return np.arctan2(self.imag, self.real)
 
-    @property
-    def as_complex(self):
-        if self._as_complex is None:
-            self._as_complex = np.apply_along_axis(
-                lambda args: [complex(*args)], 1, self
-            )
-        return self._as_complex
+    # @property
+    # def as_complex(self):
+    #     if self._as_complex is None:
+    #         self._as_complex = np.apply_along_axis(
+    #             lambda args: [complex(*args)], 1, self
+    #         ).astype("complex128")
+    #     return self._as_complex
 
     def output_to_fits(self, file_path, overwrite=False):
         array_util.numpy_array_2d_to_fits(
@@ -181,7 +183,7 @@ class VisibilitiesNoiseMap(Visibilities):
         obj.preconditioner_noise_normalization = np.sum(
             np.divide(1.0, np.square(visibilities_1d))
         )
-        obj.Wop = pylops.Diagonal(1.0 / obj.as_complex.ravel())
+        obj.Wop = pylops.Diagonal(1.0 / obj.as_complex.ravel(), dtype="complex128")
         return obj
 
     def __array_finalize__(self, obj):
