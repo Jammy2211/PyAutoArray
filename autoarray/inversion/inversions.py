@@ -732,17 +732,18 @@ class InversionInterferometerLinearOperator(AbstractInversionInterferometer):
         Op = Fop * Aop
 
         Rop = reg.RegularizationLop(
-            regularization_matrix=regularization_matrix, dtype="complex128"
+            regularization_matrix=regularization_matrix, dtype="float64"
         )
 
         preconditioner_matrix = inversion_util.preconditioner_matrix_via_mapping_matrix_from(
             mapping_matrix=mapper.mapping_matrix,
             regularization_matrix=regularization_matrix,
-            preconditioner_noise_normalization=3000.0
-            * np.sum(1.0 / np.hypot(noise_map[:, 0], noise_map[:, 1])),
+            preconditioner_noise_normalization=np.sum(
+                1.0 / np.hypot(noise_map[:, 0], noise_map[:, 1])
+            ),
         )
 
-        preconditioner_cholesky = np.linalg.inv(preconditioner_matrix)
+        preconditioner_cholesky = np.linalg.cholesky(preconditioner_matrix)
 
         log_det_curvature_reg_matrix_term = 2.0 * np.sum(
             np.log(np.diag(np.linalg.cholesky(preconditioner_matrix)))
