@@ -188,9 +188,6 @@ class VisibilitiesNoiseMap(Visibilities):
 
     def __array_finalize__(self, obj):
 
-        if hasattr(obj, "_as_complex"):
-            self._as_complex = obj._as_complex
-
         if hasattr(obj, "Wop"):
             self.Wop = obj.Wop
 

@@ -251,7 +251,9 @@ class RegularizationLop(pylops.LinearOperator):
         self.explicit = False
 
     def _matvec(self, x):
-        return x
+        print(np.max(np.real(x)))
+        print(np.max(self.regularization_matrix))
+        return np.dot(self.regularization_matrix, x)
 
     def _rmatvec(self, x):
-        return self.regularization_matrix
+        return np.dot(self.regularization_matrix.T, np.real(x))
