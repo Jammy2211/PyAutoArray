@@ -207,10 +207,10 @@ class TransformerNUFFT(NUFFT_cpu, pylops.LinearOperator):
         """
 
         # NOTE: Flip the image the autolens produces.
-        visibilities = self.forward(image.in_2d_binned)  # [::-1, :])
+        visibilities = self.forward(image.in_2d_binned[::-1, :])
 
         # ... NOTE:
-        #       visibilities *= self.shift
+        visibilities *= self.shift
 
         return vis.Visibilities(
             visibilities_1d=np.stack((visibilities.real, visibilities.imag), axis=-1)
