@@ -1020,7 +1020,7 @@ class Output:
         if self.format is "show":
             plt.show()
         elif self.format is "png":
-            plt.savefig(f"{self.path}{self.filename}.png", bbox_inches="tight")
+            plt.savefig(f"{self.path}/{self.filename}.png", bbox_inches="tight")
 
 
 def remove_spaces_and_commas_from_colors(colors):

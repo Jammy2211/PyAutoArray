@@ -47,25 +47,25 @@ class FitDataset:
         self.use_mask_in_fit = use_mask_in_fit
 
     @property
-    def name(self):
+    def name(self) -> str:
         return self.masked_dataset.dataset.name
 
     @property
-    def mask(self):
+    def mask(self) -> np.ndarray:
         return self.masked_dataset.mask
 
     @property
-    def data(self):
+    def data(self) -> np.ndarray:
         return self.masked_dataset.data
 
     @property
-    def noise_map(self):
+    def noise_map(self) -> np.ndarray:
         return self.masked_dataset.noise_map
 
     @property
-    def residual_map(self):
+    def residual_map(self) -> np.ndarray:
         """
-    Returns the residual-map between the masked dataset and model data, where:
+        Returns the residual-map between the masked dataset and model data, where:
 
         Residuals = (Data - Model_Data).
         """
@@ -76,9 +76,9 @@ class FitDataset:
         return fit_util.residual_map_from(data=self.data, model_data=self.model_data)
 
     @property
-    def normalized_residual_map(self):
+    def normalized_residual_map(self) -> np.ndarray:
         """
-    Returns the normalized residual-map between the masked dataset and model data, where:
+        Returns the normalized residual-map between the masked dataset and model data, where:
 
         Normalized_Residual = (Data - Model_Data) / Noise
         """
@@ -91,9 +91,9 @@ class FitDataset:
         )
 
     @property
-    def chi_squared_map(self):
+    def chi_squared_map(self) -> np.ndarray:
         """
-    Returns the chi-squared-map between the residual-map and noise-map, where:
+        Returns the chi-squared-map between the residual-map and noise-map, where:
 
         Chi_Squared = ((Residuals) / (Noise)) ** 2.0 = ((Data - Model)**2.0)/(Variances)
         """
@@ -106,14 +106,14 @@ class FitDataset:
         )
 
     @property
-    def signal_to_noise_map(self):
+    def signal_to_noise_map(self) -> np.ndarray:
         """The signal-to-noise_map of the dataset and noise-map which are fitted."""
         signal_to_noise_map = np.divide(self.data, self.noise_map)
         signal_to_noise_map[signal_to_noise_map < 0] = 0
         return signal_to_noise_map
 
     @property
-    def chi_squared(self):
+    def chi_squared(self) -> float:
         """
         Returns the chi-squared terms of the model data's fit to an dataset, by summing the chi-squared-map.
         """
@@ -124,13 +124,13 @@ class FitDataset:
         return fit_util.chi_squared_from(chi_squared_map=self.chi_squared_map)
 
     @property
-    def reduced_chi_squared(self):
+    def reduced_chi_squared(self) -> float:
         return self.chi_squared / int(np.size(self.mask) - np.sum(self.mask))
 
     @property
-    def noise_normalization(self):
+    def noise_normalization(self) -> float:
         """
-    Returns the noise-map normalization term of the noise-map, summing the noise_map value in every pixel as:
+        Returns the noise-map normalization term of the noise-map, summing the noise_map value in every pixel as:
 
         [Noise_Term] = sum(log(2*pi*[Noise]**2.0))
         """
@@ -141,9 +141,9 @@ class FitDataset:
         return fit_util.noise_normalization_from(noise_map=self.noise_map)
 
     @property
-    def log_likelihood(self):
+    def log_likelihood(self) -> float:
         """
-    Returns the log likelihood of each model data point's fit to the dataset, where:
+        Returns the log likelihood of each model data point's fit to the dataset, where:
 
         Log Likelihood = -0.5*[Chi_Squared_Term + Noise_Term] (see functions above for these definitions)
         """
@@ -152,7 +152,7 @@ class FitDataset:
         )
 
     @property
-    def log_likelihood_with_regularization(self):
+    def log_likelihood_with_regularization(self) -> float:
         """
     Returns the log likelihood of an inversion's fit to the dataset, including a regularization term which \
         comes from an inversion:
@@ -167,7 +167,7 @@ class FitDataset:
             )
 
     @property
-    def log_evidence(self):
+    def log_evidence(self) -> float:
         """
     Returns the log evidence of the inversion's fit to a dataset, where the log evidence includes a number of terms
         which quantify the complexity of an inversion's reconstruction (see the `Inversion` module):
@@ -199,14 +199,14 @@ class FitDataset:
             )
 
     @property
-    def figure_of_merit(self):
+    def figure_of_merit(self) -> float:
         if self.inversion is None:
             return self.log_likelihood
         else:
             return self.log_evidence
 
     @property
-    def total_inversions(self):
+    def total_inversions(self) -> int:
         if self.inversion is None:
             return 0
         else:
@@ -261,11 +261,11 @@ class FitImaging(FitDataset):
         return self.masked_dataset
 
     @property
-    def image(self):
+    def image(self) -> np.ndarray:
         return self.data
 
     @property
-    def model_image(self):
+    def model_image(self) -> np.ndarray:
         return self.model_data
 
 
@@ -321,17 +321,17 @@ class FitInterferometer(FitDataset):
         return self.masked_dataset
 
     @property
-    def mask(self):
+    def mask(self) -> np.ndarray:
         return self.masked_interferometer.visibilities_mask
 
     @property
-    def visibilities_mask(self):
+    def visibilities_mask(self) -> np.ndarray:
         return self.masked_interferometer.visibilities_mask
 
     @property
-    def visibilities(self):
+    def visibilities(self) -> np.ndarray:
         return self.data
 
     @property
-    def model_visibilities(self):
+    def model_visibilities(self) -> np.ndarray:
         return self.model_data
