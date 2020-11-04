@@ -32,49 +32,49 @@ def test__individual_attributes_are_output(interferometer_7, plot_path, plot_pat
         plotter=aplt.Plotter(output=aplt.Output(path=plot_path, format="png")),
     )
 
-    assert plot_path + "visibilities.png" in plot_patch.paths
+    assert f"{plot_path}/visibilities.png" in plot_patch.paths
 
     aplt.Interferometer.noise_map(
         interferometer=interferometer_7,
         plotter=aplt.Plotter(output=aplt.Output(path=plot_path, format="png")),
     )
 
-    assert plot_path + "noise_map.png" in plot_patch.paths
+    assert f"{plot_path}/noise_map.png" in plot_patch.paths
 
     aplt.Interferometer.u_wavelengths(
         interferometer=interferometer_7,
         plotter=aplt.Plotter(output=aplt.Output(path=plot_path, format="png")),
     )
 
-    assert plot_path + "u_wavelengths.png" in plot_patch.paths
+    assert f"{plot_path}/u_wavelengths.png" in plot_patch.paths
 
     aplt.Interferometer.v_wavelengths(
         interferometer=interferometer_7,
         plotter=aplt.Plotter(output=aplt.Output(path=plot_path, format="png")),
     )
 
-    assert plot_path + "v_wavelengths.png" in plot_patch.paths
+    assert f"{plot_path}/v_wavelengths.png" in plot_patch.paths
 
     aplt.Interferometer.uv_wavelengths(
         interferometer=interferometer_7,
         plotter=aplt.Plotter(output=aplt.Output(path=plot_path, format="png")),
     )
 
-    assert plot_path + "uv_wavelengths.png" in plot_patch.paths
+    assert f"{plot_path}/uv_wavelengths.png" in plot_patch.paths
 
     aplt.Interferometer.amplitudes_vs_uv_distances(
         interferometer=interferometer_7,
         plotter=aplt.Plotter(output=aplt.Output(path=plot_path, format="png")),
     )
 
-    assert plot_path + "amplitudes_vs_uv_distances.png" in plot_patch.paths
+    assert f"{plot_path}/amplitudes_vs_uv_distances.png" in plot_patch.paths
 
     aplt.Interferometer.phases_vs_uv_distances(
         interferometer=interferometer_7,
         plotter=aplt.Plotter(output=aplt.Output(path=plot_path, format="png")),
     )
 
-    assert plot_path + "phases_vs_uv_distances.png" in plot_patch.paths
+    assert f"{plot_path}/phases_vs_uv_distances.png" in plot_patch.paths
 
 
 def test__subplot_is_output(interferometer_7, plot_path, plot_patch):
@@ -84,7 +84,7 @@ def test__subplot_is_output(interferometer_7, plot_path, plot_patch):
         sub_plotter=aplt.SubPlotter(output=aplt.Output(path=plot_path, format="png")),
     )
 
-    assert plot_path + "subplot_interferometer.png" in plot_patch.paths
+    assert f"{plot_path}/subplot_interferometer.png" in plot_patch.paths
 
 
 def test__individuals__output_dependent_on_input(
@@ -99,12 +99,12 @@ def test__individuals__output_dependent_on_input(
         plotter=aplt.Plotter(output=aplt.Output(path=plot_path, format="png")),
     )
 
-    assert plot_path + "visibilities.png" in plot_patch.paths
+    assert f"{plot_path}/visibilities.png" in plot_patch.paths
 
-    assert not plot_path + "u_wavelengths.png" in plot_patch.paths
+    assert not f"{plot_path}/u_wavelengths.png" in plot_patch.paths
 
-    assert plot_path + "v_wavelengths.png" in plot_patch.paths
+    assert f"{plot_path}/v_wavelengths.png" in plot_patch.paths
 
-    assert plot_path + "amplitudes_vs_uv_distances.png" in plot_patch.paths
+    assert f"{plot_path}/amplitudes_vs_uv_distances.png" in plot_patch.paths
 
-    assert plot_path + "phases_vs_uv_distances.png" not in plot_patch.paths
+    assert f"{plot_path}/phases_vs_uv_distances.png" not in plot_patch.paths
