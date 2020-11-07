@@ -98,14 +98,6 @@ class AbstractVisibilities(np.ndarray):
     def phases(self):
         return np.arctan2(self.imag, self.real)
 
-    # @property
-    # def as_complex(self):
-    #     if self._as_complex is None:
-    #         self._as_complex = np.apply_along_axis(
-    #             lambda args: [complex(*args)], 1, self
-    #         ).astype("complex128")
-    #     return self._as_complex
-
     def output_to_fits(self, file_path, overwrite=False):
         array_util.numpy_array_2d_to_fits(
             array_2d=self, file_path=file_path, overwrite=overwrite
