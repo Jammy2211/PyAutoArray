@@ -209,9 +209,6 @@ class TransformerNUFFT(NUFFT_cpu, pylops.LinearOperator):
         # NOTE: Flip the image the autolens produces.
         visibilities = self.forward(image.in_2d_binned[::-1, :])
 
-        # ... NOTE:
-        visibilities *= self.shift
-
         return vis.Visibilities(
             visibilities_1d=np.stack((visibilities.real, visibilities.imag), axis=-1)
         )
@@ -250,11 +247,12 @@ class TransformerNUFFT(NUFFT_cpu, pylops.LinearOperator):
         :return: y: The output numpy array, with the size of (M,) or (M, batch)
         :rtype: numpy array with the dtype of numpy.complex64
         """
+
         x2d = array_util.sub_array_complex_2d_via_sub_indexes_from(
             sub_array_1d=x,
             sub_shape_2d=self.real_space_mask.shape_2d,
             sub_mask_index_for_sub_mask_1d_index=self._mask_index_for_mask_1d_index,
-        )
+        )[::-1, :]
 
         return self.k2y(self.xx2k(self.x2xx(x2d)))
 
@@ -269,7 +267,7 @@ class TransformerNUFFT(NUFFT_cpu, pylops.LinearOperator):
         """
         x = self.xx2x(self.k2xx(self.y2k(y)))
         return array_util.sub_array_complex_1d_from(
-            sub_array_2d=x, sub_size=1, mask=self.real_space_mask
+            sub_array_2d=x[::-1, :], sub_size=1, mask=self.real_space_mask
         )
 
     def _matvec(self, x):

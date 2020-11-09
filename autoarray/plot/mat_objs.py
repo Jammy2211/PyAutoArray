@@ -1007,11 +1007,11 @@ class Output:
             if self.format is "show":
                 plt.show()
             elif self.format is "png":
-                plt.savefig(f"{self.path}{self.filename}.png", bbox_inches="tight")
+                plt.savefig(f"{self.path}/{self.filename}.png", bbox_inches="tight")
             elif self.format is "fits":
                 if structure is not None:
                     structure.output_to_fits(
-                        file_path=f"{self.path}{self.filename}.fits", overwrite=True
+                        file_path=f"{self.path}/{self.filename}.fits", overwrite=True
                     )
 
     def subplot_to_figure(self):
@@ -1020,7 +1020,7 @@ class Output:
         if self.format is "show":
             plt.show()
         elif self.format is "png":
-            plt.savefig(f"{self.path}{self.filename}.png", bbox_inches="tight")
+            plt.savefig(f"{self.path}/{self.filename}.png", bbox_inches="tight")
 
 
 def remove_spaces_and_commas_from_colors(colors):
