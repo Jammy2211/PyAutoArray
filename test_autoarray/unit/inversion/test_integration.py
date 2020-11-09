@@ -474,9 +474,8 @@ class TestRectangular:
         assert inversion.mapped_reconstructed_visibilities[:, 0] == pytest.approx(
             np.ones(shape=(7,)), 1.0e-4
         )
-        assert inversion.mapped_reconstructed_visibilities[:, 1] == pytest.approx(
-            np.zeros(shape=(7,)), 1.0e-4
-        )
+        assert (inversion.mapped_reconstructed_visibilities[:, 1] < 0.0001).all()
+        assert (inversion.mapped_reconstructed_visibilities[:, 1] > 0.0).all()
 
     def test__interferometer_linear_operator(self):
 
@@ -537,11 +536,10 @@ class TestRectangular:
         )
 
         assert inversion.mapped_reconstructed_visibilities[:, 0] == pytest.approx(
-            0.56233 * np.ones(shape=(7,)), 1.0e-4
+            np.ones(shape=(7,)), 1.0e-4
         )
-        assert inversion.mapped_reconstructed_visibilities[:, 1] == pytest.approx(
-            np.zeros(shape=(7,)), 1.0e-4
-        )
+        assert (inversion.mapped_reconstructed_visibilities[:, 1] < 0.0001).all()
+        assert (inversion.mapped_reconstructed_visibilities[:, 1] > 0.0).all()
 
 
 class TestVoronoiMagnification:
@@ -1012,6 +1010,5 @@ class TestVoronoiMagnification:
         assert inversion.mapped_reconstructed_visibilities[:, 0] == pytest.approx(
             np.ones(shape=(7,)), 1.0e-4
         )
-        assert inversion.mapped_reconstructed_visibilities[:, 1] == pytest.approx(
-            np.zeros(shape=(7,)), 1.0e-4
-        )
+        assert (inversion.mapped_reconstructed_visibilities[:, 1] < 0.0001).all()
+        assert (inversion.mapped_reconstructed_visibilities[:, 1] > 0.0).all()
