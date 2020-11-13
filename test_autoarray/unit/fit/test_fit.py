@@ -62,7 +62,7 @@ class TestFitImaging:
         assert fit.log_likelihood == -0.5 * (fit.chi_squared + fit.noise_normalization)
 
     def test__image_and_model_are_different__inclue_masking__check_values_are_correct(
-        self
+        self,
     ):
 
         mask = aa.Mask2D.manual(
@@ -117,7 +117,7 @@ class TestFitImaging:
         assert fit.log_likelihood == -0.5 * (fit.chi_squared + fit.noise_normalization)
 
     def test__image_and_model_are_identical__inversion_included__changes_certain_properties(
-        self
+        self,
     ):
 
         mask = aa.Mask2D.manual(
@@ -162,7 +162,7 @@ class TestFitImaging:
 
 class TestFitInterferometer:
     def test__visibilities_and_model_are_identical__no_masking__check_values_are_correct(
-        self
+        self,
     ):
 
         visibilities_mask = np.full(fill_value=False, shape=(2, 2))
@@ -226,7 +226,7 @@ class TestFitInterferometer:
         assert fit.log_likelihood == -0.5 * (fit.chi_squared + fit.noise_normalization)
 
     def test__visibilities_and_model_are_different__no_masking__check_values_are_correct(
-        self
+        self,
     ):
 
         visibilities_mask = np.full(fill_value=False, shape=(2, 2))
@@ -290,7 +290,7 @@ class TestFitInterferometer:
         assert fit.log_likelihood == -0.5 * (fit.chi_squared + fit.noise_normalization)
 
     def test__visibilities_and_model_are_identical__inversion_included__changes_certain_properties(
-        self
+        self,
     ):
 
         visibilities_mask = np.full(fill_value=False, shape=(2, 2))

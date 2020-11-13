@@ -5,13 +5,14 @@ from astropy.io import fits
 import copy
 import shutil
 import os
+from os import path
 
-path = "{}/".format(os.path.dirname(os.path.realpath(__file__)))
+acs_path = "{}".format(path.dirname(path.realpath(__file__)))
 
 
 def create_acs_fits(fits_path, acs_ccd, acs_ccd_0, acs_ccd_1, units):
 
-    if os.path.exists(fits_path):
+    if path.exists(fits_path):
         shutil.rmtree(fits_path)
 
     os.makedirs(fits_path)
@@ -49,7 +50,7 @@ def create_acs_fits(fits_path, acs_ccd, acs_ccd_0, acs_ccd_1, units):
     )
     new_hdul[4].header.set("BZERO", 10.0, "physical value for an array value of zero")
 
-    new_hdul.writeto(f"{fits_path}/acs_ccd.fits")
+    new_hdul.writeto(path.join(fits_path, "acs_ccd.fits"))
 
 
 class TestFrameACS:
@@ -185,7 +186,11 @@ class TestFrameACS:
 class TestImageACS:
     def test__from_fits__reads_exposure_info_from_header_correctly(self, acs_ccd):
 
-        fits_path = "{}/files/acs/".format(os.path.dirname(os.path.realpath(__file__)))
+        fits_path = path.join(
+            "{}".format(path.dirname(path.realpath(__file__))), "files", "acs"
+        )
+
+        file_path = path.join(fits_path, "acs_ccd.fits")
 
         create_acs_fits(
             fits_path=fits_path,
@@ -195,18 +200,14 @@ class TestImageACS:
             units="COUNTS",
         )
 
-        frame = aa.acs.ImageACS.from_fits(
-            file_path=f"{fits_path}/acs_ccd.fits", quadrant_letter="B"
-        )
+        frame = aa.acs.ImageACS.from_fits(file_path=file_path, quadrant_letter="B")
 
         assert frame.exposure_info.exposure_time == 1000.0
         assert frame.exposure_info.date_of_observation == "2000-01-01"
         assert frame.exposure_info.time_of_observation == "00:00:00"
         assert frame.exposure_info.modified_julian_date == 51544.0
 
-        frame = aa.acs.ImageACS.from_fits(
-            file_path=f"{fits_path}/acs_ccd.fits", quadrant_letter="C"
-        )
+        frame = aa.acs.ImageACS.from_fits(file_path=file_path, quadrant_letter="C")
 
         assert frame.exposure_info.exposure_time == 1000.0
         assert frame.exposure_info.date_of_observation == "2000-01-01"
@@ -217,7 +218,11 @@ class TestImageACS:
         self, acs_ccd
     ):
 
-        fits_path = "{}/files/acs/".format(os.path.dirname(os.path.realpath(__file__)))
+        fits_path = path.join(
+            "{}".format(path.dirname(path.realpath(__file__))), "files", "acs"
+        )
+
+        file_path = path.join(fits_path, "acs_ccd.fits")
 
         acs_ccd_0 = copy.copy(acs_ccd)
         acs_ccd_0[0, 0] = 10.0
@@ -235,34 +240,26 @@ class TestImageACS:
             units="COUNTS",
         )
 
-        frame = aa.acs.ImageACS.from_fits(
-            file_path=f"{fits_path}/acs_ccd.fits", quadrant_letter="B"
-        )
+        frame = aa.acs.ImageACS.from_fits(file_path=file_path, quadrant_letter="B")
 
         assert frame[0, 0] == (10.0 * 2.0) + 10.0
         assert frame.in_counts[0, 0] == 10.0
         assert frame.original_roe_corner == (1, 0)
         assert frame.shape_2d == (2068, 2072)
 
-        frame = aa.acs.FrameACS.from_fits(
-            file_path=f"{fits_path}/acs_ccd.fits", quadrant_letter="A"
-        )
+        frame = aa.acs.FrameACS.from_fits(file_path=file_path, quadrant_letter="A")
 
         assert frame[0, 0] == (20.0 * 2.0) + 10.0
         assert frame.original_roe_corner == (1, 1)
         assert frame.shape_2d == (2068, 2072)
 
-        frame = aa.acs.ImageACS.from_fits(
-            file_path=f"{fits_path}/acs_ccd.fits", quadrant_letter="C"
-        )
+        frame = aa.acs.ImageACS.from_fits(file_path=file_path, quadrant_letter="C")
 
         assert frame[0, 0] == (30.0 * 2.0) + 10.0
         assert frame.original_roe_corner == (1, 0)
         assert frame.shape_2d == (2068, 2072)
 
-        frame = aa.acs.ImageACS.from_fits(
-            file_path=f"{fits_path}/acs_ccd.fits", quadrant_letter="D"
-        )
+        frame = aa.acs.ImageACS.from_fits(file_path=file_path, quadrant_letter="D")
 
         assert frame[0, 0] == (40.0 * 2.0) + 10.0
         assert frame.original_roe_corner == (1, 1)
@@ -272,7 +269,11 @@ class TestImageACS:
         self, acs_ccd
     ):
 
-        fits_path = "{}/files/acs/".format(os.path.dirname(os.path.realpath(__file__)))
+        fits_path = path.join(
+            "{}".format(path.dirname(path.realpath(__file__))), "files", "acs"
+        )
+
+        file_path = path.join(fits_path, "acs_ccd.fits")
 
         acs_ccd_0 = copy.copy(acs_ccd)
         acs_ccd_0[0, 0] = 10.0
@@ -290,33 +291,25 @@ class TestImageACS:
             units="CPS",
         )
 
-        frame = aa.acs.ImageACS.from_fits(
-            file_path=f"{fits_path}/acs_ccd.fits", quadrant_letter="B"
-        )
+        frame = aa.acs.ImageACS.from_fits(file_path=file_path, quadrant_letter="B")
 
         assert frame[0, 0] == (10.0 * 1000.0 * 2.0) + 10.0
         assert frame.original_roe_corner == (1, 0)
         assert frame.shape_2d == (2068, 2072)
 
-        frame = aa.acs.ImageACS.from_fits(
-            file_path=f"{fits_path}/acs_ccd.fits", quadrant_letter="A"
-        )
+        frame = aa.acs.ImageACS.from_fits(file_path=file_path, quadrant_letter="A")
 
         assert frame[0, 0] == (20.0 * 1000.0 * 2.0) + 10.0
         assert frame.original_roe_corner == (1, 1)
         assert frame.shape_2d == (2068, 2072)
 
-        frame = aa.acs.ImageACS.from_fits(
-            file_path=f"{fits_path}/acs_ccd.fits", quadrant_letter="C"
-        )
+        frame = aa.acs.ImageACS.from_fits(file_path=file_path, quadrant_letter="C")
 
         assert frame[0, 0] == (30.0 * 1000.0 * 2.0) + 10.0
         assert frame.original_roe_corner == (1, 0)
         assert frame.shape_2d == (2068, 2072)
 
-        frame = aa.acs.ImageACS.from_fits(
-            file_path=f"{fits_path}/acs_ccd.fits", quadrant_letter="D"
-        )
+        frame = aa.acs.ImageACS.from_fits(file_path=file_path, quadrant_letter="D")
 
         assert frame[0, 0] == (40.0 * 1000.0 * 2.0) + 10.0
         assert frame.original_roe_corner == (1, 1)
@@ -326,7 +319,7 @@ class TestImageACS:
     #     self, acs_ccd
     # ):
     #
-    #     fits_path = "{}/files/acs".format(os.path.dirname(os.path.realpath(__file__)))
+    #     fits_path = "{}/files/acs".format(path.dirname(path.realpath(__file__)))
     #
     #     create_acs_fits(
     #         fits_path=fits_path,

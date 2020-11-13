@@ -1,4 +1,5 @@
 import os
+from os import path
 
 import numpy as np
 import pytest
@@ -6,7 +7,9 @@ import pytest
 import autoarray as aa
 from autoarray import exc
 
-test_data_dir = "{}/files/array/".format(os.path.dirname(os.path.realpath(__file__)))
+test_data_dir = path.join(
+    "{}".format(os.path.dirname(os.path.realpath(__file__))), "files", "array"
+)
 
 
 class TestAPI:
@@ -157,7 +160,7 @@ class TestAPI:
         assert arr.mask.sub_size == 2
 
     def test__manual_2d__exception_raised_if_input_array_is_2d_and_not_sub_shape_of_mask(
-        self
+        self,
     ):
         with pytest.raises(exc.ArrayException):
             mask = aa.Mask2D.unmasked(shape_2d=(2, 2), pixel_scales=1.0, sub_size=1)
@@ -172,7 +175,7 @@ class TestAPI:
             aa.Array.manual_mask(array=[[1.0, 2.0], [3.0, 4.0], [5.0, 6.0]], mask=mask)
 
     def test__exception_raised_if_input_array_is_1d_and_not_number_of_masked_sub_pixels(
-        self
+        self,
     ):
         with pytest.raises(exc.ArrayException):
             mask = aa.Mask2D.manual(
@@ -311,7 +314,7 @@ class TestAPI:
     def test__from_fits__makes_array_without_other_inputs(self):
 
         arr = aa.Array.from_fits(
-            file_path=test_data_dir + "3x3_ones.fits", hdu=0, pixel_scales=1.0
+            file_path=path.join(test_data_dir, "3x3_ones.fits"), hdu=0, pixel_scales=1.0
         )
 
         assert type(arr) == aa.Array
@@ -319,7 +322,7 @@ class TestAPI:
         assert (arr.in_1d == np.ones(9)).all()
 
         arr = aa.Array.from_fits(
-            file_path=test_data_dir + "4x3_ones.fits",
+            file_path=path.join(test_data_dir, "4x3_ones.fits"),
             hdu=0,
             pixel_scales=1.0,
             store_in_1d=True,
@@ -331,7 +334,7 @@ class TestAPI:
         assert (arr.in_1d == np.ones((12,))).all()
 
         arr = aa.Array.from_fits(
-            file_path=test_data_dir + "4x3_ones.fits",
+            file_path=path.join(test_data_dir, "4x3_ones.fits"),
             hdu=0,
             pixel_scales=1.0,
             store_in_1d=False,
@@ -345,7 +348,7 @@ class TestAPI:
     def test__from_fits__makes_scaled_array_with_pixel_scale(self):
 
         arr = aa.Array.from_fits(
-            file_path=test_data_dir + "3x3_ones.fits", hdu=0, pixel_scales=1.0
+            file_path=path.join(test_data_dir, "3x3_ones.fits"), hdu=0, pixel_scales=1.0
         )
 
         assert type(arr) == aa.Array
@@ -355,7 +358,7 @@ class TestAPI:
         assert arr.geometry.origin == (0.0, 0.0)
 
         arr = aa.Array.from_fits(
-            file_path=test_data_dir + "4x3_ones.fits",
+            file_path=path.join(test_data_dir, "4x3_ones.fits"),
             hdu=0,
             pixel_scales=1.0,
             origin=(0.0, 1.0),
@@ -370,7 +373,7 @@ class TestAPI:
     def test__from_fits__makes_scaled_sub_array_with_pixel_scale_and_sub_size(self):
 
         arr = aa.Array.from_fits(
-            file_path=test_data_dir + "3x3_ones.fits",
+            file_path=path.join(test_data_dir, "3x3_ones.fits"),
             hdu=0,
             pixel_scales=1.0,
             sub_size=1,
@@ -384,7 +387,7 @@ class TestAPI:
         assert arr.mask.sub_size == 1
 
         arr = aa.Array.from_fits(
-            file_path=test_data_dir + "4x3_ones.fits",
+            file_path=path.join(test_data_dir, "4x3_ones.fits"),
             hdu=0,
             pixel_scales=1.0,
             sub_size=1,
@@ -437,7 +440,7 @@ class TestAPI:
         assert (arr == arr_via_yx).all()
 
     def test__from_yx_values__use_input_values_which_swap_values_from_top_left_notation(
-        self
+        self,
     ):
 
         arr = aa.Array.manual_yx_and_values(

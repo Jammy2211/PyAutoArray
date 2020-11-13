@@ -13,7 +13,7 @@ class AbstractVisibilities(np.ndarray):
 
     # noinspection PyUnusedLocal
     def __new__(cls, visibilities_1d, *args, **kwargs):
-        """ A hyper array with square-pixels.
+        """A hyper array with square-pixels.
 
         Parameters
         ----------
@@ -158,7 +158,7 @@ class VisibilitiesNoiseMap(Visibilities):
 
     # noinspection PyUnusedLocal
     def __new__(cls, visibilities_1d, *args, **kwargs):
-        """ A hyper array with square-pixels.
+        """A hyper array with square-pixels.
 
         Parameters
         ----------

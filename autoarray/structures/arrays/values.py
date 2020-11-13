@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 
 class Values(np.ndarray):
     def __new__(cls, values):
-        """ A collection of values structured in a way defining groups of values which share a common origin (for
+        """A collection of values structured in a way defining groups of values which share a common origin (for
         example values may be grouped if they are from a specific region of a dataset).
 
         Grouping is structured as follows:

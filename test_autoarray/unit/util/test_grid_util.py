@@ -442,7 +442,7 @@ class TestGrid1DFromMask:
         ).all()
 
     def test__3x3_mask_with_one_pixel__2x2_and_3x3_sub_grid__include_nonzero_origin(
-        self
+        self,
     ):
 
         mask = np.array([[True, True, True], [True, False, True], [True, True, True]])
@@ -911,7 +911,7 @@ class TestGridConversions:
         ).all()
 
     def test__same_as_above___pixels__but_coordinates_are_bottom_right_of_each_pixel(
-        self
+        self,
     ):
 
         grid_scaled = np.array([[0.0, 0.0], [0.0, 4.0], [-2.0, 0.0], [-2.0, 4.0]])
@@ -991,7 +991,7 @@ class TestGridConversions:
         ).all()
 
     def test__pixel_centre_grid_1d_from_scaled_grid_1d__coordinates_in_origins_of_pixels(
-        self
+        self,
     ):
 
         grid_scaled = np.array([[1.0, -2.0], [1.0, 2.0], [-1.0, -2.0], [-1.0, 2.0]])
@@ -1145,7 +1145,7 @@ class TestGridConversions:
         ).all()
 
     def test__pixel_index_grid_1d_from_scaled_grid_1d__coordinates_in_origins_of_pixels(
-        self
+        self,
     ):
 
         grid_scaled = np.array([[1.0, -2.0], [1.0, 2.0], [-1.0, -2.0], [-1.0, 2.0]])
@@ -1209,7 +1209,7 @@ class TestGridConversions:
         assert (grid_pixels == np.array([0, 1, 2, 3, 4, 5, 6, 7, 8])).all()
 
     def test__same_as_above_1d_index__but_coordinates_are_bottom_right_of_each_pixel(
-        self
+        self,
     ):
 
         grid_scaled = np.array(
@@ -1281,7 +1281,7 @@ class TestGridConversions:
         assert (grid_pixels == np.array([0, 1, 2, 3, 4, 5, 6, 7, 8])).all()
 
     def test__scaled_grid_1d_from_pixel_origin_grid_1d__coordinates_in_origins_of_pixels(
-        self
+        self,
     ):
 
         grid_pixels = np.array([[0.5, 0.5], [0.5, 1.5], [1.5, 0.5], [1.5, 1.5]])
@@ -1331,7 +1331,7 @@ class TestGridConversions:
         ).all()
 
     def test__same_as_above__pixel_to_scaled__but_coordinates_are_top_left_of_each_pixel(
-        self
+        self,
     ):
 
         grid_pixels = np.array([[0, 0], [0, 1], [1, 0], [1, 1]])
@@ -1370,7 +1370,7 @@ class TestGridConversions:
         ).all()
 
     def test__same_as_above__pixel_to_scaled_but_coordinates_are_bottom_right_of_each_pixel(
-        self
+        self,
     ):
 
         grid_pixels = np.array([[1, 1], [1, 2], [2, 1], [2, 2]])
@@ -1465,7 +1465,7 @@ class TestGridConversions:
         )
 
     def test__pixel_centres_grid_2d_from_scaled_grid_2d__coordinates_in_origins_of_pixels(
-        self
+        self,
     ):
 
         grid_scaled = np.array([[[1.0, -2.0], [1.0, 2.0]], [[-1.0, -2.0], [-1.0, 2.0]]])

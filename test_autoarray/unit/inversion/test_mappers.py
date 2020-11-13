@@ -7,7 +7,7 @@ import autoarray as aa
 def grid_to_pixel_pixels_via_nearest_neighbour(grid, pixel_centers):
     def compute_squared_separation(coordinate1, coordinate2):
         """
-    Returns the squared separation of two grid (no square root for efficiency)"""
+        Returns the squared separation of two grid (no square root for efficiency)"""
         return (coordinate1[0] - coordinate2[0]) ** 2 + (
             coordinate1[1] - coordinate2[1]
         ) ** 2
@@ -31,7 +31,7 @@ def grid_to_pixel_pixels_via_nearest_neighbour(grid, pixel_centers):
 
 class TestRectangularMapper:
     def test__sub_to_pix__variuos_grids__1_coordinate_per_square_pixel__in_centre_of_pixels(
-        self
+        self,
     ):
         #   _ _ _
         #  I_I_I_I Boundaries for pixels x = 0 and y = 0  -1.0 to -(1/3)
@@ -267,7 +267,7 @@ class TestRectangularMapper:
         ]
 
     def test__sub_to_pix__3x3_grid__change_scaledond_dimensions_size__grid_adapts_accordingly(
-        self
+        self,
     ):
         #   _ _ _
         #  I_I_I_I Boundaries for pixels x = 0 and y = 0  -1.5 to -0.5
@@ -302,7 +302,7 @@ class TestRectangularMapper:
         ]
 
     def test__sub_to_pix__various_grids__change_scaledond_dimensions__not_symmetric(
-        self
+        self,
     ):
         #   _ _ _
         #  I_I_I_I Boundaries for pixels x = 0 and y = 0  -1.5 to -0.5
@@ -451,7 +451,7 @@ class TestRectangularMapper:
         ]
 
     def test__sub_to_pix__3x3_grid_of_pixel_grid___shift_coordinates_to_new_centre__centre_adjusts_based_on_grid(
-        self
+        self,
     ):
         #   _ _ _
         #  I_I_I_I Boundaries for pixels x = 0 and y = 0  -1.0 to -(1/3)
@@ -532,7 +532,7 @@ class TestRectangularMapper:
         ]
 
     def test__reconstructed_pixelization__3x3_pixelization__solution_vector_ascending(
-        self
+        self,
     ):
         grid = aa.Grid.manual_1d(
             [
@@ -639,14 +639,18 @@ class TestRectangularMapper:
             grid=sub_grid_7x7, pixelization_grid=rectangular_pixelization_grid
         )
 
-        image_pixel_indexes = rectangular_mapper.image_pixel_indexes_from_source_pixel_indexes(
-            source_pixel_indexes=[0, 1]
+        image_pixel_indexes = (
+            rectangular_mapper.image_pixel_indexes_from_source_pixel_indexes(
+                source_pixel_indexes=[0, 1]
+            )
         )
 
         assert image_pixel_indexes == [0, 1, 2, 3, 4, 5, 6, 7]
 
-        image_pixel_indexes = rectangular_mapper.image_pixel_indexes_from_source_pixel_indexes(
-            source_pixel_indexes=[[0], [4]]
+        image_pixel_indexes = (
+            rectangular_mapper.image_pixel_indexes_from_source_pixel_indexes(
+                source_pixel_indexes=[[0], [4]]
+            )
         )
 
         assert image_pixel_indexes == [[0, 1, 2, 3], [16, 17, 18, 19]]

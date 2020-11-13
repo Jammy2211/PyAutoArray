@@ -92,7 +92,7 @@ class TestAddRegionToArrayFromImage:
         assert (frame == np.array([[1.0, 0.0], [0.0, 0.0]])).all()
 
     def test__array_is_all_1s__image_goes_into_correct_region_of_array_and_adds_to_it(
-        self
+        self,
     ):
         frame = aa.Frame.manual(array=np.ones((2, 2)), pixel_scales=1.0)
         image = np.ones((2, 2))

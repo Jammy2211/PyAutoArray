@@ -370,7 +370,7 @@ class TestIteratedArray:
         ).all()
 
     def test__iterated_array_from_func__extreme_fractional_accuracies_uses_last_or_first_sub(
-        self
+        self,
     ):
 
         mask = aa.Mask2D.manual(
@@ -441,7 +441,7 @@ class TestIteratedArray:
         assert (values == values_sub_2.in_1d_binned).all()
 
     def test__iterated_array_from_func__check_values_computed_to_fractional_accuracy(
-        self
+        self,
     ):
 
         mask = aa.Mask2D.manual(
@@ -693,7 +693,7 @@ class TestIteratedGrid:
         ).all()
 
     def test__iterated_grid_from_func__extreme_fractional_accuracies_uses_last_or_first_sub(
-        self
+        self,
     ):
 
         mask = aa.Mask2D.manual(
@@ -764,7 +764,7 @@ class TestIteratedGrid:
         assert (values == values_sub_2.in_1d_binned).all()
 
     def test__iterated_grid_from_func__check_values_computed_to_fractional_accuracy(
-        self
+        self,
     ):
 
         mask = aa.Mask2D.manual(

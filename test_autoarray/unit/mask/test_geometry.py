@@ -742,7 +742,7 @@ class TestArcsecToPixel:
         ) == (1, 1)
 
     def test__pixel_coordinates_from_scaled_coordinates___scaled_are_pixel_centres__nonzero_centre(
-        self
+        self,
     ):
         mask = aa.Mask2D.manual(
             mask=np.full(fill_value=False, shape=(2, 2)),
@@ -798,7 +798,7 @@ class TestArcsecToPixel:
         ) == (2, 2)
 
     def test__pixel_coordinates_from_scaled_coordinates__scaled_are_pixel_corners__nonzero_centre(
-        self
+        self,
     ):
         mask = aa.Mask2D.manual(
             mask=np.full(fill_value=False, shape=(2, 2)),
@@ -859,7 +859,7 @@ class TestArcsecToPixel:
         ) == (1, 1)
 
     def test__scaled_coordinates_from_pixel_coordinates___scaled_are_pixel_centres__nonzero_centre(
-        self
+        self,
     ):
         mask = aa.Mask2D.manual(
             mask=np.full(fill_value=False, shape=(3, 3)), pixel_scales=(3.0, 3.0)

@@ -923,8 +923,10 @@ def sub_border_pixel_1d_indexes_from(mask: np.ndarray, sub_size: int) -> np.ndar
 
     sub_border_pixels = np.zeros(shape=border_pixels.shape[0])
 
-    mask_1d_index_to_sub_mask_indexes = sub_mask_1d_indexes_for_mask_1d_index_via_mask_from(
-        mask=mask, sub_size=sub_size
+    mask_1d_index_to_sub_mask_indexes = (
+        sub_mask_1d_indexes_for_mask_1d_index_via_mask_from(
+            mask=mask, sub_size=sub_size
+        )
     )
 
     masked_sub_grid_1d = grid_util.grid_1d_via_mask_from(
@@ -1026,7 +1028,7 @@ def rescaled_mask_from(mask: np.ndarray, rescale_factor: float) -> np.ndarray:
 def mask_1d_index_for_sub_mask_1d_index_via_mask_from(
     mask: np.ndarray, sub_size: int
 ) -> np.ndarray:
-    """"
+    """ "
     For pixels on a 2D array of shape (total_y_pixels, total_x_pixels), compute a 1D array which, for every unmasked
     pixel on this 2D array, maps the 1D sub-pixel indexes to their 1D pixel indexes.
 
@@ -1078,7 +1080,7 @@ def mask_1d_index_for_sub_mask_1d_index_via_mask_from(
 def sub_mask_1d_indexes_for_mask_1d_index_via_mask_from(
     mask: np.ndarray, sub_size: int
 ) -> [list]:
-    """"
+    """ "
     For pixels on a 2D array of shape (total_y_pixels, total_x_pixels), compute a list oof lists which, for every
     unmasked pixel gives the 1D pixel indexes of its corresponding sub-pixels.
 
@@ -1111,10 +1113,10 @@ def sub_mask_1d_indexes_for_mask_1d_index_via_mask_from(
 
     sub_mask_1d_indexes_for_mask_1d_index = [[] for _ in range(total_pixels)]
 
-    mask_1d_index_for_sub_mask_1d_index = mask_1d_index_for_sub_mask_1d_index_via_mask_from(
-        mask=mask, sub_size=sub_size
-    ).astype(
-        "int"
+    mask_1d_index_for_sub_mask_1d_index = (
+        mask_1d_index_for_sub_mask_1d_index_via_mask_from(
+            mask=mask, sub_size=sub_size
+        ).astype("int")
     )
 
     for sub_mask_1d_index, mask_1d_index in enumerate(
@@ -1267,8 +1269,8 @@ def mask_neighbors_from(mask: np.ndarray) -> np.ndarray:
 
     mask_neighbors = -1 * np.ones(shape=total_pixels)
 
-    sub_mask_1d_index_for_sub_mask_index = sub_mask_1d_index_for_sub_mask_index_from_sub_mask_from(
-        sub_mask=mask
+    sub_mask_1d_index_for_sub_mask_index = (
+        sub_mask_1d_index_for_sub_mask_index_from_sub_mask_from(sub_mask=mask)
     )
 
     mask_index = 0

@@ -35,9 +35,10 @@ class GridRectangular(grids.Grid):
 
         obj = super().__new__(cls=cls, grid=grid, mask=mask)
 
-        pixel_neighbors, pixel_neighbors_size = pixelization_util.rectangular_neighbors_from(
-            shape_2d=shape_2d
-        )
+        (
+            pixel_neighbors,
+            pixel_neighbors_size,
+        ) = pixelization_util.rectangular_neighbors_from(shape_2d=shape_2d)
         obj.pixel_neighbors = pixel_neighbors.astype("int")
         obj.pixel_neighbors_size = pixel_neighbors_size.astype("int")
         return obj
@@ -174,7 +175,10 @@ class GridVoronoi(np.ndarray):
         except (ValueError, OverflowError, scipy.spatial.qhull.QhullError) as e:
             raise exc.PixelizationException() from e
 
-        pixel_neighbors, pixel_neighbors_size = pixelization_util.voronoi_neighbors_from(
+        (
+            pixel_neighbors,
+            pixel_neighbors_size,
+        ) = pixelization_util.voronoi_neighbors_from(
             pixels=obj.pixels, ridge_points=np.asarray(obj.voronoi.ridge_points)
         )
 

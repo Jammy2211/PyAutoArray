@@ -23,25 +23,25 @@ class AbstractMask(np.ndarray):
         *args,
         **kwargs
     ):
-        """ An abstract class for a mask that represents data structure that can be in 1D, 2D or other shapes.
+        """An abstract class for a mask that represents data structure that can be in 1D, 2D or other shapes.
 
-        When applied to data it extracts or masks the unmasked image pixels corresponding to mask entries that are
-       `False` or 0).
+         When applied to data it extracts or masks the unmasked image pixels corresponding to mask entries that are
+        `False` or 0).
 
-       The mask also defines the geometry of the data structure it is paired with, for example how its pixels convert
-       to physical units via the ``pixel_scales`` and ``origin`` parameters and a sub-grid which is used for
-       perform calculations via super-sampling.
+        The mask also defines the geometry of the data structure it is paired with, for example how its pixels convert
+        to physical units via the ``pixel_scales`` and ``origin`` parameters and a sub-grid which is used for
+        perform calculations via super-sampling.
 
-        Parameters
-        ----------
-        mask : np.ndarray
-            The ``ndarray`` containing the ``bool``'s representing the ``mask``, where `False` signifies an entry is
-            unmasked and used in calculations.
-        pixel_scales : (float, float) or float
-            The scaled units to pixel units conversion factors of every pixel. If this is input as a ``float``, it is
-            converted to a ``(float, float)`` structure.
-        origin : (float, float)
-            The origin of the ``mask``'s coordinate system in scaled units.
+         Parameters
+         ----------
+         mask : np.ndarray
+             The ``ndarray`` containing the ``bool``'s representing the ``mask``, where `False` signifies an entry is
+             unmasked and used in calculations.
+         pixel_scales : (float, float) or float
+             The scaled units to pixel units conversion factors of every pixel. If this is input as a ``float``, it is
+             converted to a ``(float, float)`` structure.
+         origin : (float, float)
+             The origin of the ``mask``'s coordinate system in scaled units.
         """
 
         # noinspection PyArgumentList

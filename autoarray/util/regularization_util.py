@@ -8,9 +8,9 @@ def constant_regularization_matrix_from(
 ) -> np.ndarray:
     """
     From the pixel-neighbors array, setup the regularization matrix using the instance regularization scheme.
-    
+
     A complete description of regularizatin and the ``regularization_matrix`` can be found in the ``Regularization``
-    class in the module ``autoarray.inversion.regularization``. 
+    class in the module ``autoarray.inversion.regularization``.
 
     Parameters
     ----------
