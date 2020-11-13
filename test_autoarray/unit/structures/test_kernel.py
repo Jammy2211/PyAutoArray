@@ -16,7 +16,7 @@ test_data_dir = "{}/arrays/files/array/".format(
 
 class TestAPI:
     def test__manual__input_kernel__all_attributes_correct_including_data_inheritance(
-        self
+        self,
     ):
         kernel = aa.Kernel.ones(shape_2d=(3, 3), pixel_scales=1.0, renormalize=False)
 
@@ -56,7 +56,7 @@ class TestAPI:
         assert kernel.origin == (0.0, 0.0)
 
     def test__from_fits__input_kernel_3x3__all_attributes_correct_including_data_inheritance(
-        self
+        self,
     ):
         kernel = aa.Kernel.from_fits(
             file_path=test_data_dir + "3x3_ones.fits", hdu=0, pixel_scales=1.0
@@ -122,7 +122,7 @@ class TestRenormalize:
 
 class TestBinnedUp:
     def test__kernel_is_even_x_even__rescaled_to_odd_x_odd__no_use_of_dimension_trimming(
-        self
+        self,
     ):
         array_2d = np.ones((6, 6))
         kernel = aa.Kernel.manual_2d(
@@ -165,7 +165,7 @@ class TestBinnedUp:
         assert (kernel.in_2d == (1.0 / 27.0) * np.ones((3, 9))).all()
 
     def test__kernel_is_even_x_even_after_binning_up__resized_to_odd_x_odd_with_shape_plus_one(
-        self
+        self,
     ):
 
         kernel = aa.Kernel.ones(shape_2d=(2, 2), pixel_scales=1.0, renormalize=False)
@@ -200,7 +200,7 @@ class TestBinnedUp:
         assert (kernel.in_2d == (1.0 / 45.0) * np.ones((9, 5))).all()
 
     def test__kernel_is_odd_and_even_after_binning_up__resized_to_odd_and_odd_with_shape_plus_one(
-        self
+        self,
     ):
         kernel = aa.Kernel.ones(shape_2d=(6, 4), pixel_scales=1.0, renormalize=False)
         kernel = kernel.rescaled_with_odd_dimensions_from_rescale_factor(
@@ -243,7 +243,7 @@ class TestConvolve:
             kernel.convolved_array_from_array(np.ones((5, 5)))
 
     def test__image_is_3x3_central_value_of_one__kernel_is_cross__blurred_image_becomes_cross(
-        self
+        self,
     ):
 
         image = aa.Array.manual_2d(
@@ -259,7 +259,7 @@ class TestConvolve:
         assert (blurred_image == kernel).all()
 
     def test__image_is_4x4_central_value_of_one__kernel_is_cross__blurred_image_becomes_cross(
-        self
+        self,
     ):
         image = aa.Array.manual_2d(
             array=[
@@ -290,7 +290,7 @@ class TestConvolve:
         ).all()
 
     def test__image_is_4x3_central_value_of_one__kernel_is_cross__blurred_image_becomes_cross(
-        self
+        self,
     ):
         image = aa.Array.manual_2d(
             array=[[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0], [0.0, 0.0, 0.0]],
@@ -311,7 +311,7 @@ class TestConvolve:
         ).all()
 
     def test__image_is_3x4_central_value_of_one__kernel_is_cross__blurred_image_becomes_cross(
-        self
+        self,
     ):
         image = aa.Array.manual_2d(
             array=[[0.0, 0.0, 0.0, 0.0], [0.0, 1.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0]],
@@ -332,7 +332,7 @@ class TestConvolve:
         ).all()
 
     def test__image_is_4x4_has_two_central_values__kernel_is_asymmetric__blurred_image_follows_convolution(
-        self
+        self,
     ):
         image = aa.Array.manual_2d(
             array=[
@@ -363,7 +363,7 @@ class TestConvolve:
         ).all()
 
     def test__image_is_4x4_values_are_on_edge__kernel_is_asymmetric__blurring_does_not_account_for_edge_effects(
-        self
+        self,
     ):
         image = aa.Array.manual_2d(
             [
@@ -394,7 +394,7 @@ class TestConvolve:
         ).all()
 
     def test__image_is_4x4_values_are_on_corner__kernel_is_asymmetric__blurring_does_not_account_for_edge_effects(
-        self
+        self,
     ):
         image = aa.Array.manual_2d(
             array=[
@@ -493,7 +493,7 @@ class TestFromAlmaGaussian:
         assert kernel_astropy == pytest.approx(kernel.in_2d, 1e-4)
 
     def test__identical_to_astropy_gaussian_model__circular_no_rotation_different_pixel_scale(
-        self
+        self,
     ):
         pixel_scales = 0.02
 
@@ -536,7 +536,7 @@ class TestFromAlmaGaussian:
         assert kernel_astropy == pytest.approx(kernel.in_2d, 1e-4)
 
     def test__identical_to_astropy_gaussian_model__include_ellipticity_from_x_and_y_stddev(
-        self
+        self,
     ):
         pixel_scales = 0.1
 
@@ -582,7 +582,7 @@ class TestFromAlmaGaussian:
         assert kernel_astropy == pytest.approx(kernel.in_2d, 1e-4)
 
     def test__identical_to_astropy_gaussian_model__include_different_ellipticity_from_x_and_y_stddev(
-        self
+        self,
     ):
         pixel_scales = 0.1
 

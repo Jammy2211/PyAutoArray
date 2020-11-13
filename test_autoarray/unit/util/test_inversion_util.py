@@ -28,7 +28,7 @@ class TestDataVectorFromData:
         assert (data_vector == np.array([2.0, 3.0, 1.0])).all()
 
     def test__simple_blurred_mapping_matrix__change_image_values__correct_data_vector(
-        self
+        self,
     ):
 
         blurred_mapping_matrix = np.array(
@@ -54,7 +54,7 @@ class TestDataVectorFromData:
         assert (data_vector == np.array([4.0, 14.0, 10.0])).all()
 
     def test__simple_blurred_mapping_matrix__change_noise_values__correct_data_vector(
-        self
+        self,
     ):
 
         blurred_mapping_matrix = np.array(
@@ -80,7 +80,7 @@ class TestDataVectorFromData:
         assert (data_vector == np.array([2.0, 3.0, 1.0])).all()
 
     def test__data_vector_via_transformer_mapping_matrix_method_same_as_blurred_method(
-        self
+        self,
     ):
 
         mapping_matrix = np.array(
@@ -97,14 +97,18 @@ class TestDataVectorFromData:
         data = np.array([4.0, 1.0, 1.0, 16.0, 1.0, 1.0])
         noise_map = np.array([2.0, 1.0, 1.0, 4.0, 1.0, 1.0])
 
-        data_vector_via_blurred = aa.util.inversion.data_vector_via_blurred_mapping_matrix_from(
-            blurred_mapping_matrix=mapping_matrix, image=data, noise_map=noise_map
+        data_vector_via_blurred = (
+            aa.util.inversion.data_vector_via_blurred_mapping_matrix_from(
+                blurred_mapping_matrix=mapping_matrix, image=data, noise_map=noise_map
+            )
         )
 
-        data_vector_via_transformed = aa.util.inversion.data_vector_via_transformed_mapping_matrix_from(
-            transformed_mapping_matrix=mapping_matrix,
-            visibilities=data,
-            noise_map=noise_map,
+        data_vector_via_transformed = (
+            aa.util.inversion.data_vector_via_transformed_mapping_matrix_from(
+                transformed_mapping_matrix=mapping_matrix,
+                visibilities=data,
+                noise_map=noise_map,
+            )
         )
 
         assert (data_vector_via_blurred == data_vector_via_transformed).all()
@@ -160,7 +164,7 @@ class TestCurvatureMatrixFromBlurred:
         ).all()
 
     def test__curvature_matrix_via_transformer_mapping_matrix_method_same_as_blurred_method(
-        self
+        self,
     ):
 
         mapping_matrix = np.array(
@@ -176,12 +180,16 @@ class TestCurvatureMatrixFromBlurred:
 
         noise_map = np.array([2.0, 1.0, 1.0, 4.0, 1.0, 1.0])
 
-        curvature_matrix_via_blurred = aa.util.inversion.curvature_matrix_via_mapping_matrix_from(
-            mapping_matrix=mapping_matrix, noise_map=noise_map
+        curvature_matrix_via_blurred = (
+            aa.util.inversion.curvature_matrix_via_mapping_matrix_from(
+                mapping_matrix=mapping_matrix, noise_map=noise_map
+            )
         )
 
-        curvature_matrix_via_transformed = aa.util.inversion.curvature_matrix_via_mapping_matrix_from(
-            mapping_matrix=mapping_matrix, noise_map=noise_map
+        curvature_matrix_via_transformed = (
+            aa.util.inversion.curvature_matrix_via_mapping_matrix_from(
+                mapping_matrix=mapping_matrix, noise_map=noise_map
+            )
         )
 
         assert (curvature_matrix_via_blurred == curvature_matrix_via_transformed).all()
@@ -189,7 +197,7 @@ class TestCurvatureMatrixFromBlurred:
 
 class TestPixelizationResiduals:
     def test__pixelization_perfectly_reconstructed_data__quantities_like_residuals_all_zeros(
-        self
+        self,
     ):
 
         pixelization_values = np.ones(3)
@@ -251,7 +259,7 @@ class TestPixelizationResiduals:
 
 class TestPixelizationNormalizedResiduals:
     def test__pixelization_perfectly_reconstructed_data__quantities_like_residuals_all_zeros(
-        self
+        self,
     ):
 
         pixelization_values = np.ones(3)
@@ -319,7 +327,7 @@ class TestPixelizationNormalizedResiduals:
 
 class TestPixelizationChiSquareds:
     def test__pixelization_perfectly_reconstructed_data__quantities_like_residuals_all_zeros(
-        self
+        self,
     ):
 
         pixelization_values = np.ones(3)
@@ -399,10 +407,12 @@ class TestPreconditionerMatrix:
             ]
         )
 
-        preconditioner_matrix = aa.util.inversion.preconditioner_matrix_via_mapping_matrix_from(
-            mapping_matrix=mapping_matrix,
-            preconditioner_noise_normalization=1.0,
-            regularization_matrix=np.zeros((3, 3)),
+        preconditioner_matrix = (
+            aa.util.inversion.preconditioner_matrix_via_mapping_matrix_from(
+                mapping_matrix=mapping_matrix,
+                preconditioner_noise_normalization=1.0,
+                regularization_matrix=np.zeros((3, 3)),
+            )
         )
 
         assert (
@@ -410,10 +420,12 @@ class TestPreconditionerMatrix:
             == np.array([[2.0, 0.0, 0.0], [0.0, 2.0, 0.0], [0.0, 0.0, 2.0]])
         ).all()
 
-        preconditioner_matrix = aa.util.inversion.preconditioner_matrix_via_mapping_matrix_from(
-            mapping_matrix=mapping_matrix,
-            preconditioner_noise_normalization=2.0,
-            regularization_matrix=np.zeros((3, 3)),
+        preconditioner_matrix = (
+            aa.util.inversion.preconditioner_matrix_via_mapping_matrix_from(
+                mapping_matrix=mapping_matrix,
+                preconditioner_noise_normalization=2.0,
+                regularization_matrix=np.zeros((3, 3)),
+            )
         )
 
         assert (
@@ -425,10 +437,12 @@ class TestPreconditionerMatrix:
             [[1.0, 2.0, 3.0], [4.0, 5.0, 6.0], [7.0, 8.0, 9.0]]
         )
 
-        preconditioner_matrix = aa.util.inversion.preconditioner_matrix_via_mapping_matrix_from(
-            mapping_matrix=mapping_matrix,
-            preconditioner_noise_normalization=2.0,
-            regularization_matrix=regularization_matrix,
+        preconditioner_matrix = (
+            aa.util.inversion.preconditioner_matrix_via_mapping_matrix_from(
+                mapping_matrix=mapping_matrix,
+                preconditioner_noise_normalization=2.0,
+                regularization_matrix=regularization_matrix,
+            )
         )
 
         assert (

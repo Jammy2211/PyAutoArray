@@ -12,7 +12,7 @@ from autoarray import exc
 
 class AbstractGridCoordinates(np.ndarray):
     def __new__(cls, coordinates):
-        """ A collection of (y,x) coordinates structured in a way defining groups of coordinates which share a common
+        """A collection of (y,x) coordinates structured in a way defining groups of coordinates which share a common
         origin (for example coordinates may be grouped if they are from a specific region of a dataset).
 
         Grouping is structured as follows:
@@ -165,13 +165,13 @@ class AbstractGridCoordinates(np.ndarray):
 
     def squared_distances_from_coordinate(self, coordinate=(0.0, 0.0)):
         """
-    Returns the squared distance of every (y,x) coordinate in this *Coordinate* instance from an input
-        coordinate.
+        Returns the squared distance of every (y,x) coordinate in this *Coordinate* instance from an input
+            coordinate.
 
-        Parameters
-        ----------
-        coordinate : (float, float)
-            The (y,x) coordinate from which the squared distance of every *Coordinate* is computed.
+            Parameters
+            ----------
+            coordinate : (float, float)
+                The (y,x) coordinate from which the squared distance of every *Coordinate* is computed.
         """
         squared_distances = np.square(self[:, 0] - coordinate[0]) + np.square(
             self[:, 1] - coordinate[1]
@@ -180,12 +180,12 @@ class AbstractGridCoordinates(np.ndarray):
 
     def distances_from_coordinate(self, coordinate=(0.0, 0.0)):
         """
-    Returns the distance of every (y,x) coordinate in this *Coordinate* instance from an input coordinate.
+        Returns the distance of every (y,x) coordinate in this *Coordinate* instance from an input coordinate.
 
-        Parameters
-        ----------
-        coordinate : (float, float)
-            The (y,x) coordinate from which the distance of every *Coordinate* is computed.
+            Parameters
+            ----------
+            coordinate : (float, float)
+                The (y,x) coordinate from which the distance of every *Coordinate* is computed.
         """
         distances = np.sqrt(
             self.squared_distances_from_coordinate(coordinate=coordinate)
@@ -295,16 +295,16 @@ class GridCoordinates(AbstractGridCoordinates):
 
     def grid_from_deflection_grid(self, deflection_grid):
         """
-    Returns a new GridCoordinates from this grid coordinates, where the (y,x) coordinates of this grid have a
-        grid of (y,x) values, termed the deflection grid, subtracted from them to determine the new grid of (y,x)
-        values.
+        Returns a new GridCoordinates from this grid coordinates, where the (y,x) coordinates of this grid have a
+            grid of (y,x) values, termed the deflection grid, subtracted from them to determine the new grid of (y,x)
+            values.
 
-        This is used by PyAutoLens to perform grid ray-tracing.
+            This is used by PyAutoLens to perform grid ray-tracing.
 
-        Parameters
-        ----------
-        deflection_grid : np.ndarray
-            The grid of (y,x) coordinates which is subtracted from this grid.
+            Parameters
+            ----------
+            deflection_grid : np.ndarray
+                The grid of (y,x) coordinates which is subtracted from this grid.
         """
         return GridCoordinates(coordinates=self - deflection_grid)
 
@@ -366,7 +366,7 @@ class GridCoordinates(AbstractGridCoordinates):
 
 class GridCoordinatesUniform(AbstractGridCoordinates):
     def __new__(cls, coordinates, shape_2d=None, pixel_scales=None):
-        """ A collection of (y,x) coordinates structured in a way defining groups of coordinates which share a common
+        """A collection of (y,x) coordinates structured in a way defining groups of coordinates which share a common
         origin (for example coordinates may be grouped if they are from a specific region of a dataset).
 
         Grouping is structured as follows:
@@ -493,16 +493,16 @@ class GridCoordinatesUniform(AbstractGridCoordinates):
 
     def grid_from_deflection_grid(self, deflection_grid):
         """
-    Returns a new GridCoordinates from this grid coordinates, where the (y,x) coordinates of this grid have a
-        grid of (y,x) values, termed the deflection grid, subtracted from them to determine the new grid of (y,x)
-        values.
+        Returns a new GridCoordinates from this grid coordinates, where the (y,x) coordinates of this grid have a
+            grid of (y,x) values, termed the deflection grid, subtracted from them to determine the new grid of (y,x)
+            values.
 
-        This is used by PyAutoLens to perform grid ray-tracing.
+            This is used by PyAutoLens to perform grid ray-tracing.
 
-        Parameters
-        ----------
-        deflection_grid : np.ndarray
-            The grid of (y,x) coordinates which is subtracted from this grid.
+            Parameters
+            ----------
+            deflection_grid : np.ndarray
+                The grid of (y,x) coordinates which is subtracted from this grid.
         """
         return GridCoordinatesUniform(
             coordinates=self - deflection_grid,

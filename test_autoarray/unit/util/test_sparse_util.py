@@ -6,7 +6,7 @@ import numpy as np
 
 class TestUnmaskedSparseForSparse:
     def test__mask_full_false__image_mask_and_pixel_centres_fully_overlap__each_sparse_maps_to_unmaked_sparse(
-        self
+        self,
     ):
 
         ma = aa.Mask2D.manual(
@@ -37,7 +37,7 @@ class TestUnmaskedSparseForSparse:
         ).all()
 
     def test__same_as_above__but_remove_some_centre_pixels_and_change_order__order_does_not_change_mapping(
-        self
+        self,
     ):
 
         ma = aa.Mask2D.manual(
@@ -185,7 +185,7 @@ class TestUnmaskedSparseForSparse:
 
 class TestSparseForUnmaskedSparse:
     def test__mask_full_false__image_mask_and_pixel_centres_fully_overlap__each_pix_maps_to_unmaked_pix(
-        self
+        self,
     ):
 
         ma = aa.Mask2D.manual(
@@ -211,7 +211,7 @@ class TestSparseForUnmaskedSparse:
         ).all()
 
     def test__same_as_above__but_remove_some_centre_pixels_and_change_order__order_does_not_change_mapping(
-        self
+        self,
     ):
 
         ma = aa.Mask2D.manual(
@@ -336,32 +336,38 @@ class TestSparseForUnmaskedSparse:
 
 class TestRegularToSparse:
     def test__simple_cases_for_regular_to_unmasked_sparse_and__sparse_for_unmasked_sparse(
-        self
+        self,
     ):
 
         regular_to_unmasked_sparse = np.array([0, 1, 2, 3, 4])
         sparse_for_unmasked_sparse = np.array([0, 1, 2, 3, 4])
-        sparse_1d_index_for_mask_1d_index = aa.util.sparse.sparse_1d_index_for_mask_1d_index_from(
-            regular_to_unmasked_sparse=regular_to_unmasked_sparse,
-            sparse_for_unmasked_sparse=sparse_for_unmasked_sparse,
+        sparse_1d_index_for_mask_1d_index = (
+            aa.util.sparse.sparse_1d_index_for_mask_1d_index_from(
+                regular_to_unmasked_sparse=regular_to_unmasked_sparse,
+                sparse_for_unmasked_sparse=sparse_for_unmasked_sparse,
+            )
         )
 
         assert (sparse_1d_index_for_mask_1d_index == np.array([0, 1, 2, 3, 4])).all()
 
         regular_to_unmasked_sparse = np.array([0, 1, 2, 3, 4])
         sparse_for_unmasked_sparse = np.array([0, 1, 5, 7, 18])
-        sparse_1d_index_for_mask_1d_index = aa.util.sparse.sparse_1d_index_for_mask_1d_index_from(
-            regular_to_unmasked_sparse=regular_to_unmasked_sparse,
-            sparse_for_unmasked_sparse=sparse_for_unmasked_sparse,
+        sparse_1d_index_for_mask_1d_index = (
+            aa.util.sparse.sparse_1d_index_for_mask_1d_index_from(
+                regular_to_unmasked_sparse=regular_to_unmasked_sparse,
+                sparse_for_unmasked_sparse=sparse_for_unmasked_sparse,
+            )
         )
 
         assert (sparse_1d_index_for_mask_1d_index == np.array([0, 1, 5, 7, 18])).all()
 
         regular_to_unmasked_sparse = np.array([1, 1, 1, 1, 2])
         sparse_for_unmasked_sparse = np.array([0, 10, 15, 3, 4])
-        sparse_1d_index_for_mask_1d_index = aa.util.sparse.sparse_1d_index_for_mask_1d_index_from(
-            regular_to_unmasked_sparse=regular_to_unmasked_sparse,
-            sparse_for_unmasked_sparse=sparse_for_unmasked_sparse,
+        sparse_1d_index_for_mask_1d_index = (
+            aa.util.sparse.sparse_1d_index_for_mask_1d_index_from(
+                regular_to_unmasked_sparse=regular_to_unmasked_sparse,
+                sparse_for_unmasked_sparse=sparse_for_unmasked_sparse,
+            )
         )
 
         assert (
@@ -370,9 +376,11 @@ class TestRegularToSparse:
 
         regular_to_unmasked_sparse = np.array([5, 6, 7, 8, 9])
         sparse_for_unmasked_sparse = np.array([0, 1, 2, 3, 4, 19, 18, 17, 16, 15])
-        sparse_1d_index_for_mask_1d_index = aa.util.sparse.sparse_1d_index_for_mask_1d_index_from(
-            regular_to_unmasked_sparse=regular_to_unmasked_sparse,
-            sparse_for_unmasked_sparse=sparse_for_unmasked_sparse,
+        sparse_1d_index_for_mask_1d_index = (
+            aa.util.sparse.sparse_1d_index_for_mask_1d_index_from(
+                regular_to_unmasked_sparse=regular_to_unmasked_sparse,
+                sparse_for_unmasked_sparse=sparse_for_unmasked_sparse,
+            )
         )
 
         assert (
@@ -382,7 +390,7 @@ class TestRegularToSparse:
 
 class TestSparseGridFromUnmaskedSparseGrid:
     def test__simple_unmasked_sparse_grid__full_grid_pix_grid_same_size__straightforward_mappings(
-        self
+        self,
     ):
 
         unmasked_sparse_grid = np.array(
@@ -425,7 +433,7 @@ class TestSparseGridFromUnmaskedSparseGrid:
         ).all()
 
     def test__simple_unmasked_sparse_grid__full_grid_pix_bigger_than_pix__straightforward_mappings(
-        self
+        self,
     ):
 
         unmasked_sparse_grid = np.array(

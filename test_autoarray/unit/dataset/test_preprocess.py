@@ -1,4 +1,5 @@
 import os
+from os import path
 
 import numpy as np
 import pytest
@@ -6,7 +7,9 @@ import shutil
 
 import autoarray as aa
 
-test_data_dir = "{}/files/imaging/".format(os.path.dirname(os.path.realpath(__file__)))
+test_data_dir = path.join(
+    "{}".format(path.dirname(path.realpath(__file__))), "files", "imaging"
+)
 
 
 def test__array_with_new_shape():
@@ -431,8 +434,10 @@ def test__exposure_time_map_from_exposure_time_and_inverse_noise_map():
     )
     background_noise_map[0] = 0.5
 
-    exposure_time_map = aa.preprocess.exposure_time_map_from_exposure_time_and_background_noise_map(
-        exposure_time=exposure_time, background_noise_map=background_noise_map
+    exposure_time_map = (
+        aa.preprocess.exposure_time_map_from_exposure_time_and_background_noise_map(
+            exposure_time=exposure_time, background_noise_map=background_noise_map
+        )
     )
 
     assert (

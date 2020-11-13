@@ -1,15 +1,15 @@
 import os
+from os import path
 import shutil
 
 import numpy as np
 import pytest
 
 import autoarray as aa
-from autoarray.structures import kernel as kern
 from autoarray.operators import transformer
 
-test_data_dir = "{}/files/interferometer/".format(
-    os.path.dirname(os.path.realpath(__file__))
+test_data_dir = path.join(
+    "{}".format(path.dirname(path.realpath(__file__))), "files", "interferometer"
 )
 
 
@@ -29,7 +29,7 @@ class TestInterferometer:
         assert interferometer.uv_wavelengths == 2
 
     def test__new_interferometer_with_signal_to_noise_limit_below_max_signal_to_noise__signal_to_noise_map_capped_to_limit(
-        self
+        self,
     ):
 
         interferometer = aa.Interferometer(
@@ -55,11 +55,11 @@ class TestInterferometer:
     def test__from_fits__all_files_in_one_fits__load_using_different_hdus(self):
 
         interferometer = aa.Interferometer.from_fits(
-            visibilities_path=test_data_dir + "3x2_multiple_hdu.fits",
+            visibilities_path=path.join(test_data_dir, "3x2_multiple_hdu.fits"),
             visibilities_hdu=0,
-            noise_map_path=test_data_dir + "3x2_multiple_hdu.fits",
+            noise_map_path=path.join(test_data_dir, "3x2_multiple_hdu.fits"),
             noise_map_hdu=1,
-            uv_wavelengths_path=test_data_dir + "3x2_multiple_hdu.fits",
+            uv_wavelengths_path=path.join(test_data_dir, "3x2_multiple_hdu.fits"),
             uv_wavelengths_hdu=2,
         )
 
@@ -73,30 +73,34 @@ class TestInterferometer:
     def test__output_all_arrays(self):
 
         interferometer = aa.Interferometer.from_fits(
-            visibilities_path=test_data_dir + "3x2_ones_twos.fits",
-            noise_map_path=test_data_dir + "3x2_threes_fours.fits",
-            uv_wavelengths_path=test_data_dir + "3x2_fives_sixes.fits",
+            visibilities_path=path.join(test_data_dir, "3x2_ones_twos.fits"),
+            noise_map_path=path.join(test_data_dir, "3x2_threes_fours.fits"),
+            uv_wavelengths_path=path.join(test_data_dir, "3x2_fives_sixes.fits"),
         )
 
-        output_data_dir = "{}/files/array/output_test/".format(
-            os.path.dirname(os.path.realpath(__file__))
+        output_data_dir = path.join(
+            "{}".format(path.dirname(path.realpath(__file__))),
+            "files",
+            "array",
+            "output_test",
         )
-        if os.path.exists(output_data_dir):
+
+        if path.exists(output_data_dir):
             shutil.rmtree(output_data_dir)
 
         os.makedirs(output_data_dir)
 
         interferometer.output_to_fits(
-            visibilities_path=output_data_dir + "visibilities.fits",
-            noise_map_path=output_data_dir + "noise_map.fits",
-            uv_wavelengths_path=output_data_dir + "uv_wavelengths.fits",
+            visibilities_path=path.join(output_data_dir, "visibilities.fits"),
+            noise_map_path=path.join(output_data_dir, "noise_map.fits"),
+            uv_wavelengths_path=path.join(output_data_dir, "uv_wavelengths.fits"),
             overwrite=True,
         )
 
         interferometer = aa.Interferometer.from_fits(
-            visibilities_path=output_data_dir + "visibilities.fits",
-            noise_map_path=output_data_dir + "noise_map.fits",
-            uv_wavelengths_path=output_data_dir + "uv_wavelengths.fits",
+            visibilities_path=path.join(output_data_dir, "visibilities.fits"),
+            noise_map_path=path.join(output_data_dir, "noise_map.fits"),
+            uv_wavelengths_path=path.join(output_data_dir, "uv_wavelengths.fits"),
         )
 
         assert (interferometer.visibilities.real == np.ones(3)).all()
@@ -194,7 +198,7 @@ class TestMaskedInterferometer:
         assert type(masked_interferometer_7.transformer) == transformer.TransformerNUFFT
 
     def test__different_interferometer_without_mock_objects__customize_constructor_inputs(
-        self
+        self,
     ):
 
         interferometer = aa.Interferometer(

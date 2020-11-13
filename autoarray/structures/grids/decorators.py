@@ -25,7 +25,7 @@ def grid_like_to_structure(func):
 
     @wraps(func)
     def wrapper(profile, grid, *args, **kwargs):
-        """ This decorator homogenizes the input of a "grid_like" structure (`Grid`, `GridIterate`, `GridInterpolate`
+        """This decorator homogenizes the input of a "grid_like" structure (`Grid`, `GridIterate`, `GridInterpolate`
         or  `GridCoordinates`) into a function. It allows these classes to be interchangeably input into a function,
         such that the grid is used to evalaute the function as every (y,x) coordinates of the grid.
 
@@ -98,7 +98,7 @@ def grid_like_to_structure_list(func):
 
     @wraps(func)
     def wrapper(profile, grid, *args, **kwargs):
-        """ This decorator homogenizes the input of a "grid_like" structure (`Grid`, `GridIterate`, `GridInterpolate`
+        """This decorator homogenizes the input of a "grid_like" structure (`Grid`, `GridIterate`, `GridInterpolate`
         or  `GridCoordinates`) into a function. It allows these classes to be interchangeably input into a function,
         such that the grid is used to evalaute the function as every (y,x) coordinates of the grid.
 

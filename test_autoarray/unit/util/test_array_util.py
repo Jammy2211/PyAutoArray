@@ -5,7 +5,9 @@ import numpy as np
 import pytest
 
 
-test_data_path = "{}/files/array/".format(os.path.dirname(os.path.realpath(__file__)))
+test_data_path = os.path.join(
+    "{}".format(os.path.dirname(os.path.realpath(__file__))), "files", "array"
+)
 
 
 @pytest.fixture(name="memoizer")
@@ -384,56 +386,54 @@ class TestResize:
 
 class TestFits:
     def test__numpy_array_1d_from_fits(self):
+
         arr = util.array.numpy_array_1d_from_fits(
-            file_path=test_data_path + "3_ones.fits", hdu=0
+            file_path=os.path.join(test_data_path, "3_ones.fits"), hdu=0
         )
 
         assert (arr == np.ones((3))).all()
 
     def test__numpy_array_1d_to_fits__output_and_load(self):
 
-        if os.path.exists(test_data_path + "array_out.fits"):
-            os.remove(test_data_path + "array_out.fits")
+        file_path = os.path.join(test_data_path, "array_out.fits")
+
+        if os.path.exists(file_path):
+            os.remove(file_path)
 
         arr = np.array([10.0, 30.0, 40.0, 92.0, 19.0, 20.0])
 
-        util.array.numpy_array_1d_to_fits(
-            arr, file_path=test_data_path + "array_out.fits"
-        )
+        util.array.numpy_array_1d_to_fits(arr, file_path=file_path)
 
-        array_load = util.array.numpy_array_1d_from_fits(
-            file_path=test_data_path + "array_out.fits", hdu=0
-        )
+        array_load = util.array.numpy_array_1d_from_fits(file_path=file_path, hdu=0)
 
         assert (arr == array_load).all()
 
     def test__numpy_array_2d_from_fits(self):
+
         arr = util.array.numpy_array_2d_from_fits(
-            file_path=test_data_path + "3x3_ones.fits", hdu=0
+            file_path=os.path.join(test_data_path, "3x3_ones.fits"), hdu=0
         )
 
         assert (arr == np.ones((3, 3))).all()
 
         arr = util.array.numpy_array_2d_from_fits(
-            file_path=test_data_path + "4x3_ones.fits", hdu=0
+            file_path=os.path.join(test_data_path, "4x3_ones.fits"), hdu=0
         )
 
         assert (arr == np.ones((4, 3))).all()
 
     def test__numpy_array_2d_to_fits__output_and_load(self):
 
-        if os.path.exists(test_data_path + "array_out.fits"):
-            os.remove(test_data_path + "array_out.fits")
+        file_path = os.path.join(test_data_path, "array_out.fits")
+
+        if os.path.exists(file_path):
+            os.remove(file_path)
 
         arr = np.array([[10.0, 30.0, 40.0], [92.0, 19.0, 20.0]])
 
-        util.array.numpy_array_2d_to_fits(
-            arr, file_path=test_data_path + "array_out.fits"
-        )
+        util.array.numpy_array_2d_to_fits(arr, file_path=file_path)
 
-        array_load = util.array.numpy_array_2d_from_fits(
-            file_path=test_data_path + "array_out.fits", hdu=0
-        )
+        array_load = util.array.numpy_array_2d_from_fits(file_path=file_path, hdu=0)
 
         assert (arr == array_load).all()
 
@@ -445,60 +445,74 @@ class TestReplaceNegativeNoise:
 
         noise_map_2d = np.array([[1.0, 2.0], [3.0, 4.0]])
 
-        noise_map_2d = util.array.replace_noise_map_2d_values_where_image_2d_values_are_negative(
-            image_2d=image_2d, noise_map_2d=noise_map_2d, target_signal_to_noise=1.0
+        noise_map_2d = (
+            util.array.replace_noise_map_2d_values_where_image_2d_values_are_negative(
+                image_2d=image_2d, noise_map_2d=noise_map_2d, target_signal_to_noise=1.0
+            )
         )
 
         assert (noise_map_2d == noise_map_2d).all()
 
     def test__2x2_array__negative_values__do_not_produce_absolute_signal_to_noise_values_above_target__no_change(
-        self
+        self,
     ):
 
         image_2d = -1.0 * np.ones(shape=(2, 2))
 
         noise_map_2d = np.array([[1.0, 0.5], [0.25, 0.125]])
 
-        noise_map_2d = util.array.replace_noise_map_2d_values_where_image_2d_values_are_negative(
-            image_2d=image_2d, noise_map_2d=noise_map_2d, target_signal_to_noise=10.0
+        noise_map_2d = (
+            util.array.replace_noise_map_2d_values_where_image_2d_values_are_negative(
+                image_2d=image_2d,
+                noise_map_2d=noise_map_2d,
+                target_signal_to_noise=10.0,
+            )
         )
 
         assert (noise_map_2d == noise_map_2d).all()
 
     def test__2x2_array__negative_values__values_give_absolute_signal_to_noise_below_target__replaces_their_noise(
-        self
+        self,
     ):
 
         image_2d = -1.0 * np.ones(shape=(2, 2))
 
         noise_map_2d = np.array([[1.0, 0.5], [0.25, 0.125]])
 
-        noise_map_2d = util.array.replace_noise_map_2d_values_where_image_2d_values_are_negative(
-            image_2d=image_2d, noise_map_2d=noise_map_2d, target_signal_to_noise=4.0
+        noise_map_2d = (
+            util.array.replace_noise_map_2d_values_where_image_2d_values_are_negative(
+                image_2d=image_2d, noise_map_2d=noise_map_2d, target_signal_to_noise=4.0
+            )
         )
 
         assert (noise_map_2d == np.array([[1.0, 0.5], [0.25, 0.25]])).all()
 
         noise_map_2d = np.array([[1.0, 0.5], [0.25, 0.125]])
 
-        noise_map_2d = util.array.replace_noise_map_2d_values_where_image_2d_values_are_negative(
-            image_2d=image_2d, noise_map_2d=noise_map_2d, target_signal_to_noise=2.0
+        noise_map_2d = (
+            util.array.replace_noise_map_2d_values_where_image_2d_values_are_negative(
+                image_2d=image_2d, noise_map_2d=noise_map_2d, target_signal_to_noise=2.0
+            )
         )
 
         assert (noise_map_2d == np.array([[1.0, 0.5], [0.5, 0.5]])).all()
 
         noise_map_2d = np.array([[1.0, 0.5], [0.25, 0.125]])
 
-        noise_map_2d = util.array.replace_noise_map_2d_values_where_image_2d_values_are_negative(
-            image_2d=image_2d, noise_map_2d=noise_map_2d, target_signal_to_noise=1.0
+        noise_map_2d = (
+            util.array.replace_noise_map_2d_values_where_image_2d_values_are_negative(
+                image_2d=image_2d, noise_map_2d=noise_map_2d, target_signal_to_noise=1.0
+            )
         )
 
         assert (noise_map_2d == np.array([[1.0, 1.0], [1.0, 1.0]])).all()
 
         noise_map_2d = np.array([[1.0, 0.5], [0.25, 0.125]])
 
-        noise_map_2d = util.array.replace_noise_map_2d_values_where_image_2d_values_are_negative(
-            image_2d=image_2d, noise_map_2d=noise_map_2d, target_signal_to_noise=0.5
+        noise_map_2d = (
+            util.array.replace_noise_map_2d_values_where_image_2d_values_are_negative(
+                image_2d=image_2d, noise_map_2d=noise_map_2d, target_signal_to_noise=0.5
+            )
         )
 
         assert (noise_map_2d == np.array([[2.0, 2.0], [2.0, 2.0]])).all()
@@ -509,8 +523,10 @@ class TestReplaceNegativeNoise:
 
         noise_map_2d = np.array([[3.0, 1.0], [4.0, 8.0]])
 
-        noise_map_2d = util.array.replace_noise_map_2d_values_where_image_2d_values_are_negative(
-            image_2d=image_2d, noise_map_2d=noise_map_2d, target_signal_to_noise=1.0
+        noise_map_2d = (
+            util.array.replace_noise_map_2d_values_where_image_2d_values_are_negative(
+                image_2d=image_2d, noise_map_2d=noise_map_2d, target_signal_to_noise=1.0
+            )
         )
 
         assert (noise_map_2d == np.array([[3.0, 2.0], [4.0, 8.0]])).all()
@@ -519,8 +535,10 @@ class TestReplaceNegativeNoise:
 
         noise_map_2d = np.array([[1.0, 2.0], [40.0, 3.0]])
 
-        noise_map_2d = util.array.replace_noise_map_2d_values_where_image_2d_values_are_negative(
-            image_2d=image_2d, noise_map_2d=noise_map_2d, target_signal_to_noise=5.0
+        noise_map_2d = (
+            util.array.replace_noise_map_2d_values_where_image_2d_values_are_negative(
+                image_2d=image_2d, noise_map_2d=noise_map_2d, target_signal_to_noise=5.0
+            )
         )
 
         assert (noise_map_2d == np.array([[2.0, 4.0], [40.0, 6.0]])).all()
@@ -531,8 +549,10 @@ class TestReplaceNegativeNoise:
 
         noise_map_2d = np.array([[1.0, 0.5, 0.25], [0.25, 0.125, 2.0]])
 
-        noise_map_2d = util.array.replace_noise_map_2d_values_where_image_2d_values_are_negative(
-            image_2d=image_2d, noise_map_2d=noise_map_2d, target_signal_to_noise=2.0
+        noise_map_2d = (
+            util.array.replace_noise_map_2d_values_where_image_2d_values_are_negative(
+                image_2d=image_2d, noise_map_2d=noise_map_2d, target_signal_to_noise=2.0
+            )
         )
 
         assert (noise_map_2d == np.array([[1.0, 0.5, 0.5], [0.5, 0.5, 2.0]])).all()
@@ -541,8 +561,10 @@ class TestReplaceNegativeNoise:
 
         noise_map_2d = np.array([[1.0, 0.5], [0.25, 0.125], [0.25, 2.0]])
 
-        noise_map_2d = util.array.replace_noise_map_2d_values_where_image_2d_values_are_negative(
-            image_2d=image_2d, noise_map_2d=noise_map_2d, target_signal_to_noise=2.0
+        noise_map_2d = (
+            util.array.replace_noise_map_2d_values_where_image_2d_values_are_negative(
+                image_2d=image_2d, noise_map_2d=noise_map_2d, target_signal_to_noise=2.0
+            )
         )
 
         assert (noise_map_2d == np.array([[1.0, 0.5], [0.5, 0.5], [0.5, 2.0]])).all()

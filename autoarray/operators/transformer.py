@@ -91,9 +91,11 @@ class TransformerDFT(pylops.LinearOperator):
 
         if self.preload_transform:
 
-            return transformer_util.real_transformed_mapping_matrix_via_preload_jit_from(
-                mapping_matrix=mapping_matrix,
-                preloaded_reals=self.preload_real_transforms,
+            return (
+                transformer_util.real_transformed_mapping_matrix_via_preload_jit_from(
+                    mapping_matrix=mapping_matrix,
+                    preloaded_reals=self.preload_real_transforms,
+                )
             )
 
         else:
@@ -108,9 +110,11 @@ class TransformerDFT(pylops.LinearOperator):
 
         if self.preload_transform:
 
-            return transformer_util.imag_transformed_mapping_matrix_via_preload_jit_from(
-                mapping_matrix=mapping_matrix,
-                preloaded_imags=self.preload_imag_transforms,
+            return (
+                transformer_util.imag_transformed_mapping_matrix_via_preload_jit_from(
+                    mapping_matrix=mapping_matrix,
+                    preloaded_imags=self.preload_imag_transforms,
+                )
             )
 
         else:
@@ -123,11 +127,15 @@ class TransformerDFT(pylops.LinearOperator):
 
     def transformed_mapping_matrices_from_mapping_matrix(self, mapping_matrix):
 
-        real_transformed_mapping_matrix = self.real_transformed_mapping_matrix_from_mapping_matrix(
-            mapping_matrix=mapping_matrix
+        real_transformed_mapping_matrix = (
+            self.real_transformed_mapping_matrix_from_mapping_matrix(
+                mapping_matrix=mapping_matrix
+            )
         )
-        imag_transformed_mapping_matrix = self.imag_transformed_mapping_matrix_from_mapping_matrix(
-            mapping_matrix=mapping_matrix
+        imag_transformed_mapping_matrix = (
+            self.imag_transformed_mapping_matrix_from_mapping_matrix(
+                mapping_matrix=mapping_matrix
+            )
         )
 
         return [real_transformed_mapping_matrix, imag_transformed_mapping_matrix]

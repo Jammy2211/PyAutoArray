@@ -1,4 +1,3 @@
-import os
 import numpy as np
 import pytest
 
@@ -6,10 +5,6 @@ import autoarray as aa
 from autoarray.structures import grids
 
 from autoarray.mock.mock import MockGridRadialMinimum
-
-test_coordinates_dir = "{}/files/coordinates/".format(
-    os.path.dirname(os.path.realpath(__file__))
-)
 
 
 class TestGrid:
@@ -254,7 +249,7 @@ class TestGrid:
         assert (square_distances.mask == mask).all()
 
     def test__grid_with_coordinates_within_distance_removed__single_coordinates_only(
-        self
+        self,
     ):
 
         grid = aa.Grid.uniform(shape_2d=(3, 3), pixel_scales=1.0)
@@ -356,7 +351,7 @@ class TestGrid:
 
 class TestGridRadialMinimum:
     def test__mock_profile__grid_radial_minimum_is_0_or_below_radial_coordinates__no_changes(
-        self
+        self,
     ):
 
         grid = np.array([[2.5, 0.0], [4.0, 0.0], [6.0, 0.0]])
@@ -366,7 +361,7 @@ class TestGridRadialMinimum:
         assert (deflections == grid).all()
 
     def test__mock_profile__grid_radial_minimum_is_above_some_radial_coordinates__moves_them_grid_radial_minimum(
-        self
+        self,
     ):
         grid = np.array([[2.0, 0.0], [1.0, 0.0], [6.0, 0.0]])
         mock_profile = MockGridRadialMinimum()

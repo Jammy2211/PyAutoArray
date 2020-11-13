@@ -1,4 +1,5 @@
 import os
+from os import path
 
 import numpy as np
 import pytest
@@ -6,7 +7,9 @@ import shutil
 
 import autoarray as aa
 
-test_data_dir = "{}/files/imaging/".format(os.path.dirname(os.path.realpath(__file__)))
+test_data_dir = path.join(
+    "{}".format(path.dirname(path.realpath(__file__))), "files", "imaging"
+)
 
 
 class TestImaging:
@@ -48,7 +51,7 @@ class TestImaging:
         assert imaging.image.geometry.origin == (0.0, 0.0)
 
     def test__new_imaging_with_signal_to_noise_limit__limit_above_max_signal_to_noise__signal_to_noise_map_unchanged(
-        self
+        self,
     ):
         image = aa.Array.full(
             fill_value=20.0, shape_2d=(2, 2), pixel_scales=1.0, store_in_1d=True
@@ -97,7 +100,7 @@ class TestImaging:
         assert (imaging.signal_to_noise_map == np.array([[4.0, 4.0], [4.0, 2.5]])).all()
 
     def test__new_imaging_with_signal_to_noise_limit_below_max_signal_to_noise__signal_to_noise_map_capped_to_limit(
-        self
+        self,
     ):
         image = aa.Array.full(fill_value=20.0, shape_2d=(2, 2), pixel_scales=1.0)
         image[3] = 5.0
@@ -151,10 +154,10 @@ class TestImaging:
     def test__from_fits__loads_arrays_and_psf_is_renormalized(self):
         imaging = aa.Imaging.from_fits(
             pixel_scales=0.1,
-            image_path=test_data_dir + "3x3_ones.fits",
-            psf_path=test_data_dir + "3x3_twos.fits",
-            noise_map_path=test_data_dir + "3x3_threes.fits",
-            positions_path=test_data_dir + "positions.dat",
+            image_path=path.join(test_data_dir, "3x3_ones.fits"),
+            psf_path=path.join(test_data_dir, "3x3_twos.fits"),
+            noise_map_path=path.join(test_data_dir, "3x3_threes.fits"),
+            positions_path=path.join(test_data_dir, "positions.dat"),
         )
 
         assert (imaging.image.in_2d == np.ones((3, 3))).all()
@@ -170,11 +173,11 @@ class TestImaging:
 
         imaging = aa.Imaging.from_fits(
             pixel_scales=0.1,
-            image_path=test_data_dir + "3x3_multiple_hdu.fits",
+            image_path=path.join(test_data_dir, "3x3_multiple_hdu.fits"),
             image_hdu=0,
-            psf_path=test_data_dir + "3x3_multiple_hdu.fits",
+            psf_path=path.join(test_data_dir, "3x3_multiple_hdu.fits"),
             psf_hdu=1,
-            noise_map_path=test_data_dir + "3x3_multiple_hdu.fits",
+            noise_map_path=path.join(test_data_dir, "3x3_multiple_hdu.fits"),
             noise_map_hdu=2,
         )
 
@@ -190,30 +193,34 @@ class TestImaging:
 
         imaging = aa.Imaging.from_fits(
             pixel_scales=0.1,
-            image_path=test_data_dir + "3x3_ones.fits",
-            psf_path=test_data_dir + "3x3_twos.fits",
-            noise_map_path=test_data_dir + "3x3_threes.fits",
+            image_path=path.join(test_data_dir, "3x3_ones.fits"),
+            psf_path=path.join(test_data_dir, "3x3_twos.fits"),
+            noise_map_path=path.join(test_data_dir, "3x3_threes.fits"),
         )
 
-        output_data_dir = "{}/files/array/output_test/".format(
-            os.path.dirname(os.path.realpath(__file__))
+        output_data_dir = path.join(
+            "{}".format(os.path.dirname(os.path.realpath(__file__))),
+            "files",
+            "array",
+            "output_test",
         )
+
         if os.path.exists(output_data_dir):
             shutil.rmtree(output_data_dir)
 
         os.makedirs(output_data_dir)
 
         imaging.output_to_fits(
-            image_path=output_data_dir + "image.fits",
-            psf_path=output_data_dir + "psf.fits",
-            noise_map_path=output_data_dir + "noise_map.fits",
+            image_path=path.join(output_data_dir, "image.fits"),
+            psf_path=path.join(output_data_dir, "psf.fits"),
+            noise_map_path=path.join(output_data_dir, "noise_map.fits"),
         )
 
         imaging = aa.Imaging.from_fits(
             pixel_scales=0.1,
-            image_path=output_data_dir + "image.fits",
-            psf_path=output_data_dir + "psf.fits",
-            noise_map_path=output_data_dir + "noise_map.fits",
+            image_path=path.join(output_data_dir, "image.fits"),
+            psf_path=path.join(output_data_dir, "psf.fits"),
+            noise_map_path=path.join(output_data_dir, "noise_map.fits"),
         )
 
         assert (imaging.image.in_2d == np.ones((3, 3))).all()
@@ -393,7 +400,7 @@ class TestMaskedImaging:
         ).all()
 
     def test__different_imaging_without_mock_objects__customize_constructor_inputs(
-        self
+        self,
     ):
 
         psf = aa.Kernel.ones(shape_2d=(7, 7), pixel_scales=3.0)
@@ -529,7 +536,7 @@ class TestSimulatorImaging:
         )
 
     def test__from_image__background_sky_on__noise_on_so_background_adds_noise_to_image(
-        self
+        self,
     ):
 
         image = aa.Array.manual_2d(

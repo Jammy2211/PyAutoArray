@@ -18,7 +18,7 @@ directory = path.dirname(path.realpath(__file__))
 @pytest.fixture(autouse=True)
 def set_config_path():
     conf.instance = conf.Config(
-        path.join(directory, "files/plotter"), path.join(directory, "output")
+        path.join(directory, "files", "plotter"), path.join(directory, "output")
     )
 
 
@@ -89,7 +89,7 @@ class TestColorMap:
         assert norm.linthresh == 2.0
 
     def test__norm_from_array__uses_array_to_get_norm_min_and_max_if_no_manual_input(
-        self
+        self,
     ):
 
         array = aa.Array.ones(shape_2d=(2, 2), pixel_scales=1.0)
@@ -428,14 +428,14 @@ class TestOutput:
 
         test_path = path.join(directory, "files/output_path")
 
-        if os.path.exists(test_path):
+        if path.exists(test_path):
             shutil.rmtree(test_path)
 
-        assert not os.path.exists(test_path)
+        assert not path.exists(test_path)
 
         output = aplt.Output(path=test_path)
 
-        assert os.path.exists(test_path)
+        assert path.exists(test_path)
 
     def test__filename_from_func__returns_function_name_if_no_filename(self):
         def toy_func():
@@ -462,7 +462,7 @@ class TestScatterer:
         scatterer.scatter_grid(grid=aa.Grid.uniform(shape_2d=(3, 3), pixel_scales=1.0))
 
     def test__scatter_colored_grid__lists_of_coordinates_or_equivalent_2d_grids__with_color_array(
-        self
+        self,
     ):
 
         scatterer = mat_objs.Scatterer(size=2, marker="x", colors="k")
@@ -481,7 +481,7 @@ class TestScatterer:
         )
 
     def test__scatter_grid_indexes_1d__input_grid_is_ndarray_and_indexes_are_valid(
-        self
+        self,
     ):
 
         scatterer = mat_objs.Scatterer(size=2, marker="x", colors="k")
@@ -500,7 +500,7 @@ class TestScatterer:
         )
 
     def test__scatter_grid_indexes_2d__input_grid_is_ndarray_and_indexes_are_valid(
-        self
+        self,
     ):
 
         scatterer = mat_objs.Scatterer(size=2, marker="x", colors="k")

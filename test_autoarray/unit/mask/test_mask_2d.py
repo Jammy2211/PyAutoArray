@@ -433,7 +433,7 @@ class TestClassMethods:
         assert mask.geometry.mask_centre == (0.0, 0.0)
 
     def test__from_pixel_coordinates__mask_with_or_without_buffer__false_at_buffed_coordinates(
-        self
+        self,
     ):
 
         mask = aa.Mask2D.from_pixel_coordinates(
