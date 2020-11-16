@@ -14,44 +14,44 @@ class Line(object):
         flux=None,
         n_stacked=None,
     ):
-        """ A 1D line of pixels (e.g. a single CTI trail) with metadata.
-        
-        Or could be an averaged stack of many lines, in which case the metadata 
+        """A 1D line of pixels (e.g. a single CTI trail) with metadata.
+
+        Or could be an averaged stack of many lines, in which case the metadata
         parameters may be e.g. the average value or the minimum value of a bin.
-        
+
         Parameters
         ----------
         line : [float]
             The pixel counts, in units of electrons.
-            
+
         noise_map : [float]
             The standard noise_maps on the pixel counts, in units of electrons.
-            
+
         name : str
             An identifier for the name (e.g. image name) of the line.
-            
-        location : [int, int] 
-            The row and column indices of the first pixel in the line in the 
-            image. The row index is the distance in pixels to the readout 
+
+        location : [int, int]
+            The row and column indices of the first pixel in the line in the
+            image. The row index is the distance in pixels to the readout
             register minus one.
-            
-        date : float 
+
+        date : float
             The Julian date.
-            
+
         background : float
-            The background charge count, in units of electrons. It is assumed 
+            The background charge count, in units of electrons. It is assumed
             that the background has not been subtracted from the line.
-            
+
         flux : float
-            The maximum charge in the line, or e.g. for a CTI trail the original 
+            The maximum charge in the line, or e.g. for a CTI trail the original
             flux before trailing, in units of electrons.
-            
+
         n_stacked : int
             If the line is an averaged stack, the number of stacked lines.
-            
+
         Attributes
         ----------
-        length : int 
+        length : int
             The number of pixels in the line array.
         """
         self.line = line
@@ -77,40 +77,40 @@ class Line(object):
 
 class LineCollection(object):
     def __init__(self, lines=None):
-        """ A collection of 1D lines of pixels with metadata.
-        
+        """A collection of 1D lines of pixels with metadata.
+
         Enables convenient analysis e.g. binning and stacking of CTI trails.
-        
+
         Parameters
         ----------
         lines : [Line]
             A list of the Line objects.
-            
+
         Attributes
         ----------
-        line : [[float]] 
+        line : [[float]]
             The pixel counts of each line, in units of electrons.
-            
+
         names : [str]
             The identifiers for the names (e.g. image name) of each line.
-            
-        locations : [[int, int]] 
-            The row and column indices of the first pixel in the line in the 
+
+        locations : [[int, int]]
+            The row and column indices of the first pixel in the line in the
             image, for each line.
-            
-        dates : [float] 
+
+        dates : [float]
             The Julian date of each line.
-            
+
         backgrounds : [float]
             The background charge count of each line, in units of electrons.
-            
+
         fluxes : [float]
             The maximum charge in each line, in units of electrons.
-            
-        lengths : [int] 
+
+        lengths : [int]
             The number of pixels in the line array of each line.
-            
-        n_lines : int 
+
+        n_lines : int
             The number of lines in the collection.
         """
         if lines is None:
@@ -182,24 +182,24 @@ class LineCollection(object):
             self.append(pickle.load(f))
 
     def find_consistent_lines(self, fraction_present=2 / 3):
-        """ Identify lines that are consistently present across several images.
-        
+        """Identify lines that are consistently present across several images.
+
         This helps to identify warm pixels by discarding noise peaks.
-        
+
         Parameters
         ----------
         self : LineCollection
-            Must contain lines from multiple images as identified by their 
+            Must contain lines from multiple images as identified by their
             Line.name with potentially matching lines with the same
             Line.location in their images.
-        
-        fraction_present : float 
+
+        fraction_present : float
             The minimum fraction of images in which the pixel must be present.
-            
+
         Returns
         -------
         consistent_lines : [int]
-            The indices of consistently present pixel lines in the attribute 
+            The indices of consistently present pixel lines in the attribute
             arrays.
         """
         # Number of separate images
@@ -232,9 +232,9 @@ class LineCollection(object):
         n_background_bins=1,
     ):
         """
-        Return the index for the 1D ordering of stacked lines in bins, given the 
+        Return the index for the 1D ordering of stacked lines in bins, given the
         index and number of each bin.
-        
+
         See generate_stacked_lines_from_bins().
         """
         return int(
@@ -268,64 +268,64 @@ class LineCollection(object):
         background_bins=None,
         return_bin_info=False,
     ):
-        """ Create a collection of stacked lines by averaging within bins.
-        
-        The following metadata variables must be set for all lines: line, 
-        location, date, background, and flux. Set n_*_bins=1 (default) to ignore 
-        any of these variables for the actual binning, but their values must 
+        """Create a collection of stacked lines by averaging within bins.
+
+        The following metadata variables must be set for all lines: line,
+        location, date, background, and flux. Set n_*_bins=1 (default) to ignore
+        any of these variables for the actual binning, but their values must
         still be set, i.e. not None.
-        
-        Lines should all be the same length. 
-        
-        The full bin edge values may be provided, or instead the number and 
-        limits of the bins. Bin minima and maxima default to the extremes of the 
-        lines' values with, by default, logarithmic spacing for the flux bins 
+
+        Lines should all be the same length.
+
+        The full bin edge values may be provided, or instead the number and
+        limits of the bins. Bin minima and maxima default to the extremes of the
+        lines' values with, by default, logarithmic spacing for the flux bins
         and linear for the others.
-        
+
         Lines with values outside of the bin minima or maxima are discarded.
-        
+
         Parameters
         ----------
         row_bins : [float]
-            The edge values of the bins for the rows, i.e. distance from the 
-            readout register (minus one). If provided, this overrides the other 
-            bin inputs to allow for uneven bin spacings, for example. If this is 
+            The edge values of the bins for the rows, i.e. distance from the
+            readout register (minus one). If provided, this overrides the other
+            bin inputs to allow for uneven bin spacings, for example. If this is
             None (default), the other inputs are used to create it.
-        
+
         n_row_bins : int
             The number of row bins, if row_bins is not provided.
-        
-        row_min : float 
+
+        row_min : float
             The minimum value for the row bins, if row_bins is not provided.
-        
-        row_max : float 
+
+        row_max : float
             The maximum value for the row bins, if row_bins is not provided.
-        
+
         row_scale : str
-            The spacing (linear of logarithmic) for the row bins, if row_bins is 
+            The spacing (linear of logarithmic) for the row bins, if row_bins is
             not provided.
-        
-        flux_bins, n_flux_bins, flux_min, flux_max, flux_scale : [float], int, 
+
+        flux_bins, n_flux_bins, flux_min, flux_max, flux_scale : [float], int,
         float, float, str
             As above, for the bins by flux.
-        
-        date_bins, n_date_bins, date_min, date_max, date_scale : [float], int, 
+
+        date_bins, n_date_bins, date_min, date_max, date_scale : [float], int,
         float, float, str
             As above, for the bins by Julian date.
-        
-        background_bins, n_background_bins, background_min, background_max, 
+
+        background_bins, n_background_bins, background_min, background_max,
         background_scale : [float], int, float, float, str
             As above, for the bins by background.
-            
+
         return_bin_info : bool
             If True, then also return the bin values for each parameter.
-            
+
         Returns
         -------
         stacked_lines : LineCollection
-            A new collection of the stacked pixel lines, including noise_maps. 
+            A new collection of the stacked pixel lines, including noise_maps.
             Metadata parameters contain the lower edge bin value.
-            
+
         row_bins, flux_bins, date_bins, background_bins : [float]
             Returned if return_bin_info is True. The edge values of the bins for
             each parameter.

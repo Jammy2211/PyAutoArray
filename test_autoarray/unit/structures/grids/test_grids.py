@@ -1,4 +1,4 @@
-import os
+from os import path
 import numpy as np
 import pytest
 
@@ -6,9 +6,9 @@ import autoarray as aa
 from autoarray import exc
 from autoarray.structures import grids
 
-from autoarray.mock.mock import MockGridRadialMinimum
-
-test_grid_dir = "{}/files/grid/".format(os.path.dirname(os.path.realpath(__file__)))
+test_grid_dir = path.join(
+    "{}".format(path.dirname(path.realpath(__file__))), "files", "grids"
+)
 
 
 class TestAPI:
@@ -387,7 +387,7 @@ class TestAPI:
         assert grid.sub_size == 2
 
     def test__bounding_box__align_at_corners__grid_corner_is_at_bounding_box_corner(
-        self
+        self,
     ):
 
         grid = aa.Grid.bounding_box(
@@ -439,7 +439,7 @@ class TestAPI:
         assert grid.origin == (0.0, 0.0)
 
     def test__bounding_box__uniform_box__buffer_around_corners__makes_grid_with_correct_pixel_scales_and_origin(
-        self
+        self,
     ):
 
         grid = aa.Grid.bounding_box(
@@ -900,7 +900,7 @@ class TestGrid:
         assert grid.sub_size == 2
 
     def test__manual__exception_raised_if_input_grid_is_2d_and_not_sub_shape_of_mask(
-        self
+        self,
     ):
 
         with pytest.raises(exc.GridException):
@@ -925,7 +925,7 @@ class TestGrid:
             )
 
     def test__manual__exception_raised_if_input_grid_is_not_number_of_masked_sub_pixels(
-        self
+        self,
     ):
 
         with pytest.raises(exc.GridException):
@@ -988,11 +988,11 @@ class TestGrid:
 
         grid = aa.Grid.uniform(shape_2d=(2, 2), pixel_scales=2.0)
 
-        grid.output_to_fits(file_path=f"{test_grid_dir}/grid.fits", overwrite=True)
+        file_path = path.join(test_grid_dir, "grid.fits")
 
-        grid_from_fits = aa.Grid.from_fits(
-            file_path=f"{test_grid_dir}/grid.fits", pixel_scales=2.0
-        )
+        grid.output_to_fits(file_path=file_path, overwrite=True)
+
+        grid_from_fits = aa.Grid.from_fits(file_path=file_path, pixel_scales=2.0)
 
         assert type(grid) == grids.Grid
         assert (
@@ -1031,12 +1031,12 @@ class TestGridSparse:
                 origin=(0.0, 0.0),
             )
 
-            unmasked_sparse_grid_pixel_centres = aa.util.grid.grid_pixel_centres_1d_from(
-                grid_scaled_1d=unmasked_sparse_grid_util,
-                shape_2d=grid.mask.shape,
-                pixel_scales=grid.pixel_scales,
-            ).astype(
-                "int"
+            unmasked_sparse_grid_pixel_centres = (
+                aa.util.grid.grid_pixel_centres_1d_from(
+                    grid_scaled_1d=unmasked_sparse_grid_util,
+                    shape_2d=grid.mask.shape,
+                    pixel_scales=grid.pixel_scales,
+                ).astype("int")
             )
 
             total_sparse_pixels = aa.util.mask.total_sparse_pixels_from(
@@ -1067,9 +1067,11 @@ class TestGridSparse:
                 "int"
             )
 
-            sparse_1d_index_for_mask_1d_index_util = aa.util.sparse.sparse_1d_index_for_mask_1d_index_from(
-                regular_to_unmasked_sparse=regular_to_unmasked_sparse_util,
-                sparse_for_unmasked_sparse=sparse_for_unmasked_sparse_util,
+            sparse_1d_index_for_mask_1d_index_util = (
+                aa.util.sparse.sparse_1d_index_for_mask_1d_index_from(
+                    regular_to_unmasked_sparse=regular_to_unmasked_sparse_util,
+                    sparse_for_unmasked_sparse=sparse_for_unmasked_sparse_util,
+                )
             )
 
             sparse_grid_util = aa.util.sparse.sparse_grid_via_unmasked_from(
@@ -1084,7 +1086,7 @@ class TestGridSparse:
             assert (sparse_grid.sparse == sparse_grid_util).all()
 
         def test__sparse_grid_overlaps_mask_perfectly__masked_pixels_in_masked_sparse_grid(
-            self
+            self,
         ):
             mask = aa.Mask2D.manual(
                 mask=np.array(
@@ -1189,7 +1191,7 @@ class TestGridSparse:
             ).all()
 
         def test__mask_with_offset_centre__origin_of_sparse_grid_moves_to_give_same_pairings(
-            self
+            self,
         ):
             mask = aa.Mask2D.manual(
                 mask=np.array(
@@ -1514,46 +1516,54 @@ class TestGridSparse:
 
             weight_map = np.ones(mask.pixels_in_mask)
 
-            sparse_grid_weight_0 = grids.GridSparse.from_total_pixels_grid_and_weight_map(
-                total_pixels=8,
-                grid=grid,
-                weight_map=weight_map,
-                n_iter=1,
-                max_iter=2,
-                seed=1,
-                stochastic=False,
+            sparse_grid_weight_0 = (
+                grids.GridSparse.from_total_pixels_grid_and_weight_map(
+                    total_pixels=8,
+                    grid=grid,
+                    weight_map=weight_map,
+                    n_iter=1,
+                    max_iter=2,
+                    seed=1,
+                    stochastic=False,
+                )
             )
 
-            sparse_grid_weight_1 = grids.GridSparse.from_total_pixels_grid_and_weight_map(
-                total_pixels=8,
-                grid=grid,
-                weight_map=weight_map,
-                n_iter=1,
-                max_iter=2,
-                seed=1,
-                stochastic=False,
+            sparse_grid_weight_1 = (
+                grids.GridSparse.from_total_pixels_grid_and_weight_map(
+                    total_pixels=8,
+                    grid=grid,
+                    weight_map=weight_map,
+                    n_iter=1,
+                    max_iter=2,
+                    seed=1,
+                    stochastic=False,
+                )
             )
 
             assert (sparse_grid_weight_0.sparse == sparse_grid_weight_1.sparse).all()
 
-            sparse_grid_weight_0 = grids.GridSparse.from_total_pixels_grid_and_weight_map(
-                total_pixels=8,
-                grid=grid,
-                weight_map=weight_map,
-                n_iter=1,
-                max_iter=2,
-                seed=1,
-                stochastic=True,
+            sparse_grid_weight_0 = (
+                grids.GridSparse.from_total_pixels_grid_and_weight_map(
+                    total_pixels=8,
+                    grid=grid,
+                    weight_map=weight_map,
+                    n_iter=1,
+                    max_iter=2,
+                    seed=1,
+                    stochastic=True,
+                )
             )
 
-            sparse_grid_weight_1 = grids.GridSparse.from_total_pixels_grid_and_weight_map(
-                total_pixels=8,
-                grid=grid,
-                weight_map=weight_map,
-                n_iter=1,
-                max_iter=2,
-                seed=1,
-                stochastic=True,
+            sparse_grid_weight_1 = (
+                grids.GridSparse.from_total_pixels_grid_and_weight_map(
+                    total_pixels=8,
+                    grid=grid,
+                    weight_map=weight_map,
+                    n_iter=1,
+                    max_iter=2,
+                    seed=1,
+                    stochastic=True,
+                )
             )
 
             assert (sparse_grid_weight_0.sparse != sparse_grid_weight_1.sparse).any()
@@ -1670,7 +1680,7 @@ class TestBorder:
         assert relocated_grid.sub_size == 2
 
     def test__outside_border_are_relocations__positive_origin_included_in_relocate(
-        self
+        self,
     ):
         mask = aa.Mask2D.circular(
             shape_2d=(60, 60),

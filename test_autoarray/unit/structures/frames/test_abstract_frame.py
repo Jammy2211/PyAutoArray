@@ -152,7 +152,7 @@ class TestFrameRegions:
         ).all()
 
     def test__parallel_front_edge_of_region__extracts_rows_within_bottom_of_region(
-        self
+        self,
     ):
 
         frame = aa.Frame.ones(shape_2d=(3, 3), pixel_scales=1.0, roe_corner=(1, 0))
@@ -361,7 +361,7 @@ class TestFrameRegions:
         assert trails == (0, 3, 4, 6)
 
     def test__serial_entie_rows_of_regioons__full_region_from_left_most_prescan_to_right_most_end_of_trails(
-        self
+        self,
     ):
 
         frame = aa.Frame.manual(

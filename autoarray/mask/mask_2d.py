@@ -149,7 +149,7 @@ class AbstractMask2D(abstract_mask.AbstractMask):
     def trimmed_array_from_padded_array_and_image_shape(
         self, padded_array, image_shape
     ):
-        """ Map a padded 1D array of values to its original 2D array, trimming all edge values.
+        """Map a padded 1D array of values to its original 2D array, trimming all edge values.
 
         Parameters
         -----------
@@ -321,7 +321,7 @@ class Mask2D(AbstractMask2D):
     ) -> "Mask2D":
         """
         Returns a Mask2D (see *Mask2D.__new__*) where all `False` entries are within a circle of input radius.
-        
+
         The ``radius`` and ``centre`` are both input in scaled units.
 
         Parameters
@@ -374,8 +374,8 @@ class Mask2D(AbstractMask2D):
     ) -> "Mask2D":
         """
         Returns a Mask2D (see *Mask2D.__new__*) where all `False` entries are within an annulus of input
-        inner radius and outer radius. 
-         
+        inner radius and outer radius.
+
         The ``inner_radius``, ``outer_radius`` and ``centre`` are all input in scaled units.
 
         Parameters
@@ -435,8 +435,8 @@ class Mask2D(AbstractMask2D):
     ) -> "Mask2D":
         """
         Returns a Mask2D (see *Mask2D.__new__*) where all `False` entries are within an inner circle and second
-        outer circle, forming an inverse annulus. 
-        
+        outer circle, forming an inverse annulus.
+
         The ``inner_radius``, ``outer_radius``, ``outer_radius_2`` and ``centre`` are all input in scaled units.
 
         Parameters

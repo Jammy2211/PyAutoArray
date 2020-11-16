@@ -307,7 +307,7 @@ class TestPixelSignals:
         assert (pixel_signals == np.array([1.0, 1.0, 1.0])).all()
 
     def test__galaxy_flux_in_a_pixel_pixel_is_double_the_others__pixel_signal_is_1_others_a_half(
-        self
+        self,
     ):
 
         pixelization_1d_index_for_sub_mask_1d_index = np.array([0, 1, 2])

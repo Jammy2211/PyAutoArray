@@ -338,8 +338,8 @@ class Imaging(AbstractImaging):
         cls,
         image_path,
         pixel_scales,
+        noise_map_path,
         image_hdu=0,
-        noise_map_path=None,
         noise_map_hdu=0,
         psf_path=None,
         psf_hdu=0,
@@ -449,7 +449,7 @@ class AbstractSimulatorImaging:
         renormalize_psf : bool
             If `True`, the PSF kernel is renormalized so all values sum to 1.0.
         read_noise : float
-            The level of read-noise added to the simulated imaging by drawing from a Gaussian distribution with 
+            The level of read-noise added to the simulated imaging by drawing from a Gaussian distribution with
             sigma equal to the value `read_noise`.
         add_poisson_noise : bool
             Whether Poisson noise corresponding to photon count statistics on the imaging observation is added.

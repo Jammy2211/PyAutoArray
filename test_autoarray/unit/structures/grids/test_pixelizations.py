@@ -1,4 +1,3 @@
-import os
 import numpy as np
 import pytest
 import scipy.spatial
@@ -7,15 +6,11 @@ from autoarray import exc
 import autoarray as aa
 from autoarray.structures import grids
 
-test_coordinates_dir = "{}/files/coordinates/".format(
-    os.path.dirname(os.path.realpath(__file__))
-)
-
 
 class TestGridRectangular:
     class TestGridNeighbors:
         def test__3x3_grid__buffer_is_small__grid_give_min_minus_1_max_1__sets_up_geometry_correctly(
-            self
+            self,
         ):
             grid = np.array(
                 [
@@ -190,9 +185,10 @@ class TestGridRectangular:
                 shape_2d=(7, 5), grid=np.zeros((2, 2)), buffer=1e-8
             )
 
-            pixel_neighbors_util, pixel_neighbors_size_util = aa.util.pixelization.rectangular_neighbors_from(
-                shape_2d=(7, 5)
-            )
+            (
+                pixel_neighbors_util,
+                pixel_neighbors_size_util,
+            ) = aa.util.pixelization.rectangular_neighbors_from(shape_2d=(7, 5))
 
             assert (pix_grid.pixel_neighbors == pixel_neighbors_util).all()
             assert (pix_grid.pixel_neighbors_size == pixel_neighbors_size_util).all()
@@ -475,7 +471,10 @@ class TestGridVoronoi:
                 np.asarray([grid[:, 1], grid[:, 0]]).T, qhull_options="Qbb Qc Qx Qm"
             )
 
-            pixel_neighbors_util, pixel_neighbors_size_util = aa.util.pixelization.voronoi_neighbors_from(
+            (
+                pixel_neighbors_util,
+                pixel_neighbors_size_util,
+            ) = aa.util.pixelization.voronoi_neighbors_from(
                 pixels=9, ridge_points=np.array(voronoi.ridge_points)
             )
 

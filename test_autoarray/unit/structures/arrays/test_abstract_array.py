@@ -1,4 +1,5 @@
 import os
+from os import path
 
 import numpy as np
 import pytest
@@ -7,7 +8,9 @@ import shutil
 import autoarray as aa
 from autoarray import exc
 
-test_data_dir = "{}/files/array/".format(os.path.dirname(os.path.realpath(__file__)))
+test_data_dir = path.join(
+    "{}".format(path.dirname(path.realpath(__file__))), "files", "array"
+)
 
 
 class TestConstructorMethods:
@@ -254,7 +257,7 @@ class TestNewArrays:
         assert arr.mask.pixel_scales == (1.0, 1.0)
 
     def test__padded_from_kernel_shape__padded_edge_of_zeros_where_extra_psf_blurring_is_performed(
-        self
+        self,
     ):
 
         array_2d = np.ones((5, 5))
@@ -289,7 +292,7 @@ class TestNewArrays:
         assert new_arr.mask.pixel_scales == (1.0, 1.0)
 
     def test__trimmed_from_kernel_shape__trim_edges_where_extra_psf_blurring_is_performed(
-        self
+        self,
     ):
         array_2d = np.ones((5, 5))
         array_2d[2, 2] = 2.0
@@ -601,21 +604,24 @@ class TestOutputToFits:
     def test__output_to_fits(self):
 
         arr = aa.Array.from_fits(
-            file_path=test_data_dir + "3x3_ones.fits", hdu=0, pixel_scales=1.0
+            file_path=path.join(test_data_dir, "3x3_ones.fits"), hdu=0, pixel_scales=1.0
         )
 
-        output_data_dir = "{}/files/array/output_test/".format(
-            os.path.dirname(os.path.realpath(__file__))
+        output_data_dir = path.join(
+            "{}".format(path.dirname(path.realpath(__file__))),
+            "files",
+            "array",
+            "output_test",
         )
-        if os.path.exists(output_data_dir):
+        if path.exists(output_data_dir):
             shutil.rmtree(output_data_dir)
 
         os.makedirs(output_data_dir)
 
-        arr.output_to_fits(file_path=output_data_dir + "array.fits")
+        arr.output_to_fits(file_path=path.join(output_data_dir, "array.fits"))
 
         array_from_out = aa.Array.from_fits(
-            file_path=output_data_dir + "array.fits", hdu=0, pixel_scales=1.0
+            file_path=path.join(output_data_dir, "array.fits"), hdu=0, pixel_scales=1.0
         )
 
         assert (array_from_out.in_2d == np.ones((3, 3))).all()
@@ -623,21 +629,25 @@ class TestOutputToFits:
     def test__output_to_fits__shapes_of_arrays_are_2d(self):
 
         arr = aa.Array.from_fits(
-            file_path=test_data_dir + "3x3_ones.fits", hdu=0, pixel_scales=1.0
+            file_path=path.join(test_data_dir, "3x3_ones.fits"), hdu=0, pixel_scales=1.0
         )
 
-        output_data_dir = "{}/files/array/output_test/".format(
-            os.path.dirname(os.path.realpath(__file__))
+        output_data_dir = path.join(
+            "{}".format(path.dirname(path.realpath(__file__))),
+            "files",
+            "array",
+            "output_test",
         )
-        if os.path.exists(output_data_dir):
+
+        if path.exists(output_data_dir):
             shutil.rmtree(output_data_dir)
 
         os.makedirs(output_data_dir)
 
-        arr.output_to_fits(file_path=output_data_dir + "array.fits")
+        arr.output_to_fits(file_path=path.join(output_data_dir, "array.fits"))
 
         array_from_out = aa.util.array.numpy_array_2d_from_fits(
-            file_path=output_data_dir + "array.fits", hdu=0
+            file_path=path.join(output_data_dir, "array.fits"), hdu=0
         )
 
         assert (array_from_out == np.ones((3, 3))).all()
@@ -646,10 +656,12 @@ class TestOutputToFits:
 
         masked_array = aa.Array.manual_mask(array=arr, mask=mask)
 
-        masked_array.output_to_fits(file_path=output_data_dir + "masked_array.fits")
+        masked_array.output_to_fits(
+            file_path=path.join(output_data_dir, "masked_array.fits")
+        )
 
         masked_array_from_out = aa.util.array.numpy_array_2d_from_fits(
-            file_path=output_data_dir + "masked_array.fits", hdu=0
+            file_path=path.join(output_data_dir, "masked_array.fits"), hdu=0
         )
 
         assert (masked_array_from_out == np.ones((3, 3))).all()

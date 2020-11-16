@@ -1,6 +1,5 @@
 import numpy as np
 import scipy.spatial.qhull as qhull
-import typing
 from autoconf import conf
 from autoarray.structures import abstract_structure
 from autoarray.structures import grids
@@ -117,7 +116,7 @@ class GridInterpolate(abstract_grid.AbstractGrid):
         store_in_1d : bool
             If True, the grid is stored in 1D as an ndarray of shape [total_unmasked_pixels, 2]. If False, it is
             stored in 2D as an ndarray of shape [total_y_pixels, total_x_pixels, 2].
-            """
+        """
         return GridInterpolate(
             grid=grid,
             mask=mask,
@@ -340,14 +339,14 @@ class GridInterpolate(abstract_grid.AbstractGrid):
 
     def blurring_grid_from_kernel_shape(self, kernel_shape_2d):
         """
-    Returns the blurring grid from a grid and create it as a GridItnterpolate, via an input 2D kernel shape.
+        Returns the blurring grid from a grid and create it as a GridItnterpolate, via an input 2D kernel shape.
 
-        For a full description of blurring grids, checkout *blurring_grid_from_mask_and_kernel_shape*.
+            For a full description of blurring grids, checkout *blurring_grid_from_mask_and_kernel_shape*.
 
-        Parameters
-        ----------
-        kernel_shape_2d : (float, float)
-            The 2D shape of the kernel which convolves signal from masked pixels to unmasked pixels.
+            Parameters
+            ----------
+            kernel_shape_2d : (float, float)
+                The 2D shape of the kernel which convolves signal from masked pixels to unmasked pixels.
         """
 
         return GridInterpolate.blurring_grid_from_mask_and_kernel_shape(

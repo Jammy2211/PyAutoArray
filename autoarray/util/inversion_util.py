@@ -9,7 +9,7 @@ def data_vector_via_blurred_mapping_matrix_from(
     """
     Returns the data vector `D` from a blurred mapping matrix `f` and the 1D image `d` and 1D noise-map $\sigma$`
     (see Warren & Dye 2003).
-    
+
     Parameters
     -----------
     blurred_mapping_matrix : np.ndarray
@@ -132,7 +132,7 @@ def inversion_residual_map_from(
         The values computed by the `Inversion` for the `reconstruction`, which are used in this function to compute
         the `residual_map` values.
     data : np.ndarray
-        The array of `data` that the `Inversion` fits. 
+        The array of `data` that the `Inversion` fits.
     mask_1d_index_for_sub_mask_1d_index : np.ndarray
         The mappings between the observed grid's sub-pixels and observed grid's pixels.
     all_sub_mask_1d_indexes_for_pixelization_1d_index : np.ndarray
@@ -176,8 +176,8 @@ def inversion_normalized_residual_map_from(
     """
     Returns the normalized residual-map of the `reconstruction` of an `Inversion` on its pixel-grid.
 
-    For this normalized residual-map, each pixel on the `reconstruction`'s pixel-grid corresponds to the sum of 
-    absolute normalized residual values in the `normalized residual_map` of the reconstructed `data` divided by the 
+    For this normalized residual-map, each pixel on the `reconstruction`'s pixel-grid corresponds to the sum of
+    absolute normalized residual values in the `normalized residual_map` of the reconstructed `data` divided by the
     number of data-points that it maps too (to normalize its value).
 
     This provides information on where in the `Inversion`'s `reconstruction` it is least able to accurately fit the
@@ -189,7 +189,7 @@ def inversion_normalized_residual_map_from(
         The values computed by the `Inversion` for the `reconstruction`, which are used in this function to compute
         the `normalized residual_map` values.
     data : np.ndarray
-        The array of `data` that the `Inversion` fits. 
+        The array of `data` that the `Inversion` fits.
     mask_1d_index_for_sub_mask_1d_index : np.ndarray
         The mappings between the observed grid's sub-pixels and observed grid's pixels.
     all_sub_mask_1d_indexes_for_pixelization_1d_index : np.ndarray
@@ -198,7 +198,7 @@ def inversion_normalized_residual_map_from(
     Returns
     -------
     np.ndarray
-        The normalized residuals of the `Inversion`'s `reconstruction` on its pixel-grid, computed by mapping the 
+        The normalized residuals of the `Inversion`'s `reconstruction` on its pixel-grid, computed by mapping the
         `normalized_residual_map` from the fit to the data.
     """
     normalized_residual_map = np.zeros(
@@ -247,7 +247,7 @@ def inversion_chi_squared_map_from(
         The values computed by the `Inversion` for the `reconstruction`, which are used in this function to compute
         the `chi_squared_map` values.
     data : np.ndarray
-        The array of `data` that the `Inversion` fits. 
+        The array of `data` that the `Inversion` fits.
     mask_1d_index_for_sub_mask_1d_index : np.ndarray
         The mappings between the observed grid's sub-pixels and observed grid's pixels.
     all_sub_mask_1d_indexes_for_pixelization_1d_index : np.ndarray

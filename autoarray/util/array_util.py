@@ -282,7 +282,7 @@ def numpy_array_1d_to_fits(
     numpy_array_to_fits(array_2d=array_2d, file_path='/path/to/file/filename.fits', overwrite=True)
     """
 
-    file_dir = file_path.rsplit("/", 1)[0]
+    file_dir = os.path.split(file_path)[0]
 
     if not os.path.exists(file_dir):
         os.makedirs(file_dir)
@@ -352,7 +352,7 @@ def numpy_array_2d_to_fits(
     numpy_array_to_fits(array_2d=array_2d, file_path='/path/to/file/filename.fits', overwrite=True)
     """
 
-    file_dir = file_path.rsplit("/", 1)[0]
+    file_dir = os.path.split(file_path)[0]
 
     if not os.path.exists(file_dir):
         os.makedirs(file_dir)
@@ -410,7 +410,7 @@ def numpy_array_2d_from_fits(
 @decorator_util.jit()
 def index_2d_for_index_1d_from(indexes_1d: np.ndarray, shape_2d) -> np.ndarray:
     """
-    For pixels on a 2D array of shape (total_y_pixels, total_x_pixels), this array maps the 1D pixel indexes to their 
+    For pixels on a 2D array of shape (total_y_pixels, total_x_pixels), this array maps the 1D pixel indexes to their
     corresponding 2D pixel indexes.
 
     Indexing is defined from the top-left corner rightwards and downwards, whereby the top-left pixel on the 2D array

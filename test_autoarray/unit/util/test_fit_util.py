@@ -69,7 +69,7 @@ class TestNormalizedResidualMap:
         ).all()
 
     def test__model_data_mismatch__mask_included__masked_normalized_residuals_set_to_0(
-        self
+        self,
     ):
 
         data = np.array([10.0, 10.0, 10.0, 10.0])
@@ -206,7 +206,7 @@ class TestLikelihood:
         assert log_likelihood == -0.5 * (chi_squared + noise_normalization)
 
     def test__model_data_mismatch__no_masking__chi_squared_and_noise_normalization_are_lh(
-        self
+        self,
     ):
 
         data = np.array([10.0, 10.0, 10.0, 10.0])
@@ -356,8 +356,10 @@ class TestLikelihood:
 class TestInversionEvidence:
     def test__simple_values(self):
 
-        likelihood_with_regularization_terms = aa.util.fit.log_likelihood_with_regularization_from(
-            chi_squared=3.0, regularization_term=6.0, noise_normalization=2.0
+        likelihood_with_regularization_terms = (
+            aa.util.fit.log_likelihood_with_regularization_from(
+                chi_squared=3.0, regularization_term=6.0, noise_normalization=2.0
+            )
         )
 
         assert likelihood_with_regularization_terms == -0.5 * (3.0 + 6.0 + 2.0)

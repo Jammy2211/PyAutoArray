@@ -465,40 +465,40 @@ class AbstractArray(abstract_structure.AbstractStructure):
 
     def binned_up_from(self, bin_up_factor, method):
         """
-    Returns a binned version of the Array, where binning up occurs by coming all pixel values in a set of
-        (bin_up_factor x bin_up_factor) pixels.
+        Returns a binned version of the Array, where binning up occurs by coming all pixel values in a set of
+            (bin_up_factor x bin_up_factor) pixels.
 
-        The pixels can be combined:
+            The pixels can be combined:
 
-        - By taking the mean of their values, which one may use for binning up an image.
-        - By adding them in quadranture, which one may use for binning up a noise-map.
-        - By summing them, which one may use for binning up an exposure time map.
+            - By taking the mean of their values, which one may use for binning up an image.
+            - By adding them in quadranture, which one may use for binning up a noise-map.
+            - By summing them, which one may use for binning up an exposure time map.
 
-        Parameters
-        ----------
-        bin_up_factor : int
-            The factor which the array is binned up by (e.g. a value of 2 bins every 2 x 2 pixels into one pixel).
-        method : str
-            The method used to combine the set of values that are binned up.
+            Parameters
+            ----------
+            bin_up_factor : int
+                The factor which the array is binned up by (e.g. a value of 2 bins every 2 x 2 pixels into one pixel).
+            method : str
+                The method used to combine the set of values that are binned up.
         """
 
         binned_mask = self.mask.binned_mask_from_bin_up_factor(
             bin_up_factor=bin_up_factor
         )
 
-        if method is "mean":
+        if method == "mean":
 
             binned_array_2d = binning_util.bin_array_2d_via_mean(
                 array_2d=self.in_2d, bin_up_factor=bin_up_factor
             )
 
-        elif method is "quadrature":
+        elif method == "quadrature":
 
             binned_array_2d = binning_util.bin_array_2d_via_quadrature(
                 array_2d=self.in_2d, bin_up_factor=bin_up_factor
             )
 
-        elif method is "sum":
+        elif method == "sum":
 
             binned_array_2d = binning_util.bin_array_2d_via_sum(
                 array_2d=self.in_2d, bin_up_factor=bin_up_factor

@@ -8,7 +8,7 @@ def residual_map_with_mask_from(
     Returns the residual-map of the fit of model-data to a masked dataset, where:
 
     Residuals = (Data - Model_Data).
-    
+
     The residual-map values in masked pixels are returned as zero.
 
     Parameters

@@ -12,9 +12,6 @@ def euclid_data():
     return euclid_data
 
 
-path = "{}/".format(os.path.dirname(os.path.realpath(__file__)))
-
-
 class TestConstructor:
     def test__constructor__converts_region_to_cartesians(self):
         region = aa.Region(region=(0, 1, 2, 3))
@@ -92,7 +89,7 @@ class TestAddRegionToArrayFromImage:
         assert (frame == np.array([[1.0, 0.0], [0.0, 0.0]])).all()
 
     def test__array_is_all_1s__image_goes_into_correct_region_of_array_and_adds_to_it(
-        self
+        self,
     ):
         frame = aa.Frame.manual(array=np.ones((2, 2)), pixel_scales=1.0)
         image = np.ones((2, 2))
