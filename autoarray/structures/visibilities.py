@@ -175,7 +175,8 @@ class VisibilitiesNoiseMap(Visibilities):
         obj.preconditioner_noise_normalization = np.sum(
             np.divide(1.0, np.square(visibilities_1d))
         )
-        obj.Wop = pylops.Diagonal(1.0 / obj.as_complex.ravel(), dtype="complex128")
+
+        obj.Wop = pylops.Diagonal(1.0 / np.real(obj).ravel(), dtype="complex128")
         return obj
 
     def __array_finalize__(self, obj):

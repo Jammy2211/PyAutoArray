@@ -12,7 +12,6 @@ from autoarray.util import inversion_util
 from scipy.interpolate import griddata
 from scipy import sparse
 import pylops
-import time
 
 
 class SettingsInversion:
@@ -21,7 +20,7 @@ class SettingsInversion:
         use_linear_operators=False,
         use_preconditioner=False,
         tolerance=1e-6,
-        maxiter=500,
+        maxiter=250,
         check_solution=True,
     ):
 
@@ -728,16 +727,9 @@ class InversionInterferometerLinearOperator(AbstractInversionInterferometer):
         settings=SettingsInversion(),
     ):
 
-        start = time.time()
-
         regularization_matrix = regularization.regularization_matrix_from_mapper(
             mapper=mapper
         )
-
-        calculation_time = time.time() - start
-        print("Time to compute Regularization Matrix = {}".format(calculation_time))
-
-        start = time.time()
 
         Aop = pylops.MatrixMult(
             sparse.bsr_matrix(mapper.mapping_matrix), dtype="complex128"
@@ -750,11 +742,6 @@ class InversionInterferometerLinearOperator(AbstractInversionInterferometer):
             regularization_matrix=regularization_matrix, dtype="float64"
         )
 
-        calculation_time = time.time() - start
-        print("Time to compute Ops = {}".format(calculation_time))
-
-        start = time.time()
-
         preconditioner_matrix = (
             inversion_util.preconditioner_matrix_via_mapping_matrix_from(
                 mapping_matrix=mapper.mapping_matrix,
@@ -765,21 +752,11 @@ class InversionInterferometerLinearOperator(AbstractInversionInterferometer):
             )
         )
 
-        calculation_time = time.time() - start
-        print("Time to compute precon = {}".format(calculation_time))
-
-        start = time.time()
-
         log_det_curvature_reg_matrix_term = 2.0 * np.sum(
             np.log(np.diag(np.linalg.cholesky(preconditioner_matrix)))
         )
 
-        calculation_time = time.time() - start
-        print("Time to compute precon log det term = {}".format(calculation_time))
-
         if not settings.use_preconditioner:
-
-            start = time.time()
 
             reconstruction = pylops.NormalEquationsInversion(
                 Op=Op,
@@ -787,13 +764,10 @@ class InversionInterferometerLinearOperator(AbstractInversionInterferometer):
                 epsNRs=[1.0],
                 NRegs=[Rop],
                 data=visibilities.as_complex,
-                #      Weight=noise_map.Wop,
+                Weight=noise_map.Wop,
                 tol=settings.tolerance,
                 **dict(maxiter=settings.maxiter),
             )
-
-            calculation_time = time.time() - start
-            print("Time to compute Recon = {}".format(calculation_time))
 
         else:
 
@@ -807,12 +781,10 @@ class InversionInterferometerLinearOperator(AbstractInversionInterferometer):
                 epsNRs=[1.0],
                 NRegs=[Rop],
                 data=visibilities.as_complex,
-                #    Weight=noise_map.Wop,
+                Weight=noise_map.Wop,
                 tol=settings.tolerance,
                 **dict(M=Mop, maxiter=settings.maxiter),
             )
-
-        print()
 
         return InversionInterferometerLinearOperator(
             visibilities=visibilities,

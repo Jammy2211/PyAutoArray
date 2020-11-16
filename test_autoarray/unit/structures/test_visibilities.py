@@ -1,5 +1,5 @@
 import os
-
+from os import path
 import numpy as np
 import pytest
 import shutil
@@ -7,8 +7,8 @@ import shutil
 import autoarray as aa
 from autoarray.structures import visibilities as vis
 
-test_data_dir = "{}/files/visibilities/".format(
-    os.path.dirname(os.path.realpath(__file__))
+test_data_dir = path.join(
+    "{}".format(path.dirname(path.realpath(__file__))), "files", "visibilities"
 )
 
 
@@ -70,14 +70,14 @@ class TestVisibilitiesAPI:
     def test__from_fits__makes_visibilities_without_other_inputs(self):
 
         visibilities = aa.Visibilities.from_fits(
-            file_path=test_data_dir + "3x2_ones.fits", hdu=0
+            file_path=path.join(test_data_dir, "3x2_ones.fits"), hdu=0
         )
 
         assert type(visibilities) == vis.Visibilities
         assert (visibilities.in_1d == np.ones((3, 2))).all()
 
         visibilities = aa.Visibilities.from_fits(
-            file_path=test_data_dir + "3x2_twos.fits", hdu=0
+            file_path=path.join(test_data_dir, "3x2_twos.fits"), hdu=0
         )
 
         assert type(visibilities) == vis.Visibilities
@@ -88,21 +88,22 @@ class TestVisibilities:
     def test__output_to_fits(self):
 
         visibilities = aa.Visibilities.from_fits(
-            file_path=test_data_dir + "3x2_ones.fits", hdu=0
+            file_path=path.join(test_data_dir, "3x2_ones.fits"), hdu=0
         )
 
-        output_data_dir = "{}/files/visibilities/output_test/".format(
-            os.path.dirname(os.path.realpath(__file__))
-        )
-        if os.path.exists(output_data_dir):
+        output_data_dir = path.join(test_data_dir, "output_test")
+
+        if path.exists(output_data_dir):
             shutil.rmtree(output_data_dir)
 
         os.makedirs(output_data_dir)
 
-        visibilities.output_to_fits(file_path=output_data_dir + "visibilities.fits")
+        visibilities.output_to_fits(
+            file_path=path.join(output_data_dir, "visibilities.fits")
+        )
 
         visibilities_from_out = aa.Visibilities.from_fits(
-            file_path=output_data_dir + "visibilities.fits", hdu=0
+            file_path=path.join(output_data_dir, "visibilities.fits"), hdu=0
         )
 
         assert (visibilities_from_out.in_1d == np.ones((3, 2))).all()
@@ -128,7 +129,9 @@ class TestVisibilitiesNoiseMap:
         assert noise_map.preconditioner_noise_normalization == pytest.approx(
             1.4236, 1.0e-4
         )
-        assert (
-            noise_map.Wop.todense()
-            == np.array([[0.2 - 0.4j, 0.0 + 0.0j], [0.0 + 0.0j, 0.12 - 0.16j]])
-        ).all()
+        # assert (
+        #     noise_map.Wop.todense()
+        #     == np.array([[0.2 - 0.4j, 0.0 + 0.0j], [0.0 + 0.0j, 0.12 - 0.16j]])
+        # ).all()
+
+        assert noise_map.Wop.todense() == pytest.approx(np.array([[1.0, 0.0], [0.0, 0.33333]]), 1.0e-4)

@@ -1,5 +1,5 @@
 import os
-
+from os import path
 import numpy as np
 import pytest
 import shutil
@@ -7,7 +7,9 @@ import shutil
 import autoarray as aa
 from autoarray import exc
 
-test_data_dir = "{}/files/mask/".format(os.path.dirname(os.path.realpath(__file__)))
+test_data_dir = path.join(
+    "{}".format(path.dirname(path.realpath(__file__))), "files", "mask"
+)
 
 
 class TestMask:
@@ -497,25 +499,28 @@ class TestToFromFits:
     def test__load_and_output_mask_to_fits(self):
 
         mask = aa.Mask2D.from_fits(
-            file_path=test_data_dir + "3x3_ones.fits",
+            file_path=path.join(test_data_dir, "3x3_ones.fits"),
             hdu=0,
             sub_size=1,
             pixel_scales=(1.0, 1.0),
         )
 
-        output_data_dir = "{}/files/array/output_test/".format(
-            os.path.dirname(os.path.realpath(__file__))
+        output_data_dir = path.join(
+            "{}".format(path.dirname(path.realpath(__file__))),
+            "files",
+            "array",
+            "output_test",
         )
 
-        if os.path.exists(output_data_dir):
+        if path.exists(output_data_dir):
             shutil.rmtree(output_data_dir)
 
         os.makedirs(output_data_dir)
 
-        mask.output_to_fits(file_path=f"{output_data_dir}/mask.fits")
+        mask.output_to_fits(file_path=path.join(output_data_dir, "mask.fits"))
 
         mask = aa.Mask2D.from_fits(
-            file_path=f"{output_data_dir}/mask.fits",
+            file_path=path.join(output_data_dir, "mask.fits"),
             hdu=0,
             sub_size=1,
             pixel_scales=(1.0, 1.0),
@@ -529,7 +534,7 @@ class TestToFromFits:
     def test__load_from_fits_with_resized_mask_shape(self):
 
         mask = aa.Mask2D.from_fits(
-            file_path=test_data_dir + "3x3_ones.fits",
+            file_path=path.join(test_data_dir, "3x3_ones.fits"),
             hdu=0,
             sub_size=1,
             pixel_scales=(1.0, 1.0),
@@ -539,7 +544,7 @@ class TestToFromFits:
         assert mask.shape_2d == (1, 1)
 
         mask = aa.Mask2D.from_fits(
-            file_path=test_data_dir + "3x3_ones.fits",
+            file_path=path.join(test_data_dir, "3x3_ones.fits"),
             hdu=0,
             sub_size=1,
             pixel_scales=(1.0, 1.0),

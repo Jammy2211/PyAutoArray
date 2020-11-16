@@ -426,7 +426,7 @@ class TestLegend:
 class TestOutput:
     def test__input_path_is_created(self):
 
-        test_path = path.join(directory, "files/output_path")
+        test_path = path.join(directory, "files", "output_path")
 
         if path.exists(test_path):
             shutil.rmtree(test_path)

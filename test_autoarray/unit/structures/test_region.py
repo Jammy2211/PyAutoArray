@@ -12,9 +12,6 @@ def euclid_data():
     return euclid_data
 
 
-path = "{}/".format(os.path.dirname(os.path.realpath(__file__)))
-
-
 class TestConstructor:
     def test__constructor__converts_region_to_cartesians(self):
         region = aa.Region(region=(0, 1, 2, 3))
