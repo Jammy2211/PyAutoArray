@@ -1,10 +1,6 @@
-import os
-
 import numpy as np
 
 import autoarray as aa
-
-test_data_dir = "{}/files/mask/".format(os.path.dirname(os.path.realpath(__file__)))
 
 
 class TestSubQuantities:

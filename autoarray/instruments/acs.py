@@ -20,9 +20,9 @@ logger.setLevel("INFO")
 
 def fits_hdu_from_quadrant_letter(quadrant_letter):
 
-    if quadrant_letter is "A" or quadrant_letter is "B":
+    if quadrant_letter == "A" or quadrant_letter == "B":
         return 1
-    elif quadrant_letter is "C" or quadrant_letter is "D":
+    elif quadrant_letter == "C" or quadrant_letter == "D":
         return 4
     else:
         raise exc.FrameException("Quadrant letter for FrameACS must be A, B, C or D.")
@@ -96,7 +96,7 @@ class FrameACS(f.Frame, ArrayACS):
         See the docstring of the `FrameACS` class for a complete description of the Euclid FPA, quadrants and
         rotations.
         """
-        if quadrant_letter is "B" or quadrant_letter is "C":
+        if quadrant_letter == "B" or quadrant_letter == "C":
 
             return cls.left(
                 array_electrons=array_electrons[0:parallel_size, 0:serial_size],
@@ -106,7 +106,7 @@ class FrameACS(f.Frame, ArrayACS):
                 parallel_overscan_size=parallel_overscan_size,
                 exposure_info=exposure_info,
             )
-        elif quadrant_letter is "A" or quadrant_letter is "D":
+        elif quadrant_letter == "A" or quadrant_letter == "D":
             return cls.right(
                 array=array_electrons[0:parallel_size, serial_size : serial_size * 2],
                 parallel_size=parallel_size,
@@ -209,7 +209,7 @@ class FrameACS(f.Frame, ArrayACS):
         overwrite : bool
             If a file already exists at the path, if overwrite=True it is overwritten else an error is raised."""
 
-        new_file_dir = new_file_path.rsplit("/", 1)[0]
+        new_file_dir = os.path.split(new_file_path)[0]
 
         if not os.path.exists(new_file_dir):
 

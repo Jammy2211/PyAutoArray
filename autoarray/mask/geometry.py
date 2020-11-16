@@ -102,13 +102,13 @@ class Geometry:
     @property
     def yticks(self):
         """
-    Returns the yticks labels of this grid, used for plotting the y-axis ticks when visualizing an image-grid"""
+        Returns the yticks labels of this grid, used for plotting the y-axis ticks when visualizing an image-grid"""
         return np.linspace(self.scaled_minima[0], self.scaled_maxima[0], 4)
 
     @property
     def xticks(self):
         """
-    Returns the xticks labels of this grid, used for plotting the x-axis ticks when visualizing an image-grid"""
+        Returns the xticks labels of this grid, used for plotting the x-axis ticks when visualizing an image-grid"""
         return np.linspace(self.scaled_minima[1], self.scaled_maxima[1], 4)
 
     @property

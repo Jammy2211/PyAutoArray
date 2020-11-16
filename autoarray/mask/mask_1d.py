@@ -20,7 +20,7 @@ class AbstractMask1d(abstract_mask.AbstractMask):
         *args,
         **kwargs
     ):
-        """ A 1D mask, representing 1D data on a uniform line of pixels with equal spacing.
+        """A 1D mask, representing 1D data on a uniform line of pixels with equal spacing.
 
         When applied to 1D data it extracts or masks the unmasked image pixels corresponding to mask entries that are
         `False` or 0).

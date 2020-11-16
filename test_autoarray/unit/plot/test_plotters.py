@@ -3,7 +3,6 @@ import autoarray as aa
 import autoarray.plot as aplt
 from os import path
 import matplotlib.pyplot as plt
-import os
 import pytest
 import numpy as np
 import shutil
@@ -12,14 +11,18 @@ directory = path.dirname(path.realpath(__file__))
 
 
 @pytest.fixture(name="plot_path")
-def make_plotter_setup():
-    return "{}/files/plotter/".format(os.path.dirname(os.path.realpath(__file__)))
+def make_plot_path_setup():
+    return path.join(
+        "{}".format(path.dirname(path.realpath(__file__))),
+        "files",
+        "plotter",
+    )
 
 
 @pytest.fixture(autouse=True)
 def set_config_path():
     conf.instance = conf.Config(
-        path.join(directory, "files/plotter"), path.join(directory, "output")
+        path.join(directory, "files", "plotter"), path.join(directory, "output")
     )
 
 
@@ -584,7 +587,7 @@ class TestAbstractPlotterAttributes:
         assert plotter.output.format == "png"
         assert plotter.output.filename == "file"
 
-        if os.path.exists(plotter.output.path):
+        if path.exists(plotter.output.path):
             shutil.rmtree(plotter.output.path)
 
         sub_plotter = aplt.SubPlotter()
@@ -603,7 +606,7 @@ class TestAbstractPlotterAttributes:
         assert sub_plotter.output.format == "png"
         assert sub_plotter.output.filename == "file"
 
-        if os.path.exists(plotter.output.path):
+        if path.exists(plotter.output.path):
             shutil.rmtree(plotter.output.path)
 
 
@@ -636,7 +639,7 @@ class TestAbstractPlotterPlots:
             include_border=True,
         )
 
-        assert f"{plot_path}/array1.png" in plot_patch.paths
+        assert path.join(plot_path, "array1.png") in plot_patch.paths
 
         plotter = aplt.Plotter(
             output=aplt.Output(path=plot_path, filename="array2", format="png")
@@ -655,7 +658,7 @@ class TestAbstractPlotterPlots:
             include_border=True,
         )
 
-        assert f"{plot_path}/array2.png" in plot_patch.paths
+        assert path.join(plot_path, "array2.png") in plot_patch.paths
 
         aplt.Array(
             array=array,
@@ -670,13 +673,13 @@ class TestAbstractPlotterPlots:
             ),
         )
 
-        assert f"{plot_path}/array3.png" in plot_patch.paths
+        assert path.join(plot_path, "array3.png") in plot_patch.paths
 
     def test__plot_array__fits_files_output_correctly(self, plot_path):
 
-        plot_path = f"{plot_path}//fits/"
+        plot_path = path.join(plot_path, "fits")
 
-        if os.path.exists(plot_path):
+        if path.exists(plot_path):
             shutil.rmtree(plot_path)
 
         arr = aa.Array.ones(shape_2d=(31, 31), pixel_scales=(1.0, 1.0), sub_size=2)
@@ -688,7 +691,7 @@ class TestAbstractPlotterPlots:
         plotter.plot_array(array=arr)
 
         arr = aa.util.array.numpy_array_2d_from_fits(
-            file_path=f"{plot_path}//array.fits", hdu=0
+            file_path=path.join(plot_path, "array.fits"), hdu=0
         )
 
         assert (arr == np.ones(shape=(31, 31))).all()
@@ -702,7 +705,7 @@ class TestAbstractPlotterPlots:
         plotter.plot_array(array=masked_array)
 
         arr = aa.util.array.numpy_array_2d_from_fits(
-            file_path=f"{plot_path}//array.fits", hdu=0
+            file_path=path.join(plot_path, "array.fits"), hdu=0
         )
 
         assert arr.shape == (13, 13)
@@ -717,7 +720,7 @@ class TestAbstractPlotterPlots:
 
         plotter.plot_frame(frame=frame, include_origin=True)
 
-        assert f"{plot_path}/frame1.png" in plot_patch.paths
+        assert path.join(plot_path, "frame1.png") in plot_patch.paths
 
         plotter = aplt.Plotter(
             output=aplt.Output(path=plot_path, filename="frame2", format="png")
@@ -725,7 +728,7 @@ class TestAbstractPlotterPlots:
 
         plotter.plot_frame(frame=frame, include_origin=True)
 
-        assert f"{plot_path}/frame2.png" in plot_patch.paths
+        assert path.join(plot_path, "frame2.png") in plot_patch.paths
 
         aplt.Frame(
             frame=frame,
@@ -734,13 +737,13 @@ class TestAbstractPlotterPlots:
             ),
         )
 
-        assert f"{plot_path}/frame3.png" in plot_patch.paths
+        assert path.join(plot_path, "frame3.png") in plot_patch.paths
 
     def test__plot_frame__fits_files_output_correctly(self, plot_path):
 
-        plot_path = f"{plot_path}//fits/"
+        plot_path = path.join(plot_path, "fits")
 
-        if os.path.exists(plot_path):
+        if path.exists(plot_path):
             shutil.rmtree(plot_path)
 
         frame = aa.Frame.ones(shape_2d=(31, 31), pixel_scales=(1.0, 1.0))
@@ -752,7 +755,7 @@ class TestAbstractPlotterPlots:
         plotter.plot_frame(frame=frame)
 
         frame = aa.util.array.numpy_array_2d_from_fits(
-            file_path=f"{plot_path}//frame.fits", hdu=0
+            file_path=path.join(plot_path, "frame.fits"), hdu=0
         )
 
         assert (frame == np.ones(shape=(31, 31))).all()
@@ -764,7 +767,7 @@ class TestAbstractPlotterPlots:
         plotter.plot_frame(frame=masked_frame)
 
         frame = aa.util.array.numpy_array_2d_from_fits(
-            file_path=f"{plot_path}//frame.fits", hdu=0
+            file_path=path.join(plot_path, "frame.fits"), hdu=0
         )
 
         assert frame.shape == (31, 31)
@@ -788,7 +791,7 @@ class TestAbstractPlotterPlots:
             symmetric_around_centre=False,
         )
 
-        assert f"{plot_path}/grid1.png" in plot_patch.paths
+        assert path.join(plot_path, "grid1.png") in plot_patch.paths
 
         plotter = aplt.Plotter(
             output=aplt.Output(path=plot_path, filename="grid2", format="png")
@@ -805,7 +808,7 @@ class TestAbstractPlotterPlots:
             symmetric_around_centre=True,
         )
 
-        assert f"{plot_path}/grid2.png" in plot_patch.paths
+        assert path.join(plot_path, "grid2.png") in plot_patch.paths
 
         aplt.Grid(
             grid=grid,
@@ -821,7 +824,7 @@ class TestAbstractPlotterPlots:
             ),
         )
 
-        assert f"{plot_path}/grid3.png" in plot_patch.paths
+        assert path.join(plot_path, "grid3.png") in plot_patch.paths
 
     def test__plot_line__works_with_all_extras_included(self, plot_path, plot_patch):
 
@@ -838,7 +841,7 @@ class TestAbstractPlotterPlots:
             vertical_line_labels=["line1", "line2"],
         )
 
-        assert f"{plot_path}/line1.png" in plot_patch.paths
+        assert path.join(plot_path, "line1.png") in plot_patch.paths
 
         plotter = aplt.Plotter(
             output=aplt.Output(path=plot_path, filename="line2", format="png")
@@ -853,7 +856,7 @@ class TestAbstractPlotterPlots:
             vertical_line_labels=["line1", "line2"],
         )
 
-        assert f"{plot_path}/line2.png" in plot_patch.paths
+        assert path.join(plot_path, "line2.png") in plot_patch.paths
 
         aplt.Line(
             y=np.array([1.0, 2.0, 3.0]),
@@ -867,7 +870,7 @@ class TestAbstractPlotterPlots:
             ),
         )
 
-        assert f"{plot_path}/line3.png" in plot_patch.paths
+        assert path.join(plot_path, "line3.png") in plot_patch.paths
 
     def test__plot_rectangular_mapper__works_with_all_extras_included(
         self, rectangular_mapper_7x7_3x3, plot_path, plot_patch
@@ -886,7 +889,7 @@ class TestAbstractPlotterPlots:
             source_pixel_indexes=[[0, 1], [2]],
         )
 
-        assert f"{plot_path}/mapper1.png" in plot_patch.paths
+        assert path.join(plot_path, "mapper1.png") in plot_patch.paths
 
         plotter = aplt.Plotter(
             output=aplt.Output(path=plot_path, filename="mapper2", format="png")
@@ -901,7 +904,7 @@ class TestAbstractPlotterPlots:
             source_pixel_indexes=[[0, 1], [2]],
         )
 
-        assert f"{plot_path}/mapper2.png" in plot_patch.paths
+        assert path.join(plot_path, "mapper2.png") in plot_patch.paths
 
         aplt.MapperObj(
             mapper=rectangular_mapper_7x7_3x3,
@@ -917,7 +920,7 @@ class TestAbstractPlotterPlots:
             ),
         )
 
-        assert f"{plot_path}/mapper3.png" in plot_patch.paths
+        assert path.join(plot_path, "mapper3.png") in plot_patch.paths
 
     def test__plot_voronoi_mapper__works_with_all_extras_included(
         self, voronoi_mapper_9_3x3, plot_path, plot_patch
@@ -936,7 +939,7 @@ class TestAbstractPlotterPlots:
             source_pixel_indexes=[[0, 1], [2]],
         )
 
-        assert f"{plot_path}/mapper1.png" in plot_patch.paths
+        assert path.join(plot_path, "mapper1.png") in plot_patch.paths
 
         plotter = aplt.Plotter(
             output=aplt.Output(path=plot_path, filename="mapper2", format="png")
@@ -951,7 +954,7 @@ class TestAbstractPlotterPlots:
             source_pixel_indexes=[[0, 1], [2]],
         )
 
-        assert f"{plot_path}/mapper2.png" in plot_patch.paths
+        assert path.join(plot_path, "mapper2.png") in plot_patch.paths
 
         aplt.MapperObj(
             mapper=voronoi_mapper_9_3x3,
@@ -967,7 +970,7 @@ class TestAbstractPlotterPlots:
             ),
         )
 
-        assert f"{plot_path}/mapper3.png" in plot_patch.paths
+        assert path.join(plot_path, "mapper3.png") in plot_patch.paths
 
 
 class TestAbstractPlotterNew:
@@ -1068,12 +1071,12 @@ class TestAbstractPlotterNew:
         assert plotter.output.format == "png"
         assert plotter.output.filename == "file"
 
-        if os.path.exists(plotter.output.path):
+        if path.exists(plotter.output.path):
             shutil.rmtree(plotter.output.path)
 
         plotter = plotter.plotter_with_new_output(path="Path0", filename="file0")
 
-        if os.path.exists(plotter.output.path):
+        if path.exists(plotter.output.path):
             shutil.rmtree(plotter.output.path)
 
         assert plotter.output.path == "Path0"
@@ -1081,7 +1084,7 @@ class TestAbstractPlotterNew:
         assert plotter.output.format == "png"
         assert plotter.output.filename == "file0"
 
-        if os.path.exists(plotter.output.path):
+        if path.exists(plotter.output.path):
             shutil.rmtree(plotter.output.path)
 
         plotter = plotter.plotter_with_new_output(
@@ -1093,7 +1096,7 @@ class TestAbstractPlotterNew:
         assert plotter.output.format == "fits"
         assert plotter.output.filename == "file1"
 
-        if os.path.exists(plotter.output.path):
+        if path.exists(plotter.output.path):
             shutil.rmtree(plotter.output.path)
 
     def test__plotter_with_new_units__new_outputs_are_setup_correctly_if_input(self):

@@ -91,9 +91,11 @@ class TransformerDFT(pylops.LinearOperator):
 
         if self.preload_transform:
 
-            return transformer_util.real_transformed_mapping_matrix_via_preload_jit_from(
-                mapping_matrix=mapping_matrix,
-                preloaded_reals=self.preload_real_transforms,
+            return (
+                transformer_util.real_transformed_mapping_matrix_via_preload_jit_from(
+                    mapping_matrix=mapping_matrix,
+                    preloaded_reals=self.preload_real_transforms,
+                )
             )
 
         else:
@@ -108,9 +110,11 @@ class TransformerDFT(pylops.LinearOperator):
 
         if self.preload_transform:
 
-            return transformer_util.imag_transformed_mapping_matrix_via_preload_jit_from(
-                mapping_matrix=mapping_matrix,
-                preloaded_imags=self.preload_imag_transforms,
+            return (
+                transformer_util.imag_transformed_mapping_matrix_via_preload_jit_from(
+                    mapping_matrix=mapping_matrix,
+                    preloaded_imags=self.preload_imag_transforms,
+                )
             )
 
         else:
@@ -123,11 +127,15 @@ class TransformerDFT(pylops.LinearOperator):
 
     def transformed_mapping_matrices_from_mapping_matrix(self, mapping_matrix):
 
-        real_transformed_mapping_matrix = self.real_transformed_mapping_matrix_from_mapping_matrix(
-            mapping_matrix=mapping_matrix
+        real_transformed_mapping_matrix = (
+            self.real_transformed_mapping_matrix_from_mapping_matrix(
+                mapping_matrix=mapping_matrix
+            )
         )
-        imag_transformed_mapping_matrix = self.imag_transformed_mapping_matrix_from_mapping_matrix(
-            mapping_matrix=mapping_matrix
+        imag_transformed_mapping_matrix = (
+            self.imag_transformed_mapping_matrix_from_mapping_matrix(
+                mapping_matrix=mapping_matrix
+            )
         )
 
         return [real_transformed_mapping_matrix, imag_transformed_mapping_matrix]
@@ -213,6 +221,12 @@ class TransformerNUFFT(NUFFT_cpu, pylops.LinearOperator):
             visibilities_1d=np.stack((visibilities.real, visibilities.imag), axis=-1)
         )
 
+    def image_from_visibilities(self, visibilities):
+        visibilities = visibilities[:, 0] + 1j * visibilities[:, 1]
+        # ...
+        image = self.adjoint(visibilities)
+        return image.real
+
     def transformed_mapping_matrices_from_mapping_matrix(self, mapping_matrix):
 
         real_transfomed_mapping_matrix = np.zeros(
@@ -265,7 +279,7 @@ class TransformerNUFFT(NUFFT_cpu, pylops.LinearOperator):
                     with the size of Nd or Nd + (batch, )
         :rtype: numpy array with the dtype of numpy.complex64
         """
-        x = self.xx2x(self.k2xx(self.y2k(y)))
+        x = np.real(self.xx2x(self.k2xx(self.y2k(y))))
         return array_util.sub_array_complex_1d_from(
             sub_array_2d=x[::-1, :], sub_size=1, mask=self.real_space_mask
         )

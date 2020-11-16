@@ -203,7 +203,10 @@ class Convolver:
         for x in range(self.mask_index_array.shape[0]):
             for y in range(self.mask_index_array.shape[1]):
                 if not mask[x][y]:
-                    image_frame_1d_indexes, image_frame_1d_kernels = self.frame_at_coordinates_jit(
+                    (
+                        image_frame_1d_indexes,
+                        image_frame_1d_kernels,
+                    ) = self.frame_at_coordinates_jit(
                         coordinates=(x, y),
                         mask=mask,
                         mask_index_array=self.mask_index_array,
@@ -241,7 +244,10 @@ class Convolver:
         for x in range(mask.shape[0]):
             for y in range(mask.shape[1]):
                 if mask[x][y] and not self.blurring_mask[x, y]:
-                    image_frame_1d_indexes, image_frame_1d_kernels = self.frame_at_coordinates_jit(
+                    (
+                        image_frame_1d_indexes,
+                        image_frame_1d_kernels,
+                    ) = self.frame_at_coordinates_jit(
                         coordinates=(x, y),
                         mask=mask,
                         mask_index_array=self.mask_index_array,

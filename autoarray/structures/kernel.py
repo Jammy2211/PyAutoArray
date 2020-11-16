@@ -17,8 +17,8 @@ class Kernel(arrays.Array):
         """An array of values, which are paired to a uniform 2D mask of pixels and sub-pixels. Each entry
         on the array corresponds to a value at the centre of a sub-pixel in an unmasked pixel. See the *Array* class
         for a full description of how Arrays work.
-        
-        The *Kernel* class is an *Array* but with additioonal methods that allow it to be convolved with data. 
+
+        The *Kernel* class is an *Array* but with additioonal methods that allow it to be convolved with data.
 
         Parameters
         ----------

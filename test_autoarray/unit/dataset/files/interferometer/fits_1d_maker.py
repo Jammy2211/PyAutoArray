@@ -1,8 +1,10 @@
 from astropy.io import fits
 import numpy as np
-import os
+from os import path
 
-path = "{}/files/array/".format(os.path.dirname(os.path.realpath(__file__)))
+file_path = path.join(
+    "{}".format(path.dirname(path.realpath(__file__))), "files", "array"
+)
 
 array1 = np.ones((3))
 array2 = 2.0 * np.ones((3))
@@ -32,4 +34,4 @@ new_hdul.append(fits.ImageHDU(array6))
 new_hdul.append(fits.ImageHDU(array7))
 new_hdul.append(fits.ImageHDU(array8))
 
-new_hdul.writeto(path + "3_multiple_hdu.fits")
+new_hdul.writeto(path.join(file_path, "3_multiple_hdu.fits"))

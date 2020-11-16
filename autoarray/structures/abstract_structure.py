@@ -36,7 +36,7 @@ class AbstractStructure(np.ndarray):
         store_in_1d : bool
             If True, the grid is stored in 1D as an ndarray of shape [total_unmasked_pixels, 2]. If False, it is
             stored in 2D as an ndarray of shape [total_y_pixels, total_x_pixels, 2].
-            """
+        """
         raise NotImplementedError()
 
     @property

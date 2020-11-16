@@ -66,8 +66,8 @@ def grid_1d_via_mask_from(
     origin: (float, float) = (0.0, 0.0),
 ) -> np.ndarray:
     """
-    For a sub-grid, every unmasked pixel of its 2D mask with shape (total_y_pixels, total_x_pixels) is divided into 
-    a finer uniform grid of shape (total_y_pixels*sub_size, total_x_pixels*sub_size). This routine computes the (y,x) 
+    For a sub-grid, every unmasked pixel of its 2D mask with shape (total_y_pixels, total_x_pixels) is divided into
+    a finer uniform grid of shape (total_y_pixels*sub_size, total_x_pixels*sub_size). This routine computes the (y,x)
     scaled coordinates a the centre of every sub-pixel defined by this 2D mask array.
 
     Grid are defined from the top-left corner, where the first unmasked sub-pixel corresponds to index 0.

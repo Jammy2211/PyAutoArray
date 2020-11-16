@@ -170,7 +170,7 @@ class TestFrameAPI:
         assert (frame.mask == np.array([[False, False], [False, False]])).all()
 
     def test__manual_mask__makes_frame_using_inputs__includes_rotation_which_includes_mask(
-        self
+        self,
     ):
 
         mask = aa.Mask2D.manual(mask=[[False, True], [False, False]], pixel_scales=1.0)

@@ -1,6 +1,6 @@
 from autoconf import conf
 import matplotlib
-import configparser
+
 
 from typing import Callable
 
@@ -23,6 +23,7 @@ import matplotlib.cm as cm
 import numpy as np
 import inspect
 import itertools
+from os import path
 import os
 import colorcet
 import configparser
@@ -147,14 +148,14 @@ class Figure:
 
     def aspect_from_shape_2d(self, shape_2d: (int, int)):
         """
-    Returns the aspect ratio of the figure from the 2D shape of an _Array_.
+        Returns the aspect ratio of the figure from the 2D shape of an _Array_.
 
-        This is primarily used to ensure that rectangular arrays are plotted as square figures on sub-plots.
+            This is primarily used to ensure that rectangular arrays are plotted as square figures on sub-plots.
 
-        Parameters
-        ----------
-        shape_2d : (int, int)
-            The two dimensional shape of an `Array` that is to be plotted.
+            Parameters
+            ----------
+            shape_2d : (int, int)
+                The two dimensional shape of an `Array` that is to be plotted.
         """
         if isinstance(self.aspect, str):
             if self.aspect in "square":
@@ -716,10 +717,10 @@ class Labels:
     def title_from_func(self, func: Callable):
         """If a title is not manually specified use the name of the function plotting the image to set the title.
 
-         Parameters
-         ----------
-         func : func
-            The function plotting the image.
+        Parameters
+        ----------
+        func : func
+           The function plotting the image.
         """
         if self.title is None:
 
@@ -788,12 +789,12 @@ class Labels:
 
     def yunits_from_units(self, units: Units):
         """
-    Returns the units of the y-axis to create the y label text if it is not manually specified.
+        Returns the units of the y-axis to create the y label text if it is not manually specified.
 
-         Parameters
-         ----------
-         unit : Units
-            The units of the image that is plotted which informs the appropriate y label text.
+             Parameters
+             ----------
+             unit : Units
+                The units of the image that is plotted which informs the appropriate y label text.
         """
         if self._yunits is None:
 
@@ -814,12 +815,12 @@ class Labels:
 
     def xunits_from_units(self, units: Units):
         """
-    Returns the units of the x-axis to create the x label text if it is not manually specified.
+        Returns the units of the x-axis to create the x label text if it is not manually specified.
 
-         Parameters
-         ----------
-         unit : Units
-            The units of the image that is plotted which informs the the appropriate x label text.
+             Parameters
+             ----------
+             unit : Units
+                The units of the image that is plotted which informs the the appropriate x label text.
         """
         if self._xunits is None:
 
@@ -984,10 +985,10 @@ class Output:
     def filename_from_func(self, func):
         """If a filename is not manually specified use the name of the function plotting the image to set it.
 
-         Parameters
-         ----------
-         func : func
-            The function plotting the image.
+        Parameters
+        ----------
+        func : func
+           The function plotting the image.
         """
         if self.filename is None:
             return func.__name__
@@ -1004,23 +1005,27 @@ class Output:
             The 2D array of image to be output, required for outputting the image as a fits file.
         """
         if not self.bypass:
-            if self.format is "show":
+            if self.format == "show":
                 plt.show()
-            elif self.format is "png":
-                plt.savefig(f"{self.path}/{self.filename}.png", bbox_inches="tight")
-            elif self.format is "fits":
+            elif self.format == "png":
+                plt.savefig(
+                    path.join(self.path, f"{self.filename}.png"), bbox_inches="tight"
+                )
+            elif self.format == "fits":
                 if structure is not None:
                     structure.output_to_fits(
-                        file_path=f"{self.path}/{self.filename}.fits", overwrite=True
+                        file_path=path.join(self.path, f"{self.filename}.fits"),
+                        overwrite=True,
                     )
 
     def subplot_to_figure(self):
-        """Output a subhplot figure, either as an image on the screen or to the hard-disk as a .png or .fits file.
-        """
-        if self.format is "show":
+        """Output a subhplot figure, either as an image on the screen or to the hard-disk as a .png or .fits file."""
+        if self.format == "show":
             plt.show()
-        elif self.format is "png":
-            plt.savefig(f"{self.path}/{self.filename}.png", bbox_inches="tight")
+        elif self.format == "png":
+            plt.savefig(
+                path.join(self.path, f"{self.filename}.png"), bbox_inches="tight"
+            )
 
 
 def remove_spaces_and_commas_from_colors(colors):
@@ -1340,17 +1345,17 @@ class Liner:
 
     def draw_y_vs_x(self, y, x, plot_axis_type, label=None):
 
-        if plot_axis_type is "linear":
+        if plot_axis_type == "linear":
             plt.plot(x, y, c=self.colors[0], lw=self.width, ls=self.style, label=label)
-        elif plot_axis_type is "semilogy":
+        elif plot_axis_type == "semilogy":
             plt.semilogy(
                 x, y, c=self.colors[0], lw=self.width, ls=self.style, label=label
             )
-        elif plot_axis_type is "loglog":
+        elif plot_axis_type == "loglog":
             plt.loglog(
                 x, y, c=self.colors[0], lw=self.width, ls=self.style, label=label
             )
-        elif plot_axis_type is "scatter":
+        elif plot_axis_type == "scatter":
             plt.scatter(x, y, c=self.colors[0], s=self.pointsize, label=label)
         else:
             raise exc.PlottingException(

@@ -153,6 +153,7 @@ class TestInterpolatedResult:
         assert isinstance(interp_array, aa.Array)
         assert interp_array.ndim == 1
         assert interp_array.shape == (9,)
+        print(interp_array)
         assert (interp_array != np.array([[1, 0, 0, 0, 0, 0, 0, 0, 0]])).any()
 
     def test__function_is_false_in_config__does_not_use_interpolatin(self):

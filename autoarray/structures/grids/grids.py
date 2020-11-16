@@ -217,7 +217,7 @@ class Grid(abstract_grid.AbstractGrid):
         store_in_1d : bool
             If True, the grid is stored in 1D as an ndarray of shape [total_unmasked_pixels, 2]. If False, it is
             stored in 2D as an ndarray of shape [total_y_pixels, total_x_pixels, 2].
-            """
+        """
         return Grid(grid=grid, mask=mask, store_in_1d=store_in_1d)
 
     @classmethod
@@ -756,15 +756,15 @@ class Grid(abstract_grid.AbstractGrid):
 
     def grid_from_deflection_grid(self, deflection_grid):
         """
-    Returns a new Grid from this grid, where the (y,x) coordinates of this grid have a grid of (y,x) values,
-         termed the deflection grid, subtracted from them to determine the new grid of (y,x) values.
+        Returns a new Grid from this grid, where the (y,x) coordinates of this grid have a grid of (y,x) values,
+             termed the deflection grid, subtracted from them to determine the new grid of (y,x) values.
 
-        This is used by PyAutoLens to perform grid ray-tracing.
+            This is used by PyAutoLens to perform grid ray-tracing.
 
-        Parameters
-        ----------
-        deflection_grid : np.ndarray
-            The grid of (y,x) coordinates which is subtracted from this grid.
+            Parameters
+            ----------
+            deflection_grid : np.ndarray
+                The grid of (y,x) coordinates which is subtracted from this grid.
         """
         return Grid(
             grid=self - deflection_grid, mask=self.mask, store_in_1d=self.store_in_1d
@@ -772,14 +772,14 @@ class Grid(abstract_grid.AbstractGrid):
 
     def blurring_grid_from_kernel_shape(self, kernel_shape_2d):
         """
-    Returns the blurring grid from a grid, via an input 2D kernel shape.
+        Returns the blurring grid from a grid, via an input 2D kernel shape.
 
-        For a full description of blurring grids, checkout *blurring_grid_from_mask_and_kernel_shape*.
+            For a full description of blurring grids, checkout *blurring_grid_from_mask_and_kernel_shape*.
 
-        Parameters
-        ----------
-        kernel_shape_2d : (float, float)
-            The 2D shape of the kernel which convolves signal from masked pixels to unmasked pixels.
+            Parameters
+            ----------
+            kernel_shape_2d : (float, float)
+                The 2D shape of the kernel which convolves signal from masked pixels to unmasked pixels.
         """
 
         return Grid.blurring_grid_from_mask_and_kernel_shape(
@@ -962,11 +962,11 @@ class GridSparse:
             origin=origin,
         ).astype("int")
 
-        sparse_1d_index_for_mask_1d_index = sparse_util.sparse_1d_index_for_mask_1d_index_from(
-            regular_to_unmasked_sparse=regular_to_unmasked_sparse,
-            sparse_for_unmasked_sparse=sparse_for_unmasked_sparse,
-        ).astype(
-            "int"
+        sparse_1d_index_for_mask_1d_index = (
+            sparse_util.sparse_1d_index_for_mask_1d_index_from(
+                regular_to_unmasked_sparse=regular_to_unmasked_sparse,
+                sparse_for_unmasked_sparse=sparse_for_unmasked_sparse,
+            ).astype("int")
         )
 
         sparse_grid = sparse_util.sparse_grid_via_unmasked_from(
@@ -1017,7 +1017,7 @@ class GridSparse:
         """
 
         if stochastic:
-            seed = np.random.randint(low=1, high=2 ** 32)
+            seed = np.random.randint(low=1, high=2 ** 31)
 
         if total_pixels > grid.shape[0]:
             raise exc.GridException

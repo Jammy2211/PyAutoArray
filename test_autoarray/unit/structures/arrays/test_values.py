@@ -1,4 +1,5 @@
 import os
+from os import path
 
 import numpy as np
 import pytest
@@ -6,9 +7,10 @@ import shutil
 
 import autoarray as aa
 from autoarray.structures import arrays
-from autoarray import exc
 
-test_values_dir = "{}/files/values/".format(os.path.dirname(os.path.realpath(__file__)))
+test_values_dir = path.join(
+    "{}".format(path.dirname(path.realpath(__file__))), "files", "values"
+)
 
 
 def test__indexes_give_entries_where_list_begin_and_end():
@@ -107,7 +109,9 @@ def test__coordinates_from_grid_1d():
 
 
 def test__load_values__retains_list_structure():
-    values = aa.Values.from_file(file_path=test_values_dir + "values_test.dat")
+    values = aa.Values.from_file(
+        file_path=path.join(test_values_dir, "values_test.dat")
+    )
 
     assert values.in_list == [[1.0, 2.0], [3.0, 4.0, 5.0]]
 
@@ -117,9 +121,9 @@ def test__output_values_to_file():
     values = aa.Values([[4.0, 5.0], [6.0, 7.0, 8.0]])
 
     output_values_dir = "{}/files/values/output_test/".format(
-        os.path.dirname(os.path.realpath(__file__))
+        path.dirname(path.realpath(__file__))
     )
-    if os.path.exists(output_values_dir):
+    if path.exists(output_values_dir):
         shutil.rmtree(output_values_dir)
 
     os.makedirs(output_values_dir)

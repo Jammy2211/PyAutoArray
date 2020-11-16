@@ -232,7 +232,7 @@ class TestRegionAfterExtraction:
 
 class Testx0x1AfterExtraction:
     def test__case_1__original_region_at_0__1d_extracted_region_is_fully_within_original_region(
-        self
+        self,
     ):
 
         x0, x1 = aa.util.frame.x0x1_after_extraction(x0o=0, x1o=6, x0e=2, x1e=4)
@@ -261,7 +261,7 @@ class Testx0x1AfterExtraction:
         assert x1 == 3
 
     def test__case_2__original_region_offset_from_0__1d_extracted_region_is_fully_within_original_region(
-        self
+        self,
     ):
 
         x0, x1 = aa.util.frame.x0x1_after_extraction(x0o=2, x1o=6, x0e=2, x1e=4)
@@ -290,7 +290,7 @@ class Testx0x1AfterExtraction:
         assert x1 == 3
 
     def test__case_3__original_region_offset_from_0__1d_extracted_region_partly_overlaps_to_left_original_region(
-        self
+        self,
     ):
 
         x0, x1 = aa.util.frame.x0x1_after_extraction(x0o=2, x1o=6, x0e=1, x1e=3)
@@ -314,7 +314,7 @@ class Testx0x1AfterExtraction:
         assert x1 == 5
 
     def test__case_4__original_region_offset_from_0__1d_extracted_region_partly_overlaps_to_right_original_region(
-        self
+        self,
     ):
 
         x0, x1 = aa.util.frame.x0x1_after_extraction(x0o=2, x1o=6, x0e=5, x1e=7)

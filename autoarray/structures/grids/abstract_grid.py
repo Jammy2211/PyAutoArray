@@ -304,12 +304,12 @@ class AbstractGrid(abstract_structure.AbstractStructure):
 
     def squared_distances_from_coordinate(self, coordinate=(0.0, 0.0)):
         """
-    Returns the squared distance of every coordinate on the grid from an input coordinate.
+        Returns the squared distance of every coordinate on the grid from an input coordinate.
 
-        Parameters
-        ----------
-        coordinate : (float, float)
-            The (y,x) coordinate from which the squared distance of every grid (y,x) coordinate is computed.
+            Parameters
+            ----------
+            coordinate : (float, float)
+                The (y,x) coordinate from which the squared distance of every grid (y,x) coordinate is computed.
         """
 
         from autoarray.structures import arrays
@@ -321,12 +321,12 @@ class AbstractGrid(abstract_structure.AbstractStructure):
 
     def distances_from_coordinate(self, coordinate=(0.0, 0.0)):
         """
-    Returns the distance of every coordinate on the grid from an input (y,x) coordinate.
+        Returns the distance of every coordinate on the grid from an input (y,x) coordinate.
 
-        Parameters
-        ----------
-        coordinate : (float, float)
-            The (y,x) coordinate from which the distance of every grid (y,x) coordinate is computed.
+            Parameters
+            ----------
+            coordinate : (float, float)
+                The (y,x) coordinate from which the distance of every grid (y,x) coordinate is computed.
         """
         from autoarray.structures import arrays
 
@@ -391,13 +391,13 @@ class AbstractGrid(abstract_structure.AbstractStructure):
     @property
     def yticks(self) -> np.ndarray:
         """
-    Returns the ytick labels of this grid, used for plotting the y-axis ticks when visualizing a grid"""
+        Returns the ytick labels of this grid, used for plotting the y-axis ticks when visualizing a grid"""
         return np.linspace(np.min(self[:, 0]), np.max(self[:, 0]), 4)
 
     @property
     def xticks(self) -> np.ndarray:
         """
-    Returns the xtick labels of this grid, used for plotting the x-axis ticks when visualizing a grid"""
+        Returns the xtick labels of this grid, used for plotting the x-axis ticks when visualizing a grid"""
         return np.linspace(np.min(self[:, 1]), np.max(self[:, 1]), 4)
 
     @staticmethod
@@ -533,7 +533,7 @@ class AbstractGrid(abstract_structure.AbstractStructure):
         )
 
     def relocated_pixelization_grid_from_pixelization_grid(self, pixelization_grid):
-        """ Relocate the coordinates of a pixelization grid to the border of this grid, see the method
+        """Relocate the coordinates of a pixelization grid to the border of this grid, see the method
         *relocated_grid_from_grid* for a full description of grid relocation.
 
         This function operates the same as other grid relocation functions by returns the grid as a

@@ -1,4 +1,5 @@
 import os
+from os import path
 import shutil
 import numpy as np
 import pytest
@@ -6,8 +7,8 @@ import pytest
 import autoarray as aa
 from autoarray.structures import grids
 
-test_coordinates_dir = "{}/files/coordinates/".format(
-    os.path.dirname(os.path.realpath(__file__))
+test_coordinates_dir = path.join(
+    "{}".format(path.dirname(path.realpath(__file__))), "files", "coordinates"
 )
 
 
@@ -176,9 +177,10 @@ class TestAbstractGridCoordinates:
         assert coordinates.in_list == [[(1.0, -1.0), (1.0, 1.0)]]
 
     def test__load_coordinates__retains_list_structure(self):
-        coordinates = aa.GridCoordinates.from_file(
-            file_path=test_coordinates_dir + "coordinates_test.dat"
-        )
+
+        file_path = path.join(test_coordinates_dir, "coordinates_test.dat")
+
+        coordinates = aa.GridCoordinates.from_file(file_path=file_path)
 
         assert coordinates.in_list == [
             [(1.0, 1.0), (2.0, 2.0)],
@@ -190,21 +192,23 @@ class TestAbstractGridCoordinates:
             [[(4.0, 4.0), (5.0, 5.0)], [(6.0, 6.0), (7.0, 7.0), (8.0, 8.0)]]
         )
 
-        output_coordinates_dir = "{}/files/coordinates/output_test/".format(
-            os.path.dirname(os.path.realpath(__file__))
+        output_coordinates_dir = path.join(
+            "{}".format(os.path.dirname(os.path.realpath(__file__))),
+            "files",
+            "coordinates",
+            "output_test",
         )
+
+        file_path = path.join(output_coordinates_dir, "coordinates_test.dat")
+
         if os.path.exists(output_coordinates_dir):
             shutil.rmtree(output_coordinates_dir)
 
         os.makedirs(output_coordinates_dir)
 
-        coordinates.output_to_file(
-            file_path=output_coordinates_dir + "coordinates_test.dat"
-        )
+        coordinates.output_to_file(file_path=file_path)
 
-        coordinates = aa.GridCoordinates.from_file(
-            file_path=output_coordinates_dir + "coordinates_test.dat"
-        )
+        coordinates = aa.GridCoordinates.from_file(file_path=file_path)
 
         assert coordinates.in_list == [
             [(4.0, 4.0), (5.0, 5.0)],
@@ -212,13 +216,9 @@ class TestAbstractGridCoordinates:
         ]
 
         with pytest.raises(FileExistsError):
-            coordinates.output_to_file(
-                file_path=output_coordinates_dir + "coordinates_test.dat"
-            )
+            coordinates.output_to_file(file_path=file_path)
 
-        coordinates.output_to_file(
-            file_path=output_coordinates_dir + "coordinates_test.dat", overwrite=True
-        )
+        coordinates.output_to_file(file_path=file_path, overwrite=True)
 
 
 class TestGridCoordinates:
