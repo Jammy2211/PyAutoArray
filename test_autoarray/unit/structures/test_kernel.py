@@ -1,5 +1,5 @@
 import os
-
+from os import path
 import numpy as np
 import pytest
 
@@ -9,8 +9,8 @@ from astropy.coordinates import Angle
 import autoarray as aa
 from autoarray import exc
 
-test_data_dir = "{}/arrays/files/array/".format(
-    os.path.dirname(os.path.realpath(__file__))
+test_data_dir = path.join(
+    "{}".format(path.dirname(path.realpath(__file__))), "arrays", "files", "array"
 )
 
 
@@ -59,13 +59,13 @@ class TestAPI:
         self,
     ):
         kernel = aa.Kernel.from_fits(
-            file_path=test_data_dir + "3x3_ones.fits", hdu=0, pixel_scales=1.0
+            file_path=path.join(test_data_dir, "3x3_ones.fits"), hdu=0, pixel_scales=1.0
         )
 
         assert (kernel.in_2d == np.ones((3, 3))).all()
 
         kernel = aa.Kernel.from_fits(
-            file_path=test_data_dir + "4x3_ones.fits", hdu=0, pixel_scales=1.0
+            file_path=path.join(test_data_dir, "4x3_ones.fits"), hdu=0, pixel_scales=1.0
         )
 
         assert (kernel.in_2d == np.ones((4, 3))).all()

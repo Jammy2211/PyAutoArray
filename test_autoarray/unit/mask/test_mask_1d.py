@@ -6,8 +6,6 @@ import pytest
 import autoarray as aa
 from autoarray import exc
 
-test_data_dir = "{}/files/mask/".format(os.path.dirname(os.path.realpath(__file__)))
-
 
 class TestMask1D:
     def test__mask__makes_mask_with_pixel_scale(self):
