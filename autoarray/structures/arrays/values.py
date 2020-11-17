@@ -85,8 +85,7 @@ class Values(np.ndarray):
 
     @property
     def in_1d(self):
-        """Convenience method to access the Values in their 1D representation, which is an ndarray of shape
-        [total_values]."""
+        """The Values in their 1D representation, an ndarray of shape [total_values]."""
         return self
 
     @property

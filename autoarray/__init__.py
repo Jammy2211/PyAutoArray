@@ -1,10 +1,14 @@
 from autoarray.structures.grids.coordinates import GridCoordinates
 from autoarray.structures.grids.coordinates import GridCoordinatesUniform
 from autoarray.structures.grids.iterate import GridIterate
+from autoarray.structures.vector_fields.vector_field_irregular import (
+    VectorFieldIrregular,
+)
 from . import exc
 from . import plot
 from . import util
 from . import mock
+from . import geometry
 from .dataset import preprocess
 from .dataset.imaging import Imaging
 from .dataset.imaging import MaskedImaging
@@ -55,4 +59,4 @@ from autoconf import conf
 
 conf.instance.register(__file__)
 
-__version__ = '0.15.0'
+__version__ = "0.15.0"
