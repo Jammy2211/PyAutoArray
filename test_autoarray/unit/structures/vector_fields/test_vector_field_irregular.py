@@ -49,10 +49,10 @@ def test__input_grids_as_different_types__all_converted_to_grid_irregular_correc
 
     vector_field = aa.VectorFieldIrregular(
         vectors=[(1.0, -1.0), (1.0, 1.0)],
-        grid=aa.GridCoordinates([[1.0, -1.0], [1.0, 1.0]]),
+        grid=aa.GridIrregular([[1.0, -1.0], [1.0, 1.0]]),
     )
 
-    assert type(vector_field.grid) == aa.GridCoordinates
+    assert type(vector_field.grid) == aa.GridIrregular
     assert (vector_field.grid == np.array([[1.0, -1.0], [1.0, 1.0]])).all()
 
     # Input np array
@@ -61,7 +61,7 @@ def test__input_grids_as_different_types__all_converted_to_grid_irregular_correc
         vectors=[(1.0, -1.0), (1.0, 1.0)], grid=[[1.0, -1.0], [1.0, 1.0]]
     )
 
-    assert type(vector_field.grid) == aa.GridCoordinates
+    assert type(vector_field.grid) == aa.GridIrregular
     assert (vector_field.grid == np.array([[1.0, -1.0], [1.0, 1.0]])).all()
 
     # Input list
@@ -70,5 +70,5 @@ def test__input_grids_as_different_types__all_converted_to_grid_irregular_correc
         vectors=[(1.0, -1.0), (1.0, 1.0)], grid=[(1.0, -1.0), (1.0, 1.0)]
     )
 
-    assert type(vector_field.grid) == aa.GridCoordinates
+    assert type(vector_field.grid) == aa.GridIrregular
     assert (vector_field.grid == np.array([[1.0, -1.0], [1.0, 1.0]])).all()

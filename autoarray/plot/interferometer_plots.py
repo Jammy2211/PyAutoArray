@@ -244,7 +244,7 @@ def uv_wavelengths(
     """
 
     plotter.plot_grid(
-        grid=grids.GridCoordinates.from_yx_1d(
+        grid=grids.GridIrregularGrouped.from_yx_1d(
             y=interferometer.uv_wavelengths[:, 1] / 10 ** 3.0,
             x=interferometer.uv_wavelengths[:, 0] / 10 ** 3.0,
         ),

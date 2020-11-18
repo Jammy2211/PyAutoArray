@@ -530,10 +530,12 @@ class TestScatterer:
         scatterer = mat_objs.Scatterer(size=2, marker="x", colors="k")
 
         scatterer.scatter_coordinates(
-            coordinates=aa.GridCoordinates([(1.0, 1.0), (2.0, 2.0)])
+            coordinates=aa.GridIrregularGrouped([(1.0, 1.0), (2.0, 2.0)])
         )
         scatterer.scatter_coordinates(
-            coordinates=aa.GridCoordinates([[(1.0, 1.0), (2.0, 2.0)], [(3.0, 3.0)]])
+            coordinates=aa.GridIrregularGrouped(
+                [[(1.0, 1.0), (2.0, 2.0)], [(3.0, 3.0)]]
+            )
         )
 
 
@@ -581,10 +583,12 @@ class TestLiner:
         liner = aplt.Liner(width=2, style="--", colors="k")
 
         liner.draw_coordinates(
-            coordinates=aa.GridCoordinates([[(1.0, 1.0), (2.0, 2.0)]])
+            coordinates=aa.GridIrregularGrouped([[(1.0, 1.0), (2.0, 2.0)]])
         )
         liner.draw_coordinates(
-            coordinates=aa.GridCoordinates([[(1.0, 1.0), (2.0, 2.0)], [(3.0, 3.0)]])
+            coordinates=aa.GridIrregularGrouped(
+                [[(1.0, 1.0), (2.0, 2.0)], [(3.0, 3.0)]]
+            )
         )
 
     def test__draw_rectangular_grid_lines__draws_for_valid_extent_and_shape(self):

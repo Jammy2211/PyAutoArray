@@ -12,7 +12,7 @@ class VectorFieldIrregular(np.ndarray):
     def __new__(
         cls,
         vectors: np.ndarray or [(float, float)],
-        grid: grids.GridCoordinates or list,
+        grid: grids.GridIrregular or list,
     ):
         """
         A collection of (y,x) vectors which are located on an irregular grid of (y,x) coordinates.
@@ -23,7 +23,7 @@ class VectorFieldIrregular(np.ndarray):
         Calculations should use the NumPy array structure wherever possible for efficient calculations.
 
         The vectors input to this function can have any of the following forms (they will be converted to the 1D NumPy
-        array structure):
+        array structure and can be converted back using the object's properties):
 
         [[vector_0_y, vector_0_x], [vector_1_y, vector_1_x]]
         [(vector_0_y, vector_0_x), (vector_1_y, vector_1_x)]
@@ -34,15 +34,18 @@ class VectorFieldIrregular(np.ndarray):
         ----------
         vectors : np.ndarray or [(float, float)]
             The 2D (y,x) vectors on an irregular grid that represent the vector-field.
-        grid : grids.GridCoordinates
+        grid : grids.GridIrregular
             The irregular grid of (y,x) coordinates where each vector is located.
         """
+
+        if len(vectors) == 0:
+            return []
 
         if type(vectors) is list:
             vectors = np.asarray(vectors)
 
         obj = vectors.view(cls)
-        obj.grid = grids.GridCoordinates(coordinates=grid)
+        obj.grid = grids.GridIrregular(grid=grid)
 
         return obj
 

@@ -89,7 +89,7 @@ class Values(np.ndarray):
         return self
 
     @property
-    def in_list(self):
+    def in_grouped_list(self):
         """Convenience method to access the Values in their list representation, whcih is a list of lists of floatss."""
         return [list(self[i:j]) for i, j in zip(self.lower_indexes, self.upper_indexes)]
 
@@ -112,22 +112,22 @@ class Values(np.ndarray):
         ]
         return Values(values=values_1d)
 
-    def coordinates_from_grid_1d(self, grid_1d):
-        """Create a `GridCoordinates` object from a 2D ndarray array of values of shape [total_values, 2].
+    def grid_from_grid_1d(self, grid_1d):
+        """Create a `GridIrregularGrouped` object from a 2D ndarray array of values of shape [total_values, 2].
 
-        The `GridCoordinates` are structured and grouped following this *Coordinate* instance.
+        The `GridIrregularGrouped` are structured and grouped following this *Coordinate* instance.
 
         Parameters
         ----------
         grid_1d : np.ndarray
-            The 2d array (shape [total_coordinates, 2]) of (y,x) coordinates that are mapped to a `GridCoordinates`
+            The 2d array (shape [total_coordinates, 2]) of (y,x) coordinates that are mapped to a `GridIrregularGrouped`
             object."""
-        coordinates_1d = [
+        grouped_grids_1d = [
             list(map(tuple, grid_1d[i:j, :]))
             for i, j in zip(self.lower_indexes, self.upper_indexes)
         ]
 
-        return grids.GridCoordinates(coordinates=coordinates_1d)
+        return grids.GridIrregularGrouped(grid=grouped_grids_1d)
 
     @classmethod
     def from_file(cls, file_path):
@@ -170,5 +170,5 @@ class Values(np.ndarray):
                 )
 
         with open(file_path, "w+") as f:
-            for value in self.in_list:
+            for value in self.in_grouped_list:
                 f.write("%s\n" % value)

@@ -1,5 +1,5 @@
-from autoarray.structures.grids.coordinates import GridCoordinates
-from autoarray.structures.grids.coordinates import GridCoordinatesUniform
+from autoarray.structures.grids.irregular import GridIrregularGrouped
+from autoarray.structures.grids.irregular import GridIrregularGroupedUniform
 from autoarray.structures.grids.iterate import GridIterate
 from autoarray.structures.vector_fields.vector_field_irregular import (
     VectorFieldIrregular,
@@ -45,8 +45,9 @@ from .structures.grids import Grid
 from .structures.grids import GridInterpolate
 from .structures.grids import GridRectangular
 from .structures.grids import GridVoronoi
-from .structures.grids import GridCoordinates
-from .structures.grids import GridCoordinatesUniform
+from .structures.grids import GridIrregular
+from .structures.grids import GridIrregularGrouped
+from .structures.grids import GridIrregularGroupedUniform
 from .structures.lines.lines import Line
 from .structures.lines.lines import LineCollection
 from .structures.region import Region

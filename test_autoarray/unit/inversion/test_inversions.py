@@ -168,7 +168,9 @@ class TestAbstractInversion:
         inversion.reconstruction = np.array([2.0, 3.0, 5.0, 0.0])
 
         assert inversion.brightest_reconstruction_pixel == 2
-        assert inversion.brightest_reconstruction_pixel_centre.in_list == [[(5.0, 6.0)]]
+        assert inversion.brightest_reconstruction_pixel_centre.in_1d_list == [
+            (5.0, 6.0)
+        ]
 
     def test__interpolated_reconstruction__config_is_image_grid__grid_as_mapper_with_good_interp(
         self,
