@@ -1,3 +1,4 @@
+from os import path
 import numpy as np
 import pickle
 
@@ -93,14 +94,14 @@ class AbstractStructure(np.ndarray):
 
     @classmethod
     def load(cls, file_path, filename):
-        with open(f"{file_path}/{filename}.pickle", "rb") as f:
+        with open(path.join(file_path, f"{filename}.pickle"), "rb") as f:
             return pickle.load(f)
 
     def save(self, file_path, filename):
         """
         Save the tracer by serializing it with pickle.
         """
-        with open(f"{file_path}/{filename}.pickle", "wb") as f:
+        with open(path.join(file_path, f"{filename}.pickle"), "wb") as f:
             pickle.dump(self, f)
 
     def resized_from(self, new_shape):

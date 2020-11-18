@@ -1,5 +1,6 @@
 import numpy as np
 
+from autoarray import geometry
 from autoarray.structures import arrays
 from autoarray.structures import grids
 from autoarray.util import array_util, grid_util
@@ -16,18 +17,15 @@ class Geometry:
 
     @property
     def central_pixel_coordinates(self):
-        return (
-            float(self.mask.shape_2d[0] - 1) / 2,
-            float(self.mask.shape_2d[1] - 1) / 2,
-        )
+        return geometry.central_pixel_coordinates_from(shape=self.mask.shape_2d)
 
     @property
     def central_scaled_coordinates(self):
-        return (
-            self.central_pixel_coordinates[0]
-            + (self.origin[0] / self.mask.pixel_scales[0]),
-            self.central_pixel_coordinates[1]
-            - (self.origin[1] / self.mask.pixel_scales[1]),
+
+        return geometry.central_scaled_coordinates_from(
+            shape=self.mask.shape_2d,
+            pixel_scales=self.mask.pixel_scales,
+            origins=self.mask.origin,
         )
 
     @property
@@ -35,31 +33,21 @@ class Geometry:
         return self.mask.origin
 
     def pixel_coordinates_from_scaled_coordinates(self, scaled_coordinates):
-        return (
-            int(
-                (
-                    (-scaled_coordinates[0] + self.mask.origin[0])
-                    / self.mask.pixel_scales[0]
-                )
-                + self.central_pixel_coordinates[0]
-                + 0.5
-            ),
-            int(
-                (
-                    (scaled_coordinates[1] - self.mask.origin[1])
-                    / self.mask.pixel_scales[1]
-                )
-                + self.central_pixel_coordinates[1]
-                + 0.5
-            ),
+
+        return geometry.pixel_coordinates_from_scaled_coordinates(
+            scaled_coordinates=scaled_coordinates,
+            shape=self.mask.shape,
+            pixel_scales=self.mask.pixel_scales,
+            origins=self.origin,
         )
 
     def scaled_coordinates_from_pixel_coordinates(self, pixel_coordinates):
-        return (
-            self.mask.pixel_scales[0]
-            * -(pixel_coordinates[0] - self.central_scaled_coordinates[0]),
-            self.mask.pixel_scales[1]
-            * (pixel_coordinates[1] - self.central_scaled_coordinates[1]),
+
+        return geometry.scaled_coordinates_from_pixel_coordinates(
+            pixel_coordinates=pixel_coordinates,
+            shape=self.mask.shape,
+            pixel_scales=self.mask.pixel_scales,
+            origins=self.origin,
         )
 
     @property
