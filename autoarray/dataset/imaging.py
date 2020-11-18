@@ -21,7 +21,7 @@ class AbstractImaging(abstract_dataset.AbstractDataset):
         image: arrays.Array,
         noise_map: arrays.Array,
         psf: kernel.Kernel = None,
-        positions: grids.GridCoordinates = None,
+        positions: grids.GridIrregularGrouped = None,
         name: str = None,
     ):
         """A class containing the data, noise-map and point spread function of a 2D imaging dataset.
@@ -396,7 +396,7 @@ class Imaging(AbstractImaging):
 
         if positions_path is not None:
 
-            positions = grids.GridCoordinates.from_file(file_path=positions_path)
+            positions = grids.GridIrregularGrouped.from_file(file_path=positions_path)
 
         else:
 

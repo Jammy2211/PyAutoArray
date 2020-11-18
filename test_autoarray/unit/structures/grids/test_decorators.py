@@ -9,9 +9,7 @@ from autoarray.mock.mock import (
     ndarray_2d_from_grid,
 )
 
-test_coordinates_dir = "{}/files/coordinates/".format(
-    os.path.dirname(os.path.realpath(__file__))
-)
+test_grid_dir = "{}/files/grid/".format(os.path.dirname(os.path.realpath(__file__)))
 
 
 def test__grid_in__output_values_same_format():
@@ -136,38 +134,56 @@ def test__grid_in__output_is_list__list_of_same_format():
     ).all()
 
 
-def test__grid_coordinates_in__output_values_same_format():
+def test__grid_irregular_in__output_values_same_format():
 
     grid_like_object = MockGridLikeObj()
 
-    coordinates = aa.GridCoordinates(
-        coordinates=[[(1.0, 2.0), (3.0, 4.0)], [(5.0, 6.0)]]
-    )
+    grid = aa.GridIrregular(grid=[(1.0, 2.0), (3.0, 4.0), (5.0, 6.0)])
 
-    values_output = grid_like_object.ndarray_1d_from_grid(grid=coordinates)
+    values_output = grid_like_object.ndarray_1d_from_grid(grid=grid)
 
-    assert values_output.in_list == [[1.0, 1.0], [1.0]]
+    assert values_output.in_1d_list == [1.0, 1.0, 1.0]
 
-    coordinates_output = grid_like_object.ndarray_2d_from_grid(grid=coordinates)
+    grid_output = grid_like_object.ndarray_2d_from_grid(grid=grid)
 
-    assert coordinates_output.in_list == [[(2.0, 4.0), (6.0, 8.0)], [(10.0, 12.0)]]
+    assert grid_output.in_1d_list == [(2.0, 4.0), (6.0, 8.0), (10.0, 12.0)]
+
+    grid = aa.GridIrregularGrouped(grid=[[(1.0, 2.0), (3.0, 4.0)], [(5.0, 6.0)]])
+
+    values_output = grid_like_object.ndarray_1d_from_grid(grid=grid)
+
+    assert values_output.in_grouped_list == [[1.0, 1.0], [1.0]]
+
+    grid_output = grid_like_object.ndarray_2d_from_grid(grid=grid)
+
+    assert grid_output.in_grouped_list == [[(2.0, 4.0), (6.0, 8.0)], [(10.0, 12.0)]]
 
 
-def test__grid_coordinates_in__output_is_list__list_of_same_format():
+def test__grid_irregular_in__output_is_list__list_of_same_format():
 
     grid_like_object = MockGridLikeObj()
 
-    coordinates = aa.GridCoordinates(
-        coordinates=[[(1.0, 2.0), (3.0, 4.0)], [(5.0, 6.0)]]
-    )
+    grid = aa.GridIrregular(grid=[(1.0, 2.0), (3.0, 4.0), (5.0, 6.0)])
 
-    coordinates_output = grid_like_object.ndarray_1d_list_from_grid(grid=coordinates)
+    grid_output = grid_like_object.ndarray_1d_list_from_grid(grid=grid)
 
-    assert coordinates_output[0].in_list == [[1.0, 1.0], [1.0]], [[2.0, 2.0], [2.0]]
+    assert grid_output[0].in_1d_list == [1.0, 1.0, 1.0]
+    assert grid_output[1].in_1d_list == [2.0, 2.0, 2.0]
 
-    coordinates_output = grid_like_object.ndarray_2d_list_from_grid(grid=coordinates)
+    grid_output = grid_like_object.ndarray_2d_list_from_grid(grid=grid)
 
-    assert coordinates_output[0].in_list == [[(1.0, 2.0), (3.0, 4.0)], [(5.0, 6.0)]], [
+    assert grid_output[0].in_1d_list == [(1.0, 2.0), (3.0, 4.0), (5.0, 6.0)]
+    assert grid_output[1].in_1d_list == [(2.0, 4.0), (6.0, 8.0), (10.0, 12.0)]
+
+    grid = aa.GridIrregularGrouped(grid=[[(1.0, 2.0), (3.0, 4.0)], [(5.0, 6.0)]])
+
+    grid_output = grid_like_object.ndarray_1d_list_from_grid(grid=grid)
+
+    assert grid_output[0].in_grouped_list == [[1.0, 1.0], [1.0]], [[2.0, 2.0], [2.0]]
+
+    grid_output = grid_like_object.ndarray_2d_list_from_grid(grid=grid)
+
+    assert grid_output[0].in_grouped_list == [[(1.0, 2.0), (3.0, 4.0)], [(5.0, 6.0)]], [
         [(2.0, 4.0), (6.0, 8.0)],
         [(10.0, 12.0)],
     ]

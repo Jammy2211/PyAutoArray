@@ -134,4 +134,6 @@ class TestVisibilitiesNoiseMap:
         #     == np.array([[0.2 - 0.4j, 0.0 + 0.0j], [0.0 + 0.0j, 0.12 - 0.16j]])
         # ).all()
 
-        assert noise_map.Wop.todense() == pytest.approx(np.array([[1.0, 0.0], [0.0, 0.33333]]), 1.0e-4)
+        assert noise_map.Wop.todense() == pytest.approx(
+            np.array([[1.0, 0.0], [0.0, 0.33333]]), 1.0e-4
+        )

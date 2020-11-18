@@ -1153,7 +1153,7 @@ class Scatterer:
 
         color = itertools.cycle(self.colors)
 
-        for coordinate_group in coordinates.in_list:
+        for coordinate_group in coordinates.in_grouped_list:
 
             plt.scatter(
                 y=np.asarray(coordinate_group)[:, 0],
@@ -1453,7 +1453,7 @@ class Liner:
 
         color = itertools.cycle(self.colors)
 
-        for coordinate_group in coordinates.in_list:
+        for coordinate_group in coordinates.in_grouped_list:
 
             plt.plot(
                 np.asarray(coordinate_group)[:, 1],
@@ -1657,7 +1657,7 @@ class VoronoiDrawer:
         regions : list of tuples
             Indices of vertices in each revised Voronoi regions.
         vertices : list of tuples
-            GridCoordinates for revised Voronoi vertices. Same as coordinates
+            GridIrregularGrouped for revised Voronoi vertices. Same as coordinates
             of input vertices, with 'points at infinity' appended to the
             end.
         """

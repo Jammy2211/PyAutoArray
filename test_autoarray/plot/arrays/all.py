@@ -17,8 +17,8 @@ aplt.Array(
     array=array,
     mask=mask,
     grid=grid,
-    positions=aa.GridCoordinates([(-1.0, -1.0)]),
-    lines=aa.GridCoordinates([(1.0, 1.0), (2.0, 2.0)]),
+    positions=aa.GridIrregularGrouped([(-1.0, -1.0)]),
+    lines=aa.GridIrregularGrouped([(1.0, 1.0), (2.0, 2.0)]),
     include=aplt.Include(origin=True, border=True),
 )
 
@@ -26,7 +26,7 @@ aplt.Array(
     array=array,
     mask=mask,
     grid=grid,
-    positions=aa.GridCoordinates([[(1.0, 1.0), (2.0, 2.0)], [(-1.0, -1.0)]]),
-    lines=aa.GridCoordinates([[(1.0, 1.0), (2.0, 2.0)], [(2.0, 4.0), (5.0, 6.0)]]),
+    positions=aa.GridIrregularGrouped([[(1.0, 1.0), (2.0, 2.0)], [(-1.0, -1.0)]]),
+    lines=aa.GridIrregularGrouped([[(1.0, 1.0), (2.0, 2.0)], [(2.0, 4.0), (5.0, 6.0)]]),
     include=aplt.Include(origin=True, border=True),
 )
