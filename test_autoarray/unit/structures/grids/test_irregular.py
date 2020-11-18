@@ -385,12 +385,8 @@ class TestGridIrregularGroupedUniform:
             grid=[[(1.0, 1.0), (1.0, 3.0)]], pixel_scales=2.0
         )
 
-        grid_upscale = (
-            grids.GridIrregularGroupedUniform.from_grid_sparse_uniform_upscale(
-                grid_sparse_uniform=grid_sparse_uniform,
-                upscale_factor=2,
-                pixel_scales=2.0,
-            )
+        grid_upscale = grids.GridIrregularGroupedUniform.from_grid_sparse_uniform_upscale(
+            grid_sparse_uniform=grid_sparse_uniform, upscale_factor=2, pixel_scales=2.0
         )
 
         assert (
@@ -410,16 +406,11 @@ class TestGridIrregularGroupedUniform:
         ).all()
 
         grid_sparse_uniform = aa.GridIrregularGroupedUniform(
-            grid=[[(1.0, 1.0), (1.0, 3.0), (1.0, 5.0), (3.0, 3.0)]],
-            pixel_scales=2.0,
+            grid=[[(1.0, 1.0), (1.0, 3.0), (1.0, 5.0), (3.0, 3.0)]], pixel_scales=2.0
         )
 
-        grid_upscale = (
-            grids.GridIrregularGroupedUniform.from_grid_sparse_uniform_upscale(
-                grid_sparse_uniform=grid_sparse_uniform,
-                upscale_factor=4,
-                pixel_scales=2.0,
-            )
+        grid_upscale = grids.GridIrregularGroupedUniform.from_grid_sparse_uniform_upscale(
+            grid_sparse_uniform=grid_sparse_uniform, upscale_factor=4, pixel_scales=2.0
         )
 
         grid_upscale_util = aa.util.grid.grid_upscaled_1d_from(
@@ -430,9 +421,7 @@ class TestGridIrregularGroupedUniform:
 
     def test__grid_from_deflection_grid(self):
         grid = aa.GridIrregularGroupedUniform(
-            grid=[[(1.0, 1.0), (2.0, 2.0)]],
-            pixel_scales=(1.0, 1.0),
-            shape_2d=(3, 3),
+            grid=[[(1.0, 1.0), (2.0, 2.0)]], pixel_scales=(1.0, 1.0), shape_2d=(3, 3)
         )
 
         grid = grid.grid_from_deflection_grid(
@@ -447,9 +436,7 @@ class TestGridIrregularGroupedUniform:
     def test__grid_from_grid_1d(self):
 
         grid = aa.GridIrregularGroupedUniform(
-            grid=[[(1.0, 1.0), (2.0, 2.0)]],
-            pixel_scales=(1.0, 1.0),
-            shape_2d=(3, 3),
+            grid=[[(1.0, 1.0), (2.0, 2.0)]], pixel_scales=(1.0, 1.0), shape_2d=(3, 3)
         )
 
         grid_from_1d = grid.grid_from_grid_1d(

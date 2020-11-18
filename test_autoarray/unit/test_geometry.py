@@ -13,22 +13,22 @@ class TestCoordinates:
         assert central_pixel_coordinates == (1,)
 
         central_pixel_coordinates = aa.geometry.central_pixel_coordinates_from(
-            shape=(3, 3),
+            shape=(3, 3)
         )
         assert central_pixel_coordinates == (1, 1)
 
         central_pixel_coordinates = aa.geometry.central_pixel_coordinates_from(
-            shape=(3, 3),
+            shape=(3, 3)
         )
         assert central_pixel_coordinates == (1, 1)
 
         central_pixel_coordinates = aa.geometry.central_pixel_coordinates_from(
-            shape=(4, 4),
+            shape=(4, 4)
         )
         assert central_pixel_coordinates == (1.5, 1.5)
 
         central_pixel_coordinates = aa.geometry.central_pixel_coordinates_from(
-            shape=(4, 4),
+            shape=(4, 4)
         )
         assert central_pixel_coordinates == (1.5, 1.5)
 
