@@ -133,7 +133,7 @@ def make_noise_map_7x7():
 
 
 def make_positions_7x7():
-    return aa.GridCoordinates(coordinates=[[(0.1, 0.1), (0.2, 0.2)], [(0.3, 0.3)]])
+    return aa.GridIrregularGrouped(coordinates=[[(0.1, 0.1), (0.2, 0.2)], [(0.3, 0.3)]])
 
 
 def make_imaging_7x7():

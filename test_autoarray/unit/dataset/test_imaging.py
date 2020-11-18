@@ -163,7 +163,7 @@ class TestImaging:
         assert (imaging.image.in_2d == np.ones((3, 3))).all()
         assert (imaging.psf.in_2d == (1.0 / 9.0) * np.ones((3, 3))).all()
         assert (imaging.noise_map.in_2d == 3.0 * np.ones((3, 3))).all()
-        assert imaging.positions.in_list == [[(1.0, 1.0), (2.0, 2.0)]]
+        assert imaging.positions.in_grouped_list == [[(1.0, 1.0), (2.0, 2.0)]]
 
         assert imaging.pixel_scales == (0.1, 0.1)
         assert imaging.psf.mask.pixel_scales == (0.1, 0.1)

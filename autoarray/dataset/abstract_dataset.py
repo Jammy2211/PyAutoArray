@@ -38,7 +38,7 @@ class AbstractDataset:
         self,
         data: abstract_structure.AbstractStructure,
         noise_map: abstract_structure.AbstractStructure,
-        positions: grids.GridCoordinates = None,
+        positions: grids.GridIrregularGrouped = None,
         name: str = None,
     ):
         """A collection of abstract 2D for different data_type classes (an image, pixel-scale, noise-map, etc.)

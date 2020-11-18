@@ -261,7 +261,7 @@ class Interferometer(AbstractInterferometer):
 
         if positions_path is not None:
 
-            positions = grids.GridCoordinates.from_file(file_path=positions_path)
+            positions = grids.GridIrregularGrouped.from_file(file_path=positions_path)
 
         else:
 

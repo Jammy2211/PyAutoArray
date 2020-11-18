@@ -632,8 +632,8 @@ class TestAbstractPlotterPlots:
             array=array,
             mask=mask,
             grid=grid,
-            positions=aa.GridCoordinates([(-1.0, -1.0)]),
-            lines=aa.GridCoordinates([(1.0, 1.0), (2.0, 2.0)]),
+            positions=aa.GridIrregularGrouped([(-1.0, -1.0)]),
+            lines=aa.GridIrregularGrouped([(1.0, 1.0), (2.0, 2.0)]),
             array_overlay=array,
             include_origin=True,
             include_border=True,
@@ -649,8 +649,10 @@ class TestAbstractPlotterPlots:
             array=array,
             mask=mask,
             grid=grid,
-            positions=aa.GridCoordinates([[(1.0, 1.0), (2.0, 2.0)], [(-1.0, -1.0)]]),
-            lines=aa.GridCoordinates(
+            positions=aa.GridIrregularGrouped(
+                [[(1.0, 1.0), (2.0, 2.0)], [(-1.0, -1.0)]]
+            ),
+            lines=aa.GridIrregularGrouped(
                 [[(1.0, 1.0), (2.0, 2.0)], [(2.0, 4.0), (5.0, 6.0)]]
             ),
             array_overlay=array,
@@ -664,8 +666,8 @@ class TestAbstractPlotterPlots:
             array=array,
             mask=mask,
             grid=grid,
-            positions=aa.GridCoordinates([(-1.0, -1.0)]),
-            lines=aa.GridCoordinates([(1.0, 1.0), (2.0, 2.0)]),
+            positions=aa.GridIrregularGrouped([(-1.0, -1.0)]),
+            lines=aa.GridIrregularGrouped([(1.0, 1.0), (2.0, 2.0)]),
             array_overlay=array,
             include=aplt.Include(origin=True, border=True),
             plotter=aplt.Plotter(
@@ -784,7 +786,7 @@ class TestAbstractPlotterPlots:
             grid=grid,
             color_array=color_array,
             axis_limits=[-1.5, 1.5, -2.5, 2.5],
-            lines=aa.GridCoordinates(
+            lines=aa.GridIrregularGrouped(
                 [[(1.0, 1.0), (2.0, 2.0)], [(2.0, 4.0), (5.0, 6.0)]]
             ),
             indexes=[0, 1, 2, 14],
@@ -801,7 +803,7 @@ class TestAbstractPlotterPlots:
             grid=grid,
             color_array=color_array,
             axis_limits=[-1.5, 1.5, -2.5, 2.5],
-            lines=aa.GridCoordinates(
+            lines=aa.GridIrregularGrouped(
                 [[(1.0, 1.0), (2.0, 2.0)], [(2.0, 4.0), (5.0, 6.0)]]
             ),
             indexes=[0, 1, 2, 14],
@@ -814,7 +816,7 @@ class TestAbstractPlotterPlots:
             grid=grid,
             color_array=color_array,
             axis_limits=[-1.5, 1.5, -2.5, 2.5],
-            lines=aa.GridCoordinates(
+            lines=aa.GridIrregularGrouped(
                 [[(1.0, 1.0), (2.0, 2.0)], [(2.0, 4.0), (5.0, 6.0)]]
             ),
             indexes=[0, 1, 2, 14],
