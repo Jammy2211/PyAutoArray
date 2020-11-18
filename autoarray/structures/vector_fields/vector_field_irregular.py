@@ -16,7 +16,7 @@ class VectorFieldIrregular(np.ndarray):
         A collection of (y,x) vectors which are located on an irregular grid of (y,x) coordinates.
 
         The `VectorFieldIrregular` stores the (y,x) vector vectors as a 2D NumPy array of shape [total_vectors, 2].
-        Index information is stored so that this array can be mapped to a list of tuples structure.
+        This array can be mapped to a list of tuples structure.
 
         Calculations should use the NumPy array structure wherever possible for efficient calculations.
 
