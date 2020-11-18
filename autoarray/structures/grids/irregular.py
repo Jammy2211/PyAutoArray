@@ -555,9 +555,7 @@ class GridIrregularGroupedUniform(GridIrregularGrouped):
         ]
 
         return GridIrregularGroupedUniform(
-            grid=grouped_grid_1d,
-            pixel_scales=self.pixel_scales,
-            shape_2d=self.shape_2d,
+            grid=grouped_grid_1d, pixel_scales=self.pixel_scales, shape_2d=self.shape_2d
         )
 
     def grid_from_deflection_grid(self, deflection_grid):

@@ -10,9 +10,7 @@ logger = logging.getLogger(__name__)
 
 class VectorFieldIrregular(np.ndarray):
     def __new__(
-        cls,
-        vectors: np.ndarray or [(float, float)],
-        grid: grids.GridIrregular or list,
+        cls, vectors: np.ndarray or [(float, float)], grid: grids.GridIrregular or list
     ):
         """
         A collection of (y,x) vectors which are located on an irregular grid of (y,x) coordinates.

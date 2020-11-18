@@ -13,9 +13,7 @@ directory = path.dirname(path.realpath(__file__))
 @pytest.fixture(name="plot_path")
 def make_plot_path_setup():
     return path.join(
-        "{}".format(path.dirname(path.realpath(__file__))),
-        "files",
-        "plotter",
+        "{}".format(path.dirname(path.realpath(__file__))), "files", "plotter"
     )
 
 

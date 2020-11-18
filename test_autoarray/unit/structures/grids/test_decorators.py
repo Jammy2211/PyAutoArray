@@ -156,10 +156,7 @@ def test__grid_irregular_in__output_values_same_format():
 
     grid_output = grid_like_object.ndarray_2d_from_grid(grid=grid)
 
-    assert grid_output.in_grouped_list == [
-        [(2.0, 4.0), (6.0, 8.0)],
-        [(10.0, 12.0)],
-    ]
+    assert grid_output.in_grouped_list == [[(2.0, 4.0), (6.0, 8.0)], [(10.0, 12.0)]]
 
 
 def test__grid_irregular_in__output_is_list__list_of_same_format():
@@ -182,17 +179,11 @@ def test__grid_irregular_in__output_is_list__list_of_same_format():
 
     grid_output = grid_like_object.ndarray_1d_list_from_grid(grid=grid)
 
-    assert grid_output[0].in_grouped_list == [[1.0, 1.0], [1.0]], [
-        [2.0, 2.0],
-        [2.0],
-    ]
+    assert grid_output[0].in_grouped_list == [[1.0, 1.0], [1.0]], [[2.0, 2.0], [2.0]]
 
     grid_output = grid_like_object.ndarray_2d_list_from_grid(grid=grid)
 
-    assert grid_output[0].in_grouped_list == [
-        [(1.0, 2.0), (3.0, 4.0)],
-        [(5.0, 6.0)],
-    ], [
+    assert grid_output[0].in_grouped_list == [[(1.0, 2.0), (3.0, 4.0)], [(5.0, 6.0)]], [
         [(2.0, 4.0), (6.0, 8.0)],
         [(10.0, 12.0)],
     ]
