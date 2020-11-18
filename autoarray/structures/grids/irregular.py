@@ -5,10 +5,8 @@ from os import path
 import pickle
 import typing
 
-
-from autoarray.structures import abstract_structure
 from autoarray.structures import arrays
-from autoarray.util import grid_util
+from autoarray.util import geometry_util, grid_util
 from autoarray import exc
 
 
@@ -347,8 +345,8 @@ class GridIrregularGrouped(AbstractGridIrregular):
         for grouped_grid in pixels:
             grouped_grids.append(
                 [
-                    mask.geometry.scaled_coordinates_from_pixel_coordinates(
-                        pixel_coordinates=coordinates
+                    mask.geometry.scaled_coordinates_2d_from(
+                        pixel_coordinates_2d=coordinates
                     )
                     for coordinates in grouped_grid
                 ]
@@ -494,9 +492,7 @@ class GridIrregularGroupedUniform(GridIrregularGrouped):
         obj = coordinates_arr.view(cls)
         obj._internal_list = grid
 
-        pixel_scales = abstract_structure.convert_pixel_scales(
-            pixel_scales=pixel_scales
-        )
+        pixel_scales = geometry_util.convert_pixel_scales_2d(pixel_scales=pixel_scales)
 
         obj.shape_2d = shape_2d
         obj.pixel_scales = pixel_scales
@@ -529,9 +525,7 @@ class GridIrregularGroupedUniform(GridIrregularGrouped):
         cls, grid_sparse_uniform, upscale_factor, pixel_scales, shape_2d=None
     ):
 
-        pixel_scales = abstract_structure.convert_pixel_scales(
-            pixel_scales=pixel_scales
-        )
+        pixel_scales = geometry_util.convert_pixel_scales_2d(pixel_scales=pixel_scales)
 
         grid_upscaled_1d = grid_util.grid_upscaled_1d_from(
             grid_1d=grid_sparse_uniform,

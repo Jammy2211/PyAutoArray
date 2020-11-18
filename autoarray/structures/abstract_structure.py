@@ -3,14 +3,6 @@ import numpy as np
 import pickle
 
 
-def convert_pixel_scales(pixel_scales):
-
-    if type(pixel_scales) is float:
-        pixel_scales = (pixel_scales, pixel_scales)
-
-    return pixel_scales
-
-
 class AbstractStructure(np.ndarray):
     def __array_finalize__(self, obj):
 
