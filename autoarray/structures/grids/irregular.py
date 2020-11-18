@@ -505,6 +505,9 @@ class GridIrregularGroupedUniform(GridIrregularGrouped):
 
     def __array_finalize__(self, obj):
 
+        if hasattr(obj, "_internal_list"):
+            self._internal_list = obj._internal_list
+
         if hasattr(obj, "shape_2d"):
             self.shape_2d = obj.shape_2d
 
