@@ -177,7 +177,7 @@ class VisibilitiesNoiseMap(Visibilities):
         )
 
         obj.Wop = pylops.Diagonal(
-            1.0 / np.sqrt(np.real(obj).ravel()), dtype="complex128"
+            1.0 / np.real(obj).ravel(), dtype="complex128"
         )
         return obj
 
