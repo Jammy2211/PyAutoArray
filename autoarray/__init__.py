@@ -8,7 +8,6 @@ from . import exc
 from . import plot
 from . import util
 from . import mock
-from . import geometry
 from .dataset import preprocess
 from .dataset.imaging import Imaging
 from .dataset.imaging import MaskedImaging
@@ -60,4 +59,4 @@ from autoconf import conf
 
 conf.instance.register(__file__)
 
-__version__ = '0.15.1'
+__version__ = "0.15.1"

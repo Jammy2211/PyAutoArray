@@ -4,10 +4,9 @@ import numpy as np
 
 from autoarray import exc
 from autoarray.structures.arrays import abstract_array
-from autoarray.structures import abstract_structure
 from autoarray.structures import grids
 from autoarray.mask import mask_2d as msk
-from autoarray.util import array_util, grid_util
+from autoarray.util import array_util, geometry_util, grid_util
 
 logging.basicConfig()
 logger = logging.getLogger(__name__)
@@ -240,9 +239,7 @@ class Array(abstract_array.AbstractArray):
             stored in 2D as an ndarray of shape [total_y_pixels, total_x_pixels].
         """
 
-        pixel_scales = abstract_structure.convert_pixel_scales(
-            pixel_scales=pixel_scales
-        )
+        pixel_scales = geometry_util.convert_pixel_scales_2d(pixel_scales=pixel_scales)
 
         if shape_2d is not None and len(shape_2d) != 2:
             raise exc.ArrayException(
@@ -301,9 +298,7 @@ class Array(abstract_array.AbstractArray):
             stored in 2D as an ndarray of shape [total_y_pixels, total_x_pixels].
         """
 
-        pixel_scales = abstract_structure.convert_pixel_scales(
-            pixel_scales=pixel_scales
-        )
+        pixel_scales = geometry_util.convert_pixel_scales_2d(pixel_scales=pixel_scales)
 
         array = abstract_array.convert_array(array=array)
 
@@ -597,9 +592,7 @@ class Array(abstract_array.AbstractArray):
             If True, the grid is stored in 1D as an ndarray of shape [total_unmasked_pixels, 2]. If False, it is
             stored in 2D as an ndarray of shape [total_y_pixels, total_x_pixels, 2].
         """
-        pixel_scales = abstract_structure.convert_pixel_scales(
-            pixel_scales=pixel_scales
-        )
+        pixel_scales = geometry_util.convert_pixel_scales_2d(pixel_scales=pixel_scales)
 
         grid = grids.Grid.manual_yx_1d(
             y=y, x=x, shape_2d=shape_2d, pixel_scales=pixel_scales, sub_size=1

@@ -1,6 +1,6 @@
 import numpy as np
 
-from autoarray import geometry
+from autoarray.util import geometry_util
 from autoarray.structures import arrays
 from autoarray.structures import grids
 from autoarray.util import array_util, grid_util
@@ -17,35 +17,35 @@ class Geometry:
 
     @property
     def central_pixel_coordinates(self):
-        return geometry.central_pixel_coordinates_from(shape=self.mask.shape_2d)
+        return geometry_util.central_pixel_coordinates_from(shape=self.mask.shape_2d)
 
     @property
     def central_scaled_coordinates(self):
 
-        return geometry.central_scaled_coordinates_from(
-            shape=self.mask.shape_2d,
+        return geometry_util.central_scaled_coordinate_2d_from(
+            shape_2d=self.mask.shape_2d,
             pixel_scales=self.mask.pixel_scales,
-            origins=self.mask.origin,
+            origin=self.mask.origin,
         )
 
     @property
     def origin(self):
         return self.mask.origin
 
-    def pixel_coordinates_from_scaled_coordinates(self, scaled_coordinates):
+    def pixel_coordinates_2d_from(self, scaled_coordinates_2d):
 
-        return geometry.pixel_coordinates_from_scaled_coordinates(
-            scaled_coordinates=scaled_coordinates,
-            shape=self.mask.shape,
+        return geometry_util.pixel_coordinates_2d_from(
+            scaled_coordinates_2d=scaled_coordinates_2d,
+            shape_2d=self.mask.shape,
             pixel_scales=self.mask.pixel_scales,
             origins=self.origin,
         )
 
-    def scaled_coordinates_from_pixel_coordinates(self, pixel_coordinates):
+    def scaled_coordinates_2d_from(self, pixel_coordinates_2d):
 
-        return geometry.scaled_coordinates_from_pixel_coordinates(
-            pixel_coordinates=pixel_coordinates,
-            shape=self.mask.shape,
+        return geometry_util.scaled_coordinates_2d_from(
+            pixel_coordinates_2d=pixel_coordinates_2d,
+            shape_2d=self.mask.shape,
             pixel_scales=self.mask.pixel_scales,
             origins=self.origin,
         )
