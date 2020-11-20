@@ -150,8 +150,8 @@ class TestVisiblities:
 
         image = aa.Array.manual_2d([[2.0, 6.0]], pixel_scales=1.0)
 
-        real_visibilities_via_preload = (
-            transformer_preload.real_visibilities_from_image(image=image)
+        real_visibilities_via_preload = transformer_preload.real_visibilities_from_image(
+            image=image
         )
         real_visibilities = transformer.real_visibilities_from_image(image=image)
 
@@ -256,8 +256,8 @@ class TestVisiblities:
 
         image = aa.Array.manual_2d([[2.0, 6.0]], pixel_scales=1.0)
 
-        imag_visibilities_via_preload = (
-            transformer_preload.imag_visibilities_from_image(image=image)
+        imag_visibilities_via_preload = transformer_preload.imag_visibilities_from_image(
+            image=image
         )
         imag_visibilities = transformer.imag_visibilities_from_image(image=image)
 
@@ -311,10 +311,8 @@ class TestVisiblitiesMappingMatrix:
 
         mapping_matrix = np.ones(shape=(1, 1))
 
-        transformed_mapping_matrix = (
-            transformer.real_transformed_mapping_matrix_from_mapping_matrix(
-                mapping_matrix=mapping_matrix
-            )
+        transformed_mapping_matrix = transformer.real_transformed_mapping_matrix_from_mapping_matrix(
+            mapping_matrix=mapping_matrix
         )
 
         assert (transformed_mapping_matrix == np.ones(shape=(4, 1))).all()
@@ -334,10 +332,8 @@ class TestVisiblitiesMappingMatrix:
 
         mapping_matrix = np.ones(shape=(2, 1))
 
-        transformed_mapping_matrix = (
-            transformer.real_transformed_mapping_matrix_from_mapping_matrix(
-                mapping_matrix=mapping_matrix
-            )
+        transformed_mapping_matrix = transformer.real_transformed_mapping_matrix_from_mapping_matrix(
+            mapping_matrix=mapping_matrix
         )
 
         assert transformed_mapping_matrix == pytest.approx(
@@ -346,10 +342,8 @@ class TestVisiblitiesMappingMatrix:
 
         mapping_matrix = np.ones(shape=(2, 2))
 
-        transformed_mapping_matrix = (
-            transformer.real_transformed_mapping_matrix_from_mapping_matrix(
-                mapping_matrix=mapping_matrix
-            )
+        transformed_mapping_matrix = transformer.real_transformed_mapping_matrix_from_mapping_matrix(
+            mapping_matrix=mapping_matrix
         )
 
         assert transformed_mapping_matrix == pytest.approx(
@@ -376,10 +370,8 @@ class TestVisiblitiesMappingMatrix:
 
         mapping_matrix = np.array([[1.0], [0.0], [0.0]])
 
-        transformed_mapping_matrix = (
-            transformer.real_transformed_mapping_matrix_from_mapping_matrix(
-                mapping_matrix=mapping_matrix
-            )
+        transformed_mapping_matrix = transformer.real_transformed_mapping_matrix_from_mapping_matrix(
+            mapping_matrix=mapping_matrix
         )
 
         assert transformed_mapping_matrix == pytest.approx(
@@ -388,10 +380,8 @@ class TestVisiblitiesMappingMatrix:
 
         mapping_matrix = np.array([[0.0], [1.0], [0.0]])
 
-        transformed_mapping_matrix = (
-            transformer.real_transformed_mapping_matrix_from_mapping_matrix(
-                mapping_matrix=mapping_matrix
-            )
+        transformed_mapping_matrix = transformer.real_transformed_mapping_matrix_from_mapping_matrix(
+            mapping_matrix=mapping_matrix
         )
 
         assert transformed_mapping_matrix == pytest.approx(
@@ -400,10 +390,8 @@ class TestVisiblitiesMappingMatrix:
 
         mapping_matrix = np.array([[0.0, 0.5], [0.0, 0.2], [1.0, 0.0]])
 
-        transformed_mapping_matrix = (
-            transformer.real_transformed_mapping_matrix_from_mapping_matrix(
-                mapping_matrix=mapping_matrix
-            )
+        transformed_mapping_matrix = transformer.real_transformed_mapping_matrix_from_mapping_matrix(
+            mapping_matrix=mapping_matrix
         )
 
         assert transformed_mapping_matrix == pytest.approx(
@@ -432,16 +420,12 @@ class TestVisiblitiesMappingMatrix:
 
         mapping_matrix = np.array([[3.0, 5.0], [1.0, 2.0]])
 
-        transformed_mapping_matrix_preload = (
-            transformer_preload.real_transformed_mapping_matrix_from_mapping_matrix(
-                mapping_matrix=mapping_matrix
-            )
+        transformed_mapping_matrix_preload = transformer_preload.real_transformed_mapping_matrix_from_mapping_matrix(
+            mapping_matrix=mapping_matrix
         )
 
-        transformed_mapping_matrix = (
-            transformer.real_transformed_mapping_matrix_from_mapping_matrix(
-                mapping_matrix=mapping_matrix
-            )
+        transformed_mapping_matrix = transformer.real_transformed_mapping_matrix_from_mapping_matrix(
+            mapping_matrix=mapping_matrix
         )
 
         assert (transformed_mapping_matrix_preload == transformed_mapping_matrix).all()
@@ -460,10 +444,8 @@ class TestVisiblitiesMappingMatrix:
 
         mapping_matrix = np.ones(shape=(1, 1))
 
-        transformed_mapping_matrix = (
-            transformer.imag_transformed_mapping_matrix_from_mapping_matrix(
-                mapping_matrix=mapping_matrix
-            )
+        transformed_mapping_matrix = transformer.imag_transformed_mapping_matrix_from_mapping_matrix(
+            mapping_matrix=mapping_matrix
         )
 
         assert transformed_mapping_matrix == pytest.approx(
@@ -484,10 +466,8 @@ class TestVisiblitiesMappingMatrix:
 
         mapping_matrix = np.ones(shape=(2, 1))
 
-        transformed_mapping_matrix = (
-            transformer.imag_transformed_mapping_matrix_from_mapping_matrix(
-                mapping_matrix=mapping_matrix
-            )
+        transformed_mapping_matrix = transformer.imag_transformed_mapping_matrix_from_mapping_matrix(
+            mapping_matrix=mapping_matrix
         )
 
         assert transformed_mapping_matrix == pytest.approx(
@@ -496,10 +476,8 @@ class TestVisiblitiesMappingMatrix:
 
         mapping_matrix = np.ones(shape=(2, 2))
 
-        transformed_mapping_matrix = (
-            transformer.imag_transformed_mapping_matrix_from_mapping_matrix(
-                mapping_matrix=mapping_matrix
-            )
+        transformed_mapping_matrix = transformer.imag_transformed_mapping_matrix_from_mapping_matrix(
+            mapping_matrix=mapping_matrix
         )
 
         assert transformed_mapping_matrix == pytest.approx(
@@ -526,10 +504,8 @@ class TestVisiblitiesMappingMatrix:
 
         mapping_matrix = np.array([[1.0], [0.0], [0.0]])
 
-        transformed_mapping_matrix = (
-            transformer.imag_transformed_mapping_matrix_from_mapping_matrix(
-                mapping_matrix=mapping_matrix
-            )
+        transformed_mapping_matrix = transformer.imag_transformed_mapping_matrix_from_mapping_matrix(
+            mapping_matrix=mapping_matrix
         )
 
         assert transformed_mapping_matrix == pytest.approx(
@@ -538,10 +514,8 @@ class TestVisiblitiesMappingMatrix:
 
         mapping_matrix = np.array([[0.0], [1.0], [0.0]])
 
-        transformed_mapping_matrix = (
-            transformer.imag_transformed_mapping_matrix_from_mapping_matrix(
-                mapping_matrix=mapping_matrix
-            )
+        transformed_mapping_matrix = transformer.imag_transformed_mapping_matrix_from_mapping_matrix(
+            mapping_matrix=mapping_matrix
         )
 
         assert transformed_mapping_matrix == pytest.approx(
@@ -550,10 +524,8 @@ class TestVisiblitiesMappingMatrix:
 
         mapping_matrix = np.array([[0.0, 0.5], [0.0, 0.2], [1.0, 0.0]])
 
-        transformed_mapping_matrix = (
-            transformer.imag_transformed_mapping_matrix_from_mapping_matrix(
-                mapping_matrix=mapping_matrix
-            )
+        transformed_mapping_matrix = transformer.imag_transformed_mapping_matrix_from_mapping_matrix(
+            mapping_matrix=mapping_matrix
         )
 
         assert transformed_mapping_matrix == pytest.approx(
@@ -582,16 +554,12 @@ class TestVisiblitiesMappingMatrix:
 
         mapping_matrix = np.array([[3.0, 5.0], [1.0, 2.0]])
 
-        transformed_mapping_matrix_preload = (
-            transformer_preload.imag_transformed_mapping_matrix_from_mapping_matrix(
-                mapping_matrix=mapping_matrix
-            )
+        transformed_mapping_matrix_preload = transformer_preload.imag_transformed_mapping_matrix_from_mapping_matrix(
+            mapping_matrix=mapping_matrix
         )
 
-        transformed_mapping_matrix = (
-            transformer.imag_transformed_mapping_matrix_from_mapping_matrix(
-                mapping_matrix=mapping_matrix
-            )
+        transformed_mapping_matrix = transformer.imag_transformed_mapping_matrix_from_mapping_matrix(
+            mapping_matrix=mapping_matrix
         )
 
         assert (transformed_mapping_matrix_preload == transformed_mapping_matrix).all()
@@ -614,10 +582,8 @@ class TestVisiblitiesMappingMatrix:
 
         mapping_matrix = np.ones(shape=(2, 1))
 
-        transformed_mapping_matrices = (
-            transformer.transformed_mapping_matrices_from_mapping_matrix(
-                mapping_matrix=mapping_matrix
-            )
+        transformed_mapping_matrices = transformer.transformed_mapping_matrices_from_mapping_matrix(
+            mapping_matrix=mapping_matrix
         )
 
         assert transformed_mapping_matrices[0] == pytest.approx(
@@ -677,10 +643,8 @@ class TestTransformerNUFFT:
             preload_transform=False,
         )
 
-        transformed_mapping_matrices_dft = (
-            transformer_dft.transformed_mapping_matrices_from_mapping_matrix(
-                mapping_matrix=mapping_matrix
-            )
+        transformed_mapping_matrices_dft = transformer_dft.transformed_mapping_matrices_from_mapping_matrix(
+            mapping_matrix=mapping_matrix
         )
 
         real_space_mask = aa.Mask2D.unmasked(shape_2d=(5, 5), pixel_scales=0.005)
@@ -689,10 +653,8 @@ class TestTransformerNUFFT:
             uv_wavelengths=uv_wavelengths, real_space_mask=real_space_mask
         )
 
-        transformed_mapping_matrices_nufft = (
-            transformer_nufft.transformed_mapping_matrices_from_mapping_matrix(
-                mapping_matrix=mapping_matrix
-            )
+        transformed_mapping_matrices_nufft = transformer_nufft.transformed_mapping_matrices_from_mapping_matrix(
+            mapping_matrix=mapping_matrix
         )
 
         assert transformed_mapping_matrices_dft[0] == pytest.approx(

@@ -955,11 +955,11 @@ class GridSparse:
             origin=origin,
         ).astype("int")
 
-        sparse_1d_index_for_mask_1d_index = (
-            sparse_util.sparse_1d_index_for_mask_1d_index_from(
-                regular_to_unmasked_sparse=regular_to_unmasked_sparse,
-                sparse_for_unmasked_sparse=sparse_for_unmasked_sparse,
-            ).astype("int")
+        sparse_1d_index_for_mask_1d_index = sparse_util.sparse_1d_index_for_mask_1d_index_from(
+            regular_to_unmasked_sparse=regular_to_unmasked_sparse,
+            sparse_for_unmasked_sparse=sparse_for_unmasked_sparse,
+        ).astype(
+            "int"
         )
 
         sparse_grid = sparse_util.sparse_grid_via_unmasked_from(
