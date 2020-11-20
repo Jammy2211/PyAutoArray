@@ -1,10 +1,9 @@
 import numpy as np
 from sklearn.cluster import KMeans
 from autoarray import exc
-from autoarray.structures import abstract_structure
 from autoarray.structures.grids import abstract_grid
 from autoarray.mask import mask_2d as msk
-from autoarray.util import array_util, sparse_util, grid_util, mask_util
+from autoarray.util import array_util, sparse_util, geometry_util, grid_util, mask_util
 
 
 class Grid(abstract_grid.AbstractGrid):
@@ -258,9 +257,7 @@ class Grid(abstract_grid.AbstractGrid):
             stored in 2D as an ndarray of shape [total_y_pixels, total_x_pixels, 2].
         """
 
-        pixel_scales = abstract_structure.convert_pixel_scales(
-            pixel_scales=pixel_scales
-        )
+        pixel_scales = geometry_util.convert_pixel_scales_2d(pixel_scales=pixel_scales)
 
         mask = msk.Mask2D.unmasked(
             shape_2d=shape_2d,
@@ -309,9 +306,7 @@ class Grid(abstract_grid.AbstractGrid):
 
         grid = abstract_grid.convert_grid(grid=grid)
 
-        pixel_scales = abstract_structure.convert_pixel_scales(
-            pixel_scales=pixel_scales
-        )
+        pixel_scales = geometry_util.convert_pixel_scales_2d(pixel_scales=pixel_scales)
 
         shape = (int(grid.shape[0] / sub_size), int(grid.shape[1] / sub_size))
 
@@ -529,9 +524,7 @@ class Grid(abstract_grid.AbstractGrid):
             If True, the grid is stored in 1D as an ndarray of shape [total_unmasked_pixels, 2]. If False, it is
             stored in 2D as an ndarray of shape [total_y_pixels, total_x_pixels, 2].
         """
-        pixel_scales = abstract_structure.convert_pixel_scales(
-            pixel_scales=pixel_scales
-        )
+        pixel_scales = geometry_util.convert_pixel_scales_2d(pixel_scales=pixel_scales)
 
         grid_1d = grid_util.grid_1d_via_shape_2d_from(
             shape_2d=shape_2d,
@@ -962,11 +955,11 @@ class GridSparse:
             origin=origin,
         ).astype("int")
 
-        sparse_1d_index_for_mask_1d_index = sparse_util.sparse_1d_index_for_mask_1d_index_from(
-            regular_to_unmasked_sparse=regular_to_unmasked_sparse,
-            sparse_for_unmasked_sparse=sparse_for_unmasked_sparse,
-        ).astype(
-            "int"
+        sparse_1d_index_for_mask_1d_index = (
+            sparse_util.sparse_1d_index_for_mask_1d_index_from(
+                regular_to_unmasked_sparse=regular_to_unmasked_sparse,
+                sparse_for_unmasked_sparse=sparse_for_unmasked_sparse,
+            ).astype("int")
         )
 
         sparse_grid = sparse_util.sparse_grid_via_unmasked_from(

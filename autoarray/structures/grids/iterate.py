@@ -1,11 +1,10 @@
 import numpy as np
 
 from autoarray import decorator_util
-from autoarray.structures import abstract_structure
 from autoarray.structures import grids
 from autoarray.structures.grids import abstract_grid
 from autoarray.mask import mask_2d as msk
-from autoarray.util import array_util, grid_util
+from autoarray.util import array_util, geometry_util, grid_util
 from autoarray import exc
 
 
@@ -160,9 +159,7 @@ class GridIterate(abstract_grid.AbstractGrid):
             stored in 2D as an ndarray of shape [total_y_pixels, total_x_pixels, 2].
         """
         grid = abstract_grid.convert_grid(grid=grid)
-        pixel_scales = abstract_structure.convert_pixel_scales(
-            pixel_scales=pixel_scales
-        )
+        pixel_scales = geometry_util.convert_pixel_scales_2d(pixel_scales=pixel_scales)
 
         mask = msk.Mask2D.unmasked(
             shape_2d=shape_2d, pixel_scales=pixel_scales, sub_size=1, origin=origin
@@ -220,9 +217,7 @@ class GridIterate(abstract_grid.AbstractGrid):
             stored in 2D as an ndarray of shape [total_y_pixels, total_x_pixels, 2].
         """
 
-        pixel_scales = abstract_structure.convert_pixel_scales(
-            pixel_scales=pixel_scales
-        )
+        pixel_scales = geometry_util.convert_pixel_scales_2d(pixel_scales=pixel_scales)
 
         grid_1d = grid_util.grid_1d_via_shape_2d_from(
             shape_2d=shape_2d, pixel_scales=pixel_scales, sub_size=1, origin=origin

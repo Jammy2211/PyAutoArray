@@ -483,6 +483,92 @@ class TestAbstractPlotterAttributes:
         assert sub_plotter.pixelization_grid_scatterer.marker == "o"
         assert sub_plotter.pixelization_grid_scatterer.colors == ["r"]
 
+    def test__vector_quiverer__from_config_or_via_manual_input(self):
+
+        plotter = aplt.Plotter()
+
+        assert plotter.vector_quiverer.headlength == 0
+        assert plotter.vector_quiverer.pivot == "middle"
+        assert plotter.vector_quiverer.linewidth == 5
+        assert plotter.vector_quiverer.units == "xy"
+        assert plotter.vector_quiverer.angles == "xy"
+        assert plotter.vector_quiverer.headwidth == 1
+        assert plotter.vector_quiverer.alpha == 1.0
+
+        plotter = aplt.Plotter(
+            vector_quiverer=aplt.VectorQuiverer(
+                headlength=1,
+                pivot="lol",
+                linewidth=2,
+                units="lol2",
+                angles="lol3",
+                headwidth=3,
+                alpha=0.5,
+            )
+        )
+
+        assert plotter.vector_quiverer.headlength == 1
+        assert plotter.vector_quiverer.pivot == "lol"
+        assert plotter.vector_quiverer.linewidth == 2
+        assert plotter.vector_quiverer.units == "lol2"
+        assert plotter.vector_quiverer.angles == "lol3"
+        assert plotter.vector_quiverer.headwidth == 3
+        assert plotter.vector_quiverer.alpha == 0.5
+
+        sub_plotter = aplt.SubPlotter()
+
+        assert sub_plotter.vector_quiverer.headlength == 0.1
+        assert sub_plotter.vector_quiverer.pivot == "middle1"
+        assert sub_plotter.vector_quiverer.linewidth == 51
+        assert sub_plotter.vector_quiverer.units == "xy1"
+        assert sub_plotter.vector_quiverer.angles == "xy1"
+        assert sub_plotter.vector_quiverer.headwidth == 11
+        assert sub_plotter.vector_quiverer.alpha == 1.1
+
+        sub_plotter = aplt.SubPlotter(
+            vector_quiverer=aplt.VectorQuiverer(
+                headlength=12,
+                pivot="lol2",
+                linewidth=22,
+                units="lol22",
+                angles="lol32",
+                headwidth=32,
+                alpha=0.52,
+            )
+        )
+
+        assert sub_plotter.vector_quiverer.headlength == 12
+        assert sub_plotter.vector_quiverer.pivot == "lol2"
+        assert sub_plotter.vector_quiverer.linewidth == 22
+        assert sub_plotter.vector_quiverer.units == "lol22"
+        assert sub_plotter.vector_quiverer.angles == "lol32"
+        assert sub_plotter.vector_quiverer.headwidth == 32
+        assert sub_plotter.vector_quiverer.alpha == 0.52
+
+    def test__patcher__from_config_or_via_manual_input(self):
+
+        plotter = aplt.Plotter()
+
+        assert plotter.patcher.facecolor == "none"
+        assert plotter.patcher.edgecolor == "cyan"
+
+        plotter = aplt.Plotter(patcher=aplt.Patcher(facecolor="r", edgecolor="g"))
+
+        assert plotter.patcher.facecolor == "r"
+        assert plotter.patcher.edgecolor == "g"
+
+        sub_plotter = aplt.SubPlotter()
+
+        assert sub_plotter.patcher.facecolor == "none"
+        assert sub_plotter.patcher.edgecolor == "y"
+
+        sub_plotter = aplt.SubPlotter(
+            patcher=aplt.Patcher.sub(facecolor="b", edgecolor="p")
+        )
+
+        assert sub_plotter.patcher.facecolor == "b"
+        assert sub_plotter.patcher.edgecolor == "p"
+
     def test__liner__from_config_or_via_manual_input(self):
 
         plotter = aplt.Plotter()
