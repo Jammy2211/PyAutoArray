@@ -5,6 +5,7 @@ import pytest
 import numpy as np
 
 import autoarray as aa
+from autoarray import exc
 
 test_vectors_dir = path.join(
     "{}".format(path.dirname(path.realpath(__file__))), "files", "vectors"
@@ -106,3 +107,37 @@ def test__elliptical_properties_and_patches():
     assert vector_field.elliptical_patches[1].width == pytest.approx(6.0, 1.0e-4)
     assert vector_field.elliptical_patches[1].height == pytest.approx(0.0, 1.0e-4)
     assert vector_field.elliptical_patches[1].angle == pytest.approx(45.0, 1.0e-4)
+
+
+def test__vectors_from_grid_within_radius():
+
+    vector_field = aa.VectorFieldIrregular(
+        vectors=[(1.0, 1.0), (2.0, 2.0)], grid=[[0.0, 1.0], [0.0, 2.0]]
+    )
+
+    vector_field_masked = vector_field.vectors_within_radius(
+        radius=3.0, centre=(0.0, 0.0)
+    )
+
+    assert type(vector_field_masked) == aa.VectorFieldIrregular
+    assert vector_field_masked.in_1d_list == [(1.0, 1.0), (2.0, 2.0)]
+    assert vector_field_masked.grid.in_1d_list == [(0.0, 1.0), (0.0, 2.0)]
+
+    vector_field_masked = vector_field.vectors_within_radius(
+        radius=1.5, centre=(0.0, 0.0)
+    )
+
+    assert type(vector_field_masked) == aa.VectorFieldIrregular
+    assert vector_field_masked.in_1d_list == [(1.0, 1.0)]
+    assert vector_field_masked.grid.in_1d_list == [(0.0, 1.0)]
+
+    vector_field_masked = vector_field.vectors_within_radius(
+        radius=0.5, centre=(0.0, 2.0)
+    )
+
+    assert type(vector_field_masked) == aa.VectorFieldIrregular
+    assert vector_field_masked.in_1d_list == [(2.0, 2.0)]
+    assert vector_field_masked.grid.in_1d_list == [(0.0, 2.0)]
+
+    with pytest.raises(exc.VectorFieldException):
+        vector_field.vectors_within_radius(radius=0.0, centre=(0.0, 0.0))

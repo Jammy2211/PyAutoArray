@@ -14,6 +14,10 @@ class GridException(Exception):
     pass
 
 
+class VectorFieldException(Exception):
+    pass
+
+
 class KernelException(Exception):
     pass
 

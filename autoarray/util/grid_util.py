@@ -763,22 +763,14 @@ def grid_upscaled_1d_from(
 
     return grid_upscaled_1d
 
-def mask_of_points_within_radius(radius: float, centre: (float, float), grid: np.ndarray):
 
-    mask = np.full(len(grid[:, 0]), True)
-
-    for i in range(len(grid[:, 0])):
-        if (grid[i, 0] - centre[0]) ** 2 + (grid[i, 1] - centre[1]) ** 2 > radius ** 2:
-            mask[i] = False
-
-    return mask
-
-
-def grid_of_points_within_radius(radius: float, centre: (float, float), grid: np.ndarray):
+def grid_of_points_within_radius(
+    radius: float, centre: (float, float), grid: np.ndarray
+):
     y_inside = []
     x_inside = []
 
-    for i in range(len(grid[:,0])):
+    for i in range(len(grid[:, 0])):
         if (grid[i, 0] - centre[0]) ** 2 + (grid[i, 1] - centre[1]) ** 2 > radius ** 2:
             y_inside.append(grid[i, 0])
             x_inside.append(grid[i, 1])
