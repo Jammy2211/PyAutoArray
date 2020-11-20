@@ -5,7 +5,7 @@ from autoarray.plot import mat_objs
 
 from os import path
 
-
+from matplotlib.patches import Ellipse
 import matplotlib.pyplot as plt
 import matplotlib.colors as colors
 import pytest
@@ -537,6 +537,37 @@ class TestScatterer:
                 [[(1.0, 1.0), (2.0, 2.0)], [(3.0, 3.0)]]
             )
         )
+
+
+class TestVectorQuiverer:
+    def test__quiver_vector_field(self):
+
+        quiverer = mat_objs.VectorQuiverer(
+            headlength=5,
+            pivot="middle",
+            linewidth=3,
+            units="xy",
+            angles="xy",
+            headwidth=6,
+            alpha=1.0,
+        )
+
+        vector_field = aa.VectorFieldIrregular(
+            vectors=[(1.0, 2.0), (2.0, 1.0)], grid=[(-1.0, 0.0), (-2.0, 0.0)]
+        )
+
+        quiverer.quiver_vector_field(vector_field=vector_field)
+
+
+class TestPatcher:
+    def test__add_patches(self):
+
+        patcher = mat_objs.Patcher(facecolor="cy", edgecolor="none")
+
+        patch_0 = Ellipse(xy=(1.0, 2.0), height=1.0, width=2.0, angle=1.0)
+        patch_1 = Ellipse(xy=(1.0, 2.0), height=1.0, width=2.0, angle=1.0)
+
+        patcher.add_patches(patches=[patch_0, patch_1])
 
 
 class TestLiner:

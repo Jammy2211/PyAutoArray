@@ -1,8 +1,15 @@
 import logging
 
 import numpy as np
+import typing
 
-from autoarray.structures import grids
+from autoarray.util import grid_util, mask_util
+
+from matplotlib.patches import Ellipse
+from autoarray.structures.arrays import values
+from autoarray.structures import arrays, grids
+
+from autoarray import exc
 
 logging.basicConfig()
 logger = logging.getLogger(__name__)
@@ -16,7 +23,7 @@ class VectorFieldIrregular(np.ndarray):
         A collection of (y,x) vectors which are located on an irregular grid of (y,x) coordinates.
 
         The `VectorFieldIrregular` stores the (y,x) vector vectors as a 2D NumPy array of shape [total_vectors, 2].
-        Index information is stored so that this array can be mapped to a list of tuples structure.
+        This array can be mapped to a list of tuples structure.
 
         Calculations should use the NumPy array structure wherever possible for efficient calculations.
 
@@ -53,11 +60,116 @@ class VectorFieldIrregular(np.ndarray):
             self.grid = obj.grid
 
     @property
-    def in_1d(self):
-        """The VectorFieldIrregular in its 1D representation, an ndarray of shape [total_vectors, 2]."""
+    def ellipticities(self) -> values.Values:
+        """
+        If we treat this vector field as a set of weak lensing shear measurements, the galaxy ellipticity each vector
+        corresponds too.
+        """
+        return values.Values(values=np.sqrt(self[:, 0] ** 2 + self[:, 1] ** 2.0))
+
+    @property
+    def semi_major_axes(self) -> values.Values:
+        """
+        If we treat this vector field as a set of weak lensing shear measurements, the semi-major axis of each
+        galaxy ellipticity that each vector corresponds too.
+        """
+        return values.Values(values=3 * (1 + self.ellipticities))
+
+    @property
+    def semi_minor_axes(self) -> values.Values:
+        """
+        If we treat this vector field as a set of weak lensing shear measurements, the semi-minor axis of each
+        galaxy ellipticity that each vector corresponds too.
+        """
+        return values.Values(values=3 * (1 - self.ellipticities))
+
+    @property
+    def phis(self) -> values.Values:
+        """
+        If we treat this vector field as a set of weak lensing shear measurements, the position angle phi defined
+        counter clockwise from the positive x-axis of each galaxy ellipticity that each vector corresponds too.
+        """
+        return values.Values(
+            values=np.arctan2(self[:, 0], self[:, 1]) * 180.0 / np.pi / 2.0
+        )
+
+    @property
+    def elliptical_patches(self) -> typing.List[Ellipse]:
+        """
+        If we treat this vector field as a set of weak lensing shear measurements, the elliptical patch representing
+        each galaxy ellipticity. This patch is used for visualizing an ellipse of each galaxy in an image.
+        """
+
+        return [
+            Ellipse(xy=(x, y), width=semi_major_axis, height=semi_minor_axis, angle=phi)
+            for x, y, semi_major_axis, semi_minor_axis, phi in zip(
+                self.grid[:, 1],
+                self.grid[:, 0],
+                self.semi_major_axes,
+                self.semi_minor_axes,
+                self.phis,
+            )
+        ]
+
+    @property
+    def in_1d(self) -> np.ndarray:
+        """
+        The vector-field in its 1D representation, an ndarray of shape [total_vectors, 2].
+        """
         return self
 
     @property
-    def in_1d_list(self):
-        """Return the (y,x) vecotrs in list of structure [(vector_0_y, vector_0_x), ...]."""
+    def in_1d_list(self) -> typing.List[typing.Tuple]:
+        """
+        The vector-field in its list representation, as list of (y,x) vector tuples in a structure
+        [(vector_0_y, vector_0_x), ...].
+        """
         return [tuple(vector) for vector in self.in_1d]
+
+    @property
+    def average_magnitude(self) -> float:
+        """
+        The average magnitude of the vector field, where averaging is performed on the (vector_y, vector_x) components.
+        """
+        return np.sqrt(np.mean(self[:, 0]) ** 2 + np.mean(self[:, 1]) ** 2)
+
+    @property
+    def average_phi(self) -> float:
+        """
+        The average angle of the vector field, where averaging is performed on the (vector_y, vector_x) components.
+        """
+        return (
+            0.5 * np.arctan2(np.mean(self[:, 0]), np.mean(self[:, 1])) * (180 / np.pi)
+        )
+
+    def vectors_within_radius(
+        self, radius: float, centre: typing.Tuple[float, float] = (0.0, 0.0)
+    ) -> "VectorFieldIrregular":
+        """
+        Returns a new `VectorFieldIrregular` object which has had all vectors outside of a circle of input radius
+        around an  input (y,x) centre removed.
+
+        Parameters
+        ----------
+        radius : float
+            The radius of the circle outside of which vectors are removed.
+        centre : float
+            The centre of the circle outside of which vectors are removed.
+
+        Returns
+        -------
+        VectorFieldIrregular
+            The vector field where all vectors outside of the input radius are removed.
+
+        """
+        squared_distances = self.grid.distances_from_coordinate(coordinate=centre)
+        mask = squared_distances < radius
+
+        if np.all(mask == False):
+            raise exc.VectorFieldException(
+                "The input radius removed all vectors / points on the grid."
+            )
+
+        return VectorFieldIrregular(
+            vectors=self[mask], grid=grids.GridIrregular(self.grid[mask])
+        )
