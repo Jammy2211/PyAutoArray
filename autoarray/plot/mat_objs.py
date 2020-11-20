@@ -1428,11 +1428,7 @@ class VectorQuiverer(AbstractMatObj):
 
 class Patcher(AbstractMatObj):
     def __init__(
-        self,
-        facecolor=None,
-        edgecolor=None,
-        section=None,
-        from_subplot_config=False,
+        self, facecolor=None, edgecolor=None, section=None, from_subplot_config=False
     ):
 
         if section is None:
