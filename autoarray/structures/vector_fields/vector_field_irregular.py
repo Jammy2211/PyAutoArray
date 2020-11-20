@@ -3,6 +3,7 @@ import logging
 import numpy as np
 
 from autoarray.structures import grids
+from autoarray.util import grid_util
 
 logging.basicConfig()
 logger = logging.getLogger(__name__)
@@ -61,3 +62,31 @@ class VectorFieldIrregular(np.ndarray):
     def in_1d_list(self):
         """Return the (y,x) vecotrs in list of structure [(vector_0_y, vector_0_x), ...]."""
         return [tuple(vector) for vector in self.in_1d]
+
+    @property
+    def average(self):
+        return(np.mean(self))
+
+    @property
+    def average_magnitude(self):
+        return np.sqrt(self[:, 0].average ** 2 + self[:, 1].average ** 2)
+
+    @property
+    def average_angle(self):
+        return 0.5*np.arctan2(self[:, 0].average, self[:, 1].average)*(180/np.pi)
+
+    def vectors_from_grid_within_radius(self, radius, centre):
+
+        mask = grid_util.mask_of_points_within_radius(grid=self.grid, radius=radius, centre=centre)
+
+        grid_inside = []
+        vector_inside = []
+
+        for i in range(len(mask)):
+            if mask[i] == True:
+                grid_inside.append(self.grid[i])
+                vector_inside.append(self[i])
+
+        grid_inside = grids.GridIrregular(grid=np.asarray(grid_inside))
+
+        return VectorFieldIrregular(grid=grid_inside, vectors=np.asarray(vector_inside))
