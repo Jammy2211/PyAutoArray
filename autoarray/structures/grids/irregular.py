@@ -239,6 +239,19 @@ class GridIrregular(AbstractGridIrregular):
         """
         return GridIrregular(grid=self - deflection_grid)
 
+    def grid_from_mask_within_radius(self, radius, centre):
+
+        mask = grid_util.mask_of_points_within_radius(
+            grid=self, radius=radius, centre=centre
+        )
+
+        inside = []
+        for i in range(len(mask)):
+            if mask[i] == True:
+                inside.append(self[i])
+
+        return GridIrregular(grid=np.asarray(inside))
+
 
 class GridIrregularGrouped(AbstractGridIrregular):
     def __new__(cls, grid):

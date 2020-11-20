@@ -762,3 +762,17 @@ def grid_upscaled_1d_from(
                 upscale_index += 1
 
     return grid_upscaled_1d
+
+
+def grid_of_points_within_radius(
+    radius: float, centre: (float, float), grid: np.ndarray
+):
+    y_inside = []
+    x_inside = []
+
+    for i in range(len(grid[:, 0])):
+        if (grid[i, 0] - centre[0]) ** 2 + (grid[i, 1] - centre[1]) ** 2 > radius ** 2:
+            y_inside.append(grid[i, 0])
+            x_inside.append(grid[i, 1])
+
+    return np.asarray(y_inside, x_inside)
