@@ -68,6 +68,8 @@ class AbstractPlotter:
         index_scatterer=None,
         pixelization_grid_scatterer=None,
         liner=None,
+        vector_quiverer=None,
+        patcher=None,
         array_overlayer=None,
         voronoi_drawer=None,
         parallel_overscan_liner=None,
@@ -172,6 +174,18 @@ class AbstractPlotter:
             )
         )
 
+        self.vector_quiverer = (
+            vector_quiverer
+            if vector_quiverer is not None
+            else mat_objs.VectorQuiverer(from_subplot_config=from_subplot_config)
+        )
+
+        self.patcher = (
+            patcher
+            if patcher is not None
+            else mat_objs.Patcher(from_subplot_config=from_subplot_config)
+        )
+
         self.array_overlayer = (
             array_overlayer
             if array_overlayer is not None
@@ -209,6 +223,8 @@ class AbstractPlotter:
         lines=None,
         positions=None,
         grid=None,
+        vector_field=None,
+        patches=None,
         array_overlay=None,
         include_origin=False,
         include_border=False,
@@ -390,6 +406,12 @@ class AbstractPlotter:
 
         if positions is not None:
             self.positions_scatterer.scatter_coordinates(coordinates=positions)
+
+        if vector_field is not None:
+            self.vector_quiverer.quiver_vector_field(vector_field=vector_field)
+
+        if patches is not None:
+            self.patcher.add_patches(patches=patches)
 
         if lines is not None:
             self.liner.draw_coordinates(coordinates=lines)
@@ -1086,6 +1108,8 @@ class Plotter(AbstractPlotter):
         index_scatterer=None,
         pixelization_grid_scatterer=None,
         liner=None,
+        vector_quiverer=None,
+        patcher=None,
         array_overlayer=None,
         voronoi_drawer=None,
         parallel_overscan_liner=None,
@@ -1110,6 +1134,8 @@ class Plotter(AbstractPlotter):
             index_scatterer=index_scatterer,
             pixelization_grid_scatterer=pixelization_grid_scatterer,
             liner=liner,
+            vector_quiverer=vector_quiverer,
+            patcher=patcher,
             array_overlayer=array_overlayer,
             voronoi_drawer=voronoi_drawer,
             parallel_overscan_liner=parallel_overscan_liner,
@@ -1138,6 +1164,8 @@ class SubPlotter(AbstractPlotter):
         index_scatterer=None,
         pixelization_grid_scatterer=None,
         liner=None,
+        vector_quiverer=None,
+        patcher=None,
         array_overlayer=None,
         voronoi_drawer=None,
         parallel_overscan_liner=None,
@@ -1163,6 +1191,8 @@ class SubPlotter(AbstractPlotter):
             index_scatterer=index_scatterer,
             pixelization_grid_scatterer=pixelization_grid_scatterer,
             liner=liner,
+            vector_quiverer=vector_quiverer,
+            patcher=patcher,
             array_overlayer=array_overlayer,
             voronoi_drawer=voronoi_drawer,
             parallel_overscan_liner=parallel_overscan_liner,
@@ -1576,6 +1606,8 @@ def plot_array(
     lines=None,
     positions=None,
     grid=None,
+    vector_field=None,
+    patches=None,
     array_overlay=None,
     include=None,
     plotter=None,
@@ -1592,6 +1624,8 @@ def plot_array(
         lines=lines,
         positions=positions,
         grid=grid,
+        vector_field=vector_field,
+        patches=patches,
         array_overlay=array_overlay,
         include_origin=include.origin,
         include_border=include.border,

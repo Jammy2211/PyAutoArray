@@ -2,7 +2,9 @@ import logging
 
 import numpy as np
 
-from autoarray.structures import grids
+from matplotlib.patches import Ellipse
+from autoarray.structures.arrays import values
+from autoarray.structures import arrays, grids
 
 logging.basicConfig()
 logger = logging.getLogger(__name__)
@@ -51,6 +53,38 @@ class VectorFieldIrregular(np.ndarray):
 
         if hasattr(obj, "grid"):
             self.grid = obj.grid
+
+    @property
+    def ellipticities(self):
+        return values.Values(values=np.sqrt(self[:, 0] ** 2 + self[:, 1] ** 2.0))
+
+    @property
+    def semi_major_axes(self):
+        return values.Values(values=3 * (1 + self.ellipticities))
+
+    @property
+    def semi_minor_axes(self):
+        return values.Values(values=3 * (1 - self.ellipticities))
+
+    @property
+    def phis(self):
+        return values.Values(
+            values=np.arctan2(self[:, 0], self[:, 1]) * 180.0 / np.pi / 2.0
+        )
+
+    @property
+    def elliptical_patches(self):
+
+        return [
+            Ellipse(xy=(x, y), width=semi_major_axis, height=semi_minor_axis, angle=phi)
+            for x, y, semi_major_axis, semi_minor_axis, phi in zip(
+                self.grid[:, 1],
+                self.grid[:, 0],
+                self.semi_major_axes,
+                self.semi_minor_axes,
+                self.phis,
+            )
+        ]
 
     @property
     def in_1d(self):
