@@ -14,6 +14,8 @@ from autoarray.plot.mat_objs import (
     PositionsScatterer,
     IndexScatterer,
     PixelizationGridScatterer,
+    VectorQuiverer,
+    Patcher,
     Liner,
     ArrayOverlayer,
     VoronoiDrawer,
