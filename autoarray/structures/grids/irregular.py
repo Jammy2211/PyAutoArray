@@ -5,10 +5,8 @@ from os import path
 import pickle
 import typing
 
-
-from autoarray.structures import abstract_structure
 from autoarray.structures import arrays
-from autoarray.util import grid_util
+from autoarray.util import geometry_util, grid_util
 from autoarray import exc
 
 
@@ -241,6 +239,19 @@ class GridIrregular(AbstractGridIrregular):
         """
         return GridIrregular(grid=self - deflection_grid)
 
+    def grid_from_mask_within_radius(self, radius, centre):
+
+        mask = grid_util.mask_of_points_within_radius(
+            grid=self, radius=radius, centre=centre
+        )
+
+        inside = []
+        for i in range(len(mask)):
+            if mask[i] == True:
+                inside.append(self[i])
+
+        return GridIrregular(grid=np.asarray(inside))
+
 
 class GridIrregularGrouped(AbstractGridIrregular):
     def __new__(cls, grid):
@@ -347,8 +358,8 @@ class GridIrregularGrouped(AbstractGridIrregular):
         for grouped_grid in pixels:
             grouped_grids.append(
                 [
-                    mask.geometry.scaled_coordinates_from_pixel_coordinates(
-                        pixel_coordinates=coordinates
+                    mask.geometry.scaled_coordinates_2d_from(
+                        pixel_coordinates_2d=coordinates
                     )
                     for coordinates in grouped_grid
                 ]
@@ -494,9 +505,7 @@ class GridIrregularGroupedUniform(GridIrregularGrouped):
         obj = coordinates_arr.view(cls)
         obj._internal_list = grid
 
-        pixel_scales = abstract_structure.convert_pixel_scales(
-            pixel_scales=pixel_scales
-        )
+        pixel_scales = geometry_util.convert_pixel_scales_2d(pixel_scales=pixel_scales)
 
         obj.shape_2d = shape_2d
         obj.pixel_scales = pixel_scales
@@ -529,9 +538,7 @@ class GridIrregularGroupedUniform(GridIrregularGrouped):
         cls, grid_sparse_uniform, upscale_factor, pixel_scales, shape_2d=None
     ):
 
-        pixel_scales = abstract_structure.convert_pixel_scales(
-            pixel_scales=pixel_scales
-        )
+        pixel_scales = geometry_util.convert_pixel_scales_2d(pixel_scales=pixel_scales)
 
         grid_upscaled_1d = grid_util.grid_upscaled_1d_from(
             grid_1d=grid_sparse_uniform,

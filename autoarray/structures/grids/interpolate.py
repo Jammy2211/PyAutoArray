@@ -1,11 +1,10 @@
 import numpy as np
 import scipy.spatial.qhull as qhull
 from autoconf import conf
-from autoarray.structures import abstract_structure
 from autoarray.structures import grids
 from autoarray.structures.grids import abstract_grid
 from autoarray.mask import mask_2d as msk
-from autoarray.util import grid_util
+from autoarray.util import geometry_util, grid_util
 from autoarray import exc
 
 
@@ -165,10 +164,8 @@ class GridInterpolate(abstract_grid.AbstractGrid):
             stored in 2D as an ndarray of shape [total_y_pixels, total_x_pixels, 2].
         """
         grid = abstract_grid.convert_grid(grid=grid)
-        pixel_scales = abstract_structure.convert_pixel_scales(
-            pixel_scales=pixel_scales
-        )
-        pixel_scales_interp = abstract_structure.convert_pixel_scales(
+        pixel_scales = geometry_util.convert_pixel_scales_2d(pixel_scales=pixel_scales)
+        pixel_scales_interp = geometry_util.convert_pixel_scales_2d(
             pixel_scales=pixel_scales_interp
         )
 
@@ -228,10 +225,8 @@ class GridInterpolate(abstract_grid.AbstractGrid):
             stored in 2D as an ndarray of shape [total_y_pixels, total_x_pixels, 2].
         """
 
-        pixel_scales = abstract_structure.convert_pixel_scales(
-            pixel_scales=pixel_scales
-        )
-        pixel_scales_interp = abstract_structure.convert_pixel_scales(
+        pixel_scales = geometry_util.convert_pixel_scales_2d(pixel_scales=pixel_scales)
+        pixel_scales_interp = geometry_util.convert_pixel_scales_2d(
             pixel_scales=pixel_scales_interp
         )
 
@@ -271,7 +266,7 @@ class GridInterpolate(abstract_grid.AbstractGrid):
             stored in 2D as an ndarray of shape [total_y_pixels, total_x_pixels, 2].
         """
 
-        pixel_scales_interp = abstract_structure.convert_pixel_scales(
+        pixel_scales_interp = geometry_util.convert_pixel_scales_2d(
             pixel_scales=pixel_scales_interp
         )
 

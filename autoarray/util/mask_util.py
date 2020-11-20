@@ -1,5 +1,6 @@
 import numpy as np
 from skimage.transform import rescale
+import typing
 
 from autoarray import decorator_util
 from autoarray import exc
@@ -8,7 +9,7 @@ from autoarray.util import grid_util
 
 @decorator_util.jit()
 def mask_centres_from(
-    shape: (int, int), pixel_scales: (float, float), centre: (float, float)
+    shape: (int, int), pixel_scales: typing.Tuple[float, float], centre: (float, float)
 ) -> (float, float):
     """
     Returns the (y,x) scaled central coordinates of a mask from its shape, pixel-scales and centre.
@@ -137,9 +138,9 @@ def total_sparse_pixels_from(
 @decorator_util.jit()
 def mask_circular_from(
     shape_2d: (int, int),
-    pixel_scales: (float, float),
+    pixel_scales: typing.Tuple[float, float],
     radius: float,
-    centre: (float, float) = (0.0, 0.0),
+    centre: typing.Tuple[float, float] = (0.0, 0.0),
 ) -> np.ndarray:
     """
     Returns a circular mask from the 2D mask array shape and radius of the circle.
@@ -191,10 +192,10 @@ def mask_circular_from(
 @decorator_util.jit()
 def mask_circular_annular_from(
     shape_2d: (int, int),
-    pixel_scales: (float, float),
+    pixel_scales: typing.Tuple[float, float],
     inner_radius: float,
     outer_radius: float,
-    centre: (float, float) = (0.0, 0.0),
+    centre: typing.Tuple[float, float] = (0.0, 0.0),
 ) -> np.ndarray:
     """
     Returns an circular annular mask from an input inner and outer mask radius and shape.
@@ -248,11 +249,11 @@ def mask_circular_annular_from(
 @decorator_util.jit()
 def mask_circular_anti_annular_from(
     shape_2d: (int, int),
-    pixel_scales: (float, float),
+    pixel_scales: typing.Tuple[float, float],
     inner_radius: float,
     outer_radius: float,
     outer_radius_2_scaled: float,
-    centre: (float, float) = (0.0, 0.0),
+    centre: typing.Tuple[float, float] = (0.0, 0.0),
 ) -> np.ndarray:
     """
     Returns an anti-annular mask from an input inner and outer mask radius and shape. The anti-annular is analogous to
@@ -385,11 +386,11 @@ def elliptical_radius_from(
 @decorator_util.jit()
 def mask_elliptical_from(
     shape_2d: (int, int),
-    pixel_scales: (float, float),
+    pixel_scales: typing.Tuple[float, float],
     major_axis_radius: float,
     axis_ratio: float,
     phi: float,
-    centre: (float, float) = (0.0, 0.0),
+    centre: typing.Tuple[float, float] = (0.0, 0.0),
 ) -> np.ndarray:
     """
     Returns an elliptical mask from an input major-axis mask radius, axis-ratio, rotational angle phi, shape and
@@ -449,14 +450,14 @@ def mask_elliptical_from(
 @decorator_util.jit()
 def mask_elliptical_annular_from(
     shape_2d: (int, int),
-    pixel_scales: (float, float),
+    pixel_scales: typing.Tuple[float, float],
     inner_major_axis_radius: float,
     inner_axis_ratio: float,
     inner_phi: float,
     outer_major_axis_radius: float,
     outer_axis_ratio: float,
     outer_phi: float,
-    centre: (float, float) = (0.0, 0.0),
+    centre: typing.Tuple[float, float] = (0.0, 0.0),
 ) -> np.ndarray:
     """
     Returns an elliptical annular mask from an input major-axis mask radius, axis-ratio, rotational angle phi for
