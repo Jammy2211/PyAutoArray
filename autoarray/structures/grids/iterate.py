@@ -134,7 +134,7 @@ class GridIterate(abstract_grid.AbstractGrid):
             grid=[[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0]]
 
         From 1D input the method cannot determine the 2D shape of the grid and its mask, thus the shape_2d must be
-        input into this method. The mask is setup as a unmasked *Mask2D* of shape_2d.
+        input into this method. The mask is setup as a unmasked `Mask2D` of shape_2d.
 
         Parameters
         ----------

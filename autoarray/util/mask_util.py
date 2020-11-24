@@ -21,7 +21,7 @@ def mask_centres_from(
     shape : (int, int)
         The (y,x) shape of the 2D array the scaled centre is computed for.
     pixel_scales : (float, float)
-        The (y,x) scaled to pixel scales of the 2D array.
+        The (y,x) scaled units to pixel units conversion factor of the 2D array.
     centre : (float, flloat)
         The (y,x) centre of the 2D mask.
 
@@ -152,7 +152,7 @@ def mask_circular_from(
     shape_2d: (int, int)
         The (y,x) shape of the mask in units of pixels.
     pixel_scales: float
-        The scaled to pixel conversion factor of each pixel.
+        The scaled units to pixel units conversion factor of each pixel.
     radius : float
         The radius (in scaled units) of the circle within which pixels unmasked.
     centre: (float, float)
@@ -207,7 +207,7 @@ def mask_circular_annular_from(
     shape_2d : (int, int)
         The (y,x) shape of the mask in units of pixels.
     pixel_scales : (float, float)
-        The scaled to pixel conversion factor of each pixel.
+        The scaled units to pixel units conversion factor of each pixel.
     inner_radius : float
         The radius (in scaled units) of the inner circle outside of which pixels are unmasked.
     outer_radius : float
@@ -266,7 +266,7 @@ def mask_circular_anti_annular_from(
     shape_2d : (int, int)
         The (y,x) shape of the mask in units of pixels.
     pixel_scales : (float, float)
-        The scaled to pixel conversion factor of each pixel.
+        The scaled units to pixel units conversion factor of each pixel.
     inner_radius : float
         The inner radius in scaled units of the annulus within which pixels are `False` and unmasked.
     outer_radius : float
@@ -403,7 +403,7 @@ def mask_elliptical_from(
     shape_2d: (int, int)
         The (y,x) shape of the mask in units of pixels.
     pixel_scales : (float, float)
-        The scaled to pixel conversion factor of each pixel.
+        The scaled units to pixel units conversion factor of each pixel.
     major_axis_radius : float
         The major-axis (in scaled units) of the ellipse within which pixels are unmasked.
     axis_ratio : float
@@ -470,7 +470,7 @@ def mask_elliptical_annular_from(
     shape_2d: (int, int)
         The (y,x) shape of the mask in units of pixels.
     pixel_scales : (float, float)
-        The scaled to pixel conversion factor of each pixel.
+        The scaled units to pixel units conversion factor of each pixel.
     inner_major_axis_radius : float
         The major-axis (in scaled units) of the inner ellipse within which pixels are masked.
     inner_axis_ratio : float
@@ -924,8 +924,10 @@ def sub_border_pixel_1d_indexes_from(mask: np.ndarray, sub_size: int) -> np.ndar
 
     sub_border_pixels = np.zeros(shape=border_pixels.shape[0])
 
-    mask_1d_index_to_sub_mask_indexes = sub_mask_1d_indexes_for_mask_1d_index_via_mask_from(
-        mask=mask, sub_size=sub_size
+    mask_1d_index_to_sub_mask_indexes = (
+        sub_mask_1d_indexes_for_mask_1d_index_via_mask_from(
+            mask=mask, sub_size=sub_size
+        )
     )
 
     masked_sub_grid_1d = grid_util.grid_1d_via_mask_from(
@@ -990,7 +992,7 @@ def rescaled_mask_from(mask: np.ndarray, rescale_factor: float) -> np.ndarray:
     smaller size depending on the `rescale_factor`.
 
     For example, a `rescale_factor` of 0.5 would reduce a 10 x 10 mask to a 5x5 mask, where the `False` entries
-    of the 5 x 5 mask corresponding to pixels which had at least one `False` entry in their correspnding location on the
+    of the 5 x 5 mask corresponding to pixels which had at least one `False` entry in their corresponding location on the
     10 x 10 mask. A rescale factor of 2.0 would increase the 10 x 10 mask in size to a 20 x 20 mask, with `False`
     again wherever the original mask had those entries.
 
@@ -1112,10 +1114,10 @@ def sub_mask_1d_indexes_for_mask_1d_index_via_mask_from(
 
     sub_mask_1d_indexes_for_mask_1d_index = [[] for _ in range(total_pixels)]
 
-    mask_1d_index_for_sub_mask_1d_index = mask_1d_index_for_sub_mask_1d_index_via_mask_from(
-        mask=mask, sub_size=sub_size
-    ).astype(
-        "int"
+    mask_1d_index_for_sub_mask_1d_index = (
+        mask_1d_index_for_sub_mask_1d_index_via_mask_from(
+            mask=mask, sub_size=sub_size
+        ).astype("int")
     )
 
     for sub_mask_1d_index, mask_1d_index in enumerate(
@@ -1268,8 +1270,8 @@ def mask_neighbors_from(mask: np.ndarray) -> np.ndarray:
 
     mask_neighbors = -1 * np.ones(shape=total_pixels)
 
-    sub_mask_1d_index_for_sub_mask_index = sub_mask_1d_index_for_sub_mask_index_from_sub_mask_from(
-        sub_mask=mask
+    sub_mask_1d_index_for_sub_mask_index = (
+        sub_mask_1d_index_for_sub_mask_index_from_sub_mask_from(sub_mask=mask)
     )
 
     mask_index = 0

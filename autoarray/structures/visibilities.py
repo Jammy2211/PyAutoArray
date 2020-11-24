@@ -20,7 +20,7 @@ class AbstractVisibilities(np.ndarray):
         array_1d: np.ndarray
             An array representing image (e.g. an image, noise-map, etc.)
         pixel_scales: (float, float)
-            The scaled to pixel conversion factor of each pixel.
+            The scaled units to pixel units conversion factor of each pixel.
         origin : (float, float)
             The scaled origin of the hyper array's coordinate system.
         """
@@ -165,7 +165,7 @@ class VisibilitiesNoiseMap(Visibilities):
         array_1d: np.ndarray
             An array representing image (e.g. an image, noise-map, etc.)
         pixel_scales: (float, float)
-            The scaled to pixel conversion factor of each pixel.
+            The scaled units to pixel units conversion factor of each pixel.
         origin : (float, float)
             The scaled origin of the hyper array's coordinate system.
         """
@@ -176,9 +176,8 @@ class VisibilitiesNoiseMap(Visibilities):
             np.divide(1.0, np.square(visibilities_1d))
         )
 
-        obj.Wop = pylops.Diagonal(
-            1.0 / np.real(obj).ravel(), dtype="complex128"
-        )
+        obj.Wop = pylops.Diagonal(1.0 / np.real(obj).ravel(), dtype="complex128")
+
         return obj
 
     def __array_finalize__(self, obj):

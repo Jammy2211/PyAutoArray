@@ -572,7 +572,7 @@ class Mask2D(AbstractMask2D):
         shape_2d (int, int)
             The (y,x) shape of the mask in units of pixels.
         pixel_scales : (float, float)
-            The scaled to pixel conversion factor of each pixel.
+            The scaled units to pixel units conversion factor of each pixel.
         inner_major_axis_radius : float
             The major-axis in scaled units of the inner ellipse within which pixels are masked.
         inner_axis_ratio : float
@@ -647,7 +647,7 @@ class Mask2D(AbstractMask2D):
         pixel_coordinates : [[int, int]]
             The input lists of 2D pixel coordinates where `False` entries are created.
         pixel_scales : (float, float)
-            The scaled to pixel conversion factor of each pixel.
+            The scaled units to pixel units conversion factor of each pixel.
         sub_size : int
             The size (sub_size x sub_size) of each unmasked pixels sub-array.
         origin : (float, float)
@@ -692,7 +692,7 @@ class Mask2D(AbstractMask2D):
         hdu : int
             The HDU number in the fits file containing the image image.
         pixel_scales : float or (float, float)
-            The scaled to pixel conversion factor of each pixel.
+            The scaled units to pixel units conversion factor of each pixel.
         sub_size : int
             The size (sub_size x sub_size) of each unmasked pixels sub-array.
         origin : (float, float)
