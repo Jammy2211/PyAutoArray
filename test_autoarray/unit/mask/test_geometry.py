@@ -11,8 +11,8 @@ class TestCoordinates:
             mask=np.full(fill_value=False, shape=(3, 3)), pixel_scales=(0.1, 0.1)
         )
 
-        central_pixel_coordinates_util = aa.util.geometry.central_pixel_coordinates_from(
-            shape=(3, 3)
+        central_pixel_coordinates_util = (
+            aa.util.geometry.central_pixel_coordinates_from(shape=(3, 3))
         )
 
         assert mask.geometry.central_pixel_coordinates == central_pixel_coordinates_util
@@ -23,8 +23,8 @@ class TestCoordinates:
             origin=(1.0, 2.0),
         )
 
-        central_pixel_coordinates_util = aa.util.geometry.central_pixel_coordinates_from(
-            shape=(5, 3)
+        central_pixel_coordinates_util = (
+            aa.util.geometry.central_pixel_coordinates_from(shape=(5, 3))
         )
 
         assert mask.geometry.central_pixel_coordinates == central_pixel_coordinates_util
@@ -640,7 +640,9 @@ class TestScaledToPixel:
             == pixel_coordinates_util
         )
 
-    def test__scaled_coordinates_2d_from___gives_same_result_as_geometry_util(self,):
+    def test__scaled_coordinates_2d_from___gives_same_result_as_geometry_util(
+        self,
+    ):
 
         mask = aa.Mask2D.manual(
             mask=np.full(fill_value=False, shape=(6, 7)),

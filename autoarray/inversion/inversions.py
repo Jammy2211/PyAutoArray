@@ -201,7 +201,7 @@ class AbstractInversion:
     @property
     def regularization_term(self):
         """
-    Returns the regularization term of an inversion. This term represents the sum of the difference in flux \
+        Returns the regularization term of an inversion. This term represents the sum of the difference in flux \
         between every pair of neighboring pixels. This is computed as:
 
         s_T * H * s = solution_vector.T * regularization_matrix * solution_vector
@@ -549,20 +549,26 @@ class InversionInterferometerMatrix(
         settings=SettingsInversion(),
     ):
 
-        transformed_mapping_matrices = transformer.transformed_mapping_matrices_from_mapping_matrix(
-            mapping_matrix=mapper.mapping_matrix
+        transformed_mapping_matrices = (
+            transformer.transformed_mapping_matrices_from_mapping_matrix(
+                mapping_matrix=mapper.mapping_matrix
+            )
         )
 
-        real_data_vector = inversion_util.data_vector_via_transformed_mapping_matrix_from(
-            transformed_mapping_matrix=transformed_mapping_matrices[0],
-            visibilities=visibilities[:, 0],
-            noise_map=noise_map[:, 0],
+        real_data_vector = (
+            inversion_util.data_vector_via_transformed_mapping_matrix_from(
+                transformed_mapping_matrix=transformed_mapping_matrices[0],
+                visibilities=visibilities[:, 0],
+                noise_map=noise_map[:, 0],
+            )
         )
 
-        imag_data_vector = inversion_util.data_vector_via_transformed_mapping_matrix_from(
-            transformed_mapping_matrix=transformed_mapping_matrices[1],
-            visibilities=visibilities[:, 1],
-            noise_map=noise_map[:, 1],
+        imag_data_vector = (
+            inversion_util.data_vector_via_transformed_mapping_matrix_from(
+                transformed_mapping_matrix=transformed_mapping_matrices[1],
+                visibilities=visibilities[:, 1],
+                noise_map=noise_map[:, 1],
+            )
         )
 
         real_curvature_matrix = inversion_util.curvature_matrix_via_mapping_matrix_from(
@@ -583,10 +589,12 @@ class InversionInterferometerMatrix(
 
         if settings.use_preconditioner:
 
-            preconditioner_matrix = inversion_util.preconditioner_matrix_via_mapping_matrix_from(
-                mapping_matrix=mapper.mapping_matrix,
-                regularization_matrix=regularization_matrix,
-                preconditioner_noise_normalization=np.sum(1.0 / noise_map ** 2),
+            preconditioner_matrix = (
+                inversion_util.preconditioner_matrix_via_mapping_matrix_from(
+                    mapping_matrix=mapper.mapping_matrix,
+                    regularization_matrix=regularization_matrix,
+                    preconditioner_noise_normalization=np.sum(1.0 / noise_map ** 2),
+                )
             )
 
             preconditioner_inv = np.linalg.inv(preconditioner_matrix)
@@ -732,19 +740,31 @@ class InversionInterferometerLinearOperator(AbstractInversionInterferometer):
             regularization_matrix=regularization_matrix, dtype="float64"
         )
 
-        preconditioner_matrix = inversion_util.preconditioner_matrix_via_mapping_matrix_from(
-            mapping_matrix=mapper.mapping_matrix,
-            regularization_matrix=regularization_matrix,
-            preconditioner_noise_normalization=np.sum(
-                np.divide(1.0, np.square(noise_map))
-            ),
+        preconditioner_matrix = (
+            inversion_util.preconditioner_matrix_via_mapping_matrix_from(
+                mapping_matrix=mapper.mapping_matrix,
+                regularization_matrix=regularization_matrix,
+                preconditioner_noise_normalization=np.sum(
+                    np.divide(1.0, np.square(noise_map))
+                ),
+            )
         )
 
         log_det_curvature_reg_matrix_term = 2.0 * np.sum(
             np.log(np.diag(np.linalg.cholesky(preconditioner_matrix)))
         )
 
+        num_iters = 0
+
+        def callback(xk):
+            nonlocal num_iters
+            num_iters += 1
+
         if not settings.use_preconditioner:
+
+            import time
+
+            start = time.time()
 
             reconstruction = pylops.NormalEquationsInversion(
                 Op=Op,
@@ -754,8 +774,13 @@ class InversionInterferometerLinearOperator(AbstractInversionInterferometer):
                 data=visibilities.as_complex,
                 Weight=noise_map.Wop,
                 tol=settings.tolerance,
-                **dict(maxiter=settings.maxiter),
+                **dict(maxiter=settings.maxiter, callback=callback),
             )
+
+            print("Number of Iterations of PyLops = ", num_iters)
+
+            calculation_time = time.time() - start
+            print("Time to compute fit = {}".format(calculation_time))
 
         else:
 
@@ -763,6 +788,10 @@ class InversionInterferometerLinearOperator(AbstractInversionInterferometer):
                 np.linalg.inv(preconditioner_matrix), dtype="float64"
             )
 
+            import time
+
+            start = time.time()
+
             reconstruction = pylops.NormalEquationsInversion(
                 Op=Op,
                 Regs=None,
@@ -771,8 +800,12 @@ class InversionInterferometerLinearOperator(AbstractInversionInterferometer):
                 data=visibilities.as_complex,
                 Weight=noise_map.Wop,
                 tol=settings.tolerance,
-                **dict(M=Mop, maxiter=settings.maxiter),
+                **dict(M=Mop, maxiter=settings.maxiter, callback=callback),
             )
+
+            print("Number of Iterations of PyLops = ", num_iters)
+            calculation_time = time.time() - start
+            print("Time to compute precon fit = {}".format(calculation_time))
 
         return InversionInterferometerLinearOperator(
             visibilities=visibilities,

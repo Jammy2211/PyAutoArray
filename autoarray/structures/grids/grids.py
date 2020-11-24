@@ -236,7 +236,7 @@ class Grid(abstract_grid.AbstractGrid):
         grid=[[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0]]
 
         From 1D input the method cannot determine the 2D shape of the grid and its mask, thus the shape_2d must be
-        input into this method. The mask is setup as a unmasked *Mask2D* of shape_2d.
+        input into this method. The mask is setup as a unmasked `Mask2D` of shape_2d.
 
         Parameters
         ----------
@@ -285,7 +285,7 @@ class Grid(abstract_grid.AbstractGrid):
               [[3.0, 3.0], [4.0, 4.0]]]
 
         The 2D shape of the grid and its mask are determined from the input grid and the mask is setup as an
-        unmasked *Mask2D* of shape_2d.
+        unmasked `Mask2D` of shape_2d.
 
         Parameters
         ----------
@@ -417,7 +417,7 @@ class Grid(abstract_grid.AbstractGrid):
         x = [1.0, 2.0, 3.0, 4.0]
 
         From 1D input the method cannot determine the 2D shape of the grid and its mask, thus the shape_2d must be
-        input into this method. The mask is setup as a unmasked *Mask2D* of shape_2d.
+        input into this method. The mask is setup as a unmasked `Mask2D` of shape_2d.
 
         Parameters
         ----------
@@ -469,7 +469,7 @@ class Grid(abstract_grid.AbstractGrid):
              [3.0, 4.0]]
 
         The 2D shape of the grid and its mask are determined from the input grid and the mask is setup as an
-        unmasked *Mask2D* of shape_2d.
+        unmasked `Mask2D` of shape_2d.
 
         Parameters
         ----------
@@ -955,11 +955,11 @@ class GridSparse:
             origin=origin,
         ).astype("int")
 
-        sparse_1d_index_for_mask_1d_index = sparse_util.sparse_1d_index_for_mask_1d_index_from(
-            regular_to_unmasked_sparse=regular_to_unmasked_sparse,
-            sparse_for_unmasked_sparse=sparse_for_unmasked_sparse,
-        ).astype(
-            "int"
+        sparse_1d_index_for_mask_1d_index = (
+            sparse_util.sparse_1d_index_for_mask_1d_index_from(
+                regular_to_unmasked_sparse=regular_to_unmasked_sparse,
+                sparse_for_unmasked_sparse=sparse_for_unmasked_sparse,
+            ).astype("int")
         )
 
         sparse_grid = sparse_util.sparse_grid_via_unmasked_from(
