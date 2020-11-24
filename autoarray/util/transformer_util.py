@@ -177,17 +177,16 @@ def real_transformed_mapping_matrix_jit(mapping_matrix, grid_radians, uv_wavelen
             if value > 0:
 
                 for vis_1d_index in range(uv_wavelengths.shape[0]):
-                    transfomed_mapping_matrix[vis_1d_index, pixel_1d_index] += (
-                        value
-                        * np.cos(
-                            -2.0
-                            * np.pi
-                            * (
-                                grid_radians[image_1d_index, 1]
-                                * uv_wavelengths[vis_1d_index, 0]
-                                + grid_radians[image_1d_index, 0]
-                                * uv_wavelengths[vis_1d_index, 1]
-                            )
+                    transfomed_mapping_matrix[
+                        vis_1d_index, pixel_1d_index
+                    ] += value * np.cos(
+                        -2.0
+                        * np.pi
+                        * (
+                            grid_radians[image_1d_index, 1]
+                            * uv_wavelengths[vis_1d_index, 0]
+                            + grid_radians[image_1d_index, 0]
+                            * uv_wavelengths[vis_1d_index, 1]
                         )
                     )
 
@@ -233,17 +232,16 @@ def imag_transformed_mapping_matrix_jit(mapping_matrix, grid_radians, uv_wavelen
             if value > 0:
 
                 for vis_1d_index in range(uv_wavelengths.shape[0]):
-                    transfomed_mapping_matrix[vis_1d_index, pixel_1d_index] += (
-                        value
-                        * np.sin(
-                            -2.0
-                            * np.pi
-                            * (
-                                grid_radians[image_1d_index, 1]
-                                * uv_wavelengths[vis_1d_index, 0]
-                                + grid_radians[image_1d_index, 0]
-                                * uv_wavelengths[vis_1d_index, 1]
-                            )
+                    transfomed_mapping_matrix[
+                        vis_1d_index, pixel_1d_index
+                    ] += value * np.sin(
+                        -2.0
+                        * np.pi
+                        * (
+                            grid_radians[image_1d_index, 1]
+                            * uv_wavelengths[vis_1d_index, 0]
+                            + grid_radians[image_1d_index, 0]
+                            * uv_wavelengths[vis_1d_index, 1]
                         )
                     )
 

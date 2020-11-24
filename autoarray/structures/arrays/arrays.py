@@ -218,7 +218,7 @@ class Array(abstract_array.AbstractArray):
         array=[1.0, 2.0, 3.0, 4.0]
 
         From 1D input the method cannot determine the 2D shape of the array and its mask, thus the shape_2d must be
-        input into this method. The mask is setup as a unmasked *Mask2D* of shape_2d.
+        input into this method. The mask is setup as a unmasked `Mask2D` of shape_2d.
 
         Parameters
         ----------
@@ -279,7 +279,7 @@ class Array(abstract_array.AbstractArray):
               [3.0, 4.0]]
 
         The 2D shape of the array and its mask are determined from the input array and the mask is setup as an
-        unmasked *Mask2D* of shape_2d.
+        unmasked `Mask2D` of shape_2d.
 
         Parameters
         ----------
@@ -408,7 +408,7 @@ class Array(abstract_array.AbstractArray):
          the method numpy ndarray.full.
 
         From 1D input the method cannot determine the 2D shape of the array and its mask, thus the shape_2d must be
-        input into this method. The mask is setup as a unmasked *Mask2D* of shape_2d.
+        input into this method. The mask is setup as a unmasked `Mask2D` of shape_2d.
 
         Parameters
         ----------
@@ -452,7 +452,7 @@ class Array(abstract_array.AbstractArray):
         ndarray.ones.
 
         From 1D input the method cannot determine the 2D shape of the array and its mask, thus the shape_2d must be
-        input into this method. The mask is setup as a unmasked *Mask2D* of shape_2d.
+        input into this method. The mask is setup as a unmasked `Mask2D` of shape_2d.
 
         Parameters
         ----------
@@ -492,7 +492,7 @@ class Array(abstract_array.AbstractArray):
         ndarray.ones.
 
         From 1D input the method cannot determine the 2D shape of the array and its mask, thus the shape_2d must be
-        input into this method. The mask is setup as a unmasked *Mask2D* of shape_2d.
+        input into this method. The mask is setup as a unmasked `Mask2D` of shape_2d.
 
         Parameters
         ----------
@@ -569,7 +569,7 @@ class Array(abstract_array.AbstractArray):
         value = [1.0, 2.0, 3.0, 4.0]
 
         From 1D input the method cannot determine the 2D shape of the grid and its mask, thus the shape_2d must be
-        input into this method. The mask is setup as a unmasked *Mask2D* of shape_2d.
+        input into this method. The mask is setup as a unmasked `Mask2D` of shape_2d.
 
         Parameters
         ----------

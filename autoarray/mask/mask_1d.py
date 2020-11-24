@@ -115,7 +115,7 @@ class Mask1D(AbstractMask1d):
         shape : (int, int)
             The (y,x) shape of the mask in units of pixels.
         pixel_scales : float or (float, float)
-            The scaled to pixel conversion factor of each pixel.
+            The scaled units to pixel units conversion factor of each pixel.
         """
         return cls.manual(
             mask=np.full(shape=shape_1d, fill_value=False),
@@ -137,7 +137,7 @@ class Mask1D(AbstractMask1d):
         hdu : int
             The HDU number in the fits file containing the image image.
         pixel_scales : float or (float, float)
-            The scaled to pixel conversion factor of each pixel.
+            The scaled units to pixel units conversion factor of each pixel.
         """
 
         mask = cls(
