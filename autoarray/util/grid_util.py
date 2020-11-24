@@ -18,7 +18,7 @@ def centres_from(
     shape_2d : (int, int)
         The (y,x) shape of the 2D array or grid the scaled centre is computed for.
     pixel_scales : (float, float)
-        The (y,x) scaled to pixel scales of the 2D array.
+        The (y,x) scaled units to pixel units conversion factor of the 2D array.
     origin : (float, flloat)
         The (y,x) origin of the 2D array, which the centre is shifted to.
 
@@ -83,7 +83,7 @@ def grid_1d_via_mask_from(
         A 2D array of bools, where `False` values are unmasked and therefore included as part of the calculated
         sub-grid.
     pixel_scales : (float, float)
-        The (y,x) scaled to pixel scales of the 2D mask array.
+        The (y,x) scaled units to pixel units conversion factor of the 2D mask array.
     sub_size : int
         The size of the sub-grid that each pixel of the 2D mask array is divided into.
     origin : (float, flloat)
@@ -165,7 +165,7 @@ def grid_2d_via_mask_from(
         A 2D array of bools, where `False` values are unmasked and therefore included as part of the calculated
         sub-grid.
     pixel_scales : (float, float)
-        The (y,x) scaled to pixel scales of the 2D mask array.
+        The (y,x) scaled units to pixel units conversion factor of the 2D mask array.
     sub_size : int
         The size of the sub-grid that each pixel of the 2D mask array is divided into.
     origin : (float, flloat)
@@ -215,7 +215,7 @@ def grid_1d_via_shape_2d_from(
     shape_2d : (int, int)
         The (y,x) shape of the 2D array the sub-grid of coordinates is computed for.
     pixel_scales : (float, float)
-        The (y,x) scaled to pixel scales of the 2D mask array.
+        The (y,x) scaled units to pixel units conversion factor of the 2D mask array.
     sub_size : int
         The size of the sub-grid that each pixel of the 2D mask array is divided into.
     origin : (float, flloat)
@@ -265,7 +265,7 @@ def grid_2d_via_shape_2d_from(
     shape_2d : (int, int)
         The (y,x) shape of the 2D array the sub-grid of coordinates is computed for.
     pixel_scales : (float, float)
-        The (y,x) scaled to pixel scales of the 2D mask array.
+        The (y,x) scaled units to pixel units conversion factor of the 2D mask array.
     sub_size : int
         The size of the sub-grid that each pixel of the 2D mask array is divided into.
     origin : (float, flloat)
@@ -319,7 +319,7 @@ def grid_pixels_1d_from(
     shape_2d : (int, int)
         The (y,x) shape of the original 2D array the scaled coordinates were computed on.
     pixel_scales : (float, float)
-        The (y,x) scaled to pixel scales of the original 2D array.
+        The (y,x) scaled units to pixel units conversion factor of the original 2D array.
     origin : (float, flloat)
         The (y,x) origin of the grid, which the scaled grid is shifted to.
 
@@ -379,7 +379,7 @@ def grid_pixel_centres_1d_from(
     shape_2d : (int, int)
         The (y,x) shape of the original 2D array the scaled coordinates were computed on.
     pixel_scales : (float, float)
-        The (y,x) scaled to pixel scales of the original 2D array.
+        The (y,x) scaled units to pixel units conversion factor of the original 2D array.
     origin : (float, flloat)
         The (y,x) origin of the grid, which the scaled grid is shifted
 
@@ -443,7 +443,7 @@ def grid_pixel_indexes_1d_from(
     shape_2d : (int, int)
         The (y,x) shape of the original 2D array the scaled coordinates were computed on.
     pixel_scales : (float, float)
-        The (y,x) scaled to pixel scales of the original 2D array.
+        The (y,x) scaled units to pixel units conversion factor of the original 2D array.
     origin : (float, flloat)
         The (y,x) origin of the grid, which the scaled grid is shifted.
 
@@ -502,7 +502,7 @@ def grid_scaled_1d_from(
     shape_2d : (int, int)
         The (y,x) shape of the original 2D array the scaled coordinates were computed on.
     pixel_scales : (float, float)
-        The (y,x) scaled to pixel scales of the original 2D array.
+        The (y,x) scaled units to pixel units conversion factor of the original 2D array.
     origin : (float, flloat)
         The (y,x) origin of the grid, which the scaled grid is shifted.
 
@@ -562,7 +562,7 @@ def grid_pixel_centres_2d_from(
     shape_2d : (int, int)
         The (y,x) shape of the original 2D array the scaled coordinates were computed on.
     pixel_scales : (float, float)
-        The (y,x) scaled to pixel scales of the original 2D array.
+        The (y,x) scaled units to pixel units conversion factor of the original 2D array.
     origin : (float, flloat)
         The (y,x) origin of the grid, which the scaled grid is shifted
 
