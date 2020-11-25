@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 class AbstractVisibilities(np.ndarray):
 
     # noinspection PyUnusedLocal
-    def __new__(cls, visibilities_1d, *args, **kwargs):
+    def __new__(cls, visibilities, *args, **kwargs):
         """A hyper array with square-pixels.
 
         Parameters
@@ -24,16 +24,11 @@ class AbstractVisibilities(np.ndarray):
         origin : (float, float)
             The scaled origin of the hyper array's coordinate system.
         """
-        obj = visibilities_1d.view(cls)
-        obj.as_complex = np.apply_along_axis(
-            lambda args: [complex(*args)], 1, visibilities_1d
-        ).astype("complex128")
-        return obj
+        return visibilities.view(cls)
 
     def __array_finalize__(self, obj):
 
-        if hasattr(obj, "as_complex"):
-            self.as_complex = obj.as_complex
+        pass
 
     def __reduce__(self):
         # Get the parent's __reduce__ tuple
@@ -81,22 +76,14 @@ class AbstractVisibilities(np.ndarray):
         return Visibilities.manual_1d(visibilities=np.fliplr(self))
 
     @property
-    def real(self):
-        return self[:, 0]
-
-    @property
-    def imag(self):
-        return self[:, 1]
-
-    @property
     @array_util.Memoizer()
     def amplitudes(self):
-        return np.sqrt(np.square(self.real) + np.square(self.imag))
+        return np.sqrt(np.square(np.real(self)) + np.square(np.imag(self)))
 
     @property
     @array_util.Memoizer()
     def phases(self):
-        return np.arctan2(self.imag, self.real)
+        return np.arctan2(np.imag(self), np.real(self))
 
     def output_to_fits(self, file_path, overwrite=False):
         array_util.numpy_array_2d_to_fits(
@@ -105,11 +92,11 @@ class AbstractVisibilities(np.ndarray):
 
     @property
     def scaled_maxima(self):
-        return (np.max(self.real), np.max(self.imag))
+        return (np.max(np.real(self)), np.max(np.imag(self)))
 
     @property
     def scaled_minima(self):
-        return (np.min(self.real), np.min(self.imag))
+        return (np.min(np.real(self)), np.min(np.imag(self)))
 
     @property
     def extent(self):
@@ -157,7 +144,7 @@ class Visibilities(AbstractVisibilities):
 class VisibilitiesNoiseMap(Visibilities):
 
     # noinspection PyUnusedLocal
-    def __new__(cls, visibilities_1d, *args, **kwargs):
+    def __new__(cls, visibilities, *args, **kwargs):
         """A hyper array with square-pixels.
 
         Parameters
@@ -170,19 +157,15 @@ class VisibilitiesNoiseMap(Visibilities):
             The scaled origin of the hyper array's coordinate system.
         """
         obj = super(VisibilitiesNoiseMap, cls).__new__(
-            cls=cls, visibilities_1d=visibilities_1d
+            cls=cls, visibilities=visibilities
         )
         obj.preconditioner_noise_normalization = np.sum(
-            np.divide(1.0, np.square(visibilities_1d))
+            np.divide(1.0, np.square(visibilities))
         )
 
-        weights = 1.0 / visibilities_1d
-        weights = np.apply_along_axis(lambda args: [complex(*args)], 1, weights).astype(
-            "complex128"
-        )
+        weights = 1.0 / visibilities
         # weights = weights - (0.0 + 1.0j)
-        print(weights)
-        obj.Wop = pylops.Diagonal(weights.ravel(), dtype="complex128")
+        obj.Wop = pylops.Diagonal(np.real(weights.ravel()), dtype="complex128")
 
         return obj
 

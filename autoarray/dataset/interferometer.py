@@ -63,7 +63,7 @@ class AbstractInterferometer(abstract_dataset.AbstractDataset):
         )
 
         interferometer.noise_map = vis.VisibilitiesNoiseMap(
-            visibilities_1d=noise_map_limit
+            visibilities=noise_map_limit
         )
 
         return interferometer
