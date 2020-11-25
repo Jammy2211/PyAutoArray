@@ -129,11 +129,18 @@ class TestVisibilitiesNoiseMap:
         assert noise_map.preconditioner_noise_normalization == pytest.approx(
             1.4236, 1.0e-4
         )
-        # assert (
-        #     noise_map.Wop.todense()
-        #     == np.array([[0.2 - 0.4j, 0.0 + 0.0j], [0.0 + 0.0j, 0.12 - 0.16j]])
-        # ).all()
 
-        assert noise_map.Wop.todense() == pytest.approx(
-            np.array([[1.0, 0.0], [0.0, 0.33333]]), 1.0e-4
+        noise_map = aa.VisibilitiesNoiseMap.manual_1d(
+            visibilities=[[1.0, 1.0], [2.0, 2.0], [2.0, 4.0]]
         )
+
+        assert (
+            noise_map.Wop.todense()
+            == np.array(
+                [
+                    [1.0 + 1.0j, 0.0 + 0.0j, 0.0 + 0.0j],
+                    [0.0 + 0.0j, 0.5 + 0.5j, 0.0 + 0.0j],
+                    [0.0 + 0.0j, 0.0 + 0.0j, 0.5 + 0.25j],
+                ]
+            )
+        ).all()
