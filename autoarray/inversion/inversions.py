@@ -777,6 +777,8 @@ class InversionInterferometerLinearOperator(AbstractInversionInterferometer):
                 **dict(maxiter=settings.maxiter, callback=callback),
             )
 
+            print(reconstruction)
+
             print("Number of Iterations of PyLops = ", num_iters)
 
             calculation_time = time.time() - start

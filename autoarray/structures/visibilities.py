@@ -176,7 +176,13 @@ class VisibilitiesNoiseMap(Visibilities):
             np.divide(1.0, np.square(visibilities_1d))
         )
 
-        obj.Wop = pylops.Diagonal(1.0 / np.real(obj).ravel(), dtype="complex128")
+        weights = 1.0 / visibilities_1d
+        weights = np.apply_along_axis(lambda args: [complex(*args)], 1, weights).astype(
+            "complex128"
+        )
+        # weights = weights - (0.0 + 1.0j)
+        print(weights)
+        obj.Wop = pylops.Diagonal(weights.ravel(), dtype="complex128")
 
         return obj
 
