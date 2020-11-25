@@ -24,6 +24,18 @@ class AbstractVisibilities(np.ndarray):
         origin : (float, float)
             The scaled origin of the hyper array's coordinate system.
         """
+
+        if type(visibilities) is list:
+            visibilities = np.asarray(visibilities)
+
+        if "float" in str(visibilities.dtype):
+            if visibilities.shape[1] == 2:
+                visibilities = (
+                    np.apply_along_axis(lambda args: [complex(*args)], 1, visibilities)
+                    .astype("complex128")
+                    .ravel()
+                )
+
         return visibilities.view(cls)
 
     def __array_finalize__(self, obj):
@@ -68,12 +80,12 @@ class AbstractVisibilities(np.ndarray):
         return self
 
     @property
-    def shape_1d(self):
-        return self.shape[0]
+    def in_array(self):
+        return np.stack((np.real(self), np.imag(self)), axis=-1)
 
     @property
-    def in_1d_flipped(self):
-        return Visibilities.manual_1d(visibilities=np.fliplr(self))
+    def shape_1d(self):
+        return self.shape[0]
 
     @property
     @array_util.Memoizer()
@@ -87,7 +99,7 @@ class AbstractVisibilities(np.ndarray):
 
     def output_to_fits(self, file_path, overwrite=False):
         array_util.numpy_array_2d_to_fits(
-            array_2d=self, file_path=file_path, overwrite=overwrite
+            array_2d=self.in_array, file_path=file_path, overwrite=overwrite
         )
 
     @property
@@ -113,16 +125,14 @@ class AbstractVisibilities(np.ndarray):
 class Visibilities(AbstractVisibilities):
     @classmethod
     def manual_1d(cls, visibilities):
-
-        if type(visibilities) is list:
-            visibilities = np.asarray(visibilities)
-
-        return cls(visibilities_1d=visibilities)
+        return cls(visibilities=visibilities)
 
     @classmethod
     def full(cls, fill_value, shape_1d):
         return cls.manual_1d(
-            visibilities=np.full(fill_value=fill_value, shape=(shape_1d[0], 2))
+            visibilities=np.full(
+                fill_value=fill_value + fill_value * 1j, shape=(shape_1d[0], 2)
+            )
         )
 
     @classmethod
@@ -156,15 +166,25 @@ class VisibilitiesNoiseMap(Visibilities):
         origin : (float, float)
             The scaled origin of the hyper array's coordinate system.
         """
+
+        if type(visibilities) is list:
+            visibilities = np.asarray(visibilities)
+
+        if "float" in str(visibilities.dtype):
+            if visibilities.shape[1] == 2:
+                visibilities = (
+                    np.apply_along_axis(lambda args: [complex(*args)], 1, visibilities)
+                    .astype("complex128")
+                    .ravel()
+                )
+
         obj = super(VisibilitiesNoiseMap, cls).__new__(
             cls=cls, visibilities=visibilities
         )
-        obj.preconditioner_noise_normalization = np.sum(
-            np.divide(1.0, np.square(visibilities))
-        )
 
-        weights = 1.0 / visibilities
-        # weights = weights - (0.0 + 1.0j)
+        weights = np.reciprocal(np.real(visibilities)) + 1j * np.reciprocal(
+            np.imag(visibilities)
+        )
         obj.Wop = pylops.Diagonal(np.real(weights.ravel()), dtype="complex128")
 
         return obj
