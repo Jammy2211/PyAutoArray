@@ -34,7 +34,7 @@ class TestInterferometer:
 
         interferometer = aa.Interferometer(
             visibilities=aa.Visibilities(visibilities_1d=np.array([[1, 1]])),
-            noise_map=aa.VisibilitiesNoiseMap(visibilities_1d=np.array([[1, 5]])),
+            noise_map=aa.VisibilitiesNoiseMap(visibilities=np.array([[1, 5]])),
             uv_wavelengths=2,
         )
 
