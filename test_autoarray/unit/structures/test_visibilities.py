@@ -62,6 +62,8 @@ class TestVisibilitiesAPI:
         visibilities = aa.Visibilities.ones(shape_1d=(2,))
 
         assert type(visibilities) == vis.Visibilities
+        print(visibilities)
+        print(visibilities.in_1d)
         assert (visibilities.in_1d == np.array([1.0 + 1.0j, 1.0 + 1.0j])).all()
 
         visibilities = aa.Visibilities.full(fill_value=2.0, shape_1d=(2,))

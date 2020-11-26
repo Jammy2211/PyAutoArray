@@ -131,7 +131,7 @@ class Visibilities(AbstractVisibilities):
     def full(cls, fill_value, shape_1d):
         return cls.manual_1d(
             visibilities=np.full(
-                fill_value=fill_value + fill_value * 1j, shape=(shape_1d[0], 2)
+                fill_value=fill_value + fill_value * 1j, shape=(shape_1d[0],)
             )
         )
 

@@ -85,14 +85,14 @@ def make_visibilities_mask_7x2():
     return fixtures.make_visibilities_mask_7x2()
 
 
-@pytest.fixture(name="visibilities_7x2")
+@pytest.fixture(name="visibilities_7")
 def make_visibilities_7():
     return fixtures.make_visibilities_7()
 
 
-@pytest.fixture(name="noise_map_7x2")
+@pytest.fixture(name="visibilities_noise_map_7")
 def make_noise_map_7():
-    return fixtures.make_noise_map_7()
+    return fixtures.make_visibilities_noise_map_7()
 
 
 @pytest.fixture(name="uv_wavelengths_7x2")

@@ -161,12 +161,11 @@ def make_visibilities_mask_7x2():
 
 def make_visibilities_7():
     visibilities = aa.Visibilities.full(shape_1d=(7,), fill_value=1.0)
-    visibilities[6, 0] = -1.0
-    visibilities[6, 1] = -1.0
+    visibilities[6] = -1.0 - 1.0j
     return visibilities
 
 
-def make_noise_map_7():
+def make_visibilities_noise_map_7():
     return aa.VisibilitiesNoiseMap.full(shape_1d=(7,), fill_value=2.0)
 
 
@@ -187,7 +186,7 @@ def make_uv_wavelengths_7():
 def make_interferometer_7():
     return aa.Interferometer(
         visibilities=make_visibilities_7(),
-        noise_map=make_noise_map_7(),
+        noise_map=make_visibilities_noise_map_7(),
         uv_wavelengths=make_uv_wavelengths_7(),
     )
 
