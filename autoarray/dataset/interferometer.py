@@ -10,7 +10,6 @@ from autoarray.dataset import abstract_dataset, preprocess
 from autoarray.structures import arrays
 from autoarray.structures import grids
 from autoarray.structures import visibilities as vis
-from autoarray.structures import kernel
 from autoarray.operators import transformer as trans
 
 
@@ -49,7 +48,7 @@ class AbstractInterferometer(abstract_dataset.AbstractDataset):
     def modified_visibilities_from_visibilities(self, visibilities):
 
         interferometer = copy.deepcopy(self)
-        interferometer.data = vis.Visibilities(visibilities_1d=visibilities)
+        interferometer.data = vis.Visibilities(visibilities=visibilities)
         return interferometer
 
     def signal_to_noise_limited_from(self, signal_to_noise_limit):
