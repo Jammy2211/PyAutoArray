@@ -51,18 +51,34 @@ class AbstractInterferometer(abstract_dataset.AbstractDataset):
         interferometer.data = vis.Visibilities(visibilities=visibilities)
         return interferometer
 
+    @property
+    def signal_to_noise_map(self):
+
+        signal_to_noise_map_real = np.divide(np.real(self.data), np.real(self.noise_map))
+        signal_to_noise_map_real[signal_to_noise_map_real < 0] = 0.0
+        signal_to_noise_map_imag = np.divide(np.imag(self.data), np.imag(self.noise_map))
+        signal_to_noise_map_imag[signal_to_noise_map_imag < 0] = 0.0
+
+        return signal_to_noise_map_real + 1j * signal_to_noise_map_imag
+
     def signal_to_noise_limited_from(self, signal_to_noise_limit):
 
         interferometer = copy.deepcopy(self)
 
-        noise_map_limit = np.where(
-            self.signal_to_noise_map > signal_to_noise_limit,
-            np.abs(self.visibilities) / signal_to_noise_limit,
-            self.noise_map,
+        noise_map_limit_real = np.where(
+            np.real(self.signal_to_noise_map) > signal_to_noise_limit,
+            np.real(self.visibilities) / signal_to_noise_limit,
+            np.real(self.noise_map),
+        )
+        
+        noise_map_limit_imag = np.where(
+            np.imag(self.signal_to_noise_map) > signal_to_noise_limit,
+            np.imag(self.visibilities) / signal_to_noise_limit,
+            np.imag(self.noise_map),
         )
 
         interferometer.noise_map = vis.VisibilitiesNoiseMap(
-            visibilities=noise_map_limit
+            visibilities=noise_map_limit_real + 1j * noise_map_limit_imag
         )
 
         return interferometer
@@ -383,14 +399,14 @@ class AbstractSimulatorInterferometer:
         visibilities = transformer.visibilities_from_image(image=image)
 
         if self.noise_sigma is not None:
-            visibilities = preprocess.data_with_gaussian_noise_added(
+            visibilities = preprocess.data_with_complex_gaussian_noise_added(
                 data=visibilities, sigma=self.noise_sigma, seed=self.noise_seed
             )
-            noise_map = vis.Visibilities.full(
+            noise_map = vis.VisibilitiesNoiseMap.full(
                 fill_value=self.noise_sigma, shape_1d=(visibilities.shape[0],)
             )
         else:
-            noise_map = vis.Visibilities.full(
+            noise_map = vis.VisibilitiesNoiseMap.full(
                 fill_value=self.noise_if_add_noise_false,
                 shape_1d=(visibilities.shape[0],),
             )
