@@ -228,6 +228,7 @@ class AbstractPlotter:
         array_overlay=None,
         include_origin=False,
         include_border=False,
+        extent_manual=None,
         bypass_output=False,
     ):
         """Plot an array of data_type as a figure.
@@ -368,6 +369,9 @@ class AbstractPlotter:
             norm=norm_scale,
             extent=extent,
         )
+
+        if extent_manual is not None:
+            extent = extent_manual
 
         if array_overlay is not None:
             self.array_overlayer.overlay_array(
@@ -1609,6 +1613,7 @@ def plot_array(
     vector_field=None,
     patches=None,
     array_overlay=None,
+    extent_manual=None,
     include=None,
     plotter=None,
 ):
@@ -1626,6 +1631,7 @@ def plot_array(
         grid=grid,
         vector_field=vector_field,
         patches=patches,
+        extent_manual=extent_manual,
         array_overlay=array_overlay,
         include_origin=include.origin,
         include_border=include.border,

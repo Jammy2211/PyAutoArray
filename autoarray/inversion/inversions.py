@@ -777,12 +777,12 @@ class InversionInterferometerLinearOperator(AbstractInversionInterferometer):
                 **dict(maxiter=settings.maxiter, callback=callback),
             )
 
-            print(reconstruction)
-
-            print("Number of Iterations of PyLops = ", num_iters)
-
-            calculation_time = time.time() - start
-            print("Time to compute fit = {}".format(calculation_time))
+            # print(reconstruction)
+            #
+            # print("Number of Iterations of PyLops = ", num_iters)
+            #
+            # calculation_time = time.time() - start
+            # print("Time to compute fit = {}".format(calculation_time))
 
         else:
 
@@ -805,9 +805,9 @@ class InversionInterferometerLinearOperator(AbstractInversionInterferometer):
                 **dict(M=Mop, maxiter=settings.maxiter, callback=callback),
             )
 
-            print("Number of Iterations of PyLops = ", num_iters)
-            calculation_time = time.time() - start
-            print("Time to compute precon fit = {}".format(calculation_time))
+            # print("Number of Iterations of PyLops = ", num_iters)
+            # calculation_time = time.time() - start
+            # print("Time to compute precon fit = {}".format(calculation_time))
 
         return InversionInterferometerLinearOperator(
             visibilities=visibilities,

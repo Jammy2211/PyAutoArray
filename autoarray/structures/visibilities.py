@@ -180,9 +180,8 @@ class VisibilitiesNoiseMap(Visibilities):
         weights = np.apply_along_axis(lambda args: [complex(*args)], 1, weights).astype(
             "complex128"
         )
-        # weights = weights - (0.0 + 1.0j)
-        print(weights)
-        obj.Wop = pylops.Diagonal(weights.ravel(), dtype="complex128")
+        print("Noise Value = ", np.max(np.real(weights.ravel())))
+        obj.Wop = pylops.Diagonal(np.real(weights.ravel()), dtype="complex128")
 
         return obj
 
