@@ -21,10 +21,10 @@ class TestInterferometer:
         )
 
         interferometer = interferometer.modified_visibilities_from_visibilities(
-            visibilities=np.array([[2, 2]])
+            visibilities=np.array([2+2j])
         )
 
-        assert (interferometer.visibilities == np.array([[2, 2]])).all()
+        assert (interferometer.visibilities == np.array([[2+2j]])).all()
         assert interferometer.noise_map == 1
         assert interferometer.uv_wavelengths == 2
 
@@ -33,8 +33,8 @@ class TestInterferometer:
     ):
 
         interferometer = aa.Interferometer(
-            visibilities=aa.Visibilities(visibilities_1d=np.array([[1, 1]])),
-            noise_map=aa.VisibilitiesNoiseMap(visibilities=np.array([[1, 5]])),
+            visibilities=aa.Visibilities(visibilities=np.array([1+1j])),
+            noise_map=aa.VisibilitiesNoiseMap(visibilities=np.array([1+5j])),
             uv_wavelengths=2,
         )
 
@@ -42,14 +42,14 @@ class TestInterferometer:
             signal_to_noise_limit=0.5
         )
 
-        assert (interferometer_capped.visibilities == np.array([[1.0, 1.0]])).all()
+        assert (interferometer_capped.visibilities == np.array([1.0+1.0j])).all()
 
         print(interferometer_capped.noise_map)
 
-        assert (interferometer_capped.noise_map == np.array([[2.0, 5.0]])).all()
+        assert (interferometer_capped.noise_map == np.array([2.0+5.0j])).all()
 
         assert (
-            interferometer_capped.signal_to_noise_map == np.array([[0.5, 0.2]])
+            interferometer_capped.signal_to_noise_map == np.array([0.5+0.2j])
         ).all()
 
     def test__from_fits__all_files_in_one_fits__load_using_different_hdus(self):
