@@ -420,7 +420,7 @@ class TestRectangular:
 
     def test__interferometer_matrices(self):
 
-        visibilities_mask = np.full(fill_value=False, shape=(7, 2))
+        visibilities_mask = np.full(fill_value=False, shape=(7,))
 
         real_space_mask = aa.Mask2D.unmasked(
             shape_2d=(7, 7), pixel_scales=0.1, sub_size=1
@@ -440,9 +440,9 @@ class TestRectangular:
 
         visibilities = aa.Visibilities.manual_1d(
             visibilities=[
-                [1.0, 0.0],
-                [1.0, 0.0],
-                [1.0, 0.0],
+                [1.0+0.0j],
+                [1.0+0.0j],
+                [1.0+0.0j],
                 [1.0, 0.0],
                 [1.0, 0.0],
                 [1.0, 0.0],

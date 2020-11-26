@@ -149,7 +149,7 @@ class TestMaskedInterferometer:
 
         masked_interferometer_7 = aa.MaskedInterferometer(
             interferometer=interferometer_7,
-            visibilities_mask=np.full(fill_value=False, shape=(7, 2)),
+            visibilities_mask=np.full(fill_value=False, shape=(7,)),
             real_space_mask=sub_mask_7x7,
         )
 
@@ -162,7 +162,7 @@ class TestMaskedInterferometer:
 
         assert (
             masked_interferometer_7.visibilities_mask
-            == np.full(fill_value=False, shape=(7, 2))
+            == np.full(fill_value=False, shape=(7,))
         ).all()
 
         assert (
@@ -210,7 +210,7 @@ class TestMaskedInterferometer:
             uv_wavelengths=3.0 * np.ones((19, 2)),
         )
 
-        visibilities_mask = np.full(fill_value=False, shape=(19, 2))
+        visibilities_mask = np.full(fill_value=False, shape=(19, ))
 
         real_space_mask = aa.Mask2D.unmasked(
             shape_2d=(19, 19), pixel_scales=1.0, invert=True, sub_size=8
@@ -231,12 +231,12 @@ class TestMaskedInterferometer:
         ).all()
 
     def test__modified_noise_map(
-        self, visibilities_noise_map_7, interferometer_7, sub_mask_7x7, visibilities_mask_7x2
+        self, visibilities_noise_map_7, interferometer_7, sub_mask_7x7, visibilities_mask_7
     ):
 
         masked_interferometer_7 = aa.MaskedInterferometer(
             interferometer=interferometer_7,
-            visibilities_mask=visibilities_mask_7x2,
+            visibilities_mask=visibilities_mask_7,
             real_space_mask=sub_mask_7x7,
             settings=aa.SettingsMaskedInterferometer(
                 transformer_class=aa.TransformerDFT
