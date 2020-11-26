@@ -3,6 +3,7 @@ import logging
 import numpy as np
 import pylops
 
+from autoarray.structures import grids
 from autoarray.util import array_util
 
 logging.basicConfig()
@@ -82,6 +83,10 @@ class AbstractVisibilities(np.ndarray):
     @property
     def in_array(self):
         return np.stack((np.real(self), np.imag(self)), axis=-1)
+
+    @property
+    def in_grid(self):
+        return grids.GridIrregular(grid=self.in_array)
 
     @property
     def shape_1d(self):
