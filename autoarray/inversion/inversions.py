@@ -454,6 +454,7 @@ class AbstractInversionInterferometer(AbstractInversion):
 
     @property
     def mapped_reconstructed_image(self):
+
         mapped_reconstructed_image = inversion_util.mapped_reconstructed_data_from(
             mapping_matrix=self.mapper.mapping_matrix,
             reconstruction=self.reconstruction,
@@ -627,10 +628,11 @@ class InversionInterferometerMatrix(
     @property
     def mapped_reconstructed_visibilities(self):
 
-        return inversion_util.mapped_reconstructed_visibilities_from(
+        visibilities = inversion_util.mapped_reconstructed_visibilities_from(
             transformed_mapping_matrix=self.transformed_mapping_matrix,
-            reconstruction=self.reconstruction,
-        )
+            reconstruction=self.reconstruction)
+
+        return vis.Visibilities(visibilities=visibilities)
 
 
 class InversionInterferometerLinearOperator(AbstractInversionInterferometer):

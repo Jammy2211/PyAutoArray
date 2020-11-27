@@ -96,7 +96,7 @@ def data_vector_via_transformed_mapping_matrix_from(
         Flattened 1D array of the noise-map used by the inversion during the fit.
     """
 
-    data_vector = (0.0 + 0.0j) * np.zeros(transformed_mapping_matrix.shape[1])
+    data_vector = np.zeros(transformed_mapping_matrix.shape[1])
     
     visibilities_real = visibilities.real
     visibilities_imag = visibilities.imag
@@ -109,7 +109,7 @@ def data_vector_via_transformed_mapping_matrix_from(
         for pix_1d_index in range(transformed_mapping_matrix.shape[1]):
             real_value = visibilities_real[vis_1d_index] * transformed_mapping_matrix_real[vis_1d_index, pix_1d_index] / (noise_map_real[vis_1d_index] ** 2.0)
             imag_value = visibilities_imag[vis_1d_index] * transformed_mapping_matrix_imag[vis_1d_index, pix_1d_index] / (noise_map_imag[vis_1d_index] ** 2.0)
-            data_vector[pix_1d_index] += real_value + 1.0j * imag_value
+            data_vector[pix_1d_index] += real_value + imag_value
 
     return data_vector
 
