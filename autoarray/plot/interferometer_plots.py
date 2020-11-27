@@ -2,6 +2,7 @@ from autoarray.plot import plotters
 from autoarray.structures import grids
 import numpy as np
 
+
 @plotters.set_include_and_sub_plotter
 @plotters.set_subplot_filename
 def subplot_interferometer(interferometer, include=None, sub_plotter=None):
@@ -151,7 +152,8 @@ def noise_map(interferometer, include=None, plotter=None):
     """
 
     plotter.plot_grid(
-        grid=interferometer.visibilities.in_grid, color_array=np.real(interferometer.noise_map)
+        grid=interferometer.visibilities.in_grid,
+        color_array=interferometer.noise_map.real,
     )
 
 

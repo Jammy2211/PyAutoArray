@@ -21,10 +21,10 @@ class TestInterferometer:
         )
 
         interferometer = interferometer.modified_visibilities_from_visibilities(
-            visibilities=np.array([2+2j])
+            visibilities=np.array([2 + 2j])
         )
 
-        assert (interferometer.visibilities == np.array([[2+2j]])).all()
+        assert (interferometer.visibilities == np.array([[2 + 2j]])).all()
         assert interferometer.noise_map == 1
         assert interferometer.uv_wavelengths == 2
 
@@ -33,8 +33,10 @@ class TestInterferometer:
     ):
 
         interferometer = aa.Interferometer(
-            visibilities=aa.Visibilities(visibilities=np.array([1+1j, 1+1j])),
-            noise_map=aa.VisibilitiesNoiseMap(visibilities=np.array([1+0.25j, 1+0.25j])),
+            visibilities=aa.Visibilities(visibilities=np.array([1 + 1j, 1 + 1j])),
+            noise_map=aa.VisibilitiesNoiseMap(
+                visibilities=np.array([1 + 0.25j, 1 + 0.25j])
+            ),
             uv_wavelengths=2,
         )
 
@@ -42,22 +44,29 @@ class TestInterferometer:
             signal_to_noise_limit=2.0
         )
 
-        assert (interferometer_capped.visibilities == np.array([1.0+1.0j, 1.0+1.0j])).all()
-        assert (interferometer_capped.noise_map == np.array([1.0+0.5j, 1.0+0.5j])).all()
         assert (
-            interferometer_capped.signal_to_noise_map == np.array([1.0+2.0j])
+            interferometer_capped.visibilities == np.array([1.0 + 1.0j, 1.0 + 1.0j])
+        ).all()
+        assert (
+            interferometer_capped.noise_map == np.array([1.0 + 0.5j, 1.0 + 0.5j])
+        ).all()
+        assert (
+            interferometer_capped.signal_to_noise_map == np.array([1.0 + 2.0j])
         ).all()
 
         interferometer_capped = interferometer.signal_to_noise_limited_from(
             signal_to_noise_limit=0.25
         )
 
-        assert (interferometer_capped.visibilities == np.array([1.0+1.0j, 1.0+1.0j])).all()
-        assert (interferometer_capped.noise_map == np.array([4.0+4.0j, 4.0+4.0j])).all()
         assert (
-            interferometer_capped.signal_to_noise_map == np.array([0.25+0.25j])
+            interferometer_capped.visibilities == np.array([1.0 + 1.0j, 1.0 + 1.0j])
         ).all()
-
+        assert (
+            interferometer_capped.noise_map == np.array([4.0 + 4.0j, 4.0 + 4.0j])
+        ).all()
+        assert (
+            interferometer_capped.signal_to_noise_map == np.array([0.25 + 0.25j])
+        ).all()
 
     def test__from_fits__all_files_in_one_fits__load_using_different_hdus(self):
 
@@ -70,8 +79,13 @@ class TestInterferometer:
             uv_wavelengths_hdu=2,
         )
 
-        assert (interferometer.visibilities == np.array([1.0 + 1.0j, 1.0 + 1.0j, 1.0 + 1.0j])).all()
-        assert (interferometer.noise_map == np.array([2.0 + 2.0j, 2.0 + 2.0j, 2.0 + 2.0j])).all()
+        assert (
+            interferometer.visibilities
+            == np.array([1.0 + 1.0j, 1.0 + 1.0j, 1.0 + 1.0j])
+        ).all()
+        assert (
+            interferometer.noise_map == np.array([2.0 + 2.0j, 2.0 + 2.0j, 2.0 + 2.0j])
+        ).all()
         assert (interferometer.uv_wavelengths[:, 0] == 3.0 * np.ones(3)).all()
         assert (interferometer.uv_wavelengths[:, 1] == 3.0 * np.ones(3)).all()
 
@@ -108,8 +122,13 @@ class TestInterferometer:
             uv_wavelengths_path=path.join(output_data_dir, "uv_wavelengths.fits"),
         )
 
-        assert (interferometer.visibilities == np.array([1.0 + 2.0j, 1.0 + 2.0j, 1.0 + 2.0j])).all()
-        assert (interferometer.noise_map == np.array([3.0 + 4.0j, 3.0 + 4.0j, 3.0 + 4.0j])).all()
+        assert (
+            interferometer.visibilities
+            == np.array([1.0 + 2.0j, 1.0 + 2.0j, 1.0 + 2.0j])
+        ).all()
+        assert (
+            interferometer.noise_map == np.array([3.0 + 4.0j, 3.0 + 4.0j, 3.0 + 4.0j])
+        ).all()
         assert (interferometer.uv_wavelengths[:, 0] == 5.0 * np.ones(3)).all()
         assert (interferometer.uv_wavelengths[:, 1] == 6.0 * np.ones(3)).all()
 
@@ -210,7 +229,7 @@ class TestMaskedInterferometer:
             uv_wavelengths=3.0 * np.ones((19, 2)),
         )
 
-        visibilities_mask = np.full(fill_value=False, shape=(19, ))
+        visibilities_mask = np.full(fill_value=False, shape=(19,))
 
         real_space_mask = aa.Mask2D.unmasked(
             shape_2d=(19, 19), pixel_scales=1.0, invert=True, sub_size=8
@@ -223,15 +242,21 @@ class TestMaskedInterferometer:
             real_space_mask=real_space_mask,
         )
 
-        assert (masked_interferometer_7.visibilities == 1.0+1.0j * np.ones((19,))).all()
-        assert (masked_interferometer_7.noise_map == 2.0+2.0j * np.ones((19,))).all()
+        assert (
+            masked_interferometer_7.visibilities == 1.0 + 1.0j * np.ones((19,))
+        ).all()
+        assert (masked_interferometer_7.noise_map == 2.0 + 2.0j * np.ones((19,))).all()
         assert (
             masked_interferometer_7.interferometer.uv_wavelengths
             == 3.0 * np.ones((19, 2))
         ).all()
 
     def test__modified_noise_map(
-        self, visibilities_noise_map_7, interferometer_7, sub_mask_7x7, visibilities_mask_7
+        self,
+        visibilities_noise_map_7,
+        interferometer_7,
+        sub_mask_7x7,
+        visibilities_mask_7,
     ):
 
         masked_interferometer_7 = aa.MaskedInterferometer(
@@ -243,13 +268,13 @@ class TestMaskedInterferometer:
             ),
         )
 
-        visibilities_noise_map_7[0] = 10.0+20.0j
+        visibilities_noise_map_7[0] = 10.0 + 20.0j
 
         masked_interferometer_7 = masked_interferometer_7.modify_noise_map(
             noise_map=visibilities_noise_map_7
         )
 
-        assert masked_interferometer_7.noise_map[0] == 10.0+20.0j
+        assert masked_interferometer_7.noise_map[0] == 10.0 + 20.0j
 
 
 class TestSimulatorInterferometer:
@@ -320,7 +345,7 @@ class TestSimulatorInterferometer:
 
         assert interferometer.visibilities == pytest.approx(visibilities, 1.0e-4)
 
-        assert (interferometer.noise_map == 0.2+0.2j * np.ones((7,))).all()
+        assert (interferometer.noise_map == 0.2 + 0.2j * np.ones((7,))).all()
 
     def test__setup_with_noise(self, uv_wavelengths_7x2, transformer_7x7_7):
 
@@ -340,7 +365,7 @@ class TestSimulatorInterferometer:
         interferometer = simulator.from_image(image=image)
 
         assert interferometer.visibilities[0] == pytest.approx(
-            -0.005364-2.36682j, 1.0e-4
+            -0.005364 - 2.36682j, 1.0e-4
         )
 
-        assert (interferometer.noise_map == 0.1+0.1j * np.ones((7,))).all()
+        assert (interferometer.noise_map == 0.1 + 0.1j * np.ones((7,))).all()

@@ -2,6 +2,7 @@ from autoarray.plot import plotters
 from autoarray.plot import inversion_plots, mat_objs
 import numpy as np
 
+
 @plotters.set_include_and_sub_plotter
 @plotters.set_subplot_filename
 def subplot_fit_interferometer(fit, include=None, sub_plotter=None):
@@ -169,7 +170,9 @@ def signal_to_noise_map(fit, include=None, plotter=None):
     origin : True
     If true, the origin of the datas's coordinate system is plotted as a 'x'.
     """
-    plotter.plot_grid(grid=fit.visibilities.in_grid, color_array=np.real(fit.signal_to_noise_map))
+    plotter.plot_grid(
+        grid=fit.visibilities.in_grid, color_array=fit.signal_to_noise_map.real
+    )
 
 
 @plotters.set_include_and_plotter
