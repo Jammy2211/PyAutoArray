@@ -584,13 +584,13 @@ def test__data_with_gaussian_noise_added():
 
 def test__data_with_complex_gaussian_noise_added():
 
-    data = aa.Visibilities.ones(shape_1d=(3, ))
+    data = aa.Visibilities.ones(shape_1d=(3,))
 
     data_with_noise = aa.preprocess.data_with_complex_gaussian_noise_added(
         data=data, sigma=0.0, seed=1
     )
 
-    assert (data_with_noise.in_1d == 1.0+1.0j * np.ones((3,))).all()
+    assert (data_with_noise.in_1d == 1.0 + 1.0j * np.ones((3,))).all()
 
     data_with_noise = aa.preprocess.data_with_complex_gaussian_noise_added(
         data=data, sigma=1.0, seed=1

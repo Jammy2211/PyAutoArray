@@ -106,20 +106,22 @@ class TestNormalizedResidualMap:
 
     def test__complex__model_data_mismatch__masked_noise_value_is_0(self):
 
-        data = np.array([10.0+10.0j, 10.0+10.0j])
+        data = np.array([10.0 + 10.0j, 10.0 + 10.0j])
         mask = np.array([False, True])
-        noise_map = np.array([2.0+2.0j, 2.0+0.0j])
-        model_data = np.array([9.0+12.0j, 9.0+8.0j])
+        noise_map = np.array([2.0 + 2.0j, 2.0 + 0.0j])
+        model_data = np.array([9.0 + 12.0j, 9.0 + 8.0j])
 
         residual_map = aa.util.fit.residual_map_with_mask_from(
             data=data, mask=mask, model_data=model_data
         )
 
-        normalized_residual_map = aa.util.fit.normalized_residual_map_complex_with_mask_from(
-            residual_map=residual_map, mask=mask, noise_map=noise_map
+        normalized_residual_map = (
+            aa.util.fit.normalized_residual_map_complex_with_mask_from(
+                residual_map=residual_map, mask=mask, noise_map=noise_map
+            )
         )
 
-        assert (normalized_residual_map == np.array([0.5-1.0j, 0.0+0.0j])).all()
+        assert (normalized_residual_map == np.array([0.5 - 1.0j, 0.0 + 0.0j])).all()
 
 
 class TestChiSquareds:
@@ -192,10 +194,10 @@ class TestChiSquareds:
 
     def test__complex__model_data_mismatch__masked_noise_value_is_0(self):
 
-        data = np.array([10.0+10.0j, 10.0+10.0j])
+        data = np.array([10.0 + 10.0j, 10.0 + 10.0j])
         mask = np.array([False, True])
-        noise_map = np.array([2.0+2.0j, 2.0+0.0j])
-        model_data = np.array([9.0+12.0j, 9.0+8.0j])
+        noise_map = np.array([2.0 + 2.0j, 2.0 + 0.0j])
+        model_data = np.array([9.0 + 12.0j, 9.0 + 8.0j])
 
         residual_map = aa.util.fit.residual_map_with_mask_from(
             data=data, mask=mask, model_data=model_data
@@ -205,7 +207,7 @@ class TestChiSquareds:
             residual_map=residual_map, mask=mask, noise_map=noise_map
         )
 
-        assert (chi_squared_map == np.array([0.25+1.0j, 0.0+0.0j])).all()
+        assert (chi_squared_map == np.array([0.25 + 1.0j, 0.0 + 0.0j])).all()
 
 
 class TestLikelihood:
@@ -386,12 +388,14 @@ class TestLikelihood:
             -0.5 * (chi_squared + noise_normalization), 1e-4
         )
 
-    def test__complex__model_data_mismatch__mask_certain_pixels__lh_non_0__2d_data(self):
+    def test__complex__model_data_mismatch__mask_certain_pixels__lh_non_0__2d_data(
+        self,
+    ):
 
-        data = np.array([10.0+10.0j, 10.0+10.0j])
+        data = np.array([10.0 + 10.0j, 10.0 + 10.0j])
         mask = np.array([False, True])
-        noise_map = np.array([2.0+1.0j, 2.0+0.0j])
-        model_data = np.array([9.0+12.0j, 9.0+8.0j])
+        noise_map = np.array([2.0 + 1.0j, 2.0 + 0.0j])
+        model_data = np.array([9.0 + 12.0j, 9.0 + 8.0j])
 
         residual_map = aa.util.fit.residual_map_with_mask_from(
             data=data, mask=mask, model_data=model_data
@@ -423,6 +427,7 @@ class TestLikelihood:
         assert log_likelihood == pytest.approx(
             -0.5 * (chi_squared + noise_normalization), 1e-4
         )
+
 
 class TestInversionEvidence:
     def test__simple_values(self):

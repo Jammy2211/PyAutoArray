@@ -54,9 +54,13 @@ class AbstractInterferometer(abstract_dataset.AbstractDataset):
     @property
     def signal_to_noise_map(self):
 
-        signal_to_noise_map_real = np.divide(np.real(self.data), np.real(self.noise_map))
+        signal_to_noise_map_real = np.divide(
+            np.real(self.data), np.real(self.noise_map)
+        )
         signal_to_noise_map_real[signal_to_noise_map_real < 0] = 0.0
-        signal_to_noise_map_imag = np.divide(np.imag(self.data), np.imag(self.noise_map))
+        signal_to_noise_map_imag = np.divide(
+            np.imag(self.data), np.imag(self.noise_map)
+        )
         signal_to_noise_map_imag[signal_to_noise_map_imag < 0] = 0.0
 
         return signal_to_noise_map_real + 1j * signal_to_noise_map_imag
@@ -70,7 +74,7 @@ class AbstractInterferometer(abstract_dataset.AbstractDataset):
             np.real(self.visibilities) / signal_to_noise_limit,
             np.real(self.noise_map),
         )
-        
+
         noise_map_limit_imag = np.where(
             np.imag(self.signal_to_noise_map) > signal_to_noise_limit,
             np.imag(self.visibilities) / signal_to_noise_limit,
