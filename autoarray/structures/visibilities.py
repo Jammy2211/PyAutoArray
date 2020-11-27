@@ -190,6 +190,7 @@ class VisibilitiesNoiseMap(Visibilities):
         weights = np.reciprocal(np.real(visibilities)) + 1j * np.reciprocal(
             np.imag(visibilities)
         )
+
         obj.Wop = pylops.Diagonal(np.real(weights.ravel()), dtype="complex128")
 
         return obj
