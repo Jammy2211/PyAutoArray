@@ -112,7 +112,7 @@ class TestDataVectorFromData:
             )
         )
 
-        data_vector_complex_via_blurred = data_vector_real_via_blurred + 1.0j*data_vector_imag_via_blurred
+        data_vector_complex_via_blurred = data_vector_real_via_blurred + data_vector_imag_via_blurred
 
         transformed_mapping_matrix = np.array(
             [

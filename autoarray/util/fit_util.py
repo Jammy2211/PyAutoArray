@@ -86,6 +86,109 @@ def noise_normalization_from(*, noise_map: np.ndarray) -> float:
     return float(np.sum(np.log(2 * np.pi * noise_map ** 2.0)))
 
 
+def normalized_residual_map_complex_from(
+    *, residual_map: np.ndarray, noise_map: np.ndarray,
+) -> np.ndarray:
+    """
+    Returns the normalized residual-map of the fit of complex model-data to a dataset, where:
+
+    Normalized_Residual = (Data - Model_Data) / Noise
+
+    Parameters
+    -----------
+    residual_map : np.ndarray
+        The residual-map of the model-simulator fit to the dataset.
+    noise_map : np.ndarray
+        The noise-map of the dataset.
+    """
+    normalized_residual_map_real = np.divide(
+        residual_map.real,
+        noise_map.real,
+        out=np.zeros_like(residual_map, dtype="complex128"),
+    )
+
+    normalized_residual_map_imag = np.divide(
+        residual_map.imag,
+        noise_map.imag,
+        out=np.zeros_like(residual_map, dtype="complex128"),
+    )
+
+    return normalized_residual_map_real + 1j * normalized_residual_map_imag
+
+
+def chi_squared_map_complex_from(
+    *, residual_map: np.ndarray, noise_map: np.ndarray,
+) -> np.ndarray:
+    """
+    Returnss the chi-squared-map of the fit of complex model-data to a dataset, where:
+
+    Chi_Squared = ((Residuals) / (Noise)) ** 2.0 = ((Data - Model)**2.0)/(Variances)
+
+    Parameters
+    -----------
+    residual_map : np.ndarray
+        The residual-map of the model-simulator fit to the dataset.
+    noise_map : np.ndarray
+        The noise-map of the dataset.
+    """
+    chi_squared_map_real = np.square(
+        np.divide(
+            residual_map.real,
+            noise_map.real,
+            out=np.zeros_like(residual_map),
+        )
+    )
+    chi_squared_map_imag = np.square(
+        np.divide(
+            residual_map.imag,
+            noise_map.imag,
+            out=np.zeros_like(residual_map),
+        )
+    )
+    return chi_squared_map_real + 1j * chi_squared_map_imag
+
+
+def chi_squared_complex_from(
+    *, chi_squared_map: np.ndarray,
+) -> float:
+    """
+    Returns the chi-squared terms of each complex model data's fit to a masked dataset, by summing the masked
+    chi-squared-map of the fit.
+
+    The chi-squared values in masked pixels are omitted from the calculation.
+
+    Parameters
+    ----------
+    chi_squared_map : np.ndarray
+        The chi-squared-map of values of the model-simulator fit to the dataset.
+    """
+    chi_squared_real = float(np.sum(chi_squared_map.real))
+    chi_squared_imag = float(np.sum(chi_squared_map.imag))
+    return chi_squared_real + chi_squared_imag
+
+
+def noise_normalization_complex_from(
+    *, noise_map: np.ndarray,
+) -> float:
+    """
+    Returns the noise-map normalization terms of a complex noise-map, summing the noise_map value in every pixel as:
+
+    [Noise_Term] = sum(log(2*pi*[Noise]**2.0))
+
+    Parameters
+    ----------
+    noise_map : np.ndarray
+        The masked noise-map of the dataset.
+    """
+    noise_normalization_real = float(
+        np.sum(np.log(2 * np.pi * noise_map.real ** 2.0))
+    )
+    noise_normalization_imag = float(
+        np.sum(np.log(2 * np.pi * noise_map.imag ** 2.0))
+    )
+    return noise_normalization_real + noise_normalization_imag
+
+
 def residual_map_with_mask_from(
     *, data: np.ndarray, mask: np.ndarray, model_data: np.ndarray
 ) -> np.ndarray:
