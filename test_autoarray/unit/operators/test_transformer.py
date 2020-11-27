@@ -386,7 +386,7 @@ class TestTransformerNUFFT:
             preload_transform=False,
         )
 
-        transformed_mapping_matrices_dft = (
+        transformed_mapping_matrix_dft = (
             transformer_dft.transformed_mapping_matrix_from_mapping_matrix(
                 mapping_matrix=mapping_matrix
             )
@@ -398,19 +398,19 @@ class TestTransformerNUFFT:
             uv_wavelengths=uv_wavelengths, real_space_mask=real_space_mask
         )
 
-        transformed_mapping_matrices_nufft = (
-            transformer_nufft.transformed_mapping_matrices_from_mapping_matrix(
+        transformed_mapping_matrix_nufft = (
+            transformer_nufft.transformed_mapping_matrix_from_mapping_matrix(
                 mapping_matrix=mapping_matrix
             )
         )
 
-        assert transformed_mapping_matrices_dft == pytest.approx(
-            transformed_mapping_matrices_nufft, 2.0
+        assert transformed_mapping_matrix_dft == pytest.approx(
+            transformed_mapping_matrix_nufft, 2.0
         )
-        assert transformed_mapping_matrices_dft == pytest.approx(
-            transformed_mapping_matrices_nufft, 2.0
+        assert transformed_mapping_matrix_dft == pytest.approx(
+            transformed_mapping_matrix_nufft, 2.0
         )
 
-        assert transformed_mapping_matrices_nufft[0, 0] == pytest.approx(
+        assert transformed_mapping_matrix_nufft[0, 0] == pytest.approx(
             25.02317 + 0.0j, 1.0e-4
         )
