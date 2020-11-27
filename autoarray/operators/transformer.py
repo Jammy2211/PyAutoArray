@@ -165,7 +165,7 @@ class TransformerNUFFT(NUFFT_cpu, pylops.LinearOperator):
     def image_from_visibilities(self, visibilities):
         return np.real(self.adjoint(visibilities))
 
-    def transformed_mapping_matrices_from_mapping_matrix(self, mapping_matrix):
+    def transformed_mapping_matrix_from_mapping_matrix(self, mapping_matrix):
 
         transfomed_mapping_matrix = 0 + 0j * np.zeros(
             (self.uv_wavelengths.shape[0], mapping_matrix.shape[1])
