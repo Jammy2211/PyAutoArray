@@ -231,8 +231,10 @@ def reconstruction(
     plotter=None,
 ):
 
-    source_pixel_values = inversion.mapper.reconstructed_pixelization_from_solution_vector(
-        solution_vector=inversion.reconstruction
+    source_pixel_values = (
+        inversion.mapper.reconstructed_pixelization_from_solution_vector(
+            solution_vector=inversion.reconstruction
+        )
     )
 
     plotter.plot_mapper(
@@ -261,8 +263,10 @@ def errors(
     plotter=None,
 ):
 
-    source_pixel_values = inversion.mapper.reconstructed_pixelization_from_solution_vector(
-        solution_vector=inversion.errors
+    source_pixel_values = (
+        inversion.mapper.reconstructed_pixelization_from_solution_vector(
+            solution_vector=inversion.errors
+        )
     )
 
     plotter.plot_mapper(
@@ -291,8 +295,10 @@ def residual_map(
     plotter=None,
 ):
 
-    source_pixel_values = inversion.mapper.reconstructed_pixelization_from_solution_vector(
-        solution_vector=inversion.residual_map
+    source_pixel_values = (
+        inversion.mapper.reconstructed_pixelization_from_solution_vector(
+            solution_vector=inversion.residual_map
+        )
     )
 
     plotter.plot_mapper(
@@ -321,8 +327,10 @@ def normalized_residual_map(
     plotter=None,
 ):
 
-    source_pixel_values = inversion.mapper.reconstructed_pixelization_from_solution_vector(
-        solution_vector=inversion.normalized_residual_map
+    source_pixel_values = (
+        inversion.mapper.reconstructed_pixelization_from_solution_vector(
+            solution_vector=inversion.normalized_residual_map
+        )
     )
 
     plotter.plot_mapper(
@@ -351,8 +359,10 @@ def chi_squared_map(
     plotter=None,
 ):
 
-    source_pixel_values = inversion.mapper.reconstructed_pixelization_from_solution_vector(
-        solution_vector=inversion.chi_squared_map
+    source_pixel_values = (
+        inversion.mapper.reconstructed_pixelization_from_solution_vector(
+            solution_vector=inversion.chi_squared_map
+        )
     )
 
     plotter.plot_mapper(
@@ -381,8 +391,10 @@ def regularization_weights(
     plotter=None,
 ):
 
-    regularization_weights = inversion.regularization.regularization_weights_from_mapper(
-        mapper=inversion.mapper
+    regularization_weights = (
+        inversion.regularization.regularization_weights_from_mapper(
+            mapper=inversion.mapper
+        )
     )
 
     plotter.plot_mapper(

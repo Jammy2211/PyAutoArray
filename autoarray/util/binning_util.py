@@ -508,8 +508,10 @@ def binned_masked_array_1d_for_masked_array_1d_from(
         mask=mask, bin_up_factor=bin_up_factor
     )
 
-    binned_mask_1d_index_for_padded_mask_index = binned_mask_1d_index_for_padded_mask_index_from(
-        mask=mask, bin_up_factor=bin_up_factor
+    binned_mask_1d_index_for_padded_mask_index = (
+        binned_mask_1d_index_for_padded_mask_index_from(
+            mask=mask, bin_up_factor=bin_up_factor
+        )
     )
 
     for mask_y in range(mask_1d_index_for_padded_mask_index.shape[0]):
@@ -606,8 +608,10 @@ def masked_array_1d_for_binned_masked_array_1d_from(
         mask=mask, bin_up_factor=bin_up_factor
     )
 
-    binned_mask_1d_index_for_padded_mask_index = binned_mask_1d_index_for_padded_mask_index_from(
-        mask=mask, bin_up_factor=bin_up_factor
+    binned_mask_1d_index_for_padded_mask_index = (
+        binned_mask_1d_index_for_padded_mask_index_from(
+            mask=mask, bin_up_factor=bin_up_factor
+        )
     )
 
     for mask_y in range(mask_1d_index_for_padded_mask_index.shape[0]):
@@ -712,8 +716,10 @@ def masked_array_1d_for_binned_masked_array_1d_all_from(
         mask=mask, bin_up_factor=bin_up_factor
     )
 
-    binned_mask_1d_index_for_padded_mask_index = binned_mask_1d_index_for_padded_mask_index_from(
-        mask=mask, bin_up_factor=bin_up_factor
+    binned_mask_1d_index_for_padded_mask_index = (
+        binned_mask_1d_index_for_padded_mask_index_from(
+            mask=mask, bin_up_factor=bin_up_factor
+        )
     )
 
     for mask_y in range(mask_1d_index_for_padded_mask_index.shape[0]):
