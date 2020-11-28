@@ -506,10 +506,8 @@ class TestLikelihood:
 class TestInversionEvidence:
     def test__simple_values(self):
 
-        likelihood_with_regularization_terms = (
-            aa.util.fit.log_likelihood_with_regularization_from(
-                chi_squared=3.0, regularization_term=6.0, noise_normalization=2.0
-            )
+        likelihood_with_regularization_terms = aa.util.fit.log_likelihood_with_regularization_from(
+            chi_squared=3.0, regularization_term=6.0, noise_normalization=2.0
         )
 
         assert likelihood_with_regularization_terms == -0.5 * (3.0 + 6.0 + 2.0)
