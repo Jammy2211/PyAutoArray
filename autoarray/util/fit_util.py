@@ -87,7 +87,9 @@ def noise_normalization_from(*, noise_map: np.ndarray) -> float:
 
 
 def normalized_residual_map_complex_from(
-    *, residual_map: np.ndarray, noise_map: np.ndarray,
+    *,
+    residual_map: np.ndarray,
+    noise_map: np.ndarray,
 ) -> np.ndarray:
     """
     Returns the normalized residual-map of the fit of complex model-data to a dataset, where:
@@ -117,7 +119,9 @@ def normalized_residual_map_complex_from(
 
 
 def chi_squared_map_complex_from(
-    *, residual_map: np.ndarray, noise_map: np.ndarray,
+    *,
+    residual_map: np.ndarray,
+    noise_map: np.ndarray,
 ) -> np.ndarray:
     """
     Returnss the chi-squared-map of the fit of complex model-data to a dataset, where:
@@ -149,7 +153,8 @@ def chi_squared_map_complex_from(
 
 
 def chi_squared_complex_from(
-    *, chi_squared_map: np.ndarray,
+    *,
+    chi_squared_map: np.ndarray,
 ) -> float:
     """
     Returns the chi-squared terms of each complex model data's fit to a masked dataset, by summing the masked
@@ -168,7 +173,8 @@ def chi_squared_complex_from(
 
 
 def noise_normalization_complex_from(
-    *, noise_map: np.ndarray,
+    *,
+    noise_map: np.ndarray,
 ) -> float:
     """
     Returns the noise-map normalization terms of a complex noise-map, summing the noise_map value in every pixel as:
@@ -180,12 +186,8 @@ def noise_normalization_complex_from(
     noise_map : np.ndarray
         The masked noise-map of the dataset.
     """
-    noise_normalization_real = float(
-        np.sum(np.log(2 * np.pi * noise_map.real ** 2.0))
-    )
-    noise_normalization_imag = float(
-        np.sum(np.log(2 * np.pi * noise_map.imag ** 2.0))
-    )
+    noise_normalization_real = float(np.sum(np.log(2 * np.pi * noise_map.real ** 2.0)))
+    noise_normalization_imag = float(np.sum(np.log(2 * np.pi * noise_map.imag ** 2.0)))
     return noise_normalization_real + noise_normalization_imag
 
 

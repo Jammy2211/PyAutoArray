@@ -499,13 +499,13 @@ class TestRectangular:
 
         visibilities = aa.Visibilities.manual_1d(
             visibilities=[
-                1.0+0.0j,
-                1.0+0.0j,
-                1.0+0.0j,
-                1.0+0.0j,
-                1.0+0.0j,
-                1.0+0.0j,
-                1.0+0.0j,
+                1.0 + 0.0j,
+                1.0 + 0.0j,
+                1.0 + 0.0j,
+                1.0 + 0.0j,
+                1.0 + 0.0j,
+                1.0 + 0.0j,
+                1.0 + 0.0j,
             ]
         )
         noise_map = aa.VisibilitiesNoiseMap.ones(shape_1d=(7,))
@@ -976,13 +976,13 @@ class TestVoronoiMagnification:
 
         visibilities = aa.Visibilities.manual_1d(
             visibilities=[
-                1.0+0.0j,
-                1.0+0.0j,
-                1.0+0.0j,
-                1.0+0.0j,
-                1.0+0.0j,
-                1.0+0.0j,
-                1.0+0.0j,
+                1.0 + 0.0j,
+                1.0 + 0.0j,
+                1.0 + 0.0j,
+                1.0 + 0.0j,
+                1.0 + 0.0j,
+                1.0 + 0.0j,
+                1.0 + 0.0j,
             ]
         )
         noise_map = aa.VisibilitiesNoiseMap.ones(shape_1d=(7,))

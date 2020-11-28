@@ -556,11 +556,11 @@ class InversionInterferometerMatrix(
             )
         )
 
-        data_vector =  inversion_util.data_vector_via_transformed_mapping_matrix_from(
-                transformed_mapping_matrix=transformed_mapping_matrix,
-                visibilities=visibilities,
-                noise_map=noise_map,
-            )
+        data_vector = inversion_util.data_vector_via_transformed_mapping_matrix_from(
+            transformed_mapping_matrix=transformed_mapping_matrix,
+            visibilities=visibilities,
+            noise_map=noise_map,
+        )
 
         real_curvature_matrix = inversion_util.curvature_matrix_via_mapping_matrix_from(
             mapping_matrix=transformed_mapping_matrix.real, noise_map=noise_map.real
@@ -583,7 +583,9 @@ class InversionInterferometerMatrix(
                 inversion_util.preconditioner_matrix_via_mapping_matrix_from(
                     mapping_matrix=mapper.mapping_matrix,
                     regularization_matrix=regularization_matrix,
-                    preconditioner_noise_normalization=np.sum((1.0 / noise_map.real ** 2) + (1.0 / noise_map.imag ** 2)),
+                    preconditioner_noise_normalization=np.sum(
+                        (1.0 / noise_map.real ** 2) + (1.0 / noise_map.imag ** 2)
+                    ),
                 )
             )
 
@@ -630,7 +632,8 @@ class InversionInterferometerMatrix(
 
         visibilities = inversion_util.mapped_reconstructed_visibilities_from(
             transformed_mapping_matrix=self.transformed_mapping_matrix,
-            reconstruction=self.reconstruction)
+            reconstruction=self.reconstruction,
+        )
 
         return vis.Visibilities(visibilities=visibilities)
 
@@ -727,7 +730,9 @@ class InversionInterferometerLinearOperator(AbstractInversionInterferometer):
             inversion_util.preconditioner_matrix_via_mapping_matrix_from(
                 mapping_matrix=mapper.mapping_matrix,
                 regularization_matrix=regularization_matrix,
-                preconditioner_noise_normalization=np.sum((1.0 / noise_map.real ** 2) + (1.0 / noise_map.imag ** 2)),
+                preconditioner_noise_normalization=np.sum(
+                    (1.0 / noise_map.real ** 2) + (1.0 / noise_map.imag ** 2)
+                ),
             )
         )
 

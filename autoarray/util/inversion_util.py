@@ -97,7 +97,7 @@ def data_vector_via_transformed_mapping_matrix_from(
     """
 
     data_vector = np.zeros(transformed_mapping_matrix.shape[1])
-    
+
     visibilities_real = visibilities.real
     visibilities_imag = visibilities.imag
     transformed_mapping_matrix_real = transformed_mapping_matrix.real
@@ -107,8 +107,16 @@ def data_vector_via_transformed_mapping_matrix_from(
 
     for vis_1d_index in range(transformed_mapping_matrix.shape[0]):
         for pix_1d_index in range(transformed_mapping_matrix.shape[1]):
-            real_value = visibilities_real[vis_1d_index] * transformed_mapping_matrix_real[vis_1d_index, pix_1d_index] / (noise_map_real[vis_1d_index] ** 2.0)
-            imag_value = visibilities_imag[vis_1d_index] * transformed_mapping_matrix_imag[vis_1d_index, pix_1d_index] / (noise_map_imag[vis_1d_index] ** 2.0)
+            real_value = (
+                visibilities_real[vis_1d_index]
+                * transformed_mapping_matrix_real[vis_1d_index, pix_1d_index]
+                / (noise_map_real[vis_1d_index] ** 2.0)
+            )
+            imag_value = (
+                visibilities_imag[vis_1d_index]
+                * transformed_mapping_matrix_imag[vis_1d_index, pix_1d_index]
+                / (noise_map_imag[vis_1d_index] ** 2.0)
+            )
             data_vector[pix_1d_index] += real_value + imag_value
 
     return data_vector
@@ -127,17 +135,20 @@ def mapped_reconstructed_visibilities_from(
         The matrix representing the blurred mappings between sub-grid pixels and pixelization pixels.
 
     """
-    mapped_reconstructed_visibilities = (0.0 + 0.0j) * np.zeros(transformed_mapping_matrix.shape[0])
+    mapped_reconstructed_visibilities = (0.0 + 0.0j) * np.zeros(
+        transformed_mapping_matrix.shape[0]
+    )
 
     transformed_mapping_matrix_real = transformed_mapping_matrix.real
     transformed_mapping_matrix_imag = transformed_mapping_matrix.imag
 
     for i in range(transformed_mapping_matrix.shape[0]):
         for j in range(reconstruction.shape[0]):
-            mapped_reconstructed_visibilities[i] += (reconstruction[j] * transformed_mapping_matrix_real[i, j]) + 1.0j*(reconstruction[j] * transformed_mapping_matrix_imag[i,j])
+            mapped_reconstructed_visibilities[i] += (
+                reconstruction[j] * transformed_mapping_matrix_real[i, j]
+            ) + 1.0j * (reconstruction[j] * transformed_mapping_matrix_imag[i, j])
 
     return mapped_reconstructed_visibilities
-
 
 
 def inversion_residual_map_from(

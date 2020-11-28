@@ -211,7 +211,8 @@ class Array(abstract_array.AbstractArray):
         exposure_info=None,
         store_in_1d=True,
     ):
-        """Create an Array (see *AbstractArray.__new__*) by inputting the array values in 1D, for example:
+        """
+        Create an Array (see `AbstractArray.__new__`) by inputting the array values in 1D, for example:
 
         array=np.array([1.0, 2.0, 3.0, 4.0])
 
@@ -225,7 +226,7 @@ class Array(abstract_array.AbstractArray):
         array : np.ndarray or list
             The values of the array input as an ndarray of shape [total_unmasked_pixels*(sub_size**2)] or a list of
             lists.
-        shape_2d : (float, float)
+        shape_2d : (int, int)
             The 2D shape of the mask the array is paired with.
         pixel_scales: (float, float) or float
             The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a ``float``,
@@ -270,7 +271,7 @@ class Array(abstract_array.AbstractArray):
         exposure_info=None,
         store_in_1d=True,
     ):
-        """Create an Array (see *AbstractArray.__new__*) by inputting the array values in 2D, for example:
+        """Create an Array (see `AbstractArray.__new__`) by inputting the array values in 2D, for example:
 
         array=np.ndarray([[1.0, 2.0],
                          [3.0, 4.0]])
@@ -327,7 +328,7 @@ class Array(abstract_array.AbstractArray):
         exposure_info=None,
         store_in_1d=True,
     ):
-        """Create an Array (see *AbstractArray.__new__*) by inputting the array values in 1D or 2D, automatically
+        """Create an Array (see `AbstractArray.__new__`) by inputting the array values in 1D or 2D, automatically
         determining whether to use the 'manual_1d' or 'manual_2d' methods.
 
         See the manual_1d and manual_2d methods for examples.
@@ -337,7 +338,7 @@ class Array(abstract_array.AbstractArray):
         array : np.ndarray or list
             The values of the array input as an ndarray of shape [total_unmasked_pixels*(sub_size**2)] or a list of
             lists.
-        shape_2d : (float, float)
+        shape_2d : (int, int)
             The 2D shape of the mask the array is paired with.
         pixel_scales: (float, float) or float
             The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a ``float``,
@@ -369,7 +370,7 @@ class Array(abstract_array.AbstractArray):
 
     @classmethod
     def manual_mask(cls, array, mask, exposure_info=None, store_in_1d=True):
-        """Create a Array (see *AbstractArray.__new__*) by inputting the array values in 1D or 2D with its mask,
+        """Create an `Array` (see `AbstractArray.__new__`) by inputting the array values in 1D or 2D with its mask,
         for example:
 
         mask = Mask2D([[True, False, False, False])
@@ -404,8 +405,9 @@ class Array(abstract_array.AbstractArray):
         exposure_info=None,
         store_in_1d=True,
     ):
-        """Create a Array (see *AbstractArray.__new__*) where all values are filled with an input fill value, analogous to
-         the method numpy ndarray.full.
+        """
+        Create an `Array` (see `AbstractArray.__new__`) where all values are filled with an input fill value,
+        analogous to the method np.full().
 
         From 1D input the method cannot determine the 2D shape of the array and its mask, thus the shape_2d must be
         input into this method. The mask is setup as a unmasked `Mask2D` of shape_2d.
@@ -414,7 +416,7 @@ class Array(abstract_array.AbstractArray):
         ----------
         fill_value : float
             The value all array elements are filled with.
-        shape_2d : (float, float)
+        shape_2d : (int, int)
             The 2D shape of the mask the array is paired with.
         pixel_scales: (float, float) or float
             The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a ``float``,
@@ -448,15 +450,15 @@ class Array(abstract_array.AbstractArray):
         exposure_info=None,
         store_in_1d=True,
     ):
-        """Create an Array (see *AbstractArray.__new__*) where all values are filled with ones, analogous to the method numpy
-        ndarray.ones.
+        """Create an Array (see `AbstractArray.__new__`) where all values are filled with ones, analogous to the
+        method np.ones().
 
         From 1D input the method cannot determine the 2D shape of the array and its mask, thus the shape_2d must be
         input into this method. The mask is setup as a unmasked `Mask2D` of shape_2d.
 
         Parameters
         ----------
-        shape_2d : (float, float)
+        shape_2d : (int, int)
             The 2D shape of the mask the array is paired with.
         pixel_scales: (float, float) or float
             The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a ``float``,
@@ -488,15 +490,15 @@ class Array(abstract_array.AbstractArray):
         exposure_info=None,
         store_in_1d=True,
     ):
-        """Create an Array (see *AbstractArray.__new__*) where all values are filled with zeros, analogous to the method numpy
-        ndarray.ones.
+        """Create an Array (see `AbstractArray.__new__`) where all values are filled with zeros, analogous to the
+        method np.ones().
 
         From 1D input the method cannot determine the 2D shape of the array and its mask, thus the shape_2d must be
         input into this method. The mask is setup as a unmasked `Mask2D` of shape_2d.
 
         Parameters
         ----------
-        shape_2d : (float, float)
+        shape_2d : (int, int)
             The 2D shape of the mask the array is paired with.
         pixel_scales: (float, float) or float
             The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a ``float``,
@@ -528,12 +530,13 @@ class Array(abstract_array.AbstractArray):
         origin=(0.0, 0.0),
         store_in_1d=True,
     ):
-        """Create an Array (see *AbstractArray.__new__*) by loaing the array values from a .fits file.
+        """
+        Create an Array (see `AbstractArray.__new__`) by loading the array values from a .fits file.
 
         Parameters
         ----------
         file_path : str
-            The path the file is output to, including the filename and the ``.fits`` extension,
+            The path the file is loaded from, including the filename and the ``.fits`` extension,
             e.g. '/path/to/filename.fits'
         hdu : int
             The Header-Data Unit of the .fits file the array data is loaded from.
@@ -561,7 +564,7 @@ class Array(abstract_array.AbstractArray):
     def manual_yx_and_values(
         cls, y, x, values, shape_2d, pixel_scales, sub_size=1, exposure_info=None
     ):
-        """Create a Array (see *AbstractArray.__new__*) by inputting the y and x pixel values where the array is filled
+        """Create an `Array` (see `AbstractArray.__new__`) by inputting the y and x pixel values where the array is filled
         and the values to fill the array, for example:
 
         y = np.array([0, 0, 0, 1])
@@ -579,7 +582,7 @@ class Array(abstract_array.AbstractArray):
             The x pixel indexes where value sare input, as an ndarray of shape [total_y_pixels*sub_size] or a list.
         values : np.ndarray or list
             The values which are used too fill in the array.
-        shape_2d : (float, float)
+        shape_2d : (int, int)
             The 2D shape of the mask the grid is paired with.
         pixel_scales: (float, float) or float
             The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a ``float``,

@@ -110,14 +110,10 @@ class TestNormalizedResidualMap:
         noise_map = np.array([2.0 + 2.0j, 2.0 + 2.0j])
         model_data = np.array([9.0 + 12.0j, 9.0 + 12.0j])
 
-        residual_map = aa.util.fit.residual_map_from(
-            data=data, model_data=model_data
-        )
+        residual_map = aa.util.fit.residual_map_from(data=data, model_data=model_data)
 
-        normalized_residual_map = (
-            aa.util.fit.normalized_residual_map_complex_from(
-                residual_map=residual_map, noise_map=noise_map
-            )
+        normalized_residual_map = aa.util.fit.normalized_residual_map_complex_from(
+            residual_map=residual_map, noise_map=noise_map
         )
 
         assert (normalized_residual_map == np.array([0.5 - 1.0j, 0.5 - 1.0j])).all()
@@ -216,9 +212,7 @@ class TestChiSquareds:
         noise_map = np.array([2.0 + 2.0j, 2.0 + 2.0j])
         model_data = np.array([9.0 + 12.0j, 9.0 + 12.0j])
 
-        residual_map = aa.util.fit.residual_map_from(
-            data=data,  model_data=model_data
-        )
+        residual_map = aa.util.fit.residual_map_from(data=data, model_data=model_data)
 
         chi_squared_map = aa.util.fit.chi_squared_map_complex_from(
             residual_map=residual_map, noise_map=noise_map
@@ -430,9 +424,7 @@ class TestLikelihood:
         noise_map = np.array([2.0 + 1.0j, 2.0 + 1.0j])
         model_data = np.array([9.0 + 12.0j, 9.0 + 12.0j])
 
-        residual_map = aa.util.fit.residual_map_from(
-            data=data, model_data=model_data
-        )
+        residual_map = aa.util.fit.residual_map_from(data=data, model_data=model_data)
 
         chi_squared_map = aa.util.fit.chi_squared_map_complex_from(
             residual_map=residual_map, noise_map=noise_map
@@ -458,9 +450,8 @@ class TestLikelihood:
         )
 
         assert log_likelihood == pytest.approx(
-            -0.5 * 2.0*(chi_squared + noise_normalization), 1e-4
+            -0.5 * 2.0 * (chi_squared + noise_normalization), 1e-4
         )
-
 
     def test__complex__model_data_mismatch__mask_certain_pixels__lh_non_0__2d_data(
         self,
@@ -506,8 +497,10 @@ class TestLikelihood:
 class TestInversionEvidence:
     def test__simple_values(self):
 
-        likelihood_with_regularization_terms = aa.util.fit.log_likelihood_with_regularization_from(
-            chi_squared=3.0, regularization_term=6.0, noise_normalization=2.0
+        likelihood_with_regularization_terms = (
+            aa.util.fit.log_likelihood_with_regularization_from(
+                chi_squared=3.0, regularization_term=6.0, noise_normalization=2.0
+            )
         )
 
         assert likelihood_with_regularization_terms == -0.5 * (3.0 + 6.0 + 2.0)
