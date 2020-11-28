@@ -91,10 +91,10 @@ def pixelization_1d_index_for_voronoi_sub_mask_1d_index_from(
             ]
 
             sub_pixel_to_nearest_pixelization_distance = (
-                grid[sub_mask_1d_index, 0] - nearest_pixelization_pixel_center[0]
-            ) ** 2 + (
-                grid[sub_mask_1d_index, 1] - nearest_pixelization_pixel_center[1]
-            ) ** 2
+                (grid[sub_mask_1d_index, 0] - nearest_pixelization_pixel_center[0]) ** 2
+                + (grid[sub_mask_1d_index, 1] - nearest_pixelization_pixel_center[1])
+                ** 2
+            )
 
             closest_separation_from_pixelization_to_neighbor = 1.0e8
 
@@ -107,10 +107,9 @@ def pixelization_1d_index_for_voronoi_sub_mask_1d_index_from(
                 ]
 
                 separation_from_neighbor = (
-                    grid[sub_mask_1d_index, 0] - pixelization_grid[neighbor, 0]
-                ) ** 2 + (
-                    grid[sub_mask_1d_index, 1] - pixelization_grid[neighbor, 1]
-                ) ** 2
+                    (grid[sub_mask_1d_index, 0] - pixelization_grid[neighbor, 0]) ** 2
+                    + (grid[sub_mask_1d_index, 1] - pixelization_grid[neighbor, 1]) ** 2
+                )
 
                 if (
                     separation_from_neighbor
