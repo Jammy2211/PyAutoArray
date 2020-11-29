@@ -68,7 +68,6 @@ def chi_squared_from(*, chi_squared_map: np.ndarray) -> float:
     chi_squared_map : np.ndarray
         The chi-squared-map of values of the model-simulator fit to the dataset.
     """
-    print(np.sum(chi_squared_map))
     return float(np.sum(chi_squared_map))
 
 
