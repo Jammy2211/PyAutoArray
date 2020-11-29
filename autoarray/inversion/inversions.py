@@ -454,6 +454,7 @@ class AbstractInversionInterferometer(AbstractInversion):
 
     @property
     def mapped_reconstructed_image(self):
+
         mapped_reconstructed_image = inversion_util.mapped_reconstructed_data_from(
             mapping_matrix=self.mapper.mapping_matrix,
             reconstruction=self.reconstruction,
@@ -478,7 +479,7 @@ class InversionInterferometerMatrix(
         regularization: reg.Regularization,
         regularization_matrix: np.ndarray,
         reconstruction: np.ndarray,
-        transformed_mapping_matrices: np.ndarray,
+        transformed_mapping_matrix: np.ndarray,
         curvature_reg_matrix: np.ndarray,
         settings: SettingsInversion,
     ):
@@ -536,7 +537,7 @@ class InversionInterferometerMatrix(
         )
 
         self.curvature_reg_matrix = curvature_reg_matrix
-        self.transformed_mapping_matrices = transformed_mapping_matrices
+        self.transformed_mapping_matrix = transformed_mapping_matrix
 
     @classmethod
     def from_data_mapper_and_regularization(
@@ -549,52 +550,39 @@ class InversionInterferometerMatrix(
         settings=SettingsInversion(),
     ):
 
-        transformed_mapping_matrices = (
-            transformer.transformed_mapping_matrices_from_mapping_matrix(
-                mapping_matrix=mapper.mapping_matrix
-            )
+        transformed_mapping_matrix = transformer.transformed_mapping_matrix_from_mapping_matrix(
+            mapping_matrix=mapper.mapping_matrix
         )
 
-        real_data_vector = (
-            inversion_util.data_vector_via_transformed_mapping_matrix_from(
-                transformed_mapping_matrix=transformed_mapping_matrices[0],
-                visibilities=visibilities[:, 0],
-                noise_map=noise_map[:, 0],
-            )
-        )
-
-        imag_data_vector = (
-            inversion_util.data_vector_via_transformed_mapping_matrix_from(
-                transformed_mapping_matrix=transformed_mapping_matrices[1],
-                visibilities=visibilities[:, 1],
-                noise_map=noise_map[:, 1],
-            )
+        data_vector = inversion_util.data_vector_via_transformed_mapping_matrix_from(
+            transformed_mapping_matrix=transformed_mapping_matrix,
+            visibilities=visibilities,
+            noise_map=noise_map,
         )
 
         real_curvature_matrix = inversion_util.curvature_matrix_via_mapping_matrix_from(
-            mapping_matrix=transformed_mapping_matrices[0], noise_map=noise_map[:, 0]
+            mapping_matrix=transformed_mapping_matrix.real, noise_map=noise_map.real
         )
 
         imag_curvature_matrix = inversion_util.curvature_matrix_via_mapping_matrix_from(
-            mapping_matrix=transformed_mapping_matrices[1], noise_map=noise_map[:, 1]
+            mapping_matrix=transformed_mapping_matrix.imag, noise_map=noise_map.imag
         )
 
         regularization_matrix = regularization.regularization_matrix_from_mapper(
             mapper=mapper
         )
 
-        data_vector = np.add(real_data_vector, imag_data_vector)
         curvature_matrix = np.add(real_curvature_matrix, imag_curvature_matrix)
         curvature_reg_matrix = np.add(curvature_matrix, regularization_matrix)
 
         if settings.use_preconditioner:
 
-            preconditioner_matrix = (
-                inversion_util.preconditioner_matrix_via_mapping_matrix_from(
-                    mapping_matrix=mapper.mapping_matrix,
-                    regularization_matrix=regularization_matrix,
-                    preconditioner_noise_normalization=np.sum(1.0 / noise_map ** 2),
-                )
+            preconditioner_matrix = inversion_util.preconditioner_matrix_via_mapping_matrix_from(
+                mapping_matrix=mapper.mapping_matrix,
+                regularization_matrix=regularization_matrix,
+                preconditioner_noise_normalization=np.sum(
+                    (1.0 / noise_map.real ** 2) + (1.0 / noise_map.imag ** 2)
+                ),
             )
 
             preconditioner_inv = np.linalg.inv(preconditioner_matrix)
@@ -628,7 +616,7 @@ class InversionInterferometerMatrix(
             transformer=transformer,
             mapper=mapper,
             regularization=regularization,
-            transformed_mapping_matrices=transformed_mapping_matrices,
+            transformed_mapping_matrix=transformed_mapping_matrix,
             regularization_matrix=regularization_matrix,
             curvature_reg_matrix=curvature_reg_matrix,
             reconstruction=values,
@@ -637,19 +625,13 @@ class InversionInterferometerMatrix(
 
     @property
     def mapped_reconstructed_visibilities(self):
-        real_visibilities = inversion_util.mapped_reconstructed_data_from(
-            mapping_matrix=self.transformed_mapping_matrices[0],
+
+        visibilities = inversion_util.mapped_reconstructed_visibilities_from(
+            transformed_mapping_matrix=self.transformed_mapping_matrix,
             reconstruction=self.reconstruction,
         )
 
-        imag_visibilities = inversion_util.mapped_reconstructed_data_from(
-            mapping_matrix=self.transformed_mapping_matrices[1],
-            reconstruction=self.reconstruction,
-        )
-
-        return vis.Visibilities(
-            visibilities_1d=np.stack((real_visibilities, imag_visibilities), axis=-1)
-        )
+        return vis.Visibilities(visibilities=visibilities)
 
 
 class InversionInterferometerLinearOperator(AbstractInversionInterferometer):
@@ -740,14 +722,12 @@ class InversionInterferometerLinearOperator(AbstractInversionInterferometer):
             regularization_matrix=regularization_matrix, dtype="float64"
         )
 
-        preconditioner_matrix = (
-            inversion_util.preconditioner_matrix_via_mapping_matrix_from(
-                mapping_matrix=mapper.mapping_matrix,
-                regularization_matrix=regularization_matrix,
-                preconditioner_noise_normalization=np.sum(
-                    np.divide(1.0, np.square(noise_map))
-                ),
-            )
+        preconditioner_matrix = inversion_util.preconditioner_matrix_via_mapping_matrix_from(
+            mapping_matrix=mapper.mapping_matrix,
+            regularization_matrix=regularization_matrix,
+            preconditioner_noise_normalization=np.sum(
+                (1.0 / noise_map.real ** 2) + (1.0 / noise_map.imag ** 2)
+            ),
         )
 
         log_det_curvature_reg_matrix_term = 2.0 * np.sum(
@@ -771,7 +751,7 @@ class InversionInterferometerLinearOperator(AbstractInversionInterferometer):
                 Regs=None,
                 epsNRs=[1.0],
                 NRegs=[Rop],
-                data=visibilities.as_complex,
+                data=visibilities,
                 Weight=noise_map.Wop,
                 tol=settings.tolerance,
                 **dict(maxiter=settings.maxiter, callback=callback),
@@ -797,15 +777,15 @@ class InversionInterferometerLinearOperator(AbstractInversionInterferometer):
                 Regs=None,
                 epsNRs=[1.0],
                 NRegs=[Rop],
-                data=visibilities.as_complex,
+                data=visibilities,
                 Weight=noise_map.Wop,
                 tol=settings.tolerance,
                 **dict(M=Mop, maxiter=settings.maxiter, callback=callback),
             )
 
-            print("Number of Iterations of PyLops = ", num_iters)
-            calculation_time = time.time() - start
-            print("Time to compute precon fit = {}".format(calculation_time))
+            # print("Number of Iterations of PyLops = ", num_iters)
+            # calculation_time = time.time() - start
+            # print("Time to compute precon fit = {}".format(calculation_time))
 
         return InversionInterferometerLinearOperator(
             visibilities=visibilities,

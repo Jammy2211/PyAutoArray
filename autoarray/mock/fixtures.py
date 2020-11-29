@@ -155,18 +155,17 @@ def make_imaging_6x6():
     )
 
 
-def make_visibilities_mask_7x2():
-    return np.full(fill_value=False, shape=(7, 2))
+def make_visibilities_mask_7():
+    return np.full(fill_value=False, shape=(7,))
 
 
 def make_visibilities_7():
     visibilities = aa.Visibilities.full(shape_1d=(7,), fill_value=1.0)
-    visibilities[6, 0] = -1.0
-    visibilities[6, 1] = -1.0
+    visibilities[6] = -1.0 - 1.0j
     return visibilities
 
 
-def make_noise_map_7():
+def make_visibilities_noise_map_7():
     return aa.VisibilitiesNoiseMap.full(shape_1d=(7,), fill_value=2.0)
 
 
@@ -187,7 +186,7 @@ def make_uv_wavelengths_7():
 def make_interferometer_7():
     return aa.Interferometer(
         visibilities=make_visibilities_7(),
-        noise_map=make_noise_map_7(),
+        noise_map=make_visibilities_noise_map_7(),
         uv_wavelengths=make_uv_wavelengths_7(),
     )
 
@@ -212,7 +211,7 @@ def make_masked_imaging_7x7():
 def make_masked_interferometer_7():
     return aa.MaskedInterferometer(
         interferometer=make_interferometer_7(),
-        visibilities_mask=make_visibilities_mask_7x2(),
+        visibilities_mask=make_visibilities_mask_7(),
         real_space_mask=make_mask_7x7(),
         settings=aa.SettingsMaskedInterferometer(
             sub_size=1, transformer_class=aa.TransformerDFT
