@@ -420,7 +420,7 @@ class TestRectangular:
 
     def test__interferometer_matrices(self):
 
-        visibilities_mask = np.full(fill_value=False, shape=(7, 2))
+        visibilities_mask = np.full(fill_value=False, shape=(7,))
 
         real_space_mask = aa.Mask2D.unmasked(
             shape_2d=(7, 7), pixel_scales=0.1, sub_size=1
@@ -440,13 +440,13 @@ class TestRectangular:
 
         visibilities = aa.Visibilities.manual_1d(
             visibilities=[
-                [1.0, 0.0],
-                [1.0, 0.0],
-                [1.0, 0.0],
-                [1.0, 0.0],
-                [1.0, 0.0],
-                [1.0, 0.0],
-                [1.0, 0.0],
+                1.0 + 0.0j,
+                1.0 + 0.0j,
+                1.0 + 0.0j,
+                1.0 + 0.0j,
+                1.0 + 0.0j,
+                1.0 + 0.0j,
+                1.0 + 0.0j,
             ]
         )
         noise_map = aa.VisibilitiesNoiseMap.ones(shape_1d=(7,))
@@ -471,15 +471,15 @@ class TestRectangular:
             settings=aa.SettingsInversion(check_solution=False),
         )
 
-        assert inversion.mapped_reconstructed_visibilities[:, 0] == pytest.approx(
-            np.ones(shape=(7,)), 1.0e-4
+        assert inversion.mapped_reconstructed_visibilities == pytest.approx(
+            1.0 + 0.0j * np.ones(shape=(7,)), 1.0e-4
         )
-        assert (inversion.mapped_reconstructed_visibilities[:, 1] < 0.0001).all()
-        assert (inversion.mapped_reconstructed_visibilities[:, 1] > 0.0).all()
+        assert (np.imag(inversion.mapped_reconstructed_visibilities) < 0.0001).all()
+        assert (np.imag(inversion.mapped_reconstructed_visibilities) > 0.0).all()
 
     def test__interferometer_linear_operator(self):
 
-        visibilities_mask = np.full(fill_value=False, shape=(7, 2))
+        visibilities_mask = np.full(fill_value=False, shape=(7,))
 
         real_space_mask = aa.Mask2D.unmasked(
             shape_2d=(7, 7), pixel_scales=0.1, sub_size=1
@@ -499,13 +499,13 @@ class TestRectangular:
 
         visibilities = aa.Visibilities.manual_1d(
             visibilities=[
-                [1.0, 0.0],
-                [1.0, 0.0],
-                [1.0, 0.0],
-                [1.0, 0.0],
-                [1.0, 0.0],
-                [1.0, 0.0],
-                [1.0, 0.0],
+                1.0 + 0.0j,
+                1.0 + 0.0j,
+                1.0 + 0.0j,
+                1.0 + 0.0j,
+                1.0 + 0.0j,
+                1.0 + 0.0j,
+                1.0 + 0.0j,
             ]
         )
         noise_map = aa.VisibilitiesNoiseMap.ones(shape_1d=(7,))
@@ -535,11 +535,11 @@ class TestRectangular:
             ),
         )
 
-        assert inversion.mapped_reconstructed_visibilities[:, 0] == pytest.approx(
-            np.ones(shape=(7,)), 1.0e-4
+        assert inversion.mapped_reconstructed_visibilities == pytest.approx(
+            1.0 + 0.0j * np.ones(shape=(7,)), 1.0e-4
         )
-        assert (inversion.mapped_reconstructed_visibilities[:, 1] < 0.0001).all()
-        assert (inversion.mapped_reconstructed_visibilities[:, 1] > 0.0).all()
+        assert (np.imag(inversion.mapped_reconstructed_visibilities) < 0.0001).all()
+        assert (np.imag(inversion.mapped_reconstructed_visibilities) > 0.0).all()
 
 
 class TestVoronoiMagnification:
@@ -954,7 +954,7 @@ class TestVoronoiMagnification:
 
     def test__interferometer(self):
 
-        visibilities_mask = np.full(fill_value=False, shape=(7, 2))
+        visibilities_mask = np.full(fill_value=False, shape=(7,))
 
         real_space_mask = aa.Mask2D.unmasked(
             shape_2d=(7, 7), pixel_scales=0.1, sub_size=1
@@ -976,13 +976,13 @@ class TestVoronoiMagnification:
 
         visibilities = aa.Visibilities.manual_1d(
             visibilities=[
-                [1.0, 0.0],
-                [1.0, 0.0],
-                [1.0, 0.0],
-                [1.0, 0.0],
-                [1.0, 0.0],
-                [1.0, 0.0],
-                [1.0, 0.0],
+                1.0 + 0.0j,
+                1.0 + 0.0j,
+                1.0 + 0.0j,
+                1.0 + 0.0j,
+                1.0 + 0.0j,
+                1.0 + 0.0j,
+                1.0 + 0.0j,
             ]
         )
         noise_map = aa.VisibilitiesNoiseMap.ones(shape_1d=(7,))
@@ -1007,8 +1007,8 @@ class TestVoronoiMagnification:
             settings=aa.SettingsInversion(check_solution=False),
         )
 
-        assert inversion.mapped_reconstructed_visibilities[:, 0] == pytest.approx(
-            np.ones(shape=(7,)), 1.0e-4
+        assert inversion.mapped_reconstructed_visibilities == pytest.approx(
+            1.0 + 0.0j * np.ones(shape=(7,)), 1.0e-4
         )
-        assert (inversion.mapped_reconstructed_visibilities[:, 1] < 0.0001).all()
-        assert (inversion.mapped_reconstructed_visibilities[:, 1] > 0.0).all()
+        assert (np.imag(inversion.mapped_reconstructed_visibilities) < 0.0001).all()
+        assert (np.imag(inversion.mapped_reconstructed_visibilities) > 0.0).all()

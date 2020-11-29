@@ -434,10 +434,8 @@ def test__exposure_time_map_from_exposure_time_and_inverse_noise_map():
     )
     background_noise_map[0] = 0.5
 
-    exposure_time_map = (
-        aa.preprocess.exposure_time_map_from_exposure_time_and_background_noise_map(
-            exposure_time=exposure_time, background_noise_map=background_noise_map
-        )
+    exposure_time_map = aa.preprocess.exposure_time_map_from_exposure_time_and_background_noise_map(
+        exposure_time=exposure_time, background_noise_map=background_noise_map
     )
 
     assert (
@@ -579,4 +577,23 @@ def test__data_with_gaussian_noise_added():
             ]
         ),
         1e-1,
+    )
+
+
+def test__data_with_complex_gaussian_noise_added():
+
+    data = aa.Visibilities.ones(shape_1d=(3,))
+
+    data_with_noise = aa.preprocess.data_with_complex_gaussian_noise_added(
+        data=data, sigma=0.0, seed=1
+    )
+
+    assert (data_with_noise.in_1d == 1.0 + 1.0j * np.ones((3,))).all()
+
+    data_with_noise = aa.preprocess.data_with_complex_gaussian_noise_added(
+        data=data, sigma=1.0, seed=1
+    )
+
+    assert data_with_noise.in_1d == pytest.approx(
+        np.array([2.62434 + 0.38824j, 0.47182 - 0.07298j, 1.86540 - 1.30153j]), 1e-3
     )

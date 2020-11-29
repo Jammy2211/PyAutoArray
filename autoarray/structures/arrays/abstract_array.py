@@ -524,7 +524,8 @@ class AbstractArray(abstract_structure.AbstractStructure):
         )
 
     def output_to_fits(self, file_path, overwrite=False):
-        """Output the array to a .fits file.
+        """
+        Output the array to a .fits file.
 
         Parameters
         ----------
@@ -532,7 +533,8 @@ class AbstractArray(abstract_structure.AbstractStructure):
             The path the file is output to, including the filename and the ``.fits`` extension,
             e.g. '/path/to/filename.fits'
         overwrite : bool
-            If a file already exists at the path, if overwrite=True it is overwritten else an error is raised."""
+            If a file already exists at the path, if overwrite=True it is overwritten else an error is raised.
+        """
         array_util.numpy_array_2d_to_fits(
             array_2d=self.in_2d, file_path=file_path, overwrite=overwrite
         )
