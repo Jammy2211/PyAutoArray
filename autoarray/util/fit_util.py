@@ -86,9 +86,7 @@ def noise_normalization_from(*, noise_map: np.ndarray) -> float:
 
 
 def normalized_residual_map_complex_from(
-    *,
-    residual_map: np.ndarray,
-    noise_map: np.ndarray,
+    *, residual_map: np.ndarray, noise_map: np.ndarray
 ) -> np.ndarray:
     """
     Returns the normalized residual-map of the fit of complex model-data to a dataset, where:
@@ -118,9 +116,7 @@ def normalized_residual_map_complex_from(
 
 
 def chi_squared_map_complex_from(
-    *,
-    residual_map: np.ndarray,
-    noise_map: np.ndarray,
+    *, residual_map: np.ndarray, noise_map: np.ndarray
 ) -> np.ndarray:
     """
     Returnss the chi-squared-map of the fit of complex model-data to a dataset, where:
@@ -135,26 +131,15 @@ def chi_squared_map_complex_from(
         The noise-map of the dataset.
     """
     chi_squared_map_real = np.square(
-        np.divide(
-            residual_map.real,
-            noise_map.real,
-            out=np.zeros_like(residual_map),
-        )
+        np.divide(residual_map.real, noise_map.real, out=np.zeros_like(residual_map))
     )
     chi_squared_map_imag = np.square(
-        np.divide(
-            residual_map.imag,
-            noise_map.imag,
-            out=np.zeros_like(residual_map),
-        )
+        np.divide(residual_map.imag, noise_map.imag, out=np.zeros_like(residual_map))
     )
     return chi_squared_map_real + 1j * chi_squared_map_imag
 
 
-def chi_squared_complex_from(
-    *,
-    chi_squared_map: np.ndarray,
-) -> float:
+def chi_squared_complex_from(*, chi_squared_map: np.ndarray) -> float:
     """
     Returns the chi-squared terms of each complex model data's fit to a masked dataset, by summing the masked
     chi-squared-map of the fit.
@@ -171,10 +156,7 @@ def chi_squared_complex_from(
     return chi_squared_real + chi_squared_imag
 
 
-def noise_normalization_complex_from(
-    *,
-    noise_map: np.ndarray,
-) -> float:
+def noise_normalization_complex_from(*, noise_map: np.ndarray) -> float:
     """
     Returns the noise-map normalization terms of a complex noise-map, summing the noise_map value in every pixel as:
 
