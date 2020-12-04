@@ -44,101 +44,43 @@ class TransformerDFT(pylops.LinearOperator):
         self.dtype = "complex128"
         self.explicit = False
 
-    def real_visibilities_from_image(self, image):
+    def visibilities_from_image(self, image):
 
         if self.preload_transform:
 
-            return transformer_util.real_visibilities_via_preload_jit_from(
+            visibilities = transformer_util.visibilities_via_preload_jit_from(
                 image_1d=image.in_1d_binned,
                 preloaded_reals=self.preload_real_transforms,
-            )
-
-        else:
-
-            return transformer_util.real_visibilities_jit(
-                image_1d=image.in_1d_binned,
-                grid_radians=self.grid,
-                uv_wavelengths=self.uv_wavelengths,
-            )
-
-    def imag_visibilities_from_image(self, image):
-
-        if self.preload_transform:
-
-            return transformer_util.imag_visibilities_from_via_preload_jit_from(
-                image_1d=image.in_1d_binned,
                 preloaded_imags=self.preload_imag_transforms,
             )
 
         else:
 
-            return transformer_util.imag_visibilities_jit(
+            visibilities = transformer_util.visibilities_jit(
                 image_1d=image.in_1d_binned,
                 grid_radians=self.grid,
                 uv_wavelengths=self.uv_wavelengths,
             )
 
-    def visibilities_from_image(self, image):
+        return vis.Visibilities(visibilities=visibilities)
 
-        real_visibilities = self.real_visibilities_from_image(image=image)
-        imag_visibilities = self.imag_visibilities_from_image(image=image)
-
-        return vis.Visibilities(
-            visibilities_1d=np.stack((real_visibilities, imag_visibilities), axis=-1)
-        )
-
-    def real_transformed_mapping_matrix_from_mapping_matrix(self, mapping_matrix):
+    def transformed_mapping_matrix_from_mapping_matrix(self, mapping_matrix):
 
         if self.preload_transform:
 
-            return (
-                transformer_util.real_transformed_mapping_matrix_via_preload_jit_from(
-                    mapping_matrix=mapping_matrix,
-                    preloaded_reals=self.preload_real_transforms,
-                )
+            return transformer_util.transformed_mapping_matrix_via_preload_jit_from(
+                mapping_matrix=mapping_matrix,
+                preloaded_reals=self.preload_real_transforms,
+                preloaded_imags=self.preload_imag_transforms,
             )
 
         else:
 
-            return transformer_util.real_transformed_mapping_matrix_jit(
+            return transformer_util.transformed_mapping_matrix_jit(
                 mapping_matrix=mapping_matrix,
                 grid_radians=self.grid,
                 uv_wavelengths=self.uv_wavelengths,
             )
-
-    def imag_transformed_mapping_matrix_from_mapping_matrix(self, mapping_matrix):
-
-        if self.preload_transform:
-
-            return (
-                transformer_util.imag_transformed_mapping_matrix_via_preload_jit_from(
-                    mapping_matrix=mapping_matrix,
-                    preloaded_imags=self.preload_imag_transforms,
-                )
-            )
-
-        else:
-
-            return transformer_util.imag_transformed_mapping_matrix_jit(
-                mapping_matrix=mapping_matrix,
-                grid_radians=self.grid,
-                uv_wavelengths=self.uv_wavelengths,
-            )
-
-    def transformed_mapping_matrices_from_mapping_matrix(self, mapping_matrix):
-
-        real_transformed_mapping_matrix = (
-            self.real_transformed_mapping_matrix_from_mapping_matrix(
-                mapping_matrix=mapping_matrix
-            )
-        )
-        imag_transformed_mapping_matrix = (
-            self.imag_transformed_mapping_matrix_from_mapping_matrix(
-                mapping_matrix=mapping_matrix
-            )
-        )
-
-        return [real_transformed_mapping_matrix, imag_transformed_mapping_matrix]
 
 
 class TransformerNUFFT(NUFFT_cpu, pylops.LinearOperator):
@@ -214,25 +156,18 @@ class TransformerNUFFT(NUFFT_cpu, pylops.LinearOperator):
         ...
         """
 
-        # NOTE: Flip the image the autolens produces.
-        visibilities = self.forward(image.in_2d_binned[::-1, :])
-
         return vis.Visibilities(
-            visibilities_1d=np.stack((visibilities.real, visibilities.imag), axis=-1)
+            visibilities=self.forward(
+                image.in_2d_binned[::-1, :]
+            )  # flip due to PyNUFFT internal flip
         )
 
     def image_from_visibilities(self, visibilities):
-        visibilities = visibilities[:, 0] + 1j * visibilities[:, 1]
-        # ...
-        image = self.adjoint(visibilities)
-        return image.real
+        return np.real(self.adjoint(visibilities))
 
-    def transformed_mapping_matrices_from_mapping_matrix(self, mapping_matrix):
+    def transformed_mapping_matrix_from_mapping_matrix(self, mapping_matrix):
 
-        real_transfomed_mapping_matrix = np.zeros(
-            (self.uv_wavelengths.shape[0], mapping_matrix.shape[1])
-        )
-        imag_transfomed_mapping_matrix = np.zeros(
+        transfomed_mapping_matrix = 0 + 0j * np.zeros(
             (self.uv_wavelengths.shape[0], mapping_matrix.shape[1])
         )
 
@@ -248,10 +183,9 @@ class TransformerNUFFT(NUFFT_cpu, pylops.LinearOperator):
 
             visibilities = self.visibilities_from_image(image=image)
 
-            real_transfomed_mapping_matrix[:, source_pixel_1d_index] = visibilities.real
-            imag_transfomed_mapping_matrix[:, source_pixel_1d_index] = visibilities.imag
+            transfomed_mapping_matrix[:, source_pixel_1d_index] = visibilities
 
-        return [real_transfomed_mapping_matrix, imag_transfomed_mapping_matrix]
+        return transfomed_mapping_matrix
 
     def forward_lop(self, x):
         """

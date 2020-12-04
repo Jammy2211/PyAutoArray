@@ -393,3 +393,12 @@ def data_with_gaussian_noise_added(data, sigma, seed=-1):
     return data + gaussian_noise_from_shape_and_sigma(
         shape=data.shape, sigma=sigma, seed=seed
     )
+
+
+def data_with_complex_gaussian_noise_added(data, sigma, seed=-1):
+
+    gaussian_noise = gaussian_noise_from_shape_and_sigma(
+        shape=(data.shape[0], 2), sigma=sigma, seed=seed
+    )
+
+    return data + gaussian_noise[:, 0] + 1.0j * gaussian_noise[:, 1]

@@ -373,7 +373,7 @@ class Kernel(arrays.Array):
         Parameters
         ----------
         file_path : str
-            The path the file is output to, including the filename and the ``.fits`` extension,
+            The path the file is loaded from, including the filename and the ``.fits`` extension,
             e.g. '/path/to/filename.fits'
         hdu : int
             The Header-Data Unit of the .fits file the array data is loaded from.

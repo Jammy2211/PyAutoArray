@@ -1031,12 +1031,12 @@ class TestGridSparse:
                 origin=(0.0, 0.0),
             )
 
-            unmasked_sparse_grid_pixel_centres = (
-                aa.util.grid.grid_pixel_centres_1d_from(
-                    grid_scaled_1d=unmasked_sparse_grid_util,
-                    shape_2d=grid.mask.shape,
-                    pixel_scales=grid.pixel_scales,
-                ).astype("int")
+            unmasked_sparse_grid_pixel_centres = aa.util.grid.grid_pixel_centres_1d_from(
+                grid_scaled_1d=unmasked_sparse_grid_util,
+                shape_2d=grid.mask.shape,
+                pixel_scales=grid.pixel_scales,
+            ).astype(
+                "int"
             )
 
             total_sparse_pixels = aa.util.mask.total_sparse_pixels_from(
@@ -1067,11 +1067,9 @@ class TestGridSparse:
                 "int"
             )
 
-            sparse_1d_index_for_mask_1d_index_util = (
-                aa.util.sparse.sparse_1d_index_for_mask_1d_index_from(
-                    regular_to_unmasked_sparse=regular_to_unmasked_sparse_util,
-                    sparse_for_unmasked_sparse=sparse_for_unmasked_sparse_util,
-                )
+            sparse_1d_index_for_mask_1d_index_util = aa.util.sparse.sparse_1d_index_for_mask_1d_index_from(
+                regular_to_unmasked_sparse=regular_to_unmasked_sparse_util,
+                sparse_for_unmasked_sparse=sparse_for_unmasked_sparse_util,
             )
 
             sparse_grid_util = aa.util.sparse.sparse_grid_via_unmasked_from(
@@ -1516,54 +1514,46 @@ class TestGridSparse:
 
             weight_map = np.ones(mask.pixels_in_mask)
 
-            sparse_grid_weight_0 = (
-                grids.GridSparse.from_total_pixels_grid_and_weight_map(
-                    total_pixels=8,
-                    grid=grid,
-                    weight_map=weight_map,
-                    n_iter=1,
-                    max_iter=2,
-                    seed=1,
-                    stochastic=False,
-                )
+            sparse_grid_weight_0 = grids.GridSparse.from_total_pixels_grid_and_weight_map(
+                total_pixels=8,
+                grid=grid,
+                weight_map=weight_map,
+                n_iter=1,
+                max_iter=2,
+                seed=1,
+                stochastic=False,
             )
 
-            sparse_grid_weight_1 = (
-                grids.GridSparse.from_total_pixels_grid_and_weight_map(
-                    total_pixels=8,
-                    grid=grid,
-                    weight_map=weight_map,
-                    n_iter=1,
-                    max_iter=2,
-                    seed=1,
-                    stochastic=False,
-                )
+            sparse_grid_weight_1 = grids.GridSparse.from_total_pixels_grid_and_weight_map(
+                total_pixels=8,
+                grid=grid,
+                weight_map=weight_map,
+                n_iter=1,
+                max_iter=2,
+                seed=1,
+                stochastic=False,
             )
 
             assert (sparse_grid_weight_0.sparse == sparse_grid_weight_1.sparse).all()
 
-            sparse_grid_weight_0 = (
-                grids.GridSparse.from_total_pixels_grid_and_weight_map(
-                    total_pixels=8,
-                    grid=grid,
-                    weight_map=weight_map,
-                    n_iter=1,
-                    max_iter=2,
-                    seed=1,
-                    stochastic=True,
-                )
+            sparse_grid_weight_0 = grids.GridSparse.from_total_pixels_grid_and_weight_map(
+                total_pixels=8,
+                grid=grid,
+                weight_map=weight_map,
+                n_iter=1,
+                max_iter=2,
+                seed=1,
+                stochastic=True,
             )
 
-            sparse_grid_weight_1 = (
-                grids.GridSparse.from_total_pixels_grid_and_weight_map(
-                    total_pixels=8,
-                    grid=grid,
-                    weight_map=weight_map,
-                    n_iter=1,
-                    max_iter=2,
-                    seed=1,
-                    stochastic=True,
-                )
+            sparse_grid_weight_1 = grids.GridSparse.from_total_pixels_grid_and_weight_map(
+                total_pixels=8,
+                grid=grid,
+                weight_map=weight_map,
+                n_iter=1,
+                max_iter=2,
+                seed=1,
+                stochastic=True,
             )
 
             assert (sparse_grid_weight_0.sparse != sparse_grid_weight_1.sparse).any()

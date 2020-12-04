@@ -27,8 +27,9 @@ from os import path
 import os
 import colorcet
 import configparser
+import typing
 
-from autoarray.structures import vector_fields
+from autoarray.structures import abstract_structure, arrays, grids, vector_fields
 from autoarray import exc
 
 
@@ -74,7 +75,8 @@ class Units(AbstractMatObj):
         conversion_factor: float = None,
         in_kpc: bool = None,
     ):
-        """The units of the figure's y and x axis.
+        """
+        The units of the figure's y and x axis.
 
         Parameters
         ----------
@@ -116,17 +118,16 @@ class Units(AbstractMatObj):
 class Figure(AbstractMatObj):
     def __init__(
         self,
-        figsize: (float, float) = None,
-        aspect: float or str = None,
+        figsize: typing.Tuple[float, float] = None,
+        aspect: typing.Union[float, str] = None,
         from_subplot_config: bool = False,
     ):
-        """The settings used to set up the Matplotlib Figure before plotting, see:
-
-        https://matplotlib.org/3.1.0/api/_as_gen/matplotlib.pyplot.figure.html
+        """
+        The settings used to set up the Matplotlib Figure before plotting.
 
         This object wraps the following Matplotlib methods:
 
-        - plt.figure(figsize)
+        - plt.figure: https://matplotlib.org/3.1.0/api/_as_gen/matplotlib.pyplot.figure.html
         - plt.close()
 
         It also controls the aspect ratio of the figure plotted.
@@ -163,19 +164,23 @@ class Figure(AbstractMatObj):
         )
 
     @classmethod
-    def sub(cls, figsize: (float, float) = None, aspect: float or str = None):
+    def sub(
+        cls,
+        figsize: typing.Union[typing.Tuple[float, float]] = None,
+        aspect: float or str = None,
+    ):
         return Figure(figsize=figsize, aspect=aspect, from_subplot_config=True)
 
-    def aspect_from_shape_2d(self, shape_2d: (int, int)):
+    def aspect_from_shape_2d(self, shape_2d: typing.Union[typing.Tuple[int, int]]):
         """
-        Returns the aspect ratio of the figure from the 2D shape of an _Array_.
+        Returns the aspect ratio of the figure from the 2D shape of an `Array`.
 
-            This is primarily used to ensure that rectangular arrays are plotted as square figures on sub-plots.
+        This is primarily used to ensure that rectangular arrays are plotted as square figures on sub-plots.
 
-            Parameters
-            ----------
-            shape_2d : (int, int)
-                The two dimensional shape of an `Array` that is to be plotted.
+        Parameters
+        ----------
+        shape_2d : (int, int)
+            The two dimensional shape of an `Array` that is to be plotted.
         """
         if isinstance(self.aspect, str):
             if self.aspect in "square":
@@ -206,17 +211,14 @@ class ColorMap(AbstractMatObj):
         linscale: float = None,
         from_subplot_config: bool = False,
     ):
-        """The settings used to set up the Matplotlib colormap and its normalization, see:
-
-        https://matplotlib.org/3.3.1/tutorials/colors/colormaps.html
-        https://matplotlib.org/3.1.1/tutorials/colors/colormapnorms.html
-        https://matplotlib.org/3.3.0/api/_as_gen/matplotlib.colors.SymLogNorm.html
+        """
+        The settings used to set up the Matplotlib colormap and its normalization.
 
         This object wraps the following Matplotlib methods:
 
-        - colors.Linear
-        - colors.LogNorm
-        - colors.SymLogNorm
+        - colors.Linear: https://matplotlib.org/3.3.1/tutorials/colors/colormaps.html
+        - colors.LogNorm: https://matplotlib.org/3.1.1/tutorials/colors/colormapnorms.html
+        - colors.SymLogNorm: https://matplotlib.org/3.3.0/api/_as_gen/matplotlib.colors.SymLogNorm.html
 
         Parameters
         ----------
@@ -312,9 +314,9 @@ class ColorMap(AbstractMatObj):
             from_subplot_config=True,
         )
 
-    def norm_from_array(self, array):
+    def norm_from_array(self, array: np.ndarray):
         """
-    Returns the `Normalization` object which scales of the colormap, using the input min / max normalization \
+        Returns the `Normalization` object which scales of the colormap, using the input min / max normalization \
         values.
 
         If norm_min / norm_max are not supplied, the minimum / maximum values of the array of data_type are used.
@@ -361,17 +363,16 @@ class ColorBar(AbstractMatObj):
         ticksize: int = None,
         fraction: float = None,
         pad: float = None,
-        tick_labels: [float] = None,
-        tick_values: [float] = None,
+        tick_labels: typing.Union[typing.List[float]] = None,
+        tick_values: typing.Union[typing.List[float]] = None,
         from_subplot_config: bool = False,
     ):
-        """The settings used to set up the Matplotlib Colorbar, see:
-
-        https://matplotlib.org/3.1.1/api/_as_gen/matplotlib.pyplot.colorbar.html
+        """
+        The settings used to set up the Matplotlib Colorbar.
 
         This object wraps the following Matplotlib methods:
 
-        - plt.colorbar
+        - plt.colorbar: https://matplotlib.org/3.1.1/api/_as_gen/matplotlib.pyplot.colorbar.html
 
         Parameters
         ----------
@@ -419,8 +420,8 @@ class ColorBar(AbstractMatObj):
         ticksize: int = None,
         fraction: float = None,
         pad: float = None,
-        tick_labels: [float] = None,
-        tick_values: [float] = None,
+        tick_labels: typing.Union[typing.List[float]] = None,
+        tick_values: typing.Union[typing.List[float]] = None,
     ):
         return ColorBar(
             ticksize=ticksize,
@@ -432,7 +433,8 @@ class ColorBar(AbstractMatObj):
         )
 
     def set(self):
-        """Setup the colorbar of the figure, specifically its ticksize, figure layout and optionally overriding
+        """
+        Setup the colorbar of the figure, specifically its ticksize, figure layout and optionally overriding
         the tick labels with manual inputs.
         """
 
@@ -452,7 +454,8 @@ class ColorBar(AbstractMatObj):
         cb.ax.tick_params(labelsize=self.ticksize)
 
     def set_with_values(self, cmap: str, color_values: np.ndarray):
-        """Set up the colorbar with a set of already known color values.
+        """
+        Set up the colorbar with a set of already known color values.
 
         This method is used for producing the color bar on a Voronoi mesh plot, which is unable to use the in-built
         Matplotlib colorbar method.
@@ -486,20 +489,18 @@ class Ticks(AbstractMatObj):
         self,
         ysize: int = None,
         xsize: int = None,
-        y_manual: [float] = None,
-        x_manual: [float] = None,
+        y_manual: typing.Union[typing.List[float]] = None,
+        x_manual: typing.Union[typing.List[float]] = None,
         from_subplot_config: bool = False,
     ):
-        """The settings used to customize the figure's y and x ticks, see:
-
-        https://matplotlib.org/3.3.1/api/_as_gen/matplotlib.pyplot.yticks.html
-        https://matplotlib.org/3.3.1/api/_as_gen/matplotlib.pyplot.xticks.html
+        """
+        The settings used to customize the figure's y and x ticks.
 
         This object wraps the following Matplotlib methods:
 
-        - plt.tick_params.
-        - plt.yticks.
-        - plt.xticks
+        - plt.tick_params
+        - plt.yticks: https://matplotlib.org/3.3.1/api/_as_gen/matplotlib.pyplot.yticks.html
+        - plt.xticks: https://matplotlib.org/3.3.1/api/_as_gen/matplotlib.pyplot.xticks.html
 
         Parameters
         ----------
@@ -537,8 +538,8 @@ class Ticks(AbstractMatObj):
         cls,
         ysize: int = None,
         xsize: int = None,
-        y_manual: [float] = None,
-        x_manual: [float] = None,
+        y_manual: typing.Union[typing.List[float]] = None,
+        x_manual: typing.Union[typing.List[float]] = None,
     ):
         return Ticks(
             ysize=ysize,
@@ -550,13 +551,14 @@ class Ticks(AbstractMatObj):
 
     def set_yticks(
         self,
-        array,
+        array: arrays.Array,
         ymin: float,
         ymax: float,
         units: Units,
         symmetric_around_centre: bool = False,
     ):
-        """Use the extent of an input `Array` object to set the y ticks of a figure.
+        """
+        Use the extent of an input `Array` object to set the y ticks of a figure.
 
         Parameters
         -----------
@@ -570,7 +572,7 @@ class Ticks(AbstractMatObj):
             The units of the figure.
         symmetric_around_centre : bool
             If True, the figure is plotted symmetrically around a central value, which is the default behaviour of
-            Matplotlib. This is used for plotting _Mapper_'s.
+            Matplotlib. This is used for plotting `Mapper`'s.
         """
 
         plt.tick_params(labelsize=self.ysize)
@@ -604,13 +606,14 @@ class Ticks(AbstractMatObj):
 
     def set_xticks(
         self,
-        array,
+        array: arrays.Array,
         xmin: float,
         xmax: float,
         units: Units,
         symmetric_around_centre: bool = False,
     ):
-        """Use the extent of an input `Array` object to set the x ticks of a figure.
+        """
+        Use the extent of an input `Array` object to set the x ticks of a figure.
 
         Parameters
         -----------
@@ -624,7 +627,7 @@ class Ticks(AbstractMatObj):
             The units of the figure.
         symmetric_around_centre : bool
             If True, the figure is plotted symmetrically around a central value, which is the default behaviour of
-            Matplotlib. This is used for plotting _Mapper_'s.
+            Matplotlib. This is used for plotting `Mapper`'s.
         """
 
         plt.tick_params(labelsize=self.xsize)
@@ -668,17 +671,13 @@ class Labels(AbstractMatObj):
         xsize: int = None,
         from_subplot_config: bool = False,
     ):
-        """The settings used to customize the figure's title and y and x labels, see:
-
-        https://matplotlib.org/3.1.1/api/_as_gen/matplotlib.pyplot.title.html
-        https://matplotlib.org/3.1.1/api/_as_gen/matplotlib.pyplot.ylabel.html
-        https://matplotlib.org/3.1.1/api/_as_gen/matplotlib.pyplot.xlabel.html
+        """The settings used to customize the figure's title and y and x labels.
 
         This object wraps the following Matplotlib methods:
 
-        - plt.title
-        - plt.ylabel
-        - plt.xlabel
+        - plt.title: https://matplotlib.org/3.1.1/api/_as_gen/matplotlib.pyplot.title.html
+        - plt.ylabel: https://matplotlib.org/3.1.1/api/_as_gen/matplotlib.pyplot.ylabel.html
+        - plt.xlabel: https://matplotlib.org/3.1.1/api/_as_gen/matplotlib.pyplot.xlabel.html
 
         The title and y and x labels will automatically be set if not specified, using the name of the functin
         used to plot the image and the _Unit_'s. object.
@@ -743,7 +742,7 @@ class Labels(AbstractMatObj):
             from_subplot_config=True,
         )
 
-    def title_from_func(self, func: Callable):
+    def title_from_func(self, func: Callable) -> str:
         """If a title is not manually specified use the name of the function plotting the image to set the title.
 
         Parameters
@@ -759,14 +758,15 @@ class Labels(AbstractMatObj):
 
             return self.title
 
-    def yunits_from_func(self, func: Callable):
-        """If the y label is not manually specified use the function plotting the image to y label, assuming that it
+    def yunits_from_func(self, func: Callable) -> str:
+        """
+        If the y label is not manually specified use the function plotting the image to y label, assuming that it
         represents spatial units.
 
-         Parameters
-         ----------
-         func : func
-            The function plotting the image.
+        Parameters
+        ----------
+        func : func
+           The function plotting the image.
         """
 
         if self._yunits is None:
@@ -788,14 +788,15 @@ class Labels(AbstractMatObj):
 
             return self._yunits
 
-    def xunits_from_func(self, func: Callable):
-        """If the x label is not manually specified use the function plotting the image to x label, assuming that it
+    def xunits_from_func(self, func: Callable) -> str:
+        """
+        If the x label is not manually specified use the function plotting the image to x label, assuming that it
         represents spatial units.
 
-         Parameters
-         ----------
-         func : func
-            The function plotting the image.
+        Parameters
+        ----------
+        func : func
+           The function plotting the image.
         """
         if self._xunits is None:
 
@@ -816,7 +817,7 @@ class Labels(AbstractMatObj):
 
             return self._xunits
 
-    def yunits_from_units(self, units: Units):
+    def yunits_from_units(self, units: Units) -> str:
         """
         Returns the units of the y-axis to create the y label text if it is not manually specified.
 
@@ -842,7 +843,7 @@ class Labels(AbstractMatObj):
 
             return self._yunits
 
-    def xunits_from_units(self, units: Units):
+    def xunits_from_units(self, units: Units) -> str:
         """
         Returns the units of the x-axis to create the x label text if it is not manually specified.
 
@@ -873,7 +874,8 @@ class Labels(AbstractMatObj):
         plt.title(label=self.title, fontsize=self.titlesize)
 
     def set_yunits(self, units: Units, include_brackets: bool):
-        """Set the y labels of the figure, including the fontsize.
+        """
+        Set the y labels of the figure, including the fontsize.
 
         The y labels are always the distance scales, thus the labels are either arc-seconds or kpc and depending on
         the unit_label the figure is plotted in.
@@ -893,7 +895,8 @@ class Labels(AbstractMatObj):
             plt.ylabel(self.yunits_from_units(units=units), fontsize=self.ysize)
 
     def set_xunits(self, units: Units, include_brackets: bool):
-        """Set the x labels of the figure, including the fontsize.
+        """
+        Set the x labels of the figure, including the fontsize.
 
         The x labels are always the distance scales, thus the labels are either arc-seconds or kpc and depending on
         the unit_label the figure is plotted in.
@@ -915,15 +918,17 @@ class Labels(AbstractMatObj):
 
 class Legend(AbstractMatObj):
     def __init__(
-        self, include: bool = None, fontsize: int = None, from_subplot_config=False
+        self,
+        include: bool = None,
+        fontsize: int = None,
+        from_subplot_config: bool = False,
     ):
-        """The settings used to include a legend on a figure and customize it, see:
-
-        https://matplotlib.org/3.1.1/api/_as_gen/matplotlib.pyplot.legend.html
+        """
+        The settings used to include a legend on a figure and customize it.
 
         This object wraps the following Matplotlib methods:
 
-        - plt.legend
+        - plt.legend: https://matplotlib.org/3.1.1/api/_as_gen/matplotlib.pyplot.legend.html
 
         The title and y and x labels will automatically be set if not specified, using the name of the functin
         used to plot the image and the _Unit_'s. object.
@@ -968,15 +973,13 @@ class Output(AbstractMatObj):
         format: str = None,
         bypass: bool = False,
     ):
-        """An object for outputting a figure to the display or hard-disc, see:
-
-        https://matplotlib.org/3.1.1/api/_as_gen/matplotlib.pyplot.show.html
-        https://matplotlib.org/3.1.1/api/_as_gen/matplotlib.pyplot.savefig.html
+        """
+        An object for outputting a figure to the display or hard-disc.
 
         This object wraps the following Matplotlib methods:
 
-        - plt.show
-        - plt.savefig
+        - plt.show: https://matplotlib.org/3.1.1/api/_as_gen/matplotlib.pyplot.show.html
+        - plt.savefig: https://matplotlib.org/3.1.1/api/_as_gen/matplotlib.pyplot.savefig.html
 
         The default behaviour is the display the figure on the computer screen, as opposed to outputting to hard-disc
         as a file.
@@ -1006,13 +1009,13 @@ class Output(AbstractMatObj):
         self.bypass = bypass
 
     @property
-    def format(self):
+    def format(self) -> str:
         if self._format is None:
             return "show"
         else:
             return self._format
 
-    def filename_from_func(self, func):
+    def filename_from_func(self, func) -> str:
         """If a filename is not manually specified use the name of the function plotting the image to set it.
 
         Parameters
@@ -1023,15 +1026,14 @@ class Output(AbstractMatObj):
         if self.filename is None:
             return func.__name__
         else:
-
             return self.filename
 
-    def to_figure(self, structure):
+    def to_figure(self, structure: abstract_structure.AbstractStructure):
         """Output the figure, either as an image on the screen or to the hard-disk as a .png or .fits file.
 
         Parameters
         -----------
-        structure : np.ndarray
+        structure : abstract_structure.AbstractStructure
             The 2D array of image to be output, required for outputting the image as a fits file.
         """
         if not self.bypass:
@@ -1068,13 +1070,33 @@ def remove_spaces_and_commas_from_colors(colors):
 class Scatterer(AbstractMatObj):
     def __init__(
         self,
-        size=None,
-        marker=None,
-        colors=None,
-        section=None,
+        size: int = None,
+        marker: str = None,
+        colors: typing.List[str] = None,
+        section: str = None,
         from_subplot_config=False,
     ):
+        """
+        An object for scattering an input set of grid points, for example (y,x) coordinates or a data structures
+        representing 2D (y,x) coordinates like a `Grid` or `GridIrregular`. If the object groups (y,x) coordinates
+        they are plotted with colors according to their group.
 
+        This object wraps the following Matplotlib methods:
+
+        - plt.scatter: https://matplotlib.org/3.1.1/api/_as_gen/matplotlib.pyplot.scatter.html
+
+        The default behaviour is the display the figure on the computer screen, as opposed to outputting to hard-disc
+        as a file.
+
+        Parameters
+        ----------
+        size : int
+            The size of the points of the scatter plot.
+        marker : str
+            The style of the scattered point's mark (e.g. 'x', 'o', '.', etc.)
+        colors : [str]
+            The list of colors that the grouped plotted coordinates cycle through.
+        """
         self.from_subplot_config = from_subplot_config
 
         self.size = load_setting(
@@ -1197,7 +1219,21 @@ class Scatterer(AbstractMatObj):
 
 class OriginScatterer(Scatterer):
     def __init__(self, size=None, marker=None, colors=None, from_subplot_config=False):
+        """
+        An object for scattering an input set of grid points, described fully in the `Scatterer` class.
 
+        The `OriginScatterer` is used specifically to plot the (y,x) coordinate origin of a data structure. It uses
+        its own settings (e.g, `size`, `marker`, etc.) in `config/visualize/mat_obj` config files.
+
+        Parameters
+        ----------
+        size : int
+            The size of the (y,x) origin of the scatter plot.
+        marker : str
+            The style of the scattered point's mark (e.g. 'x', 'o', '.', etc.)
+        colors : [str]
+            The list of colors that the grouped plotted coordinates cycle through.
+        """
         super(OriginScatterer, self).__init__(
             size=size,
             marker=marker,
@@ -1215,7 +1251,23 @@ class OriginScatterer(Scatterer):
 
 class MaskScatterer(Scatterer):
     def __init__(self, size=None, marker=None, colors=None, from_subplot_config=False):
+        """
+        An object for scattering an input set of grid points, described fully in the `Scatterer` class.
 
+        The `MaskScatterer` is used specifically to plot a 2D mask over an image, using the mask's (y,x) grid of edge
+        coordinates.
+
+        It uses its own settings (e.g, `size`, `marker`, etc.) in `config/visualize/mat_obj` config files.
+
+        Parameters
+        ----------
+        size : int
+            The size of the (y,x) origin of the scatter plot.
+        marker : str
+            The style of the scattered point's mark (e.g. 'x', 'o', '.', etc.)
+        colors : [str]
+            The list of colors that the grouped plotted coordinates cycle through.
+        """
         super(MaskScatterer, self).__init__(
             size=size,
             marker=marker,
@@ -1233,7 +1285,23 @@ class MaskScatterer(Scatterer):
 
 class BorderScatterer(Scatterer):
     def __init__(self, size=None, marker=None, colors=None, from_subplot_config=False):
+        """
+        An object for scattering an input set of grid points, described fully in the `Scatterer` class.
 
+        The `BorderScatterer` is used specifically to plot a 2D border over an image, using the border's (y,x) grid of
+        border coordinates.
+
+        It uses its own settings (e.g, `size`, `marker`, etc.) in `config/visualize/mat_obj` config files.
+
+        Parameters
+        ----------
+        size : int
+            The size of the (y,x) origin of the scatter plot.
+        marker : str
+            The style of the scattered point's mark (e.g. 'x', 'o', '.', etc.)
+        colors : [str]
+            The list of colors that the grouped plotted coordinates cycle through.
+        """
         super(BorderScatterer, self).__init__(
             size=size,
             marker=marker,
@@ -1251,7 +1319,22 @@ class BorderScatterer(Scatterer):
 
 class GridScatterer(Scatterer):
     def __init__(self, size=None, marker=None, colors=None, from_subplot_config=False):
+        """
+        An object for scattering an input set of grid points, described fully in the `Scatterer` class.
 
+        The `GridScatterer` is used specifically to plot a 2D grid of points.
+
+        It uses its own settings (e.g, `size`, `marker`, etc.) in `config/visualize/mat_obj` config files.
+
+        Parameters
+        ----------
+        size : int
+            The size of the (y,x) origin of the scatter plot.
+        marker : str
+            The style of the scattered point's mark (e.g. 'x', 'o', '.', etc.)
+        colors : [str]
+            The list of colors that the grouped plotted coordinates cycle through.
+        """
         super(GridScatterer, self).__init__(
             size=size,
             marker=marker,
@@ -1269,7 +1352,23 @@ class GridScatterer(Scatterer):
 
 class PositionsScatterer(Scatterer):
     def __init__(self, size=None, marker=None, colors=None, from_subplot_config=False):
+        """
+        An object for scattering an input set of grid points, described fully in the `Scatterer` class.
 
+        The `PositionsScatterer` is used specifically to plot a 2D irregular grid of (y,x) coordinates that are marked
+        as the `positions` of a data structure. These will be colored according to grouping, if grouped.
+
+        It uses its own settings (e.g, `size`, `marker`, etc.) in `config/visualize/mat_obj` config files.
+
+        Parameters
+        ----------
+        size : int
+            The size of the (y,x) origin of the scatter plot.
+        marker : str
+            The style of the scattered point's mark (e.g. 'x', 'o', '.', etc.)
+        colors : [str]
+            The list of colors that the grouped plotted coordinates cycle through.
+        """
         super(PositionsScatterer, self).__init__(
             size=size,
             marker=marker,
@@ -1287,7 +1386,24 @@ class PositionsScatterer(Scatterer):
 
 class IndexScatterer(Scatterer):
     def __init__(self, size=None, marker=None, colors=None, from_subplot_config=False):
+        """
+        An object for scattering an input set of grid points, described fully in the `Scatterer` class.
 
+        The `IndexScatterer` is used specifically to plot a set of pixel indexes, which have been converted to a 2D
+        grid of (y,x) coordinates from their original 1D or 2D image pixels. If the indexes were lists of grouped
+        indexes they should be converted to a `GridIrregularGrouped` object so they are colored acoording to grouping.
+
+        It uses its own settings (e.g, `size`, `marker`, etc.) in `config/visualize/mat_obj` config files.
+
+        Parameters
+        ----------
+        size : int
+            The size of the (y,x) origin of the scatter plot.
+        marker : str
+            The style of the scattered point's mark (e.g. 'x', 'o', '.', etc.)
+        colors : [str]
+            The list of colors that the grouped plotted coordinates cycle through.
+        """
         super(IndexScatterer, self).__init__(
             size=size,
             marker=marker,
@@ -1305,7 +1421,23 @@ class IndexScatterer(Scatterer):
 
 class PixelizationGridScatterer(Scatterer):
     def __init__(self, size=None, marker=None, colors=None, from_subplot_config=False):
+        """
+        An object for scattering an input set of grid points, described fully in the `Scatterer` class.
 
+        The `PixelizationScatterer` is used specifically to plot an irregular grid of (y,x) coordinates correspinding
+        to the grid of a pixelization.
+
+        It uses its own settings (e.g, `size`, `marker`, etc.) in `config/visualize/mat_obj` config files.
+
+        Parameters
+        ----------
+        size : int
+            The size of the (y,x) origin of the scatter plot.
+        marker : str
+            The style of the scattered point's mark (e.g. 'x', 'o', '.', etc.)
+        colors : [str]
+            The list of colors that the grouped plotted coordinates cycle through.
+        """
         super(PixelizationGridScatterer, self).__init__(
             size=size,
             marker=marker,

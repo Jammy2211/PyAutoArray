@@ -12,10 +12,8 @@ class TestRegions:
             pixel_scales=1.0,
         )
 
-        mask_index_for_mask_1d_index = (
-            aa.util.mask.sub_mask_index_for_sub_mask_1d_index_via_mask_from(
-                mask=mask, sub_size=1
-            )
+        mask_index_for_mask_1d_index = aa.util.mask.sub_mask_index_for_sub_mask_1d_index_via_mask_from(
+            mask=mask, sub_size=1
         )
 
         assert mask.regions._mask_index_for_mask_1d_index == pytest.approx(
@@ -246,10 +244,8 @@ class TestRegions:
             sub_size=2,
         )
 
-        mask_1d_index_for_sub_mask_1d_index_util = (
-            aa.util.mask.mask_1d_index_for_sub_mask_1d_index_via_mask_from(
-                mask=mask, sub_size=2
-            )
+        mask_1d_index_for_sub_mask_1d_index_util = aa.util.mask.mask_1d_index_for_sub_mask_1d_index_via_mask_from(
+            mask=mask, sub_size=2
         )
 
         assert (
@@ -264,10 +260,8 @@ class TestRegions:
             sub_size=2,
         )
 
-        sub_mask_index_for_sub_mask_1d_index = (
-            aa.util.mask.sub_mask_index_for_sub_mask_1d_index_via_mask_from(
-                mask=mask, sub_size=2
-            )
+        sub_mask_index_for_sub_mask_1d_index = aa.util.mask.sub_mask_index_for_sub_mask_1d_index_via_mask_from(
+            mask=mask, sub_size=2
         )
 
         assert mask.regions._sub_mask_index_for_sub_mask_1d_index == pytest.approx(

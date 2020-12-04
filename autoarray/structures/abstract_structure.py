@@ -108,5 +108,5 @@ class AbstractStructure(np.ndarray):
     def binned_up_from(self, bin_up_factor, method):
         raise NotImplementedError
 
-    def output_to_fits(self):
+    def output_to_fits(self, file_path, overwrite):
         raise NotImplementedError

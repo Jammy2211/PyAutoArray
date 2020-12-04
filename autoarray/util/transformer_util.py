@@ -73,60 +73,31 @@ def preload_imag_transforms(grid_radians, uv_wavelengths):
 
 
 @decorator_util.jit()
-def real_visibilities_via_preload_jit_from(image_1d, preloaded_reals):
+def visibilities_via_preload_jit_from(image_1d, preloaded_reals, preloaded_imags):
 
-    real_visibilities = np.zeros(shape=(preloaded_reals.shape[1]))
+    visibilities = 0 + 0j * np.zeros(shape=(preloaded_reals.shape[1]))
 
     for image_1d_index in range(image_1d.shape[0]):
         for vis_1d_index in range(preloaded_reals.shape[1]):
-            real_visibilities[vis_1d_index] += (
+            vis_real = (
                 image_1d[image_1d_index] * preloaded_reals[image_1d_index, vis_1d_index]
             )
-
-    return real_visibilities
-
-
-@decorator_util.jit()
-def real_visibilities_jit(image_1d, grid_radians, uv_wavelengths):
-
-    real_visibilities = np.zeros(shape=(uv_wavelengths.shape[0]))
-
-    for image_1d_index in range(image_1d.shape[0]):
-        for vis_1d_index in range(uv_wavelengths.shape[0]):
-            real_visibilities[vis_1d_index] += image_1d[image_1d_index] * np.cos(
-                -2.0
-                * np.pi
-                * (
-                    grid_radians[image_1d_index, 1] * uv_wavelengths[vis_1d_index, 0]
-                    + grid_radians[image_1d_index, 0] * uv_wavelengths[vis_1d_index, 1]
-                )
-            )
-
-    return real_visibilities
-
-
-@decorator_util.jit()
-def imag_visibilities_from_via_preload_jit_from(image_1d, preloaded_imags):
-
-    imag_visibilities = np.zeros(shape=(preloaded_imags.shape[1]))
-
-    for image_1d_index in range(image_1d.shape[0]):
-        for vis_1d_index in range(preloaded_imags.shape[1]):
-            imag_visibilities[vis_1d_index] += (
+            vis_imag = (
                 image_1d[image_1d_index] * preloaded_imags[image_1d_index, vis_1d_index]
             )
+            visibilities[vis_1d_index] += vis_real + 1j * vis_imag
 
-    return imag_visibilities
+    return visibilities
 
 
 @decorator_util.jit()
-def imag_visibilities_jit(image_1d, grid_radians, uv_wavelengths):
+def visibilities_jit(image_1d, grid_radians, uv_wavelengths):
 
-    imag_visibilities = np.zeros(shape=(uv_wavelengths.shape[0]))
+    visibilities = 0 + 0j * np.zeros(shape=(uv_wavelengths.shape[0]))
 
     for image_1d_index in range(image_1d.shape[0]):
         for vis_1d_index in range(uv_wavelengths.shape[0]):
-            imag_visibilities[vis_1d_index] += image_1d[image_1d_index] * np.sin(
+            vis_real = image_1d[image_1d_index] * np.cos(
                 -2.0
                 * np.pi
                 * (
@@ -134,16 +105,25 @@ def imag_visibilities_jit(image_1d, grid_radians, uv_wavelengths):
                     + grid_radians[image_1d_index, 0] * uv_wavelengths[vis_1d_index, 1]
                 )
             )
+            vis_imag = image_1d[image_1d_index] * np.sin(
+                -2.0
+                * np.pi
+                * (
+                    grid_radians[image_1d_index, 1] * uv_wavelengths[vis_1d_index, 0]
+                    + grid_radians[image_1d_index, 0] * uv_wavelengths[vis_1d_index, 1]
+                )
+            )
+            visibilities[vis_1d_index] += vis_real + 1j * vis_imag
 
-    return imag_visibilities
+    return visibilities
 
 
 @decorator_util.jit()
-def real_transformed_mapping_matrix_via_preload_jit_from(
-    mapping_matrix, preloaded_reals
+def transformed_mapping_matrix_via_preload_jit_from(
+    mapping_matrix, preloaded_reals, preloaded_imags
 ):
 
-    transfomed_mapping_matrix = np.zeros(
+    transfomed_mapping_matrix = 0 + 0j * np.zeros(
         (preloaded_reals.shape[1], mapping_matrix.shape[1])
     )
 
@@ -155,17 +135,20 @@ def real_transformed_mapping_matrix_via_preload_jit_from(
             if value > 0:
 
                 for vis_1d_index in range(preloaded_reals.shape[1]):
+
+                    vis_real = value * preloaded_reals[image_1d_index, vis_1d_index]
+                    vis_imag = value * preloaded_imags[image_1d_index, vis_1d_index]
                     transfomed_mapping_matrix[vis_1d_index, pixel_1d_index] += (
-                        value * preloaded_reals[image_1d_index, vis_1d_index]
+                        vis_real + 1j * vis_imag
                     )
 
     return transfomed_mapping_matrix
 
 
 @decorator_util.jit()
-def real_transformed_mapping_matrix_jit(mapping_matrix, grid_radians, uv_wavelengths):
+def transformed_mapping_matrix_jit(mapping_matrix, grid_radians, uv_wavelengths):
 
-    transfomed_mapping_matrix = np.zeros(
+    transfomed_mapping_matrix = 0 + 0j * np.zeros(
         (uv_wavelengths.shape[0], mapping_matrix.shape[1])
     )
 
@@ -177,9 +160,8 @@ def real_transformed_mapping_matrix_jit(mapping_matrix, grid_radians, uv_wavelen
             if value > 0:
 
                 for vis_1d_index in range(uv_wavelengths.shape[0]):
-                    transfomed_mapping_matrix[
-                        vis_1d_index, pixel_1d_index
-                    ] += value * np.cos(
+
+                    vis_real = value * np.cos(
                         -2.0
                         * np.pi
                         * (
@@ -190,59 +172,19 @@ def real_transformed_mapping_matrix_jit(mapping_matrix, grid_radians, uv_wavelen
                         )
                     )
 
-    return transfomed_mapping_matrix
+                    vis_imag = value * np.sin(
+                        -2.0
+                        * np.pi
+                        * (
+                            grid_radians[image_1d_index, 1]
+                            * uv_wavelengths[vis_1d_index, 0]
+                            + grid_radians[image_1d_index, 0]
+                            * uv_wavelengths[vis_1d_index, 1]
+                        )
+                    )
 
-
-@decorator_util.jit()
-def imag_transformed_mapping_matrix_via_preload_jit_from(
-    mapping_matrix, preloaded_imags
-):
-
-    transfomed_mapping_matrix = np.zeros(
-        (preloaded_imags.shape[1], mapping_matrix.shape[1])
-    )
-
-    for pixel_1d_index in range(mapping_matrix.shape[1]):
-        for image_1d_index in range(mapping_matrix.shape[0]):
-
-            value = mapping_matrix[image_1d_index, pixel_1d_index]
-
-            if value > 0:
-
-                for vis_1d_index in range(preloaded_imags.shape[1]):
                     transfomed_mapping_matrix[vis_1d_index, pixel_1d_index] += (
-                        value * preloaded_imags[image_1d_index, vis_1d_index]
-                    )
-
-    return transfomed_mapping_matrix
-
-
-@decorator_util.jit()
-def imag_transformed_mapping_matrix_jit(mapping_matrix, grid_radians, uv_wavelengths):
-
-    transfomed_mapping_matrix = np.zeros(
-        (uv_wavelengths.shape[0], mapping_matrix.shape[1])
-    )
-
-    for pixel_1d_index in range(mapping_matrix.shape[1]):
-        for image_1d_index in range(mapping_matrix.shape[0]):
-
-            value = mapping_matrix[image_1d_index, pixel_1d_index]
-
-            if value > 0:
-
-                for vis_1d_index in range(uv_wavelengths.shape[0]):
-                    transfomed_mapping_matrix[
-                        vis_1d_index, pixel_1d_index
-                    ] += value * np.sin(
-                        -2.0
-                        * np.pi
-                        * (
-                            grid_radians[image_1d_index, 1]
-                            * uv_wavelengths[vis_1d_index, 0]
-                            + grid_radians[image_1d_index, 0]
-                            * uv_wavelengths[vis_1d_index, 1]
-                        )
+                        vis_real + 1j * vis_imag
                     )
 
     return transfomed_mapping_matrix
