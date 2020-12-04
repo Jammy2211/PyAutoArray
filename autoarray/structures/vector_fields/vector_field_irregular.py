@@ -2,7 +2,6 @@ import logging
 
 import numpy as np
 import typing
-
 from autoarray.util import grid_util, mask_util
 
 from matplotlib.patches import Ellipse
