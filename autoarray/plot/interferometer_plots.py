@@ -1,5 +1,6 @@
 from autoarray.plot import plotters
 from autoarray.structures import grids
+import numpy as np
 
 
 @plotters.set_include_and_sub_plotter
@@ -129,7 +130,7 @@ def visibilities(interferometer, include=None, plotter=None):
         over the immage.
     """
 
-    plotter.plot_grid(grid=interferometer.visibilities)
+    plotter.plot_grid(grid=interferometer.visibilities.in_grid)
 
 
 @plotters.set_include_and_plotter
@@ -151,7 +152,8 @@ def noise_map(interferometer, include=None, plotter=None):
     """
 
     plotter.plot_grid(
-        grid=interferometer.visibilities, color_array=interferometer.noise_map[:, 0]
+        grid=interferometer.visibilities.in_grid,
+        color_array=interferometer.noise_map.real,
     )
 
 

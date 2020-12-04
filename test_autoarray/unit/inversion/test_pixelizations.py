@@ -57,10 +57,8 @@ class TestVoronoiMagnification:
 
         pixelization_grid = pix.sparse_grid_from_grid(grid=sub_grid_7x7)
 
-        pixelization_grid_manual = (
-            grids.GridVoronoi.from_grid_and_unmasked_2d_grid_shape(
-                unmasked_sparse_shape=(3, 3), grid=sub_grid_7x7
-            )
+        pixelization_grid_manual = grids.GridVoronoi.from_grid_and_unmasked_2d_grid_shape(
+            unmasked_sparse_shape=(3, 3), grid=sub_grid_7x7
         )
 
         assert (pixelization_grid_manual == pixelization_grid).all()
