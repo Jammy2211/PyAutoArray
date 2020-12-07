@@ -172,3 +172,36 @@ class VectorFieldIrregular(np.ndarray):
         return VectorFieldIrregular(
             vectors=self[mask], grid=grids.GridIrregular(self.grid[mask])
         )
+
+    def vectors_within_annulus(
+        self, inner_radius: float, outer_radius: float, centre: typing.Tuple[float, float] = (0.0, 0.0)
+    ) -> "VectorFieldIrregular":
+        """
+        Returns a new `VectorFieldIrregular` object which has had all vectors outside of a circle of input radius
+        around an  input (y,x) centre removed.
+
+        Parameters
+        ----------
+        radius : float
+            The radius of the circle outside of which vectors are removed.
+        centre : float
+            The centre of the circle outside of which vectors are removed.
+
+        Returns
+        -------
+        VectorFieldIrregular
+            The vector field where all vectors outside of the input radius are removed.
+
+        """
+        squared_distances = self.grid.distances_from_coordinate(coordinate=centre)
+        mask = (inner_radius < squared_distances) & (squared_distances < outer_radius)
+        print(mask)
+
+        if np.all(mask == False):
+            raise exc.VectorFieldException(
+                "The input radius removed all vectors / points on the grid."
+            )
+
+        return VectorFieldIrregular(
+            vectors=self[mask], grid=grids.GridIrregular(self.grid[mask])
+        )
