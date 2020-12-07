@@ -195,7 +195,6 @@ class VectorFieldIrregular(np.ndarray):
         """
         squared_distances = self.grid.distances_from_coordinate(coordinate=centre)
         mask = (inner_radius < squared_distances) & (squared_distances < outer_radius)
-        print(mask)
 
         if np.all(mask == False):
             raise exc.VectorFieldException(
