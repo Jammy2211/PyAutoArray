@@ -33,39 +33,20 @@ from autoarray.structures import abstract_structure, arrays, grids, vector_field
 from autoarray import exc
 
 
-def load_setting(param, section, name, from_subplot_config):
-
-    if param is not None:
-        return param
-
-    if not from_subplot_config:
-        return load_figure_setting(section, name)
-    else:
-        return load_subplot_setting(section, name)
-
-
-def load_figure_setting(section, name):
-    return conf.instance["visualize"]["figures"][section][name]
-
-
-def load_subplot_setting(section, name):
-    return conf.instance["visualize"]["subplots"][section][name]
-
-
 class AbstractMatObj:
-    @property
-    def section(self):
-        raise NotImplementedError
-
     def load_setting(self, param, name, from_subplot_config):
 
         if param is not None:
             return param
 
         if not from_subplot_config:
-            return conf.instance["visualize"]["figures"][self.section][name]
+            return conf.instance["visualize"]["mat_objs"][self.__class__.__name__][
+                "figure"
+            ][name]
         else:
-            return conf.instance["visualize"]["subplots"][self.section][name]
+            return conf.instance["visualize"]["mat_objs"][self.__class__.__name__][
+                "subplot"
+            ][name]
 
 
 class Units(AbstractMatObj):
@@ -144,11 +125,8 @@ class Figure(AbstractMatObj):
 
         self.from_subplot_config = from_subplot_config
 
-        self.figsize = load_setting(
-            param=figsize,
-            section="figures",
-            name="figsize",
-            from_subplot_config=from_subplot_config,
+        self.figsize = self.load_setting(
+            param=figsize, name="figsize", from_subplot_config=from_subplot_config
         )
 
         if self.figsize == "auto":
@@ -156,11 +134,8 @@ class Figure(AbstractMatObj):
         elif isinstance(self.figsize, str):
             self.figsize = tuple(map(int, self.figsize[1:-1].split(",")))
 
-        self.aspect = load_setting(
-            param=aspect,
-            section="figures",
-            name="aspect",
-            from_subplot_config=from_subplot_config,
+        self.aspect = self.load_setting(
+            param=aspect, name="aspect", from_subplot_config=from_subplot_config
         )
 
     @classmethod
@@ -243,11 +218,8 @@ class ColorMap(AbstractMatObj):
 
         self.from_subplot_config = from_subplot_config
 
-        cmap = load_setting(
-            param=cmap,
-            section="colormap",
-            name="cmap",
-            from_subplot_config=from_subplot_config,
+        cmap = self.load_setting(
+            param=cmap, name="cmap", from_subplot_config=from_subplot_config
         )
 
         if module is not None:
@@ -263,35 +235,20 @@ class ColorMap(AbstractMatObj):
         except KeyError:
             self.cmap = cmap
 
-        self.norm = load_setting(
-            param=norm,
-            section="colormap",
-            name="norm",
-            from_subplot_config=from_subplot_config,
+        self.norm = self.load_setting(
+            param=norm, name="norm", from_subplot_config=from_subplot_config
         )
-        self.norm_min = load_setting(
-            param=norm_min,
-            section="colormap",
-            name="norm_min",
-            from_subplot_config=from_subplot_config,
+        self.norm_min = self.load_setting(
+            param=norm_min, name="norm_min", from_subplot_config=from_subplot_config
         )
-        self.norm_max = load_setting(
-            param=norm_max,
-            section="colormap",
-            name="norm_max",
-            from_subplot_config=from_subplot_config,
+        self.norm_max = self.load_setting(
+            param=norm_max, name="norm_max", from_subplot_config=from_subplot_config
         )
-        self.linthresh = load_setting(
-            param=linthresh,
-            section="colormap",
-            name="linthresh",
-            from_subplot_config=from_subplot_config,
+        self.linthresh = self.load_setting(
+            param=linthresh, name="linthresh", from_subplot_config=from_subplot_config
         )
-        self.linscale = load_setting(
-            param=linscale,
-            section="colormap",
-            name="linscale",
-            from_subplot_config=from_subplot_config,
+        self.linscale = self.load_setting(
+            param=linscale, name="linscale", from_subplot_config=from_subplot_config
         )
 
     @classmethod
@@ -392,23 +349,14 @@ class ColorBar(AbstractMatObj):
 
         self.from_subplot_config = from_subplot_config
 
-        self.ticksize = load_setting(
-            param=ticksize,
-            section="colorbar",
-            name="ticksize",
-            from_subplot_config=from_subplot_config,
+        self.ticksize = self.load_setting(
+            param=ticksize, name="ticksize", from_subplot_config=from_subplot_config
         )
-        self.fraction = load_setting(
-            param=fraction,
-            section="colorbar",
-            name="fraction",
-            from_subplot_config=from_subplot_config,
+        self.fraction = self.load_setting(
+            param=fraction, name="fraction", from_subplot_config=from_subplot_config
         )
-        self.pad = load_setting(
-            param=pad,
-            section="colorbar",
-            name="pad",
-            from_subplot_config=from_subplot_config,
+        self.pad = self.load_setting(
+            param=pad, name="pad", from_subplot_config=from_subplot_config
         )
 
         self.tick_values = tick_values
@@ -517,17 +465,11 @@ class Ticks(AbstractMatObj):
         """
         self.from_subplot_config = from_subplot_config
 
-        self.ysize = load_setting(
-            param=ysize,
-            section="ticks",
-            name="ysize",
-            from_subplot_config=from_subplot_config,
+        self.ysize = self.load_setting(
+            param=ysize, name="ysize", from_subplot_config=from_subplot_config
         )
-        self.xsize = load_setting(
-            param=xsize,
-            section="ticks",
-            name="xsize",
-            from_subplot_config=from_subplot_config,
+        self.xsize = self.load_setting(
+            param=xsize, name="xsize", from_subplot_config=from_subplot_config
         )
 
         self.y_manual = y_manual
@@ -703,23 +645,14 @@ class Labels(AbstractMatObj):
         self._yunits = yunits
         self._xunits = xunits
 
-        self.titlesize = load_setting(
-            param=titlesize,
-            section="labels",
-            name="titlesize",
-            from_subplot_config=from_subplot_config,
+        self.titlesize = self.load_setting(
+            param=titlesize, name="titlesize", from_subplot_config=from_subplot_config
         )
-        self.ysize = load_setting(
-            param=ysize,
-            section="labels",
-            name="ysize",
-            from_subplot_config=from_subplot_config,
+        self.ysize = self.load_setting(
+            param=ysize, name="ysize", from_subplot_config=from_subplot_config
         )
-        self.xsize = load_setting(
-            param=xsize,
-            section="labels",
-            name="xsize",
-            from_subplot_config=from_subplot_config,
+        self.xsize = self.load_setting(
+            param=xsize, name="xsize", from_subplot_config=from_subplot_config
         )
 
     @classmethod
@@ -943,17 +876,11 @@ class Legend(AbstractMatObj):
 
         self.from_subplot_config = from_subplot_config
 
-        self.include = load_setting(
-            param=include,
-            section="legend",
-            name="include",
-            from_subplot_config=from_subplot_config,
+        self.include = self.load_setting(
+            param=include, name="include", from_subplot_config=from_subplot_config
         )
-        self.fontsize = load_setting(
-            param=fontsize,
-            section="legend",
-            name="fontsize",
-            from_subplot_config=from_subplot_config,
+        self.fontsize = self.load_setting(
+            param=fontsize, name="fontsize", from_subplot_config=from_subplot_config
         )
 
     @classmethod
@@ -1099,23 +1026,14 @@ class Scatterer(AbstractMatObj):
         """
         self.from_subplot_config = from_subplot_config
 
-        self.size = load_setting(
-            param=size,
-            section=section,
-            name="size",
-            from_subplot_config=from_subplot_config,
+        self.size = self.load_setting(
+            param=size, name="size", from_subplot_config=from_subplot_config
         )
-        self.marker = load_setting(
-            param=marker,
-            section=section,
-            name="marker",
-            from_subplot_config=from_subplot_config,
+        self.marker = self.load_setting(
+            param=marker, name="marker", from_subplot_config=from_subplot_config
         )
-        self.colors = load_setting(
-            param=colors,
-            section=section,
-            name="colors",
-            from_subplot_config=from_subplot_config,
+        self.colors = self.load_setting(
+            param=colors, name="colors", from_subplot_config=from_subplot_config
         )
 
         self.colors = remove_spaces_and_commas_from_colors(colors=self.colors)
@@ -1238,7 +1156,6 @@ class OriginScatterer(Scatterer):
             size=size,
             marker=marker,
             colors=colors,
-            section="origin",
             from_subplot_config=from_subplot_config,
         )
 
@@ -1272,7 +1189,6 @@ class MaskScatterer(Scatterer):
             size=size,
             marker=marker,
             colors=colors,
-            section="mask",
             from_subplot_config=from_subplot_config,
         )
 
@@ -1306,7 +1222,6 @@ class BorderScatterer(Scatterer):
             size=size,
             marker=marker,
             colors=colors,
-            section="border",
             from_subplot_config=from_subplot_config,
         )
 
@@ -1339,7 +1254,6 @@ class GridScatterer(Scatterer):
             size=size,
             marker=marker,
             colors=colors,
-            section="grid",
             from_subplot_config=from_subplot_config,
         )
 
@@ -1373,7 +1287,6 @@ class PositionsScatterer(Scatterer):
             size=size,
             marker=marker,
             colors=colors,
-            section="positions",
             from_subplot_config=from_subplot_config,
         )
 
@@ -1408,7 +1321,6 @@ class IndexScatterer(Scatterer):
             size=size,
             marker=marker,
             colors=colors,
-            section="index",
             from_subplot_config=from_subplot_config,
         )
 
@@ -1442,7 +1354,6 @@ class PixelizationGridScatterer(Scatterer):
             size=size,
             marker=marker,
             colors=colors,
-            section="pixelization_grid",
             from_subplot_config=from_subplot_config,
         )
 
@@ -1463,56 +1374,31 @@ class VectorQuiverer(AbstractMatObj):
         angles=None,
         headwidth=None,
         alpha=None,
-        section=None,
         from_subplot_config=False,
     ):
 
-        if section is None:
-            section = "vector_quiverer"
-
         self.from_subplot_config = from_subplot_config
 
-        self.headlength = load_setting(
-            param=headlength,
-            section=section,
-            name="headlength",
-            from_subplot_config=from_subplot_config,
+        self.headlength = self.load_setting(
+            param=headlength, name="headlength", from_subplot_config=from_subplot_config
         )
-        self.pivot = load_setting(
-            param=pivot,
-            section=section,
-            name="pivot",
-            from_subplot_config=from_subplot_config,
+        self.pivot = self.load_setting(
+            param=pivot, name="pivot", from_subplot_config=from_subplot_config
         )
-        self.linewidth = load_setting(
-            param=linewidth,
-            section=section,
-            name="linewidth",
-            from_subplot_config=from_subplot_config,
+        self.linewidth = self.load_setting(
+            param=linewidth, name="linewidth", from_subplot_config=from_subplot_config
         )
-        self.units = load_setting(
-            param=units,
-            section=section,
-            name="units",
-            from_subplot_config=from_subplot_config,
+        self.units = self.load_setting(
+            param=units, name="units", from_subplot_config=from_subplot_config
         )
-        self.angles = load_setting(
-            param=angles,
-            section=section,
-            name="angles",
-            from_subplot_config=from_subplot_config,
+        self.angles = self.load_setting(
+            param=angles, name="angles", from_subplot_config=from_subplot_config
         )
-        self.headwidth = load_setting(
-            param=headwidth,
-            section=section,
-            name="headwidth",
-            from_subplot_config=from_subplot_config,
+        self.headwidth = self.load_setting(
+            param=headwidth, name="headwidth", from_subplot_config=from_subplot_config
         )
-        self.alpha = load_setting(
-            param=alpha,
-            section=section,
-            name="alpha",
-            from_subplot_config=from_subplot_config,
+        self.alpha = self.load_setting(
+            param=alpha, name="alpha", from_subplot_config=from_subplot_config
         )
 
     def quiver_vector_field(self, vector_field: vector_fields.VectorFieldIrregular):
@@ -1542,7 +1428,6 @@ class VectorQuiverer(AbstractMatObj):
         headwidth=None,
         alpha=None,
         cmap=None,
-        section=None,
     ):
         return VectorQuiverer(
             headlength=headlength,
@@ -1553,45 +1438,30 @@ class VectorQuiverer(AbstractMatObj):
             headwidth=headwidth,
             alpha=alpha,
             cmap=cmap,
-            section=section,
             from_subplot_config=True,
         )
 
 
 class Patcher(AbstractMatObj):
-    def __init__(
-        self, facecolor=None, edgecolor=None, section=None, from_subplot_config=False
-    ):
-
-        if section is None:
-            section = "patcher"
+    def __init__(self, facecolor=None, edgecolor=None, from_subplot_config=False):
 
         self.from_subplot_config = from_subplot_config
 
-        self.facecolor = load_setting(
-            param=facecolor,
-            section=section,
-            name="facecolor",
-            from_subplot_config=from_subplot_config,
+        self.facecolor = self.load_setting(
+            param=facecolor, name="facecolor", from_subplot_config=from_subplot_config
         )
 
         if self.facecolor is None:
             self.facecolor = "none"
 
-        self.edgecolor = load_setting(
-            param=edgecolor,
-            section=section,
-            name="edgecolor",
-            from_subplot_config=from_subplot_config,
+        self.edgecolor = self.load_setting(
+            param=edgecolor, name="edgecolor", from_subplot_config=from_subplot_config
         )
 
     @classmethod
-    def sub(cls, facecolor=None, edgecolor=None, section=None):
+    def sub(cls, facecolor=None, edgecolor=None):
         return Patcher(
-            facecolor=facecolor,
-            edgecolor=edgecolor,
-            section=section,
-            from_subplot_config=True,
+            facecolor=facecolor, edgecolor=edgecolor, from_subplot_config=True
         )
 
     def add_patches(self, patches):
@@ -1610,51 +1480,34 @@ class Liner(AbstractMatObj):
         style=None,
         colors=None,
         pointsize=None,
-        section=None,
         from_subplot_config=False,
     ):
 
-        if section is None:
-            section = "liner"
-
         self.from_subplot_config = from_subplot_config
 
-        self.width = load_setting(
-            param=width,
-            section=section,
-            name="width",
-            from_subplot_config=from_subplot_config,
+        self.width = self.load_setting(
+            param=width, name="width", from_subplot_config=from_subplot_config
         )
-        self.style = load_setting(
-            param=style,
-            section=section,
-            name="style",
-            from_subplot_config=from_subplot_config,
+        self.style = self.load_setting(
+            param=style, name="style", from_subplot_config=from_subplot_config
         )
-        self.colors = load_setting(
-            param=colors,
-            section=section,
-            name="colors",
-            from_subplot_config=from_subplot_config,
+        self.colors = self.load_setting(
+            param=colors, name="colors", from_subplot_config=from_subplot_config
         )
 
         self.colors = remove_spaces_and_commas_from_colors(colors=self.colors)
 
-        self.pointsize = load_setting(
-            param=pointsize,
-            section=section,
-            name="pointsize",
-            from_subplot_config=from_subplot_config,
+        self.pointsize = self.load_setting(
+            param=pointsize, name="pointsize", from_subplot_config=from_subplot_config
         )
 
     @classmethod
-    def sub(cls, width=None, style=None, colors=None, pointsize=None, section=None):
+    def sub(cls, width=None, style=None, colors=None, pointsize=None):
         return Liner(
             width=width,
             style=style,
             colors=colors,
             pointsize=pointsize,
-            section=section,
             from_subplot_config=True,
         )
 
@@ -1794,7 +1647,6 @@ class ParallelOverscanLiner(Liner):
             style=style,
             colors=colors,
             pointsize=pointsize,
-            section="parallel_overscan",
             from_subplot_config=from_subplot_config,
         )
 
@@ -1824,7 +1676,6 @@ class SerialPrescanLiner(Liner):
             style=style,
             colors=colors,
             pointsize=pointsize,
-            section="serial_prescan",
             from_subplot_config=from_subplot_config,
         )
 
@@ -1854,7 +1705,6 @@ class SerialOverscanLiner(Liner):
             style=style,
             colors=colors,
             pointsize=pointsize,
-            section="serial_overscan",
             from_subplot_config=from_subplot_config,
         )
 
@@ -1870,23 +1720,17 @@ class SerialOverscanLiner(Liner):
 
 
 class ArrayOverlayer(AbstractMatObj):
-    def __init__(self, alpha=None, section=None, from_subplot_config=False):
-
-        if section is None:
-            section = "array_overlayer"
+    def __init__(self, alpha=None, from_subplot_config=False):
 
         self.from_subplot_config = from_subplot_config
 
-        self.alpha = load_setting(
-            param=alpha,
-            section=section,
-            name="alpha",
-            from_subplot_config=from_subplot_config,
+        self.alpha = self.load_setting(
+            param=alpha, name="alpha", from_subplot_config=from_subplot_config
         )
 
     @classmethod
-    def sub(cls, alpha, section=None):
-        return ArrayOverlayer(alpha=alpha, section=section, from_subplot_config=True)
+    def sub(cls, alpha):
+        return ArrayOverlayer(alpha=alpha, from_subplot_config=True)
 
     def overlay_array(self, array_overlay, figure):
 
@@ -1908,23 +1752,14 @@ class VoronoiDrawer(AbstractMatObj):
 
         self.from_subplot_config = from_subplot_config
 
-        self.edgewidth = load_setting(
-            param=edgewidth,
-            section="voronoi_drawer",
-            name="edgewidth",
-            from_subplot_config=from_subplot_config,
+        self.edgewidth = self.load_setting(
+            param=edgewidth, name="edgewidth", from_subplot_config=from_subplot_config
         )
-        self.edgecolor = load_setting(
-            param=edgecolor,
-            section="voronoi_drawer",
-            name="edgecolor",
-            from_subplot_config=from_subplot_config,
+        self.edgecolor = self.load_setting(
+            param=edgecolor, name="edgecolor", from_subplot_config=from_subplot_config
         )
-        self.alpha = load_setting(
-            param=alpha,
-            section="voronoi_drawer",
-            name="alpha",
-            from_subplot_config=from_subplot_config,
+        self.alpha = self.load_setting(
+            param=alpha, name="alpha", from_subplot_config=from_subplot_config
         )
 
     @classmethod

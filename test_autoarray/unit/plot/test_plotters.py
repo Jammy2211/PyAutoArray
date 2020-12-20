@@ -58,7 +58,7 @@ class TestAbstractPlotterAttributes:
         plotter = aplt.Plotter()
 
         assert plotter.figure.figsize == (7, 7)
-        assert plotter.figure.aspect == "auto"
+        assert plotter.figure.aspect == "square"
 
         plotter = aplt.Plotter(figure=aplt.Figure(aspect="auto"))
 
