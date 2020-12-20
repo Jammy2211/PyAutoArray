@@ -169,9 +169,7 @@ class AbstractPlotter:
         self.liner = (
             liner
             if liner is not None
-            else mat_objs.Liner(
-                section="liner", from_subplot_config=from_subplot_config
-            )
+            else mat_objs.Liner(from_subplot_config=from_subplot_config)
         )
 
         self.vector_quiverer = (
