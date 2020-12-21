@@ -129,39 +129,29 @@ class TestAbstractPlotterAttributes:
 
         plotter = aplt.Plotter()
 
-        assert plotter.cb.ticksize == 1
-        assert plotter.cb.fraction == 3.0
-        assert plotter.cb.pad == 4.0
+        assert plotter.cb.kwargs["labelsize"] == 1
         assert plotter.cb.tick_values == None
         assert plotter.cb.tick_labels == None
 
         plotter = aplt.Plotter(
             cb=aplt.ColorBar(
-                ticksize=20,
-                fraction=0.001,
-                pad=10.0,
+                labelsize=20,
                 tick_values=(1.0, 2.0),
                 tick_labels=(3.0, 4.0),
             )
         )
 
-        assert plotter.cb.ticksize == 20
-        assert plotter.cb.fraction == 0.001
-        assert plotter.cb.pad == 10.0
+        assert plotter.cb.kwargs["labelsize"] == 20
         assert plotter.cb.tick_values == (1.0, 2.0)
         assert plotter.cb.tick_labels == (3.0, 4.0)
 
         sub_plotter = aplt.SubPlotter()
 
-        assert sub_plotter.cb.ticksize == 1
-        assert sub_plotter.cb.fraction == 3.0
-        assert sub_plotter.cb.pad == 4.0
+        assert sub_plotter.cb.kwargs["labelsize"]  == 1
 
-        sub_plotter = aplt.SubPlotter(cb=aplt.ColorBar.sub(fraction=0.001, pad=10.0))
+        sub_plotter = aplt.SubPlotter(cb=aplt.ColorBar.sub(labelsize=10))
 
-        assert sub_plotter.cb.ticksize == 1
-        assert sub_plotter.cb.fraction == 0.001
-        assert sub_plotter.cb.pad == 10.0
+        assert sub_plotter.cb.kwargs["labelsize"]  == 10
 
     def test__ticks__from_config_or_via_manual_input(self):
 
