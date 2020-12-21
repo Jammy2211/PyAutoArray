@@ -80,8 +80,8 @@ class TestAbstractPlotterAttributes:
 
         assert plotter.cmap.cmap == "jet"
         assert plotter.cmap.norm == "linear"
-        assert plotter.cmap.norm_min == None
-        assert plotter.cmap.norm_max == None
+        assert plotter.cmap.vmin == None
+        assert plotter.cmap.vmax == None
         assert plotter.cmap.linthresh == 1.0
         assert plotter.cmap.linscale == 2.0
 
@@ -89,8 +89,8 @@ class TestAbstractPlotterAttributes:
             cmap=aplt.ColorMap(
                 cmap="cold",
                 norm="log",
-                norm_min=0.1,
-                norm_max=1.0,
+                vmin=0.1,
+                vmax=1.0,
                 linthresh=1.5,
                 linscale=2.0,
             )
@@ -98,8 +98,8 @@ class TestAbstractPlotterAttributes:
 
         assert plotter.cmap.cmap == "cold"
         assert plotter.cmap.norm == "log"
-        assert plotter.cmap.norm_min == 0.1
-        assert plotter.cmap.norm_max == 1.0
+        assert plotter.cmap.vmin == 0.1
+        assert plotter.cmap.vmax == 1.0
         assert plotter.cmap.linthresh == 1.5
         assert plotter.cmap.linscale == 2.0
 
@@ -107,21 +107,21 @@ class TestAbstractPlotterAttributes:
 
         assert sub_plotter.cmap.cmap == "jet"
         assert sub_plotter.cmap.norm == "linear"
-        assert sub_plotter.cmap.norm_min == None
-        assert sub_plotter.cmap.norm_max == None
+        assert sub_plotter.cmap.vmin == None
+        assert sub_plotter.cmap.vmax == None
         assert sub_plotter.cmap.linthresh == 1.0
         assert sub_plotter.cmap.linscale == 2.0
 
         sub_plotter = aplt.SubPlotter(
             cmap=aplt.ColorMap.sub(
-                cmap="cold", norm="log", norm_min=0.1, norm_max=1.0, linscale=2.0
+                cmap="cold", norm="log", vmin=0.1, vmax=1.0, linscale=2.0
             )
         )
 
         assert sub_plotter.cmap.cmap == "cold"
         assert sub_plotter.cmap.norm == "log"
-        assert sub_plotter.cmap.norm_min == 0.1
-        assert sub_plotter.cmap.norm_max == 1.0
+        assert sub_plotter.cmap.vmin == 0.1
+        assert sub_plotter.cmap.vmax == 1.0
         assert sub_plotter.cmap.linthresh == 1.0
         assert sub_plotter.cmap.linscale == 2.0
 
@@ -147,11 +147,11 @@ class TestAbstractPlotterAttributes:
 
         sub_plotter = aplt.SubPlotter()
 
-        assert sub_plotter.cb.kwargs["labelsize"]  == 1
+        assert sub_plotter.cb.kwargs["labelsize"] == 1
 
         sub_plotter = aplt.SubPlotter(cb=aplt.ColorBar.sub(labelsize=10))
 
-        assert sub_plotter.cb.kwargs["labelsize"]  == 10
+        assert sub_plotter.cb.kwargs["labelsize"] == 10
 
     def test__ticks__from_config_or_via_manual_input(self):
 
@@ -1095,8 +1095,8 @@ class TestAbstractPlotterNew:
             cmap=aplt.ColorMap(
                 cmap="cold",
                 norm="log",
-                norm_min=0.1,
-                norm_max=1.0,
+                vmin=0.1,
+                vmax=1.0,
                 linthresh=1.5,
                 linscale=2.0,
             )
@@ -1104,33 +1104,33 @@ class TestAbstractPlotterNew:
 
         assert plotter.cmap.cmap == "cold"
         assert plotter.cmap.norm == "log"
-        assert plotter.cmap.norm_min == 0.1
-        assert plotter.cmap.norm_max == 1.0
+        assert plotter.cmap.vmin == 0.1
+        assert plotter.cmap.vmax == 1.0
         assert plotter.cmap.linthresh == 1.5
         assert plotter.cmap.linscale == 2.0
 
         plotter = plotter.plotter_with_new_cmap(
             cmap="jet",
             norm="linear",
-            norm_min=0.12,
-            norm_max=1.2,
+            vmin=0.12,
+            vmax=1.2,
             linthresh=1.2,
             linscale=2.2,
         )
 
         assert plotter.cmap.cmap == "jet"
         assert plotter.cmap.norm == "linear"
-        assert plotter.cmap.norm_min == 0.12
-        assert plotter.cmap.norm_max == 1.2
+        assert plotter.cmap.vmin == 0.12
+        assert plotter.cmap.vmax == 1.2
         assert plotter.cmap.linthresh == 1.2
         assert plotter.cmap.linscale == 2.2
 
-        plotter = plotter.plotter_with_new_cmap(cmap="sand", norm="log", norm_min=0.13)
+        plotter = plotter.plotter_with_new_cmap(cmap="sand", norm="log", vmin=0.13)
 
         assert plotter.cmap.cmap == "sand"
         assert plotter.cmap.norm == "log"
-        assert plotter.cmap.norm_min == 0.13
-        assert plotter.cmap.norm_max == 1.2
+        assert plotter.cmap.vmin == 0.13
+        assert plotter.cmap.vmax == 1.2
         assert plotter.cmap.linthresh == 1.2
         assert plotter.cmap.linscale == 2.2
 

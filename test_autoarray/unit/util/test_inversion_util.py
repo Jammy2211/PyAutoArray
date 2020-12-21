@@ -97,19 +97,23 @@ class TestDataVectorFromData:
         data_real = np.array([4.0, 1.0, 1.0, 16.0, 1.0, 1.0])
         noise_map_real = np.array([2.0, 1.0, 1.0, 4.0, 1.0, 1.0])
 
-        data_vector_real_via_blurred = aa.util.inversion.data_vector_via_blurred_mapping_matrix_from(
-            blurred_mapping_matrix=mapping_matrix,
-            image=data_real,
-            noise_map=noise_map_real,
+        data_vector_real_via_blurred = (
+            aa.util.inversion.data_vector_via_blurred_mapping_matrix_from(
+                blurred_mapping_matrix=mapping_matrix,
+                image=data_real,
+                noise_map=noise_map_real,
+            )
         )
 
         data_imag = np.array([4.0, 1.0, 1.0, 16.0, 1.0, 1.0])
         noise_map_imag = np.array([2.0, 1.0, 1.0, 4.0, 1.0, 1.0])
 
-        data_vector_imag_via_blurred = aa.util.inversion.data_vector_via_blurred_mapping_matrix_from(
-            blurred_mapping_matrix=mapping_matrix,
-            image=data_imag,
-            noise_map=noise_map_imag,
+        data_vector_imag_via_blurred = (
+            aa.util.inversion.data_vector_via_blurred_mapping_matrix_from(
+                blurred_mapping_matrix=mapping_matrix,
+                image=data_imag,
+                noise_map=noise_map_imag,
+            )
         )
 
         data_vector_complex_via_blurred = (
@@ -134,10 +138,12 @@ class TestDataVectorFromData:
             [2.0 + 2.0j, 1.0 + 1.0j, 1.0 + 1.0j, 4.0 + 4.0j, 1.0 + 1.0j, 1.0 + 1.0j]
         )
 
-        data_vector_via_transformed = aa.util.inversion.data_vector_via_transformed_mapping_matrix_from(
-            transformed_mapping_matrix=transformed_mapping_matrix,
-            visibilities=data,
-            noise_map=noise_map,
+        data_vector_via_transformed = (
+            aa.util.inversion.data_vector_via_transformed_mapping_matrix_from(
+                transformed_mapping_matrix=transformed_mapping_matrix,
+                visibilities=data,
+                noise_map=noise_map,
+            )
         )
 
         assert (data_vector_complex_via_blurred == data_vector_via_transformed).all()
@@ -405,10 +411,12 @@ class TestPreconditionerMatrix:
             ]
         )
 
-        preconditioner_matrix = aa.util.inversion.preconditioner_matrix_via_mapping_matrix_from(
-            mapping_matrix=mapping_matrix,
-            preconditioner_noise_normalization=1.0,
-            regularization_matrix=np.zeros((3, 3)),
+        preconditioner_matrix = (
+            aa.util.inversion.preconditioner_matrix_via_mapping_matrix_from(
+                mapping_matrix=mapping_matrix,
+                preconditioner_noise_normalization=1.0,
+                regularization_matrix=np.zeros((3, 3)),
+            )
         )
 
         assert (
@@ -416,10 +424,12 @@ class TestPreconditionerMatrix:
             == np.array([[2.0, 0.0, 0.0], [0.0, 2.0, 0.0], [0.0, 0.0, 2.0]])
         ).all()
 
-        preconditioner_matrix = aa.util.inversion.preconditioner_matrix_via_mapping_matrix_from(
-            mapping_matrix=mapping_matrix,
-            preconditioner_noise_normalization=2.0,
-            regularization_matrix=np.zeros((3, 3)),
+        preconditioner_matrix = (
+            aa.util.inversion.preconditioner_matrix_via_mapping_matrix_from(
+                mapping_matrix=mapping_matrix,
+                preconditioner_noise_normalization=2.0,
+                regularization_matrix=np.zeros((3, 3)),
+            )
         )
 
         assert (
@@ -431,10 +441,12 @@ class TestPreconditionerMatrix:
             [[1.0, 2.0, 3.0], [4.0, 5.0, 6.0], [7.0, 8.0, 9.0]]
         )
 
-        preconditioner_matrix = aa.util.inversion.preconditioner_matrix_via_mapping_matrix_from(
-            mapping_matrix=mapping_matrix,
-            preconditioner_noise_normalization=2.0,
-            regularization_matrix=regularization_matrix,
+        preconditioner_matrix = (
+            aa.util.inversion.preconditioner_matrix_via_mapping_matrix_from(
+                mapping_matrix=mapping_matrix,
+                preconditioner_noise_normalization=2.0,
+                regularization_matrix=regularization_matrix,
+            )
         )
 
         assert (

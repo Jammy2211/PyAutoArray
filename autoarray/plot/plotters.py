@@ -275,9 +275,9 @@ class AbstractPlotter:
         norm : str
             The normalization of the colormap used to plotters the image, specifically whether it is linear ('linear'), log \
             ('log') or a symmetric log normalization ('symmetric_log').
-        norm_min : float or None
+        vmin : float or None
             The minimum array value the colormap map spans (all values below this value are plotted the same color).
-        norm_max : float or None
+        vmax : float or None
             The maximum array value the colormap map spans (all values above this value are plotted the same color).
         linthresh : float
             For the 'symmetric_log' colormap normalization ,this specifies the range of values within which the colormap \
@@ -323,7 +323,7 @@ class AbstractPlotter:
             array=image, origin=(0.0, 0.0), mask=circular_mask,
             border=False, points=[[1.0, 1.0], [2.0, 2.0]], grid=None, as_subplot=False,
             unit_label='scaled', kpc_per_scaled=None, figsize=(7,7), aspect='auto',
-            cmap='jet', norm='linear, norm_min=None, norm_max=None, linthresh=None, linscale=None,
+            cmap='jet', norm='linear, vmin=None, vmax=None, linthresh=None, linscale=None,
             cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01, cb_tick_values=None, cb_tick_labels=None,
             title='Image', titlesize=16, xsize=16, ysize=16, xyticksize=16,
             mask_scatterer=10, border_pointsize=2, position_pointsize=10, grid_pointsize=10,
@@ -363,7 +363,7 @@ class AbstractPlotter:
         plt.imshow(
             X=array.in_2d,
             aspect=aspect,
-            cmap=self.cmap.cmap,
+            cmap=self.cmap.kwargs["cmap"],
             norm=norm_scale,
             extent=extent,
         )
@@ -480,9 +480,9 @@ class AbstractPlotter:
         norm : str
             The normalization of the colormap used to plotters the image, specifically whether it is linear ('linear'), log \
             ('log') or a symmetric log normalization ('symmetric_log').
-        norm_min : float or None
+        vmin : float or None
             The minimum array value the colormap map spans (all values below this value are plotted the same color).
-        norm_max : float or None
+        vmax : float or None
             The maximum array value the colormap map spans (all values above this value are plotted the same color).
         linthresh : float
             For the 'symmetric_log' colormap normalization ,this specifies the range of values within which the colormap \
@@ -528,7 +528,7 @@ class AbstractPlotter:
             array=image, origin=(0.0, 0.0), mask=circular_mask,
             border=False, points=[[1.0, 1.0], [2.0, 2.0]], grid=None, as_subplot=False,
             unit_label='scaled', kpc_per_scaled=None, figsize=(7,7), aspect='auto',
-            cmap='jet', norm='linear, norm_min=None, norm_max=None, linthresh=None, linscale=None,
+            cmap='jet', norm='linear, vmin=None, vmax=None, linthresh=None, linscale=None,
             cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01, cb_tick_values=None, cb_tick_labels=None,
             title='Image', titlesize=16, xsize=16, ysize=16, xyticksize=16,
             mask_scatterer=10, border_pointsize=2, position_pointsize=10, grid_pointsize=10,
@@ -1030,8 +1030,8 @@ class AbstractPlotter:
         self,
         cmap=None,
         norm=None,
-        norm_max=None,
-        norm_min=None,
+        vmax=None,
+        vmin=None,
         linthresh=None,
         linscale=None,
     ):
@@ -1040,8 +1040,8 @@ class AbstractPlotter:
 
         plotter.cmap.cmap = cmap if cmap is not None else self.cmap.cmap
         plotter.cmap.norm = norm if norm is not None else self.cmap.norm
-        plotter.cmap.norm_max = norm_max if norm_max is not None else self.cmap.norm_max
-        plotter.cmap.norm_min = norm_min if norm_min is not None else self.cmap.norm_min
+        plotter.cmap.vmax = vmax if vmax is not None else self.cmap.vmax
+        plotter.cmap.vmin = vmin if vmin is not None else self.cmap.vmin
         plotter.cmap.linthresh = (
             linthresh if linthresh is not None else self.cmap.linthresh
         )

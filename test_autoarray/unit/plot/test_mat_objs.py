@@ -55,9 +55,9 @@ class TestFigure:
 
 
 class TestColorMap:
-    def test__norm_from_array__uses_input_norm_min_and_max_if_input(self):
+    def test__norm_from_array__uses_input_vmin_and_max_if_input(self):
 
-        cmap = aplt.ColorMap(norm_min=0.0, norm_max=1.0, norm="linear")
+        cmap = aplt.ColorMap(vmin=0.0, vmax=1.0, norm="linear")
 
         norm = cmap.norm_from_array(array=None)
 
@@ -65,7 +65,7 @@ class TestColorMap:
         assert norm.vmin == 0.0
         assert norm.vmax == 1.0
 
-        cmap = aplt.ColorMap(norm_min=0.0, norm_max=1.0, norm="log")
+        cmap = aplt.ColorMap(vmin=0.0, vmax=1.0, norm="log")
 
         norm = cmap.norm_from_array(array=None)
 
@@ -74,8 +74,8 @@ class TestColorMap:
         assert norm.vmax == 1.0
 
         cmap = aplt.ColorMap(
-            norm_min=0.0,
-            norm_max=1.0,
+            vmin=0.0,
+            vmax=1.0,
             linthresh=2.0,
             linscale=3.0,
             norm="symmetric_log",
@@ -88,14 +88,14 @@ class TestColorMap:
         assert norm.vmax == 1.0
         assert norm.linthresh == 2.0
 
-    def test__norm_from_array__uses_array_to_get_norm_min_and_max_if_no_manual_input(
+    def test__norm_from_array__uses_array_to_get_vmin_and_max_if_no_manual_input(
         self,
     ):
 
         array = aa.Array.ones(shape_2d=(2, 2), pixel_scales=1.0)
         array[0] = 0.0
 
-        cmap = aplt.ColorMap(norm_min=None, norm_max=None, norm="linear")
+        cmap = aplt.ColorMap(vmin=None, vmax=None, norm="linear")
 
         norm = cmap.norm_from_array(array=array)
 
@@ -103,7 +103,7 @@ class TestColorMap:
         assert norm.vmin == 0.0
         assert norm.vmax == 1.0
 
-        cmap = aplt.ColorMap(norm_min=None, norm_max=None, norm="log")
+        cmap = aplt.ColorMap(vmin=None, vmax=None, norm="log")
 
         norm = cmap.norm_from_array(array=array)
 
@@ -112,8 +112,8 @@ class TestColorMap:
         assert norm.vmax == 1.0
 
         cmap = aplt.ColorMap(
-            norm_min=None,
-            norm_max=None,
+            vmin=None,
+            vmax=None,
             linthresh=2.0,
             linscale=3.0,
             norm="symmetric_log",
