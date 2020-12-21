@@ -75,6 +75,20 @@ class AbstractMatObj:
                 "subplot"
             ][name]
 
+    def kwargs_of_method(self, method_name, cls_name=None):
+
+        if cls_name is None:
+            cls_name = self.__class__.__name__
+
+        args = conf.instance["visualize"]["mat_objs"][cls_name][
+            "args"
+        ][method_name]
+
+        args = args.replace(" ", "")
+        args = args.split(",")
+
+        return {key: self.kwargs[key] for key in args if key in self.kwargs}
+
 
 class Units(AbstractMatObj):
     def __init__(
@@ -350,20 +364,19 @@ class ColorBar(AbstractMatObj):
         **kwargs
     ):
         """
-        The settings used to set up the Matplotlib Colorbar.
+        The settings used to set up the Colorbar.
 
-        This object wraps the following Matplotlib methods:
+        This object wraps the following Matplotlib method:
 
-        - plt.colorbar: https://matplotlib.org/3.1.1/api/_as_gen/matplotlib.pyplot.colorbar.html
+         plt.colorbar: https://matplotlib.org/3.1.1/api/_as_gen/matplotlib.pyplot.colorbar.html
+
+        The colorbar object `cb` that is created is also customized using the following methods:
+
+         cb.set_yticklabels: https://matplotlib.org/3.3.3/api/_as_gen/matplotlib.axes.Axes.set_yticklabels.html
+         cb.tick_params: https://matplotlib.org/3.1.1/api/_as_gen/matplotlib.axes.Axes.tick_params.html
 
         Parameters
         ----------
-        ticksize : int
-            The font size of the colorbar ticks.
-        fraction : float
-            The fraction of the figure the colorbar occupies (equivalent to plt.colorbar(fraction=fraction).
-        pad : float
-            The padding around the colorbar in the figure (equivalent to plt.colorbar(pad=pad).
         tick_labels : [float]
             Manually override the colorbar tick labels to display the labels as the input list of float.
         tick_values : [float]
@@ -374,16 +387,9 @@ class ColorBar(AbstractMatObj):
 
         super().__init__(from_subplot_config=from_subplot_config, kwargs=kwargs)
 
-        colorbar_args = conf.instance["visualize"]["mat_objs"][self.__class__.__name__][
-            "args"
-        ]["colorbar"]
-
-        colorbar_args = colorbar_args.replace(" ", "")
-        colorbar_args = colorbar_args.split(",")
-
-        self.kwargs_colorbar = { key : self.kwargs[key] for key in colorbar_args }
-
-        print(self.kwargs_colorbar)
+        self.kwargs_colorbar = self.kwargs_of_method(method_name="colorbar")
+        self.kwargs_set_yticklabels = self.kwargs_of_method(method_name="set_yticklabels", cls_name="Ticks")
+        self.kwargs_tick_params = self.kwargs_of_method(method_name="tick_params", cls_name="Ticks")
 
         self.tick_values = tick_values
         self.tick_labels = tick_labels
@@ -409,19 +415,19 @@ class ColorBar(AbstractMatObj):
         """
 
         if self.tick_values is None and self.tick_labels is None:
-            cb = plt.colorbar(**self.kwargs)
+            cb = plt.colorbar(**self.kwargs_colorbar)
         elif self.tick_values is not None and self.tick_labels is not None:
             cb = plt.colorbar(
-                ticks=self.tick_values, **self.kwargs
+                ticks=self.tick_values, **self.kwargs_colorbar
             )
-            cb.ax.set_yticklabels(labels=self.tick_labels, **self.kwargs)
+            cb.ax.set_yticklabels(labels=self.tick_labels, **self.kwargs_set_yticklabels)
         else:
             raise exc.PlottingException(
                 "Only 1 entry of tick_values or tick_labels was input. You must either supply"
                 "both the values and labels, or neither."
             )
 
-        cb.ax.tick_params(**self.kwargs)
+        cb.ax.tick_params(**self.kwargs_tick_params)
 
     def set_with_values(self, cmap: str, color_values: np.ndarray):
         """
