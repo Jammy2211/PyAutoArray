@@ -140,52 +140,41 @@ class Units(AbstractMatObj):
 class Figure(AbstractMatObj):
     def __init__(
         self,
-        figsize: typing.Tuple[float, float] = None,
-        aspect: typing.Union[float, str] = None,
         from_subplot_config: bool = False,
+        **kwargs
     ):
         """
         The settings used to set up the Matplotlib Figure before plotting.
 
         This object wraps the following Matplotlib methods:
 
-        - plt.figure: https://matplotlib.org/3.1.0/api/_as_gen/matplotlib.pyplot.figure.html
+        - plt.figure: https://matplotlib.org/3.3.2/api/_as_gen/matplotlib.pyplot.figure.html
         - plt.close()
 
         It also controls the aspect ratio of the figure plotted.
 
         Parameters
         ----------
-        figsize : (float, float)
-            Width, height in inches.
-        aspect : float or str
-            The aspect ratio of the figure.
         from_subplot_config : bool
             If True, load unspecified settings from the figures.ini visualization config, else use subplots.ini.
         """
 
-        self.from_subplot_config = from_subplot_config
+        super().__init__(from_subplot_config=from_subplot_config, kwargs=kwargs)
 
-        self.figsize = self.load_setting(
-            param=figsize, name="figsize", from_subplot_config=from_subplot_config
-        )
+        self.kwargs_figure = self.kwargs_of_method(method_name="figure")
 
-        if self.figsize == "auto":
-            self.figsize = None
-        elif isinstance(self.figsize, str):
-            self.figsize = tuple(map(int, self.figsize[1:-1].split(",")))
+        if self.kwargs_figure["figsize"] == "auto":
+            self.kwargs_figure["figsize"] = None
+        elif isinstance(self.kwargs_figure["figsize"], str):
+            self.kwargs_figure["figsize"] = tuple(map(int, self.kwargs_figure["figsize"][1:-1].split(",")))
 
-        self.aspect = self.load_setting(
-            param=aspect, name="aspect", from_subplot_config=from_subplot_config
-        )
+        self.kwargs_imshow = self.kwargs_of_method(method_name="imshow")
 
     @classmethod
     def sub(
         cls,
-        figsize: typing.Union[typing.Tuple[float, float]] = None,
-        aspect: float or str = None,
     ):
-        return Figure(figsize=figsize, aspect=aspect, from_subplot_config=True)
+        return Figure(from_subplot_config=True)
 
     def aspect_from_shape_2d(self, shape_2d: typing.Union[typing.Tuple[int, int]]):
         """
@@ -198,16 +187,16 @@ class Figure(AbstractMatObj):
         shape_2d : (int, int)
             The two dimensional shape of an `Array` that is to be plotted.
         """
-        if isinstance(self.aspect, str):
-            if self.aspect in "square":
+        if isinstance(self.kwargs["aspect"], str):
+            if self.kwargs["aspect"] in "square":
                 return float(shape_2d[1]) / float(shape_2d[0])
 
-        return self.aspect
+        return self.kwargs["aspect"]
 
     def open(self):
         """Wraps the Matplotlib method 'plt.figure' for opening a figure."""
         if not plt.fignum_exists(num=1):
-            plt.figure(figsize=self.figsize)
+            plt.figure(**self.kwargs_figure)
 
     def close(self):
         """Wraps the Matplotlib method 'plt.close' for closing a figure."""
