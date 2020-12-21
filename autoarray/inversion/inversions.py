@@ -550,8 +550,10 @@ class InversionInterferometerMatrix(
         settings=SettingsInversion(),
     ):
 
-        transformed_mapping_matrix = transformer.transformed_mapping_matrix_from_mapping_matrix(
-            mapping_matrix=mapper.mapping_matrix
+        transformed_mapping_matrix = (
+            transformer.transformed_mapping_matrix_from_mapping_matrix(
+                mapping_matrix=mapper.mapping_matrix
+            )
         )
 
         data_vector = inversion_util.data_vector_via_transformed_mapping_matrix_from(
@@ -577,12 +579,14 @@ class InversionInterferometerMatrix(
 
         if settings.use_preconditioner:
 
-            preconditioner_matrix = inversion_util.preconditioner_matrix_via_mapping_matrix_from(
-                mapping_matrix=mapper.mapping_matrix,
-                regularization_matrix=regularization_matrix,
-                preconditioner_noise_normalization=np.sum(
-                    (1.0 / noise_map.real ** 2) + (1.0 / noise_map.imag ** 2)
-                ),
+            preconditioner_matrix = (
+                inversion_util.preconditioner_matrix_via_mapping_matrix_from(
+                    mapping_matrix=mapper.mapping_matrix,
+                    regularization_matrix=regularization_matrix,
+                    preconditioner_noise_normalization=np.sum(
+                        (1.0 / noise_map.real ** 2) + (1.0 / noise_map.imag ** 2)
+                    ),
+                )
             )
 
             preconditioner_inv = np.linalg.inv(preconditioner_matrix)
@@ -722,12 +726,14 @@ class InversionInterferometerLinearOperator(AbstractInversionInterferometer):
             regularization_matrix=regularization_matrix, dtype="float64"
         )
 
-        preconditioner_matrix = inversion_util.preconditioner_matrix_via_mapping_matrix_from(
-            mapping_matrix=mapper.mapping_matrix,
-            regularization_matrix=regularization_matrix,
-            preconditioner_noise_normalization=np.sum(
-                (1.0 / noise_map.real ** 2) + (1.0 / noise_map.imag ** 2)
-            ),
+        preconditioner_matrix = (
+            inversion_util.preconditioner_matrix_via_mapping_matrix_from(
+                mapping_matrix=mapper.mapping_matrix,
+                regularization_matrix=regularization_matrix,
+                preconditioner_noise_normalization=np.sum(
+                    (1.0 / noise_map.real ** 2) + (1.0 / noise_map.imag ** 2)
+                ),
+            )
         )
 
         log_det_curvature_reg_matrix_term = 2.0 * np.sum(

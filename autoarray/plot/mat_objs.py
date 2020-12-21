@@ -41,23 +41,23 @@ import functools
 #
 #     return inner
 
-class AbstractMatObj:
 
+class AbstractMatObj:
     def __init__(self, from_subplot_config, kwargs):
 
         self.from_subplot_config = from_subplot_config
 
         if not from_subplot_config:
 
-            config_dict = conf.instance["visualize"]["mat_objs"][self.__class__.__name__][
-                "figure"
-            ]._dict
+            config_dict = conf.instance["visualize"]["mat_objs"][
+                self.__class__.__name__
+            ]["figure"]._dict
 
         else:
 
-            config_dict = conf.instance["visualize"]["mat_objs"][self.__class__.__name__][
-                "subplot"
-            ]._dict
+            config_dict = conf.instance["visualize"]["mat_objs"][
+                self.__class__.__name__
+            ]["subplot"]._dict
 
         self.kwargs = {**config_dict, **kwargs}
 
@@ -80,9 +80,7 @@ class AbstractMatObj:
         if cls_name is None:
             cls_name = self.__class__.__name__
 
-        args = conf.instance["visualize"]["mat_objs"][cls_name][
-            "args"
-        ][method_name]
+        args = conf.instance["visualize"]["mat_objs"][cls_name]["args"][method_name]
 
         args = args.replace(" ", "")
         args = args.split(",")
@@ -138,18 +136,14 @@ class Units(AbstractMatObj):
 
 
 class Figure(AbstractMatObj):
-    def __init__(
-        self,
-        from_subplot_config: bool = False,
-        **kwargs
-    ):
+    def __init__(self, from_subplot_config: bool = False, **kwargs):
         """
         The settings used to set up the Matplotlib Figure before plotting.
 
         This object wraps the following Matplotlib methods:
 
         - plt.figure: https://matplotlib.org/3.3.2/api/_as_gen/matplotlib.pyplot.figure.html
-        - plt.close()
+        - plt.close: https://matplotlib.org/3.3.2/api/_as_gen/matplotlib.pyplot.close.html
 
         It also controls the aspect ratio of the figure plotted.
 
@@ -166,7 +160,9 @@ class Figure(AbstractMatObj):
         if self.kwargs_figure["figsize"] == "auto":
             self.kwargs_figure["figsize"] = None
         elif isinstance(self.kwargs_figure["figsize"], str):
-            self.kwargs_figure["figsize"] = tuple(map(int, self.kwargs_figure["figsize"][1:-1].split(",")))
+            self.kwargs_figure["figsize"] = tuple(
+                map(int, self.kwargs_figure["figsize"][1:-1].split(","))
+            )
 
         self.kwargs_imshow = self.kwargs_of_method(method_name="imshow")
 
@@ -205,52 +201,29 @@ class Figure(AbstractMatObj):
 
 
 class ColorMap(AbstractMatObj):
-    def __init__(
-        self,
-        module=None,
-        cmap: str = None,
-        norm: str = None,
-        norm_max: float = None,
-        norm_min: float = None,
-        linthresh: float = None,
-        linscale: float = None,
-        from_subplot_config: bool = False,
-    ):
+    def __init__(self, module=None, from_subplot_config: bool = False, **kwargs):
         """
         The settings used to set up the Matplotlib colormap and its normalization.
 
         This object wraps the following Matplotlib methods:
 
-        - colors.Linear: https://matplotlib.org/3.3.1/tutorials/colors/colormaps.html
-        - colors.LogNorm: https://matplotlib.org/3.1.1/tutorials/colors/colormapnorms.html
-        - colors.SymLogNorm: https://matplotlib.org/3.3.0/api/_as_gen/matplotlib.colors.SymLogNorm.html
+        - colors.Linear: https://matplotlib.org/3.3.2/tutorials/colors/colormaps.html
+        - colors.LogNorm: https://matplotlib.org/3.3.2/tutorials/colors/colormapnorms.html
+        - colors.SymLogNorm: https://matplotlib.org/3.3.2/api/_as_gen/matplotlib.colors.SymLogNorm.html
+
+        The cmap that is created is passed into various Matplotlib methods, most notably imshow:
+
+         https://matplotlib.org/3.3.2/api/_as_gen/matplotlib.pyplot.imshow.html
 
         Parameters
         ----------
-        cmap : str
-            The colormap used to map normalized data values to RGBA colors (see
-            https://matplotlib.org/3.3.1/api/cm_api.html).
-        norm : str
-            The Normalize object applied to the colormap (linear / log / symmetric_log)
-        norm_max : float
-            The maximum value of the normalization range, such that all values on a plotted `Array` above this value
-            are the same color.
-        norm_min : float
-            The minimum value of the normalization range, such that all values on a plotted `Array` below this value
-            are the same color.
-        linthresh : float
-            The range within which the plot is linear for a symmetric_log Normalization.
-        linscale : float
-            This allows the linear range (-linthresh to linthresh) to be stretched relative to the logarithmic range.
         from_subplot_config : bool
             If True, load unspecified settings from the figures.ini visualization config, else use subplots.ini.
         """
 
-        self.from_subplot_config = from_subplot_config
+        super().__init__(from_subplot_config=from_subplot_config, kwargs=kwargs)
 
-        cmap = self.load_setting(
-            param=cmap, name="cmap", from_subplot_config=from_subplot_config
-        )
+        self.kwargs_colors = self.kwargs_of_method(method_name="colors")
 
         if module is not None:
 
@@ -260,44 +233,20 @@ class ColorMap(AbstractMatObj):
             except configparser.NoOptionError:
                 cmap = conf.instance["visualize"]["general"]["colormaps"]["default"]
 
-        try:
-            self.cmap = colorcet.cm[cmap]
-        except KeyError:
-            self.cmap = cmap
+        else:
 
-        self.norm = self.load_setting(
-            param=norm, name="norm", from_subplot_config=from_subplot_config
-        )
-        self.norm_min = self.load_setting(
-            param=norm_min, name="norm_min", from_subplot_config=from_subplot_config
-        )
-        self.norm_max = self.load_setting(
-            param=norm_max, name="norm_max", from_subplot_config=from_subplot_config
-        )
-        self.linthresh = self.load_setting(
-            param=linthresh, name="linthresh", from_subplot_config=from_subplot_config
-        )
-        self.linscale = self.load_setting(
-            param=linscale, name="linscale", from_subplot_config=from_subplot_config
-        )
+            cmap = self.kwargs["cmap"]
+
+        try:
+            self.kwargs["cmap"] = colorcet.cm[cmap]
+        except KeyError:
+            pass
 
     @classmethod
     def sub(
         cls,
-        cmap: str = None,
-        norm: str = None,
-        norm_max: float = None,
-        norm_min: float = None,
-        linthresh: float = None,
-        linscale: float = None,
     ):
         return ColorMap(
-            cmap=cmap,
-            norm=norm,
-            norm_min=norm_min,
-            norm_max=norm_max,
-            linthresh=linthresh,
-            linscale=linscale,
             from_subplot_config=True,
         )
 
@@ -306,7 +255,7 @@ class ColorMap(AbstractMatObj):
         Returns the `Normalization` object which scales of the colormap, using the input min / max normalization \
         values.
 
-        If norm_min / norm_max are not supplied, the minimum / maximum values of the array of data_type are used.
+        If vmin / vmax are not supplied, the minimum / maximum values of the array of data_type are used.
 
         Parameters
         -----------
@@ -314,28 +263,28 @@ class ColorMap(AbstractMatObj):
             The 2D array of data_type which is plotted.
         """
 
-        if self.norm_min is None:
-            norm_min = array.min()
+        if self.kwargs["vmin"] is None:
+            vmin = array.min()
         else:
-            norm_min = self.norm_min
+            vmin = self.kwargs_colors["vmin"]
 
-        if self.norm_max is None:
-            norm_max = array.max()
+        if self.kwargs["vmax"] is None:
+            vmax = array.max()
         else:
-            norm_max = self.norm_max
+            vmax = self.kwargs_colors["vmax"]
 
-        if self.norm in "linear":
-            return colors.Normalize(vmin=norm_min, vmax=norm_max)
-        elif self.norm in "log":
-            if norm_min == 0.0:
-                norm_min = 1.0e-4
-            return colors.LogNorm(vmin=norm_min, vmax=norm_max)
-        elif self.norm in "symmetric_log":
+        if self.kwargs["norm"] in "linear":
+            return colors.Normalize(vmin=vmin, vmax=vmax)
+        elif self.kwargs["norm"] in "log":
+            if vmin == 0.0:
+                vmin = 1.0e-4
+            return colors.LogNorm(vmin=vmin, vmax=vmax)
+        elif self.kwargs["norm"] in "symmetric_log":
             return colors.SymLogNorm(
-                linthresh=self.linthresh,
-                linscale=self.linscale,
-                vmin=norm_min,
-                vmax=norm_max,
+                vmin=vmin,
+                vmax=vmax,
+                linthresh=self.kwargs_colors["linthresh"],
+                linscale=self.kwargs_colors["linscale"],
             )
         else:
             raise exc.PlottingException(
@@ -350,7 +299,7 @@ class ColorBar(AbstractMatObj):
         tick_labels: typing.Union[typing.List[float]] = None,
         tick_values: typing.Union[typing.List[float]] = None,
         from_subplot_config: bool = False,
-        **kwargs
+        **kwargs,
     ):
         """
         The settings used to set up the Colorbar.
@@ -377,8 +326,12 @@ class ColorBar(AbstractMatObj):
         super().__init__(from_subplot_config=from_subplot_config, kwargs=kwargs)
 
         self.kwargs_colorbar = self.kwargs_of_method(method_name="colorbar")
-        self.kwargs_set_yticklabels = self.kwargs_of_method(method_name="set_yticklabels", cls_name="Ticks")
-        self.kwargs_tick_params = self.kwargs_of_method(method_name="tick_params", cls_name="Ticks")
+        self.kwargs_set_yticklabels = self.kwargs_of_method(
+            method_name="set_yticklabels", cls_name="Ticks"
+        )
+        self.kwargs_tick_params = self.kwargs_of_method(
+            method_name="tick_params", cls_name="Ticks"
+        )
 
         self.tick_values = tick_values
         self.tick_labels = tick_labels
@@ -388,13 +341,13 @@ class ColorBar(AbstractMatObj):
         cls,
         tick_labels: typing.Union[typing.List[float]] = None,
         tick_values: typing.Union[typing.List[float]] = None,
-        **kwargs
+        **kwargs,
     ):
         return ColorBar(
             tick_values=tick_values,
             tick_labels=tick_labels,
             from_subplot_config=True,
-            **kwargs
+            **kwargs,
         )
 
     def set(self):
@@ -406,10 +359,10 @@ class ColorBar(AbstractMatObj):
         if self.tick_values is None and self.tick_labels is None:
             cb = plt.colorbar(**self.kwargs_colorbar)
         elif self.tick_values is not None and self.tick_labels is not None:
-            cb = plt.colorbar(
-                ticks=self.tick_values, **self.kwargs_colorbar
+            cb = plt.colorbar(ticks=self.tick_values, **self.kwargs_colorbar)
+            cb.ax.set_yticklabels(
+                labels=self.tick_labels, **self.kwargs_set_yticklabels
             )
-            cb.ax.set_yticklabels(labels=self.tick_labels, **self.kwargs_set_yticklabels)
         else:
             raise exc.PlottingException(
                 "Only 1 entry of tick_values or tick_labels was input. You must either supply"
@@ -440,11 +393,7 @@ class ColorBar(AbstractMatObj):
         if self.tick_values is None and self.tick_labels is None:
             plt.colorbar(mappable=cax, **self.kwargs)
         elif self.tick_values is not None and self.tick_labels is not None:
-            cb = plt.colorbar(
-                mappable=cax,
-                ticks=self.tick_values,
-                **self.kwargs
-            )
+            cb = plt.colorbar(mappable=cax, ticks=self.tick_values, **self.kwargs)
             cb.ax.set_yticklabels(self.tick_labels)
 
 
