@@ -32,8 +32,35 @@ import typing
 from autoarray.structures import abstract_structure, arrays, grids, vector_fields
 from autoarray import exc
 
+import inspect
+import functools
+
+# def ignore_unmatched_kwargs(func):
+#
+#
+#
+#     return inner
 
 class AbstractMatObj:
+
+    def __init__(self, from_subplot_config, kwargs):
+
+        self.from_subplot_config = from_subplot_config
+
+        if not from_subplot_config:
+
+            config_dict = conf.instance["visualize"]["mat_objs"][self.__class__.__name__][
+                "figure"
+            ]._dict
+
+        else:
+
+            config_dict = conf.instance["visualize"]["mat_objs"][self.__class__.__name__][
+                "subplot"
+            ]._dict
+
+        self.kwargs = {**config_dict, **kwargs}
+
     def load_setting(self, param, name, from_subplot_config):
 
         if param is not None:
@@ -317,12 +344,10 @@ class ColorMap(AbstractMatObj):
 class ColorBar(AbstractMatObj):
     def __init__(
         self,
-        ticksize: int = None,
-        fraction: float = None,
-        pad: float = None,
         tick_labels: typing.Union[typing.List[float]] = None,
         tick_values: typing.Union[typing.List[float]] = None,
         from_subplot_config: bool = False,
+        **kwargs
     ):
         """
         The settings used to set up the Matplotlib Colorbar.
@@ -347,17 +372,18 @@ class ColorBar(AbstractMatObj):
             If True, load unspecified settings from the figures.ini visualization config, else use subplots.ini.
         """
 
-        self.from_subplot_config = from_subplot_config
+        super().__init__(from_subplot_config=from_subplot_config, kwargs=kwargs)
 
-        self.ticksize = self.load_setting(
-            param=ticksize, name="ticksize", from_subplot_config=from_subplot_config
-        )
-        self.fraction = self.load_setting(
-            param=fraction, name="fraction", from_subplot_config=from_subplot_config
-        )
-        self.pad = self.load_setting(
-            param=pad, name="pad", from_subplot_config=from_subplot_config
-        )
+        colorbar_args = conf.instance["visualize"]["mat_objs"][self.__class__.__name__][
+            "args"
+        ]["colorbar"]
+
+        colorbar_args = colorbar_args.replace(" ", "")
+        colorbar_args = colorbar_args.split(",")
+
+        self.kwargs_colorbar = { key : self.kwargs[key] for key in colorbar_args }
+
+        print(self.kwargs_colorbar)
 
         self.tick_values = tick_values
         self.tick_labels = tick_labels
@@ -365,19 +391,15 @@ class ColorBar(AbstractMatObj):
     @classmethod
     def sub(
         cls,
-        ticksize: int = None,
-        fraction: float = None,
-        pad: float = None,
         tick_labels: typing.Union[typing.List[float]] = None,
         tick_values: typing.Union[typing.List[float]] = None,
+        **kwargs
     ):
         return ColorBar(
-            ticksize=ticksize,
-            fraction=fraction,
-            pad=pad,
             tick_values=tick_values,
             tick_labels=tick_labels,
             from_subplot_config=True,
+            **kwargs
         )
 
     def set(self):
@@ -387,19 +409,19 @@ class ColorBar(AbstractMatObj):
         """
 
         if self.tick_values is None and self.tick_labels is None:
-            cb = plt.colorbar(fraction=self.fraction, pad=self.pad)
+            cb = plt.colorbar(**self.kwargs)
         elif self.tick_values is not None and self.tick_labels is not None:
             cb = plt.colorbar(
-                fraction=self.fraction, pad=self.pad, ticks=self.tick_values
+                ticks=self.tick_values, **self.kwargs
             )
-            cb.ax.set_yticklabels(labels=self.tick_labels)
+            cb.ax.set_yticklabels(labels=self.tick_labels, **self.kwargs)
         else:
             raise exc.PlottingException(
                 "Only 1 entry of tick_values or tick_labels was input. You must either supply"
                 "both the values and labels, or neither."
             )
 
-        cb.ax.tick_params(labelsize=self.ticksize)
+        cb.ax.tick_params(**self.kwargs)
 
     def set_with_values(self, cmap: str, color_values: np.ndarray):
         """
@@ -421,13 +443,12 @@ class ColorBar(AbstractMatObj):
         cax.set_array(color_values)
 
         if self.tick_values is None and self.tick_labels is None:
-            plt.colorbar(mappable=cax, fraction=self.fraction, pad=self.pad)
+            plt.colorbar(mappable=cax, **self.kwargs)
         elif self.tick_values is not None and self.tick_labels is not None:
             cb = plt.colorbar(
                 mappable=cax,
-                fraction=self.fraction,
-                pad=self.pad,
                 ticks=self.tick_values,
+                **self.kwargs
             )
             cb.ax.set_yticklabels(self.tick_labels)
 
@@ -1000,7 +1021,6 @@ class Scatterer(AbstractMatObj):
         size: int = None,
         marker: str = None,
         colors: typing.List[str] = None,
-        section: str = None,
         from_subplot_config=False,
     ):
         """
