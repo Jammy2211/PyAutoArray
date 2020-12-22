@@ -457,7 +457,7 @@ class TestOutput:
 class TestScatterer:
     def test__scatter_grid(self):
 
-        scatterer = mat_objs.Scatterer(size=2, marker="x", colors="k")
+        scatterer = mat_objs.AbstractScatterer(size=2, marker="x", colors="k")
 
         scatterer.scatter_grid(grid=aa.Grid.uniform(shape_2d=(3, 3), pixel_scales=1.0))
 
@@ -465,7 +465,7 @@ class TestScatterer:
         self,
     ):
 
-        scatterer = mat_objs.Scatterer(size=2, marker="x", colors="k")
+        scatterer = mat_objs.AbstractScatterer(size=2, marker="x", colors="k")
 
         cmap = plt.get_cmap("jet")
 
@@ -484,7 +484,7 @@ class TestScatterer:
         self,
     ):
 
-        scatterer = mat_objs.Scatterer(size=2, marker="x", colors="k")
+        scatterer = mat_objs.AbstractScatterer(size=2, marker="x", colors="k")
 
         scatterer.scatter_grid_indexes(
             grid=aa.Grid.uniform(shape_2d=(3, 3), pixel_scales=1.0), indexes=[0, 1, 2]
@@ -503,7 +503,7 @@ class TestScatterer:
         self,
     ):
 
-        scatterer = mat_objs.Scatterer(size=2, marker="x", colors="k")
+        scatterer = mat_objs.AbstractScatterer(size=2, marker="x", colors="k")
 
         scatterer.scatter_grid_indexes(
             grid=aa.Grid.uniform(shape_2d=(3, 3), pixel_scales=1.0),
@@ -527,13 +527,13 @@ class TestScatterer:
 
     def test__scatter_coordinates(self):
 
-        scatterer = mat_objs.Scatterer(size=2, marker="x", colors="k")
+        scatterer = mat_objs.AbstractScatterer(size=2, marker="x", colors="k")
 
-        scatterer.scatter_coordinates(
-            coordinates=aa.GridIrregularGrouped([(1.0, 1.0), (2.0, 2.0)])
+        scatterer.scatter_grouped_grid(
+            grouped_grid=aa.GridIrregularGrouped([(1.0, 1.0), (2.0, 2.0)])
         )
-        scatterer.scatter_coordinates(
-            coordinates=aa.GridIrregularGrouped(
+        scatterer.scatter_grouped_grid(
+            grouped_grid=aa.GridIrregularGrouped(
                 [[(1.0, 1.0), (2.0, 2.0)], [(3.0, 3.0)]]
             )
         )

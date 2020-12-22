@@ -434,7 +434,7 @@ class AbstractPlotter:
             self.grid_scatterer.scatter_grid(grid=grid)
 
         if positions is not None:
-            self.positions_scatterer.scatter_coordinates(coordinates=positions)
+            self.positions_scatterer.scatter_grouped_grid(grouped_grid=positions)
 
         if vector_field is not None:
             self.vector_quiverer.quiver_vector_field(vector_field=vector_field)
@@ -991,7 +991,7 @@ class AbstractPlotter:
             self.border_scatterer.scatter_grid(grid=sub_border_grid)
 
         if positions is not None:
-            self.positions_scatterer.scatter_coordinates(coordinates=positions)
+            self.positions_scatterer.scatter_grouped_grid(grouped_grid=positions)
 
         if lines is not None:
             self.liner.draw_grid(grid=lines)
