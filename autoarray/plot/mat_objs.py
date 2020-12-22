@@ -895,7 +895,7 @@ class Output(AbstractMatObj):
         - plt.show: https://matplotlib.org/3.1.1/api/_as_gen/matplotlib.pyplot.show.html
         - plt.savefig: https://matplotlib.org/3.1.1/api/_as_gen/matplotlib.pyplot.savefig.html
 
-        The default behaviour is the display the figure on the computer screen, as opposed to outputting to hard-disc
+        The default behaviour is the display the figure on the computer screen, as opposed to outputting to hard-disk
         as a file.
 
         Parameters
@@ -943,7 +943,7 @@ class Output(AbstractMatObj):
             return self.filename
 
     def to_figure(self, structure: abstract_structure.AbstractStructure):
-        """Output the figure, either as an image on the screen or to the hard-disk as a .png or .fits file.
+        """Output the figure, by either displaying it on the user's screen or to the hard-disk as a .png or .fits file.
 
         Parameters
         -----------
@@ -974,14 +974,8 @@ class Output(AbstractMatObj):
             )
 
 
-class Scatterer(AbstractMatObj):
-    def __init__(
-        self,
-        size: int = None,
-        marker: str = None,
-        colors: typing.List[str] = None,
-        from_subplot_config=False,
-    ):
+class AbstractScatterer(AbstractMatObj):
+    def __init__(self, colors=None, from_subplot_config=False, **kwargs):
         """
         An object for scattering an input set of grid points, for example (y,x) coordinates or a data structures
         representing 2D (y,x) coordinates like a `Grid` or `GridIrregular`. If the object groups (y,x) coordinates
@@ -991,58 +985,93 @@ class Scatterer(AbstractMatObj):
 
         - plt.scatter: https://matplotlib.org/3.1.1/api/_as_gen/matplotlib.pyplot.scatter.html
 
-        The default behaviour is the display the figure on the computer screen, as opposed to outputting to hard-disc
-        as a file.
+        There are a number of children of this method that plot specific sets of (y,x) points, where each uses their
+        own settings so that the property they plot appears unique on every figure:
+
+        - `OriginScatterer`: plots the (y,x) coordinates of the origin of a data structure.
+        - `MaskScattererer`: plot a mask over an image, using its mask's (y,x) grid of edge coordinates.
+        - `BorderScatterer: plot a border over an image, using its mask's (y,x) grid of border coordinates.
+        - `GridScatterer`: plot the grid of points of a `Grid` structure.
+        - `PositionsScatterer`: plots the (y,x) coordinates that are input in a plotter via the `positions` input.
+        - `IndexScatterer`: plots specific (y,x) coordinates of a grid (or grids) via their 1d or 2d indexes.
+        - `PixelizationGridScatterer`: plots the grid of a `Pixelization` object (see `autoarray.inversion`).
 
         Parameters
         ----------
-        size : int
-            The size of the points of the scatter plot.
-        marker : str
-            The style of the scattered point's mark (e.g. 'x', 'o', '.', etc.)
         colors : [str]
-            The list of colors that the grouped plotted coordinates cycle through.
+            The color or list of colors that the grid is plotted using. For plotting indexes or a grouped grid, a
+            list of colors can be specified which the plot cycles through.
         """
-        self.from_subplot_config = from_subplot_config
+        super().__init__(from_subplot_config=from_subplot_config, kwargs=kwargs)
 
-        self.size = self.load_setting(
-            param=size, name="size", from_subplot_config=from_subplot_config
-        )
-        self.marker = self.load_setting(
-            param=marker, name="marker", from_subplot_config=from_subplot_config
-        )
-        self.colors = self.load_setting(
-            param=colors, name="colors", from_subplot_config=from_subplot_config
-        )
+        if colors is None:
+            self.kwargs["colors"] = remove_spaces_and_commas_from_colors(
+                colors=self.kwargs["colors"]
+            )
+        else:
+            self.kwargs["colors"] = colors
 
-        self.colors = remove_spaces_and_commas_from_colors(colors=self.colors)
+        if isinstance(self.kwargs["colors"], str):
+            self.kwargs["colors"] = [self.kwargs["colors"]]
 
-        if isinstance(self.colors, str):
-            self.colors = [self.colors]
+    @property
+    def kwargs_scatter(self):
+        """Creates a kwargs dict of valid inputs of the method `plt.scatter` from the object's kwargs dict."""
+        return self.kwargs_of_method(method_name="scatter")
 
     def scatter_grid(self, grid):
+        """
+        Plot an input grid of (y,x) coordinates using the matplotlib method `plt.scatter`.
 
+        Parameters
+        ----------
+        grid : Grid
+            The grid of (y,x) coordinates that is plotted.
+        """
         plt.scatter(
             y=np.asarray(grid)[:, 0],
             x=np.asarray(grid)[:, 1],
-            s=self.size,
-            c=self.colors[0],
-            marker=self.marker,
+            c=self.kwargs["colors"][0],
+            **self.kwargs_scatter,
         )
 
     def scatter_colored_grid(self, grid, color_array, cmap):
+        """
+        Plot an input grid of (y,x) coordinates using the matplotlib method `plt.scatter`.
 
+        The method colors the scattered grid according to an input ndarray of color values, using an input colormap.
+
+        Parameters
+        ----------
+        grid : Grid
+            The grid of (y,x) coordinates that is plotted.
+        color_array : ndarray
+            The array of RGB color values used to color the grid.
+        cmap : str
+            The Matplotlib colormap used for the grid point coloring.
+        """
         plt.scatter(
             y=np.asarray(grid)[:, 0],
             x=np.asarray(grid)[:, 1],
-            s=self.size,
             c=color_array,
-            marker=self.marker,
             cmap=cmap,
+            **self.kwargs_scatter,
         )
 
     def scatter_grid_indexes(self, grid, indexes):
+        """
+        Plot specific points of an input grid of (y,x) coordinates, which are specified according to the 1D or 2D
+        indexes of the `Grid`.
 
+        This method allows us to color in points on grids that map between one another.
+
+        Parameters
+        ----------
+        grid : Grid
+            The grid of (y,x) coordinates that is plotted.
+        indexes : np.ndarray
+            The 1D indexes of the grid that are colored in when plotted.
+        """
         if not isinstance(grid, np.ndarray):
             raise exc.PlottingException(
                 "The grid passed into scatter_grid_indexes is not a ndarray and thus its"
@@ -1059,7 +1088,7 @@ class Scatterer(AbstractMatObj):
             if not any(isinstance(i, list) for i in indexes):
                 indexes = [indexes]
 
-        color = itertools.cycle(self.colors)
+        color = itertools.cycle(self.kwargs["colors"])
         for index_list in indexes:
 
             if all([isinstance(index, float) for index in index_list]) or all(
@@ -1069,9 +1098,8 @@ class Scatterer(AbstractMatObj):
                 plt.scatter(
                     y=np.asarray(grid[index_list, 0]),
                     x=np.asarray(grid[index_list, 1]),
-                    s=self.size,
                     color=next(color),
-                    marker=self.marker,
+                    **self.kwargs_scatter,
                 )
 
             elif all([isinstance(index, tuple) for index in index_list]) or all(
@@ -1084,9 +1112,8 @@ class Scatterer(AbstractMatObj):
                 plt.scatter(
                     y=np.asarray(grid.in_2d[ys, xs, 0]),
                     x=np.asarray(grid.in_2d[ys, xs, 1]),
-                    s=self.size,
                     color=next(color),
-                    marker=self.marker,
+                    **self.kwargs_scatter,
                 )
 
             else:
@@ -1096,213 +1123,64 @@ class Scatterer(AbstractMatObj):
                     "useable type"
                 )
 
-    def scatter_coordinates(self, coordinates):
+    def scatter_grouped_grid(self, grouped_grid):
+        """
+         Plot an input grid of grouped (y,x) coordinates using the matplotlib method `plt.scatter`.
 
-        if len(coordinates) == 0:
+         Coordinates are grouped when they share a common origin or feature. This method colors each group the same,
+         so that the grouping is visible in the plot.
+
+         Parameters
+         ----------
+         grouped_grid : GridIrregularGrouped
+             The grid of grouped (y,x) coordinates that is plotted.
+         """
+        if len(grouped_grid) == 0:
             return
 
-        color = itertools.cycle(self.colors)
+        color = itertools.cycle(self.kwargs["colors"])
 
-        for coordinate_group in coordinates.in_grouped_list:
+        for group in grouped_grid.in_grouped_list:
 
             plt.scatter(
-                y=np.asarray(coordinate_group)[:, 0],
-                x=np.asarray(coordinate_group)[:, 1],
-                s=self.size,
+                y=np.asarray(group)[:, 0],
+                x=np.asarray(group)[:, 1],
                 c=next(color),
-                marker=self.marker,
+                **self.kwargs_scatter,
             )
 
 
-class OriginScatterer(Scatterer):
-    def __init__(self, size=None, marker=None, colors=None, from_subplot_config=False):
-        """
-        An object for scattering an input set of grid points, described fully in the `Scatterer` class.
-
-        The `OriginScatterer` is used specifically to plot the (y,x) coordinate origin of a data structure. It uses
-        its own settings (e.g, `size`, `marker`, etc.) in `config/visualize/mat_obj` config files.
-
-        Parameters
-        ----------
-        size : int
-            The size of the (y,x) origin of the scatter plot.
-        marker : str
-            The style of the scattered point's mark (e.g. 'x', 'o', '.', etc.)
-        colors : [str]
-            The list of colors that the grouped plotted coordinates cycle through.
-        """
-        super(OriginScatterer, self).__init__(
-            size=size,
-            marker=marker,
-            colors=colors,
-            from_subplot_config=from_subplot_config,
-        )
-
+class OriginScatterer(AbstractScatterer):
     @classmethod
-    def sub(cls, size=None, marker=None, colors=None):
-        return OriginScatterer(
-            size=size, marker=marker, colors=colors, from_subplot_config=True
-        )
+    def sub(cls, colors=None):
+        return OriginScatterer(colors=colors, from_subplot_config=True)
 
 
-class MaskScatterer(Scatterer):
-    def __init__(self, size=None, marker=None, colors=None, from_subplot_config=False):
-        """
-        An object for scattering an input set of grid points, described fully in the `Scatterer` class.
-
-        The `MaskScatterer` is used specifically to plot a 2D mask over an image, using the mask's (y,x) grid of edge
-        coordinates.
-
-        It uses its own settings (e.g, `size`, `marker`, etc.) in `config/visualize/mat_obj` config files.
-
-        Parameters
-        ----------
-        size : int
-            The size of the (y,x) origin of the scatter plot.
-        marker : str
-            The style of the scattered point's mark (e.g. 'x', 'o', '.', etc.)
-        colors : [str]
-            The list of colors that the grouped plotted coordinates cycle through.
-        """
-        super(MaskScatterer, self).__init__(
-            size=size,
-            marker=marker,
-            colors=colors,
-            from_subplot_config=from_subplot_config,
-        )
-
+class MaskScatterer(AbstractScatterer):
     @classmethod
-    def sub(cls, size=None, marker=None, colors=None):
-        return MaskScatterer(
-            size=size, marker=marker, colors=colors, from_subplot_config=True
-        )
+    def sub(cls, colors=None):
+        return MaskScatterer(colors=colors, from_subplot_config=True)
 
 
-class BorderScatterer(Scatterer):
-    def __init__(self, size=None, marker=None, colors=None, from_subplot_config=False):
-        """
-        An object for scattering an input set of grid points, described fully in the `Scatterer` class.
-
-        The `BorderScatterer` is used specifically to plot a 2D border over an image, using the border's (y,x) grid of
-        border coordinates.
-
-        It uses its own settings (e.g, `size`, `marker`, etc.) in `config/visualize/mat_obj` config files.
-
-        Parameters
-        ----------
-        size : int
-            The size of the (y,x) origin of the scatter plot.
-        marker : str
-            The style of the scattered point's mark (e.g. 'x', 'o', '.', etc.)
-        colors : [str]
-            The list of colors that the grouped plotted coordinates cycle through.
-        """
-        super(BorderScatterer, self).__init__(
-            size=size,
-            marker=marker,
-            colors=colors,
-            from_subplot_config=from_subplot_config,
-        )
-
+class BorderScatterer(AbstractScatterer):
     @classmethod
-    def sub(cls, size=None, marker=None, colors=None):
-        return BorderScatterer(
-            size=size, marker=marker, colors=colors, from_subplot_config=True
-        )
+    def sub(cls, colors=None):
+        return BorderScatterer(colors=colors, from_subplot_config=True)
 
 
-class GridScatterer(Scatterer):
-    def __init__(self, size=None, marker=None, colors=None, from_subplot_config=False):
-        """
-        An object for scattering an input set of grid points, described fully in the `Scatterer` class.
-
-        The `GridScatterer` is used specifically to plot a 2D grid of points.
-
-        It uses its own settings (e.g, `size`, `marker`, etc.) in `config/visualize/mat_obj` config files.
-
-        Parameters
-        ----------
-        size : int
-            The size of the (y,x) origin of the scatter plot.
-        marker : str
-            The style of the scattered point's mark (e.g. 'x', 'o', '.', etc.)
-        colors : [str]
-            The list of colors that the grouped plotted coordinates cycle through.
-        """
-        super(GridScatterer, self).__init__(
-            size=size,
-            marker=marker,
-            colors=colors,
-            from_subplot_config=from_subplot_config,
-        )
-
+class GridScatterer(AbstractScatterer):
     @classmethod
-    def sub(cls, size=None, marker=None, colors=None):
-        return GridScatterer(
-            size=size, marker=marker, colors=colors, from_subplot_config=True
-        )
+    def sub(cls, colors=None):
+        return GridScatterer(colors=colors, from_subplot_config=True)
 
 
-class PositionsScatterer(Scatterer):
-    def __init__(self, size=None, marker=None, colors=None, from_subplot_config=False):
-        """
-        An object for scattering an input set of grid points, described fully in the `Scatterer` class.
-
-        The `PositionsScatterer` is used specifically to plot a 2D irregular grid of (y,x) coordinates that are marked
-        as the `positions` of a data structure. These will be colored according to grouping, if grouped.
-
-        It uses its own settings (e.g, `size`, `marker`, etc.) in `config/visualize/mat_obj` config files.
-
-        Parameters
-        ----------
-        size : int
-            The size of the (y,x) origin of the scatter plot.
-        marker : str
-            The style of the scattered point's mark (e.g. 'x', 'o', '.', etc.)
-        colors : [str]
-            The list of colors that the grouped plotted coordinates cycle through.
-        """
-        super(PositionsScatterer, self).__init__(
-            size=size,
-            marker=marker,
-            colors=colors,
-            from_subplot_config=from_subplot_config,
-        )
-
+class PositionsScatterer(AbstractScatterer):
     @classmethod
-    def sub(cls, size=None, marker=None, colors=None):
-        return PositionsScatterer(
-            size=size, marker=marker, colors=colors, from_subplot_config=True
-        )
+    def sub(cls, colors=None):
+        return PositionsScatterer(colors=colors, from_subplot_config=True)
 
 
-class IndexScatterer(Scatterer):
-    def __init__(self, size=None, marker=None, colors=None, from_subplot_config=False):
-        """
-        An object for scattering an input set of grid points, described fully in the `Scatterer` class.
-
-        The `IndexScatterer` is used specifically to plot a set of pixel indexes, which have been converted to a 2D
-        grid of (y,x) coordinates from their original 1D or 2D image pixels. If the indexes were lists of grouped
-        indexes they should be converted to a `GridIrregularGrouped` object so they are colored acoording to grouping.
-
-        It uses its own settings (e.g, `size`, `marker`, etc.) in `config/visualize/mat_obj` config files.
-
-        Parameters
-        ----------
-        size : int
-            The size of the (y,x) origin of the scatter plot.
-        marker : str
-            The style of the scattered point's mark (e.g. 'x', 'o', '.', etc.)
-        colors : [str]
-            The list of colors that the grouped plotted coordinates cycle through.
-        """
-        super(IndexScatterer, self).__init__(
-            size=size,
-            marker=marker,
-            colors=colors,
-            from_subplot_config=from_subplot_config,
-        )
-
+class IndexScatterer(AbstractScatterer):
     @classmethod
     def sub(cls, size=None, marker=None, colors=None):
         return IndexScatterer(
@@ -1310,37 +1188,10 @@ class IndexScatterer(Scatterer):
         )
 
 
-class PixelizationGridScatterer(Scatterer):
-    def __init__(self, size=None, marker=None, colors=None, from_subplot_config=False):
-        """
-        An object for scattering an input set of grid points, described fully in the `Scatterer` class.
-
-        The `PixelizationScatterer` is used specifically to plot an irregular grid of (y,x) coordinates correspinding
-        to the grid of a pixelization.
-
-        It uses its own settings (e.g, `size`, `marker`, etc.) in `config/visualize/mat_obj` config files.
-
-        Parameters
-        ----------
-        size : int
-            The size of the (y,x) origin of the scatter plot.
-        marker : str
-            The style of the scattered point's mark (e.g. 'x', 'o', '.', etc.)
-        colors : [str]
-            The list of colors that the grouped plotted coordinates cycle through.
-        """
-        super(PixelizationGridScatterer, self).__init__(
-            size=size,
-            marker=marker,
-            colors=colors,
-            from_subplot_config=from_subplot_config,
-        )
-
+class PixelizationGridScatterer(AbstractScatterer):
     @classmethod
-    def sub(cls, size=None, marker=None, colors=None):
-        return PixelizationGridScatterer(
-            size=size, marker=marker, colors=colors, from_subplot_config=True
-        )
+    def sub(cls, colors=None):
+        return PixelizationGridScatterer(colors=colors, from_subplot_config=True)
 
 
 class VectorQuiverer(AbstractMatObj):
