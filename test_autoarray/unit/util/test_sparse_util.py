@@ -341,33 +341,27 @@ class TestRegularToSparse:
 
         regular_to_unmasked_sparse = np.array([0, 1, 2, 3, 4])
         sparse_for_unmasked_sparse = np.array([0, 1, 2, 3, 4])
-        sparse_1d_index_for_mask_1d_index = (
-            aa.util.sparse.sparse_1d_index_for_mask_1d_index_from(
-                regular_to_unmasked_sparse=regular_to_unmasked_sparse,
-                sparse_for_unmasked_sparse=sparse_for_unmasked_sparse,
-            )
+        sparse_1d_index_for_mask_1d_index = aa.util.sparse.sparse_1d_index_for_mask_1d_index_from(
+            regular_to_unmasked_sparse=regular_to_unmasked_sparse,
+            sparse_for_unmasked_sparse=sparse_for_unmasked_sparse,
         )
 
         assert (sparse_1d_index_for_mask_1d_index == np.array([0, 1, 2, 3, 4])).all()
 
         regular_to_unmasked_sparse = np.array([0, 1, 2, 3, 4])
         sparse_for_unmasked_sparse = np.array([0, 1, 5, 7, 18])
-        sparse_1d_index_for_mask_1d_index = (
-            aa.util.sparse.sparse_1d_index_for_mask_1d_index_from(
-                regular_to_unmasked_sparse=regular_to_unmasked_sparse,
-                sparse_for_unmasked_sparse=sparse_for_unmasked_sparse,
-            )
+        sparse_1d_index_for_mask_1d_index = aa.util.sparse.sparse_1d_index_for_mask_1d_index_from(
+            regular_to_unmasked_sparse=regular_to_unmasked_sparse,
+            sparse_for_unmasked_sparse=sparse_for_unmasked_sparse,
         )
 
         assert (sparse_1d_index_for_mask_1d_index == np.array([0, 1, 5, 7, 18])).all()
 
         regular_to_unmasked_sparse = np.array([1, 1, 1, 1, 2])
         sparse_for_unmasked_sparse = np.array([0, 10, 15, 3, 4])
-        sparse_1d_index_for_mask_1d_index = (
-            aa.util.sparse.sparse_1d_index_for_mask_1d_index_from(
-                regular_to_unmasked_sparse=regular_to_unmasked_sparse,
-                sparse_for_unmasked_sparse=sparse_for_unmasked_sparse,
-            )
+        sparse_1d_index_for_mask_1d_index = aa.util.sparse.sparse_1d_index_for_mask_1d_index_from(
+            regular_to_unmasked_sparse=regular_to_unmasked_sparse,
+            sparse_for_unmasked_sparse=sparse_for_unmasked_sparse,
         )
 
         assert (
@@ -376,11 +370,9 @@ class TestRegularToSparse:
 
         regular_to_unmasked_sparse = np.array([5, 6, 7, 8, 9])
         sparse_for_unmasked_sparse = np.array([0, 1, 2, 3, 4, 19, 18, 17, 16, 15])
-        sparse_1d_index_for_mask_1d_index = (
-            aa.util.sparse.sparse_1d_index_for_mask_1d_index_from(
-                regular_to_unmasked_sparse=regular_to_unmasked_sparse,
-                sparse_for_unmasked_sparse=sparse_for_unmasked_sparse,
-            )
+        sparse_1d_index_for_mask_1d_index = aa.util.sparse.sparse_1d_index_for_mask_1d_index_from(
+            regular_to_unmasked_sparse=regular_to_unmasked_sparse,
+            sparse_for_unmasked_sparse=sparse_for_unmasked_sparse,
         )
 
         assert (

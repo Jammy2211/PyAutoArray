@@ -54,10 +54,10 @@ class TestFigure:
         assert plt.fignum_exists(num=1) == False
 
 
-class TestColorMap:
+class TestCmap:
     def test__norm_from_array__uses_input_vmin_and_max_if_input(self):
 
-        cmap = aplt.ColorMap(vmin=0.0, vmax=1.0, norm="linear")
+        cmap = aplt.Cmap(vmin=0.0, vmax=1.0, norm="linear")
 
         norm = cmap.norm_from_array(array=None)
 
@@ -65,7 +65,7 @@ class TestColorMap:
         assert norm.vmin == 0.0
         assert norm.vmax == 1.0
 
-        cmap = aplt.ColorMap(vmin=0.0, vmax=1.0, norm="log")
+        cmap = aplt.Cmap(vmin=0.0, vmax=1.0, norm="log")
 
         norm = cmap.norm_from_array(array=None)
 
@@ -73,7 +73,7 @@ class TestColorMap:
         assert norm.vmin == 1.0e-4  # Increased from 0.0 to ensure min isn't inf
         assert norm.vmax == 1.0
 
-        cmap = aplt.ColorMap(
+        cmap = aplt.Cmap(
             vmin=0.0,
             vmax=1.0,
             linthresh=2.0,
@@ -95,7 +95,7 @@ class TestColorMap:
         array = aa.Array.ones(shape_2d=(2, 2), pixel_scales=1.0)
         array[0] = 0.0
 
-        cmap = aplt.ColorMap(vmin=None, vmax=None, norm="linear")
+        cmap = aplt.Cmap(vmin=None, vmax=None, norm="linear")
 
         norm = cmap.norm_from_array(array=array)
 
@@ -103,7 +103,7 @@ class TestColorMap:
         assert norm.vmin == 0.0
         assert norm.vmax == 1.0
 
-        cmap = aplt.ColorMap(vmin=None, vmax=None, norm="log")
+        cmap = aplt.Cmap(vmin=None, vmax=None, norm="log")
 
         norm = cmap.norm_from_array(array=array)
 
@@ -111,7 +111,7 @@ class TestColorMap:
         assert norm.vmin == 1.0e-4  # Increased from 0.0 to ensure min isn't inf
         assert norm.vmax == 1.0
 
-        cmap = aplt.ColorMap(
+        cmap = aplt.Cmap(
             vmin=None,
             vmax=None,
             linthresh=2.0,
@@ -127,33 +127,33 @@ class TestColorMap:
         assert norm.linthresh == 2.0
 
 
-class TestColorBar:
+class TestColorbar:
     def test__plot__works_for_reasonable_range_of_values(self):
 
         figure = aplt.Figure()
 
         figure.open()
         plt.imshow(np.ones((2, 2)))
-        cb = aplt.ColorBar(ticksize=1, fraction=1.0, pad=2.0)
+        cb = aplt.Colorbar(ticksize=1, fraction=1.0, pad=2.0)
         cb.set()
         figure.close()
 
         figure.open()
         plt.imshow(np.ones((2, 2)))
-        cb = aplt.ColorBar(
+        cb = aplt.Colorbar(
             ticksize=1,
             fraction=0.1,
             pad=0.5,
-            tick_values=[0.25, 0.5, 0.75],
-            tick_labels=[1.0, 2.0, 3.0],
+            manual_tick_values=[0.25, 0.5, 0.75],
+            manual_tick_labels=[1.0, 2.0, 3.0],
         )
         cb.set()
         figure.close()
 
         figure.open()
         plt.imshow(np.ones((2, 2)))
-        cb = aplt.ColorBar(ticksize=1, fraction=0.1, pad=0.5)
-        cb.set_with_values(cmap=aplt.ColorMap().cmap, color_values=[1.0, 2.0, 3.0])
+        cb = aplt.Colorbar(ticksize=1, fraction=0.1, pad=0.5)
+        cb.set_with_values(cmap=aplt.Cmap().cmap, color_values=[1.0, 2.0, 3.0])
         figure.close()
 
 
@@ -164,16 +164,16 @@ class TestTicks:
 
         units = aplt.Units(use_scaled=True, conversion_factor=None)
 
-        ticks = aplt.Ticks(ysize=34, xsize=35)
+        ticks = aplt.Ticks(labelsize=34, labelsize=35)
 
         extent = array.extent_of_zoomed_array(buffer=1)
 
-        ticks.set_yticks(
+        ticks.set(
             array=array,
-            ymin=extent[2],
-            ymax=extent[3],
+            min_value=extent[2],
+            max_value=extent[3],
             units=units,
-            symmetric_around_centre=False,
+            use_defaults=False,
         )
         ticks.set_xticks(
             array=array,
@@ -182,12 +182,12 @@ class TestTicks:
             units=units,
             symmetric_around_centre=False,
         )
-        ticks.set_yticks(
+        ticks.set(
             array=array,
-            ymin=extent[2],
-            ymax=extent[3],
+            min_value=extent[2],
+            max_value=extent[3],
             units=units,
-            symmetric_around_centre=True,
+            use_defaults=True,
         )
         ticks.set_xticks(
             array=array,
@@ -197,16 +197,16 @@ class TestTicks:
             symmetric_around_centre=True,
         )
 
-        ticks = aplt.Ticks(ysize=34, xsize=35)
+        ticks = aplt.Ticks(labelsize=34, labelsize=35)
 
         units = aplt.Units(use_scaled=False, conversion_factor=None)
 
-        ticks.set_yticks(
+        ticks.set(
             array=array,
-            ymin=extent[2],
-            ymax=extent[3],
+            min_value=extent[2],
+            max_value=extent[3],
             units=units,
-            symmetric_around_centre=False,
+            use_defaults=False,
         )
         ticks.set_xticks(
             array=array,
@@ -215,12 +215,12 @@ class TestTicks:
             units=units,
             symmetric_around_centre=False,
         )
-        ticks.set_yticks(
+        ticks.set(
             array=array,
-            ymin=extent[2],
-            ymax=extent[3],
+            min_value=extent[2],
+            max_value=extent[3],
             units=units,
-            symmetric_around_centre=True,
+            use_defaults=True,
         )
         ticks.set_xticks(
             array=array,
@@ -230,16 +230,16 @@ class TestTicks:
             symmetric_around_centre=True,
         )
 
-        ticks = aplt.Ticks(ysize=34, xsize=35)
+        ticks = aplt.Ticks(labelsize=34, labelsize=35)
 
         units = aplt.Units(use_scaled=True, conversion_factor=2.0)
 
-        ticks.set_yticks(
+        ticks.set(
             array=array,
-            ymin=extent[2],
-            ymax=extent[3],
+            min_value=extent[2],
+            max_value=extent[3],
             units=units,
-            symmetric_around_centre=False,
+            use_defaults=False,
         )
         ticks.set_xticks(
             array=array,
@@ -248,12 +248,12 @@ class TestTicks:
             units=units,
             symmetric_around_centre=False,
         )
-        ticks.set_yticks(
+        ticks.set(
             array=array,
-            ymin=extent[2],
-            ymax=extent[3],
+            min_value=extent[2],
+            max_value=extent[3],
             units=units,
-            symmetric_around_centre=True,
+            use_defaults=True,
         )
         ticks.set_xticks(
             array=array,
@@ -263,16 +263,16 @@ class TestTicks:
             symmetric_around_centre=True,
         )
 
-        ticks = aplt.Ticks(ysize=34, xsize=35)
+        ticks = aplt.Ticks(labelsize=34, labelsize=35)
 
         units = aplt.Units(use_scaled=False, conversion_factor=2.0)
 
-        ticks.set_yticks(
+        ticks.set(
             array=array,
-            ymin=extent[2],
-            ymax=extent[3],
+            min_value=extent[2],
+            max_value=extent[3],
             units=units,
-            symmetric_around_centre=False,
+            use_defaults=False,
         )
         ticks.set_xticks(
             array=array,
@@ -281,12 +281,12 @@ class TestTicks:
             units=units,
             symmetric_around_centre=False,
         )
-        ticks.set_yticks(
+        ticks.set(
             array=array,
-            ymin=extent[2],
-            ymax=extent[3],
+            min_value=extent[2],
+            max_value=extent[3],
             units=units,
-            symmetric_around_centre=True,
+            use_defaults=True,
         )
         ticks.set_xticks(
             array=array,
@@ -306,8 +306,8 @@ class TestLabels:
 
         assert labels._yunits == None
         assert labels._xunits == None
-        assert labels.yunits_from_units(units=units) == "kpc"
-        assert labels.xunits_from_units(units=units) == "kpc"
+        assert labels.label_from_units(units=units) == "kpc"
+        assert labels.label_from_units(units=units) == "kpc"
 
         labels = aplt.Labels()
 
@@ -315,8 +315,8 @@ class TestLabels:
 
         assert labels._yunits == None
         assert labels._xunits == None
-        assert labels.yunits_from_units(units=units) == "arcsec"
-        assert labels.xunits_from_units(units=units) == "arcsec"
+        assert labels.label_from_units(units=units) == "arcsec"
+        assert labels.label_from_units(units=units) == "arcsec"
 
         labels = aplt.Labels(yunits="hi", xunits="hi2")
 
@@ -324,8 +324,8 @@ class TestLabels:
 
         assert labels._yunits == "hi"
         assert labels._xunits == "hi2"
-        assert labels.yunits_from_units(units=units) == "hi"
-        assert labels.xunits_from_units(units=units) == "hi2"
+        assert labels.label_from_units(units=units) == "hi"
+        assert labels.label_from_units(units=units) == "hi2"
 
         labels = aplt.Labels(yunits="hi", xunits="hi2")
 
@@ -333,8 +333,8 @@ class TestLabels:
 
         assert labels._yunits == "hi"
         assert labels._xunits == "hi2"
-        assert labels.yunits_from_units(units=units) == "hi"
-        assert labels.xunits_from_units(units=units) == "hi2"
+        assert labels.label_from_units(units=units) == "hi"
+        assert labels.label_from_units(units=units) == "hi2"
 
     def test__title_from_func__uses_func_name_if_title_is_none(self):
         def toy_func():
@@ -359,7 +359,7 @@ class TestLabels:
         labels = aplt.Labels(yunits=None, xunits=None)
 
         yunits_from_func = labels.yunits_from_func(func=toy_func)
-        xunits_from_func = labels.xunits_from_func(func=toy_func)
+        xunits_from_func = labels.units_from_func(func=toy_func)
 
         assert yunits_from_func == None
         assert xunits_from_func == None
@@ -370,7 +370,7 @@ class TestLabels:
         labels = aplt.Labels()
 
         yunits_from_func = labels.yunits_from_func(func=toy_func)
-        xunits_from_func = labels.xunits_from_func(func=toy_func)
+        xunits_from_func = labels.units_from_func(func=toy_func)
 
         assert yunits_from_func == "Hi"
         assert xunits_from_func == "Hi0"
@@ -378,7 +378,7 @@ class TestLabels:
         labels = aplt.Labels(yunits="Hi1", xunits="Hi2")
 
         yunits_from_func = labels.yunits_from_func(func=toy_func)
-        xunits_from_func = labels.xunits_from_func(func=toy_func)
+        xunits_from_func = labels.units_from_func(func=toy_func)
 
         assert yunits_from_func == "Hi1"
         assert xunits_from_func == "Hi2"
@@ -389,7 +389,7 @@ class TestLabels:
         labels = aplt.Labels()
 
         yunits_from_func = labels.yunits_from_func(func=toy_func)
-        xunits_from_func = labels.xunits_from_func(func=toy_func)
+        xunits_from_func = labels.units_from_func(func=toy_func)
 
         assert yunits_from_func == "Hi"
         assert xunits_from_func == "Hi0"
@@ -397,7 +397,7 @@ class TestLabels:
         labels = aplt.Labels(yunits="Hi1", xunits="Hi2")
 
         yunits_from_func = labels.yunits_from_func(func=toy_func)
-        xunits_from_func = labels.xunits_from_func(func=toy_func)
+        xunits_from_func = labels.units_from_func(func=toy_func)
 
         assert yunits_from_func == "Hi1"
         assert xunits_from_func == "Hi2"
@@ -659,5 +659,5 @@ class TestVoronoiDrawer:
             mapper=voronoi_mapper_9_3x3,
             values=np.ones(9),
             cmap="jet",
-            cb=aplt.ColorBar(ticksize=1, fraction=0.1, pad=0.05),
+            cb=aplt.Colorbar(ticksize=1, fraction=0.1, pad=0.05),
         )

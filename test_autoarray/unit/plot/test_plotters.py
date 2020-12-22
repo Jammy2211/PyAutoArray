@@ -86,7 +86,7 @@ class TestAbstractPlotterAttributes:
         assert plotter.cmap.linscale == 2.0
 
         plotter = aplt.Plotter(
-            cmap=aplt.ColorMap(
+            cmap=aplt.Cmap(
                 cmap="cold",
                 norm="log",
                 vmin=0.1,
@@ -113,7 +113,7 @@ class TestAbstractPlotterAttributes:
         assert sub_plotter.cmap.linscale == 2.0
 
         sub_plotter = aplt.SubPlotter(
-            cmap=aplt.ColorMap.sub(
+            cmap=aplt.Cmap.sub(
                 cmap="cold", norm="log", vmin=0.1, vmax=1.0, linscale=2.0
             )
         )
@@ -130,26 +130,26 @@ class TestAbstractPlotterAttributes:
         plotter = aplt.Plotter()
 
         assert plotter.cb.kwargs["labelsize"] == 1
-        assert plotter.cb.tick_values == None
-        assert plotter.cb.tick_labels == None
+        assert plotter.cb.manual_tick_values == None
+        assert plotter.cb.manual_tick_labels == None
 
         plotter = aplt.Plotter(
-            cb=aplt.ColorBar(
+            cb=aplt.Colorbar(
                 labelsize=20,
-                tick_values=(1.0, 2.0),
-                tick_labels=(3.0, 4.0),
+                manual_tick_values=(1.0, 2.0),
+                manual_tick_labels=(3.0, 4.0),
             )
         )
 
         assert plotter.cb.kwargs["labelsize"] == 20
-        assert plotter.cb.tick_values == (1.0, 2.0)
-        assert plotter.cb.tick_labels == (3.0, 4.0)
+        assert plotter.cb.manual_tick_values == (1.0, 2.0)
+        assert plotter.cb.manual_tick_labels == (3.0, 4.0)
 
         sub_plotter = aplt.SubPlotter()
 
         assert sub_plotter.cb.kwargs["labelsize"] == 1
 
-        sub_plotter = aplt.SubPlotter(cb=aplt.ColorBar.sub(labelsize=10))
+        sub_plotter = aplt.SubPlotter(cb=aplt.Colorbar.sub(labelsize=10))
 
         assert sub_plotter.cb.kwargs["labelsize"] == 10
 
@@ -157,37 +157,37 @@ class TestAbstractPlotterAttributes:
 
         plotter = aplt.Plotter()
 
-        assert plotter.ticks.ysize == 14
-        assert plotter.ticks.xsize == 15
-        assert plotter.ticks.y_manual == None
-        assert plotter.ticks.x_manual == None
+        assert plotter.ticks.labelsize == 14
+        assert plotter.ticks.labelsize == 15
+        assert plotter.ticks.manual_values == None
+        assert plotter.ticks.manual_values == None
 
         plotter = aplt.Plotter(
             ticks=aplt.Ticks(
-                ysize=24, xsize=25, y_manual=[1.0, 2.0], x_manual=[3.0, 4.0]
+                labelsize=24, labelsize=25, y_manual=[1.0, 2.0], x_manual=[3.0, 4.0]
             )
         )
 
-        assert plotter.ticks.ysize == 24
-        assert plotter.ticks.xsize == 25
-        assert plotter.ticks.y_manual == [1.0, 2.0]
-        assert plotter.ticks.x_manual == [3.0, 4.0]
+        assert plotter.ticks.labelsize == 24
+        assert plotter.ticks.labelsize == 25
+        assert plotter.ticks.manual_values == [1.0, 2.0]
+        assert plotter.ticks.manual_values == [3.0, 4.0]
 
         sub_plotter = aplt.SubPlotter()
 
-        assert sub_plotter.ticks.ysize == 24
-        assert sub_plotter.ticks.xsize == 25
-        assert sub_plotter.ticks.y_manual == None
-        assert sub_plotter.ticks.x_manual == None
+        assert sub_plotter.ticks.labelsize == 24
+        assert sub_plotter.ticks.labelsize == 25
+        assert sub_plotter.ticks.manual_values == None
+        assert sub_plotter.ticks.manual_values == None
 
         sub_plotter = aplt.SubPlotter(
-            ticks=aplt.Ticks.sub(xsize=25, y_manual=[1.0, 2.0], x_manual=[3.0, 4.0])
+            ticks=aplt.Ticks.sub(labelsize=25, manual_values=[1.0, 2.0], x_manual=[3.0, 4.0])
         )
 
-        assert sub_plotter.ticks.ysize == 24
-        assert sub_plotter.ticks.xsize == 25
-        assert sub_plotter.ticks.y_manual == [1.0, 2.0]
-        assert sub_plotter.ticks.x_manual == [3.0, 4.0]
+        assert sub_plotter.ticks.labelsize == 24
+        assert sub_plotter.ticks.labelsize == 25
+        assert sub_plotter.ticks.manual_values == [1.0, 2.0]
+        assert sub_plotter.ticks.manual_values == [3.0, 4.0]
 
     def test__labels__from_config_or_via_manual_input(self):
 
@@ -197,12 +197,12 @@ class TestAbstractPlotterAttributes:
         assert plotter.labels._yunits == None
         assert plotter.labels._xunits == None
         assert plotter.labels.titlesize == 11
-        assert plotter.labels.ysize == 12
-        assert plotter.labels.xsize == 13
+        assert plotter.labels.labelsize == 12
+        assert plotter.labels.labelsize == 13
 
         plotter = aplt.Plotter(
             labels=aplt.Labels(
-                title="OMG", yunits="hi", xunits="hi2", titlesize=1, ysize=2, xsize=3
+                title="OMG", yunits="hi", xunits="hi2", titlesize=1, labelsize=2, labelsize=3
             )
         )
 
@@ -210,8 +210,8 @@ class TestAbstractPlotterAttributes:
         assert plotter.labels._yunits == "hi"
         assert plotter.labels._xunits == "hi2"
         assert plotter.labels.titlesize == 1
-        assert plotter.labels.ysize == 2
-        assert plotter.labels.xsize == 3
+        assert plotter.labels.labelsize == 2
+        assert plotter.labels.labelsize == 3
 
         sub_plotter = aplt.SubPlotter()
 
@@ -219,12 +219,12 @@ class TestAbstractPlotterAttributes:
         assert sub_plotter.labels._yunits == None
         assert sub_plotter.labels._xunits == None
         assert sub_plotter.labels.titlesize == 15
-        assert sub_plotter.labels.ysize == 22
-        assert sub_plotter.labels.xsize == 23
+        assert sub_plotter.labels.labelsize == 22
+        assert sub_plotter.labels.labelsize == 23
 
         sub_plotter = aplt.SubPlotter(
             labels=aplt.Labels.sub(
-                title="OMG", yunits="hi", xunits="hi2", ysize=2, xsize=3
+                title="OMG", yunits="hi", xunits="hi2", labelsize=2, labelsize=3
             )
         )
 
@@ -232,8 +232,8 @@ class TestAbstractPlotterAttributes:
         assert sub_plotter.labels._yunits == "hi"
         assert sub_plotter.labels._xunits == "hi2"
         assert sub_plotter.labels.titlesize == 15
-        assert sub_plotter.labels.ysize == 2
-        assert sub_plotter.labels.xsize == 3
+        assert sub_plotter.labels.labelsize == 2
+        assert sub_plotter.labels.labelsize == 3
 
     def test__legend__from_config_or_via_manual_input(self):
 
@@ -1054,7 +1054,7 @@ class TestAbstractPlotterNew:
 
         plotter = aplt.Plotter(
             labels=aplt.Labels(
-                title="OMG", yunits="hi", xunits="hi2", titlesize=1, ysize=2, xsize=3
+                title="OMG", yunits="hi", xunits="hi2", titlesize=1, labelsize=2, labelsize=3
             )
         )
 
@@ -1064,19 +1064,19 @@ class TestAbstractPlotterNew:
         assert plotter.labels._yunits == "hi"
         assert plotter.labels._xunits == "hi2"
         assert plotter.labels.titlesize == 1
-        assert plotter.labels.ysize == 2
-        assert plotter.labels.xsize == 3
+        assert plotter.labels.labelsize == 2
+        assert plotter.labels.labelsize == 3
 
         plotter = plotter.plotter_with_new_labels(
-            title="OMG0", yunits="hi0", xunits="hi20", titlesize=10, ysize=20, xsize=30
+            title="OMG0", yunits="hi0", xunits="hi20", titlesize=10, labelsize=20, labelsize=30
         )
 
         assert plotter.labels.title == "OMG0"
         assert plotter.labels._yunits == "hi0"
         assert plotter.labels._xunits == "hi20"
         assert plotter.labels.titlesize == 10
-        assert plotter.labels.ysize == 20
-        assert plotter.labels.xsize == 30
+        assert plotter.labels.labelsize == 20
+        assert plotter.labels.labelsize == 30
 
         plotter = plotter.plotter_with_new_labels(
             title="OMG0", yunits="hi0", xunits="hi20", titlesize=10
@@ -1086,13 +1086,13 @@ class TestAbstractPlotterNew:
         assert plotter.labels._yunits == "hi0"
         assert plotter.labels._xunits == "hi20"
         assert plotter.labels.titlesize == 10
-        assert plotter.labels.ysize == 20
-        assert plotter.labels.xsize == 30
+        assert plotter.labels.labelsize == 20
+        assert plotter.labels.labelsize == 30
 
     def test__plotter_with_new_cmap__new_labels_if_input__sizes_dont_change(self):
 
         plotter = aplt.Plotter(
-            cmap=aplt.ColorMap(
+            cmap=aplt.Cmap(
                 cmap="cold",
                 norm="log",
                 vmin=0.1,
