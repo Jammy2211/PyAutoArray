@@ -33,7 +33,6 @@ from autoarray.structures import abstract_structure, arrays, grids, vector_field
 from autoarray import exc
 
 import inspect
-import functools
 
 # def ignore_unmatched_kwargs(func):
 #
@@ -96,13 +95,22 @@ class Units(AbstractMatObj):
         in_kpc: bool = None,
     ):
         """
-        The units of the figure's y and x axis.
+        This object controls the units of a plotted figure, and performs multiple tasks when making the plot:
+
+        1) Species the units of the plot (e.g. meters, kilometers) and contains a conversion factor which is used to
+           converts the plotted data from its true units (e.g. meters) to the units to plotted (e.g. kilometeters).
+           Pixel units can also be used if use_scaled=False.
+
+        2) Uses the conversion above to manually override the yticks and xticks of the figure, so it appears in the
+           converted units.
+
+        3) Sets the ylabel and xlabel to include a string containing the units.
 
         Parameters
         ----------
         use_scaled : bool
-            If True, plot the y and x axis labels of the `Array` as its scaled coordinates using its *pixel_scales*
-            attribute. If `False` plot them in pixel units.
+            If True, plot the 2D data with y and x ticks corresponding to its scaled coordinates (its `pixel_scales`
+            attribute is used as the conversion factor). If `False` plot them in pixel units.
         conversion_factor : float
             If plotting the labels in scaled units, this factor multiplies the values that are used for the labels.
             This allows for additional unit conversions of the figure labels.
@@ -138,7 +146,7 @@ class Units(AbstractMatObj):
 class Figure(AbstractMatObj):
     def __init__(self, from_subplot_config: bool = False, **kwargs):
         """
-        The settings used to set up the Matplotlib Figure before plotting.
+        Sets up the Matplotlib figure before plotting (this is used when plotting individual figures and subplots).
 
         This object wraps the following Matplotlib methods:
 
@@ -155,28 +163,35 @@ class Figure(AbstractMatObj):
 
         super().__init__(from_subplot_config=from_subplot_config, kwargs=kwargs)
 
-        self.kwargs_figure = self.kwargs_of_method(method_name="figure")
+    @property
+    def kwargs_figure(self):
+        """Creates a kwargs dict of valid inputs of the method `plt.figure` from the object's kwargs dict."""
 
-        if self.kwargs_figure["figsize"] == "auto":
-            self.kwargs_figure["figsize"] = None
-        elif isinstance(self.kwargs_figure["figsize"], str):
-            self.kwargs_figure["figsize"] = tuple(
-                map(int, self.kwargs_figure["figsize"][1:-1].split(","))
+        kwargs_figure = self.kwargs_of_method(method_name="figure")
+
+        if kwargs_figure["figsize"] == "auto":
+            kwargs_figure["figsize"] = None
+        elif isinstance(kwargs_figure["figsize"], str):
+            kwargs_figure["figsize"] = tuple(
+                map(int, kwargs_figure["figsize"][1:-1].split(","))
             )
 
-        self.kwargs_imshow = self.kwargs_of_method(method_name="imshow")
+        return kwargs_figure
+
+    @property
+    def kwargs_imshow(self):
+        """Creates a kwargs dict of valid inputs of the method `plt.imshow` from the object's kwargs dict."""
+        return self.kwargs_of_method(method_name="imshow")
 
     @classmethod
-    def sub(
-        cls,
-    ):
+    def sub(cls,):
         return Figure(from_subplot_config=True)
 
     def aspect_from_shape_2d(self, shape_2d: typing.Union[typing.Tuple[int, int]]):
         """
         Returns the aspect ratio of the figure from the 2D shape of an `Array`.
 
-        This is primarily used to ensure that rectangular arrays are plotted as square figures on sub-plots.
+        This is used to ensure that rectangular arrays are plotted as square figures on sub-plots.
 
         Parameters
         ----------
@@ -200,10 +215,10 @@ class Figure(AbstractMatObj):
             plt.close()
 
 
-class ColorMap(AbstractMatObj):
-    def __init__(self, module=None, from_subplot_config: bool = False, **kwargs):
+class Cmap(AbstractMatObj):
+    def __init__(self, module: str = None, from_subplot_config: bool = False, **kwargs):
         """
-        The settings used to set up the Matplotlib colormap and its normalization.
+        Customizes the Matplotlib colormap and its normalization.
 
         This object wraps the following Matplotlib methods:
 
@@ -217,13 +232,14 @@ class ColorMap(AbstractMatObj):
 
         Parameters
         ----------
+        module : str
+            The module from which the plot is called, which is used to customize the colormap for figures of different
+            categories.
         from_subplot_config : bool
             If True, load unspecified settings from the figures.ini visualization config, else use subplots.ini.
         """
 
         super().__init__(from_subplot_config=from_subplot_config, kwargs=kwargs)
-
-        self.kwargs_colors = self.kwargs_of_method(method_name="colors")
 
         if module is not None:
 
@@ -243,35 +259,31 @@ class ColorMap(AbstractMatObj):
             pass
 
     @classmethod
-    def sub(
-        cls,
-    ):
-        return ColorMap(
-            from_subplot_config=True,
-        )
+    def sub(cls,):
+        return Cmap(from_subplot_config=True)
 
     def norm_from_array(self, array: np.ndarray):
         """
-        Returns the `Normalization` object which scales of the colormap, using the input min / max normalization \
-        values.
+        Returns the `Normalization` object which scales of the colormap.
 
-        If vmin / vmax are not supplied, the minimum / maximum values of the array of data_type are used.
+        If vmin / vmax are not manually input by the user, the minimum / maximum values of the data being plotted
+        are used.
 
         Parameters
         -----------
-        array : data_type.array.aa.Scaled
-            The 2D array of data_type which is plotted.
+        array : np.ndarray
+            The array of data which is to be plotted.
         """
 
         if self.kwargs["vmin"] is None:
             vmin = array.min()
         else:
-            vmin = self.kwargs_colors["vmin"]
+            vmin = self.kwargs["vmin"]
 
         if self.kwargs["vmax"] is None:
             vmax = array.max()
         else:
-            vmax = self.kwargs_colors["vmax"]
+            vmax = self.kwargs["vmax"]
 
         if self.kwargs["norm"] in "linear":
             return colors.Normalize(vmin=vmin, vmax=vmax)
@@ -283,8 +295,8 @@ class ColorMap(AbstractMatObj):
             return colors.SymLogNorm(
                 vmin=vmin,
                 vmax=vmax,
-                linthresh=self.kwargs_colors["linthresh"],
-                linscale=self.kwargs_colors["linscale"],
+                linthresh=self.kwargs["linthresh"],
+                linscale=self.kwargs["linscale"],
             )
         else:
             raise exc.PlottingException(
@@ -293,31 +305,31 @@ class ColorMap(AbstractMatObj):
             )
 
 
-class ColorBar(AbstractMatObj):
+class Colorbar(AbstractMatObj):
     def __init__(
         self,
-        tick_labels: typing.Union[typing.List[float]] = None,
-        tick_values: typing.Union[typing.List[float]] = None,
+        manual_tick_labels: typing.Union[typing.List[float]] = None,
+        manual_tick_values: typing.Union[typing.List[float]] = None,
         from_subplot_config: bool = False,
         **kwargs,
     ):
         """
-        The settings used to set up the Colorbar.
+        Customizes the colorbar of the plotted figure.
 
         This object wraps the following Matplotlib method:
 
-         plt.colorbar: https://matplotlib.org/3.1.1/api/_as_gen/matplotlib.pyplot.colorbar.html
+         plt.colorbar: https://matplotlib.org/3.3.2/api/_as_gen/matplotlib.pyplot.colorbar.html
 
         The colorbar object `cb` that is created is also customized using the following methods:
 
-         cb.set_yticklabels: https://matplotlib.org/3.3.3/api/_as_gen/matplotlib.axes.Axes.set_yticklabels.html
-         cb.tick_params: https://matplotlib.org/3.1.1/api/_as_gen/matplotlib.axes.Axes.tick_params.html
+         cb.set_yticklabels: https://matplotlib.org/3.3.2/api/_as_gen/matplotlib.axes.Axes.set_yticklabels.html
+         cb.tick_params: https://matplotlib.org/3.3.2/api/_as_gen/matplotlib.axes.Axes.tick_params.html
 
         Parameters
         ----------
-        tick_labels : [float]
-            Manually override the colorbar tick labels to display the labels as the input list of float.
-        tick_values : [float]
+        manual_tick_labels : [float]
+            Manually override the colorbar tick labels to an input list of float.
+        manual_tick_values : [float]
             If the colorbar tick labels are manually specified the locations on the colorbar they appear running 0 -> 1.
         from_subplot_config : bool
             If True, load unspecified settings from the figures.ini visualization config, else use subplots.ini.
@@ -325,44 +337,43 @@ class ColorBar(AbstractMatObj):
 
         super().__init__(from_subplot_config=from_subplot_config, kwargs=kwargs)
 
-        self.kwargs_colorbar = self.kwargs_of_method(method_name="colorbar")
-        self.kwargs_set_yticklabels = self.kwargs_of_method(
-            method_name="set_yticklabels", cls_name="Ticks"
-        )
-        self.kwargs_tick_params = self.kwargs_of_method(
-            method_name="tick_params", cls_name="Ticks"
-        )
+        self.manual_tick_labels = manual_tick_labels
+        self.manual_tick_values = manual_tick_values
 
-        self.tick_values = tick_values
-        self.tick_labels = tick_labels
+    @property
+    def kwargs_colorbar(self):
+        """Creates a kwargs dict of valid inputs of the method `plt.colorbar` from the object's kwargs dict."""
+        return self.kwargs_of_method(method_name="colorbar")
+
+    @property
+    def kwargs_tick_params(self):
+        """Creates a kwargs dict of valid inputs of the method `plt.tick_params` from the object's kwargs dict."""
+        return self.kwargs_of_method(method_name="tick_params", cls_name="TickParams")
 
     @classmethod
     def sub(
         cls,
-        tick_labels: typing.Union[typing.List[float]] = None,
-        tick_values: typing.Union[typing.List[float]] = None,
+        manual_tick_labels: typing.Union[typing.List[float]] = None,
+        manual_tick_values: typing.Union[typing.List[float]] = None,
         **kwargs,
     ):
-        return ColorBar(
-            tick_values=tick_values,
-            tick_labels=tick_labels,
+        return Colorbar(
+            manual_tick_values=manual_tick_values,
+            manual_tick_labels=manual_tick_labels,
             from_subplot_config=True,
             **kwargs,
         )
 
     def set(self):
-        """
-        Setup the colorbar of the figure, specifically its ticksize, figure layout and optionally overriding
-        the tick labels with manual inputs.
-        """
+        """ Set the figure's colorbar, optionally overriding the tick labels and values with manual inputs. """
 
-        if self.tick_values is None and self.tick_labels is None:
+        if self.manual_tick_values is None and self.manual_tick_labels is None:
             cb = plt.colorbar(**self.kwargs_colorbar)
-        elif self.tick_values is not None and self.tick_labels is not None:
-            cb = plt.colorbar(ticks=self.tick_values, **self.kwargs_colorbar)
-            cb.ax.set_yticklabels(
-                labels=self.tick_labels, **self.kwargs_set_yticklabels
-            )
+        elif (
+            self.manual_tick_values is not None and self.manual_tick_labels is not None
+        ):
+            cb = plt.colorbar(ticks=self.manual_tick_values, **self.kwargs_colorbar)
+            cb.ax.set_yticklabels(labels=self.manual_tick_labels)
         else:
             raise exc.PlottingException(
                 "Only 1 entry of tick_values or tick_labels was input. You must either supply"
@@ -373,7 +384,7 @@ class ColorBar(AbstractMatObj):
 
     def set_with_values(self, cmap: str, color_values: np.ndarray):
         """
-        Set up the colorbar with a set of already known color values.
+        Set the figure's colorbar using an array of already known color values.
 
         This method is used for producing the color bar on a Voronoi mesh plot, which is unable to use the in-built
         Matplotlib colorbar method.
@@ -382,7 +393,7 @@ class ColorBar(AbstractMatObj):
         ----------
         cmap : str
             The colormap used to map normalized data values to RGBA colors (see
-            https://matplotlib.org/3.3.1/api/cm_api.html).
+            https://matplotlib.org/3.3.2/api/cm_api.html).
         color_values : np.ndarray
             The values of the pixels on the Voronoi mesh which are used to create the colorbar.
         """
@@ -390,255 +401,271 @@ class ColorBar(AbstractMatObj):
         cax = cm.ScalarMappable(cmap=cmap)
         cax.set_array(color_values)
 
-        if self.tick_values is None and self.tick_labels is None:
-            plt.colorbar(mappable=cax, **self.kwargs)
-        elif self.tick_values is not None and self.tick_labels is not None:
-            cb = plt.colorbar(mappable=cax, ticks=self.tick_values, **self.kwargs)
-            cb.ax.set_yticklabels(self.tick_labels)
+        if self.manual_tick_values is None and self.manual_tick_labels is None:
+            plt.colorbar(mappable=cax, **self.kwargs_colorbar)
+        elif (
+            self.manual_tick_values is not None and self.manual_tick_labels is not None
+        ):
+            cb = plt.colorbar(
+                mappable=cax, ticks=self.manual_tick_values, **self.kwargs
+            )
+            cb.ax.set_yticklabels(self.manual_tick_labels)
 
 
-class Ticks(AbstractMatObj):
-    def __init__(
-        self,
-        ysize: int = None,
-        xsize: int = None,
-        y_manual: typing.Union[typing.List[float]] = None,
-        x_manual: typing.Union[typing.List[float]] = None,
-        from_subplot_config: bool = False,
-    ):
+class TickParams(AbstractMatObj):
+    def __init__(self, from_subplot_config: bool = False, **kwargs):
         """
-        The settings used to customize the figure's y and x ticks.
+        The settings used to customize a figure's y and x ticks parameters.
 
         This object wraps the following Matplotlib methods:
 
-        - plt.tick_params
+        - plt.tick_params: https://matplotlib.org/3.3.2/api/_as_gen/matplotlib.pyplot.tick_params.html
+
+        Parameters
+        ----------
+        from_subplot_config : bool
+            If True, load unspecified settings from the figures.ini visualization config, else use subplots.ini.
+        """
+        super().__init__(from_subplot_config=from_subplot_config, kwargs=kwargs)
+
+    @property
+    def kwargs_tick_params(self):
+        """Creates a kwargs dict of valid inputs of the method `plt.tick_params` from the object's kwargs dict."""
+        return self.kwargs_of_method(method_name="tick_params")
+
+    def set(self,):
+        """Set the tick_params of the figure using the method `plt.tick_params`."""
+        plt.tick_params(**self.kwargs_tick_params)
+
+
+class AbstractTicks(AbstractMatObj):
+    def __init__(
+        self,
+        manual_values: typing.Union[typing.List[float]] = None,
+        from_subplot_config: bool = False,
+        **kwargs,
+    ):
+        """
+        The settings used to customize a figure's y and x ticks using the `YTicks` and `XTicks` objects.
+
+        This object wraps the following Matplotlib methods:
+
         - plt.yticks: https://matplotlib.org/3.3.1/api/_as_gen/matplotlib.pyplot.yticks.html
         - plt.xticks: https://matplotlib.org/3.3.1/api/_as_gen/matplotlib.pyplot.xticks.html
 
         Parameters
         ----------
-        ysize : int
-            The font size of y-axis ticks.
-        xsize : int
-            The font size of x-axis ticks.
-        y_manual : [float]
-            Manually override the y-axis tick labels to display the labels as the input list of floats.
-        x_manual : [float]
-            Manually override the x-axis tick labels to display the labels as the input list of floats.
+        manual_values : [float]
+            Manually override the tick labels to display the labels as the input list of floats.
+        from_subplot_config : bool
+            If True, load unspecified settings from the figures.ini visualization config, else use subplots.ini.
+        """
+        super().__init__(from_subplot_config=from_subplot_config, kwargs=kwargs)
+
+        self.manual_values = manual_values
+
+    @property
+    def kwargs_ticks(self):
+        """Creates a kwargs dict of valid inputs of the methods `plt.yticks` and `plt.xticks` from the object's kwargs dict."""
+        return self.kwargs_of_method(method_name="ticks")
+
+    def tick_values_from(
+        self, min_value: float, max_value: float, use_defaults: bool = False
+    ):
+        """
+        Calculate the ticks used for the yticks or xticks from input values of the minimum and maximum coordinate
+        values of the y and x axis.
+
+        Certain figures may display better using the default ticks. This method has the option `use_defaults` to return
+        None such that the defaults are used.
+
+        Parameters
+        ----------
+        min_value : float
+            the minimum value of the ticks that figure is plotted using.
+        max_value : float
+            the maximum value of the ticks that figure is plotted using.
+        use_defaults : bool
+            If `True`, the function does not return tick_values such that a plotter uses the default ticks.
+        """
+        if not use_defaults:
+            if self.manual_values is not None:
+                return np.linspace(min_value, max_value, len(self.manual_values))
+            else:
+                return np.linspace(min_value, max_value, 5)
+
+    def tick_values_in_units_from(
+        self,
+        array: arrays.Array,
+        min_value: float,
+        max_value: float,
+        units: Units,
+        use_defaults: bool = False,
+    ):
+        """
+        Calculate the labels used for the yticks or xticks from input values of the minimum and maximum coordinate
+        values of the y and x axis.
+
+        The values are converted to the `Units` of the figure, via its conversion factor or using data properties.
+
+        Certain figures may display better using the default ticks. This method has the option `use_defaults` to return
+        None such that the defaults are used.
+
+        Parameters
+        ----------
+        array : arrays.Array
+            The array of data that is to be plotted, whose 2D shape is used to determine the tick values in units of
+            pixels if this is the units specified by `units`.
+        min_value : float
+            the minimum value of the ticks that figure is plotted using.
+        max_value : float
+            the maximum value of the ticks that figure is plotted using.
+        units : Units
+            The units the tick values are plotted using.
+        use_defaults : bool
+            If `True`, the function does not return tick_values such that a plotter uses the default ticks.
+        """
+        if use_defaults:
+            return
+
+        if self.manual_values is not None:
+            return np.asarray(self.manual_values)
+        elif not units.use_scaled:
+            return np.linspace(0, array.shape_2d[0], 5).astype("int")
+        elif (units.use_scaled and units.conversion_factor is None) or not units.in_kpc:
+            return np.round(np.linspace(min_value, max_value, 5), 2)
+        elif units.use_scaled and units.conversion_factor is not None:
+            return np.round(
+                np.linspace(
+                    min_value * units.conversion_factor,
+                    max_value * units.conversion_factor,
+                    5,
+                ),
+                2,
+            )
+
+        else:
+            raise exc.PlottingException(
+                "The tick labels cannot be computed using the input options."
+            )
+
+
+class YTicks(AbstractTicks):
+    @classmethod
+    def sub(cls, manual_values: typing.Union[typing.List[float]] = None):
+        return YTicks(manual_values=manual_values, from_subplot_config=True)
+
+    def set(
+        self,
+        array: arrays.Array,
+        min_value: float,
+        max_value: float,
+        units: Units,
+        use_defaults: bool = False,
+    ):
+        """
+        Set the y ticks of a figure using the shape of an input `Array` object and input units.
+
+        Parameters
+        -----------
+        array : arrays.Array
+            The 2D array of data which is plotted.
+        min_value : float
+            the minimum value of the yticks that figure is plotted using.
+        max_value : float
+            the maximum value of the yticks that figure is plotted using.
+        units : Units
+            The units of the figure.
+        use_defaults : bool
+            If True, the figure is plotted symmetrically around a central value, which is the default behaviour of
+            Matplotlib. This is used for plotting `Mapper`'s.
+        """
+
+        ticks = self.tick_values_from(
+            min_value=min_value, max_value=max_value, use_defaults=use_defaults
+        )
+        labels = self.tick_values_in_units_from(
+            array=array,
+            min_value=min_value,
+            max_value=max_value,
+            units=units,
+            use_defaults=use_defaults,
+        )
+        plt.yticks(ticks=ticks, labels=labels, **self.kwargs_ticks)
+
+
+class XTicks(AbstractTicks):
+    @classmethod
+    def sub(cls, manual_values: typing.Union[typing.List[float]] = None):
+        return XTicks(manual_values=manual_values, from_subplot_config=True)
+
+    def set(
+        self,
+        array: arrays.Array,
+        min_value: float,
+        max_value: float,
+        units: Units,
+        symmetric_around_centre: bool = False,
+    ):
+        """
+        Set the x ticks of a figure using the shape of an input `Array` object and input units.
+
+        Parameters
+        -----------
+        array : arrays.Array
+            The 2D array of data which is plotted.
+        min_value : float
+            the minimum value of the xticks that figure is plotted using.
+        max_value : float
+            the maximum value of the xticks that figure is plotted using.
+        units : Units
+            The units of the figure.
+        use_defaults : bool
+            If True, the figure is plotted symmetrically around a central value, which is the default behaviour of
+            Matplotlib. This is used for plotting `Mapper`'s.
+        """
+
+        ticks = self.tick_values_from(
+            min_value=min_value,
+            max_value=max_value,
+            use_defaults=symmetric_around_centre,
+        )
+        labels = self.tick_values_in_units_from(
+            array=array,
+            min_value=min_value,
+            max_value=max_value,
+            units=units,
+            use_defaults=symmetric_around_centre,
+        )
+        plt.xticks(ticks=ticks, labels=labels, **self.kwargs_ticks)
+
+
+class Title(AbstractMatObj):
+    def __init__(self, from_subplot_config: bool = False, **kwargs):
+        """The settings used to customize the figure's title.
+
+        This object wraps the following Matplotlib methods:
+
+        - plt.title: https://matplotlib.org/3.3.2/api/_as_gen/matplotlib.pyplot.title.html
+
+        The title will automatically be set if not specified, using the name of the function used to plot the data.
+
+        Parameters
+        ----------
         from_subplot_config : bool
             If True, load unspecified settings from the figures.ini visualization config, else use subplots.ini.
         """
         self.from_subplot_config = from_subplot_config
 
-        self.ysize = self.load_setting(
-            param=ysize, name="ysize", from_subplot_config=from_subplot_config
-        )
-        self.xsize = self.load_setting(
-            param=xsize, name="xsize", from_subplot_config=from_subplot_config
-        )
+        super().__init__(from_subplot_config=from_subplot_config, kwargs=kwargs)
 
-        self.y_manual = y_manual
-        self.x_manual = x_manual
+        if "label" not in self.kwargs:
+            self.kwargs["label"] = None
 
-    @classmethod
-    def sub(
-        cls,
-        ysize: int = None,
-        xsize: int = None,
-        y_manual: typing.Union[typing.List[float]] = None,
-        x_manual: typing.Union[typing.List[float]] = None,
-    ):
-        return Ticks(
-            ysize=ysize,
-            xsize=xsize,
-            y_manual=y_manual,
-            x_manual=x_manual,
-            from_subplot_config=True,
-        )
-
-    def set_yticks(
-        self,
-        array: arrays.Array,
-        ymin: float,
-        ymax: float,
-        units: Units,
-        symmetric_around_centre: bool = False,
-    ):
-        """
-        Use the extent of an input `Array` object to set the y ticks of a figure.
-
-        Parameters
-        -----------
-        array : arrays.Array
-            The 2D array of data which is plotted.
-        ymin : float
-            The minimum y value of the ticks.
-        ymax : float
-            The maximum y value of the ticks.
-        units : Units
-            The units of the figure.
-        symmetric_around_centre : bool
-            If True, the figure is plotted symmetrically around a central value, which is the default behaviour of
-            Matplotlib. This is used for plotting `Mapper`'s.
-        """
-
-        plt.tick_params(labelsize=self.ysize)
-
-        if symmetric_around_centre:
-            return
-
-        yticks = np.linspace(ymin, ymax, 5)
-
-        if self.y_manual is not None:
-            ytick_labels = np.asarray(self.y_manual)
-            yticks = np.linspace(ymin, ymax, len(self.y_manual))
-        elif not units.use_scaled:
-            ytick_labels = np.linspace(0, array.shape_2d[0], 5).astype("int")
-        elif (units.use_scaled and units.conversion_factor is None) or not units.in_kpc:
-            ytick_labels = np.round(np.linspace(ymin, ymax, 5), 2)
-        elif units.use_scaled and units.conversion_factor is not None:
-            ytick_labels = np.round(
-                np.linspace(
-                    ymin * units.conversion_factor, ymax * units.conversion_factor, 5
-                ),
-                2,
-            )
-
-        else:
-            raise exc.PlottingException(
-                "The y and y ticks cannot be set using the input options."
-            )
-
-        plt.yticks(ticks=yticks, labels=ytick_labels)
-
-    def set_xticks(
-        self,
-        array: arrays.Array,
-        xmin: float,
-        xmax: float,
-        units: Units,
-        symmetric_around_centre: bool = False,
-    ):
-        """
-        Use the extent of an input `Array` object to set the x ticks of a figure.
-
-        Parameters
-        -----------
-        array : arrays.Array
-            The 2D array of data which is plotted.
-        xmin : float
-            The minimum x value of the ticks.
-        xmax : float
-            The maximum x value of the ticks.
-        units : Units
-            The units of the figure.
-        symmetric_around_centre : bool
-            If True, the figure is plotted symmetrically around a central value, which is the default behaviour of
-            Matplotlib. This is used for plotting `Mapper`'s.
-        """
-
-        plt.tick_params(labelsize=self.xsize)
-
-        if symmetric_around_centre:
-            return
-
-        xticks = np.linspace(xmin, xmax, 5)
-
-        if self.x_manual is not None:
-            xtick_labels = np.asarray(self.x_manual)
-            xticks = np.linspace(xmin, xmax, len(self.x_manual))
-        elif not units.use_scaled:
-            xtick_labels = np.linspace(0, array.shape_2d[0], 5).astype("int")
-        elif (units.use_scaled and units.conversion_factor is None) or not units.in_kpc:
-            xtick_labels = np.round(np.linspace(xmin, xmax, 5), 2)
-        elif units.use_scaled and units.conversion_factor is not None:
-            xtick_labels = np.round(
-                np.linspace(
-                    xmin * units.conversion_factor, xmax * units.conversion_factor, 5
-                ),
-                2,
-            )
-
-        else:
-            raise exc.PlottingException(
-                "The y and y ticks cannot be set using the input options."
-            )
-
-        plt.xticks(ticks=xticks, labels=xtick_labels)
-
-
-class Labels(AbstractMatObj):
-    def __init__(
-        self,
-        title: str = None,
-        yunits: str = None,
-        xunits: str = None,
-        titlesize: int = None,
-        ysize: int = None,
-        xsize: int = None,
-        from_subplot_config: bool = False,
-    ):
-        """The settings used to customize the figure's title and y and x labels.
-
-        This object wraps the following Matplotlib methods:
-
-        - plt.title: https://matplotlib.org/3.1.1/api/_as_gen/matplotlib.pyplot.title.html
-        - plt.ylabel: https://matplotlib.org/3.1.1/api/_as_gen/matplotlib.pyplot.ylabel.html
-        - plt.xlabel: https://matplotlib.org/3.1.1/api/_as_gen/matplotlib.pyplot.xlabel.html
-
-        The title and y and x labels will automatically be set if not specified, using the name of the functin
-        used to plot the image and the _Unit_'s. object.
-
-        Parameters
-        ----------
-        title : str
-            Manually specify the figure's title text.
-        ylabel : int
-            Manually specify the figure's y label text.
-        xlabel : int
-            Manually specify the figure's xlabel text.
-        titlesize : int
-            The title text fontsize.
-        ysize : int
-            The ylabel text fontsize.
-        xsize : int
-            The xlabel text fontsize.
-        """
-        self.from_subplot_config = from_subplot_config
-
-        self.title = title
-        self._yunits = yunits
-        self._xunits = xunits
-
-        self.titlesize = self.load_setting(
-            param=titlesize, name="titlesize", from_subplot_config=from_subplot_config
-        )
-        self.ysize = self.load_setting(
-            param=ysize, name="ysize", from_subplot_config=from_subplot_config
-        )
-        self.xsize = self.load_setting(
-            param=xsize, name="xsize", from_subplot_config=from_subplot_config
-        )
-
-    @classmethod
-    def sub(
-        cls,
-        title: str = None,
-        yunits: str = None,
-        xunits: str = None,
-        titlesize: int = None,
-        ysize: int = None,
-        xsize: int = None,
-    ):
-        return Labels(
-            title=title,
-            yunits=yunits,
-            xunits=xunits,
-            titlesize=titlesize,
-            ysize=ysize,
-            xsize=xsize,
-            from_subplot_config=True,
-        )
+    @property
+    def kwargs_title(self):
+        """Creates a kwargs dict of valid inputs of the methods `plt.title` from the object's kwargs dict."""
+        return self.kwargs_of_method(method_name="title")
 
     def title_from_func(self, func: Callable) -> str:
         """If a title is not manually specified use the name of the function plotting the image to set the title.
@@ -648,45 +675,51 @@ class Labels(AbstractMatObj):
         func : func
            The function plotting the image.
         """
-        if self.title is None:
-
+        if self.kwargs_title["label"] is None:
             return func.__name__.capitalize()
-
         else:
+            return self.kwargs_title["label"]
 
-            return self.title
+    def set(self):
+        plt.title(**self.kwargs_title)
 
-    def yunits_from_func(self, func: Callable) -> str:
-        """
-        If the y label is not manually specified use the function plotting the image to y label, assuming that it
-        represents spatial units.
+
+class AbstractLabel(AbstractMatObj):
+    def __init__(
+        self,
+        units: "Units" = None,
+        manual_label: str = None,
+        from_subplot_config: bool = False,
+        **kwargs,
+    ):
+        """The settings used to customize the figure's title and y and x labels.
+
+        This object wraps the following Matplotlib methods:
+
+        - plt.ylabel: https://matplotlib.org/3.3.2/api/_as_gen/matplotlib.pyplot.ylabel.html
+        - plt.xlabel: https://matplotlib.org/3.3.2/api/_as_gen/matplotlib.pyplot.xlabel.html
+
+        The y and x labels will automatically be set if not specified, using the input `Unit`'s. object.
 
         Parameters
         ----------
-        func : func
-           The function plotting the image.
+        units : Units
+            The units the data is plotted using.
+        manual_label : str
+            A manual label which overrides the default computed via the units if input.
+
         """
 
-        if self._yunits is None:
+        super().__init__(from_subplot_config=from_subplot_config, kwargs=kwargs)
 
-            args = inspect.getfullargspec(func).args
-            defaults = inspect.getfullargspec(func).defaults
+        self.manual_label = manual_label
+        self._units = units
 
-            if defaults is not None:
-                non_default_args = len(args) - len(defaults)
-            else:
-                non_default_args = 0
+    @property
+    def kwargs_label(self):
+        return self.kwargs_of_method(method_name="label")
 
-            if "label_yunits" in args:
-                return defaults[args.index("label_yunits") - non_default_args]
-            else:
-                return None
-
-        else:
-
-            return self._yunits
-
-    def xunits_from_func(self, func: Callable) -> str:
+    def units_from_func(self, func: Callable, for_ylabel=True) -> "Units":
         """
         If the x label is not manually specified use the function plotting the image to x label, assuming that it
         represents spatial units.
@@ -696,7 +729,8 @@ class Labels(AbstractMatObj):
         func : func
            The function plotting the image.
         """
-        if self._xunits is None:
+
+        if self._units is None:
 
             args = inspect.getfullargspec(func).args
             defaults = inspect.getfullargspec(func).defaults
@@ -706,25 +740,27 @@ class Labels(AbstractMatObj):
             else:
                 non_default_args = 0
 
-            if "label_xunits" in args:
+            if (not for_ylabel) and "label_xunits" in args:
                 return defaults[args.index("label_xunits") - non_default_args]
+            elif for_ylabel and "label_yunits" in args:
+                return defaults[args.index("label_yunits") - non_default_args]
             else:
                 return None
 
         else:
 
-            return self._xunits
+            return self._units
 
-    def yunits_from_units(self, units: Units) -> str:
+    def label_from_units(self, units: Units) -> str:
         """
-        Returns the units of the y-axis to create the y label text if it is not manually specified.
+        Returns the label of an object, by determining it from the figure units if the label is not manually specified.
 
-             Parameters
-             ----------
-             unit : Units
-                The units of the image that is plotted which informs the appropriate y label text.
+        Parameters
+        ----------
+        units : Units
+           The units of the image that is plotted which informs the appropriate y label text.
         """
-        if self._yunits is None:
+        if self._units is None:
 
             if units.in_kpc is not None:
                 if units.in_kpc:
@@ -739,39 +775,15 @@ class Labels(AbstractMatObj):
 
         else:
 
-            return self._yunits
+            return self._units
 
-    def xunits_from_units(self, units: Units) -> str:
-        """
-        Returns the units of the x-axis to create the x label text if it is not manually specified.
 
-             Parameters
-             ----------
-             unit : Units
-                The units of the image that is plotted which informs the the appropriate x label text.
-        """
-        if self._xunits is None:
+class YLabel(AbstractLabel):
+    @classmethod
+    def sub(cls, units: str = None, manual_label: str = None):
+        return YLabel(units=units, manual_label=manual_label, from_subplot_config=True)
 
-            if units.in_kpc is not None:
-                if units.in_kpc:
-                    return "kpc"
-                else:
-                    return "arcsec"
-
-            if units.use_scaled:
-                return "scaled"
-            else:
-                return "pixels"
-
-        else:
-
-            return self._xunits
-
-    def set_title(self):
-        """Set the title and title size of the figure."""
-        plt.title(label=self.title, fontsize=self.titlesize)
-
-    def set_yunits(self, units: Units, include_brackets: bool):
+    def set(self, units: Units, include_brackets: bool):
         """
         Set the y labels of the figure, including the fontsize.
 
@@ -785,14 +797,27 @@ class Labels(AbstractMatObj):
         include_brackets : bool
             Whether to include brackets around the y label text of the units.
         """
-        if include_brackets:
-            plt.ylabel(
-                "y (" + self.yunits_from_units(units=units) + ")", fontsize=self.ysize
-            )
-        else:
-            plt.ylabel(self.yunits_from_units(units=units), fontsize=self.ysize)
 
-    def set_xunits(self, units: Units, include_brackets: bool):
+        if self.manual_label is not None:
+            plt.ylabel(ylabel=self.manual_label, **self.kwargs_label)
+        else:
+            if include_brackets:
+                plt.ylabel(
+                    ylabel="y (" + self.label_from_units(units=units) + ")",
+                    **self.kwargs_label,
+                )
+            else:
+                plt.ylabel(
+                    ylabel=self.label_from_units(units=units), **self.kwargs_label
+                )
+
+
+class XLabel(AbstractLabel):
+    @classmethod
+    def sub(cls, units: str = None, manual_label: str = None):
+        return YLabel(units=units, manual_label=manual_label, from_subplot_config=True)
+
+    def set(self, units: Units, include_brackets: bool):
         """
         Set the x labels of the figure, including the fontsize.
 
@@ -806,12 +831,18 @@ class Labels(AbstractMatObj):
         include_brackets : bool
             Whether to include brackets around the x label text of the units.
         """
-        if include_brackets:
-            plt.xlabel(
-                "x (" + self.xunits_from_units(units=units) + ")", fontsize=self.xsize
-            )
+        if self.manual_label is not None:
+            plt.xlabel(xlabel=self.manual_label, **self.kwargs_label)
         else:
-            plt.xlabel(self.xunits_from_units(units=units), fontsize=self.xsize)
+            if include_brackets:
+                plt.xlabel(
+                    xlabel="x (" + self.label_from_units(units=units) + ")",
+                    **self.kwargs_label,
+                )
+            else:
+                plt.xlabel(
+                    xlabel=self.label_from_units(units=units), **self.kwargs_label
+                )
 
 
 class Legend(AbstractMatObj):

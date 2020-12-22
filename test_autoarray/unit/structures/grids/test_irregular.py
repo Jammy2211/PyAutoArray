@@ -385,12 +385,8 @@ class TestGridIrregularGroupedUniform:
             grid=[[(1.0, 1.0), (1.0, 3.0)]], pixel_scales=2.0
         )
 
-        grid_upscale = (
-            grids.GridIrregularGroupedUniform.from_grid_sparse_uniform_upscale(
-                grid_sparse_uniform=grid_sparse_uniform,
-                upscale_factor=2,
-                pixel_scales=2.0,
-            )
+        grid_upscale = grids.GridIrregularGroupedUniform.from_grid_sparse_uniform_upscale(
+            grid_sparse_uniform=grid_sparse_uniform, upscale_factor=2, pixel_scales=2.0
         )
 
         assert (
@@ -413,12 +409,8 @@ class TestGridIrregularGroupedUniform:
             grid=[[(1.0, 1.0), (1.0, 3.0), (1.0, 5.0), (3.0, 3.0)]], pixel_scales=2.0
         )
 
-        grid_upscale = (
-            grids.GridIrregularGroupedUniform.from_grid_sparse_uniform_upscale(
-                grid_sparse_uniform=grid_sparse_uniform,
-                upscale_factor=4,
-                pixel_scales=2.0,
-            )
+        grid_upscale = grids.GridIrregularGroupedUniform.from_grid_sparse_uniform_upscale(
+            grid_sparse_uniform=grid_sparse_uniform, upscale_factor=4, pixel_scales=2.0
         )
 
         grid_upscale_util = aa.util.grid.grid_upscaled_1d_from(

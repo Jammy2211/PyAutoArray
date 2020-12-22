@@ -56,8 +56,12 @@ class AbstractPlotter:
         figure=None,
         cmap=None,
         cb=None,
-        ticks=None,
-        labels=None,
+        title=None,
+        tickparams=None,
+        yticks=None,
+        xticks=None,
+        ylabel=None,
+        xlabel=None,
         legend=None,
         output=None,
         origin_scatterer=None,
@@ -93,27 +97,49 @@ class AbstractPlotter:
         self.cmap = (
             cmap
             if cmap is not None
-            else mat_objs.ColorMap(
-                module=module, from_subplot_config=from_subplot_config
-            )
+            else mat_objs.Cmap(module=module, from_subplot_config=from_subplot_config)
         )
 
         self.cb = (
             cb
             if cb is not None
-            else mat_objs.ColorBar(from_subplot_config=from_subplot_config)
+            else mat_objs.Colorbar(from_subplot_config=from_subplot_config)
         )
 
-        self.ticks = (
-            ticks
-            if ticks is not None
-            else mat_objs.Ticks(from_subplot_config=from_subplot_config)
+        self.title = (
+            title
+            if title is not None
+            else mat_objs.Title(from_subplot_config=from_subplot_config)
         )
 
-        self.labels = (
-            labels
-            if labels is not None
-            else mat_objs.Labels(from_subplot_config=from_subplot_config)
+        self.tickparams = (
+            tickparams
+            if tickparams is not None
+            else mat_objs.TickParams(from_subplot_config=from_subplot_config)
+        )
+
+        self.yticks = (
+            yticks
+            if yticks is not None
+            else mat_objs.YTicks(from_subplot_config=from_subplot_config)
+        )
+
+        self.xticks = (
+            xticks
+            if xticks is not None
+            else mat_objs.XTicks(from_subplot_config=from_subplot_config)
+        )
+
+        self.ylabel = (
+            ylabel
+            if ylabel is not None
+            else mat_objs.YLabel(from_subplot_config=from_subplot_config)
+        )
+
+        self.xlabel = (
+            xlabel
+            if xlabel is not None
+            else mat_objs.XLabel(from_subplot_config=from_subplot_config)
         )
 
         self.legend = (
@@ -291,9 +317,9 @@ class AbstractPlotter:
             The fraction of the figure that the colorbar takes up, which resizes the colorbar relative to the figure.
         cb_pad : float
             Pads the color bar in the figure, which resizes the colorbar relative to the figure.
-        xsize : int
+        labelsize : int
             The fontsize of the x axes label.
-        ysize : int
+        labelsize : int
             The fontsize of the y axes label.
         xyticksize : int
             The font size of the x and y ticks on the figure axes.
@@ -325,7 +351,7 @@ class AbstractPlotter:
             unit_label='scaled', kpc_per_scaled=None, figsize=(7,7), aspect='auto',
             cmap='jet', norm='linear, vmin=None, vmax=None, linthresh=None, linscale=None,
             cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01, cb_tick_values=None, cb_tick_labels=None,
-            title='Image', titlesize=16, xsize=16, ysize=16, xyticksize=16,
+            title='Image', titlesize=16, labelsize=16, labelsize=16, xyticksize=16,
             mask_scatterer=10, border_pointsize=2, position_pointsize=10, grid_pointsize=10,
             xticks_manual=None, yticks_manual=None,
             output_path='/path/to/output', output_format='png', output_filename='image')
@@ -378,16 +404,17 @@ class AbstractPlotter:
 
         plt.axis(extent)
 
-        self.ticks.set_yticks(
-            array=array, ymin=extent[2], ymax=extent[3], units=self.units
+        self.tickparams.set()
+        self.yticks.set(
+            array=array, min_value=extent[2], max_value=extent[3], units=self.units
         )
-        self.ticks.set_xticks(
-            array=array, xmin=extent[0], xmax=extent[1], units=self.units
+        self.xticks.set(
+            array=array, min_value=extent[0], max_value=extent[1], units=self.units
         )
 
-        self.labels.set_title()
-        self.labels.set_yunits(units=self.units, include_brackets=True)
-        self.labels.set_xunits(units=self.units, include_brackets=True)
+        self.title.set()
+        self.ylabel.set(units=self.units, include_brackets=True)
+        self.xlabel.set(units=self.units, include_brackets=True)
 
         self.cb.set()
         if include_origin:
@@ -496,9 +523,9 @@ class AbstractPlotter:
             The fraction of the figure that the colorbar takes up, which resizes the colorbar relative to the figure.
         cb_pad : float
             Pads the color bar in the figure, which resizes the colorbar relative to the figure.
-        xsize : int
+        labelsize : int
             The fontsize of the x axes label.
-        ysize : int
+        labelsize : int
             The fontsize of the y axes label.
         xyticksize : int
             The font size of the x and y ticks on the figure axes.
@@ -530,7 +557,7 @@ class AbstractPlotter:
             unit_label='scaled', kpc_per_scaled=None, figsize=(7,7), aspect='auto',
             cmap='jet', norm='linear, vmin=None, vmax=None, linthresh=None, linscale=None,
             cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01, cb_tick_values=None, cb_tick_labels=None,
-            title='Image', titlesize=16, xsize=16, ysize=16, xyticksize=16,
+            title='Image', titlesize=16, labelsize=16, labelsize=16, xyticksize=16,
             mask_scatterer=10, border_pointsize=2, position_pointsize=10, grid_pointsize=10,
             xticks_manual=None, yticks_manual=None,
             output_path='/path/to/output', output_format='png', output_filename='image')
@@ -561,16 +588,17 @@ class AbstractPlotter:
 
         extent = frame.mask.geometry.extent
 
-        self.ticks.set_yticks(
-            array=frame, ymin=extent[2], ymax=extent[3], units=self.units
+        self.tickparams.set()
+        self.yticks.set(
+            array=frame, min_value=extent[2], max_value=extent[3], units=self.units
         )
-        self.ticks.set_xticks(
-            array=frame, xmin=extent[0], xmax=extent[1], units=self.units
+        self.xticks.set(
+            array=frame, min_value=extent[0], max_value=extent[1], units=self.units
         )
 
-        self.labels.set_title()
-        self.labels.set_yunits(units=self.units, include_brackets=True)
-        self.labels.set_xunits(units=self.units, include_brackets=True)
+        self.title.set()
+        self.ylabel.set(units=self.units, include_brackets=True)
+        self.xlabel.set(units=self.units, include_brackets=True)
 
         self.cb.set()
         if include_origin:
@@ -646,9 +674,9 @@ class AbstractPlotter:
             The text of the title.
         titlesize : int
             The size of of the title of the figure.
-        xsize : int
+        labelsize : int
             The fontsize of the x axes label.
-        ysize : int
+        labelsize : int
             The fontsize of the y axes label.
         output_path : str
             The path on the hard-disk where the figure is output.
@@ -674,9 +702,9 @@ class AbstractPlotter:
             )
             self.cb.set()
 
-        self.labels.set_title()
-        self.labels.set_yunits(units=self.units, include_brackets=True)
-        self.labels.set_xunits(units=self.units, include_brackets=True)
+        self.title.set()
+        self.ylabel.set(units=self.units, include_brackets=True)
+        self.xlabel.set(units=self.units, include_brackets=True)
 
         if axis_limits is not None:
 
@@ -690,17 +718,18 @@ class AbstractPlotter:
 
             plt.axis(grid.extent)
 
-        self.ticks.set_yticks(
+        self.tickparams.set()
+        self.yticks.set(
             array=None,
-            ymin=grid.extent[2],
-            ymax=grid.extent[3],
+            min_value=grid.extent[2],
+            max_value=grid.extent[3],
             units=self.units,
-            symmetric_around_centre=symmetric_around_centre,
+            use_defaults=symmetric_around_centre,
         )
-        self.ticks.set_xticks(
+        self.xticks.set(
             array=None,
-            xmin=grid.extent[0],
-            xmax=grid.extent[1],
+            min_value=grid.extent[0],
+            max_value=grid.extent[1],
             units=self.units,
             symmetric_around_centre=symmetric_around_centre,
         )
@@ -741,15 +770,15 @@ class AbstractPlotter:
             return
 
         self.figure.open()
-        self.labels.set_title()
+        self.title.set()
 
         if x is None:
             x = np.arange(len(y))
 
         self.liner.draw_y_vs_x(y=y, x=x, plot_axis_type=plot_axis_type, label=label)
 
-        self.labels.set_yunits(units=self.units, include_brackets=False)
-        self.labels.set_xunits(units=self.units, include_brackets=False)
+        self.ylabel.set(units=self.units, include_brackets=False)
+        self.xlabel.set(units=self.units, include_brackets=False)
 
         self.liner.draw_vertical_lines(
             vertical_lines=vertical_lines, vertical_line_labels=vertical_line_labels
@@ -758,8 +787,9 @@ class AbstractPlotter:
         if label is not None or vertical_line_labels is not None:
             self.legend.set()
 
-        self.ticks.set_xticks(
-            array=None, xmin=np.min(x), xmax=np.max(x), units=self.units
+        self.tickparams.set()
+        self.xticks.set(
+            array=None, min_value=np.min(x), max_value=np.max(x), units=self.units
         )
 
         if not bypass_output:
@@ -846,16 +876,16 @@ class AbstractPlotter:
             symmetric_around_centre=False,
         )
 
-        self.ticks.set_yticks(
+        self.yticks.set(
             array=None,
-            ymin=mapper.pixelization_grid.extent[2],
-            ymax=mapper.pixelization_grid.extent[3],
+            min_value=mapper.pixelization_grid.extent[2],
+            max_value=mapper.pixelization_grid.extent[3],
             units=self.units,
         )
-        self.ticks.set_xticks(
+        self.xticks.set(
             array=None,
-            xmin=mapper.pixelization_grid.extent[0],
-            xmax=mapper.pixelization_grid.extent[1],
+            min_value=mapper.pixelization_grid.extent[0],
+            max_value=mapper.pixelization_grid.extent[1],
             units=self.units,
         )
 
@@ -863,9 +893,10 @@ class AbstractPlotter:
             extent=mapper.pixelization_grid.extent, shape_2d=mapper.shape_2d
         )
 
-        self.labels.set_title()
-        self.labels.set_yunits(units=self.units, include_brackets=True)
-        self.labels.set_xunits(units=self.units, include_brackets=True)
+        self.title.set()
+        self.tickparams.set()
+        self.ylabel.set(units=self.units, include_brackets=True)
+        self.xlabel.set(units=self.units, include_brackets=True)
 
         if include_origin:
             self.origin_scatterer.scatter_grid(grid=[mapper.grid.origin])
@@ -923,13 +954,14 @@ class AbstractPlotter:
             symmetric_around_centre=False,
         )
 
-        self.ticks.set_yticks(
+        self.tickparams.set()
+        self.yticks.set(
             array=None,
-            ymin=mapper.pixelization_grid.extent[2],
-            ymax=mapper.pixelization_grid.extent[3],
+            min_value=mapper.pixelization_grid.extent[2],
+            max_value=mapper.pixelization_grid.extent[3],
             units=self.units,
         )
-        self.ticks.set_xticks(
+        self.xticks.set(
             array=None,
             xmin=mapper.pixelization_grid.extent[0],
             xmax=mapper.pixelization_grid.extent[1],
@@ -940,9 +972,9 @@ class AbstractPlotter:
             mapper=mapper, values=source_pixel_values, cmap=self.cmap.cmap, cb=self.cb
         )
 
-        self.labels.set_title()
-        self.labels.set_yunits(units=self.units, include_brackets=True)
-        self.labels.set_xunits(units=self.units, include_brackets=True)
+        self.title.set()
+        self.ylabel.set(units=self.units, include_brackets=True)
+        self.xlabel.set(units=self.units, include_brackets=True)
 
         if include_origin:
             self.origin_scatterer.scatter_grid(grid=[mapper.grid.origin])
@@ -1015,25 +1047,27 @@ class AbstractPlotter:
 
         plotter = copy.deepcopy(self)
 
-        plotter.labels.title = title if title is not None else self.labels.title
-        plotter.labels._yunits = yunits if yunits is not None else self.labels._yunits
-        plotter.labels._xunits = xunits if xunits is not None else self.labels._xunits
-        plotter.labels.titlesize = (
-            titlesize if titlesize is not None else self.labels.titlesize
+        plotter.title.kwargs["label"] = (
+            title if title is not None else self.title.kwargs["label"]
         )
-        plotter.labels.ysize = ysize if ysize is not None else self.labels.ysize
-        plotter.labels.xsize = xsize if xsize is not None else self.labels.xsize
+        plotter.title.kwargs["fontsize"] = (
+            titlesize if titlesize is not None else titlesize
+        )
+
+        plotter.ylabel._units = yunits if yunits is not None else self.ylabel._units
+        plotter.xlabel._units = xunits if xunits is not None else self.xlabel._units
+
+        plotter.ylabel.kwargs["labelsize"] = (
+            ysize if ysize is not None else self.ylabel.kwargs["labelsize"]
+        )
+        plotter.xlabel.kwargs["labelsize"] = (
+            xsize if xsize is not None else self.xlabel.kwargs["labelsize"]
+        )
 
         return plotter
 
     def plotter_with_new_cmap(
-        self,
-        cmap=None,
-        norm=None,
-        vmax=None,
-        vmin=None,
-        linthresh=None,
-        linscale=None,
+        self, cmap=None, norm=None, vmax=None, vmin=None, linthresh=None, linscale=None
     ):
 
         plotter = copy.deepcopy(self)
@@ -1098,8 +1132,12 @@ class Plotter(AbstractPlotter):
         figure=None,
         cmap=None,
         cb=None,
-        ticks=None,
-        labels=None,
+        title=None,
+        tickparams=None,
+        yticks=None,
+        xticks=None,
+        ylabel=None,
+        xlabel=None,
         legend=None,
         output=None,
         origin_scatterer=None,
@@ -1125,8 +1163,12 @@ class Plotter(AbstractPlotter):
             cmap=cmap,
             cb=cb,
             legend=legend,
-            ticks=ticks,
-            labels=labels,
+            title=title,
+            tickparams=tickparams,
+            yticks=yticks,
+            xticks=xticks,
+            ylabel=ylabel,
+            xlabel=xlabel,
             output=output,
             origin_scatterer=origin_scatterer,
             mask_scatterer=mask_scatterer,
@@ -1154,8 +1196,12 @@ class SubPlotter(AbstractPlotter):
         figure=None,
         cmap=None,
         cb=None,
-        ticks=None,
-        labels=None,
+        title=None,
+        tickparams=None,
+        yticks=None,
+        xticks=None,
+        ylabel=None,
+        xlabel=None,
         legend=None,
         output=None,
         origin_scatterer=None,
@@ -1182,8 +1228,12 @@ class SubPlotter(AbstractPlotter):
             cmap=cmap,
             cb=cb,
             legend=legend,
-            ticks=ticks,
-            labels=labels,
+            title=title,
+            tickparams=tickparams,
+            yticks=yticks,
+            xticks=xticks,
+            ylabel=ylabel,
+            xlabel=xlabel,
             output=output,
             origin_scatterer=origin_scatterer,
             mask_scatterer=mask_scatterer,
@@ -1580,8 +1630,8 @@ def set_labels(func):
         plotter = kwargs[plotter_key]
 
         title = plotter.labels.title_from_func(func=func)
-        yunits = plotter.labels.yunits_from_func(func=func)
-        xunits = plotter.labels.xunits_from_func(func=func)
+        yunits = plotter.labels.units_from_func(func=func, for_ylabel=True)
+        xunits = plotter.labels.units_from_func(func=func, for_ylabel=False)
 
         plotter = plotter.plotter_with_new_labels(
             title=title, yunits=yunits, xunits=xunits
