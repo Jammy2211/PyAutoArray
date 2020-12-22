@@ -717,6 +717,7 @@ class AbstractLabel(AbstractMatObj):
 
     @property
     def kwargs_label(self):
+        """Creates a kwargs dict of valid inputs of the methods `plt.ylabel` and `plt.xlabel` from the object's kwargs dict."""
         return self.kwargs_of_method(method_name="label")
 
     def units_from_func(self, func: Callable, for_ylabel=True) -> "Units":
@@ -846,46 +847,36 @@ class XLabel(AbstractLabel):
 
 
 class Legend(AbstractMatObj):
-    def __init__(
-        self,
-        include: bool = None,
-        fontsize: int = None,
-        from_subplot_config: bool = False,
-    ):
+    def __init__(self, include=False, from_subplot_config: bool = False, **kwargs):
         """
-        The settings used to include a legend on a figure and customize it.
+        The settings used to include and customize a legend on a figure.
 
         This object wraps the following Matplotlib methods:
 
-        - plt.legend: https://matplotlib.org/3.1.1/api/_as_gen/matplotlib.pyplot.legend.html
-
-        The title and y and x labels will automatically be set if not specified, using the name of the functin
-        used to plot the image and the _Unit_'s. object.
+        - plt.legend: https://matplotlib.org/3.3.2/api/_as_gen/matplotlib.pyplot.legend.html
 
         Parameters
         ----------
         include : bool
-            Whether to include a legend on the figure oor not.
-        fontsize : int
-            The size of the font on the figure.
+            If the legend should be plotted and therefore included on the figure.
         """
 
-        self.from_subplot_config = from_subplot_config
+        super().__init__(from_subplot_config=from_subplot_config, kwargs=kwargs)
 
-        self.include = self.load_setting(
-            param=include, name="include", from_subplot_config=from_subplot_config
-        )
-        self.fontsize = self.load_setting(
-            param=fontsize, name="fontsize", from_subplot_config=from_subplot_config
-        )
+        self.kwargs["include"] = include
+
+    @property
+    def kwargs_legend(self):
+        """Creates a kwargs dict of valid inputs of the method `plt.legend` from the object's kwargs dict."""
+        return self.kwargs_of_method(method_name="label")
 
     @classmethod
-    def sub(cls, include=None, fontsize=None):
-        return Legend(include=include, fontsize=fontsize, from_subplot_config=True)
+    def sub(cls, include: bool = False):
+        return Legend(include=include, from_subplot_config=True)
 
     def set(self):
-        if self.include:
-            plt.legend(fontsize=self.fontsize)
+        if self.kwargs["include"]:
+            plt.legend(**self.kwargs_legend)
 
 
 class Output(AbstractMatObj):
@@ -981,13 +972,6 @@ class Output(AbstractMatObj):
             plt.savefig(
                 path.join(self.path, f"{self.filename}.png"), bbox_inches="tight"
             )
-
-
-def remove_spaces_and_commas_from_colors(colors):
-
-    colors = [color.strip(",") for color in colors]
-    colors = [color.strip(" ") for color in colors]
-    return list(filter(None, colors))
 
 
 class Scatterer(AbstractMatObj):
@@ -1868,3 +1852,10 @@ class VoronoiDrawer(AbstractMatObj):
             new_regions.append(new_region.tolist())
 
         return new_regions, np.asarray(new_vertices)
+
+
+def remove_spaces_and_commas_from_colors(colors):
+
+    colors = [color.strip(",") for color in colors]
+    colors = [color.strip(" ") for color in colors]
+    return list(filter(None, colors))
