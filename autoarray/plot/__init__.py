@@ -1,4 +1,4 @@
-from autoarray.plot.wrap_mat.wrap_mat import (
+from autoarray.plot.mat_wrap.mat_base import (
     Units,
     Figure,
     Cmap,
@@ -13,9 +13,9 @@ from autoarray.plot.wrap_mat.wrap_mat import (
     Output,
 )
 
-from autoarray.plot.wrap_mat.include import Include
+from autoarray.plot.mat_wrap.include import Include
 
-from autoarray.plot.wrap_mat.wrap_structure import (
+from autoarray.plot.mat_wrap.mat_structure import (
     ArrayOverlay,
     GridScatter,
     LinePlot,
@@ -24,7 +24,7 @@ from autoarray.plot.wrap_mat.wrap_structure import (
     VoronoiDrawer,
 )
 
-from autoarray.plot.wrap_mat.wrap_obj import (
+from autoarray.plot.mat_wrap.mat_obj import (
     OriginScatter,
     MaskScatter,
     BorderScatter,
@@ -36,12 +36,12 @@ from autoarray.plot.wrap_mat.wrap_obj import (
     SerialPrescanPlot,
 )
 
-from autoarray.plot.wrap_mat.plotters import Plotter, SubPlotter
+from autoarray.plot.mat_wrap.plotters import Plotter, SubPlotter
 
-from autoarray.plot.wrap_mat.plotters import plot_array as Array
-from autoarray.plot.wrap_mat.plotters import plot_frame as Frame
-from autoarray.plot.wrap_mat.plotters import plot_grid as Grid
-from autoarray.plot.wrap_mat.plotters import plot_line as Line
-from autoarray.plot.wrap_mat.plotters import plot_mapper_obj as MapperObj
+from autoarray.plot.mat_wrap.plotters import plot_array as Array
+from autoarray.plot.mat_wrap.plotters import plot_frame as Frame
+from autoarray.plot.mat_wrap.plotters import plot_grid as Grid
+from autoarray.plot.mat_wrap.plotters import plot_line as Line
+from autoarray.plot.mat_wrap.plotters import plot_mapper_obj as MapperObj
 
 from autoarray.plot.plots import imaging_plots as Imaging

@@ -21,15 +21,15 @@ import matplotlib.pyplot as plt
 import numpy as np
 import itertools
 
-from autoarray.plot.wrap_mat import wrap_mat
+from autoarray.plot.mat_wrap import mat_base
 from autoarray.structures import abstract_structure, arrays, grids, vector_fields
 from autoarray import exc
 
 
-class AbstractWrapStructure(wrap_mat.AbstractWrapMat):
+class AbstractWrapStructure(mat_base.AbstractMatBase):
     @property
     def config_folder(self):
-        return "wrap_structure"
+        return "mat_structure"
 
 
 class ArrayOverlay(AbstractWrapStructure):

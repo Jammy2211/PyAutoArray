@@ -1,4 +1,4 @@
-from autoarray.plot.wrap_mat import plotters
+from autoarray.plot.mat_wrap import plotters
 
 
 @plotters.set_include_and_sub_plotter

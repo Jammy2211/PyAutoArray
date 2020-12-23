@@ -1,15 +1,11 @@
-from autoconf import conf
 import autoarray as aa
 import autoarray.plot as aplt
-from autoarray.plot import wrap_mat
 
 from os import path
 
-from matplotlib.patches import Ellipse
 import matplotlib.pyplot as plt
 import matplotlib.colors as colors
-import pytest
-import os, shutil
+import shutil
 import numpy as np
 
 directory = path.dirname(path.realpath(__file__))
@@ -729,6 +725,25 @@ class TestLegend:
 
 
 class TestOutput:
+    def test__constructor(self):
+
+        output = aplt.Output()
+
+        assert output.path == None
+        assert output._format == None
+        assert output.format == "show"
+        assert output.filename == None
+
+        output = aplt.Output(path="Path", format="png", filename="file")
+
+        assert output.path == "Path"
+        assert output._format == "png"
+        assert output.format == "png"
+        assert output.filename == "file"
+
+        if path.exists(output.path):
+            shutil.rmtree(output.path)
+
     def test__input_path_is_created(self):
 
         test_path = path.join(directory, "files", "output_path")
