@@ -974,7 +974,7 @@ class Output(AbstractMatObj):
             )
 
 
-class AbstractScatterer(AbstractMatObj):
+class Scatter(AbstractMatObj):
     def __init__(self, colors=None, from_subplot_config=False, **kwargs):
         """
         An object for scattering an input set of grid points, for example (y,x) coordinates or a data structures
@@ -985,16 +985,16 @@ class AbstractScatterer(AbstractMatObj):
 
         - plt.scatter: https://matplotlib.org/3.1.1/api/_as_gen/matplotlib.pyplot.scatter.html
 
-        There are a number of children of this method that plot specific sets of (y,x) points, where each uses their
-        own settings so that the property they plot appears unique on every figure:
+        There are a number of children of this method in the `include.py` module that plot specific sets of (y,x)
+        points, where each uses theirown settings so that the property they plot appears unique on every figure:
 
-        - `OriginScatterer`: plots the (y,x) coordinates of the origin of a data structure.
-        - `MaskScattererer`: plot a mask over an image, using its mask's (y,x) grid of edge coordinates.
-        - `BorderScatterer: plot a border over an image, using its mask's (y,x) grid of border coordinates.
-        - `GridScatterer`: plot the grid of points of a `Grid` structure.
-        - `PositionsScatterer`: plots the (y,x) coordinates that are input in a plotter via the `positions` input.
-        - `IndexScatterer`: plots specific (y,x) coordinates of a grid (or grids) via their 1d or 2d indexes.
-        - `PixelizationGridScatterer`: plots the grid of a `Pixelization` object (see `autoarray.inversion`).
+        - `OriginScatter`: plots the (y,x) coordinates of the origin of a data structure (e.g. as a black cross).
+        - `MaskScatter`: plots a mask over an image, using the `Mask2d` object's (y,x)  `edge_grid_sub_1` property.
+        - `BorderScatter: plots a border over an image, using the `Mask2d` object's (y,x) `border_grid_sub_1` property.
+        - `GridScatter`: plots an input grid of points which are passed in as a `Grid` structure.
+        - `PositionsScatter`: plots the (y,x) coordinates that are input in a plotter via the `positions` input.
+        - `IndexScatter`: plots specific (y,x) coordinates of a grid (or grids) via their 1d or 2d indexes.
+        - `PixelizationGridScatter`: plots the grid of a `Pixelization` object (see `autoarray.inversion`).
 
         Parameters
         ----------
@@ -1035,7 +1035,7 @@ class AbstractScatterer(AbstractMatObj):
             **self.kwargs_scatter,
         )
 
-    def scatter_colored_grid(self, grid, color_array, cmap):
+    def scatter_grid_colored(self, grid, color_array, cmap):
         """
         Plot an input grid of (y,x) coordinates using the matplotlib method `plt.scatter`.
 
@@ -1123,7 +1123,7 @@ class AbstractScatterer(AbstractMatObj):
                     "useable type"
                 )
 
-    def scatter_grouped_grid(self, grouped_grid):
+    def scatter_grid_grouped(self, grid_grouped):
         """
          Plot an input grid of grouped (y,x) coordinates using the matplotlib method `plt.scatter`.
 
@@ -1132,15 +1132,15 @@ class AbstractScatterer(AbstractMatObj):
 
          Parameters
          ----------
-         grouped_grid : GridIrregularGrouped
+         grid_grouped : GridIrregularGrouped
              The grid of grouped (y,x) coordinates that is plotted.
          """
-        if len(grouped_grid) == 0:
+        if len(grid_grouped) == 0:
             return
 
         color = itertools.cycle(self.kwargs["colors"])
 
-        for group in grouped_grid.in_grouped_list:
+        for group in grid_grouped.in_grouped_list:
 
             plt.scatter(
                 y=np.asarray(group)[:, 0],
@@ -1150,86 +1150,19 @@ class AbstractScatterer(AbstractMatObj):
             )
 
 
-class OriginScatterer(AbstractScatterer):
-    @classmethod
-    def sub(cls, colors=None):
-        return OriginScatterer(colors=colors, from_subplot_config=True)
-
-
-class MaskScatterer(AbstractScatterer):
-    @classmethod
-    def sub(cls, colors=None):
-        return MaskScatterer(colors=colors, from_subplot_config=True)
-
-
-class BorderScatterer(AbstractScatterer):
-    @classmethod
-    def sub(cls, colors=None):
-        return BorderScatterer(colors=colors, from_subplot_config=True)
-
-
-class GridScatterer(AbstractScatterer):
-    @classmethod
-    def sub(cls, colors=None):
-        return GridScatterer(colors=colors, from_subplot_config=True)
-
-
-class PositionsScatterer(AbstractScatterer):
-    @classmethod
-    def sub(cls, colors=None):
-        return PositionsScatterer(colors=colors, from_subplot_config=True)
-
-
-class IndexScatterer(AbstractScatterer):
-    @classmethod
-    def sub(cls, size=None, marker=None, colors=None):
-        return IndexScatterer(
-            size=size, marker=marker, colors=colors, from_subplot_config=True
-        )
-
-
-class PixelizationGridScatterer(AbstractScatterer):
-    @classmethod
-    def sub(cls, colors=None):
-        return PixelizationGridScatterer(colors=colors, from_subplot_config=True)
-
-
-class VectorQuiverer(AbstractMatObj):
+class Quiver(AbstractMatObj):
     def __init__(
         self,
-        headlength=None,
-        pivot=None,
-        linewidth=None,
-        units=None,
-        angles=None,
-        headwidth=None,
-        alpha=None,
         from_subplot_config=False,
+        **kwargs
     ):
 
-        self.from_subplot_config = from_subplot_config
+        super().__init__(from_subplot_config=from_subplot_config, kwargs=kwargs)
 
-        self.headlength = self.load_setting(
-            param=headlength, name="headlength", from_subplot_config=from_subplot_config
-        )
-        self.pivot = self.load_setting(
-            param=pivot, name="pivot", from_subplot_config=from_subplot_config
-        )
-        self.linewidth = self.load_setting(
-            param=linewidth, name="linewidth", from_subplot_config=from_subplot_config
-        )
-        self.units = self.load_setting(
-            param=units, name="units", from_subplot_config=from_subplot_config
-        )
-        self.angles = self.load_setting(
-            param=angles, name="angles", from_subplot_config=from_subplot_config
-        )
-        self.headwidth = self.load_setting(
-            param=headwidth, name="headwidth", from_subplot_config=from_subplot_config
-        )
-        self.alpha = self.load_setting(
-            param=alpha, name="alpha", from_subplot_config=from_subplot_config
-        )
+    @property
+    def kwargs_quiver(self):
+        """Creates a kwargs dict of valid inputs of the method `plt.quiver` from the object's kwargs dict."""
+        return self.kwargs_of_method(method_name="quiver")
 
     def quiver_vector_field(self, vector_field: vector_fields.VectorFieldIrregular):
 
@@ -1238,13 +1171,7 @@ class VectorQuiverer(AbstractMatObj):
             vector_field.grid[:, 0],
             vector_field[:, 1],
             vector_field[:, 0],
-            headlength=self.headlength,
-            pivot=self.pivot,
-            linewidth=self.linewidth,
-            units=self.units,
-            angles=self.angles,
-            headwidth=self.headwidth,
-            alpha=self.alpha,
+            **self.kwargs_quiver
         )
 
     @classmethod
@@ -1259,7 +1186,7 @@ class VectorQuiverer(AbstractMatObj):
         alpha=None,
         cmap=None,
     ):
-        return VectorQuiverer(
+        return Quiver(
             headlength=headlength,
             pivot=pivot,
             linewidth=linewidth,

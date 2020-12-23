@@ -10,20 +10,24 @@ from autoarray.plot.mat_objs import (
     XLabel,
     Legend,
     Output,
-    OriginScatterer,
-    MaskScatterer,
-    BorderScatterer,
-    GridScatterer,
-    PositionsScatterer,
-    IndexScatterer,
-    PixelizationGridScatterer,
-    VectorQuiverer,
+    Quiver,
     Patcher,
     Liner,
     ArrayOverlayer,
     VoronoiDrawer,
 )
-from autoarray.plot.plotters import Plotter, SubPlotter, Include
+from autoarray.plot.include import (
+    Include,
+    OriginScatter,
+    MaskScatter,
+    BorderScatter,
+    GridScatter,
+    PositionsScatter,
+    IndexScatter,
+    PixelizationGridScatter,
+)
+
+from autoarray.plot.plotters import Plotter, SubPlotter
 
 from autoarray.plot.plotters import plot_array as Array
 from autoarray.plot.plotters import plot_frame as Frame
