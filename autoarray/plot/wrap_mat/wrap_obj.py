@@ -1,7 +1,14 @@
 from autoarray.plot.wrap_mat import wrap_structure
 
 
-class OriginScatter(wrap_structure.GridScatter):
+class AbstractWrapObj:
+
+    @property
+    def config_folder(self):
+        return "wrap_obj"
+
+
+class OriginScatter(AbstractWrapObj, wrap_structure.GridScatter):
     """
     Plots the (y,x) coordinates of the origin of a data structure (e.g. as a black cross).
 
@@ -13,7 +20,7 @@ class OriginScatter(wrap_structure.GridScatter):
         return OriginScatter(colors=colors, from_subplot_config=True)
 
 
-class MaskScatter(wrap_structure.GridScatter):
+class MaskScatter(AbstractWrapObj, wrap_structure.GridScatter):
     """
     Plots a mask over an image, using the `Mask2d` object's (y,x) `edge_grid_sub_1` property.
 
@@ -25,7 +32,7 @@ class MaskScatter(wrap_structure.GridScatter):
         return MaskScatter(colors=colors, from_subplot_config=True)
 
 
-class BorderScatter(wrap_structure.GridScatter):
+class BorderScatter(AbstractWrapObj, wrap_structure.GridScatter):
     """
     Plots a border over an image, using the `Mask2d` object's (y,x) `border_grid_sub_1` property.
 
@@ -37,7 +44,7 @@ class BorderScatter(wrap_structure.GridScatter):
         return BorderScatter(colors=colors, from_subplot_config=True)
 
 
-class PositionsScatter(wrap_structure.GridScatter):
+class PositionsScatter(AbstractWrapObj, wrap_structure.GridScatter):
     """
     Plots the (y,x) coordinates that are input in a plotter via the `positions` input.
 
@@ -49,7 +56,7 @@ class PositionsScatter(wrap_structure.GridScatter):
         return PositionsScatter(colors=colors, from_subplot_config=True)
 
 
-class IndexScatter(wrap_structure.GridScatter):
+class IndexScatter(AbstractWrapObj, wrap_structure.GridScatter):
     """
     Plots specific (y,x) coordinates of a grid (or grids) via their 1d or 2d indexes.
 
@@ -63,7 +70,7 @@ class IndexScatter(wrap_structure.GridScatter):
         )
 
 
-class PixelizationGridScatter(wrap_structure.GridScatter):
+class PixelizationGridScatter(AbstractWrapObj, wrap_structure.GridScatter):
     """
     Plots the grid of a `Pixelization` object (see `autoarray.inversion`).
 
@@ -75,7 +82,7 @@ class PixelizationGridScatter(wrap_structure.GridScatter):
         return PixelizationGridScatter(colors=colors, from_subplot_config=True)
 
 
-class ParallelOverscanLine(wrap_structure.LinePlot):
+class ParallelOverscanLine(AbstractWrapObj, wrap_structure.LinePlot):
     def __init__(
         self,
         width=None,
@@ -104,7 +111,7 @@ class ParallelOverscanLine(wrap_structure.LinePlot):
         )
 
 
-class SerialPrescanLine(wrap_structure.LinePlot):
+class SerialPrescanLine(AbstractWrapObj, wrap_structure.LinePlot):
     def __init__(
         self,
         width=None,
@@ -133,7 +140,7 @@ class SerialPrescanLine(wrap_structure.LinePlot):
         )
 
 
-class SerialOverscanLine(wrap_structure.LinePlot):
+class SerialOverscanLine(AbstractWrapObj, wrap_structure.LinePlot):
     def __init__(
         self,
         width=None,
