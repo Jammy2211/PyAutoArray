@@ -31,6 +31,9 @@ from autoarray.plot.wrap_mat.wrap_obj import (
     PositionsScatter,
     IndexScatter,
     PixelizationGridScatter,
+    ParallelOverscanLine,
+    SerialOverscanLine,
+    SerialPrescanLine,
 )
 
 from autoarray.plot.wrap_mat.plotters import Plotter, SubPlotter
