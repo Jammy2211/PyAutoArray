@@ -1,7 +1,5 @@
-from autoconf import conf
 import autoarray as aa
 import autoarray.plot as aplt
-from autoarray.plot import wrap_mat
 
 from os import path
 
@@ -163,7 +161,7 @@ class TestLinePlot:
 class TestVectorFieldQuiver:
     def test__quiver_vector_field(self):
 
-        quiver = wrap_mat.VectorFieldQuiver(
+        quiver = aplt.VectorFieldQuiver(
             headlength=5,
             pivot="middle",
             linewidth=3,
@@ -183,7 +181,7 @@ class TestVectorFieldQuiver:
 class TestPatcher:
     def test__add_patches(self):
 
-        patcher = wrap_mat.Patcher(facecolor="cy", edgecolor="none")
+        patcher = aplt.Patcher(facecolor="cy", edgecolor="none")
 
         patch_0 = Ellipse(xy=(1.0, 2.0), height=1.0, width=2.0, angle=1.0)
         patch_1 = Ellipse(xy=(1.0, 2.0), height=1.0, width=2.0, angle=1.0)
@@ -194,7 +192,7 @@ class TestPatcher:
 class TestVoronoiDrawer:
     def test__draws_voronoi_pixels_for_sensible_input(self, voronoi_mapper_9_3x3):
 
-        voronoi_drawer = aplt.VoronoiDrawer(edgewidth=0.5, edgecolor="r", alpha=1.0)
+        voronoi_drawer = aplt.VoronoiDrawer(linewidth=0.5, linecolor="r", alpha=1.0)
 
         voronoi_drawer.draw_voronoi_pixels(
             mapper=voronoi_mapper_9_3x3, values=None, cmap=None, cb=None
