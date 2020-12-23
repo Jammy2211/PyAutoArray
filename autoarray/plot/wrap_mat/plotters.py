@@ -83,70 +83,70 @@ class AbstractPlotter:
     ):
 
         if isinstance(self, Plotter):
-            from_subplot_config = False
+            use_subplot_defaults = False
         else:
-            from_subplot_config = True
+            use_subplot_defaults = True
 
         self.units = units if units is not None else wrap_mat.Units()
 
         self.figure = (
             figure
             if figure is not None
-            else wrap_mat.Figure(from_subplot_config=from_subplot_config)
+            else wrap_mat.Figure(use_subplot_defaults=use_subplot_defaults)
         )
 
         self.cmap = (
             cmap
             if cmap is not None
-            else wrap_mat.Cmap(module=module, from_subplot_config=from_subplot_config)
+            else wrap_mat.Cmap(module=module, use_subplot_defaults=use_subplot_defaults)
         )
 
         self.cb = (
             cb
             if cb is not None
-            else wrap_mat.Colorbar(from_subplot_config=from_subplot_config)
+            else wrap_mat.Colorbar(use_subplot_defaults=use_subplot_defaults)
         )
 
         self.title = (
             title
             if title is not None
-            else wrap_mat.Title(from_subplot_config=from_subplot_config)
+            else wrap_mat.Title(use_subplot_defaults=use_subplot_defaults)
         )
 
         self.tickparams = (
             tickparams
             if tickparams is not None
-            else wrap_mat.TickParams(from_subplot_config=from_subplot_config)
+            else wrap_mat.TickParams(use_subplot_defaults=use_subplot_defaults)
         )
 
         self.yticks = (
             yticks
             if yticks is not None
-            else wrap_mat.YTicks(from_subplot_config=from_subplot_config)
+            else wrap_mat.YTicks(use_subplot_defaults=use_subplot_defaults)
         )
 
         self.xticks = (
             xticks
             if xticks is not None
-            else wrap_mat.XTicks(from_subplot_config=from_subplot_config)
+            else wrap_mat.XTicks(use_subplot_defaults=use_subplot_defaults)
         )
 
         self.ylabel = (
             ylabel
             if ylabel is not None
-            else wrap_mat.YLabel(from_subplot_config=from_subplot_config)
+            else wrap_mat.YLabel(use_subplot_defaults=use_subplot_defaults)
         )
 
         self.xlabel = (
             xlabel
             if xlabel is not None
-            else wrap_mat.XLabel(from_subplot_config=from_subplot_config)
+            else wrap_mat.XLabel(use_subplot_defaults=use_subplot_defaults)
         )
 
         self.legend = (
             legend
             if legend is not None
-            else wrap_mat.Legend(from_subplot_config=from_subplot_config)
+            else wrap_mat.Legend(use_subplot_defaults=use_subplot_defaults)
         )
 
         self.output = (
@@ -158,85 +158,85 @@ class AbstractPlotter:
         self.origin_scatter = (
             origin_scatter
             if origin_scatter is not None
-            else inc.OriginScatter(from_subplot_config=from_subplot_config)
+            else inc.OriginScatter(use_subplot_defaults=use_subplot_defaults)
         )
         self.mask_scatter = (
             mask_scatter
             if mask_scatter is not None
-            else inc.MaskScatter(from_subplot_config=from_subplot_config)
+            else inc.MaskScatter(use_subplot_defaults=use_subplot_defaults)
         )
         self.border_scatter = (
             border_scatter
             if border_scatter is not None
-            else inc.BorderScatter(from_subplot_config=from_subplot_config)
+            else inc.BorderScatter(use_subplot_defaults=use_subplot_defaults)
         )
         self.grid_scatter = (
             grid_scatter
             if grid_scatter is not None
-            else inc.GridScatter(from_subplot_config=from_subplot_config)
+            else inc.GridScatter(use_subplot_defaults=use_subplot_defaults)
         )
         self.positions_scatter = (
             positions_scatter
             if positions_scatter is not None
-            else inc.PositionsScatter(from_subplot_config=from_subplot_config)
+            else inc.PositionsScatter(use_subplot_defaults=use_subplot_defaults)
         )
         self.index_scatter = (
             index_scatter
             if index_scatter is not None
-            else inc.IndexScatter(from_subplot_config=from_subplot_config)
+            else inc.IndexScatter(use_subplot_defaults=use_subplot_defaults)
         )
         self.pixelization_grid_scatter = (
             pixelization_grid_scatter
             if pixelization_grid_scatter is not None
-            else inc.PixelizationGridScatter(from_subplot_config=from_subplot_config)
+            else inc.PixelizationGridScatter(use_subplot_defaults=use_subplot_defaults)
         )
 
         self.line = (
             line
             if line is not None
-            else wrap_mat.LinePlot(from_subplot_config=from_subplot_config)
+            else wrap_mat.LinePlot(use_subplot_defaults=use_subplot_defaults)
         )
 
         self.vector_quiver = (
             vector_quiver
             if vector_quiver is not None
-            else wrap_mat.VectorFieldQuiver(from_subplot_config=from_subplot_config)
+            else wrap_mat.VectorFieldQuiver(use_subplot_defaults=use_subplot_defaults)
         )
 
         self.patcher = (
             patcher
             if patcher is not None
-            else wrap_mat.Patcher(from_subplot_config=from_subplot_config)
+            else wrap_mat.Patcher(use_subplot_defaults=use_subplot_defaults)
         )
 
         self.array_over = (
             array_over
             if array_over is not None
-            else wrap_mat.ArrayOverlay(from_subplot_config=from_subplot_config)
+            else wrap_mat.ArrayOverlay(use_subplot_defaults=use_subplot_defaults)
         )
 
         self.voronoi_drawer = (
             voronoi_drawer
             if voronoi_drawer is not None
-            else wrap_mat.VoronoiDrawer(from_subplot_config=from_subplot_config)
+            else wrap_mat.VoronoiDrawer(use_subplot_defaults=use_subplot_defaults)
         )
 
         self.parallel_overscan_line = (
             parallel_overscan_line
             if parallel_overscan_line is not None
-            else inc.ParallelOverscanLine(from_subplot_config=from_subplot_config)
+            else inc.ParallelOverscanLine(use_subplot_defaults=use_subplot_defaults)
         )
 
         self.serial_prescan_line = (
             serial_prescan_line
             if serial_prescan_line is not None
-            else inc.SerialPrescanLine(from_subplot_config=from_subplot_config)
+            else inc.SerialPrescanLine(use_subplot_defaults=use_subplot_defaults)
         )
 
         self.serial_overscan_line = (
             serial_overscan_line
             if serial_overscan_line is not None
-            else inc.SerialOverscanLine(from_subplot_config=from_subplot_config)
+            else inc.SerialOverscanLine(use_subplot_defaults=use_subplot_defaults)
         )
 
     def plot_array(

@@ -32,45 +32,7 @@ from autoarray import exc
 import inspect
 
 
-class AbstractWrapMat:
-    def __init__(self, from_subplot_config, kwargs):
-
-        self.from_subplot_config = from_subplot_config
-
-        if not from_subplot_config:
-
-            config_dict = conf.instance["visualize"][self.config_folder][
-                self.__class__.__name__
-            ]["figure"]._dict
-
-        else:
-
-            config_dict = conf.instance["visualize"]["wrap_mat"][
-                self.__class__.__name__
-            ]["subplot"]._dict
-
-        self.kwargs = {**config_dict, **kwargs}
-
-    @property
-    def config_folder(self):
-        return "wrap_mat"
-
-    def kwargs_of_method(self, method_name, cls_name=None):
-
-        if cls_name is None:
-            cls_name = self.__class__.__name__
-
-        args = conf.instance["visualize"][self.config_folder][cls_name]["args"][
-            method_name
-        ]
-
-        args = args.replace(" ", "")
-        args = args.split(",")
-
-        return {key: self.kwargs[key] for key in args if key in self.kwargs}
-
-
-class Units(AbstractWrapMat):
+class Units:
     def __init__(
         self,
         use_scaled: bool = None,
@@ -126,8 +88,46 @@ class Units(AbstractWrapMat):
             self.in_kpc = None
 
 
+class AbstractWrapMat:
+    def __init__(self, use_subplot_defaults, kwargs):
+
+        self.use_subplot_defaults = use_subplot_defaults
+
+        if not use_subplot_defaults:
+
+            config_dict = conf.instance["visualize"][self.config_folder][
+                self.__class__.__name__
+            ]["figure"]._dict
+
+        else:
+
+            config_dict = conf.instance["visualize"]["wrap_mat"][
+                self.__class__.__name__
+            ]["subplot"]._dict
+
+        self.kwargs = {**config_dict, **kwargs}
+
+    @property
+    def config_folder(self):
+        return "wrap_mat"
+
+    def kwargs_of_method(self, method_name, cls_name=None):
+
+        if cls_name is None:
+            cls_name = self.__class__.__name__
+
+        args = conf.instance["visualize"][self.config_folder][cls_name]["args"][
+            method_name
+        ]
+
+        args = args.replace(" ", "")
+        args = args.split(",")
+
+        return {key: self.kwargs[key] for key in args if key in self.kwargs}
+
+
 class Figure(AbstractWrapMat):
-    def __init__(self, from_subplot_config: bool = False, **kwargs):
+    def __init__(self, use_subplot_defaults: bool = False, **kwargs):
         """
         Sets up the Matplotlib figure before plotting (this is used when plotting individual figures and subplots).
 
@@ -140,35 +140,29 @@ class Figure(AbstractWrapMat):
 
         Parameters
         ----------
-        from_subplot_config : bool
-            If True, load unspecified settings from the figures.ini visualization config, else use subplots.ini.
+        use_subplot_defaults : bool
+            `WrapMat` objects load settings from the [figure] section of its .ini config file by default. If
+            `use_subplot_defaults=True` settings from the [subplot] section are loaded instead.
         """
 
-        super().__init__(from_subplot_config=from_subplot_config, kwargs=kwargs)
+        super().__init__(use_subplot_defaults=use_subplot_defaults, kwargs=kwargs)
+
+        if self.kwargs["figsize"] == "auto":
+            self.kwargs["figsize"] = None
+        elif isinstance(self.kwargs["figsize"], str):
+            self.kwargs["figsize"] = tuple(
+                map(int, self.kwargs["figsize"][1:-1].split(","))
+            )
 
     @property
     def kwargs_figure(self):
         """Creates a kwargs dict of valid inputs of the method `plt.figure` from the object's kwargs dict."""
-
-        kwargs_figure = self.kwargs_of_method(method_name="figure")
-
-        if kwargs_figure["figsize"] == "auto":
-            kwargs_figure["figsize"] = None
-        elif isinstance(kwargs_figure["figsize"], str):
-            kwargs_figure["figsize"] = tuple(
-                map(int, kwargs_figure["figsize"][1:-1].split(","))
-            )
-
-        return kwargs_figure
+        return self.kwargs_of_method(method_name="figure")
 
     @property
     def kwargs_imshow(self):
         """Creates a kwargs dict of valid inputs of the method `plt.imshow` from the object's kwargs dict."""
         return self.kwargs_of_method(method_name="imshow")
-
-    @classmethod
-    def sub(cls,):
-        return Figure(from_subplot_config=True)
 
     def aspect_from_shape_2d(self, shape_2d: typing.Union[typing.Tuple[int, int]]):
         """
@@ -199,7 +193,9 @@ class Figure(AbstractWrapMat):
 
 
 class Cmap(AbstractWrapMat):
-    def __init__(self, module: str = None, from_subplot_config: bool = False, **kwargs):
+    def __init__(
+        self, use_subplot_defaults: bool = False, module: str = None, **kwargs
+    ):
         """
         Customizes the Matplotlib colormap and its normalization.
 
@@ -218,11 +214,12 @@ class Cmap(AbstractWrapMat):
         module : str
             The module from which the plot is called, which is used to customize the colormap for figures of different
             categories.
-        from_subplot_config : bool
-            If True, load unspecified settings from the figures.ini visualization config, else use subplots.ini.
+          use_subplot_defaults : bool
+            `WrapMat` objects load settings from the [figure] section of its .ini config file by default. If
+            `use_subplot_defaults=True` settings from the [subplot] section are loaded instead.
         """
 
-        super().__init__(from_subplot_config=from_subplot_config, kwargs=kwargs)
+        super().__init__(use_subplot_defaults=use_subplot_defaults, kwargs=kwargs)
 
         if module is not None:
 
@@ -240,10 +237,6 @@ class Cmap(AbstractWrapMat):
             self.kwargs["cmap"] = colorcet.cm[cmap]
         except KeyError:
             pass
-
-    @classmethod
-    def sub(cls,):
-        return Cmap(from_subplot_config=True)
 
     def norm_from_array(self, array: np.ndarray):
         """
@@ -291,9 +284,9 @@ class Cmap(AbstractWrapMat):
 class Colorbar(AbstractWrapMat):
     def __init__(
         self,
+        use_subplot_defaults: bool = False,
         manual_tick_labels: typing.Union[typing.List[float]] = None,
         manual_tick_values: typing.Union[typing.List[float]] = None,
-        from_subplot_config: bool = False,
         **kwargs,
     ):
         """
@@ -310,15 +303,16 @@ class Colorbar(AbstractWrapMat):
 
         Parameters
         ----------
+        use_subplot_defaults : bool
+            `WrapMat` objects load settings from the [figure] section of its .ini config file by default. If
+            `use_subplot_defaults=True` settings from the [subplot] section are loaded instead.
         manual_tick_labels : [float]
             Manually override the colorbar tick labels to an input list of float.
         manual_tick_values : [float]
             If the colorbar tick labels are manually specified the locations on the colorbar they appear running 0 -> 1.
-        from_subplot_config : bool
-            If True, load unspecified settings from the figures.ini visualization config, else use subplots.ini.
-        """
+         """
 
-        super().__init__(from_subplot_config=from_subplot_config, kwargs=kwargs)
+        super().__init__(use_subplot_defaults=use_subplot_defaults, kwargs=kwargs)
 
         self.manual_tick_labels = manual_tick_labels
         self.manual_tick_values = manual_tick_values
@@ -332,20 +326,6 @@ class Colorbar(AbstractWrapMat):
     def kwargs_tick_params(self):
         """Creates a kwargs dict of valid inputs of the method `plt.tick_params` from the object's kwargs dict."""
         return self.kwargs_of_method(method_name="tick_params", cls_name="TickParams")
-
-    @classmethod
-    def sub(
-        cls,
-        manual_tick_labels: typing.Union[typing.List[float]] = None,
-        manual_tick_values: typing.Union[typing.List[float]] = None,
-        **kwargs,
-    ):
-        return Colorbar(
-            manual_tick_values=manual_tick_values,
-            manual_tick_labels=manual_tick_labels,
-            from_subplot_config=True,
-            **kwargs,
-        )
 
     def set(self):
         """ Set the figure's colorbar, optionally overriding the tick labels and values with manual inputs. """
@@ -396,7 +376,7 @@ class Colorbar(AbstractWrapMat):
 
 
 class TickParams(AbstractWrapMat):
-    def __init__(self, from_subplot_config: bool = False, **kwargs):
+    def __init__(self, use_subplot_defaults: bool = False, **kwargs):
         """
         The settings used to customize a figure's y and x ticks parameters.
 
@@ -406,10 +386,11 @@ class TickParams(AbstractWrapMat):
 
         Parameters
         ----------
-        from_subplot_config : bool
-            If True, load unspecified settings from the figures.ini visualization config, else use subplots.ini.
+        use_subplot_defaults : bool
+            `WrapMat` objects load settings from the [figure] section of its .ini config file by default. If
+            `use_subplot_defaults=True` settings from the [subplot] section are loaded instead.
         """
-        super().__init__(from_subplot_config=from_subplot_config, kwargs=kwargs)
+        super().__init__(use_subplot_defaults=use_subplot_defaults, kwargs=kwargs)
 
     @property
     def kwargs_tick_params(self):
@@ -424,8 +405,8 @@ class TickParams(AbstractWrapMat):
 class AbstractTicks(AbstractWrapMat):
     def __init__(
         self,
+        use_subplot_defaults: bool = False,
         manual_values: typing.Union[typing.List[float]] = None,
-        from_subplot_config: bool = False,
         **kwargs,
     ):
         """
@@ -438,12 +419,13 @@ class AbstractTicks(AbstractWrapMat):
 
         Parameters
         ----------
+        use_subplot_defaults : bool
+            `WrapMat` objects load settings from the [figure] section of its .ini config file by default. If
+            `use_subplot_defaults=True` settings from the [subplot] section are loaded instead.
         manual_values : [float]
             Manually override the tick labels to display the labels as the input list of floats.
-        from_subplot_config : bool
-            If True, load unspecified settings from the figures.ini visualization config, else use subplots.ini.
         """
-        super().__init__(from_subplot_config=from_subplot_config, kwargs=kwargs)
+        super().__init__(use_subplot_defaults=use_subplot_defaults, kwargs=kwargs)
 
         self.manual_values = manual_values
 
@@ -534,10 +516,6 @@ class AbstractTicks(AbstractWrapMat):
 
 
 class YTicks(AbstractTicks):
-    @classmethod
-    def sub(cls, manual_values: typing.Union[typing.List[float]] = None):
-        return YTicks(manual_values=manual_values, from_subplot_config=True)
-
     def set(
         self,
         array: arrays.Array,
@@ -578,10 +556,6 @@ class YTicks(AbstractTicks):
 
 
 class XTicks(AbstractTicks):
-    @classmethod
-    def sub(cls, manual_values: typing.Union[typing.List[float]] = None):
-        return XTicks(manual_values=manual_values, from_subplot_config=True)
-
     def set(
         self,
         array: arrays.Array,
@@ -622,7 +596,7 @@ class XTicks(AbstractTicks):
 
 
 class Title(AbstractWrapMat):
-    def __init__(self, from_subplot_config: bool = False, **kwargs):
+    def __init__(self, use_subplot_defaults: bool = False, **kwargs):
         """The settings used to customize the figure's title.
 
         This object wraps the following Matplotlib methods:
@@ -633,12 +607,13 @@ class Title(AbstractWrapMat):
 
         Parameters
         ----------
-        from_subplot_config : bool
-            If True, load unspecified settings from the figures.ini visualization config, else use subplots.ini.
+        use_subplot_defaults : bool
+            `WrapMat` objects load settings from the [figure] section of its .ini config file by default. If
+            `use_subplot_defaults=True` settings from the [subplot] section are loaded instead.
         """
-        self.from_subplot_config = from_subplot_config
+        self.use_subplot_defaults = use_subplot_defaults
 
-        super().__init__(from_subplot_config=from_subplot_config, kwargs=kwargs)
+        super().__init__(use_subplot_defaults=use_subplot_defaults, kwargs=kwargs)
 
         if "label" not in self.kwargs:
             self.kwargs["label"] = None
@@ -668,9 +643,9 @@ class Title(AbstractWrapMat):
 class AbstractLabel(AbstractWrapMat):
     def __init__(
         self,
+        use_subplot_defaults: bool = False,
         units: "Units" = None,
         manual_label: str = None,
-        from_subplot_config: bool = False,
         **kwargs,
     ):
         """The settings used to customize the figure's title and y and x labels.
@@ -684,14 +659,16 @@ class AbstractLabel(AbstractWrapMat):
 
         Parameters
         ----------
+        use_subplot_defaults : bool
+            `WrapMat` objects load settings from the [figure] section of its .ini config file by default. If
+            `use_subplot_defaults=True` settings from the [subplot] section are loaded instead.
         units : Units
             The units the data is plotted using.
         manual_label : str
             A manual label which overrides the default computed via the units if input.
-
         """
 
-        super().__init__(from_subplot_config=from_subplot_config, kwargs=kwargs)
+        super().__init__(use_subplot_defaults=use_subplot_defaults, kwargs=kwargs)
 
         self.manual_label = manual_label
         self._units = units
@@ -761,10 +738,6 @@ class AbstractLabel(AbstractWrapMat):
 
 
 class YLabel(AbstractLabel):
-    @classmethod
-    def sub(cls, units: str = None, manual_label: str = None):
-        return YLabel(units=units, manual_label=manual_label, from_subplot_config=True)
-
     def set(self, units: Units, include_brackets: bool):
         """
         Set the y labels of the figure, including the fontsize.
@@ -795,10 +768,6 @@ class YLabel(AbstractLabel):
 
 
 class XLabel(AbstractLabel):
-    @classmethod
-    def sub(cls, units: str = None, manual_label: str = None):
-        return YLabel(units=units, manual_label=manual_label, from_subplot_config=True)
-
     def set(self, units: Units, include_brackets: bool):
         """
         Set the x labels of the figure, including the fontsize.
@@ -828,7 +797,7 @@ class XLabel(AbstractLabel):
 
 
 class Legend(AbstractWrapMat):
-    def __init__(self, include=False, from_subplot_config: bool = False, **kwargs):
+    def __init__(self, use_subplot_defaults: bool = False, include=False, **kwargs):
         """
         The settings used to include and customize a legend on a figure.
 
@@ -838,29 +807,28 @@ class Legend(AbstractWrapMat):
 
         Parameters
         ----------
+        use_subplot_defaults : bool
+            `WrapMat` objects load settings from the [figure] section of its .ini config file by default. If
+            `use_subplot_defaults=True` settings from the [subplot] section are loaded instead.
         include : bool
             If the legend should be plotted and therefore included on the figure.
         """
 
-        super().__init__(from_subplot_config=from_subplot_config, kwargs=kwargs)
+        super().__init__(use_subplot_defaults=use_subplot_defaults, kwargs=kwargs)
 
-        self.kwargs["include"] = include
+        self.include = include
 
     @property
     def kwargs_legend(self):
         """Creates a kwargs dict of valid inputs of the method `plt.legend` from the object's kwargs dict."""
         return self.kwargs_of_method(method_name="legend")
 
-    @classmethod
-    def sub(cls, include: bool = False):
-        return Legend(include=include, from_subplot_config=True)
-
     def set(self):
-        if self.kwargs["include"]:
+        if self.include:
             plt.legend(**self.kwargs_legend)
 
 
-class Output(AbstractWrapMat):
+class Output:
     def __init__(
         self,
         path: str = None,
