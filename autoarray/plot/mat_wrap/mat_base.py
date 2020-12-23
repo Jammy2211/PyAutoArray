@@ -88,7 +88,7 @@ class Units:
             self.in_kpc = None
 
 
-class AbstractWrapMat:
+class AbstractMatBase:
     def __init__(self, use_subplot_defaults, kwargs):
 
         self.use_subplot_defaults = use_subplot_defaults
@@ -109,7 +109,7 @@ class AbstractWrapMat:
 
     @property
     def config_folder(self):
-        return "wrap_mat"
+        return "mat_base"
 
     def kwargs_of_method(self, method_name, cls_name=None):
 
@@ -126,7 +126,7 @@ class AbstractWrapMat:
         return {key: self.kwargs[key] for key in args if key in self.kwargs}
 
 
-class Figure(AbstractWrapMat):
+class Figure(AbstractMatBase):
     def __init__(self, use_subplot_defaults: bool = False, **kwargs):
         """
         Sets up the Matplotlib figure before plotting (this is used when plotting individual figures and subplots).
@@ -192,7 +192,7 @@ class Figure(AbstractWrapMat):
             plt.close()
 
 
-class Cmap(AbstractWrapMat):
+class Cmap(AbstractMatBase):
     def __init__(
         self, use_subplot_defaults: bool = False, module: str = None, **kwargs
     ):
@@ -281,7 +281,7 @@ class Cmap(AbstractWrapMat):
             )
 
 
-class Colorbar(AbstractWrapMat):
+class Colorbar(AbstractMatBase):
     def __init__(
         self,
         use_subplot_defaults: bool = False,
@@ -375,7 +375,7 @@ class Colorbar(AbstractWrapMat):
             cb.ax.set_yticklabels(self.manual_tick_labels)
 
 
-class TickParams(AbstractWrapMat):
+class TickParams(AbstractMatBase):
     def __init__(self, use_subplot_defaults: bool = False, **kwargs):
         """
         The settings used to customize a figure's y and x ticks parameters.
@@ -402,7 +402,7 @@ class TickParams(AbstractWrapMat):
         plt.tick_params(**self.kwargs_tick_params)
 
 
-class AbstractTicks(AbstractWrapMat):
+class AbstractTicks(AbstractMatBase):
     def __init__(
         self,
         use_subplot_defaults: bool = False,
@@ -595,7 +595,7 @@ class XTicks(AbstractTicks):
         plt.xticks(ticks=ticks, labels=labels, **self.kwargs_ticks)
 
 
-class Title(AbstractWrapMat):
+class Title(AbstractMatBase):
     def __init__(self, use_subplot_defaults: bool = False, **kwargs):
         """The settings used to customize the figure's title.
 
@@ -640,7 +640,7 @@ class Title(AbstractWrapMat):
         plt.title(**self.kwargs_title)
 
 
-class AbstractLabel(AbstractWrapMat):
+class AbstractLabel(AbstractMatBase):
     def __init__(
         self,
         use_subplot_defaults: bool = False,
@@ -796,7 +796,7 @@ class XLabel(AbstractLabel):
                 )
 
 
-class Legend(AbstractWrapMat):
+class Legend(AbstractMatBase):
     def __init__(self, use_subplot_defaults: bool = False, include=False, **kwargs):
         """
         The settings used to include and customize a legend on a figure.

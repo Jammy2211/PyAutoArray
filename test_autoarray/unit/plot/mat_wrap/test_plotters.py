@@ -24,48 +24,6 @@ def set_config_path():
     )
 
 
-class TestAbstractPlotterAttributes:
-
-    def test__output__correctly(self):
-
-        plotter = aplt.Plotter()
-
-        assert plotter.output.path == None
-        assert plotter.output._format == None
-        assert plotter.output.format == "show"
-        assert plotter.output.filename == None
-
-        plotter = aplt.Plotter(
-            output=aplt.Output(path="Path", format="png", filename="file")
-        )
-
-        assert plotter.output.path == "Path"
-        assert plotter.output._format == "png"
-        assert plotter.output.format == "png"
-        assert plotter.output.filename == "file"
-
-        if path.exists(plotter.output.path):
-            shutil.rmtree(plotter.output.path)
-
-        sub_plotter = aplt.SubPlotter()
-
-        assert sub_plotter.output.path == None
-        assert sub_plotter.output._format == None
-        assert sub_plotter.output.format == "show"
-        assert sub_plotter.output.filename == None
-
-        sub_plotter = aplt.SubPlotter(
-            output=aplt.Output(path="Path", format="png", filename="file")
-        )
-
-        assert sub_plotter.output.path == "Path"
-        assert sub_plotter.output._format == "png"
-        assert sub_plotter.output.format == "png"
-        assert sub_plotter.output.filename == "file"
-
-        if path.exists(plotter.output.path):
-            shutil.rmtree(plotter.output.path)
-
 
 class TestAbstractPlotterPlots:
     def test__plot_array__works_with_all_extras_included(self, plot_path, plot_patch):
@@ -640,7 +598,7 @@ class TestSubPlotter:
         assert columns == 2
 
 
-from autoarray.plot.wrap_mat import plotters
+from autoarray.plot.mat_wrap import plotters
 
 
 class TestDecorator:

@@ -1,4 +1,4 @@
-from autoarray.plot.wrap_mat import plotters
+from autoarray.plot.mat_wrap import plotters
 from autoarray.structures import grids
 import numpy as np
 

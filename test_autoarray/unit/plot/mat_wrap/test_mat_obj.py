@@ -1,16 +1,7 @@
-from autoconf import conf
 import autoarray as aa
 import autoarray.plot as aplt
-from autoarray.plot import wrap_mat
 
 from os import path
-
-from matplotlib.patches import Ellipse
-import matplotlib.pyplot as plt
-import matplotlib.colors as colors
-import pytest
-import os, shutil
-import numpy as np
 
 directory = path.dirname(path.realpath(__file__))
 

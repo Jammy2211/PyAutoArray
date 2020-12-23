@@ -1,5 +1,5 @@
-from autoarray.plot.wrap_mat import plotters
-from autoarray.plot import inversion_plots, wrap_mat
+from autoarray.plot.mat_wrap import plotters
+from autoarray.plot import inversion_plots, mat_wrap
 import numpy as np
 
 

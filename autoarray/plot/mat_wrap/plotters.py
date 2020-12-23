@@ -1,7 +1,7 @@
 import matplotlib
 
 from autoconf import conf
-from autoarray.plot.wrap_mat import include as inc
+from autoarray.plot.mat_wrap import include as inc
 
 backend = conf.get_matplotlib_backend()
 
@@ -23,7 +23,7 @@ from functools import wraps
 import copy
 
 from autoarray import exc
-from autoarray.plot import wrap_mat
+from autoarray.plot.mat_wrap import mat_base
 import inspect
 import os
 from autoarray.inversion import mappers
@@ -87,72 +87,72 @@ class AbstractPlotter:
         else:
             use_subplot_defaults = True
 
-        self.units = units if units is not None else wrap_mat.Units()
+        self.units = units if units is not None else mat_wrap.Units()
 
         self.figure = (
             figure
             if figure is not None
-            else wrap_mat.Figure(use_subplot_defaults=use_subplot_defaults)
+            else mat_wrap.Figure(use_subplot_defaults=use_subplot_defaults)
         )
 
         self.cmap = (
             cmap
             if cmap is not None
-            else wrap_mat.Cmap(module=module, use_subplot_defaults=use_subplot_defaults)
+            else mat_wrap.Cmap(module=module, use_subplot_defaults=use_subplot_defaults)
         )
 
         self.cb = (
             cb
             if cb is not None
-            else wrap_mat.Colorbar(use_subplot_defaults=use_subplot_defaults)
+            else mat_wrap.Colorbar(use_subplot_defaults=use_subplot_defaults)
         )
 
         self.title = (
             title
             if title is not None
-            else wrap_mat.Title(use_subplot_defaults=use_subplot_defaults)
+            else mat_wrap.Title(use_subplot_defaults=use_subplot_defaults)
         )
 
         self.tickparams = (
             tickparams
             if tickparams is not None
-            else wrap_mat.TickParams(use_subplot_defaults=use_subplot_defaults)
+            else mat_wrap.TickParams(use_subplot_defaults=use_subplot_defaults)
         )
 
         self.yticks = (
             yticks
             if yticks is not None
-            else wrap_mat.YTicks(use_subplot_defaults=use_subplot_defaults)
+            else mat_wrap.YTicks(use_subplot_defaults=use_subplot_defaults)
         )
 
         self.xticks = (
             xticks
             if xticks is not None
-            else wrap_mat.XTicks(use_subplot_defaults=use_subplot_defaults)
+            else mat_wrap.XTicks(use_subplot_defaults=use_subplot_defaults)
         )
 
         self.ylabel = (
             ylabel
             if ylabel is not None
-            else wrap_mat.YLabel(use_subplot_defaults=use_subplot_defaults)
+            else mat_wrap.YLabel(use_subplot_defaults=use_subplot_defaults)
         )
 
         self.xlabel = (
             xlabel
             if xlabel is not None
-            else wrap_mat.XLabel(use_subplot_defaults=use_subplot_defaults)
+            else mat_wrap.XLabel(use_subplot_defaults=use_subplot_defaults)
         )
 
         self.legend = (
             legend
             if legend is not None
-            else wrap_mat.Legend(use_subplot_defaults=use_subplot_defaults)
+            else mat_wrap.Legend(use_subplot_defaults=use_subplot_defaults)
         )
 
         self.output = (
             output
             if output is not None
-            else wrap_mat.Output(bypass=isinstance(self, SubPlotter))
+            else mat_wrap.Output(bypass=isinstance(self, SubPlotter))
         )
 
         self.origin_scatter = (
@@ -194,31 +194,31 @@ class AbstractPlotter:
         self.line = (
             line
             if line is not None
-            else wrap_mat.LinePlot(use_subplot_defaults=use_subplot_defaults)
+            else mat_wrap.LinePlot(use_subplot_defaults=use_subplot_defaults)
         )
 
         self.vector_quiver = (
             vector_quiver
             if vector_quiver is not None
-            else wrap_mat.VectorFieldQuiver(use_subplot_defaults=use_subplot_defaults)
+            else mat_wrap.VectorFieldQuiver(use_subplot_defaults=use_subplot_defaults)
         )
 
         self.patcher = (
             patcher
             if patcher is not None
-            else wrap_mat.Patcher(use_subplot_defaults=use_subplot_defaults)
+            else mat_wrap.Patcher(use_subplot_defaults=use_subplot_defaults)
         )
 
         self.array_over = (
             array_over
             if array_over is not None
-            else wrap_mat.ArrayOverlay(use_subplot_defaults=use_subplot_defaults)
+            else mat_wrap.ArrayOverlay(use_subplot_defaults=use_subplot_defaults)
         )
 
         self.voronoi_drawer = (
             voronoi_drawer
             if voronoi_drawer is not None
-            else wrap_mat.VoronoiDrawer(use_subplot_defaults=use_subplot_defaults)
+            else mat_wrap.VoronoiDrawer(use_subplot_defaults=use_subplot_defaults)
         )
 
         self.parallel_overscan_plot = (
