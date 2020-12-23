@@ -2,7 +2,6 @@ from autoarray.plot.wrap_mat import wrap_structure
 
 
 class AbstractWrapObj:
-
     @property
     def config_folder(self):
         return "wrap_obj"
@@ -15,9 +14,7 @@ class OriginScatter(AbstractWrapObj, wrap_structure.GridScatter):
     See `wrap_structure.Scatter` for a description of how matplotlib is wrapped to make this plot.
     """
 
-    @classmethod
-    def sub(cls, colors=None):
-        return OriginScatter(colors=colors, from_subplot_config=True)
+    pass
 
 
 class MaskScatter(AbstractWrapObj, wrap_structure.GridScatter):
@@ -27,9 +24,7 @@ class MaskScatter(AbstractWrapObj, wrap_structure.GridScatter):
     See `wrap_structure.Scatter` for a description of how matplotlib is wrapped to make this plot.
     """
 
-    @classmethod
-    def sub(cls, colors=None):
-        return MaskScatter(colors=colors, from_subplot_config=True)
+    pass
 
 
 class BorderScatter(AbstractWrapObj, wrap_structure.GridScatter):
@@ -39,9 +34,7 @@ class BorderScatter(AbstractWrapObj, wrap_structure.GridScatter):
     See `wrap_structure.Scatter` for a description of how matplotlib is wrapped to make this plot.
     """
 
-    @classmethod
-    def sub(cls, colors=None):
-        return BorderScatter(colors=colors, from_subplot_config=True)
+    pass
 
 
 class PositionsScatter(AbstractWrapObj, wrap_structure.GridScatter):
@@ -51,9 +44,7 @@ class PositionsScatter(AbstractWrapObj, wrap_structure.GridScatter):
     See `wrap_structure.Scatter` for a description of how matplotlib is wrapped to make this plot.
     """
 
-    @classmethod
-    def sub(cls, colors=None):
-        return PositionsScatter(colors=colors, from_subplot_config=True)
+    pass
 
 
 class IndexScatter(AbstractWrapObj, wrap_structure.GridScatter):
@@ -63,11 +54,7 @@ class IndexScatter(AbstractWrapObj, wrap_structure.GridScatter):
     See `wrap_structure.Scatter` for a description of how matplotlib is wrapped to make this plot.
     """
 
-    @classmethod
-    def sub(cls, size=None, marker=None, colors=None):
-        return IndexScatter(
-            size=size, marker=marker, colors=colors, from_subplot_config=True
-        )
+    pass
 
 
 class PixelizationGridScatter(AbstractWrapObj, wrap_structure.GridScatter):
@@ -77,93 +64,16 @@ class PixelizationGridScatter(AbstractWrapObj, wrap_structure.GridScatter):
     See `wrap_structure.Scatter` for a description of how matplotlib is wrapped to make this plot.
     """
 
-    @classmethod
-    def sub(cls, colors=None):
-        return PixelizationGridScatter(colors=colors, from_subplot_config=True)
+    pass
 
 
 class ParallelOverscanLine(AbstractWrapObj, wrap_structure.LinePlot):
-    def __init__(
-        self,
-        width=None,
-        style=None,
-        colors=None,
-        pointsize=None,
-        from_subplot_config=False,
-    ):
-
-        super(ParallelOverscanLine, self).__init__(
-            width=width,
-            style=style,
-            colors=colors,
-            pointsize=pointsize,
-            from_subplot_config=from_subplot_config,
-        )
-
-    @classmethod
-    def sub(cls, width=None, style=None, colors=None, pointsize=None):
-        return ParallelOverscanLine(
-            width=width,
-            style=style,
-            colors=colors,
-            pointsize=pointsize,
-            from_subplot_config=True,
-        )
+    pass
 
 
 class SerialPrescanLine(AbstractWrapObj, wrap_structure.LinePlot):
-    def __init__(
-        self,
-        width=None,
-        style=None,
-        colors=None,
-        pointsize=None,
-        from_subplot_config=False,
-    ):
-
-        super(SerialPrescanLine, self).__init__(
-            width=width,
-            style=style,
-            colors=colors,
-            pointsize=pointsize,
-            from_subplot_config=from_subplot_config,
-        )
-
-    @classmethod
-    def sub(cls, width=None, style=None, colors=None, pointsize=None):
-        return SerialPrescanLine(
-            width=width,
-            style=style,
-            colors=colors,
-            pointsize=pointsize,
-            from_subplot_config=True,
-        )
+    pass
 
 
 class SerialOverscanLine(AbstractWrapObj, wrap_structure.LinePlot):
-    def __init__(
-        self,
-        width=None,
-        style=None,
-        colors=None,
-        pointsize=None,
-        from_subplot_config=False,
-    ):
-
-        super(SerialOverscanLine, self).__init__(
-            width=width,
-            style=style,
-            colors=colors,
-            pointsize=pointsize,
-            from_subplot_config=from_subplot_config,
-        )
-
-    @classmethod
-    def sub(cls, width=None, style=None, colors=None, pointsize=None):
-        return SerialOverscanLine(
-            width=width,
-            style=style,
-            colors=colors,
-            pointsize=pointsize,
-            from_subplot_config=True,
-        )
+    pass

@@ -33,13 +33,9 @@ class AbstractWrapStructure(wrap_mat.AbstractWrapMat):
 
 
 class ArrayOverlay(AbstractWrapStructure):
-    def __init__(self, from_subplot_config=False, **kwargs):
+    def __init__(self, use_subplot_defaults=False, **kwargs):
 
-        super().__init__(from_subplot_config=from_subplot_config, kwargs=kwargs)
-
-    @classmethod
-    def sub(cls):
-        return ArrayOverlay(from_subplot_config=True)
+        super().__init__(use_subplot_defaults=use_subplot_defaults, kwargs=kwargs)
 
     @property
     def kwargs_imshow(self):
@@ -55,7 +51,7 @@ class ArrayOverlay(AbstractWrapStructure):
 
 
 class GridScatter(AbstractWrapStructure):
-    def __init__(self, colors=None, from_subplot_config=False, **kwargs):
+    def __init__(self, colors=None, use_subplot_defaults=False, **kwargs):
         """
         An object for scattering an input set of grid points, for example (y,x) coordinates or a data structures
         representing 2D (y,x) coordinates like a `Grid` or `GridIrregular`. If the object groups (y,x) coordinates
@@ -81,7 +77,7 @@ class GridScatter(AbstractWrapStructure):
             The color or list of colors that the grid is plotted using. For plotting indexes or a grouped grid, a
             list of colors can be specified which the plot cycles through.
         """
-        super().__init__(from_subplot_config=from_subplot_config, kwargs=kwargs)
+        super().__init__(use_subplot_defaults=use_subplot_defaults, kwargs=kwargs)
 
         if colors is None:
             self.kwargs["colors"] = remove_spaces_and_commas_from_colors(
@@ -230,7 +226,7 @@ class GridScatter(AbstractWrapStructure):
 
 
 class LinePlot(AbstractWrapStructure):
-    def __init__(self, colors=None, from_subplot_config=False, **kwargs):
+    def __init__(self, use_subplot_defaults=False, colors=None, **kwargs):
         """
         An object for
 
@@ -252,7 +248,7 @@ class LinePlot(AbstractWrapStructure):
             The color or list of colors that the grid is plotted using. For plotting indexes or a grouped grid, a
             list of colors can be specified which the plot cycles through.
         """
-        super().__init__(from_subplot_config=from_subplot_config, kwargs=kwargs)
+        super().__init__(use_subplot_defaults=use_subplot_defaults, kwargs=kwargs)
 
         if colors is None:
             self.kwargs["colors"] = remove_spaces_and_commas_from_colors(
@@ -263,10 +259,6 @@ class LinePlot(AbstractWrapStructure):
 
         if isinstance(self.kwargs["colors"], str):
             self.kwargs["colors"] = [self.kwargs["colors"]]
-
-    @classmethod
-    def sub(cls, colors=None):
-        return LinePlot(colors=colors, from_subplot_config=True)
 
     @property
     def kwargs_plot(self):
@@ -364,9 +356,9 @@ class LinePlot(AbstractWrapStructure):
 
 
 class VectorFieldQuiver(AbstractWrapStructure):
-    def __init__(self, from_subplot_config=False, **kwargs):
+    def __init__(self, use_subplot_defaults=False, **kwargs):
 
-        super().__init__(from_subplot_config=from_subplot_config, kwargs=kwargs)
+        super().__init__(use_subplot_defaults=use_subplot_defaults, kwargs=kwargs)
 
     @property
     def kwargs_quiver(self):
@@ -383,35 +375,11 @@ class VectorFieldQuiver(AbstractWrapStructure):
             **self.kwargs_quiver,
         )
 
-    @classmethod
-    def sub(
-        cls,
-        headlength=None,
-        pivot=None,
-        linewidth=None,
-        units=None,
-        angles=None,
-        headwidth=None,
-        alpha=None,
-        cmap=None,
-    ):
-        return VectorFieldQuiver(
-            headlength=headlength,
-            pivot=pivot,
-            linewidth=linewidth,
-            units=units,
-            angles=angles,
-            headwidth=headwidth,
-            alpha=alpha,
-            cmap=cmap,
-            from_subplot_config=True,
-        )
-
 
 class Patcher(AbstractWrapStructure):
-    def __init__(self, from_subplot_config=False, **kwargs):
+    def __init__(self, use_subplot_defaults=False, **kwargs):
 
-        super().__init__(from_subplot_config=from_subplot_config, kwargs=kwargs)
+        super().__init__(use_subplot_defaults=use_subplot_defaults, kwargs=kwargs)
 
         if self.kwargs["facecolor"] is None:
             self.kwargs["facecolor"] = "none"
@@ -420,10 +388,6 @@ class Patcher(AbstractWrapStructure):
     def kwargs_patch_collection(self):
         """Creates a kwargs dict of valid inputs of the method `plt.quiver` from the object's kwargs dict."""
         return self.kwargs_of_method(method_name="patch_collection")
-
-    @classmethod
-    def sub(cls):
-        return Patcher(from_subplot_config=True)
 
     def add_patches(self, patches):
 
@@ -435,13 +399,9 @@ class Patcher(AbstractWrapStructure):
 
 
 class VoronoiDrawer(AbstractWrapStructure):
-    def __init__(self, from_subplot_config=False, **kwargs):
+    def __init__(self, use_subplot_defaults=False, **kwargs):
 
-        super().__init__(from_subplot_config=from_subplot_config, kwargs=kwargs)
-
-    @classmethod
-    def sub(cls):
-        return VoronoiDrawer(from_subplot_config=True)
+        super().__init__(use_subplot_defaults=use_subplot_defaults, kwargs=kwargs)
 
     @property
     def kwargs_fill(self):
