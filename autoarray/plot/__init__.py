@@ -1,43 +1,44 @@
-from autoarray.plot.mat_objs import (
+from autoarray.plot.wrap_mat.wrap_mat import (
     Units,
     Figure,
     Cmap,
     Colorbar,
     Title,
+    TickParams,
     YTicks,
     XTicks,
     YLabel,
     XLabel,
     Legend,
     Output,
-    Quiver,
+)
+
+from autoarray.plot.wrap_mat.include import Include
+
+from autoarray.plot.wrap_mat.wrap_structure import (
+    ArrayOverlay,
+    GridScatter,
+    LinePlot,
     Patcher,
-    Liner,
-    ArrayOverlayer,
+    VectorFieldQuiver,
     VoronoiDrawer,
 )
-from autoarray.plot.include import (
-    Include,
+
+from autoarray.plot.wrap_mat.wrap_obj import (
     OriginScatter,
     MaskScatter,
     BorderScatter,
-    GridScatter,
     PositionsScatter,
     IndexScatter,
     PixelizationGridScatter,
 )
 
-from autoarray.plot.plotters import Plotter, SubPlotter
+from autoarray.plot.wrap_mat.plotters import Plotter, SubPlotter
 
-from autoarray.plot.plotters import plot_array as Array
-from autoarray.plot.plotters import plot_frame as Frame
-from autoarray.plot.plotters import plot_grid as Grid
-from autoarray.plot.plotters import plot_line as Line
-from autoarray.plot.plotters import plot_mapper_obj as MapperObj
+from autoarray.plot.wrap_mat.plotters import plot_array as Array
+from autoarray.plot.wrap_mat.plotters import plot_frame as Frame
+from autoarray.plot.wrap_mat.plotters import plot_grid as Grid
+from autoarray.plot.wrap_mat.plotters import plot_line as Line
+from autoarray.plot.wrap_mat.plotters import plot_mapper_obj as MapperObj
 
-from autoarray.plot import imaging_plots as Imaging
-from autoarray.plot import interferometer_plots as Interferometer
-from autoarray.plot import fit_imaging_plots as FitImaging
-from autoarray.plot import fit_interferometer_plots as FitInterferometer
-from autoarray.plot import mapper_plots as Mapper
-from autoarray.plot import inversion_plots as Inversion
+from autoarray.plot.plots import imaging_plots as Imaging
