@@ -67,13 +67,13 @@ class PixelizationGridScatter(AbstractWrapObj, wrap_structure.GridScatter):
     pass
 
 
-class ParallelOverscanLine(AbstractWrapObj, wrap_structure.LinePlot):
+class ParallelOverscanPlot(AbstractWrapObj, wrap_structure.LinePlot):
     pass
 
 
-class SerialPrescanLine(AbstractWrapObj, wrap_structure.LinePlot):
+class SerialPrescanPlot(AbstractWrapObj, wrap_structure.LinePlot):
     pass
 
 
-class SerialOverscanLine(AbstractWrapObj, wrap_structure.LinePlot):
+class SerialOverscanPlot(AbstractWrapObj, wrap_structure.LinePlot):
     pass
