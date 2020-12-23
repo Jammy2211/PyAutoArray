@@ -77,9 +77,9 @@ class AbstractPlotter:
         patcher=None,
         array_over=None,
         voronoi_drawer=None,
-        parallel_overscan_line=None,
-        serial_prescan_line=None,
-        serial_overscan_line=None,
+        parallel_overscan_plot=None,
+        serial_prescan_plot=None,
+        serial_overscan_plot=None,
     ):
 
         if isinstance(self, Plotter):
@@ -221,22 +221,22 @@ class AbstractPlotter:
             else wrap_mat.VoronoiDrawer(use_subplot_defaults=use_subplot_defaults)
         )
 
-        self.parallel_overscan_line = (
-            parallel_overscan_line
-            if parallel_overscan_line is not None
-            else inc.ParallelOverscanLine(use_subplot_defaults=use_subplot_defaults)
+        self.parallel_overscan_plot = (
+            parallel_overscan_plot
+            if parallel_overscan_plot is not None
+            else inc.ParallelOverscanPlot(use_subplot_defaults=use_subplot_defaults)
         )
 
-        self.serial_prescan_line = (
-            serial_prescan_line
-            if serial_prescan_line is not None
-            else inc.SerialPrescanLine(use_subplot_defaults=use_subplot_defaults)
+        self.serial_prescan_plot = (
+            serial_prescan_plot
+            if serial_prescan_plot is not None
+            else inc.SerialPrescanPlot(use_subplot_defaults=use_subplot_defaults)
         )
 
-        self.serial_overscan_line = (
-            serial_overscan_line
-            if serial_overscan_line is not None
-            else inc.SerialOverscanLine(use_subplot_defaults=use_subplot_defaults)
+        self.serial_overscan_plot = (
+            serial_overscan_plot
+            if serial_overscan_plot is not None
+            else inc.SerialOverscanPlot(use_subplot_defaults=use_subplot_defaults)
         )
 
     def plot_array(
@@ -440,7 +440,7 @@ class AbstractPlotter:
             self.patcher.add_patches(patches=patches)
 
         if lines is not None:
-            self.line.draw_grid_grouped(grid_grouped=lines)
+            self.line.plot_grid_grouped(grid_grouped=lines)
 
         if not bypass_output:
             self.output.to_figure(structure=array)
@@ -605,7 +605,7 @@ class AbstractPlotter:
             include_parallel_overscan is not None
             and frame.scans.parallel_overscan is not None
         ):
-            self.parallel_overscan_line.draw_rectangular_grid_lines(
+            self.parallel_overscan_plot.plot_rectangular_grid_lines(
                 extent=frame.scans.parallel_overscan, shape_2d=frame.shape_2d
             )
 
@@ -613,7 +613,7 @@ class AbstractPlotter:
             include_serial_prescan is not None
             and frame.scans.serial_prescan is not None
         ):
-            self.serial_prescan_line.draw_rectangular_grid_lines(
+            self.serial_prescan_plot.plot_rectangular_grid_lines(
                 extent=frame.scans.serial_prescan, shape_2d=frame.shape_2d
             )
 
@@ -621,7 +621,7 @@ class AbstractPlotter:
             include_serial_overscan is not None
             and frame.scans.serial_overscan is not None
         ):
-            self.serial_overscan_line.draw_rectangular_grid_lines(
+            self.serial_overscan_plot.plot_rectangular_grid_lines(
                 extent=frame.scans.serial_overscan, shape_2d=frame.shape_2d
             )
 
@@ -772,12 +772,12 @@ class AbstractPlotter:
         if x is None:
             x = np.arange(len(y))
 
-        self.line.draw_y_vs_x(y=y, x=x, plot_axis_type=plot_axis_type, label=label)
+        self.line.plot_y_vs_x(y=y, x=x, plot_axis_type=plot_axis_type, label=label)
 
         self.ylabel.set(units=self.units, include_brackets=False)
         self.xlabel.set(units=self.units, include_brackets=False)
 
-        self.line.draw_vertical_lines(
+        self.line.plot_vertical_lines(
             vertical_lines=vertical_lines, vertical_line_labels=vertical_line_labels
         )
 
@@ -886,7 +886,7 @@ class AbstractPlotter:
             units=self.units,
         )
 
-        self.line.draw_rectangular_grid_lines(
+        self.line.plot_rectangular_grid_lines(
             extent=mapper.pixelization_grid.extent, shape_2d=mapper.shape_2d
         )
 
@@ -1149,9 +1149,9 @@ class Plotter(AbstractPlotter):
         patcher=None,
         array_over=None,
         voronoi_drawer=None,
-        parallel_overscan_line=None,
-        serial_prescan_line=None,
-        serial_overscan_line=None,
+        parallel_overscan_plot=None,
+        serial_prescan_plot=None,
+        serial_overscan_plot=None,
     ):
         super(Plotter, self).__init__(
             module=module,
@@ -1179,9 +1179,9 @@ class Plotter(AbstractPlotter):
             patcher=patcher,
             array_over=array_over,
             voronoi_drawer=voronoi_drawer,
-            parallel_overscan_line=parallel_overscan_line,
-            serial_prescan_line=serial_prescan_line,
-            serial_overscan_line=serial_overscan_line,
+            parallel_overscan_plot=parallel_overscan_plot,
+            serial_prescan_plot=serial_prescan_plot,
+            serial_overscan_plot=serial_overscan_plot,
         )
 
 
@@ -1213,9 +1213,9 @@ class SubPlotter(AbstractPlotter):
         patcher=None,
         array_over=None,
         voronoi_drawer=None,
-        parallel_overscan_line=None,
-        serial_prescan_line=None,
-        serial_overscan_line=None,
+        parallel_overscan_plot=None,
+        serial_prescan_plot=None,
+        serial_overscan_plot=None,
     ):
 
         super(SubPlotter, self).__init__(
@@ -1244,9 +1244,9 @@ class SubPlotter(AbstractPlotter):
             patcher=patcher,
             array_over=array_over,
             voronoi_drawer=voronoi_drawer,
-            parallel_overscan_line=parallel_overscan_line,
-            serial_prescan_line=serial_prescan_line,
-            serial_overscan_line=serial_overscan_line,
+            parallel_overscan_plot=parallel_overscan_plot,
+            serial_prescan_plot=serial_prescan_plot,
+            serial_overscan_plot=serial_overscan_plot,
         )
 
     def open_subplot_figure(self, number_subplots):

@@ -717,7 +717,7 @@ class TestLegend:
 
         line = aplt.LinePlot(linewidth=2, linestyle="-", colors="k", pointsize=2)
 
-        line.draw_y_vs_x(
+        line.plot_y_vs_x(
             y=[1.0, 2.0, 3.0], x=[1.0, 2.0, 3.0], plot_axis_type="linear", label="hi"
         )
 

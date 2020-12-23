@@ -101,7 +101,7 @@ class AbstractWrapMat:
 
         else:
 
-            config_dict = conf.instance["visualize"]["wrap_mat"][
+            config_dict = conf.instance["visualize"][self.config_folder][
                 self.__class__.__name__
             ]["subplot"]._dict
 

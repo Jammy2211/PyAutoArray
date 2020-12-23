@@ -270,7 +270,7 @@ class LinePlot(AbstractWrapStructure):
         """Creates a kwargs dict of valid inputs of the method `plt.quiver` from the object's kwargs dict."""
         return self.kwargs_of_method(method_name="scatter")
 
-    def draw_y_vs_x(self, y, x, plot_axis_type, label=None):
+    def plot_y_vs_x(self, y, x, plot_axis_type, label=None):
 
         if plot_axis_type == "linear":
             plt.plot(x, y, c=self.kwargs["colors"], label=label, **self.kwargs_plot)
@@ -289,7 +289,7 @@ class LinePlot(AbstractWrapStructure):
                 "{semilogy, loglog})"
             )
 
-    def draw_vertical_lines(self, vertical_lines, vertical_line_labels=None):
+    def plot_vertical_lines(self, vertical_lines, vertical_line_labels=None):
 
         if vertical_lines is [] or vertical_lines is None:
             return
@@ -308,7 +308,7 @@ class LinePlot(AbstractWrapStructure):
                 **self.kwargs_plot,
             )
 
-    def draw_rectangular_grid_lines(self, extent, shape_2d):
+    def plot_rectangular_grid_lines(self, extent, shape_2d):
 
         ys = np.linspace(extent[2], extent[3], shape_2d[1] + 1)
         xs = np.linspace(extent[0], extent[1], shape_2d[0] + 1)
@@ -323,7 +323,7 @@ class LinePlot(AbstractWrapStructure):
                 [xs[0], xs[-1]], [y, y], c=self.kwargs["colors"], **self.kwargs_plot
             )
 
-    def draw_grid_grouped(self, grid_grouped):
+    def plot_grid_grouped(self, grid_grouped):
         """Plot the liness of the mask or the array on the figure.
 
         Parameters
