@@ -29,7 +29,7 @@ def subplot_image_and_mapper(
 
     if image_pixel_indexes is not None:
 
-        sub_plotter.index_scatterer.scatter_grid_indexes(
+        sub_plotter.index_scatter.scatter_grid_indexes(
             grid=mapper.grid.geometry.unmasked_grid_sub_1, indexes=image_pixel_indexes
         )
 
@@ -39,7 +39,7 @@ def subplot_image_and_mapper(
             source_pixel_indexes=source_pixel_indexes
         )
 
-        sub_plotter.index_scatterer.scatter_grid_indexes(
+        sub_plotter.index_scatter.scatter_grid_indexes(
             grid=mapper.grid.geometry.unmasked_grid_sub_1, indexes=indexes
         )
 

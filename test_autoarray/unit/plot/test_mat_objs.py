@@ -454,27 +454,27 @@ class TestOutput:
         assert filename_from_func == "Hi"
 
 
-class TestScatterer:
+class TestScatter:
     def test__scatter_grid(self):
 
-        scatterer = mat_objs.AbstractScatterer(size=2, marker="x", colors="k")
+        scatter = mat_objs.Scatter(size=2, marker="x", colors="k")
 
-        scatterer.scatter_grid(grid=aa.Grid.uniform(shape_2d=(3, 3), pixel_scales=1.0))
+        scatter.scatter_grid(grid=aa.Grid.uniform(shape_2d=(3, 3), pixel_scales=1.0))
 
     def test__scatter_colored_grid__lists_of_coordinates_or_equivalent_2d_grids__with_color_array(
         self,
     ):
 
-        scatterer = mat_objs.AbstractScatterer(size=2, marker="x", colors="k")
+        scatter = mat_objs.Scatter(size=2, marker="x", colors="k")
 
         cmap = plt.get_cmap("jet")
 
-        scatterer.scatter_colored_grid(
+        scatter.scatter_grid_colored(
             grid=[[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0], [5.0, 5.0]],
             color_array=np.array([2.0, 2.0, 2.0, 2.0, 2.0]),
             cmap=cmap,
         )
-        scatterer.scatter_colored_grid(
+        scatter.scatter_grid_colored(
             grid=aa.Grid.uniform(shape_2d=(3, 2), pixel_scales=1.0),
             color_array=np.array([2.0, 2.0, 2.0, 2.0, 2.0, 2.0]),
             cmap=cmap,
@@ -484,17 +484,17 @@ class TestScatterer:
         self,
     ):
 
-        scatterer = mat_objs.AbstractScatterer(size=2, marker="x", colors="k")
+        scatter = mat_objs.Scatter(size=2, marker="x", colors="k")
 
-        scatterer.scatter_grid_indexes(
+        scatter.scatter_grid_indexes(
             grid=aa.Grid.uniform(shape_2d=(3, 3), pixel_scales=1.0), indexes=[0, 1, 2]
         )
 
-        scatterer.scatter_grid_indexes(
+        scatter.scatter_grid_indexes(
             grid=aa.Grid.uniform(shape_2d=(3, 3), pixel_scales=1.0), indexes=[[0, 1, 2]]
         )
 
-        scatterer.scatter_grid_indexes(
+        scatter.scatter_grid_indexes(
             grid=aa.Grid.uniform(shape_2d=(3, 3), pixel_scales=1.0),
             indexes=[[0, 1], [2]],
         )
@@ -503,46 +503,46 @@ class TestScatterer:
         self,
     ):
 
-        scatterer = mat_objs.AbstractScatterer(size=2, marker="x", colors="k")
+        scatter = mat_objs.Scatter(size=2, marker="x", colors="k")
 
-        scatterer.scatter_grid_indexes(
+        scatter.scatter_grid_indexes(
             grid=aa.Grid.uniform(shape_2d=(3, 3), pixel_scales=1.0),
             indexes=[(0, 0), (0, 1), (0, 2)],
         )
 
-        scatterer.scatter_grid_indexes(
+        scatter.scatter_grid_indexes(
             grid=aa.Grid.uniform(shape_2d=(3, 3), pixel_scales=1.0),
             indexes=[[(0, 0), (0, 1), (0, 2)]],
         )
 
-        scatterer.scatter_grid_indexes(
+        scatter.scatter_grid_indexes(
             grid=aa.Grid.uniform(shape_2d=(3, 3), pixel_scales=1.0),
             indexes=[[(0, 0), (0, 1)], [(0, 2)]],
         )
 
-        scatterer.scatter_grid_indexes(
+        scatter.scatter_grid_indexes(
             grid=aa.Grid.uniform(shape_2d=(3, 3), pixel_scales=1.0),
             indexes=[[[0, 0], [0, 1]], [[0, 2]]],
         )
 
     def test__scatter_coordinates(self):
 
-        scatterer = mat_objs.AbstractScatterer(size=2, marker="x", colors="k")
+        scatter = mat_objs.Scatter(size=2, marker="x", colors="k")
 
-        scatterer.scatter_grouped_grid(
-            grouped_grid=aa.GridIrregularGrouped([(1.0, 1.0), (2.0, 2.0)])
+        scatter.scatter_grid_grouped(
+            grid_grouped=aa.GridIrregularGrouped([(1.0, 1.0), (2.0, 2.0)])
         )
-        scatterer.scatter_grouped_grid(
-            grouped_grid=aa.GridIrregularGrouped(
+        scatter.scatter_grid_grouped(
+            grid_grouped=aa.GridIrregularGrouped(
                 [[(1.0, 1.0), (2.0, 2.0)], [(3.0, 3.0)]]
             )
         )
 
 
-class TestVectorQuiverer:
+class TestVectorQuiver:
     def test__quiver_vector_field(self):
 
-        quiverer = mat_objs.VectorQuiverer(
+        quiver = mat_objs.Quiver(
             headlength=5,
             pivot="middle",
             linewidth=3,
@@ -556,7 +556,7 @@ class TestVectorQuiverer:
             vectors=[(1.0, 2.0), (2.0, 1.0)], grid=[(-1.0, 0.0), (-2.0, 0.0)]
         )
 
-        quiverer.quiver_vector_field(vector_field=vector_field)
+        quiver.quiver_vector_field(vector_field=vector_field)
 
 
 class TestPatcher:

@@ -1,6 +1,7 @@
 import matplotlib
 
 from autoconf import conf
+from autoarray.plot import include as inc
 
 backend = conf.get_matplotlib_backend()
 
@@ -64,15 +65,15 @@ class AbstractPlotter:
         xlabel=None,
         legend=None,
         output=None,
-        origin_scatterer=None,
-        mask_scatterer=None,
-        border_scatterer=None,
-        grid_scatterer=None,
-        positions_scatterer=None,
-        index_scatterer=None,
-        pixelization_grid_scatterer=None,
+        origin_scatter=None,
+        mask_scatter=None,
+        border_scatter=None,
+        grid_scatter=None,
+        positions_scatter=None,
+        index_scatter=None,
+        pixelization_grid_scatter=None,
         liner=None,
-        vector_quiverer=None,
+        vector_quiver=None,
         patcher=None,
         array_overlayer=None,
         voronoi_drawer=None,
@@ -154,40 +155,40 @@ class AbstractPlotter:
             else mat_objs.Output(bypass=isinstance(self, SubPlotter))
         )
 
-        self.origin_scatterer = (
-            origin_scatterer
-            if origin_scatterer is not None
-            else mat_objs.OriginScatterer(from_subplot_config=from_subplot_config)
+        self.origin_scatter = (
+            origin_scatter
+            if origin_scatter is not None
+            else inc.OriginScatter(from_subplot_config=from_subplot_config)
         )
-        self.mask_scatterer = (
-            mask_scatterer
-            if mask_scatterer is not None
-            else mat_objs.MaskScatterer(from_subplot_config=from_subplot_config)
+        self.mask_scatter = (
+            mask_scatter
+            if mask_scatter is not None
+            else inc.MaskScatter(from_subplot_config=from_subplot_config)
         )
-        self.border_scatterer = (
-            border_scatterer
-            if border_scatterer is not None
-            else mat_objs.BorderScatterer(from_subplot_config=from_subplot_config)
+        self.border_scatter = (
+            border_scatter
+            if border_scatter is not None
+            else inc.BorderScatter(from_subplot_config=from_subplot_config)
         )
-        self.grid_scatterer = (
-            grid_scatterer
-            if grid_scatterer is not None
-            else mat_objs.GridScatterer(from_subplot_config=from_subplot_config)
+        self.grid_scatter = (
+            grid_scatter
+            if grid_scatter is not None
+            else inc.GridScatter(from_subplot_config=from_subplot_config)
         )
-        self.positions_scatterer = (
-            positions_scatterer
-            if positions_scatterer is not None
-            else mat_objs.PositionsScatterer(from_subplot_config=from_subplot_config)
+        self.positions_scatter = (
+            positions_scatter
+            if positions_scatter is not None
+            else inc.PositionsScatter(from_subplot_config=from_subplot_config)
         )
-        self.index_scatterer = (
-            index_scatterer
-            if index_scatterer is not None
-            else mat_objs.IndexScatterer(from_subplot_config=from_subplot_config)
+        self.index_scatter = (
+            index_scatter
+            if index_scatter is not None
+            else inc.IndexScatter(from_subplot_config=from_subplot_config)
         )
-        self.pixelization_grid_scatterer = (
-            pixelization_grid_scatterer
-            if pixelization_grid_scatterer is not None
-            else mat_objs.PixelizationGridScatterer(
+        self.pixelization_grid_scatter = (
+            pixelization_grid_scatter
+            if pixelization_grid_scatter is not None
+            else inc.PixelizationGridScatter(
                 from_subplot_config=from_subplot_config
             )
         )
@@ -198,10 +199,10 @@ class AbstractPlotter:
             else mat_objs.Liner(from_subplot_config=from_subplot_config)
         )
 
-        self.vector_quiverer = (
-            vector_quiverer
-            if vector_quiverer is not None
-            else mat_objs.VectorQuiverer(from_subplot_config=from_subplot_config)
+        self.vector_quiver = (
+            vector_quiver
+            if vector_quiver is not None
+            else mat_objs.Quiver(from_subplot_config=from_subplot_config)
         )
 
         self.patcher = (
@@ -323,7 +324,7 @@ class AbstractPlotter:
             The fontsize of the y axes label.
         xyticksize : int
             The font size of the x and y ticks on the figure axes.
-        mask_scatterer : int
+        mask_scatter : int
             The size of the points plotted to show the mask.
         xticks_manual :  [] or None
             If input, the xticks do not use the array's default xticks but instead overwrite them as these values.
@@ -352,7 +353,7 @@ class AbstractPlotter:
             cmap='jet', norm='linear, vmin=None, vmax=None, linthresh=None, linscale=None,
             cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01, cb_tick_values=None, cb_tick_labels=None,
             title='Image', titlesize=16, labelsize=16, labelsize=16, xyticksize=16,
-            mask_scatterer=10, border_pointsize=2, position_pointsize=10, grid_pointsize=10,
+            mask_scatter=10, border_pointsize=2, position_pointsize=10, grid_pointsize=10,
             xticks_manual=None, yticks_manual=None,
             output_path='/path/to/output', output_format='png', output_filename='image')
         """
@@ -418,26 +419,26 @@ class AbstractPlotter:
 
         self.cb.set()
         if include_origin:
-            self.origin_scatterer.scatter_grid(grid=[array.origin])
+            self.origin_scatter.scatter_grid(grid=[array.origin])
 
         if mask is not None:
-            self.mask_scatterer.scatter_grid(
+            self.mask_scatter.scatter_grid(
                 grid=mask.geometry.edge_grid_sub_1.in_1d_binned
             )
 
         if include_border and mask is not None:
-            self.border_scatterer.scatter_grid(
+            self.border_scatter.scatter_grid(
                 grid=mask.geometry.border_grid_sub_1.in_1d_binned
             )
 
         if grid is not None:
-            self.grid_scatterer.scatter_grid(grid=grid)
+            self.grid_scatter.scatter_grid(grid=grid)
 
         if positions is not None:
-            self.positions_scatterer.scatter_grouped_grid(grouped_grid=positions)
+            self.positions_scatter.scatter_grid_grouped(grid_grouped=positions)
 
         if vector_field is not None:
-            self.vector_quiverer.quiver_vector_field(vector_field=vector_field)
+            self.vector_quiver.quiver_vector_field(vector_field=vector_field)
 
         if patches is not None:
             self.patcher.add_patches(patches=patches)
@@ -529,7 +530,7 @@ class AbstractPlotter:
             The fontsize of the y axes label.
         xyticksize : int
             The font size of the x and y ticks on the figure axes.
-        mask_scatterer : int
+        mask_scatter : int
             The size of the points plotted to show the mask.
         xticks_manual :  [] or None
             If input, the xticks do not use the array's default xticks but instead overwrite them as these values.
@@ -558,7 +559,7 @@ class AbstractPlotter:
             cmap='jet', norm='linear, vmin=None, vmax=None, linthresh=None, linscale=None,
             cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01, cb_tick_values=None, cb_tick_labels=None,
             title='Image', titlesize=16, labelsize=16, labelsize=16, xyticksize=16,
-            mask_scatterer=10, border_pointsize=2, position_pointsize=10, grid_pointsize=10,
+            mask_scatter=10, border_pointsize=2, position_pointsize=10, grid_pointsize=10,
             xticks_manual=None, yticks_manual=None,
             output_path='/path/to/output', output_format='png', output_filename='image')
         """
@@ -602,7 +603,7 @@ class AbstractPlotter:
 
         self.cb.set()
         if include_origin:
-            self.origin_scatterer.scatter_grid(grid=[frame.origin])
+            self.origin_scatter.scatter_grid(grid=[frame.origin])
 
         if (
             include_parallel_overscan is not None
@@ -692,12 +693,12 @@ class AbstractPlotter:
 
         if color_array is None:
 
-            self.grid_scatterer.scatter_grid(grid=grid)
+            self.grid_scatter.scatter_grid(grid=grid)
 
         elif color_array is not None:
 
             plt.cm.get_cmap(self.cmap.cmap)
-            self.grid_scatterer.scatter_colored_grid(
+            self.grid_scatter.scatter_grid_colored(
                 grid=grid, color_array=color_array, cmap=self.cmap.cmap
             )
             self.cb.set()
@@ -735,16 +736,16 @@ class AbstractPlotter:
         )
 
         if include_origin:
-            self.origin_scatterer.scatter_grid(grid=[grid.origin])
+            self.origin_scatter.scatter_grid(grid=[grid.origin])
 
         if include_border:
-            self.border_scatterer.scatter_grid(grid=grid.sub_border_grid)
+            self.border_scatter.scatter_grid(grid=grid.sub_border_grid)
 
         if indexes is not None:
-            self.index_scatterer.scatter_grid_indexes(grid=grid, indexes=indexes)
+            self.index_scatter.scatter_grid_indexes(grid=grid, indexes=indexes)
 
         if positions is not None:
-            self.positions_scatterer.scatter_grid(grid=positions)
+            self.positions_scatter.scatter_grid(grid=positions)
 
         if lines is not None:
             self.liner.draw_grid(grid=lines)
@@ -899,21 +900,21 @@ class AbstractPlotter:
         self.xlabel.set(units=self.units, include_brackets=True)
 
         if include_origin:
-            self.origin_scatterer.scatter_grid(grid=[mapper.grid.origin])
+            self.origin_scatter.scatter_grid(grid=[mapper.grid.origin])
 
         if include_pixelization_grid:
-            self.pixelization_grid_scatterer.scatter_grid(grid=mapper.pixelization_grid)
+            self.pixelization_grid_scatter.scatter_grid(grid=mapper.pixelization_grid)
 
         if include_grid:
-            self.grid_scatterer.scatter_grid(grid=mapper.grid)
+            self.grid_scatter.scatter_grid(grid=mapper.grid)
 
         if include_border:
             sub_border_1d_indexes = mapper.grid.mask.regions._sub_border_1d_indexes
             sub_border_grid = mapper.grid[sub_border_1d_indexes, :]
-            self.border_scatterer.scatter_grid(grid=sub_border_grid)
+            self.border_scatter.scatter_grid(grid=sub_border_grid)
 
         if image_pixel_indexes is not None:
-            self.index_scatterer.scatter_grid_indexes(
+            self.index_scatter.scatter_grid_indexes(
                 grid=mapper.grid, indexes=image_pixel_indexes
             )
 
@@ -923,7 +924,7 @@ class AbstractPlotter:
                 source_pixel_indexes=source_pixel_indexes
             )
 
-            self.index_scatterer.scatter_grid_indexes(grid=mapper.grid, indexes=indexes)
+            self.index_scatter.scatter_grid_indexes(grid=mapper.grid, indexes=indexes)
 
         if not bypass_output:
             self.output.to_figure(structure=None)
@@ -977,27 +978,27 @@ class AbstractPlotter:
         self.xlabel.set(units=self.units, include_brackets=True)
 
         if include_origin:
-            self.origin_scatterer.scatter_grid(grid=[mapper.grid.origin])
+            self.origin_scatter.scatter_grid(grid=[mapper.grid.origin])
 
         if include_pixelization_grid:
-            self.pixelization_grid_scatterer.scatter_grid(grid=mapper.pixelization_grid)
+            self.pixelization_grid_scatter.scatter_grid(grid=mapper.pixelization_grid)
 
         if include_grid:
-            self.grid_scatterer.scatter_grid(grid=mapper.grid)
+            self.grid_scatter.scatter_grid(grid=mapper.grid)
 
         if include_border:
             sub_border_1d_indexes = mapper.grid.mask.regions._sub_border_1d_indexes
             sub_border_grid = mapper.grid[sub_border_1d_indexes, :]
-            self.border_scatterer.scatter_grid(grid=sub_border_grid)
+            self.border_scatter.scatter_grid(grid=sub_border_grid)
 
         if positions is not None:
-            self.positions_scatterer.scatter_grouped_grid(grouped_grid=positions)
+            self.positions_scatter.scatter_grid_grouped(grid_grouped=positions)
 
         if lines is not None:
             self.liner.draw_grid(grid=lines)
 
         if image_pixel_indexes is not None:
-            self.index_scatterer.scatter_grid_indexes(
+            self.index_scatter.scatter_grid_indexes(
                 grid=mapper.grid, indexes=image_pixel_indexes
             )
 
@@ -1007,7 +1008,7 @@ class AbstractPlotter:
                 source_pixel_indexes=source_pixel_indexes
             )
 
-            self.index_scatterer.scatter_grid_indexes(grid=mapper.grid, indexes=indexes)
+            self.index_scatter.scatter_grid_indexes(grid=mapper.grid, indexes=indexes)
 
         if not bypass_output:
             self.output.to_figure(structure=None)
@@ -1140,15 +1141,15 @@ class Plotter(AbstractPlotter):
         xlabel=None,
         legend=None,
         output=None,
-        origin_scatterer=None,
-        mask_scatterer=None,
-        border_scatterer=None,
-        grid_scatterer=None,
-        positions_scatterer=None,
-        index_scatterer=None,
-        pixelization_grid_scatterer=None,
+        origin_scatter=None,
+        mask_scatter=None,
+        border_scatter=None,
+        grid_scatter=None,
+        positions_scatter=None,
+        index_scatter=None,
+        pixelization_grid_scatter=None,
         liner=None,
-        vector_quiverer=None,
+        vector_quiver=None,
         patcher=None,
         array_overlayer=None,
         voronoi_drawer=None,
@@ -1170,15 +1171,15 @@ class Plotter(AbstractPlotter):
             ylabel=ylabel,
             xlabel=xlabel,
             output=output,
-            origin_scatterer=origin_scatterer,
-            mask_scatterer=mask_scatterer,
-            border_scatterer=border_scatterer,
-            grid_scatterer=grid_scatterer,
-            positions_scatterer=positions_scatterer,
-            index_scatterer=index_scatterer,
-            pixelization_grid_scatterer=pixelization_grid_scatterer,
+            origin_scatter=origin_scatter,
+            mask_scatter=mask_scatter,
+            border_scatter=border_scatter,
+            grid_scatter=grid_scatter,
+            positions_scatter=positions_scatter,
+            index_scatter=index_scatter,
+            pixelization_grid_scatter=pixelization_grid_scatter,
             liner=liner,
-            vector_quiverer=vector_quiverer,
+            vector_quiver=vector_quiver,
             patcher=patcher,
             array_overlayer=array_overlayer,
             voronoi_drawer=voronoi_drawer,
@@ -1204,15 +1205,15 @@ class SubPlotter(AbstractPlotter):
         xlabel=None,
         legend=None,
         output=None,
-        origin_scatterer=None,
-        mask_scatterer=None,
-        border_scatterer=None,
-        grid_scatterer=None,
-        positions_scatterer=None,
-        index_scatterer=None,
-        pixelization_grid_scatterer=None,
+        origin_scatter=None,
+        mask_scatter=None,
+        border_scatter=None,
+        grid_scatter=None,
+        positions_scatter=None,
+        index_scatter=None,
+        pixelization_grid_scatter=None,
         liner=None,
-        vector_quiverer=None,
+        vector_quiver=None,
         patcher=None,
         array_overlayer=None,
         voronoi_drawer=None,
@@ -1235,15 +1236,15 @@ class SubPlotter(AbstractPlotter):
             ylabel=ylabel,
             xlabel=xlabel,
             output=output,
-            origin_scatterer=origin_scatterer,
-            mask_scatterer=mask_scatterer,
-            border_scatterer=border_scatterer,
-            grid_scatterer=grid_scatterer,
-            positions_scatterer=positions_scatterer,
-            index_scatterer=index_scatterer,
-            pixelization_grid_scatterer=pixelization_grid_scatterer,
+            origin_scatter=origin_scatter,
+            mask_scatter=mask_scatter,
+            border_scatter=border_scatter,
+            grid_scatter=grid_scatter,
+            positions_scatter=positions_scatter,
+            index_scatter=index_scatter,
+            pixelization_grid_scatter=pixelization_grid_scatter,
             liner=liner,
-            vector_quiverer=vector_quiverer,
+            vector_quiver=vector_quiver,
             patcher=patcher,
             array_overlayer=array_overlayer,
             voronoi_drawer=voronoi_drawer,
@@ -1336,136 +1337,11 @@ class SubPlotter(AbstractPlotter):
             return (25, 20)
 
 
-class Include:
-    def __init__(
-        self,
-        origin=None,
-        mask=None,
-        grid=None,
-        border=None,
-        inversion_pixelization_grid=None,
-        inversion_grid=None,
-        inversion_border=None,
-        inversion_image_pixelization_grid=None,
-        parallel_overscan=None,
-        serial_prescan=None,
-        serial_overscan=None,
-    ):
-
-        self.origin = self.load_include(value=origin, name="origin")
-        self.mask = self.load_include(value=mask, name="mask")
-        self.grid = self.load_include(value=grid, name="grid")
-        self.border = self.load_include(value=border, name="border")
-        self.inversion_pixelization_grid = self.load_include(
-            value=inversion_pixelization_grid, name="inversion_pixelization_grid"
-        )
-        self.inversion_grid = self.load_include(
-            value=inversion_grid, name="inversion_grid"
-        )
-        self.inversion_border = self.load_include(
-            value=inversion_border, name="inversion_border"
-        )
-        self.inversion_image_pixelization_grid = self.load_include(
-            value=inversion_image_pixelization_grid,
-            name="inversion_image_pixelization_grid",
-        )
-        self.parallel_overscan = self.load_include(
-            value=parallel_overscan, name="parallel_overscan"
-        )
-        self.serial_prescan = self.load_include(
-            value=serial_prescan, name="serial_prescan"
-        )
-        self.serial_overscan = self.load_include(
-            value=serial_overscan, name="serial_overscan"
-        )
-
-    @staticmethod
-    def load_include(value, name):
-        if value is not None:
-            """
-            Let is be known that Jam did this - I merely made this horror more efficient
-            """
-            return value
-        return conf.instance["visualize"]["general"]["include"][name]
-
-    def grid_from_grid(self, grid):
-
-        if self.grid:
-            return grid
-        else:
-            return None
-
-    def mask_from_grid(self, grid):
-
-        if self.mask:
-            return grid.mask
-        else:
-            return None
-
-    def mask_from_masked_dataset(self, masked_dataset):
-
-        if self.mask:
-            return masked_dataset.mask
-        else:
-            return None
-
-    def mask_from_fit(self, fit):
-        """Get the masks of the fit if the masks should be plotted on the fit.
-
-        Parameters
-        -----------
-        fit : datas.fitting.fitting.AbstractLensHyperFit
-            The fit to the datas, which includes a lisrt of every model image, residual_map, chi-squareds, etc.
-        include_mask : bool
-            If `True`, the masks is plotted on the fit's datas.
-        """
-        if self.mask:
-            return fit.mask
-        else:
-            return None
-
-    def real_space_mask_from_fit(self, fit):
-        """Get the masks of the fit if the masks should be plotted on the fit.
-
-        Parameters
-        -----------
-        fit : datas.fitting.fitting.AbstractLensHyperFit
-            The fit to the datas, which includes a lisrt of every model image, residual_map, chi-squareds, etc.
-        include_mask : bool
-            If `True`, the masks is plotted on the fit's datas.
-        """
-        if self.mask:
-            return fit.settings_masked_dataset.real_space_mask
-        else:
-            return None
-
-    def parallel_overscan_from_frame(self, frame):
-
-        if self.parallel_overscan:
-            return frame.scans.parallel_overscan
-        else:
-            return None
-
-    def serial_prescan_from_frame(self, frame):
-
-        if self.serial_prescan:
-            return frame.scans.serial_prescan
-        else:
-            return None
-
-    def serial_overscan_from_frame(self, frame):
-
-        if self.serial_overscan:
-            return frame.scans.serial_overscan
-        else:
-            return None
-
-
 def include_key_from_dictionary(dictionary):
     include_key = None
 
     for key, value in dictionary.items():
-        if isinstance(value, Include):
+        if isinstance(value, inc.Include):
             include_key = key
 
     return include_key
@@ -1513,7 +1389,7 @@ def set_include_and_plotter(func):
         if include_key is not None:
             include = kwargs[include_key]
         else:
-            include = Include()
+            include = inc.Include()
             include_key = "include"
 
         kwargs[include_key] = include
@@ -1542,7 +1418,7 @@ def set_include_and_sub_plotter(func):
         if include_key is not None:
             include = kwargs[include_key]
         else:
-            include = Include()
+            include = inc.Include()
             include_key = "include"
 
         kwargs[include_key] = include
@@ -1666,7 +1542,7 @@ def plot_array(
     plotter=None,
 ):
     if include is None:
-        include = Include()
+        include = inc.Include()
 
     if plotter is None:
         plotter = Plotter()
@@ -1688,7 +1564,7 @@ def plot_array(
 
 def plot_frame(frame, include=None, plotter=None):
     if include is None:
-        include = Include()
+        include = inc.Include()
 
     if plotter is None:
         plotter = Plotter()
@@ -1714,7 +1590,7 @@ def plot_grid(
     plotter=None,
 ):
     if include is None:
-        include = Include()
+        include = inc.Include()
 
     if plotter is None:
         plotter = Plotter()
@@ -1762,7 +1638,7 @@ def plot_mapper_obj(
     plotter=None,
 ):
     if include is None:
-        include = Include()
+        include = inc.Include()
 
     if plotter is None:
         plotter = Plotter()

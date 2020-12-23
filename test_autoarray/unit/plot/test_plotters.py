@@ -257,236 +257,236 @@ class TestAbstractPlotterAttributes:
         assert sub_plotter.legend.include == True
         assert sub_plotter.legend.fontsize == 13
 
-    def test__origin_scatterer__from_config_or_via_manual_input(self):
+    def test__origin_scatter__from_config_or_via_manual_input(self):
 
         plotter = aplt.Plotter()
 
-        assert plotter.origin_scatterer.size == 80
-        assert plotter.origin_scatterer.marker == "x"
-        assert plotter.origin_scatterer.colors == ["k"]
+        assert plotter.origin_scatter.size == 80
+        assert plotter.origin_scatter.marker == "x"
+        assert plotter.origin_scatter.colors == ["k"]
 
         plotter = aplt.Plotter(
-            origin_scatterer=aplt.OriginScatterer(size=1, marker=".", colors="k")
+            origin_scatter=aplt.OriginScatter(size=1, marker=".", colors="k")
         )
 
-        assert plotter.origin_scatterer.size == 1
-        assert plotter.origin_scatterer.marker == "."
-        assert plotter.origin_scatterer.colors == ["k"]
+        assert plotter.origin_scatter.size == 1
+        assert plotter.origin_scatter.marker == "."
+        assert plotter.origin_scatter.colors == ["k"]
 
         sub_plotter = aplt.SubPlotter()
 
-        assert sub_plotter.origin_scatterer.size == 81
-        assert sub_plotter.origin_scatterer.marker == "."
-        assert sub_plotter.origin_scatterer.colors == ["r"]
+        assert sub_plotter.origin_scatter.size == 81
+        assert sub_plotter.origin_scatter.marker == "."
+        assert sub_plotter.origin_scatter.colors == ["r"]
 
         sub_plotter = aplt.SubPlotter(
-            origin_scatterer=aplt.OriginScatterer.sub(marker="o", colors=["r", "b"])
+            origin_scatter=aplt.OriginScatter.sub(marker="o", colors=["r", "b"])
         )
 
-        assert sub_plotter.origin_scatterer.size == 81
-        assert sub_plotter.origin_scatterer.marker == "o"
-        assert sub_plotter.origin_scatterer.colors == ["r", "b"]
+        assert sub_plotter.origin_scatter.size == 81
+        assert sub_plotter.origin_scatter.marker == "o"
+        assert sub_plotter.origin_scatter.colors == ["r", "b"]
 
-    def test__mask_scatterer__from_config_or_via_manual_input(self):
+    def test__mask_scatter__from_config_or_via_manual_input(self):
 
         plotter = aplt.Plotter()
 
-        assert plotter.mask_scatterer.size == 12
-        assert plotter.mask_scatterer.marker == "."
-        assert plotter.mask_scatterer.colors == ["g"]
+        assert plotter.mask_scatter.size == 12
+        assert plotter.mask_scatter.marker == "."
+        assert plotter.mask_scatter.colors == ["g"]
 
         plotter = aplt.Plotter(
-            mask_scatterer=aplt.MaskScatterer(size=1, marker="x", colors="k")
+            mask_scatter=aplt.MaskScatter(size=1, marker="x", colors="k")
         )
 
-        assert plotter.mask_scatterer.size == 1
-        assert plotter.mask_scatterer.marker == "x"
-        assert plotter.mask_scatterer.colors == ["k"]
+        assert plotter.mask_scatter.size == 1
+        assert plotter.mask_scatter.marker == "x"
+        assert plotter.mask_scatter.colors == ["k"]
 
         sub_plotter = aplt.SubPlotter()
 
-        assert sub_plotter.mask_scatterer.size == 8
-        assert sub_plotter.mask_scatterer.marker == "."
-        assert sub_plotter.mask_scatterer.colors == ["w"]
+        assert sub_plotter.mask_scatter.size == 8
+        assert sub_plotter.mask_scatter.marker == "."
+        assert sub_plotter.mask_scatter.colors == ["w"]
 
         sub_plotter = aplt.SubPlotter(
-            mask_scatterer=aplt.MaskScatterer.sub(marker="o", colors=["r", "b"])
+            mask_scatter=aplt.MaskScatter.sub(marker="o", colors=["r", "b"])
         )
 
-        assert sub_plotter.mask_scatterer.size == 8
-        assert sub_plotter.mask_scatterer.marker == "o"
-        assert sub_plotter.mask_scatterer.colors == ["r", "b"]
+        assert sub_plotter.mask_scatter.size == 8
+        assert sub_plotter.mask_scatter.marker == "o"
+        assert sub_plotter.mask_scatter.colors == ["r", "b"]
 
-    def test__border_scatterer__from_config_or_via_manual_input(self):
+    def test__border_scatter__from_config_or_via_manual_input(self):
 
         plotter = aplt.Plotter()
 
-        assert plotter.border_scatterer.size == 13
-        assert plotter.border_scatterer.marker == "+"
-        assert plotter.border_scatterer.colors == ["c"]
+        assert plotter.border_scatter.size == 13
+        assert plotter.border_scatter.marker == "+"
+        assert plotter.border_scatter.colors == ["c"]
 
         plotter = aplt.Plotter(
-            border_scatterer=aplt.BorderScatterer(size=1, marker="x", colors="k")
+            border_scatter=aplt.BorderScatter(size=1, marker="x", colors="k")
         )
 
-        assert plotter.border_scatterer.size == 1
-        assert plotter.border_scatterer.marker == "x"
-        assert plotter.border_scatterer.colors == ["k"]
+        assert plotter.border_scatter.size == 1
+        assert plotter.border_scatter.marker == "x"
+        assert plotter.border_scatter.colors == ["k"]
 
         sub_plotter = aplt.SubPlotter()
 
-        assert sub_plotter.border_scatterer.size == 7
-        assert sub_plotter.border_scatterer.marker == "."
-        assert sub_plotter.border_scatterer.colors == ["k"]
+        assert sub_plotter.border_scatter.size == 7
+        assert sub_plotter.border_scatter.marker == "."
+        assert sub_plotter.border_scatter.colors == ["k"]
 
         sub_plotter = aplt.SubPlotter(
-            border_scatterer=aplt.BorderScatterer.sub(marker="o", colors=["r", "b"])
+            border_scatter=aplt.BorderScatter.sub(marker="o", colors=["r", "b"])
         )
 
-        assert sub_plotter.border_scatterer.size == 7
-        assert sub_plotter.border_scatterer.marker == "o"
-        assert sub_plotter.border_scatterer.colors == ["r", "b"]
+        assert sub_plotter.border_scatter.size == 7
+        assert sub_plotter.border_scatter.marker == "o"
+        assert sub_plotter.border_scatter.colors == ["r", "b"]
 
-    def test__grid_scatterer__from_config_or_via_manual_input(self):
+    def test__grid_scatter__from_config_or_via_manual_input(self):
 
         plotter = aplt.Plotter()
 
-        assert plotter.grid_scatterer.size == 14
-        assert plotter.grid_scatterer.marker == "x"
-        assert plotter.grid_scatterer.colors == ["y"]
+        assert plotter.grid_scatter.size == 14
+        assert plotter.grid_scatter.marker == "x"
+        assert plotter.grid_scatter.colors == ["y"]
 
         plotter = aplt.Plotter(
-            grid_scatterer=aplt.GridScatterer(size=1, marker="x", colors="k")
+            grid_scatter=aplt.GridScatter(size=1, marker="x", colors="k")
         )
 
-        assert plotter.grid_scatterer.size == 1
-        assert plotter.grid_scatterer.marker == "x"
-        assert plotter.grid_scatterer.colors == ["k"]
+        assert plotter.grid_scatter.size == 1
+        assert plotter.grid_scatter.marker == "x"
+        assert plotter.grid_scatter.colors == ["k"]
 
         sub_plotter = aplt.SubPlotter()
 
-        assert sub_plotter.grid_scatterer.size == 6
-        assert sub_plotter.grid_scatterer.marker == "."
-        assert sub_plotter.grid_scatterer.colors == ["r"]
+        assert sub_plotter.grid_scatter.size == 6
+        assert sub_plotter.grid_scatter.marker == "."
+        assert sub_plotter.grid_scatter.colors == ["r"]
 
         sub_plotter = aplt.SubPlotter(
-            grid_scatterer=aplt.GridScatterer.sub(marker="o", colors=["r", "b"])
+            grid_scatter=aplt.GridScatter.sub(marker="o", colors=["r", "b"])
         )
 
-        assert sub_plotter.grid_scatterer.size == 6
-        assert sub_plotter.grid_scatterer.marker == "o"
-        assert sub_plotter.grid_scatterer.colors == ["r", "b"]
+        assert sub_plotter.grid_scatter.size == 6
+        assert sub_plotter.grid_scatter.marker == "o"
+        assert sub_plotter.grid_scatter.colors == ["r", "b"]
 
-    def test__positions_scatterer__from_config_or_via_manual_input(self):
+    def test__positions_scatter__from_config_or_via_manual_input(self):
 
         plotter = aplt.Plotter()
 
-        assert plotter.positions_scatterer.size == 15
-        assert plotter.positions_scatterer.marker == "o"
-        assert plotter.positions_scatterer.colors == ["r", "g", "b"]
+        assert plotter.positions_scatter.size == 15
+        assert plotter.positions_scatter.marker == "o"
+        assert plotter.positions_scatter.colors == ["r", "g", "b"]
 
         plotter = aplt.Plotter(
-            positions_scatterer=aplt.PositionsScatterer(size=1, marker="x", colors="k")
+            positions_scatter=aplt.PositionsScatter(size=1, marker="x", colors="k")
         )
 
-        assert plotter.positions_scatterer.size == 1
-        assert plotter.positions_scatterer.marker == "x"
-        assert plotter.positions_scatterer.colors == ["k"]
+        assert plotter.positions_scatter.size == 1
+        assert plotter.positions_scatter.marker == "x"
+        assert plotter.positions_scatter.colors == ["k"]
 
         sub_plotter = aplt.SubPlotter()
 
-        assert sub_plotter.positions_scatterer.size == 5
-        assert sub_plotter.positions_scatterer.marker == "."
-        assert sub_plotter.positions_scatterer.colors == ["c", "g", "b"]
+        assert sub_plotter.positions_scatter.size == 5
+        assert sub_plotter.positions_scatter.marker == "."
+        assert sub_plotter.positions_scatter.colors == ["c", "g", "b"]
 
         sub_plotter = aplt.SubPlotter(
-            positions_scatterer=aplt.PositionsScatterer.sub(
+            positions_scatter=aplt.PositionsScatter.sub(
                 marker="o", colors=["r", "b"]
             )
         )
 
-        assert sub_plotter.positions_scatterer.size == 5
-        assert sub_plotter.positions_scatterer.marker == "o"
-        assert sub_plotter.positions_scatterer.colors == ["r", "b"]
+        assert sub_plotter.positions_scatter.size == 5
+        assert sub_plotter.positions_scatter.marker == "o"
+        assert sub_plotter.positions_scatter.colors == ["r", "b"]
 
-    def test__index_scatterer__from_config_or_via_manual_input(self):
+    def test__index_scatter__from_config_or_via_manual_input(self):
 
         plotter = aplt.Plotter()
 
-        assert plotter.index_scatterer.size == 20
-        assert plotter.index_scatterer.marker == "."
-        assert plotter.index_scatterer.colors == ["r", "g", "b", "y", "k", "w"]
+        assert plotter.index_scatter.size == 20
+        assert plotter.index_scatter.marker == "."
+        assert plotter.index_scatter.colors == ["r", "g", "b", "y", "k", "w"]
 
         plotter = aplt.Plotter(
-            index_scatterer=aplt.IndexScatterer(size=1, marker="x", colors="k")
+            index_scatter=aplt.IndexScatter(size=1, marker="x", colors="k")
         )
 
-        assert plotter.index_scatterer.size == 1
-        assert plotter.index_scatterer.marker == "x"
-        assert plotter.index_scatterer.colors == ["k"]
+        assert plotter.index_scatter.size == 1
+        assert plotter.index_scatter.marker == "x"
+        assert plotter.index_scatter.colors == ["k"]
 
         sub_plotter = aplt.SubPlotter()
 
-        assert sub_plotter.index_scatterer.size == 21
-        assert sub_plotter.index_scatterer.marker == "+"
-        assert sub_plotter.index_scatterer.colors == ["r", "g", "b", "y", "w", "k"]
+        assert sub_plotter.index_scatter.size == 21
+        assert sub_plotter.index_scatter.marker == "+"
+        assert sub_plotter.index_scatter.colors == ["r", "g", "b", "y", "w", "k"]
 
         sub_plotter = aplt.SubPlotter(
-            index_scatterer=aplt.IndexScatterer.sub(marker="o", colors="r")
+            index_scatter=aplt.IndexScatter.sub(marker="o", colors="r")
         )
 
-        assert sub_plotter.index_scatterer.size == 21
-        assert sub_plotter.index_scatterer.marker == "o"
-        assert sub_plotter.index_scatterer.colors == ["r"]
+        assert sub_plotter.index_scatter.size == 21
+        assert sub_plotter.index_scatter.marker == "o"
+        assert sub_plotter.index_scatter.colors == ["r"]
 
-    def test__pixelization_grid_scatterer__from_config_or_via_manual_input(self):
+    def test__pixelization_grid_scatter__from_config_or_via_manual_input(self):
 
         plotter = aplt.Plotter()
 
-        assert plotter.pixelization_grid_scatterer.size == 5
-        assert plotter.pixelization_grid_scatterer.marker == "."
-        assert plotter.pixelization_grid_scatterer.colors == ["r"]
+        assert plotter.pixelization_grid_scatter.size == 5
+        assert plotter.pixelization_grid_scatter.marker == "."
+        assert plotter.pixelization_grid_scatter.colors == ["r"]
 
         plotter = aplt.Plotter(
-            pixelization_grid_scatterer=aplt.PixelizationGridScatterer(
+            pixelization_grid_scatter=aplt.PixelizationGridScatter(
                 size=1, marker="x", colors="k"
             )
         )
 
-        assert plotter.pixelization_grid_scatterer.size == 1
-        assert plotter.pixelization_grid_scatterer.marker == "x"
-        assert plotter.pixelization_grid_scatterer.colors == ["k"]
+        assert plotter.pixelization_grid_scatter.size == 1
+        assert plotter.pixelization_grid_scatter.marker == "x"
+        assert plotter.pixelization_grid_scatter.colors == ["k"]
 
         sub_plotter = aplt.SubPlotter()
 
-        assert sub_plotter.pixelization_grid_scatterer.size == 6
-        assert sub_plotter.pixelization_grid_scatterer.marker == "o"
-        assert sub_plotter.pixelization_grid_scatterer.colors == ["g"]
+        assert sub_plotter.pixelization_grid_scatter.size == 6
+        assert sub_plotter.pixelization_grid_scatter.marker == "o"
+        assert sub_plotter.pixelization_grid_scatter.colors == ["g"]
 
         sub_plotter = aplt.SubPlotter(
-            pixelization_grid_scatterer=aplt.PixelizationGridScatterer.sub(
+            pixelization_grid_scatter=aplt.PixelizationGridScatter.sub(
                 marker="o", colors="r"
             )
         )
 
-        assert sub_plotter.pixelization_grid_scatterer.size == 6
-        assert sub_plotter.pixelization_grid_scatterer.marker == "o"
-        assert sub_plotter.pixelization_grid_scatterer.colors == ["r"]
+        assert sub_plotter.pixelization_grid_scatter.size == 6
+        assert sub_plotter.pixelization_grid_scatter.marker == "o"
+        assert sub_plotter.pixelization_grid_scatter.colors == ["r"]
 
-    def test__vector_quiverer__from_config_or_via_manual_input(self):
+    def test__vector_quiver__from_config_or_via_manual_input(self):
 
         plotter = aplt.Plotter()
 
-        assert plotter.vector_quiverer.headlength == 0
-        assert plotter.vector_quiverer.pivot == "middle"
-        assert plotter.vector_quiverer.linewidth == 5
-        assert plotter.vector_quiverer.units == "xy"
-        assert plotter.vector_quiverer.angles == "xy"
-        assert plotter.vector_quiverer.headwidth == 1
-        assert plotter.vector_quiverer.alpha == 1.0
+        assert plotter.vector_quiver.headlength == 0
+        assert plotter.vector_quiver.pivot == "middle"
+        assert plotter.vector_quiver.linewidth == 5
+        assert plotter.vector_quiver.units == "xy"
+        assert plotter.vector_quiver.angles == "xy"
+        assert plotter.vector_quiver.headwidth == 1
+        assert plotter.vector_quiver.alpha == 1.0
 
         plotter = aplt.Plotter(
-            vector_quiverer=aplt.VectorQuiverer(
+            vector_quiver=aplt.Quiver(
                 headlength=1,
                 pivot="lol",
                 linewidth=2,
@@ -497,26 +497,26 @@ class TestAbstractPlotterAttributes:
             )
         )
 
-        assert plotter.vector_quiverer.headlength == 1
-        assert plotter.vector_quiverer.pivot == "lol"
-        assert plotter.vector_quiverer.linewidth == 2
-        assert plotter.vector_quiverer.units == "lol2"
-        assert plotter.vector_quiverer.angles == "lol3"
-        assert plotter.vector_quiverer.headwidth == 3
-        assert plotter.vector_quiverer.alpha == 0.5
+        assert plotter.vector_quiver.headlength == 1
+        assert plotter.vector_quiver.pivot == "lol"
+        assert plotter.vector_quiver.linewidth == 2
+        assert plotter.vector_quiver.units == "lol2"
+        assert plotter.vector_quiver.angles == "lol3"
+        assert plotter.vector_quiver.headwidth == 3
+        assert plotter.vector_quiver.alpha == 0.5
 
         sub_plotter = aplt.SubPlotter()
 
-        assert sub_plotter.vector_quiverer.headlength == 0.1
-        assert sub_plotter.vector_quiverer.pivot == "middle1"
-        assert sub_plotter.vector_quiverer.linewidth == 51
-        assert sub_plotter.vector_quiverer.units == "xy1"
-        assert sub_plotter.vector_quiverer.angles == "xy1"
-        assert sub_plotter.vector_quiverer.headwidth == 11
-        assert sub_plotter.vector_quiverer.alpha == 1.1
+        assert sub_plotter.vector_quiver.headlength == 0.1
+        assert sub_plotter.vector_quiver.pivot == "middle1"
+        assert sub_plotter.vector_quiver.linewidth == 51
+        assert sub_plotter.vector_quiver.units == "xy1"
+        assert sub_plotter.vector_quiver.angles == "xy1"
+        assert sub_plotter.vector_quiver.headwidth == 11
+        assert sub_plotter.vector_quiver.alpha == 1.1
 
         sub_plotter = aplt.SubPlotter(
-            vector_quiverer=aplt.VectorQuiverer(
+            vector_quiver=aplt.Quiver(
                 headlength=12,
                 pivot="lol2",
                 linewidth=22,
@@ -527,13 +527,13 @@ class TestAbstractPlotterAttributes:
             )
         )
 
-        assert sub_plotter.vector_quiverer.headlength == 12
-        assert sub_plotter.vector_quiverer.pivot == "lol2"
-        assert sub_plotter.vector_quiverer.linewidth == 22
-        assert sub_plotter.vector_quiverer.units == "lol22"
-        assert sub_plotter.vector_quiverer.angles == "lol32"
-        assert sub_plotter.vector_quiverer.headwidth == 32
-        assert sub_plotter.vector_quiverer.alpha == 0.52
+        assert sub_plotter.vector_quiver.headlength == 12
+        assert sub_plotter.vector_quiver.pivot == "lol2"
+        assert sub_plotter.vector_quiver.linewidth == 22
+        assert sub_plotter.vector_quiver.units == "lol22"
+        assert sub_plotter.vector_quiver.angles == "lol32"
+        assert sub_plotter.vector_quiver.headwidth == 32
+        assert sub_plotter.vector_quiver.alpha == 0.52
 
     def test__patcher__from_config_or_via_manual_input(self):
 
