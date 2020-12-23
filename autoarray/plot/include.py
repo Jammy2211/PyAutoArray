@@ -134,6 +134,7 @@ class OriginScatter(mat_objs.Scatter):
 
     See `mat_objs.Scatter` for a description of how matplotlib is wrapped to make this plot.
     """
+
     @classmethod
     def sub(cls, colors=None):
         return OriginScatter(colors=colors, from_subplot_config=True)
@@ -145,6 +146,7 @@ class MaskScatter(mat_objs.Scatter):
 
     See `mat_objs.Scatter` for a description of how matplotlib is wrapped to make this plot.
     """
+
     @classmethod
     def sub(cls, colors=None):
         return MaskScatter(colors=colors, from_subplot_config=True)
@@ -156,6 +158,7 @@ class BorderScatter(mat_objs.Scatter):
 
     See `mat_objs.Scatter` for a description of how matplotlib is wrapped to make this plot.
     """
+
     @classmethod
     def sub(cls, colors=None):
         return BorderScatter(colors=colors, from_subplot_config=True)
@@ -167,6 +170,7 @@ class GridScatter(mat_objs.Scatter):
 
     See `mat_objs.Scatter` for a description of how matplotlib is wrapped to make this plot.
     """
+
     @classmethod
     def sub(cls, colors=None):
         return GridScatter(colors=colors, from_subplot_config=True)
@@ -178,6 +182,7 @@ class PositionsScatter(mat_objs.Scatter):
 
     See `mat_objs.Scatter` for a description of how matplotlib is wrapped to make this plot.
     """
+
     @classmethod
     def sub(cls, colors=None):
         return PositionsScatter(colors=colors, from_subplot_config=True)
@@ -189,6 +194,7 @@ class IndexScatter(mat_objs.Scatter):
 
     See `mat_objs.Scatter` for a description of how matplotlib is wrapped to make this plot.
     """
+
     @classmethod
     def sub(cls, size=None, marker=None, colors=None):
         return IndexScatter(
@@ -202,6 +208,7 @@ class PixelizationGridScatter(mat_objs.Scatter):
 
     See `mat_objs.Scatter` for a description of how matplotlib is wrapped to make this plot.
     """
+
     @classmethod
     def sub(cls, colors=None):
         return PixelizationGridScatter(colors=colors, from_subplot_config=True)

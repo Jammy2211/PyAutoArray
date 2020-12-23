@@ -188,9 +188,7 @@ class AbstractPlotter:
         self.pixelization_grid_scatter = (
             pixelization_grid_scatter
             if pixelization_grid_scatter is not None
-            else inc.PixelizationGridScatter(
-                from_subplot_config=from_subplot_config
-            )
+            else inc.PixelizationGridScatter(from_subplot_config=from_subplot_config)
         )
 
         self.liner = (

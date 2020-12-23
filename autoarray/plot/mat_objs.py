@@ -1151,11 +1151,7 @@ class Scatter(AbstractMatObj):
 
 
 class Quiver(AbstractMatObj):
-    def __init__(
-        self,
-        from_subplot_config=False,
-        **kwargs
-    ):
+    def __init__(self, from_subplot_config=False, **kwargs):
 
         super().__init__(from_subplot_config=from_subplot_config, kwargs=kwargs)
 
@@ -1171,7 +1167,7 @@ class Quiver(AbstractMatObj):
             vector_field.grid[:, 0],
             vector_field[:, 1],
             vector_field[:, 0],
-            **self.kwargs_quiver
+            **self.kwargs_quiver,
         )
 
     @classmethod
@@ -1200,31 +1196,28 @@ class Quiver(AbstractMatObj):
 
 
 class Patcher(AbstractMatObj):
-    def __init__(self, facecolor=None, edgecolor=None, from_subplot_config=False):
+    def __init__(self, from_subplot_config=False, **kwargs):
 
-        self.from_subplot_config = from_subplot_config
+        print(kwargs)
 
-        self.facecolor = self.load_setting(
-            param=facecolor, name="facecolor", from_subplot_config=from_subplot_config
-        )
+        super().__init__(from_subplot_config=from_subplot_config, kwargs=kwargs)
 
-        if self.facecolor is None:
-            self.facecolor = "none"
+        if self.kwargs["facecolor"] is None:
+            self.kwargs["facecolor"] = "none"
 
-        self.edgecolor = self.load_setting(
-            param=edgecolor, name="edgecolor", from_subplot_config=from_subplot_config
-        )
+    @property
+    def kwargs_patch_collection(self):
+        """Creates a kwargs dict of valid inputs of the method `plt.quiver` from the object's kwargs dict."""
+        return self.kwargs_of_method(method_name="patch_collection")
 
     @classmethod
-    def sub(cls, facecolor=None, edgecolor=None):
-        return Patcher(
-            facecolor=facecolor, edgecolor=edgecolor, from_subplot_config=True
-        )
+    def sub(cls):
+        return Patcher(from_subplot_config=True)
 
     def add_patches(self, patches):
 
         patch_collection = PatchCollection(
-            patches=patches, facecolors=self.facecolor, edgecolors=self.edgecolor
+            patches=patches, **self.kwargs_patch_collection
         )
 
         plt.gcf().gca().add_collection(patch_collection)
