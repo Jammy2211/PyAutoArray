@@ -17,13 +17,6 @@ def make_plot_path_setup():
     )
 
 
-@pytest.fixture(autouse=True)
-def set_config_path():
-    conf.instance = conf.Config(
-        path.join(directory, "files", "plotter"), path.join(directory, "output")
-    )
-
-
 def test__individual_attributes_are_output(interferometer_7, plot_path, plot_patch):
 
     aplt.Interferometer.visibilities(

@@ -1,4 +1,3 @@
-from autoconf import conf
 import autoarray.plot as aplt
 import pytest
 
@@ -14,13 +13,6 @@ def make_plot_path_setup():
         "files",
         "plots",
         "fit_interferometer",
-    )
-
-
-@pytest.fixture(autouse=True)
-def set_config_path():
-    conf.instance = conf.Config(
-        path.join(directory, "files", "plotter"), path.join(directory, "output")
     )
 
 

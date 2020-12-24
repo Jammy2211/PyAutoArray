@@ -1,5 +1,4 @@
 from autoarray.plot.mat_wrap import plotters
-from autoarray.plot import inversion_plots, mat_wrap
 import numpy as np
 
 
@@ -216,13 +215,17 @@ def residual_map_vs_uv_distances(
 
     if plot_real:
         y = np.real(fit.residual_map)
-        plotter = plotter.plotter_with_new_labels(title=plotter.labels.title + " Real")
+        plotter = plotter.plotter_with_new_labels(
+            title_label=f"{plotter.title.kwargs['label']} Real"
+        )
         plotter = plotter.plotter_with_new_output(
             filename=plotter.output.filename + "_real"
         )
     else:
         y = np.imag(fit.residual_map)
-        plotter = plotter.plotter_with_new_labels(title=plotter.labels.title + " Imag")
+        plotter = plotter.plotter_with_new_labels(
+            title_label=f"{plotter.title.kwargs['label']} Imag"
+        )
         plotter = plotter.plotter_with_new_output(
             filename=plotter.output.filename + "_imag"
         )
@@ -258,13 +261,17 @@ def normalized_residual_map_vs_uv_distances(
 
     if plot_real:
         y = np.real(fit.residual_map)
-        plotter = plotter.plotter_with_new_labels(title=plotter.labels.title + " Real")
+        plotter = plotter.plotter_with_new_labels(
+            title_label=f"{plotter.title.kwargs['label']} Real"
+        )
         plotter = plotter.plotter_with_new_output(
             filename=plotter.output.filename + "_real"
         )
     else:
         y = np.imag(fit.residual_map)
-        plotter = plotter.plotter_with_new_labels(title=plotter.labels.title + " Imag")
+        plotter = plotter.plotter_with_new_labels(
+            title_label=f"{plotter.title.kwargs['label']} Imag"
+        )
         plotter = plotter.plotter_with_new_output(
             filename=plotter.output.filename + "_imag"
         )
@@ -300,13 +307,17 @@ def chi_squared_map_vs_uv_distances(
 
     if plot_real:
         y = np.real(fit.residual_map)
-        plotter = plotter.plotter_with_new_labels(title=plotter.labels.title + " Real")
+        plotter = plotter.plotter_with_new_labels(
+            title_label=f"{plotter.title.kwargs['label']} Real"
+        )
         plotter = plotter.plotter_with_new_output(
             filename=plotter.output.filename + "_real"
         )
     else:
         y = np.imag(fit.residual_map)
-        plotter = plotter.plotter_with_new_labels(title=plotter.labels.title + " Imag")
+        plotter = plotter.plotter_with_new_labels(
+            title_label=f"{plotter.title.kwargs['label']} Imag"
+        )
         plotter = plotter.plotter_with_new_output(
             filename=plotter.output.filename + "_imag"
         )
