@@ -1,8 +1,8 @@
-from autoarray.plot.mat_wrap import plotters
+from autoarray.plot.plotter import plotter
 
 
-@plotters.set_include_and_sub_plotter
-@plotters.set_subplot_filename
+@plotter.set_include_and_sub_plotter
+@plotter.set_subplot_filename
 def subplot_inversion(
     inversion,
     lines=None,
@@ -203,8 +203,8 @@ def individuals(
         )
 
 
-@plotters.set_include_and_plotter
-@plotters.set_labels
+@plotter.set_include_and_plotter
+@plotter.set_labels
 def reconstructed_image(
     inversion, grid=None, lines=None, image_positions=None, include=None, plotter=None
 ):
@@ -219,8 +219,8 @@ def reconstructed_image(
     )
 
 
-@plotters.set_include_and_plotter
-@plotters.set_labels
+@plotter.set_include_and_plotter
+@plotter.set_labels
 def reconstruction(
     inversion,
     lines=None,
@@ -249,8 +249,8 @@ def reconstruction(
     )
 
 
-@plotters.set_include_and_plotter
-@plotters.set_labels
+@plotter.set_include_and_plotter
+@plotter.set_labels
 def errors(
     inversion,
     source_positions=None,
@@ -279,8 +279,8 @@ def errors(
     )
 
 
-@plotters.set_include_and_plotter
-@plotters.set_labels
+@plotter.set_include_and_plotter
+@plotter.set_labels
 def residual_map(
     inversion,
     source_positions=None,
@@ -309,8 +309,8 @@ def residual_map(
     )
 
 
-@plotters.set_include_and_plotter
-@plotters.set_labels
+@plotter.set_include_and_plotter
+@plotter.set_labels
 def normalized_residual_map(
     inversion,
     source_positions=None,
@@ -339,8 +339,8 @@ def normalized_residual_map(
     )
 
 
-@plotters.set_include_and_plotter
-@plotters.set_labels
+@plotter.set_include_and_plotter
+@plotter.set_labels
 def chi_squared_map(
     inversion,
     source_positions=None,
@@ -369,8 +369,8 @@ def chi_squared_map(
     )
 
 
-@plotters.set_include_and_plotter
-@plotters.set_labels
+@plotter.set_include_and_plotter
+@plotter.set_labels
 def regularization_weights(
     inversion,
     source_positions=None,
@@ -399,8 +399,8 @@ def regularization_weights(
     )
 
 
-@plotters.set_include_and_plotter
-@plotters.set_labels
+@plotter.set_include_and_plotter
+@plotter.set_labels
 def interpolated_reconstruction(
     inversion, lines=None, source_positions=None, grid=None, include=None, plotter=None
 ):
@@ -414,8 +414,8 @@ def interpolated_reconstruction(
     )
 
 
-@plotters.set_include_and_plotter
-@plotters.set_labels
+@plotter.set_include_and_plotter
+@plotter.set_labels
 def interpolated_errors(
     inversion, lines=None, source_positions=None, grid=None, include=None, plotter=None
 ):

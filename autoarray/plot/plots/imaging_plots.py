@@ -1,15 +1,15 @@
-from autoarray.plot.mat_wrap import plotters
+from autoarray.plot.plotter import plotter
 
 
-@plotters.set_include_and_sub_plotter
-@plotters.set_subplot_filename
+@plotter.set_include_and_sub_plotter
+@plotter.set_subplot_filename
 def subplot_imaging(
     imaging, grid=None, mask=None, positions=None, include=None, sub_plotter=None
 ):
-    """Plot the imaging data_type as a sub-plotters of all its quantites (e.g. the dataset, noise_map, PSF, Signal-to_noise-map, \
+    """Plot the imaging data_type as a sub-plotter of all its quantites (e.g. the dataset, noise_map, PSF, Signal-to_noise-map, \
      etc).
 
-    Set *autolens.data_type.array.plotters.plotters* for a description of all innput parameters not described below.
+    Set *autolens.data_type.array.plotter.plotter* for a description of all innput parameters not described below.
 
     Parameters
     -----------
@@ -107,7 +107,7 @@ def individual(
     """Plot each attribute of the imaging data_type as individual figures one by one (e.g. the dataset, noise_map, PSF, \
      Signal-to_noise-map, etc).
 
-    Set *autolens.data_type.array.plotters.plotters* for a description of all innput parameters not described below.
+    Set *autolens.data_type.array.plotter.plotter* for a description of all innput parameters not described below.
 
     Parameters
     -----------
@@ -159,12 +159,12 @@ def individual(
         )
 
 
-@plotters.set_include_and_plotter
-@plotters.set_labels
+@plotter.set_include_and_plotter
+@plotter.set_labels
 def image(imaging, grid=None, mask=None, positions=None, include=None, plotter=None):
     """Plot the observed data_type of the imaging data_type.
 
-    Set *autolens.data_type.array.plotters.plotters* for a description of all innput parameters not described below.
+    Set *autolens.data_type.array.plotter.plotter* for a description of all innput parameters not described below.
 
     Parameters
     -----------
@@ -187,14 +187,14 @@ def image(imaging, grid=None, mask=None, positions=None, include=None, plotter=N
     )
 
 
-@plotters.set_include_and_plotter
-@plotters.set_labels
+@plotter.set_include_and_plotter
+@plotter.set_labels
 def noise_map(
     imaging, grid=None, mask=None, positions=None, include=None, plotter=None
 ):
     """Plot the noise_map of the imaging data_type.
 
-    Set *autolens.data_type.array.plotters.plotters* for a description of all innput parameters not described below.
+    Set *autolens.data_type.array.plotter.plotter* for a description of all innput parameters not described below.
 
     Parameters
     -----------
@@ -214,12 +214,12 @@ def noise_map(
     )
 
 
-@plotters.set_include_and_plotter
-@plotters.set_labels
+@plotter.set_include_and_plotter
+@plotter.set_labels
 def psf(imaging, grid=None, positions=None, include=None, plotter=None):
     """Plot the PSF of the imaging data_type.
 
-    Set *autolens.data_type.array.plotters.plotters* for a description of all innput parameters not described below.
+    Set *autolens.data_type.array.plotter.plotter* for a description of all innput parameters not described below.
 
     Parameters
     -----------
@@ -234,14 +234,14 @@ def psf(imaging, grid=None, positions=None, include=None, plotter=None):
     )
 
 
-@plotters.set_include_and_plotter
-@plotters.set_labels
+@plotter.set_include_and_plotter
+@plotter.set_labels
 def inverse_noise_map(
     imaging, grid=None, mask=None, positions=None, include=None, plotter=None
 ):
     """Plot the noise_map of the imaging data_type.
 
-    Set *autolens.data_type.array.plotters.plotters* for a description of all innput parameters not described below.
+    Set *autolens.data_type.array.plotter.plotter* for a description of all innput parameters not described below.
 
     Parameters
     -----------
@@ -261,14 +261,14 @@ def inverse_noise_map(
     )
 
 
-@plotters.set_include_and_plotter
-@plotters.set_labels
+@plotter.set_include_and_plotter
+@plotter.set_labels
 def signal_to_noise_map(
     imaging, grid=None, mask=None, positions=None, include=None, plotter=None
 ):
     """Plot the signal-to-noise_map of the imaging data_type.
 
-    Set *autolens.data_type.array.plotters.plotters* for a description of all innput parameters not described below.
+    Set *autolens.data_type.array.plotter.plotter* for a description of all innput parameters not described below.
 
     Parameters
     -----------
@@ -287,14 +287,14 @@ def signal_to_noise_map(
     )
 
 
-@plotters.set_include_and_plotter
-@plotters.set_labels
+@plotter.set_include_and_plotter
+@plotter.set_labels
 def absolute_signal_to_noise_map(
     imaging, grid=None, mask=None, positions=None, include=None, plotter=None
 ):
     """Plot the signal-to-noise_map of the imaging data_type.
 
-    Set *autolens.data_type.array.plotters.plotters* for a description of all innput parameters not described below.
+    Set *autolens.data_type.array.plotter.plotter* for a description of all innput parameters not described below.
 
     Parameters
     -----------
@@ -313,14 +313,14 @@ def absolute_signal_to_noise_map(
     )
 
 
-@plotters.set_include_and_plotter
-@plotters.set_labels
+@plotter.set_include_and_plotter
+@plotter.set_labels
 def potential_chi_squared_map(
     imaging, grid=None, mask=None, positions=None, include=None, plotter=None
 ):
     """Plot the signal-to-noise_map of the imaging data_type.
 
-    Set *autolens.data_type.array.plotters.plotters* for a description of all innput parameters not described below.
+    Set *autolens.data_type.array.plotter.plotter* for a description of all innput parameters not described below.
 
     Parameters
     -----------

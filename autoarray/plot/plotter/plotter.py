@@ -1,7 +1,7 @@
 import matplotlib
 
 from autoconf import conf
-from autoarray.plot.mat_wrap import include as inc
+from autoarray.plot.plotter import include as inc
 
 backend = conf.get_matplotlib_backend()
 
@@ -400,7 +400,7 @@ class AbstractPlotter:
             The mask applied to the array, the edge of which is plotted as a set of points over the plotted array.
         extract_array_from_mask : bool
             The plotter array is extracted using the mask, such that masked values are plotted as zeros. This ensures \
-            bright features outside the mask do not impact the color map of the plotters.
+            bright features outside the mask do not impact the color map of the plotter.
         zoom_around_mask : bool
             If True, the 2D region of the array corresponding to the rectangle encompassing all unmasked values is \
             plotted, thereby zooming into the region of interest.
@@ -415,7 +415,7 @@ class AbstractPlotter:
         unit_label : str
             The label for the unit_label of the y / x axis of the plots.
         unit_conversion_factor : float or None
-            The conversion factor between arc-seconds and kiloparsecs, required to plotters the unit_label in kpc.
+            The conversion factor between arc-seconds and kiloparsecs, required to plotter the unit_label in kpc.
         figsize : (int, int)
             The size of the figure in (total_y_pixels, total_x_pixels).
         aspect : str
@@ -424,7 +424,7 @@ class AbstractPlotter:
         cmap : str
             The colormap the array is plotted using, which may be chosen from the standard matplotlib colormaps.
         norm : str
-            The normalization of the colormap used to plotters the image, specifically whether it is linear ('linear'), log \
+            The normalization of the colormap used to plotter the image, specifically whether it is linear ('linear'), log \
             ('log') or a symmetric log normalization ('symmetric_log').
         vmin : float or None
             The minimum array value the colormap map spans (all values below this value are plotted the same color).
@@ -566,7 +566,7 @@ class AbstractPlotter:
         include_border=False,
         bypass_output=False,
     ):
-        """Plot a grid of (y,x) Cartesian coordinates as a scatter plotters of points.
+        """Plot a grid of (y,x) Cartesian coordinates as a scatter plotter of points.
 
         Parameters
         -----------
@@ -1190,7 +1190,7 @@ class SubPlotter(AbstractPlotter):
             plt.subplot(rows, columns, subplot_index, aspect=float(aspect))
 
     def get_subplot_rows_columns(self, number_subplots):
-        """Get the size of a sub plotters in (total_y_pixels, total_x_pixels), based on the number of subplots that are going to be plotted.
+        """Get the size of a sub plotter in (total_y_pixels, total_x_pixels), based on the number of subplots that are going to be plotted.
 
         Parameters
         -----------
@@ -1215,7 +1215,7 @@ class SubPlotter(AbstractPlotter):
             return 6, 6
 
     def get_subplot_figsize(self, number_subplots):
-        """Get the size of a sub plotters in (total_y_pixels, total_x_pixels), based on the number of subplots that are going to be plotted.
+        """Get the size of a sub plotter in (total_y_pixels, total_x_pixels), based on the number of subplots that are going to be plotted.
 
         Parameters
         -----------

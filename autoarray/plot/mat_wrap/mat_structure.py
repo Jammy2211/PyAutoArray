@@ -335,7 +335,7 @@ class LinePlot(AbstractWrapStructure):
         unit_label : str
             The unit_label of the y / x axis of the plots.
         kpc_per_scaled : float or None
-            The conversion factor between arc-seconds and kiloparsecs, required to plotters the unit_label in kpc.
+            The conversion factor between arc-seconds and kiloparsecs, required to plotter the unit_label in kpc.
         lines_pointsize : int
             The size of the points plotted to show the liness.
         """

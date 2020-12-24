@@ -1,4 +1,3 @@
-from autoconf import conf
 import autoarray as aa
 import autoarray.plot as aplt
 from os import path
@@ -606,7 +605,7 @@ class TestSubPlotter:
         assert columns == 2
 
 
-from autoarray.plot.mat_wrap import plotters
+from autoarray.plot.plotter import plotter
 
 
 class TestDecorator:
@@ -614,7 +613,7 @@ class TestDecorator:
 
         dictionary = {"hi": 1}
 
-        kpc_per_scaled = plotters.kpc_per_scaled_of_object_from_dictionary(
+        kpc_per_scaled = plotter.kpc_per_scaled_of_object_from_dictionary(
             dictionary=dictionary
         )
 
@@ -629,7 +628,7 @@ class TestDecorator:
 
         dictionary = {"hi": 1, "hello": obj}
 
-        kpc_per_scaled = plotters.kpc_per_scaled_of_object_from_dictionary(
+        kpc_per_scaled = plotter.kpc_per_scaled_of_object_from_dictionary(
             dictionary=dictionary
         )
 
@@ -645,7 +644,7 @@ class TestDecorator:
 
         dictionary = {"hi": 1, "hello": obj}
 
-        kpc_per_scaled = plotters.kpc_per_scaled_of_object_from_dictionary(
+        kpc_per_scaled = plotter.kpc_per_scaled_of_object_from_dictionary(
             dictionary=dictionary
         )
 
