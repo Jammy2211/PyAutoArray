@@ -17,13 +17,6 @@ def make_plot_path_setup():
     )
 
 
-@pytest.fixture(autouse=True)
-def set_config_path():
-    conf.instance = conf.Config(
-        path.join(directory, "files", "plotter"), path.join(directory, "output")
-    )
-
-
 def test__fit_quantities_are_output(fit_imaging_7x7, plot_path, plot_patch):
 
     aplt.FitImaging.image(

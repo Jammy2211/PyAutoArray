@@ -17,12 +17,28 @@ def make_plot_path_setup():
     )
 
 
-@pytest.fixture(autouse=True)
-def set_config_path():
-    conf.instance = conf.Config(
-        path.join(directory, "files", "plotter"), path.join(directory, "output")
-    )
+class TestAbstractPlotterConfig:
+    def test__uses_figure_or_subplot_configs_correctly(self):
 
+        figure = aplt.Figure(figsize=(8, 8))
+        cmap = aplt.Cmap(cmap="warm")
+
+        plotter = aplt.Plotter(figure=figure, cmap=cmap)
+
+        assert plotter.figure.kwargs["figsize"] == (8, 8)
+        assert plotter.figure.kwargs["aspect"] == "square"
+        assert plotter.cmap.kwargs["cmap"] == "warm"
+        assert plotter.cmap.kwargs["norm"] == "linear"
+
+        figure = aplt.Figure(use_subplot_defaults=True)
+        cmap = aplt.Cmap(use_subplot_defaults=True)
+
+        sub_plotter = aplt.Plotter(figure=figure, cmap=cmap)
+
+        assert sub_plotter.figure.kwargs["figsize"] == None
+        assert sub_plotter.figure.kwargs["aspect"] == "square"
+        assert sub_plotter.cmap.kwargs["cmap"] == "jet"
+        assert sub_plotter.cmap.kwargs["norm"] == "linear"
 
 
 class TestAbstractPlotterPlots:
@@ -394,86 +410,78 @@ class TestAbstractPlotterNew:
     def test__plotter_with_new_labels__new_labels_if_input__sizes_dont_change(self):
 
         plotter = aplt.Plotter(
-            labels=aplt.Labels(
-                title="OMG", yunits="hi", xunits="hi2", titlesize=1, labelsize=2, labelsize=3
-            )
+            title=aplt.Title(label="OMG", fontsize=1),
+            ylabel=aplt.YLabel(units="hi"),
+            xlabel=aplt.XLabel(units="hi2"),
+            tickparams=aplt.TickParams(labelsize=2),
         )
+
+        print(plotter.title.kwargs)
 
         plotter = plotter.plotter_with_new_labels()
 
-        assert plotter.labels.title == "OMG"
-        assert plotter.labels._yunits == "hi"
-        assert plotter.labels._xunits == "hi2"
-        assert plotter.labels.titlesize == 1
-        assert plotter.labels.labelsize == 2
-        assert plotter.labels.labelsize == 3
+        assert plotter.title.kwargs["label"] == "OMG"
+        assert plotter.title.kwargs["fontsize"] == 1
+        assert plotter.ylabel._units == "hi"
+        assert plotter.xlabel._units == "hi2"
+        assert plotter.tickparams.kwargs["labelsize"] == 2
 
         plotter = plotter.plotter_with_new_labels(
-            title="OMG0", yunits="hi0", xunits="hi20", titlesize=10, labelsize=20, labelsize=30
+            title_label="OMG0",
+            title_fontsize=10,
+            ylabel_units="hi0",
+            xlabel_units="hi20",
+            tick_params_labelsize=20,
         )
 
-        assert plotter.labels.title == "OMG0"
-        assert plotter.labels._yunits == "hi0"
-        assert plotter.labels._xunits == "hi20"
-        assert plotter.labels.titlesize == 10
-        assert plotter.labels.labelsize == 20
-        assert plotter.labels.labelsize == 30
+        assert plotter.title.kwargs["label"] == "OMG0"
+        assert plotter.title.kwargs["fontsize"] == 10
+        assert plotter.ylabel._units == "hi0"
+        assert plotter.xlabel._units == "hi20"
+        assert plotter.tickparams.kwargs["labelsize"] == 20
 
-        plotter = plotter.plotter_with_new_labels(
-            title="OMG0", yunits="hi0", xunits="hi20", titlesize=10
-        )
+        plotter = plotter.plotter_with_new_labels(title_fontsize=2, title_label="OMG0")
 
-        assert plotter.labels.title == "OMG0"
-        assert plotter.labels._yunits == "hi0"
-        assert plotter.labels._xunits == "hi20"
-        assert plotter.labels.titlesize == 10
-        assert plotter.labels.labelsize == 20
-        assert plotter.labels.labelsize == 30
+        assert plotter.title.kwargs["label"] == "OMG0"
+        assert plotter.title.kwargs["fontsize"] == 2
+        assert plotter.ylabel._units == "hi0"
+        assert plotter.xlabel._units == "hi20"
+        assert plotter.tickparams.kwargs["labelsize"] == 20
 
     def test__plotter_with_new_cmap__new_labels_if_input__sizes_dont_change(self):
 
         plotter = aplt.Plotter(
             cmap=aplt.Cmap(
-                cmap="cold",
-                norm="log",
-                vmin=0.1,
-                vmax=1.0,
-                linthresh=1.5,
-                linscale=2.0,
+                cmap="cold", norm="log", vmin=0.1, vmax=1.0, linthresh=1.5, linscale=2.0
             )
         )
 
-        assert plotter.cmap.cmap == "cold"
-        assert plotter.cmap.norm == "log"
-        assert plotter.cmap.vmin == 0.1
-        assert plotter.cmap.vmax == 1.0
-        assert plotter.cmap.linthresh == 1.5
-        assert plotter.cmap.linscale == 2.0
+        assert plotter.cmap.kwargs["cmap"] == "cold"
+        assert plotter.cmap.kwargs["norm"] == "log"
+        assert plotter.cmap.kwargs["vmin"] == 0.1
+        assert plotter.cmap.kwargs["vmax"] == 1.0
+        assert plotter.cmap.kwargs["linthresh"] == 1.5
+        assert plotter.cmap.kwargs["linscale"] == 2.0
 
         plotter = plotter.plotter_with_new_cmap(
-            cmap="jet",
-            norm="linear",
-            vmin=0.12,
-            vmax=1.2,
-            linthresh=1.2,
-            linscale=2.2,
+            cmap="jet", norm="linear", vmin=0.12, vmax=1.2, linthresh=1.2, linscale=2.2
         )
 
-        assert plotter.cmap.cmap == "jet"
-        assert plotter.cmap.norm == "linear"
-        assert plotter.cmap.vmin == 0.12
-        assert plotter.cmap.vmax == 1.2
-        assert plotter.cmap.linthresh == 1.2
-        assert plotter.cmap.linscale == 2.2
+        assert plotter.cmap.kwargs["cmap"] == "jet"
+        assert plotter.cmap.kwargs["norm"] == "linear"
+        assert plotter.cmap.kwargs["vmin"] == 0.12
+        assert plotter.cmap.kwargs["vmax"] == 1.2
+        assert plotter.cmap.kwargs["linthresh"] == 1.2
+        assert plotter.cmap.kwargs["linscale"] == 2.2
 
         plotter = plotter.plotter_with_new_cmap(cmap="sand", norm="log", vmin=0.13)
 
-        assert plotter.cmap.cmap == "sand"
-        assert plotter.cmap.norm == "log"
-        assert plotter.cmap.vmin == 0.13
-        assert plotter.cmap.vmax == 1.2
-        assert plotter.cmap.linthresh == 1.2
-        assert plotter.cmap.linscale == 2.2
+        assert plotter.cmap.kwargs["cmap"] == "sand"
+        assert plotter.cmap.kwargs["norm"] == "log"
+        assert plotter.cmap.kwargs["vmin"] == 0.13
+        assert plotter.cmap.kwargs["vmax"] == 1.2
+        assert plotter.cmap.kwargs["linthresh"] == 1.2
+        assert plotter.cmap.kwargs["linscale"] == 2.2
 
     def test__plotter_with_new_outputs__new_outputs_are_setup_correctly_if_input(self):
 

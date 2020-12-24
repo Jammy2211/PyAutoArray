@@ -16,13 +16,6 @@ def make_plot_path_setup():
     )
 
 
-@pytest.fixture(autouse=True)
-def set_config_path():
-    conf.instance = conf.Config(
-        path.join(directory, "files", "plotter"), path.join(directory, "output")
-    )
-
-
 def test__individual_attributes_are_output(
     imaging_7x7, positions_7x7, mask_7x7, plot_path, plot_patch
 ):

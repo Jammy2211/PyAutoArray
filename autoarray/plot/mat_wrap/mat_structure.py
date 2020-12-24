@@ -281,7 +281,7 @@ class LinePlot(AbstractWrapStructure):
         elif plot_axis_type == "scatter":
             print(self.kwargs_scatter)
             plt.scatter(
-                x, y, c=self.kwargs["colors"], label=label, **self.kwargs_scatter
+                x, y, c=self.kwargs["colors"][0], label=label, **self.kwargs_scatter
             )
         else:
             raise exc.PlottingException(

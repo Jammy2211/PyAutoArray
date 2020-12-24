@@ -15,13 +15,6 @@ def make_plot_path_setup():
     )
 
 
-@pytest.fixture(autouse=True)
-def set_config_path():
-    conf.instance = conf.Config(
-        path.join(directory, "files", "plotter"), path.join(directory, "output")
-    )
-
-
 def test__image_and_mapper_subplot_is_output_for_all_mappers(
     imaging_7x7, rectangular_mapper_7x7_3x3, voronoi_mapper_9_3x3, plot_path, plot_patch
 ):

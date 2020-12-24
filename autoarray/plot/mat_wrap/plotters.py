@@ -23,7 +23,7 @@ from functools import wraps
 import copy
 
 from autoarray import exc
-from autoarray.plot.mat_wrap import mat_base
+from autoarray.plot.mat_wrap import mat_base, mat_structure, mat_obj
 import inspect
 import os
 from autoarray.inversion import mappers
@@ -87,156 +87,160 @@ class AbstractPlotter:
         else:
             use_subplot_defaults = True
 
-        self.units = units if units is not None else mat_wrap.Units()
+        self.units = units if units is not None else mat_base.Units()
 
         self.figure = (
             figure
             if figure is not None
-            else mat_wrap.Figure(use_subplot_defaults=use_subplot_defaults)
+            else mat_base.Figure(use_subplot_defaults=use_subplot_defaults)
         )
 
         self.cmap = (
             cmap
             if cmap is not None
-            else mat_wrap.Cmap(module=module, use_subplot_defaults=use_subplot_defaults)
+            else mat_base.Cmap(module=module, use_subplot_defaults=use_subplot_defaults)
         )
 
         self.cb = (
             cb
             if cb is not None
-            else mat_wrap.Colorbar(use_subplot_defaults=use_subplot_defaults)
+            else mat_base.Colorbar(use_subplot_defaults=use_subplot_defaults)
         )
 
         self.title = (
             title
             if title is not None
-            else mat_wrap.Title(use_subplot_defaults=use_subplot_defaults)
+            else mat_base.Title(use_subplot_defaults=use_subplot_defaults)
         )
 
         self.tickparams = (
             tickparams
             if tickparams is not None
-            else mat_wrap.TickParams(use_subplot_defaults=use_subplot_defaults)
+            else mat_base.TickParams(use_subplot_defaults=use_subplot_defaults)
         )
 
         self.yticks = (
             yticks
             if yticks is not None
-            else mat_wrap.YTicks(use_subplot_defaults=use_subplot_defaults)
+            else mat_base.YTicks(use_subplot_defaults=use_subplot_defaults)
         )
 
         self.xticks = (
             xticks
             if xticks is not None
-            else mat_wrap.XTicks(use_subplot_defaults=use_subplot_defaults)
+            else mat_base.XTicks(use_subplot_defaults=use_subplot_defaults)
         )
 
         self.ylabel = (
             ylabel
             if ylabel is not None
-            else mat_wrap.YLabel(use_subplot_defaults=use_subplot_defaults)
+            else mat_base.YLabel(use_subplot_defaults=use_subplot_defaults)
         )
 
         self.xlabel = (
             xlabel
             if xlabel is not None
-            else mat_wrap.XLabel(use_subplot_defaults=use_subplot_defaults)
+            else mat_base.XLabel(use_subplot_defaults=use_subplot_defaults)
         )
 
         self.legend = (
             legend
             if legend is not None
-            else mat_wrap.Legend(use_subplot_defaults=use_subplot_defaults)
+            else mat_base.Legend(use_subplot_defaults=use_subplot_defaults)
         )
 
         self.output = (
             output
             if output is not None
-            else mat_wrap.Output(bypass=isinstance(self, SubPlotter))
+            else mat_base.Output(bypass=isinstance(self, SubPlotter))
         )
 
         self.origin_scatter = (
             origin_scatter
             if origin_scatter is not None
-            else inc.OriginScatter(use_subplot_defaults=use_subplot_defaults)
+            else mat_obj.OriginScatter(use_subplot_defaults=use_subplot_defaults)
         )
         self.mask_scatter = (
             mask_scatter
             if mask_scatter is not None
-            else inc.MaskScatter(use_subplot_defaults=use_subplot_defaults)
+            else mat_obj.MaskScatter(use_subplot_defaults=use_subplot_defaults)
         )
         self.border_scatter = (
             border_scatter
             if border_scatter is not None
-            else inc.BorderScatter(use_subplot_defaults=use_subplot_defaults)
+            else mat_obj.BorderScatter(use_subplot_defaults=use_subplot_defaults)
         )
         self.grid_scatter = (
             grid_scatter
             if grid_scatter is not None
-            else inc.GridScatter(use_subplot_defaults=use_subplot_defaults)
+            else mat_structure.GridScatter(use_subplot_defaults=use_subplot_defaults)
         )
         self.positions_scatter = (
             positions_scatter
             if positions_scatter is not None
-            else inc.PositionsScatter(use_subplot_defaults=use_subplot_defaults)
+            else mat_obj.PositionsScatter(use_subplot_defaults=use_subplot_defaults)
         )
         self.index_scatter = (
             index_scatter
             if index_scatter is not None
-            else inc.IndexScatter(use_subplot_defaults=use_subplot_defaults)
+            else mat_obj.IndexScatter(use_subplot_defaults=use_subplot_defaults)
         )
         self.pixelization_grid_scatter = (
             pixelization_grid_scatter
             if pixelization_grid_scatter is not None
-            else inc.PixelizationGridScatter(use_subplot_defaults=use_subplot_defaults)
+            else mat_obj.PixelizationGridScatter(
+                use_subplot_defaults=use_subplot_defaults
+            )
         )
 
-        self.line = (
+        self.line_plot = (
             line
             if line is not None
-            else mat_wrap.LinePlot(use_subplot_defaults=use_subplot_defaults)
+            else mat_structure.LinePlot(use_subplot_defaults=use_subplot_defaults)
         )
 
         self.vector_quiver = (
             vector_quiver
             if vector_quiver is not None
-            else mat_wrap.VectorFieldQuiver(use_subplot_defaults=use_subplot_defaults)
+            else mat_structure.VectorFieldQuiver(
+                use_subplot_defaults=use_subplot_defaults
+            )
         )
 
         self.patcher = (
             patcher
             if patcher is not None
-            else mat_wrap.Patcher(use_subplot_defaults=use_subplot_defaults)
+            else mat_structure.Patcher(use_subplot_defaults=use_subplot_defaults)
         )
 
         self.array_over = (
             array_over
             if array_over is not None
-            else mat_wrap.ArrayOverlay(use_subplot_defaults=use_subplot_defaults)
+            else mat_structure.ArrayOverlay(use_subplot_defaults=use_subplot_defaults)
         )
 
         self.voronoi_drawer = (
             voronoi_drawer
             if voronoi_drawer is not None
-            else mat_wrap.VoronoiDrawer(use_subplot_defaults=use_subplot_defaults)
+            else mat_structure.VoronoiDrawer(use_subplot_defaults=use_subplot_defaults)
         )
 
         self.parallel_overscan_plot = (
             parallel_overscan_plot
             if parallel_overscan_plot is not None
-            else inc.ParallelOverscanPlot(use_subplot_defaults=use_subplot_defaults)
+            else mat_obj.ParallelOverscanPlot(use_subplot_defaults=use_subplot_defaults)
         )
 
         self.serial_prescan_plot = (
             serial_prescan_plot
             if serial_prescan_plot is not None
-            else inc.SerialPrescanPlot(use_subplot_defaults=use_subplot_defaults)
+            else mat_obj.SerialPrescanPlot(use_subplot_defaults=use_subplot_defaults)
         )
 
         self.serial_overscan_plot = (
             serial_overscan_plot
             if serial_overscan_plot is not None
-            else inc.SerialOverscanPlot(use_subplot_defaults=use_subplot_defaults)
+            else mat_obj.SerialOverscanPlot(use_subplot_defaults=use_subplot_defaults)
         )
 
     def plot_array(
@@ -258,102 +262,20 @@ class AbstractPlotter:
 
         Parameters
         -----------
-        settings : PlotterSettings
-            Settings
-        include : PlotterInclude
-            Include
-        labels : PlotterLabels
-            labels
-        outputs : PlotterOutputs
-            outputs
         array : data_type.array.aa.Scaled
             The 2D array of data_type which is plotted.
-        origin : (float, float).
-            The origin of the coordinate system of the array, which is plotted as an 'x' on the image if input.
+        include : Include
+            Include            
         mask : data_type.array.mask.Mask2D
             The mask applied to the array, the edge of which is plotted as a set of points over the plotted array.
-        extract_array_from_mask : bool
-            The plotter array is extracted using the mask, such that masked values are plotted as zeros. This ensures \
-            bright features outside the mask do not impact the color map of the plotters.
-        zoom_around_mask : bool
-            If True, the 2D region of the array corresponding to the rectangle encompassing all unmasked values is \
-            plotted, thereby zooming into the region of interest.
-        border : bool
-            If a mask is supplied, its borders pixels (e.g. the exterior edge) is plotted if this is `True`.
         positions : [[]]
             Lists of (y,x) coordinates on the image which are plotted as colored dots, to highlight specific pixels.
         grid : data_type.array.aa.Grid
             A grid of (y,x) coordinates which may be plotted over the plotted array.
-        as_subplot : bool
-            Whether the array is plotted as part of a subplot, in which case the grid figure is not opened / closed.
-        unit_label : str
-            The label for the unit_label of the y / x axis of the plots.
-        unit_conversion_factor : float or None
-            The conversion factor between arc-seconds and kiloparsecs, required to plotters the unit_label in kpc.
-        figsize : (int, int)
-            The size of the figure in (total_y_pixels, total_x_pixels).
-        aspect : str
-            The aspect ratio of the array, specifically whether it is forced to be square ('equal') or adapts its size to \
-            the figure size ('auto').
-        cmap : str
-            The colormap the array is plotted using, which may be chosen from the standard matplotlib colormaps.
-        norm : str
-            The normalization of the colormap used to plotters the image, specifically whether it is linear ('linear'), log \
-            ('log') or a symmetric log normalization ('symmetric_log').
-        vmin : float or None
-            The minimum array value the colormap map spans (all values below this value are plotted the same color).
-        vmax : float or None
-            The maximum array value the colormap map spans (all values above this value are plotted the same color).
-        linthresh : float
-            For the 'symmetric_log' colormap normalization ,this specifies the range of values within which the colormap \
-            is linear.
-        linscale : float
-            For the 'symmetric_log' colormap normalization, this allowws the linear range set by linthresh to be stretched \
-            relative to the logarithmic range.
-        cb_ticksize : int
-            The size of the tick labels on the colorbar.
-        cb_fraction : float
-            The fraction of the figure that the colorbar takes up, which resizes the colorbar relative to the figure.
-        cb_pad : float
-            Pads the color bar in the figure, which resizes the colorbar relative to the figure.
-        labelsize : int
-            The fontsize of the x axes label.
-        labelsize : int
-            The fontsize of the y axes label.
-        xyticksize : int
-            The font size of the x and y ticks on the figure axes.
-        mask_scatter : int
-            The size of the points plotted to show the mask.
-        xticks_manual :  [] or None
-            If input, the xticks do not use the array's default xticks but instead overwrite them as these values.
-        yticks_manual :  [] or None
-            If input, the yticks do not use the array's default yticks but instead overwrite them as these values.
-        output_path : str
-            The path on the hard-disk where the figure is output.
-        output_filename : str
-            The filename of the figure that is output.
-        output_format : str
-            The format the figue is output:
-            'show' - display on computer screen.
-            'png' - output to hard-disk as a png.
-            'fits' - output to hard-disk as a fits file.'
-
+   
         Returns
         --------
         None
-
-        Examples
-        --------
-            plotters.plot_array(
-            array=image, origin=(0.0, 0.0), mask=circular_mask,
-            border=False, points=[[1.0, 1.0], [2.0, 2.0]], grid=None, as_subplot=False,
-            unit_label='scaled', kpc_per_scaled=None, figsize=(7,7), aspect='auto',
-            cmap='jet', norm='linear, vmin=None, vmax=None, linthresh=None, linscale=None,
-            cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01, cb_tick_values=None, cb_tick_labels=None,
-            title='Image', titlesize=16, labelsize=16, labelsize=16, xyticksize=16,
-            mask_scatter=10, border_pointsize=2, position_pointsize=10, grid_pointsize=10,
-            xticks_manual=None, yticks_manual=None,
-            output_path='/path/to/output', output_format='png', output_filename='image')
         """
 
         if array is None or np.all(array == 0):
@@ -440,7 +362,7 @@ class AbstractPlotter:
             self.patcher.add_patches(patches=patches)
 
         if lines is not None:
-            self.line.plot_grid_grouped(grid_grouped=lines)
+            self.line_plot.plot_grid_grouped(grid_grouped=lines)
 
         if not bypass_output:
             self.output.to_figure(structure=array)
@@ -576,7 +498,7 @@ class AbstractPlotter:
         plt.imshow(
             X=frame,
             aspect=aspect,
-            cmap=self.cmap.cmap,
+            cmap=self.cmap.kwargs["cmap"],
             norm=norm_scale,
             extent=frame.mask.geometry.extent,
         )
@@ -648,41 +570,13 @@ class AbstractPlotter:
 
         Parameters
         -----------
-        grid : data_type.array.aa.Grid
+        grid : Grid
             The (y,x) coordinates of the grid, in an array of shape (total_coordinates, 2).
         axis_limits : []
             The axis limits of the figure on which the grid is plotted, following [xmin, xmax, ymin, ymax].
         indexes : []
             A set of points that are plotted in a different colour for emphasis (e.g. to show the mappings between \
             different planes).
-        as_subplot : bool
-            Whether the grid is plotted as part of a subplot, in which case the grid figure is not opened / closed.
-        label_yunits : str
-            The label of the unit_label of the y / x axis of the plots.
-        unit_conversion_factor : float
-            The conversion factor between arc-seconds and kiloparsecs, required to plotters the unit_label in kpc.
-        figsize : (int, int)
-            The size of the figure in (total_y_pixels, total_x_pixels).
-        pointsize : int
-            The size of the points plotted on the grid.
-        xyticksize : int
-            The font size of the x and y ticks on the figure axes.
-        title : str
-            The text of the title.
-        titlesize : int
-            The size of of the title of the figure.
-        labelsize : int
-            The fontsize of the x axes label.
-        labelsize : int
-            The fontsize of the y axes label.
-        output_path : str
-            The path on the hard-disk where the figure is output.
-        output_filename : str
-            The filename of the figure that is output.
-        output_format : str
-            The format the figue is output:
-            'show' - display on computer screen.
-            'png' - output to hard-disk as a png.
         """
 
         self.figure.open()
@@ -693,9 +587,9 @@ class AbstractPlotter:
 
         elif color_array is not None:
 
-            plt.cm.get_cmap(self.cmap.cmap)
+            plt.cm.get_cmap(self.cmap.kwargs["cmap"])
             self.grid_scatter.scatter_grid_colored(
-                grid=grid, color_array=color_array, cmap=self.cmap.cmap
+                grid=grid, color_array=color_array, cmap=self.cmap.kwargs["cmap"]
             )
             self.cb.set()
 
@@ -744,7 +638,7 @@ class AbstractPlotter:
             self.positions_scatter.scatter_grid(grid=positions)
 
         if lines is not None:
-            self.line.draw_grid(grid=lines)
+            self.line_plot.plot_grid_grouped(grid_grouped=lines)
 
         if not bypass_output:
             self.output.to_figure(structure=grid)
@@ -772,12 +666,12 @@ class AbstractPlotter:
         if x is None:
             x = np.arange(len(y))
 
-        self.line.plot_y_vs_x(y=y, x=x, plot_axis_type=plot_axis_type, label=label)
+        self.line_plot.plot_y_vs_x(y=y, x=x, plot_axis_type=plot_axis_type, label=label)
 
         self.ylabel.set(units=self.units, include_brackets=False)
         self.xlabel.set(units=self.units, include_brackets=False)
 
-        self.line.plot_vertical_lines(
+        self.line_plot.plot_vertical_lines(
             vertical_lines=vertical_lines, vertical_line_labels=vertical_line_labels
         )
 
@@ -886,7 +780,7 @@ class AbstractPlotter:
             units=self.units,
         )
 
-        self.line.plot_rectangular_grid_lines(
+        self.line_plot.plot_rectangular_grid_lines(
             extent=mapper.pixelization_grid.extent, shape_2d=mapper.shape_2d
         )
 
@@ -960,13 +854,16 @@ class AbstractPlotter:
         )
         self.xticks.set(
             array=None,
-            xmin=mapper.pixelization_grid.extent[0],
-            xmax=mapper.pixelization_grid.extent[1],
+            min_value=mapper.pixelization_grid.extent[0],
+            max_value=mapper.pixelization_grid.extent[1],
             units=self.units,
         )
 
         self.voronoi_drawer.draw_voronoi_pixels(
-            mapper=mapper, values=source_pixel_values, cmap=self.cmap.cmap, cb=self.cb
+            mapper=mapper,
+            values=source_pixel_values,
+            cmap=self.cmap.kwargs["cmap"],
+            cb=self.cb,
         )
 
         self.title.set()
@@ -991,7 +888,7 @@ class AbstractPlotter:
             self.positions_scatter.scatter_grid_grouped(grid_grouped=positions)
 
         if lines is not None:
-            self.line.draw_grid(grid=lines)
+            self.line_plot.plot_grid_grouped(grid_grouped=lines)
 
         if image_pixel_indexes is not None:
             self.index_scatter.scatter_grid_indexes(
@@ -1034,31 +931,35 @@ class AbstractPlotter:
 
     def plotter_with_new_labels(
         self,
-        title=None,
-        yunits=None,
-        xunits=None,
-        titlesize=None,
-        ysize=None,
-        xsize=None,
+        title_label=None,
+        title_fontsize=None,
+        ylabel_units=None,
+        xlabel_units=None,
+        tick_params_labelsize=None,
     ):
 
         plotter = copy.deepcopy(self)
 
         plotter.title.kwargs["label"] = (
-            title if title is not None else self.title.kwargs["label"]
+            title_label if title_label is not None else self.title.kwargs["label"]
         )
         plotter.title.kwargs["fontsize"] = (
-            titlesize if titlesize is not None else titlesize
+            title_fontsize
+            if title_fontsize is not None
+            else self.title.kwargs["fontsize"]
         )
 
-        plotter.ylabel._units = yunits if yunits is not None else self.ylabel._units
-        plotter.xlabel._units = xunits if xunits is not None else self.xlabel._units
-
-        plotter.ylabel.kwargs["labelsize"] = (
-            ysize if ysize is not None else self.ylabel.kwargs["labelsize"]
+        plotter.ylabel._units = (
+            ylabel_units if ylabel_units is not None else self.ylabel._units
         )
-        plotter.xlabel.kwargs["labelsize"] = (
-            xsize if xsize is not None else self.xlabel.kwargs["labelsize"]
+        plotter.xlabel._units = (
+            xlabel_units if xlabel_units is not None else self.xlabel._units
+        )
+
+        plotter.tickparams.kwargs["labelsize"] = (
+            tick_params_labelsize
+            if tick_params_labelsize is not None
+            else self.tickparams.kwargs["labelsize"]
         )
 
         return plotter
@@ -1069,14 +970,24 @@ class AbstractPlotter:
 
         plotter = copy.deepcopy(self)
 
-        plotter.cmap.cmap = cmap if cmap is not None else self.cmap.cmap
-        plotter.cmap.norm = norm if norm is not None else self.cmap.norm
-        plotter.cmap.vmax = vmax if vmax is not None else self.cmap.vmax
-        plotter.cmap.vmin = vmin if vmin is not None else self.cmap.vmin
-        plotter.cmap.linthresh = (
-            linthresh if linthresh is not None else self.cmap.linthresh
+        plotter.cmap.kwargs["cmap"] = (
+            cmap if cmap is not None else self.cmap.kwargs["cmap"]
         )
-        plotter.cmap.linscale = linscale if linscale is not None else self.cmap.linscale
+        plotter.cmap.kwargs["norm"] = (
+            norm if norm is not None else self.cmap.kwargs["norm"]
+        )
+        plotter.cmap.kwargs["vmax"] = (
+            vmax if vmax is not None else self.cmap.kwargs["vmax"]
+        )
+        plotter.cmap.kwargs["vmin"] = (
+            vmin if vmin is not None else self.cmap.kwargs["vmin"]
+        )
+        plotter.cmap.kwargs["linthresh"] = (
+            linthresh if linthresh is not None else self.cmap.kwargs["linthresh"]
+        )
+        plotter.cmap.kwargs["linscale"] = (
+            linscale if linscale is not None else self.cmap.kwargs["linscale"]
+        )
 
         return plotter
 
@@ -1501,12 +1412,12 @@ def set_labels(func):
         plotter_key = plotter_key_from_dictionary(dictionary=kwargs)
         plotter = kwargs[plotter_key]
 
-        title = plotter.labels.title_from_func(func=func)
-        yunits = plotter.labels.units_from_func(func=func, for_ylabel=True)
-        xunits = plotter.labels.units_from_func(func=func, for_ylabel=False)
+        title = plotter.title.title_from_func(func=func)
+        yunits = plotter.ylabel.units_from_func(func=func, for_ylabel=True)
+        xunits = plotter.xlabel.units_from_func(func=func, for_ylabel=False)
 
         plotter = plotter.plotter_with_new_labels(
-            title=title, yunits=yunits, xunits=xunits
+            title_label=title, ylabel_units=yunits, xlabel_units=xunits
         )
 
         filename = plotter.output.filename_from_func(func=func)
