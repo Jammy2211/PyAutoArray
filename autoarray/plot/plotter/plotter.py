@@ -26,6 +26,7 @@ from autoarray import exc
 from autoarray.plot.mat_wrap import mat_base, mat_structure, mat_obj
 import inspect
 import os
+from autoarray.structures import grids
 from autoarray.inversion import mappers
 
 
@@ -52,36 +53,116 @@ def load_subplot_setting(section, name, python_type):
 class AbstractPlotter:
     def __init__(
         self,
-        module=None,
-        units=None,
-        figure=None,
-        cmap=None,
-        cb=None,
-        title=None,
-        tickparams=None,
-        yticks=None,
-        xticks=None,
-        ylabel=None,
-        xlabel=None,
-        legend=None,
-        output=None,
-        origin_scatter=None,
-        mask_scatter=None,
-        border_scatter=None,
-        grid_scatter=None,
-        positions_scatter=None,
-        index_scatter=None,
-        pixelization_grid_scatter=None,
-        line=None,
-        vector_quiver=None,
-        patcher=None,
-        array_over=None,
-        voronoi_drawer=None,
-        parallel_overscan_plot=None,
-        serial_prescan_plot=None,
-        serial_overscan_plot=None,
+        module: str = None,
+        units: mat_base.Units = None,
+        figure: mat_base.Figure = None,
+        cmap: mat_base.Cmap = None,
+        colorbar: mat_base.Colorbar = None,
+        tickparams: mat_base.TickParams = None,
+        yticks: mat_base.YTicks = None,
+        xticks: mat_base.XTicks = None,
+        title: mat_base.Title = None,
+        ylabel: mat_base.YLabel = None,
+        xlabel: mat_base.XLabel = None,
+        legend: mat_base.Legend = None,
+        output: mat_base.Output = None,
+        array_overlay: mat_structure.ArrayOverlay = None,
+        grid_scatter: mat_structure.GridScatter = None,
+        line_plot: mat_structure.LinePlot = None,
+        vector_field_quiver: mat_structure.VectorFieldQuiver = None,
+        patch_overlay: mat_structure.PatchOverlay = None,
+        voronoi_drawer: mat_structure.VoronoiDrawer = None,
+        origin_scatter: mat_obj.OriginScatter = None,
+        mask_scatter: mat_obj.MaskScatter = None,
+        border_scatter: mat_obj.BorderScatter = None,
+        positions_scatter: mat_obj.PositionsScatter = None,
+        index_scatter: mat_obj.IndexScatter = None,
+        pixelization_grid_scatter: mat_obj.PixelizationGridScatter = None,
+        parallel_overscan_plot: mat_obj.ParallelOverscanPlot = None,
+        serial_prescan_plot: mat_obj.SerialPrescanPlot = None,
+        serial_overscan_plot: mat_obj.SerialOverscanPlot = None,
     ):
-
+        """
+        Visualizes data structures (e.g an `Array`, `Grid`, `VectorField`, etc.) using Matplotlib.
+        
+        The `Plotter` is passed objects from the `mat_wrap` package which wrap matplotlib plot functions and customize
+        the appearance of the plots of the data structure. If the values of these matplotlib wrapper objects are not
+        manually specified, they assume the default values provided in the `config.visualize.mat_*` `.ini` config files.
+        
+        The following data structures can be plotted using the following matplotlib functions:
+        
+        - `Array`:, using `plt.imshow`.
+        - `Grid`: using `plt.scatter`.
+        - `Line`: using `plt.plot`, `plt.semilogy`, `plt.loglog` or `plt.scatter`.
+        - `VectorField`: using `plt.quiver`.
+        - `RectangularMapper`: using `plt.imshow`.
+        - `VoronoiMapper`: using `plt.fill`.
+        
+        Parameters
+        ----------
+        module : str
+            The name of the `plots.plot` module the plot function was called from, which is used to color the figure
+            according to its module and therefore what it is plotting.
+        units : mat_base.Units
+            The units of the figure used to plot the data structure which sets the y and x ticks and labels.
+        figure : mat_base.Figure
+            Opens the matplotlib figure before plotting via `plt.figure` and closes it once plotting is complete
+            via `plt.close`
+        cmap : mat_base.Cmap
+            Customizes the colormap of the plot and its normalization via matplotlib `colors` objects such 
+            as `colors.Normalize` and `colors.LogNorm`.
+        colorbar : mat_base.Colorbar
+            Plots the colorbar of the plot via `plt.colorbar` and customizes its appearance and ticks using methods
+            like `cb.set_yticklabels` and `cb.ax.tick_params`.
+        tickparams : mat_base.TickParams
+            Customizes the appearances of the y and x ticks on the plot, (e.g. the fontsize), using `plt.tick_params`.
+        yticks : mat_base.YTicks
+            Sets the yticks of the plot, including scaling them to new units depending on the `Units` object, via
+            `plt.yticks`.
+        xticks : mat_base.XTicks
+            Sets the xticks of the plot, including scaling them to new units depending on the `Units` object, via
+            `plt.xticks`.
+        title : mat_base.Title
+            Sets the figure title and customizes its appearance using `plt.title`.        
+        ylabel : mat_base.YLabel
+            Sets the figure ylabel and customizes its appearance using `plt.ylabel`.
+        xlabel : mat_base.XLabel
+            Sets the figure xlabel and customizes its appearance using `plt.xlabel`.
+        legend : mat_base.Legend
+            Sets whether the plot inclues a legend and customizes its appearance and labels using `plt.legend`.
+        output : mat_base.Output
+            Sets if the figure is displayed on the user's screen or output to `.png` using `plt.show` and `plt.savefig`
+        array_overlay: mat_structure.ArrayOverlay
+            Overlays an input `Array` over the figure using `plt.imshow`.
+        grid_scatter : mat_structure.GridScatter
+            Scatters a `Grid` of (y,x) coordinates over the figure using `plt.scatter`.
+        line_plot: mat_structure.LinePlot
+            Plots lines of data (e.g. a y versus x plot via `plt.plot`, vertical lines via `plt.avxline`, etc.)
+        vector_field_quiver: mat_structure.VectorFieldQuiver
+            Plots a `VectorField` object using the matplotlib function `plt.quiver`.
+        patch_overlay: mat_structure.PatchOverlay
+            Overlays matplotlib `patches.Patch` objects over the figure, such as an `Ellipse`.
+        voronoi_drawer: mat_structure.VoronoiDrawer
+            Draws a colored Voronoi mesh of pixels using `plt.fill`.
+        origin_scatter : mat_obj.OriginScatter
+            Scatters the (y,x) origin of the data structure on the figure.
+        mask_scatter : mat_obj.MaskScatter
+            Scatters an input `Mask2d` over the plotted data structure's figure.
+        border_scatter : mat_obj.BorderScatter
+            Scatters the border of an input `Mask2d` over the plotted data structure's figure.
+        positions_scatter : mat_obj.PositionsScatter
+            Scatters specific (y,x) coordinates input as a `GridIrregular` object over the figure.
+        index_scatter : mat_obj.IndexScatter
+            Scatters specific coordinates of an input `Grid` based on input values of the `Grid`'s 1D or 2D indexes.
+        pixelization_grid_scatter : mat_obj.PixelizationGridScatter
+            Scatters the `PixelizationGrid` of a `Pixelization` object.
+        parallel_overscan_plot : mat_obj.ParallelOverscanPlot
+            Plots the parallel overscan on an `Array` data structure representing a CCD imaging via `plt.plot`.
+        serial_prescan_plot : mat_obj.SerialPrescanPlot
+            Plots the serial prescan on an `Array` data structure representing a CCD imaging via `plt.plot`.
+        serial_overscan_plot : mat_obj.SerialOverscanPlot
+            Plots the serial overscan on an `Array` data structure representing a CCD imaging via `plt.plot`.
+        """
         if isinstance(self, Plotter):
             use_subplot_defaults = False
         else:
@@ -102,8 +183,8 @@ class AbstractPlotter:
         )
 
         self.cb = (
-            cb
-            if cb is not None
+            colorbar
+            if colorbar is not None
             else mat_base.Colorbar(use_subplot_defaults=use_subplot_defaults)
         )
 
@@ -194,28 +275,28 @@ class AbstractPlotter:
         )
 
         self.line_plot = (
-            line
-            if line is not None
+            line_plot
+            if line_plot is not None
             else mat_structure.LinePlot(use_subplot_defaults=use_subplot_defaults)
         )
 
-        self.vector_quiver = (
-            vector_quiver
-            if vector_quiver is not None
+        self.vector_field_quiver = (
+            vector_field_quiver
+            if vector_field_quiver is not None
             else mat_structure.VectorFieldQuiver(
                 use_subplot_defaults=use_subplot_defaults
             )
         )
 
-        self.patcher = (
-            patcher
-            if patcher is not None
-            else mat_structure.Patcher(use_subplot_defaults=use_subplot_defaults)
+        self.patch_overlay = (
+            patch_overlay
+            if patch_overlay is not None
+            else mat_structure.PatchOverlay(use_subplot_defaults=use_subplot_defaults)
         )
 
-        self.array_over = (
-            array_over
-            if array_over is not None
+        self.array_overlay = (
+            array_overlay
+            if array_overlay is not None
             else mat_structure.ArrayOverlay(use_subplot_defaults=use_subplot_defaults)
         )
 
@@ -252,7 +333,7 @@ class AbstractPlotter:
         grid=None,
         vector_field=None,
         patches=None,
-        array_over=None,
+        array_overlay=None,
         include_origin=False,
         include_border=False,
         extent_manual=None,
@@ -318,8 +399,8 @@ class AbstractPlotter:
         if extent_manual is not None:
             extent = extent_manual
 
-        if array_over is not None:
-            self.array_over.overlay_array(array=array_over, figure=self.figure)
+        if array_overlay is not None:
+            self.array_overlay.overlay_array(array=array_overlay, figure=self.figure)
 
         plt.axis(extent)
 
@@ -353,13 +434,16 @@ class AbstractPlotter:
             self.grid_scatter.scatter_grid(grid=grid)
 
         if positions is not None:
-            self.positions_scatter.scatter_grid_grouped(grid_grouped=positions)
+            if not isinstance(positions, grids.GridIrregularGrouped):
+                self.positions_scatter.scatter_grid(grid=positions)
+            else:
+                self.positions_scatter.scatter_grid_grouped(grid_grouped=positions)
 
         if vector_field is not None:
-            self.vector_quiver.quiver_vector_field(vector_field=vector_field)
+            self.vector_field_quiver.quiver_vector_field(vector_field=vector_field)
 
         if patches is not None:
-            self.patcher.add_patches(patches=patches)
+            self.patch_overlay.overlay_patches(patches=patches)
 
         if lines is not None:
             self.line_plot.plot_grid_grouped(grid_grouped=lines)
@@ -635,7 +719,10 @@ class AbstractPlotter:
             self.index_scatter.scatter_grid_indexes(grid=grid, indexes=indexes)
 
         if positions is not None:
-            self.positions_scatter.scatter_grid(grid=positions)
+            if not isinstance(positions, grids.GridIrregularGrouped):
+                self.positions_scatter.scatter_grid(grid=positions)
+            else:
+                self.positions_scatter.scatter_grid_grouped(grid_grouped=positions)
 
         if lines is not None:
             self.line_plot.plot_grid_grouped(grid_grouped=lines)
@@ -885,7 +972,10 @@ class AbstractPlotter:
             self.border_scatter.scatter_grid(grid=sub_border_grid)
 
         if positions is not None:
-            self.positions_scatter.scatter_grid_grouped(grid_grouped=positions)
+            if not isinstance(positions, grids.GridIrregularGrouped):
+                self.positions_scatter.scatter_grid(grid=positions)
+            else:
+                self.positions_scatter.scatter_grid_grouped(grid_grouped=positions)
 
         if lines is not None:
             self.line_plot.plot_grid_grouped(grid_grouped=lines)
@@ -1039,7 +1129,7 @@ class Plotter(AbstractPlotter):
         units=None,
         figure=None,
         cmap=None,
-        cb=None,
+        colorbar=None,
         title=None,
         tickparams=None,
         yticks=None,
@@ -1055,10 +1145,10 @@ class Plotter(AbstractPlotter):
         positions_scatter=None,
         index_scatter=None,
         pixelization_grid_scatter=None,
-        line=None,
-        vector_quiver=None,
-        patcher=None,
-        array_over=None,
+        line_plot=None,
+        vector_field_quiver=None,
+        patch_overlay=None,
+        array_overlay=None,
         voronoi_drawer=None,
         parallel_overscan_plot=None,
         serial_prescan_plot=None,
@@ -1069,7 +1159,7 @@ class Plotter(AbstractPlotter):
             units=units,
             figure=figure,
             cmap=cmap,
-            cb=cb,
+            colorbar=colorbar,
             legend=legend,
             title=title,
             tickparams=tickparams,
@@ -1085,10 +1175,10 @@ class Plotter(AbstractPlotter):
             positions_scatter=positions_scatter,
             index_scatter=index_scatter,
             pixelization_grid_scatter=pixelization_grid_scatter,
-            line=line,
-            vector_quiver=vector_quiver,
-            patcher=patcher,
-            array_over=array_over,
+            line_plot=line_plot,
+            vector_field_quiver=vector_field_quiver,
+            patch_overlay=patch_overlay,
+            array_overlay=array_overlay,
             voronoi_drawer=voronoi_drawer,
             parallel_overscan_plot=parallel_overscan_plot,
             serial_prescan_plot=serial_prescan_plot,
@@ -1103,7 +1193,7 @@ class SubPlotter(AbstractPlotter):
         units=None,
         figure=None,
         cmap=None,
-        cb=None,
+        colorbar=None,
         title=None,
         tickparams=None,
         yticks=None,
@@ -1119,10 +1209,10 @@ class SubPlotter(AbstractPlotter):
         positions_scatter=None,
         index_scatter=None,
         pixelization_grid_scatter=None,
-        line=None,
-        vector_quiver=None,
-        patcher=None,
-        array_over=None,
+        line_plot=None,
+        vector_field_quiver=None,
+        patch_overlay=None,
+        array_overlay=None,
         voronoi_drawer=None,
         parallel_overscan_plot=None,
         serial_prescan_plot=None,
@@ -1134,7 +1224,7 @@ class SubPlotter(AbstractPlotter):
             units=units,
             figure=figure,
             cmap=cmap,
-            cb=cb,
+            colorbar=colorbar,
             legend=legend,
             title=title,
             tickparams=tickparams,
@@ -1150,10 +1240,10 @@ class SubPlotter(AbstractPlotter):
             positions_scatter=positions_scatter,
             index_scatter=index_scatter,
             pixelization_grid_scatter=pixelization_grid_scatter,
-            line=line,
-            vector_quiver=vector_quiver,
-            patcher=patcher,
-            array_over=array_over,
+            line_plot=line_plot,
+            vector_field_quiver=vector_field_quiver,
+            patch_overlay=patch_overlay,
+            array_overlay=array_overlay,
             voronoi_drawer=voronoi_drawer,
             parallel_overscan_plot=parallel_overscan_plot,
             serial_prescan_plot=serial_prescan_plot,
@@ -1443,7 +1533,7 @@ def plot_array(
     grid=None,
     vector_field=None,
     patches=None,
-    array_over=None,
+    array_overlay=None,
     extent_manual=None,
     include=None,
     plotter=None,
@@ -1463,7 +1553,7 @@ def plot_array(
         vector_field=vector_field,
         patches=patches,
         extent_manual=extent_manual,
-        array_over=array_over,
+        array_overlay=array_overlay,
         include_origin=include.origin,
         include_border=include.border,
     )

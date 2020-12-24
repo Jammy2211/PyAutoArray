@@ -13,33 +13,33 @@ directory = path.dirname(path.realpath(__file__))
 class TestArrayOverlay:
     def test__from_config_or_via_manual_input(self):
 
-        array_overlay = aplt.ArrayOverlay()
+        array_overlaylay = aplt.ArrayOverlay()
 
-        assert array_overlay.kwargs["alpha"] == 0.5
+        assert array_overlaylay.kwargs["alpha"] == 0.5
 
-        array_overlay = aplt.ArrayOverlay(alpha=0.6)
+        array_overlaylay = aplt.ArrayOverlay(alpha=0.6)
 
-        assert array_overlay.kwargs["alpha"] == 0.6
+        assert array_overlaylay.kwargs["alpha"] == 0.6
 
-        array_overlay = aplt.ArrayOverlay(use_subplot_defaults=True)
+        array_overlaylay = aplt.ArrayOverlay(use_subplot_defaults=True)
 
-        assert array_overlay.kwargs["alpha"] == 0.7
+        assert array_overlaylay.kwargs["alpha"] == 0.7
 
-        array_overlay = aplt.ArrayOverlay(use_subplot_defaults=True, alpha=0.8)
+        array_overlaylay = aplt.ArrayOverlay(use_subplot_defaults=True, alpha=0.8)
 
-        assert array_overlay.kwargs["alpha"] == 0.8
+        assert array_overlaylay.kwargs["alpha"] == 0.8
 
     def test__overlay_array__works_for_reasonable_values(self):
 
-        array_over = aa.Array.manual_2d(
+        array_overlay = aa.Array.manual_2d(
             array=[[1.0, 2.0], [3.0, 4.0]], pixel_scales=0.5
         )
 
         figure = aplt.Figure(aspect="auto")
 
-        array_overlay = aplt.ArrayOverlay(alpha=0.5)
+        array_overlaylay = aplt.ArrayOverlay(alpha=0.5)
 
-        array_overlay.overlay_array(array=array_over, figure=figure)
+        array_overlaylay.overlay_array(array=array_overlay, figure=figure)
 
 
 class TestGridScatter:
@@ -261,34 +261,36 @@ class TestVectorFieldQuiver:
 class TestPatcher:
     def test__from_config_or_via_manual_input(self):
 
-        patcher = aplt.Patcher()
+        patch_overlay = aplt.PatchOverlay()
 
-        assert patcher.kwargs["facecolor"] == "none"
-        assert patcher.kwargs["edgecolor"] == "cyan"
+        assert patch_overlay.kwargs["facecolor"] == "none"
+        assert patch_overlay.kwargs["edgecolor"] == "cyan"
 
-        patcher = aplt.Patcher(facecolor="r", edgecolor="g")
+        patch_overlay = aplt.PatchOverlay(facecolor="r", edgecolor="g")
 
-        assert patcher.kwargs["facecolor"] == "r"
-        assert patcher.kwargs["edgecolor"] == "g"
+        assert patch_overlay.kwargs["facecolor"] == "r"
+        assert patch_overlay.kwargs["edgecolor"] == "g"
 
-        patcher = aplt.Patcher(use_subplot_defaults=True)
+        patch_overlay = aplt.PatchOverlay(use_subplot_defaults=True)
 
-        assert patcher.kwargs["facecolor"] == "none"
-        assert patcher.kwargs["edgecolor"] == "y"
+        assert patch_overlay.kwargs["facecolor"] == "none"
+        assert patch_overlay.kwargs["edgecolor"] == "y"
 
-        patcher = aplt.Patcher(use_subplot_defaults=True, facecolor="b", edgecolor="p")
+        patch_overlay = aplt.PatchOverlay(
+            use_subplot_defaults=True, facecolor="b", edgecolor="p"
+        )
 
-        assert patcher.kwargs["facecolor"] == "b"
-        assert patcher.kwargs["edgecolor"] == "p"
+        assert patch_overlay.kwargs["facecolor"] == "b"
+        assert patch_overlay.kwargs["edgecolor"] == "p"
 
     def test__add_patches(self):
 
-        patcher = aplt.Patcher(facecolor="cy", edgecolor="none")
+        patch_overlay = aplt.PatchOverlay(facecolor="cy", edgecolor="none")
 
         patch_0 = Ellipse(xy=(1.0, 2.0), height=1.0, width=2.0, angle=1.0)
         patch_1 = Ellipse(xy=(1.0, 2.0), height=1.0, width=2.0, angle=1.0)
 
-        patcher.add_patches(patches=[patch_0, patch_1])
+        patch_overlay.overlay_patches(patches=[patch_0, patch_1])
 
 
 class TestVoronoiDrawer:
