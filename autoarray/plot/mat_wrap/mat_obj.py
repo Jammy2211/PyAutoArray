@@ -2,6 +2,17 @@ from autoarray.plot.mat_wrap import mat_structure
 
 
 class AbstractMatObj:
+    """
+    An abstract base class for wrapped matplotlib structures in the `mat_structure` module that correspond to specific
+    quantities that are plotted on a figure.
+
+    For example, the `OriginScatter` and `MaskScatter` objects in this module both use the `GridScatter` object to
+    plot their corresponding data quantity (the origin and `Mask2d` of a data structure).
+
+    By defining specifc classes in this module, these objects will use their own config file to produce the plot,
+    meaning their apperance can be uniquely customized.
+    """
+
     @property
     def config_folder(self):
         return "mat_obj"

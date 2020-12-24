@@ -64,7 +64,7 @@ class TestAbstractPlotterPlots:
             grid=grid,
             positions=aa.GridIrregularGrouped([(-1.0, -1.0)]),
             lines=aa.GridIrregularGrouped([(1.0, 1.0), (2.0, 2.0)]),
-            array_over=array,
+            array_overlay=array,
             include_origin=True,
             include_border=True,
         )
@@ -85,7 +85,7 @@ class TestAbstractPlotterPlots:
             lines=aa.GridIrregularGrouped(
                 [[(1.0, 1.0), (2.0, 2.0)], [(2.0, 4.0), (5.0, 6.0)]]
             ),
-            array_over=array,
+            array_overlay=array,
             include_origin=True,
             include_border=True,
         )
@@ -98,7 +98,7 @@ class TestAbstractPlotterPlots:
             grid=grid,
             positions=aa.GridIrregularGrouped([(-1.0, -1.0)]),
             lines=aa.GridIrregularGrouped([(1.0, 1.0), (2.0, 2.0)]),
-            array_over=array,
+            array_overlay=array,
             include=aplt.Include(origin=True, border=True),
             plotter=aplt.Plotter(
                 output=aplt.Output(path=plot_path, filename="array3", format="png")

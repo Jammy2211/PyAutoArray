@@ -42,9 +42,9 @@ class Units:
         """
         This object controls the units of a plotted figure, and performs multiple tasks when making the plot:
 
-        1) Species the units of the plot (e.g. meters, kilometers) and contains a conversion factor which is used to
-           converts the plotted data from its true units (e.g. meters) to the units to plotted (e.g. kilometeters).
-           Pixel units can also be used if use_scaled=False.
+        1) Species the units of the plot (e.g. meters, kilometers) and contains a conversion factor which converts 
+           the plotted data from its current units (e.g. meters) to the units plotted (e.g. kilometeters). Pixel units
+            can be used if `use_scaled=False`.
 
         2) Uses the conversion above to manually override the yticks and xticks of the figure, so it appears in the
            converted units.
@@ -55,7 +55,7 @@ class Units:
         ----------
         use_scaled : bool
             If True, plot the 2D data with y and x ticks corresponding to its scaled coordinates (its `pixel_scales`
-            attribute is used as the conversion factor). If `False` plot them in pixel units.
+            attribute is used as the `conversion_factor`). If `False` plot them in pixel units.
         conversion_factor : float
             If plotting the labels in scaled units, this factor multiplies the values that are used for the labels.
             This allows for additional unit conversions of the figure labels.
@@ -89,7 +89,51 @@ class Units:
 
 
 class AbstractMatBase:
-    def __init__(self, use_subplot_defaults, kwargs):
+    def __init__(self, use_subplot_defaults: bool, kwargs: dict):
+        """
+        An abstract base class for wrapping matplotlib plotting methods.
+        
+        Classes are used to wrap matplotlib so that the data structures in the `autoarray.structures` package can be 
+        plotted in standardized withs. This exploits how these structures have specific formats, units, properties etc.
+        This allows us to make a simple API for plotting structures, for example to plot an `Array` structure:
+        
+        import autoarray as aa
+        import autoarray.plot as aplt
+        
+        arr = aa.Array.manual_2d(array=[[1.0, 1.0], [2.0, 2.0]], pixel_scales=2.0)
+        aplt.Array(array=arr)
+        
+        The wrapped Mat objects make it simple to customize how matplotlib visualizes this data structure, for example
+        we can customize the figure size and colormap using the `Figure` and `Cmap` objects.
+        
+        figure = aplt.Figure(figsize=(7,7), aspect="square")
+        cmap = aplt.Cmap(cmap="jet", vmin=1.0, vmax=2.0)
+        
+        plotter = aplt.Plotter(figure=figure, cmap=cmap)
+        
+        aplt.Array(array=arr, plotter=plotter)
+        
+        The `Plotter` object is detailed in the `autoarray.plot.plotter` package.
+        
+        The matplotlib wrapper objects in ths module also use configuration files to choose their default settings.
+        For example, in `autoarray.config.visualize.mat_base.Figure.ini` you will note the section:
+        
+        [figure]
+        figsize=(7, 7)
+        
+        [subplot]
+        figsize=auto
+        
+        This specifies that when a data structure (like the `Array` above) is plotted, the figsize will always be 
+        (7,7) when a single figure is plotted and it will be chosen automatically if a subplot is plotted. This
+        allows one to customize the matplotlib settings of every plot in a project.
+        
+        Parameters
+        ----------
+        use_subplot_defaults : bool
+            `Mat` objects load settings from the [figure] section of its corresponding .ini config file by default. If
+            `use_subplot_defaults=True` settings from the [subplot] section are loaded instead.
+        """
 
         self.use_subplot_defaults = use_subplot_defaults
 
@@ -111,8 +155,25 @@ class AbstractMatBase:
     def config_folder(self):
         return "mat_base"
 
-    def kwargs_of_method(self, method_name, cls_name=None):
+    def kwargs_of_method(self, method_name: str, cls_name: str = None):
+        """For an input matplotlib method name (e.g. `plot, imshow, scatter) this method finds the `[args]` section of
+        a Mat object's config file and loads the list of valid inputs to this method. It then filters the full `kwargs`
+        dictionary of the object so that it only contains input parameters that can be passed to the matplotlib method.
 
+        For example, if kwargs is:
+
+        kwargs = {"pointsize" : 2, "figsize" : (5,5)}
+
+        Then `kwargs_of_method(method_name="figure")` will return a dictionary where `pointsize` has been removed, as
+        this is not a valid input of the `plt.figure` method.
+
+        Parameters
+        ----------
+        method_name : str
+            The name of the `matplotlib` method (e.g. `figure`, `scatter`) which is used to filter out non-valid inputs.
+        cls_name : str
+            The name of the class used to choose the config file from which the args are loaded.
+        """
         if cls_name is None:
             cls_name = self.__class__.__name__
 
@@ -141,7 +202,7 @@ class Figure(AbstractMatBase):
         Parameters
         ----------
         use_subplot_defaults : bool
-            `WrapMat` objects load settings from the [figure] section of its .ini config file by default. If
+            `Mat` objects load settings from the [figure] section of its corresponding .ini config file by default. If
             `use_subplot_defaults=True` settings from the [subplot] section are loaded instead.
         """
 
@@ -164,9 +225,11 @@ class Figure(AbstractMatBase):
         """Creates a kwargs dict of valid inputs of the method `plt.imshow` from the object's kwargs dict."""
         return self.kwargs_of_method(method_name="imshow")
 
-    def aspect_from_shape_2d(self, shape_2d: typing.Union[typing.Tuple[int, int]]):
+    def aspect_from_shape_2d(
+        self, shape_2d: typing.Union[typing.Tuple[int, int]]
+    ) -> typing.Union[float, str]:
         """
-        Returns the aspect ratio of the figure from the 2D shape of an `Array`.
+        Returns the aspect ratio of the figure from the 2D shape of a data structure.
 
         This is used to ensure that rectangular arrays are plotted as square figures on sub-plots.
 
@@ -211,12 +274,12 @@ class Cmap(AbstractMatBase):
 
         Parameters
         ----------
+        use_subplot_defaults : bool
+            `Mat` objects load settings from the [figure] section of its .ini config file by default. If
+            `use_subplot_defaults=True` settings from the [subplot] section are loaded instead.
         module : str
             The module from which the plot is called, which is used to customize the colormap for figures of different
             categories.
-          use_subplot_defaults : bool
-            `WrapMat` objects load settings from the [figure] section of its .ini config file by default. If
-            `use_subplot_defaults=True` settings from the [subplot] section are loaded instead.
         """
 
         super().__init__(use_subplot_defaults=use_subplot_defaults, kwargs=kwargs)
@@ -238,7 +301,7 @@ class Cmap(AbstractMatBase):
         except KeyError:
             pass
 
-    def norm_from_array(self, array: np.ndarray):
+    def norm_from_array(self, array: np.ndarray) -> object:
         """
         Returns the `Normalization` object which scales of the colormap.
 
@@ -252,12 +315,12 @@ class Cmap(AbstractMatBase):
         """
 
         if self.kwargs["vmin"] is None:
-            vmin = array.min()
+            vmin = np.min(array)
         else:
             vmin = self.kwargs["vmin"]
 
         if self.kwargs["vmax"] is None:
-            vmax = array.max()
+            vmax = np.max(array)
         else:
             vmax = self.kwargs["vmax"]
 
@@ -304,7 +367,7 @@ class Colorbar(AbstractMatBase):
         Parameters
         ----------
         use_subplot_defaults : bool
-            `WrapMat` objects load settings from the [figure] section of its .ini config file by default. If
+            `Mat` objects load settings from the [figure] section of its .ini config file by default. If
             `use_subplot_defaults=True` settings from the [subplot] section are loaded instead.
         manual_tick_labels : [float]
             Manually override the colorbar tick labels to an input list of float.
@@ -318,12 +381,12 @@ class Colorbar(AbstractMatBase):
         self.manual_tick_values = manual_tick_values
 
     @property
-    def kwargs_colorbar(self):
+    def kwargs_colorbar(self) -> dict:
         """Creates a kwargs dict of valid inputs of the method `plt.colorbar` from the object's kwargs dict."""
         return self.kwargs_of_method(method_name="colorbar")
 
     @property
-    def kwargs_tick_params(self):
+    def kwargs_tick_params(self) -> dict:
         """Creates a kwargs dict of valid inputs of the method `plt.tick_params` from the object's kwargs dict."""
         return self.kwargs_of_method(method_name="tick_params", cls_name="TickParams")
 
@@ -345,7 +408,7 @@ class Colorbar(AbstractMatBase):
 
         cb.ax.tick_params(**self.kwargs_tick_params)
 
-    def set_with_values(self, cmap: str, color_values: np.ndarray):
+    def set_with_color_values(self, cmap: str, color_values: np.ndarray):
         """
         Set the figure's colorbar using an array of already known color values.
 
@@ -387,17 +450,17 @@ class TickParams(AbstractMatBase):
         Parameters
         ----------
         use_subplot_defaults : bool
-            `WrapMat` objects load settings from the [figure] section of its .ini config file by default. If
+            `Mat` objects load settings from the [figure] section of its .ini config file by default. If
             `use_subplot_defaults=True` settings from the [subplot] section are loaded instead.
         """
         super().__init__(use_subplot_defaults=use_subplot_defaults, kwargs=kwargs)
 
     @property
-    def kwargs_tick_params(self):
+    def kwargs_tick_params(self) -> dict:
         """Creates a kwargs dict of valid inputs of the method `plt.tick_params` from the object's kwargs dict."""
         return self.kwargs_of_method(method_name="tick_params")
 
-    def set(self,):
+    def set(self):
         """Set the tick_params of the figure using the method `plt.tick_params`."""
         plt.tick_params(**self.kwargs_tick_params)
 
@@ -420,7 +483,7 @@ class AbstractTicks(AbstractMatBase):
         Parameters
         ----------
         use_subplot_defaults : bool
-            `WrapMat` objects load settings from the [figure] section of its .ini config file by default. If
+            `Mat` objects load settings from the [figure] section of its .ini config file by default. If
             `use_subplot_defaults=True` settings from the [subplot] section are loaded instead.
         manual_values : [float]
             Manually override the tick labels to display the labels as the input list of floats.
@@ -430,13 +493,13 @@ class AbstractTicks(AbstractMatBase):
         self.manual_values = manual_values
 
     @property
-    def kwargs_ticks(self):
+    def kwargs_ticks(self) -> dict:
         """Creates a kwargs dict of valid inputs of the methods `plt.yticks` and `plt.xticks` from the object's kwargs dict."""
         return self.kwargs_of_method(method_name="ticks")
 
     def tick_values_from(
         self, min_value: float, max_value: float, use_defaults: bool = False
-    ):
+    ) -> np.ndarray:
         """
         Calculate the ticks used for the yticks or xticks from input values of the minimum and maximum coordinate
         values of the y and x axis.
@@ -466,7 +529,7 @@ class AbstractTicks(AbstractMatBase):
         max_value: float,
         units: Units,
         use_defaults: bool = False,
-    ):
+    ) -> typing.Optional[np.ndarray]:
         """
         Calculate the labels used for the yticks or xticks from input values of the minimum and maximum coordinate
         values of the y and x axis.
@@ -597,7 +660,8 @@ class XTicks(AbstractTicks):
 
 class Title(AbstractMatBase):
     def __init__(self, use_subplot_defaults: bool = False, **kwargs):
-        """The settings used to customize the figure's title.
+        """
+        The settings used to customize the figure's title.
 
         This object wraps the following Matplotlib methods:
 
@@ -608,7 +672,7 @@ class Title(AbstractMatBase):
         Parameters
         ----------
         use_subplot_defaults : bool
-            `WrapMat` objects load settings from the [figure] section of its .ini config file by default. If
+            `Mat` objects load settings from the [figure] section of its .ini config file by default. If
             `use_subplot_defaults=True` settings from the [subplot] section are loaded instead.
         """
         self.use_subplot_defaults = use_subplot_defaults
@@ -619,7 +683,7 @@ class Title(AbstractMatBase):
             self.kwargs["label"] = None
 
     @property
-    def kwargs_title(self):
+    def kwargs_title(self) -> dict:
         """Creates a kwargs dict of valid inputs of the methods `plt.title` from the object's kwargs dict."""
         return self.kwargs_of_method(method_name="title")
 
@@ -648,7 +712,8 @@ class AbstractLabel(AbstractMatBase):
         manual_label: str = None,
         **kwargs,
     ):
-        """The settings used to customize the figure's title and y and x labels.
+        """
+        The settings used to customize the figure's title and y and x labels.
 
         This object wraps the following Matplotlib methods:
 
@@ -660,7 +725,7 @@ class AbstractLabel(AbstractMatBase):
         Parameters
         ----------
         use_subplot_defaults : bool
-            `WrapMat` objects load settings from the [figure] section of its .ini config file by default. If
+            `Mat` objects load settings from the [figure] section of its .ini config file by default. If
             `use_subplot_defaults=True` settings from the [subplot] section are loaded instead.
         units : Units
             The units the data is plotted using.
@@ -674,11 +739,14 @@ class AbstractLabel(AbstractMatBase):
         self._units = units
 
     @property
-    def kwargs_label(self):
-        """Creates a kwargs dict of valid inputs of the methods `plt.ylabel` and `plt.xlabel` from the object's kwargs dict."""
+    def kwargs_label(self) -> dict:
+        """Creates a kwargs dict of valid inputs of the methods `plt.ylabel` and `plt.xlabel` from the object's
+        kwargs dict."""
         return self.kwargs_of_method(method_name="label")
 
-    def units_from_func(self, func: Callable, for_ylabel=True) -> "Units":
+    def units_from_func(
+        self, func: Callable, for_ylabel=True
+    ) -> typing.Optional["Units"]:
         """
         If the x label is not manually specified use the function plotting the image to x label, assuming that it
         represents spatial units.
@@ -710,14 +778,14 @@ class AbstractLabel(AbstractMatBase):
 
             return self._units
 
-    def label_from_units(self, units: Units) -> str:
+    def label_from_units(self, units: Units) -> typing.Optional[str]:
         """
         Returns the label of an object, by determining it from the figure units if the label is not manually specified.
 
         Parameters
         ----------
         units : Units
-           The units of the image that is plotted which informs the appropriate y label text.
+           The units of the data structure that is plotted which informs the appropriate label text.
         """
         if self._units is None:
 
@@ -808,7 +876,7 @@ class Legend(AbstractMatBase):
         Parameters
         ----------
         use_subplot_defaults : bool
-            `WrapMat` objects load settings from the [figure] section of its .ini config file by default. If
+            `Mat` objects load settings from the [figure] section of its .ini config file by default. If
             `use_subplot_defaults=True` settings from the [subplot] section are loaded instead.
         include : bool
             If the legend should be plotted and therefore included on the figure.
@@ -819,7 +887,7 @@ class Legend(AbstractMatBase):
         self.include = include
 
     @property
-    def kwargs_legend(self):
+    def kwargs_legend(self) -> dict:
         """Creates a kwargs dict of valid inputs of the method `plt.legend` from the object's kwargs dict."""
         return self.kwargs_of_method(method_name="legend")
 
@@ -837,7 +905,7 @@ class Output:
         bypass: bool = False,
     ):
         """
-        An object for outputting a figure to the display or hard-disc.
+        Sets how the figure or subplot is output, either by displaying it on the screen or writing it to hard-disk.
 
         This object wraps the following Matplotlib methods:
 
@@ -850,14 +918,14 @@ class Output:
         Parameters
         ----------
         path : str
-            If the figure is output to hard-disc the path of the folder it is saved to.
+            If the figure is output to hard-disk the path of the folder it is saved to.
         filename : str
-            If the figure is output to hard-disc the filename used to save it.
+            If the figure is output to hard-disk the filename used to save it.
         format : str
             The format of the output, 'show' displays on the computer screen, 'png' outputs to .png, 'fits' outputs to
-            .fits format.
+            `.fits` format.
         bypass : bool
-            Whether to bypass the plt.show or plt.savefig methods, used when plotting a subplot.
+            Whether to bypass the `plt.show` or `plt.savefig` methods, used when plotting a subplot.
         """
         self.path = path
 
@@ -878,7 +946,7 @@ class Output:
         else:
             return self._format
 
-    def filename_from_func(self, func) -> str:
+    def filename_from_func(self, func: Callable) -> str:
         """If a filename is not manually specified use the name of the function plotting the image to set it.
 
         Parameters

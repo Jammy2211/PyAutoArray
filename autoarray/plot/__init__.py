@@ -20,7 +20,7 @@ from autoarray.plot.mat_wrap.mat_structure import (
     ArrayOverlay,
     GridScatter,
     LinePlot,
-    Patcher,
+    PatchOverlay,
     VectorFieldQuiver,
     VoronoiDrawer,
 )
