@@ -1,8 +1,8 @@
-from autoarray.plot.mat_wrap import plotters
+from autoarray.plot.plotter import plotter
 
 
-@plotters.set_include_and_plotter
-@plotters.set_labels
+@plotter.set_include_and_plotter
+@plotter.set_labels
 def subplot_image_and_mapper(
     image,
     mapper,

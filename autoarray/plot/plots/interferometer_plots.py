@@ -1,15 +1,15 @@
-from autoarray.plot.mat_wrap import plotters
+from autoarray.plot.plotter import plotter
 from autoarray.structures import grids
 import numpy as np
 
 
-@plotters.set_include_and_sub_plotter
-@plotters.set_subplot_filename
+@plotter.set_include_and_sub_plotter
+@plotter.set_subplot_filename
 def subplot_interferometer(interferometer, include=None, sub_plotter=None):
-    """Plot the interferometer data_type as a sub-plotters of all its quantites (e.g. the dataset, noise_map, PSF, Signal-to_noise-map, \
+    """Plot the interferometer data_type as a sub-plotter of all its quantites (e.g. the dataset, noise_map, PSF, Signal-to_noise-map, \
      etc).
 
-    Set *autolens.data_type.array.plotters.plotters* for a description of all innput parameters not described below.
+    Set *autolens.data_type.array.plotter.plotter* for a description of all innput parameters not described below.
 
     Parameters
     -----------
@@ -69,7 +69,7 @@ def individual(
     """Plot each attribute of the interferometer data_type as individual figures one by one (e.g. the dataset, noise_map, PSF, \
      Signal-to_noise-map, etc).
 
-    Set *autolens.data_type.array.plotters.plotters* for a description of all innput parameters not described below.
+    Set *autolens.data_type.array.plotter.plotter* for a description of all innput parameters not described below.
 
     Parameters
     -----------
@@ -112,12 +112,12 @@ def individual(
         )
 
 
-@plotters.set_include_and_plotter
-@plotters.set_labels
+@plotter.set_include_and_plotter
+@plotter.set_labels
 def visibilities(interferometer, include=None, plotter=None):
     """Plot the observed image of the imaging data_type.
 
-    Set *autolens.data_type.array.plotters.plotters* for a description of all input parameters not described below.
+    Set *autolens.data_type.array.plotter.plotter* for a description of all input parameters not described below.
 
     Parameters
     -----------
@@ -133,12 +133,12 @@ def visibilities(interferometer, include=None, plotter=None):
     plotter.plot_grid(grid=interferometer.visibilities.in_grid)
 
 
-@plotters.set_include_and_plotter
-@plotters.set_labels
+@plotter.set_include_and_plotter
+@plotter.set_labels
 def noise_map(interferometer, include=None, plotter=None):
     """Plot the observed image of the imaging data_type.
 
-    Set *autolens.data_type.array.plotters.plotters* for a description of all input parameters not described below.
+    Set *autolens.data_type.array.plotter.plotter* for a description of all input parameters not described below.
 
     Parameters
     -----------
@@ -157,8 +157,8 @@ def noise_map(interferometer, include=None, plotter=None):
     )
 
 
-@plotters.set_include_and_plotter
-@plotters.set_labels
+@plotter.set_include_and_plotter
+@plotter.set_labels
 def u_wavelengths(
     interferometer,
     label="Wavelengths",
@@ -168,7 +168,7 @@ def u_wavelengths(
 ):
     """Plot the observed image of the imaging data_type.
 
-    Set *autolens.data_type.array.plotters.plotters* for a description of all input parameters not described below.
+    Set *autolens.data_type.array.plotter.plotter* for a description of all input parameters not described below.
 
     Parameters
     -----------
@@ -189,8 +189,8 @@ def u_wavelengths(
     )
 
 
-@plotters.set_include_and_plotter
-@plotters.set_labels
+@plotter.set_include_and_plotter
+@plotter.set_labels
 def v_wavelengths(
     interferometer,
     label="Wavelengths",
@@ -200,7 +200,7 @@ def v_wavelengths(
 ):
     """Plot the observed image of the imaging data_type.
 
-    Set *autolens.data_type.array.plotters.plotters* for a description of all input parameters not described below.
+    Set *autolens.data_type.array.plotter.plotter* for a description of all input parameters not described below.
 
     Parameters
     -----------
@@ -221,8 +221,8 @@ def v_wavelengths(
     )
 
 
-@plotters.set_include_and_plotter
-@plotters.set_labels
+@plotter.set_include_and_plotter
+@plotter.set_labels
 def uv_wavelengths(
     interferometer,
     label_yunits="V-Wavelengths ($\lambda$)",
@@ -232,7 +232,7 @@ def uv_wavelengths(
 ):
     """Plot the observed image of the imaging data_type.
 
-    Set *autolens.data_type.array.plotters.plotters* for a description of all input parameters not described below.
+    Set *autolens.data_type.array.plotter.plotter* for a description of all input parameters not described below.
 
     Parameters
     -----------
@@ -254,8 +254,8 @@ def uv_wavelengths(
     )
 
 
-@plotters.set_include_and_plotter
-@plotters.set_labels
+@plotter.set_include_and_plotter
+@plotter.set_labels
 def amplitudes_vs_uv_distances(
     interferometer,
     label_yunits="amplitude (Jy)",
@@ -271,8 +271,8 @@ def amplitudes_vs_uv_distances(
     )
 
 
-@plotters.set_include_and_plotter
-@plotters.set_labels
+@plotter.set_include_and_plotter
+@plotter.set_labels
 def phases_vs_uv_distances(
     interferometer,
     label_yunits="phase (deg)",

@@ -1,9 +1,9 @@
-from autoarray.plot.mat_wrap import plotters
+from autoarray.plot.plotter import plotter
 import numpy as np
 
 
-@plotters.set_include_and_sub_plotter
-@plotters.set_subplot_filename
+@plotter.set_include_and_sub_plotter
+@plotter.set_subplot_filename
 def subplot_fit_interferometer(fit, include=None, sub_plotter=None):
 
     number_subplots = 6
@@ -121,12 +121,12 @@ def individuals(
         )
 
 
-@plotters.set_include_and_plotter
-@plotters.set_labels
+@plotter.set_include_and_plotter
+@plotter.set_labels
 def visibilities(fit, include=None, plotter=None):
     """Plot the visibilities of a lens fit.
 
-    Set *autolens.datas.grid.plotters.plotters* for a description of all input parameters not described below.
+    Set *autolens.datas.grid.plotter.plotter* for a description of all input parameters not described below.
 
     Parameters
     -----------
@@ -138,12 +138,12 @@ def visibilities(fit, include=None, plotter=None):
     plotter.plot_grid(grid=fit.visibilities.in_grid)
 
 
-@plotters.set_include_and_plotter
-@plotters.set_labels
+@plotter.set_include_and_plotter
+@plotter.set_labels
 def noise_map(fit, include=None, plotter=None):
     """Plot the noise-map of a lens fit.
 
-    Set *autolens.datas.grid.plotters.plotters* for a description of all input parameters not described below.
+    Set *autolens.datas.grid.plotter.plotter* for a description of all input parameters not described below.
 
     Parameters
     -----------
@@ -155,12 +155,12 @@ def noise_map(fit, include=None, plotter=None):
     plotter.plot_grid(grid=fit.visibilities.in_grid, color_array=np.real(fit.noise_map))
 
 
-@plotters.set_include_and_plotter
-@plotters.set_labels
+@plotter.set_include_and_plotter
+@plotter.set_labels
 def signal_to_noise_map(fit, include=None, plotter=None):
     """Plot the noise-map of a lens fit.
 
-    Set *autolens.datas.grid.plotters.plotters* for a description of all input parameters not described below.
+    Set *autolens.datas.grid.plotter.plotter* for a description of all input parameters not described below.
 
     Parameters
     -----------
@@ -174,12 +174,12 @@ def signal_to_noise_map(fit, include=None, plotter=None):
     )
 
 
-@plotters.set_include_and_plotter
-@plotters.set_labels
+@plotter.set_include_and_plotter
+@plotter.set_labels
 def model_visibilities(fit, include=None, plotter=None):
     """Plot the model visibilities of a fit.
 
-    Set *autolens.datas.grid.plotters.plotters* for a description of all input parameters not described below.
+    Set *autolens.datas.grid.plotter.plotter* for a description of all input parameters not described below.
 
     Parameters
     -----------
@@ -191,8 +191,8 @@ def model_visibilities(fit, include=None, plotter=None):
     plotter.plot_grid(grid=fit.visibilities.in_grid)
 
 
-@plotters.set_include_and_plotter
-@plotters.set_labels
+@plotter.set_include_and_plotter
+@plotter.set_labels
 def residual_map_vs_uv_distances(
     fit,
     plot_real=True,
@@ -203,7 +203,7 @@ def residual_map_vs_uv_distances(
 ):
     """Plot the residual-map of a lens fit.
 
-    Set *autolens.datas.grid.plotters.plotters* for a description of all input parameters not described below.
+    Set *autolens.datas.grid.plotter.plotter* for a description of all input parameters not described below.
 
     Parameters
     -----------
@@ -237,8 +237,8 @@ def residual_map_vs_uv_distances(
     )
 
 
-@plotters.set_include_and_plotter
-@plotters.set_labels
+@plotter.set_include_and_plotter
+@plotter.set_labels
 def normalized_residual_map_vs_uv_distances(
     fit,
     plot_real=True,
@@ -249,7 +249,7 @@ def normalized_residual_map_vs_uv_distances(
 ):
     """Plot the residual-map of a lens fit.
 
-    Set *autolens.datas.grid.plotters.plotters* for a description of all input parameters not described below.
+    Set *autolens.datas.grid.plotter.plotter* for a description of all input parameters not described below.
 
     Parameters
     -----------
@@ -283,8 +283,8 @@ def normalized_residual_map_vs_uv_distances(
     )
 
 
-@plotters.set_include_and_plotter
-@plotters.set_labels
+@plotter.set_include_and_plotter
+@plotter.set_labels
 def chi_squared_map_vs_uv_distances(
     fit,
     plot_real=True,
@@ -295,7 +295,7 @@ def chi_squared_map_vs_uv_distances(
 ):
     """Plot the residual-map of a lens fit.
 
-    Set *autolens.datas.grid.plotters.plotters* for a description of all input parameters not described below.
+    Set *autolens.datas.grid.plotter.plotter* for a description of all input parameters not described below.
 
     Parameters
     -----------
