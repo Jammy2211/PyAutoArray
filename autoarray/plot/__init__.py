@@ -14,7 +14,7 @@ from autoarray.plot.mat_wrap.mat_base import (
 )
 
 from autoarray.plot.plotter.include import Include
-from autoarray.plot.plotter.plotter import Plotter, SubPlotter
+from autoarray.plot.plotter.plotter import Plotter, Plotter
 
 from autoarray.plot.mat_wrap.mat_structure import (
     ArrayOverlay,

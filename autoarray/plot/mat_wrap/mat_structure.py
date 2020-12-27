@@ -42,9 +42,9 @@ class AbstractMatStructure(mat_base.AbstractMatBase):
 
 
 class AbstractMatStructureColored(AbstractMatStructure):
-    def __init__(self, use_subplot_defaults, colors, kwargs: dict):
+    def __init__(self, colors, kwargs: dict):
 
-        super().__init__(use_subplot_defaults=use_subplot_defaults, kwargs=kwargs)
+        super().__init__(kwargs=kwargs)
 
         self._colors = colors
 
@@ -68,7 +68,7 @@ class AbstractMatStructureColored(AbstractMatStructure):
 
 
 class ArrayOverlay(AbstractMatStructure):
-    def __init__(self, use_subplot_defaults=False, **kwargs):
+    def __init__(self, **kwargs):
         """
         Overlays an `Array` data structure over a figure.
 
@@ -78,14 +78,8 @@ class ArrayOverlay(AbstractMatStructure):
 
         This uses the `Units` and coordinate system of the `Array` to overlay it on on the coordinate system of the
         figure that is plotted.
-
-        Parameters
-        ----------
-        use_subplot_defaults : bool
-            `Mat` objects load settings from the [figure] section of its .ini config file by default. If
-            `use_subplot_defaults=True` settings from the [subplot] section are loaded instead.
         """
-        super().__init__(use_subplot_defaults=use_subplot_defaults, kwargs=kwargs)
+        super().__init__(kwargs=kwargs)
 
     def overlay_array(self, array, figure):
 
@@ -98,7 +92,7 @@ class ArrayOverlay(AbstractMatStructure):
 
 
 class GridScatter(AbstractMatStructureColored):
-    def __init__(self, use_subplot_defaults=False, colors=None, **kwargs):
+    def __init__(self, colors=None, **kwargs):
         """
         Scatters an input set of grid points, for example (y,x) coordinates or data structures representing 2D (y,x)
         coordinates like a `Grid` or `GridIrregular`. If the object groups (y,x) coordinates they are plotted with
@@ -121,16 +115,11 @@ class GridScatter(AbstractMatStructureColored):
 
         Parameters
         ----------
-        use_subplot_defaults : bool
-            `Mat` objects load settings from the [figure] section of its .ini config file by default. If
-            `use_subplot_defaults=True` settings from the [subplot] section are loaded instead.
         colors : [str]
             The color or list of colors that the grid is plotted using. For plotting indexes or a grouped grid, a
             list of colors can be specified which the plot cycles through.
         """
-        super().__init__(
-            use_subplot_defaults=use_subplot_defaults, colors=colors, kwargs=kwargs
-        )
+        super().__init__(colors=colors, kwargs=kwargs)
 
     def scatter_grid(self, grid: typing.Union[np.ndarray, grids.Grid]):
         """
@@ -271,7 +260,7 @@ class GridScatter(AbstractMatStructureColored):
 
 
 class LinePlot(AbstractMatStructureColored):
-    def __init__(self, use_subplot_defaults=False, colors=None, **kwargs):
+    def __init__(self, colors=None, **kwargs):
         """
         Plots `Line` data structure, including y vs x figures, plotting rectangular lines over an image and plotting
         grids of (y,x) coordinates as lines (as opposed to a scatter of points using the `GridScatter` object).
@@ -286,16 +275,11 @@ class LinePlot(AbstractMatStructureColored):
 
         Parameters
         ----------
-        use_subplot_defaults : bool
-            `Mat` objects load settings from the [figure] section of its .ini config file by default. If
-            `use_subplot_defaults=True` settings from the [subplot] section are loaded instead.
         colors : [str]
             The color or list of colors that the grid is plotted using. For plotting indexes or a grouped grid, a
             list of colors can be specified which the plot cycles through.
         """
-        super().__init__(
-            use_subplot_defaults=use_subplot_defaults, colors=colors, kwargs=kwargs
-        )
+        super().__init__(colors=colors, kwargs=kwargs)
 
     def plot_y_vs_x(
         self,
@@ -430,7 +414,7 @@ class LinePlot(AbstractMatStructureColored):
 
 
 class VectorFieldQuiver(AbstractMatStructure):
-    def __init__(self, use_subplot_defaults=False, **kwargs):
+    def __init__(self, **kwargs):
         """
         Plots a `VectorField` data structure. A vector field is a set of 2D vectors on a grid of 2d (y,x) coordinates.
         These are plotted as arrows representing the (y,x) components of each vector at each (y,x) coordinate of it
@@ -439,14 +423,8 @@ class VectorFieldQuiver(AbstractMatStructure):
         This object wraps the following Matplotlib method:
 
         https://matplotlib.org/3.3.2/api/_as_gen/matplotlib.pyplot.quiver.html
-
-        Parameters
-        ----------
-        use_subplot_defaults : bool
-            `Mat` objects load settings from the [figure] section of its .ini config file by default. If
-            `use_subplot_defaults=True` settings from the [subplot] section are loaded instead.
         """
-        super().__init__(use_subplot_defaults=use_subplot_defaults, kwargs=kwargs)
+        super().__init__(kwargs=kwargs)
 
     def quiver_vector_field(self, vector_field: vector_fields.VectorFieldIrregular):
         """
@@ -468,7 +446,7 @@ class VectorFieldQuiver(AbstractMatStructure):
 
 
 class PatchOverlay(AbstractMatStructure):
-    def __init__(self, use_subplot_defaults=False, **kwargs):
+    def __init__(self, **kwargs):
         """
         Adds patches to a plotted figure using matplotlib `patches` objects.
 
@@ -478,14 +456,8 @@ class PatchOverlay(AbstractMatStructure):
         This object wraps methods described in below:
 
         https://matplotlib.org/3.3.2/api/collections_api.html
-
-        Parameters
-        ----------
-        use_subplot_defaults : bool
-            `Mat` objects load settings from the [figure] section of its .ini config file by default. If
-            `use_subplot_defaults=True` settings from the [subplot] section are loaded instead.
         """
-        super().__init__(use_subplot_defaults=use_subplot_defaults, kwargs=kwargs)
+        super().__init__(kwargs=kwargs)
 
     def overlay_patches(self, patches: typing.Union[ptch.Patch]):
         """
@@ -504,7 +476,7 @@ class PatchOverlay(AbstractMatStructure):
 
 
 class VoronoiDrawer(AbstractMatStructure):
-    def __init__(self, use_subplot_defaults=False, **kwargs):
+    def __init__(self, **kwargs):
         """
         Draws Voronoi pixels from a `MapperVoronoi` object (see `inversions.mapper`). This includes both drawing
         each Voronoi cell and coloring it according to a color value.
@@ -514,14 +486,8 @@ class VoronoiDrawer(AbstractMatStructure):
         This object wraps methods described in below:
 
         https://matplotlib.org/3.3.2/api/_as_gen/matplotlib.pyplot.fill.html
-
-        Parameters
-        ----------
-        use_subplot_defaults : bool
-            `Mat` objects load settings from the [figure] section of its .ini config file by default. If
-            `use_subplot_defaults=True` settings from the [subplot] section are loaded instead.
         """
-        super().__init__(use_subplot_defaults=use_subplot_defaults, kwargs=kwargs)
+        super().__init__(kwargs=kwargs)
 
     def draw_voronoi_pixels(
         self,

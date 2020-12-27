@@ -2,43 +2,43 @@ from autoarray.plot.plotter import plotter, include as inc
 
 
 @inc.set_include
-@plotter.set_sub_plotter
+@plotter.set_plotter_for_subplot
 @plotter.set_subplot_filename
 def subplot_fit_imaging(
-    fit, grid=None, positions=None, lines=None, include=None, sub_plotter=None
+    fit, grid=None, positions=None, lines=None, include=None, plotter=None
 ):
 
     number_subplots = 6
 
-    sub_plotter.open_subplot_figure(number_subplots=number_subplots)
+    plotter.open_subplot_figure(number_subplots=number_subplots)
 
-    sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index=1)
+    plotter.setup_subplot(number_subplots=number_subplots, subplot_index=1)
 
-    image(fit=fit, grid=grid, positions=positions, include=include, plotter=sub_plotter)
+    image(fit=fit, grid=grid, positions=positions, include=include, plotter=plotter)
 
-    sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index=2)
+    plotter.setup_subplot(number_subplots=number_subplots, subplot_index=2)
 
-    signal_to_noise_map(fit=fit, include=include, plotter=sub_plotter)
+    signal_to_noise_map(fit=fit, include=include, plotter=plotter)
 
-    sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index=3)
+    plotter.setup_subplot(number_subplots=number_subplots, subplot_index=3)
 
-    model_image(fit=fit, lines=lines, include=include, plotter=sub_plotter)
+    model_image(fit=fit, lines=lines, include=include, plotter=plotter)
 
-    sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index=4)
+    plotter.setup_subplot(number_subplots=number_subplots, subplot_index=4)
 
-    residual_map(fit=fit, include=include, plotter=sub_plotter)
+    residual_map(fit=fit, include=include, plotter=plotter)
 
-    sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index=5)
+    plotter.setup_subplot(number_subplots=number_subplots, subplot_index=5)
 
-    normalized_residual_map(fit=fit, include=include, plotter=sub_plotter)
+    normalized_residual_map(fit=fit, include=include, plotter=plotter)
 
-    sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index=6)
+    plotter.setup_subplot(number_subplots=number_subplots, subplot_index=6)
 
-    chi_squared_map(fit=fit, include=include, plotter=sub_plotter)
+    chi_squared_map(fit=fit, include=include, plotter=plotter)
 
-    sub_plotter.output.subplot_to_figure()
+    plotter.output.subplot_to_figure()
 
-    sub_plotter.figure.close()
+    plotter.figure.close()
 
 
 def individuals(
@@ -101,7 +101,7 @@ def individuals(
 
 
 @inc.set_include
-@plotter.set_plotter
+@plotter.set_plotter_for_figure
 @plotter.set_labels
 def image(fit, positions=None, grid=None, lines=None, include=None, plotter=None):
     """Plot the image of a lens fit.
@@ -125,7 +125,7 @@ def image(fit, positions=None, grid=None, lines=None, include=None, plotter=None
 
 
 @inc.set_include
-@plotter.set_plotter
+@plotter.set_plotter_for_figure
 @plotter.set_labels
 def noise_map(fit, positions=None, include=None, plotter=None):
     """Plot the noise-map of a lens fit.
@@ -145,7 +145,7 @@ def noise_map(fit, positions=None, include=None, plotter=None):
 
 
 @inc.set_include
-@plotter.set_plotter
+@plotter.set_plotter_for_figure
 @plotter.set_labels
 def signal_to_noise_map(fit, positions=None, include=None, plotter=None):
     """Plot the noise-map of a lens fit.
@@ -167,7 +167,7 @@ def signal_to_noise_map(fit, positions=None, include=None, plotter=None):
 
 
 @inc.set_include
-@plotter.set_plotter
+@plotter.set_plotter_for_figure
 @plotter.set_labels
 def model_image(fit, lines=None, positions=None, include=None, plotter=None):
     """Plot the model image of a fit.
@@ -191,7 +191,7 @@ def model_image(fit, lines=None, positions=None, include=None, plotter=None):
 
 
 @inc.set_include
-@plotter.set_plotter
+@plotter.set_plotter_for_figure
 @plotter.set_labels
 def residual_map(fit, positions=None, include=None, plotter=None):
     """Plot the residual-map of a lens fit.
@@ -211,7 +211,7 @@ def residual_map(fit, positions=None, include=None, plotter=None):
 
 
 @inc.set_include
-@plotter.set_plotter
+@plotter.set_plotter_for_figure
 @plotter.set_labels
 def normalized_residual_map(fit, positions=None, include=None, plotter=None):
     """Plot the residual-map of a lens fit.
@@ -233,7 +233,7 @@ def normalized_residual_map(fit, positions=None, include=None, plotter=None):
 
 
 @inc.set_include
-@plotter.set_plotter
+@plotter.set_plotter_for_figure
 @plotter.set_labels
 def chi_squared_map(fit, positions=None, include=None, plotter=None):
     """Plot the chi-squared-map of a lens fit.

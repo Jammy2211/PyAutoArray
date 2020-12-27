@@ -16,7 +16,7 @@ def make_plot_path_setup():
     )
 
 
-class TestAbstractPlotterConfig:
+class TestPlotterConfig:
     def test__uses_figure_or_subplot_configs_correctly(self):
 
         figure = aplt.Figure(figsize=(8, 8))
@@ -29,18 +29,20 @@ class TestAbstractPlotterConfig:
         assert plotter.cmap.config_dict["cmap"] == "warm"
         assert plotter.cmap.config_dict["norm"] == "linear"
 
-        figure = aplt.Figure(use_subplot_defaults=True)
-        cmap = aplt.Cmap(use_subplot_defaults=True)
+        figure = aplt.Figure()
+        cmap = aplt.Cmap()
 
-        sub_plotter = aplt.Plotter(figure=figure, cmap=cmap)
+        plotter = aplt.Plotter(figure=figure, cmap=cmap)
 
-        assert sub_plotter.figure.config_dict_figure["figsize"] == None
-        assert sub_plotter.figure.config_dict_imshow["aspect"] == "square"
-        assert sub_plotter.cmap.config_dict["cmap"] == "jet"
-        assert sub_plotter.cmap.config_dict["norm"] == "linear"
+        plotter.set_for_subplot(for_subplot=True)
+
+        assert plotter.figure.config_dict_figure["figsize"] == None
+        assert plotter.figure.config_dict_imshow["aspect"] == "square"
+        assert plotter.cmap.config_dict["cmap"] == "jet"
+        assert plotter.cmap.config_dict["norm"] == "linear"
 
 
-class TestAbstractPlotterPlots:
+class TestPlotterPlots:
     def test__plot_array__works_with_all_extras_included(self, plot_path, plot_patch):
 
         array = aa.Array.ones(shape_2d=(31, 31), pixel_scales=(1.0, 1.0), sub_size=2)
@@ -405,7 +407,7 @@ class TestAbstractPlotterPlots:
         assert path.join(plot_path, "mapper3.png") in plot_patch.paths
 
 
-class TestAbstractPlotterNew:
+class TestPlotterNew:
     def test__plotter_with_new_labels__new_labels_if_input__sizes_dont_change(self):
 
         plotter = aplt.Plotter(
@@ -558,7 +560,7 @@ class TestAbstractPlotterNew:
 
         assert plt.fignum_exists(num=1) == False
 
-        plotter = aplt.SubPlotter()
+        plotter = aplt.Plotter()
 
         assert plt.fignum_exists(num=1) == False
 
@@ -571,10 +573,11 @@ class TestAbstractPlotterNew:
         assert plt.fignum_exists(num=1) == False
 
 
-class TestSubPlotter:
+class TestPlotter:
     def test__subplot_figsize_for_number_of_subplots(self):
 
-        plotter = aplt.SubPlotter()
+        plotter = aplt.Plotter()
+        plotter.figure.for_subplot = True
 
         figsize = plotter.get_subplot_figsize(number_subplots=1)
 
@@ -584,7 +587,7 @@ class TestSubPlotter:
 
         assert figsize == (13, 10)
 
-        plotter = aplt.SubPlotter(figure=aplt.Figure(figsize=(20, 20)))
+        plotter = aplt.Plotter(figure=aplt.Figure(figsize=(20, 20)))
 
         figsize = plotter.get_subplot_figsize(number_subplots=4)
 
@@ -592,7 +595,7 @@ class TestSubPlotter:
 
     def test__plotter_number_of_subplots(self):
 
-        plotter = aplt.SubPlotter()
+        plotter = aplt.Plotter()
 
         rows, columns = plotter.get_subplot_rows_columns(number_subplots=1)
 

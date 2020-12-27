@@ -30,27 +30,7 @@ from autoarray.structures import grids
 from autoarray.inversion import mappers
 
 
-def setting(section, name, python_type):
-    return conf.instance.visualize_figures.get(section, name, python_type)
-
-
-def load_setting(section, value, name, python_type):
-    return (
-        value
-        if value is not None
-        else setting(section=section, name=name, python_type=python_type)
-    )
-
-
-def load_figure_setting(section, name, python_type):
-    return conf.instance.visualize_figures.get(section, name, python_type)
-
-
-def load_subplot_setting(section, name, python_type):
-    return conf.instance.visualize_subplots.get(section, name, python_type)
-
-
-class AbstractPlotter:
+class Plotter:
     def __init__(
         self,
         units: mat_base.Units = None,
@@ -159,166 +139,174 @@ class AbstractPlotter:
         serial_overscan_plot : mat_obj.SerialOverscanPlot
             Plots the serial overscan on an `Array` data structure representing a CCD imaging via `plt.plot`.
         """
-        if isinstance(self, Plotter):
-            use_subplot_defaults = False
-        else:
-            use_subplot_defaults = True
 
         self.units = units if units is not None else mat_base.Units()
-
-        self.figure = (
-            figure
-            if figure is not None
-            else mat_base.Figure(use_subplot_defaults=use_subplot_defaults)
-        )
-
-        self.cmap = (
-            cmap
-            if cmap is not None
-            else mat_base.Cmap(use_subplot_defaults=use_subplot_defaults)
-        )
-
-        self.cb = (
-            colorbar
-            if colorbar is not None
-            else mat_base.Colorbar(use_subplot_defaults=use_subplot_defaults)
-        )
-
-        self.title = (
-            title
-            if title is not None
-            else mat_base.Title(use_subplot_defaults=use_subplot_defaults)
-        )
-
+        self.figure = figure if figure is not None else mat_base.Figure()
+        self.cmap = cmap if cmap is not None else mat_base.Cmap()
+        self.colorbar = colorbar if colorbar is not None else mat_base.Colorbar()
+        self.title = title if title is not None else mat_base.Title()
         self.tickparams = (
-            tickparams
-            if tickparams is not None
-            else mat_base.TickParams(use_subplot_defaults=use_subplot_defaults)
+            tickparams if tickparams is not None else mat_base.TickParams()
         )
-
-        self.yticks = (
-            yticks
-            if yticks is not None
-            else mat_base.YTicks(use_subplot_defaults=use_subplot_defaults)
-        )
-
-        self.xticks = (
-            xticks
-            if xticks is not None
-            else mat_base.XTicks(use_subplot_defaults=use_subplot_defaults)
-        )
-
-        self.ylabel = (
-            ylabel
-            if ylabel is not None
-            else mat_base.YLabel(use_subplot_defaults=use_subplot_defaults)
-        )
-
-        self.xlabel = (
-            xlabel
-            if xlabel is not None
-            else mat_base.XLabel(use_subplot_defaults=use_subplot_defaults)
-        )
-
-        self.legend = (
-            legend
-            if legend is not None
-            else mat_base.Legend(use_subplot_defaults=use_subplot_defaults)
-        )
-
-        self.output = (
-            output
-            if output is not None
-            else mat_base.Output(bypass=isinstance(self, SubPlotter))
-        )
-
+        self.yticks = yticks if yticks is not None else mat_base.YTicks()
+        self.xticks = xticks if xticks is not None else mat_base.XTicks()
+        self.ylabel = ylabel if ylabel is not None else mat_base.YLabel()
+        self.xlabel = xlabel if xlabel is not None else mat_base.XLabel()
+        self.legend = legend if legend is not None else mat_base.Legend()
+        self.output = output if output is not None else mat_base.Output(bypass=True)
         self.origin_scatter = (
-            origin_scatter
-            if origin_scatter is not None
-            else mat_obj.OriginScatter(use_subplot_defaults=use_subplot_defaults)
+            origin_scatter if origin_scatter is not None else mat_obj.OriginScatter()
         )
         self.mask_scatter = (
-            mask_scatter
-            if mask_scatter is not None
-            else mat_obj.MaskScatter(use_subplot_defaults=use_subplot_defaults)
+            mask_scatter if mask_scatter is not None else mat_obj.MaskScatter()
         )
         self.border_scatter = (
-            border_scatter
-            if border_scatter is not None
-            else mat_obj.BorderScatter(use_subplot_defaults=use_subplot_defaults)
+            border_scatter if border_scatter is not None else mat_obj.BorderScatter()
         )
         self.grid_scatter = (
-            grid_scatter
-            if grid_scatter is not None
-            else mat_structure.GridScatter(use_subplot_defaults=use_subplot_defaults)
+            grid_scatter if grid_scatter is not None else mat_structure.GridScatter()
         )
         self.positions_scatter = (
             positions_scatter
             if positions_scatter is not None
-            else mat_obj.PositionsScatter(use_subplot_defaults=use_subplot_defaults)
+            else mat_obj.PositionsScatter()
         )
         self.index_scatter = (
-            index_scatter
-            if index_scatter is not None
-            else mat_obj.IndexScatter(use_subplot_defaults=use_subplot_defaults)
+            index_scatter if index_scatter is not None else mat_obj.IndexScatter()
         )
         self.pixelization_grid_scatter = (
             pixelization_grid_scatter
             if pixelization_grid_scatter is not None
-            else mat_obj.PixelizationGridScatter(
-                use_subplot_defaults=use_subplot_defaults
-            )
+            else mat_obj.PixelizationGridScatter()
         )
-
         self.line_plot = (
-            line_plot
-            if line_plot is not None
-            else mat_structure.LinePlot(use_subplot_defaults=use_subplot_defaults)
+            line_plot if line_plot is not None else mat_structure.LinePlot()
         )
-
         self.vector_field_quiver = (
             vector_field_quiver
             if vector_field_quiver is not None
-            else mat_structure.VectorFieldQuiver(
-                use_subplot_defaults=use_subplot_defaults
-            )
+            else mat_structure.VectorFieldQuiver()
         )
-
         self.patch_overlay = (
-            patch_overlay
-            if patch_overlay is not None
-            else mat_structure.PatchOverlay(use_subplot_defaults=use_subplot_defaults)
+            patch_overlay if patch_overlay is not None else mat_structure.PatchOverlay()
         )
-
         self.array_overlay = (
-            array_overlay
-            if array_overlay is not None
-            else mat_structure.ArrayOverlay(use_subplot_defaults=use_subplot_defaults)
+            array_overlay if array_overlay is not None else mat_structure.ArrayOverlay()
         )
-
         self.voronoi_drawer = (
             voronoi_drawer
             if voronoi_drawer is not None
-            else mat_structure.VoronoiDrawer(use_subplot_defaults=use_subplot_defaults)
+            else mat_structure.VoronoiDrawer()
         )
-
         self.parallel_overscan_plot = (
             parallel_overscan_plot
             if parallel_overscan_plot is not None
-            else mat_obj.ParallelOverscanPlot(use_subplot_defaults=use_subplot_defaults)
+            else mat_obj.ParallelOverscanPlot()
         )
-
         self.serial_prescan_plot = (
             serial_prescan_plot
             if serial_prescan_plot is not None
-            else mat_obj.SerialPrescanPlot(use_subplot_defaults=use_subplot_defaults)
+            else mat_obj.SerialPrescanPlot()
         )
-
         self.serial_overscan_plot = (
             serial_overscan_plot
             if serial_overscan_plot is not None
-            else mat_obj.SerialOverscanPlot(use_subplot_defaults=use_subplot_defaults)
+            else mat_obj.SerialOverscanPlot()
         )
+
+        self.set_for_subplot(for_subplot=False)
+
+    def set_for_subplot(self, for_subplot):
+
+        self.for_subplot = for_subplot
+        self.output.bypass = for_subplot
+
+        for attr, value in self.__dict__.items():
+            if hasattr(value, "for_subplot"):
+                value.for_subplot = for_subplot
+
+    def open_subplot_figure(self, number_subplots):
+        """Setup a figure for plotting an image.
+
+        Parameters
+        -----------
+        figsize : (int, int)
+            The size of the figure in (total_y_pixels, total_x_pixels).
+        as_subplot : bool
+            If the figure is a subplot, the setup_figure function is omitted to ensure that each subplot does not create a \
+            new figure and so that it can be output using the *output.output_figure(structure=None)* function.
+        """
+        figsize = self.get_subplot_figsize(number_subplots=number_subplots)
+        plt.figure(figsize=figsize)
+
+    def setup_subplot(
+        self, number_subplots, subplot_index, aspect=None, subplot_rows_columns=None
+    ):
+        if subplot_rows_columns is None:
+            rows, columns = self.get_subplot_rows_columns(
+                number_subplots=number_subplots
+            )
+        else:
+            rows = subplot_rows_columns[0]
+            columns = subplot_rows_columns[1]
+        if aspect is None:
+            plt.subplot(rows, columns, subplot_index)
+        else:
+            plt.subplot(rows, columns, subplot_index, aspect=float(aspect))
+
+    def get_subplot_rows_columns(self, number_subplots):
+        """Get the size of a sub plotter in (total_y_pixels, total_x_pixels), based on the number of subplots that are going to be plotted.
+
+        Parameters
+        -----------
+        number_subplots : int
+            The number of subplots that are to be plotted in the figure.
+        """
+        if number_subplots <= 2:
+            return 1, 2
+        elif number_subplots <= 4:
+            return 2, 2
+        elif number_subplots <= 6:
+            return 2, 3
+        elif number_subplots <= 9:
+            return 3, 3
+        elif number_subplots <= 12:
+            return 3, 4
+        elif number_subplots <= 16:
+            return 4, 4
+        elif number_subplots <= 20:
+            return 4, 5
+        else:
+            return 6, 6
+
+    def get_subplot_figsize(self, number_subplots):
+        """Get the size of a sub plotter in (total_y_pixels, total_x_pixels), based on the number of subplots that are going to be plotted.
+
+        Parameters
+        -----------
+        number_subplots : int
+            The number of subplots that are to be plotted in the figure.
+        """
+
+        if self.figure.config_dict_figure["figsize"] is not None:
+            return self.figure.config_dict_figure["figsize"]
+
+        if number_subplots <= 2:
+            return (18, 8)
+        elif number_subplots <= 4:
+            return (13, 10)
+        elif number_subplots <= 6:
+            return (18, 12)
+        elif number_subplots <= 9:
+            return (25, 20)
+        elif number_subplots <= 12:
+            return (25, 20)
+        elif number_subplots <= 16:
+            return (25, 20)
+        elif number_subplots <= 20:
+            return (25, 20)
+        else:
+            return (25, 20)
 
     def plot_array(
         self,
@@ -412,7 +400,7 @@ class AbstractPlotter:
         self.ylabel.set(units=self.units, include_brackets=True)
         self.xlabel.set(units=self.units, include_brackets=True)
 
-        self.cb.set()
+        self.colorbar.set()
         if include_origin:
             self.origin_scatter.scatter_grid(grid=[array.origin])
 
@@ -447,7 +435,7 @@ class AbstractPlotter:
         if not bypass_output:
             self.output.to_figure(structure=array)
 
-        if not isinstance(self, SubPlotter) and not bypass_output:
+        if not self.for_subplot and not bypass_output:
             self.figure.close()
 
     def plot_frame(
@@ -462,104 +450,6 @@ class AbstractPlotter:
     ):
         """Plot an array of data_type as a figure.
 
-        Parameters
-        -----------
-        settings : PlotterSettings
-            Settings
-        include : PlotterInclude
-            Include
-        labels : PlotterLabels
-            labels
-        outputs : PlotterOutputs
-            outputs
-        array : data_type.array.aa.Scaled
-            The 2D array of data_type which is plotted.
-        origin : (float, float).
-            The origin of the coordinate system of the array, which is plotted as an 'x' on the image if input.
-        mask : data_type.array.mask.Mask2D
-            The mask applied to the array, the edge of which is plotted as a set of points over the plotted array.
-        extract_array_from_mask : bool
-            The plotter array is extracted using the mask, such that masked values are plotted as zeros. This ensures \
-            bright features outside the mask do not impact the color map of the plotter.
-        zoom_around_mask : bool
-            If True, the 2D region of the array corresponding to the rectangle encompassing all unmasked values is \
-            plotted, thereby zooming into the region of interest.
-        border : bool
-            If a mask is supplied, its borders pixels (e.g. the exterior edge) is plotted if this is `True`.
-        positions : [[]]
-            Lists of (y,x) coordinates on the image which are plotted as colored dots, to highlight specific pixels.
-        grid : data_type.array.aa.Grid
-            A grid of (y,x) coordinates which may be plotted over the plotted array.
-        as_subplot : bool
-            Whether the array is plotted as part of a subplot, in which case the grid figure is not opened / closed.
-        unit_label : str
-            The label for the unit_label of the y / x axis of the plots.
-        unit_conversion_factor : float or None
-            The conversion factor between arc-seconds and kiloparsecs, required to plotter the unit_label in kpc.
-        figsize : (int, int)
-            The size of the figure in (total_y_pixels, total_x_pixels).
-        aspect : str
-            The aspect ratio of the array, specifically whether it is forced to be square ('equal') or adapts its size to \
-            the figure size ('auto').
-        cmap : str
-            The colormap the array is plotted using, which may be chosen from the standard matplotlib colormaps.
-        norm : str
-            The normalization of the colormap used to plotter the image, specifically whether it is linear ('linear'), log \
-            ('log') or a symmetric log normalization ('symmetric_log').
-        vmin : float or None
-            The minimum array value the colormap map spans (all values below this value are plotted the same color).
-        vmax : float or None
-            The maximum array value the colormap map spans (all values above this value are plotted the same color).
-        linthresh : float
-            For the 'symmetric_log' colormap normalization ,this specifies the range of values within which the colormap \
-            is linear.
-        linscale : float
-            For the 'symmetric_log' colormap normalization, this allowws the linear range set by linthresh to be stretched \
-            relative to the logarithmic range.
-        cb_ticksize : int
-            The size of the tick labels on the colorbar.
-        cb_fraction : float
-            The fraction of the figure that the colorbar takes up, which resizes the colorbar relative to the figure.
-        cb_pad : float
-            Pads the color bar in the figure, which resizes the colorbar relative to the figure.
-        labelsize : int
-            The fontsize of the x axes label.
-        labelsize : int
-            The fontsize of the y axes label.
-        xyticksize : int
-            The font size of the x and y ticks on the figure axes.
-        mask_scatter : int
-            The size of the points plotted to show the mask.
-        xticks_manual :  [] or None
-            If input, the xticks do not use the array's default xticks but instead overwrite them as these values.
-        yticks_manual :  [] or None
-            If input, the yticks do not use the array's default yticks but instead overwrite them as these values.
-        output_path : str
-            The path on the hard-disk where the figure is output.
-        output_filename : str
-            The filename of the figure that is output.
-        output_format : str
-            The format the figue is output:
-            'show' - display on computer screen.
-            'png' - output to hard-disk as a png.
-            'fits' - output to hard-disk as a fits file.'
-
-        Returns
-        --------
-        None
-
-        Examples
-        --------
-            plotter.plot_frame(
-            array=image, origin=(0.0, 0.0), mask=circular_mask,
-            border=False, points=[[1.0, 1.0], [2.0, 2.0]], grid=None, as_subplot=False,
-            unit_label='scaled', kpc_per_scaled=None, figsize=(7,7), aspect='auto',
-            cmap='jet', norm='linear, vmin=None, vmax=None, linthresh=None, linscale=None,
-            cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01, cb_tick_values=None, cb_tick_labels=None,
-            title='Image', titlesize=16, labelsize=16, labelsize=16, xyticksize=16,
-            mask_scatter=10, border_pointsize=2, position_pointsize=10, grid_pointsize=10,
-            xticks_manual=None, yticks_manual=None,
-            output_path='/path/to/output', output_format='png', output_filename='image')
         """
 
         if frame is None or np.all(frame == 0):
@@ -599,7 +489,7 @@ class AbstractPlotter:
         self.ylabel.set(units=self.units, include_brackets=True)
         self.xlabel.set(units=self.units, include_brackets=True)
 
-        self.cb.set()
+        self.colorbar.set()
         if include_origin:
             self.origin_scatter.scatter_grid(grid=[frame.origin])
 
@@ -630,7 +520,7 @@ class AbstractPlotter:
         if not bypass_output:
             self.output.to_figure(structure=frame)
 
-        if not isinstance(self, SubPlotter) and not bypass_output:
+        if not self.for_subplot and not bypass_output:
             self.figure.close()
 
     def plot_grid(
@@ -671,7 +561,7 @@ class AbstractPlotter:
             self.grid_scatter.scatter_grid_colored(
                 grid=grid, color_array=color_array, cmap=self.cmap.config_dict["cmap"]
             )
-            self.cb.set()
+            self.colorbar.set()
 
         self.title.set()
         self.ylabel.set(units=self.units, include_brackets=True)
@@ -726,7 +616,7 @@ class AbstractPlotter:
         if not bypass_output:
             self.output.to_figure(structure=grid)
 
-        if not isinstance(self, SubPlotter) and not bypass_output:
+        if not self.for_subplot and not bypass_output:
             self.figure.close()
 
     def plot_line(
@@ -769,7 +659,7 @@ class AbstractPlotter:
         if not bypass_output:
             self.output.to_figure(structure=None)
 
-        if not isinstance(self, SubPlotter) and not bypass_output:
+        if not self.for_subplot and not bypass_output:
             self.figure.close()
 
     def plot_mapper(
@@ -902,7 +792,7 @@ class AbstractPlotter:
         if not bypass_output:
             self.output.to_figure(structure=None)
 
-        if not isinstance(self, SubPlotter) and not bypass_output:
+        if not self.for_subplot and not bypass_output:
             self.figure.close()
 
     def plot_voronoi_mapper(
@@ -946,7 +836,7 @@ class AbstractPlotter:
             mapper=mapper,
             values=source_pixel_values,
             cmap=self.cmap.config_dict["cmap"],
-            cb=self.cb,
+            cb=self.colorbar,
         )
 
         self.title.set()
@@ -992,7 +882,7 @@ class AbstractPlotter:
         if not bypass_output:
             self.output.to_figure(structure=None)
 
-        if not isinstance(self, SubPlotter) and not bypass_output:
+        if not self.for_subplot and not bypass_output:
             self.figure.close()
 
     def set_axis_limits(self, axis_limits, grid, symmetric_around_centre):
@@ -1118,219 +1008,11 @@ class AbstractPlotter:
         return plotter
 
 
-class Plotter(AbstractPlotter):
-    def __init__(
-        self,
-        units=None,
-        figure=None,
-        cmap=None,
-        colorbar=None,
-        title=None,
-        tickparams=None,
-        yticks=None,
-        xticks=None,
-        ylabel=None,
-        xlabel=None,
-        legend=None,
-        output=None,
-        origin_scatter=None,
-        mask_scatter=None,
-        border_scatter=None,
-        grid_scatter=None,
-        positions_scatter=None,
-        index_scatter=None,
-        pixelization_grid_scatter=None,
-        line_plot=None,
-        vector_field_quiver=None,
-        patch_overlay=None,
-        array_overlay=None,
-        voronoi_drawer=None,
-        parallel_overscan_plot=None,
-        serial_prescan_plot=None,
-        serial_overscan_plot=None,
-    ):
-        super(Plotter, self).__init__(
-            units=units,
-            figure=figure,
-            cmap=cmap,
-            colorbar=colorbar,
-            legend=legend,
-            title=title,
-            tickparams=tickparams,
-            yticks=yticks,
-            xticks=xticks,
-            ylabel=ylabel,
-            xlabel=xlabel,
-            output=output,
-            origin_scatter=origin_scatter,
-            mask_scatter=mask_scatter,
-            border_scatter=border_scatter,
-            grid_scatter=grid_scatter,
-            positions_scatter=positions_scatter,
-            index_scatter=index_scatter,
-            pixelization_grid_scatter=pixelization_grid_scatter,
-            line_plot=line_plot,
-            vector_field_quiver=vector_field_quiver,
-            patch_overlay=patch_overlay,
-            array_overlay=array_overlay,
-            voronoi_drawer=voronoi_drawer,
-            parallel_overscan_plot=parallel_overscan_plot,
-            serial_prescan_plot=serial_prescan_plot,
-            serial_overscan_plot=serial_overscan_plot,
-        )
-
-
-class SubPlotter(AbstractPlotter):
-    def __init__(
-        self,
-        units=None,
-        figure=None,
-        cmap=None,
-        colorbar=None,
-        title=None,
-        tickparams=None,
-        yticks=None,
-        xticks=None,
-        ylabel=None,
-        xlabel=None,
-        legend=None,
-        output=None,
-        origin_scatter=None,
-        mask_scatter=None,
-        border_scatter=None,
-        grid_scatter=None,
-        positions_scatter=None,
-        index_scatter=None,
-        pixelization_grid_scatter=None,
-        line_plot=None,
-        vector_field_quiver=None,
-        patch_overlay=None,
-        array_overlay=None,
-        voronoi_drawer=None,
-        parallel_overscan_plot=None,
-        serial_prescan_plot=None,
-        serial_overscan_plot=None,
-    ):
-
-        super(SubPlotter, self).__init__(
-            units=units,
-            figure=figure,
-            cmap=cmap,
-            colorbar=colorbar,
-            legend=legend,
-            title=title,
-            tickparams=tickparams,
-            yticks=yticks,
-            xticks=xticks,
-            ylabel=ylabel,
-            xlabel=xlabel,
-            output=output,
-            origin_scatter=origin_scatter,
-            mask_scatter=mask_scatter,
-            border_scatter=border_scatter,
-            grid_scatter=grid_scatter,
-            positions_scatter=positions_scatter,
-            index_scatter=index_scatter,
-            pixelization_grid_scatter=pixelization_grid_scatter,
-            line_plot=line_plot,
-            vector_field_quiver=vector_field_quiver,
-            patch_overlay=patch_overlay,
-            array_overlay=array_overlay,
-            voronoi_drawer=voronoi_drawer,
-            parallel_overscan_plot=parallel_overscan_plot,
-            serial_prescan_plot=serial_prescan_plot,
-            serial_overscan_plot=serial_overscan_plot,
-        )
-
-    def open_subplot_figure(self, number_subplots):
-        """Setup a figure for plotting an image.
-
-        Parameters
-        -----------
-        figsize : (int, int)
-            The size of the figure in (total_y_pixels, total_x_pixels).
-        as_subplot : bool
-            If the figure is a subplot, the setup_figure function is omitted to ensure that each subplot does not create a \
-            new figure and so that it can be output using the *output.output_figure(structure=None)* function.
-        """
-        figsize = self.get_subplot_figsize(number_subplots=number_subplots)
-        plt.figure(figsize=figsize)
-
-    def setup_subplot(
-        self, number_subplots, subplot_index, aspect=None, subplot_rows_columns=None
-    ):
-        if subplot_rows_columns is None:
-            rows, columns = self.get_subplot_rows_columns(
-                number_subplots=number_subplots
-            )
-        else:
-            rows = subplot_rows_columns[0]
-            columns = subplot_rows_columns[1]
-        if aspect is None:
-            plt.subplot(rows, columns, subplot_index)
-        else:
-            plt.subplot(rows, columns, subplot_index, aspect=float(aspect))
-
-    def get_subplot_rows_columns(self, number_subplots):
-        """Get the size of a sub plotter in (total_y_pixels, total_x_pixels), based on the number of subplots that are going to be plotted.
-
-        Parameters
-        -----------
-        number_subplots : int
-            The number of subplots that are to be plotted in the figure.
-        """
-        if number_subplots <= 2:
-            return 1, 2
-        elif number_subplots <= 4:
-            return 2, 2
-        elif number_subplots <= 6:
-            return 2, 3
-        elif number_subplots <= 9:
-            return 3, 3
-        elif number_subplots <= 12:
-            return 3, 4
-        elif number_subplots <= 16:
-            return 4, 4
-        elif number_subplots <= 20:
-            return 4, 5
-        else:
-            return 6, 6
-
-    def get_subplot_figsize(self, number_subplots):
-        """Get the size of a sub plotter in (total_y_pixels, total_x_pixels), based on the number of subplots that are going to be plotted.
-
-        Parameters
-        -----------
-        number_subplots : int
-            The number of subplots that are to be plotted in the figure.
-        """
-
-        if self.figure.config_dict_figure["figsize"] is not None:
-            return self.figure.config_dict_figure["figsize"]
-
-        if number_subplots <= 2:
-            return (18, 8)
-        elif number_subplots <= 4:
-            return (13, 10)
-        elif number_subplots <= 6:
-            return (18, 12)
-        elif number_subplots <= 9:
-            return (25, 20)
-        elif number_subplots <= 12:
-            return (25, 20)
-        elif number_subplots <= 16:
-            return (25, 20)
-        elif number_subplots <= 20:
-            return (25, 20)
-        else:
-            return (25, 20)
-
-
 def plotter_key_from_dictionary(dictionary):
     plotter_key = None
 
     for key, value in dictionary.items():
-        if isinstance(value, AbstractPlotter):
+        if isinstance(value, Plotter):
             plotter_key = key
 
     return plotter_key
@@ -1338,12 +1020,12 @@ def plotter_key_from_dictionary(dictionary):
 
 def plotter_and_plotter_key_from_func(func):
     defaults = inspect.getfullargspec(func).defaults
-    plotter = [value for value in defaults if isinstance(value, AbstractPlotter)][0]
+    plotter = [value for value in defaults if isinstance(value, Plotter)][0]
 
     if isinstance(plotter, Plotter):
         plotter_key = "plotter"
     else:
-        plotter_key = "sub_plotter"
+        plotter_key = "plotter"
 
     return plotter, plotter_key
 
@@ -1359,7 +1041,7 @@ def kpc_per_scaled_of_object_from_dictionary(dictionary):
     return kpc_per_scaled
 
 
-def set_plotter(func):
+def set_plotter_for_figure(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
 
@@ -1371,6 +1053,8 @@ def set_plotter(func):
             plotter = Plotter()
             plotter_key = "plotter"
 
+        plotter.set_for_subplot(for_subplot=False)
+
         kwargs[plotter_key] = plotter
 
         return func(*args, **kwargs)
@@ -1378,19 +1062,21 @@ def set_plotter(func):
     return wrapper
 
 
-def set_sub_plotter(func):
+def set_plotter_for_subplot(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
 
-        sub_plotter_key = plotter_key_from_dictionary(dictionary=kwargs)
+        plotter_key = plotter_key_from_dictionary(dictionary=kwargs)
 
-        if sub_plotter_key is not None:
-            sub_plotter = kwargs[sub_plotter_key]
+        if plotter_key is not None:
+            plotter = kwargs[plotter_key]
         else:
-            sub_plotter = SubPlotter()
-            sub_plotter_key = "sub_plotter"
+            plotter = Plotter()
+            plotter_key = "plotter"
 
-        kwargs[sub_plotter_key] = sub_plotter
+        plotter.set_for_subplot(for_subplot=True)
+
+        kwargs[plotter_key] = plotter
 
         return func(*args, **kwargs)
 
@@ -1423,9 +1109,9 @@ def set_subplot_filename(func):
         plotter_key = plotter_key_from_dictionary(dictionary=kwargs)
         plotter = kwargs[plotter_key]
 
-        if not isinstance(plotter, SubPlotter):
+        if not isinstance(plotter, Plotter):
             raise exc.PlottingException(
-                "The decorator set_subplot_title was applied to a function without a SubPlotter class"
+                "The decorator set_subplot_title was applied to a function without a Plotter class"
             )
 
         filename = plotter.output.filename_from_func(func=func)

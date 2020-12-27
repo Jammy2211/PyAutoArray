@@ -4,9 +4,9 @@ import numpy as np
 
 
 @inc.set_include
-@plotter.set_sub_plotter
+@plotter.set_plotter_for_subplot
 @plotter.set_subplot_filename
-def subplot_interferometer(interferometer, include=None, sub_plotter=None):
+def subplot_interferometer(interferometer, include=None, plotter=None):
     """Plot the interferometer data_type as a sub-plotter of all its quantites (e.g. the dataset, noise_map, PSF, Signal-to_noise-map, \
      etc).
 
@@ -28,31 +28,31 @@ def subplot_interferometer(interferometer, include=None, sub_plotter=None):
 
     number_subplots = 4
 
-    sub_plotter.open_subplot_figure(number_subplots=number_subplots)
+    plotter.open_subplot_figure(number_subplots=number_subplots)
 
-    sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index=1)
+    plotter.setup_subplot(number_subplots=number_subplots, subplot_index=1)
 
-    uv_wavelengths(interferometer=interferometer, include=include, plotter=sub_plotter)
+    uv_wavelengths(interferometer=interferometer, include=include, plotter=plotter)
 
-    sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index=2)
+    plotter.setup_subplot(number_subplots=number_subplots, subplot_index=2)
 
-    visibilities(interferometer=interferometer, include=include, plotter=sub_plotter)
+    visibilities(interferometer=interferometer, include=include, plotter=plotter)
 
-    sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index=3)
+    plotter.setup_subplot(number_subplots=number_subplots, subplot_index=3)
 
     amplitudes_vs_uv_distances(
-        interferometer=interferometer, include=include, plotter=sub_plotter
+        interferometer=interferometer, include=include, plotter=plotter
     )
 
-    sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index=4)
+    plotter.setup_subplot(number_subplots=number_subplots, subplot_index=4)
 
     phases_vs_uv_distances(
-        interferometer=interferometer, include=include, plotter=sub_plotter
+        interferometer=interferometer, include=include, plotter=plotter
     )
 
-    sub_plotter.output.subplot_to_figure()
+    plotter.output.subplot_to_figure()
 
-    sub_plotter.figure.close()
+    plotter.figure.close()
 
 
 def individual(
@@ -114,7 +114,7 @@ def individual(
 
 
 @inc.set_include
-@plotter.set_plotter
+@plotter.set_plotter_for_figure
 @plotter.set_labels
 def visibilities(interferometer, include=None, plotter=None):
     """Plot the observed image of the imaging data_type.
@@ -136,7 +136,7 @@ def visibilities(interferometer, include=None, plotter=None):
 
 
 @inc.set_include
-@plotter.set_plotter
+@plotter.set_plotter_for_figure
 @plotter.set_labels
 def noise_map(interferometer, include=None, plotter=None):
     """Plot the observed image of the imaging data_type.
@@ -161,7 +161,7 @@ def noise_map(interferometer, include=None, plotter=None):
 
 
 @inc.set_include
-@plotter.set_plotter
+@plotter.set_plotter_for_figure
 @plotter.set_labels
 def u_wavelengths(
     interferometer,
@@ -194,7 +194,7 @@ def u_wavelengths(
 
 
 @inc.set_include
-@plotter.set_plotter
+@plotter.set_plotter_for_figure
 @plotter.set_labels
 def v_wavelengths(
     interferometer,
@@ -227,7 +227,7 @@ def v_wavelengths(
 
 
 @inc.set_include
-@plotter.set_plotter
+@plotter.set_plotter_for_figure
 @plotter.set_labels
 def uv_wavelengths(
     interferometer,
@@ -261,7 +261,7 @@ def uv_wavelengths(
 
 
 @inc.set_include
-@plotter.set_plotter
+@plotter.set_plotter_for_figure
 @plotter.set_labels
 def amplitudes_vs_uv_distances(
     interferometer,
@@ -279,7 +279,7 @@ def amplitudes_vs_uv_distances(
 
 
 @inc.set_include
-@plotter.set_plotter
+@plotter.set_plotter_for_figure
 @plotter.set_labels
 def phases_vs_uv_distances(
     interferometer,

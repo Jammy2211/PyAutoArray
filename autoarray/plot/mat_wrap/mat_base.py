@@ -22,8 +22,6 @@ import matplotlib.cm as cm
 import numpy as np
 from os import path
 import os
-import colorcet
-import configparser
 import typing
 
 from autoarray.structures import abstract_structure, arrays
@@ -89,7 +87,7 @@ class Units:
 
 
 class AbstractMatBase:
-    def __init__(self, use_subplot_defaults: bool, kwargs: dict):
+    def __init__(self, kwargs: dict):
         """
         An abstract base class for wrapping matplotlib plotting methods.
         
@@ -127,22 +125,16 @@ class AbstractMatBase:
         This specifies that when a data structure (like the `Array` above) is plotted, the figsize will always be 
         (7,7) when a single figure is plotted and it will be chosen automatically if a subplot is plotted. This
         allows one to customize the matplotlib settings of every plot in a project.
-        
-        Parameters
-        ----------
-        use_subplot_defaults : bool
-            `Mat` objects load settings from the [figure] section of its corresponding .ini config file by default. If
-            `use_subplot_defaults=True` settings from the [subplot] section are loaded instead.
         """
 
-        self.use_subplot_defaults = use_subplot_defaults
+        self.for_subplot = False
 
         self.kwargs = kwargs
 
     @property
     def config_dict(self):
 
-        if not self.use_subplot_defaults:
+        if not self.for_subplot:
 
             config_dict = conf.instance["visualize"][self.config_folder][
                 self.__class__.__name__
@@ -267,7 +259,7 @@ class AbstractMatBase:
 
 
 class Figure(AbstractMatBase):
-    def __init__(self, use_subplot_defaults: bool = False, **kwargs):
+    def __init__(self, **kwargs):
         """
         Sets up the Matplotlib figure before plotting (this is used when plotting individual figures and subplots).
 
@@ -277,15 +269,9 @@ class Figure(AbstractMatBase):
         - plt.close: https://matplotlib.org/3.3.2/api/_as_gen/matplotlib.pyplot.close.html
 
         It also controls the aspect ratio of the figure plotted.
-
-        Parameters
-        ----------
-        use_subplot_defaults : bool
-            `Mat` objects load settings from the [figure] section of its corresponding .ini config file by default. If
-            `use_subplot_defaults=True` settings from the [subplot] section are loaded instead.
         """
 
-        super().__init__(use_subplot_defaults=use_subplot_defaults, kwargs=kwargs)
+        super().__init__(kwargs=kwargs)
 
     def aspect_for_subplot_from_ratio(self, ratio):
 
@@ -327,7 +313,7 @@ class Figure(AbstractMatBase):
 
 
 class Cmap(AbstractMatBase):
-    def __init__(self, use_subplot_defaults: bool = False, **kwargs):
+    def __init__(self, **kwargs):
         """
         Customizes the Matplotlib colormap and its normalization.
 
@@ -340,15 +326,9 @@ class Cmap(AbstractMatBase):
         The cmap that is created is passed into various Matplotlib methods, most notably imshow:
 
          https://matplotlib.org/3.3.2/api/_as_gen/matplotlib.pyplot.imshow.html
-
-        Parameters
-        ----------
-        use_subplot_defaults : bool
-            `Mat` objects load settings from the [figure] section of its .ini config file by default. If
-            `use_subplot_defaults=True` settings from the [subplot] section are loaded instead.
         """
 
-        super().__init__(use_subplot_defaults=use_subplot_defaults, kwargs=kwargs)
+        super().__init__(kwargs=kwargs)
 
     def norm_from_array(self, array: np.ndarray) -> object:
         """
@@ -396,7 +376,6 @@ class Cmap(AbstractMatBase):
 class Colorbar(AbstractMatBase):
     def __init__(
         self,
-        use_subplot_defaults: bool = False,
         manual_tick_labels: typing.Union[typing.List[float]] = None,
         manual_tick_values: typing.Union[typing.List[float]] = None,
         **kwargs,
@@ -415,16 +394,13 @@ class Colorbar(AbstractMatBase):
 
         Parameters
         ----------
-        use_subplot_defaults : bool
-            `Mat` objects load settings from the [figure] section of its .ini config file by default. If
-            `use_subplot_defaults=True` settings from the [subplot] section are loaded instead.
         manual_tick_labels : [float]
             Manually override the colorbar tick labels to an input list of float.
         manual_tick_values : [float]
             If the colorbar tick labels are manually specified the locations on the colorbar they appear running 0 -> 1.
          """
 
-        super().__init__(use_subplot_defaults=use_subplot_defaults, kwargs=kwargs)
+        super().__init__(kwargs=kwargs)
 
         self.manual_tick_labels = manual_tick_labels
         self.manual_tick_values = manual_tick_values
@@ -480,21 +456,15 @@ class Colorbar(AbstractMatBase):
 
 
 class TickParams(AbstractMatBase):
-    def __init__(self, use_subplot_defaults: bool = False, **kwargs):
+    def __init__(self, **kwargs):
         """
         The settings used to customize a figure's y and x ticks parameters.
 
         This object wraps the following Matplotlib methods:
 
         - plt.tick_params: https://matplotlib.org/3.3.2/api/_as_gen/matplotlib.pyplot.tick_params.html
-
-        Parameters
-        ----------
-        use_subplot_defaults : bool
-            `Mat` objects load settings from the [figure] section of its .ini config file by default. If
-            `use_subplot_defaults=True` settings from the [subplot] section are loaded instead.
         """
-        super().__init__(use_subplot_defaults=use_subplot_defaults, kwargs=kwargs)
+        super().__init__(kwargs=kwargs)
 
     def set(self):
         """Set the tick_params of the figure using the method `plt.tick_params`."""
@@ -503,10 +473,7 @@ class TickParams(AbstractMatBase):
 
 class AbstractTicks(AbstractMatBase):
     def __init__(
-        self,
-        use_subplot_defaults: bool = False,
-        manual_values: typing.Union[typing.List[float]] = None,
-        **kwargs,
+        self, manual_values: typing.Union[typing.List[float]] = None, **kwargs
     ):
         """
         The settings used to customize a figure's y and x ticks using the `YTicks` and `XTicks` objects.
@@ -518,13 +485,10 @@ class AbstractTicks(AbstractMatBase):
 
         Parameters
         ----------
-        use_subplot_defaults : bool
-            `Mat` objects load settings from the [figure] section of its .ini config file by default. If
-            `use_subplot_defaults=True` settings from the [subplot] section are loaded instead.
         manual_values : [float]
             Manually override the tick labels to display the labels as the input list of floats.
         """
-        super().__init__(use_subplot_defaults=use_subplot_defaults, kwargs=kwargs)
+        super().__init__(kwargs=kwargs)
 
         self.manual_values = manual_values
 
@@ -690,7 +654,7 @@ class XTicks(AbstractTicks):
 
 
 class Title(AbstractMatBase):
-    def __init__(self, use_subplot_defaults: bool = False, **kwargs):
+    def __init__(self, **kwargs):
         """
         The settings used to customize the figure's title.
 
@@ -699,16 +663,9 @@ class Title(AbstractMatBase):
         - plt.title: https://matplotlib.org/3.3.2/api/_as_gen/matplotlib.pyplot.title.html
 
         The title will automatically be set if not specified, using the name of the function used to plot the data.
-
-        Parameters
-        ----------
-        use_subplot_defaults : bool
-            `Mat` objects load settings from the [figure] section of its .ini config file by default. If
-            `use_subplot_defaults=True` settings from the [subplot] section are loaded instead.
         """
-        self.use_subplot_defaults = use_subplot_defaults
 
-        super().__init__(use_subplot_defaults=use_subplot_defaults, kwargs=kwargs)
+        super().__init__(kwargs=kwargs)
 
         if "label" not in self.kwargs:
             self.kwargs["label"] = None
@@ -731,13 +688,7 @@ class Title(AbstractMatBase):
 
 
 class AbstractLabel(AbstractMatBase):
-    def __init__(
-        self,
-        use_subplot_defaults: bool = False,
-        units: "Units" = None,
-        manual_label: str = None,
-        **kwargs,
-    ):
+    def __init__(self, units: "Units" = None, manual_label: str = None, **kwargs):
         """
         The settings used to customize the figure's title and y and x labels.
 
@@ -750,16 +701,13 @@ class AbstractLabel(AbstractMatBase):
 
         Parameters
         ----------
-        use_subplot_defaults : bool
-            `Mat` objects load settings from the [figure] section of its .ini config file by default. If
-            `use_subplot_defaults=True` settings from the [subplot] section are loaded instead.
         units : Units
             The units the data is plotted using.
         manual_label : str
             A manual label which overrides the default computed via the units if input.
         """
 
-        super().__init__(use_subplot_defaults=use_subplot_defaults, kwargs=kwargs)
+        super().__init__(kwargs=kwargs)
 
         self.manual_label = manual_label
         self._units = units
@@ -885,7 +833,7 @@ class XLabel(AbstractLabel):
 
 
 class Legend(AbstractMatBase):
-    def __init__(self, use_subplot_defaults: bool = False, include=False, **kwargs):
+    def __init__(self, include=False, **kwargs):
         """
         The settings used to include and customize a legend on a figure.
 
@@ -895,14 +843,11 @@ class Legend(AbstractMatBase):
 
         Parameters
         ----------
-        use_subplot_defaults : bool
-            `Mat` objects load settings from the [figure] section of its .ini config file by default. If
-            `use_subplot_defaults=True` settings from the [subplot] section are loaded instead.
         include : bool
             If the legend should be plotted and therefore included on the figure.
         """
 
-        super().__init__(use_subplot_defaults=use_subplot_defaults, kwargs=kwargs)
+        super().__init__(kwargs=kwargs)
 
         self.include = include
 

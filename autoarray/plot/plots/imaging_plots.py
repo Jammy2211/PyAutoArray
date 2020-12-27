@@ -2,10 +2,10 @@ from autoarray.plot.plotter import plotter, include as inc
 
 
 @inc.set_include
-@plotter.set_sub_plotter
+@plotter.set_plotter_for_subplot
 @plotter.set_subplot_filename
 def subplot_imaging(
-    imaging, grid=None, mask=None, positions=None, include=None, sub_plotter=None
+    imaging, grid=None, mask=None, positions=None, include=None, plotter=None
 ):
     """Plot the imaging data_type as a sub-plotter of all its quantites (e.g. the dataset, noise_map, PSF, Signal-to_noise-map, \
      etc).
@@ -28,9 +28,9 @@ def subplot_imaging(
 
     number_subplots = 6
 
-    sub_plotter.open_subplot_figure(number_subplots=number_subplots)
+    plotter.open_subplot_figure(number_subplots=number_subplots)
 
-    sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index=1)
+    plotter.setup_subplot(number_subplots=number_subplots, subplot_index=1)
 
     image(
         imaging=imaging,
@@ -38,56 +38,56 @@ def subplot_imaging(
         mask=mask,
         positions=positions,
         include=include,
-        plotter=sub_plotter,
+        plotter=plotter,
     )
 
-    sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index=2)
+    plotter.setup_subplot(number_subplots=number_subplots, subplot_index=2)
 
     noise_map(
         imaging=imaging,
         mask=mask,
         positions=positions,
         include=include,
-        plotter=sub_plotter,
+        plotter=plotter,
     )
 
-    sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index=3)
+    plotter.setup_subplot(number_subplots=number_subplots, subplot_index=3)
 
-    psf(imaging=imaging, positions=positions, include=include, plotter=sub_plotter)
+    psf(imaging=imaging, positions=positions, include=include, plotter=plotter)
 
-    sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index=4)
+    plotter.setup_subplot(number_subplots=number_subplots, subplot_index=4)
 
     signal_to_noise_map(
         imaging=imaging,
         mask=mask,
         positions=positions,
         include=include,
-        plotter=sub_plotter,
+        plotter=plotter,
     )
 
-    sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index=5)
+    plotter.setup_subplot(number_subplots=number_subplots, subplot_index=5)
 
     inverse_noise_map(
         imaging=imaging,
         mask=mask,
         positions=positions,
         include=include,
-        plotter=sub_plotter,
+        plotter=plotter,
     )
 
-    sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index=6)
+    plotter.setup_subplot(number_subplots=number_subplots, subplot_index=6)
 
     potential_chi_squared_map(
         imaging=imaging,
         mask=mask,
         positions=positions,
         include=include,
-        plotter=sub_plotter,
+        plotter=plotter,
     )
 
-    sub_plotter.output.subplot_to_figure()
+    plotter.output.subplot_to_figure()
 
-    sub_plotter.figure.close()
+    plotter.figure.close()
 
 
 def individual(
@@ -161,7 +161,7 @@ def individual(
 
 
 @inc.set_include
-@plotter.set_plotter
+@plotter.set_plotter_for_figure
 @plotter.set_labels
 def image(imaging, grid=None, mask=None, positions=None, include=None, plotter=None):
     """Plot the observed data_type of the imaging data_type.
@@ -190,7 +190,7 @@ def image(imaging, grid=None, mask=None, positions=None, include=None, plotter=N
 
 
 @inc.set_include
-@plotter.set_plotter
+@plotter.set_plotter_for_figure
 @plotter.set_labels
 def noise_map(
     imaging, grid=None, mask=None, positions=None, include=None, plotter=None
@@ -218,7 +218,7 @@ def noise_map(
 
 
 @inc.set_include
-@plotter.set_plotter
+@plotter.set_plotter_for_figure
 @plotter.set_labels
 def psf(imaging, grid=None, positions=None, include=None, plotter=None):
     """Plot the PSF of the imaging data_type.
@@ -239,7 +239,7 @@ def psf(imaging, grid=None, positions=None, include=None, plotter=None):
 
 
 @inc.set_include
-@plotter.set_plotter
+@plotter.set_plotter_for_figure
 @plotter.set_labels
 def inverse_noise_map(
     imaging, grid=None, mask=None, positions=None, include=None, plotter=None
@@ -267,7 +267,7 @@ def inverse_noise_map(
 
 
 @inc.set_include
-@plotter.set_plotter
+@plotter.set_plotter_for_figure
 @plotter.set_labels
 def signal_to_noise_map(
     imaging, grid=None, mask=None, positions=None, include=None, plotter=None
@@ -294,7 +294,7 @@ def signal_to_noise_map(
 
 
 @inc.set_include
-@plotter.set_plotter
+@plotter.set_plotter_for_figure
 @plotter.set_labels
 def absolute_signal_to_noise_map(
     imaging, grid=None, mask=None, positions=None, include=None, plotter=None
@@ -321,7 +321,7 @@ def absolute_signal_to_noise_map(
 
 
 @inc.set_include
-@plotter.set_plotter
+@plotter.set_plotter_for_figure
 @plotter.set_labels
 def potential_chi_squared_map(
     imaging, grid=None, mask=None, positions=None, include=None, plotter=None

@@ -2,7 +2,7 @@ from autoarray.plot.plotter import plotter, include as inc
 
 
 @inc.set_include
-@plotter.set_plotter
+@plotter.set_plotter_for_figure
 @plotter.set_labels
 def subplot_image_and_mapper(
     image,
@@ -12,16 +12,16 @@ def subplot_image_and_mapper(
     image_pixel_indexes=None,
     source_pixel_indexes=None,
     include=None,
-    sub_plotter=None,
+    plotter=None,
 ):
 
     number_subplots = 2
 
-    sub_plotter.open_subplot_figure(number_subplots=number_subplots)
+    plotter.open_subplot_figure(number_subplots=number_subplots)
 
-    sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index=1)
+    plotter.setup_subplot(number_subplots=number_subplots, subplot_index=1)
 
-    sub_plotter.plot_array(
+    plotter.plot_array(
         array=image,
         mask=include.mask_from_grid(grid=mapper.grid),
         positions=image_positions,
@@ -30,7 +30,7 @@ def subplot_image_and_mapper(
 
     if image_pixel_indexes is not None:
 
-        sub_plotter.index_scatter.scatter_grid_indexes(
+        plotter.index_scatter.scatter_grid_indexes(
             grid=mapper.grid.geometry.unmasked_grid_sub_1, indexes=image_pixel_indexes
         )
 
@@ -40,13 +40,13 @@ def subplot_image_and_mapper(
             source_pixel_indexes=source_pixel_indexes
         )
 
-        sub_plotter.index_scatter.scatter_grid_indexes(
+        plotter.index_scatter.scatter_grid_indexes(
             grid=mapper.grid.geometry.unmasked_grid_sub_1, indexes=indexes
         )
 
-    sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index=2)
+    plotter.setup_subplot(number_subplots=number_subplots, subplot_index=2)
 
-    sub_plotter.plot_mapper(
+    plotter.plot_mapper(
         mapper=mapper,
         positions=source_positions,
         image_pixel_indexes=image_pixel_indexes,
@@ -57,5 +57,5 @@ def subplot_image_and_mapper(
         include_border=include.inversion_border,
     )
 
-    sub_plotter.output.subplot_to_figure()
-    sub_plotter.figure.close()
+    plotter.output.subplot_to_figure()
+    plotter.figure.close()

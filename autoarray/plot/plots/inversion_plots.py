@@ -2,7 +2,7 @@ from autoarray.plot.plotter import plotter, include as inc
 
 
 @inc.set_include
-@plotter.set_sub_plotter
+@plotter.set_plotter_for_subplot
 @plotter.set_subplot_filename
 def subplot_inversion(
     inversion,
@@ -13,7 +13,7 @@ def subplot_inversion(
     image_pixel_indexes=None,
     source_pixel_indexes=None,
     include=None,
-    sub_plotter=None,
+    plotter=None,
 ):
 
     number_subplots = 6
@@ -29,11 +29,11 @@ def subplot_inversion(
         )
     )
 
-    aspect_inv = sub_plotter.figure.aspect_for_subplot_from_ratio(ratio=ratio)
+    aspect_inv = plotter.figure.aspect_for_subplot_from_ratio(ratio=ratio)
 
-    sub_plotter.open_subplot_figure(number_subplots=number_subplots)
+    plotter.open_subplot_figure(number_subplots=number_subplots)
 
-    sub_plotter.setup_subplot(number_subplots=number_subplots, subplot_index=1)
+    plotter.setup_subplot(number_subplots=number_subplots, subplot_index=1)
 
     reconstructed_image(
         inversion=inversion,
@@ -41,10 +41,10 @@ def subplot_inversion(
         image_positions=image_positions,
         grid=grid,
         include=include,
-        plotter=sub_plotter,
+        plotter=plotter,
     )
 
-    sub_plotter.setup_subplot(
+    plotter.setup_subplot(
         number_subplots=number_subplots, subplot_index=2, aspect=aspect_inv
     )
 
@@ -53,12 +53,12 @@ def subplot_inversion(
         source_positions=source_positions,
         lines=lines,
         include=include,
-        plotter=sub_plotter,
+        plotter=plotter,
         image_pixel_indexes=image_pixel_indexes,
         source_pixel_indexes=source_pixel_indexes,
     )
 
-    sub_plotter.setup_subplot(
+    plotter.setup_subplot(
         number_subplots=number_subplots, subplot_index=3, aspect=aspect_inv
     )
 
@@ -67,10 +67,10 @@ def subplot_inversion(
         image_pixel_indexes=image_pixel_indexes,
         source_pixel_indexes=source_pixel_indexes,
         include=include,
-        plotter=sub_plotter,
+        plotter=plotter,
     )
 
-    sub_plotter.setup_subplot(
+    plotter.setup_subplot(
         number_subplots=number_subplots, subplot_index=4, aspect=aspect_inv
     )
 
@@ -79,10 +79,10 @@ def subplot_inversion(
         image_pixel_indexes=image_pixel_indexes,
         source_pixel_indexes=source_pixel_indexes,
         include=include,
-        plotter=sub_plotter,
+        plotter=plotter,
     )
 
-    sub_plotter.setup_subplot(
+    plotter.setup_subplot(
         number_subplots=number_subplots, subplot_index=5, aspect=aspect_inv
     )
 
@@ -91,10 +91,10 @@ def subplot_inversion(
         image_pixel_indexes=image_pixel_indexes,
         source_pixel_indexes=source_pixel_indexes,
         include=include,
-        plotter=sub_plotter,
+        plotter=plotter,
     )
 
-    sub_plotter.setup_subplot(
+    plotter.setup_subplot(
         number_subplots=number_subplots, subplot_index=6, aspect=aspect_inv
     )
 
@@ -103,12 +103,12 @@ def subplot_inversion(
         image_pixel_indexes=image_pixel_indexes,
         source_pixel_indexes=source_pixel_indexes,
         include=include,
-        plotter=sub_plotter,
+        plotter=plotter,
     )
 
-    sub_plotter.output.subplot_to_figure()
+    plotter.output.subplot_to_figure()
 
-    sub_plotter.figure.close()
+    plotter.figure.close()
 
 
 def individuals(
@@ -200,7 +200,7 @@ def individuals(
 
 
 @inc.set_include
-@plotter.set_plotter
+@plotter.set_plotter_for_figure
 @plotter.set_labels
 def reconstructed_image(
     inversion, grid=None, lines=None, image_positions=None, include=None, plotter=None
@@ -217,7 +217,7 @@ def reconstructed_image(
 
 
 @inc.set_include
-@plotter.set_plotter
+@plotter.set_plotter_for_figure
 @plotter.set_labels
 def reconstruction(
     inversion,
@@ -248,7 +248,7 @@ def reconstruction(
 
 
 @inc.set_include
-@plotter.set_plotter
+@plotter.set_plotter_for_figure
 @plotter.set_labels
 def errors(
     inversion,
@@ -279,7 +279,7 @@ def errors(
 
 
 @inc.set_include
-@plotter.set_plotter
+@plotter.set_plotter_for_figure
 @plotter.set_labels
 def residual_map(
     inversion,
@@ -310,7 +310,7 @@ def residual_map(
 
 
 @inc.set_include
-@plotter.set_plotter
+@plotter.set_plotter_for_figure
 @plotter.set_labels
 def normalized_residual_map(
     inversion,
@@ -341,7 +341,7 @@ def normalized_residual_map(
 
 
 @inc.set_include
-@plotter.set_plotter
+@plotter.set_plotter_for_figure
 @plotter.set_labels
 def chi_squared_map(
     inversion,
@@ -372,7 +372,7 @@ def chi_squared_map(
 
 
 @inc.set_include
-@plotter.set_plotter
+@plotter.set_plotter_for_figure
 @plotter.set_labels
 def regularization_weights(
     inversion,
@@ -403,7 +403,7 @@ def regularization_weights(
 
 
 @inc.set_include
-@plotter.set_plotter
+@plotter.set_plotter_for_figure
 @plotter.set_labels
 def interpolated_reconstruction(
     inversion, lines=None, source_positions=None, grid=None, include=None, plotter=None
@@ -419,7 +419,7 @@ def interpolated_reconstruction(
 
 
 @inc.set_include
-@plotter.set_plotter
+@plotter.set_plotter_for_figure
 @plotter.set_labels
 def interpolated_errors(
     inversion, lines=None, source_positions=None, grid=None, include=None, plotter=None
