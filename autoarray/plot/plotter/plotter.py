@@ -33,33 +33,33 @@ from autoarray.inversion import mappers
 class Plotter:
     def __init__(
         self,
-        units: mat_base.Units = None,
-        figure: mat_base.Figure = None,
-        cmap: mat_base.Cmap = None,
-        colorbar: mat_base.Colorbar = None,
-        tickparams: mat_base.TickParams = None,
-        yticks: mat_base.YTicks = None,
-        xticks: mat_base.XTicks = None,
-        title: mat_base.Title = None,
-        ylabel: mat_base.YLabel = None,
-        xlabel: mat_base.XLabel = None,
-        legend: mat_base.Legend = None,
-        output: mat_base.Output = None,
-        array_overlay: mat_structure.ArrayOverlay = None,
-        grid_scatter: mat_structure.GridScatter = None,
-        line_plot: mat_structure.LinePlot = None,
-        vector_field_quiver: mat_structure.VectorFieldQuiver = None,
-        patch_overlay: mat_structure.PatchOverlay = None,
-        voronoi_drawer: mat_structure.VoronoiDrawer = None,
-        origin_scatter: mat_obj.OriginScatter = None,
-        mask_scatter: mat_obj.MaskScatter = None,
-        border_scatter: mat_obj.BorderScatter = None,
-        positions_scatter: mat_obj.PositionsScatter = None,
-        index_scatter: mat_obj.IndexScatter = None,
-        pixelization_grid_scatter: mat_obj.PixelizationGridScatter = None,
-        parallel_overscan_plot: mat_obj.ParallelOverscanPlot = None,
-        serial_prescan_plot: mat_obj.SerialPrescanPlot = None,
-        serial_overscan_plot: mat_obj.SerialOverscanPlot = None,
+        units: mat_base.Units = mat_base.Units(),
+        figure: mat_base.Figure = mat_base.Figure(),
+        cmap: mat_base.Cmap = mat_base.Cmap(),
+        colorbar: mat_base.Colorbar = mat_base.Colorbar(),
+        tickparams: mat_base.TickParams = mat_base.TickParams(),
+        yticks: mat_base.YTicks = mat_base.YTicks(),
+        xticks: mat_base.XTicks = mat_base.XTicks(),
+        title: mat_base.Title = mat_base.Title(),
+        ylabel: mat_base.YLabel = mat_base.YLabel(),
+        xlabel: mat_base.XLabel = mat_base.XLabel(),
+        legend: mat_base.Legend = mat_base.Legend(),
+        output: mat_base.Output = mat_base.Output(),
+        array_overlay: mat_structure.ArrayOverlay = mat_structure.ArrayOverlay(),
+        grid_scatter: mat_structure.GridScatter = mat_structure.GridScatter(),
+        line_plot: mat_structure.LinePlot = mat_structure.LinePlot(),
+        vector_field_quiver: mat_structure.VectorFieldQuiver = mat_structure.VectorFieldQuiver(),
+        patch_overlay: mat_structure.PatchOverlay = mat_structure.PatchOverlay(),
+        voronoi_drawer: mat_structure.VoronoiDrawer = mat_structure.VoronoiDrawer(),
+        origin_scatter: mat_obj.OriginScatter = mat_obj.OriginScatter(),
+        mask_scatter: mat_obj.MaskScatter = mat_obj.MaskScatter(),
+        border_scatter: mat_obj.BorderScatter = mat_obj.BorderScatter(),
+        positions_scatter: mat_obj.PositionsScatter = mat_obj.PositionsScatter(),
+        index_scatter: mat_obj.IndexScatter = mat_obj.IndexScatter(),
+        pixelization_grid_scatter: mat_obj.PixelizationGridScatter = mat_obj.PixelizationGridScatter(),
+        parallel_overscan_plot: mat_obj.ParallelOverscanPlot = mat_obj.ParallelOverscanPlot(),
+        serial_prescan_plot: mat_obj.SerialPrescanPlot = mat_obj.SerialPrescanPlot(),
+        serial_overscan_plot: mat_obj.SerialOverscanPlot = mat_obj.SerialOverscanPlot(),
     ):
         """
         Visualizes data structures (e.g an `Array`, `Grid`, `VectorField`, etc.) using Matplotlib.
@@ -140,79 +140,33 @@ class Plotter:
             Plots the serial overscan on an `Array` data structure representing a CCD imaging via `plt.plot`.
         """
 
-        self.units = units if units is not None else mat_base.Units()
-        self.figure = figure if figure is not None else mat_base.Figure()
-        self.cmap = cmap if cmap is not None else mat_base.Cmap()
-        self.colorbar = colorbar if colorbar is not None else mat_base.Colorbar()
-        self.title = title if title is not None else mat_base.Title()
-        self.tickparams = (
-            tickparams if tickparams is not None else mat_base.TickParams()
-        )
-        self.yticks = yticks if yticks is not None else mat_base.YTicks()
-        self.xticks = xticks if xticks is not None else mat_base.XTicks()
-        self.ylabel = ylabel if ylabel is not None else mat_base.YLabel()
-        self.xlabel = xlabel if xlabel is not None else mat_base.XLabel()
-        self.legend = legend if legend is not None else mat_base.Legend()
-        self.output = output if output is not None else mat_base.Output(bypass=True)
-        self.origin_scatter = (
-            origin_scatter if origin_scatter is not None else mat_obj.OriginScatter()
-        )
-        self.mask_scatter = (
-            mask_scatter if mask_scatter is not None else mat_obj.MaskScatter()
-        )
-        self.border_scatter = (
-            border_scatter if border_scatter is not None else mat_obj.BorderScatter()
-        )
-        self.grid_scatter = (
-            grid_scatter if grid_scatter is not None else mat_structure.GridScatter()
-        )
-        self.positions_scatter = (
-            positions_scatter
-            if positions_scatter is not None
-            else mat_obj.PositionsScatter()
-        )
-        self.index_scatter = (
-            index_scatter if index_scatter is not None else mat_obj.IndexScatter()
-        )
-        self.pixelization_grid_scatter = (
-            pixelization_grid_scatter
-            if pixelization_grid_scatter is not None
-            else mat_obj.PixelizationGridScatter()
-        )
-        self.line_plot = (
-            line_plot if line_plot is not None else mat_structure.LinePlot()
-        )
-        self.vector_field_quiver = (
-            vector_field_quiver
-            if vector_field_quiver is not None
-            else mat_structure.VectorFieldQuiver()
-        )
-        self.patch_overlay = (
-            patch_overlay if patch_overlay is not None else mat_structure.PatchOverlay()
-        )
-        self.array_overlay = (
-            array_overlay if array_overlay is not None else mat_structure.ArrayOverlay()
-        )
-        self.voronoi_drawer = (
-            voronoi_drawer
-            if voronoi_drawer is not None
-            else mat_structure.VoronoiDrawer()
-        )
-        self.parallel_overscan_plot = (
-            parallel_overscan_plot
-            if parallel_overscan_plot is not None
-            else mat_obj.ParallelOverscanPlot()
-        )
-        self.serial_prescan_plot = (
-            serial_prescan_plot
-            if serial_prescan_plot is not None
-            else mat_obj.SerialPrescanPlot()
-        )
-        self.serial_overscan_plot = (
-            serial_overscan_plot
-            if serial_overscan_plot is not None
-            else mat_obj.SerialOverscanPlot()
-        )
+        self.units = units
+        self.figure = figure
+        self.cmap = cmap
+        self.colorbar = colorbar
+        self.tickparams = tickparams
+        self.title = title
+        self.yticks = yticks
+        self.xticks = xticks
+        self.ylabel = ylabel
+        self.xlabel = xlabel
+        self.legend = legend
+        self.output = output
+        self.origin_scatter = origin_scatter
+        self.mask_scatter = mask_scatter
+        self.border_scatter = border_scatter
+        self.grid_scatter = grid_scatter
+        self.positions_scatter = positions_scatter
+        self.index_scatter = index_scatter
+        self.pixelization_grid_scatter = pixelization_grid_scatter
+        self.line_plot = line_plot
+        self.vector_field_quiver = vector_field_quiver
+        self.patch_overlay = patch_overlay
+        self.array_overlay = array_overlay
+        self.voronoi_drawer = voronoi_drawer
+        self.parallel_overscan_plot = parallel_overscan_plot
+        self.serial_prescan_plot = serial_prescan_plot
+        self.serial_overscan_plot = serial_overscan_plot
 
         self.set_for_subplot(for_subplot=False)
 
