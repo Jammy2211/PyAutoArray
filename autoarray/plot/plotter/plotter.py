@@ -1334,16 +1334,6 @@ class SubPlotter(AbstractPlotter):
             return (25, 20)
 
 
-def include_key_from_dictionary(dictionary):
-    include_key = None
-
-    for key, value in dictionary.items():
-        if isinstance(value, inc.Include):
-            include_key = key
-
-    return include_key
-
-
 def plotter_key_from_dictionary(dictionary):
     plotter_key = None
 
@@ -1377,19 +1367,9 @@ def kpc_per_scaled_of_object_from_dictionary(dictionary):
     return kpc_per_scaled
 
 
-def set_include_and_plotter(func):
+def set_plotter(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
-
-        include_key = include_key_from_dictionary(dictionary=kwargs)
-
-        if include_key is not None:
-            include = kwargs[include_key]
-        else:
-            include = inc.Include()
-            include_key = "include"
-
-        kwargs[include_key] = include
 
         plotter_key = plotter_key_from_dictionary(dictionary=kwargs)
 
@@ -1406,19 +1386,9 @@ def set_include_and_plotter(func):
     return wrapper
 
 
-def set_include_and_sub_plotter(func):
+def set_sub_plotter(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
-
-        include_key = include_key_from_dictionary(dictionary=kwargs)
-
-        if include_key is not None:
-            include = kwargs[include_key]
-        else:
-            include = inc.Include()
-            include_key = "include"
-
-        kwargs[include_key] = include
 
         sub_plotter_key = plotter_key_from_dictionary(dictionary=kwargs)
 

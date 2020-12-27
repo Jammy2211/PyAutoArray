@@ -1,7 +1,8 @@
-from autoarray.plot.plotter import plotter
+from autoarray.plot.plotter import plotter, include as inc
 
 
-@plotter.set_include_and_sub_plotter
+@inc.set_include
+@plotter.set_sub_plotter
 @plotter.set_subplot_filename
 def subplot_fit_imaging(
     fit, grid=None, positions=None, lines=None, include=None, sub_plotter=None
@@ -99,7 +100,8 @@ def individuals(
         chi_squared_map(fit=fit, include=include, plotter=plotter)
 
 
-@plotter.set_include_and_plotter
+@inc.set_include
+@plotter.set_plotter
 @plotter.set_labels
 def image(fit, positions=None, grid=None, lines=None, include=None, plotter=None):
     """Plot the image of a lens fit.
@@ -122,7 +124,8 @@ def image(fit, positions=None, grid=None, lines=None, include=None, plotter=None
     )
 
 
-@plotter.set_include_and_plotter
+@inc.set_include
+@plotter.set_plotter
 @plotter.set_labels
 def noise_map(fit, positions=None, include=None, plotter=None):
     """Plot the noise-map of a lens fit.
@@ -141,7 +144,8 @@ def noise_map(fit, positions=None, include=None, plotter=None):
     )
 
 
-@plotter.set_include_and_plotter
+@inc.set_include
+@plotter.set_plotter
 @plotter.set_labels
 def signal_to_noise_map(fit, positions=None, include=None, plotter=None):
     """Plot the noise-map of a lens fit.
@@ -162,7 +166,8 @@ def signal_to_noise_map(fit, positions=None, include=None, plotter=None):
     )
 
 
-@plotter.set_include_and_plotter
+@inc.set_include
+@plotter.set_plotter
 @plotter.set_labels
 def model_image(fit, lines=None, positions=None, include=None, plotter=None):
     """Plot the model image of a fit.
@@ -185,7 +190,8 @@ def model_image(fit, lines=None, positions=None, include=None, plotter=None):
     )
 
 
-@plotter.set_include_and_plotter
+@inc.set_include
+@plotter.set_plotter
 @plotter.set_labels
 def residual_map(fit, positions=None, include=None, plotter=None):
     """Plot the residual-map of a lens fit.
@@ -204,7 +210,8 @@ def residual_map(fit, positions=None, include=None, plotter=None):
     )
 
 
-@plotter.set_include_and_plotter
+@inc.set_include
+@plotter.set_plotter
 @plotter.set_labels
 def normalized_residual_map(fit, positions=None, include=None, plotter=None):
     """Plot the residual-map of a lens fit.
@@ -225,7 +232,8 @@ def normalized_residual_map(fit, positions=None, include=None, plotter=None):
     )
 
 
-@plotter.set_include_and_plotter
+@inc.set_include
+@plotter.set_plotter
 @plotter.set_labels
 def chi_squared_map(fit, positions=None, include=None, plotter=None):
     """Plot the chi-squared-map of a lens fit.

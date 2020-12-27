@@ -1,7 +1,8 @@
-from autoarray.plot.plotter import plotter
+from autoarray.plot.plotter import plotter, include as inc
 
 
-@plotter.set_include_and_sub_plotter
+@inc.set_include
+@plotter.set_sub_plotter
 @plotter.set_subplot_filename
 def subplot_imaging(
     imaging, grid=None, mask=None, positions=None, include=None, sub_plotter=None
@@ -159,7 +160,8 @@ def individual(
         )
 
 
-@plotter.set_include_and_plotter
+@inc.set_include
+@plotter.set_plotter
 @plotter.set_labels
 def image(imaging, grid=None, mask=None, positions=None, include=None, plotter=None):
     """Plot the observed data_type of the imaging data_type.
@@ -187,7 +189,8 @@ def image(imaging, grid=None, mask=None, positions=None, include=None, plotter=N
     )
 
 
-@plotter.set_include_and_plotter
+@inc.set_include
+@plotter.set_plotter
 @plotter.set_labels
 def noise_map(
     imaging, grid=None, mask=None, positions=None, include=None, plotter=None
@@ -214,7 +217,8 @@ def noise_map(
     )
 
 
-@plotter.set_include_and_plotter
+@inc.set_include
+@plotter.set_plotter
 @plotter.set_labels
 def psf(imaging, grid=None, positions=None, include=None, plotter=None):
     """Plot the PSF of the imaging data_type.
@@ -234,7 +238,8 @@ def psf(imaging, grid=None, positions=None, include=None, plotter=None):
     )
 
 
-@plotter.set_include_and_plotter
+@inc.set_include
+@plotter.set_plotter
 @plotter.set_labels
 def inverse_noise_map(
     imaging, grid=None, mask=None, positions=None, include=None, plotter=None
@@ -261,7 +266,8 @@ def inverse_noise_map(
     )
 
 
-@plotter.set_include_and_plotter
+@inc.set_include
+@plotter.set_plotter
 @plotter.set_labels
 def signal_to_noise_map(
     imaging, grid=None, mask=None, positions=None, include=None, plotter=None
@@ -287,7 +293,8 @@ def signal_to_noise_map(
     )
 
 
-@plotter.set_include_and_plotter
+@inc.set_include
+@plotter.set_plotter
 @plotter.set_labels
 def absolute_signal_to_noise_map(
     imaging, grid=None, mask=None, positions=None, include=None, plotter=None
@@ -313,7 +320,8 @@ def absolute_signal_to_noise_map(
     )
 
 
-@plotter.set_include_and_plotter
+@inc.set_include
+@plotter.set_plotter
 @plotter.set_labels
 def potential_chi_squared_map(
     imaging, grid=None, mask=None, positions=None, include=None, plotter=None
