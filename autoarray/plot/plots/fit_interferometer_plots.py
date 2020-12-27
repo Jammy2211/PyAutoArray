@@ -1,8 +1,9 @@
-from autoarray.plot.plotter import plotter
+from autoarray.plot.plotter import plotter, include as inc
 import numpy as np
 
 
-@plotter.set_include_and_sub_plotter
+@inc.set_include
+@plotter.set_sub_plotter
 @plotter.set_subplot_filename
 def subplot_fit_interferometer(fit, include=None, sub_plotter=None):
 
@@ -121,7 +122,8 @@ def individuals(
         )
 
 
-@plotter.set_include_and_plotter
+@inc.set_include
+@plotter.set_plotter
 @plotter.set_labels
 def visibilities(fit, include=None, plotter=None):
     """Plot the visibilities of a lens fit.
@@ -138,7 +140,8 @@ def visibilities(fit, include=None, plotter=None):
     plotter.plot_grid(grid=fit.visibilities.in_grid)
 
 
-@plotter.set_include_and_plotter
+@inc.set_include
+@plotter.set_plotter
 @plotter.set_labels
 def noise_map(fit, include=None, plotter=None):
     """Plot the noise-map of a lens fit.
@@ -155,7 +158,8 @@ def noise_map(fit, include=None, plotter=None):
     plotter.plot_grid(grid=fit.visibilities.in_grid, color_array=np.real(fit.noise_map))
 
 
-@plotter.set_include_and_plotter
+@inc.set_include
+@plotter.set_plotter
 @plotter.set_labels
 def signal_to_noise_map(fit, include=None, plotter=None):
     """Plot the noise-map of a lens fit.
@@ -174,7 +178,8 @@ def signal_to_noise_map(fit, include=None, plotter=None):
     )
 
 
-@plotter.set_include_and_plotter
+@inc.set_include
+@plotter.set_plotter
 @plotter.set_labels
 def model_visibilities(fit, include=None, plotter=None):
     """Plot the model visibilities of a fit.
@@ -191,7 +196,8 @@ def model_visibilities(fit, include=None, plotter=None):
     plotter.plot_grid(grid=fit.visibilities.in_grid)
 
 
-@plotter.set_include_and_plotter
+@inc.set_include
+@plotter.set_plotter
 @plotter.set_labels
 def residual_map_vs_uv_distances(
     fit,
@@ -237,7 +243,8 @@ def residual_map_vs_uv_distances(
     )
 
 
-@plotter.set_include_and_plotter
+@inc.set_include
+@plotter.set_plotter
 @plotter.set_labels
 def normalized_residual_map_vs_uv_distances(
     fit,
@@ -283,7 +290,8 @@ def normalized_residual_map_vs_uv_distances(
     )
 
 
-@plotter.set_include_and_plotter
+@inc.set_include
+@plotter.set_plotter
 @plotter.set_labels
 def chi_squared_map_vs_uv_distances(
     fit,

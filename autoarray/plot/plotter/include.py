@@ -1,5 +1,36 @@
 from autoconf import conf
 
+from functools import wraps
+
+
+def include_key_from_dictionary(dictionary):
+    include_key = None
+
+    for key, value in dictionary.items():
+        if isinstance(value, Include):
+            include_key = key
+
+    return include_key
+
+
+def set_include(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+
+        include_key = include_key_from_dictionary(dictionary=kwargs)
+
+        if include_key is not None:
+            include = kwargs[include_key]
+        else:
+            include = Include()
+            include_key = "include"
+
+        kwargs[include_key] = include
+
+        return func(*args, **kwargs)
+
+    return wrapper
+
 
 class Include:
     def __init__(

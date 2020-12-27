@@ -1,7 +1,8 @@
-from autoarray.plot.plotter import plotter
+from autoarray.plot.plotter import plotter, include as inc
 
 
-@plotter.set_include_and_sub_plotter
+@inc.set_include
+@plotter.set_sub_plotter
 @plotter.set_subplot_filename
 def subplot_inversion(
     inversion,
@@ -203,7 +204,8 @@ def individuals(
         )
 
 
-@plotter.set_include_and_plotter
+@inc.set_include
+@plotter.set_plotter
 @plotter.set_labels
 def reconstructed_image(
     inversion, grid=None, lines=None, image_positions=None, include=None, plotter=None
@@ -219,7 +221,8 @@ def reconstructed_image(
     )
 
 
-@plotter.set_include_and_plotter
+@inc.set_include
+@plotter.set_plotter
 @plotter.set_labels
 def reconstruction(
     inversion,
@@ -249,7 +252,8 @@ def reconstruction(
     )
 
 
-@plotter.set_include_and_plotter
+@inc.set_include
+@plotter.set_plotter
 @plotter.set_labels
 def errors(
     inversion,
@@ -279,7 +283,8 @@ def errors(
     )
 
 
-@plotter.set_include_and_plotter
+@inc.set_include
+@plotter.set_plotter
 @plotter.set_labels
 def residual_map(
     inversion,
@@ -309,7 +314,8 @@ def residual_map(
     )
 
 
-@plotter.set_include_and_plotter
+@inc.set_include
+@plotter.set_plotter
 @plotter.set_labels
 def normalized_residual_map(
     inversion,
@@ -339,7 +345,8 @@ def normalized_residual_map(
     )
 
 
-@plotter.set_include_and_plotter
+@inc.set_include
+@plotter.set_plotter
 @plotter.set_labels
 def chi_squared_map(
     inversion,
@@ -369,7 +376,8 @@ def chi_squared_map(
     )
 
 
-@plotter.set_include_and_plotter
+@inc.set_include
+@plotter.set_plotter
 @plotter.set_labels
 def regularization_weights(
     inversion,
@@ -399,7 +407,8 @@ def regularization_weights(
     )
 
 
-@plotter.set_include_and_plotter
+@inc.set_include
+@plotter.set_plotter
 @plotter.set_labels
 def interpolated_reconstruction(
     inversion, lines=None, source_positions=None, grid=None, include=None, plotter=None
@@ -414,7 +423,8 @@ def interpolated_reconstruction(
     )
 
 
-@plotter.set_include_and_plotter
+@inc.set_include
+@plotter.set_plotter
 @plotter.set_labels
 def interpolated_errors(
     inversion, lines=None, source_positions=None, grid=None, include=None, plotter=None

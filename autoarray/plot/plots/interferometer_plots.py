@@ -1,9 +1,10 @@
-from autoarray.plot.plotter import plotter
+from autoarray.plot.plotter import plotter, include as inc
 from autoarray.structures import grids
 import numpy as np
 
 
-@plotter.set_include_and_sub_plotter
+@inc.set_include
+@plotter.set_sub_plotter
 @plotter.set_subplot_filename
 def subplot_interferometer(interferometer, include=None, sub_plotter=None):
     """Plot the interferometer data_type as a sub-plotter of all its quantites (e.g. the dataset, noise_map, PSF, Signal-to_noise-map, \
@@ -112,7 +113,8 @@ def individual(
         )
 
 
-@plotter.set_include_and_plotter
+@inc.set_include
+@plotter.set_plotter
 @plotter.set_labels
 def visibilities(interferometer, include=None, plotter=None):
     """Plot the observed image of the imaging data_type.
@@ -133,7 +135,8 @@ def visibilities(interferometer, include=None, plotter=None):
     plotter.plot_grid(grid=interferometer.visibilities.in_grid)
 
 
-@plotter.set_include_and_plotter
+@inc.set_include
+@plotter.set_plotter
 @plotter.set_labels
 def noise_map(interferometer, include=None, plotter=None):
     """Plot the observed image of the imaging data_type.
@@ -157,7 +160,8 @@ def noise_map(interferometer, include=None, plotter=None):
     )
 
 
-@plotter.set_include_and_plotter
+@inc.set_include
+@plotter.set_plotter
 @plotter.set_labels
 def u_wavelengths(
     interferometer,
@@ -189,7 +193,8 @@ def u_wavelengths(
     )
 
 
-@plotter.set_include_and_plotter
+@inc.set_include
+@plotter.set_plotter
 @plotter.set_labels
 def v_wavelengths(
     interferometer,
@@ -221,7 +226,8 @@ def v_wavelengths(
     )
 
 
-@plotter.set_include_and_plotter
+@inc.set_include
+@plotter.set_plotter
 @plotter.set_labels
 def uv_wavelengths(
     interferometer,
@@ -254,7 +260,8 @@ def uv_wavelengths(
     )
 
 
-@plotter.set_include_and_plotter
+@inc.set_include
+@plotter.set_plotter
 @plotter.set_labels
 def amplitudes_vs_uv_distances(
     interferometer,
@@ -271,7 +278,8 @@ def amplitudes_vs_uv_distances(
     )
 
 
-@plotter.set_include_and_plotter
+@inc.set_include
+@plotter.set_plotter
 @plotter.set_labels
 def phases_vs_uv_distances(
     interferometer,
