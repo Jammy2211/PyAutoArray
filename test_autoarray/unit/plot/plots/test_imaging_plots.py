@@ -68,7 +68,7 @@ def test__subplot_is_output(
 
     aplt.Imaging.subplot_imaging(
         imaging=imaging_7x7,
-        sub_plotter=aplt.SubPlotter(output=aplt.Output(plot_path, format="png")),
+        plotter=aplt.Plotter(output=aplt.Output(plot_path, format="png")),
     )
 
     assert path.join(plot_path, "subplot_imaging.png") in plot_patch.paths

@@ -81,7 +81,7 @@ def test__fit_sub_plot(fit_imaging_7x7, plot_path, plot_patch):
     aplt.FitImaging.subplot_fit_imaging(
         fit=fit_imaging_7x7,
         include=aplt.Include(mask=True),
-        sub_plotter=aplt.SubPlotter(output=aplt.Output(path=plot_path, format="png")),
+        plotter=aplt.Plotter(output=aplt.Output(path=plot_path, format="png")),
     )
 
     assert path.join(plot_path, "subplot_fit_imaging.png") in plot_patch.paths

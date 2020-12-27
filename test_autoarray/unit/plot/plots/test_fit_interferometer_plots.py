@@ -114,7 +114,7 @@ def test__fit_sub_plot(fit_interferometer_7, plot_path, plot_patch):
 
     aplt.FitInterferometer.subplot_fit_interferometer(
         fit=fit_interferometer_7,
-        sub_plotter=aplt.SubPlotter(output=aplt.Output(plot_path, format="png")),
+        plotter=aplt.Plotter(output=aplt.Output(plot_path, format="png")),
     )
 
     assert (

@@ -13,33 +13,33 @@ directory = path.dirname(path.realpath(__file__))
 class TestArrayOverlay:
     def test__from_config_or_via_manual_input(self):
 
-        array_overlaylay = aplt.ArrayOverlay()
+        array_overlay = aplt.ArrayOverlay()
 
-        assert array_overlaylay.config_dict["alpha"] == 0.5
+        assert array_overlay.config_dict["alpha"] == 0.5
 
-        array_overlaylay = aplt.ArrayOverlay(alpha=0.6)
+        array_overlay = aplt.ArrayOverlay(alpha=0.6)
 
-        assert array_overlaylay.config_dict["alpha"] == 0.6
+        assert array_overlay.config_dict["alpha"] == 0.6
 
-        array_overlaylay = aplt.ArrayOverlay(use_subplot_defaults=True)
+        array_overlay = aplt.ArrayOverlay()
+        array_overlay.for_subplot = True
 
-        assert array_overlaylay.config_dict["alpha"] == 0.7
+        assert array_overlay.config_dict["alpha"] == 0.7
 
-        array_overlaylay = aplt.ArrayOverlay(use_subplot_defaults=True, alpha=0.8)
+        array_overlay = aplt.ArrayOverlay(alpha=0.8)
+        array_overlay.for_subplot = True
 
-        assert array_overlaylay.config_dict["alpha"] == 0.8
+        assert array_overlay.config_dict["alpha"] == 0.8
 
     def test__overlay_array__works_for_reasonable_values(self):
 
-        array_overlay = aa.Array.manual_2d(
-            array=[[1.0, 2.0], [3.0, 4.0]], pixel_scales=0.5
-        )
+        arr = aa.Array.manual_2d(array=[[1.0, 2.0], [3.0, 4.0]], pixel_scales=0.5)
 
         figure = aplt.Figure(aspect="auto")
 
-        array_overlaylay = aplt.ArrayOverlay(alpha=0.5)
+        array_overlay = aplt.ArrayOverlay(alpha=0.5)
 
-        array_overlaylay.overlay_array(array=array_overlay, figure=figure)
+        array_overlay.overlay_array(array=arr, figure=figure)
 
 
 class TestGridScatter:
@@ -55,12 +55,14 @@ class TestGridScatter:
         assert grid_scatter.config_dict["marker"] == "x"
         assert grid_scatter.colors == ["y"]
 
-        grid_scatter = aplt.GridScatter(use_subplot_defaults=True)
+        grid_scatter = aplt.GridScatter()
+        grid_scatter.for_subplot = True
 
         assert grid_scatter.config_dict["marker"] == "."
         assert grid_scatter.colors == ["r"]
 
-        grid_scatter = aplt.GridScatter(use_subplot_defaults=True, colors=["r", "b"])
+        grid_scatter = aplt.GridScatter(colors=["r", "b"])
+        grid_scatter.for_subplot = True
 
         assert grid_scatter.config_dict["marker"] == "."
         assert grid_scatter.colors == ["r", "b"]
@@ -162,12 +164,14 @@ class TestLinePlot:
         assert line_plot.config_dict["width"] == 3
         assert line_plot.colors == ["k", "b"]
 
-        line_plot = aplt.LinePlot(use_subplot_defaults=True)
+        line_plot = aplt.LinePlot()
+        line_plot.for_subplot = True
 
         assert line_plot.config_dict["width"] == 1
         assert line_plot.colors == ["k"]
 
-        line_plot = aplt.LinePlot(use_subplot_defaults=True, style=".")
+        line_plot = aplt.LinePlot(style=".")
+        line_plot.for_subplot = True
 
         assert line_plot.config_dict["width"] == 1
         assert line_plot.colors == ["k"]
@@ -231,11 +235,13 @@ class TestVectorFieldQuiver:
 
         assert vector_field_quiver.config_dict["headlength"] == 1
 
-        vector_field_quiver = aplt.VectorFieldQuiver(use_subplot_defaults=True)
+        vector_field_quiver = aplt.VectorFieldQuiver()
+        vector_field_quiver.for_subplot = True
 
         assert vector_field_quiver.config_dict["headlength"] == 0.1
 
         vector_field_quiver = aplt.VectorFieldQuiver(headlength=12)
+        vector_field_quiver.for_subplot = True
 
         assert vector_field_quiver.config_dict["headlength"] == 12
 
@@ -271,14 +277,14 @@ class TestPatcher:
         assert patch_overlay.config_dict["facecolor"] == "r"
         assert patch_overlay.config_dict["edgecolor"] == "g"
 
-        patch_overlay = aplt.PatchOverlay(use_subplot_defaults=True)
+        patch_overlay = aplt.PatchOverlay()
+        patch_overlay.for_subplot = True
 
         assert patch_overlay.config_dict["facecolor"] == None
         assert patch_overlay.config_dict["edgecolor"] == "y"
 
-        patch_overlay = aplt.PatchOverlay(
-            use_subplot_defaults=True, facecolor="b", edgecolor="p"
-        )
+        patch_overlay = aplt.PatchOverlay(facecolor="b", edgecolor="p")
+        patch_overlay.for_subplot = True
 
         assert patch_overlay.config_dict["facecolor"] == "b"
         assert patch_overlay.config_dict["edgecolor"] == "p"
@@ -306,12 +312,14 @@ class TestVoronoiDrawer:
         assert voronoi_drawer.config_dict["linewidth"] == 0.5
         assert voronoi_drawer.config_dict["edgecolor"] == "k"
 
-        voronoi_drawer = aplt.VoronoiDrawer(use_subplot_defaults=True)
+        voronoi_drawer = aplt.VoronoiDrawer()
+        voronoi_drawer.for_subplot = True
 
         assert voronoi_drawer.config_dict["linewidth"] == 1.0
         assert voronoi_drawer.config_dict["edgecolor"] == "r"
 
-        voronoi_drawer = aplt.VoronoiDrawer(use_subplot_defaults=True, edgecolor="b")
+        voronoi_drawer = aplt.VoronoiDrawer(edgecolor="b")
+        voronoi_drawer.for_subplot = True
 
         assert voronoi_drawer.config_dict["linewidth"] == 1.0
         assert voronoi_drawer.config_dict["edgecolor"] == "b"

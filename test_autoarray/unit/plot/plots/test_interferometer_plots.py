@@ -73,7 +73,7 @@ def test__subplot_is_output(interferometer_7, plot_path, plot_patch):
 
     aplt.Interferometer.subplot_interferometer(
         interferometer=interferometer_7,
-        sub_plotter=aplt.SubPlotter(output=aplt.Output(path=plot_path, format="png")),
+        plotter=aplt.Plotter(output=aplt.Output(path=plot_path, format="png")),
     )
 
     assert path.join(plot_path, "subplot_interferometer.png") in plot_patch.paths
