@@ -137,7 +137,12 @@ class AbstractMatBase:
 
         self.use_subplot_defaults = use_subplot_defaults
 
-        if not use_subplot_defaults:
+        self.kwargs = kwargs
+
+    @property
+    def config_dict(self):
+
+        if not self.use_subplot_defaults:
 
             config_dict = conf.instance["visualize"][self.config_folder][
                 self.__class__.__name__
@@ -149,23 +154,24 @@ class AbstractMatBase:
                 self.__class__.__name__
             ]["subplot"]._dict
 
-        self.kwargs = {**config_dict, **kwargs}
+        return {**config_dict, **self.kwargs}
 
     @property
     def config_folder(self):
         return "mat_base"
 
-    def kwargs_of_method(self, method_name: str, cls_name: str = None):
-        """For an input matplotlib method name (e.g. `plot, imshow, scatter) this method finds the `[args]` section of
-        a Mat object's config file and loads the list of valid inputs to this method. It then filters the full `kwargs`
-        dictionary of the object so that it only contains input parameters that can be passed to the matplotlib method.
+    def config_dict_of_method(self, method_name: str):
+        """
+        For an input matplotlib method name (e.g. `plot, imshow, scatter) this method finds the `[args]` section of
+        a Mat object's config file and loads the list of valid inputs to this method. It then filters the `config_dict`
+        of the object so that it only contains input parameters that can be passed to the matplotlib method.
 
-        For example, if kwargs is:
+        For example, if config_dict is:
 
-        kwargs = {"pointsize" : 2, "figsize" : (5,5)}
+        config_dict = {"pointsize" : 2, "figsize" : (5,5)}
 
-        Then `kwargs_of_method(method_name="figure")` will return a dictionary where `pointsize` has been removed, as
-        this is not a valid input of the `plt.figure` method.
+        Then `config_dict_of_method(method_name="figure")` will return a dictionary where `pointsize` has been
+        removed, as this is not a valid input of the `plt.figure` method.
 
         Parameters
         ----------
@@ -174,17 +180,90 @@ class AbstractMatBase:
         cls_name : str
             The name of the class used to choose the config file from which the args are loaded.
         """
-        if cls_name is None:
-            cls_name = self.__class__.__name__
 
-        args = conf.instance["visualize"][self.config_folder][cls_name]["args"][
-            method_name
-        ]
+        args = conf.instance["visualize"][self.config_folder][self.__class__.__name__][
+            "args"
+        ][method_name]
 
         args = args.replace(" ", "")
         args = args.split(",")
 
-        return {key: self.kwargs[key] for key in args if key in self.kwargs}
+        return {key: self.config_dict[key] for key in args if key in self.config_dict}
+
+    @property
+    def config_dict_figure(self):
+        """Creates a config dict of valid inputs of the method `plt.figure` from the object's config_dict."""
+        config_dict = self.config_dict_of_method(method_name="figure")
+
+        if config_dict["figsize"] == "auto":
+            config_dict["figsize"] = None
+        elif isinstance(config_dict["figsize"], str):
+            config_dict["figsize"] = tuple(
+                map(int, config_dict["figsize"][1:-1].split(","))
+            )
+
+        return config_dict
+
+    @property
+    def config_dict_colorbar(self) -> dict:
+        """Creates a config_dict of valid inputs of the method `plt.colorbar` from the object's config_dict."""
+        return self.config_dict_of_method(method_name="colorbar")
+
+    @property
+    def config_dict_tick_params(self) -> dict:
+        """Creates a config_dict of valid inputs of the method `plt.tick_params` from the object's config_dict."""
+        return self.config_dict_of_method(method_name="tick_params")
+
+    @property
+    def config_dict_ticks(self) -> dict:
+        """Creates a config_dict of valid inputs of the methods `plt.yticks` and `plt.xticks` from the object's config_dict."""
+        return self.config_dict_of_method(method_name="ticks")
+
+    @property
+    def config_dict_title(self) -> dict:
+        """Creates a config_dict of valid inputs of the methods `plt.title` from the object's config_dict."""
+        return self.config_dict_of_method(method_name="title")
+
+    @property
+    def config_dict_label(self) -> dict:
+        """Creates a config_dict of valid inputs of the methods `plt.ylabel` and `plt.xlabel` from the object's
+        config_dict."""
+        return self.config_dict_of_method(method_name="label")
+
+    @property
+    def config_dict_legend(self) -> dict:
+        """Creates a config_dict of valid inputs of the method `plt.legend` from the object's config_dict."""
+        return self.config_dict_of_method(method_name="legend")
+
+    @property
+    def config_dict_imshow(self):
+        """Creates a config dict of valid inputs of the method `plt.imshow` from the object's config_dict."""
+        return self.config_dict_of_method(method_name="imshow")
+
+    @property
+    def config_dict_scatter(self) -> dict:
+        """Creates a config_dict of valid inputs of the method `plt.scatter` from the object's config_dict."""
+        return self.config_dict_of_method(method_name="scatter")
+
+    @property
+    def config_dict_plot(self) -> dict:
+        """Creates a config_dict of valid inputs of the method `plt.quiver` from the object's config_dict."""
+        return self.config_dict_of_method(method_name="plot")
+
+    @property
+    def config_dict_quiver(self) -> dict:
+        """Creates a config_dict of valid inputs of the method `plt.quiver` from the object's config_dict."""
+        return self.config_dict_of_method(method_name="quiver")
+
+    @property
+    def config_dict_patch_collection(self) -> dict:
+        """Creates a config_dict of valid inputs of the method `plt.quiver` from the object's config_dict."""
+        return self.config_dict_of_method(method_name="patch_collection")
+
+    @property
+    def config_dict_fill(self) -> dict:
+        """Creates a config_dict of valid inputs of the method `plt.fill` from the object's config_dict."""
+        return self.config_dict_of_method(method_name="fill")
 
 
 class Figure(AbstractMatBase):
@@ -208,22 +287,14 @@ class Figure(AbstractMatBase):
 
         super().__init__(use_subplot_defaults=use_subplot_defaults, kwargs=kwargs)
 
-        if self.kwargs["figsize"] == "auto":
-            self.kwargs["figsize"] = None
-        elif isinstance(self.kwargs["figsize"], str):
-            self.kwargs["figsize"] = tuple(
-                map(int, self.kwargs["figsize"][1:-1].split(","))
-            )
+    def aspect_for_subplot_from_ratio(self, ratio):
 
-    @property
-    def kwargs_figure(self):
-        """Creates a kwargs dict of valid inputs of the method `plt.figure` from the object's kwargs dict."""
-        return self.kwargs_of_method(method_name="figure")
-
-    @property
-    def kwargs_imshow(self):
-        """Creates a kwargs dict of valid inputs of the method `plt.imshow` from the object's kwargs dict."""
-        return self.kwargs_of_method(method_name="imshow")
+        if self.config_dict["aspect"] in "square":
+            return ratio
+        elif self.config_dict["aspect"] in "auto":
+            return 1.0 / ratio
+        elif self.config_dict["aspect"] in "equal":
+            return 1.0
 
     def aspect_from_shape_2d(
         self, shape_2d: typing.Union[typing.Tuple[int, int]]
@@ -238,16 +309,16 @@ class Figure(AbstractMatBase):
         shape_2d : (int, int)
             The two dimensional shape of an `Array` that is to be plotted.
         """
-        if isinstance(self.kwargs["aspect"], str):
-            if self.kwargs["aspect"] in "square":
+        if isinstance(self.config_dict["aspect"], str):
+            if self.config_dict["aspect"] in "square":
                 return float(shape_2d[1]) / float(shape_2d[0])
 
-        return self.kwargs["aspect"]
+        return self.config_dict["aspect"]
 
     def open(self):
         """Wraps the Matplotlib method 'plt.figure' for opening a figure."""
         if not plt.fignum_exists(num=1):
-            plt.figure(**self.kwargs_figure)
+            plt.figure(**self.config_dict_figure)
 
     def close(self):
         """Wraps the Matplotlib method 'plt.close' for closing a figure."""
@@ -256,9 +327,7 @@ class Figure(AbstractMatBase):
 
 
 class Cmap(AbstractMatBase):
-    def __init__(
-        self, use_subplot_defaults: bool = False, module: str = None, **kwargs
-    ):
+    def __init__(self, use_subplot_defaults: bool = False, **kwargs):
         """
         Customizes the Matplotlib colormap and its normalization.
 
@@ -277,29 +346,9 @@ class Cmap(AbstractMatBase):
         use_subplot_defaults : bool
             `Mat` objects load settings from the [figure] section of its .ini config file by default. If
             `use_subplot_defaults=True` settings from the [subplot] section are loaded instead.
-        module : str
-            The module from which the plot is called, which is used to customize the colormap for figures of different
-            categories.
         """
 
         super().__init__(use_subplot_defaults=use_subplot_defaults, kwargs=kwargs)
-
-        if module is not None:
-
-            module_name = module.__name__.split(".")[-1]
-            try:
-                cmap = conf.instance["visualize"]["general"]["colormaps"][module_name]
-            except configparser.NoOptionError:
-                cmap = conf.instance["visualize"]["general"]["colormaps"]["default"]
-
-        else:
-
-            cmap = self.kwargs["cmap"]
-
-        try:
-            self.kwargs["cmap"] = colorcet.cm[cmap]
-        except KeyError:
-            pass
 
     def norm_from_array(self, array: np.ndarray) -> object:
         """
@@ -314,28 +363,28 @@ class Cmap(AbstractMatBase):
             The array of data which is to be plotted.
         """
 
-        if self.kwargs["vmin"] is None:
+        if self.config_dict["vmin"] is None:
             vmin = np.min(array)
         else:
-            vmin = self.kwargs["vmin"]
+            vmin = self.config_dict["vmin"]
 
-        if self.kwargs["vmax"] is None:
+        if self.config_dict["vmax"] is None:
             vmax = np.max(array)
         else:
-            vmax = self.kwargs["vmax"]
+            vmax = self.config_dict["vmax"]
 
-        if self.kwargs["norm"] in "linear":
+        if self.config_dict["norm"] in "linear":
             return colors.Normalize(vmin=vmin, vmax=vmax)
-        elif self.kwargs["norm"] in "log":
+        elif self.config_dict["norm"] in "log":
             if vmin == 0.0:
                 vmin = 1.0e-4
             return colors.LogNorm(vmin=vmin, vmax=vmax)
-        elif self.kwargs["norm"] in "symmetric_log":
+        elif self.config_dict["norm"] in "symmetric_log":
             return colors.SymLogNorm(
                 vmin=vmin,
                 vmax=vmax,
-                linthresh=self.kwargs["linthresh"],
-                linscale=self.kwargs["linscale"],
+                linthresh=self.config_dict["linthresh"],
+                linscale=self.config_dict["linscale"],
             )
         else:
             raise exc.PlottingException(
@@ -380,25 +429,17 @@ class Colorbar(AbstractMatBase):
         self.manual_tick_labels = manual_tick_labels
         self.manual_tick_values = manual_tick_values
 
-    @property
-    def kwargs_colorbar(self) -> dict:
-        """Creates a kwargs dict of valid inputs of the method `plt.colorbar` from the object's kwargs dict."""
-        return self.kwargs_of_method(method_name="colorbar")
-
-    @property
-    def kwargs_tick_params(self) -> dict:
-        """Creates a kwargs dict of valid inputs of the method `plt.tick_params` from the object's kwargs dict."""
-        return self.kwargs_of_method(method_name="tick_params", cls_name="TickParams")
-
     def set(self):
         """ Set the figure's colorbar, optionally overriding the tick labels and values with manual inputs. """
 
         if self.manual_tick_values is None and self.manual_tick_labels is None:
-            cb = plt.colorbar(**self.kwargs_colorbar)
+            cb = plt.colorbar(**self.config_dict_colorbar)
         elif (
             self.manual_tick_values is not None and self.manual_tick_labels is not None
         ):
-            cb = plt.colorbar(ticks=self.manual_tick_values, **self.kwargs_colorbar)
+            cb = plt.colorbar(
+                ticks=self.manual_tick_values, **self.config_dict_colorbar
+            )
             cb.ax.set_yticklabels(labels=self.manual_tick_labels)
         else:
             raise exc.PlottingException(
@@ -406,7 +447,7 @@ class Colorbar(AbstractMatBase):
                 "both the values and labels, or neither."
             )
 
-        cb.ax.tick_params(**self.kwargs_tick_params)
+        cb.ax.tick_params(**self.config_dict_tick_params)
 
     def set_with_color_values(self, cmap: str, color_values: np.ndarray):
         """
@@ -428,12 +469,12 @@ class Colorbar(AbstractMatBase):
         cax.set_array(color_values)
 
         if self.manual_tick_values is None and self.manual_tick_labels is None:
-            plt.colorbar(mappable=cax, **self.kwargs_colorbar)
+            plt.colorbar(mappable=cax, **self.config_dict_colorbar)
         elif (
             self.manual_tick_values is not None and self.manual_tick_labels is not None
         ):
             cb = plt.colorbar(
-                mappable=cax, ticks=self.manual_tick_values, **self.kwargs
+                mappable=cax, ticks=self.manual_tick_values, **self.config_dict_colorbar
             )
             cb.ax.set_yticklabels(self.manual_tick_labels)
 
@@ -455,14 +496,9 @@ class TickParams(AbstractMatBase):
         """
         super().__init__(use_subplot_defaults=use_subplot_defaults, kwargs=kwargs)
 
-    @property
-    def kwargs_tick_params(self) -> dict:
-        """Creates a kwargs dict of valid inputs of the method `plt.tick_params` from the object's kwargs dict."""
-        return self.kwargs_of_method(method_name="tick_params")
-
     def set(self):
         """Set the tick_params of the figure using the method `plt.tick_params`."""
-        plt.tick_params(**self.kwargs_tick_params)
+        plt.tick_params(**self.config_dict_tick_params)
 
 
 class AbstractTicks(AbstractMatBase):
@@ -491,11 +527,6 @@ class AbstractTicks(AbstractMatBase):
         super().__init__(use_subplot_defaults=use_subplot_defaults, kwargs=kwargs)
 
         self.manual_values = manual_values
-
-    @property
-    def kwargs_ticks(self) -> dict:
-        """Creates a kwargs dict of valid inputs of the methods `plt.yticks` and `plt.xticks` from the object's kwargs dict."""
-        return self.kwargs_of_method(method_name="ticks")
 
     def tick_values_from(
         self, min_value: float, max_value: float, use_defaults: bool = False
@@ -615,7 +646,7 @@ class YTicks(AbstractTicks):
             units=units,
             use_defaults=use_defaults,
         )
-        plt.yticks(ticks=ticks, labels=labels, **self.kwargs_ticks)
+        plt.yticks(ticks=ticks, labels=labels, **self.config_dict_ticks)
 
 
 class XTicks(AbstractTicks):
@@ -655,7 +686,7 @@ class XTicks(AbstractTicks):
             units=units,
             use_defaults=use_defaults,
         )
-        plt.xticks(ticks=ticks, labels=labels, **self.kwargs_ticks)
+        plt.xticks(ticks=ticks, labels=labels, **self.config_dict_ticks)
 
 
 class Title(AbstractMatBase):
@@ -682,11 +713,6 @@ class Title(AbstractMatBase):
         if "label" not in self.kwargs:
             self.kwargs["label"] = None
 
-    @property
-    def kwargs_title(self) -> dict:
-        """Creates a kwargs dict of valid inputs of the methods `plt.title` from the object's kwargs dict."""
-        return self.kwargs_of_method(method_name="title")
-
     def title_from_func(self, func: Callable) -> str:
         """If a title is not manually specified use the name of the function plotting the image to set the title.
 
@@ -695,13 +721,13 @@ class Title(AbstractMatBase):
         func : func
            The function plotting the image.
         """
-        if self.kwargs_title["label"] is None:
+        if self.config_dict_title["label"] is None:
             return func.__name__.capitalize()
         else:
-            return self.kwargs_title["label"]
+            return self.config_dict_title["label"]
 
     def set(self):
-        plt.title(**self.kwargs_title)
+        plt.title(**self.config_dict_title)
 
 
 class AbstractLabel(AbstractMatBase):
@@ -737,12 +763,6 @@ class AbstractLabel(AbstractMatBase):
 
         self.manual_label = manual_label
         self._units = units
-
-    @property
-    def kwargs_label(self) -> dict:
-        """Creates a kwargs dict of valid inputs of the methods `plt.ylabel` and `plt.xlabel` from the object's
-        kwargs dict."""
-        return self.kwargs_of_method(method_name="label")
 
     def units_from_func(
         self, func: Callable, for_ylabel=True
@@ -822,16 +842,16 @@ class YLabel(AbstractLabel):
         """
 
         if self.manual_label is not None:
-            plt.ylabel(ylabel=self.manual_label, **self.kwargs_label)
+            plt.ylabel(ylabel=self.manual_label, **self.config_dict_label)
         else:
             if include_brackets:
                 plt.ylabel(
                     ylabel="y (" + self.label_from_units(units=units) + ")",
-                    **self.kwargs_label,
+                    **self.config_dict_label,
                 )
             else:
                 plt.ylabel(
-                    ylabel=self.label_from_units(units=units), **self.kwargs_label
+                    ylabel=self.label_from_units(units=units), **self.config_dict_label
                 )
 
 
@@ -851,16 +871,16 @@ class XLabel(AbstractLabel):
             Whether to include brackets around the x label text of the units.
         """
         if self.manual_label is not None:
-            plt.xlabel(xlabel=self.manual_label, **self.kwargs_label)
+            plt.xlabel(xlabel=self.manual_label, **self.config_dict_label)
         else:
             if include_brackets:
                 plt.xlabel(
                     xlabel="x (" + self.label_from_units(units=units) + ")",
-                    **self.kwargs_label,
+                    **self.config_dict_label,
                 )
             else:
                 plt.xlabel(
-                    xlabel=self.label_from_units(units=units), **self.kwargs_label
+                    xlabel=self.label_from_units(units=units), **self.config_dict_label
                 )
 
 
@@ -886,14 +906,9 @@ class Legend(AbstractMatBase):
 
         self.include = include
 
-    @property
-    def kwargs_legend(self) -> dict:
-        """Creates a kwargs dict of valid inputs of the method `plt.legend` from the object's kwargs dict."""
-        return self.kwargs_of_method(method_name="legend")
-
     def set(self):
         if self.include:
-            plt.legend(**self.kwargs_legend)
+            plt.legend(**self.config_dict_legend)
 
 
 class Output:

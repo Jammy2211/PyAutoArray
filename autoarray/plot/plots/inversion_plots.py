@@ -29,12 +29,7 @@ def subplot_inversion(
         )
     )
 
-    if sub_plotter.figure.kwargs["aspect"] in "square":
-        aspect_inv = ratio
-    elif sub_plotter.figure.kwargs["aspect"] in "auto":
-        aspect_inv = 1.0 / ratio
-    elif sub_plotter.figure.kwargs["aspect"] in "equal":
-        aspect_inv = 1.0
+    aspect_inv = sub_plotter.figure.aspect_for_subplot_from_ratio(ratio=ratio)
 
     sub_plotter.open_subplot_figure(number_subplots=number_subplots)
 
