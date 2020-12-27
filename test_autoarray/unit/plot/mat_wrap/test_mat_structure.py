@@ -15,19 +15,19 @@ class TestArrayOverlay:
 
         array_overlaylay = aplt.ArrayOverlay()
 
-        assert array_overlaylay.kwargs["alpha"] == 0.5
+        assert array_overlaylay.config_dict["alpha"] == 0.5
 
         array_overlaylay = aplt.ArrayOverlay(alpha=0.6)
 
-        assert array_overlaylay.kwargs["alpha"] == 0.6
+        assert array_overlaylay.config_dict["alpha"] == 0.6
 
         array_overlaylay = aplt.ArrayOverlay(use_subplot_defaults=True)
 
-        assert array_overlaylay.kwargs["alpha"] == 0.7
+        assert array_overlaylay.config_dict["alpha"] == 0.7
 
         array_overlaylay = aplt.ArrayOverlay(use_subplot_defaults=True, alpha=0.8)
 
-        assert array_overlaylay.kwargs["alpha"] == 0.8
+        assert array_overlaylay.config_dict["alpha"] == 0.8
 
     def test__overlay_array__works_for_reasonable_values(self):
 
@@ -47,23 +47,23 @@ class TestGridScatter:
 
         grid_scatter = aplt.GridScatter()
 
-        assert grid_scatter.kwargs["marker"] == "x"
-        assert grid_scatter.kwargs["colors"] == ["y"]
+        assert grid_scatter.config_dict["marker"] == "x"
+        assert grid_scatter.colors == ["y"]
 
         grid_scatter = aplt.GridScatter(marker="x")
 
-        assert grid_scatter.kwargs["marker"] == "x"
-        assert grid_scatter.kwargs["colors"] == ["y"]
+        assert grid_scatter.config_dict["marker"] == "x"
+        assert grid_scatter.colors == ["y"]
 
         grid_scatter = aplt.GridScatter(use_subplot_defaults=True)
 
-        assert grid_scatter.kwargs["marker"] == "."
-        assert grid_scatter.kwargs["colors"] == ["r"]
+        assert grid_scatter.config_dict["marker"] == "."
+        assert grid_scatter.colors == ["r"]
 
         grid_scatter = aplt.GridScatter(use_subplot_defaults=True, colors=["r", "b"])
 
-        assert grid_scatter.kwargs["marker"] == "."
-        assert grid_scatter.kwargs["colors"] == ["r", "b"]
+        assert grid_scatter.config_dict["marker"] == "."
+        assert grid_scatter.colors == ["r", "b"]
 
     def test__scatter_grid(self):
 
@@ -154,23 +154,23 @@ class TestLinePlot:
 
         line_plot = aplt.LinePlot()
 
-        assert line_plot.kwargs["width"] == 3
-        assert line_plot.kwargs["colors"] == ["k", "w"]
+        assert line_plot.config_dict["width"] == 3
+        assert line_plot.colors == ["k", "w"]
 
         line_plot = aplt.LinePlot(colors=["k", "b"])
 
-        assert line_plot.kwargs["width"] == 3
-        assert line_plot.kwargs["colors"] == ["k", "b"]
+        assert line_plot.config_dict["width"] == 3
+        assert line_plot.colors == ["k", "b"]
 
         line_plot = aplt.LinePlot(use_subplot_defaults=True)
 
-        assert line_plot.kwargs["width"] == 1
-        assert line_plot.kwargs["colors"] == ["k"]
+        assert line_plot.config_dict["width"] == 1
+        assert line_plot.colors == ["k"]
 
         line_plot = aplt.LinePlot(use_subplot_defaults=True, style=".")
 
-        assert line_plot.kwargs["width"] == 1
-        assert line_plot.kwargs["colors"] == ["k"]
+        assert line_plot.config_dict["width"] == 1
+        assert line_plot.colors == ["k"]
 
     def test__draw_y_vs_x__works_for_reasonable_values(self):
 
@@ -225,19 +225,19 @@ class TestVectorFieldQuiver:
 
         vector_field_quiver = aplt.VectorFieldQuiver()
 
-        assert vector_field_quiver.kwargs["headlength"] == 0
+        assert vector_field_quiver.config_dict["headlength"] == 0
 
         vector_field_quiver = aplt.VectorFieldQuiver(headlength=1)
 
-        assert vector_field_quiver.kwargs["headlength"] == 1
+        assert vector_field_quiver.config_dict["headlength"] == 1
 
         vector_field_quiver = aplt.VectorFieldQuiver(use_subplot_defaults=True)
 
-        assert vector_field_quiver.kwargs["headlength"] == 0.1
+        assert vector_field_quiver.config_dict["headlength"] == 0.1
 
         vector_field_quiver = aplt.VectorFieldQuiver(headlength=12)
 
-        assert vector_field_quiver.kwargs["headlength"] == 12
+        assert vector_field_quiver.config_dict["headlength"] == 12
 
     def test__quiver_vector_field(self):
 
@@ -263,25 +263,25 @@ class TestPatcher:
 
         patch_overlay = aplt.PatchOverlay()
 
-        assert patch_overlay.kwargs["facecolor"] == "none"
-        assert patch_overlay.kwargs["edgecolor"] == "cyan"
+        assert patch_overlay.config_dict["facecolor"] == None
+        assert patch_overlay.config_dict["edgecolor"] == "cyan"
 
         patch_overlay = aplt.PatchOverlay(facecolor="r", edgecolor="g")
 
-        assert patch_overlay.kwargs["facecolor"] == "r"
-        assert patch_overlay.kwargs["edgecolor"] == "g"
+        assert patch_overlay.config_dict["facecolor"] == "r"
+        assert patch_overlay.config_dict["edgecolor"] == "g"
 
         patch_overlay = aplt.PatchOverlay(use_subplot_defaults=True)
 
-        assert patch_overlay.kwargs["facecolor"] == "none"
-        assert patch_overlay.kwargs["edgecolor"] == "y"
+        assert patch_overlay.config_dict["facecolor"] == None
+        assert patch_overlay.config_dict["edgecolor"] == "y"
 
         patch_overlay = aplt.PatchOverlay(
             use_subplot_defaults=True, facecolor="b", edgecolor="p"
         )
 
-        assert patch_overlay.kwargs["facecolor"] == "b"
-        assert patch_overlay.kwargs["edgecolor"] == "p"
+        assert patch_overlay.config_dict["facecolor"] == "b"
+        assert patch_overlay.config_dict["edgecolor"] == "p"
 
     def test__add_patches(self):
 
@@ -298,23 +298,23 @@ class TestVoronoiDrawer:
 
         voronoi_drawer = aplt.VoronoiDrawer()
 
-        assert voronoi_drawer.kwargs["linewidth"] == 0.3
-        assert voronoi_drawer.kwargs["edgecolor"] == "k"
+        assert voronoi_drawer.config_dict["linewidth"] == 0.3
+        assert voronoi_drawer.config_dict["edgecolor"] == "k"
 
         voronoi_drawer = aplt.VoronoiDrawer(linewidth=0.5)
 
-        assert voronoi_drawer.kwargs["linewidth"] == 0.5
-        assert voronoi_drawer.kwargs["edgecolor"] == "k"
+        assert voronoi_drawer.config_dict["linewidth"] == 0.5
+        assert voronoi_drawer.config_dict["edgecolor"] == "k"
 
         voronoi_drawer = aplt.VoronoiDrawer(use_subplot_defaults=True)
 
-        assert voronoi_drawer.kwargs["linewidth"] == 1.0
-        assert voronoi_drawer.kwargs["edgecolor"] == "r"
+        assert voronoi_drawer.config_dict["linewidth"] == 1.0
+        assert voronoi_drawer.config_dict["edgecolor"] == "r"
 
         voronoi_drawer = aplt.VoronoiDrawer(use_subplot_defaults=True, edgecolor="b")
 
-        assert voronoi_drawer.kwargs["linewidth"] == 1.0
-        assert voronoi_drawer.kwargs["edgecolor"] == "b"
+        assert voronoi_drawer.config_dict["linewidth"] == 1.0
+        assert voronoi_drawer.config_dict["edgecolor"] == "b"
 
     def test__draws_voronoi_pixels_for_sensible_input(self, voronoi_mapper_9_3x3):
 

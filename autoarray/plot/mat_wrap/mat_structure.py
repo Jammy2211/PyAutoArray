@@ -41,6 +41,32 @@ class AbstractMatStructure(mat_base.AbstractMatBase):
         return "mat_structure"
 
 
+class AbstractMatStructureColored(AbstractMatStructure):
+    def __init__(self, use_subplot_defaults, colors, kwargs: dict):
+
+        super().__init__(use_subplot_defaults=use_subplot_defaults, kwargs=kwargs)
+
+        self._colors = colors
+
+    @property
+    def colors(self):
+
+        if self._colors is None:
+
+            colors = remove_spaces_and_commas_from_colors(
+                colors=self.config_dict["colors"]
+            )
+
+        else:
+
+            colors = self._colors
+
+        if isinstance(colors, str):
+            return [colors]
+
+        return colors
+
+
 class ArrayOverlay(AbstractMatStructure):
     def __init__(self, use_subplot_defaults=False, **kwargs):
         """
@@ -61,20 +87,17 @@ class ArrayOverlay(AbstractMatStructure):
         """
         super().__init__(use_subplot_defaults=use_subplot_defaults, kwargs=kwargs)
 
-    @property
-    def kwargs_imshow(self):
-        """Creates a kwargs dict of valid inputs of the method `plt.imshow` from the object's kwargs dict."""
-        return self.kwargs_of_method(method_name="imshow")
-
     def overlay_array(self, array, figure):
 
         aspect = figure.aspect_from_shape_2d(shape_2d=array.shape_2d)
         extent = array.extent_of_zoomed_array(buffer=0)
 
-        plt.imshow(X=array.in_2d, aspect=aspect, extent=extent, **self.kwargs_imshow)
+        plt.imshow(
+            X=array.in_2d, aspect=aspect, extent=extent, **self.config_dict_imshow
+        )
 
 
-class GridScatter(AbstractMatStructure):
+class GridScatter(AbstractMatStructureColored):
     def __init__(self, use_subplot_defaults=False, colors=None, **kwargs):
         """
         Scatters an input set of grid points, for example (y,x) coordinates or data structures representing 2D (y,x)
@@ -105,22 +128,9 @@ class GridScatter(AbstractMatStructure):
             The color or list of colors that the grid is plotted using. For plotting indexes or a grouped grid, a
             list of colors can be specified which the plot cycles through.
         """
-        super().__init__(use_subplot_defaults=use_subplot_defaults, kwargs=kwargs)
-
-        if colors is None:
-            self.kwargs["colors"] = remove_spaces_and_commas_from_colors(
-                colors=self.kwargs["colors"]
-            )
-        else:
-            self.kwargs["colors"] = colors
-
-        if isinstance(self.kwargs["colors"], str):
-            self.kwargs["colors"] = [self.kwargs["colors"]]
-
-    @property
-    def kwargs_scatter(self) -> dict:
-        """Creates a kwargs dict of valid inputs of the method `plt.scatter` from the object's kwargs dict."""
-        return self.kwargs_of_method(method_name="scatter")
+        super().__init__(
+            use_subplot_defaults=use_subplot_defaults, colors=colors, kwargs=kwargs
+        )
 
     def scatter_grid(self, grid: typing.Union[np.ndarray, grids.Grid]):
         """
@@ -134,8 +144,8 @@ class GridScatter(AbstractMatStructure):
         plt.scatter(
             y=np.asarray(grid)[:, 0],
             x=np.asarray(grid)[:, 1],
-            c=self.kwargs["colors"][0],
-            **self.kwargs_scatter,
+            c=self.colors[0],
+            **self.config_dict_scatter,
         )
 
     def scatter_grid_colored(
@@ -163,7 +173,7 @@ class GridScatter(AbstractMatStructure):
             x=np.asarray(grid)[:, 1],
             c=color_array,
             cmap=cmap,
-            **self.kwargs_scatter,
+            **self.config_dict_scatter,
         )
 
     def scatter_grid_indexes(
@@ -198,7 +208,7 @@ class GridScatter(AbstractMatStructure):
             if not any(isinstance(i, list) for i in indexes):
                 indexes = [indexes]
 
-        color = itertools.cycle(self.kwargs["colors"])
+        color = itertools.cycle(self.colors)
         for index_list in indexes:
 
             if all([isinstance(index, float) for index in index_list]) or all(
@@ -209,7 +219,7 @@ class GridScatter(AbstractMatStructure):
                     y=np.asarray(grid[index_list, 0]),
                     x=np.asarray(grid[index_list, 1]),
                     color=next(color),
-                    **self.kwargs_scatter,
+                    **self.config_dict_scatter,
                 )
 
             elif all([isinstance(index, tuple) for index in index_list]) or all(
@@ -223,7 +233,7 @@ class GridScatter(AbstractMatStructure):
                     y=np.asarray(grid.in_2d[ys, xs, 0]),
                     x=np.asarray(grid.in_2d[ys, xs, 1]),
                     color=next(color),
-                    **self.kwargs_scatter,
+                    **self.config_dict_scatter,
                 )
 
             else:
@@ -248,7 +258,7 @@ class GridScatter(AbstractMatStructure):
         if len(grid_grouped) == 0:
             return
 
-        color = itertools.cycle(self.kwargs["colors"])
+        color = itertools.cycle(self.colors)
 
         for group in grid_grouped.in_grouped_list:
 
@@ -256,11 +266,11 @@ class GridScatter(AbstractMatStructure):
                 y=np.asarray(group)[:, 0],
                 x=np.asarray(group)[:, 1],
                 c=next(color),
-                **self.kwargs_scatter,
+                **self.config_dict_scatter,
             )
 
 
-class LinePlot(AbstractMatStructure):
+class LinePlot(AbstractMatStructureColored):
     def __init__(self, use_subplot_defaults=False, colors=None, **kwargs):
         """
         Plots `Line` data structure, including y vs x figures, plotting rectangular lines over an image and plotting
@@ -283,27 +293,9 @@ class LinePlot(AbstractMatStructure):
             The color or list of colors that the grid is plotted using. For plotting indexes or a grouped grid, a
             list of colors can be specified which the plot cycles through.
         """
-        super().__init__(use_subplot_defaults=use_subplot_defaults, kwargs=kwargs)
-
-        if colors is None:
-            self.kwargs["colors"] = remove_spaces_and_commas_from_colors(
-                colors=self.kwargs["colors"]
-            )
-        else:
-            self.kwargs["colors"] = colors
-
-        if isinstance(self.kwargs["colors"], str):
-            self.kwargs["colors"] = [self.kwargs["colors"]]
-
-    @property
-    def kwargs_plot(self) -> dict:
-        """Creates a kwargs dict of valid inputs of the method `plt.quiver` from the object's kwargs dict."""
-        return self.kwargs_of_method(method_name="plot")
-
-    @property
-    def kwargs_scatter(self) -> dict:
-        """Creates a kwargs dict of valid inputs of the method `plt.quiver` from the object's kwargs dict."""
-        return self.kwargs_of_method(method_name="scatter")
+        super().__init__(
+            use_subplot_defaults=use_subplot_defaults, colors=colors, kwargs=kwargs
+        )
 
     def plot_y_vs_x(
         self,
@@ -330,15 +322,13 @@ class LinePlot(AbstractMatStructure):
         """
 
         if plot_axis_type == "linear":
-            plt.plot(x, y, c=self.kwargs["colors"], label=label, **self.kwargs_plot)
+            plt.plot(x, y, c=self.colors, label=label, **self.config_dict_plot)
         elif plot_axis_type == "semilogy":
-            plt.semilogy(x, y, c=self.kwargs["colors"], label=label, **self.kwargs_plot)
+            plt.semilogy(x, y, c=self.colors, label=label, **self.config_dict_plot)
         elif plot_axis_type == "loglog":
-            plt.loglog(x, y, c=self.kwargs["colors"], label=label, **self.kwargs_plot)
+            plt.loglog(x, y, c=self.colors, label=label, **self.config_dict_plot)
         elif plot_axis_type == "scatter":
-            plt.scatter(
-                x, y, c=self.kwargs["colors"][0], label=label, **self.kwargs_scatter
-            )
+            plt.scatter(x, y, c=self.colors[0], label=label, **self.config_dict_scatter)
         else:
             raise exc.PlottingException(
                 "The plot_axis_type supplied to the plotter is not a valid string (must be linear "
@@ -376,8 +366,8 @@ class LinePlot(AbstractMatStructure):
             plt.axvline(
                 x=vertical_line,
                 label=vertical_line_label,
-                c=self.kwargs["colors"],
-                **self.kwargs_plot,
+                c=self.colors,
+                **self.config_dict_plot,
             )
 
     def plot_rectangular_grid_lines(
@@ -404,13 +394,9 @@ class LinePlot(AbstractMatStructure):
 
         # grid lines
         for x in xs:
-            plt.plot(
-                [x, x], [ys[0], ys[-1]], c=self.kwargs["colors"], **self.kwargs_plot
-            )
+            plt.plot([x, x], [ys[0], ys[-1]], c=self.colors, **self.config_dict_plot)
         for y in ys:
-            plt.plot(
-                [xs[0], xs[-1]], [y, y], c=self.kwargs["colors"], **self.kwargs_plot
-            )
+            plt.plot([xs[0], xs[-1]], [y, y], c=self.colors, **self.config_dict_plot)
 
     def plot_grid_grouped(self, grid_grouped: grids.GridIrregularGrouped):
         """
@@ -431,7 +417,7 @@ class LinePlot(AbstractMatStructure):
         if len(grid_grouped) == 0:
             return
 
-        color = itertools.cycle(self.kwargs["colors"])
+        color = itertools.cycle(self.colors)
 
         for grid_group in grid_grouped.in_grouped_list:
 
@@ -439,7 +425,7 @@ class LinePlot(AbstractMatStructure):
                 np.asarray(grid_group)[:, 1],
                 np.asarray(grid_group)[:, 0],
                 c=next(color),
-                **self.kwargs_plot,
+                **self.config_dict_plot,
             )
 
 
@@ -462,11 +448,6 @@ class VectorFieldQuiver(AbstractMatStructure):
         """
         super().__init__(use_subplot_defaults=use_subplot_defaults, kwargs=kwargs)
 
-    @property
-    def kwargs_quiver(self) -> dict:
-        """Creates a kwargs dict of valid inputs of the method `plt.quiver` from the object's kwargs dict."""
-        return self.kwargs_of_method(method_name="quiver")
-
     def quiver_vector_field(self, vector_field: vector_fields.VectorFieldIrregular):
         """
          Plot a vector field using the matplotlib method `plt.quiver` such that each vector appears as an arrow whose
@@ -482,7 +463,7 @@ class VectorFieldQuiver(AbstractMatStructure):
             vector_field.grid[:, 0],
             vector_field[:, 1],
             vector_field[:, 0],
-            **self.kwargs_quiver,
+            **self.config_dict_quiver,
         )
 
 
@@ -506,14 +487,6 @@ class PatchOverlay(AbstractMatStructure):
         """
         super().__init__(use_subplot_defaults=use_subplot_defaults, kwargs=kwargs)
 
-        if self.kwargs["facecolor"] is None:
-            self.kwargs["facecolor"] = "none"
-
-    @property
-    def kwargs_patch_collection(self) -> dict:
-        """Creates a kwargs dict of valid inputs of the method `plt.quiver` from the object's kwargs dict."""
-        return self.kwargs_of_method(method_name="patch_collection")
-
     def overlay_patches(self, patches: typing.Union[ptch.Patch]):
         """
         Overlay a list of patches on a figure, for example an `Ellipse`.
@@ -524,7 +497,7 @@ class PatchOverlay(AbstractMatStructure):
             The patches that are laid over the figure.
         """
         patch_collection = PatchCollection(
-            patches=patches, **self.kwargs_patch_collection
+            patches=patches, **self.config_dict_patch_collection
         )
 
         plt.gcf().gca().add_collection(patch_collection)
@@ -549,11 +522,6 @@ class VoronoiDrawer(AbstractMatStructure):
             `use_subplot_defaults=True` settings from the [subplot] section are loaded instead.
         """
         super().__init__(use_subplot_defaults=use_subplot_defaults, kwargs=kwargs)
-
-    @property
-    def kwargs_fill(self) -> dict:
-        """Creates a kwargs dict of valid inputs of the method `plt.fill` from the object's kwargs dict."""
-        return self.kwargs_of_method(method_name="fill")
 
     def draw_voronoi_pixels(
         self,
@@ -590,7 +558,7 @@ class VoronoiDrawer(AbstractMatStructure):
         for region, index in zip(regions, range(mapper.pixels)):
             polygon = vertices[region]
             col = cmap(color_array[index])
-            plt.fill(*zip(*polygon), facecolor=col, **self.kwargs_fill)
+            plt.fill(*zip(*polygon), facecolor=col, **self.config_dict_fill)
 
     def voronoi_polygons(self, voronoi, radius=None):
         """

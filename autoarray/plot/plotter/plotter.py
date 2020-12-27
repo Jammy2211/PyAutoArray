@@ -53,7 +53,6 @@ def load_subplot_setting(section, name, python_type):
 class AbstractPlotter:
     def __init__(
         self,
-        module: str = None,
         units: mat_base.Units = None,
         figure: mat_base.Figure = None,
         cmap: mat_base.Cmap = None,
@@ -100,9 +99,6 @@ class AbstractPlotter:
         
         Parameters
         ----------
-        module : str
-            The name of the `plots.plot` module the plot function was called from, which is used to color the figure
-            according to its module and therefore what it is plotting.
         units : mat_base.Units
             The units of the figure used to plot the data structure which sets the y and x ticks and labels.
         figure : mat_base.Figure
@@ -179,7 +175,7 @@ class AbstractPlotter:
         self.cmap = (
             cmap
             if cmap is not None
-            else mat_base.Cmap(module=module, use_subplot_defaults=use_subplot_defaults)
+            else mat_base.Cmap(use_subplot_defaults=use_subplot_defaults)
         )
 
         self.cb = (
@@ -391,7 +387,7 @@ class AbstractPlotter:
         plt.imshow(
             X=array.in_2d,
             aspect=aspect,
-            cmap=self.cmap.kwargs["cmap"],
+            cmap=self.cmap.config_dict["cmap"],
             norm=norm_scale,
             extent=extent,
         )
@@ -582,7 +578,7 @@ class AbstractPlotter:
         plt.imshow(
             X=frame,
             aspect=aspect,
-            cmap=self.cmap.kwargs["cmap"],
+            cmap=self.cmap.config_dict["cmap"],
             norm=norm_scale,
             extent=frame.mask.geometry.extent,
         )
@@ -671,9 +667,9 @@ class AbstractPlotter:
 
         elif color_array is not None:
 
-            plt.cm.get_cmap(self.cmap.kwargs["cmap"])
+            plt.cm.get_cmap(self.cmap.config_dict["cmap"])
             self.grid_scatter.scatter_grid_colored(
-                grid=grid, color_array=color_array, cmap=self.cmap.kwargs["cmap"]
+                grid=grid, color_array=color_array, cmap=self.cmap.config_dict["cmap"]
             )
             self.cb.set()
 
@@ -949,7 +945,7 @@ class AbstractPlotter:
         self.voronoi_drawer.draw_voronoi_pixels(
             mapper=mapper,
             values=source_pixel_values,
-            cmap=self.cmap.kwargs["cmap"],
+            cmap=self.cmap.config_dict["cmap"],
             cb=self.cb,
         )
 
@@ -1031,12 +1027,12 @@ class AbstractPlotter:
         plotter = copy.deepcopy(self)
 
         plotter.title.kwargs["label"] = (
-            title_label if title_label is not None else self.title.kwargs["label"]
+            title_label if title_label is not None else self.title.config_dict["label"]
         )
         plotter.title.kwargs["fontsize"] = (
             title_fontsize
             if title_fontsize is not None
-            else self.title.kwargs["fontsize"]
+            else self.title.config_dict["fontsize"]
         )
 
         plotter.ylabel._units = (
@@ -1049,7 +1045,7 @@ class AbstractPlotter:
         plotter.tickparams.kwargs["labelsize"] = (
             tick_params_labelsize
             if tick_params_labelsize is not None
-            else self.tickparams.kwargs["labelsize"]
+            else self.tickparams.config_dict["labelsize"]
         )
 
         return plotter
@@ -1061,22 +1057,22 @@ class AbstractPlotter:
         plotter = copy.deepcopy(self)
 
         plotter.cmap.kwargs["cmap"] = (
-            cmap if cmap is not None else self.cmap.kwargs["cmap"]
+            cmap if cmap is not None else self.cmap.config_dict["cmap"]
         )
         plotter.cmap.kwargs["norm"] = (
-            norm if norm is not None else self.cmap.kwargs["norm"]
+            norm if norm is not None else self.cmap.config_dict["norm"]
         )
         plotter.cmap.kwargs["vmax"] = (
-            vmax if vmax is not None else self.cmap.kwargs["vmax"]
+            vmax if vmax is not None else self.cmap.config_dict["vmax"]
         )
         plotter.cmap.kwargs["vmin"] = (
-            vmin if vmin is not None else self.cmap.kwargs["vmin"]
+            vmin if vmin is not None else self.cmap.config_dict["vmin"]
         )
         plotter.cmap.kwargs["linthresh"] = (
-            linthresh if linthresh is not None else self.cmap.kwargs["linthresh"]
+            linthresh if linthresh is not None else self.cmap.config_dict["linthresh"]
         )
         plotter.cmap.kwargs["linscale"] = (
-            linscale if linscale is not None else self.cmap.kwargs["linscale"]
+            linscale if linscale is not None else self.cmap.config_dict["linscale"]
         )
 
         return plotter
@@ -1125,7 +1121,6 @@ class AbstractPlotter:
 class Plotter(AbstractPlotter):
     def __init__(
         self,
-        module=None,
         units=None,
         figure=None,
         cmap=None,
@@ -1155,7 +1150,6 @@ class Plotter(AbstractPlotter):
         serial_overscan_plot=None,
     ):
         super(Plotter, self).__init__(
-            module=module,
             units=units,
             figure=figure,
             cmap=cmap,
@@ -1189,7 +1183,6 @@ class Plotter(AbstractPlotter):
 class SubPlotter(AbstractPlotter):
     def __init__(
         self,
-        module=None,
         units=None,
         figure=None,
         cmap=None,
@@ -1220,7 +1213,6 @@ class SubPlotter(AbstractPlotter):
     ):
 
         super(SubPlotter, self).__init__(
-            module=module,
             units=units,
             figure=figure,
             cmap=cmap,
@@ -1313,8 +1305,8 @@ class SubPlotter(AbstractPlotter):
             The number of subplots that are to be plotted in the figure.
         """
 
-        if self.figure.kwargs["figsize"] is not None:
-            return self.figure.kwargs["figsize"]
+        if self.figure.config_dict_figure["figsize"] is not None:
+            return self.figure.config_dict_figure["figsize"]
 
         if number_subplots <= 2:
             return (18, 8)
@@ -1376,7 +1368,7 @@ def set_plotter(func):
         if plotter_key is not None:
             plotter = kwargs[plotter_key]
         else:
-            plotter = Plotter(module=inspect.getmodule(func))
+            plotter = Plotter()
             plotter_key = "plotter"
 
         kwargs[plotter_key] = plotter
@@ -1395,7 +1387,7 @@ def set_sub_plotter(func):
         if sub_plotter_key is not None:
             sub_plotter = kwargs[sub_plotter_key]
         else:
-            sub_plotter = SubPlotter(module=inspect.getmodule(func))
+            sub_plotter = SubPlotter()
             sub_plotter_key = "sub_plotter"
 
         kwargs[sub_plotter_key] = sub_plotter
