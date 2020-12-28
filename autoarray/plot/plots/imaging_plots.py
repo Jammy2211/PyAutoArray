@@ -179,7 +179,7 @@ def image(imaging, grid=None, mask=None, positions=None, include=None, plotter=N
         over the immage.
     """
 
-    plotter.plot_array(
+    plotter._plot_array(
         array=imaging.image,
         include_origin=include.origin,
         include_border=include.border,
@@ -207,7 +207,7 @@ def noise_map(
         If true, the include_origin of the dataset's coordinate system is plotted as a 'x'.
     """
 
-    plotter.plot_array(
+    plotter._plot_array(
         array=imaging.noise_map,
         include_origin=include.origin,
         include_border=include.border,
@@ -233,7 +233,7 @@ def psf(imaging, grid=None, positions=None, include=None, plotter=None):
         If true, the include_origin of the dataset's coordinate system is plotted as a 'x'.
     """
 
-    plotter.plot_array(
+    plotter._plot_array(
         array=imaging.psf, include_origin=include.origin, grid=grid, positions=positions
     )
 
@@ -256,7 +256,7 @@ def inverse_noise_map(
         If true, the include_origin of the dataset's coordinate system is plotted as a 'x'.
     """
 
-    plotter.plot_array(
+    plotter._plot_array(
         array=imaging.inverse_noise_map,
         include_origin=include.origin,
         include_border=include.border,
@@ -283,7 +283,7 @@ def signal_to_noise_map(
     include_origin : True
         If true, the include_origin of the dataset's coordinate system is plotted as a 'x'.
     """
-    plotter.plot_array(
+    plotter._plot_array(
         array=imaging.signal_to_noise_map,
         include_origin=include.origin,
         include_border=include.border,
@@ -310,7 +310,7 @@ def absolute_signal_to_noise_map(
     include_origin : True
         If true, the include_origin of the dataset's coordinate system is plotted as a 'x'.
     """
-    plotter.plot_array(
+    plotter._plot_array(
         array=imaging.absolute_signal_to_noise_map,
         include_origin=include.origin,
         include_border=include.border,
@@ -337,7 +337,7 @@ def potential_chi_squared_map(
     include_origin : True
         If true, the include_origin of the dataset's coordinate system is plotted as a 'x'.
     """
-    plotter.plot_array(
+    plotter._plot_array(
         array=imaging.potential_chi_squared_map,
         include_origin=include.origin,
         include_border=include.border,

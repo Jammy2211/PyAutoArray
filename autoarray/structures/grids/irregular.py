@@ -214,6 +214,11 @@ class GridIrregular(AbstractGridIrregular):
 
         return obj
 
+    @property
+    def in_grouped_list(self):
+        """Return the coordinates on a structured list which groups coordinates with a common origin."""
+        return [self]
+
     def values_from_arr_1d(self, arr_1d):
         """Create a *Values* object from a 1D NumPy array of values of shape [total_coordinates]. The
         *Values* are structured and grouped following this *Coordinate* instance."""

@@ -83,6 +83,27 @@ def make_mask_6x6():
     return aa.Mask2D.manual(mask=mask, pixel_scales=(1.0, 1.0))
 
 
+### arrays ###
+
+
+def make_array_7x7():
+    return aa.Array.ones(shape_2d=(7, 7), pixel_scales=(1.0, 1.0))
+
+
+def make_scans_7x7():
+    return aa.Scans(
+        serial_overscan=(0, 6, 6, 7),
+        serial_prescan=(0, 7, 0, 1),
+        parallel_overscan=(6, 7, 1, 6),
+    )
+
+
+def make_frame_7x7():
+    return aa.Frame.ones(
+        shape_2d=(7, 7), pixel_scales=(1.0, 1.0), scans=make_scans_7x7()
+    )
+
+
 # GRIDS #
 
 
@@ -132,7 +153,7 @@ def make_noise_map_7x7():
     return aa.Array.full(fill_value=2.0, shape_2d=(7, 7), pixel_scales=(1.0, 1.0))
 
 
-def make_positions_7x7():
+def make_grid_irregular_grouped_7x7():
     return aa.GridIrregularGrouped(grid=[[(0.1, 0.1), (0.2, 0.2)], [(0.3, 0.3)]])
 
 

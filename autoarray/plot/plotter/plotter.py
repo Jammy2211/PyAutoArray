@@ -1,7 +1,6 @@
 import matplotlib
 
 from autoconf import conf
-from autoarray.plot.plotter import include as inc
 
 backend = conf.get_matplotlib_backend()
 
@@ -26,7 +25,7 @@ from autoarray import exc
 from autoarray.plot.mat_wrap import mat_base, mat_structure, mat_obj
 import inspect
 import os
-from autoarray.structures import grids
+from autoarray.plot.plotter import include as inc
 from autoarray.inversion import mappers
 
 
@@ -262,21 +261,7 @@ class Plotter:
         else:
             return (25, 20)
 
-    def plot_array(
-        self,
-        array,
-        mask=None,
-        lines=None,
-        positions=None,
-        grid=None,
-        vector_field=None,
-        patches=None,
-        array_overlay=None,
-        include_origin=False,
-        include_border=False,
-        extent_manual=None,
-        bypass_output=False,
-    ):
+    def _plot_array(self, array, visuals, extent_manual=None, bypass_output=False):
         """Plot an array of data_type as a figure.
 
         Parameters
@@ -337,8 +322,10 @@ class Plotter:
         if extent_manual is not None:
             extent = extent_manual
 
-        if array_overlay is not None:
-            self.array_overlay.overlay_array(array=array_overlay, figure=self.figure)
+        if visuals.array_overlay is not None:
+            self.array_overlay.overlay_array(
+                array=visuals.array_overlay, figure=self.figure
+            )
 
         plt.axis(extent)
 
@@ -355,36 +342,8 @@ class Plotter:
         self.xlabel.set(units=self.units, include_brackets=True)
 
         self.colorbar.set()
-        if include_origin:
-            self.origin_scatter.scatter_grid(grid=[array.origin])
 
-        if mask is not None:
-            self.mask_scatter.scatter_grid(
-                grid=mask.geometry.edge_grid_sub_1.in_1d_binned
-            )
-
-        if include_border and mask is not None:
-            self.border_scatter.scatter_grid(
-                grid=mask.geometry.border_grid_sub_1.in_1d_binned
-            )
-
-        if grid is not None:
-            self.grid_scatter.scatter_grid(grid=grid)
-
-        if positions is not None:
-            if not isinstance(positions, grids.GridIrregularGrouped):
-                self.positions_scatter.scatter_grid(grid=positions)
-            else:
-                self.positions_scatter.scatter_grid_grouped(grid_grouped=positions)
-
-        if vector_field is not None:
-            self.vector_field_quiver.quiver_vector_field(vector_field=vector_field)
-
-        if patches is not None:
-            self.patch_overlay.overlay_patches(patches=patches)
-
-        if lines is not None:
-            self.line_plot.plot_grid_grouped(grid_grouped=lines)
+        visuals.plot_via_plotter(plotter=self)
 
         if not bypass_output:
             self.output.to_figure(structure=array)
@@ -392,16 +351,7 @@ class Plotter:
         if not self.for_subplot and not bypass_output:
             self.figure.close()
 
-    def plot_frame(
-        self,
-        frame,
-        lines=None,
-        include_origin=False,
-        include_parallel_overscan=False,
-        include_serial_prescan=False,
-        include_serial_overscan=False,
-        bypass_output=False,
-    ):
+    def _plot_frame(self, frame, visuals=None, bypass_output=False):
         """Plot an array of data_type as a figure.
 
         """
@@ -444,32 +394,8 @@ class Plotter:
         self.xlabel.set(units=self.units, include_brackets=True)
 
         self.colorbar.set()
-        if include_origin:
-            self.origin_scatter.scatter_grid(grid=[frame.origin])
 
-        if (
-            include_parallel_overscan is not None
-            and frame.scans.parallel_overscan is not None
-        ):
-            self.parallel_overscan_plot.plot_rectangular_grid_lines(
-                extent=frame.scans.parallel_overscan, shape_2d=frame.shape_2d
-            )
-
-        if (
-            include_serial_prescan is not None
-            and frame.scans.serial_prescan is not None
-        ):
-            self.serial_prescan_plot.plot_rectangular_grid_lines(
-                extent=frame.scans.serial_prescan, shape_2d=frame.shape_2d
-            )
-
-        if (
-            include_serial_overscan is not None
-            and frame.scans.serial_overscan is not None
-        ):
-            self.serial_overscan_plot.plot_rectangular_grid_lines(
-                extent=frame.scans.serial_overscan, shape_2d=frame.shape_2d
-            )
+        visuals.plot_via_plotter(plotter=self)
 
         if not bypass_output:
             self.output.to_figure(structure=frame)
@@ -477,17 +403,14 @@ class Plotter:
         if not self.for_subplot and not bypass_output:
             self.figure.close()
 
-    def plot_grid(
+    def _plot_grid(
         self,
         grid,
+        visuals=None,
         color_array=None,
         axis_limits=None,
         indexes=None,
-        positions=None,
-        lines=None,
         symmetric_around_centre=True,
-        include_origin=False,
-        include_border=False,
         bypass_output=False,
     ):
         """Plot a grid of (y,x) Cartesian coordinates as a scatter plotter of points.
@@ -549,23 +472,7 @@ class Plotter:
             use_defaults=symmetric_around_centre,
         )
 
-        if include_origin:
-            self.origin_scatter.scatter_grid(grid=[grid.origin])
-
-        if include_border:
-            self.border_scatter.scatter_grid(grid=grid.sub_border_grid)
-
-        if indexes is not None:
-            self.index_scatter.scatter_grid_indexes(grid=grid, indexes=indexes)
-
-        if positions is not None:
-            if not isinstance(positions, grids.GridIrregularGrouped):
-                self.positions_scatter.scatter_grid(grid=positions)
-            else:
-                self.positions_scatter.scatter_grid_grouped(grid_grouped=positions)
-
-        if lines is not None:
-            self.line_plot.plot_grid_grouped(grid_grouped=lines)
+        visuals.plot_via_plotter(plotter=self)
 
         if not bypass_output:
             self.output.to_figure(structure=grid)
@@ -573,7 +480,7 @@ class Plotter:
         if not self.for_subplot and not bypass_output:
             self.figure.close()
 
-    def plot_line(
+    def _plot_line(
         self,
         y,
         x,
@@ -616,16 +523,11 @@ class Plotter:
         if not self.for_subplot and not bypass_output:
             self.figure.close()
 
-    def plot_mapper(
+    def _plot_mapper(
         self,
         mapper,
+        visuals=None,
         source_pixel_values=None,
-        positions=None,
-        lines=None,
-        include_origin=False,
-        include_pixelization_grid=False,
-        include_grid=False,
-        include_border=False,
         image_pixel_indexes=None,
         source_pixel_indexes=None,
         bypass_output=False,
@@ -633,44 +535,31 @@ class Plotter:
 
         if isinstance(mapper, mappers.MapperRectangular):
 
-            self.plot_rectangular_mapper(
+            self._plot_rectangular_mapper(
                 mapper=mapper,
+                visuals=visuals,
                 source_pixel_values=source_pixel_values,
-                positions=positions,
-                lines=lines,
-                include_origin=include_origin,
-                include_grid=include_grid,
-                include_pixelization_grid=include_pixelization_grid,
-                include_border=include_border,
                 image_pixel_indexes=image_pixel_indexes,
                 source_pixel_indexes=source_pixel_indexes,
+                bypass_output=bypass_output,
             )
 
         else:
 
-            self.plot_voronoi_mapper(
+            self._plot_voronoi_mapper(
                 mapper=mapper,
+                visuals=visuals,
                 source_pixel_values=source_pixel_values,
-                positions=positions,
-                lines=lines,
-                include_origin=include_origin,
-                include_grid=include_grid,
-                include_pixelization_grid=include_pixelization_grid,
-                include_border=include_border,
                 image_pixel_indexes=image_pixel_indexes,
                 source_pixel_indexes=source_pixel_indexes,
+                bypass_output=bypass_output,
             )
 
-    def plot_rectangular_mapper(
+    def _plot_rectangular_mapper(
         self,
         mapper,
+        visuals=None,
         source_pixel_values=None,
-        positions=None,
-        lines=None,
-        include_origin=False,
-        include_pixelization_grid=False,
-        include_grid=False,
-        include_border=False,
         image_pixel_indexes=None,
         source_pixel_indexes=None,
         bypass_output=False,
@@ -680,7 +569,7 @@ class Plotter:
 
         if source_pixel_values is not None:
 
-            self.plot_array(
+            self._plot_array(
                 array=source_pixel_values,
                 lines=lines,
                 positions=positions,
@@ -716,19 +605,7 @@ class Plotter:
         self.ylabel.set(units=self.units, include_brackets=True)
         self.xlabel.set(units=self.units, include_brackets=True)
 
-        if include_origin:
-            self.origin_scatter.scatter_grid(grid=[mapper.grid.origin])
-
-        if include_pixelization_grid:
-            self.pixelization_grid_scatter.scatter_grid(grid=mapper.pixelization_grid)
-
-        if include_grid:
-            self.grid_scatter.scatter_grid(grid=mapper.grid)
-
-        if include_border:
-            sub_border_1d_indexes = mapper.grid.mask.regions._sub_border_1d_indexes
-            sub_border_grid = mapper.grid[sub_border_1d_indexes, :]
-            self.border_scatter.scatter_grid(grid=sub_border_grid)
+        visuals.plot_via_plotter(plotter=self)
 
         if image_pixel_indexes is not None:
             self.index_scatter.scatter_grid_indexes(
@@ -749,16 +626,11 @@ class Plotter:
         if not self.for_subplot and not bypass_output:
             self.figure.close()
 
-    def plot_voronoi_mapper(
+    def _plot_voronoi_mapper(
         self,
         mapper,
+        visuals=None,
         source_pixel_values=None,
-        positions=None,
-        lines=None,
-        include_origin=False,
-        include_pixelization_grid=False,
-        include_grid=False,
-        include_border=False,
         image_pixel_indexes=None,
         source_pixel_indexes=None,
         bypass_output=False,
@@ -797,28 +669,7 @@ class Plotter:
         self.ylabel.set(units=self.units, include_brackets=True)
         self.xlabel.set(units=self.units, include_brackets=True)
 
-        if include_origin:
-            self.origin_scatter.scatter_grid(grid=[mapper.grid.origin])
-
-        if include_pixelization_grid:
-            self.pixelization_grid_scatter.scatter_grid(grid=mapper.pixelization_grid)
-
-        if include_grid:
-            self.grid_scatter.scatter_grid(grid=mapper.grid)
-
-        if include_border:
-            sub_border_1d_indexes = mapper.grid.mask.regions._sub_border_1d_indexes
-            sub_border_grid = mapper.grid[sub_border_1d_indexes, :]
-            self.border_scatter.scatter_grid(grid=sub_border_grid)
-
-        if positions is not None:
-            if not isinstance(positions, grids.GridIrregularGrouped):
-                self.positions_scatter.scatter_grid(grid=positions)
-            else:
-                self.positions_scatter.scatter_grid_grouped(grid_grouped=positions)
-
-        if lines is not None:
-            self.line_plot.plot_grid_grouped(grid_grouped=lines)
+        visuals.plot_via_plotter(plotter=self)
 
         if image_pixel_indexes is not None:
             self.index_scatter.scatter_grid_indexes(
@@ -1125,128 +976,3 @@ def set_labels(func):
         return func(*args, **kwargs)
 
     return wrapper
-
-
-def plot_array(
-    array,
-    mask=None,
-    lines=None,
-    positions=None,
-    grid=None,
-    vector_field=None,
-    patches=None,
-    array_overlay=None,
-    extent_manual=None,
-    include=None,
-    plotter=None,
-):
-    if include is None:
-        include = inc.Include()
-
-    if plotter is None:
-        plotter = Plotter()
-
-    plotter.plot_array(
-        array=array,
-        mask=mask,
-        lines=lines,
-        positions=positions,
-        grid=grid,
-        vector_field=vector_field,
-        patches=patches,
-        extent_manual=extent_manual,
-        array_overlay=array_overlay,
-        include_origin=include.origin,
-        include_border=include.border,
-    )
-
-
-def plot_frame(frame, include=None, plotter=None):
-    if include is None:
-        include = inc.Include()
-
-    if plotter is None:
-        plotter = Plotter()
-
-    plotter.plot_frame(
-        frame=frame,
-        include_origin=include.origin,
-        include_parallel_overscan=include.parallel_overscan,
-        include_serial_prescan=include.serial_prescan,
-        include_serial_overscan=include.serial_overscan,
-    )
-
-
-def plot_grid(
-    grid,
-    color_array=None,
-    axis_limits=None,
-    indexes=None,
-    positions=None,
-    lines=None,
-    symmetric_around_centre=True,
-    include=None,
-    plotter=None,
-):
-    if include is None:
-        include = inc.Include()
-
-    if plotter is None:
-        plotter = Plotter()
-
-    plotter.plot_grid(
-        grid=grid,
-        color_array=color_array,
-        axis_limits=axis_limits,
-        indexes=indexes,
-        positions=positions,
-        lines=lines,
-        symmetric_around_centre=symmetric_around_centre,
-        include_origin=include.origin,
-        include_border=include.border,
-    )
-
-
-def plot_line(
-    y,
-    x,
-    label=None,
-    plot_axis_type="semilogy",
-    vertical_lines=None,
-    vertical_line_labels=None,
-    plotter=None,
-):
-    if plotter is None:
-        plotter = Plotter()
-
-    plotter.plot_line(
-        y=y,
-        x=x,
-        label=label,
-        plot_axis_type=plot_axis_type,
-        vertical_lines=vertical_lines,
-        vertical_line_labels=vertical_line_labels,
-    )
-
-
-def plot_mapper_obj(
-    mapper,
-    image_pixel_indexes=None,
-    source_pixel_indexes=None,
-    include=None,
-    plotter=None,
-):
-    if include is None:
-        include = inc.Include()
-
-    if plotter is None:
-        plotter = Plotter()
-
-    plotter.plot_mapper(
-        mapper=mapper,
-        include_pixelization_grid=include.inversion_pixelization_grid,
-        include_grid=include.inversion_grid,
-        include_border=include.inversion_border,
-        image_pixel_indexes=image_pixel_indexes,
-        source_pixel_indexes=source_pixel_indexes,
-    )

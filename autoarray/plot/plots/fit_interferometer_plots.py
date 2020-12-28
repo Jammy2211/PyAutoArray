@@ -135,7 +135,7 @@ def visibilities(fit, include=None, plotter=None):
     origin : True
         If true, the origin of the datas's coordinate system is plotted as a 'x'.
     """
-    plotter.plot_grid(grid=fit.visibilities.in_grid)
+    plotter._plot_grid(grid=fit.visibilities.in_grid)
 
 
 @inc.set_include
@@ -153,7 +153,9 @@ def noise_map(fit, include=None, plotter=None):
     origin : True
         If true, the origin of the datas's coordinate system is plotted as a 'x'.
     """
-    plotter.plot_grid(grid=fit.visibilities.in_grid, color_array=np.real(fit.noise_map))
+    plotter._plot_grid(
+        grid=fit.visibilities.in_grid, color_array=np.real(fit.noise_map)
+    )
 
 
 @inc.set_include
@@ -171,7 +173,7 @@ def signal_to_noise_map(fit, include=None, plotter=None):
     origin : True
     If true, the origin of the datas's coordinate system is plotted as a 'x'.
     """
-    plotter.plot_grid(
+    plotter._plot_grid(
         grid=fit.visibilities.in_grid, color_array=fit.signal_to_noise_map.real
     )
 
@@ -191,7 +193,7 @@ def model_visibilities(fit, include=None, plotter=None):
     visibilities_index : int
         The index of the datas in the datas-set of which the model visibilities is plotted.
     """
-    plotter.plot_grid(grid=fit.visibilities.in_grid)
+    plotter._plot_grid(grid=fit.visibilities.in_grid)
 
 
 @inc.set_include
@@ -234,7 +236,7 @@ def residual_map_vs_uv_distances(
             filename=plotter.output.filename + "_imag"
         )
 
-    plotter.plot_line(
+    plotter._plot_line(
         y=y,
         x=fit.masked_interferometer.interferometer.uv_distances / 10 ** 3.0,
         plot_axis_type="scatter",
@@ -281,7 +283,7 @@ def normalized_residual_map_vs_uv_distances(
             filename=plotter.output.filename + "_imag"
         )
 
-    plotter.plot_line(
+    plotter._plot_line(
         y=y,
         x=fit.masked_interferometer.interferometer.uv_distances / 10 ** 3.0,
         plot_axis_type="scatter",
@@ -328,7 +330,7 @@ def chi_squared_map_vs_uv_distances(
             filename=plotter.output.filename + "_imag"
         )
 
-    plotter.plot_line(
+    plotter._plot_line(
         y=y,
         x=fit.masked_interferometer.interferometer.uv_distances / 10 ** 3.0,
         plot_axis_type="scatter",

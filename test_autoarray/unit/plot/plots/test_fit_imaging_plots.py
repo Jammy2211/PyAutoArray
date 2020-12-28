@@ -142,7 +142,7 @@ def test__fit_individuals__source_and_lens__depedent_on_input(
 
 
 def test__output_as_fits__correct_output_format(
-    fit_imaging_7x7, positions_7x7, mask_7x7, plot_path, plot_patch
+    fit_imaging_7x7, grid_irregular_grouped_7x7, mask_7x7, plot_path, plot_patch
 ):
 
     aplt.FitImaging.individuals(
