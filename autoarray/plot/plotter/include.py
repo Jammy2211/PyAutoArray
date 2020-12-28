@@ -1,5 +1,6 @@
 from autoconf import conf
-
+from autoarray.structures import arrays, grids, lines as l, vector_fields
+from autoarray.plot.plotter import visuals as ps
 from functools import wraps
 
 
@@ -48,55 +49,79 @@ class Include:
         serial_overscan=None,
     ):
 
-        self.origin = self.load_include(value=origin, name="origin")
-        self.mask = self.load_include(value=mask, name="mask")
-        self.grid = self.load_include(value=grid, name="grid")
-        self.border = self.load_include(value=border, name="border")
-        self.inversion_pixelization_grid = self.load_include(
-            value=inversion_pixelization_grid, name="inversion_pixelization_grid"
+        section = conf.instance["visualize"]["include"]["include"]
+
+        self.origin = section["origin"] if origin is None else origin
+        self.mask = section["mask"] if mask is None else mask
+        self.grid = section["grid"] if grid is None else grid
+        self.border = section["border"] if border is None else border
+        self.inversion_pixelization_grid = (
+            section["inversion_pixelization_grid"]
+            if inversion_pixelization_grid is None
+            else inversion_pixelization_grid
         )
-        self.inversion_grid = self.load_include(
-            value=inversion_grid, name="inversion_grid"
+        self.inversion_grid = (
+            section["inversion_grid"] if inversion_grid is None else inversion_grid
         )
-        self.inversion_border = self.load_include(
-            value=inversion_border, name="inversion_border"
+        self.inversion_border = (
+            section["inversion_border"]
+            if inversion_border is None
+            else inversion_border
         )
-        self.inversion_image_pixelization_grid = self.load_include(
-            value=inversion_image_pixelization_grid,
-            name="inversion_image_pixelization_grid",
+        self.inversion_image_pixelization_grid = (
+            section["inversion_image_pixelization_grid"]
+            if inversion_image_pixelization_grid is None
+            else inversion_image_pixelization_grid
         )
-        self.parallel_overscan = self.load_include(
-            value=parallel_overscan, name="parallel_overscan"
+        self.parallel_overscan = (
+            section["parallel_overscan"]
+            if parallel_overscan is None
+            else parallel_overscan
         )
-        self.serial_prescan = self.load_include(
-            value=serial_prescan, name="serial_prescan"
+        self.serial_prescan = (
+            section["serial_prescan"] if serial_prescan is None else serial_prescan
         )
-        self.serial_overscan = self.load_include(
-            value=serial_overscan, name="serial_overscan"
+        self.serial_overscan = (
+            section["serial_overscan"] if serial_overscan is None else serial_overscan
         )
 
-    @staticmethod
-    def load_include(value, name):
-        if value is not None:
-            """
-            Let is be known that Jam did this - I merely made this horror more efficient
-            """
-            return value
-        return conf.instance["visualize"]["general"]["include"][name]
+    def visuals_from_structure(self, structure):
 
-    def grid_from_grid(self, grid):
+        origin = grids.GridIrregular(grid=[structure.origin]) if self.origin else None
 
-        if self.grid:
-            return grid
-        else:
-            return None
+        mask = structure.mask if self.mask else None
 
-    def mask_from_grid(self, grid):
+        border = (
+            structure.mask.geometry.border_grid_sub_1.in_1d_binned
+            if self.border
+            else None
+        )
 
-        if self.mask:
-            return grid.mask
-        else:
-            return None
+        return ps.Visuals(origin=origin, mask=mask, border=border)
+
+    def visuals_from_array(self, array):
+
+        return self.visuals_from_structure(structure=array)
+
+    def visuals_from_grid(self, grid):
+
+        return self.visuals_from_structure(structure=grid)
+
+    def visuals_from_frame(self, frame):
+
+        visuals_structure = self.visuals_from_structure(structure=frame)
+
+        parallel_overscan = (
+            frame.scans.parallel_overscan if self.parallel_overscan else None
+        )
+        serial_prescan = frame.scans.serial_prescan if self.serial_prescan else None
+        serial_overscan = frame.scans.serial_overscan if self.serial_overscan else None
+
+        return visuals_structure + ps.Visuals(
+            parallel_overscan=parallel_overscan,
+            serial_prescan=serial_prescan,
+            serial_overscan=serial_overscan,
+        )
 
     def mask_from_masked_dataset(self, masked_dataset):
 
@@ -132,26 +157,5 @@ class Include:
         """
         if self.mask:
             return fit.settings_masked_dataset.real_space_mask
-        else:
-            return None
-
-    def parallel_overscan_from_frame(self, frame):
-
-        if self.parallel_overscan:
-            return frame.scans.parallel_overscan
-        else:
-            return None
-
-    def serial_prescan_from_frame(self, frame):
-
-        if self.serial_prescan:
-            return frame.scans.serial_prescan
-        else:
-            return None
-
-    def serial_overscan_from_frame(self, frame):
-
-        if self.serial_overscan:
-            return frame.scans.serial_overscan
         else:
             return None

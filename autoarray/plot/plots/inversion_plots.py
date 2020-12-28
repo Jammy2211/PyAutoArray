@@ -206,7 +206,7 @@ def reconstructed_image(
     inversion, grid=None, lines=None, image_positions=None, include=None, plotter=None
 ):
 
-    plotter.plot_array(
+    plotter._plot_array(
         array=inversion.mapped_reconstructed_image,
         mask=include.mask_from_grid(grid=inversion.mapper.grid),
         lines=lines,
@@ -233,7 +233,7 @@ def reconstruction(
         solution_vector=inversion.reconstruction
     )
 
-    plotter.plot_mapper(
+    plotter._plot_mapper(
         mapper=inversion.mapper,
         source_pixel_values=source_pixel_values,
         lines=lines,
@@ -264,7 +264,7 @@ def errors(
         solution_vector=inversion.errors
     )
 
-    plotter.plot_mapper(
+    plotter._plot_mapper(
         mapper=inversion.mapper,
         source_pixel_values=source_pixel_values,
         lines=lines,
@@ -295,7 +295,7 @@ def residual_map(
         solution_vector=inversion.residual_map
     )
 
-    plotter.plot_mapper(
+    plotter._plot_mapper(
         mapper=inversion.mapper,
         source_pixel_values=source_pixel_values,
         lines=lines,
@@ -326,7 +326,7 @@ def normalized_residual_map(
         solution_vector=inversion.normalized_residual_map
     )
 
-    plotter.plot_mapper(
+    plotter._plot_mapper(
         mapper=inversion.mapper,
         source_pixel_values=source_pixel_values,
         lines=lines,
@@ -357,7 +357,7 @@ def chi_squared_map(
         solution_vector=inversion.chi_squared_map
     )
 
-    plotter.plot_mapper(
+    plotter._plot_mapper(
         mapper=inversion.mapper,
         source_pixel_values=source_pixel_values,
         lines=lines,
@@ -388,7 +388,7 @@ def regularization_weights(
         mapper=inversion.mapper
     )
 
-    plotter.plot_mapper(
+    plotter._plot_mapper(
         mapper=inversion.mapper,
         source_pixel_values=regularization_weights,
         lines=lines,
@@ -409,7 +409,7 @@ def interpolated_reconstruction(
     inversion, lines=None, source_positions=None, grid=None, include=None, plotter=None
 ):
 
-    plotter.plot_array(
+    plotter._plot_array(
         array=inversion.interpolated_reconstruction_from_shape_2d(),
         lines=lines,
         positions=source_positions,
@@ -425,7 +425,7 @@ def interpolated_errors(
     inversion, lines=None, source_positions=None, grid=None, include=None, plotter=None
 ):
 
-    plotter.plot_array(
+    plotter._plot_array(
         array=inversion.interpolated_errors_from_shape_2d(),
         lines=lines,
         positions=source_positions,

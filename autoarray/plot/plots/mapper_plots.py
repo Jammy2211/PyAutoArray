@@ -21,7 +21,7 @@ def subplot_image_and_mapper(
 
     plotter.setup_subplot(number_subplots=number_subplots, subplot_index=1)
 
-    plotter.plot_array(
+    plotter._plot_array(
         array=image,
         mask=include.mask_from_grid(grid=mapper.grid),
         positions=image_positions,
@@ -46,7 +46,7 @@ def subplot_image_and_mapper(
 
     plotter.setup_subplot(number_subplots=number_subplots, subplot_index=2)
 
-    plotter.plot_mapper(
+    plotter._plot_mapper(
         mapper=mapper,
         positions=source_positions,
         image_pixel_indexes=image_pixel_indexes,

@@ -13,8 +13,9 @@ from autoarray.plot.mat_wrap.mat_base import (
     Output,
 )
 
+from autoarray.plot.plotter.visuals import Visuals
 from autoarray.plot.plotter.include import Include
-from autoarray.plot.plotter.plotter import Plotter, Plotter
+from autoarray.plot.plotter.plotter import Plotter
 
 from autoarray.plot.mat_wrap.mat_structure import (
     ArrayOverlay,
@@ -37,11 +38,11 @@ from autoarray.plot.mat_wrap.mat_obj import (
     SerialPrescanPlot,
 )
 
-from autoarray.plot.plotter.plotter import plot_array as Array
-from autoarray.plot.plotter.plotter import plot_frame as Frame
-from autoarray.plot.plotter.plotter import plot_grid as Grid
-from autoarray.plot.plotter.plotter import plot_line as Line
-from autoarray.plot.plotter.plotter import plot_mapper_obj as MapperObj
+from autoarray.plot.plots.structure_plots import plot_array as Array
+from autoarray.plot.plots.structure_plots import plot_frame as Frame
+from autoarray.plot.plots.structure_plots import plot_grid as Grid
+from autoarray.plot.plots.structure_plots import plot_line as Line
+from autoarray.plot.plots.structure_plots import plot_mapper_obj as MapperObj
 
 from autoarray.plot.plots import imaging_plots as Imaging
 from autoarray.plot.plots import interferometer_plots as Interferometer

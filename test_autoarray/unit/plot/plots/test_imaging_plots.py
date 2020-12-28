@@ -17,12 +17,12 @@ def make_plot_path_setup():
 
 
 def test__individual_attributes_are_output(
-    imaging_7x7, positions_7x7, mask_7x7, plot_path, plot_patch
+    imaging_7x7, grid_irregular_grouped_7x7, mask_7x7, plot_path, plot_patch
 ):
 
     aplt.Imaging.image(
         imaging=imaging_7x7,
-        positions=positions_7x7,
+        positions=grid_irregular_grouped_7x7,
         mask=mask_7x7,
         include=aplt.Include(mask=True),
         plotter=aplt.Plotter(output=aplt.Output(plot_path, format="png")),
@@ -63,7 +63,7 @@ def test__individual_attributes_are_output(
 
 
 def test__subplot_is_output(
-    imaging_7x7, positions_7x7, mask_7x7, plot_path, plot_patch
+    imaging_7x7, grid_irregular_grouped_7x7, mask_7x7, plot_path, plot_patch
 ):
 
     aplt.Imaging.subplot_imaging(
@@ -102,7 +102,7 @@ def test__imaging_individuals__output_dependent_on_input(
 
 
 def test__output_as_fits__correct_output_format(
-    imaging_7x7, positions_7x7, mask_7x7, plot_path, plot_patch
+    imaging_7x7, grid_irregular_grouped_7x7, mask_7x7, plot_path, plot_patch
 ):
 
     aplt.Imaging.individual(

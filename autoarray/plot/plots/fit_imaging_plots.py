@@ -115,7 +115,7 @@ def image(fit, positions=None, grid=None, lines=None, include=None, plotter=None
     origin : True
         If true, the origin of the datas's coordinate system is plotted as a 'x'.
     """
-    plotter.plot_array(
+    plotter._plot_array(
         array=fit.data,
         grid=grid,
         mask=include.mask_from_fit(fit=fit),
@@ -139,7 +139,7 @@ def noise_map(fit, positions=None, include=None, plotter=None):
     origin : True
         If true, the origin of the datas's coordinate system is plotted as a 'x'.
     """
-    plotter.plot_array(
+    plotter._plot_array(
         array=fit.noise_map, mask=include.mask_from_fit(fit=fit), positions=positions
     )
 
@@ -159,7 +159,7 @@ def signal_to_noise_map(fit, positions=None, include=None, plotter=None):
     origin : True
     If true, the origin of the datas's coordinate system is plotted as a 'x'.
     """
-    plotter.plot_array(
+    plotter._plot_array(
         array=fit.signal_to_noise_map,
         mask=include.mask_from_fit(fit=fit),
         positions=positions,
@@ -182,7 +182,7 @@ def model_image(fit, lines=None, positions=None, include=None, plotter=None):
         The index of the datas in the datas-set of which the model image is plotted.
     """
 
-    plotter.plot_array(
+    plotter._plot_array(
         array=fit.model_data,
         mask=include.mask_from_fit(fit=fit),
         lines=lines,
@@ -205,7 +205,7 @@ def residual_map(fit, positions=None, include=None, plotter=None):
     image_index : int
         The index of the datas in the datas-set of which the residual_map are plotted.
     """
-    plotter.plot_array(
+    plotter._plot_array(
         array=fit.residual_map, mask=include.mask_from_fit(fit=fit), positions=positions
     )
 
@@ -225,7 +225,7 @@ def normalized_residual_map(fit, positions=None, include=None, plotter=None):
     image_index : int
         The index of the datas in the datas-set of which the normalized_residual_map are plotted.
     """
-    plotter.plot_array(
+    plotter._plot_array(
         array=fit.normalized_residual_map,
         mask=include.mask_from_fit(fit=fit),
         positions=positions,
@@ -247,7 +247,7 @@ def chi_squared_map(fit, positions=None, include=None, plotter=None):
     image_index : int
         The index of the datas in the datas-set of which the chi-squareds are plotted.
     """
-    plotter.plot_array(
+    plotter._plot_array(
         array=fit.chi_squared_map,
         mask=include.mask_from_fit(fit=fit),
         positions=positions,

@@ -132,7 +132,7 @@ def visibilities(interferometer, include=None, plotter=None):
         over the immage.
     """
 
-    plotter.plot_grid(grid=interferometer.visibilities.in_grid)
+    plotter._plot_grid(grid=interferometer.visibilities.in_grid)
 
 
 @inc.set_include
@@ -154,7 +154,7 @@ def noise_map(interferometer, include=None, plotter=None):
         over the immage.
     """
 
-    plotter.plot_grid(
+    plotter._plot_grid(
         grid=interferometer.visibilities.in_grid,
         color_array=interferometer.noise_map.real,
     )
@@ -185,7 +185,7 @@ def u_wavelengths(
         over the immage.
     """
 
-    plotter.plot_line(
+    plotter._plot_line(
         y=interferometer.uv_wavelengths[:, 0],
         x=None,
         label=label,
@@ -218,7 +218,7 @@ def v_wavelengths(
         over the immage.
     """
 
-    plotter.plot_line(
+    plotter._plot_line(
         y=interferometer.uv_wavelengths[:, 1],
         x=None,
         label=label,
@@ -251,7 +251,7 @@ def uv_wavelengths(
         over the immage.
     """
 
-    plotter.plot_grid(
+    plotter._plot_grid(
         grid=grids.GridIrregularGrouped.from_yx_1d(
             y=interferometer.uv_wavelengths[:, 1] / 10 ** 3.0,
             x=interferometer.uv_wavelengths[:, 0] / 10 ** 3.0,
@@ -271,7 +271,7 @@ def amplitudes_vs_uv_distances(
     plotter=None,
 ):
 
-    plotter.plot_line(
+    plotter._plot_line(
         y=interferometer.amplitudes,
         x=interferometer.uv_distances / 10 ** 3.0,
         plot_axis_type="scatter",
@@ -289,7 +289,7 @@ def phases_vs_uv_distances(
     plotter=None,
 ):
 
-    plotter.plot_line(
+    plotter._plot_line(
         y=interferometer.phases,
         x=interferometer.uv_distances / 10 ** 3.0,
         plot_axis_type="scatter",
