@@ -249,7 +249,7 @@ class TestRegions:
         )
 
         assert (
-            mask.regions._full_1d_index_for_sub_full_1d_index
+            mask.regions._mask_1d_index_for_sub_mask_1d_index
             == mask_1d_index_for_sub_mask_1d_index_util
         ).all()
 

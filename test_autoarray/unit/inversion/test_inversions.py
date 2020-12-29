@@ -151,7 +151,7 @@ class TestAbstractInversion:
             convolver=mock.MockConvolver(matrix_shape),
             mapper=mock.MockMapper(
                 matrix_shape,
-                pixelization_grid=aa.GridVoronoi.manual_1d(
+                source_pixelization_grid=aa.GridVoronoi.manual_1d(
                     [[1.0, 2.0], [3.0, 4.0], [5.0, 6.0], [5.0, 0.0]]
                 ),
             ),
@@ -203,8 +203,8 @@ class TestAbstractInversion:
             convolver=mock.MockConvolver(matrix_shape),
             mapper=mock.MockMapper(
                 matrix_shape=matrix_shape,
-                grid=grid,
-                pixelization_grid=pixelization_grid,
+                source_full_grid=grid,
+                source_pixelization_grid=pixelization_grid,
             ),
             regularization=mock.MockRegularization(matrix_shape),
             settings=aa.SettingsInversion(check_solution=False),
@@ -265,8 +265,8 @@ class TestAbstractInversion:
             convolver=mock.MockConvolver(matrix_shape),
             mapper=mock.MockMapper(
                 matrix_shape=matrix_shape,
-                grid=grid,
-                pixelization_grid=pixelization_grid,
+                source_full_grid=grid,
+                source_pixelization_grid=pixelization_grid,
             ),
             regularization=mock.MockRegularization(matrix_shape),
             settings=aa.SettingsInversion(check_solution=False),
@@ -322,8 +322,8 @@ class TestAbstractInversion:
             convolver=mock.MockConvolver(matrix_shape),
             mapper=mock.MockMapper(
                 matrix_shape=matrix_shape,
-                grid=grid,
-                pixelization_grid=pixelization_grid,
+                source_full_grid=grid,
+                source_pixelization_grid=pixelization_grid,
             ),
             regularization=mock.MockRegularization(matrix_shape),
             settings=aa.SettingsInversion(check_solution=False),
@@ -409,8 +409,8 @@ class TestAbstractInversion:
             convolver=mock.MockConvolver(matrix_shape),
             mapper=mock.MockMapper(
                 matrix_shape=matrix_shape,
-                grid=grid,
-                pixelization_grid=pixelization_grid,
+                source_full_grid=grid,
+                source_pixelization_grid=pixelization_grid,
             ),
             regularization=mock.MockRegularization(matrix_shape),
             settings=aa.SettingsInversion(check_solution=False),
@@ -472,7 +472,7 @@ class TestInversionImagingMatrix:
             image=np.ones(9),
             noise_map=np.ones(9),
             convolver=mock.MockConvolver(matrix_shape),
-            mapper=mock.MockMapper(matrix_shape=matrix_shape, grid=grid),
+            mapper=mock.MockMapper(matrix_shape=matrix_shape, source_full_grid=grid),
             regularization=mock.MockRegularization(matrix_shape),
             settings=aa.SettingsInversion(check_solution=False),
         )
@@ -526,7 +526,7 @@ class TestInversionImagingMatrix:
             image=np.ones(9),
             noise_map=np.ones(9),
             convolver=mock.MockConvolver(matrix_shape),
-            mapper=mock.MockMapper(matrix_shape=matrix_shape, grid=grid),
+            mapper=mock.MockMapper(matrix_shape=matrix_shape, source_full_grid=grid),
             regularization=mock.MockRegularization(matrix_shape),
             settings=aa.SettingsInversion(check_solution=False),
         )
@@ -583,7 +583,9 @@ class TestInversionImagingMatrix:
                 image=np.ones(9),
                 noise_map=np.ones(9),
                 convolver=mock.MockConvolver(matrix_shape),
-                mapper=mock.MockMapper(matrix_shape=matrix_shape, grid=grid),
+                mapper=mock.MockMapper(
+                    matrix_shape=matrix_shape, source_full_grid=grid
+                ),
                 regularization=mock.MockRegularization(matrix_shape),
             )
 

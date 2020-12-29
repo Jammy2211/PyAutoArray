@@ -229,9 +229,9 @@ class MockPixelizationGrid:
 
 
 class MockRegMapper:
-    def __init__(self, pixelization_grid=None, pixel_signals=None):
+    def __init__(self, source_pixelization_grid=None, pixel_signals=None):
 
-        self.pixelization_grid = pixelization_grid
+        self.source_pixelization_grid = source_pixelization_grid
         self.pixel_signals = pixel_signals
 
     def pixel_signals_from_signal_scale(self, signal_scale):
@@ -239,13 +239,15 @@ class MockRegMapper:
 
 
 class MockMapper:
-    def __init__(self, matrix_shape, grid=None, pixelization_grid=None):
+    def __init__(
+        self, matrix_shape, source_full_grid=None, source_pixelization_grid=None
+    ):
 
-        self.grid = grid
-        self.pixelization_grid = pixelization_grid
+        self.source_full_grid = source_full_grid
+        self.source_pixelization_grid = source_pixelization_grid
         self.mapping_matrix = np.ones(matrix_shape)
-        if pixelization_grid is not None:
-            self.pixels = pixelization_grid.shape[0]
+        if source_pixelization_grid is not None:
+            self.pixels = source_pixelization_grid.shape[0]
         else:
             self.pixels = None
 
