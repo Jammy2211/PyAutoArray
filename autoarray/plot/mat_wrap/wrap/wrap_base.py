@@ -3,18 +3,22 @@ import matplotlib
 
 from typing import Callable
 
-backend = conf.get_matplotlib_backend()
 
-if backend not in "default":
-    matplotlib.use(backend)
+def set_backend():
 
-try:
-    hpc_mode = conf.instance["general"]["hpc"]["hpc_mode"]
-except KeyError:
-    hpc_mode = False
+    backend = conf.get_matplotlib_backend()
 
-if hpc_mode:
-    matplotlib.use("Agg")
+    if backend not in "default":
+        matplotlib.use(backend)
+
+    try:
+        hpc_mode = conf.instance["general"]["hpc"]["hpc_mode"]
+    except KeyError:
+        hpc_mode = False
+
+    if hpc_mode:
+        matplotlib.use("Agg")
+
 
 import matplotlib.pyplot as plt
 import matplotlib.colors as colors
@@ -86,7 +90,7 @@ class Units:
             self.in_kpc = None
 
 
-class AbstractMatBase:
+class AbstractMatWrap:
     def __init__(self, kwargs: dict):
         """
         An abstract base class for wrapping matplotlib plotting methods.
@@ -150,7 +154,7 @@ class AbstractMatBase:
 
     @property
     def config_folder(self):
-        return "mat_base"
+        return "mat_wrap"
 
     def config_dict_of_method(self, method_name: str):
         """
@@ -258,7 +262,7 @@ class AbstractMatBase:
         return self.config_dict_of_method(method_name="fill")
 
 
-class Figure(AbstractMatBase):
+class Figure(AbstractMatWrap):
     def __init__(self, **kwargs):
         """
         Sets up the Matplotlib figure before plotting (this is used when plotting individual figures and subplots).
@@ -312,7 +316,7 @@ class Figure(AbstractMatBase):
             plt.close()
 
 
-class Cmap(AbstractMatBase):
+class Cmap(AbstractMatWrap):
     def __init__(self, **kwargs):
         """
         Customizes the Matplotlib colormap and its normalization.
@@ -373,7 +377,7 @@ class Cmap(AbstractMatBase):
             )
 
 
-class Colorbar(AbstractMatBase):
+class Colorbar(AbstractMatWrap):
     def __init__(
         self,
         manual_tick_labels: typing.Union[typing.List[float]] = None,
@@ -455,7 +459,7 @@ class Colorbar(AbstractMatBase):
             cb.ax.set_yticklabels(self.manual_tick_labels)
 
 
-class TickParams(AbstractMatBase):
+class TickParams(AbstractMatWrap):
     def __init__(self, **kwargs):
         """
         The settings used to customize a figure's y and x ticks parameters.
@@ -471,7 +475,7 @@ class TickParams(AbstractMatBase):
         plt.tick_params(**self.config_dict_tick_params)
 
 
-class AbstractTicks(AbstractMatBase):
+class AbstractTicks(AbstractMatWrap):
     def __init__(
         self, manual_values: typing.Union[typing.List[float]] = None, **kwargs
     ):
@@ -653,7 +657,7 @@ class XTicks(AbstractTicks):
         plt.xticks(ticks=ticks, labels=labels, **self.config_dict_ticks)
 
 
-class Title(AbstractMatBase):
+class Title(AbstractMatWrap):
     def __init__(self, **kwargs):
         """
         The settings used to customize the figure's title.
@@ -687,7 +691,7 @@ class Title(AbstractMatBase):
         plt.title(**self.config_dict_title)
 
 
-class AbstractLabel(AbstractMatBase):
+class AbstractLabel(AbstractMatWrap):
     def __init__(self, units: "Units" = None, manual_label: str = None, **kwargs):
         """
         The settings used to customize the figure's title and y and x labels.
@@ -832,7 +836,7 @@ class XLabel(AbstractLabel):
                 )
 
 
-class Legend(AbstractMatBase):
+class Legend(AbstractMatWrap):
     def __init__(self, include=False, **kwargs):
         """
         The settings used to include and customize a legend on a figure.
@@ -949,3 +953,37 @@ class Output:
             plt.savefig(
                 path.join(self.path, f"{self.filename}.png"), bbox_inches="tight"
             )
+
+
+class AbstractMatWrapColored:
+
+    config_dict = None
+
+    def __init__(self, colors):
+
+        self._colors = colors
+
+    @property
+    def colors(self):
+
+        if self._colors is None:
+
+            colors = remove_spaces_and_commas_from_colors(
+                colors=self.config_dict["colors"]
+            )
+
+        else:
+
+            colors = self._colors
+
+        if isinstance(colors, str):
+            return [colors]
+
+        return colors
+
+
+def remove_spaces_and_commas_from_colors(colors):
+
+    colors = [color.strip(",") for color in colors]
+    colors = [color.strip(" ") for color in colors]
+    return list(filter(None, colors))

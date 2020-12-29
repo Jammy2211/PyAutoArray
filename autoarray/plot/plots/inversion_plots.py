@@ -1,9 +1,9 @@
-from autoarray.plot.plotter import plotter, include as inc
+from autoarray.plot.mat_wrap import mat_decorators
 
 
-@inc.set_include
-@plotter.set_plotter_for_subplot
-@plotter.set_subplot_filename
+@mat_decorators.set_plot_defaults_2d
+@mat_decorators.set_plotter_2d_for_subplot
+@mat_decorators.set_subplot_filename
 def subplot_inversion(
     inversion,
     lines=None,
@@ -12,8 +12,8 @@ def subplot_inversion(
     grid=None,
     image_pixel_indexes=None,
     source_pixel_indexes=None,
-    include=None,
-    plotter=None,
+    include_2d=None,
+    plotter_2d=None,
 ):
 
     number_subplots = 6
@@ -29,22 +29,22 @@ def subplot_inversion(
         )
     )
 
-    aspect_inv = plotter.figure.aspect_for_subplot_from_ratio(ratio=ratio)
+    aspect_inv = plotter_2d.figure.aspect_for_subplot_from_ratio(ratio=ratio)
 
-    plotter.open_subplot_figure(number_subplots=number_subplots)
+    plotter_2d.open_subplot_figure(number_subplots=number_subplots)
 
-    plotter.setup_subplot(number_subplots=number_subplots, subplot_index=1)
+    plotter_2d.setup_subplot(number_subplots=number_subplots, subplot_index=1)
 
     reconstructed_image(
         inversion=inversion,
         lines=lines,
         image_positions=image_positions,
         grid=grid,
-        include=include,
-        plotter=plotter,
+        include_2d=include_2d,
+        plotter_2d=plotter_2d,
     )
 
-    plotter.setup_subplot(
+    plotter_2d.setup_subplot(
         number_subplots=number_subplots, subplot_index=2, aspect=aspect_inv
     )
 
@@ -52,13 +52,13 @@ def subplot_inversion(
         inversion=inversion,
         source_positions=source_positions,
         lines=lines,
-        include=include,
-        plotter=plotter,
+        include_2d=include_2d,
+        plotter_2d=plotter_2d,
         image_pixel_indexes=image_pixel_indexes,
         source_pixel_indexes=source_pixel_indexes,
     )
 
-    plotter.setup_subplot(
+    plotter_2d.setup_subplot(
         number_subplots=number_subplots, subplot_index=3, aspect=aspect_inv
     )
 
@@ -66,11 +66,11 @@ def subplot_inversion(
         inversion=inversion,
         image_pixel_indexes=image_pixel_indexes,
         source_pixel_indexes=source_pixel_indexes,
-        include=include,
-        plotter=plotter,
+        include_2d=include_2d,
+        plotter_2d=plotter_2d,
     )
 
-    plotter.setup_subplot(
+    plotter_2d.setup_subplot(
         number_subplots=number_subplots, subplot_index=4, aspect=aspect_inv
     )
 
@@ -78,11 +78,11 @@ def subplot_inversion(
         inversion=inversion,
         image_pixel_indexes=image_pixel_indexes,
         source_pixel_indexes=source_pixel_indexes,
-        include=include,
-        plotter=plotter,
+        include_2d=include_2d,
+        plotter_2d=plotter_2d,
     )
 
-    plotter.setup_subplot(
+    plotter_2d.setup_subplot(
         number_subplots=number_subplots, subplot_index=5, aspect=aspect_inv
     )
 
@@ -90,11 +90,11 @@ def subplot_inversion(
         inversion=inversion,
         image_pixel_indexes=image_pixel_indexes,
         source_pixel_indexes=source_pixel_indexes,
-        include=include,
-        plotter=plotter,
+        include_2d=include_2d,
+        plotter_2d=plotter_2d,
     )
 
-    plotter.setup_subplot(
+    plotter_2d.setup_subplot(
         number_subplots=number_subplots, subplot_index=6, aspect=aspect_inv
     )
 
@@ -102,13 +102,13 @@ def subplot_inversion(
         inversion=inversion,
         image_pixel_indexes=image_pixel_indexes,
         source_pixel_indexes=source_pixel_indexes,
-        include=include,
-        plotter=plotter,
+        include_2d=include_2d,
+        plotter_2d=plotter_2d,
     )
 
-    plotter.output.subplot_to_figure()
+    plotter_2d.output.subplot_to_figure()
 
-    plotter.figure.close()
+    plotter_2d.figure.close()
 
 
 def individuals(
@@ -125,8 +125,8 @@ def individuals(
     plot_regularization_weight_map=False,
     plot_interpolated_reconstruction=False,
     plot_interpolated_errors=False,
-    include=None,
-    plotter=None,
+    include_2d=None,
+    plotter_2d=None,
 ):
     """Plot the model datas_ of an analysis, using the *Fitter* class object.
 
@@ -148,8 +148,8 @@ def individuals(
         reconstructed_image(
             inversion=inversion,
             image_positions=image_positions,
-            include=include,
-            plotter=plotter,
+            include_2d=include_2d,
+            plotter_2d=plotter_2d,
         )
 
     if plot_reconstruction:
@@ -158,29 +158,35 @@ def individuals(
             inversion=inversion,
             source_positions=source_positions,
             lines=lines,
-            include=include,
-            plotter=plotter,
+            include_2d=include_2d,
+            plotter_2d=plotter_2d,
         )
 
     if plot_errors:
 
-        errors(inversion=inversion, include=include, plotter=plotter)
+        errors(inversion=inversion, include_2d=include_2d, plotter_2d=plotter_2d)
 
     if plot_residual_map:
 
-        residual_map(inversion=inversion, include=include, plotter=plotter)
+        residual_map(inversion=inversion, include_2d=include_2d, plotter_2d=plotter_2d)
 
     if plot_normalized_residual_map:
 
-        normalized_residual_map(inversion=inversion, include=include, plotter=plotter)
+        normalized_residual_map(
+            inversion=inversion, include_2d=include_2d, plotter_2d=plotter_2d
+        )
 
     if plot_chi_squared_map:
 
-        chi_squared_map(inversion=inversion, include=include, plotter=plotter)
+        chi_squared_map(
+            inversion=inversion, include_2d=include_2d, plotter_2d=plotter_2d
+        )
 
     if plot_regularization_weight_map:
 
-        regularization_weights(inversion=inversion, include=include, plotter=plotter)
+        regularization_weights(
+            inversion=inversion, include_2d=include_2d, plotter_2d=plotter_2d
+        )
 
     if plot_interpolated_reconstruction:
 
@@ -188,247 +194,256 @@ def individuals(
             inversion=inversion,
             source_positions=source_positions,
             lines=lines,
-            include=include,
-            plotter=plotter,
+            include_2d=include_2d,
+            plotter_2d=plotter_2d,
         )
 
     if plot_interpolated_errors:
 
         interpolated_errors(
-            inversion=inversion, lines=lines, include=include, plotter=plotter
+            inversion=inversion,
+            lines=lines,
+            include_2d=include_2d,
+            plotter_2d=plotter_2d,
         )
 
 
-@inc.set_include
-@plotter.set_plotter_for_figure
-@plotter.set_labels
+@mat_decorators.set_plot_defaults_2d
+@mat_decorators.set_labels
 def reconstructed_image(
-    inversion, grid=None, lines=None, image_positions=None, include=None, plotter=None
+    inversion,
+    grid=None,
+    lines=None,
+    image_positions=None,
+    include_2d=None,
+    plotter_2d=None,
 ):
 
-    plotter._plot_array(
+    plotter_2d._plot_array(
         array=inversion.mapped_reconstructed_image,
-        mask=include.mask_from_grid(grid=inversion.mapper.grid),
+        mask=include_2d.mask_from_grid(grid=inversion.mapper.grid),
         lines=lines,
         positions=image_positions,
         grid=grid,
-        include_origin=include.origin,
+        include_origin=include_2d.origin,
     )
 
 
-@inc.set_include
-@plotter.set_plotter_for_figure
-@plotter.set_labels
+@mat_decorators.set_plot_defaults_2d
+@mat_decorators.set_labels
 def reconstruction(
     inversion,
     lines=None,
     source_positions=None,
     image_pixel_indexes=None,
     source_pixel_indexes=None,
-    include=None,
-    plotter=None,
+    include_2d=None,
+    plotter_2d=None,
 ):
 
     source_pixel_values = inversion.mapper.reconstructed_pixelization_from_solution_vector(
         solution_vector=inversion.reconstruction
     )
 
-    plotter._plot_mapper(
+    plotter_2d._plot_mapper(
         mapper=inversion.mapper,
         source_pixel_values=source_pixel_values,
         lines=lines,
         positions=source_positions,
         image_pixel_indexes=image_pixel_indexes,
         source_pixel_indexes=source_pixel_indexes,
-        include_origin=include.origin,
-        include_pixelization_grid=include.inversion_pixelization_grid,
-        include_grid=include.inversion_grid,
-        include_border=include.inversion_border,
+        include_origin=include_2d.origin,
+        include_pixelization_grid=include_2d.inversion_pixelization_grid,
+        include_grid=include_2d.inversion_grid,
+        include_border=include_2d.inversion_border,
     )
 
 
-@inc.set_include
-@plotter.set_plotter_for_figure
-@plotter.set_labels
+@mat_decorators.set_plot_defaults_2d
+@mat_decorators.set_labels
 def errors(
     inversion,
     source_positions=None,
     lines=None,
     image_pixel_indexes=None,
     source_pixel_indexes=None,
-    include=None,
-    plotter=None,
+    include_2d=None,
+    plotter_2d=None,
 ):
 
     source_pixel_values = inversion.mapper.reconstructed_pixelization_from_solution_vector(
         solution_vector=inversion.errors
     )
 
-    plotter._plot_mapper(
+    plotter_2d._plot_mapper(
         mapper=inversion.mapper,
         source_pixel_values=source_pixel_values,
         lines=lines,
         positions=source_positions,
         image_pixel_indexes=image_pixel_indexes,
         source_pixel_indexes=source_pixel_indexes,
-        include_origin=include.origin,
-        include_pixelization_grid=include.inversion_pixelization_grid,
-        include_grid=include.inversion_grid,
-        include_border=include.inversion_border,
+        include_origin=include_2d.origin,
+        include_pixelization_grid=include_2d.inversion_pixelization_grid,
+        include_grid=include_2d.inversion_grid,
+        include_border=include_2d.inversion_border,
     )
 
 
-@inc.set_include
-@plotter.set_plotter_for_figure
-@plotter.set_labels
+@mat_decorators.set_plot_defaults_2d
+@mat_decorators.set_labels
 def residual_map(
     inversion,
     source_positions=None,
     lines=None,
     image_pixel_indexes=None,
     source_pixel_indexes=None,
-    include=None,
-    plotter=None,
+    include_2d=None,
+    plotter_2d=None,
 ):
 
     source_pixel_values = inversion.mapper.reconstructed_pixelization_from_solution_vector(
         solution_vector=inversion.residual_map
     )
 
-    plotter._plot_mapper(
+    plotter_2d._plot_mapper(
         mapper=inversion.mapper,
         source_pixel_values=source_pixel_values,
         lines=lines,
         positions=source_positions,
         image_pixel_indexes=image_pixel_indexes,
         source_pixel_indexes=source_pixel_indexes,
-        include_origin=include.origin,
-        include_pixelization_grid=include.inversion_pixelization_grid,
-        include_grid=include.inversion_grid,
-        include_border=include.inversion_border,
+        include_origin=include_2d.origin,
+        include_pixelization_grid=include_2d.inversion_pixelization_grid,
+        include_grid=include_2d.inversion_grid,
+        include_border=include_2d.inversion_border,
     )
 
 
-@inc.set_include
-@plotter.set_plotter_for_figure
-@plotter.set_labels
+@mat_decorators.set_plot_defaults_2d
+@mat_decorators.set_labels
 def normalized_residual_map(
     inversion,
     source_positions=None,
     lines=None,
     image_pixel_indexes=None,
     source_pixel_indexes=None,
-    include=None,
-    plotter=None,
+    include_2d=None,
+    plotter_2d=None,
 ):
 
     source_pixel_values = inversion.mapper.reconstructed_pixelization_from_solution_vector(
         solution_vector=inversion.normalized_residual_map
     )
 
-    plotter._plot_mapper(
+    plotter_2d._plot_mapper(
         mapper=inversion.mapper,
         source_pixel_values=source_pixel_values,
         lines=lines,
         positions=source_positions,
         image_pixel_indexes=image_pixel_indexes,
         source_pixel_indexes=source_pixel_indexes,
-        include_origin=include.origin,
-        include_pixelization_grid=include.inversion_pixelization_grid,
-        include_grid=include.inversion_grid,
-        include_border=include.inversion_border,
+        include_origin=include_2d.origin,
+        include_pixelization_grid=include_2d.inversion_pixelization_grid,
+        include_grid=include_2d.inversion_grid,
+        include_border=include_2d.inversion_border,
     )
 
 
-@inc.set_include
-@plotter.set_plotter_for_figure
-@plotter.set_labels
+@mat_decorators.set_plot_defaults_2d
+@mat_decorators.set_labels
 def chi_squared_map(
     inversion,
     source_positions=None,
     lines=None,
     image_pixel_indexes=None,
     source_pixel_indexes=None,
-    include=None,
-    plotter=None,
+    include_2d=None,
+    plotter_2d=None,
 ):
 
     source_pixel_values = inversion.mapper.reconstructed_pixelization_from_solution_vector(
         solution_vector=inversion.chi_squared_map
     )
 
-    plotter._plot_mapper(
+    plotter_2d._plot_mapper(
         mapper=inversion.mapper,
         source_pixel_values=source_pixel_values,
         lines=lines,
         positions=source_positions,
         image_pixel_indexes=image_pixel_indexes,
         source_pixel_indexes=source_pixel_indexes,
-        include_origin=include.origin,
-        include_pixelization_grid=include.inversion_pixelization_grid,
-        include_grid=include.inversion_grid,
-        include_border=include.inversion_border,
+        include_origin=include_2d.origin,
+        include_pixelization_grid=include_2d.inversion_pixelization_grid,
+        include_grid=include_2d.inversion_grid,
+        include_border=include_2d.inversion_border,
     )
 
 
-@inc.set_include
-@plotter.set_plotter_for_figure
-@plotter.set_labels
+@mat_decorators.set_plot_defaults_2d
+@mat_decorators.set_labels
 def regularization_weights(
     inversion,
     source_positions=None,
     lines=None,
     image_pixel_indexes=None,
     source_pixel_indexes=None,
-    include=None,
-    plotter=None,
+    include_2d=None,
+    plotter_2d=None,
 ):
 
     regularization_weights = inversion.regularization.regularization_weights_from_mapper(
         mapper=inversion.mapper
     )
 
-    plotter._plot_mapper(
+    plotter_2d._plot_mapper(
         mapper=inversion.mapper,
         source_pixel_values=regularization_weights,
         lines=lines,
         positions=source_positions,
         image_pixel_indexes=image_pixel_indexes,
         source_pixel_indexes=source_pixel_indexes,
-        include_origin=include.origin,
-        include_pixelization_grid=include.inversion_pixelization_grid,
-        include_grid=include.inversion_grid,
-        include_border=include.inversion_border,
+        include_origin=include_2d.origin,
+        include_pixelization_grid=include_2d.inversion_pixelization_grid,
+        include_grid=include_2d.inversion_grid,
+        include_border=include_2d.inversion_border,
     )
 
 
-@inc.set_include
-@plotter.set_plotter_for_figure
-@plotter.set_labels
+@mat_decorators.set_plot_defaults_2d
+@mat_decorators.set_labels
 def interpolated_reconstruction(
-    inversion, lines=None, source_positions=None, grid=None, include=None, plotter=None
+    inversion,
+    lines=None,
+    source_positions=None,
+    grid=None,
+    include_2d=None,
+    plotter_2d=None,
 ):
 
-    plotter._plot_array(
+    plotter_2d._plot_array(
         array=inversion.interpolated_reconstruction_from_shape_2d(),
         lines=lines,
         positions=source_positions,
         grid=grid,
-        include_origin=include.origin,
+        include_origin=include_2d.origin,
     )
 
 
-@inc.set_include
-@plotter.set_plotter_for_figure
-@plotter.set_labels
+@mat_decorators.set_plot_defaults_2d
+@mat_decorators.set_labels
 def interpolated_errors(
-    inversion, lines=None, source_positions=None, grid=None, include=None, plotter=None
+    inversion,
+    lines=None,
+    source_positions=None,
+    grid=None,
+    include_2d=None,
+    plotter_2d=None,
 ):
 
-    plotter._plot_array(
+    plotter_2d._plot_array(
         array=inversion.interpolated_errors_from_shape_2d(),
         lines=lines,
         positions=source_positions,
         grid=grid,
-        include_origin=include.origin,
+        include_origin=include_2d.origin,
     )

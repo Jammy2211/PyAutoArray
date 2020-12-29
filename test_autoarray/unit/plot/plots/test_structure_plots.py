@@ -29,7 +29,7 @@ class TestPlotArray:
 
         aplt.Array(
             array=array_7x7,
-            plotter=aplt.Plotter(
+            plotter_2d=aplt.Plotter2D(
                 output=aplt.Output(path=plot_path, filename="array1", format="png")
             ),
         )
@@ -38,15 +38,15 @@ class TestPlotArray:
 
         aplt.Array(
             array=array_7x7,
-            include=aplt.Include(origin=True, mask=True, border=True),
-            plotter=aplt.Plotter(
+            include_2d=aplt.Include2D(origin=True, mask=True, border=True),
+            plotter_2d=aplt.Plotter2D(
                 output=aplt.Output(path=plot_path, filename="array2", format="png")
             ),
         )
 
         assert path.join(plot_path, "array2.png") in plot_patch.paths
 
-        visuals = aplt.Visuals(
+        visuals_2d = aplt.Visuals2D(
             origin=grid_irregular_grouped_7x7,
             mask=mask_7x7,
             border=mask_7x7.geometry.border_grid_sub_1.in_1d_binned,
@@ -58,8 +58,8 @@ class TestPlotArray:
 
         aplt.Array(
             array=array_7x7,
-            visuals=visuals,
-            plotter=aplt.Plotter(
+            visuals_2d=visuals_2d,
+            plotter_2d=aplt.Plotter2D(
                 output=aplt.Output(path=plot_path, filename="array3", format="png")
             ),
         )
@@ -73,11 +73,11 @@ class TestPlotArray:
         if path.exists(plot_path):
             shutil.rmtree(plot_path)
 
-        plotter = aplt.Plotter(
+        plotter_2d = aplt.Plotter2D(
             output=aplt.Output(path=plot_path, filename="array", format="fits")
         )
 
-        aplt.Array(array=array_7x7, plotter=plotter)
+        aplt.Array(array=array_7x7, plotter_2d=plotter_2d)
 
         arr = aa.util.array.numpy_array_2d_from_fits(
             file_path=path.join(plot_path, "array.fits"), hdu=0
@@ -100,7 +100,7 @@ class TestPlotFrame:
 
         aplt.Frame(
             frame=frame_7x7,
-            plotter=aplt.Plotter(
+            plotter_2d=aplt.Plotter2D(
                 output=aplt.Output(path=plot_path, filename="frame1", format="png")
             ),
         )
@@ -109,7 +109,7 @@ class TestPlotFrame:
 
         aplt.Frame(
             frame=frame_7x7,
-            include=aplt.Include(
+            include_2d=aplt.Include2D(
                 origin=True,
                 mask=True,
                 border=True,
@@ -117,14 +117,14 @@ class TestPlotFrame:
                 serial_prescan=True,
                 serial_overscan=True,
             ),
-            plotter=aplt.Plotter(
+            plotter_2d=aplt.Plotter2D(
                 output=aplt.Output(path=plot_path, filename="frame2", format="png")
             ),
         )
 
         assert path.join(plot_path, "frame2.png") in plot_patch.paths
 
-        visuals = aplt.Visuals(
+        visuals_2d = aplt.Visuals2D(
             origin=grid_irregular_grouped_7x7,
             mask=mask_7x7,
             border=mask_7x7.geometry.border_grid_sub_1.in_1d_binned,
@@ -139,8 +139,8 @@ class TestPlotFrame:
 
         aplt.Frame(
             frame=frame_7x7,
-            visuals=visuals,
-            plotter=aplt.Plotter(
+            visuals_2d=visuals_2d,
+            plotter_2d=aplt.Plotter2D(
                 output=aplt.Output(path=plot_path, filename="frame3", format="png")
             ),
         )
@@ -154,11 +154,11 @@ class TestPlotFrame:
         if path.exists(plot_path):
             shutil.rmtree(plot_path)
 
-        plotter = aplt.Plotter(
+        plotter_2d = aplt.Plotter2D(
             output=aplt.Output(path=plot_path, filename="frame", format="fits")
         )
 
-        aplt.Frame(frame=frame_7x7, plotter=plotter)
+        aplt.Frame(frame=frame_7x7, plotter_2d=plotter_2d)
 
         frame = aa.util.array.numpy_array_2d_from_fits(
             file_path=path.join(plot_path, "frame.fits"), hdu=0
@@ -186,7 +186,7 @@ class TestPlotGrid:
             axis_limits=[-1.5, 1.5, -2.5, 2.5],
             indexes=[0, 1, 2, 14],
             symmetric_around_centre=False,
-            plotter=aplt.Plotter(
+            plotter_2d=aplt.Plotter2D(
                 output=aplt.Output(path=plot_path, filename="grid1", format="png")
             ),
         )
@@ -198,16 +198,16 @@ class TestPlotGrid:
             color_array=color_array,
             axis_limits=[-1.5, 1.5, -2.5, 2.5],
             indexes=[0, 1, 2, 14],
-            include=aplt.Include(origin=True, mask=True, border=True),
+            include_2d=aplt.Include2D(origin=True, mask=True, border=True),
             symmetric_around_centre=True,
-            plotter=aplt.Plotter(
+            plotter_2d=aplt.Plotter2D(
                 output=aplt.Output(path=plot_path, filename="grid2", format="png")
             ),
         )
 
         assert path.join(plot_path, "grid2.png") in plot_patch.paths
 
-        visuals = aplt.Visuals(
+        visuals_2d = aplt.Visuals2D(
             origin=grid_irregular_grouped_7x7,
             mask=mask_7x7,
             border=mask_7x7.geometry.border_grid_sub_1.in_1d_binned,
@@ -219,12 +219,12 @@ class TestPlotGrid:
 
         aplt.Grid(
             grid=grid_7x7,
-            visuals=visuals,
+            visuals_2d=visuals_2d,
             color_array=color_array,
             axis_limits=[-1.5, 1.5, -2.5, 2.5],
             indexes=[0, 1, 2, 14],
             symmetric_around_centre=True,
-            plotter=aplt.Plotter(
+            plotter_2d=aplt.Plotter2D(
                 output=aplt.Output(path=plot_path, filename="grid3", format="png")
             ),
         )
@@ -241,7 +241,7 @@ class TestPlotMapper:
             mapper=rectangular_mapper_7x7_3x3,
             image_pixel_indexes=[[(0, 0), (0, 1)], [(1, 2)]],
             source_pixel_indexes=[[0, 1], [2]],
-            plotter=aplt.Plotter(
+            plotter_2d=aplt.Plotter2D(
                 output=aplt.Output(path=plot_path, filename="mapper1", format="png")
             ),
         )
@@ -252,7 +252,7 @@ class TestPlotMapper:
             mapper=rectangular_mapper_7x7_3x3,
             image_pixel_indexes=[[(0, 0), (0, 1)], [(1, 2)]],
             source_pixel_indexes=[[0, 1], [2]],
-            plotter=aplt.Plotter(
+            plotter_2d=aplt.Plotter2D(
                 output=aplt.Output(path=plot_path, filename="mapper2", format="png")
             ),
         )
@@ -263,7 +263,7 @@ class TestPlotMapper:
             mapper=rectangular_mapper_7x7_3x3,
             image_pixel_indexes=[[(0, 0), (0, 1)], [(1, 2)]],
             source_pixel_indexes=[[0, 1], [2]],
-            plotter=aplt.Plotter(
+            plotter_2d=aplt.Plotter2D(
                 output=aplt.Output(path=plot_path, filename="mapper3", format="png")
             ),
         )
@@ -278,7 +278,7 @@ class TestPlotMapper:
             mapper=voronoi_mapper_9_3x3,
             image_pixel_indexes=[[(0, 0), (0, 1)], [(1, 2)]],
             source_pixel_indexes=[[0, 1], [2]],
-            plotter=aplt.Plotter(
+            plotter_2d=aplt.Plotter2D(
                 output=aplt.Output(path=plot_path, filename="mapper1", format="png")
             ),
         )
@@ -289,7 +289,7 @@ class TestPlotMapper:
             mapper=voronoi_mapper_9_3x3,
             image_pixel_indexes=[[(0, 0), (0, 1)], [(1, 2)]],
             source_pixel_indexes=[[0, 1], [2]],
-            plotter=aplt.Plotter(
+            plotter_2d=aplt.Plotter2D(
                 output=aplt.Output(path=plot_path, filename="mapper2", format="png")
             ),
         )
@@ -300,7 +300,7 @@ class TestPlotMapper:
             mapper=voronoi_mapper_9_3x3,
             image_pixel_indexes=[[(0, 0), (0, 1)], [(1, 2)]],
             source_pixel_indexes=[[0, 1], [2]],
-            plotter=aplt.Plotter(
+            plotter_2d=aplt.Plotter2D(
                 output=aplt.Output(path=plot_path, filename="mapper3", format="png")
             ),
         )
@@ -318,7 +318,7 @@ class TestPlotLine:
             vertical_lines=[1.0, 2.0],
             label="line0",
             vertical_line_labels=["line1", "line2"],
-            plotter=aplt.Plotter(
+            plotter_1d=aplt.Plotter1D(
                 output=aplt.Output(path=plot_path, filename="line1", format="png")
             ),
         )
@@ -332,7 +332,7 @@ class TestPlotLine:
             vertical_lines=[1.0, 2.0],
             label="line0",
             vertical_line_labels=["line1", "line2"],
-            plotter=aplt.Plotter(
+            plotter_1d=aplt.Plotter1D(
                 output=aplt.Output(path=plot_path, filename="line2", format="png")
             ),
         )
@@ -346,7 +346,7 @@ class TestPlotLine:
             vertical_lines=[1.0, 2.0],
             label="line0",
             vertical_line_labels=["line1", "line2"],
-            plotter=aplt.Plotter(
+            plotter_1d=aplt.Plotter1D(
                 output=aplt.Output(path=plot_path, filename="line3", format="png")
             ),
         )

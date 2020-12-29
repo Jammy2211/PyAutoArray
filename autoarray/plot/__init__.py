@@ -1,32 +1,25 @@
-from autoarray.plot.mat_wrap.mat_base import (
+from autoarray.plot.mat_wrap.wrap.wrap_base import (
     Units,
     Figure,
     Cmap,
     Colorbar,
-    Title,
     TickParams,
     YTicks,
     XTicks,
+    Title,
     YLabel,
     XLabel,
     Legend,
     Output,
 )
-
-from autoarray.plot.plotter.visuals import Visuals
-from autoarray.plot.plotter.include import Include
-from autoarray.plot.plotter.plotter import Plotter
-
-from autoarray.plot.mat_wrap.mat_structure import (
+from autoarray.plot.mat_wrap.wrap.wrap_1d import LinePlot
+from autoarray.plot.mat_wrap.wrap.wrap_2d import (
     ArrayOverlay,
     GridScatter,
-    LinePlot,
-    PatchOverlay,
+    GridPlot,
     VectorFieldQuiver,
+    PatchOverlay,
     VoronoiDrawer,
-)
-
-from autoarray.plot.mat_wrap.mat_obj import (
     OriginScatter,
     MaskScatter,
     BorderScatter,
@@ -34,9 +27,13 @@ from autoarray.plot.mat_wrap.mat_obj import (
     IndexScatter,
     PixelizationGridScatter,
     ParallelOverscanPlot,
-    SerialOverscanPlot,
     SerialPrescanPlot,
+    SerialOverscanPlot,
 )
+
+from autoarray.plot.mat_wrap.plotter import Plotter1D, Plotter2D
+from autoarray.plot.mat_wrap.include import Include1D, Include2D
+from autoarray.plot.mat_wrap.visuals import Visuals1D, Visuals2D
 
 from autoarray.plot.plots.structure_plots import plot_array as Array
 from autoarray.plot.plots.structure_plots import plot_frame as Frame
