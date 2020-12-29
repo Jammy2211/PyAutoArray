@@ -27,7 +27,7 @@ class TestRegularizationinstance:
             pixel_neighbors=pixel_neighbors, pixel_neighbors_size=pixel_neighbors_size
         )
 
-        mapper = MockRegMapper(pixelization_grid=pixelization_grid)
+        mapper = MockRegMapper(source_pixelization_grid=pixelization_grid)
 
         reg = aa.reg.Constant(coefficient=1.0)
         regularization_matrix = reg.regularization_matrix_from_mapper(mapper=mapper)
@@ -83,7 +83,7 @@ class TestRegularizationWeighted:
         )
 
         mapper = MockRegMapper(
-            pixelization_grid=pixelization_grid, pixel_signals=pixel_signals
+            source_pixelization_grid=pixelization_grid, pixel_signals=pixel_signals
         )
 
         regularization_matrix = reg.regularization_matrix_from_mapper(mapper=mapper)
