@@ -1,11 +1,20 @@
 from autoarray.plot.mat_wrap import mat_decorators
+from autoarray.plot.mat_wrap import visuals as vis
+from autoarray.plot.mat_wrap import include as inc
+from autoarray.plot.mat_wrap import plotter as p
+import typing
 from autoarray.plot.plots import structure_plots
 
 
 @mat_decorators.set_plot_defaults_2d
 @mat_decorators.set_plotter_2d_for_subplot
 @mat_decorators.set_subplot_filename
-def subplot_imaging(imaging, visuals_2d=None, include_2d=None, plotter_2d=None):
+def subplot_imaging(
+    imaging,
+    visuals_2d: typing.Optional[vis.Visuals2D] = None,
+    include_2d: typing.Optional[inc.Include2D] = None,
+    plotter_2d: typing.Optional[p.Plotter2D] = None,
+):
     """Plot the imaging data_type as a sub-plotter_2d of all its quantites (e.g. the dataset, noise_map, PSF, Signal-to_noise-map, \
      etc).
 
@@ -90,9 +99,9 @@ def subplot_imaging(imaging, visuals_2d=None, include_2d=None, plotter_2d=None):
 
 def individual(
     imaging,
-    visuals_2d=None,
-    include_2d=None,
-    plotter_2d=None,
+    visuals_2d: typing.Optional[vis.Visuals2D] = None,
+    include_2d: typing.Optional[inc.Include2D] = None,
+    plotter_2d: typing.Optional[p.Plotter2D] = None,
     plot_image=False,
     plot_noise_map=False,
     plot_psf=False,
@@ -180,7 +189,12 @@ def individual(
 
 @mat_decorators.set_plot_defaults_2d
 @mat_decorators.set_labels
-def image(imaging, visuals_2d=None, include_2d=None, plotter_2d=None):
+def image(
+    imaging,
+    visuals_2d: typing.Optional[vis.Visuals2D] = None,
+    include_2d: typing.Optional[inc.Include2D] = None,
+    plotter_2d: typing.Optional[p.Plotter2D] = None,
+):
     """Plot the observed data_type of the imaging data_type.
 
     Set *autolens.data_type.array.plotter_2d.plotter_2d* for a description of all innput parameters not described below.
@@ -206,7 +220,12 @@ def image(imaging, visuals_2d=None, include_2d=None, plotter_2d=None):
 
 @mat_decorators.set_plot_defaults_2d
 @mat_decorators.set_labels
-def noise_map(imaging, visuals_2d=None, include_2d=None, plotter_2d=None):
+def noise_map(
+    imaging,
+    visuals_2d: typing.Optional[vis.Visuals2D] = None,
+    include_2d: typing.Optional[inc.Include2D] = None,
+    plotter_2d: typing.Optional[p.Plotter2D] = None,
+):
     """Plot the noise_map of the imaging data_type.
 
     Set *autolens.data_type.array.plotter_2d.plotter_2d* for a description of all innput parameters not described below.
@@ -229,7 +248,12 @@ def noise_map(imaging, visuals_2d=None, include_2d=None, plotter_2d=None):
 
 @mat_decorators.set_plot_defaults_2d
 @mat_decorators.set_labels
-def psf(imaging, visuals_2d=None, include_2d=None, plotter_2d=None):
+def psf(
+    imaging,
+    visuals_2d: typing.Optional[vis.Visuals2D] = None,
+    include_2d: typing.Optional[inc.Include2D] = None,
+    plotter_2d: typing.Optional[p.Plotter2D] = None,
+):
     """Plot the PSF of the imaging data_type.
 
     Set *autolens.data_type.array.plotter_2d.plotter_2d* for a description of all innput parameters not described below.
@@ -252,7 +276,12 @@ def psf(imaging, visuals_2d=None, include_2d=None, plotter_2d=None):
 
 @mat_decorators.set_plot_defaults_2d
 @mat_decorators.set_labels
-def inverse_noise_map(imaging, visuals_2d=None, include_2d=None, plotter_2d=None):
+def inverse_noise_map(
+    imaging,
+    visuals_2d: typing.Optional[vis.Visuals2D] = None,
+    include_2d: typing.Optional[inc.Include2D] = None,
+    plotter_2d: typing.Optional[p.Plotter2D] = None,
+):
     """Plot the noise_map of the imaging data_type.
 
     Set *autolens.data_type.array.plotter_2d.plotter_2d* for a description of all innput parameters not described below.
@@ -275,7 +304,12 @@ def inverse_noise_map(imaging, visuals_2d=None, include_2d=None, plotter_2d=None
 
 @mat_decorators.set_plot_defaults_2d
 @mat_decorators.set_labels
-def signal_to_noise_map(imaging, visuals_2d=None, include_2d=None, plotter_2d=None):
+def signal_to_noise_map(
+    imaging,
+    visuals_2d: typing.Optional[vis.Visuals2D] = None,
+    include_2d: typing.Optional[inc.Include2D] = None,
+    plotter_2d: typing.Optional[p.Plotter2D] = None,
+):
     """Plot the signal-to-noise_map of the imaging data_type.
 
     Set *autolens.data_type.array.plotter_2d.plotter_2d* for a description of all innput parameters not described below.
@@ -298,7 +332,10 @@ def signal_to_noise_map(imaging, visuals_2d=None, include_2d=None, plotter_2d=No
 @mat_decorators.set_plot_defaults_2d
 @mat_decorators.set_labels
 def absolute_signal_to_noise_map(
-    imaging, visuals_2d=None, include_2d=None, plotter_2d=None
+    imaging,
+    visuals_2d: typing.Optional[vis.Visuals2D] = None,
+    include_2d: typing.Optional[inc.Include2D] = None,
+    plotter_2d: typing.Optional[p.Plotter2D] = None,
 ):
     """Plot the signal-to-noise_map of the imaging data_type.
 
@@ -322,7 +359,10 @@ def absolute_signal_to_noise_map(
 @mat_decorators.set_plot_defaults_2d
 @mat_decorators.set_labels
 def potential_chi_squared_map(
-    imaging, visuals_2d=None, include_2d=None, plotter_2d=None
+    imaging,
+    visuals_2d: typing.Optional[vis.Visuals2D] = None,
+    include_2d: typing.Optional[inc.Include2D] = None,
+    plotter_2d: typing.Optional[p.Plotter2D] = None,
 ):
     """Plot the signal-to-noise_map of the imaging data_type.
 

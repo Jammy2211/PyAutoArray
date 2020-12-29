@@ -5,10 +5,11 @@ wrap_base.set_backend()
 import matplotlib.pyplot as plt
 import numpy as np
 import copy
+import typing
 
 from autoarray import exc
 from autoarray.plot.mat_wrap import wrap
-from autoarray.plot.mat_wrap.wrap import wrap_2d
+from autoarray.plot.mat_wrap import visuals as vis
 import os
 from autoarray.inversion import mappers
 
@@ -668,7 +669,12 @@ class Plotter2D(AbstractPlotter):
         if not self.for_subplot and not bypass_output:
             self.figure.close()
 
-    def _plot_frame(self, frame, visuals_2d=None, bypass_output=False):
+    def _plot_frame(
+        self,
+        frame,
+        visuals_2d: typing.Optional[vis.Visuals2D] = None,
+        bypass_output=False,
+    ):
         """Plot an array of data_type as a figure.
 
         """
@@ -723,7 +729,7 @@ class Plotter2D(AbstractPlotter):
     def _plot_grid(
         self,
         grid,
-        visuals_2d=None,
+        visuals_2d: typing.Optional[vis.Visuals2D] = None,
         color_array=None,
         axis_limits=None,
         indexes=None,
@@ -799,11 +805,11 @@ class Plotter2D(AbstractPlotter):
 
     def _plot_mapper(
         self,
-        mapper,
-        visuals_2d=None,
-        source_pixel_values=None,
-        image_pixel_indexes=None,
-        source_pixel_indexes=None,
+        mapper: mappers.Mapper,
+        visuals_2d: typing.Optional[vis.Visuals2D] = None,
+        source_pixelilzation_values=None,
+        full_indexes=None,
+        pixelization_indexes=None,
         bypass_output=False,
     ):
 
@@ -812,9 +818,9 @@ class Plotter2D(AbstractPlotter):
             self._plot_rectangular_mapper(
                 mapper=mapper,
                 visuals_2d=visuals_2d,
-                source_pixel_values=source_pixel_values,
-                image_pixel_indexes=image_pixel_indexes,
-                source_pixel_indexes=source_pixel_indexes,
+                source_pixelilzation_values=source_pixelilzation_values,
+                full_indexes=full_indexes,
+                pixelization_indexes=pixelization_indexes,
                 bypass_output=bypass_output,
             )
 
@@ -823,54 +829,52 @@ class Plotter2D(AbstractPlotter):
             self._plot_voronoi_mapper(
                 mapper=mapper,
                 visuals_2d=visuals_2d,
-                source_pixel_values=source_pixel_values,
-                image_pixel_indexes=image_pixel_indexes,
-                source_pixel_indexes=source_pixel_indexes,
+                source_pixelilzation_values=source_pixelilzation_values,
+                full_indexes=full_indexes,
+                pixelization_indexes=pixelization_indexes,
                 bypass_output=bypass_output,
             )
 
     def _plot_rectangular_mapper(
         self,
-        mapper,
-        visuals_2d=None,
-        source_pixel_values=None,
-        image_pixel_indexes=None,
-        source_pixel_indexes=None,
+        mapper: mappers.MapperRectangular,
+        visuals_2d: typing.Optional[vis.Visuals2D] = None,
+        source_pixelilzation_values=None,
+        full_indexes=None,
+        pixelization_indexes=None,
         bypass_output=False,
     ):
 
         self.figure.open()
 
-        if source_pixel_values is not None:
+        if source_pixelilzation_values is not None:
             self._plot_array(
-                array=source_pixel_values,
-                lines=lines,
-                positions=positions,
-                include_origin=include_origin,
+                array=source_pixelilzation_values,
+                visuals_2d=visuals_2d,
                 bypass_output=True,
             )
 
         self.set_axis_limits(
-            axis_limits=mapper.pixelization_grid.extent,
+            axis_limits=mapper.source_pixelization_grid.extent,
             grid=None,
             symmetric_around_centre=False,
         )
 
         self.yticks.set(
             array=None,
-            min_value=mapper.pixelization_grid.extent[2],
-            max_value=mapper.pixelization_grid.extent[3],
+            min_value=mapper.source_pixelization_grid.extent[2],
+            max_value=mapper.source_pixelization_grid.extent[3],
             units=self.units,
         )
         self.xticks.set(
             array=None,
-            min_value=mapper.pixelization_grid.extent[0],
-            max_value=mapper.pixelization_grid.extent[1],
+            min_value=mapper.source_pixelization_grid.extent[0],
+            max_value=mapper.source_pixelization_grid.extent[1],
             units=self.units,
         )
 
         self.line_plot.plot_rectangular_grid_lines(
-            extent=mapper.pixelization_grid.extent, shape_2d=mapper.shape_2d
+            extent=mapper.source_pixelization_grid.extent, shape_2d=mapper.shape_2d
         )
 
         self.title.set()
@@ -880,17 +884,19 @@ class Plotter2D(AbstractPlotter):
 
         visuals_2d.plot_via_plotter(plotter=self)
 
-        if image_pixel_indexes is not None:
+        if full_indexes is not None:
             self.index_scatter.scatter_grid_indexes(
-                grid=mapper.grid, indexes=image_pixel_indexes
+                grid=mapper.source_full_grid, indexes=full_indexes
             )
 
-        if source_pixel_indexes is not None:
-            indexes = mapper.image_pixel_indexes_from_source_pixel_indexes(
-                source_pixel_indexes=source_pixel_indexes
+        if pixelization_indexes is not None:
+            indexes = mapper.full_indexes_from_pixelization_indexes(
+                pixelization_indexes=pixelization_indexes
             )
 
-            self.index_scatter.scatter_grid_indexes(grid=mapper.grid, indexes=indexes)
+            self.index_scatter.scatter_grid_indexes(
+                grid=mapper.source_full_grid, indexes=indexes
+            )
 
         if not bypass_output:
             self.output.to_figure(structure=None)
@@ -900,18 +906,18 @@ class Plotter2D(AbstractPlotter):
 
     def _plot_voronoi_mapper(
         self,
-        mapper,
-        visuals_2d=None,
-        source_pixel_values=None,
-        image_pixel_indexes=None,
-        source_pixel_indexes=None,
+        mapper: mappers.MapperVoronoi,
+        visuals_2d: typing.Optional[vis.Visuals2D] = None,
+        source_pixelilzation_values=None,
+        full_indexes=None,
+        pixelization_indexes=None,
         bypass_output=False,
     ):
 
         self.figure.open()
 
         self.set_axis_limits(
-            axis_limits=mapper.pixelization_grid.extent,
+            axis_limits=mapper.source_pixelization_grid.extent,
             grid=None,
             symmetric_around_centre=False,
         )
@@ -919,23 +925,23 @@ class Plotter2D(AbstractPlotter):
         self.tickparams.set()
         self.yticks.set(
             array=None,
-            min_value=mapper.pixelization_grid.extent[2],
-            max_value=mapper.pixelization_grid.extent[3],
+            min_value=mapper.source_pixelization_grid.extent[2],
+            max_value=mapper.source_pixelization_grid.extent[3],
             units=self.units,
         )
         self.xticks.set(
             array=None,
-            min_value=mapper.pixelization_grid.extent[0],
-            max_value=mapper.pixelization_grid.extent[1],
+            min_value=mapper.source_pixelization_grid.extent[0],
+            max_value=mapper.source_pixelization_grid.extent[1],
             units=self.units,
         )
 
-        self.voronoi_drawer.draw_voronoi_pixels(
-            mapper=mapper,
-            values=source_pixel_values,
-            cmap=self.cmap.config_dict["cmap"],
-            cb=self.colorbar,
-        )
+        # self.voronoi_drawer.draw_voronoi_pixels(
+        #     mapper=mapper,
+        #     values=source_pixelilzation_values,
+        #     cmap=self.cmap.config_dict["cmap"],
+        #     cb=self.colorbar,
+        # )
 
         self.title.set()
         self.ylabel.set(units=self.units, include_brackets=True)
@@ -943,17 +949,19 @@ class Plotter2D(AbstractPlotter):
 
         visuals_2d.plot_via_plotter(plotter=self)
 
-        if image_pixel_indexes is not None:
+        if full_indexes is not None:
             self.index_scatter.scatter_grid_indexes(
-                grid=mapper.grid, indexes=image_pixel_indexes
+                grid=mapper.source_full_grid, indexes=full_indexes
             )
 
-        if source_pixel_indexes is not None:
-            indexes = mapper.image_pixel_indexes_from_source_pixel_indexes(
-                source_pixel_indexes=source_pixel_indexes
+        if pixelization_indexes is not None:
+            indexes = mapper.full_indexes_from_pixelization_indexes(
+                pixelization_indexes=pixelization_indexes
             )
 
-            self.index_scatter.scatter_grid_indexes(grid=mapper.grid, indexes=indexes)
+            self.index_scatter.scatter_grid_indexes(
+                grid=mapper.source_full_grid, indexes=indexes
+            )
 
         if not bypass_output:
             self.output.to_figure(structure=None)

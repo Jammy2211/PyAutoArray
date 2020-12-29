@@ -21,7 +21,7 @@ def test__fit_quantities_are_output(fit_imaging_7x7, plot_path, plot_patch):
 
     aplt.FitImaging.image(
         fit=fit_imaging_7x7,
-        include_2d=aplt.Include2D(mask=True),
+        include_2d=aplt.Include2D(origin=True, mask=True, border=True),
         plotter_2d=aplt.Plotter2D(output=aplt.Output(path=plot_path, format="png")),
     )
 

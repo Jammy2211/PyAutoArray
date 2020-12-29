@@ -215,7 +215,7 @@ class TestAbstractInversion:
         )
 
         interpolated_reconstruction = (
-            inversion.interpolated_reconstruction_from_shape_2d()
+            inversion.interpolated_reconstructed_data_from_shape_2d()
         )
 
         assert interpolated_reconstruction.shape_2d == (5, 5)
@@ -334,7 +334,7 @@ class TestAbstractInversion:
         )
 
         interpolated_reconstruction = (
-            inversion.interpolated_reconstruction_from_shape_2d()
+            inversion.interpolated_reconstructed_data_from_shape_2d()
         )
 
         assert (
@@ -349,7 +349,7 @@ class TestAbstractInversion:
             (0.66666, 0.66666), 1.0e-4
         )
 
-        interpolated_reconstruction = inversion.interpolated_reconstruction_from_shape_2d(
+        interpolated_reconstruction = inversion.interpolated_reconstructed_data_from_shape_2d(
             shape_2d=(2, 2)
         )
 
@@ -367,7 +367,7 @@ class TestAbstractInversion:
             [1.0, 1.0, 1.0, 5.0, 5.0, 5.0, 5.0, 1.0, 1.0]
         )
 
-        interpolated_reconstruction = inversion.interpolated_reconstruction_from_shape_2d(
+        interpolated_reconstruction = inversion.interpolated_reconstructed_data_from_shape_2d(
             shape_2d=(2, 2)
         )
 
@@ -420,7 +420,7 @@ class TestAbstractInversion:
             [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
         )
 
-        interpolated_reconstruction = inversion.interpolated_reconstruction_from_shape_2d(
+        interpolated_reconstruction = inversion.interpolated_reconstructed_data_from_shape_2d(
             shape_2d=(2, 2)
         )
 
@@ -438,7 +438,7 @@ class TestAbstractInversion:
             [1.0, 1.0, 1.0, 5.0, 5.0, 5.0, 5.0, 1.0, 1.0]
         )
 
-        interpolated_reconstruction = inversion.interpolated_reconstruction_from_shape_2d(
+        interpolated_reconstruction = inversion.interpolated_reconstructed_data_from_shape_2d(
             shape_2d=(2, 2)
         )
 

@@ -1,4 +1,9 @@
 from autoarray.plot.mat_wrap import mat_decorators
+from autoarray.plot.mat_wrap import visuals as vis
+from autoarray.plot.mat_wrap import include as inc
+from autoarray.plot.mat_wrap import plotter as p
+from autoarray.plot.plots import structure_plots
+import typing
 
 
 @mat_decorators.set_plot_defaults_2d
@@ -6,12 +11,11 @@ from autoarray.plot.mat_wrap import mat_decorators
 def subplot_image_and_mapper(
     image,
     mapper,
-    image_positions=None,
-    source_positions=None,
-    image_pixel_indexes=None,
-    source_pixel_indexes=None,
-    include_2d=None,
-    plotter_2d=None,
+    visuals_2d: typing.Optional[vis.Visuals2D] = None,
+    include_2d: typing.Optional[inc.Include2D] = None,
+    plotter_2d: typing.Optional[p.Plotter2D] = None,
+    full_indexes=None,
+    pixelization_indexes=None,
 ):
 
     number_subplots = 2
@@ -20,40 +24,36 @@ def subplot_image_and_mapper(
 
     plotter_2d.setup_subplot(number_subplots=number_subplots, subplot_index=1)
 
-    plotter_2d._plot_array(
-        array=image,
-        mask=include_2d.mask_from_grid(grid=mapper.grid),
-        positions=image_positions,
-        include_origin=include_2d.origin,
+    structure_plots.plot_array(
+        array=image, visuals_2d=visuals_2d, include_2d=include_2d, plotter_2d=plotter_2d
     )
 
-    if image_pixel_indexes is not None:
+    if full_indexes is not None:
 
         plotter_2d.index_scatter.scatter_grid_indexes(
-            grid=mapper.grid.geometry.unmasked_grid_sub_1, indexes=image_pixel_indexes
+            grid=mapper.source_full_grid.geometry.unmasked_grid_sub_1,
+            indexes=full_indexes,
         )
 
-    if source_pixel_indexes is not None:
+    if pixelization_indexes is not None:
 
-        indexes = mapper.image_pixel_indexes_from_source_pixel_indexes(
-            source_pixel_indexes=source_pixel_indexes
+        indexes = mapper.full_indexes_from_pixelization_indexes(
+            pixelization_indexes=pixelization_indexes
         )
 
         plotter_2d.index_scatter.scatter_grid_indexes(
-            grid=mapper.grid.geometry.unmasked_grid_sub_1, indexes=indexes
+            grid=mapper.source_full_grid.geometry.unmasked_grid_sub_1, indexes=indexes
         )
 
     plotter_2d.setup_subplot(number_subplots=number_subplots, subplot_index=2)
 
-    plotter_2d._plot_mapper(
+    structure_plots.plot_mapper_obj(
         mapper=mapper,
-        positions=source_positions,
-        image_pixel_indexes=image_pixel_indexes,
-        source_pixel_indexes=source_pixel_indexes,
-        include_origin=include_2d.origin,
-        include_grid=include_2d.inversion_grid,
-        include_pixelization_grid=include_2d.inversion_pixelization_grid,
-        include_border=include_2d.inversion_border,
+        visuals_2d=visuals_2d,
+        include_2d=include_2d,
+        plotter_2d=plotter_2d,
+        full_indexes=full_indexes,
+        pixelization_indexes=pixelization_indexes,
     )
 
     plotter_2d.output.subplot_to_figure()

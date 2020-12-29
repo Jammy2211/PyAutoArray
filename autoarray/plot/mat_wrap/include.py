@@ -30,12 +30,10 @@ class Include2D:
         self,
         origin=None,
         mask=None,
-        grid=None,
         border=None,
-        inversion_pixelization_grid=None,
-        inversion_grid=None,
-        inversion_border=None,
-        inversion_image_pixelization_grid=None,
+        mapper_data_grid=None,
+        mapper_source_grid=None,
+        mapper_source_border=None,
         parallel_overscan=None,
         serial_prescan=None,
         serial_overscan=None,
@@ -45,25 +43,21 @@ class Include2D:
 
         self.origin = section["origin"] if origin is None else origin
         self.mask = section["mask"] if mask is None else mask
-        self.grid = section["grid"] if grid is None else grid
         self.border = section["border"] if border is None else border
-        self.inversion_pixelization_grid = (
-            section["inversion_pixelization_grid"]
-            if inversion_pixelization_grid is None
-            else inversion_pixelization_grid
+        self.mapper_data_grid = (
+            section["mapper_data_grid"]
+            if mapper_data_grid is None
+            else mapper_data_grid
         )
-        self.inversion_grid = (
-            section["inversion_grid"] if inversion_grid is None else inversion_grid
+        self.mapper_source_grid = (
+            section["mapper_source_grid"]
+            if mapper_source_grid is None
+            else mapper_source_grid
         )
-        self.inversion_border = (
-            section["inversion_border"]
-            if inversion_border is None
-            else inversion_border
-        )
-        self.inversion_image_pixelization_grid = (
-            section["inversion_image_pixelization_grid"]
-            if inversion_image_pixelization_grid is None
-            else inversion_image_pixelization_grid
+        self.mapper_source_border = (
+            section["mapper_source_border"]
+            if mapper_source_border is None
+            else mapper_source_border
         )
         self.parallel_overscan = (
             section["parallel_overscan"]
@@ -117,39 +111,31 @@ class Include2D:
             serial_overscan=serial_overscan,
         )
 
-    def mask_from_masked_dataset(self, masked_dataset):
+    def visuals_of_data_from_mapper(self, mapper):
 
-        if self.mask:
-            return masked_dataset.mask
-        else:
-            return None
+        origin = (
+            grids.GridIrregular(grid=[mapper.source_full_grid.mask.origin])
+            if self.origin
+            else None
+        )
+        grid = mapper.data_pixelization_grid if self.mapper_data_grid else None
 
-    def mask_from_fit(self, fit):
-        """Get the masks of the fit if the masks should be plotted on the fit.
+        border = (
+            mapper.source_full_grid.mask.geometry.border_grid_sub_1.in_1d_binned
+            if self.border
+            else None
+        )
 
-        Parameters
-        -----------
-        fit : datas.fitting.fitting.AbstractLensHyperFit
-            The fit to the datas, which includes a lisrt of every model image, residual_map, chi-squareds, etc.
-        include_mask : bool
-            If `True`, the masks is plotted on the fit's datas.
-        """
-        if self.mask:
-            return fit.mask
-        else:
-            return None
+        return vis.Visuals2D(origin=origin, grid=grid, border=border)
 
-    def real_space_mask_from_fit(self, fit):
-        """Get the masks of the fit if the masks should be plotted on the fit.
+    def visuals_of_source_from_mapper(self, mapper):
 
-        Parameters
-        -----------
-        fit : datas.fitting.fitting.AbstractLensHyperFit
-            The fit to the datas, which includes a lisrt of every model image, residual_map, chi-squareds, etc.
-        include_mask : bool
-            If `True`, the masks is plotted on the fit's datas.
-        """
-        if self.mask:
-            return fit.settings_masked_dataset.real_space_mask
-        else:
-            return None
+        origin = (
+            grids.GridIrregular(grid=[mapper.source_pixelization_grid.origin])
+            if self.origin
+            else None
+        )
+        grid = mapper.source_pixelization_grid if self.mapper_source_grid else None
+        #     border = mapper.source_grid.sub_border_grid if self.mapper_source_grid else None
+
+        return vis.Visuals2D(origin=origin, grid=grid)  # , border=border)
