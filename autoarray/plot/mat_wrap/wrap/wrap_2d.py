@@ -1,73 +1,35 @@
-from autoconf import conf
-import matplotlib
+from autoarray.plot.mat_wrap.wrap import wrap_base
 
-from matplotlib.collections import PatchCollection
+wrap_base.set_backend()
 
-backend = conf.get_matplotlib_backend()
-
-if backend not in "default":
-    matplotlib.use(backend)
-
-try:
-    hpc_mode = conf.instance["general"]["hpc"]["hpc_mode"]
-except KeyError:
-    hpc_mode = False
-
-if hpc_mode:
-    matplotlib.use("Agg")
+from autoarray.plot.mat_wrap import wrap
 
 import matplotlib.pyplot as plt
 from matplotlib import patches as ptch
+from matplotlib.collections import PatchCollection
 import numpy as np
 import itertools
 import typing
 
-from autoarray.plot.mat_wrap import mat_base
 from autoarray.inversion import mappers
-from autoarray.structures import grids, lines, vector_fields
+from autoarray.structures import grids, vector_fields
 from autoarray import exc
 
 
-class AbstractMatStructure(mat_base.AbstractMatBase):
+class AbstractMatWrap2D(wrap_base.AbstractMatWrap):
     """
     An abstract base class for wrapping matplotlib plotting methods which take as input and plot data structures. For
     example, the `ArrayOverlay` object specifically plots `Array` data structures.
 
-    As full description of the matplotlib wrapping can be found in `mat_base.AbstractMatBase`.
+    As full description of the matplotlib wrapping can be found in `mat_base.AbstractMatWrap`.
     """
 
     @property
     def config_folder(self):
-        return "mat_structure"
+        return "mat_wrap_2d"
 
 
-class AbstractMatStructureColored(AbstractMatStructure):
-    def __init__(self, colors, kwargs: dict):
-
-        super().__init__(kwargs=kwargs)
-
-        self._colors = colors
-
-    @property
-    def colors(self):
-
-        if self._colors is None:
-
-            colors = remove_spaces_and_commas_from_colors(
-                colors=self.config_dict["colors"]
-            )
-
-        else:
-
-            colors = self._colors
-
-        if isinstance(colors, str):
-            return [colors]
-
-        return colors
-
-
-class ArrayOverlay(AbstractMatStructure):
+class ArrayOverlay(AbstractMatWrap2D):
     def __init__(self, **kwargs):
         """
         Overlays an `Array` data structure over a figure.
@@ -91,7 +53,7 @@ class ArrayOverlay(AbstractMatStructure):
         )
 
 
-class GridScatter(AbstractMatStructureColored):
+class GridScatter(AbstractMatWrap2D, wrap_base.AbstractMatWrapColored):
     def __init__(self, colors=None, **kwargs):
         """
         Scatters an input set of grid points, for example (y,x) coordinates or data structures representing 2D (y,x)
@@ -119,7 +81,8 @@ class GridScatter(AbstractMatStructureColored):
             The color or list of colors that the grid is plotted using. For plotting indexes or a grouped grid, a
             list of colors can be specified which the plot cycles through.
         """
-        super().__init__(colors=colors, kwargs=kwargs)
+        super().__init__(kwargs=kwargs)
+        wrap_base.AbstractMatWrapColored.__init__(self=self, colors=colors)
 
     def scatter_grid(self, grid: typing.Union[np.ndarray, grids.Grid]):
         """
@@ -259,19 +222,16 @@ class GridScatter(AbstractMatStructureColored):
             )
 
 
-class LinePlot(AbstractMatStructureColored):
+class GridPlot(AbstractMatWrap2D, wrap_base.AbstractMatWrapColored):
     def __init__(self, colors=None, **kwargs):
         """
-        Plots `Line` data structure, including y vs x figures, plotting rectangular lines over an image and plotting
-        grids of (y,x) coordinates as lines (as opposed to a scatter of points using the `GridScatter` object).
+        Plots `Grid` data structure that are better visualized as solid lines, for example rectangular lines that are
+        plotted over an image and grids of (y,x) coordinates as lines (as opposed to a scatter of points
+        using the `GridScatter` object).
 
         This object wraps the following Matplotlib methods:
 
         - plt.plot: https://matplotlib.org/3.3.3/api/_as_gen/matplotlib.pyplot.plot.html
-        - plt.scatter: https://matplotlib.org/3.1.1/api/_as_gen/matplotlib.pyplot.scatter.html
-        - plt.semilogy: https://matplotlib.org/3.3.2/api/_as_gen/matplotlib.pyplot.semilogy.html
-        - plt.loglog: https://matplotlib.org/3.3.2/api/_as_gen/matplotlib.pyplot.loglog.html
-        - plt.avxline: https://matplotlib.org/3.3.2/api/_as_gen/matplotlib.pyplot.axvline.html
 
         Parameters
         ----------
@@ -279,80 +239,8 @@ class LinePlot(AbstractMatStructureColored):
             The color or list of colors that the grid is plotted using. For plotting indexes or a grouped grid, a
             list of colors can be specified which the plot cycles through.
         """
-        super().__init__(colors=colors, kwargs=kwargs)
-
-    def plot_y_vs_x(
-        self,
-        y: typing.Union[np.ndarray, lines.Line],
-        x: typing.Union[np.ndarray, lines.Line],
-        plot_axis_type: str,
-        label: str = None,
-    ):
-        """
-        Plots 1D y-data against 1D x-data using the matplotlib method `plt.plot`, `plt.semilogy`, `plt.loglog`,
-        or `plt.scatter`.
-
-        Parameters
-        ----------
-        y : np.ndarray or lines.Line
-            The ydata that is plotted.
-        x : np.ndarray or lines.Line
-            The xdata that is plotted.
-        plot_axis_type : str
-            The method used to make the plot that defines the scale of the axes {"linear", "semilogy", "loglog",
-            "scatter"}.
-        label : str
-            Optionally include a label on the plot for a `Legend` to display.
-        """
-
-        if plot_axis_type == "linear":
-            plt.plot(x, y, c=self.colors, label=label, **self.config_dict_plot)
-        elif plot_axis_type == "semilogy":
-            plt.semilogy(x, y, c=self.colors, label=label, **self.config_dict_plot)
-        elif plot_axis_type == "loglog":
-            plt.loglog(x, y, c=self.colors, label=label, **self.config_dict_plot)
-        elif plot_axis_type == "scatter":
-            plt.scatter(x, y, c=self.colors[0], label=label, **self.config_dict_scatter)
-        else:
-            raise exc.PlottingException(
-                "The plot_axis_type supplied to the plotter is not a valid string (must be linear "
-                "{semilogy, loglog})"
-            )
-
-    def plot_vertical_lines(
-        self,
-        vertical_lines: typing.List[np.ndarray],
-        vertical_line_labels: typing.List[str] = None,
-    ):
-        """
-        Plots vertical lines on 1D plot of y versus x using the method `plt.axvline`.
-
-        This method is typically called after `plot_y_vs_x` to add vertical lines to the figure.
-
-        Parameters
-        ----------
-        vertical_lines : [np.ndarray]
-            The vertical lines of data that are plotted on the figure.
-        vertical_line_labels : [str]
-            Labels for each vertical line used by a `Legend`.
-        """
-
-        if vertical_lines is [] or vertical_lines is None:
-            return
-
-        if vertical_line_labels is None:
-            vertical_line_labels = [None for i in range(len(vertical_lines))]
-
-        for vertical_line, vertical_line_label in zip(
-            vertical_lines, vertical_line_labels
-        ):
-
-            plt.axvline(
-                x=vertical_line,
-                label=vertical_line_label,
-                c=self.colors,
-                **self.config_dict_plot,
-            )
+        super().__init__(kwargs=kwargs)
+        wrap_base.AbstractMatWrapColored.__init__(self=self, colors=colors)
 
     def plot_rectangular_grid_lines(
         self,
@@ -413,7 +301,7 @@ class LinePlot(AbstractMatStructureColored):
             )
 
 
-class VectorFieldQuiver(AbstractMatStructure):
+class VectorFieldQuiver(AbstractMatWrap2D):
     def __init__(self, **kwargs):
         """
         Plots a `VectorField` data structure. A vector field is a set of 2D vectors on a grid of 2d (y,x) coordinates.
@@ -445,7 +333,7 @@ class VectorFieldQuiver(AbstractMatStructure):
         )
 
 
-class PatchOverlay(AbstractMatStructure):
+class PatchOverlay(AbstractMatWrap2D):
     def __init__(self, **kwargs):
         """
         Adds patches to a plotted figure using matplotlib `patches` objects.
@@ -475,7 +363,7 @@ class PatchOverlay(AbstractMatStructure):
         plt.gcf().gca().add_collection(patch_collection)
 
 
-class VoronoiDrawer(AbstractMatStructure):
+class VoronoiDrawer(AbstractMatWrap2D):
     def __init__(self, **kwargs):
         """
         Draws Voronoi pixels from a `MapperVoronoi` object (see `inversions.mapper`). This includes both drawing
@@ -494,7 +382,7 @@ class VoronoiDrawer(AbstractMatStructure):
         mapper: mappers.MapperVoronoi,
         values: np.ndarray,
         cmap: str,
-        cb: mat_base.Colorbar,
+        cb: wrap.Colorbar,
     ):
         """
         Draws the Voronoi pixels of the input `mapper` using its `pixelization_grid` which contains the (y,x) 
@@ -608,8 +496,73 @@ class VoronoiDrawer(AbstractMatStructure):
         return new_regions, np.asarray(new_vertices)
 
 
-def remove_spaces_and_commas_from_colors(colors):
+class OriginScatter(GridScatter):
+    """
+    Plots the (y,x) coordinates of the origin of a data structure (e.g. as a black cross).
 
-    colors = [color.strip(",") for color in colors]
-    colors = [color.strip(" ") for color in colors]
-    return list(filter(None, colors))
+    See `mat_structure.Scatter` for a description of how matplotlib is wrapped to make this plot.
+    """
+
+    pass
+
+
+class MaskScatter(GridScatter):
+    """
+    Plots a mask over an image, using the `Mask2d` object's (y,x) `edge_grid_sub_1` property.
+
+    See `mat_structure.Scatter` for a description of how matplotlib is wrapped to make this plot.
+    """
+
+    pass
+
+
+class BorderScatter(GridScatter):
+    """
+    Plots a border over an image, using the `Mask2d` object's (y,x) `border_grid_sub_1` property.
+
+    See `mat_structure.Scatter` for a description of how matplotlib is wrapped to make this plot.
+    """
+
+    pass
+
+
+class PositionsScatter(GridScatter):
+    """
+    Plots the (y,x) coordinates that are input in a plotter via the `positions` input.
+
+    See `mat_structure.Scatter` for a description of how matplotlib is wrapped to make this plot.
+    """
+
+    pass
+
+
+class IndexScatter(GridScatter):
+    """
+    Plots specific (y,x) coordinates of a grid (or grids) via their 1d or 2d indexes.
+
+    See `mat_structure.Scatter` for a description of how matplotlib is wrapped to make this plot.
+    """
+
+    pass
+
+
+class PixelizationGridScatter(GridScatter):
+    """
+    Plots the grid of a `Pixelization` object (see `autoarray.inversion`).
+
+    See `mat_structure.Scatter` for a description of how matplotlib is wrapped to make this plot.
+    """
+
+    pass
+
+
+class ParallelOverscanPlot(GridPlot):
+    pass
+
+
+class SerialPrescanPlot(GridPlot):
+    pass
+
+
+class SerialOverscanPlot(GridPlot):
+    pass

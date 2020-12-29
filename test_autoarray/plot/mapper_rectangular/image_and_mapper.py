@@ -13,7 +13,7 @@ imaging = aa.Imaging(image=image, noise_map=noise_map)
 aplt.Mapper.subplot_image_and_mapper(
     image=imaging,
     mapper=rectangular_mapper,
-    include=aplt.Include(
+    include=aplt.Include2D(
         inversion_grid=False, inversion_border=True, inversion_pixelization_grid=False
     ),
     image_pixel_indexes=[0, 1, 2, 3],

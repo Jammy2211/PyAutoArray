@@ -21,23 +21,23 @@ def test__image_and_mapper_subplot_is_output_for_all_mappers(
     aplt.Mapper.subplot_image_and_mapper(
         image=imaging_7x7.image,
         mapper=rectangular_mapper_7x7_3x3,
-        include=aplt.Include(
+        include_2d=aplt.Include2D(
             inversion_pixelization_grid=True, inversion_grid=True, inversion_border=True
         ),
         image_pixel_indexes=[[0, 1, 2], [3]],
         source_pixel_indexes=[[1, 2], [0]],
-        plotter=aplt.Plotter(output=aplt.Output(path=plot_path, format="png")),
+        plotter_2d=aplt.Plotter2D(output=aplt.Output(path=plot_path, format="png")),
     )
     assert path.join(plot_path, "subplot_image_and_mapper.png") in plot_patch.paths
 
     aplt.Mapper.subplot_image_and_mapper(
         image=imaging_7x7.image,
         mapper=voronoi_mapper_9_3x3,
-        include=aplt.Include(
+        include_2d=aplt.Include2D(
             inversion_pixelization_grid=True, inversion_grid=True, inversion_border=True
         ),
         image_pixel_indexes=[[0, 1, 2], [3]],
         source_pixel_indexes=[[1, 2], [0]],
-        plotter=aplt.Plotter(output=aplt.Output(path=plot_path, format="png")),
+        plotter_2d=aplt.Plotter2D(output=aplt.Output(path=plot_path, format="png")),
     )
     assert path.join(plot_path, "subplot_image_and_mapper.png") in plot_patch.paths

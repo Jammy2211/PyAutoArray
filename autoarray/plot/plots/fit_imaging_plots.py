@@ -1,44 +1,50 @@
-from autoarray.plot.plotter import plotter, include as inc
+from autoarray.plot.mat_wrap import mat_decorators
 
 
-@inc.set_include
-@plotter.set_plotter_for_subplot
-@plotter.set_subplot_filename
+@mat_decorators.set_plot_defaults_2d
+@mat_decorators.set_plotter_2d_for_subplot
+@mat_decorators.set_subplot_filename
 def subplot_fit_imaging(
-    fit, grid=None, positions=None, lines=None, include=None, plotter=None
+    fit, grid=None, positions=None, lines=None, include_2d=None, plotter_2d=None
 ):
 
     number_subplots = 6
 
-    plotter.open_subplot_figure(number_subplots=number_subplots)
+    plotter_2d.open_subplot_figure(number_subplots=number_subplots)
 
-    plotter.setup_subplot(number_subplots=number_subplots, subplot_index=1)
+    plotter_2d.setup_subplot(number_subplots=number_subplots, subplot_index=1)
 
-    image(fit=fit, grid=grid, positions=positions, include=include, plotter=plotter)
+    image(
+        fit=fit,
+        grid=grid,
+        positions=positions,
+        include_2d=include_2d,
+        plotter_2d=plotter_2d,
+    )
 
-    plotter.setup_subplot(number_subplots=number_subplots, subplot_index=2)
+    plotter_2d.setup_subplot(number_subplots=number_subplots, subplot_index=2)
 
-    signal_to_noise_map(fit=fit, include=include, plotter=plotter)
+    signal_to_noise_map(fit=fit, include_2d=include_2d, plotter_2d=plotter_2d)
 
-    plotter.setup_subplot(number_subplots=number_subplots, subplot_index=3)
+    plotter_2d.setup_subplot(number_subplots=number_subplots, subplot_index=3)
 
-    model_image(fit=fit, lines=lines, include=include, plotter=plotter)
+    model_image(fit=fit, lines=lines, include_2d=include_2d, plotter_2d=plotter_2d)
 
-    plotter.setup_subplot(number_subplots=number_subplots, subplot_index=4)
+    plotter_2d.setup_subplot(number_subplots=number_subplots, subplot_index=4)
 
-    residual_map(fit=fit, include=include, plotter=plotter)
+    residual_map(fit=fit, include_2d=include_2d, plotter_2d=plotter_2d)
 
-    plotter.setup_subplot(number_subplots=number_subplots, subplot_index=5)
+    plotter_2d.setup_subplot(number_subplots=number_subplots, subplot_index=5)
 
-    normalized_residual_map(fit=fit, include=include, plotter=plotter)
+    normalized_residual_map(fit=fit, include_2d=include_2d, plotter_2d=plotter_2d)
 
-    plotter.setup_subplot(number_subplots=number_subplots, subplot_index=6)
+    plotter_2d.setup_subplot(number_subplots=number_subplots, subplot_index=6)
 
-    chi_squared_map(fit=fit, include=include, plotter=plotter)
+    chi_squared_map(fit=fit, include_2d=include_2d, plotter_2d=plotter_2d)
 
-    plotter.output.subplot_to_figure()
+    plotter_2d.output.subplot_to_figure()
 
-    plotter.figure.close()
+    plotter_2d.figure.close()
 
 
 def individuals(
@@ -53,8 +59,8 @@ def individuals(
     plot_residual_map=False,
     plot_normalized_residual_map=False,
     plot_chi_squared_map=False,
-    include=None,
-    plotter=None,
+    include_2d=None,
+    plotter_2d=None,
 ):
     """Plot the model datas_ of an analysis, using the *Fitter* class object.
 
@@ -73,182 +79,183 @@ def individuals(
 
     if plot_image:
 
-        image(fit=fit, include=include, positions=positions, grid=grid, plotter=plotter)
+        image(
+            fit=fit,
+            include_2d=include_2d,
+            positions=positions,
+            grid=grid,
+            plotter_2d=plotter_2d,
+        )
 
     if plot_noise_map:
 
-        noise_map(fit=fit, include=include, plotter=plotter)
+        noise_map(fit=fit, include_2d=include_2d, plotter_2d=plotter_2d)
 
     if plot_signal_to_noise_map:
 
-        signal_to_noise_map(fit=fit, include=include, plotter=plotter)
+        signal_to_noise_map(fit=fit, include_2d=include_2d, plotter_2d=plotter_2d)
 
     if plot_model_image:
 
-        model_image(fit=fit, include=include, lines=lines, plotter=plotter)
+        model_image(fit=fit, include_2d=include_2d, lines=lines, plotter_2d=plotter_2d)
 
     if plot_residual_map:
 
-        residual_map(fit=fit, include=include, plotter=plotter)
+        residual_map(fit=fit, include_2d=include_2d, plotter_2d=plotter_2d)
 
     if plot_normalized_residual_map:
 
-        normalized_residual_map(fit=fit, include=include, plotter=plotter)
+        normalized_residual_map(fit=fit, include_2d=include_2d, plotter_2d=plotter_2d)
 
     if plot_chi_squared_map:
 
-        chi_squared_map(fit=fit, include=include, plotter=plotter)
+        chi_squared_map(fit=fit, include_2d=include_2d, plotter_2d=plotter_2d)
 
 
-@inc.set_include
-@plotter.set_plotter_for_figure
-@plotter.set_labels
-def image(fit, positions=None, grid=None, lines=None, include=None, plotter=None):
+@mat_decorators.set_plot_defaults_2d
+@mat_decorators.set_labels
+def image(fit, positions=None, grid=None, lines=None, include_2d=None, plotter_2d=None):
     """Plot the image of a lens fit.
 
-    Set *autolens.datas.array.plotter.plotter* for a description of all input parameters not described below.
+    Set *autolens.datas.array.plotter_2d.plotter_2d* for a description of all input parameters not described below.
 
     Parameters
     -----------
     image : datas.imaging.datas.Imaging
-        The datas-datas, which include the observed datas, noise_map, PSF, signal-to-noise_map, etc.
+        The datas-datas, which include_2d the observed datas, noise_map, PSF, signal-to-noise_map, etc.
     origin : True
         If true, the origin of the datas's coordinate system is plotted as a 'x'.
     """
-    plotter._plot_array(
+    plotter_2d._plot_array(
         array=fit.data,
         grid=grid,
-        mask=include.mask_from_fit(fit=fit),
+        mask=include_2d.mask_from_fit(fit=fit),
         lines=lines,
         positions=positions,
     )
 
 
-@inc.set_include
-@plotter.set_plotter_for_figure
-@plotter.set_labels
-def noise_map(fit, positions=None, include=None, plotter=None):
+@mat_decorators.set_plot_defaults_2d
+@mat_decorators.set_labels
+def noise_map(fit, positions=None, include_2d=None, plotter_2d=None):
     """Plot the noise-map of a lens fit.
 
-    Set *autolens.datas.array.plotter.plotter* for a description of all input parameters not described below.
+    Set *autolens.datas.array.plotter_2d.plotter_2d* for a description of all input parameters not described below.
 
     Parameters
     -----------
     image : datas.imaging.datas.Imaging
-        The datas-datas, which include the observed datas, noise_map, PSF, signal-to-noise_map, etc.
+        The datas-datas, which include_2d the observed datas, noise_map, PSF, signal-to-noise_map, etc.
     origin : True
         If true, the origin of the datas's coordinate system is plotted as a 'x'.
     """
-    plotter._plot_array(
-        array=fit.noise_map, mask=include.mask_from_fit(fit=fit), positions=positions
+    plotter_2d._plot_array(
+        array=fit.noise_map, mask=include_2d.mask_from_fit(fit=fit), positions=positions
     )
 
 
-@inc.set_include
-@plotter.set_plotter_for_figure
-@plotter.set_labels
-def signal_to_noise_map(fit, positions=None, include=None, plotter=None):
+@mat_decorators.set_plot_defaults_2d
+@mat_decorators.set_labels
+def signal_to_noise_map(fit, positions=None, include_2d=None, plotter_2d=None):
     """Plot the noise-map of a lens fit.
 
-    Set *autolens.datas.array.plotter.plotter* for a description of all input parameters not described below.
+    Set *autolens.datas.array.plotter_2d.plotter_2d* for a description of all input parameters not described below.
 
     Parameters
     -----------
     image : datas.imaging.datas.Imaging
-    The datas-datas, which include the observed datas, signal_to_noise_map, PSF, signal-to-signal_to_noise_map, etc.
+    The datas-datas, which include_2d the observed datas, signal_to_noise_map, PSF, signal-to-signal_to_noise_map, etc.
     origin : True
     If true, the origin of the datas's coordinate system is plotted as a 'x'.
     """
-    plotter._plot_array(
+    plotter_2d._plot_array(
         array=fit.signal_to_noise_map,
-        mask=include.mask_from_fit(fit=fit),
+        mask=include_2d.mask_from_fit(fit=fit),
         positions=positions,
     )
 
 
-@inc.set_include
-@plotter.set_plotter_for_figure
-@plotter.set_labels
-def model_image(fit, lines=None, positions=None, include=None, plotter=None):
+@mat_decorators.set_plot_defaults_2d
+@mat_decorators.set_labels
+def model_image(fit, lines=None, positions=None, include_2d=None, plotter_2d=None):
     """Plot the model image of a fit.
 
-    Set *autolens.datas.array.plotter.plotter* for a description of all input parameters not described below.
+    Set *autolens.datas.array.plotter_2d.plotter_2d* for a description of all input parameters not described below.
 
     Parameters
     -----------
     fit : datas.fitting.fitting.AbstractFitter
-        The fit to the datas, which include a list of every model image, residual_map, chi-squareds, etc.
+        The fit to the datas, which include_2d a list of every model image, residual_map, chi-squareds, etc.
     image_index : int
         The index of the datas in the datas-set of which the model image is plotted.
     """
 
-    plotter._plot_array(
+    plotter_2d._plot_array(
         array=fit.model_data,
-        mask=include.mask_from_fit(fit=fit),
+        mask=include_2d.mask_from_fit(fit=fit),
         lines=lines,
         positions=positions,
     )
 
 
-@inc.set_include
-@plotter.set_plotter_for_figure
-@plotter.set_labels
-def residual_map(fit, positions=None, include=None, plotter=None):
+@mat_decorators.set_plot_defaults_2d
+@mat_decorators.set_labels
+def residual_map(fit, positions=None, include_2d=None, plotter_2d=None):
     """Plot the residual-map of a lens fit.
 
-    Set *autolens.datas.array.plotter.plotter* for a description of all input parameters not described below.
+    Set *autolens.datas.array.plotter_2d.plotter_2d* for a description of all input parameters not described below.
 
     Parameters
     -----------
     fit : datas.fitting.fitting.AbstractFitter
-        The fit to the datas, which include a list of every model image, residual_map, chi-squareds, etc.
+        The fit to the datas, which include_2d a list of every model image, residual_map, chi-squareds, etc.
     image_index : int
         The index of the datas in the datas-set of which the residual_map are plotted.
     """
-    plotter._plot_array(
-        array=fit.residual_map, mask=include.mask_from_fit(fit=fit), positions=positions
-    )
-
-
-@inc.set_include
-@plotter.set_plotter_for_figure
-@plotter.set_labels
-def normalized_residual_map(fit, positions=None, include=None, plotter=None):
-    """Plot the residual-map of a lens fit.
-
-    Set *autolens.datas.array.plotter.plotter* for a description of all input parameters not described below.
-
-    Parameters
-    -----------
-    fit : datas.fitting.fitting.AbstractFitter
-        The fit to the datas, which include a list of every model image, normalized_residual_map, chi-squareds, etc.
-    image_index : int
-        The index of the datas in the datas-set of which the normalized_residual_map are plotted.
-    """
-    plotter._plot_array(
-        array=fit.normalized_residual_map,
-        mask=include.mask_from_fit(fit=fit),
+    plotter_2d._plot_array(
+        array=fit.residual_map,
+        mask=include_2d.mask_from_fit(fit=fit),
         positions=positions,
     )
 
 
-@inc.set_include
-@plotter.set_plotter_for_figure
-@plotter.set_labels
-def chi_squared_map(fit, positions=None, include=None, plotter=None):
-    """Plot the chi-squared-map of a lens fit.
+@mat_decorators.set_plot_defaults_2d
+@mat_decorators.set_labels
+def normalized_residual_map(fit, positions=None, include_2d=None, plotter_2d=None):
+    """Plot the residual-map of a lens fit.
 
-    Set *autolens.datas.array.plotter.plotter* for a description of all input parameters not described below.
+    Set *autolens.datas.array.plotter_2d.plotter_2d* for a description of all input parameters not described below.
 
     Parameters
     -----------
     fit : datas.fitting.fitting.AbstractFitter
-        The fit to the datas, which include a list of every model image, residual_map, chi-squareds, etc.
+        The fit to the datas, which include_2d a list of every model image, normalized_residual_map, chi-squareds, etc.
+    image_index : int
+        The index of the datas in the datas-set of which the normalized_residual_map are plotted.
+    """
+    plotter_2d._plot_array(
+        array=fit.normalized_residual_map,
+        mask=include_2d.mask_from_fit(fit=fit),
+        positions=positions,
+    )
+
+
+@mat_decorators.set_plot_defaults_2d
+@mat_decorators.set_labels
+def chi_squared_map(fit, positions=None, include_2d=None, plotter_2d=None):
+    """Plot the chi-squared-map of a lens fit.
+
+    Set *autolens.datas.array.plotter_2d.plotter_2d* for a description of all input parameters not described below.
+
+    Parameters
+    -----------
+    fit : datas.fitting.fitting.AbstractFitter
+        The fit to the datas, which include_2d a list of every model image, residual_map, chi-squareds, etc.
     image_index : int
         The index of the datas in the datas-set of which the chi-squareds are plotted.
     """
-    plotter._plot_array(
+    plotter_2d._plot_array(
         array=fit.chi_squared_map,
-        mask=include.mask_from_fit(fit=fit),
+        mask=include_2d.mask_from_fit(fit=fit),
         positions=positions,
     )

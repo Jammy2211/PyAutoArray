@@ -1,39 +1,46 @@
-from autoarray.plot.plotter import visuals as ps
+from autoarray.plot.mat_wrap import mat_decorators
 
 
-@ps.set_plot_defaults
-def plot_array(array, visuals=None, include=None, plotter=None, extent_manual=None):
+@mat_decorators.set_plot_defaults_2d
+@mat_decorators.set_labels
+def plot_array(
+    array, visuals_2d=None, include_2d=None, plotter_2d=None, extent_manual=None
+):
 
-    visuals += include.visuals_from_array(array=array)
+    visuals_2d += include_2d.visuals_from_array(array=array)
 
-    plotter._plot_array(array=array, visuals=visuals, extent_manual=extent_manual)
-
-
-@ps.set_plot_defaults
-def plot_frame(frame, plotter=None, visuals=None, include=None):
-
-    visuals += include.visuals_from_frame(frame=frame)
-
-    plotter._plot_frame(frame=frame, visuals=visuals)
+    plotter_2d._plot_array(
+        array=array, visuals_2d=visuals_2d, extent_manual=extent_manual
+    )
 
 
-@ps.set_plot_defaults
+@mat_decorators.set_plot_defaults_2d
+@mat_decorators.set_labels
+def plot_frame(frame, plotter_2d=None, visuals_2d=None, include_2d=None):
+
+    visuals_2d += include_2d.visuals_from_frame(frame=frame)
+
+    plotter_2d._plot_frame(frame=frame, visuals_2d=visuals_2d)
+
+
+@mat_decorators.set_plot_defaults_2d
+@mat_decorators.set_labels
 def plot_grid(
     grid,
-    plotter=None,
-    visuals=None,
-    include=None,
+    plotter_2d=None,
+    visuals_2d=None,
+    include_2d=None,
     color_array=None,
     axis_limits=None,
     indexes=None,
     symmetric_around_centre=True,
 ):
 
-    visuals += include.visuals_from_grid(grid=grid)
+    visuals_2d += include_2d.visuals_from_grid(grid=grid)
 
-    plotter._plot_grid(
+    plotter_2d._plot_grid(
         grid=grid,
-        visuals=visuals,
+        visuals_2d=visuals_2d,
         color_array=color_array,
         axis_limits=axis_limits,
         indexes=indexes,
@@ -41,35 +48,40 @@ def plot_grid(
     )
 
 
-@ps.set_plot_defaults
+@mat_decorators.set_plot_defaults_2d
+@mat_decorators.set_labels
 def plot_mapper_obj(
     mapper,
-    plotter=None,
-    visuals=None,
-    include=None,
+    plotter_2d=None,
+    visuals_2d=None,
+    include_2d=None,
     image_pixel_indexes=None,
     source_pixel_indexes=None,
 ):
 
-    plotter._plot_mapper(
+    plotter_2d._plot_mapper(
         mapper=mapper,
-        visuals=visuals,
+        visuals_2d=visuals_2d,
         image_pixel_indexes=image_pixel_indexes,
         source_pixel_indexes=source_pixel_indexes,
     )
 
 
+@mat_decorators.set_plot_defaults_1d
+@mat_decorators.set_labels
 def plot_line(
     y,
     x,
+    plotter_1d=None,
+    visuals_1d=None,
+    include_1d=None,
     label=None,
     plot_axis_type="semilogy",
     vertical_lines=None,
     vertical_line_labels=None,
-    plotter=None,
 ):
 
-    plotter._plot_line(
+    plotter_1d._plot_line(
         y=y,
         x=x,
         label=label,

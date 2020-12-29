@@ -20,35 +20,35 @@ def test__fit_quantities_are_output(fit_interferometer_7, plot_path, plot_patch)
 
     aplt.FitInterferometer.visibilities(
         fit=fit_interferometer_7,
-        plotter=aplt.Plotter(output=aplt.Output(path=plot_path, format="png")),
+        plotter_2d=aplt.Plotter2D(output=aplt.Output(path=plot_path, format="png")),
     )
 
     assert path.join(plot_path, "visibilities.png") in plot_patch.paths
 
     aplt.FitInterferometer.noise_map(
         fit=fit_interferometer_7,
-        plotter=aplt.Plotter(output=aplt.Output(path=plot_path, format="png")),
+        plotter_2d=aplt.Plotter2D(output=aplt.Output(path=plot_path, format="png")),
     )
 
     assert path.join(plot_path, "noise_map.png") in plot_patch.paths
 
     aplt.FitInterferometer.signal_to_noise_map(
         fit=fit_interferometer_7,
-        plotter=aplt.Plotter(output=aplt.Output(path=plot_path, format="png")),
+        plotter_2d=aplt.Plotter2D(output=aplt.Output(path=plot_path, format="png")),
     )
 
     assert path.join(plot_path, "signal_to_noise_map.png") in plot_patch.paths
 
     aplt.FitInterferometer.model_visibilities(
         fit=fit_interferometer_7,
-        plotter=aplt.Plotter(output=aplt.Output(path=plot_path, format="png")),
+        plotter_2d=aplt.Plotter2D(output=aplt.Output(path=plot_path, format="png")),
     )
 
     assert path.join(plot_path, "model_visibilities.png") in plot_patch.paths
 
     aplt.FitInterferometer.residual_map_vs_uv_distances(
         fit=fit_interferometer_7,
-        plotter=aplt.Plotter(output=aplt.Output(path=plot_path, format="png")),
+        plotter_2d=aplt.Plotter2D(output=aplt.Output(path=plot_path, format="png")),
     )
 
     assert (
@@ -59,7 +59,7 @@ def test__fit_quantities_are_output(fit_interferometer_7, plot_path, plot_patch)
     aplt.FitInterferometer.residual_map_vs_uv_distances(
         fit=fit_interferometer_7,
         plot_real=False,
-        plotter=aplt.Plotter(output=aplt.Output(path=plot_path, format="png")),
+        plotter_2d=aplt.Plotter2D(output=aplt.Output(path=plot_path, format="png")),
     )
 
     assert (
@@ -69,7 +69,7 @@ def test__fit_quantities_are_output(fit_interferometer_7, plot_path, plot_patch)
 
     aplt.FitInterferometer.normalized_residual_map_vs_uv_distances(
         fit=fit_interferometer_7,
-        plotter=aplt.Plotter(output=aplt.Output(path=plot_path, format="png")),
+        plotter_2d=aplt.Plotter2D(output=aplt.Output(path=plot_path, format="png")),
     )
 
     assert (
@@ -80,7 +80,7 @@ def test__fit_quantities_are_output(fit_interferometer_7, plot_path, plot_patch)
     aplt.FitInterferometer.normalized_residual_map_vs_uv_distances(
         fit=fit_interferometer_7,
         plot_real=False,
-        plotter=aplt.Plotter(output=aplt.Output(path=plot_path, format="png")),
+        plotter_2d=aplt.Plotter2D(output=aplt.Output(path=plot_path, format="png")),
     )
 
     assert (
@@ -90,7 +90,7 @@ def test__fit_quantities_are_output(fit_interferometer_7, plot_path, plot_patch)
 
     aplt.FitInterferometer.chi_squared_map_vs_uv_distances(
         fit=fit_interferometer_7,
-        plotter=aplt.Plotter(output=aplt.Output(path=plot_path, format="png")),
+        plotter_2d=aplt.Plotter2D(output=aplt.Output(path=plot_path, format="png")),
     )
 
     assert (
@@ -101,7 +101,7 @@ def test__fit_quantities_are_output(fit_interferometer_7, plot_path, plot_patch)
     aplt.FitInterferometer.chi_squared_map_vs_uv_distances(
         fit=fit_interferometer_7,
         plot_real=False,
-        plotter=aplt.Plotter(output=aplt.Output(path=plot_path, format="png")),
+        plotter_2d=aplt.Plotter2D(output=aplt.Output(path=plot_path, format="png")),
     )
 
     assert (
@@ -114,7 +114,7 @@ def test__fit_sub_plot(fit_interferometer_7, plot_path, plot_patch):
 
     aplt.FitInterferometer.subplot_fit_interferometer(
         fit=fit_interferometer_7,
-        plotter=aplt.Plotter(output=aplt.Output(plot_path, format="png")),
+        plotter_2d=aplt.Plotter2D(output=aplt.Output(plot_path, format="png")),
     )
 
     assert (
@@ -133,7 +133,7 @@ def test__fit_individuals__dependent_on_input(
         plot_signal_to_noise_map=False,
         plot_model_visibilities=True,
         plot_chi_squared_map=True,
-        plotter=aplt.Plotter(output=aplt.Output(plot_path, format="png")),
+        plotter_2d=aplt.Plotter2D(output=aplt.Output(plot_path, format="png")),
     )
 
     assert path.join(plot_path, "visibilities.png") in plot_patch.paths

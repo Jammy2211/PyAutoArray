@@ -1,39 +1,31 @@
 from autoconf import conf
-from autoarray.structures import arrays, grids, lines as l, vector_fields
-from autoarray.plot.plotter import visuals as ps
-from functools import wraps
+from autoarray.structures import grids
+from autoarray.plot.mat_wrap import visuals as vis
 
 
-def include_key_from_dictionary(dictionary):
-    include_key = None
+class AbstractInclude:
+    def __init__(self, origin=None, mask=None):
 
-    for key, value in dictionary.items():
-        if isinstance(value, Include):
-            include_key = key
+        section = conf.instance["visualize"]["include"]["include"]
 
-    return include_key
-
-
-def set_include(func):
-    @wraps(func)
-    def wrapper(*args, **kwargs):
-
-        include_key = include_key_from_dictionary(dictionary=kwargs)
-
-        if include_key is not None:
-            include = kwargs[include_key]
-        else:
-            include = Include()
-            include_key = "include"
-
-        kwargs[include_key] = include
-
-        return func(*args, **kwargs)
-
-    return wrapper
+        self.origin = section["origin"] if origin is None else origin
+        self.mask = section["mask"] if mask is None else mask
 
 
-class Include:
+class Include1D(AbstractInclude):
+    def __init__(self, origin=None, mask=None):
+
+        super().__init__(origin=origin, mask=mask)
+
+    def visuals_from_line(self, line):
+
+        origin = line.origin if self.origin else None
+        mask = line.mask if self.mask else None
+
+        return vis.Visuals1D(origin=origin, mask=mask)
+
+
+class Include2D:
     def __init__(
         self,
         origin=None,
@@ -97,7 +89,7 @@ class Include:
             else None
         )
 
-        return ps.Visuals(origin=origin, mask=mask, border=border)
+        return vis.Visuals2D(origin=origin, mask=mask, border=border)
 
     def visuals_from_array(self, array):
 
@@ -105,7 +97,9 @@ class Include:
 
     def visuals_from_grid(self, grid):
 
-        return self.visuals_from_structure(structure=grid)
+        if isinstance(grid, grids.Grid):
+            return self.visuals_from_structure(structure=grid)
+        return vis.Visuals2D()
 
     def visuals_from_frame(self, frame):
 
@@ -117,7 +111,7 @@ class Include:
         serial_prescan = frame.scans.serial_prescan if self.serial_prescan else None
         serial_overscan = frame.scans.serial_overscan if self.serial_overscan else None
 
-        return visuals_structure + ps.Visuals(
+        return visuals_structure + vis.Visuals2D(
             parallel_overscan=parallel_overscan,
             serial_prescan=serial_prescan,
             serial_overscan=serial_overscan,

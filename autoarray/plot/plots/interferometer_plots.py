@@ -1,21 +1,32 @@
-from autoarray.plot.plotter import plotter, include as inc
+from autoarray.plot.mat_wrap import mat_decorators
+from autoarray.plot.plots import structure_plots
 from autoarray.structures import grids
 import numpy as np
 
 
-@inc.set_include
-@plotter.set_plotter_for_subplot
-@plotter.set_subplot_filename
-def subplot_interferometer(interferometer, include=None, plotter=None):
-    """Plot the interferometer data_type as a sub-plotter of all its quantites (e.g. the dataset, noise_map, PSF, Signal-to_noise-map, \
+@mat_decorators.set_plot_defaults_1d
+@mat_decorators.set_plot_defaults_2d
+@mat_decorators.set_plotter_1d_for_subplot
+@mat_decorators.set_plotter_2d_for_subplot
+@mat_decorators.set_subplot_filename
+def subplot_interferometer(
+    interferometer,
+    visuals_2d=None,
+    include_2d=None,
+    plotter_2d=None,
+    visuals_1d=None,
+    include_1d=None,
+    plotter_1d=None,
+):
+    """Plot the interferometer data_type as a sub-plotter_2d of all its quantites (e.g. the dataset, noise_map, PSF, Signal-to_noise-map, \
      etc).
 
-    Set *autolens.data_type.array.plotter.plotter* for a description of all innput parameters not described below.
+    Set *autolens.data_type.array.plotter_2d.plotter_2d* for a description of all innput parameters not described below.
 
     Parameters
     -----------
     interferometer : data_type.UVPlaneData
-        The interferometer data_type, which include the observed data_type, noise_map, PSF, signal-to-noise_map, etc.
+        The interferometer data_type, which include_2d the observed data_type, noise_map, PSF, signal-to-noise_map, etc.
     origin : True
         If true, the origin of the dataset's coordinate system is plotted as a 'x'.
     image_plane_pix_grid : np.ndarray or data_type.array.grid_stacks.PixGrid
@@ -28,35 +39,57 @@ def subplot_interferometer(interferometer, include=None, plotter=None):
 
     number_subplots = 4
 
-    plotter.open_subplot_figure(number_subplots=number_subplots)
+    plotter_2d.open_subplot_figure(number_subplots=number_subplots)
 
-    plotter.setup_subplot(number_subplots=number_subplots, subplot_index=1)
+    plotter_2d.setup_subplot(number_subplots=number_subplots, subplot_index=1)
 
-    uv_wavelengths(interferometer=interferometer, include=include, plotter=plotter)
+    uv_wavelengths(
+        interferometer=interferometer,
+        visuals_2d=visuals_2d,
+        include_2d=include_2d,
+        plotter_2d=plotter_2d,
+    )
 
-    plotter.setup_subplot(number_subplots=number_subplots, subplot_index=2)
+    plotter_2d.setup_subplot(number_subplots=number_subplots, subplot_index=2)
 
-    visibilities(interferometer=interferometer, include=include, plotter=plotter)
+    visibilities(
+        interferometer=interferometer,
+        visuals_2d=visuals_2d,
+        include_2d=include_2d,
+        plotter_2d=plotter_2d,
+    )
 
-    plotter.setup_subplot(number_subplots=number_subplots, subplot_index=3)
+    plotter_2d.setup_subplot(number_subplots=number_subplots, subplot_index=3)
 
     amplitudes_vs_uv_distances(
-        interferometer=interferometer, include=include, plotter=plotter
+        interferometer=interferometer,
+        visuals_1d=visuals_1d,
+        include_1d=include_1d,
+        plotter_1d=plotter_1d,
     )
 
-    plotter.setup_subplot(number_subplots=number_subplots, subplot_index=4)
+    plotter_1d.setup_subplot(number_subplots=number_subplots, subplot_index=4)
 
     phases_vs_uv_distances(
-        interferometer=interferometer, include=include, plotter=plotter
+        interferometer=interferometer,
+        visuals_1d=visuals_1d,
+        include_1d=include_1d,
+        plotter_1d=plotter_1d,
     )
 
-    plotter.output.subplot_to_figure()
+    plotter_2d.output.subplot_to_figure()
 
-    plotter.figure.close()
+    plotter_2d.figure.close()
 
 
 def individual(
     interferometer,
+    visuals_2d=None,
+    include_2d=None,
+    plotter_2d=None,
+    visuals_1d=None,
+    include_1d=None,
+    plotter_1d=None,
     plot_visibilities=False,
     plot_noise_map=False,
     plot_u_wavelengths=False,
@@ -64,62 +97,70 @@ def individual(
     plot_uv_wavelengths=False,
     plot_amplitudes_vs_uv_distances=False,
     plot_phases_vs_uv_distances=False,
-    include=None,
-    plotter=None,
 ):
-    """Plot each attribute of the interferometer data_type as individual figures one by one (e.g. the dataset, noise_map, PSF, \
+    """
+    Plot each attribute of the interferometer data_type as individual figures one by one (e.g. the dataset, noise_map, PSF, \
      Signal-to_noise-map, etc).
 
-    Set *autolens.data_type.array.plotter.plotter* for a description of all innput parameters not described below.
+    Set *autolens.data_type.array.plotter_2d.plotter_2d* for a description of all innput parameters not described below.
 
     Parameters
     -----------
     interferometer : data_type.UVPlaneData
-        The interferometer data_type, which include the observed data_type, noise_map, PSF, signal-to-noise_map, etc.
+        The interferometer data_type, which include_2d the observed data_type, noise_map, PSF, signal-to-noise_map, etc.
     origin : True
         If true, the origin of the dataset's coordinate system is plotted as a 'x'.
     """
 
     if plot_visibilities:
 
-        visibilities(interferometer=interferometer, include=include, plotter=plotter)
+        visibilities(
+            interferometer=interferometer, visuals_2d=visuals_2d, include_2d=include_2d, plotter_2d=plotter_2d
+        )
 
     if plot_noise_map:
 
-        noise_map(interferometer=interferometer, include=include, plotter=plotter)
+        noise_map(
+            interferometer=interferometer, visuals_2d=visuals_2d, include_2d=include_2d, plotter_2d=plotter_2d
+        )
 
     if plot_u_wavelengths:
 
-        uv_wavelengths(interferometer=interferometer, include=include, plotter=plotter)
+        uv_wavelengths(
+            interferometer=interferometer, visuals_2d=visuals_2d, include_2d=include_2d, plotter_2d=plotter_2d
+        )
 
     if plot_v_wavelengths:
 
-        v_wavelengths(interferometer=interferometer, include=include, plotter=plotter)
+        v_wavelengths(
+            interferometer=interferometer, visuals_1d=visuals_1d, include_1d=include_1d, plotter_1d=plotter_1d
+        )
 
     if plot_uv_wavelengths:
 
-        uv_wavelengths(interferometer=interferometer, include=include, plotter=plotter)
+        uv_wavelengths(
+            interferometer=interferometer, visuals_2d=visuals_2d, include_2d=include_2d, plotter_2d=plotter_2d
+        )
 
     if plot_amplitudes_vs_uv_distances:
 
         amplitudes_vs_uv_distances(
-            interferometer=interferometer, include=include, plotter=plotter
+            interferometer=interferometer, visuals_1d=visuals_1d, include_1d=include_1d, plotter_1d=plotter_1d
         )
 
     if plot_phases_vs_uv_distances:
 
         phases_vs_uv_distances(
-            interferometer=interferometer, include=include, plotter=plotter
+            interferometer=interferometer, visuals_1d=visuals_1d, include_1d=include_1d, plotter_1d=plotter_1d
         )
 
 
-@inc.set_include
-@plotter.set_plotter_for_figure
-@plotter.set_labels
-def visibilities(interferometer, include=None, plotter=None):
+@mat_decorators.set_plot_defaults_2d
+@mat_decorators.set_labels
+def visibilities(interferometer, visuals_2d=None, include_2d=None, plotter_2d=None):
     """Plot the observed image of the imaging data_type.
 
-    Set *autolens.data_type.array.plotter.plotter* for a description of all input parameters not described below.
+    Set *autolens.data_type.array.plotter_2d.plotter_2d* for a description of all input parameters not described below.
 
     Parameters
     -----------
@@ -132,16 +173,20 @@ def visibilities(interferometer, include=None, plotter=None):
         over the immage.
     """
 
-    plotter._plot_grid(grid=interferometer.visibilities.in_grid)
+    structure_plots.plot_grid(
+        grid=interferometer.visibilities.in_grid,
+        visuals_2d=visuals_2d,
+        include_2d=include_2d,
+        plotter_2d=plotter_2d,
+    )
 
 
-@inc.set_include
-@plotter.set_plotter_for_figure
-@plotter.set_labels
-def noise_map(interferometer, include=None, plotter=None):
+@mat_decorators.set_plot_defaults_2d
+@mat_decorators.set_labels
+def noise_map(interferometer, visuals_2d=None, include_2d=None, plotter_2d=None):
     """Plot the observed image of the imaging data_type.
 
-    Set *autolens.data_type.array.plotter.plotter* for a description of all input parameters not described below.
+    Set *autolens.data_type.array.plotter_2d.plotter_2d* for a description of all input parameters not described below.
 
     Parameters
     -----------
@@ -154,25 +199,28 @@ def noise_map(interferometer, include=None, plotter=None):
         over the immage.
     """
 
-    plotter._plot_grid(
+    structure_plots.plot_grid(
+        visuals_2d=visuals_2d,
+        include_2d=include_2d,
+        plotter_2d=plotter_2d,
         grid=interferometer.visibilities.in_grid,
         color_array=interferometer.noise_map.real,
     )
 
 
-@inc.set_include
-@plotter.set_plotter_for_figure
-@plotter.set_labels
+@mat_decorators.set_plot_defaults_1d
+@mat_decorators.set_labels
 def u_wavelengths(
     interferometer,
+    visuals_1d=None,
+    include_1d=None,
+    plotter_1d=None,
     label="Wavelengths",
     plot_axis_type="linear",
-    include=None,
-    plotter=None,
 ):
     """Plot the observed image of the imaging data_type.
 
-    Set *autolens.data_type.array.plotter.plotter* for a description of all input parameters not described below.
+    Set *autolens.data_type.array.plotter_1d.plotter_1d* for a description of all input parameters not described below.
 
     Parameters
     -----------
@@ -185,27 +233,28 @@ def u_wavelengths(
         over the immage.
     """
 
-    plotter._plot_line(
+    structure_plots.plot_line(
         y=interferometer.uv_wavelengths[:, 0],
         x=None,
+        plotter_1d=plotter_1d,
         label=label,
         plot_axis_type=plot_axis_type,
     )
 
 
-@inc.set_include
-@plotter.set_plotter_for_figure
-@plotter.set_labels
+@mat_decorators.set_plot_defaults_1d
+@mat_decorators.set_labels
 def v_wavelengths(
     interferometer,
+    visuals_1d=None,
+    include_1d=None,
+    plotter_1d=None,
     label="Wavelengths",
     plot_axis_type="linear",
-    include=None,
-    plotter=None,
 ):
     """Plot the observed image of the imaging data_type.
 
-    Set *autolens.data_type.array.plotter.plotter* for a description of all input parameters not described below.
+    Set *autolens.data_type.array.plotter_1d.plotter_1d* for a description of all input parameters not described below.
 
     Parameters
     -----------
@@ -218,27 +267,28 @@ def v_wavelengths(
         over the immage.
     """
 
-    plotter._plot_line(
+    structure_plots.plot_line(
         y=interferometer.uv_wavelengths[:, 1],
         x=None,
+        plotter_1d=plotter_1d,
         label=label,
         plot_axis_type=plot_axis_type,
     )
 
 
-@inc.set_include
-@plotter.set_plotter_for_figure
-@plotter.set_labels
+@mat_decorators.set_plot_defaults_2d
+@mat_decorators.set_labels
 def uv_wavelengths(
     interferometer,
+    visuals_2d=None,
+    include_2d=None,
+    plotter_2d=None,
     label_yunits="V-Wavelengths ($\lambda$)",
     label_xunits="U-Wavelengths ($\lambda$)",
-    include=None,
-    plotter=None,
 ):
     """Plot the observed image of the imaging data_type.
 
-    Set *autolens.data_type.array.plotter.plotter* for a description of all input parameters not described below.
+    Set *autolens.data_type.array.plotter_2d.plotter_2d* for a description of all input parameters not described below.
 
     Parameters
     -----------
@@ -251,46 +301,51 @@ def uv_wavelengths(
         over the immage.
     """
 
-    plotter._plot_grid(
+    structure_plots.plot_grid(
         grid=grids.GridIrregularGrouped.from_yx_1d(
             y=interferometer.uv_wavelengths[:, 1] / 10 ** 3.0,
             x=interferometer.uv_wavelengths[:, 0] / 10 ** 3.0,
         ),
+        visuals_2d=visuals_2d,
+        include_2d=include_2d,
+        plotter_2d=plotter_2d,
         symmetric_around_centre=True,
     )
 
 
-@inc.set_include
-@plotter.set_plotter_for_figure
-@plotter.set_labels
+@mat_decorators.set_plot_defaults_1d
+@mat_decorators.set_labels
 def amplitudes_vs_uv_distances(
     interferometer,
+    visuals_1d=None,
+    include_1d=None,
+    plotter_1d=None,
     label_yunits="amplitude (Jy)",
     label_xunits=r"UV$_{distance}$ (k$\lambda$)",
-    include=None,
-    plotter=None,
 ):
 
-    plotter._plot_line(
+    structure_plots.plot_line(
         y=interferometer.amplitudes,
         x=interferometer.uv_distances / 10 ** 3.0,
         plot_axis_type="scatter",
+        plotter_1d=plotter_1d,
     )
 
 
-@inc.set_include
-@plotter.set_plotter_for_figure
-@plotter.set_labels
+@mat_decorators.set_plot_defaults_1d
+@mat_decorators.set_labels
 def phases_vs_uv_distances(
     interferometer,
+    visuals_1d=None,
+    include_1d=None,
+    plotter_1d=None,
     label_yunits="phase (deg)",
     label_xunits=r"UV$_{distance}$ (k$\lambda$)",
-    include=None,
-    plotter=None,
 ):
 
-    plotter._plot_line(
+    structure_plots.plot_line(
         y=interferometer.phases,
         x=interferometer.uv_distances / 10 ** 3.0,
         plot_axis_type="scatter",
+        plotter_1d=plotter_1d,
     )

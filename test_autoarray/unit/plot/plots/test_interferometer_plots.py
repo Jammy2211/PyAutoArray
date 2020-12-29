@@ -1,7 +1,6 @@
 from os import path
 
 import pytest
-from autoconf import conf
 import autoarray.plot as aplt
 
 directory = path.dirname(path.realpath(__file__))
@@ -21,49 +20,49 @@ def test__individual_attributes_are_output(interferometer_7, plot_path, plot_pat
 
     aplt.Interferometer.visibilities(
         interferometer=interferometer_7,
-        plotter=aplt.Plotter(output=aplt.Output(path=plot_path, format="png")),
+        plotter_2d=aplt.Plotter2D(output=aplt.Output(path=plot_path, format="png")),
     )
 
     assert path.join(plot_path, "visibilities.png") in plot_patch.paths
 
     aplt.Interferometer.noise_map(
         interferometer=interferometer_7,
-        plotter=aplt.Plotter(output=aplt.Output(path=plot_path, format="png")),
+        plotter_2d=aplt.Plotter2D(output=aplt.Output(path=plot_path, format="png")),
     )
 
     assert path.join(plot_path, "noise_map.png") in plot_patch.paths
 
     aplt.Interferometer.u_wavelengths(
         interferometer=interferometer_7,
-        plotter=aplt.Plotter(output=aplt.Output(path=plot_path, format="png")),
+        plotter_1d=aplt.Plotter1D(output=aplt.Output(path=plot_path, format="png")),
     )
 
     assert path.join(plot_path, "u_wavelengths.png") in plot_patch.paths
 
     aplt.Interferometer.v_wavelengths(
         interferometer=interferometer_7,
-        plotter=aplt.Plotter(output=aplt.Output(path=plot_path, format="png")),
+        plotter_1d=aplt.Plotter1D(output=aplt.Output(path=plot_path, format="png")),
     )
 
     assert path.join(plot_path, "v_wavelengths.png") in plot_patch.paths
 
     aplt.Interferometer.uv_wavelengths(
         interferometer=interferometer_7,
-        plotter=aplt.Plotter(output=aplt.Output(path=plot_path, format="png")),
+        plotter_2d=aplt.Plotter2D(output=aplt.Output(path=plot_path, format="png")),
     )
 
     assert path.join(plot_path, "uv_wavelengths.png") in plot_patch.paths
 
     aplt.Interferometer.amplitudes_vs_uv_distances(
         interferometer=interferometer_7,
-        plotter=aplt.Plotter(output=aplt.Output(path=plot_path, format="png")),
+        plotter_1d=aplt.Plotter1D(output=aplt.Output(path=plot_path, format="png")),
     )
 
     assert path.join(plot_path, "amplitudes_vs_uv_distances.png") in plot_patch.paths
 
     aplt.Interferometer.phases_vs_uv_distances(
         interferometer=interferometer_7,
-        plotter=aplt.Plotter(output=aplt.Output(path=plot_path, format="png")),
+        plotter_1d=aplt.Plotter1D(output=aplt.Output(path=plot_path, format="png")),
     )
 
     assert path.join(plot_path, "phases_vs_uv_distances.png") in plot_patch.paths
@@ -71,9 +70,11 @@ def test__individual_attributes_are_output(interferometer_7, plot_path, plot_pat
 
 def test__subplot_is_output(interferometer_7, plot_path, plot_patch):
 
+    print(plot_patch.paths)
+
     aplt.Interferometer.subplot_interferometer(
         interferometer=interferometer_7,
-        plotter=aplt.Plotter(output=aplt.Output(path=plot_path, format="png")),
+        plotter_2d=aplt.Plotter2D(output=aplt.Output(path=plot_path, format="png")),
     )
 
     assert path.join(plot_path, "subplot_interferometer.png") in plot_patch.paths
@@ -84,11 +85,12 @@ def test__individuals__output_dependent_on_input(
 ):
     aplt.Interferometer.individual(
         interferometer=interferometer_7,
+        plotter_2d=aplt.Plotter2D(output=aplt.Output(path=plot_path, format="png")),
+        plotter_1d=aplt.Plotter1D(output=aplt.Output(path=plot_path, format="png")),
         plot_visibilities=True,
         plot_u_wavelengths=False,
         plot_v_wavelengths=True,
         plot_amplitudes_vs_uv_distances=True,
-        plotter=aplt.Plotter(output=aplt.Output(path=plot_path, format="png")),
     )
 
     assert path.join(plot_path, "visibilities.png") in plot_patch.paths

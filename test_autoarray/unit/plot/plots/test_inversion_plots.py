@@ -28,7 +28,7 @@ def test__individual_attributes_are_output_for_rectangular_inversion(
         inversion=rectangular_inversion_7x7_3x3,
         image_positions=grid_irregular_grouped_7x7,
         lines=lines,
-        plotter=aplt.Plotter(output=aplt.Output(path=plot_path, format="png")),
+        plotter_2d=aplt.Plotter2D(output=aplt.Output(path=plot_path, format="png")),
     )
 
     assert path.join(plot_path, "reconstructed_image.png") in plot_patch.paths
@@ -39,7 +39,7 @@ def test__individual_attributes_are_output_for_rectangular_inversion(
         lines=lines,
         image_pixel_indexes=[0],
         source_pixel_indexes=[1],
-        plotter=aplt.Plotter(output=aplt.Output(path=plot_path, format="png")),
+        plotter_2d=aplt.Plotter2D(output=aplt.Output(path=plot_path, format="png")),
     )
 
     assert path.join(plot_path, "reconstruction.png") in plot_patch.paths
@@ -50,7 +50,7 @@ def test__individual_attributes_are_output_for_rectangular_inversion(
         lines=lines,
         image_pixel_indexes=[0],
         source_pixel_indexes=[1],
-        plotter=aplt.Plotter(output=aplt.Output(path=plot_path, format="png")),
+        plotter_2d=aplt.Plotter2D(output=aplt.Output(path=plot_path, format="png")),
     )
 
     assert path.join(plot_path, "errors.png") in plot_patch.paths
@@ -61,7 +61,7 @@ def test__individual_attributes_are_output_for_rectangular_inversion(
         lines=lines,
         image_pixel_indexes=[0],
         source_pixel_indexes=[1],
-        plotter=aplt.Plotter(output=aplt.Output(path=plot_path, format="png")),
+        plotter_2d=aplt.Plotter2D(output=aplt.Output(path=plot_path, format="png")),
     )
 
     assert path.join(plot_path, "residual_map.png") in plot_patch.paths
@@ -72,7 +72,7 @@ def test__individual_attributes_are_output_for_rectangular_inversion(
         lines=lines,
         image_pixel_indexes=[0],
         source_pixel_indexes=[1],
-        plotter=aplt.Plotter(output=aplt.Output(path=plot_path, format="png")),
+        plotter_2d=aplt.Plotter2D(output=aplt.Output(path=plot_path, format="png")),
     )
 
     assert path.join(plot_path, "normalized_residual_map.png") in plot_patch.paths
@@ -83,7 +83,7 @@ def test__individual_attributes_are_output_for_rectangular_inversion(
         lines=lines,
         image_pixel_indexes=[0],
         source_pixel_indexes=[1],
-        plotter=aplt.Plotter(output=aplt.Output(path=plot_path, format="png")),
+        plotter_2d=aplt.Plotter2D(output=aplt.Output(path=plot_path, format="png")),
     )
 
     assert path.join(plot_path, "chi_squared_map.png") in plot_patch.paths
@@ -94,7 +94,7 @@ def test__individual_attributes_are_output_for_rectangular_inversion(
         lines=lines,
         image_pixel_indexes=[0],
         source_pixel_indexes=[1],
-        plotter=aplt.Plotter(output=aplt.Output(path=plot_path, format="png")),
+        plotter_2d=aplt.Plotter2D(output=aplt.Output(path=plot_path, format="png")),
     )
 
     assert path.join(plot_path, "regularization_weights.png") in plot_patch.paths
@@ -103,7 +103,7 @@ def test__individual_attributes_are_output_for_rectangular_inversion(
         inversion=rectangular_inversion_7x7_3x3,
         source_positions=grid_irregular_grouped_7x7,
         lines=lines,
-        plotter=aplt.Plotter(output=aplt.Output(path=plot_path, format="png")),
+        plotter_2d=aplt.Plotter2D(output=aplt.Output(path=plot_path, format="png")),
     )
 
     assert path.join(plot_path, "interpolated_reconstruction.png") in plot_patch.paths
@@ -112,7 +112,7 @@ def test__individual_attributes_are_output_for_rectangular_inversion(
         inversion=rectangular_inversion_7x7_3x3,
         source_positions=grid_irregular_grouped_7x7,
         lines=lines,
-        plotter=aplt.Plotter(output=aplt.Output(path=plot_path, format="png")),
+        plotter_2d=aplt.Plotter2D(output=aplt.Output(path=plot_path, format="png")),
     )
 
     assert path.join(plot_path, "interpolated_errors.png") in plot_patch.paths
@@ -128,7 +128,7 @@ def test__individual_attributes_are_output_for_voronoi_inversion(
         inversion=voronoi_inversion_9_3x3,
         image_positions=grid_irregular_grouped_7x7,
         lines=lines,
-        plotter=aplt.Plotter(output=aplt.Output(path=plot_path, format="png")),
+        plotter_2d=aplt.Plotter2D(output=aplt.Output(path=plot_path, format="png")),
     )
 
     assert path.join(plot_path, "reconstructed_image.png") in plot_patch.paths
@@ -139,7 +139,7 @@ def test__individual_attributes_are_output_for_voronoi_inversion(
         lines=lines,
         image_pixel_indexes=[0],
         source_pixel_indexes=[1],
-        plotter=aplt.Plotter(output=aplt.Output(path=plot_path, format="png")),
+        plotter_2d=aplt.Plotter2D(output=aplt.Output(path=plot_path, format="png")),
     )
 
     assert path.join(plot_path, "reconstruction.png") in plot_patch.paths
@@ -150,7 +150,7 @@ def test__individual_attributes_are_output_for_voronoi_inversion(
         lines=lines,
         image_pixel_indexes=[0],
         source_pixel_indexes=[1],
-        plotter=aplt.Plotter(output=aplt.Output(path=plot_path, format="png")),
+        plotter_2d=aplt.Plotter2D(output=aplt.Output(path=plot_path, format="png")),
     )
 
     assert path.join(plot_path, "errors.png") in plot_patch.paths
@@ -161,7 +161,7 @@ def test__individual_attributes_are_output_for_voronoi_inversion(
         lines=lines,
         image_pixel_indexes=[0],
         source_pixel_indexes=[1],
-        plotter=aplt.Plotter(output=aplt.Output(path=plot_path, format="png")),
+        plotter_2d=aplt.Plotter2D(output=aplt.Output(path=plot_path, format="png")),
     )
 
     assert path.join(plot_path, "residual_map.png") in plot_patch.paths
@@ -172,7 +172,7 @@ def test__individual_attributes_are_output_for_voronoi_inversion(
         lines=lines,
         image_pixel_indexes=[0],
         source_pixel_indexes=[1],
-        plotter=aplt.Plotter(output=aplt.Output(path=plot_path, format="png")),
+        plotter_2d=aplt.Plotter2D(output=aplt.Output(path=plot_path, format="png")),
     )
 
     assert path.join(plot_path, "normalized_residual_map.png") in plot_patch.paths
@@ -183,7 +183,7 @@ def test__individual_attributes_are_output_for_voronoi_inversion(
         lines=lines,
         image_pixel_indexes=[0],
         source_pixel_indexes=[1],
-        plotter=aplt.Plotter(output=aplt.Output(path=plot_path, format="png")),
+        plotter_2d=aplt.Plotter2D(output=aplt.Output(path=plot_path, format="png")),
     )
 
     assert path.join(plot_path, "chi_squared_map.png") in plot_patch.paths
@@ -194,7 +194,7 @@ def test__individual_attributes_are_output_for_voronoi_inversion(
         lines=lines,
         image_pixel_indexes=[0],
         source_pixel_indexes=[1],
-        plotter=aplt.Plotter(output=aplt.Output(path=plot_path, format="png")),
+        plotter_2d=aplt.Plotter2D(output=aplt.Output(path=plot_path, format="png")),
     )
 
     assert path.join(plot_path, "regularization_weights.png") in plot_patch.paths
@@ -203,7 +203,7 @@ def test__individual_attributes_are_output_for_voronoi_inversion(
         inversion=voronoi_inversion_9_3x3,
         source_positions=grid_irregular_grouped_7x7,
         lines=lines,
-        plotter=aplt.Plotter(output=aplt.Output(path=plot_path, format="png")),
+        plotter_2d=aplt.Plotter2D(output=aplt.Output(path=plot_path, format="png")),
     )
 
     assert path.join(plot_path, "interpolated_reconstruction.png") in plot_patch.paths
@@ -212,7 +212,7 @@ def test__individual_attributes_are_output_for_voronoi_inversion(
         inversion=voronoi_inversion_9_3x3,
         source_positions=grid_irregular_grouped_7x7,
         lines=lines,
-        plotter=aplt.Plotter(output=aplt.Output(path=plot_path, format="png")),
+        plotter_2d=aplt.Plotter2D(output=aplt.Output(path=plot_path, format="png")),
     )
 
     assert path.join(plot_path, "interpolated_errors.png") in plot_patch.paths
@@ -229,7 +229,7 @@ def test__inversion_subplot_is_output_for_all_inversions(
         inversion=rectangular_inversion_7x7_3x3,
         image_pixel_indexes=[[0, 1, 2], [3]],
         source_pixel_indexes=[[1, 2], [0]],
-        plotter=aplt.Plotter(output=aplt.Output(path=plot_path, format="png")),
+        plotter_2d=aplt.Plotter2D(output=aplt.Output(path=plot_path, format="png")),
     )
     assert path.join(plot_path, "subplot_inversion.png") in plot_patch.paths
 
@@ -237,7 +237,7 @@ def test__inversion_subplot_is_output_for_all_inversions(
         inversion=voronoi_inversion_9_3x3,
         image_pixel_indexes=[[0, 1, 2], [3]],
         source_pixel_indexes=[[1, 2], [0]],
-        plotter=aplt.Plotter(output=aplt.Output(path=plot_path, format="png")),
+        plotter_2d=aplt.Plotter2D(output=aplt.Output(path=plot_path, format="png")),
     )
     assert path.join(plot_path, "subplot_inversion.png") in plot_patch.paths
 
@@ -256,7 +256,7 @@ def test__inversion_individuals__output_dependent_on_input(
         plot_errors=True,
         plot_chi_squared_map=True,
         plot_interpolated_reconstruction=True,
-        plotter=aplt.Plotter(output=aplt.Output(path=plot_path, format="png")),
+        plotter_2d=aplt.Plotter2D(output=aplt.Output(path=plot_path, format="png")),
     )
 
     assert path.join(plot_path, "reconstructed_image.png") in plot_patch.paths

@@ -1,16 +1,15 @@
-from autoarray.plot.plotter import plotter, include as inc
+from autoarray.plot.mat_wrap import mat_decorators
+from autoarray.plot.plots import structure_plots
 
 
-@inc.set_include
-@plotter.set_plotter_for_subplot
-@plotter.set_subplot_filename
-def subplot_imaging(
-    imaging, grid=None, mask=None, positions=None, include=None, plotter=None
-):
-    """Plot the imaging data_type as a sub-plotter of all its quantites (e.g. the dataset, noise_map, PSF, Signal-to_noise-map, \
+@mat_decorators.set_plot_defaults_2d
+@mat_decorators.set_plotter_2d_for_subplot
+@mat_decorators.set_subplot_filename
+def subplot_imaging(imaging, visuals_2d=None, include_2d=None, plotter_2d=None):
+    """Plot the imaging data_type as a sub-plotter_2d of all its quantites (e.g. the dataset, noise_map, PSF, Signal-to_noise-map, \
      etc).
 
-    Set *autolens.data_type.array.plotter.plotter* for a description of all innput parameters not described below.
+    Set *autolens.data_type.array.plotter_2d.plotter_2d* for a description of all innput parameters not described below.
 
     Parameters
     -----------
@@ -28,73 +27,72 @@ def subplot_imaging(
 
     number_subplots = 6
 
-    plotter.open_subplot_figure(number_subplots=number_subplots)
+    plotter_2d.open_subplot_figure(number_subplots=number_subplots)
 
-    plotter.setup_subplot(number_subplots=number_subplots, subplot_index=1)
+    plotter_2d.setup_subplot(number_subplots=number_subplots, subplot_index=1)
 
     image(
         imaging=imaging,
-        grid=grid,
-        mask=mask,
-        positions=positions,
-        include=include,
-        plotter=plotter,
+        visuals_2d=visuals_2d,
+        include_2d=include_2d,
+        plotter_2d=plotter_2d,
     )
 
-    plotter.setup_subplot(number_subplots=number_subplots, subplot_index=2)
+    plotter_2d.setup_subplot(number_subplots=number_subplots, subplot_index=2)
 
     noise_map(
         imaging=imaging,
-        mask=mask,
-        positions=positions,
-        include=include,
-        plotter=plotter,
+        visuals_2d=visuals_2d,
+        include_2d=include_2d,
+        plotter_2d=plotter_2d,
     )
 
-    plotter.setup_subplot(number_subplots=number_subplots, subplot_index=3)
+    plotter_2d.setup_subplot(number_subplots=number_subplots, subplot_index=3)
 
-    psf(imaging=imaging, positions=positions, include=include, plotter=plotter)
+    psf(
+        imaging=imaging,
+        visuals_2d=visuals_2d,
+        include_2d=include_2d,
+        plotter_2d=plotter_2d,
+    )
 
-    plotter.setup_subplot(number_subplots=number_subplots, subplot_index=4)
+    plotter_2d.setup_subplot(number_subplots=number_subplots, subplot_index=4)
 
     signal_to_noise_map(
         imaging=imaging,
-        mask=mask,
-        positions=positions,
-        include=include,
-        plotter=plotter,
+        visuals_2d=visuals_2d,
+        include_2d=include_2d,
+        plotter_2d=plotter_2d,
     )
 
-    plotter.setup_subplot(number_subplots=number_subplots, subplot_index=5)
+    plotter_2d.setup_subplot(number_subplots=number_subplots, subplot_index=5)
 
     inverse_noise_map(
         imaging=imaging,
-        mask=mask,
-        positions=positions,
-        include=include,
-        plotter=plotter,
+        visuals_2d=visuals_2d,
+        include_2d=include_2d,
+        plotter_2d=plotter_2d,
     )
 
-    plotter.setup_subplot(number_subplots=number_subplots, subplot_index=6)
+    plotter_2d.setup_subplot(number_subplots=number_subplots, subplot_index=6)
 
     potential_chi_squared_map(
         imaging=imaging,
-        mask=mask,
-        positions=positions,
-        include=include,
-        plotter=plotter,
+        visuals_2d=visuals_2d,
+        include_2d=include_2d,
+        plotter_2d=plotter_2d,
     )
 
-    plotter.output.subplot_to_figure()
+    plotter_2d.output.subplot_to_figure()
 
-    plotter.figure.close()
+    plotter_2d.figure.close()
 
 
 def individual(
     imaging,
-    grid=None,
-    mask=None,
-    positions=None,
+    visuals_2d=None,
+    include_2d=None,
+    plotter_2d=None,
     plot_image=False,
     plot_noise_map=False,
     plot_psf=False,
@@ -102,13 +100,11 @@ def individual(
     plot_signal_to_noise_map=False,
     plot_absolute_signal_to_noise_map=False,
     plot_potential_chi_squared_map=False,
-    include=None,
-    plotter=None,
 ):
     """Plot each attribute of the imaging data_type as individual figures one by one (e.g. the dataset, noise_map, PSF, \
      Signal-to_noise-map, etc).
 
-    Set *autolens.data_type.array.plotter.plotter* for a description of all innput parameters not described below.
+    Set *autolens.data_type.array.plotter_2d.plotter_2d* for a description of all innput parameters not described below.
 
     Parameters
     -----------
@@ -122,51 +118,72 @@ def individual(
 
         image(
             imaging=imaging,
-            grid=grid,
-            mask=mask,
-            positions=positions,
-            include=include,
-            plotter=plotter,
+            visuals_2d=visuals_2d,
+            include_2d=include_2d,
+            plotter_2d=plotter_2d,
         )
 
     if plot_noise_map:
 
-        noise_map(imaging=imaging, mask=mask, include=include, plotter=plotter)
+        noise_map(
+            imaging=imaging,
+            visuals_2d=visuals_2d,
+            include_2d=include_2d,
+            plotter_2d=plotter_2d,
+        )
 
     if plot_psf:
 
-        psf(imaging=imaging, include=include, plotter=plotter)
+        psf(
+            imaging=imaging,
+            visuals_2d=visuals_2d,
+            include_2d=include_2d,
+            plotter_2d=plotter_2d,
+        )
 
     if plot_inverse_noise_map:
 
-        inverse_noise_map(imaging=imaging, include=include, plotter=plotter)
+        inverse_noise_map(
+            imaging=imaging,
+            visuals_2d=visuals_2d,
+            include_2d=include_2d,
+            plotter_2d=plotter_2d,
+        )
 
     if plot_signal_to_noise_map:
 
         signal_to_noise_map(
-            imaging=imaging, mask=mask, include=include, plotter=plotter
+            imaging=imaging,
+            visuals_2d=visuals_2d,
+            include_2d=include_2d,
+            plotter_2d=plotter_2d,
         )
 
     if plot_absolute_signal_to_noise_map:
 
         absolute_signal_to_noise_map(
-            imaging=imaging, mask=mask, include=include, plotter=plotter
+            imaging=imaging,
+            visuals_2d=visuals_2d,
+            include_2d=include_2d,
+            plotter_2d=plotter_2d,
         )
 
     if plot_potential_chi_squared_map:
 
         potential_chi_squared_map(
-            imaging=imaging, mask=mask, include=include, plotter=plotter
+            imaging=imaging,
+            visuals_2d=visuals_2d,
+            include_2d=include_2d,
+            plotter_2d=plotter_2d,
         )
 
 
-@inc.set_include
-@plotter.set_plotter_for_figure
-@plotter.set_labels
-def image(imaging, grid=None, mask=None, positions=None, include=None, plotter=None):
+@mat_decorators.set_plot_defaults_2d
+@mat_decorators.set_labels
+def image(imaging, visuals_2d=None, include_2d=None, plotter_2d=None):
     """Plot the observed data_type of the imaging data_type.
 
-    Set *autolens.data_type.array.plotter.plotter* for a description of all innput parameters not described below.
+    Set *autolens.data_type.array.plotter_2d.plotter_2d* for a description of all innput parameters not described below.
 
     Parameters
     -----------
@@ -179,25 +196,20 @@ def image(imaging, grid=None, mask=None, positions=None, include=None, plotter=N
         over the immage.
     """
 
-    plotter._plot_array(
+    structure_plots.plot_array(
         array=imaging.image,
-        include_origin=include.origin,
-        include_border=include.border,
-        grid=grid,
-        mask=mask,
-        positions=positions,
+        visuals_2d=visuals_2d,
+        include_2d=include_2d,
+        plotter_2d=plotter_2d,
     )
 
 
-@inc.set_include
-@plotter.set_plotter_for_figure
-@plotter.set_labels
-def noise_map(
-    imaging, grid=None, mask=None, positions=None, include=None, plotter=None
-):
+@mat_decorators.set_plot_defaults_2d
+@mat_decorators.set_labels
+def noise_map(imaging, visuals_2d=None, include_2d=None, plotter_2d=None):
     """Plot the noise_map of the imaging data_type.
 
-    Set *autolens.data_type.array.plotter.plotter* for a description of all innput parameters not described below.
+    Set *autolens.data_type.array.plotter_2d.plotter_2d* for a description of all innput parameters not described below.
 
     Parameters
     -----------
@@ -207,23 +219,20 @@ def noise_map(
         If true, the include_origin of the dataset's coordinate system is plotted as a 'x'.
     """
 
-    plotter._plot_array(
+    structure_plots.plot_array(
         array=imaging.noise_map,
-        include_origin=include.origin,
-        include_border=include.border,
-        grid=grid,
-        mask=mask,
-        positions=positions,
+        visuals_2d=visuals_2d,
+        include_2d=include_2d,
+        plotter_2d=plotter_2d,
     )
 
 
-@inc.set_include
-@plotter.set_plotter_for_figure
-@plotter.set_labels
-def psf(imaging, grid=None, positions=None, include=None, plotter=None):
+@mat_decorators.set_plot_defaults_2d
+@mat_decorators.set_labels
+def psf(imaging, visuals_2d=None, include_2d=None, plotter_2d=None):
     """Plot the PSF of the imaging data_type.
 
-    Set *autolens.data_type.array.plotter.plotter* for a description of all innput parameters not described below.
+    Set *autolens.data_type.array.plotter_2d.plotter_2d* for a description of all innput parameters not described below.
 
     Parameters
     -----------
@@ -233,20 +242,20 @@ def psf(imaging, grid=None, positions=None, include=None, plotter=None):
         If true, the include_origin of the dataset's coordinate system is plotted as a 'x'.
     """
 
-    plotter._plot_array(
-        array=imaging.psf, include_origin=include.origin, grid=grid, positions=positions
+    structure_plots.plot_array(
+        array=imaging.psf,
+        visuals_2d=visuals_2d,
+        include_2d=include_2d,
+        plotter_2d=plotter_2d,
     )
 
 
-@inc.set_include
-@plotter.set_plotter_for_figure
-@plotter.set_labels
-def inverse_noise_map(
-    imaging, grid=None, mask=None, positions=None, include=None, plotter=None
-):
+@mat_decorators.set_plot_defaults_2d
+@mat_decorators.set_labels
+def inverse_noise_map(imaging, visuals_2d=None, include_2d=None, plotter_2d=None):
     """Plot the noise_map of the imaging data_type.
 
-    Set *autolens.data_type.array.plotter.plotter* for a description of all innput parameters not described below.
+    Set *autolens.data_type.array.plotter_2d.plotter_2d* for a description of all innput parameters not described below.
 
     Parameters
     -----------
@@ -256,25 +265,20 @@ def inverse_noise_map(
         If true, the include_origin of the dataset's coordinate system is plotted as a 'x'.
     """
 
-    plotter._plot_array(
+    structure_plots.plot_array(
         array=imaging.inverse_noise_map,
-        include_origin=include.origin,
-        include_border=include.border,
-        grid=grid,
-        mask=mask,
-        positions=positions,
+        visuals_2d=visuals_2d,
+        include_2d=include_2d,
+        plotter_2d=plotter_2d,
     )
 
 
-@inc.set_include
-@plotter.set_plotter_for_figure
-@plotter.set_labels
-def signal_to_noise_map(
-    imaging, grid=None, mask=None, positions=None, include=None, plotter=None
-):
+@mat_decorators.set_plot_defaults_2d
+@mat_decorators.set_labels
+def signal_to_noise_map(imaging, visuals_2d=None, include_2d=None, plotter_2d=None):
     """Plot the signal-to-noise_map of the imaging data_type.
 
-    Set *autolens.data_type.array.plotter.plotter* for a description of all innput parameters not described below.
+    Set *autolens.data_type.array.plotter_2d.plotter_2d* for a description of all innput parameters not described below.
 
     Parameters
     -----------
@@ -283,25 +287,22 @@ def signal_to_noise_map(
     include_origin : True
         If true, the include_origin of the dataset's coordinate system is plotted as a 'x'.
     """
-    plotter._plot_array(
+    structure_plots.plot_array(
         array=imaging.signal_to_noise_map,
-        include_origin=include.origin,
-        include_border=include.border,
-        grid=grid,
-        mask=mask,
-        positions=positions,
+        visuals_2d=visuals_2d,
+        include_2d=include_2d,
+        plotter_2d=plotter_2d,
     )
 
 
-@inc.set_include
-@plotter.set_plotter_for_figure
-@plotter.set_labels
+@mat_decorators.set_plot_defaults_2d
+@mat_decorators.set_labels
 def absolute_signal_to_noise_map(
-    imaging, grid=None, mask=None, positions=None, include=None, plotter=None
+    imaging, visuals_2d=None, include_2d=None, plotter_2d=None
 ):
     """Plot the signal-to-noise_map of the imaging data_type.
 
-    Set *autolens.data_type.array.plotter.plotter* for a description of all innput parameters not described below.
+    Set *autolens.data_type.array.plotter_2d.plotter_2d* for a description of all innput parameters not described below.
 
     Parameters
     -----------
@@ -310,25 +311,22 @@ def absolute_signal_to_noise_map(
     include_origin : True
         If true, the include_origin of the dataset's coordinate system is plotted as a 'x'.
     """
-    plotter._plot_array(
+    structure_plots.plot_array(
         array=imaging.absolute_signal_to_noise_map,
-        include_origin=include.origin,
-        include_border=include.border,
-        grid=grid,
-        mask=mask,
-        positions=positions,
+        visuals_2d=visuals_2d,
+        include_2d=include_2d,
+        plotter_2d=plotter_2d,
     )
 
 
-@inc.set_include
-@plotter.set_plotter_for_figure
-@plotter.set_labels
+@mat_decorators.set_plot_defaults_2d
+@mat_decorators.set_labels
 def potential_chi_squared_map(
-    imaging, grid=None, mask=None, positions=None, include=None, plotter=None
+    imaging, visuals_2d=None, include_2d=None, plotter_2d=None
 ):
     """Plot the signal-to-noise_map of the imaging data_type.
 
-    Set *autolens.data_type.array.plotter.plotter* for a description of all innput parameters not described below.
+    Set *autolens.data_type.array.plotter_2d.plotter_2d* for a description of all innput parameters not described below.
 
     Parameters
     -----------
@@ -337,11 +335,9 @@ def potential_chi_squared_map(
     include_origin : True
         If true, the include_origin of the dataset's coordinate system is plotted as a 'x'.
     """
-    plotter._plot_array(
+    structure_plots.plot_array(
         array=imaging.potential_chi_squared_map,
-        include_origin=include.origin,
-        include_border=include.border,
-        grid=grid,
-        mask=mask,
-        positions=positions,
+        visuals_2d=visuals_2d,
+        include_2d=include_2d,
+        plotter_2d=plotter_2d,
     )

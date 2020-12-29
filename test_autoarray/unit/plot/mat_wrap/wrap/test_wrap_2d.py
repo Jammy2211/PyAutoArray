@@ -151,59 +151,43 @@ class TestGridScatter:
         )
 
 
-class TestLinePlot:
+class TestGridPlot:
     def test___from_config_or_via_manual_input(self):
 
-        line_plot = aplt.LinePlot()
+        line_plot = aplt.GridPlot()
 
         assert line_plot.config_dict["width"] == 3
         assert line_plot.colors == ["k", "w"]
 
-        line_plot = aplt.LinePlot(colors=["k", "b"])
+        line_plot = aplt.GridPlot(colors=["k", "b"])
 
         assert line_plot.config_dict["width"] == 3
         assert line_plot.colors == ["k", "b"]
 
-        line_plot = aplt.LinePlot()
+        line_plot = aplt.GridPlot()
         line_plot.for_subplot = True
 
         assert line_plot.config_dict["width"] == 1
         assert line_plot.colors == ["k"]
 
-        line_plot = aplt.LinePlot(style=".")
+        line_plot = aplt.GridPlot(style=".")
         line_plot.for_subplot = True
 
         assert line_plot.config_dict["width"] == 1
         assert line_plot.colors == ["k"]
 
-    def test__draw_y_vs_x__works_for_reasonable_values(self):
+    def test__plot_rectangular_grid_lines__draws_for_valid_extent_and_shape(self):
 
-        line = aplt.LinePlot(linewidth=2, linestyle="-", colors="k")
+        line = aplt.GridPlot(linewidth=2, linestyle="--", colors="k")
 
-        line.plot_y_vs_x(y=[1.0, 2.0, 3.0], x=[1.0, 2.0, 3.0], plot_axis_type="linear")
-        line.plot_y_vs_x(
-            y=[1.0, 2.0, 3.0], x=[1.0, 2.0, 3.0], plot_axis_type="semilogy"
-        )
-        line.plot_y_vs_x(y=[1.0, 2.0, 3.0], x=[1.0, 2.0, 3.0], plot_axis_type="loglog")
-
-        line = aplt.LinePlot(colors="k", s=2)
-
-        line.plot_y_vs_x(y=[1.0, 2.0, 3.0], x=[1.0, 2.0, 3.0], plot_axis_type="scatter")
-
-    def test__draw_vertical_lines__works_for_reasonable_values(self):
-
-        line = aplt.LinePlot(linewidth=2, linestyle="-", colors="k")
-
-        line.plot_vertical_lines(vertical_lines=[[0.0]])
-        line.plot_vertical_lines(vertical_lines=[[1.0], [2.0]])
-        line.plot_vertical_lines(vertical_lines=[[0.0]], vertical_line_labels=["hi"])
-        line.plot_vertical_lines(
-            vertical_lines=[[1.0], [2.0]], vertical_line_labels=["hi1", "hi2"]
+        line.plot_rectangular_grid_lines(extent=[0.0, 1.0, 0.0, 1.0], shape_2d=(3, 2))
+        line.plot_rectangular_grid_lines(
+            extent=[-4.0, 8.0, -3.0, 10.0], shape_2d=(8, 3)
         )
 
-    def test__draw_coordinates(self):
+    def test__plot_grouped_grid(self):
 
-        line = aplt.LinePlot(linewidth=2, linestyle="--", colors="k")
+        line = aplt.GridPlot(linewidth=2, linestyle="--", colors="k")
 
         line.plot_grid_grouped(
             grid_grouped=aa.GridIrregularGrouped([[(1.0, 1.0), (2.0, 2.0)]])
@@ -212,15 +196,6 @@ class TestLinePlot:
             grid_grouped=aa.GridIrregularGrouped(
                 [[(1.0, 1.0), (2.0, 2.0)], [(3.0, 3.0)]]
             )
-        )
-
-    def test__draw_rectangular_grid_lines__draws_for_valid_extent_and_shape(self):
-
-        line = aplt.LinePlot(linewidth=2, linestyle="--", colors="k")
-
-        line.plot_rectangular_grid_lines(extent=[0.0, 1.0, 0.0, 1.0], shape_2d=(3, 2))
-        line.plot_rectangular_grid_lines(
-            extent=[-4.0, 8.0, -3.0, 10.0], shape_2d=(8, 3)
         )
 
 
@@ -338,3 +313,70 @@ class TestVoronoiDrawer:
             cmap="jet",
             cb=aplt.Colorbar(ticksize=1, fraction=0.1, pad=0.05),
         )
+
+
+class TestDerivedClasses:
+    def test__all_class_load_and_inherit_correctly(self):
+
+        origin_scatter = aplt.OriginScatter()
+        origin_scatter.scatter_grid(
+            grid=aa.Grid.uniform(shape_2d=(3, 3), pixel_scales=1.0)
+        )
+
+        assert origin_scatter.config_dict["s"] == 80
+
+        mask_scatter = aplt.MaskScatter()
+        mask_scatter.scatter_grid(
+            grid=aa.Grid.uniform(shape_2d=(3, 3), pixel_scales=1.0)
+        )
+
+        assert mask_scatter.config_dict["s"] == 12
+
+        border_scatter = aplt.BorderScatter()
+        border_scatter.scatter_grid(
+            grid=aa.Grid.uniform(shape_2d=(3, 3), pixel_scales=1.0)
+        )
+
+        assert border_scatter.config_dict["s"] == 13
+
+        positions_scatter = aplt.PositionsScatter()
+        positions_scatter.scatter_grid(
+            grid=aa.Grid.uniform(shape_2d=(3, 3), pixel_scales=1.0)
+        )
+
+        assert positions_scatter.config_dict["s"] == 15
+
+        index_scatter = aplt.IndexScatter()
+        index_scatter.scatter_grid(
+            grid=aa.Grid.uniform(shape_2d=(3, 3), pixel_scales=1.0)
+        )
+
+        assert index_scatter.config_dict["s"] == 20
+
+        pixelization_grid_scatter = aplt.PixelizationGridScatter()
+        pixelization_grid_scatter.scatter_grid(
+            grid=aa.Grid.uniform(shape_2d=(3, 3), pixel_scales=1.0)
+        )
+
+        assert pixelization_grid_scatter.config_dict["s"] == 5
+
+        parallel_overscan_plot = aplt.ParallelOverscanPlot()
+        parallel_overscan_plot.plot_rectangular_grid_lines(
+            extent=[0.0, 1.0, 0.0, 1.0], shape_2d=(3, 2)
+        )
+
+        assert parallel_overscan_plot.config_dict["linewidth"] == 1
+
+        serial_overscan_plot = aplt.SerialOverscanPlot()
+        serial_overscan_plot.plot_rectangular_grid_lines(
+            extent=[0.0, 1.0, 0.0, 1.0], shape_2d=(3, 2)
+        )
+
+        assert serial_overscan_plot.config_dict["linewidth"] == 2
+
+        serial_prescan_plot = aplt.SerialPrescanPlot()
+        serial_prescan_plot.plot_rectangular_grid_lines(
+            extent=[0.0, 1.0, 0.0, 1.0], shape_2d=(3, 2)
+        )
+
+        assert serial_prescan_plot.config_dict["linewidth"] == 3

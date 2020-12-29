@@ -1,9 +1,7 @@
-import autoarray as aa
 import autoarray.plot as aplt
 from os import path
 import matplotlib.pyplot as plt
 import pytest
-import numpy as np
 import shutil
 
 directory = path.dirname(path.realpath(__file__))
@@ -16,34 +14,10 @@ def make_plot_path_setup():
     )
 
 
-class TestPlotter:
-    def test__uses_figure_or_subplot_configs_correctly(self):
-
-        figure = aplt.Figure(figsize=(8, 8))
-        cmap = aplt.Cmap(cmap="warm")
-
-        plotter = aplt.Plotter(figure=figure, cmap=cmap)
-
-        assert plotter.figure.config_dict_figure["figsize"] == (8, 8)
-        assert plotter.figure.config_dict_imshow["aspect"] == "square"
-        assert plotter.cmap.config_dict["cmap"] == "warm"
-        assert plotter.cmap.config_dict["norm"] == "linear"
-
-        figure = aplt.Figure()
-        cmap = aplt.Cmap()
-
-        plotter = aplt.Plotter(figure=figure, cmap=cmap)
-
-        plotter.set_for_subplot(for_subplot=True)
-
-        assert plotter.figure.config_dict_figure["figsize"] == None
-        assert plotter.figure.config_dict_imshow["aspect"] == "square"
-        assert plotter.cmap.config_dict["cmap"] == "jet"
-        assert plotter.cmap.config_dict["norm"] == "linear"
-
+class TestAbstractPlotter:
     def test__subplot_figsize_for_number_of_subplots(self):
 
-        plotter = aplt.Plotter()
+        plotter = aplt.Plotter2D()
         plotter.figure.for_subplot = True
 
         figsize = plotter.get_subplot_figsize(number_subplots=1)
@@ -54,7 +28,7 @@ class TestPlotter:
 
         assert figsize == (13, 10)
 
-        plotter = aplt.Plotter(figure=aplt.Figure(figsize=(20, 20)))
+        plotter = aplt.Plotter2D(figure=aplt.Figure(figsize=(20, 20)))
 
         figsize = plotter.get_subplot_figsize(number_subplots=4)
 
@@ -62,7 +36,7 @@ class TestPlotter:
 
     def test__plotter_number_of_subplots(self):
 
-        plotter = aplt.Plotter()
+        plotter = aplt.Plotter2D()
 
         rows, columns = plotter.get_subplot_rows_columns(number_subplots=1)
 
@@ -74,11 +48,32 @@ class TestPlotter:
         assert rows == 2
         assert columns == 2
 
+    def test__open_and_close_subplot_figures(self):
 
-class TestPlotterNew:
+        plotter = aplt.Plotter2D()
+        plotter.figure.open()
+
+        assert plt.fignum_exists(num=1) == True
+
+        plotter.figure.close()
+
+        assert plt.fignum_exists(num=1) == False
+
+        plotter = aplt.Plotter2D()
+
+        assert plt.fignum_exists(num=1) == False
+
+        plotter.open_subplot_figure(number_subplots=4)
+
+        assert plt.fignum_exists(num=1) == True
+
+        plotter.figure.close()
+
+        assert plt.fignum_exists(num=1) == False
+
     def test__plotter_with_new_labels__new_labels_if_input__sizes_dont_change(self):
 
-        plotter = aplt.Plotter(
+        plotter = aplt.Plotter2D(
             title=aplt.Title(label="OMG", fontsize=1),
             ylabel=aplt.YLabel(units="hi"),
             xlabel=aplt.XLabel(units="hi2"),
@@ -119,7 +114,7 @@ class TestPlotterNew:
 
     def test__plotter_with_new_cmap__new_labels_if_input__sizes_dont_change(self):
 
-        plotter = aplt.Plotter(
+        plotter = aplt.Plotter2D(
             cmap=aplt.Cmap(
                 cmap="cold", norm="log", vmin=0.1, vmax=1.0, linthresh=1.5, linscale=2.0
             )
@@ -154,7 +149,7 @@ class TestPlotterNew:
 
     def test__plotter_with_new_outputs__new_outputs_are_setup_correctly_if_input(self):
 
-        plotter = aplt.Plotter(
+        plotter = aplt.Plotter2D(
             output=aplt.Output(path="Path", format="png", filename="file")
         )
 
@@ -195,7 +190,7 @@ class TestPlotterNew:
 
     def test__plotter_with_new_units__new_outputs_are_setup_correctly_if_input(self):
 
-        plotter = aplt.Plotter(
+        plotter = aplt.Plotter2D(
             units=aplt.Units(use_scaled=True, in_kpc=True, conversion_factor=1.0)
         )
 
@@ -217,71 +212,28 @@ class TestPlotterNew:
         assert plotter.units.in_kpc == False
         assert plotter.units.conversion_factor == 3.0
 
-    def test__open_and_close_subplot_figures(self):
 
-        plotter = aplt.Plotter()
-        plotter.figure.open()
+class TestPlotter2D:
+    def test__uses_figure_or_subplot_configs_correctly(self):
 
-        assert plt.fignum_exists(num=1) == True
+        figure = aplt.Figure(figsize=(8, 8))
+        cmap = aplt.Cmap(cmap="warm")
 
-        plotter.figure.close()
+        plotter = aplt.Plotter2D(figure=figure, cmap=cmap)
 
-        assert plt.fignum_exists(num=1) == False
+        assert plotter.figure.config_dict_figure["figsize"] == (8, 8)
+        assert plotter.figure.config_dict_imshow["aspect"] == "square"
+        assert plotter.cmap.config_dict["cmap"] == "warm"
+        assert plotter.cmap.config_dict["norm"] == "linear"
 
-        plotter = aplt.Plotter()
+        figure = aplt.Figure()
+        cmap = aplt.Cmap()
 
-        assert plt.fignum_exists(num=1) == False
+        plotter = aplt.Plotter2D(figure=figure, cmap=cmap)
 
-        plotter.open_subplot_figure(number_subplots=4)
+        plotter.set_for_subplot(for_subplot=True)
 
-        assert plt.fignum_exists(num=1) == True
-
-        plotter.figure.close()
-
-        assert plt.fignum_exists(num=1) == False
-
-
-from autoarray.plot.plotter import plotter
-
-
-class TestDecorator:
-    def test__kpc_per_scaled_extacted_from_object_if_available(self):
-
-        dictionary = {"hi": 1}
-
-        kpc_per_scaled = plotter.kpc_per_scaled_of_object_from_dictionary(
-            dictionary=dictionary
-        )
-
-        assert kpc_per_scaled == None
-
-        class MockObj:
-            def __init__(self, param1):
-
-                self.param1 = param1
-
-        obj = MockObj(param1=1)
-
-        dictionary = {"hi": 1, "hello": obj}
-
-        kpc_per_scaled = plotter.kpc_per_scaled_of_object_from_dictionary(
-            dictionary=dictionary
-        )
-
-        assert kpc_per_scaled == None
-
-        class MockObj:
-            def __init__(self, param1, kpc_per_scaled):
-
-                self.param1 = param1
-                self.kpc_per_scaled = kpc_per_scaled
-
-        obj = MockObj(param1=1, kpc_per_scaled=2)
-
-        dictionary = {"hi": 1, "hello": obj}
-
-        kpc_per_scaled = plotter.kpc_per_scaled_of_object_from_dictionary(
-            dictionary=dictionary
-        )
-
-        assert kpc_per_scaled == 2
+        assert plotter.figure.config_dict_figure["figsize"] == None
+        assert plotter.figure.config_dict_imshow["aspect"] == "square"
+        assert plotter.cmap.config_dict["cmap"] == "jet"
+        assert plotter.cmap.config_dict["norm"] == "linear"
