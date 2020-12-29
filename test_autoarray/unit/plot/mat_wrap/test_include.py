@@ -1,4 +1,5 @@
-from autoarray import plot as aplt
+import autoarray as aa
+import autoarray.plot as aplt
 
 
 class TestInclude2d:
@@ -8,7 +9,6 @@ class TestInclude2d:
 
         assert include.origin == True
         assert include.mask == True
-        assert include.grid == True
         assert include.border == True
         assert include.parallel_overscan == True
         assert include.serial_prescan == True
@@ -18,7 +18,6 @@ class TestInclude2d:
 
         assert include.origin == False
         assert include.mask == True
-        assert include.grid == True
         assert include.border == False
         assert include.parallel_overscan == True
         assert include.serial_prescan == True
@@ -82,4 +81,97 @@ class TestInclude2d:
 
         assert visuals.origin == None
         assert visuals.mask == None
+        assert visuals.border == None
+
+    def test__visuals_for_data_from_rectangular_mapper(
+        self, rectangular_mapper_7x7_3x3
+    ):
+        include = aplt.Include2D(origin=True, mapper_data_grid=True, border=True)
+
+        visuals = include.visuals_of_data_from_mapper(mapper=rectangular_mapper_7x7_3x3)
+
+        assert visuals.origin.in_1d_list == [(0.0, 0.0)]
+        assert visuals.grid == None
+        #  assert visuals.border == (0, 2)
+
+        include = aplt.Include2D(origin=False, mapper_data_grid=False, border=False)
+
+        visuals = include.visuals_of_data_from_mapper(mapper=rectangular_mapper_7x7_3x3)
+
+        assert visuals.origin == None
+        assert visuals.grid == None
+        assert visuals.border == None
+
+    def test__visuals_for_data_from_voronoi_mapper(self, voronoi_mapper_9_3x3):
+
+        include = aplt.Include2D(origin=True, mapper_data_grid=True, border=True)
+
+        visuals = include.visuals_of_data_from_mapper(mapper=voronoi_mapper_9_3x3)
+
+        assert visuals.origin.in_1d_list == [(0.0, 0.0)]
+        assert (
+            visuals.grid == aa.Grid.uniform(shape_2d=(2, 2), pixel_scales=0.1)
+        ).all()
+        #      assert visuals.border.shape == (0, 2)
+
+        include = aplt.Include2D(origin=False, mapper_data_grid=False, border=False)
+
+        visuals = include.visuals_of_data_from_mapper(mapper=voronoi_mapper_9_3x3)
+
+        assert visuals.origin == None
+        assert visuals.grid == None
+        assert visuals.border == None
+
+    def test__visuals_for_source_from_rectangular_mapper(
+        self, rectangular_mapper_7x7_3x3
+    ):
+
+        include = aplt.Include2D(
+            origin=True, mapper_source_grid=True, mapper_source_border=True
+        )
+
+        visuals = include.visuals_of_source_from_mapper(
+            mapper=rectangular_mapper_7x7_3x3
+        )
+
+        assert visuals.origin.in_1d_list == [(0.0, 0.0)]
+        assert (
+            visuals.grid == rectangular_mapper_7x7_3x3.source_pixelization_grid
+        ).all()
+        #    assert visuals.border.shape == (0, 2)
+
+        include = aplt.Include2D(
+            origin=False, mapper_source_grid=False, mapper_source_border=False
+        )
+
+        visuals = include.visuals_of_source_from_mapper(
+            mapper=rectangular_mapper_7x7_3x3
+        )
+
+        assert visuals.origin == None
+        assert visuals.grid == None
+        assert visuals.border == None
+
+    def test__visuals_for_source_from_voronoi_mapper(self, voronoi_mapper_9_3x3):
+
+        include = aplt.Include2D(
+            origin=True, mapper_source_grid=True, mapper_source_border=True
+        )
+
+        visuals = include.visuals_of_source_from_mapper(mapper=voronoi_mapper_9_3x3)
+
+        print(visuals.origin.in_1d_list)
+
+        assert visuals.origin.in_1d_list == [(0.0, 0.0)]
+        assert (visuals.grid == voronoi_mapper_9_3x3.source_pixelization_grid).all()
+        #      assert visuals.border.shape == (0, 2)
+
+        include = aplt.Include2D(
+            origin=False, mapper_source_grid=False, mapper_source_border=False
+        )
+
+        visuals = include.visuals_of_source_from_mapper(mapper=voronoi_mapper_9_3x3)
+
+        assert visuals.origin == None
+        assert visuals.grid == None
         assert visuals.border == None

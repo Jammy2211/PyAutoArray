@@ -277,7 +277,12 @@ class Figure(AbstractMatWrap):
 
         super().__init__(kwargs=kwargs)
 
-    def aspect_for_subplot_from_ratio(self, ratio):
+    def aspect_for_subplot_from_grid(self, grid):
+
+        ratio = float(
+            (grid.scaled_maxima[1] - grid.scaled_minima[1])
+            / (grid.scaled_maxima[0] - grid.scaled_minima[0])
+        )
 
         if self.config_dict["aspect"] in "square":
             return ratio

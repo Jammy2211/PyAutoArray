@@ -8,10 +8,10 @@ directory = path.dirname(path.realpath(__file__))
 class TestDecorator:
     def test__kpc_per_scaled_extacted_from_object_if_available(self):
 
-        dictionary = {"hi": 1}
+        kwargs = {"hi": 1}
 
-        kpc_per_scaled = mat_decorators.kpc_per_scaled_of_object_from_dictionary(
-            dictionary=dictionary
+        kpc_per_scaled = mat_decorators.kpc_per_scaled_of_object_from_kwargs(
+            kwargs=kwargs
         )
 
         assert kpc_per_scaled == None
@@ -23,10 +23,10 @@ class TestDecorator:
 
         obj = MockObj(param1=1)
 
-        dictionary = {"hi": 1, "hello": obj}
+        kwargs = {"hi": 1, "hello": obj}
 
-        kpc_per_scaled = mat_decorators.kpc_per_scaled_of_object_from_dictionary(
-            dictionary=dictionary
+        kpc_per_scaled = mat_decorators.kpc_per_scaled_of_object_from_kwargs(
+            kwargs=kwargs
         )
 
         assert kpc_per_scaled == None
@@ -39,10 +39,10 @@ class TestDecorator:
 
         obj = MockObj(param1=1, kpc_per_scaled=2)
 
-        dictionary = {"hi": 1, "hello": obj}
+        kwargs = {"hi": 1, "hello": obj}
 
-        kpc_per_scaled = mat_decorators.kpc_per_scaled_of_object_from_dictionary(
-            dictionary=dictionary
+        kpc_per_scaled = mat_decorators.kpc_per_scaled_of_object_from_kwargs(
+            kwargs=kwargs
         )
 
         assert kpc_per_scaled == 2

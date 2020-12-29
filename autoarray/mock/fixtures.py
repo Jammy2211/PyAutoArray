@@ -265,7 +265,8 @@ def make_rectangular_pixelization_grid_3x3():
 
 def make_rectangular_mapper_7x7_3x3():
     return aa.Mapper(
-        grid=make_grid_7x7(), pixelization_grid=make_rectangular_pixelization_grid_3x3()
+        source_full_grid=make_grid_7x7(),
+        source_pixelization_grid=make_rectangular_pixelization_grid_3x3(),
     )
 
 
@@ -295,7 +296,9 @@ def make_voronoi_pixelization_grid_9():
 
 def make_voronoi_mapper_9_3x3():
     return aa.Mapper(
-        grid=make_grid_7x7(), pixelization_grid=make_voronoi_pixelization_grid_9()
+        source_full_grid=make_grid_7x7(),
+        source_pixelization_grid=make_voronoi_pixelization_grid_9(),
+        data_pixelization_grid=aa.Grid.uniform(shape_2d=(2, 2), pixel_scales=0.1),
     )
 
 

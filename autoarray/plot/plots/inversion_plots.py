@@ -1,4 +1,9 @@
 from autoarray.plot.mat_wrap import mat_decorators
+from autoarray.plot.mat_wrap import visuals as vis
+from autoarray.plot.mat_wrap import include as inc
+from autoarray.plot.mat_wrap import plotter as p
+from autoarray.plot.plots import structure_plots
+import typing
 
 
 @mat_decorators.set_plot_defaults_2d
@@ -6,30 +11,18 @@ from autoarray.plot.mat_wrap import mat_decorators
 @mat_decorators.set_subplot_filename
 def subplot_inversion(
     inversion,
-    lines=None,
-    image_positions=None,
-    source_positions=None,
-    grid=None,
-    image_pixel_indexes=None,
-    source_pixel_indexes=None,
-    include_2d=None,
-    plotter_2d=None,
+    plotter_2d: typing.Optional[p.Plotter2D] = None,
+    visuals_2d: typing.Optional[vis.Visuals2D] = None,
+    include_2d: typing.Optional[inc.Include2D] = None,
+    full_indexes=None,
+    pixelization_indexes=None,
 ):
 
     number_subplots = 6
 
-    ratio = float(
-        (
-            inversion.mapper.grid.scaled_maxima[1]
-            - inversion.mapper.grid.scaled_minima[1]
-        )
-        / (
-            inversion.mapper.grid.scaled_maxima[0]
-            - inversion.mapper.grid.scaled_minima[0]
-        )
+    aspect_inv = plotter_2d.figure.aspect_for_subplot_from_grid(
+        grid=inversion.mapper.source_full_grid
     )
-
-    aspect_inv = plotter_2d.figure.aspect_for_subplot_from_ratio(ratio=ratio)
 
     plotter_2d.open_subplot_figure(number_subplots=number_subplots)
 
@@ -37,11 +30,9 @@ def subplot_inversion(
 
     reconstructed_image(
         inversion=inversion,
-        lines=lines,
-        image_positions=image_positions,
-        grid=grid,
-        include_2d=include_2d,
         plotter_2d=plotter_2d,
+        visuals_2d=visuals_2d,
+        include_2d=include_2d,
     )
 
     plotter_2d.setup_subplot(
@@ -50,12 +41,11 @@ def subplot_inversion(
 
     reconstruction(
         inversion=inversion,
-        source_positions=source_positions,
-        lines=lines,
-        include_2d=include_2d,
         plotter_2d=plotter_2d,
-        image_pixel_indexes=image_pixel_indexes,
-        source_pixel_indexes=source_pixel_indexes,
+        visuals_2d=visuals_2d,
+        include_2d=include_2d,
+        full_indexes=full_indexes,
+        pixelization_indexes=pixelization_indexes,
     )
 
     plotter_2d.setup_subplot(
@@ -64,10 +54,11 @@ def subplot_inversion(
 
     errors(
         inversion=inversion,
-        image_pixel_indexes=image_pixel_indexes,
-        source_pixel_indexes=source_pixel_indexes,
-        include_2d=include_2d,
         plotter_2d=plotter_2d,
+        visuals_2d=visuals_2d,
+        include_2d=include_2d,
+        full_indexes=full_indexes,
+        pixelization_indexes=pixelization_indexes,
     )
 
     plotter_2d.setup_subplot(
@@ -76,10 +67,11 @@ def subplot_inversion(
 
     residual_map(
         inversion=inversion,
-        image_pixel_indexes=image_pixel_indexes,
-        source_pixel_indexes=source_pixel_indexes,
-        include_2d=include_2d,
         plotter_2d=plotter_2d,
+        visuals_2d=visuals_2d,
+        include_2d=include_2d,
+        full_indexes=full_indexes,
+        pixelization_indexes=pixelization_indexes,
     )
 
     plotter_2d.setup_subplot(
@@ -88,10 +80,11 @@ def subplot_inversion(
 
     chi_squared_map(
         inversion=inversion,
-        image_pixel_indexes=image_pixel_indexes,
-        source_pixel_indexes=source_pixel_indexes,
-        include_2d=include_2d,
         plotter_2d=plotter_2d,
+        visuals_2d=visuals_2d,
+        include_2d=include_2d,
+        full_indexes=full_indexes,
+        pixelization_indexes=pixelization_indexes,
     )
 
     plotter_2d.setup_subplot(
@@ -100,10 +93,11 @@ def subplot_inversion(
 
     regularization_weights(
         inversion=inversion,
-        image_pixel_indexes=image_pixel_indexes,
-        source_pixel_indexes=source_pixel_indexes,
-        include_2d=include_2d,
         plotter_2d=plotter_2d,
+        visuals_2d=visuals_2d,
+        include_2d=include_2d,
+        full_indexes=full_indexes,
+        pixelization_indexes=pixelization_indexes,
     )
 
     plotter_2d.output.subplot_to_figure()
@@ -113,9 +107,9 @@ def subplot_inversion(
 
 def individuals(
     inversion,
-    lines=None,
-    image_positions=None,
-    source_positions=None,
+    plotter_2d: typing.Optional[p.Plotter2D] = None,
+    visuals_2d: typing.Optional[vis.Visuals2D] = None,
+    include_2d: typing.Optional[inc.Include2D] = None,
     plot_reconstructed_image=False,
     plot_reconstruction=False,
     plot_errors=False,
@@ -125,8 +119,6 @@ def individuals(
     plot_regularization_weight_map=False,
     plot_interpolated_reconstruction=False,
     plot_interpolated_errors=False,
-    include_2d=None,
-    plotter_2d=None,
 ):
     """Plot the model datas_ of an analysis, using the *Fitter* class object.
 
@@ -147,64 +139,81 @@ def individuals(
 
         reconstructed_image(
             inversion=inversion,
-            image_positions=image_positions,
-            include_2d=include_2d,
             plotter_2d=plotter_2d,
+            visuals_2d=visuals_2d,
+            include_2d=include_2d,
         )
 
     if plot_reconstruction:
 
         reconstruction(
             inversion=inversion,
-            source_positions=source_positions,
-            lines=lines,
-            include_2d=include_2d,
             plotter_2d=plotter_2d,
+            visuals_2d=visuals_2d,
+            include_2d=include_2d,
         )
 
     if plot_errors:
 
-        errors(inversion=inversion, include_2d=include_2d, plotter_2d=plotter_2d)
+        errors(
+            inversion=inversion,
+            plotter_2d=plotter_2d,
+            visuals_2d=visuals_2d,
+            include_2d=include_2d,
+        )
 
     if plot_residual_map:
 
-        residual_map(inversion=inversion, include_2d=include_2d, plotter_2d=plotter_2d)
+        residual_map(
+            inversion=inversion,
+            plotter_2d=plotter_2d,
+            visuals_2d=visuals_2d,
+            include_2d=include_2d,
+        )
 
     if plot_normalized_residual_map:
 
         normalized_residual_map(
-            inversion=inversion, include_2d=include_2d, plotter_2d=plotter_2d
+            inversion=inversion,
+            plotter_2d=plotter_2d,
+            visuals_2d=visuals_2d,
+            include_2d=include_2d,
         )
 
     if plot_chi_squared_map:
 
         chi_squared_map(
-            inversion=inversion, include_2d=include_2d, plotter_2d=plotter_2d
+            inversion=inversion,
+            plotter_2d=plotter_2d,
+            visuals_2d=visuals_2d,
+            include_2d=include_2d,
         )
 
     if plot_regularization_weight_map:
 
         regularization_weights(
-            inversion=inversion, include_2d=include_2d, plotter_2d=plotter_2d
+            inversion=inversion,
+            plotter_2d=plotter_2d,
+            visuals_2d=visuals_2d,
+            include_2d=include_2d,
         )
 
     if plot_interpolated_reconstruction:
 
         interpolated_reconstruction(
             inversion=inversion,
-            source_positions=source_positions,
-            lines=lines,
-            include_2d=include_2d,
             plotter_2d=plotter_2d,
+            visuals_2d=visuals_2d,
+            include_2d=include_2d,
         )
 
     if plot_interpolated_errors:
 
         interpolated_errors(
             inversion=inversion,
-            lines=lines,
-            include_2d=include_2d,
             plotter_2d=plotter_2d,
+            visuals_2d=visuals_2d,
+            include_2d=include_2d,
         )
 
 
@@ -212,20 +221,18 @@ def individuals(
 @mat_decorators.set_labels
 def reconstructed_image(
     inversion,
-    grid=None,
-    lines=None,
-    image_positions=None,
-    include_2d=None,
-    plotter_2d=None,
+    plotter_2d: typing.Optional[p.Plotter2D] = None,
+    visuals_2d: typing.Optional[vis.Visuals2D] = None,
+    include_2d: typing.Optional[inc.Include2D] = None,
 ):
 
-    plotter_2d._plot_array(
+    visuals_2d += include_2d.visuals_of_data_from_mapper(mapper=inversion.mapper)
+
+    structure_plots.plot_array(
         array=inversion.mapped_reconstructed_image,
-        mask=include_2d.mask_from_grid(grid=inversion.mapper.grid),
-        lines=lines,
-        positions=image_positions,
-        grid=grid,
-        include_origin=include_2d.origin,
+        plotter_2d=plotter_2d,
+        visuals_2d=visuals_2d,
+        include_2d=include_2d,
     )
 
 
@@ -233,29 +240,27 @@ def reconstructed_image(
 @mat_decorators.set_labels
 def reconstruction(
     inversion,
-    lines=None,
-    source_positions=None,
-    image_pixel_indexes=None,
-    source_pixel_indexes=None,
-    include_2d=None,
-    plotter_2d=None,
+    plotter_2d: typing.Optional[p.Plotter2D] = None,
+    visuals_2d: typing.Optional[vis.Visuals2D] = None,
+    include_2d: typing.Optional[inc.Include2D] = None,
+    full_indexes=None,
+    pixelization_indexes=None,
 ):
 
-    source_pixel_values = inversion.mapper.reconstructed_pixelization_from_solution_vector(
+    visuals_2d += include_2d.visuals_of_source_from_mapper(mapper=inversion.mapper)
+
+    source_pixelilzation_values = inversion.mapper.reconstructed_source_pixelization_from_solution_vector(
         solution_vector=inversion.reconstruction
     )
 
-    plotter_2d._plot_mapper(
+    structure_plots.plot_mapper_obj(
         mapper=inversion.mapper,
-        source_pixel_values=source_pixel_values,
-        lines=lines,
-        positions=source_positions,
-        image_pixel_indexes=image_pixel_indexes,
-        source_pixel_indexes=source_pixel_indexes,
-        include_origin=include_2d.origin,
-        include_pixelization_grid=include_2d.inversion_pixelization_grid,
-        include_grid=include_2d.inversion_grid,
-        include_border=include_2d.inversion_border,
+        plotter_2d=plotter_2d,
+        visuals_2d=visuals_2d,
+        include_2d=include_2d,
+        source_pixelilzation_values=source_pixelilzation_values,
+        full_indexes=full_indexes,
+        pixelization_indexes=pixelization_indexes,
     )
 
 
@@ -263,29 +268,27 @@ def reconstruction(
 @mat_decorators.set_labels
 def errors(
     inversion,
-    source_positions=None,
-    lines=None,
-    image_pixel_indexes=None,
-    source_pixel_indexes=None,
-    include_2d=None,
-    plotter_2d=None,
+    plotter_2d: typing.Optional[p.Plotter2D] = None,
+    visuals_2d: typing.Optional[vis.Visuals2D] = None,
+    include_2d: typing.Optional[inc.Include2D] = None,
+    full_indexes=None,
+    pixelization_indexes=None,
 ):
 
-    source_pixel_values = inversion.mapper.reconstructed_pixelization_from_solution_vector(
+    visuals_2d += include_2d.visuals_of_source_from_mapper(mapper=inversion.mapper)
+
+    source_pixelilzation_values = inversion.mapper.reconstructed_source_pixelization_from_solution_vector(
         solution_vector=inversion.errors
     )
 
-    plotter_2d._plot_mapper(
+    structure_plots.plot_mapper_obj(
         mapper=inversion.mapper,
-        source_pixel_values=source_pixel_values,
-        lines=lines,
-        positions=source_positions,
-        image_pixel_indexes=image_pixel_indexes,
-        source_pixel_indexes=source_pixel_indexes,
-        include_origin=include_2d.origin,
-        include_pixelization_grid=include_2d.inversion_pixelization_grid,
-        include_grid=include_2d.inversion_grid,
-        include_border=include_2d.inversion_border,
+        plotter_2d=plotter_2d,
+        visuals_2d=visuals_2d,
+        include_2d=include_2d,
+        source_pixelilzation_values=source_pixelilzation_values,
+        full_indexes=full_indexes,
+        pixelization_indexes=pixelization_indexes,
     )
 
 
@@ -293,29 +296,27 @@ def errors(
 @mat_decorators.set_labels
 def residual_map(
     inversion,
-    source_positions=None,
-    lines=None,
-    image_pixel_indexes=None,
-    source_pixel_indexes=None,
-    include_2d=None,
-    plotter_2d=None,
+    plotter_2d: typing.Optional[p.Plotter2D] = None,
+    visuals_2d: typing.Optional[vis.Visuals2D] = None,
+    include_2d: typing.Optional[inc.Include2D] = None,
+    full_indexes=None,
+    pixelization_indexes=None,
 ):
 
-    source_pixel_values = inversion.mapper.reconstructed_pixelization_from_solution_vector(
+    visuals_2d += include_2d.visuals_of_source_from_mapper(mapper=inversion.mapper)
+
+    source_pixelilzation_values = inversion.mapper.reconstructed_source_pixelization_from_solution_vector(
         solution_vector=inversion.residual_map
     )
 
-    plotter_2d._plot_mapper(
+    structure_plots.plot_mapper_obj(
         mapper=inversion.mapper,
-        source_pixel_values=source_pixel_values,
-        lines=lines,
-        positions=source_positions,
-        image_pixel_indexes=image_pixel_indexes,
-        source_pixel_indexes=source_pixel_indexes,
-        include_origin=include_2d.origin,
-        include_pixelization_grid=include_2d.inversion_pixelization_grid,
-        include_grid=include_2d.inversion_grid,
-        include_border=include_2d.inversion_border,
+        plotter_2d=plotter_2d,
+        visuals_2d=visuals_2d,
+        include_2d=include_2d,
+        source_pixelilzation_values=source_pixelilzation_values,
+        full_indexes=full_indexes,
+        pixelization_indexes=pixelization_indexes,
     )
 
 
@@ -323,29 +324,27 @@ def residual_map(
 @mat_decorators.set_labels
 def normalized_residual_map(
     inversion,
-    source_positions=None,
-    lines=None,
-    image_pixel_indexes=None,
-    source_pixel_indexes=None,
-    include_2d=None,
-    plotter_2d=None,
+    plotter_2d: typing.Optional[p.Plotter2D] = None,
+    visuals_2d: typing.Optional[vis.Visuals2D] = None,
+    include_2d: typing.Optional[inc.Include2D] = None,
+    full_indexes=None,
+    pixelization_indexes=None,
 ):
 
-    source_pixel_values = inversion.mapper.reconstructed_pixelization_from_solution_vector(
+    visuals_2d += include_2d.visuals_of_source_from_mapper(mapper=inversion.mapper)
+
+    source_pixelilzation_values = inversion.mapper.reconstructed_source_pixelization_from_solution_vector(
         solution_vector=inversion.normalized_residual_map
     )
 
-    plotter_2d._plot_mapper(
+    structure_plots.plot_mapper_obj(
         mapper=inversion.mapper,
-        source_pixel_values=source_pixel_values,
-        lines=lines,
-        positions=source_positions,
-        image_pixel_indexes=image_pixel_indexes,
-        source_pixel_indexes=source_pixel_indexes,
-        include_origin=include_2d.origin,
-        include_pixelization_grid=include_2d.inversion_pixelization_grid,
-        include_grid=include_2d.inversion_grid,
-        include_border=include_2d.inversion_border,
+        plotter_2d=plotter_2d,
+        visuals_2d=visuals_2d,
+        include_2d=include_2d,
+        source_pixelilzation_values=source_pixelilzation_values,
+        full_indexes=full_indexes,
+        pixelization_indexes=pixelization_indexes,
     )
 
 
@@ -353,29 +352,27 @@ def normalized_residual_map(
 @mat_decorators.set_labels
 def chi_squared_map(
     inversion,
-    source_positions=None,
-    lines=None,
-    image_pixel_indexes=None,
-    source_pixel_indexes=None,
-    include_2d=None,
-    plotter_2d=None,
+    plotter_2d: typing.Optional[p.Plotter2D] = None,
+    visuals_2d: typing.Optional[vis.Visuals2D] = None,
+    include_2d: typing.Optional[inc.Include2D] = None,
+    full_indexes=None,
+    pixelization_indexes=None,
 ):
 
-    source_pixel_values = inversion.mapper.reconstructed_pixelization_from_solution_vector(
+    visuals_2d += include_2d.visuals_of_source_from_mapper(mapper=inversion.mapper)
+
+    source_pixelilzation_values = inversion.mapper.reconstructed_source_pixelization_from_solution_vector(
         solution_vector=inversion.chi_squared_map
     )
 
-    plotter_2d._plot_mapper(
+    structure_plots.plot_mapper_obj(
         mapper=inversion.mapper,
-        source_pixel_values=source_pixel_values,
-        lines=lines,
-        positions=source_positions,
-        image_pixel_indexes=image_pixel_indexes,
-        source_pixel_indexes=source_pixel_indexes,
-        include_origin=include_2d.origin,
-        include_pixelization_grid=include_2d.inversion_pixelization_grid,
-        include_grid=include_2d.inversion_grid,
-        include_border=include_2d.inversion_border,
+        plotter_2d=plotter_2d,
+        visuals_2d=visuals_2d,
+        include_2d=include_2d,
+        source_pixelilzation_values=source_pixelilzation_values,
+        full_indexes=full_indexes,
+        pixelization_indexes=pixelization_indexes,
     )
 
 
@@ -383,29 +380,27 @@ def chi_squared_map(
 @mat_decorators.set_labels
 def regularization_weights(
     inversion,
-    source_positions=None,
-    lines=None,
-    image_pixel_indexes=None,
-    source_pixel_indexes=None,
-    include_2d=None,
-    plotter_2d=None,
+    plotter_2d: typing.Optional[p.Plotter2D] = None,
+    visuals_2d: typing.Optional[vis.Visuals2D] = None,
+    include_2d: typing.Optional[inc.Include2D] = None,
+    full_indexes=None,
+    pixelization_indexes=None,
 ):
+
+    visuals_2d += include_2d.visuals_of_source_from_mapper(mapper=inversion.mapper)
 
     regularization_weights = inversion.regularization.regularization_weights_from_mapper(
         mapper=inversion.mapper
     )
 
-    plotter_2d._plot_mapper(
+    structure_plots.plot_mapper_obj(
         mapper=inversion.mapper,
-        source_pixel_values=regularization_weights,
-        lines=lines,
-        positions=source_positions,
-        image_pixel_indexes=image_pixel_indexes,
-        source_pixel_indexes=source_pixel_indexes,
-        include_origin=include_2d.origin,
-        include_pixelization_grid=include_2d.inversion_pixelization_grid,
-        include_grid=include_2d.inversion_grid,
-        include_border=include_2d.inversion_border,
+        plotter_2d=plotter_2d,
+        visuals_2d=visuals_2d,
+        include_2d=include_2d,
+        source_pixelilzation_values=regularization_weights,
+        full_indexes=full_indexes,
+        pixelization_indexes=pixelization_indexes,
     )
 
 
@@ -413,19 +408,18 @@ def regularization_weights(
 @mat_decorators.set_labels
 def interpolated_reconstruction(
     inversion,
-    lines=None,
-    source_positions=None,
-    grid=None,
-    include_2d=None,
-    plotter_2d=None,
+    plotter_2d: typing.Optional[p.Plotter2D] = None,
+    visuals_2d: typing.Optional[vis.Visuals2D] = None,
+    include_2d: typing.Optional[inc.Include2D] = None,
 ):
 
-    plotter_2d._plot_array(
-        array=inversion.interpolated_reconstruction_from_shape_2d(),
-        lines=lines,
-        positions=source_positions,
-        grid=grid,
-        include_origin=include_2d.origin,
+    visuals_2d += include_2d.visuals_of_source_from_mapper(mapper=inversion.mapper)
+
+    structure_plots.plot_array(
+        array=inversion.interpolated_reconstructed_data_from_shape_2d(),
+        plotter_2d=plotter_2d,
+        visuals_2d=visuals_2d,
+        include_2d=include_2d,
     )
 
 
@@ -433,17 +427,16 @@ def interpolated_reconstruction(
 @mat_decorators.set_labels
 def interpolated_errors(
     inversion,
-    lines=None,
-    source_positions=None,
-    grid=None,
-    include_2d=None,
-    plotter_2d=None,
+    plotter_2d: typing.Optional[p.Plotter2D] = None,
+    visuals_2d: typing.Optional[vis.Visuals2D] = None,
+    include_2d: typing.Optional[inc.Include2D] = None,
 ):
 
-    plotter_2d._plot_array(
+    visuals_2d += include_2d.visuals_of_source_from_mapper(mapper=inversion.mapper)
+
+    structure_plots.plot_array(
         array=inversion.interpolated_errors_from_shape_2d(),
-        lines=lines,
-        positions=source_positions,
-        grid=grid,
-        include_origin=include_2d.origin,
+        plotter_2d=plotter_2d,
+        visuals_2d=visuals_2d,
+        include_2d=include_2d,
     )

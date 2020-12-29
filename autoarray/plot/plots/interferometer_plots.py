@@ -1,4 +1,8 @@
 from autoarray.plot.mat_wrap import mat_decorators
+from autoarray.plot.mat_wrap import visuals as vis
+from autoarray.plot.mat_wrap import include as inc
+from autoarray.plot.mat_wrap import plotter as p
+import typing
 from autoarray.plot.plots import structure_plots
 from autoarray.structures import grids
 import numpy as np
@@ -11,12 +15,12 @@ import numpy as np
 @mat_decorators.set_subplot_filename
 def subplot_interferometer(
     interferometer,
-    visuals_2d=None,
-    include_2d=None,
-    plotter_2d=None,
-    visuals_1d=None,
-    include_1d=None,
-    plotter_1d=None,
+    visuals_2d: typing.Optional[vis.Visuals2D] = None,
+    include_2d: typing.Optional[inc.Include2D] = None,
+    plotter_2d: typing.Optional[p.Plotter2D] = None,
+    visuals_1d: typing.Optional[vis.Visuals1D] = None,
+    include_1d: typing.Optional[inc.Include1D] = None,
+    plotter_1d: typing.Optional[p.Plotter1D] = None,
 ):
     """Plot the interferometer data_type as a sub-plotter_2d of all its quantites (e.g. the dataset, noise_map, PSF, Signal-to_noise-map, \
      etc).
@@ -84,12 +88,12 @@ def subplot_interferometer(
 
 def individual(
     interferometer,
-    visuals_2d=None,
-    include_2d=None,
-    plotter_2d=None,
-    visuals_1d=None,
-    include_1d=None,
-    plotter_1d=None,
+    visuals_2d: typing.Optional[vis.Visuals2D] = None,
+    include_2d: typing.Optional[inc.Include2D] = None,
+    plotter_2d: typing.Optional[p.Plotter2D] = None,
+    visuals_1d: typing.Optional[vis.Visuals1D] = None,
+    include_1d: typing.Optional[inc.Include1D] = None,
+    plotter_1d: typing.Optional[p.Plotter1D] = None,
     plot_visibilities=False,
     plot_noise_map=False,
     plot_u_wavelengths=False,
@@ -115,49 +119,75 @@ def individual(
     if plot_visibilities:
 
         visibilities(
-            interferometer=interferometer, visuals_2d=visuals_2d, include_2d=include_2d, plotter_2d=plotter_2d
+            interferometer=interferometer,
+            visuals_2d=visuals_2d,
+            include_2d=include_2d,
+            plotter_2d=plotter_2d,
         )
 
     if plot_noise_map:
 
         noise_map(
-            interferometer=interferometer, visuals_2d=visuals_2d, include_2d=include_2d, plotter_2d=plotter_2d
+            interferometer=interferometer,
+            visuals_2d=visuals_2d,
+            include_2d=include_2d,
+            plotter_2d=plotter_2d,
         )
 
     if plot_u_wavelengths:
 
         uv_wavelengths(
-            interferometer=interferometer, visuals_2d=visuals_2d, include_2d=include_2d, plotter_2d=plotter_2d
+            interferometer=interferometer,
+            visuals_2d=visuals_2d,
+            include_2d=include_2d,
+            plotter_2d=plotter_2d,
         )
 
     if plot_v_wavelengths:
 
         v_wavelengths(
-            interferometer=interferometer, visuals_1d=visuals_1d, include_1d=include_1d, plotter_1d=plotter_1d
+            interferometer=interferometer,
+            visuals_1d=visuals_1d,
+            include_1d=include_1d,
+            plotter_1d=plotter_1d,
         )
 
     if plot_uv_wavelengths:
 
         uv_wavelengths(
-            interferometer=interferometer, visuals_2d=visuals_2d, include_2d=include_2d, plotter_2d=plotter_2d
+            interferometer=interferometer,
+            visuals_2d=visuals_2d,
+            include_2d=include_2d,
+            plotter_2d=plotter_2d,
         )
 
     if plot_amplitudes_vs_uv_distances:
 
         amplitudes_vs_uv_distances(
-            interferometer=interferometer, visuals_1d=visuals_1d, include_1d=include_1d, plotter_1d=plotter_1d
+            interferometer=interferometer,
+            visuals_1d=visuals_1d,
+            include_1d=include_1d,
+            plotter_1d=plotter_1d,
         )
 
     if plot_phases_vs_uv_distances:
 
         phases_vs_uv_distances(
-            interferometer=interferometer, visuals_1d=visuals_1d, include_1d=include_1d, plotter_1d=plotter_1d
+            interferometer=interferometer,
+            visuals_1d=visuals_1d,
+            include_1d=include_1d,
+            plotter_1d=plotter_1d,
         )
 
 
 @mat_decorators.set_plot_defaults_2d
 @mat_decorators.set_labels
-def visibilities(interferometer, visuals_2d=None, include_2d=None, plotter_2d=None):
+def visibilities(
+    interferometer,
+    visuals_2d: typing.Optional[vis.Visuals2D] = None,
+    include_2d: typing.Optional[inc.Include2D] = None,
+    plotter_2d: typing.Optional[p.Plotter2D] = None,
+):
     """Plot the observed image of the imaging data_type.
 
     Set *autolens.data_type.array.plotter_2d.plotter_2d* for a description of all input parameters not described below.
@@ -183,7 +213,12 @@ def visibilities(interferometer, visuals_2d=None, include_2d=None, plotter_2d=No
 
 @mat_decorators.set_plot_defaults_2d
 @mat_decorators.set_labels
-def noise_map(interferometer, visuals_2d=None, include_2d=None, plotter_2d=None):
+def noise_map(
+    interferometer,
+    visuals_2d: typing.Optional[vis.Visuals2D] = None,
+    include_2d: typing.Optional[inc.Include2D] = None,
+    plotter_2d: typing.Optional[p.Plotter2D] = None,
+):
     """Plot the observed image of the imaging data_type.
 
     Set *autolens.data_type.array.plotter_2d.plotter_2d* for a description of all input parameters not described below.
@@ -212,9 +247,9 @@ def noise_map(interferometer, visuals_2d=None, include_2d=None, plotter_2d=None)
 @mat_decorators.set_labels
 def u_wavelengths(
     interferometer,
-    visuals_1d=None,
-    include_1d=None,
-    plotter_1d=None,
+    visuals_1d: typing.Optional[vis.Visuals1D] = None,
+    include_1d: typing.Optional[inc.Include1D] = None,
+    plotter_1d: typing.Optional[p.Plotter1D] = None,
     label="Wavelengths",
     plot_axis_type="linear",
 ):
@@ -246,9 +281,9 @@ def u_wavelengths(
 @mat_decorators.set_labels
 def v_wavelengths(
     interferometer,
-    visuals_1d=None,
-    include_1d=None,
-    plotter_1d=None,
+    visuals_1d: typing.Optional[vis.Visuals1D] = None,
+    include_1d: typing.Optional[inc.Include1D] = None,
+    plotter_1d: typing.Optional[p.Plotter1D] = None,
     label="Wavelengths",
     plot_axis_type="linear",
 ):
@@ -280,9 +315,9 @@ def v_wavelengths(
 @mat_decorators.set_labels
 def uv_wavelengths(
     interferometer,
-    visuals_2d=None,
-    include_2d=None,
-    plotter_2d=None,
+    visuals_2d: typing.Optional[vis.Visuals2D] = None,
+    include_2d: typing.Optional[inc.Include2D] = None,
+    plotter_2d: typing.Optional[p.Plotter2D] = None,
     label_yunits="V-Wavelengths ($\lambda$)",
     label_xunits="U-Wavelengths ($\lambda$)",
 ):
@@ -317,9 +352,9 @@ def uv_wavelengths(
 @mat_decorators.set_labels
 def amplitudes_vs_uv_distances(
     interferometer,
-    visuals_1d=None,
-    include_1d=None,
-    plotter_1d=None,
+    visuals_1d: typing.Optional[vis.Visuals1D] = None,
+    include_1d: typing.Optional[inc.Include1D] = None,
+    plotter_1d: typing.Optional[p.Plotter1D] = None,
     label_yunits="amplitude (Jy)",
     label_xunits=r"UV$_{distance}$ (k$\lambda$)",
 ):
@@ -336,9 +371,9 @@ def amplitudes_vs_uv_distances(
 @mat_decorators.set_labels
 def phases_vs_uv_distances(
     interferometer,
-    visuals_1d=None,
-    include_1d=None,
-    plotter_1d=None,
+    visuals_1d: typing.Optional[vis.Visuals1D] = None,
+    include_1d: typing.Optional[inc.Include1D] = None,
+    plotter_1d: typing.Optional[p.Plotter1D] = None,
     label_yunits="phase (deg)",
     label_xunits=r"UV$_{distance}$ (k$\lambda$)",
 ):

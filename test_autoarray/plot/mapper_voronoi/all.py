@@ -24,6 +24,8 @@ voronoi_grid = aa.GridVoronoi(
         shape=grid_7x7.shape_1d, dtype="int"
     ),
 )
-voronoi_mapper = aa.Mapper(grid=grid_7x7, pixelization_grid=voronoi_grid)
+voronoi_mapper = aa.Mapper(
+    source_full_grid=grid_7x7, source_pixelization_grid=voronoi_grid
+)
 
-aplt.MapperObj(mapper=voronoi_mapper, source_pixel_indexes=[[3, 4], [5]])
+aplt.MapperObj(mapper=voronoi_mapper, pixelization_indexes=[[3, 4], [5]])

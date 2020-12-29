@@ -239,8 +239,8 @@ class TestPlotMapper:
 
         aplt.MapperObj(
             mapper=rectangular_mapper_7x7_3x3,
-            image_pixel_indexes=[[(0, 0), (0, 1)], [(1, 2)]],
-            source_pixel_indexes=[[0, 1], [2]],
+            full_indexes=[[(0, 0), (0, 1)], [(1, 2)]],
+            pixelization_indexes=[[0, 1], [2]],
             plotter_2d=aplt.Plotter2D(
                 output=aplt.Output(path=plot_path, filename="mapper1", format="png")
             ),
@@ -250,8 +250,8 @@ class TestPlotMapper:
 
         aplt.MapperObj(
             mapper=rectangular_mapper_7x7_3x3,
-            image_pixel_indexes=[[(0, 0), (0, 1)], [(1, 2)]],
-            source_pixel_indexes=[[0, 1], [2]],
+            full_indexes=[[(0, 0), (0, 1)], [(1, 2)]],
+            pixelization_indexes=[[0, 1], [2]],
             plotter_2d=aplt.Plotter2D(
                 output=aplt.Output(path=plot_path, filename="mapper2", format="png")
             ),
@@ -259,10 +259,15 @@ class TestPlotMapper:
 
         assert path.join(plot_path, "mapper2.png") in plot_patch.paths
 
+        include_2d = aplt.Include2D(
+            origin=True, mapper_source_grid=True, mapper_source_border=True
+        )
+
         aplt.MapperObj(
             mapper=rectangular_mapper_7x7_3x3,
-            image_pixel_indexes=[[(0, 0), (0, 1)], [(1, 2)]],
-            source_pixel_indexes=[[0, 1], [2]],
+            include_2d=include_2d,
+            full_indexes=[[(0, 0), (0, 1)], [(1, 2)]],
+            pixelization_indexes=[[0, 1], [2]],
             plotter_2d=aplt.Plotter2D(
                 output=aplt.Output(path=plot_path, filename="mapper3", format="png")
             ),
@@ -276,8 +281,8 @@ class TestPlotMapper:
 
         aplt.MapperObj(
             mapper=voronoi_mapper_9_3x3,
-            image_pixel_indexes=[[(0, 0), (0, 1)], [(1, 2)]],
-            source_pixel_indexes=[[0, 1], [2]],
+            full_indexes=[[(0, 0), (0, 1)], [(1, 2)]],
+            pixelization_indexes=[[0, 1], [2]],
             plotter_2d=aplt.Plotter2D(
                 output=aplt.Output(path=plot_path, filename="mapper1", format="png")
             ),
@@ -287,8 +292,8 @@ class TestPlotMapper:
 
         aplt.MapperObj(
             mapper=voronoi_mapper_9_3x3,
-            image_pixel_indexes=[[(0, 0), (0, 1)], [(1, 2)]],
-            source_pixel_indexes=[[0, 1], [2]],
+            full_indexes=[[(0, 0), (0, 1)], [(1, 2)]],
+            pixelization_indexes=[[0, 1], [2]],
             plotter_2d=aplt.Plotter2D(
                 output=aplt.Output(path=plot_path, filename="mapper2", format="png")
             ),
@@ -298,8 +303,8 @@ class TestPlotMapper:
 
         aplt.MapperObj(
             mapper=voronoi_mapper_9_3x3,
-            image_pixel_indexes=[[(0, 0), (0, 1)], [(1, 2)]],
-            source_pixel_indexes=[[0, 1], [2]],
+            full_indexes=[[(0, 0), (0, 1)], [(1, 2)]],
+            pixelization_indexes=[[0, 1], [2]],
             plotter_2d=aplt.Plotter2D(
                 output=aplt.Output(path=plot_path, filename="mapper3", format="png")
             ),

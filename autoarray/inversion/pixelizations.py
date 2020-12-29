@@ -161,8 +161,8 @@ class Rectangular(Pixelization):
         )
 
         return mappers.MapperRectangular(
-            grid=relocated_grid,
-            pixelization_grid=pixelization_grid,
+            source_full_grid=relocated_grid,
+            source_pixelization_grid=pixelization_grid,
             hyper_image=hyper_image,
         )
 
@@ -230,8 +230,9 @@ class Voronoi(Pixelization):
             )
 
             return mappers.MapperVoronoi(
-                grid=relocated_grid,
-                pixelization_grid=pixelization_grid,
+                source_full_grid=relocated_grid,
+                source_pixelization_grid=pixelization_grid,
+                data_pixelization_grid=sparse_grid,
                 hyper_image=hyper_image,
             )
         except ValueError as e:
