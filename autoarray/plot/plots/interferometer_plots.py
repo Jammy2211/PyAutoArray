@@ -8,19 +8,15 @@ from autoarray.structures import grids
 import numpy as np
 
 
-@mat_decorators.set_plot_defaults_1d
-@mat_decorators.set_plot_defaults_2d
-@mat_decorators.set_plotter_1d_for_subplot
-@mat_decorators.set_plotter_2d_for_subplot
 @mat_decorators.set_subplot_filename
 def subplot_interferometer(
     interferometer,
-    visuals_2d: typing.Optional[vis.Visuals2D] = None,
-    include_2d: typing.Optional[inc.Include2D] = None,
-    plotter_2d: typing.Optional[p.Plotter2D] = None,
-    visuals_1d: typing.Optional[vis.Visuals1D] = None,
-    include_1d: typing.Optional[inc.Include1D] = None,
-    plotter_1d: typing.Optional[p.Plotter1D] = None,
+    visuals_1d: vis.Visuals1D = vis.Visuals1D(),
+    include_1d: inc.Include1D = inc.Include1D(),
+    plotter_1d: p.Plotter1D = p.Plotter1D(),
+    visuals_2d: vis.Visuals2D = vis.Visuals2D(),
+    include_2d: inc.Include2D = inc.Include2D(),
+    plotter_2d: p.Plotter2D = p.Plotter2D(),
 ):
     """Plot the interferometer data_type as a sub-plotter_2d of all its quantites (e.g. the dataset, noise_map, PSF, Signal-to_noise-map, \
      etc).
@@ -40,6 +36,9 @@ def subplot_interferometer(
         If `False`, the config file general.ini is used to determine whether the subpot is plotted. If `True`, the \
         config file is ignored.
     """
+
+    plotter_2d = plotter_2d.plotter_for_subplot_from(func=subplot_interferometer)
+    plotter_1d = plotter_1d.plotter_for_subplot_from(func=subplot_interferometer)
 
     number_subplots = 4
 
@@ -88,12 +87,12 @@ def subplot_interferometer(
 
 def individual(
     interferometer,
-    visuals_2d: typing.Optional[vis.Visuals2D] = None,
-    include_2d: typing.Optional[inc.Include2D] = None,
-    plotter_2d: typing.Optional[p.Plotter2D] = None,
-    visuals_1d: typing.Optional[vis.Visuals1D] = None,
-    include_1d: typing.Optional[inc.Include1D] = None,
-    plotter_1d: typing.Optional[p.Plotter1D] = None,
+    visuals_2d: vis.Visuals2D = vis.Visuals2D(),
+    include_2d: inc.Include2D = inc.Include2D(),
+    plotter_2d: p.Plotter2D = p.Plotter2D(),
+    visuals_1d: vis.Visuals1D = vis.Visuals1D(),
+    include_1d: inc.Include1D = inc.Include1D(),
+    plotter_1d: p.Plotter1D = p.Plotter1D(),
     plot_visibilities=False,
     plot_noise_map=False,
     plot_u_wavelengths=False,
@@ -180,13 +179,12 @@ def individual(
         )
 
 
-@mat_decorators.set_plot_defaults_2d
 @mat_decorators.set_labels
 def visibilities(
     interferometer,
-    visuals_2d: typing.Optional[vis.Visuals2D] = None,
-    include_2d: typing.Optional[inc.Include2D] = None,
-    plotter_2d: typing.Optional[p.Plotter2D] = None,
+    visuals_2d: vis.Visuals2D = vis.Visuals2D(),
+    include_2d: inc.Include2D = inc.Include2D(),
+    plotter_2d: p.Plotter2D = p.Plotter2D(),
 ):
     """Plot the observed image of the imaging data_type.
 
@@ -211,13 +209,12 @@ def visibilities(
     )
 
 
-@mat_decorators.set_plot_defaults_2d
 @mat_decorators.set_labels
 def noise_map(
     interferometer,
-    visuals_2d: typing.Optional[vis.Visuals2D] = None,
-    include_2d: typing.Optional[inc.Include2D] = None,
-    plotter_2d: typing.Optional[p.Plotter2D] = None,
+    visuals_2d: vis.Visuals2D = vis.Visuals2D(),
+    include_2d: inc.Include2D = inc.Include2D(),
+    plotter_2d: p.Plotter2D = p.Plotter2D(),
 ):
     """Plot the observed image of the imaging data_type.
 
@@ -243,13 +240,12 @@ def noise_map(
     )
 
 
-@mat_decorators.set_plot_defaults_1d
 @mat_decorators.set_labels
 def u_wavelengths(
     interferometer,
-    visuals_1d: typing.Optional[vis.Visuals1D] = None,
-    include_1d: typing.Optional[inc.Include1D] = None,
-    plotter_1d: typing.Optional[p.Plotter1D] = None,
+    visuals_1d: vis.Visuals1D = vis.Visuals1D(),
+    include_1d: inc.Include1D = inc.Include1D(),
+    plotter_1d: p.Plotter1D = p.Plotter1D(),
     label="Wavelengths",
     plot_axis_type="linear",
 ):
@@ -277,13 +273,12 @@ def u_wavelengths(
     )
 
 
-@mat_decorators.set_plot_defaults_1d
 @mat_decorators.set_labels
 def v_wavelengths(
     interferometer,
-    visuals_1d: typing.Optional[vis.Visuals1D] = None,
-    include_1d: typing.Optional[inc.Include1D] = None,
-    plotter_1d: typing.Optional[p.Plotter1D] = None,
+    visuals_1d: vis.Visuals1D = vis.Visuals1D(),
+    include_1d: inc.Include1D = inc.Include1D(),
+    plotter_1d: p.Plotter1D = p.Plotter1D(),
     label="Wavelengths",
     plot_axis_type="linear",
 ):
@@ -311,13 +306,12 @@ def v_wavelengths(
     )
 
 
-@mat_decorators.set_plot_defaults_2d
 @mat_decorators.set_labels
 def uv_wavelengths(
     interferometer,
-    visuals_2d: typing.Optional[vis.Visuals2D] = None,
-    include_2d: typing.Optional[inc.Include2D] = None,
-    plotter_2d: typing.Optional[p.Plotter2D] = None,
+    visuals_2d: vis.Visuals2D = vis.Visuals2D(),
+    include_2d: inc.Include2D = inc.Include2D(),
+    plotter_2d: p.Plotter2D = p.Plotter2D(),
     label_yunits="V-Wavelengths ($\lambda$)",
     label_xunits="U-Wavelengths ($\lambda$)",
 ):
@@ -348,13 +342,12 @@ def uv_wavelengths(
     )
 
 
-@mat_decorators.set_plot_defaults_1d
 @mat_decorators.set_labels
 def amplitudes_vs_uv_distances(
     interferometer,
-    visuals_1d: typing.Optional[vis.Visuals1D] = None,
-    include_1d: typing.Optional[inc.Include1D] = None,
-    plotter_1d: typing.Optional[p.Plotter1D] = None,
+    visuals_1d: vis.Visuals1D = vis.Visuals1D(),
+    include_1d: inc.Include1D = inc.Include1D(),
+    plotter_1d: p.Plotter1D = p.Plotter1D(),
     label_yunits="amplitude (Jy)",
     label_xunits=r"UV$_{distance}$ (k$\lambda$)",
 ):
@@ -367,13 +360,12 @@ def amplitudes_vs_uv_distances(
     )
 
 
-@mat_decorators.set_plot_defaults_1d
 @mat_decorators.set_labels
 def phases_vs_uv_distances(
     interferometer,
-    visuals_1d: typing.Optional[vis.Visuals1D] = None,
-    include_1d: typing.Optional[inc.Include1D] = None,
-    plotter_1d: typing.Optional[p.Plotter1D] = None,
+    visuals_1d: vis.Visuals1D = vis.Visuals1D(),
+    include_1d: inc.Include1D = inc.Include1D(),
+    plotter_1d: p.Plotter1D = p.Plotter1D(),
     label_yunits="phase (deg)",
     label_xunits=r"UV$_{distance}$ (k$\lambda$)",
 ):

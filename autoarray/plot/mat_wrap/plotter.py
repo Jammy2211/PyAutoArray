@@ -92,14 +92,22 @@ class AbstractPlotter:
         self.legend = legend
         self.output = output
 
-    def set_for_subplot(self, for_subplot):
+    def plotter_for_subplot_from(self, func=None):
 
-        self.for_subplot = for_subplot
-        self.output.bypass = for_subplot
+        plotter = copy.deepcopy(self)
 
-        for attr, value in self.__dict__.items():
+        plotter.for_subplot = True
+        plotter.output.bypass = True
+
+        for attr, value in plotter.__dict__.items():
             if hasattr(value, "for_subplot"):
-                value.for_subplot = for_subplot
+                value.for_subplot = True
+
+        if func is not None:
+            filename = plotter.output.filename_from_func(func=func)
+            return plotter.plotter_with_new_output(filename=filename)
+        else:
+            return plotter
 
     def open_subplot_figure(self, number_subplots):
         """Setup a figure for plotting an image.
@@ -390,7 +398,7 @@ class Plotter1D(AbstractPlotter):
 
         self.line_plot = line_plot
 
-        self.set_for_subplot(for_subplot=False)
+        self.for_subplot = False
 
     def _plot_line(
         self,
@@ -577,7 +585,7 @@ class Plotter2D(AbstractPlotter):
         self.serial_prescan_plot = serial_prescan_plot
         self.serial_overscan_plot = serial_overscan_plot
 
-        self.set_for_subplot(for_subplot=False)
+        self.for_subplot = False
 
     def _plot_array(self, array, visuals_2d, extent_manual=None, bypass_output=False):
         """Plot an array of data_type as a figure.
@@ -670,10 +678,7 @@ class Plotter2D(AbstractPlotter):
             self.figure.close()
 
     def _plot_frame(
-        self,
-        frame,
-        visuals_2d: typing.Optional[vis.Visuals2D] = None,
-        bypass_output=False,
+        self, frame, visuals_2d: vis.Visuals2D = vis.Visuals2D(), bypass_output=False
     ):
         """Plot an array of data_type as a figure.
 
@@ -729,7 +734,7 @@ class Plotter2D(AbstractPlotter):
     def _plot_grid(
         self,
         grid,
-        visuals_2d: typing.Optional[vis.Visuals2D] = None,
+        visuals_2d: vis.Visuals2D = vis.Visuals2D(),
         color_array=None,
         axis_limits=None,
         indexes=None,
@@ -806,7 +811,7 @@ class Plotter2D(AbstractPlotter):
     def _plot_mapper(
         self,
         mapper: mappers.Mapper,
-        visuals_2d: typing.Optional[vis.Visuals2D] = None,
+        visuals_2d: vis.Visuals2D = vis.Visuals2D(),
         source_pixelilzation_values=None,
         full_indexes=None,
         pixelization_indexes=None,
@@ -838,7 +843,7 @@ class Plotter2D(AbstractPlotter):
     def _plot_rectangular_mapper(
         self,
         mapper: mappers.MapperRectangular,
-        visuals_2d: typing.Optional[vis.Visuals2D] = None,
+        visuals_2d: vis.Visuals2D = vis.Visuals2D(),
         source_pixelilzation_values=None,
         full_indexes=None,
         pixelization_indexes=None,
@@ -907,7 +912,7 @@ class Plotter2D(AbstractPlotter):
     def _plot_voronoi_mapper(
         self,
         mapper: mappers.MapperVoronoi,
-        visuals_2d: typing.Optional[vis.Visuals2D] = None,
+        visuals_2d: vis.Visuals2D = vis.Visuals2D(),
         source_pixelilzation_values=None,
         full_indexes=None,
         pixelization_indexes=None,

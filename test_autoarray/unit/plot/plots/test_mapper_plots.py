@@ -20,7 +20,9 @@ def test__image_and_mapper_subplot_is_output_for_all_mappers(
     aplt.Mapper.subplot_image_and_mapper(
         image=imaging_7x7.image,
         mapper=rectangular_mapper_7x7_3x3,
-        include_2d=aplt.Include2D(mapper_source_grid=True, mapper_source_border=True),
+        include_2d=aplt.Include2D(
+            mapper_source_pixelization_grid=True, mapper_source_border=True
+        ),
         full_indexes=[[0, 1, 2], [3]],
         pixelization_indexes=[[1, 2], [0]],
         plotter_2d=aplt.Plotter2D(output=aplt.Output(path=plot_path, format="png")),
@@ -31,7 +33,9 @@ def test__image_and_mapper_subplot_is_output_for_all_mappers(
     aplt.Mapper.subplot_image_and_mapper(
         image=imaging_7x7.image,
         mapper=voronoi_mapper_9_3x3,
-        include_2d=aplt.Include2D(mapper_source_grid=True, mapper_source_border=True),
+        include_2d=aplt.Include2D(
+            mapper_source_pixelization_grid=True, mapper_source_border=True
+        ),
         full_indexes=[[0, 1, 2], [3]],
         pixelization_indexes=[[1, 2], [0]],
         plotter_2d=aplt.Plotter2D(output=aplt.Output(path=plot_path, format="png")),

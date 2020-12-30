@@ -7,15 +7,15 @@ from autoarray.fit import fit as f
 import typing
 
 
-@mat_decorators.set_plot_defaults_2d
-@mat_decorators.set_plotter_2d_for_subplot
 @mat_decorators.set_subplot_filename
 def subplot_fit_imaging(
     fit: f.FitImaging,
-    visuals_2d: typing.Optional[vis.Visuals2D] = None,
-    include_2d: typing.Optional[inc.Include2D] = None,
-    plotter_2d: typing.Optional[p.Plotter2D] = None,
+    visuals_2d: vis.Visuals2D = vis.Visuals2D(),
+    include_2d: inc.Include2D = inc.Include2D(),
+    plotter_2d: p.Plotter2D = p.Plotter2D(),
 ):
+
+    plotter_2d = plotter_2d.plotter_for_subplot_from(func=subplot_fit_imaging)
 
     number_subplots = 6
 
@@ -62,9 +62,9 @@ def subplot_fit_imaging(
 
 def individuals(
     fit: f.FitImaging,
-    visuals_2d: typing.Optional[vis.Visuals2D] = None,
-    include_2d: typing.Optional[inc.Include2D] = None,
-    plotter_2d: typing.Optional[p.Plotter2D] = None,
+    visuals_2d: vis.Visuals2D = vis.Visuals2D(),
+    include_2d: inc.Include2D = inc.Include2D(),
+    plotter_2d: p.Plotter2D = p.Plotter2D(),
     plot_image=False,
     plot_noise_map=False,
     plot_signal_to_noise_map=False,
@@ -131,13 +131,12 @@ def individuals(
         )
 
 
-@mat_decorators.set_plot_defaults_2d
 @mat_decorators.set_labels
 def image(
     fit: f.FitImaging,
-    visuals_2d: typing.Optional[vis.Visuals2D] = None,
-    include_2d: typing.Optional[inc.Include2D] = None,
-    plotter_2d: typing.Optional[p.Plotter2D] = None,
+    visuals_2d: vis.Visuals2D = vis.Visuals2D(),
+    include_2d: inc.Include2D = inc.Include2D(),
+    plotter_2d: p.Plotter2D = p.Plotter2D(),
 ):
     """Plot the image of a lens fit.
 
@@ -158,13 +157,12 @@ def image(
     )
 
 
-@mat_decorators.set_plot_defaults_2d
 @mat_decorators.set_labels
 def noise_map(
     fit: f.FitImaging,
-    visuals_2d: typing.Optional[vis.Visuals2D] = None,
-    include_2d: typing.Optional[inc.Include2D] = None,
-    plotter_2d: typing.Optional[p.Plotter2D] = None,
+    visuals_2d: vis.Visuals2D = vis.Visuals2D(),
+    include_2d: inc.Include2D = inc.Include2D(),
+    plotter_2d: p.Plotter2D = p.Plotter2D(),
 ):
     """Plot the noise-map of a lens fit.
 
@@ -185,13 +183,12 @@ def noise_map(
     )
 
 
-@mat_decorators.set_plot_defaults_2d
 @mat_decorators.set_labels
 def signal_to_noise_map(
     fit: f.FitImaging,
-    visuals_2d: typing.Optional[vis.Visuals2D] = None,
-    include_2d: typing.Optional[inc.Include2D] = None,
-    plotter_2d: typing.Optional[p.Plotter2D] = None,
+    visuals_2d: vis.Visuals2D = vis.Visuals2D(),
+    include_2d: inc.Include2D = inc.Include2D(),
+    plotter_2d: p.Plotter2D = p.Plotter2D(),
 ):
     """Plot the noise-map of a lens fit.
 
@@ -212,13 +209,12 @@ def signal_to_noise_map(
     )
 
 
-@mat_decorators.set_plot_defaults_2d
 @mat_decorators.set_labels
 def model_image(
     fit: f.FitImaging,
-    visuals_2d: typing.Optional[vis.Visuals2D] = None,
-    include_2d: typing.Optional[inc.Include2D] = None,
-    plotter_2d: typing.Optional[p.Plotter2D] = None,
+    visuals_2d: vis.Visuals2D = vis.Visuals2D(),
+    include_2d: inc.Include2D = inc.Include2D(),
+    plotter_2d: p.Plotter2D = p.Plotter2D(),
 ):
     """Plot the model image of a fit.
 
@@ -240,13 +236,12 @@ def model_image(
     )
 
 
-@mat_decorators.set_plot_defaults_2d
 @mat_decorators.set_labels
 def residual_map(
     fit: f.FitImaging,
-    visuals_2d: typing.Optional[vis.Visuals2D] = None,
-    include_2d: typing.Optional[inc.Include2D] = None,
-    plotter_2d: typing.Optional[p.Plotter2D] = None,
+    visuals_2d: vis.Visuals2D = vis.Visuals2D(),
+    include_2d: inc.Include2D = inc.Include2D(),
+    plotter_2d: p.Plotter2D = p.Plotter2D(),
 ):
     """Plot the residual-map of a lens fit.
 
@@ -267,13 +262,12 @@ def residual_map(
     )
 
 
-@mat_decorators.set_plot_defaults_2d
 @mat_decorators.set_labels
 def normalized_residual_map(
     fit: f.FitImaging,
-    visuals_2d: typing.Optional[vis.Visuals2D] = None,
-    include_2d: typing.Optional[inc.Include2D] = None,
-    plotter_2d: typing.Optional[p.Plotter2D] = None,
+    visuals_2d: vis.Visuals2D = vis.Visuals2D(),
+    include_2d: inc.Include2D = inc.Include2D(),
+    plotter_2d: p.Plotter2D = p.Plotter2D(),
 ):
     """Plot the residual-map of a lens fit.
 
@@ -294,13 +288,12 @@ def normalized_residual_map(
     )
 
 
-@mat_decorators.set_plot_defaults_2d
 @mat_decorators.set_labels
 def chi_squared_map(
     fit: f.FitImaging,
-    visuals_2d: typing.Optional[vis.Visuals2D] = None,
-    include_2d: typing.Optional[inc.Include2D] = None,
-    plotter_2d: typing.Optional[p.Plotter2D] = None,
+    visuals_2d: vis.Visuals2D = vis.Visuals2D(),
+    include_2d: inc.Include2D = inc.Include2D(),
+    plotter_2d: p.Plotter2D = p.Plotter2D(),
 ):
     """Plot the chi-squared-map of a lens fit.
 

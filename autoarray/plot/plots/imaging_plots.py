@@ -6,14 +6,11 @@ import typing
 from autoarray.plot.plots import structure_plots
 
 
-@mat_decorators.set_plot_defaults_2d
-@mat_decorators.set_plotter_2d_for_subplot
-@mat_decorators.set_subplot_filename
 def subplot_imaging(
     imaging,
-    visuals_2d: typing.Optional[vis.Visuals2D] = None,
-    include_2d: typing.Optional[inc.Include2D] = None,
-    plotter_2d: typing.Optional[p.Plotter2D] = None,
+    visuals_2d: typing.Optional[vis.Visuals2D] = vis.Visuals2D(),
+    include_2d: typing.Optional[inc.Include2D] = inc.Include2D(),
+    plotter_2d: typing.Optional[p.Plotter2D] = p.Plotter2D(),
 ):
     """Plot the imaging data_type as a sub-plotter_2d of all its quantites (e.g. the dataset, noise_map, PSF, Signal-to_noise-map, \
      etc).
@@ -33,6 +30,8 @@ def subplot_imaging(
         If `False`, the config file general.ini is used to determine whether the subpot is plotted. If `True`, the \
         config file is ignored.
     """
+
+    plotter_2d = plotter_2d.plotter_for_subplot_from(func=subplot_imaging)
 
     number_subplots = 6
 
@@ -99,9 +98,9 @@ def subplot_imaging(
 
 def individual(
     imaging,
-    visuals_2d: typing.Optional[vis.Visuals2D] = None,
-    include_2d: typing.Optional[inc.Include2D] = None,
-    plotter_2d: typing.Optional[p.Plotter2D] = None,
+    visuals_2d: vis.Visuals2D = vis.Visuals2D(),
+    include_2d: inc.Include2D = inc.Include2D(),
+    plotter_2d: p.Plotter2D = p.Plotter2D(),
     plot_image=False,
     plot_noise_map=False,
     plot_psf=False,
@@ -187,13 +186,12 @@ def individual(
         )
 
 
-@mat_decorators.set_plot_defaults_2d
 @mat_decorators.set_labels
 def image(
     imaging,
-    visuals_2d: typing.Optional[vis.Visuals2D] = None,
-    include_2d: typing.Optional[inc.Include2D] = None,
-    plotter_2d: typing.Optional[p.Plotter2D] = None,
+    visuals_2d: vis.Visuals2D = vis.Visuals2D(),
+    include_2d: inc.Include2D = inc.Include2D(),
+    plotter_2d: p.Plotter2D = p.Plotter2D(),
 ):
     """Plot the observed data_type of the imaging data_type.
 
@@ -218,13 +216,12 @@ def image(
     )
 
 
-@mat_decorators.set_plot_defaults_2d
 @mat_decorators.set_labels
 def noise_map(
     imaging,
-    visuals_2d: typing.Optional[vis.Visuals2D] = None,
-    include_2d: typing.Optional[inc.Include2D] = None,
-    plotter_2d: typing.Optional[p.Plotter2D] = None,
+    visuals_2d: vis.Visuals2D = vis.Visuals2D(),
+    include_2d: inc.Include2D = inc.Include2D(),
+    plotter_2d: p.Plotter2D = p.Plotter2D(),
 ):
     """Plot the noise_map of the imaging data_type.
 
@@ -246,13 +243,12 @@ def noise_map(
     )
 
 
-@mat_decorators.set_plot_defaults_2d
 @mat_decorators.set_labels
 def psf(
     imaging,
-    visuals_2d: typing.Optional[vis.Visuals2D] = None,
-    include_2d: typing.Optional[inc.Include2D] = None,
-    plotter_2d: typing.Optional[p.Plotter2D] = None,
+    visuals_2d: vis.Visuals2D = vis.Visuals2D(),
+    include_2d: inc.Include2D = inc.Include2D(),
+    plotter_2d: p.Plotter2D = p.Plotter2D(),
 ):
     """Plot the PSF of the imaging data_type.
 
@@ -274,13 +270,12 @@ def psf(
     )
 
 
-@mat_decorators.set_plot_defaults_2d
 @mat_decorators.set_labels
 def inverse_noise_map(
     imaging,
-    visuals_2d: typing.Optional[vis.Visuals2D] = None,
-    include_2d: typing.Optional[inc.Include2D] = None,
-    plotter_2d: typing.Optional[p.Plotter2D] = None,
+    visuals_2d: vis.Visuals2D = vis.Visuals2D(),
+    include_2d: inc.Include2D = inc.Include2D(),
+    plotter_2d: p.Plotter2D = p.Plotter2D(),
 ):
     """Plot the noise_map of the imaging data_type.
 
@@ -302,13 +297,12 @@ def inverse_noise_map(
     )
 
 
-@mat_decorators.set_plot_defaults_2d
 @mat_decorators.set_labels
 def signal_to_noise_map(
     imaging,
-    visuals_2d: typing.Optional[vis.Visuals2D] = None,
-    include_2d: typing.Optional[inc.Include2D] = None,
-    plotter_2d: typing.Optional[p.Plotter2D] = None,
+    visuals_2d: vis.Visuals2D = vis.Visuals2D(),
+    include_2d: inc.Include2D = inc.Include2D(),
+    plotter_2d: p.Plotter2D = p.Plotter2D(),
 ):
     """Plot the signal-to-noise_map of the imaging data_type.
 
@@ -329,13 +323,12 @@ def signal_to_noise_map(
     )
 
 
-@mat_decorators.set_plot_defaults_2d
 @mat_decorators.set_labels
 def absolute_signal_to_noise_map(
     imaging,
-    visuals_2d: typing.Optional[vis.Visuals2D] = None,
-    include_2d: typing.Optional[inc.Include2D] = None,
-    plotter_2d: typing.Optional[p.Plotter2D] = None,
+    visuals_2d: vis.Visuals2D = vis.Visuals2D(),
+    include_2d: inc.Include2D = inc.Include2D(),
+    plotter_2d: p.Plotter2D = p.Plotter2D(),
 ):
     """Plot the signal-to-noise_map of the imaging data_type.
 
@@ -356,13 +349,12 @@ def absolute_signal_to_noise_map(
     )
 
 
-@mat_decorators.set_plot_defaults_2d
 @mat_decorators.set_labels
 def potential_chi_squared_map(
     imaging,
-    visuals_2d: typing.Optional[vis.Visuals2D] = None,
-    include_2d: typing.Optional[inc.Include2D] = None,
-    plotter_2d: typing.Optional[p.Plotter2D] = None,
+    visuals_2d: vis.Visuals2D = vis.Visuals2D(),
+    include_2d: inc.Include2D = inc.Include2D(),
+    plotter_2d: p.Plotter2D = p.Plotter2D(),
 ):
     """Plot the signal-to-noise_map of the imaging data_type.
 

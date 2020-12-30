@@ -7,13 +7,12 @@ from autoarray.inversion import mappers
 import typing
 
 
-@mat_decorators.set_plot_defaults_2d
 @mat_decorators.set_labels
 def plot_array(
     array: arrays.Array,
-    visuals_2d: typing.Optional[vis.Visuals2D] = None,
-    include_2d: typing.Optional[inc.Include2D] = None,
-    plotter_2d: typing.Optional[p.Plotter2D] = None,
+    visuals_2d: vis.Visuals2D = vis.Visuals2D(),
+    include_2d: inc.Include2D = inc.Include2D(),
+    plotter_2d: p.Plotter2D = p.Plotter2D(),
     extent_manual=None,
 ):
 
@@ -24,13 +23,12 @@ def plot_array(
     )
 
 
-@mat_decorators.set_plot_defaults_2d
 @mat_decorators.set_labels
 def plot_frame(
     frame: frames.Frame,
-    plotter_2d: typing.Optional[p.Plotter2D] = None,
-    visuals_2d: typing.Optional[vis.Visuals2D] = None,
-    include_2d: typing.Optional[inc.Include2D] = None,
+    plotter_2d: p.Plotter2D = p.Plotter2D(),
+    visuals_2d: vis.Visuals2D = vis.Visuals2D(),
+    include_2d: inc.Include2D = inc.Include2D(),
 ):
 
     visuals_2d += include_2d.visuals_from_frame(frame=frame)
@@ -38,13 +36,12 @@ def plot_frame(
     plotter_2d._plot_frame(frame=frame, visuals_2d=visuals_2d)
 
 
-@mat_decorators.set_plot_defaults_2d
 @mat_decorators.set_labels
 def plot_grid(
     grid: grids.Grid,
-    plotter_2d: typing.Optional[p.Plotter2D] = None,
-    visuals_2d: typing.Optional[vis.Visuals2D] = None,
-    include_2d: typing.Optional[inc.Include2D] = None,
+    plotter_2d: p.Plotter2D = p.Plotter2D(),
+    visuals_2d: vis.Visuals2D = vis.Visuals2D(),
+    include_2d: inc.Include2D = inc.Include2D(),
     color_array=None,
     axis_limits=None,
     indexes=None,
@@ -63,13 +60,12 @@ def plot_grid(
     )
 
 
-@mat_decorators.set_plot_defaults_2d
 @mat_decorators.set_labels
 def plot_mapper_obj(
     mapper: mappers.Mapper,
-    plotter_2d: typing.Optional[p.Plotter2D] = None,
-    visuals_2d: typing.Optional[vis.Visuals2D] = None,
-    include_2d: typing.Optional[inc.Include2D] = None,
+    plotter_2d: p.Plotter2D = p.Plotter2D(),
+    visuals_2d: vis.Visuals2D = vis.Visuals2D(),
+    include_2d: inc.Include2D = inc.Include2D(),
     source_pixelilzation_values=None,
     full_indexes=None,
     pixelization_indexes=None,
@@ -86,14 +82,13 @@ def plot_mapper_obj(
     )
 
 
-@mat_decorators.set_plot_defaults_1d
 @mat_decorators.set_labels
 def plot_line(
     y,
     x,
-    plotter_1d: typing.Optional[p.Plotter1D] = None,
-    visuals_1d: typing.Optional[vis.Visuals1D] = None,
-    include_1d: typing.Optional[inc.Include1D] = None,
+    plotter_1d: p.Plotter1D = p.Plotter1D(),
+    visuals_1d: vis.Visuals1D = vis.Visuals1D(),
+    include_1d: inc.Include1D = inc.Include1D(),
     label=None,
     plot_axis_type="semilogy",
     vertical_lines=None,
