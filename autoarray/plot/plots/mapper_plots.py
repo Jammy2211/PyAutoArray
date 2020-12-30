@@ -6,17 +6,18 @@ from autoarray.plot.plots import structure_plots
 import typing
 
 
-@mat_decorators.set_plot_defaults_2d
 @mat_decorators.set_labels
 def subplot_image_and_mapper(
     image,
     mapper,
-    visuals_2d: typing.Optional[vis.Visuals2D] = None,
-    include_2d: typing.Optional[inc.Include2D] = None,
-    plotter_2d: typing.Optional[p.Plotter2D] = None,
+    visuals_2d: vis.Visuals2D = vis.Visuals2D(),
+    include_2d: inc.Include2D = inc.Include2D(),
+    plotter_2d: p.Plotter2D = p.Plotter2D(),
     full_indexes=None,
     pixelization_indexes=None,
 ):
+
+    plotter_2d = plotter_2d.plotter_for_subplot_from(func=subplot_image_and_mapper)
 
     number_subplots = 2
 

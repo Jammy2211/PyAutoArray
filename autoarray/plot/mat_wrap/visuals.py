@@ -68,6 +68,7 @@ class Visuals2D(AbstractVisuals):
         lines: typing.List[l.Line] = None,
         positions: grids.GridIrregular = None,
         grid: grids.Grid = None,
+        pixelization_grid: grids.Grid = None,
         vector_field: vector_fields.VectorFieldIrregular = None,
         patches: typing.Union[ptch.Patch] = None,
         array_overlay: arrays.Array = None,
@@ -82,6 +83,7 @@ class Visuals2D(AbstractVisuals):
         self.lines = lines
         self.positions = positions
         self.grid = grid
+        self.pixelization_grid = pixelization_grid
         self.vector_field = vector_field
         self.patches = patches
         self.array_overlay = array_overlay
@@ -90,14 +92,6 @@ class Visuals2D(AbstractVisuals):
         self.parallel_overscan = parallel_overscan
         self.serial_prescan = serial_prescan
         self.serial_overscan = serial_overscan
-
-    def __add__(self, other):
-
-        for attr, value in other.__dict__.items():
-            if self.__dict__[attr] is None and other.__dict__[attr] is not None:
-                self.__dict__[attr] = other.__dict__[attr]
-
-        return self
 
     @property
     def plotter(self):
@@ -122,6 +116,9 @@ class Visuals2D(AbstractVisuals):
 
         if self.grid is not None:
             plotter.grid_scatter.scatter_grid(grid=self.grid)
+
+        if self.pixelization_grid is not None:
+            plotter.pixelization_grid_scatter.scatter_grid(grid=self.pixelization_grid)
 
         if self.positions is not None:
             plotter.positions_scatter.scatter_grid_grouped(grid_grouped=self.positions)

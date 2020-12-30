@@ -18,7 +18,7 @@ class TestAbstractPlotter:
     def test__subplot_figsize_for_number_of_subplots(self):
 
         plotter = aplt.Plotter2D()
-        plotter.figure.for_subplot = True
+        plotter = plotter.plotter_for_subplot_from()
 
         figsize = plotter.get_subplot_figsize(number_subplots=1)
 
@@ -231,9 +231,9 @@ class TestPlotter2D:
 
         plotter = aplt.Plotter2D(figure=figure, cmap=cmap)
 
-        plotter.set_for_subplot(for_subplot=True)
+        sub_plotter = plotter.plotter_for_subplot_from()
 
-        assert plotter.figure.config_dict_figure["figsize"] == None
-        assert plotter.figure.config_dict_imshow["aspect"] == "square"
-        assert plotter.cmap.config_dict["cmap"] == "jet"
-        assert plotter.cmap.config_dict["norm"] == "linear"
+        assert sub_plotter.figure.config_dict_figure["figsize"] == None
+        assert sub_plotter.figure.config_dict_imshow["aspect"] == "square"
+        assert sub_plotter.cmap.config_dict["cmap"] == "jet"
+        assert sub_plotter.cmap.config_dict["norm"] == "linear"

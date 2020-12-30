@@ -260,7 +260,7 @@ class TestPlotMapper:
         assert path.join(plot_path, "mapper2.png") in plot_patch.paths
 
         include_2d = aplt.Include2D(
-            origin=True, mapper_source_grid=True, mapper_source_border=True
+            origin=True, mapper_source_pixelization_grid=True, mapper_source_border=True
         )
 
         aplt.MapperObj(

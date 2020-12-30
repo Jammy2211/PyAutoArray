@@ -6,17 +6,17 @@ from autoarray.plot.plots import structure_plots
 import typing
 
 
-@mat_decorators.set_plot_defaults_2d
-@mat_decorators.set_plotter_2d_for_subplot
 @mat_decorators.set_subplot_filename
 def subplot_inversion(
     inversion,
-    plotter_2d: typing.Optional[p.Plotter2D] = None,
-    visuals_2d: typing.Optional[vis.Visuals2D] = None,
-    include_2d: typing.Optional[inc.Include2D] = None,
+    plotter_2d: p.Plotter2D = p.Plotter2D(),
+    visuals_2d: vis.Visuals2D = vis.Visuals2D(),
+    include_2d: inc.Include2D = inc.Include2D(),
     full_indexes=None,
     pixelization_indexes=None,
 ):
+
+    plotter_2d = plotter_2d.plotter_for_subplot_from(func=subplot_inversion)
 
     number_subplots = 6
 
@@ -107,9 +107,9 @@ def subplot_inversion(
 
 def individuals(
     inversion,
-    plotter_2d: typing.Optional[p.Plotter2D] = None,
-    visuals_2d: typing.Optional[vis.Visuals2D] = None,
-    include_2d: typing.Optional[inc.Include2D] = None,
+    plotter_2d: p.Plotter2D = p.Plotter2D(),
+    visuals_2d: vis.Visuals2D = vis.Visuals2D(),
+    include_2d: inc.Include2D = inc.Include2D(),
     plot_reconstructed_image=False,
     plot_reconstruction=False,
     plot_errors=False,
@@ -217,13 +217,12 @@ def individuals(
         )
 
 
-@mat_decorators.set_plot_defaults_2d
 @mat_decorators.set_labels
 def reconstructed_image(
     inversion,
-    plotter_2d: typing.Optional[p.Plotter2D] = None,
-    visuals_2d: typing.Optional[vis.Visuals2D] = None,
-    include_2d: typing.Optional[inc.Include2D] = None,
+    plotter_2d: p.Plotter2D = p.Plotter2D(),
+    visuals_2d: vis.Visuals2D = vis.Visuals2D(),
+    include_2d: inc.Include2D = inc.Include2D(),
 ):
 
     visuals_2d += include_2d.visuals_of_data_from_mapper(mapper=inversion.mapper)
@@ -236,13 +235,12 @@ def reconstructed_image(
     )
 
 
-@mat_decorators.set_plot_defaults_2d
 @mat_decorators.set_labels
 def reconstruction(
     inversion,
-    plotter_2d: typing.Optional[p.Plotter2D] = None,
-    visuals_2d: typing.Optional[vis.Visuals2D] = None,
-    include_2d: typing.Optional[inc.Include2D] = None,
+    plotter_2d: p.Plotter2D = p.Plotter2D(),
+    visuals_2d: vis.Visuals2D = vis.Visuals2D(),
+    include_2d: inc.Include2D = inc.Include2D(),
     full_indexes=None,
     pixelization_indexes=None,
 ):
@@ -264,13 +262,12 @@ def reconstruction(
     )
 
 
-@mat_decorators.set_plot_defaults_2d
 @mat_decorators.set_labels
 def errors(
     inversion,
-    plotter_2d: typing.Optional[p.Plotter2D] = None,
-    visuals_2d: typing.Optional[vis.Visuals2D] = None,
-    include_2d: typing.Optional[inc.Include2D] = None,
+    plotter_2d: p.Plotter2D = p.Plotter2D(),
+    visuals_2d: vis.Visuals2D = vis.Visuals2D(),
+    include_2d: inc.Include2D = inc.Include2D(),
     full_indexes=None,
     pixelization_indexes=None,
 ):
@@ -292,13 +289,12 @@ def errors(
     )
 
 
-@mat_decorators.set_plot_defaults_2d
 @mat_decorators.set_labels
 def residual_map(
     inversion,
-    plotter_2d: typing.Optional[p.Plotter2D] = None,
-    visuals_2d: typing.Optional[vis.Visuals2D] = None,
-    include_2d: typing.Optional[inc.Include2D] = None,
+    plotter_2d: p.Plotter2D = p.Plotter2D(),
+    visuals_2d: vis.Visuals2D = vis.Visuals2D(),
+    include_2d: inc.Include2D = inc.Include2D(),
     full_indexes=None,
     pixelization_indexes=None,
 ):
@@ -320,13 +316,12 @@ def residual_map(
     )
 
 
-@mat_decorators.set_plot_defaults_2d
 @mat_decorators.set_labels
 def normalized_residual_map(
     inversion,
-    plotter_2d: typing.Optional[p.Plotter2D] = None,
-    visuals_2d: typing.Optional[vis.Visuals2D] = None,
-    include_2d: typing.Optional[inc.Include2D] = None,
+    plotter_2d: p.Plotter2D = p.Plotter2D(),
+    visuals_2d: vis.Visuals2D = vis.Visuals2D(),
+    include_2d: inc.Include2D = inc.Include2D(),
     full_indexes=None,
     pixelization_indexes=None,
 ):
@@ -348,13 +343,12 @@ def normalized_residual_map(
     )
 
 
-@mat_decorators.set_plot_defaults_2d
 @mat_decorators.set_labels
 def chi_squared_map(
     inversion,
-    plotter_2d: typing.Optional[p.Plotter2D] = None,
-    visuals_2d: typing.Optional[vis.Visuals2D] = None,
-    include_2d: typing.Optional[inc.Include2D] = None,
+    plotter_2d: p.Plotter2D = p.Plotter2D(),
+    visuals_2d: vis.Visuals2D = vis.Visuals2D(),
+    include_2d: inc.Include2D = inc.Include2D(),
     full_indexes=None,
     pixelization_indexes=None,
 ):
@@ -376,13 +370,12 @@ def chi_squared_map(
     )
 
 
-@mat_decorators.set_plot_defaults_2d
 @mat_decorators.set_labels
 def regularization_weights(
     inversion,
-    plotter_2d: typing.Optional[p.Plotter2D] = None,
-    visuals_2d: typing.Optional[vis.Visuals2D] = None,
-    include_2d: typing.Optional[inc.Include2D] = None,
+    plotter_2d: p.Plotter2D = p.Plotter2D(),
+    visuals_2d: vis.Visuals2D = vis.Visuals2D(),
+    include_2d: inc.Include2D = inc.Include2D(),
     full_indexes=None,
     pixelization_indexes=None,
 ):
@@ -404,13 +397,12 @@ def regularization_weights(
     )
 
 
-@mat_decorators.set_plot_defaults_2d
 @mat_decorators.set_labels
 def interpolated_reconstruction(
     inversion,
-    plotter_2d: typing.Optional[p.Plotter2D] = None,
-    visuals_2d: typing.Optional[vis.Visuals2D] = None,
-    include_2d: typing.Optional[inc.Include2D] = None,
+    plotter_2d: p.Plotter2D = p.Plotter2D(),
+    visuals_2d: vis.Visuals2D = vis.Visuals2D(),
+    include_2d: inc.Include2D = inc.Include2D(),
 ):
 
     visuals_2d += include_2d.visuals_of_source_from_mapper(mapper=inversion.mapper)
@@ -423,13 +415,12 @@ def interpolated_reconstruction(
     )
 
 
-@mat_decorators.set_plot_defaults_2d
 @mat_decorators.set_labels
 def interpolated_errors(
     inversion,
-    plotter_2d: typing.Optional[p.Plotter2D] = None,
-    visuals_2d: typing.Optional[vis.Visuals2D] = None,
-    include_2d: typing.Optional[inc.Include2D] = None,
+    plotter_2d: p.Plotter2D = p.Plotter2D(),
+    visuals_2d: vis.Visuals2D = vis.Visuals2D(),
+    include_2d: inc.Include2D = inc.Include2D(),
 ):
 
     visuals_2d += include_2d.visuals_of_source_from_mapper(mapper=inversion.mapper)
