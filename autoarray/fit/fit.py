@@ -1,5 +1,6 @@
 import numpy as np
 
+from autoarray.structures import abstract_structure
 from autoarray.util import fit_util
 
 
@@ -51,7 +52,7 @@ class FitDataset:
         return self.masked_dataset.dataset.name
 
     @property
-    def mask(self) -> np.ndarray:
+    def mask(self) -> abstract_structure.AbstractStructure:
         return self.masked_dataset.mask
 
     @property

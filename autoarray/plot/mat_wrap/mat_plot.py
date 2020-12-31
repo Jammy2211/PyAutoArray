@@ -14,7 +14,7 @@ import os
 from autoarray.inversion import mappers
 
 
-class AbstractPlotter:
+class AbstractMatPlot:
     def __init__(
         self,
         units: wrap.Units = wrap.Units(),
@@ -315,7 +315,7 @@ class AbstractPlotter:
         return plotter
 
 
-class Plotter1D(AbstractPlotter):
+class MatPlot1D(AbstractMatPlot):
     def __init__(
         self,
         units: wrap.Units = wrap.Units(),
@@ -400,7 +400,7 @@ class Plotter1D(AbstractPlotter):
 
         self.for_subplot = False
 
-    def _plot_line(
+    def plot_line(
         self,
         y,
         x,
@@ -444,7 +444,7 @@ class Plotter1D(AbstractPlotter):
             self.figure.close()
 
 
-class Plotter2D(AbstractPlotter):
+class MatPlot2D(AbstractMatPlot):
     def __init__(
         self,
         units: wrap.Units = wrap.Units(),
@@ -587,7 +587,7 @@ class Plotter2D(AbstractPlotter):
 
         self.for_subplot = False
 
-    def _plot_array(self, array, visuals_2d, extent_manual=None, bypass_output=False):
+    def plot_array(self, array, visuals_2d, extent_manual=None, bypass_output=False):
         """Plot an array of data_type as a figure.
 
         Parameters
@@ -731,7 +731,7 @@ class Plotter2D(AbstractPlotter):
         if not self.for_subplot and not bypass_output:
             self.figure.close()
 
-    def _plot_grid(
+    def plot_grid(
         self,
         grid,
         visuals_2d: vis.Visuals2D = vis.Visuals2D(),
@@ -808,7 +808,7 @@ class Plotter2D(AbstractPlotter):
         if not self.for_subplot and not bypass_output:
             self.figure.close()
 
-    def _plot_mapper(
+    def plot_mapper(
         self,
         mapper: mappers.Mapper,
         visuals_2d: vis.Visuals2D = vis.Visuals2D(),
@@ -853,7 +853,7 @@ class Plotter2D(AbstractPlotter):
         self.figure.open()
 
         if source_pixelilzation_values is not None:
-            self._plot_array(
+            self.plot_array(
                 array=source_pixelilzation_values,
                 visuals_2d=visuals_2d,
                 bypass_output=True,

@@ -1,6 +1,5 @@
-import autoarray.plot as aplt
 from os import path
-from autoarray.plot.mat_wrap import mat_decorators
+from autoarray.plot.plotters import abstract_plotters
 
 directory = path.dirname(path.realpath(__file__))
 
@@ -10,7 +9,7 @@ class TestDecorator:
 
         kwargs = {"hi": 1}
 
-        kpc_per_scaled = mat_decorators.kpc_per_scaled_of_object_from_kwargs(
+        kpc_per_scaled = abstract_plotters.kpc_per_scaled_of_object_from_kwargs(
             kwargs=kwargs
         )
 
@@ -25,7 +24,7 @@ class TestDecorator:
 
         kwargs = {"hi": 1, "hello": obj}
 
-        kpc_per_scaled = mat_decorators.kpc_per_scaled_of_object_from_kwargs(
+        kpc_per_scaled = abstract_plotters.kpc_per_scaled_of_object_from_kwargs(
             kwargs=kwargs
         )
 
@@ -41,7 +40,7 @@ class TestDecorator:
 
         kwargs = {"hi": 1, "hello": obj}
 
-        kpc_per_scaled = mat_decorators.kpc_per_scaled_of_object_from_kwargs(
+        kpc_per_scaled = abstract_plotters.kpc_per_scaled_of_object_from_kwargs(
             kwargs=kwargs
         )
 

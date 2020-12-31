@@ -1,5 +1,7 @@
 from autoconf import conf
 from autoarray.structures import abstract_structure, arrays, frames, grids, lines
+from autoarray.dataset import abstract_dataset, interferometer as inter
+from autoarray.fit import fit as f
 from autoarray.inversion import mappers
 from autoarray.plot.mat_wrap import visuals as vis
 import typing
@@ -396,3 +398,19 @@ class Include2D(AbstractInclude):
             grid=source_full_grid,
             pixelization_grid=source_pixelization_grid,
         )  # , border=border)
+
+    def visuals_from_dataset(self, dataset: abstract_dataset.AbstractDataset):
+        return self.visuals_from_structure(structure=dataset.data)
+
+    def visuals_from_interferometer(self, interferometer: inter.Interferometer):
+        return vis.Visuals2D()
+
+    def visuals_from_fit_imaging(self, fit: f.FitImaging):
+
+        return self.visuals_from_array(array=fit.image)
+
+    def visuals_from_fit_interferometer(self, fit: f.FitInterferometer):
+
+        return self.visuals_from_interferometer(
+            interferometer=fit.masked_interferometer.dataset
+        )

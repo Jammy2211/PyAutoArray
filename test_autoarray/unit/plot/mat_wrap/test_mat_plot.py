@@ -17,7 +17,7 @@ def make_plot_path_setup():
 class TestAbstractPlotter:
     def test__subplot_figsize_for_number_of_subplots(self):
 
-        plotter = aplt.Plotter2D()
+        plotter = aplt.MatPlot2D()
         plotter = plotter.plotter_for_subplot_from()
 
         figsize = plotter.get_subplot_figsize(number_subplots=1)
@@ -28,7 +28,7 @@ class TestAbstractPlotter:
 
         assert figsize == (13, 10)
 
-        plotter = aplt.Plotter2D(figure=aplt.Figure(figsize=(20, 20)))
+        plotter = aplt.MatPlot2D(figure=aplt.Figure(figsize=(20, 20)))
 
         figsize = plotter.get_subplot_figsize(number_subplots=4)
 
@@ -36,7 +36,7 @@ class TestAbstractPlotter:
 
     def test__plotter_number_of_subplots(self):
 
-        plotter = aplt.Plotter2D()
+        plotter = aplt.MatPlot2D()
 
         rows, columns = plotter.get_subplot_rows_columns(number_subplots=1)
 
@@ -50,7 +50,7 @@ class TestAbstractPlotter:
 
     def test__open_and_close_subplot_figures(self):
 
-        plotter = aplt.Plotter2D()
+        plotter = aplt.MatPlot2D()
         plotter.figure.open()
 
         assert plt.fignum_exists(num=1) == True
@@ -59,7 +59,7 @@ class TestAbstractPlotter:
 
         assert plt.fignum_exists(num=1) == False
 
-        plotter = aplt.Plotter2D()
+        plotter = aplt.MatPlot2D()
 
         assert plt.fignum_exists(num=1) == False
 
@@ -73,7 +73,7 @@ class TestAbstractPlotter:
 
     def test__plotter_with_new_labels__new_labels_if_input__sizes_dont_change(self):
 
-        plotter = aplt.Plotter2D(
+        plotter = aplt.MatPlot2D(
             title=aplt.Title(label="OMG", fontsize=1),
             ylabel=aplt.YLabel(units="hi"),
             xlabel=aplt.XLabel(units="hi2"),
@@ -114,7 +114,7 @@ class TestAbstractPlotter:
 
     def test__plotter_with_new_cmap__new_labels_if_input__sizes_dont_change(self):
 
-        plotter = aplt.Plotter2D(
+        plotter = aplt.MatPlot2D(
             cmap=aplt.Cmap(
                 cmap="cold", norm="log", vmin=0.1, vmax=1.0, linthresh=1.5, linscale=2.0
             )
@@ -149,7 +149,7 @@ class TestAbstractPlotter:
 
     def test__plotter_with_new_outputs__new_outputs_are_setup_correctly_if_input(self):
 
-        plotter = aplt.Plotter2D(
+        plotter = aplt.MatPlot2D(
             output=aplt.Output(path="Path", format="png", filename="file")
         )
 
@@ -190,7 +190,7 @@ class TestAbstractPlotter:
 
     def test__plotter_with_new_units__new_outputs_are_setup_correctly_if_input(self):
 
-        plotter = aplt.Plotter2D(
+        plotter = aplt.MatPlot2D(
             units=aplt.Units(use_scaled=True, in_kpc=True, conversion_factor=1.0)
         )
 
@@ -219,7 +219,7 @@ class TestPlotter2D:
         figure = aplt.Figure(figsize=(8, 8))
         cmap = aplt.Cmap(cmap="warm")
 
-        plotter = aplt.Plotter2D(figure=figure, cmap=cmap)
+        plotter = aplt.MatPlot2D(figure=figure, cmap=cmap)
 
         assert plotter.figure.config_dict_figure["figsize"] == (8, 8)
         assert plotter.figure.config_dict_imshow["aspect"] == "square"
@@ -229,7 +229,7 @@ class TestPlotter2D:
         figure = aplt.Figure()
         cmap = aplt.Cmap()
 
-        plotter = aplt.Plotter2D(figure=figure, cmap=cmap)
+        plotter = aplt.MatPlot2D(figure=figure, cmap=cmap)
 
         sub_plotter = plotter.plotter_for_subplot_from()
 
