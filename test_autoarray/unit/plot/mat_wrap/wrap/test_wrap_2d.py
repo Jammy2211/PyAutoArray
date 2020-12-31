@@ -154,27 +154,27 @@ class TestGridScatter:
 class TestGridPlot:
     def test___from_config_or_via_manual_input(self):
 
-        line_plot = aplt.GridPlot()
+        grid_plot = aplt.GridPlot()
 
-        assert line_plot.config_dict["width"] == 3
-        assert line_plot.colors == ["k", "w"]
+        assert grid_plot.config_dict["width"] == 3
+        assert grid_plot.colors == ["k", "w"]
 
-        line_plot = aplt.GridPlot(colors=["k", "b"])
+        grid_plot = aplt.GridPlot(colors=["k", "b"])
 
-        assert line_plot.config_dict["width"] == 3
-        assert line_plot.colors == ["k", "b"]
+        assert grid_plot.config_dict["width"] == 3
+        assert grid_plot.colors == ["k", "b"]
 
-        line_plot = aplt.GridPlot()
-        line_plot.for_subplot = True
+        grid_plot = aplt.GridPlot()
+        grid_plot.for_subplot = True
 
-        assert line_plot.config_dict["width"] == 1
-        assert line_plot.colors == ["k"]
+        assert grid_plot.config_dict["width"] == 1
+        assert grid_plot.colors == ["k"]
 
-        line_plot = aplt.GridPlot(style=".")
-        line_plot.for_subplot = True
+        grid_plot = aplt.GridPlot(style=".")
+        grid_plot.for_subplot = True
 
-        assert line_plot.config_dict["width"] == 1
-        assert line_plot.colors == ["k"]
+        assert grid_plot.config_dict["width"] == 1
+        assert grid_plot.colors == ["k"]
 
     def test__plot_rectangular_grid_lines__draws_for_valid_extent_and_shape(self):
 

@@ -1,6 +1,6 @@
 from autoarray.mask import mask_1d
 from autoarray.structures import arrays, grids, lines as l, vector_fields
-from autoarray.plot.mat_wrap import plotter as p, include as inc
+from autoarray.plot.mat_wrap import mat_plot, include as inc
 from autoarray.mask import mask_2d
 from matplotlib import patches as ptch
 import typing
@@ -41,7 +41,7 @@ class Visuals1D(AbstractVisuals):
 
     @property
     def plotter(self):
-        return p.Plotter1D()
+        return mat_plot.MatPlot1D()
 
     @property
     def include(self):
@@ -92,14 +92,6 @@ class Visuals2D(AbstractVisuals):
         self.parallel_overscan = parallel_overscan
         self.serial_prescan = serial_prescan
         self.serial_overscan = serial_overscan
-
-    @property
-    def plotter(self):
-        return p.Plotter2D()
-
-    @property
-    def include(self):
-        return inc.Include2D()
 
     def plot_via_plotter(self, plotter):
 

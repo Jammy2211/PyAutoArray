@@ -16,7 +16,7 @@ def make_plot_path_setup():
     )
 
 
-class TestPlotArray:
+class TestArrayPlotter:
     def test__works_with_all_extras_included(
         self,
         array_7x7,
@@ -27,22 +27,24 @@ class TestPlotArray:
         plot_patch,
     ):
 
-        aplt.Array(
-            array=array_7x7,
-            plotter_2d=aplt.Plotter2D(
+        array_plotter = aplt.ArrayPlotter(
+            mat_plot_2d=aplt.MatPlot2D(
                 output=aplt.Output(path=plot_path, filename="array1", format="png")
-            ),
+            )
         )
+
+        array_plotter.array(array=array_7x7)
 
         assert path.join(plot_path, "array1.png") in plot_patch.paths
 
-        aplt.Array(
-            array=array_7x7,
+        array_plotter = aplt.ArrayPlotter(
             include_2d=aplt.Include2D(origin=True, mask=True, border=True),
-            plotter_2d=aplt.Plotter2D(
+            mat_plot_2d=aplt.MatPlot2D(
                 output=aplt.Output(path=plot_path, filename="array2", format="png")
             ),
         )
+
+        array_plotter.array(array=array_7x7)
 
         assert path.join(plot_path, "array2.png") in plot_patch.paths
 
@@ -56,13 +58,14 @@ class TestPlotArray:
             array_overlay=array_7x7,
         )
 
-        aplt.Array(
-            array=array_7x7,
+        array_plotter = aplt.ArrayPlotter(
             visuals_2d=visuals_2d,
-            plotter_2d=aplt.Plotter2D(
+            mat_plot_2d=aplt.MatPlot2D(
                 output=aplt.Output(path=plot_path, filename="array3", format="png")
             ),
         )
+
+        array_plotter.array(array=array_7x7)
 
         assert path.join(plot_path, "array3.png") in plot_patch.paths
 
@@ -70,14 +73,16 @@ class TestPlotArray:
 
         plot_path = path.join(plot_path, "fits")
 
+        array_plotter = aplt.ArrayPlotter(
+            mat_plot_2d=aplt.MatPlot2D(
+                output=aplt.Output(path=plot_path, filename="array", format="fits")
+            )
+        )
+
         if path.exists(plot_path):
             shutil.rmtree(plot_path)
 
-        plotter_2d = aplt.Plotter2D(
-            output=aplt.Output(path=plot_path, filename="array", format="fits")
-        )
-
-        aplt.Array(array=array_7x7, plotter_2d=plotter_2d)
+        array_plotter.array(array=array_7x7)
 
         arr = aa.util.array.numpy_array_2d_from_fits(
             file_path=path.join(plot_path, "array.fits"), hdu=0
@@ -86,7 +91,7 @@ class TestPlotArray:
         assert (arr == array_7x7.in_2d).all()
 
 
-class TestPlotFrame:
+class TestFramePlotter:
     def test__works_with_all_extras_included(
         self,
         frame_7x7,
@@ -98,17 +103,17 @@ class TestPlotFrame:
         plot_patch,
     ):
 
-        aplt.Frame(
-            frame=frame_7x7,
-            plotter_2d=aplt.Plotter2D(
+        frame_plotter = aplt.FramePlotter(
+            mat_plot_2d=aplt.MatPlot2D(
                 output=aplt.Output(path=plot_path, filename="frame1", format="png")
-            ),
+            )
         )
+
+        frame_plotter.frame(frame=frame_7x7)
 
         assert path.join(plot_path, "frame1.png") in plot_patch.paths
 
-        aplt.Frame(
-            frame=frame_7x7,
+        frame_plotter = aplt.FramePlotter(
             include_2d=aplt.Include2D(
                 origin=True,
                 mask=True,
@@ -117,10 +122,12 @@ class TestPlotFrame:
                 serial_prescan=True,
                 serial_overscan=True,
             ),
-            plotter_2d=aplt.Plotter2D(
+            mat_plot_2d=aplt.MatPlot2D(
                 output=aplt.Output(path=plot_path, filename="frame2", format="png")
             ),
         )
+
+        frame_plotter.frame(frame=frame_7x7)
 
         assert path.join(plot_path, "frame2.png") in plot_patch.paths
 
@@ -137,13 +144,14 @@ class TestPlotFrame:
             serial_overscan=scans_7x7.serial_overscan,
         )
 
-        aplt.Frame(
-            frame=frame_7x7,
+        frame_plotter = aplt.FramePlotter(
             visuals_2d=visuals_2d,
-            plotter_2d=aplt.Plotter2D(
+            mat_plot_2d=aplt.MatPlot2D(
                 output=aplt.Output(path=plot_path, filename="frame3", format="png")
             ),
         )
+
+        frame_plotter.frame(frame=frame_7x7)
 
         assert path.join(plot_path, "frame3.png") in plot_patch.paths
 
@@ -151,14 +159,16 @@ class TestPlotFrame:
 
         plot_path = path.join(plot_path, "fits")
 
+        frame_plotter = aplt.FramePlotter(
+            mat_plot_2d=aplt.MatPlot2D(
+                output=aplt.Output(path=plot_path, filename="frame", format="fits")
+            )
+        )
+
         if path.exists(plot_path):
             shutil.rmtree(plot_path)
 
-        plotter_2d = aplt.Plotter2D(
-            output=aplt.Output(path=plot_path, filename="frame", format="fits")
-        )
-
-        aplt.Frame(frame=frame_7x7, plotter_2d=plotter_2d)
+        frame_plotter.frame(frame=frame_7x7)
 
         frame = aa.util.array.numpy_array_2d_from_fits(
             file_path=path.join(plot_path, "frame.fits"), hdu=0
@@ -167,7 +177,7 @@ class TestPlotFrame:
         assert (frame == frame_7x7.in_2d).all()
 
 
-class TestPlotGrid:
+class TestGridPlotter:
     def test__works_with_all_extras_included(
         self,
         array_7x7,
@@ -178,31 +188,37 @@ class TestPlotGrid:
         plot_patch,
     ):
 
+        grid_plotter = aplt.GridPlotter(
+            mat_plot_2d=aplt.MatPlot2D(
+                output=aplt.Output(path=plot_path, filename="grid1", format="png")
+            )
+        )
+
         color_array = np.linspace(start=0.0, stop=1.0, num=grid_7x7.shape_1d)
 
-        aplt.Grid(
+        grid_plotter.grid(
             grid=grid_7x7,
             color_array=color_array,
             axis_limits=[-1.5, 1.5, -2.5, 2.5],
             indexes=[0, 1, 2, 14],
             symmetric_around_centre=False,
-            plotter_2d=aplt.Plotter2D(
-                output=aplt.Output(path=plot_path, filename="grid1", format="png")
-            ),
         )
 
         assert path.join(plot_path, "grid1.png") in plot_patch.paths
 
-        aplt.Grid(
+        grid_plotter = aplt.GridPlotter(
+            mat_plot_2d=aplt.MatPlot2D(
+                output=aplt.Output(path=plot_path, filename="grid2", format="png")
+            ),
+            include_2d=aplt.Include2D(origin=True, mask=True, border=True),
+        )
+
+        grid_plotter.grid(
             grid=grid_7x7,
             color_array=color_array,
             axis_limits=[-1.5, 1.5, -2.5, 2.5],
             indexes=[0, 1, 2, 14],
-            include_2d=aplt.Include2D(origin=True, mask=True, border=True),
             symmetric_around_centre=True,
-            plotter_2d=aplt.Plotter2D(
-                output=aplt.Output(path=plot_path, filename="grid2", format="png")
-            ),
         )
 
         assert path.join(plot_path, "grid2.png") in plot_patch.paths
@@ -217,60 +233,72 @@ class TestPlotGrid:
             array_overlay=array_7x7,
         )
 
-        aplt.Grid(
-            grid=grid_7x7,
+        grid_plotter = aplt.GridPlotter(
+            mat_plot_2d=aplt.MatPlot2D(
+                output=aplt.Output(path=plot_path, filename="grid3", format="png")
+            ),
             visuals_2d=visuals_2d,
+        )
+
+        grid_plotter.grid(
+            grid=grid_7x7,
             color_array=color_array,
             axis_limits=[-1.5, 1.5, -2.5, 2.5],
             indexes=[0, 1, 2, 14],
             symmetric_around_centre=True,
-            plotter_2d=aplt.Plotter2D(
-                output=aplt.Output(path=plot_path, filename="grid3", format="png")
-            ),
         )
 
         assert path.join(plot_path, "grid3.png") in plot_patch.paths
 
 
-class TestPlotMapper:
+class TestMapperPlotter:
     def test__plot_rectangular_mapper__works_with_all_extras_included(
         self, rectangular_mapper_7x7_3x3, plot_path, plot_patch
     ):
 
-        aplt.MapperObj(
+        mapper_plotter = aplt.MapperPlotter(
+            mat_plot_2d=aplt.MatPlot2D(
+                output=aplt.Output(path=plot_path, filename="mapper1", format="png")
+            )
+        )
+
+        mapper_plotter.mapper(
             mapper=rectangular_mapper_7x7_3x3,
             full_indexes=[[(0, 0), (0, 1)], [(1, 2)]],
             pixelization_indexes=[[0, 1], [2]],
-            plotter_2d=aplt.Plotter2D(
-                output=aplt.Output(path=plot_path, filename="mapper1", format="png")
-            ),
         )
 
         assert path.join(plot_path, "mapper1.png") in plot_patch.paths
 
-        aplt.MapperObj(
+        mapper_plotter = aplt.MapperPlotter(
+            mat_plot_2d=aplt.MatPlot2D(
+                output=aplt.Output(path=plot_path, filename="mapper2", format="png")
+            )
+        )
+
+        mapper_plotter.mapper(
             mapper=rectangular_mapper_7x7_3x3,
             full_indexes=[[(0, 0), (0, 1)], [(1, 2)]],
             pixelization_indexes=[[0, 1], [2]],
-            plotter_2d=aplt.Plotter2D(
-                output=aplt.Output(path=plot_path, filename="mapper2", format="png")
-            ),
         )
 
         assert path.join(plot_path, "mapper2.png") in plot_patch.paths
 
-        include_2d = aplt.Include2D(
-            origin=True, mapper_source_pixelization_grid=True, mapper_source_border=True
-        )
-
-        aplt.MapperObj(
-            mapper=rectangular_mapper_7x7_3x3,
-            include_2d=include_2d,
-            full_indexes=[[(0, 0), (0, 1)], [(1, 2)]],
-            pixelization_indexes=[[0, 1], [2]],
-            plotter_2d=aplt.Plotter2D(
+        mapper_plotter = aplt.MapperPlotter(
+            mat_plot_2d=aplt.MatPlot2D(
                 output=aplt.Output(path=plot_path, filename="mapper3", format="png")
             ),
+            include_2d=aplt.Include2D(
+                origin=True,
+                mapper_source_pixelization_grid=True,
+                mapper_source_border=True,
+            ),
+        )
+
+        mapper_plotter.mapper(
+            mapper=rectangular_mapper_7x7_3x3,
+            full_indexes=[[(0, 0), (0, 1)], [(1, 2)]],
+            pixelization_indexes=[[0, 1], [2]],
         )
 
         assert path.join(plot_path, "mapper3.png") in plot_patch.paths
@@ -279,81 +307,135 @@ class TestPlotMapper:
         self, voronoi_mapper_9_3x3, plot_path, plot_patch
     ):
 
-        aplt.MapperObj(
+        mapper_plotter = aplt.MapperPlotter(
+            mat_plot_2d=aplt.MatPlot2D(
+                output=aplt.Output(path=plot_path, filename="mapper1", format="png")
+            )
+        )
+
+        mapper_plotter.mapper(
             mapper=voronoi_mapper_9_3x3,
             full_indexes=[[(0, 0), (0, 1)], [(1, 2)]],
             pixelization_indexes=[[0, 1], [2]],
-            plotter_2d=aplt.Plotter2D(
-                output=aplt.Output(path=plot_path, filename="mapper1", format="png")
-            ),
         )
 
         assert path.join(plot_path, "mapper1.png") in plot_patch.paths
 
-        aplt.MapperObj(
+        mapper_plotter = aplt.MapperPlotter(
+            mat_plot_2d=aplt.MatPlot2D(
+                output=aplt.Output(path=plot_path, filename="mapper2", format="png")
+            )
+        )
+
+        mapper_plotter.mapper(
             mapper=voronoi_mapper_9_3x3,
             full_indexes=[[(0, 0), (0, 1)], [(1, 2)]],
             pixelization_indexes=[[0, 1], [2]],
-            plotter_2d=aplt.Plotter2D(
-                output=aplt.Output(path=plot_path, filename="mapper2", format="png")
-            ),
         )
 
         assert path.join(plot_path, "mapper2.png") in plot_patch.paths
 
-        aplt.MapperObj(
+        mapper_plotter = aplt.MapperPlotter(
+            mat_plot_2d=aplt.MatPlot2D(
+                output=aplt.Output(path=plot_path, filename="mapper3", format="png")
+            )
+        )
+
+        mapper_plotter.mapper(
             mapper=voronoi_mapper_9_3x3,
             full_indexes=[[(0, 0), (0, 1)], [(1, 2)]],
             pixelization_indexes=[[0, 1], [2]],
-            plotter_2d=aplt.Plotter2D(
-                output=aplt.Output(path=plot_path, filename="mapper3", format="png")
-            ),
         )
 
         assert path.join(plot_path, "mapper3.png") in plot_patch.paths
 
+    def test__image_and_mapper_subplot_is_output_for_all_mappers(
+        self,
+        imaging_7x7,
+        rectangular_mapper_7x7_3x3,
+        voronoi_mapper_9_3x3,
+        plot_path,
+        plot_patch,
+    ):
 
-class TestPlotLine:
+        mapper_plotter = aplt.MapperPlotter(
+            mat_plot_2d=aplt.MatPlot2D(
+                output=aplt.Output(path=plot_path, format="png")
+            ),
+            include_2d=aplt.Include2D(
+                mapper_source_pixelization_grid=True, mapper_source_border=True
+            ),
+        )
+
+        mapper_plotter.subplot_image_and_mapper(
+            image=imaging_7x7.image,
+            mapper=rectangular_mapper_7x7_3x3,
+            full_indexes=[[0, 1, 2], [3]],
+            pixelization_indexes=[[1, 2], [0]],
+        )
+
+        assert path.join(plot_path, "subplot_image_and_mapper.png") in plot_patch.paths
+
+        mapper_plotter.subplot_image_and_mapper(
+            image=imaging_7x7.image,
+            mapper=voronoi_mapper_9_3x3,
+            full_indexes=[[0, 1, 2], [3]],
+            pixelization_indexes=[[1, 2], [0]],
+        )
+
+        assert path.join(plot_path, "subplot_image_and_mapper.png") in plot_patch.paths
+
+
+class TestLinePlotter:
     def test__plot_line__works_with_all_extras_included(self, plot_path, plot_patch):
 
-        aplt.Line(
+        line_plotter = aplt.LinePlotter(
+            mat_plot_1d=aplt.MatPlot1D(
+                output=aplt.Output(path=plot_path, filename="line1", format="png")
+            )
+        )
+
+        line_plotter.line(
             y=np.array([1.0, 2.0, 3.0]),
             x=np.array([0.5, 1.0, 1.5]),
             plot_axis_type="loglog",
             vertical_lines=[1.0, 2.0],
             label="line0",
             vertical_line_labels=["line1", "line2"],
-            plotter_1d=aplt.Plotter1D(
-                output=aplt.Output(path=plot_path, filename="line1", format="png")
-            ),
         )
 
         assert path.join(plot_path, "line1.png") in plot_patch.paths
 
-        aplt.Line(
+        line_plotter = aplt.LinePlotter(
+            mat_plot_1d=aplt.MatPlot1D(
+                output=aplt.Output(path=plot_path, filename="line2", format="png")
+            )
+        )
+
+        line_plotter.line(
             y=np.array([1.0, 2.0, 3.0]),
             x=np.array([0.5, 1.0, 1.5]),
             plot_axis_type="semilogy",
             vertical_lines=[1.0, 2.0],
             label="line0",
             vertical_line_labels=["line1", "line2"],
-            plotter_1d=aplt.Plotter1D(
-                output=aplt.Output(path=plot_path, filename="line2", format="png")
-            ),
         )
 
         assert path.join(plot_path, "line2.png") in plot_patch.paths
 
-        aplt.Line(
+        line_plotter = aplt.LinePlotter(
+            mat_plot_1d=aplt.MatPlot1D(
+                output=aplt.Output(path=plot_path, filename="line3", format="png")
+            )
+        )
+
+        line_plotter.line(
             y=np.array([1.0, 2.0, 3.0]),
             x=np.array([0.5, 1.0, 1.5]),
             plot_axis_type="loglog",
             vertical_lines=[1.0, 2.0],
             label="line0",
             vertical_line_labels=["line1", "line2"],
-            plotter_1d=aplt.Plotter1D(
-                output=aplt.Output(path=plot_path, filename="line3", format="png")
-            ),
         )
 
         assert path.join(plot_path, "line3.png") in plot_patch.paths
