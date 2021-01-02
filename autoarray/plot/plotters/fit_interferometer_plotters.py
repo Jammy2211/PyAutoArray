@@ -11,6 +11,7 @@ import numpy as np
 class FitInterferometerPlotter(abstract_plotters.AbstractPlotter):
     def __init__(
         self,
+        fit: f.FitInterferometer,
         mat_plot_1d: mat_plot.MatPlot1D = mat_plot.MatPlot1D(),
         visuals_1d: vis.Visuals1D = vis.Visuals1D(),
         include_1d: inc.Include1D = inc.Include1D(),
@@ -28,7 +29,13 @@ class FitInterferometerPlotter(abstract_plotters.AbstractPlotter):
             visuals_2d=visuals_2d,
         )
 
-    def subplot_fit_interferometer(self, fit: f.FitInterferometer):
+        self.fit = fit
+        self.visuals_2d = self.visuals_from_fit_interferometer(fit=fit)
+
+    def visuals_from_fit_interferometer(self, fit: f.FitInterferometer):
+        return vis.Visuals2D()
+
+    def subplot_fit_interferometer(self):
 
         mat_plot_1d = self.mat_plot_1d.plotter_for_subplot_from(
             func=self.subplot_fit_interferometer
@@ -40,27 +47,27 @@ class FitInterferometerPlotter(abstract_plotters.AbstractPlotter):
 
         mat_plot_1d.setup_subplot(number_subplots=number_subplots, subplot_index=1)
 
-        self.residual_map_vs_uv_distances(fit=fit)
+        self.figure_residual_map_vs_uv_distances()
 
         mat_plot_1d.setup_subplot(number_subplots=number_subplots, subplot_index=2)
 
-        self.normalized_residual_map_vs_uv_distances(fit=fit)
+        self.figure_normalized_residual_map_vs_uv_distances()
 
         mat_plot_1d.setup_subplot(number_subplots=number_subplots, subplot_index=3)
 
-        self.chi_squared_map_vs_uv_distances(fit=fit)
+        self.figure_chi_squared_map_vs_uv_distances()
 
         mat_plot_1d.setup_subplot(number_subplots=number_subplots, subplot_index=4)
 
-        self.residual_map_vs_uv_distances(fit=fit, plot_real=False)
+        self.figure_residual_map_vs_uv_distances(plot_real=False)
 
         mat_plot_1d.setup_subplot(number_subplots=number_subplots, subplot_index=5)
 
-        self.normalized_residual_map_vs_uv_distances(fit=fit, plot_real=False)
+        self.figure_normalized_residual_map_vs_uv_distances(plot_real=False)
 
         mat_plot_1d.setup_subplot(number_subplots=number_subplots, subplot_index=6)
 
-        self.chi_squared_map_vs_uv_distances(fit=fit, plot_real=False)
+        self.figure_chi_squared_map_vs_uv_distances(plot_real=False)
 
         mat_plot_1d.output.subplot_to_figure()
 
@@ -68,7 +75,6 @@ class FitInterferometerPlotter(abstract_plotters.AbstractPlotter):
 
     def individuals(
         self,
-        fit: f.FitInterferometer,
         plot_visibilities=False,
         plot_noise_map=False,
         plot_signal_to_noise_map=False,
@@ -92,28 +98,32 @@ class FitInterferometerPlotter(abstract_plotters.AbstractPlotter):
             in the python interpreter window.
         """
 
-        self.visibilities(fit=fit) if plot_visibilities else None
-        self.noise_map(fit=fit) if plot_noise_map else None
-        self.signal_to_noise_map(fit=fit) if plot_signal_to_noise_map else None
-        self.model_visibilities(fit=fit) if plot_model_visibilities else None
+        if plot_visibilities:
+            self.figure_visibilities()
+        if plot_noise_map:
+            self.figure_noise_map()
+        if plot_signal_to_noise_map:
+            self.figure_signal_to_noise_map()
+        if plot_model_visibilities:
+            self.figure_model_visibilities()
 
         if plot_residual_map:
 
-            self.residual_map_vs_uv_distances(fit=fit, plot_real=True)
-            self.residual_map_vs_uv_distances(fit=fit, plot_real=False)
+            self.figure_residual_map_vs_uv_distances(plot_real=True)
+            self.figure_residual_map_vs_uv_distances(plot_real=False)
 
         if plot_normalized_residual_map:
 
-            self.normalized_residual_map_vs_uv_distances(fit=fit, plot_real=True)
-            self.normalized_residual_map_vs_uv_distances(fit=fit, plot_real=False)
+            self.figure_normalized_residual_map_vs_uv_distances(plot_real=True)
+            self.figure_normalized_residual_map_vs_uv_distances(plot_real=False)
 
         if plot_chi_squared_map:
 
-            self.chi_squared_map_vs_uv_distances(fit=fit, plot_real=True)
-            self.chi_squared_map_vs_uv_distances(fit=fit, plot_real=False)
+            self.figure_chi_squared_map_vs_uv_distances(plot_real=True)
+            self.figure_chi_squared_map_vs_uv_distances(plot_real=False)
 
     @abstract_plotters.set_labels
-    def visibilities(self, fit: f.FitInterferometer):
+    def figure_visibilities(self):
         """Plot the visibilities of a lens fit.
     
         Set *autolens.datas.grid.mat_plot_2d.mat_plot_2d* for a description of all input parameters not described below.
@@ -126,14 +136,13 @@ class FitInterferometerPlotter(abstract_plotters.AbstractPlotter):
             If true, the origin of the datas's coordinate system is plotted as a 'x'.
         """
         self.mat_plot_2d.plot_grid(
-            grid=fit.visibilities.in_grid,
-            visuals_2d=self.visuals_2d
-            + self.include_2d.visuals_from_fit_interferometer(fit=fit),
-            color_array=np.real(fit.noise_map),
+            grid=self.fit.visibilities.in_grid,
+            visuals_2d=self.visuals_2d,
+            color_array=np.real(self.fit.noise_map),
         )
 
     @abstract_plotters.set_labels
-    def noise_map(self, fit: f.FitInterferometer):
+    def figure_noise_map(self):
         """Plot the noise-map of a lens fit.
     
         Set *autolens.datas.grid.mat_plot_2d.mat_plot_2d* for a description of all input parameters not described below.
@@ -146,14 +155,13 @@ class FitInterferometerPlotter(abstract_plotters.AbstractPlotter):
             If true, the origin of the datas's coordinate system is plotted as a 'x'.
         """
         self.mat_plot_2d.plot_grid(
-            grid=fit.visibilities.in_grid,
-            visuals_2d=self.visuals_2d
-            + self.include_2d.visuals_from_fit_interferometer(fit=fit),
-            color_array=np.real(fit.noise_map),
+            grid=self.fit.visibilities.in_grid,
+            visuals_2d=self.visuals_2d,
+            color_array=np.real(self.fit.noise_map),
         )
 
     @abstract_plotters.set_labels
-    def signal_to_noise_map(self, fit: f.FitInterferometer):
+    def figure_signal_to_noise_map(self):
         """Plot the noise-map of a lens fit.
     
         Set *autolens.datas.grid.mat_plot_2d.mat_plot_2d* for a description of all input parameters not described below.
@@ -166,14 +174,13 @@ class FitInterferometerPlotter(abstract_plotters.AbstractPlotter):
         If true, the origin of the datas's coordinate system is plotted as a 'x'.
         """
         self.mat_plot_2d.plot_grid(
-            grid=fit.visibilities.in_grid,
-            visuals_2d=self.visuals_2d
-            + self.include_2d.visuals_from_fit_interferometer(fit=fit),
-            color_array=np.real(fit.signal_to_noise_map),
+            grid=self.fit.visibilities.in_grid,
+            visuals_2d=self.visuals_2d,
+            color_array=np.real(self.fit.signal_to_noise_map),
         )
 
     @abstract_plotters.set_labels
-    def model_visibilities(self, fit: f.FitInterferometer):
+    def figure_model_visibilities(self):
         """Plot the model visibilities of a fit.
     
         Set *autolens.datas.grid.mat_plot_2d.mat_plot_2d* for a description of all input parameters not described below.
@@ -186,16 +193,14 @@ class FitInterferometerPlotter(abstract_plotters.AbstractPlotter):
             The index of the datas in the datas-set of which the model visibilities is plotted.
         """
         self.mat_plot_2d.plot_grid(
-            grid=fit.visibilities.in_grid,
-            visuals_2d=self.visuals_2d
-            + self.include_2d.visuals_from_fit_interferometer(fit=fit),
-            color_array=np.real(fit.model_data),
+            grid=self.fit.visibilities.in_grid,
+            visuals_2d=self.visuals_2d,
+            color_array=np.real(self.fit.model_data),
         )
 
     @abstract_plotters.set_labels
-    def residual_map_vs_uv_distances(
+    def figure_residual_map_vs_uv_distances(
         self,
-        fit: f.FitInterferometer,
         plot_real=True,
         label_yunits="V$_{R,data}$ - V$_{R,model}$",
         label_xunits=r"UV$_{distance}$ (k$\lambda$)",
@@ -213,7 +218,7 @@ class FitInterferometerPlotter(abstract_plotters.AbstractPlotter):
         """
 
         if plot_real:
-            y = np.real(fit.residual_map)
+            y = np.real(self.fit.residual_map)
             mat_plot_1d = self.mat_plot_1d.plotter_with_new_labels(
                 title_label=f"{self.mat_plot_1d.title.kwargs['label']} Real"
             )
@@ -221,7 +226,7 @@ class FitInterferometerPlotter(abstract_plotters.AbstractPlotter):
                 filename=mat_plot_1d.output.filename + "_real"
             )
         else:
-            y = np.imag(fit.residual_map)
+            y = np.imag(self.fit.residual_map)
             mat_plot_1d = self.mat_plot_1d.plotter_with_new_labels(
                 title_label=f"{self.mat_plot_1d.title.kwargs['label']} Imag"
             )
@@ -231,14 +236,13 @@ class FitInterferometerPlotter(abstract_plotters.AbstractPlotter):
 
         mat_plot_1d.plot_line(
             y=y,
-            x=fit.masked_interferometer.interferometer.uv_distances / 10 ** 3.0,
+            x=self.fit.masked_interferometer.interferometer.uv_distances / 10 ** 3.0,
             plot_axis_type="scatter",
         )
 
     @abstract_plotters.set_labels
-    def normalized_residual_map_vs_uv_distances(
+    def figure_normalized_residual_map_vs_uv_distances(
         self,
-        fit: f.FitInterferometer,
         plot_real=True,
         label_yunits="V$_{R,data}$ - V$_{R,model}$",
         label_xunits=r"UV$_{distance}$ (k$\lambda$)",
@@ -256,7 +260,7 @@ class FitInterferometerPlotter(abstract_plotters.AbstractPlotter):
         """
 
         if plot_real:
-            y = np.real(fit.residual_map)
+            y = np.real(self.fit.residual_map)
             mat_plot_1d = self.mat_plot_1d.plotter_with_new_labels(
                 title_label=f"{self.mat_plot_1d.title.kwargs['label']} Real"
             )
@@ -264,7 +268,7 @@ class FitInterferometerPlotter(abstract_plotters.AbstractPlotter):
                 filename=mat_plot_1d.output.filename + "_real"
             )
         else:
-            y = np.imag(fit.residual_map)
+            y = np.imag(self.fit.residual_map)
             mat_plot_1d = self.mat_plot_1d.plotter_with_new_labels(
                 title_label=f"{self.mat_plot_1d.title.kwargs['label']} Imag"
             )
@@ -274,14 +278,13 @@ class FitInterferometerPlotter(abstract_plotters.AbstractPlotter):
 
         mat_plot_1d.plot_line(
             y=y,
-            x=fit.masked_interferometer.interferometer.uv_distances / 10 ** 3.0,
+            x=self.fit.masked_interferometer.interferometer.uv_distances / 10 ** 3.0,
             plot_axis_type="scatter",
         )
 
     @abstract_plotters.set_labels
-    def chi_squared_map_vs_uv_distances(
+    def figure_chi_squared_map_vs_uv_distances(
         self,
-        fit: f.FitInterferometer,
         plot_real=True,
         label_yunits="V$_{R,data}$ - V$_{R,model}$",
         label_xunits=r"UV$_{distance}$ (k$\lambda$)",
@@ -299,7 +302,7 @@ class FitInterferometerPlotter(abstract_plotters.AbstractPlotter):
         """
 
         if plot_real:
-            y = np.real(fit.residual_map)
+            y = np.real(self.fit.residual_map)
             mat_plot_1d = self.mat_plot_1d.plotter_with_new_labels(
                 title_label=f"{self.mat_plot_1d.title.kwargs['label']} Real"
             )
@@ -307,7 +310,7 @@ class FitInterferometerPlotter(abstract_plotters.AbstractPlotter):
                 filename=mat_plot_1d.output.filename + "_real"
             )
         else:
-            y = np.imag(fit.residual_map)
+            y = np.imag(self.fit.residual_map)
             mat_plot_1d = self.mat_plot_1d.plotter_with_new_labels(
                 title_label=f"{self.mat_plot_1d.title.kwargs['label']} Imag"
             )
@@ -317,6 +320,6 @@ class FitInterferometerPlotter(abstract_plotters.AbstractPlotter):
 
         mat_plot_1d.plot_line(
             y=y,
-            x=fit.masked_interferometer.interferometer.uv_distances / 10 ** 3.0,
+            x=self.fit.masked_interferometer.interferometer.uv_distances / 10 ** 3.0,
             plot_axis_type="scatter",
         )

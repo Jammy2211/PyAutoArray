@@ -85,6 +85,15 @@ class AbstractDataset:
     def geometry(self):
         return self.data.mask.geometry
 
+    def visuals_from_include(
+        self, include_origin=False, include_mask=False, include_border=False
+    ):
+        return self.data.visuals_from_include(
+            include_origin=include_origin,
+            include_mask=include_mask,
+            include_border=include_border,
+        )
+
     @property
     def inverse_noise_map(self):
         return 1.0 / self.noise_map

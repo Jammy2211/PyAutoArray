@@ -2,21 +2,27 @@ from autoarray.plot.mat_wrap import visuals as vis
 from autoarray.plot.mat_wrap import include as inc
 from autoarray.plot.mat_wrap import mat_plot
 from autoarray.plot.plotters import abstract_plotters
+from autoarray.dataset import imaging as im
 
 
 class ImagingPlotter(abstract_plotters.AbstractPlotter):
     def __init__(
         self,
+        imaging: im.Imaging,
         mat_plot_2d: mat_plot.MatPlot2D = mat_plot.MatPlot2D(),
         visuals_2d: vis.Visuals2D = vis.Visuals2D(),
         include_2d: inc.Include2D = inc.Include2D(),
     ):
 
+        self.imaging = imaging
+
         super().__init__(
             mat_plot_2d=mat_plot_2d, include_2d=include_2d, visuals_2d=visuals_2d
         )
 
-    def subplot_imaging(self, imaging):
+        self.visuals_2d = self.visuals_from_structure(structure=imaging.image)
+
+    def subplot_imaging(self):
         """Plot the imaging data_type as a sub-mat_plot_2d of all its quantites (e.g. the dataset, noise_map, PSF, Signal-to_noise-map, \
          etc).
     
@@ -46,27 +52,27 @@ class ImagingPlotter(abstract_plotters.AbstractPlotter):
 
         mat_plot_2d.setup_subplot(number_subplots=number_subplots, subplot_index=1)
 
-        self.image(imaging=imaging)
+        self.figure_image()
 
         mat_plot_2d.setup_subplot(number_subplots=number_subplots, subplot_index=2)
 
-        self.noise_map(imaging=imaging)
+        self.figure_noise_map()
 
         mat_plot_2d.setup_subplot(number_subplots=number_subplots, subplot_index=3)
 
-        self.psf(imaging=imaging)
+        self.figure_psf()
 
         mat_plot_2d.setup_subplot(number_subplots=number_subplots, subplot_index=4)
 
-        self.signal_to_noise_map(imaging=imaging)
+        self.figure_signal_to_noise_map()
 
         mat_plot_2d.setup_subplot(number_subplots=number_subplots, subplot_index=5)
 
-        self.inverse_noise_map(imaging=imaging)
+        self.figure_inverse_noise_map()
 
         mat_plot_2d.setup_subplot(number_subplots=number_subplots, subplot_index=6)
 
-        self.potential_chi_squared_map(imaging=imaging)
+        self.figure_potential_chi_squared_map()
 
         mat_plot_2d.output.subplot_to_figure()
 
@@ -74,7 +80,6 @@ class ImagingPlotter(abstract_plotters.AbstractPlotter):
 
     def individual(
         self,
-        imaging,
         plot_image=False,
         plot_noise_map=False,
         plot_psf=False,
@@ -97,22 +102,22 @@ class ImagingPlotter(abstract_plotters.AbstractPlotter):
         """
 
         if plot_image:
-            self.image(imaging=imaging)
+            self.figure_image()
         if plot_noise_map:
-            self.noise_map(imaging=imaging)
+            self.figure_noise_map()
         if plot_psf:
-            self.psf(imaging=imaging)
+            self.figure_psf()
         if plot_inverse_noise_map:
-            self.inverse_noise_map(imaging=imaging)
+            self.figure_inverse_noise_map()
         if plot_signal_to_noise_map:
-            self.signal_to_noise_map(imaging=imaging)
+            self.figure_signal_to_noise_map()
         if plot_absolute_signal_to_noise_map:
-            self.absolute_signal_to_noise_map(imaging=imaging)
+            self.figure_absolute_signal_to_noise_map()
         if plot_potential_chi_squared_map:
-            self.potential_chi_squared_map(imaging=imaging)
+            self.figure_potential_chi_squared_map()
 
     @abstract_plotters.set_labels
-    def image(self, imaging):
+    def figure_image(self):
         """Plot the observed data_type of the imaging data_type.
     
         Set *autolens.data_type.array.mat_plot_2d.mat_plot_2d* for a description of all innput parameters not described below.
@@ -128,13 +133,11 @@ class ImagingPlotter(abstract_plotters.AbstractPlotter):
             over the immage.
         """
         self.mat_plot_2d.plot_array(
-            array=imaging.image,
-            visuals_2d=self.visuals_2d
-            + self.include_2d.visuals_from_dataset(dataset=imaging),
+            array=self.imaging.image, visuals_2d=self.visuals_2d
         )
 
     @abstract_plotters.set_labels
-    def noise_map(self, imaging):
+    def figure_noise_map(self):
         """Plot the noise_map of the imaging data_type.
     
         Set *autolens.data_type.array.mat_plot_2d.mat_plot_2d* for a description of all innput parameters not described below.
@@ -147,13 +150,11 @@ class ImagingPlotter(abstract_plotters.AbstractPlotter):
             If true, the include_origin of the dataset's coordinate system is plotted as a 'x'.
         """
         self.mat_plot_2d.plot_array(
-            array=imaging.noise_map,
-            visuals_2d=self.visuals_2d
-            + self.include_2d.visuals_from_dataset(dataset=imaging),
+            array=self.imaging.noise_map, visuals_2d=self.visuals_2d
         )
 
     @abstract_plotters.set_labels
-    def psf(self, imaging):
+    def figure_psf(self):
         """Plot the PSF of the imaging data_type.
     
         Set *autolens.data_type.array.mat_plot_2d.mat_plot_2d* for a description of all innput parameters not described below.
@@ -165,14 +166,10 @@ class ImagingPlotter(abstract_plotters.AbstractPlotter):
         include_origin : True
             If true, the include_origin of the dataset's coordinate system is plotted as a 'x'.
         """
-        self.mat_plot_2d.plot_array(
-            array=imaging.psf,
-            visuals_2d=self.visuals_2d
-            + self.include_2d.visuals_from_dataset(dataset=imaging),
-        )
+        self.mat_plot_2d.plot_array(array=self.imaging.psf, visuals_2d=self.visuals_2d)
 
     @abstract_plotters.set_labels
-    def inverse_noise_map(self, imaging):
+    def figure_inverse_noise_map(self):
         """Plot the noise_map of the imaging data_type.
     
         Set *autolens.data_type.array.mat_plot_2d.mat_plot_2d* for a description of all innput parameters not described below.
@@ -185,13 +182,11 @@ class ImagingPlotter(abstract_plotters.AbstractPlotter):
             If true, the include_origin of the dataset's coordinate system is plotted as a 'x'.
         """
         self.mat_plot_2d.plot_array(
-            array=imaging.inverse_noise_map,
-            visuals_2d=self.visuals_2d
-            + self.include_2d.visuals_from_dataset(dataset=imaging),
+            array=self.imaging.inverse_noise_map, visuals_2d=self.visuals_2d
         )
 
     @abstract_plotters.set_labels
-    def signal_to_noise_map(self, imaging):
+    def figure_signal_to_noise_map(self):
         """Plot the signal-to-noise_map of the imaging data_type.
     
         Set *autolens.data_type.array.mat_plot_2d.mat_plot_2d* for a description of all innput parameters not described below.
@@ -204,13 +199,11 @@ class ImagingPlotter(abstract_plotters.AbstractPlotter):
             If true, the include_origin of the dataset's coordinate system is plotted as a 'x'.
         """
         self.mat_plot_2d.plot_array(
-            array=imaging.signal_to_noise_map,
-            visuals_2d=self.visuals_2d
-            + self.include_2d.visuals_from_dataset(dataset=imaging),
+            array=self.imaging.signal_to_noise_map, visuals_2d=self.visuals_2d
         )
 
     @abstract_plotters.set_labels
-    def absolute_signal_to_noise_map(self, imaging):
+    def figure_absolute_signal_to_noise_map(self):
         """Plot the signal-to-noise_map of the imaging data_type.
     
         Set *autolens.data_type.array.mat_plot_2d.mat_plot_2d* for a description of all innput parameters not described below.
@@ -223,13 +216,11 @@ class ImagingPlotter(abstract_plotters.AbstractPlotter):
             If true, the include_origin of the dataset's coordinate system is plotted as a 'x'.
         """
         self.mat_plot_2d.plot_array(
-            array=imaging.absolute_signal_to_noise_map,
-            visuals_2d=self.visuals_2d
-            + self.include_2d.visuals_from_dataset(dataset=imaging),
+            array=self.imaging.absolute_signal_to_noise_map, visuals_2d=self.visuals_2d
         )
 
     @abstract_plotters.set_labels
-    def potential_chi_squared_map(self, imaging):
+    def figure_potential_chi_squared_map(self):
         """Plot the signal-to-noise_map of the imaging data_type.
     
         Set *autolens.data_type.array.mat_plot_2d.mat_plot_2d* for a description of all innput parameters not described below.
@@ -242,7 +233,5 @@ class ImagingPlotter(abstract_plotters.AbstractPlotter):
             If true, the include_origin of the dataset's coordinate system is plotted as a 'x'.
         """
         self.mat_plot_2d.plot_array(
-            array=imaging.potential_chi_squared_map,
-            visuals_2d=self.visuals_2d
-            + self.include_2d.visuals_from_dataset(dataset=imaging),
+            array=self.imaging.potential_chi_squared_map, visuals_2d=self.visuals_2d
         )

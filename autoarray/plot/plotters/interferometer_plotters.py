@@ -2,8 +2,7 @@ from autoarray.plot.plotters import abstract_plotters
 from autoarray.plot.mat_wrap import visuals as vis
 from autoarray.plot.mat_wrap import include as inc
 from autoarray.plot.mat_wrap import mat_plot
-import typing
-from autoarray.plot.plotters import structure_plotters
+from autoarray.dataset import interferometer as inter
 from autoarray.structures import grids
 import numpy as np
 
@@ -11,6 +10,7 @@ import numpy as np
 class InterferometerPlotter(abstract_plotters.AbstractPlotter):
     def __init__(
         self,
+        interferometer: inter.Interferometer,
         mat_plot_1d: mat_plot.MatPlot1D = mat_plot.MatPlot1D(),
         visuals_1d: vis.Visuals1D = vis.Visuals1D(),
         include_1d: inc.Include1D = inc.Include1D(),
@@ -18,6 +18,8 @@ class InterferometerPlotter(abstract_plotters.AbstractPlotter):
         visuals_2d: vis.Visuals2D = vis.Visuals2D(),
         include_2d: inc.Include2D = inc.Include2D(),
     ):
+
+        self.interferometer = interferometer
 
         super().__init__(
             mat_plot_1d=mat_plot_1d,
@@ -28,7 +30,14 @@ class InterferometerPlotter(abstract_plotters.AbstractPlotter):
             visuals_2d=visuals_2d,
         )
 
-    def subplot_interferometer(self, interferometer):
+        self.visuals_2d = self.visuals_from_interferometer(
+            interferometer=interferometer
+        )
+
+    def visuals_from_interferometer(self, interferometer: inter.Interferometer):
+        return vis.Visuals2D()
+
+    def subplot_interferometer(self):
         """Plot the interferometer data_type as a sub-mat_plot_2d of all its quantites (e.g. the dataset, noise_map, PSF, Signal-to_noise-map, \
          etc).
 
@@ -61,19 +70,19 @@ class InterferometerPlotter(abstract_plotters.AbstractPlotter):
 
         mat_plot_2d.setup_subplot(number_subplots=number_subplots, subplot_index=1)
 
-        self.uv_wavelengths(interferometer=interferometer)
+        self.figure_uv_wavelengths()
 
         mat_plot_2d.setup_subplot(number_subplots=number_subplots, subplot_index=2)
 
-        self.visibilities(interferometer=interferometer)
+        self.figure_visibilities()
 
         mat_plot_2d.setup_subplot(number_subplots=number_subplots, subplot_index=3)
 
-        self.amplitudes_vs_uv_distances(interferometer=interferometer)
+        self.figure_amplitudes_vs_uv_distances()
 
         mat_plot_1d.setup_subplot(number_subplots=number_subplots, subplot_index=4)
 
-        self.phases_vs_uv_distances(interferometer=interferometer)
+        self.figure_phases_vs_uv_distances()
 
         mat_plot_2d.output.subplot_to_figure()
 
@@ -81,7 +90,6 @@ class InterferometerPlotter(abstract_plotters.AbstractPlotter):
 
     def individual(
         self,
-        interferometer,
         plot_visibilities=False,
         plot_noise_map=False,
         plot_u_wavelengths=False,
@@ -105,22 +113,22 @@ class InterferometerPlotter(abstract_plotters.AbstractPlotter):
         """
 
         if plot_visibilities:
-            self.visibilities(interferometer=interferometer)
+            self.figure_visibilities()
         if plot_noise_map:
-            self.noise_map(interferometer=interferometer)
+            self.figure_noise_map()
         if plot_u_wavelengths:
-            self.uv_wavelengths(interferometer=interferometer)
+            self.figure_uv_wavelengths()
         if plot_v_wavelengths:
-            self.v_wavelengths(interferometer=interferometer)
+            self.figure_v_wavelengths()
         if plot_uv_wavelengths:
-            self.uv_wavelengths(interferometer=interferometer)
+            self.figure_uv_wavelengths()
         if plot_amplitudes_vs_uv_distances:
-            self.amplitudes_vs_uv_distances(interferometer=interferometer)
+            self.figure_amplitudes_vs_uv_distances()
         if plot_phases_vs_uv_distances:
-            self.phases_vs_uv_distances(interferometer=interferometer)
+            self.figure_phases_vs_uv_distances()
 
     @abstract_plotters.set_labels
-    def visibilities(self, interferometer):
+    def figure_visibilities(self):
         """Plot the observed image of the imaging data_type.
 
         Set *autolens.data_type.array.mat_plot_2d.mat_plot_2d* for a description of all input parameters not described below.
@@ -136,15 +144,11 @@ class InterferometerPlotter(abstract_plotters.AbstractPlotter):
             over the immage.
         """
         self.mat_plot_2d.plot_grid(
-            grid=interferometer.visibilities.in_grid,
-            visuals_2d=self.visuals_2d
-            + self.include_2d.visuals_from_interferometer(
-                interferometer=interferometer
-            ),
+            grid=self.interferometer.visibilities.in_grid, visuals_2d=self.visuals_2d
         )
 
     @abstract_plotters.set_labels
-    def noise_map(self, interferometer):
+    def figure_noise_map(self):
         """Plot the observed image of the imaging data_type.
 
         Set *autolens.data_type.array.mat_plot_2d.mat_plot_2d* for a description of all input parameters not described below.
@@ -160,18 +164,13 @@ class InterferometerPlotter(abstract_plotters.AbstractPlotter):
             over the immage.
         """
         self.mat_plot_2d.plot_grid(
-            grid=interferometer.visibilities.in_grid,
-            visuals_2d=self.visuals_2d
-            + self.include_2d.visuals_from_interferometer(
-                interferometer=interferometer
-            ),
-            color_array=interferometer.noise_map.real,
+            grid=self.interferometer.visibilities.in_grid,
+            visuals_2d=self.visuals_2d,
+            color_array=self.interferometer.noise_map.real,
         )
 
     @abstract_plotters.set_labels
-    def u_wavelengths(
-        self, interferometer, label="Wavelengths", plot_axis_type="linear"
-    ):
+    def figure_u_wavelengths(self, label="Wavelengths", plot_axis_type="linear"):
         """Plot the observed image of the imaging data_type.
 
         Set *autolens.data_type.array.mat_plot_1d.mat_plot_1d* for a description of all input parameters not described below.
@@ -187,16 +186,14 @@ class InterferometerPlotter(abstract_plotters.AbstractPlotter):
             over the immage.
         """
         self.mat_plot_1d.plot_line(
-            y=interferometer.uv_wavelengths[:, 0],
+            y=self.interferometer.uv_wavelengths[:, 0],
             x=None,
             label=label,
             plot_axis_type=plot_axis_type,
         )
 
     @abstract_plotters.set_labels
-    def v_wavelengths(
-        self, interferometer, label="Wavelengths", plot_axis_type="linear"
-    ):
+    def figure_v_wavelengths(self, label="Wavelengths", plot_axis_type="linear"):
         """Plot the observed image of the imaging data_type.
 
         Set *autolens.data_type.array.mat_plot_1d.mat_plot_1d* for a description of all input parameters not described below.
@@ -212,16 +209,15 @@ class InterferometerPlotter(abstract_plotters.AbstractPlotter):
             over the immage.
         """
         self.mat_plot_1d.plot_line(
-            y=interferometer.uv_wavelengths[:, 1],
+            y=self.interferometer.uv_wavelengths[:, 1],
             x=None,
             label=label,
             plot_axis_type=plot_axis_type,
         )
 
     @abstract_plotters.set_labels
-    def uv_wavelengths(
+    def figure_uv_wavelengths(
         self,
-        interferometer,
         label_yunits="V-Wavelengths ($\lambda$)",
         label_xunits="U-Wavelengths ($\lambda$)",
     ):
@@ -241,40 +237,33 @@ class InterferometerPlotter(abstract_plotters.AbstractPlotter):
         """
         self.mat_plot_2d.plot_grid(
             grid=grids.GridIrregularGrouped.from_yx_1d(
-                y=interferometer.uv_wavelengths[:, 1] / 10 ** 3.0,
-                x=interferometer.uv_wavelengths[:, 0] / 10 ** 3.0,
+                y=self.interferometer.uv_wavelengths[:, 1] / 10 ** 3.0,
+                x=self.interferometer.uv_wavelengths[:, 0] / 10 ** 3.0,
             ),
-            visuals_2d=self.visuals_2d
-            + self.include_2d.visuals_from_interferometer(
-                interferometer=interferometer
-            ),
+            visuals_2d=self.visuals_2d,
             symmetric_around_centre=True,
         )
 
     @abstract_plotters.set_labels
-    def amplitudes_vs_uv_distances(
+    def figure_amplitudes_vs_uv_distances(
         self,
-        interferometer,
         label_yunits="amplitude (Jy)",
         label_xunits=r"UV$_{distance}$ (k$\lambda$)",
     ):
 
         self.mat_plot_1d.plot_line(
-            y=interferometer.amplitudes,
-            x=interferometer.uv_distances / 10 ** 3.0,
+            y=self.interferometer.amplitudes,
+            x=self.interferometer.uv_distances / 10 ** 3.0,
             plot_axis_type="scatter",
         )
 
     @abstract_plotters.set_labels
-    def phases_vs_uv_distances(
-        self,
-        interferometer,
-        label_yunits="phase (deg)",
-        label_xunits=r"UV$_{distance}$ (k$\lambda$)",
+    def figure_phases_vs_uv_distances(
+        self, label_yunits="phase (deg)", label_xunits=r"UV$_{distance}$ (k$\lambda$)"
     ):
 
         self.mat_plot_1d.plot_line(
-            y=interferometer.phases,
-            x=interferometer.uv_distances / 10 ** 3.0,
+            y=self.interferometer.phases,
+            x=self.interferometer.uv_distances / 10 ** 3.0,
             plot_axis_type="scatter",
         )

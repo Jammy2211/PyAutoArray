@@ -16,43 +16,75 @@ def make_plot_path_setup():
     )
 
 
+def test__visuals_in_constructor_use_imaging_and_include(fit_imaging_7x7):
+
+    visuals_2d = aplt.Visuals2D(origin=(1.0, 1.0), vector_field=2)
+
+    include = aplt.Include2D(origin=True, mask=True, border=True)
+
+    fit_imaging_plotter = aplt.FitImagingPlotter(
+        fit=fit_imaging_7x7, visuals_2d=visuals_2d, include_2d=include
+    )
+
+    assert fit_imaging_plotter.visuals_2d.origin.in_1d_list == [(0.0, 0.0)]
+    assert (fit_imaging_plotter.visuals_2d.mask == fit_imaging_7x7.image.mask).all()
+    assert (
+        fit_imaging_plotter.visuals_2d.border
+        == fit_imaging_7x7.image.mask.geometry.border_grid_sub_1.in_1d_binned
+    ).all()
+    assert fit_imaging_plotter.visuals_2d.vector_field == 2
+
+    include = aplt.Include2D(origin=False, mask=False, border=False)
+
+    fit_imaging_plotter = aplt.FitImagingPlotter(
+        fit=fit_imaging_7x7, visuals_2d=visuals_2d, include_2d=include
+    )
+
+    assert fit_imaging_plotter.visuals_2d.origin == (1.0, 1.0)
+    assert fit_imaging_plotter.visuals_2d.mask == None
+    assert fit_imaging_plotter.visuals_2d.border == None
+    assert fit_imaging_plotter.visuals_2d.vector_field == 2
+
+
 def test__fit_quantities_are_output(fit_imaging_7x7, plot_path, plot_patch):
 
     fit_imaging_plotter = aplt.FitImagingPlotter(
+        fit=fit_imaging_7x7,
         include_2d=aplt.Include2D(origin=True, mask=True, border=True),
         mat_plot_2d=aplt.MatPlot2D(output=aplt.Output(path=plot_path, format="png")),
     )
 
-    fit_imaging_plotter.image(fit=fit_imaging_7x7)
+    fit_imaging_plotter.figure_image()
     assert path.join(plot_path, "image.png") in plot_patch.paths
 
-    fit_imaging_plotter.noise_map(fit=fit_imaging_7x7)
+    fit_imaging_plotter.figure_noise_map()
     assert path.join(plot_path, "noise_map.png") in plot_patch.paths
 
-    fit_imaging_plotter.signal_to_noise_map(fit=fit_imaging_7x7)
+    fit_imaging_plotter.figure_signal_to_noise_map()
     assert path.join(plot_path, "signal_to_noise_map.png") in plot_patch.paths
 
-    fit_imaging_plotter.model_image(fit=fit_imaging_7x7)
+    fit_imaging_plotter.figure_model_image()
     assert path.join(plot_path, "model_image.png") in plot_patch.paths
 
-    fit_imaging_plotter.residual_map(fit=fit_imaging_7x7)
+    fit_imaging_plotter.figure_residual_map()
     assert path.join(plot_path, "residual_map.png") in plot_patch.paths
 
-    fit_imaging_plotter.normalized_residual_map(fit=fit_imaging_7x7)
+    fit_imaging_plotter.figure_normalized_residual_map()
     assert path.join(plot_path, "normalized_residual_map.png") in plot_patch.paths
 
-    fit_imaging_plotter.chi_squared_map(fit=fit_imaging_7x7)
+    fit_imaging_plotter.figure_chi_squared_map()
     assert path.join(plot_path, "chi_squared_map.png") in plot_patch.paths
 
 
 def test__fit_sub_plot(fit_imaging_7x7, plot_path, plot_patch):
 
     fit_imaging_plotter = aplt.FitImagingPlotter(
+        fit=fit_imaging_7x7,
         include_2d=aplt.Include2D(origin=True, mask=True, border=True),
         mat_plot_2d=aplt.MatPlot2D(output=aplt.Output(path=plot_path, format="png")),
     )
 
-    fit_imaging_plotter.subplot_fit_imaging(fit=fit_imaging_7x7)
+    fit_imaging_plotter.subplot_fit_imaging()
 
     assert path.join(plot_path, "subplot_fit_imaging.png") in plot_patch.paths
 
@@ -62,12 +94,12 @@ def test__fit_individuals__source_and_lens__depedent_on_input(
 ):
 
     fit_imaging_plotter = aplt.FitImagingPlotter(
+        fit=fit_imaging_7x7,
         include_2d=aplt.Include2D(origin=True, mask=True, border=True),
         mat_plot_2d=aplt.MatPlot2D(output=aplt.Output(path=plot_path, format="png")),
     )
 
     fit_imaging_plotter.individuals(
-        fit=fit_imaging_7x7,
         plot_image=True,
         plot_noise_map=False,
         plot_signal_to_noise_map=False,
@@ -84,7 +116,6 @@ def test__fit_individuals__source_and_lens__depedent_on_input(
     assert path.join(plot_path, "chi_squared_map.png") in plot_patch.paths
 
     fit_imaging_plotter.individuals(
-        fit=fit_imaging_7x7,
         plot_image=True,
         plot_noise_map=False,
         plot_signal_to_noise_map=False,
@@ -106,11 +137,12 @@ def test__output_as_fits__correct_output_format(
 ):
 
     fit_imaging_plotter = aplt.FitImagingPlotter(
+        fit=fit_imaging_7x7,
         include_2d=aplt.Include2D(origin=True, mask=True, border=True),
         mat_plot_2d=aplt.MatPlot2D(output=aplt.Output(path=plot_path, format="png")),
     )
 
-    fit_imaging_plotter.individuals(fit=fit_imaging_7x7, plot_image=True)
+    fit_imaging_plotter.individuals(plot_image=True)
 
     image_from_plot = aa.util.array.numpy_array_2d_from_fits(
         file_path=path.join(plot_path, "image.fits"), hdu=0

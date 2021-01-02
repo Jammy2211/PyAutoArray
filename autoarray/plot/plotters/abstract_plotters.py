@@ -3,6 +3,11 @@ from autoarray.plot.mat_wrap import include as inc
 from autoarray.plot.mat_wrap import mat_plot
 from functools import wraps
 
+from autoarray.structures import abstract_structure, arrays, frames, grids, lines
+from autoarray.dataset import abstract_dataset, interferometer as inter
+from autoarray.fit import fit as f
+from autoarray.inversion import mappers
+
 
 def set_labels(func):
     """
@@ -110,3 +115,44 @@ class AbstractPlotter:
         self.include_2d = include_2d
         self.mat_plot_2d = mat_plot_2d
         self._mat_plot_2d = mat_plot_2d
+
+    def visuals_from_structure(
+        self, structure: abstract_structure.AbstractStructure
+    ) -> "vis.Visuals2D":
+        """
+        Extracts from a `Structure` attributes that can be plotted and return them in a `Visuals` object.
+
+        Only attributes with `True` entries in the `Include` object are extracted for plotting.
+
+        From an `AbstractStructure` the following attributes can be extracted for plotting:
+
+        - origin: the (y,x) origin of the structure's coordinate system.
+        - mask: the mask of the structure.
+        - border: the border of the structure's mask.
+
+        Parameters
+        ----------
+        structure : abstract_structure.AbstractStructure
+            The structure whose attributes are extracted for plotting.
+
+        Returns
+        -------
+        vis.Visuals2D
+            The collection of attributes that can be plotted by a `Plotter2D` object.
+        """
+
+        origin = (
+            grids.GridIrregular(grid=[structure.origin])
+            if self.include_2d.origin
+            else None
+        )
+
+        mask = structure.mask if self.include_2d.mask else None
+
+        border = (
+            structure.mask.geometry.border_grid_sub_1.in_1d_binned
+            if self.include_2d.border
+            else None
+        )
+
+        return vis.Visuals2D(origin=origin, mask=mask, border=border) + self.visuals_2d

@@ -924,7 +924,8 @@ class Output:
            The function plotting the image.
         """
         if self.filename is None:
-            return func.__name__
+            funcname = func.__name__
+            return funcname.replace("figure_", "")
         else:
             return self.filename
 
