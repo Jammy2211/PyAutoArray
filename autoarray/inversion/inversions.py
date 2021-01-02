@@ -98,27 +98,6 @@ def log_determinant_of_matrix_cholesky(matrix):
         raise exc.InversionException()
 
 
-class AbstractInversionMatrix:
-    def __init__(
-        self, curvature_reg_matrix: np.ndarray, regularization_matrix: np.ndarray
-    ):
-
-        self.curvature_reg_matrix = curvature_reg_matrix
-        self.regularization_matrix = regularization_matrix
-
-    @property
-    def log_det_curvature_reg_matrix_term(self):
-        return log_determinant_of_matrix_cholesky(self.curvature_reg_matrix)
-
-    @property
-    def errors_with_covariance(self):
-        return np.linalg.inv(self.curvature_reg_matrix)
-
-    @property
-    def errors(self):
-        return np.diagonal(self.errors_with_covariance)
-
-
 class AbstractInversion:
     def __init__(
         self,
@@ -233,6 +212,43 @@ class AbstractInversion:
                 ]
             ]
         )
+
+    @property
+    def mapped_reconstructed_image(self):
+        raise NotImplementedError()
+
+    @property
+    def residual_map(self):
+        raise NotImplementedError()
+
+    @property
+    def normalized_residual_map(self):
+        raise NotImplementedError()
+
+    @property
+    def chi_squared_map(self):
+        raise NotImplementedError()
+
+
+class AbstractInversionMatrix:
+    def __init__(
+        self, curvature_reg_matrix: np.ndarray, regularization_matrix: np.ndarray
+    ):
+
+        self.curvature_reg_matrix = curvature_reg_matrix
+        self.regularization_matrix = regularization_matrix
+
+    @property
+    def log_det_curvature_reg_matrix_term(self):
+        return log_determinant_of_matrix_cholesky(self.curvature_reg_matrix)
+
+    @property
+    def errors_with_covariance(self):
+        return np.linalg.inv(self.curvature_reg_matrix)
+
+    @property
+    def errors(self):
+        return np.diagonal(self.errors_with_covariance)
 
 
 class InversionImagingMatrix(AbstractInversion, AbstractInversionMatrix):
