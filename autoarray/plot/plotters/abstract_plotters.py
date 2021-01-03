@@ -46,12 +46,12 @@ def set_labels(func):
                     filename = mat_plot.output.filename_from_func(func=func)
                     kpc_per_scaled = kpc_per_scaled_of_object_from_kwargs(kwargs=kwargs)
 
-                    mat_plot = mat_plot.plotter_with_new_labels(
+                    mat_plot = mat_plot.mat_plot_with_new_labels(
                         title_label=title, ylabel_units=yunits, xlabel_units=xunits
                     )
 
-                    mat_plot = mat_plot.plotter_with_new_output(filename=filename)
-                    mat_plot = mat_plot.plotter_with_new_units(
+                    mat_plot = mat_plot.mat_plot_with_new_output(filename=filename)
+                    mat_plot = mat_plot.mat_plot_with_new_units(
                         conversion_factor=kpc_per_scaled
                     )
 
@@ -69,12 +69,12 @@ def set_labels(func):
                     filename = mat_plot.output.filename_from_func(func=func)
                     kpc_per_scaled = kpc_per_scaled_of_object_from_kwargs(kwargs=kwargs)
 
-                    mat_plot = mat_plot.plotter_with_new_labels(
+                    mat_plot = mat_plot.mat_plot_with_new_labels(
                         title_label=title, ylabel_units=yunits, xlabel_units=xunits
                     )
 
-                    mat_plot = mat_plot.plotter_with_new_output(filename=filename)
-                    mat_plot = mat_plot.plotter_with_new_units(
+                    mat_plot = mat_plot.mat_plot_with_new_output(filename=filename)
+                    mat_plot = mat_plot.mat_plot_with_new_units(
                         conversion_factor=kpc_per_scaled
                     )
 

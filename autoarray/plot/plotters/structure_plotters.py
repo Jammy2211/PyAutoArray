@@ -21,7 +21,13 @@ class ArrayPlotter(abstract_plotters.AbstractPlotter):
         )
 
         self.array = array
-        self.visuals_2d = self.visuals_from_array(array=array)
+
+    @property
+    def visuals_with_include_2d(self):
+
+        visuals_2d = copy.deepcopy(self.visuals_2d)
+
+        return visuals_2d + self.visuals_from_array(array=self.array)
 
     def visuals_from_array(self, array: arrays.Array) -> "vis.Visuals2D":
         """
@@ -51,7 +57,9 @@ class ArrayPlotter(abstract_plotters.AbstractPlotter):
     def figure_array(self, extent_manual=None):
 
         self.mat_plot_2d.plot_array(
-            array=self.array, visuals_2d=self.visuals_2d, extent_manual=extent_manual
+            array=self.array,
+            visuals_2d=self.visuals_with_include_2d,
+            extent_manual=extent_manual,
         )
 
 
@@ -69,7 +77,12 @@ class FramePlotter(abstract_plotters.AbstractPlotter):
 
         self.frame = frame
 
-        self.visuals_2d = self.visuals_from_frame(frame=frame)
+    @property
+    def visuals_with_include_2d(self):
+
+        visuals_2d = copy.deepcopy(self.visuals_2d)
+
+        return visuals_2d + self.visuals_from_frame(frame=self.frame)
 
     def visuals_from_frame(self, frame: frames.Frame) -> "vis.Visuals2D":
         """
@@ -117,7 +130,9 @@ class FramePlotter(abstract_plotters.AbstractPlotter):
     @abstract_plotters.set_labels
     def figure_frame(self):
 
-        self.mat_plot_2d._plot_frame(frame=self.frame, visuals_2d=self.visuals_2d)
+        self.mat_plot_2d._plot_frame(
+            frame=self.frame, visuals_2d=self.visuals_with_include_2d
+        )
 
 
 class GridPlotter(abstract_plotters.AbstractPlotter):
@@ -134,7 +149,12 @@ class GridPlotter(abstract_plotters.AbstractPlotter):
 
         self.grid = grid
 
-        self.visuals_2d = self.visuals_from_grid(grid=grid)
+    @property
+    def visuals_with_include_2d(self):
+
+        visuals_2d = copy.deepcopy(self.visuals_2d)
+
+        return visuals_2d + self.visuals_from_grid(grid=self.grid)
 
     def visuals_from_grid(self, grid: grids.Grid) -> "vis.Visuals2D":
         """
@@ -173,7 +193,7 @@ class GridPlotter(abstract_plotters.AbstractPlotter):
 
         self.mat_plot_2d.plot_grid(
             grid=self.grid,
-            visuals_2d=self.visuals_2d,
+            visuals_2d=self.visuals_with_include_2d,
             color_array=color_array,
             axis_limits=axis_limits,
             indexes=indexes,
@@ -195,8 +215,19 @@ class MapperPlotter(abstract_plotters.AbstractPlotter):
 
         self.mapper = mapper
 
-        self.visuals_2d_data = self.visuals_of_data_from_mapper(mapper=mapper)
-        self.visuals_2d_source = self.visuals_of_source_from_mapper(mapper=mapper)
+    @property
+    def visuals_data_with_include_2d(self):
+
+        visuals_2d = copy.deepcopy(self.visuals_2d)
+
+        return visuals_2d + self.visuals_of_data_from_mapper(mapper=self.mapper)
+
+    @property
+    def visuals_source_with_include_2d(self):
+
+        visuals_2d = copy.deepcopy(self.visuals_2d)
+
+        return visuals_2d + self.visuals_of_source_from_mapper(mapper=self.mapper)
 
     def visuals_of_data_from_mapper(self, mapper: mappers.Mapper) -> "vis.Visuals2D":
         """
@@ -302,7 +333,7 @@ class MapperPlotter(abstract_plotters.AbstractPlotter):
 
         self.mat_plot_2d.plot_mapper(
             mapper=self.mapper,
-            visuals_2d=self.visuals_2d_source,
+            visuals_2d=self.visuals_source_with_include_2d,
             source_pixelilzation_values=source_pixelilzation_values,
             full_indexes=full_indexes,
             pixelization_indexes=pixelization_indexes,
@@ -313,7 +344,7 @@ class MapperPlotter(abstract_plotters.AbstractPlotter):
         self, image, full_indexes=None, pixelization_indexes=None
     ):
 
-        mat_plot_2d = self.mat_plot_2d.plotter_for_subplot_from(
+        mat_plot_2d = self.mat_plot_2d.mat_plot_for_subplot_from(
             func=self.subplot_image_and_mapper
         )
 
@@ -323,7 +354,9 @@ class MapperPlotter(abstract_plotters.AbstractPlotter):
 
         mat_plot_2d.setup_subplot(number_subplots=number_subplots, subplot_index=1)
 
-        self.mat_plot_2d.plot_array(array=image, visuals_2d=self.visuals_2d_data)
+        self.mat_plot_2d.plot_array(
+            array=image, visuals_2d=self.visuals_data_with_include_2d
+        )
 
         if full_indexes is not None:
 

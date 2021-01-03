@@ -2,10 +2,10 @@ from autoarray.plot.plotters import abstract_plotters
 from autoarray.plot.mat_wrap import visuals as vis
 from autoarray.plot.mat_wrap import include as inc
 from autoarray.plot.mat_wrap import mat_plot
-from autoarray.plot.plotters import structure_plotters
 from autoarray.fit import fit as f
-import typing
 import numpy as np
+
+import copy
 
 
 class FitInterferometerPlotter(abstract_plotters.AbstractPlotter):
@@ -30,97 +30,11 @@ class FitInterferometerPlotter(abstract_plotters.AbstractPlotter):
         )
 
         self.fit = fit
-        self.visuals_2d = self.visuals_from_fit_interferometer(fit=fit)
 
-    def visuals_from_fit_interferometer(self, fit: f.FitInterferometer):
-        return vis.Visuals2D()
+    @property
+    def visuals_with_include_2d(self):
 
-    def subplot_fit_interferometer(self):
-
-        mat_plot_1d = self.mat_plot_1d.plotter_for_subplot_from(
-            func=self.subplot_fit_interferometer
-        )
-
-        number_subplots = 6
-
-        mat_plot_1d.open_subplot_figure(number_subplots=number_subplots)
-
-        mat_plot_1d.setup_subplot(number_subplots=number_subplots, subplot_index=1)
-
-        self.figure_residual_map_vs_uv_distances()
-
-        mat_plot_1d.setup_subplot(number_subplots=number_subplots, subplot_index=2)
-
-        self.figure_normalized_residual_map_vs_uv_distances()
-
-        mat_plot_1d.setup_subplot(number_subplots=number_subplots, subplot_index=3)
-
-        self.figure_chi_squared_map_vs_uv_distances()
-
-        mat_plot_1d.setup_subplot(number_subplots=number_subplots, subplot_index=4)
-
-        self.figure_residual_map_vs_uv_distances(plot_real=False)
-
-        mat_plot_1d.setup_subplot(number_subplots=number_subplots, subplot_index=5)
-
-        self.figure_normalized_residual_map_vs_uv_distances(plot_real=False)
-
-        mat_plot_1d.setup_subplot(number_subplots=number_subplots, subplot_index=6)
-
-        self.figure_chi_squared_map_vs_uv_distances(plot_real=False)
-
-        mat_plot_1d.output.subplot_to_figure()
-
-        mat_plot_1d.figure.close()
-
-    def individuals(
-        self,
-        plot_visibilities=False,
-        plot_noise_map=False,
-        plot_signal_to_noise_map=False,
-        plot_model_visibilities=False,
-        plot_residual_map=False,
-        plot_normalized_residual_map=False,
-        plot_chi_squared_map=False,
-    ):
-        """Plot the model datas_ of an analysis, using the *Fitter* class object.
-    
-        The visualization and output type can be fully customized.
-    
-        Parameters
-        -----------
-        fit : autolens.lens.fitting.Fitter
-            Class containing fit between the model datas_ and observed lens datas_ (including residual_map, chi_squared_map etc.)
-        output_path : str
-            The path where the datas_ is output if the output_type is a file format (e.g. png, fits)
-        output_format : str
-            How the datas_ is output. File formats (e.g. png, fits) output the datas_ to harddisk. 'show' displays the datas_ \
-            in the python interpreter window.
-        """
-
-        if plot_visibilities:
-            self.figure_visibilities()
-        if plot_noise_map:
-            self.figure_noise_map()
-        if plot_signal_to_noise_map:
-            self.figure_signal_to_noise_map()
-        if plot_model_visibilities:
-            self.figure_model_visibilities()
-
-        if plot_residual_map:
-
-            self.figure_residual_map_vs_uv_distances(plot_real=True)
-            self.figure_residual_map_vs_uv_distances(plot_real=False)
-
-        if plot_normalized_residual_map:
-
-            self.figure_normalized_residual_map_vs_uv_distances(plot_real=True)
-            self.figure_normalized_residual_map_vs_uv_distances(plot_real=False)
-
-        if plot_chi_squared_map:
-
-            self.figure_chi_squared_map_vs_uv_distances(plot_real=True)
-            self.figure_chi_squared_map_vs_uv_distances(plot_real=False)
+        return copy.deepcopy(self.visuals_2d)
 
     @abstract_plotters.set_labels
     def figure_visibilities(self):
@@ -219,18 +133,18 @@ class FitInterferometerPlotter(abstract_plotters.AbstractPlotter):
 
         if plot_real:
             y = np.real(self.fit.residual_map)
-            mat_plot_1d = self.mat_plot_1d.plotter_with_new_labels(
+            mat_plot_1d = self.mat_plot_1d.mat_plot_with_new_labels(
                 title_label=f"{self.mat_plot_1d.title.kwargs['label']} Real"
             )
-            mat_plot_1d = mat_plot_1d.plotter_with_new_output(
+            mat_plot_1d = mat_plot_1d.mat_plot_with_new_output(
                 filename=mat_plot_1d.output.filename + "_real"
             )
         else:
             y = np.imag(self.fit.residual_map)
-            mat_plot_1d = self.mat_plot_1d.plotter_with_new_labels(
+            mat_plot_1d = self.mat_plot_1d.mat_plot_with_new_labels(
                 title_label=f"{self.mat_plot_1d.title.kwargs['label']} Imag"
             )
-            mat_plot_1d = mat_plot_1d.plotter_with_new_output(
+            mat_plot_1d = mat_plot_1d.mat_plot_with_new_output(
                 filename=mat_plot_1d.output.filename + "_imag"
             )
 
@@ -261,18 +175,18 @@ class FitInterferometerPlotter(abstract_plotters.AbstractPlotter):
 
         if plot_real:
             y = np.real(self.fit.residual_map)
-            mat_plot_1d = self.mat_plot_1d.plotter_with_new_labels(
+            mat_plot_1d = self.mat_plot_1d.mat_plot_with_new_labels(
                 title_label=f"{self.mat_plot_1d.title.kwargs['label']} Real"
             )
-            mat_plot_1d = mat_plot_1d.plotter_with_new_output(
+            mat_plot_1d = mat_plot_1d.mat_plot_with_new_output(
                 filename=mat_plot_1d.output.filename + "_real"
             )
         else:
             y = np.imag(self.fit.residual_map)
-            mat_plot_1d = self.mat_plot_1d.plotter_with_new_labels(
+            mat_plot_1d = self.mat_plot_1d.mat_plot_with_new_labels(
                 title_label=f"{self.mat_plot_1d.title.kwargs['label']} Imag"
             )
-            mat_plot_1d = mat_plot_1d.plotter_with_new_output(
+            mat_plot_1d = mat_plot_1d.mat_plot_with_new_output(
                 filename=mat_plot_1d.output.filename + "_imag"
             )
 
@@ -303,18 +217,18 @@ class FitInterferometerPlotter(abstract_plotters.AbstractPlotter):
 
         if plot_real:
             y = np.real(self.fit.residual_map)
-            mat_plot_1d = self.mat_plot_1d.plotter_with_new_labels(
+            mat_plot_1d = self.mat_plot_1d.mat_plot_with_new_labels(
                 title_label=f"{self.mat_plot_1d.title.kwargs['label']} Real"
             )
-            mat_plot_1d = mat_plot_1d.plotter_with_new_output(
+            mat_plot_1d = mat_plot_1d.mat_plot_with_new_output(
                 filename=mat_plot_1d.output.filename + "_real"
             )
         else:
             y = np.imag(self.fit.residual_map)
-            mat_plot_1d = self.mat_plot_1d.plotter_with_new_labels(
+            mat_plot_1d = self.mat_plot_1d.mat_plot_with_new_labels(
                 title_label=f"{self.mat_plot_1d.title.kwargs['label']} Imag"
             )
-            mat_plot_1d = mat_plot_1d.plotter_with_new_output(
+            mat_plot_1d = mat_plot_1d.mat_plot_with_new_output(
                 filename=mat_plot_1d.output.filename + "_imag"
             )
 
@@ -323,3 +237,87 @@ class FitInterferometerPlotter(abstract_plotters.AbstractPlotter):
             x=self.fit.masked_interferometer.interferometer.uv_distances / 10 ** 3.0,
             plot_axis_type="scatter",
         )
+
+    def figure_individuals(
+        self,
+        plot_visibilities=False,
+        plot_noise_map=False,
+        plot_signal_to_noise_map=False,
+        plot_model_visibilities=False,
+        plot_residual_map=False,
+        plot_normalized_residual_map=False,
+        plot_chi_squared_map=False,
+    ):
+        """Plot the model datas_ of an analysis, using the *Fitter* class object.
+
+        The visualization and output type can be fully customized.
+
+        Parameters
+        -----------
+        fit : autolens.lens.fitting.Fitter
+            Class containing fit between the model datas_ and observed lens datas_ (including residual_map, chi_squared_map etc.)
+        output_path : str
+            The path where the datas_ is output if the output_type is a file format (e.g. png, fits)
+        output_format : str
+            How the datas_ is output. File formats (e.g. png, fits) output the datas_ to harddisk. 'show' displays the datas_ \
+            in the python interpreter window.
+        """
+
+        if plot_visibilities:
+            self.figure_visibilities()
+        if plot_noise_map:
+            self.figure_noise_map()
+        if plot_signal_to_noise_map:
+            self.figure_signal_to_noise_map()
+        if plot_model_visibilities:
+            self.figure_model_visibilities()
+
+        if plot_residual_map:
+            self.figure_residual_map_vs_uv_distances(plot_real=True)
+            self.figure_residual_map_vs_uv_distances(plot_real=False)
+
+        if plot_normalized_residual_map:
+            self.figure_normalized_residual_map_vs_uv_distances(plot_real=True)
+            self.figure_normalized_residual_map_vs_uv_distances(plot_real=False)
+
+        if plot_chi_squared_map:
+            self.figure_chi_squared_map_vs_uv_distances(plot_real=True)
+            self.figure_chi_squared_map_vs_uv_distances(plot_real=False)
+
+    def subplot_fit_interferometer(self):
+
+        mat_plot_1d = self.mat_plot_1d.mat_plot_for_subplot_from(
+            func=self.subplot_fit_interferometer
+        )
+
+        number_subplots = 6
+
+        mat_plot_1d.open_subplot_figure(number_subplots=number_subplots)
+
+        mat_plot_1d.setup_subplot(number_subplots=number_subplots, subplot_index=1)
+
+        self.figure_residual_map_vs_uv_distances()
+
+        mat_plot_1d.setup_subplot(number_subplots=number_subplots, subplot_index=2)
+
+        self.figure_normalized_residual_map_vs_uv_distances()
+
+        mat_plot_1d.setup_subplot(number_subplots=number_subplots, subplot_index=3)
+
+        self.figure_chi_squared_map_vs_uv_distances()
+
+        mat_plot_1d.setup_subplot(number_subplots=number_subplots, subplot_index=4)
+
+        self.figure_residual_map_vs_uv_distances(plot_real=False)
+
+        mat_plot_1d.setup_subplot(number_subplots=number_subplots, subplot_index=5)
+
+        self.figure_normalized_residual_map_vs_uv_distances(plot_real=False)
+
+        mat_plot_1d.setup_subplot(number_subplots=number_subplots, subplot_index=6)
+
+        self.figure_chi_squared_map_vs_uv_distances(plot_real=False)
+
+        mat_plot_1d.output.subplot_to_figure()
+
+        mat_plot_1d.figure.close()

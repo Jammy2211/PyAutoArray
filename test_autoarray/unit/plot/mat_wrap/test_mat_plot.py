@@ -18,7 +18,7 @@ class TestAbstractPlotter:
     def test__subplot_figsize_for_number_of_subplots(self):
 
         plotter = aplt.MatPlot2D()
-        plotter = plotter.plotter_for_subplot_from()
+        plotter = plotter.mat_plot_for_subplot_from()
 
         figsize = plotter.get_subplot_figsize(number_subplots=1)
 
@@ -71,7 +71,7 @@ class TestAbstractPlotter:
 
         assert plt.fignum_exists(num=1) == False
 
-    def test__plotter_with_new_labels__new_labels_if_input__sizes_dont_change(self):
+    def test__mat_plot_with_new_labels__new_labels_if_input__sizes_dont_change(self):
 
         plotter = aplt.MatPlot2D(
             title=aplt.Title(label="OMG", fontsize=1),
@@ -82,7 +82,7 @@ class TestAbstractPlotter:
 
         print(plotter.title.config_dict)
 
-        plotter = plotter.plotter_with_new_labels()
+        plotter = plotter.mat_plot_with_new_labels()
 
         assert plotter.title.config_dict["label"] == "OMG"
         assert plotter.title.config_dict["fontsize"] == 1
@@ -90,7 +90,7 @@ class TestAbstractPlotter:
         assert plotter.xlabel._units == "hi2"
         assert plotter.tickparams.config_dict["labelsize"] == 2
 
-        plotter = plotter.plotter_with_new_labels(
+        plotter = plotter.mat_plot_with_new_labels(
             title_label="OMG0",
             title_fontsize=10,
             ylabel_units="hi0",
@@ -104,7 +104,7 @@ class TestAbstractPlotter:
         assert plotter.xlabel._units == "hi20"
         assert plotter.tickparams.config_dict["labelsize"] == 20
 
-        plotter = plotter.plotter_with_new_labels(title_fontsize=2, title_label="OMG0")
+        plotter = plotter.mat_plot_with_new_labels(title_fontsize=2, title_label="OMG0")
 
         assert plotter.title.config_dict["label"] == "OMG0"
         assert plotter.title.config_dict["fontsize"] == 2
@@ -112,7 +112,7 @@ class TestAbstractPlotter:
         assert plotter.xlabel._units == "hi20"
         assert plotter.tickparams.config_dict["labelsize"] == 20
 
-    def test__plotter_with_new_cmap__new_labels_if_input__sizes_dont_change(self):
+    def test__mat_plot_with_new_cmap__new_labels_if_input__sizes_dont_change(self):
 
         plotter = aplt.MatPlot2D(
             cmap=aplt.Cmap(
@@ -127,7 +127,7 @@ class TestAbstractPlotter:
         assert plotter.cmap.config_dict["linthresh"] == 1.5
         assert plotter.cmap.config_dict["linscale"] == 2.0
 
-        plotter = plotter.plotter_with_new_cmap(
+        plotter = plotter.mat_plot_with_new_cmap(
             cmap="jet", norm="linear", vmin=0.12, vmax=1.2, linthresh=1.2, linscale=2.2
         )
 
@@ -138,7 +138,7 @@ class TestAbstractPlotter:
         assert plotter.cmap.config_dict["linthresh"] == 1.2
         assert plotter.cmap.config_dict["linscale"] == 2.2
 
-        plotter = plotter.plotter_with_new_cmap(cmap="sand", norm="log", vmin=0.13)
+        plotter = plotter.mat_plot_with_new_cmap(cmap="sand", norm="log", vmin=0.13)
 
         assert plotter.cmap.config_dict["cmap"] == "sand"
         assert plotter.cmap.config_dict["norm"] == "log"
@@ -147,13 +147,13 @@ class TestAbstractPlotter:
         assert plotter.cmap.config_dict["linthresh"] == 1.2
         assert plotter.cmap.config_dict["linscale"] == 2.2
 
-    def test__plotter_with_new_outputs__new_outputs_are_setup_correctly_if_input(self):
+    def test__mat_plot_with_new_outputs__new_outputs_are_setup_correctly_if_input(self):
 
         plotter = aplt.MatPlot2D(
             output=aplt.Output(path="Path", format="png", filename="file")
         )
 
-        plotter = plotter.plotter_with_new_output()
+        plotter = plotter.mat_plot_with_new_output()
 
         assert plotter.output.path == "Path"
         assert plotter.output._format == "png"
@@ -163,7 +163,7 @@ class TestAbstractPlotter:
         if path.exists(plotter.output.path):
             shutil.rmtree(plotter.output.path)
 
-        plotter = plotter.plotter_with_new_output(path="Path0", filename="file0")
+        plotter = plotter.mat_plot_with_new_output(path="Path0", filename="file0")
 
         if path.exists(plotter.output.path):
             shutil.rmtree(plotter.output.path)
@@ -176,7 +176,7 @@ class TestAbstractPlotter:
         if path.exists(plotter.output.path):
             shutil.rmtree(plotter.output.path)
 
-        plotter = plotter.plotter_with_new_output(
+        plotter = plotter.mat_plot_with_new_output(
             path="Path1", filename="file1", format="fits"
         )
 
@@ -188,7 +188,7 @@ class TestAbstractPlotter:
         if path.exists(plotter.output.path):
             shutil.rmtree(plotter.output.path)
 
-    def test__plotter_with_new_units__new_outputs_are_setup_correctly_if_input(self):
+    def test__mat_plot_with_new_units__new_outputs_are_setup_correctly_if_input(self):
 
         plotter = aplt.MatPlot2D(
             units=aplt.Units(use_scaled=True, in_kpc=True, conversion_factor=1.0)
@@ -198,7 +198,7 @@ class TestAbstractPlotter:
         assert plotter.units.in_kpc == True
         assert plotter.units.conversion_factor == 1.0
 
-        plotter = plotter.plotter_with_new_units(
+        plotter = plotter.mat_plot_with_new_units(
             use_scaled=False, in_kpc=False, conversion_factor=2.0
         )
 
@@ -206,7 +206,7 @@ class TestAbstractPlotter:
         assert plotter.units.in_kpc == False
         assert plotter.units.conversion_factor == 2.0
 
-        plotter = plotter.plotter_with_new_units(conversion_factor=3.0)
+        plotter = plotter.mat_plot_with_new_units(conversion_factor=3.0)
 
         assert plotter.units.use_scaled == False
         assert plotter.units.in_kpc == False
@@ -231,7 +231,7 @@ class TestPlotter2D:
 
         plotter = aplt.MatPlot2D(figure=figure, cmap=cmap)
 
-        sub_plotter = plotter.plotter_for_subplot_from()
+        sub_plotter = plotter.mat_plot_for_subplot_from()
 
         assert sub_plotter.figure.config_dict_figure["figsize"] == None
         assert sub_plotter.figure.config_dict_imshow["aspect"] == "square"

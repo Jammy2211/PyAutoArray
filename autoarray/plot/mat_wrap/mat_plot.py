@@ -92,7 +92,7 @@ class AbstractMatPlot:
         self.legend = legend
         self.output = output
 
-    def plotter_for_subplot_from(self, func=None):
+    def mat_plot_for_subplot_from(self, func=None):
 
         plotter = copy.deepcopy(self)
 
@@ -105,7 +105,7 @@ class AbstractMatPlot:
 
         if func is not None:
             filename = plotter.output.filename_from_func(func=func)
-            return plotter.plotter_with_new_output(filename=filename)
+            return plotter.mat_plot_with_new_output(filename=filename)
         else:
             return plotter
 
@@ -212,7 +212,7 @@ class AbstractMatPlot:
             axis_limits = [-x, x, -y, y]
             plt.axis(axis_limits)
 
-    def plotter_with_new_labels(
+    def mat_plot_with_new_labels(
         self,
         title_label=None,
         title_fontsize=None,
@@ -247,7 +247,7 @@ class AbstractMatPlot:
 
         return plotter
 
-    def plotter_with_new_cmap(
+    def mat_plot_with_new_cmap(
         self, cmap=None, norm=None, vmax=None, vmin=None, linthresh=None, linscale=None
     ):
 
@@ -274,7 +274,7 @@ class AbstractMatPlot:
 
         return plotter
 
-    def plotter_with_new_units(
+    def mat_plot_with_new_units(
         self, use_scaled=None, conversion_factor=None, in_kpc=None
     ):
 
@@ -294,7 +294,7 @@ class AbstractMatPlot:
 
         return plotter
 
-    def plotter_with_new_output(self, path=None, filename=None, format=None):
+    def mat_plot_with_new_output(self, path=None, filename=None, format=None):
 
         plotter = copy.deepcopy(self)
 

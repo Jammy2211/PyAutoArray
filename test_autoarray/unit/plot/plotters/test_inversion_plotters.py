@@ -135,7 +135,7 @@ def test__inversion_individuals__output_dependent_on_input(
         mat_plot_2d=aplt.MatPlot2D(output=aplt.Output(path=plot_path, format="png")),
     )
 
-    inversion_plotter.individuals(
+    inversion_plotter.figure_individuals(
         plot_reconstructed_image=True,
         plot_errors=True,
         plot_chi_squared_map=True,

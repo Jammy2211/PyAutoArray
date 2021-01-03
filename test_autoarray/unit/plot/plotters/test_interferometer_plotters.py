@@ -25,31 +25,24 @@ def test__individual_attributes_are_output(interferometer_7, plot_path, plot_pat
     )
 
     interferometer_plotter.figure_visibilities()
-
     assert path.join(plot_path, "visibilities.png") in plot_patch.paths
 
     interferometer_plotter.figure_noise_map()
-
     assert path.join(plot_path, "noise_map.png") in plot_patch.paths
 
     interferometer_plotter.figure_u_wavelengths()
-
     assert path.join(plot_path, "u_wavelengths.png") in plot_patch.paths
 
     interferometer_plotter.figure_v_wavelengths()
-
     assert path.join(plot_path, "v_wavelengths.png") in plot_patch.paths
 
     interferometer_plotter.figure_uv_wavelengths()
-
     assert path.join(plot_path, "uv_wavelengths.png") in plot_patch.paths
 
     interferometer_plotter.figure_amplitudes_vs_uv_distances()
-
     assert path.join(plot_path, "amplitudes_vs_uv_distances.png") in plot_patch.paths
 
     interferometer_plotter.figure_phases_vs_uv_distances()
-
     assert path.join(plot_path, "phases_vs_uv_distances.png") in plot_patch.paths
 
 

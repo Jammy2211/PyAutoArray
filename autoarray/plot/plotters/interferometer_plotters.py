@@ -5,6 +5,7 @@ from autoarray.plot.mat_wrap import mat_plot
 from autoarray.dataset import interferometer as inter
 from autoarray.structures import grids
 import numpy as np
+import copy
 
 
 class InterferometerPlotter(abstract_plotters.AbstractPlotter):
@@ -30,9 +31,9 @@ class InterferometerPlotter(abstract_plotters.AbstractPlotter):
             visuals_2d=visuals_2d,
         )
 
-        self.visuals_2d = self.visuals_from_interferometer(
-            interferometer=interferometer
-        )
+    @property
+    def visuals_with_include_2d(self):
+        return copy.deepcopy(self.visuals_2d)
 
     def visuals_from_interferometer(self, interferometer: inter.Interferometer):
         return vis.Visuals2D()
@@ -57,10 +58,10 @@ class InterferometerPlotter(abstract_plotters.AbstractPlotter):
             config file is ignored.
         """
 
-        mat_plot_2d = self.mat_plot_2d.plotter_for_subplot_from(
+        mat_plot_2d = self.mat_plot_2d.mat_plot_for_subplot_from(
             func=self.subplot_interferometer
         )
-        mat_plot_1d = self.mat_plot_1d.plotter_for_subplot_from(
+        mat_plot_1d = self.mat_plot_1d.mat_plot_for_subplot_from(
             func=self.subplot_interferometer
         )
 
