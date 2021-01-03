@@ -3,7 +3,8 @@ from autoarray.plot.mat_wrap import visuals as vis
 from autoarray.plot.mat_wrap import include as inc
 from autoarray.plot.mat_wrap import mat_plot
 from autoarray.fit import fit as f
-import typing
+
+import copy
 
 
 class FitImagingPlotter(abstract_plotters.AbstractPlotter):
@@ -21,89 +22,12 @@ class FitImagingPlotter(abstract_plotters.AbstractPlotter):
 
         self.fit = fit
 
-        self.visuals_2d = self.visuals_from_fit_imaging(fit=fit)
+    @property
+    def visuals_with_include_2d(self):
 
-    def visuals_from_fit_imaging(self, fit: f.FitImaging):
+        visuals_2d = copy.deepcopy(self.visuals_2d)
 
-        return self.visuals_from_structure(structure=fit.image)
-
-    def subplot_fit_imaging(self):
-
-        mat_plot_2d = self.mat_plot_2d.plotter_for_subplot_from(
-            func=self.subplot_fit_imaging
-        )
-
-        number_subplots = 6
-
-        mat_plot_2d.open_subplot_figure(number_subplots=number_subplots)
-
-        mat_plot_2d.setup_subplot(number_subplots=number_subplots, subplot_index=1)
-
-        self.figure_image()
-
-        mat_plot_2d.setup_subplot(number_subplots=number_subplots, subplot_index=2)
-
-        self.figure_signal_to_noise_map()
-
-        mat_plot_2d.setup_subplot(number_subplots=number_subplots, subplot_index=3)
-
-        self.figure_model_image()
-
-        mat_plot_2d.setup_subplot(number_subplots=number_subplots, subplot_index=4)
-
-        self.figure_residual_map()
-
-        mat_plot_2d.setup_subplot(number_subplots=number_subplots, subplot_index=5)
-
-        self.figure_normalized_residual_map()
-
-        mat_plot_2d.setup_subplot(number_subplots=number_subplots, subplot_index=6)
-
-        self.figure_chi_squared_map()
-
-        mat_plot_2d.output.subplot_to_figure()
-
-        mat_plot_2d.figure.close()
-
-    def individuals(
-        self,
-        plot_image=False,
-        plot_noise_map=False,
-        plot_signal_to_noise_map=False,
-        plot_model_image=False,
-        plot_residual_map=False,
-        plot_normalized_residual_map=False,
-        plot_chi_squared_map=False,
-    ):
-        """Plot the model datas_ of an analysis, using the *Fitter* class object.
-    
-        The visualization and output type can be fully customized.
-    
-        Parameters
-        -----------
-        fit : autolens.lens.fitting.Fitter
-            Class containing fit between the model datas_ and observed lens datas_ (including residual_map, chi_squared_map etc.)
-        output_path : str
-            The path where the datas_ is output if the output_type is a file format (e.g. png, fits)
-        output_format : str
-            How the datas_ is output. File formats (e.g. png, fits) output the datas_ to harddisk. 'show' displays the datas_ \
-            in the python interpreter window.
-        """
-
-        if plot_image:
-            self.figure_image()
-        if plot_noise_map:
-            self.figure_noise_map()
-        if plot_signal_to_noise_map:
-            self.figure_signal_to_noise_map()
-        if plot_model_image:
-            self.figure_model_image()
-        if plot_residual_map:
-            self.figure_residual_map()
-        if plot_normalized_residual_map:
-            self.figure_normalized_residual_map()
-        if plot_chi_squared_map:
-            self.figure_chi_squared_map()
+        return visuals_2d + self.visuals_from_structure(structure=self.fit.image)
 
     @abstract_plotters.set_labels
     def figure_image(self):
@@ -221,3 +145,81 @@ class FitImagingPlotter(abstract_plotters.AbstractPlotter):
         self.mat_plot_2d.plot_array(
             array=self.fit.chi_squared_map, visuals_2d=self.visuals_2d
         )
+
+    def figure_individuals(
+        self,
+        plot_image=False,
+        plot_noise_map=False,
+        plot_signal_to_noise_map=False,
+        plot_model_image=False,
+        plot_residual_map=False,
+        plot_normalized_residual_map=False,
+        plot_chi_squared_map=False,
+    ):
+        """Plot the model datas_ of an analysis, using the *Fitter* class object.
+
+        The visualization and output type can be fully customized.
+
+        Parameters
+        -----------
+        fit : autolens.lens.fitting.Fitter
+            Class containing fit between the model datas_ and observed lens datas_ (including residual_map, chi_squared_map etc.)
+        output_path : str
+            The path where the datas_ is output if the output_type is a file format (e.g. png, fits)
+        output_format : str
+            How the datas_ is output. File formats (e.g. png, fits) output the datas_ to harddisk. 'show' displays the datas_ \
+            in the python interpreter window.
+        """
+
+        if plot_image:
+            self.figure_image()
+        if plot_noise_map:
+            self.figure_noise_map()
+        if plot_signal_to_noise_map:
+            self.figure_signal_to_noise_map()
+        if plot_model_image:
+            self.figure_model_image()
+        if plot_residual_map:
+            self.figure_residual_map()
+        if plot_normalized_residual_map:
+            self.figure_normalized_residual_map()
+        if plot_chi_squared_map:
+            self.figure_chi_squared_map()
+
+    def subplot_fit_imaging(self):
+
+        mat_plot_2d = self.mat_plot_2d.mat_plot_for_subplot_from(
+            func=self.subplot_fit_imaging
+        )
+
+        number_subplots = 6
+
+        mat_plot_2d.open_subplot_figure(number_subplots=number_subplots)
+
+        mat_plot_2d.setup_subplot(number_subplots=number_subplots, subplot_index=1)
+
+        self.figure_image()
+
+        mat_plot_2d.setup_subplot(number_subplots=number_subplots, subplot_index=2)
+
+        self.figure_signal_to_noise_map()
+
+        mat_plot_2d.setup_subplot(number_subplots=number_subplots, subplot_index=3)
+
+        self.figure_model_image()
+
+        mat_plot_2d.setup_subplot(number_subplots=number_subplots, subplot_index=4)
+
+        self.figure_residual_map()
+
+        mat_plot_2d.setup_subplot(number_subplots=number_subplots, subplot_index=5)
+
+        self.figure_normalized_residual_map()
+
+        mat_plot_2d.setup_subplot(number_subplots=number_subplots, subplot_index=6)
+
+        self.figure_chi_squared_map()
+
+        mat_plot_2d.output.subplot_to_figure()
+
+        mat_plot_2d.figure.close()

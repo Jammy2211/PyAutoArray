@@ -24,13 +24,22 @@ def test__visuals_in_constructor_use_imaging_and_include(imaging_7x7):
         imaging=imaging_7x7, visuals_2d=visuals_2d, include_2d=include
     )
 
-    assert imaging_plotter.visuals_2d.origin.in_1d_list == [(0.0, 0.0)]
-    assert (imaging_plotter.visuals_2d.mask == imaging_7x7.image.mask).all()
+    assert imaging_plotter.visuals_2d.origin == (1.0, 1.0)
+    assert imaging_plotter.visuals_with_include_2d.origin == (1.0, 1.0)
+
+    assert imaging_plotter.visuals_2d.mask == None
     assert (
-        imaging_plotter.visuals_2d.border
+        imaging_plotter.visuals_with_include_2d.mask == imaging_7x7.image.mask
+    ).all()
+
+    assert imaging_plotter.visuals_2d.border == None
+    assert (
+        imaging_plotter.visuals_with_include_2d.border
         == imaging_7x7.image.mask.geometry.border_grid_sub_1.in_1d_binned
     ).all()
+
     assert imaging_plotter.visuals_2d.vector_field == 2
+    assert imaging_plotter.visuals_with_include_2d.vector_field == 2
 
     include = aplt.Include2D(origin=False, mask=False, border=False)
 
@@ -38,10 +47,10 @@ def test__visuals_in_constructor_use_imaging_and_include(imaging_7x7):
         imaging=imaging_7x7, visuals_2d=visuals_2d, include_2d=include
     )
 
-    assert imaging_plotter.visuals_2d.origin == (1.0, 1.0)
-    assert imaging_plotter.visuals_2d.mask == None
-    assert imaging_plotter.visuals_2d.border == None
-    assert imaging_plotter.visuals_2d.vector_field == 2
+    assert imaging_plotter.visuals_with_include_2d.origin == (1.0, 1.0)
+    assert imaging_plotter.visuals_with_include_2d.mask == None
+    assert imaging_plotter.visuals_with_include_2d.border == None
+    assert imaging_plotter.visuals_with_include_2d.vector_field == 2
 
 
 def test__individual_attributes_are_output(
@@ -95,7 +104,7 @@ def test__imaging_individuals__output_dependent_on_input(
         mat_plot_2d=aplt.MatPlot2D(output=aplt.Output(plot_path, format="png")),
     )
 
-    imaging_plot.individual(
+    imaging_plot.figure_individual(
         plot_image=True,
         plot_psf=True,
         plot_inverse_noise_map=True,
@@ -120,7 +129,7 @@ def test__output_as_fits__correct_output_format(
         mat_plot_2d=aplt.MatPlot2D(output=aplt.Output(path=plot_path, format="fits")),
     )
 
-    imaging_plot.individual(
+    imaging_plot.figure_individual(
         plot_image=True, plot_psf=True, plot_absolute_signal_to_noise_map=True
     )
 

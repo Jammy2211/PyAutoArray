@@ -33,6 +33,14 @@ class AbstractStructure(np.ndarray):
         raise NotImplementedError()
 
     @property
+    def in_1d(self):
+        raise NotImplementedError
+
+    @property
+    def in_2d(self):
+        raise NotImplementedError
+
+    @property
     def shape_1d(self):
         return self.mask.shape_1d
 

@@ -98,7 +98,7 @@ def test__fit_individuals__dependent_on_input(
         mat_plot_2d=aplt.MatPlot2D(output=aplt.Output(path=plot_path, format="png")),
     )
 
-    fit_interferometer_plotter.individuals(
+    fit_interferometer_plotter.figure_individuals(
         plot_visibilities=True,
         plot_noise_map=False,
         plot_signal_to_noise_map=False,

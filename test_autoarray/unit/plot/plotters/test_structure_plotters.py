@@ -27,12 +27,20 @@ class TestArrayPlotter:
             array=array_7x7, visuals_2d=visuals_2d, include_2d=include
         )
 
-        assert array_plotter.visuals_2d.origin.in_1d_list == [(0.0, 0.0)]
-        assert (array_plotter.visuals_2d.mask == array_7x7.mask).all()
+        assert array_plotter.visuals_2d.origin == (1.0, 1.0)
+        assert array_plotter.visuals_with_include_2d.origin == (1.0, 1.0)
+
+        assert array_plotter.visuals_2d.mask == None
+        assert (array_plotter.visuals_with_include_2d.mask == array_7x7.mask).all()
+
+        assert array_plotter.visuals_2d.border == None
         assert (
-            array_plotter.visuals_2d.border
+            array_plotter.visuals_with_include_2d.border
             == array_7x7.mask.geometry.border_grid_sub_1.in_1d_binned
         ).all()
+
+        assert array_plotter.visuals_2d.vector_field == 2
+        assert array_plotter.visuals_with_include_2d.vector_field == 2
 
         include = aplt.Include2D(origin=False, mask=False, border=False)
 
@@ -40,10 +48,10 @@ class TestArrayPlotter:
             array=array_7x7, visuals_2d=visuals_2d, include_2d=include
         )
 
-        assert array_plotter.visuals_2d.origin == (1.0, 1.0)
-        assert array_plotter.visuals_2d.mask == None
-        assert array_plotter.visuals_2d.border == None
-        assert array_plotter.visuals_2d.vector_field == 2
+        assert array_plotter.visuals_with_include_2d.origin == (1.0, 1.0)
+        assert array_plotter.visuals_with_include_2d.mask == None
+        assert array_plotter.visuals_with_include_2d.border == None
+        assert array_plotter.visuals_with_include_2d.vector_field == 2
 
     def test__works_with_all_extras_included(
         self,
@@ -136,14 +144,21 @@ class TestFramePlotter:
             frame=frame_7x7, visuals_2d=visuals_2d, include_2d=include
         )
 
-        assert frame_plotter.visuals_2d.origin.in_1d_list == [(0.0, 0.0)]
-        assert (frame_plotter.visuals_2d.mask == frame_7x7.mask).all()
+        assert frame_plotter.visuals_2d.origin == (1.0, 1.0)
+        assert frame_plotter.visuals_with_include_2d.origin == (1.0, 1.0)
+
+        assert frame_plotter.visuals_2d.mask == None
+        assert (frame_plotter.visuals_with_include_2d.mask == frame_7x7.mask).all()
+
+        assert frame_plotter.visuals_2d.border == None
         assert (
-            frame_plotter.visuals_2d.border
+            frame_plotter.visuals_with_include_2d.border
             == frame_7x7.mask.geometry.border_grid_sub_1.in_1d_binned
         ).all()
+
+        assert frame_plotter.visuals_2d.parallel_overscan == None
         assert (
-            frame_plotter.visuals_2d.parallel_overscan
+            frame_plotter.visuals_with_include_2d.parallel_overscan
             == frame_7x7.scans.parallel_overscan
         )
 
@@ -155,11 +170,11 @@ class TestFramePlotter:
             frame=frame_7x7, visuals_2d=visuals_2d, include_2d=include
         )
 
-        assert frame_plotter.visuals_2d.origin == (1.0, 1.0)
-        assert frame_plotter.visuals_2d.mask == None
-        assert frame_plotter.visuals_2d.border == None
-        assert frame_plotter.visuals_2d.vector_field == 2
-        assert frame_plotter.visuals_2d.parallel_overscan == None
+        assert frame_plotter.visuals_with_include_2d.origin == (1.0, 1.0)
+        assert frame_plotter.visuals_with_include_2d.mask == None
+        assert frame_plotter.visuals_with_include_2d.border == None
+        assert frame_plotter.visuals_with_include_2d.vector_field == 2
+        assert frame_plotter.visuals_with_include_2d.parallel_overscan == None
 
     def test__works_with_all_extras_included(
         self,
@@ -261,10 +276,15 @@ class TestGridPlotter:
             grid=grid_7x7, visuals_2d=visuals_2d, include_2d=include
         )
 
-        assert grid_plotter.visuals_2d.origin.in_1d_list == [(0.0, 0.0)]
-        assert (grid_plotter.visuals_2d.mask == grid_7x7.mask).all()
+        assert grid_plotter.visuals_2d.origin == (1.0, 1.0)
+        assert grid_plotter.visuals_with_include_2d.origin == (1.0, 1.0)
+
+        assert grid_plotter.visuals_2d.mask == None
+        assert (grid_plotter.visuals_with_include_2d.mask == grid_7x7.mask).all()
+
+        assert grid_plotter.visuals_2d.border == None
         assert (
-            grid_plotter.visuals_2d.border
+            grid_plotter.visuals_with_include_2d.border
             == grid_7x7.mask.geometry.border_grid_sub_1.in_1d_binned
         ).all()
 
@@ -274,10 +294,10 @@ class TestGridPlotter:
             grid=grid_7x7, visuals_2d=visuals_2d, include_2d=include
         )
 
-        assert grid_plotter.visuals_2d.origin == (1.0, 1.0)
-        assert grid_plotter.visuals_2d.mask == None
-        assert grid_plotter.visuals_2d.border == None
-        assert grid_plotter.visuals_2d.vector_field == 2
+        assert grid_plotter.visuals_with_include_2d.origin == (1.0, 1.0)
+        assert grid_plotter.visuals_with_include_2d.mask == None
+        assert grid_plotter.visuals_with_include_2d.border == None
+        assert grid_plotter.visuals_with_include_2d.vector_field == 2
 
     def test__works_with_all_extras_included(
         self,
@@ -364,12 +384,14 @@ class TestMapperPlotter:
             mapper=rectangular_mapper_7x7_3x3, include_2d=include
         )
 
-        assert mapper_plotter.visuals_2d_data.origin.in_1d_list == [(0.0, 0.0)]
+        assert mapper_plotter.visuals_data_with_include_2d.origin.in_1d_list == [
+            (0.0, 0.0)
+        ]
         assert (
-            mapper_plotter.visuals_2d_data.mask
+            mapper_plotter.visuals_data_with_include_2d.mask
             == rectangular_mapper_7x7_3x3.source_full_grid.mask
         ).all()
-        assert mapper_plotter.visuals_2d_data.grid == None
+        assert mapper_plotter.visuals_data_with_include_2d.grid == None
         #  assert visuals.border == (0, 2)
 
         include = aplt.Include2D(
@@ -380,10 +402,10 @@ class TestMapperPlotter:
             mapper=rectangular_mapper_7x7_3x3, include_2d=include
         )
 
-        assert mapper_plotter.visuals_2d_data.origin == None
-        assert mapper_plotter.visuals_2d_data.mask == None
-        assert mapper_plotter.visuals_2d_data.grid == None
-        assert mapper_plotter.visuals_2d_data.border == None
+        assert mapper_plotter.visuals_data_with_include_2d.origin == None
+        assert mapper_plotter.visuals_data_with_include_2d.mask == None
+        assert mapper_plotter.visuals_data_with_include_2d.grid == None
+        assert mapper_plotter.visuals_data_with_include_2d.border == None
 
     def test__visuals_for_data_from_voronoi_mapper(self, voronoi_mapper_9_3x3):
 
@@ -395,13 +417,15 @@ class TestMapperPlotter:
             mapper=voronoi_mapper_9_3x3, include_2d=include
         )
 
-        assert mapper_plotter.visuals_2d_data.origin.in_1d_list == [(0.0, 0.0)]
+        assert mapper_plotter.visuals_data_with_include_2d.origin.in_1d_list == [
+            (0.0, 0.0)
+        ]
         assert (
-            mapper_plotter.visuals_2d_data.mask
+            mapper_plotter.visuals_data_with_include_2d.mask
             == voronoi_mapper_9_3x3.source_full_grid.mask
         ).all()
         assert (
-            mapper_plotter.visuals_2d_data.pixelization_grid
+            mapper_plotter.visuals_data_with_include_2d.pixelization_grid
             == aa.Grid.uniform(shape_2d=(2, 2), pixel_scales=0.1)
         ).all()
         #      assert visuals.border.shape == (0, 2)
@@ -414,11 +438,11 @@ class TestMapperPlotter:
             mapper=voronoi_mapper_9_3x3, include_2d=include
         )
 
-        assert mapper_plotter.visuals_2d_data.origin == None
-        assert mapper_plotter.visuals_2d_data.mask == None
-        assert mapper_plotter.visuals_2d_data.grid == None
-        assert mapper_plotter.visuals_2d_data.pixelization_grid == None
-        assert mapper_plotter.visuals_2d_data.border == None
+        assert mapper_plotter.visuals_data_with_include_2d.origin == None
+        assert mapper_plotter.visuals_data_with_include_2d.mask == None
+        assert mapper_plotter.visuals_data_with_include_2d.grid == None
+        assert mapper_plotter.visuals_data_with_include_2d.pixelization_grid == None
+        assert mapper_plotter.visuals_data_with_include_2d.border == None
 
     def test__visuals_for_source_from_rectangular_mapper(
         self, rectangular_mapper_7x7_3x3
@@ -435,13 +459,16 @@ class TestMapperPlotter:
             mapper=rectangular_mapper_7x7_3x3, include_2d=include
         )
 
-        assert mapper_plotter.visuals_2d_source.origin.in_1d_list == [(0.0, 0.0)]
+        assert mapper_plotter.visuals_2d.origin == None
+        assert mapper_plotter.visuals_source_with_include_2d.origin.in_1d_list == [
+            (0.0, 0.0)
+        ]
         assert (
-            mapper_plotter.visuals_2d_source.grid
+            mapper_plotter.visuals_source_with_include_2d.grid
             == rectangular_mapper_7x7_3x3.source_full_grid
         ).all()
         assert (
-            mapper_plotter.visuals_2d_source.pixelization_grid
+            mapper_plotter.visuals_source_with_include_2d.pixelization_grid
             == rectangular_mapper_7x7_3x3.source_pixelization_grid
         ).all()
         #    assert visuals.border.shape == (0, 2)
@@ -457,10 +484,10 @@ class TestMapperPlotter:
             mapper=rectangular_mapper_7x7_3x3, include_2d=include
         )
 
-        assert mapper_plotter.visuals_2d_source.origin == None
-        assert mapper_plotter.visuals_2d_source.grid == None
-        assert mapper_plotter.visuals_2d_source.pixelization_grid == None
-        assert mapper_plotter.visuals_2d_source.border == None
+        assert mapper_plotter.visuals_source_with_include_2d.origin == None
+        assert mapper_plotter.visuals_source_with_include_2d.grid == None
+        assert mapper_plotter.visuals_source_with_include_2d.pixelization_grid == None
+        assert mapper_plotter.visuals_source_with_include_2d.border == None
 
     def test__visuals_for_source_from_voronoi_mapper(self, voronoi_mapper_9_3x3):
 
@@ -475,13 +502,16 @@ class TestMapperPlotter:
             mapper=voronoi_mapper_9_3x3, include_2d=include
         )
 
-        assert mapper_plotter.visuals_2d_source.origin.in_1d_list == [(0.0, 0.0)]
+        assert mapper_plotter.visuals_2d.origin == None
+        assert mapper_plotter.visuals_source_with_include_2d.origin.in_1d_list == [
+            (0.0, 0.0)
+        ]
         assert (
-            mapper_plotter.visuals_2d_source.grid
+            mapper_plotter.visuals_source_with_include_2d.grid
             == voronoi_mapper_9_3x3.source_full_grid
         ).all()
         assert (
-            mapper_plotter.visuals_2d_source.pixelization_grid
+            mapper_plotter.visuals_source_with_include_2d.pixelization_grid
             == voronoi_mapper_9_3x3.source_pixelization_grid
         ).all()
         #      assert visuals.border.shape == (0, 2)
@@ -496,9 +526,9 @@ class TestMapperPlotter:
             mapper=voronoi_mapper_9_3x3, include_2d=include
         )
 
-        assert mapper_plotter.visuals_2d_source.origin == None
-        assert mapper_plotter.visuals_2d_source.grid == None
-        assert mapper_plotter.visuals_2d_source.border == None
+        assert mapper_plotter.visuals_source_with_include_2d.origin == None
+        assert mapper_plotter.visuals_source_with_include_2d.grid == None
+        assert mapper_plotter.visuals_source_with_include_2d.border == None
 
     def test__plot_rectangular_mapper__works_with_all_extras_included(
         self, rectangular_mapper_7x7_3x3, plot_path, plot_patch
