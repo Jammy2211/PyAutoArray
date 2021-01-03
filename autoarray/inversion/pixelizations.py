@@ -132,6 +132,7 @@ class Rectangular(Pixelization):
         self,
         grid: grids.Grid,
         sparse_grid: grids.Grid = None,
+        sparse_image_plane_grid: grids.Grid = None,
         hyper_image: np.ndarray = None,
         settings=SettingsPixelization(),
     ):
@@ -189,6 +190,7 @@ class Voronoi(Pixelization):
         self,
         grid: grids.Grid,
         sparse_grid: grids.Grid = None,
+        sparse_image_plane_grid: grids.Grid = None,
         hyper_image: np.ndarray = None,
         settings=SettingsPixelization(),
     ):
@@ -232,7 +234,7 @@ class Voronoi(Pixelization):
             return mappers.MapperVoronoi(
                 source_full_grid=relocated_grid,
                 source_pixelization_grid=pixelization_grid,
-                data_pixelization_grid=sparse_grid,
+                data_pixelization_grid=sparse_image_plane_grid,
                 hyper_image=hyper_image,
             )
         except ValueError as e:

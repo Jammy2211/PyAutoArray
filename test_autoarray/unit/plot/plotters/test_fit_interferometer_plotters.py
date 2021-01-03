@@ -36,41 +36,39 @@ def test__fit_quantities_are_output(fit_interferometer_7, plot_path, plot_patch)
     fit_interferometer_plotter.figure_model_visibilities()
     assert path.join(plot_path, "model_visibilities.png") in plot_patch.paths
 
-    fit_interferometer_plotter.figure_residual_map_vs_uv_distances()
+    fit_interferometer_plotter.figure_real_residual_map_vs_uv_distances()
     assert (
-        path.join(plot_path, "residual_map_vs_uv_distances_real.png")
+        path.join(plot_path, "real_residual_map_vs_uv_distances.png")
         in plot_patch.paths
     )
 
-    fit_interferometer_plotter.figure_residual_map_vs_uv_distances(plot_real=False)
+    fit_interferometer_plotter.figure_real_residual_map_vs_uv_distances()
     assert (
-        path.join(plot_path, "residual_map_vs_uv_distances_imag.png")
+        path.join(plot_path, "real_residual_map_vs_uv_distances.png")
         in plot_patch.paths
     )
 
-    fit_interferometer_plotter.figure_normalized_residual_map_vs_uv_distances()
+    fit_interferometer_plotter.figure_real_normalized_residual_map_vs_uv_distances()
     assert (
-        path.join(plot_path, "normalized_residual_map_vs_uv_distances_real.png")
+        path.join(plot_path, "real_normalized_residual_map_vs_uv_distances.png")
         in plot_patch.paths
     )
 
-    fit_interferometer_plotter.figure_normalized_residual_map_vs_uv_distances(
-        plot_real=False
-    )
+    fit_interferometer_plotter.figure_imag_normalized_residual_map_vs_uv_distances()
     assert (
-        path.join(plot_path, "normalized_residual_map_vs_uv_distances_imag.png")
+        path.join(plot_path, "imag_normalized_residual_map_vs_uv_distances.png")
         in plot_patch.paths
     )
 
-    fit_interferometer_plotter.figure_chi_squared_map_vs_uv_distances()
+    fit_interferometer_plotter.figure_imag_chi_squared_map_vs_uv_distances()
     assert (
-        path.join(plot_path, "chi_squared_map_vs_uv_distances_real.png")
+        path.join(plot_path, "imag_chi_squared_map_vs_uv_distances.png")
         in plot_patch.paths
     )
 
-    fit_interferometer_plotter.figure_chi_squared_map_vs_uv_distances(plot_real=False)
+    fit_interferometer_plotter.figure_imag_chi_squared_map_vs_uv_distances()
     assert (
-        path.join(plot_path, "chi_squared_map_vs_uv_distances_imag.png")
+        path.join(plot_path, "imag_chi_squared_map_vs_uv_distances.png")
         in plot_patch.paths
     )
 
@@ -111,26 +109,26 @@ def test__fit_individuals__dependent_on_input(
     assert path.join(plot_path, "signal_to_noise_map.png") not in plot_patch.paths
     assert path.join(plot_path, "model_visibilities.png") in plot_patch.paths
     assert (
-        path.join(plot_path, "residual_map_vs_uv_distances_real.png")
+        path.join(plot_path, "real_residual_map_vs_uv_distances.png")
         not in plot_patch.paths
     )
     assert (
-        path.join(plot_path, "residual_map_vs_uv_distances_imag.png")
+        path.join(plot_path, "imag_residual_map_vs_uv_distances.png")
         not in plot_patch.paths
     )
     assert (
-        path.join(plot_path, "normalized_residual_map_vs_uv_distances_real.png")
+        path.join(plot_path, "real_normalized_residual_map_vs_uv_distances.png")
         not in plot_patch.paths
     )
     assert (
-        path.join(plot_path, "normalized_residual_map_vs_uv_distances_imag.png")
+        path.join(plot_path, "imag_normalized_residual_map_vs_uv_distances.png")
         not in plot_patch.paths
     )
     assert (
-        path.join(plot_path, "chi_squared_map_vs_uv_distances_real.png")
+        path.join(plot_path, "real_chi_squared_map_vs_uv_distances.png")
         in plot_patch.paths
     )
     assert (
-        path.join(plot_path, "chi_squared_map_vs_uv_distances_imag.png")
+        path.join(plot_path, "imag_chi_squared_map_vs_uv_distances.png")
         in plot_patch.paths
     )

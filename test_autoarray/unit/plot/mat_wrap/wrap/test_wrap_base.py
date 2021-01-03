@@ -489,22 +489,6 @@ class TestTitle:
         assert title.config_dict["label"] == "OMG2"
         assert title.config_dict["fontsize"] == 2
 
-    def test__title_from_func__uses_func_name_if_title_is_none(self):
-        def toy_func():
-            pass
-
-        label = aplt.Title(label=None)
-
-        title_from_func = label.title_from_func(func=toy_func)
-
-        assert title_from_func == "Toy_func"
-
-        label = aplt.Title(label="Hi")
-
-        title_from_func = label.title_from_func(func=toy_func)
-
-        assert title_from_func == "Hi"
-
 
 class TestYLabel:
     def test__loads_values_from_config_if_not_manually_input(self):
@@ -561,46 +545,6 @@ class TestYLabel:
         assert ylabel._units == "hi"
         assert ylabel.label_from_units(units=units) == "hi"
 
-    def test__units_from_func__uses_function_inputs_if_available(self):
-        def toy_func():
-            pass
-
-        ylabel = aplt.YLabel(units=None)
-
-        yunits_from_func = ylabel.units_from_func(func=toy_func)
-
-        assert yunits_from_func == None
-
-        def toy_func(label_yunits="Hi"):
-            pass
-
-        ylabel = aplt.YLabel()
-
-        yunits_from_func = ylabel.units_from_func(func=toy_func)
-
-        assert yunits_from_func == "Hi"
-
-        ylabel = aplt.YLabel(units="Hi1")
-
-        yunits_from_func = ylabel.units_from_func(func=toy_func)
-
-        assert yunits_from_func == "Hi1"
-
-        def toy_func(argument, label_yunits="Hi"):
-            pass
-
-        ylabel = aplt.YLabel()
-
-        yunits_from_func = ylabel.units_from_func(func=toy_func)
-
-        assert yunits_from_func == "Hi"
-
-        ylabel = aplt.YLabel(units="Hi1")
-
-        yunits_from_func = ylabel.units_from_func(func=toy_func)
-
-        assert yunits_from_func == "Hi1"
-
 
 class TestXLabel:
     def test__loads_values_from_config_if_not_manually_input(self):
@@ -654,46 +598,6 @@ class TestXLabel:
 
         assert xlabel._units == "hi"
         assert xlabel.label_from_units(units=units) == "hi"
-
-    def test__units_from_func__uses_function_inputs_if_available(self):
-        def toy_func():
-            pass
-
-        xlabel = aplt.XLabel(units=None)
-
-        yunits_from_func = xlabel.units_from_func(func=toy_func)
-
-        assert yunits_from_func == None
-
-        def toy_func(label_yunits="Hi"):
-            pass
-
-        xlabel = aplt.XLabel()
-
-        yunits_from_func = xlabel.units_from_func(func=toy_func)
-
-        assert yunits_from_func == "Hi"
-
-        xlabel = aplt.XLabel(units="Hi1")
-
-        yunits_from_func = xlabel.units_from_func(func=toy_func)
-
-        assert yunits_from_func == "Hi1"
-
-        def toy_func(argument, label_yunits="Hi"):
-            pass
-
-        xlabel = aplt.XLabel()
-
-        yunits_from_func = xlabel.units_from_func(func=toy_func)
-
-        assert yunits_from_func == "Hi"
-
-        xlabel = aplt.XLabel(units="Hi1")
-
-        yunits_from_func = xlabel.units_from_func(func=toy_func)
-
-        assert yunits_from_func == "Hi1"
 
 
 class TestLegend:
@@ -772,19 +676,3 @@ class TestOutput:
         output = aplt.Output(path=test_path)
 
         assert path.exists(test_path)
-
-    def test__filename_from_func__returns_function_name_if_no_filename(self):
-        def toy_func():
-            pass
-
-        output = aplt.Output(filename=None)
-
-        filename_from_func = output.filename_from_func(func=toy_func)
-
-        assert filename_from_func == "toy_func"
-
-        output = aplt.Output(filename="Hi")
-
-        filename_from_func = output.filename_from_func(func=toy_func)
-
-        assert filename_from_func == "Hi"

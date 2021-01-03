@@ -10,8 +10,11 @@ class AbstractVisuals:
     def __add__(self, other):
 
         for attr, value in other.__dict__.items():
-            if self.__dict__[attr] is None and other.__dict__[attr] is not None:
-                self.__dict__[attr] = other.__dict__[attr]
+            try:
+                if self.__dict__[attr] is None and other.__dict__[attr] is not None:
+                    self.__dict__[attr] = other.__dict__[attr]
+            except KeyError:
+                pass
 
         return self
 
@@ -58,7 +61,7 @@ class Visuals1D(AbstractVisuals):
         #     )
 
         if self.lines is not None:
-            plotter.line_plot.plot_grid_grouped(grid_grouped=self.lines)
+            plotter.grid_plot.plot_grid_grouped(grid_grouped=self.lines)
 
 
 class Visuals2D(AbstractVisuals):
@@ -70,7 +73,7 @@ class Visuals2D(AbstractVisuals):
         grid: grids.Grid = None,
         pixelization_grid: grids.Grid = None,
         vector_field: vector_fields.VectorFieldIrregular = None,
-        patches: typing.Union[ptch.Patch] = None,
+        patches: typing.List[ptch.Patch] = None,
         array_overlay: arrays.Array = None,
         origin: grids.Grid = None,
         border: grids.Grid = None,
@@ -124,4 +127,4 @@ class Visuals2D(AbstractVisuals):
             plotter.patch_overlay.overlay_patches(patches=self.patches)
 
         if self.lines is not None:
-            plotter.line_plot.plot_grid_grouped(grid_grouped=self.lines)
+            plotter.grid_plot.plot_grid_grouped(grid_grouped=self.lines)

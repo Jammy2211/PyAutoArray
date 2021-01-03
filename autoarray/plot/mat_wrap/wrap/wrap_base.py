@@ -1,8 +1,6 @@
 from autoconf import conf
 import matplotlib
 
-from typing import Callable
-
 
 def set_backend():
 
@@ -111,7 +109,7 @@ class AbstractMatWrap:
         figure = aplt.Figure(figsize=(7,7), aspect="square")
         cmap = aplt.Cmap(cmap="jet", vmin=1.0, vmax=2.0)
         
-        plotter = aplt.Plotter(figure=figure, cmap=cmap)
+        plotter = aplt.MatPlot2D(figure=figure, cmap=cmap)
         
         aplt.Array(array=arr, plotter=plotter)
         
@@ -679,19 +677,6 @@ class Title(AbstractMatWrap):
         if "label" not in self.kwargs:
             self.kwargs["label"] = None
 
-    def title_from_func(self, func: Callable) -> str:
-        """If a title is not manually specified use the name of the function plotting the image to set the title.
-
-        Parameters
-        ----------
-        func : func
-           The function plotting the image.
-        """
-        if self.config_dict_title["label"] is None:
-            return func.__name__.capitalize()
-        else:
-            return self.config_dict_title["label"]
-
     def set(self):
         plt.title(**self.config_dict_title)
 
@@ -720,40 +705,6 @@ class AbstractLabel(AbstractMatWrap):
 
         self.manual_label = manual_label
         self._units = units
-
-    def units_from_func(
-        self, func: Callable, for_ylabel=True
-    ) -> typing.Optional["Units"]:
-        """
-        If the x label is not manually specified use the function plotting the image to x label, assuming that it
-        represents spatial units.
-
-        Parameters
-        ----------
-        func : func
-           The function plotting the image.
-        """
-
-        if self._units is None:
-
-            args = inspect.getfullargspec(func).args
-            defaults = inspect.getfullargspec(func).defaults
-
-            if defaults is not None:
-                non_default_args = len(args) - len(defaults)
-            else:
-                non_default_args = 0
-
-            if (not for_ylabel) and "label_xunits" in args:
-                return defaults[args.index("label_xunits") - non_default_args]
-            elif for_ylabel and "label_yunits" in args:
-                return defaults[args.index("label_yunits") - non_default_args]
-            else:
-                return None
-
-        else:
-
-            return self._units
 
     def label_from_units(self, units: Units) -> typing.Optional[str]:
         """
@@ -915,20 +866,6 @@ class Output:
         else:
             return self._format
 
-    def filename_from_func(self, func: Callable) -> str:
-        """If a filename is not manually specified use the name of the function plotting the image to set it.
-
-        Parameters
-        ----------
-        func : func
-           The function plotting the image.
-        """
-        if self.filename is None:
-            funcname = func.__name__
-            return funcname.replace("figure_", "")
-        else:
-            return self.filename
-
     def to_figure(self, structure: abstract_structure.AbstractStructure):
         """Output the figure, by either displaying it on the user's screen or to the hard-disk as a .png or .fits file.
 
@@ -937,6 +874,7 @@ class Output:
         structure : abstract_structure.AbstractStructure
             The 2D array of image to be output, required for outputting the image as a fits file.
         """
+
         if not self.bypass:
             if self.format == "show":
                 plt.show()

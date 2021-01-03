@@ -29,7 +29,7 @@ class ImagingPlotter(abstract_plotters.AbstractPlotter):
 
         return visuals_2d + self.visuals_from_structure(structure=self.imaging.image)
 
-    @abstract_plotters.set_labels
+    @abstract_plotters.for_figure
     def figure_image(self):
         """Plot the observed data_type of the imaging data_type.
     
@@ -49,7 +49,7 @@ class ImagingPlotter(abstract_plotters.AbstractPlotter):
             array=self.imaging.image, visuals_2d=self.visuals_with_include_2d
         )
 
-    @abstract_plotters.set_labels
+    @abstract_plotters.for_figure
     def figure_noise_map(self):
         """Plot the noise_map of the imaging data_type.
     
@@ -66,7 +66,7 @@ class ImagingPlotter(abstract_plotters.AbstractPlotter):
             array=self.imaging.noise_map, visuals_2d=self.visuals_with_include_2d
         )
 
-    @abstract_plotters.set_labels
+    @abstract_plotters.for_figure
     def figure_psf(self):
         """Plot the PSF of the imaging data_type.
     
@@ -83,7 +83,7 @@ class ImagingPlotter(abstract_plotters.AbstractPlotter):
             array=self.imaging.psf, visuals_2d=self.visuals_with_include_2d
         )
 
-    @abstract_plotters.set_labels
+    @abstract_plotters.for_figure
     def figure_inverse_noise_map(self):
         """Plot the noise_map of the imaging data_type.
     
@@ -101,7 +101,7 @@ class ImagingPlotter(abstract_plotters.AbstractPlotter):
             visuals_2d=self.visuals_with_include_2d,
         )
 
-    @abstract_plotters.set_labels
+    @abstract_plotters.for_figure
     def figure_signal_to_noise_map(self):
         """Plot the signal-to-noise_map of the imaging data_type.
     
@@ -119,7 +119,7 @@ class ImagingPlotter(abstract_plotters.AbstractPlotter):
             visuals_2d=self.visuals_with_include_2d,
         )
 
-    @abstract_plotters.set_labels
+    @abstract_plotters.for_figure
     def figure_absolute_signal_to_noise_map(self):
         """Plot the signal-to-noise_map of the imaging data_type.
     
@@ -137,7 +137,7 @@ class ImagingPlotter(abstract_plotters.AbstractPlotter):
             visuals_2d=self.visuals_with_include_2d,
         )
 
-    @abstract_plotters.set_labels
+    @abstract_plotters.for_figure
     def figure_potential_chi_squared_map(self):
         """Plot the signal-to-noise_map of the imaging data_type.
     
@@ -193,6 +193,7 @@ class ImagingPlotter(abstract_plotters.AbstractPlotter):
         if plot_potential_chi_squared_map:
             self.figure_potential_chi_squared_map()
 
+    @abstract_plotters.for_subplot
     def subplot_imaging(self):
         """Plot the imaging data_type as a sub-mat_plot_2d of all its quantites (e.g. the dataset, noise_map, PSF, Signal-to_noise-map, \
          etc).
@@ -213,38 +214,33 @@ class ImagingPlotter(abstract_plotters.AbstractPlotter):
             config file is ignored.
         """
 
-        mat_plot_2d = self.mat_plot_2d.mat_plot_for_subplot_from(
-            func=self.subplot_imaging
-        )
-
         number_subplots = 6
 
-        mat_plot_2d.open_subplot_figure(number_subplots=number_subplots)
+        self.open_subplot_figure(number_subplots=number_subplots)
 
-        mat_plot_2d.setup_subplot(number_subplots=number_subplots, subplot_index=1)
+        self.setup_subplot(number_subplots=number_subplots, subplot_index=1)
 
         self.figure_image()
 
-        mat_plot_2d.setup_subplot(number_subplots=number_subplots, subplot_index=2)
+        self.setup_subplot(number_subplots=number_subplots, subplot_index=2)
 
         self.figure_noise_map()
 
-        mat_plot_2d.setup_subplot(number_subplots=number_subplots, subplot_index=3)
+        self.setup_subplot(number_subplots=number_subplots, subplot_index=3)
 
         self.figure_psf()
 
-        mat_plot_2d.setup_subplot(number_subplots=number_subplots, subplot_index=4)
+        self.setup_subplot(number_subplots=number_subplots, subplot_index=4)
 
         self.figure_signal_to_noise_map()
 
-        mat_plot_2d.setup_subplot(number_subplots=number_subplots, subplot_index=5)
+        self.setup_subplot(number_subplots=number_subplots, subplot_index=5)
 
         self.figure_inverse_noise_map()
 
-        mat_plot_2d.setup_subplot(number_subplots=number_subplots, subplot_index=6)
+        self.setup_subplot(number_subplots=number_subplots, subplot_index=6)
 
         self.figure_potential_chi_squared_map()
 
-        mat_plot_2d.output.subplot_to_figure()
-
-        mat_plot_2d.figure.close()
+        self.mat_plot_2d.output.subplot_to_figure()
+        self.mat_plot_2d.figure.close()

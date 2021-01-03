@@ -166,8 +166,6 @@ class GridVoronoi(np.ndarray):
             nearest_pixelization_1d_index_for_mask_1d_index
         )
 
-        obj.pixels = grid.shape[0]
-
         try:
             obj.voronoi = scipy.spatial.Voronoi(
                 np.asarray([grid[:, 1], grid[:, 0]]).T, qhull_options="Qbb Qc Qx Qm"
@@ -191,6 +189,9 @@ class GridVoronoi(np.ndarray):
         return obj
 
     def __array_finalize__(self, obj):
+
+        if hasattr(obj, "voronoi"):
+            self.voronoi = obj.voronoi
 
         if hasattr(obj, "pixel_neighbors"):
             self.pixel_neighbors = obj.pixel_neighbors
@@ -227,6 +228,10 @@ class GridVoronoi(np.ndarray):
     @property
     def origin(self):
         return (0.0, 0.0)
+
+    @property
+    def pixels(self):
+        return self.shape[0]
 
     @property
     def sub_border_grid(self):
