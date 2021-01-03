@@ -68,11 +68,11 @@ class LinePlot(AbstractMatWrap1D, wrap_base.AbstractMatWrapColored):
         """
 
         if plot_axis_type == "linear":
-            plt.plot(x, y, c=self.colors, label=label, **self.config_dict_plot)
+            plt.plot(x, y, c=self.colors[0], label=label, **self.config_dict_plot)
         elif plot_axis_type == "semilogy":
-            plt.semilogy(x, y, c=self.colors, label=label, **self.config_dict_plot)
+            plt.semilogy(x, y, c=self.colors[0], label=label, **self.config_dict_plot)
         elif plot_axis_type == "loglog":
-            plt.loglog(x, y, c=self.colors, label=label, **self.config_dict_plot)
+            plt.loglog(x, y, c=self.colors[0], label=label, **self.config_dict_plot)
         elif plot_axis_type == "scatter":
             plt.scatter(x, y, c=self.colors[0], label=label, **self.config_dict_scatter)
         else:
@@ -112,6 +112,6 @@ class LinePlot(AbstractMatWrap1D, wrap_base.AbstractMatWrapColored):
             plt.axvline(
                 x=vertical_line,
                 label=vertical_line_label,
-                c=self.colors,
+                c=self.colors[0],
                 **self.config_dict_plot,
             )

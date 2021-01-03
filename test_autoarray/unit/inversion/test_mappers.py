@@ -30,7 +30,7 @@ def grid_to_pixel_pixels_via_nearest_neighbour(grid, pixel_centers):
 
 
 class TestRectangularMapper:
-    def test__sub_to_pix__variuos_grids__1_coordinate_per_square_pixel__in_centre_of_pixels(
+    def test__sub_to_pix__various_grids__1_coordinate_per_square_pixel__in_centre_of_pixels(
         self,
     ):
         #   _ _ _
@@ -66,6 +66,8 @@ class TestRectangularMapper:
             mapper.pixelization_1d_index_for_sub_full_1d_index
             == np.array([0, 1, 2, 3, 4, 5, 6, 7, 8])
         ).all()
+
+        print(mapper.all_sub_full_1d_indexes_for_pixelization_1d_index)
 
         assert mapper.all_sub_full_1d_indexes_for_pixelization_1d_index == [
             [0],

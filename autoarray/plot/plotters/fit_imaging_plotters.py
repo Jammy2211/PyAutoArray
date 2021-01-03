@@ -4,6 +4,7 @@ from autoarray.plot.mat_wrap import include as inc
 from autoarray.plot.mat_wrap import mat_plot
 from autoarray.fit import fit as f
 
+import typing
 import copy
 
 
@@ -29,7 +30,7 @@ class FitImagingPlotter(abstract_plotters.AbstractPlotter):
 
         return visuals_2d + self.visuals_from_structure(structure=self.fit.image)
 
-    @abstract_plotters.set_labels
+    @abstract_plotters.for_figure
     def figure_image(self):
         """Plot the image of a lens fit.
     
@@ -42,9 +43,11 @@ class FitImagingPlotter(abstract_plotters.AbstractPlotter):
         origin : True
             If true, the origin of the datas's coordinate system is plotted as a 'x'.
         """
-        self.mat_plot_2d.plot_array(array=self.fit.data, visuals_2d=self.visuals_2d)
+        self.mat_plot_2d.plot_array(
+            array=self.fit.data, visuals_2d=self.visuals_with_include_2d
+        )
 
-    @abstract_plotters.set_labels
+    @abstract_plotters.for_figure
     def figure_noise_map(self):
         """Plot the noise-map of a lens fit.
     
@@ -58,10 +61,10 @@ class FitImagingPlotter(abstract_plotters.AbstractPlotter):
             If true, the origin of the datas's coordinate system is plotted as a 'x'.
         """
         self.mat_plot_2d.plot_array(
-            array=self.fit.noise_map, visuals_2d=self.visuals_2d
+            array=self.fit.noise_map, visuals_2d=self.visuals_with_include_2d
         )
 
-    @abstract_plotters.set_labels
+    @abstract_plotters.for_figure
     def figure_signal_to_noise_map(self):
         """Plot the noise-map of a lens fit.
     
@@ -75,10 +78,10 @@ class FitImagingPlotter(abstract_plotters.AbstractPlotter):
         If true, the origin of the datas's coordinate system is plotted as a 'x'.
         """
         self.mat_plot_2d.plot_array(
-            array=self.fit.signal_to_noise_map, visuals_2d=self.visuals_2d
+            array=self.fit.signal_to_noise_map, visuals_2d=self.visuals_with_include_2d
         )
 
-    @abstract_plotters.set_labels
+    @abstract_plotters.for_figure
     def figure_model_image(self):
         """Plot the model image of a fit.
     
@@ -92,10 +95,10 @@ class FitImagingPlotter(abstract_plotters.AbstractPlotter):
             The index of the datas in the datas-set of which the model image is plotted.
         """
         self.mat_plot_2d.plot_array(
-            array=self.fit.model_data, visuals_2d=self.visuals_2d
+            array=self.fit.model_data, visuals_2d=self.visuals_with_include_2d
         )
 
-    @abstract_plotters.set_labels
+    @abstract_plotters.for_figure
     def figure_residual_map(self):
         """Plot the residual-map of a lens fit.
     
@@ -109,10 +112,10 @@ class FitImagingPlotter(abstract_plotters.AbstractPlotter):
             The index of the datas in the datas-set of which the residual_map are plotted.
         """
         self.mat_plot_2d.plot_array(
-            array=self.fit.residual_map, visuals_2d=self.visuals_2d
+            array=self.fit.residual_map, visuals_2d=self.visuals_with_include_2d
         )
 
-    @abstract_plotters.set_labels
+    @abstract_plotters.for_figure
     def figure_normalized_residual_map(self):
         """Plot the residual-map of a lens fit.
     
@@ -126,10 +129,11 @@ class FitImagingPlotter(abstract_plotters.AbstractPlotter):
             The index of the datas in the datas-set of which the normalized_residual_map are plotted.
         """
         self.mat_plot_2d.plot_array(
-            array=self.fit.normalized_residual_map, visuals_2d=self.visuals_2d
+            array=self.fit.normalized_residual_map,
+            visuals_2d=self.visuals_with_include_2d,
         )
 
-    @abstract_plotters.set_labels
+    @abstract_plotters.for_figure
     def figure_chi_squared_map(self):
         """Plot the chi-squared-map of a lens fit.
     
@@ -143,7 +147,7 @@ class FitImagingPlotter(abstract_plotters.AbstractPlotter):
             The index of the datas in the datas-set of which the chi-squareds are plotted.
         """
         self.mat_plot_2d.plot_array(
-            array=self.fit.chi_squared_map, visuals_2d=self.visuals_2d
+            array=self.fit.chi_squared_map, visuals_2d=self.visuals_with_include_2d
         )
 
     def figure_individuals(
@@ -186,40 +190,37 @@ class FitImagingPlotter(abstract_plotters.AbstractPlotter):
         if plot_chi_squared_map:
             self.figure_chi_squared_map()
 
+    @abstract_plotters.for_subplot
     def subplot_fit_imaging(self):
-
-        mat_plot_2d = self.mat_plot_2d.mat_plot_for_subplot_from(
-            func=self.subplot_fit_imaging
-        )
 
         number_subplots = 6
 
-        mat_plot_2d.open_subplot_figure(number_subplots=number_subplots)
+        self.open_subplot_figure(number_subplots=number_subplots)
 
-        mat_plot_2d.setup_subplot(number_subplots=number_subplots, subplot_index=1)
+        self.setup_subplot(number_subplots=number_subplots, subplot_index=1)
 
         self.figure_image()
 
-        mat_plot_2d.setup_subplot(number_subplots=number_subplots, subplot_index=2)
+        self.setup_subplot(number_subplots=number_subplots, subplot_index=2)
 
         self.figure_signal_to_noise_map()
 
-        mat_plot_2d.setup_subplot(number_subplots=number_subplots, subplot_index=3)
+        self.setup_subplot(number_subplots=number_subplots, subplot_index=3)
 
         self.figure_model_image()
 
-        mat_plot_2d.setup_subplot(number_subplots=number_subplots, subplot_index=4)
+        self.setup_subplot(number_subplots=number_subplots, subplot_index=4)
 
         self.figure_residual_map()
 
-        mat_plot_2d.setup_subplot(number_subplots=number_subplots, subplot_index=5)
+        self.setup_subplot(number_subplots=number_subplots, subplot_index=5)
 
         self.figure_normalized_residual_map()
 
-        mat_plot_2d.setup_subplot(number_subplots=number_subplots, subplot_index=6)
+        self.setup_subplot(number_subplots=number_subplots, subplot_index=6)
 
         self.figure_chi_squared_map()
 
-        mat_plot_2d.output.subplot_to_figure()
+        self.mat_plot_2d.output.subplot_to_figure()
 
-        mat_plot_2d.figure.close()
+        self.mat_plot_2d.figure.close()

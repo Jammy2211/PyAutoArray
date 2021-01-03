@@ -23,13 +23,14 @@ class InversionPlotter(structure_plotters.MapperPlotter):
 
         self.inversion = inversion
 
-    @abstract_plotters.set_labels
+    @abstract_plotters.for_figure
     def figure_reconstructed_image(self):
         self.mat_plot_2d.plot_array(
-            array=self.inversion.mapped_reconstructed_image, visuals_2d=self.visuals_2d
+            array=self.inversion.mapped_reconstructed_image,
+            visuals_2d=self.visuals_data_with_include_2d,
         )
 
-    @abstract_plotters.set_labels
+    @abstract_plotters.for_figure
     def figure_reconstruction(self, full_indexes=None, pixelization_indexes=None):
 
         source_pixelilzation_values = self.inversion.mapper.reconstructed_source_pixelization_from_solution_vector(
@@ -38,12 +39,13 @@ class InversionPlotter(structure_plotters.MapperPlotter):
 
         self.mat_plot_2d.plot_mapper(
             mapper=self.inversion.mapper,
+            visuals_2d=self.visuals_source_with_include_2d,
             source_pixelilzation_values=source_pixelilzation_values,
             full_indexes=full_indexes,
             pixelization_indexes=pixelization_indexes,
         )
 
-    @abstract_plotters.set_labels
+    @abstract_plotters.for_figure
     def figure_errors(self, full_indexes=None, pixelization_indexes=None):
 
         source_pixelilzation_values = self.inversion.mapper.reconstructed_source_pixelization_from_solution_vector(
@@ -52,13 +54,13 @@ class InversionPlotter(structure_plotters.MapperPlotter):
 
         self.mat_plot_2d.plot_mapper(
             mapper=self.inversion.mapper,
-            visuals_2d=self.visuals_2d,
+            visuals_2d=self.visuals_source_with_include_2d,
             source_pixelilzation_values=source_pixelilzation_values,
             full_indexes=full_indexes,
             pixelization_indexes=pixelization_indexes,
         )
 
-    @abstract_plotters.set_labels
+    @abstract_plotters.for_figure
     def figure_residual_map(self, full_indexes=None, pixelization_indexes=None):
 
         source_pixelilzation_values = self.inversion.mapper.reconstructed_source_pixelization_from_solution_vector(
@@ -67,13 +69,13 @@ class InversionPlotter(structure_plotters.MapperPlotter):
 
         self.mat_plot_2d.plot_mapper(
             mapper=self.inversion.mapper,
-            visuals_2d=self.visuals_2d,
+            visuals_2d=self.visuals_source_with_include_2d,
             source_pixelilzation_values=source_pixelilzation_values,
             full_indexes=full_indexes,
             pixelization_indexes=pixelization_indexes,
         )
 
-    @abstract_plotters.set_labels
+    @abstract_plotters.for_figure
     def figure_normalized_residual_map(
         self, full_indexes=None, pixelization_indexes=None
     ):
@@ -84,13 +86,13 @@ class InversionPlotter(structure_plotters.MapperPlotter):
 
         self.mat_plot_2d.plot_mapper(
             mapper=self.inversion.mapper,
-            visuals_2d=self.visuals_2d,
+            visuals_2d=self.visuals_source_with_include_2d,
             source_pixelilzation_values=source_pixelilzation_values,
             full_indexes=full_indexes,
             pixelization_indexes=pixelization_indexes,
         )
 
-    @abstract_plotters.set_labels
+    @abstract_plotters.for_figure
     def figure_chi_squared_map(self, full_indexes=None, pixelization_indexes=None):
 
         source_pixelilzation_values = self.inversion.mapper.reconstructed_source_pixelization_from_solution_vector(
@@ -99,13 +101,13 @@ class InversionPlotter(structure_plotters.MapperPlotter):
 
         self.mat_plot_2d.plot_mapper(
             mapper=self.inversion.mapper,
-            visuals_2d=self.visuals_2d,
+            visuals_2d=self.visuals_source_with_include_2d,
             source_pixelilzation_values=source_pixelilzation_values,
             full_indexes=full_indexes,
             pixelization_indexes=pixelization_indexes,
         )
 
-    @abstract_plotters.set_labels
+    @abstract_plotters.for_figure
     def figure_regularization_weights(
         self, full_indexes=None, pixelization_indexes=None
     ):
@@ -116,26 +118,26 @@ class InversionPlotter(structure_plotters.MapperPlotter):
 
         self.mat_plot_2d.plot_mapper(
             mapper=self.inversion.mapper,
-            visuals_2d=self.visuals_2d,
+            visuals_2d=self.visuals_source_with_include_2d,
             source_pixelilzation_values=regularization_weights,
             full_indexes=full_indexes,
             pixelization_indexes=pixelization_indexes,
         )
 
-    @abstract_plotters.set_labels
+    @abstract_plotters.for_figure
     def figure_interpolated_reconstruction(self):
 
         self.mat_plot_2d.plot_array(
             array=self.inversion.interpolated_reconstructed_data_from_shape_2d(),
-            visuals_2d=self.visuals_2d,
+            visuals_2d=self.visuals_data_with_include_2d,
         )
 
-    @abstract_plotters.set_labels
+    @abstract_plotters.for_figure
     def figure_interpolated_errors(self):
 
         self.mat_plot_2d.plot_array(
             array=self.inversion.interpolated_errors_from_shape_2d(),
-            visuals_2d=self.visuals_2d,
+            visuals_2d=self.visuals_data_with_include_2d,
         )
 
     def figure_individuals(
@@ -184,25 +186,22 @@ class InversionPlotter(structure_plotters.MapperPlotter):
         if plot_interpolated_errors:
             self.figure_interpolated_errors()
 
+    @abstract_plotters.for_subplot
     def subplot_inversion(self, full_indexes=None, pixelization_indexes=None):
-
-        mat_plot_2d = self.mat_plot_2d.mat_plot_for_subplot_from(
-            func=self.subplot_inversion
-        )
 
         number_subplots = 6
 
-        aspect_inv = mat_plot_2d.figure.aspect_for_subplot_from_grid(
+        aspect_inv = self.mat_plot_2d.figure.aspect_for_subplot_from_grid(
             grid=self.inversion.mapper.source_full_grid
         )
 
-        mat_plot_2d.open_subplot_figure(number_subplots=number_subplots)
+        self.open_subplot_figure(number_subplots=number_subplots)
 
-        mat_plot_2d.setup_subplot(number_subplots=number_subplots, subplot_index=1)
+        self.setup_subplot(number_subplots=number_subplots, subplot_index=1)
 
         self.figure_reconstructed_image()
 
-        mat_plot_2d.setup_subplot(
+        self.setup_subplot(
             number_subplots=number_subplots, subplot_index=2, aspect=aspect_inv
         )
 
@@ -210,7 +209,7 @@ class InversionPlotter(structure_plotters.MapperPlotter):
             full_indexes=full_indexes, pixelization_indexes=pixelization_indexes
         )
 
-        mat_plot_2d.setup_subplot(
+        self.setup_subplot(
             number_subplots=number_subplots, subplot_index=3, aspect=aspect_inv
         )
 
@@ -218,7 +217,7 @@ class InversionPlotter(structure_plotters.MapperPlotter):
             full_indexes=full_indexes, pixelization_indexes=pixelization_indexes
         )
 
-        mat_plot_2d.setup_subplot(
+        self.setup_subplot(
             number_subplots=number_subplots, subplot_index=4, aspect=aspect_inv
         )
 
@@ -226,7 +225,7 @@ class InversionPlotter(structure_plotters.MapperPlotter):
             full_indexes=full_indexes, pixelization_indexes=pixelization_indexes
         )
 
-        mat_plot_2d.setup_subplot(
+        self.setup_subplot(
             number_subplots=number_subplots, subplot_index=5, aspect=aspect_inv
         )
 
@@ -234,7 +233,7 @@ class InversionPlotter(structure_plotters.MapperPlotter):
             full_indexes=full_indexes, pixelization_indexes=pixelization_indexes
         )
 
-        mat_plot_2d.setup_subplot(
+        self.setup_subplot(
             number_subplots=number_subplots, subplot_index=6, aspect=aspect_inv
         )
 
@@ -242,6 +241,6 @@ class InversionPlotter(structure_plotters.MapperPlotter):
             full_indexes=full_indexes, pixelization_indexes=pixelization_indexes
         )
 
-        mat_plot_2d.output.subplot_to_figure()
+        self.mat_plot_2d.output.subplot_to_figure()
 
-        mat_plot_2d.figure.close()
+        self.mat_plot_2d.figure.close()

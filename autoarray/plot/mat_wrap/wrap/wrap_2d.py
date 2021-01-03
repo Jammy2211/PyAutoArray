@@ -266,9 +266,9 @@ class GridPlot(AbstractMatWrap2D, wrap_base.AbstractMatWrapColored):
 
         # grid lines
         for x in xs:
-            plt.plot([x, x], [ys[0], ys[-1]], c=self.colors, **self.config_dict_plot)
+            plt.plot([x, x], [ys[0], ys[-1]], c=self.colors[0], **self.config_dict_plot)
         for y in ys:
-            plt.plot([xs[0], xs[-1]], [y, y], c=self.colors, **self.config_dict_plot)
+            plt.plot([xs[0], xs[-1]], [y, y], c=self.colors[0], **self.config_dict_plot)
 
     def plot_grid_grouped(self, grid_grouped: grids.GridIrregularGrouped):
         """

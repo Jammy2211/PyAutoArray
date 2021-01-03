@@ -53,7 +53,7 @@ class ArrayPlotter(abstract_plotters.AbstractPlotter):
         """
         return self.visuals_from_structure(structure=array)
 
-    @abstract_plotters.set_labels
+    @abstract_plotters.for_figure
     def figure_array(self, extent_manual=None):
 
         self.mat_plot_2d.plot_array(
@@ -127,10 +127,10 @@ class FramePlotter(abstract_plotters.AbstractPlotter):
             serial_overscan=serial_overscan,
         )
 
-    @abstract_plotters.set_labels
+    @abstract_plotters.for_figure
     def figure_frame(self):
 
-        self.mat_plot_2d._plot_frame(
+        self.mat_plot_2d.plot_frame(
             frame=self.frame, visuals_2d=self.visuals_with_include_2d
         )
 
@@ -182,7 +182,7 @@ class GridPlotter(abstract_plotters.AbstractPlotter):
             return self.visuals_from_structure(structure=grid)
         return vis.Visuals2D()
 
-    @abstract_plotters.set_labels
+    @abstract_plotters.for_figure
     def figure_grid(
         self,
         color_array=None,
@@ -310,6 +310,7 @@ class MapperPlotter(abstract_plotters.AbstractPlotter):
         source_full_grid = (
             mapper.source_full_grid if self.include_2d.mapper_source_full_grid else None
         )
+
         source_pixelization_grid = (
             mapper.source_pixelization_grid
             if self.include_2d.mapper_source_pixelization_grid
@@ -323,7 +324,7 @@ class MapperPlotter(abstract_plotters.AbstractPlotter):
             pixelization_grid=source_pixelization_grid,
         )  # , border=border)
 
-    @abstract_plotters.set_labels
+    @abstract_plotters.for_figure
     def figure_mapper(
         self,
         source_pixelilzation_values=None,
@@ -339,20 +340,16 @@ class MapperPlotter(abstract_plotters.AbstractPlotter):
             pixelization_indexes=pixelization_indexes,
         )
 
-    @abstract_plotters.set_labels
+    @abstract_plotters.for_subplot
     def subplot_image_and_mapper(
         self, image, full_indexes=None, pixelization_indexes=None
     ):
 
-        mat_plot_2d = self.mat_plot_2d.mat_plot_for_subplot_from(
-            func=self.subplot_image_and_mapper
-        )
-
         number_subplots = 2
 
-        mat_plot_2d.open_subplot_figure(number_subplots=number_subplots)
+        self.open_subplot_figure(number_subplots=number_subplots)
 
-        mat_plot_2d.setup_subplot(number_subplots=number_subplots, subplot_index=1)
+        self.setup_subplot(number_subplots=number_subplots, subplot_index=1)
 
         self.mat_plot_2d.plot_array(
             array=image, visuals_2d=self.visuals_data_with_include_2d
@@ -360,7 +357,7 @@ class MapperPlotter(abstract_plotters.AbstractPlotter):
 
         if full_indexes is not None:
 
-            mat_plot_2d.index_scatter.scatter_grid_indexes(
+            self.mat_plot_2d.index_scatter.scatter_grid_indexes(
                 grid=self.mapper.source_full_grid.geometry.unmasked_grid_sub_1,
                 indexes=full_indexes,
             )
@@ -371,22 +368,22 @@ class MapperPlotter(abstract_plotters.AbstractPlotter):
                 pixelization_indexes=pixelization_indexes
             )
 
-            mat_plot_2d.index_scatter.scatter_grid_indexes(
+            self.mat_plot_2d.index_scatter.scatter_grid_indexes(
                 grid=self.mapper.source_full_grid.geometry.unmasked_grid_sub_1,
                 indexes=indexes,
             )
 
-        mat_plot_2d.setup_subplot(number_subplots=number_subplots, subplot_index=2)
+        self.setup_subplot(number_subplots=number_subplots, subplot_index=2)
 
         self.figure_mapper(
             full_indexes=full_indexes, pixelization_indexes=pixelization_indexes
         )
 
-        mat_plot_2d.output.subplot_to_figure()
-        mat_plot_2d.figure.close()
+        self.mat_plot_2d.output.subplot_to_figure()
+        self.mat_plot_2d.figure.close()
 
 
-class LinePlotter:
+class LinePlotter(abstract_plotters.AbstractPlotter):
     def __init__(
         self,
         mat_plot_1d: mat_plot.MatPlot1D = mat_plot.MatPlot1D(),
@@ -394,9 +391,9 @@ class LinePlotter:
         include_1d: inc.Include1D = inc.Include1D(),
     ):
 
-        self.mat_plot_1d = mat_plot_1d
-        self.visuals_1d = visuals_1d
-        self.include_1d = include_1d
+        super().__init__(
+            visuals_1d=visuals_1d, include_1d=include_1d, mat_plot_1d=mat_plot_1d
+        )
 
     def visuals_from_line(self, line: lines.Line) -> "vis.Visuals1D":
 
@@ -405,7 +402,7 @@ class LinePlotter:
 
         return vis.Visuals1D(origin=origin, mask=mask)
 
-    @abstract_plotters.set_labels
+    @abstract_plotters.for_figure
     def line(
         self,
         y,

@@ -591,14 +591,17 @@ class TestVoronoiMagnification:
             nearest_pixelization_1d_index_for_mask_1d_index=sparse_grid.sparse_1d_index_for_mask_1d_index,
         )
 
+        sparse_image_plane_grid = aa.GridIrregular(grid=[(0.0, 0.0)])
+
         mapper = pix.mapper_from_grid_and_sparse_grid(
             grid=grid,
             sparse_grid=pixelization_grid,
             settings=aa.SettingsPixelization(use_border=False),
+            sparse_image_plane_grid=sparse_image_plane_grid,
             hyper_image=np.ones((2, 2)),
         )
 
-        assert (mapper.data_pixelization_grid == sparse_grid.sparse).all()
+        assert (mapper.data_pixelization_grid == sparse_image_plane_grid).all()
         assert mapper.source_pixelization_grid.shape_2d_scaled == pytest.approx(
             (2.0, 2.0), 1.0e-4
         )
@@ -691,14 +694,12 @@ class TestVoronoiMagnification:
             grid=sparse_grid.sparse,
             nearest_pixelization_1d_index_for_mask_1d_index=sparse_grid.sparse_1d_index_for_mask_1d_index,
         )
-
         mapper = pix.mapper_from_grid_and_sparse_grid(
             grid=grid,
             sparse_grid=pixelization_grid,
             settings=aa.SettingsPixelization(use_border=False),
         )
 
-        assert (mapper.data_pixelization_grid == sparse_grid.sparse).all()
         assert mapper.source_pixelization_grid.shape_2d_scaled == pytest.approx(
             (2.0, 2.0), 1.0e-4
         )
@@ -812,7 +813,6 @@ class TestVoronoiMagnification:
             settings=aa.SettingsPixelization(use_border=False),
         )
 
-        assert (mapper.data_pixelization_grid == sparse_grid.sparse).all()
         assert mapper.source_full_grid.shape_2d_scaled == pytest.approx(
             (2.02, 2.01), 1.0e-4
         )
@@ -905,7 +905,6 @@ class TestVoronoiMagnification:
             settings=aa.SettingsPixelization(use_border=False),
         )
 
-        assert (mapper.data_pixelization_grid == sparse_grid.sparse).all()
         assert mapper.source_pixelization_grid.shape_2d_scaled == pytest.approx(
             (2.0, 2.0), 1.0e-4
         )

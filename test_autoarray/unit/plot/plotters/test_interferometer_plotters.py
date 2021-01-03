@@ -69,7 +69,7 @@ def test__individuals__output_dependent_on_input(
         mat_plot_2d=aplt.MatPlot2D(output=aplt.Output(path=plot_path, format="png")),
     )
 
-    interferometer_plotter.individual(
+    interferometer_plotter.figure_individual(
         plot_visibilities=True,
         plot_u_wavelengths=False,
         plot_v_wavelengths=True,

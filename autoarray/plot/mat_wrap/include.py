@@ -1,5 +1,4 @@
 from autoconf import conf
-from autoarray.plot.mat_wrap import visuals as vis
 import typing
 
 
@@ -40,7 +39,6 @@ class AbstractInclude:
     def origin(self):
         return self.load(value=self._origin, name="origin")
 
-    #
     @property
     def mask(self):
         return self.load(value=self._mask, name="mask")

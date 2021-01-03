@@ -5,7 +5,6 @@ wrap_base.set_backend()
 import matplotlib.pyplot as plt
 import numpy as np
 import copy
-import typing
 
 from autoarray import exc
 from autoarray.plot.mat_wrap import wrap
@@ -92,106 +91,6 @@ class AbstractMatPlot:
         self.legend = legend
         self.output = output
 
-    def mat_plot_for_subplot_from(self, func=None):
-
-        plotter = copy.deepcopy(self)
-
-        plotter.for_subplot = True
-        plotter.output.bypass = True
-
-        for attr, value in plotter.__dict__.items():
-            if hasattr(value, "for_subplot"):
-                value.for_subplot = True
-
-        if func is not None:
-            filename = plotter.output.filename_from_func(func=func)
-            return plotter.mat_plot_with_new_output(filename=filename)
-        else:
-            return plotter
-
-    def open_subplot_figure(self, number_subplots):
-        """Setup a figure for plotting an image.
-
-        Parameters
-        -----------
-        figsize : (int, int)
-            The size of the figure in (total_y_pixels, total_x_pixels).
-        as_subplot : bool
-            If the figure is a subplot, the setup_figure function is omitted to ensure that each subplot does not create a \
-            new figure and so that it can be output using the *output.output_figure(structure=None)* function.
-        """
-        figsize = self.get_subplot_figsize(number_subplots=number_subplots)
-        plt.figure(figsize=figsize)
-
-    def setup_subplot(
-        self, number_subplots, subplot_index, aspect=None, subplot_rows_columns=None
-    ):
-        if subplot_rows_columns is None:
-            rows, columns = self.get_subplot_rows_columns(
-                number_subplots=number_subplots
-            )
-        else:
-            rows = subplot_rows_columns[0]
-            columns = subplot_rows_columns[1]
-        if aspect is None:
-            plt.subplot(rows, columns, subplot_index)
-        else:
-            plt.subplot(rows, columns, subplot_index, aspect=float(aspect))
-
-    def get_subplot_rows_columns(self, number_subplots):
-        """Get the size of a sub plotter in (total_y_pixels, total_x_pixels), based on the number of subplots that are going to be plotted.
-
-        Parameters
-        -----------
-        number_subplots : int
-            The number of subplots that are to be plotted in the figure.
-        """
-        if number_subplots <= 2:
-            return 1, 2
-        elif number_subplots <= 4:
-            return 2, 2
-        elif number_subplots <= 6:
-            return 2, 3
-        elif number_subplots <= 9:
-            return 3, 3
-        elif number_subplots <= 12:
-            return 3, 4
-        elif number_subplots <= 16:
-            return 4, 4
-        elif number_subplots <= 20:
-            return 4, 5
-        else:
-            return 6, 6
-
-    def get_subplot_figsize(self, number_subplots):
-        """Get the size of a sub plotter in (total_y_pixels, total_x_pixels), based on the number of subplots that are going to be plotted.
-
-        Parameters
-        -----------
-        number_subplots : int
-            The number of subplots that are to be plotted in the figure.
-        """
-
-        if self.figure.config_dict_figure["figsize"] is not None:
-            return self.figure.config_dict_figure["figsize"]
-
-        if number_subplots <= 2:
-            return (18, 8)
-        elif number_subplots <= 4:
-            return (13, 10)
-        elif number_subplots <= 6:
-            return (18, 12)
-        elif number_subplots <= 9:
-            return (25, 20)
-        elif number_subplots <= 12:
-            return (25, 20)
-        elif number_subplots <= 16:
-            return (25, 20)
-        elif number_subplots <= 20:
-            return (25, 20)
-        else:
-            return (25, 20)
-
     def set_axis_limits(self, axis_limits, grid, symmetric_around_centre):
         """Set the axis limits of the figure the grid is plotted on.
 
@@ -211,108 +110,6 @@ class AbstractMatPlot:
             y = np.max([np.abs(ymin), np.abs(ymax)])
             axis_limits = [-x, x, -y, y]
             plt.axis(axis_limits)
-
-    def mat_plot_with_new_labels(
-        self,
-        title_label=None,
-        title_fontsize=None,
-        ylabel_units=None,
-        xlabel_units=None,
-        tick_params_labelsize=None,
-    ):
-
-        plotter = copy.deepcopy(self)
-
-        plotter.title.kwargs["label"] = (
-            title_label if title_label is not None else self.title.config_dict["label"]
-        )
-        plotter.title.kwargs["fontsize"] = (
-            title_fontsize
-            if title_fontsize is not None
-            else self.title.config_dict["fontsize"]
-        )
-
-        plotter.ylabel._units = (
-            ylabel_units if ylabel_units is not None else self.ylabel._units
-        )
-        plotter.xlabel._units = (
-            xlabel_units if xlabel_units is not None else self.xlabel._units
-        )
-
-        plotter.tickparams.kwargs["labelsize"] = (
-            tick_params_labelsize
-            if tick_params_labelsize is not None
-            else self.tickparams.config_dict["labelsize"]
-        )
-
-        return plotter
-
-    def mat_plot_with_new_cmap(
-        self, cmap=None, norm=None, vmax=None, vmin=None, linthresh=None, linscale=None
-    ):
-
-        plotter = copy.deepcopy(self)
-
-        plotter.cmap.kwargs["cmap"] = (
-            cmap if cmap is not None else self.cmap.config_dict["cmap"]
-        )
-        plotter.cmap.kwargs["norm"] = (
-            norm if norm is not None else self.cmap.config_dict["norm"]
-        )
-        plotter.cmap.kwargs["vmax"] = (
-            vmax if vmax is not None else self.cmap.config_dict["vmax"]
-        )
-        plotter.cmap.kwargs["vmin"] = (
-            vmin if vmin is not None else self.cmap.config_dict["vmin"]
-        )
-        plotter.cmap.kwargs["linthresh"] = (
-            linthresh if linthresh is not None else self.cmap.config_dict["linthresh"]
-        )
-        plotter.cmap.kwargs["linscale"] = (
-            linscale if linscale is not None else self.cmap.config_dict["linscale"]
-        )
-
-        return plotter
-
-    def mat_plot_with_new_units(
-        self, use_scaled=None, conversion_factor=None, in_kpc=None
-    ):
-
-        plotter = copy.deepcopy(self)
-
-        plotter.units.use_scaled = (
-            use_scaled if use_scaled is not None else self.units.use_scaled
-        )
-
-        plotter.units.in_kpc = in_kpc if in_kpc is not None else self.units.in_kpc
-
-        plotter.units.conversion_factor = (
-            conversion_factor
-            if conversion_factor is not None
-            else self.units.conversion_factor
-        )
-
-        return plotter
-
-    def mat_plot_with_new_output(self, path=None, filename=None, format=None):
-
-        plotter = copy.deepcopy(self)
-
-        plotter.output.path = path if path is not None else self.output.path
-
-        if path is not None and path:
-            try:
-                os.makedirs(path)
-            except FileExistsError:
-                pass
-
-        plotter.output.filename = (
-            filename if filename is not None else self.output.filename
-        )
-
-        plotter.output._format = format if format is not None else self.output._format
-
-        return plotter
 
 
 class MatPlot1D(AbstractMatPlot):
@@ -408,7 +205,6 @@ class MatPlot1D(AbstractMatPlot):
         plot_axis_type="semilogy",
         vertical_lines=None,
         vertical_line_labels=None,
-        bypass_output=False,
     ):
 
         if y is None:
@@ -437,10 +233,8 @@ class MatPlot1D(AbstractMatPlot):
             array=None, min_value=np.min(x), max_value=np.max(x), units=self.units
         )
 
-        if not bypass_output:
+        if not self.for_subplot:
             self.output.to_figure(structure=None)
-
-        if not self.for_subplot and not bypass_output:
             self.figure.close()
 
 
@@ -461,7 +255,7 @@ class MatPlot2D(AbstractMatPlot):
         output: wrap.Output = wrap.Output(),
         array_overlay: wrap.ArrayOverlay = wrap.ArrayOverlay(),
         grid_scatter: wrap.GridScatter = wrap.GridScatter(),
-        line_plot: wrap.GridPlot = wrap.GridPlot(),
+        grid_plot: wrap.GridPlot = wrap.GridPlot(),
         vector_field_quiver: wrap.VectorFieldQuiver = wrap.VectorFieldQuiver(),
         patch_overlay: wrap.PatchOverlay = wrap.PatchOverlay(),
         voronoi_drawer: wrap.VoronoiDrawer = wrap.VoronoiDrawer(),
@@ -526,7 +320,7 @@ class MatPlot2D(AbstractMatPlot):
             Overlays an input `Array` over the figure using `plt.imshow`.
         grid_scatter : wrappers.GridScatter
             Scatters a `Grid` of (y,x) coordinates over the figure using `plt.scatter`.
-        line_plot: wrappers.LinePlot
+        grid_plot: wrappers.LinePlot
             Plots lines of data (e.g. a y versus x plot via `plt.plot`, vertical lines via `plt.avxline`, etc.)
         vector_field_quiver: wrappers.VectorFieldQuiver
             Plots a `VectorField` object using the matplotlib function `plt.quiver`.
@@ -576,7 +370,7 @@ class MatPlot2D(AbstractMatPlot):
         self.positions_scatter = positions_scatter
         self.index_scatter = index_scatter
         self.pixelization_grid_scatter = pixelization_grid_scatter
-        self.line_plot = line_plot
+        self.grid_plot = grid_plot
         self.vector_field_quiver = vector_field_quiver
         self.patch_overlay = patch_overlay
         self.array_overlay = array_overlay
@@ -587,7 +381,7 @@ class MatPlot2D(AbstractMatPlot):
 
         self.for_subplot = False
 
-    def plot_array(self, array, visuals_2d, extent_manual=None, bypass_output=False):
+    def plot_array(self, array, visuals_2d, extent_manual=None):
         """Plot an array of data_type as a figure.
 
         Parameters
@@ -671,15 +465,11 @@ class MatPlot2D(AbstractMatPlot):
 
         visuals_2d.plot_via_plotter(plotter=self)
 
-        if not bypass_output:
+        if not self.for_subplot:
             self.output.to_figure(structure=array)
-
-        if not self.for_subplot and not bypass_output:
             self.figure.close()
 
-    def _plot_frame(
-        self, frame, visuals_2d: vis.Visuals2D = vis.Visuals2D(), bypass_output=False
-    ):
+    def plot_frame(self, frame, visuals_2d: vis.Visuals2D = vis.Visuals2D()):
         """Plot an array of data_type as a figure.
 
         """
@@ -725,10 +515,8 @@ class MatPlot2D(AbstractMatPlot):
 
         visuals_2d.plot_via_plotter(plotter=self)
 
-        if not bypass_output:
+        if not self.for_subplot:
             self.output.to_figure(structure=frame)
-
-        if not self.for_subplot and not bypass_output:
             self.figure.close()
 
     def plot_grid(
@@ -739,7 +527,6 @@ class MatPlot2D(AbstractMatPlot):
         axis_limits=None,
         indexes=None,
         symmetric_around_centre=True,
-        bypass_output=False,
     ):
         """Plot a grid of (y,x) Cartesian coordinates as a scatter plotter of points.
 
@@ -802,10 +589,8 @@ class MatPlot2D(AbstractMatPlot):
 
         visuals_2d.plot_via_plotter(plotter=self)
 
-        if not bypass_output:
+        if not self.for_subplot:
             self.output.to_figure(structure=grid)
-
-        if not self.for_subplot and not bypass_output:
             self.figure.close()
 
     def plot_mapper(
@@ -815,7 +600,6 @@ class MatPlot2D(AbstractMatPlot):
         source_pixelilzation_values=None,
         full_indexes=None,
         pixelization_indexes=None,
-        bypass_output=False,
     ):
 
         if isinstance(mapper, mappers.MapperRectangular):
@@ -826,7 +610,6 @@ class MatPlot2D(AbstractMatPlot):
                 source_pixelilzation_values=source_pixelilzation_values,
                 full_indexes=full_indexes,
                 pixelization_indexes=pixelization_indexes,
-                bypass_output=bypass_output,
             )
 
         else:
@@ -837,7 +620,6 @@ class MatPlot2D(AbstractMatPlot):
                 source_pixelilzation_values=source_pixelilzation_values,
                 full_indexes=full_indexes,
                 pixelization_indexes=pixelization_indexes,
-                bypass_output=bypass_output,
             )
 
     def _plot_rectangular_mapper(
@@ -847,17 +629,12 @@ class MatPlot2D(AbstractMatPlot):
         source_pixelilzation_values=None,
         full_indexes=None,
         pixelization_indexes=None,
-        bypass_output=False,
     ):
 
         self.figure.open()
 
         if source_pixelilzation_values is not None:
-            self.plot_array(
-                array=source_pixelilzation_values,
-                visuals_2d=visuals_2d,
-                bypass_output=True,
-            )
+            self.plot_array(array=source_pixelilzation_values, visuals_2d=visuals_2d)
 
         self.set_axis_limits(
             axis_limits=mapper.source_pixelization_grid.extent,
@@ -878,7 +655,7 @@ class MatPlot2D(AbstractMatPlot):
             units=self.units,
         )
 
-        self.line_plot.plot_rectangular_grid_lines(
+        self.grid_plot.plot_rectangular_grid_lines(
             extent=mapper.source_pixelization_grid.extent, shape_2d=mapper.shape_2d
         )
 
@@ -903,10 +680,8 @@ class MatPlot2D(AbstractMatPlot):
                 grid=mapper.source_full_grid, indexes=indexes
             )
 
-        if not bypass_output:
+        if not self.for_subplot:
             self.output.to_figure(structure=None)
-
-        if not self.for_subplot and not bypass_output:
             self.figure.close()
 
     def _plot_voronoi_mapper(
@@ -916,7 +691,6 @@ class MatPlot2D(AbstractMatPlot):
         source_pixelilzation_values=None,
         full_indexes=None,
         pixelization_indexes=None,
-        bypass_output=False,
     ):
 
         self.figure.open()
@@ -941,12 +715,12 @@ class MatPlot2D(AbstractMatPlot):
             units=self.units,
         )
 
-        # self.voronoi_drawer.draw_voronoi_pixels(
-        #     mapper=mapper,
-        #     values=source_pixelilzation_values,
-        #     cmap=self.cmap.config_dict["cmap"],
-        #     cb=self.colorbar,
-        # )
+        self.voronoi_drawer.draw_voronoi_pixels(
+            mapper=mapper,
+            values=source_pixelilzation_values,
+            cmap=self.cmap.config_dict["cmap"],
+            cb=self.colorbar,
+        )
 
         self.title.set()
         self.ylabel.set(units=self.units, include_brackets=True)
@@ -968,8 +742,6 @@ class MatPlot2D(AbstractMatPlot):
                 grid=mapper.source_full_grid, indexes=indexes
             )
 
-        if not bypass_output:
+        if not self.for_subplot:
             self.output.to_figure(structure=None)
-
-        if not self.for_subplot and not bypass_output:
             self.figure.close()
