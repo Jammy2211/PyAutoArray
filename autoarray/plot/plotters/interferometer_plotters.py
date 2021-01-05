@@ -33,10 +33,7 @@ class InterferometerPlotter(abstract_plotters.AbstractPlotter):
 
     @property
     def visuals_with_include_2d(self):
-        return copy.deepcopy(self.visuals_2d)
-
-    def visuals_from_interferometer(self, interferometer: inter.Interferometer):
-        return vis.Visuals2D()
+        return self.visuals_2d + vis.Visuals2D()
 
     @abstract_plotters.for_figure
     def figure_visibilities(self):
@@ -179,7 +176,7 @@ class InterferometerPlotter(abstract_plotters.AbstractPlotter):
             plot_axis_type="scatter",
         )
 
-    def figure_individual(
+    def figure_individuals(
         self,
         plot_visibilities=False,
         plot_noise_map=False,

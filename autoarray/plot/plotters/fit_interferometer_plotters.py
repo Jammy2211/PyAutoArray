@@ -5,8 +5,6 @@ from autoarray.plot.mat_wrap import mat_plot
 from autoarray.fit import fit as f
 import numpy as np
 
-import copy
-
 
 class FitInterferometerPlotter(abstract_plotters.AbstractPlotter):
     def __init__(
@@ -33,8 +31,7 @@ class FitInterferometerPlotter(abstract_plotters.AbstractPlotter):
 
     @property
     def visuals_with_include_2d(self):
-
-        return copy.deepcopy(self.visuals_2d)
+        return self.visuals_2d + vis.Visuals2D()
 
     @abstract_plotters.for_figure
     def figure_visibilities(self):

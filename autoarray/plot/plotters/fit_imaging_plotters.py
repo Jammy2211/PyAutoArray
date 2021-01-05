@@ -3,6 +3,7 @@ from autoarray.plot.mat_wrap import visuals as vis
 from autoarray.plot.mat_wrap import include as inc
 from autoarray.plot.mat_wrap import mat_plot
 from autoarray.fit import fit as f
+from autoarray.structures import grids
 
 import typing
 import copy
@@ -26,9 +27,15 @@ class FitImagingPlotter(abstract_plotters.AbstractPlotter):
     @property
     def visuals_with_include_2d(self):
 
-        visuals_2d = copy.deepcopy(self.visuals_2d)
-
-        return visuals_2d + self.visuals_from_structure(structure=self.fit.image)
+        return self.visuals_2d + vis.Visuals2D(
+            origin=self.extract_2d(
+                "origin", grids.GridIrregular(grid=[self.fit.mask.origin])
+            ),
+            mask=self.extract_2d("mask", self.fit.mask),
+            border=self.extract_2d(
+                "border", self.fit.mask.geometry.border_grid_sub_1.in_1d_binned
+            ),
+        )
 
     @abstract_plotters.for_figure
     def figure_image(self):

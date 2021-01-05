@@ -104,7 +104,7 @@ def test__imaging_individuals__output_dependent_on_input(
         mat_plot_2d=aplt.MatPlot2D(output=aplt.Output(plot_path, format="png")),
     )
 
-    imaging_plot.figure_individual(
+    imaging_plot.figure_individuals(
         plot_image=True,
         plot_psf=True,
         plot_inverse_noise_map=True,
@@ -129,7 +129,7 @@ def test__output_as_fits__correct_output_format(
         mat_plot_2d=aplt.MatPlot2D(output=aplt.Output(path=plot_path, format="fits")),
     )
 
-    imaging_plot.figure_individual(
+    imaging_plot.figure_individuals(
         plot_image=True, plot_psf=True, plot_absolute_signal_to_noise_map=True
     )
 
