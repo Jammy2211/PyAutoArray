@@ -8,9 +8,6 @@ from autoarray.plot.mat_wrap import visuals as vis
 from autoarray.plot.mat_wrap import include as inc
 from autoarray.plot.mat_wrap import mat_plot
 
-import copy
-import inspect
-import typing
 from functools import wraps
 from typing import Callable
 
@@ -26,33 +23,6 @@ def title_from_func(func: Callable, index=None) -> str:
     if index is None:
         return func.__name__.replace("figure_", "").capitalize()
     return f"{func.__name__.replace('figure_', '').capitalize()}_{index}"
-
-
-def units_from_func(func: Callable, for_ylabel=True) -> typing.Optional["Units"]:
-    """
-    If the x label is not manually specified use the function plotting the image to x label, assuming that it
-    represents spatial units.
-
-    Parameters
-    ----------
-    func : func
-       The function plotting the image.
-    """
-
-    args = inspect.getfullargspec(func).args
-    defaults = inspect.getfullargspec(func).defaults
-
-    if defaults is not None:
-        non_default_args = len(args) - len(defaults)
-    else:
-        non_default_args = 0
-
-    if (not for_ylabel) and "label_xunits" in args:
-        return defaults[args.index("label_xunits") - non_default_args]
-    elif for_ylabel and "label_yunits" in args:
-        return defaults[args.index("label_yunits") - non_default_args]
-    else:
-        return None
 
 
 def filename_from_func(func: Callable, index=None) -> str:
@@ -71,54 +41,6 @@ def filename_from_func(func: Callable, index=None) -> str:
     return f"{filename}_{index}"
 
 
-def update_mat_plot_for_figure_of_subplot(mat_plot, func: Callable, kwargs, index=None):
-
-    if mat_plot is None:
-        return None
-
-    mat_plot.title.kwargs["label"] = title_from_func(func=func, index=index)
-    mat_plot.ylabel._units = units_from_func(func=func, for_ylabel=True)
-    mat_plot.xlabel._units = units_from_func(func=func, for_ylabel=False)
-    kpc_per_scaled = kpc_per_scaled_of_object_from_kwargs(kwargs=kwargs)
-
-    mat_plot.units.conversion_factor = kpc_per_scaled
-
-    return mat_plot
-
-
-def update_mat_plot(mat_plot, func: Callable, kwargs, index=None, for_subplot=False):
-
-    if mat_plot is None:
-        return None
-
-    if mat_plot.title.kwargs["label"] is None:
-        mat_plot.title.kwargs["label"] = title_from_func(func=func, index=index)
-
-    if mat_plot.ylabel._units is None:
-        mat_plot.ylabel._units = units_from_func(func=func, for_ylabel=True)
-
-    if mat_plot.xlabel._units is None:
-        mat_plot.xlabel._units = units_from_func(func=func, for_ylabel=False)
-
-    kpc_per_scaled = kpc_per_scaled_of_object_from_kwargs(kwargs=kwargs)
-
-    mat_plot.units.conversion_factor = kpc_per_scaled
-
-    if mat_plot.output.filename is None:
-        mat_plot.output.filename = filename_from_func(func=func, index=index)
-
-    if for_subplot:
-
-        mat_plot.for_subplot = True
-        mat_plot.output.bypass = True
-
-        for attr, value in mat_plot.__dict__.items():
-            if hasattr(value, "for_subplot"):
-                value.for_subplot = True
-
-    return mat_plot
-
-
 def index_from_inputs(args, kwargs):
 
     try:
@@ -134,20 +56,12 @@ def for_figure(func):
 
         if args[0].for_subplot:
 
-            args[0].mat_plot_2d = update_mat_plot_for_figure_of_subplot(
-                mat_plot=args[0].mat_plot_2d, func=func, kwargs=kwargs
-            )
-            args[0].mat_plot_1d = update_mat_plot_for_figure_of_subplot(
-                mat_plot=args[0].mat_plot_1d, func=func, kwargs=kwargs
-            )
+            args[0].set_mat_plots_titles_from_func(func=func)
 
             return func(*args, **kwargs)
 
-        plotter = args[0].new_with_updated_mat_plots(
-            func=func, kwargs=kwargs, for_subplot=False
-        )
-
-        args = (plotter,) + tuple(arg for arg in args[1:])
+        args[0].set_mat_plots_filenames_from_func(func=func)
+        args[0].set_mat_plots_titles_from_func(func=func)
 
         return func(*args, **kwargs)
 
@@ -162,20 +76,12 @@ def for_figure_with_index(func):
 
         if args[0].for_subplot:
 
-            args[0].mat_plot_2d = update_mat_plot_for_figure_of_subplot(
-                mat_plot=args[0].mat_plot_2d, func=func, index=index, kwargs=kwargs
-            )
-            args[0].mat_plot_1d = update_mat_plot_for_figure_of_subplot(
-                mat_plot=args[0].mat_plot_1d, func=func, index=index, kwargs=kwargs
-            )
+            args[0].set_mat_plots_titles_from_func(func=func, index=index)
 
             return func(*args, **kwargs)
 
-        plotter = args[0].new_with_updated_mat_plots(
-            func=func, kwargs=kwargs, index=index, for_subplot=False
-        )
-
-        args = (plotter,) + tuple(arg for arg in args[1:])
+        args[0].set_mat_plots_filenames_from_func(func=func, index=index)
+        args[0].set_mat_plots_titles_from_func(func=func, index=index)
 
         return func(*args, **kwargs)
 
@@ -186,13 +92,13 @@ def for_subplot(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
 
-        plotter = args[0].new_with_updated_mat_plots(
-            func=func, kwargs=kwargs, for_subplot=True
-        )
+        args[0].set_mat_plots_filenames_from_func(func=func)
+        args[0].set_mat_plots_titles_from_func(func=func)
+        args[0].set_mat_plots_for_subplot(for_subplot=True)
 
-        args = (plotter,) + tuple(arg for arg in args[1:])
+        func(*args, **kwargs)
 
-        return func(*args, **kwargs)
+        args[0].set_mat_plots_for_subplot(for_subplot=False)
 
     return wrapper
 
@@ -203,26 +109,15 @@ def for_subplot_with_index(func):
 
         index = index_from_inputs(args=args, kwargs=kwargs)
 
-        plotter = args[0].new_with_updated_mat_plots(
-            func=func, kwargs=kwargs, index=index, for_subplot=True
-        )
+        args[0].set_mat_plots_filenames_from_func(func=func, index=index)
+        args[0].set_mat_plots_titles_from_func(func=func, index=index)
+        args[0].set_mat_plots_for_subplot(for_subplot=True)
 
-        args = (plotter,) + tuple(arg for arg in args[1:])
+        func(*args, **kwargs)
 
-        return func(*args, **kwargs)
+        args[0].set_mat_plots_for_subplot(for_subplot=False)
 
     return wrapper
-
-
-def kpc_per_scaled_of_object_from_kwargs(kwargs):
-
-    kpc_per_scaled = None
-
-    for key, value in kwargs.items():
-        if hasattr(value, "kpc_per_scaled"):
-            return value.kpc_per_scaled
-
-    return kpc_per_scaled
 
 
 class AbstractPlotter:
@@ -243,27 +138,31 @@ class AbstractPlotter:
         self.include_2d = include_2d
         self.mat_plot_2d = mat_plot_2d
 
-    def new_with_updated_mat_plots(self, func, kwargs, index=None, for_subplot=False):
+    def set_mat_plots_titles_from_func(self, func, index=None):
 
-        plotter = copy.deepcopy(self)
+        if self.mat_plot_1d is not None:
+            self.mat_plot_1d.title._auto_label = title_from_func(func=func, index=index)
 
-        plotter.mat_plot_1d = update_mat_plot(
-            mat_plot=plotter.mat_plot_1d,
-            func=func,
-            kwargs=kwargs,
-            index=index,
-            for_subplot=for_subplot,
-        )
+        if self.mat_plot_2d is not None:
+            self.mat_plot_2d.title._auto_label = title_from_func(func=func, index=index)
 
-        plotter.mat_plot_2d = update_mat_plot(
-            mat_plot=plotter.mat_plot_2d,
-            func=func,
-            kwargs=kwargs,
-            index=index,
-            for_subplot=for_subplot,
-        )
+    def set_mat_plots_filenames_from_func(self, func, index=None):
 
-        return plotter
+        if self.mat_plot_1d is not None:
+            self.mat_plot_1d.output._auto_filename = filename_from_func(
+                func=func, index=index
+            )
+
+        if self.mat_plot_2d is not None:
+            self.mat_plot_2d.output._auto_filename = filename_from_func(
+                func=func, index=index
+            )
+
+    def set_mat_plots_for_subplot(self, for_subplot):
+        if self.mat_plot_1d is not None:
+            self.mat_plot_1d.set_for_subplot(for_subplot=for_subplot)
+        if self.mat_plot_2d is not None:
+            self.mat_plot_2d.set_for_subplot(for_subplot=for_subplot)
 
     @property
     def for_subplot(self):

@@ -29,8 +29,6 @@ import typing
 from autoarray.structures import abstract_structure, arrays
 from autoarray import exc
 
-import inspect
-
 
 class Units:
     def __init__(
@@ -42,7 +40,7 @@ class Units:
         """
         This object controls the units of a plotted figure, and performs multiple tasks when making the plot:
 
-        1) Species the units of the plot (e.g. meters, kilometers) and contains a conversion factor which converts 
+        1) Species the units of the plot (e.g. meters, kilometers) and contains a conversion factor which converts
            the plotted data from its current units (e.g. meters) to the units plotted (e.g. kilometeters). Pixel units
             can be used if `use_scaled=False`.
 
@@ -674,15 +672,26 @@ class Title(AbstractMatWrap):
 
         super().__init__(kwargs=kwargs)
 
-        if "label" not in self.kwargs:
-            self.kwargs["label"] = None
+        if "label" in self.kwargs:
+            self.manual_label = self.kwargs["label"]
+        else:
+            self.manual_label = None
+
+        self._auto_label = None
+
+    @property
+    def label(self):
+        if self.manual_label is None:
+            return self._auto_label
+        return self.manual_label
 
     def set(self):
-        plt.title(**self.config_dict_title)
+
+        plt.title(label=self.label, **self.config_dict_title)
 
 
 class AbstractLabel(AbstractMatWrap):
-    def __init__(self, units: "Units" = None, manual_label: str = None, **kwargs):
+    def __init__(self, manual_label: str = None, **kwargs):
         """
         The settings used to customize the figure's title and y and x labels.
 
@@ -704,7 +713,6 @@ class AbstractLabel(AbstractMatWrap):
         super().__init__(kwargs=kwargs)
 
         self.manual_label = manual_label
-        self._units = units
 
     def label_from_units(self, units: Units) -> typing.Optional[str]:
         """
@@ -715,22 +723,20 @@ class AbstractLabel(AbstractMatWrap):
         units : Units
            The units of the data structure that is plotted which informs the appropriate label text.
         """
-        if self._units is None:
 
-            if units.in_kpc is not None:
-                if units.in_kpc:
-                    return "kpc"
-                else:
-                    return "arcsec"
+        if units is None:
+            return None
 
-            if units.use_scaled:
-                return "scaled"
+        if units.in_kpc is not None:
+            if units.in_kpc:
+                return "kpc"
             else:
-                return "pixels"
+                return "arcsec"
 
+        if units.use_scaled:
+            return "scaled"
         else:
-
-            return self._units
+            return "pixels"
 
 
 class YLabel(AbstractLabel):
@@ -754,7 +760,7 @@ class YLabel(AbstractLabel):
         else:
             if include_brackets:
                 plt.ylabel(
-                    ylabel="y (" + self.label_from_units(units=units) + ")",
+                    ylabel=f"y ({self.label_from_units(units=units)})",
                     **self.config_dict_label,
                 )
             else:
@@ -783,7 +789,7 @@ class XLabel(AbstractLabel):
         else:
             if include_brackets:
                 plt.xlabel(
-                    xlabel="x (" + self.label_from_units(units=units) + ")",
+                    xlabel=f"x ({self.label_from_units(units=units)})",
                     **self.config_dict_label,
                 )
             else:
@@ -855,9 +861,16 @@ class Output:
             except FileExistsError:
                 pass
 
-        self.filename = filename
+        self._filename = filename
+        self._auto_filename = None
         self._format = format
         self.bypass = bypass
+
+    @property
+    def filename(self):
+        if self._filename is not None:
+            return self._filename
+        return self._auto_filename
 
     @property
     def format(self) -> str:

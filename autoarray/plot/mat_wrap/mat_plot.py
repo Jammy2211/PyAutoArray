@@ -109,6 +109,15 @@ class AbstractMatPlot:
             axis_limits = [-x, x, -y, y]
             plt.axis(axis_limits)
 
+    def set_for_subplot(self, for_subplot):
+
+        self.for_subplot = for_subplot
+        self.output.bypass = for_subplot
+
+        for attr, value in self.__dict__.items():
+            if hasattr(value, "for_subplot"):
+                value.for_subplot = for_subplot
+
 
 class MatPlot1D(AbstractMatPlot):
     def __init__(

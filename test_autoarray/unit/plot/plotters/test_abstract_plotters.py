@@ -23,40 +23,6 @@ class TestFromFunc:
 
         assert title_from_func == "Toy_func"
 
-    def test__units_from_func__uses_function_inputs_if_available(self):
-        def toy_func():
-            pass
-
-        units_from_func = abstract_plotters.units_from_func(func=toy_func)
-
-        assert units_from_func == None
-
-        def toy_func(label_yunits="Hi"):
-            pass
-
-        units_from_func = abstract_plotters.units_from_func(
-            func=toy_func, for_ylabel=True
-        )
-        assert units_from_func == "Hi"
-
-        units_from_func = abstract_plotters.units_from_func(
-            func=toy_func, for_ylabel=False
-        )
-        assert units_from_func == None
-
-        def toy_func(label_xunits="Hi"):
-            pass
-
-        units_from_func = abstract_plotters.units_from_func(
-            func=toy_func, for_ylabel=False
-        )
-        assert units_from_func == "Hi"
-
-        units_from_func = abstract_plotters.units_from_func(
-            func=toy_func, for_ylabel=True
-        )
-        assert units_from_func == None
-
     def test__filename_from_func__returns_function_name_if_no_filename(self):
         def toy_func():
             pass
@@ -71,49 +37,6 @@ class TestFromFunc:
         filename_from_func = abstract_plotters.filename_from_func(func=figure_toy_func)
 
         assert filename_from_func == "toy_func"
-
-
-class TestDecorator:
-    def test__kpc_per_scaled_extacted_from_object_if_available(self):
-
-        kwargs = {"hi": 1}
-
-        kpc_per_scaled = abstract_plotters.kpc_per_scaled_of_object_from_kwargs(
-            kwargs=kwargs
-        )
-
-        assert kpc_per_scaled == None
-
-        class MockObj:
-            def __init__(self, param1):
-
-                self.param1 = param1
-
-        obj = MockObj(param1=1)
-
-        kwargs = {"hi": 1, "hello": obj}
-
-        kpc_per_scaled = abstract_plotters.kpc_per_scaled_of_object_from_kwargs(
-            kwargs=kwargs
-        )
-
-        assert kpc_per_scaled == None
-
-        class MockObj:
-            def __init__(self, param1, kpc_per_scaled):
-
-                self.param1 = param1
-                self.kpc_per_scaled = kpc_per_scaled
-
-        obj = MockObj(param1=1, kpc_per_scaled=2)
-
-        kwargs = {"hi": 1, "hello": obj}
-
-        kpc_per_scaled = abstract_plotters.kpc_per_scaled_of_object_from_kwargs(
-            kwargs=kwargs
-        )
-
-        assert kpc_per_scaled == 2
 
 
 class TestAbstractPlotter:

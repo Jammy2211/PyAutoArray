@@ -469,24 +469,24 @@ class TestTitle:
 
         title = aplt.Title()
 
-        assert title.config_dict["label"] == None
+        assert title.manual_label == None
         assert title.config_dict["fontsize"] == 11
 
         title = aplt.Title(label="OMG", fontsize=1)
 
-        assert title.config_dict["label"] == "OMG"
+        assert title.manual_label == "OMG"
         assert title.config_dict["fontsize"] == 1
 
         title = aplt.Title()
         title.for_subplot = True
 
-        assert title.config_dict["label"] == None
+        assert title.manual_label == None
         assert title.config_dict["fontsize"] == 15
 
         title = aplt.Title(label="OMG2", fontsize=2)
         title.for_subplot = True
 
-        assert title.config_dict["label"] == "OMG2"
+        assert title.manual_label == "OMG2"
         assert title.config_dict["fontsize"] == 2
 
 
@@ -495,109 +495,42 @@ class TestYLabel:
 
         ylabel = aplt.YLabel()
 
-        assert ylabel._units == None
         assert ylabel.config_dict["fontsize"] == 1
 
-        ylabel = aplt.YLabel(units="hi", fontsize=11)
+        ylabel = aplt.YLabel(fontsize=11)
 
-        assert ylabel._units == "hi"
         assert ylabel.config_dict["fontsize"] == 11
 
         ylabel = aplt.YLabel()
         ylabel.for_subplot = True
 
-        assert ylabel._units == None
         assert ylabel.config_dict["fontsize"] == 2
 
-        ylabel = aplt.YLabel(units="hi2", fontsize=12)
+        ylabel = aplt.YLabel(fontsize=12)
         ylabel.for_subplot = True
 
-        assert ylabel._units == "hi2"
         assert ylabel.config_dict["fontsize"] == 12
-
-    def test__units_use_plot_in_kpc_if_it_is_passed(self):
-
-        ylabel = aplt.YLabel()
-
-        units = aplt.Units(in_kpc=True)
-
-        assert ylabel._units == None
-        assert ylabel.label_from_units(units=units) == "kpc"
-
-        ylabel = aplt.YLabel()
-
-        units = aplt.Units(in_kpc=False)
-
-        assert ylabel._units == None
-        assert ylabel.label_from_units(units=units) == "arcsec"
-
-        ylabel = aplt.YLabel(units="hi")
-
-        units = aplt.Units(in_kpc=True)
-
-        assert ylabel._units == "hi"
-        assert ylabel.label_from_units(units=units) == "hi"
-
-        ylabel = aplt.YLabel(units="hi")
-
-        units = aplt.Units(in_kpc=False)
-
-        assert ylabel._units == "hi"
-        assert ylabel.label_from_units(units=units) == "hi"
 
 
 class TestXLabel:
     def test__loads_values_from_config_if_not_manually_input(self):
         xlabel = aplt.XLabel()
 
-        assert xlabel._units == None
         assert xlabel.config_dict["fontsize"] == 3
 
-        xlabel = aplt.XLabel(units="hi", fontsize=11)
+        xlabel = aplt.XLabel(fontsize=11)
 
-        assert xlabel._units == "hi"
         assert xlabel.config_dict["fontsize"] == 11
 
         xlabel = aplt.XLabel()
         xlabel.for_subplot = True
 
-        assert xlabel._units == None
         assert xlabel.config_dict["fontsize"] == 4
 
-        xlabel = aplt.XLabel(units="hi2", fontsize=12)
+        xlabel = aplt.XLabel(fontsize=12)
         xlabel.for_subplot = True
 
-        assert xlabel._units == "hi2"
         assert xlabel.config_dict["fontsize"] == 12
-
-    def test__units_use_plot_in_kpc_if_it_is_passed(self):
-        xlabel = aplt.XLabel()
-
-        units = aplt.Units(in_kpc=True)
-
-        assert xlabel._units == None
-        assert xlabel.label_from_units(units=units) == "kpc"
-
-        xlabel = aplt.XLabel()
-
-        units = aplt.Units(in_kpc=False)
-
-        assert xlabel._units == None
-        assert xlabel.label_from_units(units=units) == "arcsec"
-
-        xlabel = aplt.XLabel(units="hi")
-
-        units = aplt.Units(in_kpc=True)
-
-        assert xlabel._units == "hi"
-        assert xlabel.label_from_units(units=units) == "hi"
-
-        xlabel = aplt.XLabel(units="hi")
-
-        units = aplt.Units(in_kpc=False)
-
-        assert xlabel._units == "hi"
-        assert xlabel.label_from_units(units=units) == "hi"
 
 
 class TestLegend:
