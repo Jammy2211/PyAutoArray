@@ -7,17 +7,15 @@ import matplotlib.pyplot as plt
 from autoarray.plot.mat_wrap import visuals as vis
 from autoarray.plot.mat_wrap import include as inc
 from autoarray.plot.mat_wrap import mat_plot
-from functools import wraps
-
-from autoarray.structures import abstract_structure, grids
 
 import copy
 import inspect
 import typing
+from functools import wraps
 from typing import Callable
 
 
-def title_from_func(func: Callable) -> str:
+def title_from_func(func: Callable, index=None) -> str:
     """If a title is not manually specified use the name of the function plotting the image to set the title.
 
     Parameters
@@ -25,7 +23,9 @@ def title_from_func(func: Callable) -> str:
     func : func
        The function plotting the image.
     """
-    return func.__name__.replace("figure_", "").capitalize()
+    if index is None:
+        return func.__name__.replace("figure_", "").capitalize()
+    return f"{func.__name__.replace('figure_', '').capitalize()}_{index}"
 
 
 def units_from_func(func: Callable, for_ylabel=True) -> typing.Optional["Units"]:
@@ -55,7 +55,7 @@ def units_from_func(func: Callable, for_ylabel=True) -> typing.Optional["Units"]
         return None
 
 
-def filename_from_func(func: Callable) -> str:
+def filename_from_func(func: Callable, index=None) -> str:
     """If a filename is not manually specified use the name of the function plotting the image to set it.
 
     Parameters
@@ -64,13 +64,35 @@ def filename_from_func(func: Callable) -> str:
        The function plotting the image.
     """
     funcname = func.__name__
-    return funcname.replace("figure_", "")
+    filename = funcname.replace("figure_", "")
+
+    if index is None:
+        return filename
+    return f"{filename}_{index}"
 
 
-def update_mat_plot(mat_plot, func: Callable, kwargs, for_subplot=False):
+def update_mat_plot_for_figure_of_subplot(mat_plot, func: Callable, kwargs, index=None):
+
+    if mat_plot is None:
+        return None
+
+    mat_plot.title.kwargs["label"] = title_from_func(func=func, index=index)
+    mat_plot.ylabel._units = units_from_func(func=func, for_ylabel=True)
+    mat_plot.xlabel._units = units_from_func(func=func, for_ylabel=False)
+    kpc_per_scaled = kpc_per_scaled_of_object_from_kwargs(kwargs=kwargs)
+
+    mat_plot.units.conversion_factor = kpc_per_scaled
+
+    return mat_plot
+
+
+def update_mat_plot(mat_plot, func: Callable, kwargs, index=None, for_subplot=False):
+
+    if mat_plot is None:
+        return None
 
     if mat_plot.title.kwargs["label"] is None:
-        mat_plot.title.kwargs["label"] = title_from_func(func=func)
+        mat_plot.title.kwargs["label"] = title_from_func(func=func, index=index)
 
     if mat_plot.ylabel._units is None:
         mat_plot.ylabel._units = units_from_func(func=func, for_ylabel=True)
@@ -78,12 +100,12 @@ def update_mat_plot(mat_plot, func: Callable, kwargs, for_subplot=False):
     if mat_plot.xlabel._units is None:
         mat_plot.xlabel._units = units_from_func(func=func, for_ylabel=False)
 
-    if mat_plot.output.filename is None:
-        mat_plot.output.filename = filename_from_func(func=func)
-
     kpc_per_scaled = kpc_per_scaled_of_object_from_kwargs(kwargs=kwargs)
 
     mat_plot.units.conversion_factor = kpc_per_scaled
+
+    if mat_plot.output.filename is None:
+        mat_plot.output.filename = filename_from_func(func=func, index=index)
 
     if for_subplot:
 
@@ -97,45 +119,61 @@ def update_mat_plot(mat_plot, func: Callable, kwargs, for_subplot=False):
     return mat_plot
 
 
+def index_from_inputs(args, kwargs):
+
+    try:
+        return args[1]
+    except IndexError:
+        key = next(iter(kwargs))
+        return kwargs[key]
+
+
 def for_figure(func):
-    """
-    Decorate a profile method that accepts a coordinate grid and returns a data_type grid.
-
-    If an interpolator attribute is associated with the input grid then that interpolator is used to down sample the
-    coordinate grid prior to calling the function and up sample the result of the function.
-
-    If no interpolator attribute is associated with the input grid then the function is called as hyper.
-
-    Parameters
-    ----------
-    func
-        Some method that accepts a grid
-
-    Returns
-    -------
-    decorated_function
-        The function with optional interpolation
-    """
-
     @wraps(func)
     def wrapper(*args, **kwargs):
 
         if args[0].for_subplot:
+
+            args[0].mat_plot_2d = update_mat_plot_for_figure_of_subplot(
+                mat_plot=args[0].mat_plot_2d, func=func, kwargs=kwargs
+            )
+            args[0].mat_plot_1d = update_mat_plot_for_figure_of_subplot(
+                mat_plot=args[0].mat_plot_1d, func=func, kwargs=kwargs
+            )
+
             return func(*args, **kwargs)
 
-        plotter = copy.deepcopy(args[0])
+        plotter = args[0].new_with_updated_mat_plots(
+            func=func, kwargs=kwargs, for_subplot=False
+        )
 
-        if plotter.mat_plot_1d is not None:
+        args = (plotter,) + tuple(arg for arg in args[1:])
 
-            plotter.mat_plot_1d = update_mat_plot(
-                mat_plot=plotter.mat_plot_1d, func=func, kwargs=kwargs
+        return func(*args, **kwargs)
+
+    return wrapper
+
+
+def for_figure_with_index(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+
+        index = index_from_inputs(args=args, kwargs=kwargs)
+
+        if args[0].for_subplot:
+
+            args[0].mat_plot_2d = update_mat_plot_for_figure_of_subplot(
+                mat_plot=args[0].mat_plot_2d, func=func, index=index, kwargs=kwargs
+            )
+            args[0].mat_plot_1d = update_mat_plot_for_figure_of_subplot(
+                mat_plot=args[0].mat_plot_1d, func=func, index=index, kwargs=kwargs
             )
 
-        if plotter.mat_plot_2d is not None:
+            return func(*args, **kwargs)
 
-            plotter.mat_plot_2d = update_mat_plot(
-                mat_plot=plotter.mat_plot_2d, func=func, kwargs=kwargs
-            )
+        plotter = args[0].new_with_updated_mat_plots(
+            func=func, kwargs=kwargs, index=index, for_subplot=False
+        )
 
         args = (plotter,) + tuple(arg for arg in args[1:])
 
@@ -145,39 +183,29 @@ def for_figure(func):
 
 
 def for_subplot(func):
-    """
-    Decorate a profile method that accepts a coordinate grid and returns a data_type grid.
-
-    If an interpolator attribute is associated with the input grid then that interpolator is used to down sample the
-    coordinate grid prior to calling the function and up sample the result of the function.
-
-    If no interpolator attribute is associated with the input grid then the function is called as hyper.
-
-    Parameters
-    ----------
-    func
-        Some method that accepts a grid
-
-    Returns
-    -------
-    decorated_function
-        The function with optional interpolation
-    """
-
     @wraps(func)
     def wrapper(*args, **kwargs):
 
-        plotter = copy.deepcopy(args[0])
+        plotter = args[0].new_with_updated_mat_plots(
+            func=func, kwargs=kwargs, for_subplot=True
+        )
 
-        if plotter.mat_plot_1d is not None:
-            plotter.mat_plot_1d = update_mat_plot(
-                mat_plot=plotter.mat_plot_1d, func=func, kwargs=kwargs, for_subplot=True
-            )
+        args = (plotter,) + tuple(arg for arg in args[1:])
 
-        if plotter.mat_plot_2d is not None:
-            plotter.mat_plot_2d = update_mat_plot(
-                mat_plot=plotter.mat_plot_2d, func=func, kwargs=kwargs, for_subplot=True
-            )
+        return func(*args, **kwargs)
+
+    return wrapper
+
+
+def for_subplot_with_index(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+
+        index = index_from_inputs(args=args, kwargs=kwargs)
+
+        plotter = args[0].new_with_updated_mat_plots(
+            func=func, kwargs=kwargs, index=index, for_subplot=True
+        )
 
         args = (plotter,) + tuple(arg for arg in args[1:])
 
@@ -214,6 +242,28 @@ class AbstractPlotter:
         self.visuals_2d = visuals_2d
         self.include_2d = include_2d
         self.mat_plot_2d = mat_plot_2d
+
+    def new_with_updated_mat_plots(self, func, kwargs, index=None, for_subplot=False):
+
+        plotter = copy.deepcopy(self)
+
+        plotter.mat_plot_1d = update_mat_plot(
+            mat_plot=plotter.mat_plot_1d,
+            func=func,
+            kwargs=kwargs,
+            index=index,
+            for_subplot=for_subplot,
+        )
+
+        plotter.mat_plot_2d = update_mat_plot(
+            mat_plot=plotter.mat_plot_2d,
+            func=func,
+            kwargs=kwargs,
+            index=index,
+            for_subplot=for_subplot,
+        )
+
+        return plotter
 
     @property
     def for_subplot(self):
@@ -316,43 +366,35 @@ class AbstractPlotter:
         else:
             plt.subplot(rows, columns, subplot_index, aspect=float(aspect))
 
-    def visuals_from_structure(
-        self, structure: abstract_structure.AbstractStructure
-    ) -> "vis.Visuals2D":
+    def extract_2d(self, name, value, include_name=None):
         """
-        Extracts from a `Structure` attributes that can be plotted and return them in a `Visuals` object.
+        Extracts an attribute for plotting in a `Visuals2D` object based on the following criteria:
 
-        Only attributes with `True` entries in the `Include` object are extracted for plotting.
+        1) If `visuals_2d` already has a value for the attribute this is returned, over-riding the input `value` of
+          that attribute.
 
-        From an `AbstractStructure` the following attributes can be extracted for plotting:
+        2) If `visuals_2d` do not contain the attribute, the input `value` is returned provided its corresponding
+          entry in the `Include2D` class is `True`.
 
-        - origin: the (y,x) origin of the structure's coordinate system.
-        - mask: the mask of the structure.
-        - border: the border of the structure's mask.
+        3) If the `Include2D` entry is `False` a None is returned and the attribute is therefore plotted.
 
         Parameters
         ----------
-        structure : abstract_structure.AbstractStructure
-            The structure whose attributes are extracted for plotting.
+        name : str
+            The name of the attribute which is to be extracted.
+        value :
+            The `value` of the attribute, which is used when criteria 2) above is met.
 
         Returns
         -------
-        vis.Visuals2D
             The collection of attributes that can be plotted by a `Plotter2D` object.
         """
 
-        origin = (
-            grids.GridIrregular(grid=[structure.origin])
-            if self.include_2d.origin
-            else None
-        )
+        if include_name is None:
+            include_name = name
 
-        mask = structure.mask if self.include_2d.mask else None
-
-        border = (
-            structure.mask.geometry.border_grid_sub_1.in_1d_binned
-            if self.include_2d.border
-            else None
-        )
-
-        return vis.Visuals2D(origin=origin, mask=mask, border=border) + self.visuals_2d
+        if getattr(self.visuals_2d, name) is not None:
+            return getattr(self.visuals_2d, name)
+        else:
+            if getattr(self.include_2d, include_name):
+                return value

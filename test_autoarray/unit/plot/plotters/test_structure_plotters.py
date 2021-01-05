@@ -270,7 +270,7 @@ class TestGridPlotter:
 
         visuals_2d = aplt.Visuals2D(origin=(1.0, 1.0), vector_field=2)
 
-        include = aplt.Include2D(origin=True, mask=True, border=True)
+        include = aplt.Include2D(origin=True)
 
         grid_plotter = aplt.GridPlotter(
             grid=grid_7x7, visuals_2d=visuals_2d, include_2d=include
@@ -279,24 +279,13 @@ class TestGridPlotter:
         assert grid_plotter.visuals_2d.origin == (1.0, 1.0)
         assert grid_plotter.visuals_with_include_2d.origin == (1.0, 1.0)
 
-        assert grid_plotter.visuals_2d.mask == None
-        assert (grid_plotter.visuals_with_include_2d.mask == grid_7x7.mask).all()
-
-        assert grid_plotter.visuals_2d.border == None
-        assert (
-            grid_plotter.visuals_with_include_2d.border
-            == grid_7x7.mask.geometry.border_grid_sub_1.in_1d_binned
-        ).all()
-
-        include = aplt.Include2D(origin=False, mask=False, border=False)
+        include = aplt.Include2D(origin=False)
 
         grid_plotter = aplt.GridPlotter(
             grid=grid_7x7, visuals_2d=visuals_2d, include_2d=include
         )
 
         assert grid_plotter.visuals_with_include_2d.origin == (1.0, 1.0)
-        assert grid_plotter.visuals_with_include_2d.mask == None
-        assert grid_plotter.visuals_with_include_2d.border == None
         assert grid_plotter.visuals_with_include_2d.vector_field == 2
 
     def test__works_with_all_extras_included(

@@ -24,16 +24,11 @@ class ArrayPlotter(abstract_plotters.AbstractPlotter):
 
     @property
     def visuals_with_include_2d(self):
-
-        visuals_2d = copy.deepcopy(self.visuals_2d)
-
-        return visuals_2d + self.visuals_from_array(array=self.array)
-
-    def visuals_from_array(self, array: arrays.Array) -> "vis.Visuals2D":
         """
-        Extracts from an `Array` attributes that can be plotted and return them in a `Visuals` object.
+        Extracts from an `Array` attributes that can be plotted and returns them in a `Visuals` object.
 
-        Only attributes with `True` entries in the `Include` object are extracted for plotting.
+        Only attributes already in `self.visuals_2d` or with `True` entries in the `Include` object are extracted
+        for plotting.
 
         From an `Array` the following attributes can be extracted for plotting:
 
@@ -51,7 +46,15 @@ class ArrayPlotter(abstract_plotters.AbstractPlotter):
         vis.Visuals2D
             The collection of attributes that can be plotted by a `Plotter2D` object.
         """
-        return self.visuals_from_structure(structure=array)
+        return self.visuals_2d + vis.Visuals2D(
+            origin=self.extract_2d(
+                "origin", grids.GridIrregular(grid=[self.array.origin])
+            ),
+            mask=self.extract_2d("mask", self.array.mask),
+            border=self.extract_2d(
+                "border", self.array.mask.geometry.border_grid_sub_1.in_1d_binned
+            ),
+        )
 
     @abstract_plotters.for_figure
     def figure_array(self, extent_manual=None):
@@ -79,16 +82,11 @@ class FramePlotter(abstract_plotters.AbstractPlotter):
 
     @property
     def visuals_with_include_2d(self):
-
-        visuals_2d = copy.deepcopy(self.visuals_2d)
-
-        return visuals_2d + self.visuals_from_frame(frame=self.frame)
-
-    def visuals_from_frame(self, frame: frames.Frame) -> "vis.Visuals2D":
         """
         Extracts from a `Frame` attributes that can be plotted and return them in a `Visuals` object.
 
-        Only attributes with `True` entries in the `Include` object are extracted for plotting.
+        Only attributes already in `self.visuals_2d` or with `True` entries in the `Include` object are extracted
+        for plotting.
 
         From an `Frame` the following attributes can be extracted for plotting:
 
@@ -109,22 +107,23 @@ class FramePlotter(abstract_plotters.AbstractPlotter):
         vis.Visuals2D
             The collection of attributes that can be plotted by a `Plotter2D` object.
         """
-        visuals_structure = self.visuals_from_structure(structure=frame)
-
-        parallel_overscan = (
-            frame.scans.parallel_overscan if self.include_2d.parallel_overscan else None
-        )
-        serial_prescan = (
-            frame.scans.serial_prescan if self.include_2d.serial_prescan else None
-        )
-        serial_overscan = (
-            frame.scans.serial_overscan if self.include_2d.serial_overscan else None
-        )
-
-        return visuals_structure + vis.Visuals2D(
-            parallel_overscan=parallel_overscan,
-            serial_prescan=serial_prescan,
-            serial_overscan=serial_overscan,
+        return self.visuals_2d + vis.Visuals2D(
+            origin=self.extract_2d(
+                "origin", grids.GridIrregular(grid=[self.frame.origin])
+            ),
+            mask=self.extract_2d("mask", self.frame.mask),
+            border=self.extract_2d(
+                "border", self.frame.mask.geometry.border_grid_sub_1.in_1d_binned
+            ),
+            parallel_overscan=self.extract_2d(
+                "parallel_overscan", self.frame.scans.parallel_overscan
+            ),
+            serial_prescan=self.extract_2d(
+                "serial_prescan", self.frame.scans.serial_prescan
+            ),
+            serial_overscan=self.extract_2d(
+                "serial_overscan", self.frame.scans.serial_overscan
+            ),
         )
 
     @abstract_plotters.for_figure
@@ -151,12 +150,6 @@ class GridPlotter(abstract_plotters.AbstractPlotter):
 
     @property
     def visuals_with_include_2d(self):
-
-        visuals_2d = copy.deepcopy(self.visuals_2d)
-
-        return visuals_2d + self.visuals_from_grid(grid=self.grid)
-
-    def visuals_from_grid(self, grid: grids.Grid) -> "vis.Visuals2D":
         """
         Extracts from a `Grid` attributes that can be plotted and return them in a `Visuals` object.
 
@@ -178,9 +171,14 @@ class GridPlotter(abstract_plotters.AbstractPlotter):
         vis.Visuals2D
             The collection of attributes that can be plotted by a `Plotter2D` object.
         """
-        if isinstance(grid, grids.Grid):
-            return self.visuals_from_structure(structure=grid)
-        return vis.Visuals2D()
+        if not isinstance(self.grid, grids.Grid):
+            return self.visuals_2d
+
+        return self.visuals_2d + vis.Visuals2D(
+            origin=self.extract_2d(
+                "origin", grids.GridIrregular(grid=[self.grid.origin])
+            )
+        )
 
     @abstract_plotters.for_figure
     def figure_grid(
@@ -217,19 +215,6 @@ class MapperPlotter(abstract_plotters.AbstractPlotter):
 
     @property
     def visuals_data_with_include_2d(self):
-
-        visuals_2d = copy.deepcopy(self.visuals_2d)
-
-        return visuals_2d + self.visuals_of_data_from_mapper(mapper=self.mapper)
-
-    @property
-    def visuals_source_with_include_2d(self):
-
-        visuals_2d = copy.deepcopy(self.visuals_2d)
-
-        return visuals_2d + self.visuals_of_source_from_mapper(mapper=self.mapper)
-
-    def visuals_of_data_from_mapper(self, mapper: mappers.Mapper) -> "vis.Visuals2D":
         """
         Extracts from a `Mapper` attributes that can be plotted for figures in its data-plane (e.g. the reconstructed
         data) and return them in a `Visuals` object.
@@ -253,32 +238,25 @@ class MapperPlotter(abstract_plotters.AbstractPlotter):
         vis.Visuals2D
             The collection of attributes that can be plotted by a `Plotter2D` object.
         """
-        origin = (
-            grids.GridIrregular(grid=[mapper.source_full_grid.mask.origin])
-            if self.include_2d.origin
-            else None
-        )
-        mask = mapper.source_full_grid.mask if self.include_2d.mask else None
-        data_pixelization_grid = (
-            mapper.data_pixelization_grid
-            if self.include_2d.mapper_data_pixelization_grid
-            else None
-        )
-
-        border = (
-            mapper.source_full_grid.mask.geometry.border_grid_sub_1.in_1d_binned
-            if self.include_2d.border
-            else None
-        )
-
         return vis.Visuals2D(
-            origin=origin,
-            mask=mask,
-            pixelization_grid=data_pixelization_grid,
-            border=border,
+            origin=self.extract_2d(
+                "origin",
+                grids.GridIrregular(grid=[self.mapper.source_full_grid.mask.origin]),
+            ),
+            mask=self.extract_2d("mask", self.mapper.source_full_grid.mask),
+            border=self.extract_2d(
+                "border",
+                self.mapper.source_full_grid.mask.geometry.border_grid_sub_1.in_1d_binned,
+            ),
+            pixelization_grid=self.extract_2d(
+                "pixelization_grid",
+                self.mapper.data_pixelization_grid,
+                "mapper_data_pixelization_grid",
+            ),
         )
 
-    def visuals_of_source_from_mapper(self, mapper: mappers.Mapper) -> "vis.Visuals2D":
+    @property
+    def visuals_source_with_include_2d(self):
         """
         Extracts from a `Mapper` attributes that can be plotted for figures in its source-plane (e.g. the reconstruction
         and return them in a `Visuals` object.
@@ -302,27 +280,21 @@ class MapperPlotter(abstract_plotters.AbstractPlotter):
         vis.Visuals2D
             The collection of attributes that can be plotted by a `Plotter2D` object.
         """
-        origin = (
-            grids.GridIrregular(grid=[mapper.source_pixelization_grid.origin])
-            if self.include_2d.origin
-            else None
-        )
-        source_full_grid = (
-            mapper.source_full_grid if self.include_2d.mapper_source_full_grid else None
-        )
-
-        source_pixelization_grid = (
-            mapper.source_pixelization_grid
-            if self.include_2d.mapper_source_pixelization_grid
-            else None
-        )
-        #     border = mapper.source_grid.sub_border_grid if self.mapper_source_pixelization_grid else None
 
         return vis.Visuals2D(
-            origin=origin,
-            grid=source_full_grid,
-            pixelization_grid=source_pixelization_grid,
-        )  # , border=border)
+            origin=self.extract_2d(
+                "origin",
+                grids.GridIrregular(grid=[self.mapper.source_pixelization_grid.origin]),
+            ),
+            grid=self.extract_2d(
+                "grid", self.mapper.source_full_grid, "mapper_source_full_grid"
+            ),
+            pixelization_grid=self.extract_2d(
+                "pixelization_grid",
+                self.mapper.source_pixelization_grid,
+                "mapper_source_pixelization_grid",
+            ),
+        )
 
     @abstract_plotters.for_figure
     def figure_mapper(

@@ -4,12 +4,10 @@ wrap_base.set_backend()
 
 import matplotlib.pyplot as plt
 import numpy as np
-import copy
 
 from autoarray import exc
 from autoarray.plot.mat_wrap import wrap
 from autoarray.plot.mat_wrap import visuals as vis
-import os
 from autoarray.inversion import mappers
 
 

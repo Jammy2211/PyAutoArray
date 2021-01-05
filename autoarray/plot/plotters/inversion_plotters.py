@@ -148,7 +148,7 @@ class InversionPlotter(structure_plotters.MapperPlotter):
         plot_residual_map=False,
         plot_normalized_residual_map=False,
         plot_chi_squared_map=False,
-        plot_regularization_weight_map=False,
+        plot_regularization_weights=False,
         plot_interpolated_reconstruction=False,
         plot_interpolated_errors=False,
     ):
@@ -179,7 +179,7 @@ class InversionPlotter(structure_plotters.MapperPlotter):
             self.figure_normalized_residual_map()
         if plot_chi_squared_map:
             self.figure_chi_squared_map()
-        if plot_regularization_weight_map:
+        if plot_regularization_weights:
             self.figure_regularization_weights()
         if plot_interpolated_reconstruction:
             self.figure_interpolated_reconstruction()

@@ -1,4 +1,3 @@
-import autoarray as aa
 import autoarray.plot as aplt
 
 

@@ -5,6 +5,7 @@ from autoarray.plot.plotters import abstract_plotters
 from autoarray.dataset import imaging as im
 
 import copy
+from autoarray.structures import grids
 
 
 class ImagingPlotter(abstract_plotters.AbstractPlotter):
@@ -25,9 +26,16 @@ class ImagingPlotter(abstract_plotters.AbstractPlotter):
     @property
     def visuals_with_include_2d(self):
 
-        visuals_2d = copy.deepcopy(self.visuals_2d)
-
-        return visuals_2d + self.visuals_from_structure(structure=self.imaging.image)
+        return self.visuals_2d + vis.Visuals2D(
+            origin=self.extract_2d(
+                "origin", grids.GridIrregular(grid=[self.imaging.image.origin])
+            ),
+            mask=self.extract_2d("mask", self.imaging.image.mask),
+            border=self.extract_2d(
+                "border",
+                self.imaging.image.mask.geometry.border_grid_sub_1.in_1d_binned,
+            ),
+        )
 
     @abstract_plotters.for_figure
     def figure_image(self):
@@ -155,7 +163,7 @@ class ImagingPlotter(abstract_plotters.AbstractPlotter):
             visuals_2d=self.visuals_with_include_2d,
         )
 
-    def figure_individual(
+    def figure_individuals(
         self,
         plot_image=False,
         plot_noise_map=False,

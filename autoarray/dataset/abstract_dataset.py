@@ -85,15 +85,6 @@ class AbstractDataset:
     def geometry(self):
         return self.data.mask.geometry
 
-    def visuals_from_include(
-        self, include_origin=False, include_mask=False, include_border=False
-    ):
-        return self.data.visuals_from_include(
-            include_origin=include_origin,
-            include_mask=include_mask,
-            include_border=include_border,
-        )
-
     @property
     def inverse_noise_map(self):
         return 1.0 / self.noise_map
@@ -428,6 +419,36 @@ class AbstractMaskedDataset:
     @property
     def positions(self):
         return self.dataset.positions
+
+    @property
+    def inverse_noise_map(self):
+        return 1.0 / self.noise_map
+
+    @property
+    def signal_to_noise_map(self):
+        """The estimated signal-to-noise_maps mappers of the image."""
+        signal_to_noise_map = np.divide(self.data, self.noise_map)
+        signal_to_noise_map[signal_to_noise_map < 0] = 0
+        return signal_to_noise_map
+
+    @property
+    def absolute_signal_to_noise_map(self):
+        """The estimated absolute_signal-to-noise_maps mappers of the image."""
+        return self.data._new_structure(
+            array=np.divide(np.abs(self.data), self.noise_map),
+            mask=self.data.mask,
+            store_in_1d=self.data.store_in_1d,
+        )
+
+    @property
+    def potential_chi_squared_map(self):
+        """The potential chi-squared-map of the imaging data_type. This represents how much each pixel can contribute to \
+        the chi-squared-map, assuming the model fails to fit it at all (e.g. model value = 0.0)."""
+        return self.data._new_structure(
+            array=np.square(self.absolute_signal_to_noise_map),
+            mask=self.data.mask,
+            store_in_1d=self.data.store_in_1d,
+        )
 
     def modify_noise_map(self, noise_map):
 
