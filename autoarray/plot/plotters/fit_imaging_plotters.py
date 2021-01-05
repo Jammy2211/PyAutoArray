@@ -5,9 +5,6 @@ from autoarray.plot.mat_wrap import mat_plot
 from autoarray.fit import fit as f
 from autoarray.structures import grids
 
-import typing
-import copy
-
 
 class FitImagingPlotter(abstract_plotters.AbstractPlotter):
     def __init__(

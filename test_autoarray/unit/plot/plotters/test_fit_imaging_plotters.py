@@ -90,6 +90,8 @@ def test__fit_sub_plot(fit_imaging_7x7, plot_path, plot_patch):
 
     fit_imaging_plotter.subplot_fit_imaging()
 
+    print(plot_patch.paths)
+
     assert path.join(plot_path, "subplot_fit_imaging.png") in plot_patch.paths
 
 
