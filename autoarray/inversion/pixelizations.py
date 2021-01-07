@@ -10,7 +10,7 @@ import copy
 class SettingsPixelization:
     def __init__(
         self,
-        use_border: bool = False,
+        use_border: bool = True,
         pixel_limit: int = None,
         is_stochastic: bool = False,
         kmeans_seed: int = 0,

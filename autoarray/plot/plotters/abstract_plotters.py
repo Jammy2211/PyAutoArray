@@ -52,70 +52,70 @@ def index_from_inputs(args, kwargs):
 
 def for_figure(func):
     @wraps(func)
-    def wrapper(*args, **kwargs):
+    def wrapper(plotter, *args, **kwargs):
 
-        if args[0].for_subplot:
+        if plotter.for_subplot:
 
-            args[0].set_mat_plots_titles_from_func(func=func)
+            plotter.set_auto_title_from_func(func=func)
 
-            return func(*args, **kwargs)
+            return func(plotter, *args, **kwargs)
 
-        args[0].set_mat_plots_filenames_from_func(func=func)
-        args[0].set_mat_plots_titles_from_func(func=func)
+        plotter.set_auto_filename_from_func(func=func)
+        plotter.set_auto_title_from_func(func=func)
 
-        return func(*args, **kwargs)
+        return func(plotter, *args, **kwargs)
 
     return wrapper
 
 
 def for_figure_with_index(func):
     @wraps(func)
-    def wrapper(*args, **kwargs):
+    def wrapper(plotter, *args, **kwargs):
 
         index = index_from_inputs(args=args, kwargs=kwargs)
 
-        if args[0].for_subplot:
+        if plotter.for_subplot:
 
-            args[0].set_mat_plots_titles_from_func(func=func, index=index)
+            plotter.set_auto_title_from_func(func=func, index=index)
 
-            return func(*args, **kwargs)
+            return func(plotter, *args, **kwargs)
 
-        args[0].set_mat_plots_filenames_from_func(func=func, index=index)
-        args[0].set_mat_plots_titles_from_func(func=func, index=index)
+        plotter.set_auto_filename_from_func(func=func, index=index)
+        plotter.set_auto_title_from_func(func=func, index=index)
 
-        return func(*args, **kwargs)
+        return func(plotter, *args, **kwargs)
 
     return wrapper
 
 
 def for_subplot(func):
     @wraps(func)
-    def wrapper(*args, **kwargs):
+    def wrapper(plotter, *args, **kwargs):
 
-        args[0].set_mat_plots_filenames_from_func(func=func)
-        args[0].set_mat_plots_titles_from_func(func=func)
-        args[0].set_mat_plots_for_subplot(for_subplot=True)
+        plotter.set_auto_filename_from_func(func=func)
+        plotter.set_auto_title_from_func(func=func)
+        plotter.set_mat_plots_for_subplot(for_subplot=True)
 
-        func(*args, **kwargs)
+        func(plotter, *args, **kwargs)
 
-        args[0].set_mat_plots_for_subplot(for_subplot=False)
+        plotter.set_mat_plots_for_subplot(for_subplot=False)
 
     return wrapper
 
 
 def for_subplot_with_index(func):
     @wraps(func)
-    def wrapper(*args, **kwargs):
+    def wrapper(plotter, *args, **kwargs):
 
         index = index_from_inputs(args=args, kwargs=kwargs)
 
-        args[0].set_mat_plots_filenames_from_func(func=func, index=index)
-        args[0].set_mat_plots_titles_from_func(func=func, index=index)
-        args[0].set_mat_plots_for_subplot(for_subplot=True)
+        plotter.set_auto_filename_from_func(func=func, index=index)
+        plotter.set_auto_title_from_func(func=func, index=index)
+        plotter.set_mat_plots_for_subplot(for_subplot=True)
 
-        func(*args, **kwargs)
+        func(plotter, *args, **kwargs)
 
-        args[0].set_mat_plots_for_subplot(for_subplot=False)
+        plotter.set_mat_plots_for_subplot(for_subplot=False)
 
     return wrapper
 
@@ -138,7 +138,15 @@ class AbstractPlotter:
         self.include_2d = include_2d
         self.mat_plot_2d = mat_plot_2d
 
-    def set_mat_plots_titles_from_func(self, func, index=None):
+    def set_title(self, label):
+
+        if self.mat_plot_1d is not None:
+            self.mat_plot_1d.title.manual_label = label
+
+        if self.mat_plot_2d is not None:
+            self.mat_plot_2d.title.manual_label = label
+
+    def set_auto_title_from_func(self, func, index=None):
 
         if self.mat_plot_1d is not None:
             self.mat_plot_1d.title._auto_label = title_from_func(func=func, index=index)
@@ -146,7 +154,15 @@ class AbstractPlotter:
         if self.mat_plot_2d is not None:
             self.mat_plot_2d.title._auto_label = title_from_func(func=func, index=index)
 
-    def set_mat_plots_filenames_from_func(self, func, index=None):
+    def set_filename(self, filename):
+
+        if self.mat_plot_1d is not None:
+            self.mat_plot_1d.output._filename = filename
+
+        if self.mat_plot_2d is not None:
+            self.mat_plot_2d.output._filename = filename
+
+    def set_auto_filename_from_func(self, func, index=None):
 
         if self.mat_plot_1d is not None:
             self.mat_plot_1d.output._auto_filename = filename_from_func(
@@ -226,12 +242,12 @@ class AbstractPlotter:
         """
 
         if self.mat_plot_1d is not None:
-            if self.mat_plot_1d.figure.config_dict_figure["figsize"] is not None:
-                return self.mat_plot_1d.figure.config_dict_figure["figsize"]
+            if self.mat_plot_1d.figure.config_dict["figsize"] is not None:
+                return self.mat_plot_1d.figure.config_dict["figsize"]
 
         if self.mat_plot_2d is not None:
-            if self.mat_plot_2d.figure.config_dict_figure["figsize"] is not None:
-                return self.mat_plot_2d.figure.config_dict_figure["figsize"]
+            if self.mat_plot_2d.figure.config_dict["figsize"] is not None:
+                return self.mat_plot_2d.figure.config_dict["figsize"]
 
         if number_subplots <= 2:
             return (18, 8)
@@ -253,6 +269,7 @@ class AbstractPlotter:
     def setup_subplot(
         self, number_subplots, subplot_index, aspect=None, subplot_rows_columns=None
     ):
+
         if subplot_rows_columns is None:
             rows, columns = self.get_subplot_rows_columns(
                 number_subplots=number_subplots

@@ -18,6 +18,7 @@ class AbstractMatPlot:
         figure: wrap.Figure = wrap.Figure(),
         cmap: wrap.Cmap = wrap.Cmap(),
         colorbar: wrap.Colorbar = wrap.Colorbar(),
+        colorbar_tickparams: wrap.ColorbarTickParams = wrap.ColorbarTickParams(),
         tickparams: wrap.TickParams = wrap.TickParams(),
         yticks: wrap.YTicks = wrap.YTicks(),
         xticks: wrap.XTicks = wrap.XTicks(),
@@ -54,8 +55,10 @@ class AbstractMatPlot:
             Customizes the colormap of the plot and its normalization via matplotlib `colors` objects such 
             as `colors.Normalize` and `colors.LogNorm`.
         colorbar : mat_wrap.Colorbar
-            Plots the colorbar of the plot via `plt.colorbar` and customizes its appearance and ticks using methods
-            like `cb.set_yticklabels` and `cb.ax.tick_params`.
+            Plots the colorbar of the plot via `plt.colorbar` and customizes its tick labels and values using method
+            like `cb.set_yticklabels`.
+        colorbar_tickparams : mat_wrap.ColorbarTickParams
+            Customizes the yticks of the colorbar plotted via `plt.colorbar`.
         tickparams : mat_wrap.TickParams
             Customizes the appearances of the y and x ticks on the plot, (e.g. the fontsize), using `plt.tick_params`.
         yticks : mat_wrap.YTicks
@@ -80,6 +83,7 @@ class AbstractMatPlot:
         self.figure = figure
         self.cmap = cmap
         self.colorbar = colorbar
+        self.colorbar_tickparams = colorbar_tickparams
         self.tickparams = tickparams
         self.title = title
         self.yticks = yticks
@@ -126,6 +130,7 @@ class MatPlot1D(AbstractMatPlot):
         figure: wrap.Figure = wrap.Figure(),
         cmap: wrap.Cmap = wrap.Cmap(),
         colorbar: wrap.Colorbar = wrap.Colorbar(),
+        colorbar_tickparams: wrap.ColorbarTickParams = wrap.ColorbarTickParams(),
         tickparams: wrap.TickParams = wrap.TickParams(),
         yticks: wrap.YTicks = wrap.YTicks(),
         xticks: wrap.XTicks = wrap.XTicks(),
@@ -163,8 +168,10 @@ class MatPlot1D(AbstractMatPlot):
             Customizes the colormap of the plot and its normalization via matplotlib `colors` objects such 
             as `colors.Normalize` and `colors.LogNorm`.
         colorbar : mat_wrap.Colorbar
-            Plots the colorbar of the plot via `plt.colorbar` and customizes its appearance and ticks using methods
-            like `cb.set_yticklabels` and `cb.ax.tick_params`.
+            Plots the colorbar of the plot via `plt.colorbar` and customizes its tick labels and values using method
+            like `cb.set_yticklabels`.
+        colorbar_tickparams : mat_wrap.ColorbarTickParams
+            Customizes the yticks of the colorbar plotted via `plt.colorbar`.
         tickparams : mat_wrap.TickParams
             Customizes the appearances of the y and x ticks on the plot, (e.g. the fontsize), using `plt.tick_params`.
         yticks : mat_wrap.YTicks
@@ -190,6 +197,7 @@ class MatPlot1D(AbstractMatPlot):
             figure=figure,
             cmap=cmap,
             colorbar=colorbar,
+            colorbar_tickparams=colorbar_tickparams,
             tickparams=tickparams,
             yticks=yticks,
             xticks=xticks,
@@ -252,6 +260,7 @@ class MatPlot2D(AbstractMatPlot):
         figure: wrap.Figure = wrap.Figure(),
         cmap: wrap.Cmap = wrap.Cmap(),
         colorbar: wrap.Colorbar = wrap.Colorbar(),
+        colorbar_tickparams: wrap.ColorbarTickParams = wrap.ColorbarTickParams(),
         tickparams: wrap.TickParams = wrap.TickParams(),
         yticks: wrap.YTicks = wrap.YTicks(),
         xticks: wrap.XTicks = wrap.XTicks(),
@@ -303,8 +312,10 @@ class MatPlot2D(AbstractMatPlot):
             Customizes the colormap of the plot and its normalization via matplotlib `colors` objects such 
             as `colors.Normalize` and `colors.LogNorm`.
         colorbar : mat_wrap.Colorbar
-            Plots the colorbar of the plot via `plt.colorbar` and customizes its appearance and ticks using methods
-            like `cb.set_yticklabels` and `cb.ax.tick_params`.
+            Plots the colorbar of the plot via `plt.colorbar` and customizes its tick labels and values using method
+            like `cb.set_yticklabels`.
+        colorbar_tickparams : mat_wrap.ColorbarTickParams
+            Customizes the yticks of the colorbar plotted via `plt.colorbar`.
         tickparams : mat_wrap.TickParams
             Customizes the appearances of the y and x ticks on the plot, (e.g. the fontsize), using `plt.tick_params`.
         yticks : mat_wrap.YTicks
@@ -360,6 +371,7 @@ class MatPlot2D(AbstractMatPlot):
             figure=figure,
             cmap=cmap,
             colorbar=colorbar,
+            colorbar_tickparams=colorbar_tickparams,
             tickparams=tickparams,
             yticks=yticks,
             xticks=xticks,
@@ -388,7 +400,7 @@ class MatPlot2D(AbstractMatPlot):
 
         self.for_subplot = False
 
-    def plot_array(self, array, visuals_2d, extent_manual=None):
+    def plot_array(self, array, visuals_2d, extent_manual=None, bypass=False):
         """Plot an array of data_type as a figure.
 
         Parameters
@@ -468,11 +480,12 @@ class MatPlot2D(AbstractMatPlot):
         self.ylabel.set(units=self.units, include_brackets=True)
         self.xlabel.set(units=self.units, include_brackets=True)
 
-        self.colorbar.set()
+        cb = self.colorbar.set()
+        self.colorbar_tickparams.set(cb=cb)
 
         visuals_2d.plot_via_plotter(plotter=self)
 
-        if not self.for_subplot:
+        if not self.for_subplot and not bypass:
             self.output.to_figure(structure=array)
             self.figure.close()
 
@@ -518,7 +531,8 @@ class MatPlot2D(AbstractMatPlot):
         self.ylabel.set(units=self.units, include_brackets=True)
         self.xlabel.set(units=self.units, include_brackets=True)
 
-        self.colorbar.set()
+        cb = self.colorbar.set()
+        self.colorbar_tickparams.set(cb=cb)
 
         visuals_2d.plot_via_plotter(plotter=self)
 
@@ -560,7 +574,8 @@ class MatPlot2D(AbstractMatPlot):
             self.grid_scatter.scatter_grid_colored(
                 grid=grid, color_array=color_array, cmap=self.cmap.config_dict["cmap"]
             )
-            self.colorbar.set()
+            cb = self.colorbar.set()
+            self.colorbar_tickparams.set(cb=cb)
 
         self.title.set()
         self.ylabel.set(units=self.units, include_brackets=True)
@@ -579,20 +594,19 @@ class MatPlot2D(AbstractMatPlot):
             plt.axis(grid.extent)
 
         self.tickparams.set()
-        self.yticks.set(
-            array=None,
-            min_value=grid.extent[2],
-            max_value=grid.extent[3],
-            units=self.units,
-            use_defaults=symmetric_around_centre,
-        )
-        self.xticks.set(
-            array=None,
-            min_value=grid.extent[0],
-            max_value=grid.extent[1],
-            units=self.units,
-            use_defaults=symmetric_around_centre,
-        )
+        if not symmetric_around_centre:
+            self.yticks.set(
+                array=None,
+                min_value=grid.extent[2],
+                max_value=grid.extent[3],
+                units=self.units,
+            )
+            self.xticks.set(
+                array=None,
+                min_value=grid.extent[0],
+                max_value=grid.extent[1],
+                units=self.units,
+            )
 
         visuals_2d.plot_via_plotter(plotter=self)
 
@@ -641,7 +655,9 @@ class MatPlot2D(AbstractMatPlot):
         self.figure.open()
 
         if source_pixelilzation_values is not None:
-            self.plot_array(array=source_pixelilzation_values, visuals_2d=visuals_2d)
+            self.plot_array(
+                array=source_pixelilzation_values, visuals_2d=visuals_2d, bypass=True
+            )
 
         self.set_axis_limits(
             axis_limits=mapper.source_pixelization_grid.extent,
@@ -726,7 +742,8 @@ class MatPlot2D(AbstractMatPlot):
             mapper=mapper,
             values=source_pixelilzation_values,
             cmap=self.cmap.config_dict["cmap"],
-            cb=self.colorbar,
+            colorbar=self.colorbar,
+            colorbar_tickparams=self.colorbar_tickparams,
         )
 
         self.title.set()

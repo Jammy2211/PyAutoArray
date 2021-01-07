@@ -46,7 +46,7 @@ class ArrayPlotter(abstract_plotters.AbstractPlotter):
         vis.Visuals2D
             The collection of attributes that can be plotted by a `Plotter2D` object.
         """
-        return self.visuals_2d + vis.Visuals2D(
+        return self.visuals_2d + self.visuals_2d.__class__(
             origin=self.extract_2d(
                 "origin", grids.GridIrregular(grid=[self.array.origin])
             ),
@@ -107,7 +107,7 @@ class FramePlotter(abstract_plotters.AbstractPlotter):
         vis.Visuals2D
             The collection of attributes that can be plotted by a `Plotter2D` object.
         """
-        return self.visuals_2d + vis.Visuals2D(
+        return self.visuals_2d + self.visuals_2d.__class__(
             origin=self.extract_2d(
                 "origin", grids.GridIrregular(grid=[self.frame.origin])
             ),
@@ -174,7 +174,7 @@ class GridPlotter(abstract_plotters.AbstractPlotter):
         if not isinstance(self.grid, grids.Grid):
             return self.visuals_2d
 
-        return self.visuals_2d + vis.Visuals2D(
+        return self.visuals_2d + self.visuals_2d.__class__(
             origin=self.extract_2d(
                 "origin", grids.GridIrregular(grid=[self.grid.origin])
             )
@@ -238,7 +238,7 @@ class MapperPlotter(abstract_plotters.AbstractPlotter):
         vis.Visuals2D
             The collection of attributes that can be plotted by a `Plotter2D` object.
         """
-        return vis.Visuals2D(
+        return self.visuals_2d + self.visuals_2d.__class__(
             origin=self.extract_2d(
                 "origin",
                 grids.GridIrregular(grid=[self.mapper.source_full_grid.mask.origin]),
@@ -281,13 +281,16 @@ class MapperPlotter(abstract_plotters.AbstractPlotter):
             The collection of attributes that can be plotted by a `Plotter2D` object.
         """
 
-        return vis.Visuals2D(
+        return self.visuals_2d + self.visuals_2d.__class__(
             origin=self.extract_2d(
                 "origin",
                 grids.GridIrregular(grid=[self.mapper.source_pixelization_grid.origin]),
             ),
             grid=self.extract_2d(
                 "grid", self.mapper.source_full_grid, "mapper_source_full_grid"
+            ),
+            border=self.extract_2d(
+                "border", self.mapper.source_full_grid.sub_border_grid
             ),
             pixelization_grid=self.extract_2d(
                 "pixelization_grid",

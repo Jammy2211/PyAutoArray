@@ -2,7 +2,6 @@ from autoarray.plot.mat_wrap.wrap import wrap_base
 
 wrap_base.set_backend()
 
-from autoarray.plot.mat_wrap import wrap
 import matplotlib.pyplot as plt
 import numpy as np
 import typing
@@ -24,8 +23,8 @@ class AbstractMatWrap1D(wrap_base.AbstractMatWrap):
         return "mat_wrap_1d"
 
 
-class LinePlot(AbstractMatWrap1D, wrap_base.AbstractMatWrapColored):
-    def __init__(self, colors=None, **kwargs):
+class LinePlot(AbstractMatWrap1D):
+    def __init__(self, **kwargs):
         """
         Plots a `Line` data structure as a y vs x figure.
 
@@ -33,15 +32,8 @@ class LinePlot(AbstractMatWrap1D, wrap_base.AbstractMatWrapColored):
 
         - plt.plot: https://matplotlib.org/3.3.3/api/_as_gen/matplotlib.pyplot.plot.html
         - plt.avxline: https://matplotlib.org/3.3.2/api/_as_gen/matplotlib.pyplot.axvline.html
-
-        Parameters
-        ----------
-        colors : [str]
-            The color or list of colors that the grid is plotted using. For plotting indexes or a grouped grid, a
-            list of colors can be specified which the plot cycles through.
         """
-        super().__init__(kwargs=kwargs)
-        wrap_base.AbstractMatWrapColored.__init__(self=self, colors=colors)
+        super().__init__(**kwargs)
 
     def plot_y_vs_x(
         self,
@@ -68,13 +60,13 @@ class LinePlot(AbstractMatWrap1D, wrap_base.AbstractMatWrapColored):
         """
 
         if plot_axis_type == "linear":
-            plt.plot(x, y, c=self.colors[0], label=label, **self.config_dict_plot)
+            plt.plot(x, y, label=label, **self.config_dict)
         elif plot_axis_type == "semilogy":
-            plt.semilogy(x, y, c=self.colors[0], label=label, **self.config_dict_plot)
+            plt.semilogy(x, y, label=label, **self.config_dict)
         elif plot_axis_type == "loglog":
-            plt.loglog(x, y, c=self.colors[0], label=label, **self.config_dict_plot)
+            plt.loglog(x, y, label=label, **self.config_dict)
         elif plot_axis_type == "scatter":
-            plt.scatter(x, y, c=self.colors[0], label=label, **self.config_dict_scatter)
+            plt.scatter(x, y, label=label, **self.config_dict)
         else:
             raise exc.PlottingException(
                 "The plot_axis_type supplied to the plotter is not a valid string (must be linear "
@@ -109,9 +101,4 @@ class LinePlot(AbstractMatWrap1D, wrap_base.AbstractMatWrapColored):
             vertical_lines, vertical_line_labels
         ):
 
-            plt.axvline(
-                x=vertical_line,
-                label=vertical_line_label,
-                c=self.colors[0],
-                **self.config_dict_plot,
-            )
+            plt.axvline(x=vertical_line, label=vertical_line_label, **self.config_dict)

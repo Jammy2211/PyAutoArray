@@ -41,20 +41,18 @@ class ArrayOverlay(AbstractMatWrap2D):
         This uses the `Units` and coordinate system of the `Array` to overlay it on on the coordinate system of the
         figure that is plotted.
         """
-        super().__init__(kwargs=kwargs)
+        super().__init__(**kwargs)
 
     def overlay_array(self, array, figure):
 
         aspect = figure.aspect_from_shape_2d(shape_2d=array.shape_2d)
         extent = array.extent_of_zoomed_array(buffer=0)
 
-        plt.imshow(
-            X=array.in_2d, aspect=aspect, extent=extent, **self.config_dict_imshow
-        )
+        plt.imshow(X=array.in_2d, aspect=aspect, extent=extent, **self.config_dict)
 
 
-class GridScatter(AbstractMatWrap2D, wrap_base.AbstractMatWrapColored):
-    def __init__(self, colors=None, **kwargs):
+class GridScatter(AbstractMatWrap2D):
+    def __init__(self, **kwargs):
         """
         Scatters an input set of grid points, for example (y,x) coordinates or data structures representing 2D (y,x)
         coordinates like a `Grid` or `GridIrregular`. If the object groups (y,x) coordinates they are plotted with
@@ -81,8 +79,7 @@ class GridScatter(AbstractMatWrap2D, wrap_base.AbstractMatWrapColored):
             The color or list of colors that the grid is plotted using. For plotting indexes or a grouped grid, a
             list of colors can be specified which the plot cycles through.
         """
-        super().__init__(kwargs=kwargs)
-        wrap_base.AbstractMatWrapColored.__init__(self=self, colors=colors)
+        super().__init__(**kwargs)
 
     def scatter_grid(self, grid: typing.Union[np.ndarray, grids.Grid]):
         """
@@ -93,11 +90,9 @@ class GridScatter(AbstractMatWrap2D, wrap_base.AbstractMatWrapColored):
         grid : Grid
             The grid of (y,x) coordinates that is plotted.
         """
+
         plt.scatter(
-            y=np.asarray(grid)[:, 0],
-            x=np.asarray(grid)[:, 1],
-            c=self.colors[0],
-            **self.config_dict_scatter,
+            y=np.asarray(grid)[:, 0], x=np.asarray(grid)[:, 1], **self.config_dict
         )
 
     def scatter_grid_colored(
@@ -120,12 +115,16 @@ class GridScatter(AbstractMatWrap2D, wrap_base.AbstractMatWrapColored):
         cmap : str
             The Matplotlib colormap used for the grid point coloring.
         """
+
+        config_dict = self.config_dict
+        config_dict.pop("c")
+
         plt.scatter(
             y=np.asarray(grid)[:, 0],
             x=np.asarray(grid)[:, 1],
             c=color_array,
             cmap=cmap,
-            **self.config_dict_scatter,
+            **config_dict,
         )
 
     def scatter_grid_indexes(
@@ -160,7 +159,10 @@ class GridScatter(AbstractMatWrap2D, wrap_base.AbstractMatWrapColored):
             if not any(isinstance(i, list) for i in indexes):
                 indexes = [indexes]
 
-        color = itertools.cycle(self.colors)
+        color = itertools.cycle(self.config_dict["c"])
+        config_dict = self.config_dict
+        config_dict.pop("c")
+
         for index_list in indexes:
 
             if all([isinstance(index, float) for index in index_list]) or all(
@@ -171,21 +173,20 @@ class GridScatter(AbstractMatWrap2D, wrap_base.AbstractMatWrapColored):
                     y=np.asarray(grid[index_list, 0]),
                     x=np.asarray(grid[index_list, 1]),
                     color=next(color),
-                    **self.config_dict_scatter,
+                    **config_dict,
                 )
 
             elif all([isinstance(index, tuple) for index in index_list]) or all(
                 [isinstance(index, list) for index in index_list]
             ):
 
-                ys = [index[0] for index in index_list]
-                xs = [index[1] for index in index_list]
+                ys, xs = map(list, zip(*index_list))
 
                 plt.scatter(
                     y=np.asarray(grid.in_2d[ys, xs, 0]),
                     x=np.asarray(grid.in_2d[ys, xs, 1]),
                     color=next(color),
-                    **self.config_dict_scatter,
+                    **config_dict,
                 )
 
             else:
@@ -210,7 +211,9 @@ class GridScatter(AbstractMatWrap2D, wrap_base.AbstractMatWrapColored):
         if len(grid_grouped) == 0:
             return
 
-        color = itertools.cycle(self.colors)
+        color = itertools.cycle(self.config_dict["c"])
+        config_dict = self.config_dict
+        config_dict.pop("c")
 
         for group in grid_grouped.in_grouped_list:
 
@@ -218,12 +221,12 @@ class GridScatter(AbstractMatWrap2D, wrap_base.AbstractMatWrapColored):
                 y=np.asarray(group)[:, 0],
                 x=np.asarray(group)[:, 1],
                 c=next(color),
-                **self.config_dict_scatter,
+                **config_dict,
             )
 
 
-class GridPlot(AbstractMatWrap2D, wrap_base.AbstractMatWrapColored):
-    def __init__(self, colors=None, **kwargs):
+class GridPlot(AbstractMatWrap2D):
+    def __init__(self, **kwargs):
         """
         Plots `Grid` data structure that are better visualized as solid lines, for example rectangular lines that are
         plotted over an image and grids of (y,x) coordinates as lines (as opposed to a scatter of points
@@ -239,8 +242,7 @@ class GridPlot(AbstractMatWrap2D, wrap_base.AbstractMatWrapColored):
             The color or list of colors that the grid is plotted using. For plotting indexes or a grouped grid, a
             list of colors can be specified which the plot cycles through.
         """
-        super().__init__(kwargs=kwargs)
-        wrap_base.AbstractMatWrapColored.__init__(self=self, colors=colors)
+        super().__init__(**kwargs)
 
     def plot_rectangular_grid_lines(
         self,
@@ -266,9 +268,20 @@ class GridPlot(AbstractMatWrap2D, wrap_base.AbstractMatWrapColored):
 
         # grid lines
         for x in xs:
-            plt.plot([x, x], [ys[0], ys[-1]], c=self.colors[0], **self.config_dict_plot)
+            plt.plot([x, x], [ys[0], ys[-1]], **self.config_dict)
         for y in ys:
-            plt.plot([xs[0], xs[-1]], [y, y], c=self.colors[0], **self.config_dict_plot)
+            plt.plot([xs[0], xs[-1]], [y, y], **self.config_dict)
+
+    def plot_grid(self, grid: typing.Union[np.ndarray, grids.Grid]):
+        """
+        Plot an input grid of (y,x) coordinates using the matplotlib method `plt.scatter`.
+
+        Parameters
+        ----------
+        grid : Grid
+            The grid of (y,x) coordinates that is plotted.
+        """
+        plt.plot(np.asarray(grid)[:, 1], np.asarray(grid)[:, 0], **self.config_dict)
 
     def plot_grid_grouped(self, grid_grouped: grids.GridIrregularGrouped):
         """
@@ -289,7 +302,9 @@ class GridPlot(AbstractMatWrap2D, wrap_base.AbstractMatWrapColored):
         if len(grid_grouped) == 0:
             return
 
-        color = itertools.cycle(self.colors)
+        color = itertools.cycle(self.config_dict["c"])
+        config_dict = self.config_dict
+        config_dict.pop("c")
 
         for grid_group in grid_grouped.in_grouped_list:
 
@@ -297,7 +312,7 @@ class GridPlot(AbstractMatWrap2D, wrap_base.AbstractMatWrapColored):
                 np.asarray(grid_group)[:, 1],
                 np.asarray(grid_group)[:, 0],
                 c=next(color),
-                **self.config_dict_plot,
+                **config_dict,
             )
 
 
@@ -312,7 +327,7 @@ class VectorFieldQuiver(AbstractMatWrap2D):
 
         https://matplotlib.org/3.3.2/api/_as_gen/matplotlib.pyplot.quiver.html
         """
-        super().__init__(kwargs=kwargs)
+        super().__init__(**kwargs)
 
     def quiver_vector_field(self, vector_field: vector_fields.VectorFieldIrregular):
         """
@@ -329,7 +344,7 @@ class VectorFieldQuiver(AbstractMatWrap2D):
             vector_field.grid[:, 0],
             vector_field[:, 1],
             vector_field[:, 0],
-            **self.config_dict_quiver,
+            **self.config_dict,
         )
 
 
@@ -345,7 +360,7 @@ class PatchOverlay(AbstractMatWrap2D):
 
         https://matplotlib.org/3.3.2/api/collections_api.html
         """
-        super().__init__(kwargs=kwargs)
+        super().__init__(**kwargs)
 
     def overlay_patches(self, patches: typing.Union[ptch.Patch]):
         """
@@ -356,9 +371,7 @@ class PatchOverlay(AbstractMatWrap2D):
         patches : [Patch]
             The patches that are laid over the figure.
         """
-        patch_collection = PatchCollection(
-            patches=patches, **self.config_dict_patch_collection
-        )
+        patch_collection = PatchCollection(patches=patches, **self.config_dict)
 
         plt.gcf().gca().add_collection(patch_collection)
 
@@ -375,14 +388,15 @@ class VoronoiDrawer(AbstractMatWrap2D):
 
         https://matplotlib.org/3.3.2/api/_as_gen/matplotlib.pyplot.fill.html
         """
-        super().__init__(kwargs=kwargs)
+        super().__init__(**kwargs)
 
     def draw_voronoi_pixels(
         self,
         mapper: mappers.MapperVoronoi,
         values: np.ndarray,
         cmap: str,
-        cb: wrap.Colorbar,
+        colorbar: wrap.Colorbar,
+        colorbar_tickparams: wrap.ColorbarTickParams = None,
     ):
         """
         Draws the Voronoi pixels of the input `mapper` using its `pixelization_grid` which contains the (y,x) 
@@ -396,7 +410,7 @@ class VoronoiDrawer(AbstractMatWrap2D):
             An array used to compute the color values that every Voronoi cell is plotted using.
         cmap : str
             The colormap used to plot each Voronoi cell.
-        cb : Colorbar
+        colorbar : Colorbar
             The `Colorbar` object in `mat_base` used to set the colorbar of the figure the Voronoi mesh is plotted on.
         """
         regions, vertices = self.voronoi_polygons(voronoi=mapper.voronoi)
@@ -404,7 +418,9 @@ class VoronoiDrawer(AbstractMatWrap2D):
         if values is not None:
             color_array = values[:] / np.max(values)
             cmap = plt.get_cmap(cmap)
-            cb.set_with_color_values(cmap=cmap, color_values=values)
+            colorbar = colorbar.set_with_color_values(cmap=cmap, color_values=values)
+            if colorbar is not None and colorbar_tickparams is not None:
+                colorbar_tickparams.set(cb=colorbar)
         else:
             cmap = plt.get_cmap("Greys")
             color_array = np.zeros(shape=mapper.pixels)
@@ -412,7 +428,7 @@ class VoronoiDrawer(AbstractMatWrap2D):
         for region, index in zip(regions, range(mapper.pixels)):
             polygon = vertices[region]
             col = cmap(color_array[index])
-            plt.fill(*zip(*polygon), facecolor=col, **self.config_dict_fill)
+            plt.fill(*zip(*polygon), facecolor=col, zorder=-1, **self.config_dict)
 
     def voronoi_polygons(self, voronoi, radius=None):
         """

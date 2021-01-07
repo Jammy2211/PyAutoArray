@@ -99,14 +99,6 @@ class Visuals1D(AbstractVisuals):
 
     def plot_via_plotter(self, plotter):
 
-        # if self.origin is not None:
-        #     plotter.origin_scatter.scatter_grid(grid=self.origin)
-        #
-        # if self.mask is not None:
-        #     plotter.mask_scatter.scatter_grid(
-        #         grid=self.mask.geometry.edge_grid_sub_1.in_1d_binned
-        #     )
-
         if self.lines is not None:
             plotter.grid_plot.plot_grid_grouped(grid_grouped=self.lines)
 
@@ -114,7 +106,9 @@ class Visuals1D(AbstractVisuals):
 class Visuals2D(AbstractVisuals):
     def __init__(
         self,
+        origin: grids.Grid = None,
         mask: mask_2d.Mask2D = None,
+        border: grids.Grid = None,
         lines: typing.List[l.Line] = None,
         positions: grids.GridIrregular = None,
         grid: grids.Grid = None,
@@ -122,14 +116,14 @@ class Visuals2D(AbstractVisuals):
         vector_field: vector_fields.VectorFieldIrregular = None,
         patches: typing.List[ptch.Patch] = None,
         array_overlay: arrays.Array = None,
-        origin: grids.Grid = None,
-        border: grids.Grid = None,
         parallel_overscan=None,
         serial_prescan=None,
         serial_overscan=None,
     ):
 
+        self.origin = origin
         self.mask = mask
+        self.border = border
         self.lines = lines
         self.positions = positions
         self.grid = grid
@@ -137,8 +131,6 @@ class Visuals2D(AbstractVisuals):
         self.vector_field = vector_field
         self.patches = patches
         self.array_overlay = array_overlay
-        self.origin = origin
-        self.border = border
         self.parallel_overscan = parallel_overscan
         self.serial_prescan = serial_prescan
         self.serial_overscan = serial_overscan

@@ -115,8 +115,8 @@ class TestAbstractPlotter:
 
         plotter = abstract_plotters.AbstractPlotter(mat_plot_2d=mat_plot_2d)
 
-        assert plotter.mat_plot_2d.figure.config_dict_figure["figsize"] == (8, 8)
-        assert plotter.mat_plot_2d.figure.config_dict_imshow["aspect"] == "square"
+        assert plotter.mat_plot_2d.figure.config_dict["figsize"] == (8, 8)
+        assert plotter.mat_plot_2d.figure.config_dict["aspect"] == "square"
         assert plotter.mat_plot_2d.cmap.config_dict["cmap"] == "warm"
         assert plotter.mat_plot_2d.cmap.config_dict["norm"] == "linear"
 
@@ -130,8 +130,8 @@ class TestAbstractPlotter:
 
         plotter = abstract_plotters.AbstractPlotter(mat_plot_2d=mat_plot_2d)
 
-        assert plotter.mat_plot_2d.figure.config_dict_figure["figsize"] == None
-        assert plotter.mat_plot_2d.figure.config_dict_imshow["aspect"] == "square"
+        assert plotter.mat_plot_2d.figure.config_dict["figsize"] == None
+        assert plotter.mat_plot_2d.figure.config_dict["aspect"] == "square"
         assert plotter.mat_plot_2d.cmap.config_dict["cmap"] == "jet"
         assert plotter.mat_plot_2d.cmap.config_dict["norm"] == "linear"
 

@@ -75,10 +75,10 @@ class Include2D(AbstractInclude):
         origin: typing.Optional[bool] = None,
         mask: typing.Optional[bool] = None,
         border: typing.Optional[bool] = None,
+        grid: typing.Optional[bool] = None,
         mapper_data_pixelization_grid: typing.Optional[bool] = None,
         mapper_source_pixelization_grid: typing.Optional[bool] = None,
         mapper_source_full_grid: typing.Optional[bool] = None,
-        mapper_source_border: typing.Optional[bool] = None,
         parallel_overscan: typing.Optional[bool] = None,
         serial_prescan: typing.Optional[bool] = None,
         serial_overscan: typing.Optional[bool] = None,
@@ -105,9 +105,6 @@ class Include2D(AbstractInclude):
             If `True`, the pixelization grid in the data plane of a plotted `Mapper` is included on the figure.
         mapper_source_pixelization_grid : bool
             If `True`, the pixelization grid in the source plane of a plotted `Mapper` is included on the figure.
-        mapper_source_border : bool
-            If `True`, the border of the pixelization grid in the source plane of a plotted `Mapper` is included on 
-            the figure.
         parallel_overscan : bool
             If `True`, the parallel overscan of a plotted `Frame` is included on the figure.
         serial_prescan : bool
@@ -119,10 +116,10 @@ class Include2D(AbstractInclude):
         super().__init__(origin=origin, mask=mask)
 
         self._border = border
+        self._grid = grid
         self._mapper_data_pixelization_grid = mapper_data_pixelization_grid
         self._mapper_source_pixelization_grid = mapper_source_pixelization_grid
         self._mapper_source_full_grid = mapper_source_full_grid
-        self._mapper_source_border = mapper_source_border
         self._parallel_overscan = parallel_overscan
         self._serial_prescan = serial_prescan
         self._serial_overscan = serial_overscan
@@ -130,6 +127,10 @@ class Include2D(AbstractInclude):
     @property
     def border(self):
         return self.load(value=self._border, name="border")
+
+    @property
+    def grid(self):
+        return self.load(value=self._grid, name="grid")
 
     @property
     def mapper_data_pixelization_grid(self):
@@ -150,10 +151,6 @@ class Include2D(AbstractInclude):
         return self.load(
             value=self._mapper_source_full_grid, name="mapper_source_full_grid"
         )
-
-    @property
-    def mapper_source_border(self):
-        return self.load(value=self._mapper_source_border, name="mapper_source_border")
 
     @property
     def parallel_overscan(self):

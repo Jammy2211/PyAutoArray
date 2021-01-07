@@ -32,25 +32,25 @@ class TestFigure:
 
         figure = aplt.Figure()
 
-        assert figure.config_dict_figure["figsize"] == (7, 7)
-        assert figure.config_dict_imshow["aspect"] == "square"
+        assert figure.config_dict["figsize"] == (7, 7)
+        assert figure.config_dict["aspect"] == "square"
 
         figure = aplt.Figure(aspect="auto")
 
-        assert figure.config_dict_figure["figsize"] == (7, 7)
-        assert figure.config_dict_imshow["aspect"] == "auto"
+        assert figure.config_dict["figsize"] == (7, 7)
+        assert figure.config_dict["aspect"] == "auto"
 
         figure = aplt.Figure()
         figure.for_subplot = True
 
-        assert figure.config_dict_figure["figsize"] == None
-        assert figure.config_dict_imshow["aspect"] == "square"
+        assert figure.config_dict["figsize"] == None
+        assert figure.config_dict["aspect"] == "square"
 
         figure = aplt.Figure(figsize=(6, 6))
         figure.for_subplot = True
 
-        assert figure.config_dict_figure["figsize"] == (6, 6)
-        assert figure.config_dict_imshow["aspect"] == "square"
+        assert figure.config_dict["figsize"] == (6, 6)
+        assert figure.config_dict["aspect"] == "square"
 
     def test__aspect_from_shape_2d(self):
 
@@ -175,27 +175,26 @@ class TestColorbar:
 
         colorbar = aplt.Colorbar()
 
-        assert colorbar.config_dict["labelsize"] == 1
+        assert colorbar.config_dict["fraction"] == 3.0
         assert colorbar.manual_tick_values == None
         assert colorbar.manual_tick_labels == None
 
         colorbar = aplt.Colorbar(
-            labelsize=20, manual_tick_values=(1.0, 2.0), manual_tick_labels=(3.0, 4.0)
+            manual_tick_values=(1.0, 2.0), manual_tick_labels=(3.0, 4.0)
         )
 
-        assert colorbar.config_dict["labelsize"] == 20
         assert colorbar.manual_tick_values == (1.0, 2.0)
         assert colorbar.manual_tick_labels == (3.0, 4.0)
 
         colorbar = aplt.Colorbar()
         colorbar.for_subplot = True
 
-        assert colorbar.config_dict["labelsize"] == 1
+        assert colorbar.config_dict["fraction"] == 5.0
 
-        colorbar = aplt.Colorbar(labelsize=10)
+        colorbar = aplt.Colorbar(fraction=6.0)
         colorbar.for_subplot = True
 
-        assert colorbar.config_dict["labelsize"] == 10
+        assert colorbar.config_dict["fraction"] == 6.0
 
     def test__plot__works_for_reasonable_range_of_values(self):
 
@@ -203,14 +202,13 @@ class TestColorbar:
 
         figure.open()
         plt.imshow(np.ones((2, 2)))
-        cb = aplt.Colorbar(ticksize=1, fraction=1.0, pad=2.0)
+        cb = aplt.Colorbar(fraction=1.0, pad=2.0)
         cb.set()
         figure.close()
 
         figure.open()
         plt.imshow(np.ones((2, 2)))
         cb = aplt.Colorbar(
-            ticksize=1,
             fraction=0.1,
             pad=0.5,
             manual_tick_values=[0.25, 0.5, 0.75],
@@ -221,11 +219,33 @@ class TestColorbar:
 
         figure.open()
         plt.imshow(np.ones((2, 2)))
-        cb = aplt.Colorbar(ticksize=1, fraction=0.1, pad=0.5)
+        cb = aplt.Colorbar(fraction=0.1, pad=0.5)
         cb.set_with_color_values(
             cmap=aplt.Cmap().config_dict["cmap"], color_values=[1.0, 2.0, 3.0]
         )
         figure.close()
+
+
+class TestColorbarTickParams:
+    def test__loads_values_from_config_if_not_manually_input(self):
+
+        colorbar_tickparams = aplt.ColorbarTickParams()
+
+        assert colorbar_tickparams.config_dict["labelsize"] == 1
+
+        colorbar_tickparams = aplt.ColorbarTickParams(labelsize=20)
+
+        assert colorbar_tickparams.config_dict["labelsize"] == 20
+
+        colorbar_tickparams = aplt.ColorbarTickParams()
+        colorbar_tickparams.for_subplot = True
+
+        assert colorbar_tickparams.config_dict["labelsize"] == 1
+
+        colorbar_tickparams = aplt.ColorbarTickParams(labelsize=10)
+        colorbar_tickparams.for_subplot = True
+
+        assert colorbar_tickparams.config_dict["labelsize"] == 10
 
 
 class TestTicksParams:
@@ -253,25 +273,25 @@ class TestYTicks:
 
         yticks = aplt.YTicks()
 
-        assert yticks.config_dict["labelsize"] == 16
+        assert yticks.config_dict["fontsize"] == 16
         assert yticks.manual_values == None
         assert yticks.manual_values == None
 
-        yticks = aplt.YTicks(labelsize=24, manual_values=[1.0, 2.0])
+        yticks = aplt.YTicks(fontsize=24, manual_values=[1.0, 2.0])
 
-        assert yticks.config_dict["labelsize"] == 24
+        assert yticks.config_dict["fontsize"] == 24
         assert yticks.manual_values == [1.0, 2.0]
 
         yticks = aplt.YTicks()
         yticks.for_subplot = True
 
-        assert yticks.config_dict["labelsize"] == 10
+        assert yticks.config_dict["fontsize"] == 10
         assert yticks.manual_values == None
 
-        yticks = aplt.YTicks(labelsize=25, manual_values=[1.0, 2.0])
+        yticks = aplt.YTicks(fontsize=25, manual_values=[1.0, 2.0])
         yticks.for_subplot = True
 
-        assert yticks.config_dict["labelsize"] == 25
+        assert yticks.config_dict["fontsize"] == 25
         assert yticks.manual_values == [1.0, 2.0]
 
     def test__set__works_for_good_values(self):
@@ -280,106 +300,54 @@ class TestYTicks:
 
         units = aplt.Units(use_scaled=True, conversion_factor=None)
 
-        yticks = aplt.YTicks(labelsize=34)
+        yticks = aplt.YTicks(fontsize=34)
 
         extent = array.extent_of_zoomed_array(buffer=1)
 
-        yticks.set(
-            array=array,
-            min_value=extent[2],
-            max_value=extent[3],
-            units=units,
-            use_defaults=False,
-        )
-        yticks.set(
-            array=array,
-            min_value=extent[2],
-            max_value=extent[3],
-            units=units,
-            use_defaults=True,
-        )
+        yticks.set(array=array, min_value=extent[2], max_value=extent[3], units=units)
 
-        yticks = aplt.YTicks(labelsize=34)
+        yticks = aplt.YTicks(fontsize=34)
 
         units = aplt.Units(use_scaled=False, conversion_factor=None)
 
-        yticks.set(
-            array=array,
-            min_value=extent[2],
-            max_value=extent[3],
-            units=units,
-            use_defaults=False,
-        )
-        yticks.set(
-            array=array,
-            min_value=extent[2],
-            max_value=extent[3],
-            units=units,
-            use_defaults=True,
-        )
+        yticks.set(array=array, min_value=extent[2], max_value=extent[3], units=units)
 
-        yticks = aplt.YTicks(labelsize=34)
+        yticks = aplt.YTicks(fontsize=34)
 
         units = aplt.Units(use_scaled=True, conversion_factor=2.0)
 
-        yticks.set(
-            array=array,
-            min_value=extent[2],
-            max_value=extent[3],
-            units=units,
-            use_defaults=False,
-        )
-        yticks.set(
-            array=array,
-            min_value=extent[2],
-            max_value=extent[3],
-            units=units,
-            use_defaults=True,
-        )
+        yticks.set(array=array, min_value=extent[2], max_value=extent[3], units=units)
 
-        yticks = aplt.YTicks(labelsize=34)
+        yticks = aplt.YTicks(fontsize=34)
 
         units = aplt.Units(use_scaled=False, conversion_factor=2.0)
 
-        yticks.set(
-            array=array,
-            min_value=extent[2],
-            max_value=extent[3],
-            units=units,
-            use_defaults=False,
-        )
-        yticks.set(
-            array=array,
-            min_value=extent[2],
-            max_value=extent[3],
-            units=units,
-            use_defaults=True,
-        )
+        yticks.set(array=array, min_value=extent[2], max_value=extent[3], units=units)
 
 
 class TestXTicks:
     def test__ticks_loads_values_from_config_if_not_manually_input(self):
         xticks = aplt.XTicks()
 
-        assert xticks.config_dict["labelsize"] == 17
+        assert xticks.config_dict["fontsize"] == 17
         assert xticks.manual_values == None
         assert xticks.manual_values == None
 
-        xticks = aplt.XTicks(labelsize=24, manual_values=[1.0, 2.0])
+        xticks = aplt.XTicks(fontsize=24, manual_values=[1.0, 2.0])
 
-        assert xticks.config_dict["labelsize"] == 24
+        assert xticks.config_dict["fontsize"] == 24
         assert xticks.manual_values == [1.0, 2.0]
 
         xticks = aplt.XTicks()
         xticks.for_subplot = True
 
-        assert xticks.config_dict["labelsize"] == 11
+        assert xticks.config_dict["fontsize"] == 11
         assert xticks.manual_values == None
 
-        xticks = aplt.XTicks(labelsize=25, manual_values=[1.0, 2.0])
+        xticks = aplt.XTicks(fontsize=25, manual_values=[1.0, 2.0])
         xticks.for_subplot = True
 
-        assert xticks.config_dict["labelsize"] == 25
+        assert xticks.config_dict["fontsize"] == 25
         assert xticks.manual_values == [1.0, 2.0]
 
     def test__set__works_for_good_values(self):
@@ -387,81 +355,29 @@ class TestXTicks:
 
         units = aplt.Units(use_scaled=True, conversion_factor=None)
 
-        xticks = aplt.XTicks(labelsize=34)
+        xticks = aplt.XTicks(fontsize=34)
 
         extent = array.extent_of_zoomed_array(buffer=1)
 
-        xticks.set(
-            array=array,
-            min_value=extent[0],
-            max_value=extent[1],
-            units=units,
-            use_defaults=False,
-        )
-        xticks.set(
-            array=array,
-            min_value=extent[0],
-            max_value=extent[1],
-            units=units,
-            use_defaults=True,
-        )
+        xticks.set(array=array, min_value=extent[0], max_value=extent[1], units=units)
 
-        xticks = aplt.XTicks(labelsize=34)
+        xticks = aplt.XTicks(fontsize=34)
 
         units = aplt.Units(use_scaled=False, conversion_factor=None)
 
-        xticks.set(
-            array=array,
-            min_value=extent[0],
-            max_value=extent[1],
-            units=units,
-            use_defaults=False,
-        )
-        xticks.set(
-            array=array,
-            min_value=extent[0],
-            max_value=extent[1],
-            units=units,
-            use_defaults=True,
-        )
+        xticks.set(array=array, min_value=extent[0], max_value=extent[1], units=units)
 
-        xticks = aplt.XTicks(labelsize=34)
+        xticks = aplt.XTicks(fontsize=34)
 
         units = aplt.Units(use_scaled=True, conversion_factor=2.0)
 
-        xticks.set(
-            array=array,
-            min_value=extent[0],
-            max_value=extent[1],
-            units=units,
-            use_defaults=False,
-        )
-        xticks.set(
-            array=array,
-            min_value=extent[0],
-            max_value=extent[1],
-            units=units,
-            use_defaults=True,
-        )
+        xticks.set(array=array, min_value=extent[0], max_value=extent[1], units=units)
 
-        xticks = aplt.XTicks(labelsize=34)
+        xticks = aplt.XTicks(fontsize=34)
 
         units = aplt.Units(use_scaled=False, conversion_factor=2.0)
 
-        xticks.set(
-            array=array,
-            min_value=extent[0],
-            max_value=extent[1],
-            units=units,
-            use_defaults=False,
-        )
-        xticks.set(
-            array=array,
-            min_value=extent[0],
-            max_value=extent[1],
-            units=units,
-            use_defaults=True,
-        )
+        xticks.set(array=array, min_value=extent[0], max_value=extent[1], units=units)
 
 
 class TestTitle:
@@ -564,13 +480,13 @@ class TestLegend:
 
         figure.open()
 
-        line = aplt.LinePlot(linewidth=2, linestyle="-", colors="k", pointsize=2)
+        line = aplt.LinePlot(linewidth=2, linestyle="-", c="k")
 
         line.plot_y_vs_x(
             y=[1.0, 2.0, 3.0], x=[1.0, 2.0, 3.0], plot_axis_type="linear", label="hi"
         )
 
-        legend = aplt.Legend(include=True, fontsize=1)
+        legend = aplt.Legend(fontsize=1)
 
         legend.set()
 
