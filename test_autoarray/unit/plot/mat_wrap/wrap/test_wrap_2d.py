@@ -48,28 +48,28 @@ class TestGridScatter:
         grid_scatter = aplt.GridScatter()
 
         assert grid_scatter.config_dict["marker"] == "x"
-        assert grid_scatter.colors == ["y"]
+        assert grid_scatter.config_dict["c"] == ["y"]
 
         grid_scatter = aplt.GridScatter(marker="x")
 
         assert grid_scatter.config_dict["marker"] == "x"
-        assert grid_scatter.colors == ["y"]
+        assert grid_scatter.config_dict["c"] == ["y"]
 
         grid_scatter = aplt.GridScatter()
         grid_scatter.for_subplot = True
 
         assert grid_scatter.config_dict["marker"] == "."
-        assert grid_scatter.colors == ["r"]
+        assert grid_scatter.config_dict["c"] == ["r"]
 
-        grid_scatter = aplt.GridScatter(colors=["r", "b"])
+        grid_scatter = aplt.GridScatter(c=["r", "b"])
         grid_scatter.for_subplot = True
 
         assert grid_scatter.config_dict["marker"] == "."
-        assert grid_scatter.colors == ["r", "b"]
+        assert grid_scatter.config_dict["c"] == ["r", "b"]
 
     def test__scatter_grid(self):
 
-        scatter = aplt.GridScatter(size=2, marker="x", colors="k")
+        scatter = aplt.GridScatter(s=2, marker="x", c="k")
 
         scatter.scatter_grid(grid=aa.Grid.uniform(shape_2d=(3, 3), pixel_scales=1.0))
 
@@ -77,7 +77,7 @@ class TestGridScatter:
         self,
     ):
 
-        scatter = aplt.GridScatter(size=2, marker="x", colors="k")
+        scatter = aplt.GridScatter(s=2, marker="x", c="k")
 
         cmap = plt.get_cmap("jet")
 
@@ -96,7 +96,7 @@ class TestGridScatter:
         self,
     ):
 
-        scatter = aplt.GridScatter(size=2, marker="x", colors="k")
+        scatter = aplt.GridScatter(s=2, marker="x", c="k")
 
         scatter.scatter_grid_indexes(
             grid=aa.Grid.uniform(shape_2d=(3, 3), pixel_scales=1.0), indexes=[0, 1, 2]
@@ -115,7 +115,7 @@ class TestGridScatter:
         self,
     ):
 
-        scatter = aplt.GridScatter(size=2, marker="x", colors="k")
+        scatter = aplt.GridScatter(s=2, marker="x", c="k")
 
         scatter.scatter_grid_indexes(
             grid=aa.Grid.uniform(shape_2d=(3, 3), pixel_scales=1.0),
@@ -139,7 +139,7 @@ class TestGridScatter:
 
     def test__scatter_coordinates(self):
 
-        scatter = aplt.GridScatter(size=2, marker="x", colors="k")
+        scatter = aplt.GridScatter(s=2, marker="x", c="k")
 
         scatter.scatter_grid_grouped(
             grid_grouped=aa.GridIrregularGrouped([(1.0, 1.0), (2.0, 2.0)])
@@ -156,29 +156,29 @@ class TestGridPlot:
 
         grid_plot = aplt.GridPlot()
 
-        assert grid_plot.config_dict["width"] == 3
-        assert grid_plot.colors == ["k", "w"]
+        assert grid_plot.config_dict["linewidth"] == 3
+        assert grid_plot.config_dict["c"] == ["k", "w"]
 
-        grid_plot = aplt.GridPlot(colors=["k", "b"])
+        grid_plot = aplt.GridPlot(c=["k", "b"])
 
-        assert grid_plot.config_dict["width"] == 3
-        assert grid_plot.colors == ["k", "b"]
+        assert grid_plot.config_dict["linewidth"] == 3
+        assert grid_plot.config_dict["c"] == ["k", "b"]
 
         grid_plot = aplt.GridPlot()
         grid_plot.for_subplot = True
 
-        assert grid_plot.config_dict["width"] == 1
-        assert grid_plot.colors == ["k"]
+        assert grid_plot.config_dict["linewidth"] == 1
+        assert grid_plot.config_dict["c"] == ["k"]
 
         grid_plot = aplt.GridPlot(style=".")
         grid_plot.for_subplot = True
 
-        assert grid_plot.config_dict["width"] == 1
-        assert grid_plot.colors == ["k"]
+        assert grid_plot.config_dict["linewidth"] == 1
+        assert grid_plot.config_dict["c"] == ["k"]
 
     def test__plot_rectangular_grid_lines__draws_for_valid_extent_and_shape(self):
 
-        line = aplt.GridPlot(linewidth=2, linestyle="--", colors="k")
+        line = aplt.GridPlot(linewidth=2, linestyle="--", c="k")
 
         line.plot_rectangular_grid_lines(extent=[0.0, 1.0, 0.0, 1.0], shape_2d=(3, 2))
         line.plot_rectangular_grid_lines(
@@ -187,7 +187,7 @@ class TestGridPlot:
 
     def test__plot_grouped_grid(self):
 
-        line = aplt.GridPlot(linewidth=2, linestyle="--", colors="k")
+        line = aplt.GridPlot(linewidth=2, linestyle="--", c="k")
 
         line.plot_grid_grouped(
             grid_grouped=aa.GridIrregularGrouped([[(1.0, 1.0), (2.0, 2.0)]])
@@ -301,22 +301,22 @@ class TestVoronoiDrawer:
 
     def test__draws_voronoi_pixels_for_sensible_input(self, voronoi_mapper_9_3x3):
 
-        voronoi_drawer = aplt.VoronoiDrawer(linewidth=0.5, linecolor="r", alpha=1.0)
+        voronoi_drawer = aplt.VoronoiDrawer(linewidth=0.5, edgecolor="r", alpha=1.0)
 
         voronoi_drawer.draw_voronoi_pixels(
-            mapper=voronoi_mapper_9_3x3, values=None, cmap=None, cb=None
+            mapper=voronoi_mapper_9_3x3, values=None, cmap=None, colorbar=None
         )
 
         voronoi_drawer.draw_voronoi_pixels(
             mapper=voronoi_mapper_9_3x3,
             values=np.ones(9),
             cmap="jet",
-            cb=aplt.Colorbar(ticksize=1, fraction=0.1, pad=0.05),
+            colorbar=aplt.Colorbar(fraction=0.1, pad=0.05),
         )
 
 
 class TestDerivedClasses:
-    def test__all_class_load_and_inherit_correctly(self):
+    def test__all_class_load_and_inherit_correctly(self, grid_irregular_grouped_7x7):
 
         origin_scatter = aplt.OriginScatter()
         origin_scatter.scatter_grid(
@@ -340,16 +340,12 @@ class TestDerivedClasses:
         assert border_scatter.config_dict["s"] == 13
 
         positions_scatter = aplt.PositionsScatter()
-        positions_scatter.scatter_grid(
-            grid=aa.Grid.uniform(shape_2d=(3, 3), pixel_scales=1.0)
-        )
+        positions_scatter.scatter_grid(grid=grid_irregular_grouped_7x7)
 
         assert positions_scatter.config_dict["s"] == 15
 
         index_scatter = aplt.IndexScatter()
-        index_scatter.scatter_grid(
-            grid=aa.Grid.uniform(shape_2d=(3, 3), pixel_scales=1.0)
-        )
+        index_scatter.scatter_grid_grouped(grid_grouped=grid_irregular_grouped_7x7)
 
         assert index_scatter.config_dict["s"] == 20
 

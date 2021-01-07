@@ -441,7 +441,7 @@ class TestMapperPlotter:
             origin=True,
             mapper_source_full_grid=True,
             mapper_source_pixelization_grid=True,
-            mapper_source_border=True,
+            border=True,
         )
 
         mapper_plotter = aplt.MapperPlotter(
@@ -460,13 +460,16 @@ class TestMapperPlotter:
             mapper_plotter.visuals_source_with_include_2d.pixelization_grid
             == rectangular_mapper_7x7_3x3.source_pixelization_grid
         ).all()
-        #    assert visuals.border.shape == (0, 2)
+        assert (
+            mapper_plotter.visuals_source_with_include_2d.border
+            == rectangular_mapper_7x7_3x3.source_full_grid.sub_border_grid
+        ).all()
 
         include = aplt.Include2D(
             origin=False,
+            border=False,
             mapper_source_full_grid=False,
             mapper_source_pixelization_grid=False,
-            mapper_source_border=False,
         )
 
         mapper_plotter = aplt.MapperPlotter(
@@ -482,9 +485,9 @@ class TestMapperPlotter:
 
         include = aplt.Include2D(
             origin=True,
+            border=True,
             mapper_source_full_grid=True,
             mapper_source_pixelization_grid=True,
-            mapper_source_border=True,
         )
 
         mapper_plotter = aplt.MapperPlotter(
@@ -503,12 +506,13 @@ class TestMapperPlotter:
             mapper_plotter.visuals_source_with_include_2d.pixelization_grid
             == voronoi_mapper_9_3x3.source_pixelization_grid
         ).all()
-        #      assert visuals.border.shape == (0, 2)
+        assert (
+            mapper_plotter.visuals_source_with_include_2d.border
+            == voronoi_mapper_9_3x3.source_full_grid.sub_border_grid
+        ).all()
 
         include = aplt.Include2D(
-            origin=False,
-            mapper_source_pixelization_grid=False,
-            mapper_source_border=False,
+            origin=False, border=False, mapper_source_pixelization_grid=False
         )
 
         mapper_plotter = aplt.MapperPlotter(
@@ -557,9 +561,7 @@ class TestMapperPlotter:
                 output=aplt.Output(path=plot_path, filename="mapper3", format="png")
             ),
             include_2d=aplt.Include2D(
-                origin=True,
-                mapper_source_pixelization_grid=True,
-                mapper_source_border=True,
+                origin=True, mapper_source_pixelization_grid=True
             ),
         )
 
@@ -630,9 +632,7 @@ class TestMapperPlotter:
             mat_plot_2d=aplt.MatPlot2D(
                 output=aplt.Output(path=plot_path, format="png")
             ),
-            include_2d=aplt.Include2D(
-                mapper_source_pixelization_grid=True, mapper_source_border=True
-            ),
+            include_2d=aplt.Include2D(mapper_source_pixelization_grid=True),
         )
 
         mapper_plotter.subplot_image_and_mapper(

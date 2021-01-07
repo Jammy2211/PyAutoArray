@@ -3,6 +3,7 @@ from .wrap_base import (
     Figure,
     Cmap,
     Colorbar,
+    ColorbarTickParams,
     TickParams,
     YTicks,
     XTicks,

@@ -227,7 +227,7 @@ class GridVoronoi(np.ndarray):
 
     @property
     def origin(self):
-        return (0.0, 0.0)
+        return 0.0, 0.0
 
     @property
     def pixels(self):

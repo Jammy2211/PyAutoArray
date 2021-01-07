@@ -26,6 +26,7 @@ from os import path
 import os
 import typing
 
+
 from autoarray.structures import abstract_structure, arrays
 from autoarray import exc
 
@@ -87,7 +88,7 @@ class Units:
 
 
 class AbstractMatWrap:
-    def __init__(self, kwargs: dict):
+    def __init__(self, **kwargs):
         """
         An abstract base class for wrapping matplotlib plotting methods.
         
@@ -128,7 +129,6 @@ class AbstractMatWrap:
         """
 
         self.for_subplot = False
-
         self.kwargs = kwargs
 
     @property
@@ -146,116 +146,16 @@ class AbstractMatWrap:
                 self.__class__.__name__
             ]["subplot"]._dict
 
+        if "c" in config_dict:
+            config_dict["c"] = remove_spaces_and_commas_from_colors(
+                colors=config_dict["c"]
+            )
+
         return {**config_dict, **self.kwargs}
 
     @property
     def config_folder(self):
         return "mat_wrap"
-
-    def config_dict_of_method(self, method_name: str):
-        """
-        For an input matplotlib method name (e.g. `plot, imshow, scatter) this method finds the `[args]` section of
-        a Mat object's config file and loads the list of valid inputs to this method. It then filters the `config_dict`
-        of the object so that it only contains input parameters that can be passed to the matplotlib method.
-
-        For example, if config_dict is:
-
-        config_dict = {"pointsize" : 2, "figsize" : (5,5)}
-
-        Then `config_dict_of_method(method_name="figure")` will return a dictionary where `pointsize` has been
-        removed, as this is not a valid input of the `plt.figure` method.
-
-        Parameters
-        ----------
-        method_name : str
-            The name of the `matplotlib` method (e.g. `figure`, `scatter`) which is used to filter out non-valid inputs.
-        cls_name : str
-            The name of the class used to choose the config file from which the args are loaded.
-        """
-
-        args = conf.instance["visualize"][self.config_folder][self.__class__.__name__][
-            "args"
-        ][method_name]
-
-        args = args.replace(" ", "")
-        args = args.split(",")
-
-        return {key: self.config_dict[key] for key in args if key in self.config_dict}
-
-    @property
-    def config_dict_figure(self):
-        """Creates a config dict of valid inputs of the method `plt.figure` from the object's config_dict."""
-        config_dict = self.config_dict_of_method(method_name="figure")
-
-        if config_dict["figsize"] == "auto":
-            config_dict["figsize"] = None
-        elif isinstance(config_dict["figsize"], str):
-            config_dict["figsize"] = tuple(
-                map(int, config_dict["figsize"][1:-1].split(","))
-            )
-
-        return config_dict
-
-    @property
-    def config_dict_colorbar(self) -> dict:
-        """Creates a config_dict of valid inputs of the method `plt.colorbar` from the object's config_dict."""
-        return self.config_dict_of_method(method_name="colorbar")
-
-    @property
-    def config_dict_tick_params(self) -> dict:
-        """Creates a config_dict of valid inputs of the method `plt.tick_params` from the object's config_dict."""
-        return self.config_dict_of_method(method_name="tick_params")
-
-    @property
-    def config_dict_ticks(self) -> dict:
-        """Creates a config_dict of valid inputs of the methods `plt.yticks` and `plt.xticks` from the object's config_dict."""
-        return self.config_dict_of_method(method_name="ticks")
-
-    @property
-    def config_dict_title(self) -> dict:
-        """Creates a config_dict of valid inputs of the methods `plt.title` from the object's config_dict."""
-        return self.config_dict_of_method(method_name="title")
-
-    @property
-    def config_dict_label(self) -> dict:
-        """Creates a config_dict of valid inputs of the methods `plt.ylabel` and `plt.xlabel` from the object's
-        config_dict."""
-        return self.config_dict_of_method(method_name="label")
-
-    @property
-    def config_dict_legend(self) -> dict:
-        """Creates a config_dict of valid inputs of the method `plt.legend` from the object's config_dict."""
-        return self.config_dict_of_method(method_name="legend")
-
-    @property
-    def config_dict_imshow(self):
-        """Creates a config dict of valid inputs of the method `plt.imshow` from the object's config_dict."""
-        return self.config_dict_of_method(method_name="imshow")
-
-    @property
-    def config_dict_scatter(self) -> dict:
-        """Creates a config_dict of valid inputs of the method `plt.scatter` from the object's config_dict."""
-        return self.config_dict_of_method(method_name="scatter")
-
-    @property
-    def config_dict_plot(self) -> dict:
-        """Creates a config_dict of valid inputs of the method `plt.quiver` from the object's config_dict."""
-        return self.config_dict_of_method(method_name="plot")
-
-    @property
-    def config_dict_quiver(self) -> dict:
-        """Creates a config_dict of valid inputs of the method `plt.quiver` from the object's config_dict."""
-        return self.config_dict_of_method(method_name="quiver")
-
-    @property
-    def config_dict_patch_collection(self) -> dict:
-        """Creates a config_dict of valid inputs of the method `plt.quiver` from the object's config_dict."""
-        return self.config_dict_of_method(method_name="patch_collection")
-
-    @property
-    def config_dict_fill(self) -> dict:
-        """Creates a config_dict of valid inputs of the method `plt.fill` from the object's config_dict."""
-        return self.config_dict_of_method(method_name="fill")
 
 
 class Figure(AbstractMatWrap):
@@ -271,7 +171,22 @@ class Figure(AbstractMatWrap):
         It also controls the aspect ratio of the figure plotted.
         """
 
-        super().__init__(kwargs=kwargs)
+        super().__init__(**kwargs)
+
+    @property
+    def config_dict(self):
+        """Creates a config dict of valid inputs of the method `plt.figure` from the object's config_dict."""
+
+        config_dict = super().config_dict
+
+        if config_dict["figsize"] == "auto":
+            config_dict["figsize"] = None
+        elif isinstance(config_dict["figsize"], str):
+            config_dict["figsize"] = tuple(
+                map(int, config_dict["figsize"][1:-1].split(","))
+            )
+
+        return config_dict
 
     def aspect_for_subplot_from_grid(self, grid):
 
@@ -309,7 +224,8 @@ class Figure(AbstractMatWrap):
     def open(self):
         """Wraps the Matplotlib method 'plt.figure' for opening a figure."""
         if not plt.fignum_exists(num=1):
-            plt.figure(**self.config_dict_figure)
+            config_dict = self.config_dict.pop("aspect")
+            plt.figure(config_dict)
 
     def close(self):
         """Wraps the Matplotlib method 'plt.close' for closing a figure."""
@@ -333,7 +249,7 @@ class Cmap(AbstractMatWrap):
          https://matplotlib.org/3.3.2/api/_as_gen/matplotlib.pyplot.imshow.html
         """
 
-        super().__init__(kwargs=kwargs)
+        super().__init__(**kwargs)
 
     def norm_from_array(self, array: np.ndarray) -> object:
         """
@@ -381,8 +297,8 @@ class Cmap(AbstractMatWrap):
 class Colorbar(AbstractMatWrap):
     def __init__(
         self,
-        manual_tick_labels: typing.Union[typing.List[float]] = None,
-        manual_tick_values: typing.Union[typing.List[float]] = None,
+        manual_tick_labels: typing.Optional[typing.List[float]] = None,
+        manual_tick_values: typing.Optional[typing.List[float]] = None,
         **kwargs,
     ):
         """
@@ -395,7 +311,6 @@ class Colorbar(AbstractMatWrap):
         The colorbar object `cb` that is created is also customized using the following methods:
 
          cb.set_yticklabels: https://matplotlib.org/3.3.2/api/_as_gen/matplotlib.axes.Axes.set_yticklabels.html
-         cb.tick_params: https://matplotlib.org/3.3.2/api/_as_gen/matplotlib.axes.Axes.tick_params.html
 
         Parameters
         ----------
@@ -405,7 +320,7 @@ class Colorbar(AbstractMatWrap):
             If the colorbar tick labels are manually specified the locations on the colorbar they appear running 0 -> 1.
          """
 
-        super().__init__(kwargs=kwargs)
+        super().__init__(**kwargs)
 
         self.manual_tick_labels = manual_tick_labels
         self.manual_tick_values = manual_tick_values
@@ -414,13 +329,11 @@ class Colorbar(AbstractMatWrap):
         """ Set the figure's colorbar, optionally overriding the tick labels and values with manual inputs. """
 
         if self.manual_tick_values is None and self.manual_tick_labels is None:
-            cb = plt.colorbar(**self.config_dict_colorbar)
+            cb = plt.colorbar(**self.config_dict)
         elif (
             self.manual_tick_values is not None and self.manual_tick_labels is not None
         ):
-            cb = plt.colorbar(
-                ticks=self.manual_tick_values, **self.config_dict_colorbar
-            )
+            cb = plt.colorbar(ticks=self.manual_tick_values, **self.config_dict)
             cb.ax.set_yticklabels(labels=self.manual_tick_labels)
         else:
             raise exc.PlottingException(
@@ -428,7 +341,7 @@ class Colorbar(AbstractMatWrap):
                 "both the values and labels, or neither."
             )
 
-        cb.ax.tick_params(**self.config_dict_tick_params)
+        return cb
 
     def set_with_color_values(self, cmap: str, color_values: np.ndarray):
         """
@@ -450,14 +363,28 @@ class Colorbar(AbstractMatWrap):
         cax.set_array(color_values)
 
         if self.manual_tick_values is None and self.manual_tick_labels is None:
-            plt.colorbar(mappable=cax, **self.config_dict_colorbar)
+            plt.colorbar(mappable=cax, **self.config_dict)
         elif (
             self.manual_tick_values is not None and self.manual_tick_labels is not None
         ):
             cb = plt.colorbar(
-                mappable=cax, ticks=self.manual_tick_values, **self.config_dict_colorbar
+                mappable=cax, ticks=self.manual_tick_values, **self.config_dict
             )
             cb.ax.set_yticklabels(self.manual_tick_labels)
+
+
+class ColorbarTickParams(AbstractMatWrap):
+    """
+    Customizes the ticks of the colorbar of the plotted figure.
+
+    This object wraps the following Matplotlib colorbar method:
+
+     cb.set_yticklabels: https://matplotlib.org/3.3.2/api/_as_gen/matplotlib.axes.Axes.set_yticklabels.html
+     """
+
+    def set(self, cb):
+
+        cb.ax.tick_params(**self.config_dict)
 
 
 class TickParams(AbstractMatWrap):
@@ -469,11 +396,11 @@ class TickParams(AbstractMatWrap):
 
         - plt.tick_params: https://matplotlib.org/3.3.2/api/_as_gen/matplotlib.pyplot.tick_params.html
         """
-        super().__init__(kwargs=kwargs)
+        super().__init__(**kwargs)
 
     def set(self):
         """Set the tick_params of the figure using the method `plt.tick_params`."""
-        plt.tick_params(**self.config_dict_tick_params)
+        plt.tick_params(**self.config_dict)
 
 
 class AbstractTicks(AbstractMatWrap):
@@ -493,19 +420,14 @@ class AbstractTicks(AbstractMatWrap):
         manual_values : [float]
             Manually override the tick labels to display the labels as the input list of floats.
         """
-        super().__init__(kwargs=kwargs)
+        super().__init__(**kwargs)
 
         self.manual_values = manual_values
 
-    def tick_values_from(
-        self, min_value: float, max_value: float, use_defaults: bool = False
-    ) -> np.ndarray:
+    def tick_values_from(self, min_value: float, max_value: float) -> np.ndarray:
         """
         Calculate the ticks used for the yticks or xticks from input values of the minimum and maximum coordinate
         values of the y and x axis.
-
-        Certain figures may display better using the default ticks. This method has the option `use_defaults` to return
-        None such that the defaults are used.
 
         Parameters
         ----------
@@ -513,31 +435,20 @@ class AbstractTicks(AbstractMatWrap):
             the minimum value of the ticks that figure is plotted using.
         max_value : float
             the maximum value of the ticks that figure is plotted using.
-        use_defaults : bool
-            If `True`, the function does not return tick_values such that a plotter uses the default ticks.
         """
-        if not use_defaults:
-            if self.manual_values is not None:
-                return np.linspace(min_value, max_value, len(self.manual_values))
-            else:
-                return np.linspace(min_value, max_value, 5)
+        if self.manual_values is not None:
+            return np.linspace(min_value, max_value, len(self.manual_values))
+        else:
+            return np.linspace(min_value, max_value, 5)
 
     def tick_values_in_units_from(
-        self,
-        array: arrays.Array,
-        min_value: float,
-        max_value: float,
-        units: Units,
-        use_defaults: bool = False,
+        self, array: arrays.Array, min_value: float, max_value: float, units: Units
     ) -> typing.Optional[np.ndarray]:
         """
         Calculate the labels used for the yticks or xticks from input values of the minimum and maximum coordinate
         values of the y and x axis.
 
         The values are converted to the `Units` of the figure, via its conversion factor or using data properties.
-
-        Certain figures may display better using the default ticks. This method has the option `use_defaults` to return
-        None such that the defaults are used.
 
         Parameters
         ----------
@@ -550,11 +461,7 @@ class AbstractTicks(AbstractMatWrap):
             the maximum value of the ticks that figure is plotted using.
         units : Units
             The units the tick values are plotted using.
-        use_defaults : bool
-            If `True`, the function does not return tick_values such that a plotter uses the default ticks.
         """
-        if use_defaults:
-            return
 
         if self.manual_values is not None:
             return np.asarray(self.manual_values)
@@ -580,12 +487,7 @@ class AbstractTicks(AbstractMatWrap):
 
 class YTicks(AbstractTicks):
     def set(
-        self,
-        array: arrays.Array,
-        min_value: float,
-        max_value: float,
-        units: Units,
-        use_defaults: bool = False,
+        self, array: arrays.Array, min_value: float, max_value: float, units: Units
     ):
         """
         Set the y ticks of a figure using the shape of an input `Array` object and input units.
@@ -600,32 +502,18 @@ class YTicks(AbstractTicks):
             the maximum value of the yticks that figure is plotted using.
         units : Units
             The units of the figure.
-        use_defaults : bool
-            If True, the figure is plotted symmetrically around a central value, which is the default behaviour of
-            Matplotlib. This is used for plotting `Mapper`'s.
         """
 
-        ticks = self.tick_values_from(
-            min_value=min_value, max_value=max_value, use_defaults=use_defaults
-        )
+        ticks = self.tick_values_from(min_value=min_value, max_value=max_value)
         labels = self.tick_values_in_units_from(
-            array=array,
-            min_value=min_value,
-            max_value=max_value,
-            units=units,
-            use_defaults=use_defaults,
+            array=array, min_value=min_value, max_value=max_value, units=units
         )
-        plt.yticks(ticks=ticks, labels=labels, **self.config_dict_ticks)
+        plt.yticks(ticks=ticks, labels=labels, **self.config_dict)
 
 
 class XTicks(AbstractTicks):
     def set(
-        self,
-        array: arrays.Array,
-        min_value: float,
-        max_value: float,
-        units: Units,
-        use_defaults: bool = False,
+        self, array: arrays.Array, min_value: float, max_value: float, units: Units
     ):
         """
         Set the x ticks of a figure using the shape of an input `Array` object and input units.
@@ -640,22 +528,13 @@ class XTicks(AbstractTicks):
             the maximum value of the xticks that figure is plotted using.
         units : Units
             The units of the figure.
-        use_defaults : bool
-            If True, the figure is plotted symmetrically around a central value, which is the default behaviour of
-            Matplotlib. This is used for plotting `Mapper`'s.
         """
 
-        ticks = self.tick_values_from(
-            min_value=min_value, max_value=max_value, use_defaults=use_defaults
-        )
+        ticks = self.tick_values_from(min_value=min_value, max_value=max_value)
         labels = self.tick_values_in_units_from(
-            array=array,
-            min_value=min_value,
-            max_value=max_value,
-            units=units,
-            use_defaults=use_defaults,
+            array=array, min_value=min_value, max_value=max_value, units=units
         )
-        plt.xticks(ticks=ticks, labels=labels, **self.config_dict_ticks)
+        plt.xticks(ticks=ticks, labels=labels, **self.config_dict)
 
 
 class Title(AbstractMatWrap):
@@ -670,12 +549,9 @@ class Title(AbstractMatWrap):
         The title will automatically be set if not specified, using the name of the function used to plot the data.
         """
 
-        super().__init__(kwargs=kwargs)
+        super().__init__(**kwargs)
 
-        if "label" in self.kwargs:
-            self.manual_label = self.kwargs["label"]
-        else:
-            self.manual_label = None
+        self.manual_label = self.kwargs.get("label")
 
         self._auto_label = None
 
@@ -687,7 +563,7 @@ class Title(AbstractMatWrap):
 
     def set(self):
 
-        plt.title(label=self.label, **self.config_dict_title)
+        plt.title(label=self.label, **self.config_dict)
 
 
 class AbstractLabel(AbstractMatWrap):
@@ -710,7 +586,7 @@ class AbstractLabel(AbstractMatWrap):
             A manual label which overrides the default computed via the units if input.
         """
 
-        super().__init__(kwargs=kwargs)
+        super().__init__(**kwargs)
 
         self.manual_label = manual_label
 
@@ -756,16 +632,16 @@ class YLabel(AbstractLabel):
         """
 
         if self.manual_label is not None:
-            plt.ylabel(ylabel=self.manual_label, **self.config_dict_label)
+            plt.ylabel(ylabel=self.manual_label, **self.config_dict)
         else:
             if include_brackets:
                 plt.ylabel(
                     ylabel=f"y ({self.label_from_units(units=units)})",
-                    **self.config_dict_label,
+                    **self.config_dict,
                 )
             else:
                 plt.ylabel(
-                    ylabel=self.label_from_units(units=units), **self.config_dict_label
+                    ylabel=self.label_from_units(units=units), **self.config_dict
                 )
 
 
@@ -785,16 +661,16 @@ class XLabel(AbstractLabel):
             Whether to include brackets around the x label text of the units.
         """
         if self.manual_label is not None:
-            plt.xlabel(xlabel=self.manual_label, **self.config_dict_label)
+            plt.xlabel(xlabel=self.manual_label, **self.config_dict)
         else:
             if include_brackets:
                 plt.xlabel(
                     xlabel=f"x ({self.label_from_units(units=units)})",
-                    **self.config_dict_label,
+                    **self.config_dict,
                 )
             else:
                 plt.xlabel(
-                    xlabel=self.label_from_units(units=units), **self.config_dict_label
+                    xlabel=self.label_from_units(units=units), **self.config_dict
                 )
 
 
@@ -813,13 +689,13 @@ class Legend(AbstractMatWrap):
             If the legend should be plotted and therefore included on the figure.
         """
 
-        super().__init__(kwargs=kwargs)
+        super().__init__(**kwargs)
 
         self.include = include
 
     def set(self):
         if self.include:
-            plt.legend(**self.config_dict_legend)
+            plt.legend(**self.config_dict)
 
 
 class Output:
@@ -910,33 +786,6 @@ class Output:
             plt.savefig(
                 path.join(self.path, f"{self.filename}.png"), bbox_inches="tight"
             )
-
-
-class AbstractMatWrapColored:
-
-    config_dict = None
-
-    def __init__(self, colors):
-
-        self._colors = colors
-
-    @property
-    def colors(self):
-
-        if self._colors is None:
-
-            colors = remove_spaces_and_commas_from_colors(
-                colors=self.config_dict["colors"]
-            )
-
-        else:
-
-            colors = self._colors
-
-        if isinstance(colors, str):
-            return [colors]
-
-        return colors
 
 
 def remove_spaces_and_commas_from_colors(colors):

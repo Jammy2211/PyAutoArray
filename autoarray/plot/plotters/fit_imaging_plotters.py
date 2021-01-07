@@ -24,7 +24,7 @@ class FitImagingPlotter(abstract_plotters.AbstractPlotter):
     @property
     def visuals_with_include_2d(self):
 
-        return self.visuals_2d + vis.Visuals2D(
+        return self.visuals_2d + self.visuals_2d.__class__(
             origin=self.extract_2d(
                 "origin", grids.GridIrregular(grid=[self.fit.mask.origin])
             ),
