@@ -6,15 +6,8 @@ from autoarray.fit import fit as f
 from autoarray.structures import grids
 
 
-class FitImagingPlotter(abstract_plotters.AbstractPlotter):
-    def __init__(
-        self,
-        fit: f.FitImaging,
-        mat_plot_2d: mat_plot.MatPlot2D = mat_plot.MatPlot2D(),
-        visuals_2d: vis.Visuals2D = vis.Visuals2D(),
-        include_2d: inc.Include2D = inc.Include2D(),
-    ):
-
+class AbstractFitImagingPlotter(abstract_plotters.AbstractPlotter):
+    def __init__(self, fit, mat_plot_2d, visuals_2d, include_2d):
         super().__init__(
             mat_plot_2d=mat_plot_2d, include_2d=include_2d, visuals_2d=visuals_2d
         )
@@ -37,9 +30,9 @@ class FitImagingPlotter(abstract_plotters.AbstractPlotter):
     @abstract_plotters.for_figure
     def figure_image(self):
         """Plot the image of a lens fit.
-    
+
         Set *autolens.datas.array.mat_plot_2d.mat_plot_2d* for a description of all input parameters not described below.
-    
+
         Parameters
         -----------
         image : datas.imaging.datas.Imaging
@@ -54,9 +47,9 @@ class FitImagingPlotter(abstract_plotters.AbstractPlotter):
     @abstract_plotters.for_figure
     def figure_noise_map(self):
         """Plot the noise-map of a lens fit.
-    
+
         Set *autolens.datas.array.mat_plot_2d.mat_plot_2d* for a description of all input parameters not described below.
-    
+
         Parameters
         -----------
         image : datas.imaging.datas.Imaging
@@ -71,9 +64,9 @@ class FitImagingPlotter(abstract_plotters.AbstractPlotter):
     @abstract_plotters.for_figure
     def figure_signal_to_noise_map(self):
         """Plot the noise-map of a lens fit.
-    
+
         Set *autolens.datas.array.mat_plot_2d.mat_plot_2d* for a description of all input parameters not described below.
-    
+
         Parameters
         -----------
         image : datas.imaging.datas.Imaging
@@ -88,9 +81,9 @@ class FitImagingPlotter(abstract_plotters.AbstractPlotter):
     @abstract_plotters.for_figure
     def figure_model_image(self):
         """Plot the model image of a fit.
-    
+
         Set *autolens.datas.array.mat_plot_2d.mat_plot_2d* for a description of all input parameters not described below.
-    
+
         Parameters
         -----------
         fit : datas.fitting.fitting.AbstractFitter
@@ -105,9 +98,9 @@ class FitImagingPlotter(abstract_plotters.AbstractPlotter):
     @abstract_plotters.for_figure
     def figure_residual_map(self):
         """Plot the residual-map of a lens fit.
-    
+
         Set *autolens.datas.array.mat_plot_2d.mat_plot_2d* for a description of all input parameters not described below.
-    
+
         Parameters
         -----------
         fit : datas.fitting.fitting.AbstractFitter
@@ -122,9 +115,9 @@ class FitImagingPlotter(abstract_plotters.AbstractPlotter):
     @abstract_plotters.for_figure
     def figure_normalized_residual_map(self):
         """Plot the residual-map of a lens fit.
-    
+
         Set *autolens.datas.array.mat_plot_2d.mat_plot_2d* for a description of all input parameters not described below.
-    
+
         Parameters
         -----------
         fit : datas.fitting.fitting.AbstractFitter
@@ -140,9 +133,9 @@ class FitImagingPlotter(abstract_plotters.AbstractPlotter):
     @abstract_plotters.for_figure
     def figure_chi_squared_map(self):
         """Plot the chi-squared-map of a lens fit.
-    
+
         Set *autolens.datas.array.mat_plot_2d.mat_plot_2d* for a description of all input parameters not described below.
-    
+
         Parameters
         -----------
         fit : datas.fitting.fitting.AbstractFitter
@@ -228,3 +221,20 @@ class FitImagingPlotter(abstract_plotters.AbstractPlotter):
         self.mat_plot_2d.output.subplot_to_figure()
 
         self.mat_plot_2d.figure.close()
+
+
+class FitImagingPlotter(AbstractFitImagingPlotter):
+    def __init__(
+        self,
+        fit: f.FitImaging,
+        mat_plot_2d: mat_plot.MatPlot2D = mat_plot.MatPlot2D(),
+        visuals_2d: vis.Visuals2D = vis.Visuals2D(),
+        include_2d: inc.Include2D = inc.Include2D(),
+    ):
+
+        super().__init__(
+            fit=fit,
+            mat_plot_2d=mat_plot_2d,
+            include_2d=include_2d,
+            visuals_2d=visuals_2d,
+        )

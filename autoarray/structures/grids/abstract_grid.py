@@ -524,6 +524,9 @@ class AbstractGrid(abstract_structure.AbstractStructure):
             The grid (uniform or irregular) whose pixels are to be relocated to the border edge if outside it.
         """
 
+        if len(self.sub_border_grid) == 0:
+            return grid
+
         return grids.Grid(
             grid=self.relocated_grid_from_grid_jit(
                 grid=grid, border_grid=self.sub_border_grid
@@ -544,6 +547,9 @@ class AbstractGrid(abstract_structure.AbstractStructure):
         grid : Grid
             The grid (uniform or irregular) whose pixels are to be relocated to the border edge if outside it.
         """
+
+        if len(self.sub_border_grid) == 0:
+            return pixelization_grid
 
         if isinstance(pixelization_grid, grids.GridVoronoi):
 

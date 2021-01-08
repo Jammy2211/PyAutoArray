@@ -5,7 +5,6 @@ from autoarray.plot.mat_wrap import mat_plot
 from autoarray.dataset import interferometer as inter
 from autoarray.structures import grids
 import numpy as np
-import copy
 
 
 class InterferometerPlotter(abstract_plotters.AbstractPlotter):

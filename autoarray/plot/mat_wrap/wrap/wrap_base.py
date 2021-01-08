@@ -159,19 +159,16 @@ class AbstractMatWrap:
 
 
 class Figure(AbstractMatWrap):
-    def __init__(self, **kwargs):
-        """
-        Sets up the Matplotlib figure before plotting (this is used when plotting individual figures and subplots).
+    """
+    Sets up the Matplotlib figure before plotting (this is used when plotting individual figures and subplots).
 
-        This object wraps the following Matplotlib methods:
+    This object wraps the following Matplotlib methods:
 
-        - plt.figure: https://matplotlib.org/3.3.2/api/_as_gen/matplotlib.pyplot.figure.html
-        - plt.close: https://matplotlib.org/3.3.2/api/_as_gen/matplotlib.pyplot.close.html
+    - plt.figure: https://matplotlib.org/3.3.2/api/_as_gen/matplotlib.pyplot.figure.html
+    - plt.close: https://matplotlib.org/3.3.2/api/_as_gen/matplotlib.pyplot.close.html
 
-        It also controls the aspect ratio of the figure plotted.
-        """
-
-        super().__init__(**kwargs)
+    It also controls the aspect ratio of the figure plotted.
+    """
 
     @property
     def config_dict(self):
@@ -234,22 +231,19 @@ class Figure(AbstractMatWrap):
 
 
 class Cmap(AbstractMatWrap):
-    def __init__(self, **kwargs):
-        """
-        Customizes the Matplotlib colormap and its normalization.
+    """
+    Customizes the Matplotlib colormap and its normalization.
 
-        This object wraps the following Matplotlib methods:
+    This object wraps the following Matplotlib methods:
 
-        - colors.Linear: https://matplotlib.org/3.3.2/tutorials/colors/colormaps.html
-        - colors.LogNorm: https://matplotlib.org/3.3.2/tutorials/colors/colormapnorms.html
-        - colors.SymLogNorm: https://matplotlib.org/3.3.2/api/_as_gen/matplotlib.colors.SymLogNorm.html
+    - colors.Linear: https://matplotlib.org/3.3.2/tutorials/colors/colormaps.html
+    - colors.LogNorm: https://matplotlib.org/3.3.2/tutorials/colors/colormapnorms.html
+    - colors.SymLogNorm: https://matplotlib.org/3.3.2/api/_as_gen/matplotlib.colors.SymLogNorm.html
 
-        The cmap that is created is passed into various Matplotlib methods, most notably imshow:
+    The cmap that is created is passed into various Matplotlib methods, most notably imshow:
 
-         https://matplotlib.org/3.3.2/api/_as_gen/matplotlib.pyplot.imshow.html
-        """
-
-        super().__init__(**kwargs)
+     https://matplotlib.org/3.3.2/api/_as_gen/matplotlib.pyplot.imshow.html
+    """
 
     def norm_from_array(self, array: np.ndarray) -> object:
         """
@@ -388,15 +382,13 @@ class ColorbarTickParams(AbstractMatWrap):
 
 
 class TickParams(AbstractMatWrap):
-    def __init__(self, **kwargs):
-        """
-        The settings used to customize a figure's y and x ticks parameters.
+    """
+    The settings used to customize a figure's y and x ticks parameters.
 
-        This object wraps the following Matplotlib methods:
+    This object wraps the following Matplotlib methods:
 
-        - plt.tick_params: https://matplotlib.org/3.3.2/api/_as_gen/matplotlib.pyplot.tick_params.html
-        """
-        super().__init__(**kwargs)
+    - plt.tick_params: https://matplotlib.org/3.3.2/api/_as_gen/matplotlib.pyplot.tick_params.html
+    """
 
     def set(self):
         """Set the tick_params of the figure using the method `plt.tick_params`."""
@@ -405,7 +397,7 @@ class TickParams(AbstractMatWrap):
 
 class AbstractTicks(AbstractMatWrap):
     def __init__(
-        self, manual_values: typing.Union[typing.List[float]] = None, **kwargs
+        self, manual_values: typing.Optional[typing.List[float]] = None, **kwargs
     ):
         """
         The settings used to customize a figure's y and x ticks using the `YTicks` and `XTicks` objects.
@@ -487,7 +479,11 @@ class AbstractTicks(AbstractMatWrap):
 
 class YTicks(AbstractTicks):
     def set(
-        self, array: arrays.Array, min_value: float, max_value: float, units: Units
+        self,
+        array: typing.Optional[arrays.Array],
+        min_value: float,
+        max_value: float,
+        units: Units,
     ):
         """
         Set the y ticks of a figure using the shape of an input `Array` object and input units.
@@ -513,7 +509,11 @@ class YTicks(AbstractTicks):
 
 class XTicks(AbstractTicks):
     def set(
-        self, array: arrays.Array, min_value: float, max_value: float, units: Units
+        self,
+        array: typing.Optional[arrays.Array],
+        min_value: float,
+        max_value: float,
+        units: Units,
     ):
         """
         Set the x ticks of a figure using the shape of an input `Array` object and input units.
@@ -563,7 +563,11 @@ class Title(AbstractMatWrap):
 
     def set(self):
 
-        plt.title(label=self.label, **self.config_dict)
+        config_dict = self.config_dict
+        if "label" in config_dict:
+            config_dict.pop("label")
+
+        plt.title(label=self.label, **config_dict)
 
 
 class AbstractLabel(AbstractMatWrap):
@@ -675,19 +679,20 @@ class XLabel(AbstractLabel):
 
 
 class Legend(AbstractMatWrap):
+    """
+    The settings used to include and customize a legend on a figure.
+
+    This object wraps the following Matplotlib methods:
+
+    - plt.legend: https://matplotlib.org/3.3.2/api/_as_gen/matplotlib.pyplot.legend.html
+
+    Parameters
+    ----------
+    include : bool
+        If the legend should be plotted and therefore included on the figure.
+    """
+
     def __init__(self, include=False, **kwargs):
-        """
-        The settings used to include and customize a legend on a figure.
-
-        This object wraps the following Matplotlib methods:
-
-        - plt.legend: https://matplotlib.org/3.3.2/api/_as_gen/matplotlib.pyplot.legend.html
-
-        Parameters
-        ----------
-        include : bool
-            If the legend should be plotted and therefore included on the figure.
-        """
 
         super().__init__(**kwargs)
 
@@ -755,7 +760,9 @@ class Output:
         else:
             return self._format
 
-    def to_figure(self, structure: abstract_structure.AbstractStructure):
+    def to_figure(
+        self, structure: typing.Optional[abstract_structure.AbstractStructure]
+    ):
         """Output the figure, by either displaying it on the user's screen or to the hard-disk as a .png or .fits file.
 
         Parameters
@@ -792,4 +799,7 @@ def remove_spaces_and_commas_from_colors(colors):
 
     colors = [color.strip(",") for color in colors]
     colors = [color.strip(" ") for color in colors]
-    return list(filter(None, colors))
+    colors = list(filter(None, colors))
+    if len(colors) == 1:
+        return colors[0]
+    return colors

@@ -10,6 +10,8 @@ from autoarray.plot.mat_wrap import wrap
 from autoarray.plot.mat_wrap import visuals as vis
 from autoarray.inversion import mappers
 
+import typing
+
 
 class AbstractMatPlot:
     def __init__(
@@ -616,7 +618,7 @@ class MatPlot2D(AbstractMatPlot):
 
     def plot_mapper(
         self,
-        mapper: mappers.Mapper,
+        mapper: typing.Union[mappers.MapperRectangular, mappers.MapperVoronoi],
         visuals_2d: vis.Visuals2D = vis.Visuals2D(),
         source_pixelilzation_values=None,
         full_indexes=None,

@@ -4,9 +4,10 @@ from autoarray.plot.mat_wrap import mat_plot, include as inc
 from autoarray.mask import mask_2d
 from matplotlib import patches as ptch
 import typing
+from abc import ABC
 
 
-class AbstractVisuals:
+class AbstractVisuals(ABC):
     def __add__(self, other):
         """
         Adds two `Visuals` classes together.
@@ -46,14 +47,6 @@ class AbstractVisuals:
         retain the attributes that are added to it by the `visuals_2d_via_include`. This ensures that if multiple plots
         are made, the same `visuals_2d_via_user` is used for every plot. If this were not the case, it would
         permenantly inherit attributes from the `Visuals` from the `Include` method and plot them on all figures.
-
-        Parameters
-        ----------
-        other
-
-        Returns
-        -------
-
         """
 
         for attr, value in self.__dict__.items():
@@ -64,17 +57,6 @@ class AbstractVisuals:
                 pass
 
         return other
-
-    @property
-    def plotter(self):
-        raise NotImplementedError()
-
-    @property
-    def include(self):
-        raise NotImplementedError()
-
-    def plot_via_plotter(self, plotter):
-        raise NotImplementedError()
 
 
 class Visuals1D(AbstractVisuals):

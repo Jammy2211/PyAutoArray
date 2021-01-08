@@ -10,10 +10,7 @@ rectangular_mapper = aa.Mapper(
 
 aplt.MapperObj(
     mapper=rectangular_mapper,
-    include=aplt.Include2D(
-        mapper_source_pixelization_grid=True,
-        inversion_grid=True,,
-    ),
+    include=aplt.Include2D(mapper_source_pixelization_grid=True, inversion_grid=True),
     full_indexes=[[(0, 0), (0, 1)], [(1, 2)]],
     pixelization_indexes=[[0, 1], [2]],
 )

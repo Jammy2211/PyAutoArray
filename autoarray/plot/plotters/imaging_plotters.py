@@ -3,8 +3,6 @@ from autoarray.plot.mat_wrap import include as inc
 from autoarray.plot.mat_wrap import mat_plot
 from autoarray.plot.plotters import abstract_plotters
 from autoarray.dataset import imaging as im
-
-import copy
 from autoarray.structures import grids
 
 

@@ -24,16 +24,14 @@ class AbstractMatWrap1D(wrap_base.AbstractMatWrap):
 
 
 class LinePlot(AbstractMatWrap1D):
-    def __init__(self, **kwargs):
-        """
-        Plots a `Line` data structure as a y vs x figure.
+    """
+    Plots a `Line` data structure as a y vs x figure.
 
-        This object wraps the following Matplotlib methods:
+    This object wraps the following Matplotlib methods:
 
-        - plt.plot: https://matplotlib.org/3.3.3/api/_as_gen/matplotlib.pyplot.plot.html
-        - plt.avxline: https://matplotlib.org/3.3.2/api/_as_gen/matplotlib.pyplot.axvline.html
-        """
-        super().__init__(**kwargs)
+    - plt.plot: https://matplotlib.org/3.3.3/api/_as_gen/matplotlib.pyplot.plot.html
+    - plt.avxline: https://matplotlib.org/3.3.2/api/_as_gen/matplotlib.pyplot.axvline.html
+    """
 
     def plot_y_vs_x(
         self,

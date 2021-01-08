@@ -30,18 +30,16 @@ class AbstractMatWrap2D(wrap_base.AbstractMatWrap):
 
 
 class ArrayOverlay(AbstractMatWrap2D):
-    def __init__(self, **kwargs):
-        """
-        Overlays an `Array` data structure over a figure.
+    """
+    Overlays an `Array` data structure over a figure.
 
-        This object wraps the following Matplotlib method:
+    This object wraps the following Matplotlib method:
 
-        - plt.imshow: https://matplotlib.org/3.3.2/api/_as_gen/matplotlib.pyplot.imshow.html
+    - plt.imshow: https://matplotlib.org/3.3.2/api/_as_gen/matplotlib.pyplot.imshow.html
 
-        This uses the `Units` and coordinate system of the `Array` to overlay it on on the coordinate system of the
-        figure that is plotted.
-        """
-        super().__init__(**kwargs)
+    This uses the `Units` and coordinate system of the `Array` to overlay it on on the coordinate system of the
+    figure that is plotted.
+    """
 
     def overlay_array(self, array, figure):
 
@@ -52,34 +50,32 @@ class ArrayOverlay(AbstractMatWrap2D):
 
 
 class GridScatter(AbstractMatWrap2D):
-    def __init__(self, **kwargs):
-        """
-        Scatters an input set of grid points, for example (y,x) coordinates or data structures representing 2D (y,x)
-        coordinates like a `Grid` or `GridIrregular`. If the object groups (y,x) coordinates they are plotted with
-        varying colors according to their group.
+    """
+    Scatters an input set of grid points, for example (y,x) coordinates or data structures representing 2D (y,x)
+    coordinates like a `Grid` or `GridIrregular`. If the object groups (y,x) coordinates they are plotted with
+    varying colors according to their group.
 
-        This object wraps the following Matplotlib methods:
+    This object wraps the following Matplotlib methods:
 
-        - plt.scatter: https://matplotlib.org/3.1.1/api/_as_gen/matplotlib.pyplot.scatter.html
+    - plt.scatter: https://matplotlib.org/3.1.1/api/_as_gen/matplotlib.pyplot.scatter.html
 
-        There are a number of children of this method in the `mat_obj.py` module that plot specific sets of (y,x)
-        points. Each of these objects uses uses their own config file and settings so that each has a unique appearance
-        on every figure:
+    There are a number of children of this method in the `mat_obj.py` module that plot specific sets of (y,x)
+    points. Each of these objects uses uses their own config file and settings so that each has a unique appearance
+    on every figure:
 
-        - `OriginScatter`: plots the (y,x) coordinates of the origin of a data structure (e.g. as a black cross).
-        - `MaskScatter`: plots a mask over an image, using the `Mask2d` object's (y,x)  `edge_grid_sub_1` property.
-        - `BorderScatter: plots a border over an image, using the `Mask2d` object's (y,x) `border_grid_sub_1` property.
-        - `PositionsScatter`: plots the (y,x) coordinates that are input in a plotter via the `positions` input.
-        - `IndexScatter`: plots specific (y,x) coordinates of a grid (or grids) via their 1d or 2d indexes.
-        - `PixelizationGridScatter`: plots the grid of a `Pixelization` object (see `autoarray.inversion`).
+    - `OriginScatter`: plots the (y,x) coordinates of the origin of a data structure (e.g. as a black cross).
+    - `MaskScatter`: plots a mask over an image, using the `Mask2d` object's (y,x)  `edge_grid_sub_1` property.
+    - `BorderScatter: plots a border over an image, using the `Mask2d` object's (y,x) `border_grid_sub_1` property.
+    - `PositionsScatter`: plots the (y,x) coordinates that are input in a plotter via the `positions` input.
+    - `IndexScatter`: plots specific (y,x) coordinates of a grid (or grids) via their 1d or 2d indexes.
+    - `PixelizationGridScatter`: plots the grid of a `Pixelization` object (see `autoarray.inversion`).
 
-        Parameters
-        ----------
-        colors : [str]
-            The color or list of colors that the grid is plotted using. For plotting indexes or a grouped grid, a
-            list of colors can be specified which the plot cycles through.
-        """
-        super().__init__(**kwargs)
+    Parameters
+    ----------
+    colors : [str]
+        The color or list of colors that the grid is plotted using. For plotting indexes or a grouped grid, a
+        list of colors can be specified which the plot cycles through.
+    """
 
     def scatter_grid(self, grid: typing.Union[np.ndarray, grids.Grid]):
         """
@@ -226,23 +222,21 @@ class GridScatter(AbstractMatWrap2D):
 
 
 class GridPlot(AbstractMatWrap2D):
-    def __init__(self, **kwargs):
-        """
-        Plots `Grid` data structure that are better visualized as solid lines, for example rectangular lines that are
-        plotted over an image and grids of (y,x) coordinates as lines (as opposed to a scatter of points
-        using the `GridScatter` object).
+    """
+    Plots `Grid` data structure that are better visualized as solid lines, for example rectangular lines that are
+    plotted over an image and grids of (y,x) coordinates as lines (as opposed to a scatter of points
+    using the `GridScatter` object).
 
-        This object wraps the following Matplotlib methods:
+    This object wraps the following Matplotlib methods:
 
-        - plt.plot: https://matplotlib.org/3.3.3/api/_as_gen/matplotlib.pyplot.plot.html
+    - plt.plot: https://matplotlib.org/3.3.3/api/_as_gen/matplotlib.pyplot.plot.html
 
-        Parameters
-        ----------
-        colors : [str]
-            The color or list of colors that the grid is plotted using. For plotting indexes or a grouped grid, a
-            list of colors can be specified which the plot cycles through.
-        """
-        super().__init__(**kwargs)
+    Parameters
+    ----------
+    colors : [str]
+        The color or list of colors that the grid is plotted using. For plotting indexes or a grouped grid, a
+        list of colors can be specified which the plot cycles through.
+    """
 
     def plot_rectangular_grid_lines(
         self,
@@ -317,17 +311,15 @@ class GridPlot(AbstractMatWrap2D):
 
 
 class VectorFieldQuiver(AbstractMatWrap2D):
-    def __init__(self, **kwargs):
-        """
-        Plots a `VectorField` data structure. A vector field is a set of 2D vectors on a grid of 2d (y,x) coordinates.
-        These are plotted as arrows representing the (y,x) components of each vector at each (y,x) coordinate of it
-        grid.
+    """
+    Plots a `VectorField` data structure. A vector field is a set of 2D vectors on a grid of 2d (y,x) coordinates.
+    These are plotted as arrows representing the (y,x) components of each vector at each (y,x) coordinate of it
+    grid.
 
-        This object wraps the following Matplotlib method:
+    This object wraps the following Matplotlib method:
 
-        https://matplotlib.org/3.3.2/api/_as_gen/matplotlib.pyplot.quiver.html
-        """
-        super().__init__(**kwargs)
+    https://matplotlib.org/3.3.2/api/_as_gen/matplotlib.pyplot.quiver.html
+    """
 
     def quiver_vector_field(self, vector_field: vector_fields.VectorFieldIrregular):
         """
@@ -349,18 +341,16 @@ class VectorFieldQuiver(AbstractMatWrap2D):
 
 
 class PatchOverlay(AbstractMatWrap2D):
-    def __init__(self, **kwargs):
-        """
-        Adds patches to a plotted figure using matplotlib `patches` objects.
+    """
+    Adds patches to a plotted figure using matplotlib `patches` objects.
 
-        The coordinate system of each `Patch` uses that of the figure, which is typically set up using the plotted
-        data structure. This makes it straight forward to add patches in specific locations.
+    The coordinate system of each `Patch` uses that of the figure, which is typically set up using the plotted
+    data structure. This makes it straight forward to add patches in specific locations.
 
-        This object wraps methods described in below:
+    This object wraps methods described in below:
 
-        https://matplotlib.org/3.3.2/api/collections_api.html
-        """
-        super().__init__(**kwargs)
+    https://matplotlib.org/3.3.2/api/collections_api.html
+    """
 
     def overlay_patches(self, patches: typing.Union[ptch.Patch]):
         """
@@ -377,18 +367,16 @@ class PatchOverlay(AbstractMatWrap2D):
 
 
 class VoronoiDrawer(AbstractMatWrap2D):
-    def __init__(self, **kwargs):
-        """
-        Draws Voronoi pixels from a `MapperVoronoi` object (see `inversions.mapper`). This includes both drawing
-        each Voronoi cell and coloring it according to a color value.
+    """
+    Draws Voronoi pixels from a `MapperVoronoi` object (see `inversions.mapper`). This includes both drawing
+    each Voronoi cell and coloring it according to a color value.
 
-        The mapper contains the grid of (y,x) coordinate where the centre of each Voronoi cell is plotted.
+    The mapper contains the grid of (y,x) coordinate where the centre of each Voronoi cell is plotted.
 
-        This object wraps methods described in below:
+    This object wraps methods described in below:
 
-        https://matplotlib.org/3.3.2/api/_as_gen/matplotlib.pyplot.fill.html
-        """
-        super().__init__(**kwargs)
+    https://matplotlib.org/3.3.2/api/_as_gen/matplotlib.pyplot.fill.html
+    """
 
     def draw_voronoi_pixels(
         self,

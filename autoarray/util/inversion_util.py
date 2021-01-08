@@ -122,7 +122,7 @@ def data_vector_via_transformed_mapping_matrix_from(
     return data_vector
 
 
-# @decorator_util.jit()
+@decorator_util.jit()
 def mapped_reconstructed_visibilities_from(
     transformed_mapping_matrix: np.ndarray, reconstruction: np.ndarray
 ) -> np.ndarray:
