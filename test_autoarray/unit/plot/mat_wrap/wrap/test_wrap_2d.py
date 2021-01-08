@@ -48,18 +48,18 @@ class TestGridScatter:
         grid_scatter = aplt.GridScatter()
 
         assert grid_scatter.config_dict["marker"] == "x"
-        assert grid_scatter.config_dict["c"] == ["y"]
+        assert grid_scatter.config_dict["c"] == "y"
 
         grid_scatter = aplt.GridScatter(marker="x")
 
         assert grid_scatter.config_dict["marker"] == "x"
-        assert grid_scatter.config_dict["c"] == ["y"]
+        assert grid_scatter.config_dict["c"] == "y"
 
         grid_scatter = aplt.GridScatter()
         grid_scatter.for_subplot = True
 
         assert grid_scatter.config_dict["marker"] == "."
-        assert grid_scatter.config_dict["c"] == ["r"]
+        assert grid_scatter.config_dict["c"] == "r"
 
         grid_scatter = aplt.GridScatter(c=["r", "b"])
         grid_scatter.for_subplot = True
@@ -168,13 +168,13 @@ class TestGridPlot:
         grid_plot.for_subplot = True
 
         assert grid_plot.config_dict["linewidth"] == 1
-        assert grid_plot.config_dict["c"] == ["k"]
+        assert grid_plot.config_dict["c"] == "k"
 
         grid_plot = aplt.GridPlot(style=".")
         grid_plot.for_subplot = True
 
         assert grid_plot.config_dict["linewidth"] == 1
-        assert grid_plot.config_dict["c"] == ["k"]
+        assert grid_plot.config_dict["c"] == "k"
 
     def test__plot_rectangular_grid_lines__draws_for_valid_extent_and_shape(self):
 
@@ -245,7 +245,7 @@ class TestPatcher:
         patch_overlay = aplt.PatchOverlay()
 
         assert patch_overlay.config_dict["facecolor"] == None
-        assert patch_overlay.config_dict["edgecolor"] == "cyan"
+        assert patch_overlay.config_dict["edgecolor"] == "c"
 
         patch_overlay = aplt.PatchOverlay(facecolor="r", edgecolor="g")
 

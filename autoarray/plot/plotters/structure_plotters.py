@@ -4,7 +4,7 @@ from autoarray.plot.mat_wrap import include as inc
 from autoarray.plot.mat_wrap import mat_plot
 from autoarray.structures import arrays, frames, grids, lines
 from autoarray.inversion import mappers
-import copy
+import typing
 
 
 class ArrayPlotter(abstract_plotters.AbstractPlotter):
@@ -202,7 +202,7 @@ class GridPlotter(abstract_plotters.AbstractPlotter):
 class MapperPlotter(abstract_plotters.AbstractPlotter):
     def __init__(
         self,
-        mapper: mappers.Mapper,
+        mapper: typing.Union[mappers.MapperRectangular, mappers.MapperVoronoi],
         mat_plot_2d: mat_plot.MatPlot2D = mat_plot.MatPlot2D(),
         visuals_2d: vis.Visuals2D = vis.Visuals2D(),
         include_2d: inc.Include2D = inc.Include2D(),
@@ -333,7 +333,7 @@ class MapperPlotter(abstract_plotters.AbstractPlotter):
         if full_indexes is not None:
 
             self.mat_plot_2d.index_scatter.scatter_grid_indexes(
-                grid=self.mapper.source_full_grid.geometry.unmasked_grid_sub_1,
+                grid=self.mapper.source_full_grid.geometry.masked_grid,
                 indexes=full_indexes,
             )
 
@@ -344,8 +344,7 @@ class MapperPlotter(abstract_plotters.AbstractPlotter):
             )
 
             self.mat_plot_2d.index_scatter.scatter_grid_indexes(
-                grid=self.mapper.source_full_grid.geometry.unmasked_grid_sub_1,
-                indexes=indexes,
+                grid=self.mapper.source_full_grid.geometry.masked_grid, indexes=indexes
             )
 
         self.setup_subplot(number_subplots=number_subplots, subplot_index=2)

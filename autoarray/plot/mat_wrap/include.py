@@ -1,5 +1,4 @@
 from autoconf import conf
-from autoarray.structures import abstract_structure, grids
 import typing
 
 

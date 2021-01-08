@@ -11,7 +11,7 @@ class TestLinePlot:
         line_plot = aplt.LinePlot()
 
         assert line_plot.config_dict["linewidth"] == 3
-        assert line_plot.config_dict["c"] == ["k"]
+        assert line_plot.config_dict["c"] == "k"
 
         line_plot = aplt.LinePlot(c=["k", "b"])
 
@@ -22,13 +22,13 @@ class TestLinePlot:
         line_plot.for_subplot = True
 
         assert line_plot.config_dict["linewidth"] == 1
-        assert line_plot.config_dict["c"] == ["k"]
+        assert line_plot.config_dict["c"] == "k"
 
         line_plot = aplt.LinePlot(linestyle=".")
         line_plot.for_subplot = True
 
         assert line_plot.config_dict["linewidth"] == 1
-        assert line_plot.config_dict["c"] == ["k"]
+        assert line_plot.config_dict["c"] == "k"
 
     def test__plot_y_vs_x__works_for_reasonable_values(self):
 
