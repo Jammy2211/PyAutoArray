@@ -46,13 +46,13 @@ class AbstractGridIrregular(np.ndarray):
 
     def structure_from_result(
         self, result: np.ndarray or list
-    ) -> typing.Union[arrays.Values, list]:
-        """Convert a result from a non autoarray structure to an aa.Values or aa.GridIrregularGrouped structure, where
+    ) -> typing.Union[arrays.ValuesIrregularGrouped, list]:
+        """Convert a result from a non autoarray structure to an aa.ValuesIrregularGrouped or aa.GridIrregularGrouped structure, where
         the conversion depends on type(result) as follows:
 
-        - 1D np.ndarray   -> aa.Values
+        - 1D np.ndarray   -> aa.ValuesIrregularGrouped
         - 2D np.ndarray   -> aa.GridIrregularGrouped
-        - [1D np.ndarray] -> [aa.Values]
+        - [1D np.ndarray] -> [aa.ValuesIrregularGrouped]
         - [2D np.ndarray] -> [aa.GridIrregularGrouped]
 
         This function is used by the grid_like_to_structure decorator to convert the output result of a function
@@ -76,10 +76,10 @@ class AbstractGridIrregular(np.ndarray):
                 return [self.grid_from_grid_1d(grid_1d=value) for value in result]
 
     def structure_list_from_result_list(self, result_list: list) -> typing.Union[list]:
-        """Convert a result from a list of non autoarray structures to a list of aa.Values or aa.GridIrregularGrouped
+        """Convert a result from a list of non autoarray structures to a list of aa.ValuesIrregularGrouped or aa.GridIrregularGrouped
         structures, where the conversion depends on type(result) as follows:
 
-        - [1D np.ndarray] -> [aa.Values]
+        - [1D np.ndarray] -> [aa.ValuesIrregularGrouped]
         - [2D np.ndarray] -> [aa.GridIrregularGrouped]
 
         This function is used by the grid_like_list_to_structure_list decorator to convert the output result of a
@@ -220,9 +220,9 @@ class GridIrregular(AbstractGridIrregular):
         return [self]
 
     def values_from_arr_1d(self, arr_1d):
-        """Create a *Values* object from a 1D NumPy array of values of shape [total_coordinates]. The
-        *Values* are structured and grouped following this *Coordinate* instance."""
-        return arrays.Values(values=arr_1d)
+        """Create a *ValuesIrregularGrouped* object from a 1D NumPy array of values of shape [total_coordinates]. The
+        *ValuesIrregularGrouped* are structured and grouped following this *Coordinate* instance."""
+        return arrays.ValuesIrregularGrouped(values=arr_1d)
 
     def grid_from_grid_1d(self, grid_1d):
         """Create a `GridIrregularGrouped` object from a 2D NumPy array of values of shape [total_coordinates, 2]. The
@@ -256,6 +256,39 @@ class GridIrregular(AbstractGridIrregular):
                 inside.append(self[i])
 
         return GridIrregular(grid=np.asarray(inside))
+
+    @property
+    def furthest_distances_from_other_coordinates(
+        self
+    ) -> arrays.ValuesIrregularGrouped:
+        """
+        For every (y,x) coordinate on the `GridIrregular` returns the furthest radial distance of each coordinate
+        to any other coordinate on the grid.
+
+        For example, for the following grid:
+
+        grid=[(0.0, 0.0), (0.0, 1.0), (0.0, 3.0)]
+
+        The returned further distances are:
+
+        [3.0, 2.0, 3.0]
+
+        Returns
+        -------
+        arrays.ValuesIrregularGrouped
+            The further distances of every coordinate to every other coordinate on the irregular grid.
+        """
+
+        radial_distances_max = np.zeros((self.shape[0]))
+
+        for i in range(self.shape[0]):
+
+            x_distances = np.square(np.subtract(self[i, 0], self[:, 0]))
+            y_distances = np.square(np.subtract(self[i, 1], self[:, 1]))
+
+            radial_distances_max[i] = np.sqrt(np.max(np.add(x_distances, y_distances)))
+
+        return self.values_from_arr_1d(arr_1d=radial_distances_max)
 
 
 class GridIrregularGrouped(AbstractGridIrregular):
@@ -417,12 +450,12 @@ class GridIrregularGrouped(AbstractGridIrregular):
                 f.write(f"{coordinate}\n")
 
     def values_from_arr_1d(self, arr_1d):
-        """Create a *Values* object from a 1D NumPy array of values of shape [total_coordinates]. The
-        *Values* are structured and grouped following this *Coordinate* instance."""
+        """Create a *ValuesIrregularGrouped* object from a 1D NumPy array of values of shape [total_coordinates]. The
+        *ValuesIrregularGrouped* are structured and grouped following this *Coordinate* instance."""
         values_1d = [
             list(arr_1d[i:j]) for i, j in zip(self.lower_indexes, self.upper_indexes)
         ]
-        return arrays.Values(values=values_1d)
+        return arrays.ValuesIrregularGrouped(values=values_1d)
 
     def grid_from_grid_1d(self, grid_1d):
         """Create a `GridIrregularGrouped` object from a 2D NumPy array of values of shape [total_coordinates, 2]. The
@@ -448,6 +481,38 @@ class GridIrregularGrouped(AbstractGridIrregular):
                 The grid of (y,x) coordinates which is subtracted from this grid.
         """
         return GridIrregularGrouped(grid=self - deflection_grid)
+
+    @property
+    def furthest_distances_from_other_coordinates(
+        self
+    ) -> arrays.ValuesIrregularGrouped:
+        """
+        For every group of irregular (y,x) coordinates returns the furthest radial distance of each coordinate to any
+        other coordinate on the grid.
+
+        For example, for the following grid:
+
+        grid=[[(0.0, 0.0), (0.0, 1.0), (0.0, 3.0)], [(0.0, 0.0), (1.0, 1.0)]]
+
+        The returned further distances are:
+
+        [[3.0, 2.0, 3.0], [1.0, 1.0]
+
+        Returns
+        -------
+        arrays.ValuesIrregularGrouped
+            The further distances of every coordinate on every grouped grid to every other coordinate on that grid.
+        """
+
+        radial_distances_max = []
+
+        for grouped_grid in self.in_grouped_list:
+
+            grid = GridIrregular(grid=grouped_grid)
+
+            radial_distances_max.append(grid.furthest_distances_from_other_coordinates)
+
+        return arrays.ValuesIrregularGrouped(radial_distances_max)
 
 
 class GridIrregularGroupedUniform(GridIrregularGrouped):

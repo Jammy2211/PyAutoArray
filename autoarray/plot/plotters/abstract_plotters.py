@@ -56,6 +56,7 @@ def for_figure(func):
 
         if plotter.for_subplot:
 
+            plotter.reset_auto_title()
             plotter.set_auto_title_from_func(func=func)
 
             return func(plotter, *args, **kwargs)
@@ -79,6 +80,7 @@ def for_figure_with_index(func):
 
         if plotter.for_subplot:
 
+            plotter.reset_auto_title()
             plotter.set_auto_title_from_func(func=func, index=index)
 
             return func(plotter, *args, **kwargs)
@@ -99,7 +101,6 @@ def for_subplot(func):
     def wrapper(plotter, *args, **kwargs):
 
         plotter.set_auto_filename_from_func(func=func)
-        plotter.set_auto_title_from_func(func=func)
         plotter.set_mat_plots_for_subplot(for_subplot=True)
 
         func(plotter, *args, **kwargs)
@@ -118,7 +119,6 @@ def for_subplot_with_index(func):
         index = index_from_inputs(args=args, kwargs=kwargs)
 
         plotter.set_auto_filename_from_func(func=func, index=index)
-        plotter.set_auto_title_from_func(func=func, index=index)
         plotter.set_mat_plots_for_subplot(for_subplot=True)
 
         func(plotter, *args, **kwargs)
