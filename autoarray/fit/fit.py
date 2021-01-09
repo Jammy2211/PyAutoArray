@@ -155,7 +155,7 @@ class FitDataset:
     @property
     def log_likelihood_with_regularization(self) -> float:
         """
-    Returns the log likelihood of an inversion's fit to the dataset, including a regularization term which \
+        Returns the log likelihood of an inversion's fit to the dataset, including a regularization term which \
         comes from an inversion:
 
         Log Likelihood = -0.5*[Chi_Squared_Term + Regularization_Term + Noise_Term] (see functions above for these definitions)
@@ -170,7 +170,7 @@ class FitDataset:
     @property
     def log_evidence(self) -> float:
         """
-    Returns the log evidence of the inversion's fit to a dataset, where the log evidence includes a number of terms
+        Returns the log evidence of the inversion's fit to a dataset, where the log evidence includes a number of terms
         which quantify the complexity of an inversion's reconstruction (see the `Inversion` module):
 
         Log Evidence = -0.5*[Chi_Squared_Term + Regularization_Term + Log(Covariance_Regularization_Term) -

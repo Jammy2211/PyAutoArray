@@ -10,7 +10,7 @@ logging.basicConfig()
 logger = logging.getLogger(__name__)
 
 
-class Values(np.ndarray):
+class ValuesIrregularGrouped(np.ndarray):
     def __new__(cls, values):
         """A collection of values structured in a way defining groups of values which share a common origin (for
         example values may be grouped if they are from a specific region of a dataset).
@@ -35,8 +35,8 @@ class Values(np.ndarray):
 
         Print methods are overridden so a user always "sees" the values as the list structure.
 
-        In contrast to a *Array* structure, *Values* do not lie on a uniform grid or correspond to values that
-        originate from a uniform grid. Therefore, when handling irregular data-sets *Values* should be used.
+        In contrast to a *Array* structure, *ValuesIrregularGrouped* do not lie on a uniform grid or correspond to values that
+        originate from a uniform grid. Therefore, when handling irregular data-sets *ValuesIrregularGrouped* should be used.
 
         Parameters
         ----------
@@ -85,12 +85,12 @@ class Values(np.ndarray):
 
     @property
     def in_1d(self):
-        """The Values in their 1D representation, an ndarray of shape [total_values]."""
+        """The ValuesIrregularGrouped in their 1D representation, an ndarray of shape [total_values]."""
         return self
 
     @property
     def in_grouped_list(self):
-        """Convenience method to access the Values in their list representation, whcih is a list of lists of floatss."""
+        """Convenience method to access the ValuesIrregularGrouped in their list representation, whcih is a list of lists of floatss."""
         return [list(self[i:j]) for i, j in zip(self.lower_indexes, self.upper_indexes)]
 
     @property
@@ -99,18 +99,18 @@ class Values(np.ndarray):
         return [value for value in self.in_1d]
 
     def values_from_arr_1d(self, arr_1d):
-        """Create a *Values* object from a 1D ndarray of values of shape [total_values].
+        """Create a *ValuesIrregularGrouped* object from a 1D ndarray of values of shape [total_values].
 
-        The *Values* are structured and grouped following this *Values* instance.
+        The *ValuesIrregularGrouped* are structured and grouped following this *ValuesIrregularGrouped* instance.
 
         Parameters
         ----------
         arr_1d : np.ndarray
-            The 1D array (shape [total_values]) of values that are mapped to a *Values* object."""
+            The 1D array (shape [total_values]) of values that are mapped to a *ValuesIrregularGrouped* object."""
         values_1d = [
             list(arr_1d[i:j]) for i, j in zip(self.lower_indexes, self.upper_indexes)
         ]
-        return Values(values=values_1d)
+        return ValuesIrregularGrouped(values=values_1d)
 
     def grid_from_grid_1d(self, grid_1d):
         """Create a `GridIrregularGrouped` object from a 2D ndarray array of values of shape [total_values, 2].
@@ -131,7 +131,7 @@ class Values(np.ndarray):
 
     @classmethod
     def from_file(cls, file_path):
-        """Create a *Values* object from a file which stores the values as a list of list of floats.
+        """Create a *ValuesIrregularGrouped* object from a file which stores the values as a list of list of floats.
 
         Parameters
         ----------
@@ -147,10 +147,10 @@ class Values(np.ndarray):
             values_list = ast.literal_eval(line)
             values.append(values_list)
 
-        return Values(values=values)
+        return ValuesIrregularGrouped(values=values)
 
     def output_to_file(self, file_path, overwrite=False):
-        """Output this instance of the *Values* object to a list of list of floats.
+        """Output this instance of the *ValuesIrregularGrouped* object to a list of list of floats.
 
         Parameters
         ----------

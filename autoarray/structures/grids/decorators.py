@@ -34,7 +34,7 @@ def grid_like_to_structure(func):
         of shape [total_coordinates, 2] where second dimension stores the (y,x) values. If a `GridIterate` is input,
         the function is evaluated using the appropriate iterated_*_from_func* function.
 
-        The outputs of the function are converted from a 1D or 2D NumPy Array to an *Array*, `Grid`, *Values* or
+        The outputs of the function are converted from a 1D or 2D NumPy Array to an *Array*, `Grid`, *ValuesIrregularGrouped* or
         `GridIrregularGrouped` objects, whichever is applicable as follows:
 
         - If the function returns (y,x) coordinates at every input point, the returned results are returned as a
@@ -44,7 +44,7 @@ def grid_like_to_structure(func):
           an *Array* structure which uses the same dimensions and mask as the `Grid`.
 
         - If the function returns scalar values at every input point and `GridIrregularGrouped` are input, the returned
-          results are a *Values* object with structure resembling that of the `GridIrregularGrouped`..
+          results are a *ValuesIrregularGrouped* object with structure resembling that of the `GridIrregularGrouped`..
 
         If the input array is not a `Grid` structure (e.g. it is a 2D NumPy array) the output is a NumPy array.
 
@@ -108,7 +108,7 @@ def grid_like_to_structure_list(func):
         the function is evaluated using the appropriate iterated_*_from_func* function.
 
         If a `GridIterate` is not input the outputs of the function are converted from a list of 1D or 2D NumPy Arrays
-        to a list of *Array*, `Grid`,  *Values* or  `GridIrregularGrouped` objects, whichever is applicable as follows:
+        to a list of *Array*, `Grid`,  *ValuesIrregularGrouped* or  `GridIrregularGrouped` objects, whichever is applicable as follows:
 
         - If the function returns (y,x) coordinates at every input point, the returned results are returned as a
          `Grid` or `GridIrregularGrouped` structure - the same structure as the input.
@@ -117,7 +117,7 @@ def grid_like_to_structure_list(func):
           an *Array* structure which uses the same dimensions and mask as the `Grid`.
 
         - If the function returns scalar values at every input point and `GridIrregularGrouped` are input, the returned
-          results are a *Values* object with structure resembling that of the `GridIrregularGrouped`.
+          results are a *ValuesIrregularGrouped* object with structure resembling that of the `GridIrregularGrouped`.
 
         if a `GridIterate` is input, the iterated grid calculation is not applicable. Thus, the highest resolution
         sub_size grid in the `GridIterate` is used instead.
