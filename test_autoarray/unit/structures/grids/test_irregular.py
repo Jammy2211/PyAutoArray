@@ -160,6 +160,31 @@ class TestGridIrregular:
             [3.0, 2.0, 3.0]
         ]
 
+    def test__grid_of_closest_from_grid(self):
+
+        grid = aa.GridIrregular(grid=[(0.0, 0.0), (0.0, 1.0)])
+
+        grid_of_closest = grid.grid_of_closest_from_grid_pair(
+            grid_pair=np.array([[0.0, 0.1]])
+        )
+
+        assert (grid_of_closest == np.array([[0.0, 0.0]])).all()
+
+        grid_of_closest = grid.grid_of_closest_from_grid_pair(
+            grid_pair=np.array([[0.0, 0.1], [0.0, 0.2], [0.0, 0.3]])
+        )
+
+        assert (grid_of_closest == np.array([[0.0, 0.0], [0.0, 0.0], [0.0, 0.0]])).all()
+
+        grid_of_closest = grid.grid_of_closest_from_grid_pair(
+            grid_pair=np.array([[0.0, 0.1], [0.0, 0.2], [0.0, 0.9], [0.0, -0.1]])
+        )
+
+        assert (
+            grid_of_closest
+            == np.array([[0.0, 0.0], [0.0, 0.0], [0.0, 1.0], [0.0, 0.0]])
+        ).all()
+
 
 class TestGridIrregularGrouped:
     def test__indexes_give_entries_where_list_begin_and_end(self):
@@ -364,6 +389,48 @@ class TestGridIrregularGrouped:
         assert grid.furthest_distances_from_other_coordinates.in_grouped_list == [
             [3.0, 2.0, 3.0],
             [0.0],
+        ]
+
+    def test__grid_of_closest_from_grid(self):
+
+        grid = aa.GridIrregularGrouped(grid=[[(0.0, 0.0), (0.0, 1.0)]])
+        grid_pair = aa.GridIrregularGrouped(grid=[[(0.0, 0.1)]])
+
+        grid_of_closest = grid.grid_of_closest_from_grid_pair(grid_pair=grid_pair)
+
+        assert grid_of_closest.in_grouped_list == [[(0.0, 0.0)]]
+
+        grid_pair = aa.GridIrregularGrouped(grid=[[(0.0, 0.1), (0.0, 0.2), (0.0, 0.3)]])
+
+        grid_of_closest = grid.grid_of_closest_from_grid_pair(grid_pair=grid_pair)
+
+        assert grid_of_closest.in_grouped_list == [[(0.0, 0.0), (0.0, 0.0), (0.0, 0.0)]]
+
+        grid_pair = aa.GridIrregularGrouped(
+            grid=[[(0.0, 0.1), (0.0, 0.2), (0.0, 0.9), (0.0, -0.1)]]
+        )
+
+        grid_of_closest = grid.grid_of_closest_from_grid_pair(grid_pair=grid_pair)
+
+        assert grid_of_closest.in_grouped_list == [
+            [(0.0, 0.0), (0.0, 0.0), (0.0, 1.0), (0.0, 0.0)]
+        ]
+
+        grid = aa.GridIrregularGrouped(
+            grid=[[(0.0, 0.0), (0.0, 1.0)], [(0.0, 0.0), (0.0, 1.0)]]
+        )
+        grid_pair = aa.GridIrregularGrouped(
+            grid=[
+                [(0.0, 0.1), (0.0, 0.2), (0.0, 0.3)],
+                [(0.0, 0.1), (0.0, 0.2), (0.0, 0.9), (0.0, -0.1)],
+            ]
+        )
+
+        grid_of_closest = grid.grid_of_closest_from_grid_pair(grid_pair=grid_pair)
+
+        assert grid_of_closest.in_grouped_list == [
+            [(0.0, 0.0), (0.0, 0.0), (0.0, 0.0)],
+            [(0.0, 0.0), (0.0, 0.0), (0.0, 1.0), (0.0, 0.0)],
         ]
 
     def test__with_mask__converts_to_and_from_pixels(self):
