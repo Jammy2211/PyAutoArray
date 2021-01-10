@@ -290,6 +290,37 @@ class GridIrregular(AbstractGridIrregular):
 
         return self.values_from_arr_1d(arr_1d=radial_distances_max)
 
+    def grid_of_closest_from_grid_pair(self, grid_pair):
+        """
+        From an input grid, find the closest coordinates of this instance of the `GridIrregular` to each coordinate on
+        the input grid and return each closest coordinate as a new `GridIrregular`.
+
+        Parameters
+        ----------
+        grid_pair : np.ndarray
+            The grid of coordinates the closest coordinate of each (y,x) location is paired with.
+
+        Returns
+        -------
+        GridIrregular
+            The grid of coordinates corresponding to the closest coordinate of each coordinate of this instance of
+            the `GridIrregular` to the input grid.
+
+        """
+
+        grid_of_closest = np.zeros((grid_pair.shape[0], 2))
+
+        for i in range(grid_pair.shape[0]):
+
+            x_distances = np.square(np.subtract(grid_pair[i, 0], self[:, 0]))
+            y_distances = np.square(np.subtract(grid_pair[i, 1], self[:, 1]))
+
+            radial_distances = np.add(x_distances, y_distances)
+
+            grid_of_closest[i, :] = self[np.argmin(radial_distances), :]
+
+        return GridIrregular(grid=grid_of_closest)
+
 
 class GridIrregularGrouped(AbstractGridIrregular):
     def __new__(cls, grid):
@@ -513,6 +544,38 @@ class GridIrregularGrouped(AbstractGridIrregular):
             radial_distances_max.append(grid.furthest_distances_from_other_coordinates)
 
         return arrays.ValuesIrregularGrouped(radial_distances_max)
+
+    def grid_of_closest_from_grid_pair(self, grid_pair: "GridIrregularGrouped"):
+        """
+        From an input grid, find the closest coordinates of this instance of the `GridIrregular` to each coordinate on
+        the input grid and return each closest coordinate as a new `GridIrregular`.
+
+        Parameters
+        ----------
+        grid_pair : GridIrregularGrouped
+            The grid of coordinates the closest coordinate of each (y,x) location is paired with.
+
+        Returns
+        -------
+        GridIrregular
+            The grid of coordinates corresponding to the closest coordinate of each coordinate of this instance of
+            the `GridIrregular` to the input grid.
+
+        """
+
+        grids_of_closest = []
+
+        for grouped_grid, grouped_grid_pair in zip(
+            self.in_grouped_list, grid_pair.in_grouped_list
+        ):
+
+            grid = GridIrregular(grid=grouped_grid)
+            grid_of_closest = grid.grid_of_closest_from_grid_pair(
+                grid_pair=np.asarray(grouped_grid_pair)
+            )
+            grids_of_closest.append(grid_of_closest)
+
+        return GridIrregularGrouped(grid=grids_of_closest)
 
 
 class GridIrregularGroupedUniform(GridIrregularGrouped):
