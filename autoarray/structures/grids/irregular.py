@@ -467,6 +467,11 @@ class GridIrregularGrouped(AbstractGridIrregular):
             If there is as exsiting file it will be overwritten if this is `True`.
         """
 
+        file_dir = os.path.split(file_path)[0]
+
+        if not path.exists(file_dir):
+            os.makedirs(file_dir)
+
         if overwrite and path.exists(file_path):
             os.remove(file_path)
         elif not overwrite and path.exists(file_path):
@@ -487,6 +492,11 @@ class GridIrregularGrouped(AbstractGridIrregular):
             list(arr_1d[i:j]) for i, j in zip(self.lower_indexes, self.upper_indexes)
         ]
         return arrays.ValuesIrregularGrouped(values=values_1d)
+
+    def values_from_value(self, value):
+        return self.values_from_arr_1d(
+            arr_1d=np.full(fill_value=value, shape=self.shape[0])
+        )
 
     def grid_from_grid_1d(self, grid_1d):
         """Create a `GridIrregularGrouped` object from a 2D NumPy array of values of shape [total_coordinates, 2]. The
