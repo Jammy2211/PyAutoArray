@@ -307,31 +307,24 @@ class AbstractFitInterferometerPlotter(abstract_plotters.AbstractPlotter):
         self.open_subplot_figure(number_subplots=number_subplots)
 
         self.setup_subplot(number_subplots=number_subplots, subplot_index=1)
-
         self.figure_real_residual_map_vs_uv_distances()
 
         self.setup_subplot(number_subplots=number_subplots, subplot_index=2)
-
         self.figure_real_normalized_residual_map_vs_uv_distances()
 
         self.setup_subplot(number_subplots=number_subplots, subplot_index=3)
-
         self.figure_real_chi_squared_map_vs_uv_distances()
 
         self.setup_subplot(number_subplots=number_subplots, subplot_index=4)
-
         self.figure_imag_residual_map_vs_uv_distances()
 
         self.setup_subplot(number_subplots=number_subplots, subplot_index=5)
-
         self.figure_imag_normalized_residual_map_vs_uv_distances()
 
         self.setup_subplot(number_subplots=number_subplots, subplot_index=6)
-
         self.figure_imag_chi_squared_map_vs_uv_distances()
 
         self.mat_plot_1d.output.subplot_to_figure()
-
         self.mat_plot_1d.figure.close()
 
 

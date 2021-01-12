@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 from autoarray import exc
+from autoarray.structures import arrays
 from autoarray.plot.mat_wrap import wrap
 from autoarray.plot.mat_wrap import visuals as vis
 from autoarray.inversion import mappers
@@ -62,7 +63,7 @@ class AbstractMatPlot:
         colorbar_tickparams : mat_wrap.ColorbarTickParams
             Customizes the yticks of the colorbar plotted via `plt.colorbar`.
         tickparams : mat_wrap.TickParams
-            Customizes the appearances of the y and x ticks on the plot, (e.g. the fontsize), using `plt.tick_params`.
+            Customizes the appearances of the y and x ticks on the plot (e.g. the fontsize) using `plt.tick_params`.
         yticks : mat_wrap.YTicks
             Sets the yticks of the plot, including scaling them to new units depending on the `Units` object, via
             `plt.yticks`.
@@ -96,7 +97,8 @@ class AbstractMatPlot:
         self.output = output
 
     def set_axis_limits(self, axis_limits, grid, symmetric_around_centre):
-        """Set the axis limits of the figure the grid is plotted on.
+        """
+        Set the axis limits of the figure the grid is plotted on.
 
         Parameters
         -----------
@@ -115,8 +117,19 @@ class AbstractMatPlot:
             axis_limits = [-x, x, -y, y]
             plt.axis(axis_limits)
 
-    def set_for_subplot(self, for_subplot):
+    def set_for_subplot(self, for_subplot: bool):
+        """
+        Sets the `for_subplot` attribute for every `MatWrap` object in this `MatPlot` object by updating
+        the `for_subplot`. By changing this tag:
 
+            - The [subplot] section of the config file of every `MatWrap` object is used instead of [figure].
+            - Calls which output or close the matplotlib figure are over-ridden so that the subplot is not removed.
+
+        Parameters
+        ----------
+        for_subplot : bool
+            The entry the `for_subplot` attribute of every `MatWrap` object is set too.
+        """
         self.for_subplot = for_subplot
         self.output.bypass = for_subplot
 
@@ -144,20 +157,15 @@ class MatPlot1D(AbstractMatPlot):
         line_plot: wrap.LinePlot = wrap.LinePlot(),
     ):
         """
-        Visualizes data structures (e.g an `Array`, `Grid`, `VectorField`, etc.) using Matplotlib.
+        Visualizes 1D data structures (e.g a `Line`, etc.) using Matplotlib.
 
         The `Plotter` is passed objects from the `mat_wrap` package which wrap matplotlib plot functions and customize
         the appearance of the plots of the data structure. If the values of these matplotlib wrapper objects are not
         manually specified, they assume the default values provided in the `config.visualize.mat_*` `.ini` config files.
 
-        The following data structures can be plotted using the following matplotlib functions:
+        The following 1D data structures can be plotted using the following matplotlib functions:
 
-        - `Array`:, using `plt.imshow`.
-        - `Grid`: using `plt.scatter`.
-        - `Line`: using `plt.plot`, `plt.semilogy`, `plt.loglog` or `plt.scatter`.
-        - `VectorField`: using `plt.quiver`.
-        - `RectangularMapper`: using `plt.imshow`.
-        - `VoronoiMapper`: using `plt.fill`.
+        - `Line` using `plt.plot`.
 
         Parameters
         ----------
@@ -288,13 +296,13 @@ class MatPlot2D(AbstractMatPlot):
         serial_overscan_plot: wrap.SerialOverscanPlot = wrap.SerialOverscanPlot(),
     ):
         """
-        Visualizes data structures (e.g an `Array`, `Grid`, `VectorField`, etc.) using Matplotlib.
+        Visualizes 2D data structures (e.g an `Array`, `Grid`, `VectorField`, etc.) using Matplotlib.
 
         The `Plotter` is passed objects from the `mat_wrap` package which wrap matplotlib plot functions and customize
         the appearance of the plots of the data structure. If the values of these matplotlib wrapper objects are not
         manually specified, they assume the default values provided in the `config.visualize.mat_*` `.ini` config files.
 
-        The following data structures can be plotted using the following matplotlib functions:
+        The following 2D data structures can be plotted using the following matplotlib functions:
 
         - `Array`:, using `plt.imshow`.
         - `Grid`: using `plt.scatter`.
@@ -402,25 +410,28 @@ class MatPlot2D(AbstractMatPlot):
 
         self.for_subplot = False
 
-    def plot_array(self, array, visuals_2d, extent_manual=None, bypass=False):
-        """Plot an array of data_type as a figure.
+    def plot_array(
+        self,
+        array: arrays.Array,
+        visuals_2d: vis.Visuals2D,
+        extent_manual: np.ndarray = None,
+        bypass: bool = False,
+    ):
+        """
+        Plot an `Array` data structure as a figure using the matplotlib wrapper objects and tools.
+
+        This `Array` is plotted using `plt.imshow`.
 
         Parameters
         -----------
-        array : data_type.array.aa.Scaled
+        array : arrays.Array
             The 2D array of data_type which is plotted.
-        include : Include
-            Include            
-        mask : data_type.array.mask.Mask2D
-            The mask applied to the array, the edge of which is plotted as a set of points over the plotted array.
-        positions : [[]]
-            Lists of (y,x) coordinates on the image which are plotted as colored dots, to highlight specific pixels.
-        grid : data_type.array.aa.Grid
-            A grid of (y,x) coordinates which may be plotted over the plotted array.
-
-        Returns
-        --------
-        None
+        visuals_2d : vis.Visuals2D
+            Contains all the visuals that are plotted over the `Array` (e.g. the origin, mask, grids, etc.).
+        extent_manual : np.ndarray
+            Manually specify the extent of the figure yticks and xticks using the format [xmin, xmax, ymin, ymax].
+        bypass : bool
+            If `True`, `plt.close` is omitted and the matplotlib figure remains open. This is used when making subplots.
         """
 
         if array is None or np.all(array == 0):
