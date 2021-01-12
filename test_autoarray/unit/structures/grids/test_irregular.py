@@ -326,6 +326,20 @@ class TestGridIrregularGrouped:
 
         assert values_from_1d.in_grouped_list == [[1.0, 2.0], [3.0]]
 
+    def test__values_from_value(self):
+
+        grid = aa.GridIrregularGrouped(grid=[[(1.0, 1.0), (2.0, 2.0)]])
+
+        values_from_value = grid.values_from_value(value=1.0)
+
+        assert values_from_value.in_grouped_list == [[1.0, 1.0]]
+
+        grid = aa.GridIrregularGrouped(grid=[[(1.0, 1.0), (2.0, 2.0)], [(3.0, 3.0)]])
+
+        values_from_value = grid.values_from_value(value=2.0)
+
+        assert values_from_value.in_grouped_list == [[2.0, 2.0], [2.0]]
+
     def test__grid_from_grid_1d(self):
 
         grid = aa.GridIrregularGrouped(grid=[[(1.0, 1.0), (2.0, 2.0)]])

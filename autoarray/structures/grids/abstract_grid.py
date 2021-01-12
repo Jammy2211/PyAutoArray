@@ -335,6 +335,10 @@ class AbstractGrid(abstract_structure.AbstractStructure):
         )
         return arrays.Array.manual_mask(array=distances, mask=self.mask)
 
+    def grid_radii_from(self, centre=(0.0, 0.0)):
+
+        grid_radii = np.linspace(0.0)
+
     @property
     def shape_2d_scaled(self) -> (float, float):
         """The two dimensional shape of the grid in scaled units, computed by taking the minimum and maximum values of
