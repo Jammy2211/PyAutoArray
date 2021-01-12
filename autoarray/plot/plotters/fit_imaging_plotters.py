@@ -195,31 +195,24 @@ class AbstractFitImagingPlotter(abstract_plotters.AbstractPlotter):
         self.open_subplot_figure(number_subplots=number_subplots)
 
         self.setup_subplot(number_subplots=number_subplots, subplot_index=1)
-
         self.figure_image()
 
         self.setup_subplot(number_subplots=number_subplots, subplot_index=2)
-
         self.figure_signal_to_noise_map()
 
         self.setup_subplot(number_subplots=number_subplots, subplot_index=3)
-
         self.figure_model_image()
 
         self.setup_subplot(number_subplots=number_subplots, subplot_index=4)
-
         self.figure_residual_map()
 
         self.setup_subplot(number_subplots=number_subplots, subplot_index=5)
-
         self.figure_normalized_residual_map()
 
         self.setup_subplot(number_subplots=number_subplots, subplot_index=6)
-
         self.figure_chi_squared_map()
 
         self.mat_plot_2d.output.subplot_to_figure()
-
         self.mat_plot_2d.figure.close()
 
 

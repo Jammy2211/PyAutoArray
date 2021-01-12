@@ -6,14 +6,8 @@ from autoarray.dataset import imaging as im
 from autoarray.structures import grids
 
 
-class ImagingPlotter(abstract_plotters.AbstractPlotter):
-    def __init__(
-        self,
-        imaging: im.Imaging,
-        mat_plot_2d: mat_plot.MatPlot2D = mat_plot.MatPlot2D(),
-        visuals_2d: vis.Visuals2D = vis.Visuals2D(),
-        include_2d: inc.Include2D = inc.Include2D(),
-    ):
+class AbstractImagingPlotter(abstract_plotters.AbstractPlotter):
+    def __init__(self, imaging, mat_plot_2d, visuals_2d, include_2d):
 
         self.imaging = imaging
 
@@ -38,9 +32,9 @@ class ImagingPlotter(abstract_plotters.AbstractPlotter):
     @abstract_plotters.for_figure
     def figure_image(self):
         """Plot the observed data_type of the imaging data_type.
-    
+
         Set *autolens.data_type.array.mat_plot_2d.mat_plot_2d* for a description of all innput parameters not described below.
-    
+
         Parameters
         -----------
         image : data_type.ImagingData
@@ -58,9 +52,9 @@ class ImagingPlotter(abstract_plotters.AbstractPlotter):
     @abstract_plotters.for_figure
     def figure_noise_map(self):
         """Plot the noise_map of the imaging data_type.
-    
+
         Set *autolens.data_type.array.mat_plot_2d.mat_plot_2d* for a description of all innput parameters not described below.
-    
+
         Parameters
         -----------
         image : data_type.ImagingData
@@ -75,9 +69,9 @@ class ImagingPlotter(abstract_plotters.AbstractPlotter):
     @abstract_plotters.for_figure
     def figure_psf(self):
         """Plot the PSF of the imaging data_type.
-    
+
         Set *autolens.data_type.array.mat_plot_2d.mat_plot_2d* for a description of all innput parameters not described below.
-    
+
         Parameters
         -----------
         image : data_type.ImagingData
@@ -92,9 +86,9 @@ class ImagingPlotter(abstract_plotters.AbstractPlotter):
     @abstract_plotters.for_figure
     def figure_inverse_noise_map(self):
         """Plot the noise_map of the imaging data_type.
-    
+
         Set *autolens.data_type.array.mat_plot_2d.mat_plot_2d* for a description of all innput parameters not described below.
-    
+
         Parameters
         -----------
         image : data_type.ImagingData
@@ -110,9 +104,9 @@ class ImagingPlotter(abstract_plotters.AbstractPlotter):
     @abstract_plotters.for_figure
     def figure_signal_to_noise_map(self):
         """Plot the signal-to-noise_map of the imaging data_type.
-    
+
         Set *autolens.data_type.array.mat_plot_2d.mat_plot_2d* for a description of all innput parameters not described below.
-    
+
         Parameters
         -----------
         image : data_type.ImagingData
@@ -128,9 +122,9 @@ class ImagingPlotter(abstract_plotters.AbstractPlotter):
     @abstract_plotters.for_figure
     def figure_absolute_signal_to_noise_map(self):
         """Plot the signal-to-noise_map of the imaging data_type.
-    
+
         Set *autolens.data_type.array.mat_plot_2d.mat_plot_2d* for a description of all innput parameters not described below.
-    
+
         Parameters
         -----------
         image : data_type.ImagingData
@@ -146,9 +140,9 @@ class ImagingPlotter(abstract_plotters.AbstractPlotter):
     @abstract_plotters.for_figure
     def figure_potential_chi_squared_map(self):
         """Plot the signal-to-noise_map of the imaging data_type.
-    
+
         Set *autolens.data_type.array.mat_plot_2d.mat_plot_2d* for a description of all innput parameters not described below.
-    
+
         Parameters
         -----------
         image : data_type.ImagingData
@@ -225,28 +219,39 @@ class ImagingPlotter(abstract_plotters.AbstractPlotter):
         self.open_subplot_figure(number_subplots=number_subplots)
 
         self.setup_subplot(number_subplots=number_subplots, subplot_index=1)
-
         self.figure_image()
 
         self.setup_subplot(number_subplots=number_subplots, subplot_index=2)
-
         self.figure_noise_map()
 
         self.setup_subplot(number_subplots=number_subplots, subplot_index=3)
-
         self.figure_psf()
 
         self.setup_subplot(number_subplots=number_subplots, subplot_index=4)
-
         self.figure_signal_to_noise_map()
 
         self.setup_subplot(number_subplots=number_subplots, subplot_index=5)
-
         self.figure_inverse_noise_map()
 
         self.setup_subplot(number_subplots=number_subplots, subplot_index=6)
-
         self.figure_potential_chi_squared_map()
 
         self.mat_plot_2d.output.subplot_to_figure()
         self.mat_plot_2d.figure.close()
+
+
+class ImagingPlotter(AbstractImagingPlotter):
+    def __init__(
+        self,
+        imaging: im.Imaging,
+        mat_plot_2d: mat_plot.MatPlot2D = mat_plot.MatPlot2D(),
+        visuals_2d: vis.Visuals2D = vis.Visuals2D(),
+        include_2d: inc.Include2D = inc.Include2D(),
+    ):
+
+        super().__init__(
+            imaging=imaging,
+            mat_plot_2d=mat_plot_2d,
+            include_2d=include_2d,
+            visuals_2d=visuals_2d,
+        )

@@ -9,8 +9,9 @@ class AbstractInclude:
         """
         Sets which `Visuals` are included on a figure that is plotted using a `Plotter`.
 
-        The `Include` object is used to extract the visuals of the plotted data structure (e.g. `Array`, `Grid`) s so they can be used in plot
-        functions. Only visuals with a `True` entry in the `Include` object are extracted and therefore plotted.
+        The `Include` object is used to extract the visuals of the plotted data structure (e.g. `Array`, `Grid`) so
+        they can be used in plot functions. Only visuals with a `True` entry in the `Include` object are extracted and t
+        plotted.
 
         If an entry is not input into the class (e.g. it retains its default entry of `None`) then the bool is
         loaded from the `config/visualize/include.ini` config file. This means the default visuals of a project
@@ -52,7 +53,7 @@ class Include1D(AbstractInclude):
         Sets which `Visuals1D` are included on a figure plotting 1D data that is plotted using a `Plotter1D`.
 
         The `Include` object is used to extract the visuals of the plotted 1D data structures so they can be used in 
-        plot functions. Only visuals with a `True` entry in the `Include` object are extracted and therefore plotted.
+        plot functions. Only visuals with a `True` entry in the `Include` object are extracted and plotted.
 
         If an entry is not input into the class (e.g. it retains its default entry of `None`) then the bool is
         loaded from the `config/visualize/include.ini` config file. This means the default visuals of a project
@@ -86,7 +87,7 @@ class Include2D(AbstractInclude):
         Sets which `Visuals2D` are included on a figure plotting 2D data that is plotted using a `Plotter2D`.
 
         The `Include` object is used to extract the visuals of the plotted 2D data structures so they can be used in 
-        plot functions. Only visuals with a `True` entry in the `Include` object are extracted and therefore plotted.
+        plot functions. Only visuals with a `True` entry in the `Include` object are extracted and plotted.
 
         If an entry is not input into the class (e.g. it retains its default entry of `None`) then the bool is
         loaded from the `config/visualize/include.ini` config file. This means the default visuals of a project
