@@ -553,21 +553,16 @@ class Title(AbstractMatWrap):
 
         self.manual_label = self.kwargs.get("label")
 
-        self._auto_label = None
-
-    @property
-    def label(self):
-        if self.manual_label is None:
-            return self._auto_label
-        return self.manual_label
-
-    def set(self):
+    def set(self, auto_title=None):
 
         config_dict = self.config_dict
+
+        label = auto_title if self.manual_label is None else self.manual_label
+
         if "label" in config_dict:
             config_dict.pop("label")
 
-        plt.title(label=self.label, **config_dict)
+        plt.title(label=label, **config_dict)
 
 
 class AbstractLabel(AbstractMatWrap):
@@ -742,16 +737,9 @@ class Output:
             except FileExistsError:
                 pass
 
-        self._filename = filename
-        self._auto_filename = None
+        self.filename = filename
         self._format = format
         self.bypass = bypass
-
-    @property
-    def filename(self):
-        if self._filename is not None:
-            return self._filename
-        return self._auto_filename
 
     @property
     def format(self) -> str:
@@ -761,7 +749,9 @@ class Output:
             return self._format
 
     def to_figure(
-        self, structure: typing.Optional[abstract_structure.AbstractStructure]
+        self,
+        structure: typing.Optional[abstract_structure.AbstractStructure],
+        auto_filename=None,
     ):
         """Output the figure, by either displaying it on the user's screen or to the hard-disk as a .png or .fits file.
 
@@ -771,12 +761,14 @@ class Output:
             The 2D array of image to be output, required for outputting the image as a fits file.
         """
 
+        filename = auto_filename if self.filename is None else self.filename
+
         if not self.bypass:
             if self.format == "show":
                 plt.show()
             elif self.format == "png":
                 plt.savefig(
-                    path.join(self.path, f"{self.filename}.png"), bbox_inches="tight"
+                    path.join(self.path, f"{filename}.png"), bbox_inches="tight"
                 )
             elif self.format == "fits":
                 if structure is not None:
@@ -785,14 +777,15 @@ class Output:
                         overwrite=True,
                     )
 
-    def subplot_to_figure(self):
+    def subplot_to_figure(self, auto_filename=None):
         """Output a subhplot figure, either as an image on the screen or to the hard-disk as a .png or .fits file."""
+
+        filename = auto_filename if self.filename is None else self.filename
+
         if self.format == "show":
             plt.show()
         elif self.format == "png":
-            plt.savefig(
-                path.join(self.path, f"{self.filename}.png"), bbox_inches="tight"
-            )
+            plt.savefig(path.join(self.path, f"{filename}.png"), bbox_inches="tight")
 
 
 def remove_spaces_and_commas_from_colors(colors):

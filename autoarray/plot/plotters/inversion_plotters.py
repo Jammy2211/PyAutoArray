@@ -1,7 +1,7 @@
 from autoarray.plot.plotters import abstract_plotters
 from autoarray.plot.mat_wrap import visuals as vis
 from autoarray.plot.mat_wrap import include as inc
-from autoarray.plot.mat_wrap import mat_plot
+from autoarray.plot.mat_wrap import mat_plot as mp
 from autoarray.plot.plotters import structure_plotters
 from autoarray.inversion import inversions as inv
 
@@ -10,7 +10,7 @@ class InversionPlotter(structure_plotters.MapperPlotter):
     def __init__(
         self,
         inversion: inv.AbstractInversion,
-        mat_plot_2d: mat_plot.MatPlot2D = mat_plot.MatPlot2D(),
+        mat_plot_2d: mp.MatPlot2D = mp.MatPlot2D(),
         visuals_2d: vis.Visuals2D = vis.Visuals2D(),
         include_2d: inc.Include2D = inc.Include2D(),
     ):
@@ -23,134 +23,24 @@ class InversionPlotter(structure_plotters.MapperPlotter):
 
         self.inversion = inversion
 
-    @abstract_plotters.for_figure
-    def figure_reconstructed_image(self):
-        self.mat_plot_2d.plot_array(
-            array=self.inversion.mapped_reconstructed_image,
-            visuals_2d=self.visuals_data_with_include_2d,
+    def as_mapper(self, source_pixelization_values):
+        return self.inversion.mapper.reconstructed_source_pixelization_from_solution_vector(
+            source_pixelization_values
         )
 
-    @abstract_plotters.for_figure
-    def figure_reconstruction(self, full_indexes=None, pixelization_indexes=None):
-
-        source_pixelilzation_values = self.inversion.mapper.reconstructed_source_pixelization_from_solution_vector(
-            solution_vector=self.inversion.reconstruction
-        )
-
-        self.mat_plot_2d.plot_mapper(
-            mapper=self.inversion.mapper,
-            visuals_2d=self.visuals_source_with_include_2d,
-            source_pixelilzation_values=source_pixelilzation_values,
-            full_indexes=full_indexes,
-            pixelization_indexes=pixelization_indexes,
-        )
-
-    @abstract_plotters.for_figure
-    def figure_errors(self, full_indexes=None, pixelization_indexes=None):
-
-        source_pixelilzation_values = self.inversion.mapper.reconstructed_source_pixelization_from_solution_vector(
-            solution_vector=self.inversion.errors
-        )
-
-        self.mat_plot_2d.plot_mapper(
-            mapper=self.inversion.mapper,
-            visuals_2d=self.visuals_source_with_include_2d,
-            source_pixelilzation_values=source_pixelilzation_values,
-            full_indexes=full_indexes,
-            pixelization_indexes=pixelization_indexes,
-        )
-
-    @abstract_plotters.for_figure
-    def figure_residual_map(self, full_indexes=None, pixelization_indexes=None):
-
-        source_pixelilzation_values = self.inversion.mapper.reconstructed_source_pixelization_from_solution_vector(
-            solution_vector=self.inversion.residual_map
-        )
-
-        self.mat_plot_2d.plot_mapper(
-            mapper=self.inversion.mapper,
-            visuals_2d=self.visuals_source_with_include_2d,
-            source_pixelilzation_values=source_pixelilzation_values,
-            full_indexes=full_indexes,
-            pixelization_indexes=pixelization_indexes,
-        )
-
-    @abstract_plotters.for_figure
-    def figure_normalized_residual_map(
-        self, full_indexes=None, pixelization_indexes=None
-    ):
-
-        source_pixelilzation_values = self.inversion.mapper.reconstructed_source_pixelization_from_solution_vector(
-            solution_vector=self.inversion.normalized_residual_map
-        )
-
-        self.mat_plot_2d.plot_mapper(
-            mapper=self.inversion.mapper,
-            visuals_2d=self.visuals_source_with_include_2d,
-            source_pixelilzation_values=source_pixelilzation_values,
-            full_indexes=full_indexes,
-            pixelization_indexes=pixelization_indexes,
-        )
-
-    @abstract_plotters.for_figure
-    def figure_chi_squared_map(self, full_indexes=None, pixelization_indexes=None):
-
-        source_pixelilzation_values = self.inversion.mapper.reconstructed_source_pixelization_from_solution_vector(
-            solution_vector=self.inversion.chi_squared_map
-        )
-
-        self.mat_plot_2d.plot_mapper(
-            mapper=self.inversion.mapper,
-            visuals_2d=self.visuals_source_with_include_2d,
-            source_pixelilzation_values=source_pixelilzation_values,
-            full_indexes=full_indexes,
-            pixelization_indexes=pixelization_indexes,
-        )
-
-    @abstract_plotters.for_figure
-    def figure_regularization_weights(
-        self, full_indexes=None, pixelization_indexes=None
-    ):
-
-        regularization_weights = self.inversion.regularization.regularization_weights_from_mapper(
-            mapper=self.inversion.mapper
-        )
-
-        self.mat_plot_2d.plot_mapper(
-            mapper=self.inversion.mapper,
-            visuals_2d=self.visuals_source_with_include_2d,
-            source_pixelilzation_values=regularization_weights,
-            full_indexes=full_indexes,
-            pixelization_indexes=pixelization_indexes,
-        )
-
-    @abstract_plotters.for_figure
-    def figure_interpolated_reconstruction(self):
-
-        self.mat_plot_2d.plot_array(
-            array=self.inversion.interpolated_reconstructed_data_from_shape_2d(),
-            visuals_2d=self.visuals_data_with_include_2d,
-        )
-
-    @abstract_plotters.for_figure
-    def figure_interpolated_errors(self):
-
-        self.mat_plot_2d.plot_array(
-            array=self.inversion.interpolated_errors_from_shape_2d(),
-            visuals_2d=self.visuals_data_with_include_2d,
-        )
-
-    def figure_individuals(
+    def figures(
         self,
-        plot_reconstructed_image=False,
-        plot_reconstruction=False,
-        plot_errors=False,
-        plot_residual_map=False,
-        plot_normalized_residual_map=False,
-        plot_chi_squared_map=False,
-        plot_regularization_weights=False,
-        plot_interpolated_reconstruction=False,
-        plot_interpolated_errors=False,
+        reconstructed_image=False,
+        reconstruction=False,
+        errors=False,
+        residual_map=False,
+        normalized_residual_map=False,
+        chi_squared_map=False,
+        regularization_weights=False,
+        interpolated_reconstruction=False,
+        interpolated_errors=False,
+        full_indexes=None,
+        pixelization_indexes=None,
     ):
         """Plot the model datas_ of an analysis, using the *Fitter* class object.
 
@@ -167,80 +57,153 @@ class InversionPlotter(structure_plotters.MapperPlotter):
             in the python interpreter window.
         """
 
-        if plot_reconstructed_image:
-            self.figure_reconstructed_image()
-        if plot_reconstruction:
-            self.figure_reconstruction()
-        if plot_errors:
-            self.figure_errors()
-        if plot_residual_map:
-            self.figure_residual_map()
-        if plot_normalized_residual_map:
-            self.figure_normalized_residual_map()
-        if plot_chi_squared_map:
-            self.figure_chi_squared_map()
-        if plot_regularization_weights:
-            self.figure_regularization_weights()
-        if plot_interpolated_reconstruction:
-            self.figure_interpolated_reconstruction()
-        if plot_interpolated_errors:
-            self.figure_interpolated_errors()
+        if reconstructed_image:
 
-    @abstract_plotters.for_subplot
-    def subplot_inversion(self, full_indexes=None, pixelization_indexes=None):
+            self.plot_array(
+                array=self.inversion.mapped_reconstructed_image,
+                visuals_2d=self.visuals_data_with_include_2d,
+                auto_labels=mp.AutoLabels(
+                    title="Reconstructed Image", filename="reconstructed_image"
+                ),
+            )
 
-        number_subplots = 6
+        if reconstruction:
 
-        aspect_inv = self.mat_plot_2d.figure.aspect_for_subplot_from_grid(
-            grid=self.inversion.mapper.source_full_grid
+            self.plot_mapper(
+                mapper=self.inversion.mapper,
+                visuals_2d=self.visuals_source_with_include_2d,
+                auto_labels=mp.AutoLabels(
+                    title="Source Reconstruction", filename="reconstruction"
+                ),
+                source_pixelilzation_values=self.as_mapper(
+                    self.inversion.reconstruction
+                ),
+                full_indexes=full_indexes,
+                pixelization_indexes=pixelization_indexes,
+            )
+
+        if errors:
+
+            self.plot_mapper(
+                mapper=self.inversion.mapper,
+                visuals_2d=self.visuals_source_with_include_2d,
+                auto_labels=mp.AutoLabels(title="Errors", filename="errors"),
+                source_pixelilzation_values=self.as_mapper(self.inversion.errors),
+                full_indexes=full_indexes,
+                pixelization_indexes=pixelization_indexes,
+            )
+
+        if residual_map:
+
+            self.plot_mapper(
+                mapper=self.inversion.mapper,
+                visuals_2d=self.visuals_source_with_include_2d,
+                auto_labels=mp.AutoLabels(
+                    title="Residual Map", filename="residual_map"
+                ),
+                source_pixelilzation_values=self.as_mapper(self.inversion.residual_map),
+                full_indexes=full_indexes,
+                pixelization_indexes=pixelization_indexes,
+            )
+
+        if normalized_residual_map:
+
+            self.plot_mapper(
+                mapper=self.inversion.mapper,
+                visuals_2d=self.visuals_source_with_include_2d,
+                auto_labels=mp.AutoLabels(
+                    title="Normalized Residual Map", filename="normalized_residual_map"
+                ),
+                source_pixelilzation_values=self.as_mapper(
+                    self.inversion.normalized_residual_map
+                ),
+                full_indexes=full_indexes,
+                pixelization_indexes=pixelization_indexes,
+            )
+
+        if chi_squared_map:
+
+            self.mat_plot_2d.plot_mapper(
+                mapper=self.inversion.mapper,
+                visuals_2d=self.visuals_source_with_include_2d,
+                auto_labels=mp.AutoLabels(
+                    title="Chi-Squared Map", filename="chi_squared_map"
+                ),
+                source_pixelilzation_values=self.as_mapper(
+                    self.inversion.chi_squared_map
+                ),
+                full_indexes=full_indexes,
+                pixelization_indexes=pixelization_indexes,
+            )
+
+        if regularization_weights:
+
+            self.mat_plot_2d.plot_mapper(
+                mapper=self.inversion.mapper,
+                visuals_2d=self.visuals_source_with_include_2d,
+                auto_labels=mp.AutoLabels(
+                    title="Regularization Weights", filename="regularization_weights"
+                ),
+                source_pixelilzation_values=self.as_mapper(
+                    self.inversion.regularization_weights
+                ),
+                full_indexes=full_indexes,
+                pixelization_indexes=pixelization_indexes,
+            )
+
+        if interpolated_reconstruction:
+
+            self.plot_array(
+                array=self.inversion.interpolated_reconstructed_data_from_shape_2d(),
+                visuals_2d=self.visuals_data_with_include_2d,
+                auto_labels=mp.AutoLabels(
+                    title="Interpolated Reconstruction",
+                    filename="interpolated_reconstruction",
+                ),
+            )
+
+        if interpolated_errors:
+            self.plot_array(
+                array=self.inversion.interpolated_errors_from_shape_2d(),
+                visuals_2d=self.visuals_data_with_include_2d,
+                auto_labels=mp.AutoLabels(
+                    title="Interpolated Errors", filename="interpolated_errors"
+                ),
+            )
+
+    def subplot(
+        self,
+        reconstructed_image=False,
+        reconstruction=False,
+        errors=False,
+        residual_map=False,
+        normalized_residual_map=False,
+        chi_squared_map=False,
+        regularization_weights=False,
+        interpolated_reconstruction=False,
+        interpolated_errors=False,
+        auto_filename="subplot_inversion",
+    ):
+
+        self._subplot_custom_plot(
+            reconstructed_image=reconstructed_image,
+            reconstruction=reconstruction,
+            errors=errors,
+            residual_map=residual_map,
+            normalized_residual_map=normalized_residual_map,
+            chi_squared_map=chi_squared_map,
+            regularization_weights=regularization_weights,
+            interpolated_reconstruction=interpolated_reconstruction,
+            interpolated_errors=interpolated_errors,
+            auto_labels=mp.AutoLabels(filename=auto_filename),
         )
 
-        self.open_subplot_figure(number_subplots=number_subplots)
-
-        self.setup_subplot(number_subplots=number_subplots, subplot_index=1)
-
-        self.figure_reconstructed_image()
-
-        self.setup_subplot(
-            number_subplots=number_subplots, subplot_index=2, aspect=aspect_inv
+    def subplot_inversion(self):
+        return self.subplot(
+            reconstructed_image=True,
+            reconstruction=True,
+            errors=True,
+            residual_map=True,
+            chi_squared_map=True,
+            regularization_weights=True,
         )
-
-        self.figure_reconstruction(
-            full_indexes=full_indexes, pixelization_indexes=pixelization_indexes
-        )
-
-        self.setup_subplot(
-            number_subplots=number_subplots, subplot_index=3, aspect=aspect_inv
-        )
-
-        self.figure_errors(
-            full_indexes=full_indexes, pixelization_indexes=pixelization_indexes
-        )
-
-        self.setup_subplot(
-            number_subplots=number_subplots, subplot_index=4, aspect=aspect_inv
-        )
-
-        self.figure_residual_map(
-            full_indexes=full_indexes, pixelization_indexes=pixelization_indexes
-        )
-
-        self.setup_subplot(
-            number_subplots=number_subplots, subplot_index=5, aspect=aspect_inv
-        )
-
-        self.figure_chi_squared_map(
-            full_indexes=full_indexes, pixelization_indexes=pixelization_indexes
-        )
-
-        self.setup_subplot(
-            number_subplots=number_subplots, subplot_index=6, aspect=aspect_inv
-        )
-
-        self.figure_regularization_weights(
-            full_indexes=full_indexes, pixelization_indexes=pixelization_indexes
-        )
-
-        self.mat_plot_2d.output.subplot_to_figure()
-
-        self.mat_plot_2d.figure.close()

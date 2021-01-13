@@ -70,7 +70,7 @@ class TestArrayPlotter:
             ),
         )
 
-        array_plotter.figure_array()
+        array_plotter.figure()
 
         assert path.join(plot_path, "array1.png") in plot_patch.paths
 
@@ -82,7 +82,7 @@ class TestArrayPlotter:
             ),
         )
 
-        array_plotter.figure_array()
+        array_plotter.figure()
 
         assert path.join(plot_path, "array2.png") in plot_patch.paths
 
@@ -104,7 +104,7 @@ class TestArrayPlotter:
             ),
         )
 
-        array_plotter.figure_array()
+        array_plotter.figure()
 
         assert path.join(plot_path, "array3.png") in plot_patch.paths
 
@@ -122,7 +122,7 @@ class TestArrayPlotter:
         if path.exists(plot_path):
             shutil.rmtree(plot_path)
 
-        array_plotter.figure_array()
+        array_plotter.figure()
 
         arr = aa.util.array.numpy_array_2d_from_fits(
             file_path=path.join(plot_path, "array.fits"), hdu=0
@@ -194,7 +194,7 @@ class TestFramePlotter:
             ),
         )
 
-        frame_plotter.figure_frame()
+        frame_plotter.figure()
 
         assert path.join(plot_path, "frame1.png") in plot_patch.paths
 
@@ -213,7 +213,7 @@ class TestFramePlotter:
             ),
         )
 
-        frame_plotter.figure_frame()
+        frame_plotter.figure()
 
         assert path.join(plot_path, "frame2.png") in plot_patch.paths
 
@@ -238,7 +238,7 @@ class TestFramePlotter:
             ),
         )
 
-        frame_plotter.figure_frame()
+        frame_plotter.figure()
 
         assert path.join(plot_path, "frame3.png") in plot_patch.paths
 
@@ -256,7 +256,7 @@ class TestFramePlotter:
         if path.exists(plot_path):
             shutil.rmtree(plot_path)
 
-        frame_plotter.figure_frame()
+        frame_plotter.figure()
 
         frame = aa.util.array.numpy_array_2d_from_fits(
             file_path=path.join(plot_path, "frame.fits"), hdu=0
@@ -307,7 +307,7 @@ class TestGridPlotter:
 
         color_array = np.linspace(start=0.0, stop=1.0, num=grid_7x7.shape_1d)
 
-        grid_plotter.figure_grid(
+        grid_plotter.figure(
             color_array=color_array,
             axis_limits=[-1.5, 1.5, -2.5, 2.5],
             indexes=[0, 1, 2, 14],
@@ -324,7 +324,7 @@ class TestGridPlotter:
             include_2d=aplt.Include2D(origin=True, mask=True, border=True),
         )
 
-        grid_plotter.figure_grid(
+        grid_plotter.figure(
             color_array=color_array,
             axis_limits=[-1.5, 1.5, -2.5, 2.5],
             indexes=[0, 1, 2, 14],
@@ -351,7 +351,7 @@ class TestGridPlotter:
             visuals_2d=visuals_2d,
         )
 
-        grid_plotter.figure_grid(
+        grid_plotter.figure(
             color_array=color_array,
             axis_limits=[-1.5, 1.5, -2.5, 2.5],
             indexes=[0, 1, 2, 14],
@@ -534,7 +534,7 @@ class TestMapperPlotter:
             ),
         )
 
-        mapper_plotter.figure_mapper(
+        mapper_plotter.figure(
             full_indexes=[[(0, 0), (0, 1)], [(1, 2)]],
             pixelization_indexes=[[0, 1], [2]],
         )
@@ -548,7 +548,7 @@ class TestMapperPlotter:
             ),
         )
 
-        mapper_plotter.figure_mapper(
+        mapper_plotter.figure(
             full_indexes=[[(0, 0), (0, 1)], [(1, 2)]],
             pixelization_indexes=[[0, 1], [2]],
         )
@@ -565,7 +565,7 @@ class TestMapperPlotter:
             ),
         )
 
-        mapper_plotter.figure_mapper(
+        mapper_plotter.figure(
             full_indexes=[[(0, 0), (0, 1)], [(1, 2)]],
             pixelization_indexes=[[0, 1], [2]],
         )
@@ -583,7 +583,7 @@ class TestMapperPlotter:
             ),
         )
 
-        mapper_plotter.figure_mapper(
+        mapper_plotter.figure(
             full_indexes=[[(0, 0), (0, 1)], [(1, 2)]],
             pixelization_indexes=[[0, 1], [2]],
         )
@@ -597,7 +597,7 @@ class TestMapperPlotter:
             ),
         )
 
-        mapper_plotter.figure_mapper(
+        mapper_plotter.figure(
             full_indexes=[[(0, 0), (0, 1)], [(1, 2)]],
             pixelization_indexes=[[0, 1], [2]],
         )
@@ -611,7 +611,7 @@ class TestMapperPlotter:
             ),
         )
 
-        mapper_plotter.figure_mapper(
+        mapper_plotter.figure(
             full_indexes=[[(0, 0), (0, 1)], [(1, 2)]],
             pixelization_indexes=[[0, 1], [2]],
         )
@@ -661,7 +661,7 @@ class TestLinePlotter:
             )
         )
 
-        line_plotter.line(
+        line_plotter.figure(
             y=np.array([1.0, 2.0, 3.0]),
             x=np.array([0.5, 1.0, 1.5]),
             plot_axis_type="loglog",
@@ -678,7 +678,7 @@ class TestLinePlotter:
             )
         )
 
-        line_plotter.line(
+        line_plotter.figure(
             y=np.array([1.0, 2.0, 3.0]),
             x=np.array([0.5, 1.0, 1.5]),
             plot_axis_type="semilogy",
@@ -695,7 +695,7 @@ class TestLinePlotter:
             )
         )
 
-        line_plotter.line(
+        line_plotter.figure(
             y=np.array([1.0, 2.0, 3.0]),
             x=np.array([0.5, 1.0, 1.5]),
             plot_axis_type="loglog",

@@ -235,6 +235,12 @@ class AbstractInversion:
     def chi_squared_map(self):
         raise NotImplementedError()
 
+    @property
+    def regularization_weights(self):
+        return self.regularization.regularization_weights_from_mapper(
+            mapper=self.mapper
+        )
+
 
 class AbstractInversionMatrix:
     def __init__(

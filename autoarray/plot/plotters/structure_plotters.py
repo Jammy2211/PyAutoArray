@@ -1,7 +1,7 @@
 from autoarray.plot.plotters import abstract_plotters
 from autoarray.plot.mat_wrap import visuals as vis
 from autoarray.plot.mat_wrap import include as inc
-from autoarray.plot.mat_wrap import mat_plot
+from autoarray.plot.mat_wrap import mat_plot as mp
 from autoarray.structures import arrays, frames, grids, lines
 from autoarray.inversion import mappers
 import typing
@@ -11,7 +11,7 @@ class ArrayPlotter(abstract_plotters.AbstractPlotter):
     def __init__(
         self,
         array: arrays.Array,
-        mat_plot_2d: mat_plot.MatPlot2D = mat_plot.MatPlot2D(),
+        mat_plot_2d: mp.MatPlot2D = mp.MatPlot2D(),
         visuals_2d: vis.Visuals2D = vis.Visuals2D(),
         include_2d: inc.Include2D = inc.Include2D(),
     ):
@@ -56,12 +56,12 @@ class ArrayPlotter(abstract_plotters.AbstractPlotter):
             ),
         )
 
-    @abstract_plotters.for_figure
-    def figure_array(self, extent_manual=None):
+    def figure(self, extent_manual=None):
 
-        self.mat_plot_2d.plot_array(
+        self.plot_array(
             array=self.array,
             visuals_2d=self.visuals_with_include_2d,
+            auto_labels=mp.AutoLabels(title="Array", filename="array"),
             extent_manual=extent_manual,
         )
 
@@ -70,7 +70,7 @@ class FramePlotter(abstract_plotters.AbstractPlotter):
     def __init__(
         self,
         frame: frames.Frame,
-        mat_plot_2d: mat_plot.MatPlot2D = mat_plot.MatPlot2D(),
+        mat_plot_2d: mp.MatPlot2D = mp.MatPlot2D(),
         visuals_2d: vis.Visuals2D = vis.Visuals2D(),
         include_2d: inc.Include2D = inc.Include2D(),
     ):
@@ -126,11 +126,12 @@ class FramePlotter(abstract_plotters.AbstractPlotter):
             ),
         )
 
-    @abstract_plotters.for_figure
-    def figure_frame(self):
+    def figure(self):
 
-        self.mat_plot_2d.plot_frame(
-            frame=self.frame, visuals_2d=self.visuals_with_include_2d
+        self.plot_array(
+            array=self.frame,
+            visuals_2d=self.visuals_with_include_2d,
+            auto_labels=mp.AutoLabels(title="Frame", filename="frame"),
         )
 
 
@@ -138,7 +139,7 @@ class GridPlotter(abstract_plotters.AbstractPlotter):
     def __init__(
         self,
         grid: grids.Grid,
-        mat_plot_2d: mat_plot.MatPlot2D = mat_plot.MatPlot2D(),
+        mat_plot_2d: mp.MatPlot2D = mp.MatPlot2D(),
         visuals_2d: vis.Visuals2D = vis.Visuals2D(),
         include_2d: inc.Include2D = inc.Include2D(),
     ):
@@ -180,8 +181,7 @@ class GridPlotter(abstract_plotters.AbstractPlotter):
             )
         )
 
-    @abstract_plotters.for_figure
-    def figure_grid(
+    def figure(
         self,
         color_array=None,
         axis_limits=None,
@@ -189,9 +189,10 @@ class GridPlotter(abstract_plotters.AbstractPlotter):
         symmetric_around_centre=True,
     ):
 
-        self.mat_plot_2d.plot_grid(
+        self.plot_grid(
             grid=self.grid,
             visuals_2d=self.visuals_with_include_2d,
+            auto_labels=mp.AutoLabels(title="Grid", filename="grid"),
             color_array=color_array,
             axis_limits=axis_limits,
             indexes=indexes,
@@ -203,7 +204,7 @@ class MapperPlotter(abstract_plotters.AbstractPlotter):
     def __init__(
         self,
         mapper: typing.Union[mappers.MapperRectangular, mappers.MapperVoronoi],
-        mat_plot_2d: mat_plot.MatPlot2D = mat_plot.MatPlot2D(),
+        mat_plot_2d: mp.MatPlot2D = mp.MatPlot2D(),
         visuals_2d: vis.Visuals2D = vis.Visuals2D(),
         include_2d: inc.Include2D = inc.Include2D(),
     ):
@@ -299,23 +300,22 @@ class MapperPlotter(abstract_plotters.AbstractPlotter):
             ),
         )
 
-    @abstract_plotters.for_figure
-    def figure_mapper(
+    def figure(
         self,
         source_pixelilzation_values=None,
         full_indexes=None,
         pixelization_indexes=None,
     ):
 
-        self.mat_plot_2d.plot_mapper(
+        self.plot_mapper(
             mapper=self.mapper,
             visuals_2d=self.visuals_source_with_include_2d,
             source_pixelilzation_values=source_pixelilzation_values,
+            auto_labels=mp.AutoLabels(title="Mapper", filename="mapper"),
             full_indexes=full_indexes,
             pixelization_indexes=pixelization_indexes,
         )
 
-    @abstract_plotters.for_subplot
     def subplot_image_and_mapper(
         self, image, full_indexes=None, pixelization_indexes=None
     ):
@@ -323,11 +323,12 @@ class MapperPlotter(abstract_plotters.AbstractPlotter):
         number_subplots = 2
 
         self.open_subplot_figure(number_subplots=number_subplots)
-
         self.setup_subplot(number_subplots=number_subplots, subplot_index=1)
 
-        self.mat_plot_2d.plot_array(
-            array=image, visuals_2d=self.visuals_data_with_include_2d
+        self.plot_array(
+            array=image,
+            visuals_2d=self.visuals_data_with_include_2d,
+            auto_labels=mp.AutoLabels(title="Image"),
         )
 
         if full_indexes is not None:
@@ -349,18 +350,20 @@ class MapperPlotter(abstract_plotters.AbstractPlotter):
 
         self.setup_subplot(number_subplots=number_subplots, subplot_index=2)
 
-        self.figure_mapper(
+        self.figure(
             full_indexes=full_indexes, pixelization_indexes=pixelization_indexes
         )
 
-        self.mat_plot_2d.output.subplot_to_figure()
+        self.mat_plot_2d.output.subplot_to_figure(
+            auto_filename="subplot_image_and_mapper"
+        )
         self.mat_plot_2d.figure.close()
 
 
 class LinePlotter(abstract_plotters.AbstractPlotter):
     def __init__(
         self,
-        mat_plot_1d: mat_plot.MatPlot1D = mat_plot.MatPlot1D(),
+        mat_plot_1d: mp.MatPlot1D = mp.MatPlot1D(),
         visuals_1d: vis.Visuals1D = vis.Visuals1D(),
         include_1d: inc.Include1D = inc.Include1D(),
     ):
@@ -376,8 +379,7 @@ class LinePlotter(abstract_plotters.AbstractPlotter):
 
         return vis.Visuals1D(origin=origin, mask=mask)
 
-    @abstract_plotters.for_figure
-    def line(
+    def figure(
         self,
         y,
         x,
@@ -390,6 +392,8 @@ class LinePlotter(abstract_plotters.AbstractPlotter):
         self.mat_plot_1d.plot_line(
             y=y,
             x=x,
+            visuals_1d=self.visuals_1d,
+            auto_labels=mp.AutoLabels(),
             label=label,
             plot_axis_type=plot_axis_type,
             vertical_lines=vertical_lines,

@@ -1,7 +1,7 @@
 from autoarray.plot.plotters import abstract_plotters
 from autoarray.plot.mat_wrap import visuals as vis
 from autoarray.plot.mat_wrap import include as inc
-from autoarray.plot.mat_wrap import mat_plot
+from autoarray.plot.mat_wrap import mat_plot as mp
 from autoarray.fit import fit as f
 import numpy as np
 
@@ -33,235 +33,18 @@ class AbstractFitInterferometerPlotter(abstract_plotters.AbstractPlotter):
     def visuals_with_include_2d(self):
         return self.visuals_2d + self.visuals_2d.__class__()
 
-    @abstract_plotters.for_figure
-    def figure_visibilities(self):
-        """Plot the visibilities of a lens fit.
-
-        Set *autolens.datas.grid.mat_plot_2d.mat_plot_2d* for a description of all input parameters not described below.
-
-        Parameters
-        -----------
-        visibilities : datas.imaging.datas.Imaging
-            The datas-datas, which include_2d the observed datas, noise_map, PSF, signal-to-noise_map, etc.
-        origin : True
-            If true, the origin of the datas's coordinate system is plotted as a 'x'.
-        """
-        self.mat_plot_2d.plot_grid(
-            grid=self.fit.visibilities.in_grid,
-            visuals_2d=self.visuals_2d,
-            color_array=np.real(self.fit.noise_map),
-        )
-
-    @abstract_plotters.for_figure
-    def figure_noise_map(self):
-        """Plot the noise-map of a lens fit.
-
-        Set *autolens.datas.grid.mat_plot_2d.mat_plot_2d* for a description of all input parameters not described below.
-
-        Parameters
-        -----------
-        visibilities : datas.imaging.datas.Imaging
-            The datas-datas, which include_2d the observed datas, noise_map, PSF, signal-to-noise_map, etc.
-        origin : True
-            If true, the origin of the datas's coordinate system is plotted as a 'x'.
-        """
-        self.mat_plot_2d.plot_grid(
-            grid=self.fit.visibilities.in_grid,
-            visuals_2d=self.visuals_2d,
-            color_array=np.real(self.fit.noise_map),
-        )
-
-    @abstract_plotters.for_figure
-    def figure_signal_to_noise_map(self):
-        """Plot the noise-map of a lens fit.
-
-        Set *autolens.datas.grid.mat_plot_2d.mat_plot_2d* for a description of all input parameters not described below.
-
-        Parameters
-        -----------
-        visibilities : datas.imaging.datas.Imaging
-        The datas-datas, which include_2d the observed datas, signal_to_noise_map, PSF, signal-to-signal_to_noise_map, etc.
-        origin : True
-        If true, the origin of the datas's coordinate system is plotted as a 'x'.
-        """
-        self.mat_plot_2d.plot_grid(
-            grid=self.fit.visibilities.in_grid,
-            visuals_2d=self.visuals_2d,
-            color_array=np.real(self.fit.signal_to_noise_map),
-        )
-
-    @abstract_plotters.for_figure
-    def figure_model_visibilities(self):
-        """Plot the model visibilities of a fit.
-
-        Set *autolens.datas.grid.mat_plot_2d.mat_plot_2d* for a description of all input parameters not described below.
-
-        Parameters
-        -----------
-        fit : datas.fitting.fitting.AbstractFitter
-            The fit to the datas, which include_2d a list of every model visibilities, residual_map, chi-squareds, etc.
-        visibilities_index : int
-            The index of the datas in the datas-set of which the model visibilities is plotted.
-        """
-        self.mat_plot_2d.plot_grid(
-            grid=self.fit.visibilities.in_grid,
-            visuals_2d=self.visuals_2d,
-            color_array=np.real(self.fit.model_data),
-        )
-
-    @abstract_plotters.for_figure
-    def figure_real_residual_map_vs_uv_distances(
+    def figures(
         self,
-        label_yunits="V$_{R,data}$ - V$_{R,model}$",
-        label_xunits=r"UV$_{distance}$ (k$\lambda$)",
-    ):
-        """Plot the residual-map of a lens fit.
-
-        Set *autolens.datas.grid.mat_plot_1d.mat_plot_1d* for a description of all input parameters not described below.
-
-        Parameters
-        -----------
-        fit : datas.fitting.fitting.AbstractFitter
-            The fit to the datas, which include_2d a list of every model visibilities, residual_map, chi-squareds, etc.
-        visibilities_index : int
-            The index of the datas in the datas-set of which the residual_map are plotted.
-        """
-
-        self.mat_plot_1d.plot_line(
-            y=np.real(self.fit.residual_map),
-            x=self.fit.masked_interferometer.interferometer.uv_distances / 10 ** 3.0,
-            plot_axis_type="scatter",
-        )
-
-    @abstract_plotters.for_figure
-    def figure_real_normalized_residual_map_vs_uv_distances(
-        self,
-        label_yunits="V$_{R,data}$ - V$_{R,model}$",
-        label_xunits=r"UV$_{distance}$ (k$\lambda$)",
-    ):
-        """Plot the residual-map of a lens fit.
-
-        Set *autolens.datas.grid.mat_plot_1d.mat_plot_1d* for a description of all input parameters not described below.
-
-        Parameters
-        -----------
-        fit : datas.fitting.fitting.AbstractFitter
-            The fit to the datas, which include_2d a list of every model visibilities, residual_map, chi-squareds, etc.
-        visibilities_index : int
-            The index of the datas in the datas-set of which the residual_map are plotted.
-        """
-
-        self.mat_plot_1d.plot_line(
-            y=np.real(self.fit.residual_map),
-            x=self.fit.masked_interferometer.interferometer.uv_distances / 10 ** 3.0,
-            plot_axis_type="scatter",
-        )
-
-    @abstract_plotters.for_figure
-    def figure_real_chi_squared_map_vs_uv_distances(
-        self,
-        label_yunits="V$_{R,data}$ - V$_{R,model}$",
-        label_xunits=r"UV$_{distance}$ (k$\lambda$)",
-    ):
-        """Plot the residual-map of a lens fit.
-
-        Set *autolens.datas.grid.mat_plot_1d.mat_plot_1d* for a description of all input parameters not described below.
-
-        Parameters
-        -----------
-        fit : datas.fitting.fitting.AbstractFitter
-            The fit to the datas, which include_2d a list of every model visibilities, residual_map, chi-squareds, etc.
-        visibilities_index : int
-            The index of the datas in the datas-set of which the residual_map are plotted.
-        """
-
-        self.mat_plot_1d.plot_line(
-            y=np.real(self.fit.residual_map),
-            x=self.fit.masked_interferometer.interferometer.uv_distances / 10 ** 3.0,
-            plot_axis_type="scatter",
-        )
-
-    @abstract_plotters.for_figure
-    def figure_imag_residual_map_vs_uv_distances(
-        self,
-        label_yunits="V$_{R,data}$ - V$_{R,model}$",
-        label_xunits=r"UV$_{distance}$ (k$\lambda$)",
-    ):
-        """Plot the residual-map of a lens fit.
-
-        Set *autolens.datas.grid.mat_plot_1d.mat_plot_1d* for a description of all input parameters not described below.
-
-        Parameters
-        -----------
-        fit : datas.fitting.fitting.AbstractFitter
-            The fit to the datas, which include_2d a list of every model visibilities, residual_map, chi-squareds, etc.
-        visibilities_index : int
-            The index of the datas in the datas-set of which the residual_map are plotted.
-        """
-
-        self.mat_plot_1d.plot_line(
-            y=np.imag(self.fit.residual_map),
-            x=self.fit.masked_interferometer.interferometer.uv_distances / 10 ** 3.0,
-            plot_axis_type="scatter",
-        )
-
-    @abstract_plotters.for_figure
-    def figure_imag_normalized_residual_map_vs_uv_distances(
-        self,
-        label_yunits="V$_{R,data}$ - V$_{R,model}$",
-        label_xunits=r"UV$_{distance}$ (k$\lambda$)",
-    ):
-        """Plot the residual-map of a lens fit.
-
-        Set *autolens.datas.grid.mat_plot_1d.mat_plot_1d* for a description of all input parameters not described below.
-
-        Parameters
-        -----------
-        fit : datas.fitting.fitting.AbstractFitter
-            The fit to the datas, which include_2d a list of every model visibilities, residual_map, chi-squareds, etc.
-        visibilities_index : int
-            The index of the datas in the datas-set of which the residual_map are plotted.
-        """
-
-        self.mat_plot_1d.plot_line(
-            y=np.imag(self.fit.residual_map),
-            x=self.fit.masked_interferometer.interferometer.uv_distances / 10 ** 3.0,
-            plot_axis_type="scatter",
-        )
-
-    @abstract_plotters.for_figure
-    def figure_imag_chi_squared_map_vs_uv_distances(
-        self,
-        label_yunits="V$_{R,data}$ - V$_{R,model}$",
-        label_xunits=r"UV$_{distance}$ (k$\lambda$)",
-    ):
-        """Plot the residual-map of a lens fit.
-
-        Set *autolens.datas.grid.mat_plot_1d.mat_plot_1d* for a description of all input parameters not described below.
-
-        Parameters
-        -----------
-        fit : datas.fitting.fitting.AbstractFitter
-            The fit to the datas, which include_2d a list of every model visibilities, residual_map, chi-squareds, etc.
-        visibilities_index : int
-            The index of the datas in the datas-set of which the residual_map are plotted.
-        """
-
-        self.mat_plot_1d.plot_line(
-            y=np.imag(self.fit.residual_map),
-            x=self.fit.masked_interferometer.interferometer.uv_distances / 10 ** 3.0,
-            plot_axis_type="scatter",
-        )
-
-    def figure_individuals(
-        self,
-        plot_visibilities=False,
-        plot_noise_map=False,
-        plot_signal_to_noise_map=False,
-        plot_model_visibilities=False,
-        plot_residual_map=False,
-        plot_normalized_residual_map=False,
-        plot_chi_squared_map=False,
+        visibilities=False,
+        noise_map=False,
+        signal_to_noise_map=False,
+        model_visibilities=False,
+        residual_map_real=False,
+        residual_map_imag=False,
+        normalized_residual_map_real=False,
+        normalized_residual_map_imag=False,
+        chi_squared_map_real=False,
+        chi_squared_map_imag=False,
     ):
         """Plot the model datas_ of an analysis, using the *Fitter* class object.
 
@@ -278,64 +61,180 @@ class AbstractFitInterferometerPlotter(abstract_plotters.AbstractPlotter):
             in the python interpreter window.
         """
 
-        if plot_visibilities:
-            self.figure_visibilities()
-        if plot_noise_map:
-            self.figure_noise_map()
-        if plot_signal_to_noise_map:
-            self.figure_signal_to_noise_map()
-        if plot_model_visibilities:
-            self.figure_model_visibilities()
+        if visibilities:
+            self.plot_grid(
+                grid=self.fit.visibilities.in_grid,
+                visuals_2d=self.visuals_2d,
+                auto_labels=mp.AutoLabels(
+                    title="Visibilities", filename="visibilities"
+                ),
+                color_array=np.real(self.fit.noise_map),
+            )
 
-        if plot_residual_map:
-            self.figure_real_residual_map_vs_uv_distances()
-            self.figure_imag_residual_map_vs_uv_distances()
+        if noise_map:
+            self.plot_grid(
+                grid=self.fit.visibilities.in_grid,
+                visuals_2d=self.visuals_2d,
+                auto_labels=mp.AutoLabels(title="Noise-Map", filename="noise_map"),
+                color_array=np.real(self.fit.noise_map),
+            )
 
-        if plot_normalized_residual_map:
-            self.figure_real_normalized_residual_map_vs_uv_distances()
-            self.figure_imag_normalized_residual_map_vs_uv_distances()
+        if signal_to_noise_map:
+            self.plot_grid(
+                grid=self.fit.visibilities.in_grid,
+                visuals_2d=self.visuals_2d,
+                auto_labels=mp.AutoLabels(
+                    title="Signal-To-Noise Map", filename="signal_to_noise_map"
+                ),
+                color_array=np.real(self.fit.signal_to_noise_map),
+            )
+        if model_visibilities:
+            self.plot_grid(
+                grid=self.fit.visibilities.in_grid,
+                visuals_2d=self.visuals_2d,
+                auto_labels=mp.AutoLabels(
+                    title="Model Visibilities", filename="model_visibilities"
+                ),
+                color_array=np.real(self.fit.model_data),
+            )
 
-        if plot_chi_squared_map:
-            self.figure_real_chi_squared_map_vs_uv_distances()
-            self.figure_imag_chi_squared_map_vs_uv_distances()
+        if residual_map_real:
+            self.plot_line(
+                y=np.real(self.fit.residual_map),
+                x=self.fit.masked_interferometer.interferometer.uv_distances
+                / 10 ** 3.0,
+                visuals_1d=self.visuals_1d,
+                auto_labels=mp.AutoLabels(
+                    title="Residual Map vs UV-Distance (real)",
+                    filename="real_residual_map_vs_uv_distances",
+                    ylabel="V$_{R,data}$ - V$_{R,model}$",
+                    xlabel=r"UV$_{distance}$ (k$\lambda$)",
+                ),
+                plot_axis_type="scatter",
+            )
+        if residual_map_imag:
+            self.plot_line(
+                y=np.imag(self.fit.residual_map),
+                x=self.fit.masked_interferometer.interferometer.uv_distances
+                / 10 ** 3.0,
+                visuals_1d=self.visuals_1d,
+                auto_labels=mp.AutoLabels(
+                    title="Residual Map vs UV-Distance (imag)",
+                    filename="imag_residual_map_vs_uv_distances",
+                    ylabel="V$_{R,data}$ - V$_{R,model}$",
+                    xlabel=r"UV$_{distance}$ (k$\lambda$)",
+                ),
+                plot_axis_type="scatter",
+            )
 
-    @abstract_plotters.for_subplot
+        if normalized_residual_map_real:
+
+            self.plot_line(
+                y=np.real(self.fit.residual_map),
+                x=self.fit.masked_interferometer.interferometer.uv_distances
+                / 10 ** 3.0,
+                visuals_1d=self.visuals_1d,
+                auto_labels=mp.AutoLabels(
+                    title="Normalized Residual Map vs UV-Distance (real)",
+                    filename="real_normalized_residual_map_vs_uv_distances",
+                    ylabel="V$_{R,data}$ - V$_{R,model}$",
+                    xlabel=r"UV$_{distance}$ (k$\lambda$)",
+                ),
+                plot_axis_type="scatter",
+            )
+        if normalized_residual_map_imag:
+            self.plot_line(
+                y=np.imag(self.fit.residual_map),
+                x=self.fit.masked_interferometer.interferometer.uv_distances
+                / 10 ** 3.0,
+                visuals_1d=self.visuals_1d,
+                auto_labels=mp.AutoLabels(
+                    title="Normalized Residual Map vs UV-Distance (imag)",
+                    filename="imag_normalized_residual_map_vs_uv_distances",
+                    ylabel="V$_{R,data}$ - V$_{R,model}$",
+                    xlabel=r"UV$_{distance}$ (k$\lambda$)",
+                ),
+                plot_axis_type="scatter",
+            )
+
+        if chi_squared_map_real:
+
+            self.plot_line(
+                y=np.real(self.fit.residual_map),
+                x=self.fit.masked_interferometer.interferometer.uv_distances
+                / 10 ** 3.0,
+                visuals_1d=self.visuals_1d,
+                auto_labels=mp.AutoLabels(
+                    title="Chi-Squared Map vs UV-Distance (real)",
+                    filename="real_chi_squared_map_vs_uv_distances",
+                    ylabel="V$_{R,data}$ - V$_{R,model}$",
+                    xlabel=r"UV$_{distance}$ (k$\lambda$)",
+                ),
+                plot_axis_type="scatter",
+            )
+        if chi_squared_map_imag:
+            self.plot_line(
+                y=np.imag(self.fit.residual_map),
+                x=self.fit.masked_interferometer.interferometer.uv_distances
+                / 10 ** 3.0,
+                visuals_1d=self.visuals_1d,
+                auto_labels=mp.AutoLabels(
+                    title="Chi-Squared Map vs UV-Distance (imag)",
+                    filename="imag_chi_squared_map_vs_uv_distances",
+                    ylabel="V$_{R,data}$ - V$_{R,model}$",
+                    xlabel=r"UV$_{distance}$ (k$\lambda$)",
+                ),
+                plot_axis_type="scatter",
+            )
+
+    def subplot(
+        self,
+        visibilities=False,
+        noise_map=False,
+        signal_to_noise_map=False,
+        model_visibilities=False,
+        residual_map_real=False,
+        residual_map_imag=False,
+        normalized_residual_map_real=False,
+        normalized_residual_map_imag=False,
+        chi_squared_map_real=False,
+        chi_squared_map_imag=False,
+        auto_filename="subplot_fit_interferometer",
+    ):
+
+        self._subplot_custom_plot(
+            visibilities=visibilities,
+            noise_map=noise_map,
+            signal_to_noise_map=signal_to_noise_map,
+            model_visibilities=model_visibilities,
+            residual_map_real=residual_map_real,
+            residual_map_imag=residual_map_imag,
+            normalized_residual_map_real=normalized_residual_map_real,
+            normalized_residual_map_imag=normalized_residual_map_imag,
+            chi_squared_map_real=chi_squared_map_real,
+            chi_squared_map_imag=chi_squared_map_imag,
+            auto_labels=mp.AutoLabels(filename=auto_filename),
+        )
+
     def subplot_fit_interferometer(self):
-
-        number_subplots = 6
-
-        self.open_subplot_figure(number_subplots=number_subplots)
-
-        self.setup_subplot(number_subplots=number_subplots, subplot_index=1)
-        self.figure_real_residual_map_vs_uv_distances()
-
-        self.setup_subplot(number_subplots=number_subplots, subplot_index=2)
-        self.figure_real_normalized_residual_map_vs_uv_distances()
-
-        self.setup_subplot(number_subplots=number_subplots, subplot_index=3)
-        self.figure_real_chi_squared_map_vs_uv_distances()
-
-        self.setup_subplot(number_subplots=number_subplots, subplot_index=4)
-        self.figure_imag_residual_map_vs_uv_distances()
-
-        self.setup_subplot(number_subplots=number_subplots, subplot_index=5)
-        self.figure_imag_normalized_residual_map_vs_uv_distances()
-
-        self.setup_subplot(number_subplots=number_subplots, subplot_index=6)
-        self.figure_imag_chi_squared_map_vs_uv_distances()
-
-        self.mat_plot_1d.output.subplot_to_figure()
-        self.mat_plot_1d.figure.close()
+        return self.subplot(
+            residual_map_real=True,
+            normalized_residual_map_real=True,
+            chi_squared_map_real=True,
+            residual_map_imag=True,
+            normalized_residual_map_imag=True,
+            chi_squared_map_imag=True,
+        )
 
 
 class FitInterferometerPlotter(AbstractFitInterferometerPlotter):
     def __init__(
         self,
         fit: f.FitInterferometer,
-        mat_plot_1d: mat_plot.MatPlot1D = mat_plot.MatPlot1D(),
+        mat_plot_1d: mp.MatPlot1D = mp.MatPlot1D(),
         visuals_1d: vis.Visuals1D = vis.Visuals1D(),
         include_1d: inc.Include1D = inc.Include1D(),
-        mat_plot_2d: mat_plot.MatPlot2D = mat_plot.MatPlot2D(),
+        mat_plot_2d: mp.MatPlot2D = mp.MatPlot2D(),
         visuals_2d: vis.Visuals2D = vis.Visuals2D(),
         include_2d: inc.Include2D = inc.Include2D(),
     ):
