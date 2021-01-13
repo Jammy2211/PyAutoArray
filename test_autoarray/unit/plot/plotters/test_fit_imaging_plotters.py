@@ -58,25 +58,40 @@ def test__fit_quantities_are_output(fit_imaging_7x7, plot_path, plot_patch):
         mat_plot_2d=aplt.MatPlot2D(output=aplt.Output(path=plot_path, format="png")),
     )
 
-    fit_imaging_plotter.figure_image()
+    fit_imaging_plotter.figures(
+        image=True,
+        noise_map=True,
+        signal_to_noise_map=True,
+        model_image=True,
+        residual_map=True,
+        normalized_residual_map=True,
+        chi_squared_map=True,
+    )
+
     assert path.join(plot_path, "image.png") in plot_patch.paths
-
-    fit_imaging_plotter.figure_noise_map()
     assert path.join(plot_path, "noise_map.png") in plot_patch.paths
-
-    fit_imaging_plotter.figure_signal_to_noise_map()
     assert path.join(plot_path, "signal_to_noise_map.png") in plot_patch.paths
-
-    fit_imaging_plotter.figure_model_image()
     assert path.join(plot_path, "model_image.png") in plot_patch.paths
-
-    fit_imaging_plotter.figure_residual_map()
     assert path.join(plot_path, "residual_map.png") in plot_patch.paths
-
-    fit_imaging_plotter.figure_normalized_residual_map()
     assert path.join(plot_path, "normalized_residual_map.png") in plot_patch.paths
+    assert path.join(plot_path, "chi_squared_map.png") in plot_patch.paths
 
-    fit_imaging_plotter.figure_chi_squared_map()
+    plot_patch.paths = []
+
+    fit_imaging_plotter.figures(
+        image=True,
+        noise_map=False,
+        signal_to_noise_map=False,
+        model_image=True,
+        chi_squared_map=True,
+    )
+
+    assert path.join(plot_path, "image.png") in plot_patch.paths
+    assert path.join(plot_path, "noise_map.png") not in plot_patch.paths
+    assert path.join(plot_path, "signal_to_noise_map.png") not in plot_patch.paths
+    assert path.join(plot_path, "model_image.png") in plot_patch.paths
+    assert path.join(plot_path, "residual_map.png") not in plot_patch.paths
+    assert path.join(plot_path, "normalized_residual_map.png") not in plot_patch.paths
     assert path.join(plot_path, "chi_squared_map.png") in plot_patch.paths
 
 
@@ -90,52 +105,7 @@ def test__fit_sub_plot(fit_imaging_7x7, plot_path, plot_patch):
 
     fit_imaging_plotter.subplot_fit_imaging()
 
-    print(plot_patch.paths)
-
     assert path.join(plot_path, "subplot_fit_imaging.png") in plot_patch.paths
-
-
-def test__fit_individuals__source_and_lens__depedent_on_input(
-    fit_imaging_7x7, plot_path, plot_patch
-):
-
-    fit_imaging_plotter = aplt.FitImagingPlotter(
-        fit=fit_imaging_7x7,
-        include_2d=aplt.Include2D(origin=True, mask=True, border=True),
-        mat_plot_2d=aplt.MatPlot2D(output=aplt.Output(path=plot_path, format="png")),
-    )
-
-    fit_imaging_plotter.figure_individuals(
-        plot_image=True,
-        plot_noise_map=False,
-        plot_signal_to_noise_map=False,
-        plot_model_image=True,
-        plot_chi_squared_map=True,
-    )
-
-    assert path.join(plot_path, "image.png") in plot_patch.paths
-    assert path.join(plot_path, "noise_map.png") not in plot_patch.paths
-    assert path.join(plot_path, "signal_to_noise_map.png") not in plot_patch.paths
-    assert path.join(plot_path, "model_image.png") in plot_patch.paths
-    assert path.join(plot_path, "residual_map.png") not in plot_patch.paths
-    assert path.join(plot_path, "normalized_residual_map.png") not in plot_patch.paths
-    assert path.join(plot_path, "chi_squared_map.png") in plot_patch.paths
-
-    fit_imaging_plotter.figure_individuals(
-        plot_image=True,
-        plot_noise_map=False,
-        plot_signal_to_noise_map=False,
-        plot_model_image=True,
-        plot_chi_squared_map=True,
-    )
-
-    assert path.join(plot_path, "image.png") in plot_patch.paths
-    assert path.join(plot_path, "noise_map.png") not in plot_patch.paths
-    assert path.join(plot_path, "signal_to_noise_map.png") not in plot_patch.paths
-    assert path.join(plot_path, "model_image.png") in plot_patch.paths
-    assert path.join(plot_path, "residual_map.png") not in plot_patch.paths
-    assert path.join(plot_path, "normalized_residual_map.png") not in plot_patch.paths
-    assert path.join(plot_path, "chi_squared_map.png") in plot_patch.paths
 
 
 def test__output_as_fits__correct_output_format(
@@ -148,7 +118,7 @@ def test__output_as_fits__correct_output_format(
         mat_plot_2d=aplt.MatPlot2D(output=aplt.Output(path=plot_path, format="png")),
     )
 
-    fit_imaging_plotter.figure_individuals(plot_image=True)
+    fit_imaging_plotter.figures(image=True)
 
     image_from_plot = aa.util.array.numpy_array_2d_from_fits(
         file_path=path.join(plot_path, "image.fits"), hdu=0

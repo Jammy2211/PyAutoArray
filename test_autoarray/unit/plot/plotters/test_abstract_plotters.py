@@ -1,42 +1,9 @@
 from os import path
 import matplotlib.pyplot as plt
-import autoarray as aa
 import autoarray.plot as aplt
 from autoarray.plot.plotters import abstract_plotters
 
 directory = path.dirname(path.realpath(__file__))
-
-
-class TestFromFunc:
-    def test__title_from_func__uses_func_name_if_title_is_none(self):
-        def toy_func():
-            pass
-
-        title_from_func = abstract_plotters.title_from_func(func=toy_func)
-
-        assert title_from_func == "Toy_func"
-
-        def figure_toy_func():
-            pass
-
-        title_from_func = abstract_plotters.title_from_func(func=figure_toy_func)
-
-        assert title_from_func == "Toy_func"
-
-    def test__filename_from_func__returns_function_name_if_no_filename(self):
-        def toy_func():
-            pass
-
-        filename_from_func = abstract_plotters.filename_from_func(func=toy_func)
-
-        assert filename_from_func == "toy_func"
-
-        def figure_toy_func():
-            pass
-
-        filename_from_func = abstract_plotters.filename_from_func(func=figure_toy_func)
-
-        assert filename_from_func == "toy_func"
 
 
 class TestAbstractPlotter:

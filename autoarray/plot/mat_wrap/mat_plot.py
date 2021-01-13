@@ -14,6 +14,15 @@ from autoarray.inversion import mappers
 import typing
 
 
+class AutoLabels:
+    def __init__(self, title=None, ylabel=None, xlabel=None, filename=None):
+
+        self.title = title
+        self.ylabel = ylabel
+        self.xlabel = xlabel
+        self.filename = filename
+
+
 class AbstractMatPlot:
     def __init__(
         self,
@@ -226,6 +235,8 @@ class MatPlot1D(AbstractMatPlot):
         self,
         y,
         x,
+        visuals_1d: vis.Visuals1D,
+        auto_labels: AutoLabels,
         label=None,
         plot_axis_type="semilogy",
         vertical_lines=None,
@@ -236,7 +247,7 @@ class MatPlot1D(AbstractMatPlot):
             return
 
         self.figure.open()
-        self.title.set()
+        self.title.set(auto_title=auto_labels.title)
 
         if x is None:
             x = np.arange(len(y))
@@ -259,7 +270,7 @@ class MatPlot1D(AbstractMatPlot):
         )
 
         if not self.for_subplot:
-            self.output.to_figure(structure=None)
+            self.output.to_figure(structure=None, auto_filename=auto_labels.filename)
             self.figure.close()
 
 
@@ -414,6 +425,7 @@ class MatPlot2D(AbstractMatPlot):
         self,
         array: arrays.Array,
         visuals_2d: vis.Visuals2D,
+        auto_labels: AutoLabels,
         extent_manual: np.ndarray = None,
         bypass: bool = False,
     ):
@@ -489,7 +501,7 @@ class MatPlot2D(AbstractMatPlot):
             array=array, min_value=extent[0], max_value=extent[1], units=self.units
         )
 
-        self.title.set()
+        self.title.set(auto_title=auto_labels.title)
         self.ylabel.set(units=self.units, include_brackets=True)
         self.xlabel.set(units=self.units, include_brackets=True)
 
@@ -499,10 +511,10 @@ class MatPlot2D(AbstractMatPlot):
         visuals_2d.plot_via_plotter(plotter=self)
 
         if not self.for_subplot and not bypass:
-            self.output.to_figure(structure=array)
+            self.output.to_figure(structure=array, auto_filename=auto_labels.filename)
             self.figure.close()
 
-    def plot_frame(self, frame, visuals_2d: vis.Visuals2D = vis.Visuals2D()):
+    def plot_frame(self, frame, visuals_2d: vis.Visuals2D, auto_labels: AutoLabels):
         """Plot an array of data_type as a figure.
 
         """
@@ -540,7 +552,7 @@ class MatPlot2D(AbstractMatPlot):
             array=frame, min_value=extent[0], max_value=extent[1], units=self.units
         )
 
-        self.title.set()
+        self.title.set(auto_title=auto_labels.title)
         self.ylabel.set(units=self.units, include_brackets=True)
         self.xlabel.set(units=self.units, include_brackets=True)
 
@@ -550,13 +562,14 @@ class MatPlot2D(AbstractMatPlot):
         visuals_2d.plot_via_plotter(plotter=self)
 
         if not self.for_subplot:
-            self.output.to_figure(structure=frame)
+            self.output.to_figure(structure=frame, auto_filename=auto_labels.filename)
             self.figure.close()
 
     def plot_grid(
         self,
         grid,
-        visuals_2d: vis.Visuals2D = vis.Visuals2D(),
+        visuals_2d: vis.Visuals2D,
+        auto_labels: AutoLabels,
         color_array=None,
         axis_limits=None,
         indexes=None,
@@ -590,7 +603,7 @@ class MatPlot2D(AbstractMatPlot):
             cb = self.colorbar.set()
             self.colorbar_tickparams.set(cb=cb)
 
-        self.title.set()
+        self.title.set(auto_title=auto_labels.title)
         self.ylabel.set(units=self.units, include_brackets=True)
         self.xlabel.set(units=self.units, include_brackets=True)
 
@@ -624,13 +637,14 @@ class MatPlot2D(AbstractMatPlot):
         visuals_2d.plot_via_plotter(plotter=self)
 
         if not self.for_subplot:
-            self.output.to_figure(structure=grid)
+            self.output.to_figure(structure=grid, auto_filename=auto_labels.filename)
             self.figure.close()
 
     def plot_mapper(
         self,
         mapper: typing.Union[mappers.MapperRectangular, mappers.MapperVoronoi],
-        visuals_2d: vis.Visuals2D = vis.Visuals2D(),
+        visuals_2d: vis.Visuals2D,
+        auto_labels: AutoLabels,
         source_pixelilzation_values=None,
         full_indexes=None,
         pixelization_indexes=None,
@@ -641,6 +655,7 @@ class MatPlot2D(AbstractMatPlot):
             self._plot_rectangular_mapper(
                 mapper=mapper,
                 visuals_2d=visuals_2d,
+                auto_labels=auto_labels,
                 source_pixelilzation_values=source_pixelilzation_values,
                 full_indexes=full_indexes,
                 pixelization_indexes=pixelization_indexes,
@@ -651,6 +666,7 @@ class MatPlot2D(AbstractMatPlot):
             self._plot_voronoi_mapper(
                 mapper=mapper,
                 visuals_2d=visuals_2d,
+                auto_labels=auto_labels,
                 source_pixelilzation_values=source_pixelilzation_values,
                 full_indexes=full_indexes,
                 pixelization_indexes=pixelization_indexes,
@@ -659,7 +675,8 @@ class MatPlot2D(AbstractMatPlot):
     def _plot_rectangular_mapper(
         self,
         mapper: mappers.MapperRectangular,
-        visuals_2d: vis.Visuals2D = vis.Visuals2D(),
+        visuals_2d: vis.Visuals2D,
+        auto_labels: AutoLabels,
         source_pixelilzation_values=None,
         full_indexes=None,
         pixelization_indexes=None,
@@ -669,7 +686,10 @@ class MatPlot2D(AbstractMatPlot):
 
         if source_pixelilzation_values is not None:
             self.plot_array(
-                array=source_pixelilzation_values, visuals_2d=visuals_2d, bypass=True
+                array=source_pixelilzation_values,
+                visuals_2d=visuals_2d,
+                auto_labels=auto_labels,
+                bypass=True,
             )
 
         self.set_axis_limits(
@@ -695,7 +715,7 @@ class MatPlot2D(AbstractMatPlot):
             extent=mapper.source_pixelization_grid.extent, shape_2d=mapper.shape_2d
         )
 
-        self.title.set()
+        self.title.set(auto_title=auto_labels.title)
         self.tickparams.set()
         self.ylabel.set(units=self.units, include_brackets=True)
         self.xlabel.set(units=self.units, include_brackets=True)
@@ -717,13 +737,14 @@ class MatPlot2D(AbstractMatPlot):
             )
 
         if not self.for_subplot:
-            self.output.to_figure(structure=None)
+            self.output.to_figure(structure=None, auto_filename=auto_labels.filename)
             self.figure.close()
 
     def _plot_voronoi_mapper(
         self,
         mapper: mappers.MapperVoronoi,
-        visuals_2d: vis.Visuals2D = vis.Visuals2D(),
+        visuals_2d: vis.Visuals2D,
+        auto_labels: AutoLabels,
         source_pixelilzation_values=None,
         full_indexes=None,
         pixelization_indexes=None,
@@ -759,7 +780,7 @@ class MatPlot2D(AbstractMatPlot):
             colorbar_tickparams=self.colorbar_tickparams,
         )
 
-        self.title.set()
+        self.title.set(auto_title=auto_labels.title)
         self.ylabel.set(units=self.units, include_brackets=True)
         self.xlabel.set(units=self.units, include_brackets=True)
 
@@ -780,5 +801,5 @@ class MatPlot2D(AbstractMatPlot):
             )
 
         if not self.for_subplot:
-            self.output.to_figure(structure=None)
+            self.output.to_figure(structure=None, auto_filename=auto_labels.filename)
             self.figure.close()

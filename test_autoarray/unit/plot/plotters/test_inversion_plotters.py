@@ -16,8 +16,12 @@ def make_plot_path_setup():
     )
 
 
-def test__individual_attributes_are_output_for_rectangular_inversion(
-    rectangular_inversion_7x7_3x3, grid_irregular_grouped_7x7, plot_path, plot_patch
+def test__individual_attributes_are_output_for_all_mappers(
+    rectangular_inversion_7x7_3x3,
+    voronoi_inversion_9_3x3,
+    grid_irregular_grouped_7x7,
+    plot_path,
+    plot_patch,
 ):
 
     inversion_plotter = aplt.InversionPlotter(
@@ -25,77 +29,78 @@ def test__individual_attributes_are_output_for_rectangular_inversion(
         mat_plot_2d=aplt.MatPlot2D(output=aplt.Output(path=plot_path, format="png")),
     )
 
-    inversion_plotter.figure_reconstructed_image()
+    inversion_plotter.figures(
+        reconstructed_image=True,
+        reconstruction=True,
+        errors=True,
+        residual_map=True,
+        normalized_residual_map=True,
+        chi_squared_map=True,
+        regularization_weights=True,
+        interpolated_reconstruction=True,
+        interpolated_errors=True,
+        full_indexes=[0],
+        pixelization_indexes=[1],
+    )
+
     assert path.join(plot_path, "reconstructed_image.png") in plot_patch.paths
-
-    inversion_plotter.figure_reconstruction(full_indexes=[0], pixelization_indexes=[1])
     assert path.join(plot_path, "reconstruction.png") in plot_patch.paths
-
-    inversion_plotter.figure_errors(full_indexes=[0], pixelization_indexes=[1])
     assert path.join(plot_path, "errors.png") in plot_patch.paths
-
-    inversion_plotter.figure_residual_map(full_indexes=[0], pixelization_indexes=[1])
     assert path.join(plot_path, "residual_map.png") in plot_patch.paths
-
-    inversion_plotter.figure_normalized_residual_map(
-        full_indexes=[0], pixelization_indexes=[1]
-    )
     assert path.join(plot_path, "normalized_residual_map.png") in plot_patch.paths
-
-    inversion_plotter.figure_chi_squared_map(full_indexes=[0], pixelization_indexes=[1])
     assert path.join(plot_path, "chi_squared_map.png") in plot_patch.paths
-
-    inversion_plotter.figure_regularization_weights(
-        full_indexes=[0], pixelization_indexes=[1]
-    )
     assert path.join(plot_path, "regularization_weights.png") in plot_patch.paths
-
-    inversion_plotter.figure_interpolated_reconstruction()
     assert path.join(plot_path, "interpolated_reconstruction.png") in plot_patch.paths
-
-    inversion_plotter.figure_interpolated_errors()
     assert path.join(plot_path, "interpolated_errors.png") in plot_patch.paths
 
-
-def test__individual_attributes_are_output_for_voronoi_inversion(
-    voronoi_inversion_9_3x3, grid_irregular_grouped_7x7, mask_7x7, plot_path, plot_patch
-):
+    plot_patch.paths = []
 
     inversion_plotter = aplt.InversionPlotter(
         inversion=voronoi_inversion_9_3x3,
         mat_plot_2d=aplt.MatPlot2D(output=aplt.Output(path=plot_path, format="png")),
     )
 
-    inversion_plotter.figure_reconstructed_image()
+    inversion_plotter.figures(
+        reconstructed_image=True,
+        reconstruction=True,
+        errors=True,
+        residual_map=True,
+        normalized_residual_map=True,
+        chi_squared_map=True,
+        regularization_weights=True,
+        interpolated_reconstruction=True,
+        interpolated_errors=True,
+        full_indexes=[0],
+        pixelization_indexes=[1],
+    )
+
     assert path.join(plot_path, "reconstructed_image.png") in plot_patch.paths
-
-    inversion_plotter.figure_reconstruction(full_indexes=[0], pixelization_indexes=[1])
     assert path.join(plot_path, "reconstruction.png") in plot_patch.paths
-
-    inversion_plotter.figure_errors(full_indexes=[0], pixelization_indexes=[1])
     assert path.join(plot_path, "errors.png") in plot_patch.paths
-
-    inversion_plotter.figure_residual_map(full_indexes=[0], pixelization_indexes=[1])
     assert path.join(plot_path, "residual_map.png") in plot_patch.paths
-
-    inversion_plotter.figure_normalized_residual_map(
-        full_indexes=[0], pixelization_indexes=[1]
-    )
     assert path.join(plot_path, "normalized_residual_map.png") in plot_patch.paths
-
-    inversion_plotter.figure_chi_squared_map(full_indexes=[0], pixelization_indexes=[1])
     assert path.join(plot_path, "chi_squared_map.png") in plot_patch.paths
-
-    inversion_plotter.figure_regularization_weights(
-        full_indexes=[0], pixelization_indexes=[1]
-    )
     assert path.join(plot_path, "regularization_weights.png") in plot_patch.paths
-
-    inversion_plotter.figure_interpolated_reconstruction()
     assert path.join(plot_path, "interpolated_reconstruction.png") in plot_patch.paths
-
-    inversion_plotter.figure_interpolated_errors()
     assert path.join(plot_path, "interpolated_errors.png") in plot_patch.paths
+
+    plot_patch.paths = []
+
+    inversion_plotter.figures(
+        reconstructed_image=True,
+        errors=True,
+        chi_squared_map=True,
+        interpolated_reconstruction=True,
+    )
+
+    assert path.join(plot_path, "reconstructed_image.png") in plot_patch.paths
+    assert path.join(plot_path, "reconstruction.png") not in plot_patch.paths
+    assert path.join(plot_path, "errors.png") in plot_patch.paths
+    assert path.join(plot_path, "residual_map.png") not in plot_patch.paths
+    assert path.join(plot_path, "normalized_residual_map.png") not in plot_patch.paths
+    assert path.join(plot_path, "chi_squared_map.png") in plot_patch.paths
+    assert path.join(plot_path, "interpolated_reconstruction.png") in plot_patch.paths
+    assert path.join(plot_path, "interpolated_errors.png") not in plot_patch.paths
 
 
 def test__inversion_subplot_is_output_for_all_inversions(
@@ -111,42 +116,5 @@ def test__inversion_subplot_is_output_for_all_inversions(
         mat_plot_2d=aplt.MatPlot2D(output=aplt.Output(path=plot_path, format="png")),
     )
 
-    inversion_plotter.subplot_inversion(
-        full_indexes=[[0, 1, 2], [3]], pixelization_indexes=[[1, 2], [0]]
-    )
+    inversion_plotter.subplot_inversion()
     assert path.join(plot_path, "subplot_inversion.png") in plot_patch.paths
-
-    inversion_plotter.subplot_inversion(
-        full_indexes=[[0, 1, 2], [3]], pixelization_indexes=[[1, 2], [0]]
-    )
-    assert path.join(plot_path, "subplot_inversion.png") in plot_patch.paths
-
-
-def test__inversion_individuals__output_dependent_on_input(
-    rectangular_inversion_7x7_3x3,
-    grid_irregular_grouped_7x7,
-    mask_7x7,
-    plot_path,
-    plot_patch,
-):
-
-    inversion_plotter = aplt.InversionPlotter(
-        inversion=rectangular_inversion_7x7_3x3,
-        mat_plot_2d=aplt.MatPlot2D(output=aplt.Output(path=plot_path, format="png")),
-    )
-
-    inversion_plotter.figure_individuals(
-        plot_reconstructed_image=True,
-        plot_errors=True,
-        plot_chi_squared_map=True,
-        plot_interpolated_reconstruction=True,
-    )
-
-    assert path.join(plot_path, "reconstructed_image.png") in plot_patch.paths
-    assert path.join(plot_path, "reconstruction.png") not in plot_patch.paths
-    assert path.join(plot_path, "errors.png") in plot_patch.paths
-    assert path.join(plot_path, "residual_map.png") not in plot_patch.paths
-    assert path.join(plot_path, "normalized_residual_map.png") not in plot_patch.paths
-    assert path.join(plot_path, "chi_squared_map.png") in plot_patch.paths
-    assert path.join(plot_path, "interpolated_reconstruction.png") in plot_patch.paths
-    assert path.join(plot_path, "interpolated_errors.png") not in plot_patch.paths

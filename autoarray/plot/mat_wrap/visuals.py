@@ -20,9 +20,9 @@ class AbstractVisuals(ABC):
         masked_array = al.Array.manual_mask(array=array, mask=mask)
         include_2d = Include2D(mask=True)
         array_plotter = aplt.ArrayPlotter(array=masked_array, include_2d=include_2d)
-        array_plotter.figure_array()
+        array_plotter.figure()
 
-        Because `mask=True` in `Include2D` the function `figure_array` extracts the `Mask2D` from the `masked_array`
+        Because `mask=True` in `Include2D` the function `figure` extracts the `Mask2D` from the `masked_array`
         and plots it. It does this by creating a new `Visuals2D` object.
 
         If the user did not manually input a `Visuals2d` object, the one created in `function_array` is the one used to
