@@ -128,13 +128,13 @@ class AbstractMatWrap:
         allows one to customize the matplotlib settings of every plot in a project.
         """
 
-        self.for_subplot = False
+        self.is_for_subplot = False
         self.kwargs = kwargs
 
     @property
     def config_dict(self):
 
-        if not self.for_subplot:
+        if not self.is_for_subplot:
 
             config_dict = conf.instance["visualize"][self.config_folder][
                 self.__class__.__name__

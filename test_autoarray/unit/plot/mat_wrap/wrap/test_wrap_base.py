@@ -41,13 +41,13 @@ class TestFigure:
         assert figure.config_dict["aspect"] == "auto"
 
         figure = aplt.Figure()
-        figure.for_subplot = True
+        figure.is_for_subplot = True
 
         assert figure.config_dict["figsize"] == None
         assert figure.config_dict["aspect"] == "square"
 
         figure = aplt.Figure(figsize=(6, 6))
-        figure.for_subplot = True
+        figure.is_for_subplot = True
 
         assert figure.config_dict["figsize"] == (6, 6)
         assert figure.config_dict["aspect"] == "square"
@@ -97,13 +97,13 @@ class TestCmap:
         assert cmap.config_dict["norm"] == "linear"
 
         cmap = aplt.Cmap()
-        cmap.for_subplot = True
+        cmap.is_for_subplot = True
 
         assert cmap.config_dict["cmap"] == "jet"
         assert cmap.config_dict["norm"] == "linear"
 
         cmap = aplt.Cmap(cmap="cold")
-        cmap.for_subplot = True
+        cmap.is_for_subplot = True
 
         assert cmap.config_dict["cmap"] == "cold"
         assert cmap.config_dict["norm"] == "linear"
@@ -187,12 +187,12 @@ class TestColorbar:
         assert colorbar.manual_tick_labels == (3.0, 4.0)
 
         colorbar = aplt.Colorbar()
-        colorbar.for_subplot = True
+        colorbar.is_for_subplot = True
 
         assert colorbar.config_dict["fraction"] == 5.0
 
         colorbar = aplt.Colorbar(fraction=6.0)
-        colorbar.for_subplot = True
+        colorbar.is_for_subplot = True
 
         assert colorbar.config_dict["fraction"] == 6.0
 
@@ -238,12 +238,12 @@ class TestColorbarTickParams:
         assert colorbar_tickparams.config_dict["labelsize"] == 20
 
         colorbar_tickparams = aplt.ColorbarTickParams()
-        colorbar_tickparams.for_subplot = True
+        colorbar_tickparams.is_for_subplot = True
 
         assert colorbar_tickparams.config_dict["labelsize"] == 1
 
         colorbar_tickparams = aplt.ColorbarTickParams(labelsize=10)
-        colorbar_tickparams.for_subplot = True
+        colorbar_tickparams.is_for_subplot = True
 
         assert colorbar_tickparams.config_dict["labelsize"] == 10
 
@@ -258,12 +258,12 @@ class TestTicksParams:
         assert tick_params.config_dict["labelsize"] == 24
 
         tick_params = aplt.TickParams()
-        tick_params.for_subplot = True
+        tick_params.is_for_subplot = True
 
         assert tick_params.config_dict["labelsize"] == 10
 
         tick_params = aplt.TickParams(labelsize=25)
-        tick_params.for_subplot = True
+        tick_params.is_for_subplot = True
 
         assert tick_params.config_dict["labelsize"] == 25
 
@@ -283,13 +283,13 @@ class TestYTicks:
         assert yticks.manual_values == [1.0, 2.0]
 
         yticks = aplt.YTicks()
-        yticks.for_subplot = True
+        yticks.is_for_subplot = True
 
         assert yticks.config_dict["fontsize"] == 10
         assert yticks.manual_values == None
 
         yticks = aplt.YTicks(fontsize=25, manual_values=[1.0, 2.0])
-        yticks.for_subplot = True
+        yticks.is_for_subplot = True
 
         assert yticks.config_dict["fontsize"] == 25
         assert yticks.manual_values == [1.0, 2.0]
@@ -339,13 +339,13 @@ class TestXTicks:
         assert xticks.manual_values == [1.0, 2.0]
 
         xticks = aplt.XTicks()
-        xticks.for_subplot = True
+        xticks.is_for_subplot = True
 
         assert xticks.config_dict["fontsize"] == 11
         assert xticks.manual_values == None
 
         xticks = aplt.XTicks(fontsize=25, manual_values=[1.0, 2.0])
-        xticks.for_subplot = True
+        xticks.is_for_subplot = True
 
         assert xticks.config_dict["fontsize"] == 25
         assert xticks.manual_values == [1.0, 2.0]
@@ -394,13 +394,13 @@ class TestTitle:
         assert title.config_dict["fontsize"] == 1
 
         title = aplt.Title()
-        title.for_subplot = True
+        title.is_for_subplot = True
 
         assert title.manual_label == None
         assert title.config_dict["fontsize"] == 15
 
         title = aplt.Title(label="OMG2", fontsize=2)
-        title.for_subplot = True
+        title.is_for_subplot = True
 
         assert title.manual_label == "OMG2"
         assert title.config_dict["fontsize"] == 2
@@ -418,12 +418,12 @@ class TestYLabel:
         assert ylabel.config_dict["fontsize"] == 11
 
         ylabel = aplt.YLabel()
-        ylabel.for_subplot = True
+        ylabel.is_for_subplot = True
 
         assert ylabel.config_dict["fontsize"] == 2
 
         ylabel = aplt.YLabel(fontsize=12)
-        ylabel.for_subplot = True
+        ylabel.is_for_subplot = True
 
         assert ylabel.config_dict["fontsize"] == 12
 
@@ -439,12 +439,12 @@ class TestXLabel:
         assert xlabel.config_dict["fontsize"] == 11
 
         xlabel = aplt.XLabel()
-        xlabel.for_subplot = True
+        xlabel.is_for_subplot = True
 
         assert xlabel.config_dict["fontsize"] == 4
 
         xlabel = aplt.XLabel(fontsize=12)
-        xlabel.for_subplot = True
+        xlabel.is_for_subplot = True
 
         assert xlabel.config_dict["fontsize"] == 12
 
@@ -463,13 +463,13 @@ class TestLegend:
         assert legend.config_dict["fontsize"] == 11
 
         legend = aplt.Legend()
-        legend.for_subplot = True
+        legend.is_for_subplot = True
 
         assert legend.include == False
         assert legend.config_dict["fontsize"] == 13
 
         legend = aplt.Legend(include=True, fontsize=14)
-        legend.for_subplot = True
+        legend.is_for_subplot = True
 
         assert legend.include == True
         assert legend.config_dict["fontsize"] == 14

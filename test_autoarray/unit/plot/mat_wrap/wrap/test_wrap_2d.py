@@ -22,12 +22,12 @@ class TestArrayOverlay:
         assert array_overlay.config_dict["alpha"] == 0.6
 
         array_overlay = aplt.ArrayOverlay()
-        array_overlay.for_subplot = True
+        array_overlay.is_for_subplot = True
 
         assert array_overlay.config_dict["alpha"] == 0.7
 
         array_overlay = aplt.ArrayOverlay(alpha=0.8)
-        array_overlay.for_subplot = True
+        array_overlay.is_for_subplot = True
 
         assert array_overlay.config_dict["alpha"] == 0.8
 
@@ -56,13 +56,13 @@ class TestGridScatter:
         assert grid_scatter.config_dict["c"] == "y"
 
         grid_scatter = aplt.GridScatter()
-        grid_scatter.for_subplot = True
+        grid_scatter.is_for_subplot = True
 
         assert grid_scatter.config_dict["marker"] == "."
         assert grid_scatter.config_dict["c"] == "r"
 
         grid_scatter = aplt.GridScatter(c=["r", "b"])
-        grid_scatter.for_subplot = True
+        grid_scatter.is_for_subplot = True
 
         assert grid_scatter.config_dict["marker"] == "."
         assert grid_scatter.config_dict["c"] == ["r", "b"]
@@ -165,13 +165,13 @@ class TestGridPlot:
         assert grid_plot.config_dict["c"] == ["k", "b"]
 
         grid_plot = aplt.GridPlot()
-        grid_plot.for_subplot = True
+        grid_plot.is_for_subplot = True
 
         assert grid_plot.config_dict["linewidth"] == 1
         assert grid_plot.config_dict["c"] == "k"
 
         grid_plot = aplt.GridPlot(style=".")
-        grid_plot.for_subplot = True
+        grid_plot.is_for_subplot = True
 
         assert grid_plot.config_dict["linewidth"] == 1
         assert grid_plot.config_dict["c"] == "k"
@@ -211,12 +211,12 @@ class TestVectorFieldQuiver:
         assert vector_field_quiver.config_dict["headlength"] == 1
 
         vector_field_quiver = aplt.VectorFieldQuiver()
-        vector_field_quiver.for_subplot = True
+        vector_field_quiver.is_for_subplot = True
 
         assert vector_field_quiver.config_dict["headlength"] == 0.1
 
         vector_field_quiver = aplt.VectorFieldQuiver(headlength=12)
-        vector_field_quiver.for_subplot = True
+        vector_field_quiver.is_for_subplot = True
 
         assert vector_field_quiver.config_dict["headlength"] == 12
 
@@ -253,13 +253,13 @@ class TestPatcher:
         assert patch_overlay.config_dict["edgecolor"] == "g"
 
         patch_overlay = aplt.PatchOverlay()
-        patch_overlay.for_subplot = True
+        patch_overlay.is_for_subplot = True
 
         assert patch_overlay.config_dict["facecolor"] == None
         assert patch_overlay.config_dict["edgecolor"] == "y"
 
         patch_overlay = aplt.PatchOverlay(facecolor="b", edgecolor="p")
-        patch_overlay.for_subplot = True
+        patch_overlay.is_for_subplot = True
 
         assert patch_overlay.config_dict["facecolor"] == "b"
         assert patch_overlay.config_dict["edgecolor"] == "p"
@@ -288,13 +288,13 @@ class TestVoronoiDrawer:
         assert voronoi_drawer.config_dict["edgecolor"] == "k"
 
         voronoi_drawer = aplt.VoronoiDrawer()
-        voronoi_drawer.for_subplot = True
+        voronoi_drawer.is_for_subplot = True
 
         assert voronoi_drawer.config_dict["linewidth"] == 1.0
         assert voronoi_drawer.config_dict["edgecolor"] == "r"
 
         voronoi_drawer = aplt.VoronoiDrawer(edgecolor="b")
-        voronoi_drawer.for_subplot = True
+        voronoi_drawer.is_for_subplot = True
 
         assert voronoi_drawer.config_dict["linewidth"] == 1.0
         assert voronoi_drawer.config_dict["edgecolor"] == "b"

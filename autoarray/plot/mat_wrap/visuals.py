@@ -101,6 +101,8 @@ class Visuals2D(AbstractVisuals):
         parallel_overscan=None,
         serial_prescan=None,
         serial_overscan=None,
+        indexes=None,
+        pixelization_indexes=None,
     ):
 
         self.origin = origin
@@ -116,8 +118,10 @@ class Visuals2D(AbstractVisuals):
         self.parallel_overscan = parallel_overscan
         self.serial_prescan = serial_prescan
         self.serial_overscan = serial_overscan
+        self.indexes = indexes
+        self.pixelization_indexes = pixelization_indexes
 
-    def plot_via_plotter(self, plotter):
+    def plot_via_plotter(self, plotter, grid_indexes=None, mapper=None):
 
         if self.origin is not None:
             plotter.origin_scatter.scatter_grid(grid=self.origin)
@@ -149,3 +153,17 @@ class Visuals2D(AbstractVisuals):
 
         if self.lines is not None:
             plotter.grid_plot.plot_grid_grouped(grid_grouped=self.lines)
+
+        if self.indexes is not None:
+            plotter.index_scatter.scatter_grid_indexes(
+                grid=grid_indexes, indexes=self.indexes
+            )
+
+        if self.pixelization_indexes is not None and mapper is not None:
+            indexes = mapper.full_indexes_from_pixelization_indexes(
+                pixelization_indexes=self.pixelization_indexes
+            )
+
+            plotter.index_scatter.scatter_grid_indexes(
+                grid=mapper.source_full_grid, indexes=indexes
+            )

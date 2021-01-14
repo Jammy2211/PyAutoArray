@@ -53,43 +53,54 @@ class AbstractImagingPlotter(abstract_plotters.AbstractPlotter):
         """
 
         if image:
-            self.plot_array(
+
+            self.mat_plot_2d.plot_array(
                 array=self.imaging.image,
                 visuals_2d=self.visuals_with_include_2d,
                 auto_labels=mp.AutoLabels(title="Image", filename="image"),
             )
+
         if noise_map:
-            self.plot_array(
+
+            self.mat_plot_2d.plot_array(
                 array=self.imaging.noise_map,
                 visuals_2d=self.visuals_with_include_2d,
                 auto_labels=mp.AutoLabels("Noise-Map", filename="noise_map"),
             )
+
         if psf:
-            self.plot_array(
+
+            self.mat_plot_2d.plot_array(
                 array=self.imaging.psf,
                 visuals_2d=self.visuals_with_include_2d,
                 auto_labels=mp.AutoLabels(
                     title="Point Spread Function", filename="psf"
                 ),
             )
+
         if inverse_noise_map:
-            self.plot_array(
+
+            self.mat_plot_2d.plot_array(
                 array=self.imaging.inverse_noise_map,
                 visuals_2d=self.visuals_with_include_2d,
                 auto_labels=mp.AutoLabels(
                     title="Inverse Noise-Map", filename="inverse_noise_map"
                 ),
             )
+
         if signal_to_noise_map:
-            self.plot_array(
+
+            self.mat_plot_2d.plot_array(
                 array=self.imaging.signal_to_noise_map,
                 visuals_2d=self.visuals_with_include_2d,
                 auto_labels=mp.AutoLabels(
                     title="Signal-To-Noise Map", filename="signal_to_noise_map"
                 ),
             )
+
         if absolute_signal_to_noise_map:
-            self.plot_array(
+
+            self.mat_plot_2d.plot_array(
                 array=self.imaging.absolute_signal_to_noise_map,
                 visuals_2d=self.visuals_with_include_2d,
                 auto_labels=mp.AutoLabels(
@@ -97,8 +108,10 @@ class AbstractImagingPlotter(abstract_plotters.AbstractPlotter):
                     filename="absolute_signal_to_noise_map",
                 ),
             )
+
         if potential_chi_squared_map:
-            self.plot_array(
+
+            self.mat_plot_2d.plot_array(
                 array=self.imaging.potential_chi_squared_map,
                 visuals_2d=self.visuals_with_include_2d,
                 auto_labels=mp.AutoLabels(

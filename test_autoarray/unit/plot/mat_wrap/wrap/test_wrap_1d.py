@@ -19,13 +19,13 @@ class TestLinePlot:
         assert line_plot.config_dict["c"] == ["k", "b"]
 
         line_plot = aplt.LinePlot()
-        line_plot.for_subplot = True
+        line_plot.is_for_subplot = True
 
         assert line_plot.config_dict["linewidth"] == 1
         assert line_plot.config_dict["c"] == "k"
 
         line_plot = aplt.LinePlot(linestyle=".")
-        line_plot.for_subplot = True
+        line_plot.is_for_subplot = True
 
         assert line_plot.config_dict["linewidth"] == 1
         assert line_plot.config_dict["c"] == "k"

@@ -88,10 +88,10 @@ class TestAbstractPlotter:
         assert plotter.mat_plot_2d.cmap.config_dict["norm"] == "linear"
 
         figure = aplt.Figure()
-        figure.for_subplot = True
+        figure.is_for_subplot = True
 
         cmap = aplt.Cmap()
-        cmap.for_subplot = True
+        cmap.is_for_subplot = True
 
         mat_plot_2d = aplt.MatPlot2D(figure=figure, cmap=cmap)
 
