@@ -831,7 +831,7 @@ class Output:
             elif self.format == "fits":
                 if structure is not None:
                     structure.output_to_fits(
-                        file_path=path.join(self.path, f"{self.filename}.fits"),
+                        file_path=path.join(self.path, f"{filename}.fits"),
                         overwrite=True,
                     )
 

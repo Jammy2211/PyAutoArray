@@ -109,6 +109,9 @@ class AbstractMatPlot:
         self.legend = legend
         self.output = output
 
+        self.number_subplots = None
+        self.subplot_index = None
+
     def set_for_subplot(self, is_for_subplot: bool):
         """
         Sets the `is_for_subplot` attribute for every `MatWrap` object in this `MatPlot` object by updating
@@ -412,6 +415,48 @@ class MatPlot2D(AbstractMatPlot):
 
         self.is_for_subplot = False
 
+    def get_subplot_rows_columns(self, number_subplots):
+        """Get the size of a sub plotter in (total_y_pixels, total_x_pixels), based on the number of subplots that are going to be plotted.
+
+        Parameters
+        -----------
+        number_subplots : int
+            The number of subplots that are to be plotted in the figure.
+        """
+        if number_subplots <= 2:
+            return 1, 2
+        elif number_subplots <= 4:
+            return 2, 2
+        elif number_subplots <= 6:
+            return 2, 3
+        elif number_subplots <= 9:
+            return 3, 3
+        elif number_subplots <= 12:
+            return 3, 4
+        elif number_subplots <= 16:
+            return 4, 4
+        elif number_subplots <= 20:
+            return 4, 5
+        else:
+            return 6, 6
+
+    def setup_subplot(self, aspect=None, subplot_rows_columns=None):
+
+        if subplot_rows_columns is None:
+            rows, columns = self.get_subplot_rows_columns(
+                number_subplots=self.number_subplots
+            )
+        else:
+            rows = subplot_rows_columns[0]
+            columns = subplot_rows_columns[1]
+
+        if aspect is None:
+            plt.subplot(rows, columns, self.subplot_index)
+        else:
+            plt.subplot(rows, columns, self.subplot_index, aspect=float(aspect))
+
+        self.subplot_index += 1
+
     def plot_array(
         self,
         array: arrays.Array,
@@ -459,7 +504,12 @@ class MatPlot2D(AbstractMatPlot):
 
             extent_imshow = array.extent
 
-        self.figure.open()
+        if not self.is_for_subplot:
+            self.figure.open()
+        else:
+            if not bypass:
+                self.setup_subplot()
+
         aspect = self.figure.aspect_from_shape_2d(shape_2d=array.shape_2d)
         norm_scale = self.cmap.norm_from_array(array=array)
 
@@ -479,7 +529,10 @@ class MatPlot2D(AbstractMatPlot):
         extent_axis = self.axis.config_dict.get("extent")
         extent_axis = extent_axis if extent_axis is not None else extent_imshow
 
+        self.axis.set(extent=extent_axis)
+
         self.tickparams.set()
+
         self.yticks.set(
             array=array,
             min_value=extent_axis[2],
@@ -522,7 +575,11 @@ class MatPlot2D(AbstractMatPlot):
                 "a pixel scales attribute."
             )
 
-        self.figure.open()
+        if not self.is_for_subplot:
+            self.figure.open()
+        else:
+            self.setup_subplot()
+
         aspect = self.figure.aspect_from_shape_2d(shape_2d=frame.shape_2d)
         norm_scale = self.cmap.norm_from_array(array=frame)
 
@@ -542,6 +599,7 @@ class MatPlot2D(AbstractMatPlot):
         self.axis.set(extent=extent_axis)
 
         self.tickparams.set()
+
         self.yticks.set(
             array=frame,
             min_value=extent_axis[2],
@@ -582,7 +640,10 @@ class MatPlot2D(AbstractMatPlot):
             different planes).
         """
 
-        self.figure.open()
+        if not self.is_for_subplot:
+            self.figure.open()
+        else:
+            self.setup_subplot()
 
         if color_array is None:
 
@@ -662,7 +723,15 @@ class MatPlot2D(AbstractMatPlot):
         source_pixelilzation_values=None,
     ):
 
-        self.figure.open()
+        if not self.is_for_subplot:
+            self.figure.open()
+        else:
+
+            aspect_inv = self.figure.aspect_for_subplot_from_grid(
+                grid=mapper.source_full_grid
+            )
+
+            self.setup_subplot(aspect=aspect_inv)
 
         if source_pixelilzation_values is not None:
             self.plot_array(
@@ -719,7 +788,15 @@ class MatPlot2D(AbstractMatPlot):
         source_pixelilzation_values=None,
     ):
 
-        self.figure.open()
+        if not self.is_for_subplot:
+            self.figure.open()
+        else:
+
+            aspect_inv = self.figure.aspect_for_subplot_from_grid(
+                grid=mapper.source_full_grid
+            )
+
+            self.setup_subplot(aspect=aspect_inv)
 
         extent_axis = self.axis.config_dict.get("extent")
         extent_axis = (
