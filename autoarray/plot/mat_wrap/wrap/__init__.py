@@ -1,6 +1,7 @@
 from .wrap_base import (
     Units,
     Figure,
+    Axis,
     Cmap,
     Colorbar,
     ColorbarTickParams,

@@ -56,13 +56,12 @@ class ArrayPlotter(abstract_plotters.AbstractPlotter):
             ),
         )
 
-    def figure(self, extent_manual=None):
+    def figure(self):
 
         self.mat_plot_2d.plot_array(
             array=self.array,
             visuals_2d=self.visuals_with_include_2d,
             auto_labels=mp.AutoLabels(title="Array", filename="array"),
-            extent_manual=extent_manual,
         )
 
 
@@ -181,15 +180,13 @@ class GridPlotter(abstract_plotters.AbstractPlotter):
             )
         )
 
-    def figure(self, color_array=None, axis_limits=None, symmetric_around_centre=True):
+    def figure(self, color_array=None):
 
         self.mat_plot_2d.plot_grid(
             grid=self.grid,
             visuals_2d=self.visuals_with_include_2d,
             auto_labels=mp.AutoLabels(title="Grid", filename="grid"),
             color_array=color_array,
-            axis_limits=axis_limits,
-            symmetric_around_centre=symmetric_around_centre,
         )
 
 
@@ -314,7 +311,6 @@ class MapperPlotter(abstract_plotters.AbstractPlotter):
             array=image,
             visuals_2d=self.visuals_data_with_include_2d,
             auto_labels=mp.AutoLabels(title="Image"),
-            mapper=self.mapper,
         )
 
         if self.visuals_2d.pixelization_indexes is not None:

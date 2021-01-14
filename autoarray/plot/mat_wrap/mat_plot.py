@@ -28,6 +28,7 @@ class AbstractMatPlot:
         self,
         units: wrap.Units = wrap.Units(),
         figure: wrap.Figure = wrap.Figure(),
+        axis: wrap.Axis = wrap.Axis(),
         cmap: wrap.Cmap = wrap.Cmap(),
         colorbar: wrap.Colorbar = wrap.Colorbar(),
         colorbar_tickparams: wrap.ColorbarTickParams = wrap.ColorbarTickParams(),
@@ -63,6 +64,8 @@ class AbstractMatPlot:
         figure : mat_wrap.Figure
             Opens the matplotlib figure before plotting via `plt.figure` and closes it once plotting is complete
             via `plt.close`
+        axis : mat_wrap.Axis
+            Sets the extent of the figure axis via `plt.axis` and allows for a manual axis range.
         cmap : mat_wrap.Cmap
             Customizes the colormap of the plot and its normalization via matplotlib `colors` objects such 
             as `colors.Normalize` and `colors.LogNorm`.
@@ -93,6 +96,7 @@ class AbstractMatPlot:
 
         self.units = units
         self.figure = figure
+        self.axis = axis
         self.cmap = cmap
         self.colorbar = colorbar
         self.colorbar_tickparams = colorbar_tickparams
@@ -104,27 +108,6 @@ class AbstractMatPlot:
         self.xlabel = xlabel
         self.legend = legend
         self.output = output
-
-    def set_axis_limits(self, axis_limits, grid, symmetric_around_centre):
-        """
-        Set the axis limits of the figure the grid is plotted on.
-
-        Parameters
-        -----------
-        axis_limits : []
-            The axis limits of the figure on which the grid is plotted, following [xmin, xmax, ymin, ymax].
-        """
-        if axis_limits is not None:
-            plt.axis(axis_limits)
-        elif symmetric_around_centre:
-            ymin = np.min(grid[:, 0])
-            ymax = np.max(grid[:, 0])
-            xmin = np.min(grid[:, 1])
-            xmax = np.max(grid[:, 1])
-            x = np.max([np.abs(xmin), np.abs(xmax)])
-            y = np.max([np.abs(ymin), np.abs(ymax)])
-            axis_limits = [-x, x, -y, y]
-            plt.axis(axis_limits)
 
     def set_for_subplot(self, is_for_subplot: bool):
         """
@@ -152,6 +135,7 @@ class MatPlot1D(AbstractMatPlot):
         self,
         units: wrap.Units = wrap.Units(),
         figure: wrap.Figure = wrap.Figure(),
+        axis: wrap.Axis = wrap.Axis(),
         cmap: wrap.Cmap = wrap.Cmap(),
         colorbar: wrap.Colorbar = wrap.Colorbar(),
         colorbar_tickparams: wrap.ColorbarTickParams = wrap.ColorbarTickParams(),
@@ -182,7 +166,9 @@ class MatPlot1D(AbstractMatPlot):
             The units of the figure used to plot the data structure which sets the y and x ticks and labels.
         figure : mat_wrap.Figure
             Opens the matplotlib figure before plotting via `plt.figure` and closes it once plotting is complete
-            via `plt.close`
+            via `plt.close`.
+        axis : mat_wrap.Axis
+            Sets the extent of the figure axis via `plt.axis` and allows for a manual axis range.
         cmap : mat_wrap.Cmap
             Customizes the colormap of the plot and its normalization via matplotlib `colors` objects such 
             as `colors.Normalize` and `colors.LogNorm`.
@@ -214,6 +200,7 @@ class MatPlot1D(AbstractMatPlot):
         super().__init__(
             units=units,
             figure=figure,
+            axis=axis,
             cmap=cmap,
             colorbar=colorbar,
             colorbar_tickparams=colorbar_tickparams,
@@ -279,6 +266,7 @@ class MatPlot2D(AbstractMatPlot):
         self,
         units: wrap.Units = wrap.Units(),
         figure: wrap.Figure = wrap.Figure(),
+        axis: wrap.Axis = wrap.Axis(),
         cmap: wrap.Cmap = wrap.Cmap(),
         colorbar: wrap.Colorbar = wrap.Colorbar(),
         colorbar_tickparams: wrap.ColorbarTickParams = wrap.ColorbarTickParams(),
@@ -328,7 +316,9 @@ class MatPlot2D(AbstractMatPlot):
             The units of the figure used to plot the data structure which sets the y and x ticks and labels.
         figure : mat_wrap.Figure
             Opens the matplotlib figure before plotting via `plt.figure` and closes it once plotting is complete
-            via `plt.close`
+            via `plt.close`.
+        axis : mat_wrap.Axis
+            Sets the extent of the figure axis via `plt.axis` and allows for a manual axis range.
         cmap : mat_wrap.Cmap
             Customizes the colormap of the plot and its normalization via matplotlib `colors` objects such 
             as `colors.Normalize` and `colors.LogNorm`.
@@ -390,6 +380,7 @@ class MatPlot2D(AbstractMatPlot):
         super().__init__(
             units=units,
             figure=figure,
+            axis=axis,
             cmap=cmap,
             colorbar=colorbar,
             colorbar_tickparams=colorbar_tickparams,
@@ -426,8 +417,6 @@ class MatPlot2D(AbstractMatPlot):
         array: arrays.Array,
         visuals_2d: vis.Visuals2D,
         auto_labels: AutoLabels,
-        extent_manual: np.ndarray = None,
-        mapper=None,
         bypass: bool = False,
     ):
         """
@@ -441,8 +430,6 @@ class MatPlot2D(AbstractMatPlot):
             The 2D array of data_type which is plotted.
         visuals_2d : vis.Visuals2D
             Contains all the visuals that are plotted over the `Array` (e.g. the origin, mask, grids, etc.).
-        extent_manual : np.ndarray
-            Manually specify the extent of the figure yticks and xticks using the format [xmin, xmax, ymin, ymax].
         bypass : bool
             If `True`, `plt.close` is omitted and the matplotlib figure remains open. This is used when making subplots.
         """
@@ -465,12 +452,12 @@ class MatPlot2D(AbstractMatPlot):
 
         if array.zoom_for_plot:
 
-            extent = array.extent_of_zoomed_array(buffer=buffer)
+            extent_imshow = array.extent_of_zoomed_array(buffer=buffer)
             array = array.zoomed_around_mask(buffer=buffer)
 
         else:
 
-            extent = array.extent
+            extent_imshow = array.extent
 
         self.figure.open()
         aspect = self.figure.aspect_from_shape_2d(shape_2d=array.shape_2d)
@@ -481,25 +468,29 @@ class MatPlot2D(AbstractMatPlot):
             aspect=aspect,
             cmap=self.cmap.config_dict["cmap"],
             norm=norm_scale,
-            extent=extent,
+            extent=extent_imshow,
         )
-
-        if extent_manual is not None:
-            extent = extent_manual
 
         if visuals_2d.array_overlay is not None:
             self.array_overlay.overlay_array(
                 array=visuals_2d.array_overlay, figure=self.figure
             )
 
-        plt.axis(extent)
+        extent_axis = self.axis.config_dict.get("extent")
+        extent_axis = extent_axis if extent_axis is not None else extent_imshow
 
         self.tickparams.set()
         self.yticks.set(
-            array=array, min_value=extent[2], max_value=extent[3], units=self.units
+            array=array,
+            min_value=extent_axis[2],
+            max_value=extent_axis[3],
+            units=self.units,
         )
         self.xticks.set(
-            array=array, min_value=extent[0], max_value=extent[1], units=self.units
+            array=array,
+            min_value=extent_axis[0],
+            max_value=extent_axis[1],
+            units=self.units,
         )
 
         self.title.set(auto_title=auto_labels.title)
@@ -535,24 +526,33 @@ class MatPlot2D(AbstractMatPlot):
         aspect = self.figure.aspect_from_shape_2d(shape_2d=frame.shape_2d)
         norm_scale = self.cmap.norm_from_array(array=frame)
 
+        extent_imshow = frame.mask.geometry.extent
+
         plt.imshow(
             X=frame,
             aspect=aspect,
             cmap=self.cmap.config_dict["cmap"],
             norm=norm_scale,
-            extent=frame.mask.geometry.extent,
+            extent=extent_imshow,
         )
 
-        plt.axis(frame.mask.geometry.extent)
+        extent_axis = self.axis.config_dict.get("extent")
+        extent_axis = extent_axis if extent_axis is not None else extent_imshow
 
-        extent = frame.mask.geometry.extent
+        self.axis.set(extent=extent_axis)
 
         self.tickparams.set()
         self.yticks.set(
-            array=frame, min_value=extent[2], max_value=extent[3], units=self.units
+            array=frame,
+            min_value=extent_axis[2],
+            max_value=extent_axis[3],
+            units=self.units,
         )
         self.xticks.set(
-            array=frame, min_value=extent[0], max_value=extent[1], units=self.units
+            array=frame,
+            min_value=extent_axis[0],
+            max_value=extent_axis[1],
+            units=self.units,
         )
 
         self.title.set(auto_title=auto_labels.title)
@@ -569,13 +569,7 @@ class MatPlot2D(AbstractMatPlot):
             self.figure.close()
 
     def plot_grid(
-        self,
-        grid,
-        visuals_2d: vis.Visuals2D,
-        auto_labels: AutoLabels,
-        color_array=None,
-        axis_limits=None,
-        symmetric_around_centre=True,
+        self, grid, visuals_2d: vis.Visuals2D, auto_labels: AutoLabels, color_array=None
     ):
         """Plot a grid of (y,x) Cartesian coordinates as a scatter plotter of points.
 
@@ -583,8 +577,6 @@ class MatPlot2D(AbstractMatPlot):
         -----------
         grid : Grid
             The (y,x) coordinates of the grid, in an array of shape (total_coordinates, 2).
-        axis_limits : []
-            The axis limits of the figure on which the grid is plotted, following [xmin, xmax, ymin, ymax].
         indexes : []
             A set of points that are plotted in a different colour for emphasis (e.g. to show the mappings between \
             different planes).
@@ -609,30 +601,24 @@ class MatPlot2D(AbstractMatPlot):
         self.ylabel.set(units=self.units, include_brackets=True)
         self.xlabel.set(units=self.units, include_brackets=True)
 
-        if axis_limits is not None:
+        extent_axis = self.axis.config_dict.get("extent")
+        extent_axis = extent_axis if extent_axis is not None else grid.extent
 
-            self.set_axis_limits(
-                axis_limits=axis_limits,
-                grid=grid,
-                symmetric_around_centre=symmetric_around_centre,
-            )
-
-        else:
-
-            plt.axis(grid.extent)
+        self.axis.set(extent=extent_axis, grid=grid)
 
         self.tickparams.set()
-        if not symmetric_around_centre:
+
+        if not self.axis.symmetric_around_centre:
             self.yticks.set(
                 array=None,
-                min_value=grid.extent[2],
-                max_value=grid.extent[3],
+                min_value=extent_axis[2],
+                max_value=extent_axis[3],
                 units=self.units,
             )
             self.xticks.set(
                 array=None,
-                min_value=grid.extent[0],
-                max_value=grid.extent[1],
+                min_value=extent_axis[0],
+                max_value=extent_axis[1],
                 units=self.units,
             )
 
@@ -686,22 +672,25 @@ class MatPlot2D(AbstractMatPlot):
                 bypass=True,
             )
 
-        self.set_axis_limits(
-            axis_limits=mapper.source_pixelization_grid.extent,
-            grid=None,
-            symmetric_around_centre=False,
+        extent_axis = self.axis.config_dict.get("extent")
+        extent_axis = (
+            extent_axis
+            if extent_axis is not None
+            else mapper.source_pixelization_grid.extent
         )
+
+        self.axis.set(extent=extent_axis, grid=mapper.source_pixelization_grid)
 
         self.yticks.set(
             array=None,
-            min_value=mapper.source_pixelization_grid.extent[2],
-            max_value=mapper.source_pixelization_grid.extent[3],
+            min_value=extent_axis[2],
+            max_value=extent_axis[3],
             units=self.units,
         )
         self.xticks.set(
             array=None,
-            min_value=mapper.source_pixelization_grid.extent[0],
-            max_value=mapper.source_pixelization_grid.extent[1],
+            min_value=extent_axis[0],
+            max_value=extent_axis[1],
             units=self.units,
         )
 
@@ -732,23 +721,26 @@ class MatPlot2D(AbstractMatPlot):
 
         self.figure.open()
 
-        self.set_axis_limits(
-            axis_limits=mapper.source_pixelization_grid.extent,
-            grid=None,
-            symmetric_around_centre=False,
+        extent_axis = self.axis.config_dict.get("extent")
+        extent_axis = (
+            extent_axis
+            if extent_axis is not None
+            else mapper.source_pixelization_grid.extent
         )
+
+        self.axis.set(extent=extent_axis, grid=mapper.source_pixelization_grid)
 
         self.tickparams.set()
         self.yticks.set(
             array=None,
-            min_value=mapper.source_pixelization_grid.extent[2],
-            max_value=mapper.source_pixelization_grid.extent[3],
+            min_value=extent_axis[2],
+            max_value=extent_axis[3],
             units=self.units,
         )
         self.xticks.set(
             array=None,
-            min_value=mapper.source_pixelization_grid.extent[0],
-            max_value=mapper.source_pixelization_grid.extent[1],
+            min_value=extent_axis[0],
+            max_value=extent_axis[1],
             units=self.units,
         )
 

@@ -116,7 +116,6 @@ class InterferometerPlotter(abstract_plotters.AbstractPlotter):
                 auto_labels=mp.AutoLabels(
                     title="UV-Wavelengths", filename="uv_wavelengths"
                 ),
-                symmetric_around_centre=True,
             )
 
         if amplitudes_vs_uv_distances:
