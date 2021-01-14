@@ -31,14 +31,14 @@ class TestAbstractPlotter:
 
     def test__plotter_number_of_subplots(self):
 
-        plotter = abstract_plotters.AbstractPlotter()
+        plotter = abstract_plotters.AbstractPlotter(mat_plot_2d=aplt.MatPlot2D())
 
-        rows, columns = plotter.get_subplot_rows_columns(number_subplots=1)
+        rows, columns = plotter.mat_plot_2d.get_subplot_rows_columns(number_subplots=1)
 
         assert rows == 1
         assert columns == 2
 
-        rows, columns = plotter.get_subplot_rows_columns(number_subplots=4)
+        rows, columns = plotter.mat_plot_2d.get_subplot_rows_columns(number_subplots=4)
 
         assert rows == 2
         assert columns == 2

@@ -127,8 +127,8 @@ class FramePlotter(abstract_plotters.AbstractPlotter):
 
     def figure(self):
 
-        self.mat_plot_2d.plot_array(
-            array=self.frame,
+        self.mat_plot_2d.plot_frame(
+            frame=self.frame,
             visuals_2d=self.visuals_with_include_2d,
             auto_labels=mp.AutoLabels(title="Frame", filename="frame"),
         )
@@ -302,10 +302,7 @@ class MapperPlotter(abstract_plotters.AbstractPlotter):
     @abstract_plotters.for_subplot
     def subplot_image_and_mapper(self, image):
 
-        number_subplots = 2
-
-        self.open_subplot_figure(number_subplots=number_subplots)
-        self.setup_subplot(number_subplots=number_subplots, subplot_index=1)
+        self.open_subplot_figure(number_subplots=2)
 
         self.mat_plot_2d.plot_array(
             array=image,
@@ -323,14 +320,12 @@ class MapperPlotter(abstract_plotters.AbstractPlotter):
                 grid=self.mapper.source_full_grid.geometry.masked_grid, indexes=indexes
             )
 
-        self.setup_subplot(number_subplots=number_subplots, subplot_index=2)
-
         self.figure()
 
         self.mat_plot_2d.output.subplot_to_figure(
             auto_filename="subplot_image_and_mapper"
         )
-        self.mat_plot_2d.figure.close()
+        self.close_subplot_figure()
 
 
 class LinePlotter(abstract_plotters.AbstractPlotter):

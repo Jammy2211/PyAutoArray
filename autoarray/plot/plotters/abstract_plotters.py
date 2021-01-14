@@ -107,11 +107,15 @@ class AbstractPlotter:
         if self.mat_plot_2d is not None:
             self.mat_plot_2d.output.filename = filename
 
-    def set_mat_plots_for_subplot(self, is_for_subplot):
+    def set_mat_plots_for_subplot(self, is_for_subplot, number_subplots=None):
         if self.mat_plot_1d is not None:
             self.mat_plot_1d.set_for_subplot(is_for_subplot=is_for_subplot)
+            self.mat_plot_1d.number_subplots = number_subplots
+            self.mat_plot_1d.subplot_index = 1
         if self.mat_plot_2d is not None:
             self.mat_plot_2d.set_for_subplot(is_for_subplot=is_for_subplot)
+            self.mat_plot_2d.number_subplots = number_subplots
+            self.mat_plot_2d.subplot_index = 1
 
     @property
     def is_for_subplot(self):
@@ -137,33 +141,18 @@ class AbstractPlotter:
             If the figure is a subplot, the setup_figure function is omitted to ensure that each subplot does not create a \
             new figure and so that it can be output using the *output.output_figure(structure=None)* function.
         """
+
+        self.set_mat_plots_for_subplot(
+            is_for_subplot=True, number_subplots=number_subplots
+        )
+
         figsize = self.get_subplot_figsize(number_subplots=number_subplots)
         plt.figure(figsize=figsize)
 
-    def get_subplot_rows_columns(self, number_subplots):
-        """Get the size of a sub plotter in (total_y_pixels, total_x_pixels), based on the number of subplots that are going to be plotted.
+    def close_subplot_figure(self):
 
-        Parameters
-        -----------
-        number_subplots : int
-            The number of subplots that are to be plotted in the figure.
-        """
-        if number_subplots <= 2:
-            return 1, 2
-        elif number_subplots <= 4:
-            return 2, 2
-        elif number_subplots <= 6:
-            return 2, 3
-        elif number_subplots <= 9:
-            return 3, 3
-        elif number_subplots <= 12:
-            return 3, 4
-        elif number_subplots <= 16:
-            return 4, 4
-        elif number_subplots <= 20:
-            return 4, 5
-        else:
-            return 6, 6
+        self.mat_plot_2d.figure.close()
+        self.set_mat_plots_for_subplot(is_for_subplot=False)
 
     def get_subplot_figsize(self, number_subplots):
         """Get the size of a sub plotter in (total_y_pixels, total_x_pixels), based on the number of subplots that are going to be plotted.
@@ -199,58 +188,32 @@ class AbstractPlotter:
         else:
             return (25, 20)
 
-    def setup_subplot(
-        self, number_subplots, subplot_index, aspect=None, subplot_rows_columns=None
-    ):
-
-        if subplot_rows_columns is None:
-            rows, columns = self.get_subplot_rows_columns(
-                number_subplots=number_subplots
-            )
-        else:
-            rows = subplot_rows_columns[0]
-            columns = subplot_rows_columns[1]
-
-        if aspect is None:
-            plt.subplot(rows, columns, subplot_index)
-        else:
-            plt.subplot(rows, columns, subplot_index, aspect=float(aspect))
-
-    @for_subplot
     def _subplot_custom_plot(self, **kwargs):
 
         figures_dict = dict(
             (key, value) for key, value in kwargs.items() if value is True
         )
 
-        number_subplots = len(figures_dict)
-
-        self.open_subplot_figure(number_subplots=number_subplots)
+        self.open_subplot_figure(number_subplots=len(figures_dict))
 
         for index, (key, value) in enumerate(figures_dict.items()):
             if value:
-                self.setup_subplot(
-                    number_subplots=number_subplots, subplot_index=index + 1
-                )
                 self.figures(**{key: True})
 
         self.mat_plot_2d.output.subplot_to_figure(
             auto_filename=kwargs["auto_labels"].filename
         )
-        self.mat_plot_2d.figure.close()
 
-    @for_subplot
+        self.close_subplot_figure()
+
     def subplot_of_plotters_figure(self, plotters, name):
 
-        number_subplots = len(plotters)
-
-        self.open_subplot_figure(number_subplots=number_subplots)
+        self.open_subplot_figure(number_subplots=len(plotters))
 
         for i, plotter in enumerate(plotters):
-
-            self.setup_subplot(number_subplots=number_subplots, subplot_index=i + 1)
 
             plotter.figures(**{name: True})
 
         self.mat_plot_2d.output.subplot_to_figure(auto_filename=f"subplot_{name}")
-        self.mat_plot_2d.figure.close()
+
+        self.close_subplot_figure()
