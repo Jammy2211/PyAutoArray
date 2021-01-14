@@ -1,5 +1,6 @@
 from autoarray.plot.mat_wrap.wrap.wrap_base import Units
 from autoarray.plot.mat_wrap.wrap.wrap_base import Figure
+from autoarray.plot.mat_wrap.wrap.wrap_base import Axis
 from autoarray.plot.mat_wrap.wrap.wrap_base import Cmap
 from autoarray.plot.mat_wrap.wrap.wrap_base import Colorbar
 from autoarray.plot.mat_wrap.wrap.wrap_base import ColorbarTickParams

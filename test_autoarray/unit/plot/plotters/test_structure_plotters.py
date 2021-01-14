@@ -308,11 +308,7 @@ class TestGridPlotter:
 
         color_array = np.linspace(start=0.0, stop=1.0, num=grid_7x7.shape_1d)
 
-        grid_plotter.figure(
-            color_array=color_array,
-            axis_limits=[-1.5, 1.5, -2.5, 2.5],
-            symmetric_around_centre=False,
-        )
+        grid_plotter.figure(color_array=color_array)
 
         assert path.join(plot_path, "grid1.png") in plot_patch.paths
 
@@ -325,11 +321,7 @@ class TestGridPlotter:
             include_2d=aplt.Include2D(origin=True, mask=True, border=True),
         )
 
-        grid_plotter.figure(
-            color_array=color_array,
-            axis_limits=[-1.5, 1.5, -2.5, 2.5],
-            symmetric_around_centre=True,
-        )
+        grid_plotter.figure(color_array=color_array)
 
         assert path.join(plot_path, "grid2.png") in plot_patch.paths
 
@@ -352,11 +344,7 @@ class TestGridPlotter:
             visuals_2d=visuals_2d,
         )
 
-        grid_plotter.figure(
-            color_array=color_array,
-            axis_limits=[-1.5, 1.5, -2.5, 2.5],
-            symmetric_around_centre=True,
-        )
+        grid_plotter.figure(color_array=color_array)
 
         assert path.join(plot_path, "grid3.png") in plot_patch.paths
 
