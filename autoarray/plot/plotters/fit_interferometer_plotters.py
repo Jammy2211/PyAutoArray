@@ -62,7 +62,7 @@ class AbstractFitInterferometerPlotter(abstract_plotters.AbstractPlotter):
         """
 
         if visibilities:
-            self.plot_grid(
+            self.mat_plot_2d.plot_grid(
                 grid=self.fit.visibilities.in_grid,
                 visuals_2d=self.visuals_2d,
                 auto_labels=mp.AutoLabels(
@@ -72,7 +72,7 @@ class AbstractFitInterferometerPlotter(abstract_plotters.AbstractPlotter):
             )
 
         if noise_map:
-            self.plot_grid(
+            self.mat_plot_2d.plot_grid(
                 grid=self.fit.visibilities.in_grid,
                 visuals_2d=self.visuals_2d,
                 auto_labels=mp.AutoLabels(title="Noise-Map", filename="noise_map"),
@@ -80,7 +80,7 @@ class AbstractFitInterferometerPlotter(abstract_plotters.AbstractPlotter):
             )
 
         if signal_to_noise_map:
-            self.plot_grid(
+            self.mat_plot_2d.plot_grid(
                 grid=self.fit.visibilities.in_grid,
                 visuals_2d=self.visuals_2d,
                 auto_labels=mp.AutoLabels(
@@ -89,7 +89,7 @@ class AbstractFitInterferometerPlotter(abstract_plotters.AbstractPlotter):
                 color_array=np.real(self.fit.signal_to_noise_map),
             )
         if model_visibilities:
-            self.plot_grid(
+            self.mat_plot_2d.plot_grid(
                 grid=self.fit.visibilities.in_grid,
                 visuals_2d=self.visuals_2d,
                 auto_labels=mp.AutoLabels(
@@ -99,7 +99,7 @@ class AbstractFitInterferometerPlotter(abstract_plotters.AbstractPlotter):
             )
 
         if residual_map_real:
-            self.plot_line(
+            self.mat_plot_1d.plot_line(
                 y=np.real(self.fit.residual_map),
                 x=self.fit.masked_interferometer.interferometer.uv_distances
                 / 10 ** 3.0,
@@ -113,7 +113,7 @@ class AbstractFitInterferometerPlotter(abstract_plotters.AbstractPlotter):
                 plot_axis_type="scatter",
             )
         if residual_map_imag:
-            self.plot_line(
+            self.mat_plot_1d.plot_line(
                 y=np.imag(self.fit.residual_map),
                 x=self.fit.masked_interferometer.interferometer.uv_distances
                 / 10 ** 3.0,
@@ -129,7 +129,7 @@ class AbstractFitInterferometerPlotter(abstract_plotters.AbstractPlotter):
 
         if normalized_residual_map_real:
 
-            self.plot_line(
+            self.mat_plot_1d.plot_line(
                 y=np.real(self.fit.residual_map),
                 x=self.fit.masked_interferometer.interferometer.uv_distances
                 / 10 ** 3.0,
@@ -143,7 +143,7 @@ class AbstractFitInterferometerPlotter(abstract_plotters.AbstractPlotter):
                 plot_axis_type="scatter",
             )
         if normalized_residual_map_imag:
-            self.plot_line(
+            self.mat_plot_1d.plot_line(
                 y=np.imag(self.fit.residual_map),
                 x=self.fit.masked_interferometer.interferometer.uv_distances
                 / 10 ** 3.0,
@@ -159,7 +159,7 @@ class AbstractFitInterferometerPlotter(abstract_plotters.AbstractPlotter):
 
         if chi_squared_map_real:
 
-            self.plot_line(
+            self.mat_plot_1d.plot_line(
                 y=np.real(self.fit.residual_map),
                 x=self.fit.masked_interferometer.interferometer.uv_distances
                 / 10 ** 3.0,
@@ -173,7 +173,7 @@ class AbstractFitInterferometerPlotter(abstract_plotters.AbstractPlotter):
                 plot_axis_type="scatter",
             )
         if chi_squared_map_imag:
-            self.plot_line(
+            self.mat_plot_1d.plot_line(
                 y=np.imag(self.fit.residual_map),
                 x=self.fit.masked_interferometer.interferometer.uv_distances
                 / 10 ** 3.0,

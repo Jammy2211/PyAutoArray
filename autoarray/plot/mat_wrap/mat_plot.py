@@ -126,25 +126,25 @@ class AbstractMatPlot:
             axis_limits = [-x, x, -y, y]
             plt.axis(axis_limits)
 
-    def set_for_subplot(self, for_subplot: bool):
+    def set_for_subplot(self, is_for_subplot: bool):
         """
-        Sets the `for_subplot` attribute for every `MatWrap` object in this `MatPlot` object by updating
-        the `for_subplot`. By changing this tag:
+        Sets the `is_for_subplot` attribute for every `MatWrap` object in this `MatPlot` object by updating
+        the `is_for_subplot`. By changing this tag:
 
             - The [subplot] section of the config file of every `MatWrap` object is used instead of [figure].
             - Calls which output or close the matplotlib figure are over-ridden so that the subplot is not removed.
 
         Parameters
         ----------
-        for_subplot : bool
-            The entry the `for_subplot` attribute of every `MatWrap` object is set too.
+        is_for_subplot : bool
+            The entry the `is_for_subplot` attribute of every `MatWrap` object is set too.
         """
-        self.for_subplot = for_subplot
-        self.output.bypass = for_subplot
+        self.is_for_subplot = is_for_subplot
+        self.output.bypass = is_for_subplot
 
         for attr, value in self.__dict__.items():
-            if hasattr(value, "for_subplot"):
-                value.for_subplot = for_subplot
+            if hasattr(value, "is_for_subplot"):
+                value.is_for_subplot = is_for_subplot
 
 
 class MatPlot1D(AbstractMatPlot):
@@ -229,7 +229,7 @@ class MatPlot1D(AbstractMatPlot):
 
         self.line_plot = line_plot
 
-        self.for_subplot = False
+        self.is_for_subplot = False
 
     def plot_line(
         self,
@@ -269,7 +269,7 @@ class MatPlot1D(AbstractMatPlot):
             array=None, min_value=np.min(x), max_value=np.max(x), units=self.units
         )
 
-        if not self.for_subplot:
+        if not self.is_for_subplot:
             self.output.to_figure(structure=None, auto_filename=auto_labels.filename)
             self.figure.close()
 
@@ -419,7 +419,7 @@ class MatPlot2D(AbstractMatPlot):
         self.serial_prescan_plot = serial_prescan_plot
         self.serial_overscan_plot = serial_overscan_plot
 
-        self.for_subplot = False
+        self.is_for_subplot = False
 
     def plot_array(
         self,
@@ -427,6 +427,7 @@ class MatPlot2D(AbstractMatPlot):
         visuals_2d: vis.Visuals2D,
         auto_labels: AutoLabels,
         extent_manual: np.ndarray = None,
+        mapper=None,
         bypass: bool = False,
     ):
         """
@@ -508,9 +509,11 @@ class MatPlot2D(AbstractMatPlot):
         cb = self.colorbar.set()
         self.colorbar_tickparams.set(cb=cb)
 
-        visuals_2d.plot_via_plotter(plotter=self)
+        visuals_2d.plot_via_plotter(
+            plotter=self, grid_indexes=array.geometry.masked_grid
+        )
 
-        if not self.for_subplot and not bypass:
+        if not self.is_for_subplot and not bypass:
             self.output.to_figure(structure=array, auto_filename=auto_labels.filename)
             self.figure.close()
 
@@ -561,7 +564,7 @@ class MatPlot2D(AbstractMatPlot):
 
         visuals_2d.plot_via_plotter(plotter=self)
 
-        if not self.for_subplot:
+        if not self.is_for_subplot:
             self.output.to_figure(structure=frame, auto_filename=auto_labels.filename)
             self.figure.close()
 
@@ -572,7 +575,6 @@ class MatPlot2D(AbstractMatPlot):
         auto_labels: AutoLabels,
         color_array=None,
         axis_limits=None,
-        indexes=None,
         symmetric_around_centre=True,
     ):
         """Plot a grid of (y,x) Cartesian coordinates as a scatter plotter of points.
@@ -634,9 +636,9 @@ class MatPlot2D(AbstractMatPlot):
                 units=self.units,
             )
 
-        visuals_2d.plot_via_plotter(plotter=self)
+        visuals_2d.plot_via_plotter(plotter=self, grid_indexes=grid)
 
-        if not self.for_subplot:
+        if not self.is_for_subplot:
             self.output.to_figure(structure=grid, auto_filename=auto_labels.filename)
             self.figure.close()
 
@@ -646,8 +648,6 @@ class MatPlot2D(AbstractMatPlot):
         visuals_2d: vis.Visuals2D,
         auto_labels: AutoLabels,
         source_pixelilzation_values=None,
-        full_indexes=None,
-        pixelization_indexes=None,
     ):
 
         if isinstance(mapper, mappers.MapperRectangular):
@@ -657,8 +657,6 @@ class MatPlot2D(AbstractMatPlot):
                 visuals_2d=visuals_2d,
                 auto_labels=auto_labels,
                 source_pixelilzation_values=source_pixelilzation_values,
-                full_indexes=full_indexes,
-                pixelization_indexes=pixelization_indexes,
             )
 
         else:
@@ -668,8 +666,6 @@ class MatPlot2D(AbstractMatPlot):
                 visuals_2d=visuals_2d,
                 auto_labels=auto_labels,
                 source_pixelilzation_values=source_pixelilzation_values,
-                full_indexes=full_indexes,
-                pixelization_indexes=pixelization_indexes,
             )
 
     def _plot_rectangular_mapper(
@@ -678,8 +674,6 @@ class MatPlot2D(AbstractMatPlot):
         visuals_2d: vis.Visuals2D,
         auto_labels: AutoLabels,
         source_pixelilzation_values=None,
-        full_indexes=None,
-        pixelization_indexes=None,
     ):
 
         self.figure.open()
@@ -720,23 +714,11 @@ class MatPlot2D(AbstractMatPlot):
         self.ylabel.set(units=self.units, include_brackets=True)
         self.xlabel.set(units=self.units, include_brackets=True)
 
-        visuals_2d.plot_via_plotter(plotter=self)
+        visuals_2d.plot_via_plotter(
+            plotter=self, grid_indexes=mapper.source_full_grid, mapper=mapper
+        )
 
-        if full_indexes is not None:
-            self.index_scatter.scatter_grid_indexes(
-                grid=mapper.source_full_grid, indexes=full_indexes
-            )
-
-        if pixelization_indexes is not None:
-            indexes = mapper.full_indexes_from_pixelization_indexes(
-                pixelization_indexes=pixelization_indexes
-            )
-
-            self.index_scatter.scatter_grid_indexes(
-                grid=mapper.source_full_grid, indexes=indexes
-            )
-
-        if not self.for_subplot:
+        if not self.is_for_subplot:
             self.output.to_figure(structure=None, auto_filename=auto_labels.filename)
             self.figure.close()
 
@@ -746,8 +728,6 @@ class MatPlot2D(AbstractMatPlot):
         visuals_2d: vis.Visuals2D,
         auto_labels: AutoLabels,
         source_pixelilzation_values=None,
-        full_indexes=None,
-        pixelization_indexes=None,
     ):
 
         self.figure.open()
@@ -784,22 +764,10 @@ class MatPlot2D(AbstractMatPlot):
         self.ylabel.set(units=self.units, include_brackets=True)
         self.xlabel.set(units=self.units, include_brackets=True)
 
-        visuals_2d.plot_via_plotter(plotter=self)
+        visuals_2d.plot_via_plotter(
+            plotter=self, grid_indexes=mapper.source_full_grid, mapper=mapper
+        )
 
-        if full_indexes is not None:
-            self.index_scatter.scatter_grid_indexes(
-                grid=mapper.source_full_grid, indexes=full_indexes
-            )
-
-        if pixelization_indexes is not None:
-            indexes = mapper.full_indexes_from_pixelization_indexes(
-                pixelization_indexes=pixelization_indexes
-            )
-
-            self.index_scatter.scatter_grid_indexes(
-                grid=mapper.source_full_grid, indexes=indexes
-            )
-
-        if not self.for_subplot:
+        if not self.is_for_subplot:
             self.output.to_figure(structure=None, auto_filename=auto_labels.filename)
             self.figure.close()

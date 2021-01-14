@@ -53,49 +53,62 @@ class AbstractFitImagingPlotter(abstract_plotters.AbstractPlotter):
         """
 
         if image:
-            self.plot_array(
+
+            self.mat_plot_2d.plot_array(
                 array=self.fit.data,
                 visuals_2d=self.visuals_with_include_2d,
                 auto_labels=mp.AutoLabels(title="Image", filename="image"),
             )
+
         if noise_map:
-            self.plot_array(
+
+            self.mat_plot_2d.plot_array(
                 array=self.fit.noise_map,
                 visuals_2d=self.visuals_with_include_2d,
                 auto_labels=mp.AutoLabels(title="Noise-Map", filename="noise_map"),
             )
+
         if signal_to_noise_map:
-            self.plot_array(
+
+            self.mat_plot_2d.plot_array(
                 array=self.fit.signal_to_noise_map,
                 visuals_2d=self.visuals_with_include_2d,
                 auto_labels=mp.AutoLabels(
                     title="Signal-To-Noise Map", filename="signal_to_noise_map"
                 ),
             )
+
         if model_image:
-            self.plot_array(
+
+            self.mat_plot_2d.plot_array(
                 array=self.fit.model_data,
                 visuals_2d=self.visuals_with_include_2d,
                 auto_labels=mp.AutoLabels(title="Model Image", filename="model_image"),
             )
+
         if residual_map:
-            self.plot_array(
+
+            self.mat_plot_2d.plot_array(
                 array=self.fit.residual_map,
                 visuals_2d=self.visuals_with_include_2d,
                 auto_labels=mp.AutoLabels(
                     title="Residual Map", filename="residual_map"
                 ),
             )
+
         if normalized_residual_map:
-            self.plot_array(
+
+            self.mat_plot_2d.plot_array(
                 array=self.fit.normalized_residual_map,
                 visuals_2d=self.visuals_with_include_2d,
                 auto_labels=mp.AutoLabels(
                     title="Normalized Residual Map", filename="normalized_residual_map"
                 ),
             )
+
         if chi_squared_map:
-            self.plot_array(
+
+            self.mat_plot_2d.plot_array(
                 array=self.fit.chi_squared_map,
                 visuals_2d=self.visuals_with_include_2d,
                 auto_labels=mp.AutoLabels(

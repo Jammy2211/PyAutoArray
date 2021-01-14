@@ -60,7 +60,7 @@ class InterferometerPlotter(abstract_plotters.AbstractPlotter):
 
         if visibilities:
 
-            self.plot_grid(
+            self.mat_plot_2d.plot_grid(
                 grid=self.interferometer.visibilities.in_grid,
                 visuals_2d=self.visuals_with_include_2d,
                 auto_labels=mp.AutoLabels(
@@ -70,7 +70,7 @@ class InterferometerPlotter(abstract_plotters.AbstractPlotter):
 
         if noise_map:
 
-            self.plot_grid(
+            self.mat_plot_2d.plot_grid(
                 grid=self.interferometer.visibilities.in_grid,
                 visuals_2d=self.visuals_with_include_2d,
                 color_array=self.interferometer.noise_map.real,
@@ -79,7 +79,7 @@ class InterferometerPlotter(abstract_plotters.AbstractPlotter):
 
         if u_wavelengths:
 
-            self.plot_line(
+            self.mat_plot_1d.plot_line(
                 y=self.interferometer.uv_wavelengths[:, 0],
                 x=None,
                 visuals_1d=self.visuals_1d,
@@ -93,7 +93,7 @@ class InterferometerPlotter(abstract_plotters.AbstractPlotter):
 
         if v_wavelengths:
 
-            self.plot_line(
+            self.mat_plot_1d.plot_line(
                 y=self.interferometer.uv_wavelengths[:, 1],
                 x=None,
                 visuals_1d=self.visuals_1d,
@@ -107,7 +107,7 @@ class InterferometerPlotter(abstract_plotters.AbstractPlotter):
 
         if uv_wavelengths:
 
-            self.plot_grid(
+            self.mat_plot_2d.plot_grid(
                 grid=grids.GridIrregularGrouped.from_yx_1d(
                     y=self.interferometer.uv_wavelengths[:, 1] / 10 ** 3.0,
                     x=self.interferometer.uv_wavelengths[:, 0] / 10 ** 3.0,
@@ -121,7 +121,7 @@ class InterferometerPlotter(abstract_plotters.AbstractPlotter):
 
         if amplitudes_vs_uv_distances:
 
-            self.plot_line(
+            self.mat_plot_1d.plot_line(
                 y=self.interferometer.amplitudes,
                 x=self.interferometer.uv_distances / 10 ** 3.0,
                 visuals_1d=self.visuals_1d,
@@ -136,7 +136,7 @@ class InterferometerPlotter(abstract_plotters.AbstractPlotter):
 
         if phases_vs_uv_distances:
 
-            self.plot_line(
+            self.mat_plot_1d.plot_line(
                 y=self.interferometer.phases,
                 x=self.interferometer.uv_distances / 10 ** 3.0,
                 visuals_1d=self.visuals_1d,

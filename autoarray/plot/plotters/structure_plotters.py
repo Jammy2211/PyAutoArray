@@ -58,7 +58,7 @@ class ArrayPlotter(abstract_plotters.AbstractPlotter):
 
     def figure(self, extent_manual=None):
 
-        self.plot_array(
+        self.mat_plot_2d.plot_array(
             array=self.array,
             visuals_2d=self.visuals_with_include_2d,
             auto_labels=mp.AutoLabels(title="Array", filename="array"),
@@ -128,7 +128,7 @@ class FramePlotter(abstract_plotters.AbstractPlotter):
 
     def figure(self):
 
-        self.plot_array(
+        self.mat_plot_2d.plot_array(
             array=self.frame,
             visuals_2d=self.visuals_with_include_2d,
             auto_labels=mp.AutoLabels(title="Frame", filename="frame"),
@@ -181,21 +181,14 @@ class GridPlotter(abstract_plotters.AbstractPlotter):
             )
         )
 
-    def figure(
-        self,
-        color_array=None,
-        axis_limits=None,
-        indexes=None,
-        symmetric_around_centre=True,
-    ):
+    def figure(self, color_array=None, axis_limits=None, symmetric_around_centre=True):
 
-        self.plot_grid(
+        self.mat_plot_2d.plot_grid(
             grid=self.grid,
             visuals_2d=self.visuals_with_include_2d,
             auto_labels=mp.AutoLabels(title="Grid", filename="grid"),
             color_array=color_array,
             axis_limits=axis_limits,
-            indexes=indexes,
             symmetric_around_centre=symmetric_around_centre,
         )
 
@@ -300,48 +293,34 @@ class MapperPlotter(abstract_plotters.AbstractPlotter):
             ),
         )
 
-    def figure(
-        self,
-        source_pixelilzation_values=None,
-        full_indexes=None,
-        pixelization_indexes=None,
-    ):
+    def figure(self, source_pixelilzation_values=None):
 
-        self.plot_mapper(
+        self.mat_plot_2d.plot_mapper(
             mapper=self.mapper,
             visuals_2d=self.visuals_source_with_include_2d,
             source_pixelilzation_values=source_pixelilzation_values,
             auto_labels=mp.AutoLabels(title="Mapper", filename="mapper"),
-            full_indexes=full_indexes,
-            pixelization_indexes=pixelization_indexes,
         )
 
-    def subplot_image_and_mapper(
-        self, image, full_indexes=None, pixelization_indexes=None
-    ):
+    @abstract_plotters.for_subplot
+    def subplot_image_and_mapper(self, image):
 
         number_subplots = 2
 
         self.open_subplot_figure(number_subplots=number_subplots)
         self.setup_subplot(number_subplots=number_subplots, subplot_index=1)
 
-        self.plot_array(
+        self.mat_plot_2d.plot_array(
             array=image,
             visuals_2d=self.visuals_data_with_include_2d,
             auto_labels=mp.AutoLabels(title="Image"),
+            mapper=self.mapper,
         )
 
-        if full_indexes is not None:
-
-            self.mat_plot_2d.index_scatter.scatter_grid_indexes(
-                grid=self.mapper.source_full_grid.geometry.masked_grid,
-                indexes=full_indexes,
-            )
-
-        if pixelization_indexes is not None:
+        if self.visuals_2d.pixelization_indexes is not None:
 
             indexes = self.mapper.full_indexes_from_pixelization_indexes(
-                pixelization_indexes=pixelization_indexes
+                pixelization_indexes=self.visuals_2d.pixelization_indexes
             )
 
             self.mat_plot_2d.index_scatter.scatter_grid_indexes(
@@ -350,9 +329,7 @@ class MapperPlotter(abstract_plotters.AbstractPlotter):
 
         self.setup_subplot(number_subplots=number_subplots, subplot_index=2)
 
-        self.figure(
-            full_indexes=full_indexes, pixelization_indexes=pixelization_indexes
-        )
+        self.figure()
 
         self.mat_plot_2d.output.subplot_to_figure(
             auto_filename="subplot_image_and_mapper"

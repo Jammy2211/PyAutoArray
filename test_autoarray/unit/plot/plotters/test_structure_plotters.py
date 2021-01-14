@@ -300,6 +300,7 @@ class TestGridPlotter:
 
         grid_plotter = aplt.GridPlotter(
             grid=grid_7x7,
+            visuals_2d=aplt.Visuals2D(indexes=[0, 1, 2]),
             mat_plot_2d=aplt.MatPlot2D(
                 output=aplt.Output(path=plot_path, filename="grid1", format="png")
             ),
@@ -310,7 +311,6 @@ class TestGridPlotter:
         grid_plotter.figure(
             color_array=color_array,
             axis_limits=[-1.5, 1.5, -2.5, 2.5],
-            indexes=[0, 1, 2, 14],
             symmetric_around_centre=False,
         )
 
@@ -318,6 +318,7 @@ class TestGridPlotter:
 
         grid_plotter = aplt.GridPlotter(
             grid=grid_7x7,
+            visuals_2d=aplt.Visuals2D(indexes=[0, 1, 2]),
             mat_plot_2d=aplt.MatPlot2D(
                 output=aplt.Output(path=plot_path, filename="grid2", format="png")
             ),
@@ -327,7 +328,6 @@ class TestGridPlotter:
         grid_plotter.figure(
             color_array=color_array,
             axis_limits=[-1.5, 1.5, -2.5, 2.5],
-            indexes=[0, 1, 2, 14],
             symmetric_around_centre=True,
         )
 
@@ -341,6 +341,7 @@ class TestGridPlotter:
             positions=grid_irregular_grouped_7x7,
             lines=grid_irregular_grouped_7x7,
             array_overlay=array_7x7,
+            indexes=[0, 1, 2],
         )
 
         grid_plotter = aplt.GridPlotter(
@@ -354,7 +355,6 @@ class TestGridPlotter:
         grid_plotter.figure(
             color_array=color_array,
             axis_limits=[-1.5, 1.5, -2.5, 2.5],
-            indexes=[0, 1, 2, 14],
             symmetric_around_centre=True,
         )
 
@@ -529,34 +529,37 @@ class TestMapperPlotter:
 
         mapper_plotter = aplt.MapperPlotter(
             mapper=rectangular_mapper_7x7_3x3,
+            visuals_2d=aplt.Visuals2D(
+                indexes=[[(0, 0), (0, 1)], [(1, 2)]], pixelization_indexes=[[0, 1], [2]]
+            ),
             mat_plot_2d=aplt.MatPlot2D(
                 output=aplt.Output(path=plot_path, filename="mapper1", format="png")
             ),
         )
 
-        mapper_plotter.figure(
-            full_indexes=[[(0, 0), (0, 1)], [(1, 2)]],
-            pixelization_indexes=[[0, 1], [2]],
-        )
+        mapper_plotter.figure()
 
         assert path.join(plot_path, "mapper1.png") in plot_patch.paths
 
         mapper_plotter = aplt.MapperPlotter(
             mapper=rectangular_mapper_7x7_3x3,
+            visuals_2d=aplt.Visuals2D(
+                indexes=[[(0, 0), (0, 1)], [(1, 2)]], pixelization_indexes=[[0, 1], [2]]
+            ),
             mat_plot_2d=aplt.MatPlot2D(
                 output=aplt.Output(path=plot_path, filename="mapper2", format="png")
             ),
         )
 
-        mapper_plotter.figure(
-            full_indexes=[[(0, 0), (0, 1)], [(1, 2)]],
-            pixelization_indexes=[[0, 1], [2]],
-        )
+        mapper_plotter.figure()
 
         assert path.join(plot_path, "mapper2.png") in plot_patch.paths
 
         mapper_plotter = aplt.MapperPlotter(
             mapper=rectangular_mapper_7x7_3x3,
+            visuals_2d=aplt.Visuals2D(
+                indexes=[[(0, 0), (0, 1)], [(1, 2)]], pixelization_indexes=[[0, 1], [2]]
+            ),
             mat_plot_2d=aplt.MatPlot2D(
                 output=aplt.Output(path=plot_path, filename="mapper3", format="png")
             ),
@@ -565,10 +568,7 @@ class TestMapperPlotter:
             ),
         )
 
-        mapper_plotter.figure(
-            full_indexes=[[(0, 0), (0, 1)], [(1, 2)]],
-            pixelization_indexes=[[0, 1], [2]],
-        )
+        mapper_plotter.figure()
 
         assert path.join(plot_path, "mapper3.png") in plot_patch.paths
 
@@ -578,43 +578,43 @@ class TestMapperPlotter:
 
         mapper_plotter = aplt.MapperPlotter(
             mapper=voronoi_mapper_9_3x3,
+            visuals_2d=aplt.Visuals2D(
+                indexes=[[(0, 0), (0, 1)], [(1, 2)]], pixelization_indexes=[[0, 1], [2]]
+            ),
             mat_plot_2d=aplt.MatPlot2D(
                 output=aplt.Output(path=plot_path, filename="mapper1", format="png")
             ),
         )
 
-        mapper_plotter.figure(
-            full_indexes=[[(0, 0), (0, 1)], [(1, 2)]],
-            pixelization_indexes=[[0, 1], [2]],
-        )
+        mapper_plotter.figure()
 
         assert path.join(plot_path, "mapper1.png") in plot_patch.paths
 
         mapper_plotter = aplt.MapperPlotter(
+            visuals_2d=aplt.Visuals2D(
+                indexes=[[(0, 0), (0, 1)], [(1, 2)]], pixelization_indexes=[[0, 1], [2]]
+            ),
             mapper=voronoi_mapper_9_3x3,
             mat_plot_2d=aplt.MatPlot2D(
                 output=aplt.Output(path=plot_path, filename="mapper2", format="png")
             ),
         )
 
-        mapper_plotter.figure(
-            full_indexes=[[(0, 0), (0, 1)], [(1, 2)]],
-            pixelization_indexes=[[0, 1], [2]],
-        )
+        mapper_plotter.figure()
 
         assert path.join(plot_path, "mapper2.png") in plot_patch.paths
 
         mapper_plotter = aplt.MapperPlotter(
+            visuals_2d=aplt.Visuals2D(
+                indexes=[[(0, 0), (0, 1)], [(1, 2)]], pixelization_indexes=[[0, 1], [2]]
+            ),
             mapper=voronoi_mapper_9_3x3,
             mat_plot_2d=aplt.MatPlot2D(
                 output=aplt.Output(path=plot_path, filename="mapper3", format="png")
             ),
         )
 
-        mapper_plotter.figure(
-            full_indexes=[[(0, 0), (0, 1)], [(1, 2)]],
-            pixelization_indexes=[[0, 1], [2]],
-        )
+        mapper_plotter.figure()
 
         assert path.join(plot_path, "mapper3.png") in plot_patch.paths
 
@@ -629,25 +629,20 @@ class TestMapperPlotter:
 
         mapper_plotter = aplt.MapperPlotter(
             mapper=rectangular_mapper_7x7_3x3,
+            visuals_2d=aplt.Visuals2D(
+                indexes=[[(0, 0), (0, 1)], [(1, 2)]], pixelization_indexes=[[0, 1], [2]]
+            ),
             mat_plot_2d=aplt.MatPlot2D(
                 output=aplt.Output(path=plot_path, format="png")
             ),
             include_2d=aplt.Include2D(mapper_source_pixelization_grid=True),
         )
 
-        mapper_plotter.subplot_image_and_mapper(
-            image=imaging_7x7.image,
-            full_indexes=[[0, 1, 2], [3]],
-            pixelization_indexes=[[1, 2], [0]],
-        )
+        mapper_plotter.subplot_image_and_mapper(image=imaging_7x7.image)
 
         assert path.join(plot_path, "subplot_image_and_mapper.png") in plot_patch.paths
 
-        mapper_plotter.subplot_image_and_mapper(
-            image=imaging_7x7.image,
-            full_indexes=[[0, 1, 2], [3]],
-            pixelization_indexes=[[1, 2], [0]],
-        )
+        mapper_plotter.subplot_image_and_mapper(image=imaging_7x7.image)
 
         assert path.join(plot_path, "subplot_image_and_mapper.png") in plot_patch.paths
 

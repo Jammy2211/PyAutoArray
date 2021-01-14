@@ -39,8 +39,6 @@ class InversionPlotter(structure_plotters.MapperPlotter):
         regularization_weights=False,
         interpolated_reconstruction=False,
         interpolated_errors=False,
-        full_indexes=None,
-        pixelization_indexes=None,
     ):
         """Plot the model datas_ of an analysis, using the *Fitter* class object.
 
@@ -59,7 +57,7 @@ class InversionPlotter(structure_plotters.MapperPlotter):
 
         if reconstructed_image:
 
-            self.plot_array(
+            self.mat_plot_2d.plot_array(
                 array=self.inversion.mapped_reconstructed_image,
                 visuals_2d=self.visuals_data_with_include_2d,
                 auto_labels=mp.AutoLabels(
@@ -69,7 +67,7 @@ class InversionPlotter(structure_plotters.MapperPlotter):
 
         if reconstruction:
 
-            self.plot_mapper(
+            self.mat_plot_2d.plot_mapper(
                 mapper=self.inversion.mapper,
                 visuals_2d=self.visuals_source_with_include_2d,
                 auto_labels=mp.AutoLabels(
@@ -78,37 +76,31 @@ class InversionPlotter(structure_plotters.MapperPlotter):
                 source_pixelilzation_values=self.as_mapper(
                     self.inversion.reconstruction
                 ),
-                full_indexes=full_indexes,
-                pixelization_indexes=pixelization_indexes,
             )
 
         if errors:
 
-            self.plot_mapper(
+            self.mat_plot_2d.plot_mapper(
                 mapper=self.inversion.mapper,
                 visuals_2d=self.visuals_source_with_include_2d,
                 auto_labels=mp.AutoLabels(title="Errors", filename="errors"),
                 source_pixelilzation_values=self.as_mapper(self.inversion.errors),
-                full_indexes=full_indexes,
-                pixelization_indexes=pixelization_indexes,
             )
 
         if residual_map:
 
-            self.plot_mapper(
+            self.mat_plot_2d.plot_mapper(
                 mapper=self.inversion.mapper,
                 visuals_2d=self.visuals_source_with_include_2d,
                 auto_labels=mp.AutoLabels(
                     title="Residual Map", filename="residual_map"
                 ),
                 source_pixelilzation_values=self.as_mapper(self.inversion.residual_map),
-                full_indexes=full_indexes,
-                pixelization_indexes=pixelization_indexes,
             )
 
         if normalized_residual_map:
 
-            self.plot_mapper(
+            self.mat_plot_2d.plot_mapper(
                 mapper=self.inversion.mapper,
                 visuals_2d=self.visuals_source_with_include_2d,
                 auto_labels=mp.AutoLabels(
@@ -117,8 +109,6 @@ class InversionPlotter(structure_plotters.MapperPlotter):
                 source_pixelilzation_values=self.as_mapper(
                     self.inversion.normalized_residual_map
                 ),
-                full_indexes=full_indexes,
-                pixelization_indexes=pixelization_indexes,
             )
 
         if chi_squared_map:
@@ -132,8 +122,6 @@ class InversionPlotter(structure_plotters.MapperPlotter):
                 source_pixelilzation_values=self.as_mapper(
                     self.inversion.chi_squared_map
                 ),
-                full_indexes=full_indexes,
-                pixelization_indexes=pixelization_indexes,
             )
 
         if regularization_weights:
@@ -147,13 +135,11 @@ class InversionPlotter(structure_plotters.MapperPlotter):
                 source_pixelilzation_values=self.as_mapper(
                     self.inversion.regularization_weights
                 ),
-                full_indexes=full_indexes,
-                pixelization_indexes=pixelization_indexes,
             )
 
         if interpolated_reconstruction:
 
-            self.plot_array(
+            self.mat_plot_2d.plot_array(
                 array=self.inversion.interpolated_reconstructed_data_from_shape_2d(),
                 visuals_2d=self.visuals_data_with_include_2d,
                 auto_labels=mp.AutoLabels(
@@ -163,7 +149,7 @@ class InversionPlotter(structure_plotters.MapperPlotter):
             )
 
         if interpolated_errors:
-            self.plot_array(
+            self.mat_plot_2d.plot_array(
                 array=self.inversion.interpolated_errors_from_shape_2d(),
                 visuals_2d=self.visuals_data_with_include_2d,
                 auto_labels=mp.AutoLabels(
