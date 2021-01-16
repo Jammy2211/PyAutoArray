@@ -8,34 +8,6 @@ from autoarray.plot.mat_wrap import visuals as vis
 from autoarray.plot.mat_wrap import include as inc
 from autoarray.plot.mat_wrap import mat_plot
 
-from functools import wraps
-
-
-def for_subplot(func):
-    @wraps(func)
-    def wrapper(plotter, *args, **kwargs):
-
-        plotter.set_mat_plots_for_subplot(is_for_subplot=True)
-
-        func(plotter, *args, **kwargs)
-
-        plotter.set_mat_plots_for_subplot(is_for_subplot=False)
-
-    return wrapper
-
-
-def for_subplot_with_index(func):
-    @wraps(func)
-    def wrapper(plotter, *args, **kwargs):
-
-        plotter.set_mat_plots_for_subplot(is_for_subplot=True)
-
-        func(plotter, *args, **kwargs)
-
-        plotter.set_mat_plots_for_subplot(is_for_subplot=False)
-
-    return wrapper
-
 
 class AbstractPlotter:
     def __init__(
