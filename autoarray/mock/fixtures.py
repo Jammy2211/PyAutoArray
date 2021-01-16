@@ -68,19 +68,25 @@ def make_blurring_mask_7x7():
     return aa.Mask2D.manual(mask=blurring_mask, pixel_scales=(1.0, 1.0))
 
 
-def make_mask_6x6():
-    mask = np.array(
-        [
-            [True, True, True, True, True, True],
-            [True, True, True, True, True, True],
-            [True, True, False, False, True, True],
-            [True, True, False, False, True, True],
-            [True, True, True, True, True, True],
-            [True, True, True, True, True, True],
-        ]
+### arrays ###
+
+
+def make_array_7x7():
+    return aa.Array.ones(shape_2d=(7, 7), pixel_scales=(1.0, 1.0))
+
+
+def make_scans_7x7():
+    return aa.Scans(
+        serial_overscan=(0, 6, 6, 7),
+        serial_prescan=(0, 7, 0, 1),
+        parallel_overscan=(6, 7, 1, 6),
     )
 
-    return aa.Mask2D.manual(mask=mask, pixel_scales=(1.0, 1.0))
+
+def make_frame_7x7():
+    return aa.Frame.ones(
+        shape_2d=(7, 7), pixel_scales=(1.0, 1.0), scans=make_scans_7x7()
+    )
 
 
 # GRIDS #
@@ -128,11 +134,15 @@ def make_psf_3x3():
     return aa.Kernel.ones(shape_2d=(3, 3), pixel_scales=(1.0, 1.0))
 
 
+def make_psf_no_blur_3x3():
+    return aa.Kernel.no_blur(pixel_scales=(1.0, 1.0))
+
+
 def make_noise_map_7x7():
     return aa.Array.full(fill_value=2.0, shape_2d=(7, 7), pixel_scales=(1.0, 1.0))
 
 
-def make_positions_7x7():
+def make_grid_irregular_grouped_7x7():
     return aa.GridIrregularGrouped(grid=[[(0.1, 0.1), (0.2, 0.2)], [(0.3, 0.3)]])
 
 
@@ -145,13 +155,12 @@ def make_imaging_7x7():
     )
 
 
-def make_imaging_6x6():
-    image = aa.Array.full(shape_2d=(6, 6), fill_value=1.0)
-    psf = aa.Kernel.full(shape_2d=(3, 3), fill_value=1.0)
-    noise_map = aa.Array.full(shape_2d=(6, 6), fill_value=2.0)
-
+def make_imaging_no_blur_7x7():
     return aa.Imaging(
-        image=image, psf=psf, noise_map=noise_map, name="mock_imaging_6x6"
+        image=make_image_7x7(),
+        psf=make_psf_no_blur_3x3(),
+        noise_map=make_noise_map_7x7(),
+        name="mock_imaging_7x7",
     )
 
 
@@ -208,6 +217,14 @@ def make_masked_imaging_7x7():
     )
 
 
+def make_masked_imaging_no_blur_7x7():
+    return aa.MaskedImaging(
+        imaging=make_imaging_no_blur_7x7(),
+        mask=make_sub_mask_7x7(),
+        settings=aa.SettingsMaskedImaging(sub_size=1),
+    )
+
+
 def make_masked_interferometer_7():
     return aa.MaskedInterferometer(
         interferometer=make_interferometer_7(),
@@ -244,7 +261,8 @@ def make_rectangular_pixelization_grid_3x3():
 
 def make_rectangular_mapper_7x7_3x3():
     return aa.Mapper(
-        grid=make_grid_7x7(), pixelization_grid=make_rectangular_pixelization_grid_3x3()
+        source_full_grid=make_grid_7x7(),
+        source_pixelization_grid=make_rectangular_pixelization_grid_3x3(),
     )
 
 
@@ -274,7 +292,9 @@ def make_voronoi_pixelization_grid_9():
 
 def make_voronoi_mapper_9_3x3():
     return aa.Mapper(
-        grid=make_grid_7x7(), pixelization_grid=make_voronoi_pixelization_grid_9()
+        source_full_grid=make_grid_7x7(),
+        source_pixelization_grid=make_voronoi_pixelization_grid_9(),
+        data_pixelization_grid=aa.Grid.uniform(shape_2d=(2, 2), pixel_scales=0.1),
     )
 
 

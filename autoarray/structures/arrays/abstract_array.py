@@ -333,10 +333,10 @@ class AbstractArray(abstract_structure.AbstractStructure):
 
         extracted_array_2d = array_util.extracted_array_2d_from(
             array_2d=self.in_2d,
-            y0=self.geometry._zoom_region[0] - buffer,
-            y1=self.geometry._zoom_region[1] + buffer,
-            x0=self.geometry._zoom_region[2] - buffer,
-            x1=self.geometry._zoom_region[3] + buffer,
+            y0=self.geometry.zoom_region[0] - buffer,
+            y1=self.geometry.zoom_region[1] + buffer,
+            x0=self.geometry.zoom_region[2] - buffer,
+            x1=self.geometry.zoom_region[3] + buffer,
         )
 
         mask = msk.Mask2D.unmasked(
@@ -367,10 +367,10 @@ class AbstractArray(abstract_structure.AbstractStructure):
         """
         extracted_array_2d = array_util.extracted_array_2d_from(
             array_2d=self.in_2d,
-            y0=self.geometry._zoom_region[0] - buffer,
-            y1=self.geometry._zoom_region[1] + buffer,
-            x0=self.geometry._zoom_region[2] - buffer,
-            x1=self.geometry._zoom_region[3] + buffer,
+            y0=self.geometry.zoom_region[0] - buffer,
+            y1=self.geometry.zoom_region[1] + buffer,
+            x0=self.geometry.zoom_region[2] - buffer,
+            x1=self.geometry.zoom_region[3] + buffer,
         )
 
         mask = msk.Mask2D.unmasked(

@@ -3,6 +3,7 @@ import logging
 import numpy as np
 import pylops
 
+from autoarray.mask import mask_2d
 from autoarray.structures import grids
 from autoarray.util import array_util
 

@@ -335,6 +335,10 @@ class AbstractGrid(abstract_structure.AbstractStructure):
         )
         return arrays.Array.manual_mask(array=distances, mask=self.mask)
 
+    def grid_radii_from(self, centre=(0.0, 0.0)):
+
+        grid_radii = np.linspace(0.0)
+
     @property
     def shape_2d_scaled(self) -> (float, float):
         """The two dimensional shape of the grid in scaled units, computed by taking the minimum and maximum values of
@@ -524,6 +528,9 @@ class AbstractGrid(abstract_structure.AbstractStructure):
             The grid (uniform or irregular) whose pixels are to be relocated to the border edge if outside it.
         """
 
+        if len(self.sub_border_grid) == 0:
+            return grid
+
         return grids.Grid(
             grid=self.relocated_grid_from_grid_jit(
                 grid=grid, border_grid=self.sub_border_grid
@@ -544,6 +551,9 @@ class AbstractGrid(abstract_structure.AbstractStructure):
         grid : Grid
             The grid (uniform or irregular) whose pixels are to be relocated to the border edge if outside it.
         """
+
+        if len(self.sub_border_grid) == 0:
+            return pixelization_grid
 
         if isinstance(pixelization_grid, grids.GridVoronoi):
 

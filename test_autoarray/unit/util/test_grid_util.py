@@ -827,6 +827,169 @@ class TestGrid2DFromShape:
         ).all()
 
 
+class TestGridRadii:
+    def test__grid_radii_from_scaled_1d__vary_all_x_dimension_parameters(self):
+
+        grid_radii = aa.util.grid.grid_radii_scaled_1d_from(
+            extent=np.array([-1.0, 1.0, -1.0, 1.0]),
+            centre=(0.0, 0.0),
+            pixel_scales=(1.0, 1.0),
+            sub_size=1,
+        )
+
+        assert (grid_radii == np.array([[0.0, 0.0], [0.0, 1.0]])).all()
+
+        grid_radii = aa.util.grid.grid_radii_scaled_1d_from(
+            extent=np.array([-1.0, 3.0, -1.0, 1.0]),
+            centre=(0.0, 0.0),
+            pixel_scales=(1.0, 1.0),
+            sub_size=1,
+        )
+
+        assert (
+            grid_radii == np.array([[0.0, 0.0], [0.0, 1.0], [0.0, 2.0], [0.0, 3.0]])
+        ).all()
+
+        grid_radii = aa.util.grid.grid_radii_scaled_1d_from(
+            extent=np.array([-1.0, 3.0, -1.0, 1.0]),
+            centre=(0.0, 1.0),
+            pixel_scales=(1.0, 1.0),
+            sub_size=1,
+        )
+
+        assert (grid_radii == np.array([[0.0, 1.0], [0.0, 2.0], [0.0, 3.0]])).all()
+
+        grid_radii = aa.util.grid.grid_radii_scaled_1d_from(
+            extent=np.array([-2.0, 1.0, -1.0, 1.0]),
+            centre=(0.0, 1.0),
+            pixel_scales=(1.0, 1.0),
+            sub_size=1,
+        )
+
+        assert (
+            grid_radii == np.array([[0.0, 1.0], [0.0, 2.0], [0.0, 3.0], [0.0, 4.0]])
+        ).all()
+
+        grid_radii = aa.util.grid.grid_radii_scaled_1d_from(
+            extent=np.array([-1.0, 1.0, -1.0, 1.0]),
+            centre=(0.0, 1.0),
+            pixel_scales=(0.1, 0.5),
+            sub_size=1,
+        )
+
+        assert (
+            grid_radii
+            == np.array([[0.0, 1.0], [0.0, 1.5], [0.0, 2.0], [0.0, 2.5], [0.0, 3.0]])
+        ).all()
+
+        grid_radii = aa.util.grid.grid_radii_scaled_1d_from(
+            extent=np.array([-1.0, 1.0, -1.0, 1.0]),
+            centre=(0.0, 1.0),
+            pixel_scales=(0.1, 1.0),
+            sub_size=2,
+        )
+
+        assert (
+            grid_radii
+            == np.array([[0.0, 1.0], [0.0, 1.5], [0.0, 2.0], [0.0, 2.5], [0.0, 3.0]])
+        ).all()
+
+        grid_radii = aa.util.grid.grid_radii_scaled_1d_from(
+            extent=np.array([5.0, 8.0, 99.9, 100.1]),
+            centre=(100.0, 7.0),
+            pixel_scales=(10.0, 0.25),
+            sub_size=1,
+        )
+
+        assert (
+            grid_radii
+            == np.array(
+                [
+                    [100.0, 7.0],
+                    [100.0, 7.25],
+                    [100.0, 7.5],
+                    [100.0, 7.75],
+                    [100.0, 8.0],
+                    [100.0, 8.25],
+                    [100.0, 8.5],
+                    [100.0, 8.75],
+                    [100.0, 9.0],
+                ]
+            )
+        ).all()
+
+    def test__grid_radii_from_scaled_1d__vary_all_y_dimension_parameters(self):
+
+        grid_radii = aa.util.grid.grid_radii_scaled_1d_from(
+            extent=np.array([-1.0, 1.0, -1.0, 3.0]),
+            centre=(0.0, 0.0),
+            pixel_scales=(1.0, 1.0),
+            sub_size=1,
+        )
+
+        assert (
+            grid_radii == np.array([[0.0, 0.0], [0.0, 1.0], [0.0, 2.0], [0.0, 3.0]])
+        ).all()
+
+        grid_radii = aa.util.grid.grid_radii_scaled_1d_from(
+            extent=np.array([-1.0, 1.0, -2.0, 1.0]),
+            centre=(1.0, 0.0),
+            pixel_scales=(1.0, 1.0),
+            sub_size=1,
+        )
+
+        assert (
+            grid_radii == np.array([[1.0, 0.0], [1.0, 1.0], [1.0, 2.0], [1.0, 3.0]])
+        ).all()
+
+        grid_radii = aa.util.grid.grid_radii_scaled_1d_from(
+            extent=np.array([-1.0, 1.0, -1.0, 1.0]),
+            centre=(1.0, 0.0),
+            pixel_scales=(0.5, 0.1),
+            sub_size=1,
+        )
+
+        assert (
+            grid_radii
+            == np.array([[1.0, 0.0], [1.0, 0.5], [1.0, 1.0], [1.0, 1.5], [1.0, 2.0]])
+        ).all()
+
+        grid_radii = aa.util.grid.grid_radii_scaled_1d_from(
+            extent=np.array([-1.0, 1.0, -1.0, 1.0]),
+            centre=(1.0, 0.0),
+            pixel_scales=(0.5, 0.1),
+            sub_size=2,
+        )
+
+        assert (
+            grid_radii
+            == np.array(
+                [
+                    [1.0, 0.0],
+                    [1.0, 0.25],
+                    [1.0, 0.5],
+                    [1.0, 0.75],
+                    [1.0, 1.0],
+                    [1.0, 1.25],
+                    [1.0, 1.5],
+                    [1.0, 1.75],
+                    [1.0, 2.0],
+                ]
+            )
+        ).all()
+
+        grid_radii = aa.util.grid.grid_radii_scaled_1d_from(
+            extent=np.array([99.9, 100.1, -1.0, 3.0]),
+            centre=(-1.0, 100.0),
+            pixel_scales=(1.5, 10.0),
+            sub_size=1,
+        )
+
+        assert (
+            grid_radii == np.array([[-1.0, 100.0], [-1.0, 101.5], [-1.0, 103.0]])
+        ).all()
+
+
 class TestGridConversions:
     def test__pixel_grid_1d_from_scaled_grid_1d__coordinates_in_origins_of_pixels(self):
 

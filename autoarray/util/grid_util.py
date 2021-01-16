@@ -292,6 +292,99 @@ def grid_2d_via_shape_2d_from(
     )
 
 
+# @decorator_util.jit()
+def grid_radii_scaled_1d_from(
+    extent: np.ndarray,
+    centre: (float, float),
+    pixel_scales: (float, float),
+    sub_size: int,
+) -> np.ndarray:
+    """
+    Determine a radial grid of points from a region of coordinates defined by an extent and with a (y,x). This
+    functions operates as follows:
+
+    - Given the region defined by the extent [xmin, xmax, ymin, ymax], the algorithm finds the longest 1D distance of
+    the 4 paths from the (y,x) centre to the edge of the region (e.g. following the positive / negative y and x axes).
+
+    - Use the pixel-scale corresponding to the direction chosen (e.g. if the positive x-axis was the longest, the
+    pixel_scale in the x dimension is used).
+
+    - Determine the number of pixels between the centre and the edge of the region using the longest path between the
+    two chosen above.
+
+    - Create a (y,x) grid of radial points where all points are at the centre's y value = 0.0 and the x values iterate
+    from the centre in increasing steps of the pixel-scale.
+
+    A schematric is shown below:
+
+    -------------------
+    |                 |
+    |<- - -  - ->x    | x = centre
+    |                 | <-> = longest radial path from centre to extent edge
+    |                 |
+    -------------------
+
+    Using the centre x above, this function finds the longest radial path to the edge of the extent window.
+
+    The returned `grid_radii` represents a radial set of points that in 1D sample the 2D grid outwards from its centre.
+    This grid stores the radial coordinates as (y,x) values (where all y values are the same) as opposed to a 1D data
+    structure so that it can be used in functions which require that a 2D grid structure is input.
+
+    Parameters
+    ----------
+    extent : np.ndarray
+        The extent of the grid the radii grid is computed using, with format [xmin, xmax, ymin, ymax]
+    centre : (float, flloat)
+        The (y,x) central coordinate which the radial grid is traced outwards from.
+    pixel_scales : (float, float)
+        The (y,x) scaled units to pixel units conversion factor of the 2D mask array.
+    sub_size : int
+        The size of the sub-grid that each pixel of the 2D mask array is divided into.
+
+    Returns
+    -------
+    ndarray
+        A radial set of points sampling the longest distance from the centre to the edge of the extent in along the
+        positive x-axis.
+    """
+
+    distance_to_positive_x = extent[1] - centre[1]
+    distance_to_positive_y = extent[3] - centre[0]
+    distance_to_negative_x = centre[1] - extent[0]
+    distance_to_negative_y = centre[0] - extent[2]
+
+    scaled_distance = max(
+        [
+            distance_to_positive_x,
+            distance_to_positive_y,
+            distance_to_negative_x,
+            distance_to_negative_y,
+        ]
+    )
+
+    if (scaled_distance == distance_to_positive_y) or (
+        scaled_distance == distance_to_negative_y
+    ):
+        pixel_scale = pixel_scales[0]
+    else:
+        pixel_scale = pixel_scales[1]
+
+    shape_1d = sub_size * int((scaled_distance / pixel_scale)) + 1
+
+    grid_radii_scaled = np.zeros((shape_1d, 2))
+
+    grid_radii_scaled[:, 0] += centre[0]
+
+    radii = centre[1]
+
+    for i in range(shape_1d):
+
+        grid_radii_scaled[i, 1] = radii
+        radii += pixel_scale / sub_size
+
+    return grid_radii_scaled
+
+
 @decorator_util.jit()
 def grid_pixels_1d_from(
     grid_scaled_1d: np.ndarray,

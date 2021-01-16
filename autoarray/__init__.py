@@ -36,7 +36,7 @@ from .operators.convolver import Convolver
 from .operators.transformer import TransformerDFT
 from .operators.transformer import TransformerNUFFT
 from .structures.arrays import Array
-from .structures.arrays import Values
+from .structures.arrays import ValuesIrregularGrouped
 from .structures.arrays.abstract_array import ExposureInfo
 from .structures.frames import Frame
 from .structures.frames.abstract_frame import Scans
@@ -59,4 +59,4 @@ from autoconf import conf
 
 conf.instance.register(__file__)
 
-__version__ = '0.16.4'
+__version__ = '0.17.0'

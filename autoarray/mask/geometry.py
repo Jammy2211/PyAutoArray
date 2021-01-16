@@ -313,7 +313,7 @@ class Geometry:
         return self.masked_grid[self.mask.regions._sub_border_1d_indexes]
 
     @property
-    def _zoom_centre(self):
+    def zoom_centre(self):
 
         extraction_grid_1d = self.mask.geometry.grid_pixels_from_grid_scaled_1d(
             grid_scaled_1d=self.masked_grid_sub_1.in_1d
@@ -329,26 +329,26 @@ class Geometry:
         )
 
     @property
-    def _zoom_offset_pixels(self):
+    def zoom_offset_pixels(self):
 
         if self.mask.pixel_scales is None:
             return self.central_pixel_coordinates
 
         return (
-            self._zoom_centre[0] - self.central_pixel_coordinates[0],
-            self._zoom_centre[1] - self.central_pixel_coordinates[1],
+            self.zoom_centre[0] - self.central_pixel_coordinates[0],
+            self.zoom_centre[1] - self.central_pixel_coordinates[1],
         )
 
     @property
-    def _zoom_offset_scaled(self):
+    def zoom_offset_scaled(self):
 
         return (
-            -self.mask.pixel_scales[0] * self._zoom_offset_pixels[0],
-            self.mask.pixel_scales[1] * self._zoom_offset_pixels[1],
+            -self.mask.pixel_scales[0] * self.zoom_offset_pixels[0],
+            self.mask.pixel_scales[1] * self.zoom_offset_pixels[1],
         )
 
     @property
-    def _zoom_region(self):
+    def zoom_region(self):
         """The zoomed rectangular region corresponding to the square encompassing all unmasked values. This zoomed
         extraction region is a squuare, even if the mask is rectangular.
 
@@ -372,3 +372,23 @@ class Geometry:
             y0 -= int(length_difference / 2.0)
 
         return [y0, y1 + 1, x0, x1 + 1]
+
+    @property
+    def zoom_shape_2d(self):
+        region = self.zoom_region
+        return (region[1] - region[0], region[3] - region[2])
+
+    @property
+    def zoom_mask_unmasked(self):
+        """ The scaled-grid of (y,x) coordinates of every pixel.
+
+        This is defined from the top-left corner, such that the first pixel at location [0, 0] will have a negative x \
+        value y value in scaled units.
+        """
+
+        return self.mask.__class__.unmasked(
+            shape_2d=self.zoom_shape_2d,
+            pixel_scales=self.mask.pixel_scales,
+            sub_size=self.mask.sub_size,
+            origin=self.zoom_offset_scaled,
+        )

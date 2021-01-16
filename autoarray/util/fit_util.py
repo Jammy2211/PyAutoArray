@@ -1,7 +1,11 @@
 import numpy as np
 
+from autoarray.structures import abstract_structure
 
-def residual_map_from(*, data: np.ndarray, model_data: np.ndarray) -> np.ndarray:
+
+def residual_map_from(
+    *, data: np.ndarray, model_data: np.ndarray
+) -> abstract_structure.AbstractStructure:
     """
     Returns the residual-map of the fit of model-data to a masked dataset, where:
 
@@ -21,7 +25,7 @@ def residual_map_from(*, data: np.ndarray, model_data: np.ndarray) -> np.ndarray
 
 def normalized_residual_map_from(
     *, residual_map: np.ndarray, noise_map: np.ndarray
-) -> np.ndarray:
+) -> abstract_structure.AbstractStructure:
     """
     Returns the normalized residual-map of the fit of model-data to a masked dataset, where:
 
@@ -41,7 +45,7 @@ def normalized_residual_map_from(
 
 def chi_squared_map_from(
     *, residual_map: np.ndarray, noise_map: np.ndarray
-) -> np.ndarray:
+) -> abstract_structure.AbstractStructure:
     """
     Returns the chi-squared-map of the fit of model-data to a masked dataset, where:
 
@@ -87,7 +91,7 @@ def noise_normalization_from(*, noise_map: np.ndarray) -> float:
 
 def normalized_residual_map_complex_from(
     *, residual_map: np.ndarray, noise_map: np.ndarray
-) -> np.ndarray:
+) -> abstract_structure.AbstractStructure:
     """
     Returns the normalized residual-map of the fit of complex model-data to a dataset, where:
 
@@ -117,7 +121,7 @@ def normalized_residual_map_complex_from(
 
 def chi_squared_map_complex_from(
     *, residual_map: np.ndarray, noise_map: np.ndarray
-) -> np.ndarray:
+) -> abstract_structure.AbstractStructure:
     """
     Returnss the chi-squared-map of the fit of complex model-data to a dataset, where:
 
@@ -174,7 +178,7 @@ def noise_normalization_complex_from(*, noise_map: np.ndarray) -> float:
 
 def residual_map_with_mask_from(
     *, data: np.ndarray, mask: np.ndarray, model_data: np.ndarray
-) -> np.ndarray:
+) -> abstract_structure.AbstractStructure:
     """
     Returns the residual-map of the fit of model-data to a masked dataset, where:
 
@@ -198,7 +202,7 @@ def residual_map_with_mask_from(
 
 def normalized_residual_map_with_mask_from(
     *, residual_map: np.ndarray, noise_map: np.ndarray, mask: np.ndarray
-) -> np.ndarray:
+) -> abstract_structure.AbstractStructure:
     """
     Returns the normalized residual-map of the fit of model-data to a masked dataset, where:
 
@@ -225,7 +229,7 @@ def normalized_residual_map_with_mask_from(
 
 def chi_squared_map_with_mask_from(
     *, residual_map: np.ndarray, noise_map: np.ndarray, mask: np.ndarray
-) -> np.ndarray:
+) -> abstract_structure.AbstractStructure:
     """
     Returnss the chi-squared-map of the fit of model-data to a masked dataset, where:
 
@@ -293,7 +297,7 @@ def noise_normalization_with_mask_from(
 
 def normalized_residual_map_complex_with_mask_from(
     *, residual_map: np.ndarray, noise_map: np.ndarray, mask: np.ndarray
-) -> np.ndarray:
+) -> abstract_structure.AbstractStructure:
     """
     Returns the normalized residual-map of the fit of complex model-data to a masked dataset, where:
 
@@ -329,7 +333,7 @@ def normalized_residual_map_complex_with_mask_from(
 
 def chi_squared_map_complex_with_mask_from(
     *, residual_map: np.ndarray, noise_map: np.ndarray, mask: np.ndarray
-) -> np.ndarray:
+) -> abstract_structure.AbstractStructure:
     """
     Returnss the chi-squared-map of the fit of complex model-data to a masked dataset, where:
 

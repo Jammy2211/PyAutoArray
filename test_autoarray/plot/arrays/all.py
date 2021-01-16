@@ -19,7 +19,7 @@ aplt.Array(
     grid=grid,
     positions=aa.GridIrregularGrouped([(-1.0, -1.0)]),
     lines=aa.GridIrregularGrouped([(1.0, 1.0), (2.0, 2.0)]),
-    include=aplt.Include(origin=True, border=True),
+    include=aplt.Include2D(origin=True, border=True),
 )
 
 aplt.Array(
@@ -28,5 +28,5 @@ aplt.Array(
     grid=grid,
     positions=aa.GridIrregularGrouped([[(1.0, 1.0), (2.0, 2.0)], [(-1.0, -1.0)]]),
     lines=aa.GridIrregularGrouped([[(1.0, 1.0), (2.0, 2.0)], [(2.0, 4.0), (5.0, 6.0)]]),
-    include=aplt.Include(origin=True, border=True),
+    include=aplt.Include2D(origin=True, border=True),
 )
