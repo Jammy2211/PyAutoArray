@@ -299,7 +299,6 @@ class MapperPlotter(abstract_plotters.AbstractPlotter):
             auto_labels=mp.AutoLabels(title="Mapper", filename="mapper"),
         )
 
-    @abstract_plotters.for_subplot
     def subplot_image_and_mapper(self, image):
 
         self.open_subplot_figure(number_subplots=2)

@@ -221,8 +221,9 @@ class Figure(AbstractMatWrap):
     def open(self):
         """Wraps the Matplotlib method 'plt.figure' for opening a figure."""
         if not plt.fignum_exists(num=1):
-            config_dict = self.config_dict.pop("aspect")
-            plt.figure(config_dict)
+            config_dict = self.config_dict
+            config_dict.pop("aspect")
+            plt.figure(**config_dict)
 
     def close(self):
         """Wraps the Matplotlib method 'plt.close' for closing a figure."""
@@ -282,7 +283,6 @@ class Axis(AbstractMatWrap):
         else:
 
             if extent_dict is not None:
-                print(extent_dict)
                 plt.axis(extent_dict, **config_dict)
             else:
                 plt.axis(extent, **config_dict)
