@@ -166,8 +166,6 @@ class GridVoronoi(np.ndarray):
             nearest_pixelization_1d_index_for_mask_1d_index
         )
 
-        obj.pixels = grid.shape[0]
-
         try:
             obj.voronoi = scipy.spatial.Voronoi(
                 np.asarray([grid[:, 1], grid[:, 0]]).T, qhull_options="Qbb Qc Qx Qm"
@@ -192,6 +190,9 @@ class GridVoronoi(np.ndarray):
 
     def __array_finalize__(self, obj):
 
+        if hasattr(obj, "voronoi"):
+            self.voronoi = obj.voronoi
+
         if hasattr(obj, "pixel_neighbors"):
             self.pixel_neighbors = obj.pixel_neighbors
 
@@ -202,6 +203,9 @@ class GridVoronoi(np.ndarray):
             self.nearest_pixelization_1d_index_for_mask_1d_index = (
                 obj.nearest_pixelization_1d_index_for_mask_1d_index
             )
+
+        if hasattr(obj, "_sub_border_1d_indexes"):
+            self._sub_border_1d_indexes = obj._sub_border_1d_indexes
 
     def __reduce__(self):
         # Get the parent's __reduce__ tuple
@@ -220,6 +224,22 @@ class GridVoronoi(np.ndarray):
         for key, value in state[-1].items():
             setattr(self, key, value)
         super().__setstate__(state[0:-1])
+
+    @property
+    def origin(self):
+        return 0.0, 0.0
+
+    @property
+    def pixels(self):
+        return self.shape[0]
+
+    @property
+    def sub_border_grid(self):
+        """The (y,x) grid of all sub-pixels which are at the border of the mask.
+
+        This is NOT all sub-pixels which are in mask pixels at the mask's border, but specifically the sub-pixels
+        within these border pixels which are at the extreme edge of the border."""
+        return self[self._sub_border_1d_indexes]
 
     @classmethod
     def manual_1d(cls, grid):

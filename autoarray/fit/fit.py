@@ -1,69 +1,33 @@
 import numpy as np
 
+from autoarray.structures import abstract_structure
 from autoarray.util import fit_util
 
 
-class FitDataset:
-
-    # noinspection PyUnresolvedReferences
+class FitData:
     def __init__(
-        self, masked_dataset, model_data, inversion=None, use_mask_in_fit=True
+        self,
+        data,
+        noise_map,
+        model_data,
+        mask=None,
+        inversion=None,
+        use_mask_in_fit=False,
     ):
-        """Class to fit a masked dataset where the dataset's data structures are any dimension.
 
-        Parameters
-        -----------
-        masked_dataset : MaskedDataset
-            The masked dataset (data, mask, noise-map, etc.) that is fitted.
-        model_data : np.ndarray
-            The model data the masked dataset is fitted with.
-        inversion : Inversion
-            If the fit uses an `Inversion` this is the instance of the object used to perform the fit. This determines
-            if the `log_likelihood` or `log_evidence` is used as the `figure_of_merit`.
-        use_mask_in_fit : bool
-            If `True`, masked data points are omitted from the fit. If `False` they are not (in most use cases the
-            `masked_dataset` will have been processed to remove masked points, for example the `in_1d` representation).
-
-        Attributes
-        -----------
-        residual_map : np.ndarray
-            The residual-map of the fit (data - model_data).
-        chi_squared_map : np.ndarray
-            The chi-squared-map of the fit ((data - model_data) / noise_maps ) **2.0
-        chi_squared : float
-            The overall chi-squared of the model's fit to the dataset, summed over every data point.
-        reduced_chi_squared : float
-            The reduced chi-squared of the model's fit to simulate (chi_squared / number of data points), summed over \
-            every data point.
-        noise_normalization : float
-            The overall normalization term of the noise_map, summed over every data point.
-        log_likelihood : float
-            The overall log likelihood of the model's fit to the dataset, summed over evey data point.
-        """
-
-        self.masked_dataset = masked_dataset
+        self.data = data
+        self.noise_map = noise_map
         self.model_data = model_data
+        self._mask = mask
         self.inversion = inversion
         self.use_mask_in_fit = use_mask_in_fit
 
     @property
-    def name(self) -> str:
-        return self.masked_dataset.dataset.name
+    def mask(self):
+        return self._mask
 
     @property
-    def mask(self) -> np.ndarray:
-        return self.masked_dataset.mask
-
-    @property
-    def data(self) -> np.ndarray:
-        return self.masked_dataset.data
-
-    @property
-    def noise_map(self) -> np.ndarray:
-        return self.masked_dataset.noise_map
-
-    @property
-    def residual_map(self) -> np.ndarray:
+    def residual_map(self) -> abstract_structure.AbstractStructure:
         """
         Returns the residual-map between the masked dataset and model data, where:
 
@@ -76,7 +40,7 @@ class FitDataset:
         return fit_util.residual_map_from(data=self.data, model_data=self.model_data)
 
     @property
-    def normalized_residual_map(self) -> np.ndarray:
+    def normalized_residual_map(self) -> abstract_structure.AbstractStructure:
         """
         Returns the normalized residual-map between the masked dataset and model data, where:
 
@@ -91,7 +55,7 @@ class FitDataset:
         )
 
     @property
-    def chi_squared_map(self) -> np.ndarray:
+    def chi_squared_map(self) -> abstract_structure.AbstractStructure:
         """
         Returns the chi-squared-map between the residual-map and noise-map, where:
 
@@ -106,7 +70,7 @@ class FitDataset:
         )
 
     @property
-    def signal_to_noise_map(self) -> np.ndarray:
+    def signal_to_noise_map(self) -> abstract_structure.AbstractStructure:
         """The signal-to-noise_map of the dataset and noise-map which are fitted."""
         signal_to_noise_map = np.divide(self.data, self.noise_map)
         signal_to_noise_map[signal_to_noise_map < 0] = 0
@@ -154,7 +118,7 @@ class FitDataset:
     @property
     def log_likelihood_with_regularization(self) -> float:
         """
-    Returns the log likelihood of an inversion's fit to the dataset, including a regularization term which \
+        Returns the log likelihood of an inversion's fit to the dataset, including a regularization term which \
         comes from an inversion:
 
         Log Likelihood = -0.5*[Chi_Squared_Term + Regularization_Term + Noise_Term] (see functions above for these definitions)
@@ -169,7 +133,7 @@ class FitDataset:
     @property
     def log_evidence(self) -> float:
         """
-    Returns the log evidence of the inversion's fit to a dataset, where the log evidence includes a number of terms
+        Returns the log evidence of the inversion's fit to a dataset, where the log evidence includes a number of terms
         which quantify the complexity of an inversion's reconstruction (see the `Inversion` module):
 
         Log Evidence = -0.5*[Chi_Squared_Term + Regularization_Term + Log(Covariance_Regularization_Term) -
@@ -211,6 +175,61 @@ class FitDataset:
             return 0
         else:
             return 1
+
+
+class FitDataset(FitData):
+
+    # noinspection PyUnresolvedReferences
+    def __init__(
+        self, masked_dataset, model_data, inversion=None, use_mask_in_fit=True
+    ):
+        """Class to fit a masked dataset where the dataset's data structures are any dimension.
+
+        Parameters
+        -----------
+        masked_dataset : MaskedDataset
+            The masked dataset (data, mask, noise-map, etc.) that is fitted.
+        model_data : np.ndarray
+            The model data the masked dataset is fitted with.
+        inversion : Inversion
+            If the fit uses an `Inversion` this is the instance of the object used to perform the fit. This determines
+            if the `log_likelihood` or `log_evidence` is used as the `figure_of_merit`.
+        use_mask_in_fit : bool
+            If `True`, masked data points are omitted from the fit. If `False` they are not (in most use cases the
+            `masked_dataset` will have been processed to remove masked points, for example the `in_1d` representation).
+
+        Attributes
+        -----------
+        residual_map : np.ndarray
+            The residual-map of the fit (data - model_data).
+        chi_squared_map : np.ndarray
+            The chi-squared-map of the fit ((data - model_data) / noise_maps ) **2.0
+        chi_squared : float
+            The overall chi-squared of the model's fit to the dataset, summed over every data point.
+        reduced_chi_squared : float
+            The reduced chi-squared of the model's fit to simulate (chi_squared / number of data points), summed over \
+            every data point.
+        noise_normalization : float
+            The overall normalization term of the noise_map, summed over every data point.
+        log_likelihood : float
+            The overall log likelihood of the model's fit to the dataset, summed over evey data point.
+        """
+
+        self.masked_dataset = masked_dataset
+
+        super().__init__(
+            data=masked_dataset.data,
+            noise_map=masked_dataset.noise_map,
+            model_data=model_data,
+            mask=masked_dataset.mask,
+            inversion=inversion,
+        )
+
+        self.use_mask_in_fit = use_mask_in_fit
+
+    @property
+    def name(self) -> str:
+        return self.masked_dataset.dataset.name
 
 
 class FitImaging(FitDataset):
@@ -261,11 +280,11 @@ class FitImaging(FitDataset):
         return self.masked_dataset
 
     @property
-    def image(self) -> np.ndarray:
+    def image(self) -> abstract_structure.AbstractStructure:
         return self.data
 
     @property
-    def model_image(self) -> np.ndarray:
+    def model_image(self) -> abstract_structure.AbstractStructure:
         return self.model_data
 
 
@@ -321,19 +340,19 @@ class FitInterferometer(FitDataset):
         return self.masked_dataset
 
     @property
-    def mask(self) -> np.ndarray:
+    def mask(self) -> abstract_structure.AbstractStructure:
         return self.masked_interferometer.visibilities_mask
 
     @property
-    def visibilities_mask(self) -> np.ndarray:
+    def visibilities_mask(self) -> abstract_structure.AbstractStructure:
         return self.masked_interferometer.visibilities_mask
 
     @property
-    def visibilities(self) -> np.ndarray:
+    def visibilities(self) -> abstract_structure.AbstractStructure:
         return self.data
 
     @property
-    def signal_to_noise_map(self) -> np.ndarray:
+    def signal_to_noise_map(self) -> abstract_structure.AbstractStructure:
         """The signal-to-noise_map of the dataset and noise-map which are fitted."""
         signal_to_noise_map_real = np.divide(
             np.real(self.data), np.real(self.noise_map)
@@ -347,11 +366,11 @@ class FitInterferometer(FitDataset):
         return signal_to_noise_map_real + 1.0j * signal_to_noise_map_imag
 
     @property
-    def model_visibilities(self) -> np.ndarray:
+    def model_visibilities(self) -> abstract_structure.AbstractStructure:
         return self.model_data
 
     @property
-    def normalized_residual_map(self) -> np.ndarray:
+    def normalized_residual_map(self) -> abstract_structure.AbstractStructure:
         """
         Returns the normalized residual-map between the masked dataset and model data, where:
 
@@ -362,7 +381,7 @@ class FitInterferometer(FitDataset):
         )
 
     @property
-    def chi_squared_map(self) -> np.ndarray:
+    def chi_squared_map(self) -> abstract_structure.AbstractStructure:
         """
         Returns the chi-squared-map between the residual-map and noise-map, where:
 

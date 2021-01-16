@@ -11,4 +11,5 @@ imaging = aa.Imaging(image=array, noise_map=array, psf=kernel)
 
 # aplt.Imaging.image(imaging=imaging)
 
-aplt.Imaging.subplot_imaging(imaging=imaging)
+imaging_plotter = aplt.ImagingPlotter(imaging=imaging)
+imaging_plotter.subplot_imaging()

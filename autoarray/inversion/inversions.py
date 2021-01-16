@@ -12,6 +12,7 @@ from autoarray.util import inversion_util
 from scipy.interpolate import griddata
 from scipy import sparse
 import pylops
+import typing
 
 
 class SettingsInversion:
@@ -51,7 +52,12 @@ class SettingsInversion:
         return ""
 
 
-def inversion(masked_dataset, mapper, regularization, settings=SettingsInversion()):
+def inversion(
+    masked_dataset,
+    mapper: typing.Union[mappers.MapperRectangular, mappers.MapperVoronoi],
+    regularization,
+    settings=SettingsInversion(),
+):
 
     if isinstance(masked_dataset, imaging.MaskedImaging):
 
@@ -98,32 +104,11 @@ def log_determinant_of_matrix_cholesky(matrix):
         raise exc.InversionException()
 
 
-class AbstractInversionMatrix:
-    def __init__(
-        self, curvature_reg_matrix: np.ndarray, regularization_matrix: np.ndarray
-    ):
-
-        self.curvature_reg_matrix = curvature_reg_matrix
-        self.regularization_matrix = regularization_matrix
-
-    @property
-    def log_det_curvature_reg_matrix_term(self):
-        return log_determinant_of_matrix_cholesky(self.curvature_reg_matrix)
-
-    @property
-    def errors_with_covariance(self):
-        return np.linalg.inv(self.curvature_reg_matrix)
-
-    @property
-    def errors(self):
-        return np.diagonal(self.errors_with_covariance)
-
-
 class AbstractInversion:
     def __init__(
         self,
         noise_map: np.ndarray,
-        mapper: mappers.Mapper,
+        mapper: typing.Union[mappers.MapperRectangular, mappers.MapperVoronoi],
         regularization: reg.Regularization,
         regularization_matrix: np.ndarray,
         reconstruction: np.ndarray,
@@ -137,7 +122,7 @@ class AbstractInversion:
         self.reconstruction = reconstruction
         self.settings = settings
 
-    def interpolated_reconstruction_from_shape_2d(self, shape_2d=None):
+    def interpolated_reconstructed_data_from_shape_2d(self, shape_2d=None):
         return self.interpolated_values_from_shape_2d(
             values=self.reconstruction, shape_2d=shape_2d
         )
@@ -152,7 +137,7 @@ class AbstractInversion:
         if shape_2d is not None:
 
             grid = grids.Grid.bounding_box(
-                bounding_box=self.mapper.pixelization_grid.extent,
+                bounding_box=self.mapper.source_pixelization_grid.extent,
                 shape_2d=shape_2d,
                 buffer_around_corners=False,
             )
@@ -162,7 +147,7 @@ class AbstractInversion:
             in "image_grid"
         ):
 
-            grid = self.mapper.grid
+            grid = self.mapper.source_full_grid
 
         elif (
             conf.instance["general"]["inversion"]["interpolated_grid_shape"]
@@ -173,7 +158,7 @@ class AbstractInversion:
             shape_2d = (dimension, dimension)
 
             grid = grids.Grid.bounding_box(
-                bounding_box=self.mapper.pixelization_grid.extent,
+                bounding_box=self.mapper.source_pixelization_grid.extent,
                 shape_2d=shape_2d,
                 buffer_around_corners=False,
             )
@@ -186,7 +171,7 @@ class AbstractInversion:
             )
 
         interpolated_reconstruction = griddata(
-            points=self.mapper.pixelization_grid,
+            points=self.mapper.source_pixelization_grid,
             values=values,
             xi=grid.in_2d_binned,
             method="linear",
@@ -227,8 +212,55 @@ class AbstractInversion:
     @property
     def brightest_reconstruction_pixel_centre(self):
         return grids.GridIrregular(
-            grid=[self.mapper.pixelization_grid[self.brightest_reconstruction_pixel]]
+            grid=[
+                self.mapper.source_pixelization_grid[
+                    self.brightest_reconstruction_pixel
+                ]
+            ]
         )
+
+    @property
+    def mapped_reconstructed_image(self):
+        raise NotImplementedError()
+
+    @property
+    def residual_map(self):
+        raise NotImplementedError()
+
+    @property
+    def normalized_residual_map(self):
+        raise NotImplementedError()
+
+    @property
+    def chi_squared_map(self):
+        raise NotImplementedError()
+
+    @property
+    def regularization_weights(self):
+        return self.regularization.regularization_weights_from_mapper(
+            mapper=self.mapper
+        )
+
+
+class AbstractInversionMatrix:
+    def __init__(
+        self, curvature_reg_matrix: np.ndarray, regularization_matrix: np.ndarray
+    ):
+
+        self.curvature_reg_matrix = curvature_reg_matrix
+        self.regularization_matrix = regularization_matrix
+
+    @property
+    def log_det_curvature_reg_matrix_term(self):
+        return log_determinant_of_matrix_cholesky(self.curvature_reg_matrix)
+
+    @property
+    def errors_with_covariance(self):
+        return np.linalg.inv(self.curvature_reg_matrix)
+
+    @property
+    def errors(self):
+        return np.diagonal(self.errors_with_covariance)
 
 
 class InversionImagingMatrix(AbstractInversion, AbstractInversionMatrix):
@@ -237,7 +269,7 @@ class InversionImagingMatrix(AbstractInversion, AbstractInversionMatrix):
         image: arrays.Array,
         noise_map: arrays.Array,
         convolver: conv.Convolver,
-        mapper: mappers.Mapper,
+        mapper: typing.Union[mappers.MapperRectangular, mappers.MapperVoronoi],
         regularization: reg.Regularization,
         blurred_mapping_matrix: np.ndarray,
         regularization_matrix: np.ndarray,
@@ -306,7 +338,7 @@ class InversionImagingMatrix(AbstractInversion, AbstractInversionMatrix):
         image: arrays.Array,
         noise_map: arrays.Array,
         convolver: conv.Convolver,
-        mapper: mappers.Mapper,
+        mapper: typing.Union[mappers.MapperRectangular, mappers.MapperVoronoi],
         regularization: reg.Regularization,
         settings=SettingsInversion(),
     ):
@@ -363,7 +395,7 @@ class InversionImagingMatrix(AbstractInversion, AbstractInversionMatrix):
 
         return arrays.Array(
             array=reconstructed_image,
-            mask=self.mapper.grid.mask.mask_sub_1,
+            mask=self.mapper.source_full_grid.mask.mask_sub_1,
             store_in_1d=True,
         )
 
@@ -372,8 +404,8 @@ class InversionImagingMatrix(AbstractInversion, AbstractInversionMatrix):
         return inversion_util.inversion_residual_map_from(
             pixelization_values=self.reconstruction,
             data=self.image,
-            mask_1d_index_for_sub_mask_1d_index=self.mapper.grid.mask.regions._mask_1d_index_for_sub_mask_1d_index,
-            all_sub_mask_1d_indexes_for_pixelization_1d_index=self.mapper.all_sub_mask_1d_indexes_for_pixelization_1d_index,
+            mask_1d_index_for_sub_mask_1d_index=self.mapper.source_full_grid.mask.regions._mask_1d_index_for_sub_mask_1d_index,
+            all_sub_mask_1d_indexes_for_pixelization_1d_index=self.mapper.all_sub_full_1d_indexes_for_pixelization_1d_index,
         )
 
     @property
@@ -382,8 +414,8 @@ class InversionImagingMatrix(AbstractInversion, AbstractInversionMatrix):
             pixelization_values=self.reconstruction,
             data=self.image,
             noise_map_1d=self.noise_map,
-            mask_1d_index_for_sub_mask_1d_index=self.mapper.grid.mask.regions._mask_1d_index_for_sub_mask_1d_index,
-            all_sub_mask_1d_indexes_for_pixelization_1d_index=self.mapper.all_sub_mask_1d_indexes_for_pixelization_1d_index,
+            mask_1d_index_for_sub_mask_1d_index=self.mapper.source_full_grid.mask.regions._mask_1d_index_for_sub_mask_1d_index,
+            all_sub_mask_1d_indexes_for_pixelization_1d_index=self.mapper.all_sub_full_1d_indexes_for_pixelization_1d_index,
         )
 
     @property
@@ -392,8 +424,8 @@ class InversionImagingMatrix(AbstractInversion, AbstractInversionMatrix):
             pixelization_values=self.reconstruction,
             data=self.image,
             noise_map_1d=self.noise_map,
-            mask_1d_index_for_sub_mask_1d_index=self.mapper.grid.mask.regions._mask_1d_index_for_sub_mask_1d_index,
-            all_sub_mask_1d_indexes_for_pixelization_1d_index=self.mapper.all_sub_mask_1d_indexes_for_pixelization_1d_index,
+            mask_1d_index_for_sub_mask_1d_index=self.mapper.source_full_grid.mask.regions._mask_1d_index_for_sub_mask_1d_index,
+            all_sub_mask_1d_indexes_for_pixelization_1d_index=self.mapper.all_sub_full_1d_indexes_for_pixelization_1d_index,
         )
 
 
@@ -403,7 +435,7 @@ class AbstractInversionInterferometer(AbstractInversion):
         visibilities: vis.Visibilities,
         noise_map: vis.VisibilitiesNoiseMap,
         transformer: trans.TransformerNUFFT,
-        mapper: mappers.Mapper,
+        mapper: typing.Union[mappers.MapperRectangular, mappers.MapperVoronoi],
         regularization: reg.Regularization,
         regularization_matrix: np.ndarray,
         reconstruction: np.ndarray,
@@ -428,7 +460,7 @@ class AbstractInversionInterferometer(AbstractInversion):
         visibilities: vis.Visibilities,
         noise_map: vis.VisibilitiesNoiseMap,
         transformer: trans.TransformerNUFFT,
-        mapper: mappers.Mapper,
+        mapper: typing.Union[mappers.MapperRectangular, mappers.MapperVoronoi],
         regularization: reg.Regularization,
         settings=SettingsInversion(use_linear_operators=True),
     ):
@@ -462,7 +494,7 @@ class AbstractInversionInterferometer(AbstractInversion):
 
         return arrays.Array(
             array=mapped_reconstructed_image,
-            mask=self.mapper.grid.mask.mask_sub_1,
+            mask=self.mapper.source_full_grid.mask.mask_sub_1,
             store_in_1d=True,
         )
 
@@ -475,7 +507,7 @@ class InversionInterferometerMatrix(
         visibilities: vis.Visibilities,
         noise_map: vis.VisibilitiesNoiseMap,
         transformer: trans.TransformerNUFFT,
-        mapper: mappers.Mapper,
+        mapper: typing.Union[mappers.MapperRectangular, mappers.MapperVoronoi],
         regularization: reg.Regularization,
         regularization_matrix: np.ndarray,
         reconstruction: np.ndarray,
@@ -545,7 +577,7 @@ class InversionInterferometerMatrix(
         visibilities: vis.Visibilities,
         noise_map: vis.VisibilitiesNoiseMap,
         transformer: trans.TransformerNUFFT,
-        mapper: mappers.Mapper,
+        mapper: typing.Union[mappers.MapperRectangular, mappers.MapperVoronoi],
         regularization: reg.Regularization,
         settings=SettingsInversion(),
     ):
@@ -640,7 +672,7 @@ class InversionInterferometerLinearOperator(AbstractInversionInterferometer):
         visibilities: vis.Visibilities,
         noise_map: vis.VisibilitiesNoiseMap,
         transformer: trans.TransformerNUFFT,
-        mapper: mappers.Mapper,
+        mapper: typing.Union[mappers.MapperRectangular, mappers.MapperVoronoi],
         regularization: reg.Regularization,
         regularization_matrix: np.ndarray,
         reconstruction: np.ndarray,
@@ -702,7 +734,7 @@ class InversionInterferometerLinearOperator(AbstractInversionInterferometer):
         visibilities: vis.Visibilities,
         noise_map: vis.VisibilitiesNoiseMap,
         transformer: trans.TransformerNUFFT,
-        mapper: mappers.Mapper,
+        mapper: typing.Union[mappers.MapperRectangular, mappers.MapperVoronoi],
         regularization: reg.Regularization,
         settings=SettingsInversion(),
     ):

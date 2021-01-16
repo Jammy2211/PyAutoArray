@@ -10,7 +10,7 @@ import copy
 class SettingsPixelization:
     def __init__(
         self,
-        use_border: bool = False,
+        use_border: bool = True,
         pixel_limit: int = None,
         is_stochastic: bool = False,
         kmeans_seed: int = 0,
@@ -132,6 +132,7 @@ class Rectangular(Pixelization):
         self,
         grid: grids.Grid,
         sparse_grid: grids.Grid = None,
+        sparse_image_plane_grid: grids.Grid = None,
         hyper_image: np.ndarray = None,
         settings=SettingsPixelization(),
     ):
@@ -161,8 +162,8 @@ class Rectangular(Pixelization):
         )
 
         return mappers.MapperRectangular(
-            grid=relocated_grid,
-            pixelization_grid=pixelization_grid,
+            source_full_grid=relocated_grid,
+            source_pixelization_grid=pixelization_grid,
             hyper_image=hyper_image,
         )
 
@@ -189,6 +190,7 @@ class Voronoi(Pixelization):
         self,
         grid: grids.Grid,
         sparse_grid: grids.Grid = None,
+        sparse_image_plane_grid: grids.Grid = None,
         hyper_image: np.ndarray = None,
         settings=SettingsPixelization(),
     ):
@@ -230,8 +232,9 @@ class Voronoi(Pixelization):
             )
 
             return mappers.MapperVoronoi(
-                grid=relocated_grid,
-                pixelization_grid=pixelization_grid,
+                source_full_grid=relocated_grid,
+                source_pixelization_grid=pixelization_grid,
+                data_pixelization_grid=sparse_image_plane_grid,
                 hyper_image=hyper_image,
             )
         except ValueError as e:

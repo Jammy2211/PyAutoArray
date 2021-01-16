@@ -35,6 +35,21 @@ def make_mask_7x7_1_pix():
     return fixtures.make_mask_7x7_1_pix()
 
 
+@pytest.fixture(name="array_7x7")
+def make_array_7x7():
+    return fixtures.make_array_7x7()
+
+
+@pytest.fixture(name="scans_7x7")
+def make_scans_7x7():
+    return fixtures.make_scans_7x7()
+
+
+@pytest.fixture(name="frame_7x7")
+def make_frame_7x7():
+    return fixtures.make_frame_7x7()
+
+
 @pytest.fixture(name="grid_7x7")
 def make_grid_7x7():
     return fixtures.make_grid_7x7()
@@ -65,9 +80,9 @@ def make_noise_map_7x7():
     return fixtures.make_noise_map_7x7()
 
 
-@pytest.fixture(name="positions_7x7")
-def make_positions_7x7():
-    return fixtures.make_positions_7x7()
+@pytest.fixture(name="grid_irregular_grouped_7x7")
+def make_grid_irregular_grouped_7x7():
+    return fixtures.make_grid_irregular_grouped_7x7()
 
 
 @pytest.fixture(name="imaging_7x7")
