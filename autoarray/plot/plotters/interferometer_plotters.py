@@ -53,7 +53,7 @@ class InterferometerPlotter(abstract_plotters.AbstractPlotter):
         Parameters
         -----------
         interferometer : data_type.UVPlaneData
-            The interferometer data_type, which include_2d the observed data_type, noise_map, PSF, signal-to-noise_map, etc.
+            The interferometer data_type, which include the observed data_type, noise_map, PSF, signal-to-noise_map, etc.
         origin : True
             If true, the origin of the dataset's coordinate system is plotted as a 'x'.
         """
@@ -180,7 +180,7 @@ class InterferometerPlotter(abstract_plotters.AbstractPlotter):
         Parameters
         -----------
         interferometer : data_type.UVPlaneData
-            The interferometer data_type, which include_2d the observed data_type, noise_map, PSF, signal-to-noise_map, etc.
+            The interferometer data_type, which include the observed data_type, noise_map, PSF, signal-to-noise_map, etc.
         origin : True
             If true, the origin of the dataset's coordinate system is plotted as a 'x'.
         image_plane_pix_grid : np.ndarray or data_type.array.grid_stacks.PixGrid
