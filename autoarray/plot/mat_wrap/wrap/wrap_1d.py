@@ -71,10 +71,10 @@ class LinePlot(AbstractMatWrap1D):
                 "{semilogy, loglog})"
             )
 
-    def plot_vertical_lines(
-        self,
-        vertical_lines: typing.List[np.ndarray],
-        vertical_line_labels: typing.List[str] = None,
+
+class AXVLine(AbstractMatWrap1D):
+    def plot_vertical_line(
+        self, vertical_line: float, vertical_line_label: typing.Optional[str] = None
     ):
         """
         Plots vertical lines on 1D plot of y versus x using the method `plt.axvline`.
@@ -83,20 +83,13 @@ class LinePlot(AbstractMatWrap1D):
 
         Parameters
         ----------
-        vertical_lines : [np.ndarray]
+        vertical_line : [np.ndarray]
             The vertical lines of data that are plotted on the figure.
-        vertical_line_labels : [str]
+        vertical_line_label : [str]
             Labels for each vertical line used by a `Legend`.
         """
 
-        if vertical_lines is [] or vertical_lines is None:
+        if vertical_line is [] or vertical_line is None:
             return
 
-        if vertical_line_labels is None:
-            vertical_line_labels = [None for i in range(len(vertical_lines))]
-
-        for vertical_line, vertical_line_label in zip(
-            vertical_lines, vertical_line_labels
-        ):
-
-            plt.axvline(x=vertical_line, label=vertical_line_label, **self.config_dict)
+        plt.axvline(x=vertical_line, label=vertical_line_label, **self.config_dict)

@@ -415,7 +415,7 @@ class AbstractGrid(abstract_structure.AbstractStructure):
     @decorator_util.jit()
     def relocated_grid_from_grid_jit(grid, border_grid):
         """ Relocate the coordinates of a grid to its border if they are outside the border, where the border is
-        defined as all pixels at the edge of the grid's mask (see *mask.regions._border_1d_indexes*).
+        defined as all pixels at the edge of the grid's mask (see *mask._border_1d_indexes*).
 
         This is performed as follows:
 
@@ -514,7 +514,7 @@ class AbstractGrid(abstract_structure.AbstractStructure):
 
     def relocated_grid_from_grid(self, grid):
         """ Relocate the coordinates of a grid to the border of this grid if they are outside the border, where the
-        border is defined as all pixels at the edge of the grid's mask (see *mask.regions._border_1d_indexes*).
+        border is defined as all pixels at the edge of the grid's mask (see *mask._border_1d_indexes*).
 
         This is performed as follows:
 

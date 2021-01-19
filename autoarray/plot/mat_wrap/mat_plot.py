@@ -15,11 +15,14 @@ import typing
 
 
 class AutoLabels:
-    def __init__(self, title=None, ylabel=None, xlabel=None, filename=None):
+    def __init__(
+        self, title=None, ylabel=None, xlabel=None, legend=None, filename=None
+    ):
 
         self.title = title
         self.ylabel = ylabel
         self.xlabel = xlabel
+        self.legend = legend
         self.filename = filename
 
 
@@ -227,7 +230,6 @@ class MatPlot1D(AbstractMatPlot):
         x,
         visuals_1d: vis.Visuals1D,
         auto_labels: AutoLabels,
-        label=None,
         plot_axis_type="semilogy",
         vertical_lines=None,
         vertical_line_labels=None,
@@ -242,22 +244,28 @@ class MatPlot1D(AbstractMatPlot):
         if x is None:
             x = np.arange(len(y))
 
-        self.line_plot.plot_y_vs_x(y=y, x=x, plot_axis_type=plot_axis_type, label=label)
+        self.line_plot.plot_y_vs_x(
+            y=y, x=x, plot_axis_type=plot_axis_type, label=auto_labels.legend
+        )
 
         self.ylabel.set(units=self.units, include_brackets=False)
         self.xlabel.set(units=self.units, include_brackets=False)
 
-        self.line_plot.plot_vertical_lines(
-            vertical_lines=vertical_lines, vertical_line_labels=vertical_line_labels
-        )
+        # self.line_plot.plot_vertical_lines(
+        #     vertical_lines=vertical_lines, vertical_line_labels=vertical_line_labels
+        # )
 
-        if label is not None or vertical_line_labels is not None:
+        if auto_labels.legend is not None:  # or vertical_line_labels is not None:
             self.legend.set()
 
         self.tickparams.set()
         self.xticks.set(
             array=None, min_value=np.min(x), max_value=np.max(x), units=self.units
         )
+
+        self.title.set(auto_title=auto_labels.title)
+        self.ylabel.set(units=self.units, auto_label=auto_labels.ylabel)
+        self.xlabel.set(units=self.units, auto_label=auto_labels.xlabel)
 
         if not self.is_for_subplot:
             self.output.to_figure(structure=None, auto_filename=auto_labels.filename)
@@ -553,9 +561,7 @@ class MatPlot2D(AbstractMatPlot):
         cb = self.colorbar.set()
         self.colorbar_tickparams.set(cb=cb)
 
-        visuals_2d.plot_via_plotter(
-            plotter=self, grid_indexes=array.geometry.masked_grid
-        )
+        visuals_2d.plot_via_plotter(plotter=self, grid_indexes=array.mask.masked_grid)
 
         if not self.is_for_subplot and not bypass:
             self.output.to_figure(structure=array, auto_filename=auto_labels.filename)
@@ -583,7 +589,7 @@ class MatPlot2D(AbstractMatPlot):
         aspect = self.figure.aspect_from_shape_2d(shape_2d=frame.shape_2d)
         norm_scale = self.cmap.norm_from_array(array=frame)
 
-        extent_imshow = frame.mask.geometry.extent
+        extent_imshow = frame.mask.extent
 
         plt.imshow(
             X=frame,

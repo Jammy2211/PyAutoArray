@@ -1,12 +1,12 @@
 import logging
-
 import copy
 import numpy as np
 
 from autoarray import exc
 from autoarray.mask import abstract_mask
-from autoarray.util import array_util, binning_util, geometry_util, mask_util
-from autoarray.structures import arrays
+from autoarray.util import array_util, binning_util, geometry_util, grid_util, mask_util
+from autoarray.structures import arrays, grids
+
 
 logging.basicConfig()
 logger = logging.getLogger(__name__)
@@ -86,35 +86,34 @@ class AbstractMask2D(abstract_mask.AbstractMask):
 
         return mask_util.mask_via_shape_2d_and_mask_index_for_mask_1d_index_from(
             shape_2d=sub_shape,
-            mask_index_for_mask_1d_index=self.regions._sub_mask_index_for_sub_mask_1d_index,
+            mask_index_for_mask_1d_index=self._sub_mask_index_for_sub_mask_1d_index,
         ).astype("bool")
-
-    @property
-    def edge_buffed_mask(self):
-        edge_buffed_mask = mask_util.buffed_mask_from(mask=self).astype("bool")
-        return self.__class__(
-            mask=edge_buffed_mask,
-            pixel_scales=self.pixel_scales,
-            sub_size=self.sub_size,
-            origin=self.origin,
-        )
 
     def rescaled_mask_from_rescale_factor(self, rescale_factor):
         rescaled_mask = mask_util.rescaled_mask_from(
             mask=self, rescale_factor=rescale_factor
         )
-        return self.__class__(
+        return Mask2D(
             mask=rescaled_mask,
             pixel_scales=self.pixel_scales,
             sub_size=self.sub_size,
             origin=self.origin,
         )
 
+    @property
+    def mask_sub_1(self):
+        """
+        Returns the mask on the same scaled coordinate system but with a sub-grid of ``sub_size`` `.
+        """
+        return Mask2D(
+            mask=self, sub_size=1, pixel_scales=self.pixel_scales, origin=self.origin
+        )
+
     def binned_mask_from_bin_up_factor(self, bin_up_factor):
 
         binned_up_mask = binning_util.bin_mask(mask=self, bin_up_factor=bin_up_factor)
 
-        return self.__class__(
+        return Mask2D(
             mask=binned_up_mask,
             pixel_scales=self.binned_pixel_scales_from_bin_up_factor(
                 bin_up_factor=bin_up_factor
@@ -138,7 +137,7 @@ class AbstractMask2D(abstract_mask.AbstractMask):
             array_2d=mask, resized_shape=new_shape
         ).astype("bool")
 
-        return self.__class__(
+        return Mask2D(
             mask=resized_mask,
             pixel_scales=self.pixel_scales,
             sub_size=self.sub_size,
@@ -218,6 +217,510 @@ class AbstractMask2D(abstract_mask.AbstractMask):
         """
         array_util.numpy_array_2d_to_fits(
             array_2d=self.astype("float"), file_path=file_path, overwrite=overwrite
+        )
+
+    @property
+    def shape_2d_scaled(self):
+        return (
+            float(self.pixel_scales[0] * self.shape[0]),
+            float(self.pixel_scales[1] * self.shape[1]),
+        )
+
+    @property
+    def central_pixel_coordinates(self):
+        return geometry_util.central_pixel_coordinates_from(shape=self.shape_2d)
+
+    @property
+    def central_scaled_coordinates(self):
+
+        return geometry_util.central_scaled_coordinate_2d_from(
+            shape_2d=self.shape_2d, pixel_scales=self.pixel_scales, origin=self.origin
+        )
+
+    def pixel_coordinates_2d_from(self, scaled_coordinates_2d):
+
+        return geometry_util.pixel_coordinates_2d_from(
+            scaled_coordinates_2d=scaled_coordinates_2d,
+            shape_2d=self.shape,
+            pixel_scales=self.pixel_scales,
+            origins=self.origin,
+        )
+
+    def scaled_coordinates_2d_from(self, pixel_coordinates_2d):
+
+        return geometry_util.scaled_coordinates_2d_from(
+            pixel_coordinates_2d=pixel_coordinates_2d,
+            shape_2d=self.shape,
+            pixel_scales=self.pixel_scales,
+            origins=self.origin,
+        )
+
+    @property
+    @array_util.Memoizer()
+    def mask_centre(self):
+        return grid_util.grid_centre_from(grid_1d=self.masked_grid_sub_1)
+
+    @property
+    def scaled_maxima(self):
+        return (
+            (self.shape_2d_scaled[0] / 2.0) + self.origin[0],
+            (self.shape_2d_scaled[1] / 2.0) + self.origin[1],
+        )
+
+    @property
+    def scaled_minima(self):
+        return (
+            (-(self.shape_2d_scaled[0] / 2.0)) + self.origin[0],
+            (-(self.shape_2d_scaled[1] / 2.0)) + self.origin[1],
+        )
+
+    @property
+    def extent(self):
+        return np.asarray(
+            [
+                self.scaled_minima[1],
+                self.scaled_maxima[1],
+                self.scaled_minima[0],
+                self.scaled_maxima[0],
+            ]
+        )
+
+    @property
+    def yticks(self):
+        """
+        Returns the yticks labels of this grid, used for plotting the y-axis ticks when visualizing an image-grid"""
+        return np.linspace(self.scaled_minima[0], self.scaled_maxima[0], 4)
+
+    @property
+    def xticks(self):
+        """
+        Returns the xticks labels of this grid, used for plotting the x-axis ticks when visualizing an image-grid"""
+        return np.linspace(self.scaled_minima[1], self.scaled_maxima[1], 4)
+
+    @property
+    def edge_buffed_mask(self):
+        edge_buffed_mask = mask_util.buffed_mask_from(mask=self).astype("bool")
+        return Mask2D(
+            mask=edge_buffed_mask,
+            pixel_scales=self.pixel_scales,
+            sub_size=self.sub_size,
+            origin=self.origin,
+        )
+
+    @property
+    def unmasked_grid_sub_1(self):
+        """ The scaled-grid of (y,x) coordinates of every pixel.
+
+        This is defined from the top-left corner, such that the first pixel at location [0, 0] will have a negative x \
+        value y value in scaled units.
+        """
+        grid_1d = grid_util.grid_1d_via_shape_2d_from(
+            shape_2d=self.shape,
+            pixel_scales=self.pixel_scales,
+            sub_size=1,
+            origin=self.origin,
+        )
+
+        return grids.Grid(
+            grid=grid_1d, mask=self.unmasked_mask.mask_sub_1, store_in_1d=True
+        )
+
+    @property
+    def masked_grid(self):
+        sub_grid_1d = grid_util.grid_1d_via_mask_from(
+            mask=self,
+            pixel_scales=self.pixel_scales,
+            sub_size=self.sub_size,
+            origin=self.origin,
+        )
+        return grids.Grid(
+            grid=sub_grid_1d, mask=self.edge_mask.mask_sub_1, store_in_1d=True
+        )
+
+    @property
+    def masked_grid_sub_1(self):
+
+        grid_1d = grid_util.grid_1d_via_mask_from(
+            mask=self, pixel_scales=self.pixel_scales, sub_size=1, origin=self.origin
+        )
+        return grids.Grid(grid=grid_1d, mask=self.mask_sub_1, store_in_1d=True)
+
+    @property
+    def edge_grid_sub_1(self):
+        """
+        The indicies of the mask's border pixels, where a border pixel is any unmasked pixel on an
+        exterior edge (e.g. next to at least one pixel with a `True` value but not central pixels like those within \
+        an annulus mask).
+        """
+        edge_grid_1d = self.masked_grid_sub_1[self._edge_1d_indexes]
+        return grids.Grid(
+            grid=edge_grid_1d, mask=self.edge_mask.mask_sub_1, store_in_1d=True
+        )
+
+    @property
+    def border_grid_1d(self):
+        """
+        The indicies of the mask's border pixels, where a border pixel is any unmasked pixel on an
+        exterior edge (e.g. next to at least one pixel with a `True` value but not central pixels like those within \
+        an annulus mask).
+        """
+        return self.masked_grid[self._sub_border_1d_indexes]
+
+    @property
+    def border_grid_sub_1(self):
+        """
+        The indicies of the mask's border pixels, where a border pixel is any unmasked pixel on an
+        exterior edge (e.g. next to at least one pixel with a `True` value but not central pixels like those within \
+        an annulus mask).
+        """
+        border_grid_1d = self.masked_grid_sub_1[self._border_1d_indexes]
+        return grids.Grid(
+            grid=border_grid_1d, mask=self.border_mask.mask_sub_1, store_in_1d=True
+        )
+
+    def grid_pixels_from_grid_scaled_1d(self, grid_scaled_1d):
+        """
+        Convert a grid of (y,x) scaled coordinates to a grid of (y,x) pixel values. Pixel coordinates are \
+        returned as floats such that they include the decimal offset from each pixel's top-left corner.
+
+        The pixel coordinate origin is at the top left corner of the grid, such that the pixel [0,0] corresponds to \
+        highest y scaled coordinate value and lowest x scaled coordinate.
+
+        The scaled coordinate origin is defined by the class attribute origin, and coordinates are shifted to this \
+        origin before computing their 1D grid pixel indexes.
+
+        Parameters
+        ----------
+        grid_scaled_1d: np.ndarray
+            A grid of (y,x) coordinates in scaled units.
+        """
+        grid_pixels_1d = grid_util.grid_pixels_1d_from(
+            grid_scaled_1d=grid_scaled_1d,
+            shape_2d=self.shape,
+            pixel_scales=self.pixel_scales,
+            origin=self.origin,
+        )
+        return grids.Grid(grid=grid_pixels_1d, mask=self.mask_sub_1, store_in_1d=True)
+
+    def grid_pixel_centres_from_grid_scaled_1d(self, grid_scaled_1d):
+        """Convert a grid of (y,x) scaled coordinates to a grid of (y,x) pixel values. Pixel coordinates are \
+        returned as integers such that they map directly to the pixel they are contained within.
+
+        The pixel coordinate origin is at the top left corner of the grid, such that the pixel [0,0] corresponds to \
+        higher y scaled coordinate value and lowest x scaled coordinate.
+
+        The scaled coordinate origin is defined by the class attribute origin, and coordinates are shifted to this \
+        origin before computing their 1D grid pixel indexes.
+
+        Parameters
+        ----------
+        grid_scaled_1d: np.ndarray
+            The grid of (y,x) coordinates in scaled units.
+        """
+        grid_pixel_centres_1d = grid_util.grid_pixel_centres_1d_from(
+            grid_scaled_1d=grid_scaled_1d,
+            shape_2d=self.shape,
+            pixel_scales=self.pixel_scales,
+            origin=self.origin,
+        ).astype("int")
+
+        return grids.Grid(
+            grid=grid_pixel_centres_1d, mask=self.edge_mask.mask_sub_1, store_in_1d=True
+        )
+
+    def grid_pixel_indexes_from_grid_scaled_1d(self, grid_scaled_1d):
+        """Convert a grid of (y,x) scaled coordinates to a grid of (y,x) pixel 1D indexes. Pixel coordinates are \
+        returned as integers such that they are the pixel from the top-left of the 2D grid going rights and then \
+        downwards.
+
+        For example:
+
+        The pixel at the top-left, whose 2D index is [0,0], corresponds to 1D index 0.
+        The fifth pixel on the top row, whose 2D index is [0,5], corresponds to 1D index 4.
+        The first pixel on the second row, whose 2D index is [0,1], has 1D index 10 if a row has 10 pixels.
+
+        The scaled coordinate origin is defined by the class attribute origin, and coordinates are shifted to this \
+        origin before computing their 1D grid pixel indexes.
+
+        Parameters
+        ----------
+        grid_scaled_1d: np.ndarray
+            The grid of (y,x) coordinates in scaled units.
+        """
+        grid_pixel_indexes_1d = grid_util.grid_pixel_indexes_1d_from(
+            grid_scaled_1d=grid_scaled_1d,
+            shape_2d=self.shape,
+            pixel_scales=self.pixel_scales,
+            origin=self.origin,
+        ).astype("int")
+
+        return arrays.Array(
+            array=grid_pixel_indexes_1d,
+            mask=self.edge_mask.mask_sub_1,
+            store_in_1d=True,
+        )
+
+    def grid_scaled_from_grid_pixels_1d(self, grid_pixels_1d):
+        """Convert a grid of (y,x) pixel coordinates to a grid of (y,x) scaled values.
+
+        The pixel coordinate origin is at the top left corner of the grid, such that the pixel [0,0] corresponds to \
+        higher y scaled coordinate value and lowest x scaled coordinate.
+
+        The scaled coordinate origin is defined by the class attribute origin, and coordinates are shifted to this \
+        origin before computing their 1D grid pixel indexes.
+
+        Parameters
+        ----------
+        grid_pixels_1d : np.ndarray
+            The grid of (y,x) coordinates in pixels.
+        """
+        grid_scaled_1d = grid_util.grid_scaled_1d_from(
+            grid_pixels_1d=grid_pixels_1d,
+            shape_2d=self.shape,
+            pixel_scales=self.pixel_scales,
+            origin=self.origin,
+        )
+        return grids.Grid(
+            grid=grid_scaled_1d, mask=self.edge_mask.mask_sub_1, store_in_1d=True
+        )
+
+    def grid_scaled_from_grid_pixels_1d_for_marching_squares(
+        self, grid_pixels_1d, shape_2d
+    ):
+
+        grid_scaled_1d = grid_util.grid_scaled_1d_from(
+            grid_pixels_1d=grid_pixels_1d,
+            shape_2d=shape_2d,
+            pixel_scales=(
+                self.pixel_scales[0] / self.sub_size,
+                self.pixel_scales[1] / self.sub_size,
+            ),
+            origin=self.origin,
+        )
+
+        grid_scaled_1d[:, 0] -= self.pixel_scales[0] / (2.0 * self.sub_size)
+        grid_scaled_1d[:, 1] += self.pixel_scales[1] / (2.0 * self.sub_size)
+
+        return grids.Grid(
+            grid=grid_scaled_1d, mask=self.edge_mask.mask_sub_1, store_in_1d=True
+        )
+
+    @property
+    def _mask_index_for_mask_1d_index(self):
+        """A 1D array of mappings between every unmasked pixel and its 2D pixel coordinates."""
+        return mask_util.sub_mask_index_for_sub_mask_1d_index_via_mask_from(
+            mask=self, sub_size=1
+        ).astype("int")
+
+    @property
+    def _edge_1d_indexes(self):
+        """The indicies of the mask's edge pixels, where an edge pixel is any unmasked pixel on its edge \
+        (next to at least one pixel with a `True` value).
+        """
+        return mask_util.edge_1d_indexes_from(mask=self).astype("int")
+
+    @property
+    def _edge_2d_indexes(self):
+        """The indicies of the mask's edge pixels, where an edge pixel is any unmasked pixel on its edge \
+        (next to at least one pixel with a `True` value).
+        """
+        return self._mask_index_for_mask_1d_index[self._edge_1d_indexes].astype("int")
+
+    @property
+    def _border_1d_indexes(self):
+        """The indicies of the mask's border pixels, where a border pixel is any unmasked pixel on an
+        exterior edge (e.g. next to at least one pixel with a `True` value but not central pixels like those within \
+        an annulus mask).
+        """
+        return mask_util.border_1d_indexes_from(mask=self).astype("int")
+
+    @property
+    def _border_2d_indexes(self):
+        """The indicies of the mask's border pixels, where a border pixel is any unmasked pixel on an
+        exterior edge (e.g. next to at least one pixel with a `True` value but not central pixels like those within \
+        an annulus mask).
+        """
+        return self._mask_index_for_mask_1d_index[self._border_1d_indexes].astype("int")
+
+    @property
+    def _sub_border_1d_indexes(self):
+        """The indicies of the mask's border pixels, where a border pixel is any unmasked pixel on an
+        exterior edge (e.g. next to at least one pixel with a `True` value but not central pixels like those within \
+        an annulus mask).
+        """
+        return mask_util.sub_border_pixel_1d_indexes_from(
+            mask=self, sub_size=self.sub_size
+        ).astype("int")
+
+    @array_util.Memoizer()
+    def blurring_mask_from_kernel_shape(self, kernel_shape_2d):
+        """
+        Returns a blurring mask, which represents all masked pixels whose light will be blurred into unmasked \
+        pixels via PSF convolution (see grid.Grid.blurring_grid_from_mask_and_psf_shape).
+
+        Parameters
+        ----------
+        kernel_shape_2d : (int, int)
+           The shape of the psf which defines the blurring region (e.g. the shape of the PSF)
+        """
+
+        if kernel_shape_2d[0] % 2 == 0 or kernel_shape_2d[1] % 2 == 0:
+            raise exc.MaskException("psf_size of exterior region must be odd")
+
+        blurring_mask = mask_util.blurring_mask_from(
+            mask=self, kernel_shape_2d=kernel_shape_2d
+        )
+
+        return Mask2D(
+            mask=blurring_mask,
+            sub_size=1,
+            pixel_scales=self.pixel_scales,
+            origin=self.origin,
+        )
+
+    @property
+    def unmasked_mask(self):
+        """The indicies of the mask's border pixels, where a border pixel is any unmasked pixel on an
+        exterior edge (e.g. next to at least one pixel with a `True` value but not central pixels like those within \
+        an annulus mask).
+        """
+        return Mask2D.unmasked(
+            shape_2d=self.shape_2d,
+            sub_size=self.sub_size,
+            pixel_scales=self.pixel_scales,
+            origin=self.origin,
+        )
+
+    @property
+    def edge_mask(self):
+        """The indicies of the mask's border pixels, where a border pixel is any unmasked pixel on an
+        exterior edge (e.g. next to at least one pixel with a `True` value but not central pixels like those within \
+        an annulus mask).
+        """
+        mask = np.full(fill_value=True, shape=self.shape)
+        mask[self._edge_2d_indexes[:, 0], self._edge_2d_indexes[:, 1]] = False
+        return Mask2D(
+            mask=mask,
+            sub_size=self.sub_size,
+            pixel_scales=self.pixel_scales,
+            origin=self.origin,
+        )
+
+    @property
+    def border_mask(self):
+        """The indicies of the mask's border pixels, where a border pixel is any unmasked pixel on an
+        exterior edge (e.g. next to at least one pixel with a `True` value but not central pixels like those within \
+        an annulus mask).
+        """
+        mask = np.full(fill_value=True, shape=self.shape)
+        mask[self._border_2d_indexes[:, 0], self._border_2d_indexes[:, 1]] = False
+        return Mask2D(
+            mask=mask,
+            sub_size=self.sub_size,
+            pixel_scales=self.pixel_scales,
+            origin=self.origin,
+        )
+
+    @property
+    def _sub_mask_index_for_sub_mask_1d_index(self):
+        """A 1D array of mappings between every unmasked sub pixel and its 2D sub-pixel coordinates."""
+        return mask_util.sub_mask_index_for_sub_mask_1d_index_via_mask_from(
+            mask=self, sub_size=self.sub_size
+        ).astype("int")
+
+    @property
+    @array_util.Memoizer()
+    def _mask_1d_index_for_sub_mask_1d_index(self):
+        """The util between every sub-pixel and its host pixel.
+
+        For example:
+
+        - sub_to_pixel[8] = 2 -  The ninth sub-pixel is within the 3rd pixel.
+        - sub_to_pixel[20] = 4 -  The twenty first sub-pixel is within the 5th pixel.
+        """
+        return mask_util.mask_1d_index_for_sub_mask_1d_index_via_mask_from(
+            mask=self, sub_size=self.sub_size
+        ).astype("int")
+
+    @property
+    def zoom_centre(self):
+
+        extraction_grid_1d = self.grid_pixels_from_grid_scaled_1d(
+            grid_scaled_1d=self.masked_grid_sub_1.in_1d
+        )
+        y_pixels_max = np.max(extraction_grid_1d[:, 0])
+        y_pixels_min = np.min(extraction_grid_1d[:, 0])
+        x_pixels_max = np.max(extraction_grid_1d[:, 1])
+        x_pixels_min = np.min(extraction_grid_1d[:, 1])
+
+        return (
+            ((y_pixels_max + y_pixels_min - 1.0) / 2.0),
+            ((x_pixels_max + x_pixels_min - 1.0) / 2.0),
+        )
+
+    @property
+    def zoom_offset_pixels(self):
+
+        if self.pixel_scales is None:
+            return self.central_pixel_coordinates
+
+        return (
+            self.zoom_centre[0] - self.central_pixel_coordinates[0],
+            self.zoom_centre[1] - self.central_pixel_coordinates[1],
+        )
+
+    @property
+    def zoom_offset_scaled(self):
+
+        return (
+            -self.pixel_scales[0] * self.zoom_offset_pixels[0],
+            self.pixel_scales[1] * self.zoom_offset_pixels[1],
+        )
+
+    @property
+    def zoom_region(self):
+        """The zoomed rectangular region corresponding to the square encompassing all unmasked values. This zoomed
+        extraction region is a squuare, even if the mask is rectangular.
+
+        This is used to zoom in on the region of an image that is used in an analysis for visualization."""
+
+        # Have to convert mask to bool for invert function to work.
+        where = np.array(np.where(np.invert(self.astype("bool"))))
+        y0, x0 = np.amin(where, axis=1)
+        y1, x1 = np.amax(where, axis=1)
+
+        ylength = y1 - y0
+        xlength = x1 - x0
+
+        if ylength > xlength:
+            length_difference = ylength - xlength
+            x1 += int(length_difference / 2.0)
+            x0 -= int(length_difference / 2.0)
+        elif xlength > ylength:
+            length_difference = xlength - ylength
+            y1 += int(length_difference / 2.0)
+            y0 -= int(length_difference / 2.0)
+
+        return [y0, y1 + 1, x0, x1 + 1]
+
+    @property
+    def zoom_shape_2d(self):
+        region = self.zoom_region
+        return (region[1] - region[0], region[3] - region[2])
+
+    @property
+    def zoom_mask_unmasked(self):
+        """ The scaled-grid of (y,x) coordinates of every pixel.
+
+        This is defined from the top-left corner, such that the first pixel at location [0, 0] will have a negative x \
+        value y value in scaled units.
+        """
+
+        return Mask2D.unmasked(
+            shape_2d=self.zoom_shape_2d,
+            pixel_scales=self.pixel_scales,
+            sub_size=self.sub_size,
+            origin=self.zoom_offset_scaled,
         )
 
 

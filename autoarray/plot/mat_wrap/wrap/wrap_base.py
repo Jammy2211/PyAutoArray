@@ -624,7 +624,7 @@ class Title(AbstractMatWrap):
 
 
 class AbstractLabel(AbstractMatWrap):
-    def __init__(self, manual_label: str = None, **kwargs):
+    def __init__(self, **kwargs):
         """
         The settings used to customize the figure's title and y and x labels.
 
@@ -645,7 +645,7 @@ class AbstractLabel(AbstractMatWrap):
 
         super().__init__(**kwargs)
 
-        self.manual_label = manual_label
+        self.manual_label = self.kwargs.get("label")
 
     def label_from_units(self, units: Units) -> typing.Optional[str]:
         """
@@ -673,7 +673,7 @@ class AbstractLabel(AbstractMatWrap):
 
 
 class YLabel(AbstractLabel):
-    def set(self, units: Units, include_brackets: bool):
+    def set(self, units: Units, include_brackets: bool = True, auto_label=None):
         """
         Set the y labels of the figure, including the fontsize.
 
@@ -688,22 +688,26 @@ class YLabel(AbstractLabel):
             Whether to include brackets around the y label text of the units.
         """
 
+        config_dict = self.config_dict
+
+        if "label" in self.config_dict:
+            config_dict.pop("label")
+
         if self.manual_label is not None:
-            plt.ylabel(ylabel=self.manual_label, **self.config_dict)
+            plt.ylabel(ylabel=self.manual_label, **config_dict)
+        elif auto_label is not None:
+            plt.ylabel(ylabel=auto_label, **config_dict)
         else:
             if include_brackets:
                 plt.ylabel(
-                    ylabel=f"y ({self.label_from_units(units=units)})",
-                    **self.config_dict,
+                    ylabel=f"y ({self.label_from_units(units=units)})", **config_dict
                 )
             else:
-                plt.ylabel(
-                    ylabel=self.label_from_units(units=units), **self.config_dict
-                )
+                plt.ylabel(ylabel=self.label_from_units(units=units), **config_dict)
 
 
 class XLabel(AbstractLabel):
-    def set(self, units: Units, include_brackets: bool):
+    def set(self, units: Units, include_brackets: bool = True, auto_label=None):
         """
         Set the x labels of the figure, including the fontsize.
 
@@ -717,18 +721,23 @@ class XLabel(AbstractLabel):
         include_brackets : bool
             Whether to include brackets around the x label text of the units.
         """
+
+        config_dict = self.config_dict
+
+        if "label" in self.config_dict:
+            config_dict.pop("label")
+
         if self.manual_label is not None:
-            plt.xlabel(xlabel=self.manual_label, **self.config_dict)
+            plt.xlabel(xlabel=self.manual_label, **config_dict)
+        elif auto_label is not None:
+            plt.xlabel(xlabel=auto_label, **config_dict)
         else:
             if include_brackets:
                 plt.xlabel(
-                    xlabel=f"x ({self.label_from_units(units=units)})",
-                    **self.config_dict,
+                    xlabel=f"x ({self.label_from_units(units=units)})", **config_dict
                 )
             else:
-                plt.xlabel(
-                    xlabel=self.label_from_units(units=units), **self.config_dict
-                )
+                plt.xlabel(xlabel=self.label_from_units(units=units), **config_dict)
 
 
 class Legend(AbstractMatWrap):
@@ -745,7 +754,7 @@ class Legend(AbstractMatWrap):
         If the legend should be plotted and therefore included on the figure.
     """
 
-    def __init__(self, include=False, **kwargs):
+    def __init__(self, include=True, **kwargs):
 
         super().__init__(**kwargs)
 
@@ -753,7 +762,11 @@ class Legend(AbstractMatWrap):
 
     def set(self):
         if self.include:
-            plt.legend(**self.config_dict)
+
+            config_dict = self.config_dict
+            config_dict.pop("include")
+
+            plt.legend(**config_dict)
 
 
 class Output:

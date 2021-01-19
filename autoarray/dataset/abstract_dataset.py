@@ -82,10 +82,6 @@ class AbstractDataset:
         return self.data.mask.mapping
 
     @property
-    def geometry(self):
-        return self.data.mask.geometry
-
-    @property
     def inverse_noise_map(self):
         return 1.0 / self.noise_map
 

@@ -287,7 +287,7 @@ class AbstractArray(abstract_structure.AbstractStructure):
 
     @property
     def extent(self):
-        return self.mask.geometry.extent
+        return self.mask.extent
 
     @property
     def in_counts(self):
@@ -333,17 +333,17 @@ class AbstractArray(abstract_structure.AbstractStructure):
 
         extracted_array_2d = array_util.extracted_array_2d_from(
             array_2d=self.in_2d,
-            y0=self.geometry.zoom_region[0] - buffer,
-            y1=self.geometry.zoom_region[1] + buffer,
-            x0=self.geometry.zoom_region[2] - buffer,
-            x1=self.geometry.zoom_region[3] + buffer,
+            y0=self.mask.zoom_region[0] - buffer,
+            y1=self.mask.zoom_region[1] + buffer,
+            x0=self.mask.zoom_region[2] - buffer,
+            x1=self.mask.zoom_region[3] + buffer,
         )
 
         mask = msk.Mask2D.unmasked(
             shape_2d=extracted_array_2d.shape,
             pixel_scales=self.pixel_scales,
             sub_size=self.sub_size,
-            origin=self.mask.geometry.mask_centre,
+            origin=self.mask.mask_centre,
         )
 
         array = convert_manual_2d_array(
@@ -367,20 +367,20 @@ class AbstractArray(abstract_structure.AbstractStructure):
         """
         extracted_array_2d = array_util.extracted_array_2d_from(
             array_2d=self.in_2d,
-            y0=self.geometry.zoom_region[0] - buffer,
-            y1=self.geometry.zoom_region[1] + buffer,
-            x0=self.geometry.zoom_region[2] - buffer,
-            x1=self.geometry.zoom_region[3] + buffer,
+            y0=self.mask.zoom_region[0] - buffer,
+            y1=self.mask.zoom_region[1] + buffer,
+            x0=self.mask.zoom_region[2] - buffer,
+            x1=self.mask.zoom_region[3] + buffer,
         )
 
         mask = msk.Mask2D.unmasked(
             shape_2d=extracted_array_2d.shape,
             pixel_scales=self.pixel_scales,
             sub_size=self.sub_size,
-            origin=self.mask.geometry.mask_centre,
+            origin=self.mask.mask_centre,
         )
 
-        return mask.geometry.extent
+        return mask.extent
 
     def resized_from(self, new_shape):
         """Resize the array around its centre to a new input shape.

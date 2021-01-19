@@ -52,7 +52,7 @@ class ArrayPlotter(abstract_plotters.AbstractPlotter):
             ),
             mask=self.extract_2d("mask", self.array.mask),
             border=self.extract_2d(
-                "border", self.array.mask.geometry.border_grid_sub_1.in_1d_binned
+                "border", self.array.mask.border_grid_sub_1.in_1d_binned
             ),
         )
 
@@ -112,7 +112,7 @@ class FramePlotter(abstract_plotters.AbstractPlotter):
             ),
             mask=self.extract_2d("mask", self.frame.mask),
             border=self.extract_2d(
-                "border", self.frame.mask.geometry.border_grid_sub_1.in_1d_binned
+                "border", self.frame.mask.border_grid_sub_1.in_1d_binned
             ),
             parallel_overscan=self.extract_2d(
                 "parallel_overscan", self.frame.scans.parallel_overscan
@@ -237,7 +237,7 @@ class MapperPlotter(abstract_plotters.AbstractPlotter):
             mask=self.extract_2d("mask", self.mapper.source_full_grid.mask),
             border=self.extract_2d(
                 "border",
-                self.mapper.source_full_grid.mask.geometry.border_grid_sub_1.in_1d_binned,
+                self.mapper.source_full_grid.mask.border_grid_sub_1.in_1d_binned,
             ),
             pixelization_grid=self.extract_2d(
                 "pixelization_grid",
@@ -316,7 +316,7 @@ class MapperPlotter(abstract_plotters.AbstractPlotter):
             )
 
             self.mat_plot_2d.index_scatter.scatter_grid_indexes(
-                grid=self.mapper.source_full_grid.geometry.masked_grid, indexes=indexes
+                grid=self.mapper.source_full_grid.mask.masked_grid, indexes=indexes
             )
 
         self.figure()
@@ -330,6 +330,8 @@ class MapperPlotter(abstract_plotters.AbstractPlotter):
 class LinePlotter(abstract_plotters.AbstractPlotter):
     def __init__(
         self,
+        y,
+        x,
         mat_plot_1d: mp.MatPlot1D = mp.MatPlot1D(),
         visuals_1d: vis.Visuals1D = vis.Visuals1D(),
         include_1d: inc.Include1D = inc.Include1D(),

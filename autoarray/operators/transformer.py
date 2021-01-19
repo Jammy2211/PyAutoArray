@@ -16,9 +16,7 @@ class TransformerDFT(pylops.LinearOperator):
 
         self.uv_wavelengths = uv_wavelengths.astype("float")
         self.real_space_mask = real_space_mask.mask_sub_1
-        self.grid = (
-            self.real_space_mask.geometry.masked_grid_sub_1.in_1d_binned.in_radians
-        )
+        self.grid = self.real_space_mask.masked_grid_sub_1.in_1d_binned.in_radians
 
         self.total_visibilities = uv_wavelengths.shape[0]
         self.total_image_pixels = self.real_space_mask.pixels_in_mask
@@ -90,10 +88,10 @@ class TransformerNUFFT(NUFFT_cpu, pylops.LinearOperator):
 
         self.uv_wavelengths = uv_wavelengths
         self.real_space_mask = real_space_mask.mask_sub_1
-        #        self.grid = self.real_space_mask.geometry.unmasked_grid.in_radians
+        #        self.grid = self.real_space_mask.unmasked_grid.in_radians
         self.grid = grids.Grid.from_mask(mask=self.real_space_mask).in_radians
         self._mask_index_for_mask_1d_index = copy.copy(
-            real_space_mask.regions._mask_index_for_mask_1d_index.astype("int")
+            real_space_mask._mask_index_for_mask_1d_index.astype("int")
         )
 
         # NOTE: The plan need only be initialized once

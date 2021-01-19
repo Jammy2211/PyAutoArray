@@ -404,7 +404,7 @@ class InversionImagingMatrix(AbstractInversion, AbstractInversionMatrix):
         return inversion_util.inversion_residual_map_from(
             pixelization_values=self.reconstruction,
             data=self.image,
-            mask_1d_index_for_sub_mask_1d_index=self.mapper.source_full_grid.mask.regions._mask_1d_index_for_sub_mask_1d_index,
+            mask_1d_index_for_sub_mask_1d_index=self.mapper.source_full_grid.mask._mask_1d_index_for_sub_mask_1d_index,
             all_sub_mask_1d_indexes_for_pixelization_1d_index=self.mapper.all_sub_full_1d_indexes_for_pixelization_1d_index,
         )
 
@@ -414,7 +414,7 @@ class InversionImagingMatrix(AbstractInversion, AbstractInversionMatrix):
             pixelization_values=self.reconstruction,
             data=self.image,
             noise_map_1d=self.noise_map,
-            mask_1d_index_for_sub_mask_1d_index=self.mapper.source_full_grid.mask.regions._mask_1d_index_for_sub_mask_1d_index,
+            mask_1d_index_for_sub_mask_1d_index=self.mapper.source_full_grid.mask._mask_1d_index_for_sub_mask_1d_index,
             all_sub_mask_1d_indexes_for_pixelization_1d_index=self.mapper.all_sub_full_1d_indexes_for_pixelization_1d_index,
         )
 
@@ -424,7 +424,7 @@ class InversionImagingMatrix(AbstractInversion, AbstractInversionMatrix):
             pixelization_values=self.reconstruction,
             data=self.image,
             noise_map_1d=self.noise_map,
-            mask_1d_index_for_sub_mask_1d_index=self.mapper.source_full_grid.mask.regions._mask_1d_index_for_sub_mask_1d_index,
+            mask_1d_index_for_sub_mask_1d_index=self.mapper.source_full_grid.mask._mask_1d_index_for_sub_mask_1d_index,
             all_sub_mask_1d_indexes_for_pixelization_1d_index=self.mapper.all_sub_full_1d_indexes_for_pixelization_1d_index,
         )
 
