@@ -57,6 +57,34 @@ class TestGrid:
             grid.in_2d_flipped == np.array([[[2.0, 1.0], [4.0, 3.0], [6.0, 5.0]]])
         ).all()
 
+    def test__grid_radii_from__same_as_grid_util(self):
+
+        grid = grids.Grid.uniform(shape_2d=(3, 3), pixel_scales=(1.0, 2.0))
+
+        grid_radii = grid.grid_radii_from(centre=(0.0, 0.0))
+
+        grid_radii_util = aa.util.grid.grid_radii_scaled_1d_from(
+            extent=grid.extent,
+            centre=(0.0, 0.0),
+            pixel_scales=grid.pixel_scales,
+            sub_size=grid.sub_size,
+        )
+
+        assert (grid_radii == grid_radii_util).all()
+
+        grid = grids.Grid.uniform(shape_2d=(3, 4), pixel_scales=(3.0, 2.0))
+
+        grid_radii = grid.grid_radii_from(centre=(0.3, 0.1))
+
+        grid_radii_util = aa.util.grid.grid_radii_scaled_1d_from(
+            extent=grid.extent,
+            centre=(0.3, 0.1),
+            pixel_scales=grid.pixel_scales,
+            sub_size=grid.sub_size,
+        )
+
+        assert (grid_radii == grid_radii_util).all()
+
     def test__in_radians(self):
         mask = np.array(
             [

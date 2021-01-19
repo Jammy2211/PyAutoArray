@@ -337,7 +337,14 @@ class AbstractGrid(abstract_structure.AbstractStructure):
 
     def grid_radii_from(self, centre=(0.0, 0.0)):
 
-        grid_radii = np.linspace(0.0)
+        grid_radii = grid_util.grid_radii_scaled_1d_from(
+            extent=self.extent,
+            centre=centre,
+            pixel_scales=self.pixel_scales,
+            sub_size=self.sub_size,
+        )
+
+        return grids.GridIrregular(grid=grid_radii)
 
     @property
     def shape_2d_scaled(self) -> (float, float):

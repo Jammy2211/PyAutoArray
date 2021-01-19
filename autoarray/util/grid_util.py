@@ -292,7 +292,7 @@ def grid_2d_via_shape_2d_from(
     )
 
 
-# @decorator_util.jit()
+@decorator_util.jit()
 def grid_radii_scaled_1d_from(
     extent: np.ndarray,
     centre: (float, float),
