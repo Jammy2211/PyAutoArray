@@ -248,21 +248,6 @@ class TestGrids:
             )
         ).all()
 
-    def test__unmasked_grid_over_grid(self):
-
-        mask = aa.Mask2D.manual(
-            [
-                [True, True, True, True, True],
-                [True, False, False, False, True],
-                [True, False, False, False, True],
-                [True, False, False, False, True],
-                [True, True, True, True, True],
-            ],
-            pixel_scales=(1.0, 1.0),
-        )
-
-        print(mask.geometry.unmasked_grid_over_mask_sub_1)
-
     def test__masked_grids_1d(self):
 
         mask = aa.Mask2D.unmasked(shape_2d=(3, 3), pixel_scales=(1.0, 1.0))
