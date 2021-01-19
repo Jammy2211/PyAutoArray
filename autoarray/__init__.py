@@ -1,3 +1,4 @@
+from autoarray.structures.lines.lines import Line
 from autoarray.structures.grids.irregular import GridIrregularGrouped
 from autoarray.structures.grids.irregular import GridIrregularGroupedUniform
 from autoarray.structures.grids.iterate import GridIterate
@@ -47,8 +48,6 @@ from .structures.grids import GridVoronoi
 from .structures.grids import GridIrregular
 from .structures.grids import GridIrregularGrouped
 from .structures.grids import GridIrregularGroupedUniform
-from .structures.lines.lines import Line
-from .structures.lines.lines import LineCollection
 from .structures.region import Region
 from .structures.kernel import Kernel
 from .structures.region import Region

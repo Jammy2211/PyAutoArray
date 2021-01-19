@@ -34,7 +34,7 @@ def test__visuals_in_constructor_use_imaging_and_include(fit_imaging_7x7):
     ).all()
     assert (
         fit_imaging_plotter.visuals_with_include_2d.border
-        == fit_imaging_7x7.image.mask.geometry.border_grid_sub_1.in_1d_binned
+        == fit_imaging_7x7.image.mask.border_grid_sub_1.in_1d_binned
     ).all()
     assert fit_imaging_plotter.visuals_with_include_2d.vector_field == 2
 

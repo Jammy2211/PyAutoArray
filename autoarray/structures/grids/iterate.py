@@ -316,7 +316,7 @@ class GridIterate(abstract_grid.AbstractGrid):
             stored in 2D as an ndarray of shape [total_y_pixels, total_x_pixels, 2].
         """
 
-        blurring_mask = mask.regions.blurring_mask_from_kernel_shape(
+        blurring_mask = mask.blurring_mask_from_kernel_shape(
             kernel_shape_2d=kernel_shape_2d
         )
 

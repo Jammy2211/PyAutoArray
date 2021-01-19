@@ -124,7 +124,7 @@ class Mapper:
 
     @property
     def _full_1d_index_for_sub_full_1d_index(self):
-        return self.source_full_grid.mask.regions._mask_1d_index_for_sub_mask_1d_index
+        return self.source_full_grid.mask._mask_1d_index_for_sub_mask_1d_index
 
     @property
     def pixelization_1d_index_for_sub_full_1d_index(self):

@@ -3,7 +3,7 @@ import logging
 import numpy as np
 
 from autoarray import exc
-from autoarray.mask import geometry, regions
+from autoarray.util import array_util
 
 logging.basicConfig()
 logger = logging.getLogger(__name__)
@@ -97,20 +97,8 @@ class AbstractMask(np.ndarray):
         return self.pixel_scales[0]
 
     @property
-    def geometry(self):
-        """The Geometry class contains methods describing the Mask2D's geometry, for example the Grid of unmasked
-        pixels.
-
-        See the Geometry class for a full description."""
-        return geometry.Geometry(mask=self)
-
-    @property
-    def regions(self):
-        """The Region class contains methods describing regions on the Mask2D, for example the pixel indexes of Mask2D
-        pixels on its edge.
-
-        See the Region class for a full description."""
-        return regions.Regions(mask=self)
+    def dimensions(self):
+        return len(self.shape)
 
     @property
     def sub_length(self) -> int:
@@ -119,7 +107,7 @@ class AbstractMask(np.ndarray):
 
         For example, a sub-size of 3x3 means every pixel has 9 sub-pixels.
         """
-        return int(self.sub_size ** 2.0)
+        return int(self.sub_size ** self.dimensions)
 
     @property
     def sub_fraction(self) -> float:
@@ -159,7 +147,7 @@ class AbstractMask(np.ndarray):
         """
         The total number of unmasked sub-pixels (values are `False`) in the mask.
         """
-        return self.sub_size ** 2 * self.pixels_in_mask
+        return self.sub_size ** self.dimensions * self.pixels_in_mask
 
     @property
     def shape_1d(self) -> int:
@@ -174,15 +162,6 @@ class AbstractMask(np.ndarray):
         The 1D shape of the masks's sub-grid, which is equivalent to the total number of unmasked pixels in the mask.
         """
         return int(self.pixels_in_mask * self.sub_size ** 2.0)
-
-    @property
-    def mask_sub_1(self) -> "AbstractMask":
-        """
-        Returns the mask on the same scaled coordinate system but with a sub-grid of ``sub_size`` `.
-        """
-        return self.__class__(
-            mask=self, sub_size=1, pixel_scales=self.pixel_scales, origin=self.origin
-        )
 
     def mask_new_sub_size_from_mask(self, mask, sub_size=1) -> "AbstractMask":
         """

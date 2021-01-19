@@ -48,7 +48,7 @@ class TestImaging:
         assert imaging.psf.pixel_scales == pytest.approx((1.0, 1.66666666666), 1.0e-4)
         assert imaging.noise_map.pixel_scales == (2.0, 2.0)
 
-        assert imaging.image.geometry.origin == (0.0, 0.0)
+        assert imaging.image.origin == (0.0, 0.0)
 
     def test__new_imaging_with_signal_to_noise_limit__limit_above_max_signal_to_noise__signal_to_noise_map_unchanged(
         self,

@@ -427,9 +427,7 @@ class GridIrregularGrouped(AbstractGridIrregular):
         for grouped_grid in pixels:
             grouped_grids.append(
                 [
-                    mask.geometry.scaled_coordinates_2d_from(
-                        pixel_coordinates_2d=coordinates
-                    )
+                    mask.scaled_coordinates_2d_from(pixel_coordinates_2d=coordinates)
                     for coordinates in grouped_grid
                 ]
             )

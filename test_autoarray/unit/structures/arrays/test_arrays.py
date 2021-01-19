@@ -21,7 +21,7 @@ class TestAPI:
         assert (arr.in_2d == np.array([[1.0, 2.0], [3.0, 4.0]])).all()
         assert (arr.in_1d == np.array([1.0, 2.0, 3.0, 4.0])).all()
         assert arr.pixel_scales == (1.0, 1.0)
-        assert arr.geometry.origin == (0.0, 0.0)
+        assert arr.origin == (0.0, 0.0)
 
         arr = aa.Array.manual_1d(
             array=[1.0, 2.0, 3.0, 4.0],
@@ -34,7 +34,7 @@ class TestAPI:
         assert (arr.in_2d == np.array([[1.0, 2.0], [3.0, 4.0]])).all()
         assert (arr.in_1d == np.array([1.0, 2.0, 3.0, 4.0])).all()
         assert arr.pixel_scales == (1.0, 1.0)
-        assert arr.geometry.origin == (0.0, 1.0)
+        assert arr.origin == (0.0, 1.0)
 
         arr = aa.Array.manual_1d(
             array=[1.0, 2.0, 3.0, 4.0, 5.0, 6.0],
@@ -46,7 +46,7 @@ class TestAPI:
         assert (arr.in_2d == np.array([[1.0, 2.0, 3.0], [4.0, 5.0, 6.0]])).all()
         assert (arr.in_1d == np.array([1.0, 2.0, 3.0, 4.0, 5.0, 6.0])).all()
         assert arr.pixel_scales == (2.0, 3.0)
-        assert arr.geometry.origin == (0.0, 0.0)
+        assert arr.origin == (0.0, 0.0)
 
     def test__manual__makes_with_sub_size(self):
 
@@ -58,7 +58,7 @@ class TestAPI:
         assert (arr.in_2d == np.array([[1.0, 2.0], [3.0, 4.0]])).all()
         assert (arr.in_1d == np.array([1.0, 2.0, 3.0, 4.0])).all()
         assert arr.pixel_scales == (1.0, 1.0)
-        assert arr.geometry.origin == (0.0, 0.0)
+        assert arr.origin == (0.0, 0.0)
         assert arr.mask.sub_size == 1
 
         arr = aa.Array.manual_1d(
@@ -73,7 +73,7 @@ class TestAPI:
         assert (arr.in_2d == np.array([[1.0, 2.0], [3.0, 4.0]])).all()
         assert (arr.in_1d == np.array([1.0, 2.0, 3.0, 4.0])).all()
         assert arr.pixel_scales == (1.0, 1.0)
-        assert arr.geometry.origin == (0.0, 1.0)
+        assert arr.origin == (0.0, 1.0)
         assert arr.mask.sub_size == 2
 
         arr = aa.Array.manual_1d(
@@ -91,7 +91,7 @@ class TestAPI:
         assert (arr.in_2d_binned == np.array([[2.5], [6.5]])).all()
         assert (arr.in_1d_binned == np.array([2.5, 6.5])).all()
         assert arr.pixel_scales == (2.0, 2.0)
-        assert arr.geometry.origin == (0.0, 0.0)
+        assert arr.origin == (0.0, 0.0)
         assert arr.mask.sub_size == 2
 
     def test__manual_mask__makes_array_without_other_inputs(self):
@@ -102,7 +102,7 @@ class TestAPI:
         assert (arr.in_2d == np.array([[1.0, 2.0], [3.0, 4.0]])).all()
         assert (arr.in_1d == np.array([1.0, 2.0, 3.0, 4.0])).all()
         assert arr.pixel_scales == (1.0, 1.0)
-        assert arr.geometry.origin == (0.0, 0.0)
+        assert arr.origin == (0.0, 0.0)
 
         mask = aa.Mask2D.manual(
             mask=[[False, False], [True, False]], pixel_scales=1.0, origin=(0.0, 1.0)
@@ -113,7 +113,7 @@ class TestAPI:
         assert (arr.in_2d == np.array([[1.0, 2.0], [0.0, 4.0]])).all()
         assert (arr.in_1d == np.array([1.0, 2.0, 4.0])).all()
         assert arr.pixel_scales == (1.0, 1.0)
-        assert arr.geometry.origin == (0.0, 1.0)
+        assert arr.origin == (0.0, 1.0)
 
         mask = aa.Mask2D.manual(
             mask=[[False, False], [True, False]], pixel_scales=1.0, origin=(0.0, 1.0)
@@ -124,7 +124,7 @@ class TestAPI:
         assert (arr.in_2d == np.array([[1.0, 2.0], [0.0, 4.0]])).all()
         assert (arr.in_1d == np.array([1.0, 2.0, 4.0])).all()
         assert arr.pixel_scales == (1.0, 1.0)
-        assert arr.geometry.origin == (0.0, 1.0)
+        assert arr.origin == (0.0, 1.0)
 
         mask = aa.Mask2D.manual(mask=[[False], [True]], pixel_scales=2.0, sub_size=2)
         arr = aa.Array.manual_mask(
@@ -140,7 +140,7 @@ class TestAPI:
         assert (arr.in_2d_binned == np.array([[2.5], [0.0]])).all()
         assert (arr.in_1d_binned == np.array([2.5])).all()
         assert arr.pixel_scales == (2.0, 2.0)
-        assert arr.geometry.origin == (0.0, 0.0)
+        assert arr.origin == (0.0, 0.0)
         assert arr.mask.sub_size == 2
 
         arr = aa.Array.manual_mask(
@@ -156,7 +156,7 @@ class TestAPI:
         assert (arr.in_2d_binned == np.array([[2.5], [0.0]])).all()
         assert (arr.in_1d_binned == np.array([2.5])).all()
         assert arr.pixel_scales == (2.0, 2.0)
-        assert arr.geometry.origin == (0.0, 0.0)
+        assert arr.origin == (0.0, 0.0)
         assert arr.mask.sub_size == 2
 
     def test__manual_2d__exception_raised_if_input_array_is_2d_and_not_sub_shape_of_mask(
@@ -209,7 +209,7 @@ class TestAPI:
         assert (arr.in_2d == np.array([[1.0, 1.0], [1.0, 1.0]])).all()
         assert (arr.in_1d == np.array([1.0, 1.0, 1.0, 1.0])).all()
         assert arr.pixel_scales == (1.0, 1.0)
-        assert arr.geometry.origin == (0.0, 0.0)
+        assert arr.origin == (0.0, 0.0)
 
         arr = aa.Array.full(
             fill_value=2.0, shape_2d=(2, 2), pixel_scales=1.0, origin=(0.0, 1.0)
@@ -219,7 +219,7 @@ class TestAPI:
         assert (arr.in_2d == np.array([[2.0, 2.0], [2.0, 2.0]])).all()
         assert (arr.in_1d == np.array([2.0, 2.0, 2.0, 2.0])).all()
         assert arr.pixel_scales == (1.0, 1.0)
-        assert arr.geometry.origin == (0.0, 1.0)
+        assert arr.origin == (0.0, 1.0)
 
     def test__full__makes_scaled_sub_array_with_pixel_scale_and_sub_size(self):
 
@@ -231,7 +231,7 @@ class TestAPI:
         assert (arr.in_2d == np.array([[1.0, 1.0, 1.0, 1.0]])).all()
         assert (arr.in_1d == np.array([1.0, 1.0, 1.0, 1.0])).all()
         assert arr.pixel_scales == (1.0, 1.0)
-        assert arr.geometry.origin == (0.0, 0.0)
+        assert arr.origin == (0.0, 0.0)
         assert arr.mask.sub_size == 1
 
         arr = aa.Array.full(
@@ -246,7 +246,7 @@ class TestAPI:
         assert (arr.in_2d == np.array([[2.0, 2.0], [2.0, 2.0]])).all()
         assert (arr.in_1d == np.array([2.0, 2.0, 2.0, 2.0])).all()
         assert arr.pixel_scales == (1.0, 1.0)
-        assert arr.geometry.origin == (0.0, 1.0)
+        assert arr.origin == (0.0, 1.0)
         assert arr.mask.sub_size == 2
 
     def test__ones_zeros__makes_array_without_other_inputs(self):
@@ -279,7 +279,7 @@ class TestAPI:
         assert (arr.in_2d == np.array([[1.0, 1.0], [1.0, 1.0]])).all()
         assert (arr.in_1d == np.array([1.0, 1.0, 1.0, 1.0])).all()
         assert arr.pixel_scales == (1.0, 1.0)
-        assert arr.geometry.origin == (0.0, 0.0)
+        assert arr.origin == (0.0, 0.0)
 
         arr = aa.Array.zeros(shape_2d=(2, 2), pixel_scales=1.0, origin=(0.0, 1.0))
 
@@ -287,7 +287,7 @@ class TestAPI:
         assert (arr.in_2d == np.array([[0.0, 0.0], [0.0, 0.0]])).all()
         assert (arr.in_1d == np.array([0.0, 0.0, 0.0, 0.0])).all()
         assert arr.pixel_scales == (1.0, 1.0)
-        assert arr.geometry.origin == (0.0, 1.0)
+        assert arr.origin == (0.0, 1.0)
 
     def test__ones_zeros__makes_scaled_sub_array_with_pixel_scale_and_sub_size(self):
 
@@ -297,7 +297,7 @@ class TestAPI:
         assert (arr.in_2d == np.array([[1.0, 1.0, 1.0, 1.0]])).all()
         assert (arr.in_1d == np.array([1.0, 1.0, 1.0, 1.0])).all()
         assert arr.pixel_scales == (1.0, 1.0)
-        assert arr.geometry.origin == (0.0, 0.0)
+        assert arr.origin == (0.0, 0.0)
         assert arr.mask.sub_size == 1
 
         arr = aa.Array.zeros(
@@ -308,7 +308,7 @@ class TestAPI:
         assert (arr.in_2d == np.array([[0.0, 0.0], [0.0, 0.0]])).all()
         assert (arr.in_1d == np.array([0.0, 0.0, 0.0, 0.0])).all()
         assert arr.pixel_scales == (1.0, 1.0)
-        assert arr.geometry.origin == (0.0, 1.0)
+        assert arr.origin == (0.0, 1.0)
         assert arr.mask.sub_size == 2
 
     def test__from_fits__makes_array_without_other_inputs(self):
@@ -355,7 +355,7 @@ class TestAPI:
         assert (arr.in_2d == np.ones((3, 3))).all()
         assert (arr.in_1d == np.ones(9)).all()
         assert arr.pixel_scales == (1.0, 1.0)
-        assert arr.geometry.origin == (0.0, 0.0)
+        assert arr.origin == (0.0, 0.0)
 
         arr = aa.Array.from_fits(
             file_path=path.join(test_data_dir, "4x3_ones.fits"),
@@ -368,7 +368,7 @@ class TestAPI:
         assert (arr.in_2d == np.ones((4, 3))).all()
         assert (arr.in_1d == np.ones((12,))).all()
         assert arr.pixel_scales == (1.0, 1.0)
-        assert arr.geometry.origin == (0.0, 1.0)
+        assert arr.origin == (0.0, 1.0)
 
     def test__from_fits__makes_scaled_sub_array_with_pixel_scale_and_sub_size(self):
 
@@ -383,7 +383,7 @@ class TestAPI:
         assert (arr.in_2d == np.ones((3, 3))).all()
         assert (arr.in_1d == np.ones(9)).all()
         assert arr.pixel_scales == (1.0, 1.0)
-        assert arr.geometry.origin == (0.0, 0.0)
+        assert arr.origin == (0.0, 0.0)
         assert arr.mask.sub_size == 1
 
         arr = aa.Array.from_fits(
@@ -398,15 +398,15 @@ class TestAPI:
         assert (arr.in_2d == np.ones((4, 3))).all()
         assert (arr.in_1d == np.ones(12)).all()
         assert arr.pixel_scales == (1.0, 1.0)
-        assert arr.geometry.origin == (0.0, 1.0)
+        assert arr.origin == (0.0, 1.0)
         assert arr.mask.sub_size == 1
 
     def test__from_yx_values__use_manual_array_values__returns_input_array(self):
 
         arr = aa.Array.manual_2d(array=[[1.0, 2.0], [3.0, 4.0]], pixel_scales=1.0)
 
-        y = arr.mask.geometry.unmasked_grid_sub_1[:, 0]
-        x = arr.mask.geometry.unmasked_grid_sub_1[:, 1]
+        y = arr.mask.unmasked_grid_sub_1[:, 0]
+        x = arr.mask.unmasked_grid_sub_1[:, 1]
         arr_via_yx = aa.Array.manual_yx_and_values(
             y=y, x=x, values=arr, shape_2d=arr.shape_2d, pixel_scales=1.0
         )
@@ -417,8 +417,8 @@ class TestAPI:
             array=[[1.0, 2.0], [3.0, 4.0], [5.0, 6.0]], pixel_scales=1.0
         )
 
-        y = arr.mask.geometry.unmasked_grid_sub_1[:, 0]
-        x = arr.mask.geometry.unmasked_grid_sub_1[:, 1]
+        y = arr.mask.unmasked_grid_sub_1[:, 0]
+        x = arr.mask.unmasked_grid_sub_1[:, 1]
 
         arr_via_yx = aa.Array.manual_yx_and_values(
             y=y, x=x, values=arr, shape_2d=arr.shape_2d, pixel_scales=1.0
@@ -430,8 +430,8 @@ class TestAPI:
             array=[[1.0, 2.0, 3.0], [3.0, 4.0, 6.0]], pixel_scales=1.0
         )
 
-        y = arr.mask.geometry.unmasked_grid_sub_1[:, 0]
-        x = arr.mask.geometry.unmasked_grid_sub_1[:, 1]
+        y = arr.mask.unmasked_grid_sub_1[:, 0]
+        x = arr.mask.unmasked_grid_sub_1[:, 1]
 
         arr_via_yx = aa.Array.manual_yx_and_values(
             y=y, x=x, values=arr, shape_2d=arr.shape_2d, pixel_scales=1.0

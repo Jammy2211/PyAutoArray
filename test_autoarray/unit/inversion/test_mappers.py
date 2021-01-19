@@ -658,7 +658,7 @@ class TestRectangularMapper:
             pixels=9,
             signal_scale=2.0,
             pixelization_1d_index_for_sub_mask_1d_index=mapper.pixelization_1d_index_for_sub_full_1d_index,
-            mask_1d_index_for_sub_mask_1d_index=grid_7x7.regions._mask_1d_index_for_sub_mask_1d_index,
+            mask_1d_index_for_sub_mask_1d_index=grid_7x7.mask._mask_1d_index_for_sub_mask_1d_index,
             hyper_image=image_7x7,
         )
 
@@ -814,7 +814,7 @@ class TestVoronoiMapper:
             pixels=6,
             signal_scale=2.0,
             pixelization_1d_index_for_sub_mask_1d_index=mapper.pixelization_1d_index_for_sub_full_1d_index,
-            mask_1d_index_for_sub_mask_1d_index=grid_7x7.regions._mask_1d_index_for_sub_mask_1d_index,
+            mask_1d_index_for_sub_mask_1d_index=grid_7x7.mask._mask_1d_index_for_sub_mask_1d_index,
             hyper_image=image_7x7,
         )
 

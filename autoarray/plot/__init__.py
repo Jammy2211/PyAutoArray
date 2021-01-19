@@ -14,6 +14,8 @@ from autoarray.plot.mat_wrap.wrap.wrap_base import Legend
 from autoarray.plot.mat_wrap.wrap.wrap_base import Output
 
 from autoarray.plot.mat_wrap.wrap.wrap_1d import LinePlot
+from autoarray.plot.mat_wrap.wrap.wrap_1d import AXVLine
+
 from autoarray.plot.mat_wrap.wrap.wrap_2d import ArrayOverlay
 from autoarray.plot.mat_wrap.wrap.wrap_2d import GridScatter
 from autoarray.plot.mat_wrap.wrap.wrap_2d import GridPlot
