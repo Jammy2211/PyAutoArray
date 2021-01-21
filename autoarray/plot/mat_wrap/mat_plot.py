@@ -830,7 +830,7 @@ class MatPlot2D(AbstractMatPlot):
         self.voronoi_drawer.draw_voronoi_pixels(
             mapper=mapper,
             values=source_pixelilzation_values,
-            cmap=self.cmap.config_dict["cmap"],
+            cmap=self.cmap,
             colorbar=self.colorbar,
             colorbar_tickparams=self.colorbar_tickparams,
         )

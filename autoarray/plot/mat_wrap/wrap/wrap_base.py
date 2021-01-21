@@ -303,6 +303,20 @@ class Cmap(AbstractMatWrap):
      https://matplotlib.org/3.3.2/api/_as_gen/matplotlib.pyplot.imshow.html
     """
 
+    def vmin_from_array(self, array: np.ndarray):
+
+        if self.config_dict["vmin"] is None:
+            return np.min(array)
+        else:
+            return self.config_dict["vmin"]
+
+    def vmax_from_array(self, array: np.ndarray):
+
+        if self.config_dict["vmax"] is None:
+            return np.max(array)
+        else:
+            return self.config_dict["vmax"]
+
     def norm_from_array(self, array: np.ndarray) -> object:
         """
         Returns the `Normalization` object which scales of the colormap.
@@ -316,15 +330,8 @@ class Cmap(AbstractMatWrap):
             The array of data which is to be plotted.
         """
 
-        if self.config_dict["vmin"] is None:
-            vmin = np.min(array)
-        else:
-            vmin = self.config_dict["vmin"]
-
-        if self.config_dict["vmax"] is None:
-            vmax = np.max(array)
-        else:
-            vmax = self.config_dict["vmax"]
+        vmin = self.vmin_from_array(array=array)
+        vmax = self.vmax_from_array(array=array)
 
         if self.config_dict["norm"] in "linear":
             return colors.Normalize(vmin=vmin, vmax=vmax)

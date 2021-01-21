@@ -382,7 +382,7 @@ class VoronoiDrawer(AbstractMatWrap2D):
         self,
         mapper: mappers.MapperVoronoi,
         values: np.ndarray,
-        cmap: str,
+        cmap: wrap.Cmap,
         colorbar: wrap.Colorbar,
         colorbar_tickparams: wrap.ColorbarTickParams = None,
     ):
@@ -404,9 +404,19 @@ class VoronoiDrawer(AbstractMatWrap2D):
         regions, vertices = self.voronoi_polygons(voronoi=mapper.voronoi)
 
         if values is not None:
-            color_array = values[:] / np.max(values)
-            cmap = plt.get_cmap(cmap)
-            colorbar = colorbar.set_with_color_values(cmap=cmap, color_values=values)
+
+            vmin = cmap.vmin_from_array(array=values)
+            vmax = cmap.vmax_from_array(array=values)
+
+            color_values = np.where(values > vmax, vmax, values)
+            color_values = np.where(values < vmin, vmin, color_values)
+
+            color_array = (color_values - vmin) / (vmax - vmin)
+
+            cmap = plt.get_cmap(cmap.config_dict["cmap"])
+            colorbar = colorbar.set_with_color_values(
+                cmap=cmap, color_values=color_values
+            )
             if colorbar is not None and colorbar_tickparams is not None:
                 colorbar_tickparams.set(cb=colorbar)
         else:
