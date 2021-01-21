@@ -304,13 +304,13 @@ class TestVoronoiDrawer:
         voronoi_drawer = aplt.VoronoiDrawer(linewidth=0.5, edgecolor="r", alpha=1.0)
 
         voronoi_drawer.draw_voronoi_pixels(
-            mapper=voronoi_mapper_9_3x3, values=None, cmap=None, colorbar=None
+            mapper=voronoi_mapper_9_3x3, values=None, cmap=aplt.Cmap(), colorbar=None
         )
 
         voronoi_drawer.draw_voronoi_pixels(
             mapper=voronoi_mapper_9_3x3,
             values=np.ones(9),
-            cmap="jet",
+            cmap=aplt.Cmap(),
             colorbar=aplt.Colorbar(fraction=0.1, pad=0.05),
         )
 
