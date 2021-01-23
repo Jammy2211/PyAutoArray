@@ -6,6 +6,19 @@ import numpy as np
 import pytest
 
 
+class TestMask1D:
+    def test__total_image_pixels_from_mask(self):
+        mask = np.array([False, True, False, False, False, True])
+
+        assert util.mask.total_pixels_1d_from(mask=mask) == 4
+
+    def test__total_sub_pixels_from_mask(self):
+
+        mask = np.array([False, True, False, False, False, True])
+
+        assert util.mask.total_sub_pixels_1d_from(mask=mask, sub_size=2) == 8
+
+
 class TestTotalPixels:
     def test__total_image_pixels_from_mask(self):
         mask = np.array(

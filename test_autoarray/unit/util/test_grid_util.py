@@ -3,6 +3,40 @@ import numpy as np
 import pytest
 
 
+class TestGrid1DActual1D:
+    def test__sets_up_scaled_alone_grid(self):
+
+        grid_1d = aa.util.grid.grid_1d_via_shape_1d_from(
+            shape_1d=(3,), pixel_scales=(1.0,), sub_size=1
+        )
+
+        assert (grid_1d == np.array([-1.0, 0.0, 1.0])).all()
+
+        grid_1d = aa.util.grid.grid_1d_via_shape_1d_from(
+            shape_1d=(3,), pixel_scales=(1.0,), sub_size=2, origin=(1.0,)
+        )
+
+        assert (grid_1d == np.array([-0.25, 0.25, 0.75, 1.25, 1.75, 2.25])).all()
+
+    def test__grid_1d_is_actual_via_via_mask_from(self):
+
+        mask = np.array([False, True, False, False])
+
+        grid_1d = aa.util.grid.grid_1d_is_1d_via_mask_from(
+            mask=mask, pixel_scales=(3.0,), sub_size=1
+        )
+
+        assert (grid_1d == np.array([-4.5, 1.5, 4.5])).all()
+
+        mask = np.array([True, False, True, False])
+
+        grid_1d = aa.util.grid.grid_1d_is_1d_via_mask_from(
+            mask=mask, pixel_scales=(2.0,), sub_size=2, origin=(1.0,)
+        )
+
+        assert (grid_1d == np.array([-0.5, 0.5, 3.5, 4.5])).all()
+
+
 class TestGrid1DFromMask:
     def test__from_3x3_mask__sub_size_1(self):
 
@@ -71,6 +105,8 @@ class TestGrid1DFromMask:
         grid = aa.util.grid.grid_1d_via_mask_from(
             mask=mask, pixel_scales=(3.0, 3.0), sub_size=1
         )
+
+        print(grid)
 
         assert (
             grid

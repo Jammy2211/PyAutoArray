@@ -143,7 +143,7 @@ def convert_manual_array(array, mask, store_in_1d):
     return convert_manual_2d_array(array_2d=array, mask=mask, store_in_1d=store_in_1d)
 
 
-class AbstractArray(abstract_structure.AbstractStructure):
+class AbstractArray(abstract_structure.AbstractStructure2D):
 
     exposure_info = None
 

@@ -144,13 +144,13 @@ def convert_manual_grid(grid, mask, store_in_1d):
     return convert_manual_2d_grid(grid_2d=grid, mask=mask, store_in_1d=store_in_1d)
 
 
-class AbstractGrid(abstract_structure.AbstractStructure):
+class AbstractGrid(abstract_structure.AbstractStructure2D):
     def __array_finalize__(self, obj):
 
         super(AbstractGrid, self).__array_finalize__(obj)
 
         if hasattr(obj, "_sub_border_1d_indexes"):
-            self._sub_border_1d_indexes = obj._sub_border_1d_indexes
+            self.mask._sub_border_1d_indexes = obj._sub_border_1d_indexes
 
     def __reduce__(self):
         # Get the parent's __reduce__ tuple
@@ -510,7 +510,7 @@ class AbstractGrid(abstract_structure.AbstractStructure):
 
         This is NOT all sub-pixels which are in mask pixels at the mask's border, but specifically the sub-pixels
         within these border pixels which are at the extreme edge of the border."""
-        return self[self.regions._sub_border_1d_indexes]
+        return self[self.mask._sub_border_1d_indexes]
 
     def relocated_grid_from_grid(self, grid):
         """ Relocate the coordinates of a grid to the border of this grid if they are outside the border, where the

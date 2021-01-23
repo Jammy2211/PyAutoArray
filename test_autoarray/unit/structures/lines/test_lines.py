@@ -18,12 +18,6 @@ class TestAPI:
 
         assert type(line) == lines.Line
         assert (line.in_1d == np.array([1.0, 2.0, 3.0, 4.0])).all()
-        assert line.pixel_scales == (1.0, 1.0)
-        assert line.origin == (0.0, 0.0)
-
-        line = aa.Line.manual_1d(
-            line=[[1.0, 2.0], [3.0, 4.0], [5.0, 6.0], [7.0, 8.0]],
-            shape_2d=(2, 2),
-            pixel_scales=1.0,
-            origin=(0.0, 1.0),
-        )
+        assert line.pixel_scale == 1.0
+        assert line.pixel_scales == (1.0,)
+        assert line.origin == (0.0,)

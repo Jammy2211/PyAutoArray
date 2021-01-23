@@ -10,9 +10,6 @@ class AbstractStructure(np.ndarray):
             if hasattr(obj, "mask"):
                 self.mask = obj.mask
 
-            if hasattr(obj, "store_in_1d"):
-                self.store_in_1d = obj.store_in_1d
-
     def _new_structure(self, grid, mask, store_in_1d):
         """Conveninence method for creating a new instance of the Grid class from this grid.
 
@@ -37,24 +34,12 @@ class AbstractStructure(np.ndarray):
         raise NotImplementedError
 
     @property
-    def in_2d(self):
-        raise NotImplementedError
-
-    @property
     def shape_1d(self):
         return self.mask.shape_1d
 
     @property
     def sub_shape_1d(self):
         return self.mask.sub_shape_1d
-
-    @property
-    def shape_2d(self):
-        return self.mask.shape
-
-    @property
-    def sub_shape_2d(self):
-        return self.mask.sub_shape_2d
 
     @property
     def pixel_scales(self):
@@ -71,10 +56,6 @@ class AbstractStructure(np.ndarray):
     @property
     def sub_size(self):
         return self.mask.sub_size
-
-    @property
-    def regions(self):
-        return self.mask
 
     @property
     def unmasked_grid(self):
@@ -114,3 +95,31 @@ class AbstractStructure(np.ndarray):
 
     def output_to_fits(self, file_path, overwrite):
         raise NotImplementedError
+
+
+class AbstractStructure1D(AbstractStructure):
+
+    pass
+
+
+class AbstractStructure2D(AbstractStructure):
+    def __array_finalize__(self, obj):
+
+        super().__array_finalize__(obj=obj)
+
+        if isinstance(obj, AbstractStructure2D):
+
+            if hasattr(obj, "store_in_1d"):
+                self.store_in_1d = obj.store_in_1d
+
+    @property
+    def in_2d(self):
+        raise NotImplementedError
+
+    @property
+    def shape_2d(self):
+        return self.mask.shape
+
+    @property
+    def sub_shape_2d(self):
+        return self.mask.sub_shape_2d

@@ -159,7 +159,7 @@ class Mapper:
             pixels=self.pixels,
             signal_scale=signal_scale,
             pixelization_1d_index_for_sub_mask_1d_index=self.pixelization_1d_index_for_sub_full_1d_index,
-            mask_1d_index_for_sub_mask_1d_index=self.source_full_grid.regions._mask_1d_index_for_sub_mask_1d_index,
+            mask_1d_index_for_sub_mask_1d_index=self.source_full_grid.mask._mask_1d_index_for_sub_mask_1d_index,
             hyper_image=self.hyper_image,
         )
 
@@ -298,7 +298,7 @@ class MapperVoronoi(Mapper):
         return mapper_util.pixelization_1d_index_for_voronoi_sub_mask_1d_index_from(
             grid=self.source_full_grid,
             nearest_pixelization_1d_index_for_mask_1d_index=self.source_pixelization_grid.nearest_pixelization_1d_index_for_mask_1d_index,
-            mask_1d_index_for_sub_mask_1d_index=self.source_full_grid.regions._mask_1d_index_for_sub_mask_1d_index,
+            mask_1d_index_for_sub_mask_1d_index=self.source_full_grid.mask._mask_1d_index_for_sub_mask_1d_index,
             pixelization_grid=self.source_pixelization_grid,
             pixel_neighbors=self.source_pixelization_grid.pixel_neighbors,
             pixel_neighbors_size=self.source_pixelization_grid.pixel_neighbors_size,

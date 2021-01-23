@@ -1,41 +1,133 @@
 from autoarray import decorator_util
 import numpy as np
 
-from autoarray.util import array_util, mask_util
+from autoarray.util import array_util, geometry_util, mask_util
+
+from typing import Tuple
 
 
-@decorator_util.jit()
-def centres_from(
-    shape_2d: (int, int), pixel_scales: (float, float), origin: (float, float)
-) -> (float, float):
+def grid_1d_via_shape_1d_from(
+    shape_1d: (int,),
+    pixel_scales: Tuple[float],
+    sub_size: int,
+    origin: Tuple[float] = (0.0,),
+) -> np.ndarray:
     """
-    Returns the (y,x) scaled central coordinates of an array or grid from its 2D shape, pixel-scales and origin.
+    For a sub-grid, every unmasked pixel of its 2D mask with shape (total_y_pixels, total_x_pixels) is divided into a
+    finer uniform grid of shape (total_y_pixels*sub_size, total_x_pixels*sub_size). This routine computes the (y,x)
+    scaled coordinates at the centre of every sub-pixel defined by this 2D mask array.
 
-    The coordinate system is defined such that the positive y axis is up and positive x axis is right.
+    Grid are defined from the top-left corner, where the first sub-pixel corresponds to index [0,0].
+    Sub-pixels that are part of the same mask array pixel are indexed next to one another, such that the second
+    sub-pixel in the first pixel has index 1, its next sub-pixel has index 2, and so forth.
+
+    The sub-grid is returned on an array of shape (total_pixels**2*sub_size**2, 2). y coordinates are
+    stored in the 0 index of the second dimension, x coordinates in the 1 index.
 
     Parameters
     ----------
     shape_2d : (int, int)
-        The (y,x) shape of the 2D array or grid the scaled centre is computed for.
+        The (y,x) shape of the 2D array the sub-grid of coordinates is computed for.
     pixel_scales : (float, float)
-        The (y,x) scaled units to pixel units conversion factor of the 2D array.
+        The (y,x) scaled units to pixel units conversion factor of the 2D mask array.
+    sub_size : int
+        The size of the sub-grid that each pixel of the 2D mask array is divided into.
     origin : (float, flloat)
-        The (y,x) origin of the 2D array, which the centre is shifted to.
+        The (y,x) origin of the 2D array, which the sub-grid is shifted around.
 
     Returns
     -------
-    tuple (float, float)
-        The (y,x) scaled central coordinates of the input array.
+    ndarray
+        A sub grid of (y,x) scaled coordinates at the centre of every pixel unmasked pixel on the 2D mask
+        array. The sub grid array has dimensions (total_unmasked_pixels*sub_size**2, 2).
 
     Examples
     --------
-    centres_scaled = centres_from(shape_2d=(5,5), pixel_scales=(0.5, 0.5), origin=(0.0, 0.0))
+    mask = np.array([[True, False, True],
+                     [False, False, False]
+                     [True, False, True]])
+    sub_grid_1d = sub_grid_1d_from_mask_pixel_scales_and_origin(mask=mask, pixel_scales=(0.5, 0.5), origin=(0.0, 0.0))
+    """
+    return grid_1d_is_1d_via_mask_from(
+        mask=np.full(fill_value=False, shape=shape_1d),
+        pixel_scales=pixel_scales,
+        sub_size=sub_size,
+        origin=origin,
+    )
+
+
+@decorator_util.jit()
+def grid_1d_is_1d_via_mask_from(
+    mask: np.ndarray,
+    pixel_scales: Tuple[float],
+    sub_size: int,
+    origin: Tuple[float] = (0.0,),
+) -> np.ndarray:
+    """
+    For a sub-grid, every unmasked pixel of its 2D mask with shape (total_y_pixels, total_x_pixels) is divided into
+    a finer uniform grid of shape (total_y_pixels*sub_size, total_x_pixels*sub_size). This routine computes the (y,x)
+    scaled coordinates a the centre of every sub-pixel defined by this 2D mask array.
+
+    Grid are defined from the top-left corner, where the first unmasked sub-pixel corresponds to index 0.
+    Sub-pixels that are part of the same mask array pixel are indexed next to one another, such that the second
+    sub-pixel in the first pixel has index 1, its next sub-pixel has index 2, and so forth.
+
+    The sub-grid is returned on an array of shape (total_unmasked_pixels*sub_size**2, 2). y coordinates are
+    stored in the 0 index of the second dimension, x coordinates in the 1 index.
+
+    Parameters
+    ----------
+    mask : np.ndarray
+        A 2D array of bools, where `False` values are unmasked and therefore included as part of the calculated
+        sub-grid.
+    pixel_scales : (float, float)
+        The (y,x) scaled units to pixel units conversion factor of the 2D mask array.
+    sub_size : int
+        The size of the sub-grid that each pixel of the 2D mask array is divided into.
+    origin : (float, flloat)
+        The (y,x) origin of the 2D array, which the sub-grid is shifted around.
+
+    Returns
+    -------
+    ndarray
+        A sub grid of (y,x) scaled coordinates at the centre of every pixel unmasked pixel on the 2D mask
+        array. The sub grid array has dimensions (total_unmasked_pixels*sub_size**2, 2).
+
+    Examples
+    --------
+    mask = np.array([[True, False, True],
+                     [False, False, False]
+                     [True, False, True]])
+    grid_1d = sub_grid_1d_from_mask_pixel_scales_and_origin(mask=mask, pixel_scales=(0.5, 0.5), origin=(0.0, 0.0))
     """
 
-    y_centre_scaled = float(shape_2d[0] - 1) / 2 + (origin[0] / pixel_scales[0])
-    x_centre_scaled = float(shape_2d[1] - 1) / 2 - (origin[1] / pixel_scales[1])
+    total_sub_pixels = mask_util.total_sub_pixels_1d_from(mask, sub_size)
 
-    return y_centre_scaled, x_centre_scaled
+    grid_1d = np.zeros(shape=(total_sub_pixels,))
+
+    centres_scaled = geometry_util.central_scaled_coordinate_1d_from(
+        shape_1d=mask.shape, pixel_scales=pixel_scales, origin=origin
+    )
+
+    sub_index = 0
+
+    x_sub_half = pixel_scales[0] / 2
+    x_sub_step = pixel_scales[0] / (sub_size)
+
+    for x in range(mask.shape[0]):
+
+        if not mask[x]:
+
+            x_scaled = (x - centres_scaled[0]) * pixel_scales[0]
+
+            for x1 in range(sub_size):
+
+                grid_1d[sub_index] = (
+                    x_scaled - x_sub_half + x1 * x_sub_step + (x_sub_step / 2.0)
+                )
+                sub_index += 1
+
+    return grid_1d
 
 
 @decorator_util.jit()
@@ -107,7 +199,7 @@ def grid_1d_via_mask_from(
 
     grid_1d = np.zeros(shape=(total_sub_pixels, 2))
 
-    centres_scaled = centres_from(
+    centres_scaled = geometry_util.central_scaled_coordinate_2d_from(
         shape_2d=mask.shape, pixel_scales=pixel_scales, origin=origin
     )
 
@@ -430,7 +522,7 @@ def grid_pixels_1d_from(
 
     grid_pixels_1d = np.zeros((grid_scaled_1d.shape[0], 2))
 
-    centres_scaled = centres_from(
+    centres_scaled = geometry_util.central_scaled_coordinate_2d_from(
         shape_2d=shape_2d, pixel_scales=pixel_scales, origin=origin
     )
 
@@ -490,7 +582,7 @@ def grid_pixel_centres_1d_from(
 
     grid_pixels_1d = np.zeros((grid_scaled_1d.shape[0], 2))
 
-    centres_scaled = centres_from(
+    centres_scaled = geometry_util.central_scaled_coordinate_2d_from(
         shape_2d=shape_2d, pixel_scales=pixel_scales, origin=origin
     )
 
@@ -613,7 +705,7 @@ def grid_scaled_1d_from(
 
     grid_scaled_1d = np.zeros((grid_pixels_1d.shape[0], 2))
 
-    centres_scaled = centres_from(
+    centres_scaled = geometry_util.central_scaled_coordinate_2d_from(
         shape_2d=shape_2d, pixel_scales=pixel_scales, origin=origin
     )
 
@@ -673,7 +765,7 @@ def grid_pixel_centres_2d_from(
 
     grid_pixels_2d = np.zeros((grid_scaled_2d.shape[0], grid_scaled_2d.shape[1], 2))
 
-    centres_scaled = centres_from(
+    centres_scaled = geometry_util.central_scaled_coordinate_2d_from(
         shape_2d=shape_2d, pixel_scales=pixel_scales, origin=origin
     )
 

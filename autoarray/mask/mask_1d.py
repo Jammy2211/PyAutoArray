@@ -60,6 +60,24 @@ class AbstractMask1d(abstract_mask.AbstractMask):
         else:
             self.origin = (0.0,)
 
+    @property
+    def unmasked_grid_sub_1(self):
+        """ The scaled-grid of (y,x) coordinates of every pixel.
+
+        This is defined from the top-left corner, such that the first pixel at location [0, 0] will have a negative x \
+        value y value in scaled units.
+        """
+        grid_1d = grid_util.grid_1d_via_shape_2d_from(
+            shape_2d=self.shape,
+            pixel_scales=self.pixel_scales,
+            sub_size=1,
+            origin=self.origin,
+        )
+
+        return grids.Grid(
+            grid=grid_1d, mask=self.unmasked_mask.mask_sub_1, store_in_1d=True
+        )
+
     def output_to_fits(self, file_path: str, overwrite: bool = False):
         """
         Write the 1D mask to a .fits file.
