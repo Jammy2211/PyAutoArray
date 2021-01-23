@@ -228,7 +228,7 @@ class AbstractMask2D(abstract_mask.AbstractMask):
 
     @property
     def central_pixel_coordinates(self):
-        return geometry_util.central_pixel_coordinates_from(shape=self.shape_2d)
+        return geometry_util.central_pixel_coordinates_2d_from(shape_2d=self.shape_2d)
 
     @property
     def central_scaled_coordinates(self):

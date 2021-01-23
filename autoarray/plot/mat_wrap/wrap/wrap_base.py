@@ -768,10 +768,11 @@ class Legend(AbstractMatWrap):
         self.include = include
 
     def set(self):
+
         if self.include:
 
             config_dict = self.config_dict
-            config_dict.pop("include")
+            config_dict.pop("include") if "include" in config_dict else None
 
             plt.legend(**config_dict)
 

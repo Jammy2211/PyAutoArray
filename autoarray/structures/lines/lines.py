@@ -1,6 +1,7 @@
 import numpy as np
-
+from autoarray.structures import abstract_structure
 from autoarray.mask import mask_1d as msk
+from autoarray.util import geometry_util
 
 
 def convert_line(line):
@@ -11,7 +12,7 @@ def convert_line(line):
     return line
 
 
-class AbstractLine(np.ndarray):
+class AbstractLine(abstract_structure.AbstractStructure1D):
     def __new__(cls, line, mask, *args, **kwargs):
 
         obj = line.view(cls)
@@ -24,7 +25,7 @@ class AbstractLine(np.ndarray):
         return self
 
 
-class Line(np.ndarray):
+class Line(AbstractLine):
     @classmethod
     def manual_1d(cls, line, pixel_scales, sub_size=1, origin=(0.0,)):
         """Create a Line (see `Line.__new__`) by inputting the line values in 1D, for example:
@@ -46,6 +47,8 @@ class Line(np.ndarray):
         """
 
         line = convert_line(line)
+
+        pixel_scales = geometry_util.convert_pixel_scales_1d(pixel_scales=pixel_scales)
 
         mask = msk.Mask1D.unmasked(
             shape_1d=line.shape[0],

@@ -205,7 +205,7 @@ class GridVoronoi(np.ndarray):
             )
 
         if hasattr(obj, "_sub_border_1d_indexes"):
-            self._sub_border_1d_indexes = obj._sub_border_1d_indexes
+            self.mask._sub_border_1d_indexes = obj._sub_border_1d_indexes
 
     def __reduce__(self):
         # Get the parent's __reduce__ tuple
@@ -239,7 +239,7 @@ class GridVoronoi(np.ndarray):
 
         This is NOT all sub-pixels which are in mask pixels at the mask's border, but specifically the sub-pixels
         within these border pixels which are at the extreme edge of the border."""
-        return self[self._sub_border_1d_indexes]
+        return self[self.mask._sub_border_1d_indexes]
 
     @classmethod
     def manual_1d(cls, grid):

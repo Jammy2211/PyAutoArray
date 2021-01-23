@@ -41,6 +41,69 @@ def mask_centres_from(
 
 
 @decorator_util.jit()
+def total_pixels_1d_from(mask: np.ndarray) -> int:
+    """
+    Returns the total number of unmasked pixels in a mask.
+
+    Parameters
+    ----------
+    mask : np.ndarray
+        A 2D array of bools, where `False` values are unmasked and included when counting pixels.
+
+    Returns
+    -------
+    int
+        The total number of pixels that are unmasked.
+
+    Examples
+    --------
+
+    mask = np.array([[True, False, True],
+                 [False, False, False]
+                 [True, False, True]])
+
+    total_regular_pixels = total_regular_pixels_from_mask(mask=mask)
+    """
+
+    total_regular_pixels = 0
+
+    for x in range(mask.shape[0]):
+        if not mask[x]:
+            total_regular_pixels += 1
+
+    return total_regular_pixels
+
+
+@decorator_util.jit()
+def total_sub_pixels_1d_from(mask: np.ndarray, sub_size: int) -> int:
+    """
+    Returns the total number of sub-pixels in unmasked pixels in a mask.
+
+    Parameters
+    ----------
+    mask : np.ndarray
+        A 2D array of bools, where `False` values are unmasked and included when counting sub pixels.
+    sub_size : int
+        The size of the sub-grid that each pixel of the 2D mask array is divided into.
+
+    Returns
+    -------
+    int
+        The total number of sub pixels that are unmasked.
+
+    Examples
+    --------
+
+    mask = np.array([[True, False, True],
+                     [False, False, False]
+                     [True, False, True]])
+
+    total_sub_pixels = total_sub_pixels_from_mask(mask=mask, sub_size=2)
+    """
+    return total_pixels_1d_from(mask) * sub_size
+
+
+@decorator_util.jit()
 def total_pixels_from(mask: np.ndarray) -> int:
     """
     Returns the total number of unmasked pixels in a mask.
