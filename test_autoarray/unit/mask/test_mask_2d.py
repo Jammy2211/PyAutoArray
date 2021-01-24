@@ -195,7 +195,7 @@ class TestClassMethods:
 
     def test__mask_circular__compare_to_array_util(self):
 
-        mask_via_util = aa.util.mask.mask_circular_from(
+        mask_via_util = aa.util.mask.mask_2d_circular_from(
             shape_2d=(5, 4), pixel_scales=(2.7, 2.7), radius=3.5, centre=(0.0, 0.0)
         )
 
@@ -212,7 +212,7 @@ class TestClassMethods:
         assert mask.mask_centre == pytest.approx((0.0, 0.0), 1.0e-8)
 
     def test__mask_circular__inverted__compare_to_array_util(self):
-        mask_via_util = aa.util.mask.mask_circular_from(
+        mask_via_util = aa.util.mask.mask_2d_circular_from(
             shape_2d=(5, 4), pixel_scales=(2.7, 2.7), radius=3.5, centre=(0.0, 0.0)
         )
 
@@ -230,7 +230,7 @@ class TestClassMethods:
         assert mask.mask_centre == (0.0, 0.0)
 
     def test__mask_annulus__compare_to_array_util(self):
-        mask_via_util = aa.util.mask.mask_circular_annular_from(
+        mask_via_util = aa.util.mask.mask_2d_circular_annular_from(
             shape_2d=(5, 4),
             pixel_scales=(2.7, 2.7),
             inner_radius=0.8,
@@ -252,7 +252,7 @@ class TestClassMethods:
         assert mask.mask_centre == pytest.approx((0.0, 0.0), 1.0e-8)
 
     def test__mask_annulus_inverted__compare_to_array_util(self):
-        mask_via_util = aa.util.mask.mask_circular_annular_from(
+        mask_via_util = aa.util.mask.mask_2d_circular_annular_from(
             shape_2d=(5, 4),
             pixel_scales=(2.7, 2.7),
             inner_radius=0.8,
@@ -275,7 +275,7 @@ class TestClassMethods:
         assert mask.mask_centre == (0.0, 0.0)
 
     def test__mask_anti_annulus__compare_to_array_util(self):
-        mask_via_util = aa.util.mask.mask_circular_anti_annular_from(
+        mask_via_util = aa.util.mask.mask_2d_circular_anti_annular_from(
             shape_2d=(9, 9),
             pixel_scales=(1.2, 1.2),
             inner_radius=0.8,
@@ -299,7 +299,7 @@ class TestClassMethods:
         assert mask.mask_centre == (0.0, 0.0)
 
     def test__mask_anti_annulus_inverted__compare_to_array_util(self):
-        mask_via_util = aa.util.mask.mask_circular_anti_annular_from(
+        mask_via_util = aa.util.mask.mask_2d_circular_anti_annular_from(
             shape_2d=(9, 9),
             pixel_scales=(1.2, 1.2),
             inner_radius=0.8,
@@ -324,7 +324,7 @@ class TestClassMethods:
         assert mask.mask_centre == (0.0, 0.0)
 
     def test__mask_elliptical__compare_to_array_util(self):
-        mask_via_util = aa.util.mask.mask_elliptical_from(
+        mask_via_util = aa.util.mask.mask_2d_elliptical_from(
             shape_2d=(8, 5),
             pixel_scales=(2.7, 2.7),
             major_axis_radius=5.7,
@@ -348,7 +348,7 @@ class TestClassMethods:
         assert mask.mask_centre == pytest.approx((0.0, 0.0), 1.0e-8)
 
     def test__mask_elliptical_inverted__compare_to_array_util(self):
-        mask_via_util = aa.util.mask.mask_elliptical_from(
+        mask_via_util = aa.util.mask.mask_2d_elliptical_from(
             shape_2d=(8, 5),
             pixel_scales=(2.7, 2.7),
             major_axis_radius=5.7,
@@ -373,7 +373,7 @@ class TestClassMethods:
         assert mask.mask_centre == (0.0, 0.0)
 
     def test__mask_elliptical_annular__compare_to_array_util(self):
-        mask_via_util = aa.util.mask.mask_elliptical_annular_from(
+        mask_via_util = aa.util.mask.mask_2d_elliptical_annular_from(
             shape_2d=(8, 5),
             pixel_scales=(2.7, 2.7),
             inner_major_axis_radius=2.1,
@@ -404,7 +404,7 @@ class TestClassMethods:
 
     def test__mask_elliptical_annular_inverted__compare_to_array_util(self):
 
-        mask_via_util = aa.util.mask.mask_elliptical_annular_from(
+        mask_via_util = aa.util.mask.mask_2d_elliptical_annular_from(
             shape_2d=(8, 5),
             pixel_scales=(2.7, 2.7),
             inner_major_axis_radius=2.1,
@@ -667,8 +667,8 @@ class TestNewMasksFromMask:
         mask_rescaled_manual = np.full(fill_value=False, shape=(3, 3))
         mask_rescaled_manual[1, 1] = True
 
-        mask_rescaled_manual = aa.util.mask.rescaled_mask_from(
-            mask=mask, rescale_factor=2.0
+        mask_rescaled_manual = aa.util.mask.rescaled_mask_2d_from(
+            mask_2d=mask, rescale_factor=2.0
         )
 
         assert (mask_rescaled == mask_rescaled_manual).all()
@@ -678,7 +678,7 @@ class TestNewMasksFromMask:
         mask = aa.Mask2D.unmasked(shape_2d=(5, 5), pixel_scales=1.0)
         mask[2, 2] = True
 
-        edge_buffed_mask_manual = aa.util.mask.buffed_mask_from(mask=mask).astype(
+        edge_buffed_mask_manual = aa.util.mask.buffed_mask_2d_from(mask_2d=mask).astype(
             "bool"
         )
 
@@ -693,8 +693,8 @@ class TestRegions:
             pixel_scales=1.0,
         )
 
-        mask_index_for_mask_1d_index = aa.util.mask.sub_mask_index_for_sub_mask_1d_index_via_mask_from(
-            mask=mask, sub_size=1
+        mask_index_for_mask_1d_index = aa.util.mask.sub_native_index_for_sub_slim_index_via_mask_2d_from(
+            mask_2d=mask, sub_size=1
         )
 
         assert mask._mask_index_for_mask_1d_index == pytest.approx(
@@ -737,8 +737,8 @@ class TestRegions:
             pixel_scales=1.0,
         )
 
-        blurring_mask_via_util = aa.util.mask.blurring_mask_from(
-            mask=mask, kernel_shape_2d=(3, 3)
+        blurring_mask_via_util = aa.util.mask.blurring_mask_2d_from(
+            mask_2d=mask, kernel_shape_2d=(3, 3)
         )
 
         blurring_mask = mask.blurring_mask_from_kernel_shape(kernel_shape_2d=(3, 3))
@@ -761,7 +761,7 @@ class TestRegions:
             pixel_scales=1.0,
         )
 
-        edge_pixels_util = aa.util.mask.edge_1d_indexes_from(mask=mask)
+        edge_pixels_util = aa.util.mask.edge_1d_indexes_from(mask_2d=mask)
 
         assert mask._edge_1d_indexes == pytest.approx(edge_pixels_util, 1e-4)
         assert mask._edge_2d_indexes[0] == pytest.approx(np.array([1, 1]), 1e-4)
@@ -817,7 +817,7 @@ class TestRegions:
             pixel_scales=1.0,
         )
 
-        border_pixels_util = aa.util.mask.border_1d_indexes_from(mask=mask)
+        border_pixels_util = aa.util.mask.border_slim_indexes_from(mask_2d=mask)
 
         assert mask._border_1d_indexes == pytest.approx(border_pixels_util, 1e-4)
         assert mask._border_2d_indexes[0] == pytest.approx(np.array([1, 1]), 1e-4)
@@ -873,8 +873,8 @@ class TestRegions:
             sub_size=2,
         )
 
-        sub_border_pixels_util = aa.util.mask.sub_border_pixel_1d_indexes_from(
-            mask=mask, sub_size=2
+        sub_border_pixels_util = aa.util.mask.sub_border_pixel_slim_indexes_from(
+            mask_2d=mask, sub_size=2
         )
 
         assert mask._sub_border_1d_indexes == pytest.approx(
@@ -899,20 +899,19 @@ class TestRegions:
             mask._sub_border_1d_indexes == np.array([0, 5, 9, 14, 23, 26, 31, 35])
         ).all()
 
-    def test__mask_1d_index_for_sub_mask_1d_index__compare_to_util(self):
+    def test__slim_index_for_sub_slim_index__compare_to_util(self):
         mask = aa.Mask2D.manual(
             mask=[[True, False, True], [False, False, False], [True, False, False]],
             pixel_scales=1.0,
             sub_size=2,
         )
 
-        mask_1d_index_for_sub_mask_1d_index_util = aa.util.mask.mask_1d_index_for_sub_mask_1d_index_via_mask_from(
-            mask=mask, sub_size=2
+        slim_index_for_sub_slim_index_util = aa.util.mask.slim_index_for_sub_slim_index_via_mask_2d_from(
+            mask_2d=mask, sub_size=2
         )
 
         assert (
-            mask._mask_1d_index_for_sub_mask_1d_index
-            == mask_1d_index_for_sub_mask_1d_index_util
+            mask._slim_index_for_sub_slim_index == slim_index_for_sub_slim_index_util
         ).all()
 
     def test__sub_mask_index_for_sub_mask_1d_index__compare_to_array_util(self):
@@ -922,8 +921,8 @@ class TestRegions:
             sub_size=2,
         )
 
-        sub_mask_index_for_sub_mask_1d_index = aa.util.mask.sub_mask_index_for_sub_mask_1d_index_via_mask_from(
-            mask=mask, sub_size=2
+        sub_mask_index_for_sub_mask_1d_index = aa.util.mask.sub_native_index_for_sub_slim_index_via_mask_2d_from(
+            mask_2d=mask, sub_size=2
         )
 
         assert mask._sub_mask_index_for_sub_mask_1d_index == pytest.approx(
@@ -1383,7 +1382,7 @@ class TestGrids:
             shape_2d=(4, 7), pixel_scales=(0.56, 0.56), sub_size=1
         )
 
-        grid_1d_util = aa.util.grid.grid_1d_via_shape_2d_from(
+        grid_1d_util = aa.util.grid.grid_2d_slim_via_shape_2d_from(
             shape_2d=(4, 7), pixel_scales=(0.56, 0.56), sub_size=1
         )
 
@@ -1413,7 +1412,7 @@ class TestGrids:
             shape_2d=(4, 7), pixel_scales=(0.8, 0.56), sub_size=1
         )
 
-        grid_1d_util = aa.util.grid.grid_1d_via_shape_2d_from(
+        grid_1d_util = aa.util.grid.grid_2d_slim_via_shape_2d_from(
             shape_2d=(4, 7), pixel_scales=(0.8, 0.56), sub_size=1
         )
 
@@ -1630,8 +1629,8 @@ class TestGrids:
             origin=(3.0, -2.0),
         )
 
-        masked_grid_util = aa.util.grid.grid_1d_via_mask_from(
-            mask=mask, pixel_scales=(1.0, 1.0), sub_size=5, origin=(3.0, -2.0)
+        masked_grid_util = aa.util.grid.grid_2d_slim_via_mask_from(
+            mask_2d=mask, pixel_scales=(1.0, 1.0), sub_size=5, origin=(3.0, -2.0)
         )
 
         assert (mask.masked_grid == masked_grid_util).all()
@@ -1732,8 +1731,8 @@ class TestGridConversions:
 
         grid_scaled_1d = np.array([[1.0, -2.0], [1.0, 2.0], [-1.0, -2.0], [-1.0, 2.0]])
 
-        grid_pixels_util = aa.util.grid.grid_pixels_1d_from(
-            grid_scaled_1d=grid_scaled_1d, shape_2d=(2, 2), pixel_scales=(2.0, 4.0)
+        grid_pixels_util = aa.util.grid.grid_pixels_2d_slim_from(
+            grid_scaled_2d_slim=grid_scaled_1d, shape_2d=(2, 2), pixel_scales=(2.0, 4.0)
         )
         grid_pixels = mask.grid_pixels_from_grid_scaled_1d(
             grid_scaled_1d=grid_scaled_1d
@@ -1748,8 +1747,8 @@ class TestGridConversions:
 
         grid_scaled_1d = np.array([[0.5, -0.5], [0.5, 0.5], [-0.5, -0.5], [-0.5, 0.5]])
 
-        grid_pixels_util = aa.util.grid.grid_pixel_centres_1d_from(
-            grid_scaled_1d=grid_scaled_1d, shape_2d=(2, 2), pixel_scales=(2.0, 2.0)
+        grid_pixels_util = aa.util.grid.grid_pixel_centres_2d_slim_from(
+            grid_scaled_2d_slim=grid_scaled_1d, shape_2d=(2, 2), pixel_scales=(2.0, 2.0)
         )
 
         grid_pixels = mask.grid_pixel_centres_from_grid_scaled_1d(
@@ -1762,8 +1761,8 @@ class TestGridConversions:
 
         grid_scaled_1d = np.array([[1.0, -2.0], [1.0, 2.0], [-1.0, -2.0], [-1.0, 2.0]])
 
-        grid_pixels_util = aa.util.grid.grid_pixel_centres_1d_from(
-            grid_scaled_1d=grid_scaled_1d, shape_2d=(2, 2), pixel_scales=(7.0, 2.0)
+        grid_pixels_util = aa.util.grid.grid_pixel_centres_2d_slim_from(
+            grid_scaled_2d_slim=grid_scaled_1d, shape_2d=(2, 2), pixel_scales=(7.0, 2.0)
         )
 
         grid_pixels = mask.grid_pixel_centres_from_grid_scaled_1d(
@@ -1777,8 +1776,8 @@ class TestGridConversions:
 
         grid_scaled = np.array([[1.0, -1.0], [1.0, 1.0], [-1.0, -1.0], [-1.0, 1.0]])
 
-        grid_pixel_indexes_util = aa.util.grid.grid_pixel_indexes_1d_from(
-            grid_scaled_1d=grid_scaled, shape_2d=(2, 2), pixel_scales=(2.0, 2.0)
+        grid_pixel_indexes_util = aa.util.grid.grid_pixel_indexes_2d_slim_from(
+            grid_scaled_2d_slim=grid_scaled, shape_2d=(2, 2), pixel_scales=(2.0, 2.0)
         )
 
         grid_pixel_indexes = mask.grid_pixel_indexes_from_grid_scaled_1d(
@@ -1791,8 +1790,8 @@ class TestGridConversions:
 
         grid_scaled = np.array([[1.0, -2.0], [1.0, 2.0], [-1.0, -2.0], [-1.0, 2.0]])
 
-        grid_pixels_util = aa.util.grid.grid_pixel_indexes_1d_from(
-            grid_scaled_1d=grid_scaled, shape_2d=(2, 2), pixel_scales=(2.0, 4.0)
+        grid_pixels_util = aa.util.grid.grid_pixel_indexes_2d_slim_from(
+            grid_scaled_2d_slim=grid_scaled, shape_2d=(2, 2), pixel_scales=(2.0, 4.0)
         )
 
         grid_pixels = mask.grid_pixel_indexes_from_grid_scaled_1d(
@@ -1806,8 +1805,8 @@ class TestGridConversions:
 
         grid_pixels = np.array([[0, 0], [0, 1], [1, 0], [1, 1]])
 
-        grid_pixels_util = aa.util.grid.grid_scaled_1d_from(
-            grid_pixels_1d=grid_pixels, shape_2d=(2, 2), pixel_scales=(2.0, 2.0)
+        grid_pixels_util = aa.util.grid.grid_scaled_2d_slim_from(
+            grid_pixels_2d_slim=grid_pixels, shape_2d=(2, 2), pixel_scales=(2.0, 2.0)
         )
 
         grid_pixels = mask.grid_scaled_from_grid_pixels_1d(grid_pixels_1d=grid_pixels)
@@ -1818,8 +1817,8 @@ class TestGridConversions:
 
         grid_pixels = np.array([[0, 0], [0, 1], [1, 0], [1, 1]])
 
-        grid_pixels_util = aa.util.grid.grid_scaled_1d_from(
-            grid_pixels_1d=grid_pixels, shape_2d=(2, 2), pixel_scales=(2.0, 2.0)
+        grid_pixels_util = aa.util.grid.grid_scaled_2d_slim_from(
+            grid_pixels_2d_slim=grid_pixels, shape_2d=(2, 2), pixel_scales=(2.0, 2.0)
         )
         grid_pixels = mask.grid_scaled_from_grid_pixels_1d(grid_pixels_1d=grid_pixels)
 
@@ -1832,8 +1831,8 @@ class TestGridConversions:
 
         grid_scaled = np.array([[1.0, -2.0], [1.0, 2.0], [-1.0, -2.0], [-1.0, 2.0]])
 
-        grid_pixels_util = aa.util.grid.grid_pixels_1d_from(
-            grid_scaled_1d=grid_scaled,
+        grid_pixels_util = aa.util.grid.grid_pixels_2d_slim_from(
+            grid_scaled_2d_slim=grid_scaled,
             shape_2d=(2, 2),
             pixel_scales=(2.0, 2.0),
             origin=(1.0, 2.0),
@@ -1841,8 +1840,8 @@ class TestGridConversions:
         grid_pixels = mask.grid_pixels_from_grid_scaled_1d(grid_scaled_1d=grid_scaled)
         assert (grid_pixels == grid_pixels_util).all()
 
-        grid_pixels_util = aa.util.grid.grid_pixel_indexes_1d_from(
-            grid_scaled_1d=grid_scaled,
+        grid_pixels_util = aa.util.grid.grid_pixel_indexes_2d_slim_from(
+            grid_scaled_2d_slim=grid_scaled,
             shape_2d=(2, 2),
             pixel_scales=(2.0, 2.0),
             origin=(1.0, 2.0),
@@ -1852,8 +1851,8 @@ class TestGridConversions:
         )
         assert grid_pixels == pytest.approx(grid_pixels_util, 1e-4)
 
-        grid_pixels_util = aa.util.grid.grid_pixel_centres_1d_from(
-            grid_scaled_1d=grid_scaled,
+        grid_pixels_util = aa.util.grid.grid_pixel_centres_2d_slim_from(
+            grid_scaled_2d_slim=grid_scaled,
             shape_2d=(2, 2),
             pixel_scales=(2.0, 2.0),
             origin=(1.0, 2.0),
@@ -1865,8 +1864,8 @@ class TestGridConversions:
 
         grid_pixels = np.array([[0, 0], [0, 1], [1, 0], [1, 1]])
 
-        grid_scaled_util = aa.util.grid.grid_scaled_1d_from(
-            grid_pixels_1d=grid_pixels,
+        grid_scaled_util = aa.util.grid.grid_scaled_2d_slim_from(
+            grid_pixels_2d_slim=grid_pixels,
             shape_2d=(2, 2),
             pixel_scales=(2.0, 2.0),
             origin=(1.0, 2.0),
@@ -1882,8 +1881,8 @@ class TestGridConversions:
             shape_2d=(2, 2), pixel_scales=(2.0, 1.0), origin=(1.0, 2.0)
         )
 
-        grid_pixels_util = aa.util.grid.grid_pixels_1d_from(
-            grid_scaled_1d=grid_scaled,
+        grid_pixels_util = aa.util.grid.grid_pixels_2d_slim_from(
+            grid_scaled_2d_slim=grid_scaled,
             shape_2d=(2, 2),
             pixel_scales=(2.0, 1.0),
             origin=(1.0, 2.0),
@@ -1891,8 +1890,8 @@ class TestGridConversions:
         grid_pixels = mask.grid_pixels_from_grid_scaled_1d(grid_scaled_1d=grid_scaled)
         assert (grid_pixels == grid_pixels_util).all()
 
-        grid_pixels_util = aa.util.grid.grid_pixel_indexes_1d_from(
-            grid_scaled_1d=grid_scaled,
+        grid_pixels_util = aa.util.grid.grid_pixel_indexes_2d_slim_from(
+            grid_scaled_2d_slim=grid_scaled,
             shape_2d=(2, 2),
             pixel_scales=(2.0, 1.0),
             origin=(1.0, 2.0),
@@ -1902,8 +1901,8 @@ class TestGridConversions:
         )
         assert (grid_pixels == grid_pixels_util).all()
 
-        grid_pixels_util = aa.util.grid.grid_pixel_centres_1d_from(
-            grid_scaled_1d=grid_scaled,
+        grid_pixels_util = aa.util.grid.grid_pixel_centres_2d_slim_from(
+            grid_scaled_2d_slim=grid_scaled,
             shape_2d=(2, 2),
             pixel_scales=(2.0, 1.0),
             origin=(1.0, 2.0),
@@ -1915,8 +1914,8 @@ class TestGridConversions:
 
         grid_pixels = np.array([[0, 0], [0, 1], [1, 0], [1, 1]])
 
-        grid_scaled_util = aa.util.grid.grid_scaled_1d_from(
-            grid_pixels_1d=grid_pixels,
+        grid_scaled_util = aa.util.grid.grid_scaled_2d_slim_from(
+            grid_pixels_2d_slim=grid_pixels,
             shape_2d=(2, 2),
             pixel_scales=(2.0, 1.0),
             origin=(1.0, 2.0),

@@ -232,12 +232,12 @@ class MapperPlotter(abstract_plotters.AbstractPlotter):
         return self.visuals_2d + self.visuals_2d.__class__(
             origin=self.extract_2d(
                 "origin",
-                grids.GridIrregular(grid=[self.mapper.source_full_grid.mask.origin]),
+                grids.GridIrregular(grid=[self.mapper.source_slim_grid.mask.origin]),
             ),
-            mask=self.extract_2d("mask", self.mapper.source_full_grid.mask),
+            mask=self.extract_2d("mask", self.mapper.source_slim_grid.mask),
             border=self.extract_2d(
                 "border",
-                self.mapper.source_full_grid.mask.border_grid_sub_1.in_1d_binned,
+                self.mapper.source_slim_grid.mask.border_grid_sub_1.in_1d_binned,
             ),
             pixelization_grid=self.extract_2d(
                 "pixelization_grid",
@@ -258,7 +258,7 @@ class MapperPlotter(abstract_plotters.AbstractPlotter):
 
         - origin: the (y,x) origin of the coordinate system in the source plane.
         - mapper_source_pixelization_grid: the `Mapper`'s pixelization grid in the source-plane.
-        - mapper_source_full_grid: the `Mapper`'s full grid in the source-plane.
+        - mapper_source_slim_grid: the `Mapper`'s full grid in the source-plane.
         - mapper_border_grid: the border of the `Mapper`'s full grid in the data-plane.
 
         Parameters
@@ -278,10 +278,10 @@ class MapperPlotter(abstract_plotters.AbstractPlotter):
                 grids.GridIrregular(grid=[self.mapper.source_pixelization_grid.origin]),
             ),
             grid=self.extract_2d(
-                "grid", self.mapper.source_full_grid, "mapper_source_full_grid"
+                "grid", self.mapper.source_slim_grid, "mapper_source_slim_grid"
             ),
             border=self.extract_2d(
-                "border", self.mapper.source_full_grid.sub_border_grid
+                "border", self.mapper.source_slim_grid.sub_border_grid
             ),
             pixelization_grid=self.extract_2d(
                 "pixelization_grid",
@@ -311,12 +311,12 @@ class MapperPlotter(abstract_plotters.AbstractPlotter):
 
         if self.visuals_2d.pixelization_indexes is not None:
 
-            indexes = self.mapper.full_indexes_from_pixelization_indexes(
+            indexes = self.mapper.slim_indexes_from_pixelization_indexes(
                 pixelization_indexes=self.visuals_2d.pixelization_indexes
             )
 
             self.mat_plot_2d.index_scatter.scatter_grid_indexes(
-                grid=self.mapper.source_full_grid.mask.masked_grid, indexes=indexes
+                grid=self.mapper.source_slim_grid.mask.masked_grid, indexes=indexes
             )
 
         self.figure()

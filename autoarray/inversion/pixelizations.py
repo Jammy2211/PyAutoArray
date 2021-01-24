@@ -162,7 +162,7 @@ class Rectangular(Pixelization):
         )
 
         return mappers.MapperRectangular(
-            source_full_grid=relocated_grid,
+            source_slim_grid=relocated_grid,
             source_pixelization_grid=pixelization_grid,
             hyper_image=hyper_image,
         )
@@ -232,7 +232,7 @@ class Voronoi(Pixelization):
             )
 
             return mappers.MapperVoronoi(
-                source_full_grid=relocated_grid,
+                source_slim_grid=relocated_grid,
                 source_pixelization_grid=pixelization_grid,
                 data_pixelization_grid=sparse_image_plane_grid,
                 hyper_image=hyper_image,

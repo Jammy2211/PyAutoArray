@@ -25,12 +25,12 @@ class TestObj:
 
         mask = aa.Mask2D.manual(mask=mask, pixel_scales=(2.0, 2.0), sub_size=2)
 
-        blurring_mask_util = aa.util.mask.blurring_mask_from(
-            mask=mask, kernel_shape_2d=(3, 5)
+        blurring_mask_util = aa.util.mask.blurring_mask_2d_from(
+            mask_2d=mask, kernel_shape_2d=(3, 5)
         )
 
-        blurring_grid_util = aa.util.grid.grid_1d_via_mask_from(
-            mask=blurring_mask_util, pixel_scales=(2.0, 2.0), sub_size=1
+        blurring_grid_util = aa.util.grid.grid_2d_slim_via_mask_from(
+            mask_2d=blurring_mask_util, pixel_scales=(2.0, 2.0), sub_size=1
         )
 
         grid = aa.GridInterpolate.from_mask(mask=mask, pixel_scales_interp=0.1)
@@ -60,12 +60,12 @@ class TestObj:
 
         mask = aa.Mask2D.manual(mask=mask, pixel_scales=(2.0, 2.0))
 
-        blurring_mask_util = aa.util.mask.blurring_mask_from(
-            mask=mask, kernel_shape_2d=(3, 5)
+        blurring_mask_util = aa.util.mask.blurring_mask_2d_from(
+            mask_2d=mask, kernel_shape_2d=(3, 5)
         )
 
-        blurring_grid_util = aa.util.grid.grid_1d_via_mask_from(
-            mask=blurring_mask_util, pixel_scales=(2.0, 2.0), sub_size=1
+        blurring_grid_util = aa.util.grid.grid_2d_slim_via_mask_from(
+            mask_2d=blurring_mask_util, pixel_scales=(2.0, 2.0), sub_size=1
         )
 
         mask = aa.Mask2D.manual(mask=mask, pixel_scales=(2.0, 2.0))
@@ -119,8 +119,8 @@ class TestObj:
 
         padded_grid = grid.padded_grid_from_kernel_shape(kernel_shape_2d=(5, 5))
 
-        padded_grid_util = aa.util.grid.grid_1d_via_mask_from(
-            mask=np.full((6, 9), False), pixel_scales=(8.0, 8.0), sub_size=4
+        padded_grid_util = aa.util.grid.grid_2d_slim_via_mask_from(
+            mask_2d=np.full((6, 9), False), pixel_scales=(8.0, 8.0), sub_size=4
         )
 
         assert isinstance(padded_grid, grids.GridInterpolate)
@@ -443,8 +443,8 @@ class TestAPI:
         )
         mask = aa.Mask2D.manual(mask=mask, pixel_scales=(2.0, 2.0), sub_size=1)
 
-        grid_via_util = aa.util.grid.grid_1d_via_mask_from(
-            mask=mask, sub_size=1, pixel_scales=(2.0, 2.0)
+        grid_via_util = aa.util.grid.grid_2d_slim_via_mask_from(
+            mask_2d=mask, sub_size=1, pixel_scales=(2.0, 2.0)
         )
 
         grid = aa.GridInterpolate.from_mask(
@@ -459,7 +459,7 @@ class TestAPI:
         assert grid.sub_size == 1
 
         grid_via_util = aa.util.grid.grid_2d_via_mask_from(
-            mask=mask, sub_size=1, pixel_scales=(2.0, 2.0)
+            mask_2d=mask, sub_size=1, pixel_scales=(2.0, 2.0)
         )
 
         grid = aa.GridInterpolate.from_mask(
@@ -482,8 +482,8 @@ class TestAPI:
         )
         mask = aa.Mask2D.manual(mask=mask, pixel_scales=(2.0, 2.0), sub_size=2)
 
-        grid_via_util = aa.util.grid.grid_1d_via_mask_from(
-            mask=mask, sub_size=2, pixel_scales=(2.0, 2.0)
+        grid_via_util = aa.util.grid.grid_2d_slim_via_mask_from(
+            mask_2d=mask, sub_size=2, pixel_scales=(2.0, 2.0)
         )
 
         grid = aa.GridInterpolate.from_mask(

@@ -63,7 +63,7 @@ class TestGrid:
 
         grid_radii = grid.grid_radii_from(centre=(0.0, 0.0))
 
-        grid_radii_util = aa.util.grid.grid_radii_scaled_1d_from(
+        grid_radii_util = aa.util.grid.grid_scaled_2d_slim_radii_from(
             extent=grid.extent,
             centre=(0.0, 0.0),
             pixel_scales=grid.pixel_scales,
@@ -76,7 +76,7 @@ class TestGrid:
 
         grid_radii = grid.grid_radii_from(centre=(0.3, 0.1))
 
-        grid_radii_util = aa.util.grid.grid_radii_scaled_1d_from(
+        grid_radii_util = aa.util.grid.grid_scaled_2d_slim_radii_from(
             extent=grid.extent,
             centre=(0.3, 0.1),
             pixel_scales=grid.pixel_scales,
@@ -140,8 +140,8 @@ class TestGrid:
 
         padded_grid = grid.padded_grid_from_kernel_shape(kernel_shape_2d=(3, 3))
 
-        padded_grid_util = aa.util.grid.grid_1d_via_mask_from(
-            mask=np.full((6, 6), False), pixel_scales=(3.0, 3.0), sub_size=1
+        padded_grid_util = aa.util.grid.grid_2d_slim_via_mask_from(
+            mask_2d=np.full((6, 6), False), pixel_scales=(3.0, 3.0), sub_size=1
         )
 
         assert isinstance(padded_grid, grids.Grid)
@@ -153,8 +153,8 @@ class TestGrid:
 
         padded_grid = grid.padded_grid_from_kernel_shape(kernel_shape_2d=(3, 3))
 
-        padded_grid_util = aa.util.grid.grid_1d_via_mask_from(
-            mask=np.full((6, 7), False), pixel_scales=(2.0, 2.0), sub_size=1
+        padded_grid_util = aa.util.grid.grid_2d_slim_via_mask_from(
+            mask_2d=np.full((6, 7), False), pixel_scales=(2.0, 2.0), sub_size=1
         )
 
         assert padded_grid.shape == (42, 2)
@@ -164,8 +164,8 @@ class TestGrid:
 
         padded_grid = grid.padded_grid_from_kernel_shape(kernel_shape_2d=(3, 3))
 
-        padded_grid_util = aa.util.grid.grid_1d_via_mask_from(
-            mask=np.full((7, 6), False), pixel_scales=(1.0, 1.0), sub_size=1
+        padded_grid_util = aa.util.grid.grid_2d_slim_via_mask_from(
+            mask_2d=np.full((7, 6), False), pixel_scales=(1.0, 1.0), sub_size=1
         )
 
         assert padded_grid.shape == (42, 2)
@@ -175,8 +175,8 @@ class TestGrid:
 
         padded_grid = grid.padded_grid_from_kernel_shape(kernel_shape_2d=(2, 5))
 
-        padded_grid_util = aa.util.grid.grid_1d_via_mask_from(
-            mask=np.full((6, 9), False), pixel_scales=(8.0, 8.0), sub_size=1
+        padded_grid_util = aa.util.grid.grid_2d_slim_via_mask_from(
+            mask_2d=np.full((6, 9), False), pixel_scales=(8.0, 8.0), sub_size=1
         )
 
         assert padded_grid.shape == (54, 2)
@@ -190,8 +190,8 @@ class TestGrid:
 
         padded_grid = grid.padded_grid_from_kernel_shape(kernel_shape_2d=(3, 3))
 
-        padded_grid_util = aa.util.grid.grid_1d_via_mask_from(
-            mask=np.full((7, 6), False), pixel_scales=(2.0, 2.0), sub_size=2
+        padded_grid_util = aa.util.grid.grid_2d_slim_via_mask_from(
+            mask_2d=np.full((7, 6), False), pixel_scales=(2.0, 2.0), sub_size=2
         )
 
         assert padded_grid.shape == (168, 2)
@@ -206,8 +206,8 @@ class TestGrid:
 
         padded_grid = grid.padded_grid_from_kernel_shape(kernel_shape_2d=(5, 5))
 
-        padded_grid_util = aa.util.grid.grid_1d_via_mask_from(
-            mask=np.full((6, 9), False), pixel_scales=(8.0, 8.0), sub_size=4
+        padded_grid_util = aa.util.grid.grid_2d_slim_via_mask_from(
+            mask_2d=np.full((6, 9), False), pixel_scales=(8.0, 8.0), sub_size=4
         )
 
         assert padded_grid.shape == (864, 2)
@@ -229,8 +229,8 @@ class TestGrid:
 
         mask = aa.Mask2D.manual(mask=mask, pixel_scales=(2.0, 2.0), sub_size=2)
 
-        sub_border_1d_indexes_util = aa.util.mask.sub_border_pixel_1d_indexes_from(
-            mask=mask, sub_size=2
+        sub_border_1d_indexes_util = aa.util.mask.sub_border_pixel_slim_indexes_from(
+            mask_2d=mask, sub_size=2
         )
 
         grid = aa.Grid.from_mask(mask=mask)

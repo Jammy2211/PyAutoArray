@@ -1,7 +1,6 @@
 import autoarray as aa
 import autoarray.plot as aplt
 from os import path
-import matplotlib.pyplot as plt
 import pytest
 import numpy as np
 import shutil
@@ -366,7 +365,7 @@ class TestMapperPlotter:
         ]
         assert (
             mapper_plotter.visuals_data_with_include_2d.mask
-            == rectangular_mapper_7x7_3x3.source_full_grid.mask
+            == rectangular_mapper_7x7_3x3.source_slim_grid.mask
         ).all()
         assert mapper_plotter.visuals_data_with_include_2d.grid == None
         #  assert visuals.border == (0, 2)
@@ -399,7 +398,7 @@ class TestMapperPlotter:
         ]
         assert (
             mapper_plotter.visuals_data_with_include_2d.mask
-            == voronoi_mapper_9_3x3.source_full_grid.mask
+            == voronoi_mapper_9_3x3.source_slim_grid.mask
         ).all()
         assert (
             mapper_plotter.visuals_data_with_include_2d.pixelization_grid
@@ -427,7 +426,7 @@ class TestMapperPlotter:
 
         include = aplt.Include2D(
             origin=True,
-            mapper_source_full_grid=True,
+            mapper_source_slim_grid=True,
             mapper_source_pixelization_grid=True,
             border=True,
         )
@@ -442,7 +441,7 @@ class TestMapperPlotter:
         ]
         assert (
             mapper_plotter.visuals_source_with_include_2d.grid
-            == rectangular_mapper_7x7_3x3.source_full_grid
+            == rectangular_mapper_7x7_3x3.source_slim_grid
         ).all()
         assert (
             mapper_plotter.visuals_source_with_include_2d.pixelization_grid
@@ -450,13 +449,13 @@ class TestMapperPlotter:
         ).all()
         assert (
             mapper_plotter.visuals_source_with_include_2d.border
-            == rectangular_mapper_7x7_3x3.source_full_grid.sub_border_grid
+            == rectangular_mapper_7x7_3x3.source_slim_grid.sub_border_grid
         ).all()
 
         include = aplt.Include2D(
             origin=False,
             border=False,
-            mapper_source_full_grid=False,
+            mapper_source_slim_grid=False,
             mapper_source_pixelization_grid=False,
         )
 
@@ -474,7 +473,7 @@ class TestMapperPlotter:
         include = aplt.Include2D(
             origin=True,
             border=True,
-            mapper_source_full_grid=True,
+            mapper_source_slim_grid=True,
             mapper_source_pixelization_grid=True,
         )
 
@@ -488,7 +487,7 @@ class TestMapperPlotter:
         ]
         assert (
             mapper_plotter.visuals_source_with_include_2d.grid
-            == voronoi_mapper_9_3x3.source_full_grid
+            == voronoi_mapper_9_3x3.source_slim_grid
         ).all()
         assert (
             mapper_plotter.visuals_source_with_include_2d.pixelization_grid
@@ -496,7 +495,7 @@ class TestMapperPlotter:
         ).all()
         assert (
             mapper_plotter.visuals_source_with_include_2d.border
-            == voronoi_mapper_9_3x3.source_full_grid.sub_border_grid
+            == voronoi_mapper_9_3x3.source_slim_grid.sub_border_grid
         ).all()
 
         include = aplt.Include2D(

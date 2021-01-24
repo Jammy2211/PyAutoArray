@@ -203,7 +203,7 @@ class TestAbstractInversion:
             convolver=mock.MockConvolver(matrix_shape),
             mapper=mock.MockMapper(
                 matrix_shape=matrix_shape,
-                source_full_grid=grid,
+                source_slim_grid=grid,
                 source_pixelization_grid=pixelization_grid,
             ),
             regularization=mock.MockRegularization(matrix_shape),
@@ -265,7 +265,7 @@ class TestAbstractInversion:
             convolver=mock.MockConvolver(matrix_shape),
             mapper=mock.MockMapper(
                 matrix_shape=matrix_shape,
-                source_full_grid=grid,
+                source_slim_grid=grid,
                 source_pixelization_grid=pixelization_grid,
             ),
             regularization=mock.MockRegularization(matrix_shape),
@@ -322,7 +322,7 @@ class TestAbstractInversion:
             convolver=mock.MockConvolver(matrix_shape),
             mapper=mock.MockMapper(
                 matrix_shape=matrix_shape,
-                source_full_grid=grid,
+                source_slim_grid=grid,
                 source_pixelization_grid=pixelization_grid,
             ),
             regularization=mock.MockRegularization(matrix_shape),
@@ -409,7 +409,7 @@ class TestAbstractInversion:
             convolver=mock.MockConvolver(matrix_shape),
             mapper=mock.MockMapper(
                 matrix_shape=matrix_shape,
-                source_full_grid=grid,
+                source_slim_grid=grid,
                 source_pixelization_grid=pixelization_grid,
             ),
             regularization=mock.MockRegularization(matrix_shape),
@@ -472,7 +472,7 @@ class TestInversionImagingMatrix:
             image=np.ones(9),
             noise_map=np.ones(9),
             convolver=mock.MockConvolver(matrix_shape),
-            mapper=mock.MockMapper(matrix_shape=matrix_shape, source_full_grid=grid),
+            mapper=mock.MockMapper(matrix_shape=matrix_shape, source_slim_grid=grid),
             regularization=mock.MockRegularization(matrix_shape),
             settings=aa.SettingsInversion(check_solution=False),
         )
@@ -526,7 +526,7 @@ class TestInversionImagingMatrix:
             image=np.ones(9),
             noise_map=np.ones(9),
             convolver=mock.MockConvolver(matrix_shape),
-            mapper=mock.MockMapper(matrix_shape=matrix_shape, source_full_grid=grid),
+            mapper=mock.MockMapper(matrix_shape=matrix_shape, source_slim_grid=grid),
             regularization=mock.MockRegularization(matrix_shape),
             settings=aa.SettingsInversion(check_solution=False),
         )
@@ -584,7 +584,7 @@ class TestInversionImagingMatrix:
                 noise_map=np.ones(9),
                 convolver=mock.MockConvolver(matrix_shape),
                 mapper=mock.MockMapper(
-                    matrix_shape=matrix_shape, source_full_grid=grid
+                    matrix_shape=matrix_shape, source_slim_grid=grid
                 ),
                 regularization=mock.MockRegularization(matrix_shape),
             )
@@ -626,4 +626,4 @@ directory = path.dirname(path.realpath(__file__))
 #         pixelization_residuals_util = \
 #             am.util.inversion.pixelization_residuals_from_pixelization_values_reconstructed_data_1d_and_mapping_quantities(
 #                 pixelization_values=inversion.reconstruction, reconstructed_data_1d=inversion.reconstructed_data_1d,
-#                 mask_1d_index_for_sub_mask_1d_index=inversion.mapper.mask_1d_index_for_sub_mask_1d_index, all_sub_mask_1d_indexes_for_pixelization_1d_index=inversion.mapper.all_sub_mask_1d_indexes_for_pixelization_1d_index)
+#                 slim_index_for_sub_slim_index=inversion.mapper.slim_index_for_sub_slim_index, all_sub_slim_indexes_for_pixelization_index=inversion.mapper.all_sub_slim_indexes_for_pixelization_index)

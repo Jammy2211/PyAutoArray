@@ -526,7 +526,7 @@ class Grid(abstract_grid.AbstractGrid):
         """
         pixel_scales = geometry_util.convert_pixel_scales_2d(pixel_scales=pixel_scales)
 
-        grid_1d = grid_util.grid_1d_via_shape_2d_from(
+        grid_1d = grid_util.grid_2d_slim_via_shape_2d_from(
             shape_2d=shape_2d,
             pixel_scales=pixel_scales,
             sub_size=sub_size,
@@ -618,8 +618,8 @@ class Grid(abstract_grid.AbstractGrid):
             stored in 2D as an ndarray of shape [total_y_pixels, total_x_pixels, 2].
         """
 
-        sub_grid_1d = grid_util.grid_1d_via_mask_from(
-            mask=mask,
+        sub_grid_1d = grid_util.grid_2d_slim_via_mask_from(
+            mask_2d=mask,
             pixel_scales=mask.pixel_scales,
             sub_size=mask.sub_size,
             origin=mask.origin,
@@ -629,7 +629,7 @@ class Grid(abstract_grid.AbstractGrid):
             return Grid(grid=sub_grid_1d, mask=mask, store_in_1d=store_in_1d)
 
         sub_grid_2d = grid_util.sub_grid_2d_from(
-            sub_grid_1d=sub_grid_1d, mask=mask, sub_size=mask.sub_size
+            sub_grid_2d_slim=sub_grid_1d, mask_2d=mask, sub_size=mask.sub_size
         )
 
         return Grid(grid=sub_grid_2d, mask=mask, store_in_1d=store_in_1d)
@@ -918,21 +918,21 @@ class GridSparse:
 
         origin = grid.mask.mask_centre
 
-        unmasked_sparse_grid_1d = grid_util.grid_1d_via_shape_2d_from(
+        unmasked_sparse_grid_1d = grid_util.grid_2d_slim_via_shape_2d_from(
             shape_2d=unmasked_sparse_shape,
             pixel_scales=pixel_scales,
             sub_size=1,
             origin=origin,
         )
 
-        unmasked_sparse_grid_pixel_centres = grid_util.grid_pixel_centres_1d_from(
-            grid_scaled_1d=unmasked_sparse_grid_1d,
+        unmasked_sparse_grid_pixel_centres = grid_util.grid_pixel_centres_2d_slim_from(
+            grid_scaled_2d_slim=unmasked_sparse_grid_1d,
             shape_2d=grid.mask.shape,
             pixel_scales=grid.mask.pixel_scales,
         ).astype("int")
 
-        total_sparse_pixels = mask_util.total_sparse_pixels_from(
-            mask=grid.mask,
+        total_sparse_pixels = mask_util.total_sparse_pixels_2d_from(
+            mask_2d=grid.mask,
             unmasked_sparse_grid_pixel_centres=unmasked_sparse_grid_pixel_centres,
         )
 
@@ -948,14 +948,14 @@ class GridSparse:
             unmasked_sparse_grid_pixel_centres=unmasked_sparse_grid_pixel_centres,
         ).astype("int")
 
-        regular_to_unmasked_sparse = grid_util.grid_pixel_indexes_1d_from(
-            grid_scaled_1d=grid,
+        regular_to_unmasked_sparse = grid_util.grid_pixel_indexes_2d_slim_from(
+            grid_scaled_2d_slim=grid,
             shape_2d=unmasked_sparse_shape,
             pixel_scales=pixel_scales,
             origin=origin,
         ).astype("int")
 
-        sparse_1d_index_for_mask_1d_index = sparse_util.sparse_1d_index_for_mask_1d_index_from(
+        sparse_1d_index_for_mask_1d_index = sparse_util.sparse_slim_index_for_mask_slim_index_from(
             regular_to_unmasked_sparse=regular_to_unmasked_sparse,
             sparse_for_unmasked_sparse=sparse_for_unmasked_sparse,
         ).astype(

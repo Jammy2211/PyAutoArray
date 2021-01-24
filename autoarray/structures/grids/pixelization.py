@@ -95,7 +95,7 @@ class GridRectangular(grids.Grid):
 
         origin = ((y_max + y_min) / 2.0, (x_max + x_min) / 2.0)
 
-        grid_1d = grid_util.grid_1d_via_shape_2d_from(
+        grid_1d = grid_util.grid_2d_slim_via_shape_2d_from(
             shape_2d=shape_2d, pixel_scales=pixel_scales, sub_size=1, origin=origin
         )
 

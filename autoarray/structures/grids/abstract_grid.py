@@ -80,7 +80,7 @@ def convert_manual_1d_grid(grid_1d, mask, store_in_1d):
         return grid_1d
 
     return grid_util.sub_grid_2d_from(
-        sub_grid_1d=grid_1d, mask=mask, sub_size=mask.sub_size
+        sub_grid_2d_slim=grid_1d, mask_2d=mask, sub_size=mask.sub_size
     )
 
 
@@ -106,7 +106,7 @@ def convert_manual_2d_grid(grid_2d, mask, store_in_1d):
         Whether the memory-representation of the array is in 1D or 2D.
     """
 
-    grid_1d = grid_util.sub_grid_1d_from(
+    grid_1d = grid_util.sub_grid_2d_slim_from(
         sub_grid_2d=grid_2d, mask=mask, sub_size=mask.sub_size
     )
 
@@ -114,7 +114,7 @@ def convert_manual_2d_grid(grid_2d, mask, store_in_1d):
         return grid_1d
 
     return grid_util.sub_grid_2d_from(
-        sub_grid_1d=grid_1d, mask=mask, sub_size=mask.sub_size
+        sub_grid_2d_slim=grid_1d, mask_2d=mask, sub_size=mask.sub_size
     )
 
 
@@ -179,7 +179,7 @@ class AbstractGrid(abstract_structure.AbstractStructure2D):
         if self.store_in_1d:
             return self
 
-        sub_grid_1d = grid_util.sub_grid_1d_from(
+        sub_grid_1d = grid_util.sub_grid_2d_slim_from(
             sub_grid_2d=self, mask=self.mask, sub_size=self.mask.sub_size
         )
 
@@ -194,7 +194,7 @@ class AbstractGrid(abstract_structure.AbstractStructure2D):
 
         if self.store_in_1d:
             sub_grid_2d = grid_util.sub_grid_2d_from(
-                sub_grid_1d=self, mask=self.mask, sub_size=self.mask.sub_size
+                sub_grid_2d_slim=self, mask_2d=self.mask, sub_size=self.mask.sub_size
             )
             return self._new_structure(
                 grid=sub_grid_2d, mask=self.mask, store_in_1d=False
@@ -214,7 +214,7 @@ class AbstractGrid(abstract_structure.AbstractStructure2D):
         If the grid is stored in 1D it is return as is. If it is stored in 2D, it must first be mapped from 2D to 1D."""
         if not self.store_in_1d:
 
-            sub_grid_1d = grid_util.sub_grid_1d_from(
+            sub_grid_1d = grid_util.sub_grid_2d_slim_from(
                 sub_grid_2d=self, mask=self.mask, sub_size=self.mask.sub_size
             )
 
@@ -250,7 +250,7 @@ class AbstractGrid(abstract_structure.AbstractStructure2D):
         If the grid is stored in 2D it is return as is. If it is stored in 1D, it must first be mapped from 1D to 2D."""
         if not self.store_in_1d:
 
-            sub_grid_1d = grid_util.sub_grid_1d_from(
+            sub_grid_1d = grid_util.sub_grid_2d_slim_from(
                 sub_grid_2d=self, mask=self.mask, sub_size=self.mask.sub_size
             )
 
@@ -271,7 +271,7 @@ class AbstractGrid(abstract_structure.AbstractStructure2D):
         binned_grid_1d = np.stack((binned_grid_1d_y, binned_grid_1d_x), axis=-1)
 
         binned_grid_2d = grid_util.sub_grid_2d_from(
-            sub_grid_1d=binned_grid_1d, mask=self.mask, sub_size=1
+            sub_grid_2d_slim=binned_grid_1d, mask_2d=self.mask, sub_size=1
         )
 
         return self._new_structure(
@@ -337,7 +337,7 @@ class AbstractGrid(abstract_structure.AbstractStructure2D):
 
     def grid_radii_from(self, centre=(0.0, 0.0)):
 
-        grid_radii = grid_util.grid_radii_scaled_1d_from(
+        grid_radii = grid_util.grid_scaled_2d_slim_radii_from(
             extent=self.extent,
             centre=centre,
             pixel_scales=self.pixel_scales,

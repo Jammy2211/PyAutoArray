@@ -70,7 +70,7 @@ def convert_manual_1d_array(array_1d, mask, store_in_1d):
         return array_1d
 
     return array_util.sub_array_2d_from(
-        sub_array_1d=array_1d, mask=mask, sub_size=mask.sub_size
+        sub_array_2d_slim=array_1d, mask_2d=mask, sub_size=mask.sub_size
     )
 
 
@@ -103,15 +103,15 @@ def convert_manual_2d_array(array_2d, mask, store_in_1d):
             "(e.g. the mask 2D shape multipled by its sub size."
         )
 
-    sub_array_1d = array_util.sub_array_1d_from(
-        sub_array_2d=array_2d, mask=mask, sub_size=mask.sub_size
+    sub_array_1d = array_util.sub_array_2d_slim_from(
+        sub_array_2d=array_2d, mask_2d=mask, sub_size=mask.sub_size
     )
 
     if store_in_1d:
         return sub_array_1d
 
     return array_util.sub_array_2d_from(
-        sub_array_1d=sub_array_1d, mask=mask, sub_size=mask.sub_size
+        sub_array_2d_slim=sub_array_1d, mask_2d=mask, sub_size=mask.sub_size
     )
 
 
@@ -193,8 +193,8 @@ class AbstractArray(abstract_structure.AbstractStructure2D):
         if self.store_in_1d:
             return self
 
-        sub_array_1d = array_util.sub_array_1d_from(
-            sub_array_2d=self, mask=self.mask, sub_size=self.mask.sub_size
+        sub_array_1d = array_util.sub_array_2d_slim_from(
+            sub_array_2d=self, mask_2d=self.mask, sub_size=self.mask.sub_size
         )
 
         return self._new_structure(array=sub_array_1d, mask=self.mask, store_in_1d=True)
@@ -207,7 +207,7 @@ class AbstractArray(abstract_structure.AbstractStructure2D):
         If the array is stored in 2D it is return as is. If it is stored in 1D, it must first be mapped from 1D to 2D."""
         if self.store_in_1d:
             sub_array_2d = array_util.sub_array_2d_from(
-                sub_array_1d=self, mask=self.mask, sub_size=self.mask.sub_size
+                sub_array_2d_slim=self, mask_2d=self.mask, sub_size=self.mask.sub_size
             )
             return self._new_structure(
                 array=sub_array_2d, mask=self.mask, store_in_1d=False
@@ -228,8 +228,8 @@ class AbstractArray(abstract_structure.AbstractStructure2D):
 
         if not self.store_in_1d:
 
-            sub_array_1d = array_util.sub_array_1d_from(
-                sub_array_2d=self, mask=self.mask, sub_size=self.mask.sub_size
+            sub_array_1d = array_util.sub_array_2d_slim_from(
+                sub_array_2d=self, mask_2d=self.mask, sub_size=self.mask.sub_size
             )
 
         else:
@@ -257,8 +257,8 @@ class AbstractArray(abstract_structure.AbstractStructure2D):
         If the array is stored in 2D it is return as is. If it is stored in 1D, it must first be mapped from 1D to 2D."""
         if not self.store_in_1d:
 
-            sub_array_1d = array_util.sub_array_1d_from(
-                sub_array_2d=self, mask=self.mask, sub_size=self.mask.sub_size
+            sub_array_1d = array_util.sub_array_2d_slim_from(
+                sub_array_2d=self, mask_2d=self.mask, sub_size=self.mask.sub_size
             )
 
         else:
@@ -271,7 +271,7 @@ class AbstractArray(abstract_structure.AbstractStructure2D):
         )
 
         binned_array_2d = array_util.sub_array_2d_from(
-            sub_array_1d=binned_array_1d, mask=self.mask, sub_size=1
+            sub_array_2d_slim=binned_array_1d, mask_2d=self.mask, sub_size=1
         )
 
         return self._new_structure(
@@ -511,8 +511,8 @@ class AbstractArray(abstract_structure.AbstractStructure2D):
                 "[mean I quadrature I sum]"
             )
 
-        binned_array_1d = array_util.sub_array_1d_from(
-            mask=binned_mask, sub_array_2d=binned_array_2d, sub_size=1
+        binned_array_1d = array_util.sub_array_2d_slim_from(
+            mask_2d=binned_mask, sub_array_2d=binned_array_2d, sub_size=1
         )
 
         array = convert_manual_1d_array(

@@ -475,7 +475,7 @@ class Kernel(arrays.Array):
 
         If the array is stored in 2D it is return as is. If it is stored in 1D, it must first be mapped from 1D to 2D."""
         return array_util.sub_array_2d_from(
-            sub_array_1d=self, mask=self.mask, sub_size=self.mask.sub_size
+            sub_array_2d_slim=self, mask_2d=self.mask, sub_size=self.mask.sub_size
         )
 
     @property
@@ -510,8 +510,8 @@ class Kernel(arrays.Array):
             array_binned_2d, self.in_2d, mode="same"
         )
 
-        convolved_array_1d = array_util.sub_array_1d_from(
-            mask=array_binned_2d.mask, sub_array_2d=convolved_array_2d, sub_size=1
+        convolved_array_1d = array_util.sub_array_2d_slim_from(
+            mask_2d=array_binned_2d.mask, sub_array_2d=convolved_array_2d, sub_size=1
         )
 
         return arrays.Array(
@@ -542,8 +542,8 @@ class Kernel(arrays.Array):
 
         convolved_array_2d = scipy.signal.convolve2d(array_2d, self.in_2d, mode="same")
 
-        convolved_array_1d = array_util.sub_array_1d_from(
-            mask=mask, sub_array_2d=convolved_array_2d, sub_size=1
+        convolved_array_1d = array_util.sub_array_2d_slim_from(
+            mask_2d=mask, sub_array_2d=convolved_array_2d, sub_size=1
         )
 
         return arrays.Array(

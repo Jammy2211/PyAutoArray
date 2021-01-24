@@ -14,7 +14,7 @@ masked_imaging = aa.MaskedImaging(imaging=imaging, mask=mask)
 grid_7x7 = aa.Grid.from_mask(mask=mask)
 rectangular_grid = aa.GridRectangular.overlay_grid(grid=grid_7x7, shape_2d=(3, 3))
 rectangular_mapper = aa.Mapper(
-    source_full_grid=grid_7x7, source_pixelization_grid=rectangular_grid
+    source_slim_grid=grid_7x7, source_pixelization_grid=rectangular_grid
 )
 
 regularization = aa.reg.Constant(coefficient=1.0)

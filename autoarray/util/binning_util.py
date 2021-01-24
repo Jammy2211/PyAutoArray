@@ -346,9 +346,7 @@ def mask_1d_index_for_padded_mask_index_from(
         array_2d=mask, bin_up_factor=bin_up_factor, pad_value=True
     )
 
-    return mask_util.sub_mask_1d_index_for_sub_mask_index_from_sub_mask_from(
-        sub_mask=padded_mask
-    )
+    return mask_util.sub_slim_index_for_sub_native_index_from(sub_mask_2d=padded_mask)
 
 
 @decorator_util.jit()
@@ -500,7 +498,7 @@ def binned_masked_array_1d_for_masked_array_1d_from(
         array_2d=mask, bin_up_factor=bin_up_factor, pad_value=True
     )
 
-    total_masked_pixels = mask_util.total_pixels_from(mask=padded_mask)
+    total_masked_pixels = mask_util.total_pixels_2d_from(mask_2d=padded_mask)
 
     binned_masked_array_1d_for_masked_array_1d = np.zeros(shape=total_masked_pixels)
 
@@ -596,7 +594,7 @@ def masked_array_1d_for_binned_masked_array_1d_from(
 
     binned_upmask = bin_mask(mask=mask, bin_up_factor=bin_up_factor)
 
-    total_binned_masked_pixels = mask_util.total_pixels_from(mask=binned_upmask)
+    total_binned_masked_pixels = mask_util.total_pixels_2d_from(mask_2d=binned_upmask)
 
     masked_array_1d_for_binned_masked_array_1d = -1 * np.ones(
         total_binned_masked_pixels
@@ -700,7 +698,7 @@ def masked_array_1d_for_binned_masked_array_1d_all_from(
 
     binned_upmask = bin_mask(mask=mask, bin_up_factor=bin_up_factor)
 
-    total_binned_masked_pixels = mask_util.total_pixels_from(mask=binned_upmask)
+    total_binned_masked_pixels = mask_util.total_pixels_2d_from(mask_2d=binned_upmask)
 
     masked_array_1d_for_binned_masked_array_1d_all = -1 * np.ones(
         (total_binned_masked_pixels, bin_up_factor ** 2)
