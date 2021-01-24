@@ -160,10 +160,10 @@ class Visuals2D(AbstractVisuals):
             )
 
         if self.pixelization_indexes is not None and mapper is not None:
-            indexes = mapper.full_indexes_from_pixelization_indexes(
+            indexes = mapper.slim_indexes_from_pixelization_indexes(
                 pixelization_indexes=self.pixelization_indexes
             )
 
             plotter.index_scatter.scatter_grid_indexes(
-                grid=mapper.source_full_grid, indexes=indexes
+                grid=mapper.source_slim_grid, indexes=indexes
             )

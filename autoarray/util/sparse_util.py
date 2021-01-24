@@ -88,12 +88,12 @@ def sparse_for_unmasked_sparse_from(
 
 
 @decorator_util.jit()
-def sparse_1d_index_for_mask_1d_index_from(
+def sparse_slim_index_for_mask_slim_index_from(
     regular_to_unmasked_sparse: np.ndarray, sparse_for_unmasked_sparse: np.ndarray
 ) -> np.ndarray:
     """
-    Using the mapping between a grid and unmasked sparse grid, compute the mapping of 1D indexes between the sparse
-    grid and the unmasked pixels in a mask.
+    Using the mapping between a grid and unmasked sparse grid, compute the mapping of the slimmed indexes between the
+    sparse grid and the unmasked pixels in a mask.
 
     Parameters
     ----------
@@ -110,14 +110,14 @@ def sparse_1d_index_for_mask_1d_index_from(
     """
     total_regular_pixels = regular_to_unmasked_sparse.shape[0]
 
-    sparse_1d_index_for_mask_1d_index = np.zeros(total_regular_pixels)
+    sparse_slim_index_for_mask_slim_index = np.zeros(total_regular_pixels)
 
     for regular_index in range(total_regular_pixels):
-        sparse_1d_index_for_mask_1d_index[regular_index] = sparse_for_unmasked_sparse[
-            regular_to_unmasked_sparse[regular_index]
-        ]
+        sparse_slim_index_for_mask_slim_index[
+            regular_index
+        ] = sparse_for_unmasked_sparse[regular_to_unmasked_sparse[regular_index]]
 
-    return sparse_1d_index_for_mask_1d_index
+    return sparse_slim_index_for_mask_slim_index
 
 
 @decorator_util.jit()

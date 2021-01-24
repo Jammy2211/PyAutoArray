@@ -223,8 +223,8 @@ class Convolver:
                     ].shape[0]
                     mask_1d_index += 1
 
-        self.blurring_mask = mask_util.blurring_mask_from(
-            mask=mask, kernel_shape_2d=kernel.shape_2d
+        self.blurring_mask = mask_util.blurring_mask_2d_from(
+            mask_2d=mask, kernel_shape_2d=kernel.shape_2d
         )
 
         self.pixels_in_blurring_mask = int(

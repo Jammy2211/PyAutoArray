@@ -4,7 +4,8 @@ import numpy as np
 
 from autoarray import exc
 from autoarray.mask import abstract_mask
-from autoarray.util import array_util
+from autoarray.structures import grids
+from autoarray.util import array_util, grid_util
 
 logging.basicConfig()
 logger = logging.getLogger(__name__)
@@ -61,17 +62,36 @@ class AbstractMask1d(abstract_mask.AbstractMask):
             self.origin = (0.0,)
 
     @property
+    def mask_sub_1(self):
+        """
+        Returns the mask on the same scaled coordinate system but with a sub-grid of ``sub_size`` `.
+        """
+        return Mask1D(
+            mask=self, sub_size=1, pixel_scales=self.pixel_scales, origin=self.origin
+        )
+
+    @property
+    def unmasked_mask(self):
+        """The indicies of the mask's border pixels, where a border pixel is any unmasked pixel on an
+        exterior edge (e.g. next to at least one pixel with a `True` value but not central pixels like those within \
+        an annulus mask).
+        """
+        return Mask1D.unmasked(
+            shape_1d=self.shape_1d,
+            sub_size=self.sub_size,
+            pixel_scales=self.pixel_scales,
+            origin=self.origin,
+        )
+
+    @property
     def unmasked_grid_sub_1(self):
         """ The scaled-grid of (y,x) coordinates of every pixel.
 
         This is defined from the top-left corner, such that the first pixel at location [0, 0] will have a negative x \
         value y value in scaled units.
         """
-        grid_1d = grid_util.grid_1d_via_shape_2d_from(
-            shape_2d=self.shape,
-            pixel_scales=self.pixel_scales,
-            sub_size=1,
-            origin=self.origin,
+        grid_1d = grid_util.grid_1d_via_mask_from(
+            mask_1d=self, pixel_scales=self.pixel_scales, sub_size=1, origin=self.origin
         )
 
         return grids.Grid(

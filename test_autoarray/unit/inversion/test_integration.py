@@ -42,10 +42,10 @@ class TestRectangular:
         )
 
         assert mapper.data_pixelization_grid == None
-        assert mapper.source_full_grid.shape_2d_scaled == pytest.approx(
+        assert mapper.source_slim_grid.shape_2d_scaled == pytest.approx(
             (2.0, 2.0), 1.0e-4
         )
-        assert mapper.source_full_grid.origin == pytest.approx((0.0, 0.0), 1.0e-4)
+        assert mapper.source_slim_grid.origin == pytest.approx((0.0, 0.0), 1.0e-4)
 
         assert (
             mapper.mapping_matrix
@@ -813,7 +813,7 @@ class TestVoronoiMagnification:
             settings=aa.SettingsPixelization(use_border=False),
         )
 
-        assert mapper.source_full_grid.shape_2d_scaled == pytest.approx(
+        assert mapper.source_slim_grid.shape_2d_scaled == pytest.approx(
             (2.02, 2.01), 1.0e-4
         )
         assert (mapper.source_pixelization_grid == sparse_grid.sparse).all()

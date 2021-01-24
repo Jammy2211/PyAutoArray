@@ -174,7 +174,9 @@ class GridIterate(abstract_grid.AbstractGrid):
                 store_in_1d=store_in_1d,
             )
 
-        grid_2d = grid_util.sub_grid_2d_from(sub_grid_1d=grid, mask=mask, sub_size=1)
+        grid_2d = grid_util.sub_grid_2d_from(
+            sub_grid_2d_slim=grid, mask_2d=mask, sub_size=1
+        )
 
         return GridIterate(
             grid=grid_2d,
@@ -219,7 +221,7 @@ class GridIterate(abstract_grid.AbstractGrid):
 
         pixel_scales = geometry_util.convert_pixel_scales_2d(pixel_scales=pixel_scales)
 
-        grid_1d = grid_util.grid_1d_via_shape_2d_from(
+        grid_1d = grid_util.grid_2d_slim_via_shape_2d_from(
             shape_2d=shape_2d, pixel_scales=pixel_scales, sub_size=1, origin=origin
         )
 
@@ -257,8 +259,8 @@ class GridIterate(abstract_grid.AbstractGrid):
             stored in 2D as an ndarray of shape [total_y_pixels, total_x_pixels, 2].
         """
 
-        grid_1d = grid_util.grid_1d_via_mask_from(
-            mask=mask, pixel_scales=mask.pixel_scales, sub_size=1, origin=mask.origin
+        grid_1d = grid_util.grid_2d_slim_via_mask_from(
+            mask_2d=mask, pixel_scales=mask.pixel_scales, sub_size=1, origin=mask.origin
         )
 
         if store_in_1d:
@@ -271,7 +273,7 @@ class GridIterate(abstract_grid.AbstractGrid):
             )
 
         grid_2d = grid_util.sub_grid_2d_from(
-            sub_grid_1d=grid_1d, mask=mask.mask_sub_1, sub_size=1
+            sub_grid_2d_slim=grid_1d, mask_2d=mask.mask_sub_1, sub_size=1
         )
 
         return grids.GridIterate(
@@ -552,8 +554,8 @@ class GridIterate(abstract_grid.AbstractGrid):
 
             if fractional_mask_higher_sub.is_all_true:
 
-                iterated_array_1d = array_util.sub_array_1d_from(
-                    mask=self.mask, sub_array_2d=iterated_array, sub_size=1
+                iterated_array_1d = array_util.sub_array_2d_slim_from(
+                    mask_2d=self.mask, sub_array_2d=iterated_array, sub_size=1
                 )
 
                 return arrays.Array(
@@ -572,8 +574,8 @@ class GridIterate(abstract_grid.AbstractGrid):
 
         iterated_array_2d = iterated_array + array_higher_sub.in_2d_binned
 
-        iterated_array_1d = array_util.sub_array_1d_from(
-            mask=self.mask, sub_array_2d=iterated_array_2d, sub_size=1
+        iterated_array_1d = array_util.sub_array_2d_slim_from(
+            mask_2d=self.mask, sub_array_2d=iterated_array_2d, sub_size=1
         )
 
         return arrays.Array(
@@ -752,7 +754,7 @@ class GridIterate(abstract_grid.AbstractGrid):
 
             if fractional_mask_higher_sub.is_all_true:
 
-                iterated_grid_1d = grid_util.sub_grid_1d_from(
+                iterated_grid_1d = grid_util.sub_grid_2d_slim_from(
                     mask=self.mask, sub_grid_2d=iterated_grid, sub_size=1
                 )
 
@@ -772,7 +774,7 @@ class GridIterate(abstract_grid.AbstractGrid):
 
         iterated_grid_2d = iterated_grid + grid_higher_sub.in_2d_binned
 
-        iterated_grid_1d = grid_util.sub_grid_1d_from(
+        iterated_grid_1d = grid_util.sub_grid_2d_slim_from(
             mask=self.mask, sub_grid_2d=iterated_grid_2d, sub_size=1
         )
 

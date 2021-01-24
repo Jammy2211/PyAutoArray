@@ -601,8 +601,8 @@ class Array(abstract_array.AbstractArray):
             y=y, x=x, shape_2d=shape_2d, pixel_scales=pixel_scales, sub_size=1
         )
 
-        grid_pixels = grid_util.grid_pixel_indexes_1d_from(
-            grid_scaled_1d=grid.in_1d, shape_2d=shape_2d, pixel_scales=pixel_scales
+        grid_pixels = grid_util.grid_pixel_indexes_2d_slim_from(
+            grid_scaled_2d_slim=grid.in_1d, shape_2d=shape_2d, pixel_scales=pixel_scales
         )
 
         array_1d = np.zeros(shape=shape_2d[0] * shape_2d[1])

@@ -734,7 +734,7 @@ class MatPlot2D(AbstractMatPlot):
         else:
 
             aspect_inv = self.figure.aspect_for_subplot_from_grid(
-                grid=mapper.source_full_grid
+                grid=mapper.source_slim_grid
             )
 
             self.setup_subplot(aspect=aspect_inv)
@@ -779,7 +779,7 @@ class MatPlot2D(AbstractMatPlot):
         self.xlabel.set(units=self.units, include_brackets=True)
 
         visuals_2d.plot_via_plotter(
-            plotter=self, grid_indexes=mapper.source_full_grid, mapper=mapper
+            plotter=self, grid_indexes=mapper.source_slim_grid, mapper=mapper
         )
 
         if not self.is_for_subplot:
@@ -799,7 +799,7 @@ class MatPlot2D(AbstractMatPlot):
         else:
 
             aspect_inv = self.figure.aspect_for_subplot_from_grid(
-                grid=mapper.source_full_grid
+                grid=mapper.source_slim_grid
             )
 
             self.setup_subplot(aspect=aspect_inv)
@@ -840,7 +840,7 @@ class MatPlot2D(AbstractMatPlot):
         self.xlabel.set(units=self.units, include_brackets=True)
 
         visuals_2d.plot_via_plotter(
-            plotter=self, grid_indexes=mapper.source_full_grid, mapper=mapper
+            plotter=self, grid_indexes=mapper.source_slim_grid, mapper=mapper
         )
 
         if not self.is_for_subplot:

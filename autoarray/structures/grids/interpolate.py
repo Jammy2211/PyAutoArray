@@ -68,8 +68,8 @@ class GridInterpolate(abstract_grid.AbstractGrid):
 
         mask_interp = rescaled_mask.edge_buffed_mask
 
-        grid_interp = grid_util.grid_1d_via_mask_from(
-            mask=mask_interp,
+        grid_interp = grid_util.grid_2d_slim_via_mask_from(
+            mask_2d=mask_interp,
             pixel_scales=pixel_scales_interp,
             sub_size=1,
             origin=mask.origin,
@@ -185,7 +185,7 @@ class GridInterpolate(abstract_grid.AbstractGrid):
             )
 
         grid_2d = grid_util.sub_grid_2d_from(
-            sub_grid_1d=grid, mask=mask, sub_size=sub_size
+            sub_grid_2d_slim=grid, mask_2d=mask, sub_size=sub_size
         )
 
         return GridInterpolate(
@@ -230,7 +230,7 @@ class GridInterpolate(abstract_grid.AbstractGrid):
             pixel_scales=pixel_scales_interp
         )
 
-        grid_1d = grid_util.grid_1d_via_shape_2d_from(
+        grid_1d = grid_util.grid_2d_slim_via_shape_2d_from(
             shape_2d=shape_2d,
             pixel_scales=pixel_scales,
             sub_size=sub_size,
@@ -270,8 +270,8 @@ class GridInterpolate(abstract_grid.AbstractGrid):
             pixel_scales=pixel_scales_interp
         )
 
-        grid_1d = grid_util.grid_1d_via_mask_from(
-            mask=mask,
+        grid_1d = grid_util.grid_2d_slim_via_mask_from(
+            mask_2d=mask,
             pixel_scales=mask.pixel_scales,
             sub_size=mask.sub_size,
             origin=mask.origin,
@@ -286,7 +286,7 @@ class GridInterpolate(abstract_grid.AbstractGrid):
             )
 
         grid_2d = grid_util.sub_grid_2d_from(
-            sub_grid_1d=grid_1d, mask=mask.mask_sub_1, sub_size=1
+            sub_grid_2d_slim=grid_1d, mask_2d=mask.mask_sub_1, sub_size=1
         )
 
         return grids.GridInterpolate(

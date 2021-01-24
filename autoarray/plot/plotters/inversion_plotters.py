@@ -24,9 +24,7 @@ class InversionPlotter(structure_plotters.MapperPlotter):
         self.inversion = inversion
 
     def as_mapper(self, source_pixelization_values):
-        return self.inversion.mapper.reconstructed_source_pixelization_from_solution_vector(
-            source_pixelization_values
-        )
+        return self.inversion.mapper.reconstruction_from(source_pixelization_values)
 
     def figures(
         self,

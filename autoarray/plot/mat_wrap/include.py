@@ -78,7 +78,7 @@ class Include2D(AbstractInclude):
         grid: typing.Optional[bool] = None,
         mapper_data_pixelization_grid: typing.Optional[bool] = None,
         mapper_source_pixelization_grid: typing.Optional[bool] = None,
-        mapper_source_full_grid: typing.Optional[bool] = None,
+        mapper_source_slim_grid: typing.Optional[bool] = None,
         parallel_overscan: typing.Optional[bool] = None,
         serial_prescan: typing.Optional[bool] = None,
         serial_overscan: typing.Optional[bool] = None,
@@ -119,7 +119,7 @@ class Include2D(AbstractInclude):
         self._grid = grid
         self._mapper_data_pixelization_grid = mapper_data_pixelization_grid
         self._mapper_source_pixelization_grid = mapper_source_pixelization_grid
-        self._mapper_source_full_grid = mapper_source_full_grid
+        self._mapper_source_slim_grid = mapper_source_slim_grid
         self._parallel_overscan = parallel_overscan
         self._serial_prescan = serial_prescan
         self._serial_overscan = serial_overscan
@@ -147,9 +147,9 @@ class Include2D(AbstractInclude):
         )
 
     @property
-    def mapper_source_full_grid(self):
+    def mapper_source_slim_grid(self):
         return self.load(
-            value=self._mapper_source_full_grid, name="mapper_source_full_grid"
+            value=self._mapper_source_slim_grid, name="mapper_source_slim_grid"
         )
 
     @property
