@@ -6,12 +6,12 @@ from autoarray.structures import region as reg
 from autoarray.util import frame_util
 
 
-class AbstractFrame(abstract_array.AbstractArray):
+class AbstractFrame2D(abstract_array.AbstractArray2D):
     def __array_finalize__(self, obj):
 
-        super(AbstractFrame, self).__array_finalize__(obj)
+        super(AbstractFrame2D, self).__array_finalize__(obj)
 
-        if isinstance(obj, AbstractFrame):
+        if isinstance(obj, AbstractFrame2D):
             if hasattr(obj, "roe_corner"):
                 self.roe_corner = obj.roe_corner
 
@@ -26,7 +26,7 @@ class AbstractFrame(abstract_array.AbstractArray):
 
     def __reduce__(self):
         # Get the parent's __reduce__ tuple
-        pickled_state = super(AbstractFrame, self).__reduce__()
+        pickled_state = super(AbstractFrame2D, self).__reduce__()
         # Create our own tuple to pass to __setstate__
         class_dict = {}
         for key, value in self.__dict__.items():
@@ -40,9 +40,9 @@ class AbstractFrame(abstract_array.AbstractArray):
 
         for key, value in state[-1].items():
             setattr(self, key, value)
-        super(AbstractFrame, self).__setstate__(state[0:-1])
+        super(AbstractFrame2D, self).__setstate__(state[0:-1])
 
-    def _new_structure(self, array, mask, store_in_1d):
+    def _new_structure(self, array, mask, store_slim):
         return self.__class__(
             array=array,
             mask=mask,
@@ -112,7 +112,7 @@ class AbstractFrame(abstract_array.AbstractArray):
         []     [=====================]
                <---------S----------
         """
-        return f.Frame.extracted_frame_from_frame_and_extraction_region(
+        return f.Frame2D.extracted_frame_from_frame_and_extraction_region(
             frame=self, extraction_region=self.scans.parallel_overscan
         )
 
@@ -121,11 +121,11 @@ class AbstractFrame(abstract_array.AbstractArray):
         return self.parallel_overscan_frame.binned_across_serial
 
     def parallel_trail_from_y(self, y, dy):
-        """GridIrregularGrouped of a parallel trail of size dy from coordinate y"""
+        """Grid2DIrregularGrouped of a parallel trail of size dy from coordinate y"""
         return (int(y - dy), int(y + 1))
 
     def serial_trail_from_x(self, x, dx):
-        """GridIrregularGrouped of a serial trail of size dx from coordinate x"""
+        """Grid2DIrregularGrouped of a serial trail of size dx from coordinate x"""
         return (int(x), int(x + 1 + dx))
 
     def parallel_front_edge_of_region(self, region, rows):
@@ -136,17 +136,17 @@ class AbstractFrame(abstract_array.AbstractArray):
         y_min = y_coord + rows[0]
         y_max = y_coord + rows[1]
 
-        return reg.Region((y_min, y_max, region.x0, region.x1))
+        return reg.Region2D((y_min, y_max, region.x0, region.x1))
 
     def parallel_trails_of_region(self, region, rows=(0, 1)):
         y_coord = region.y1
         y_min = y_coord + rows[0]
         y_max = y_coord + rows[1]
-        return reg.Region((y_min, y_max, region.x0, region.x1))
+        return reg.Region2D((y_min, y_max, region.x0, region.x1))
 
     def parallel_side_nearest_read_out_region(self, region, columns=(0, 1)):
         x_min, x_max = self.x_limits(region, columns)
-        return reg.Region(region=(0, self.shape_2d[0], x_min, x_max))
+        return reg.Region2D(region=(0, self.shape_native[0], x_min, x_max))
 
     @property
     def serial_overscan_frame(self):
@@ -195,7 +195,7 @@ class AbstractFrame(abstract_array.AbstractArray):
         []     [=====================]
                <---------S----------
         """
-        return f.Frame.extracted_frame_from_frame_and_extraction_region(
+        return f.Frame2D.extracted_frame_from_frame_and_extraction_region(
             frame=self, extraction_region=self.scans.serial_overscan
         )
 
@@ -206,16 +206,16 @@ class AbstractFrame(abstract_array.AbstractArray):
     def serial_front_edge_of_region(self, region, columns=(0, 1)):
         reg.check_serial_front_edge_size(region, columns)
         x_min, x_max = self.x_limits(region, columns)
-        return reg.Region(region=(region.y0, region.y1, x_min, x_max))
+        return reg.Region2D(region=(region.y0, region.y1, x_min, x_max))
 
     def serial_trails_of_region(self, region, columns=(0, 1)):
         x_coord = region.x1
         x_min = x_coord + columns[0]
         x_max = x_coord + columns[1]
-        return reg.Region(region=(region.y0, region.y1, x_min, x_max))
+        return reg.Region2D(region=(region.y0, region.y1, x_min, x_max))
 
     def serial_entire_rows_of_region(self, region):
-        return reg.Region(region=(region.y0, region.y1, 0, self.shape_2d[1]))
+        return reg.Region2D(region=(region.y0, region.y1, 0, self.shape_native[1]))
 
     def x_limits(self, region, columns):
         x_coord = region.x0
@@ -230,32 +230,32 @@ class Scans:
     ):
 
         if isinstance(parallel_overscan, tuple):
-            parallel_overscan = reg.Region(region=parallel_overscan)
+            parallel_overscan = reg.Region2D(region=parallel_overscan)
 
         if isinstance(serial_prescan, tuple):
-            serial_prescan = reg.Region(region=serial_prescan)
+            serial_prescan = reg.Region2D(region=serial_prescan)
 
         if isinstance(serial_overscan, tuple):
-            serial_overscan = reg.Region(region=serial_overscan)
+            serial_overscan = reg.Region2D(region=serial_overscan)
 
         self.parallel_overscan = parallel_overscan
         self.serial_prescan = serial_prescan
         self.serial_overscan = serial_overscan
 
     @classmethod
-    def rotated_from_roe_corner(cls, roe_corner, shape_2d, scans):
+    def rotated_from_roe_corner(cls, roe_corner, shape_native, scans):
 
         if scans is None:
             return Scans()
 
         parallel_overscan = frame_util.rotate_region_from_roe_corner(
-            region=scans.parallel_overscan, shape_2d=shape_2d, roe_corner=roe_corner
+            region=scans.parallel_overscan, shape_native=shape_native, roe_corner=roe_corner
         )
         serial_prescan = frame_util.rotate_region_from_roe_corner(
-            region=scans.serial_prescan, shape_2d=shape_2d, roe_corner=roe_corner
+            region=scans.serial_prescan, shape_native=shape_native, roe_corner=roe_corner
         )
         serial_overscan = frame_util.rotate_region_from_roe_corner(
-            region=scans.serial_overscan, shape_2d=shape_2d, roe_corner=roe_corner
+            region=scans.serial_overscan, shape_native=shape_native, roe_corner=roe_corner
         )
 
         return Scans(

@@ -45,14 +45,14 @@ def test__input_as_list__convert_correctly():
     assert type(values) == arrays.ValuesIrregularGrouped
     assert (values == np.array([1.0, -1.0])).all()
     assert values.in_grouped_list == [[1.0, -1.0]]
-    assert values.in_1d_list == [1.0, -1.0]
+    assert values.in_list == [1.0, -1.0]
 
     values = aa.ValuesIrregularGrouped(values=[[1.0], [-1.0]])
 
     assert type(values) == arrays.ValuesIrregularGrouped
     assert (values == np.array([1.0, -1.0])).all()
     assert values.in_grouped_list == [[1.0], [-1.0]]
-    assert values.in_1d_list == [1.0, -1.0]
+    assert values.in_list == [1.0, -1.0]
 
 
 def test__input_as_dict__retains_dict_and_converts_correctly():
@@ -62,7 +62,7 @@ def test__input_as_dict__retains_dict_and_converts_correctly():
     assert type(values) == arrays.ValuesIrregularGrouped
     assert (values == np.array([1.0, -1.0])).all()
     assert values.in_grouped_list == [[1.0, -1.0]]
-    assert values.in_1d_list == [1.0, -1.0]
+    assert values.in_list == [1.0, -1.0]
     assert values.as_dict["source_0"] == 1.0
     assert values.as_dict["source_1"] == -1.0
 
@@ -71,22 +71,22 @@ def test__input_as_dict__retains_dict_and_converts_correctly():
     assert type(values) == arrays.ValuesIrregularGrouped
     assert (values == np.array([1.0, -1.0])).all()
     assert values.in_grouped_list == [[1.0], [-1.0]]
-    assert values.in_1d_list == [1.0, -1.0]
+    assert values.in_list == [1.0, -1.0]
     assert values.as_dict["source_0"] == [1.0]
     assert values.as_dict["source_1"] == [-1.0]
 
 
-def test__values_from_arr_1d():
+def test__values_from_array_slim():
 
     values = aa.ValuesIrregularGrouped(values=[[1.0, 2.0]])
 
-    values_from_1d = values.values_from_arr_1d(arr_1d=np.array([1.0, 2.0]))
+    values_from_1d = values.values_from_array_slim(array_slim=np.array([1.0, 2.0]))
 
     assert values_from_1d.in_grouped_list == [[1.0, 2.0]]
 
     values = aa.ValuesIrregularGrouped(values=[[1.0, 2.0], [3.0]])
 
-    values_from_1d = values.values_from_arr_1d(arr_1d=np.array([1.0, 2.0, 3.0]))
+    values_from_1d = values.values_from_array_slim(array_slim=np.array([1.0, 2.0, 3.0]))
 
     assert values_from_1d.in_grouped_list == [[1.0, 2.0], [3.0]]
 
@@ -95,16 +95,16 @@ def test__coordinates_from_grid_1d():
 
     values = aa.ValuesIrregularGrouped(values=[[1.0, 2.0]])
 
-    coordinate_from_1d = values.grid_from_grid_1d(
-        grid_1d=np.array([[1.0, 1.0], [2.0, 2.0]])
+    coordinate_from_1d = values.grid_from_grid_slim(
+        grid_slim=np.array([[1.0, 1.0], [2.0, 2.0]])
     )
 
     assert coordinate_from_1d.in_grouped_list == [[(1.0, 1.0), (2.0, 2.0)]]
 
     values = aa.ValuesIrregularGrouped(values=[[1.0, 2.0], [3.0]])
 
-    coordinate_from_1d = values.grid_from_grid_1d(
-        grid_1d=np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0]])
+    coordinate_from_1d = values.grid_from_grid_slim(
+        grid_slim=np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0]])
     )
 
     assert coordinate_from_1d.in_grouped_list == [

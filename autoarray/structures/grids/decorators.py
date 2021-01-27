@@ -3,7 +3,7 @@ from functools import wraps
 
 from autoconf import conf
 from autoarray.structures import grids
-from autoarray.structures.grids.irregular import AbstractGridIrregular
+from autoarray.structures.grids.irregular import AbstractGrid2DIrregular
 
 
 def grid_like_to_structure(func):
@@ -26,33 +26,33 @@ def grid_like_to_structure(func):
 
     @wraps(func)
     def wrapper(profile, grid, *args, **kwargs):
-        """This decorator homogenizes the input of a "grid_like" structure (`Grid`, `GridIterate`, `GridInterpolate`
-        or  `GridIrregularGrouped`) into a function. It allows these classes to be interchangeably input into a function,
+        """This decorator homogenizes the input of a "grid_like" structure (`Grid2D`, `Grid2DIterate`, `Grid2DInterpolate`
+        or  `Grid2DIrregularGrouped`) into a function. It allows these classes to be interchangeably input into a function,
         such that the grid is used to evalaute the function as every (y,x) coordinates of the grid.
 
-        The grid_like objects `Grid` and `GridIrregularGrouped` are input into the function as a flattened 2D NumPy array
-        of shape [total_coordinates, 2] where second dimension stores the (y,x) values. If a `GridIterate` is input,
+        The grid_like objects `Grid2D` and `Grid2DIrregularGrouped` are input into the function as a flattened 2D NumPy array
+        of shape [total_coordinates, 2] where second dimension stores the (y,x) values. If a `Grid2DIterate` is input,
         the function is evaluated using the appropriate iterated_*_from_func* function.
 
-        The outputs of the function are converted from a 1D or 2D NumPy Array to an *Array*, `Grid`, *ValuesIrregularGrouped* or
-        `GridIrregularGrouped` objects, whichever is applicable as follows:
+        The outputs of the function are converted from a 1D or 2D NumPy Array2D to an *Array2D*, `Grid2D`, *ValuesIrregularGrouped* or
+        `Grid2DIrregularGrouped` objects, whichever is applicable as follows:
 
         - If the function returns (y,x) coordinates at every input point, the returned results are returned as a
-         `Grid` or `GridIrregularGrouped` structure - the same structure as the input.
+         `Grid2D` or `Grid2DIrregularGrouped` structure - the same structure as the input.
 
-        - If the function returns scalar values at every input point and a `Grid` is input, the returned results are
-          an *Array* structure which uses the same dimensions and mask as the `Grid`.
+        - If the function returns scalar values at every input point and a `Grid2D` is input, the returned results are
+          an *Array2D* structure which uses the same dimensions and mask as the `Grid2D`.
 
-        - If the function returns scalar values at every input point and `GridIrregularGrouped` are input, the returned
-          results are a *ValuesIrregularGrouped* object with structure resembling that of the `GridIrregularGrouped`..
+        - If the function returns scalar values at every input point and `Grid2DIrregularGrouped` are input, the returned
+          results are a *ValuesIrregularGrouped* object with structure resembling that of the `Grid2DIrregularGrouped`..
 
-        If the input array is not a `Grid` structure (e.g. it is a 2D NumPy array) the output is a NumPy array.
+        If the input array is not a `Grid2D` structure (e.g. it is a 2D NumPy array) the output is a NumPy array.
 
         Parameters
         ----------
         profile : Profile
             A Profile object which uses grid_like inputs to compute quantities at every coordinate on the grid.
-        grid : Grid or GridIrregularGrouped
+        grid : Grid2D or Grid2DIrregularGrouped
             A grid_like object of (y,x) coordinates on which the function values are evaluated.
 
         Returns
@@ -60,19 +60,19 @@ def grid_like_to_structure(func):
             The function values evaluated on the grid with the same structure as the input grid_like object.
         """
 
-        if isinstance(grid, grids.GridIterate):
+        if isinstance(grid, grids.Grid2DIterate):
             return grid.iterated_result_from_func(func=func, cls=profile)
-        elif isinstance(grid, grids.GridInterpolate):
+        elif isinstance(grid, grids.Grid2DInterpolate):
             return grid.result_from_func(func=func, cls=profile)
-        elif isinstance(grid, AbstractGridIrregular):
+        elif isinstance(grid, AbstractGrid2DIrregular):
             result = func(profile, grid, *args, **kwargs)
             return grid.structure_from_result(result=result)
-        elif isinstance(grid, grids.Grid):
+        elif isinstance(grid, grids.Grid2D):
             result = func(profile, grid, *args, **kwargs)
             return grid.structure_from_result(result=result)
 
-        if not isinstance(grid, AbstractGridIrregular) and not isinstance(
-            grid, grids.Grid
+        if not isinstance(grid, AbstractGrid2DIrregular) and not isinstance(
+            grid, grids.Grid2D
         ):
             return func(profile, grid, *args, **kwargs)
 
@@ -99,36 +99,36 @@ def grid_like_to_structure_list(func):
 
     @wraps(func)
     def wrapper(profile, grid, *args, **kwargs):
-        """This decorator homogenizes the input of a "grid_like" structure (`Grid`, `GridIterate`, `GridInterpolate`
-        or  `GridIrregularGrouped`) into a function. It allows these classes to be interchangeably input into a function,
+        """This decorator homogenizes the input of a "grid_like" structure (`Grid2D`, `Grid2DIterate`, `Grid2DInterpolate`
+        or  `Grid2DIrregularGrouped`) into a function. It allows these classes to be interchangeably input into a function,
         such that the grid is used to evalaute the function as every (y,x) coordinates of the grid.
 
-        The grid_like objects `Grid` and `GridIrregularGrouped` are input into the function as a flattened 2D NumPy array
-        of shape [total_coordinates, 2] where second dimension stores the (y,x) values. If a `GridIterate` is input,
+        The grid_like objects `Grid2D` and `Grid2DIrregularGrouped` are input into the function as a flattened 2D NumPy array
+        of shape [total_coordinates, 2] where second dimension stores the (y,x) values. If a `Grid2DIterate` is input,
         the function is evaluated using the appropriate iterated_*_from_func* function.
 
-        If a `GridIterate` is not input the outputs of the function are converted from a list of 1D or 2D NumPy Arrays
-        to a list of *Array*, `Grid`,  *ValuesIrregularGrouped* or  `GridIrregularGrouped` objects, whichever is applicable as follows:
+        If a `Grid2DIterate` is not input the outputs of the function are converted from a list of 1D or 2D NumPy Arrays
+        to a list of *Array2D*, `Grid2D`,  *ValuesIrregularGrouped* or  `Grid2DIrregularGrouped` objects, whichever is applicable as follows:
 
         - If the function returns (y,x) coordinates at every input point, the returned results are returned as a
-         `Grid` or `GridIrregularGrouped` structure - the same structure as the input.
+         `Grid2D` or `Grid2DIrregularGrouped` structure - the same structure as the input.
 
-        - If the function returns scalar values at every input point and a `Grid` is input, the returned results are
-          an *Array* structure which uses the same dimensions and mask as the `Grid`.
+        - If the function returns scalar values at every input point and a `Grid2D` is input, the returned results are
+          an *Array2D* structure which uses the same dimensions and mask as the `Grid2D`.
 
-        - If the function returns scalar values at every input point and `GridIrregularGrouped` are input, the returned
-          results are a *ValuesIrregularGrouped* object with structure resembling that of the `GridIrregularGrouped`.
+        - If the function returns scalar values at every input point and `Grid2DIrregularGrouped` are input, the returned
+          results are a *ValuesIrregularGrouped* object with structure resembling that of the `Grid2DIrregularGrouped`.
 
-        if a `GridIterate` is input, the iterated grid calculation is not applicable. Thus, the highest resolution
-        sub_size grid in the `GridIterate` is used instead.
+        if a `Grid2DIterate` is input, the iterated grid calculation is not applicable. Thus, the highest resolution
+        sub_size grid in the `Grid2DIterate` is used instead.
 
-        If the input array is not a `Grid` structure (e.g. it is a 2D NumPy array) the output is a NumPy array.
+        If the input array is not a `Grid2D` structure (e.g. it is a 2D NumPy array) the output is a NumPy array.
 
         Parameters
         ----------
         profile : Profile
             A Profile object which uses grid_like inputs to compute quantities at every coordinate on the grid.
-        grid : Grid or GridIrregularGrouped
+        grid : Grid2D or Grid2DIrregularGrouped
             A grid_like object of (y,x) coordinates on which the function values are evaluated.
 
         Returns
@@ -136,30 +136,30 @@ def grid_like_to_structure_list(func):
             The function values evaluated on the grid with the same structure as the input grid_like object.
         """
 
-        if isinstance(grid, grids.GridIterate):
+        if isinstance(grid, grids.Grid2DIterate):
             mask = grid.mask.mask_new_sub_size_from_mask(
                 mask=grid.mask, sub_size=max(grid.sub_steps)
             )
-            grid_compute = grids.Grid.from_mask(mask=mask)
+            grid_compute = grids.Grid2D.from_mask(mask=mask)
             result_list = func(profile, grid_compute, *args, **kwargs)
             result_list = [
                 grid_compute.structure_from_result(result=result)
                 for result in result_list
             ]
-            result_list = [result.in_1d_binned for result in result_list]
+            result_list = [result.slim_binned for result in result_list]
             return grid.grid.structure_list_from_result_list(result_list=result_list)
-        elif isinstance(grid, grids.GridInterpolate):
+        elif isinstance(grid, grids.Grid2DInterpolate):
             return func(profile, grid, *args, **kwargs)
         #     return grid.structure_list_from_result_list(result_list=result_list)
-        elif isinstance(grid, AbstractGridIrregular):
+        elif isinstance(grid, AbstractGrid2DIrregular):
             result_list = func(profile, grid, *args, **kwargs)
             return grid.structure_list_from_result_list(result_list=result_list)
-        elif isinstance(grid, grids.Grid):
+        elif isinstance(grid, grids.Grid2D):
             result_list = func(profile, grid, *args, **kwargs)
             return grid.structure_list_from_result_list(result_list=result_list)
 
-        if not isinstance(grid, AbstractGridIrregular) and not isinstance(
-            grid, grids.Grid
+        if not isinstance(grid, AbstractGrid2DIrregular) and not isinstance(
+            grid, grids.Grid2D
         ):
             return func(profile, grid, *args, **kwargs)
 
@@ -167,7 +167,7 @@ def grid_like_to_structure_list(func):
 
 
 def transform(func):
-    """Checks whether the input Grid of (y,x) coordinates have previously been transformed. If they have not \
+    """Checks whether the input Grid2D of (y,x) coordinates have previously been transformed. If they have not \
     been transformed then they are transformed.
 
     Parameters
@@ -196,7 +196,7 @@ def transform(func):
             A grid_like object whose coordinates may be transformed.
         """
 
-        if not isinstance(grid, (grids.GridTransformed, grids.GridTransformedNumpy)):
+        if not isinstance(grid, (grids.Grid2DTransformed, grids.Grid2DTransformedNumpy)):
             result = func(
                 cls, cls.transform_grid_to_reference_frame(grid), *args, **kwargs
             )

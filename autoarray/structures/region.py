@@ -3,7 +3,7 @@ import numpy as np
 from autoarray import exc
 
 
-class Region(object):
+class Region2D(object):
     def __init__(self, region):
         """Setup a region of an image, which could be where the parallel overscan, serial overscan, etc. are.
 
@@ -17,17 +17,17 @@ class Region(object):
 
         if region[0] < 0 or region[1] < 0 or region[2] < 0 or region[3] < 0:
             raise exc.RegionException(
-                "A coordinate of the Region was specified as negative."
+                "A coordinate of the Region2D was specified as negative."
             )
 
         if region[0] >= region[1]:
             raise exc.RegionException(
-                "The first row in the Region was equal to or greater than the second row."
+                "The first row in the Region2D was equal to or greater than the second row."
             )
 
         if region[2] >= region[3]:
             raise exc.RegionException(
-                "The first column in the Region was equal to greater than the second column."
+                "The first column in the Region2D was equal to greater than the second column."
             )
         self.region = region
 
@@ -64,7 +64,7 @@ class Region(object):
         return super().__eq__(other)
 
     def __repr__(self):
-        return "<Region {} {} {} {}>".format(*self)
+        return "<Region2D {} {} {} {}>".format(*self)
 
     @property
     def slice(self):

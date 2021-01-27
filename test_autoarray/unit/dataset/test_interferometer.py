@@ -147,8 +147,8 @@ class TestSettingsMaskedInterferometer:
     def test__tag(self):
 
         settings = aa.SettingsMaskedInterferometer(
-            grid_class=aa.GridIterate,
-            grid_inversion_class=aa.Grid,
+            grid_class=aa.Grid2DIterate,
+            grid_inversion_class=aa.Grid2D,
             fractional_accuracy=0.1,
             sub_size=3,
             transformer_class=aa.TransformerDFT,
@@ -224,15 +224,15 @@ class TestMaskedInterferometer:
     ):
 
         interferometer = aa.Interferometer(
-            visibilities=aa.Visibilities.ones(shape_1d=(19,)),
-            noise_map=2.0 * aa.Visibilities.ones(shape_1d=(19,)),
+            visibilities=aa.Visibilities.ones(shape_slim=(19,)),
+            noise_map=2.0 * aa.Visibilities.ones(shape_slim=(19,)),
             uv_wavelengths=3.0 * np.ones((19, 2)),
         )
 
         visibilities_mask = np.full(fill_value=False, shape=(19,))
 
         real_space_mask = aa.Mask2D.unmasked(
-            shape_2d=(19, 19), pixel_scales=1.0, invert=True, sub_size=8
+            shape_native=(19, 19), pixel_scales=1.0, invert=True, sub_size=8
         )
         real_space_mask[9, 9] = False
 
@@ -282,7 +282,7 @@ class TestSimulatorInterferometer:
         self, uv_wavelengths_7x2, transformer_7x7_7, mask_7x7
     ):
 
-        image = aa.Array.manual_2d(
+        image = aa.Array2D.manual_native(
             array=[[2.0, 0.0, 0.0], [0.0, 1.0, 0.0], [3.0, 0.0, 0.0]],
             pixel_scales=transformer_7x7_7.grid.pixel_scales,
         )
@@ -299,7 +299,7 @@ class TestSimulatorInterferometer:
         transformer = simulator.transformer_class(
             uv_wavelengths=uv_wavelengths_7x2,
             real_space_mask=aa.Mask2D.unmasked(
-                shape_2d=(3, 3), pixel_scales=image.pixel_scales
+                shape_native=(3, 3), pixel_scales=image.pixel_scales
             ),
         )
 
@@ -310,7 +310,7 @@ class TestSimulatorInterferometer:
     def test__setup_with_background_sky_on__noise_off__no_noise_in_image__noise_map_is_noise_value(
         self, uv_wavelengths_7x2, transformer_7x7_7
     ):
-        image = aa.Array.manual_2d(
+        image = aa.Array2D.manual_native(
             array=[[2.0, 0.0, 0.0], [0.0, 1.0, 0.0], [3.0, 0.0, 0.0]],
             pixel_scales=transformer_7x7_7.grid.pixel_scales,
         )
@@ -329,14 +329,14 @@ class TestSimulatorInterferometer:
         transformer = simulator.transformer_class(
             uv_wavelengths=uv_wavelengths_7x2,
             real_space_mask=aa.Mask2D.unmasked(
-                shape_2d=(3, 3), pixel_scales=image.pixel_scales
+                shape_native=(3, 3), pixel_scales=image.pixel_scales
             ),
         )
 
-        background_sky_map = aa.Array.full(
+        background_sky_map = aa.Array2D.full(
             fill_value=2.0,
             pixel_scales=transformer_7x7_7.grid.pixel_scales,
-            shape_2d=image.shape_2d,
+            shape_native=image.shape_native,
         )
 
         visibilities = transformer.visibilities_from_image(
@@ -349,7 +349,7 @@ class TestSimulatorInterferometer:
 
     def test__setup_with_noise(self, uv_wavelengths_7x2, transformer_7x7_7):
 
-        image = aa.Array.manual_2d(
+        image = aa.Array2D.manual_native(
             array=[[2.0, 0.0, 0.0], [0.0, 1.0, 0.0], [3.0, 0.0, 0.0]],
             pixel_scales=transformer_7x7_7.grid.pixel_scales,
         )

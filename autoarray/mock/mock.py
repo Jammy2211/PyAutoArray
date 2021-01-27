@@ -245,10 +245,10 @@ class MockRegMapper:
 
 class MockMapper:
     def __init__(
-        self, matrix_shape, source_slim_grid=None, source_pixelization_grid=None
+        self, matrix_shape, source_grid_slim=None, source_pixelization_grid=None
     ):
 
-        self.source_slim_grid = source_slim_grid
+        self.source_grid_slim = source_grid_slim
         self.source_pixelization_grid = source_pixelization_grid
         self.mapping_matrix = np.ones(matrix_shape)
         if source_pixelization_grid is not None:

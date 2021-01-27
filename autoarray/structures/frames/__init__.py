@@ -1,1 +1,1 @@
-from .frames import Frame
+from .frames import Frame2D

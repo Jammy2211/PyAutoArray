@@ -26,18 +26,18 @@ class TestObj:
         mask = aa.Mask2D.manual(mask=mask, pixel_scales=(2.0, 2.0), sub_size=2)
 
         blurring_mask_util = aa.util.mask.blurring_mask_2d_from(
-            mask_2d=mask, kernel_shape_2d=(3, 5)
+            mask_2d=mask, kernel_shape_native=(3, 5)
         )
 
         blurring_grid_util = aa.util.grid.grid_2d_slim_via_mask_from(
             mask_2d=blurring_mask_util, pixel_scales=(2.0, 2.0), sub_size=1
         )
 
-        grid = aa.GridInterpolate.from_mask(mask=mask, pixel_scales_interp=0.1)
+        grid = aa.Grid2DInterpolate.from_mask(mask=mask, pixel_scales_interp=0.1)
 
-        blurring_grid = grid.blurring_grid_from_kernel_shape(kernel_shape_2d=(3, 5))
+        blurring_grid = grid.blurring_grid_from_kernel_shape(kernel_shape_native=(3, 5))
 
-        assert isinstance(blurring_grid, grids.GridInterpolate)
+        assert isinstance(blurring_grid, grids.Grid2DInterpolate)
         assert len(blurring_grid.shape) == 2
         assert blurring_grid == pytest.approx(blurring_grid_util, 1e-4)
         assert blurring_grid.pixel_scales == (2.0, 2.0)
@@ -61,7 +61,7 @@ class TestObj:
         mask = aa.Mask2D.manual(mask=mask, pixel_scales=(2.0, 2.0))
 
         blurring_mask_util = aa.util.mask.blurring_mask_2d_from(
-            mask_2d=mask, kernel_shape_2d=(3, 5)
+            mask_2d=mask, kernel_shape_native=(3, 5)
         )
 
         blurring_grid_util = aa.util.grid.grid_2d_slim_via_mask_from(
@@ -70,43 +70,43 @@ class TestObj:
 
         mask = aa.Mask2D.manual(mask=mask, pixel_scales=(2.0, 2.0))
 
-        blurring_grid = grids.GridInterpolate.blurring_grid_from_mask_and_kernel_shape(
-            mask=mask, kernel_shape_2d=(3, 5), pixel_scales_interp=0.1
+        blurring_grid = grids.Grid2DInterpolate.blurring_grid_from_mask_and_kernel_shape(
+            mask=mask, kernel_shape_native=(3, 5), pixel_scales_interp=0.1
         )
 
-        assert isinstance(blurring_grid, grids.GridInterpolate)
+        assert isinstance(blurring_grid, grids.Grid2DInterpolate)
         assert len(blurring_grid.shape) == 2
         assert blurring_grid == pytest.approx(blurring_grid_util, 1e-4)
         assert blurring_grid.pixel_scales == (2.0, 2.0)
         assert blurring_grid.pixel_scales_interp == (0.1, 0.1)
 
-        blurring_grid = grids.GridInterpolate.blurring_grid_from_mask_and_kernel_shape(
+        blurring_grid = grids.Grid2DInterpolate.blurring_grid_from_mask_and_kernel_shape(
             mask=mask,
-            kernel_shape_2d=(3, 5),
+            kernel_shape_native=(3, 5),
             pixel_scales_interp=0.1,
-            store_in_1d=False,
+            store_slim=False,
         )
 
-        assert isinstance(blurring_grid, grids.GridInterpolate)
+        assert isinstance(blurring_grid, grids.Grid2DInterpolate)
         assert len(blurring_grid.shape) == 3
         assert blurring_grid.pixel_scales == (2.0, 2.0)
         assert blurring_grid.pixel_scales_interp == (0.1, 0.1)
 
     def test__padded_grid_from_kernel_shape(self):
-        grid = grids.GridInterpolate.uniform(
-            shape_2d=(4, 4), pixel_scales=3.0, pixel_scales_interp=0.1
+        grid = grids.Grid2DInterpolate.uniform(
+            shape_native=(4, 4), pixel_scales=3.0, pixel_scales_interp=0.1
         )
 
-        padded_grid = grid.padded_grid_from_kernel_shape(kernel_shape_2d=(3, 3))
+        padded_grid = grid.padded_grid_from_kernel_shape(kernel_shape_native=(3, 3))
 
-        assert isinstance(padded_grid, grids.GridInterpolate)
+        assert isinstance(padded_grid, grids.Grid2DInterpolate)
         assert padded_grid.pixel_scales_interp == (0.1, 0.1)
 
-        mask = aa.Mask2D.unmasked(shape_2d=(6, 6), pixel_scales=(3.0, 3.0), sub_size=1)
+        mask = aa.Mask2D.unmasked(shape_native=(6, 6), pixel_scales=(3.0, 3.0), sub_size=1)
 
-        grid = grids.GridInterpolate.from_mask(mask=mask, pixel_scales_interp=0.1)
+        grid = grids.Grid2DInterpolate.from_mask(mask=mask, pixel_scales_interp=0.1)
 
-        assert isinstance(padded_grid, grids.GridInterpolate)
+        assert isinstance(padded_grid, grids.Grid2DInterpolate)
         assert padded_grid.pixel_scales_interp == (0.1, 0.1)
         assert (padded_grid.vtx == grid.vtx).all()
         assert (padded_grid.wts == grid.wts).all()
@@ -115,17 +115,17 @@ class TestObj:
             mask=np.full((2, 5), False), pixel_scales=(8.0, 8.0), sub_size=4
         )
 
-        grid = aa.GridInterpolate.from_mask(mask=mask, pixel_scales_interp=0.2)
+        grid = aa.Grid2DInterpolate.from_mask(mask=mask, pixel_scales_interp=0.2)
 
-        padded_grid = grid.padded_grid_from_kernel_shape(kernel_shape_2d=(5, 5))
+        padded_grid = grid.padded_grid_from_kernel_shape(kernel_shape_native=(5, 5))
 
         padded_grid_util = aa.util.grid.grid_2d_slim_via_mask_from(
             mask_2d=np.full((6, 9), False), pixel_scales=(8.0, 8.0), sub_size=4
         )
 
-        assert isinstance(padded_grid, grids.GridInterpolate)
+        assert isinstance(padded_grid, grids.Grid2DInterpolate)
         assert padded_grid.pixel_scales_interp == (0.2, 0.2)
-        assert isinstance(padded_grid, grids.GridInterpolate)
+        assert isinstance(padded_grid, grids.Grid2DInterpolate)
         assert padded_grid.shape == (864, 2)
         assert (padded_grid.mask == np.full(fill_value=False, shape=(6, 9))).all()
         assert padded_grid == pytest.approx(padded_grid_util, 1e-4)
@@ -142,15 +142,15 @@ class TestInterpolatedResult:
                 result[0] = 1
                 return result
 
-        mask = aa.Mask2D.unmasked(shape_2d=(3, 3), pixel_scales=(1.0, 1.0), sub_size=1)
+        mask = aa.Mask2D.unmasked(shape_native=(3, 3), pixel_scales=(1.0, 1.0), sub_size=1)
 
-        grid = aa.GridInterpolate.from_mask(mask=mask, pixel_scales_interp=0.5)
+        grid = aa.Grid2DInterpolate.from_mask(mask=mask, pixel_scales_interp=0.5)
 
         cls = MockInterpolateClass()
 
         interp_array = grid.result_from_func(func=cls.func, cls=MockInterpolateClass())
 
-        assert isinstance(interp_array, aa.Array)
+        assert isinstance(interp_array, aa.Array2D)
         assert interp_array.ndim == 1
         assert interp_array.shape == (9,)
         print(interp_array)
@@ -166,15 +166,15 @@ class TestInterpolatedResult:
                 result[0] = 1
                 return result
 
-        mask = aa.Mask2D.unmasked(shape_2d=(3, 3), pixel_scales=(1.0, 1.0), sub_size=1)
+        mask = aa.Mask2D.unmasked(shape_native=(3, 3), pixel_scales=(1.0, 1.0), sub_size=1)
 
-        grid = aa.GridInterpolate.from_mask(mask=mask, pixel_scales_interp=0.5)
+        grid = aa.Grid2DInterpolate.from_mask(mask=mask, pixel_scales_interp=0.5)
 
         cls = MockInterpolateClass()
 
         arr = grid.result_from_func(func=cls.func_off, cls=MockInterpolateClass())
 
-        assert isinstance(arr, aa.Array)
+        assert isinstance(arr, aa.Array2D)
         assert arr.ndim == 1
         assert arr.shape == (9,)
         assert (arr == np.array([[1, 0, 0, 0, 0, 0, 0, 0, 0]])).any()
@@ -188,15 +188,15 @@ class TestInterpolatedResult:
                 result[0, :] = 1
                 return result
 
-        mask = aa.Mask2D.unmasked(shape_2d=(3, 3), pixel_scales=(1.0, 1.0), sub_size=1)
+        mask = aa.Mask2D.unmasked(shape_native=(3, 3), pixel_scales=(1.0, 1.0), sub_size=1)
 
-        grid = aa.GridInterpolate.from_mask(mask=mask, pixel_scales_interp=0.5)
+        grid = aa.Grid2DInterpolate.from_mask(mask=mask, pixel_scales_interp=0.5)
 
         cls = MockInterpolateClass()
 
         interp_grid = grid.result_from_func(func=cls.func, cls=MockInterpolateClass())
 
-        assert isinstance(interp_grid, aa.Grid)
+        assert isinstance(interp_grid, aa.Grid2D)
         assert interp_grid.ndim == 2
         assert interp_grid.shape == (9, 2)
         assert (
@@ -228,18 +228,18 @@ class TestInterpolatedResult:
         cls = MockInterpolateObj()
 
         mask = aa.Mask2D.circular_annular(
-            shape_2d=(20, 20),
+            shape_native=(20, 20),
             pixel_scales=(1.0, 1.0),
             sub_size=1,
             inner_radius=3.0,
             outer_radius=8.0,
         )
 
-        grid = aa.Grid.from_mask(mask=mask)
+        grid = aa.Grid2D.from_mask(mask=mask)
 
         true_array = ndarray_1d_from_grid(profile=None, grid=grid)
 
-        grid = aa.GridInterpolate.from_mask(mask=mask, pixel_scales_interp=1.0)
+        grid = aa.Grid2DInterpolate.from_mask(mask=mask, pixel_scales_interp=1.0)
 
         interpolated_array = grid.result_from_func(
             func=cls.ndarray_1d_from_grid, cls=MockInterpolateObj()
@@ -248,7 +248,7 @@ class TestInterpolatedResult:
         assert interpolated_array.shape[0] == mask.pixels_in_mask
         assert (true_array == interpolated_array).all()
 
-        grid = aa.GridInterpolate.from_mask(mask=mask, pixel_scales_interp=0.1)
+        grid = aa.Grid2DInterpolate.from_mask(mask=mask, pixel_scales_interp=0.1)
 
         interpolated_array = grid.result_from_func(
             func=cls.ndarray_1d_from_grid, cls=MockInterpolateObj()
@@ -259,7 +259,7 @@ class TestInterpolatedResult:
         assert np.max(true_array - interpolated_array) < 0.001
 
         mask = aa.Mask2D.circular_annular(
-            shape_2d=(28, 28),
+            shape_native=(28, 28),
             pixel_scales=(1.0, 1.0),
             sub_size=1,
             inner_radius=3.0,
@@ -267,11 +267,11 @@ class TestInterpolatedResult:
             centre=(3.0, 3.0),
         )
 
-        grid = aa.Grid.from_mask(mask=mask)
+        grid = aa.Grid2D.from_mask(mask=mask)
 
         true_array = ndarray_1d_from_grid(profile=None, grid=grid)
 
-        grid = aa.GridInterpolate.from_mask(mask=mask, pixel_scales_interp=0.1)
+        grid = aa.Grid2DInterpolate.from_mask(mask=mask, pixel_scales_interp=0.1)
 
         interpolated_array = grid.result_from_func(
             func=cls.ndarray_1d_from_grid, cls=MockInterpolateObj()
@@ -291,18 +291,18 @@ class TestInterpolatedResult:
         cls = MockInterpolateObj()
 
         mask = aa.Mask2D.circular_annular(
-            shape_2d=(20, 20),
+            shape_native=(20, 20),
             pixel_scales=(1.0, 1.0),
             sub_size=1,
             inner_radius=3.0,
             outer_radius=8.0,
         )
 
-        grid = aa.Grid.from_mask(mask=mask)
+        grid = aa.Grid2D.from_mask(mask=mask)
 
         true_grid = ndarray_2d_from_grid(profile=None, grid=grid)
 
-        grid = aa.GridInterpolate.from_mask(mask=mask, pixel_scales_interp=1.0)
+        grid = aa.Grid2DInterpolate.from_mask(mask=mask, pixel_scales_interp=1.0)
 
         interpolated_grid = grid.result_from_func(
             func=cls.ndarray_2d_from_grid, cls=MockInterpolateObj()
@@ -312,7 +312,7 @@ class TestInterpolatedResult:
         assert interpolated_grid.shape[1] == 2
         assert (true_grid == interpolated_grid).all()
 
-        grid = aa.GridInterpolate.from_mask(mask=mask, pixel_scales_interp=0.1)
+        grid = aa.Grid2DInterpolate.from_mask(mask=mask, pixel_scales_interp=0.1)
 
         interpolated_grid = grid.result_from_func(
             func=cls.ndarray_2d_from_grid, cls=MockInterpolateObj()
@@ -325,7 +325,7 @@ class TestInterpolatedResult:
         assert np.max(true_grid[:, 1] - interpolated_grid[:, 1]) < 0.001
 
         mask = aa.Mask2D.circular_annular(
-            shape_2d=(28, 28),
+            shape_native=(28, 28),
             pixel_scales=(1.0, 1.0),
             sub_size=1,
             inner_radius=3.0,
@@ -333,11 +333,11 @@ class TestInterpolatedResult:
             centre=(3.0, 3.0),
         )
 
-        grid = aa.Grid.from_mask(mask=mask)
+        grid = aa.Grid2D.from_mask(mask=mask)
 
         true_grid = ndarray_2d_from_grid(profile=None, grid=grid)
 
-        grid = aa.GridInterpolate.from_mask(mask=mask, pixel_scales_interp=0.1)
+        grid = aa.Grid2DInterpolate.from_mask(mask=mask, pixel_scales_interp=0.1)
 
         interpolated_grid = grid.result_from_func(
             func=cls.ndarray_2d_from_grid, cls=MockInterpolateObj()
@@ -351,82 +351,82 @@ class TestInterpolatedResult:
 
 
 class TestAPI:
-    def test__manual_1d(self):
+    def test__manual_slim(self):
 
-        grid = aa.GridInterpolate.manual_1d(
+        grid = aa.Grid2DInterpolate.manual_slim(
             grid=[[1.0, 2.0], [3.0, 4.0], [5.0, 6.0], [7.0, 8.0]],
-            shape_2d=(2, 2),
+            shape_native=(2, 2),
             pixel_scales=1.0,
             pixel_scales_interp=0.1,
             origin=(0.0, 1.0),
-            store_in_1d=True,
+            store_slim=True,
         )
 
-        assert type(grid) == grids.GridInterpolate
-        assert type(grid.in_1d) == grids.GridInterpolate
-        assert type(grid.in_2d) == grids.GridInterpolate
+        assert type(grid) == grids.Grid2DInterpolate
+        assert type(grid.slim) == grids.Grid2DInterpolate
+        assert type(grid.native) == grids.Grid2DInterpolate
         assert (
             grid == np.array([[1.0, 2.0], [3.0, 4.0], [5.0, 6.0], [7.0, 8.0]])
         ).all()
         assert (
-            grid.in_2d == np.array([[[1.0, 2.0], [3.0, 4.0]], [[5.0, 6.0], [7.0, 8.0]]])
+            grid.native == np.array([[[1.0, 2.0], [3.0, 4.0]], [[5.0, 6.0], [7.0, 8.0]]])
         ).all()
         assert (
-            grid.in_1d == np.array([[1.0, 2.0], [3.0, 4.0], [5.0, 6.0], [7.0, 8.0]])
+            grid.slim == np.array([[1.0, 2.0], [3.0, 4.0], [5.0, 6.0], [7.0, 8.0]])
         ).all()
         assert grid.pixel_scales == (1.0, 1.0)
         assert grid.pixel_scales_interp == (0.1, 0.1)
         assert grid.origin == (0.0, 1.0)
 
-        grid = aa.GridInterpolate.manual_1d(
+        grid = aa.Grid2DInterpolate.manual_slim(
             grid=[[1.0, 2.0], [3.0, 4.0], [5.0, 6.0], [7.0, 8.0]],
-            shape_2d=(2, 2),
+            shape_native=(2, 2),
             pixel_scales=1.0,
             pixel_scales_interp=0.1,
             origin=(0.0, 1.0),
-            store_in_1d=False,
+            store_slim=False,
         )
 
-        assert type(grid) == grids.GridInterpolate
-        assert type(grid.in_1d) == grids.GridInterpolate
-        assert type(grid.in_2d) == grids.GridInterpolate
+        assert type(grid) == grids.Grid2DInterpolate
+        assert type(grid.slim) == grids.Grid2DInterpolate
+        assert type(grid.native) == grids.Grid2DInterpolate
         assert (
             grid == np.array([[[1.0, 2.0], [3.0, 4.0]], [[5.0, 6.0], [7.0, 8.0]]])
         ).all()
         assert (
-            grid.in_2d == np.array([[[1.0, 2.0], [3.0, 4.0]], [[5.0, 6.0], [7.0, 8.0]]])
+            grid.native == np.array([[[1.0, 2.0], [3.0, 4.0]], [[5.0, 6.0], [7.0, 8.0]]])
         ).all()
         assert (
-            grid.in_1d == np.array([[1.0, 2.0], [3.0, 4.0], [5.0, 6.0], [7.0, 8.0]])
+            grid.slim == np.array([[1.0, 2.0], [3.0, 4.0], [5.0, 6.0], [7.0, 8.0]])
         ).all()
         assert grid.pixel_scales == (1.0, 1.0)
         assert grid.pixel_scales_interp == (0.1, 0.1)
         assert grid.origin == (0.0, 1.0)
 
-        grid = aa.GridInterpolate.manual_1d(
+        grid = aa.Grid2DInterpolate.manual_slim(
             grid=[[1.0, 2.0], [3.0, 4.0], [5.0, 6.0], [7.0, 8.0]],
-            shape_2d=(1, 1),
+            shape_native=(1, 1),
             pixel_scales=1.0,
             pixel_scales_interp=0.1,
             sub_size=2,
             origin=(0.0, 1.0),
-            store_in_1d=True,
+            store_slim=True,
         )
 
-        assert type(grid) == grids.GridInterpolate
-        assert type(grid.in_1d) == grids.GridInterpolate
-        assert type(grid.in_2d) == grids.GridInterpolate
+        assert type(grid) == grids.Grid2DInterpolate
+        assert type(grid.slim) == grids.Grid2DInterpolate
+        assert type(grid.native) == grids.Grid2DInterpolate
         assert (
             grid == np.array([[1.0, 2.0], [3.0, 4.0], [5.0, 6.0], [7.0, 8.0]])
         ).all()
         assert (
-            grid.in_2d == np.array([[[1.0, 2.0], [3.0, 4.0]], [[5.0, 6.0], [7.0, 8.0]]])
+            grid.native == np.array([[[1.0, 2.0], [3.0, 4.0]], [[5.0, 6.0], [7.0, 8.0]]])
         ).all()
         assert (
-            grid.in_1d == np.array([[1.0, 2.0], [3.0, 4.0], [5.0, 6.0], [7.0, 8.0]])
+            grid.slim == np.array([[1.0, 2.0], [3.0, 4.0], [5.0, 6.0], [7.0, 8.0]])
         ).all()
-        assert (grid.in_2d_binned == np.array([[[4.0, 5.0]]])).all()
-        assert (grid.in_1d_binned == np.array([[4.0, 5.0]])).all()
+        assert (grid.native_binned == np.array([[[4.0, 5.0]]])).all()
+        assert (grid.slim_binned == np.array([[4.0, 5.0]])).all()
         assert grid.pixel_scales == (1.0, 1.0)
         assert grid.pixel_scales_interp == (0.1, 0.1)
         assert grid.origin == (0.0, 1.0)
@@ -447,13 +447,13 @@ class TestAPI:
             mask_2d=mask, sub_size=1, pixel_scales=(2.0, 2.0)
         )
 
-        grid = aa.GridInterpolate.from_mask(
-            mask=mask, pixel_scales_interp=0.1, store_in_1d=True
+        grid = aa.Grid2DInterpolate.from_mask(
+            mask=mask, pixel_scales_interp=0.1, store_slim=True
         )
 
-        assert type(grid) == grids.GridInterpolate
-        assert type(grid.in_1d) == grids.GridInterpolate
-        assert type(grid.in_2d) == grids.GridInterpolate
+        assert type(grid) == grids.Grid2DInterpolate
+        assert type(grid.slim) == grids.Grid2DInterpolate
+        assert type(grid.native) == grids.Grid2DInterpolate
         assert grid == pytest.approx(grid_via_util, 1e-4)
         assert grid.pixel_scales_interp == (0.1, 0.1)
         assert grid.sub_size == 1
@@ -462,13 +462,13 @@ class TestAPI:
             mask_2d=mask, sub_size=1, pixel_scales=(2.0, 2.0)
         )
 
-        grid = aa.GridInterpolate.from_mask(
-            mask=mask, pixel_scales_interp=0.1, store_in_1d=False
+        grid = aa.Grid2DInterpolate.from_mask(
+            mask=mask, pixel_scales_interp=0.1, store_slim=False
         )
 
-        assert type(grid) == grids.GridInterpolate
-        assert type(grid.in_1d) == grids.GridInterpolate
-        assert type(grid.in_2d) == grids.GridInterpolate
+        assert type(grid) == grids.Grid2DInterpolate
+        assert type(grid.slim) == grids.Grid2DInterpolate
+        assert type(grid.native) == grids.Grid2DInterpolate
         assert grid == pytest.approx(grid_via_util, 1e-4)
         assert grid.pixel_scales_interp == (0.1, 0.1)
         assert grid.sub_size == 1
@@ -486,73 +486,73 @@ class TestAPI:
             mask_2d=mask, sub_size=2, pixel_scales=(2.0, 2.0)
         )
 
-        grid = aa.GridInterpolate.from_mask(
-            mask=mask, pixel_scales_interp=0.1, store_in_1d=True
+        grid = aa.Grid2DInterpolate.from_mask(
+            mask=mask, pixel_scales_interp=0.1, store_slim=True
         )
 
-        assert type(grid) == grids.GridInterpolate
-        assert type(grid.in_1d) == grids.GridInterpolate
-        assert type(grid.in_2d) == grids.GridInterpolate
+        assert type(grid) == grids.Grid2DInterpolate
+        assert type(grid.slim) == grids.Grid2DInterpolate
+        assert type(grid.native) == grids.Grid2DInterpolate
         assert grid == pytest.approx(grid_via_util, 1e-4)
         assert grid.pixel_scales_interp == (0.1, 0.1)
         assert grid.sub_size == 2
 
     def test__uniform(self):
 
-        grid = aa.GridInterpolate.uniform(
-            shape_2d=(2, 2), pixel_scales=2.0, pixel_scales_interp=0.1, store_in_1d=True
+        grid = aa.Grid2DInterpolate.uniform(
+            shape_native=(2, 2), pixel_scales=2.0, pixel_scales_interp=0.1, store_slim=True
         )
 
-        assert type(grid) == grids.GridInterpolate
-        assert type(grid.in_1d) == grids.GridInterpolate
-        assert type(grid.in_2d) == grids.GridInterpolate
+        assert type(grid) == grids.Grid2DInterpolate
+        assert type(grid.slim) == grids.Grid2DInterpolate
+        assert type(grid.native) == grids.Grid2DInterpolate
         assert (
             grid == np.array([[1.0, -1.0], [1.0, 1.0], [-1.0, -1.0], [-1.0, 1.0]])
         ).all()
         assert (
-            grid.in_2d
+            grid.native
             == np.array([[[1.0, -1.0], [1.0, 1.0]], [[-1.0, -1.0], [-1.0, 1.0]]])
         ).all()
         assert (
-            grid.in_1d == np.array([[1.0, -1.0], [1.0, 1.0], [-1.0, -1.0], [-1.0, 1.0]])
+            grid.slim == np.array([[1.0, -1.0], [1.0, 1.0], [-1.0, -1.0], [-1.0, 1.0]])
         ).all()
         assert grid.pixel_scales == (2.0, 2.0)
         assert grid.pixel_scales_interp == (0.1, 0.1)
         assert grid.origin == (0.0, 0.0)
 
-        grid = aa.GridInterpolate.uniform(
-            shape_2d=(2, 2),
+        grid = aa.Grid2DInterpolate.uniform(
+            shape_native=(2, 2),
             pixel_scales=2.0,
             pixel_scales_interp=0.1,
-            store_in_1d=False,
+            store_slim=False,
         )
 
-        assert type(grid) == grids.GridInterpolate
-        assert type(grid.in_1d) == grids.GridInterpolate
-        assert type(grid.in_2d) == grids.GridInterpolate
+        assert type(grid) == grids.Grid2DInterpolate
+        assert type(grid.slim) == grids.Grid2DInterpolate
+        assert type(grid.native) == grids.Grid2DInterpolate
         assert (
             grid == np.array([[[1.0, -1.0], [1.0, 1.0]], [[-1.0, -1.0], [-1.0, 1.0]]])
         ).all()
         assert (
-            grid.in_2d
+            grid.native
             == np.array([[[1.0, -1.0], [1.0, 1.0]], [[-1.0, -1.0], [-1.0, 1.0]]])
         ).all()
         assert (
-            grid.in_1d == np.array([[1.0, -1.0], [1.0, 1.0], [-1.0, -1.0], [-1.0, 1.0]])
+            grid.slim == np.array([[1.0, -1.0], [1.0, 1.0], [-1.0, -1.0], [-1.0, 1.0]])
         ).all()
         assert grid.pixel_scales == (2.0, 2.0)
         assert grid.pixel_scales_interp == (0.1, 0.1)
         assert grid.origin == (0.0, 0.0)
 
-        grid = aa.GridInterpolate.uniform(
-            shape_2d=(2, 1), pixel_scales=1.0, pixel_scales_interp=0.2, sub_size=2
+        grid = aa.Grid2DInterpolate.uniform(
+            shape_native=(2, 1), pixel_scales=1.0, pixel_scales_interp=0.2, sub_size=2
         )
 
-        assert type(grid) == grids.GridInterpolate
-        assert type(grid.in_1d) == grids.GridInterpolate
-        assert type(grid.in_2d) == grids.GridInterpolate
+        assert type(grid) == grids.Grid2DInterpolate
+        assert type(grid.slim) == grids.Grid2DInterpolate
+        assert type(grid.native) == grids.Grid2DInterpolate
         assert (
-            grid.in_2d
+            grid.native
             == np.array(
                 [
                     [[0.75, -0.25], [0.75, 0.25]],
@@ -563,7 +563,7 @@ class TestAPI:
             )
         ).all()
         assert (
-            grid.in_1d
+            grid.slim
             == np.array(
                 [
                     [0.75, -0.25],
@@ -577,8 +577,8 @@ class TestAPI:
                 ]
             )
         ).all()
-        assert (grid.in_2d_binned == np.array([[[0.5, 0.0]], [[-0.5, 0.0]]])).all()
-        assert (grid.in_1d_binned == np.array([[0.5, 0.0], [-0.5, 0.0]])).all()
+        assert (grid.native_binned == np.array([[[0.5, 0.0]], [[-0.5, 0.0]]])).all()
+        assert (grid.slim_binned == np.array([[0.5, 0.0], [-0.5, 0.0]])).all()
         assert grid.pixel_scales == (1.0, 1.0)
         assert grid.pixel_scales_interp == (0.2, 0.2)
         assert grid.origin == (0.0, 0.0)

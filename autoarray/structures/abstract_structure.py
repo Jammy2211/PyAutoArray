@@ -10,11 +10,11 @@ class AbstractStructure(np.ndarray):
             if hasattr(obj, "mask"):
                 self.mask = obj.mask
 
-    def _new_structure(self, grid, mask, store_in_1d):
-        """Conveninence method for creating a new instance of the Grid class from this grid.
+    def _new_structure(self, grid, mask, store_slim):
+        """Conveninence method for creating a new instance of the Grid2D class from this grid.
 
-        This method is over-written by other grids (e.g. GridIterate) such that the in_1d and in_2d methods return
-        instances of that Grid's type.
+        This method is over-written by other grids (e.g. Grid2DIterate) such that the slim and native methods return
+        instances of that Grid2D's type.
 
         Parameters
         ----------
@@ -23,23 +23,23 @@ class AbstractStructure(np.ndarray):
         mask : msk.Mask2D
             The 2D mask associated with the grid, defining the pixels each grid coordinate is paired with and
             originates from.
-        store_in_1d : bool
+        store_slim : bool
             If True, the grid is stored in 1D as an ndarray of shape [total_unmasked_pixels, 2]. If False, it is
             stored in 2D as an ndarray of shape [total_y_pixels, total_x_pixels, 2].
         """
         raise NotImplementedError()
 
     @property
-    def in_1d(self):
+    def slim(self):
         raise NotImplementedError
 
     @property
-    def shape_1d(self):
-        return self.mask.shape_1d
+    def shape_slim(self):
+        return self.mask.shape_slim
 
     @property
-    def sub_shape_1d(self):
-        return self.mask.sub_shape_1d
+    def sub_shape_slim(self):
+        return self.mask.sub_shape_slim
 
     @property
     def pixel_scales(self):
@@ -109,17 +109,17 @@ class AbstractStructure2D(AbstractStructure):
 
         if isinstance(obj, AbstractStructure2D):
 
-            if hasattr(obj, "store_in_1d"):
-                self.store_in_1d = obj.store_in_1d
+            if hasattr(obj, "store_slim"):
+                self.store_slim = obj.store_slim
 
     @property
-    def in_2d(self):
+    def native(self):
         raise NotImplementedError
 
     @property
-    def shape_2d(self):
+    def shape_native(self):
         return self.mask.shape
 
     @property
-    def sub_shape_2d(self):
-        return self.mask.sub_shape_2d
+    def sub_shape_native(self):
+        return self.mask.sub_shape_native

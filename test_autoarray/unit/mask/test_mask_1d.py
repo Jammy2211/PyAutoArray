@@ -68,7 +68,7 @@ class TestMask1D:
         assert type(mask) == aa.Mask1D
         assert (mask == np.array([False, False, True])).all()
 
-    def test__mask__input_is_2d_mask__no_shape_2d__raises_exception(self):
+    def test__mask__input_is_2d_mask__no_shape_native__raises_exception(self):
 
         with pytest.raises(exc.MaskException):
 

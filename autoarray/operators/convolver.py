@@ -174,7 +174,7 @@ class Convolver:
         kernel : grid.PSF or ndarray
             An array representing a PSF.
         """
-        if kernel.shape_2d[0] % 2 == 0 or kernel.shape_2d[1] % 2 == 0:
+        if kernel.shape_native[0] % 2 == 0 or kernel.shape_native[1] % 2 == 0:
             raise exc.ConvolverException("PSF kernel must be odd")
 
         self.mask = mask
@@ -190,7 +190,7 @@ class Convolver:
                     count += 1
 
         self.kernel = kernel
-        self.kernel_max_size = self.kernel.shape_2d[0] * self.kernel.shape_2d[1]
+        self.kernel_max_size = self.kernel.shape_native[0] * self.kernel.shape_native[1]
 
         mask_1d_index = 0
         self.image_frame_1d_indexes = np.zeros(
@@ -210,7 +210,7 @@ class Convolver:
                         coordinates=(x, y),
                         mask=mask,
                         mask_index_array=self.mask_index_array,
-                        kernel_2d=self.kernel.in_2d[:, :],
+                        kernel_2d=self.kernel.native[:, :],
                     )
                     self.image_frame_1d_indexes[
                         mask_1d_index, :
@@ -224,7 +224,7 @@ class Convolver:
                     mask_1d_index += 1
 
         self.blurring_mask = mask_util.blurring_mask_2d_from(
-            mask_2d=mask, kernel_shape_2d=kernel.shape_2d
+            mask_2d=mask, kernel_shape_native=kernel.shape_native
         )
 
         self.pixels_in_blurring_mask = int(
@@ -251,7 +251,7 @@ class Convolver:
                         coordinates=(x, y),
                         mask=mask,
                         mask_index_array=self.mask_index_array,
-                        kernel_2d=self.kernel.in_2d,
+                        kernel_2d=self.kernel.native,
                     )
                     self.blurring_frame_1d_indexes[
                         mask_1d_index, :
@@ -275,22 +275,22 @@ class Convolver:
         ----------
         coordinates: (int, int)
             The coordinates of mask_index_array on which the frame should be centred
-        kernel_shape_2d: (int, int)
+        kernel_shape_native: (int, int)
             The shape of the kernel for which this frame will be used
         """
 
-        kernel_shape_2d = kernel_2d.shape
-        kernel_max_size = kernel_shape_2d[0] * kernel_shape_2d[1]
+        kernel_shape_native = kernel_2d.shape
+        kernel_max_size = kernel_shape_native[0] * kernel_shape_native[1]
 
-        half_x = int(kernel_shape_2d[0] / 2)
-        half_y = int(kernel_shape_2d[1] / 2)
+        half_x = int(kernel_shape_native[0] / 2)
+        half_y = int(kernel_shape_native[1] / 2)
 
         frame = -1 * np.ones((kernel_max_size))
         kernel_frame = -1.0 * np.ones((kernel_max_size))
 
         count = 0
-        for i in range(kernel_shape_2d[0]):
-            for j in range(kernel_shape_2d[1]):
+        for i in range(kernel_shape_native[0]):
+            for j in range(kernel_shape_native[1]):
                 x = coordinates[0] - half_x + i
                 y = coordinates[1] - half_y + j
                 if (
@@ -323,18 +323,18 @@ class Convolver:
             )
 
         convolved_image = self.convolve_jit(
-            image_1d_array=image.in_1d_binned,
+            image_1d_array=image.slim_binned,
             image_frame_1d_indexes=self.image_frame_1d_indexes,
             image_frame_1d_kernels=self.image_frame_1d_kernels,
             image_frame_1d_lengths=self.image_frame_1d_lengths,
-            blurring_1d_array=blurring_image.in_1d_binned,
+            blurring_1d_array=blurring_image.slim_binned,
             blurring_frame_1d_indexes=self.blurring_frame_1d_indexes,
             blurring_frame_1d_kernels=self.blurring_frame_1d_kernels,
             blurring_frame_1d_lengths=self.blurring_frame_1d_lengths,
         )
 
-        return arrays.Array(
-            array=convolved_image, mask=self.mask.mask_sub_1, store_in_1d=True
+        return arrays.Array2D(
+            array=convolved_image, mask=self.mask.mask_sub_1, store_slim=True
         )
 
     @staticmethod

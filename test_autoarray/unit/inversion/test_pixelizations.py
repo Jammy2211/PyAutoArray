@@ -57,14 +57,14 @@ class TestVoronoiMagnification:
 
         pixelization_grid = pix.sparse_grid_from_grid(grid=sub_grid_7x7)
 
-        pixelization_grid_manual = grids.GridVoronoi.from_grid_and_unmasked_2d_grid_shape(
+        pixelization_grid_manual = grids.Grid2DVoronoi.from_grid_and_unmasked_2d_grid_shape(
             unmasked_sparse_shape=(3, 3), grid=sub_grid_7x7
         )
 
         assert (pixelization_grid_manual == pixelization_grid).all()
         assert (
-            pixelization_grid_manual.nearest_pixelization_1d_index_for_mask_1d_index
-            == pixelization_grid.nearest_pixelization_1d_index_for_mask_1d_index
+            pixelization_grid_manual.nearest_pixelization_index_for_slim_index
+            == pixelization_grid.nearest_pixelization_index_for_slim_index
         ).all()
 
 
@@ -151,17 +151,17 @@ class TestVoronoiBrightness:
 
         weight_map = pix.weight_map_from_hyper_image(hyper_image=hyper_image)
 
-        sparse_grid = grids.GridSparse.from_total_pixels_grid_and_weight_map(
+        sparse_grid = grids.Grid2DSparse.from_total_pixels_grid_and_weight_map(
             total_pixels=pix.pixels, grid=sub_grid_7x7, weight_map=weight_map, seed=1
         )
 
-        pixelization_grid_manual = grids.GridVoronoi(
+        pixelization_grid_manual = grids.Grid2DVoronoi(
             grid=sparse_grid.sparse,
-            nearest_pixelization_1d_index_for_mask_1d_index=sparse_grid.sparse_1d_index_for_mask_1d_index,
+            nearest_pixelization_index_for_slim_index=sparse_grid.sparse_index_for_slim_index,
         )
 
         assert (pixelization_grid_manual == pixelization_grid).all()
         assert (
-            pixelization_grid_manual.nearest_pixelization_1d_index_for_mask_1d_index
-            == pixelization_grid.nearest_pixelization_1d_index_for_mask_1d_index
+            pixelization_grid_manual.nearest_pixelization_index_for_slim_index
+            == pixelization_grid.nearest_pixelization_index_for_slim_index
         ).all()

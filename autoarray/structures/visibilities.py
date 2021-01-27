@@ -19,7 +19,7 @@ class AbstractVisibilities(np.ndarray):
         A collection of (real, imag) visibilities which are used to represent the data in an `Interferometer` dataset.
 
         The (real, imag) visibilities are stored as a 1D complex NumPy array of shape [total_visibilities]. These can
-        be mapped to a 2D real NumPy array of shape [total_visibilities, 2] and a `GridIrregular` data structure
+        be mapped to a 2D real NumPy array of shape [total_visibilities, 2] and a `Grid2DIrregular` data structure
         which is used for plotting the visibilities in 2D in the complex plane.
 
         Calculations should use the NumPy array structure wherever possible for efficient calculations.
@@ -68,7 +68,7 @@ class AbstractVisibilities(np.ndarray):
         super(AbstractVisibilities, self).__setstate__(state[0:-1])
 
     @property
-    def in_1d(self):
+    def slim(self):
         return self
 
     @property
@@ -82,10 +82,10 @@ class AbstractVisibilities(np.ndarray):
     @property
     def in_grid(self):
         """Returns the 1D complex NumPy array of values as an irregular grid."""
-        return grids.GridIrregular(grid=self.in_array)
+        return grids.Grid2DIrregular(grid=self.in_array)
 
     @property
-    def shape_1d(self):
+    def shape_slim(self):
         return self.shape[0]
 
     @property
@@ -142,7 +142,7 @@ class AbstractVisibilities(np.ndarray):
 
 class Visibilities(AbstractVisibilities):
     @classmethod
-    def manual_1d(cls, visibilities):
+    def manual_slim(cls, visibilities):
         """
         Create `Visibilities` (see `AbstractVisibilities.__new__`) by inputting (real, imag) values as a 1D complex
         NumPy array or 2D NumPy float array or list, for example:
@@ -159,58 +159,58 @@ class Visibilities(AbstractVisibilities):
         return cls(visibilities=visibilities)
 
     @classmethod
-    def full(cls, fill_value, shape_1d):
+    def full(cls, fill_value, shape_slim):
         """
         Create `Visibilities` (see `AbstractVisibilities.__new__`) where all (real, imag) values are filled with an
         input fill value, analogous to the method numpy ndarray.full.
 
-        From 1D input the method cannot determine the 2D shape of the array and its mask, thus the shape_2d must be
-        input into this method. The mask is setup as a unmasked `Mask2D` of shape_2d.
+        From 1D input the method cannot determine the 2D shape of the array and its mask, thus the shape_native must be
+        input into this method. The mask is setup as a unmasked `Mask2D` of shape_native.
 
         Parameters
         ----------
         fill_value : float
             The value all real and imaginary array elements are filled with.
-        shape_1d : int
+        shape_slim : int
             The 1D shape of output visibilities.
         """
-        return cls.manual_1d(
+        return cls.manual_slim(
             visibilities=np.full(
-                fill_value=fill_value + fill_value * 1j, shape=(shape_1d[0],)
+                fill_value=fill_value + fill_value * 1j, shape=(shape_slim[0],)
             )
         )
 
     @classmethod
-    def ones(cls, shape_1d):
+    def ones(cls, shape_slim):
         """
         Create `Visibilities` (see `AbstractVisibilities.__new__`) where all (real, imag) values are filled with ones,
         analogous to the method np.ones().
 
-        From 1D input the method cannot determine the 2D shape of the array and its mask, thus the shape_2d must be
-        input into this method. The mask is setup as a unmasked `Mask2D` of shape_2d.
+        From 1D input the method cannot determine the 2D shape of the array and its mask, thus the shape_native must be
+        input into this method. The mask is setup as a unmasked `Mask2D` of shape_native.
 
         Parameters
         ----------
-        shape_1d : int
+        shape_slim : int
             The 1D shape of output visibilities.
         """
-        return cls.full(fill_value=1.0, shape_1d=shape_1d)
+        return cls.full(fill_value=1.0, shape_slim=shape_slim)
 
     @classmethod
-    def zeros(cls, shape_1d):
+    def zeros(cls, shape_slim):
         """
         Create `Visibilities` (see `AbstractVisibilities.__new__`) where all (real, imag) values are filled with zeros,
         analogous to the method np.zeros().
 
-        From 1D input the method cannot determine the 2D shape of the array and its mask, thus the shape_2d must be
-        input into this method. The mask is setup as a unmasked `Mask2D` of shape_2d.
+        From 1D input the method cannot determine the 2D shape of the array and its mask, thus the shape_native must be
+        input into this method. The mask is setup as a unmasked `Mask2D` of shape_native.
 
         Parameters
         ----------
-        shape_1d : int
+        shape_slim : int
             The 1D shape of output visibilities.
         """
-        return cls.full(fill_value=0.0, shape_1d=shape_1d)
+        return cls.full(fill_value=0.0, shape_slim=shape_slim)
 
     @classmethod
     def from_fits(cls, file_path, hdu):
@@ -231,7 +231,7 @@ class Visibilities(AbstractVisibilities):
         visibilities_1d = array_util.numpy_array_2d_from_fits(
             file_path=file_path, hdu=hdu
         )
-        return cls.manual_1d(visibilities=visibilities_1d)
+        return cls.manual_slim(visibilities=visibilities_1d)
 
 
 class VisibilitiesNoiseMap(Visibilities):

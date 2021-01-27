@@ -1,2 +1,2 @@
-from .arrays import Array
+from .arrays import Array2D
 from .values import ValuesIrregularGrouped

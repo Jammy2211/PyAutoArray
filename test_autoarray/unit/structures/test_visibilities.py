@@ -15,23 +15,23 @@ test_data_dir = path.join(
 class TestVisibilitiesAPI:
     def test__manual__makes_visibilities_without_other_inputs(self):
 
-        visibilities = aa.Visibilities.manual_1d(visibilities=[1.0 + 2.0j, 3.0 + 4.0j])
+        visibilities = aa.Visibilities.manual_slim(visibilities=[1.0 + 2.0j, 3.0 + 4.0j])
 
         assert type(visibilities) == vis.Visibilities
-        assert (visibilities.in_1d == np.array([1.0 + 2.0j, 3.0 + 4.0j])).all()
+        assert (visibilities.slim == np.array([1.0 + 2.0j, 3.0 + 4.0j])).all()
         assert (visibilities.in_array == np.array([[1.0, 2.0], [3.0, 4.0]])).all()
         assert (visibilities.amplitudes == np.array([np.sqrt(5), 5.0])).all()
         assert visibilities.phases == pytest.approx(
             np.array([1.10714872, 0.92729522]), 1.0e-4
         )
 
-        visibilities = aa.Visibilities.manual_1d(
+        visibilities = aa.Visibilities.manual_slim(
             visibilities=[1.0 + 2.0j, 3.0 + 4.0j, 5.0 + 6.0j]
         )
 
         assert type(visibilities) == vis.Visibilities
         assert (
-            visibilities.in_1d == np.array([1.0 + 2.0j, 3.0 + 4.0j, 5.0 + 6.0j])
+            visibilities.slim == np.array([1.0 + 2.0j, 3.0 + 4.0j, 5.0 + 6.0j])
         ).all()
         assert (
             visibilities.in_array == np.array([[1.0, 2.0], [3.0, 4.0], [5.0, 6.0]])
@@ -39,49 +39,49 @@ class TestVisibilitiesAPI:
 
     def test__manual__makes_visibilities_with_converted_input_as_list(self):
 
-        visibilities = aa.Visibilities.manual_1d(visibilities=[[1.0, 2.0], [3.0, 4.0]])
+        visibilities = aa.Visibilities.manual_slim(visibilities=[[1.0, 2.0], [3.0, 4.0]])
 
         assert type(visibilities) == vis.Visibilities
-        assert (visibilities.in_1d == np.array([1.0 + 2.0j, 3.0 + 4.0j])).all()
+        assert (visibilities.slim == np.array([1.0 + 2.0j, 3.0 + 4.0j])).all()
         assert (visibilities.amplitudes == np.array([np.sqrt(5), 5.0])).all()
         assert visibilities.phases == pytest.approx(
             np.array([1.10714872, 0.92729522]), 1.0e-4
         )
 
-        visibilities = aa.Visibilities.manual_1d(
+        visibilities = aa.Visibilities.manual_slim(
             visibilities=[[1.0, 2.0], [3.0, 4.0], [5.0, 6.0]]
         )
 
         assert type(visibilities) == vis.Visibilities
         assert (
-            visibilities.in_1d == np.array([1.0 + 2.0j, 3.0 + 4.0j, 5.0 + 6.0j])
+            visibilities.slim == np.array([1.0 + 2.0j, 3.0 + 4.0j, 5.0 + 6.0j])
         ).all()
 
     def test__full__makes_visibilities_without_other_inputs(self):
 
-        visibilities = aa.Visibilities.ones(shape_1d=(2,))
+        visibilities = aa.Visibilities.ones(shape_slim=(2,))
 
         assert type(visibilities) == vis.Visibilities
         print(visibilities)
-        print(visibilities.in_1d)
-        assert (visibilities.in_1d == np.array([1.0 + 1.0j, 1.0 + 1.0j])).all()
+        print(visibilities.slim)
+        assert (visibilities.slim == np.array([1.0 + 1.0j, 1.0 + 1.0j])).all()
 
-        visibilities = aa.Visibilities.full(fill_value=2.0, shape_1d=(2,))
+        visibilities = aa.Visibilities.full(fill_value=2.0, shape_slim=(2,))
 
         assert type(visibilities) == vis.Visibilities
-        assert (visibilities.in_1d == np.array([2.0 + 2.0j, 2.0 + 2.0j])).all()
+        assert (visibilities.slim == np.array([2.0 + 2.0j, 2.0 + 2.0j])).all()
 
     def test__ones_zeros__makes_visibilities_without_other_inputs(self):
 
-        visibilities = aa.Visibilities.ones(shape_1d=(2,))
+        visibilities = aa.Visibilities.ones(shape_slim=(2,))
 
         assert type(visibilities) == vis.Visibilities
-        assert (visibilities.in_1d == np.array([1.0 + 1.0j, 1.0 + 1.0j])).all()
+        assert (visibilities.slim == np.array([1.0 + 1.0j, 1.0 + 1.0j])).all()
 
-        visibilities = aa.Visibilities.zeros(shape_1d=(2,))
+        visibilities = aa.Visibilities.zeros(shape_slim=(2,))
 
         assert type(visibilities) == vis.Visibilities
-        assert (visibilities.in_1d == np.array([0.0 + 0.0j, 0.0 + 0.0j])).all()
+        assert (visibilities.slim == np.array([0.0 + 0.0j, 0.0 + 0.0j])).all()
 
     def test__from_fits__makes_visibilities_without_other_inputs(self):
 
@@ -91,7 +91,7 @@ class TestVisibilitiesAPI:
 
         assert type(visibilities) == vis.Visibilities
         assert (
-            visibilities.in_1d == np.array([1.0 + 1.0j, 1.0 + 1.0j, 1.0 + 1.0j])
+            visibilities.slim == np.array([1.0 + 1.0j, 1.0 + 1.0j, 1.0 + 1.0j])
         ).all()
 
         visibilities = aa.Visibilities.from_fits(
@@ -100,7 +100,7 @@ class TestVisibilitiesAPI:
 
         assert type(visibilities) == vis.Visibilities
         assert (
-            visibilities.in_1d == np.array([2.0 + 2.0j, 2.0 + 2.0j, 2.0 + 2.0j])
+            visibilities.slim == np.array([2.0 + 2.0j, 2.0 + 2.0j, 2.0 + 2.0j])
         ).all()
 
 
@@ -126,25 +126,25 @@ class TestVisibilities:
             file_path=path.join(output_data_dir, "visibilities.fits"), hdu=0
         )
         assert (
-            visibilities.in_1d == np.array([1.0 + 1.0j, 1.0 + 1.0j, 1.0 + 1.0j])
+            visibilities.slim == np.array([1.0 + 1.0j, 1.0 + 1.0j, 1.0 + 1.0j])
         ).all()
 
 
 class TestVisibilitiesNoiseMap:
     def test__visibilities_noise_has_attributes(self):
 
-        noise_map = aa.VisibilitiesNoiseMap.manual_1d(
+        noise_map = aa.VisibilitiesNoiseMap.manual_slim(
             visibilities=[[1.0, 2.0], [3.0, 4.0]]
         )
 
         assert type(noise_map) == vis.VisibilitiesNoiseMap
-        assert (noise_map.in_1d == np.array([1.0 + 2.0j, 3.0 + 4.0j])).all()
+        assert (noise_map.slim == np.array([1.0 + 2.0j, 3.0 + 4.0j])).all()
         assert (noise_map.amplitudes == np.array([np.sqrt(5), 5.0])).all()
         assert noise_map.phases == pytest.approx(
             np.array([1.10714872, 0.92729522]), 1.0e-4
         )
 
-        noise_map = aa.VisibilitiesNoiseMap.manual_1d(
+        noise_map = aa.VisibilitiesNoiseMap.manual_slim(
             visibilities=[[1.0, 1.0], [2.0, 2.0], [2.0, 4.0]]
         )
 

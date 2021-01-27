@@ -69,11 +69,11 @@ class AbstractMask2D(abstract_mask.AbstractMask):
             self.origin = (0.0, 0.0)
 
     @property
-    def shape_2d(self):
+    def shape_native(self):
         return self.shape
 
     @property
-    def sub_shape_2d(self):
+    def sub_shape_native(self):
         try:
             return (self.shape[0] * self.sub_size, self.shape[1] * self.sub_size)
         except AttributeError:
@@ -84,8 +84,8 @@ class AbstractMask2D(abstract_mask.AbstractMask):
 
         sub_shape = (self.shape[0] * self.sub_size, self.shape[1] * self.sub_size)
 
-        return mask_util.mask_2d_via_shape_2d_and_native_for_slim(
-            shape_2d=sub_shape,
+        return mask_util.mask_2d_via_shape_native_and_native_for_slim(
+            shape_native=sub_shape,
             native_for_slim=self._sub_mask_index_for_sub_mask_1d_index,
         ).astype("bool")
 
@@ -157,11 +157,11 @@ class AbstractMask2D(abstract_mask.AbstractMask):
 
         pad_size_0 = self.shape[0] - image_shape[0]
         pad_size_1 = self.shape[1] - image_shape[1]
-        trimmed_array = padded_array.in_2d_binned[
+        trimmed_array = padded_array.native_binned[
             pad_size_0 // 2 : self.shape[0] - pad_size_0 // 2,
             pad_size_1 // 2 : self.shape[1] - pad_size_1 // 2,
         ]
-        return arrays.Array.manual(
+        return arrays.Array2D.manual(
             array=trimmed_array,
             pixel_scales=self.pixel_scales,
             sub_size=1,
@@ -178,7 +178,7 @@ class AbstractMask2D(abstract_mask.AbstractMask):
 
         Parameters
         ----------
-        psf : aa.Kernel
+        psf : aa.Kernel2D
             The PSF of the image used for convolution.
         unmasked_image_1d : np.ndarray
             The 1D unmasked image which is blurred.
@@ -220,7 +220,7 @@ class AbstractMask2D(abstract_mask.AbstractMask):
         )
 
     @property
-    def shape_2d_scaled(self):
+    def shape_native_scaled(self):
         return (
             float(self.pixel_scales[0] * self.shape[0]),
             float(self.pixel_scales[1] * self.shape[1]),
@@ -228,20 +228,20 @@ class AbstractMask2D(abstract_mask.AbstractMask):
 
     @property
     def central_pixel_coordinates(self):
-        return geometry_util.central_pixel_coordinates_2d_from(shape_2d=self.shape_2d)
+        return geometry_util.central_pixel_coordinates_2d_from(shape_native=self.shape_native)
 
     @property
     def central_scaled_coordinates(self):
 
         return geometry_util.central_scaled_coordinate_2d_from(
-            shape_2d=self.shape_2d, pixel_scales=self.pixel_scales, origin=self.origin
+            shape_native=self.shape_native, pixel_scales=self.pixel_scales, origin=self.origin
         )
 
     def pixel_coordinates_2d_from(self, scaled_coordinates_2d):
 
         return geometry_util.pixel_coordinates_2d_from(
             scaled_coordinates_2d=scaled_coordinates_2d,
-            shape_2d=self.shape,
+            shape_native=self.shape,
             pixel_scales=self.pixel_scales,
             origins=self.origin,
         )
@@ -250,7 +250,7 @@ class AbstractMask2D(abstract_mask.AbstractMask):
 
         return geometry_util.scaled_coordinates_2d_from(
             pixel_coordinates_2d=pixel_coordinates_2d,
-            shape_2d=self.shape,
+            shape_native=self.shape,
             pixel_scales=self.pixel_scales,
             origins=self.origin,
         )
@@ -263,15 +263,15 @@ class AbstractMask2D(abstract_mask.AbstractMask):
     @property
     def scaled_maxima(self):
         return (
-            (self.shape_2d_scaled[0] / 2.0) + self.origin[0],
-            (self.shape_2d_scaled[1] / 2.0) + self.origin[1],
+            (self.shape_native_scaled[0] / 2.0) + self.origin[0],
+            (self.shape_native_scaled[1] / 2.0) + self.origin[1],
         )
 
     @property
     def scaled_minima(self):
         return (
-            (-(self.shape_2d_scaled[0] / 2.0)) + self.origin[0],
-            (-(self.shape_2d_scaled[1] / 2.0)) + self.origin[1],
+            (-(self.shape_native_scaled[0] / 2.0)) + self.origin[0],
+            (-(self.shape_native_scaled[1] / 2.0)) + self.origin[1],
         )
 
     @property
@@ -314,15 +314,15 @@ class AbstractMask2D(abstract_mask.AbstractMask):
         This is defined from the top-left corner, such that the first pixel at location [0, 0] will have a negative x \
         value y value in scaled units.
         """
-        grid_1d = grid_util.grid_2d_slim_via_shape_2d_from(
-            shape_2d=self.shape,
+        grid_slim = grid_util.grid_2d_slim_via_shape_native_from(
+            shape_native=self.shape,
             pixel_scales=self.pixel_scales,
             sub_size=1,
             origin=self.origin,
         )
 
-        return grids.Grid(
-            grid=grid_1d, mask=self.unmasked_mask.mask_sub_1, store_in_1d=True
+        return grids.Grid2D(
+            grid=grid_slim, mask=self.unmasked_mask.mask_sub_1, store_slim=True
         )
 
     @property
@@ -333,17 +333,17 @@ class AbstractMask2D(abstract_mask.AbstractMask):
             sub_size=self.sub_size,
             origin=self.origin,
         )
-        return grids.Grid(
-            grid=sub_grid_1d, mask=self.edge_mask.mask_sub_1, store_in_1d=True
+        return grids.Grid2D(
+            grid=sub_grid_1d, mask=self.edge_mask.mask_sub_1, store_slim=True
         )
 
     @property
     def masked_grid_sub_1(self):
 
-        grid_1d = grid_util.grid_2d_slim_via_mask_from(
+        grid_slim = grid_util.grid_2d_slim_via_mask_from(
             mask_2d=self, pixel_scales=self.pixel_scales, sub_size=1, origin=self.origin
         )
-        return grids.Grid(grid=grid_1d, mask=self.mask_sub_1, store_in_1d=True)
+        return grids.Grid2D(grid=grid_slim, mask=self.mask_sub_1, store_slim=True)
 
     @property
     def edge_grid_sub_1(self):
@@ -353,8 +353,8 @@ class AbstractMask2D(abstract_mask.AbstractMask):
         an annulus mask).
         """
         edge_grid_1d = self.masked_grid_sub_1[self._edge_1d_indexes]
-        return grids.Grid(
-            grid=edge_grid_1d, mask=self.edge_mask.mask_sub_1, store_in_1d=True
+        return grids.Grid2D(
+            grid=edge_grid_1d, mask=self.edge_mask.mask_sub_1, store_slim=True
         )
 
     @property
@@ -364,7 +364,7 @@ class AbstractMask2D(abstract_mask.AbstractMask):
         exterior edge (e.g. next to at least one pixel with a `True` value but not central pixels like those within \
         an annulus mask).
         """
-        return self.masked_grid[self._sub_border_1d_indexes]
+        return self.masked_grid[self._sub_border_flat_indexes]
 
     @property
     def border_grid_sub_1(self):
@@ -374,8 +374,8 @@ class AbstractMask2D(abstract_mask.AbstractMask):
         an annulus mask).
         """
         border_grid_1d = self.masked_grid_sub_1[self._border_1d_indexes]
-        return grids.Grid(
-            grid=border_grid_1d, mask=self.border_mask.mask_sub_1, store_in_1d=True
+        return grids.Grid2D(
+            grid=border_grid_1d, mask=self.border_mask.mask_sub_1, store_slim=True
         )
 
     def grid_pixels_from_grid_scaled_1d(self, grid_scaled_1d):
@@ -396,11 +396,11 @@ class AbstractMask2D(abstract_mask.AbstractMask):
         """
         grid_pixels_1d = grid_util.grid_pixels_2d_slim_from(
             grid_scaled_2d_slim=grid_scaled_1d,
-            shape_2d=self.shape,
+            shape_native=self.shape,
             pixel_scales=self.pixel_scales,
             origin=self.origin,
         )
-        return grids.Grid(grid=grid_pixels_1d, mask=self.mask_sub_1, store_in_1d=True)
+        return grids.Grid2D(grid=grid_pixels_1d, mask=self.mask_sub_1, store_slim=True)
 
     def grid_pixel_centres_from_grid_scaled_1d(self, grid_scaled_1d):
         """Convert a grid of (y,x) scaled coordinates to a grid of (y,x) pixel values. Pixel coordinates are \
@@ -419,13 +419,13 @@ class AbstractMask2D(abstract_mask.AbstractMask):
         """
         grid_pixel_centres_1d = grid_util.grid_pixel_centres_2d_slim_from(
             grid_scaled_2d_slim=grid_scaled_1d,
-            shape_2d=self.shape,
+            shape_native=self.shape,
             pixel_scales=self.pixel_scales,
             origin=self.origin,
         ).astype("int")
 
-        return grids.Grid(
-            grid=grid_pixel_centres_1d, mask=self.edge_mask.mask_sub_1, store_in_1d=True
+        return grids.Grid2D(
+            grid=grid_pixel_centres_1d, mask=self.edge_mask.mask_sub_1, store_slim=True
         )
 
     def grid_pixel_indexes_from_grid_scaled_1d(self, grid_scaled_1d):
@@ -449,15 +449,15 @@ class AbstractMask2D(abstract_mask.AbstractMask):
         """
         grid_pixel_indexes_1d = grid_util.grid_pixel_indexes_2d_slim_from(
             grid_scaled_2d_slim=grid_scaled_1d,
-            shape_2d=self.shape,
+            shape_native=self.shape,
             pixel_scales=self.pixel_scales,
             origin=self.origin,
         ).astype("int")
 
-        return arrays.Array(
+        return arrays.Array2D(
             array=grid_pixel_indexes_1d,
             mask=self.edge_mask.mask_sub_1,
-            store_in_1d=True,
+            store_slim=True,
         )
 
     def grid_scaled_from_grid_pixels_1d(self, grid_pixels_1d):
@@ -476,21 +476,21 @@ class AbstractMask2D(abstract_mask.AbstractMask):
         """
         grid_scaled_1d = grid_util.grid_scaled_2d_slim_from(
             grid_pixels_2d_slim=grid_pixels_1d,
-            shape_2d=self.shape,
+            shape_native=self.shape,
             pixel_scales=self.pixel_scales,
             origin=self.origin,
         )
-        return grids.Grid(
-            grid=grid_scaled_1d, mask=self.edge_mask.mask_sub_1, store_in_1d=True
+        return grids.Grid2D(
+            grid=grid_scaled_1d, mask=self.edge_mask.mask_sub_1, store_slim=True
         )
 
     def grid_scaled_from_grid_pixels_1d_for_marching_squares(
-        self, grid_pixels_1d, shape_2d
+        self, grid_pixels_1d, shape_native
     ):
 
         grid_scaled_1d = grid_util.grid_scaled_2d_slim_from(
             grid_pixels_2d_slim=grid_pixels_1d,
-            shape_2d=shape_2d,
+            shape_native=shape_native,
             pixel_scales=(
                 self.pixel_scales[0] / self.sub_size,
                 self.pixel_scales[1] / self.sub_size,
@@ -501,8 +501,8 @@ class AbstractMask2D(abstract_mask.AbstractMask):
         grid_scaled_1d[:, 0] -= self.pixel_scales[0] / (2.0 * self.sub_size)
         grid_scaled_1d[:, 1] += self.pixel_scales[1] / (2.0 * self.sub_size)
 
-        return grids.Grid(
-            grid=grid_scaled_1d, mask=self.edge_mask.mask_sub_1, store_in_1d=True
+        return grids.Grid2D(
+            grid=grid_scaled_1d, mask=self.edge_mask.mask_sub_1, store_slim=True
         )
 
     @property
@@ -543,7 +543,7 @@ class AbstractMask2D(abstract_mask.AbstractMask):
         return self._mask_index_for_mask_1d_index[self._border_1d_indexes].astype("int")
 
     @property
-    def _sub_border_1d_indexes(self):
+    def _sub_border_flat_indexes(self):
         """The indicies of the mask's border pixels, where a border pixel is any unmasked pixel on an
         exterior edge (e.g. next to at least one pixel with a `True` value but not central pixels like those within \
         an annulus mask).
@@ -553,22 +553,22 @@ class AbstractMask2D(abstract_mask.AbstractMask):
         ).astype("int")
 
     @array_util.Memoizer()
-    def blurring_mask_from_kernel_shape(self, kernel_shape_2d):
+    def blurring_mask_from_kernel_shape(self, kernel_shape_native):
         """
         Returns a blurring mask, which represents all masked pixels whose light will be blurred into unmasked \
-        pixels via PSF convolution (see grid.Grid.blurring_grid_from_mask_and_psf_shape).
+        pixels via PSF convolution (see grid.Grid2D.blurring_grid_from_mask_and_psf_shape).
 
         Parameters
         ----------
-        kernel_shape_2d : (int, int)
+        kernel_shape_native : (int, int)
            The shape of the psf which defines the blurring region (e.g. the shape of the PSF)
         """
 
-        if kernel_shape_2d[0] % 2 == 0 or kernel_shape_2d[1] % 2 == 0:
+        if kernel_shape_native[0] % 2 == 0 or kernel_shape_native[1] % 2 == 0:
             raise exc.MaskException("psf_size of exterior region must be odd")
 
         blurring_mask = mask_util.blurring_mask_2d_from(
-            mask_2d=self, kernel_shape_2d=kernel_shape_2d
+            mask_2d=self, kernel_shape_native=kernel_shape_native
         )
 
         return Mask2D(
@@ -585,7 +585,7 @@ class AbstractMask2D(abstract_mask.AbstractMask):
         an annulus mask).
         """
         return Mask2D.unmasked(
-            shape_2d=self.shape_2d,
+            shape_native=self.shape_native,
             sub_size=self.sub_size,
             pixel_scales=self.pixel_scales,
             origin=self.origin,
@@ -646,7 +646,7 @@ class AbstractMask2D(abstract_mask.AbstractMask):
     def zoom_centre(self):
 
         extraction_grid_1d = self.grid_pixels_from_grid_scaled_1d(
-            grid_scaled_1d=self.masked_grid_sub_1.in_1d
+            grid_scaled_1d=self.masked_grid_sub_1.slim
         )
         y_pixels_max = np.max(extraction_grid_1d[:, 0])
         y_pixels_min = np.min(extraction_grid_1d[:, 0])
@@ -704,7 +704,7 @@ class AbstractMask2D(abstract_mask.AbstractMask):
         return [y0, y1 + 1, x0, x1 + 1]
 
     @property
-    def zoom_shape_2d(self):
+    def zoom_shape_native(self):
         region = self.zoom_region
         return (region[1] - region[0], region[3] - region[2])
 
@@ -717,7 +717,7 @@ class AbstractMask2D(abstract_mask.AbstractMask):
         """
 
         return Mask2D.unmasked(
-            shape_2d=self.zoom_shape_2d,
+            shape_native=self.zoom_shape_native,
             pixel_scales=self.pixel_scales,
             sub_size=self.sub_size,
             origin=self.zoom_offset_scaled,
@@ -777,7 +777,7 @@ class Mask2D(AbstractMask2D):
     @classmethod
     def unmasked(
         cls,
-        shape_2d: (int, int),
+        shape_native: (int, int),
         pixel_scales: (float, float),
         sub_size: int = 1,
         origin: (float, float) = (0.0, 0.0),
@@ -787,7 +787,7 @@ class Mask2D(AbstractMask2D):
 
         Parameters
         ----------
-        shape_2d : (int, int)
+        shape_native : (int, int)
             The 2D shape of the mask that is created.
         pixel_scales: (float, float) or float
             The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a ``float``,
@@ -801,7 +801,7 @@ class Mask2D(AbstractMask2D):
             and visa versa.
         """
         return cls.manual(
-            mask=np.full(shape=shape_2d, fill_value=False),
+            mask=np.full(shape=shape_native, fill_value=False),
             pixel_scales=pixel_scales,
             sub_size=sub_size,
             origin=origin,
@@ -811,7 +811,7 @@ class Mask2D(AbstractMask2D):
     @classmethod
     def circular(
         cls,
-        shape_2d: (int, int),
+        shape_native: (int, int),
         radius: float,
         pixel_scales: (float, float),
         sub_size: int = 1,
@@ -826,7 +826,7 @@ class Mask2D(AbstractMask2D):
 
         Parameters
         ----------
-        shape_2d : (int, int)
+        shape_native : (int, int)
             The (y,x) shape of the mask in units of pixels.
         radius : float
             The radius in scaled units of the circle within which pixels are `False` and unmasked.
@@ -849,7 +849,7 @@ class Mask2D(AbstractMask2D):
                 pixel_scales = (float(pixel_scales), float(pixel_scales))
 
         mask = mask_util.mask_2d_circular_from(
-            shape_2d=shape_2d, pixel_scales=pixel_scales, radius=radius, centre=centre
+            shape_native=shape_native, pixel_scales=pixel_scales, radius=radius, centre=centre
         )
 
         return cls.manual(
@@ -863,7 +863,7 @@ class Mask2D(AbstractMask2D):
     @classmethod
     def circular_annular(
         cls,
-        shape_2d: (int, int),
+        shape_native: (int, int),
         inner_radius: float,
         outer_radius: float,
         pixel_scales: (float, float),
@@ -880,7 +880,7 @@ class Mask2D(AbstractMask2D):
 
         Parameters
         ----------
-        shape_2d : (int, int)
+        shape_native : (int, int)
             The (y,x) shape of the mask in units of pixels.
         inner_radius : float
             The inner radius in scaled units of the annulus within which pixels are `False` and unmasked.
@@ -905,7 +905,7 @@ class Mask2D(AbstractMask2D):
                 pixel_scales = (float(pixel_scales), float(pixel_scales))
 
         mask = mask_util.mask_2d_circular_annular_from(
-            shape_2d=shape_2d,
+            shape_native=shape_native,
             pixel_scales=pixel_scales,
             inner_radius=inner_radius,
             outer_radius=outer_radius,
@@ -923,7 +923,7 @@ class Mask2D(AbstractMask2D):
     @classmethod
     def circular_anti_annular(
         cls,
-        shape_2d: (int, int),
+        shape_native: (int, int),
         inner_radius: float,
         outer_radius: float,
         outer_radius_2: float,
@@ -941,7 +941,7 @@ class Mask2D(AbstractMask2D):
 
         Parameters
         ----------
-        shape_2d : (int, int)
+        shape_native : (int, int)
             The (y,x) shape of the mask in units of pixels.
         inner_radius : float
             The inner radius in scaled units of the annulus within which pixels are `False` and unmasked.
@@ -969,7 +969,7 @@ class Mask2D(AbstractMask2D):
                 pixel_scales = (float(pixel_scales), float(pixel_scales))
 
         mask = mask_util.mask_2d_circular_anti_annular_from(
-            shape_2d=shape_2d,
+            shape_native=shape_native,
             pixel_scales=pixel_scales,
             inner_radius=inner_radius,
             outer_radius=outer_radius,
@@ -988,7 +988,7 @@ class Mask2D(AbstractMask2D):
     @classmethod
     def elliptical(
         cls,
-        shape_2d: (int, int),
+        shape_native: (int, int),
         major_axis_radius: float,
         axis_ratio: float,
         phi: float,
@@ -1005,7 +1005,7 @@ class Mask2D(AbstractMask2D):
 
         Parameters
         ----------
-        shape_2d : (int, int)
+        shape_native : (int, int)
             The (y,x) shape of the mask in units of pixels.
         major_axis_radius : float
             The major-axis in scaled units of the ellipse within which pixels are unmasked.
@@ -1032,7 +1032,7 @@ class Mask2D(AbstractMask2D):
                 pixel_scales = (float(pixel_scales), float(pixel_scales))
 
         mask = mask_util.mask_2d_elliptical_from(
-            shape_2d=shape_2d,
+            shape_native=shape_native,
             pixel_scales=pixel_scales,
             major_axis_radius=major_axis_radius,
             axis_ratio=axis_ratio,
@@ -1051,7 +1051,7 @@ class Mask2D(AbstractMask2D):
     @classmethod
     def elliptical_annular(
         cls,
-        shape_2d: (int, int),
+        shape_native: (int, int),
         inner_major_axis_radius: float,
         inner_axis_ratio: float,
         inner_phi: float,
@@ -1072,7 +1072,7 @@ class Mask2D(AbstractMask2D):
 
         Parameters
         ----------
-        shape_2d (int, int)
+        shape_native (int, int)
             The (y,x) shape of the mask in units of pixels.
         pixel_scales : (float, float)
             The scaled units to pixel units conversion factor of each pixel.
@@ -1106,7 +1106,7 @@ class Mask2D(AbstractMask2D):
                 pixel_scales = (float(pixel_scales), float(pixel_scales))
 
         mask = mask_util.mask_2d_elliptical_annular_from(
-            shape_2d=shape_2d,
+            shape_native=shape_native,
             pixel_scales=pixel_scales,
             inner_major_axis_radius=inner_major_axis_radius,
             inner_axis_ratio=inner_axis_ratio,
@@ -1128,7 +1128,7 @@ class Mask2D(AbstractMask2D):
     @classmethod
     def from_pixel_coordinates(
         cls,
-        shape_2d: (int, int),
+        shape_native: (int, int),
         pixel_coordinates: [[int, int]],
         pixel_scales: (float, float),
         sub_size: int = 1,
@@ -1145,7 +1145,7 @@ class Mask2D(AbstractMask2D):
 
         Parameters
         ----------
-        shape_2d (int, int)
+        shape_native (int, int)
             The (y,x) shape of the mask in units of pixels.
         pixel_coordinates : [[int, int]]
             The input lists of 2D pixel coordinates where `False` entries are created.
@@ -1164,7 +1164,7 @@ class Mask2D(AbstractMask2D):
         """
 
         mask = mask_util.mask_2d_via_pixel_coordinates_from(
-            shape_2d=shape_2d, pixel_coordinates=pixel_coordinates, buffer=buffer
+            shape_native=shape_native, pixel_coordinates=pixel_coordinates, buffer=buffer
         )
 
         return cls.manual(

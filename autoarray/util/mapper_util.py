@@ -58,7 +58,7 @@ def pixelization_index_for_voronoi_sub_slim_index_from(
 
     Parameters
     ----------
-    grid : Grid
+    grid : Grid2D
         The grid of (y,x) scaled coordinates at the centre of every unmasked pixel, which has been traced to
         to an irgrid via lens.
     nearest_pixelization_index_for_slim_index : np.ndarray
