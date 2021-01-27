@@ -33,7 +33,7 @@ class TestArrayOverlay:
 
     def test__overlay_array__works_for_reasonable_values(self):
 
-        arr = aa.Array.manual_2d(array=[[1.0, 2.0], [3.0, 4.0]], pixel_scales=0.5)
+        arr = aa.Array2D.manual_native(array=[[1.0, 2.0], [3.0, 4.0]], pixel_scales=0.5)
 
         figure = aplt.Figure(aspect="auto")
 
@@ -71,7 +71,7 @@ class TestGridScatter:
 
         scatter = aplt.GridScatter(s=2, marker="x", c="k")
 
-        scatter.scatter_grid(grid=aa.Grid.uniform(shape_2d=(3, 3), pixel_scales=1.0))
+        scatter.scatter_grid(grid=aa.Grid2D.uniform(shape_native=(3, 3), pixel_scales=1.0))
 
     def test__scatter_colored_grid__lists_of_coordinates_or_equivalent_2d_grids__with_color_array(
         self,
@@ -87,7 +87,7 @@ class TestGridScatter:
             cmap=cmap,
         )
         scatter.scatter_grid_colored(
-            grid=aa.Grid.uniform(shape_2d=(3, 2), pixel_scales=1.0),
+            grid=aa.Grid2D.uniform(shape_native=(3, 2), pixel_scales=1.0),
             color_array=np.array([2.0, 2.0, 2.0, 2.0, 2.0, 2.0]),
             cmap=cmap,
         )
@@ -99,15 +99,15 @@ class TestGridScatter:
         scatter = aplt.GridScatter(s=2, marker="x", c="k")
 
         scatter.scatter_grid_indexes(
-            grid=aa.Grid.uniform(shape_2d=(3, 3), pixel_scales=1.0), indexes=[0, 1, 2]
+            grid=aa.Grid2D.uniform(shape_native=(3, 3), pixel_scales=1.0), indexes=[0, 1, 2]
         )
 
         scatter.scatter_grid_indexes(
-            grid=aa.Grid.uniform(shape_2d=(3, 3), pixel_scales=1.0), indexes=[[0, 1, 2]]
+            grid=aa.Grid2D.uniform(shape_native=(3, 3), pixel_scales=1.0), indexes=[[0, 1, 2]]
         )
 
         scatter.scatter_grid_indexes(
-            grid=aa.Grid.uniform(shape_2d=(3, 3), pixel_scales=1.0),
+            grid=aa.Grid2D.uniform(shape_native=(3, 3), pixel_scales=1.0),
             indexes=[[0, 1], [2]],
         )
 
@@ -118,22 +118,22 @@ class TestGridScatter:
         scatter = aplt.GridScatter(s=2, marker="x", c="k")
 
         scatter.scatter_grid_indexes(
-            grid=aa.Grid.uniform(shape_2d=(3, 3), pixel_scales=1.0),
+            grid=aa.Grid2D.uniform(shape_native=(3, 3), pixel_scales=1.0),
             indexes=[(0, 0), (0, 1), (0, 2)],
         )
 
         scatter.scatter_grid_indexes(
-            grid=aa.Grid.uniform(shape_2d=(3, 3), pixel_scales=1.0),
+            grid=aa.Grid2D.uniform(shape_native=(3, 3), pixel_scales=1.0),
             indexes=[[(0, 0), (0, 1), (0, 2)]],
         )
 
         scatter.scatter_grid_indexes(
-            grid=aa.Grid.uniform(shape_2d=(3, 3), pixel_scales=1.0),
+            grid=aa.Grid2D.uniform(shape_native=(3, 3), pixel_scales=1.0),
             indexes=[[(0, 0), (0, 1)], [(0, 2)]],
         )
 
         scatter.scatter_grid_indexes(
-            grid=aa.Grid.uniform(shape_2d=(3, 3), pixel_scales=1.0),
+            grid=aa.Grid2D.uniform(shape_native=(3, 3), pixel_scales=1.0),
             indexes=[[[0, 0], [0, 1]], [[0, 2]]],
         )
 
@@ -142,10 +142,10 @@ class TestGridScatter:
         scatter = aplt.GridScatter(s=2, marker="x", c="k")
 
         scatter.scatter_grid_grouped(
-            grid_grouped=aa.GridIrregularGrouped([(1.0, 1.0), (2.0, 2.0)])
+            grid_grouped=aa.Grid2DIrregularGrouped([(1.0, 1.0), (2.0, 2.0)])
         )
         scatter.scatter_grid_grouped(
-            grid_grouped=aa.GridIrregularGrouped(
+            grid_grouped=aa.Grid2DIrregularGrouped(
                 [[(1.0, 1.0), (2.0, 2.0)], [(3.0, 3.0)]]
             )
         )
@@ -180,9 +180,9 @@ class TestGridPlot:
 
         line = aplt.GridPlot(linewidth=2, linestyle="--", c="k")
 
-        line.plot_rectangular_grid_lines(extent=[0.0, 1.0, 0.0, 1.0], shape_2d=(3, 2))
+        line.plot_rectangular_grid_lines(extent=[0.0, 1.0, 0.0, 1.0], shape_native=(3, 2))
         line.plot_rectangular_grid_lines(
-            extent=[-4.0, 8.0, -3.0, 10.0], shape_2d=(8, 3)
+            extent=[-4.0, 8.0, -3.0, 10.0], shape_native=(8, 3)
         )
 
     def test__plot_grouped_grid(self):
@@ -190,10 +190,10 @@ class TestGridPlot:
         line = aplt.GridPlot(linewidth=2, linestyle="--", c="k")
 
         line.plot_grid_grouped(
-            grid_grouped=aa.GridIrregularGrouped([[(1.0, 1.0), (2.0, 2.0)]])
+            grid_grouped=aa.Grid2DIrregularGrouped([[(1.0, 1.0), (2.0, 2.0)]])
         )
         line.plot_grid_grouped(
-            grid_grouped=aa.GridIrregularGrouped(
+            grid_grouped=aa.Grid2DIrregularGrouped(
                 [[(1.0, 1.0), (2.0, 2.0)], [(3.0, 3.0)]]
             )
         )
@@ -232,7 +232,7 @@ class TestVectorFieldQuiver:
             alpha=1.0,
         )
 
-        vector_field = aa.VectorFieldIrregular(
+        vector_field = aa.VectorField2DIrregular(
             vectors=[(1.0, 2.0), (2.0, 1.0)], grid=[(-1.0, 0.0), (-2.0, 0.0)]
         )
 
@@ -320,21 +320,21 @@ class TestDerivedClasses:
 
         origin_scatter = aplt.OriginScatter()
         origin_scatter.scatter_grid(
-            grid=aa.Grid.uniform(shape_2d=(3, 3), pixel_scales=1.0)
+            grid=aa.Grid2D.uniform(shape_native=(3, 3), pixel_scales=1.0)
         )
 
         assert origin_scatter.config_dict["s"] == 80
 
         mask_scatter = aplt.MaskScatter()
         mask_scatter.scatter_grid(
-            grid=aa.Grid.uniform(shape_2d=(3, 3), pixel_scales=1.0)
+            grid=aa.Grid2D.uniform(shape_native=(3, 3), pixel_scales=1.0)
         )
 
         assert mask_scatter.config_dict["s"] == 12
 
         border_scatter = aplt.BorderScatter()
         border_scatter.scatter_grid(
-            grid=aa.Grid.uniform(shape_2d=(3, 3), pixel_scales=1.0)
+            grid=aa.Grid2D.uniform(shape_native=(3, 3), pixel_scales=1.0)
         )
 
         assert border_scatter.config_dict["s"] == 13
@@ -351,28 +351,28 @@ class TestDerivedClasses:
 
         pixelization_grid_scatter = aplt.PixelizationGridScatter()
         pixelization_grid_scatter.scatter_grid(
-            grid=aa.Grid.uniform(shape_2d=(3, 3), pixel_scales=1.0)
+            grid=aa.Grid2D.uniform(shape_native=(3, 3), pixel_scales=1.0)
         )
 
         assert pixelization_grid_scatter.config_dict["s"] == 5
 
         parallel_overscan_plot = aplt.ParallelOverscanPlot()
         parallel_overscan_plot.plot_rectangular_grid_lines(
-            extent=[0.0, 1.0, 0.0, 1.0], shape_2d=(3, 2)
+            extent=[0.0, 1.0, 0.0, 1.0], shape_native=(3, 2)
         )
 
         assert parallel_overscan_plot.config_dict["linewidth"] == 1
 
         serial_overscan_plot = aplt.SerialOverscanPlot()
         serial_overscan_plot.plot_rectangular_grid_lines(
-            extent=[0.0, 1.0, 0.0, 1.0], shape_2d=(3, 2)
+            extent=[0.0, 1.0, 0.0, 1.0], shape_native=(3, 2)
         )
 
         assert serial_overscan_plot.config_dict["linewidth"] == 2
 
         serial_prescan_plot = aplt.SerialPrescanPlot()
         serial_prescan_plot.plot_rectangular_grid_lines(
-            extent=[0.0, 1.0, 0.0, 1.0], shape_2d=(3, 2)
+            extent=[0.0, 1.0, 0.0, 1.0], shape_native=(3, 2)
         )
 
         assert serial_prescan_plot.config_dict["linewidth"] == 3

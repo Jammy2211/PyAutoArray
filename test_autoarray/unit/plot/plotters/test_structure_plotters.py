@@ -15,14 +15,14 @@ def make_plot_path_setup():
     )
 
 
-class TestArrayPlotter:
+class TestArray2DPlotter:
     def test___visuals_in_constructor_use_array_and_include(self, array_7x7):
 
         visuals_2d = aplt.Visuals2D(origin=(1.0, 1.0), vector_field=2)
 
         include = aplt.Include2D(origin=True, mask=True, border=True)
 
-        array_plotter = aplt.ArrayPlotter(
+        array_plotter = aplt.Array2DPlotter(
             array=array_7x7, visuals_2d=visuals_2d, include_2d=include
         )
 
@@ -35,7 +35,7 @@ class TestArrayPlotter:
         assert array_plotter.visuals_2d.border == None
         assert (
             array_plotter.visuals_with_include_2d.border
-            == array_7x7.mask.border_grid_sub_1.in_1d_binned
+            == array_7x7.mask.border_grid_sub_1.slim_binned
         ).all()
 
         assert array_plotter.visuals_2d.vector_field == 2
@@ -43,7 +43,7 @@ class TestArrayPlotter:
 
         include = aplt.Include2D(origin=False, mask=False, border=False)
 
-        array_plotter = aplt.ArrayPlotter(
+        array_plotter = aplt.Array2DPlotter(
             array=array_7x7, visuals_2d=visuals_2d, include_2d=include
         )
 
@@ -62,7 +62,7 @@ class TestArrayPlotter:
         plot_patch,
     ):
 
-        array_plotter = aplt.ArrayPlotter(
+        array_plotter = aplt.Array2DPlotter(
             array=array_7x7,
             mat_plot_2d=aplt.MatPlot2D(
                 output=aplt.Output(path=plot_path, filename="array1", format="png")
@@ -73,7 +73,7 @@ class TestArrayPlotter:
 
         assert path.join(plot_path, "array1.png") in plot_patch.paths
 
-        array_plotter = aplt.ArrayPlotter(
+        array_plotter = aplt.Array2DPlotter(
             array=array_7x7,
             include_2d=aplt.Include2D(origin=True, mask=True, border=True),
             mat_plot_2d=aplt.MatPlot2D(
@@ -88,14 +88,14 @@ class TestArrayPlotter:
         visuals_2d = aplt.Visuals2D(
             origin=grid_irregular_grouped_7x7,
             mask=mask_7x7,
-            border=mask_7x7.border_grid_sub_1.in_1d_binned,
+            border=mask_7x7.border_grid_sub_1.slim_binned,
             grid=grid_7x7,
             positions=grid_irregular_grouped_7x7,
             lines=grid_irregular_grouped_7x7,
             array_overlay=array_7x7,
         )
 
-        array_plotter = aplt.ArrayPlotter(
+        array_plotter = aplt.Array2DPlotter(
             array=array_7x7,
             visuals_2d=visuals_2d,
             mat_plot_2d=aplt.MatPlot2D(
@@ -111,7 +111,7 @@ class TestArrayPlotter:
 
         plot_path = path.join(plot_path, "fits")
 
-        array_plotter = aplt.ArrayPlotter(
+        array_plotter = aplt.Array2DPlotter(
             array=array_7x7,
             mat_plot_2d=aplt.MatPlot2D(
                 output=aplt.Output(path=plot_path, filename="array", format="fits")
@@ -127,10 +127,10 @@ class TestArrayPlotter:
             file_path=path.join(plot_path, "array.fits"), hdu=0
         )
 
-        assert (arr == array_7x7.in_2d).all()
+        assert (arr == array_7x7.native).all()
 
 
-class TestFramePlotter:
+class TestFrame2DPlotter:
     def test___visuals_in_constructor_use_frame_and_include(self, frame_7x7):
 
         visuals_2d = aplt.Visuals2D(origin=(1.0, 1.0), vector_field=2)
@@ -139,7 +139,7 @@ class TestFramePlotter:
             origin=True, mask=True, border=True, parallel_overscan=True
         )
 
-        frame_plotter = aplt.FramePlotter(
+        frame_plotter = aplt.Frame2DPlotter(
             frame=frame_7x7, visuals_2d=visuals_2d, include_2d=include
         )
 
@@ -152,7 +152,7 @@ class TestFramePlotter:
         assert frame_plotter.visuals_2d.border == None
         assert (
             frame_plotter.visuals_with_include_2d.border
-            == frame_7x7.mask.border_grid_sub_1.in_1d_binned
+            == frame_7x7.mask.border_grid_sub_1.slim_binned
         ).all()
 
         assert frame_plotter.visuals_2d.parallel_overscan == None
@@ -165,7 +165,7 @@ class TestFramePlotter:
             origin=False, mask=False, border=False, parallel_overscan=False
         )
 
-        frame_plotter = aplt.FramePlotter(
+        frame_plotter = aplt.Frame2DPlotter(
             frame=frame_7x7, visuals_2d=visuals_2d, include_2d=include
         )
 
@@ -186,7 +186,7 @@ class TestFramePlotter:
         plot_patch,
     ):
 
-        frame_plotter = aplt.FramePlotter(
+        frame_plotter = aplt.Frame2DPlotter(
             frame=frame_7x7,
             mat_plot_2d=aplt.MatPlot2D(
                 output=aplt.Output(path=plot_path, filename="frame1", format="png")
@@ -197,7 +197,7 @@ class TestFramePlotter:
 
         assert path.join(plot_path, "frame1.png") in plot_patch.paths
 
-        frame_plotter = aplt.FramePlotter(
+        frame_plotter = aplt.Frame2DPlotter(
             frame=frame_7x7,
             include_2d=aplt.Include2D(
                 origin=True,
@@ -219,7 +219,7 @@ class TestFramePlotter:
         visuals_2d = aplt.Visuals2D(
             origin=grid_irregular_grouped_7x7,
             mask=mask_7x7,
-            border=mask_7x7.border_grid_sub_1.in_1d_binned,
+            border=mask_7x7.border_grid_sub_1.slim_binned,
             grid=grid_7x7,
             positions=grid_irregular_grouped_7x7,
             lines=grid_irregular_grouped_7x7,
@@ -229,7 +229,7 @@ class TestFramePlotter:
             serial_overscan=scans_7x7.serial_overscan,
         )
 
-        frame_plotter = aplt.FramePlotter(
+        frame_plotter = aplt.Frame2DPlotter(
             frame=frame_7x7,
             visuals_2d=visuals_2d,
             mat_plot_2d=aplt.MatPlot2D(
@@ -245,7 +245,7 @@ class TestFramePlotter:
 
         plot_path = path.join(plot_path, "fits")
 
-        frame_plotter = aplt.FramePlotter(
+        frame_plotter = aplt.Frame2DPlotter(
             frame=frame_7x7,
             mat_plot_2d=aplt.MatPlot2D(
                 output=aplt.Output(path=plot_path, filename="frame", format="fits")
@@ -261,17 +261,17 @@ class TestFramePlotter:
             file_path=path.join(plot_path, "frame.fits"), hdu=0
         )
 
-        assert (frame == frame_7x7.in_2d).all()
+        assert (frame == frame_7x7.native).all()
 
 
-class TestGridPlotter:
+class TestGrid2DPlotter:
     def test___visuals_in_constructor_use_grid_and_include(self, grid_7x7):
 
         visuals_2d = aplt.Visuals2D(origin=(1.0, 1.0), vector_field=2)
 
         include = aplt.Include2D(origin=True)
 
-        grid_plotter = aplt.GridPlotter(
+        grid_plotter = aplt.Grid2DPlotter(
             grid=grid_7x7, visuals_2d=visuals_2d, include_2d=include
         )
 
@@ -280,7 +280,7 @@ class TestGridPlotter:
 
         include = aplt.Include2D(origin=False)
 
-        grid_plotter = aplt.GridPlotter(
+        grid_plotter = aplt.Grid2DPlotter(
             grid=grid_7x7, visuals_2d=visuals_2d, include_2d=include
         )
 
@@ -297,7 +297,7 @@ class TestGridPlotter:
         plot_patch,
     ):
 
-        grid_plotter = aplt.GridPlotter(
+        grid_plotter = aplt.Grid2DPlotter(
             grid=grid_7x7,
             visuals_2d=aplt.Visuals2D(indexes=[0, 1, 2]),
             mat_plot_2d=aplt.MatPlot2D(
@@ -305,13 +305,13 @@ class TestGridPlotter:
             ),
         )
 
-        color_array = np.linspace(start=0.0, stop=1.0, num=grid_7x7.shape_1d)
+        color_array = np.linspace(start=0.0, stop=1.0, num=grid_7x7.shape_slim)
 
         grid_plotter.figure(color_array=color_array)
 
         assert path.join(plot_path, "grid1.png") in plot_patch.paths
 
-        grid_plotter = aplt.GridPlotter(
+        grid_plotter = aplt.Grid2DPlotter(
             grid=grid_7x7,
             visuals_2d=aplt.Visuals2D(indexes=[0, 1, 2]),
             mat_plot_2d=aplt.MatPlot2D(
@@ -327,7 +327,7 @@ class TestGridPlotter:
         visuals_2d = aplt.Visuals2D(
             origin=grid_irregular_grouped_7x7,
             mask=mask_7x7,
-            border=mask_7x7.border_grid_sub_1.in_1d_binned,
+            border=mask_7x7.border_grid_sub_1.slim_binned,
             grid=grid_7x7,
             positions=grid_irregular_grouped_7x7,
             lines=grid_irregular_grouped_7x7,
@@ -335,7 +335,7 @@ class TestGridPlotter:
             indexes=[0, 1, 2],
         )
 
-        grid_plotter = aplt.GridPlotter(
+        grid_plotter = aplt.Grid2DPlotter(
             grid=grid_7x7,
             mat_plot_2d=aplt.MatPlot2D(
                 output=aplt.Output(path=plot_path, filename="grid3", format="png")
@@ -360,12 +360,12 @@ class TestMapperPlotter:
             mapper=rectangular_mapper_7x7_3x3, include_2d=include
         )
 
-        assert mapper_plotter.visuals_data_with_include_2d.origin.in_1d_list == [
+        assert mapper_plotter.visuals_data_with_include_2d.origin.in_list == [
             (0.0, 0.0)
         ]
         assert (
             mapper_plotter.visuals_data_with_include_2d.mask
-            == rectangular_mapper_7x7_3x3.source_slim_grid.mask
+            == rectangular_mapper_7x7_3x3.source_grid_slim.mask
         ).all()
         assert mapper_plotter.visuals_data_with_include_2d.grid == None
         #  assert visuals.border == (0, 2)
@@ -393,16 +393,16 @@ class TestMapperPlotter:
             mapper=voronoi_mapper_9_3x3, include_2d=include
         )
 
-        assert mapper_plotter.visuals_data_with_include_2d.origin.in_1d_list == [
+        assert mapper_plotter.visuals_data_with_include_2d.origin.in_list == [
             (0.0, 0.0)
         ]
         assert (
             mapper_plotter.visuals_data_with_include_2d.mask
-            == voronoi_mapper_9_3x3.source_slim_grid.mask
+            == voronoi_mapper_9_3x3.source_grid_slim.mask
         ).all()
         assert (
             mapper_plotter.visuals_data_with_include_2d.pixelization_grid
-            == aa.Grid.uniform(shape_2d=(2, 2), pixel_scales=0.1)
+            == aa.Grid2D.uniform(shape_native=(2, 2), pixel_scales=0.1)
         ).all()
         #      assert visuals.border.shape == (0, 2)
 
@@ -426,7 +426,7 @@ class TestMapperPlotter:
 
         include = aplt.Include2D(
             origin=True,
-            mapper_source_slim_grid=True,
+            mapper_source_grid_slim=True,
             mapper_source_pixelization_grid=True,
             border=True,
         )
@@ -436,12 +436,12 @@ class TestMapperPlotter:
         )
 
         assert mapper_plotter.visuals_2d.origin == None
-        assert mapper_plotter.visuals_source_with_include_2d.origin.in_1d_list == [
+        assert mapper_plotter.visuals_source_with_include_2d.origin.in_list == [
             (0.0, 0.0)
         ]
         assert (
             mapper_plotter.visuals_source_with_include_2d.grid
-            == rectangular_mapper_7x7_3x3.source_slim_grid
+            == rectangular_mapper_7x7_3x3.source_grid_slim
         ).all()
         assert (
             mapper_plotter.visuals_source_with_include_2d.pixelization_grid
@@ -449,13 +449,13 @@ class TestMapperPlotter:
         ).all()
         assert (
             mapper_plotter.visuals_source_with_include_2d.border
-            == rectangular_mapper_7x7_3x3.source_slim_grid.sub_border_grid
+            == rectangular_mapper_7x7_3x3.source_grid_slim.sub_border_grid
         ).all()
 
         include = aplt.Include2D(
             origin=False,
             border=False,
-            mapper_source_slim_grid=False,
+            mapper_source_grid_slim=False,
             mapper_source_pixelization_grid=False,
         )
 
@@ -473,7 +473,7 @@ class TestMapperPlotter:
         include = aplt.Include2D(
             origin=True,
             border=True,
-            mapper_source_slim_grid=True,
+            mapper_source_grid_slim=True,
             mapper_source_pixelization_grid=True,
         )
 
@@ -482,12 +482,12 @@ class TestMapperPlotter:
         )
 
         assert mapper_plotter.visuals_2d.origin == None
-        assert mapper_plotter.visuals_source_with_include_2d.origin.in_1d_list == [
+        assert mapper_plotter.visuals_source_with_include_2d.origin.in_list == [
             (0.0, 0.0)
         ]
         assert (
             mapper_plotter.visuals_source_with_include_2d.grid
-            == voronoi_mapper_9_3x3.source_slim_grid
+            == voronoi_mapper_9_3x3.source_grid_slim
         ).all()
         assert (
             mapper_plotter.visuals_source_with_include_2d.pixelization_grid
@@ -495,7 +495,7 @@ class TestMapperPlotter:
         ).all()
         assert (
             mapper_plotter.visuals_source_with_include_2d.border
-            == voronoi_mapper_9_3x3.source_slim_grid.sub_border_grid
+            == voronoi_mapper_9_3x3.source_grid_slim.sub_border_grid
         ).all()
 
         include = aplt.Include2D(
@@ -634,10 +634,10 @@ class TestMapperPlotter:
         assert path.join(plot_path, "subplot_image_and_mapper.png") in plot_patch.paths
 
 
-class TestLinePlotter:
+class TestLine1DPlotter:
     def test__plot_line__works_with_all_extras_included(self, plot_path, plot_patch):
 
-        line_plotter = aplt.LinePlotter(
+        line_plotter = aplt.Line1DPlotter(
             mat_plot_1d=aplt.MatPlot1D(
                 output=aplt.Output(path=plot_path, filename="line1", format="png")
             )
@@ -654,7 +654,7 @@ class TestLinePlotter:
 
         assert path.join(plot_path, "line1.png") in plot_patch.paths
 
-        line_plotter = aplt.LinePlotter(
+        line_plotter = aplt.Line1DPlotter(
             mat_plot_1d=aplt.MatPlot1D(
                 output=aplt.Output(path=plot_path, filename="line2", format="png")
             )
@@ -671,7 +671,7 @@ class TestLinePlotter:
 
         assert path.join(plot_path, "line2.png") in plot_patch.paths
 
-        line_plotter = aplt.LinePlotter(
+        line_plotter = aplt.Line1DPlotter(
             mat_plot_1d=aplt.MatPlot1D(
                 output=aplt.Output(path=plot_path, filename="line3", format="png")
             )

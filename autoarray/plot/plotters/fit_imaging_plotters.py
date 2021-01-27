@@ -19,11 +19,11 @@ class AbstractFitImagingPlotter(abstract_plotters.AbstractPlotter):
 
         return self.visuals_2d + self.visuals_2d.__class__(
             origin=self.extract_2d(
-                "origin", grids.GridIrregular(grid=[self.fit.mask.origin])
+                "origin", grids.Grid2DIrregular(grid=[self.fit.mask.origin])
             ),
             mask=self.extract_2d("mask", self.fit.mask),
             border=self.extract_2d(
-                "border", self.fit.mask.border_grid_sub_1.in_1d_binned
+                "border", self.fit.mask.border_grid_sub_1.slim_binned
             ),
         )
 

@@ -9,7 +9,7 @@ from autoarray.util import grid_util
 
 @decorator_util.jit()
 def mask_2d_centres_from(
-    shape_2d: (int, int),
+    shape_native: (int, int),
     pixel_scales: typing.Tuple[float, float],
     centre: (float, float),
 ) -> (float, float):
@@ -20,7 +20,7 @@ def mask_2d_centres_from(
 
     Parameters
     ----------
-    shape_2d : (int, int)
+    shape_native : (int, int)
         The (y,x) shape of the 2D array the scaled centre is computed for.
     pixel_scales : (float, float)
         The (y,x) scaled units to pixel units conversion factor of the 2D array.
@@ -36,8 +36,8 @@ def mask_2d_centres_from(
     --------
     centres_scaled = centres_from_shape_pixel_scales_and_centre(shape=(5,5), pixel_scales=(0.5, 0.5), centre=(0.0, 0.0))
     """
-    y_centre_scaled = (float(shape_2d[0] - 1) / 2) - (centre[0] / pixel_scales[0])
-    x_centre_scaled = (float(shape_2d[1] - 1) / 2) + (centre[1] / pixel_scales[1])
+    y_centre_scaled = (float(shape_native[0] - 1) / 2) - (centre[0] / pixel_scales[0])
+    x_centre_scaled = (float(shape_native[1] - 1) / 2) + (centre[1] / pixel_scales[1])
 
     return (y_centre_scaled, x_centre_scaled)
 
@@ -202,7 +202,7 @@ def total_sparse_pixels_2d_from(
 
 @decorator_util.jit()
 def mask_2d_circular_from(
-    shape_2d: (int, int),
+    shape_native: (int, int),
     pixel_scales: typing.Tuple[float, float],
     radius: float,
     centre: typing.Tuple[float, float] = (0.0, 0.0),
@@ -214,7 +214,7 @@ def mask_2d_circular_from(
 
     Parameters
     ----------
-    shape_2d: (int, int)
+    shape_native: (int, int)
         The (y,x) shape of the mask in units of pixels.
     pixel_scales: float
         The scaled units to pixel units conversion factor of each pixel.
@@ -234,10 +234,10 @@ def mask_2d_circular_from(
         shape=(10, 10), pixel_scales=0.1, radius=0.5, centre=(0.0, 0.0))
     """
 
-    mask_2d = np.full(shape_2d, True)
+    mask_2d = np.full(shape_native, True)
 
     centres_scaled = mask_2d_centres_from(
-        shape_2d=mask_2d.shape, pixel_scales=pixel_scales, centre=centre
+        shape_native=mask_2d.shape, pixel_scales=pixel_scales, centre=centre
     )
 
     for y in range(mask_2d.shape[0]):
@@ -256,7 +256,7 @@ def mask_2d_circular_from(
 
 @decorator_util.jit()
 def mask_2d_circular_annular_from(
-    shape_2d: (int, int),
+    shape_native: (int, int),
     pixel_scales: typing.Tuple[float, float],
     inner_radius: float,
     outer_radius: float,
@@ -269,7 +269,7 @@ def mask_2d_circular_annular_from(
 
     Parameters
     ----------
-    shape_2d : (int, int)
+    shape_native : (int, int)
         The (y,x) shape of the mask in units of pixels.
     pixel_scales : (float, float)
         The scaled units to pixel units conversion factor of each pixel.
@@ -291,10 +291,10 @@ def mask_2d_circular_annular_from(
         shape=(10, 10), pixel_scales=0.1, inner_radius=0.5, outer_radius=1.5, centre=(0.0, 0.0))
     """
 
-    mask_2d = np.full(shape_2d, True)
+    mask_2d = np.full(shape_native, True)
 
     centres_scaled = mask_2d_centres_from(
-        shape_2d=mask_2d.shape, pixel_scales=pixel_scales, centre=centre
+        shape_native=mask_2d.shape, pixel_scales=pixel_scales, centre=centre
     )
 
     for y in range(mask_2d.shape[0]):
@@ -313,7 +313,7 @@ def mask_2d_circular_annular_from(
 
 @decorator_util.jit()
 def mask_2d_circular_anti_annular_from(
-    shape_2d: (int, int),
+    shape_native: (int, int),
     pixel_scales: typing.Tuple[float, float],
     inner_radius: float,
     outer_radius: float,
@@ -328,7 +328,7 @@ def mask_2d_circular_anti_annular_from(
 
     Parameters
     ----------
-    shape_2d : (int, int)
+    shape_native : (int, int)
         The (y,x) shape of the mask in units of pixels.
     pixel_scales : (float, float)
         The scaled units to pixel units conversion factor of each pixel.
@@ -354,10 +354,10 @@ def mask_2d_circular_anti_annular_from(
 
     """
 
-    mask_2d = np.full(shape_2d, True)
+    mask_2d = np.full(shape_native, True)
 
     centres_scaled = mask_2d_centres_from(
-        shape_2d=mask_2d.shape, pixel_scales=pixel_scales, centre=centre
+        shape_native=mask_2d.shape, pixel_scales=pixel_scales, centre=centre
     )
 
     for y in range(mask_2d.shape[0]):
@@ -378,7 +378,7 @@ def mask_2d_circular_anti_annular_from(
 
 
 def mask_2d_via_pixel_coordinates_from(
-    shape_2d: (int, int), pixel_coordinates: [list], buffer: int = 0
+    shape_native: (int, int), pixel_coordinates: [list], buffer: int = 0
 ) -> np.ndarray:
     """
     Returns a mask where all unmasked `False` entries are defined from an input list of list of pixel coordinates.
@@ -388,7 +388,7 @@ def mask_2d_via_pixel_coordinates_from(
 
     Parameters
     ----------
-    shape_2d (int, int)
+    shape_native (int, int)
         The (y,x) shape of the mask in units of pixels.
     pixel_coordinates : [[int, int]]
         The input lists of 2D pixel coordinates where `False` entries are created.
@@ -397,7 +397,7 @@ def mask_2d_via_pixel_coordinates_from(
         amount.
     """
 
-    mask_2d = np.full(shape=shape_2d, fill_value=True)
+    mask_2d = np.full(shape=shape_native, fill_value=True)
 
     for y, x in pixel_coordinates:
 
@@ -450,7 +450,7 @@ def elliptical_radius_from(
 
 @decorator_util.jit()
 def mask_2d_elliptical_from(
-    shape_2d: (int, int),
+    shape_native: (int, int),
     pixel_scales: typing.Tuple[float, float],
     major_axis_radius: float,
     axis_ratio: float,
@@ -465,7 +465,7 @@ def mask_2d_elliptical_from(
 
     Parameters
     ----------
-    shape_2d: (int, int)
+    shape_native: (int, int)
         The (y,x) shape of the mask in units of pixels.
     pixel_scales : (float, float)
         The scaled units to pixel units conversion factor of each pixel.
@@ -490,10 +490,10 @@ def mask_2d_elliptical_from(
         shape=(10, 10), pixel_scales=0.1, major_axis_radius=0.5, elliptical_comps=(0.333333, 0.0), centre=(0.0, 0.0))
     """
 
-    mask_2d = np.full(shape_2d, True)
+    mask_2d = np.full(shape_native, True)
 
     centres_scaled = mask_2d_centres_from(
-        shape_2d=mask_2d.shape, pixel_scales=pixel_scales, centre=centre
+        shape_native=mask_2d.shape, pixel_scales=pixel_scales, centre=centre
     )
 
     for y in range(mask_2d.shape[0]):
@@ -514,7 +514,7 @@ def mask_2d_elliptical_from(
 
 @decorator_util.jit()
 def mask_2d_elliptical_annular_from(
-    shape_2d: (int, int),
+    shape_native: (int, int),
     pixel_scales: typing.Tuple[float, float],
     inner_major_axis_radius: float,
     inner_axis_ratio: float,
@@ -532,7 +532,7 @@ def mask_2d_elliptical_annular_from(
 
     Parameters
     ----------
-    shape_2d: (int, int)
+    shape_native: (int, int)
         The (y,x) shape of the mask in units of pixels.
     pixel_scales : (float, float)
         The scaled units to pixel units conversion factor of each pixel.
@@ -567,10 +567,10 @@ def mask_2d_elliptical_annular_from(
          centre=(0.0, 0.0))
     """
 
-    mask_2d = np.full(shape_2d, True)
+    mask_2d = np.full(shape_native, True)
 
     centres_scaled = mask_2d_centres_from(
-        shape_2d=mask_2d.shape, pixel_scales=pixel_scales, centre=centre
+        shape_native=mask_2d.shape, pixel_scales=pixel_scales, centre=centre
     )
 
     for y in range(mask_2d.shape[0]):
@@ -598,7 +598,7 @@ def mask_2d_elliptical_annular_from(
 
 @decorator_util.jit()
 def blurring_mask_2d_from(
-    mask_2d: np.ndarray, kernel_shape_2d: (int, int)
+    mask_2d: np.ndarray, kernel_shape_native: (int, int)
 ) -> np.ndarray:
     """
     Returns a blurring mask from an input mask and psf shape.
@@ -613,7 +613,7 @@ def blurring_mask_2d_from(
     -----------
     mask_2d : np.ndarray
         A 2D array of bools, where `False` values are unmasked.
-    kernel_shape_2d : (int, int)
+    kernel_shape_native : (int, int)
         The 2D shape of the PSF which is used to compute the blurring mask.
 
     Returns
@@ -638,10 +638,10 @@ def blurring_mask_2d_from(
         for x in range(mask_2d.shape[1]):
             if not mask_2d[y, x]:
                 for y1 in range(
-                    (-kernel_shape_2d[0] + 1) // 2, (kernel_shape_2d[0] + 1) // 2
+                    (-kernel_shape_native[0] + 1) // 2, (kernel_shape_native[0] + 1) // 2
                 ):
                     for x1 in range(
-                        (-kernel_shape_2d[1] + 1) // 2, (kernel_shape_2d[1] + 1) // 2
+                        (-kernel_shape_native[1] + 1) // 2, (kernel_shape_native[1] + 1) // 2
                     ):
                         if (
                             0 <= x + x1 <= mask_2d.shape[1] - 1
@@ -659,8 +659,8 @@ def blurring_mask_2d_from(
 
 
 @decorator_util.jit()
-def mask_2d_via_shape_2d_and_native_for_slim(
-    shape_2d: (int, int), native_for_slim: np.ndarray
+def mask_2d_via_shape_native_and_native_for_slim(
+    shape_native: (int, int), native_for_slim: np.ndarray
 ) -> np.ndarray:
     """
     For a slimmed set of data that was computed by mapping unmasked values from a native 2D array of shape 
@@ -676,7 +676,7 @@ def mask_2d_via_shape_2d_and_native_for_slim(
 
     Parameters
     ----------
-    shape_2d : (int, int)
+    shape_native : (int, int)
         The shape of the 2D array which the pixels are defined on.
     native_for_slim : np.ndarray
         An array describing the native 2D array index that every slimmed array index maps too.
@@ -693,7 +693,7 @@ def mask_2d_via_shape_2d_and_native_for_slim(
     mask = mask_from_shape_and_native_for_slim(shape=(3,3), native_for_slim=native_for_slim)
     """
 
-    mask = np.ones(shape_2d)
+    mask = np.ones(shape_native)
 
     for index in range(len(native_for_slim)):
         mask[native_for_slim[index, 0], native_for_slim[index, 1]] = False

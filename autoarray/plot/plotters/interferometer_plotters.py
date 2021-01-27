@@ -108,7 +108,7 @@ class InterferometerPlotter(abstract_plotters.AbstractPlotter):
         if uv_wavelengths:
 
             self.mat_plot_2d.plot_grid(
-                grid=grids.GridIrregularGrouped.from_yx_1d(
+                grid=grids.Grid2DIrregularGrouped.from_yx_1d(
                     y=self.interferometer.uv_wavelengths[:, 1] / 10 ** 3.0,
                     x=self.interferometer.uv_wavelengths[:, 0] / 10 ** 3.0,
                 ),

@@ -10,19 +10,19 @@ path = "{}/".format(os.path.dirname(os.path.realpath(__file__)))
 class TestBinnedAcross:
     def test__parallel__different_arrays__gives_frame_binned(self):
 
-        frame = aa.Frame.manual(array=np.ones((3, 3)), pixel_scales=1.0)
+        frame = aa.Frame2D.manual(array=np.ones((3, 3)), pixel_scales=1.0)
 
         assert (frame.binned_across_parallel == np.array([1.0, 1.0, 1.0])).all()
 
-        frame = aa.Frame.manual(array=np.ones((4, 3)), pixel_scales=1.0)
+        frame = aa.Frame2D.manual(array=np.ones((4, 3)), pixel_scales=1.0)
 
         assert (frame.binned_across_parallel == np.array([1.0, 1.0, 1.0])).all()
 
-        frame = aa.Frame.manual(array=np.ones((3, 4)), pixel_scales=1.0)
+        frame = aa.Frame2D.manual(array=np.ones((3, 4)), pixel_scales=1.0)
 
         assert (frame.binned_across_parallel == np.array([1.0, 1.0, 1.0, 1.0])).all()
 
-        frame = aa.Frame.manual(
+        frame = aa.Frame2D.manual(
             array=np.array([[1.0, 6.0, 9.0], [2.0, 6.0, 9.0], [3.0, 6.0, 9.0]]),
             pixel_scales=1.0,
         )
@@ -35,7 +35,7 @@ class TestBinnedAcross:
             [[False, False, False], [False, False, False], [True, False, False]]
         )
 
-        frame = aa.Frame.manual_mask(
+        frame = aa.Frame2D.manual_mask(
             array=np.array([[1.0, 6.0, 9.0], [2.0, 6.0, 9.0], [3.0, 6.0, 9.0]]),
             mask=mask,
         )
@@ -44,19 +44,19 @@ class TestBinnedAcross:
 
     def test__serial__different_arrays__gives_frame_binned(self):
 
-        frame = aa.Frame.manual(array=np.ones((3, 3)), pixel_scales=1.0)
+        frame = aa.Frame2D.manual(array=np.ones((3, 3)), pixel_scales=1.0)
 
         assert (frame.binned_across_serial == np.array([1.0, 1.0, 1.0])).all()
 
-        frame = aa.Frame.manual(array=np.ones((4, 3)), pixel_scales=1.0)
+        frame = aa.Frame2D.manual(array=np.ones((4, 3)), pixel_scales=1.0)
 
         assert (frame.binned_across_serial == np.array([1.0, 1.0, 1.0, 1.0])).all()
 
-        frame = aa.Frame.manual(array=np.ones((3, 4)), pixel_scales=1.0)
+        frame = aa.Frame2D.manual(array=np.ones((3, 4)), pixel_scales=1.0)
 
         assert (frame.binned_across_serial == np.array([1.0, 1.0, 1.0])).all()
 
-        frame = aa.Frame.manual(
+        frame = aa.Frame2D.manual(
             array=np.array([[1.0, 2.0, 3.0], [6.0, 6.0, 6.0], [9.0, 9.0, 9.0]]),
             pixel_scales=1.0,
         )
@@ -69,7 +69,7 @@ class TestBinnedAcross:
             [[False, False, True], [False, False, False], [False, False, False]]
         )
 
-        frame = aa.Frame.manual_mask(
+        frame = aa.Frame2D.manual_mask(
             array=np.array([[1.0, 2.0, 3.0], [6.0, 6.0, 6.0], [9.0, 9.0, 9.0]]),
             mask=mask,
         )
@@ -84,7 +84,7 @@ class TestFrameRegions:
             [[0.0, 1.0, 2.0], [3.0, 4.0, 5.0], [6.0, 7.0, 8.0], [9.0, 10.0, 11.0]]
         )
 
-        frame = aa.Frame.manual(
+        frame = aa.Frame2D.manual(
             array=arr,
             pixel_scales=1.0,
             roe_corner=(1, 0),
@@ -93,7 +93,7 @@ class TestFrameRegions:
 
         assert (frame.parallel_overscan_frame == np.array([[0.0]])).all()
 
-        frame = aa.Frame.manual(
+        frame = aa.Frame2D.manual(
             array=arr,
             pixel_scales=1.0,
             roe_corner=(1, 0),
@@ -105,7 +105,7 @@ class TestFrameRegions:
             == np.array([[0.0, 1.0], [3.0, 4.0], [6.0, 7.0]])
         ).all()
 
-        frame = aa.Frame.manual(
+        frame = aa.Frame2D.manual(
             array=arr,
             pixel_scales=1.0,
             roe_corner=(1, 0),
@@ -122,7 +122,7 @@ class TestFrameRegions:
             [[0.0, 1.0, 2.0], [3.0, 4.0, 5.0], [6.0, 7.0, 8.0], [9.0, 10.0, 11.0]]
         )
 
-        frame = aa.Frame.manual(
+        frame = aa.Frame2D.manual(
             array=arr,
             pixel_scales=1.0,
             roe_corner=(1, 0),
@@ -131,7 +131,7 @@ class TestFrameRegions:
 
         assert (frame.parallel_overscan_binned_line == np.array([0.0])).all()
 
-        frame = aa.Frame.manual(
+        frame = aa.Frame2D.manual(
             array=arr,
             pixel_scales=1.0,
             roe_corner=(1, 0),
@@ -140,7 +140,7 @@ class TestFrameRegions:
 
         assert (frame.parallel_overscan_binned_line == np.array([0.5, 3.5, 6.5])).all()
 
-        frame = aa.Frame.manual(
+        frame = aa.Frame2D.manual(
             array=arr,
             pixel_scales=1.0,
             roe_corner=(1, 0),
@@ -155,9 +155,9 @@ class TestFrameRegions:
         self,
     ):
 
-        frame = aa.Frame.ones(shape_2d=(3, 3), pixel_scales=1.0, roe_corner=(1, 0))
+        frame = aa.Frame2D.ones(shape_native=(3, 3), pixel_scales=1.0, roe_corner=(1, 0))
 
-        region = aa.Region(region=(0, 3, 0, 3))
+        region = aa.Region2D(region=(0, 3, 0, 3))
 
         # Front edge is row 0, so for 1 row we extract 0 -> 1
 
@@ -179,9 +179,9 @@ class TestFrameRegions:
 
     def test__parallel_trails_of_region__extracts_rows_above_region(self):
 
-        frame = aa.Frame.ones(shape_2d=(3, 3), pixel_scales=1.0, roe_corner=(1, 0))
+        frame = aa.Frame2D.ones(shape_native=(3, 3), pixel_scales=1.0, roe_corner=(1, 0))
 
-        region = aa.Region(
+        region = aa.Region2D(
             region=(0, 3, 0, 3)
         )  # The trails are row 3 and above, so extract 3 -> 4
 
@@ -202,10 +202,10 @@ class TestFrameRegions:
         assert trails == (4, 6, 0, 3)
 
     def test__parallel_side_nearest_read_out_region(self):
-        frame = aa.Frame.manual(
+        frame = aa.Frame2D.manual(
             array=np.ones((5, 5)), pixel_scales=1.0, roe_corner=(1, 0)
         )
-        region = aa.Region(region=(1, 3, 0, 5))
+        region = aa.Region2D(region=(1, 3, 0, 5))
 
         parallel_region = frame.parallel_side_nearest_read_out_region(
             region=region, columns=(0, 1)
@@ -213,10 +213,10 @@ class TestFrameRegions:
 
         assert parallel_region == (0, 5, 0, 1)
 
-        frame = aa.Frame.manual(
+        frame = aa.Frame2D.manual(
             array=np.ones((4, 4)), pixel_scales=1.0, roe_corner=(1, 0)
         )
-        region = aa.Region(region=(1, 3, 0, 5))
+        region = aa.Region2D(region=(1, 3, 0, 5))
 
         parallel_region = frame.parallel_side_nearest_read_out_region(
             region=region, columns=(1, 3)
@@ -224,7 +224,7 @@ class TestFrameRegions:
 
         assert parallel_region == (0, 4, 1, 3)
 
-        region = aa.Region(region=(1, 3, 2, 5))
+        region = aa.Region2D(region=(1, 3, 2, 5))
 
         parallel_region = frame.parallel_side_nearest_read_out_region(
             region=region, columns=(1, 3)
@@ -232,10 +232,10 @@ class TestFrameRegions:
 
         assert parallel_region == (0, 4, 3, 5)
 
-        frame = aa.Frame.manual(
+        frame = aa.Frame2D.manual(
             array=np.ones((2, 5)), pixel_scales=1.0, roe_corner=(1, 0)
         )
-        region = aa.Region(region=(1, 3, 0, 5))
+        region = aa.Region2D(region=(1, 3, 0, 5))
 
         parallel_region = frame.parallel_side_nearest_read_out_region(
             region=region, columns=(0, 1)
@@ -249,7 +249,7 @@ class TestFrameRegions:
             [[0.0, 1.0, 2.0], [3.0, 4.0, 5.0], [6.0, 7.0, 8.0], [9.0, 10.0, 11.0]]
         )
 
-        frame = aa.Frame.manual(
+        frame = aa.Frame2D.manual(
             array=arr,
             pixel_scales=1.0,
             roe_corner=(1, 0),
@@ -258,7 +258,7 @@ class TestFrameRegions:
 
         assert (frame.serial_overscan_frame == np.array([[0.0]])).all()
 
-        frame = aa.Frame.manual(
+        frame = aa.Frame2D.manual(
             array=arr,
             pixel_scales=1.0,
             roe_corner=(1, 0),
@@ -270,7 +270,7 @@ class TestFrameRegions:
             == np.array([[0.0, 1.0], [3.0, 4.0], [6.0, 7.0]])
         ).all()
 
-        frame = aa.Frame.manual(
+        frame = aa.Frame2D.manual(
             array=arr,
             pixel_scales=1.0,
             roe_corner=(1, 0),
@@ -287,7 +287,7 @@ class TestFrameRegions:
             [[0.0, 1.0, 2.0], [3.0, 4.0, 5.0], [6.0, 7.0, 8.0], [9.0, 10.0, 11.0]]
         )
 
-        frame = aa.Frame.manual(
+        frame = aa.Frame2D.manual(
             array=arr,
             pixel_scales=1.0,
             roe_corner=(1, 0),
@@ -296,7 +296,7 @@ class TestFrameRegions:
 
         assert (frame.serial_overscan_binned_line == np.array([0.0])).all()
 
-        frame = aa.Frame.manual(
+        frame = aa.Frame2D.manual(
             array=arr,
             pixel_scales=1.0,
             roe_corner=(1, 0),
@@ -305,7 +305,7 @@ class TestFrameRegions:
 
         assert (frame.serial_overscan_binned_line == np.array([3.0, 4.0])).all()
 
-        frame = aa.Frame.manual(
+        frame = aa.Frame2D.manual(
             array=arr,
             pixel_scales=1.0,
             roe_corner=(1, 0),
@@ -315,9 +315,9 @@ class TestFrameRegions:
         assert (frame.serial_overscan_binned_line == np.array([6.5])).all()
 
     def test__serial_front_edge_of_region__extracts_region_within_left_of_region(self):
-        frame = aa.Frame.ones(shape_2d=(3, 3), pixel_scales=1.0, roe_corner=(1, 0))
+        frame = aa.Frame2D.ones(shape_native=(3, 3), pixel_scales=1.0, roe_corner=(1, 0))
 
-        region = aa.Region(
+        region = aa.Region2D(
             region=(0, 3, 0, 3)
         )  # Front edge is column 0, so for 1 column we extract 0 -> 1
 
@@ -338,9 +338,9 @@ class TestFrameRegions:
         assert front_edge == (0, 3, 1, 3)
 
     def test__serial_trails_of_regions__extracts_region_to_right_of_region(self):
-        frame = aa.Frame.ones(shape_2d=(3, 3), pixel_scales=1.0, roe_corner=(1, 0))
+        frame = aa.Frame2D.ones(shape_native=(3, 3), pixel_scales=1.0, roe_corner=(1, 0))
 
-        region = aa.Region(
+        region = aa.Region2D(
             region=(0, 3, 0, 3)
         )  # The trails are column 3 and above, so extract 3 -> 4
 
@@ -364,28 +364,28 @@ class TestFrameRegions:
         self,
     ):
 
-        frame = aa.Frame.manual(
+        frame = aa.Frame2D.manual(
             array=np.ones((5, 5)), pixel_scales=1.0, roe_corner=(1, 0)
         )
-        region = aa.Region(region=(1, 3, 0, 5))
+        region = aa.Region2D(region=(1, 3, 0, 5))
 
         serial_region = frame.serial_entire_rows_of_region(region=region)
 
         assert serial_region == (1, 3, 0, 5)
 
-        frame = aa.Frame.manual(
+        frame = aa.Frame2D.manual(
             array=np.ones((5, 25)), pixel_scales=1.0, roe_corner=(1, 0)
         )
-        region = aa.Region(region=(1, 3, 0, 5))
+        region = aa.Region2D(region=(1, 3, 0, 5))
 
         serial_region = frame.serial_entire_rows_of_region(region=region)
 
         assert serial_region == (1, 3, 0, 25)
 
-        frame = aa.Frame.manual(
+        frame = aa.Frame2D.manual(
             array=np.ones((8, 55)), pixel_scales=1.0, roe_corner=(1, 0)
         )
-        region = aa.Region(region=(3, 5, 5, 30))
+        region = aa.Region2D(region=(3, 5, 5, 30))
 
         serial_region = frame.serial_entire_rows_of_region(region=region)
 

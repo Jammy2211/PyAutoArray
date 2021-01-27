@@ -18,9 +18,9 @@ def check_grid(grid):
     if 2 < len(grid.shape) > 3:
         raise exc.GridException("The dimensions of the input grid array is not 2 or 3")
 
-    if grid.store_in_1d and len(grid.shape) != 2:
+    if grid.store_slim and len(grid.shape) != 2:
         raise exc.GridException(
-            "An grid input into the grids.Grid.__new__ method has store_in_1d = `True` but"
+            "An grid input into the grids.Grid2D.__new__ method has store_slim = `True` but"
             "the input shape of the array is not 1."
         )
 
@@ -37,7 +37,7 @@ def check_grid_and_mask(grid, mask):
 
     elif len(grid.shape) == 3:
 
-        if (grid.shape[0], grid.shape[1]) != mask.sub_shape_2d:
+        if (grid.shape[0], grid.shape[1]) != mask.sub_shape_native:
             raise exc.GridException(
                 "The input grid is 2D but not the same dimensions as the sub-mask "
                 "(e.g. the mask 2D shape multipled by its sub size."
@@ -52,9 +52,9 @@ def convert_grid(grid):
     return grid
 
 
-def convert_manual_1d_grid(grid_1d, mask, store_in_1d):
+def convert_manual_grid_2d_slim(grid_2d_slim, mask, store_slim):
     """
-    Manual 1D Grid functions take as input a list or ndarray which is to be returned as an Grid. This function
+    Manual 1D Grid2D functions take as input a list or ndarray which is to be returned as an Grid2D. This function
     performs the following and checks and conversions on the input:
 
     1) If the input is a list, convert it to a 2D ndarray of shape [total_coordinates, 2].
@@ -66,27 +66,27 @@ def convert_manual_1d_grid(grid_1d, mask, store_in_1d):
 
     Parameters
     ----------
-    grid_1d : np.ndarray or list
+    grid_2d_slim : np.ndarray or list
         The input structure which is converted to a 2D ndarray if it is a list.
     mask : Mask2D
-        The mask of the output Array.
-    store_in_1d : bool
+        The mask of the output Array2D.
+    store_slim : bool
         Whether the memory-representation of the grid is in 1D or 2D.
     """
 
-    grid_1d = convert_grid(grid=grid_1d)
+    grid_2d_slim = convert_grid(grid=grid_2d_slim)
 
-    if store_in_1d:
-        return grid_1d
+    if store_slim:
+        return grid_2d_slim
 
     return grid_util.sub_grid_2d_from(
-        sub_grid_2d_slim=grid_1d, mask_2d=mask, sub_size=mask.sub_size
+        sub_grid_2d_slim=grid_2d_slim, mask_2d=mask, sub_size=mask.sub_size
     )
 
 
-def convert_manual_2d_grid(grid_2d, mask, store_in_1d):
+def convert_manual_grid_2d(grid_2d, mask, store_slim):
     """
-    Manual 2D Grid functions take as input a list or ndarray which is to be returned as a Grid. This function
+    Manual 2D Grid2D functions take as input a list or ndarray which is to be returned as a Grid2D. This function
     performs the following and checks and conversions on the input:
 
     1) If the input is a list, convert it to a 3D ndarray of shape  [total_y_coordinates, total_x_coordinates, 2]
@@ -101,26 +101,26 @@ def convert_manual_2d_grid(grid_2d, mask, store_in_1d):
     grid_2d : np.ndarray or list
         The input structure which is converted to a 3D ndarray if it is a list.
     mask : Mask2D
-        The mask of the output Grid.
-    store_in_1d : bool
+        The mask of the output Grid2D.
+    store_slim : bool
         Whether the memory-representation of the array is in 1D or 2D.
     """
 
-    grid_1d = grid_util.sub_grid_2d_slim_from(
+    grid_slim = grid_util.sub_grid_2d_slim_from(
         sub_grid_2d=grid_2d, mask=mask, sub_size=mask.sub_size
     )
 
-    if store_in_1d:
-        return grid_1d
+    if store_slim:
+        return grid_slim
 
     return grid_util.sub_grid_2d_from(
-        sub_grid_2d_slim=grid_1d, mask_2d=mask, sub_size=mask.sub_size
+        sub_grid_2d_slim=grid_slim, mask_2d=mask, sub_size=mask.sub_size
     )
 
 
-def convert_manual_grid(grid, mask, store_in_1d):
+def convert_manual_grid(grid, mask, store_slim):
     """
-    Manual Grid functions take as input a list or ndarray which is to be returned as an Grid. This function
+    Manual Grid2D functions take as input a list or ndarray which is to be returned as an Grid2D. This function
     performs the following and checks and conversions on the input:
 
     1) If the input is a list, convert it to an ndarray.
@@ -132,25 +132,25 @@ def convert_manual_grid(grid, mask, store_in_1d):
     array : np.ndarray or list
         The input structure which is converted to an ndarray if it is a list.
     mask : Mask2D
-        The mask of the output Array.
-    store_in_1d : bool
+        The mask of the output Array2D.
+    store_slim : bool
         Whether the memory-representation of the array is in 1D or 2D.
     """
 
     grid = convert_grid(grid=grid)
 
     if len(grid.shape) == 2:
-        return convert_manual_1d_grid(grid_1d=grid, mask=mask, store_in_1d=store_in_1d)
-    return convert_manual_2d_grid(grid_2d=grid, mask=mask, store_in_1d=store_in_1d)
+        return convert_manual_grid_2d_slim(grid_2d_slim=grid, mask=mask, store_slim=store_slim)
+    return convert_manual_grid_2d(grid_2d=grid, mask=mask, store_slim=store_slim)
 
 
-class AbstractGrid(abstract_structure.AbstractStructure2D):
+class AbstractGrid2D(abstract_structure.AbstractStructure2D):
     def __array_finalize__(self, obj):
 
-        super(AbstractGrid, self).__array_finalize__(obj)
+        super(AbstractGrid2D, self).__array_finalize__(obj)
 
-        if hasattr(obj, "_sub_border_1d_indexes"):
-            self.mask._sub_border_1d_indexes = obj._sub_border_1d_indexes
+        if hasattr(obj, "_sub_border_flat_indexes"):
+            self.mask._sub_border_flat_indexes = obj._sub_border_flat_indexes
 
     def __reduce__(self):
         # Get the parent's __reduce__ tuple
@@ -171,40 +171,40 @@ class AbstractGrid(abstract_structure.AbstractStructure2D):
         super().__setstate__(state[0:-1])
 
     @property
-    def in_1d(self):
-        """Convenience method to access the grid's 1D representation, which is a Grid stored as an ndarray of shape
+    def slim(self):
+        """Convenience method to access the grid's 1D representation, which is a Grid2D stored as an ndarray of shape
         [total_unmasked_pixels*(sub_size**2), 2].
 
         If the grid is stored in 1D it is return as is. If it is stored in 2D, it must first be mapped from 2D to 1D."""
-        if self.store_in_1d:
+        if self.store_slim:
             return self
 
-        sub_grid_1d = grid_util.sub_grid_2d_slim_from(
+        sub_grid_2d_slim = grid_util.sub_grid_2d_slim_from(
             sub_grid_2d=self, mask=self.mask, sub_size=self.mask.sub_size
         )
 
-        return self._new_structure(grid=sub_grid_1d, mask=self.mask, store_in_1d=True)
+        return self._new_structure(grid=sub_grid_2d_slim, mask=self.mask, store_slim=True)
 
     @property
-    def in_2d(self):
-        """Convenience method to access the grid's 2D representation, which is a Grid stored as an ndarray of shape
+    def native(self):
+        """Convenience method to access the grid's 2D representation, which is a Grid2D stored as an ndarray of shape
         [sub_size*total_y_pixels, sub_size*total_x_pixels, 2] where all masked values are given values (0.0, 0.0).
 
         If the grid is stored in 2D it is return as is. If it is stored in 1D, it must first be mapped from 1D to 2D."""
 
-        if self.store_in_1d:
+        if self.store_slim:
             sub_grid_2d = grid_util.sub_grid_2d_from(
                 sub_grid_2d_slim=self, mask_2d=self.mask, sub_size=self.mask.sub_size
             )
             return self._new_structure(
-                grid=sub_grid_2d, mask=self.mask, store_in_1d=False
+                grid=sub_grid_2d, mask=self.mask, store_slim=False
             )
 
         return self
 
     @property
-    def in_1d_binned(self):
-        """Convenience method to access the binned-up grid in its 1D representation, which is a Grid stored as an
+    def slim_binned(self):
+        """Convenience method to access the binned-up grid in its 1D representation, which is a Grid2D stored as an
         ndarray of shape [total_unmasked_pixels, 2].
 
         The binning up process converts a grid from (y,x) values where each value is a coordinate on the sub-grid to
@@ -212,35 +212,35 @@ class AbstractGrid(abstract_structure.AbstractStructure2D):
         performed by taking the mean of all (y,x) values in each sub pixel.
 
         If the grid is stored in 1D it is return as is. If it is stored in 2D, it must first be mapped from 2D to 1D."""
-        if not self.store_in_1d:
+        if not self.store_slim:
 
-            sub_grid_1d = grid_util.sub_grid_2d_slim_from(
+            sub_grid_2d_slim = grid_util.sub_grid_2d_slim_from(
                 sub_grid_2d=self, mask=self.mask, sub_size=self.mask.sub_size
             )
 
         else:
 
-            sub_grid_1d = self
+            sub_grid_2d_slim = self
 
-        binned_grid_1d_y = np.multiply(
+        binned_grid_2d_slim_y = np.multiply(
             self.mask.sub_fraction,
-            sub_grid_1d[:, 0].reshape(-1, self.mask.sub_length).sum(axis=1),
+            sub_grid_2d_slim[:, 0].reshape(-1, self.mask.sub_length).sum(axis=1),
         )
 
-        binned_grid_1d_x = np.multiply(
+        binned_grid_2d_slim_x = np.multiply(
             self.mask.sub_fraction,
-            sub_grid_1d[:, 1].reshape(-1, self.mask.sub_length).sum(axis=1),
+            sub_grid_2d_slim[:, 1].reshape(-1, self.mask.sub_length).sum(axis=1),
         )
 
         return self._new_structure(
-            grid=np.stack((binned_grid_1d_y, binned_grid_1d_x), axis=-1),
+            grid=np.stack((binned_grid_2d_slim_y, binned_grid_2d_slim_x), axis=-1),
             mask=self.mask.mask_sub_1,
-            store_in_1d=True,
+            store_slim=True,
         )
 
     @property
-    def in_2d_binned(self):
-        """Convenience method to access the binned-up grid in its 2D representation, which is a Grid stored as an
+    def native_binned(self):
+        """Convenience method to access the binned-up grid in its 2D representation, which is a Grid2D stored as an
         ndarray of shape [total_y_pixels, total_x_pixels, 2].
 
         The binning up process conerts a grid from (y,x) values where each value is a coordinate on the sub-grid to
@@ -248,7 +248,7 @@ class AbstractGrid(abstract_structure.AbstractStructure2D):
         performed by taking the mean of all (y,x) values in each sub pixel.
 
         If the grid is stored in 2D it is return as is. If it is stored in 1D, it must first be mapped from 1D to 2D."""
-        if not self.store_in_1d:
+        if not self.store_slim:
 
             sub_grid_1d = grid_util.sub_grid_2d_slim_from(
                 sub_grid_2d=self, mask=self.mask, sub_size=self.mask.sub_size
@@ -258,28 +258,28 @@ class AbstractGrid(abstract_structure.AbstractStructure2D):
 
             sub_grid_1d = self
 
-        binned_grid_1d_y = np.multiply(
+        binned_grid_2d_slim_y = np.multiply(
             self.mask.sub_fraction,
             sub_grid_1d[:, 0].reshape(-1, self.mask.sub_length).sum(axis=1),
         )
 
-        binned_grid_1d_x = np.multiply(
+        binned_grid_2d_slim_x = np.multiply(
             self.mask.sub_fraction,
             sub_grid_1d[:, 1].reshape(-1, self.mask.sub_length).sum(axis=1),
         )
 
-        binned_grid_1d = np.stack((binned_grid_1d_y, binned_grid_1d_x), axis=-1)
+        binned_grid_2d_slim = np.stack((binned_grid_2d_slim_y, binned_grid_2d_slim_x), axis=-1)
 
         binned_grid_2d = grid_util.sub_grid_2d_from(
-            sub_grid_2d_slim=binned_grid_1d, mask_2d=self.mask, sub_size=1
+            sub_grid_2d_slim=binned_grid_2d_slim, mask_2d=self.mask, sub_size=1
         )
 
         return self._new_structure(
-            grid=binned_grid_2d, mask=self.mask.mask_sub_1, store_in_1d=False
+            grid=binned_grid_2d, mask=self.mask.mask_sub_1, store_slim=False
         )
 
     @property
-    def in_1d_flipped(self) -> np.ndarray:
+    def slim_flipped(self) -> np.ndarray:
         """Return the grid as an ndarray of shape [total_unmasked_pixels, 2] with flipped values such that coordinates
         are given as (x,y) values.
 
@@ -287,12 +287,12 @@ class AbstractGrid(abstract_structure.AbstractStructure2D):
         return np.fliplr(self)
 
     @property
-    def in_2d_flipped(self):
+    def native_flipped(self):
         """Return the grid as an ndarray array of shape [total_x_pixels, total_y_pixels, 2[ with flipped values such
         that coordinates are given as (x,y) values.
 
         This is used to interface with Python libraries that require the grid in (x,y) format."""
-        return np.stack((self.in_2d[:, :, 1], self.in_2d[:, :, 0]), axis=-1)
+        return np.stack((self.native[:, :, 1], self.native[:, :, 0]), axis=-1)
 
     @property
     @array_util.Memoizer()
@@ -317,7 +317,7 @@ class AbstractGrid(abstract_structure.AbstractStructure2D):
         squared_distances = np.square(self[:, 0] - coordinate[0]) + np.square(
             self[:, 1] - coordinate[1]
         )
-        return arrays.Array.manual_mask(array=squared_distances, mask=self.mask)
+        return arrays.Array2D.manual_mask(array=squared_distances, mask=self.mask)
 
     def distances_from_coordinate(self, coordinate=(0.0, 0.0)):
         """
@@ -333,7 +333,7 @@ class AbstractGrid(abstract_structure.AbstractStructure2D):
         distances = np.sqrt(
             self.squared_distances_from_coordinate(coordinate=coordinate)
         )
-        return arrays.Array.manual_mask(array=distances, mask=self.mask)
+        return arrays.Array2D.manual_mask(array=distances, mask=self.mask)
 
     def grid_radii_from(self, centre=(0.0, 0.0)):
 
@@ -344,10 +344,10 @@ class AbstractGrid(abstract_structure.AbstractStructure2D):
             sub_size=self.sub_size,
         )
 
-        return grids.GridIrregular(grid=grid_radii)
+        return grids.Grid2DIrregular(grid=grid_radii)
 
     @property
-    def shape_2d_scaled(self) -> (float, float):
+    def shape_native_scaled(self) -> (float, float):
         """The two dimensional shape of the grid in scaled units, computed by taking the minimum and maximum values of
         the grid."""
         return (
@@ -359,16 +359,16 @@ class AbstractGrid(abstract_structure.AbstractStructure2D):
     def scaled_maxima(self) -> (float, float):
         """The maximum values of the grid in scaled coordinates returned as a tuple (y_max, x_max)."""
         return (
-            self.origin[0] + (self.shape_2d_scaled[0] / 2.0),
-            self.origin[1] + (self.shape_2d_scaled[1] / 2.0),
+            self.origin[0] + (self.shape_native_scaled[0] / 2.0),
+            self.origin[1] + (self.shape_native_scaled[1] / 2.0),
         )
 
     @property
     def scaled_minima(self) -> (float, float):
         """The minium values of the grid in scaled coordinates returned as a tuple (y_min, x_min)."""
         return (
-            (self.origin[0] - (self.shape_2d_scaled[0] / 2.0)),
-            (self.origin[1] - (self.shape_2d_scaled[1] / 2.0)),
+            (self.origin[0] - (self.shape_native_scaled[0] / 2.0)),
+            (self.origin[1] - (self.shape_native_scaled[1] / 2.0)),
         )
 
     @property
@@ -432,9 +432,9 @@ class AbstractGrid(abstract_structure.AbstractStructure2D):
 
         Parameters
         ----------
-        grid : Grid
+        grid : Grid2D
             The grid (uniform or irregular) whose pixels are to be relocated to the border edge if outside it.
-        border_grid : Grid
+        border_grid : Grid2D
             The grid of border (y,x) coordinates.
         """
 
@@ -477,7 +477,7 @@ class AbstractGrid(abstract_structure.AbstractStructure2D):
 
         return grid
 
-    def padded_grid_from_kernel_shape(self, kernel_shape_2d):
+    def padded_grid_from_kernel_shape(self, kernel_shape_native):
         """When the edge pixels of a mask are unmasked and a convolution is to occur, the signal of edge pixels will be
         'missing' if the grid is used to evaluate the signal via an analytic function.
 
@@ -486,23 +486,23 @@ class AbstractGrid(abstract_structure.AbstractStructure2D):
 
         Parameters
         ----------
-        kernel_shape_2d : (float, float)
+        kernel_shape_native : (float, float)
             The 2D shape of the kernel which convolves signal from masked pixels to unmasked pixels.
         """
         shape = self.mask.shape
 
         padded_shape = (
-            shape[0] + kernel_shape_2d[0] - 1,
-            shape[1] + kernel_shape_2d[1] - 1,
+            shape[0] + kernel_shape_native[0] - 1,
+            shape[1] + kernel_shape_native[1] - 1,
         )
 
         padded_mask = msk.Mask2D.unmasked(
-            shape_2d=padded_shape,
+            shape_native=padded_shape,
             pixel_scales=self.mask.pixel_scales,
             sub_size=self.mask.sub_size,
         )
 
-        return grids.Grid.from_mask(mask=padded_mask)
+        return grids.Grid2D.from_mask(mask=padded_mask)
 
     @property
     def sub_border_grid(self):
@@ -510,7 +510,7 @@ class AbstractGrid(abstract_structure.AbstractStructure2D):
 
         This is NOT all sub-pixels which are in mask pixels at the mask's border, but specifically the sub-pixels
         within these border pixels which are at the extreme edge of the border."""
-        return self[self.mask._sub_border_1d_indexes]
+        return self[self.mask._sub_border_flat_indexes]
 
     def relocated_grid_from_grid(self, grid):
         """ Relocate the coordinates of a grid to the border of this grid if they are outside the border, where the
@@ -531,14 +531,14 @@ class AbstractGrid(abstract_structure.AbstractStructure2D):
 
         Parameters
         ----------
-        grid : Grid
+        grid : Grid2D
             The grid (uniform or irregular) whose pixels are to be relocated to the border edge if outside it.
         """
 
         if len(self.sub_border_grid) == 0:
             return grid
 
-        return grids.Grid(
+        return grids.Grid2D(
             grid=self.relocated_grid_from_grid_jit(
                 grid=grid, border_grid=self.sub_border_grid
             ),
@@ -551,24 +551,24 @@ class AbstractGrid(abstract_structure.AbstractStructure2D):
         *relocated_grid_from_grid* for a full description of grid relocation.
 
         This function operates the same as other grid relocation functions by returns the grid as a
-        `GridVoronoi` instance.
+        `Grid2DVoronoi` instance.
 
         Parameters
         ----------
-        grid : Grid
+        grid : Grid2D
             The grid (uniform or irregular) whose pixels are to be relocated to the border edge if outside it.
         """
 
         if len(self.sub_border_grid) == 0:
             return pixelization_grid
 
-        if isinstance(pixelization_grid, grids.GridVoronoi):
+        if isinstance(pixelization_grid, grids.Grid2DVoronoi):
 
-            return grids.GridVoronoi(
+            return grids.Grid2DVoronoi(
                 grid=self.relocated_grid_from_grid_jit(
                     grid=pixelization_grid, border_grid=self.sub_border_grid
                 ),
-                nearest_pixelization_1d_index_for_mask_1d_index=pixelization_grid.nearest_pixelization_1d_index_for_mask_1d_index,
+                nearest_pixelization_index_for_slim_index=pixelization_grid.nearest_pixelization_index_for_slim_index,
             )
 
         return pixelization_grid
@@ -584,5 +584,5 @@ class AbstractGrid(abstract_structure.AbstractStructure2D):
         overwrite : bool
             If a file already exists at the path, if overwrite=True it is overwritten else an error is raised."""
         array_util.numpy_array_2d_to_fits(
-            array_2d=self.in_2d, file_path=file_path, overwrite=overwrite
+            array_2d=self.native, file_path=file_path, overwrite=overwrite
         )

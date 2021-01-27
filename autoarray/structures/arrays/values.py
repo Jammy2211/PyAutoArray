@@ -12,7 +12,8 @@ logger = logging.getLogger(__name__)
 
 class ValuesIrregularGrouped(np.ndarray):
     def __new__(cls, values):
-        """A collection of values structured in a way defining groups of values which share a common origin (for
+        """
+        A collection of values structured in a way defining groups of values which share a common origin (for
         example values may be grouped if they are from a specific region of a dataset).
 
         Grouping is structured as follows:
@@ -35,7 +36,7 @@ class ValuesIrregularGrouped(np.ndarray):
 
         Print methods are overridden so a user always "sees" the values as the list structure.
 
-        In contrast to a *Array* structure, *ValuesIrregularGrouped* do not lie on a uniform grid or correspond to values that
+        In contrast to a *Array2D* structure, *ValuesIrregularGrouped* do not lie on a uniform grid or correspond to values that
         originate from a uniform grid. Therefore, when handling irregular data-sets *ValuesIrregularGrouped* should be used.
 
         Parameters
@@ -84,50 +85,50 @@ class ValuesIrregularGrouped(np.ndarray):
             self.upper_indexes = obj.upper_indexes
 
     @property
-    def in_1d(self):
+    def slim(self):
         """The ValuesIrregularGrouped in their 1D representation, an ndarray of shape [total_values]."""
         return self
+
+    @property
+    def in_list(self):
+        """Return the coordinates on a structured list which groups coordinates with a common origin."""
+        return [value for value in self.slim]
 
     @property
     def in_grouped_list(self):
         """Convenience method to access the ValuesIrregularGrouped in their list representation, whcih is a list of lists of floatss."""
         return [list(self[i:j]) for i, j in zip(self.lower_indexes, self.upper_indexes)]
 
-    @property
-    def in_1d_list(self):
-        """Return the coordinates on a structured list which groups coordinates with a common origin."""
-        return [value for value in self.in_1d]
-
-    def values_from_arr_1d(self, arr_1d):
+    def values_from_array_slim(self, array_slim):
         """Create a *ValuesIrregularGrouped* object from a 1D ndarray of values of shape [total_values].
 
         The *ValuesIrregularGrouped* are structured and grouped following this *ValuesIrregularGrouped* instance.
 
         Parameters
         ----------
-        arr_1d : np.ndarray
+        array_slim : np.ndarray
             The 1D array (shape [total_values]) of values that are mapped to a *ValuesIrregularGrouped* object."""
-        values_1d = [
-            list(arr_1d[i:j]) for i, j in zip(self.lower_indexes, self.upper_indexes)
+        values = [
+            list(array_slim[i:j]) for i, j in zip(self.lower_indexes, self.upper_indexes)
         ]
-        return ValuesIrregularGrouped(values=values_1d)
+        return ValuesIrregularGrouped(values=values)
 
-    def grid_from_grid_1d(self, grid_1d):
-        """Create a `GridIrregularGrouped` object from a 2D ndarray array of values of shape [total_values, 2].
+    def grid_from_grid_slim(self, grid_slim):
+        """Create a `Grid2DIrregularGrouped` object from a 2D ndarray array of values of shape [total_values, 2].
 
-        The `GridIrregularGrouped` are structured and grouped following this *Coordinate* instance.
+        The `Grid2DIrregularGrouped` are structured and grouped following this *Coordinate* instance.
 
         Parameters
         ----------
-        grid_1d : np.ndarray
-            The 2d array (shape [total_coordinates, 2]) of (y,x) coordinates that are mapped to a `GridIrregularGrouped`
+        grid_slim : np.ndarray
+            The 2d array (shape [total_coordinates, 2]) of (y,x) coordinates that are mapped to a `Grid2DIrregularGrouped`
             object."""
         grouped_grids_1d = [
-            list(map(tuple, grid_1d[i:j, :]))
+            list(map(tuple, grid_slim[i:j, :]))
             for i, j in zip(self.lower_indexes, self.upper_indexes)
         ]
 
-        return grids.GridIrregularGrouped(grid=grouped_grids_1d)
+        return grids.Grid2DIrregularGrouped(grid=grouped_grids_1d)
 
     @classmethod
     def from_file(cls, file_path):

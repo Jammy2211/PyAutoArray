@@ -32,18 +32,18 @@ def array_eps_to_counts(array_eps, bscale, bzero):
 
     if bscale is None:
         raise exc.FrameException(
-            "Cannot convert a Frame to units COUNTS without a bscale attribute (bscale = None)."
+            "Cannot convert a Frame2D to units COUNTS without a bscale attribute (bscale = None)."
         )
 
     return (array_eps - bzero) / bscale
 
 
-class ArrayACS(arrays.Array):
+class ArrayACS(arrays.Array2D):
 
     pass
 
 
-class FrameACS(f.Frame, ArrayACS):
+class FrameACS(f.Frame2D, ArrayACS):
     """An ACS frame consists of four quadrants ('A', 'B', 'C', 'D') which have the following layout:
 
        <--------S-----------   ---------S----------->
@@ -137,7 +137,7 @@ class FrameACS(f.Frame, ArrayACS):
         See the docstring of the `FrameACS` class for a complete description of the Euclid FPA, quadrants and
         rotations.
         """
-        parallel_overscan = reg.Region(
+        parallel_overscan = reg.Region2D(
             (
                 parallel_size - parallel_overscan_size,
                 parallel_size,
@@ -146,7 +146,7 @@ class FrameACS(f.Frame, ArrayACS):
             )
         )
 
-        serial_prescan = reg.Region((0, parallel_size, 0, serial_prescan_size))
+        serial_prescan = reg.Region2D((0, parallel_size, 0, serial_prescan_size))
 
         return cls.manual(
             array=array_electrons,
@@ -175,7 +175,7 @@ class FrameACS(f.Frame, ArrayACS):
         See the docstring of the `FrameACS` class for a complete description of the Euclid FPA, quadrants and
         rotations.
         """
-        parallel_overscan = reg.Region(
+        parallel_overscan = reg.Region2D(
             (
                 parallel_size - parallel_overscan_size,
                 parallel_size,
@@ -184,7 +184,7 @@ class FrameACS(f.Frame, ArrayACS):
             )
         )
 
-        serial_prescan = reg.Region(
+        serial_prescan = reg.Region2D(
             (0, parallel_size, serial_size - serial_prescan_size, serial_size)
         )
 

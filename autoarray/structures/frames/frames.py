@@ -6,7 +6,7 @@ from autoarray.mask import mask_2d as msk
 from autoarray.util import array_util, geometry_util, frame_util
 
 
-class Frame(abstract_frame.AbstractFrame):
+class Frame2D(abstract_frame.AbstractFrame2D):
     def __new__(
         cls, array, mask, original_roe_corner=(1, 0), scans=None, exposure_info=None
     ):
@@ -26,11 +26,11 @@ class Frame(abstract_frame.AbstractFrame):
 
         Parameters
         -----------
-        parallel_overscan : frame.Region
+        parallel_overscan : frame.Region2D
             The parallel overscan region of the ci_frame.
-        serial_prescan : frame.Region
+        serial_prescan : frame.Region2D
             The serial prescan region of the ci_frame.
-        serial_overscan : frame.Region
+        serial_overscan : frame.Region2D
             The serial overscan region of the ci_frame.
         """
 
@@ -41,7 +41,7 @@ class Frame(abstract_frame.AbstractFrame):
 
         obj = array.view(cls)
         obj.mask = mask
-        obj.store_in_1d = False
+        obj.store_slim = False
         obj.zoom_for_plot = False
         obj.original_roe_corner = original_roe_corner
         obj.scans = scans or abstract_frame.Scans()
@@ -69,11 +69,11 @@ class Frame(abstract_frame.AbstractFrame):
 
         Parameters
         -----------
-        parallel_overscan : frame.Region
+        parallel_overscan : frame.Region2D
             The parallel overscan region of the ci_frame.
-        serial_prescan : frame.Region
+        serial_prescan : frame.Region2D
             The serial prescan region of the ci_frame.
-        serial_overscan : frame.Region
+        serial_overscan : frame.Region2D
             The serial overscan region of the ci_frame.
         """
 
@@ -81,10 +81,10 @@ class Frame(abstract_frame.AbstractFrame):
 
         pixel_scales = geometry_util.convert_pixel_scales_2d(pixel_scales=pixel_scales)
 
-        mask = msk.Mask2D.unmasked(shape_2d=array.shape, pixel_scales=pixel_scales)
+        mask = msk.Mask2D.unmasked(shape_native=array.shape, pixel_scales=pixel_scales)
 
         scans = abstract_frame.Scans.rotated_from_roe_corner(
-            roe_corner=roe_corner, shape_2d=array.shape, scans=scans
+            roe_corner=roe_corner, shape_native=array.shape, scans=scans
         )
 
         return cls(
@@ -118,11 +118,11 @@ class Frame(abstract_frame.AbstractFrame):
 
         Parameters
         -----------
-        parallel_overscan : Region
+        parallel_overscan : Region2D
             The parallel overscan region of the ci_frame.
-        serial_prescan : Region
+        serial_prescan : Region2D
             The serial prescan region of the ci_frame.
-        serial_overscan : Region
+        serial_overscan : Region2D
             The serial overscan region of the ci_frame.
         """
 
@@ -138,7 +138,7 @@ class Frame(abstract_frame.AbstractFrame):
         array[mask == True] = 0.0
 
         scans = abstract_frame.Scans.rotated_from_roe_corner(
-            roe_corner=roe_corner, shape_2d=array.shape, scans=scans
+            roe_corner=roe_corner, shape_native=array.shape, scans=scans
         )
 
         return cls(
@@ -153,7 +153,7 @@ class Frame(abstract_frame.AbstractFrame):
     def full(
         cls,
         fill_value,
-        shape_2d,
+        shape_native,
         pixel_scales,
         roe_corner=(1, 0),
         scans=None,
@@ -161,7 +161,7 @@ class Frame(abstract_frame.AbstractFrame):
     ):
 
         return cls.manual(
-            array=np.full(fill_value=fill_value, shape=shape_2d),
+            array=np.full(fill_value=fill_value, shape=shape_native),
             pixel_scales=pixel_scales,
             roe_corner=roe_corner,
             scans=scans,
@@ -170,11 +170,11 @@ class Frame(abstract_frame.AbstractFrame):
 
     @classmethod
     def ones(
-        cls, shape_2d, pixel_scales, roe_corner=(1, 0), scans=None, exposure_info=None
+        cls, shape_native, pixel_scales, roe_corner=(1, 0), scans=None, exposure_info=None
     ):
         return cls.full(
             fill_value=1.0,
-            shape_2d=shape_2d,
+            shape_native=shape_native,
             roe_corner=roe_corner,
             scans=scans,
             exposure_info=exposure_info,
@@ -183,11 +183,11 @@ class Frame(abstract_frame.AbstractFrame):
 
     @classmethod
     def zeros(
-        cls, shape_2d, pixel_scales, roe_corner=(1, 0), scans=None, exposure_info=None
+        cls, shape_native, pixel_scales, roe_corner=(1, 0), scans=None, exposure_info=None
     ):
         return cls.full(
             fill_value=0.0,
-            shape_2d=shape_2d,
+            shape_native=shape_native,
             pixel_scales=pixel_scales,
             roe_corner=roe_corner,
             scans=scans,
@@ -248,7 +248,7 @@ class Frame(abstract_frame.AbstractFrame):
 
     @classmethod
     def from_frame(cls, frame, mask):
-        return Frame(
+        return Frame2D(
             array=frame,
             mask=mask,
             original_roe_corner=frame.original_roe_corner,

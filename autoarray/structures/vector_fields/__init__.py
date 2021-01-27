@@ -1,1 +1,1 @@
-from .vector_field_irregular import VectorFieldIrregular
+from .vector_field_irregular import VectorField2DIrregular

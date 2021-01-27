@@ -5,19 +5,19 @@ from autoarray.util import array_util, mask_util
 
 
 @decorator_util.jit()
-def padded_binning_shape_2d_from(
-    shape_2d: (int, int), bin_up_factor: int
+def padded_binning_shape_native_from(
+    shape_native: (int, int), bin_up_factor: int
 ) -> (int, int):
     """
     Returns the padded 2D shape of a 2D array that is going to be binned up, based on the ``bin_up_factor``. This shape
     accounts for if the array is padded first.
 
-    For example, if the array has ``shape_2d`` (5,5) and the ``bin_up_factor`` is 2, this routine will calculate that
-    the binned up array's ``shape_2d`` will becocme (6,6).
+    For example, if the array has ``shape_native`` (5,5) and the ``bin_up_factor`` is 2, this routine will calculate that
+    the binned up array's ``shape_native`` will becocme (6,6).
 
     Parameters
     ----------
-    shape_2d : (int, int)
+    shape_native : (int, int)
         The shape of the 2D array that is to binned.
     bin_up_factor : int
         The factor which the array is binned up by (e.g. a value of 2 bins every 2 x 2 pixels into one pixel).
@@ -35,7 +35,7 @@ def padded_binning_shape_2d_from(
     padded_array_2d = padded_array_2d_for_binning_up_with_bin_up_factor(
         array_2d=array_2d, bin_up_factor=2, pad_value=0.0)
     """
-    shape_remainder = (shape_2d[0] % bin_up_factor, shape_2d[1] % bin_up_factor)
+    shape_remainder = (shape_native[0] % bin_up_factor, shape_native[1] % bin_up_factor)
 
     if shape_remainder[0] != 0 and shape_remainder[1] != 0:
         shape_pad = (
@@ -49,7 +49,7 @@ def padded_binning_shape_2d_from(
     else:
         shape_pad = (0, 0)
 
-    return (shape_2d[0] + shape_pad[0], shape_2d[1] + shape_pad[1])
+    return (shape_native[0] + shape_pad[0], shape_native[1] + shape_pad[1])
 
 
 @decorator_util.jit()
@@ -60,7 +60,7 @@ def padded_binning_array_2d_from(
     If an array is to be binned up, but the dimensions are not divisible by the ``bin-up factor``, this routine pads
     the array to make it divisible.
 
-    For example, if the array has ``shape_2d`` (5,5) and the ``bin_up_factor`` is 2, this routine will pad the array
+    For example, if the array has ``shape_native`` (5,5) and the ``bin_up_factor`` is 2, this routine will pad the array
     to shape (6,6).
 
     Parameters
@@ -84,12 +84,12 @@ def padded_binning_array_2d_from(
         array_2d=array_2d, bin_up_factor=2, pad_value=0.0)
     """
 
-    padded_binning_shape_2d = padded_binning_shape_2d_from(
-        shape_2d=array_2d.shape, bin_up_factor=bin_up_factor
+    padded_binning_shape_native = padded_binning_shape_native_from(
+        shape_native=array_2d.shape, bin_up_factor=bin_up_factor
     )
 
     return array_util.resized_array_2d_from_array_2d(
-        array_2d=array_2d, resized_shape=padded_binning_shape_2d, pad_value=pad_value
+        array_2d=array_2d, resized_shape=padded_binning_shape_native, pad_value=pad_value
     )
 
 
@@ -98,7 +98,7 @@ def bin_array_2d_via_mean(array_2d: np.ndarray, bin_up_factor: int) -> np.ndarra
     """Bin up an array to coarser resolution, by binning up groups of pixels and using their mean value to determine
      the value of the new pixel.
 
-    If an ``array_2d`` with ``shape_2d`` (8,8) is input and the ``bin_up_factor`` is 2, this would return a new array of ``shape_2d`` (4,4) where
+    If an ``array_2d`` with ``shape_native`` (8,8) is input and the ``bin_up_factor`` is 2, this would return a new array of ``shape_native`` (4,4) where
     every pixel was the mean of each collection of 2x2 pixels on the (8,8) array.
 
     If binning up the array leads to an edge being cut (e.g. a (9,9) array binned up by 2), the array is first
@@ -152,7 +152,7 @@ def bin_array_2d_via_quadrature(array_2d: np.ndarray, bin_up_factor: int) -> np.
     """Bin up an array to coarser resolution, by binning up groups of pixels and using their quadrature value to
     determine the value of the new pixel.
 
-    If an ``array_2d`` with ``shape_2d`` (8,8) is input and the ``bin_up_factor`` is 2, this would return a new array of ``shape_2d`` (4,4) where
+    If an ``array_2d`` with ``shape_native`` (8,8) is input and the ``bin_up_factor`` is 2, this would return a new array of ``shape_native`` (4,4) where
     every pixel was the quadrature of each collection of 2x2 pixels on the (8,8) array.
 
     If binning up the array leads to an edge being cut (e.g. a (9,9) array binned up by 2), the array is first
@@ -207,8 +207,8 @@ def bin_array_2d_via_sum(array_2d: np.ndarray, bin_up_factor: int) -> np.ndarray
     Bin up an array to coarser resolution, by binning up groups of pixels and using their sum value to determine
     the value of the new pixel.
 
-    If an ``array_2d`` with ``shape_2d`` (8,8) is input and the ``bin_up_factor`` is 2, this would return a new array
-    of ``shape_2d`` (4,4) where every pixel was the sum of each collection of 2x2 pixels on the (8,8) array.
+    If an ``array_2d`` with ``shape_native`` (8,8) is input and the ``bin_up_factor`` is 2, this would return a new array
+    of ``shape_native`` (4,4) where every pixel was the sum of each collection of 2x2 pixels on the (8,8) array.
 
     If binning up the array leads to an edge being cut (e.g. a (9,9) array binned up by 2), the array is first
     padded to make the division work. One must be careful of edge effects in this case.
@@ -262,8 +262,8 @@ def bin_mask(mask: np.ndarray, bin_up_factor: int) -> np.ndarray:
     Bin up an array to coarser resolution, by binning up groups of pixels and using their sum value to determine
     the value of the new pixel.
 
-    If an ``array_2d`` with ``shape_2d`` (8,8) is input and the ``bin_up_factor`` is 2, this would return a new array
-    of ``shape_2d`` (4,4) where every pixel was the sum of each collection of 2x2 pixels on the (8,8) array.
+    If an ``array_2d`` with ``shape_native`` (8,8) is input and the ``bin_up_factor`` is 2, this would return a new array
+    of ``shape_native`` (4,4) where every pixel was the sum of each collection of 2x2 pixels on the (8,8) array.
 
     If binning up the array leads to an edge being cut (e.g. a (9,9) array binned up by 2), an ``array_2d`` is first
     extracted around the centre of that array.
@@ -532,7 +532,7 @@ def masked_array_1d_for_binned_masked_array_1d_from(
     Returns a 1D array which maps every (padded) binned masked index to its correspond 1D index in the original 2D
     mask that was binned up.
 
-    Array indexing starts from the top-left and goes rightwards and downwards. The top-left pixel of each mask is
+    Array2D indexing starts from the top-left and goes rightwards and downwards. The top-left pixel of each mask is
     used before binning up.
 
     This uses the convenience tools *padded_mask_to_mask_1d* and *padded_mask_to_binned_mask_1d* to
@@ -633,7 +633,7 @@ def masked_array_1d_for_binned_masked_array_1d_all_from(
     Returns a 2D array which maps every (padded) binned masked index to all of the corresponding 1D indexes of the
     the original 2D mask that was binned up.
 
-    Array indexing starts from the top-left and goes rightwards and downwards. The top-left pixel of each mask is
+    Array2D indexing starts from the top-left and goes rightwards and downwards. The top-left pixel of each mask is
     used before binning up. Minus one's are used for util which go to masked values with True.
 
     This uses the convenience tools *padded_mask_to_mask_1d* and *padded_mask_to_binned_mask_1d* to

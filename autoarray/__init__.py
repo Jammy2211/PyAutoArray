@@ -1,9 +1,9 @@
-from autoarray.structures.lines.lines import Line
-from autoarray.structures.grids.irregular import GridIrregularGrouped
-from autoarray.structures.grids.irregular import GridIrregularGroupedUniform
-from autoarray.structures.grids.iterate import GridIterate
+from autoarray.structures.lines.lines import Line1D
+from autoarray.structures.grids.irregular import Grid2DIrregularGrouped
+from autoarray.structures.grids.irregular import Grid2DIrregularGroupedUniform
+from autoarray.structures.grids.iterate import Grid2DIterate
 from autoarray.structures.vector_fields.vector_field_irregular import (
-    VectorFieldIrregular,
+    VectorField2DIrregular,
 )
 from . import exc
 from . import plot
@@ -36,21 +36,21 @@ from .operators.convolver import Convolver
 from .operators.convolver import Convolver
 from .operators.transformer import TransformerDFT
 from .operators.transformer import TransformerNUFFT
-from .structures.arrays import Array
+from .structures.arrays import Array2D
 from .structures.arrays import ValuesIrregularGrouped
 from .structures.arrays.abstract_array import ExposureInfo
-from .structures.frames import Frame
+from .structures.frames import Frame2D
 from .structures.frames.abstract_frame import Scans
-from .structures.grids import Grid
-from .structures.grids import GridInterpolate
-from .structures.grids import GridRectangular
-from .structures.grids import GridVoronoi
-from .structures.grids import GridIrregular
-from .structures.grids import GridIrregularGrouped
-from .structures.grids import GridIrregularGroupedUniform
-from .structures.region import Region
-from .structures.kernel import Kernel
-from .structures.region import Region
+from .structures.grids import Grid2D
+from .structures.grids import Grid2DInterpolate
+from .structures.grids import Grid2DRectangular
+from .structures.grids import Grid2DVoronoi
+from .structures.grids import Grid2DIrregular
+from .structures.grids import Grid2DIrregularGrouped
+from .structures.grids import Grid2DIrregularGroupedUniform
+from .structures.region import Region2D
+from .structures.kernel import Kernel2D
+from .structures.region import Region2D
 from .structures.visibilities import Visibilities
 from .structures.visibilities import VisibilitiesNoiseMap
 

@@ -94,13 +94,13 @@ class AbstractMatWrap:
         
         Classes are used to wrap matplotlib so that the data structures in the `autoarray.structures` package can be 
         plotted in standardized withs. This exploits how these structures have specific formats, units, properties etc.
-        This allows us to make a simple API for plotting structures, for example to plot an `Array` structure:
+        This allows us to make a simple API for plotting structures, for example to plot an `Array2D` structure:
         
         import autoarray as aa
         import autoarray.plot as aplt
         
-        arr = aa.Array.manual_2d(array=[[1.0, 1.0], [2.0, 2.0]], pixel_scales=2.0)
-        aplt.Array(array=arr)
+        arr = aa.Array2D.manual_native(array=[[1.0, 1.0], [2.0, 2.0]], pixel_scales=2.0)
+        aplt.Array2D(array=arr)
         
         The wrapped Mat objects make it simple to customize how matplotlib visualizes this data structure, for example
         we can customize the figure size and colormap using the `Figure` and `Cmap` objects.
@@ -110,7 +110,7 @@ class AbstractMatWrap:
         
         plotter = aplt.MatPlot2D(figure=figure, cmap=cmap)
         
-        aplt.Array(array=arr, plotter=plotter)
+        aplt.Array2D(array=arr, plotter=plotter)
         
         The `Plotter` object is detailed in the `autoarray.plot.plotter` package.
         
@@ -123,7 +123,7 @@ class AbstractMatWrap:
         [subplot]
         figsize=auto
         
-        This specifies that when a data structure (like the `Array` above) is plotted, the figsize will always be 
+        This specifies that when a data structure (like the `Array2D` above) is plotted, the figsize will always be 
         (7,7) when a single figure is plotted and it will be chosen automatically if a subplot is plotted. This
         allows one to customize the matplotlib settings of every plot in a project.
         """
@@ -199,8 +199,8 @@ class Figure(AbstractMatWrap):
         elif self.config_dict["aspect"] in "equal":
             return 1.0
 
-    def aspect_from_shape_2d(
-        self, shape_2d: typing.Union[typing.Tuple[int, int]]
+    def aspect_from_shape_native(
+        self, shape_native: typing.Union[typing.Tuple[int, int]]
     ) -> typing.Union[float, str]:
         """
         Returns the aspect ratio of the figure from the 2D shape of a data structure.
@@ -209,12 +209,12 @@ class Figure(AbstractMatWrap):
 
         Parameters
         ----------
-        shape_2d : (int, int)
-            The two dimensional shape of an `Array` that is to be plotted.
+        shape_native : (int, int)
+            The two dimensional shape of an `Array2D` that is to be plotted.
         """
         if isinstance(self.config_dict["aspect"], str):
             if self.config_dict["aspect"] in "square":
-                return float(shape_2d[1]) / float(shape_2d[0])
+                return float(shape_native[1]) / float(shape_native[0])
 
         return self.config_dict["aspect"]
 
@@ -499,7 +499,7 @@ class AbstractTicks(AbstractMatWrap):
             return np.linspace(min_value, max_value, 5)
 
     def tick_values_in_units_from(
-        self, array: arrays.Array, min_value: float, max_value: float, units: Units
+        self, array: arrays.Array2D, min_value: float, max_value: float, units: Units
     ) -> typing.Optional[np.ndarray]:
         """
         Calculate the labels used for the yticks or xticks from input values of the minimum and maximum coordinate
@@ -509,7 +509,7 @@ class AbstractTicks(AbstractMatWrap):
 
         Parameters
         ----------
-        array : arrays.Array
+        array : arrays.Array2D
             The array of data that is to be plotted, whose 2D shape is used to determine the tick values in units of
             pixels if this is the units specified by `units`.
         min_value : float
@@ -523,7 +523,7 @@ class AbstractTicks(AbstractMatWrap):
         if self.manual_values is not None:
             return np.asarray(self.manual_values)
         elif not units.use_scaled:
-            return np.linspace(0, array.shape_2d[0], 5).astype("int")
+            return np.linspace(0, array.shape_native[0], 5).astype("int")
         elif (units.use_scaled and units.conversion_factor is None) or not units.in_kpc:
             return np.round(np.linspace(min_value, max_value, 5), 2)
         elif units.use_scaled and units.conversion_factor is not None:
@@ -545,17 +545,17 @@ class AbstractTicks(AbstractMatWrap):
 class YTicks(AbstractTicks):
     def set(
         self,
-        array: typing.Optional[arrays.Array],
+        array: typing.Optional[arrays.Array2D],
         min_value: float,
         max_value: float,
         units: Units,
     ):
         """
-        Set the y ticks of a figure using the shape of an input `Array` object and input units.
+        Set the y ticks of a figure using the shape of an input `Array2D` object and input units.
 
         Parameters
         -----------
-        array : arrays.Array
+        array : arrays.Array2D
             The 2D array of data which is plotted.
         min_value : float
             the minimum value of the yticks that figure is plotted using.
@@ -575,17 +575,17 @@ class YTicks(AbstractTicks):
 class XTicks(AbstractTicks):
     def set(
         self,
-        array: typing.Optional[arrays.Array],
+        array: typing.Optional[arrays.Array2D],
         min_value: float,
         max_value: float,
         units: Units,
     ):
         """
-        Set the x ticks of a figure using the shape of an input `Array` object and input units.
+        Set the x ticks of a figure using the shape of an input `Array2D` object and input units.
 
         Parameters
         -----------
-        array : arrays.Array
+        array : arrays.Array2D
             The 2D array of data which is plotted.
         min_value : float
             the minimum value of the xticks that figure is plotted using.

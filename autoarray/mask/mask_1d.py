@@ -77,7 +77,7 @@ class AbstractMask1d(abstract_mask.AbstractMask):
         an annulus mask).
         """
         return Mask1D.unmasked(
-            shape_1d=self.shape_1d,
+            shape_slim=self.shape_slim,
             sub_size=self.sub_size,
             pixel_scales=self.pixel_scales,
             origin=self.origin,
@@ -90,12 +90,12 @@ class AbstractMask1d(abstract_mask.AbstractMask):
         This is defined from the top-left corner, such that the first pixel at location [0, 0] will have a negative x \
         value y value in scaled units.
         """
-        grid_1d = grid_util.grid_1d_via_mask_from(
+        grid_slim = grid_util.grid_1d_via_mask_from(
             mask_1d=self, pixel_scales=self.pixel_scales, sub_size=1, origin=self.origin
         )
 
-        return grids.Grid(
-            grid=grid_1d, mask=self.unmasked_mask.mask_sub_1, store_in_1d=True
+        return grids.Grid2D(
+            grid=grid_slim, mask=self.unmasked_mask.mask_sub_1, store_slim=True
         )
 
     def output_to_fits(self, file_path: str, overwrite: bool = False):
@@ -145,7 +145,7 @@ class Mask1D(AbstractMask1d):
         )
 
     @classmethod
-    def unmasked(cls, shape_1d, pixel_scales, sub_size=1, origin=(0.0,), invert=False):
+    def unmasked(cls, shape_slim, pixel_scales, sub_size=1, origin=(0.0,), invert=False):
         """Setup a mask where all pixels are unmasked.
 
         Parameters
@@ -156,7 +156,7 @@ class Mask1D(AbstractMask1d):
             The scaled units to pixel units conversion factor of each pixel.
         """
         return cls.manual(
-            mask=np.full(shape=shape_1d, fill_value=False),
+            mask=np.full(shape=shape_slim, fill_value=False),
             pixel_scales=pixel_scales,
             origin=origin,
             sub_size=sub_size,
@@ -199,23 +199,23 @@ class Mask1D(AbstractMask1d):
 
     @property
     def is_all_false(self):
-        return self.pixels_in_mask == self.shape_1d
+        return self.pixels_in_mask == self.shape_slim
 
     @property
-    def shape_1d(self):
+    def shape_slim(self):
         return self.shape[0]
 
     @property
-    def shape_1d_scaled(self):
-        return float(self.pixel_scales * self.shape_1d)
+    def shape_slim_scaled(self):
+        return float(self.pixel_scales * self.shape_slim)
 
     @property
     def scaled_maxima(self):
-        return (self.shape_1d_scaled / 2.0) + self.origin
+        return (self.shape_slim_scaled / 2.0) + self.origin
 
     @property
     def scaled_minima(self):
-        return -(self.shape_1d_scaled / 2.0) + self.origin
+        return -(self.shape_slim_scaled / 2.0) + self.origin
 
     @property
     def extent(self):

@@ -9,7 +9,7 @@ class AbstractInclude:
         """
         Sets which `Visuals` are included on a figure that is plotted using a `Plotter`.
 
-        The `Include` object is used to extract the visuals of the plotted data structure (e.g. `Array`, `Grid`) so
+        The `Include` object is used to extract the visuals of the plotted data structure (e.g. `Array2D`, `Grid2D`) so
         they can be used in plot functions. Only visuals with a `True` entry in the `Include` object are extracted and t
         plotted.
 
@@ -20,9 +20,9 @@ class AbstractInclude:
         Parameters
         ----------
         origin : bool
-            If `True`, the `origin` of the plotted data structure (e.g. `Array`, `Grid`)  is included on the figure.
+            If `True`, the `origin` of the plotted data structure (e.g. `Array2D`, `Grid2D`)  is included on the figure.
         mask : bool
-            if `True`, the `mask` of the plotted data structure (e.g. `Array`, `Grid`)  is included on the figure.
+            if `True`, the `mask` of the plotted data structure (e.g. `Array2D`, `Grid2D`)  is included on the figure.
         """
 
         self._origin = origin
@@ -78,7 +78,7 @@ class Include2D(AbstractInclude):
         grid: typing.Optional[bool] = None,
         mapper_data_pixelization_grid: typing.Optional[bool] = None,
         mapper_source_pixelization_grid: typing.Optional[bool] = None,
-        mapper_source_slim_grid: typing.Optional[bool] = None,
+        mapper_source_grid_slim: typing.Optional[bool] = None,
         parallel_overscan: typing.Optional[bool] = None,
         serial_prescan: typing.Optional[bool] = None,
         serial_overscan: typing.Optional[bool] = None,
@@ -96,21 +96,21 @@ class Include2D(AbstractInclude):
         Parameters
         ----------
         origin : bool
-            If `True`, the `origin` of the plotted data structure (e.g. `Array`, `Grid`)  is included on the figure.
+            If `True`, the `origin` of the plotted data structure (e.g. `Array2D`, `Grid2D`)  is included on the figure.
         mask : bool
-            if `True`, the `mask` of the plotted data structure (e.g. `Array`, `Grid`)  is included on the figure.
+            if `True`, the `mask` of the plotted data structure (e.g. `Array2D`, `Grid2D`)  is included on the figure.
         border : bool
-            If `True`, the `border` of the plotted data structure (e.g. `Array`, `Grid`)  is included on the figure.
+            If `True`, the `border` of the plotted data structure (e.g. `Array2D`, `Grid2D`)  is included on the figure.
         mapper_data_pixelization_grid : bool
             If `True`, the pixelization grid in the data plane of a plotted `Mapper` is included on the figure.
         mapper_source_pixelization_grid : bool
             If `True`, the pixelization grid in the source plane of a plotted `Mapper` is included on the figure.
         parallel_overscan : bool
-            If `True`, the parallel overscan of a plotted `Frame` is included on the figure.
+            If `True`, the parallel overscan of a plotted `Frame2D` is included on the figure.
         serial_prescan : bool
-            If `True`, the serial prescan of a plotted `Frame` is included on the figure.
+            If `True`, the serial prescan of a plotted `Frame2D` is included on the figure.
         serial_overscan : bool
-            If `True`, the serial overscan of a plotted `Frame` is included on the figure.
+            If `True`, the serial overscan of a plotted `Frame2D` is included on the figure.
         """
 
         super().__init__(origin=origin, mask=mask)
@@ -119,7 +119,7 @@ class Include2D(AbstractInclude):
         self._grid = grid
         self._mapper_data_pixelization_grid = mapper_data_pixelization_grid
         self._mapper_source_pixelization_grid = mapper_source_pixelization_grid
-        self._mapper_source_slim_grid = mapper_source_slim_grid
+        self._mapper_source_grid_slim = mapper_source_grid_slim
         self._parallel_overscan = parallel_overscan
         self._serial_prescan = serial_prescan
         self._serial_overscan = serial_overscan
@@ -147,9 +147,9 @@ class Include2D(AbstractInclude):
         )
 
     @property
-    def mapper_source_slim_grid(self):
+    def mapper_source_grid_slim(self):
         return self.load(
-            value=self._mapper_source_slim_grid, name="mapper_source_slim_grid"
+            value=self._mapper_source_grid_slim, name="mapper_source_grid_slim"
         )
 
     @property

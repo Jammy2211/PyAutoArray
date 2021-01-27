@@ -52,21 +52,21 @@ class TestFigure:
         assert figure.config_dict["figsize"] == (6, 6)
         assert figure.config_dict["aspect"] == "square"
 
-    def test__aspect_from_shape_2d(self):
+    def test__aspect_from_shape_native(self):
 
         figure = aplt.Figure(aspect="auto")
 
-        aspect = figure.aspect_from_shape_2d(shape_2d=(2, 2))
+        aspect = figure.aspect_from_shape_native(shape_native=(2, 2))
 
         assert aspect == "auto"
 
         figure = aplt.Figure(aspect="square")
 
-        aspect = figure.aspect_from_shape_2d(shape_2d=(2, 2))
+        aspect = figure.aspect_from_shape_native(shape_native=(2, 2))
 
         assert aspect == 1.0
 
-        aspect = figure.aspect_from_shape_2d(shape_2d=(4, 2))
+        aspect = figure.aspect_from_shape_native(shape_native=(4, 2))
 
         assert aspect == 0.5
 
@@ -112,7 +112,7 @@ class TestAxis:
 
         axis = aplt.Axis(symmetric_source_centre=True)
 
-        grid = aa.Grid.uniform(shape_2d=(3, 3), pixel_scales=2.0)
+        grid = aa.Grid2D.uniform(shape_native=(3, 3), pixel_scales=2.0)
 
         axis.set(extent=[0.1, 0.2, 0.3, 0.4], grid=grid)
 
@@ -173,7 +173,7 @@ class TestCmap:
 
     def test__norm_from_array__uses_array_to_get_vmin_and_max_if_no_manual_input(self,):
 
-        array = aa.Array.ones(shape_2d=(2, 2), pixel_scales=1.0)
+        array = aa.Array2D.ones(shape_native=(2, 2), pixel_scales=1.0)
         array[0] = 0.0
 
         cmap = aplt.Cmap(vmin=None, vmax=None, norm="linear")
@@ -330,7 +330,7 @@ class TestYTicks:
 
     def test__set__works_for_good_values(self):
 
-        array = aa.Array.ones(shape_2d=(2, 2), pixel_scales=1.0)
+        array = aa.Array2D.ones(shape_native=(2, 2), pixel_scales=1.0)
 
         units = aplt.Units(use_scaled=True, conversion_factor=None)
 
@@ -385,7 +385,7 @@ class TestXTicks:
         assert xticks.manual_values == [1.0, 2.0]
 
     def test__set__works_for_good_values(self):
-        array = aa.Array.ones(shape_2d=(2, 2), pixel_scales=1.0)
+        array = aa.Array2D.ones(shape_native=(2, 2), pixel_scales=1.0)
 
         units = aplt.Units(use_scaled=True, conversion_factor=None)
 

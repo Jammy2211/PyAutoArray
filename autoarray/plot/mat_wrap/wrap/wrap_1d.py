@@ -13,7 +13,7 @@ from autoarray import exc
 class AbstractMatWrap1D(wrap_base.AbstractMatWrap):
     """
     An abstract base class for wrapping matplotlib plotting methods which take as input and plot data structures. For
-    example, the `ArrayOverlay` object specifically plots `Array` data structures.
+    example, the `ArrayOverlay` object specifically plots `Array2D` data structures.
 
     As full description of the matplotlib wrapping can be found in `mat_base.AbstractMatWrap`.
     """
@@ -35,8 +35,8 @@ class LinePlot(AbstractMatWrap1D):
 
     def plot_y_vs_x(
         self,
-        y: typing.Union[np.ndarray, lines.Line],
-        x: typing.Union[np.ndarray, lines.Line],
+        y: typing.Union[np.ndarray, lines.Line1D],
+        x: typing.Union[np.ndarray, lines.Line1D],
         plot_axis_type: str,
         label: str = None,
     ):
@@ -46,7 +46,7 @@ class LinePlot(AbstractMatWrap1D):
 
         Parameters
         ----------
-        y : np.ndarray or lines.Line
+        y : np.ndarray or lines.Line1D
             The ydata that is plotted.
         x : np.ndarray or lines.Line
             The xdata that is plotted.

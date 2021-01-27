@@ -408,7 +408,7 @@ def numpy_array_2d_from_fits(
 
 
 @decorator_util.jit()
-def index_2d_for_index_slim_from(indexes_slim: np.ndarray, shape_2d) -> np.ndarray:
+def index_2d_for_index_slim_from(indexes_slim: np.ndarray, shape_native) -> np.ndarray:
     """
     For pixels on a native 2D array of shape (total_y_pixels, total_x_pixels), this array maps the slimmed 1D pixel
     indexes to their corresponding 2D pixel indexes.
@@ -427,7 +427,7 @@ def index_2d_for_index_slim_from(indexes_slim: np.ndarray, shape_2d) -> np.ndarr
     ----------
     indexes_slim : np.ndarray
         The slim 1D pixel indexes which are mapped to 2D indexes.
-    shape_2d : (int, int)
+    shape_native : (int, int)
         The shape of the 2D array which the pixels are natively defined on.
 
     Returns
@@ -444,14 +444,14 @@ def index_2d_for_index_slim_from(indexes_slim: np.ndarray, shape_2d) -> np.ndarr
 
     for i, index_slim in enumerate(indexes_slim):
 
-        index_2d_for_index_slim[i, 0] = int(index_slim / shape_2d[1])
-        index_2d_for_index_slim[i, 1] = int(index_slim % shape_2d[1])
+        index_2d_for_index_slim[i, 0] = int(index_slim / shape_native[1])
+        index_2d_for_index_slim[i, 1] = int(index_slim % shape_native[1])
 
     return index_2d_for_index_slim
 
 
 @decorator_util.jit()
-def index_slim_for_index_2d_from(indexes_2d: np.ndarray, shape_2d) -> np.ndarray:
+def index_slim_for_index_2d_from(indexes_2d: np.ndarray, shape_native) -> np.ndarray:
     """
     For pixels on a native 2D array of shape (total_y_pixels, total_x_pixels), this array maps the 2D pixel indexes to
     their corresponding slimmed 1D pixel indexes.
@@ -470,7 +470,7 @@ def index_slim_for_index_2d_from(indexes_2d: np.ndarray, shape_2d) -> np.ndarray
     ----------
     indexes_2d : np.ndarray
         The native 2D pixel indexes which are mapped to slimmed 1D indexes.
-    shape_2d : (int, int)
+    shape_native : (int, int)
         The shape of the 2D array which the pixels are defined on.
 
     Returns
@@ -487,7 +487,7 @@ def index_slim_for_index_2d_from(indexes_2d: np.ndarray, shape_2d) -> np.ndarray
 
     for i in range(indexes_2d.shape[0]):
         index_slim_for_index_native_2d[i] = int(
-            (indexes_2d[i, 0]) * shape_2d[1] + indexes_2d[i, 1]
+            (indexes_2d[i, 0]) * shape_native[1] + indexes_2d[i, 1]
         )
 
     return index_slim_for_index_native_2d
@@ -737,11 +737,11 @@ def sub_array_complex_slim_from(
 @decorator_util.jit()
 def sub_array_2d_complex_via_sub_indexes_from(
     sub_array_2d_slim: np.ndarray,
-    sub_shape_2d: (int, int),
+    sub_shape_native: (int, int),
     sub_native_index_for_slim_index: np.ndarray,
 ) -> np.ndarray:
 
-    sub_array_2d = 0 + 0j * np.zeros(sub_shape_2d)
+    sub_array_2d = 0 + 0j * np.zeros(sub_shape_native)
 
     for slim_index in range(len(sub_native_index_for_slim_index)):
         sub_array_2d[

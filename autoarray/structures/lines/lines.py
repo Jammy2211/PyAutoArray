@@ -12,7 +12,7 @@ def convert_line(line):
     return line
 
 
-class AbstractLine(abstract_structure.AbstractStructure1D):
+class AbstractLine1D(abstract_structure.AbstractStructure1D):
     def __new__(cls, line, mask, *args, **kwargs):
 
         obj = line.view(cls)
@@ -21,13 +21,14 @@ class AbstractLine(abstract_structure.AbstractStructure1D):
         return obj
 
     @property
-    def in_1d(self):
+    def slim(self):
         return self
 
 
-class Line(AbstractLine):
+class Line1D(AbstractLine1D):
+
     @classmethod
-    def manual_1d(cls, line, pixel_scales, sub_size=1, origin=(0.0,)):
+    def manual_slim(cls, line, pixel_scales, sub_size=1, origin=(0.0,)):
         """Create a Line (see `Line.__new__`) by inputting the line values in 1D, for example:
 
         line=np.array([1.0, 2.0 3.0, 4.0])
@@ -51,10 +52,10 @@ class Line(AbstractLine):
         pixel_scales = geometry_util.convert_pixel_scales_1d(pixel_scales=pixel_scales)
 
         mask = msk.Mask1D.unmasked(
-            shape_1d=line.shape[0],
+            shape_slim=line.shape[0],
             pixel_scales=pixel_scales,
             sub_size=sub_size,
             origin=origin,
         )
 
-        return Line(line=line, mask=mask)
+        return Line1D(line=line, mask=mask)

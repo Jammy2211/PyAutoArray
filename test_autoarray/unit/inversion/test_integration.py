@@ -24,7 +24,7 @@ class TestRectangular:
 
         # Source-plane comprises 5 grid, so 5 masked_image pixels traced to the pix-plane.
 
-        grid = aa.Grid.manual_mask(
+        grid = aa.Grid2D.manual_mask(
             grid=[[1.0, -1.0], [1.0, 1.0], [0.0, 0.0], [-1.0, -1.0], [-1.0, 1.0]],
             mask=mask,
         )
@@ -42,10 +42,10 @@ class TestRectangular:
         )
 
         assert mapper.data_pixelization_grid == None
-        assert mapper.source_slim_grid.shape_2d_scaled == pytest.approx(
+        assert mapper.source_grid_slim.shape_native_scaled == pytest.approx(
             (2.0, 2.0), 1.0e-4
         )
-        assert mapper.source_slim_grid.origin == pytest.approx((0.0, 0.0), 1.0e-4)
+        assert mapper.source_grid_slim.origin == pytest.approx((0.0, 0.0), 1.0e-4)
 
         assert (
             mapper.mapping_matrix
@@ -59,7 +59,7 @@ class TestRectangular:
                 ]
             )
         ).all()
-        assert mapper.shape_2d == (3, 3)
+        assert mapper.shape_native == (3, 3)
         assert (mapper.hyper_image == np.ones((2, 2))).all()
 
         reg = aa.reg.Constant(coefficient=1.0)
@@ -82,9 +82,9 @@ class TestRectangular:
             )
         ).all()
 
-        image = aa.Array.ones(shape_2d=(7, 7), pixel_scales=1.0)
-        noise_map = aa.Array.ones(shape_2d=(7, 7), pixel_scales=1.0)
-        psf = aa.Kernel.no_blur(pixel_scales=1.0)
+        image = aa.Array2D.ones(shape_native=(7, 7), pixel_scales=1.0)
+        noise_map = aa.Array2D.ones(shape_native=(7, 7), pixel_scales=1.0)
+        psf = aa.Kernel2D.no_blur(pixel_scales=1.0)
 
         imaging = aa.Imaging(image=image, noise_map=noise_map, psf=psf)
 
@@ -119,7 +119,7 @@ class TestRectangular:
 
         # There is no sub-grid, so our grid are just the masked_image grid (note the NumPy weighted_data structure
         # ensures this has no sub-gridding)
-        grid = aa.Grid.manual_mask(
+        grid = aa.Grid2D.manual_mask(
             grid=[
                 [0.9, -0.9],
                 [1.0, -1.0],
@@ -149,7 +149,7 @@ class TestRectangular:
         )
 
         assert mapper.data_pixelization_grid == None
-        assert mapper.source_pixelization_grid.shape_2d_scaled == pytest.approx(
+        assert mapper.source_pixelization_grid.shape_native_scaled == pytest.approx(
             (2.2, 2.2), 1.0e-4
         )
         assert mapper.source_pixelization_grid.origin == pytest.approx(
@@ -178,7 +178,7 @@ class TestRectangular:
                 ]
             )
         ).all()
-        assert mapper.shape_2d == (3, 3)
+        assert mapper.shape_native == (3, 3)
 
         reg = aa.reg.Constant(coefficient=1.0)
         regularization_matrix = reg.regularization_matrix_from_mapper(mapper=mapper)
@@ -200,9 +200,9 @@ class TestRectangular:
             )
         ).all()
 
-        image = aa.Array.ones(shape_2d=(7, 7), pixel_scales=1.0)
-        noise_map = aa.Array.ones(shape_2d=(7, 7), pixel_scales=1.0)
-        psf = aa.Kernel.no_blur(pixel_scales=1.0)
+        image = aa.Array2D.ones(shape_native=(7, 7), pixel_scales=1.0)
+        noise_map = aa.Array2D.ones(shape_native=(7, 7), pixel_scales=1.0)
+        psf = aa.Kernel2D.no_blur(pixel_scales=1.0)
 
         imaging = aa.Imaging(image=image, noise_map=noise_map, psf=psf)
 
@@ -241,7 +241,7 @@ class TestRectangular:
         # The grid below is unphysical in that the (0.0, 0.0) terms on the end of each sub-grid probably couldn't
         # happen for a real lens calculation. This is to make a mapping_matrix matrix which explicitly tests the
         # sub-grid.
-        grid = aa.Grid.manual_mask(
+        grid = aa.Grid2D.manual_mask(
             grid=[
                 [1.0, -1.0],
                 [1.0, -1.0],
@@ -276,7 +276,7 @@ class TestRectangular:
         )
 
         assert mapper.data_pixelization_grid == None
-        assert mapper.source_pixelization_grid.shape_2d_scaled == pytest.approx(
+        assert mapper.source_pixelization_grid.shape_native_scaled == pytest.approx(
             (2.0, 2.0), 1.0e-4
         )
         assert mapper.source_pixelization_grid.origin == pytest.approx(
@@ -295,7 +295,7 @@ class TestRectangular:
                 ]
             )
         ).all()
-        assert mapper.shape_2d == (3, 3)
+        assert mapper.shape_native == (3, 3)
 
         reg = aa.reg.Constant(coefficient=1.0)
         regularization_matrix = reg.regularization_matrix_from_mapper(mapper=mapper)
@@ -317,9 +317,9 @@ class TestRectangular:
             )
         ).all()
 
-        image = aa.Array.ones(shape_2d=(7, 7), pixel_scales=1.0)
-        noise_map = aa.Array.ones(shape_2d=(7, 7), pixel_scales=1.0)
-        psf = aa.Kernel.no_blur(pixel_scales=1.0)
+        image = aa.Array2D.ones(shape_native=(7, 7), pixel_scales=1.0)
+        noise_map = aa.Array2D.ones(shape_native=(7, 7), pixel_scales=1.0)
+        psf = aa.Kernel2D.no_blur(pixel_scales=1.0)
 
         imaging = aa.Imaging(image=image, noise_map=noise_map, psf=psf)
 
@@ -352,7 +352,7 @@ class TestRectangular:
             sub_size=1,
         )
 
-        grid = aa.Grid.manual_mask(
+        grid = aa.Grid2D.manual_mask(
             grid=[[1.0, 1.0], [1.0, 1.0], [1.0, 1.0], [1.0, 1.0], [-1.0, -1.0]],
             mask=mask,
         )
@@ -366,7 +366,7 @@ class TestRectangular:
         )
 
         assert mapper.data_pixelization_grid == None
-        assert mapper.source_pixelization_grid.shape_2d_scaled == pytest.approx(
+        assert mapper.source_pixelization_grid.shape_native_scaled == pytest.approx(
             (2.0, 2.0), 1.0e-4
         )
         assert mapper.source_pixelization_grid.origin == pytest.approx(
@@ -385,7 +385,7 @@ class TestRectangular:
                 ]
             )
         ).all()
-        assert mapper.shape_2d == (3, 3)
+        assert mapper.shape_native == (3, 3)
 
         reg = aa.reg.Constant(coefficient=1.0)
         regularization_matrix = reg.regularization_matrix_from_mapper(mapper=mapper)
@@ -407,9 +407,9 @@ class TestRectangular:
             )
         ).all()
 
-        image = aa.Array.ones(shape_2d=(7, 7), pixel_scales=1.0)
-        noise_map = aa.Array.ones(shape_2d=(7, 7), pixel_scales=1.0)
-        psf = aa.Kernel.no_blur(pixel_scales=1.0)
+        image = aa.Array2D.ones(shape_native=(7, 7), pixel_scales=1.0)
+        noise_map = aa.Array2D.ones(shape_native=(7, 7), pixel_scales=1.0)
+        psf = aa.Kernel2D.no_blur(pixel_scales=1.0)
 
         imaging = aa.Imaging(image=image, noise_map=noise_map, psf=psf)
 
@@ -431,10 +431,10 @@ class TestRectangular:
         visibilities_mask = np.full(fill_value=False, shape=(7,))
 
         real_space_mask = aa.Mask2D.unmasked(
-            shape_2d=(7, 7), pixel_scales=0.1, sub_size=1
+            shape_native=(7, 7), pixel_scales=0.1, sub_size=1
         )
 
-        grid = aa.Grid.from_mask(mask=real_space_mask)
+        grid = aa.Grid2D.from_mask(mask=real_space_mask)
 
         pix = aa.pix.Rectangular(shape=(7, 7))
 
@@ -446,7 +446,7 @@ class TestRectangular:
 
         reg = aa.reg.Constant(coefficient=0.0)
 
-        visibilities = aa.Visibilities.manual_1d(
+        visibilities = aa.Visibilities.manual_slim(
             visibilities=[
                 1.0 + 0.0j,
                 1.0 + 0.0j,
@@ -457,7 +457,7 @@ class TestRectangular:
                 1.0 + 0.0j,
             ]
         )
-        noise_map = aa.VisibilitiesNoiseMap.ones(shape_1d=(7,))
+        noise_map = aa.VisibilitiesNoiseMap.ones(shape_slim=(7,))
         uv_wavelengths = np.ones(shape=(7, 2))
 
         interferometer = aa.Interferometer(
@@ -490,10 +490,10 @@ class TestRectangular:
         visibilities_mask = np.full(fill_value=False, shape=(7,))
 
         real_space_mask = aa.Mask2D.unmasked(
-            shape_2d=(7, 7), pixel_scales=0.1, sub_size=1
+            shape_native=(7, 7), pixel_scales=0.1, sub_size=1
         )
 
-        grid = aa.Grid.from_mask(mask=real_space_mask)
+        grid = aa.Grid2D.from_mask(mask=real_space_mask)
 
         pix = aa.pix.Rectangular(shape=(7, 7))
 
@@ -505,7 +505,7 @@ class TestRectangular:
 
         reg = aa.reg.Constant(coefficient=0.0)
 
-        visibilities = aa.Visibilities.manual_1d(
+        visibilities = aa.Visibilities.manual_slim(
             visibilities=[
                 1.0 + 0.0j,
                 1.0 + 0.0j,
@@ -516,7 +516,7 @@ class TestRectangular:
                 1.0 + 0.0j,
             ]
         )
-        noise_map = aa.VisibilitiesNoiseMap.ones(shape_1d=(7,))
+        noise_map = aa.VisibilitiesNoiseMap.ones(shape_slim=(7,))
         uv_wavelengths = np.ones(shape=(7, 2))
 
         interferometer = aa.Interferometer(
@@ -579,19 +579,19 @@ class TestVoronoiMagnification:
             ]
         )
 
-        grid = aa.Grid.manual_mask(grid=grid, mask=mask)
+        grid = aa.Grid2D.manual_mask(grid=grid, mask=mask)
 
         pix = aa.pix.VoronoiMagnification(shape=(3, 3))
-        sparse_grid = grids.GridSparse.from_grid_and_unmasked_2d_grid_shape(
+        sparse_grid = grids.Grid2DSparse.from_grid_and_unmasked_2d_grid_shape(
             grid=grid, unmasked_sparse_shape=pix.shape
         )
 
-        pixelization_grid = aa.GridVoronoi(
+        pixelization_grid = aa.Grid2DVoronoi(
             grid=sparse_grid.sparse,
-            nearest_pixelization_1d_index_for_mask_1d_index=sparse_grid.sparse_1d_index_for_mask_1d_index,
+            nearest_pixelization_index_for_slim_index=sparse_grid.sparse_index_for_slim_index,
         )
 
-        sparse_image_plane_grid = aa.GridIrregular(grid=[(0.0, 0.0)])
+        sparse_image_plane_grid = aa.Grid2DIrregular(grid=[(0.0, 0.0)])
 
         mapper = pix.mapper_from_grid_and_sparse_grid(
             grid=grid,
@@ -602,7 +602,7 @@ class TestVoronoiMagnification:
         )
 
         assert (mapper.data_pixelization_grid == sparse_image_plane_grid).all()
-        assert mapper.source_pixelization_grid.shape_2d_scaled == pytest.approx(
+        assert mapper.source_pixelization_grid.shape_native_scaled == pytest.approx(
             (2.0, 2.0), 1.0e-4
         )
         assert (mapper.source_pixelization_grid == sparse_grid.sparse).all()
@@ -648,9 +648,9 @@ class TestVoronoiMagnification:
             )
         ).all()
 
-        image = aa.Array.ones(shape_2d=(5, 5), pixel_scales=1.0)
-        noise_map = aa.Array.ones(shape_2d=(5, 5), pixel_scales=1.0)
-        psf = aa.Kernel.no_blur(pixel_scales=1.0)
+        image = aa.Array2D.ones(shape_native=(5, 5), pixel_scales=1.0)
+        noise_map = aa.Array2D.ones(shape_native=(5, 5), pixel_scales=1.0)
+        psf = aa.Kernel2D.no_blur(pixel_scales=1.0)
 
         imaging = aa.Imaging(image=image, noise_map=noise_map, psf=psf)
 
@@ -683,16 +683,16 @@ class TestVoronoiMagnification:
 
         grid = np.array([[1.0, 0.0], [0.0, -1.0], [0.0, 0.0], [0.0, 1.0], [-1.0, 0.0]])
 
-        grid = aa.Grid.manual_mask(grid=grid, mask=mask)
+        grid = aa.Grid2D.manual_mask(grid=grid, mask=mask)
 
         pix = aa.pix.VoronoiMagnification(shape=(3, 3))
-        sparse_grid = grids.GridSparse.from_grid_and_unmasked_2d_grid_shape(
+        sparse_grid = grids.Grid2DSparse.from_grid_and_unmasked_2d_grid_shape(
             grid=grid, unmasked_sparse_shape=pix.shape
         )
 
-        pixelization_grid = aa.GridVoronoi(
+        pixelization_grid = aa.Grid2DVoronoi(
             grid=sparse_grid.sparse,
-            nearest_pixelization_1d_index_for_mask_1d_index=sparse_grid.sparse_1d_index_for_mask_1d_index,
+            nearest_pixelization_index_for_slim_index=sparse_grid.sparse_index_for_slim_index,
         )
         mapper = pix.mapper_from_grid_and_sparse_grid(
             grid=grid,
@@ -700,7 +700,7 @@ class TestVoronoiMagnification:
             settings=aa.SettingsPixelization(use_border=False),
         )
 
-        assert mapper.source_pixelization_grid.shape_2d_scaled == pytest.approx(
+        assert mapper.source_pixelization_grid.shape_native_scaled == pytest.approx(
             (2.0, 2.0), 1.0e-4
         )
         assert (mapper.source_pixelization_grid == sparse_grid.sparse).all()
@@ -737,9 +737,9 @@ class TestVoronoiMagnification:
             )
         ).all()
 
-        image = aa.Array.ones(shape_2d=(5, 5), pixel_scales=1.0)
-        noise_map = aa.Array.ones(shape_2d=(5, 5), pixel_scales=1.0)
-        psf = aa.Kernel.no_blur(pixel_scales=1.0)
+        image = aa.Array2D.ones(shape_native=(5, 5), pixel_scales=1.0)
+        noise_map = aa.Array2D.ones(shape_native=(5, 5), pixel_scales=1.0)
+        psf = aa.Kernel2D.no_blur(pixel_scales=1.0)
 
         imaging = aa.Imaging(image=image, noise_map=noise_map, psf=psf)
 
@@ -795,16 +795,16 @@ class TestVoronoiMagnification:
             ]
         )
 
-        grid = aa.Grid.manual_mask(grid=grid, mask=mask)
+        grid = aa.Grid2D.manual_mask(grid=grid, mask=mask)
 
         pix = aa.pix.VoronoiMagnification(shape=(3, 3))
-        sparse_grid = grids.GridSparse.from_grid_and_unmasked_2d_grid_shape(
+        sparse_grid = grids.Grid2DSparse.from_grid_and_unmasked_2d_grid_shape(
             grid=grid, unmasked_sparse_shape=pix.shape
         )
 
-        pixelization_grid = aa.GridVoronoi(
+        pixelization_grid = aa.Grid2DVoronoi(
             grid=sparse_grid.sparse,
-            nearest_pixelization_1d_index_for_mask_1d_index=sparse_grid.sparse_1d_index_for_mask_1d_index,
+            nearest_pixelization_index_for_slim_index=sparse_grid.sparse_index_for_slim_index,
         )
 
         mapper = pix.mapper_from_grid_and_sparse_grid(
@@ -813,7 +813,7 @@ class TestVoronoiMagnification:
             settings=aa.SettingsPixelization(use_border=False),
         )
 
-        assert mapper.source_slim_grid.shape_2d_scaled == pytest.approx(
+        assert mapper.source_grid_slim.shape_native_scaled == pytest.approx(
             (2.02, 2.01), 1.0e-4
         )
         assert (mapper.source_pixelization_grid == sparse_grid.sparse).all()
@@ -850,9 +850,9 @@ class TestVoronoiMagnification:
             )
         ).all()
 
-        image = aa.Array.ones(shape_2d=(5, 5), pixel_scales=1.0)
-        noise_map = aa.Array.ones(shape_2d=(5, 5), pixel_scales=1.0)
-        psf = aa.Kernel.no_blur(pixel_scales=1.0)
+        image = aa.Array2D.ones(shape_native=(5, 5), pixel_scales=1.0)
+        noise_map = aa.Array2D.ones(shape_native=(5, 5), pixel_scales=1.0)
+        psf = aa.Kernel2D.no_blur(pixel_scales=1.0)
 
         imaging = aa.Imaging(image=image, noise_map=noise_map, psf=psf)
 
@@ -887,16 +887,16 @@ class TestVoronoiMagnification:
 
         grid = np.array([[2.0, 1.0], [1.0, 0.0], [1.0, 1.0], [1.0, 2.0], [0.0, 1.0]])
 
-        grid = aa.Grid.manual_mask(grid=grid, mask=mask)
+        grid = aa.Grid2D.manual_mask(grid=grid, mask=mask)
 
         pix = aa.pix.VoronoiMagnification(shape=(3, 3))
-        sparse_grid = grids.GridSparse.from_grid_and_unmasked_2d_grid_shape(
+        sparse_grid = grids.Grid2DSparse.from_grid_and_unmasked_2d_grid_shape(
             grid=grid, unmasked_sparse_shape=pix.shape
         )
 
-        pixelization_grid = aa.GridVoronoi(
+        pixelization_grid = aa.Grid2DVoronoi(
             grid=sparse_grid.sparse,
-            nearest_pixelization_1d_index_for_mask_1d_index=sparse_grid.sparse_1d_index_for_mask_1d_index,
+            nearest_pixelization_index_for_slim_index=sparse_grid.sparse_index_for_slim_index,
         )
 
         mapper = pix.mapper_from_grid_and_sparse_grid(
@@ -905,7 +905,7 @@ class TestVoronoiMagnification:
             settings=aa.SettingsPixelization(use_border=False),
         )
 
-        assert mapper.source_pixelization_grid.shape_2d_scaled == pytest.approx(
+        assert mapper.source_pixelization_grid.shape_native_scaled == pytest.approx(
             (2.0, 2.0), 1.0e-4
         )
         assert (mapper.source_pixelization_grid == sparse_grid.sparse).all()
@@ -942,9 +942,9 @@ class TestVoronoiMagnification:
             )
         ).all()
 
-        image = aa.Array.ones(shape_2d=(7, 7), pixel_scales=1.0)
-        noise_map = aa.Array.ones(shape_2d=(7, 7), pixel_scales=1.0)
-        psf = aa.Kernel.no_blur(pixel_scales=1.0)
+        image = aa.Array2D.ones(shape_native=(7, 7), pixel_scales=1.0)
+        noise_map = aa.Array2D.ones(shape_native=(7, 7), pixel_scales=1.0)
+        psf = aa.Kernel2D.no_blur(pixel_scales=1.0)
 
         imaging = aa.Imaging(image=image, noise_map=noise_map, psf=psf)
 
@@ -966,10 +966,10 @@ class TestVoronoiMagnification:
         visibilities_mask = np.full(fill_value=False, shape=(7,))
 
         real_space_mask = aa.Mask2D.unmasked(
-            shape_2d=(7, 7), pixel_scales=0.1, sub_size=1
+            shape_native=(7, 7), pixel_scales=0.1, sub_size=1
         )
 
-        grid = aa.Grid.from_mask(mask=real_space_mask)
+        grid = aa.Grid2D.from_mask(mask=real_space_mask)
 
         pix = aa.pix.VoronoiMagnification(shape=(7, 7))
 
@@ -983,7 +983,7 @@ class TestVoronoiMagnification:
 
         reg = aa.reg.Constant(coefficient=0.0)
 
-        visibilities = aa.Visibilities.manual_1d(
+        visibilities = aa.Visibilities.manual_slim(
             visibilities=[
                 1.0 + 0.0j,
                 1.0 + 0.0j,
@@ -994,7 +994,7 @@ class TestVoronoiMagnification:
                 1.0 + 0.0j,
             ]
         )
-        noise_map = aa.VisibilitiesNoiseMap.ones(shape_1d=(7,))
+        noise_map = aa.VisibilitiesNoiseMap.ones(shape_slim=(7,))
         uv_wavelengths = np.ones(shape=(7, 2))
 
         interferometer = aa.Interferometer(
