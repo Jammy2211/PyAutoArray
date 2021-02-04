@@ -68,7 +68,10 @@ class Kernel2D(arrays.Array2D):
             If True, the Kernel2D's array values are renormalized such that they sum to 1.0.
         """
         array = arrays.Array2D.manual_slim(
-            array=array, shape_native=shape_native, pixel_scales=pixel_scales, origin=origin
+            array=array,
+            shape_native=shape_native,
+            pixel_scales=pixel_scales,
+            origin=origin,
         )
 
         return cls(array=array, mask=array.mask, renormalize=renormalize)
@@ -109,7 +112,12 @@ class Kernel2D(arrays.Array2D):
 
     @classmethod
     def manual(
-        cls, array, pixel_scales, shape_native=None, origin=(0.0, 0.0), renormalize=False
+        cls,
+        array,
+        pixel_scales,
+        shape_native=None,
+        origin=(0.0, 0.0),
+        renormalize=False,
     ):
         """Create a Kernel2D (see *Kernel2D.__new__*) by inputting the kernel values in 1D or 2D, automatically
         determining whether to use the 'manual_slim' or 'manual_native' methods.
@@ -300,7 +308,9 @@ class Kernel2D(arrays.Array2D):
             If True, the Kernel2D's array values are renormalized such that they sum to 1.0.
         """
 
-        grid = grids.Grid2D.uniform(shape_native=shape_native, pixel_scales=pixel_scales)
+        grid = grids.Grid2D.uniform(
+            shape_native=shape_native, pixel_scales=pixel_scales
+        )
         grid_shifted = np.subtract(grid, centre)
         grid_radius = np.sqrt(np.sum(grid_shifted ** 2.0, 1))
         theta_coordinate_to_profile = np.arctan2(

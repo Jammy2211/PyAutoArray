@@ -18,14 +18,18 @@ class TestAPI:
     def test__manual__input_kernel__all_attributes_correct_including_data_inheritance(
         self,
     ):
-        kernel = aa.Kernel2D.ones(shape_native=(3, 3), pixel_scales=1.0, renormalize=False)
+        kernel = aa.Kernel2D.ones(
+            shape_native=(3, 3), pixel_scales=1.0, renormalize=False
+        )
 
         assert kernel.shape_native == (3, 3)
         assert (kernel.native == np.ones((3, 3))).all()
         assert kernel.pixel_scales == (1.0, 1.0)
         assert kernel.origin == (0.0, 0.0)
 
-        kernel = aa.Kernel2D.ones(shape_native=(4, 3), pixel_scales=1.0, renormalize=False)
+        kernel = aa.Kernel2D.ones(
+            shape_native=(4, 3), pixel_scales=1.0, renormalize=False
+        )
 
         assert kernel.shape_native == (4, 3)
         assert (kernel.native == np.ones((4, 3))).all()
@@ -168,21 +172,27 @@ class TestBinnedUp:
         self,
     ):
 
-        kernel = aa.Kernel2D.ones(shape_native=(2, 2), pixel_scales=1.0, renormalize=False)
+        kernel = aa.Kernel2D.ones(
+            shape_native=(2, 2), pixel_scales=1.0, renormalize=False
+        )
         kernel = kernel.rescaled_with_odd_dimensions_from_rescale_factor(
             rescale_factor=2.0, renormalize=True
         )
         assert kernel.pixel_scales == (0.4, 0.4)
         assert (kernel.native == (1.0 / 25.0) * np.ones((5, 5))).all()
 
-        kernel = aa.Kernel2D.ones(shape_native=(40, 40), pixel_scales=1.0, renormalize=False)
+        kernel = aa.Kernel2D.ones(
+            shape_native=(40, 40), pixel_scales=1.0, renormalize=False
+        )
         kernel = kernel.rescaled_with_odd_dimensions_from_rescale_factor(
             rescale_factor=0.1, renormalize=True
         )
         assert kernel.pixel_scales == (8.0, 8.0)
         assert (kernel.native == (1.0 / 25.0) * np.ones((5, 5))).all()
 
-        kernel = aa.Kernel2D.ones(shape_native=(2, 4), pixel_scales=1.0, renormalize=False)
+        kernel = aa.Kernel2D.ones(
+            shape_native=(2, 4), pixel_scales=1.0, renormalize=False
+        )
         kernel = kernel.rescaled_with_odd_dimensions_from_rescale_factor(
             rescale_factor=2.0, renormalize=True
         )
@@ -191,7 +201,9 @@ class TestBinnedUp:
         assert kernel.pixel_scales[1] == pytest.approx(0.4444444, 1.0e-4)
         assert (kernel.native == (1.0 / 45.0) * np.ones((5, 9))).all()
 
-        kernel = aa.Kernel2D.ones(shape_native=(4, 2), pixel_scales=1.0, renormalize=False)
+        kernel = aa.Kernel2D.ones(
+            shape_native=(4, 2), pixel_scales=1.0, renormalize=False
+        )
         kernel = kernel.rescaled_with_odd_dimensions_from_rescale_factor(
             rescale_factor=2.0, renormalize=True
         )
@@ -202,7 +214,9 @@ class TestBinnedUp:
     def test__kernel_is_odd_and_even_after_binning_up__resized_to_odd_and_odd_with_shape_plus_one(
         self,
     ):
-        kernel = aa.Kernel2D.ones(shape_native=(6, 4), pixel_scales=1.0, renormalize=False)
+        kernel = aa.Kernel2D.ones(
+            shape_native=(6, 4), pixel_scales=1.0, renormalize=False
+        )
         kernel = kernel.rescaled_with_odd_dimensions_from_rescale_factor(
             rescale_factor=0.5, renormalize=True
         )
@@ -210,7 +224,9 @@ class TestBinnedUp:
         assert kernel.pixel_scales == pytest.approx((2.0, 1.3333333333), 1.0e-4)
         assert (kernel.native == (1.0 / 9.0) * np.ones((3, 3))).all()
 
-        kernel = aa.Kernel2D.ones(shape_native=(9, 12), pixel_scales=1.0, renormalize=False)
+        kernel = aa.Kernel2D.ones(
+            shape_native=(9, 12), pixel_scales=1.0, renormalize=False
+        )
         kernel = kernel.rescaled_with_odd_dimensions_from_rescale_factor(
             rescale_factor=0.33333333333, renormalize=True
         )
@@ -218,7 +234,9 @@ class TestBinnedUp:
         assert kernel.pixel_scales == pytest.approx((3.0, 2.4), 1.0e-4)
         assert (kernel.native == (1.0 / 15.0) * np.ones((3, 5))).all()
 
-        kernel = aa.Kernel2D.ones(shape_native=(4, 6), pixel_scales=1.0, renormalize=False)
+        kernel = aa.Kernel2D.ones(
+            shape_native=(4, 6), pixel_scales=1.0, renormalize=False
+        )
         kernel = kernel.rescaled_with_odd_dimensions_from_rescale_factor(
             rescale_factor=0.5, renormalize=True
         )
@@ -226,7 +244,9 @@ class TestBinnedUp:
         assert kernel.pixel_scales == pytest.approx((1.33333333333, 2.0), 1.0e-4)
         assert (kernel.native == (1.0 / 9.0) * np.ones((3, 3))).all()
 
-        kernel = aa.Kernel2D.ones(shape_native=(12, 9), pixel_scales=1.0, renormalize=False)
+        kernel = aa.Kernel2D.ones(
+            shape_native=(12, 9), pixel_scales=1.0, renormalize=False
+        )
         kernel = kernel.rescaled_with_odd_dimensions_from_rescale_factor(
             rescale_factor=0.33333333333, renormalize=True
         )
@@ -237,7 +257,9 @@ class TestBinnedUp:
 class TestConvolve:
     def test__kernel_is_not_odd_x_odd__raises_error(self):
 
-        kernel = aa.Kernel2D.manual_native(array=[[0.0, 1.0], [1.0, 2.0]], pixel_scales=1.0)
+        kernel = aa.Kernel2D.manual_native(
+            array=[[0.0, 1.0], [1.0, 2.0]], pixel_scales=1.0
+        )
 
         with pytest.raises(exc.KernelException):
             kernel.convolved_array_from_array(np.ones((5, 5)))

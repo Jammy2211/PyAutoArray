@@ -275,7 +275,9 @@ class MapperPlotter(abstract_plotters.AbstractPlotter):
         return self.visuals_2d + self.visuals_2d.__class__(
             origin=self.extract_2d(
                 "origin",
-                grids.Grid2DIrregular(grid=[self.mapper.source_pixelization_grid.origin]),
+                grids.Grid2DIrregular(
+                    grid=[self.mapper.source_pixelization_grid.origin]
+                ),
             ),
             grid=self.extract_2d(
                 "grid", self.mapper.source_grid_slim, "mapper_source_grid_slim"

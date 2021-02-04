@@ -321,11 +321,14 @@ class TestTransformerNUFFT:
 
         uv_wavelengths = np.array([[0.2, 1.0], [0.5, 1.1], [0.8, 1.2]])
 
-        grid_radians = aa.Grid2D.uniform(shape_native=(5, 5), pixel_scales=0.005).in_radians
+        grid_radians = aa.Grid2D.uniform(
+            shape_native=(5, 5), pixel_scales=0.005
+        ).in_radians
         real_space_mask = MockRealSpaceMask(grid=grid_radians)
 
         image = aa.Array2D.ones(
-            shape_native=grid_radians.shape_native, pixel_scales=grid_radians.pixel_scales
+            shape_native=grid_radians.shape_native,
+            pixel_scales=grid_radians.pixel_scales,
         )
 
         transformer_dft = aa.TransformerDFT(

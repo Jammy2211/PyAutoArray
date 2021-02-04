@@ -170,7 +170,12 @@ class Frame2D(abstract_frame.AbstractFrame2D):
 
     @classmethod
     def ones(
-        cls, shape_native, pixel_scales, roe_corner=(1, 0), scans=None, exposure_info=None
+        cls,
+        shape_native,
+        pixel_scales,
+        roe_corner=(1, 0),
+        scans=None,
+        exposure_info=None,
     ):
         return cls.full(
             fill_value=1.0,
@@ -183,7 +188,12 @@ class Frame2D(abstract_frame.AbstractFrame2D):
 
     @classmethod
     def zeros(
-        cls, shape_native, pixel_scales, roe_corner=(1, 0), scans=None, exposure_info=None
+        cls,
+        shape_native,
+        pixel_scales,
+        roe_corner=(1, 0),
+        scans=None,
+        exposure_info=None,
     ):
         return cls.full(
             fill_value=0.0,

@@ -27,6 +27,8 @@ aplt.Array2D(
     mask=mask,
     grid=grid,
     positions=aa.Grid2DIrregularGrouped([[(1.0, 1.0), (2.0, 2.0)], [(-1.0, -1.0)]]),
-    lines=aa.Grid2DIrregularGrouped([[(1.0, 1.0), (2.0, 2.0)], [(2.0, 4.0), (5.0, 6.0)]]),
+    lines=aa.Grid2DIrregularGrouped(
+        [[(1.0, 1.0), (2.0, 2.0)], [(2.0, 4.0), (5.0, 6.0)]]
+    ),
     include=aplt.Include2D(origin=True, border=True),
 )

@@ -243,7 +243,9 @@ class TestGrid:
         mask = aa.Mask2D.manual(
             [[True, False], [False, False]], pixel_scales=1.0, origin=(0.0, 1.0)
         )
-        grid = aa.Grid2D.manual_mask(grid=[[1.0, 1.0], [2.0, 3.0], [1.0, 2.0]], mask=mask)
+        grid = aa.Grid2D.manual_mask(
+            grid=[[1.0, 1.0], [2.0, 3.0], [1.0, 2.0]], mask=mask
+        )
 
         square_distances = grid.squared_distances_from_coordinate(coordinate=(0.0, 0.0))
 
@@ -259,7 +261,9 @@ class TestGrid:
         mask = aa.Mask2D.manual(
             [[True, False], [False, False]], pixel_scales=1.0, origin=(0.0, 1.0)
         )
-        grid = aa.Grid2D.manual_mask(grid=[[1.0, 1.0], [2.0, 3.0], [1.0, 2.0]], mask=mask)
+        grid = aa.Grid2D.manual_mask(
+            grid=[[1.0, 1.0], [2.0, 3.0], [1.0, 2.0]], mask=mask
+        )
 
         square_distances = grid.distances_from_coordinate(coordinate=(0.0, 0.0))
 
@@ -310,7 +314,9 @@ class TestGrid:
             grid == np.array([[1.0, -1.0], [1.0, 1.0], [-1.0, -1.0], [-1.0, 1.0]])
         ).all()
 
-        grid = aa.Grid2D.uniform(shape_native=(3, 3), pixel_scales=1.0, origin=(1.0, 1.0))
+        grid = aa.Grid2D.uniform(
+            shape_native=(3, 3), pixel_scales=1.0, origin=(1.0, 1.0)
+        )
 
         grid = grid.grid_with_coordinates_within_distance_removed(
             coordinates=(0.0, 0.0), distance=0.05
@@ -354,7 +360,9 @@ class TestGrid:
             )
         ).all()
 
-        grid = aa.Grid2D.uniform(shape_native=(3, 3), pixel_scales=1.0, origin=(1.0, 1.0))
+        grid = aa.Grid2D.uniform(
+            shape_native=(3, 3), pixel_scales=1.0, origin=(1.0, 1.0)
+        )
 
         grid = grid.grid_with_coordinates_within_distance_removed(
             coordinates=[(0.0, 0.0), (1.0, -1.0), (-1.0, -1.0), (2.0, 2.0)],

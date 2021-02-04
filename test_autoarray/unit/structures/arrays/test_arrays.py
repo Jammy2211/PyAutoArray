@@ -172,7 +172,9 @@ class TestAPI:
 
         with pytest.raises(exc.ArrayException):
             mask = aa.Mask2D.unmasked(shape_native=(2, 2), pixel_scales=1.0, sub_size=2)
-            aa.Array2D.manual_mask(array=[[1.0, 2.0], [3.0, 4.0], [5.0, 6.0]], mask=mask)
+            aa.Array2D.manual_mask(
+                array=[[1.0, 2.0], [3.0, 4.0], [5.0, 6.0]], mask=mask
+            )
 
     def test__exception_raised_if_input_array_is_1d_and_not_number_of_masked_sub_pixels(
         self,

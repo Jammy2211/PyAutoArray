@@ -602,7 +602,9 @@ class Array2D(abstract_array.AbstractArray2D):
         )
 
         grid_pixels = grid_util.grid_pixel_indexes_2d_slim_from(
-            grid_scaled_2d_slim=grid.slim, shape_native=shape_native, pixel_scales=pixel_scales
+            grid_scaled_2d_slim=grid.slim,
+            shape_native=shape_native,
+            pixel_scales=pixel_scales,
         )
 
         array_1d = np.zeros(shape=shape_native[0] * shape_native[1])

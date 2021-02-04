@@ -123,7 +123,9 @@ def rectangular_corner_neighbors(
     )
     pixel_neighbors_size[pixels - shape_native[1]] = 2
 
-    pixel_neighbors[pixels - 1, 0:2] = np.array([pixels - shape_native[1] - 1, pixels - 2])
+    pixel_neighbors[pixels - 1, 0:2] = np.array(
+        [pixels - shape_native[1] - 1, pixels - 2]
+    )
     pixel_neighbors_size[pixels - 1] = 2
 
     return pixel_neighbors, pixel_neighbors_size
@@ -198,7 +200,11 @@ def rectangular_left_edge_neighbors(
     for pix in range(1, shape_native[0] - 1):
         pixel_index = pix * shape_native[1]
         pixel_neighbors[pixel_index, 0:3] = np.array(
-            [pixel_index - shape_native[1], pixel_index + 1, pixel_index + shape_native[1]]
+            [
+                pixel_index - shape_native[1],
+                pixel_index + 1,
+                pixel_index + shape_native[1],
+            ]
         )
         pixel_neighbors_size[pixel_index] = 3
 
@@ -236,7 +242,11 @@ def rectangular_right_edge_neighbors(
     for pix in range(1, shape_native[0] - 1):
         pixel_index = pix * shape_native[1] + shape_native[1] - 1
         pixel_neighbors[pixel_index, 0:3] = np.array(
-            [pixel_index - shape_native[1], pixel_index - 1, pixel_index + shape_native[1]]
+            [
+                pixel_index - shape_native[1],
+                pixel_index - 1,
+                pixel_index + shape_native[1],
+            ]
         )
         pixel_neighbors_size[pixel_index] = 3
 

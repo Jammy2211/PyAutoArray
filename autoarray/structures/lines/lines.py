@@ -26,7 +26,6 @@ class AbstractLine1D(abstract_structure.AbstractStructure1D):
 
 
 class Line1D(AbstractLine1D):
-
     @classmethod
     def manual_slim(cls, line, pixel_scales, sub_size=1, origin=(0.0,)):
         """Create a Line (see `Line.__new__`) by inputting the line values in 1D, for example:

@@ -17,7 +17,9 @@ logger = logging.getLogger(__name__)
 
 class VectorField2DIrregular(np.ndarray):
     def __new__(
-        cls, vectors: np.ndarray or [(float, float)], grid: grids.Grid2DIrregular or list
+        cls,
+        vectors: np.ndarray or [(float, float)],
+        grid: grids.Grid2DIrregular or list,
     ):
         """
         A collection of (y,x) vectors which are located on an irregular grid of (y,x) coordinates.

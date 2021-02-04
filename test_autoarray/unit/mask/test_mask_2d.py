@@ -1558,7 +1558,9 @@ class TestGrids:
         )
 
     def test__masked_sub_grid(self):
-        mask = aa.Mask2D.unmasked(shape_native=(3, 3), pixel_scales=(1.0, 1.0), sub_size=1)
+        mask = aa.Mask2D.unmasked(
+            shape_native=(3, 3), pixel_scales=(1.0, 1.0), sub_size=1
+        )
 
         assert (
             mask.masked_grid
@@ -1577,7 +1579,9 @@ class TestGrids:
             )
         ).all()
 
-        mask = aa.Mask2D.unmasked(shape_native=(2, 2), pixel_scales=(1.0, 1.0), sub_size=2)
+        mask = aa.Mask2D.unmasked(
+            shape_native=(2, 2), pixel_scales=(1.0, 1.0), sub_size=2
+        )
 
         assert (
             mask.masked_grid
@@ -1603,7 +1607,9 @@ class TestGrids:
             )
         ).all()
 
-        mask = aa.Mask2D.unmasked(shape_native=(3, 3), pixel_scales=(1.0, 1.0), sub_size=1)
+        mask = aa.Mask2D.unmasked(
+            shape_native=(3, 3), pixel_scales=(1.0, 1.0), sub_size=1
+        )
         mask[1, 1] = True
 
         assert (
@@ -1732,7 +1738,9 @@ class TestGridConversions:
         grid_scaled_1d = np.array([[1.0, -2.0], [1.0, 2.0], [-1.0, -2.0], [-1.0, 2.0]])
 
         grid_pixels_util = aa.util.grid.grid_pixels_2d_slim_from(
-            grid_scaled_2d_slim=grid_scaled_1d, shape_native=(2, 2), pixel_scales=(2.0, 4.0)
+            grid_scaled_2d_slim=grid_scaled_1d,
+            shape_native=(2, 2),
+            pixel_scales=(2.0, 4.0),
         )
         grid_pixels = mask.grid_pixels_from_grid_scaled_1d(
             grid_scaled_1d=grid_scaled_1d
@@ -1748,7 +1756,9 @@ class TestGridConversions:
         grid_scaled_1d = np.array([[0.5, -0.5], [0.5, 0.5], [-0.5, -0.5], [-0.5, 0.5]])
 
         grid_pixels_util = aa.util.grid.grid_pixel_centres_2d_slim_from(
-            grid_scaled_2d_slim=grid_scaled_1d, shape_native=(2, 2), pixel_scales=(2.0, 2.0)
+            grid_scaled_2d_slim=grid_scaled_1d,
+            shape_native=(2, 2),
+            pixel_scales=(2.0, 2.0),
         )
 
         grid_pixels = mask.grid_pixel_centres_from_grid_scaled_1d(
@@ -1762,7 +1772,9 @@ class TestGridConversions:
         grid_scaled_1d = np.array([[1.0, -2.0], [1.0, 2.0], [-1.0, -2.0], [-1.0, 2.0]])
 
         grid_pixels_util = aa.util.grid.grid_pixel_centres_2d_slim_from(
-            grid_scaled_2d_slim=grid_scaled_1d, shape_native=(2, 2), pixel_scales=(7.0, 2.0)
+            grid_scaled_2d_slim=grid_scaled_1d,
+            shape_native=(2, 2),
+            pixel_scales=(7.0, 2.0),
         )
 
         grid_pixels = mask.grid_pixel_centres_from_grid_scaled_1d(
@@ -1777,7 +1789,9 @@ class TestGridConversions:
         grid_scaled = np.array([[1.0, -1.0], [1.0, 1.0], [-1.0, -1.0], [-1.0, 1.0]])
 
         grid_pixel_indexes_util = aa.util.grid.grid_pixel_indexes_2d_slim_from(
-            grid_scaled_2d_slim=grid_scaled, shape_native=(2, 2), pixel_scales=(2.0, 2.0)
+            grid_scaled_2d_slim=grid_scaled,
+            shape_native=(2, 2),
+            pixel_scales=(2.0, 2.0),
         )
 
         grid_pixel_indexes = mask.grid_pixel_indexes_from_grid_scaled_1d(
@@ -1791,7 +1805,9 @@ class TestGridConversions:
         grid_scaled = np.array([[1.0, -2.0], [1.0, 2.0], [-1.0, -2.0], [-1.0, 2.0]])
 
         grid_pixels_util = aa.util.grid.grid_pixel_indexes_2d_slim_from(
-            grid_scaled_2d_slim=grid_scaled, shape_native=(2, 2), pixel_scales=(2.0, 4.0)
+            grid_scaled_2d_slim=grid_scaled,
+            shape_native=(2, 2),
+            pixel_scales=(2.0, 4.0),
         )
 
         grid_pixels = mask.grid_pixel_indexes_from_grid_scaled_1d(
@@ -1806,7 +1822,9 @@ class TestGridConversions:
         grid_pixels = np.array([[0, 0], [0, 1], [1, 0], [1, 1]])
 
         grid_pixels_util = aa.util.grid.grid_scaled_2d_slim_from(
-            grid_pixels_2d_slim=grid_pixels, shape_native=(2, 2), pixel_scales=(2.0, 2.0)
+            grid_pixels_2d_slim=grid_pixels,
+            shape_native=(2, 2),
+            pixel_scales=(2.0, 2.0),
         )
 
         grid_pixels = mask.grid_scaled_from_grid_pixels_1d(grid_pixels_1d=grid_pixels)
@@ -1818,7 +1836,9 @@ class TestGridConversions:
         grid_pixels = np.array([[0, 0], [0, 1], [1, 0], [1, 1]])
 
         grid_pixels_util = aa.util.grid.grid_scaled_2d_slim_from(
-            grid_pixels_2d_slim=grid_pixels, shape_native=(2, 2), pixel_scales=(2.0, 2.0)
+            grid_pixels_2d_slim=grid_pixels,
+            shape_native=(2, 2),
+            pixel_scales=(2.0, 2.0),
         )
         grid_pixels = mask.grid_scaled_from_grid_pixels_1d(grid_pixels_1d=grid_pixels)
 

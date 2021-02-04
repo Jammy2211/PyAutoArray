@@ -208,9 +208,7 @@ class TestFitInterferometer:
             fit.signal_to_noise_map.slim == np.array([0.5 + 1.0j, 1.5 + 2.0j])
         ).all()
 
-        assert (
-            fit.model_visibilities.slim == np.array([1.0 + 2.0j, 3.0 + 4.0j])
-        ).all()
+        assert (fit.model_visibilities.slim == np.array([1.0 + 2.0j, 3.0 + 4.0j])).all()
 
         assert (fit.residual_map.slim == np.array([0.0 + 0.0j, 0.0 + 0.0j])).all()
 
@@ -272,9 +270,7 @@ class TestFitInterferometer:
             fit.signal_to_noise_map.slim == np.array([0.5 + 1.0j, 1.5 + 2.0j])
         ).all()
 
-        assert (
-            fit.model_visibilities.slim == np.array([1.0 + 2.0j, 3.0 + 3.0j])
-        ).all()
+        assert (fit.model_visibilities.slim == np.array([1.0 + 2.0j, 3.0 + 3.0j])).all()
 
         assert (fit.residual_map.slim == np.array([0.0 + 0.0j, 0.0 + 1.0j])).all()
 

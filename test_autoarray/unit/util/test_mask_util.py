@@ -341,7 +341,10 @@ class TestMaskCircular:
 class TestMaskAnnular:
     def test__mask_inner_radius_zero_outer_radius_small_medium_and_large__mask(self):
         mask = util.mask.mask_2d_circular_annular_from(
-            shape_native=(3, 3), pixel_scales=(1.0, 1.0), inner_radius=0.0, outer_radius=0.5
+            shape_native=(3, 3),
+            pixel_scales=(1.0, 1.0),
+            inner_radius=0.0,
+            outer_radius=0.5,
         )
 
         assert (
@@ -369,7 +372,10 @@ class TestMaskAnnular:
         ).all()
 
         mask = util.mask.mask_2d_circular_annular_from(
-            shape_native=(3, 3), pixel_scales=(1.0, 1.0), inner_radius=0.5, outer_radius=3.0
+            shape_native=(3, 3),
+            pixel_scales=(1.0, 1.0),
+            inner_radius=0.5,
+            outer_radius=3.0,
         )
 
         assert (
@@ -380,7 +386,10 @@ class TestMaskAnnular:
         ).all()
 
         mask = util.mask.mask_2d_circular_annular_from(
-            shape_native=(4, 4), pixel_scales=(0.5, 1.0), inner_radius=1.1, outer_radius=2.0
+            shape_native=(4, 4),
+            pixel_scales=(0.5, 1.0),
+            inner_radius=1.1,
+            outer_radius=2.0,
         )
 
         assert (
@@ -1371,7 +1380,9 @@ class TestMaskBlurring:
     def test__size__3x3_small_mask(self):
         mask = np.array([[True, True, True], [True, False, True], [True, True, True]])
 
-        blurring_mask = util.mask.blurring_mask_2d_from(mask, kernel_shape_native=(3, 3))
+        blurring_mask = util.mask.blurring_mask_2d_from(
+            mask, kernel_shape_native=(3, 3)
+        )
 
         assert (
             blurring_mask
@@ -1393,7 +1404,9 @@ class TestMaskBlurring:
             ]
         )
 
-        blurring_mask = util.mask.blurring_mask_2d_from(mask, kernel_shape_native=(3, 3))
+        blurring_mask = util.mask.blurring_mask_2d_from(
+            mask, kernel_shape_native=(3, 3)
+        )
 
         assert (
             blurring_mask
@@ -1423,7 +1436,9 @@ class TestMaskBlurring:
             ]
         )
 
-        blurring_mask = util.mask.blurring_mask_2d_from(mask, kernel_shape_native=(5, 5))
+        blurring_mask = util.mask.blurring_mask_2d_from(
+            mask, kernel_shape_native=(5, 5)
+        )
 
         assert (
             blurring_mask
@@ -1453,7 +1468,9 @@ class TestMaskBlurring:
             ]
         )
 
-        blurring_mask = util.mask.blurring_mask_2d_from(mask, kernel_shape_native=(5, 3))
+        blurring_mask = util.mask.blurring_mask_2d_from(
+            mask, kernel_shape_native=(5, 3)
+        )
 
         assert (
             blurring_mask
@@ -1485,7 +1502,9 @@ class TestMaskBlurring:
             ]
         )
 
-        blurring_mask = util.mask.blurring_mask_2d_from(mask, kernel_shape_native=(3, 5))
+        blurring_mask = util.mask.blurring_mask_2d_from(
+            mask, kernel_shape_native=(3, 5)
+        )
 
         assert (
             blurring_mask
@@ -1517,7 +1536,9 @@ class TestMaskBlurring:
             ]
         )
 
-        blurring_mask = util.mask.blurring_mask_2d_from(mask, kernel_shape_native=(3, 3))
+        blurring_mask = util.mask.blurring_mask_2d_from(
+            mask, kernel_shape_native=(3, 3)
+        )
 
         assert (
             blurring_mask
@@ -1549,7 +1570,9 @@ class TestMaskBlurring:
             ]
         )
 
-        blurring_mask = util.mask.blurring_mask_2d_from(mask, kernel_shape_native=(5, 5))
+        blurring_mask = util.mask.blurring_mask_2d_from(
+            mask, kernel_shape_native=(5, 5)
+        )
 
         assert (
             blurring_mask
@@ -1583,7 +1606,9 @@ class TestMaskBlurring:
             ]
         )
 
-        blurring_mask = util.mask.blurring_mask_2d_from(mask, kernel_shape_native=(5, 3))
+        blurring_mask = util.mask.blurring_mask_2d_from(
+            mask, kernel_shape_native=(5, 3)
+        )
 
         assert (
             blurring_mask
@@ -1619,7 +1644,9 @@ class TestMaskBlurring:
             ]
         )
 
-        blurring_mask = util.mask.blurring_mask_2d_from(mask, kernel_shape_native=(3, 5))
+        blurring_mask = util.mask.blurring_mask_2d_from(
+            mask, kernel_shape_native=(3, 5)
+        )
 
         assert (
             blurring_mask
@@ -1654,7 +1681,9 @@ class TestMaskBlurring:
             ]
         )
 
-        blurring_mask = util.mask.blurring_mask_2d_from(mask, kernel_shape_native=(3, 3))
+        blurring_mask = util.mask.blurring_mask_2d_from(
+            mask, kernel_shape_native=(3, 3)
+        )
 
         assert (
             blurring_mask
@@ -1686,7 +1715,9 @@ class TestMaskBlurring:
             ]
         )
 
-        blurring_mask = util.mask.blurring_mask_2d_from(mask, kernel_shape_native=(5, 5))
+        blurring_mask = util.mask.blurring_mask_2d_from(
+            mask, kernel_shape_native=(5, 5)
+        )
 
         assert (
             blurring_mask
@@ -1718,7 +1749,9 @@ class TestMaskBlurring:
             ]
         )
 
-        blurring_mask = util.mask.blurring_mask_2d_from(mask, kernel_shape_native=(3, 3))
+        blurring_mask = util.mask.blurring_mask_2d_from(
+            mask, kernel_shape_native=(3, 3)
+        )
 
         assert (
             blurring_mask
@@ -1751,7 +1784,9 @@ class TestMaskBlurring:
             ]
         )
 
-        blurring_mask = util.mask.blurring_mask_2d_from(mask, kernel_shape_native=(3, 3))
+        blurring_mask = util.mask.blurring_mask_2d_from(
+            mask, kernel_shape_native=(3, 3)
+        )
 
         assert (
             blurring_mask

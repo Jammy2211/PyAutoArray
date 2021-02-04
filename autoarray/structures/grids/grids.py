@@ -311,7 +311,10 @@ class Grid2D(abstract_grid.AbstractGrid2D):
         shape = (int(grid.shape[0] / sub_size), int(grid.shape[1] / sub_size))
 
         mask = msk.Mask2D.unmasked(
-            shape_native=shape, pixel_scales=pixel_scales, sub_size=sub_size, origin=origin
+            shape_native=shape,
+            pixel_scales=pixel_scales,
+            sub_size=sub_size,
+            origin=origin,
         )
 
         grid = abstract_grid.convert_manual_grid_2d(
@@ -912,8 +915,10 @@ class Grid2DSparse:
         pixel_scales = grid.mask.pixel_scales
 
         pixel_scales = (
-            (grid.shape_native_scaled[0] + pixel_scales[0]) / (unmasked_sparse_shape[0]),
-            (grid.shape_native_scaled[1] + pixel_scales[1]) / (unmasked_sparse_shape[1]),
+            (grid.shape_native_scaled[0] + pixel_scales[0])
+            / (unmasked_sparse_shape[0]),
+            (grid.shape_native_scaled[1] + pixel_scales[1])
+            / (unmasked_sparse_shape[1]),
         )
 
         origin = grid.mask.mask_centre

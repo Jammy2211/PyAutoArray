@@ -9,8 +9,9 @@ from autoarray.util import grid_util, pixelization_util
 
 
 class Grid2DRectangular(grids.Grid2D):
-
-    def __new__(cls, grid, shape_native, pixel_scales, origin=(0.0, 0.0), *args, **kwargs):
+    def __new__(
+        cls, grid, shape_native, pixel_scales, origin=(0.0, 0.0), *args, **kwargs
+    ):
         """A grid of (y,x) coordinates which reprsent a rectangular grid of pixels which are used to form the pixel centres of adaptive pixelizations in the \
         *pixelizations* module.
 
@@ -31,7 +32,10 @@ class Grid2DRectangular(grids.Grid2D):
         """
 
         mask = msk.Mask2D.unmasked(
-            shape_native=shape_native, pixel_scales=pixel_scales, sub_size=1, origin=origin
+            shape_native=shape_native,
+            pixel_scales=pixel_scales,
+            sub_size=1,
+            origin=origin,
         )
 
         obj = super().__new__(cls=cls, grid=grid, mask=mask)
@@ -97,11 +101,17 @@ class Grid2DRectangular(grids.Grid2D):
         origin = ((y_max + y_min) / 2.0, (x_max + x_min) / 2.0)
 
         grid_slim = grid_util.grid_2d_slim_via_shape_native_from(
-            shape_native=shape_native, pixel_scales=pixel_scales, sub_size=1, origin=origin
+            shape_native=shape_native,
+            pixel_scales=pixel_scales,
+            sub_size=1,
+            origin=origin,
         )
 
         return Grid2DRectangular(
-            grid=grid_slim, shape_native=shape_native, pixel_scales=pixel_scales, origin=origin
+            grid=grid_slim,
+            shape_native=shape_native,
+            pixel_scales=pixel_scales,
+            origin=origin,
         )
 
     @property
@@ -206,7 +216,7 @@ class Grid2DVoronoi(np.ndarray):
             )
 
         if hasattr(obj, "_sub_border_flat_indexes"):
-            self.mask._sub_border_flat_indexes = obj._sub_border_flat_indexes
+            self._sub_border_flat_indexes = obj._sub_border_flat_indexes
 
     def __reduce__(self):
         # Get the parent's __reduce__ tuple
@@ -240,7 +250,7 @@ class Grid2DVoronoi(np.ndarray):
 
         This is NOT all sub-pixels which are in mask pixels at the mask's border, but specifically the sub-pixels
         within these border pixels which are at the extreme edge of the border."""
-        return self[self.mask._sub_border_flat_indexes]
+        return self[self._sub_border_flat_indexes]
 
     @classmethod
     def manual_slim(cls, grid):

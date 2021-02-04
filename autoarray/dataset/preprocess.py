@@ -240,9 +240,12 @@ def background_noise_map_from_edges_of_image(image, no_edges):
     for edge_no in range(no_edges):
         top_edge = image.native[edge_no, edge_no : image.shape_native[1] - edge_no]
         bottom_edge = image.native[
-            image.shape_native[0] - 1 - edge_no, edge_no : image.shape_native[1] - edge_no
+            image.shape_native[0] - 1 - edge_no,
+            edge_no : image.shape_native[1] - edge_no,
         ]
-        left_edge = image.native[edge_no + 1 : image.shape_native[0] - 1 - edge_no, edge_no]
+        left_edge = image.native[
+            edge_no + 1 : image.shape_native[0] - 1 - edge_no, edge_no
+        ]
         right_edge = image.native[
             edge_no + 1 : image.shape_native[0] - 1 - edge_no,
             image.shape_native[1] - 1 - edge_no,

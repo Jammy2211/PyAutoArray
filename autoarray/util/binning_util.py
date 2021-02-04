@@ -89,7 +89,9 @@ def padded_binning_array_2d_from(
     )
 
     return array_util.resized_array_2d_from_array_2d(
-        array_2d=array_2d, resized_shape=padded_binning_shape_native, pad_value=pad_value
+        array_2d=array_2d,
+        resized_shape=padded_binning_shape_native,
+        pad_value=pad_value,
     )
 
 

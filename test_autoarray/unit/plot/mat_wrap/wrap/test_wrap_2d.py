@@ -71,7 +71,9 @@ class TestGridScatter:
 
         scatter = aplt.GridScatter(s=2, marker="x", c="k")
 
-        scatter.scatter_grid(grid=aa.Grid2D.uniform(shape_native=(3, 3), pixel_scales=1.0))
+        scatter.scatter_grid(
+            grid=aa.Grid2D.uniform(shape_native=(3, 3), pixel_scales=1.0)
+        )
 
     def test__scatter_colored_grid__lists_of_coordinates_or_equivalent_2d_grids__with_color_array(
         self,
@@ -99,11 +101,13 @@ class TestGridScatter:
         scatter = aplt.GridScatter(s=2, marker="x", c="k")
 
         scatter.scatter_grid_indexes(
-            grid=aa.Grid2D.uniform(shape_native=(3, 3), pixel_scales=1.0), indexes=[0, 1, 2]
+            grid=aa.Grid2D.uniform(shape_native=(3, 3), pixel_scales=1.0),
+            indexes=[0, 1, 2],
         )
 
         scatter.scatter_grid_indexes(
-            grid=aa.Grid2D.uniform(shape_native=(3, 3), pixel_scales=1.0), indexes=[[0, 1, 2]]
+            grid=aa.Grid2D.uniform(shape_native=(3, 3), pixel_scales=1.0),
+            indexes=[[0, 1, 2]],
         )
 
         scatter.scatter_grid_indexes(
@@ -180,7 +184,9 @@ class TestGridPlot:
 
         line = aplt.GridPlot(linewidth=2, linestyle="--", c="k")
 
-        line.plot_rectangular_grid_lines(extent=[0.0, 1.0, 0.0, 1.0], shape_native=(3, 2))
+        line.plot_rectangular_grid_lines(
+            extent=[0.0, 1.0, 0.0, 1.0], shape_native=(3, 2)
+        )
         line.plot_rectangular_grid_lines(
             extent=[-4.0, 8.0, -3.0, 10.0], shape_native=(8, 3)
         )

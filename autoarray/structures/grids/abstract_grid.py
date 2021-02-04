@@ -140,7 +140,9 @@ def convert_manual_grid(grid, mask, store_slim):
     grid = convert_grid(grid=grid)
 
     if len(grid.shape) == 2:
-        return convert_manual_grid_2d_slim(grid_2d_slim=grid, mask=mask, store_slim=store_slim)
+        return convert_manual_grid_2d_slim(
+            grid_2d_slim=grid, mask=mask, store_slim=store_slim
+        )
     return convert_manual_grid_2d(grid_2d=grid, mask=mask, store_slim=store_slim)
 
 
@@ -183,7 +185,9 @@ class AbstractGrid2D(abstract_structure.AbstractStructure2D):
             sub_grid_2d=self, mask=self.mask, sub_size=self.mask.sub_size
         )
 
-        return self._new_structure(grid=sub_grid_2d_slim, mask=self.mask, store_slim=True)
+        return self._new_structure(
+            grid=sub_grid_2d_slim, mask=self.mask, store_slim=True
+        )
 
     @property
     def native(self):
@@ -268,7 +272,9 @@ class AbstractGrid2D(abstract_structure.AbstractStructure2D):
             sub_grid_1d[:, 1].reshape(-1, self.mask.sub_length).sum(axis=1),
         )
 
-        binned_grid_2d_slim = np.stack((binned_grid_2d_slim_y, binned_grid_2d_slim_x), axis=-1)
+        binned_grid_2d_slim = np.stack(
+            (binned_grid_2d_slim_y, binned_grid_2d_slim_x), axis=-1
+        )
 
         binned_grid_2d = grid_util.sub_grid_2d_from(
             sub_grid_2d_slim=binned_grid_2d_slim, mask_2d=self.mask, sub_size=1

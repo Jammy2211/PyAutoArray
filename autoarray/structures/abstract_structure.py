@@ -34,6 +34,10 @@ class AbstractStructure(np.ndarray):
         raise NotImplementedError
 
     @property
+    def native(self):
+        raise NotImplementedError
+
+    @property
     def shape_slim(self):
         return self.mask.shape_slim
 
