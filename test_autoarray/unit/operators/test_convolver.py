@@ -128,7 +128,8 @@ class TestNumbering:
 
     def test__cross_mask(self, cross_mask):
         convolver = aa.Convolver(
-            mask=cross_mask, kernel=aa.Kernel2D.ones(shape_native=(1, 1), pixel_scales=1.0)
+            mask=cross_mask,
+            kernel=aa.Kernel2D.ones(shape_native=(1, 1), pixel_scales=1.0),
         )
 
         assert (
@@ -941,7 +942,8 @@ class TestBlurringFrameIndxes:
     def test__blurring_region_3x3_kernel(self, cross_mask):
 
         convolver = aa.Convolver(
-            mask=cross_mask, kernel=aa.Kernel2D.ones(shape_native=(3, 3), pixel_scales=1.0)
+            mask=cross_mask,
+            kernel=aa.Kernel2D.ones(shape_native=(3, 3), pixel_scales=1.0),
         )
 
         assert (
@@ -1204,7 +1206,9 @@ class TestCompareToFull2dConv:
         image = aa.Array2D.manual_native(
             array=np.arange(900).reshape(30, 30), pixel_scales=1.0
         )
-        blurred_image = scipy.signal.convolve2d(image.native, kernel.native, mode="same")
+        blurred_image = scipy.signal.convolve2d(
+            image.native, kernel.native, mode="same"
+        )
         blurred_image = aa.Array2D.manual_native(array=blurred_image, pixel_scales=1.0)
 
         mask = aa.Mask2D.circular(

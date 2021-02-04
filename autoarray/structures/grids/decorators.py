@@ -196,7 +196,9 @@ def transform(func):
             A grid_like object whose coordinates may be transformed.
         """
 
-        if not isinstance(grid, (grids.Grid2DTransformed, grids.Grid2DTransformedNumpy)):
+        if not isinstance(
+            grid, (grids.Grid2DTransformed, grids.Grid2DTransformedNumpy)
+        ):
             result = func(
                 cls, cls.transform_grid_to_reference_frame(grid), *args, **kwargs
             )

@@ -9,9 +9,7 @@ from autoarray import exc
 
 
 class Grid2DInterpolate(abstract_grid.AbstractGrid2D):
-    def __new__(
-        cls, grid, mask, pixel_scales_interp, store_slim=True, *args, **kwargs
-    ):
+    def __new__(cls, grid, mask, pixel_scales_interp, store_slim=True, *args, **kwargs):
         """Represents a grid of coordinates as described in the `Grid2D` class, but allows for a sparse grid to be used
          to evaluate functions on the grid, the results of which are then interpolated to the grid's native resolution.
 

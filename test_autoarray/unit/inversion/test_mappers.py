@@ -102,7 +102,9 @@ class TestRectangularMapper:
             shape_native=(3, 3),
         )
 
-        pixelization_grid = aa.Grid2DRectangular.overlay_grid(shape_native=(3, 3), grid=grid)
+        pixelization_grid = aa.Grid2DRectangular.overlay_grid(
+            shape_native=(3, 3), grid=grid
+        )
 
         mapper = aa.Mapper(
             source_grid_slim=grid, source_pixelization_grid=pixelization_grid
@@ -147,7 +149,9 @@ class TestRectangularMapper:
             shape_native=(3, 3),
         )
 
-        pixelization_grid = aa.Grid2DRectangular.overlay_grid(shape_native=(3, 3), grid=grid)
+        pixelization_grid = aa.Grid2DRectangular.overlay_grid(
+            shape_native=(3, 3), grid=grid
+        )
 
         mapper = aa.Mapper(
             source_grid_slim=grid, source_pixelization_grid=pixelization_grid
@@ -199,7 +203,9 @@ class TestRectangularMapper:
             shape_native=(3, 2),
         )
 
-        pixelization_grid = aa.Grid2DRectangular.overlay_grid(shape_native=(4, 3), grid=grid)
+        pixelization_grid = aa.Grid2DRectangular.overlay_grid(
+            shape_native=(4, 3), grid=grid
+        )
 
         mapper = aa.Mapper(
             source_grid_slim=grid, source_pixelization_grid=pixelization_grid
@@ -252,7 +258,9 @@ class TestRectangularMapper:
             shape_native=(2, 3),
         )
 
-        pixelization_grid = aa.Grid2DRectangular.overlay_grid(shape_native=(3, 4), grid=grid)
+        pixelization_grid = aa.Grid2DRectangular.overlay_grid(
+            shape_native=(3, 4), grid=grid
+        )
 
         mapper = aa.Mapper(
             source_grid_slim=grid, source_pixelization_grid=pixelization_grid
@@ -292,7 +300,9 @@ class TestRectangularMapper:
             shape_native=(5, 1),
         )
 
-        pixelization_grid = aa.Grid2DRectangular.overlay_grid(shape_native=(3, 3), grid=grid)
+        pixelization_grid = aa.Grid2DRectangular.overlay_grid(
+            shape_native=(3, 3), grid=grid
+        )
 
         mapper = aa.Mapper(
             source_grid_slim=grid, source_pixelization_grid=pixelization_grid
@@ -328,7 +338,9 @@ class TestRectangularMapper:
             shape_native=(5, 1),
         )
 
-        pixelization_grid = aa.Grid2DRectangular.overlay_grid(shape_native=(3, 3), grid=grid)
+        pixelization_grid = aa.Grid2DRectangular.overlay_grid(
+            shape_native=(3, 3), grid=grid
+        )
 
         mapper = aa.Mapper(
             source_grid_slim=grid, source_pixelization_grid=pixelization_grid
@@ -362,7 +374,9 @@ class TestRectangularMapper:
             shape_native=(5, 1),
         )
 
-        pixelization_grid = aa.Grid2DRectangular.overlay_grid(shape_native=(4, 3), grid=grid)
+        pixelization_grid = aa.Grid2DRectangular.overlay_grid(
+            shape_native=(4, 3), grid=grid
+        )
 
         mapper = aa.Mapper(
             source_grid_slim=grid, source_pixelization_grid=pixelization_grid
@@ -398,7 +412,9 @@ class TestRectangularMapper:
             shape_native=(5, 1),
         )
 
-        pixelization_grid = aa.Grid2DRectangular.overlay_grid(shape_native=(3, 4), grid=grid)
+        pixelization_grid = aa.Grid2DRectangular.overlay_grid(
+            shape_native=(3, 4), grid=grid
+        )
 
         mapper = aa.Mapper(
             source_grid_slim=grid, source_pixelization_grid=pixelization_grid
@@ -445,7 +461,9 @@ class TestRectangularMapper:
             shape_native=(3, 3),
         )
 
-        pixelization_grid = aa.Grid2DRectangular.overlay_grid(shape_native=(3, 3), grid=grid)
+        pixelization_grid = aa.Grid2DRectangular.overlay_grid(
+            shape_native=(3, 3), grid=grid
+        )
 
         mapper = aa.Mapper(
             source_grid_slim=grid, source_pixelization_grid=pixelization_grid
@@ -492,7 +510,9 @@ class TestRectangularMapper:
             shape_native=(3, 3),
         )
 
-        pixelization_grid = aa.Grid2DRectangular.overlay_grid(shape_native=(3, 3), grid=grid)
+        pixelization_grid = aa.Grid2DRectangular.overlay_grid(
+            shape_native=(3, 3), grid=grid
+        )
 
         mapper = aa.Mapper(
             source_grid_slim=grid, source_pixelization_grid=pixelization_grid
@@ -528,7 +548,9 @@ class TestRectangularMapper:
             shape_native=(5, 1),
         )
 
-        pixelization_grid = aa.Grid2DRectangular.overlay_grid(shape_native=(4, 3), grid=grid)
+        pixelization_grid = aa.Grid2DRectangular.overlay_grid(
+            shape_native=(4, 3), grid=grid
+        )
 
         mapper = aa.Mapper(
             source_grid_slim=grid, source_pixelization_grid=pixelization_grid
@@ -571,7 +593,9 @@ class TestRectangularMapper:
             shape_native=(3, 3),
         )
 
-        pixelization_grid = aa.Grid2DRectangular.overlay_grid(shape_native=(3, 3), grid=grid)
+        pixelization_grid = aa.Grid2DRectangular.overlay_grid(
+            shape_native=(3, 3), grid=grid
+        )
 
         mapper = aa.Mapper(
             source_grid_slim=grid, source_pixelization_grid=pixelization_grid
@@ -596,7 +620,9 @@ class TestRectangularMapper:
             shape_native=(2, 2),
         )
 
-        pixelization_grid = aa.Grid2DRectangular.overlay_grid(shape_native=(4, 3), grid=grid)
+        pixelization_grid = aa.Grid2DRectangular.overlay_grid(
+            shape_native=(4, 3), grid=grid
+        )
 
         mapper = aa.Mapper(
             source_grid_slim=grid, source_pixelization_grid=pixelization_grid
@@ -614,7 +640,9 @@ class TestRectangularMapper:
         assert (recon_pix.native == recon_pix_util).all()
         assert recon_pix.shape_native == (4, 3)
 
-        pixelization_grid = aa.Grid2DRectangular.overlay_grid(shape_native=(3, 4), grid=grid)
+        pixelization_grid = aa.Grid2DRectangular.overlay_grid(
+            shape_native=(3, 4), grid=grid
+        )
 
         mapper = aa.Mapper(
             source_grid_slim=grid, source_pixelization_grid=pixelization_grid

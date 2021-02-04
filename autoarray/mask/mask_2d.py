@@ -228,13 +228,17 @@ class AbstractMask2D(abstract_mask.AbstractMask):
 
     @property
     def central_pixel_coordinates(self):
-        return geometry_util.central_pixel_coordinates_2d_from(shape_native=self.shape_native)
+        return geometry_util.central_pixel_coordinates_2d_from(
+            shape_native=self.shape_native
+        )
 
     @property
     def central_scaled_coordinates(self):
 
         return geometry_util.central_scaled_coordinate_2d_from(
-            shape_native=self.shape_native, pixel_scales=self.pixel_scales, origin=self.origin
+            shape_native=self.shape_native,
+            pixel_scales=self.pixel_scales,
+            origin=self.origin,
         )
 
     def pixel_coordinates_2d_from(self, scaled_coordinates_2d):
@@ -455,9 +459,7 @@ class AbstractMask2D(abstract_mask.AbstractMask):
         ).astype("int")
 
         return arrays.Array2D(
-            array=grid_pixel_indexes_1d,
-            mask=self.edge_mask.mask_sub_1,
-            store_slim=True,
+            array=grid_pixel_indexes_1d, mask=self.edge_mask.mask_sub_1, store_slim=True
         )
 
     def grid_scaled_from_grid_pixels_1d(self, grid_pixels_1d):
@@ -849,7 +851,10 @@ class Mask2D(AbstractMask2D):
                 pixel_scales = (float(pixel_scales), float(pixel_scales))
 
         mask = mask_util.mask_2d_circular_from(
-            shape_native=shape_native, pixel_scales=pixel_scales, radius=radius, centre=centre
+            shape_native=shape_native,
+            pixel_scales=pixel_scales,
+            radius=radius,
+            centre=centre,
         )
 
         return cls.manual(
@@ -1164,7 +1169,9 @@ class Mask2D(AbstractMask2D):
         """
 
         mask = mask_util.mask_2d_via_pixel_coordinates_from(
-            shape_native=shape_native, pixel_coordinates=pixel_coordinates, buffer=buffer
+            shape_native=shape_native,
+            pixel_coordinates=pixel_coordinates,
+            buffer=buffer,
         )
 
         return cls.manual(

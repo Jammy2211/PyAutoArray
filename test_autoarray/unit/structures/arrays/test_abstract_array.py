@@ -114,10 +114,7 @@ class TestConstructorMethods:
     def test__constructor_class_method_native__store_native(self):
 
         arr = aa.Array2D.manual_native(
-            array=np.ones((3, 3)),
-            sub_size=1,
-            pixel_scales=(1.0, 1.0),
-            store_slim=False,
+            array=np.ones((3, 3)), sub_size=1, pixel_scales=(1.0, 1.0), store_slim=False
         )
 
         assert (arr == np.ones((3, 3))).all()
@@ -133,10 +130,7 @@ class TestConstructorMethods:
         assert arr.mask.scaled_minima == (-1.5, -1.5)
 
         arr = aa.Array2D.manual_native(
-            array=np.ones((4, 4)),
-            sub_size=2,
-            pixel_scales=(0.1, 0.1),
-            store_slim=False,
+            array=np.ones((4, 4)), sub_size=2, pixel_scales=(0.1, 0.1), store_slim=False
         )
 
         assert (arr == np.ones((4, 4))).all()
@@ -220,7 +214,9 @@ class TestNewArrays:
         array_2d = np.ones((5, 5))
         array_2d[2, 2] = 2.0
 
-        arr = aa.Array2D.manual_native(array=array_2d, sub_size=1, pixel_scales=(1.0, 1.0))
+        arr = aa.Array2D.manual_native(
+            array=array_2d, sub_size=1, pixel_scales=(1.0, 1.0)
+        )
 
         arr = arr.resized_from(new_shape=(7, 7))
 
@@ -244,7 +240,9 @@ class TestNewArrays:
         array_2d = np.ones((5, 5))
         array_2d[2, 2] = 2.0
 
-        arr = aa.Array2D.manual_native(array=array_2d, sub_size=1, pixel_scales=(1.0, 1.0))
+        arr = aa.Array2D.manual_native(
+            array=array_2d, sub_size=1, pixel_scales=(1.0, 1.0)
+        )
 
         arr = arr.resized_from(new_shape=(3, 3))
 
@@ -263,7 +261,9 @@ class TestNewArrays:
         array_2d = np.ones((5, 5))
         array_2d[2, 2] = 2.0
 
-        arr = aa.Array2D.manual_native(array=array_2d, sub_size=1, pixel_scales=(1.0, 1.0))
+        arr = aa.Array2D.manual_native(
+            array=array_2d, sub_size=1, pixel_scales=(1.0, 1.0)
+        )
 
         new_arr = arr.padded_before_convolution_from(kernel_shape=(3, 3))
 
@@ -282,7 +282,9 @@ class TestNewArrays:
         array_2d = np.ones((9, 9))
         array_2d[4, 4] = 2.0
 
-        arr = aa.Array2D.manual_native(array=array_2d, sub_size=1, pixel_scales=(1.0, 1.0))
+        arr = aa.Array2D.manual_native(
+            array=array_2d, sub_size=1, pixel_scales=(1.0, 1.0)
+        )
 
         new_arr = arr.padded_before_convolution_from(kernel_shape=(7, 7))
 
@@ -297,7 +299,9 @@ class TestNewArrays:
         array_2d = np.ones((5, 5))
         array_2d[2, 2] = 2.0
 
-        arr = aa.Array2D.manual_native(array=array_2d, sub_size=1, pixel_scales=(1.0, 1.0))
+        arr = aa.Array2D.manual_native(
+            array=array_2d, sub_size=1, pixel_scales=(1.0, 1.0)
+        )
 
         new_arr = arr.trimmed_after_convolution_from(kernel_shape=(3, 3))
 
@@ -317,7 +321,9 @@ class TestNewArrays:
         array_2d = np.ones((9, 9))
         array_2d[4, 4] = 2.0
 
-        arr = aa.Array2D.manual_native(array=array_2d, sub_size=1, pixel_scales=(1.0, 1.0))
+        arr = aa.Array2D.manual_native(
+            array=array_2d, sub_size=1, pixel_scales=(1.0, 1.0)
+        )
 
         new_arr = arr.trimmed_after_convolution_from(kernel_shape=(7, 7))
 
@@ -563,7 +569,9 @@ class TestNewArrays:
             ]
         )
 
-        arr = aa.Array2D.manual_native(array=array_2d, sub_size=1, pixel_scales=(0.1, 0.1))
+        arr = aa.Array2D.manual_native(
+            array=array_2d, sub_size=1, pixel_scales=(0.1, 0.1)
+        )
 
         arr_binned_util = aa.util.binning.bin_array_2d_via_mean(
             array_2d=array_2d, bin_up_factor=4

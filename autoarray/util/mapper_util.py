@@ -1,6 +1,8 @@
 import numpy as np
 from autoarray import decorator_util
 
+from autoarray import exc
+
 
 @decorator_util.jit()
 def mapping_matrix_from(
@@ -83,7 +85,12 @@ def pixelization_index_for_voronoi_sub_slim_index_from(
             slim_index_for_sub_slim_index[sub_slim_index]
         ]
 
+        whiletime = 0
+
         while True:
+
+            if whiletime > 1000000:
+                raise exc.PixelizationException
 
             nearest_pixelization_pixel_center = pixelization_grid[
                 nearest_pixelization_index
@@ -123,6 +130,8 @@ def pixelization_index_for_voronoi_sub_slim_index_from(
             sub_pixel_to_neighboring_pixelization_distance = (
                 closest_separation_from_pixelization_to_neighbor
             )
+
+            whiletime += 1
 
             if (
                 sub_pixel_to_nearest_pixelization_distance

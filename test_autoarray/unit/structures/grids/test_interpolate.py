@@ -102,7 +102,9 @@ class TestObj:
         assert isinstance(padded_grid, grids.Grid2DInterpolate)
         assert padded_grid.pixel_scales_interp == (0.1, 0.1)
 
-        mask = aa.Mask2D.unmasked(shape_native=(6, 6), pixel_scales=(3.0, 3.0), sub_size=1)
+        mask = aa.Mask2D.unmasked(
+            shape_native=(6, 6), pixel_scales=(3.0, 3.0), sub_size=1
+        )
 
         grid = grids.Grid2DInterpolate.from_mask(mask=mask, pixel_scales_interp=0.1)
 
@@ -142,7 +144,9 @@ class TestInterpolatedResult:
                 result[0] = 1
                 return result
 
-        mask = aa.Mask2D.unmasked(shape_native=(3, 3), pixel_scales=(1.0, 1.0), sub_size=1)
+        mask = aa.Mask2D.unmasked(
+            shape_native=(3, 3), pixel_scales=(1.0, 1.0), sub_size=1
+        )
 
         grid = aa.Grid2DInterpolate.from_mask(mask=mask, pixel_scales_interp=0.5)
 
@@ -166,7 +170,9 @@ class TestInterpolatedResult:
                 result[0] = 1
                 return result
 
-        mask = aa.Mask2D.unmasked(shape_native=(3, 3), pixel_scales=(1.0, 1.0), sub_size=1)
+        mask = aa.Mask2D.unmasked(
+            shape_native=(3, 3), pixel_scales=(1.0, 1.0), sub_size=1
+        )
 
         grid = aa.Grid2DInterpolate.from_mask(mask=mask, pixel_scales_interp=0.5)
 
@@ -188,7 +194,9 @@ class TestInterpolatedResult:
                 result[0, :] = 1
                 return result
 
-        mask = aa.Mask2D.unmasked(shape_native=(3, 3), pixel_scales=(1.0, 1.0), sub_size=1)
+        mask = aa.Mask2D.unmasked(
+            shape_native=(3, 3), pixel_scales=(1.0, 1.0), sub_size=1
+        )
 
         grid = aa.Grid2DInterpolate.from_mask(mask=mask, pixel_scales_interp=0.5)
 
@@ -369,7 +377,8 @@ class TestAPI:
             grid == np.array([[1.0, 2.0], [3.0, 4.0], [5.0, 6.0], [7.0, 8.0]])
         ).all()
         assert (
-            grid.native == np.array([[[1.0, 2.0], [3.0, 4.0]], [[5.0, 6.0], [7.0, 8.0]]])
+            grid.native
+            == np.array([[[1.0, 2.0], [3.0, 4.0]], [[5.0, 6.0], [7.0, 8.0]]])
         ).all()
         assert (
             grid.slim == np.array([[1.0, 2.0], [3.0, 4.0], [5.0, 6.0], [7.0, 8.0]])
@@ -394,7 +403,8 @@ class TestAPI:
             grid == np.array([[[1.0, 2.0], [3.0, 4.0]], [[5.0, 6.0], [7.0, 8.0]]])
         ).all()
         assert (
-            grid.native == np.array([[[1.0, 2.0], [3.0, 4.0]], [[5.0, 6.0], [7.0, 8.0]]])
+            grid.native
+            == np.array([[[1.0, 2.0], [3.0, 4.0]], [[5.0, 6.0], [7.0, 8.0]]])
         ).all()
         assert (
             grid.slim == np.array([[1.0, 2.0], [3.0, 4.0], [5.0, 6.0], [7.0, 8.0]])
@@ -420,7 +430,8 @@ class TestAPI:
             grid == np.array([[1.0, 2.0], [3.0, 4.0], [5.0, 6.0], [7.0, 8.0]])
         ).all()
         assert (
-            grid.native == np.array([[[1.0, 2.0], [3.0, 4.0]], [[5.0, 6.0], [7.0, 8.0]]])
+            grid.native
+            == np.array([[[1.0, 2.0], [3.0, 4.0]], [[5.0, 6.0], [7.0, 8.0]]])
         ).all()
         assert (
             grid.slim == np.array([[1.0, 2.0], [3.0, 4.0], [5.0, 6.0], [7.0, 8.0]])
@@ -500,7 +511,10 @@ class TestAPI:
     def test__uniform(self):
 
         grid = aa.Grid2DInterpolate.uniform(
-            shape_native=(2, 2), pixel_scales=2.0, pixel_scales_interp=0.1, store_slim=True
+            shape_native=(2, 2),
+            pixel_scales=2.0,
+            pixel_scales_interp=0.1,
+            store_slim=True,
         )
 
         assert type(grid) == grids.Grid2DInterpolate

@@ -638,10 +638,12 @@ def blurring_mask_2d_from(
         for x in range(mask_2d.shape[1]):
             if not mask_2d[y, x]:
                 for y1 in range(
-                    (-kernel_shape_native[0] + 1) // 2, (kernel_shape_native[0] + 1) // 2
+                    (-kernel_shape_native[0] + 1) // 2,
+                    (kernel_shape_native[0] + 1) // 2,
                 ):
                     for x1 in range(
-                        (-kernel_shape_native[1] + 1) // 2, (kernel_shape_native[1] + 1) // 2
+                        (-kernel_shape_native[1] + 1) // 2,
+                        (kernel_shape_native[1] + 1) // 2,
                     ):
                         if (
                             0 <= x + x1 <= mask_2d.shape[1] - 1

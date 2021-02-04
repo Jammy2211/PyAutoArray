@@ -162,7 +162,10 @@ class Grid2DIterate(abstract_grid.AbstractGrid2D):
         pixel_scales = geometry_util.convert_pixel_scales_2d(pixel_scales=pixel_scales)
 
         mask = msk.Mask2D.unmasked(
-            shape_native=shape_native, pixel_scales=pixel_scales, sub_size=1, origin=origin
+            shape_native=shape_native,
+            pixel_scales=pixel_scales,
+            sub_size=1,
+            origin=origin,
         )
 
         if store_slim:
@@ -222,7 +225,10 @@ class Grid2DIterate(abstract_grid.AbstractGrid2D):
         pixel_scales = geometry_util.convert_pixel_scales_2d(pixel_scales=pixel_scales)
 
         grid_slim = grid_util.grid_2d_slim_via_shape_native_from(
-            shape_native=shape_native, pixel_scales=pixel_scales, sub_size=1, origin=origin
+            shape_native=shape_native,
+            pixel_scales=pixel_scales,
+            sub_size=1,
+            origin=origin,
         )
 
         return Grid2DIterate.manual_slim(

@@ -109,7 +109,8 @@ class ValuesIrregularGrouped(np.ndarray):
         array_slim : np.ndarray
             The 1D array (shape [total_values]) of values that are mapped to a *ValuesIrregularGrouped* object."""
         values = [
-            list(array_slim[i:j]) for i, j in zip(self.lower_indexes, self.upper_indexes)
+            list(array_slim[i:j])
+            for i, j in zip(self.lower_indexes, self.upper_indexes)
         ]
         return ValuesIrregularGrouped(values=values)
 

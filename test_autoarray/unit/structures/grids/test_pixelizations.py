@@ -207,8 +207,7 @@ class TestGrid2DVoronoi:
             pix_grid == np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [1.0, 4.0]])
         ).all()
         assert (
-            pix_grid.nearest_pixelization_index_for_slim_index
-            == np.array([0, 1, 2, 3])
+            pix_grid.nearest_pixelization_index_for_slim_index == np.array([0, 1, 2, 3])
         ).all()
 
     def test__from_unmasked_sparse_shape_and_grid(self):

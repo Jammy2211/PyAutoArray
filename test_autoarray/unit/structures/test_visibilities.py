@@ -15,7 +15,9 @@ test_data_dir = path.join(
 class TestVisibilitiesAPI:
     def test__manual__makes_visibilities_without_other_inputs(self):
 
-        visibilities = aa.Visibilities.manual_slim(visibilities=[1.0 + 2.0j, 3.0 + 4.0j])
+        visibilities = aa.Visibilities.manual_slim(
+            visibilities=[1.0 + 2.0j, 3.0 + 4.0j]
+        )
 
         assert type(visibilities) == vis.Visibilities
         assert (visibilities.slim == np.array([1.0 + 2.0j, 3.0 + 4.0j])).all()
@@ -39,7 +41,9 @@ class TestVisibilitiesAPI:
 
     def test__manual__makes_visibilities_with_converted_input_as_list(self):
 
-        visibilities = aa.Visibilities.manual_slim(visibilities=[[1.0, 2.0], [3.0, 4.0]])
+        visibilities = aa.Visibilities.manual_slim(
+            visibilities=[[1.0, 2.0], [3.0, 4.0]]
+        )
 
         assert type(visibilities) == vis.Visibilities
         assert (visibilities.slim == np.array([1.0 + 2.0j, 3.0 + 4.0j])).all()

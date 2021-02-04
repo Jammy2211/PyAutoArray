@@ -71,7 +71,9 @@ class AbstractGrid2DIrregular(np.ndarray):
                 return self.grid_from_grid_slim(grid_slim=result)
         elif isinstance(result, list):
             if len(result[0].shape) == 1:
-                return [self.values_from_array_slim(array_slim=value) for value in result]
+                return [
+                    self.values_from_array_slim(array_slim=value) for value in result
+                ]
             elif len(result[0].shape) == 2:
                 return [self.grid_from_grid_slim(grid_slim=value) for value in result]
 
@@ -91,7 +93,9 @@ class AbstractGrid2DIrregular(np.ndarray):
             The input result (e.g. of a decorated function) that is converted to a PyAutoArray structure.
         """
         if len(result_list[0].shape) == 1:
-            return [self.values_from_array_slim(array_slim=value) for value in result_list]
+            return [
+                self.values_from_array_slim(array_slim=value) for value in result_list
+            ]
         elif len(result_list[0].shape) == 2:
             return [self.grid_from_grid_slim(grid_slim=value) for value in result_list]
 
@@ -501,7 +505,8 @@ class Grid2DIrregularGrouped(AbstractGrid2DIrregular):
         """Create a *ValuesIrregularGrouped* object from a 1D NumPy array of values of shape [total_coordinates]. The
         *ValuesIrregularGrouped* are structured and grouped following this *Coordinate* instance."""
         values_1d = [
-            list(array_slim[i:j]) for i, j in zip(self.lower_indexes, self.upper_indexes)
+            list(array_slim[i:j])
+            for i, j in zip(self.lower_indexes, self.upper_indexes)
         ]
         return arrays.ValuesIrregularGrouped(values=values_1d)
 
@@ -706,7 +711,9 @@ class Grid2DIrregularGroupedUniform(Grid2DIrregularGrouped):
             pixel_scales[1] / upscale_factor,
         )
 
-        return cls(grid=grid_upscaled_1d, pixel_scales=pixel_scales, shape_native=shape_native)
+        return cls(
+            grid=grid_upscaled_1d, pixel_scales=pixel_scales, shape_native=shape_native
+        )
 
     def grid_from_grid_slim(self, grid_slim):
         """Create a `Grid2DIrregularGroupedUniform` object from a 2D NumPy array of values of shape [total_coordinates, 2]. The
@@ -717,7 +724,9 @@ class Grid2DIrregularGroupedUniform(Grid2DIrregularGrouped):
         ]
 
         return Grid2DIrregularGroupedUniform(
-            grid=grouped_grid_1d, pixel_scales=self.pixel_scales, shape_native=self.shape_native
+            grid=grouped_grid_1d,
+            pixel_scales=self.pixel_scales,
+            shape_native=self.shape_native,
         )
 
     def grid_from_deflection_grid(self, deflection_grid):

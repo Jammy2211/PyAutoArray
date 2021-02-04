@@ -329,7 +329,9 @@ class TestMaskedImaging:
             ),
         )
 
-        grid = aa.Grid2DInterpolate.from_mask(mask=sub_mask_7x7, pixel_scales_interp=1.0)
+        grid = aa.Grid2DInterpolate.from_mask(
+            mask=sub_mask_7x7, pixel_scales_interp=1.0
+        )
 
         blurring_grid = grid.blurring_grid_from_kernel_shape(kernel_shape_native=(3, 3))
 
@@ -423,7 +425,9 @@ class TestMaskedImaging:
         )
 
         assert (masked_imaging.imaging.image.native == np.ones((19, 19))).all()
-        assert (masked_imaging.imaging.noise_map.native == 2.0 * np.ones((19, 19))).all()
+        assert (
+            masked_imaging.imaging.noise_map.native == 2.0 * np.ones((19, 19))
+        ).all()
         assert (masked_imaging.psf.native == (1.0 / 49.0) * np.ones((7, 7))).all()
         assert masked_imaging.convolver.kernel.shape_native == (7, 7)
         assert (masked_imaging.image == np.array([1.0])).all()

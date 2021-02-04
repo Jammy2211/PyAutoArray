@@ -212,7 +212,9 @@ def central_scaled_coordinate_2d_from(
         The central coordinates of the 2D data structure in scaled units.
     """
 
-    central_pixel_coordinates = central_pixel_coordinates_2d_from(shape_native=shape_native)
+    central_pixel_coordinates = central_pixel_coordinates_2d_from(
+        shape_native=shape_native
+    )
 
     y_pixel = central_pixel_coordinates[0] + (origin[0] / pixel_scales[0])
     x_pixel = central_pixel_coordinates[1] - (origin[1] / pixel_scales[1])
@@ -228,7 +230,9 @@ def pixel_coordinates_2d_from(
     origins: Tuple[float, float] = (0.0, 0.0),
 ) -> Union[Tuple[float], Tuple[float, float]]:
 
-    central_pixel_coordinates = central_pixel_coordinates_2d_from(shape_native=shape_native)
+    central_pixel_coordinates = central_pixel_coordinates_2d_from(
+        shape_native=shape_native
+    )
 
     y_pixel = int(
         (-scaled_coordinates_2d[0] + origins[0]) / pixel_scales[0]

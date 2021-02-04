@@ -162,9 +162,7 @@ class TestAbstractInversion:
         inversion.reconstruction = np.array([2.0, 3.0, 5.0, 0.0])
 
         assert inversion.brightest_reconstruction_pixel == 2
-        assert inversion.brightest_reconstruction_pixel_centre.in_list == [
-            (5.0, 6.0)
-        ]
+        assert inversion.brightest_reconstruction_pixel_centre.in_list == [(5.0, 6.0)]
 
     def test__interpolated_reconstruction__config_is_image_grid__grid_as_mapper_with_good_interp(
         self,
@@ -283,7 +281,9 @@ class TestAbstractInversion:
         assert interpolated_errors.shape_native == (5, 5)
 
         assert interpolated_errors.slim == pytest.approx(np.ones(shape=(25,)), 1.0e-4)
-        assert interpolated_errors.native == pytest.approx(np.ones(shape=(5, 5)), 1.0e-4)
+        assert interpolated_errors.native == pytest.approx(
+            np.ones(shape=(5, 5)), 1.0e-4
+        )
         assert interpolated_errors.pixel_scales == pytest.approx((1.0, 1.0), 1.0e-4)
 
     def test__interpolated_reconstruction__config_is_source_grid__grid_is_zoomed_as_uses_mapper_grid(

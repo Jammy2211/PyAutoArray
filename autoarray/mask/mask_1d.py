@@ -145,7 +145,9 @@ class Mask1D(AbstractMask1d):
         )
 
     @classmethod
-    def unmasked(cls, shape_slim, pixel_scales, sub_size=1, origin=(0.0,), invert=False):
+    def unmasked(
+        cls, shape_slim, pixel_scales, sub_size=1, origin=(0.0,), invert=False
+    ):
         """Setup a mask where all pixels are unmasked.
 
         Parameters

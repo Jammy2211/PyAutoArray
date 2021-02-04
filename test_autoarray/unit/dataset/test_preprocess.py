@@ -36,7 +36,9 @@ def test__array_with_new_shape():
 def test__array_from_electrons_per_second_to_counts():
 
     arr_eps = aa.Array2D.ones(shape_native=(3, 3), pixel_scales=1.0)
-    exposure_time_map = aa.Array2D.full(fill_value=2.0, shape_native=(3, 3), pixel_scales=1.0)
+    exposure_time_map = aa.Array2D.full(
+        fill_value=2.0, shape_native=(3, 3), pixel_scales=1.0
+    )
 
     arr_counts = aa.preprocess.array_eps_to_counts(
         array_eps=arr_eps, exposure_time_map=exposure_time_map
@@ -48,7 +50,9 @@ def test__array_from_electrons_per_second_to_counts():
 def test__array_from_counts_to_electrons_per_second():
 
     arr_counts = aa.Array2D.ones(shape_native=(3, 3), pixel_scales=1.0)
-    exposure_time_map = aa.Array2D.full(fill_value=2.0, shape_native=(3, 3), pixel_scales=1.0)
+    exposure_time_map = aa.Array2D.full(
+        fill_value=2.0, shape_native=(3, 3), pixel_scales=1.0
+    )
 
     arr_eps = aa.preprocess.array_counts_to_eps(
         array_counts=arr_counts, exposure_time_map=exposure_time_map
@@ -60,7 +64,9 @@ def test__array_from_counts_to_electrons_per_second():
 def test__array_from_electrons_per_second_to_adus():
 
     arr_eps = aa.Array2D.ones(shape_native=(3, 3), pixel_scales=1.0)
-    exposure_time_map = aa.Array2D.full(fill_value=2.0, shape_native=(3, 3), pixel_scales=1.0)
+    exposure_time_map = aa.Array2D.full(
+        fill_value=2.0, shape_native=(3, 3), pixel_scales=1.0
+    )
 
     arr_adus = aa.preprocess.array_eps_to_adus(
         array_eps=arr_eps, exposure_time_map=exposure_time_map, gain=2.0
@@ -78,7 +84,9 @@ def test__array_from_electrons_per_second_to_adus():
 def test__array_from_adus_to_electrons_per_second():
 
     arr_adus = aa.Array2D.ones(shape_native=(3, 3), pixel_scales=1.0)
-    exposure_time_map = aa.Array2D.full(fill_value=2.0, shape_native=(3, 3), pixel_scales=1.0)
+    exposure_time_map = aa.Array2D.full(
+        fill_value=2.0, shape_native=(3, 3), pixel_scales=1.0
+    )
 
     arr_eps = aa.preprocess.array_adus_to_eps(
         array_adus=arr_adus, exposure_time_map=exposure_time_map, gain=2.0
@@ -112,7 +120,9 @@ def test__noise_map_from_image_exposure_time_map():
     assert (poisson_noise_map.native == 2.0 * np.ones((4, 2))).all()
 
     image = aa.Array2D.ones(shape_native=(1, 5), pixel_scales=1.0)
-    exposure_time_map = aa.Array2D.full(fill_value=4.0, shape_native=(1, 5), pixel_scales=1.0)
+    exposure_time_map = aa.Array2D.full(
+        fill_value=4.0, shape_native=(1, 5), pixel_scales=1.0
+    )
     poisson_noise_map = aa.preprocess.noise_map_from_data_eps_and_exposure_time_map(
         data_eps=image, exposure_time_map=exposure_time_map
     )
@@ -179,7 +189,9 @@ def test__noise_map_from_image_exposure_time_map_and_background_noise_map():
     )
 
     image = aa.Array2D.ones(shape_native=(2, 3), pixel_scales=1.0)
-    exposure_time_map = aa.Array2D.full(fill_value=2.0, shape_native=(2, 3), pixel_scales=1.0)
+    exposure_time_map = aa.Array2D.full(
+        fill_value=2.0, shape_native=(2, 3), pixel_scales=1.0
+    )
     background_noise_map = aa.Array2D.full(
         fill_value=5.0, shape_native=(2, 3), pixel_scales=1.0
     )

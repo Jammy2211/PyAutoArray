@@ -22,7 +22,9 @@ class TestProperties:
         self,
     ):
         array = aa.Array2D.manual_native([[1.0, 2.0], [3.0, 4.0]], pixel_scales=1.0)
-        noise_map = aa.Array2D.manual_native([[10.0, 10.0], [30.0, 4.0]], pixel_scales=1.0)
+        noise_map = aa.Array2D.manual_native(
+            [[10.0, 10.0], [30.0, 4.0]], pixel_scales=1.0
+        )
 
         dataset = abstract_dataset.AbstractDataset(data=array, noise_map=noise_map)
 
@@ -36,7 +38,9 @@ class TestProperties:
     ):
         array = aa.Array2D.manual_native([[-1.0, 2.0], [3.0, -4.0]], pixel_scales=1.0)
 
-        noise_map = aa.Array2D.manual_native([[10.0, 10.0], [30.0, 4.0]], pixel_scales=1.0)
+        noise_map = aa.Array2D.manual_native(
+            [[10.0, 10.0], [30.0, 4.0]], pixel_scales=1.0
+        )
 
         dataset = abstract_dataset.AbstractDataset(data=array, noise_map=noise_map)
 
@@ -50,7 +54,9 @@ class TestProperties:
     ):
         array = aa.Array2D.manual_native([[-1.0, 2.0], [3.0, -4.0]], pixel_scales=1.0)
 
-        noise_map = aa.Array2D.manual_native([[10.0, 10.0], [30.0, 4.0]], pixel_scales=1.0)
+        noise_map = aa.Array2D.manual_native(
+            [[10.0, 10.0], [30.0, 4.0]], pixel_scales=1.0
+        )
 
         dataset = abstract_dataset.AbstractDataset(data=array, noise_map=noise_map)
 
@@ -64,7 +70,9 @@ class TestProperties:
         self,
     ):
         array = aa.Array2D.manual_native([[-1.0, 2.0], [3.0, -4.0]], pixel_scales=1.0)
-        noise_map = aa.Array2D.manual_native([[10.0, 10.0], [30.0, 4.0]], pixel_scales=1.0)
+        noise_map = aa.Array2D.manual_native(
+            [[10.0, 10.0], [30.0, 4.0]], pixel_scales=1.0
+        )
 
         dataset = abstract_dataset.AbstractDataset(data=array, noise_map=noise_map)
 
@@ -268,7 +276,9 @@ class TestAbstractMaskedData:
         masked_imaging_7x7 = abstract_dataset.AbstractMaskedDataset(
             dataset=imaging_7x7,
             mask=sub_mask_7x7,
-            settings=abstract_dataset.AbstractSettingsMaskedDataset(grid_class=aa.Grid2D),
+            settings=abstract_dataset.AbstractSettingsMaskedDataset(
+                grid_class=aa.Grid2D
+            ),
         )
 
         assert isinstance(masked_imaging_7x7.grid, aa.Grid2D)
@@ -294,7 +304,9 @@ class TestAbstractMaskedData:
             ),
         )
 
-        grid = aa.Grid2DInterpolate.from_mask(mask=sub_mask_7x7, pixel_scales_interp=1.0)
+        grid = aa.Grid2DInterpolate.from_mask(
+            mask=sub_mask_7x7, pixel_scales_interp=1.0
+        )
 
         assert isinstance(masked_imaging_7x7.grid, aa.Grid2DInterpolate)
         assert (masked_imaging_7x7.grid == grid).all()
@@ -325,7 +337,9 @@ class TestAbstractMaskedData:
             ),
         )
 
-        grid = aa.Grid2DInterpolate.from_mask(mask=sub_mask_7x7, pixel_scales_interp=1.0)
+        grid = aa.Grid2DInterpolate.from_mask(
+            mask=sub_mask_7x7, pixel_scales_interp=1.0
+        )
 
         assert isinstance(masked_imaging_7x7.grid_inversion, aa.Grid2DInterpolate)
         assert (masked_imaging_7x7.grid_inversion == grid).all()
@@ -336,7 +350,10 @@ class TestAbstractMaskedData:
         # If an input mask is supplied we use mask input.
 
         mask_input = aa.Mask2D.circular(
-            shape_native=imaging_7x7.shape_native, pixel_scales=1, sub_size=1, radius=1.5
+            shape_native=imaging_7x7.shape_native,
+            pixel_scales=1,
+            sub_size=1,
+            radius=1.5,
         )
 
         masked_dataset = abstract_dataset.AbstractMaskedDataset(

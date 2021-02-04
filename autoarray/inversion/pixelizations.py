@@ -294,7 +294,10 @@ class VoronoiBrightnessImage(Voronoi):
         return np.power(weight_map, self.weight_power)
 
     def sparse_grid_from_grid(
-        self, grid: grids.Grid2D, hyper_image: np.ndarray, settings=SettingsPixelization()
+        self,
+        grid: grids.Grid2D,
+        hyper_image: np.ndarray,
+        settings=SettingsPixelization(),
     ):
         weight_map = self.weight_map_from_hyper_image(hyper_image=hyper_image)
 

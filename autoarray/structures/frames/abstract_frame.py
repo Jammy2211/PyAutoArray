@@ -249,13 +249,19 @@ class Scans:
             return Scans()
 
         parallel_overscan = frame_util.rotate_region_from_roe_corner(
-            region=scans.parallel_overscan, shape_native=shape_native, roe_corner=roe_corner
+            region=scans.parallel_overscan,
+            shape_native=shape_native,
+            roe_corner=roe_corner,
         )
         serial_prescan = frame_util.rotate_region_from_roe_corner(
-            region=scans.serial_prescan, shape_native=shape_native, roe_corner=roe_corner
+            region=scans.serial_prescan,
+            shape_native=shape_native,
+            roe_corner=roe_corner,
         )
         serial_overscan = frame_util.rotate_region_from_roe_corner(
-            region=scans.serial_overscan, shape_native=shape_native, roe_corner=roe_corner
+            region=scans.serial_overscan,
+            shape_native=shape_native,
+            roe_corner=roe_corner,
         )
 
         return Scans(

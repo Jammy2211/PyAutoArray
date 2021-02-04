@@ -155,7 +155,9 @@ class TestFrameRegions:
         self,
     ):
 
-        frame = aa.Frame2D.ones(shape_native=(3, 3), pixel_scales=1.0, roe_corner=(1, 0))
+        frame = aa.Frame2D.ones(
+            shape_native=(3, 3), pixel_scales=1.0, roe_corner=(1, 0)
+        )
 
         region = aa.Region2D(region=(0, 3, 0, 3))
 
@@ -179,7 +181,9 @@ class TestFrameRegions:
 
     def test__parallel_trails_of_region__extracts_rows_above_region(self):
 
-        frame = aa.Frame2D.ones(shape_native=(3, 3), pixel_scales=1.0, roe_corner=(1, 0))
+        frame = aa.Frame2D.ones(
+            shape_native=(3, 3), pixel_scales=1.0, roe_corner=(1, 0)
+        )
 
         region = aa.Region2D(
             region=(0, 3, 0, 3)
@@ -315,7 +319,9 @@ class TestFrameRegions:
         assert (frame.serial_overscan_binned_line == np.array([6.5])).all()
 
     def test__serial_front_edge_of_region__extracts_region_within_left_of_region(self):
-        frame = aa.Frame2D.ones(shape_native=(3, 3), pixel_scales=1.0, roe_corner=(1, 0))
+        frame = aa.Frame2D.ones(
+            shape_native=(3, 3), pixel_scales=1.0, roe_corner=(1, 0)
+        )
 
         region = aa.Region2D(
             region=(0, 3, 0, 3)
@@ -338,7 +344,9 @@ class TestFrameRegions:
         assert front_edge == (0, 3, 1, 3)
 
     def test__serial_trails_of_regions__extracts_region_to_right_of_region(self):
-        frame = aa.Frame2D.ones(shape_native=(3, 3), pixel_scales=1.0, roe_corner=(1, 0))
+        frame = aa.Frame2D.ones(
+            shape_native=(3, 3), pixel_scales=1.0, roe_corner=(1, 0)
+        )
 
         region = aa.Region2D(
             region=(0, 3, 0, 3)

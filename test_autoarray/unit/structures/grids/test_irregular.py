@@ -104,7 +104,9 @@ class TestGrid2DIrregular:
 
         grid = aa.Grid2DIrregular(grid=[(1.0, 1.0), (2.0, 2.0), (3.0, 3.0)])
 
-        values_from_1d = grid.values_from_array_slim(array_slim=np.array([1.0, 2.0, 3.0]))
+        values_from_1d = grid.values_from_array_slim(
+            array_slim=np.array([1.0, 2.0, 3.0])
+        )
 
         assert isinstance(values_from_1d, aa.ValuesIrregularGrouped)
         assert values_from_1d.in_list == [1.0, 2.0, 3.0]
@@ -322,7 +324,9 @@ class TestGrid2DIrregularGrouped:
 
         grid = aa.Grid2DIrregularGrouped(grid=[[(1.0, 1.0), (2.0, 2.0)], [(3.0, 3.0)]])
 
-        values_from_1d = grid.values_from_array_slim(array_slim=np.array([1.0, 2.0, 3.0]))
+        values_from_1d = grid.values_from_array_slim(
+            array_slim=np.array([1.0, 2.0, 3.0])
+        )
 
         assert values_from_1d.in_grouped_list == [[1.0, 2.0], [3.0]]
 
@@ -414,7 +418,9 @@ class TestGrid2DIrregularGrouped:
 
         assert grid_of_closest.in_grouped_list == [[(0.0, 0.0)]]
 
-        grid_pair = aa.Grid2DIrregularGrouped(grid=[[(0.0, 0.1), (0.0, 0.2), (0.0, 0.3)]])
+        grid_pair = aa.Grid2DIrregularGrouped(
+            grid=[[(0.0, 0.1), (0.0, 0.2), (0.0, 0.3)]]
+        )
 
         grid_of_closest = grid.grid_of_closest_from_grid_pair(grid_pair=grid_pair)
 
@@ -551,7 +557,9 @@ class TestGrid2DIrregularGroupedUniform:
 
     def test__grid_from_deflection_grid(self):
         grid = aa.Grid2DIrregularGroupedUniform(
-            grid=[[(1.0, 1.0), (2.0, 2.0)]], pixel_scales=(1.0, 1.0), shape_native=(3, 3)
+            grid=[[(1.0, 1.0), (2.0, 2.0)]],
+            pixel_scales=(1.0, 1.0),
+            shape_native=(3, 3),
         )
 
         grid = grid.grid_from_deflection_grid(
@@ -566,7 +574,9 @@ class TestGrid2DIrregularGroupedUniform:
     def test__grid_from_grid_slim(self):
 
         grid = aa.Grid2DIrregularGroupedUniform(
-            grid=[[(1.0, 1.0), (2.0, 2.0)]], pixel_scales=(1.0, 1.0), shape_native=(3, 3)
+            grid=[[(1.0, 1.0), (2.0, 2.0)]],
+            pixel_scales=(1.0, 1.0),
+            shape_native=(3, 3),
         )
 
         grid_from_1d = grid.grid_from_grid_slim(

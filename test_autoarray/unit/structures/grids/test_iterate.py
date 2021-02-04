@@ -154,7 +154,10 @@ class TestObj:
     def test__padded_grid_from_kernel_shape__matches_grid_2d_after_padding(self):
 
         grid = grids.Grid2DIterate.uniform(
-            shape_native=(4, 4), pixel_scales=3.0, fractional_accuracy=0.1, sub_steps=[2, 3]
+            shape_native=(4, 4),
+            pixel_scales=3.0,
+            fractional_accuracy=0.1,
+            sub_steps=[2, 3],
         )
 
         padded_grid = grid.padded_grid_from_kernel_shape(kernel_shape_native=(3, 3))
@@ -653,7 +656,9 @@ class TestIteratedGrid:
             pixel_scales=(1.0, 1.0),
         )
 
-        iterate = aa.Grid2DIterate.from_mask(mask=mask_lower_sub, fractional_accuracy=0.5)
+        iterate = aa.Grid2DIterate.from_mask(
+            mask=mask_lower_sub, fractional_accuracy=0.5
+        )
 
         grid_lower_sub = aa.Grid2D.manual_mask(
             [
@@ -863,7 +868,8 @@ class TestAPI:
             grid == np.array([[1.0, 2.0], [3.0, 4.0], [5.0, 6.0], [7.0, 8.0]])
         ).all()
         assert (
-            grid.native == np.array([[[1.0, 2.0], [3.0, 4.0]], [[5.0, 6.0], [7.0, 8.0]]])
+            grid.native
+            == np.array([[[1.0, 2.0], [3.0, 4.0]], [[5.0, 6.0], [7.0, 8.0]]])
         ).all()
         assert (
             grid.slim == np.array([[1.0, 2.0], [3.0, 4.0], [5.0, 6.0], [7.0, 8.0]])
@@ -890,7 +896,8 @@ class TestAPI:
             grid == np.array([[[1.0, 2.0], [3.0, 4.0]], [[5.0, 6.0], [7.0, 8.0]]])
         ).all()
         assert (
-            grid.native == np.array([[[1.0, 2.0], [3.0, 4.0]], [[5.0, 6.0], [7.0, 8.0]]])
+            grid.native
+            == np.array([[[1.0, 2.0], [3.0, 4.0]], [[5.0, 6.0], [7.0, 8.0]]])
         ).all()
         assert (
             grid.slim == np.array([[1.0, 2.0], [3.0, 4.0], [5.0, 6.0], [7.0, 8.0]])
