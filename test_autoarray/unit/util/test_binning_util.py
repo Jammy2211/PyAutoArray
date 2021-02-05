@@ -334,7 +334,7 @@ class TestBinnedArrays2d:
             == np.array([[(5.0 / 9.0), (4.0 / 9.0)], [(4.0 / 9.0), (4.0 / 9.0)]])
         ).all()
 
-        # Padded Array:
+        # Padded Array2D:
 
         # np.array([[0.0, 1.0, 1.0, 1.0],
         #           [0.0, 1.0, 2.0, 1.0]]
@@ -491,7 +491,7 @@ class TestBinnedArrays2d:
             )
         ).all()
 
-        # Padded Array:
+        # Padded Array2D:
 
         # np.array([[0.0, 1.0, 1.0, 1.0],
         #           [0.0, 1.0, 2.0, 1.0]]
@@ -616,7 +616,7 @@ class TestBinnedArrays2d:
         )
         assert (binned_array_2d == np.array([[5.0, 4.0], [4.0, 4.0]])).all()
 
-        # Padded Array:
+        # Padded Array2D:
 
         # np.array([[0.0, 1.0, 1.0, 1.0],
         #           [0.0, 1.0, 2.0, 1.0]]
@@ -727,7 +727,7 @@ class TestBinUpMask2d:
         binned_mask = aa.util.binning.bin_mask(mask=mask, bin_up_factor=3)
         assert (binned_mask == np.array([[False, True], [True, False]])).all()
 
-        # Padded Array:
+        # Padded Array2D:
 
         # np.array([[0.0, 1.0, 1.0, 1.0],
         #           [0.0, 1.0, 2.0, 1.0]]

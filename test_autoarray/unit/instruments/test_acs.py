@@ -67,7 +67,7 @@ class TestFrameACS:
         )
 
         assert acs_frame.original_roe_corner == (1, 0)
-        assert acs_frame.shape_2d == (2068, 2072)
+        assert acs_frame.shape_native == (2068, 2072)
         assert (acs_frame == np.zeros((2068, 2072))).all()
         assert acs_frame.scans.parallel_overscan == (2048, 2068, 24, 2072)
         assert acs_frame.scans.serial_prescan == (0, 2068, 0, 24)
@@ -81,7 +81,7 @@ class TestFrameACS:
         )
 
         assert acs_frame.original_roe_corner == (1, 0)
-        assert acs_frame.shape_2d == (2068, 2072)
+        assert acs_frame.shape_native == (2068, 2072)
         assert (acs_frame == np.zeros((2068, 2072))).all()
         assert acs_frame.scans.parallel_overscan == (2060, 2070, 28, 2072)
         assert acs_frame.scans.serial_prescan == (0, 2070, 0, 28)
@@ -95,7 +95,7 @@ class TestFrameACS:
         )
 
         assert acs_frame.original_roe_corner == (1, 1)
-        assert acs_frame.shape_2d == (2068, 2072)
+        assert acs_frame.shape_native == (2068, 2072)
         assert (acs_frame == np.zeros((2068, 2072))).all()
         assert acs_frame.scans.parallel_overscan == (2048, 2068, 24, 2072)
         assert acs_frame.scans.serial_prescan == (0, 2068, 0, 24)
@@ -109,7 +109,7 @@ class TestFrameACS:
         )
 
         assert acs_frame.original_roe_corner == (1, 1)
-        assert acs_frame.shape_2d == (2068, 2072)
+        assert acs_frame.shape_native == (2068, 2072)
         assert (acs_frame == np.zeros((2068, 2072))).all()
         assert acs_frame.scans.parallel_overscan == (2060, 2070, 28, 2072)
         assert acs_frame.scans.serial_prescan == (0, 2070, 0, 28)
@@ -119,27 +119,27 @@ class TestFrameACS:
         frame = aa.acs.FrameACS.from_ccd(array_electrons=acs_ccd, quadrant_letter="B")
 
         assert frame.original_roe_corner == (1, 0)
-        assert frame.shape_2d == (2068, 2072)
+        assert frame.shape_native == (2068, 2072)
 
         frame = aa.acs.FrameACS.from_ccd(array_electrons=acs_ccd, quadrant_letter="C")
 
         assert frame.original_roe_corner == (1, 0)
-        assert frame.shape_2d == (2068, 2072)
+        assert frame.shape_native == (2068, 2072)
 
         frame = aa.acs.FrameACS.from_ccd(array_electrons=acs_ccd, quadrant_letter="A")
 
         assert frame.original_roe_corner == (1, 1)
-        assert frame.shape_2d == (2068, 2072)
+        assert frame.shape_native == (2068, 2072)
 
         frame = aa.acs.FrameACS.from_ccd(array_electrons=acs_ccd, quadrant_letter="D")
 
         assert frame.original_roe_corner == (1, 1)
-        assert frame.shape_2d == (2068, 2072)
+        assert frame.shape_native == (2068, 2072)
 
     def test__conversions_to_counts_and_counts_per_second_use_correct_values(self):
 
-        frame = aa.Frame.ones(
-            shape_2d=(3, 3),
+        frame = aa.Frame2D.ones(
+            shape_native=(3, 3),
             pixel_scales=1.0,
             exposure_info=aa.acs.ExposureInfoACS(
                 bscale=1.0, bzero=0.0, exposure_time=1.0
@@ -149,8 +149,8 @@ class TestFrameACS:
         assert (frame.in_counts == np.ones(shape=(3, 3))).all()
         assert (frame.in_counts_per_second == np.ones(shape=(3, 3))).all()
 
-        frame = aa.Frame.ones(
-            shape_2d=(3, 3),
+        frame = aa.Frame2D.ones(
+            shape_native=(3, 3),
             pixel_scales=1.0,
             exposure_info=aa.acs.ExposureInfoACS(
                 bscale=2.0, bzero=0.0, exposure_time=1.0
@@ -160,8 +160,8 @@ class TestFrameACS:
         assert (frame.in_counts == 0.5 * np.ones(shape=(3, 3))).all()
         assert (frame.in_counts_per_second == 0.5 * np.ones(shape=(3, 3))).all()
 
-        frame = aa.Frame.ones(
-            shape_2d=(3, 3),
+        frame = aa.Frame2D.ones(
+            shape_native=(3, 3),
             pixel_scales=1.0,
             exposure_info=aa.acs.ExposureInfoACS(
                 bscale=2.0, bzero=0.1, exposure_time=1.0
@@ -171,8 +171,8 @@ class TestFrameACS:
         assert (frame.in_counts == 0.45 * np.ones(shape=(3, 3))).all()
         assert (frame.in_counts_per_second == 0.45 * np.ones(shape=(3, 3))).all()
 
-        frame = aa.Frame.ones(
-            shape_2d=(3, 3),
+        frame = aa.Frame2D.ones(
+            shape_native=(3, 3),
             pixel_scales=1.0,
             exposure_info=aa.acs.ExposureInfoACS(
                 bscale=2.0, bzero=0.1, exposure_time=2.0
@@ -245,25 +245,25 @@ class TestImageACS:
         assert frame[0, 0] == (10.0 * 2.0) + 10.0
         assert frame.in_counts[0, 0] == 10.0
         assert frame.original_roe_corner == (1, 0)
-        assert frame.shape_2d == (2068, 2072)
+        assert frame.shape_native == (2068, 2072)
 
         frame = aa.acs.FrameACS.from_fits(file_path=file_path, quadrant_letter="A")
 
         assert frame[0, 0] == (20.0 * 2.0) + 10.0
         assert frame.original_roe_corner == (1, 1)
-        assert frame.shape_2d == (2068, 2072)
+        assert frame.shape_native == (2068, 2072)
 
         frame = aa.acs.ImageACS.from_fits(file_path=file_path, quadrant_letter="C")
 
         assert frame[0, 0] == (30.0 * 2.0) + 10.0
         assert frame.original_roe_corner == (1, 0)
-        assert frame.shape_2d == (2068, 2072)
+        assert frame.shape_native == (2068, 2072)
 
         frame = aa.acs.ImageACS.from_fits(file_path=file_path, quadrant_letter="D")
 
         assert frame[0, 0] == (40.0 * 2.0) + 10.0
         assert frame.original_roe_corner == (1, 1)
-        assert frame.shape_2d == (2068, 2072)
+        assert frame.shape_native == (2068, 2072)
 
     def test__from_fits__in_counts_per_second__uses_fits_header_correctly_converts_and_picks_correct_quadrant(
         self, acs_ccd
@@ -295,25 +295,25 @@ class TestImageACS:
 
         assert frame[0, 0] == (10.0 * 1000.0 * 2.0) + 10.0
         assert frame.original_roe_corner == (1, 0)
-        assert frame.shape_2d == (2068, 2072)
+        assert frame.shape_native == (2068, 2072)
 
         frame = aa.acs.ImageACS.from_fits(file_path=file_path, quadrant_letter="A")
 
         assert frame[0, 0] == (20.0 * 1000.0 * 2.0) + 10.0
         assert frame.original_roe_corner == (1, 1)
-        assert frame.shape_2d == (2068, 2072)
+        assert frame.shape_native == (2068, 2072)
 
         frame = aa.acs.ImageACS.from_fits(file_path=file_path, quadrant_letter="C")
 
         assert frame[0, 0] == (30.0 * 1000.0 * 2.0) + 10.0
         assert frame.original_roe_corner == (1, 0)
-        assert frame.shape_2d == (2068, 2072)
+        assert frame.shape_native == (2068, 2072)
 
         frame = aa.acs.ImageACS.from_fits(file_path=file_path, quadrant_letter="D")
 
         assert frame[0, 0] == (40.0 * 1000.0 * 2.0) + 10.0
         assert frame.original_roe_corner == (1, 1)
-        assert frame.shape_2d == (2068, 2072)
+        assert frame.shape_native == (2068, 2072)
 
     # def test__update_fits__if_new_file_is_not_presnet_copies_original_file_and_updates(
     #     self, acs_ccd

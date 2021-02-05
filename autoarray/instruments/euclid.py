@@ -25,7 +25,7 @@ def roe_corner_from(ccd_id, quadrant_id):
         return (1, 1)
 
 
-class FrameEuclid(f.Frame):
+class FrameEuclid(f.Frame2D):
     """
     In the Euclid FPA, the quadrant id ('E', 'F', 'G', 'H') depends on whether the CCD is located
     on the left side (rows 1-3) or right side (rows 4-6) of the FPA:
@@ -331,7 +331,7 @@ class ScansEuclid(abstract_frame.Scans):
 
         if parallel_overscan_size > 0:
 
-            parallel_overscan = reg.Region(
+            parallel_overscan = reg.Region2D(
                 (
                     0,
                     parallel_overscan_size,
@@ -344,8 +344,8 @@ class ScansEuclid(abstract_frame.Scans):
 
             parallel_overscan = None
 
-        serial_prescan = reg.Region((0, parallel_size, 0, serial_prescan_size))
-        serial_overscan = reg.Region(
+        serial_prescan = reg.Region2D((0, parallel_size, 0, serial_prescan_size))
+        serial_overscan = reg.Region2D(
             (
                 0,
                 parallel_size - parallel_overscan_size,
@@ -372,7 +372,7 @@ class ScansEuclid(abstract_frame.Scans):
 
         if parallel_overscan_size > 0:
 
-            parallel_overscan = reg.Region(
+            parallel_overscan = reg.Region2D(
                 (
                     0,
                     parallel_overscan_size,
@@ -385,10 +385,10 @@ class ScansEuclid(abstract_frame.Scans):
 
             parallel_overscan = None
 
-        serial_prescan = reg.Region(
+        serial_prescan = reg.Region2D(
             (0, parallel_size, serial_size - serial_prescan_size, serial_size)
         )
-        serial_overscan = reg.Region(
+        serial_overscan = reg.Region2D(
             (0, parallel_size - parallel_overscan_size, 0, serial_overscan_size)
         )
 
@@ -410,7 +410,7 @@ class ScansEuclid(abstract_frame.Scans):
 
         if parallel_overscan_size > 0:
 
-            parallel_overscan = reg.Region(
+            parallel_overscan = reg.Region2D(
                 (
                     parallel_size - parallel_overscan_size,
                     parallel_size,
@@ -423,8 +423,8 @@ class ScansEuclid(abstract_frame.Scans):
 
             parallel_overscan = None
 
-        serial_prescan = reg.Region((0, parallel_size, 0, serial_prescan_size))
-        serial_overscan = reg.Region(
+        serial_prescan = reg.Region2D((0, parallel_size, 0, serial_prescan_size))
+        serial_overscan = reg.Region2D(
             (
                 0,
                 parallel_size - parallel_overscan_size,
@@ -451,7 +451,7 @@ class ScansEuclid(abstract_frame.Scans):
 
         if parallel_overscan_size > 0:
 
-            parallel_overscan = reg.Region(
+            parallel_overscan = reg.Region2D(
                 (
                     parallel_size - parallel_overscan_size,
                     parallel_size,
@@ -464,10 +464,10 @@ class ScansEuclid(abstract_frame.Scans):
 
             parallel_overscan = None
 
-        serial_prescan = reg.Region(
+        serial_prescan = reg.Region2D(
             (0, parallel_size, serial_size - serial_prescan_size, serial_size)
         )
-        serial_overscan = reg.Region(
+        serial_overscan = reg.Region2D(
             (0, parallel_size - parallel_overscan_size, 0, serial_overscan_size)
         )
 

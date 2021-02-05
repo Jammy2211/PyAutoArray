@@ -7,7 +7,7 @@ import autoarray as aa
 from autoarray.structures import grids
 
 
-class TestGridRectangular:
+class TestGrid2DRectangular:
     class TestGridNeighbors:
         def test__3x3_grid__buffer_is_small__grid_give_min_minus_1_max_1__sets_up_geometry_correctly(
             self,
@@ -26,11 +26,11 @@ class TestGridRectangular:
                 ]
             )
 
-            pix_grid = aa.GridRectangular.overlay_grid(
-                shape_2d=(3, 3), grid=grid, buffer=1e-8
+            pix_grid = aa.Grid2DRectangular.overlay_grid(
+                shape_native=(3, 3), grid=grid, buffer=1e-8
             )
 
-            assert pix_grid.shape_2d == (3, 3)
+            assert pix_grid.shape_native == (3, 3)
             assert pix_grid.pixel_scales == pytest.approx((2.0 / 3.0, 2.0 / 3.0), 1e-2)
             assert (pix_grid.pixel_neighbors[0] == [1, 3, -1, -1]).all()
             assert (pix_grid.pixel_neighbors[1] == [0, 2, 4, -1]).all()
@@ -61,11 +61,11 @@ class TestGridRectangular:
                 ]
             )
 
-            pix_grid = aa.GridRectangular.overlay_grid(
-                shape_2d=(3, 3), grid=grid, buffer=1e-8
+            pix_grid = aa.Grid2DRectangular.overlay_grid(
+                shape_native=(3, 3), grid=grid, buffer=1e-8
             )
 
-            assert pix_grid.shape_2d == (3, 3)
+            assert pix_grid.shape_native == (3, 3)
             assert pix_grid.pixel_scales == pytest.approx((2.0 / 3.0, 2.0 / 3.0), 1e-2)
 
         def test__5x4_grid__buffer_is_small(self):
@@ -83,21 +83,21 @@ class TestGridRectangular:
                 ]
             )
 
-            pix_grid = aa.GridRectangular.overlay_grid(
-                shape_2d=(5, 4), grid=grid, buffer=1e-8
+            pix_grid = aa.Grid2DRectangular.overlay_grid(
+                shape_native=(5, 4), grid=grid, buffer=1e-8
             )
 
-            assert pix_grid.shape_2d == (5, 4)
+            assert pix_grid.shape_native == (5, 4)
             assert pix_grid.pixel_scales == pytest.approx((2.0 / 5.0, 2.0 / 4.0), 1e-2)
 
         def test__3x3_grid__larger_range_of_grid(self):
             grid = np.array([[2.0, 1.0], [4.0, 3.0], [6.0, 5.0], [8.0, 7.0]])
 
-            pix_grid = aa.GridRectangular.overlay_grid(
-                shape_2d=(3, 3), grid=grid, buffer=1e-8
+            pix_grid = aa.Grid2DRectangular.overlay_grid(
+                shape_native=(3, 3), grid=grid, buffer=1e-8
             )
 
-            assert pix_grid.shape_2d == (3, 3)
+            assert pix_grid.shape_native == (3, 3)
             assert pix_grid.pixel_scales == pytest.approx((6.0 / 3.0, 6.0 / 3.0), 1e-2)
 
     class TestPixelCentres:
@@ -116,8 +116,8 @@ class TestGridRectangular:
                 ]
             )
 
-            pix_grid = aa.GridRectangular.overlay_grid(
-                shape_2d=(3, 3), grid=grid, buffer=1e-8
+            pix_grid = aa.Grid2DRectangular.overlay_grid(
+                shape_native=(3, 3), grid=grid, buffer=1e-8
             )
 
             assert pix_grid == pytest.approx(
@@ -151,8 +151,8 @@ class TestGridRectangular:
                 ]
             )
 
-            pix_grid = aa.GridRectangular.overlay_grid(
-                shape_2d=(4, 3), grid=grid, buffer=1e-8
+            pix_grid = aa.Grid2DRectangular.overlay_grid(
+                shape_native=(4, 3), grid=grid, buffer=1e-8
             )
 
             assert pix_grid == pytest.approx(
@@ -181,34 +181,33 @@ class TestGridRectangular:
             # I8 I 9I10I11I
             # I12I13I14I15I
 
-            pix_grid = aa.GridRectangular.overlay_grid(
-                shape_2d=(7, 5), grid=np.zeros((2, 2)), buffer=1e-8
+            pix_grid = aa.Grid2DRectangular.overlay_grid(
+                shape_native=(7, 5), grid=np.zeros((2, 2)), buffer=1e-8
             )
 
             (
                 pixel_neighbors_util,
                 pixel_neighbors_size_util,
-            ) = aa.util.pixelization.rectangular_neighbors_from(shape_2d=(7, 5))
+            ) = aa.util.pixelization.rectangular_neighbors_from(shape_native=(7, 5))
 
             assert (pix_grid.pixel_neighbors == pixel_neighbors_util).all()
             assert (pix_grid.pixel_neighbors_size == pixel_neighbors_size_util).all()
 
 
-class TestGridVoronoi:
+class TestGrid2DVoronoi:
     def test__pixelization_grid__attributes(self):
 
-        pix_grid = grids.GridVoronoi(
+        pix_grid = grids.Grid2DVoronoi(
             grid=np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [1.0, 4.0]]),
-            nearest_pixelization_1d_index_for_mask_1d_index=np.array([0, 1, 2, 3]),
+            nearest_pixelization_index_for_slim_index=np.array([0, 1, 2, 3]),
         )
 
-        assert type(pix_grid) == grids.GridVoronoi
+        assert type(pix_grid) == grids.Grid2DVoronoi
         assert (
             pix_grid == np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [1.0, 4.0]])
         ).all()
         assert (
-            pix_grid.nearest_pixelization_1d_index_for_mask_1d_index
-            == np.array([0, 1, 2, 3])
+            pix_grid.nearest_pixelization_index_for_slim_index == np.array([0, 1, 2, 3])
         ).all()
 
     def test__from_unmasked_sparse_shape_and_grid(self):
@@ -221,20 +220,20 @@ class TestGridVoronoi:
             sub_size=1,
         )
 
-        grid = aa.Grid.from_mask(mask=mask)
+        grid = aa.Grid2D.from_mask(mask=mask)
 
-        sparse_grid = grids.GridSparse.from_grid_and_unmasked_2d_grid_shape(
+        sparse_grid = grids.Grid2DSparse.from_grid_and_unmasked_2d_grid_shape(
             unmasked_sparse_shape=(10, 10), grid=grid
         )
 
-        pixelization_grid = grids.GridVoronoi.from_grid_and_unmasked_2d_grid_shape(
+        pixelization_grid = grids.Grid2DVoronoi.from_grid_and_unmasked_2d_grid_shape(
             unmasked_sparse_shape=(10, 10), grid=grid
         )
 
         assert (sparse_grid.sparse == pixelization_grid).all()
         assert (
-            sparse_grid.sparse_1d_index_for_mask_1d_index
-            == pixelization_grid.nearest_pixelization_1d_index_for_mask_1d_index
+            sparse_grid.sparse_index_for_slim_index
+            == pixelization_grid.nearest_pixelization_index_for_slim_index
         ).all()
 
     class TestVoronoiGrid:
@@ -255,7 +254,7 @@ class TestGridVoronoi:
                 ]
             )
 
-            pix = aa.GridVoronoi(grid=grid)
+            pix = aa.Grid2DVoronoi(grid=grid)
 
             assert (
                 pix.voronoi.points
@@ -281,7 +280,7 @@ class TestGridVoronoi:
                 [[-1.0, 1.0], [1.0, 1.0], [0.0, 0.0], [-1.0, -1.0], [1.0, -1.0]]
             )
 
-            pix = aa.GridVoronoi(grid=grid)
+            pix = aa.Grid2DVoronoi(grid=grid)
 
             pix.voronoi.vertices = list(map(lambda x: list(x), pix.voronoi.vertices))
 
@@ -307,7 +306,7 @@ class TestGridVoronoi:
                 ]
             )
 
-            pix = aa.GridVoronoi(grid=grid)
+            pix = aa.Grid2DVoronoi(grid=grid)
 
             # ridge points is a numpy array for speed, but convert to list for the comparisons below so we can use in
             # to look for each list
@@ -326,7 +325,7 @@ class TestGridVoronoi:
                 [[1.0, -1.0], [1.0, 1.0], [0.0, 0.0], [-1.0, -1.0], [-1.0, 1.0]]
             )
 
-            pix = aa.GridVoronoi(grid=grid)
+            pix = aa.Grid2DVoronoi(grid=grid)
             # ridge points is a numpy array for speed, but convert to list for the comparisons below so we can use in
             # to look for each list
 
@@ -386,7 +385,7 @@ class TestGridVoronoi:
                 ]
             )
 
-            pix = aa.GridVoronoi(grid=grid)
+            pix = aa.Grid2DVoronoi(grid=grid)
 
             # ridge points is a numpy array for speed, but convert to list for the comparisons below so we can use in
             # to look for each list
@@ -465,7 +464,7 @@ class TestGridVoronoi:
                 ]
             )
 
-            pix = aa.GridVoronoi(grid=grid)
+            pix = aa.Grid2DVoronoi(grid=grid)
 
             voronoi = scipy.spatial.Voronoi(
                 np.asarray([grid[:, 1], grid[:, 0]]).T, qhull_options="Qbb Qc Qx Qm"
@@ -486,4 +485,4 @@ class TestGridVoronoi:
             grid = np.array([[3.0, 0.0]])
 
             with pytest.raises(exc.PixelizationException):
-                aa.GridVoronoi(grid=grid)
+                aa.Grid2DVoronoi(grid=grid)

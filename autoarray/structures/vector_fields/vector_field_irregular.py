@@ -15,9 +15,11 @@ logging.basicConfig()
 logger = logging.getLogger(__name__)
 
 
-class VectorFieldIrregular(np.ndarray):
+class VectorField2DIrregular(np.ndarray):
     def __new__(
-        cls, vectors: np.ndarray or [(float, float)], grid: grids.GridIrregular or list
+        cls,
+        vectors: np.ndarray or [(float, float)],
+        grid: grids.Grid2DIrregular or list,
     ):
         """
         A collection of (y,x) vectors which are located on an irregular grid of (y,x) coordinates.
@@ -39,7 +41,7 @@ class VectorFieldIrregular(np.ndarray):
         ----------
         vectors : np.ndarray or [(float, float)]
             The 2D (y,x) vectors on an irregular grid that represent the vector-field.
-        grid : grids.GridIrregular
+        grid : grids.Grid2DIrregular
             The irregular grid of (y,x) coordinates where each vector is located.
         """
 
@@ -50,7 +52,7 @@ class VectorFieldIrregular(np.ndarray):
             vectors = np.asarray(vectors)
 
         obj = vectors.view(cls)
-        obj.grid = grids.GridIrregular(grid=grid)
+        obj.grid = grids.Grid2DIrregular(grid=grid)
 
         return obj
 
@@ -114,19 +116,19 @@ class VectorFieldIrregular(np.ndarray):
         ]
 
     @property
-    def in_1d(self) -> np.ndarray:
+    def slim(self) -> np.ndarray:
         """
         The vector-field in its 1D representation, an ndarray of shape [total_vectors, 2].
         """
         return self
 
     @property
-    def in_1d_list(self) -> typing.List[typing.Tuple]:
+    def in_list(self) -> typing.List[typing.Tuple]:
         """
         The vector-field in its list representation, as list of (y,x) vector tuples in a structure
         [(vector_0_y, vector_0_x), ...].
         """
-        return [tuple(vector) for vector in self.in_1d]
+        return [tuple(vector) for vector in self.slim]
 
     @property
     def average_magnitude(self) -> float:
@@ -146,9 +148,9 @@ class VectorFieldIrregular(np.ndarray):
 
     def vectors_within_radius(
         self, radius: float, centre: typing.Tuple[float, float] = (0.0, 0.0)
-    ) -> "VectorFieldIrregular":
+    ) -> "VectorField2DIrregular":
         """
-        Returns a new `VectorFieldIrregular` object which has had all vectors outside of a circle of input radius
+        Returns a new `VectorField2DIrregular` object which has had all vectors outside of a circle of input radius
         around an  input (y,x) centre removed.
 
         Parameters
@@ -160,7 +162,7 @@ class VectorFieldIrregular(np.ndarray):
 
         Returns
         -------
-        VectorFieldIrregular
+        VectorField2DIrregular
             The vector field where all vectors outside of the input radius are removed.
 
         """
@@ -172,6 +174,6 @@ class VectorFieldIrregular(np.ndarray):
                 "The input radius removed all vectors / points on the grid."
             )
 
-        return VectorFieldIrregular(
-            vectors=self[mask], grid=grids.GridIrregular(self.grid[mask])
+        return VectorField2DIrregular(
+            vectors=self[mask], grid=grids.Grid2DIrregular(self.grid[mask])
         )

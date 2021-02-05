@@ -18,21 +18,21 @@ logger = logging.getLogger(__name__)
 class AbstractImaging(abstract_dataset.AbstractDataset):
     def __init__(
         self,
-        image: arrays.Array,
-        noise_map: arrays.Array,
-        psf: kernel.Kernel = None,
-        positions: grids.GridIrregularGrouped = None,
+        image: arrays.Array2D,
+        noise_map: arrays.Array2D,
+        psf: kernel.Kernel2D = None,
+        positions: grids.Grid2DIrregularGrouped = None,
         name: str = None,
     ):
         """A class containing the data, noise-map and point spread function of a 2D imaging dataset.
 
         Parameters
         ----------
-        image : aa.Array
+        image : aa.Array2D
             The array of the image data, in units of electrons per second.
-        noise_map : aa.Array
+        noise_map : aa.Array2D
             An array describing the RMS standard deviation error in each pixel in units of electrons per second.
-        psf : aa.Array
+        psf : aa.Array2D
             An array describing the Point Spread Function kernel of the image.
         """
 
@@ -53,8 +53,8 @@ class AbstractImaging(abstract_dataset.AbstractDataset):
                 )
 
     @property
-    def shape_2d(self):
-        return self.data.shape_2d
+    def shape_native(self):
+        return self.data.shape_native
 
     @property
     def image(self):
@@ -94,10 +94,10 @@ class AbstractImaging(abstract_dataset.AbstractDataset):
             self.noise_map,
         )
 
-        imaging.noise_map = arrays.Array.manual_mask(
+        imaging.noise_map = arrays.Array2D.manual_mask(
             array=noise_map_limit,
             mask=self.image.mask,
-            store_in_1d=self.noise_map.store_in_1d,
+            store_slim=self.noise_map.store_slim,
         )
 
         return imaging
@@ -106,8 +106,8 @@ class AbstractImaging(abstract_dataset.AbstractDataset):
 class AbstractSettingsMaskedImaging(abstract_dataset.AbstractSettingsMaskedDataset):
     def __init__(
         self,
-        grid_class=grids.Grid,
-        grid_inversion_class=grids.Grid,
+        grid_class=grids.Grid2D,
+        grid_inversion_class=grids.Grid2D,
         sub_size=2,
         fractional_accuracy=0.9999,
         sub_steps=None,
@@ -126,23 +126,23 @@ class AbstractSettingsMaskedImaging(abstract_dataset.AbstractSettingsMaskedDatas
 
         Parameters
         ----------
-        grid_class : ag.Grid
-            The type of grid used to create the image from the `Galaxy` and `Plane`. The options are `Grid`,
-            `GridIterate` and `GridInterpolate` (see the `Grid` documentation for a description of these options).
-        grid_inversion_class : ag.Grid
+        grid_class : ag.Grid2D
+            The type of grid used to create the image from the `Galaxy` and `Plane`. The options are `Grid2D`,
+            `Grid2DIterate` and `Grid2DInterpolate` (see the `Grid2D` documentation for a description of these options).
+        grid_inversion_class : ag.Grid2D
             The type of grid used to create the grid that maps the `Inversion` source pixels to the data's image-pixels.
-            The options are `Grid`, `GridIterate` and `GridInterpolate` (see the `Grid` documentation for a
+            The options are `Grid2D`, `Grid2DIterate` and `Grid2DInterpolate` (see the `Grid2D` documentation for a
             description of these options).
         sub_size : int
-            If the grid and / or grid_inversion use a `Grid`, this sets the sub-size used by the `Grid`.
+            If the grid and / or grid_inversion use a `Grid2D`, this sets the sub-size used by the `Grid2D`.
         fractional_accuracy : float
-            If the grid and / or grid_inversion use a `GridIterate`, this sets the fractional accuracy it
+            If the grid and / or grid_inversion use a `Grid2DIterate`, this sets the fractional accuracy it
             uses when evaluating functions.
         sub_steps : [int]
-            If the grid and / or grid_inversion use a `GridIterate`, this sets the steps the sub-size is increased by
+            If the grid and / or grid_inversion use a `Grid2DIterate`, this sets the steps the sub-size is increased by
             to meet the fractional accuracy when evaluating functions.
         pixel_scales_interp : float or (float, float)
-            If the grid and / or grid_inversion use a `GridInterpolate`, this sets the resolution of the interpolation
+            If the grid and / or grid_inversion use a `Grid2DInterpolate`, this sets the resolution of the interpolation
             grid.
         signal_to_noise_limit : float
             If input, the dataset's noise-map is rescaled such that no pixel has a signal-to-noise above the
@@ -191,12 +191,12 @@ class AbstractSettingsMaskedImaging(abstract_dataset.AbstractSettingsMaskedDatas
         if psf is not None:
 
             if self.psf_shape_2d is None:
-                psf_shape_2d = psf.shape_2d
+                psf_shape_2d = psf.shape_native
             else:
                 psf_shape_2d = self.psf_shape_2d
 
-            return kernel.Kernel.manual_2d(
-                array=psf.resized_from(new_shape=psf_shape_2d).in_2d,
+            return kernel.Kernel2D.manual_native(
+                array=psf.resized_from(new_shape=psf_shape_2d).native,
                 pixel_scales=psf.pixel_scales,
                 renormalize=self.renormalize_psf,
             )
@@ -282,16 +282,16 @@ class AbstractMaskedImaging(abstract_dataset.AbstractMaskedDataset):
 
         super().__init__(dataset=imaging, mask=mask, settings=settings)
 
-        self.image = arrays.Array.manual_mask(
-            array=self.dataset.image.in_2d,
+        self.image = arrays.Array2D.manual_mask(
+            array=self.dataset.image.native,
             mask=mask.mask_sub_1,
-            store_in_1d=imaging.image.store_in_1d,
+            store_slim=imaging.image.store_slim,
         )
 
-        self.noise_map = arrays.Array.manual_mask(
-            array=self.dataset.noise_map.in_2d,
+        self.noise_map = arrays.Array2D.manual_mask(
+            array=self.dataset.noise_map.native,
             mask=mask.mask_sub_1,
-            store_in_1d=imaging.noise_map.store_in_1d,
+            store_slim=imaging.noise_map.store_slim,
         )
 
         psf = copy.deepcopy(imaging.psf)
@@ -302,7 +302,7 @@ class AbstractMaskedImaging(abstract_dataset.AbstractMaskedDataset):
 
             self.convolver = convolver.Convolver(mask=mask, kernel=self.psf)
             self.blurring_grid = self.grid.blurring_grid_from_kernel_shape(
-                kernel_shape_2d=self.psf.shape_2d
+                kernel_shape_native=self.psf.shape_native
             )
 
     @property
@@ -373,17 +373,17 @@ class Imaging(AbstractImaging):
             The hdu the noise_map is contained in the .fits file specified by *noise_map_path*.
         """
 
-        image = arrays.Array.from_fits(
+        image = arrays.Array2D.from_fits(
             file_path=image_path, hdu=image_hdu, pixel_scales=pixel_scales
         )
 
-        noise_map = arrays.Array.from_fits(
+        noise_map = arrays.Array2D.from_fits(
             file_path=noise_map_path, hdu=noise_map_hdu, pixel_scales=pixel_scales
         )
 
         if psf_path is not None:
 
-            psf = kernel.Kernel.from_fits(
+            psf = kernel.Kernel2D.from_fits(
                 file_path=psf_path,
                 hdu=psf_hdu,
                 pixel_scales=pixel_scales,
@@ -396,7 +396,7 @@ class Imaging(AbstractImaging):
 
         if positions_path is not None:
 
-            positions = grids.GridIrregularGrouped.from_file(file_path=positions_path)
+            positions = grids.Grid2DIrregularGrouped.from_file(file_path=positions_path)
 
         else:
 
@@ -428,7 +428,7 @@ class AbstractSimulatorImaging:
         self,
         exposure_time: float,
         background_sky_level: float = 0.0,
-        psf: kernel.Kernel = None,
+        psf: kernel.Kernel2D = None,
         renormalize_psf: bool = True,
         read_noise: float = None,
         add_poisson_noise: bool = True,
@@ -440,7 +440,7 @@ class AbstractSimulatorImaging:
 
         Parameters
         ----------
-        psf : Kernel
+        psf : Kernel2D
             An arrays describing the PSF kernel of the image.
         exposure_time : float
             The exposure time of the simulated imaging.
@@ -475,32 +475,32 @@ class AbstractSimulatorImaging:
 
 
 class SimulatorImaging(AbstractSimulatorImaging):
-    def from_image(self, image: arrays.Array, name: str = None):
+    def from_image(self, image: arrays.Array2D, name: str = None):
         """
         Returns a realistic simulated image by applying effects to a plain simulated image.
 
         Parameters
         ----------
-        image : arrays.Array
+        image : arrays.Array2D
             The image before simulating which has noise added, PSF convolution, etc performed to it.
         """
 
-        exposure_time_map = arrays.Array.full(
+        exposure_time_map = arrays.Array2D.full(
             fill_value=self.exposure_time,
-            shape_2d=image.shape_2d,
+            shape_native=image.shape_native,
             pixel_scales=image.pixel_scales,
         )
 
-        background_sky_map = arrays.Array.full(
+        background_sky_map = arrays.Array2D.full(
             fill_value=self.background_sky_level,
-            shape_2d=image.shape_2d,
+            shape_native=image.shape_native,
             pixel_scales=image.pixel_scales,
         )
 
         if self.psf is not None:
             psf = self.psf
         else:
-            psf = kernel.Kernel.no_blur(pixel_scales=image.pixel_scales)
+            psf = kernel.Kernel2D.no_blur(pixel_scales=image.pixel_scales)
 
         image = psf.convolved_array_from_array(array=image)
 
@@ -518,9 +518,9 @@ class SimulatorImaging(AbstractSimulatorImaging):
             )
 
         else:
-            noise_map = arrays.Array.full(
+            noise_map = arrays.Array2D.full(
                 fill_value=self.noise_if_add_noise_false,
-                shape_2d=image.shape_2d,
+                shape_native=image.shape_native,
                 pixel_scales=image.pixel_scales,
             )
 
@@ -533,9 +533,9 @@ class SimulatorImaging(AbstractSimulatorImaging):
         image = image - background_sky_map
 
         mask = msk.Mask2D.unmasked(
-            shape_2d=image.shape_2d, pixel_scales=image.pixel_scales
+            shape_native=image.shape_native, pixel_scales=image.pixel_scales
         )
 
-        image = arrays.Array.manual_mask(array=image, mask=mask)
+        image = arrays.Array2D.manual_mask(array=image, mask=mask)
 
         return Imaging(image=image, psf=self.psf, noise_map=noise_map, name=name)

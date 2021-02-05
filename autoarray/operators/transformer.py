@@ -16,9 +16,7 @@ class TransformerDFT(pylops.LinearOperator):
 
         self.uv_wavelengths = uv_wavelengths.astype("float")
         self.real_space_mask = real_space_mask.mask_sub_1
-        self.grid = (
-            self.real_space_mask.geometry.masked_grid_sub_1.in_1d_binned.in_radians
-        )
+        self.grid = self.real_space_mask.masked_grid_sub_1.slim_binned.in_radians
 
         self.total_visibilities = uv_wavelengths.shape[0]
         self.total_image_pixels = self.real_space_mask.pixels_in_mask
@@ -49,7 +47,7 @@ class TransformerDFT(pylops.LinearOperator):
         if self.preload_transform:
 
             visibilities = transformer_util.visibilities_via_preload_jit_from(
-                image_1d=image.in_1d_binned,
+                image_1d=image.slim_binned,
                 preloaded_reals=self.preload_real_transforms,
                 preloaded_imags=self.preload_imag_transforms,
             )
@@ -57,7 +55,7 @@ class TransformerDFT(pylops.LinearOperator):
         else:
 
             visibilities = transformer_util.visibilities_jit(
-                image_1d=image.in_1d_binned,
+                image_1d=image.slim_binned,
                 grid_radians=self.grid,
                 uv_wavelengths=self.uv_wavelengths,
             )
@@ -90,10 +88,10 @@ class TransformerNUFFT(NUFFT_cpu, pylops.LinearOperator):
 
         self.uv_wavelengths = uv_wavelengths
         self.real_space_mask = real_space_mask.mask_sub_1
-        #        self.grid = self.real_space_mask.geometry.unmasked_grid.in_radians
-        self.grid = grids.Grid.from_mask(mask=self.real_space_mask).in_radians
+        #        self.grid = self.real_space_mask.unmasked_grid.in_radians
+        self.grid = grids.Grid2D.from_mask(mask=self.real_space_mask).in_radians
         self._mask_index_for_mask_1d_index = copy.copy(
-            real_space_mask.regions._mask_index_for_mask_1d_index.astype("int")
+            real_space_mask._mask_index_for_mask_1d_index.astype("int")
         )
 
         # NOTE: The plan need only be initialized once
@@ -146,8 +144,8 @@ class TransformerNUFFT(NUFFT_cpu, pylops.LinearOperator):
         # NOTE:
         self.plan(
             om=visibilities_normalized,
-            Nd=self.grid.shape_2d,
-            Kd=(ratio * self.grid.shape_2d[0], ratio * self.grid.shape_2d[1]),
+            Nd=self.grid.shape_native,
+            Kd=(ratio * self.grid.shape_native[0], ratio * self.grid.shape_native[1]),
             Jd=interp_kernel,
         )
 
@@ -158,7 +156,7 @@ class TransformerNUFFT(NUFFT_cpu, pylops.LinearOperator):
 
         return vis.Visibilities(
             visibilities=self.forward(
-                image.in_2d_binned[::-1, :]
+                image.native_binned[::-1, :]
             )  # flip due to PyNUFFT internal flip
         )
 
@@ -174,12 +172,14 @@ class TransformerNUFFT(NUFFT_cpu, pylops.LinearOperator):
         for source_pixel_1d_index in range(mapping_matrix.shape[1]):
 
             image_2d = array_util.sub_array_2d_from(
-                sub_array_1d=mapping_matrix[:, source_pixel_1d_index],
-                mask=self.grid.mask,
+                sub_array_2d_slim=mapping_matrix[:, source_pixel_1d_index],
+                mask_2d=self.grid.mask,
                 sub_size=1,
             )
 
-            image = arrays.Array(array=image_2d, mask=self.grid.mask, store_in_1d=False)
+            image = arrays.Array2D(
+                array=image_2d, mask=self.grid.mask, store_slim=False
+            )
 
             visibilities = self.visibilities_from_image(image=image)
 
@@ -196,10 +196,10 @@ class TransformerNUFFT(NUFFT_cpu, pylops.LinearOperator):
         :rtype: numpy array with the dtype of numpy.complex64
         """
 
-        x2d = array_util.sub_array_complex_2d_via_sub_indexes_from(
-            sub_array_1d=x,
-            sub_shape_2d=self.real_space_mask.shape_2d,
-            sub_mask_index_for_sub_mask_1d_index=self._mask_index_for_mask_1d_index,
+        x2d = array_util.sub_array_2d_complex_via_sub_indexes_from(
+            sub_array_2d_slim=x,
+            sub_shape_native=self.real_space_mask.shape_native,
+            sub_native_index_for_slim_index=self._mask_index_for_mask_1d_index,
         )[::-1, :]
 
         return self.k2y(self.xx2k(self.x2xx(x2d)))
@@ -214,7 +214,7 @@ class TransformerNUFFT(NUFFT_cpu, pylops.LinearOperator):
         :rtype: numpy array with the dtype of numpy.complex64
         """
         x = np.real(self.xx2x(self.k2xx(self.y2k(y))))
-        return array_util.sub_array_complex_1d_from(
+        return array_util.sub_array_complex_slim_from(
             sub_array_2d=x[::-1, :], sub_size=1, mask=self.real_space_mask
         )
 

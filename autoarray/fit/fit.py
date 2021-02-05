@@ -196,7 +196,7 @@ class FitDataset(FitData):
             if the `log_likelihood` or `log_evidence` is used as the `figure_of_merit`.
         use_mask_in_fit : bool
             If `True`, masked data points are omitted from the fit. If `False` they are not (in most use cases the
-            `masked_dataset` will have been processed to remove masked points, for example the `in_1d` representation).
+            `masked_dataset` will have been processed to remove masked points, for example the `slim` representation).
 
         Attributes
         -----------
@@ -242,14 +242,14 @@ class FitImaging(FitDataset):
         -----------
         masked_imaging : MaskedImaging
             The masked imaging dataset that is fitted.
-        model_image : Array
+        model_image : Array2D
             The model image the masked imaging is fitted with.
         inversion : Inversion
             If the fit uses an `Inversion` this is the instance of the object used to perform the fit. This determines
             if the `log_likelihood` or `log_evidence` is used as the `figure_of_merit`.
         use_mask_in_fit : bool
             If `True`, masked data points are omitted from the fit. If `False` they are not (in most use cases the
-            `masked_dataset` will have been processed to remove masked points, for example the `in_1d` representation).
+            `masked_dataset` will have been processed to remove masked points, for example the `slim` representation).
 
         Attributes
         -----------
@@ -309,7 +309,7 @@ class FitInterferometer(FitDataset):
             if the `log_likelihood` or `log_evidence` is used as the `figure_of_merit`.
         use_mask_in_fit : bool
             If `True`, masked data points are omitted from the fit. If `False` they are not (in most use cases the
-            `masked_dataset` will have been processed to remove masked points, for example the `in_1d` representation).
+            `masked_dataset` will have been processed to remove masked points, for example the `slim` representation).
 
         Attributes
         -----------

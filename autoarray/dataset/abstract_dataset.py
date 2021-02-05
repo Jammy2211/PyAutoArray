@@ -16,19 +16,19 @@ def grid_from_mask_and_grid_class(
     if mask.pixel_scales is None:
         return None
 
-    if grid_class is grids.Grid:
+    if grid_class is grids.Grid2D:
 
-        return grids.Grid.from_mask(mask=mask)
+        return grids.Grid2D.from_mask(mask=mask)
 
-    elif grid_class is grids.GridIterate:
+    elif grid_class is grids.Grid2DIterate:
 
-        return grids.GridIterate.from_mask(
+        return grids.Grid2DIterate.from_mask(
             mask=mask, fractional_accuracy=fractional_accuracy, sub_steps=sub_steps
         )
 
-    elif grid_class is grids.GridInterpolate:
+    elif grid_class is grids.Grid2DInterpolate:
 
-        return grids.GridInterpolate.from_mask(
+        return grids.Grid2DInterpolate.from_mask(
             mask=mask, pixel_scales_interp=pixel_scales_interp
         )
 
@@ -38,7 +38,7 @@ class AbstractDataset:
         self,
         data: abstract_structure.AbstractStructure,
         noise_map: abstract_structure.AbstractStructure,
-        positions: grids.GridIrregularGrouped = None,
+        positions: grids.Grid2DIrregularGrouped = None,
         name: str = None,
     ):
         """A collection of abstract 2D for different data_type classes (an image, pixel-scale, noise-map, etc.)
@@ -82,10 +82,6 @@ class AbstractDataset:
         return self.data.mask.mapping
 
     @property
-    def geometry(self):
-        return self.data.mask.geometry
-
-    @property
     def inverse_noise_map(self):
         return 1.0 / self.noise_map
 
@@ -107,7 +103,7 @@ class AbstractDataset:
         return self.data._new_structure(
             array=np.divide(np.abs(self.data), self.noise_map),
             mask=self.data.mask,
-            store_in_1d=self.data.store_in_1d,
+            store_slim=self.data.store_slim,
         )
 
     @property
@@ -122,7 +118,7 @@ class AbstractDataset:
         return self.data._new_structure(
             array=np.square(self.absolute_signal_to_noise_map),
             mask=self.data.mask,
-            store_in_1d=self.data.store_in_1d,
+            store_slim=self.data.store_slim,
         )
 
     @property
@@ -155,8 +151,8 @@ class AbstractDataset:
 class AbstractSettingsMaskedDataset:
     def __init__(
         self,
-        grid_class=grids.Grid,
-        grid_inversion_class=grids.Grid,
+        grid_class=grids.Grid2D,
+        grid_inversion_class=grids.Grid2D,
         sub_size=2,
         fractional_accuracy=0.9999,
         sub_steps=None,
@@ -172,23 +168,23 @@ class AbstractSettingsMaskedDataset:
 
         Parameters
         ----------
-        grid_class : ag.Grid
-            The type of grid used to create the image from the `Galaxy` and `Plane`. The options are `Grid`,
-            `GridIterate` and `GridInterpolate` (see the `Grid` documentation for a description of these options).
-        grid_inversion_class : ag.Grid
+        grid_class : ag.Grid2D
+            The type of grid used to create the image from the `Galaxy` and `Plane`. The options are `Grid2D`,
+            `Grid2DIterate` and `Grid2DInterpolate` (see the `Grid2D` documentation for a description of these options).
+        grid_inversion_class : ag.Grid2D
             The type of grid used to create the grid that maps the `Inversion` source pixels to the data's image-pixels.
-            The options are `Grid`, `GridIterate` and `GridInterpolate` (see the `Grid` documentation for a
+            The options are `Grid2D`, `Grid2DIterate` and `Grid2DInterpolate` (see the `Grid2D` documentation for a
             description of these options).
         sub_size : int
-            If the grid and / or grid_inversion use a `Grid`, this sets the sub-size used by the `Grid`.
+            If the grid and / or grid_inversion use a `Grid2D`, this sets the sub-size used by the `Grid2D`.
         fractional_accuracy : float
-            If the grid and / or grid_inversion use a `GridIterate`, this sets the fractional accuracy it
+            If the grid and / or grid_inversion use a `Grid2DIterate`, this sets the fractional accuracy it
             uses when evaluating functions.
         sub_steps : [int]
-            If the grid and / or grid_inversion use a `GridIterate`, this sets the steps the sub-size is increased by
+            If the grid and / or grid_inversion use a `Grid2DIterate`, this sets the steps the sub-size is increased by
             to meet the fractional accuracy when evaluating functions.
         pixel_scales_interp : float or (float, float)
-            If the grid and / or grid_inversion use a `GridInterpolate`, this sets the resolution of the interpolation
+            If the grid and / or grid_inversion use a `Grid2DInterpolate`, this sets the resolution of the interpolation
             grid.
         signal_to_noise_limit : float
             If input, the dataset's noise-map is rescaled such that no pixel has a signal-to-noise above the
@@ -266,7 +262,7 @@ class AbstractSettingsMaskedDataset:
 
     @property
     def grid_sub_size_tag(self):
-        """Generate a sub-size tag, to customize phase names based on the sub-grid size used, of the Grid class.
+        """Generate a sub-size tag, to customize phase names based on the sub-grid size used, of the Grid2D class.
 
         This changes the phase settings folder as follows:
 
@@ -274,7 +270,7 @@ class AbstractSettingsMaskedDataset:
         sub_size = 1 -> settings_sub_size_2
         sub_size = 4 -> settings_sub_size_4
         """
-        if not self.grid_class is grids.Grid:
+        if not self.grid_class is grids.Grid2D:
             return ""
         return (
             f"{conf.instance['notation']['settings_tags']['dataset']['sub_size']}_"
@@ -284,14 +280,14 @@ class AbstractSettingsMaskedDataset:
     @property
     def grid_fractional_accuracy_tag(self):
         """Generate a fractional accuracy tag, to customize phase names based on the fractional accuracy of the
-        GridIterate class.
+        Grid2DIterate class.
 
         This changes the phase settings folder as follows:
 
         fraction_accuracy = 0.5 -> settings__facc_0.5
         fractional_accuracy = 0.999999 = 4 -> settings__facc_0.999999
         """
-        if not self.grid_class is grids.GridIterate:
+        if not self.grid_class is grids.Grid2DIterate:
             return ""
         return (
             f"{conf.instance['notation']['settings_tags']['dataset']['fractional_accuracy']}_"
@@ -301,14 +297,14 @@ class AbstractSettingsMaskedDataset:
     @property
     def grid_pixel_scales_interp_tag(self):
         """Generate an interpolation pixel scale tag, to customize phase names based on the resolution of the
-        GridInterpolate.
+        Grid2DInterpolate.
 
         This changes the phase settings folder as follows:
 
         pixel_scales_interp = None -> settings
         pixel_scales_interp = 0.1 -> settings___grid_interp_0.1
         """
-        if not self.grid_class is grids.GridInterpolate:
+        if not self.grid_class is grids.Grid2DInterpolate:
             return ""
         if self.pixel_scales_interp is None:
             return ""
@@ -318,7 +314,7 @@ class AbstractSettingsMaskedDataset:
 
     @property
     def grid_inversion_sub_size_tag(self):
-        """Generate a sub-size tag, to customize phase names based on the sub-grid size used, of the Grid class.
+        """Generate a sub-size tag, to customize phase names based on the sub-grid size used, of the Grid2D class.
 
         This changes the phase settings folder as follows:
 
@@ -326,7 +322,7 @@ class AbstractSettingsMaskedDataset:
         sub_size = 1 -> settings__grid_sub_size_2
         sub_size = 4 -> settings__grid_inv_sub_size_4
         """
-        if not self.grid_inversion_class is grids.Grid:
+        if not self.grid_inversion_class is grids.Grid2D:
             return ""
         return (
             f"{conf.instance['notation']['settings_tags']['dataset']['sub_size']}_"
@@ -336,14 +332,14 @@ class AbstractSettingsMaskedDataset:
     @property
     def grid_inversion_fractional_accuracy_tag(self):
         """Generate a fractional accuracy tag, to customize phase names based on the fractional accuracy of the
-        GridIterate class.
+        Grid2DIterate class.
 
         This changes the phase settings folder as follows:
 
         fraction_accuracy = 0.5 -> settings__facc_0.5
         fractional_accuracy = 0.999999 = 4 -> settings__facc_0.999999
         """
-        if not self.grid_inversion_class is grids.GridIterate:
+        if not self.grid_inversion_class is grids.Grid2DIterate:
             return ""
         return (
             f"{conf.instance['notation']['settings_tags']['dataset']['fractional_accuracy']}_"
@@ -353,14 +349,14 @@ class AbstractSettingsMaskedDataset:
     @property
     def grid_inversion_pixel_scales_interp_tag(self):
         """Generate an interpolation pixel scale tag, to customize phase names based on the resolution of the
-        GridInterpolate.
+        Grid2DInterpolate.
 
         This changes the phase settings folder as follows:
 
         pixel_scales_interp = None -> settings
         pixel_scales_interp = 0.1 -> settings___grid_interp_0.1
         """
-        if not self.grid_inversion_class is grids.GridInterpolate:
+        if not self.grid_inversion_class is grids.Grid2DInterpolate:
             return ""
         if self.pixel_scales_interp is None:
             return ""
@@ -437,7 +433,7 @@ class AbstractMaskedDataset:
         return self.data._new_structure(
             array=np.divide(np.abs(self.data), self.noise_map),
             mask=self.data.mask,
-            store_in_1d=self.data.store_in_1d,
+            store_slim=self.data.store_slim,
         )
 
     @property
@@ -447,7 +443,7 @@ class AbstractMaskedDataset:
         return self.data._new_structure(
             array=np.square(self.absolute_signal_to_noise_map),
             mask=self.data.mask,
-            store_in_1d=self.data.store_in_1d,
+            store_slim=self.data.store_slim,
         )
 
     def modify_noise_map(self, noise_map):

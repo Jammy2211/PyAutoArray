@@ -1,15 +1,15 @@
 import autoarray as aa
 import autoarray.plot as aplt
 
-grid_7x7 = aa.Grid.uniform(shape_2d=(7, 7), pixel_scales=1.0)
-rectangular_grid = aa.GridRectangular.overlay_grid(grid=grid_7x7, shape_2d=(3, 3))
+grid_7x7 = aa.Grid2D.uniform(shape_native=(7, 7), pixel_scales=1.0)
+rectangular_grid = aa.Grid2DRectangular.overlay_grid(grid=grid_7x7, shape_native=(3, 3))
 rectangular_mapper = aa.Mapper(
-    source_full_grid=grid_7x7, source_pixelization_grid=rectangular_grid
+    source_grid_slim=grid_7x7, source_pixelization_grid=rectangular_grid
 )
 
-image = aa.Array.ones(shape_2d=(7, 7), pixel_scales=1.0)
+image = aa.Array2D.ones(shape_native=(7, 7), pixel_scales=1.0)
 image[0:4] = 5.0
-noise_map = aa.Array.ones(shape_2d=(7, 7), pixel_scales=1.0)
+noise_map = aa.Array2D.ones(shape_native=(7, 7), pixel_scales=1.0)
 imaging = aa.Imaging(image=image, noise_map=noise_map)
 
 aplt.Mapper.subplot_image_and_mapper(

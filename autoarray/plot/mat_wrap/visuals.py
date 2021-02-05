@@ -15,11 +15,11 @@ class AbstractVisuals(ABC):
         When we perform plotting, the `Include` class is used to create additional `Visuals` class from the data
         structures that are plotted, for example:
 
-        mask = Mask2D.circular(shape_2d=(100, 100), pixel_scales=0.1, radius=3.0)
-        array = Array.ones(shape_2d=(100, 100), pixel_scales=0.1)
-        masked_array = al.Array.manual_mask(array=array, mask=mask)
+        mask = Mask2D.circular(shape_native=(100, 100), pixel_scales=0.1, radius=3.0)
+        array = Array2D.ones(shape_native=(100, 100), pixel_scales=0.1)
+        masked_array = al.Array2D.manual_mask(array=array, mask=mask)
         include_2d = Include2D(mask=True)
-        array_plotter = aplt.ArrayPlotter(array=masked_array, include_2d=include_2d)
+        array_plotter = aplt.Array2DPlotter(array=masked_array, include_2d=include_2d)
         array_plotter.figure()
 
         Because `mask=True` in `Include2D` the function `figure` extracts the `Mask2D` from the `masked_array`
@@ -32,7 +32,7 @@ class AbstractVisuals(ABC):
 
         visuals_2d = Visuals2D(origin=(0.0, 0.0))
         include_2d = Include2D(mask=True)
-        array_plotter = aplt.ArrayPlotter(array=masked_array, include_2d=include_2d)
+        array_plotter = aplt.Array2DPlotter(array=masked_array, include_2d=include_2d)
 
         We now wish for the `Plotter` to plot the `origin` in the user's input `Visuals2D` object and the `Mask2d`
         extracted via the `Include2D`. To achieve this, two `Visuals2D` objects are created: (i) the user's input
@@ -63,8 +63,8 @@ class Visuals1D(AbstractVisuals):
     def __init__(
         self,
         mask: mask_1d.Mask1D = None,
-        lines: typing.List[l.Line] = None,
-        origin: grids.Grid = None,
+        lines: typing.List[l.Line1D] = None,
+        origin: grids.Grid2D = None,
     ):
 
         self.mask = mask
@@ -88,16 +88,16 @@ class Visuals1D(AbstractVisuals):
 class Visuals2D(AbstractVisuals):
     def __init__(
         self,
-        origin: grids.Grid = None,
+        origin: grids.Grid2D = None,
         mask: mask_2d.Mask2D = None,
-        border: grids.Grid = None,
-        lines: typing.List[l.Line] = None,
-        positions: grids.GridIrregular = None,
-        grid: grids.Grid = None,
-        pixelization_grid: grids.Grid = None,
-        vector_field: vector_fields.VectorFieldIrregular = None,
+        border: grids.Grid2D = None,
+        lines: typing.List[l.Line1D] = None,
+        positions: grids.Grid2DIrregular = None,
+        grid: grids.Grid2D = None,
+        pixelization_grid: grids.Grid2D = None,
+        vector_field: vector_fields.VectorField2DIrregular = None,
         patches: typing.List[ptch.Patch] = None,
-        array_overlay: arrays.Array = None,
+        array_overlay: arrays.Array2D = None,
         parallel_overscan=None,
         serial_prescan=None,
         serial_overscan=None,
@@ -128,7 +128,7 @@ class Visuals2D(AbstractVisuals):
 
         if self.mask is not None:
             plotter.mask_scatter.scatter_grid(
-                grid=self.mask.geometry.edge_grid_sub_1.in_1d_binned
+                grid=self.mask.edge_grid_sub_1.slim_binned
             )
 
         if self.border is not None:
@@ -160,10 +160,10 @@ class Visuals2D(AbstractVisuals):
             )
 
         if self.pixelization_indexes is not None and mapper is not None:
-            indexes = mapper.full_indexes_from_pixelization_indexes(
+            indexes = mapper.slim_indexes_from_pixelization_indexes(
                 pixelization_indexes=self.pixelization_indexes
             )
 
             plotter.index_scatter.scatter_grid_indexes(
-                grid=mapper.source_full_grid, indexes=indexes
+                grid=mapper.source_grid_slim, indexes=indexes
             )

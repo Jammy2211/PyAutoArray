@@ -19,7 +19,7 @@ from autoarray import exc
 class AbstractMatWrap2D(wrap_base.AbstractMatWrap):
     """
     An abstract base class for wrapping matplotlib plotting methods which take as input and plot data structures. For
-    example, the `ArrayOverlay` object specifically plots `Array` data structures.
+    example, the `ArrayOverlay` object specifically plots `Array2D` data structures.
 
     As full description of the matplotlib wrapping can be found in `mat_base.AbstractMatWrap`.
     """
@@ -31,28 +31,28 @@ class AbstractMatWrap2D(wrap_base.AbstractMatWrap):
 
 class ArrayOverlay(AbstractMatWrap2D):
     """
-    Overlays an `Array` data structure over a figure.
+    Overlays an `Array2D` data structure over a figure.
 
     This object wraps the following Matplotlib method:
 
     - plt.imshow: https://matplotlib.org/3.3.2/api/_as_gen/matplotlib.pyplot.imshow.html
 
-    This uses the `Units` and coordinate system of the `Array` to overlay it on on the coordinate system of the
+    This uses the `Units` and coordinate system of the `Array2D` to overlay it on on the coordinate system of the
     figure that is plotted.
     """
 
     def overlay_array(self, array, figure):
 
-        aspect = figure.aspect_from_shape_2d(shape_2d=array.shape_2d)
+        aspect = figure.aspect_from_shape_native(shape_native=array.shape_native)
         extent = array.extent_of_zoomed_array(buffer=0)
 
-        plt.imshow(X=array.in_2d, aspect=aspect, extent=extent, **self.config_dict)
+        plt.imshow(X=array.native, aspect=aspect, extent=extent, **self.config_dict)
 
 
 class GridScatter(AbstractMatWrap2D):
     """
     Scatters an input set of grid points, for example (y,x) coordinates or data structures representing 2D (y,x)
-    coordinates like a `Grid` or `GridIrregular`. If the object groups (y,x) coordinates they are plotted with
+    coordinates like a `Grid2D` or `Grid2DIrregular`. If the object groups (y,x) coordinates they are plotted with
     varying colors according to their group.
 
     This object wraps the following Matplotlib methods:
@@ -77,13 +77,13 @@ class GridScatter(AbstractMatWrap2D):
         list of colors can be specified which the plot cycles through.
     """
 
-    def scatter_grid(self, grid: typing.Union[np.ndarray, grids.Grid]):
+    def scatter_grid(self, grid: typing.Union[np.ndarray, grids.Grid2D]):
         """
         Plot an input grid of (y,x) coordinates using the matplotlib method `plt.scatter`.
 
         Parameters
         ----------
-        grid : Grid
+        grid : Grid2D
             The grid of (y,x) coordinates that is plotted.
         """
 
@@ -93,7 +93,7 @@ class GridScatter(AbstractMatWrap2D):
 
     def scatter_grid_colored(
         self,
-        grid: typing.Union[np.ndarray, grids.Grid],
+        grid: typing.Union[np.ndarray, grids.Grid2D],
         color_array: np.ndarray,
         cmap: str,
     ):
@@ -104,7 +104,7 @@ class GridScatter(AbstractMatWrap2D):
 
         Parameters
         ----------
-        grid : Grid
+        grid : Grid2D
             The grid of (y,x) coordinates that is plotted.
         color_array : ndarray
             The array of RGB color values used to color the grid.
@@ -124,17 +124,17 @@ class GridScatter(AbstractMatWrap2D):
         )
 
     def scatter_grid_indexes(
-        self, grid: typing.Union[np.ndarray, grids.Grid], indexes: np.ndarray
+        self, grid: typing.Union[np.ndarray, grids.Grid2D], indexes: np.ndarray
     ):
         """
         Plot specific points of an input grid of (y,x) coordinates, which are specified according to the 1D or 2D
-        indexes of the `Grid`.
+        indexes of the `Grid2D`.
 
         This method allows us to color in points on grids that map between one another.
 
         Parameters
         ----------
-        grid : Grid
+        grid : Grid2D
             The grid of (y,x) coordinates that is plotted.
         indexes : np.ndarray
             The 1D indexes of the grid that are colored in when plotted.
@@ -179,8 +179,8 @@ class GridScatter(AbstractMatWrap2D):
                 ys, xs = map(list, zip(*index_list))
 
                 plt.scatter(
-                    y=np.asarray(grid.in_2d[ys, xs, 0]),
-                    x=np.asarray(grid.in_2d[ys, xs, 1]),
+                    y=np.asarray(grid.native[ys, xs, 0]),
+                    x=np.asarray(grid.native[ys, xs, 1]),
                     color=next(color),
                     **config_dict,
                 )
@@ -192,7 +192,7 @@ class GridScatter(AbstractMatWrap2D):
                     "useable type"
                 )
 
-    def scatter_grid_grouped(self, grid_grouped: grids.GridIrregularGrouped):
+    def scatter_grid_grouped(self, grid_grouped: grids.Grid2DIrregularGrouped):
         """
          Plot an input grid of grouped (y,x) coordinates using the matplotlib method `plt.scatter`.
 
@@ -201,7 +201,7 @@ class GridScatter(AbstractMatWrap2D):
 
          Parameters
          ----------
-         grid_grouped : GridIrregularGrouped
+         grid_grouped : Grid2DIrregularGrouped
              The grid of grouped (y,x) coordinates that is plotted.
          """
         if len(grid_grouped) == 0:
@@ -223,7 +223,7 @@ class GridScatter(AbstractMatWrap2D):
 
 class GridPlot(AbstractMatWrap2D):
     """
-    Plots `Grid` data structure that are better visualized as solid lines, for example rectangular lines that are
+    Plots `Grid2D` data structure that are better visualized as solid lines, for example rectangular lines that are
     plotted over an image and grids of (y,x) coordinates as lines (as opposed to a scatter of points
     using the `GridScatter` object).
 
@@ -241,24 +241,24 @@ class GridPlot(AbstractMatWrap2D):
     def plot_rectangular_grid_lines(
         self,
         extent: typing.Tuple[float, float, float, float],
-        shape_2d: typing.Tuple[int, int],
+        shape_native: typing.Tuple[int, int],
     ):
         """
         Plots a rectangular grid of lines on a plot, using the coordinate system of the figure.
 
-        The size and shape of the grid is specified by the `extent` and `shape_2d` properties of a data structure
+        The size and shape of the grid is specified by the `extent` and `shape_native` properties of a data structure
         which will provide the rectangaular grid lines on a suitable coordinate system for the plot.
 
         Parameters
         ----------
         extent : (float, float, float, float)
             The extent of the rectangualr grid, with format [xmin, xmax, ymin, ymax]
-        shape_2d : (int, int)
+        shape_native : (int, int)
             The 2D shape of the mask the array is paired with.
         """
 
-        ys = np.linspace(extent[2], extent[3], shape_2d[1] + 1)
-        xs = np.linspace(extent[0], extent[1], shape_2d[0] + 1)
+        ys = np.linspace(extent[2], extent[3], shape_native[1] + 1)
+        xs = np.linspace(extent[0], extent[1], shape_native[0] + 1)
 
         # grid lines
         for x in xs:
@@ -266,18 +266,18 @@ class GridPlot(AbstractMatWrap2D):
         for y in ys:
             plt.plot([xs[0], xs[-1]], [y, y], **self.config_dict)
 
-    def plot_grid(self, grid: typing.Union[np.ndarray, grids.Grid]):
+    def plot_grid(self, grid: typing.Union[np.ndarray, grids.Grid2D]):
         """
         Plot an input grid of (y,x) coordinates using the matplotlib method `plt.scatter`.
 
         Parameters
         ----------
-        grid : Grid
+        grid : Grid2D
             The grid of (y,x) coordinates that is plotted.
         """
         plt.plot(np.asarray(grid)[:, 1], np.asarray(grid)[:, 0], **self.config_dict)
 
-    def plot_grid_grouped(self, grid_grouped: grids.GridIrregularGrouped):
+    def plot_grid_grouped(self, grid_grouped: grids.Grid2DIrregularGrouped):
         """
          Plot an input grid of grouped (y,x) coordinates using the matplotlib method `plt.line`.
 
@@ -289,7 +289,7 @@ class GridPlot(AbstractMatWrap2D):
 
          Parameters
          ----------
-         grid_grouped : GridIrregularGrouped
+         grid_grouped : Grid2DIrregularGrouped
              The grid of grouped (y,x) coordinates that are plotted.
          """
 
@@ -321,14 +321,14 @@ class VectorFieldQuiver(AbstractMatWrap2D):
     https://matplotlib.org/3.3.2/api/_as_gen/matplotlib.pyplot.quiver.html
     """
 
-    def quiver_vector_field(self, vector_field: vector_fields.VectorFieldIrregular):
+    def quiver_vector_field(self, vector_field: vector_fields.VectorField2DIrregular):
         """
          Plot a vector field using the matplotlib method `plt.quiver` such that each vector appears as an arrow whose
          direction depends on the y and x magnitudes of the vector.
 
          Parameters
          ----------
-         vector_field : VectorFieldIrregular
+         vector_field : VectorField2DIrregular
              The vector field that is plotted using `plt.quiver`.
          """
         plt.quiver(
@@ -382,7 +382,7 @@ class VoronoiDrawer(AbstractMatWrap2D):
         self,
         mapper: mappers.MapperVoronoi,
         values: np.ndarray,
-        cmap: str,
+        cmap: wrap.Cmap,
         colorbar: wrap.Colorbar,
         colorbar_tickparams: wrap.ColorbarTickParams = None,
     ):
@@ -404,9 +404,19 @@ class VoronoiDrawer(AbstractMatWrap2D):
         regions, vertices = self.voronoi_polygons(voronoi=mapper.voronoi)
 
         if values is not None:
-            color_array = values[:] / np.max(values)
-            cmap = plt.get_cmap(cmap)
-            colorbar = colorbar.set_with_color_values(cmap=cmap, color_values=values)
+
+            vmin = cmap.vmin_from_array(array=values)
+            vmax = cmap.vmax_from_array(array=values)
+
+            color_values = np.where(values > vmax, vmax, values)
+            color_values = np.where(values < vmin, vmin, color_values)
+
+            color_array = (color_values - vmin) / (vmax - vmin)
+
+            cmap = plt.get_cmap(cmap.config_dict["cmap"])
+            colorbar = colorbar.set_with_color_values(
+                cmap=cmap, color_values=color_values
+            )
             if colorbar is not None and colorbar_tickparams is not None:
                 colorbar_tickparams.set(cb=colorbar)
         else:
@@ -434,7 +444,7 @@ class VoronoiDrawer(AbstractMatWrap2D):
         regions : list of tuples
             Indices of vertices in each revised Voronoi regions.
         vertices : list of tuples
-            GridIrregularGrouped for revised Voronoi vertices. Same as coordinates
+            Grid2DIrregularGrouped for revised Voronoi vertices. Same as coordinates
             of input vertices, with 'points at infinity' appended to the
             end.
         """
