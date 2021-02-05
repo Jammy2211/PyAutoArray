@@ -122,23 +122,23 @@ class AbstractInversion:
         self.reconstruction = reconstruction
         self.settings = settings
 
-    def interpolated_reconstructed_data_from_shape_2d(self, shape_2d=None):
-        return self.interpolated_values_from_shape_2d(
-            values=self.reconstruction, shape_2d=shape_2d
+    def interpolated_reconstructed_data_from_shape_native(self, shape_native=None):
+        return self.interpolated_values_from_shape_native(
+            values=self.reconstruction, shape_native=shape_native
         )
 
-    def interpolated_errors_from_shape_2d(self, shape_2d=None):
-        return self.interpolated_values_from_shape_2d(
-            values=self.errors, shape_2d=shape_2d
+    def interpolated_errors_from_shape_native(self, shape_native=None):
+        return self.interpolated_values_from_shape_native(
+            values=self.errors, shape_native=shape_native
         )
 
-    def interpolated_values_from_shape_2d(self, values, shape_2d=None):
+    def interpolated_values_from_shape_native(self, values, shape_native=None):
 
-        if shape_2d is not None:
+        if shape_native is not None:
 
-            grid = grids.Grid.bounding_box(
+            grid = grids.Grid2D.bounding_box(
                 bounding_box=self.mapper.source_pixelization_grid.extent,
-                shape_2d=shape_2d,
+                shape_native=shape_native,
                 buffer_around_corners=False,
             )
 
@@ -147,7 +147,7 @@ class AbstractInversion:
             in "image_grid"
         ):
 
-            grid = self.mapper.source_full_grid
+            grid = self.mapper.source_grid_slim
 
         elif (
             conf.instance["general"]["inversion"]["interpolated_grid_shape"]
@@ -155,11 +155,11 @@ class AbstractInversion:
         ):
 
             dimension = int(np.sqrt(self.mapper.pixels))
-            shape_2d = (dimension, dimension)
+            shape_native = (dimension, dimension)
 
-            grid = grids.Grid.bounding_box(
+            grid = grids.Grid2D.bounding_box(
                 bounding_box=self.mapper.source_pixelization_grid.extent,
-                shape_2d=shape_2d,
+                shape_native=shape_native,
                 buffer_around_corners=False,
             )
 
@@ -173,13 +173,13 @@ class AbstractInversion:
         interpolated_reconstruction = griddata(
             points=self.mapper.source_pixelization_grid,
             values=values,
-            xi=grid.in_2d_binned,
+            xi=grid.native_binned,
             method="linear",
         )
 
         interpolated_reconstruction[np.isnan(interpolated_reconstruction)] = 0.0
 
-        return arrays.Array.manual(
+        return arrays.Array2D.manual(
             array=interpolated_reconstruction, pixel_scales=grid.pixel_scales
         )
 
@@ -211,7 +211,7 @@ class AbstractInversion:
 
     @property
     def brightest_reconstruction_pixel_centre(self):
-        return grids.GridIrregular(
+        return grids.Grid2DIrregular(
             grid=[
                 self.mapper.source_pixelization_grid[
                     self.brightest_reconstruction_pixel
@@ -266,8 +266,8 @@ class AbstractInversionMatrix:
 class InversionImagingMatrix(AbstractInversion, AbstractInversionMatrix):
     def __init__(
         self,
-        image: arrays.Array,
-        noise_map: arrays.Array,
+        image: arrays.Array2D,
+        noise_map: arrays.Array2D,
         convolver: conv.Convolver,
         mapper: typing.Union[mappers.MapperRectangular, mappers.MapperVoronoi],
         regularization: reg.Regularization,
@@ -335,8 +335,8 @@ class InversionImagingMatrix(AbstractInversion, AbstractInversionMatrix):
     @classmethod
     def from_data_mapper_and_regularization(
         cls,
-        image: arrays.Array,
-        noise_map: arrays.Array,
+        image: arrays.Array2D,
+        noise_map: arrays.Array2D,
         convolver: conv.Convolver,
         mapper: typing.Union[mappers.MapperRectangular, mappers.MapperVoronoi],
         regularization: reg.Regularization,
@@ -393,10 +393,10 @@ class InversionImagingMatrix(AbstractInversion, AbstractInversionMatrix):
             reconstruction=self.reconstruction,
         )
 
-        return arrays.Array(
+        return arrays.Array2D(
             array=reconstructed_image,
-            mask=self.mapper.source_full_grid.mask.mask_sub_1,
-            store_in_1d=True,
+            mask=self.mapper.source_grid_slim.mask.mask_sub_1,
+            store_slim=True,
         )
 
     @property
@@ -404,8 +404,8 @@ class InversionImagingMatrix(AbstractInversion, AbstractInversionMatrix):
         return inversion_util.inversion_residual_map_from(
             pixelization_values=self.reconstruction,
             data=self.image,
-            mask_1d_index_for_sub_mask_1d_index=self.mapper.source_full_grid.mask.regions._mask_1d_index_for_sub_mask_1d_index,
-            all_sub_mask_1d_indexes_for_pixelization_1d_index=self.mapper.all_sub_full_1d_indexes_for_pixelization_1d_index,
+            slim_index_for_sub_slim_index=self.mapper.source_grid_slim.mask._slim_index_for_sub_slim_index,
+            all_sub_slim_indexes_for_pixelization_index=self.mapper.all_sub_slim_indexes_for_pixelization_index,
         )
 
     @property
@@ -414,8 +414,8 @@ class InversionImagingMatrix(AbstractInversion, AbstractInversionMatrix):
             pixelization_values=self.reconstruction,
             data=self.image,
             noise_map_1d=self.noise_map,
-            mask_1d_index_for_sub_mask_1d_index=self.mapper.source_full_grid.mask.regions._mask_1d_index_for_sub_mask_1d_index,
-            all_sub_mask_1d_indexes_for_pixelization_1d_index=self.mapper.all_sub_full_1d_indexes_for_pixelization_1d_index,
+            slim_index_for_sub_slim_index=self.mapper.source_grid_slim.mask._slim_index_for_sub_slim_index,
+            all_sub_slim_indexes_for_pixelization_index=self.mapper.all_sub_slim_indexes_for_pixelization_index,
         )
 
     @property
@@ -424,8 +424,8 @@ class InversionImagingMatrix(AbstractInversion, AbstractInversionMatrix):
             pixelization_values=self.reconstruction,
             data=self.image,
             noise_map_1d=self.noise_map,
-            mask_1d_index_for_sub_mask_1d_index=self.mapper.source_full_grid.mask.regions._mask_1d_index_for_sub_mask_1d_index,
-            all_sub_mask_1d_indexes_for_pixelization_1d_index=self.mapper.all_sub_full_1d_indexes_for_pixelization_1d_index,
+            slim_index_for_sub_slim_index=self.mapper.source_grid_slim.mask._slim_index_for_sub_slim_index,
+            all_sub_slim_indexes_for_pixelization_index=self.mapper.all_sub_slim_indexes_for_pixelization_index,
         )
 
 
@@ -492,10 +492,10 @@ class AbstractInversionInterferometer(AbstractInversion):
             reconstruction=self.reconstruction,
         )
 
-        return arrays.Array(
+        return arrays.Array2D(
             array=mapped_reconstructed_image,
-            mask=self.mapper.source_full_grid.mask.mask_sub_1,
-            store_in_1d=True,
+            mask=self.mapper.source_grid_slim.mask.mask_sub_1,
+            store_slim=True,
         )
 
 

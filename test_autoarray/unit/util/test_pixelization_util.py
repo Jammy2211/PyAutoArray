@@ -14,7 +14,7 @@ class TestRectangular:
             (
                 pixel_neighbors,
                 pixel_neighbors_size,
-            ) = aa.util.pixelization.rectangular_neighbors_from(shape_2d=(3, 3))
+            ) = aa.util.pixelization.rectangular_neighbors_from(shape_native=(3, 3))
 
             assert (pixel_neighbors[0] == [1, 3, -1, -1]).all()
             assert (pixel_neighbors[1] == [0, 2, 4, -1]).all()
@@ -37,7 +37,7 @@ class TestRectangular:
             (
                 pixel_neighbors,
                 pixel_neighbors_size,
-            ) = aa.util.pixelization.rectangular_neighbors_from(shape_2d=(3, 4))
+            ) = aa.util.pixelization.rectangular_neighbors_from(shape_native=(3, 4))
 
             assert (pixel_neighbors[0] == [1, 4, -1, -1]).all()
             assert (pixel_neighbors[1] == [0, 2, 5, -1]).all()
@@ -66,7 +66,7 @@ class TestRectangular:
             (
                 pixel_neighbors,
                 pixel_neighbors_size,
-            ) = aa.util.pixelization.rectangular_neighbors_from(shape_2d=(4, 3))
+            ) = aa.util.pixelization.rectangular_neighbors_from(shape_native=(4, 3))
 
             assert (pixel_neighbors[0] == [1, 3, -1, -1]).all()
             assert (pixel_neighbors[1] == [0, 2, 4, -1]).all()
@@ -95,7 +95,7 @@ class TestRectangular:
             (
                 pixel_neighbors,
                 pixel_neighbors_size,
-            ) = aa.util.pixelization.rectangular_neighbors_from(shape_2d=(4, 4))
+            ) = aa.util.pixelization.rectangular_neighbors_from(shape_native=(4, 4))
 
             assert (pixel_neighbors[0] == [1, 4, -1, -1]).all()
             assert (pixel_neighbors[1] == [0, 2, 5, -1]).all()

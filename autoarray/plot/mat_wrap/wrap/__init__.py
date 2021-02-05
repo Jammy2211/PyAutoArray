@@ -14,7 +14,7 @@ from .wrap_base import (
     Legend,
     Output,
 )
-from .wrap_1d import LinePlot
+from .wrap_1d import LinePlot, AXVLine
 from .wrap_2d import (
     ArrayOverlay,
     GridScatter,

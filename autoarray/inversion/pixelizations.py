@@ -94,7 +94,7 @@ class Pixelization:
         """ Abstract base class for a pixelization, which discretizes grid of (y,x) coordinates into pixels.
         """
 
-    def mapper_from_grid_and_sparse_grid(self, grid: grids.Grid, border: np.ndarray):
+    def mapper_from_grid_and_sparse_grid(self, grid: grids.Grid2D, border: np.ndarray):
         raise NotImplementedError(
             "pixelization_mapper_from_grids_and_borders should be overridden"
         )
@@ -130,9 +130,9 @@ class Rectangular(Pixelization):
 
     def mapper_from_grid_and_sparse_grid(
         self,
-        grid: grids.Grid,
-        sparse_grid: grids.Grid = None,
-        sparse_image_plane_grid: grids.Grid = None,
+        grid: grids.Grid2D,
+        sparse_grid: grids.Grid2D = None,
+        sparse_image_plane_grid: grids.Grid2D = None,
         hyper_image: np.ndarray = None,
         settings=SettingsPixelization(),
     ):
@@ -144,7 +144,7 @@ class Rectangular(Pixelization):
 
         Parameters
         ----------
-        grid : aa.Grid
+        grid : aa.Grid2D
             A stack of grid describing the observed image's pixel coordinates (e.g. an image-grid, sub-grid, etc.).
         border : aa.GridBorder I None
             The border of the grid's grid.
@@ -157,19 +157,19 @@ class Rectangular(Pixelization):
         else:
             relocated_grid = grid
 
-        pixelization_grid = grids.GridRectangular.overlay_grid(
-            shape_2d=self.shape, grid=relocated_grid
+        pixelization_grid = grids.Grid2DRectangular.overlay_grid(
+            shape_native=self.shape, grid=relocated_grid
         )
 
         return mappers.MapperRectangular(
-            source_full_grid=relocated_grid,
+            source_grid_slim=relocated_grid,
             source_pixelization_grid=pixelization_grid,
             hyper_image=hyper_image,
         )
 
     def sparse_grid_from_grid(
         self,
-        grid: grids.Grid,
+        grid: grids.Grid2D,
         hyper_image: np.ndarray = None,
         settings=SettingsPixelization(),
     ):
@@ -188,9 +188,9 @@ class Voronoi(Pixelization):
 
     def mapper_from_grid_and_sparse_grid(
         self,
-        grid: grids.Grid,
-        sparse_grid: grids.Grid = None,
-        sparse_image_plane_grid: grids.Grid = None,
+        grid: grids.Grid2D,
+        sparse_grid: grids.Grid2D = None,
+        sparse_image_plane_grid: grids.Grid2D = None,
         hyper_image: np.ndarray = None,
         settings=SettingsPixelization(),
     ):
@@ -208,7 +208,7 @@ class Voronoi(Pixelization):
 
         Parameters
         ----------
-        grid : aa.Grid
+        grid : aa.Grid2D
             A collection of grid describing the observed image's pixel coordinates (includes an image and sub grid).
         border : aa.GridBorder
             The borders of the grid_stacks (defined by their image-plane masks).
@@ -226,13 +226,13 @@ class Voronoi(Pixelization):
             relocated_pixelization_grid = sparse_grid
 
         try:
-            pixelization_grid = grids.GridVoronoi(
+            pixelization_grid = grids.Grid2DVoronoi(
                 grid=relocated_pixelization_grid,
-                nearest_pixelization_1d_index_for_mask_1d_index=sparse_grid.nearest_pixelization_1d_index_for_mask_1d_index,
+                nearest_pixelization_index_for_slim_index=sparse_grid.nearest_pixelization_index_for_slim_index,
             )
 
             return mappers.MapperVoronoi(
-                source_full_grid=relocated_grid,
+                source_grid_slim=relocated_grid,
                 source_pixelization_grid=pixelization_grid,
                 data_pixelization_grid=sparse_image_plane_grid,
                 hyper_image=hyper_image,
@@ -258,17 +258,17 @@ class VoronoiMagnification(Voronoi):
 
     def sparse_grid_from_grid(
         self,
-        grid: grids.Grid,
+        grid: grids.Grid2D,
         hyper_image: np.ndarray = None,
         settings=SettingsPixelization(),
     ):
-        sparse_grid = grids.GridSparse.from_grid_and_unmasked_2d_grid_shape(
+        sparse_grid = grids.Grid2DSparse.from_grid_and_unmasked_2d_grid_shape(
             grid=grid, unmasked_sparse_shape=self.shape
         )
 
-        return grids.GridVoronoi(
+        return grids.Grid2DVoronoi(
             grid=sparse_grid.sparse,
-            nearest_pixelization_1d_index_for_mask_1d_index=sparse_grid.sparse_1d_index_for_mask_1d_index,
+            nearest_pixelization_index_for_slim_index=sparse_grid.sparse_index_for_slim_index,
         )
 
 
@@ -294,11 +294,14 @@ class VoronoiBrightnessImage(Voronoi):
         return np.power(weight_map, self.weight_power)
 
     def sparse_grid_from_grid(
-        self, grid: grids.Grid, hyper_image: np.ndarray, settings=SettingsPixelization()
+        self,
+        grid: grids.Grid2D,
+        hyper_image: np.ndarray,
+        settings=SettingsPixelization(),
     ):
         weight_map = self.weight_map_from_hyper_image(hyper_image=hyper_image)
 
-        sparse_grid = grids.GridSparse.from_total_pixels_grid_and_weight_map(
+        sparse_grid = grids.Grid2DSparse.from_total_pixels_grid_and_weight_map(
             total_pixels=self.pixels,
             grid=grid,
             weight_map=weight_map,
@@ -306,7 +309,7 @@ class VoronoiBrightnessImage(Voronoi):
             stochastic=settings.is_stochastic,
         )
 
-        return grids.GridVoronoi(
+        return grids.Grid2DVoronoi(
             grid=sparse_grid.sparse,
-            nearest_pixelization_1d_index_for_mask_1d_index=sparse_grid.sparse_1d_index_for_mask_1d_index,
+            nearest_pixelization_index_for_slim_index=sparse_grid.sparse_index_for_slim_index,
         )

@@ -16,7 +16,7 @@ def array_with_new_shape(array, new_shape):
 
     Parameters
     -----------
-    array : aa.Array
+    array : aa.Array2D
         The array which is trimmed / padded to a new 2D shape.
     new_shape : (int, int)
         The new 2D shape of the array.
@@ -36,9 +36,9 @@ def array_eps_to_counts(array_eps, exposure_time_map):
 
     Parameters
     ----------
-    array_eps : aa.Array
+    array_eps : aa.Array2D
         The array which is converted from electrons per seconds to counts.
-    exposure_time_map : aa.Array
+    exposure_time_map : aa.Array2D
         The exposure time at every data-point of the array.
     """
     return np.multiply(array_eps, exposure_time_map)
@@ -55,9 +55,9 @@ def array_counts_to_eps(array_counts, exposure_time_map):
 
     Parameters
     ----------
-    array_counts  : aa.Array
+    array_counts  : aa.Array2D
         The array which is converted from counts to electrons per seconds.
-    exposure_time_map : aa.Array
+    exposure_time_map : aa.Array2D
         The exposure time at every data-point of the array.
     """
     return np.divide(array_counts, exposure_time_map)
@@ -74,9 +74,9 @@ def array_eps_to_adus(array_eps, exposure_time_map, gain):
 
     Parameters
     ----------
-    array_eps  : aa.Array
+    array_eps  : aa.Array2D
         The array which is converted from electrons per seconds to adus.
-    exposure_time_map : aa.Array
+    exposure_time_map : aa.Array2D
         The exposure time at every data-point of the array.
     gain : float
         The gain of the instrument used in the conversion to / from counts and ADUs.
@@ -95,9 +95,9 @@ def array_adus_to_eps(array_adus, exposure_time_map, gain):
 
     Parameters
     ----------
-    array_adus  : aa.Array
+    array_adus  : aa.Array2D
         The array which is converted from adus to electrons per seconds
-    exposure_time_map : aa.Array
+    exposure_time_map : aa.Array2D
         The exposure time at every data-point of the array.
     gain : float
         The gain of the instrument used in the conversion to / from counts and ADUs.
@@ -109,7 +109,7 @@ def array_counts_to_counts_per_second(array_counts, exposure_time):
 
     if exposure_time is None:
         raise exc.FrameException(
-            "Cannot convert a Frame to units counts per second without an exposure time attribute (exposure_time = None)."
+            "Cannot convert a Frame2D to units counts per second without an exposure time attribute (exposure_time = None)."
         )
 
     return array_counts / exposure_time
@@ -124,12 +124,12 @@ def array_with_random_uniform_values_added(array, upper_limit=0.001):
 
     Parameters
     ----------
-    data : aa.Array
+    data : aa.Array2D
         The array that the uniform noise values are added to.
     upper_limit : float
         The upper limit of the uniform distribution from which the values are drawn.
     """
-    return array + upper_limit * np.random.uniform(size=array.shape_1d)
+    return array + upper_limit * np.random.uniform(size=array.shape_slim)
 
 
 def noise_map_from_data_eps_and_exposure_time_map(data_eps, exposure_time_map):
@@ -143,9 +143,9 @@ def noise_map_from_data_eps_and_exposure_time_map(data_eps, exposure_time_map):
 
     Parameters
     ----------
-    data_eps : aa.Array
+    data_eps : aa.Array2D
         The data in electrons second used to estimate the Poisson noise in every data point.
-    exposure_time_map : aa.Array
+    exposure_time_map : aa.Array2D
         The exposure time at every data-point of the data.
     """
     return np.sqrt(np.abs(data_eps * exposure_time_map)) / exposure_time_map
@@ -200,11 +200,11 @@ def noise_map_from_data_eps_exposure_time_map_and_background_noise_map(
 
     Parameters
     ----------
-    data_eps : aa.Array
+    data_eps : aa.Array2D
         The data in electrons second used to estimate the Poisson noise in every data point.
-    exposure_time_map : aa.Array
+    exposure_time_map : aa.Array2D
         The exposure time at every data-point of the data.
-    background_noise_map : aa.Array
+    background_noise_map : aa.Array2D
         The RMS standard deviation error in every data point due to a background component of the noise-map in units
         of electrons per second.
     """
@@ -229,7 +229,7 @@ def background_noise_map_from_edges_of_image(image, no_edges):
 
     Parameters
     ----------
-    image : aa.Array
+    image : aa.Array2D
         The image whose edge values are used to estimate the background noise.
     no_edges : int
         Number of edges used to estimate the background level.
@@ -238,21 +238,24 @@ def background_noise_map_from_edges_of_image(image, no_edges):
     edges = []
 
     for edge_no in range(no_edges):
-        top_edge = image.in_2d[edge_no, edge_no : image.shape_2d[1] - edge_no]
-        bottom_edge = image.in_2d[
-            image.shape_2d[0] - 1 - edge_no, edge_no : image.shape_2d[1] - edge_no
+        top_edge = image.native[edge_no, edge_no : image.shape_native[1] - edge_no]
+        bottom_edge = image.native[
+            image.shape_native[0] - 1 - edge_no,
+            edge_no : image.shape_native[1] - edge_no,
         ]
-        left_edge = image.in_2d[edge_no + 1 : image.shape_2d[0] - 1 - edge_no, edge_no]
-        right_edge = image.in_2d[
-            edge_no + 1 : image.shape_2d[0] - 1 - edge_no,
-            image.shape_2d[1] - 1 - edge_no,
+        left_edge = image.native[
+            edge_no + 1 : image.shape_native[0] - 1 - edge_no, edge_no
+        ]
+        right_edge = image.native[
+            edge_no + 1 : image.shape_native[0] - 1 - edge_no,
+            image.shape_native[1] - 1 - edge_no,
         ]
 
         edges = np.concatenate((edges, top_edge, bottom_edge, right_edge, left_edge))
 
-    return arrays.Array.full(
+    return arrays.Array2D.full(
         fill_value=norm.fit(edges)[1],
-        shape_2d=image.shape_2d,
+        shape_native=image.shape_native,
         pixel_scales=image.pixel_scales,
     )
 
@@ -290,7 +293,7 @@ def exposure_time_map_from_exposure_time_and_background_noise_map(
     ----------
     exposure_time : float
         The total exposure time of the observation.
-    background_noise_map : aa.Array
+    background_noise_map : aa.Array2D
         The RMS standard deviation error in every data point due to a background component of the noise-map in units
         of electrons per second.
     """

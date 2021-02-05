@@ -15,11 +15,14 @@ import typing
 
 
 class AutoLabels:
-    def __init__(self, title=None, ylabel=None, xlabel=None, filename=None):
+    def __init__(
+        self, title=None, ylabel=None, xlabel=None, legend=None, filename=None
+    ):
 
         self.title = title
         self.ylabel = ylabel
         self.xlabel = xlabel
+        self.legend = legend
         self.filename = filename
 
 
@@ -42,7 +45,7 @@ class AbstractMatPlot:
         output: wrap.Output = wrap.Output(),
     ):
         """
-        Visualizes data structures (e.g an `Array`, `Grid`, `VectorField`, etc.) using Matplotlib.
+        Visualizes data structures (e.g an `Array2D`, `Grid2D`, `VectorField`, etc.) using Matplotlib.
         
         The `Plotter` is passed objects from the `mat_wrap` package which wrap matplotlib plot functions and customize
         the appearance of the plots of the data structure. If the values of these matplotlib wrapper objects are not
@@ -50,8 +53,8 @@ class AbstractMatPlot:
         
         The following data structures can be plotted using the following matplotlib functions:
         
-        - `Array`:, using `plt.imshow`.
-        - `Grid`: using `plt.scatter`.
+        - `Array2D`:, using `plt.imshow`.
+        - `Grid2D`: using `plt.scatter`.
         - `Line`: using `plt.plot`, `plt.semilogy`, `plt.loglog` or `plt.scatter`.
         - `VectorField`: using `plt.quiver`.
         - `RectangularMapper`: using `plt.imshow`.
@@ -227,7 +230,6 @@ class MatPlot1D(AbstractMatPlot):
         x,
         visuals_1d: vis.Visuals1D,
         auto_labels: AutoLabels,
-        label=None,
         plot_axis_type="semilogy",
         vertical_lines=None,
         vertical_line_labels=None,
@@ -242,22 +244,28 @@ class MatPlot1D(AbstractMatPlot):
         if x is None:
             x = np.arange(len(y))
 
-        self.line_plot.plot_y_vs_x(y=y, x=x, plot_axis_type=plot_axis_type, label=label)
+        self.line_plot.plot_y_vs_x(
+            y=y, x=x, plot_axis_type=plot_axis_type, label=auto_labels.legend
+        )
 
         self.ylabel.set(units=self.units, include_brackets=False)
         self.xlabel.set(units=self.units, include_brackets=False)
 
-        self.line_plot.plot_vertical_lines(
-            vertical_lines=vertical_lines, vertical_line_labels=vertical_line_labels
-        )
+        # self.line_plot.plot_vertical_lines(
+        #     vertical_lines=vertical_lines, vertical_line_labels=vertical_line_labels
+        # )
 
-        if label is not None or vertical_line_labels is not None:
+        if auto_labels.legend is not None:  # or vertical_line_labels is not None:
             self.legend.set()
 
         self.tickparams.set()
         self.xticks.set(
             array=None, min_value=np.min(x), max_value=np.max(x), units=self.units
         )
+
+        self.title.set(auto_title=auto_labels.title)
+        self.ylabel.set(units=self.units, auto_label=auto_labels.ylabel)
+        self.xlabel.set(units=self.units, auto_label=auto_labels.xlabel)
 
         if not self.is_for_subplot:
             self.output.to_figure(structure=None, auto_filename=auto_labels.filename)
@@ -298,7 +306,7 @@ class MatPlot2D(AbstractMatPlot):
         serial_overscan_plot: wrap.SerialOverscanPlot = wrap.SerialOverscanPlot(),
     ):
         """
-        Visualizes 2D data structures (e.g an `Array`, `Grid`, `VectorField`, etc.) using Matplotlib.
+        Visualizes 2D data structures (e.g an `Array2D`, `Grid2D`, `VectorField`, etc.) using Matplotlib.
 
         The `Plotter` is passed objects from the `mat_wrap` package which wrap matplotlib plot functions and customize
         the appearance of the plots of the data structure. If the values of these matplotlib wrapper objects are not
@@ -306,8 +314,8 @@ class MatPlot2D(AbstractMatPlot):
 
         The following 2D data structures can be plotted using the following matplotlib functions:
 
-        - `Array`:, using `plt.imshow`.
-        - `Grid`: using `plt.scatter`.
+        - `Array2D`:, using `plt.imshow`.
+        - `Grid2D`: using `plt.scatter`.
         - `Line`: using `plt.plot`, `plt.semilogy`, `plt.loglog` or `plt.scatter`.
         - `VectorField`: using `plt.quiver`.
         - `RectangularMapper`: using `plt.imshow`.
@@ -349,9 +357,9 @@ class MatPlot2D(AbstractMatPlot):
         output : mat_wrap.Output
             Sets if the figure is displayed on the user's screen or output to `.png` using `plt.show` and `plt.savefig`
         array_overlay: wrappers.ArrayOverlay
-            Overlays an input `Array` over the figure using `plt.imshow`.
+            Overlays an input `Array2D` over the figure using `plt.imshow`.
         grid_scatter : wrappers.GridScatter
-            Scatters a `Grid` of (y,x) coordinates over the figure using `plt.scatter`.
+            Scatters a `Grid2D` of (y,x) coordinates over the figure using `plt.scatter`.
         grid_plot: wrappers.LinePlot
             Plots lines of data (e.g. a y versus x plot via `plt.plot`, vertical lines via `plt.avxline`, etc.)
         vector_field_quiver: wrappers.VectorFieldQuiver
@@ -367,17 +375,17 @@ class MatPlot2D(AbstractMatPlot):
         border_scatter : wrappers.BorderScatter
             Scatters the border of an input `Mask2d` over the plotted data structure's figure.
         positions_scatter : wrappers.PositionsScatter
-            Scatters specific (y,x) coordinates input as a `GridIrregular` object over the figure.
+            Scatters specific (y,x) coordinates input as a `Grid2DIrregular` object over the figure.
         index_scatter : wrappers.IndexScatter
-            Scatters specific coordinates of an input `Grid` based on input values of the `Grid`'s 1D or 2D indexes.
+            Scatters specific coordinates of an input `Grid2D` based on input values of the `Grid2D`'s 1D or 2D indexes.
         pixelization_grid_scatter : wrappers.PixelizationGridScatter
             Scatters the `PixelizationGrid` of a `Pixelization` object.
         parallel_overscan_plot : wrappers.ParallelOverscanPlot
-            Plots the parallel overscan on an `Array` data structure representing a CCD imaging via `plt.plot`.
+            Plots the parallel overscan on an `Array2D` data structure representing a CCD imaging via `plt.plot`.
         serial_prescan_plot : wrappers.SerialPrescanPlot
-            Plots the serial prescan on an `Array` data structure representing a CCD imaging via `plt.plot`.
+            Plots the serial prescan on an `Array2D` data structure representing a CCD imaging via `plt.plot`.
         serial_overscan_plot : wrappers.SerialOverscanPlot
-            Plots the serial overscan on an `Array` data structure representing a CCD imaging via `plt.plot`.
+            Plots the serial overscan on an `Array2D` data structure representing a CCD imaging via `plt.plot`.
         """
 
         super().__init__(
@@ -459,22 +467,22 @@ class MatPlot2D(AbstractMatPlot):
 
     def plot_array(
         self,
-        array: arrays.Array,
+        array: arrays.Array2D,
         visuals_2d: vis.Visuals2D,
         auto_labels: AutoLabels,
         bypass: bool = False,
     ):
         """
-        Plot an `Array` data structure as a figure using the matplotlib wrapper objects and tools.
+        Plot an `Array2D` data structure as a figure using the matplotlib wrapper objects and tools.
 
-        This `Array` is plotted using `plt.imshow`.
+        This `Array2D` is plotted using `plt.imshow`.
 
         Parameters
         -----------
-        array : arrays.Array
+        array : arrays.Array2D
             The 2D array of data_type which is plotted.
         visuals_2d : vis.Visuals2D
-            Contains all the visuals that are plotted over the `Array` (e.g. the origin, mask, grids, etc.).
+            Contains all the visuals that are plotted over the `Array2D` (e.g. the origin, mask, grids, etc.).
         bypass : bool
             If `True`, `plt.close` is omitted and the matplotlib figure remains open. This is used when making subplots.
         """
@@ -510,11 +518,11 @@ class MatPlot2D(AbstractMatPlot):
             if not bypass:
                 self.setup_subplot()
 
-        aspect = self.figure.aspect_from_shape_2d(shape_2d=array.shape_2d)
+        aspect = self.figure.aspect_from_shape_native(shape_native=array.shape_native)
         norm_scale = self.cmap.norm_from_array(array=array)
 
         plt.imshow(
-            X=array.in_2d,
+            X=array.native,
             aspect=aspect,
             cmap=self.cmap.config_dict["cmap"],
             norm=norm_scale,
@@ -553,9 +561,7 @@ class MatPlot2D(AbstractMatPlot):
         cb = self.colorbar.set()
         self.colorbar_tickparams.set(cb=cb)
 
-        visuals_2d.plot_via_plotter(
-            plotter=self, grid_indexes=array.geometry.masked_grid
-        )
+        visuals_2d.plot_via_plotter(plotter=self, grid_indexes=array.mask.masked_grid)
 
         if not self.is_for_subplot and not bypass:
             self.output.to_figure(structure=array, auto_filename=auto_labels.filename)
@@ -580,10 +586,10 @@ class MatPlot2D(AbstractMatPlot):
         else:
             self.setup_subplot()
 
-        aspect = self.figure.aspect_from_shape_2d(shape_2d=frame.shape_2d)
+        aspect = self.figure.aspect_from_shape_native(shape_native=frame.shape_native)
         norm_scale = self.cmap.norm_from_array(array=frame)
 
-        extent_imshow = frame.mask.geometry.extent
+        extent_imshow = frame.mask.extent
 
         plt.imshow(
             X=frame,
@@ -633,7 +639,7 @@ class MatPlot2D(AbstractMatPlot):
 
         Parameters
         -----------
-        grid : Grid
+        grid : Grid2D
             The (y,x) coordinates of the grid, in an array of shape (total_coordinates, 2).
         indexes : []
             A set of points that are plotted in a different colour for emphasis (e.g. to show the mappings between \
@@ -728,7 +734,7 @@ class MatPlot2D(AbstractMatPlot):
         else:
 
             aspect_inv = self.figure.aspect_for_subplot_from_grid(
-                grid=mapper.source_full_grid
+                grid=mapper.source_grid_slim
             )
 
             self.setup_subplot(aspect=aspect_inv)
@@ -764,7 +770,8 @@ class MatPlot2D(AbstractMatPlot):
         )
 
         self.grid_plot.plot_rectangular_grid_lines(
-            extent=mapper.source_pixelization_grid.extent, shape_2d=mapper.shape_2d
+            extent=mapper.source_pixelization_grid.extent,
+            shape_native=mapper.shape_native,
         )
 
         self.title.set(auto_title=auto_labels.title)
@@ -773,7 +780,7 @@ class MatPlot2D(AbstractMatPlot):
         self.xlabel.set(units=self.units, include_brackets=True)
 
         visuals_2d.plot_via_plotter(
-            plotter=self, grid_indexes=mapper.source_full_grid, mapper=mapper
+            plotter=self, grid_indexes=mapper.source_grid_slim, mapper=mapper
         )
 
         if not self.is_for_subplot:
@@ -793,7 +800,7 @@ class MatPlot2D(AbstractMatPlot):
         else:
 
             aspect_inv = self.figure.aspect_for_subplot_from_grid(
-                grid=mapper.source_full_grid
+                grid=mapper.source_grid_slim
             )
 
             self.setup_subplot(aspect=aspect_inv)
@@ -824,7 +831,7 @@ class MatPlot2D(AbstractMatPlot):
         self.voronoi_drawer.draw_voronoi_pixels(
             mapper=mapper,
             values=source_pixelilzation_values,
-            cmap=self.cmap.config_dict["cmap"],
+            cmap=self.cmap,
             colorbar=self.colorbar,
             colorbar_tickparams=self.colorbar_tickparams,
         )
@@ -834,7 +841,7 @@ class MatPlot2D(AbstractMatPlot):
         self.xlabel.set(units=self.units, include_brackets=True)
 
         visuals_2d.plot_via_plotter(
-            plotter=self, grid_indexes=mapper.source_full_grid, mapper=mapper
+            plotter=self, grid_indexes=mapper.source_grid_slim, mapper=mapper
         )
 
         if not self.is_for_subplot:

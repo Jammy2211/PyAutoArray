@@ -1,5 +1,3 @@
-import os
-
 import numpy as np
 import pytest
 
@@ -70,7 +68,7 @@ class TestMask1D:
         assert type(mask) == aa.Mask1D
         assert (mask == np.array([False, False, True])).all()
 
-    def test__mask__input_is_2d_mask__no_shape_2d__raises_exception(self):
+    def test__mask__input_is_2d_mask__no_shape_native__raises_exception(self):
 
         with pytest.raises(exc.MaskException):
 
@@ -111,3 +109,12 @@ class TestMask1D:
         mask = aa.Mask1D.manual(mask=[True, True, False, False], pixel_scales=1.0)
 
         assert mask.is_all_false == False
+
+    def test__unmasked_mask(self):
+
+        mask = aa.Mask1D.manual(
+            mask=[True, False, True, False, False, False, True, False, True],
+            pixel_scales=1.0,
+        )
+
+        assert (mask.unmasked_mask == np.full(fill_value=False, shape=(9,))).all()

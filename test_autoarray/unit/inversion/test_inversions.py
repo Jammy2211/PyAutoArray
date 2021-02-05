@@ -151,7 +151,7 @@ class TestAbstractInversion:
             convolver=mock.MockConvolver(matrix_shape),
             mapper=mock.MockMapper(
                 matrix_shape,
-                source_pixelization_grid=aa.GridVoronoi.manual_1d(
+                source_pixelization_grid=aa.Grid2DVoronoi.manual_slim(
                     [[1.0, 2.0], [3.0, 4.0], [5.0, 6.0], [5.0, 0.0]]
                 ),
             ),
@@ -162,9 +162,7 @@ class TestAbstractInversion:
         inversion.reconstruction = np.array([2.0, 3.0, 5.0, 0.0])
 
         assert inversion.brightest_reconstruction_pixel == 2
-        assert inversion.brightest_reconstruction_pixel_centre.in_1d_list == [
-            (5.0, 6.0)
-        ]
+        assert inversion.brightest_reconstruction_pixel_centre.in_list == [(5.0, 6.0)]
 
     def test__interpolated_reconstruction__config_is_image_grid__grid_as_mapper_with_good_interp(
         self,
@@ -191,10 +189,10 @@ class TestAbstractInversion:
             sub_size=2,
         )
 
-        grid = aa.Grid.from_mask(mask=mask)
+        grid = aa.Grid2D.from_mask(mask=mask)
 
-        pixelization_grid = aa.Grid.uniform(
-            shape_2d=(3, 3), pixel_scales=1.0, sub_size=1
+        pixelization_grid = aa.Grid2D.uniform(
+            shape_native=(3, 3), pixel_scales=1.0, sub_size=1
         )
 
         inversion = inversions.InversionImagingMatrix.from_data_mapper_and_regularization(
@@ -203,7 +201,7 @@ class TestAbstractInversion:
             convolver=mock.MockConvolver(matrix_shape),
             mapper=mock.MockMapper(
                 matrix_shape=matrix_shape,
-                source_full_grid=grid,
+                source_grid_slim=grid,
                 source_pixelization_grid=pixelization_grid,
             ),
             regularization=mock.MockRegularization(matrix_shape),
@@ -215,15 +213,15 @@ class TestAbstractInversion:
         )
 
         interpolated_reconstruction = (
-            inversion.interpolated_reconstructed_data_from_shape_2d()
+            inversion.interpolated_reconstructed_data_from_shape_native()
         )
 
-        assert interpolated_reconstruction.shape_2d == (5, 5)
+        assert interpolated_reconstruction.shape_native == (5, 5)
 
-        assert interpolated_reconstruction.in_1d == pytest.approx(
+        assert interpolated_reconstruction.slim == pytest.approx(
             np.ones(shape=(25,)), 1.0e-4
         )
-        assert interpolated_reconstruction.in_2d == pytest.approx(
+        assert interpolated_reconstruction.native == pytest.approx(
             np.ones(shape=(5, 5)), 1.0e-4
         )
         assert interpolated_reconstruction.pixel_scales == pytest.approx(
@@ -253,10 +251,10 @@ class TestAbstractInversion:
             sub_size=1,
         )
 
-        grid = aa.Grid.from_mask(mask=mask)
+        grid = aa.Grid2D.from_mask(mask=mask)
 
-        pixelization_grid = aa.Grid.uniform(
-            shape_2d=(3, 3), pixel_scales=1.0, sub_size=1
+        pixelization_grid = aa.Grid2D.uniform(
+            shape_native=(3, 3), pixel_scales=1.0, sub_size=1
         )
 
         inversion = inversions.InversionImagingMatrix.from_data_mapper_and_regularization(
@@ -265,7 +263,7 @@ class TestAbstractInversion:
             convolver=mock.MockConvolver(matrix_shape),
             mapper=mock.MockMapper(
                 matrix_shape=matrix_shape,
-                source_full_grid=grid,
+                source_grid_slim=grid,
                 source_pixelization_grid=pixelization_grid,
             ),
             regularization=mock.MockRegularization(matrix_shape),
@@ -278,12 +276,14 @@ class TestAbstractInversion:
 
         inversion.curvature_reg_matrix = np.eye(N=9)
 
-        interpolated_errors = inversion.interpolated_errors_from_shape_2d()
+        interpolated_errors = inversion.interpolated_errors_from_shape_native()
 
-        assert interpolated_errors.shape_2d == (5, 5)
+        assert interpolated_errors.shape_native == (5, 5)
 
-        assert interpolated_errors.in_1d == pytest.approx(np.ones(shape=(25,)), 1.0e-4)
-        assert interpolated_errors.in_2d == pytest.approx(np.ones(shape=(5, 5)), 1.0e-4)
+        assert interpolated_errors.slim == pytest.approx(np.ones(shape=(25,)), 1.0e-4)
+        assert interpolated_errors.native == pytest.approx(
+            np.ones(shape=(5, 5)), 1.0e-4
+        )
         assert interpolated_errors.pixel_scales == pytest.approx((1.0, 1.0), 1.0e-4)
 
     def test__interpolated_reconstruction__config_is_source_grid__grid_is_zoomed_as_uses_mapper_grid(
@@ -310,10 +310,10 @@ class TestAbstractInversion:
             sub_size=1,
         )
 
-        grid = aa.Grid.from_mask(mask=mask)
+        grid = aa.Grid2D.from_mask(mask=mask)
 
-        pixelization_grid = aa.Grid.uniform(
-            shape_2d=(3, 3), pixel_scales=1.0, sub_size=1
+        pixelization_grid = aa.Grid2D.uniform(
+            shape_native=(3, 3), pixel_scales=1.0, sub_size=1
         )
 
         inversion = inversions.InversionImagingMatrix.from_data_mapper_and_regularization(
@@ -322,7 +322,7 @@ class TestAbstractInversion:
             convolver=mock.MockConvolver(matrix_shape),
             mapper=mock.MockMapper(
                 matrix_shape=matrix_shape,
-                source_full_grid=grid,
+                source_grid_slim=grid,
                 source_pixelization_grid=pixelization_grid,
             ),
             regularization=mock.MockRegularization(matrix_shape),
@@ -334,30 +334,30 @@ class TestAbstractInversion:
         )
 
         interpolated_reconstruction = (
-            inversion.interpolated_reconstructed_data_from_shape_2d()
+            inversion.interpolated_reconstructed_data_from_shape_native()
         )
 
         assert (
-            interpolated_reconstruction.in_1d
+            interpolated_reconstruction.slim
             == np.array([1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0])
         ).all()
         assert (
-            interpolated_reconstruction.in_2d
+            interpolated_reconstruction.native
             == np.array([[1.0, 1.0, 1.0], [1.0, 1.0, 1.0], [1.0, 1.0, 1.0]])
         ).all()
         assert interpolated_reconstruction.pixel_scales == pytest.approx(
             (0.66666, 0.66666), 1.0e-4
         )
 
-        interpolated_reconstruction = inversion.interpolated_reconstructed_data_from_shape_2d(
-            shape_2d=(2, 2)
+        interpolated_reconstruction = inversion.interpolated_reconstructed_data_from_shape_native(
+            shape_native=(2, 2)
         )
 
         assert (
-            interpolated_reconstruction.in_1d == np.array([1.0, 1.0, 1.0, 1.0])
+            interpolated_reconstruction.slim == np.array([1.0, 1.0, 1.0, 1.0])
         ).all()
         assert (
-            interpolated_reconstruction.in_2d == np.array([[1.0, 1.0], [1.0, 1.0]])
+            interpolated_reconstruction.native == np.array([[1.0, 1.0], [1.0, 1.0]])
         ).all()
         assert interpolated_reconstruction.pixel_scales == pytest.approx(
             (1.0, 1.0), 1.0e-4
@@ -367,19 +367,19 @@ class TestAbstractInversion:
             [1.0, 1.0, 1.0, 5.0, 5.0, 5.0, 5.0, 1.0, 1.0]
         )
 
-        interpolated_reconstruction = inversion.interpolated_reconstructed_data_from_shape_2d(
-            shape_2d=(2, 2)
+        interpolated_reconstruction = inversion.interpolated_reconstructed_data_from_shape_native(
+            shape_native=(2, 2)
         )
 
         assert (
-            interpolated_reconstruction.in_1d == np.array([3.0, 3.0, 3.0, 3.0])
+            interpolated_reconstruction.slim == np.array([3.0, 3.0, 3.0, 3.0])
         ).all()
         assert (
-            interpolated_reconstruction.in_2d == np.array([[3.0, 3.0], [3.0, 3.0]])
+            interpolated_reconstruction.native == np.array([[3.0, 3.0], [3.0, 3.0]])
         ).all()
         assert interpolated_reconstruction.pixel_scales == (1.0, 1.0)
 
-    def test__interp__manual_shape_2d__uses_input_shape_2d(self):
+    def test__interp__manual_shape_native__uses_input_shape_native(self):
 
         matrix_shape = (25, 3)
 
@@ -397,10 +397,10 @@ class TestAbstractInversion:
             sub_size=1,
         )
 
-        grid = aa.Grid.from_mask(mask=mask)
+        grid = aa.Grid2D.from_mask(mask=mask)
 
-        pixelization_grid = aa.Grid.uniform(
-            shape_2d=(3, 3), pixel_scales=1.0, sub_size=1
+        pixelization_grid = aa.Grid2D.uniform(
+            shape_native=(3, 3), pixel_scales=1.0, sub_size=1
         )
 
         inversion = inversions.InversionImagingMatrix.from_data_mapper_and_regularization(
@@ -409,7 +409,7 @@ class TestAbstractInversion:
             convolver=mock.MockConvolver(matrix_shape),
             mapper=mock.MockMapper(
                 matrix_shape=matrix_shape,
-                source_full_grid=grid,
+                source_grid_slim=grid,
                 source_pixelization_grid=pixelization_grid,
             ),
             regularization=mock.MockRegularization(matrix_shape),
@@ -420,15 +420,15 @@ class TestAbstractInversion:
             [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
         )
 
-        interpolated_reconstruction = inversion.interpolated_reconstructed_data_from_shape_2d(
-            shape_2d=(2, 2)
+        interpolated_reconstruction = inversion.interpolated_reconstructed_data_from_shape_native(
+            shape_native=(2, 2)
         )
 
         assert (
-            interpolated_reconstruction.in_1d == np.array([1.0, 1.0, 1.0, 1.0])
+            interpolated_reconstruction.slim == np.array([1.0, 1.0, 1.0, 1.0])
         ).all()
         assert (
-            interpolated_reconstruction.in_2d == np.array([[1.0, 1.0], [1.0, 1.0]])
+            interpolated_reconstruction.native == np.array([[1.0, 1.0], [1.0, 1.0]])
         ).all()
         assert interpolated_reconstruction.pixel_scales == pytest.approx(
             (1.0, 1.0), 1.0e-4
@@ -438,15 +438,15 @@ class TestAbstractInversion:
             [1.0, 1.0, 1.0, 5.0, 5.0, 5.0, 5.0, 1.0, 1.0]
         )
 
-        interpolated_reconstruction = inversion.interpolated_reconstructed_data_from_shape_2d(
-            shape_2d=(2, 2)
+        interpolated_reconstruction = inversion.interpolated_reconstructed_data_from_shape_native(
+            shape_native=(2, 2)
         )
 
         assert (
-            interpolated_reconstruction.in_1d == np.array([3.0, 3.0, 3.0, 3.0])
+            interpolated_reconstruction.slim == np.array([3.0, 3.0, 3.0, 3.0])
         ).all()
         assert (
-            interpolated_reconstruction.in_2d == np.array([[3.0, 3.0], [3.0, 3.0]])
+            interpolated_reconstruction.native == np.array([[3.0, 3.0], [3.0, 3.0]])
         ).all()
         assert interpolated_reconstruction.pixel_scales == (1.0, 1.0)
 
@@ -466,13 +466,13 @@ class TestInversionImagingMatrix:
             sub_size=1,
         )
 
-        grid = aa.Grid.from_mask(mask=mask)
+        grid = aa.Grid2D.from_mask(mask=mask)
 
         inversion = inversions.InversionImagingMatrix.from_data_mapper_and_regularization(
             image=np.ones(9),
             noise_map=np.ones(9),
             convolver=mock.MockConvolver(matrix_shape),
-            mapper=mock.MockMapper(matrix_shape=matrix_shape, source_full_grid=grid),
+            mapper=mock.MockMapper(matrix_shape=matrix_shape, source_grid_slim=grid),
             regularization=mock.MockRegularization(matrix_shape),
             settings=aa.SettingsInversion(check_solution=False),
         )
@@ -488,7 +488,7 @@ class TestInversionImagingMatrix:
 
         assert (inversion.mapped_reconstructed_image == np.array([4.0, 3.0, 1.0])).all()
         assert (
-            inversion.mapped_reconstructed_image.in_2d
+            inversion.mapped_reconstructed_image.native
             == np.array([[0.0, 0.0, 0.0], [4.0, 3.0, 1.0], [0.0, 0.0, 0.0]])
         ).all()
 
@@ -520,13 +520,13 @@ class TestInversionImagingMatrix:
             sub_size=1,
         )
 
-        grid = aa.Grid.from_mask(mask=mask)
+        grid = aa.Grid2D.from_mask(mask=mask)
 
         inversion = inversions.InversionImagingMatrix.from_data_mapper_and_regularization(
             image=np.ones(9),
             noise_map=np.ones(9),
             convolver=mock.MockConvolver(matrix_shape),
-            mapper=mock.MockMapper(matrix_shape=matrix_shape, source_full_grid=grid),
+            mapper=mock.MockMapper(matrix_shape=matrix_shape, source_grid_slim=grid),
             regularization=mock.MockRegularization(matrix_shape),
             settings=aa.SettingsInversion(check_solution=False),
         )
@@ -545,7 +545,7 @@ class TestInversionImagingMatrix:
             inversion.mapped_reconstructed_image == np.array([10.0, 8.0, 1.0])
         ).all()
         assert (
-            inversion.mapped_reconstructed_image.in_2d
+            inversion.mapped_reconstructed_image.native
             == np.array([[0.0, 0.0, 0.0], [10.0, 8.0, 1.0], [0.0, 0.0, 0.0]])
         ).all()
 
@@ -573,7 +573,7 @@ class TestInversionImagingMatrix:
             sub_size=1,
         )
 
-        grid = aa.Grid.from_mask(mask=mask)
+        grid = aa.Grid2D.from_mask(mask=mask)
 
         matrix_shape = (9, 3)
 
@@ -584,7 +584,7 @@ class TestInversionImagingMatrix:
                 noise_map=np.ones(9),
                 convolver=mock.MockConvolver(matrix_shape),
                 mapper=mock.MockMapper(
-                    matrix_shape=matrix_shape, source_full_grid=grid
+                    matrix_shape=matrix_shape, source_grid_slim=grid
                 ),
                 regularization=mock.MockRegularization(matrix_shape),
             )
@@ -626,4 +626,4 @@ directory = path.dirname(path.realpath(__file__))
 #         pixelization_residuals_util = \
 #             am.util.inversion.pixelization_residuals_from_pixelization_values_reconstructed_data_1d_and_mapping_quantities(
 #                 pixelization_values=inversion.reconstruction, reconstructed_data_1d=inversion.reconstructed_data_1d,
-#                 mask_1d_index_for_sub_mask_1d_index=inversion.mapper.mask_1d_index_for_sub_mask_1d_index, all_sub_mask_1d_indexes_for_pixelization_1d_index=inversion.mapper.all_sub_mask_1d_indexes_for_pixelization_1d_index)
+#                 slim_index_for_sub_slim_index=inversion.mapper.slim_index_for_sub_slim_index, all_sub_slim_indexes_for_pixelization_index=inversion.mapper.all_sub_slim_indexes_for_pixelization_index)

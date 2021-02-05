@@ -20,12 +20,11 @@ class AbstractImagingPlotter(abstract_plotters.AbstractPlotter):
 
         return self.visuals_2d + self.visuals_2d.__class__(
             origin=self.extract_2d(
-                "origin", grids.GridIrregular(grid=[self.imaging.image.origin])
+                "origin", grids.Grid2DIrregular(grid=[self.imaging.image.origin])
             ),
             mask=self.extract_2d("mask", self.imaging.image.mask),
             border=self.extract_2d(
-                "border",
-                self.imaging.image.mask.geometry.border_grid_sub_1.in_1d_binned,
+                "border", self.imaging.image.mask.border_grid_sub_1.slim_binned
             ),
         )
 

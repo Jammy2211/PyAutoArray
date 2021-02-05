@@ -78,7 +78,7 @@ def make_simple_convolver(simple_mask_5x5):
 
     return aa.Convolver(
         mask=simple_mask_5x5,
-        kernel=aa.Kernel.manual_2d(
+        kernel=aa.Kernel2D.manual_native(
             [[1.0, 2.0, 3.0], [4.0, 5.0, 6.0], [7.0, 8.0, 9.0]], pixel_scales=1.0
         ),
     )
@@ -88,7 +88,7 @@ def make_simple_convolver(simple_mask_5x5):
 def make_cross_convolver(cross_mask):
     return aa.Convolver(
         mask=cross_mask,
-        kernel=aa.Kernel.manual_2d(
+        kernel=aa.Kernel2D.manual_native(
             [[1.0, 2.0, 3.0], [4.0, 5.0, 6.0], [7.0, 8.0, 9.0]], pixel_scales=1.0
         ),
     )
@@ -96,7 +96,7 @@ def make_cross_convolver(cross_mask):
 
 @pytest.fixture(name="simple_kernel")
 def make_simple_kernel():
-    return aa.Kernel.manual_2d(
+    return aa.Kernel2D.manual_native(
         kernel=[[0, 0.1, 0], [0.1, 0.6, 0.1], [0, 0.1, 0]], pixel_scales=1.0
     )
 
@@ -106,7 +106,7 @@ class TestNumbering:
 
         convolver = aa.Convolver(
             mask=simple_mask_5x5,
-            kernel=aa.Kernel.ones(shape_2d=(1, 1), pixel_scales=1.0),
+            kernel=aa.Kernel2D.ones(shape_native=(1, 1), pixel_scales=1.0),
         )
 
         mask_index_array = convolver.mask_index_array
@@ -128,7 +128,8 @@ class TestNumbering:
 
     def test__cross_mask(self, cross_mask):
         convolver = aa.Convolver(
-            mask=cross_mask, kernel=aa.Kernel.ones(shape_2d=(1, 1), pixel_scales=1.0)
+            mask=cross_mask,
+            kernel=aa.Kernel2D.ones(shape_native=(1, 1), pixel_scales=1.0),
         )
 
         assert (
@@ -148,7 +149,7 @@ class TestNumbering:
         with pytest.raises(exc.ConvolverException):
             aa.Convolver(
                 mask=np.full((3, 3), False),
-                kernel=aa.Kernel.ones(shape_2d=(2, 2), pixel_scales=1.0),
+                kernel=aa.Kernel2D.ones(shape_native=(2, 2), pixel_scales=1.0),
             )
 
 
@@ -158,7 +159,7 @@ class TestFrameExtraction:
             coordinates=(2, 2),
             mask=simple_mask_5x5,
             mask_index_array=simple_convolver.mask_index_array,
-            kernel_2d=simple_convolver.kernel.in_2d,
+            kernel_2d=simple_convolver.kernel.native,
         )
 
         assert (frame == np.array([i for i in range(9)])).all()
@@ -169,7 +170,7 @@ class TestFrameExtraction:
             coordinates=(1, 1),
             mask=simple_mask_5x5,
             mask_index_array=simple_convolver.mask_index_array,
-            kernel_2d=simple_convolver.kernel.in_2d,
+            kernel_2d=simple_convolver.kernel.native,
         )
 
         assert (frame == corner_frame).all()
@@ -180,7 +181,7 @@ class TestFrameExtraction:
             coordinates=(2, 2),
             mask=simple_mask_5x5,
             mask_index_array=simple_convolver.mask_index_array,
-            kernel_2d=simple_convolver.kernel.in_2d,
+            kernel_2d=simple_convolver.kernel.native,
         )
 
         assert (
@@ -191,7 +192,7 @@ class TestFrameExtraction:
             coordinates=(1, 1),
             mask=simple_mask_5x5,
             mask_index_array=simple_convolver.mask_index_array,
-            kernel_2d=simple_convolver.kernel.in_2d,
+            kernel_2d=simple_convolver.kernel.native,
         )
 
         assert (
@@ -209,7 +210,7 @@ class TestFrameExtraction:
     def test__frame_5x5_kernel__at_coords(self, simple_mask_7x7):
         convolver = aa.Convolver(
             mask=simple_mask_7x7,
-            kernel=aa.Kernel.manual_2d(
+            kernel=aa.Kernel2D.manual_native(
                 [
                     [1.0, 2.0, 3.0, 4.0, 5.0],
                     [6.0, 7.0, 8.0, 9.0, 10.0],
@@ -225,7 +226,7 @@ class TestFrameExtraction:
             coordinates=(2, 2),
             mask=simple_mask_7x7,
             mask_index_array=convolver.mask_index_array,
-            kernel_2d=convolver.kernel.in_2d,
+            kernel_2d=convolver.kernel.native,
         )
 
         assert (
@@ -265,7 +266,7 @@ class TestFrameExtraction:
             coordinates=(3, 2),
             mask=simple_mask_7x7,
             mask_index_array=convolver.mask_index_array,
-            kernel_2d=convolver.kernel.in_2d,
+            kernel_2d=convolver.kernel.native,
         )
 
         assert (
@@ -305,7 +306,7 @@ class TestFrameExtraction:
             coordinates=(3, 3),
             mask=simple_mask_7x7,
             mask_index_array=convolver.mask_index_array,
-            kernel_2d=convolver.kernel.in_2d,
+            kernel_2d=convolver.kernel.native,
         )
 
         assert (
@@ -372,7 +373,7 @@ class TestImageFrameIndexes:
     ):
         convolver = aa.Convolver(
             mask=simple_mask_7x7,
-            kernel=aa.Kernel.ones(shape_2d=(3, 5), pixel_scales=1.0),
+            kernel=aa.Kernel2D.ones(shape_native=(3, 5), pixel_scales=1.0),
         )
 
         assert (
@@ -417,7 +418,7 @@ class TestImageFrameIndexes:
     ):
         convolver = aa.Convolver(
             mask=simple_mask_7x7,
-            kernel=aa.Kernel.ones(shape_2d=(5, 3), pixel_scales=1.0),
+            kernel=aa.Kernel2D.ones(shape_native=(5, 3), pixel_scales=1.0),
         )
 
         assert (
@@ -460,7 +461,7 @@ class TestImageFrameIndexes:
     def test__masked_square__7x7_kernel(self, simple_mask_7x7):
         convolver = aa.Convolver(
             mask=simple_mask_7x7,
-            kernel=aa.Kernel.ones(shape_2d=(5, 5), pixel_scales=1.0),
+            kernel=aa.Kernel2D.ones(shape_native=(5, 5), pixel_scales=1.0),
         )
 
         assert (
@@ -767,7 +768,7 @@ class TestImageFrameKernels:
     ):
         convolver = aa.Convolver(
             mask=simple_mask_7x7,
-            kernel=aa.Kernel.manual_2d(
+            kernel=aa.Kernel2D.manual_native(
                 [
                     [1.0, 2.0, 3.0, 4.0, 5.0],
                     [6.0, 7.0, 8.0, 9.0, 10.0],
@@ -853,7 +854,7 @@ class TestImageFrameKernels:
     ):
         convolver = aa.Convolver(
             mask=simple_mask_7x7,
-            kernel=aa.Kernel.manual_2d(
+            kernel=aa.Kernel2D.manual_native(
                 [
                     [1.0, 2.0, 3.0],
                     [4.0, 5.0, 6.0],
@@ -941,7 +942,8 @@ class TestBlurringFrameIndxes:
     def test__blurring_region_3x3_kernel(self, cross_mask):
 
         convolver = aa.Convolver(
-            mask=cross_mask, kernel=aa.Kernel.ones(shape_2d=(3, 3), pixel_scales=1.0)
+            mask=cross_mask,
+            kernel=aa.Kernel2D.ones(shape_native=(3, 3), pixel_scales=1.0),
         )
 
         assert (
@@ -967,7 +969,7 @@ class TestBlurringFrameKernels:
 
         convolver = aa.Convolver(
             mask=cross_mask,
-            kernel=aa.Kernel.manual_2d(
+            kernel=aa.Kernel2D.manual_native(
                 [[1.0, 2.0, 3.0], [4.0, 5.0, 6.0], [7.0, 8.0, 9.0]], pixel_scales=1.0
             ),
         )
@@ -994,7 +996,7 @@ class TestFrameLengths:
     def test__frames_are_from_examples_above__lengths_are_right(self, simple_mask_7x7):
         convolver = aa.Convolver(
             mask=simple_mask_7x7,
-            kernel=aa.Kernel.ones(shape_2d=(3, 5), pixel_scales=1.0),
+            kernel=aa.Kernel2D.ones(shape_native=(3, 5), pixel_scales=1.0),
         )
 
         # convolver_image.image_frame_indexes[0] == np.array([0, 1, 2, 3, 4, 5])
@@ -1026,7 +1028,7 @@ class TestConvolveMappingMatrix:
             ]
         )
 
-        asymmetric_kernel = aa.Kernel.manual_2d(
+        asymmetric_kernel = aa.Kernel2D.manual_native(
             array=[[0, 0.0, 0], [0.4, 0.2, 0.3], [0, 0.1, 0]], pixel_scales=1.0
         )
 
@@ -1096,7 +1098,7 @@ class TestConvolveMappingMatrix:
             ]
         )
 
-        asymmetric_kernel = aa.Kernel.manual_2d(
+        asymmetric_kernel = aa.Kernel2D.manual_native(
             array=[[0, 0.0, 0], [0.4, 0.2, 0.3], [0, 0.1, 0]], pixel_scales=1.0
         )
 
@@ -1169,19 +1171,19 @@ class TestConvolution:
             sub_size=1,
         )
 
-        kernel = aa.Kernel.manual_2d(
+        kernel = aa.Kernel2D.manual_native(
             array=[[0, 0.2, 0], [0.2, 0.4, 0.2], [0, 0.2, 0]], pixel_scales=0.1
         )
 
         convolver = aa.Convolver(mask=cross_mask, kernel=kernel)
 
-        image_array = aa.Array.manual_mask(array=[1, 0, 0, 0, 0], mask=cross_mask)
+        image_array = aa.Array2D.manual_mask(array=[1, 0, 0, 0, 0], mask=cross_mask)
 
-        blurring_mask = cross_mask.regions.blurring_mask_from_kernel_shape(
-            kernel_shape_2d=kernel.shape_2d
+        blurring_mask = cross_mask.blurring_mask_from_kernel_shape(
+            kernel_shape_native=kernel.shape_native
         )
 
-        blurring_array = aa.Array.manual_mask(
+        blurring_array = aa.Array2D.manual_mask(
             array=[0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], mask=blurring_mask
         )
 
@@ -1198,36 +1200,38 @@ class TestCompareToFull2dConv:
 
         import scipy.signal
 
-        kernel = aa.Kernel.manual_2d(
+        kernel = aa.Kernel2D.manual_native(
             array=np.arange(49).reshape(7, 7), pixel_scales=1.0
         )
-        image = aa.Array.manual_2d(
+        image = aa.Array2D.manual_native(
             array=np.arange(900).reshape(30, 30), pixel_scales=1.0
         )
-        blurred_image = scipy.signal.convolve2d(image.in_2d, kernel.in_2d, mode="same")
-        blurred_image = aa.Array.manual_2d(array=blurred_image, pixel_scales=1.0)
+        blurred_image = scipy.signal.convolve2d(
+            image.native, kernel.native, mode="same"
+        )
+        blurred_image = aa.Array2D.manual_native(array=blurred_image, pixel_scales=1.0)
 
         mask = aa.Mask2D.circular(
-            shape_2d=(30, 30), pixel_scales=(1.0, 1.0), sub_size=1, radius=4.0
+            shape_native=(30, 30), pixel_scales=(1.0, 1.0), sub_size=1, radius=4.0
         )
 
-        masked_image = aa.Array.manual_mask(
-            array=image.in_2d, mask=mask, store_in_1d=True
+        masked_image = aa.Array2D.manual_mask(
+            array=image.native, mask=mask, store_slim=True
         )
 
-        blurred_masked_image = aa.Array.manual_mask(
-            array=blurred_image.in_2d, mask=mask, store_in_1d=True
+        blurred_masked_image = aa.Array2D.manual_mask(
+            array=blurred_image.native, mask=mask, store_slim=True
         )
 
         # Now reproduce this datas_ using the frame convolver_image
 
-        blurring_mask = mask.regions.blurring_mask_from_kernel_shape(
-            kernel_shape_2d=kernel.shape_2d
+        blurring_mask = mask.blurring_mask_from_kernel_shape(
+            kernel_shape_native=kernel.shape_native
         )
         convolver = aa.Convolver(mask=mask, kernel=kernel)
 
-        blurring_image = aa.Array.manual_mask(
-            array=image.in_2d, mask=blurring_mask, store_in_1d=True
+        blurring_image = aa.Array2D.manual_mask(
+            array=image.native, mask=blurring_mask, store_slim=True
         )
 
         blurred_masked_im_1 = convolver.convolved_image_from_image_and_blurring_image(

@@ -7,22 +7,22 @@ import numpy as np
 
 
 def mapper(
-    source_full_grid,
+    source_grid_slim,
     source_pixelization_grid,
     data_pixelization_grid=None,
     hyper_data=None,
 ):
 
-    if isinstance(source_pixelization_grid, grids.GridRectangular):
+    if isinstance(source_pixelization_grid, grids.Grid2DRectangular):
         return MapperRectangular(
-            source_full_grid=source_full_grid,
+            source_grid_slim=source_grid_slim,
             source_pixelization_grid=source_pixelization_grid,
             data_pixelization_grid=data_pixelization_grid,
             hyper_image=hyper_data,
         )
-    elif isinstance(source_pixelization_grid, grids.GridVoronoi):
+    elif isinstance(source_pixelization_grid, grids.Grid2DVoronoi):
         return MapperVoronoi(
-            source_full_grid=source_full_grid,
+            source_grid_slim=source_grid_slim,
             source_pixelization_grid=source_pixelization_grid,
             data_pixelization_grid=data_pixelization_grid,
             hyper_image=hyper_data,
@@ -32,12 +32,13 @@ def mapper(
 class Mapper:
     def __init__(
         self,
-        source_full_grid,
+        source_grid_slim,
         source_pixelization_grid,
         data_pixelization_grid=None,
         hyper_image=None,
     ):
-        """ Abstract base class representing a mapper, which maps unmasked pixels on a masked 2D array (in the form of \
+        """
+        Abstract base class representing a mapper, which maps unmasked pixels on a masked 2D array (in the form of \
         a grid, see the *hyper_galaxies.array.grid* module) to discretized pixels in a pixelization.
 
         1D structures are used to represent these mappings, for example between the different grid in a grid \
@@ -99,21 +100,21 @@ class Mapper:
         ----------
         pixels : int
             The number of pixels in the mapper's pixelization.
-        source_full_grid: gridStack
+        source_grid_slim: gridStack
             A stack of grid's which are mapped to the pixelization (includes an and sub grid).
         hyper_image : np.ndarray
             A pre-computed hyper-image of the image the mapper is expected to reconstruct, used for adaptive analysis.
         """
-        self.source_full_grid = source_full_grid
+        self.source_grid_slim = source_grid_slim
         self.source_pixelization_grid = source_pixelization_grid
         self.data_pixelization_grid = data_pixelization_grid
 
         self.mapping_matrix = mapper_util.mapping_matrix_from(
-            pixelization_1d_index_for_sub_mask_1d_index=self.pixelization_1d_index_for_sub_full_1d_index,
+            pixelization_index_for_sub_slim_index=self.pixelization_index_for_sub_slim_index,
             pixels=self.pixels,
-            total_mask_pixels=self.source_full_grid.mask.pixels_in_mask,
-            mask_1d_index_for_sub_mask_1d_index=self._full_1d_index_for_sub_full_1d_index,
-            sub_fraction=self.source_full_grid.mask.sub_fraction,
+            total_mask_pixels=self.source_grid_slim.mask.pixels_in_mask,
+            slim_index_for_sub_slim_index=self._slim_index_for_sub_slim_index,
+            sub_fraction=self.source_grid_slim.mask.sub_fraction,
         )
 
         self.hyper_image = hyper_image
@@ -123,49 +124,45 @@ class Mapper:
         return self.source_pixelization_grid.pixels
 
     @property
-    def _full_1d_index_for_sub_full_1d_index(self):
-        return self.source_full_grid.mask.regions._mask_1d_index_for_sub_mask_1d_index
+    def _slim_index_for_sub_slim_index(self):
+        return self.source_grid_slim.mask._slim_index_for_sub_slim_index
 
     @property
-    def pixelization_1d_index_for_sub_full_1d_index(self):
+    def pixelization_index_for_sub_slim_index(self):
         raise NotImplementedError(
-            "pixelization_1d_index_for_sub_mask_1d_index should be overridden"
+            "pixelization_index_for_sub_slim_index should be overridden"
         )
 
     @property
-    def all_sub_full_1d_indexes_for_pixelization_1d_index(self):
+    def all_sub_slim_indexes_for_pixelization_index(self):
         """
         Returns the mappings between a pixelization's pixels and the unmasked sub-grid pixels. These mappings \
         are determined after the grid is used to determine the pixelization.
 
         The pixelization's pixels map to different number of sub-grid pixels, thus a list of lists is used to \
         represent these mappings"""
-        all_sub_mask_1d_indexes_for_pixelization_1d_index = [
-            [] for _ in range(self.pixels)
-        ]
+        all_sub_slim_indexes_for_pixelization_index = [[] for _ in range(self.pixels)]
 
-        for mask_1d_index, pix_1d_index in enumerate(
-            self.pixelization_1d_index_for_sub_full_1d_index
+        for slim_index, pix_index in enumerate(
+            self.pixelization_index_for_sub_slim_index
         ):
-            all_sub_mask_1d_indexes_for_pixelization_1d_index[pix_1d_index].append(
-                mask_1d_index
-            )
+            all_sub_slim_indexes_for_pixelization_index[pix_index].append(slim_index)
 
-        return all_sub_mask_1d_indexes_for_pixelization_1d_index
+        return all_sub_slim_indexes_for_pixelization_index
 
     def pixel_signals_from_signal_scale(self, signal_scale):
 
         return mapper_util.adaptive_pixel_signals_from(
             pixels=self.pixels,
             signal_scale=signal_scale,
-            pixelization_1d_index_for_sub_mask_1d_index=self.pixelization_1d_index_for_sub_full_1d_index,
-            mask_1d_index_for_sub_mask_1d_index=self.source_full_grid.regions._mask_1d_index_for_sub_mask_1d_index,
+            pixelization_index_for_sub_slim_index=self.pixelization_index_for_sub_slim_index,
+            slim_index_for_sub_slim_index=self.source_grid_slim.mask._slim_index_for_sub_slim_index,
             hyper_image=self.hyper_image,
         )
 
-    def full_indexes_from_pixelization_indexes(self, pixelization_indexes):
+    def slim_indexes_from_pixelization_indexes(self, pixelization_indexes):
 
-        image_for_source = self.all_sub_full_1d_indexes_for_pixelization_1d_index
+        image_for_source = self.all_sub_slim_indexes_for_pixelization_index
 
         if not any(isinstance(i, list) for i in pixelization_indexes):
             return list(
@@ -188,7 +185,7 @@ class Mapper:
                 )
             return indexes
 
-    def reconstructed_source_pixelization_from_solution_vector(self, solution_vector):
+    def reconstruction_from(self, solution_vector):
         """Given the solution vector of an inversion (see *inversions.Inversion*), determine the reconstructed \
         pixelization of the rectangular pixelization by using the mapper."""
         raise NotImplementedError()
@@ -197,7 +194,7 @@ class Mapper:
 class MapperRectangular(Mapper):
     def __init__(
         self,
-        source_full_grid,
+        source_grid_slim,
         source_pixelization_grid,
         data_pixelization_grid=None,
         hyper_image=None,
@@ -211,45 +208,45 @@ class MapperRectangular(Mapper):
         ----------
         pixels : int
             The number of pixels in the rectangular pixelization (y_pixels*x_pixels).
-        source_full_grid : gridStack
+        source_grid_slim : gridStack
             A stack of grid describing the observed image's pixel coordinates (e.g. an image-grid, sub-grid, etc.).
-        shape_2d : (int, int)
+        shape_native : (int, int)
             The dimensions of the rectangular grid of pixels (y_pixels, x_pixel)
         geometry : pixelization.Rectangular.Geometry
             The geometry (e.g. y / x edge locations, pixel-scales) of the rectangular pixelization.
         """
         super(MapperRectangular, self).__init__(
-            source_full_grid=source_full_grid,
+            source_grid_slim=source_grid_slim,
             source_pixelization_grid=source_pixelization_grid,
             data_pixelization_grid=data_pixelization_grid,
             hyper_image=hyper_image,
         )
 
     @property
-    def shape_2d(self):
-        return self.source_pixelization_grid.shape_2d
+    def shape_native(self):
+        return self.source_pixelization_grid.shape_native
 
     @property
-    def pixelization_1d_index_for_sub_full_1d_index(self):
+    def pixelization_index_for_sub_slim_index(self):
         """The 1D index mappings between the sub grid's pixels and rectangular pixelization's pixels"""
-        return grid_util.grid_pixel_indexes_1d_from(
-            grid_scaled_1d=self.source_full_grid,
-            shape_2d=self.source_pixelization_grid.shape_2d,
+        return grid_util.grid_pixel_indexes_2d_slim_from(
+            grid_scaled_2d_slim=self.source_grid_slim,
+            shape_native=self.source_pixelization_grid.shape_native,
             pixel_scales=self.source_pixelization_grid.pixel_scales,
             origin=self.source_pixelization_grid.origin,
         ).astype("int")
 
-    def reconstructed_source_pixelization_from_solution_vector(self, solution_vector):
+    def reconstruction_from(self, solution_vector):
         """Given the solution vector of an inversion (see *inversions.Inversion*), determine the reconstructed \
         pixelization of the rectangular pixelization by using the mapper."""
         recon = array_util.sub_array_2d_from(
-            sub_array_1d=solution_vector,
-            mask=np.full(
-                fill_value=False, shape=self.source_pixelization_grid.shape_2d
+            sub_array_2d_slim=solution_vector,
+            mask_2d=np.full(
+                fill_value=False, shape=self.source_pixelization_grid.shape_native
             ),
             sub_size=1,
         )
-        return arrays.Array.manual(
+        return arrays.Array2D.manual(
             array=recon,
             sub_size=1,
             pixel_scales=self.source_pixelization_grid.pixel_scales,
@@ -260,7 +257,7 @@ class MapperRectangular(Mapper):
 class MapperVoronoi(Mapper):
     def __init__(
         self,
-        source_full_grid,
+        source_grid_slim,
         source_pixelization_grid,
         data_pixelization_grid=None,
         hyper_image=None,
@@ -275,7 +272,7 @@ class MapperVoronoi(Mapper):
         ----------
         pixels : int
             The number of pixels in the Voronoi pixelization.
-        source_full_grid : gridStack
+        source_grid_slim : gridStack
             A stack of grid describing the observed image's pixel coordinates (e.g. an image-grid, sub-grid, etc.).
         voronoi : scipy.spatial.Voronoi
             Class storing the Voronoi grid's 
@@ -285,20 +282,20 @@ class MapperVoronoi(Mapper):
             A pre-computed hyper-image of the image the mapper is expected to reconstruct, used for adaptive analysis.
         """
         super(MapperVoronoi, self).__init__(
-            source_full_grid=source_full_grid,
+            source_grid_slim=source_grid_slim,
             source_pixelization_grid=source_pixelization_grid,
             data_pixelization_grid=data_pixelization_grid,
             hyper_image=hyper_image,
         )
 
     @property
-    def pixelization_1d_index_for_sub_full_1d_index(self):
+    def pixelization_index_for_sub_slim_index(self):
         """  The 1D index mappings between the sub pixels and Voronoi pixelization pixels. """
 
-        return mapper_util.pixelization_1d_index_for_voronoi_sub_mask_1d_index_from(
-            grid=self.source_full_grid,
-            nearest_pixelization_1d_index_for_mask_1d_index=self.source_pixelization_grid.nearest_pixelization_1d_index_for_mask_1d_index,
-            mask_1d_index_for_sub_mask_1d_index=self.source_full_grid.regions._mask_1d_index_for_sub_mask_1d_index,
+        return mapper_util.pixelization_index_for_voronoi_sub_slim_index_from(
+            grid=self.source_grid_slim,
+            nearest_pixelization_index_for_slim_index=self.source_pixelization_grid.nearest_pixelization_index_for_slim_index,
+            slim_index_for_sub_slim_index=self.source_grid_slim.mask._slim_index_for_sub_slim_index,
             pixelization_grid=self.source_pixelization_grid,
             pixel_neighbors=self.source_pixelization_grid.pixel_neighbors,
             pixel_neighbors_size=self.source_pixelization_grid.pixel_neighbors_size,
@@ -308,5 +305,5 @@ class MapperVoronoi(Mapper):
     def voronoi(self):
         return self.source_pixelization_grid.voronoi
 
-    def reconstructed_source_pixelization_from_solution_vector(self, solution_vector):
+    def reconstruction_from(self, solution_vector):
         return solution_vector

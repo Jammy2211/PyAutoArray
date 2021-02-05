@@ -15,22 +15,22 @@ test_data_dir = path.join(
 class TestImaging:
     def test__new_imaging_binned(self):
 
-        image = aa.Array.manual_2d(array=np.ones((6, 6)), pixel_scales=1.0)
+        image = aa.Array2D.manual_native(array=np.ones((6, 6)), pixel_scales=1.0)
         image[21] = 2.0
         image[27] = 2.0
         image[33] = 2.0
 
         binned_image_util = aa.util.binning.bin_array_2d_via_mean(
-            array_2d=image.in_2d, bin_up_factor=2
+            array_2d=image.native, bin_up_factor=2
         )
 
-        noise_map_array = aa.Array.ones(shape_2d=(6, 6), pixel_scales=1.0)
+        noise_map_array = aa.Array2D.ones(shape_native=(6, 6), pixel_scales=1.0)
         noise_map_array[21:24] = 3.0
         binned_noise_map_util = aa.util.binning.bin_array_2d_via_quadrature(
-            array_2d=noise_map_array.in_2d, bin_up_factor=2
+            array_2d=noise_map_array.native, bin_up_factor=2
         )
 
-        psf = aa.Kernel.ones(shape_2d=(3, 5), pixel_scales=1.0)
+        psf = aa.Kernel2D.ones(shape_native=(3, 5), pixel_scales=1.0)
         psf_util = psf.rescaled_with_odd_dimensions_from_rescale_factor(
             rescale_factor=0.5, renormalize=False
         )
@@ -39,33 +39,33 @@ class TestImaging:
 
         imaging = imaging.binned_up_from(bin_up_factor=2)
 
-        assert (imaging.image.in_2d == binned_image_util).all()
+        assert (imaging.image.native == binned_image_util).all()
         assert (imaging.psf == psf_util).all()
 
-        assert (imaging.noise_map.in_2d == binned_noise_map_util).all()
+        assert (imaging.noise_map.native == binned_noise_map_util).all()
 
         assert imaging.image.pixel_scales == (2.0, 2.0)
         assert imaging.psf.pixel_scales == pytest.approx((1.0, 1.66666666666), 1.0e-4)
         assert imaging.noise_map.pixel_scales == (2.0, 2.0)
 
-        assert imaging.image.geometry.origin == (0.0, 0.0)
+        assert imaging.image.origin == (0.0, 0.0)
 
     def test__new_imaging_with_signal_to_noise_limit__limit_above_max_signal_to_noise__signal_to_noise_map_unchanged(
         self,
     ):
-        image = aa.Array.full(
-            fill_value=20.0, shape_2d=(2, 2), pixel_scales=1.0, store_in_1d=True
+        image = aa.Array2D.full(
+            fill_value=20.0, shape_native=(2, 2), pixel_scales=1.0, store_slim=True
         )
         image[3] = 5.0
 
-        noise_map_array = aa.Array.full(
-            fill_value=5.0, shape_2d=(2, 2), pixel_scales=1.0, store_in_1d=True
+        noise_map_array = aa.Array2D.full(
+            fill_value=5.0, shape_native=(2, 2), pixel_scales=1.0, store_slim=True
         )
         noise_map_array[3] = 2.0
 
         imaging = aa.Imaging(
             image=image,
-            psf=aa.Kernel.zeros(shape_2d=(3, 3), pixel_scales=1.0),
+            psf=aa.Kernel2D.zeros(shape_native=(3, 3), pixel_scales=1.0),
             noise_map=noise_map_array,
         )
 
@@ -77,15 +77,15 @@ class TestImaging:
 
         assert (imaging.signal_to_noise_map == np.array([4.0, 4.0, 4.0, 2.5])).all()
 
-        assert (imaging.psf.in_2d == np.zeros((3, 3))).all()
+        assert (imaging.psf.native == np.zeros((3, 3))).all()
 
-        image = aa.Array.full(
-            fill_value=20.0, shape_2d=(2, 2), pixel_scales=1.0, store_in_1d=False
+        image = aa.Array2D.full(
+            fill_value=20.0, shape_native=(2, 2), pixel_scales=1.0, store_slim=False
         )
         image[1, 1] = 5.0
 
-        noise_map_array = aa.Array.full(
-            fill_value=5.0, shape_2d=(2, 2), pixel_scales=1.0, store_in_1d=False
+        noise_map_array = aa.Array2D.full(
+            fill_value=5.0, shape_native=(2, 2), pixel_scales=1.0, store_slim=False
         )
         noise_map_array[1, 1] = 2.0
 
@@ -102,54 +102,54 @@ class TestImaging:
     def test__new_imaging_with_signal_to_noise_limit_below_max_signal_to_noise__signal_to_noise_map_capped_to_limit(
         self,
     ):
-        image = aa.Array.full(fill_value=20.0, shape_2d=(2, 2), pixel_scales=1.0)
+        image = aa.Array2D.full(fill_value=20.0, shape_native=(2, 2), pixel_scales=1.0)
         image[3] = 5.0
 
-        noise_map_array = aa.Array.full(
-            fill_value=5.0, shape_2d=(2, 2), pixel_scales=1.0
+        noise_map_array = aa.Array2D.full(
+            fill_value=5.0, shape_native=(2, 2), pixel_scales=1.0
         )
         noise_map_array[3] = 2.0
 
         imaging = aa.Imaging(
             image=image,
-            psf=aa.Kernel.zeros(shape_2d=(3, 3), pixel_scales=1.0),
+            psf=aa.Kernel2D.zeros(shape_native=(3, 3), pixel_scales=1.0),
             noise_map=noise_map_array,
         )
 
         imaging_capped = imaging.signal_to_noise_limited_from(signal_to_noise_limit=2.0)
 
         assert (
-            imaging_capped.image.in_2d == np.array([[20.0, 20.0], [20.0, 5.0]])
+            imaging_capped.image.native == np.array([[20.0, 20.0], [20.0, 5.0]])
         ).all()
 
         assert (
-            imaging_capped.noise_map.in_2d == np.array([[10.0, 10.0], [10.0, 2.5]])
+            imaging_capped.noise_map.native == np.array([[10.0, 10.0], [10.0, 2.5]])
         ).all()
 
         assert (
-            imaging_capped.signal_to_noise_map.in_2d
+            imaging_capped.signal_to_noise_map.native
             == np.array([[2.0, 2.0], [2.0, 2.0]])
         ).all()
 
-        assert (imaging_capped.psf.in_2d == np.zeros((3, 3))).all()
+        assert (imaging_capped.psf.native == np.zeros((3, 3))).all()
 
         imaging_capped = imaging.signal_to_noise_limited_from(signal_to_noise_limit=3.0)
 
         assert (
-            imaging_capped.image.in_2d == np.array([[20.0, 20.0], [20.0, 5.0]])
+            imaging_capped.image.native == np.array([[20.0, 20.0], [20.0, 5.0]])
         ).all()
 
         assert (
-            imaging_capped.noise_map.in_2d
+            imaging_capped.noise_map.native
             == np.array([[(20.0 / 3.0), (20.0 / 3.0)], [(20.0 / 3.0), 2.0]])
         ).all()
 
         assert (
-            imaging_capped.signal_to_noise_map.in_2d
+            imaging_capped.signal_to_noise_map.native
             == np.array([[3.0, 3.0], [3.0, 2.5]])
         ).all()
 
-        assert (imaging_capped.psf.in_2d == np.zeros((3, 3))).all()
+        assert (imaging_capped.psf.native == np.zeros((3, 3))).all()
 
     def test__from_fits__loads_arrays_and_psf_is_renormalized(self):
         imaging = aa.Imaging.from_fits(
@@ -160,9 +160,9 @@ class TestImaging:
             positions_path=path.join(test_data_dir, "positions.dat"),
         )
 
-        assert (imaging.image.in_2d == np.ones((3, 3))).all()
-        assert (imaging.psf.in_2d == (1.0 / 9.0) * np.ones((3, 3))).all()
-        assert (imaging.noise_map.in_2d == 3.0 * np.ones((3, 3))).all()
+        assert (imaging.image.native == np.ones((3, 3))).all()
+        assert (imaging.psf.native == (1.0 / 9.0) * np.ones((3, 3))).all()
+        assert (imaging.noise_map.native == 3.0 * np.ones((3, 3))).all()
         assert imaging.positions.in_grouped_list == [[(1.0, 1.0), (2.0, 2.0)]]
 
         assert imaging.pixel_scales == (0.1, 0.1)
@@ -181,9 +181,9 @@ class TestImaging:
             noise_map_hdu=2,
         )
 
-        assert (imaging.image.in_2d == np.ones((3, 3))).all()
-        assert (imaging.psf.in_2d == (1.0 / 9.0) * np.ones((3, 3))).all()
-        assert (imaging.noise_map.in_2d == 3.0 * np.ones((3, 3))).all()
+        assert (imaging.image.native == np.ones((3, 3))).all()
+        assert (imaging.psf.native == (1.0 / 9.0) * np.ones((3, 3))).all()
+        assert (imaging.noise_map.native == 3.0 * np.ones((3, 3))).all()
 
         assert imaging.pixel_scales == (0.1, 0.1)
         assert imaging.psf.mask.pixel_scales == (0.1, 0.1)
@@ -223,9 +223,9 @@ class TestImaging:
             noise_map_path=path.join(output_data_dir, "noise_map.fits"),
         )
 
-        assert (imaging.image.in_2d == np.ones((3, 3))).all()
-        assert (imaging.psf.in_2d == (1.0 / 9.0) * np.ones((3, 3))).all()
-        assert (imaging.noise_map.in_2d == 3.0 * np.ones((3, 3))).all()
+        assert (imaging.image.native == np.ones((3, 3))).all()
+        assert (imaging.psf.native == (1.0 / 9.0) * np.ones((3, 3))).all()
+        assert (imaging.noise_map.native == 3.0 * np.ones((3, 3))).all()
 
         assert imaging.pixel_scales == (0.1, 0.1)
         assert imaging.psf.mask.pixel_scales == (0.1, 0.1)
@@ -254,8 +254,8 @@ class TestSettingsMaskedImaging:
     def test__tag(self):
 
         settings_masked_imaging = aa.SettingsMaskedImaging(
-            grid_class=aa.Grid,
-            grid_inversion_class=aa.Grid,
+            grid_class=aa.Grid2D,
+            grid_inversion_class=aa.Grid2D,
             sub_size=2,
             signal_to_noise_limit=2,
             bin_up_factor=None,
@@ -274,20 +274,20 @@ class TestMaskedImaging:
 
         masked_imaging_7x7 = aa.MaskedImaging(imaging=imaging_7x7, mask=sub_mask_7x7)
 
-        assert (masked_imaging_7x7.image.in_1d == np.ones(9)).all()
+        assert (masked_imaging_7x7.image.slim == np.ones(9)).all()
 
         assert (
-            masked_imaging_7x7.image.in_2d == np.ones((7, 7)) * np.invert(sub_mask_7x7)
+            masked_imaging_7x7.image.native == np.ones((7, 7)) * np.invert(sub_mask_7x7)
         ).all()
 
-        assert (masked_imaging_7x7.noise_map.in_1d == 2.0 * np.ones(9)).all()
+        assert (masked_imaging_7x7.noise_map.slim == 2.0 * np.ones(9)).all()
         assert (
-            masked_imaging_7x7.noise_map.in_2d
+            masked_imaging_7x7.noise_map.native
             == 2.0 * np.ones((7, 7)) * np.invert(sub_mask_7x7)
         ).all()
 
-        assert (masked_imaging_7x7.psf.in_1d == (1.0 / 9.0) * np.ones(9)).all()
-        assert (masked_imaging_7x7.psf.in_2d == (1.0 / 9.0) * np.ones((3, 3))).all()
+        assert (masked_imaging_7x7.psf.slim == (1.0 / 9.0) * np.ones(9)).all()
+        assert (masked_imaging_7x7.psf.native == (1.0 / 9.0) * np.ones((3, 3))).all()
 
     def test__grid(
         self,
@@ -301,44 +301,46 @@ class TestMaskedImaging:
         masked_imaging_7x7 = aa.MaskedImaging(
             imaging=imaging_7x7,
             mask=sub_mask_7x7,
-            settings=aa.SettingsMaskedImaging(grid_class=aa.Grid),
+            settings=aa.SettingsMaskedImaging(grid_class=aa.Grid2D),
         )
 
-        assert isinstance(masked_imaging_7x7.grid, aa.Grid)
-        assert (masked_imaging_7x7.grid.in_1d_binned == grid_7x7).all()
-        assert (masked_imaging_7x7.grid.in_1d == sub_grid_7x7).all()
-        assert isinstance(masked_imaging_7x7.blurring_grid, aa.Grid)
-        assert (masked_imaging_7x7.blurring_grid.in_1d == blurring_grid_7x7).all()
+        assert isinstance(masked_imaging_7x7.grid, aa.Grid2D)
+        assert (masked_imaging_7x7.grid.slim_binned == grid_7x7).all()
+        assert (masked_imaging_7x7.grid.slim == sub_grid_7x7).all()
+        assert isinstance(masked_imaging_7x7.blurring_grid, aa.Grid2D)
+        assert (masked_imaging_7x7.blurring_grid.slim == blurring_grid_7x7).all()
 
         masked_imaging_7x7 = aa.MaskedImaging(
             imaging=imaging_7x7,
             mask=sub_mask_7x7,
-            settings=aa.SettingsMaskedImaging(grid_class=aa.GridIterate),
+            settings=aa.SettingsMaskedImaging(grid_class=aa.Grid2DIterate),
         )
 
-        assert isinstance(masked_imaging_7x7.grid, aa.GridIterate)
-        assert (masked_imaging_7x7.grid.in_1d_binned == grid_iterate_7x7).all()
-        assert isinstance(masked_imaging_7x7.blurring_grid, aa.GridIterate)
-        assert (masked_imaging_7x7.blurring_grid.in_1d == blurring_grid_7x7).all()
+        assert isinstance(masked_imaging_7x7.grid, aa.Grid2DIterate)
+        assert (masked_imaging_7x7.grid.slim_binned == grid_iterate_7x7).all()
+        assert isinstance(masked_imaging_7x7.blurring_grid, aa.Grid2DIterate)
+        assert (masked_imaging_7x7.blurring_grid.slim == blurring_grid_7x7).all()
 
         masked_imaging_7x7 = aa.MaskedImaging(
             imaging=imaging_7x7,
             mask=sub_mask_7x7,
             settings=aa.SettingsMaskedImaging(
-                grid_class=aa.GridInterpolate, pixel_scales_interp=1.0
+                grid_class=aa.Grid2DInterpolate, pixel_scales_interp=1.0
             ),
         )
 
-        grid = aa.GridInterpolate.from_mask(mask=sub_mask_7x7, pixel_scales_interp=1.0)
+        grid = aa.Grid2DInterpolate.from_mask(
+            mask=sub_mask_7x7, pixel_scales_interp=1.0
+        )
 
-        blurring_grid = grid.blurring_grid_from_kernel_shape(kernel_shape_2d=(3, 3))
+        blurring_grid = grid.blurring_grid_from_kernel_shape(kernel_shape_native=(3, 3))
 
-        assert isinstance(masked_imaging_7x7.grid, aa.GridInterpolate)
+        assert isinstance(masked_imaging_7x7.grid, aa.Grid2DInterpolate)
         assert (masked_imaging_7x7.grid == grid).all()
         assert (masked_imaging_7x7.grid.vtx == grid.vtx).all()
         assert (masked_imaging_7x7.grid.wts == grid.wts).all()
 
-        assert isinstance(masked_imaging_7x7.blurring_grid, aa.GridInterpolate)
+        assert isinstance(masked_imaging_7x7.blurring_grid, aa.Grid2DInterpolate)
         assert (masked_imaging_7x7.blurring_grid == blurring_grid).all()
         assert (masked_imaging_7x7.blurring_grid.vtx == blurring_grid.vtx).all()
         assert (masked_imaging_7x7.blurring_grid.wts == blurring_grid.wts).all()
@@ -347,7 +349,7 @@ class TestMaskedImaging:
 
         masked_imaging_7x7 = aa.MaskedImaging(imaging=imaging_7x7, mask=sub_mask_7x7)
 
-        assert type(masked_imaging_7x7.psf) == aa.Kernel
+        assert type(masked_imaging_7x7.psf) == aa.Kernel2D
         assert type(masked_imaging_7x7.convolver) == aa.Convolver
 
     def test__masked_imaging__uses_bin_up_factor(self, imaging_7x7, mask_7x7_1_pix):
@@ -355,21 +357,21 @@ class TestMaskedImaging:
         masked_imaging_7x7 = aa.MaskedImaging(
             imaging=imaging_7x7,
             mask=mask_7x7_1_pix,
-            settings=aa.SettingsMaskedImaging(grid_class=aa.Grid, bin_up_factor=2),
+            settings=aa.SettingsMaskedImaging(grid_class=aa.Grid2D, bin_up_factor=2),
         )
 
         binned_up_imaging = imaging_7x7.binned_up_from(bin_up_factor=2)
         binned_up_mask = mask_7x7_1_pix.binned_mask_from_bin_up_factor(bin_up_factor=2)
 
         assert (
-            masked_imaging_7x7.image.in_2d
-            == binned_up_imaging.image.in_2d * np.invert(binned_up_mask)
+            masked_imaging_7x7.image.native
+            == binned_up_imaging.image.native * np.invert(binned_up_mask)
         ).all()
 
         assert (masked_imaging_7x7.psf == (1.0 / 9.0) * binned_up_imaging.psf).all()
         assert (
-            masked_imaging_7x7.noise_map.in_2d
-            == binned_up_imaging.noise_map.in_2d * np.invert(binned_up_mask)
+            masked_imaging_7x7.noise_map.native
+            == binned_up_imaging.noise_map.native * np.invert(binned_up_mask)
         ).all()
 
         assert (masked_imaging_7x7.mask == binned_up_mask).all()
@@ -382,7 +384,7 @@ class TestMaskedImaging:
             imaging=imaging_7x7,
             mask=mask_7x7_1_pix,
             settings=aa.SettingsMaskedImaging(
-                grid_class=aa.Grid, signal_to_noise_limit=0.1
+                grid_class=aa.Grid2D, signal_to_noise_limit=0.1
             ),
         )
 
@@ -391,28 +393,28 @@ class TestMaskedImaging:
         )
 
         assert (
-            masked_imaging_7x7.image.in_2d
-            == imaging_snr_limit.image.in_2d * np.invert(mask_7x7_1_pix)
+            masked_imaging_7x7.image.native
+            == imaging_snr_limit.image.native * np.invert(mask_7x7_1_pix)
         ).all()
         assert (
-            masked_imaging_7x7.noise_map.in_2d
-            == imaging_snr_limit.noise_map.in_2d * np.invert(mask_7x7_1_pix)
+            masked_imaging_7x7.noise_map.native
+            == imaging_snr_limit.noise_map.native * np.invert(mask_7x7_1_pix)
         ).all()
 
     def test__different_imaging_without_mock_objects__customize_constructor_inputs(
         self,
     ):
 
-        psf = aa.Kernel.ones(shape_2d=(7, 7), pixel_scales=3.0)
+        psf = aa.Kernel2D.ones(shape_native=(7, 7), pixel_scales=3.0)
         imaging = aa.Imaging(
-            image=aa.Array.ones(shape_2d=(19, 19), pixel_scales=3.0),
+            image=aa.Array2D.ones(shape_native=(19, 19), pixel_scales=3.0),
             psf=psf,
-            noise_map=aa.Array.full(
-                fill_value=2.0, shape_2d=(19, 19), pixel_scales=3.0
+            noise_map=aa.Array2D.full(
+                fill_value=2.0, shape_native=(19, 19), pixel_scales=3.0
             ),
         )
         mask = aa.Mask2D.unmasked(
-            shape_2d=(19, 19), pixel_scales=1.0, invert=True, sub_size=8
+            shape_native=(19, 19), pixel_scales=1.0, invert=True, sub_size=8
         )
         mask[9, 9] = False
 
@@ -422,10 +424,12 @@ class TestMaskedImaging:
             settings=aa.SettingsMaskedImaging(psf_shape_2d=(7, 7)),
         )
 
-        assert (masked_imaging.imaging.image.in_2d == np.ones((19, 19))).all()
-        assert (masked_imaging.imaging.noise_map.in_2d == 2.0 * np.ones((19, 19))).all()
-        assert (masked_imaging.psf.in_2d == (1.0 / 49.0) * np.ones((7, 7))).all()
-        assert masked_imaging.convolver.kernel.shape_2d == (7, 7)
+        assert (masked_imaging.imaging.image.native == np.ones((19, 19))).all()
+        assert (
+            masked_imaging.imaging.noise_map.native == 2.0 * np.ones((19, 19))
+        ).all()
+        assert (masked_imaging.psf.native == (1.0 / 49.0) * np.ones((7, 7))).all()
+        assert masked_imaging.convolver.kernel.shape_native == (7, 7)
         assert (masked_imaging.image == np.array([1.0])).all()
         assert (masked_imaging.noise_map == np.array([2.0])).all()
 
@@ -442,16 +446,16 @@ class TestMaskedImaging:
             image=image_7x7, noise_map=noise_map_7x7
         )
 
-        assert masked_imaging_7x7.image.in_1d[0] == 10.0
-        assert masked_imaging_7x7.image.in_2d[0, 0] == 10.0
-        assert masked_imaging_7x7.noise_map.in_1d[0] == 11.0
-        assert masked_imaging_7x7.noise_map.in_2d[0, 0] == 11.0
+        assert masked_imaging_7x7.image.slim[0] == 10.0
+        assert masked_imaging_7x7.image.native[0, 0] == 10.0
+        assert masked_imaging_7x7.noise_map.slim[0] == 11.0
+        assert masked_imaging_7x7.noise_map.native[0, 0] == 11.0
 
 
 class TestSimulatorImaging:
     def test__from_image__all_features_off(self):
 
-        image = aa.Array.manual_2d(
+        image = aa.Array2D.manual_native(
             array=np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]]),
             pixel_scales=0.1,
         )
@@ -461,14 +465,14 @@ class TestSimulatorImaging:
         imaging = simulator.from_image(image=image)
 
         assert (
-            imaging.image.in_2d
+            imaging.image.native
             == np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]])
         ).all()
         assert imaging.pixel_scales == (0.1, 0.1)
 
     def test__from_image__noise_off___noise_map_is_noise_value(self):
 
-        image = aa.Array.manual_2d(
+        image = aa.Array2D.manual_native(
             array=np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]]),
             pixel_scales=1.0,
         )
@@ -483,19 +487,19 @@ class TestSimulatorImaging:
         imaging = simulator.from_image(image=image)
 
         assert (
-            imaging.image.in_2d
+            imaging.image.native
             == np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]])
         ).all()
-        assert (imaging.noise_map.in_2d == 0.2 * np.ones((3, 3))).all()
+        assert (imaging.noise_map.native == 0.2 * np.ones((3, 3))).all()
 
     def test__from_image__psf_blurs_image_with_edge_trimming(self):
 
-        image = aa.Array.manual_2d(
+        image = aa.Array2D.manual_native(
             array=np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]]),
             pixel_scales=1.0,
         )
 
-        psf = aa.Kernel.manual_2d(
+        psf = aa.Kernel2D.manual_native(
             array=np.array([[0.0, 1.0, 0.0], [1.0, 2.0, 1.0], [0.0, 1.0, 0.0]]),
             pixel_scales=1.0,
         )
@@ -507,13 +511,13 @@ class TestSimulatorImaging:
         imaging = simulator.from_image(image=image)
 
         assert (
-            imaging.image.in_2d
+            imaging.image.native
             == np.array([[0.0, 1.0, 0.0], [1.0, 2.0, 1.0], [0.0, 1.0, 0.0]])
         ).all()
 
     def test__setup_with_noise(self):
 
-        image = aa.Array.manual_2d(
+        image = aa.Array2D.manual_native(
             array=np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]]),
             pixel_scales=1.0,
         )
@@ -524,14 +528,14 @@ class TestSimulatorImaging:
 
         imaging = simulator.from_image(image=image)
 
-        assert imaging.image.in_2d == pytest.approx(
+        assert imaging.image.native == pytest.approx(
             np.array([[0.0, 0.0, 0.0], [0.0, 1.05, 0.0], [0.0, 0.0, 0.0]]), 1e-2
         )
 
         # Because of the value is 1.05, the estimated Poisson noise_map_1d is:
         # sqrt((1.05 * 20))/20 = 0.2291
 
-        assert imaging.noise_map.in_2d == pytest.approx(
+        assert imaging.noise_map.native == pytest.approx(
             np.array([[0.0, 0.0, 0.0], [0.0, 0.2291, 0.0], [0.0, 0.0, 0.0]]), 1e-2
         )
 
@@ -539,7 +543,7 @@ class TestSimulatorImaging:
         self,
     ):
 
-        image = aa.Array.manual_2d(
+        image = aa.Array2D.manual_native(
             array=np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]]),
             pixel_scales=1.0,
         )
@@ -554,19 +558,19 @@ class TestSimulatorImaging:
         imaging = simulator.from_image(image=image)
 
         assert (
-            imaging.image.in_2d
+            imaging.image.native
             == np.array([[1.0, 5.0, 4.0], [1.0, 2.0, 1.0], [5.0, 2.0, 7.0]])
         ).all()
 
-        assert imaging.noise_map.in_2d[0, 0] == pytest.approx(4.12310, 1.0e-4)
+        assert imaging.noise_map.native[0, 0] == pytest.approx(4.12310, 1.0e-4)
 
     def test__from_image__psf_and_noise__noise_added_to_blurred_image(self):
-        image = aa.Array.manual_2d(
+        image = aa.Array2D.manual_native(
             array=np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]]),
             pixel_scales=1.0,
         )
 
-        psf = aa.Kernel.manual_2d(
+        psf = aa.Kernel2D.manual_native(
             array=np.array([[0.0, 1.0, 0.0], [1.0, 2.0, 1.0], [0.0, 1.0, 0.0]]),
             pixel_scales=1.0,
         )
@@ -581,7 +585,7 @@ class TestSimulatorImaging:
 
         imaging = simulator.from_image(image=image)
 
-        assert imaging.image.in_2d == pytest.approx(
+        assert imaging.image.native == pytest.approx(
             np.array([[0.0, 1.05, 0.0], [1.3, 2.35, 1.05], [0.0, 1.05, 0.0]]), 1e-2
         )
 

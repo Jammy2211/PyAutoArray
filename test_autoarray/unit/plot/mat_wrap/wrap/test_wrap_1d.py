@@ -44,13 +44,30 @@ class TestLinePlot:
 
         line.plot_y_vs_x(y=[1.0, 2.0, 3.0], x=[1.0, 2.0, 3.0], plot_axis_type="scatter")
 
+
+class TestAVXLine:
+    def test___from_config_or_via_manual_input(self):
+
+        line_plot = aplt.AXVLine()
+
+        assert line_plot.config_dict["ymin"] == 0.5
+
+        line_plot = aplt.AXVLine(ymin=0.7)
+
+        assert line_plot.config_dict["ymin"] == 0.7
+
+        line_plot = aplt.AXVLine()
+        line_plot.is_for_subplot = True
+
+        assert line_plot.config_dict["ymin"] == 0.6
+
+        line_plot = aplt.AXVLine(ymin=0.1)
+        line_plot.is_for_subplot = True
+
+        assert line_plot.config_dict["ymin"] == 0.1
+
     def test__plot_vertical_lines__works_for_reasonable_values(self):
 
-        line = aplt.LinePlot(linewidth=2, linestyle="-", c="k")
+        line = aplt.AXVLine(linewidth=2, linestyle="-", c="k")
 
-        line.plot_vertical_lines(vertical_lines=[[0.0]])
-        line.plot_vertical_lines(vertical_lines=[[1.0], [2.0]])
-        line.plot_vertical_lines(vertical_lines=[[0.0]], vertical_line_labels=["hi"])
-        line.plot_vertical_lines(
-            vertical_lines=[[1.0], [2.0]], vertical_line_labels=["hi1", "hi2"]
-        )
+        line.plot_vertical_line(vertical_line=0.0, vertical_line_label="hi")

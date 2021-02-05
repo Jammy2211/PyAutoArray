@@ -25,10 +25,10 @@ def data_vector_via_blurred_mapping_matrix_from(
     data_vector = np.zeros(mapping_shape[1])
 
     for mask_1d_index in range(mapping_shape[0]):
-        for pix_1_index in range(mapping_shape[1]):
-            data_vector[pix_1_index] += (
+        for pix_index in range(mapping_shape[1]):
+            data_vector[pix_index] += (
                 image[mask_1d_index]
-                * blurred_mapping_matrix[mask_1d_index, pix_1_index]
+                * blurred_mapping_matrix[mask_1d_index, pix_index]
                 / (noise_map[mask_1d_index] ** 2.0)
             )
 
@@ -155,8 +155,8 @@ def inversion_residual_map_from(
     *,
     pixelization_values: np.ndarray,
     data: np.ndarray,
-    mask_1d_index_for_sub_mask_1d_index: np.ndarray,
-    all_sub_mask_1d_indexes_for_pixelization_1d_index: [list],
+    slim_index_for_sub_slim_index: np.ndarray,
+    all_sub_slim_indexes_for_pixelization_index: [list],
 ):
     """
     Returns the residual-map of the `reconstruction` of an `Inversion` on its pixel-grid.
@@ -175,9 +175,9 @@ def inversion_residual_map_from(
         the `residual_map` values.
     data : np.ndarray
         The array of `data` that the `Inversion` fits.
-    mask_1d_index_for_sub_mask_1d_index : np.ndarray
+    slim_index_for_sub_slim_index : np.ndarray
         The mappings between the observed grid's sub-pixels and observed grid's pixels.
-    all_sub_mask_1d_indexes_for_pixelization_1d_index : np.ndarray
+    all_sub_slim_indexes_for_pixelization_index : np.ndarray
         The mapping of every pixel on the `Inversion`'s `reconstruction`'s pixel-grid to the `data` pixels.
 
     Returns
@@ -186,23 +186,21 @@ def inversion_residual_map_from(
         The residuals of the `Inversion`'s `reconstruction` on its pixel-grid, computed by mapping the `residual_map`
         from the fit to the data.
     """
-    residual_map = np.zeros(
-        shape=len(all_sub_mask_1d_indexes_for_pixelization_1d_index)
-    )
+    residual_map = np.zeros(shape=len(all_sub_slim_indexes_for_pixelization_index))
 
-    for pix_1_index, sub_mask_1d_indexes in enumerate(
-        all_sub_mask_1d_indexes_for_pixelization_1d_index
+    for pix_index, sub_slim_indexes in enumerate(
+        all_sub_slim_indexes_for_pixelization_index
     ):
 
         sub_mask_total = 0
-        for sub_mask_1d_index in sub_mask_1d_indexes:
+        for sub_mask_1d_index in sub_slim_indexes:
             sub_mask_total += 1
-            mask_1d_index = mask_1d_index_for_sub_mask_1d_index[sub_mask_1d_index]
-            residual = data[mask_1d_index] - pixelization_values[pix_1_index]
-            residual_map[pix_1_index] += np.abs(residual)
+            mask_1d_index = slim_index_for_sub_slim_index[sub_mask_1d_index]
+            residual = data[mask_1d_index] - pixelization_values[pix_index]
+            residual_map[pix_index] += np.abs(residual)
 
         if sub_mask_total > 0:
-            residual_map[pix_1_index] /= sub_mask_total
+            residual_map[pix_index] /= sub_mask_total
 
     return residual_map.copy()
 
@@ -212,8 +210,8 @@ def inversion_normalized_residual_map_from(
     pixelization_values,
     data,
     noise_map_1d,
-    mask_1d_index_for_sub_mask_1d_index,
-    all_sub_mask_1d_indexes_for_pixelization_1d_index,
+    slim_index_for_sub_slim_index,
+    all_sub_slim_indexes_for_pixelization_index,
 ):
     """
     Returns the normalized residual-map of the `reconstruction` of an `Inversion` on its pixel-grid.
@@ -232,9 +230,9 @@ def inversion_normalized_residual_map_from(
         the `normalized residual_map` values.
     data : np.ndarray
         The array of `data` that the `Inversion` fits.
-    mask_1d_index_for_sub_mask_1d_index : np.ndarray
+    slim_index_for_sub_slim_index : np.ndarray
         The mappings between the observed grid's sub-pixels and observed grid's pixels.
-    all_sub_mask_1d_indexes_for_pixelization_1d_index : np.ndarray
+    all_sub_slim_indexes_for_pixelization_index : np.ndarray
         The mapping of every pixel on the `Inversion`'s `reconstruction`'s pixel-grid to the `data` pixels.
 
     Returns
@@ -244,23 +242,23 @@ def inversion_normalized_residual_map_from(
         `normalized_residual_map` from the fit to the data.
     """
     normalized_residual_map = np.zeros(
-        shape=len(all_sub_mask_1d_indexes_for_pixelization_1d_index)
+        shape=len(all_sub_slim_indexes_for_pixelization_index)
     )
 
-    for pix_1_index, sub_mask_1d_indexes in enumerate(
-        all_sub_mask_1d_indexes_for_pixelization_1d_index
+    for pix_index, sub_slim_indexes in enumerate(
+        all_sub_slim_indexes_for_pixelization_index
     ):
         sub_mask_total = 0
-        for sub_mask_1d_index in sub_mask_1d_indexes:
+        for sub_mask_1d_index in sub_slim_indexes:
             sub_mask_total += 1
-            mask_1d_index = mask_1d_index_for_sub_mask_1d_index[sub_mask_1d_index]
-            residual = data[mask_1d_index] - pixelization_values[pix_1_index]
-            normalized_residual_map[pix_1_index] += np.abs(
+            mask_1d_index = slim_index_for_sub_slim_index[sub_mask_1d_index]
+            residual = data[mask_1d_index] - pixelization_values[pix_index]
+            normalized_residual_map[pix_index] += np.abs(
                 (residual / noise_map_1d[mask_1d_index])
             )
 
         if sub_mask_total > 0:
-            normalized_residual_map[pix_1_index] /= sub_mask_total
+            normalized_residual_map[pix_index] /= sub_mask_total
 
     return normalized_residual_map.copy()
 
@@ -270,8 +268,8 @@ def inversion_chi_squared_map_from(
     pixelization_values,
     data,
     noise_map_1d,
-    mask_1d_index_for_sub_mask_1d_index,
-    all_sub_mask_1d_indexes_for_pixelization_1d_index,
+    slim_index_for_sub_slim_index,
+    all_sub_slim_indexes_for_pixelization_index,
 ):
     """
     Returns the chi-squared-map of the `reconstruction` of an `Inversion` on its pixel-grid.
@@ -290,9 +288,9 @@ def inversion_chi_squared_map_from(
         the `chi_squared_map` values.
     data : np.ndarray
         The array of `data` that the `Inversion` fits.
-    mask_1d_index_for_sub_mask_1d_index : np.ndarray
+    slim_index_for_sub_slim_index : np.ndarray
         The mappings between the observed grid's sub-pixels and observed grid's pixels.
-    all_sub_mask_1d_indexes_for_pixelization_1d_index : np.ndarray
+    all_sub_slim_indexes_for_pixelization_index : np.ndarray
         The mapping of every pixel on the `Inversion`'s `reconstruction`'s pixel-grid to the `data` pixels.
 
     Returns
@@ -301,24 +299,22 @@ def inversion_chi_squared_map_from(
         The chi-squareds of the `Inversion`'s `reconstruction` on its pixel-grid, computed by mapping the `chi-squared_map`
         from the fit to the data.
     """
-    chi_squared_map = np.zeros(
-        shape=len(all_sub_mask_1d_indexes_for_pixelization_1d_index)
-    )
+    chi_squared_map = np.zeros(shape=len(all_sub_slim_indexes_for_pixelization_index))
 
-    for pix_1_index, sub_mask_1d_indexes in enumerate(
-        all_sub_mask_1d_indexes_for_pixelization_1d_index
+    for pix_index, sub_slim_indexes in enumerate(
+        all_sub_slim_indexes_for_pixelization_index
     ):
         sub_mask_total = 0
-        for sub_mask_1d_index in sub_mask_1d_indexes:
+        for sub_mask_1d_index in sub_slim_indexes:
             sub_mask_total += 1
-            mask_1d_index = mask_1d_index_for_sub_mask_1d_index[sub_mask_1d_index]
-            residual = data[mask_1d_index] - pixelization_values[pix_1_index]
-            chi_squared_map[pix_1_index] += (
+            mask_1d_index = slim_index_for_sub_slim_index[sub_mask_1d_index]
+            residual = data[mask_1d_index] - pixelization_values[pix_index]
+            chi_squared_map[pix_index] += (
                 residual / noise_map_1d[mask_1d_index]
             ) ** 2.0
 
         if sub_mask_total > 0:
-            chi_squared_map[pix_1_index] /= sub_mask_total
+            chi_squared_map[pix_index] /= sub_mask_total
 
     return chi_squared_map.copy()
 

@@ -72,7 +72,7 @@ def make_blurring_mask_7x7():
 
 
 def make_array_7x7():
-    return aa.Array.ones(shape_2d=(7, 7), pixel_scales=(1.0, 1.0))
+    return aa.Array2D.ones(shape_native=(7, 7), pixel_scales=(1.0, 1.0))
 
 
 def make_scans_7x7():
@@ -84,8 +84,8 @@ def make_scans_7x7():
 
 
 def make_frame_7x7():
-    return aa.Frame.ones(
-        shape_2d=(7, 7), pixel_scales=(1.0, 1.0), scans=make_scans_7x7()
+    return aa.Frame2D.ones(
+        shape_native=(7, 7), pixel_scales=(1.0, 1.0), scans=make_scans_7x7()
     )
 
 
@@ -93,15 +93,15 @@ def make_frame_7x7():
 
 
 def make_grid_7x7():
-    return aa.Grid.from_mask(mask=make_mask_7x7())
+    return aa.Grid2D.from_mask(mask=make_mask_7x7())
 
 
 def make_sub_grid_7x7():
-    return aa.Grid.from_mask(mask=make_sub_mask_7x7())
+    return aa.Grid2D.from_mask(mask=make_sub_mask_7x7())
 
 
 def make_grid_iterate_7x7():
-    return aa.GridIterate.from_mask(
+    return aa.Grid2DIterate.from_mask(
         mask=make_mask_7x7(), fractional_accuracy=0.9999, sub_steps=[2, 4, 8, 16]
     )
 
@@ -116,7 +116,7 @@ def make_sub_grid_7x7_simple():
 
 
 def make_blurring_grid_7x7():
-    return aa.Grid.from_mask(mask=make_blurring_mask_7x7())
+    return aa.Grid2D.from_mask(mask=make_blurring_mask_7x7())
 
 
 # CONVOLVERS #
@@ -127,23 +127,23 @@ def make_convolver_7x7():
 
 
 def make_image_7x7():
-    return aa.Array.ones(shape_2d=(7, 7), pixel_scales=(1.0, 1.0))
+    return aa.Array2D.ones(shape_native=(7, 7), pixel_scales=(1.0, 1.0))
 
 
 def make_psf_3x3():
-    return aa.Kernel.ones(shape_2d=(3, 3), pixel_scales=(1.0, 1.0))
+    return aa.Kernel2D.ones(shape_native=(3, 3), pixel_scales=(1.0, 1.0))
 
 
 def make_psf_no_blur_3x3():
-    return aa.Kernel.no_blur(pixel_scales=(1.0, 1.0))
+    return aa.Kernel2D.no_blur(pixel_scales=(1.0, 1.0))
 
 
 def make_noise_map_7x7():
-    return aa.Array.full(fill_value=2.0, shape_2d=(7, 7), pixel_scales=(1.0, 1.0))
+    return aa.Array2D.full(fill_value=2.0, shape_native=(7, 7), pixel_scales=(1.0, 1.0))
 
 
 def make_grid_irregular_grouped_7x7():
-    return aa.GridIrregularGrouped(grid=[[(0.1, 0.1), (0.2, 0.2)], [(0.3, 0.3)]])
+    return aa.Grid2DIrregularGrouped(grid=[[(0.1, 0.1), (0.2, 0.2)], [(0.3, 0.3)]])
 
 
 def make_imaging_7x7():
@@ -169,13 +169,13 @@ def make_visibilities_mask_7():
 
 
 def make_visibilities_7():
-    visibilities = aa.Visibilities.full(shape_1d=(7,), fill_value=1.0)
+    visibilities = aa.Visibilities.full(shape_slim=(7,), fill_value=1.0)
     visibilities[6] = -1.0 - 1.0j
     return visibilities
 
 
 def make_visibilities_noise_map_7():
-    return aa.VisibilitiesNoiseMap.full(shape_1d=(7,), fill_value=2.0)
+    return aa.VisibilitiesNoiseMap.full(shape_slim=(7,), fill_value=2.0)
 
 
 def make_uv_wavelengths_7():
@@ -256,18 +256,18 @@ def make_masked_interferometer_fit_x1_plane_7():
 
 
 def make_rectangular_pixelization_grid_3x3():
-    return aa.GridRectangular.overlay_grid(grid=make_grid_7x7(), shape_2d=(3, 3))
+    return aa.Grid2DRectangular.overlay_grid(grid=make_grid_7x7(), shape_native=(3, 3))
 
 
 def make_rectangular_mapper_7x7_3x3():
     return aa.Mapper(
-        source_full_grid=make_grid_7x7(),
+        source_grid_slim=make_grid_7x7(),
         source_pixelization_grid=make_rectangular_pixelization_grid_3x3(),
     )
 
 
 def make_voronoi_pixelization_grid_9():
-    grid_9 = aa.Grid.manual_1d(
+    grid_9 = aa.Grid2D.manual_slim(
         grid=[
             [0.6, -0.3],
             [0.5, -0.8],
@@ -279,22 +279,22 @@ def make_voronoi_pixelization_grid_9():
             [-1.2, 0.8],
             [-1.5, 0.9],
         ],
-        shape_2d=(3, 3),
+        shape_native=(3, 3),
         pixel_scales=1.0,
     )
-    return aa.GridVoronoi(
+    return aa.Grid2DVoronoi(
         grid=grid_9,
-        nearest_pixelization_1d_index_for_mask_1d_index=np.zeros(
-            shape=make_grid_7x7().shape_1d, dtype="int"
+        nearest_pixelization_index_for_slim_index=np.zeros(
+            shape=make_grid_7x7().shape_slim, dtype="int"
         ),
     )
 
 
 def make_voronoi_mapper_9_3x3():
     return aa.Mapper(
-        source_full_grid=make_grid_7x7(),
+        source_grid_slim=make_grid_7x7(),
         source_pixelization_grid=make_voronoi_pixelization_grid_9(),
-        data_pixelization_grid=aa.Grid.uniform(shape_2d=(2, 2), pixel_scales=0.1),
+        data_pixelization_grid=aa.Grid2D.uniform(shape_native=(2, 2), pixel_scales=0.1),
     )
 
 

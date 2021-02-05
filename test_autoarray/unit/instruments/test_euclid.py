@@ -22,7 +22,7 @@ class TestFrameEuclid:
         )
 
         assert euclid_frame.original_roe_corner == (0, 0)
-        assert euclid_frame.shape_2d == (2086, 2128)
+        assert euclid_frame.shape_native == (2086, 2128)
         assert (euclid_frame == np.zeros((2086, 2128))).all()
         assert euclid_frame.scans.parallel_overscan == (2066, 2086, 51, 2099)
         assert euclid_frame.scans.serial_prescan == (0, 2086, 0, 51)
@@ -38,7 +38,7 @@ class TestFrameEuclid:
         )
 
         assert euclid_frame.original_roe_corner == (0, 0)
-        assert euclid_frame.shape_2d == (2086, 2128)
+        assert euclid_frame.shape_native == (2086, 2128)
         assert (euclid_frame == np.zeros((2086, 2128))).all()
         assert euclid_frame.scans.parallel_overscan == (2071, 2086, 41, 2118)
         assert euclid_frame.scans.serial_prescan == (0, 2086, 0, 41)
@@ -54,7 +54,7 @@ class TestFrameEuclid:
         )
 
         assert euclid_frame.original_roe_corner == (0, 1)
-        assert euclid_frame.shape_2d == (2086, 2128)
+        assert euclid_frame.shape_native == (2086, 2128)
         assert (euclid_frame == np.zeros((2086, 2128))).all()
         assert euclid_frame.scans.parallel_overscan == (2066, 2086, 51, 2099)
         assert euclid_frame.scans.serial_prescan == (0, 2086, 0, 51)
@@ -70,7 +70,7 @@ class TestFrameEuclid:
         )
 
         assert euclid_frame.original_roe_corner == (0, 1)
-        assert euclid_frame.shape_2d == (2086, 2128)
+        assert euclid_frame.shape_native == (2086, 2128)
         assert (euclid_frame == np.zeros((2086, 2128))).all()
         assert euclid_frame.scans.parallel_overscan == (2071, 2086, 41, 2118)
         assert euclid_frame.scans.serial_prescan == (0, 2086, 0, 41)
@@ -86,7 +86,7 @@ class TestFrameEuclid:
         )
 
         assert euclid_frame.original_roe_corner == (1, 0)
-        assert euclid_frame.shape_2d == (2086, 2128)
+        assert euclid_frame.shape_native == (2086, 2128)
         assert (euclid_frame == np.zeros((2086, 2128))).all()
         assert euclid_frame.scans.parallel_overscan == (2066, 2086, 51, 2099)
         assert euclid_frame.scans.serial_prescan == (0, 2086, 0, 51)
@@ -102,7 +102,7 @@ class TestFrameEuclid:
         )
 
         assert euclid_frame.original_roe_corner == (1, 0)
-        assert euclid_frame.shape_2d == (2086, 2128)
+        assert euclid_frame.shape_native == (2086, 2128)
         assert (euclid_frame == np.zeros((2086, 2128))).all()
         assert euclid_frame.scans.parallel_overscan == (2071, 2086, 41, 2118)
         assert euclid_frame.scans.serial_prescan == (0, 2086, 0, 41)
@@ -118,7 +118,7 @@ class TestFrameEuclid:
         )
 
         assert euclid_frame.original_roe_corner == (1, 1)
-        assert euclid_frame.shape_2d == (2086, 2128)
+        assert euclid_frame.shape_native == (2086, 2128)
         assert (euclid_frame == np.zeros((2086, 2128))).all()
         assert euclid_frame.scans.parallel_overscan == (2066, 2086, 51, 2099)
         assert euclid_frame.scans.serial_prescan == (0, 2086, 0, 51)
@@ -134,7 +134,7 @@ class TestFrameEuclid:
         )
 
         assert euclid_frame.original_roe_corner == (1, 1)
-        assert euclid_frame.shape_2d == (2086, 2128)
+        assert euclid_frame.shape_native == (2086, 2128)
         assert (euclid_frame == np.zeros((2086, 2128))).all()
         assert euclid_frame.scans.parallel_overscan == (2071, 2086, 41, 2118)
         assert euclid_frame.scans.serial_prescan == (0, 2086, 0, 41)
