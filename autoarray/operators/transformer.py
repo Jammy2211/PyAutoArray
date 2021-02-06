@@ -90,8 +90,8 @@ class TransformerNUFFT(NUFFT_cpu, pylops.LinearOperator):
         self.real_space_mask = real_space_mask.mask_sub_1
         #        self.grid = self.real_space_mask.unmasked_grid.in_radians
         self.grid = grids.Grid2D.from_mask(mask=self.real_space_mask).in_radians
-        self._mask_index_for_mask_1d_index = copy.copy(
-            real_space_mask._mask_index_for_mask_1d_index.astype("int")
+        self._sub_native_index_for_sub_slim_index = copy.copy(
+            real_space_mask._sub_native_index_for_sub_slim_index.astype("int")
         )
 
         # NOTE: The plan need only be initialized once
@@ -115,14 +115,24 @@ class TransformerNUFFT(NUFFT_cpu, pylops.LinearOperator):
         )
 
         self.real_space_pixels = self.real_space_mask.pixels_in_mask
-        self.total_visibilities = uv_wavelengths.shape[0]
+
+        # NOTE: If reshaped the shape of the operator is (2 x Nvis, Np) else it is (Nvis, Np)
+        self.total_visibilities = int(uv_wavelengths.shape[0] * uv_wavelengths.shape[1])
 
         self.shape = (
             int(np.prod(self.total_visibilities)),
             int(np.prod(self.real_space_pixels)),
         )
-        self.dtype = "complex128"
+
+        # NOTE: If the operator is reshaped then the output is real.
+        self.dtype = "float64"
+
         self.explicit = False
+
+        # NOTE: This is the scaling factor that needs to be applied to the adjoint operator
+        self.adjoint_scaling = (2.0 * self.grid.shape_native[0]) * (
+            2.0 * self.grid.shape_native[1]
+        )
 
     def initialize_plan(self, ratio=2, interp_kernel=(6, 6)):
 
@@ -199,10 +209,11 @@ class TransformerNUFFT(NUFFT_cpu, pylops.LinearOperator):
         x2d = array_util.sub_array_2d_complex_via_sub_indexes_from(
             sub_array_2d_slim=x,
             sub_shape_native=self.real_space_mask.shape_native,
-            sub_native_index_for_slim_index=self._mask_index_for_mask_1d_index,
+            sub_native_index_for_slim_index=self._sub_native_index_for_sub_slim_index,
         )[::-1, :]
 
-        return self.k2y(self.xx2k(self.x2xx(x2d)))
+        y = self.k2y(self.xx2k(self.x2xx(x2d)))
+        return np.concatenate((y.real, y.imag), axis=0)
 
     def adjoint_lop(self, y):
         """
@@ -213,10 +224,26 @@ class TransformerNUFFT(NUFFT_cpu, pylops.LinearOperator):
                     with the size of Nd or Nd + (batch, )
         :rtype: numpy array with the dtype of numpy.complex64
         """
-        x = np.real(self.xx2x(self.k2xx(self.y2k(y))))
-        return array_util.sub_array_complex_slim_from(
-            sub_array_2d=x[::-1, :], sub_size=1, mask=self.real_space_mask
+
+        def a_complex_from_a_real_and_a_imag(a_real, a_imag):
+
+            return a_real + 1j * a_imag
+
+        y = a_complex_from_a_real_and_a_imag(
+            a_real=y[: int(self.shape[0] / 2.0)], a_imag=y[int(self.shape[0] / 2.0) :]
         )
+
+        x2d = np.real(self.xx2x(self.k2xx(self.y2k(y))))
+
+        x = array_util.sub_array_complex_slim_from(
+            sub_array_2d=x2d[::-1, :], sub_size=1, mask=self.real_space_mask
+        )
+        x = x.real  # NOTE:
+
+        # NOTE:
+        x *= self.adjoint_scaling
+
+        return x
 
     def _matvec(self, x):
         return self.forward_lop(x)

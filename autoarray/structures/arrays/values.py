@@ -1,8 +1,9 @@
-import ast
 import logging
 
 import numpy as np
 import os
+import json
+from os import path
 
 from autoarray.structures import grids
 
@@ -10,7 +11,7 @@ logging.basicConfig()
 logger = logging.getLogger(__name__)
 
 
-class ValuesIrregularGrouped(np.ndarray):
+class ValuesIrregular(np.ndarray):
     def __new__(cls, values):
         """
         A collection of values structured in a way defining groups of values which share a common origin (for
@@ -36,8 +37,8 @@ class ValuesIrregularGrouped(np.ndarray):
 
         Print methods are overridden so a user always "sees" the values as the list structure.
 
-        In contrast to a *Array2D* structure, *ValuesIrregularGrouped* do not lie on a uniform grid or correspond to values that
-        originate from a uniform grid. Therefore, when handling irregular data-sets *ValuesIrregularGrouped* should be used.
+        In contrast to a *Array2D* structure, *ValuesIrregular* do not lie on a uniform grid or correspond to values that
+        originate from a uniform grid. Therefore, when handling irregular data-sets *ValuesIrregular* should be used.
 
         Parameters
         ----------
@@ -48,129 +49,90 @@ class ValuesIrregularGrouped(np.ndarray):
         if len(values) == 0:
             return []
 
-        if isinstance(values, dict):
-            values_dict = values
-            values = [value for value in values.values()]
-        else:
-            values_dict = None
+        if type(values) is list:
+            values = np.asarray(values)
 
-        if isinstance(values[0], float):
-            values = [values]
-
-        upper_indexes = []
-
-        a = 0
-
-        for value in values:
-            a = a + len(value)
-            upper_indexes.append(a)
-
-        values_arr = np.concatenate([np.array(i) for i in values])
-
-        obj = values_arr.view(cls)
-        obj.upper_indexes = upper_indexes
-        obj.lower_indexes = [0] + upper_indexes[:-1]
-
-        if values_dict is not None:
-            obj.as_dict = values_dict
+        obj = values.view(cls)
 
         return obj
 
-    def __array_finalize__(self, obj):
-
-        if hasattr(obj, "lower_indexes"):
-            self.lower_indexes = obj.lower_indexes
-
-        if hasattr(obj, "upper_indexes"):
-            self.upper_indexes = obj.upper_indexes
-
     @property
     def slim(self):
-        """The ValuesIrregularGrouped in their 1D representation, an ndarray of shape [total_values]."""
+        """The ValuesIrregular in their 1D representation, an ndarray of shape [total_values]."""
         return self
 
     @property
     def in_list(self):
-        """Return the coordinates on a structured list which groups coordinates with a common origin."""
-        return [value for value in self.slim]
+        """Return the values on a structured list which groups values with a common origin."""
+        return [value for value in self]
 
     @property
     def in_grouped_list(self):
-        """Convenience method to access the ValuesIrregularGrouped in their list representation, whcih is a list of lists of floatss."""
-        return [list(self[i:j]) for i, j in zip(self.lower_indexes, self.upper_indexes)]
+        """Return the values on a structured list which groups values with a common origin."""
+        return self.in_list
 
     def values_from_array_slim(self, array_slim):
-        """Create a *ValuesIrregularGrouped* object from a 1D ndarray of values of shape [total_values].
+        """Create a *ValuesIrregular* object from a 1D ndarray of values of shape [total_values].
 
-        The *ValuesIrregularGrouped* are structured and grouped following this *ValuesIrregularGrouped* instance.
+        The *ValuesIrregular* are structured and grouped following this *ValuesIrregular* instance.
 
         Parameters
         ----------
         array_slim : np.ndarray
-            The 1D array (shape [total_values]) of values that are mapped to a *ValuesIrregularGrouped* object."""
-        values = [
-            list(array_slim[i:j])
-            for i, j in zip(self.lower_indexes, self.upper_indexes)
-        ]
-        return ValuesIrregularGrouped(values=values)
+            The 1D array (shape [total_values]) of values that are mapped to a *ValuesIrregular* object."""
+        return ValuesIrregular(values=array_slim)
 
     def grid_from_grid_slim(self, grid_slim):
-        """Create a `Grid2DIrregularGrouped` object from a 2D ndarray array of values of shape [total_values, 2].
+        """Create a `Grid2DIrregular` object from a 2D ndarray array of values of shape [total_values, 2].
 
-        The `Grid2DIrregularGrouped` are structured and grouped following this *Coordinate* instance.
+        The `Grid2DIrregular` are structured and grouped following this *Coordinate* instance.
 
         Parameters
         ----------
         grid_slim : np.ndarray
-            The 2d array (shape [total_coordinates, 2]) of (y,x) coordinates that are mapped to a `Grid2DIrregularGrouped`
+            The 2d array (shape [total_coordinates, 2]) of (y,x) coordinates that are mapped to a `Grid2DIrregular`
             object."""
-        grouped_grids_1d = [
-            list(map(tuple, grid_slim[i:j, :]))
-            for i, j in zip(self.lower_indexes, self.upper_indexes)
-        ]
-
-        return grids.Grid2DIrregularGrouped(grid=grouped_grids_1d)
+        return grids.Grid2DIrregular(grid=grid_slim)
 
     @classmethod
     def from_file(cls, file_path):
-        """Create a *ValuesIrregularGrouped* object from a file which stores the values as a list of list of floats.
+        """Create a `Grid2DIrregular` object from a file which stores the coordinates as a list of list of tuples.
 
         Parameters
         ----------
         file_path : str
-            The path to the values .dat file containing the values (e.g. '/path/to/values.dat')
+            The path to the coordinates .dat file containing the coordinates (e.g. '/path/to/coordinates.dat')
         """
-        with open(file_path) as f:
-            values_lines = f.readlines()
 
-        values = []
+        with open(file_path) as infile:
+            values = json.load(infile)
 
-        for line in values_lines:
-            values_list = ast.literal_eval(line)
-            values.append(values_list)
+        return ValuesIrregular(values=values)
 
-        return ValuesIrregularGrouped(values=values)
-
-    def output_to_file(self, file_path, overwrite=False):
-        """Output this instance of the *ValuesIrregularGrouped* object to a list of list of floats.
+    def output_to_json(self, file_path, overwrite=False):
+        """Output this instance of the `Grid2DIrregular` object to a list of list of tuples.
 
         Parameters
         ----------
         file_path : str
-            The path to the values .dat file containing the values (e.g. '/path/to/values.dat')
+            The path to the coordinates .dat file containing the coordinates (e.g. '/path/to/coordinates.dat')
         overwrite : bool
             If there is as exsiting file it will be overwritten if this is `True`.
         """
 
-        if os.path.exists(file_path):
-            if overwrite:
-                os.remove(file_path)
-            else:
-                raise FileExistsError(
-                    f"The file {file_path} already exists. Set overwrite=True to overwrite this"
-                    "file"
-                )
+        file_dir = os.path.split(file_path)[0]
+
+        if not path.exists(file_dir):
+            os.makedirs(file_dir)
+
+        if overwrite and path.exists(file_path):
+            os.remove(file_path)
+        elif not overwrite and path.exists(file_path):
+            raise FileExistsError(
+                "The file ",
+                file_path,
+                " already exists. Set overwrite=True to overwrite this" "file",
+            )
 
         with open(file_path, "w+") as f:
-            for value in self.in_grouped_list:
-                f.write("%s\n" % value)
+            json.dump(self.in_list, f)

@@ -121,11 +121,11 @@ class AbstractFrame2D(abstract_array.AbstractArray2D):
         return self.parallel_overscan_frame.binned_across_serial
 
     def parallel_trail_from_y(self, y, dy):
-        """Grid2DIrregularGrouped of a parallel trail of size dy from coordinate y"""
+        """Grid2DIrregular of a parallel trail of size dy from coordinate y"""
         return (int(y - dy), int(y + 1))
 
     def serial_trail_from_x(self, x, dx):
-        """Grid2DIrregularGrouped of a serial trail of size dx from coordinate x"""
+        """Grid2DIrregular of a serial trail of size dx from coordinate x"""
         return (int(x), int(x + 1 + dx))
 
     def parallel_front_edge_of_region(self, region, rows):
