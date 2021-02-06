@@ -142,8 +142,11 @@ def make_noise_map_7x7():
     return aa.Array2D.full(fill_value=2.0, shape_native=(7, 7), pixel_scales=(1.0, 1.0))
 
 
-def make_grid_irregular_grouped_7x7():
-    return aa.Grid2DIrregularGrouped(grid=[[(0.1, 0.1), (0.2, 0.2)], [(0.3, 0.3)]])
+def make_grid_irregular_7x7_list():
+    return [
+        aa.Grid2DIrregular(grid=[(0.1, 0.1), (0.2, 0.2)]),
+        aa.Grid2DIrregular(grid=[(0.3, 0.3)]),
+    ]
 
 
 def make_imaging_7x7():

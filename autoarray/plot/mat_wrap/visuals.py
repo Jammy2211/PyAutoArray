@@ -82,7 +82,7 @@ class Visuals1D(AbstractVisuals):
     def plot_via_plotter(self, plotter):
 
         if self.lines is not None:
-            plotter.grid_plot.plot_grid_grouped(grid_grouped=self.lines)
+            plotter.grid_plot.plot_grid_list(grid_list=self.lines)
 
 
 class Visuals2D(AbstractVisuals):
@@ -141,7 +141,7 @@ class Visuals2D(AbstractVisuals):
             plotter.pixelization_grid_scatter.scatter_grid(grid=self.pixelization_grid)
 
         if self.positions is not None:
-            plotter.positions_scatter.scatter_grid_grouped(grid_grouped=self.positions)
+            plotter.positions_scatter.scatter_grid_list(grid_list=self.positions)
 
         if self.vector_field is not None:
             plotter.vector_field_quiver.quiver_vector_field(
@@ -152,7 +152,7 @@ class Visuals2D(AbstractVisuals):
             plotter.patch_overlay.overlay_patches(patches=self.patches)
 
         if self.lines is not None:
-            plotter.grid_plot.plot_grid_grouped(grid_grouped=self.lines)
+            plotter.grid_plot.plot_grid_list(grid_list=self.lines)
 
         if self.indexes is not None:
             plotter.index_scatter.scatter_grid_indexes(

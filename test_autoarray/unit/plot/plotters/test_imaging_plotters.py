@@ -54,10 +54,10 @@ def test__visuals_in_constructor_use_imaging_and_include(imaging_7x7):
 
 
 def test__individual_attributes_are_output(
-    imaging_7x7, grid_irregular_grouped_7x7, mask_7x7, plot_path, plot_patch
+    imaging_7x7, grid_irregular_7x7_list, mask_7x7, plot_path, plot_patch
 ):
 
-    visuals_2d = aplt.Visuals2D(mask=mask_7x7, positions=grid_irregular_grouped_7x7)
+    visuals_2d = aplt.Visuals2D(mask=mask_7x7, positions=grid_irregular_7x7_list)
 
     imaging_plotter = aplt.ImagingPlotter(
         imaging=imaging_7x7,
@@ -95,7 +95,7 @@ def test__individual_attributes_are_output(
 
 
 def test__subplot_is_output(
-    imaging_7x7, grid_irregular_grouped_7x7, mask_7x7, plot_path, plot_patch
+    imaging_7x7, grid_irregular_7x7_list, mask_7x7, plot_path, plot_patch
 ):
 
     imaging_plot = aplt.ImagingPlotter(
@@ -111,7 +111,7 @@ def test__subplot_is_output(
 
 
 def test__output_as_fits__correct_output_format(
-    imaging_7x7, grid_irregular_grouped_7x7, mask_7x7, plot_path, plot_patch
+    imaging_7x7, grid_irregular_7x7_list, mask_7x7, plot_path, plot_patch
 ):
 
     imaging_plotter = aplt.ImagingPlotter(
