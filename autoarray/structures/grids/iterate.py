@@ -555,12 +555,12 @@ class Grid2DIterate(abstract_grid.AbstractGrid2D):
                 func=func, cls=cls, mask=fractional_mask_lower_sub, sub_size=sub_size
             )
 
-            fractional_mask_higher_sub = self.fractional_mask_from_arrays(
-                array_lower_sub_2d=array_lower_sub_2d,
-                array_higher_sub_2d=array_higher_sub,
-            )
-
             try:
+
+                fractional_mask_higher_sub = self.fractional_mask_from_arrays(
+                    array_lower_sub_2d=array_lower_sub_2d,
+                    array_higher_sub_2d=array_higher_sub,
+                )
 
                 iterated_array = self.iterated_array_jit_from(
                     iterated_array=iterated_array,
