@@ -87,13 +87,13 @@ class GridScatter(AbstractMatWrap2D):
             The grid of (y,x) coordinates that is plotted.
         """
 
-        if isinstance(grid, list):
-            return self.scatter_grid_list(grid_list=grid)
-
         config_dict = self.config_dict
         config_dict.pop("c")
 
-        plt.scatter(y=np.asarray(grid)[:, 0], x=np.asarray(grid)[:, 1], **config_dict)
+        try:
+            plt.scatter(y=np.asarray(grid)[:, 0], x=np.asarray(grid)[:, 1], **config_dict)
+        except IndexError:
+            return self.scatter_grid_list(grid_list=grid)
 
     def scatter_grid_list(
         self, grid_list: Union[List[grids.Grid2D], List[grids.Grid2DIrregular]]
@@ -281,10 +281,10 @@ class GridPlot(AbstractMatWrap2D):
         grid : Grid2D
             The grid of (y,x) coordinates that is plotted.
         """
-        if isinstance(list, grid):
+        try:
+            plt.plot(np.asarray(grid)[:, 1], np.asarray(grid)[:, 0], **self.config_dict)
+        except IndexError:
             return self.plot_grid_list(grid_list=grid)
-
-        plt.plot(np.asarray(grid)[:, 1], np.asarray(grid)[:, 0], **self.config_dict)
 
     def plot_grid_list(
         self, grid_list: Union[List[grids.Grid2D], List[grids.Grid2DIrregular]]

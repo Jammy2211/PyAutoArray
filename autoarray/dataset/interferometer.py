@@ -91,11 +91,13 @@ class AbstractInterferometer(abstract_dataset.AbstractDataset):
 class AbstractSettingsMaskedInterferometer(
     abstract_dataset.AbstractSettingsMaskedDataset
 ):
+
     def __init__(
         self,
         grid_class=grids.Grid2D,
         grid_inversion_class=grids.Grid2D,
         sub_size=2,
+        sub_size_inversion=2,
         fractional_accuracy=0.9999,
         sub_steps=None,
         pixel_scales_interp=None,
@@ -138,6 +140,7 @@ class AbstractSettingsMaskedInterferometer(
             grid_class=grid_class,
             grid_inversion_class=grid_inversion_class,
             sub_size=sub_size,
+            sub_size_inversion=sub_size_inversion,
             fractional_accuracy=fractional_accuracy,
             sub_steps=sub_steps,
             pixel_scales_interp=pixel_scales_interp,
@@ -181,6 +184,7 @@ class AbstractSettingsMaskedInterferometer(
 
 
 class AbstractMaskedInterferometer(abstract_dataset.AbstractMaskedDataset):
+
     def __init__(
         self,
         interferometer,
