@@ -116,14 +116,17 @@ class GridScatter(AbstractMatWrap2D):
         config_dict = self.config_dict
         config_dict.pop("c")
 
-        for grid in grid_list:
+        try:
+            for grid in grid_list:
 
-            plt.scatter(
-                y=np.asarray(grid)[:, 0],
-                x=np.asarray(grid)[:, 1],
-                c=next(color),
-                **config_dict,
-            )
+                plt.scatter(
+                    y=np.asarray(grid)[:, 0],
+                    x=np.asarray(grid)[:, 1],
+                    c=next(color),
+                    **config_dict,
+                )
+        except IndexError:
+            return None
 
     def scatter_grid_colored(
         self,
@@ -304,20 +307,23 @@ class GridPlot(AbstractMatWrap2D):
          """
 
         if len(grid_list) == 0:
-            return
+            return None
 
         color = itertools.cycle(self.config_dict["c"])
         config_dict = self.config_dict
         config_dict.pop("c")
 
-        for grid in grid_list:
+        try:
+            for grid in grid_list:
 
-            plt.plot(
-                np.asarray(grid)[:, 1],
-                np.asarray(grid)[:, 0],
-                c=next(color),
-                **config_dict,
-            )
+                plt.plot(
+                    np.asarray(grid)[:, 1],
+                    np.asarray(grid)[:, 0],
+                    c=next(color),
+                    **config_dict,
+                )
+        except IndexError:
+            return None
 
 
 class VectorFieldQuiver(AbstractMatWrap2D):
