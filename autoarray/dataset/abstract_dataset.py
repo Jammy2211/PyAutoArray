@@ -149,11 +149,13 @@ class AbstractDataset:
 
 
 class AbstractSettingsMaskedDataset:
+
     def __init__(
         self,
         grid_class=grids.Grid2D,
         grid_inversion_class=grids.Grid2D,
         sub_size=2,
+        sub_size_inversion=2,
         fractional_accuracy=0.9999,
         sub_steps=None,
         pixel_scales_interp=None,
@@ -194,6 +196,7 @@ class AbstractSettingsMaskedDataset:
         self.grid_class = grid_class
         self.grid_inversion_class = grid_inversion_class
         self.sub_size = sub_size
+        self.sub_size_inversion = sub_size_inversion
         self.fractional_accuracy = fractional_accuracy
 
         if sub_steps is None:
@@ -204,6 +207,7 @@ class AbstractSettingsMaskedDataset:
         self.signal_to_noise_limit = signal_to_noise_limit
 
     def grid_from_mask(self, mask):
+
         return grid_from_mask_and_grid_class(
             mask=mask,
             grid_class=self.grid_class,
@@ -213,6 +217,7 @@ class AbstractSettingsMaskedDataset:
         )
 
     def grid_inversion_from_mask(self, mask):
+
         return grid_from_mask_and_grid_class(
             mask=mask,
             grid_class=self.grid_inversion_class,
@@ -326,7 +331,7 @@ class AbstractSettingsMaskedDataset:
             return ""
         return (
             f"{conf.instance['notation']['settings_tags']['dataset']['sub_size']}_"
-            f"{str(self.sub_size)}"
+            f"{str(self.sub_size_inversion)}"
         )
 
     @property
@@ -384,9 +389,11 @@ class AbstractSettingsMaskedDataset:
 
 
 class AbstractMaskedDataset:
+
     def __init__(self, dataset, mask, settings=AbstractSettingsMaskedDataset()):
 
         if mask.sub_size != settings.sub_size:
+
             mask = msk.Mask2D.manual(
                 mask=mask,
                 pixel_scales=mask.pixel_scales,
@@ -406,7 +413,14 @@ class AbstractMaskedDataset:
 
         self.grid = settings.grid_from_mask(mask=mask)
 
-        self.grid_inversion = settings.grid_inversion_from_mask(mask=mask)
+        mask_inversion = msk.Mask2D.manual(
+            mask=mask,
+            pixel_scales=mask.pixel_scales,
+            sub_size=settings.sub_size_inversion,
+            origin=mask.origin,
+        )
+
+        self.grid_inversion = settings.grid_inversion_from_mask(mask=mask_inversion)
 
     @property
     def name(self) -> str:
