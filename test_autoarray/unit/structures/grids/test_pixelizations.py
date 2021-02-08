@@ -230,259 +230,168 @@ class TestGrid2DVoronoi:
             unmasked_sparse_shape=(10, 10), grid=grid
         )
 
-        assert (sparse_grid.sparse == pixelization_grid).all()
+        assert (sparse_grid == pixelization_grid).all()
         assert (
             sparse_grid.sparse_index_for_slim_index
             == pixelization_grid.nearest_pixelization_index_for_slim_index
         ).all()
 
-    class TestVoronoiGrid:
-        def test__9_points___check_voronoi_swaps_axis_from_y_x__to_x_y(self):
-            # 9 points in a square - makes a square (this is the example int he scipy documentaiton page)
+    def test__voronoi_grid__simple_shapes_make_voronoi_grid_correctly(self):
 
-            grid = np.array(
+        # 9 points in a square - makes a square (this is the example int he scipy documentaiton page)
+
+        grid = np.array(
+            [
+                [2.0, 0.0],
+                [2.0, 1.0],
+                [2.0, 2.0],
+                [1.0, 0.0],
+                [1.0, 1.0],
+                [1.0, 2.0],
+                [0.0, 0.0],
+                [0.0, 1.0],
+                [0.0, 2.0],
+            ]
+        )
+
+        pix = aa.Grid2DVoronoi(grid=grid)
+
+        assert (
+            pix.voronoi.points
+            == np.array(
                 [
-                    [2.0, 0.0],
-                    [2.0, 1.0],
-                    [2.0, 2.0],
-                    [1.0, 0.0],
-                    [1.0, 1.0],
+                    [0.0, 2.0],
                     [1.0, 2.0],
-                    [0.0, 0.0],
-                    [0.0, 1.0],
-                    [0.0, 2.0],
-                ]
-            )
-
-            pix = aa.Grid2DVoronoi(grid=grid)
-
-            assert (
-                pix.voronoi.points
-                == np.array(
-                    [
-                        [0.0, 2.0],
-                        [1.0, 2.0],
-                        [2.0, 2.0],
-                        [0.0, 1.0],
-                        [1.0, 1.0],
-                        [2.0, 1.0],
-                        [0.0, 0.0],
-                        [1.0, 0.0],
-                        [2.0, 0.0],
-                    ]
-                )
-            ).all()
-
-        def test__points_in_x_cross_shape__sets_up_diamond_voronoi_vertices(self):
-            # 5 points in the shape of the face of a 5 on a die - makes a diamond Voronoi diagram
-
-            grid = np.array(
-                [[-1.0, 1.0], [1.0, 1.0], [0.0, 0.0], [-1.0, -1.0], [1.0, -1.0]]
-            )
-
-            pix = aa.Grid2DVoronoi(grid=grid)
-
-            pix.voronoi.vertices = list(map(lambda x: list(x), pix.voronoi.vertices))
-
-            assert [0, 1.0] in pix.voronoi.vertices
-            assert [-1.0, 0.0] in pix.voronoi.vertices
-            assert [1.0, 0.0] in pix.voronoi.vertices
-            assert [0.0, -1.0] in pix.voronoi.vertices
-
-        def test__9_points_in_square___sets_up_square_of_voronoi_vertices(self):
-            # 9 points in a square - makes a square (this is the example int he scipy documentaiton page)
-
-            grid = np.array(
-                [
-                    [2.0, 0.0],
-                    [2.0, 1.0],
                     [2.0, 2.0],
-                    [1.0, 0.0],
+                    [0.0, 1.0],
                     [1.0, 1.0],
-                    [1.0, 2.0],
-                    [0.0, 0.0],
-                    [0.0, 1.0],
-                    [0.0, 2.0],
-                ]
-            )
-
-            pix = aa.Grid2DVoronoi(grid=grid)
-
-            # ridge points is a numpy array for speed, but convert to list for the comparisons below so we can use in
-            # to look for each list
-
-            pix.voronoi.vertices = list(map(lambda x: list(x), pix.voronoi.vertices))
-
-            assert [0.5, 1.5] in pix.voronoi.vertices
-            assert [1.5, 0.5] in pix.voronoi.vertices
-            assert [0.5, 0.5] in pix.voronoi.vertices
-            assert [1.5, 1.5] in pix.voronoi.vertices
-
-        def test__points_in_x_cross_shape__sets_up_pairs_of_voronoi_cells(self):
-            # 5 points in the shape of the face of a 5 on a die - makes a diamond Voronoi diagram
-
-            grid = np.array(
-                [[1.0, -1.0], [1.0, 1.0], [0.0, 0.0], [-1.0, -1.0], [-1.0, 1.0]]
-            )
-
-            pix = aa.Grid2DVoronoi(grid=grid)
-            # ridge points is a numpy array for speed, but convert to list for the comparisons below so we can use in
-            # to look for each list
-
-            pix.voronoi.ridge_grid = list(
-                map(lambda x: list(x), pix.voronoi.ridge_points)
-            )
-
-            assert len(pix.voronoi.ridge_points) == 8
-
-            assert [2, 0] in pix.voronoi.ridge_points or [
-                0,
-                2,
-            ] in pix.voronoi.ridge_points
-            assert [2, 1] in pix.voronoi.ridge_points or [
-                1,
-                2,
-            ] in pix.voronoi.ridge_points
-            assert [2, 3] in pix.voronoi.ridge_points or [
-                3,
-                2,
-            ] in pix.voronoi.ridge_points
-            assert [2, 4] in pix.voronoi.ridge_points or [
-                4,
-                2,
-            ] in pix.voronoi.ridge_points
-            assert [0, 1] in pix.voronoi.ridge_points or [
-                1,
-                0,
-            ] in pix.voronoi.ridge_points
-            assert [0.3] in pix.voronoi.ridge_points or [
-                3,
-                0,
-            ] in pix.voronoi.ridge_points
-            assert [3, 4] in pix.voronoi.ridge_points or [
-                4,
-                3,
-            ] in pix.voronoi.ridge_points
-            assert [4, 1] in pix.voronoi.ridge_points or [
-                1,
-                4,
-            ] in pix.voronoi.ridge_points
-
-        def test__9_points_in_square___sets_up_pairs_of_voronoi_cells(self):
-            # 9 points in a square - makes a square (this is the example int he scipy documentaiton page)
-
-            grid = np.array(
-                [
-                    [2.0, 0.0],
                     [2.0, 1.0],
-                    [2.0, 2.0],
+                    [0.0, 0.0],
                     [1.0, 0.0],
-                    [1.0, 1.0],
-                    [1.0, 2.0],
-                    [0.0, 0.0],
-                    [0.0, 1.0],
-                    [0.0, 2.0],
+                    [2.0, 0.0],
                 ]
             )
+        ).all()
 
-            pix = aa.Grid2DVoronoi(grid=grid)
+        # 5 points in the shape of the face of a 5 on a die - makes a diamond Voronoi diagram
 
-            # ridge points is a numpy array for speed, but convert to list for the comparisons below so we can use in
-            # to look for each list
+        grid = np.array(
+            [[-1.0, 1.0], [1.0, 1.0], [0.0, 0.0], [-1.0, -1.0], [1.0, -1.0]]
+        )
 
-            pix.voronoi.ridge_grid = list(
-                map(lambda x: list(x), pix.voronoi.ridge_points)
-            )
+        pix = aa.Grid2DVoronoi(grid=grid)
 
-            assert len(pix.voronoi.ridge_points) == 12
+        pix.voronoi.vertices = list(map(lambda x: list(x), pix.voronoi.vertices))
 
-            assert [0, 1] in pix.voronoi.ridge_points or [
-                1,
-                0,
-            ] in pix.voronoi.ridge_points
-            assert [1, 2] in pix.voronoi.ridge_points or [
-                2,
-                1,
-            ] in pix.voronoi.ridge_points
-            assert [3, 4] in pix.voronoi.ridge_points or [
-                4,
-                3,
-            ] in pix.voronoi.ridge_points
-            assert [4, 5] in pix.voronoi.ridge_points or [
-                5,
-                4,
-            ] in pix.voronoi.ridge_points
-            assert [6, 7] in pix.voronoi.ridge_points or [
-                7,
-                6,
-            ] in pix.voronoi.ridge_points
-            assert [7, 8] in pix.voronoi.ridge_points or [
-                8,
-                7,
-            ] in pix.voronoi.ridge_points
+        assert [0, 1.0] in pix.voronoi.vertices
+        assert [-1.0, 0.0] in pix.voronoi.vertices
+        assert [1.0, 0.0] in pix.voronoi.vertices
+        assert [0.0, -1.0] in pix.voronoi.vertices
 
-            assert [0, 3] in pix.voronoi.ridge_points or [
-                3,
-                0,
-            ] in pix.voronoi.ridge_points
-            assert [1, 4] in pix.voronoi.ridge_points or [
-                4,
-                1,
-            ] in pix.voronoi.ridge_points
-            assert [4, 7] in pix.voronoi.ridge_points or [
-                7,
-                4,
-            ] in pix.voronoi.ridge_points
-            assert [2, 5] in pix.voronoi.ridge_points or [
-                5,
-                2,
-            ] in pix.voronoi.ridge_points
-            assert [5, 8] in pix.voronoi.ridge_points or [
-                8,
-                5,
-            ] in pix.voronoi.ridge_points
-            assert [3, 6] in pix.voronoi.ridge_points or [
-                6,
-                3,
-            ] in pix.voronoi.ridge_points
+        # 9 points in a square - makes a square (this is the example int he scipy documentaiton page)
 
-    class TestNeighbors:
-        def test__compare_to_pixelization_util(self):
-            # 9 points in a square - makes a square (this is the example int he scipy documentaiton page)
+        grid = np.array(
+            [
+                [2.0, 0.0],
+                [2.0, 1.0],
+                [2.0, 2.0],
+                [1.0, 0.0],
+                [1.0, 1.0],
+                [1.0, 2.0],
+                [0.0, 0.0],
+                [0.0, 1.0],
+                [0.0, 2.0],
+            ]
+        )
 
-            grid = np.array(
-                [
-                    [3.0, 0.0],
-                    [2.0, 1.0],
-                    [2.0, 2.0],
-                    [8.0, 3.0],
-                    [1.0, 3.0],
-                    [1.0, 9.0],
-                    [6.0, 31.0],
-                    [0.0, 2.0],
-                    [3.0, 5.0],
-                ]
-            )
+        pix = aa.Grid2DVoronoi(grid=grid)
 
-            pix = aa.Grid2DVoronoi(grid=grid)
+        # ridge points is a numpy array for speed, but convert to list for the comparisons below so we can use in
+        # to look for each list
 
-            voronoi = scipy.spatial.Voronoi(
-                np.asarray([grid[:, 1], grid[:, 0]]).T, qhull_options="Qbb Qc Qx Qm"
-            )
+        pix.voronoi.vertices = list(map(lambda x: list(x), pix.voronoi.vertices))
 
-            (
-                pixel_neighbors_util,
-                pixel_neighbors_size_util,
-            ) = aa.util.pixelization.voronoi_neighbors_from(
-                pixels=9, ridge_points=np.array(voronoi.ridge_points)
-            )
+        assert [0.5, 1.5] in pix.voronoi.vertices
+        assert [1.5, 0.5] in pix.voronoi.vertices
+        assert [0.5, 0.5] in pix.voronoi.vertices
+        assert [1.5, 1.5] in pix.voronoi.vertices
 
-            assert (pix.pixel_neighbors == pixel_neighbors_util).all()
-            assert (pix.pixel_neighbors_size == pixel_neighbors_size_util).all()
+        # 9 points in a square - makes a square (this is the example int he scipy documentaiton page)
 
-        def test__qhull_error_is_caught(self):
+        grid = np.array(
+            [
+                [2.0, 0.0],
+                [2.0, 1.0],
+                [2.0, 2.0],
+                [1.0, 0.0],
+                [1.0, 1.0],
+                [1.0, 2.0],
+                [0.0, 0.0],
+                [0.0, 1.0],
+                [0.0, 2.0],
+            ]
+        )
 
-            grid = np.array([[3.0, 0.0]])
+        pix = aa.Grid2DVoronoi(grid=grid)
 
-            with pytest.raises(exc.PixelizationException):
-                aa.Grid2DVoronoi(grid=grid)
+        # ridge points is a numpy array for speed, but convert to list for the comparisons below so we can use in
+        # to look for each list
+
+        pix.voronoi.ridge_grid = list(map(lambda x: list(x), pix.voronoi.ridge_points))
+
+        assert len(pix.voronoi.ridge_points) == 12
+
+        assert [0, 1] in pix.voronoi.ridge_points or [1, 0] in pix.voronoi.ridge_points
+        assert [1, 2] in pix.voronoi.ridge_points or [2, 1] in pix.voronoi.ridge_points
+        assert [3, 4] in pix.voronoi.ridge_points or [4, 3] in pix.voronoi.ridge_points
+        assert [4, 5] in pix.voronoi.ridge_points or [5, 4] in pix.voronoi.ridge_points
+        assert [6, 7] in pix.voronoi.ridge_points or [7, 6] in pix.voronoi.ridge_points
+        assert [7, 8] in pix.voronoi.ridge_points or [8, 7] in pix.voronoi.ridge_points
+
+        assert [0, 3] in pix.voronoi.ridge_points or [3, 0] in pix.voronoi.ridge_points
+        assert [1, 4] in pix.voronoi.ridge_points or [4, 1] in pix.voronoi.ridge_points
+        assert [4, 7] in pix.voronoi.ridge_points or [7, 4] in pix.voronoi.ridge_points
+        assert [2, 5] in pix.voronoi.ridge_points or [5, 2] in pix.voronoi.ridge_points
+        assert [5, 8] in pix.voronoi.ridge_points or [8, 5] in pix.voronoi.ridge_points
+        assert [3, 6] in pix.voronoi.ridge_points or [6, 3] in pix.voronoi.ridge_points
+
+    def test__pixel_neighbors__compare_to_pixelization_util(self):
+
+        # 9 points in a square - makes a square (this is the example int he scipy documentaiton page)
+
+        grid = np.array(
+            [
+                [3.0, 0.0],
+                [2.0, 1.0],
+                [2.0, 2.0],
+                [8.0, 3.0],
+                [1.0, 3.0],
+                [1.0, 9.0],
+                [6.0, 31.0],
+                [0.0, 2.0],
+                [3.0, 5.0],
+            ]
+        )
+
+        pix = aa.Grid2DVoronoi(grid=grid)
+
+        voronoi = scipy.spatial.Voronoi(
+            np.asarray([grid[:, 1], grid[:, 0]]).T, qhull_options="Qbb Qc Qx Qm"
+        )
+
+        (
+            pixel_neighbors_util,
+            pixel_neighbors_size_util,
+        ) = aa.util.pixelization.voronoi_neighbors_from(
+            pixels=9, ridge_points=np.array(voronoi.ridge_points)
+        )
+
+        assert (pix.pixel_neighbors == pixel_neighbors_util).all()
+        assert (pix.pixel_neighbors_size == pixel_neighbors_size_util).all()
+
+    def test__qhull_error_is_caught(self):
+
+        grid = np.array([[3.0, 0.0]])
+
+        with pytest.raises(exc.PixelizationException):
+            aa.Grid2DVoronoi(grid=grid)

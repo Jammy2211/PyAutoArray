@@ -53,8 +53,7 @@ class ArrayOverlay(AbstractMatWrap2D):
 class GridScatter(AbstractMatWrap2D):
     """
     Scatters an input set of grid points, for example (y,x) coordinates or data structures representing 2D (y,x)
-    coordinates like a `Grid2D` or `Grid2DIrregular`. If the object groups (y,x) coordinates they are plotted with
-    varying colors according to their group.
+    coordinates like a `Grid2D` or `Grid2DIrregular`. List of (y,x) coordinates are plotted with varying colors.
 
     This object wraps the following Matplotlib methods:
 
@@ -74,7 +73,7 @@ class GridScatter(AbstractMatWrap2D):
     Parameters
     ----------
     colors : [str]
-        The color or list of colors that the grid is plotted using. For plotting indexes or a grouped grid, a
+        The color or list of colors that the grid is plotted using. For plotting indexes or a grid list, a
         list of colors can be specified which the plot cycles through.
     """
 
@@ -91,23 +90,24 @@ class GridScatter(AbstractMatWrap2D):
         if isinstance(grid, list):
             return self.scatter_grid_list(grid_list=grid)
 
-        plt.scatter(
-            y=np.asarray(grid)[:, 0], x=np.asarray(grid)[:, 1], **self.config_dict
-        )
+        config_dict = self.config_dict
+        config_dict.pop("c")
+
+        plt.scatter(y=np.asarray(grid)[:, 0], x=np.asarray(grid)[:, 1], **config_dict)
 
     def scatter_grid_list(
         self, grid_list: Union[List[grids.Grid2D], List[grids.Grid2DIrregular]]
     ):
         """
-         Plot an input grid of grouped (y,x) coordinates using the matplotlib method `plt.scatter`.
+         Plot an input list of grids of (y,x) coordinates using the matplotlib method `plt.scatter`.
 
-         Coordinates are grouped when they share a common origin or feature. This method colors each group the same,
-         so that the grouping is visible in the plot.
+         This method colors each grid in each entry of the list the same, so that the different grids are visible in
+         the plot.
 
          Parameters
          ----------
-         grid_list : Grid2DIrregular
-             The grid of grouped (y,x) coordinates that is plotted.
+         grid_list : [Grid2DIrregular]
+             The list of grids of (y,x) coordinates that are plotted.
          """
         if len(grid_list) == 0:
             return
@@ -240,7 +240,7 @@ class GridPlot(AbstractMatWrap2D):
     Parameters
     ----------
     colors : [str]
-        The color or list of colors that the grid is plotted using. For plotting indexes or a grouped grid, a
+        The color or list of colors that the grid is plotted using. For plotting indexes or a grid list, a
         list of colors can be specified which the plot cycles through.
     """
 
@@ -290,18 +290,17 @@ class GridPlot(AbstractMatWrap2D):
         self, grid_list: Union[List[grids.Grid2D], List[grids.Grid2DIrregular]]
     ):
         """
-         Plot an input grid of grouped (y,x) coordinates using the matplotlib method `plt.line`.
+         Plot an input list of grids of (y,x) coordinates using the matplotlib method `plt.line`.
 
-         Coordinates are grouped when they share a common origin or feature. This method colors each group the same,
-         so that the grouping is visible in the plot.
+        This method colors each grid in the list the same, so that the different grids are visible in the plot.
 
-         This provides an alternative to `GridScatter.scatter_grid_grouped` where the plotted grids appear as lines
+         This provides an alternative to `GridScatter.scatter_grid_list` where the plotted grids appear as lines
          instead of scattered points.
 
          Parameters
          ----------
          grid_list : Grid2DIrregular
-             The grid of grouped (y,x) coordinates that are plotted.
+             The list of grids of (y,x) coordinates that are plotted.
          """
 
         if len(grid_list) == 0:

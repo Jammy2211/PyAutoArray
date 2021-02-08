@@ -14,36 +14,30 @@ logger = logging.getLogger(__name__)
 class ValuesIrregular(np.ndarray):
     def __new__(cls, values):
         """
-        A collection of values structured in a way defining groups of values which share a common origin (for
-        example values may be grouped if they are from a specific region of a dataset).
+        A collection of values which are structured as follows:
 
-        Grouping is structured as follows:
+        [value0, value1, value3]
 
-        [[value0, value1], [value0, value1, value2]]
-
-        Here, we have two groups of values, where each group is associated with the other values.
-
-        The values object does not store the values as a list of list of floats, but instead a 1D NumPy array
-        of shape [total_values]. Index information is stored so that this array can be mapped to the list of
-        list of float structure above. They are stored as a NumPy array so the values can be used efficiently for
-        calculations.
+        The values object does not store the values as a list of floats, but instead a 1D NumPy array
+        of shape [total_values]. This array can be mapped to the list of floats structure above. They are stored
+        as a NumPy array so the values can be used efficiently for calculations.
 
         The values input to this function can have any of the following forms:
 
-        [[value0, value1], [value0]]
-        [[value0, value1]]
+        [value0, value1]
 
-        In all cases, they will be converted to a list of list of floats followed by a 1D NumPy array.
+        In all cases, they will be converted to a list of floats followed by a 1D NumPy array.
 
         Print methods are overridden so a user always "sees" the values as the list structure.
 
-        In contrast to a *Array2D* structure, *ValuesIrregular* do not lie on a uniform grid or correspond to values that
-        originate from a uniform grid. Therefore, when handling irregular data-sets *ValuesIrregular* should be used.
+        In contrast to a `Array2D` structure, `ValuesIrregular` do not lie on a uniform grid or correspond to values
+        that originate from a uniform grid. Therefore, when handling irregular data-sets `ValuesIrregular` should be
+        used.
 
         Parameters
         ----------
-        values : [[float]] or equivalent
-            A collection of values that are grouped according to whether they share a common origin.
+        values : [float] or equivalent
+            A collection of values.
         """
 
         if len(values) == 0:
@@ -63,18 +57,13 @@ class ValuesIrregular(np.ndarray):
 
     @property
     def in_list(self):
-        """Return the values on a structured list which groups values with a common origin."""
+        """Return the values in a list."""
         return [value for value in self]
-
-    @property
-    def in_grouped_list(self):
-        """Return the values on a structured list which groups values with a common origin."""
-        return self.in_list
 
     def values_from_array_slim(self, array_slim):
         """Create a *ValuesIrregular* object from a 1D ndarray of values of shape [total_values].
 
-        The *ValuesIrregular* are structured and grouped following this *ValuesIrregular* instance.
+        The *ValuesIrregular* are structured following this `ValuesIrregular` instance.
 
         Parameters
         ----------
@@ -85,7 +74,7 @@ class ValuesIrregular(np.ndarray):
     def grid_from_grid_slim(self, grid_slim):
         """Create a `Grid2DIrregular` object from a 2D ndarray array of values of shape [total_values, 2].
 
-        The `Grid2DIrregular` are structured and grouped following this *Coordinate* instance.
+        The `Grid2DIrregular` are structured following this *ValuesIrregular* instance.
 
         Parameters
         ----------

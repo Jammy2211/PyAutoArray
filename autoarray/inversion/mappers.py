@@ -105,6 +105,7 @@ class Mapper:
         hyper_image : np.ndarray
             A pre-computed hyper-image of the image the mapper is expected to reconstruct, used for adaptive analysis.
         """
+
         self.source_grid_slim = source_grid_slim
         self.source_pixelization_grid = source_pixelization_grid
         self.data_pixelization_grid = data_pixelization_grid

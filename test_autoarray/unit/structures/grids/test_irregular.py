@@ -15,12 +15,20 @@ test_grid_dir = path.join(
 class TestGrid2DIrregular:
     def test__input_as_list_or_list_of_other_types__all_convert_correctly(self):
 
+        # Input tuple
+
+        grid = aa.Grid2DIrregular(grid=[(1.0, -1.0)])
+
+        assert type(grid) == grids.Grid2DIrregular
+        assert (grid == np.array([[1.0, -1.0]])).all()
+        assert grid.in_list == [(1.0, -1.0)]
+
         # Input tuples
 
         grid = aa.Grid2DIrregular(grid=[(1.0, -1.0), (1.0, 1.0)])
 
         assert type(grid) == grids.Grid2DIrregular
-        assert (grid == np.array([[[1.0, -1.0], [1.0, 1.0]]])).all()
+        assert (grid == np.array([[1.0, -1.0], [1.0, 1.0]])).all()
         assert grid.in_list == [(1.0, -1.0), (1.0, 1.0)]
 
         # Input np array
@@ -28,7 +36,7 @@ class TestGrid2DIrregular:
         grid = aa.Grid2DIrregular(grid=[np.array([1.0, -1.0]), np.array([1.0, 1.0])])
 
         assert type(grid) == grids.Grid2DIrregular
-        assert (grid == np.array([[[1.0, -1.0], [1.0, 1.0]]])).all()
+        assert (grid == np.array([[1.0, -1.0], [1.0, 1.0]])).all()
         assert grid.in_list == [(1.0, -1.0), (1.0, 1.0)]
 
         # Input list
@@ -36,7 +44,7 @@ class TestGrid2DIrregular:
         grid = aa.Grid2DIrregular(grid=[[1.0, -1.0], [1.0, 1.0]])
 
         assert type(grid) == grids.Grid2DIrregular
-        assert (grid == np.array([[[1.0, -1.0], [1.0, 1.0]]])).all()
+        assert (grid == np.array([[1.0, -1.0], [1.0, 1.0]])).all()
         assert grid.in_list == [(1.0, -1.0), (1.0, 1.0)]
 
     def test__from_yx_1d(self):
