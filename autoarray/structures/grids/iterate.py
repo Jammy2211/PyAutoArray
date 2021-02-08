@@ -1,7 +1,7 @@
 import numpy as np
 
 from autoarray import decorator_util
-from autoarray.structures import grids
+from autoarray.structures import arrays, grids
 from autoarray.structures.grids import abstract_grid
 from autoarray.mask import mask_2d as msk
 from autoarray.util import array_util, geometry_util, grid_util
@@ -541,7 +541,6 @@ class Grid2DIterate(abstract_grid.AbstractGrid2D):
         grid_lower_sub_2d : arrays.Array2D
             The results computed by the function using a lower sub-grid size
         """
-        from autoarray.structures import arrays
 
         if not np.any(array_lower_sub_2d):
             return array_lower_sub_2d.slim
@@ -561,22 +560,22 @@ class Grid2DIterate(abstract_grid.AbstractGrid2D):
                 array_higher_sub_2d=array_higher_sub,
             )
 
-            iterated_array = self.iterated_array_jit_from(
-                iterated_array=iterated_array,
-                fractional_mask_higher_sub=fractional_mask_higher_sub,
-                fractional_mask_lower_sub=fractional_mask_lower_sub,
-                array_higher_sub_2d=array_higher_sub,
-            )
+            try:
+
+                iterated_array = self.iterated_array_jit_from(
+                    iterated_array=iterated_array,
+                    fractional_mask_higher_sub=fractional_mask_higher_sub,
+                    fractional_mask_lower_sub=fractional_mask_lower_sub,
+                    array_higher_sub_2d=array_higher_sub,
+                )
+
+            except ZeroDivisionError:
+
+                return self.return_iterated_array_result(iterated_array=iterated_array)
 
             if fractional_mask_higher_sub.is_all_true:
 
-                iterated_array_1d = array_util.sub_array_2d_slim_from(
-                    mask_2d=self.mask, sub_array_2d=iterated_array, sub_size=1
-                )
-
-                return arrays.Array2D(
-                    array=iterated_array_1d, mask=self.mask.mask_sub_1, store_slim=True
-                )
+                return self.return_iterated_array_result(iterated_array=iterated_array)
 
             array_lower_sub_2d = array_higher_sub
             fractional_mask_lower_sub = fractional_mask_higher_sub
@@ -590,8 +589,24 @@ class Grid2DIterate(abstract_grid.AbstractGrid2D):
 
         iterated_array_2d = iterated_array + array_higher_sub.native_binned
 
+        return self.return_iterated_array_result(iterated_array=iterated_array_2d)
+
+    def return_iterated_array_result(self, iterated_array : np.ndarray) -> arrays.Array2D:
+        """
+        Returns the resulting iterated array, by mapping it to 1D and then passing it back as an `Array2D` structure.
+
+        Parameters
+        ----------
+        iterated_array : np.ndarray
+
+        Returns
+        -------
+        iterated_array
+            The resulting array computed via iteration.
+        """
+
         iterated_array_1d = array_util.sub_array_2d_slim_from(
-            mask_2d=self.mask, sub_array_2d=iterated_array_2d, sub_size=1
+            mask_2d=self.mask, sub_array_2d=iterated_array, sub_size=1
         )
 
         return arrays.Array2D(
@@ -849,14 +864,11 @@ class Grid2DIterate(abstract_grid.AbstractGrid2D):
             result=result_sub_1_1d
         ).native_binned
 
-        try:
-            if len(result_sub_1_2d.shape) == 2:
-                return self.iterated_array_from_func(
-                    func=func, cls=cls, array_lower_sub_2d=result_sub_1_2d
-                )
-            elif len(result_sub_1_2d.shape) == 3:
-                return self.iterated_grid_from_func(
-                    func=func, cls=cls, grid_lower_sub_2d=result_sub_1_2d
-                )
-        except ZeroDivisionError:
-            raise exc.GridException
+        if len(result_sub_1_2d.shape) == 2:
+            return self.iterated_array_from_func(
+                func=func, cls=cls, array_lower_sub_2d=result_sub_1_2d
+            )
+        elif len(result_sub_1_2d.shape) == 3:
+            return self.iterated_grid_from_func(
+                func=func, cls=cls, grid_lower_sub_2d=result_sub_1_2d
+            )
