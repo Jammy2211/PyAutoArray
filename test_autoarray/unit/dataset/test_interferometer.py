@@ -135,12 +135,15 @@ class TestInterferometer:
 
 class TestSettingsMaskedInterferometer:
     def test__transformer_tag(self):
+
         settings = aa.SettingsMaskedInterferometer(transformer_class=aa.TransformerDFT)
         assert settings.transformer_tag == "__dft"
+
         settings = aa.SettingsMaskedInterferometer(
             transformer_class=aa.TransformerNUFFT
         )
         assert settings.transformer_tag == "__nufft"
+
         settings = aa.SettingsMaskedInterferometer(transformer_class=None)
         assert settings.transformer_tag == ""
 
@@ -150,7 +153,7 @@ class TestSettingsMaskedInterferometer:
             grid_class=aa.Grid2DIterate,
             grid_inversion_class=aa.Grid2D,
             fractional_accuracy=0.1,
-            sub_size=3,
+            sub_size_inversion=3,
             transformer_class=aa.TransformerDFT,
         )
 
