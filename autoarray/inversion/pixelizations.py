@@ -189,8 +189,8 @@ class Voronoi(Pixelization):
     def mapper_from_grid_and_sparse_grid(
         self,
         grid: grids.Grid2D,
-        sparse_grid: grids.Grid2D = None,
-        sparse_image_plane_grid: grids.Grid2D = None,
+        sparse_grid: grids.Grid2DSparse = None,
+        sparse_image_plane_grid: grids.Grid2DSparse = None,
         hyper_image: np.ndarray = None,
         settings=SettingsPixelization(),
     ):
@@ -226,9 +226,10 @@ class Voronoi(Pixelization):
             relocated_pixelization_grid = sparse_grid
 
         try:
+
             pixelization_grid = grids.Grid2DVoronoi(
                 grid=relocated_pixelization_grid,
-                nearest_pixelization_index_for_slim_index=sparse_grid.nearest_pixelization_index_for_slim_index,
+                nearest_pixelization_index_for_slim_index=sparse_grid.sparse_index_for_slim_index,
             )
 
             return mappers.MapperVoronoi(
@@ -237,6 +238,7 @@ class Voronoi(Pixelization):
                 data_pixelization_grid=sparse_image_plane_grid,
                 hyper_image=hyper_image,
             )
+
         except ValueError as e:
             raise e
 
@@ -262,13 +264,9 @@ class VoronoiMagnification(Voronoi):
         hyper_image: np.ndarray = None,
         settings=SettingsPixelization(),
     ):
-        sparse_grid = grids.Grid2DSparse.from_grid_and_unmasked_2d_grid_shape(
-            grid=grid, unmasked_sparse_shape=self.shape
-        )
 
-        return grids.Grid2DVoronoi(
-            grid=sparse_grid.sparse,
-            nearest_pixelization_index_for_slim_index=sparse_grid.sparse_index_for_slim_index,
+        return grids.Grid2DSparse.from_grid_and_unmasked_2d_grid_shape(
+            grid=grid, unmasked_sparse_shape=self.shape
         )
 
 
@@ -287,6 +285,7 @@ class VoronoiBrightnessImage(Voronoi):
         self.weight_power = weight_power
 
     def weight_map_from_hyper_image(self, hyper_image: np.ndarray):
+
         weight_map = (hyper_image - np.min(hyper_image)) / (
             np.max(hyper_image) - np.min(hyper_image)
         ) + self.weight_floor * np.max(hyper_image)
@@ -299,17 +298,13 @@ class VoronoiBrightnessImage(Voronoi):
         hyper_image: np.ndarray,
         settings=SettingsPixelization(),
     ):
+
         weight_map = self.weight_map_from_hyper_image(hyper_image=hyper_image)
 
-        sparse_grid = grids.Grid2DSparse.from_total_pixels_grid_and_weight_map(
+        return grids.Grid2DSparse.from_total_pixels_grid_and_weight_map(
             total_pixels=self.pixels,
             grid=grid,
             weight_map=weight_map,
             seed=settings.kmeans_seed,
             stochastic=settings.is_stochastic,
-        )
-
-        return grids.Grid2DVoronoi(
-            grid=sparse_grid.sparse,
-            nearest_pixelization_index_for_slim_index=sparse_grid.sparse_index_for_slim_index,
         )

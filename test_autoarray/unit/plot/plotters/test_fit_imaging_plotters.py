@@ -109,7 +109,7 @@ def test__fit_sub_plot(fit_imaging_7x7, plot_path, plot_patch):
 
 
 def test__output_as_fits__correct_output_format(
-    fit_imaging_7x7, grid_irregular_grouped_7x7, mask_7x7, plot_path, plot_patch
+    fit_imaging_7x7, grid_irregular_7x7_list, mask_7x7, plot_path, plot_patch
 ):
 
     fit_imaging_plotter = aplt.FitImagingPlotter(

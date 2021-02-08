@@ -65,6 +65,16 @@ def make_grid_iterate_7x7():
     return fixtures.make_grid_iterate_7x7()
 
 
+@pytest.fixture(name="grid_irregular_7x7")
+def make_grid_irregular_7x7():
+    return fixtures.make_grid_irregular_7x7()
+
+
+@pytest.fixture(name="grid_irregular_7x7_list")
+def make_grid_irregular_7x7_list():
+    return fixtures.make_grid_irregular_7x7_list()
+
+
 @pytest.fixture(name="blurring_grid_7x7")
 def make_blurring_grid_7x7():
     return fixtures.make_blurring_grid_7x7()
@@ -78,11 +88,6 @@ def make_image_7x7():
 @pytest.fixture(name="noise_map_7x7")
 def make_noise_map_7x7():
     return fixtures.make_noise_map_7x7()
-
-
-@pytest.fixture(name="grid_irregular_grouped_7x7")
-def make_grid_irregular_grouped_7x7():
-    return fixtures.make_grid_irregular_grouped_7x7()
 
 
 @pytest.fixture(name="imaging_7x7")

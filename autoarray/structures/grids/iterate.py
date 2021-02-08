@@ -1,7 +1,7 @@
 import numpy as np
 
 from autoarray import decorator_util
-from autoarray.structures import grids
+from autoarray.structures import arrays, grids
 from autoarray.structures.grids import abstract_grid
 from autoarray.mask import mask_2d as msk
 from autoarray.util import array_util, geometry_util, grid_util
@@ -26,7 +26,8 @@ class Grid2DIterate(abstract_grid.AbstractGrid2D):
         *args,
         **kwargs,
     ):
-        """Represents a grid of coordinates as described for the `Grid2D` class, but using an iterative sub-grid that
+        """
+        Represents a grid of coordinates as described for the `Grid2D` class, but using an iterative sub-grid that
         adapts its resolution when it is input into a function that performs an analytic calculation.
 
         A `Grid2D` represents (y,x) coordinates using a sub-grid, where functions are evaluated once at every coordinate
@@ -92,7 +93,8 @@ class Grid2DIterate(abstract_grid.AbstractGrid2D):
             self.sub_steps = obj.sub_steps
 
     def _new_structure(self, grid, mask, store_slim):
-        """Conveninence method for creating a new instance of the Grid2DIterate class from this grid.
+        """
+        Conveninence method for creating a new instance of the Grid2DIterate class from this grid.
 
         This method is used in the 'slim', 'native', etc. convenience methods. By overwritin this method such that a
         Grid2DIterate is created the slim and native methods will return instances of the Grid2DIterate.
@@ -127,11 +129,12 @@ class Grid2DIterate(abstract_grid.AbstractGrid2D):
         sub_steps=None,
         store_slim=True,
     ):
-        """Create a Grid2DIterate (see *Grid2DIterate.__new__*) by inputting the grid coordinates in 1D, for example:
+        """
+        Create a Grid2DIterate (see *Grid2DIterate.__new__*) by inputting the grid coordinates in 1D, for example:
 
-            grid=np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0]])
+        grid=np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0]])
 
-            grid=[[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0]]
+        grid=[[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0]]
 
         From 1D input the method cannot determine the 2D shape of the grid and its mask, thus the shape_native must be
         input into this method. The mask is setup as a unmasked `Mask2D` of shape_native.
@@ -199,7 +202,8 @@ class Grid2DIterate(abstract_grid.AbstractGrid2D):
         sub_steps=None,
         store_slim=True,
     ):
-        """Create a Grid2DIterate (see *Grid2DIterate.__new__*) as a uniform grid of (y,x) values given an input
+        """
+        Create a Grid2DIterate (see *Grid2DIterate.__new__*) as a uniform grid of (y,x) values given an input
         shape_native and pixel scale of the grid:
 
         Parameters
@@ -245,7 +249,8 @@ class Grid2DIterate(abstract_grid.AbstractGrid2D):
     def from_mask(
         cls, mask, fractional_accuracy=0.9999, sub_steps=None, store_slim=True
     ):
-        """Create a Grid2DIterate (see *Grid2DIterate.__new__*) from a mask, where only unmasked pixels are included in
+        """
+        Create a Grid2DIterate (see *Grid2DIterate.__new__*) from a mask, where only unmasked pixels are included in
         the grid (if the grid is represented in 2D masked values are (0.0, 0.0)).
 
         The mask's pixel_scales and origin properties are used to compute the grid (y,x) coordinates.
@@ -299,7 +304,8 @@ class Grid2DIterate(abstract_grid.AbstractGrid2D):
         sub_steps=None,
         store_slim=True,
     ):
-        """Setup a blurring-grid from a mask, where a blurring grid consists of all pixels that are masked (and
+        """
+        Setup a blurring-grid from a mask, where a blurring grid consists of all pixels that are masked (and
         therefore have their values set to (0.0, 0.0)), but are close enough to the unmasked pixels that their values
         will be convolved into the unmasked those pixels. This occurs in *PyAutoGalaxy* when computing images from
         light profile objects.
@@ -338,14 +344,14 @@ class Grid2DIterate(abstract_grid.AbstractGrid2D):
     def grid_from_deflection_grid(self, deflection_grid):
         """
         Returns a new Grid2DIterate from this grid, where the (y,x) coordinates of this grid have a grid of (y,x) values,
-             termed the deflection grid, subtracted from them to determine the new grid of (y,x) values.
+        termed the deflection grid, subtracted from them to determine the new grid of (y,x) values.
 
-            This is used by PyAutoLens to perform grid ray-tracing.
+        This is used by PyAutoLens to perform grid ray-tracing.
 
-            Parameters
-            ----------
-            deflection_grid : np.ndarray
-                The grid of (y,x) coordinates which is subtracted from this grid.
+        Parameters
+        ----------
+        deflection_grid : np.ndarray
+            The grid of (y,x) coordinates which is subtracted from this grid.
         """
         return Grid2DIterate(
             grid=self - deflection_grid,
@@ -376,7 +382,8 @@ class Grid2DIterate(abstract_grid.AbstractGrid2D):
         )
 
     def padded_grid_from_kernel_shape(self, kernel_shape_native):
-        """When the edge pixels of a mask are unmasked and a convolution is to occur, the signal of edge pixels will be
+        """
+        When the edge pixels of a mask are unmasked and a convolution is to occur, the signal of edge pixels will be
         'missing' if the grid is used to evaluate the signal via an analytic function.
 
         To ensure this signal is included the padded grid is used, which is 'buffed' such that it includes all pixels
@@ -429,20 +436,20 @@ class Grid2DIterate(abstract_grid.AbstractGrid2D):
     ) -> msk.Mask2D:
         """
         Returns a fractional mask from a result array, where the fractional mask describes whether the evaluated
-            value in the result array is within the `Grid2DIterate`'s specified fractional accuracy. The fractional mask thus
-            determines whether a pixel on the grid needs to be reevaluated at a higher level of sub-gridding to meet the
-            specified fractional accuracy. If it must be re-evaluated, the fractional masks's entry is `False`.
+        value in the result array is within the `Grid2DIterate`'s specified fractional accuracy. The fractional mask thus
+        determines whether a pixel on the grid needs to be reevaluated at a higher level of sub-gridding to meet the
+        specified fractional accuracy. If it must be re-evaluated, the fractional masks's entry is `False`.
 
-            The fractional mask is computed by comparing the results evaluated at one level of sub-gridding to another
-            at a higher level of sub-griding. Thus, the sub-grid size in chosen on a per-pixel basis until the function
-            is evaluated at the specified fractional accuracy.
+        The fractional mask is computed by comparing the results evaluated at one level of sub-gridding to another
+        at a higher level of sub-griding. Thus, the sub-grid size in chosen on a per-pixel basis until the function
+        is evaluated at the specified fractional accuracy.
 
-            Parameters
-            ----------
-            array_lower_sub_2d : arrays.Array2D
-                The results computed by a function using a lower sub-grid size
-            array_higher_sub_2d : arrays.Array2D
-                The results computed by a function using a higher sub-grid size.
+        Parameters
+        ----------
+        array_lower_sub_2d : arrays.Array2D
+            The results computed by a function using a lower sub-grid size
+        array_higher_sub_2d : arrays.Array2D
+            The results computed by a function using a higher sub-grid size.
         """
 
         fractional_mask = msk.Mask2D.unmasked(
@@ -474,13 +481,15 @@ class Grid2DIterate(abstract_grid.AbstractGrid2D):
         array_lower_sub_2d,
         array_higher_mask,
     ):
-        """Jitted functioon to determine the fractional mask, which is a mask where:
+        """
+        Jitted functioon to determine the fractional mask, which is a mask where:
 
         - `True` entries signify the function has been evaluated in that pixel to desired fractional accuracy and
            therefore does not need to be iteratively computed at higher levels of sub-gridding.
 
         - `False` entries signify the function has not been evaluated in that pixel to desired fractional accuracy and
-           therefore must be iterative computed at higher levels of sub-gridding to meet this accuracy."""
+           therefore must be iterative computed at higher levels of sub-gridding to meet this accuracy.
+        """
 
         for y in range(fractional_mask.shape[0]):
             for x in range(fractional_mask.shape[1]):
@@ -505,7 +514,8 @@ class Grid2DIterate(abstract_grid.AbstractGrid2D):
         return fractional_mask
 
     def iterated_array_from_func(self, func, cls, array_lower_sub_2d):
-        """Iterate over a function that returns an array of values until the it meets a specified fractional accuracy.
+        """
+        Iterate over a function that returns an array of values until the it meets a specified fractional accuracy.
         The function returns a result on a pixel-grid where evaluating it on more points on a higher resolution
         sub-grid followed by binning lead to a more precise evaluation of the function. The function is assumed to
         belong to a class, which is input into tthe method.
@@ -531,7 +541,6 @@ class Grid2DIterate(abstract_grid.AbstractGrid2D):
         grid_lower_sub_2d : arrays.Array2D
             The results computed by the function using a lower sub-grid size
         """
-        from autoarray.structures import arrays
 
         if not np.any(array_lower_sub_2d):
             return array_lower_sub_2d.slim
@@ -546,27 +555,27 @@ class Grid2DIterate(abstract_grid.AbstractGrid2D):
                 func=func, cls=cls, mask=fractional_mask_lower_sub, sub_size=sub_size
             )
 
-            fractional_mask_higher_sub = self.fractional_mask_from_arrays(
-                array_lower_sub_2d=array_lower_sub_2d,
-                array_higher_sub_2d=array_higher_sub,
-            )
+            try:
 
-            iterated_array = self.iterated_array_jit_from(
-                iterated_array=iterated_array,
-                fractional_mask_higher_sub=fractional_mask_higher_sub,
-                fractional_mask_lower_sub=fractional_mask_lower_sub,
-                array_higher_sub_2d=array_higher_sub,
-            )
+                fractional_mask_higher_sub = self.fractional_mask_from_arrays(
+                    array_lower_sub_2d=array_lower_sub_2d,
+                    array_higher_sub_2d=array_higher_sub,
+                )
+
+                iterated_array = self.iterated_array_jit_from(
+                    iterated_array=iterated_array,
+                    fractional_mask_higher_sub=fractional_mask_higher_sub,
+                    fractional_mask_lower_sub=fractional_mask_lower_sub,
+                    array_higher_sub_2d=array_higher_sub,
+                )
+
+            except ZeroDivisionError:
+
+                return self.return_iterated_array_result(iterated_array=iterated_array)
 
             if fractional_mask_higher_sub.is_all_true:
 
-                iterated_array_1d = array_util.sub_array_2d_slim_from(
-                    mask_2d=self.mask, sub_array_2d=iterated_array, sub_size=1
-                )
-
-                return arrays.Array2D(
-                    array=iterated_array_1d, mask=self.mask.mask_sub_1, store_slim=True
-                )
+                return self.return_iterated_array_result(iterated_array=iterated_array)
 
             array_lower_sub_2d = array_higher_sub
             fractional_mask_lower_sub = fractional_mask_higher_sub
@@ -580,8 +589,24 @@ class Grid2DIterate(abstract_grid.AbstractGrid2D):
 
         iterated_array_2d = iterated_array + array_higher_sub.native_binned
 
+        return self.return_iterated_array_result(iterated_array=iterated_array_2d)
+
+    def return_iterated_array_result(self, iterated_array : np.ndarray) -> arrays.Array2D:
+        """
+        Returns the resulting iterated array, by mapping it to 1D and then passing it back as an `Array2D` structure.
+
+        Parameters
+        ----------
+        iterated_array : np.ndarray
+
+        Returns
+        -------
+        iterated_array
+            The resulting array computed via iteration.
+        """
+
         iterated_array_1d = array_util.sub_array_2d_slim_from(
-            mask_2d=self.mask, sub_array_2d=iterated_array_2d, sub_size=1
+            mask_2d=self.mask, sub_array_2d=iterated_array, sub_size=1
         )
 
         return arrays.Array2D(
@@ -596,9 +621,11 @@ class Grid2DIterate(abstract_grid.AbstractGrid2D):
         fractional_mask_lower_sub,
         array_higher_sub_2d,
     ):
-        """Create the iterated array from a result array that is computed at a higher sub size leel than the previous grid.
+        """
+        Create the iterated array from a result array that is computed at a higher sub size leel than the previous grid.
 
-        The iterated array is only updated for pixels where the fractional accuracy is met."""
+        The iterated array is only updated for pixels where the fractional accuracy is met.
+        """
 
         for y in range(iterated_array.shape[0]):
             for x in range(iterated_array.shape[1]):
@@ -615,20 +642,20 @@ class Grid2DIterate(abstract_grid.AbstractGrid2D):
     ) -> msk.Mask2D:
         """
         Returns a fractional mask from a result array, where the fractional mask describes whether the evaluated
-            value in the result array is within the `Grid2DIterate`'s specified fractional accuracy. The fractional mask thus
-            determines whether a pixel on the grid needs to be reevaluated at a higher level of sub-gridding to meet the
-            specified fractional accuracy. If it must be re-evaluated, the fractional masks's entry is `False`.
+        value in the result array is within the `Grid2DIterate`'s specified fractional accuracy. The fractional mask thus
+        determines whether a pixel on the grid needs to be reevaluated at a higher level of sub-gridding to meet the
+        specified fractional accuracy. If it must be re-evaluated, the fractional masks's entry is `False`.
 
-            The fractional mask is computed by comparing the results evaluated at one level of sub-gridding to another
-            at a higher level of sub-griding. Thus, the sub-grid size in chosen on a per-pixel basis until the function
-            is evaluated at the specified fractional accuracy.
+        The fractional mask is computed by comparing the results evaluated at one level of sub-gridding to another
+        at a higher level of sub-griding. Thus, the sub-grid size in chosen on a per-pixel basis until the function
+        is evaluated at the specified fractional accuracy.
 
-            Parameters
-            ----------
-            grid_lower_sub_2d : arrays.Array2D
-                The results computed by a function using a lower sub-grid size
-            grid_higher_sub_2d : grids.Array2D
-                The results computed by a function using a higher sub-grid size.
+        Parameters
+        ----------
+        grid_lower_sub_2d : arrays.Array2D
+            The results computed by a function using a lower sub-grid size
+        grid_higher_sub_2d : grids.Array2D
+            The results computed by a function using a higher sub-grid size.
         """
 
         fractional_mask = msk.Mask2D.unmasked(
@@ -660,13 +687,15 @@ class Grid2DIterate(abstract_grid.AbstractGrid2D):
         grid_lower_sub_2d,
         grid_higher_mask,
     ):
-        """Jitted function to determine the fractional mask, which is a mask where:
+        """
+        Jitted function to determine the fractional mask, which is a mask where:
 
         - `True` entries signify the function has been evaluated in that pixel to desired fractional accuracy and
            therefore does not need to be iteratively computed at higher levels of sub-gridding.
 
         - `False` entries signify the function has not been evaluated in that pixel to desired fractional accuracy and
-           therefore must be iterative computed at higher levels of sub-gridding to meet this accuracy."""
+           therefore must be iterative computed at higher levels of sub-gridding to meet this accuracy.
+        """
 
         for y in range(fractional_mask.shape[0]):
             for x in range(fractional_mask.shape[1]):
@@ -707,7 +736,8 @@ class Grid2DIterate(abstract_grid.AbstractGrid2D):
         return fractional_mask
 
     def iterated_grid_from_func(self, func, cls, grid_lower_sub_2d):
-        """Iterate over a function that returns a grid of values until the it meets a specified fractional accuracy.
+        """
+        Iterate over a function that returns a grid of values until the it meets a specified fractional accuracy.
         The function returns a result on a pixel-grid where evaluating it on more points on a higher resolution
         sub-grid followed by binning lead to a more precise evaluation of the function. For the fractional accuracy of
         the grid to be met, both the y and x values must meet it.
@@ -796,10 +826,11 @@ class Grid2DIterate(abstract_grid.AbstractGrid2D):
         fractional_mask_lower_sub,
         grid_higher_sub_2d,
     ):
-        """Create the iterated grid from a result grid that is computed at a higher sub size level than the previous
-        grid.
+        """
+        Create the iterated grid from a result grid that is computed at a higher sub size level than the previous grid.
 
-        The iterated grid is only updated for pixels where the fractional accuracy is met in both the (y,x) coodinates."""
+        The iterated grid is only updated for pixels where the fractional accuracy is met in both the (y,x) coodinates.
+        """
 
         for y in range(iterated_grid.shape[0]):
             for x in range(iterated_grid.shape[1]):
@@ -812,7 +843,8 @@ class Grid2DIterate(abstract_grid.AbstractGrid2D):
         return iterated_grid
 
     def iterated_result_from_func(self, func, cls):
-        """Iterate over a function that returns an array or grid of values until the it meets a specified fractional
+        """
+        Iterate over a function that returns an array or grid of values until the it meets a specified fractional
         accuracy. The function returns a result on a pixel-grid where evaluating it on more points on a higher
         resolution sub-grid followed by binning lead to a more precise evaluation of the function.
 

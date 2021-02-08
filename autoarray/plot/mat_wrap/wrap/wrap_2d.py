@@ -10,6 +10,7 @@ from matplotlib.collections import PatchCollection
 import numpy as np
 import itertools
 import typing
+from typing import List, Union
 
 from autoarray.inversion import mappers
 from autoarray.structures import grids, vector_fields
@@ -52,8 +53,7 @@ class ArrayOverlay(AbstractMatWrap2D):
 class GridScatter(AbstractMatWrap2D):
     """
     Scatters an input set of grid points, for example (y,x) coordinates or data structures representing 2D (y,x)
-    coordinates like a `Grid2D` or `Grid2DIrregular`. If the object groups (y,x) coordinates they are plotted with
-    varying colors according to their group.
+    coordinates like a `Grid2D` or `Grid2DIrregular`. List of (y,x) coordinates are plotted with varying colors.
 
     This object wraps the following Matplotlib methods:
 
@@ -73,7 +73,7 @@ class GridScatter(AbstractMatWrap2D):
     Parameters
     ----------
     colors : [str]
-        The color or list of colors that the grid is plotted using. For plotting indexes or a grouped grid, a
+        The color or list of colors that the grid is plotted using. For plotting indexes or a grid list, a
         list of colors can be specified which the plot cycles through.
     """
 
@@ -87,9 +87,43 @@ class GridScatter(AbstractMatWrap2D):
             The grid of (y,x) coordinates that is plotted.
         """
 
-        plt.scatter(
-            y=np.asarray(grid)[:, 0], x=np.asarray(grid)[:, 1], **self.config_dict
-        )
+        config_dict = self.config_dict
+        config_dict.pop("c")
+
+        try:
+            plt.scatter(y=np.asarray(grid)[:, 0], x=np.asarray(grid)[:, 1], **config_dict)
+        except IndexError:
+            return self.scatter_grid_list(grid_list=grid)
+
+    def scatter_grid_list(
+        self, grid_list: Union[List[grids.Grid2D], List[grids.Grid2DIrregular]]
+    ):
+        """
+         Plot an input list of grids of (y,x) coordinates using the matplotlib method `plt.scatter`.
+
+         This method colors each grid in each entry of the list the same, so that the different grids are visible in
+         the plot.
+
+         Parameters
+         ----------
+         grid_list : [Grid2DIrregular]
+             The list of grids of (y,x) coordinates that are plotted.
+         """
+        if len(grid_list) == 0:
+            return
+
+        color = itertools.cycle(self.config_dict["c"])
+        config_dict = self.config_dict
+        config_dict.pop("c")
+
+        for grid in grid_list:
+
+            plt.scatter(
+                y=np.asarray(grid)[:, 0],
+                x=np.asarray(grid)[:, 1],
+                c=next(color),
+                **config_dict,
+            )
 
     def scatter_grid_colored(
         self,
@@ -192,34 +226,6 @@ class GridScatter(AbstractMatWrap2D):
                     "useable type"
                 )
 
-    def scatter_grid_grouped(self, grid_grouped: grids.Grid2DIrregularGrouped):
-        """
-         Plot an input grid of grouped (y,x) coordinates using the matplotlib method `plt.scatter`.
-
-         Coordinates are grouped when they share a common origin or feature. This method colors each group the same,
-         so that the grouping is visible in the plot.
-
-         Parameters
-         ----------
-         grid_grouped : Grid2DIrregularGrouped
-             The grid of grouped (y,x) coordinates that is plotted.
-         """
-        if len(grid_grouped) == 0:
-            return
-
-        color = itertools.cycle(self.config_dict["c"])
-        config_dict = self.config_dict
-        config_dict.pop("c")
-
-        for group in grid_grouped.in_grouped_list:
-
-            plt.scatter(
-                y=np.asarray(group)[:, 0],
-                x=np.asarray(group)[:, 1],
-                c=next(color),
-                **config_dict,
-            )
-
 
 class GridPlot(AbstractMatWrap2D):
     """
@@ -234,7 +240,7 @@ class GridPlot(AbstractMatWrap2D):
     Parameters
     ----------
     colors : [str]
-        The color or list of colors that the grid is plotted using. For plotting indexes or a grouped grid, a
+        The color or list of colors that the grid is plotted using. For plotting indexes or a grid list, a
         list of colors can be specified which the plot cycles through.
     """
 
@@ -275,36 +281,40 @@ class GridPlot(AbstractMatWrap2D):
         grid : Grid2D
             The grid of (y,x) coordinates that is plotted.
         """
-        plt.plot(np.asarray(grid)[:, 1], np.asarray(grid)[:, 0], **self.config_dict)
+        try:
+            plt.plot(np.asarray(grid)[:, 1], np.asarray(grid)[:, 0], **self.config_dict)
+        except IndexError:
+            return self.plot_grid_list(grid_list=grid)
 
-    def plot_grid_grouped(self, grid_grouped: grids.Grid2DIrregularGrouped):
+    def plot_grid_list(
+        self, grid_list: Union[List[grids.Grid2D], List[grids.Grid2DIrregular]]
+    ):
         """
-         Plot an input grid of grouped (y,x) coordinates using the matplotlib method `plt.line`.
+         Plot an input list of grids of (y,x) coordinates using the matplotlib method `plt.line`.
 
-         Coordinates are grouped when they share a common origin or feature. This method colors each group the same,
-         so that the grouping is visible in the plot.
+        This method colors each grid in the list the same, so that the different grids are visible in the plot.
 
-         This provides an alternative to `GridScatter.scatter_grid_grouped` where the plotted grids appear as lines
+         This provides an alternative to `GridScatter.scatter_grid_list` where the plotted grids appear as lines
          instead of scattered points.
 
          Parameters
          ----------
-         grid_grouped : Grid2DIrregularGrouped
-             The grid of grouped (y,x) coordinates that are plotted.
+         grid_list : Grid2DIrregular
+             The list of grids of (y,x) coordinates that are plotted.
          """
 
-        if len(grid_grouped) == 0:
+        if len(grid_list) == 0:
             return
 
         color = itertools.cycle(self.config_dict["c"])
         config_dict = self.config_dict
         config_dict.pop("c")
 
-        for grid_group in grid_grouped.in_grouped_list:
+        for grid in grid_list:
 
             plt.plot(
-                np.asarray(grid_group)[:, 1],
-                np.asarray(grid_group)[:, 0],
+                np.asarray(grid)[:, 1],
+                np.asarray(grid)[:, 0],
                 c=next(color),
                 **config_dict,
             )
@@ -444,7 +454,7 @@ class VoronoiDrawer(AbstractMatWrap2D):
         regions : list of tuples
             Indices of vertices in each revised Voronoi regions.
         vertices : list of tuples
-            Grid2DIrregularGrouped for revised Voronoi vertices. Same as coordinates
+            Grid2DIrregular for revised Voronoi vertices. Same as coordinates
             of input vertices, with 'points at infinity' appended to the
             end.
         """

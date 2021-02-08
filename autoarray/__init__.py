@@ -1,6 +1,6 @@
 from autoarray.structures.lines.lines import Line1D
-from autoarray.structures.grids.irregular import Grid2DIrregularGrouped
-from autoarray.structures.grids.irregular import Grid2DIrregularGroupedUniform
+from autoarray.structures.grids.irregular import Grid2DIrregular
+from autoarray.structures.grids.irregular import Grid2DIrregularUniform
 from autoarray.structures.grids.iterate import Grid2DIterate
 from autoarray.structures.vector_fields.vector_field_irregular import (
     VectorField2DIrregular,
@@ -37,7 +37,8 @@ from .operators.convolver import Convolver
 from .operators.transformer import TransformerDFT
 from .operators.transformer import TransformerNUFFT
 from .structures.arrays import Array2D
-from .structures.arrays import ValuesIrregularGrouped
+from .structures.arrays import ValuesIrregular
+from .structures.arrays import ValuesIrregular
 from .structures.arrays.abstract_array import ExposureInfo
 from .structures.frames import Frame2D
 from .structures.frames.abstract_frame import Scans
@@ -46,8 +47,7 @@ from .structures.grids import Grid2DInterpolate
 from .structures.grids import Grid2DRectangular
 from .structures.grids import Grid2DVoronoi
 from .structures.grids import Grid2DIrregular
-from .structures.grids import Grid2DIrregularGrouped
-from .structures.grids import Grid2DIrregularGroupedUniform
+from .structures.grids import Grid2DIrregularUniform
 from .structures.region import Region2D
 from .structures.kernel import Kernel2D
 from .structures.region import Region2D
@@ -58,4 +58,4 @@ from autoconf import conf
 
 conf.instance.register(__file__)
 
-__version__ = '0.18.0'
+__version__ = '0.18.1'

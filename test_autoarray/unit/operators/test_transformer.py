@@ -317,7 +317,7 @@ class TestVisiblitiesMappingMatrix:
 
 
 class TestTransformerNUFFT:
-    def test__image_from_visibilities__same_as_direct__include_numerics(self):
+    def test__visibilities_from_image__same_as_direct__include_numerics(self):
 
         uv_wavelengths = np.array([[0.2, 1.0], [0.5, 1.1], [0.8, 1.2]])
 

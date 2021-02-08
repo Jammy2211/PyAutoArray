@@ -19,14 +19,12 @@ class SettingsInversion:
     def __init__(
         self,
         use_linear_operators=False,
-        use_preconditioner=False,
-        tolerance=1e-6,
+        tolerance=1e-8,
         maxiter=250,
         check_solution=True,
     ):
 
         self.use_linear_operators = use_linear_operators
-        self.use_preconditioner = use_preconditioner
         self.tolerance = tolerance
         self.maxiter = maxiter
         self.check_solution = check_solution
@@ -35,8 +33,7 @@ class SettingsInversion:
     def tag(self):
         return (
             f"{conf.instance['notation']['settings_tags']['inversion']['inversion']}["
-            f"{self.use_linear_operators_tag}"
-            f"{self.use_preconditioner_tag}]"
+            f"{self.use_linear_operators_tag}]"
         )
 
     @property
@@ -44,12 +41,6 @@ class SettingsInversion:
         if not self.use_linear_operators:
             return f"{conf.instance['notation']['settings_tags']['inversion']['use_matrices']}"
         return f"{conf.instance['notation']['settings_tags']['inversion']['use_linear_operators']}"
-
-    @property
-    def use_preconditioner_tag(self):
-        if self.use_preconditioner:
-            return f"__{conf.instance['notation']['settings_tags']['inversion']['use_preconditioner']}"
-        return ""
 
 
 def inversion(
@@ -607,35 +598,10 @@ class InversionInterferometerMatrix(
         curvature_matrix = np.add(real_curvature_matrix, imag_curvature_matrix)
         curvature_reg_matrix = np.add(curvature_matrix, regularization_matrix)
 
-        if settings.use_preconditioner:
-
-            preconditioner_matrix = inversion_util.preconditioner_matrix_via_mapping_matrix_from(
-                mapping_matrix=mapper.mapping_matrix,
-                regularization_matrix=regularization_matrix,
-                preconditioner_noise_normalization=np.sum(
-                    (1.0 / noise_map.real ** 2) + (1.0 / noise_map.imag ** 2)
-                ),
-            )
-
-            preconditioner_inv = np.linalg.inv(preconditioner_matrix)
-            precondtioned_curvature_reg_matrix = np.matmul(
-                preconditioner_inv, curvature_reg_matrix
-            )
-            preconditioned_data_vector = np.matmul(preconditioner_inv, data_vector)
-
-            try:
-                values = np.linalg.solve(
-                    precondtioned_curvature_reg_matrix, preconditioned_data_vector
-                )
-            except np.linalg.LinAlgError:
-                raise exc.InversionException()
-
-        else:
-
-            try:
-                values = np.linalg.solve(curvature_reg_matrix, data_vector)
-            except np.linalg.LinAlgError:
-                raise exc.InversionException()
+        try:
+            values = np.linalg.solve(curvature_reg_matrix, data_vector)
+        except np.linalg.LinAlgError:
+            raise exc.InversionException()
 
         if settings.check_solution:
             if np.isclose(a=values[0], b=values[1], atol=1e-4).all():
@@ -744,80 +710,45 @@ class InversionInterferometerLinearOperator(AbstractInversionInterferometer):
         )
 
         Aop = pylops.MatrixMult(
-            sparse.bsr_matrix(mapper.mapping_matrix), dtype="complex128"
+            sparse.bsr_matrix(mapper.mapping_matrix), dtype="float64"
         )
+
         Fop = transformer
 
         Op = Fop * Aop
 
-        Rop = reg.RegularizationLop(
-            regularization_matrix=regularization_matrix, dtype="float64"
+        curvature_matrix_approx = np.multiply(
+            np.sum(noise_map.weights_ordered_1d),
+            mapper.mapping_matrix.T @ mapper.mapping_matrix,
         )
 
-        preconditioner_matrix = inversion_util.preconditioner_matrix_via_mapping_matrix_from(
-            mapping_matrix=mapper.mapping_matrix,
-            regularization_matrix=regularization_matrix,
-            preconditioner_noise_normalization=np.sum(
-                (1.0 / noise_map.real ** 2) + (1.0 / noise_map.imag ** 2)
-            ),
+        preconditioner_matrix = np.add(curvature_matrix_approx, regularization_matrix)
+
+        preconditioner_inverse_matrix = np.linalg.inv(preconditioner_matrix)
+
+        MOp = pylops.MatrixMult(
+            sparse.bsr_matrix(preconditioner_inverse_matrix), dtype="float64"
         )
 
         log_det_curvature_reg_matrix_term = 2.0 * np.sum(
             np.log(np.diag(np.linalg.cholesky(preconditioner_matrix)))
         )
 
-        num_iters = 0
-
-        def callback(xk):
-            nonlocal num_iters
-            num_iters += 1
-
-        if not settings.use_preconditioner:
-
-            import time
-
-            start = time.time()
-
-            reconstruction = pylops.NormalEquationsInversion(
-                Op=Op,
-                Regs=None,
-                epsNRs=[1.0],
-                NRegs=[Rop],
-                data=visibilities,
-                Weight=noise_map.Wop,
-                tol=settings.tolerance,
-                **dict(maxiter=settings.maxiter, callback=callback),
-            )
-
-            print("Number of Iterations of PyLops = ", num_iters)
-
-            calculation_time = time.time() - start
-            print("Time to compute fit = {}".format(calculation_time))
-
-        else:
-
-            Mop = pylops.MatrixMult(
-                np.linalg.inv(preconditioner_matrix), dtype="float64"
-            )
-
-            import time
-
-            start = time.time()
-
-            reconstruction = pylops.NormalEquationsInversion(
-                Op=Op,
-                Regs=None,
-                epsNRs=[1.0],
-                NRegs=[Rop],
-                data=visibilities,
-                Weight=noise_map.Wop,
-                tol=settings.tolerance,
-                **dict(M=Mop, maxiter=settings.maxiter, callback=callback),
-            )
-
-            # print("Number of Iterations of PyLops = ", num_iters)
-            # calculation_time = time.time() - start
-            # print("Time to compute precon fit = {}".format(calculation_time))
+        reconstruction = pylops.NormalEquationsInversion(
+            Op=Op,
+            Regs=None,
+            epsNRs=[1.0],
+            data=visibilities.ordered_1d,
+            Weight=pylops.Diagonal(diag=noise_map.weights_ordered_1d, dtype="float64"),
+            NRegs=[
+                pylops.MatrixMult(
+                    sparse.bsr_matrix(regularization_matrix), dtype="float64"
+                )
+            ],
+            M=MOp,
+            tol=settings.tolerance,
+            **dict(maxiter=settings.maxiter),
+        )
 
         return InversionInterferometerLinearOperator(
             visibilities=visibilities,

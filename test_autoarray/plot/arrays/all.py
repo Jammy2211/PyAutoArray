@@ -17,8 +17,8 @@ aplt.Array2D(
     array=array,
     mask=mask,
     grid=grid,
-    positions=aa.Grid2DIrregularGrouped([(-1.0, -1.0)]),
-    lines=aa.Grid2DIrregularGrouped([(1.0, 1.0), (2.0, 2.0)]),
+    positions=aa.Grid2DIrregular([(-1.0, -1.0)]),
+    lines=aa.Grid2DIrregular([(1.0, 1.0), (2.0, 2.0)]),
     include=aplt.Include2D(origin=True, border=True),
 )
 
@@ -26,9 +26,7 @@ aplt.Array2D(
     array=array,
     mask=mask,
     grid=grid,
-    positions=aa.Grid2DIrregularGrouped([[(1.0, 1.0), (2.0, 2.0)], [(-1.0, -1.0)]]),
-    lines=aa.Grid2DIrregularGrouped(
-        [[(1.0, 1.0), (2.0, 2.0)], [(2.0, 4.0), (5.0, 6.0)]]
-    ),
+    positions=aa.Grid2DIrregular([[(1.0, 1.0), (2.0, 2.0)], [(-1.0, -1.0)]]),
+    lines=aa.Grid2DIrregular([[(1.0, 1.0), (2.0, 2.0)], [(2.0, 4.0), (5.0, 6.0)]]),
     include=aplt.Include2D(origin=True, border=True),
 )

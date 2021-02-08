@@ -47,7 +47,18 @@ class AbstractVisibilities(np.ndarray):
                     .ravel()
                 )
 
-        return visibilities.view(cls)
+        obj = visibilities.view(cls)
+
+        obj.ordered_1d = np.concatenate(
+            (np.real(visibilities), np.imag(visibilities)), axis=0
+        )
+
+        return obj
+
+    def __array_finalize__(self, obj):
+
+        if hasattr(obj, "ordered_1d"):
+            self.ordered_1d = obj.ordered_1d
 
     def __reduce__(self):
         # Get the parent's __reduce__ tuple
@@ -267,15 +278,20 @@ class VisibilitiesNoiseMap(Visibilities):
             cls=cls, visibilities=visibilities
         )
 
-        weights = np.reciprocal(np.real(visibilities)) + 1j * np.reciprocal(
-            np.imag(visibilities)
+        obj.ordered_1d = np.concatenate(
+            (np.real(visibilities), np.imag(visibilities)), axis=0
         )
 
-        obj.Wop = pylops.Diagonal(np.real(weights.ravel()), dtype="complex128")
+        weights = 1.0 / obj.in_array ** 2.0
+
+        obj.weights_ordered_1d = np.concatenate((weights[:, 0], weights[:, 1]), axis=0)
 
         return obj
 
     def __array_finalize__(self, obj):
 
-        if hasattr(obj, "Wop"):
-            self.Wop = obj.Wop
+        if hasattr(obj, "ordered_1d"):
+            self.ordered_1d = obj.ordered_1d
+
+        if hasattr(obj, "weights_ordered_1d"):
+            self.weights_ordered_1d = obj.weights_ordered_1d
