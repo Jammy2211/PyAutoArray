@@ -311,7 +311,7 @@ class Grid2DIrregular(np.ndarray):
         return Grid2DIrregular(grid=grid_of_closest)
 
     @classmethod
-    def from_file(cls, file_path):
+    def from_json(cls, file_path):
         """Create a `Grid2DIrregular` object from a file which stores the coordinates as a list of list of tuples.
 
         Parameters
@@ -324,6 +324,26 @@ class Grid2DIrregular(np.ndarray):
             grid = json.load(infile)
 
         return Grid2DIrregular(grid=grid)
+
+    @classmethod
+    def from_dat_file(cls, file_path):
+        """Create a `Grid2DIrregularGrouped` object from a file which stores the coordinates as a list of list of tuples.
+        Parameters
+        ----------
+        file_path : str
+            The path to the coordinates .dat file containing the coordinates (e.g. '/path/to/coordinates.dat')
+        """
+
+        with open(file_path) as f:
+            grid_string = f.readlines()
+
+        grouped_grids = []
+
+        for line in grid_string:
+            coordinate_list = ast.literal_eval(line)
+            grouped_grids.append(coordinate_list)
+
+        return cls(grid=grouped_grids[0])
 
     def output_to_json(self, file_path, overwrite=False):
         """Output this instance of the `Grid2DIrregular` object to a list of list of tuples.

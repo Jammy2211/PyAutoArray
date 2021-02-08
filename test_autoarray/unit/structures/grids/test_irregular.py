@@ -228,7 +228,7 @@ class TestGrid2DIrregular:
 
         grid.output_to_json(file_path=file_path)
 
-        grid = aa.Grid2DIrregular.from_file(file_path=file_path)
+        grid = aa.Grid2DIrregular.from_json(file_path=file_path)
 
         assert grid.in_list == [
             (4.0, 4.0),
