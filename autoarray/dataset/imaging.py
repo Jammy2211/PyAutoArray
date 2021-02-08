@@ -396,7 +396,13 @@ class Imaging(AbstractImaging):
 
         if positions_path is not None:
 
-            positions = grids.Grid2DIrregular.from_file(file_path=positions_path)
+            if ".dat" in positions_path:
+
+                positions = grids.Grid2DIrregular.from_dat_file(file_path=positions_path)
+                positions_path = positions_path.replace(".dat", ".json")
+                positions.output_to_json(file_path=positions_path, overwrite=True)
+
+            positions = grids.Grid2DIrregular.from_json(file_path=positions_path)
 
         else:
 
