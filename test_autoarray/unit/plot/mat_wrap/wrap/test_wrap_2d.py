@@ -186,7 +186,7 @@ class TestGridPlot:
             extent=[-4.0, 8.0, -3.0, 10.0], shape_native=(8, 3)
         )
 
-    def test__plot_grouped_grid(self):
+    def test__plot_grid_list(self):
 
         line = aplt.GridPlot(linewidth=2, linestyle="--", c="k")
 

@@ -264,7 +264,7 @@ class Grid2DVoronoi(np.ndarray):
         )
 
         return Grid2DVoronoi(
-            grid=sparse_grid.sparse,
+            grid=sparse_grid,
             nearest_pixelization_index_for_slim_index=sparse_grid.sparse_index_for_slim_index,
         )
 

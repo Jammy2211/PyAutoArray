@@ -36,7 +36,7 @@ class TestValuesIrregular:
             array_slim=np.array([1.0, 2.0, 3.0])
         )
 
-        assert values_from_1d.in_grouped_list == [1.0, 2.0, 3.0]
+        assert values_from_1d.in_list == [1.0, 2.0, 3.0]
 
     def test__coordinates_from_grid_1d(self):
 
@@ -78,7 +78,7 @@ class TestValuesIrregular:
 
         values = aa.ValuesIrregular.from_file(file_path=file_path)
 
-        assert values.in_grouped_list == [[4.0, 5.0], [6.0, 7.0, 8.0]]
+        assert values.in_list == [[4.0, 5.0], [6.0, 7.0, 8.0]]
 
         with pytest.raises(FileExistsError):
             values.output_to_json(file_path=file_path)

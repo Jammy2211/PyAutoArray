@@ -55,16 +55,16 @@ class TestVoronoiMagnification:
 
         pix = aa.pix.VoronoiMagnification(shape=(3, 3))
 
-        pixelization_grid = pix.sparse_grid_from_grid(grid=sub_grid_7x7)
+        sparse_grid = pix.sparse_grid_from_grid(grid=sub_grid_7x7)
 
-        pixelization_grid_manual = grids.Grid2DVoronoi.from_grid_and_unmasked_2d_grid_shape(
+        pixelization_grid = grids.Grid2DVoronoi.from_grid_and_unmasked_2d_grid_shape(
             unmasked_sparse_shape=(3, 3), grid=sub_grid_7x7
         )
 
-        assert (pixelization_grid_manual == pixelization_grid).all()
+        assert (pixelization_grid == sparse_grid).all()
         assert (
-            pixelization_grid_manual.nearest_pixelization_index_for_slim_index
-            == pixelization_grid.nearest_pixelization_index_for_slim_index
+            pixelization_grid.nearest_pixelization_index_for_slim_index
+            == sparse_grid.sparse_index_for_slim_index
         ).all()
 
 
@@ -143,25 +143,19 @@ class TestVoronoiBrightness:
 
         hyper_image = np.array([0.0, 1.0, 0.0, 1.0, 0.0, 1.0, 0.0, 1.0, 0.0])
 
-        pixelization_grid = pix.sparse_grid_from_grid(
-            grid=sub_grid_7x7,
-            hyper_image=hyper_image,
-            settings=aa.SettingsPixelization(kmeans_seed=1),
-        )
-
         weight_map = pix.weight_map_from_hyper_image(hyper_image=hyper_image)
 
         sparse_grid = grids.Grid2DSparse.from_total_pixels_grid_and_weight_map(
             total_pixels=pix.pixels, grid=sub_grid_7x7, weight_map=weight_map, seed=1
         )
 
-        pixelization_grid_manual = grids.Grid2DVoronoi(
-            grid=sparse_grid.sparse,
+        pixelization_grid = grids.Grid2DVoronoi(
+            grid=sparse_grid,
             nearest_pixelization_index_for_slim_index=sparse_grid.sparse_index_for_slim_index,
         )
 
-        assert (pixelization_grid_manual == pixelization_grid).all()
+        assert (pixelization_grid == sparse_grid).all()
         assert (
-            pixelization_grid_manual.nearest_pixelization_index_for_slim_index
-            == pixelization_grid.nearest_pixelization_index_for_slim_index
+            pixelization_grid.nearest_pixelization_index_for_slim_index
+            == sparse_grid.sparse_index_for_slim_index
         ).all()

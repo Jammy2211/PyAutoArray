@@ -103,9 +103,7 @@ class Grid2DIrregular(np.ndarray):
 
     @classmethod
     def from_yx_1d(cls, y, x):
-        """Create `Grid2DIrregular` from a list of y and x values.
-
-        This function omits coordinate grouping."""
+        """Create `Grid2DIrregular` from a list of y and x values."""
         return Grid2DIrregular(grid=np.stack((y, x), axis=-1))
 
     @classmethod
@@ -120,17 +118,12 @@ class Grid2DIrregular(np.ndarray):
 
     @property
     def in_list(self):
-        """Return the coordinates on a structured list which groups coordinates with a common origin."""
+        """Return the coordinates in a list."""
         return [tuple(value) for value in self]
-
-    @property
-    def in_grouped_list(self):
-        """Return the coordinates on a structured list which groups coordinates with a common origin."""
-        return self.in_list
 
     def values_from_array_slim(self, array_slim):
         """Create a *ValuesIrregular* object from a 1D NumPy array of values of shape [total_coordinates]. The
-        *ValuesIrregular* are structured and grouped following this *Coordinate* instance."""
+        *ValuesIrregular* are structured following this `Grid2DIrregular` instance."""
         return arrays.ValuesIrregular(values=array_slim)
 
     def values_from_value(self, value):
@@ -140,7 +133,7 @@ class Grid2DIrregular(np.ndarray):
 
     def grid_from_grid_slim(self, grid_slim):
         """Create a `Grid2DIrregular` object from a 2D NumPy array of values of shape [total_coordinates, 2]. The
-        `Grid2DIrregular` are structured and grouped following this *Coordinate* instance."""
+        `Grid2DIrregular` are structured following this *Grid2DIrregular* instance."""
         return Grid2DIrregular(grid=grid_slim)
 
     def grid_from_deflection_grid(self, deflection_grid):
@@ -375,28 +368,20 @@ class Grid2DIrregular(np.ndarray):
 
 class Grid2DIrregularUniform(Grid2DIrregular):
     def __new__(cls, grid, shape_native=None, pixel_scales=None):
-        """A collection of (y,x) coordinates structured in a way defining groups of coordinates which share a common
-        origin (for example coordinates may be grouped if they are from a specific region of a dataset).
+        """
+        A collection of (y,x) coordinates which is structured as follows:
 
-        Grouping is structured as follows:
+        [[x0, x1], [x0, x1]]
 
-        [[x0, x1], [x0, x1, x2]]
-
-        Here, we have two groups of coordinates, where each group is associated.
-
-        The coordinate object does not store the coordinates as a list of list of tuples, but instead a 2D NumPy array
-        of shape [total_coordinates, 2]. Index information is stored so that this array can be mapped to the list of
-        list of tuple structure above. They are stored as a NumPy array so the coordinates can be used efficiently for
+        The grid object does not store the coordinates as a list of tuples, but instead a 2D NumPy array of
+        shape [total_coordinates, 2]. They are stored as a NumPy array so the coordinates can be used efficiently for
         calculations.
 
         The coordinates input to this function can have any of the following forms:
 
-        [[(y0,x0), (y1,x1)], [(y0,x0)]]
-        [[[y0,x0], [y1,x1]], [[y0,x0)]]
         [(y0,x0), (y1,x1)]
-        [[y0,x0], [y1,x1]]
 
-        In all cases, they will be converted to a list of list of tuples followed by a 2D NumPy array.
+        In all cases, they will be converted to a list of tuples followed by a 2D NumPy array.
 
         Print methods are overidden so a user always "sees" the coordinates as the list structure.
 
@@ -408,8 +393,8 @@ class Grid2DIrregularUniform(Grid2DIrregular):
 
         Parameters
         ----------
-        grid : [[tuple]] or equivalent
-            A collection of (y,x) coordinates that are grouped if they correpsond to a shared origin.
+        grid : [tuple] or equivalent
+            A collection of (y,x) coordinates that.
         """
 
         #    obj = super(Grid2DIrregularUniform, cls).__new__(cls=cls, coordinates=coordinates)
@@ -485,7 +470,7 @@ class Grid2DIrregularUniform(Grid2DIrregular):
 
     def grid_from_grid_slim(self, grid_slim):
         """Create a `Grid2DIrregularUniform` object from a 2D NumPy array of values of shape [total_coordinates, 2]. The
-        `Grid2DIrregularUniform` are structured and grouped following this *Coordinate* instance."""
+        `Grid2DIrregularUniform` are structured following this *GridIrregular2D* instance."""
         return Grid2DIrregularUniform(
             grid=grid_slim,
             pixel_scales=self.pixel_scales,
