@@ -8,6 +8,7 @@ logger = logging.getLogger(__name__)
 
 
 class TestProperties:
+
     def test__inverse_noise_is_one_over_noise(self):
         array = aa.Array2D.manual_native([[1.0, 2.0], [3.0, 4.0]], pixel_scales=1.0)
         noise_map = aa.Array2D.manual_native([[1.0, 2.0], [4.0, 8.0]], pixel_scales=1.0)
@@ -84,6 +85,7 @@ class TestProperties:
 
 
 class TestMethods:
+
     def test__new_imaging_with_arrays_trimmed_via_kernel_shape(self):
         data = aa.Array2D.full(fill_value=20.0, shape_native=(3, 3), pixel_scales=1.0)
         data[4] = 5.0
@@ -103,6 +105,7 @@ class TestMethods:
 
 
 class TestAbstractMaskedDatasetTags:
+
     def test__grids__sub_size_tags(self):
 
         settings = abstract_dataset.AbstractSettingsMaskedDataset(
@@ -127,15 +130,15 @@ class TestAbstractMaskedDatasetTags:
         )
         assert settings.grid_inversion_sub_size_tag == ""
         settings = abstract_dataset.AbstractSettingsMaskedDataset(
-            grid_inversion_class=aa.Grid2D, sub_size=1
+            grid_inversion_class=aa.Grid2D, sub_size=2, sub_size_inversion=1
         )
         assert settings.grid_inversion_sub_size_tag == "sub_1"
         settings = abstract_dataset.AbstractSettingsMaskedDataset(
-            grid_inversion_class=aa.Grid2D, sub_size=2
+            grid_inversion_class=aa.Grid2D, sub_size=1, sub_size_inversion=2
         )
         assert settings.grid_inversion_sub_size_tag == "sub_2"
         settings = abstract_dataset.AbstractSettingsMaskedDataset(
-            grid_inversion_class=aa.Grid2D, sub_size=4
+            grid_inversion_class=aa.Grid2D, sub_size=1, sub_size_inversion=4
         )
         assert settings.grid_inversion_sub_size_tag == "sub_4"
 
@@ -224,6 +227,7 @@ class TestAbstractMaskedDatasetTags:
         settings = abstract_dataset.AbstractSettingsMaskedDataset(
             grid_class=aa.Grid2D,
             sub_size=1,
+            sub_size_inversion=2,
             grid_inversion_class=aa.Grid2DIterate,
             fractional_accuracy=0.5,
         )
@@ -243,9 +247,10 @@ class TestAbstractMaskedDatasetTags:
             fractional_accuracy=0.8,
             grid_inversion_class=aa.Grid2D,
             sub_size=2,
+            sub_size_inversion=4,
         )
         assert settings.grid_tag_no_inversion == "grid_facc_0.8"
-        assert settings.grid_tag_with_inversion == "grid_facc_0.8_inv_sub_2"
+        assert settings.grid_tag_with_inversion == "grid_facc_0.8_inv_sub_4"
 
     def test__signal_to_noise_limit_tag(self):
 
@@ -317,17 +322,29 @@ class TestAbstractMaskedData:
     def test__grid_inversion(
         self, imaging_7x7, sub_mask_7x7, grid_7x7, sub_grid_7x7, blurring_grid_7x7
     ):
+
         masked_imaging_7x7 = abstract_dataset.AbstractMaskedDataset(
             dataset=imaging_7x7,
             mask=sub_mask_7x7,
             settings=abstract_dataset.AbstractSettingsMaskedDataset(
-                grid_inversion_class=aa.Grid2D
+                grid_inversion_class=aa.Grid2D, sub_size_inversion=2
+            ),
+        )
+
+        assert masked_imaging_7x7.grid_inversion.sub_size == 2
+        assert (masked_imaging_7x7.grid_inversion.slim_binned == grid_7x7).all()
+        assert (masked_imaging_7x7.grid_inversion.slim == sub_grid_7x7).all()
+
+        masked_imaging_7x7 = abstract_dataset.AbstractMaskedDataset(
+            dataset=imaging_7x7,
+            mask=sub_mask_7x7,
+            settings=abstract_dataset.AbstractSettingsMaskedDataset(
+                grid_inversion_class=aa.Grid2D, sub_size=2, sub_size_inversion=4
             ),
         )
 
         assert isinstance(masked_imaging_7x7.grid_inversion, aa.Grid2D)
-        assert (masked_imaging_7x7.grid_inversion.slim_binned == grid_7x7).all()
-        assert (masked_imaging_7x7.grid_inversion.slim == sub_grid_7x7).all()
+        assert masked_imaging_7x7.grid_inversion.sub_size == 4
 
         masked_imaging_7x7 = abstract_dataset.AbstractMaskedDataset(
             dataset=imaging_7x7,
