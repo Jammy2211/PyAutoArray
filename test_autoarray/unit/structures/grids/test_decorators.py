@@ -9,8 +9,6 @@ from autoarray.mock.mock import (
     ndarray_2d_from_grid,
 )
 
-test_grid_dir = "{}/files/grid/".format(os.path.dirname(os.path.realpath(__file__)))
-
 
 def test__grid_in__output_values_same_format():
 
@@ -148,16 +146,6 @@ def test__grid_irregular_in__output_values_same_format():
 
     assert grid_output.in_list == [(2.0, 4.0), (6.0, 8.0), (10.0, 12.0)]
 
-    grid = aa.Grid2DIrregularGrouped(grid=[[(1.0, 2.0), (3.0, 4.0)], [(5.0, 6.0)]])
-
-    values_output = grid_like_object.ndarray_1d_from_grid(grid=grid)
-
-    assert values_output.in_grouped_list == [[1.0, 1.0], [1.0]]
-
-    grid_output = grid_like_object.ndarray_2d_from_grid(grid=grid)
-
-    assert grid_output.in_grouped_list == [[(2.0, 4.0), (6.0, 8.0)], [(10.0, 12.0)]]
-
 
 def test__grid_irregular_in__output_is_list__list_of_same_format():
 
@@ -174,19 +162,6 @@ def test__grid_irregular_in__output_is_list__list_of_same_format():
 
     assert grid_output[0].in_list == [(1.0, 2.0), (3.0, 4.0), (5.0, 6.0)]
     assert grid_output[1].in_list == [(2.0, 4.0), (6.0, 8.0), (10.0, 12.0)]
-
-    grid = aa.Grid2DIrregularGrouped(grid=[[(1.0, 2.0), (3.0, 4.0)], [(5.0, 6.0)]])
-
-    grid_output = grid_like_object.ndarray_1d_list_from_grid(grid=grid)
-
-    assert grid_output[0].in_grouped_list == [[1.0, 1.0], [1.0]], [[2.0, 2.0], [2.0]]
-
-    grid_output = grid_like_object.ndarray_2d_list_from_grid(grid=grid)
-
-    assert grid_output[0].in_grouped_list == [[(1.0, 2.0), (3.0, 4.0)], [(5.0, 6.0)]], [
-        [(2.0, 4.0), (6.0, 8.0)],
-        [(10.0, 12.0)],
-    ]
 
 
 def test__grid_iterate_in__output_values__use_iterated_array_function():

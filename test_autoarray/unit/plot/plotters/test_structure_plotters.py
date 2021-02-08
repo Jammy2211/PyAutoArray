@@ -16,6 +16,7 @@ def make_plot_path_setup():
 
 
 class TestArray2DPlotter:
+
     def test___visuals_in_constructor_use_array_and_include(self, array_7x7):
 
         visuals_2d = aplt.Visuals2D(origin=(1.0, 1.0), vector_field=2)
@@ -57,7 +58,7 @@ class TestArray2DPlotter:
         array_7x7,
         mask_7x7,
         grid_7x7,
-        grid_irregular_grouped_7x7,
+        grid_irregular_7x7_list,
         plot_path,
         plot_patch,
     ):
@@ -86,12 +87,12 @@ class TestArray2DPlotter:
         assert path.join(plot_path, "array2.png") in plot_patch.paths
 
         visuals_2d = aplt.Visuals2D(
-            origin=grid_irregular_grouped_7x7,
+            origin=grid_irregular_7x7_list,
             mask=mask_7x7,
             border=mask_7x7.border_grid_sub_1.slim_binned,
             grid=grid_7x7,
-            positions=grid_irregular_grouped_7x7,
-            lines=grid_irregular_grouped_7x7,
+            positions=grid_irregular_7x7_list,
+     #       lines=grid_irregular_7x7_list,
             array_overlay=array_7x7,
         )
 
@@ -180,7 +181,7 @@ class TestFrame2DPlotter:
         frame_7x7,
         mask_7x7,
         grid_7x7,
-        grid_irregular_grouped_7x7,
+        grid_irregular_7x7_list,
         scans_7x7,
         plot_path,
         plot_patch,
@@ -217,12 +218,12 @@ class TestFrame2DPlotter:
         assert path.join(plot_path, "frame2.png") in plot_patch.paths
 
         visuals_2d = aplt.Visuals2D(
-            origin=grid_irregular_grouped_7x7,
+            origin=grid_irregular_7x7_list,
             mask=mask_7x7,
             border=mask_7x7.border_grid_sub_1.slim_binned,
             grid=grid_7x7,
-            positions=grid_irregular_grouped_7x7,
-            lines=grid_irregular_grouped_7x7,
+            positions=grid_irregular_7x7_list,
+            lines=grid_irregular_7x7_list,
             array_overlay=frame_7x7,
             parallel_overscan=scans_7x7.parallel_overscan,
             serial_prescan=scans_7x7.serial_prescan,
@@ -292,7 +293,7 @@ class TestGrid2DPlotter:
         array_7x7,
         grid_7x7,
         mask_7x7,
-        grid_irregular_grouped_7x7,
+        grid_irregular_7x7_list,
         plot_path,
         plot_patch,
     ):
@@ -325,12 +326,12 @@ class TestGrid2DPlotter:
         assert path.join(plot_path, "grid2.png") in plot_patch.paths
 
         visuals_2d = aplt.Visuals2D(
-            origin=grid_irregular_grouped_7x7,
+            origin=grid_irregular_7x7_list,
             mask=mask_7x7,
             border=mask_7x7.border_grid_sub_1.slim_binned,
             grid=grid_7x7,
-            positions=grid_irregular_grouped_7x7,
-            lines=grid_irregular_grouped_7x7,
+            positions=grid_irregular_7x7_list,
+            lines=grid_irregular_7x7_list,
             array_overlay=array_7x7,
             indexes=[0, 1, 2],
         )

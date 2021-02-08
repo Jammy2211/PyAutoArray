@@ -686,19 +686,19 @@ class TestNewMasksFromMask:
 
 
 class TestRegions:
-    def test__mask_index_for_mask_1d_index__compare_to_array_util(self):
+    def test__sub_native_index_for_sub_slim_index__compare_to_array_util(self):
 
         mask = aa.Mask2D.manual(
             mask=[[True, True, True], [True, False, False], [True, True, False]],
             pixel_scales=1.0,
         )
 
-        mask_index_for_mask_1d_index = aa.util.mask.sub_native_index_for_sub_slim_index_via_mask_2d_from(
+        sub_native_index_for_sub_slim_index = aa.util.mask.sub_native_index_for_sub_slim_index_via_mask_2d_from(
             mask_2d=mask, sub_size=1
         )
 
-        assert mask._mask_index_for_mask_1d_index == pytest.approx(
-            mask_index_for_mask_1d_index, 1e-4
+        assert mask._sub_native_index_for_sub_slim_index == pytest.approx(
+            sub_native_index_for_sub_slim_index, 1e-4
         )
 
     def test__unmasked_mask(self):

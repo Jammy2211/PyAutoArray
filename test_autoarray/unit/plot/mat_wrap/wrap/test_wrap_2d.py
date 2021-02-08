@@ -145,13 +145,8 @@ class TestGridScatter:
 
         scatter = aplt.GridScatter(s=2, marker="x", c="k")
 
-        scatter.scatter_grid_grouped(
-            grid_grouped=aa.Grid2DIrregularGrouped([(1.0, 1.0), (2.0, 2.0)])
-        )
-        scatter.scatter_grid_grouped(
-            grid_grouped=aa.Grid2DIrregularGrouped(
-                [[(1.0, 1.0), (2.0, 2.0)], [(3.0, 3.0)]]
-            )
+        scatter.scatter_grid_list(
+            grid_list=[aa.Grid2DIrregular([(1.0, 1.0), (2.0, 2.0)])]
         )
 
 
@@ -191,17 +186,13 @@ class TestGridPlot:
             extent=[-4.0, 8.0, -3.0, 10.0], shape_native=(8, 3)
         )
 
-    def test__plot_grouped_grid(self):
+    def test__plot_grid_list(self):
 
         line = aplt.GridPlot(linewidth=2, linestyle="--", c="k")
 
-        line.plot_grid_grouped(
-            grid_grouped=aa.Grid2DIrregularGrouped([[(1.0, 1.0), (2.0, 2.0)]])
-        )
-        line.plot_grid_grouped(
-            grid_grouped=aa.Grid2DIrregularGrouped(
-                [[(1.0, 1.0), (2.0, 2.0)], [(3.0, 3.0)]]
-            )
+        line.plot_grid_list(grid_list=aa.Grid2DIrregular([[(1.0, 1.0), (2.0, 2.0)]]))
+        line.plot_grid_list(
+            grid_list=aa.Grid2DIrregular([[(1.0, 1.0), (2.0, 2.0)], [(3.0, 3.0)]])
         )
 
 
@@ -322,7 +313,7 @@ class TestVoronoiDrawer:
 
 
 class TestDerivedClasses:
-    def test__all_class_load_and_inherit_correctly(self, grid_irregular_grouped_7x7):
+    def test__all_class_load_and_inherit_correctly(self, grid_irregular_7x7_list):
 
         origin_scatter = aplt.OriginScatter()
         origin_scatter.scatter_grid(
@@ -346,12 +337,12 @@ class TestDerivedClasses:
         assert border_scatter.config_dict["s"] == 13
 
         positions_scatter = aplt.PositionsScatter()
-        positions_scatter.scatter_grid(grid=grid_irregular_grouped_7x7)
+        positions_scatter.scatter_grid(grid=grid_irregular_7x7_list)
 
         assert positions_scatter.config_dict["s"] == 15
 
         index_scatter = aplt.IndexScatter()
-        index_scatter.scatter_grid_grouped(grid_grouped=grid_irregular_grouped_7x7)
+        index_scatter.scatter_grid_list(grid_list=grid_irregular_7x7_list)
 
         assert index_scatter.config_dict["s"] == 20
 

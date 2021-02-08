@@ -62,38 +62,38 @@ class VectorField2DIrregular(np.ndarray):
             self.grid = obj.grid
 
     @property
-    def ellipticities(self) -> values.ValuesIrregularGrouped:
+    def ellipticities(self) -> values.ValuesIrregular:
         """
         If we treat this vector field as a set of weak lensing shear measurements, the galaxy ellipticity each vector
         corresponds too.
         """
-        return values.ValuesIrregularGrouped(
+        return values.ValuesIrregular(
             values=np.sqrt(self[:, 0] ** 2 + self[:, 1] ** 2.0)
         )
 
     @property
-    def semi_major_axes(self) -> values.ValuesIrregularGrouped:
+    def semi_major_axes(self) -> values.ValuesIrregular:
         """
         If we treat this vector field as a set of weak lensing shear measurements, the semi-major axis of each
         galaxy ellipticity that each vector corresponds too.
         """
-        return values.ValuesIrregularGrouped(values=3 * (1 + self.ellipticities))
+        return values.ValuesIrregular(values=3 * (1 + self.ellipticities))
 
     @property
-    def semi_minor_axes(self) -> values.ValuesIrregularGrouped:
+    def semi_minor_axes(self) -> values.ValuesIrregular:
         """
         If we treat this vector field as a set of weak lensing shear measurements, the semi-minor axis of each
         galaxy ellipticity that each vector corresponds too.
         """
-        return values.ValuesIrregularGrouped(values=3 * (1 - self.ellipticities))
+        return values.ValuesIrregular(values=3 * (1 - self.ellipticities))
 
     @property
-    def phis(self) -> values.ValuesIrregularGrouped:
+    def phis(self) -> values.ValuesIrregular:
         """
         If we treat this vector field as a set of weak lensing shear measurements, the position angle phi defined
         counter clockwise from the positive x-axis of each galaxy ellipticity that each vector corresponds too.
         """
-        return values.ValuesIrregularGrouped(
+        return values.ValuesIrregular(
             values=np.arctan2(self[:, 0], self[:, 1]) * 180.0 / np.pi / 2.0
         )
 

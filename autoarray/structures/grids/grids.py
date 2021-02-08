@@ -863,9 +863,10 @@ class Grid2D(abstract_grid.AbstractGrid2D):
         return [self.structure_from_result(result=result) for result in result_list]
 
 
-class Grid2DSparse:
-    def __init__(self, sparse_grid, sparse_index_for_slim_index):
-        """A sparse grid of coordinates, where each entry corresponds to the (y,x) coordinates at the centre of a
+class Grid2DSparse(np.ndarray):
+    def __new__(cls, grid, sparse_index_for_slim_index):
+        """
+        A sparse grid of coordinates, where each entry corresponds to the (y,x) coordinates at the centre of a
         pixel on the sparse grid. To setup the sparse-grid, it is laid over a grid of unmasked pixels, such
         that all sparse-grid pixels which map inside of an unmasked grid pixel are included on the sparse grid.
 
@@ -892,8 +893,16 @@ class Grid2DSparse:
         sparse_index_for_slim_index : np.ndarray
             An array whose indexes map pixels from a Grid2D's mask to the closest (y,x) coordinate on the sparse_grid.
         """
-        self.sparse = sparse_grid
-        self.sparse_index_for_slim_index = sparse_index_for_slim_index
+
+        obj = grid.view(cls)
+        obj.sparse_index_for_slim_index = sparse_index_for_slim_index
+
+        return obj
+
+    def __array_finalize__(self, obj):
+
+        if hasattr(obj, "sparse_index_for_slim_index"):
+            self.sparse_index_for_slim_index = obj.sparse_index_for_slim_index
 
     @classmethod
     def from_grid_and_unmasked_2d_grid_shape(cls, grid, unmasked_sparse_shape):
@@ -973,8 +982,7 @@ class Grid2DSparse:
         )
 
         return Grid2DSparse(
-            sparse_grid=sparse_grid,
-            sparse_index_for_slim_index=sparse_index_for_slim_index,
+            grid=sparse_grid, sparse_index_for_slim_index=sparse_index_for_slim_index
         )
 
     @classmethod
@@ -1030,13 +1038,13 @@ class Grid2DSparse:
             raise exc.InversionException()
 
         return Grid2DSparse(
-            sparse_grid=kmeans.cluster_centers_,
+            grid=kmeans.cluster_centers_,
             sparse_index_for_slim_index=kmeans.labels_.astype("int"),
         )
 
     @property
     def total_sparse_pixels(self):
-        return len(self.sparse)
+        return len(self)
 
 
 class Grid2DTransformed(Grid2D):

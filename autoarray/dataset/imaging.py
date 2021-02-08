@@ -21,7 +21,7 @@ class AbstractImaging(abstract_dataset.AbstractDataset):
         image: arrays.Array2D,
         noise_map: arrays.Array2D,
         psf: kernel.Kernel2D = None,
-        positions: grids.Grid2DIrregularGrouped = None,
+        positions: grids.Grid2DIrregular = None,
         name: str = None,
     ):
         """A class containing the data, noise-map and point spread function of a 2D imaging dataset.
@@ -109,6 +109,7 @@ class AbstractSettingsMaskedImaging(abstract_dataset.AbstractSettingsMaskedDatas
         grid_class=grids.Grid2D,
         grid_inversion_class=grids.Grid2D,
         sub_size=2,
+        sub_size_inversion=2,
         fractional_accuracy=0.9999,
         sub_steps=None,
         pixel_scales_interp=None,
@@ -156,6 +157,7 @@ class AbstractSettingsMaskedImaging(abstract_dataset.AbstractSettingsMaskedDatas
             grid_class=grid_class,
             grid_inversion_class=grid_inversion_class,
             sub_size=sub_size,
+            sub_size_inversion=sub_size_inversion,
             fractional_accuracy=fractional_accuracy,
             sub_steps=sub_steps,
             pixel_scales_interp=pixel_scales_interp,
@@ -396,7 +398,13 @@ class Imaging(AbstractImaging):
 
         if positions_path is not None:
 
-            positions = grids.Grid2DIrregularGrouped.from_file(file_path=positions_path)
+            if ".dat" in positions_path:
+
+                positions = grids.Grid2DIrregular.from_dat_file(file_path=positions_path)
+                positions_path = positions_path.replace(".dat", ".json")
+                positions.output_to_json(file_path=positions_path, overwrite=True)
+
+            positions = grids.Grid2DIrregular.from_json(file_path=positions_path)
 
         else:
 

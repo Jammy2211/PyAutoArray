@@ -839,7 +839,7 @@ def check_if_border_pixel(
         The mask for which the input pixel is checked if it is a border pixel.
     edge_pixel_slim : int
         The edge pixel index in 1D that is checked if it is a border pixel (this 1D index is mapped to 2d via the
-        array `mask_index_for_mask_1d_index`).
+        array `sub_native_index_for_sub_slim_index`).
     native_to_slim : np.ndarray
         An array describing the native 2D array index that every slimmed array index maps too.
 
@@ -884,7 +884,7 @@ def total_border_pixels_from(mask_2d, edge_pixels, native_to_slim):
         The mask for which the total number of border pixels is computed.
     edge_pixel_1d : int
         The edge pixel index in 1D that is checked if it is a border pixel (this 1D index is mapped to 2d via the
-        array `mask_index_for_mask_1d_index`).
+        array `sub_native_index_for_sub_slim_index`).
     native_to_slim : np.ndarray
         An array describing the 2D array index that every 1D array index maps too.
 
@@ -930,14 +930,14 @@ def border_slim_indexes_from(mask_2d: np.ndarray) -> np.ndarray:
     """
 
     edge_pixels = edge_1d_indexes_from(mask_2d=mask_2d)
-    mask_index_for_mask_1d_index = sub_native_index_for_sub_slim_index_via_mask_2d_from(
+    sub_native_index_for_sub_slim_index = sub_native_index_for_sub_slim_index_via_mask_2d_from(
         mask_2d=mask_2d, sub_size=1
     )
 
     border_pixel_total = total_border_pixels_from(
         mask_2d=mask_2d,
         edge_pixels=edge_pixels,
-        native_to_slim=mask_index_for_mask_1d_index,
+        native_to_slim=sub_native_index_for_sub_slim_index,
     )
 
     border_pixels = np.zeros(border_pixel_total)
@@ -949,7 +949,7 @@ def border_slim_indexes_from(mask_2d: np.ndarray) -> np.ndarray:
         if check_if_border_pixel(
             mask_2d=mask_2d,
             edge_pixel_slim=edge_pixels[edge_pixel_index],
-            native_to_slim=mask_index_for_mask_1d_index,
+            native_to_slim=sub_native_index_for_sub_slim_index,
         ):
 
             border_pixels[border_pixel_index] = edge_pixels[edge_pixel_index]

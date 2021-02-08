@@ -82,10 +82,11 @@ class Visuals1D(AbstractVisuals):
     def plot_via_plotter(self, plotter):
 
         if self.lines is not None:
-            plotter.grid_plot.plot_grid_grouped(grid_grouped=self.lines)
+            plotter.grid_plot.plot_grid(grid=self.lines)
 
 
 class Visuals2D(AbstractVisuals):
+
     def __init__(
         self,
         origin: grids.Grid2D = None,
@@ -124,7 +125,7 @@ class Visuals2D(AbstractVisuals):
     def plot_via_plotter(self, plotter, grid_indexes=None, mapper=None):
 
         if self.origin is not None:
-            plotter.origin_scatter.scatter_grid(grid=self.origin)
+            plotter.origin_scatter.scatter_grid(grid=grids.Grid2DIrregular(grid=self.origin))
 
         if self.mask is not None:
             plotter.mask_scatter.scatter_grid(
@@ -141,7 +142,7 @@ class Visuals2D(AbstractVisuals):
             plotter.pixelization_grid_scatter.scatter_grid(grid=self.pixelization_grid)
 
         if self.positions is not None:
-            plotter.positions_scatter.scatter_grid_grouped(grid_grouped=self.positions)
+            plotter.positions_scatter.scatter_grid(grid=self.positions)
 
         if self.vector_field is not None:
             plotter.vector_field_quiver.quiver_vector_field(
@@ -152,7 +153,7 @@ class Visuals2D(AbstractVisuals):
             plotter.patch_overlay.overlay_patches(patches=self.patches)
 
         if self.lines is not None:
-            plotter.grid_plot.plot_grid_grouped(grid_grouped=self.lines)
+            plotter.grid_plot.plot_grid(grid=self.lines)
 
         if self.indexes is not None:
             plotter.index_scatter.scatter_grid_indexes(

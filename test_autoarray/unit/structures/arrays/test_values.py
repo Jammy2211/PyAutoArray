@@ -13,137 +13,74 @@ test_values_dir = path.join(
 )
 
 
-def test__indexes_give_entries_where_list_begin_and_end():
+class TestValuesIrregular:
+    def test__input_as_list__convert_correctly(self):
 
-    values = aa.ValuesIrregularGrouped(values=[[0.0]])
+        values = aa.ValuesIrregular(values=[1.0, -1.0])
 
-    assert values.lower_indexes == [0]
-    assert values.upper_indexes == [1]
+        assert type(values) == arrays.ValuesIrregular
+        assert (values == np.array([1.0, -1.0])).all()
+        assert values.in_list == [1.0, -1.0]
 
-    values = aa.ValuesIrregularGrouped(values=[[0.0, 0.0]])
+    def test__values_from_array_slim(self):
 
-    assert values.lower_indexes == [0]
-    assert values.upper_indexes == [2]
+        values = aa.ValuesIrregular(values=[1.0, 2.0])
 
-    values = aa.ValuesIrregularGrouped(values=[[0.0, 0.0], [0.0]])
+        values_from_1d = values.values_from_array_slim(array_slim=np.array([1.0, 2.0]))
 
-    assert values.lower_indexes == [0, 2]
-    assert values.upper_indexes == [2, 3]
+        assert values_from_1d.in_list == [1.0, 2.0]
 
-    values = aa.ValuesIrregularGrouped(
-        values=[[0.0, 0.0], [0.0, 0.0, 0.0], [0.0, 0.0], [0.0]]
-    )
+        values = aa.ValuesIrregular(values=[1.0, 2.0, 3.0])
 
-    assert values.lower_indexes == [0, 2, 5, 7]
-    assert values.upper_indexes == [2, 5, 7, 8]
+        values_from_1d = values.values_from_array_slim(
+            array_slim=np.array([1.0, 2.0, 3.0])
+        )
 
+        assert values_from_1d.in_list == [1.0, 2.0, 3.0]
 
-def test__input_as_list__convert_correctly():
+    def test__coordinates_from_grid_1d(self):
 
-    values = aa.ValuesIrregularGrouped(values=[1.0, -1.0])
+        values = aa.ValuesIrregular(values=[1.0, 2.0])
 
-    assert type(values) == arrays.ValuesIrregularGrouped
-    assert (values == np.array([1.0, -1.0])).all()
-    assert values.in_grouped_list == [[1.0, -1.0]]
-    assert values.in_list == [1.0, -1.0]
+        coordinate_from_1d = values.grid_from_grid_slim(
+            grid_slim=np.array([[1.0, 1.0], [2.0, 2.0]])
+        )
 
-    values = aa.ValuesIrregularGrouped(values=[[1.0], [-1.0]])
+        assert coordinate_from_1d.in_list == [(1.0, 1.0), (2.0, 2.0)]
 
-    assert type(values) == arrays.ValuesIrregularGrouped
-    assert (values == np.array([1.0, -1.0])).all()
-    assert values.in_grouped_list == [[1.0], [-1.0]]
-    assert values.in_list == [1.0, -1.0]
+        values = aa.ValuesIrregular(values=[[1.0, 2.0, 3.0]])
 
+        coordinate_from_1d = values.grid_from_grid_slim(
+            grid_slim=np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0]])
+        )
 
-def test__input_as_dict__retains_dict_and_converts_correctly():
+        assert coordinate_from_1d.in_list == [(1.0, 1.0), (2.0, 2.0), (3.0, 3.0)]
 
-    values = aa.ValuesIrregularGrouped(values=dict(source_0=1.0, source_1=-1.0))
+    def test__output_values_to_json(self):
 
-    assert type(values) == arrays.ValuesIrregularGrouped
-    assert (values == np.array([1.0, -1.0])).all()
-    assert values.in_grouped_list == [[1.0, -1.0]]
-    assert values.in_list == [1.0, -1.0]
-    assert values.as_dict["source_0"] == 1.0
-    assert values.as_dict["source_1"] == -1.0
+        values = aa.ValuesIrregular([[4.0, 5.0], [6.0, 7.0, 8.0]])
 
-    values = aa.ValuesIrregularGrouped(values=dict(source_0=[1.0], source_1=[-1.0]))
+        output_values_dir = path.join(
+            "{}".format(path.dirname(path.realpath(__file__))),
+            "files",
+            "values",
+            "output_test",
+        )
 
-    assert type(values) == arrays.ValuesIrregularGrouped
-    assert (values == np.array([1.0, -1.0])).all()
-    assert values.in_grouped_list == [[1.0], [-1.0]]
-    assert values.in_list == [1.0, -1.0]
-    assert values.as_dict["source_0"] == [1.0]
-    assert values.as_dict["source_1"] == [-1.0]
+        if path.exists(output_values_dir):
+            shutil.rmtree(output_values_dir)
 
+        os.makedirs(output_values_dir)
 
-def test__values_from_array_slim():
+        file_path = path.join(output_values_dir, "values_test.dat")
 
-    values = aa.ValuesIrregularGrouped(values=[[1.0, 2.0]])
+        values.output_to_json(file_path=file_path)
 
-    values_from_1d = values.values_from_array_slim(array_slim=np.array([1.0, 2.0]))
+        values = aa.ValuesIrregular.from_file(file_path=file_path)
 
-    assert values_from_1d.in_grouped_list == [[1.0, 2.0]]
+        assert values.in_list == [[4.0, 5.0], [6.0, 7.0, 8.0]]
 
-    values = aa.ValuesIrregularGrouped(values=[[1.0, 2.0], [3.0]])
+        with pytest.raises(FileExistsError):
+            values.output_to_json(file_path=file_path)
 
-    values_from_1d = values.values_from_array_slim(array_slim=np.array([1.0, 2.0, 3.0]))
-
-    assert values_from_1d.in_grouped_list == [[1.0, 2.0], [3.0]]
-
-
-def test__coordinates_from_grid_1d():
-
-    values = aa.ValuesIrregularGrouped(values=[[1.0, 2.0]])
-
-    coordinate_from_1d = values.grid_from_grid_slim(
-        grid_slim=np.array([[1.0, 1.0], [2.0, 2.0]])
-    )
-
-    assert coordinate_from_1d.in_grouped_list == [[(1.0, 1.0), (2.0, 2.0)]]
-
-    values = aa.ValuesIrregularGrouped(values=[[1.0, 2.0], [3.0]])
-
-    coordinate_from_1d = values.grid_from_grid_slim(
-        grid_slim=np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0]])
-    )
-
-    assert coordinate_from_1d.in_grouped_list == [
-        [(1.0, 1.0), (2.0, 2.0)],
-        [(3.0, 3.0)],
-    ]
-
-
-def test__load_values__retains_list_structure():
-    values = aa.ValuesIrregularGrouped.from_file(
-        file_path=path.join(test_values_dir, "values_test.dat")
-    )
-
-    assert values.in_grouped_list == [[1.0, 2.0], [3.0, 4.0, 5.0]]
-
-
-def test__output_values_to_file():
-
-    values = aa.ValuesIrregularGrouped([[4.0, 5.0], [6.0, 7.0, 8.0]])
-
-    output_values_dir = "{}/files/values/output_test/".format(
-        path.dirname(path.realpath(__file__))
-    )
-    if path.exists(output_values_dir):
-        shutil.rmtree(output_values_dir)
-
-    os.makedirs(output_values_dir)
-
-    values.output_to_file(file_path=output_values_dir + "values_test.dat")
-
-    values = aa.ValuesIrregularGrouped.from_file(
-        file_path=output_values_dir + "values_test.dat"
-    )
-
-    assert values.in_grouped_list == [[4.0, 5.0], [6.0, 7.0, 8.0]]
-
-    with pytest.raises(FileExistsError):
-        values.output_to_file(file_path=output_values_dir + "values_test.dat")
-
-    values.output_to_file(
-        file_path=output_values_dir + "values_test.dat", overwrite=True
-    )
+        values.output_to_json(file_path=file_path, overwrite=True)
