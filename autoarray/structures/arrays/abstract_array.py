@@ -69,7 +69,7 @@ def convert_manual_array_slim(array_slim, mask, store_slim):
     if store_slim:
         return array_slim
 
-    return array_util.sub_array_2d_from(
+    return array_util.sub_array_2d_native_from(
         sub_array_2d_slim=array_slim, mask_2d=mask, sub_size=mask.sub_size
     )
 
@@ -110,7 +110,7 @@ def convert_manual_native_array(array_2d, mask, store_slim):
     if store_slim:
         return sub_array_1d
 
-    return array_util.sub_array_2d_from(
+    return array_util.sub_array_2d_native_from(
         sub_array_2d_slim=sub_array_1d, mask_2d=mask, sub_size=mask.sub_size
     )
 
@@ -206,7 +206,7 @@ class AbstractArray2D(abstract_structure.AbstractStructure2D):
 
         If the array is stored in 2D it is return as is. If it is stored in 1D, it must first be mapped from 1D to 2D."""
         if self.store_slim:
-            sub_array_2d = array_util.sub_array_2d_from(
+            sub_array_2d = array_util.sub_array_2d_native_from(
                 sub_array_2d_slim=self, mask_2d=self.mask, sub_size=self.mask.sub_size
             )
             return self._new_structure(
@@ -270,7 +270,7 @@ class AbstractArray2D(abstract_structure.AbstractStructure2D):
             sub_array_1d[:].reshape(-1, self.mask.sub_length).sum(axis=1),
         )
 
-        binned_array_2d = array_util.sub_array_2d_from(
+        binned_array_2d = array_util.sub_array_2d_native_from(
             sub_array_2d_slim=binned_array_1d, mask_2d=self.mask, sub_size=1
         )
 

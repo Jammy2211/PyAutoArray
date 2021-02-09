@@ -240,7 +240,7 @@ class MapperRectangular(Mapper):
     def reconstruction_from(self, solution_vector):
         """Given the solution vector of an inversion (see *inversions.Inversion*), determine the reconstructed \
         pixelization of the rectangular pixelization by using the mapper."""
-        recon = array_util.sub_array_2d_from(
+        recon = array_util.sub_array_2d_native_from(
             sub_array_2d_slim=solution_vector,
             mask_2d=np.full(
                 fill_value=False, shape=self.source_pixelization_grid.shape_native

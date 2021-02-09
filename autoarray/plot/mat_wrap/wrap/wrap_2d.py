@@ -88,10 +88,13 @@ class GridScatter(AbstractMatWrap2D):
         """
 
         config_dict = self.config_dict
-        config_dict.pop("c")
+        if len(config_dict["c"]) > 1:
+            config_dict["c"] = config_dict["c"][0]
 
         try:
-            plt.scatter(y=np.asarray(grid)[:, 0], x=np.asarray(grid)[:, 1], **config_dict)
+            plt.scatter(
+                y=np.asarray(grid)[:, 0], x=np.asarray(grid)[:, 1], **config_dict
+            )
         except IndexError:
             return self.scatter_grid_list(grid_list=grid)
 

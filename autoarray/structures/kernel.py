@@ -484,7 +484,7 @@ class Kernel2D(arrays.Array2D):
         [sub_size*total_y_pixels, sub_size*total_x_pixels, 2] where all masked values are given values (0.0, 0.0).
 
         If the array is stored in 2D it is return as is. If it is stored in 1D, it must first be mapped from 1D to 2D."""
-        return array_util.sub_array_2d_from(
+        return array_util.sub_array_2d_native_from(
             sub_array_2d_slim=self, mask_2d=self.mask, sub_size=self.mask.sub_size
         )
 

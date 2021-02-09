@@ -591,7 +591,9 @@ class Grid2DIterate(abstract_grid.AbstractGrid2D):
 
         return self.return_iterated_array_result(iterated_array=iterated_array_2d)
 
-    def return_iterated_array_result(self, iterated_array : np.ndarray) -> arrays.Array2D:
+    def return_iterated_array_result(
+        self, iterated_array: np.ndarray
+    ) -> arrays.Array2D:
         """
         Returns the resulting iterated array, by mapping it to 1D and then passing it back as an `Array2D` structure.
 
