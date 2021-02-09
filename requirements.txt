@@ -1,8 +1,8 @@
 autoconf==0.7.7
 colorcet>=2.0.2
-llvmlite<=0.32.1
-numba<=0.47.0
-numpy>=1.18.0
+llvmlite
+numba
+numpy
 scipy>=1.5.1
 decorator>=4.0.0
 dill>=0.3.1.1
