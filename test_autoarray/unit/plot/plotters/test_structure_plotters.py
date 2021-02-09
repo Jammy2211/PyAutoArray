@@ -16,7 +16,6 @@ def make_plot_path_setup():
 
 
 class TestArray2DPlotter:
-
     def test___visuals_in_constructor_use_array_and_include(self, array_7x7):
 
         visuals_2d = aplt.Visuals2D(origin=(1.0, 1.0), vector_field=2)
@@ -92,7 +91,7 @@ class TestArray2DPlotter:
             border=mask_7x7.border_grid_sub_1.slim_binned,
             grid=grid_7x7,
             positions=grid_irregular_7x7_list,
-     #       lines=grid_irregular_7x7_list,
+            #       lines=grid_irregular_7x7_list,
             array_overlay=array_7x7,
         )
 

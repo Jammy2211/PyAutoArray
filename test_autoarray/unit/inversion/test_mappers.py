@@ -632,7 +632,7 @@ class TestRectangularMapper:
             [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 1.0, 2.0, 3.0]
         )
         recon_pix = mapper.reconstruction_from(solution_vector=solution)
-        recon_pix_util = aa.util.array.sub_array_2d_from(
+        recon_pix_util = aa.util.array.sub_array_2d_native_from(
             sub_array_2d_slim=solution,
             mask_2d=np.full(fill_value=False, shape=(4, 3)),
             sub_size=1,
@@ -652,7 +652,7 @@ class TestRectangularMapper:
             [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 1.0, 2.0, 3.0]
         )
         recon_pix = mapper.reconstruction_from(solution_vector=solution)
-        recon_pix_util = aa.util.array.sub_array_2d_from(
+        recon_pix_util = aa.util.array.sub_array_2d_native_from(
             sub_array_2d_slim=solution,
             mask_2d=np.full(fill_value=False, shape=(3, 4)),
             sub_size=1,
