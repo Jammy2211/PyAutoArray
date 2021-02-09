@@ -8,7 +8,6 @@ logger = logging.getLogger(__name__)
 
 
 class TestProperties:
-
     def test__inverse_noise_is_one_over_noise(self):
         array = aa.Array2D.manual_native([[1.0, 2.0], [3.0, 4.0]], pixel_scales=1.0)
         noise_map = aa.Array2D.manual_native([[1.0, 2.0], [4.0, 8.0]], pixel_scales=1.0)
@@ -85,7 +84,6 @@ class TestProperties:
 
 
 class TestMethods:
-
     def test__new_imaging_with_arrays_trimmed_via_kernel_shape(self):
         data = aa.Array2D.full(fill_value=20.0, shape_native=(3, 3), pixel_scales=1.0)
         data[4] = 5.0
@@ -105,7 +103,6 @@ class TestMethods:
 
 
 class TestAbstractMaskedDatasetTags:
-
     def test__grids__sub_size_tags(self):
 
         settings = abstract_dataset.AbstractSettingsMaskedDataset(

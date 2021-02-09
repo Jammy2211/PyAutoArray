@@ -878,7 +878,7 @@ class TestArray2dForArray1d:
 
         mask = np.full(fill_value=False, shape=(2, 2))
 
-        array_2d = util.array.sub_array_2d_from(
+        array_2d = util.array.sub_array_2d_native_from(
             sub_array_2d_slim=array_1d, mask_2d=mask, sub_size=1
         )
 
@@ -888,7 +888,7 @@ class TestArray2dForArray1d:
 
         mask = np.array([[False, False], [False, True]])
 
-        array_2d = util.array.sub_array_2d_from(
+        array_2d = util.array.sub_array_2d_native_from(
             sub_array_2d_slim=array_1d, mask_2d=mask, sub_size=1
         )
 
@@ -904,7 +904,7 @@ class TestArray2dForArray1d:
             ]
         )
 
-        array_2d = util.array.sub_array_2d_from(
+        array_2d = util.array.sub_array_2d_native_from(
             sub_array_2d_slim=array_1d, mask_2d=mask, sub_size=1
         )
 
@@ -923,7 +923,7 @@ class TestArray2dForArray1d:
 
         mask = np.array([[False, False], [False, True]])
 
-        array_2d = util.array.sub_array_2d_from(
+        array_2d = util.array.sub_array_2d_native_from(
             sub_array_2d_slim=array_1d, mask_2d=mask, sub_size=2
         )
 
@@ -948,7 +948,7 @@ class TestArray2dForArray1d:
         array_2d = util.array.sub_array_2d_complex_via_sub_indexes_from(
             sub_array_2d_slim=array_1d,
             sub_shape_native=(2, 2),
-            sub_native_index_for_slim_index=np.array(
+            sub_native_index_for_slim_index_2d=np.array(
                 [[0, 0], [0, 1], [1, 0], [1, 1]], dtype="int"
             ),
         )

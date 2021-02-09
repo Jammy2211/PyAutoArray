@@ -149,7 +149,6 @@ class AbstractDataset:
 
 
 class AbstractSettingsMaskedDataset:
-
     def __init__(
         self,
         grid_class=grids.Grid2D,
@@ -389,7 +388,6 @@ class AbstractSettingsMaskedDataset:
 
 
 class AbstractMaskedDataset:
-
     def __init__(self, dataset, mask, settings=AbstractSettingsMaskedDataset()):
 
         if mask.sub_size != settings.sub_size:

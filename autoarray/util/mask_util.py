@@ -8,41 +8,6 @@ from autoarray.util import grid_util
 
 
 @decorator_util.jit()
-def mask_2d_centres_from(
-    shape_native: (int, int),
-    pixel_scales: typing.Tuple[float, float],
-    centre: (float, float),
-) -> (float, float):
-    """
-    Returns the (y,x) scaled central coordinates of a mask from its shape, pixel-scales and centre.
-
-    The coordinate system is defined such that the positive y axis is up and positive x axis is right.
-
-    Parameters
-    ----------
-    shape_native : (int, int)
-        The (y,x) shape of the 2D array the scaled centre is computed for.
-    pixel_scales : (float, float)
-        The (y,x) scaled units to pixel units conversion factor of the 2D array.
-    centre : (float, flloat)
-        The (y,x) centre of the 2D mask.
-
-    Returns
-    -------
-    tuple (float, float)
-        The (y,x) scaled central coordinates of the input array.
-
-    Examples
-    --------
-    centres_scaled = centres_from_shape_pixel_scales_and_centre(shape=(5,5), pixel_scales=(0.5, 0.5), centre=(0.0, 0.0))
-    """
-    y_centre_scaled = (float(shape_native[0] - 1) / 2) - (centre[0] / pixel_scales[0])
-    x_centre_scaled = (float(shape_native[1] - 1) / 2) + (centre[1] / pixel_scales[1])
-
-    return (y_centre_scaled, x_centre_scaled)
-
-
-@decorator_util.jit()
 def total_pixels_1d_from(mask_1d: np.ndarray) -> int:
     """
     Returns the total number of unmasked pixels in a mask.
@@ -103,6 +68,95 @@ def total_sub_pixels_1d_from(mask_1d: np.ndarray, sub_size: int) -> int:
     total_sub_pixels = total_sub_pixels_from_mask(mask=mask, sub_size=2)
     """
     return total_pixels_1d_from(mask_1d) * sub_size
+
+
+@decorator_util.jit()
+def sub_native_index_for_sub_slim_index_1d_from(
+    mask_1d: np.ndarray, sub_size: int
+) -> np.ndarray:
+    """
+    Returns an array of shape [total_unmasked_pixels*sub_size] that maps every unmasked sub-pixel to its
+    corresponding native 2D pixel using its (y,x) pixel indexes.
+
+    For example, for a sub-grid size of 2x2, if pixel [2,5] corresponds to the first pixel in the masked slim array:
+
+    - The first sub-pixel in this pixel on the 1D array is sub_native_index_for_sub_slim_index_2d[4] = [2,5]
+    - The second sub-pixel in this pixel on the 1D array is sub_native_index_for_sub_slim_index_2d[5] = [2,6]
+    - The third sub-pixel in this pixel on the 1D array is sub_native_index_for_sub_slim_index_2d[5] = [3,5]
+
+    Parameters
+    -----------
+    mask_2d : np.ndarray
+        A 2D array of bools, where `False` values are unmasked.
+    sub_size : int
+        The size of the sub-grid in each mask pixel.
+
+    Returns
+    -------
+    ndarray
+        An array that maps pixels from a slimmed array of shape [total_unmasked_pixels*sub_size] to its native array
+        of shape [total_pixels*sub_size, total_pixels*sub_size].
+
+    Examples
+    --------
+    mask_2d = np.array([[True, True, True],
+                     [True, False, True]
+                     [True, True, True]])
+
+    sub_native_index_for_sub_slim_index_2d = sub_native_index_for_sub_slim_index_via_mask_2d_from(mask_2d=mask_2d, sub_size=1)
+
+    """
+
+    total_sub_pixels = total_sub_pixels_1d_from(mask_1d=mask_1d, sub_size=sub_size)
+    sub_native_index_for_sub_slim_index_1d = np.zeros(shape=total_sub_pixels)
+
+    sub_slim_index = 0
+
+    for x in range(mask_1d.shape[0]):
+        if not mask_1d[x]:
+            for x1 in range(sub_size):
+
+                sub_native_index_for_sub_slim_index_1d[sub_slim_index] = (
+                    x * sub_size
+                ) + x1
+                sub_slim_index += 1
+
+    return sub_native_index_for_sub_slim_index_1d
+
+
+@decorator_util.jit()
+def mask_2d_centres_from(
+    shape_native: (int, int),
+    pixel_scales: typing.Tuple[float, float],
+    centre: (float, float),
+) -> (float, float):
+    """
+    Returns the (y,x) scaled central coordinates of a mask from its shape, pixel-scales and centre.
+
+    The coordinate system is defined such that the positive y axis is up and positive x axis is right.
+
+    Parameters
+    ----------
+    shape_native : (int, int)
+        The (y,x) shape of the 2D array the scaled centre is computed for.
+    pixel_scales : (float, float)
+        The (y,x) scaled units to pixel units conversion factor of the 2D array.
+    centre : (float, flloat)
+        The (y,x) centre of the 2D mask.
+
+    Returns
+    -------
+    tuple (float, float)
+        The (y,x) scaled central coordinates of the input array.
+
+    Examples
+    --------
+    centres_scaled = centres_from_shape_pixel_scales_and_centre(shape=(5,5), pixel_scales=(0.5, 0.5), centre=(0.0, 0.0))
+    """
+    y_centre_scaled = (float(shape_native[0] - 1) / 2) - (centre[0] / pixel_scales[0])
+    x_centre_scaled = (float(shape_native[1] - 1) / 2) + (centre[1] / pixel_scales[1])
+
+    return (y_centre_scaled, x_centre_scaled)
 
 
 @decorator_util.jit()
@@ -839,7 +893,7 @@ def check_if_border_pixel(
         The mask for which the input pixel is checked if it is a border pixel.
     edge_pixel_slim : int
         The edge pixel index in 1D that is checked if it is a border pixel (this 1D index is mapped to 2d via the
-        array `sub_native_index_for_sub_slim_index`).
+        array `sub_native_index_for_sub_slim_index_2d`).
     native_to_slim : np.ndarray
         An array describing the native 2D array index that every slimmed array index maps too.
 
@@ -884,7 +938,7 @@ def total_border_pixels_from(mask_2d, edge_pixels, native_to_slim):
         The mask for which the total number of border pixels is computed.
     edge_pixel_1d : int
         The edge pixel index in 1D that is checked if it is a border pixel (this 1D index is mapped to 2d via the
-        array `sub_native_index_for_sub_slim_index`).
+        array `sub_native_index_for_sub_slim_index_2d`).
     native_to_slim : np.ndarray
         An array describing the 2D array index that every 1D array index maps too.
 
@@ -930,14 +984,14 @@ def border_slim_indexes_from(mask_2d: np.ndarray) -> np.ndarray:
     """
 
     edge_pixels = edge_1d_indexes_from(mask_2d=mask_2d)
-    sub_native_index_for_sub_slim_index = sub_native_index_for_sub_slim_index_via_mask_2d_from(
+    sub_native_index_for_sub_slim_index_2d = sub_native_index_for_sub_slim_index_2d_from(
         mask_2d=mask_2d, sub_size=1
     )
 
     border_pixel_total = total_border_pixels_from(
         mask_2d=mask_2d,
         edge_pixels=edge_pixels,
-        native_to_slim=sub_native_index_for_sub_slim_index,
+        native_to_slim=sub_native_index_for_sub_slim_index_2d,
     )
 
     border_pixels = np.zeros(border_pixel_total)
@@ -949,7 +1003,7 @@ def border_slim_indexes_from(mask_2d: np.ndarray) -> np.ndarray:
         if check_if_border_pixel(
             mask_2d=mask_2d,
             edge_pixel_slim=edge_pixels[edge_pixel_index],
-            native_to_slim=sub_native_index_for_sub_slim_index,
+            native_to_slim=sub_native_index_for_sub_slim_index_2d,
         ):
 
             border_pixels[border_pixel_index] = edge_pixels[edge_pixel_index]
@@ -1245,7 +1299,7 @@ def sub_slim_index_for_sub_native_index_from(sub_mask_2d: np.ndarray):
 
 
 @decorator_util.jit()
-def sub_native_index_for_sub_slim_index_via_mask_2d_from(
+def sub_native_index_for_sub_slim_index_2d_from(
     mask_2d: np.ndarray, sub_size: int
 ) -> np.ndarray:
     """
@@ -1254,9 +1308,9 @@ def sub_native_index_for_sub_slim_index_via_mask_2d_from(
 
     For example, for a sub-grid size of 2x2, if pixel [2,5] corresponds to the first pixel in the masked slim array:
 
-    - The first sub-pixel in this pixel on the 1D array is sub_native_index_for_sub_slim_index[4] = [2,5]
-    - The second sub-pixel in this pixel on the 1D array is sub_native_index_for_sub_slim_index[5] = [2,6]
-    - The third sub-pixel in this pixel on the 1D array is sub_native_index_for_sub_slim_index[5] = [3,5]
+    - The first sub-pixel in this pixel on the 1D array is sub_native_index_for_sub_slim_index_2d[4] = [2,5]
+    - The second sub-pixel in this pixel on the 1D array is sub_native_index_for_sub_slim_index_2d[5] = [2,6]
+    - The third sub-pixel in this pixel on the 1D array is sub_native_index_for_sub_slim_index_2d[5] = [3,5]
 
     Parameters
     -----------
@@ -1277,12 +1331,11 @@ def sub_native_index_for_sub_slim_index_via_mask_2d_from(
                      [True, False, True]
                      [True, True, True]])
 
-    sub_native_index_for_sub_slim_index = sub_native_index_for_sub_slim_index_via_mask_2d_from(mask_2d=mask_2d, sub_size=1)
-
+    sub_native_index_for_sub_slim_index_2d = sub_native_index_for_sub_slim_index_via_mask_2d_from(mask_2d=mask_2d, sub_size=1)
     """
 
     total_sub_pixels = total_sub_pixels_2d_from(mask_2d=mask_2d, sub_size=sub_size)
-    sub_native_index_for_sub_slim_index = np.zeros(shape=(total_sub_pixels, 2))
+    sub_native_index_for_sub_slim_index_2d = np.zeros(shape=(total_sub_pixels, 2))
     sub_slim_index = 0
 
     for y in range(mask_2d.shape[0]):
@@ -1290,13 +1343,13 @@ def sub_native_index_for_sub_slim_index_via_mask_2d_from(
             if not mask_2d[y, x]:
                 for y1 in range(sub_size):
                     for x1 in range(sub_size):
-                        sub_native_index_for_sub_slim_index[sub_slim_index, :] = (
+                        sub_native_index_for_sub_slim_index_2d[sub_slim_index, :] = (
                             (y * sub_size) + y1,
                             (x * sub_size) + x1,
                         )
                         sub_slim_index += 1
 
-    return sub_native_index_for_sub_slim_index
+    return sub_native_index_for_sub_slim_index_2d
 
 
 @decorator_util.jit()
