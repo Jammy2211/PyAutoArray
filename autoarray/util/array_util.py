@@ -562,7 +562,7 @@ def sub_array_2d_slim_from(
     return sub_array_2d_slim
 
 
-def sub_array_2d_from(
+def sub_array_2d_native_from(
     sub_array_2d_slim: np.ndarray, mask_2d: np.ndarray, sub_size: int
 ) -> np.ndarray:
     """
@@ -604,14 +604,16 @@ def sub_array_2d_from(
 
     sub_shape = (mask_2d.shape[0] * sub_size, mask_2d.shape[1] * sub_size)
 
-    sub_slim_to_native = mask_util.sub_native_index_for_sub_slim_index_via_mask_2d_from(
+    sub_native_index_for_sub_slim_index_2d = mask_util.sub_native_index_for_sub_slim_index_2d_from(
         mask_2d=mask_2d, sub_size=sub_size
-    ).astype("int")
+    ).astype(
+        "int"
+    )
 
     return sub_array_2d_via_sub_indexes_from(
         sub_array_2d_slim=sub_array_2d_slim,
         sub_shape=sub_shape,
-        sub_native_index_for_slim_index=sub_slim_to_native,
+        sub_native_index_for_slim_index_2d=sub_native_index_for_sub_slim_index_2d,
     )
 
 
@@ -619,10 +621,10 @@ def sub_array_2d_from(
 def sub_array_2d_via_sub_indexes_from(
     sub_array_2d_slim: np.ndarray,
     sub_shape: (int, int),
-    sub_native_index_for_slim_index: np.ndarray,
+    sub_native_index_for_slim_index_2d: np.ndarray,
 ) -> np.ndarray:
     """
-    For a slimmed sub array and sub-indexes mapping the slimmed sub-array values to their native sub-array,
+    For a slimmed sub array with sub-indexes mapping the slimmed sub-array values to their native sub-array,
     return the native 2D sub-array.
 
     A sub-array is an array whose dimensions correspond to the normal array multiplied by the sub_size. For example
@@ -645,7 +647,7 @@ def sub_array_2d_via_sub_indexes_from(
         The slimmed array of shape [total_values] which are mapped to the native array..
     sub_shape : (int, int)
         The 2D dimensions of the native 2D sub-array.
-    sub_native_index_for_slim_index : np.narray
+    sub_native_index_for_slim_index_2d : np.narray
         An array of shape [total_values] that maps from the slimmed array to the native array.
 
     Returns
@@ -655,10 +657,11 @@ def sub_array_2d_via_sub_indexes_from(
     """
     sub_array_native_2d = np.zeros(sub_shape)
 
-    for slim_index in range(len(sub_native_index_for_slim_index)):
+    for slim_index in range(len(sub_native_index_for_slim_index_2d)):
+
         sub_array_native_2d[
-            sub_native_index_for_slim_index[slim_index, 0],
-            sub_native_index_for_slim_index[slim_index, 1],
+            sub_native_index_for_slim_index_2d[slim_index, 0],
+            sub_native_index_for_slim_index_2d[slim_index, 1],
         ] = sub_array_2d_slim[slim_index]
 
     return sub_array_native_2d
@@ -738,15 +741,15 @@ def sub_array_complex_slim_from(
 def sub_array_2d_complex_via_sub_indexes_from(
     sub_array_2d_slim: np.ndarray,
     sub_shape_native: (int, int),
-    sub_native_index_for_slim_index: np.ndarray,
+    sub_native_index_for_slim_index_2d: np.ndarray,
 ) -> np.ndarray:
 
     sub_array_2d = 0 + 0j * np.zeros(sub_shape_native)
 
-    for slim_index in range(len(sub_native_index_for_slim_index)):
+    for slim_index in range(len(sub_native_index_for_slim_index_2d)):
         sub_array_2d[
-            sub_native_index_for_slim_index[slim_index, 0],
-            sub_native_index_for_slim_index[slim_index, 1],
+            sub_native_index_for_slim_index_2d[slim_index, 0],
+            sub_native_index_for_slim_index_2d[slim_index, 1],
         ] = sub_array_2d_slim[slim_index]
 
     return sub_array_2d

@@ -86,7 +86,6 @@ class Visuals1D(AbstractVisuals):
 
 
 class Visuals2D(AbstractVisuals):
-
     def __init__(
         self,
         origin: grids.Grid2D = None,
@@ -125,7 +124,9 @@ class Visuals2D(AbstractVisuals):
     def plot_via_plotter(self, plotter, grid_indexes=None, mapper=None):
 
         if self.origin is not None:
-            plotter.origin_scatter.scatter_grid(grid=grids.Grid2DIrregular(grid=self.origin))
+            plotter.origin_scatter.scatter_grid(
+                grid=grids.Grid2DIrregular(grid=self.origin)
+            )
 
         if self.mask is not None:
             plotter.mask_scatter.scatter_grid(

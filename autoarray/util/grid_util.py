@@ -877,11 +877,11 @@ def sub_grid_2d_from(
         mapped from the slimmed grid.
     """
 
-    sub_grid_2d_y = array_util.sub_array_2d_from(
+    sub_grid_2d_y = array_util.sub_array_2d_native_from(
         sub_array_2d_slim=sub_grid_2d_slim[:, 0], mask_2d=mask_2d, sub_size=sub_size
     )
 
-    sub_grid_2d_x = array_util.sub_array_2d_from(
+    sub_grid_2d_x = array_util.sub_array_2d_native_from(
         sub_array_2d_slim=sub_grid_2d_slim[:, 1], mask_2d=mask_2d, sub_size=sub_size
     )
 

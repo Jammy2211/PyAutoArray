@@ -91,7 +91,6 @@ class AbstractInterferometer(abstract_dataset.AbstractDataset):
 class AbstractSettingsMaskedInterferometer(
     abstract_dataset.AbstractSettingsMaskedDataset
 ):
-
     def __init__(
         self,
         grid_class=grids.Grid2D,
@@ -184,7 +183,6 @@ class AbstractSettingsMaskedInterferometer(
 
 
 class AbstractMaskedInterferometer(abstract_dataset.AbstractMaskedDataset):
-
     def __init__(
         self,
         interferometer,

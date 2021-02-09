@@ -181,7 +181,7 @@ class TransformerNUFFT(NUFFT_cpu, pylops.LinearOperator):
 
         for source_pixel_1d_index in range(mapping_matrix.shape[1]):
 
-            image_2d = array_util.sub_array_2d_from(
+            image_2d = array_util.sub_array_2d_native_from(
                 sub_array_2d_slim=mapping_matrix[:, source_pixel_1d_index],
                 mask_2d=self.grid.mask,
                 sub_size=1,
@@ -209,7 +209,7 @@ class TransformerNUFFT(NUFFT_cpu, pylops.LinearOperator):
         x2d = array_util.sub_array_2d_complex_via_sub_indexes_from(
             sub_array_2d_slim=x,
             sub_shape_native=self.real_space_mask.shape_native,
-            sub_native_index_for_slim_index=self._sub_native_index_for_sub_slim_index,
+            sub_native_index_for_slim_index_2d=self._sub_native_index_for_sub_slim_index,
         )[::-1, :]
 
         y = self.k2y(self.xx2k(self.x2xx(x2d)))

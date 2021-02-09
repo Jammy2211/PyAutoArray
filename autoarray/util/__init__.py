@@ -5,6 +5,7 @@ from . import frame_util as frame
 from . import geometry_util as geometry
 from . import grid_util as grid
 from . import inversion_util as inversion
+from . import line_util as line
 from . import mapper_util as mapper
 from . import mask_util as mask
 from . import pixelization_util as pixelization
