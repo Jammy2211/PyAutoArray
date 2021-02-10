@@ -1,52 +1,25 @@
 from codecs import open
 from os.path import abspath, dirname, join
-from subprocess import call
+from os import environ
 
-from setuptools import find_packages, setup, Command
-
-
-def version():
-    with open("autoarray/__init__.py") as f:
-        lines = f.read().split("\n")
-    for line in lines:
-        if "__version__" in line:
-            return line.split("=")[1].strip(" '\”")
-
-
-class RunTests(Command):
-    """Run all tests."""
-
-    description = "run tests"
-    user_options = []
-
-    def initialize_options(self):
-        pass
-
-    def finalize_options(self):
-        pass
-
-    def run(self):
-        """Run all tests!"""
-        errno = call(["py.test", "--cov=autoarray", "--cov-report=term-missing"])
-        raise SystemExit(errno)
-
+from setuptools import find_packages, setup
 
 this_dir = abspath(dirname(__file__))
-with open(join(this_dir, "README.md"), encoding="utf-8") as file:
+with open(join(this_dir, "README.rst"), encoding="utf-8") as file:
     long_description = file.read()
 
 with open(join(this_dir, "requirements.txt")) as f:
     requirements = f.read().split("\n")
 
 setup(
-    name="autoarray",
-    version=version(),
-    description="numpy extension for masked purposes",
+    name="autofit",
+    version=environ.get("VERSION", "1.0.dev0"),
+    description="Classy Probabilistic Programming",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/jammy2211/PyAutoArray",
+    url="https://github.com/rhayes777/AutoFit",
     author="James Nightingale and Richard Hayes",
-    author_email="james.w.nightingale@durham.ac.uk",
+    author_email="richard@rghsoftware.co.uk",
     include_package_data=True,
     license="MIT License",
     classifiers=[
@@ -66,6 +39,6 @@ setup(
     keywords="cli",
     packages=find_packages(exclude=["docs"]),
     install_requires=requirements,
-    extras_require={"test": ["coverage", "pytest", "pytest-cov"]},
-    cmd_class={"test": RunTests},
+    setup_requires=["pytest-runner"],
+    tests_require=["pytest"],
 )
