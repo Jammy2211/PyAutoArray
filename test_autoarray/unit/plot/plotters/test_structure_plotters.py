@@ -635,7 +635,7 @@ class TestMapperPlotter:
 
 
 class TestLine1DPlotter:
-    def test__plot_line__works_with_all_extras_included(self, plot_path, plot_patch):
+    def _test__plot_line__works_with_all_extras_included(self, plot_path, plot_patch):
 
         line_plotter = aplt.Line1DPlotter(
             mat_plot_1d=aplt.MatPlot1D(
