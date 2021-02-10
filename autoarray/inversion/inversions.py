@@ -489,6 +489,17 @@ class AbstractInversionInterferometer(AbstractInversion):
             store_slim=True,
         )
 
+    @property
+    def residual_map(self):
+        return None
+
+    @property
+    def normalized_residual_map(self):
+        return None
+
+    @property
+    def chi_squared_map(self):
+        return None
 
 class InversionInterferometerMatrix(
     AbstractInversionInterferometer, AbstractInversionMatrix
@@ -772,3 +783,7 @@ class InversionInterferometerLinearOperator(AbstractInversionInterferometer):
         return self.transformer.visibilities_from_image(
             image=self.mapped_reconstructed_image
         )
+
+    @property
+    def errors(self):
+        return None
