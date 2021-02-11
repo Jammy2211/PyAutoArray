@@ -196,7 +196,7 @@ class Grid2D(abstract_grid.AbstractGrid2D):
         obj.mask = mask
         obj.store_slim = store_slim
 
-        abstract_grid.check_grid(grid=obj)
+        abstract_grid.check_grid_2d(grid_2d=obj)
 
         return obj
 
@@ -267,7 +267,7 @@ class Grid2D(abstract_grid.AbstractGrid2D):
         )
 
         grid = abstract_grid.convert_manual_grid_2d_slim(
-            grid_2d_slim=grid, mask=mask, store_slim=store_slim
+            grid_2d_slim=grid, mask_2d=mask, store_slim=store_slim
         )
 
         return Grid2D(grid=grid, mask=mask, store_slim=store_slim)
@@ -317,8 +317,8 @@ class Grid2D(abstract_grid.AbstractGrid2D):
             origin=origin,
         )
 
-        grid = abstract_grid.convert_manual_grid_2d(
-            grid_2d=grid, mask=mask, store_slim=store_slim
+        grid = abstract_grid.convert_manual_grid_2d_native(
+            grid_2d_native=grid, mask_2d=mask, store_slim=store_slim
         )
 
         return Grid2D(grid=grid, mask=mask, store_slim=store_slim)
@@ -393,10 +393,10 @@ class Grid2D(abstract_grid.AbstractGrid2D):
         """
 
         grid = abstract_grid.convert_grid(grid=grid)
-        abstract_grid.check_grid_and_mask(grid=grid, mask=mask)
+        abstract_grid.check_grid_2d_and_mask_2d(grid_2d=grid, mask_2d=mask)
 
-        grid = abstract_grid.convert_manual_grid(
-            grid=grid, mask=mask, store_slim=store_slim
+        grid = abstract_grid.convert_manual_grid_2d(
+            grid_2d=grid, mask_2d=mask, store_slim=store_slim
         )
 
         return Grid2D(grid=grid, mask=mask, store_slim=store_slim)

@@ -107,34 +107,6 @@ class TestGrid:
             1.0 * np.pi / (180 * 3600), 1.0e-8
         )
 
-    def test__yticks(self):
-        mask = aa.Mask2D.circular(
-            shape_native=(3, 3), radius=1.0, pixel_scales=(1.0, 1.0), sub_size=1
-        )
-
-        grid = grids.Grid2D(grid=np.array([[1.5, 1.0], [-1.5, -1.0]]), mask=mask)
-        assert grid.yticks == pytest.approx(np.array([-1.5, -0.5, 0.5, 1.5]), 1e-3)
-
-        grid = grids.Grid2D(grid=np.array([[3.0, 1.0], [-3.0, -1.0]]), mask=mask)
-        assert grid.yticks == pytest.approx(np.array([-3.0, -1, 1.0, 3.0]), 1e-3)
-
-        grid = grids.Grid2D(grid=np.array([[5.0, 3.5], [2.0, -1.0]]), mask=mask)
-        assert grid.yticks == pytest.approx(np.array([2.0, 3.0, 4.0, 5.0]), 1e-3)
-
-    def test__xticks(self):
-        mask = aa.Mask2D.circular(
-            shape_native=(3, 3), radius=1.0, pixel_scales=(1.0, 1.0), sub_size=1
-        )
-
-        grid = grids.Grid2D(grid=np.array([[1.0, 1.5], [-1.0, -1.5]]), mask=mask)
-        assert grid.xticks == pytest.approx(np.array([-1.5, -0.5, 0.5, 1.5]), 1e-3)
-
-        grid = grids.Grid2D(grid=np.array([[1.0, 3.0], [-1.0, -3.0]]), mask=mask)
-        assert grid.xticks == pytest.approx(np.array([-3.0, -1, 1.0, 3.0]), 1e-3)
-
-        grid = grids.Grid2D(grid=np.array([[3.5, 2.0], [-1.0, 5.0]]), mask=mask)
-        assert grid.xticks == pytest.approx(np.array([2.0, 3.0, 4.0, 5.0]), 1e-3)
-
     def test__padded_grid_from_kernel_shape__matches_grid_2d_after_padding(self):
         grid = grids.Grid2D.uniform(shape_native=(4, 4), pixel_scales=3.0, sub_size=1)
 
