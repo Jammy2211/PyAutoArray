@@ -290,18 +290,6 @@ class AbstractMask2D(abstract_mask.AbstractMask):
         )
 
     @property
-    def yticks(self):
-        """
-        Returns the yticks labels of this grid, used for plotting the y-axis ticks when visualizing an image-grid"""
-        return np.linspace(self.scaled_minima[0], self.scaled_maxima[0], 4)
-
-    @property
-    def xticks(self):
-        """
-        Returns the xticks labels of this grid, used for plotting the x-axis ticks when visualizing an image-grid"""
-        return np.linspace(self.scaled_minima[1], self.scaled_maxima[1], 4)
-
-    @property
     def edge_buffed_mask(self):
         edge_buffed_mask = mask_util.buffed_mask_2d_from(mask_2d=self).astype("bool")
         return Mask2D(
