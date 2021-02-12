@@ -484,8 +484,8 @@ class Kernel2D(arrays.Array2D):
         [sub_size*total_y_pixels, sub_size*total_x_pixels, 2] where all masked values are given values (0.0, 0.0).
 
         If the array is stored in 2D it is return as is. If it is stored in 1D, it must first be mapped from 1D to 2D."""
-        return array_util.sub_array_2d_native_from(
-            sub_array_2d_slim=self, mask_2d=self.mask, sub_size=self.mask.sub_size
+        return array_util.array_2d_native_from(
+            array_2d_slim=self, mask_2d=self.mask, sub_size=self.mask.sub_size
         )
 
     @property
@@ -520,8 +520,8 @@ class Kernel2D(arrays.Array2D):
             array_binned_2d, self.native, mode="same"
         )
 
-        convolved_array_1d = array_util.sub_array_2d_slim_from(
-            mask_2d=array_binned_2d.mask, sub_array_2d=convolved_array_2d, sub_size=1
+        convolved_array_1d = array_util.array_2d_slim_from(
+            mask_2d=array_binned_2d.mask, array_2d=convolved_array_2d, sub_size=1
         )
 
         return arrays.Array2D(
@@ -552,8 +552,8 @@ class Kernel2D(arrays.Array2D):
 
         convolved_array_2d = scipy.signal.convolve2d(array_2d, self.native, mode="same")
 
-        convolved_array_1d = array_util.sub_array_2d_slim_from(
-            mask_2d=mask, sub_array_2d=convolved_array_2d, sub_size=1
+        convolved_array_1d = array_util.array_2d_slim_from(
+            mask_2d=mask, array_2d=convolved_array_2d, sub_size=1
         )
 
         return arrays.Array2D(

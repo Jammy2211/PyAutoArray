@@ -182,8 +182,8 @@ class Grid2DInterpolate(abstract_grid.AbstractGrid2D):
                 store_slim=store_slim,
             )
 
-        grid_2d = grid_util.sub_grid_2d_from(
-            sub_grid_2d_slim=grid, mask_2d=mask, sub_size=sub_size
+        grid_2d = grid_util.grid_2d_from(
+            grid_2d_slim=grid, mask_2d=mask, sub_size=sub_size
         )
 
         return Grid2DInterpolate(
@@ -283,8 +283,8 @@ class Grid2DInterpolate(abstract_grid.AbstractGrid2D):
                 store_slim=store_slim,
             )
 
-        grid_2d = grid_util.sub_grid_2d_from(
-            sub_grid_2d_slim=grid_slim, mask_2d=mask.mask_sub_1, sub_size=1
+        grid_2d = grid_util.grid_2d_from(
+            grid_2d_slim=grid_slim, mask_2d=mask.mask_sub_1, sub_size=1
         )
 
         return grids.Grid2DInterpolate(

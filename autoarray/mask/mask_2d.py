@@ -498,7 +498,7 @@ class AbstractMask2D(abstract_mask.AbstractMask):
     @property
     def _sub_native_index_for_sub_slim_index(self):
         """A 1D array of mappings between every unmasked pixel and its 2D pixel coordinates."""
-        return mask_util.sub_native_index_for_sub_slim_index_2d_from(
+        return mask_util.native_index_for_slim_index_2d_from(
             mask_2d=self, sub_size=1
         ).astype("int")
 
@@ -618,7 +618,7 @@ class AbstractMask2D(abstract_mask.AbstractMask):
     @property
     def _sub_mask_index_for_sub_mask_1d_index(self):
         """A 1D array of mappings between every unmasked sub pixel and its 2D sub-pixel coordinates."""
-        return mask_util.sub_native_index_for_sub_slim_index_2d_from(
+        return mask_util.native_index_for_slim_index_2d_from(
             mask_2d=self, sub_size=self.sub_size
         ).astype("int")
 

@@ -69,8 +69,8 @@ def convert_manual_array_slim(array_slim, mask, store_slim):
     if store_slim:
         return array_slim
 
-    return array_util.sub_array_2d_native_from(
-        sub_array_2d_slim=array_slim, mask_2d=mask, sub_size=mask.sub_size
+    return array_util.array_2d_native_from(
+        array_2d_slim=array_slim, mask_2d=mask, sub_size=mask.sub_size
     )
 
 
@@ -103,15 +103,15 @@ def convert_manual_native_array(array_2d, mask, store_slim):
             "(e.g. the mask 2D shape multipled by its sub size."
         )
 
-    sub_array_1d = array_util.sub_array_2d_slim_from(
-        sub_array_2d=array_2d, mask_2d=mask, sub_size=mask.sub_size
+    sub_array_1d = array_util.array_2d_slim_from(
+        array_2d=array_2d, mask_2d=mask, sub_size=mask.sub_size
     )
 
     if store_slim:
         return sub_array_1d
 
-    return array_util.sub_array_2d_native_from(
-        sub_array_2d_slim=sub_array_1d, mask_2d=mask, sub_size=mask.sub_size
+    return array_util.array_2d_native_from(
+        array_2d_slim=sub_array_1d, mask_2d=mask, sub_size=mask.sub_size
     )
 
 
@@ -193,8 +193,8 @@ class AbstractArray2D(abstract_structure.AbstractStructure2D):
         if self.store_slim:
             return self
 
-        sub_array_1d = array_util.sub_array_2d_slim_from(
-            sub_array_2d=self, mask_2d=self.mask, sub_size=self.mask.sub_size
+        sub_array_1d = array_util.array_2d_slim_from(
+            array_2d=self, mask_2d=self.mask, sub_size=self.mask.sub_size
         )
 
         return self._new_structure(array=sub_array_1d, mask=self.mask, store_slim=True)
@@ -206,8 +206,8 @@ class AbstractArray2D(abstract_structure.AbstractStructure2D):
 
         If the array is stored in 2D it is return as is. If it is stored in 1D, it must first be mapped from 1D to 2D."""
         if self.store_slim:
-            sub_array_2d = array_util.sub_array_2d_native_from(
-                sub_array_2d_slim=self, mask_2d=self.mask, sub_size=self.mask.sub_size
+            sub_array_2d = array_util.array_2d_native_from(
+                array_2d_slim=self, mask_2d=self.mask, sub_size=self.mask.sub_size
             )
             return self._new_structure(
                 array=sub_array_2d, mask=self.mask, store_slim=False
@@ -228,8 +228,8 @@ class AbstractArray2D(abstract_structure.AbstractStructure2D):
 
         if not self.store_slim:
 
-            sub_array_1d = array_util.sub_array_2d_slim_from(
-                sub_array_2d=self, mask_2d=self.mask, sub_size=self.mask.sub_size
+            sub_array_1d = array_util.array_2d_slim_from(
+                array_2d=self, mask_2d=self.mask, sub_size=self.mask.sub_size
             )
 
         else:
@@ -257,8 +257,8 @@ class AbstractArray2D(abstract_structure.AbstractStructure2D):
         If the array is stored in 2D it is return as is. If it is stored in 1D, it must first be mapped from 1D to 2D."""
         if not self.store_slim:
 
-            sub_array_1d = array_util.sub_array_2d_slim_from(
-                sub_array_2d=self, mask_2d=self.mask, sub_size=self.mask.sub_size
+            sub_array_1d = array_util.array_2d_slim_from(
+                array_2d=self, mask_2d=self.mask, sub_size=self.mask.sub_size
             )
 
         else:
@@ -270,8 +270,8 @@ class AbstractArray2D(abstract_structure.AbstractStructure2D):
             sub_array_1d[:].reshape(-1, self.mask.sub_length).sum(axis=1),
         )
 
-        binned_array_2d = array_util.sub_array_2d_native_from(
-            sub_array_2d_slim=binned_array_1d, mask_2d=self.mask, sub_size=1
+        binned_array_2d = array_util.array_2d_native_from(
+            array_2d_slim=binned_array_1d, mask_2d=self.mask, sub_size=1
         )
 
         return self._new_structure(
@@ -511,8 +511,8 @@ class AbstractArray2D(abstract_structure.AbstractStructure2D):
                 "[mean I quadrature I sum]"
             )
 
-        binned_array_1d = array_util.sub_array_2d_slim_from(
-            mask_2d=binned_mask, sub_array_2d=binned_array_2d, sub_size=1
+        binned_array_1d = array_util.array_2d_slim_from(
+            mask_2d=binned_mask, array_2d=binned_array_2d, sub_size=1
         )
 
         array = convert_manual_array_slim(

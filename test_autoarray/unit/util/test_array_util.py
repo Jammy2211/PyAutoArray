@@ -658,8 +658,8 @@ class TestArray1DFromArray2d:
 
         mask = np.array([[True, True, True], [True, False, True], [True, True, True]])
 
-        array_1d = util.array.sub_array_2d_slim_from(
-            mask_2d=mask, sub_array_2d=array_2d, sub_size=1
+        array_1d = util.array.array_2d_slim_from(
+            mask_2d=mask, array_2d=array_2d, sub_size=1
         )
 
         assert (array_1d == np.array([5])).all()
@@ -670,8 +670,8 @@ class TestArray1DFromArray2d:
             [[True, False, True], [False, False, False], [True, False, True]]
         )
 
-        array_1d = util.array.sub_array_2d_slim_from(
-            mask_2d=mask, sub_array_2d=array_2d, sub_size=1
+        array_1d = util.array.array_2d_slim_from(
+            mask_2d=mask, array_2d=array_2d, sub_size=1
         )
 
         assert (array_1d == np.array([2, 4, 5, 6, 8])).all()
@@ -686,8 +686,8 @@ class TestArray1DFromArray2d:
             ]
         )
 
-        array_1d = util.array.sub_array_2d_slim_from(
-            mask_2d=mask, sub_array_2d=array_2d, sub_size=1
+        array_1d = util.array.array_2d_slim_from(
+            mask_2d=mask, array_2d=array_2d, sub_size=1
         )
 
         assert (array_1d == np.array([2, 5, 6, 7, 10, 12])).all()
@@ -703,8 +703,8 @@ class TestArray1DFromArray2d:
             ]
         )
 
-        array_1d = util.array.sub_array_2d_slim_from(
-            mask_2d=mask, sub_array_2d=array_2d, sub_size=1
+        array_1d = util.array.array_2d_slim_from(
+            mask_2d=mask, array_2d=array_2d, sub_size=1
         )
 
         assert (array_1d == np.array([2, 4, 5, 6, 8])).all()
@@ -724,16 +724,16 @@ class TestArray1DFromArray2d:
 
         mask = np.array([[True, True, True], [True, False, True], [True, True, True]])
 
-        sub_array_1d = util.array.sub_array_2d_slim_from(
-            sub_array_2d=sub_array_2d, mask_2d=mask, sub_size=2
+        sub_array_1d = util.array.array_2d_slim_from(
+            array_2d=sub_array_2d, mask_2d=mask, sub_size=2
         )
 
         assert (sub_array_1d == np.array([15, 16, 3, 4])).all()
 
         mask = np.array([[True, False, True], [True, False, True], [True, True, False]])
 
-        sub_array_1d = util.array.sub_array_2d_slim_from(
-            sub_array_2d=sub_array_2d, mask_2d=mask, sub_size=2
+        sub_array_1d = util.array.array_2d_slim_from(
+            array_2d=sub_array_2d, mask_2d=mask, sub_size=2
         )
 
         assert (
@@ -759,8 +759,8 @@ class TestArray1DFromArray2d:
             ]
         )
 
-        sub_array_1d = util.array.sub_array_2d_slim_from(
-            sub_array_2d=sub_array_2d, mask_2d=mask, sub_size=2
+        sub_array_1d = util.array.array_2d_slim_from(
+            array_2d=sub_array_2d, mask_2d=mask, sub_size=2
         )
 
         assert (
@@ -817,8 +817,8 @@ class TestArray1DFromArray2d:
             ]
         )
 
-        sub_array_1d = util.array.sub_array_2d_slim_from(
-            sub_array_2d=sub_array_2d, mask_2d=mask, sub_size=2
+        sub_array_1d = util.array.array_2d_slim_from(
+            array_2d=sub_array_2d, mask_2d=mask, sub_size=2
         )
 
         assert (
@@ -843,8 +843,8 @@ class TestArray1DFromArray2d:
 
         mask = np.array([[False, True], [True, False]])
 
-        sub_array_1d = util.array.sub_array_2d_slim_from(
-            sub_array_2d=sub_array_2d, mask_2d=mask, sub_size=3
+        sub_array_1d = util.array.array_2d_slim_from(
+            array_2d=sub_array_2d, mask_2d=mask, sub_size=3
         )
 
         assert (
@@ -864,8 +864,8 @@ class TestArray1DFromArray2d:
 
         mask = np.array([[True, True, True], [True, False, True], [True, True, True]])
 
-        array_1d = util.array.sub_array_complex_slim_from(
-            mask=mask, sub_array_2d=array_2d, sub_size=1
+        array_1d = util.array.array_2d_slim_complex_from(
+            mask=mask, array_2d_native=array_2d, sub_size=1
         )
 
         assert (array_1d == np.array([5 + 5j])).all()
@@ -878,8 +878,8 @@ class TestArray2dForArray1d:
 
         mask = np.full(fill_value=False, shape=(2, 2))
 
-        array_2d = util.array.sub_array_2d_native_from(
-            sub_array_2d_slim=array_1d, mask_2d=mask, sub_size=1
+        array_2d = util.array.array_2d_native_from(
+            array_2d_slim=array_1d, mask_2d=mask, sub_size=1
         )
 
         assert (array_2d == np.array([[1.0, 2.0], [3.0, 4.0]])).all()
@@ -888,8 +888,8 @@ class TestArray2dForArray1d:
 
         mask = np.array([[False, False], [False, True]])
 
-        array_2d = util.array.sub_array_2d_native_from(
-            sub_array_2d_slim=array_1d, mask_2d=mask, sub_size=1
+        array_2d = util.array.array_2d_native_from(
+            array_2d_slim=array_1d, mask_2d=mask, sub_size=1
         )
 
         assert (array_2d == np.array([[1.0, 2.0], [3.0, 0.0]])).all()
@@ -904,8 +904,8 @@ class TestArray2dForArray1d:
             ]
         )
 
-        array_2d = util.array.sub_array_2d_native_from(
-            sub_array_2d_slim=array_1d, mask_2d=mask, sub_size=1
+        array_2d = util.array.array_2d_native_from(
+            array_2d_slim=array_1d, mask_2d=mask, sub_size=1
         )
 
         assert (
@@ -923,8 +923,8 @@ class TestArray2dForArray1d:
 
         mask = np.array([[False, False], [False, True]])
 
-        array_2d = util.array.sub_array_2d_native_from(
-            sub_array_2d_slim=array_1d, mask_2d=mask, sub_size=2
+        array_2d = util.array.array_2d_native_from(
+            array_2d_slim=array_1d, mask_2d=mask, sub_size=2
         )
 
         assert (
@@ -945,10 +945,10 @@ class TestArray2dForArray1d:
             [1.0 + 1j, 2.0 + 2j, 3.0 + 3j, 4.0 + 4j], dtype="complex128"
         )
 
-        array_2d = util.array.sub_array_2d_complex_via_sub_indexes_from(
-            sub_array_2d_slim=array_1d,
+        array_2d = util.array.array_2d_native_complex_via_indexes_from(
+            array_2d_slim=array_1d,
             sub_shape_native=(2, 2),
-            sub_native_index_for_slim_index_2d=np.array(
+            native_index_for_slim_index_2d=np.array(
                 [[0, 0], [0, 1], [1, 0], [1, 1]], dtype="int"
             ),
         )

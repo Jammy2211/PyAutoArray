@@ -79,8 +79,8 @@ def convert_manual_grid_2d_slim(grid_2d_slim, mask_2d, store_slim):
     if store_slim:
         return grid_2d_slim
 
-    return grid_util.sub_grid_2d_from(
-        sub_grid_2d_slim=grid_2d_slim, mask_2d=mask_2d, sub_size=mask_2d.sub_size
+    return grid_util.grid_2d_from(
+        grid_2d_slim=grid_2d_slim, mask_2d=mask_2d, sub_size=mask_2d.sub_size
     )
 
 
@@ -106,15 +106,15 @@ def convert_manual_grid_2d_native(grid_2d_native, mask_2d, store_slim):
         Whether the memory-representation of the array is in 1D or 2D.
     """
 
-    grid_slim = grid_util.sub_grid_2d_slim_from(
-        sub_grid_2d=grid_2d_native, mask=mask_2d, sub_size=mask_2d.sub_size
+    grid_slim = grid_util.grid_2d_slim_from(
+        grid_2d=grid_2d_native, mask=mask_2d, sub_size=mask_2d.sub_size
     )
 
     if store_slim:
         return grid_slim
 
-    return grid_util.sub_grid_2d_from(
-        sub_grid_2d_slim=grid_slim, mask_2d=mask_2d, sub_size=mask_2d.sub_size
+    return grid_util.grid_2d_from(
+        grid_2d_slim=grid_slim, mask_2d=mask_2d, sub_size=mask_2d.sub_size
     )
 
 
@@ -148,32 +148,7 @@ def convert_manual_grid_2d(grid_2d, mask_2d, store_slim):
     )
 
 
-class AbstractGrid2D(abstract_structure.AbstractStructure2D):
-    def __array_finalize__(self, obj):
-
-        super(AbstractGrid2D, self).__array_finalize__(obj)
-
-        if hasattr(obj, "_sub_border_flat_indexes"):
-            self.mask._sub_border_flat_indexes = obj._sub_border_flat_indexes
-
-    def __reduce__(self):
-        # Get the parent's __reduce__ tuple
-        pickled_state = super().__reduce__()
-        # Create our own tuple to pass to __setstate__
-        class_dict = {}
-        for key, value in self.__dict__.items():
-            class_dict[key] = value
-        new_state = pickled_state[2] + (class_dict,)
-        # Return a tuple that replaces the parent's __setstate__ tuple with our own
-        return pickled_state[0], pickled_state[1], new_state
-
-    # noinspection PyMethodOverriding
-    def __setstate__(self, state):
-
-        for key, value in state[-1].items():
-            setattr(self, key, value)
-        super().__setstate__(state[0:-1])
-
+class AbstractGrid1D(abstract_structure.AbstractStructure1D):
     @property
     def slim(self):
         """
@@ -185,8 +160,8 @@ class AbstractGrid2D(abstract_structure.AbstractStructure2D):
         if self.store_slim:
             return self
 
-        sub_grid_2d_slim = grid_util.sub_grid_2d_slim_from(
-            sub_grid_2d=self, mask=self.mask, sub_size=self.mask.sub_size
+        sub_grid_2d_slim = grid_util.grid_2d_slim_from(
+            grid_2d=self, mask=self.mask, sub_size=self.mask.sub_size
         )
 
         return self._new_structure(
@@ -203,8 +178,8 @@ class AbstractGrid2D(abstract_structure.AbstractStructure2D):
         """
 
         if self.store_slim:
-            sub_grid_2d = grid_util.sub_grid_2d_from(
-                sub_grid_2d_slim=self, mask_2d=self.mask, sub_size=self.mask.sub_size
+            sub_grid_2d = grid_util.grid_2d_from(
+                grid_2d_slim=self, mask_2d=self.mask, sub_size=self.mask.sub_size
             )
             return self._new_structure(
                 grid=sub_grid_2d, mask=self.mask, store_slim=False
@@ -226,8 +201,8 @@ class AbstractGrid2D(abstract_structure.AbstractStructure2D):
         """
         if not self.store_slim:
 
-            sub_grid_2d_slim = grid_util.sub_grid_2d_slim_from(
-                sub_grid_2d=self, mask=self.mask, sub_size=self.mask.sub_size
+            sub_grid_2d_slim = grid_util.grid_2d_slim_from(
+                grid_2d=self, mask=self.mask, sub_size=self.mask.sub_size
             )
 
         else:
@@ -264,8 +239,8 @@ class AbstractGrid2D(abstract_structure.AbstractStructure2D):
         """
         if not self.store_slim:
 
-            sub_grid_1d = grid_util.sub_grid_2d_slim_from(
-                sub_grid_2d=self, mask=self.mask, sub_size=self.mask.sub_size
+            sub_grid_1d = grid_util.grid_2d_slim_from(
+                grid_2d=self, mask=self.mask, sub_size=self.mask.sub_size
             )
 
         else:
@@ -286,12 +261,141 @@ class AbstractGrid2D(abstract_structure.AbstractStructure2D):
             (binned_grid_2d_slim_y, binned_grid_2d_slim_x), axis=-1
         )
 
-        binned_grid_2d = grid_util.sub_grid_2d_from(
-            sub_grid_2d_slim=binned_grid_2d_slim, mask_2d=self.mask, sub_size=1
+        binned_grid_2d = grid_util.grid_2d_from(
+            grid_2d_slim=binned_grid_2d_slim, mask_2d=self.mask, sub_size=1
         )
 
         return self._new_structure(
             grid=binned_grid_2d, mask=self.mask.mask_sub_1, store_slim=False
+        )
+
+
+class AbstractGrid2D(abstract_structure.AbstractStructure2D):
+    def __array_finalize__(self, obj):
+
+        super(AbstractGrid2D, self).__array_finalize__(obj)
+
+        if hasattr(obj, "_sub_border_flat_indexes"):
+            self.mask._sub_border_flat_indexes = obj._sub_border_flat_indexes
+
+    @property
+    def slim(self):
+        """
+        Convenience method to access the grid's 1D representation, which is a Grid2D stored as an ndarray of shape
+        [total_unmasked_pixels*(sub_size**2), 2].
+
+        If the grid is stored in 1D it is return as is. If it is stored in 2D, it must first be mapped from 2D to 1D.
+        """
+        if self.store_slim:
+            return self
+
+        sub_grid_2d_slim = grid_util.grid_2d_slim_from(
+            grid_2d=self, mask=self.mask, sub_size=self.mask.sub_size
+        )
+
+        return self._new_structure(
+            grid=sub_grid_2d_slim, mask=self.mask, store_slim=True
+        )
+
+    @property
+    def native(self):
+        """
+        Convenience method to access the grid's 2D representation, which is a Grid2D stored as an ndarray of shape
+        [sub_size*total_y_pixels, sub_size*total_x_pixels, 2] where all masked values are given values (0.0, 0.0).
+
+        If the grid is stored in 2D it is return as is. If it is stored in 1D, it must first be mapped from 1D to 2D.
+        """
+
+        if self.store_slim:
+
+            grid_2d = grid_util.grid_2d_from(
+                grid_2d_slim=self, mask_2d=self.mask, sub_size=self.mask.sub_size
+            )
+
+            return self._new_structure(grid=grid_2d, mask=self.mask, store_slim=False)
+
+        return self
+
+    @property
+    def slim_binned(self):
+        """
+        Convenience method to access the binned-up grid in its 1D representation, which is a Grid2D stored as an
+        ndarray of shape [total_unmasked_pixels, 2].
+
+        The binning up process converts a grid from (y,x) values where each value is a coordinate on the sub-grid to
+        (y,x) values where each coordinate is at the centre of its mask (e.g. a grid with a sub_size of 1). This is
+        performed by taking the mean of all (y,x) values in each sub pixel.
+
+        If the grid is stored in 1D it is return as is. If it is stored in 2D, it must first be mapped from 2D to 1D.
+        """
+        if not self.store_slim:
+
+            grid_2d_slim = grid_util.grid_2d_slim_from(
+                grid_2d=self, mask=self.mask, sub_size=self.mask.sub_size
+            )
+
+        else:
+
+            grid_2d_slim = self
+
+        grid_2d_slim_binned_y = np.multiply(
+            self.mask.sub_fraction,
+            grid_2d_slim[:, 0].reshape(-1, self.mask.sub_length).sum(axis=1),
+        )
+
+        grid_2d_slim_binned_x = np.multiply(
+            self.mask.sub_fraction,
+            grid_2d_slim[:, 1].reshape(-1, self.mask.sub_length).sum(axis=1),
+        )
+
+        return self._new_structure(
+            grid=np.stack((grid_2d_slim_binned_y, grid_2d_slim_binned_x), axis=-1),
+            mask=self.mask.mask_sub_1,
+            store_slim=True,
+        )
+
+    @property
+    def native_binned(self):
+        """
+        Convenience method to access the binned-up grid in its 2D representation, which is a Grid2D stored as an
+        ndarray of shape [total_y_pixels, total_x_pixels, 2].
+
+        The binning up process conerts a grid from (y,x) values where each value is a coordinate on the sub-grid to
+        (y,x) values where each coordinate is at the centre of its mask (e.g. a grid with a sub_size of 1). This is
+        performed by taking the mean of all (y,x) values in each sub pixel.
+
+        If the grid is stored in 2D it is return as is. If it is stored in 1D, it must first be mapped from 1D to 2D.
+        """
+        if not self.store_slim:
+
+            grid_2d_slim = grid_util.grid_2d_slim_from(
+                grid_2d=self, mask=self.mask, sub_size=self.mask.sub_size
+            )
+
+        else:
+
+            grid_2d_slim = self
+
+        grid_2d_slim_binned_y = np.multiply(
+            self.mask.sub_fraction,
+            grid_2d_slim[:, 0].reshape(-1, self.mask.sub_length).sum(axis=1),
+        )
+
+        grid_2d_slim_binned_x = np.multiply(
+            self.mask.sub_fraction,
+            grid_2d_slim[:, 1].reshape(-1, self.mask.sub_length).sum(axis=1),
+        )
+
+        grid_2d_slim_binned = np.stack(
+            (grid_2d_slim_binned_y, grid_2d_slim_binned_x), axis=-1
+        )
+
+        grid_2d_native_binned = grid_util.grid_2d_from(
+            grid_2d_slim=grid_2d_slim_binned, mask_2d=self.mask, sub_size=1
+        )
+
+        return self._new_structure(
+            grid=grid_2d_native_binned, mask=self.mask.mask_sub_1, store_slim=False
         )
 
     @property
@@ -322,10 +426,10 @@ class AbstractGrid2D(abstract_structure.AbstractStructure2D):
         """
         Returns the squared distance of every coordinate on the grid from an input coordinate.
 
-            Parameters
-            ----------
-            coordinate : (float, float)
-                The (y,x) coordinate from which the squared distance of every grid (y,x) coordinate is computed.
+        Parameters
+        ----------
+        coordinate : (float, float)
+            The (y,x) coordinate from which the squared distance of every grid (y,x) coordinate is computed.
         """
 
         from autoarray.structures import arrays
@@ -339,10 +443,10 @@ class AbstractGrid2D(abstract_structure.AbstractStructure2D):
         """
         Returns the distance of every coordinate on the grid from an input (y,x) coordinate.
 
-            Parameters
-            ----------
-            coordinate : (float, float)
-                The (y,x) coordinate from which the distance of every grid (y,x) coordinate is computed.
+        Parameters
+        ----------
+        coordinate : (float, float)
+            The (y,x) coordinate from which the distance of every grid (y,x) coordinate is computed.
         """
         from autoarray.structures import arrays
 
@@ -520,14 +624,17 @@ class AbstractGrid2D(abstract_structure.AbstractStructure2D):
 
     @property
     def sub_border_grid(self):
-        """The (y,x) grid of all sub-pixels which are at the border of the mask.
+        """
+        The (y,x) grid of all sub-pixels which are at the border of the mask.
 
         This is NOT all sub-pixels which are in mask pixels at the mask's border, but specifically the sub-pixels
-        within these border pixels which are at the extreme edge of the border."""
+        within these border pixels which are at the extreme edge of the border.
+        """
         return self[self.mask._sub_border_flat_indexes]
 
     def relocated_grid_from_grid(self, grid):
-        """ Relocate the coordinates of a grid to the border of this grid if they are outside the border, where the
+        """
+        Relocate the coordinates of a grid to the border of this grid if they are outside the border, where the
         border is defined as all pixels at the edge of the grid's mask (see *mask._border_1d_indexes*).
 
         This is performed as follows:
