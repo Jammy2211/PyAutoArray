@@ -693,7 +693,7 @@ class TestRegions:
             pixel_scales=1.0,
         )
 
-        sub_native_index_for_sub_slim_index_2d = aa.util.mask.sub_native_index_for_sub_slim_index_2d_from(
+        sub_native_index_for_sub_slim_index_2d = aa.util.mask.native_index_for_slim_index_2d_from(
             mask_2d=mask, sub_size=1
         )
 
@@ -921,7 +921,7 @@ class TestRegions:
             sub_size=2,
         )
 
-        sub_mask_index_for_sub_mask_1d_index = aa.util.mask.sub_native_index_for_sub_slim_index_2d_from(
+        sub_mask_index_for_sub_mask_1d_index = aa.util.mask.native_index_for_slim_index_2d_from(
             mask_2d=mask, sub_size=2
         )
 

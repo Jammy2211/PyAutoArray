@@ -42,6 +42,7 @@ from .structures.arrays import ValuesIrregular
 from .structures.arrays.abstract_array import ExposureInfo
 from .structures.frames import Frame2D
 from .structures.frames.abstract_frame import Scans
+from .structures.grids import Grid1D
 from .structures.grids import Grid2D
 from .structures.grids import Grid2DInterpolate
 from .structures.grids import Grid2DRectangular

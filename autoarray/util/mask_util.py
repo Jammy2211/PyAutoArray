@@ -984,7 +984,7 @@ def border_slim_indexes_from(mask_2d: np.ndarray) -> np.ndarray:
     """
 
     edge_pixels = edge_1d_indexes_from(mask_2d=mask_2d)
-    sub_native_index_for_sub_slim_index_2d = sub_native_index_for_sub_slim_index_2d_from(
+    sub_native_index_for_sub_slim_index_2d = native_index_for_slim_index_2d_from(
         mask_2d=mask_2d, sub_size=1
     )
 
@@ -1299,7 +1299,7 @@ def sub_slim_index_for_sub_native_index_from(sub_mask_2d: np.ndarray):
 
 
 @decorator_util.jit()
-def sub_native_index_for_sub_slim_index_2d_from(
+def native_index_for_slim_index_2d_from(
     mask_2d: np.ndarray, sub_size: int
 ) -> np.ndarray:
     """

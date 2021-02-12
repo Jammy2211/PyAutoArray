@@ -1,3 +1,4 @@
+from .one_d.grids import Grid1D
 from .grids import Grid2D, Grid2DSparse, Grid2DTransformed, Grid2DTransformedNumpy
 from .iterate import Grid2DIterate
 from .interpolate import Grid2DInterpolate

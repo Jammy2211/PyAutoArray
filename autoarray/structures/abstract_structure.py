@@ -6,9 +6,35 @@ import pickle
 class AbstractStructure(np.ndarray):
     def __array_finalize__(self, obj):
 
-        if isinstance(obj, AbstractStructure):
-            if hasattr(obj, "mask"):
-                self.mask = obj.mask
+        if hasattr(obj, "mask"):
+            self.mask = obj.mask
+
+        if hasattr(obj, "store_slim"):
+            self.store_slim = obj.store_slim
+
+    def __reduce__(self):
+
+        # Get the parent's __reduce__ tuple
+        pickled_state = super().__reduce__()
+
+        # Create our own tuple to pass to __setstate__
+        class_dict = {}
+
+        for key, value in self.__dict__.items():
+            class_dict[key] = value
+
+        new_state = pickled_state[2] + (class_dict,)
+
+        # Return a tuple that replaces the parent's __setstate__ tuple with our own
+        return pickled_state[0], pickled_state[1], new_state
+
+    # noinspection PyMethodOverriding
+    def __setstate__(self, state):
+
+        for key, value in state[-1].items():
+            setattr(self, key, value)
+
+        super().__setstate__(state[0:-1])
 
     def _new_structure(self, grid, mask, store_slim):
         """Conveninence method for creating a new instance of the Grid2D class from this grid.
@@ -107,15 +133,6 @@ class AbstractStructure1D(AbstractStructure):
 
 
 class AbstractStructure2D(AbstractStructure):
-    def __array_finalize__(self, obj):
-
-        super().__array_finalize__(obj=obj)
-
-        if isinstance(obj, AbstractStructure2D):
-
-            if hasattr(obj, "store_slim"):
-                self.store_slim = obj.store_slim
-
     @property
     def native(self):
         raise NotImplementedError

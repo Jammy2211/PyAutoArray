@@ -8,19 +8,24 @@ from autoarray.util import array_util, sparse_util, geometry_util, grid_util, ma
 
 class Grid2D(abstract_grid.AbstractGrid2D):
     def __new__(cls, grid, mask, store_slim=True, *args, **kwargs):
-        """A grid of coordinates, which are paired to a uniform 2D mask of pixels and sub-pixels. Each entry
-        on the grid corresponds to the (y,x) coordinates at the centre of a sub-pixel in an unmasked pixel.
+        """
+        A grid of 2D (y,x) coordinates, which are paired to a uniform 2D mask of pixels and sub-pixels. Each entry
+        on the grid corresponds to the (y,x) coordinates at the centre of a sub-pixel of an unmasked pixel.
 
-        A `Grid2D` is ordered such that pixels begin from the top-row of the corresponding mask and go right and down.
-        The positive y-axis is upwards and positive x-axis to the right.
+        A `Grid2D` is ordered such that pixels begin from the top-row (e.g. index [0, 0]) of the corresponding mask
+        and go right and down. The positive y-axis is upwards and positive x-axis to the right.
 
-        The grid can be stored in 1D or 2D, as detailed below.
+        The grid can be stored in two formats:
+
+        - slimmed: all masked entries are removed so the ndarray is shape [total_unmasked_coordinates*sub_size**2, 2]
+        - native: it retains the original shape of the grid so the ndarray is
+          shape [total_y_coordinates*sub_size, total_x_coordinates*sub_size, 2].
 
         Case 1: [sub-size=1, store_slim = True]:
         -----------------------------------------
 
-        The Grid2D is an ndarray of shape [total_unmasked_pixels, 2], therefore when store_slim=True the shape of the
-        grid is 2, not 1.
+        The Grid2D is an ndarray of shape [total_unmasked_coordinates, 2], therefore when store_slim=True the shape of
+        the grid is 2, not 1.
 
         The first element of the ndarray corresponds to the pixel index and second element the y or x coordinate value.
         For example:
@@ -63,12 +68,13 @@ class Grid2D(abstract_grid.AbstractGrid2D):
         Case 2: [sub-size>1, store_slim=True]:
         ------------------
 
-        If the masks's sub size is > 1, the grid is defined as a sub-grid where each entry corresponds to the (y,x)
-        coordinates at the centre of each sub-pixel of an unmasked pixel.
+        If the mask's `sub_size` is > 1, the grid is defined as a sub-grid where each entry corresponds to the (y,x)
+        coordinates at the centre of each sub-pixel of an unmasked pixel. The Grid2D is therefore stored as an ndarray
+        of shape [total_unmasked_coordinates*sub_size**2, 2]
 
         The sub-grid indexes are ordered such that pixels begin from the first (top-left) sub-pixel in the first
         unmasked pixel. Indexes then go over the sub-pixels in each unmasked pixel, for every unmasked pixel.
-        Therefore, the sub-grid is an ndarray of shape [total_unmasked_pixels*(sub_grid_shape)**2, 2]. For example:
+        Therefore, the sub-grid is an ndarray of shape [total_unmasked_coordinates*(sub_grid_shape)**2, 2]. For example:
 
         - grid[9, 1] - using a 2x2 sub-grid, gives the 3rd unmasked pixel's 2nd sub-pixel x-coordinate.
         - grid[9, 1] - using a 3x3 sub-grid, gives the 2nd unmasked pixel's 1st sub-pixel x-coordinate.
@@ -99,7 +105,7 @@ class Grid2D(abstract_grid.AbstractGrid2D):
          x x x x x x x x x x  I
          x x x x x x x x x x  I                        y     x
          x x x x x x x x x x +ve  grid[0] = [0.5,  -1.5]
-         x x xI0I1 x x x x x  y   grid[1] = [0.5,  -0.5]
+         x x x 0 1 x x x x x  y   grid[1] = [0.5,  -0.5]
          x x x x x x x x x x -ve
          x x x x x x x x x x  I
          x x x x x x x x x x  I
@@ -129,7 +135,7 @@ class Grid2D(abstract_grid.AbstractGrid2D):
                  grid[7] = [0.25, -0.5]
                  grid[8] = [0.25, -0.25]
 
-        Case 3: [sub_size=1 store_slim=False]
+        Case 3: [sub_size=1, store_slim=False]
         --------------------------------------
 
         The Grid2D has the same properties as Case 1, but is stored as an an ndarray of shape
@@ -143,9 +149,9 @@ class Grid2D(abstract_grid.AbstractGrid2D):
          x x x x x x x x x xI
          x x x x x x x x x xI     This is an example mask.Mask2D, where:
          x x x x x x x x x xI
-         x x x xIoIo x x x xI     x = `True` (Pixel is masked and excluded from the grid)
-         x x xIoIoIoIo x x xI     o = `False` (Pixel is not masked and included in the grid)
-         x x xIoIoIoIo x x xI
+         x x x x o o x x x xI     x = `True` (Pixel is masked and excluded from the grid)
+         x x x o o o o x x xI     o = `False` (Pixel is not masked and included in the grid)
+         x x x o o o o x x xI
          x x x x x x x x x xI
          x x x x x x x x x xI
          x x x x x x x x x xI
@@ -177,8 +183,9 @@ class Grid2D(abstract_grid.AbstractGrid2D):
         *originates* or *is paired with* the mask's pixels but has had its value change by some aspect of the
         calculation.
 
-        This is important for *PyAutoLens*, where grids in the image-plane are ray-traced and deflected to perform
-        lensig calculations. The grid indexing is used to map pixels between the image-plane and source-plane.
+        This is important for the child project *PyAutoLens*, where grids in the image-plane are ray-traced and
+        deflected to perform lensing calculations. The grid indexing is used to map pixels between the image-plane and
+        source-plane.
 
         Parameters
         ----------
@@ -188,8 +195,8 @@ class Grid2D(abstract_grid.AbstractGrid2D):
             The 2D mask associated with the grid, defining the pixels each grid coordinate is paired with and
             originates from.
         store_slim : bool
-            If True, the grid is stored in 1D as an ndarray of shape [total_unmasked_pixels, 2]. If False, it is
-            stored in 2D as an ndarray of shape [total_y_pixels, total_x_pixels, 2].
+            If True, the grid is stored in 1D as an ndarray of shape [total_unmasked_coordinates, 2]. If False, it is
+            stored in 2D as an ndarray of shape [total_y_coordinates, total_x_coordinates, 2].
         """
 
         obj = grid.view(cls)
@@ -214,8 +221,8 @@ class Grid2D(abstract_grid.AbstractGrid2D):
             The 2D mask associated with the grid, defining the pixels each grid coordinate is paired with and
             originates from.
         store_slim : bool
-            If True, the grid is stored in 1D as an ndarray of shape [total_unmasked_pixels, 2]. If False, it is
-            stored in 2D as an ndarray of shape [total_y_pixels, total_x_pixels, 2].
+            If True, the grid is stored in 1D as an ndarray of shape [total_unmasked_coordinates, 2]. If False, it is
+            stored in 2D as an ndarray of shape [total_y_coordinates, total_x_coordinates, 2].
         """
         return Grid2D(grid=grid, mask=mask, store_slim=store_slim)
 
@@ -253,8 +260,8 @@ class Grid2D(abstract_grid.AbstractGrid2D):
         origin : (float, float)
             The origin of the grid's mask.
         store_slim : bool
-            If True, the grid is stored in 1D as an ndarray of shape [total_unmasked_pixels, 2]. If False, it is
-            stored in 2D as an ndarray of shape [total_y_pixels, total_x_pixels, 2].
+            If True, the grid is stored in 1D as an ndarray of shape [total_unmasked_coordinates, 2]. If False, it is
+            stored in 2D as an ndarray of shape [total_y_coordinates, total_x_coordinates, 2].
         """
 
         pixel_scales = geometry_util.convert_pixel_scales_2d(pixel_scales=pixel_scales)
@@ -291,7 +298,7 @@ class Grid2D(abstract_grid.AbstractGrid2D):
         ----------
         grid : np.ndarray or list
             The (y,x) coordinates of the grid input as an ndarray of shape
-            [total_y_pixels*sub_size, total_x_pixel*sub_size, 2] or a list of lists.
+            [total_y_coordinates*sub_size, total_x_pixel*sub_size, 2] or a list of lists.
         pixel_scales: (float, float) or float
             The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a ``float``,
             it is converted to a (float, float) structure.
@@ -300,8 +307,8 @@ class Grid2D(abstract_grid.AbstractGrid2D):
         origin : (float, float)
             The origin of the grid's mask.
         store_slim : bool
-            If True, the grid is stored in 1D as an ndarray of shape [total_unmasked_pixels, 2]. If False, it is
-            stored in 2D as an ndarray of shape [total_y_pixels, total_x_pixels, 2].
+            If True, the grid is stored in 1D as an ndarray of shape [total_unmasked_coordinates, 2]. If False, it is
+            stored in 2D as an ndarray of shape [total_y_coordinates, total_x_coordinates, 2].
         """
 
         grid = abstract_grid.convert_grid(grid=grid)
@@ -353,8 +360,8 @@ class Grid2D(abstract_grid.AbstractGrid2D):
         origin : (float, float)
             The origin of the grid's mask.
         store_slim : bool
-            If True, the grid is stored in 1D as an ndarray of shape [total_unmasked_pixels, 2]. If False, it is
-            stored in 2D as an ndarray of shape [total_y_pixels, total_x_pixels, 2].
+            If True, the grid is stored in 1D as an ndarray of shape [total_unmasked_coordinates, 2]. If False, it is
+            stored in 2D as an ndarray of shape [total_y_coordinates, total_x_coordinates, 2].
         """
         if len(grid.shape) == 2:
             return cls.manual_slim(
@@ -388,8 +395,8 @@ class Grid2D(abstract_grid.AbstractGrid2D):
             The 2D mask associated with the grid, defining the pixels each grid coordinate is paired with and
             originates from.
         store_slim : bool
-            If True, the grid is stored in 1D as an ndarray of shape [total_unmasked_pixels, 2]. If False, it is
-            stored in 2D as an ndarray of shape [total_y_pixels, total_x_pixels, 2].
+            If True, the grid is stored in 1D as an ndarray of shape [total_unmasked_coordinates, 2]. If False, it is
+            stored in 2D as an ndarray of shape [total_y_coordinates, total_x_coordinates, 2].
         """
 
         grid = abstract_grid.convert_grid(grid=grid)
@@ -438,8 +445,8 @@ class Grid2D(abstract_grid.AbstractGrid2D):
         origin : (float, float)
             The origin of the grid's mask.
         store_slim : bool
-            If True, the grid is stored in 1D as an ndarray of shape [total_unmasked_pixels, 2]. If False, it is
-            stored in 2D as an ndarray of shape [total_y_pixels, total_x_pixels, 2].
+            If True, the grid is stored in 1D as an ndarray of shape [total_unmasked_coordinates, 2]. If False, it is
+            stored in 2D as an ndarray of shape [total_y_coordinates, total_x_coordinates, 2].
         """
         if type(y) is list:
             y = np.asarray(y)
@@ -488,8 +495,8 @@ class Grid2D(abstract_grid.AbstractGrid2D):
         origin : (float, float)
             The origin of the grid's mask.
         store_slim : bool
-            If True, the grid is stored in 1D as an ndarray of shape [total_unmasked_pixels, 2]. If False, it is
-            stored in 2D as an ndarray of shape [total_y_pixels, total_x_pixels, 2].
+            If True, the grid is stored in 1D as an ndarray of shape [total_unmasked_coordinates, 2]. If False, it is
+            stored in 2D as an ndarray of shape [total_y_coordinates, total_x_coordinates, 2].
         """
         if type(y) is list:
             y = np.asarray(y)
@@ -524,8 +531,8 @@ class Grid2D(abstract_grid.AbstractGrid2D):
         origin : (float, float)
             The origin of the grid's mask.
         store_slim : bool
-            If True, the grid is stored in 1D as an ndarray of shape [total_unmasked_pixels, 2]. If False, it is
-            stored in 2D as an ndarray of shape [total_y_pixels, total_x_pixels, 2].
+            If True, the grid is stored in 1D as an ndarray of shape [total_unmasked_coordinates, 2]. If False, it is
+            stored in 2D as an ndarray of shape [total_y_coordinates, total_x_coordinates, 2].
         """
         pixel_scales = geometry_util.convert_pixel_scales_2d(pixel_scales=pixel_scales)
 
@@ -577,8 +584,8 @@ class Grid2D(abstract_grid.AbstractGrid2D):
             Whether the grid is buffered such that the (y,x) values in the centre of its masks' edge pixels align
             with the input bounding box values.
         store_slim : bool
-            If True, the grid is stored in 1D as an ndarray of shape [total_unmasked_pixels, 2]. If False, it is
-            stored in 2D as an ndarray of shape [total_y_pixels, total_x_pixels, 2].
+            If True, the grid is stored in 1D as an ndarray of shape [total_unmasked_coordinates, 2]. If False, it is
+            stored in 2D as an ndarray of shape [total_y_coordinates, total_x_coordinates, 2].
         """
         y_min, y_max, x_min, x_max = bounding_box
 
@@ -617,8 +624,8 @@ class Grid2D(abstract_grid.AbstractGrid2D):
         mask : Mask2D
             The mask whose masked pixels are used to setup the sub-pixel grid.
         store_slim : bool
-            If True, the grid is stored in 1D as an ndarray of shape [total_unmasked_pixels, 2]. If False, it is
-            stored in 2D as an ndarray of shape [total_y_pixels, total_x_pixels, 2].
+            If True, the grid is stored in 1D as an ndarray of shape [total_unmasked_coordinates, 2]. If False, it is
+            stored in 2D as an ndarray of shape [total_y_coordinates, total_x_coordinates, 2].
         """
 
         sub_grid_1d = grid_util.grid_2d_slim_via_mask_from(
@@ -631,8 +638,8 @@ class Grid2D(abstract_grid.AbstractGrid2D):
         if store_slim:
             return Grid2D(grid=sub_grid_1d, mask=mask, store_slim=store_slim)
 
-        sub_grid_2d = grid_util.sub_grid_2d_from(
-            sub_grid_2d_slim=sub_grid_1d, mask_2d=mask, sub_size=mask.sub_size
+        sub_grid_2d = grid_util.grid_2d_from(
+            grid_2d_slim=sub_grid_1d, mask_2d=mask, sub_size=mask.sub_size
         )
 
         return Grid2D(grid=sub_grid_2d, mask=mask, store_slim=store_slim)
@@ -651,8 +658,8 @@ class Grid2D(abstract_grid.AbstractGrid2D):
         mask : Mask2D
             The mask whose masked pixels are used to setup the sub-pixel grid.
         store_slim : bool
-            If True, the grid is stored in 1D as an ndarray of shape [total_unmasked_pixels, 2]. If False, it is
-            stored in 2D as an ndarray of shape [total_y_pixels, total_x_pixels, 2].
+            If True, the grid is stored in 1D as an ndarray of shape [total_unmasked_coordinates, 2]. If False, it is
+            stored in 2D as an ndarray of shape [total_y_coordinates, total_x_coordinates, 2].
         """
 
         sub_grid_2d = array_util.numpy_array_2d_from_fits(file_path=file_path, hdu=0)
@@ -740,8 +747,8 @@ class Grid2D(abstract_grid.AbstractGrid2D):
         kernel_shape_native : (float, float)
             The 2D shape of the kernel which convolves signal from masked pixels to unmasked pixels.
         store_slim : bool
-            If True, the grid is stored in 1D as an ndarray of shape [total_unmasked_pixels, 2]. If False, it is
-            stored in 2D as an ndarray of shape [total_y_pixels, total_x_pixels, 2].
+            If True, the grid is stored in 1D as an ndarray of shape [total_unmasked_coordinates, 2]. If False, it is
+            stored in 2D as an ndarray of shape [total_y_coordinates, total_x_coordinates, 2].
         """
 
         blurring_mask = mask.blurring_mask_from_kernel_shape(
