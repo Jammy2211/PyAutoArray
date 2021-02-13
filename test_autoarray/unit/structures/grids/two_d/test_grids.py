@@ -818,7 +818,7 @@ class TestGrid:
 
         mask = aa.Mask2D.manual(mask=mask, pixel_scales=(2.0, 2.0), sub_size=2)
 
-        blurring_mask_util = aa.util.mask.blurring_mask_2d_from(
+        blurring_mask_util = aa.util.mask_2d.blurring_mask_2d_from(
             mask_2d=mask, kernel_shape_native=(3, 5)
         )
 
@@ -862,7 +862,7 @@ class TestGrid:
 
         mask = aa.Mask2D.manual(mask=mask, pixel_scales=(2.0, 2.0), sub_size=2)
 
-        blurring_mask_util = aa.util.mask.blurring_mask_2d_from(
+        blurring_mask_util = aa.util.mask_2d.blurring_mask_2d_from(
             mask_2d=mask, kernel_shape_native=(3, 5)
         )
 
@@ -1057,7 +1057,7 @@ class TestGrid2DSparse:
             "int"
         )
 
-        total_sparse_pixels = aa.util.mask.total_sparse_pixels_2d_from(
+        total_sparse_pixels = aa.util.mask_2d.total_sparse_pixels_2d_from(
             mask_2d=mask,
             unmasked_sparse_grid_pixel_centres=unmasked_sparse_grid_pixel_centres,
         )

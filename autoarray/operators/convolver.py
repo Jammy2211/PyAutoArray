@@ -2,7 +2,7 @@ from autoarray import decorator_util
 import numpy as np
 from autoarray import exc
 from autoarray.structures import arrays
-from autoarray.util import mask_util
+from autoarray.util import mask_2d_util
 
 
 class Convolver:
@@ -223,7 +223,7 @@ class Convolver:
                     ].shape[0]
                     mask_1d_index += 1
 
-        self.blurring_mask = mask_util.blurring_mask_2d_from(
+        self.blurring_mask = mask_2d_util.blurring_mask_2d_from(
             mask_2d=mask, kernel_shape_native=kernel.shape_native
         )
 

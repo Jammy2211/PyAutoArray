@@ -201,7 +201,7 @@ class TestGrid:
 
         mask = aa.Mask2D.manual(mask=mask, pixel_scales=(2.0, 2.0), sub_size=2)
 
-        sub_border_flat_indexes_util = aa.util.mask.sub_border_pixel_slim_indexes_from(
+        sub_border_flat_indexes_util = aa.util.mask_2d.sub_border_pixel_slim_indexes_from(
             mask_2d=mask, sub_size=2
         )
 

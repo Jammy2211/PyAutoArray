@@ -1,7 +1,7 @@
 import numpy as np
 
 from autoarray import decorator_util
-from autoarray.util import mask_util
+from autoarray.util import mask_1d_util
 
 
 # @decorator_util.jit()
@@ -54,7 +54,7 @@ def sub_line_1d_slim_from(
     sub_line_1d_slim = sub_line_1d_slim_from(sub_line_1d_native, array_2d=array_2d, sub_size=2)
     """
 
-    total_sub_pixels = mask_util.total_sub_pixels_1d_from(
+    total_sub_pixels = mask_1d_util.total_sub_pixels_1d_from(
         mask_1d=mask_1d, sub_size=sub_size
     )
 
@@ -76,7 +76,7 @@ def sub_line_1d_native_from(
 
     sub_shape = mask_1d.shape[0] * sub_size
 
-    sub_native_index_for_sub_slim_index_1d = mask_util.sub_native_index_for_sub_slim_index_1d_from(
+    sub_native_index_for_sub_slim_index_1d = mask_1d_util.sub_native_index_for_sub_slim_index_1d_from(
         mask_1d=mask_1d, sub_size=sub_size
     ).astype(
         "int"

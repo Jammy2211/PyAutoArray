@@ -3,7 +3,7 @@ import os
 
 from autoconf import conf
 from autoarray import decorator_util
-from autoarray.util import mask_util
+from autoarray.util import mask_2d_util
 import numpy as np
 from astropy.io import fits
 from functools import wraps
@@ -542,7 +542,7 @@ def array_2d_slim_from(
     sub_array_2d_slim = array_2d_slim_from(mask=mask, array_2d=array_2d, sub_size=2)
     """
 
-    total_sub_pixels = mask_util.total_sub_pixels_2d_from(
+    total_sub_pixels = mask_2d_util.total_sub_pixels_2d_from(
         mask_2d=mask_2d, sub_size=sub_size
     )
 
@@ -604,7 +604,7 @@ def array_2d_native_from(
 
     sub_shape = (mask_2d.shape[0] * sub_size, mask_2d.shape[1] * sub_size)
 
-    native_index_for_slim_index_2d = mask_util.native_index_for_slim_index_2d_from(
+    native_index_for_slim_index_2d = mask_2d_util.native_index_for_slim_index_2d_from(
         mask_2d=mask_2d, sub_size=sub_size
     ).astype("int")
 
@@ -715,7 +715,7 @@ def array_2d_slim_complex_from(
         mask=mask, array_2d=array_2d)
     """
 
-    total_sub_pixels = mask_util.total_sub_pixels_2d_from(
+    total_sub_pixels = mask_2d_util.total_sub_pixels_2d_from(
         mask_2d=mask, sub_size=sub_size
     )
 
