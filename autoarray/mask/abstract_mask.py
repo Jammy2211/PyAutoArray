@@ -3,7 +3,6 @@ import logging
 import numpy as np
 
 from autoarray import exc
-from autoarray.util import array_util
 
 logging.basicConfig()
 logger = logging.getLogger(__name__)

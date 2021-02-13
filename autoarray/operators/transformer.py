@@ -1,6 +1,6 @@
 from autoarray.util import transformer_util
 from autoarray.structures import arrays, visibilities as vis, grids
-from autoarray.util import array_util
+from autoarray.structures.arrays import array_util
 from astropy import units
 from pynufft import NUFFT_cpu
 import pylops

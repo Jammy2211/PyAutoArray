@@ -6,7 +6,8 @@ from autoarray import exc
 from autoarray.dataset import preprocess
 from autoarray.structures import abstract_structure
 from autoarray.mask import mask_2d as msk
-from autoarray.util import binning_util, array_util
+from autoarray.util import binning_util
+from autoarray.structures.arrays import array_util
 
 logging.basicConfig()
 logger = logging.getLogger(__name__)

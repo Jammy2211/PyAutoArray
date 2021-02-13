@@ -1,11 +1,9 @@
 import logging
 
 import numpy as np
-import pylops
 
-from autoarray.mask import mask_2d
 from autoarray.structures import grids
-from autoarray.util import array_util
+from autoarray.structures.arrays import array_util
 
 logging.basicConfig()
 logger = logging.getLogger(__name__)

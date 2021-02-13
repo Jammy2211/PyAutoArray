@@ -4,7 +4,8 @@ from autoarray import decorator_util
 from autoarray.structures import arrays, grids
 from autoarray.structures.grids import abstract_grid
 from autoarray.mask import mask_2d as msk
-from autoarray.util import array_util, geometry_util, grid_util
+from autoarray.util import geometry_util, grid_util
+from autoarray.structures.arrays import array_util
 from autoarray import exc
 
 

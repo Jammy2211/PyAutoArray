@@ -6,7 +6,7 @@ import numpy as np
 
 from autoarray.structures import arrays
 from autoarray.structures import grids
-from autoarray.util import array_util
+from autoarray.structures.arrays import array_util
 from autoarray import exc
 
 
