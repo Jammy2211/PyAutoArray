@@ -1,4 +1,4 @@
-from autoarray.util import transformer_util
+from autoarray.operators import transformer_util
 from autoarray.structures import arrays, visibilities as vis, grids
 from autoarray.structures.arrays import array_util
 from astropy import units
