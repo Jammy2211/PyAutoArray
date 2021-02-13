@@ -1,7 +1,6 @@
 from autoarray.structures.lines.lines import Line1D
-from autoarray.structures.grids.irregular import Grid2DIrregular
-from autoarray.structures.grids.irregular import Grid2DIrregularUniform
-from autoarray.structures.grids.iterate import Grid2DIterate
+from autoarray.structures.grids.two_d.irregular import Grid2DIrregular
+from autoarray.structures.grids.two_d.irregular import Grid2DIrregularUniform
 from autoarray.structures.vector_fields.vector_field_irregular import (
     VectorField2DIrregular,
 )
@@ -45,10 +44,11 @@ from .structures.frames.abstract_frame import Scans
 from .structures.grids import Grid1D
 from .structures.grids import Grid2D
 from .structures.grids import Grid2DInterpolate
-from .structures.grids import Grid2DRectangular
-from .structures.grids import Grid2DVoronoi
+from .structures.grids import Grid2DIterate
 from .structures.grids import Grid2DIrregular
 from .structures.grids import Grid2DIrregularUniform
+from .structures.grids import Grid2DRectangular
+from .structures.grids import Grid2DVoronoi
 from .structures.region import Region2D
 from .structures.kernel import Kernel2D
 from .structures.region import Region2D

@@ -93,9 +93,7 @@ class GridScatter(AbstractMatWrap2D):
             config_dict["c"] = config_dict["c"][0]
 
         try:
-            plt.scatter(
-                y=grid[:, 0], x=grid[:, 1], **config_dict
-            )
+            plt.scatter(y=grid[:, 0], x=grid[:, 1], **config_dict)
         except (IndexError, TypeError):
             return self.scatter_grid_list(grid_list=grid)
 
@@ -123,12 +121,7 @@ class GridScatter(AbstractMatWrap2D):
         try:
             for grid in grid_list:
 
-                plt.scatter(
-                    y=grid[:, 0],
-                    x=grid[:, 1],
-                    c=next(color),
-                    **config_dict,
-                )
+                plt.scatter(y=grid[:, 0], x=grid[:, 1], c=next(color), **config_dict)
         except IndexError:
             return None
 
@@ -156,13 +149,7 @@ class GridScatter(AbstractMatWrap2D):
         config_dict = self.config_dict
         config_dict.pop("c")
 
-        plt.scatter(
-            y=grid[:, 0],
-            x=grid[:, 1],
-            c=color_array,
-            cmap=cmap,
-            **config_dict,
-        )
+        plt.scatter(y=grid[:, 0], x=grid[:, 1], c=color_array, cmap=cmap, **config_dict)
 
     def scatter_grid_indexes(
         self, grid: typing.Union[np.ndarray, grids.Grid2D], indexes: np.ndarray
@@ -320,12 +307,7 @@ class GridPlot(AbstractMatWrap2D):
         try:
             for grid in grid_list:
 
-                plt.plot(
-                    grid[:, 1],
-                    grid[:, 0],
-                    c=next(color),
-                    **config_dict,
-                )
+                plt.plot(grid[:, 1], grid[:, 0], c=next(color), **config_dict)
         except IndexError:
             return None
 

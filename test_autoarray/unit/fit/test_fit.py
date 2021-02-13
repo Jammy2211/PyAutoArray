@@ -6,7 +6,6 @@ from autoarray.mock import mock
 
 
 class TestFitImaging:
-
     def test__image_and_model_are_identical__no_masking__check_values_are_correct(self):
 
         mask = aa.Mask2D.manual(
@@ -162,7 +161,6 @@ class TestFitImaging:
 
 
 class TestFitInterferometer:
-
     def test__visibilities_and_model_are_identical__no_masking__check_values_are_correct(
         self,
     ):

@@ -8,6 +8,7 @@ from autoarray.util import grid_util
 
 import warnings
 
+
 @decorator_util.jit()
 def total_pixels_1d_from(mask_1d: np.ndarray) -> int:
     """
@@ -1142,14 +1143,13 @@ def rescaled_mask_2d_from(mask_2d: np.ndarray, rescale_factor: float) -> np.ndar
         mode="edge",
         anti_aliasing=False,
         multichannel=False,
-    ).astype("int")
+    )
 
     rescaled_mask_2d[0, :] = 1
     rescaled_mask_2d[rescaled_mask_2d.shape[0] - 1, :] = 1
     rescaled_mask_2d[:, 0] = 1
     rescaled_mask_2d[:, rescaled_mask_2d.shape[1] - 1] = 1
-
-    return rescaled_mask_2d
+    return np.isclose(rescaled_mask_2d, 1)
 
 
 @decorator_util.jit()

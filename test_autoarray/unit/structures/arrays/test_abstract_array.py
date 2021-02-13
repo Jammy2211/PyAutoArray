@@ -14,7 +14,6 @@ test_data_dir = path.join(
 
 
 class TestConstructorMethods:
-
     def test__constructor_class_method_native__store_slim(self):
 
         arr = aa.Array2D.manual_native(
@@ -561,8 +560,8 @@ class TestNewArrays:
 
         assert extent == pytest.approx(np.array([-4.0, 6.0, -2.0, 3.0]), 1.0e-4)
 
-class TestOutputToFits:
 
+class TestOutputToFits:
     def test__output_to_fits(self):
 
         arr = aa.Array2D.from_fits(

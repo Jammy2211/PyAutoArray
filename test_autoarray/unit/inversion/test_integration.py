@@ -6,7 +6,6 @@ import pytest
 
 
 class TestRectangular:
-
     def test__5_simple_grid__no_sub_grid(self):
 
         mask = aa.Mask2D.manual(
@@ -552,7 +551,6 @@ class TestRectangular:
 
 
 class TestVoronoiMagnification:
-
     def test__3x3_simple_grid(self):
 
         mask = aa.Mask2D.manual(

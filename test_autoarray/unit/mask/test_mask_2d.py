@@ -13,7 +13,6 @@ test_data_dir = path.join(
 
 
 class TestMask:
-
     def test__mask__makes_mask_with_pixel_scale(self):
 
         mask = aa.Mask2D.manual(mask=[[False, False], [True, True]], pixel_scales=1.0)

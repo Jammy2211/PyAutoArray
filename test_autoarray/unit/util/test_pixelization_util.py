@@ -4,7 +4,6 @@ import scipy.spatial
 
 
 class TestRectangular:
-
     def test__rectangular_neighbors_from(self):
 
         # I0I1I2I
@@ -115,7 +114,6 @@ class TestRectangular:
 
 
 class TestVoronoi:
-
     def test__voronoi_neighbors_from(self):
 
         points = np.array(

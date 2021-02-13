@@ -5,7 +5,6 @@ import pytest
 
 
 class MockRealSpaceMask:
-
     def __init__(self, grid):
 
         self.grid = grid
@@ -33,21 +32,18 @@ class MockRealSpaceMask:
 
 
 class MockMaskedGrid:
-
     def __init__(self, grid):
 
         self.slim_binned = MockMaskedGrid2(grid=grid)
 
 
 class MockMaskedGrid2:
-
     def __init__(self, grid):
 
         self.in_radians = grid
 
 
 class TestVisiblities:
-
     def test__visibilities__intensity_image_all_ones__simple_cases(self):
 
         uv_wavelengths = np.ones(shape=(4, 2))
@@ -167,7 +163,6 @@ class TestVisiblities:
 
 
 class TestVisiblitiesMappingMatrix:
-
     def test__visibilities__mapping_matrix_all_ones__simple_cases(self):
 
         uv_wavelengths = np.ones(shape=(4, 2))
@@ -324,7 +319,6 @@ class TestVisiblitiesMappingMatrix:
 
 
 class TestTransformerNUFFT:
-
     def test__visibilities_from_image__same_as_direct__include_numerics(self):
 
         uv_wavelengths = np.array([[0.2, 1.0], [0.5, 1.1], [0.8, 1.2]])

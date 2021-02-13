@@ -14,7 +14,6 @@ test_values_dir = path.join(
 
 
 class TestValuesIrregular:
-
     def test__input_as_list__convert_correctly(self):
 
         values = aa.ValuesIrregular(values=[1.0, -1.0])

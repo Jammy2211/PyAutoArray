@@ -8,7 +8,6 @@ from autoarray.structures.arrays import array_util
 
 
 class Grid2D(abstract_grid.AbstractGrid2D):
-
     def __new__(cls, grid, mask, store_slim=True, *args, **kwargs):
         """
         A grid of 2D (y,x) coordinates, which are paired to a uniform 2D mask of pixels and sub-pixels. Each entry
