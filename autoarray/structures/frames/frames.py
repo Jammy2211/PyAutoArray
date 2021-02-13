@@ -1,9 +1,8 @@
 import numpy as np
 
 from autoarray.structures.arrays import abstract_array, array_util
-from autoarray.structures.frames import abstract_frame
+from autoarray.structures.frames import abstract_frame, frame_util
 from autoarray.mask import mask_2d as msk
-from autoarray.util import frame_util
 from autoarray.geometry import geometry_util
 
 

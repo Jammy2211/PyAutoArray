@@ -1,9 +1,9 @@
 from ..structures.arrays import array_util as array
+from ..structures.grids.one_d import grid_1d_util as grid_1d
+from ..structures.grids.two_d import grid_2d_util as grid_2d
+from ..structures.frames import frame_util as frame
 from ..geometry import geometry_util as geometry
 from . import fit_util as fit
-from . import frame_util as frame
-from . import grid_1d_util as grid_1d
-from . import grid_2d_util as grid_2d
 from . import inversion_util as inversion
 from . import line_util as line
 from . import mapper_util as mapper
