@@ -6,7 +6,6 @@ import pytest
 
 
 class TestMask1D:
-
     def test__total_image_pixels_1d_from(self):
 
         mask_1d = np.array([False, True, False, False, False, True])
@@ -2942,7 +2941,6 @@ class TestSubMask2DForSubMask1D:
 
 
 class TestRescaledMaskFromMask:
-
     def test__mask_7x7_central_pixel__rescale_factor_is_1__returns_same_mask(self):
 
         mask = np.array(
@@ -2973,9 +2971,7 @@ class TestRescaledMaskFromMask:
         ).all()
 
 
-
 class TestBuffedMaskFromMask:
-
     def test__5x5_mask_false_centre_pixel__3x3_falses_in_centre_of_buffed_mask(self):
 
         mask = np.array(
@@ -3147,7 +3143,6 @@ class TestBuffedMaskFromMask:
 
 
 class TestMaskNeighbors:
-
     def test__gives_right_neighbor_then_down_if_not_available(self):
 
         mask = np.array(

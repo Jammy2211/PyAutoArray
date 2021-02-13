@@ -278,11 +278,17 @@ class Grid2DVoronoi(np.ndarray):
 
     @property
     def scaled_maxima(self):
-        return (np.amax(self[:, 0]).astype("float"), np.amax(self[:, 1]).astype("float"))
+        return (
+            np.amax(self[:, 0]).astype("float"),
+            np.amax(self[:, 1]).astype("float"),
+        )
 
     @property
     def scaled_minima(self):
-        return (np.amin(self[:, 0]).astype("float"), np.amin(self[:, 1]).astype("float"))
+        return (
+            np.amin(self[:, 0]).astype("float"),
+            np.amin(self[:, 1]).astype("float"),
+        )
 
     @property
     def extent(self):

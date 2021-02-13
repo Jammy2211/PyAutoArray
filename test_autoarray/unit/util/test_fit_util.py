@@ -5,7 +5,6 @@ import pytest
 
 
 class TestResiduals:
-
     def test__model_matches_data__residual_map_all_0s(self):
 
         data = np.array([10.0, 10.0, 10.0, 10.0])
@@ -38,7 +37,6 @@ class TestResiduals:
 
 
 class TestNormalizedResidualMap:
-
     def test__model_mathces_data__normalized_residual_all_0s(self):
 
         data = np.array([10.0, 10.0, 10.0, 10.0])

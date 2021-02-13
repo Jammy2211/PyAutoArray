@@ -7,7 +7,6 @@ from autoarray.mock import mock
 
 
 class TestSettingsInversion:
-
     def test__inversion_uses_linear_operator_tag(self):
 
         settings = aa.SettingsInversion(use_linear_operators=True)
@@ -29,7 +28,6 @@ class TestSettingsInversion:
 
 
 class TestLogDetMatrixCholesky:
-
     def test__determinant_of_positive_definite_matrix_via_cholesky(self):
 
         matrix = np.array([[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]])

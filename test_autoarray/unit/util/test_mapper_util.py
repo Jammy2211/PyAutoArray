@@ -14,7 +14,6 @@ def make_five_pixels():
 
 
 class TestMappingMatrix:
-
     def test__3_image_pixels__6_pixel_pixels__sub_grid_1x1(self, three_pixels):
 
         pixelization_1d_index_for_sub_mask_1d_index = np.array([0, 1, 2])

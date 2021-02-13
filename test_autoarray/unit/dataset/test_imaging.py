@@ -11,8 +11,8 @@ test_data_dir = path.join(
     "{}".format(path.dirname(path.realpath(__file__))), "files", "imaging"
 )
 
-class TestImaging:
 
+class TestImaging:
     def test__new_imaging_with_signal_to_noise_limit__limit_above_max_signal_to_noise__signal_to_noise_map_unchanged(
         self,
     ):
@@ -197,7 +197,6 @@ class TestImaging:
 
 
 class TestSettingsMaskedImaging:
-
     def test__psf_shape_2d_tag(self):
 
         settings = aa.SettingsMaskedImaging(psf_shape_2d=None)

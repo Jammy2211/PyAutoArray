@@ -15,7 +15,6 @@ logger = logging.getLogger(__name__)
 
 
 class VectorField2DIrregular(np.ndarray):
-
     def __new__(
         cls,
         vectors: np.ndarray or [(float, float)],
@@ -179,7 +178,10 @@ class VectorField2DIrregular(np.ndarray):
         )
 
     def vectors_within_annulus(
-        self, inner_radius: float, outer_radius: float, centre: typing.Tuple[float, float] = (0.0, 0.0)
+        self,
+        inner_radius: float,
+        outer_radius: float,
+        centre: typing.Tuple[float, float] = (0.0, 0.0),
     ) -> "VectorFieldIrregular":
         """
         Returns a new `VectorFieldIrregular` object which has had all vectors outside of a circle of input radius

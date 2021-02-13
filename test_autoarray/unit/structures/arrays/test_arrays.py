@@ -13,7 +13,6 @@ test_data_dir = path.join(
 
 
 class TestAPI:
-
     def test__manual__makes_array_without_other_inputs(self):
 
         arr = aa.Array2D.manual_native(array=[[1.0, 2.0], [3.0, 4.0]], pixel_scales=1.0)

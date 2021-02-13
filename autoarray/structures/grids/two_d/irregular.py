@@ -13,7 +13,6 @@ from autoarray import exc
 
 
 class Grid2DIrregular(np.ndarray):
-
     def __new__(cls, grid):
         """
         An irregular grid of (y,x) coordinates.
@@ -81,12 +80,18 @@ class Grid2DIrregular(np.ndarray):
     @property
     def scaled_maxima(self):
         """The maximum values of the coordinates returned as a tuple (y_max, x_max)."""
-        return (np.amax(self[:, 0]).astype("float"), np.amax(self[:, 1]).astype("float"))
+        return (
+            np.amax(self[:, 0]).astype("float"),
+            np.amax(self[:, 1]).astype("float"),
+        )
 
     @property
     def scaled_minima(self):
         """The minimum values of the coordinates returned as a tuple (y_max, x_max)."""
-        return (np.amin(self[:, 0]).astype("float"), np.amin(self[:, 1]).astype("float"))
+        return (
+            np.amin(self[:, 0]).astype("float"),
+            np.amin(self[:, 1]).astype("float"),
+        )
 
     @property
     def extent(self):

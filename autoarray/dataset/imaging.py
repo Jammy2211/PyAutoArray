@@ -203,8 +203,8 @@ class AbstractSettingsMaskedImaging(abstract_dataset.AbstractSettingsMaskedDatas
             + x
         )
 
-class AbstractMaskedImaging(abstract_dataset.AbstractMaskedDataset):
 
+class AbstractMaskedImaging(abstract_dataset.AbstractMaskedDataset):
     def __init__(self, imaging, mask, settings=AbstractSettingsMaskedImaging()):
         """
         The lens dataset is the collection of data_type (image, noise-map, PSF), a mask, grid, convolver \

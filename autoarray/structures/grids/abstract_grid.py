@@ -272,7 +272,6 @@ class AbstractGrid1D(abstract_structure.AbstractStructure1D):
 
 
 class AbstractGrid2D(abstract_structure.AbstractStructure2D):
-
     def __array_finalize__(self, obj):
 
         super().__array_finalize__(obj)

@@ -11,7 +11,6 @@ import numpy as np
 
 
 class TransformerDFT(pylops.LinearOperator):
-
     def __init__(self, uv_wavelengths, real_space_mask, preload_transform=True):
 
         super(TransformerDFT, self).__init__()
@@ -84,7 +83,6 @@ class TransformerDFT(pylops.LinearOperator):
 
 
 class TransformerNUFFT(NUFFT_cpu, pylops.LinearOperator):
-
     def __init__(self, uv_wavelengths, real_space_mask):
 
         super(TransformerNUFFT, self).__init__()
