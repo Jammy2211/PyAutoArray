@@ -1,7 +1,7 @@
 from autoarray import decorator_util
 import numpy as np
 
-from autoarray.util import mask_util
+from autoarray.util import mask_2d_util
 from autoarray.geometry import geometry_util
 from autoarray.structures.arrays import array_util
 
@@ -74,7 +74,7 @@ def grid_2d_slim_via_mask_from(
     grid_slim = grid_2d_slim_via_mask_from(mask=mask, pixel_scales=(0.5, 0.5), sub_size=1, origin=(0.0, 0.0))
     """
 
-    total_sub_pixels = mask_util.total_sub_pixels_2d_from(mask_2d, sub_size)
+    total_sub_pixels = mask_2d_util.total_sub_pixels_2d_from(mask_2d, sub_size)
 
     grid_slim = np.zeros(shape=(total_sub_pixels, 2))
 

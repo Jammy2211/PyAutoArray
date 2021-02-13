@@ -1,13 +1,14 @@
+from ..geometry import geometry_util as geometry
+from . import mask_1d_util as mask_1d
+from . import mask_2d_util as mask_2d
 from ..structures.arrays import array_util as array
 from ..structures.grids.one_d import grid_1d_util as grid_1d
 from ..structures.grids.two_d import grid_2d_util as grid_2d
 from ..structures.frames import frame_util as frame
-from ..geometry import geometry_util as geometry
 from . import fit_util as fit
 from . import inversion_util as inversion
 from . import line_util as line
 from . import mapper_util as mapper
-from . import mask_util as mask
 from . import pixelization_util as pixelization
 from . import regularization_util as regularization
 from . import sparse_util as sparse

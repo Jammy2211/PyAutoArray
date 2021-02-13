@@ -1,7 +1,7 @@
 from autoarray import decorator_util
 import numpy as np
 
-from autoarray.util import mask_util
+from autoarray.util import mask_1d_util
 from autoarray.geometry import geometry_util
 
 from typing import Tuple
@@ -95,7 +95,7 @@ def grid_1d_via_mask_from(
     grid_slim = grid_1d_via_mask_from(mask_1d=mask_1d, pixel_scales=(0.5, 0.5), sub_size=1, origin=(0.0, 0.0))
     """
 
-    total_sub_pixels = mask_util.total_sub_pixels_1d_from(mask_1d, sub_size)
+    total_sub_pixels = mask_1d_util.total_sub_pixels_1d_from(mask_1d, sub_size)
 
     grid_1d = np.zeros(shape=(total_sub_pixels,))
 

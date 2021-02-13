@@ -90,7 +90,7 @@ class TestObj:
 
         mask = aa.Mask2D.manual(mask=mask, pixel_scales=(2.0, 2.0), sub_size=2)
 
-        blurring_mask_util = aa.util.mask.blurring_mask_2d_from(
+        blurring_mask_util = aa.util.mask_2d.blurring_mask_2d_from(
             mask_2d=mask, kernel_shape_native=(3, 5)
         )
 
@@ -124,7 +124,7 @@ class TestObj:
 
         mask = aa.Mask2D.manual(mask=mask, pixel_scales=(2.0, 2.0))
 
-        blurring_mask_util = aa.util.mask.blurring_mask_2d_from(
+        blurring_mask_util = aa.util.mask_2d.blurring_mask_2d_from(
             mask_2d=mask, kernel_shape_native=(3, 5)
         )
 

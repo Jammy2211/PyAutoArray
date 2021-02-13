@@ -5,57 +5,6 @@ import numpy as np
 import pytest
 
 
-class TestMask1D:
-    def test__total_image_pixels_1d_from(self):
-
-        mask_1d = np.array([False, True, False, False, False, True])
-
-        assert util.mask.total_pixels_1d_from(mask_1d=mask_1d) == 4
-
-    def test__total_sub_pixels_1d_from(self):
-
-        mask_1d = np.array([False, True, False, False, False, True])
-
-        assert util.mask.total_sub_pixels_1d_from(mask_1d=mask_1d, sub_size=2) == 8
-
-    def test__sub_native_index_for_sub_slim_index_1d_from(self):
-
-        mask_1d = np.array([False, False, False, False])
-
-        sub_native_index_for_sub_slim_index_1d = util.mask.sub_native_index_for_sub_slim_index_1d_from(
-            mask_1d=mask_1d, sub_size=1
-        )
-
-        assert (sub_native_index_for_sub_slim_index_1d == np.array([0, 1, 2, 3])).all()
-
-        mask_1d = np.array([False, False, True, False, False])
-
-        sub_native_index_for_sub_slim_index_1d = util.mask.sub_native_index_for_sub_slim_index_1d_from(
-            mask_1d=mask_1d, sub_size=1
-        )
-
-        assert (sub_native_index_for_sub_slim_index_1d == np.array([0, 1, 3, 4])).all()
-
-        mask_1d = np.array([True, False, False, True, False, False])
-
-        sub_native_index_for_sub_slim_index_1d = util.mask.sub_native_index_for_sub_slim_index_1d_from(
-            mask_1d=mask_1d, sub_size=1
-        )
-
-        assert (sub_native_index_for_sub_slim_index_1d == np.array([1, 2, 4, 5])).all()
-
-        mask_1d = np.array([True, False, False, True, False, False])
-
-        sub_native_index_for_sub_slim_index_1d = util.mask.sub_native_index_for_sub_slim_index_1d_from(
-            mask_1d=mask_1d, sub_size=2
-        )
-
-        assert (
-            sub_native_index_for_sub_slim_index_1d
-            == np.array([2, 3, 4, 5, 8, 9, 10, 11])
-        ).all()
-
-
 class TestTotalPixels:
     def test__total_image_pixels_from_mask_2d(self):
 
@@ -63,7 +12,7 @@ class TestTotalPixels:
             [[True, False, True], [False, False, False], [True, False, True]]
         )
 
-        assert util.mask.total_pixels_2d_from(mask_2d=mask_2d) == 5
+        assert util.mask_2d.total_pixels_2d_from(mask_2d=mask_2d) == 5
 
     def test__total_sub_pixels_from_mask_2d(self):
 
@@ -71,7 +20,7 @@ class TestTotalPixels:
             [[True, False, True], [False, False, False], [True, False, True]]
         )
 
-        assert util.mask.total_sub_pixels_2d_from(mask_2d, sub_size=2) == 20
+        assert util.mask_2d.total_sub_pixels_2d_from(mask_2d, sub_size=2) == 20
 
     def test__total_edge_pixels_from_mask_2d(self):
 
@@ -85,128 +34,117 @@ class TestTotalPixels:
             ]
         )
 
-        assert util.mask.total_edge_pixels_from(mask_2d=mask_2d) == 8
+        assert util.mask_2d.total_edge_pixels_from(mask_2d=mask_2d) == 8
 
-    class TestTotalSparsePixels:
-        def test__mask_full_false__full_pixelization_grid_pixels_in_mask(self):
+    def test__total_sparse_pixels__mask_full_false__full_pixelization_grid_pixels_in_mask(
+        self
+    ):
 
-            ma = np.array(
-                [[False, False, False], [False, False, False], [False, False, False]]
-            )
+        ma = np.array(
+            [[False, False, False], [False, False, False], [False, False, False]]
+        )
 
-            full_pix_grid_pixel_centres = np.array([[0, 0], [0, 1], [0, 2], [1, 0]])
+        full_pix_grid_pixel_centres = np.array([[0, 0], [0, 1], [0, 2], [1, 0]])
 
-            total_masked_pixels = util.mask.total_sparse_pixels_2d_from(
-                mask_2d=ma,
-                unmasked_sparse_grid_pixel_centres=full_pix_grid_pixel_centres,
-            )
+        total_masked_pixels = util.mask_2d.total_sparse_pixels_2d_from(
+            mask_2d=ma, unmasked_sparse_grid_pixel_centres=full_pix_grid_pixel_centres
+        )
 
-            assert total_masked_pixels == 4
+        assert total_masked_pixels == 4
 
-            full_pix_grid_pixel_centres = np.array(
-                [[0, 0], [0, 1], [0, 2], [1, 0], [1, 1], [2, 1]]
-            )
+        full_pix_grid_pixel_centres = np.array(
+            [[0, 0], [0, 1], [0, 2], [1, 0], [1, 1], [2, 1]]
+        )
 
-            total_masked_pixels = util.mask.total_sparse_pixels_2d_from(
-                mask_2d=ma,
-                unmasked_sparse_grid_pixel_centres=full_pix_grid_pixel_centres,
-            )
+        total_masked_pixels = util.mask_2d.total_sparse_pixels_2d_from(
+            mask_2d=ma, unmasked_sparse_grid_pixel_centres=full_pix_grid_pixel_centres
+        )
 
-            assert total_masked_pixels == 6
+        assert total_masked_pixels == 6
 
-        def test__mask_is_cross__only_pixelization_grid_pixels_in_mask_are_counted(
-            self,
-        ):
+    def test__total_sparse_pixels__mask_is_cross__only_pixelization_grid_pixels_in_mask_are_counted(
+        self,
+    ):
 
-            ma = np.array(
-                [[True, False, True], [False, False, False], [True, False, True]]
-            )
+        ma = np.array([[True, False, True], [False, False, False], [True, False, True]])
 
-            full_pix_grid_pixel_centres = np.array([[0, 0], [0, 1], [0, 2], [1, 0]])
+        full_pix_grid_pixel_centres = np.array([[0, 0], [0, 1], [0, 2], [1, 0]])
 
-            total_masked_pixels = util.mask.total_sparse_pixels_2d_from(
-                mask_2d=ma,
-                unmasked_sparse_grid_pixel_centres=full_pix_grid_pixel_centres,
-            )
+        total_masked_pixels = util.mask_2d.total_sparse_pixels_2d_from(
+            mask_2d=ma, unmasked_sparse_grid_pixel_centres=full_pix_grid_pixel_centres
+        )
 
-            assert total_masked_pixels == 2
+        assert total_masked_pixels == 2
 
-            full_pix_grid_pixel_centres = np.array(
-                [[0, 0], [0, 1], [0, 2], [1, 0], [1, 1], [2, 1]]
-            )
+        full_pix_grid_pixel_centres = np.array(
+            [[0, 0], [0, 1], [0, 2], [1, 0], [1, 1], [2, 1]]
+        )
 
-            total_masked_pixels = util.mask.total_sparse_pixels_2d_from(
-                mask_2d=ma,
-                unmasked_sparse_grid_pixel_centres=full_pix_grid_pixel_centres,
-            )
+        total_masked_pixels = util.mask_2d.total_sparse_pixels_2d_from(
+            mask_2d=ma, unmasked_sparse_grid_pixel_centres=full_pix_grid_pixel_centres
+        )
 
-            assert total_masked_pixels == 4
+        assert total_masked_pixels == 4
 
-        def test__same_as_above_but_3x4_mask(self):
+    def test__total_sparse_pixels__rectangular_masks(self):
 
-            ma = np.array(
-                [
-                    [True, True, False, True],
-                    [False, False, False, False],
-                    [True, True, False, True],
-                ]
-            )
+        ma = np.array(
+            [
+                [True, True, False, True],
+                [False, False, False, False],
+                [True, True, False, True],
+            ]
+        )
 
-            full_pix_grid_pixel_centres = np.array([[0, 0], [0, 1], [0, 2], [1, 0]])
+        full_pix_grid_pixel_centres = np.array([[0, 0], [0, 1], [0, 2], [1, 0]])
 
-            total_masked_pixels = util.mask.total_sparse_pixels_2d_from(
-                mask_2d=ma,
-                unmasked_sparse_grid_pixel_centres=full_pix_grid_pixel_centres,
-            )
+        total_masked_pixels = util.mask_2d.total_sparse_pixels_2d_from(
+            mask_2d=ma, unmasked_sparse_grid_pixel_centres=full_pix_grid_pixel_centres
+        )
 
-            assert total_masked_pixels == 2
+        assert total_masked_pixels == 2
 
-            full_pix_grid_pixel_centres = np.array(
-                [[0, 0], [0, 1], [0, 2], [1, 0], [1, 1], [1, 2], [1, 3], [2, 2]]
-            )
+        full_pix_grid_pixel_centres = np.array(
+            [[0, 0], [0, 1], [0, 2], [1, 0], [1, 1], [1, 2], [1, 3], [2, 2]]
+        )
 
-            total_masked_pixels = util.mask.total_sparse_pixels_2d_from(
-                mask_2d=ma,
-                unmasked_sparse_grid_pixel_centres=full_pix_grid_pixel_centres,
-            )
+        total_masked_pixels = util.mask_2d.total_sparse_pixels_2d_from(
+            mask_2d=ma, unmasked_sparse_grid_pixel_centres=full_pix_grid_pixel_centres
+        )
 
-            assert total_masked_pixels == 6
+        assert total_masked_pixels == 6
 
-        def test__same_as_above_but_4x3_mask(self):
+        ma = np.array(
+            [
+                [True, False, True],
+                [True, False, True],
+                [False, False, False],
+                [True, False, True],
+            ]
+        )
 
-            ma = np.array(
-                [
-                    [True, False, True],
-                    [True, False, True],
-                    [False, False, False],
-                    [True, False, True],
-                ]
-            )
+        full_pix_grid_pixel_centres = np.array([[0, 0], [0, 1], [0, 2], [1, 1]])
 
-            full_pix_grid_pixel_centres = np.array([[0, 0], [0, 1], [0, 2], [1, 1]])
+        total_masked_pixels = util.mask_2d.total_sparse_pixels_2d_from(
+            mask_2d=ma, unmasked_sparse_grid_pixel_centres=full_pix_grid_pixel_centres
+        )
 
-            total_masked_pixels = util.mask.total_sparse_pixels_2d_from(
-                mask_2d=ma,
-                unmasked_sparse_grid_pixel_centres=full_pix_grid_pixel_centres,
-            )
+        assert total_masked_pixels == 2
 
-            assert total_masked_pixels == 2
+        full_pix_grid_pixel_centres = np.array(
+            [[0, 0], [0, 1], [0, 2], [1, 1], [2, 0], [2, 1], [2, 2], [3, 1]]
+        )
 
-            full_pix_grid_pixel_centres = np.array(
-                [[0, 0], [0, 1], [0, 2], [1, 1], [2, 0], [2, 1], [2, 2], [3, 1]]
-            )
+        total_masked_pixels = util.mask_2d.total_sparse_pixels_2d_from(
+            mask_2d=ma, unmasked_sparse_grid_pixel_centres=full_pix_grid_pixel_centres
+        )
 
-            total_masked_pixels = util.mask.total_sparse_pixels_2d_from(
-                mask_2d=ma,
-                unmasked_sparse_grid_pixel_centres=full_pix_grid_pixel_centres,
-            )
-
-            assert total_masked_pixels == 6
+        assert total_masked_pixels == 6
 
 
 class TestMaskCircular:
     def test__3x3_mask_input_radius_small__medium__big__masks(self):
-        mask = util.mask.mask_2d_circular_from(
+        mask = util.mask_2d.mask_2d_circular_from(
             shape_native=(3, 3), pixel_scales=(1.0, 1.0), radius=0.5
         )
 
@@ -215,7 +153,7 @@ class TestMaskCircular:
             == np.array([[True, True, True], [True, False, True], [True, True, True]])
         ).all()
 
-        mask = util.mask.mask_2d_circular_from(
+        mask = util.mask_2d.mask_2d_circular_from(
             shape_native=(3, 3), pixel_scales=(1.0, 1.0), radius=1.3
         )
 
@@ -226,7 +164,7 @@ class TestMaskCircular:
             )
         ).all()
 
-        mask = util.mask.mask_2d_circular_from(
+        mask = util.mask_2d.mask_2d_circular_from(
             shape_native=(3, 3), pixel_scales=(1.0, 1.0), radius=3.0
         )
 
@@ -237,7 +175,7 @@ class TestMaskCircular:
             )
         ).all()
 
-        mask = util.mask.mask_2d_circular_from(
+        mask = util.mask_2d.mask_2d_circular_from(
             shape_native=(3, 3), pixel_scales=(0.5, 1.0), radius=0.5
         )
 
@@ -248,7 +186,7 @@ class TestMaskCircular:
 
     def test__4x3_mask_input_radius_small__medium__big__masks(self):
 
-        mask = util.mask.mask_2d_circular_from(
+        mask = util.mask_2d.mask_2d_circular_from(
             shape_native=(4, 3), pixel_scales=(1.0, 1.0), radius=0.5
         )
 
@@ -264,7 +202,7 @@ class TestMaskCircular:
             )
         ).all()
 
-        mask = util.mask.mask_2d_circular_from(
+        mask = util.mask_2d.mask_2d_circular_from(
             shape_native=(4, 3), pixel_scales=(1.0, 1.0), radius=1.5001
         )
 
@@ -280,7 +218,7 @@ class TestMaskCircular:
             )
         ).all()
 
-        mask = util.mask.mask_2d_circular_from(
+        mask = util.mask_2d.mask_2d_circular_from(
             shape_native=(4, 3), pixel_scales=(1.0, 1.0), radius=3.0
         )
 
@@ -297,7 +235,7 @@ class TestMaskCircular:
         ).all()
 
     def test__4x4_mask_input_radius_small__medium__big__masks(self):
-        mask = util.mask.mask_2d_circular_from(
+        mask = util.mask_2d.mask_2d_circular_from(
             shape_native=(4, 4), pixel_scales=(1.0, 1.0), radius=0.72
         )
 
@@ -313,7 +251,7 @@ class TestMaskCircular:
             )
         ).all()
 
-        mask = util.mask.mask_2d_circular_from(
+        mask = util.mask_2d.mask_2d_circular_from(
             shape_native=(4, 4), pixel_scales=(1.0, 1.0), radius=1.7
         )
 
@@ -329,7 +267,7 @@ class TestMaskCircular:
             )
         ).all()
 
-        mask = util.mask.mask_2d_circular_from(
+        mask = util.mask_2d.mask_2d_circular_from(
             shape_native=(4, 4), pixel_scales=(1.0, 1.0), radius=3.0
         )
 
@@ -347,7 +285,7 @@ class TestMaskCircular:
 
     def test__origin_shifts__downwards__right__diagonal(self):
 
-        mask = util.mask.mask_2d_circular_from(
+        mask = util.mask_2d.mask_2d_circular_from(
             shape_native=(3, 3), pixel_scales=(3.0, 3.0), radius=0.5, centre=(-3, 0)
         )
 
@@ -357,7 +295,7 @@ class TestMaskCircular:
             == np.array([[True, True, True], [True, True, True], [True, False, True]])
         ).all()
 
-        mask = util.mask.mask_2d_circular_from(
+        mask = util.mask_2d.mask_2d_circular_from(
             shape_native=(3, 3), pixel_scales=(3.0, 3.0), radius=0.5, centre=(0.0, 3.0)
         )
 
@@ -367,7 +305,7 @@ class TestMaskCircular:
             == np.array([[True, True, True], [True, True, False], [True, True, True]])
         ).all()
 
-        mask = util.mask.mask_2d_circular_from(
+        mask = util.mask_2d.mask_2d_circular_from(
             shape_native=(3, 3), pixel_scales=(3.0, 3.0), radius=0.5, centre=(3, 3)
         )
 
@@ -379,7 +317,7 @@ class TestMaskCircular:
 
 class TestMaskAnnular:
     def test__mask_inner_radius_zero_outer_radius_small_medium_and_large__mask(self):
-        mask = util.mask.mask_2d_circular_annular_from(
+        mask = util.mask_2d.mask_2d_circular_annular_from(
             shape_native=(3, 3),
             pixel_scales=(1.0, 1.0),
             inner_radius=0.0,
@@ -391,7 +329,7 @@ class TestMaskAnnular:
             == np.array([[True, True, True], [True, False, True], [True, True, True]])
         ).all()
 
-        mask = util.mask.mask_2d_circular_annular_from(
+        mask = util.mask_2d.mask_2d_circular_annular_from(
             shape_native=(4, 4),
             pixel_scales=(1.0, 1.0),
             inner_radius=0.81,
@@ -410,7 +348,7 @@ class TestMaskAnnular:
             )
         ).all()
 
-        mask = util.mask.mask_2d_circular_annular_from(
+        mask = util.mask_2d.mask_2d_circular_annular_from(
             shape_native=(3, 3),
             pixel_scales=(1.0, 1.0),
             inner_radius=0.5,
@@ -424,7 +362,7 @@ class TestMaskAnnular:
             )
         ).all()
 
-        mask = util.mask.mask_2d_circular_annular_from(
+        mask = util.mask_2d.mask_2d_circular_annular_from(
             shape_native=(4, 4),
             pixel_scales=(0.5, 1.0),
             inner_radius=1.1,
@@ -444,7 +382,7 @@ class TestMaskAnnular:
         ).all()
 
     def test__4x3_mask_inner_radius_small_outer_radius_medium__mask(self):
-        mask = util.mask.mask_2d_circular_annular_from(
+        mask = util.mask_2d.mask_2d_circular_annular_from(
             shape_native=(4, 3),
             pixel_scales=(1.0, 1.0),
             inner_radius=0.51,
@@ -464,7 +402,7 @@ class TestMaskAnnular:
         ).all()
 
     def test__4x3_mask_inner_radius_medium_outer_radius_large__mask(self):
-        mask = util.mask.mask_2d_circular_annular_from(
+        mask = util.mask_2d.mask_2d_circular_annular_from(
             shape_native=(4, 3),
             pixel_scales=(1.0, 1.0),
             inner_radius=1.51,
@@ -484,7 +422,7 @@ class TestMaskAnnular:
         ).all()
 
     def test__4x4_mask_inner_radius_medium_outer_radius_large__mask(self):
-        mask = util.mask.mask_2d_circular_annular_from(
+        mask = util.mask_2d.mask_2d_circular_annular_from(
             shape_native=(4, 4),
             pixel_scales=(1.0, 1.0),
             inner_radius=1.71,
@@ -505,7 +443,7 @@ class TestMaskAnnular:
 
     def test__origin_shift__simple_shift_upwards__right_diagonal(self):
 
-        mask = util.mask.mask_2d_circular_annular_from(
+        mask = util.mask_2d.mask_2d_circular_annular_from(
             shape_native=(3, 3),
             pixel_scales=(3.0, 3.0),
             inner_radius=0.5,
@@ -521,7 +459,7 @@ class TestMaskAnnular:
             )
         ).all()
 
-        mask = util.mask.mask_2d_circular_annular_from(
+        mask = util.mask_2d.mask_2d_circular_annular_from(
             shape_native=(3, 3),
             pixel_scales=(3.0, 3.0),
             inner_radius=0.5,
@@ -537,7 +475,7 @@ class TestMaskAnnular:
             )
         ).all()
 
-        mask = util.mask.mask_2d_circular_annular_from(
+        mask = util.mask_2d.mask_2d_circular_annular_from(
             shape_native=(3, 3),
             pixel_scales=(3.0, 3.0),
             inner_radius=0.5,
@@ -559,7 +497,7 @@ class TestMaskAntiAnnular:
         self,
     ):
 
-        mask = util.mask.mask_2d_circular_anti_annular_from(
+        mask = util.mask_2d.mask_2d_circular_anti_annular_from(
             shape_native=(5, 5),
             pixel_scales=(1.0, 1.0),
             inner_radius=0.5,
@@ -584,7 +522,7 @@ class TestMaskAntiAnnular:
         self,
     ):
 
-        mask = util.mask.mask_2d_circular_anti_annular_from(
+        mask = util.mask_2d.mask_2d_circular_anti_annular_from(
             shape_native=(5, 5),
             pixel_scales=(1.0, 1.0),
             inner_radius=1.5,
@@ -605,7 +543,7 @@ class TestMaskAntiAnnular:
             )
         ).all()
 
-        mask = util.mask.mask_2d_circular_anti_annular_from(
+        mask = util.mask_2d.mask_2d_circular_anti_annular_from(
             shape_native=(5, 5),
             pixel_scales=(0.1, 1.0),
             inner_radius=1.5,
@@ -630,7 +568,7 @@ class TestMaskAntiAnnular:
         self,
     ):
 
-        mask = util.mask.mask_2d_circular_anti_annular_from(
+        mask = util.mask_2d.mask_2d_circular_anti_annular_from(
             shape_native=(5, 5),
             pixel_scales=(1.0, 1.0),
             inner_radius=0.5,
@@ -653,7 +591,7 @@ class TestMaskAntiAnnular:
 
     def test__7x7_second_outer_radius_mask_works_too(self):
 
-        mask = util.mask.mask_2d_circular_anti_annular_from(
+        mask = util.mask_2d.mask_2d_circular_anti_annular_from(
             shape_native=(7, 7),
             pixel_scales=(1.0, 1.0),
             inner_radius=0.5,
@@ -678,7 +616,7 @@ class TestMaskAntiAnnular:
 
     def test__origin_shift__diagonal_shift(self):
 
-        mask = util.mask.mask_2d_circular_anti_annular_from(
+        mask = util.mask_2d.mask_2d_circular_anti_annular_from(
             shape_native=(7, 7),
             pixel_scales=(3.0, 3.0),
             inner_radius=1.5,
@@ -706,7 +644,7 @@ class TestMaskAntiAnnular:
 class TestMaskElliptical:
     def test__input_circular_params__small_medium_and_large_masks(self):
 
-        mask = util.mask.mask_2d_elliptical_from(
+        mask = util.mask_2d.mask_2d_elliptical_from(
             shape_native=(3, 3),
             pixel_scales=(1.0, 1.0),
             major_axis_radius=0.5,
@@ -719,7 +657,7 @@ class TestMaskElliptical:
             == np.array([[True, True, True], [True, False, True], [True, True, True]])
         ).all()
 
-        mask = util.mask.mask_2d_elliptical_from(
+        mask = util.mask_2d.mask_2d_elliptical_from(
             shape_native=(3, 3),
             pixel_scales=(1.0, 1.0),
             major_axis_radius=1.3,
@@ -734,7 +672,7 @@ class TestMaskElliptical:
             )
         ).all()
 
-        mask = util.mask.mask_2d_elliptical_from(
+        mask = util.mask_2d.mask_2d_elliptical_from(
             shape_native=(3, 3),
             pixel_scales=(1.0, 1.0),
             major_axis_radius=3.0,
@@ -753,7 +691,7 @@ class TestMaskElliptical:
         self,
     ):
 
-        mask = util.mask.mask_2d_elliptical_from(
+        mask = util.mask_2d.mask_2d_elliptical_from(
             shape_native=(3, 3),
             pixel_scales=(1.0, 1.0),
             major_axis_radius=1.3,
@@ -766,7 +704,7 @@ class TestMaskElliptical:
             == np.array([[True, True, True], [False, False, False], [True, True, True]])
         ).all()
 
-        mask = util.mask.mask_2d_elliptical_from(
+        mask = util.mask_2d.mask_2d_elliptical_from(
             shape_native=(3, 3),
             pixel_scales=(1.0, 1.0),
             major_axis_radius=1.3,
@@ -779,7 +717,7 @@ class TestMaskElliptical:
             == np.array([[True, True, True], [False, False, False], [True, True, True]])
         ).all()
 
-        mask = util.mask.mask_2d_elliptical_from(
+        mask = util.mask_2d.mask_2d_elliptical_from(
             shape_native=(3, 3),
             pixel_scales=(1.0, 1.0),
             major_axis_radius=1.3,
@@ -794,7 +732,7 @@ class TestMaskElliptical:
 
     def test__same_as_above_but_90_degree_rotations(self):
 
-        mask = util.mask.mask_2d_elliptical_from(
+        mask = util.mask_2d.mask_2d_elliptical_from(
             shape_native=(3, 3),
             pixel_scales=(1.0, 1.0),
             major_axis_radius=1.3,
@@ -807,7 +745,7 @@ class TestMaskElliptical:
             == np.array([[True, False, True], [True, False, True], [True, False, True]])
         ).all()
 
-        mask = util.mask.mask_2d_elliptical_from(
+        mask = util.mask_2d.mask_2d_elliptical_from(
             shape_native=(3, 3),
             pixel_scales=(1.0, 1.0),
             major_axis_radius=1.3,
@@ -822,7 +760,7 @@ class TestMaskElliptical:
 
     def test__same_as_above_but_diagonal_rotations(self):
 
-        mask = util.mask.mask_2d_elliptical_from(
+        mask = util.mask_2d.mask_2d_elliptical_from(
             shape_native=(3, 3),
             pixel_scales=(1.0, 1.0),
             major_axis_radius=1.5,
@@ -835,7 +773,7 @@ class TestMaskElliptical:
             == np.array([[True, True, False], [True, False, True], [False, True, True]])
         ).all()
 
-        mask = util.mask.mask_2d_elliptical_from(
+        mask = util.mask_2d.mask_2d_elliptical_from(
             shape_native=(3, 3),
             pixel_scales=(1.0, 1.0),
             major_axis_radius=1.5,
@@ -848,7 +786,7 @@ class TestMaskElliptical:
             == np.array([[False, True, True], [True, False, True], [True, True, False]])
         ).all()
 
-        mask = util.mask.mask_2d_elliptical_from(
+        mask = util.mask_2d.mask_2d_elliptical_from(
             shape_native=(3, 3),
             pixel_scales=(1.0, 1.0),
             major_axis_radius=1.5,
@@ -861,7 +799,7 @@ class TestMaskElliptical:
             == np.array([[True, True, False], [True, False, True], [False, True, True]])
         ).all()
 
-        mask = util.mask.mask_2d_elliptical_from(
+        mask = util.mask_2d.mask_2d_elliptical_from(
             shape_native=(3, 3),
             pixel_scales=(1.0, 1.0),
             major_axis_radius=1.5,
@@ -876,7 +814,7 @@ class TestMaskElliptical:
 
     def test__4x3__ellipse_is_formed(self):
 
-        mask = util.mask.mask_2d_elliptical_from(
+        mask = util.mask_2d.mask_2d_elliptical_from(
             shape_native=(4, 3),
             pixel_scales=(1.0, 1.0),
             major_axis_radius=1.5,
@@ -896,7 +834,7 @@ class TestMaskElliptical:
             )
         ).all()
 
-        mask = util.mask.mask_2d_elliptical_from(
+        mask = util.mask_2d.mask_2d_elliptical_from(
             shape_native=(4, 3),
             pixel_scales=(1.0, 1.0),
             major_axis_radius=1.5,
@@ -916,7 +854,7 @@ class TestMaskElliptical:
             )
         ).all()
 
-        mask = util.mask.mask_2d_elliptical_from(
+        mask = util.mask_2d.mask_2d_elliptical_from(
             shape_native=(4, 3),
             pixel_scales=(1.0, 0.1),
             major_axis_radius=1.5,
@@ -938,7 +876,7 @@ class TestMaskElliptical:
 
     def test__3x4__ellipse_is_formed(self):
 
-        mask = util.mask.mask_2d_elliptical_from(
+        mask = util.mask_2d.mask_2d_elliptical_from(
             shape_native=(3, 4),
             pixel_scales=(1.0, 1.0),
             major_axis_radius=1.5,
@@ -957,7 +895,7 @@ class TestMaskElliptical:
             )
         ).all()
 
-        mask = util.mask.mask_2d_elliptical_from(
+        mask = util.mask_2d.mask_2d_elliptical_from(
             shape_native=(3, 4),
             pixel_scales=(1.0, 1.0),
             major_axis_radius=1.5,
@@ -976,7 +914,7 @@ class TestMaskElliptical:
             )
         ).all()
 
-        mask = util.mask.mask_2d_elliptical_from(
+        mask = util.mask_2d.mask_2d_elliptical_from(
             shape_native=(3, 4),
             pixel_scales=(0.1, 1.0),
             major_axis_radius=1.5,
@@ -997,7 +935,7 @@ class TestMaskElliptical:
 
     def test__3x3_mask__shifts_dowwards__right__diagonal(self):
 
-        mask = util.mask.mask_2d_elliptical_from(
+        mask = util.mask_2d.mask_2d_elliptical_from(
             shape_native=(3, 3),
             pixel_scales=(3.0, 3.0),
             major_axis_radius=4.8,
@@ -1011,7 +949,7 @@ class TestMaskElliptical:
             == np.array([[True, True, True], [True, True, False], [True, False, True]])
         ).all()
 
-        mask = util.mask.mask_2d_elliptical_from(
+        mask = util.mask_2d.mask_2d_elliptical_from(
             shape_native=(3, 3),
             pixel_scales=(3.0, 3.0),
             major_axis_radius=4.8,
@@ -1025,7 +963,7 @@ class TestMaskElliptical:
             == np.array([[True, True, True], [True, True, False], [True, False, True]])
         ).all()
 
-        mask = util.mask.mask_2d_elliptical_from(
+        mask = util.mask_2d.mask_2d_elliptical_from(
             shape_native=(3, 3),
             pixel_scales=(3.0, 3.0),
             major_axis_radius=4.8,
@@ -1045,7 +983,7 @@ class TestMaskEllipticalAnnular:
         self,
     ):
 
-        mask = util.mask.mask_2d_elliptical_annular_from(
+        mask = util.mask_2d.mask_2d_elliptical_annular_from(
             shape_native=(3, 3),
             pixel_scales=(1.0, 1.0),
             inner_major_axis_radius=0.0,
@@ -1061,7 +999,7 @@ class TestMaskEllipticalAnnular:
             == np.array([[True, True, True], [True, False, True], [True, True, True]])
         ).all()
 
-        mask = util.mask.mask_2d_elliptical_annular_from(
+        mask = util.mask_2d.mask_2d_elliptical_annular_from(
             shape_native=(4, 4),
             pixel_scales=(1.0, 1.0),
             inner_major_axis_radius=0.81,
@@ -1084,7 +1022,7 @@ class TestMaskEllipticalAnnular:
             )
         ).all()
 
-        mask = util.mask.mask_2d_elliptical_annular_from(
+        mask = util.mask_2d.mask_2d_elliptical_annular_from(
             shape_native=(3, 3),
             pixel_scales=(1.0, 1.0),
             inner_major_axis_radius=0.5,
@@ -1104,7 +1042,7 @@ class TestMaskEllipticalAnnular:
 
     def test__elliptical_parameters_and_rotations_work_correctly(self):
 
-        mask = util.mask.mask_2d_elliptical_annular_from(
+        mask = util.mask_2d.mask_2d_elliptical_annular_from(
             shape_native=(3, 3),
             pixel_scales=(1.0, 1.0),
             inner_major_axis_radius=0.0,
@@ -1120,7 +1058,7 @@ class TestMaskEllipticalAnnular:
             == np.array([[True, True, True], [False, False, False], [True, True, True]])
         ).all()
 
-        mask = util.mask.mask_2d_elliptical_annular_from(
+        mask = util.mask_2d.mask_2d_elliptical_annular_from(
             shape_native=(3, 3),
             pixel_scales=(1.0, 1.0),
             inner_major_axis_radius=0.0,
@@ -1136,7 +1074,7 @@ class TestMaskEllipticalAnnular:
             == np.array([[True, False, True], [True, False, True], [True, False, True]])
         ).all()
 
-        mask = util.mask.mask_2d_elliptical_annular_from(
+        mask = util.mask_2d.mask_2d_elliptical_annular_from(
             shape_native=(3, 3),
             pixel_scales=(1.0, 1.0),
             inner_major_axis_radius=0.0,
@@ -1152,7 +1090,7 @@ class TestMaskEllipticalAnnular:
             == np.array([[True, True, False], [True, False, True], [False, True, True]])
         ).all()
 
-        mask = util.mask.mask_2d_elliptical_annular_from(
+        mask = util.mask_2d.mask_2d_elliptical_annular_from(
             shape_native=(3, 3),
             pixel_scales=(0.1, 1.0),
             inner_major_axis_radius=0.0,
@@ -1170,7 +1108,7 @@ class TestMaskEllipticalAnnular:
 
     def test__large_mask_array__can_see_elliptical_annuli_form(self):
 
-        mask = util.mask.mask_2d_elliptical_annular_from(
+        mask = util.mask_2d.mask_2d_elliptical_annular_from(
             shape_native=(7, 5),
             pixel_scales=(1.0, 1.0),
             inner_major_axis_radius=1.0,
@@ -1196,7 +1134,7 @@ class TestMaskEllipticalAnnular:
             )
         ).all()
 
-        mask = util.mask.mask_2d_elliptical_annular_from(
+        mask = util.mask_2d.mask_2d_elliptical_annular_from(
             shape_native=(7, 5),
             pixel_scales=(1.0, 1.0),
             inner_major_axis_radius=1.0,
@@ -1222,7 +1160,7 @@ class TestMaskEllipticalAnnular:
             )
         ).all()
 
-        mask = util.mask.mask_2d_elliptical_annular_from(
+        mask = util.mask_2d.mask_2d_elliptical_annular_from(
             shape_native=(7, 5),
             pixel_scales=(1.0, 1.0),
             inner_major_axis_radius=2.0,
@@ -1248,7 +1186,7 @@ class TestMaskEllipticalAnnular:
             )
         ).all()
 
-        mask = util.mask.mask_2d_elliptical_annular_from(
+        mask = util.mask_2d.mask_2d_elliptical_annular_from(
             shape_native=(7, 5),
             pixel_scales=(1.0, 1.0),
             inner_major_axis_radius=1.0,
@@ -1276,7 +1214,7 @@ class TestMaskEllipticalAnnular:
 
     def test__shifts(self):
 
-        mask = util.mask.mask_2d_elliptical_annular_from(
+        mask = util.mask_2d.mask_2d_elliptical_annular_from(
             shape_native=(7, 5),
             pixel_scales=(1.0, 1.0),
             inner_major_axis_radius=1.0,
@@ -1303,7 +1241,7 @@ class TestMaskEllipticalAnnular:
             )
         ).all()
 
-        mask = util.mask.mask_2d_elliptical_annular_from(
+        mask = util.mask_2d.mask_2d_elliptical_annular_from(
             shape_native=(7, 5),
             pixel_scales=(1.0, 1.0),
             inner_major_axis_radius=1.0,
@@ -1330,7 +1268,7 @@ class TestMaskEllipticalAnnular:
             )
         ).all()
 
-        mask = util.mask.mask_2d_elliptical_annular_from(
+        mask = util.mask_2d.mask_2d_elliptical_annular_from(
             shape_native=(7, 5),
             pixel_scales=(1.0, 1.0),
             inner_major_axis_radius=1.0,
@@ -1361,7 +1299,7 @@ class TestMaskEllipticalAnnular:
 class TestMaskFromPixelCoordinates:
     def test__mask_without_buffer__false_at_coordinates(self):
 
-        mask = util.mask.mask_2d_via_pixel_coordinates_from(
+        mask = util.mask_2d.mask_2d_via_pixel_coordinates_from(
             shape_native=(3, 3), pixel_coordinates=[[0, 0]]
         )
 
@@ -1370,7 +1308,7 @@ class TestMaskFromPixelCoordinates:
             == np.array([[False, True, True], [True, True, True], [True, True, True]])
         ).all()
 
-        mask = util.mask.mask_2d_via_pixel_coordinates_from(
+        mask = util.mask_2d.mask_2d_via_pixel_coordinates_from(
             shape_native=(2, 3), pixel_coordinates=[[0, 1], [1, 1], [1, 2]]
         )
 
@@ -1378,7 +1316,7 @@ class TestMaskFromPixelCoordinates:
 
     def test__mask_with_buffer__false_at_buffed_coordinates(self):
 
-        mask = util.mask.mask_2d_via_pixel_coordinates_from(
+        mask = util.mask_2d.mask_2d_via_pixel_coordinates_from(
             shape_native=(5, 5), pixel_coordinates=[[2, 2]], buffer=1
         )
 
@@ -1395,7 +1333,7 @@ class TestMaskFromPixelCoordinates:
             )
         ).all()
 
-        mask = util.mask.mask_2d_via_pixel_coordinates_from(
+        mask = util.mask_2d.mask_2d_via_pixel_coordinates_from(
             shape_native=(7, 7), pixel_coordinates=[[2, 2], [5, 5]], buffer=1
         )
 
@@ -1419,7 +1357,7 @@ class TestMaskBlurring:
     def test__size__3x3_small_mask(self):
         mask = np.array([[True, True, True], [True, False, True], [True, True, True]])
 
-        blurring_mask = util.mask.blurring_mask_2d_from(
+        blurring_mask = util.mask_2d.blurring_mask_2d_from(
             mask, kernel_shape_native=(3, 3)
         )
 
@@ -1443,7 +1381,7 @@ class TestMaskBlurring:
             ]
         )
 
-        blurring_mask = util.mask.blurring_mask_2d_from(
+        blurring_mask = util.mask_2d.blurring_mask_2d_from(
             mask, kernel_shape_native=(3, 3)
         )
 
@@ -1475,7 +1413,7 @@ class TestMaskBlurring:
             ]
         )
 
-        blurring_mask = util.mask.blurring_mask_2d_from(
+        blurring_mask = util.mask_2d.blurring_mask_2d_from(
             mask, kernel_shape_native=(5, 5)
         )
 
@@ -1507,7 +1445,7 @@ class TestMaskBlurring:
             ]
         )
 
-        blurring_mask = util.mask.blurring_mask_2d_from(
+        blurring_mask = util.mask_2d.blurring_mask_2d_from(
             mask, kernel_shape_native=(5, 3)
         )
 
@@ -1541,7 +1479,7 @@ class TestMaskBlurring:
             ]
         )
 
-        blurring_mask = util.mask.blurring_mask_2d_from(
+        blurring_mask = util.mask_2d.blurring_mask_2d_from(
             mask, kernel_shape_native=(3, 5)
         )
 
@@ -1575,7 +1513,7 @@ class TestMaskBlurring:
             ]
         )
 
-        blurring_mask = util.mask.blurring_mask_2d_from(
+        blurring_mask = util.mask_2d.blurring_mask_2d_from(
             mask, kernel_shape_native=(3, 3)
         )
 
@@ -1609,7 +1547,7 @@ class TestMaskBlurring:
             ]
         )
 
-        blurring_mask = util.mask.blurring_mask_2d_from(
+        blurring_mask = util.mask_2d.blurring_mask_2d_from(
             mask, kernel_shape_native=(5, 5)
         )
 
@@ -1645,7 +1583,7 @@ class TestMaskBlurring:
             ]
         )
 
-        blurring_mask = util.mask.blurring_mask_2d_from(
+        blurring_mask = util.mask_2d.blurring_mask_2d_from(
             mask, kernel_shape_native=(5, 3)
         )
 
@@ -1683,7 +1621,7 @@ class TestMaskBlurring:
             ]
         )
 
-        blurring_mask = util.mask.blurring_mask_2d_from(
+        blurring_mask = util.mask_2d.blurring_mask_2d_from(
             mask, kernel_shape_native=(3, 5)
         )
 
@@ -1720,7 +1658,7 @@ class TestMaskBlurring:
             ]
         )
 
-        blurring_mask = util.mask.blurring_mask_2d_from(
+        blurring_mask = util.mask_2d.blurring_mask_2d_from(
             mask, kernel_shape_native=(3, 3)
         )
 
@@ -1754,7 +1692,7 @@ class TestMaskBlurring:
             ]
         )
 
-        blurring_mask = util.mask.blurring_mask_2d_from(
+        blurring_mask = util.mask_2d.blurring_mask_2d_from(
             mask, kernel_shape_native=(5, 5)
         )
 
@@ -1788,7 +1726,7 @@ class TestMaskBlurring:
             ]
         )
 
-        blurring_mask = util.mask.blurring_mask_2d_from(
+        blurring_mask = util.mask_2d.blurring_mask_2d_from(
             mask, kernel_shape_native=(3, 3)
         )
 
@@ -1823,7 +1761,7 @@ class TestMaskBlurring:
             ]
         )
 
-        blurring_mask = util.mask.blurring_mask_2d_from(
+        blurring_mask = util.mask_2d.blurring_mask_2d_from(
             mask, kernel_shape_native=(3, 3)
         )
 
@@ -1860,7 +1798,7 @@ class TestMaskBlurring:
         )
 
         with pytest.raises(exc.MaskException):
-            util.mask.blurring_mask_2d_from(mask, kernel_shape_native=(5, 5))
+            util.mask_2d.blurring_mask_2d_from(mask, kernel_shape_native=(5, 5))
 
 
 class TestMaskFromShapeAndMask2dIndexForMask1dIndex:
@@ -1869,7 +1807,7 @@ class TestMaskFromShapeAndMask2dIndexForMask1dIndex:
         slim_to_native = np.array([[0, 0], [0, 1], [1, 0], [1, 1]])
         shape = (2, 2)
 
-        mask = util.mask.mask_2d_via_shape_native_and_native_for_slim(
+        mask = util.mask_2d.mask_2d_via_shape_native_and_native_for_slim(
             shape_native=shape, native_for_slim=slim_to_native
         )
 
@@ -1880,7 +1818,7 @@ class TestMaskFromShapeAndMask2dIndexForMask1dIndex:
         slim_to_native = np.array([[0, 0], [0, 1], [1, 0]])
         shape = (2, 2)
 
-        mask = util.mask.mask_2d_via_shape_native_and_native_for_slim(
+        mask = util.mask_2d.mask_2d_via_shape_native_and_native_for_slim(
             shape_native=shape, native_for_slim=slim_to_native
         )
 
@@ -1891,7 +1829,7 @@ class TestMaskFromShapeAndMask2dIndexForMask1dIndex:
         slim_to_native = np.array([[0, 0], [0, 1], [1, 0], [2, 0], [2, 1], [2, 3]])
         shape = (3, 4)
 
-        mask = util.mask.mask_2d_via_shape_native_and_native_for_slim(
+        mask = util.mask_2d.mask_2d_via_shape_native_and_native_for_slim(
             shape_native=shape, native_for_slim=slim_to_native
         )
 
@@ -1921,7 +1859,7 @@ class TestEdgePixels:
             ]
         )
 
-        edge_pixels = util.mask.edge_1d_indexes_from(mask_2d=mask)
+        edge_pixels = util.mask_2d.edge_1d_indexes_from(mask_2d=mask)
 
         assert (edge_pixels == np.array([0])).all()
 
@@ -1938,7 +1876,7 @@ class TestEdgePixels:
             ]
         )
 
-        edge_pixels = util.mask.edge_1d_indexes_from(mask_2d=mask)
+        edge_pixels = util.mask_2d.edge_1d_indexes_from(mask_2d=mask)
 
         assert (edge_pixels == np.array([0, 1, 2, 3, 5, 6, 7, 8])).all()
 
@@ -1955,7 +1893,7 @@ class TestEdgePixels:
             ]
         )
 
-        edge_pixels = util.mask.edge_1d_indexes_from(mask_2d=mask)
+        edge_pixels = util.mask_2d.edge_1d_indexes_from(mask_2d=mask)
 
         assert (edge_pixels == np.array([0, 1, 2, 3, 5, 6, 8, 9, 11, 12, 13, 14])).all()
 
@@ -1973,7 +1911,7 @@ class TestEdgePixels:
             ]
         )
 
-        edge_pixels = util.mask.edge_1d_indexes_from(mask_2d=mask)
+        edge_pixels = util.mask_2d.edge_1d_indexes_from(mask_2d=mask)
 
         assert (
             edge_pixels
@@ -1994,7 +1932,7 @@ class TestEdgePixels:
             ]
         )
 
-        edge_pixels = util.mask.edge_1d_indexes_from(mask_2d=mask)
+        edge_pixels = util.mask_2d.edge_1d_indexes_from(mask_2d=mask)
 
         assert (
             edge_pixels
@@ -2016,7 +1954,7 @@ class TestEdgePixels:
             ]
         )
 
-        edge_pixels = util.mask.edge_1d_indexes_from(mask_2d=mask)
+        edge_pixels = util.mask_2d.edge_1d_indexes_from(mask_2d=mask)
 
         assert (
             edge_pixels == np.array([0, 1, 2, 3, 4, 6, 7, 8, 10, 11, 12, 13, 14])
@@ -2035,7 +1973,7 @@ class TestEdgePixels:
             ]
         )
 
-        edge_pixels = util.mask.edge_1d_indexes_from(mask_2d=mask)
+        edge_pixels = util.mask_2d.edge_1d_indexes_from(mask_2d=mask)
 
         assert (
             edge_pixels
@@ -2058,7 +1996,7 @@ class TestBorderPixels:
             ]
         )
 
-        border_pixels = util.mask.border_slim_indexes_from(mask_2d=mask)
+        border_pixels = util.mask_2d.border_slim_indexes_from(mask_2d=mask)
 
         assert (border_pixels == np.array([0])).all()
 
@@ -2074,7 +2012,7 @@ class TestBorderPixels:
             ]
         )
 
-        border_pixels = util.mask.border_slim_indexes_from(mask_2d=mask)
+        border_pixels = util.mask_2d.border_slim_indexes_from(mask_2d=mask)
 
         assert (border_pixels == np.array([0, 1, 2])).all()
 
@@ -2090,7 +2028,7 @@ class TestBorderPixels:
             ]
         )
 
-        border_pixels = util.mask.border_slim_indexes_from(mask_2d=mask)
+        border_pixels = util.mask_2d.border_slim_indexes_from(mask_2d=mask)
 
         assert (border_pixels == np.array([0, 1, 2, 3, 5, 6, 7, 8])).all()
 
@@ -2110,7 +2048,7 @@ class TestBorderPixels:
             ]
         )
 
-        border_pixels = util.mask.border_slim_indexes_from(mask_2d=mask)
+        border_pixels = util.mask_2d.border_slim_indexes_from(mask_2d=mask)
 
         assert (
             border_pixels
@@ -2161,7 +2099,7 @@ class TestBorderPixels:
             ]
         )
 
-        border_pixels = util.mask.border_slim_indexes_from(mask_2d=mask)
+        border_pixels = util.mask_2d.border_slim_indexes_from(mask_2d=mask)
 
         assert (
             border_pixels
@@ -2211,7 +2149,7 @@ class TestBorderPixels:
             ]
         )
 
-        border_pixels = util.mask.border_slim_indexes_from(mask_2d=mask)
+        border_pixels = util.mask_2d.border_slim_indexes_from(mask_2d=mask)
 
         assert (
             border_pixels
@@ -2263,7 +2201,7 @@ class TestSubBorderPixels:
             ]
         )
 
-        sub_border_pixels = util.mask.sub_border_pixel_slim_indexes_from(
+        sub_border_pixels = util.mask_2d.sub_border_pixel_slim_indexes_from(
             mask_2d=mask, sub_size=1
         )
 
@@ -2281,7 +2219,7 @@ class TestSubBorderPixels:
             ]
         )
 
-        sub_border_pixels = util.mask.sub_border_pixel_slim_indexes_from(
+        sub_border_pixels = util.mask_2d.sub_border_pixel_slim_indexes_from(
             mask_2d=mask, sub_size=1
         )
 
@@ -2299,7 +2237,7 @@ class TestSubBorderPixels:
             ]
         )
 
-        sub_border_pixels = util.mask.sub_border_pixel_slim_indexes_from(
+        sub_border_pixels = util.mask_2d.sub_border_pixel_slim_indexes_from(
             mask_2d=mask, sub_size=1
         )
 
@@ -2321,7 +2259,7 @@ class TestSubBorderPixels:
             ]
         )
 
-        sub_border_pixels = util.mask.sub_border_pixel_slim_indexes_from(
+        sub_border_pixels = util.mask_2d.sub_border_pixel_slim_indexes_from(
             mask_2d=mask, sub_size=2
         )
 
@@ -2339,7 +2277,7 @@ class TestSubBorderPixels:
             ]
         )
 
-        sub_border_pixels = util.mask.sub_border_pixel_slim_indexes_from(
+        sub_border_pixels = util.mask_2d.sub_border_pixel_slim_indexes_from(
             mask_2d=mask, sub_size=2
         )
 
@@ -2357,7 +2295,7 @@ class TestSubBorderPixels:
             ]
         )
 
-        sub_border_pixels = util.mask.sub_border_pixel_slim_indexes_from(
+        sub_border_pixels = util.mask_2d.sub_border_pixel_slim_indexes_from(
             mask_2d=mask, sub_size=2
         )
 
@@ -2379,7 +2317,7 @@ class TestSubBorderPixels:
             ]
         )
 
-        sub_border_pixels = util.mask.sub_border_pixel_slim_indexes_from(
+        sub_border_pixels = util.mask_2d.sub_border_pixel_slim_indexes_from(
             mask_2d=mask, sub_size=3
         )
 
@@ -2397,7 +2335,7 @@ class TestSubBorderPixels:
             ]
         )
 
-        sub_border_pixels = util.mask.sub_border_pixel_slim_indexes_from(
+        sub_border_pixels = util.mask_2d.sub_border_pixel_slim_indexes_from(
             mask_2d=mask, sub_size=3
         )
 
@@ -2415,7 +2353,7 @@ class TestSubBorderPixels:
             ]
         )
 
-        sub_border_pixels = util.mask.sub_border_pixel_slim_indexes_from(
+        sub_border_pixels = util.mask_2d.sub_border_pixel_slim_indexes_from(
             mask_2d=mask, sub_size=3
         )
 
@@ -2437,7 +2375,7 @@ class TestSubBorderPixels:
             ]
         )
 
-        sub_border_pixels = util.mask.sub_border_pixel_slim_indexes_from(
+        sub_border_pixels = util.mask_2d.sub_border_pixel_slim_indexes_from(
             mask_2d=mask, sub_size=2
         )
 
@@ -2490,7 +2428,7 @@ class TestSubBorderPixels:
             ]
         )
 
-        sub_border_pixels = util.mask.sub_border_pixel_slim_indexes_from(
+        sub_border_pixels = util.mask_2d.sub_border_pixel_slim_indexes_from(
             mask_2d=mask, sub_size=2
         )
 
@@ -2542,7 +2480,7 @@ class TestSubBorderPixels:
             ]
         )
 
-        sub_border_pixels = util.mask.sub_border_pixel_slim_indexes_from(
+        sub_border_pixels = util.mask_2d.sub_border_pixel_slim_indexes_from(
             mask_2d=mask, sub_size=2
         )
 
@@ -2585,7 +2523,7 @@ class TestMask2DIndexFromSubMask1DIndex:
     ):
         mask = np.array([[True, True, True], [True, False, True], [True, True, True]])
 
-        slim_index_for_sub_slim_index = util.mask.slim_index_for_sub_slim_index_via_mask_2d_from(
+        slim_index_for_sub_slim_index = util.mask_2d.slim_index_for_sub_slim_index_via_mask_2d_from(
             mask, sub_size=2
         )
 
@@ -2596,7 +2534,7 @@ class TestMask2DIndexFromSubMask1DIndex:
     ):
         mask = np.array([[True, True, True], [False, False, False], [True, True, True]])
 
-        slim_index_for_sub_slim_index = util.mask.slim_index_for_sub_slim_index_via_mask_2d_from(
+        slim_index_for_sub_slim_index = util.mask_2d.slim_index_for_sub_slim_index_via_mask_2d_from(
             mask, sub_size=2
         )
 
@@ -2610,7 +2548,7 @@ class TestMask2DIndexFromSubMask1DIndex:
     ):
         mask = np.array([[True, True, True], [False, False, False], [True, True, True]])
 
-        slim_index_for_sub_slim_index = util.mask.slim_index_for_sub_slim_index_via_mask_2d_from(
+        slim_index_for_sub_slim_index = util.mask_2d.slim_index_for_sub_slim_index_via_mask_2d_from(
             mask, sub_size=3
         )
 
@@ -2657,7 +2595,7 @@ class TestSubMask1DIndexFromMask1DIndexes:
 
         mask = np.array([[True, True, True], [True, False, True], [True, True, True]])
 
-        sub_mask_1d_indexes_for_mask_1d_index = util.mask.sub_slim_indexes_for_slim_index_via_mask_2d_from(
+        sub_mask_1d_indexes_for_mask_1d_index = util.mask_2d.sub_slim_indexes_for_slim_index_via_mask_2d_from(
             mask, sub_size=2
         )
 
@@ -2668,7 +2606,7 @@ class TestSubMask1DIndexFromMask1DIndexes:
     ):
         mask = np.array([[True, True, True], [False, False, False], [True, True, True]])
 
-        sub_mask_1d_indexes_for_mask_1d_index = util.mask.sub_slim_indexes_for_slim_index_via_mask_2d_from(
+        sub_mask_1d_indexes_for_mask_1d_index = util.mask_2d.sub_slim_indexes_for_slim_index_via_mask_2d_from(
             mask, sub_size=2
         )
 
@@ -2683,7 +2621,7 @@ class TestSubMask1DIndexFromMask1DIndexes:
     ):
         mask = np.array([[True, True, True], [False, False, False], [True, True, True]])
 
-        sub_mask_1d_indexes_for_mask_1d_index = util.mask.sub_slim_indexes_for_slim_index_via_mask_2d_from(
+        sub_mask_1d_indexes_for_mask_1d_index = util.mask_2d.sub_slim_indexes_for_slim_index_via_mask_2d_from(
             mask, sub_size=3
         )
 
@@ -2699,7 +2637,7 @@ class TestSubMask2dToSubMask1d:
 
         mask = np.full(fill_value=False, shape=(3, 3))
 
-        sub_mask_1d_index_for_sub_mask_index = util.mask.sub_slim_index_for_sub_native_index_from(
+        sub_mask_1d_index_for_sub_mask_index = util.mask_2d.sub_slim_index_for_sub_native_index_from(
             sub_mask_2d=mask
         )
 
@@ -2710,7 +2648,7 @@ class TestSubMask2dToSubMask1d:
 
         mask = np.full(fill_value=False, shape=(2, 3))
 
-        sub_mask_1d_index_for_sub_mask_index = util.mask.sub_slim_index_for_sub_native_index_from(
+        sub_mask_1d_index_for_sub_mask_index = util.mask_2d.sub_slim_index_for_sub_native_index_from(
             sub_mask_2d=mask
         )
 
@@ -2720,7 +2658,7 @@ class TestSubMask2dToSubMask1d:
 
         mask = np.full(fill_value=False, shape=(3, 2))
 
-        sub_mask_1d_index_for_sub_mask_index = util.mask.sub_slim_index_for_sub_native_index_from(
+        sub_mask_1d_index_for_sub_mask_index = util.mask_2d.sub_slim_index_for_sub_native_index_from(
             sub_mask_2d=mask
         )
 
@@ -2736,7 +2674,7 @@ class TestSubMask2dToSubMask1d:
             [[False, True, False], [True, True, False], [False, False, True]]
         )
 
-        sub_mask_1d_index_for_sub_mask_index = util.mask.sub_slim_index_for_sub_native_index_from(
+        sub_mask_1d_index_for_sub_mask_index = util.mask_2d.sub_slim_index_for_sub_native_index_from(
             sub_mask_2d=mask
         )
 
@@ -2753,7 +2691,7 @@ class TestSubMask2dToSubMask1d:
             ]
         )
 
-        sub_mask_1d_index_for_sub_mask_index = util.mask.sub_slim_index_for_sub_native_index_from(
+        sub_mask_1d_index_for_sub_mask_index = util.mask_2d.sub_slim_index_for_sub_native_index_from(
             sub_mask_2d=mask
         )
 
@@ -2771,7 +2709,7 @@ class TestSubMask2dToSubMask1d:
             ]
         )
 
-        sub_mask_1d_index_for_sub_mask_index = util.mask.sub_slim_index_for_sub_native_index_from(
+        sub_mask_1d_index_for_sub_mask_index = util.mask_2d.sub_slim_index_for_sub_native_index_from(
             sub_mask_2d=mask
         )
 
@@ -2786,7 +2724,7 @@ class TestSubMask2DForSubMask1D:
 
         mask = np.array([[True, True, True], [True, False, True], [True, True, True]])
 
-        sub_mask_index_for_sub_mask_1d_index = util.mask.native_index_for_slim_index_2d_from(
+        sub_mask_index_for_sub_mask_1d_index = util.mask_2d.native_index_for_slim_index_2d_from(
             mask_2d=mask, sub_size=1
         )
 
@@ -2796,7 +2734,7 @@ class TestSubMask2DForSubMask1D:
             [[True, False, True], [False, False, False], [True, False, True]]
         )
 
-        sub_mask_index_for_sub_mask_1d_index = util.mask.native_index_for_slim_index_2d_from(
+        sub_mask_index_for_sub_mask_1d_index = util.mask_2d.native_index_for_slim_index_2d_from(
             mask_2d=mask, sub_size=1
         )
 
@@ -2813,7 +2751,7 @@ class TestSubMask2DForSubMask1D:
             ]
         )
 
-        sub_mask_index_for_sub_mask_1d_index = util.mask.native_index_for_slim_index_2d_from(
+        sub_mask_index_for_sub_mask_1d_index = util.mask_2d.native_index_for_slim_index_2d_from(
             mask_2d=mask, sub_size=1
         )
 
@@ -2831,7 +2769,7 @@ class TestSubMask2DForSubMask1D:
             ]
         )
 
-        sub_mask_index_for_sub_mask_1d_index = util.mask.native_index_for_slim_index_2d_from(
+        sub_mask_index_for_sub_mask_1d_index = util.mask_2d.native_index_for_slim_index_2d_from(
             mask_2d=mask, sub_size=1
         )
 
@@ -2844,7 +2782,7 @@ class TestSubMask2DForSubMask1D:
 
         mask = np.array([[True, True, True], [True, False, True], [True, True, True]])
 
-        sub_mask_index_for_sub_mask_1d_index = util.mask.native_index_for_slim_index_2d_from(
+        sub_mask_index_for_sub_mask_1d_index = util.mask_2d.native_index_for_slim_index_2d_from(
             mask_2d=mask, sub_size=2
         )
 
@@ -2853,7 +2791,7 @@ class TestSubMask2DForSubMask1D:
             == np.array([[2, 2], [2, 3], [3, 2], [3, 3]])
         ).all()
 
-        sub_mask_index_for_sub_mask_1d_index = util.mask.native_index_for_slim_index_2d_from(
+        sub_mask_index_for_sub_mask_1d_index = util.mask_2d.native_index_for_slim_index_2d_from(
             mask_2d=mask, sub_size=3
         )
 
@@ -2868,7 +2806,7 @@ class TestSubMask2DForSubMask1D:
             [[True, False, True], [False, False, False], [True, False, True]]
         )
 
-        sub_mask_index_for_sub_mask_1d_index = util.mask.native_index_for_slim_index_2d_from(
+        sub_mask_index_for_sub_mask_1d_index = util.mask_2d.native_index_for_slim_index_2d_from(
             mask_2d=mask, sub_size=2
         )
 
@@ -2908,7 +2846,7 @@ class TestSubMask2DForSubMask1D:
             ]
         )
 
-        sub_mask_index_for_sub_mask_1d_index = util.mask.native_index_for_slim_index_2d_from(
+        sub_mask_index_for_sub_mask_1d_index = util.mask_2d.native_index_for_slim_index_2d_from(
             mask_2d=mask, sub_size=2
         )
 
@@ -2928,7 +2866,7 @@ class TestSubMask2DForSubMask1D:
             ]
         )
 
-        sub_mask_index_for_sub_mask_1d_index = util.mask.native_index_for_slim_index_2d_from(
+        sub_mask_index_for_sub_mask_1d_index = util.mask_2d.native_index_for_slim_index_2d_from(
             mask_2d=mask, sub_size=2
         )
 
@@ -2953,7 +2891,7 @@ class TestRescaledMaskFromMask:
             ]
         )
 
-        rescaled_mask = util.mask.rescaled_mask_2d_from(
+        rescaled_mask = util.mask_2d.rescaled_mask_2d_from(
             mask_2d=mask, rescale_factor=1.0
         )
 
@@ -2984,7 +2922,7 @@ class TestBuffedMaskFromMask:
             ]
         )
 
-        buffed_mask = util.mask.buffed_mask_2d_from(mask_2d=mask, buffer=1)
+        buffed_mask = util.mask_2d.buffed_mask_2d_from(mask_2d=mask, buffer=1)
 
         assert (
             buffed_mask
@@ -3010,7 +2948,7 @@ class TestBuffedMaskFromMask:
             ]
         )
 
-        buffed_mask = util.mask.buffed_mask_2d_from(mask_2d=mask, buffer=1)
+        buffed_mask = util.mask_2d.buffed_mask_2d_from(mask_2d=mask, buffer=1)
 
         assert (
             buffed_mask
@@ -3037,7 +2975,7 @@ class TestBuffedMaskFromMask:
             ]
         )
 
-        buffed_mask = util.mask.buffed_mask_2d_from(mask_2d=mask, buffer=1)
+        buffed_mask = util.mask_2d.buffed_mask_2d_from(mask_2d=mask, buffer=1)
 
         assert (
             buffed_mask
@@ -3066,7 +3004,7 @@ class TestBuffedMaskFromMask:
             ]
         )
 
-        buffed_mask = util.mask.buffed_mask_2d_from(mask_2d=mask, buffer=1)
+        buffed_mask = util.mask_2d.buffed_mask_2d_from(mask_2d=mask, buffer=1)
 
         assert (
             buffed_mask
@@ -3095,7 +3033,7 @@ class TestBuffedMaskFromMask:
             ]
         )
 
-        buffed_mask = util.mask.buffed_mask_2d_from(mask_2d=mask, buffer=2)
+        buffed_mask = util.mask_2d.buffed_mask_2d_from(mask_2d=mask, buffer=2)
 
         assert (
             buffed_mask
@@ -3124,7 +3062,7 @@ class TestBuffedMaskFromMask:
             ]
         )
 
-        buffed_mask = util.mask.buffed_mask_2d_from(mask_2d=mask, buffer=2)
+        buffed_mask = util.mask_2d.buffed_mask_2d_from(mask_2d=mask, buffer=2)
 
         assert (
             buffed_mask
@@ -3154,7 +3092,7 @@ class TestMaskNeighbors:
             ]
         )
 
-        mask_neighbors = util.mask.mask_2d_neighbors_from(mask_2d=mask)
+        mask_neighbors = util.mask_2d.mask_2d_neighbors_from(mask_2d=mask)
 
         assert (mask_neighbors == np.array([1, 3, 3, 2])).all()
 
@@ -3167,7 +3105,7 @@ class TestMaskNeighbors:
             ]
         )
 
-        mask_neighbors = util.mask.mask_2d_neighbors_from(mask_2d=mask)
+        mask_neighbors = util.mask_2d.mask_2d_neighbors_from(mask_2d=mask)
 
         assert (mask_neighbors == np.array([1, 2, 5, 4, 5, 4])).all()
 
@@ -3181,7 +3119,7 @@ class TestMaskNeighbors:
             ]
         )
 
-        mask_neighbors = util.mask.mask_2d_neighbors_from(mask_2d=mask)
+        mask_neighbors = util.mask_2d.mask_2d_neighbors_from(mask_2d=mask)
 
         assert (mask_neighbors == np.array([1, 3, 3, 5, 5, 4])).all()
 
@@ -3189,19 +3127,19 @@ class TestMaskNeighbors:
 
         mask = np.array([[False, False], [False, False]])
 
-        mask_neighbors = util.mask.mask_2d_neighbors_from(mask_2d=mask)
+        mask_neighbors = util.mask_2d.mask_2d_neighbors_from(mask_2d=mask)
 
         assert (mask_neighbors == np.array([1, 3, 3, 2])).all()
 
         mask = np.array([[False, False, False], [False, False, False]])
 
-        mask_neighbors = util.mask.mask_2d_neighbors_from(mask_2d=mask)
+        mask_neighbors = util.mask_2d.mask_2d_neighbors_from(mask_2d=mask)
 
         assert (mask_neighbors == np.array([1, 2, 5, 4, 5, 4])).all()
 
         mask = np.array([[False, False], [False, False], [False, False]])
 
-        mask_neighbors = util.mask.mask_2d_neighbors_from(mask_2d=mask)
+        mask_neighbors = util.mask_2d.mask_2d_neighbors_from(mask_2d=mask)
 
         assert (mask_neighbors == np.array([1, 3, 3, 5, 5, 4])).all()
 
@@ -3216,6 +3154,6 @@ class TestMaskNeighbors:
             ]
         )
 
-        mask_neighbors = util.mask.mask_2d_neighbors_from(mask_2d=mask)
+        mask_neighbors = util.mask_2d.mask_2d_neighbors_from(mask_2d=mask)
 
         assert (mask_neighbors == np.array([2, -1, 3, 2])).all()
