@@ -78,9 +78,7 @@ def line_1d_native_from(
 
     native_index_for_slim_index_1d = mask_1d_util.native_index_for_slim_index_1d_from(
         mask_1d=mask_1d, sub_size=sub_size
-    ).astype(
-        "int"
-    )
+    ).astype("int")
 
     return line_1d_via_indexes_1d_from(
         line_1d_slim=line_1d_slim,
@@ -91,9 +89,7 @@ def line_1d_native_from(
 
 @decorator_util.jit()
 def line_1d_via_indexes_1d_from(
-    line_1d_slim: np.ndarray,
-    sub_shape: int,
-    native_index_for_slim_index_1d: np.ndarray,
+    line_1d_slim: np.ndarray, sub_shape: int, native_index_for_slim_index_1d: np.ndarray
 ) -> np.ndarray:
     """
     For a slimmed sub line with sub-indexes mapping the slimmed sub line values to their native sub line,
@@ -134,8 +130,8 @@ def line_1d_via_indexes_1d_from(
 
     for slim_index in range(len(native_index_for_slim_index_1d)):
 
-        sub_line_1d_native[
-            native_index_for_slim_index_1d[slim_index]
-        ] = line_1d_slim[slim_index]
+        sub_line_1d_native[native_index_for_slim_index_1d[slim_index]] = line_1d_slim[
+            slim_index
+        ]
 
     return sub_line_1d_native

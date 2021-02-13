@@ -1834,7 +1834,7 @@ class TestSubGrid2dFromSubGrid2D:
         mask = np.array([[True, True, True], [True, False, True], [True, True, True]])
 
         grid_slim = aa.util.grid_2d.grid_2d_slim_from(
-            grid_2d=grid_2d, mask=mask, sub_size=1
+            grid_2d_native=grid_2d, mask=mask, sub_size=1
         )
 
         assert (grid_slim == np.array([[5, 5]])).all()
@@ -1852,7 +1852,7 @@ class TestSubGrid2dFromSubGrid2D:
         )
 
         grid_slim = aa.util.grid_2d.grid_2d_slim_from(
-            grid_2d=grid_2d, mask=mask, sub_size=1
+            grid_2d_native=grid_2d, mask=mask, sub_size=1
         )
 
         assert (grid_slim == np.array([[2, 2], [4, 4], [5, 5], [6, 6], [8, 8]])).all()
@@ -1874,7 +1874,7 @@ class TestSubGrid2dFromSubGrid2D:
         )
 
         grid_slim = aa.util.grid_2d.grid_2d_slim_from(
-            grid_2d=grid_2d, mask=mask, sub_size=1
+            grid_2d_native=grid_2d, mask=mask, sub_size=1
         )
 
         assert (
@@ -1900,7 +1900,7 @@ class TestSubGrid2dFromSubGrid2D:
         )
 
         grid_slim = aa.util.grid_2d.grid_2d_slim_from(
-            grid_2d=grid_2d, mask=mask, sub_size=1
+            grid_2d_native=grid_2d, mask=mask, sub_size=1
         )
 
         assert (grid_slim == np.array([[2, 2], [4, 4], [5, 5], [6, 6], [8, 8]])).all()
@@ -1921,7 +1921,7 @@ class TestSubGrid2dFromSubGrid2D:
         mask = np.array([[True, False, True], [True, False, True], [True, True, False]])
 
         sub_array_2d = aa.util.grid_2d.grid_2d_slim_from(
-            grid_2d=sub_grid_2d, mask=mask, sub_size=2
+            grid_2d_native=sub_grid_2d, mask=mask, sub_size=2
         )
 
         assert (

@@ -160,7 +160,7 @@ class AbstractMask(np.ndarray):
         """
         The 1D shape of the masks's sub-grid, which is equivalent to the total number of unmasked pixels in the mask.
         """
-        return int(self.pixels_in_mask * self.sub_size ** 2.0)
+        return int(self.pixels_in_mask * self.sub_size ** self.dimensions)
 
     def mask_new_sub_size_from_mask(self, mask, sub_size=1) -> "AbstractMask":
         """

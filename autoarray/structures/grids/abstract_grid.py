@@ -109,7 +109,7 @@ def convert_manual_grid_2d_native(grid_2d_native, mask_2d, store_slim):
     """
 
     grid_slim = grid_2d_util.grid_2d_slim_from(
-        grid_2d=grid_2d_native, mask=mask_2d, sub_size=mask_2d.sub_size
+        grid_2d_native=grid_2d_native, mask=mask_2d, sub_size=mask_2d.sub_size
     )
 
     if store_slim:
@@ -151,7 +151,6 @@ def convert_manual_grid_2d(grid_2d, mask_2d, store_slim):
 
 
 class AbstractGrid1D(abstract_structure.AbstractStructure1D):
-
     @property
     def slim(self):
         """
@@ -171,9 +170,11 @@ class AbstractGrid1D(abstract_structure.AbstractStructure1D):
         If the grid is stored in 2D it is return as is. If it is stored in 1D, it must first be mapped from 1D to 2D.
         """
 
-        return grid_1d_util.grid_1d_native_from(
+        grid_1d = grid_1d_util.grid_1d_native_from(
             grid_1d_slim=self, mask_1d=self.mask, sub_size=self.mask.sub_size
         )
+
+        return grids.Grid1D(grid=grid_1d, mask=self.mask)
 
     @property
     def slim_binned(self):
@@ -187,31 +188,12 @@ class AbstractGrid1D(abstract_structure.AbstractStructure1D):
 
         If the grid is stored in 1D it is return as is. If it is stored in 2D, it must first be mapped from 2D to 1D.
         """
-        if not self.store_slim:
 
-            sub_grid_2d_slim = grid_2d_util.grid_2d_slim_from(
-                grid_2d=self, mask=self.mask, sub_size=self.mask.sub_size
-            )
-
-        else:
-
-            sub_grid_2d_slim = self
-
-        binned_grid_2d_slim_y = np.multiply(
-            self.mask.sub_fraction,
-            sub_grid_2d_slim[:, 0].reshape(-1, self.mask.sub_length).sum(axis=1),
+        binned_grid_1d_slim = np.multiply(
+            self.mask.sub_fraction, self.reshape(-1, self.mask.sub_length).sum(axis=1)
         )
 
-        binned_grid_2d_slim_x = np.multiply(
-            self.mask.sub_fraction,
-            sub_grid_2d_slim[:, 1].reshape(-1, self.mask.sub_length).sum(axis=1),
-        )
-
-        return self._new_structure(
-            grid=np.stack((binned_grid_2d_slim_y, binned_grid_2d_slim_x), axis=-1),
-            mask=self.mask.mask_sub_1,
-            store_slim=True,
-        )
+        return grids.Grid1D(grid=binned_grid_1d_slim, mask=self.mask.mask_sub_1)
 
     @property
     def native_binned(self):
@@ -225,36 +207,17 @@ class AbstractGrid1D(abstract_structure.AbstractStructure1D):
 
         If the grid is stored in 2D it is return as is. If it is stored in 1D, it must first be mapped from 1D to 2D.
         """
-        if not self.store_slim:
 
-            sub_grid_1d = grid_2d_util.grid_2d_slim_from(
-                grid_2d=self, mask=self.mask, sub_size=self.mask.sub_size
-            )
-
-        else:
-
-            sub_grid_1d = self
-
-        binned_grid_2d_slim_y = np.multiply(
-            self.mask.sub_fraction,
-            sub_grid_1d[:, 0].reshape(-1, self.mask.sub_length).sum(axis=1),
+        binned_grid_1d_slim = np.multiply(
+            self.mask.sub_fraction, self.reshape(-1, self.mask.sub_length).sum(axis=1)
         )
 
-        binned_grid_2d_slim_x = np.multiply(
-            self.mask.sub_fraction,
-            sub_grid_1d[:, 1].reshape(-1, self.mask.sub_length).sum(axis=1),
+        binned_grid_1d = grid_1d_util.grid_1d_native_from(
+            grid_1d_slim=binned_grid_1d_slim, mask_1d=self.mask, sub_size=1
         )
 
-        binned_grid_2d_slim = np.stack(
-            (binned_grid_2d_slim_y, binned_grid_2d_slim_x), axis=-1
-        )
-
-        binned_grid_2d = grid_2d_util.grid_2d_native_from(
-            grid_2d_slim=binned_grid_2d_slim, mask_2d=self.mask, sub_size=1
-        )
-
-        return self._new_structure(
-            grid=binned_grid_2d, mask=self.mask.mask_sub_1, store_slim=False
+        return grids.Grid1D(
+            grid=binned_grid_1d, mask=self.mask.mask_sub_1, store_slim=False
         )
 
 
@@ -278,7 +241,7 @@ class AbstractGrid2D(abstract_structure.AbstractStructure2D):
             return self
 
         sub_grid_2d_slim = grid_2d_util.grid_2d_slim_from(
-            grid_2d=self, mask=self.mask, sub_size=self.mask.sub_size
+            grid_2d_native=self, mask=self.mask, sub_size=self.mask.sub_size
         )
 
         return self._new_structure(
@@ -319,7 +282,7 @@ class AbstractGrid2D(abstract_structure.AbstractStructure2D):
         if not self.store_slim:
 
             grid_2d_slim = grid_2d_util.grid_2d_slim_from(
-                grid_2d=self, mask=self.mask, sub_size=self.mask.sub_size
+                grid_2d_native=self, mask=self.mask, sub_size=self.mask.sub_size
             )
 
         else:
@@ -357,7 +320,7 @@ class AbstractGrid2D(abstract_structure.AbstractStructure2D):
         if not self.store_slim:
 
             grid_2d_slim = grid_2d_util.grid_2d_slim_from(
-                grid_2d=self, mask=self.mask, sub_size=self.mask.sub_size
+                grid_2d_native=self, mask=self.mask, sub_size=self.mask.sub_size
             )
 
         else:

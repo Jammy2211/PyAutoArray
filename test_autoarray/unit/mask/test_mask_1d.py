@@ -6,7 +6,6 @@ from autoarray import exc
 
 
 class TestMask1D:
-
     def test__mask__makes_mask_with_pixel_scale(self):
 
         mask = aa.Mask1D.manual(mask=[False, True], pixel_scales=1.0)
@@ -16,6 +15,7 @@ class TestMask1D:
         assert mask.pixel_scale == 1.0
         assert mask.pixel_scales == (1.0,)
         assert mask.origin == (0.0,)
+        assert (mask.extent == np.array([-1.0, 1.0])).all()
 
         mask = aa.Mask1D.manual(
             mask=[False, False, True], pixel_scales=3.0, origin=(1.0,)
@@ -25,6 +25,7 @@ class TestMask1D:
         assert (mask == np.array([False, False, True])).all()
         assert mask.pixel_scale == 3.0
         assert mask.origin == (1.0,)
+        assert (mask.extent == np.array([-3.5, 5.5])).all()
 
     def test__mask__makes_mask_with_pixel_scale_and_sub_size(self):
 

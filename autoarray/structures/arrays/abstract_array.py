@@ -104,7 +104,7 @@ def convert_manual_native_array(array_2d, mask, store_slim):
         )
 
     sub_array_1d = array_util.array_2d_slim_from(
-        array_2d=array_2d, mask_2d=mask, sub_size=mask.sub_size
+        array_2d_native=array_2d, mask_2d=mask, sub_size=mask.sub_size
     )
 
     if store_slim:
@@ -194,7 +194,7 @@ class AbstractArray2D(abstract_structure.AbstractStructure2D):
             return self
 
         sub_array_1d = array_util.array_2d_slim_from(
-            array_2d=self, mask_2d=self.mask, sub_size=self.mask.sub_size
+            array_2d_native=self, mask_2d=self.mask, sub_size=self.mask.sub_size
         )
 
         return self._new_structure(array=sub_array_1d, mask=self.mask, store_slim=True)
@@ -229,7 +229,7 @@ class AbstractArray2D(abstract_structure.AbstractStructure2D):
         if not self.store_slim:
 
             sub_array_1d = array_util.array_2d_slim_from(
-                array_2d=self, mask_2d=self.mask, sub_size=self.mask.sub_size
+                array_2d_native=self, mask_2d=self.mask, sub_size=self.mask.sub_size
             )
 
         else:
@@ -258,7 +258,7 @@ class AbstractArray2D(abstract_structure.AbstractStructure2D):
         if not self.store_slim:
 
             sub_array_1d = array_util.array_2d_slim_from(
-                array_2d=self, mask_2d=self.mask, sub_size=self.mask.sub_size
+                array_2d_native=self, mask_2d=self.mask, sub_size=self.mask.sub_size
             )
 
         else:

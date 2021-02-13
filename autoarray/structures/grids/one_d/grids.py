@@ -1,10 +1,12 @@
 from autoarray.structures.grids import abstract_grid
+from autoarray.structures.grids.one_d import grid_1d_util
 from autoarray.geometry import geometry_util
 from autoarray.mask import mask_1d
 
+from autoarray import exc
+
 
 class Grid1D(abstract_grid.AbstractGrid1D):
-
     def __new__(cls, grid, mask, *args, **kwargs):
         """
         A grid of 1D (x) coordinates, which are paired to a uniform 1D mask of pixels and sub-pixels. Each entry
@@ -159,13 +161,7 @@ class Grid1D(abstract_grid.AbstractGrid1D):
         return obj
 
     @classmethod
-    def manual_slim(
-        cls,
-        grid,
-        pixel_scales,
-        sub_size=1,
-        origin=(0.0,),
-    ):
+    def manual_slim(cls, grid, pixel_scales, sub_size=1, origin=(0.0,)):
         """
         Create a Grid1D (see *Grid1D.__new__*) by inputting the grid coordinates in 1D, for example:
 
@@ -189,12 +185,10 @@ class Grid1D(abstract_grid.AbstractGrid1D):
 
         pixel_scales = geometry_util.convert_pixel_scales_1d(pixel_scales=pixel_scales)
 
-        grid = abstract_grid.convert_grid(
-            grid=grid,
-        )
+        grid = abstract_grid.convert_grid(grid=grid)
 
         mask = mask_1d.Mask1D.unmasked(
-            shape_slim=grid.shape[0],
+            shape_slim=grid.shape[0] // sub_size,
             pixel_scales=pixel_scales,
             sub_size=sub_size,
             origin=origin,
@@ -203,13 +197,7 @@ class Grid1D(abstract_grid.AbstractGrid1D):
         return Grid1D(grid=grid, mask=mask)
 
     @classmethod
-    def manual_native(
-        cls,
-        grid,
-        pixel_scales,
-        sub_size=1,
-        origin=(0.0,),
-    ):
+    def manual_native(cls, grid, pixel_scales, sub_size=1, origin=(0.0,)):
         """
         Create a Grid1D (see *Grid1D.__new__*) by inputting the grid coordinates in 1D, for example:
 
@@ -230,4 +218,38 @@ class Grid1D(abstract_grid.AbstractGrid1D):
         origin : (float, float)
             The origin of the grid's mask.
         """
-        return cls.manual_slim(grid=grid, pixel_scales=pixel_scales, sub_size=sub_size, origin=origin)
+        return cls.manual_slim(
+            grid=grid, pixel_scales=pixel_scales, sub_size=sub_size, origin=origin
+        )
+
+    @classmethod
+    def manual_mask(cls, grid, mask):
+        """
+        Create a Grid1D (see `Grid1D.__new__`) by inputting the grid coordinates in 1D with their corresponding mask.
+
+        See the manual_slim and manual_native methods for examples.
+
+        Parameters
+        ----------
+        grid : np.ndarray or list
+            The (x) coordinates of the grid input as an ndarray of shape [total_coordinates*sub_size] or a list of lists.
+        mask : msk.Mask1D
+            The 1D mask associated with the grid, defining the pixels each grid coordinate is paired with and
+            originates from.
+        """
+
+        grid = abstract_grid.convert_grid(grid=grid)
+
+        if grid.shape[0] == mask.sub_shape_native[0]:
+
+            grid = grid_1d_util.grid_1d_slim_from(
+                grid_1d_native=grid, mask_1d=mask, sub_size=mask.sub_size
+            )
+
+        elif grid.shape[0] != mask.shape[0]:
+
+            raise exc.GridException(
+                "The grid input into manual_mask does not have matching dimensions with the mask"
+            )
+
+        return Grid1D(grid=grid, mask=mask)

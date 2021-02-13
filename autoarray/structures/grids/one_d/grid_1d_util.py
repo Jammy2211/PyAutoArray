@@ -125,12 +125,46 @@ def grid_1d_slim_via_mask_from(
     return grid_1d
 
 
+def grid_1d_slim_from(
+    grid_1d_native: np.ndarray, mask_1d: np.ndarray, sub_size: int
+) -> np.ndarray:
+    """
+    For a native 1D grid and mask of shape [total_pixels], map the values of all unmasked pixels to a slimmed grid of
+    shape [total_unmasked_pixels].
+
+    The pixel coordinate origin is at the left of the native grid and goes right-wards, such
+    that for a grid of shape (4,) where pixels 0, 1 and 3 are unmasked:
+
+    - pixel [0] of the 1D native grid will correspond to index 0 of the 1D grid.
+    - pixel [1] of the 1D native grid will correspond to index 1 of the 1D grid.
+    - pixel [3] of the 1D native grid will correspond to index 2 of the 1D grid.
+
+    Parameters
+    ----------
+    grid_1d_native : ndarray
+        The native grid of (x) values which are mapped to the slimmed grid.
+    mask_1d : np.ndarray
+        A 1D array of bools, where `False` values mean unmasked and are included in the mapping.
+    sub_size : int
+        The size (sub_size x sub_size) of each unmasked pixels sub-array.
+
+    Returns
+    -------
+    ndarray
+        A 1D slim grid of values mapped from the 1D native grid with dimensions (total_unmasked_pixels).
+    """
+
+    return line_util.line_1d_slim_from(
+        line_1d_native=grid_1d_native, mask_1d=mask_1d, sub_size=sub_size
+    )
+
+
 def grid_1d_native_from(
     grid_1d_slim: np.ndarray, mask_1d: np.ndarray, sub_size: int
 ) -> np.ndarray:
     """
     For a slimmed 1D grid of shape [total_unmasked_pixels*sub_size], that was computed by extracting the unmasked values
-    from a native 1D grid of shape [total_pixels*sub_Size], map the slimmed grid's coordinates back to the native 1D
+    from a native 1D grid of shape [total_pixels*sub_size], map the slimmed grid's coordinates back to the native 1D
     grid where masked values are set to zero.
 
     This uses a 1D array 'slim_to_native' where each index gives the 1D pixel indexes of the grid's native unmasked

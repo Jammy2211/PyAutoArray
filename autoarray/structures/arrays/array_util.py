@@ -495,7 +495,7 @@ def index_slim_for_index_2d_from(indexes_2d: np.ndarray, shape_native) -> np.nda
 
 @decorator_util.jit()
 def array_2d_slim_from(
-    array_2d: np.ndarray, mask_2d: np.ndarray, sub_size: int
+    array_2d_native: np.ndarray, mask_2d: np.ndarray, sub_size: int
 ) -> np.ndarray:
     """
     For a 2D sub array and mask, map the values of all unmasked pixels to its slimmed 1D sub-array.
@@ -516,11 +516,11 @@ def array_2d_slim_from(
 
     Parameters
     ----------
-    array_2d : np.ndarray
+    array_2d_native : np.ndarray
         A 2D array of values on the dimensions of the sub-grid.
     mask_2d : np.ndarray
         A 2D array of bools, where `False` values mean unmasked and are included in the mapping.
-    array_2d : np.ndarray
+    array_2d_native : np.ndarray
         The 2D array of values which are mapped to a 1D array.
 
     Returns
@@ -554,7 +554,7 @@ def array_2d_slim_from(
             if not mask_2d[y, x]:
                 for y1 in range(sub_size):
                     for x1 in range(sub_size):
-                        array_2d_slim[index] = array_2d[
+                        array_2d_slim[index] = array_2d_native[
                             y * sub_size + y1, x * sub_size + x1
                         ]
                         index += 1

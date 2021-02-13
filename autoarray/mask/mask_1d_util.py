@@ -1,12 +1,5 @@
 import numpy as np
-from skimage.transform import rescale
-import typing
-
 from autoarray import decorator_util
-from autoarray import exc
-from autoarray.structures.grids.two_d import grid_2d_util
-
-import warnings
 
 
 @decorator_util.jit()

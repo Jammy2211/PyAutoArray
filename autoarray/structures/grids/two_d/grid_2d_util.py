@@ -159,7 +159,9 @@ def grid_2d_via_mask_from(
         mask_2d=mask_2d, pixel_scales=pixel_scales, sub_size=sub_size, origin=origin
     )
 
-    return grid_2d_native_from(grid_2d_slim=grid_2d_slim, mask_2d=mask_2d, sub_size=sub_size)
+    return grid_2d_native_from(
+        grid_2d_slim=grid_2d_slim, mask_2d=mask_2d, sub_size=sub_size
+    )
 
 
 def grid_2d_slim_via_shape_native_from(
@@ -688,7 +690,7 @@ def furthest_grid_2d_slim_index_from(
 
 
 def grid_2d_slim_from(
-    grid_2d: np.ndarray, mask: np.ndarray, sub_size: int
+    grid_2d_native: np.ndarray, mask: np.ndarray, sub_size: int
 ) -> np.ndarray:
     """
     For a native 2D grid and mask of shape [total_y_pixels, total_x_pixels, 2], map the values of all unmasked
@@ -703,7 +705,7 @@ def grid_2d_slim_from(
 
     Parameters
     ----------
-    grid_2d : ndarray
+    grid_2d_native : ndarray
         The native grid of (y,x) values which are mapped to the slimmed grid.
     mask_2d : np.ndarray
         A 2D array of bools, where `False` values mean unmasked and are included in the mapping.
@@ -716,15 +718,15 @@ def grid_2d_slim_from(
         A 1D grid of values mapped from the 2D grid with dimensions (total_unmasked_pixels).
     """
 
-    grid_1d_y = array_util.array_2d_slim_from(
-        array_2d=grid_2d[:, :, 0], mask_2d=mask, sub_size=sub_size
+    grid_1d_slim_y = array_util.array_2d_slim_from(
+        array_2d_native=grid_2d_native[:, :, 0], mask_2d=mask, sub_size=sub_size
     )
 
-    grid_1d_x = array_util.array_2d_slim_from(
-        array_2d=grid_2d[:, :, 1], mask_2d=mask, sub_size=sub_size
+    grid_1d_slim_x = array_util.array_2d_slim_from(
+        array_2d_native=grid_2d_native[:, :, 1], mask_2d=mask, sub_size=sub_size
     )
 
-    return np.stack((grid_1d_y, grid_1d_x), axis=-1)
+    return np.stack((grid_1d_slim_y, grid_1d_slim_x), axis=-1)
 
 
 def grid_2d_native_from(
