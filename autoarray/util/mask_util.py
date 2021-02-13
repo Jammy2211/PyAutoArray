@@ -4,7 +4,7 @@ import typing
 
 from autoarray import decorator_util
 from autoarray import exc
-from autoarray.util import grid_2d_util
+from autoarray.structures.grids.two_d import grid_2d_util
 
 import warnings
 

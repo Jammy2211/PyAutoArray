@@ -5,7 +5,8 @@ import scipy.spatial.qhull as qhull
 from autoarray import exc
 from autoarray.structures import grids
 from autoarray.mask import mask_2d as msk
-from autoarray.util import grid_2d_util, pixelization_util
+from autoarray.util import pixelization_util
+from autoarray.structures.grids.two_d import grid_2d_util
 
 
 class Grid2DRectangular(grids.Grid2D):

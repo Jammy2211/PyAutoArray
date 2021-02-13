@@ -6,7 +6,7 @@ from autoarray import exc
 from autoarray.structures.arrays import abstract_array, array_util
 from autoarray.structures import grids
 from autoarray.mask import mask_2d as msk
-from autoarray.util import grid_2d_util
+from autoarray.structures.grids.two_d import grid_2d_util
 from autoarray.geometry import geometry_util
 
 logging.basicConfig()

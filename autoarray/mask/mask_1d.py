@@ -5,7 +5,7 @@ import numpy as np
 from autoarray import exc
 from autoarray.mask import abstract_mask
 from autoarray.structures import grids
-from autoarray.util import grid_1d_util
+from autoarray.structures.grids.one_d import grid_1d_util
 from autoarray.structures.arrays import array_util
 
 logging.basicConfig()

@@ -7,7 +7,7 @@ import typing
 import json
 
 from autoarray.structures import arrays
-from autoarray.util import grid_2d_util
+from autoarray.structures.grids.two_d import grid_2d_util
 from autoarray.geometry import geometry_util
 from autoarray import exc
 

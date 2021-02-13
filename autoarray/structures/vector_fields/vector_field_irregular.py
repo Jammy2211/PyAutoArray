@@ -2,11 +2,10 @@ import logging
 
 import numpy as np
 import typing
-from autoarray.util import grid_2d_util, mask_util
 
 from matplotlib.patches import Ellipse
 from autoarray.structures.arrays import values
-from autoarray.structures import arrays, grids
+from autoarray.structures import grids
 
 from autoarray import exc
 

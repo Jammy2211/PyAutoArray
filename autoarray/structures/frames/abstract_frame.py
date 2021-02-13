@@ -3,7 +3,7 @@ import numpy as np
 from autoarray.structures.arrays import abstract_array
 from autoarray.structures import frames as f
 from autoarray.structures import region as reg
-from autoarray.util import frame_util
+from autoarray.structures.frames import frame_util
 
 
 class AbstractFrame2D(abstract_array.AbstractArray2D):
