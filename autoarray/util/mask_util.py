@@ -4,7 +4,7 @@ import typing
 
 from autoarray import decorator_util
 from autoarray import exc
-from autoarray.util import grid_util
+from autoarray.util import grid_2d_util
 
 import warnings
 
@@ -1054,17 +1054,19 @@ def sub_border_pixel_slim_indexes_from(
         mask_2d=mask_2d, sub_size=sub_size
     )
 
-    sub_grid_2d_slim = grid_util.grid_2d_slim_via_mask_from(
+    sub_grid_2d_slim = grid_2d_util.grid_2d_slim_via_mask_from(
         mask_2d=mask_2d, pixel_scales=(1.0, 1.0), sub_size=sub_size, origin=(0.0, 0.0)
     )
-    mask_centre = grid_util.grid_2d_centre_from(grid_2d_slim=sub_grid_2d_slim)
+    mask_centre = grid_2d_util.grid_2d_centre_from(grid_2d_slim=sub_grid_2d_slim)
 
     for (border_1d_index, border_pixel) in enumerate(border_pixels):
         sub_border_pixels_of_border_pixel = sub_slim_indexes_for_slim_index[
             int(border_pixel)
         ]
 
-        sub_border_pixels[border_1d_index] = grid_util.furthest_grid_2d_slim_index_from(
+        sub_border_pixels[
+            border_1d_index
+        ] = grid_2d_util.furthest_grid_2d_slim_index_from(
             grid_2d_slim=sub_grid_2d_slim,
             slim_indexes=sub_border_pixels_of_border_pixel,
             coordinate=mask_centre,

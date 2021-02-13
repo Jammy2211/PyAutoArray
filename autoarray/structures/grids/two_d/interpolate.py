@@ -4,7 +4,8 @@ from autoconf import conf
 from autoarray.structures import grids
 from autoarray.structures.grids import abstract_grid
 from autoarray.mask import mask_2d as msk
-from autoarray.util import geometry_util, grid_util
+from autoarray.util import grid_2d_util
+from autoarray.geometry import geometry_util
 from autoarray import exc
 
 
@@ -66,7 +67,7 @@ class Grid2DInterpolate(abstract_grid.AbstractGrid2D):
 
         mask_interp = rescaled_mask.edge_buffed_mask
 
-        grid_interp = grid_util.grid_2d_slim_via_mask_from(
+        grid_interp = grid_2d_util.grid_2d_slim_via_mask_from(
             mask_2d=mask_interp,
             pixel_scales=pixel_scales_interp,
             sub_size=1,
@@ -182,7 +183,7 @@ class Grid2DInterpolate(abstract_grid.AbstractGrid2D):
                 store_slim=store_slim,
             )
 
-        grid_2d = grid_util.grid_2d_from(
+        grid_2d = grid_2d_util.grid_2d_from(
             grid_2d_slim=grid, mask_2d=mask, sub_size=sub_size
         )
 
@@ -228,7 +229,7 @@ class Grid2DInterpolate(abstract_grid.AbstractGrid2D):
             pixel_scales=pixel_scales_interp
         )
 
-        grid_slim = grid_util.grid_2d_slim_via_shape_native_from(
+        grid_slim = grid_2d_util.grid_2d_slim_via_shape_native_from(
             shape_native=shape_native,
             pixel_scales=pixel_scales,
             sub_size=sub_size,
@@ -268,7 +269,7 @@ class Grid2DInterpolate(abstract_grid.AbstractGrid2D):
             pixel_scales=pixel_scales_interp
         )
 
-        grid_slim = grid_util.grid_2d_slim_via_mask_from(
+        grid_slim = grid_2d_util.grid_2d_slim_via_mask_from(
             mask_2d=mask,
             pixel_scales=mask.pixel_scales,
             sub_size=mask.sub_size,
@@ -283,7 +284,7 @@ class Grid2DInterpolate(abstract_grid.AbstractGrid2D):
                 store_slim=store_slim,
             )
 
-        grid_2d = grid_util.grid_2d_from(
+        grid_2d = grid_2d_util.grid_2d_from(
             grid_2d_slim=grid_slim, mask_2d=mask.mask_sub_1, sub_size=1
         )
 

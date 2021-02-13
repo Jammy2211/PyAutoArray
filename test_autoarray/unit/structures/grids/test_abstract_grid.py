@@ -63,7 +63,7 @@ class TestGrid:
 
         grid_radii = grid.grid_radii_from(centre=(0.0, 0.0))
 
-        grid_radii_util = aa.util.grid.grid_scaled_2d_slim_radii_from(
+        grid_radii_util = aa.util.grid_2d.grid_scaled_2d_slim_radii_from(
             extent=grid.extent,
             centre=(0.0, 0.0),
             pixel_scales=grid.pixel_scales,
@@ -76,7 +76,7 @@ class TestGrid:
 
         grid_radii = grid.grid_radii_from(centre=(0.3, 0.1))
 
-        grid_radii_util = aa.util.grid.grid_scaled_2d_slim_radii_from(
+        grid_radii_util = aa.util.grid_2d.grid_scaled_2d_slim_radii_from(
             extent=grid.extent,
             centre=(0.3, 0.1),
             pixel_scales=grid.pixel_scales,
@@ -112,7 +112,7 @@ class TestGrid:
 
         padded_grid = grid.padded_grid_from_kernel_shape(kernel_shape_native=(3, 3))
 
-        padded_grid_util = aa.util.grid.grid_2d_slim_via_mask_from(
+        padded_grid_util = aa.util.grid_2d.grid_2d_slim_via_mask_from(
             mask_2d=np.full((6, 6), False), pixel_scales=(3.0, 3.0), sub_size=1
         )
 
@@ -125,7 +125,7 @@ class TestGrid:
 
         padded_grid = grid.padded_grid_from_kernel_shape(kernel_shape_native=(3, 3))
 
-        padded_grid_util = aa.util.grid.grid_2d_slim_via_mask_from(
+        padded_grid_util = aa.util.grid_2d.grid_2d_slim_via_mask_from(
             mask_2d=np.full((6, 7), False), pixel_scales=(2.0, 2.0), sub_size=1
         )
 
@@ -136,7 +136,7 @@ class TestGrid:
 
         padded_grid = grid.padded_grid_from_kernel_shape(kernel_shape_native=(3, 3))
 
-        padded_grid_util = aa.util.grid.grid_2d_slim_via_mask_from(
+        padded_grid_util = aa.util.grid_2d.grid_2d_slim_via_mask_from(
             mask_2d=np.full((7, 6), False), pixel_scales=(1.0, 1.0), sub_size=1
         )
 
@@ -147,7 +147,7 @@ class TestGrid:
 
         padded_grid = grid.padded_grid_from_kernel_shape(kernel_shape_native=(2, 5))
 
-        padded_grid_util = aa.util.grid.grid_2d_slim_via_mask_from(
+        padded_grid_util = aa.util.grid_2d.grid_2d_slim_via_mask_from(
             mask_2d=np.full((6, 9), False), pixel_scales=(8.0, 8.0), sub_size=1
         )
 
@@ -162,7 +162,7 @@ class TestGrid:
 
         padded_grid = grid.padded_grid_from_kernel_shape(kernel_shape_native=(3, 3))
 
-        padded_grid_util = aa.util.grid.grid_2d_slim_via_mask_from(
+        padded_grid_util = aa.util.grid_2d.grid_2d_slim_via_mask_from(
             mask_2d=np.full((7, 6), False), pixel_scales=(2.0, 2.0), sub_size=2
         )
 
@@ -178,7 +178,7 @@ class TestGrid:
 
         padded_grid = grid.padded_grid_from_kernel_shape(kernel_shape_native=(5, 5))
 
-        padded_grid_util = aa.util.grid.grid_2d_slim_via_mask_from(
+        padded_grid_util = aa.util.grid_2d.grid_2d_slim_via_mask_from(
             mask_2d=np.full((6, 9), False), pixel_scales=(8.0, 8.0), sub_size=4
         )
 

@@ -822,7 +822,7 @@ class TestGrid:
             mask_2d=mask, kernel_shape_native=(3, 5)
         )
 
-        blurring_grid_util = aa.util.grid.grid_2d_slim_via_mask_from(
+        blurring_grid_util = aa.util.grid_2d.grid_2d_slim_via_mask_from(
             mask_2d=blurring_mask_util, pixel_scales=(2.0, 2.0), sub_size=1
         )
 
@@ -866,7 +866,7 @@ class TestGrid:
             mask_2d=mask, kernel_shape_native=(3, 5)
         )
 
-        blurring_grid_util = aa.util.grid.grid_2d_slim_via_mask_from(
+        blurring_grid_util = aa.util.grid_2d.grid_2d_slim_via_mask_from(
             mask_2d=blurring_mask_util, pixel_scales=(2.0, 2.0), sub_size=1
         )
 
@@ -986,7 +986,7 @@ class TestGrid:
         )
         mask = aa.Mask2D.manual(mask=mask, pixel_scales=(2.0, 2.0), sub_size=1)
 
-        grid_via_util = aa.util.grid.grid_2d_slim_via_mask_from(
+        grid_via_util = aa.util.grid_2d.grid_2d_slim_via_mask_from(
             mask_2d=mask, sub_size=1, pixel_scales=(2.0, 2.0)
         )
 
@@ -996,7 +996,7 @@ class TestGrid:
         assert grid == pytest.approx(grid_via_util, 1e-4)
         assert grid.pixel_scales == (2.0, 2.0)
 
-        grid_2d = aa.util.grid.grid_2d_from(
+        grid_2d = aa.util.grid_2d.grid_2d_from(
             grid_2d_slim=grid, mask_2d=mask, sub_size=mask.sub_size
         )
 
@@ -1042,14 +1042,14 @@ class TestGrid2DSparse:
             unmasked_sparse_shape=(10, 10), grid=grid
         )
 
-        unmasked_sparse_grid_util = aa.util.grid.grid_2d_slim_via_shape_native_from(
+        unmasked_sparse_grid_util = aa.util.grid_2d.grid_2d_slim_via_shape_native_from(
             shape_native=(10, 10),
             pixel_scales=(0.15, 0.15),
             sub_size=1,
             origin=(0.0, 0.0),
         )
 
-        unmasked_sparse_grid_pixel_centres = aa.util.grid.grid_pixel_centres_2d_slim_from(
+        unmasked_sparse_grid_pixel_centres = aa.util.grid_2d.grid_pixel_centres_2d_slim_from(
             grid_scaled_2d_slim=unmasked_sparse_grid_util,
             shape_native=grid.mask.shape,
             pixel_scales=grid.pixel_scales,
@@ -1062,12 +1062,14 @@ class TestGrid2DSparse:
             unmasked_sparse_grid_pixel_centres=unmasked_sparse_grid_pixel_centres,
         )
 
-        regular_to_unmasked_sparse_util = aa.util.grid.grid_pixel_indexes_2d_slim_from(
+        regular_to_unmasked_sparse_util = aa.util.grid_2d.grid_pixel_indexes_2d_slim_from(
             grid_scaled_2d_slim=grid,
             shape_native=(10, 10),
             pixel_scales=(0.15, 0.15),
             origin=(0.0, 0.0),
-        ).astype("int")
+        ).astype(
+            "int"
+        )
 
         unmasked_sparse_for_sparse_util = aa.util.sparse.unmasked_sparse_for_sparse_from(
             total_sparse_pixels=total_sparse_pixels,

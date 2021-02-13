@@ -6,9 +6,9 @@ import pickle
 import typing
 import json
 
-from autoarray.structures import abstract_structure
 from autoarray.structures import arrays
-from autoarray.util import geometry_util, grid_util
+from autoarray.util import grid_2d_util
+from autoarray.geometry import geometry_util
 from autoarray import exc
 
 
@@ -164,7 +164,7 @@ class Grid2DIrregular(np.ndarray):
 
     def grid_from_mask_within_radius(self, radius, centre):
 
-        mask = grid_util.mask_of_points_within_radius(
+        mask = grid_2d_util.mask_of_points_within_radius(
             grid=self, radius=radius, centre=centre
         )
 
@@ -484,7 +484,7 @@ class Grid2DIrregularUniform(Grid2DIrregular):
 
         pixel_scales = geometry_util.convert_pixel_scales_2d(pixel_scales=pixel_scales)
 
-        grid_upscaled_1d = grid_util.grid_2d_slim_upscaled_from(
+        grid_upscaled_1d = grid_2d_util.grid_2d_slim_upscaled_from(
             grid_slim=grid_sparse_uniform,
             upscale_factor=upscale_factor,
             pixel_scales=pixel_scales,

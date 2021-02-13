@@ -5,7 +5,7 @@ import scipy.spatial.qhull as qhull
 from autoarray import exc
 from autoarray.structures import grids
 from autoarray.mask import mask_2d as msk
-from autoarray.util import grid_util, pixelization_util
+from autoarray.util import grid_2d_util, pixelization_util
 
 
 class Grid2DRectangular(grids.Grid2D):
@@ -101,7 +101,7 @@ class Grid2DRectangular(grids.Grid2D):
 
         origin = ((y_max + y_min) / 2.0, (x_max + x_min) / 2.0)
 
-        grid_slim = grid_util.grid_2d_slim_via_shape_native_from(
+        grid_slim = grid_2d_util.grid_2d_slim_via_shape_native_from(
             shape_native=shape_native,
             pixel_scales=pixel_scales,
             sub_size=1,

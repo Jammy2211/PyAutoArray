@@ -5,7 +5,7 @@ import numpy as np
 from autoarray import exc
 from autoarray.mask import abstract_mask
 from autoarray.structures import grids
-from autoarray.util import grid_util
+from autoarray.util import grid_1d_util
 from autoarray.structures.arrays import array_util
 
 logging.basicConfig()
@@ -91,11 +91,11 @@ class AbstractMask1d(abstract_mask.AbstractMask):
         This is defined from the top-left corner, such that the first pixel at location [0, 0] will have a negative x \
         value y value in scaled units.
         """
-        grid_slim = grid_util.grid_1d_via_mask_from(
+        grid_slim = grid_1d_util.grid_1d_via_mask_from(
             mask_1d=self, pixel_scales=self.pixel_scales, sub_size=1, origin=self.origin
         )
 
-        return grids.Grid2D(
+        return grids.Grid1D(
             grid=grid_slim, mask=self.unmasked_mask.mask_sub_1, store_slim=True
         )
 
@@ -121,7 +121,7 @@ class AbstractMask1d(abstract_mask.AbstractMask):
         mask.output_to_fits(file_path='/path/to/file/filename.fits', overwrite=True)
         """
         array_util.numpy_array_1d_to_fits(
-            array_2d=self.astype("float"), file_path=file_path, overwrite=overwrite
+            array_1d=self.astype("float"), file_path=file_path, overwrite=overwrite
         )
 
 
@@ -181,14 +181,12 @@ class Mask1D(AbstractMask1d):
             The scaled units to pixel units conversion factor of each pixel.
         """
 
-        mask = cls(
+        return cls.manual(
             array_util.numpy_array_1d_from_fits(file_path=file_path, hdu=hdu),
             pixel_scales=pixel_scales,
             sub_size=sub_size,
             origin=origin,
         )
-
-        return mask
 
     def output_to_fits(self, file_path, overwrite=False):
 

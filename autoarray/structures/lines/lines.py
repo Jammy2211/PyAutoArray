@@ -1,7 +1,8 @@
 import numpy as np
 from autoarray.structures import abstract_structure
 from autoarray.mask import mask_1d as msk
-from autoarray.util import geometry_util, line_util
+from autoarray.util import line_util
+from autoarray.geometry import geometry_util
 
 
 def convert_line(line):

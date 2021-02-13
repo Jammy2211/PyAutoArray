@@ -4,7 +4,8 @@ from autoarray import decorator_util
 from autoarray.structures import arrays, grids
 from autoarray.structures.grids import abstract_grid
 from autoarray.mask import mask_2d as msk
-from autoarray.util import geometry_util, grid_util
+from autoarray.util import grid_2d_util
+from autoarray.geometry import geometry_util
 from autoarray.structures.arrays import array_util
 from autoarray import exc
 
@@ -181,7 +182,7 @@ class Grid2DIterate(abstract_grid.AbstractGrid2D):
                 store_slim=store_slim,
             )
 
-        grid_2d = grid_util.grid_2d_from(grid_2d_slim=grid, mask_2d=mask, sub_size=1)
+        grid_2d = grid_2d_util.grid_2d_from(grid_2d_slim=grid, mask_2d=mask, sub_size=1)
 
         return Grid2DIterate(
             grid=grid_2d,
@@ -227,7 +228,7 @@ class Grid2DIterate(abstract_grid.AbstractGrid2D):
 
         pixel_scales = geometry_util.convert_pixel_scales_2d(pixel_scales=pixel_scales)
 
-        grid_slim = grid_util.grid_2d_slim_via_shape_native_from(
+        grid_slim = grid_2d_util.grid_2d_slim_via_shape_native_from(
             shape_native=shape_native,
             pixel_scales=pixel_scales,
             sub_size=1,
@@ -269,7 +270,7 @@ class Grid2DIterate(abstract_grid.AbstractGrid2D):
             stored in 2D as an ndarray of shape [total_y_pixels, total_x_pixels, 2].
         """
 
-        grid_slim = grid_util.grid_2d_slim_via_mask_from(
+        grid_slim = grid_2d_util.grid_2d_slim_via_mask_from(
             mask_2d=mask, pixel_scales=mask.pixel_scales, sub_size=1, origin=mask.origin
         )
 
@@ -282,7 +283,7 @@ class Grid2DIterate(abstract_grid.AbstractGrid2D):
                 store_slim=store_slim,
             )
 
-        grid_2d = grid_util.grid_2d_from(
+        grid_2d = grid_2d_util.grid_2d_from(
             grid_2d_slim=grid_slim, mask_2d=mask.mask_sub_1, sub_size=1
         )
 
@@ -791,7 +792,7 @@ class Grid2DIterate(abstract_grid.AbstractGrid2D):
 
             if fractional_mask_higher_sub.is_all_true:
 
-                iterated_grid_1d = grid_util.grid_2d_slim_from(
+                iterated_grid_1d = grid_2d_util.grid_2d_slim_from(
                     mask=self.mask, grid_2d=iterated_grid, sub_size=1
                 )
 
@@ -811,7 +812,7 @@ class Grid2DIterate(abstract_grid.AbstractGrid2D):
 
         iterated_grid_2d = iterated_grid + grid_higher_sub.native_binned
 
-        iterated_grid_1d = grid_util.grid_2d_slim_from(
+        iterated_grid_1d = grid_2d_util.grid_2d_slim_from(
             mask=self.mask, grid_2d=iterated_grid_2d, sub_size=1
         )
 
