@@ -345,6 +345,7 @@ class Cmap(AbstractMatWrap):
                 vmax=vmax,
                 linthresh=self.config_dict["linthresh"],
                 linscale=self.config_dict["linscale"],
+                base=10
             )
         else:
             raise exc.PlottingException(

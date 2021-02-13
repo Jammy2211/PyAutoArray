@@ -274,6 +274,7 @@ def make_rectangular_mapper_7x7_3x3():
 
 
 def make_voronoi_pixelization_grid_9():
+
     grid_9 = aa.Grid2D.manual_slim(
         grid=[
             [0.6, -0.3],
@@ -289,6 +290,7 @@ def make_voronoi_pixelization_grid_9():
         shape_native=(3, 3),
         pixel_scales=1.0,
     )
+
     return aa.Grid2DVoronoi(
         grid=grid_9,
         nearest_pixelization_index_for_slim_index=np.zeros(
@@ -316,7 +318,9 @@ def make_rectangular_inversion_7x7_3x3():
 
 
 def make_voronoi_inversion_9_3x3():
+
     regularization = aa.reg.Constant(coefficient=1.0)
+
     return aa.Inversion(
         masked_dataset=make_masked_imaging_7x7(),
         mapper=make_voronoi_mapper_9_3x3(),

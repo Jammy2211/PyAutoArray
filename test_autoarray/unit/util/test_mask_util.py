@@ -6,6 +6,7 @@ import pytest
 
 
 class TestMask1D:
+
     def test__total_image_pixels_1d_from(self):
 
         mask_1d = np.array([False, True, False, False, False, True])
@@ -2941,7 +2942,9 @@ class TestSubMask2DForSubMask1D:
 
 
 class TestRescaledMaskFromMask:
+
     def test__mask_7x7_central_pixel__rescale_factor_is_1__returns_same_mask(self):
+
         mask = np.array(
             [
                 [True, True, True, True, True],
@@ -2969,174 +2972,12 @@ class TestRescaledMaskFromMask:
             )
         ).all()
 
-    def test__mask_7x7_central_pixel__rescale_factor_is_2__returns_10x10_mask_4_central_values(
-        self,
-    ):
-        mask = np.array(
-            [
-                [True, True, True, True, True],
-                [True, True, True, True, True],
-                [True, True, False, True, True],
-                [True, True, True, True, True],
-                [True, True, True, True, True],
-            ]
-        )
-
-        rescaled_mask = util.mask.rescaled_mask_2d_from(
-            mask_2d=mask, rescale_factor=2.0
-        )
-
-        assert (
-            rescaled_mask
-            == np.array(
-                [
-                    [True, True, True, True, True, True, True, True, True, True],
-                    [True, True, True, True, True, True, True, True, True, True],
-                    [True, True, True, True, True, True, True, True, True, True],
-                    [True, True, True, False, False, False, False, True, True, True],
-                    [True, True, True, False, False, False, False, True, True, True],
-                    [True, True, True, False, False, False, False, True, True, True],
-                    [True, True, True, False, False, False, False, True, True, True],
-                    [True, True, True, True, True, True, True, True, True, True],
-                    [True, True, True, True, True, True, True, True, True, True],
-                    [True, True, True, True, True, True, True, True, True, True],
-                ]
-            )
-        ).all()
-
-    def test__same_as_above__off_centre_pixels(self):
-        mask = np.array(
-            [
-                [True, True, True, True, True],
-                [True, False, True, True, True],
-                [True, True, True, True, True],
-                [True, True, True, False, True],
-                [True, True, True, True, True],
-            ]
-        )
-
-        rescaled_mask = util.mask.rescaled_mask_2d_from(
-            mask_2d=mask, rescale_factor=2.0
-        )
-
-        assert (
-            rescaled_mask
-            == np.array(
-                [
-                    [True, True, True, True, True, True, True, True, True, True],
-                    [True, False, False, False, False, True, True, True, True, True],
-                    [True, False, False, False, False, True, True, True, True, True],
-                    [True, False, False, False, False, True, True, True, True, True],
-                    [True, False, False, False, False, True, True, True, True, True],
-                    [True, True, True, True, True, False, False, False, False, True],
-                    [True, True, True, True, True, False, False, False, False, True],
-                    [True, True, True, True, True, False, False, False, False, True],
-                    [True, True, True, True, True, False, False, False, False, True],
-                    [True, True, True, True, True, True, True, True, True, True],
-                ]
-            )
-        ).all()
-
-    def test__mask_4x3_two_central_pixels__rescale_near_1__returns_slightly_different_masks(
-        self,
-    ):
-        mask = np.array(
-            [
-                [True, True, True, True, True],
-                [True, True, True, True, True],
-                [True, True, False, True, True],
-                [True, True, False, True, True],
-                [True, True, True, True, True],
-                [True, True, True, True, True],
-            ]
-        )
-
-        rescaled_mask = util.mask.rescaled_mask_2d_from(
-            mask_2d=mask, rescale_factor=1.2
-        )
-
-        assert (
-            rescaled_mask
-            == np.array(
-                [
-                    [True, True, True, True, True, True],
-                    [True, True, True, True, True, True],
-                    [True, True, False, False, True, True],
-                    [True, True, False, False, True, True],
-                    [True, True, False, False, True, True],
-                    [True, True, True, True, True, True],
-                    [True, True, True, True, True, True],
-                ]
-            )
-        ).all()
-
-        rescaled_mask = util.mask.rescaled_mask_2d_from(
-            mask_2d=mask, rescale_factor=0.8
-        )
-
-        assert (
-            rescaled_mask
-            == np.array(
-                [
-                    [True, True, True, True],
-                    [True, False, False, True],
-                    [True, False, False, True],
-                    [True, False, False, True],
-                    [True, True, True, True],
-                ]
-            )
-        ).all()
-
-    def test__mask_3x4_two_central_pixels__rescale_near_1__returns_slightly_different_masks(
-        self,
-    ):
-        mask = np.array(
-            [
-                [True, True, True, True, True, True],
-                [True, True, True, True, True, True],
-                [True, True, False, False, True, True],
-                [True, True, True, True, True, True],
-                [True, True, True, True, True, True],
-            ]
-        )
-
-        rescaled_mask = util.mask.rescaled_mask_2d_from(
-            mask_2d=mask, rescale_factor=1.2
-        )
-
-        assert (
-            rescaled_mask
-            == np.array(
-                [
-                    [True, True, True, True, True, True, True],
-                    [True, True, True, True, True, True, True],
-                    [True, True, False, False, False, True, True],
-                    [True, True, False, False, False, True, True],
-                    [True, True, True, True, True, True, True],
-                    [True, True, True, True, True, True, True],
-                ]
-            )
-        ).all()
-
-        rescaled_mask = util.mask.rescaled_mask_2d_from(
-            mask_2d=mask, rescale_factor=0.8
-        )
-
-        assert (
-            rescaled_mask
-            == np.array(
-                [
-                    [True, True, True, True, True],
-                    [True, False, False, False, True],
-                    [True, False, False, False, True],
-                    [True, True, True, True, True],
-                ]
-            )
-        ).all()
 
 
 class TestBuffedMaskFromMask:
+
     def test__5x5_mask_false_centre_pixel__3x3_falses_in_centre_of_buffed_mask(self):
+
         mask = np.array(
             [
                 [True, True, True, True, True],
@@ -3306,6 +3147,7 @@ class TestBuffedMaskFromMask:
 
 
 class TestMaskNeighbors:
+
     def test__gives_right_neighbor_then_down_if_not_available(self):
 
         mask = np.array(

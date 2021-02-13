@@ -13,6 +13,7 @@ test_grid_dir = path.join(
 
 
 class TestGrid2DIrregular:
+
     def test__input_as_list_or_list_of_other_types__all_convert_correctly(self):
 
         # Input tuple
@@ -209,7 +210,7 @@ class TestGrid2DIrregular:
     def test__from_and_to_file_json(self):
 
         grid = aa.Grid2DIrregular(
-            [(4.0, 4.0), (5.0, 5.0), (6.0, 6.0), (7.0, 7.0), (8.0, 8.0)]
+            grid=[(6.0, 6.0), (7.0, 7.0), (8.0, 8.0)]
         )
 
         output_grid_dir = path.join(
@@ -231,8 +232,6 @@ class TestGrid2DIrregular:
         grid = aa.Grid2DIrregular.from_json(file_path=file_path)
 
         assert grid.in_list == [
-            (4.0, 4.0),
-            (5.0, 5.0),
             (6.0, 6.0),
             (7.0, 7.0),
             (8.0, 8.0),

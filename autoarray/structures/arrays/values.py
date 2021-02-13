@@ -44,6 +44,10 @@ class ValuesIrregular(np.ndarray):
             return []
 
         if type(values) is list:
+
+            if isinstance(values, ValuesIrregular):
+                return values
+
             values = np.asarray(values)
 
         obj = values.view(cls)
@@ -99,7 +103,8 @@ class ValuesIrregular(np.ndarray):
         return ValuesIrregular(values=values)
 
     def output_to_json(self, file_path, overwrite=False):
-        """Output this instance of the `Grid2DIrregular` object to a list of list of tuples.
+        """
+        Output this instance of the `Grid2DIrregular` object to a list of list of tuples.
 
         Parameters
         ----------

@@ -191,6 +191,7 @@ class Grid2DPlotter(abstract_plotters.AbstractPlotter):
 
 
 class MapperPlotter(abstract_plotters.AbstractPlotter):
+
     def __init__(
         self,
         mapper: typing.Union[mappers.MapperRectangular, mappers.MapperVoronoi],

@@ -237,7 +237,7 @@ class AdaptiveBrightness(Regularization):
 
 
 class RegularizationLop(pylops.LinearOperator):
-    def __init__(self, regularization_matrix, dtype="float64"):
+    def __init__(self, regularization_matrix):
 
         self.regularization_matrix = regularization_matrix
         self.pixels = regularization_matrix.shape[0]

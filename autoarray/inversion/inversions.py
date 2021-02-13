@@ -16,6 +16,7 @@ import typing
 
 
 class SettingsInversion:
+
     def __init__(
         self,
         use_linear_operators=False,
@@ -721,7 +722,7 @@ class InversionInterferometerLinearOperator(AbstractInversionInterferometer):
         )
 
         Aop = pylops.MatrixMult(
-            sparse.bsr_matrix(mapper.mapping_matrix), dtype="float64"
+            sparse.bsr_matrix(mapper.mapping_matrix)
         )
 
         Fop = transformer
@@ -738,7 +739,7 @@ class InversionInterferometerLinearOperator(AbstractInversionInterferometer):
         preconditioner_inverse_matrix = np.linalg.inv(preconditioner_matrix)
 
         MOp = pylops.MatrixMult(
-            sparse.bsr_matrix(preconditioner_inverse_matrix), dtype="float64"
+            sparse.bsr_matrix(preconditioner_inverse_matrix)
         )
 
         log_det_curvature_reg_matrix_term = 2.0 * np.sum(
@@ -750,14 +751,15 @@ class InversionInterferometerLinearOperator(AbstractInversionInterferometer):
             Regs=None,
             epsNRs=[1.0],
             data=visibilities.ordered_1d,
-            Weight=pylops.Diagonal(diag=noise_map.weights_ordered_1d, dtype="float64"),
+            Weight=pylops.Diagonal(diag=noise_map.weights_ordered_1d),
             NRegs=[
                 pylops.MatrixMult(
-                    sparse.bsr_matrix(regularization_matrix), dtype="float64"
+                    sparse.bsr_matrix(regularization_matrix)
                 )
             ],
             M=MOp,
             tol=settings.tolerance,
+            atol=settings.tolerance,
             **dict(maxiter=settings.maxiter),
         )
 

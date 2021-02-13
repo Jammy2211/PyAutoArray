@@ -443,10 +443,10 @@ class AbstractArray2D(abstract_structure.AbstractStructure2D):
         kernel_shape : (float, float)
             The 2D shape of the kernel which convolves signal from masked pixels to unmasked pixels.
         """
-        psf_cut_y = np.int(np.ceil(kernel_shape[0] / 2)) - 1
-        psf_cut_x = np.int(np.ceil(kernel_shape[1] / 2)) - 1
-        array_y = np.int(self.mask.shape[0])
-        array_x = np.int(self.mask.shape[1])
+        psf_cut_y = int(np.ceil(kernel_shape[0] / 2)) - 1
+        psf_cut_x = int(np.ceil(kernel_shape[1] / 2)) - 1
+        array_y = int(self.mask.shape[0])
+        array_x = int(self.mask.shape[1])
         trimmed_array_2d = self.native[
             psf_cut_y : array_y - psf_cut_y, psf_cut_x : array_x - psf_cut_x
         ]

@@ -434,6 +434,7 @@ class Kernel2D(arrays.Array2D):
         )
 
         if kernel_rescaled.shape[0] % 2 == 0 and kernel_rescaled.shape[1] % 2 == 0:
+
             kernel_rescaled = resize(
                 kernel_rescaled,
                 output_shape=(
@@ -443,14 +444,18 @@ class Kernel2D(arrays.Array2D):
                 anti_aliasing=False,
                 mode="constant",
             )
+
         elif kernel_rescaled.shape[0] % 2 == 0 and kernel_rescaled.shape[1] % 2 != 0:
+
             kernel_rescaled = resize(
                 kernel_rescaled,
                 output_shape=(kernel_rescaled.shape[0] + 1, kernel_rescaled.shape[1]),
                 anti_aliasing=False,
                 mode="constant",
             )
+
         elif kernel_rescaled.shape[0] % 2 != 0 and kernel_rescaled.shape[1] % 2 == 0:
+
             kernel_rescaled = resize(
                 kernel_rescaled,
                 output_shape=(kernel_rescaled.shape[0], kernel_rescaled.shape[1] + 1),

@@ -6,12 +6,14 @@ import pickle
 import typing
 import json
 
+from autoarray.structures import abstract_structure
 from autoarray.structures import arrays
 from autoarray.util import geometry_util, grid_util
 from autoarray import exc
 
 
 class Grid2DIrregular(np.ndarray):
+
     def __new__(cls, grid):
         """
         An irregular grid of (y,x) coordinates.
@@ -39,6 +41,10 @@ class Grid2DIrregular(np.ndarray):
             return []
 
         if type(grid) is list:
+
+            if isinstance(grid[0], Grid2DIrregular):
+                return grid
+
             grid = np.asarray(grid)
 
         obj = grid.view(cls)
@@ -68,19 +74,19 @@ class Grid2DIrregular(np.ndarray):
         """The two dimensional shape of the coordinates spain in scaled units, computed by taking the minimum and
         maximum values of the coordinates."""
         return (
-            np.amax(self[:, 0]) - np.amin(self[:, 0]),
-            np.amax(self[:, 1]) - np.amin(self[:, 1]),
+            np.amax(self[:, 0]).astype("float") - np.amin(self[:, 0]).astype("float"),
+            np.amax(self[:, 1]).astype("float") - np.amin(self[:, 1]).astype("float"),
         )
 
     @property
     def scaled_maxima(self):
         """The maximum values of the coordinates returned as a tuple (y_max, x_max)."""
-        return (np.amax(self[:, 0]), np.amax(self[:, 1]))
+        return (np.amax(self[:, 0]).astype("float"), np.amax(self[:, 1]).astype("float"))
 
     @property
     def scaled_minima(self):
         """The minimum values of the coordinates returned as a tuple (y_max, x_max)."""
-        return (np.amin(self[:, 0]), np.amin(self[:, 1]))
+        return (np.amin(self[:, 0]).astype("float"), np.amin(self[:, 1]).astype("float"))
 
     @property
     def extent(self):
@@ -88,7 +94,7 @@ class Grid2DIrregular(np.ndarray):
 
         This follows the format of the extent input parameter in the matplotlib method imshow (and other methods) and
         is used for visualization in the plot module."""
-        return np.asarray(
+        return np.array(
             [
                 self.scaled_minima[1],
                 self.scaled_maxima[1],

@@ -12,7 +12,8 @@ class Grid2DRectangular(grids.Grid2D):
     def __new__(
         cls, grid, shape_native, pixel_scales, origin=(0.0, 0.0), *args, **kwargs
     ):
-        """A grid of (y,x) coordinates which reprsent a rectangular grid of pixels which are used to form the pixel centres of adaptive pixelizations in the \
+        """
+        A grid of (y,x) coordinates which reprsent a rectangular grid of pixels which are used to form the pixel centres of adaptive pixelizations in the \
         *pixelizations* module.
 
         A `Grid2DRectangular` is ordered such pixels begin from the top-row of the mask and go rightwards and then \
@@ -271,21 +272,21 @@ class Grid2DVoronoi(np.ndarray):
     @property
     def shape_native_scaled(self):
         return (
-            np.amax(self[:, 0]) - np.amin(self[:, 0]),
-            np.amax(self[:, 1]) - np.amin(self[:, 1]),
+            np.amax(self[:, 0]).astype("float") - np.amin(self[:, 0]).astype("float"),
+            np.amax(self[:, 1]).astype("float") - np.amin(self[:, 1]).astype("float"),
         )
 
     @property
     def scaled_maxima(self):
-        return (np.amax(self[:, 0]), np.amax(self[:, 1]))
+        return (np.amax(self[:, 0]).astype("float"), np.amax(self[:, 1]).astype("float"))
 
     @property
     def scaled_minima(self):
-        return (np.amin(self[:, 0]), np.amin(self[:, 1]))
+        return (np.amin(self[:, 0]).astype("float"), np.amin(self[:, 1]).astype("float"))
 
     @property
     def extent(self):
-        return np.asarray(
+        return np.array(
             [
                 self.scaled_minima[1],
                 self.scaled_maxima[1],

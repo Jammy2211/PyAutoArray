@@ -16,6 +16,7 @@ def make_plot_path_setup():
 
 
 class TestArray2DPlotter:
+
     def test___visuals_in_constructor_use_array_and_include(self, array_7x7):
 
         visuals_2d = aplt.Visuals2D(origin=(1.0, 1.0), vector_field=2)
@@ -265,6 +266,7 @@ class TestFrame2DPlotter:
 
 
 class TestGrid2DPlotter:
+
     def test___visuals_in_constructor_use_grid_and_include(self, grid_7x7):
 
         visuals_2d = aplt.Visuals2D(origin=(1.0, 1.0), vector_field=2)
@@ -349,6 +351,7 @@ class TestGrid2DPlotter:
 
 
 class TestMapperPlotter:
+
     def test__visuals_for_data_from_rectangular_mapper(
         self, rectangular_mapper_7x7_3x3
     ):

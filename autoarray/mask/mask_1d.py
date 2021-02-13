@@ -222,4 +222,4 @@ class Mask1D(AbstractMask1d):
 
     @property
     def extent(self):
-        return np.asarray([self.scaled_minima, self.scaled_maxima])
+        return np.array([self.scaled_minima, self.scaled_maxima])

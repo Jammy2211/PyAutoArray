@@ -283,7 +283,7 @@ class MapperVoronoi(Mapper):
         hyper_image : np.ndarray
             A pre-computed hyper-image of the image the mapper is expected to reconstruct, used for adaptive analysis.
         """
-        super(MapperVoronoi, self).__init__(
+        super().__init__(
             source_grid_slim=source_grid_slim,
             source_pixelization_grid=source_pixelization_grid,
             data_pixelization_grid=data_pixelization_grid,
@@ -292,8 +292,9 @@ class MapperVoronoi(Mapper):
 
     @property
     def pixelization_index_for_sub_slim_index(self):
-        """  The 1D index mappings between the sub pixels and Voronoi pixelization pixels. """
-
+        """
+        The 1D index mappings between the sub pixels and Voronoi pixelization pixels.
+        """
         return mapper_util.pixelization_index_for_voronoi_sub_slim_index_from(
             grid=self.source_grid_slim,
             nearest_pixelization_index_for_slim_index=self.source_pixelization_grid.nearest_pixelization_index_for_slim_index,

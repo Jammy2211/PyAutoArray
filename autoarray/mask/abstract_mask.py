@@ -172,17 +172,3 @@ class AbstractMask(np.ndarray):
             pixel_scales=self.pixel_scales,
             origin=self.origin,
         )
-
-    def binned_pixel_scales_from_bin_up_factor(self, bin_up_factor: int) -> tuple:
-        """
-        If the mask is binned up to a coarser resolution, computes the ``pixel_scales`` of the binned up mask
-
-        Parameters
-        ----------
-        bin_up_factor : int
-            The factor by which the mask is binned up to a coarser resolution.
-        """
-        if self.pixel_scales is not None:
-            return tuple(
-                pixel_scale * bin_up_factor for pixel_scale in self.pixel_scales
-            )
