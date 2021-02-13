@@ -13,6 +13,7 @@ test_data_dir = path.join(
 
 
 class TestMask:
+
     def test__mask__makes_mask_with_pixel_scale(self):
 
         mask = aa.Mask2D.manual(mask=[[False, False], [True, True]], pixel_scales=1.0)
@@ -606,32 +607,6 @@ class TestNewMasksFromMask:
                 ]
             )
         ).all()
-
-    def test__binned_mask__compare_to_mask_via_util(self):
-
-        mask = aa.Mask2D.unmasked(shape_native=(14, 19), pixel_scales=(1.0, 1.0))
-        mask[1, 5] = False
-        mask[6, 5] = False
-        mask[4, 9] = False
-        mask[11, 10] = False
-
-        binned_up_mask_via_util = aa.util.binning.bin_mask(mask=mask, bin_up_factor=2)
-
-        mask = mask.binned_mask_from_bin_up_factor(bin_up_factor=2)
-        assert (mask == binned_up_mask_via_util).all()
-        assert mask.pixel_scales == (2.0, 2.0)
-
-        mask = aa.Mask2D.unmasked(shape_native=(14, 19), pixel_scales=(2.0, 2.0))
-        mask[1, 5] = False
-        mask[6, 5] = False
-        mask[4, 9] = False
-        mask[11, 10] = False
-
-        binned_up_mask_via_util = aa.util.binning.bin_mask(mask=mask, bin_up_factor=3)
-
-        mask = mask.binned_mask_from_bin_up_factor(bin_up_factor=3)
-        assert (mask == binned_up_mask_via_util).all()
-        assert mask.pixel_scales == (6.0, 6.0)
 
     def test__resized_mask__pad__compare_to_manual_mask(self):
 

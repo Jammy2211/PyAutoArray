@@ -11,44 +11,7 @@ test_data_dir = path.join(
     "{}".format(path.dirname(path.realpath(__file__))), "files", "imaging"
 )
 
-
 class TestImaging:
-    def test__new_imaging_binned(self):
-
-        image = aa.Array2D.manual_native(array=np.ones((6, 6)), pixel_scales=1.0)
-        image[21] = 2.0
-        image[27] = 2.0
-        image[33] = 2.0
-
-        binned_image_util = aa.util.binning.bin_array_2d_via_mean(
-            array_2d=image.native, bin_up_factor=2
-        )
-
-        noise_map_array = aa.Array2D.ones(shape_native=(6, 6), pixel_scales=1.0)
-        noise_map_array[21:24] = 3.0
-        binned_noise_map_util = aa.util.binning.bin_array_2d_via_quadrature(
-            array_2d=noise_map_array.native, bin_up_factor=2
-        )
-
-        psf = aa.Kernel2D.ones(shape_native=(3, 5), pixel_scales=1.0)
-        psf_util = psf.rescaled_with_odd_dimensions_from_rescale_factor(
-            rescale_factor=0.5, renormalize=False
-        )
-
-        imaging = aa.Imaging(image=image, psf=psf, noise_map=noise_map_array)
-
-        imaging = imaging.binned_up_from(bin_up_factor=2)
-
-        assert (imaging.image.native == binned_image_util).all()
-        assert (imaging.psf == psf_util).all()
-
-        assert (imaging.noise_map.native == binned_noise_map_util).all()
-
-        assert imaging.image.pixel_scales == (2.0, 2.0)
-        assert imaging.psf.pixel_scales == pytest.approx((1.0, 1.66666666666), 1.0e-4)
-        assert imaging.noise_map.pixel_scales == (2.0, 2.0)
-
-        assert imaging.image.origin == (0.0, 0.0)
 
     def test__new_imaging_with_signal_to_noise_limit__limit_above_max_signal_to_noise__signal_to_noise_map_unchanged(
         self,
@@ -352,30 +315,6 @@ class TestMaskedImaging:
 
         assert type(masked_imaging_7x7.psf) == aa.Kernel2D
         assert type(masked_imaging_7x7.convolver) == aa.Convolver
-
-    def test__masked_imaging__uses_bin_up_factor(self, imaging_7x7, mask_7x7_1_pix):
-
-        masked_imaging_7x7 = aa.MaskedImaging(
-            imaging=imaging_7x7,
-            mask=mask_7x7_1_pix,
-            settings=aa.SettingsMaskedImaging(grid_class=aa.Grid2D, bin_up_factor=2),
-        )
-
-        binned_up_imaging = imaging_7x7.binned_up_from(bin_up_factor=2)
-        binned_up_mask = mask_7x7_1_pix.binned_mask_from_bin_up_factor(bin_up_factor=2)
-
-        assert (
-            masked_imaging_7x7.image.native
-            == binned_up_imaging.image.native * np.invert(binned_up_mask)
-        ).all()
-
-        assert (masked_imaging_7x7.psf == (1.0 / 9.0) * binned_up_imaging.psf).all()
-        assert (
-            masked_imaging_7x7.noise_map.native
-            == binned_up_imaging.noise_map.native * np.invert(binned_up_mask)
-        ).all()
-
-        assert (masked_imaging_7x7.mask == binned_up_mask).all()
 
     def test__masked_imaging__uses_signal_to_noise_limit(
         self, imaging_7x7, mask_7x7_1_pix

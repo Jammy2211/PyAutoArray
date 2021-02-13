@@ -6,7 +6,6 @@ from autoarray import exc
 from autoarray.dataset import preprocess
 from autoarray.structures import abstract_structure
 from autoarray.mask import mask_2d as msk
-from autoarray.util import binning_util
 from autoarray.structures.arrays import array_util
 
 logging.basicConfig()
@@ -462,66 +461,6 @@ class AbstractArray2D(abstract_structure.AbstractStructure2D):
 
         return self.__class__(
             array=array, mask=resized_mask, store_slim=self.store_slim
-        )
-
-    def binned_up_from(self, bin_up_factor, method):
-        """
-        Returns a binned version of the Array2D, where binning up occurs by coming all pixel values in a set of
-            (bin_up_factor x bin_up_factor) pixels.
-
-            The pixels can be combined:
-
-            - By taking the mean of their values, which one may use for binning up an image.
-            - By adding them in quadranture, which one may use for binning up a noise-map.
-            - By summing them, which one may use for binning up an exposure time map.
-
-            Parameters
-            ----------
-            bin_up_factor : int
-                The factor which the array is binned up by (e.g. a value of 2 bins every 2 x 2 pixels into one pixel).
-            method : str
-                The method used to combine the set of values that are binned up.
-        """
-
-        binned_mask = self.mask.binned_mask_from_bin_up_factor(
-            bin_up_factor=bin_up_factor
-        )
-
-        if method == "mean":
-
-            binned_array_2d = binning_util.bin_array_2d_via_mean(
-                array_2d=self.native, bin_up_factor=bin_up_factor
-            )
-
-        elif method == "quadrature":
-
-            binned_array_2d = binning_util.bin_array_2d_via_quadrature(
-                array_2d=self.native, bin_up_factor=bin_up_factor
-            )
-
-        elif method == "sum":
-
-            binned_array_2d = binning_util.bin_array_2d_via_sum(
-                array_2d=self.native, bin_up_factor=bin_up_factor
-            )
-
-        else:
-
-            raise exc.ArrayException(
-                "The method used in binned_up_array_from_array is not a valid method "
-                "[mean I quadrature I sum]"
-            )
-
-        binned_array_1d = array_util.array_2d_slim_from(
-            mask_2d=binned_mask, array_2d=binned_array_2d, sub_size=1
-        )
-
-        array = convert_manual_array_slim(
-            array_slim=binned_array_1d, mask=binned_mask, store_slim=self.store_slim
-        )
-
-        return self._new_structure(
-            array=array, mask=binned_mask, store_slim=self.store_slim
         )
 
     def output_to_fits(self, file_path, overwrite=False):
