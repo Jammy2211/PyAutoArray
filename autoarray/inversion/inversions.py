@@ -6,9 +6,8 @@ from autoarray.structures import arrays
 from autoarray.structures import grids
 from autoarray.structures import visibilities as vis
 from autoarray.operators import convolver as conv, transformer as trans
-from autoarray.inversion import regularization as reg, mappers
+from autoarray.inversion import regularization as reg, mappers, inversion_util
 from autoarray.dataset import imaging, interferometer
-from autoarray.util import inversion_util
 from scipy.interpolate import griddata
 from scipy import sparse
 import pylops
