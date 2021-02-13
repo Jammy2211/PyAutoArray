@@ -4,7 +4,7 @@ import numpy as np
 
 from autoarray import exc
 from autoarray.mask import abstract_mask
-from autoarray.util import binning_util, geometry_util, grid_util, mask_util
+from autoarray.util import geometry_util, grid_util, mask_util
 from autoarray.structures.arrays import array_util
 from autoarray.structures import arrays, grids
 
@@ -108,19 +108,6 @@ class AbstractMask2D(abstract_mask.AbstractMask):
         """
         return Mask2D(
             mask=self, sub_size=1, pixel_scales=self.pixel_scales, origin=self.origin
-        )
-
-    def binned_mask_from_bin_up_factor(self, bin_up_factor):
-
-        binned_up_mask = binning_util.bin_mask(mask=self, bin_up_factor=bin_up_factor)
-
-        return Mask2D(
-            mask=binned_up_mask,
-            pixel_scales=self.binned_pixel_scales_from_bin_up_factor(
-                bin_up_factor=bin_up_factor
-            ),
-            sub_size=self.sub_size,
-            origin=self.origin,
         )
 
     def resized_mask_from_new_shape(self, new_shape):

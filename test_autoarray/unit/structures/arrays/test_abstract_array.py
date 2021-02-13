@@ -14,6 +14,7 @@ test_data_dir = path.join(
 
 
 class TestConstructorMethods:
+
     def test__constructor_class_method_native__store_slim(self):
 
         arr = aa.Array2D.manual_native(
@@ -560,55 +561,8 @@ class TestNewArrays:
 
         assert extent == pytest.approx(np.array([-4.0, 6.0, -2.0, 3.0]), 1.0e-4)
 
-    def test__binned_up__compare_all_extract_methods_to_array_util(self):
-        array_2d = np.array(
-            [
-                [1.0, 6.0, 3.0, 7.0, 3.0, 2.0],
-                [2.0, 5.0, 3.0, 7.0, 7.0, 7.0],
-                [1.0, 2.0, 3.0, 4.0, 5.0, 6.0],
-            ]
-        )
-
-        arr = aa.Array2D.manual_native(
-            array=array_2d, sub_size=1, pixel_scales=(0.1, 0.1)
-        )
-
-        arr_binned_util = aa.util.binning.bin_array_2d_via_mean(
-            array_2d=array_2d, bin_up_factor=4
-        )
-        arr_binned = arr.binned_up_from(bin_up_factor=4, method="mean")
-        assert (arr_binned.native == arr_binned_util).all()
-        assert arr_binned.pixel_scales == (0.4, 0.4)
-
-        arr_binned_util = aa.util.binning.bin_array_2d_via_quadrature(
-            array_2d=array_2d, bin_up_factor=4
-        )
-        arr_binned = arr.binned_up_from(bin_up_factor=4, method="quadrature")
-        assert (arr_binned.native == arr_binned_util).all()
-        assert arr_binned.pixel_scales == (0.4, 0.4)
-
-        arr_binned_util = aa.util.binning.bin_array_2d_via_sum(
-            array_2d=array_2d, bin_up_factor=4
-        )
-        arr_binned = arr.binned_up_from(bin_up_factor=4, method="sum")
-        assert (arr_binned.native == arr_binned_util).all()
-        assert arr_binned.pixel_scales == (0.4, 0.4)
-
-    def test__binned_up__invalid_method__raises_exception(self):
-        array_2d = [
-            [1.0, 6.0, 3.0, 7.0, 3.0, 2.0],
-            [2.0, 5.0, 3.0, 7.0, 7.0, 7.0],
-            [1.0, 2.0, 3.0, 4.0, 5.0, 6.0],
-        ]
-
-        array_2d = aa.Array2D.manual_native(
-            array=array_2d, sub_size=1, pixel_scales=(0.1, 0.1)
-        )
-        with pytest.raises(exc.ArrayException):
-            array_2d.binned_up_from(bin_up_factor=4, method="wrong")
-
-
 class TestOutputToFits:
+
     def test__output_to_fits(self):
 
         arr = aa.Array2D.from_fits(

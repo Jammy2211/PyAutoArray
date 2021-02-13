@@ -1,5 +1,4 @@
 from ..structures.arrays import array_util as array
-from . import binning_util as binning
 from . import fit_util as fit
 from . import frame_util as frame
 from . import geometry_util as geometry

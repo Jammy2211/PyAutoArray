@@ -120,9 +120,6 @@ class AbstractStructure(np.ndarray):
     def trimmed_after_convolution_from(self, kernel_shape):
         raise NotImplementedError
 
-    def binned_up_from(self, bin_up_factor, method):
-        raise NotImplementedError
-
     def output_to_fits(self, file_path, overwrite):
         raise NotImplementedError
 

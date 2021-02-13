@@ -64,26 +64,6 @@ class AbstractImaging(abstract_dataset.AbstractDataset):
     def pixel_scales(self):
         return self.data.pixel_scales
 
-    def binned_up_from(self, bin_up_factor):
-
-        imaging = copy.deepcopy(self)
-
-        imaging.data = self.image.binned_up_from(
-            bin_up_factor=bin_up_factor, method="mean"
-        )
-        imaging.psf = self.psf.rescaled_with_odd_dimensions_from_rescale_factor(
-            rescale_factor=1.0 / bin_up_factor, renormalize=False
-        )
-        imaging.noise_map = (
-            self.noise_map.binned_up_from(
-                bin_up_factor=bin_up_factor, method="quadrature"
-            )
-            if self.noise_map is not None
-            else None
-        )
-
-        return imaging
-
     def signal_to_noise_limited_from(self, signal_to_noise_limit):
 
         imaging = copy.deepcopy(self)
@@ -273,14 +253,6 @@ class AbstractMaskedImaging(abstract_dataset.AbstractMaskedDataset):
             The maximum number of pixels that can be used by an inversion, with the limit placed primarily to speed \
             up run.
         """
-
-        if settings.bin_up_factor is not None:
-
-            imaging = imaging.binned_up_from(bin_up_factor=settings.bin_up_factor)
-
-            mask = mask.binned_mask_from_bin_up_factor(
-                bin_up_factor=settings.bin_up_factor
-            )
 
         super().__init__(dataset=imaging, mask=mask, settings=settings)
 
