@@ -4,7 +4,8 @@ import numpy as np
 
 from autoarray import exc
 from autoarray.mask import abstract_mask
-from autoarray.util import geometry_util, grid_util, mask_util
+from autoarray.util import grid_2d_util, mask_util
+from autoarray.geometry import geometry_util
 from autoarray.structures.arrays import array_util
 from autoarray.structures import arrays, grids
 
@@ -252,7 +253,7 @@ class AbstractMask2D(abstract_mask.AbstractMask):
     @property
     @array_util.Memoizer()
     def mask_centre(self):
-        return grid_util.grid_2d_centre_from(grid_2d_slim=self.masked_grid_sub_1)
+        return grid_2d_util.grid_2d_centre_from(grid_2d_slim=self.masked_grid_sub_1)
 
     @property
     def scaled_maxima(self):
@@ -296,7 +297,7 @@ class AbstractMask2D(abstract_mask.AbstractMask):
         This is defined from the top-left corner, such that the first pixel at location [0, 0] will have a negative x \
         value y value in scaled units.
         """
-        grid_slim = grid_util.grid_2d_slim_via_shape_native_from(
+        grid_slim = grid_2d_util.grid_2d_slim_via_shape_native_from(
             shape_native=self.shape,
             pixel_scales=self.pixel_scales,
             sub_size=1,
@@ -309,7 +310,7 @@ class AbstractMask2D(abstract_mask.AbstractMask):
 
     @property
     def masked_grid(self):
-        sub_grid_1d = grid_util.grid_2d_slim_via_mask_from(
+        sub_grid_1d = grid_2d_util.grid_2d_slim_via_mask_from(
             mask_2d=self,
             pixel_scales=self.pixel_scales,
             sub_size=self.sub_size,
@@ -322,7 +323,7 @@ class AbstractMask2D(abstract_mask.AbstractMask):
     @property
     def masked_grid_sub_1(self):
 
-        grid_slim = grid_util.grid_2d_slim_via_mask_from(
+        grid_slim = grid_2d_util.grid_2d_slim_via_mask_from(
             mask_2d=self, pixel_scales=self.pixel_scales, sub_size=1, origin=self.origin
         )
         return grids.Grid2D(grid=grid_slim, mask=self.mask_sub_1, store_slim=True)
@@ -376,7 +377,7 @@ class AbstractMask2D(abstract_mask.AbstractMask):
         grid_scaled_1d: np.ndarray
             A grid of (y,x) coordinates in scaled units.
         """
-        grid_pixels_1d = grid_util.grid_pixels_2d_slim_from(
+        grid_pixels_1d = grid_2d_util.grid_pixels_2d_slim_from(
             grid_scaled_2d_slim=grid_scaled_1d,
             shape_native=self.shape,
             pixel_scales=self.pixel_scales,
@@ -399,7 +400,7 @@ class AbstractMask2D(abstract_mask.AbstractMask):
         grid_scaled_1d: np.ndarray
             The grid of (y,x) coordinates in scaled units.
         """
-        grid_pixel_centres_1d = grid_util.grid_pixel_centres_2d_slim_from(
+        grid_pixel_centres_1d = grid_2d_util.grid_pixel_centres_2d_slim_from(
             grid_scaled_2d_slim=grid_scaled_1d,
             shape_native=self.shape,
             pixel_scales=self.pixel_scales,
@@ -429,7 +430,7 @@ class AbstractMask2D(abstract_mask.AbstractMask):
         grid_scaled_1d: np.ndarray
             The grid of (y,x) coordinates in scaled units.
         """
-        grid_pixel_indexes_1d = grid_util.grid_pixel_indexes_2d_slim_from(
+        grid_pixel_indexes_1d = grid_2d_util.grid_pixel_indexes_2d_slim_from(
             grid_scaled_2d_slim=grid_scaled_1d,
             shape_native=self.shape,
             pixel_scales=self.pixel_scales,
@@ -454,7 +455,7 @@ class AbstractMask2D(abstract_mask.AbstractMask):
         grid_pixels_1d : np.ndarray
             The grid of (y,x) coordinates in pixels.
         """
-        grid_scaled_1d = grid_util.grid_scaled_2d_slim_from(
+        grid_scaled_1d = grid_2d_util.grid_scaled_2d_slim_from(
             grid_pixels_2d_slim=grid_pixels_1d,
             shape_native=self.shape,
             pixel_scales=self.pixel_scales,
@@ -468,7 +469,7 @@ class AbstractMask2D(abstract_mask.AbstractMask):
         self, grid_pixels_1d, shape_native
     ):
 
-        grid_scaled_1d = grid_util.grid_scaled_2d_slim_from(
+        grid_scaled_1d = grid_2d_util.grid_scaled_2d_slim_from(
             grid_pixels_2d_slim=grid_pixels_1d,
             shape_native=shape_native,
             pixel_scales=(

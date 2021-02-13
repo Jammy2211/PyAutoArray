@@ -1,6 +1,6 @@
 from autoarray.structures import arrays
 from autoarray.structures import grids
-from autoarray.util import grid_util, mapper_util
+from autoarray.util import grid_2d_util, mapper_util
 from autoarray.structures.arrays import array_util
 
 import itertools
@@ -231,7 +231,7 @@ class MapperRectangular(Mapper):
     @property
     def pixelization_index_for_sub_slim_index(self):
         """The 1D index mappings between the sub grid's pixels and rectangular pixelization's pixels"""
-        return grid_util.grid_pixel_indexes_2d_slim_from(
+        return grid_2d_util.grid_pixel_indexes_2d_slim_from(
             grid_scaled_2d_slim=self.source_grid_slim,
             shape_native=self.source_pixelization_grid.shape_native,
             pixel_scales=self.source_pixelization_grid.pixel_scales,

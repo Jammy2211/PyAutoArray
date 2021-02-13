@@ -94,7 +94,7 @@ class TestObj:
             mask_2d=mask, kernel_shape_native=(3, 5)
         )
 
-        blurring_grid_util = aa.util.grid.grid_2d_slim_via_mask_from(
+        blurring_grid_util = aa.util.grid_2d.grid_2d_slim_via_mask_from(
             mask_2d=blurring_mask_util, pixel_scales=(2.0, 2.0), sub_size=1
         )
 
@@ -128,7 +128,7 @@ class TestObj:
             mask_2d=mask, kernel_shape_native=(3, 5)
         )
 
-        blurring_grid_util = aa.util.grid.grid_2d_slim_via_mask_from(
+        blurring_grid_util = aa.util.grid_2d.grid_2d_slim_via_mask_from(
             mask_2d=blurring_mask_util, pixel_scales=(2.0, 2.0), sub_size=1
         )
 
@@ -162,7 +162,7 @@ class TestObj:
 
         padded_grid = grid.padded_grid_from_kernel_shape(kernel_shape_native=(3, 3))
 
-        padded_grid_util = aa.util.grid.grid_2d_slim_via_mask_from(
+        padded_grid_util = aa.util.grid_2d.grid_2d_slim_via_mask_from(
             mask_2d=np.full((6, 6), False), pixel_scales=(3.0, 3.0), sub_size=1
         )
 
@@ -183,7 +183,7 @@ class TestObj:
 
         padded_grid = grid.padded_grid_from_kernel_shape(kernel_shape_native=(5, 5))
 
-        padded_grid_util = aa.util.grid.grid_2d_slim_via_mask_from(
+        padded_grid_util = aa.util.grid_2d.grid_2d_slim_via_mask_from(
             mask_2d=np.full((6, 9), False), pixel_scales=(8.0, 8.0), sub_size=1
         )
 
@@ -918,7 +918,7 @@ class TestAPI:
         )
         mask = aa.Mask2D.manual(mask=mask, pixel_scales=(2.0, 2.0), sub_size=2)
 
-        grid_via_util = aa.util.grid.grid_2d_slim_via_mask_from(
+        grid_via_util = aa.util.grid_2d.grid_2d_slim_via_mask_from(
             mask_2d=mask, sub_size=1, pixel_scales=(2.0, 2.0)
         )
 
@@ -934,7 +934,7 @@ class TestAPI:
         assert grid.sub_steps == [2, 3, 4]
         assert grid.sub_size == 1
 
-        grid_via_util = aa.util.grid.grid_2d_via_mask_from(
+        grid_via_util = aa.util.grid_2d.grid_2d_via_mask_from(
             mask_2d=mask, sub_size=1, pixel_scales=(2.0, 2.0)
         )
 
