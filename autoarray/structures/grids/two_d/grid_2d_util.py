@@ -1,11 +1,9 @@
 from autoarray import decorator_util
 import numpy as np
 
-from autoarray.util import mask_2d_util
+from autoarray.mask import mask_2d_util
 from autoarray.geometry import geometry_util
 from autoarray.structures.arrays import array_util
-
-from typing import Tuple
 
 
 @decorator_util.jit()

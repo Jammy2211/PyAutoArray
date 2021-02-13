@@ -3,7 +3,7 @@ import os
 
 from autoconf import conf
 from autoarray import decorator_util
-from autoarray.util import mask_2d_util
+from autoarray.mask import mask_2d_util
 import numpy as np
 from astropy.io import fits
 from functools import wraps

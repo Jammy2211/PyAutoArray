@@ -2,8 +2,8 @@ import numpy as np
 from sklearn.cluster import KMeans
 from autoarray import exc
 from autoarray.structures.grids import abstract_grid
-from autoarray.mask import mask_2d as msk
-from autoarray.util import sparse_util, mask_2d_util
+from autoarray.mask import mask_2d as msk, mask_2d_util
+from autoarray.util import sparse_util
 from autoarray.structures.grids.two_d import grid_2d_util
 from autoarray.geometry import geometry_util
 from autoarray.structures.arrays import array_util
