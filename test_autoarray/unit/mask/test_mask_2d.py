@@ -13,27 +13,7 @@ test_data_dir = path.join(
 
 
 class TestMask:
-    def test__mask__makes_mask_with_pixel_scale(self):
-
-        mask = aa.Mask2D.manual(mask=[[False, False], [True, True]], pixel_scales=1.0)
-
-        assert type(mask) == aa.Mask2D
-        assert (mask == np.array([[False, False], [True, True]])).all()
-        assert mask.pixel_scales == (1.0, 1.0)
-        assert mask.origin == (0.0, 0.0)
-
-        mask = aa.Mask2D.manual(
-            mask=[[False, False, True], [True, True, False]],
-            pixel_scales=(2.0, 3.0),
-            origin=(0.0, 1.0),
-        )
-
-        assert type(mask) == aa.Mask2D
-        assert (mask == np.array([[False, False, True], [True, True, False]])).all()
-        assert mask.pixel_scales == (2.0, 3.0)
-        assert mask.origin == (0.0, 1.0)
-
-    def test__mask__makes_mask_with_pixel_scale_and_sub_size(self):
+    def test__manual(self):
 
         mask = aa.Mask2D.manual(
             mask=[[False, False], [True, True]], pixel_scales=1.0, sub_size=1
@@ -44,6 +24,7 @@ class TestMask:
         assert mask.pixel_scales == (1.0, 1.0)
         assert mask.origin == (0.0, 0.0)
         assert mask.sub_size == 1
+        assert (mask.extent == np.array([-1.0, 1.0, -1.0, 1.0])).all()
 
         mask = aa.Mask2D.manual(
             mask=[[False, False], [True, True]],

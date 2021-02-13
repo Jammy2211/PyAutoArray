@@ -659,7 +659,7 @@ class TestArray1DFromArray2d:
         mask = np.array([[True, True, True], [True, False, True], [True, True, True]])
 
         array_1d = util.array.array_2d_slim_from(
-            mask_2d=mask, array_2d=array_2d, sub_size=1
+            mask_2d=mask, array_2d_native=array_2d, sub_size=1
         )
 
         assert (array_1d == np.array([5])).all()
@@ -671,7 +671,7 @@ class TestArray1DFromArray2d:
         )
 
         array_1d = util.array.array_2d_slim_from(
-            mask_2d=mask, array_2d=array_2d, sub_size=1
+            mask_2d=mask, array_2d_native=array_2d, sub_size=1
         )
 
         assert (array_1d == np.array([2, 4, 5, 6, 8])).all()
@@ -687,7 +687,7 @@ class TestArray1DFromArray2d:
         )
 
         array_1d = util.array.array_2d_slim_from(
-            mask_2d=mask, array_2d=array_2d, sub_size=1
+            mask_2d=mask, array_2d_native=array_2d, sub_size=1
         )
 
         assert (array_1d == np.array([2, 5, 6, 7, 10, 12])).all()
@@ -704,7 +704,7 @@ class TestArray1DFromArray2d:
         )
 
         array_1d = util.array.array_2d_slim_from(
-            mask_2d=mask, array_2d=array_2d, sub_size=1
+            mask_2d=mask, array_2d_native=array_2d, sub_size=1
         )
 
         assert (array_1d == np.array([2, 4, 5, 6, 8])).all()
@@ -725,7 +725,7 @@ class TestArray1DFromArray2d:
         mask = np.array([[True, True, True], [True, False, True], [True, True, True]])
 
         sub_array_1d = util.array.array_2d_slim_from(
-            array_2d=sub_array_2d, mask_2d=mask, sub_size=2
+            array_2d_native=sub_array_2d, mask_2d=mask, sub_size=2
         )
 
         assert (sub_array_1d == np.array([15, 16, 3, 4])).all()
@@ -733,7 +733,7 @@ class TestArray1DFromArray2d:
         mask = np.array([[True, False, True], [True, False, True], [True, True, False]])
 
         sub_array_1d = util.array.array_2d_slim_from(
-            array_2d=sub_array_2d, mask_2d=mask, sub_size=2
+            array_2d_native=sub_array_2d, mask_2d=mask, sub_size=2
         )
 
         assert (
@@ -760,7 +760,7 @@ class TestArray1DFromArray2d:
         )
 
         sub_array_1d = util.array.array_2d_slim_from(
-            array_2d=sub_array_2d, mask_2d=mask, sub_size=2
+            array_2d_native=sub_array_2d, mask_2d=mask, sub_size=2
         )
 
         assert (
@@ -818,7 +818,7 @@ class TestArray1DFromArray2d:
         )
 
         sub_array_1d = util.array.array_2d_slim_from(
-            array_2d=sub_array_2d, mask_2d=mask, sub_size=2
+            array_2d_native=sub_array_2d, mask_2d=mask, sub_size=2
         )
 
         assert (
@@ -844,7 +844,7 @@ class TestArray1DFromArray2d:
         mask = np.array([[False, True], [True, False]])
 
         sub_array_1d = util.array.array_2d_slim_from(
-            array_2d=sub_array_2d, mask_2d=mask, sub_size=3
+            array_2d_native=sub_array_2d, mask_2d=mask, sub_size=3
         )
 
         assert (

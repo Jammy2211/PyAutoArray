@@ -14,7 +14,6 @@ test_data_dir = path.join(
 
 
 class TestConstructorMethods:
-
     def test__constructor_class_method_native__store_slim(self):
 
         arr = aa.Array2D.manual_native(
@@ -212,7 +211,6 @@ class TestConstructorMethods:
 
 
 class TestNewArrays:
-
     def test__pad__compare_to_array_util(self):
 
         array_2d = np.ones((5, 5))

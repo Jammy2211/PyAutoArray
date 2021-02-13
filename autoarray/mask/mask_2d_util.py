@@ -1,18 +1,17 @@
 import numpy as np
 from skimage.transform import rescale
-import typing
+from typing import Tuple
+import warnings
 
 from autoarray import decorator_util
 from autoarray import exc
 from autoarray.structures.grids.two_d import grid_2d_util
 
-import warnings
-
 
 @decorator_util.jit()
 def mask_2d_centres_from(
-    shape_native: (int, int),
-    pixel_scales: typing.Tuple[float, float],
+    shape_native: Tuple[int, int],
+    pixel_scales: Tuple[float, float],
     centre: (float, float),
 ) -> (float, float):
     """
@@ -141,10 +140,10 @@ def total_sparse_pixels_2d_from(
 
 @decorator_util.jit()
 def mask_2d_circular_from(
-    shape_native: (int, int),
-    pixel_scales: typing.Tuple[float, float],
+    shape_native: Tuple[int, int],
+    pixel_scales: Tuple[float, float],
     radius: float,
-    centre: typing.Tuple[float, float] = (0.0, 0.0),
+    centre: Tuple[float, float] = (0.0, 0.0),
 ) -> np.ndarray:
     """
     Returns a circular mask from the 2D mask array shape and radius of the circle.
@@ -195,11 +194,11 @@ def mask_2d_circular_from(
 
 @decorator_util.jit()
 def mask_2d_circular_annular_from(
-    shape_native: (int, int),
-    pixel_scales: typing.Tuple[float, float],
+    shape_native: Tuple[int, int],
+    pixel_scales: Tuple[float, float],
     inner_radius: float,
     outer_radius: float,
-    centre: typing.Tuple[float, float] = (0.0, 0.0),
+    centre: Tuple[float, float] = (0.0, 0.0),
 ) -> np.ndarray:
     """
     Returns an circular annular mask from an input inner and outer mask radius and shape.
@@ -252,12 +251,12 @@ def mask_2d_circular_annular_from(
 
 @decorator_util.jit()
 def mask_2d_circular_anti_annular_from(
-    shape_native: (int, int),
-    pixel_scales: typing.Tuple[float, float],
+    shape_native: Tuple[int, int],
+    pixel_scales: Tuple[float, float],
     inner_radius: float,
     outer_radius: float,
     outer_radius_2_scaled: float,
-    centre: typing.Tuple[float, float] = (0.0, 0.0),
+    centre: Tuple[float, float] = (0.0, 0.0),
 ) -> np.ndarray:
     """
     Returns an anti-annular mask from an input inner and outer mask radius and shape. The anti-annular is analogous to
@@ -317,7 +316,7 @@ def mask_2d_circular_anti_annular_from(
 
 
 def mask_2d_via_pixel_coordinates_from(
-    shape_native: (int, int), pixel_coordinates: [list], buffer: int = 0
+    shape_native: Tuple[int, int], pixel_coordinates: [list], buffer: int = 0
 ) -> np.ndarray:
     """
     Returns a mask where all unmasked `False` entries are defined from an input list of list of pixel coordinates.
@@ -389,12 +388,12 @@ def elliptical_radius_from(
 
 @decorator_util.jit()
 def mask_2d_elliptical_from(
-    shape_native: (int, int),
-    pixel_scales: typing.Tuple[float, float],
+    shape_native: Tuple[int, int],
+    pixel_scales: Tuple[float, float],
     major_axis_radius: float,
     axis_ratio: float,
     phi: float,
-    centre: typing.Tuple[float, float] = (0.0, 0.0),
+    centre: Tuple[float, float] = (0.0, 0.0),
 ) -> np.ndarray:
     """
     Returns an elliptical mask from an input major-axis mask radius, axis-ratio, rotational angle phi, shape and
@@ -453,15 +452,15 @@ def mask_2d_elliptical_from(
 
 @decorator_util.jit()
 def mask_2d_elliptical_annular_from(
-    shape_native: (int, int),
-    pixel_scales: typing.Tuple[float, float],
+    shape_native: Tuple[int, int],
+    pixel_scales: Tuple[float, float],
     inner_major_axis_radius: float,
     inner_axis_ratio: float,
     inner_phi: float,
     outer_major_axis_radius: float,
     outer_axis_ratio: float,
     outer_phi: float,
-    centre: typing.Tuple[float, float] = (0.0, 0.0),
+    centre: Tuple[float, float] = (0.0, 0.0),
 ) -> np.ndarray:
     """
     Returns an elliptical annular mask from an input major-axis mask radius, axis-ratio, rotational angle phi for
@@ -537,7 +536,7 @@ def mask_2d_elliptical_annular_from(
 
 @decorator_util.jit()
 def blurring_mask_2d_from(
-    mask_2d: np.ndarray, kernel_shape_native: (int, int)
+    mask_2d: np.ndarray, kernel_shape_native: Tuple[int, int]
 ) -> np.ndarray:
     """
     Returns a blurring mask from an input mask and psf shape.
@@ -601,7 +600,7 @@ def blurring_mask_2d_from(
 
 @decorator_util.jit()
 def mask_2d_via_shape_native_and_native_for_slim(
-    shape_native: (int, int), native_for_slim: np.ndarray
+    shape_native: Tuple[int, int], native_for_slim: np.ndarray
 ) -> np.ndarray:
     """
     For a slimmed set of data that was computed by mapping unmasked values from a native 2D array of shape 

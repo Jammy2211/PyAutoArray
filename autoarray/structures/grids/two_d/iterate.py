@@ -182,7 +182,9 @@ class Grid2DIterate(abstract_grid.AbstractGrid2D):
                 store_slim=store_slim,
             )
 
-        grid_2d = grid_2d_util.grid_2d_native_from(grid_2d_slim=grid, mask_2d=mask, sub_size=1)
+        grid_2d = grid_2d_util.grid_2d_native_from(
+            grid_2d_slim=grid, mask_2d=mask, sub_size=1
+        )
 
         return Grid2DIterate(
             grid=grid_2d,
@@ -608,7 +610,7 @@ class Grid2DIterate(abstract_grid.AbstractGrid2D):
         """
 
         iterated_array_1d = array_util.array_2d_slim_from(
-            mask_2d=self.mask, array_2d=iterated_array, sub_size=1
+            mask_2d=self.mask, array_2d_native=iterated_array, sub_size=1
         )
 
         return arrays.Array2D(
@@ -793,7 +795,7 @@ class Grid2DIterate(abstract_grid.AbstractGrid2D):
             if fractional_mask_higher_sub.is_all_true:
 
                 iterated_grid_1d = grid_2d_util.grid_2d_slim_from(
-                    mask=self.mask, grid_2d=iterated_grid, sub_size=1
+                    mask=self.mask, grid_2d_native=iterated_grid, sub_size=1
                 )
 
                 return grids.Grid2D(
@@ -813,7 +815,7 @@ class Grid2DIterate(abstract_grid.AbstractGrid2D):
         iterated_grid_2d = iterated_grid + grid_higher_sub.native_binned
 
         iterated_grid_1d = grid_2d_util.grid_2d_slim_from(
-            mask=self.mask, grid_2d=iterated_grid_2d, sub_size=1
+            mask=self.mask, grid_2d_native=iterated_grid_2d, sub_size=1
         )
 
         return grids.Grid2D(

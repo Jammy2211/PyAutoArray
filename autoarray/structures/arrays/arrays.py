@@ -24,7 +24,8 @@ class Array2D(abstract_array.AbstractArray2D):
         *args,
         **kwargs
     ):
-        """An array of values, which are paired to a uniform 2D mask of pixels and sub-pixels. Each entry
+        """
+        An array of values, which are paired to a uniform 2D mask of pixels and sub-pixels. Each entry
         on the array corresponds to a value at the centre of a sub-pixel in an unmasked pixel.
 
         An *Array2D* is ordered such that pixels begin from the top-row of the corresponding mask and go right and down.

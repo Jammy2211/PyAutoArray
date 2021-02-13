@@ -13,7 +13,6 @@ test_data_dir = path.join(
 
 
 class TestAPI:
-
     def test__manual(self):
 
         arr = aa.Array2D.manual_native(

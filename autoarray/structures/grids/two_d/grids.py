@@ -384,8 +384,9 @@ class Grid2D(abstract_grid.AbstractGrid2D):
 
     @classmethod
     def manual_mask(cls, grid, mask, store_slim=True):
-        """Create a Grid2D (see *Grid2D.__new__*) by inputting the grid coordinate in 1D or 2D, automatically
-        determining whether to use the 'manual_slim' or 'manual_native' methods.
+        """
+        Create a Grid2D (see *Grid2D.__new__*) by inputting the grid coordinates in their native or slimmed format with
+        their corresponding mask, automatically determining whether to use the 'manual_slim' or 'manual_native' methods.
 
         See the manual_slim and manual_native methods for examples.
 

@@ -12,7 +12,6 @@ test_grid_dir = path.join(
 
 
 class TestAPI:
-
     def test__manual(self):
 
         grid = aa.Grid2D.manual_native(
