@@ -5,7 +5,8 @@ import numpy as np
 from autoarray import exc
 from autoarray.mask import abstract_mask
 from autoarray.structures import grids
-from autoarray.util import array_util, grid_util
+from autoarray.util import grid_util
+from autoarray.structures.arrays import array_util
 
 logging.basicConfig()
 logger = logging.getLogger(__name__)

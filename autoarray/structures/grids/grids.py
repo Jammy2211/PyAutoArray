@@ -3,7 +3,8 @@ from sklearn.cluster import KMeans
 from autoarray import exc
 from autoarray.structures.grids import abstract_grid
 from autoarray.mask import mask_2d as msk
-from autoarray.util import array_util, sparse_util, geometry_util, grid_util, mask_util
+from autoarray.util import sparse_util, geometry_util, grid_util, mask_util
+from autoarray.structures.arrays import array_util
 
 
 class Grid2D(abstract_grid.AbstractGrid2D):

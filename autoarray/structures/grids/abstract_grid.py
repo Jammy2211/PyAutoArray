@@ -5,7 +5,8 @@ from autoarray import exc
 from autoarray.structures import abstract_structure
 from autoarray.structures import grids
 from autoarray.mask import mask_2d as msk
-from autoarray.util import array_util, grid_util
+from autoarray.util import grid_util
+from autoarray.structures.arrays import array_util
 
 
 def convert_grid(grid):

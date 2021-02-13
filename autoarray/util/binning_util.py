@@ -1,7 +1,8 @@
 from autoarray import decorator_util
 import numpy as np
 
-from autoarray.util import array_util, mask_util
+from autoarray.util import mask_util
+from autoarray.structures.arrays import array_util
 
 
 @decorator_util.jit()
@@ -12,8 +13,8 @@ def padded_binning_shape_native_from(
     Returns the padded 2D shape of a 2D array that is going to be binned up, based on the ``bin_up_factor``. This shape
     accounts for if the array is padded first.
 
-    For example, if the array has ``shape_native`` (5,5) and the ``bin_up_factor`` is 2, this routine will calculate that
-    the binned up array's ``shape_native`` will becocme (6,6).
+    For example, if the array has ``shape_native`` (5,5) and the ``bin_up_factor`` is 2, this routine will calculate
+    that the binned up array's ``shape_native`` will becocme (6,6).
 
     Parameters
     ----------
@@ -60,8 +61,8 @@ def padded_binning_array_2d_from(
     If an array is to be binned up, but the dimensions are not divisible by the ``bin-up factor``, this routine pads
     the array to make it divisible.
 
-    For example, if the array has ``shape_native`` (5,5) and the ``bin_up_factor`` is 2, this routine will pad the array
-    to shape (6,6).
+    For example, if the array has ``shape_native`` (5,5) and the ``bin_up_factor`` is 2, this routine will pad the
+    array to shape (6,6).
 
     Parameters
     ----------
@@ -100,8 +101,8 @@ def bin_array_2d_via_mean(array_2d: np.ndarray, bin_up_factor: int) -> np.ndarra
     """Bin up an array to coarser resolution, by binning up groups of pixels and using their mean value to determine
      the value of the new pixel.
 
-    If an ``array_2d`` with ``shape_native`` (8,8) is input and the ``bin_up_factor`` is 2, this would return a new array of ``shape_native`` (4,4) where
-    every pixel was the mean of each collection of 2x2 pixels on the (8,8) array.
+    If an ``array_2d`` with ``shape_native`` (8,8) is input and the ``bin_up_factor`` is 2, this would return a new
+    array of ``shape_native`` (4,4) where every pixel was the mean of each collection of 2x2 pixels on the (8,8) array.
 
     If binning up the array leads to an edge being cut (e.g. a (9,9) array binned up by 2), the array is first
     padded to make the division work. One must be careful of edge effects in this case.
@@ -154,8 +155,9 @@ def bin_array_2d_via_quadrature(array_2d: np.ndarray, bin_up_factor: int) -> np.
     """Bin up an array to coarser resolution, by binning up groups of pixels and using their quadrature value to
     determine the value of the new pixel.
 
-    If an ``array_2d`` with ``shape_native`` (8,8) is input and the ``bin_up_factor`` is 2, this would return a new array of ``shape_native`` (4,4) where
-    every pixel was the quadrature of each collection of 2x2 pixels on the (8,8) array.
+    If an ``array_2d`` with ``shape_native`` (8,8) is input and the ``bin_up_factor`` is 2, this would return a new
+    array of ``shape_native`` (4,4) where every pixel was the quadrature of each collection of 2x2 pixels on
+    the (8,8) array.
 
     If binning up the array leads to an edge being cut (e.g. a (9,9) array binned up by 2), the array is first
     padded to make the division work. One must be careful of edge effects in this case.
@@ -209,8 +211,8 @@ def bin_array_2d_via_sum(array_2d: np.ndarray, bin_up_factor: int) -> np.ndarray
     Bin up an array to coarser resolution, by binning up groups of pixels and using their sum value to determine
     the value of the new pixel.
 
-    If an ``array_2d`` with ``shape_native`` (8,8) is input and the ``bin_up_factor`` is 2, this would return a new array
-    of ``shape_native`` (4,4) where every pixel was the sum of each collection of 2x2 pixels on the (8,8) array.
+    If an ``array_2d`` with ``shape_native`` (8,8) is input and the ``bin_up_factor`` is 2, this would return a new
+    array of ``shape_native`` (4,4) where every pixel was the sum of each collection of 2x2 pixels on the (8,8) array.
 
     If binning up the array leads to an edge being cut (e.g. a (9,9) array binned up by 2), the array is first
     padded to make the division work. One must be careful of edge effects in this case.
@@ -264,8 +266,8 @@ def bin_mask(mask: np.ndarray, bin_up_factor: int) -> np.ndarray:
     Bin up an array to coarser resolution, by binning up groups of pixels and using their sum value to determine
     the value of the new pixel.
 
-    If an ``array_2d`` with ``shape_native`` (8,8) is input and the ``bin_up_factor`` is 2, this would return a new array
-    of ``shape_native`` (4,4) where every pixel was the sum of each collection of 2x2 pixels on the (8,8) array.
+    If an ``array_2d`` with ``shape_native`` (8,8) is input and the ``bin_up_factor`` is 2, this would return a new
+    array of ``shape_native`` (4,4) where every pixel was the sum of each collection of 2x2 pixels on the (8,8) array.
 
     If binning up the array leads to an edge being cut (e.g. a (9,9) array binned up by 2), an ``array_2d`` is first
     extracted around the centre of that array.

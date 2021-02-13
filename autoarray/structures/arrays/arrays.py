@@ -3,10 +3,10 @@ import logging
 import numpy as np
 
 from autoarray import exc
-from autoarray.structures.arrays import abstract_array
+from autoarray.structures.arrays import abstract_array, array_util
 from autoarray.structures import grids
 from autoarray.mask import mask_2d as msk
-from autoarray.util import array_util, geometry_util, grid_util
+from autoarray.util import geometry_util, grid_util
 
 logging.basicConfig()
 logger = logging.getLogger(__name__)
