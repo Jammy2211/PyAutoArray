@@ -159,7 +159,7 @@ def grid_2d_via_mask_from(
         mask_2d=mask_2d, pixel_scales=pixel_scales, sub_size=sub_size, origin=origin
     )
 
-    return grid_2d_from(grid_2d_slim=grid_2d_slim, mask_2d=mask_2d, sub_size=sub_size)
+    return grid_2d_native_from(grid_2d_slim=grid_2d_slim, mask_2d=mask_2d, sub_size=sub_size)
 
 
 def grid_2d_slim_via_shape_native_from(
@@ -727,7 +727,7 @@ def grid_2d_slim_from(
     return np.stack((grid_1d_y, grid_1d_x), axis=-1)
 
 
-def grid_2d_from(
+def grid_2d_native_from(
     grid_2d_slim: np.ndarray, mask_2d: np.ndarray, sub_size: int
 ) -> np.ndarray:
     """
@@ -758,15 +758,15 @@ def grid_2d_from(
         mapped from the slimmed grid.
     """
 
-    grid_2d_y = array_util.array_2d_native_from(
+    grid_2d_native_y = array_util.array_2d_native_from(
         array_2d_slim=grid_2d_slim[:, 0], mask_2d=mask_2d, sub_size=sub_size
     )
 
-    grid_2d_x = array_util.array_2d_native_from(
+    grid_2d_native_x = array_util.array_2d_native_from(
         array_2d_slim=grid_2d_slim[:, 1], mask_2d=mask_2d, sub_size=sub_size
     )
 
-    return np.stack((grid_2d_y, grid_2d_x), axis=-1)
+    return np.stack((grid_2d_native_y, grid_2d_native_x), axis=-1)
 
 
 @decorator_util.jit()

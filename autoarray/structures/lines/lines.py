@@ -24,12 +24,8 @@ class AbstractLine1D(abstract_structure.AbstractStructure1D):
     @property
     def native(self):
 
-        print(self)
-        print(self.mask)
-        print(self.sub_size)
-
-        return line_util.sub_line_1d_native_from(
-            sub_line_1d_slim=self, mask_1d=self.mask, sub_size=self.sub_size
+        return line_util.line_1d_native_from(
+            line_1d_slim=self, mask_1d=self.mask, sub_size=self.sub_size
         )
 
     @property
@@ -38,6 +34,7 @@ class AbstractLine1D(abstract_structure.AbstractStructure1D):
 
 
 class Line1D(AbstractLine1D):
+
     @classmethod
     def manual_slim(cls, line, pixel_scales, sub_size=1, origin=(0.0,)):
         """
@@ -121,8 +118,8 @@ class Line1D(AbstractLine1D):
 
         line = convert_line(line)
 
-        line = line_util.sub_line_1d_slim_from(
-            sub_line_1d_native=line, mask_1d=mask, sub_size=mask.sub_size
+        line = line_util.line_1d_slim_from(
+            line_1d_native=line, mask_1d=mask, sub_size=mask.sub_size
         )
 
         return Line1D(line=line, mask=mask)

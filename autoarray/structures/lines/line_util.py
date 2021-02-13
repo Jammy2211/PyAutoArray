@@ -5,8 +5,8 @@ from autoarray.mask import mask_1d_util
 
 
 # @decorator_util.jit()
-def sub_line_1d_slim_from(
-    sub_line_1d_native: np.ndarray, mask_1d: np.ndarray, sub_size: int
+def line_1d_slim_from(
+    line_1d_native: np.ndarray, mask_1d: np.ndarray, sub_size: int
 ) -> np.ndarray:
     """
     For a 1D sub line and mask, map the values of all unmasked pixels to its slimmed 1D sub-line.
@@ -31,7 +31,7 @@ def sub_line_1d_slim_from(
 
     Parameters
     ----------
-    sub_line_1d_native : np.ndarray
+    line_1d_native : np.ndarray
         A 1D array of values on the dimensions of the native sub-line.
     mask_1d : np.ndarray
         A 1D array of bools, where `False` values mean unmasked and are included in the mapping.
@@ -58,42 +58,42 @@ def sub_line_1d_slim_from(
         mask_1d=mask_1d, sub_size=sub_size
     )
 
-    sub_line_1d_slim = np.zeros(shape=total_sub_pixels)
+    line_1d_slim = np.zeros(shape=total_sub_pixels)
     index = 0
 
     for x in range(mask_1d.shape[0]):
         if not mask_1d[x]:
             for x1 in range(sub_size):
-                sub_line_1d_slim[index] = sub_line_1d_native[x * sub_size + x1]
+                line_1d_slim[index] = line_1d_native[x * sub_size + x1]
                 index += 1
 
-    return sub_line_1d_slim
+    return line_1d_slim
 
 
-def sub_line_1d_native_from(
-    sub_line_1d_slim: np.ndarray, mask_1d: np.ndarray, sub_size: int
+def line_1d_native_from(
+    line_1d_slim: np.ndarray, mask_1d: np.ndarray, sub_size: int
 ) -> np.ndarray:
 
     sub_shape = mask_1d.shape[0] * sub_size
 
-    sub_native_index_for_sub_slim_index_1d = mask_1d_util.sub_native_index_for_sub_slim_index_1d_from(
+    native_index_for_slim_index_1d = mask_1d_util.native_index_for_slim_index_1d_from(
         mask_1d=mask_1d, sub_size=sub_size
     ).astype(
         "int"
     )
 
-    return sub_line_1d_via_sub_indexes_from(
-        sub_line_1d_slim=sub_line_1d_slim,
+    return line_1d_via_indexes_1d_from(
+        line_1d_slim=line_1d_slim,
         sub_shape=sub_shape,
-        sub_native_index_for_slim_index_1d=sub_native_index_for_sub_slim_index_1d,
+        native_index_for_slim_index_1d=native_index_for_slim_index_1d,
     )
 
 
 @decorator_util.jit()
-def sub_line_1d_via_sub_indexes_from(
-    sub_line_1d_slim: np.ndarray,
+def line_1d_via_indexes_1d_from(
+    line_1d_slim: np.ndarray,
     sub_shape: int,
-    sub_native_index_for_slim_index_1d: np.ndarray,
+    native_index_for_slim_index_1d: np.ndarray,
 ) -> np.ndarray:
     """
     For a slimmed sub line with sub-indexes mapping the slimmed sub line values to their native sub line,
@@ -110,7 +110,7 @@ def sub_line_1d_via_sub_indexes_from(
     - pixel[1] of the native 1D array will correspond to index 1 of the slim array (which is the second sub-pixel in
     the line).
 
-    If the native lined is masked and the third pixel is masked (e.g. its mask_1d entry is `True`) then:
+    If the native line is masked and the third pixel is masked (e.g. its mask_1d entry is `True`) then:
 
     - pixels [0], [1], [2] and [3] of the native 1D array will correspond to indexes 0, 1, 2, 3 of the slim array.
     - pixels [4] and [5] of the native 1D array do not map to the slim array (these sub-pixels are masked).
@@ -118,11 +118,11 @@ def sub_line_1d_via_sub_indexes_from(
 
     Parameters
     ----------
-    sub_line_1d_slim : np.ndarray
+    line_1d_slim : np.ndarray
         The slimmed array of shape [total_x_pixels*sub_size] which are mapped to the native array.
     sub_shape : int
         The 1D dimensions of the native 1D sub line.
-    sub_native_index_for_slim_index_1d : np.narray
+    native_index_for_slim_index_1d : np.narray
         An array of shape [total_x_pixels*sub_size] that maps from the slimmed array to the native array.
 
     Returns
@@ -132,10 +132,10 @@ def sub_line_1d_via_sub_indexes_from(
     """
     sub_line_1d_native = np.zeros(sub_shape)
 
-    for slim_index in range(len(sub_native_index_for_slim_index_1d)):
+    for slim_index in range(len(native_index_for_slim_index_1d)):
 
         sub_line_1d_native[
-            sub_native_index_for_slim_index_1d[slim_index]
-        ] = sub_line_1d_slim[slim_index]
+            native_index_for_slim_index_1d[slim_index]
+        ] = line_1d_slim[slim_index]
 
     return sub_line_1d_native

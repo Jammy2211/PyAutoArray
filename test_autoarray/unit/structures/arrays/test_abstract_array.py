@@ -14,6 +14,7 @@ test_data_dir = path.join(
 
 
 class TestConstructorMethods:
+
     def test__constructor_class_method_native__store_slim(self):
 
         arr = aa.Array2D.manual_native(
@@ -92,6 +93,7 @@ class TestConstructorMethods:
         assert arr.mask.scaled_minima == pytest.approx((-4.0, -3.5), 1e-4)
 
     def test__constructor_class_method_slim__store_slim(self):
+
         arr = aa.Array2D.manual_slim(
             array=np.ones((9,)),
             shape_native=(3, 3),
@@ -210,7 +212,9 @@ class TestConstructorMethods:
 
 
 class TestNewArrays:
+
     def test__pad__compare_to_array_util(self):
+
         array_2d = np.ones((5, 5))
         array_2d[2, 2] = 2.0
 

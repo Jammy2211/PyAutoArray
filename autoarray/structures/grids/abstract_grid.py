@@ -5,6 +5,7 @@ from autoarray import exc
 from autoarray.structures import abstract_structure
 from autoarray.structures import grids
 from autoarray.mask import mask_2d as msk
+from autoarray.structures.grids.one_d import grid_1d_util
 from autoarray.structures.grids.two_d import grid_2d_util
 from autoarray.structures.arrays import array_util
 
@@ -80,7 +81,7 @@ def convert_manual_grid_2d_slim(grid_2d_slim, mask_2d, store_slim):
     if store_slim:
         return grid_2d_slim
 
-    return grid_2d_util.grid_2d_from(
+    return grid_2d_util.grid_2d_native_from(
         grid_2d_slim=grid_2d_slim, mask_2d=mask_2d, sub_size=mask_2d.sub_size
     )
 
@@ -114,7 +115,7 @@ def convert_manual_grid_2d_native(grid_2d_native, mask_2d, store_slim):
     if store_slim:
         return grid_slim
 
-    return grid_2d_util.grid_2d_from(
+    return grid_2d_util.grid_2d_native_from(
         grid_2d_slim=grid_slim, mask_2d=mask_2d, sub_size=mask_2d.sub_size
     )
 
@@ -150,6 +151,7 @@ def convert_manual_grid_2d(grid_2d, mask_2d, store_slim):
 
 
 class AbstractGrid1D(abstract_structure.AbstractStructure1D):
+
     @property
     def slim(self):
         """
@@ -158,16 +160,7 @@ class AbstractGrid1D(abstract_structure.AbstractStructure1D):
 
         If the grid is stored in 1D it is return as is. If it is stored in 2D, it must first be mapped from 2D to 1D.
         """
-        if self.store_slim:
-            return self
-
-        sub_grid_2d_slim = grid_2d_util.grid_2d_slim_from(
-            grid_2d=self, mask=self.mask, sub_size=self.mask.sub_size
-        )
-
-        return self._new_structure(
-            grid=sub_grid_2d_slim, mask=self.mask, store_slim=True
-        )
+        return self
 
     @property
     def native(self):
@@ -178,15 +171,9 @@ class AbstractGrid1D(abstract_structure.AbstractStructure1D):
         If the grid is stored in 2D it is return as is. If it is stored in 1D, it must first be mapped from 1D to 2D.
         """
 
-        if self.store_slim:
-            sub_grid_2d = grid_2d_util.grid_2d_from(
-                grid_2d_slim=self, mask_2d=self.mask, sub_size=self.mask.sub_size
-            )
-            return self._new_structure(
-                grid=sub_grid_2d, mask=self.mask, store_slim=False
-            )
-
-        return self
+        return grid_1d_util.grid_1d_native_from(
+            grid_1d_slim=self, mask_1d=self.mask, sub_size=self.mask.sub_size
+        )
 
     @property
     def slim_binned(self):
@@ -262,7 +249,7 @@ class AbstractGrid1D(abstract_structure.AbstractStructure1D):
             (binned_grid_2d_slim_y, binned_grid_2d_slim_x), axis=-1
         )
 
-        binned_grid_2d = grid_2d_util.grid_2d_from(
+        binned_grid_2d = grid_2d_util.grid_2d_native_from(
             grid_2d_slim=binned_grid_2d_slim, mask_2d=self.mask, sub_size=1
         )
 
@@ -309,7 +296,7 @@ class AbstractGrid2D(abstract_structure.AbstractStructure2D):
 
         if self.store_slim:
 
-            grid_2d = grid_2d_util.grid_2d_from(
+            grid_2d = grid_2d_util.grid_2d_native_from(
                 grid_2d_slim=self, mask_2d=self.mask, sub_size=self.mask.sub_size
             )
 
@@ -391,7 +378,7 @@ class AbstractGrid2D(abstract_structure.AbstractStructure2D):
             (grid_2d_slim_binned_y, grid_2d_slim_binned_x), axis=-1
         )
 
-        grid_2d_native_binned = grid_2d_util.grid_2d_from(
+        grid_2d_native_binned = grid_2d_util.grid_2d_native_from(
             grid_2d_slim=grid_2d_slim_binned, mask_2d=self.mask, sub_size=1
         )
 

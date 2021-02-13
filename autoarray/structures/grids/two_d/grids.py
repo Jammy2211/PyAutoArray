@@ -640,7 +640,7 @@ class Grid2D(abstract_grid.AbstractGrid2D):
         if store_slim:
             return Grid2D(grid=sub_grid_1d, mask=mask, store_slim=store_slim)
 
-        sub_grid_2d = grid_2d_util.grid_2d_from(
+        sub_grid_2d = grid_2d_util.grid_2d_native_from(
             grid_2d_slim=sub_grid_1d, mask_2d=mask, sub_size=mask.sub_size
         )
 

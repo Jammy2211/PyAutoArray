@@ -1,8 +1,11 @@
 from autoarray.structures.grids import abstract_grid
+from autoarray.geometry import geometry_util
+from autoarray.mask import mask_1d
 
 
 class Grid1D(abstract_grid.AbstractGrid1D):
-    def __new__(cls, grid, mask, store_slim=True, *args, **kwargs):
+
+    def __new__(cls, grid, mask, *args, **kwargs):
         """
         A grid of 1D (x) coordinates, which are paired to a uniform 1D mask of pixels and sub-pixels. Each entry
         on the grid corresponds to the (x) coordinates at the centre of a sub-pixel of an unmasked pixel.
@@ -152,9 +155,6 @@ class Grid1D(abstract_grid.AbstractGrid1D):
 
         obj = grid.view(cls)
         obj.mask = mask
-        obj.store_slim = store_slim
-
-        abstract_grid.check_grid_2d(grid_2d=obj)
 
         return obj
 
@@ -162,29 +162,22 @@ class Grid1D(abstract_grid.AbstractGrid1D):
     def manual_slim(
         cls,
         grid,
-        shape_native,
         pixel_scales,
         sub_size=1,
-        origin=(0.0, 0.0),
-        store_slim=True,
+        origin=(0.0,),
     ):
         """
-        Create a Grid2D (see *Grid2D.__new__*) by inputting the grid coordinates in 1D, for example:
+        Create a Grid1D (see *Grid1D.__new__*) by inputting the grid coordinates in 1D, for example:
 
         grid=np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0]])
 
         grid=[[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0]]
-
-        From 1D input the method cannot determine the 2D shape of the grid and its mask, thus the shape_native must be
-        input into this method. The mask is setup as a unmasked `Mask2D` of shape_native.
 
         Parameters
         ----------
         grid : np.ndarray or list
             The (y,x) coordinates of the grid input as an ndarray of shape [total_unmasked_pixells*(sub_size**2), 2]
             or a list of lists.
-        shape_native : (float, float)
-            The 2D shape of the mask the grid is paired with.
         pixel_scales: (float, float) or float
             The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a ``float``,
             it is converted to a (float, float) structure.
@@ -192,22 +185,49 @@ class Grid1D(abstract_grid.AbstractGrid1D):
             The size (sub_size x sub_size) of each unmasked pixels sub-grid.
         origin : (float, float)
             The origin of the grid's mask.
-        store_slim : bool
-            If True, the grid is stored in 1D as an ndarray of shape [total_unmasked_coordinates, 2]. If False, it is
-            stored in 2D as an ndarray of shape [total_y_coordinates, total_x_coordinates, 2].
         """
 
-        pixel_scales = geometry_util.convert_pixel_scales_2d(pixel_scales=pixel_scales)
+        pixel_scales = geometry_util.convert_pixel_scales_1d(pixel_scales=pixel_scales)
 
-        mask = msk.Mask2D.unmasked(
-            shape_native=shape_native,
+        grid = abstract_grid.convert_grid(
+            grid=grid,
+        )
+
+        mask = mask_1d.Mask1D.unmasked(
+            shape_slim=grid.shape[0],
             pixel_scales=pixel_scales,
             sub_size=sub_size,
             origin=origin,
         )
 
-        grid = abstract_grid.convert_manual_grid_2d_slim(
-            grid_2d_slim=grid, mask_2d=mask, store_slim=store_slim
-        )
+        return Grid1D(grid=grid, mask=mask)
 
-        return Grid2D(grid=grid, mask=mask, store_slim=store_slim)
+    @classmethod
+    def manual_native(
+        cls,
+        grid,
+        pixel_scales,
+        sub_size=1,
+        origin=(0.0,),
+    ):
+        """
+        Create a Grid1D (see *Grid1D.__new__*) by inputting the grid coordinates in 1D, for example:
+
+        grid=np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0]])
+
+        grid=[[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0]]
+
+        Parameters
+        ----------
+        grid : np.ndarray or list
+            The (y,x) coordinates of the grid input as an ndarray of shape [total_unmasked_pixells*(sub_size**2), 2]
+            or a list of lists.
+        pixel_scales: (float, float) or float
+            The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a ``float``,
+            it is converted to a (float, float) structure.
+        sub_size : int
+            The size (sub_size x sub_size) of each unmasked pixels sub-grid.
+        origin : (float, float)
+            The origin of the grid's mask.
+        """
+        return cls.manual_slim(grid=grid, pixel_scales=pixel_scales, sub_size=sub_size, origin=origin)
