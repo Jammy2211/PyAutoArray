@@ -91,7 +91,7 @@ class AbstractMask1d(abstract_mask.AbstractMask):
         This is defined from the top-left corner, such that the first pixel at location [0, 0] will have a negative x \
         value y value in scaled units.
         """
-        grid_slim = grid_1d_util.grid_1d_via_mask_from(
+        grid_slim = grid_1d_util.grid_1d_slim_via_mask_from(
             mask_1d=self, pixel_scales=self.pixel_scales, sub_size=1, origin=self.origin
         )
 

@@ -1952,7 +1952,7 @@ class TestSubGrid2DFromSubGrid2d:
 
         mask = np.full(fill_value=False, shape=(2, 2))
 
-        grid_2d = aa.util.grid_2d.grid_2d_from(
+        grid_2d = aa.util.grid_2d.grid_2d_native_from(
             grid_2d_slim=grid_slim, mask_2d=mask, sub_size=1
         )
 
@@ -1964,7 +1964,7 @@ class TestSubGrid2DFromSubGrid2d:
 
         mask = np.array([[False, False], [False, True]])
 
-        grid_2d = aa.util.grid_2d.grid_2d_from(
+        grid_2d = aa.util.grid_2d.grid_2d_native_from(
             grid_2d_slim=grid_slim, mask_2d=mask, sub_size=1
         )
 
@@ -1991,7 +1991,7 @@ class TestSubGrid2DFromSubGrid2d:
             ]
         )
 
-        grid_2d = aa.util.grid_2d.grid_2d_from(
+        grid_2d = aa.util.grid_2d.grid_2d_native_from(
             grid_2d_slim=grid_slim, mask_2d=mask, sub_size=1
         )
 
@@ -2027,7 +2027,7 @@ class TestSubGrid2DFromSubGrid2d:
 
         mask = np.array([[False, False], [False, True]])
 
-        grid_2d = aa.util.grid_2d.grid_2d_from(
+        grid_2d = aa.util.grid_2d.grid_2d_native_from(
             grid_2d_slim=grid_slim, mask_2d=mask, sub_size=2
         )
 

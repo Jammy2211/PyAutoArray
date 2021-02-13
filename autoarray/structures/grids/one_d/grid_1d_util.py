@@ -2,12 +2,13 @@ from autoarray import decorator_util
 import numpy as np
 
 from autoarray.mask import mask_1d_util
+from autoarray.structures.lines import line_util
 from autoarray.geometry import geometry_util
 
 from typing import Tuple
 
 
-def grid_1d_via_shape_slim_from(
+def grid_1d_slim_via_shape_slim_from(
     shape_slim: (int,),
     pixel_scales: Tuple[float],
     sub_size: int,
@@ -45,7 +46,7 @@ def grid_1d_via_shape_slim_from(
     --------
     sub_grid_1d = grid_1d_via_shape_slim_from(mask=mask, pixel_scales=(0.5, 0.5), sub_size=2, origin=(0.0, 0.0))
     """
-    return grid_1d_via_mask_from(
+    return grid_1d_slim_via_mask_from(
         mask_1d=np.full(fill_value=False, shape=shape_slim),
         pixel_scales=pixel_scales,
         sub_size=sub_size,
@@ -54,7 +55,7 @@ def grid_1d_via_shape_slim_from(
 
 
 @decorator_util.jit()
-def grid_1d_via_mask_from(
+def grid_1d_slim_via_mask_from(
     mask_1d: np.ndarray,
     pixel_scales: Tuple[float],
     sub_size: int,
@@ -122,3 +123,38 @@ def grid_1d_via_mask_from(
                 sub_index += 1
 
     return grid_1d
+
+
+def grid_1d_native_from(
+    grid_1d_slim: np.ndarray, mask_1d: np.ndarray, sub_size: int
+) -> np.ndarray:
+    """
+    For a slimmed 1D grid of shape [total_unmasked_pixels*sub_size], that was computed by extracting the unmasked values
+    from a native 1D grid of shape [total_pixels*sub_Size], map the slimmed grid's coordinates back to the native 1D
+    grid where masked values are set to zero.
+
+    This uses a 1D array 'slim_to_native' where each index gives the 1D pixel indexes of the grid's native unmasked
+    pixels, for example:
+
+    - If slim_to_native[0] = [0], the first value of the 1D slimmed grid maps to the pixel [0] of the native 1D grid.
+    - If slim_to_native[1] = [2], the second value of the 1D slimmed grid maps to the pixel [2] of the native 1D grid.
+    - If slim_to_native[4] = [9], the fifth value of the 1D slimmed grid maps to the pixels [9] of the native 1D grid.
+
+    Parameters
+    ----------
+    grid_1d_slim : np.ndarray
+        The (x) values of the slimmed 1D grid which are mapped to the native 1D grid.
+    mask_1d : np.ndarray
+        A 1D array of bools, where `False` values means unmasked and are included in the mapping.
+    sub_size : int
+        The size of each unmasked pixels sub-grid.
+
+    Returns
+    -------
+    ndarray
+        A NumPy array of shape [total_pixels*sub_size] corresponding to the (x) values of the native 1D
+        mapped from the slimmed grid.
+    """
+    return line_util.line_1d_native_from(
+        line_1d_slim=grid_1d_slim, mask_1d=mask_1d, sub_size=sub_size
+    )

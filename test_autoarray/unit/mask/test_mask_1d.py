@@ -6,6 +6,7 @@ from autoarray import exc
 
 
 class TestMask1D:
+
     def test__mask__makes_mask_with_pixel_scale(self):
 
         mask = aa.Mask1D.manual(mask=[False, True], pixel_scales=1.0)

@@ -13,42 +13,8 @@ test_data_dir = path.join(
 
 
 class TestAPI:
-    def test__manual__makes_array_without_other_inputs(self):
 
-        arr = aa.Array2D.manual_native(array=[[1.0, 2.0], [3.0, 4.0]], pixel_scales=1.0)
-
-        assert type(arr) == aa.Array2D
-        assert (arr.native == np.array([[1.0, 2.0], [3.0, 4.0]])).all()
-        assert (arr.slim == np.array([1.0, 2.0, 3.0, 4.0])).all()
-        assert arr.pixel_scales == (1.0, 1.0)
-        assert arr.origin == (0.0, 0.0)
-
-        arr = aa.Array2D.manual_slim(
-            array=[1.0, 2.0, 3.0, 4.0],
-            shape_native=(2, 2),
-            pixel_scales=1.0,
-            origin=(0.0, 1.0),
-        )
-
-        assert type(arr) == aa.Array2D
-        assert (arr.native == np.array([[1.0, 2.0], [3.0, 4.0]])).all()
-        assert (arr.slim == np.array([1.0, 2.0, 3.0, 4.0])).all()
-        assert arr.pixel_scales == (1.0, 1.0)
-        assert arr.origin == (0.0, 1.0)
-
-        arr = aa.Array2D.manual_slim(
-            array=[1.0, 2.0, 3.0, 4.0, 5.0, 6.0],
-            shape_native=(2, 3),
-            pixel_scales=(2.0, 3.0),
-        )
-
-        assert type(arr) == aa.Array2D
-        assert (arr.native == np.array([[1.0, 2.0, 3.0], [4.0, 5.0, 6.0]])).all()
-        assert (arr.slim == np.array([1.0, 2.0, 3.0, 4.0, 5.0, 6.0])).all()
-        assert arr.pixel_scales == (2.0, 3.0)
-        assert arr.origin == (0.0, 0.0)
-
-    def test__manual__makes_with_sub_size(self):
+    def test__manual(self):
 
         arr = aa.Array2D.manual_native(
             array=[[1.0, 2.0], [3.0, 4.0]], pixel_scales=1.0, sub_size=1
@@ -94,7 +60,8 @@ class TestAPI:
         assert arr.origin == (0.0, 0.0)
         assert arr.mask.sub_size == 2
 
-    def test__manual_mask__makes_array_without_other_inputs(self):
+    def test__manual_mask(self):
+
         mask = aa.Mask2D.unmasked(shape_native=(2, 2), pixel_scales=1.0)
         arr = aa.Array2D.manual_mask(array=[[1.0, 2.0], [3.0, 4.0]], mask=mask)
 

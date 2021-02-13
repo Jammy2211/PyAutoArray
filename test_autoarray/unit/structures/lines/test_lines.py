@@ -12,6 +12,7 @@ test_line_dir = path.join(
 
 
 class TestAPI:
+
     def test__manual__makes_line_with_pixel_scale(self):
 
         line = aa.Line1D.manual_slim(line=[1.0, 2.0, 3.0, 4.0], pixel_scales=1.0)

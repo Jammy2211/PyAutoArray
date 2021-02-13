@@ -73,7 +73,7 @@ def total_sub_pixels_1d_from(mask_1d: np.ndarray, sub_size: int) -> int:
 
 
 @decorator_util.jit()
-def sub_native_index_for_sub_slim_index_1d_from(
+def native_index_for_slim_index_1d_from(
     mask_1d: np.ndarray, sub_size: int
 ) -> np.ndarray:
     """
