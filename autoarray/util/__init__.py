@@ -12,4 +12,4 @@ from ..inversion import pixelization_util as pixelization
 from ..inversion import mapper_util as mapper
 from ..inversion import regularization_util as regularization
 from ..inversion import inversion_util as inversion
-from . import transformer_util as transformer
+from ..operators import transformer_util as transformer
