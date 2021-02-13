@@ -317,14 +317,14 @@ def normalized_residual_map_complex_with_mask_from(
     normalized_residual_map_real = np.divide(
         residual_map.real,
         noise_map.real,
-        out=np.zeros_like(residual_map, dtype="complex128"),
+        out=np.zeros_like(residual_map.real),
         where=np.asarray(mask) == 0,
     )
 
     normalized_residual_map_imag = np.divide(
         residual_map.imag,
         noise_map.imag,
-        out=np.zeros_like(residual_map, dtype="complex128"),
+        out=np.zeros_like(residual_map.imag),
         where=np.asarray(mask) == 0,
     )
 
@@ -350,11 +350,12 @@ def chi_squared_map_complex_with_mask_from(
     mask : np.ndarray
         The mask applied to the residual-map, where `False` entries are included in the calculation.
     """
+
     chi_squared_map_real = np.square(
         np.divide(
             residual_map.real,
             noise_map.real,
-            out=np.zeros_like(residual_map),
+            out=np.zeros_like(residual_map.real),
             where=np.asarray(mask) == 0,
         )
     )
@@ -362,7 +363,7 @@ def chi_squared_map_complex_with_mask_from(
         np.divide(
             residual_map.imag,
             noise_map.imag,
-            out=np.zeros_like(residual_map),
+            out=np.zeros_like(residual_map.imag),
             where=np.asarray(mask) == 0,
         )
     )

@@ -15,6 +15,7 @@ logger = logging.getLogger(__name__)
 
 
 class VectorField2DIrregular(np.ndarray):
+
     def __new__(
         cls,
         vectors: np.ndarray or [(float, float)],

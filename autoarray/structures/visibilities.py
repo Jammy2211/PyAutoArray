@@ -139,7 +139,7 @@ class AbstractVisibilities(np.ndarray):
     @property
     def extent(self):
         """The extent of the visibilities if they are treated as a 2D grid in the complex plane."""
-        return np.asarray(
+        return np.array(
             [
                 self.scaled_minima[1],
                 self.scaled_maxima[1],

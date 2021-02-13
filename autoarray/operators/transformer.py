@@ -2,14 +2,16 @@ from autoarray.util import transformer_util
 from autoarray.structures import arrays, visibilities as vis, grids
 from autoarray.structures.arrays import array_util
 from astropy import units
-from pynufft import NUFFT_cpu
+from pynufft.linalg.nufft_cpu import NUFFT_cpu
 import pylops
+import warnings
 
 import copy
 import numpy as np
 
 
 class TransformerDFT(pylops.LinearOperator):
+
     def __init__(self, uv_wavelengths, real_space_mask, preload_transform=True):
 
         super(TransformerDFT, self).__init__()
@@ -82,6 +84,7 @@ class TransformerDFT(pylops.LinearOperator):
 
 
 class TransformerNUFFT(NUFFT_cpu, pylops.LinearOperator):
+
     def __init__(self, uv_wavelengths, real_space_mask):
 
         super(TransformerNUFFT, self).__init__()
@@ -164,6 +167,8 @@ class TransformerNUFFT(NUFFT_cpu, pylops.LinearOperator):
         ...
         """
 
+        warnings.filterwarnings("ignore")
+
         return vis.Visibilities(
             visibilities=self.forward(
                 image.native_binned[::-1, :]
@@ -175,7 +180,7 @@ class TransformerNUFFT(NUFFT_cpu, pylops.LinearOperator):
 
     def transformed_mapping_matrix_from_mapping_matrix(self, mapping_matrix):
 
-        transfomed_mapping_matrix = 0 + 0j * np.zeros(
+        transformed_mapping_matrix = 0 + 0j * np.zeros(
             (self.uv_wavelengths.shape[0], mapping_matrix.shape[1])
         )
 
@@ -193,9 +198,9 @@ class TransformerNUFFT(NUFFT_cpu, pylops.LinearOperator):
 
             visibilities = self.visibilities_from_image(image=image)
 
-            transfomed_mapping_matrix[:, source_pixel_1d_index] = visibilities
+            transformed_mapping_matrix[:, source_pixel_1d_index] = visibilities
 
-        return transfomed_mapping_matrix
+        return transformed_mapping_matrix
 
     def forward_lop(self, x):
         """
@@ -205,6 +210,8 @@ class TransformerNUFFT(NUFFT_cpu, pylops.LinearOperator):
         :return: y: The output numpy array, with the size of (M,) or (M, batch)
         :rtype: numpy array with the dtype of numpy.complex64
         """
+
+        warnings.filterwarnings("ignore")
 
         x2d = array_util.array_2d_native_complex_via_indexes_from(
             array_2d_slim=x,
@@ -224,6 +231,8 @@ class TransformerNUFFT(NUFFT_cpu, pylops.LinearOperator):
                     with the size of Nd or Nd + (batch, )
         :rtype: numpy array with the dtype of numpy.complex64
         """
+
+        warnings.filterwarnings("ignore")
 
         def a_complex_from_a_real_and_a_imag(a_real, a_imag):
 

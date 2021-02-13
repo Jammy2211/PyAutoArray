@@ -88,14 +88,15 @@ class GridScatter(AbstractMatWrap2D):
         """
 
         config_dict = self.config_dict
+
         if len(config_dict["c"]) > 1:
             config_dict["c"] = config_dict["c"][0]
 
         try:
             plt.scatter(
-                y=np.asarray(grid)[:, 0], x=np.asarray(grid)[:, 1], **config_dict
+                y=grid[:, 0], x=grid[:, 1], **config_dict
             )
-        except IndexError:
+        except (IndexError, TypeError):
             return self.scatter_grid_list(grid_list=grid)
 
     def scatter_grid_list(
@@ -123,8 +124,8 @@ class GridScatter(AbstractMatWrap2D):
             for grid in grid_list:
 
                 plt.scatter(
-                    y=np.asarray(grid)[:, 0],
-                    x=np.asarray(grid)[:, 1],
+                    y=grid[:, 0],
+                    x=grid[:, 1],
                     c=next(color),
                     **config_dict,
                 )
@@ -156,8 +157,8 @@ class GridScatter(AbstractMatWrap2D):
         config_dict.pop("c")
 
         plt.scatter(
-            y=np.asarray(grid)[:, 0],
-            x=np.asarray(grid)[:, 1],
+            y=grid[:, 0],
+            x=grid[:, 1],
             c=color_array,
             cmap=cmap,
             **config_dict,
@@ -206,8 +207,8 @@ class GridScatter(AbstractMatWrap2D):
             ):
 
                 plt.scatter(
-                    y=np.asarray(grid[index_list, 0]),
-                    x=np.asarray(grid[index_list, 1]),
+                    y=grid[index_list, 0],
+                    x=grid[index_list, 1],
                     color=next(color),
                     **config_dict,
                 )
@@ -219,8 +220,8 @@ class GridScatter(AbstractMatWrap2D):
                 ys, xs = map(list, zip(*index_list))
 
                 plt.scatter(
-                    y=np.asarray(grid.native[ys, xs, 0]),
-                    x=np.asarray(grid.native[ys, xs, 1]),
+                    y=grid.native[ys, xs, 0],
+                    x=grid.native[ys, xs, 1],
                     color=next(color),
                     **config_dict,
                 )
@@ -288,8 +289,8 @@ class GridPlot(AbstractMatWrap2D):
             The grid of (y,x) coordinates that is plotted.
         """
         try:
-            plt.plot(np.asarray(grid)[:, 1], np.asarray(grid)[:, 0], **self.config_dict)
-        except IndexError:
+            plt.plot(grid[:, 1], grid[:, 0], **self.config_dict)
+        except (IndexError, TypeError):
             return self.plot_grid_list(grid_list=grid)
 
     def plot_grid_list(
@@ -320,8 +321,8 @@ class GridPlot(AbstractMatWrap2D):
             for grid in grid_list:
 
                 plt.plot(
-                    np.asarray(grid)[:, 1],
-                    np.asarray(grid)[:, 0],
+                    grid[:, 1],
+                    grid[:, 0],
                     c=next(color),
                     **config_dict,
                 )
@@ -380,6 +381,7 @@ class PatchOverlay(AbstractMatWrap2D):
         patches : [Patch]
             The patches that are laid over the figure.
         """
+
         patch_collection = PatchCollection(patches=patches, **self.config_dict)
 
         plt.gcf().gca().add_collection(patch_collection)
@@ -430,7 +432,10 @@ class VoronoiDrawer(AbstractMatWrap2D):
             color_values = np.where(values > vmax, vmax, values)
             color_values = np.where(values < vmin, vmin, color_values)
 
-            color_array = (color_values - vmin) / (vmax - vmin)
+            if vmax != vmin:
+                color_array = (color_values - vmin) / (vmax - vmin)
+            else:
+                color_array = np.ones(color_values.shape[0])
 
             cmap = plt.get_cmap(cmap.config_dict["cmap"])
             colorbar = colorbar.set_with_color_values(

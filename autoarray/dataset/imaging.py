@@ -94,7 +94,6 @@ class AbstractSettingsMaskedImaging(abstract_dataset.AbstractSettingsMaskedDatas
         sub_steps=None,
         pixel_scales_interp=None,
         signal_to_noise_limit=None,
-        bin_up_factor=None,
         psf_shape_2d=None,
         renormalize_psf=True,
     ):
@@ -144,7 +143,6 @@ class AbstractSettingsMaskedImaging(abstract_dataset.AbstractSettingsMaskedDatas
             signal_to_noise_limit=signal_to_noise_limit,
         )
 
-        self.bin_up_factor = bin_up_factor
         self.psf_shape_2d = psf_shape_2d
         self.renormalize_psf = renormalize_psf
 
@@ -154,7 +152,6 @@ class AbstractSettingsMaskedImaging(abstract_dataset.AbstractSettingsMaskedDatas
             f"{conf.instance['notation']['settings_tags']['imaging']['imaging']}"
             f"[{self.grid_tag_no_inversion}"
             f"{self.signal_to_noise_limit_tag}"
-            f"{self.bin_up_factor_tag}"
             f"{self.psf_shape_tag}]"
         )
 
@@ -164,7 +161,6 @@ class AbstractSettingsMaskedImaging(abstract_dataset.AbstractSettingsMaskedDatas
             f"{conf.instance['notation']['settings_tags']['imaging']['imaging']}"
             f"[{self.grid_tag_with_inversion}"
             f"{self.signal_to_noise_limit_tag}"
-            f"{self.bin_up_factor_tag}"
             f"{self.psf_shape_tag}]"
         )
 
@@ -207,28 +203,8 @@ class AbstractSettingsMaskedImaging(abstract_dataset.AbstractSettingsMaskedDatas
             + x
         )
 
-    @property
-    def bin_up_factor_tag(self):
-        """Generate a bin up tag, to customize phase names based on the resolutioon the image is binned up by for faster \
-        run times.
-
-        This changes the phase settings folder as follows:
-
-        bin_up_factor = 1 -> settings
-        bin_up_factor = 2 -> settings_bin_up_factor_2
-        bin_up_factor = 2 -> settings_bin_up_factor_2
-        """
-        if self.bin_up_factor == 1 or self.bin_up_factor is None:
-            return ""
-        return (
-            "__"
-            + conf.instance["notation"]["settings_tags"]["imaging"]["bin_up_factor"]
-            + "_"
-            + str(self.bin_up_factor)
-        )
-
-
 class AbstractMaskedImaging(abstract_dataset.AbstractMaskedDataset):
+
     def __init__(self, imaging, mask, settings=AbstractSettingsMaskedImaging()):
         """
         The lens dataset is the collection of data_type (image, noise-map, PSF), a mask, grid, convolver \

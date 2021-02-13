@@ -91,9 +91,11 @@ class AbstractMask2D(abstract_mask.AbstractMask):
         ).astype("bool")
 
     def rescaled_mask_from_rescale_factor(self, rescale_factor):
+
         rescaled_mask = mask_util.rescaled_mask_2d_from(
             mask_2d=self, rescale_factor=rescale_factor
         )
+
         return Mask2D(
             mask=rescaled_mask,
             pixel_scales=self.pixel_scales,
@@ -268,7 +270,7 @@ class AbstractMask2D(abstract_mask.AbstractMask):
 
     @property
     def extent(self):
-        return np.asarray(
+        return np.array(
             [
                 self.scaled_minima[1],
                 self.scaled_maxima[1],

@@ -197,14 +197,6 @@ class TestImaging:
 
 
 class TestSettingsMaskedImaging:
-    def test__bin_up_factor_tag(self):
-
-        settings = aa.SettingsMaskedImaging(bin_up_factor=None)
-        assert settings.bin_up_factor_tag == ""
-        settings = aa.SettingsMaskedImaging(bin_up_factor=1)
-        assert settings.bin_up_factor_tag == ""
-        settings = aa.SettingsMaskedImaging(bin_up_factor=2)
-        assert settings.bin_up_factor_tag == "__bin_2"
 
     def test__psf_shape_2d_tag(self):
 
@@ -222,7 +214,6 @@ class TestSettingsMaskedImaging:
             grid_inversion_class=aa.Grid2D,
             sub_size=2,
             signal_to_noise_limit=2,
-            bin_up_factor=None,
             psf_shape_2d=None,
         )
 

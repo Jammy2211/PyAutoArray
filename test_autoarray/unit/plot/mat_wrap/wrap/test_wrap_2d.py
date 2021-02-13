@@ -11,6 +11,7 @@ directory = path.dirname(path.realpath(__file__))
 
 
 class TestArrayOverlay:
+
     def test__from_config_or_via_manual_input(self):
 
         array_overlay = aplt.ArrayOverlay()
@@ -33,7 +34,7 @@ class TestArrayOverlay:
 
     def test__overlay_array__works_for_reasonable_values(self):
 
-        arr = aa.Array2D.manual_native(array=[[1.0, 2.0], [3.0, 4.0]], pixel_scales=0.5)
+        arr = aa.Array2D.manual_native(array=[[1.0, 2.0], [3.0, 4.0]], pixel_scales=0.5, origin=(2.0, 2.0))
 
         figure = aplt.Figure(aspect="auto")
 
@@ -43,6 +44,7 @@ class TestArrayOverlay:
 
 
 class TestGridScatter:
+
     def test__from_config_or_via_manual_input(self):
 
         grid_scatter = aplt.GridScatter()
@@ -84,7 +86,7 @@ class TestGridScatter:
         cmap = plt.get_cmap("jet")
 
         scatter.scatter_grid_colored(
-            grid=[[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0], [5.0, 5.0]],
+            grid=aa.Grid2DIrregular([(1.0, 1.0), (2.0, 2.0), (3.0, 3.0), (4.0, 4.0), (5.0, 5.0)]),
             color_array=np.array([2.0, 2.0, 2.0, 2.0, 2.0]),
             cmap=cmap,
         )
@@ -190,9 +192,12 @@ class TestGridPlot:
 
         line = aplt.GridPlot(linewidth=2, linestyle="--", c="k")
 
-        line.plot_grid_list(grid_list=aa.Grid2DIrregular([[(1.0, 1.0), (2.0, 2.0)]]))
+        line.plot_grid_list(grid_list=[aa.Grid2DIrregular([(1.0, 1.0), (2.0, 2.0)])])
         line.plot_grid_list(
-            grid_list=aa.Grid2DIrregular([[(1.0, 1.0), (2.0, 2.0)], [(3.0, 3.0)]])
+            grid_list=[
+                aa.Grid2DIrregular([(1.0, 1.0), (2.0, 2.0)]),
+                aa.Grid2DIrregular([(3.0, 3.0)])
+            ]
         )
 
 
@@ -230,13 +235,15 @@ class TestVectorFieldQuiver:
         )
 
         vector_field = aa.VectorField2DIrregular(
-            vectors=[(1.0, 2.0), (2.0, 1.0)], grid=[(-1.0, 0.0), (-2.0, 0.0)]
+            vectors=[(1.0, 2.0), (2.0, 1.0)],
+            grid=[(-1.0, 0.0), (-2.0, 0.0)]
         )
 
         quiver.quiver_vector_field(vector_field=vector_field)
 
 
 class TestPatcher:
+
     def test__from_config_or_via_manual_input(self):
 
         patch_overlay = aplt.PatchOverlay()
@@ -263,7 +270,7 @@ class TestPatcher:
 
     def test__add_patches(self):
 
-        patch_overlay = aplt.PatchOverlay(facecolor="cy", edgecolor="none")
+        patch_overlay = aplt.PatchOverlay(facecolor="c", edgecolor="none")
 
         patch_0 = Ellipse(xy=(1.0, 2.0), height=1.0, width=2.0, angle=1.0)
         patch_1 = Ellipse(xy=(1.0, 2.0), height=1.0, width=2.0, angle=1.0)
@@ -272,6 +279,7 @@ class TestPatcher:
 
 
 class TestVoronoiDrawer:
+
     def test__from_config_or_via_manual_input(self):
 
         voronoi_drawer = aplt.VoronoiDrawer()
@@ -304,15 +312,19 @@ class TestVoronoiDrawer:
             mapper=voronoi_mapper_9_3x3, values=None, cmap=aplt.Cmap(), colorbar=None
         )
 
+        values = np.ones(9)
+        values[0] = 0.0
+
         voronoi_drawer.draw_voronoi_pixels(
             mapper=voronoi_mapper_9_3x3,
-            values=np.ones(9),
+            values=values,
             cmap=aplt.Cmap(),
             colorbar=aplt.Colorbar(fraction=0.1, pad=0.05),
         )
 
 
 class TestDerivedClasses:
+
     def test__all_class_load_and_inherit_correctly(self, grid_irregular_7x7_list):
 
         origin_scatter = aplt.OriginScatter()

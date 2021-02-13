@@ -272,9 +272,10 @@ class AbstractGrid1D(abstract_structure.AbstractStructure1D):
 
 
 class AbstractGrid2D(abstract_structure.AbstractStructure2D):
+
     def __array_finalize__(self, obj):
 
-        super(AbstractGrid2D, self).__array_finalize__(obj)
+        super().__array_finalize__(obj)
 
         if hasattr(obj, "_sub_border_flat_indexes"):
             self.mask._sub_border_flat_indexes = obj._sub_border_flat_indexes

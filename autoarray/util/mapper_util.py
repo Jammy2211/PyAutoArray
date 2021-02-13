@@ -77,7 +77,7 @@ def pixelization_index_for_voronoi_sub_slim_index_from(
         Voronoi grid.
     """
 
-    pixelization_index_for_voronoi_sub_slim_index = np.zeros((grid.shape[0]))
+    pixelization_index_for_voronoi_sub_slim_index = np.zeros(grid.shape[0])
 
     for sub_slim_index in range(grid.shape[0]):
 

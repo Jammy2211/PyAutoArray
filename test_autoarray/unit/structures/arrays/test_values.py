@@ -14,6 +14,7 @@ test_values_dir = path.join(
 
 
 class TestValuesIrregular:
+
     def test__input_as_list__convert_correctly(self):
 
         values = aa.ValuesIrregular(values=[1.0, -1.0])
@@ -58,7 +59,7 @@ class TestValuesIrregular:
 
     def test__output_values_to_json(self):
 
-        values = aa.ValuesIrregular([[4.0, 5.0], [6.0, 7.0, 8.0]])
+        values = aa.ValuesIrregular(values=[6.0, 7.0, 8.0])
 
         output_values_dir = path.join(
             "{}".format(path.dirname(path.realpath(__file__))),
@@ -78,7 +79,7 @@ class TestValuesIrregular:
 
         values = aa.ValuesIrregular.from_file(file_path=file_path)
 
-        assert values.in_list == [[4.0, 5.0], [6.0, 7.0, 8.0]]
+        assert values.in_list == [6.0, 7.0, 8.0]
 
         with pytest.raises(FileExistsError):
             values.output_to_json(file_path=file_path)
