@@ -1,7 +1,7 @@
 import numpy as np
 import pylops
 
-from autoarray.util import regularization_util
+from autoarray.inversion import regularization_util
 
 
 class Regularization:

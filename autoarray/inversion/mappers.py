@@ -1,6 +1,6 @@
 from autoarray.structures import arrays
 from autoarray.structures import grids
-from autoarray.util import mapper_util
+from autoarray.inversion import mapper_util
 from autoarray.structures.grids.two_d import grid_2d_util
 from autoarray.structures.arrays import array_util
 
