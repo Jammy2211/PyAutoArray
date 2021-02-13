@@ -1,7 +1,7 @@
 import numpy as np
 
 from autoarray.structures import abstract_structure
-from autoarray.util import fit_util
+from autoarray.fit import fit_util
 
 
 class FitData:

@@ -1,7 +1,7 @@
 import numpy as np
 
 from autoarray import decorator_util
-from autoarray.util import mask_1d_util
+from autoarray.mask import mask_1d_util
 
 
 # @decorator_util.jit()

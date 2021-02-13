@@ -3,8 +3,7 @@ import copy
 import numpy as np
 
 from autoarray import exc
-from autoarray.mask import abstract_mask
-from autoarray.util import mask_2d_util
+from autoarray.mask import abstract_mask, mask_2d_util
 from autoarray.structures.grids.two_d import grid_2d_util
 from autoarray.geometry import geometry_util
 from autoarray.structures.arrays import array_util

@@ -1,7 +1,7 @@
 from autoarray import decorator_util
 import numpy as np
 
-from autoarray.util import mask_1d_util
+from autoarray.mask import mask_1d_util
 from autoarray.geometry import geometry_util
 
 from typing import Tuple
