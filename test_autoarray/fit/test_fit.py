@@ -1,11 +1,13 @@
 import autoarray as aa
 
 import numpy as np
+import pytest
 
 from autoarray.mock import mock
 
 
 class TestFitImaging:
+
     def test__image_and_model_are_identical__no_masking__check_values_are_correct(self):
 
         mask = aa.Mask2D.manual(
@@ -220,7 +222,7 @@ class TestFitInterferometer:
 
         assert fit.chi_squared == 0.0
         assert fit.reduced_chi_squared == 0.0
-        assert fit.noise_normalization == 4.0 * np.log(2 * np.pi * 2.0 ** 2.0)
+        assert fit.noise_normalization == pytest.approx(4.0 * np.log(2 * np.pi * 2.0 ** 2.0), 1.0e-4)
         assert fit.log_likelihood == -0.5 * (fit.chi_squared + fit.noise_normalization)
 
     def test__visibilities_and_model_are_different__no_masking__check_values_are_correct(
@@ -282,7 +284,7 @@ class TestFitInterferometer:
 
         assert fit.chi_squared == 0.25
         assert fit.reduced_chi_squared == 0.25 / 2.0
-        assert fit.noise_normalization == 4.0 * np.log(2 * np.pi * 2.0 ** 2.0)
+        assert fit.noise_normalization == pytest.approx(4.0 * np.log(2 * np.pi * 2.0 ** 2.0), 1.0e-4)
         assert fit.log_likelihood == -0.5 * (fit.chi_squared + fit.noise_normalization)
 
     def test__visibilities_and_model_are_identical__inversion_included__changes_certain_properties(
@@ -329,7 +331,7 @@ class TestFitInterferometer:
 
         assert fit.chi_squared == 0.0
         assert fit.reduced_chi_squared == 0.0
-        assert fit.noise_normalization == 4.0 * np.log(2 * np.pi * 2.0 ** 2.0)
+        assert fit.noise_normalization == pytest.approx(4.0 * np.log(2 * np.pi * 2.0 ** 2.0), 1.0e-4)
         assert fit.log_likelihood == -0.5 * (fit.chi_squared + fit.noise_normalization)
 
         assert fit.log_likelihood_with_regularization == -0.5 * (
