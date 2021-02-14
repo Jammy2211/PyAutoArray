@@ -5,6 +5,7 @@ import pytest
 
 
 class TestResiduals:
+
     def test__model_matches_data__residual_map_all_0s(self):
 
         data = np.array([10.0, 10.0, 10.0, 10.0])
@@ -237,6 +238,7 @@ class TestChiSquareds:
 
 
 class TestLikelihood:
+
     def test__model_matches_data__noise_all_2s__lh_is_noise_normalization(self):
 
         data = np.array([10.0, 10.0, 10.0, 10.0])
@@ -265,7 +267,7 @@ class TestLikelihood:
             + np.log(2.0 * np.pi * (2.0 ** 2.0))
         )
 
-        assert log_likelihood == -0.5 * (chi_squared + noise_normalization)
+        assert log_likelihood == pytest.approx(-0.5 * (chi_squared + noise_normalization), 1.0e-4)
 
     def test__model_data_mismatch__no_masking__chi_squared_and_noise_normalization_are_lh(
         self,
@@ -302,7 +304,7 @@ class TestLikelihood:
             + np.log(2.0 * np.pi * (2.0 ** 2.0))
         )
 
-        assert log_likelihood == -0.5 * (chi_squared + noise_normalization)
+        assert log_likelihood == pytest.approx(-0.5 * (chi_squared + noise_normalization), 1.0e-4)
 
     def test__same_as_above_but_different_noise_in_each_pixel(self):
 
