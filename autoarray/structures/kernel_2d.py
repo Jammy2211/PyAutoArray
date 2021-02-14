@@ -533,7 +533,7 @@ class Kernel2D(array_2d.Array2D):
             array=convolved_array_1d, mask=array_binned_2d.mask, store_slim=True
         )
 
-    def convolved_array_from_array_2d_and_mask(self, array_2d, mask):
+    def convolved_array_from_array_and_mask(self, array, mask):
         """
         Convolve an array with this Kernel2D
 
@@ -555,7 +555,7 @@ class Kernel2D(array_2d.Array2D):
         if self.mask.shape[0] % 2 == 0 or self.mask.shape[1] % 2 == 0:
             raise exc.KernelException("Kernel2D Kernel2D must be odd")
 
-        convolved_array_2d = scipy.signal.convolve2d(array_2d, self.native, mode="same")
+        convolved_array_2d = scipy.signal.convolve2d(array, self.native, mode="same")
 
         convolved_array_1d = array_2d_util.array_2d_slim_from(
             mask_2d=mask, array_2d_native=convolved_array_2d, sub_size=1
