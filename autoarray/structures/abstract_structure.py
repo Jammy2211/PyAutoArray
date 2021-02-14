@@ -4,7 +4,6 @@ import pickle
 
 
 class AbstractStructure(np.ndarray):
-
     def __array_finalize__(self, obj):
 
         if hasattr(obj, "mask"):
@@ -127,7 +126,6 @@ class AbstractStructure1D(AbstractStructure):
 
 
 class AbstractStructure2D(AbstractStructure):
-
     @property
     def native(self):
         raise NotImplementedError

@@ -1,7 +1,7 @@
 import numpy as np
 from autoarray.structures import abstract_structure
 from autoarray.mask import mask_1d as msk
-from autoarray.structures.lines import line_util
+from autoarray.structures.lines import array_1d_util
 from autoarray.geometry import geometry_util
 
 
@@ -24,7 +24,7 @@ class AbstractLine1D(abstract_structure.AbstractStructure1D):
     @property
     def native(self):
 
-        return line_util.line_1d_native_from(
+        return array_1d_util.line_1d_native_from(
             line_1d_slim=self, mask_1d=self.mask, sub_size=self.sub_size
         )
 
@@ -117,7 +117,7 @@ class Line1D(AbstractLine1D):
 
         line = convert_line(line)
 
-        line = line_util.line_1d_slim_from(
+        line = array_1d_util.line_1d_slim_from(
             line_1d_native=line, mask_1d=mask, sub_size=mask.sub_size
         )
 

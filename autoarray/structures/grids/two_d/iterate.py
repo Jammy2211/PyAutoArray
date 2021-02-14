@@ -6,7 +6,7 @@ from autoarray.structures.grids import abstract_grid
 from autoarray.mask import mask_2d as msk
 from autoarray.structures.grids.two_d import grid_2d_util
 from autoarray.geometry import geometry_util
-from autoarray.structures.arrays import array_util
+from autoarray.structures.arrays.two_d import array_2d_util
 from autoarray import exc
 
 
@@ -609,7 +609,7 @@ class Grid2DIterate(abstract_grid.AbstractGrid2D):
             The resulting array computed via iteration.
         """
 
-        iterated_array_1d = array_util.array_2d_slim_from(
+        iterated_array_1d = array_2d_util.array_2d_slim_from(
             mask_2d=self.mask, array_2d_native=iterated_array, sub_size=1
         )
 

@@ -5,7 +5,7 @@ from autoarray.structures.grids import abstract_grid
 from autoarray.mask import mask_2d as msk, mask_2d_util
 from autoarray.structures.grids.two_d import grid_2d_util, sparse_util
 from autoarray.geometry import geometry_util
-from autoarray.structures.arrays import array_util
+from autoarray.structures.arrays.two_d import array_2d_util
 
 
 class Grid2D(abstract_grid.AbstractGrid2D):
@@ -665,7 +665,7 @@ class Grid2D(abstract_grid.AbstractGrid2D):
             stored in 2D as an ndarray of shape [total_y_coordinates, total_x_coordinates, 2].
         """
 
-        sub_grid_2d = array_util.numpy_array_2d_from_fits(file_path=file_path, hdu=0)
+        sub_grid_2d = array_2d_util.numpy_array_2d_from_fits(file_path=file_path, hdu=0)
 
         return Grid2D.manual(
             grid=sub_grid_2d,

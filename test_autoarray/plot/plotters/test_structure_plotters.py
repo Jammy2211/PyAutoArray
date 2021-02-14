@@ -123,7 +123,7 @@ class TestArray2DPlotter:
 
         array_plotter.figure()
 
-        arr = aa.util.array.numpy_array_2d_from_fits(
+        arr = aa.util.array_2d.numpy_array_2d_from_fits(
             file_path=path.join(plot_path, "array.fits"), hdu=0
         )
 
@@ -257,7 +257,7 @@ class TestFrame2DPlotter:
 
         frame_plotter.figure()
 
-        frame = aa.util.array.numpy_array_2d_from_fits(
+        frame = aa.util.array_2d.numpy_array_2d_from_fits(
             file_path=path.join(plot_path, "frame.fits"), hdu=0
         )
 

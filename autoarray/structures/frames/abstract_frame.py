@@ -7,7 +7,6 @@ from autoarray.structures.frames import frame_util
 
 
 class AbstractFrame2D(abstract_array.AbstractArray2D):
-
     def __array_finalize__(self, obj):
 
         super().__array_finalize__(obj)
@@ -209,7 +208,6 @@ class AbstractFrame2D(abstract_array.AbstractArray2D):
 
 
 class Scans:
-
     def __init__(
         self, parallel_overscan=None, serial_prescan=None, serial_overscan=None
     ):

@@ -1,3 +1,2 @@
-from .arrays import Array2D
-from .values import ValuesIrregular
+from autoarray.structures.arrays.two_d.arrays import Array2D
 from .values import ValuesIrregular

@@ -1,6 +1,6 @@
 from autoarray.operators import transformer_util
 from autoarray.structures import arrays, visibilities as vis, grids
-from autoarray.structures.arrays import array_util
+from autoarray.structures.arrays.two_d import array_2d_util
 from astropy import units
 from pynufft.linalg.nufft_cpu import NUFFT_cpu
 import pylops
@@ -184,7 +184,7 @@ class TransformerNUFFT(NUFFT_cpu, pylops.LinearOperator):
 
         for source_pixel_1d_index in range(mapping_matrix.shape[1]):
 
-            image_2d = array_util.array_2d_native_from(
+            image_2d = array_2d_util.array_2d_native_from(
                 array_2d_slim=mapping_matrix[:, source_pixel_1d_index],
                 mask_2d=self.grid.mask,
                 sub_size=1,
@@ -211,7 +211,7 @@ class TransformerNUFFT(NUFFT_cpu, pylops.LinearOperator):
 
         warnings.filterwarnings("ignore")
 
-        x2d = array_util.array_2d_native_complex_via_indexes_from(
+        x2d = array_2d_util.array_2d_native_complex_via_indexes_from(
             array_2d_slim=x,
             sub_shape_native=self.real_space_mask.shape_native,
             native_index_for_slim_index_2d=self._sub_native_index_for_sub_slim_index,
@@ -242,7 +242,7 @@ class TransformerNUFFT(NUFFT_cpu, pylops.LinearOperator):
 
         x2d = np.real(self.xx2x(self.k2xx(self.y2k(y))))
 
-        x = array_util.array_2d_slim_complex_from(
+        x = array_2d_util.array_2d_slim_complex_from(
             array_2d_native=x2d[::-1, :], sub_size=1, mask=self.real_space_mask
         )
         x = x.real  # NOTE:

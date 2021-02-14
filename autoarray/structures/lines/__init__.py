@@ -1,1 +1,1 @@
-from .lines import Line1D
+from .array_1d import Line1D

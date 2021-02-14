@@ -2,14 +2,13 @@ import logging
 import numpy as np
 import copy
 
-import autoarray as aa
-
 from autoconf import conf
 from autoarray import exc
-from autoarray.dataset import abstract_dataset, preprocess
 from autoarray.structures import arrays
+from autoarray.structures.arrays.two_d import array_2d_util
 from autoarray.structures import grids
 from autoarray.structures import visibilities as vis
+from autoarray.dataset import abstract_dataset, preprocess
 from autoarray.operators import transformer as trans
 
 
@@ -268,15 +267,15 @@ class Interferometer(AbstractInterferometer):
         ----------
         """
 
-        visibilities = aa.Visibilities.from_fits(
+        visibilities = vis.Visibilities.from_fits(
             file_path=visibilities_path, hdu=visibilities_hdu
         )
 
-        noise_map = aa.VisibilitiesNoiseMap.from_fits(
+        noise_map = vis.VisibilitiesNoiseMap.from_fits(
             file_path=noise_map_path, hdu=noise_map_hdu
         )
 
-        uv_wavelengths = aa.util.array.numpy_array_2d_from_fits(
+        uv_wavelengths = array_2d_util.numpy_array_2d_from_fits(
             file_path=uv_wavelengths_path, hdu=uv_wavelengths_hdu
         )
 
@@ -312,7 +311,7 @@ class Interferometer(AbstractInterferometer):
             self.noise_map.output_to_fits(file_path=noise_map_path, overwrite=overwrite)
 
         if self.uv_wavelengths is not None and uv_wavelengths_path is not None:
-            aa.util.array.numpy_array_2d_to_fits(
+            array_2d_util.numpy_array_2d_to_fits(
                 array_2d=self.uv_wavelengths,
                 file_path=uv_wavelengths_path,
                 overwrite=overwrite,

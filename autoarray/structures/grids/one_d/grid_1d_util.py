@@ -2,7 +2,7 @@ from autoarray import decorator_util
 import numpy as np
 
 from autoarray.mask import mask_1d_util
-from autoarray.structures.lines import line_util
+from autoarray.structures.lines import array_1d_util
 from autoarray.geometry import geometry_util
 
 from typing import Tuple
@@ -154,7 +154,7 @@ def grid_1d_slim_from(
         A 1D slim grid of values mapped from the 1D native grid with dimensions (total_unmasked_pixels).
     """
 
-    return line_util.line_1d_slim_from(
+    return array_1d_util.line_1d_slim_from(
         line_1d_native=grid_1d_native, mask_1d=mask_1d, sub_size=sub_size
     )
 
@@ -189,6 +189,6 @@ def grid_1d_native_from(
         A NumPy array of shape [total_pixels*sub_size] corresponding to the (x) values of the native 1D
         mapped from the slimmed grid.
     """
-    return line_util.line_1d_native_from(
+    return array_1d_util.line_1d_native_from(
         line_1d_slim=grid_1d_slim, mask_1d=mask_1d, sub_size=sub_size
     )

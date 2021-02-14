@@ -609,7 +609,7 @@ class TestOutputToFits:
 
         arr.output_to_fits(file_path=path.join(output_data_dir, "array.fits"))
 
-        array_from_out = aa.util.array.numpy_array_2d_from_fits(
+        array_from_out = aa.util.array_2d.numpy_array_2d_from_fits(
             file_path=path.join(output_data_dir, "array.fits"), hdu=0
         )
 
@@ -623,7 +623,7 @@ class TestOutputToFits:
             file_path=path.join(output_data_dir, "masked_array.fits")
         )
 
-        masked_array_from_out = aa.util.array.numpy_array_2d_from_fits(
+        masked_array_from_out = aa.util.array_2d.numpy_array_2d_from_fits(
             file_path=path.join(output_data_dir, "masked_array.fits"), hdu=0
         )
 
