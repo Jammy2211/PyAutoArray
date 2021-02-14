@@ -2,7 +2,7 @@ import logging
 
 import numpy as np
 
-from autoarray.structures import grids
+from autoarray.structures.grids.two_d import grid_2d_irregular
 from autoarray.structures.arrays.two_d import array_2d_util
 
 logging.basicConfig()
@@ -91,7 +91,7 @@ class AbstractVisibilities(np.ndarray):
     @property
     def in_grid(self):
         """Returns the 1D complex NumPy array of values as an irregular grid."""
-        return grids.Grid2DIrregular(grid=self.in_array)
+        return grid_2d_irregular.Grid2DIrregular(grid=self.in_array)
 
     @property
     def shape_slim(self):

@@ -2,8 +2,9 @@ import numpy as np
 
 from autoconf import conf
 from autoarray import exc
-from autoarray.structures import arrays
-from autoarray.structures import grids
+from autoarray.structures.arrays.two_d import array_2d
+from autoarray.structures.grids.two_d import grid_2d
+from autoarray.structures.grids.two_d import grid_2d_irregular
 from autoarray.structures import visibilities as vis
 from autoarray.operators import convolver as conv, transformer as trans
 from autoarray.inversion import regularization as reg, mappers, inversion_util
@@ -126,7 +127,7 @@ class AbstractInversion:
 
         if shape_native is not None:
 
-            grid = grids.Grid2D.bounding_box(
+            grid = grid_2d.Grid2D.bounding_box(
                 bounding_box=self.mapper.source_pixelization_grid.extent,
                 shape_native=shape_native,
                 buffer_around_corners=False,
@@ -147,7 +148,7 @@ class AbstractInversion:
             dimension = int(np.sqrt(self.mapper.pixels))
             shape_native = (dimension, dimension)
 
-            grid = grids.Grid2D.bounding_box(
+            grid = grid_2d.Grid2D.bounding_box(
                 bounding_box=self.mapper.source_pixelization_grid.extent,
                 shape_native=shape_native,
                 buffer_around_corners=False,
@@ -169,7 +170,7 @@ class AbstractInversion:
 
         interpolated_reconstruction[np.isnan(interpolated_reconstruction)] = 0.0
 
-        return arrays.Array2D.manual(
+        return array_2d.Array2D.manual(
             array=interpolated_reconstruction, pixel_scales=grid.pixel_scales
         )
 
@@ -201,7 +202,7 @@ class AbstractInversion:
 
     @property
     def brightest_reconstruction_pixel_centre(self):
-        return grids.Grid2DIrregular(
+        return grid_2d_irregular.Grid2DIrregular(
             grid=[
                 self.mapper.source_pixelization_grid[
                     self.brightest_reconstruction_pixel
@@ -256,8 +257,8 @@ class AbstractInversionMatrix:
 class InversionImagingMatrix(AbstractInversion, AbstractInversionMatrix):
     def __init__(
         self,
-        image: arrays.Array2D,
-        noise_map: arrays.Array2D,
+        image: array_2d.Array2D,
+        noise_map: array_2d.Array2D,
         convolver: conv.Convolver,
         mapper: typing.Union[mappers.MapperRectangular, mappers.MapperVoronoi],
         regularization: reg.Regularization,
@@ -325,8 +326,8 @@ class InversionImagingMatrix(AbstractInversion, AbstractInversionMatrix):
     @classmethod
     def from_data_mapper_and_regularization(
         cls,
-        image: arrays.Array2D,
-        noise_map: arrays.Array2D,
+        image: array_2d.Array2D,
+        noise_map: array_2d.Array2D,
         convolver: conv.Convolver,
         mapper: typing.Union[mappers.MapperRectangular, mappers.MapperVoronoi],
         regularization: reg.Regularization,
@@ -383,7 +384,7 @@ class InversionImagingMatrix(AbstractInversion, AbstractInversionMatrix):
             reconstruction=self.reconstruction,
         )
 
-        return arrays.Array2D(
+        return array_2d.Array2D(
             array=reconstructed_image,
             mask=self.mapper.source_grid_slim.mask.mask_sub_1,
             store_slim=True,
@@ -482,7 +483,7 @@ class AbstractInversionInterferometer(AbstractInversion):
             reconstruction=self.reconstruction,
         )
 
-        return arrays.Array2D(
+        return array_2d.Array2D(
             array=mapped_reconstructed_image,
             mask=self.mapper.source_grid_slim.mask.mask_sub_1,
             store_slim=True,

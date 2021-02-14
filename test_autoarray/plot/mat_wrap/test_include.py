@@ -1,7 +1,7 @@
 import autoarray.plot as aplt
 
 
-class TestInclude2d:
+class TestInclude2D:
     def test__loads_default_values_from_config_if_not_input(self):
 
         include = aplt.Include2D()

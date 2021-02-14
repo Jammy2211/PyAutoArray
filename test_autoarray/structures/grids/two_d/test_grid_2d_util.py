@@ -5,6 +5,7 @@ import pytest
 
 class TestGrid2dSlimFromMask:
     def test__from_3x3_mask__sub_size_1(self):
+
         mask = np.array([[True, True, True], [True, False, True], [True, True, True]])
 
         grid = aa.util.grid_2d.grid_2d_slim_via_mask_from(

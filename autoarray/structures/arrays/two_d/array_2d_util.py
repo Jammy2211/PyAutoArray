@@ -256,157 +256,6 @@ def replace_noise_map_2d_values_where_image_2d_values_are_negative(
     return noise_map_2d
 
 
-def numpy_array_1d_to_fits(
-    array_1d: np.ndarray, file_path: str, overwrite: bool = False
-):
-    """
-    Write a 1D NumPy array to a .fits file.
-
-    Parameters
-    ----------
-    array_2d : np.ndarray
-        The 2D array that is written to fits.
-    file_path : str
-        The full path of the file that is output, including the file name and ``.fits`` extension.
-    overwrite : bool
-        If `True` and a file already exists with the input file_path the .fits file is overwritten. If False, an error
-        will be raised.
-
-    Returns
-    -------
-    None
-
-    Examples
-    --------
-    array_2d = np.ones((5,5))
-    numpy_array_to_fits(array_2d=array_2d, file_path='/path/to/file/filename.fits', overwrite=True)
-    """
-
-    file_dir = os.path.split(file_path)[0]
-
-    if not os.path.exists(file_dir):
-        os.makedirs(file_dir)
-
-    if overwrite and os.path.exists(file_path):
-        os.remove(file_path)
-
-    new_hdr = fits.Header()
-    hdu = fits.PrimaryHDU(array_1d, new_hdr)
-    hdu.writeto(file_path)
-
-
-def numpy_array_1d_from_fits(file_path: str, hdu: int):
-    """
-    Read a 1D NumPy array from a .fits file.
-
-    After loading the NumPy array, the array is flipped upside-down using np.flipud. This is so that the structures
-    appear the same orientation as .fits files loaded in DS9.
-
-    Parameters
-    ----------
-    file_path : str
-        The full path of the file that is loaded, including the file name and ``.fits`` extension.
-    hdu : int
-        The HDU extension of the array that is loaded from the .fits file.
-
-    Returns
-    -------
-    ndarray
-        The NumPy array that is loaded from the .fits file.
-
-    Examples
-    --------
-    array_2d = numpy_array_from_fits(file_path='/path/to/file/filename.fits', hdu=0)
-    """
-    hdu_list = fits.open(file_path)
-    return np.array(hdu_list[hdu].data)
-
-
-def numpy_array_2d_to_fits(
-    array_2d: np.ndarray, file_path: str, overwrite: bool = False
-):
-    """
-    Write a 2D NumPy array to a .fits file.
-
-    Before outputting a NumPy array, the array may be flipped upside-down using np.flipud depending on the project
-    config files. This is for Astronomy projects so that structures appear the same orientation as ``.fits`` files
-    loaded in DS9.
-
-    Parameters
-    ----------
-    array_2d : np.ndarray
-        The 2D array that is written to fits.
-    file_path : str
-        The full path of the file that is output, including the file name and ``.fits`` extension.
-    overwrite : bool
-        If `True` and a file already exists with the input file_path the .fits file is overwritten. If `False`, an
-        error is raised.
-
-    Returns
-    -------
-    None
-
-    Examples
-    --------
-    array_2d = np.ones((5,5))
-    numpy_array_to_fits(array_2d=array_2d, file_path='/path/to/file/filename.fits', overwrite=True)
-    """
-
-    file_dir = os.path.split(file_path)[0]
-
-    if not os.path.exists(file_dir):
-        os.makedirs(file_dir)
-
-    if overwrite and os.path.exists(file_path):
-        os.remove(file_path)
-
-    new_hdr = fits.Header()
-
-    flip_for_ds9 = conf.instance["general"]["fits"]["flip_for_ds9"]
-
-    if flip_for_ds9:
-        hdu = fits.PrimaryHDU(np.flipud(array_2d), new_hdr)
-    else:
-        hdu = fits.PrimaryHDU(array_2d, new_hdr)
-    hdu.writeto(file_path)
-
-
-def numpy_array_2d_from_fits(
-    file_path: str, hdu: int, do_not_scale_image_data: bool = False
-):
-    """
-    Read a 2D NumPy array from a .fits file.
-
-    After loading the NumPy array, the array is flipped upside-down using np.flipud. This is so that the structures
-    appear the same orientation as .fits files loaded in DS9.
-
-    Parameters
-    ----------
-    file_path : str
-        The full path of the file that is loaded, including the file name and ``.fits`` extension.
-    hdu : int
-        The HDU extension of the array that is loaded from the .fits file.
-    do_not_scale_image_data : bool
-        If True, the .fits file is not rescaled automatically based on the .fits header info.
-
-    Returns
-    -------
-    ndarray
-        The NumPy array that is loaded from the .fits file.
-
-    Examples
-    --------
-    array_2d = numpy_array_from_fits(file_path='/path/to/file/filename.fits', hdu=0)
-    """
-    hdu_list = fits.open(file_path, do_not_scale_image_data=do_not_scale_image_data)
-
-    flip_for_ds9 = conf.instance["general"]["fits"]["flip_for_ds9"]
-
-    if flip_for_ds9:
-        return np.flipud(np.array(hdu_list[hdu].data)).astype("float64")
-    return np.array(hdu_list[hdu].data).astype("float64")
-
-
 @decorator_util.jit()
 def index_2d_for_index_slim_from(indexes_slim: np.ndarray, shape_native) -> np.ndarray:
     """
@@ -751,3 +600,88 @@ def array_2d_native_complex_via_indexes_from(
         ] = array_2d_slim[slim_index]
 
     return sub_array_2d
+
+
+def numpy_array_2d_to_fits(
+    array_2d: np.ndarray, file_path: str, overwrite: bool = False
+):
+    """
+    Write a 2D NumPy array to a .fits file.
+
+    Before outputting a NumPy array, the array may be flipped upside-down using np.flipud depending on the project
+    config files. This is for Astronomy projects so that structures appear the same orientation as ``.fits`` files
+    loaded in DS9.
+
+    Parameters
+    ----------
+    array_2d : np.ndarray
+        The 2D array that is written to fits.
+    file_path : str
+        The full path of the file that is output, including the file name and ``.fits`` extension.
+    overwrite : bool
+        If `True` and a file already exists with the input file_path the .fits file is overwritten. If `False`, an
+        error is raised.
+
+    Returns
+    -------
+    None
+
+    Examples
+    --------
+    array_2d = np.ones((5,5))
+    numpy_array_to_fits(array_2d=array_2d, file_path='/path/to/file/filename.fits', overwrite=True)
+    """
+
+    file_dir = os.path.split(file_path)[0]
+
+    if not os.path.exists(file_dir):
+        os.makedirs(file_dir)
+
+    if overwrite and os.path.exists(file_path):
+        os.remove(file_path)
+
+    new_hdr = fits.Header()
+
+    flip_for_ds9 = conf.instance["general"]["fits"]["flip_for_ds9"]
+
+    if flip_for_ds9:
+        hdu = fits.PrimaryHDU(np.flipud(array_2d), new_hdr)
+    else:
+        hdu = fits.PrimaryHDU(array_2d, new_hdr)
+    hdu.writeto(file_path)
+
+
+def numpy_array_2d_from_fits(
+    file_path: str, hdu: int, do_not_scale_image_data: bool = False
+):
+    """
+    Read a 2D NumPy array from a .fits file.
+
+    After loading the NumPy array, the array is flipped upside-down using np.flipud. This is so that the structures
+    appear the same orientation as .fits files loaded in DS9.
+
+    Parameters
+    ----------
+    file_path : str
+        The full path of the file that is loaded, including the file name and ``.fits`` extension.
+    hdu : int
+        The HDU extension of the array that is loaded from the .fits file.
+    do_not_scale_image_data : bool
+        If True, the .fits file is not rescaled automatically based on the .fits header info.
+
+    Returns
+    -------
+    ndarray
+        The NumPy array that is loaded from the .fits file.
+
+    Examples
+    --------
+    array_2d = numpy_array_from_fits(file_path='/path/to/file/filename.fits', hdu=0)
+    """
+    hdu_list = fits.open(file_path, do_not_scale_image_data=do_not_scale_image_data)
+
+    flip_for_ds9 = conf.instance["general"]["fits"]["flip_for_ds9"]
+
+    if flip_for_ds9:
+        return np.flipud(np.array(hdu_list[hdu].data)).astype("float64")
+    return np.array(hdu_list[hdu].data).astype("float64")

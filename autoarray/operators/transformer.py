@@ -1,5 +1,7 @@
 from autoarray.operators import transformer_util
-from autoarray.structures import arrays, visibilities as vis, grids
+from autoarray.structures.arrays.two_d import array_2d
+from autoarray.structures.grids.two_d import grid_2d
+from autoarray.structures import visibilities as vis
 from autoarray.structures.arrays.two_d import array_2d_util
 from astropy import units
 from pynufft.linalg.nufft_cpu import NUFFT_cpu
@@ -90,7 +92,7 @@ class TransformerNUFFT(NUFFT_cpu, pylops.LinearOperator):
         self.uv_wavelengths = uv_wavelengths
         self.real_space_mask = real_space_mask.mask_sub_1
         #        self.grid = self.real_space_mask.unmasked_grid.in_radians
-        self.grid = grids.Grid2D.from_mask(mask=self.real_space_mask).in_radians
+        self.grid = grid_2d.Grid2D.from_mask(mask=self.real_space_mask).in_radians
         self._sub_native_index_for_sub_slim_index = copy.copy(
             real_space_mask._sub_native_index_for_sub_slim_index.astype("int")
         )
@@ -190,7 +192,7 @@ class TransformerNUFFT(NUFFT_cpu, pylops.LinearOperator):
                 sub_size=1,
             )
 
-            image = arrays.Array2D(
+            image = array_2d.Array2D(
                 array=image_2d, mask=self.grid.mask, store_slim=False
             )
 

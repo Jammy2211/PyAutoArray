@@ -1,5 +1,9 @@
 from autoarray.mask import mask_1d
-from autoarray.structures import arrays, grids, lines as l, vector_fields
+from autoarray.structures.arrays.one_d import array_1d
+from autoarray.structures.arrays.two_d import array_2d
+from autoarray.structures.grids.two_d import grid_2d
+from autoarray.structures.grids.two_d import grid_2d_irregular
+from autoarray.structures.vector_fields import vector_field_irregular
 from autoarray.plot.mat_wrap import mat_plot, include as inc
 from autoarray.mask import mask_2d
 from matplotlib import patches as ptch
@@ -63,8 +67,8 @@ class Visuals1D(AbstractVisuals):
     def __init__(
         self,
         mask: mask_1d.Mask1D = None,
-        lines: typing.List[l.Line1D] = None,
-        origin: grids.Grid2D = None,
+        lines: typing.List[array_1d.Array1D] = None,
+        origin: grid_2d.Grid2D = None,
     ):
 
         self.mask = mask
@@ -88,16 +92,16 @@ class Visuals1D(AbstractVisuals):
 class Visuals2D(AbstractVisuals):
     def __init__(
         self,
-        origin: grids.Grid2D = None,
+        origin: grid_2d.Grid2D = None,
         mask: mask_2d.Mask2D = None,
-        border: grids.Grid2D = None,
-        lines: typing.List[l.Line1D] = None,
-        positions: grids.Grid2DIrregular = None,
-        grid: grids.Grid2D = None,
-        pixelization_grid: grids.Grid2D = None,
-        vector_field: vector_fields.VectorField2DIrregular = None,
+        border: grid_2d.Grid2D = None,
+        lines: typing.List[array_1d.Array1D] = None,
+        positions: grid_2d_irregular.Grid2DIrregular = None,
+        grid: grid_2d.Grid2D = None,
+        pixelization_grid: grid_2d.Grid2D = None,
+        vector_field: vector_field_irregular.VectorField2DIrregular = None,
         patches: typing.List[ptch.Patch] = None,
-        array_overlay: arrays.Array2D = None,
+        array_overlay: array_2d.Array2D = None,
         parallel_overscan=None,
         serial_prescan=None,
         serial_overscan=None,
@@ -125,7 +129,7 @@ class Visuals2D(AbstractVisuals):
 
         if self.origin is not None:
             plotter.origin_scatter.scatter_grid(
-                grid=grids.Grid2DIrregular(grid=self.origin)
+                grid=grid_2d_irregular.Grid2DIrregular(grid=self.origin)
             )
 
         if self.mask is not None:

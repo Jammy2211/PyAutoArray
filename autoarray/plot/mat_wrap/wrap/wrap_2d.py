@@ -13,7 +13,9 @@ import typing
 from typing import List, Union
 
 from autoarray.inversion import mappers
-from autoarray.structures import grids, vector_fields
+from autoarray.structures.grids.two_d import grid_2d
+from autoarray.structures.grids.two_d import grid_2d_irregular
+from autoarray.structures.vector_fields import vector_field_irregular
 from autoarray import exc
 
 
@@ -77,7 +79,7 @@ class GridScatter(AbstractMatWrap2D):
         list of colors can be specified which the plot cycles through.
     """
 
-    def scatter_grid(self, grid: typing.Union[np.ndarray, grids.Grid2D]):
+    def scatter_grid(self, grid: typing.Union[np.ndarray, grid_2d.Grid2D]):
         """
         Plot an input grid of (y,x) coordinates using the matplotlib method `plt.scatter`.
 
@@ -98,7 +100,8 @@ class GridScatter(AbstractMatWrap2D):
             return self.scatter_grid_list(grid_list=grid)
 
     def scatter_grid_list(
-        self, grid_list: Union[List[grids.Grid2D], List[grids.Grid2DIrregular]]
+        self,
+        grid_list: Union[List[grid_2d.Grid2D], List[grid_2d_irregular.Grid2DIrregular]],
     ):
         """
          Plot an input list of grids of (y,x) coordinates using the matplotlib method `plt.scatter`.
@@ -127,7 +130,7 @@ class GridScatter(AbstractMatWrap2D):
 
     def scatter_grid_colored(
         self,
-        grid: typing.Union[np.ndarray, grids.Grid2D],
+        grid: typing.Union[np.ndarray, grid_2d.Grid2D],
         color_array: np.ndarray,
         cmap: str,
     ):
@@ -152,7 +155,7 @@ class GridScatter(AbstractMatWrap2D):
         plt.scatter(y=grid[:, 0], x=grid[:, 1], c=color_array, cmap=cmap, **config_dict)
 
     def scatter_grid_indexes(
-        self, grid: typing.Union[np.ndarray, grids.Grid2D], indexes: np.ndarray
+        self, grid: typing.Union[np.ndarray, grid_2d.Grid2D], indexes: np.ndarray
     ):
         """
         Plot specific points of an input grid of (y,x) coordinates, which are specified according to the 1D or 2D
@@ -266,7 +269,7 @@ class GridPlot(AbstractMatWrap2D):
         for y in ys:
             plt.plot([xs[0], xs[-1]], [y, y], **self.config_dict)
 
-    def plot_grid(self, grid: typing.Union[np.ndarray, grids.Grid2D]):
+    def plot_grid(self, grid: typing.Union[np.ndarray, grid_2d.Grid2D]):
         """
         Plot an input grid of (y,x) coordinates using the matplotlib method `plt.scatter`.
 
@@ -281,7 +284,8 @@ class GridPlot(AbstractMatWrap2D):
             return self.plot_grid_list(grid_list=grid)
 
     def plot_grid_list(
-        self, grid_list: Union[List[grids.Grid2D], List[grids.Grid2DIrregular]]
+        self,
+        grid_list: Union[List[grid_2d.Grid2D], List[grid_2d_irregular.Grid2DIrregular]],
     ):
         """
          Plot an input list of grids of (y,x) coordinates using the matplotlib method `plt.line`.
@@ -323,7 +327,9 @@ class VectorFieldQuiver(AbstractMatWrap2D):
     https://matplotlib.org/3.3.2/api/_as_gen/matplotlib.pyplot.quiver.html
     """
 
-    def quiver_vector_field(self, vector_field: vector_fields.VectorField2DIrregular):
+    def quiver_vector_field(
+        self, vector_field: vector_field_irregular.VectorField2DIrregular
+    ):
         """
          Plot a vector field using the matplotlib method `plt.quiver` such that each vector appears as an arrow whose
          direction depends on the y and x magnitudes of the vector.

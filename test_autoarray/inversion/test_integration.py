@@ -1,5 +1,4 @@
 import autoarray as aa
-from autoarray.structures import grids
 from autoarray.inversion import mappers
 import numpy as np
 import pytest
@@ -583,7 +582,7 @@ class TestVoronoiMagnification:
 
         pix = aa.pix.VoronoiMagnification(shape=(3, 3))
 
-        sparse_grid = grids.Grid2DSparse.from_grid_and_unmasked_2d_grid_shape(
+        sparse_grid = aa.Grid2DSparse.from_grid_and_unmasked_2d_grid_shape(
             grid=grid, unmasked_sparse_shape=pix.shape
         )
 
@@ -687,7 +686,7 @@ class TestVoronoiMagnification:
 
         pix = aa.pix.VoronoiMagnification(shape=(3, 3))
 
-        sparse_grid = grids.Grid2DSparse.from_grid_and_unmasked_2d_grid_shape(
+        sparse_grid = aa.Grid2DSparse.from_grid_and_unmasked_2d_grid_shape(
             grid=grid, unmasked_sparse_shape=pix.shape
         )
 
@@ -795,7 +794,7 @@ class TestVoronoiMagnification:
         grid = aa.Grid2D.manual_mask(grid=grid, mask=mask)
 
         pix = aa.pix.VoronoiMagnification(shape=(3, 3))
-        sparse_grid = grids.Grid2DSparse.from_grid_and_unmasked_2d_grid_shape(
+        sparse_grid = aa.Grid2DSparse.from_grid_and_unmasked_2d_grid_shape(
             grid=grid, unmasked_sparse_shape=pix.shape
         )
 
@@ -882,7 +881,7 @@ class TestVoronoiMagnification:
         grid = aa.Grid2D.manual_mask(grid=grid, mask=mask)
 
         pix = aa.pix.VoronoiMagnification(shape=(3, 3))
-        sparse_grid = grids.Grid2DSparse.from_grid_and_unmasked_2d_grid_shape(
+        sparse_grid = aa.Grid2DSparse.from_grid_and_unmasked_2d_grid_shape(
             grid=grid, unmasked_sparse_shape=pix.shape
         )
 

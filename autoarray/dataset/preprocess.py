@@ -1,7 +1,7 @@
 import numpy as np
 from scipy.stats import norm
 
-from autoarray.structures import arrays
+from autoarray.structures.arrays.two_d import array_2d
 from autoarray import exc
 
 
@@ -253,7 +253,7 @@ def background_noise_map_from_edges_of_image(image, no_edges):
 
         edges = np.concatenate((edges, top_edge, bottom_edge, right_edge, left_edge))
 
-    return arrays.Array2D.full(
+    return array_2d.Array2D.full(
         fill_value=norm.fit(edges)[1],
         shape_native=image.shape_native,
         pixel_scales=image.pixel_scales,

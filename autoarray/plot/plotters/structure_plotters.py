@@ -2,7 +2,11 @@ from autoarray.plot.plotters import abstract_plotters
 from autoarray.plot.mat_wrap import visuals as vis
 from autoarray.plot.mat_wrap import include as inc
 from autoarray.plot.mat_wrap import mat_plot as mp
-from autoarray.structures import arrays, frames, grids, lines
+from autoarray.structures.arrays.one_d import array_1d
+from autoarray.structures.arrays.two_d import array_2d
+from autoarray.structures.frames import frames
+from autoarray.structures.grids.two_d import grid_2d
+from autoarray.structures.grids.two_d import grid_2d_irregular
 from autoarray.inversion import mappers
 import typing
 
@@ -10,7 +14,7 @@ import typing
 class Array2DPlotter(abstract_plotters.AbstractPlotter):
     def __init__(
         self,
-        array: arrays.Array2D,
+        array: array_2d.Array2D,
         mat_plot_2d: mp.MatPlot2D = mp.MatPlot2D(),
         visuals_2d: vis.Visuals2D = vis.Visuals2D(),
         include_2d: inc.Include2D = inc.Include2D(),
@@ -38,7 +42,7 @@ class Array2DPlotter(abstract_plotters.AbstractPlotter):
 
         Parameters
         ----------
-        array : arrays.Array2D
+        array : array_2d.Array2D
             The array whose attributes are extracted for plotting.
 
         Returns
@@ -48,7 +52,7 @@ class Array2DPlotter(abstract_plotters.AbstractPlotter):
         """
         return self.visuals_2d + self.visuals_2d.__class__(
             origin=self.extract_2d(
-                "origin", grids.Grid2DIrregular(grid=[self.array.origin])
+                "origin", grid_2d_irregular.Grid2DIrregular(grid=[self.array.origin])
             ),
             mask=self.extract_2d("mask", self.array.mask),
             border=self.extract_2d(
@@ -108,7 +112,7 @@ class Frame2DPlotter(abstract_plotters.AbstractPlotter):
         """
         return self.visuals_2d + self.visuals_2d.__class__(
             origin=self.extract_2d(
-                "origin", grids.Grid2DIrregular(grid=[self.frame.origin])
+                "origin", grid_2d_irregular.Grid2DIrregular(grid=[self.frame.origin])
             ),
             mask=self.extract_2d("mask", self.frame.mask),
             border=self.extract_2d(
@@ -137,7 +141,7 @@ class Frame2DPlotter(abstract_plotters.AbstractPlotter):
 class Grid2DPlotter(abstract_plotters.AbstractPlotter):
     def __init__(
         self,
-        grid: grids.Grid2D,
+        grid: grid_2d.Grid2D,
         mat_plot_2d: mp.MatPlot2D = mp.MatPlot2D(),
         visuals_2d: vis.Visuals2D = vis.Visuals2D(),
         include_2d: inc.Include2D = inc.Include2D(),
@@ -163,7 +167,7 @@ class Grid2DPlotter(abstract_plotters.AbstractPlotter):
 
         Parameters
         ----------
-        grid : abstract_grid.AbstractGrid2D
+        grid : abstract_grid_2d.AbstractGrid2D
             The grid whose attributes are extracted for plotting.
 
         Returns
@@ -171,12 +175,12 @@ class Grid2DPlotter(abstract_plotters.AbstractPlotter):
         vis.Visuals2D
             The collection of attributes that can be plotted by a `Plotter2D` object.
         """
-        if not isinstance(self.grid, grids.Grid2D):
+        if not isinstance(self.grid, grid_2d.Grid2D):
             return self.visuals_2d
 
         return self.visuals_2d + self.visuals_2d.__class__(
             origin=self.extract_2d(
-                "origin", grids.Grid2DIrregular(grid=[self.grid.origin])
+                "origin", grid_2d_irregular.Grid2DIrregular(grid=[self.grid.origin])
             )
         )
 
@@ -232,7 +236,9 @@ class MapperPlotter(abstract_plotters.AbstractPlotter):
         return self.visuals_2d + self.visuals_2d.__class__(
             origin=self.extract_2d(
                 "origin",
-                grids.Grid2DIrregular(grid=[self.mapper.source_grid_slim.mask.origin]),
+                grid_2d_irregular.Grid2DIrregular(
+                    grid=[self.mapper.source_grid_slim.mask.origin]
+                ),
             ),
             mask=self.extract_2d("mask", self.mapper.source_grid_slim.mask),
             border=self.extract_2d(
@@ -275,7 +281,7 @@ class MapperPlotter(abstract_plotters.AbstractPlotter):
         return self.visuals_2d + self.visuals_2d.__class__(
             origin=self.extract_2d(
                 "origin",
-                grids.Grid2DIrregular(
+                grid_2d_irregular.Grid2DIrregular(
                     grid=[self.mapper.source_pixelization_grid.origin]
                 ),
             ),
@@ -329,7 +335,7 @@ class MapperPlotter(abstract_plotters.AbstractPlotter):
         self.close_subplot_figure()
 
 
-class Line1DPlotter(abstract_plotters.AbstractPlotter):
+class Array1DPlotter(abstract_plotters.AbstractPlotter):
     def __init__(
         self,
         y,
@@ -343,7 +349,7 @@ class Line1DPlotter(abstract_plotters.AbstractPlotter):
             visuals_1d=visuals_1d, include_1d=include_1d, mat_plot_1d=mat_plot_1d
         )
 
-    def visuals_from_line(self, line: lines.Line1D) -> "vis.Visuals1D":
+    def visuals_from_line(self, line: array_1d.Array1D) -> "vis.Visuals1D":
 
         origin = line.origin if self.include_1d.origin else None
         mask = line.mask if self.include_1d.mask else None

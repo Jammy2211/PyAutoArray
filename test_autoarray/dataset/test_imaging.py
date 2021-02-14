@@ -16,6 +16,7 @@ class TestImaging:
     def test__new_imaging_with_signal_to_noise_limit__limit_above_max_signal_to_noise__signal_to_noise_map_unchanged(
         self,
     ):
+
         image = aa.Array2D.full(
             fill_value=20.0, shape_native=(2, 2), pixel_scales=1.0, store_slim=True
         )

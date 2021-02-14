@@ -4,9 +4,10 @@ import copy
 
 from autoconf import conf
 from autoarray import exc
-from autoarray.structures import arrays
+from autoarray.structures.arrays.two_d import array_2d
 from autoarray.structures.arrays.two_d import array_2d_util
-from autoarray.structures import grids
+from autoarray.structures.grids.two_d import grid_2d
+from autoarray.structures.grids.two_d import grid_2d_irregular
 from autoarray.structures import visibilities as vis
 from autoarray.dataset import abstract_dataset, preprocess
 from autoarray.operators import transformer as trans
@@ -92,8 +93,8 @@ class AbstractSettingsMaskedInterferometer(
 ):
     def __init__(
         self,
-        grid_class=grids.Grid2D,
-        grid_inversion_class=grids.Grid2D,
+        grid_class=grid_2d.Grid2D,
+        grid_inversion_class=grid_2d.Grid2D,
         sub_size=2,
         sub_size_inversion=2,
         fractional_accuracy=0.9999,
@@ -281,7 +282,9 @@ class Interferometer(AbstractInterferometer):
 
         if positions_path is not None:
 
-            positions = grids.Grid2DIrregular.from_json(file_path=positions_path)
+            positions = grid_2d_irregular.Grid2DIrregular.from_json(
+                file_path=positions_path
+            )
 
         else:
 
@@ -393,7 +396,7 @@ class AbstractSimulatorInterferometer:
             uv_wavelengths=self.uv_wavelengths, real_space_mask=image.mask
         )
 
-        background_sky_map = arrays.Array2D.full(
+        background_sky_map = array_2d.Array2D.full(
             fill_value=self.background_sky_level,
             shape_native=image.shape_native,
             pixel_scales=image.pixel_scales,

@@ -6,11 +6,8 @@ import pytest
 import shutil
 
 import autoarray as aa
-from autoarray.structures import arrays
 
-test_values_dir = path.join(
-    "{}".format(path.dirname(path.realpath(__file__))), "files", "values"
-)
+test_values_dir = path.join("{}".format(path.dirname(path.realpath(__file__))), "files")
 
 
 class TestValuesIrregular:
@@ -18,7 +15,7 @@ class TestValuesIrregular:
 
         values = aa.ValuesIrregular(values=[1.0, -1.0])
 
-        assert type(values) == arrays.ValuesIrregular
+        assert type(values) == aa.ValuesIrregular
         assert (values == np.array([1.0, -1.0])).all()
         assert values.in_list == [1.0, -1.0]
 

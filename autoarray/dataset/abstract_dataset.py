@@ -5,8 +5,10 @@ import copy
 
 from autoconf import conf
 from autoarray.structures import abstract_structure
-from autoarray.structures import arrays
-from autoarray.structures import grids
+from autoarray.structures.grids.two_d import grid_2d
+from autoarray.structures.grids.two_d import grid_2d_irregular
+from autoarray.structures.grids.two_d import grid_2d_interpolate
+from autoarray.structures.grids.two_d import grid_2d_iterate
 from autoarray.mask import mask_2d as msk
 
 
@@ -16,19 +18,19 @@ def grid_from_mask_and_grid_class(
     if mask.pixel_scales is None:
         return None
 
-    if grid_class is grids.Grid2D:
+    if grid_class is grid_2d.Grid2D:
 
-        return grids.Grid2D.from_mask(mask=mask)
+        return grid_2d.Grid2D.from_mask(mask=mask)
 
-    elif grid_class is grids.Grid2DIterate:
+    elif grid_class is grid_2d_iterate.Grid2DIterate:
 
-        return grids.Grid2DIterate.from_mask(
+        return grid_2d_iterate.Grid2DIterate.from_mask(
             mask=mask, fractional_accuracy=fractional_accuracy, sub_steps=sub_steps
         )
 
-    elif grid_class is grids.Grid2DInterpolate:
+    elif grid_class is grid_2d_interpolate.Grid2DInterpolate:
 
-        return grids.Grid2DInterpolate.from_mask(
+        return grid_2d_interpolate.Grid2DInterpolate.from_mask(
             mask=mask, pixel_scales_interp=pixel_scales_interp
         )
 
@@ -38,7 +40,7 @@ class AbstractDataset:
         self,
         data: abstract_structure.AbstractStructure,
         noise_map: abstract_structure.AbstractStructure,
-        positions: grids.Grid2DIrregular = None,
+        positions: grid_2d_irregular.Grid2DIrregular = None,
         name: str = None,
     ):
         """A collection of abstract 2D for different data_type classes (an image, pixel-scale, noise-map, etc.)
@@ -151,8 +153,8 @@ class AbstractDataset:
 class AbstractSettingsMaskedDataset:
     def __init__(
         self,
-        grid_class=grids.Grid2D,
-        grid_inversion_class=grids.Grid2D,
+        grid_class=grid_2d.Grid2D,
+        grid_inversion_class=grid_2d.Grid2D,
         sub_size=2,
         sub_size_inversion=2,
         fractional_accuracy=0.9999,
@@ -274,7 +276,7 @@ class AbstractSettingsMaskedDataset:
         sub_size = 1 -> settings_sub_size_2
         sub_size = 4 -> settings_sub_size_4
         """
-        if not self.grid_class is grids.Grid2D:
+        if not self.grid_class is grid_2d.Grid2D:
             return ""
         return (
             f"{conf.instance['notation']['settings_tags']['dataset']['sub_size']}_"
@@ -291,7 +293,7 @@ class AbstractSettingsMaskedDataset:
         fraction_accuracy = 0.5 -> settings__facc_0.5
         fractional_accuracy = 0.999999 = 4 -> settings__facc_0.999999
         """
-        if not self.grid_class is grids.Grid2DIterate:
+        if not self.grid_class is grid_2d_iterate.Grid2DIterate:
             return ""
         return (
             f"{conf.instance['notation']['settings_tags']['dataset']['fractional_accuracy']}_"
@@ -308,7 +310,7 @@ class AbstractSettingsMaskedDataset:
         pixel_scales_interp = None -> settings
         pixel_scales_interp = 0.1 -> settings___grid_interp_0.1
         """
-        if not self.grid_class is grids.Grid2DInterpolate:
+        if not self.grid_class is grid_2d_interpolate.Grid2DInterpolate:
             return ""
         if self.pixel_scales_interp is None:
             return ""
@@ -326,7 +328,7 @@ class AbstractSettingsMaskedDataset:
         sub_size = 1 -> settings__grid_sub_size_2
         sub_size = 4 -> settings__grid_inv_sub_size_4
         """
-        if not self.grid_inversion_class is grids.Grid2D:
+        if not self.grid_inversion_class is grid_2d.Grid2D:
             return ""
         return (
             f"{conf.instance['notation']['settings_tags']['dataset']['sub_size']}_"
@@ -343,7 +345,7 @@ class AbstractSettingsMaskedDataset:
         fraction_accuracy = 0.5 -> settings__facc_0.5
         fractional_accuracy = 0.999999 = 4 -> settings__facc_0.999999
         """
-        if not self.grid_inversion_class is grids.Grid2DIterate:
+        if not self.grid_inversion_class is grid_2d_iterate.Grid2DIterate:
             return ""
         return (
             f"{conf.instance['notation']['settings_tags']['dataset']['fractional_accuracy']}_"
@@ -360,7 +362,7 @@ class AbstractSettingsMaskedDataset:
         pixel_scales_interp = None -> settings
         pixel_scales_interp = 0.1 -> settings___grid_interp_0.1
         """
-        if not self.grid_inversion_class is grids.Grid2DInterpolate:
+        if not self.grid_inversion_class is grid_2d_interpolate.Grid2DInterpolate:
             return ""
         if self.pixel_scales_interp is None:
             return ""

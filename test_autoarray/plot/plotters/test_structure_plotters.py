@@ -15,6 +15,61 @@ def make_plot_path_setup():
     )
 
 
+class TestArray1DPlotter:
+    def _test__plot_line__works_with_all_extras_included(self, plot_path, plot_patch):
+
+        array_1d_plotter = aplt.Array1DPlotter(
+            mat_plot_1d=aplt.MatPlot1D(
+                output=aplt.Output(path=plot_path, filename="line1", format="png")
+            )
+        )
+
+        array_1d_plotter.figure(
+            y=np.array([1.0, 2.0, 3.0]),
+            x=np.array([0.5, 1.0, 1.5]),
+            plot_axis_type="loglog",
+            vertical_lines=[1.0, 2.0],
+            label="line0",
+            vertical_line_labels=["line1", "line2"],
+        )
+
+        assert path.join(plot_path, "line1.png") in plot_patch.paths
+
+        array_1d_plotter = aplt.Array1DPlotter(
+            mat_plot_1d=aplt.MatPlot1D(
+                output=aplt.Output(path=plot_path, filename="line2", format="png")
+            )
+        )
+
+        array_1d_plotter.figure(
+            y=np.array([1.0, 2.0, 3.0]),
+            x=np.array([0.5, 1.0, 1.5]),
+            plot_axis_type="semilogy",
+            vertical_lines=[1.0, 2.0],
+            label="line0",
+            vertical_line_labels=["line1", "line2"],
+        )
+
+        assert path.join(plot_path, "line2.png") in plot_patch.paths
+
+        array_1d_plotter = aplt.Array1DPlotter(
+            mat_plot_1d=aplt.MatPlot1D(
+                output=aplt.Output(path=plot_path, filename="line3", format="png")
+            )
+        )
+
+        array_1d_plotter.figure(
+            y=np.array([1.0, 2.0, 3.0]),
+            x=np.array([0.5, 1.0, 1.5]),
+            plot_axis_type="loglog",
+            vertical_lines=[1.0, 2.0],
+            label="line0",
+            vertical_line_labels=["line1", "line2"],
+        )
+
+        assert path.join(plot_path, "line3.png") in plot_patch.paths
+
+
 class TestArray2DPlotter:
     def test___visuals_in_constructor_use_array_and_include(self, array_7x7):
 
@@ -632,58 +687,3 @@ class TestMapperPlotter:
         mapper_plotter.subplot_image_and_mapper(image=imaging_7x7.image)
 
         assert path.join(plot_path, "subplot_image_and_mapper.png") in plot_patch.paths
-
-
-class TestLine1DPlotter:
-    def _test__plot_line__works_with_all_extras_included(self, plot_path, plot_patch):
-
-        line_plotter = aplt.Line1DPlotter(
-            mat_plot_1d=aplt.MatPlot1D(
-                output=aplt.Output(path=plot_path, filename="line1", format="png")
-            )
-        )
-
-        line_plotter.figure(
-            y=np.array([1.0, 2.0, 3.0]),
-            x=np.array([0.5, 1.0, 1.5]),
-            plot_axis_type="loglog",
-            vertical_lines=[1.0, 2.0],
-            label="line0",
-            vertical_line_labels=["line1", "line2"],
-        )
-
-        assert path.join(plot_path, "line1.png") in plot_patch.paths
-
-        line_plotter = aplt.Line1DPlotter(
-            mat_plot_1d=aplt.MatPlot1D(
-                output=aplt.Output(path=plot_path, filename="line2", format="png")
-            )
-        )
-
-        line_plotter.figure(
-            y=np.array([1.0, 2.0, 3.0]),
-            x=np.array([0.5, 1.0, 1.5]),
-            plot_axis_type="semilogy",
-            vertical_lines=[1.0, 2.0],
-            label="line0",
-            vertical_line_labels=["line1", "line2"],
-        )
-
-        assert path.join(plot_path, "line2.png") in plot_patch.paths
-
-        line_plotter = aplt.Line1DPlotter(
-            mat_plot_1d=aplt.MatPlot1D(
-                output=aplt.Output(path=plot_path, filename="line3", format="png")
-            )
-        )
-
-        line_plotter.figure(
-            y=np.array([1.0, 2.0, 3.0]),
-            x=np.array([0.5, 1.0, 1.5]),
-            plot_axis_type="loglog",
-            vertical_lines=[1.0, 2.0],
-            label="line0",
-            vertical_line_labels=["line1", "line2"],
-        )
-
-        assert path.join(plot_path, "line3.png") in plot_patch.paths

@@ -7,9 +7,10 @@ from autoconf import conf
 from autoarray import exc
 from autoarray.dataset import abstract_dataset, preprocess
 from autoarray.mask import mask_2d as msk
-from autoarray.structures import arrays
-from autoarray.structures import grids
-from autoarray.structures import kernel
+from autoarray.structures.arrays.two_d import array_2d
+from autoarray.structures.grids.two_d import grid_2d
+from autoarray.structures.grids.two_d import grid_2d_irregular
+from autoarray.structures import kernel_2d
 from autoarray.operators import convolver
 
 logger = logging.getLogger(__name__)
@@ -18,10 +19,10 @@ logger = logging.getLogger(__name__)
 class AbstractImaging(abstract_dataset.AbstractDataset):
     def __init__(
         self,
-        image: arrays.Array2D,
-        noise_map: arrays.Array2D,
-        psf: kernel.Kernel2D = None,
-        positions: grids.Grid2DIrregular = None,
+        image: array_2d.Array2D,
+        noise_map: array_2d.Array2D,
+        psf: kernel_2d.Kernel2D = None,
+        positions: grid_2d_irregular.Grid2DIrregular = None,
         name: str = None,
     ):
         """A class containing the data, noise-map and point spread function of a 2D imaging dataset.
@@ -74,7 +75,7 @@ class AbstractImaging(abstract_dataset.AbstractDataset):
             self.noise_map,
         )
 
-        imaging.noise_map = arrays.Array2D.manual_mask(
+        imaging.noise_map = array_2d.Array2D.manual_mask(
             array=noise_map_limit,
             mask=self.image.mask,
             store_slim=self.noise_map.store_slim,
@@ -86,8 +87,8 @@ class AbstractImaging(abstract_dataset.AbstractDataset):
 class AbstractSettingsMaskedImaging(abstract_dataset.AbstractSettingsMaskedDataset):
     def __init__(
         self,
-        grid_class=grids.Grid2D,
-        grid_inversion_class=grids.Grid2D,
+        grid_class=grid_2d.Grid2D,
+        grid_inversion_class=grid_2d.Grid2D,
         sub_size=2,
         sub_size_inversion=2,
         fractional_accuracy=0.9999,
@@ -173,7 +174,7 @@ class AbstractSettingsMaskedImaging(abstract_dataset.AbstractSettingsMaskedDatas
             else:
                 psf_shape_2d = self.psf_shape_2d
 
-            return kernel.Kernel2D.manual_native(
+            return kernel_2d.Kernel2D.manual_native(
                 array=psf.resized_from(new_shape=psf_shape_2d).native,
                 pixel_scales=psf.pixel_scales,
                 renormalize=self.renormalize_psf,
@@ -232,13 +233,13 @@ class AbstractMaskedImaging(abstract_dataset.AbstractMaskedDataset):
 
         super().__init__(dataset=imaging, mask=mask, settings=settings)
 
-        self.image = arrays.Array2D.manual_mask(
+        self.image = array_2d.Array2D.manual_mask(
             array=self.dataset.image.native,
             mask=mask.mask_sub_1,
             store_slim=imaging.image.store_slim,
         )
 
-        self.noise_map = arrays.Array2D.manual_mask(
+        self.noise_map = array_2d.Array2D.manual_mask(
             array=self.dataset.noise_map.native,
             mask=mask.mask_sub_1,
             store_slim=imaging.noise_map.store_slim,
@@ -323,17 +324,17 @@ class Imaging(AbstractImaging):
             The hdu the noise_map is contained in the .fits file specified by *noise_map_path*.
         """
 
-        image = arrays.Array2D.from_fits(
+        image = array_2d.Array2D.from_fits(
             file_path=image_path, hdu=image_hdu, pixel_scales=pixel_scales
         )
 
-        noise_map = arrays.Array2D.from_fits(
+        noise_map = array_2d.Array2D.from_fits(
             file_path=noise_map_path, hdu=noise_map_hdu, pixel_scales=pixel_scales
         )
 
         if psf_path is not None:
 
-            psf = kernel.Kernel2D.from_fits(
+            psf = kernel_2d.Kernel2D.from_fits(
                 file_path=psf_path,
                 hdu=psf_hdu,
                 pixel_scales=pixel_scales,
@@ -348,13 +349,15 @@ class Imaging(AbstractImaging):
 
             if ".dat" in positions_path:
 
-                positions = grids.Grid2DIrregular.from_dat_file(
+                positions = grid_2d_irregular.Grid2DIrregular.from_dat_file(
                     file_path=positions_path
                 )
                 positions_path = positions_path.replace(".dat", ".json")
                 positions.output_to_json(file_path=positions_path, overwrite=True)
 
-            positions = grids.Grid2DIrregular.from_json(file_path=positions_path)
+            positions = grid_2d_irregular.Grid2DIrregular.from_json(
+                file_path=positions_path
+            )
 
         else:
 
@@ -386,7 +389,7 @@ class AbstractSimulatorImaging:
         self,
         exposure_time: float,
         background_sky_level: float = 0.0,
-        psf: kernel.Kernel2D = None,
+        psf: kernel_2d.Kernel2D = None,
         renormalize_psf: bool = True,
         read_noise: float = None,
         add_poisson_noise: bool = True,
@@ -433,23 +436,23 @@ class AbstractSimulatorImaging:
 
 
 class SimulatorImaging(AbstractSimulatorImaging):
-    def from_image(self, image: arrays.Array2D, name: str = None):
+    def from_image(self, image: array_2d.Array2D, name: str = None):
         """
         Returns a realistic simulated image by applying effects to a plain simulated image.
 
         Parameters
         ----------
-        image : arrays.Array2D
+        image : array_2d.Array2D
             The image before simulating which has noise added, PSF convolution, etc performed to it.
         """
 
-        exposure_time_map = arrays.Array2D.full(
+        exposure_time_map = array_2d.Array2D.full(
             fill_value=self.exposure_time,
             shape_native=image.shape_native,
             pixel_scales=image.pixel_scales,
         )
 
-        background_sky_map = arrays.Array2D.full(
+        background_sky_map = array_2d.Array2D.full(
             fill_value=self.background_sky_level,
             shape_native=image.shape_native,
             pixel_scales=image.pixel_scales,
@@ -458,7 +461,7 @@ class SimulatorImaging(AbstractSimulatorImaging):
         if self.psf is not None:
             psf = self.psf
         else:
-            psf = kernel.Kernel2D.no_blur(pixel_scales=image.pixel_scales)
+            psf = kernel_2d.Kernel2D.no_blur(pixel_scales=image.pixel_scales)
 
         image = psf.convolved_array_from_array(array=image)
 
@@ -476,7 +479,7 @@ class SimulatorImaging(AbstractSimulatorImaging):
             )
 
         else:
-            noise_map = arrays.Array2D.full(
+            noise_map = array_2d.Array2D.full(
                 fill_value=self.noise_if_add_noise_false,
                 shape_native=image.shape_native,
                 pixel_scales=image.pixel_scales,
@@ -494,6 +497,6 @@ class SimulatorImaging(AbstractSimulatorImaging):
             shape_native=image.shape_native, pixel_scales=image.pixel_scales
         )
 
-        image = arrays.Array2D.manual_mask(array=image, mask=mask)
+        image = array_2d.Array2D.manual_mask(array=image, mask=mask)
 
         return Imaging(image=image, psf=self.psf, noise_map=noise_map, name=name)

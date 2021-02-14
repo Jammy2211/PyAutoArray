@@ -7,9 +7,7 @@ import shutil
 import autoarray as aa
 from autoarray.structures import visibilities as vis
 
-test_data_dir = path.join(
-    "{}".format(path.dirname(path.realpath(__file__))), "files", "visibilities"
-)
+test_data_dir = path.join("{}".format(path.dirname(path.realpath(__file__))), "files")
 
 
 class TestVisibilitiesAPI:
@@ -70,8 +68,6 @@ class TestVisibilitiesAPI:
         visibilities = aa.Visibilities.ones(shape_slim=(2,))
 
         assert type(visibilities) == vis.Visibilities
-        print(visibilities)
-        print(visibilities.slim)
         assert (visibilities.slim == np.array([1.0 + 1.0j, 1.0 + 1.0j])).all()
 
         visibilities = aa.Visibilities.full(fill_value=2.0, shape_slim=(2,))

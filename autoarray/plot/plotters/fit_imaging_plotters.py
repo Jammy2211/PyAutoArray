@@ -3,7 +3,7 @@ from autoarray.plot.mat_wrap import visuals as vis
 from autoarray.plot.mat_wrap import include as inc
 from autoarray.plot.mat_wrap import mat_plot as mp
 from autoarray.fit import fit as f
-from autoarray.structures import grids
+from autoarray.structures.grids.two_d import grid_2d_irregular
 
 
 class AbstractFitImagingPlotter(abstract_plotters.AbstractPlotter):
@@ -19,7 +19,7 @@ class AbstractFitImagingPlotter(abstract_plotters.AbstractPlotter):
 
         return self.visuals_2d + self.visuals_2d.__class__(
             origin=self.extract_2d(
-                "origin", grids.Grid2DIrregular(grid=[self.fit.mask.origin])
+                "origin", grid_2d_irregular.Grid2DIrregular(grid=[self.fit.mask.origin])
             ),
             mask=self.extract_2d("mask", self.fit.mask),
             border=self.extract_2d(

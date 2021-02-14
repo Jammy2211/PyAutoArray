@@ -2,7 +2,10 @@ import numpy as np
 from functools import wraps
 
 from autoconf import conf
-from autoarray.structures import grids
+from autoarray.structures.grids.two_d import grid_2d
+from autoarray.structures.grids.two_d import grid_2d_interpolate
+from autoarray.structures.grids.two_d import grid_2d_iterate
+from autoarray.structures.grids.two_d import grid_2d_irregular
 
 
 def grid_like_to_structure(func):
@@ -59,19 +62,19 @@ def grid_like_to_structure(func):
             The function values evaluated on the grid with the same structure as the input grid_like object.
         """
 
-        if isinstance(grid, grids.Grid2DIterate):
+        if isinstance(grid, grid_2d_iterate.Grid2DIterate):
             return grid.iterated_result_from_func(func=func, cls=profile)
-        elif isinstance(grid, grids.Grid2DInterpolate):
+        elif isinstance(grid, grid_2d_interpolate.Grid2DInterpolate):
             return grid.result_from_func(func=func, cls=profile)
-        elif isinstance(grid, grids.Grid2DIrregular):
+        elif isinstance(grid, grid_2d_irregular.Grid2DIrregular):
             result = func(profile, grid, *args, **kwargs)
             return grid.structure_from_result(result=result)
-        elif isinstance(grid, grids.Grid2D):
+        elif isinstance(grid, grid_2d.Grid2D):
             result = func(profile, grid, *args, **kwargs)
             return grid.structure_from_result(result=result)
 
-        if not isinstance(grid, grids.Grid2DIrregular) and not isinstance(
-            grid, grids.Grid2D
+        if not isinstance(grid, grid_2d_irregular.Grid2DIrregular) and not isinstance(
+            grid, grid_2d.Grid2D
         ):
             return func(profile, grid, *args, **kwargs)
 
@@ -135,11 +138,11 @@ def grid_like_to_structure_list(func):
             The function values evaluated on the grid with the same structure as the input grid_like object.
         """
 
-        if isinstance(grid, grids.Grid2DIterate):
+        if isinstance(grid, grid_2d_iterate.Grid2DIterate):
             mask = grid.mask.mask_new_sub_size_from_mask(
                 mask=grid.mask, sub_size=max(grid.sub_steps)
             )
-            grid_compute = grids.Grid2D.from_mask(mask=mask)
+            grid_compute = grid_2d.Grid2D.from_mask(mask=mask)
             result_list = func(profile, grid_compute, *args, **kwargs)
             result_list = [
                 grid_compute.structure_from_result(result=result)
@@ -147,17 +150,17 @@ def grid_like_to_structure_list(func):
             ]
             result_list = [result.slim_binned for result in result_list]
             return grid.grid.structure_list_from_result_list(result_list=result_list)
-        elif isinstance(grid, grids.Grid2DInterpolate):
+        elif isinstance(grid, grid_2d_interpolate.Grid2DInterpolate):
             return func(profile, grid, *args, **kwargs)
-        elif isinstance(grid, grids.Grid2DIrregular):
+        elif isinstance(grid, grid_2d_irregular.Grid2DIrregular):
             result_list = func(profile, grid, *args, **kwargs)
             return grid.structure_list_from_result_list(result_list=result_list)
-        elif isinstance(grid, grids.Grid2D):
+        elif isinstance(grid, grid_2d.Grid2D):
             result_list = func(profile, grid, *args, **kwargs)
             return grid.structure_list_from_result_list(result_list=result_list)
 
-        if not isinstance(grid, grids.Grid2DIrregular) and not isinstance(
-            grid, grids.Grid2D
+        if not isinstance(grid, grid_2d_irregular.Grid2DIrregular) and not isinstance(
+            grid, grid_2d.Grid2D
         ):
             return func(profile, grid, *args, **kwargs)
 
@@ -195,7 +198,7 @@ def transform(func):
         """
 
         if not isinstance(
-            grid, (grids.Grid2DTransformed, grids.Grid2DTransformedNumpy)
+            grid, (grid_2d.Grid2DTransformed, grid_2d.Grid2DTransformedNumpy)
         ):
             result = func(
                 cls, cls.transform_grid_to_reference_frame(grid), *args, **kwargs
