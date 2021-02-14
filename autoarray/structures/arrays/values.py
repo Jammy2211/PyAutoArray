@@ -12,6 +12,7 @@ logger = logging.getLogger(__name__)
 
 
 class ValuesIrregular(np.ndarray):
+
     def __new__(cls, values):
         """
         A collection of values which are structured as follows:

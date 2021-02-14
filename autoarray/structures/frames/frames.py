@@ -7,10 +7,12 @@ from autoarray.geometry import geometry_util
 
 
 class Frame2D(abstract_frame.AbstractFrame2D):
+
     def __new__(
         cls, array, mask, original_roe_corner=(1, 0), scans=None, exposure_info=None
     ):
-        """Abstract class for the geometry of a CTI Image.
+        """
+        Abstract class for the geometry of a CTI Image.
 
         A f.FrameArray is stored as a 2D ndarrays. When this immage is passed to arctic, clocking goes towards
         the 'top' of the ndarrays (e.g. towards row 0). Trails therefore appear towards the 'bottom' of the arrays
