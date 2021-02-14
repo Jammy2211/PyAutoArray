@@ -3,7 +3,7 @@ from autoarray.plot.mat_wrap import visuals as vis
 from autoarray.plot.mat_wrap import include as inc
 from autoarray.plot.mat_wrap import mat_plot as mp
 from autoarray.dataset import interferometer as inter
-from autoarray.structures import grids
+from autoarray.structures.grids.two_d import grid_2d_irregular
 import numpy as np
 
 
@@ -108,7 +108,7 @@ class InterferometerPlotter(abstract_plotters.AbstractPlotter):
         if uv_wavelengths:
 
             self.mat_plot_2d.plot_grid(
-                grid=grids.Grid2DIrregular.from_yx_1d(
+                grid=grid_2d_irregular.Grid2DIrregular.from_yx_1d(
                     y=self.interferometer.uv_wavelengths[:, 1] / 10 ** 3.0,
                     x=self.interferometer.uv_wavelengths[:, 0] / 10 ** 3.0,
                 ),

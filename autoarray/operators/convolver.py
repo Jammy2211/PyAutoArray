@@ -1,13 +1,14 @@
 from autoarray import decorator_util
 import numpy as np
 from autoarray import exc
-from autoarray.structures import arrays
+from autoarray.structures.arrays.two_d import array_2d
 from autoarray.mask import mask_2d_util
 
 
 class Convolver:
     def __init__(self, mask, kernel):
-        """ Class to setup the 1D convolution of an / mapping matrix.
+        """
+        Class to setup the 1D convolution of an / mapping matrix.
 
         Take a simple 3x3 and masks:
 
@@ -333,7 +334,7 @@ class Convolver:
             blurring_frame_1d_lengths=self.blurring_frame_1d_lengths,
         )
 
-        return arrays.Array2D(
+        return array_2d.Array2D(
             array=convolved_image, mask=self.mask.mask_sub_1, store_slim=True
         )
 

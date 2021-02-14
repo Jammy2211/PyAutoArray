@@ -1,7 +1,8 @@
 import numpy as np
 from autoconf import conf
 from autoarray import exc
-from autoarray.structures import grids
+from autoarray.structures.grids.two_d import grid_2d
+from autoarray.structures.grids.two_d import grid_2d_pixelization
 from autoarray.inversion import mappers
 
 import copy
@@ -94,7 +95,9 @@ class Pixelization:
         """ Abstract base class for a pixelization, which discretizes grid of (y,x) coordinates into pixels.
         """
 
-    def mapper_from_grid_and_sparse_grid(self, grid: grids.Grid2D, border: np.ndarray):
+    def mapper_from_grid_and_sparse_grid(
+        self, grid: grid_2d.Grid2D, border: np.ndarray
+    ):
         raise NotImplementedError(
             "pixelization_mapper_from_grids_and_borders should be overridden"
         )
@@ -130,9 +133,9 @@ class Rectangular(Pixelization):
 
     def mapper_from_grid_and_sparse_grid(
         self,
-        grid: grids.Grid2D,
-        sparse_grid: grids.Grid2D = None,
-        sparse_image_plane_grid: grids.Grid2D = None,
+        grid: grid_2d.Grid2D,
+        sparse_grid: grid_2d.Grid2D = None,
+        sparse_image_plane_grid: grid_2d.Grid2D = None,
         hyper_image: np.ndarray = None,
         settings=SettingsPixelization(),
     ):
@@ -157,7 +160,7 @@ class Rectangular(Pixelization):
         else:
             relocated_grid = grid
 
-        pixelization_grid = grids.Grid2DRectangular.overlay_grid(
+        pixelization_grid = grid_2d_pixelization.Grid2DRectangular.overlay_grid(
             shape_native=self.shape, grid=relocated_grid
         )
 
@@ -169,7 +172,7 @@ class Rectangular(Pixelization):
 
     def sparse_grid_from_grid(
         self,
-        grid: grids.Grid2D,
+        grid: grid_2d.Grid2D,
         hyper_image: np.ndarray = None,
         settings=SettingsPixelization(),
     ):
@@ -188,9 +191,9 @@ class Voronoi(Pixelization):
 
     def mapper_from_grid_and_sparse_grid(
         self,
-        grid: grids.Grid2D,
-        sparse_grid: grids.Grid2DSparse = None,
-        sparse_image_plane_grid: grids.Grid2DSparse = None,
+        grid: grid_2d.Grid2D,
+        sparse_grid: grid_2d.Grid2DSparse = None,
+        sparse_image_plane_grid: grid_2d.Grid2DSparse = None,
         hyper_image: np.ndarray = None,
         settings=SettingsPixelization(),
     ):
@@ -227,7 +230,7 @@ class Voronoi(Pixelization):
 
         try:
 
-            pixelization_grid = grids.Grid2DVoronoi(
+            pixelization_grid = grid_2d_pixelization.Grid2DVoronoi(
                 grid=relocated_pixelization_grid,
                 nearest_pixelization_index_for_slim_index=sparse_grid.sparse_index_for_slim_index,
             )
@@ -260,12 +263,12 @@ class VoronoiMagnification(Voronoi):
 
     def sparse_grid_from_grid(
         self,
-        grid: grids.Grid2D,
+        grid: grid_2d.Grid2D,
         hyper_image: np.ndarray = None,
         settings=SettingsPixelization(),
     ):
 
-        return grids.Grid2DSparse.from_grid_and_unmasked_2d_grid_shape(
+        return grid_2d.Grid2DSparse.from_grid_and_unmasked_2d_grid_shape(
             grid=grid, unmasked_sparse_shape=self.shape
         )
 
@@ -294,14 +297,14 @@ class VoronoiBrightnessImage(Voronoi):
 
     def sparse_grid_from_grid(
         self,
-        grid: grids.Grid2D,
+        grid: grid_2d.Grid2D,
         hyper_image: np.ndarray,
         settings=SettingsPixelization(),
     ):
 
         weight_map = self.weight_map_from_hyper_image(hyper_image=hyper_image)
 
-        return grids.Grid2DSparse.from_total_pixels_grid_and_weight_map(
+        return grid_2d.Grid2DSparse.from_total_pixels_grid_and_weight_map(
             total_pixels=self.pixels,
             grid=grid,
             weight_map=weight_map,

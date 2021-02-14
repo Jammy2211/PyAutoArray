@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import typing
 
-from autoarray.structures import lines
+from autoarray.structures.arrays.one_d import array_1d
 from autoarray import exc
 
 
@@ -35,8 +35,8 @@ class LinePlot(AbstractMatWrap1D):
 
     def plot_y_vs_x(
         self,
-        y: typing.Union[np.ndarray, lines.Line1D],
-        x: typing.Union[np.ndarray, lines.Line1D],
+        y: typing.Union[np.ndarray, array_1d.Array1D],
+        x: typing.Union[np.ndarray, array_1d.Array1D],
         plot_axis_type: str,
         label: str = None,
     ):
@@ -46,7 +46,7 @@ class LinePlot(AbstractMatWrap1D):
 
         Parameters
         ----------
-        y : np.ndarray or lines.Line1D
+        y : np.ndarray or array_1d.Array1D
             The ydata that is plotted.
         x : np.ndarray or lines.Line
             The xdata that is plotted.

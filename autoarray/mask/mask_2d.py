@@ -7,7 +7,8 @@ from autoarray.mask import abstract_mask, mask_2d_util
 from autoarray.structures.grids.two_d import grid_2d_util
 from autoarray.geometry import geometry_util
 from autoarray.structures.arrays.two_d import array_2d_util
-from autoarray.structures import arrays, grids
+from autoarray.structures.arrays.two_d import array_2d
+from autoarray.structures.grids.two_d import grid_2d
 
 
 logging.basicConfig()
@@ -152,7 +153,7 @@ class AbstractMask2D(abstract_mask.AbstractMask):
             pad_size_0 // 2 : self.shape[0] - pad_size_0 // 2,
             pad_size_1 // 2 : self.shape[1] - pad_size_1 // 2,
         ]
-        return arrays.Array2D.manual(
+        return array_2d.Array2D.manual(
             array=trimmed_array,
             pixel_scales=self.pixel_scales,
             sub_size=1,
@@ -304,7 +305,7 @@ class AbstractMask2D(abstract_mask.AbstractMask):
             origin=self.origin,
         )
 
-        return grids.Grid2D(
+        return grid_2d.Grid2D(
             grid=grid_slim, mask=self.unmasked_mask.mask_sub_1, store_slim=True
         )
 
@@ -316,7 +317,7 @@ class AbstractMask2D(abstract_mask.AbstractMask):
             sub_size=self.sub_size,
             origin=self.origin,
         )
-        return grids.Grid2D(
+        return grid_2d.Grid2D(
             grid=sub_grid_1d, mask=self.edge_mask.mask_sub_1, store_slim=True
         )
 
@@ -326,7 +327,7 @@ class AbstractMask2D(abstract_mask.AbstractMask):
         grid_slim = grid_2d_util.grid_2d_slim_via_mask_from(
             mask_2d=self, pixel_scales=self.pixel_scales, sub_size=1, origin=self.origin
         )
-        return grids.Grid2D(grid=grid_slim, mask=self.mask_sub_1, store_slim=True)
+        return grid_2d.Grid2D(grid=grid_slim, mask=self.mask_sub_1, store_slim=True)
 
     @property
     def edge_grid_sub_1(self):
@@ -336,7 +337,7 @@ class AbstractMask2D(abstract_mask.AbstractMask):
         an annulus mask).
         """
         edge_grid_1d = self.masked_grid_sub_1[self._edge_1d_indexes]
-        return grids.Grid2D(
+        return grid_2d.Grid2D(
             grid=edge_grid_1d, mask=self.edge_mask.mask_sub_1, store_slim=True
         )
 
@@ -357,7 +358,7 @@ class AbstractMask2D(abstract_mask.AbstractMask):
         an annulus mask).
         """
         border_grid_1d = self.masked_grid_sub_1[self._border_1d_indexes]
-        return grids.Grid2D(
+        return grid_2d.Grid2D(
             grid=border_grid_1d, mask=self.border_mask.mask_sub_1, store_slim=True
         )
 
@@ -383,7 +384,9 @@ class AbstractMask2D(abstract_mask.AbstractMask):
             pixel_scales=self.pixel_scales,
             origin=self.origin,
         )
-        return grids.Grid2D(grid=grid_pixels_1d, mask=self.mask_sub_1, store_slim=True)
+        return grid_2d.Grid2D(
+            grid=grid_pixels_1d, mask=self.mask_sub_1, store_slim=True
+        )
 
     def grid_pixel_centres_from_grid_scaled_1d(self, grid_scaled_1d):
         """Convert a grid of (y,x) scaled coordinates to a grid of (y,x) pixel values. Pixel coordinates are \
@@ -407,7 +410,7 @@ class AbstractMask2D(abstract_mask.AbstractMask):
             origin=self.origin,
         ).astype("int")
 
-        return grids.Grid2D(
+        return grid_2d.Grid2D(
             grid=grid_pixel_centres_1d, mask=self.edge_mask.mask_sub_1, store_slim=True
         )
 
@@ -437,7 +440,7 @@ class AbstractMask2D(abstract_mask.AbstractMask):
             origin=self.origin,
         ).astype("int")
 
-        return arrays.Array2D(
+        return array_2d.Array2D(
             array=grid_pixel_indexes_1d, mask=self.edge_mask.mask_sub_1, store_slim=True
         )
 
@@ -461,7 +464,7 @@ class AbstractMask2D(abstract_mask.AbstractMask):
             pixel_scales=self.pixel_scales,
             origin=self.origin,
         )
-        return grids.Grid2D(
+        return grid_2d.Grid2D(
             grid=grid_scaled_1d, mask=self.edge_mask.mask_sub_1, store_slim=True
         )
 
@@ -482,7 +485,7 @@ class AbstractMask2D(abstract_mask.AbstractMask):
         grid_scaled_1d[:, 0] -= self.pixel_scales[0] / (2.0 * self.sub_size)
         grid_scaled_1d[:, 1] += self.pixel_scales[1] / (2.0 * self.sub_size)
 
-        return grids.Grid2D(
+        return grid_2d.Grid2D(
             grid=grid_scaled_1d, mask=self.edge_mask.mask_sub_1, store_slim=True
         )
 

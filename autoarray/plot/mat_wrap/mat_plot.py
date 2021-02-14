@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 from autoarray import exc
-from autoarray.structures import arrays
+from autoarray.structures.arrays.two_d import array_2d
 from autoarray.plot.mat_wrap import wrap
 from autoarray.plot.mat_wrap import visuals as vis
 from autoarray.inversion import mappers
@@ -467,7 +467,7 @@ class MatPlot2D(AbstractMatPlot):
 
     def plot_array(
         self,
-        array: arrays.Array2D,
+        array: array_2d.Array2D,
         visuals_2d: vis.Visuals2D,
         auto_labels: AutoLabels,
         bypass: bool = False,
@@ -479,7 +479,7 @@ class MatPlot2D(AbstractMatPlot):
 
         Parameters
         -----------
-        array : arrays.Array2D
+        array : array_2d.Array2D
             The 2D array of data_type which is plotted.
         visuals_2d : vis.Visuals2D
             Contains all the visuals that are plotted over the `Array2D` (e.g. the origin, mask, grids, etc.).

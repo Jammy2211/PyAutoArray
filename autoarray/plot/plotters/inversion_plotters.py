@@ -1,4 +1,3 @@
-from autoarray.plot.plotters import abstract_plotters
 from autoarray.plot.mat_wrap import visuals as vis
 from autoarray.plot.mat_wrap import include as inc
 from autoarray.plot.mat_wrap import mat_plot as mp

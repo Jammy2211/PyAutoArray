@@ -9,9 +9,7 @@ from astropy.coordinates import Angle
 import autoarray as aa
 from autoarray import exc
 
-test_data_dir = path.join(
-    "{}".format(path.dirname(path.realpath(__file__))), "arrays", "files", "array"
-)
+test_data_dir = path.join("{}".format(path.dirname(path.realpath(__file__))), "files")
 
 
 class TestAPI:
@@ -63,16 +61,16 @@ class TestAPI:
         self,
     ):
         kernel = aa.Kernel2D.from_fits(
-            file_path=path.join(test_data_dir, "3x3_ones.fits"), hdu=0, pixel_scales=1.0
+            file_path=path.join(test_data_dir, "3x2_ones.fits"), hdu=0, pixel_scales=1.0
         )
 
-        assert (kernel.native == np.ones((3, 3))).all()
+        assert (kernel.native == np.ones((3, 2))).all()
 
         kernel = aa.Kernel2D.from_fits(
-            file_path=path.join(test_data_dir, "4x3_ones.fits"), hdu=0, pixel_scales=1.0
+            file_path=path.join(test_data_dir, "3x2_twos.fits"), hdu=0, pixel_scales=1.0
         )
 
-        assert (kernel.native == np.ones((4, 3))).all()
+        assert (kernel.native == 2.0 * np.ones((3, 2))).all()
 
     def test__no_blur__correct_kernel(self):
         kernel = aa.Kernel2D.no_blur(pixel_scales=1.0)

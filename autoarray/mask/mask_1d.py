@@ -5,7 +5,7 @@ from typing import List, Tuple, Union
 
 from autoarray import exc
 from autoarray.mask import abstract_mask
-from autoarray.structures import grids
+from autoarray.structures.grids.one_d import grid_1d
 from autoarray.structures.grids.one_d import grid_1d_util
 from autoarray.structures.arrays.two_d import array_2d_util
 
@@ -91,7 +91,7 @@ class AbstractMask1d(abstract_mask.AbstractMask):
         )
 
     @property
-    def unmasked_grid_sub_1(self) -> grids.Grid1D:
+    def unmasked_grid_sub_1(self) -> grid_1d.Grid1D:
         """ The scaled-grid of (y,x) coordinates of every pixel.
 
         This is defined from the top-left corner, such that the first pixel at location [0, 0] will have a negative x \
@@ -101,7 +101,7 @@ class AbstractMask1d(abstract_mask.AbstractMask):
             mask_1d=self, pixel_scales=self.pixel_scales, sub_size=1, origin=self.origin
         )
 
-        return grids.Grid1D(
+        return grid_1d.Grid1D(
             grid=grid_slim, mask=self.unmasked_mask.mask_sub_1, store_slim=True
         )
 

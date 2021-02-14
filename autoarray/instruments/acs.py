@@ -1,7 +1,7 @@
 from autoarray.structures.arrays import abstract_array
 from autoarray.structures.arrays.two_d import array_2d_util
 from autoarray.structures.frames import abstract_frame
-from autoarray.structures import arrays
+from autoarray.structures.arrays.two_d import array_2d
 from autoarray.structures import frames as f
 from autoarray.structures import region as reg
 from autoarray import exc
@@ -38,7 +38,7 @@ def array_eps_to_counts(array_eps, bscale, bzero):
     return (array_eps - bzero) / bscale
 
 
-class ArrayACS(arrays.Array2D):
+class ArrayACS(array_2d.Array2D):
 
     pass
 

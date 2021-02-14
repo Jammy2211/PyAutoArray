@@ -1,4 +1,3 @@
-from autoarray.structures import grids
 import autoarray as aa
 import numpy as np
 
@@ -57,8 +56,9 @@ class TestVoronoiMagnification:
 
         sparse_grid = pix.sparse_grid_from_grid(grid=sub_grid_7x7)
 
-        pixelization_grid = grids.Grid2DVoronoi.from_grid_and_unmasked_2d_grid_shape(
-            unmasked_sparse_shape=(3, 3), grid=sub_grid_7x7
+        pixelization_grid = aa.Grid2DVoronoi(
+            grid=sparse_grid,
+            nearest_pixelization_index_for_slim_index=sparse_grid.sparse_index_for_slim_index,
         )
 
         assert (pixelization_grid == sparse_grid).all()
@@ -145,11 +145,11 @@ class TestVoronoiBrightness:
 
         weight_map = pix.weight_map_from_hyper_image(hyper_image=hyper_image)
 
-        sparse_grid = grids.Grid2DSparse.from_total_pixels_grid_and_weight_map(
+        sparse_grid = aa.Grid2DSparse.from_total_pixels_grid_and_weight_map(
             total_pixels=pix.pixels, grid=sub_grid_7x7, weight_map=weight_map, seed=1
         )
 
-        pixelization_grid = grids.Grid2DVoronoi(
+        pixelization_grid = aa.Grid2DVoronoi(
             grid=sparse_grid,
             nearest_pixelization_index_for_slim_index=sparse_grid.sparse_index_for_slim_index,
         )

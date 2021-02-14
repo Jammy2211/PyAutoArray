@@ -5,7 +5,7 @@ import typing
 
 from matplotlib.patches import Ellipse
 from autoarray.structures.arrays import values
-from autoarray.structures import grids
+from autoarray.structures.grids.two_d import grid_2d_irregular
 
 from autoarray import exc
 
@@ -17,7 +17,7 @@ class VectorField2DIrregular(np.ndarray):
     def __new__(
         cls,
         vectors: np.ndarray or [(float, float)],
-        grid: grids.Grid2DIrregular or list,
+        grid: grid_2d_irregular.Grid2DIrregular or list,
     ):
         """
         A collection of (y,x) vectors which are located on an irregular grid of (y,x) coordinates.
@@ -39,7 +39,7 @@ class VectorField2DIrregular(np.ndarray):
         ----------
         vectors : np.ndarray or [(float, float)]
             The 2D (y,x) vectors on an irregular grid that represent the vector-field.
-        grid : grids.Grid2DIrregular
+        grid : grid_2d_irregular.Grid2DIrregular
             The irregular grid of (y,x) coordinates where each vector is located.
         """
 
@@ -50,7 +50,7 @@ class VectorField2DIrregular(np.ndarray):
             vectors = np.asarray(vectors)
 
         obj = vectors.view(cls)
-        obj.grid = grids.Grid2DIrregular(grid=grid)
+        obj.grid = grid_2d_irregular.Grid2DIrregular(grid=grid)
 
         return obj
 
@@ -173,7 +173,7 @@ class VectorField2DIrregular(np.ndarray):
             )
 
         return VectorField2DIrregular(
-            vectors=self[mask], grid=grids.Grid2DIrregular(self.grid[mask])
+            vectors=self[mask], grid=grid_2d_irregular.Grid2DIrregular(self.grid[mask])
         )
 
     def vectors_within_annulus(
@@ -181,7 +181,7 @@ class VectorField2DIrregular(np.ndarray):
         inner_radius: float,
         outer_radius: float,
         centre: typing.Tuple[float, float] = (0.0, 0.0),
-    ) -> "VectorFieldIrregular":
+    ) -> "VectorField2DIrregular":
         """
         Returns a new `VectorFieldIrregular` object which has had all vectors outside of a circle of input radius
         around an  input (y,x) centre removed.
@@ -207,6 +207,6 @@ class VectorField2DIrregular(np.ndarray):
                 "The input radius removed all vectors / points on the grid."
             )
 
-        return VectorFieldIrregular(
-            vectors=self[mask], grid=grids.GridIrregular(self.grid[mask])
+        return VectorField2DIrregular(
+            vectors=self[mask], grid=grid_2d_irregular.Grid2DIrregular(self.grid[mask])
         )

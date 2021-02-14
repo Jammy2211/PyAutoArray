@@ -3,7 +3,7 @@ from autoarray.plot.mat_wrap import include as inc
 from autoarray.plot.mat_wrap import mat_plot as mp
 from autoarray.plot.plotters import abstract_plotters
 from autoarray.dataset import imaging as im
-from autoarray.structures import grids
+from autoarray.structures.grids.two_d import grid_2d_irregular
 
 
 class AbstractImagingPlotter(abstract_plotters.AbstractPlotter):
@@ -20,7 +20,8 @@ class AbstractImagingPlotter(abstract_plotters.AbstractPlotter):
 
         return self.visuals_2d + self.visuals_2d.__class__(
             origin=self.extract_2d(
-                "origin", grids.Grid2DIrregular(grid=[self.imaging.image.origin])
+                "origin",
+                grid_2d_irregular.Grid2DIrregular(grid=[self.imaging.image.origin]),
             ),
             mask=self.extract_2d("mask", self.imaging.image.mask),
             border=self.extract_2d(

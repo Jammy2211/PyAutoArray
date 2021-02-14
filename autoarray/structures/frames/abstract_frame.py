@@ -1,12 +1,12 @@
 import numpy as np
 
-from autoarray.structures.arrays import abstract_array
+from autoarray.structures.arrays.two_d import abstract_array_2d
 from autoarray.structures import frames as f
 from autoarray.structures import region as reg
 from autoarray.structures.frames import frame_util
 
 
-class AbstractFrame2D(abstract_array.AbstractArray2D):
+class AbstractFrame2D(abstract_array_2d.AbstractArray2D):
     def __array_finalize__(self, obj):
 
         super().__array_finalize__(obj)
@@ -26,6 +26,7 @@ class AbstractFrame2D(abstract_array.AbstractArray2D):
                 self.exposure_info = obj.exposure_info
 
     def _new_structure(self, array, mask, store_slim):
+
         return self.__class__(
             array=array,
             mask=mask,
