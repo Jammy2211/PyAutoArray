@@ -13,7 +13,7 @@ with open(join(this_dir, "requirements.txt")) as f:
 
 setup(
     name="autoarray",
-    version=environ.get("VERSION", "0.19.0"),
+    version=environ.get("VERSION", "1.0.dev0"),
     description="PyAuto Data Structures",
     long_description=long_description,
     long_description_content_type="text/markdown",
