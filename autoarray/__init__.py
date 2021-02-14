@@ -1,4 +1,4 @@
-from autoarray.structures.lines.lines import Line1D
+from autoarray.structures.lines.array_1d import Line1D
 from autoarray.structures.grids.two_d.irregular import Grid2DIrregular
 from autoarray.structures.grids.two_d.irregular import Grid2DIrregularUniform
 from autoarray.structures.vector_fields.vector_field_irregular import (

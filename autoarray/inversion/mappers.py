@@ -2,7 +2,7 @@ from autoarray.structures import arrays
 from autoarray.structures import grids
 from autoarray.inversion import mapper_util
 from autoarray.structures.grids.two_d import grid_2d_util
-from autoarray.structures.arrays import array_util
+from autoarray.structures.arrays.two_d import array_2d_util
 
 import itertools
 import numpy as np
@@ -242,7 +242,7 @@ class MapperRectangular(Mapper):
     def reconstruction_from(self, solution_vector):
         """Given the solution vector of an inversion (see *inversions.Inversion*), determine the reconstructed \
         pixelization of the rectangular pixelization by using the mapper."""
-        recon = array_util.array_2d_native_from(
+        recon = array_2d_util.array_2d_native_from(
             array_2d_slim=solution_vector,
             mask_2d=np.full(
                 fill_value=False, shape=self.source_pixelization_grid.shape_native

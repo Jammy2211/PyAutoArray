@@ -3,7 +3,7 @@ import logging
 import numpy as np
 
 from autoarray.structures import grids
-from autoarray.structures.arrays import array_util
+from autoarray.structures.arrays.two_d import array_2d_util
 
 logging.basicConfig()
 logger = logging.getLogger(__name__)
@@ -98,12 +98,12 @@ class AbstractVisibilities(np.ndarray):
         return self.shape[0]
 
     @property
-    @array_util.Memoizer()
+    @array_2d_util.Memoizer()
     def amplitudes(self):
         return np.sqrt(np.square(self.real) + np.square(self.imag))
 
     @property
-    @array_util.Memoizer()
+    @array_2d_util.Memoizer()
     def phases(self):
         return np.arctan2(self.imag, self.real)
 
@@ -122,7 +122,7 @@ class AbstractVisibilities(np.ndarray):
         overwrite : bool
             If a file already exists at the path, if overwrite=True it is overwritten else an error is raised.
         """
-        array_util.numpy_array_2d_to_fits(
+        array_2d_util.numpy_array_2d_to_fits(
             array_2d=self.in_array, file_path=file_path, overwrite=overwrite
         )
 
@@ -237,7 +237,7 @@ class Visibilities(AbstractVisibilities):
         hdu : int
             The Header-Data Unit of the .fits file the visibilitiy data is loaded from.
         """
-        visibilities_1d = array_util.numpy_array_2d_from_fits(
+        visibilities_1d = array_2d_util.numpy_array_2d_from_fits(
             file_path=file_path, hdu=hdu
         )
         return cls.manual_slim(visibilities=visibilities_1d)

@@ -7,8 +7,8 @@ import pytest
 from autoarray.mock import fixtures
 from autoconf import conf
 
-class PlotPatch:
 
+class PlotPatch:
     def __init__(self):
         self.paths = []
 

@@ -1,4 +1,5 @@
-from autoarray.structures.arrays import abstract_array, array_util
+from autoarray.structures.arrays import abstract_array
+from autoarray.structures.arrays.two_d import array_2d_util
 from autoarray.structures.frames import abstract_frame
 from autoarray.structures import arrays
 from autoarray.structures import frames as f
@@ -73,7 +74,7 @@ class FrameACS(f.Frame2D, ArrayACS):
 
         hdu = fits_hdu_from_quadrant_letter(quadrant_letter=quadrant_letter)
 
-        array = array_util.numpy_array_2d_from_fits(file_path=file_path, hdu=hdu)
+        array = array_2d_util.numpy_array_2d_from_fits(file_path=file_path, hdu=hdu)
 
         return cls.from_ccd(array_electrons=array, quadrant_letter=quadrant_letter)
 
@@ -292,7 +293,7 @@ class ImageACS(FrameACS, ArrayACS):
     @staticmethod
     def array_converted_to_electrons_from_fits(file_path, hdu, exposure_info):
 
-        array = array_util.numpy_array_2d_from_fits(
+        array = array_2d_util.numpy_array_2d_from_fits(
             file_path=file_path, hdu=hdu, do_not_scale_image_data=True
         )
 

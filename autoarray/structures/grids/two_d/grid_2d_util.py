@@ -3,7 +3,7 @@ import numpy as np
 
 from autoarray.mask import mask_2d_util
 from autoarray.geometry import geometry_util
-from autoarray.structures.arrays import array_util
+from autoarray.structures.arrays.two_d import array_2d_util
 
 
 @decorator_util.jit()
@@ -718,11 +718,11 @@ def grid_2d_slim_from(
         A 1D grid of values mapped from the 2D grid with dimensions (total_unmasked_pixels).
     """
 
-    grid_1d_slim_y = array_util.array_2d_slim_from(
+    grid_1d_slim_y = array_2d_util.array_2d_slim_from(
         array_2d_native=grid_2d_native[:, :, 0], mask_2d=mask, sub_size=sub_size
     )
 
-    grid_1d_slim_x = array_util.array_2d_slim_from(
+    grid_1d_slim_x = array_2d_util.array_2d_slim_from(
         array_2d_native=grid_2d_native[:, :, 1], mask_2d=mask, sub_size=sub_size
     )
 
@@ -760,11 +760,11 @@ def grid_2d_native_from(
         mapped from the slimmed grid.
     """
 
-    grid_2d_native_y = array_util.array_2d_native_from(
+    grid_2d_native_y = array_2d_util.array_2d_native_from(
         array_2d_slim=grid_2d_slim[:, 0], mask_2d=mask_2d, sub_size=sub_size
     )
 
-    grid_2d_native_x = array_util.array_2d_native_from(
+    grid_2d_native_x = array_2d_util.array_2d_native_from(
         array_2d_slim=grid_2d_slim[:, 1], mask_2d=mask_2d, sub_size=sub_size
     )
 

@@ -7,7 +7,7 @@ from autoarray.structures import grids
 from autoarray.mask import mask_2d as msk
 from autoarray.structures.grids.one_d import grid_1d_util
 from autoarray.structures.grids.two_d import grid_2d_util
-from autoarray.structures.arrays import array_util
+from autoarray.structures.arrays.two_d import array_2d_util
 
 
 def convert_grid(grid):
@@ -366,7 +366,7 @@ class AbstractGrid2D(abstract_structure.AbstractStructure2D):
         return np.stack((self.native[:, :, 1], self.native[:, :, 0]), axis=-1)
 
     @property
-    @array_util.Memoizer()
+    @array_2d_util.Memoizer()
     def in_radians(self):
         """Return the grid as an ndarray where all (y,x) values are converted to Radians.
 
@@ -655,6 +655,6 @@ class AbstractGrid2D(abstract_structure.AbstractStructure2D):
             e.g. '/path/to/filename.fits'
         overwrite : bool
             If a file already exists at the path, if overwrite=True it is overwritten else an error is raised."""
-        array_util.numpy_array_2d_to_fits(
+        array_2d_util.numpy_array_2d_to_fits(
             array_2d=self.native, file_path=file_path, overwrite=overwrite
         )

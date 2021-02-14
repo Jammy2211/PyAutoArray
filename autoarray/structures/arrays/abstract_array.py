@@ -6,7 +6,7 @@ from autoarray import exc
 from autoarray.dataset import preprocess
 from autoarray.structures import abstract_structure
 from autoarray.mask import mask_2d as msk
-from autoarray.structures.arrays import array_util
+from autoarray.structures.arrays.two_d import array_2d_util
 
 logging.basicConfig()
 logger = logging.getLogger(__name__)
@@ -69,7 +69,7 @@ def convert_manual_array_slim(array_slim, mask, store_slim):
     if store_slim:
         return array_slim
 
-    return array_util.array_2d_native_from(
+    return array_2d_util.array_2d_native_from(
         array_2d_slim=array_slim, mask_2d=mask, sub_size=mask.sub_size
     )
 
@@ -103,14 +103,14 @@ def convert_manual_native_array(array_2d, mask, store_slim):
             "(e.g. the mask 2D shape multipled by its sub size."
         )
 
-    sub_array_1d = array_util.array_2d_slim_from(
+    sub_array_1d = array_2d_util.array_2d_slim_from(
         array_2d_native=array_2d, mask_2d=mask, sub_size=mask.sub_size
     )
 
     if store_slim:
         return sub_array_1d
 
-    return array_util.array_2d_native_from(
+    return array_2d_util.array_2d_native_from(
         array_2d_slim=sub_array_1d, mask_2d=mask, sub_size=mask.sub_size
     )
 
@@ -165,7 +165,7 @@ class AbstractArray2D(abstract_structure.AbstractStructure2D):
         if self.store_slim:
             return self
 
-        sub_array_1d = array_util.array_2d_slim_from(
+        sub_array_1d = array_2d_util.array_2d_slim_from(
             array_2d_native=self, mask_2d=self.mask, sub_size=self.mask.sub_size
         )
 
@@ -178,7 +178,7 @@ class AbstractArray2D(abstract_structure.AbstractStructure2D):
 
         If the array is stored in 2D it is return as is. If it is stored in 1D, it must first be mapped from 1D to 2D."""
         if self.store_slim:
-            sub_array_2d = array_util.array_2d_native_from(
+            sub_array_2d = array_2d_util.array_2d_native_from(
                 array_2d_slim=self, mask_2d=self.mask, sub_size=self.mask.sub_size
             )
             return self._new_structure(
@@ -200,7 +200,7 @@ class AbstractArray2D(abstract_structure.AbstractStructure2D):
 
         if not self.store_slim:
 
-            sub_array_1d = array_util.array_2d_slim_from(
+            sub_array_1d = array_2d_util.array_2d_slim_from(
                 array_2d_native=self, mask_2d=self.mask, sub_size=self.mask.sub_size
             )
 
@@ -229,7 +229,7 @@ class AbstractArray2D(abstract_structure.AbstractStructure2D):
         If the array is stored in 2D it is return as is. If it is stored in 1D, it must first be mapped from 1D to 2D."""
         if not self.store_slim:
 
-            sub_array_1d = array_util.array_2d_slim_from(
+            sub_array_1d = array_2d_util.array_2d_slim_from(
                 array_2d_native=self, mask_2d=self.mask, sub_size=self.mask.sub_size
             )
 
@@ -242,7 +242,7 @@ class AbstractArray2D(abstract_structure.AbstractStructure2D):
             sub_array_1d[:].reshape(-1, self.mask.sub_length).sum(axis=1),
         )
 
-        binned_array_2d = array_util.array_2d_native_from(
+        binned_array_2d = array_2d_util.array_2d_native_from(
             array_2d_slim=binned_array_1d, mask_2d=self.mask, sub_size=1
         )
 
@@ -303,7 +303,7 @@ class AbstractArray2D(abstract_structure.AbstractStructure2D):
             The number pixels around the extracted array used as a buffer.
         """
 
-        extracted_array_2d = array_util.extracted_array_2d_from(
+        extracted_array_2d = array_2d_util.extracted_array_2d_from(
             array_2d=self.native,
             y0=self.mask.zoom_region[0] - buffer,
             y1=self.mask.zoom_region[1] + buffer,
@@ -337,7 +337,7 @@ class AbstractArray2D(abstract_structure.AbstractStructure2D):
         buffer : int
             The number pixels around the extracted array used as a buffer.
         """
-        extracted_array_2d = array_util.extracted_array_2d_from(
+        extracted_array_2d = array_2d_util.extracted_array_2d_from(
             array_2d=self.native,
             y0=self.mask.zoom_region[0] - buffer,
             y1=self.mask.zoom_region[1] + buffer,
@@ -369,7 +369,7 @@ class AbstractArray2D(abstract_structure.AbstractStructure2D):
             The new 2D shape of the array.
         """
 
-        resized_array_2d = array_util.resized_array_2d_from_array_2d(
+        resized_array_2d = array_2d_util.resized_array_2d_from_array_2d(
             array_2d=self.native, resized_shape=new_shape
         )
 
@@ -447,13 +447,12 @@ class AbstractArray2D(abstract_structure.AbstractStructure2D):
         overwrite : bool
             If a file already exists at the path, if overwrite=True it is overwritten else an error is raised.
         """
-        array_util.numpy_array_2d_to_fits(
+        array_2d_util.numpy_array_2d_to_fits(
             array_2d=self.native, file_path=file_path, overwrite=overwrite
         )
 
 
 class ExposureInfo:
-
     def __init__(
         self,
         date_of_observation=None,

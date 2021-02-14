@@ -6,7 +6,7 @@ from autoarray import exc
 from autoarray.mask import abstract_mask, mask_2d_util
 from autoarray.structures.grids.two_d import grid_2d_util
 from autoarray.geometry import geometry_util
-from autoarray.structures.arrays import array_util
+from autoarray.structures.arrays.two_d import array_2d_util
 from autoarray.structures import arrays, grids
 
 
@@ -124,7 +124,7 @@ class AbstractMask2D(abstract_mask.AbstractMask):
 
         mask = copy.deepcopy(self)
 
-        resized_mask = array_util.resized_array_2d_from_array_2d(
+        resized_mask = array_2d_util.resized_array_2d_from_array_2d(
             array_2d=mask, resized_shape=new_shape
         ).astype("bool")
 
@@ -206,7 +206,7 @@ class AbstractMask2D(abstract_mask.AbstractMask):
         mask = Mask2D(mask=np.full(shape=(5,5), fill_value=False))
         mask.output_to_fits(file_path='/path/to/file/filename.fits', overwrite=True)
         """
-        array_util.numpy_array_2d_to_fits(
+        array_2d_util.numpy_array_2d_to_fits(
             array_2d=self.astype("float"), file_path=file_path, overwrite=overwrite
         )
 
@@ -251,7 +251,7 @@ class AbstractMask2D(abstract_mask.AbstractMask):
         )
 
     @property
-    @array_util.Memoizer()
+    @array_2d_util.Memoizer()
     def mask_centre(self):
         return grid_2d_util.grid_2d_centre_from(grid_2d_slim=self.masked_grid_sub_1)
 
@@ -537,7 +537,7 @@ class AbstractMask2D(abstract_mask.AbstractMask):
             mask_2d=self, sub_size=self.sub_size
         ).astype("int")
 
-    @array_util.Memoizer()
+    @array_2d_util.Memoizer()
     def blurring_mask_from_kernel_shape(self, kernel_shape_native):
         """
         Returns a blurring mask, which represents all masked pixels whose light will be blurred into unmasked \
@@ -614,7 +614,7 @@ class AbstractMask2D(abstract_mask.AbstractMask):
         ).astype("int")
 
     @property
-    @array_util.Memoizer()
+    @array_2d_util.Memoizer()
     def _slim_index_for_sub_slim_index(self):
         """The util between every sub-pixel and its host pixel.
 
@@ -1197,7 +1197,7 @@ class Mask2D(AbstractMask2D):
                 pixel_scales = (float(pixel_scales), float(pixel_scales))
 
         mask = cls(
-            array_util.numpy_array_2d_from_fits(file_path=file_path, hdu=hdu),
+            array_2d_util.numpy_array_2d_from_fits(file_path=file_path, hdu=hdu),
             pixel_scales=pixel_scales,
             sub_size=sub_size,
             origin=origin,
