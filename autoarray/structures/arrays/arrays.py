@@ -14,6 +14,7 @@ logger = logging.getLogger(__name__)
 
 
 class Array2D(abstract_array.AbstractArray2D):
+
     def __new__(
         cls,
         array,

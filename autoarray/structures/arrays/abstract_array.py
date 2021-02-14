@@ -147,34 +147,6 @@ class AbstractArray2D(abstract_structure.AbstractStructure2D):
 
     exposure_info = None
 
-    def __reduce__(self):
-        # Get the parent's __reduce__ tuple
-        pickled_state = super(AbstractArray2D, self).__reduce__()
-        # Create our own tuple to pass to __setstate__
-        class_dict = {}
-        for key, value in self.__dict__.items():
-            class_dict[key] = value
-        new_state = pickled_state[2] + (class_dict,)
-        # Return a tuple that replaces the parent's __setstate__ tuple with our own
-        return pickled_state[0], pickled_state[1], new_state
-
-    # noinspection PyMethodOverriding
-    def __setstate__(self, state):
-
-        for key, value in state[-1].items():
-            setattr(self, key, value)
-        super(AbstractArray2D, self).__setstate__(state[0:-1])
-
-    def __array_wrap__(self, out_arr, context=None):
-        return np.ndarray.__array_wrap__(self, out_arr, context)
-
-    def __eq__(self, other):
-        super_result = super(AbstractArray2D, self).__eq__(other)
-        try:
-            return super_result.all()
-        except AttributeError:
-            return super_result
-
     def _new_structure(self, array, mask, store_slim):
         return self.__class__(array=array, mask=mask, store_slim=store_slim)
 
@@ -481,6 +453,7 @@ class AbstractArray2D(abstract_structure.AbstractStructure2D):
 
 
 class ExposureInfo:
+
     def __init__(
         self,
         date_of_observation=None,
