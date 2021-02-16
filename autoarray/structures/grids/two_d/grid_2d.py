@@ -11,6 +11,7 @@ from autoarray.geometry import geometry_util
 
 
 class Grid2D(abstract_grid_2d.AbstractGrid2D):
+
     def __new__(cls, grid, mask, store_slim=True, *args, **kwargs):
         """
         A grid of 2D (y,x) coordinates, which are paired to a uniform 2D mask of pixels and sub-pixels. Each entry
@@ -875,7 +876,8 @@ class Grid2D(abstract_grid_2d.AbstractGrid2D):
         return [self.structure_from_result(result=result) for result in result_list]
 
 
-class Grid2DSparse(np.ndarray):
+class Grid2DSparse(abstract_grid_2d.AbstractGrid2D):
+
     def __new__(cls, grid, sparse_index_for_slim_index):
         """
         A sparse grid of coordinates, where each entry corresponds to the (y,x) coordinates at the centre of a
