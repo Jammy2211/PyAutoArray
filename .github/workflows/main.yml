@@ -44,6 +44,7 @@ jobs:
     - name: Install dependencies
       if: steps.cache-pip.outputs.cache-hit != 'true'
       run: |
+        pip install pytest
         pip install -r PyAutoFit/requirements.txt
         pip install -r PyAutoArray/requirements.txt
         pip install -r PyAutoGalaxy/requirements.txt
