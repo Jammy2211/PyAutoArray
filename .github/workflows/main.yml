@@ -18,7 +18,6 @@ jobs:
     - name: Checkout PyAutoArray
       uses: actions/checkout@v2
       with:
-        repository: Jammy2211/PyAutoArray
         path: PyAutoArray
     - name: Checkout PyAutoGalaxy
       uses: actions/checkout@v2
