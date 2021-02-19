@@ -23,6 +23,7 @@ jobs:
     - name: Install dependencies
       if: steps.cache-pip.outputs.cache-hit != 'true'
       run: |
+        pip install wheel
         pip install pytest
         pip install -r PyAutoArray/requirements.txt
     - name: Run tests
