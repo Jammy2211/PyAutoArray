@@ -255,14 +255,26 @@ class TestAbstractMaskedDatasetTags:
             signal_to_noise_limit=None
         )
         assert settings.signal_to_noise_limit_tag == ""
+
         settings = abstract_dataset.AbstractSettingsMaskedDataset(
             signal_to_noise_limit=1
         )
         assert settings.signal_to_noise_limit_tag == "__snr_1"
+
         settings = abstract_dataset.AbstractSettingsMaskedDataset(
             signal_to_noise_limit=2
         )
         assert settings.signal_to_noise_limit_tag == "__snr_2"
+
+        settings = abstract_dataset.AbstractSettingsMaskedDataset(
+            signal_to_noise_limit=2, signal_to_noise_limit_radii=1.0
+        )
+        assert settings.signal_to_noise_limit_tag == "__snr_2_radii_1.00"
+
+        settings = abstract_dataset.AbstractSettingsMaskedDataset(
+            signal_to_noise_limit=2, signal_to_noise_limit_radii=1.524
+        )
+        assert settings.signal_to_noise_limit_tag == "__snr_2_radii_1.52"
 
 
 class TestAbstractMaskedData:

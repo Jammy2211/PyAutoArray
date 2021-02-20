@@ -513,6 +513,7 @@ class MatPlot2D(AbstractMatPlot):
             extent_imshow = array.extent
 
         if not self.is_for_subplot:
+
             self.figure.open()
         else:
             if not bypass:

@@ -49,3 +49,5 @@ from autoarray.plot.plotters.imaging_plotters import ImagingPlotter
 from autoarray.plot.plotters.interferometer_plotters import InterferometerPlotter
 from autoarray.plot.plotters.fit_imaging_plotters import FitImagingPlotter
 from autoarray.plot.plotters.fit_interferometer_plotters import FitInterferometerPlotter
+
+from autoarray.plot.plotters.abstract_plotters import subplot_of_plotter_list_figure

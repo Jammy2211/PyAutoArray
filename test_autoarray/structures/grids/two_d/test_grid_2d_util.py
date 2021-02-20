@@ -71,8 +71,6 @@ class TestGrid2dSlimFromMask:
             mask_2d=mask, pixel_scales=(3.0, 3.0), sub_size=1
         )
 
-        print(grid)
-
         assert (
             grid
             == np.array(

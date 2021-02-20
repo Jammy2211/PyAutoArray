@@ -67,8 +67,6 @@ class TestRectangularMapper:
             == np.array([0, 1, 2, 3, 4, 5, 6, 7, 8])
         ).all()
 
-        print(mapper.all_sub_slim_indexes_for_pixelization_index)
-
         assert mapper.all_sub_slim_indexes_for_pixelization_index == [
             [0],
             [1],

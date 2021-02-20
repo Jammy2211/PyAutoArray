@@ -60,7 +60,7 @@ def mapped_reconstructed_data_from(
     mapping_matrix: np.ndarray, reconstruction: np.ndarray
 ) -> np.ndarray:
     """
-    Returns the reconstructed data vector from the blurrred mapping matrix `f` and solution vector *S*.
+    Returns the reconstructed data vector from the blurred mapping matrix `f` and solution vector *S*.
 
     Parameters
     -----------
@@ -68,12 +68,12 @@ def mapped_reconstructed_data_from(
         The matrix representing the blurred mappings between sub-grid pixels and pixelization pixels.
 
     """
-    mapped_reconstructred_data = np.zeros(mapping_matrix.shape[0])
+    mapped_reconstructed_data = np.zeros(mapping_matrix.shape[0])
     for i in range(mapping_matrix.shape[0]):
         for j in range(reconstruction.shape[0]):
-            mapped_reconstructred_data[i] += reconstruction[j] * mapping_matrix[i, j]
+            mapped_reconstructed_data[i] += reconstruction[j] * mapping_matrix[i, j]
 
-    return mapped_reconstructred_data
+    return mapped_reconstructed_data
 
 
 @decorator_util.jit()

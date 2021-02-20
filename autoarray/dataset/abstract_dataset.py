@@ -161,6 +161,7 @@ class AbstractSettingsMaskedDataset:
         sub_steps=None,
         pixel_scales_interp=None,
         signal_to_noise_limit=None,
+        signal_to_noise_limit_radii=None,
     ):
         """
         The lens dataset is the collection of data_type (image, noise-map, PSF), a mask, grid, convolver \
@@ -206,6 +207,7 @@ class AbstractSettingsMaskedDataset:
         self.sub_steps = sub_steps
         self.pixel_scales_interp = pixel_scales_interp
         self.signal_to_noise_limit = signal_to_noise_limit
+        self.signal_to_noise_limit_radii = signal_to_noise_limit_radii
 
     def grid_from_mask(self, mask):
 
@@ -383,9 +385,18 @@ class AbstractSettingsMaskedDataset:
         """
         if self.signal_to_noise_limit is None:
             return ""
+
+        if self.signal_to_noise_limit_radii is not None:
+            signal_to_noise_limit_radii_tag = "_radii_" + "{:.2f}".format(
+                self.signal_to_noise_limit_radii
+            )
+        else:
+            signal_to_noise_limit_radii_tag = ""
+
         return (
             f"__{conf.instance['notation']['settings_tags']['dataset']['signal_to_noise_limit']}_"
             f"{str(self.signal_to_noise_limit)}"
+            f"{signal_to_noise_limit_radii_tag}"
         )
 
 
@@ -403,8 +414,21 @@ class AbstractMaskedDataset:
 
         if settings.signal_to_noise_limit is not None:
 
+            if settings.signal_to_noise_limit_radii is not None:
+
+                signal_to_noise_mask = msk.Mask2D.circular(
+                    shape_native=mask.shape_native,
+                    radius=settings.signal_to_noise_limit_radii,
+                    pixel_scales=mask.pixel_scales,
+                )
+
+            else:
+
+                signal_to_noise_mask = None
+
             dataset = dataset.signal_to_noise_limited_from(
-                signal_to_noise_limit=settings.signal_to_noise_limit
+                signal_to_noise_limit=settings.signal_to_noise_limit,
+                mask=signal_to_noise_mask,
             )
 
         self.dataset = dataset
