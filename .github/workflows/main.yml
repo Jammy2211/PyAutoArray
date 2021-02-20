@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [3.8.0]  # 3.9 not supported on numba as of 2020-02-11
+        python-version: [3.6, 3.7, 3.8]  # 3.9 not supported on numba as of 2020-02-11
     steps:
     - name: Checkout PyAutoConf
       uses: actions/checkout@v2
@@ -28,7 +28,7 @@ jobs:
     - name: Install dependencies
       if: steps.cache-pip.outputs.cache-hit != 'true'
       run: |
-        sudo apt-get install python3-setuptools
+        apt-get install python3-setuptools
         pip3 install wheel
         pip3 install pytest
         pip3 install -r PyAutoArray/requirements.txt
