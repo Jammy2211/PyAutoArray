@@ -29,10 +29,10 @@ jobs:
       if: steps.cache-pip.outputs.cache-hit != 'true'
       run: |
         sudo apt-get install python3-setuptools
-        pip3 install wheel
-        pip3 install pytest
-        pip3 install -r PyAutoArray/requirements.txt
-        pip3 install -r PyAutoConf/requirements.txt
+        pip install wheel
+        pip install pytest
+        pip install -r PyAutoArray/requirements.txt
+        pip install -r PyAutoConf/requirements.txt
     - name: Run tests
       run: |
         export ROOT_DIR=`pwd`
