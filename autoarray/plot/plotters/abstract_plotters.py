@@ -27,9 +27,6 @@ class AbstractPlotter:
         self.include_2d = include_2d
         self.mat_plot_2d = mat_plot_2d
 
-    def figures(self, **kwargs):
-        raise NotImplementedError
-
     def extract_2d(self, name, value, include_name=None):
         """
         Extracts an attribute for plotting in a `Visuals2D` object based on the following criteria:
@@ -178,14 +175,36 @@ class AbstractPlotter:
 
         self.close_subplot_figure()
 
-    def subplot_of_plotters_figure(self, plotters, name):
+    def subplot_of_plotters_figure(self, plotter_list, name):
 
-        self.open_subplot_figure(number_subplots=len(plotters))
+        self.open_subplot_figure(number_subplots=len(plotter_list))
 
-        for i, plotter in enumerate(plotters):
+        for i, plotter in enumerate(plotter_list):
 
             plotter.figures(**{name: True})
 
         self.mat_plot_2d.output.subplot_to_figure(auto_filename=f"subplot_{name}")
 
         self.close_subplot_figure()
+
+
+def subplot_of_plotter_list_figure(plotter_list, name):
+
+    number_subplots = len(plotter_list)
+
+    plotter_list[0].open_subplot_figure(number_subplots=number_subplots)
+
+    for i, plotter in enumerate(plotter_list):
+
+        plotter.set_mat_plots_for_subplot(
+            is_for_subplot=True, number_subplots=number_subplots
+        )
+
+        plotter.figures(**{name: True})
+
+        plotter.set_mat_plots_for_subplot(is_for_subplot=False)
+
+    plotter_list[0].mat_plot_2d.output.subplot_to_figure(
+        auto_filename=f"subplot_{name}_list"
+    )
+    plotter_list[0].close_subplot_figure()

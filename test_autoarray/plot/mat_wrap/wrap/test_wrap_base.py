@@ -223,7 +223,7 @@ class TestColorbar:
         colorbar = aplt.Colorbar()
         colorbar.is_for_subplot = True
 
-        assert colorbar.config_dict["fraction"] == 5.0
+        assert colorbar.config_dict["fraction"] == 0.1
 
         colorbar = aplt.Colorbar(fraction=6.0)
         colorbar.is_for_subplot = True

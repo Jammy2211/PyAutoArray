@@ -65,14 +65,19 @@ class AbstractImaging(abstract_dataset.AbstractDataset):
     def pixel_scales(self):
         return self.data.pixel_scales
 
-    def signal_to_noise_limited_from(self, signal_to_noise_limit):
+    def signal_to_noise_limited_from(self, signal_to_noise_limit, mask=None):
 
         imaging = copy.deepcopy(self)
 
+        if mask is None:
+            mask = msk.Mask2D.unmasked(
+                shape_native=self.shape_native, pixel_scales=self.pixel_scales
+            )
+
         noise_map_limit = np.where(
-            self.signal_to_noise_map > signal_to_noise_limit,
-            np.abs(self.image) / signal_to_noise_limit,
-            self.noise_map,
+            (self.signal_to_noise_map.native > signal_to_noise_limit) & (mask == False),
+            np.abs(self.image.native) / signal_to_noise_limit,
+            self.noise_map.native,
         )
 
         imaging.noise_map = array_2d.Array2D.manual_mask(
@@ -95,6 +100,7 @@ class AbstractSettingsMaskedImaging(abstract_dataset.AbstractSettingsMaskedDatas
         sub_steps=None,
         pixel_scales_interp=None,
         signal_to_noise_limit=None,
+        signal_to_noise_limit_radii=None,
         psf_shape_2d=None,
         renormalize_psf=True,
     ):
@@ -142,6 +148,7 @@ class AbstractSettingsMaskedImaging(abstract_dataset.AbstractSettingsMaskedDatas
             sub_steps=sub_steps,
             pixel_scales_interp=pixel_scales_interp,
             signal_to_noise_limit=signal_to_noise_limit,
+            signal_to_noise_limit_radii=signal_to_noise_limit_radii,
         )
 
         self.psf_shape_2d = psf_shape_2d

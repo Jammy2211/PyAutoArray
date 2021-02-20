@@ -139,7 +139,8 @@ class Rectangular(Pixelization):
         hyper_image: np.ndarray = None,
         settings=SettingsPixelization(),
     ):
-        """Setup a rectangular mapper from a rectangular pixelization, as follows:
+        """
+        Setup a rectangular mapper from a rectangular pixelization, as follows:
 
         1) If a border is supplied, relocate all of the grid's and sub grid pixels beyond the border.
         2) Determine the rectangular pixelization's geometry, by laying the pixelization over the sub-grid.
@@ -220,10 +221,13 @@ class Voronoi(Pixelization):
         """
 
         if settings.use_border:
+
             relocated_grid = grid.relocated_grid_from_grid(grid=grid)
+
             relocated_pixelization_grid = grid.relocated_pixelization_grid_from_pixelization_grid(
                 pixelization_grid=sparse_grid
             )
+
         else:
             relocated_grid = grid
             relocated_pixelization_grid = sparse_grid

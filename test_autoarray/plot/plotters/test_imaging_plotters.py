@@ -105,8 +105,6 @@ def test__subplot_is_output(
 
     imaging_plot.subplot_imaging()
 
-    print(plot_patch.paths)
-
     assert path.join(plot_path, "subplot_imaging.png") in plot_patch.paths
 
 
