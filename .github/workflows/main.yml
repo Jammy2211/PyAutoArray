@@ -31,7 +31,7 @@ jobs:
         pip3 install setuptools
         pip3 install wheel
         pip3 install pytest
-        pip3 install numpy==1.19.7
+        pip3 install numpy==1.19.5
         pip3 install llvmlite==0.32.1
         pip3 install numba==0.47.0
         pip3 install -r PyAutoConf/requirements.txt
