@@ -34,8 +34,8 @@ jobs:
         pip3 install llvmlite==0.32.1
         pip3 install numba==0.47.0
         pip3 install numpy==1.19.7
-        pip3 install -r PyAutoArray/requirements.txt
         pip3 install -r PyAutoConf/requirements.txt
+        pip3 install -r PyAutoArray/requirements.txt --ignore-installed llvmlite numba numpy
     - name: Run tests
       run: |
         export ROOT_DIR=`pwd`
