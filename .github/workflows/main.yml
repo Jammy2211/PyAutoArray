@@ -26,7 +26,7 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-pip-
     - name: Install dependencies
-   #   if: steps.cache-pip.outputs.cache-hit != 'true'
+      if: steps.cache-pip.outputs.cache-hit != 'true'
       run: |
         pip3 install --upgrade pip
         pip3 install setuptools
@@ -37,7 +37,7 @@ jobs:
     - name: Run tests
       run: |
         export ROOT_DIR=`pwd`
-        export PYTHONPATH=$PYTHONPATH:$ROOT_DIR/PyAutoArray
         export PYTHONPATH=$PYTHONPATH:$ROOT_DIR/PyAutoConf
+        export PYTHONPATH=$PYTHONPATH:$ROOT_DIR/PyAutoArray
         pushd PyAutoArray
         python3 -m pytest
