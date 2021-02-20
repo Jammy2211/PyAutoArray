@@ -65,7 +65,7 @@ class AbstractInterferometer(abstract_dataset.AbstractDataset):
 
         return signal_to_noise_map_real + 1j * signal_to_noise_map_imag
 
-    def signal_to_noise_limited_from(self, signal_to_noise_limit):
+    def signal_to_noise_limited_from(self, signal_to_noise_limit, mask=None):
 
         interferometer = copy.deepcopy(self)
 
