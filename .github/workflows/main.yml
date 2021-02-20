@@ -28,15 +28,14 @@ jobs:
     - name: Install dependencies
       if: steps.cache-pip.outputs.cache-hit != 'true'
       run: |
-        sudo apt-get install python3-setuptools
-        pip install wheel
-        pip install pytest
-        pip install -r PyAutoArray/requirements.txt
-        pip install -r PyAutoConf/requirements.txt
+        pip3 install wheel
+        pip3 install pytest
+        pip3 install -r PyAutoArray/requirements.txt
+        pip3 install -r PyAutoConf/requirements.txt
     - name: Run tests
       run: |
         export ROOT_DIR=`pwd`
         export PYTHONPATH=$PYTHONPATH:$ROOT_DIR/PyAutoArray
         export PYTHONPATH=$PYTHONPATH:$ROOT_DIR/PyAutoConf
         pushd PyAutoArray
-        pytest3
+        pytest
