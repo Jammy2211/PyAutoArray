@@ -135,6 +135,50 @@ class AbstractMatPlot:
             if hasattr(value, "is_for_subplot"):
                 value.is_for_subplot = is_for_subplot
 
+    def get_subplot_rows_columns(self, number_subplots):
+        """
+        Get the size of a sub plotter in (total_y_pixels, total_x_pixels), based on the number of subplots that are
+        going to be plotted.
+
+        Parameters
+        -----------
+        number_subplots : int
+            The number of subplots that are to be plotted in the figure.
+        """
+        if number_subplots <= 2:
+            return 1, 2
+        elif number_subplots <= 4:
+            return 2, 2
+        elif number_subplots <= 6:
+            return 2, 3
+        elif number_subplots <= 9:
+            return 3, 3
+        elif number_subplots <= 12:
+            return 3, 4
+        elif number_subplots <= 16:
+            return 4, 4
+        elif number_subplots <= 20:
+            return 4, 5
+        else:
+            return 6, 6
+
+    def setup_subplot(self, aspect=None, subplot_rows_columns=None):
+
+        if subplot_rows_columns is None:
+            rows, columns = self.get_subplot_rows_columns(
+                number_subplots=self.number_subplots
+            )
+        else:
+            rows = subplot_rows_columns[0]
+            columns = subplot_rows_columns[1]
+
+        if aspect is None:
+            plt.subplot(rows, columns, self.subplot_index)
+        else:
+            plt.subplot(rows, columns, self.subplot_index, aspect=float(aspect))
+
+        self.subplot_index += 1
+
 
 class MatPlot1D(AbstractMatPlot):
     def __init__(
@@ -233,12 +277,18 @@ class MatPlot1D(AbstractMatPlot):
         plot_axis_type="semilogy",
         vertical_lines=None,
         vertical_line_labels=None,
+        bypass: bool = False,
     ):
 
         if y is None:
             return
 
-        self.figure.open()
+        if not self.is_for_subplot:
+            self.figure.open()
+        else:
+            if not bypass:
+                self.setup_subplot()
+
         self.title.set(auto_title=auto_labels.title)
 
         if x is None:
@@ -423,48 +473,6 @@ class MatPlot2D(AbstractMatPlot):
 
         self.is_for_subplot = False
 
-    def get_subplot_rows_columns(self, number_subplots):
-        """Get the size of a sub plotter in (total_y_pixels, total_x_pixels), based on the number of subplots that are going to be plotted.
-
-        Parameters
-        -----------
-        number_subplots : int
-            The number of subplots that are to be plotted in the figure.
-        """
-        if number_subplots <= 2:
-            return 1, 2
-        elif number_subplots <= 4:
-            return 2, 2
-        elif number_subplots <= 6:
-            return 2, 3
-        elif number_subplots <= 9:
-            return 3, 3
-        elif number_subplots <= 12:
-            return 3, 4
-        elif number_subplots <= 16:
-            return 4, 4
-        elif number_subplots <= 20:
-            return 4, 5
-        else:
-            return 6, 6
-
-    def setup_subplot(self, aspect=None, subplot_rows_columns=None):
-
-        if subplot_rows_columns is None:
-            rows, columns = self.get_subplot_rows_columns(
-                number_subplots=self.number_subplots
-            )
-        else:
-            rows = subplot_rows_columns[0]
-            columns = subplot_rows_columns[1]
-
-        if aspect is None:
-            plt.subplot(rows, columns, self.subplot_index)
-        else:
-            plt.subplot(rows, columns, self.subplot_index, aspect=float(aspect))
-
-        self.subplot_index += 1
-
     def plot_array(
         self,
         array: array_2d.Array2D,
@@ -513,7 +521,6 @@ class MatPlot2D(AbstractMatPlot):
             extent_imshow = array.extent
 
         if not self.is_for_subplot:
-
             self.figure.open()
         else:
             if not bypass:
