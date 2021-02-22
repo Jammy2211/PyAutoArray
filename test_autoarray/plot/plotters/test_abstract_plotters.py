@@ -149,7 +149,7 @@ def make_plot_path_setup():
     )
 
 
-class TestPlotterList:
+class TestMultiPlotter:
     def test__subplot_of_plotter_list_figure(self, imaging_7x7, plot_path, plot_patch):
 
         mat_plot_2d = aplt.MatPlot2D(output=aplt.Output(plot_path, format="png"))
@@ -159,6 +159,7 @@ class TestPlotterList:
 
         plotter_list = [plotter_0, plotter_1]
 
-        aplt.subplot_of_plotter_list_figure(plotter_list=plotter_list, name="image")
+        multi_plotter = aplt.MultiPlotter(plotter_list=plotter_list)
+        multi_plotter.subplot_of_figure(func_name="figures", figure_name="image")
 
         assert path.join(plot_path, "subplot_image_list.png") in plot_patch.paths

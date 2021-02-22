@@ -50,4 +50,4 @@ from autoarray.plot.plotters.interferometer_plotters import InterferometerPlotte
 from autoarray.plot.plotters.fit_imaging_plotters import FitImagingPlotter
 from autoarray.plot.plotters.fit_interferometer_plotters import FitInterferometerPlotter
 
-from autoarray.plot.plotters.abstract_plotters import subplot_of_plotter_list_figure
+from autoarray.plot.plotters.abstract_plotters import MultiPlotter

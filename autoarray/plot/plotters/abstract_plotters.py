@@ -188,23 +188,26 @@ class AbstractPlotter:
         self.close_subplot_figure()
 
 
-def subplot_of_plotter_list_figure(plotter_list, name):
+class MultiPlotter:
+    def __init__(self, plotter_list):
 
-    number_subplots = len(plotter_list)
+        self.plotter_list = plotter_list
 
-    plotter_list[0].open_subplot_figure(number_subplots=number_subplots)
+    def subplot_of_figure(self, func_name, figure_name, kwargs=None):
 
-    for i, plotter in enumerate(plotter_list):
+        if kwargs is None:
+            kwargs = {}
 
-        plotter.set_mat_plots_for_subplot(
-            is_for_subplot=True, number_subplots=number_subplots
+        number_subplots = len(self.plotter_list)
+
+        self.plotter_list[0].open_subplot_figure(number_subplots=number_subplots)
+
+        for i, plotter in enumerate(self.plotter_list):
+
+            func = getattr(plotter, func_name)
+            func(**{**{figure_name: True}, **kwargs})
+
+        self.plotter_list[0].mat_plot_2d.output.subplot_to_figure(
+            auto_filename=f"subplot_{figure_name}_list"
         )
-
-        plotter.figures(**{name: True})
-
-        plotter.set_mat_plots_for_subplot(is_for_subplot=False)
-
-    plotter_list[0].mat_plot_2d.output.subplot_to_figure(
-        auto_filename=f"subplot_{name}_list"
-    )
-    plotter_list[0].close_subplot_figure()
+        self.plotter_list[0].close_subplot_figure()
