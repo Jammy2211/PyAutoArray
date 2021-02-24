@@ -9,6 +9,7 @@ from autoarray.structures import visibilities as vis
 from autoarray.operators import convolver as conv, transformer as trans
 from autoarray.inversion import regularization as reg, mappers, inversion_util
 from autoarray.dataset import imaging, interferometer
+from autoarray import preloads as pload
 from scipy.interpolate import griddata
 from scipy import sparse
 import pylops
@@ -235,9 +236,13 @@ class AbstractInversion:
 
 class AbstractInversionMatrix:
     def __init__(
-        self, curvature_reg_matrix: np.ndarray, regularization_matrix: np.ndarray
+        self,
+        curvature_reg_matrix: np.ndarray,
+        curvature_matrix: np.ndarray,
+        regularization_matrix: np.ndarray,
     ):
 
+        self.curvature_matrix = curvature_matrix
         self.curvature_reg_matrix = curvature_reg_matrix
         self.regularization_matrix = regularization_matrix
 
@@ -263,6 +268,7 @@ class InversionImagingMatrix(AbstractInversion, AbstractInversionMatrix):
         mapper: typing.Union[mappers.MapperRectangular, mappers.MapperVoronoi],
         regularization: reg.Regularization,
         blurred_mapping_matrix: np.ndarray,
+        curvature_matrix: np.ndarray,
         regularization_matrix: np.ndarray,
         curvature_reg_matrix: np.ndarray,
         reconstruction: np.ndarray,
@@ -315,6 +321,7 @@ class InversionImagingMatrix(AbstractInversion, AbstractInversionMatrix):
 
         AbstractInversionMatrix.__init__(
             self=self,
+            curvature_matrix=curvature_matrix,
             curvature_reg_matrix=curvature_reg_matrix,
             regularization_matrix=regularization_matrix,
         )
@@ -332,11 +339,18 @@ class InversionImagingMatrix(AbstractInversion, AbstractInversionMatrix):
         mapper: typing.Union[mappers.MapperRectangular, mappers.MapperVoronoi],
         regularization: reg.Regularization,
         settings=SettingsInversion(),
+        preloads=pload.Preloads(),
     ):
 
-        blurred_mapping_matrix = convolver.convolve_mapping_matrix(
-            mapping_matrix=mapper.mapping_matrix
-        )
+        if preloads.blurred_mapping_matrix is None:
+
+            blurred_mapping_matrix = convolver.convolve_mapping_matrix(
+                mapping_matrix=mapper.mapping_matrix
+            )
+
+        else:
+
+            blurred_mapping_matrix = preloads.blurred_mapping_matrix
 
         data_vector = inversion_util.data_vector_via_blurred_mapping_matrix_from(
             blurred_mapping_matrix=blurred_mapping_matrix,
@@ -344,9 +358,15 @@ class InversionImagingMatrix(AbstractInversion, AbstractInversionMatrix):
             noise_map=noise_map,
         )
 
-        curvature_matrix = inversion_util.curvature_matrix_via_mapping_matrix_from(
-            mapping_matrix=blurred_mapping_matrix, noise_map=noise_map
-        )
+        if preloads.curvature_matrix is None:
+
+            curvature_matrix = inversion_util.curvature_matrix_via_mapping_matrix_from(
+                mapping_matrix=blurred_mapping_matrix, noise_map=noise_map
+            )
+
+        else:
+
+            curvature_matrix = preloads.curvature_matrix
 
         regularization_matrix = regularization.regularization_matrix_from_mapper(
             mapper=mapper
@@ -371,6 +391,7 @@ class InversionImagingMatrix(AbstractInversion, AbstractInversionMatrix):
             mapper=mapper,
             regularization=regularization,
             blurred_mapping_matrix=blurred_mapping_matrix,
+            curvature_matrix=curvature_matrix,
             regularization_matrix=regularization_matrix,
             curvature_reg_matrix=curvature_reg_matrix,
             reconstruction=values,
@@ -515,6 +536,7 @@ class InversionInterferometerMatrix(
         regularization_matrix: np.ndarray,
         reconstruction: np.ndarray,
         transformed_mapping_matrix: np.ndarray,
+        curvature_matrix: np.ndarray,
         curvature_reg_matrix: np.ndarray,
         settings: SettingsInversion,
     ):
@@ -567,6 +589,7 @@ class InversionInterferometerMatrix(
 
         AbstractInversionMatrix.__init__(
             self=self,
+            curvature_matrix=curvature_matrix,
             curvature_reg_matrix=curvature_reg_matrix,
             regularization_matrix=regularization_matrix,
         )
@@ -625,6 +648,7 @@ class InversionInterferometerMatrix(
             noise_map=noise_map,
             transformer=transformer,
             mapper=mapper,
+            curvature_matrix=curvature_matrix,
             regularization=regularization,
             transformed_mapping_matrix=transformed_mapping_matrix,
             regularization_matrix=regularization_matrix,

@@ -15,14 +15,12 @@ class SettingsPixelization:
         pixel_limit: int = None,
         is_stochastic: bool = False,
         kmeans_seed: int = 0,
-        preload_sparse_grids_of_planes=None,
     ):
 
         self.use_border = use_border
         self.pixel_limit = pixel_limit
         self.is_stochastic = is_stochastic
         self.kmeans_seed = kmeans_seed
-        self.preload_sparse_grids_of_planes = preload_sparse_grids_of_planes
 
     @property
     def tag(self):
@@ -81,12 +79,6 @@ class SettingsPixelization:
     def settings_with_is_stochastic_true(self):
         settings = copy.copy(self)
         settings.is_stochastic = True
-        return settings
-
-    def modify_preload(self, preload_sparse_grids_of_planes):
-
-        settings = copy.copy(self)
-        settings.preload_sparse_grids_of_planes = preload_sparse_grids_of_planes
         return settings
 
 

@@ -579,6 +579,43 @@ class TestInversionImagingMatrix:
                 regularization=mock.MockRegularization(matrix_shape),
             )
 
+    def test__preloads(self):
+
+        matrix_shape = (9, 3)
+
+        mask = aa.Mask2D.manual(
+            mask=np.array(
+                [[True, True, True], [False, False, False], [True, True, True]]
+            ),
+            pixel_scales=1.0,
+            sub_size=1,
+        )
+
+        grid = aa.Grid2D.from_mask(mask=mask)
+
+        blurred_mapping_matrix = 2.0 * np.ones(matrix_shape)
+
+        curvature_matrix = 18.0 * np.ones((matrix_shape[1], matrix_shape[1]))
+
+        inversion = inversions.InversionImagingMatrix.from_data_mapper_and_regularization(
+            image=np.ones(9),
+            noise_map=np.ones(9),
+            convolver=mock.MockConvolver(matrix_shape),
+            mapper=mock.MockMapper(matrix_shape=matrix_shape, source_grid_slim=grid),
+            regularization=mock.MockRegularization(matrix_shape),
+            settings=aa.SettingsInversion(check_solution=False),
+            preloads=aa.Preloads(
+                blurred_mapping_matrix=blurred_mapping_matrix,
+                curvature_matrix=curvature_matrix,
+            ),
+        )
+
+        assert (inversion.blurred_mapping_matrix == blurred_mapping_matrix).all()
+        assert (
+            inversion.curvature_reg_matrix
+            == curvature_matrix + inversion.regularization_matrix
+        ).all()
+
 
 from autoconf import conf
 from os import path
