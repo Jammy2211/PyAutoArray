@@ -193,10 +193,7 @@ class MultiPlotter:
 
         self.plotter_list = plotter_list
 
-    def subplot_of_figure(self, func_name, figure_name, kwargs=None):
-
-        if kwargs is None:
-            kwargs = {}
+    def subplot_of_figure(self, func_name, figure_name, **kwargs):
 
         number_subplots = len(self.plotter_list)
 
@@ -207,7 +204,12 @@ class MultiPlotter:
             func = getattr(plotter, func_name)
             func(**{**{figure_name: True}, **kwargs})
 
-        self.plotter_list[0].mat_plot_2d.output.subplot_to_figure(
-            auto_filename=f"subplot_{figure_name}_list"
-        )
+        if self.plotter_list[0].mat_plot_1d is not None:
+            self.plotter_list[0].mat_plot_1d.output.subplot_to_figure(
+                auto_filename=f"subplot_{figure_name}_list"
+            )
+        if self.plotter_list[0].mat_plot_2d is not None:
+            self.plotter_list[0].mat_plot_2d.output.subplot_to_figure(
+                auto_filename=f"subplot_{figure_name}_list"
+            )
         self.plotter_list[0].close_subplot_figure()

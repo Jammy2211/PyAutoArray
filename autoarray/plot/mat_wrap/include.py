@@ -34,7 +34,11 @@ class AbstractInclude:
         elif value is False:
             return False
         elif value is None:
-            return conf.instance["visualize"]["include"]["include"][name]
+            return conf.instance["visualize"]["include"][self.section][name]
+
+    @property
+    def section(self):
+        raise NotImplementedError
 
     @property
     def origin(self):
@@ -67,6 +71,10 @@ class Include1D(AbstractInclude):
             if `True`, the `mask` of the plotted data structure (e.g. `Line`)  is included on the figure.
         """
         super().__init__(origin=origin, mask=mask)
+
+    @property
+    def section(self):
+        return "include_1d"
 
 
 class Include2D(AbstractInclude):
@@ -123,6 +131,10 @@ class Include2D(AbstractInclude):
         self._parallel_overscan = parallel_overscan
         self._serial_prescan = serial_prescan
         self._serial_overscan = serial_overscan
+
+    @property
+    def section(self):
+        return "include_2d"
 
     @property
     def border(self):
