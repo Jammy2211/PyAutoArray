@@ -51,7 +51,7 @@ def curvature_matrix_via_mapping_matrix_from(
         Flattened 1D array of the noise-map used by the inversion during the fit.
     """
     array = mapping_matrix / noise_map[:, None]
-    curvature_matrix = np.dot(array.T, np.matrix.transpose(array.T))
+    curvature_matrix = np.dot(array.T, array)
     return curvature_matrix
 
 
