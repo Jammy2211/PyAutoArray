@@ -2,7 +2,7 @@ from autoarray.structures.arrays import abstract_array
 from autoarray.structures.arrays.two_d import array_2d_util
 from autoarray.structures.frames import abstract_frame
 from autoarray.structures.arrays.two_d import array_2d
-from autoarray.structures import frames as f
+from autoarray.structures.frames import frames as f
 from autoarray.structures import region as reg
 from autoarray import exc
 
