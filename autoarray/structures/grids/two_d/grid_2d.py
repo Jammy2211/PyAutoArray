@@ -847,9 +847,6 @@ class Grid2D(abstract_grid_2d.AbstractGrid2D):
         result : np.ndarray or [np.ndarray]
             The input result (e.g. of a decorated function) that is converted to a PyAutoArray structure.
         """
-
-        from autoarray.structures import arrays
-
         if len(result.shape) == 1:
             return array_2d.Array2D(array=result, mask=self.mask, store_slim=True)
         else:

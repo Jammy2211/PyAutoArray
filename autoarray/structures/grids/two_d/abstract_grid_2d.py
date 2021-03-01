@@ -7,7 +7,6 @@ from autoarray.structures.arrays.two_d import array_2d
 from autoarray.structures.grids import abstract_grid
 from autoarray.structures.grids.two_d import grid_2d
 from autoarray.structures.grids.two_d import grid_2d_irregular
-from autoarray.structures.grids.two_d import grid_2d_pixelization
 from autoarray.mask import mask_2d as msk
 from autoarray.structures.grids.two_d import grid_2d_util
 from autoarray.structures.arrays.two_d import array_2d_util
