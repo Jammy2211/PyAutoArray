@@ -115,7 +115,7 @@ def test__output_as_fits__correct_output_format(
     fit_imaging_plotter = aplt.FitImagingPlotter(
         fit=fit_imaging_7x7,
         include_2d=aplt.Include2D(origin=True, mask=True, border=True),
-        mat_plot_2d=aplt.MatPlot2D(output=aplt.Output(path=plot_path, format="png")),
+        mat_plot_2d=aplt.MatPlot2D(output=aplt.Output(path=plot_path, format="fits")),
     )
 
     fit_imaging_plotter.figures(image=True)

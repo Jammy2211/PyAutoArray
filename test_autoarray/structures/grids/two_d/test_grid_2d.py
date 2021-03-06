@@ -1166,32 +1166,6 @@ class TestGrid2DSparse:
     def test__unmasked_2d__from_grid_and_unmasked_shape__sets_up_with_correct_shape_and_pixel_scales(
         self, mask_7x7
     ):
-        grid = aa.Grid2D.from_mask(mask=mask_7x7)
-
-        sparse_grid = aa.Grid2DSparse.from_grid_and_unmasked_2d_grid_shape(
-            grid=grid, unmasked_sparse_shape=(3, 3)
-        )
-
-        assert (
-            sparse_grid
-            == np.array(
-                [
-                    [1.0, -1.0],
-                    [1.0, 0.0],
-                    [1.0, 1.0],
-                    [0.0, -1.0],
-                    [0.0, 0.0],
-                    [0.0, 1.0],
-                    [-1.0, -1.0],
-                    [-1.0, 0.0],
-                    [-1.0, 1.0],
-                ]
-            )
-        ).all()
-        assert (
-            sparse_grid.sparse_index_for_slim_index
-            == np.array([0, 1, 2, 3, 4, 5, 6, 7, 8])
-        ).all()
 
         mask = aa.Mask2D.manual(
             mask=np.array(

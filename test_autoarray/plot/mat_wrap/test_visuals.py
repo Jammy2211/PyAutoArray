@@ -1,4 +1,4 @@
-from autoarray import plot as aplt
+import autoarray.plot as aplt
 
 
 class TestAbstractVisuals:

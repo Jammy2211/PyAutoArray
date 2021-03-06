@@ -1,4 +1,6 @@
 from autoarray.plot.mat_wrap.wrap import wrap_base
+from autoarray.plot.mat_wrap.wrap import wrap_2d
+from autoarray.plot.mat_wrap.wrap import wrap_1d
 
 wrap_base.set_backend()
 
@@ -7,7 +9,6 @@ import numpy as np
 
 from autoarray import exc
 from autoarray.structures.arrays.two_d import array_2d
-from autoarray.plot.mat_wrap import wrap
 from autoarray.plot.mat_wrap import visuals as vis
 from autoarray.inversion import mappers
 
@@ -29,20 +30,20 @@ class AutoLabels:
 class AbstractMatPlot:
     def __init__(
         self,
-        units: wrap.Units = wrap.Units(),
-        figure: wrap.Figure = wrap.Figure(),
-        axis: wrap.Axis = wrap.Axis(),
-        cmap: wrap.Cmap = wrap.Cmap(),
-        colorbar: wrap.Colorbar = wrap.Colorbar(),
-        colorbar_tickparams: wrap.ColorbarTickParams = wrap.ColorbarTickParams(),
-        tickparams: wrap.TickParams = wrap.TickParams(),
-        yticks: wrap.YTicks = wrap.YTicks(),
-        xticks: wrap.XTicks = wrap.XTicks(),
-        title: wrap.Title = wrap.Title(),
-        ylabel: wrap.YLabel = wrap.YLabel(),
-        xlabel: wrap.XLabel = wrap.XLabel(),
-        legend: wrap.Legend = wrap.Legend(),
-        output: wrap.Output = wrap.Output(),
+        units: wrap_base.Units = wrap_base.Units(),
+        figure: wrap_base.Figure = wrap_base.Figure(),
+        axis: wrap_base.Axis = wrap_base.Axis(),
+        cmap: wrap_base.Cmap = wrap_base.Cmap(),
+        colorbar: wrap_base.Colorbar = wrap_base.Colorbar(),
+        colorbar_tickparams: wrap_base.ColorbarTickParams = wrap_base.ColorbarTickParams(),
+        tickparams: wrap_base.TickParams = wrap_base.TickParams(),
+        yticks: wrap_base.YTicks = wrap_base.YTicks(),
+        xticks: wrap_base.XTicks = wrap_base.XTicks(),
+        title: wrap_base.Title = wrap_base.Title(),
+        ylabel: wrap_base.YLabel = wrap_base.YLabel(),
+        xlabel: wrap_base.XLabel = wrap_base.XLabel(),
+        legend: wrap_base.Legend = wrap_base.Legend(),
+        output: wrap_base.Output = wrap_base.Output(),
     ):
         """
         Visualizes data structures (e.g an `Array2D`, `Grid2D`, `VectorField`, etc.) using Matplotlib.
@@ -183,21 +184,21 @@ class AbstractMatPlot:
 class MatPlot1D(AbstractMatPlot):
     def __init__(
         self,
-        units: wrap.Units = wrap.Units(),
-        figure: wrap.Figure = wrap.Figure(),
-        axis: wrap.Axis = wrap.Axis(),
-        cmap: wrap.Cmap = wrap.Cmap(),
-        colorbar: wrap.Colorbar = wrap.Colorbar(),
-        colorbar_tickparams: wrap.ColorbarTickParams = wrap.ColorbarTickParams(),
-        tickparams: wrap.TickParams = wrap.TickParams(),
-        yticks: wrap.YTicks = wrap.YTicks(),
-        xticks: wrap.XTicks = wrap.XTicks(),
-        title: wrap.Title = wrap.Title(),
-        ylabel: wrap.YLabel = wrap.YLabel(),
-        xlabel: wrap.XLabel = wrap.XLabel(),
-        legend: wrap.Legend = wrap.Legend(),
-        output: wrap.Output = wrap.Output(),
-        line_plot: wrap.LinePlot = wrap.LinePlot(),
+        units: wrap_base.Units = wrap_base.Units(),
+        figure: wrap_base.Figure = wrap_base.Figure(),
+        axis: wrap_base.Axis = wrap_base.Axis(),
+        cmap: wrap_base.Cmap = wrap_base.Cmap(),
+        colorbar: wrap_base.Colorbar = wrap_base.Colorbar(),
+        colorbar_tickparams: wrap_base.ColorbarTickParams = wrap_base.ColorbarTickParams(),
+        tickparams: wrap_base.TickParams = wrap_base.TickParams(),
+        yticks: wrap_base.YTicks = wrap_base.YTicks(),
+        xticks: wrap_base.XTicks = wrap_base.XTicks(),
+        title: wrap_base.Title = wrap_base.Title(),
+        ylabel: wrap_base.YLabel = wrap_base.YLabel(),
+        xlabel: wrap_base.XLabel = wrap_base.XLabel(),
+        legend: wrap_base.Legend = wrap_base.Legend(),
+        output: wrap_base.Output = wrap_base.Output(),
+        line_plot: wrap_1d.LinePlot = wrap_1d.LinePlot(),
     ):
         """
         Visualizes 1D data structures (e.g a `Line`, etc.) using Matplotlib.
@@ -325,35 +326,35 @@ class MatPlot1D(AbstractMatPlot):
 class MatPlot2D(AbstractMatPlot):
     def __init__(
         self,
-        units: wrap.Units = wrap.Units(),
-        figure: wrap.Figure = wrap.Figure(),
-        axis: wrap.Axis = wrap.Axis(),
-        cmap: wrap.Cmap = wrap.Cmap(),
-        colorbar: wrap.Colorbar = wrap.Colorbar(),
-        colorbar_tickparams: wrap.ColorbarTickParams = wrap.ColorbarTickParams(),
-        tickparams: wrap.TickParams = wrap.TickParams(),
-        yticks: wrap.YTicks = wrap.YTicks(),
-        xticks: wrap.XTicks = wrap.XTicks(),
-        title: wrap.Title = wrap.Title(),
-        ylabel: wrap.YLabel = wrap.YLabel(),
-        xlabel: wrap.XLabel = wrap.XLabel(),
-        legend: wrap.Legend = wrap.Legend(),
-        output: wrap.Output = wrap.Output(),
-        array_overlay: wrap.ArrayOverlay = wrap.ArrayOverlay(),
-        grid_scatter: wrap.GridScatter = wrap.GridScatter(),
-        grid_plot: wrap.GridPlot = wrap.GridPlot(),
-        vector_field_quiver: wrap.VectorFieldQuiver = wrap.VectorFieldQuiver(),
-        patch_overlay: wrap.PatchOverlay = wrap.PatchOverlay(),
-        voronoi_drawer: wrap.VoronoiDrawer = wrap.VoronoiDrawer(),
-        origin_scatter: wrap.OriginScatter = wrap.OriginScatter(),
-        mask_scatter: wrap.MaskScatter = wrap.MaskScatter(),
-        border_scatter: wrap.BorderScatter = wrap.BorderScatter(),
-        positions_scatter: wrap.PositionsScatter = wrap.PositionsScatter(),
-        index_scatter: wrap.IndexScatter = wrap.IndexScatter(),
-        pixelization_grid_scatter: wrap.PixelizationGridScatter = wrap.PixelizationGridScatter(),
-        parallel_overscan_plot: wrap.ParallelOverscanPlot = wrap.ParallelOverscanPlot(),
-        serial_prescan_plot: wrap.SerialPrescanPlot = wrap.SerialPrescanPlot(),
-        serial_overscan_plot: wrap.SerialOverscanPlot = wrap.SerialOverscanPlot(),
+        units: wrap_base.Units = wrap_base.Units(),
+        figure: wrap_base.Figure = wrap_base.Figure(),
+        axis: wrap_base.Axis = wrap_base.Axis(),
+        cmap: wrap_base.Cmap = wrap_base.Cmap(),
+        colorbar: wrap_base.Colorbar = wrap_base.Colorbar(),
+        colorbar_tickparams: wrap_base.ColorbarTickParams = wrap_base.ColorbarTickParams(),
+        tickparams: wrap_base.TickParams = wrap_base.TickParams(),
+        yticks: wrap_base.YTicks = wrap_base.YTicks(),
+        xticks: wrap_base.XTicks = wrap_base.XTicks(),
+        title: wrap_base.Title = wrap_base.Title(),
+        ylabel: wrap_base.YLabel = wrap_base.YLabel(),
+        xlabel: wrap_base.XLabel = wrap_base.XLabel(),
+        legend: wrap_base.Legend = wrap_base.Legend(),
+        output: wrap_base.Output = wrap_base.Output(),
+        array_overlay: wrap_2d.ArrayOverlay = wrap_2d.ArrayOverlay(),
+        grid_scatter: wrap_2d.GridScatter = wrap_2d.GridScatter(),
+        grid_plot: wrap_2d.GridPlot = wrap_2d.GridPlot(),
+        vector_field_quiver: wrap_2d.VectorFieldQuiver = wrap_2d.VectorFieldQuiver(),
+        patch_overlay: wrap_2d.PatchOverlay = wrap_2d.PatchOverlay(),
+        voronoi_drawer: wrap_2d.VoronoiDrawer = wrap_2d.VoronoiDrawer(),
+        origin_scatter: wrap_2d.OriginScatter = wrap_2d.OriginScatter(),
+        mask_scatter: wrap_2d.MaskScatter = wrap_2d.MaskScatter(),
+        border_scatter: wrap_2d.BorderScatter = wrap_2d.BorderScatter(),
+        positions_scatter: wrap_2d.PositionsScatter = wrap_2d.PositionsScatter(),
+        index_scatter: wrap_2d.IndexScatter = wrap_2d.IndexScatter(),
+        pixelization_grid_scatter: wrap_2d.PixelizationGridScatter = wrap_2d.PixelizationGridScatter(),
+        parallel_overscan_plot: wrap_2d.ParallelOverscanPlot = wrap_2d.ParallelOverscanPlot(),
+        serial_prescan_plot: wrap_2d.SerialPrescanPlot = wrap_2d.SerialPrescanPlot(),
+        serial_overscan_plot: wrap_2d.SerialOverscanPlot = wrap_2d.SerialOverscanPlot(),
     ):
         """
         Visualizes 2D data structures (e.g an `Array2D`, `Grid2D`, `VectorField`, etc.) using Matplotlib.
