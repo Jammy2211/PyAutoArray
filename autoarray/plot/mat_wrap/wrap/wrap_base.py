@@ -29,7 +29,7 @@ import os
 import typing
 
 
-from autoarray.structures import abstract_structure, arrays
+from autoarray.structures import abstract_structure
 from autoarray import exc
 
 

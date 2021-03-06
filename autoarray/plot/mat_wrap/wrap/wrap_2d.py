@@ -2,8 +2,6 @@ from autoarray.plot.mat_wrap.wrap import wrap_base
 
 wrap_base.set_backend()
 
-from autoarray.plot.mat_wrap import wrap
-
 import matplotlib.pyplot as plt
 from matplotlib import patches as ptch
 from matplotlib.collections import PatchCollection
@@ -391,9 +389,9 @@ class VoronoiDrawer(AbstractMatWrap2D):
         self,
         mapper: mappers.MapperVoronoi,
         values: np.ndarray,
-        cmap: wrap.Cmap,
-        colorbar: wrap.Colorbar,
-        colorbar_tickparams: wrap.ColorbarTickParams = None,
+        cmap: wrap_base.Cmap,
+        colorbar: wrap_base.Colorbar,
+        colorbar_tickparams: wrap_base.ColorbarTickParams = None,
     ):
         """
         Draws the Voronoi pixels of the input `mapper` using its `pixelization_grid` which contains the (y,x) 

@@ -305,9 +305,6 @@ class AbstractGrid2D(abstract_structure.AbstractStructure2D):
         coordinate : (float, float)
             The (y,x) coordinate from which the squared distance of every grid (y,x) coordinate is computed.
         """
-
-        from autoarray.structures import arrays
-
         squared_distances = np.square(self[:, 0] - coordinate[0]) + np.square(
             self[:, 1] - coordinate[1]
         )
@@ -322,8 +319,6 @@ class AbstractGrid2D(abstract_structure.AbstractStructure2D):
         coordinate : (float, float)
             The (y,x) coordinate from which the distance of every grid (y,x) coordinate is computed.
         """
-        from autoarray.structures import arrays
-
         distances = np.sqrt(
             self.squared_distances_from_coordinate(coordinate=coordinate)
         )

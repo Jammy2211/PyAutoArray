@@ -1,7 +1,6 @@
 import numpy as np
 
 from autoarray.structures.arrays.two_d import abstract_array_2d
-from autoarray.structures.frames import frames as f
 from autoarray.structures import region as reg
 from autoarray.structures.frames import frame_util
 
@@ -96,6 +95,8 @@ class AbstractFrame2D(abstract_array_2d.AbstractArray2D):
         []     [=====================]
                <---------S----------
         """
+        from autoarray.structures.frames import frames as f
+
         return f.Frame2D.extracted_frame_from_frame_and_extraction_region(
             frame=self, extraction_region=self.scans.parallel_overscan
         )
@@ -179,6 +180,8 @@ class AbstractFrame2D(abstract_array_2d.AbstractArray2D):
         []     [=====================]
                <---------S----------
         """
+        from autoarray.structures.frames import frames as f
+
         return f.Frame2D.extracted_frame_from_frame_and_extraction_region(
             frame=self, extraction_region=self.scans.serial_overscan
         )
