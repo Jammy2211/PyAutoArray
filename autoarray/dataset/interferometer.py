@@ -18,11 +18,11 @@ logger = logging.getLogger(__name__)
 
 class AbstractInterferometer(abstract_dataset.AbstractDataset):
     def __init__(
-        self, visibilities, noise_map, uv_wavelengths, positions=None, name=None
+        self, visibilities, noise_map, uv_wavelengths, name=None
     ):
 
         super().__init__(
-            data=visibilities, noise_map=noise_map, positions=positions, name=name
+            data=visibilities, noise_map=noise_map, name=name
         )
 
         self.uv_wavelengths = uv_wavelengths
@@ -256,7 +256,6 @@ class Interferometer(AbstractInterferometer):
         visibilities_hdu=0,
         noise_map_hdu=0,
         uv_wavelengths_hdu=0,
-        positions_path=None,
     ):
         """Factory for loading the interferometer data_type from .fits files, as well as computing properties like the noise-map,
         exposure-time map, etc. from the interferometer-data_type.
@@ -280,21 +279,10 @@ class Interferometer(AbstractInterferometer):
             file_path=uv_wavelengths_path, hdu=uv_wavelengths_hdu
         )
 
-        if positions_path is not None:
-
-            positions = grid_2d_irregular.Grid2DIrregular.from_json(
-                file_path=positions_path
-            )
-
-        else:
-
-            positions = None
-
         return Interferometer(
             visibilities=visibilities,
             noise_map=noise_map,
             uv_wavelengths=uv_wavelengths,
-            positions=positions,
         )
 
     def output_to_fits(

@@ -22,7 +22,6 @@ class AbstractImaging(abstract_dataset.AbstractDataset):
         image: array_2d.Array2D,
         noise_map: array_2d.Array2D,
         psf: kernel_2d.Kernel2D = None,
-        positions: grid_2d_irregular.Grid2DIrregular = None,
         name: str = None,
     ):
         """A class containing the data, noise-map and point spread function of a 2D imaging dataset.
@@ -38,7 +37,7 @@ class AbstractImaging(abstract_dataset.AbstractDataset):
         """
 
         super().__init__(
-            data=image, noise_map=noise_map, positions=positions, name=name
+            data=image, noise_map=noise_map, name=name
         )
 
         self.psf = psf
@@ -301,7 +300,6 @@ class Imaging(AbstractImaging):
         noise_map_hdu=0,
         psf_path=None,
         psf_hdu=0,
-        positions_path=None,
         name=None,
     ):
         """Factory for loading the imaging data_type from .fits files, as well as computing properties like the noise-map,
@@ -352,26 +350,8 @@ class Imaging(AbstractImaging):
 
             psf = None
 
-        if positions_path is not None:
-
-            if ".dat" in positions_path:
-
-                positions = grid_2d_irregular.Grid2DIrregular.from_dat_file(
-                    file_path=positions_path
-                )
-                positions_path = positions_path.replace(".dat", ".json")
-                positions.output_to_json(file_path=positions_path, overwrite=True)
-
-            positions = grid_2d_irregular.Grid2DIrregular.from_json(
-                file_path=positions_path
-            )
-
-        else:
-
-            positions = None
-
         return Imaging(
-            image=image, noise_map=noise_map, psf=psf, positions=positions, name=name
+            image=image, noise_map=noise_map, psf=psf, name=name
         )
 
     def output_to_fits(
