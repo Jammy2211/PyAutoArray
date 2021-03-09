@@ -40,7 +40,6 @@ class AbstractDataset:
         self,
         data: abstract_structure.AbstractStructure,
         noise_map: abstract_structure.AbstractStructure,
-        positions: grid_2d_irregular.Grid2DIrregular = None,
         name: str = None,
     ):
         """A collection of abstract 2D for different data_type classes (an image, pixel-scale, noise-map, etc.)
@@ -55,7 +54,6 @@ class AbstractDataset:
         """
         self.data = data
         self.noise_map = noise_map
-        self.positions = positions
         self._name = name if name is not None else "dataset"
 
     @property
@@ -449,10 +447,6 @@ class AbstractMaskedDataset:
     @property
     def name(self) -> str:
         return self.dataset.name
-
-    @property
-    def positions(self):
-        return self.dataset.positions
 
     @property
     def inverse_noise_map(self):
