@@ -22,60 +22,6 @@ class SettingsPixelization:
         self.is_stochastic = is_stochastic
         self.kmeans_seed = kmeans_seed
 
-    @property
-    def tag(self):
-        return (
-            f"{conf.instance['notation']['settings_tags']['pixelization']['pixelization']}["
-            f"{self.use_border_tag}"
-            f"{self.is_stochastic_tag}]"
-        )
-
-    @property
-    def use_border_tag(self):
-        """Generate a tag for whether a border is used by the inversion.
-
-        This changes the setup folder as follows (the example tags below are the default config tags):
-
-        inversion_use_border = `False` -> settings
-        inversion_use_border = `True` -> settings___no_border
-        """
-        if self.use_border:
-
-            tag = conf.instance["notation"]["settings_tags"]["pixelization"][
-                "use_border"
-            ]
-
-            if not tag:
-                return str(tag)
-            return f"{tag}"
-        elif not self.use_border:
-            return f"{conf.instance['notation']['settings_tags']['pixelization']['no_border']}"
-
-    @property
-    def is_stochastic_tag(self):
-        """Generate a tag for whether the inversion is stochastic.
-
-        This changes the setup folder as follows (the example tags below are the default config tags):
-
-        inversion_stochastic = `False` -> settings
-        inversion_stochastic = `True` -> settings___stochastic
-        """
-        if not self.is_stochastic:
-
-            tag = conf.instance["notation"]["settings_tags"]["pixelization"][
-                "not_stochastic"
-            ]
-            if not tag:
-                return tag
-            return "__" + tag
-        elif self.is_stochastic:
-            return (
-                "__"
-                + conf.instance["notation"]["settings_tags"]["pixelization"][
-                    "stochastic"
-                ]
-            )
-
     def settings_with_is_stochastic_true(self):
         settings = copy.copy(self)
         settings.is_stochastic = True
