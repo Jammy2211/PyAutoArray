@@ -30,19 +30,6 @@ class SettingsInversion:
         self.maxiter = maxiter
         self.check_solution = check_solution
 
-    @property
-    def tag(self):
-        return (
-            f"{conf.instance['notation']['settings_tags']['inversion']['inversion']}["
-            f"{self.use_linear_operators_tag}]"
-        )
-
-    @property
-    def use_linear_operators_tag(self):
-        if not self.use_linear_operators:
-            return f"{conf.instance['notation']['settings_tags']['inversion']['use_matrices']}"
-        return f"{conf.instance['notation']['settings_tags']['inversion']['use_linear_operators']}"
-
 
 def inversion(
     masked_dataset,

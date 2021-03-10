@@ -6,27 +6,6 @@ import numpy as np
 from autoarray.mock import mock
 
 
-class TestSettingsInversion:
-    def test__inversion_uses_linear_operator_tag(self):
-
-        settings = aa.SettingsInversion(use_linear_operators=True)
-        assert settings.use_linear_operators_tag == "lop"
-
-        settings = aa.SettingsInversion(use_linear_operators=False)
-        assert settings.use_linear_operators_tag == "mat"
-
-    def test__tag(self):
-
-        settings = aa.SettingsInversion(use_linear_operators=True)
-        assert settings.tag == "inv[lop]"
-
-        settings = aa.SettingsInversion(use_linear_operators=False)
-        assert settings.tag == "inv[mat]"
-
-        settings = aa.SettingsInversion(use_linear_operators=False)
-        assert settings.tag == "inv[mat]"
-
-
 class TestLogDetMatrixCholesky:
     def test__determinant_of_positive_definite_matrix_via_cholesky(self):
 

@@ -36,9 +36,7 @@ class AbstractImaging(abstract_dataset.AbstractDataset):
             An array describing the Point Spread Function kernel of the image.
         """
 
-        super().__init__(
-            data=image, noise_map=noise_map, name=name
-        )
+        super().__init__(data=image, noise_map=noise_map, name=name)
 
         self.psf = psf
 
@@ -153,24 +151,6 @@ class AbstractSettingsMaskedImaging(abstract_dataset.AbstractSettingsMaskedDatas
         self.psf_shape_2d = psf_shape_2d
         self.renormalize_psf = renormalize_psf
 
-    @property
-    def tag_no_inversion(self):
-        return (
-            f"{conf.instance['notation']['settings_tags']['imaging']['imaging']}"
-            f"[{self.grid_tag_no_inversion}"
-            f"{self.signal_to_noise_limit_tag}"
-            f"{self.psf_shape_tag}]"
-        )
-
-    @property
-    def tag_with_inversion(self):
-        return (
-            f"{conf.instance['notation']['settings_tags']['imaging']['imaging']}"
-            f"[{self.grid_tag_with_inversion}"
-            f"{self.signal_to_noise_limit_tag}"
-            f"{self.psf_shape_tag}]"
-        )
-
     def psf_reshaped_and_renormalized_from_psf(self, psf):
 
         if psf is not None:
@@ -185,30 +165,6 @@ class AbstractSettingsMaskedImaging(abstract_dataset.AbstractSettingsMaskedDatas
                 pixel_scales=psf.pixel_scales,
                 renormalize=self.renormalize_psf,
             )
-
-    @property
-    def psf_shape_tag(self):
-        """Generate an image psf shape tag, to customize phase names based on size of the image PSF that the original PSF \
-        is trimmed to for faster run times.
-
-        This changes the phase settings folder as follows:
-
-        image_psf_shape = 1 -> settings
-        image_psf_shape = 2 -> settings_image_psf_shape_2
-        image_psf_shape = 2 -> settings_image_psf_shape_2
-        """
-        if self.psf_shape_2d is None:
-            return ""
-        y = str(self.psf_shape_2d[0])
-        x = str(self.psf_shape_2d[1])
-        return (
-            "__"
-            + conf.instance["notation"]["settings_tags"]["imaging"]["psf_shape"]
-            + "_"
-            + y
-            + "x"
-            + x
-        )
 
 
 class AbstractMaskedImaging(abstract_dataset.AbstractMaskedDataset):
@@ -350,9 +306,7 @@ class Imaging(AbstractImaging):
 
             psf = None
 
-        return Imaging(
-            image=image, noise_map=noise_map, psf=psf, name=name
-        )
+        return Imaging(image=image, noise_map=noise_map, psf=psf, name=name)
 
     def output_to_fits(
         self, image_path, psf_path=None, noise_map_path=None, overwrite=False

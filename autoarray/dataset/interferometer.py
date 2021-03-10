@@ -17,13 +17,9 @@ logger = logging.getLogger(__name__)
 
 
 class AbstractInterferometer(abstract_dataset.AbstractDataset):
-    def __init__(
-        self, visibilities, noise_map, uv_wavelengths, name=None
-    ):
+    def __init__(self, visibilities, noise_map, uv_wavelengths, name=None):
 
-        super().__init__(
-            data=visibilities, noise_map=noise_map, name=name
-        )
+        super().__init__(data=visibilities, noise_map=noise_map, name=name)
 
         self.uv_wavelengths = uv_wavelengths
 
@@ -147,39 +143,6 @@ class AbstractSettingsMaskedInterferometer(
         )
 
         self.transformer_class = transformer_class
-
-    @property
-    def tag_no_inversion(self):
-        return (
-            f"{conf.instance['notation']['settings_tags']['interferometer']['interferometer']}["
-            f"{self.grid_tag_no_inversion}"
-            f"{self.transformer_tag}"
-            f"{self.signal_to_noise_limit_tag}]"
-        )
-
-    @property
-    def tag_with_inversion(self):
-        return (
-            f"{conf.instance['notation']['settings_tags']['interferometer']['interferometer']}["
-            f"{self.grid_tag_with_inversion}"
-            f"{self.transformer_tag}"
-            f"{self.signal_to_noise_limit_tag}]"
-        )
-
-    @property
-    def transformer_tag(self):
-        """Generate an image psf shape tag, to customize phase names based on size of the image PSF that the original PSF \
-        is trimmed to for faster run times.
-
-        This changes the phase settings folder as follows:
-
-        image_psf_shape = 1 -> settings
-        image_psf_shape = 2 -> settings_image_psf_shape_2
-        image_psf_shape = 2 -> settings_image_psf_shape_2
-        """
-        if self.transformer_class is None:
-            return ""
-        return f"__{conf.instance['notation']['settings_tags']['interferometer'][self.transformer_class.__name__]}"
 
 
 class AbstractMaskedInterferometer(abstract_dataset.AbstractMaskedDataset):

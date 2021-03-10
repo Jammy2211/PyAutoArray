@@ -3,20 +3,6 @@ import numpy as np
 
 
 class TestSettingsPixelization:
-    def test__use_border_tag(self):
-
-        settings = aa.SettingsPixelization(use_border=True)
-        assert settings.use_border_tag == "use_border"
-        settings = aa.SettingsPixelization(use_border=False)
-        assert settings.use_border_tag == "no_border"
-
-    def test__stochastic_tag(self):
-
-        settings = aa.SettingsPixelization(is_stochastic=True)
-        assert settings.is_stochastic_tag == "__stochastic"
-        settings = aa.SettingsPixelization(is_stochastic=False)
-        assert settings.is_stochastic_tag == ""
-
     def test__settings_with_is_stochastic_true(self):
 
         settings = aa.SettingsPixelization(is_stochastic=False)
@@ -26,11 +12,6 @@ class TestSettingsPixelization:
         settings = aa.SettingsPixelization(is_stochastic=True)
         settings = settings.settings_with_is_stochastic_true()
         assert settings.is_stochastic == True
-
-    def test__tag(self):
-
-        settings = aa.SettingsPixelization(use_border=False, is_stochastic=True)
-        assert settings.tag == "pix[no_border__stochastic]"
 
 
 class TestRectangular:

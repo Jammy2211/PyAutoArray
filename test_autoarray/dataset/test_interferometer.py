@@ -133,37 +133,6 @@ class TestInterferometer:
         assert (interferometer.uv_wavelengths[:, 1] == 6.0 * np.ones(3)).all()
 
 
-class TestSettingsMaskedInterferometer:
-    def test__transformer_tag(self):
-
-        settings = aa.SettingsMaskedInterferometer(transformer_class=aa.TransformerDFT)
-        assert settings.transformer_tag == "__dft"
-
-        settings = aa.SettingsMaskedInterferometer(
-            transformer_class=aa.TransformerNUFFT
-        )
-        assert settings.transformer_tag == "__nufft"
-
-        settings = aa.SettingsMaskedInterferometer(transformer_class=None)
-        assert settings.transformer_tag == ""
-
-    def test__tag(self):
-
-        settings = aa.SettingsMaskedInterferometer(
-            grid_class=aa.Grid2DIterate,
-            grid_inversion_class=aa.Grid2D,
-            fractional_accuracy=0.1,
-            sub_size_inversion=3,
-            transformer_class=aa.TransformerDFT,
-        )
-
-        assert settings.tag_no_inversion == "interferometer[grid_facc_0.1__dft]"
-        assert (
-            settings.tag_with_inversion
-            == "interferometer[grid_facc_0.1_inv_sub_3__dft]"
-        )
-
-
 class TestMaskedInterferometer:
     def test__masked_dataset(
         self, interferometer_7, sub_mask_7x7, visibilities_7, visibilities_noise_map_7
