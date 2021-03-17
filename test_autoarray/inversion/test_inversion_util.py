@@ -192,6 +192,83 @@ class TestCurvatureMatrixFromBlurred:
             == np.array([[1.25, 0.25, 0.0], [0.25, 2.25, 1.0], [0.0, 1.0, 1.0]])
         ).all()
 
+    def test__curvature_matrix_via_sparse_preload(self):
+
+        blurred_mapping_matrix = np.array(
+            [
+                [1.0, 1.0, 0.0],
+                [1.0, 0.0, 0.0],
+                [0.0, 1.0, 0.0],
+                [0.0, 1.0, 1.0],
+                [0.0, 0.0, 0.0],
+                [0.0, 0.0, 0.0],
+            ]
+        )
+
+        noise_map = np.array([1.0, 1.0, 1.0, 1.0, 1.0, 1.0])
+
+        curvature_matrix_sparse_preload = aa.util.inversion.curvature_matrix_sparse_preload_indexes_via_mapping_matrix_from(
+            mapping_matrix=blurred_mapping_matrix
+        )
+
+        curvature_matrix_sparse_preload_values = aa.util.inversion.curvature_matrix_sparse_preload_values_via_mapping_matrix_from(
+            mapping_matrix=blurred_mapping_matrix
+        )
+
+        curvature_matrix = aa.util.inversion.curvature_matrix_via_sparse_preload_from(
+            mapping_matrix=blurred_mapping_matrix,
+            noise_map=noise_map,
+            curvature_matrix_sparse_preload_indexes=curvature_matrix_sparse_preload.astype(
+                "int"
+            ),
+            curvature_matrix_sparse_preload_values=curvature_matrix_sparse_preload_values,
+        )
+
+        assert (
+            curvature_matrix
+            == np.array([[2.0, 1.0, 0.0], [1.0, 3.0, 1.0], [0.0, 1.0, 1.0]])
+        ).all()
+
+        blurred_mapping_matrix = np.array(
+            [
+                [1.0, 1.0, 0.0, 0.5],
+                [1.0, 0.0, 0.0, 0.25],
+                [0.0, 1.0, 0.6, 0.75],
+                [0.0, 1.0, 1.0, 0.1],
+                [0.0, 0.0, 0.3, 1.0],
+                [0.0, 0.0, 0.5, 0.7],
+            ]
+        )
+
+        noise_map = np.array([2.0, 1.0, 10.0, 0.5, 3.0, 7.0])
+
+        curvature_matrix_via_mapping_matrix = aa.util.inversion.curvature_matrix_via_mapping_matrix_from(
+            mapping_matrix=blurred_mapping_matrix, noise_map=noise_map
+        )
+
+        curvature_matrix_sparse_preload = aa.util.inversion.curvature_matrix_sparse_preload_indexes_via_mapping_matrix_from(
+            mapping_matrix=blurred_mapping_matrix
+        )
+
+        curvature_matrix_sparse_preload_values = aa.util.inversion.curvature_matrix_sparse_preload_values_via_mapping_matrix_from(
+            mapping_matrix=blurred_mapping_matrix
+        )
+
+        curvature_matrix = aa.util.inversion.curvature_matrix_via_sparse_preload_from(
+            mapping_matrix=blurred_mapping_matrix,
+            noise_map=noise_map,
+            curvature_matrix_sparse_preload_indexes=curvature_matrix_sparse_preload.astype(
+                "int"
+            ),
+            curvature_matrix_sparse_preload_values=curvature_matrix_sparse_preload_values,
+        )
+
+        print(curvature_matrix_via_mapping_matrix)
+
+        print(curvature_matrix)
+
+        assert (curvature_matrix_via_mapping_matrix == curvature_matrix).all()
+
 
 class TestPixelizationResiduals:
     def test__pixelization_perfectly_reconstructed_data__quantities_like_residuals_all_zeros(
