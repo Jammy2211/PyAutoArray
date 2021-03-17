@@ -597,6 +597,13 @@ class TestInversionImagingMatrix:
 
         curvature_matrix = 18.0 * np.ones((matrix_shape[1], matrix_shape[1]))
 
+        curvature_matrix_sparse_preload_indexes = aa.util.inversion.curvature_matrix_sparse_preload_indexes_via_mapping_matrix_from(
+            mapping_matrix=blurred_mapping_matrix
+        )
+        curvature_matrix_sparse_preload_values = aa.util.inversion.curvature_matrix_sparse_preload_values_via_mapping_matrix_from(
+            mapping_matrix=blurred_mapping_matrix
+        )
+
         inversion = inversions.InversionImagingMatrix.from_data_mapper_and_regularization(
             image=np.ones(9),
             noise_map=np.ones(9),
@@ -606,15 +613,12 @@ class TestInversionImagingMatrix:
             settings=aa.SettingsInversion(check_solution=False),
             preloads=aa.Preloads(
                 blurred_mapping_matrix=blurred_mapping_matrix,
-                curvature_matrix=curvature_matrix,
+                curvature_matrix_sparse_preload_indexes=curvature_matrix_sparse_preload_indexes,
+                curvature_matrix_sparse_preload_values=curvature_matrix_sparse_preload_values,
             ),
         )
 
         assert (inversion.blurred_mapping_matrix == blurred_mapping_matrix).all()
-        assert (
-            inversion.curvature_reg_matrix
-            == curvature_matrix + inversion.regularization_matrix
-        ).all()
 
 
 from autoconf import conf
