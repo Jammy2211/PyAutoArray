@@ -207,21 +207,19 @@ class TestCurvatureMatrixFromBlurred:
 
         noise_map = np.array([1.0, 1.0, 1.0, 1.0, 1.0, 1.0])
 
-        curvature_matrix_sparse_preload = aa.util.inversion.curvature_matrix_sparse_preload_indexes_via_mapping_matrix_from(
-            mapping_matrix=blurred_mapping_matrix
-        )
-
-        curvature_matrix_sparse_preload_values = aa.util.inversion.curvature_matrix_sparse_preload_values_via_mapping_matrix_from(
+        curvature_matrix_sparse_preload, curvature_matrix_preload_counts = aa.util.inversion.curvature_matrix_sparse_preload_via_mapping_matrix_from(
             mapping_matrix=blurred_mapping_matrix
         )
 
         curvature_matrix = aa.util.inversion.curvature_matrix_via_sparse_preload_from(
             mapping_matrix=blurred_mapping_matrix,
             noise_map=noise_map,
-            curvature_matrix_sparse_preload_indexes=curvature_matrix_sparse_preload.astype(
+            curvature_matrix_sparse_preload=curvature_matrix_sparse_preload.astype(
                 "int"
             ),
-            curvature_matrix_sparse_preload_values=curvature_matrix_sparse_preload_values,
+            curvature_matrix_preload_counts=curvature_matrix_preload_counts.astype(
+                "int"
+            ),
         )
 
         assert (
@@ -246,21 +244,19 @@ class TestCurvatureMatrixFromBlurred:
             mapping_matrix=blurred_mapping_matrix, noise_map=noise_map
         )
 
-        curvature_matrix_sparse_preload = aa.util.inversion.curvature_matrix_sparse_preload_indexes_via_mapping_matrix_from(
-            mapping_matrix=blurred_mapping_matrix
-        )
-
-        curvature_matrix_sparse_preload_values = aa.util.inversion.curvature_matrix_sparse_preload_values_via_mapping_matrix_from(
+        curvature_matrix_sparse_preload, curvature_matrix_preload_counts = aa.util.inversion.curvature_matrix_sparse_preload_via_mapping_matrix_from(
             mapping_matrix=blurred_mapping_matrix
         )
 
         curvature_matrix = aa.util.inversion.curvature_matrix_via_sparse_preload_from(
             mapping_matrix=blurred_mapping_matrix,
             noise_map=noise_map,
-            curvature_matrix_sparse_preload_indexes=curvature_matrix_sparse_preload.astype(
+            curvature_matrix_sparse_preload=curvature_matrix_sparse_preload.astype(
                 "int"
             ),
-            curvature_matrix_sparse_preload_values=curvature_matrix_sparse_preload_values,
+            curvature_matrix_preload_counts=curvature_matrix_preload_counts.astype(
+                "int"
+            ),
         )
 
         assert (curvature_matrix_via_mapping_matrix == curvature_matrix).all()
