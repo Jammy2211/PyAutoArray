@@ -450,16 +450,22 @@ class InversionImagingMatrix(AbstractInversion, AbstractInversionMatrix):
         )
 
     @property
-    def curvature_matrix_sparse_preload_indexes(self):
-        return inversion_util.curvature_matrix_sparse_preload_indexes_via_mapping_matrix_from(
+    def curvature_matrix_sparse_preload(self):
+
+        curvature_matrix_sparse_preload, curvature_matrix_preload_counts = inversion_util.curvature_matrix_sparse_preload_via_mapping_matrix_from(
             mapping_matrix=self.blurred_mapping_matrix
         )
 
+        return curvature_matrix_sparse_preload
+
     @property
-    def curvature_matrix_sparse_preload_values(self):
-        return inversion_util.curvature_matrix_sparse_preload_values_via_mapping_matrix_from(
+    def curvature_matrix_preload_counts(self):
+
+        curvature_matrix_sparse_preload, curvature_matrix_preload_counts = inversion_util.curvature_matrix_sparse_preload_via_mapping_matrix_from(
             mapping_matrix=self.blurred_mapping_matrix
         )
+
+        return curvature_matrix_preload_counts
 
 
 class AbstractInversionInterferometer(AbstractInversion):
