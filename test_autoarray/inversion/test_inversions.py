@@ -597,10 +597,7 @@ class TestInversionImagingMatrix:
 
         curvature_matrix = 18.0 * np.ones((matrix_shape[1], matrix_shape[1]))
 
-        curvature_matrix_sparse_preload_indexes = aa.util.inversion.curvature_matrix_sparse_preload_indexes_via_mapping_matrix_from(
-            mapping_matrix=blurred_mapping_matrix
-        )
-        curvature_matrix_sparse_preload_values = aa.util.inversion.curvature_matrix_sparse_preload_values_via_mapping_matrix_from(
+        curvature_matrix_sparse_preload, curvature_matrix_preload_counts = aa.util.inversion.curvature_matrix_sparse_preload_via_mapping_matrix_from(
             mapping_matrix=blurred_mapping_matrix
         )
 
@@ -613,8 +610,8 @@ class TestInversionImagingMatrix:
             settings=aa.SettingsInversion(check_solution=False),
             preloads=aa.Preloads(
                 blurred_mapping_matrix=blurred_mapping_matrix,
-                curvature_matrix_sparse_preload_indexes=curvature_matrix_sparse_preload_indexes,
-                curvature_matrix_sparse_preload_values=curvature_matrix_sparse_preload_values,
+                curvature_matrix_sparse_preload=curvature_matrix_sparse_preload,
+                curvature_matrix_preload_counts=curvature_matrix_preload_counts,
             ),
         )
 

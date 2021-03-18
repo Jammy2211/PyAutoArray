@@ -358,7 +358,7 @@ class InversionImagingMatrix(AbstractInversion, AbstractInversionMatrix):
             noise_map=noise_map,
         )
 
-        if preloads.curvature_matrix_sparse_preload_indexes is None:
+        if preloads.curvature_matrix_sparse_preload is None:
 
             curvature_matrix = inversion_util.curvature_matrix_via_mapping_matrix_from(
                 mapping_matrix=blurred_mapping_matrix, noise_map=noise_map
@@ -369,10 +369,12 @@ class InversionImagingMatrix(AbstractInversion, AbstractInversionMatrix):
             curvature_matrix = inversion_util.curvature_matrix_via_sparse_preload_from(
                 mapping_matrix=blurred_mapping_matrix,
                 noise_map=noise_map,
-                curvature_matrix_sparse_preload_indexes=preloads.curvature_matrix_sparse_preload_indexes.astype(
+                curvature_matrix_sparse_preload=preloads.curvature_matrix_sparse_preload.astype(
                     "int"
                 ),
-                curvature_matrix_sparse_preload_values=preloads.curvature_matrix_sparse_preload_values,
+                curvature_matrix_preload_counts=preloads.curvature_matrix_preload_counts.astype(
+                    "int"
+                ),
             )
 
         regularization_matrix = regularization.regularization_matrix_from_mapper(

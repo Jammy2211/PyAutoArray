@@ -56,38 +56,7 @@ def curvature_matrix_via_mapping_matrix_from(
 
 
 @decorator_util.jit()
-def curvature_matrix_sparse_preload_total_values_from(
-    mapping_matrix: np.ndarray,
-) -> int:
-    """
-    RReturn the number of indexes in a preload matrix that expresses the non-zero entries of the blurred mapping matrix
-    for an efficient construction of the curvature matrix `F` (see Warren & Dye 2003).
-
-    This is used for models where the blurred mapping matrix does not change, but the noise-map of the values that
-    are used to construct that blurred mapping matrix do change.
-
-    Parameters
-    -----------
-    mapping_matrix : np.ndarray
-        The matrix representing the mappings (these could be blurred or transfomed) between sub-grid pixels and
-        pixelization pixels.
-    """
-
-    preload_count = 0
-
-    for mask_1d_index in range(mapping_matrix.shape[0]):
-        for pix_index_0 in range(mapping_matrix.shape[1]):
-            if mapping_matrix[mask_1d_index, pix_index_0] > 0.0:
-                for pix_index_1 in range(mapping_matrix.shape[1]):
-                    if pix_index_0 >= pix_index_1:
-                        if mapping_matrix[mask_1d_index, pix_index_1] > 0.0:
-                            preload_count += 1
-
-    return preload_count
-
-
-@decorator_util.jit()
-def curvature_matrix_sparse_preload_indexes_via_mapping_matrix_from(
+def curvature_matrix_sparse_preload_via_mapping_matrix_from(
     mapping_matrix: np.ndarray,
 ) -> np.ndarray:
     """
@@ -104,81 +73,35 @@ def curvature_matrix_sparse_preload_indexes_via_mapping_matrix_from(
         pixelization pixels.
     """
 
-    preload_count = curvature_matrix_sparse_preload_total_values_from(
-        mapping_matrix=mapping_matrix
-    )
-
-    curvature_matrix_sparse_preload_indexes = np.zeros((preload_count, 3))
-
-    index = 0
+    curvature_matrix_preload_counts = np.zeros(mapping_matrix.shape[0])
 
     for mask_1d_index in range(mapping_matrix.shape[0]):
-        for pix_index_0 in range(mapping_matrix.shape[1]):
-            if mapping_matrix[mask_1d_index, pix_index_0] > 0.0:
-                for pix_index_1 in range(mapping_matrix.shape[1]):
-                    if pix_index_0 >= pix_index_1:
-                        if mapping_matrix[mask_1d_index, pix_index_1] > 0.0:
-                            curvature_matrix_sparse_preload_indexes[
-                                index, 0
-                            ] = pix_index_0
-                            curvature_matrix_sparse_preload_indexes[
-                                index, 1
-                            ] = pix_index_1
-                            curvature_matrix_sparse_preload_indexes[
-                                index, 2
-                            ] = mask_1d_index
-                            index += 1
+        for pix_index in range(mapping_matrix.shape[1]):
+            if mapping_matrix[mask_1d_index, pix_index] > 0.0:
+                curvature_matrix_preload_counts[mask_1d_index] += 1
 
-    return curvature_matrix_sparse_preload_indexes
+    preload_max = np.max(curvature_matrix_preload_counts)
 
-
-@decorator_util.jit()
-def curvature_matrix_sparse_preload_values_via_mapping_matrix_from(
-    mapping_matrix: np.ndarray,
-) -> np.ndarray:
-    """
-    Returns a matrix that expresses the non-zero entries of the blurred mapping matrix for an efficient construction of
-    the curvature matrix `F` (see Warren & Dye 2003).
-
-    This is used for models where the blurred mapping matrix does not change, but the noise-map of the values that
-    are used to construct that blurred mapping matrix do change.
-
-    Parameters
-    -----------
-    mapping_matrix : np.ndarray
-        The matrix representing the mappings (these could be blurred or transfomed) between sub-grid pixels and
-        pixelization pixels.
-    """
-
-    preload_count = curvature_matrix_sparse_preload_total_values_from(
-        mapping_matrix=mapping_matrix
+    curvature_matrix_sparse_preload = np.zeros(
+        (mapping_matrix.shape[0], int(preload_max))
     )
 
-    curvature_matrix_sparse_preload_values = np.zeros(preload_count)
-
-    index = 0
-
     for mask_1d_index in range(mapping_matrix.shape[0]):
-        for pix_index_0 in range(mapping_matrix.shape[1]):
-            if mapping_matrix[mask_1d_index, pix_index_0] > 0.0:
-                for pix_index_1 in range(mapping_matrix.shape[1]):
-                    if pix_index_0 >= pix_index_1:
-                        if mapping_matrix[mask_1d_index, pix_index_1] > 0.0:
-                            curvature_matrix_sparse_preload_values[index] = (
-                                mapping_matrix[mask_1d_index, pix_index_0]
-                                * mapping_matrix[mask_1d_index, pix_index_1]
-                            )
-                            index += 1
+        index = 0
+        for pix_index in range(mapping_matrix.shape[1]):
+            if mapping_matrix[mask_1d_index, pix_index] > 0.0:
+                curvature_matrix_sparse_preload[mask_1d_index, index] = pix_index
+                index += 1
 
-    return curvature_matrix_sparse_preload_values
+    return curvature_matrix_sparse_preload, curvature_matrix_preload_counts
 
 
 @decorator_util.jit()
 def curvature_matrix_via_sparse_preload_from(
     mapping_matrix: np.ndarray,
     noise_map: np.ndarray,
-    curvature_matrix_sparse_preload_indexes,
-    curvature_matrix_sparse_preload_values,
+    curvature_matrix_sparse_preload,
+    curvature_matrix_preload_counts,
 ) -> np.ndarray:
     """
     Returns the curvature matrix `F` from a blurred mapping matrix `f` and the 1D noise-map $\sigma$
@@ -198,20 +121,30 @@ def curvature_matrix_via_sparse_preload_from(
     """
     curvature_matrix = np.zeros((mapping_matrix.shape[1], mapping_matrix.shape[1]))
 
-    for index in range(curvature_matrix_sparse_preload_indexes.shape[0]):
+    for mask_1d_index in range(mapping_matrix.shape[0]):
 
-        pix_index_0 = curvature_matrix_sparse_preload_indexes[index, 0]
-        pix_index_1 = curvature_matrix_sparse_preload_indexes[index, 1]
-        mask_1d_index = curvature_matrix_sparse_preload_indexes[index, 2]
+        total_pix = curvature_matrix_preload_counts[mask_1d_index]
 
-        curvature_matrix[pix_index_0, pix_index_1] += (
-            curvature_matrix_sparse_preload_values[index]
-            / noise_map[mask_1d_index] ** 2
-        )
+        for preload_index_0 in range(total_pix):
+            for preload_index_1 in range(
+                preload_index_0, curvature_matrix_preload_counts[mask_1d_index]
+            ):
+
+                pix_index_0 = curvature_matrix_sparse_preload[
+                    mask_1d_index, preload_index_0
+                ]
+                pix_index_1 = curvature_matrix_sparse_preload[
+                    mask_1d_index, preload_index_1
+                ]
+
+                curvature_matrix[pix_index_0, pix_index_1] += (
+                    mapping_matrix[mask_1d_index, pix_index_0]
+                    * mapping_matrix[mask_1d_index, pix_index_1]
+                ) / noise_map[mask_1d_index] ** 2
 
     for i in range(mapping_matrix.shape[1]):
         for j in range(mapping_matrix.shape[1]):
-            curvature_matrix[i, j] = curvature_matrix[j, i]
+            curvature_matrix[j, i] = curvature_matrix[i, j]
 
     return curvature_matrix
 
