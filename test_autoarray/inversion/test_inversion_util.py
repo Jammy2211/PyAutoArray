@@ -263,10 +263,6 @@ class TestCurvatureMatrixFromBlurred:
             curvature_matrix_sparse_preload_values=curvature_matrix_sparse_preload_values,
         )
 
-        print(curvature_matrix_via_mapping_matrix)
-
-        print(curvature_matrix)
-
         assert (curvature_matrix_via_mapping_matrix == curvature_matrix).all()
 
 
