@@ -1,6 +1,7 @@
 from autoarray.structures import abstract_structure
 from autoarray.structures.grids.one_d import grid_1d
 from autoarray.structures.grids.one_d import grid_1d_util
+from autoarray.structures.grids.two_d import grid_2d_irregular
 
 import numpy as np
 
@@ -74,3 +75,11 @@ class AbstractGrid1D(abstract_structure.AbstractStructure1D):
         return grid_1d.Grid1D(
             grid=binned_grid_1d, mask=self.mask.mask_sub_1, store_slim=False
         )
+
+    def project_to_radial_grid_2d(self, angle=0.0):
+
+        grid = np.zeros((self.sub_shape_native[0], 2))
+
+        grid[:, 1] = self
+
+        return grid_2d_irregular.Grid2DIrregular(grid=grid)
