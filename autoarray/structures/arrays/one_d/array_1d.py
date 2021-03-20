@@ -7,6 +7,13 @@ from autoarray.geometry import geometry_util
 
 
 class Array1D(abstract_array_1d.AbstractArray1D):
+    def __new__(cls, array, mask, *args, **kwargs):
+
+        obj = array.view(cls)
+        obj.mask = mask
+
+        return obj
+
     @classmethod
     def manual_slim(cls, array, pixel_scales, sub_size=1, origin=(0.0,)):
         """
@@ -39,7 +46,7 @@ class Array1D(abstract_array_1d.AbstractArray1D):
             origin=origin,
         )
 
-        return Array1D(line=array, mask=mask)
+        return Array1D(array=array, mask=mask)
 
     @classmethod
     def manual_native(cls, array, pixel_scales, sub_size=1, origin=(0.0,)):
@@ -94,4 +101,4 @@ class Array1D(abstract_array_1d.AbstractArray1D):
             array_1d_native=array, mask_1d=mask, sub_size=mask.sub_size
         )
 
-        return Array1D(line=array, mask=mask)
+        return Array1D(array=array, mask=mask)
