@@ -1043,3 +1043,47 @@ class TestTransforms:
         assert transformed_grid_2d == pytest.approx(
             np.array([[9.0, -5.0], [9.0, -4.0], [10.0, -4.0]])
         )
+
+    def test__transform_2d_grid_from_reference_frame(self):
+
+        grid_2d = np.array([[0.0, 1.0], [1.0, 1.0], [1.0, 0.0]])
+
+        transformed_grid_2d = aa.util.geometry.transform_grid_2d_from_reference_frame(
+            grid_2d=grid_2d, centre=(0.0, 0.0), angle=0.0
+        )
+
+        assert transformed_grid_2d == pytest.approx(
+            np.array([[0.0, 1.0], [1.0, 1.0], [1.0, 0.0]])
+        )
+
+        transformed_grid_2d = aa.util.geometry.transform_grid_2d_from_reference_frame(
+            grid_2d=grid_2d, centre=(0.0, 0.0), angle=45.0
+        )
+
+        assert transformed_grid_2d == pytest.approx(
+            np.array(
+                [
+                    [np.sqrt(2) / 2.0, np.sqrt(2) / 2.0],
+                    [np.sqrt(2), 0.0],
+                    [np.sqrt(2) / 2.0, -np.sqrt(2) / 2.0],
+                ]
+            )
+        )
+
+        transformed_grid_2d = aa.util.geometry.transform_grid_2d_from_reference_frame(
+            grid_2d=grid_2d, centre=(2.0, 2.0), angle=90.0
+        )
+
+        assert transformed_grid_2d == pytest.approx(
+            np.array([[3.0, 2.0], [3.0, 1.0], [2.0, 1.0]])
+        )
+
+        transformed_grid_2d = aa.util.geometry.transform_grid_2d_to_reference_frame(
+            grid_2d=grid_2d, centre=(8.0, 5.0), angle=137.0
+        )
+
+        original_grid_2d = aa.util.geometry.transform_grid_2d_from_reference_frame(
+            grid_2d=transformed_grid_2d, centre=(8.0, 5.0), angle=137.0
+        )
+
+        assert grid_2d == pytest.approx(original_grid_2d, 1.0e-4)

@@ -273,12 +273,14 @@ def scaled_coordinates_2d_from(
 
 def transform_grid_2d_to_reference_frame(
     grid_2d: np.ndarray, centre: Tuple[float, float], angle: float
-):
+) -> np.ndarray:
     """
-    Transform a 2D grid of (y,x) coordinates to a new reference frame, which includes:
+    Transform a 2D grid of (y,x) coordinates to a new reference frame.
 
-    1) A translation to a new (y,x) centre value.
-    2) A rotation around this translated centre, which is performed clockwise from an input angle.
+    This transformation includes:
+
+    1) A translation to a new (y,x) centre value, by subtracting the centre from every coordinate on the grid.
+    2) A rotation of the grid around this new centre, which is performed clockwise from an input angle.
 
     Parameters
     ----------
@@ -296,3 +298,40 @@ def transform_grid_2d_to_reference_frame(
             radius * np.cos(theta_coordinate_to_profile),
         )
     ).T
+
+
+def transform_grid_2d_from_reference_frame(
+    grid_2d: np.ndarray, centre: Tuple[float, float], angle: float
+) -> np.ndarray:
+    """
+    Transform a 2D grid of (y,x) coordinates to a new reference frame, which is the reverse frame computed via the
+     method `transform_grid_2d_to_reference_frame`.
+
+     This transformation includes:
+
+    1) A translation to a new (y,x) centre value, by adding the centre to every coordinate on the grid.
+    2) A rotation of the grid around this new centre, which is performed counter-clockwise from an input angle.
+
+    Parameters
+    ----------
+    grid : ndarray
+        The 2d grid of (y, x) coordinates which are transformed to a new reference frame.
+    """
+
+    cos_angle = np.cos(np.radians(angle))
+    sin_angle = np.sin(np.radians(angle))
+
+    y = np.add(
+        np.add(
+            np.multiply(grid_2d[:, 1], sin_angle), np.multiply(grid_2d[:, 0], cos_angle)
+        ),
+        centre[0],
+    )
+    x = np.add(
+        np.add(
+            np.multiply(grid_2d[:, 1], cos_angle),
+            -np.multiply(grid_2d[:, 0], sin_angle),
+        ),
+        centre[1],
+    )
+    return np.vstack((y, x)).T
