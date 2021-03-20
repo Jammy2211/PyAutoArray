@@ -5,7 +5,7 @@ from autoarray.structures.grids.one_d import grid_1d_util
 from autoarray.structures.grids.two_d import grid_2d
 from autoarray.structures.grids.two_d import grid_2d_irregular
 from autoarray.geometry import geometry_util
-from autoarray.mask import mask_1d
+from autoarray.mask import mask_1d, mask_2d
 
 from autoarray import exc
 
@@ -304,7 +304,7 @@ class Grid1D(abstract_grid_1d.AbstractGrid1D):
         else:
             if isinstance(result, grid_2d.Grid2DTransformedNumpy):
                 return grid_2d.Grid2DTransformed(grid=result, mask=self.mask)
-            return grid_2d.Grid2D(grid=result, mask=self.mask)
+            return grid_2d.Grid2D(grid=result, mask=self.mask.to_mask_2d)
 
     def structure_list_from_result_list(self, result_list: list):
         """
