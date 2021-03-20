@@ -2,6 +2,7 @@ import numpy as np
 from functools import wraps
 
 from autoconf import conf
+from autoarray.structures.grids.one_d import abstract_grid_1d
 from autoarray.structures.grids.two_d import grid_2d
 from autoarray.structures.grids.two_d import grid_2d_interpolate
 from autoarray.structures.grids.two_d import grid_2d_iterate
@@ -72,6 +73,8 @@ def grid_like_to_structure(func):
         elif isinstance(grid, grid_2d.Grid2D):
             result = func(profile, grid, *args, **kwargs)
             return grid.structure_from_result(result=result)
+        elif isinstance(grid, abstract_grid_1d.AbstractGrid1D):
+            return
 
         if not isinstance(grid, grid_2d_irregular.Grid2DIrregular) and not isinstance(
             grid, grid_2d.Grid2D

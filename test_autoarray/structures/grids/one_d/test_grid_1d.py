@@ -72,8 +72,32 @@ class TestAPI:
         assert grid.pixel_scales == (1.0,)
         assert grid.origin == (0.0,)
 
+    def test__from_mask(self):
 
-class TestGrid2D:
+        mask = aa.Mask1D.unmasked(shape_slim=(4,), pixel_scales=1.0, sub_size=1)
+        grid = aa.Grid1D.from_mask(mask=mask)
+
+        assert type(grid) == aa.Grid1D
+        assert (grid.native == np.array([-1.5, -0.5, 0.5, 1.5])).all()
+        assert (grid.slim == np.array([-1.5, -0.5, 0.5, 1.5])).all()
+        assert (grid.native_binned == np.array([-1.5, -0.5, 0.5, 1.5])).all()
+        assert (grid.slim_binned == np.array([-1.5, -0.5, 0.5, 1.5])).all()
+        assert grid.pixel_scales == (1.0,)
+        assert grid.origin == (0.0,)
+
+        mask = aa.Mask1D.unmasked(shape_slim=(2,), pixel_scales=1.0, sub_size=2)
+        grid = aa.Grid1D.from_mask(mask=mask)
+
+        assert type(grid) == aa.Grid1D
+        assert (grid.native == np.array([-0.75, -0.25, 0.25, 0.75])).all()
+        assert (grid.slim == np.array([-0.75, -0.25, 0.25, 0.75])).all()
+        assert (grid.native_binned == np.array([-0.5, 0.5])).all()
+        assert (grid.slim_binned == np.array([-0.5, 0.5])).all()
+        assert grid.pixel_scales == (1.0,)
+        assert grid.origin == (0.0,)
+
+
+class TestGrid1D:
     def test__grid_2d_with_other_value_out(self):
 
         grid_1d = aa.Grid1D.manual_native(
@@ -106,3 +130,92 @@ class TestGrid2D:
             ),
             1.0e-4,
         )
+
+    def test__structure_from_result__maps_numpy_array_to__auto_array_or_grid(self):
+
+        mask = np.array([True, False, False, True])
+
+        mask = aa.Mask1D.manual(mask=mask, pixel_scales=(1.0,), sub_size=1)
+
+        grid = aa.Grid1D.from_mask(mask=mask)
+
+        result = grid.structure_from_result(result=np.array([1.0, 2.0, 3.0, 4.0]))
+
+        assert isinstance(result, aa.Array2D)
+        assert (
+            result.native
+            == np.array(
+                [
+                    [0.0, 0.0, 0.0, 0.0],
+                    [0.0, 1.0, 2.0, 0.0],
+                    [0.0, 3.0, 4.0, 0.0],
+                    [0.0, 0.0, 0.0, 0.0],
+                ]
+            )
+        ).all()
+
+        result = grid.structure_from_result(
+            result=np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0]])
+        )
+
+        assert isinstance(result, aa.Grid2D)
+        assert (
+            result.native
+            == np.array(
+                [
+                    [[0.0, 0.0], [0.0, 0.0], [0.0, 0.0], [0.0, 0.0]],
+                    [[0.0, 0.0], [1.0, 1.0], [2.0, 2.0], [0.0, 0.0]],
+                    [[0.0, 0.0], [3.0, 3.0], [4.0, 4.0], [0.0, 0.0]],
+                    [[0.0, 0.0], [0.0, 0.0], [0.0, 0.0], [0.0, 0.0]],
+                ]
+            )
+        ).all()
+
+    def test__structure_list_from_result_list__maps_list_to_auto_arrays_or_grids(self):
+
+        mask = np.array(
+            [
+                [True, True, True, True],
+                [True, False, False, True],
+                [True, False, False, True],
+                [True, True, True, True],
+            ]
+        )
+
+        mask = aa.Mask2D.manual(mask=mask, pixel_scales=(1.0, 1.0), sub_size=1)
+
+        grid = aa.Grid2D.from_mask(mask=mask)
+
+        result = grid.structure_list_from_result_list(
+            result_list=[np.array([1.0, 2.0, 3.0, 4.0])]
+        )
+
+        assert isinstance(result[0], aa.Array2D)
+        assert (
+            result[0].native
+            == np.array(
+                [
+                    [0.0, 0.0, 0.0, 0.0],
+                    [0.0, 1.0, 2.0, 0.0],
+                    [0.0, 3.0, 4.0, 0.0],
+                    [0.0, 0.0, 0.0, 0.0],
+                ]
+            )
+        ).all()
+
+        result = grid.structure_list_from_result_list(
+            result_list=[np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0]])]
+        )
+
+        assert isinstance(result[0], aa.Grid2D)
+        assert (
+            result[0].native
+            == np.array(
+                [
+                    [[0.0, 0.0], [0.0, 0.0], [0.0, 0.0], [0.0, 0.0]],
+                    [[0.0, 0.0], [1.0, 1.0], [2.0, 2.0], [0.0, 0.0]],
+                    [[0.0, 0.0], [3.0, 3.0], [4.0, 4.0], [0.0, 0.0]],
+                    [[0.0, 0.0], [0.0, 0.0], [0.0, 0.0], [0.0, 0.0]],
+                ]
+            )
+        ).all()

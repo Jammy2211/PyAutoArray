@@ -623,8 +623,9 @@ class Grid2D(abstract_grid_2d.AbstractGrid2D):
 
     @classmethod
     def from_mask(cls, mask, store_slim=True):
-        """Create a Grid2D (see *Grid2D.__new__*) from a mask, where only unmasked pixels are included in the grid (if the
-        grid is represented in 2D masked values are (0.0, 0.0)).
+        """
+        Create a Grid2D (see *Grid2D.__new__*) from a mask, where only unmasked pixels are included in the grid (if the
+        grid is represented in its native 2D masked values are (0.0, 0.0)).
 
         The mask's pixel_scales, sub_size and origin properties are used to compute the grid (y,x) coordinates.
 
@@ -658,7 +659,7 @@ class Grid2D(abstract_grid_2d.AbstractGrid2D):
         cls, file_path, pixel_scales, sub_size=1, origin=(0.0, 0.0), store_slim=True
     ):
         """Create a Grid2D (see *Grid2D.__new__*) from a mask, where only unmasked pixels are included in the grid (if the
-        grid is represented in 2D masked values are (0.0, 0.0)).
+        grid is represented in its native 2D masked values are (0.0, 0.0)).
 
         The mask's pixel_scales, sub_size and origin properties are used to compute the grid (y,x) coordinates.
 
@@ -837,7 +838,8 @@ class Grid2D(abstract_grid_2d.AbstractGrid2D):
         return Grid2D.from_mask(mask=mask, store_slim=self.store_slim)
 
     def structure_from_result(self, result: np.ndarray):
-        """Convert a result from an ndarray to an aa.Array2D or aa.Grid2D structure, where the conversion depends on
+        """
+        Convert a result from an ndarray to an aa.Array2D or aa.Grid2D structure, where the conversion depends on
         type(result) as follows:
 
         - 1D np.ndarray   -> aa.Array2D
@@ -859,7 +861,8 @@ class Grid2D(abstract_grid_2d.AbstractGrid2D):
             return Grid2D(grid=result, mask=self.mask, store_slim=True)
 
     def structure_list_from_result_list(self, result_list: list):
-        """Convert a result from a list of ndarrays to a list of aa.Array2D or aa.Grid2D structure, where the conversion
+        """
+        Convert a result from a list of ndarrays to a list of aa.Array2D or aa.Grid2D structure, where the conversion
         depends on type(result) as follows:
 
         - [1D np.ndarray] -> [aa.Array2D]
