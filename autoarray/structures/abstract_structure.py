@@ -72,6 +72,14 @@ class AbstractStructure(np.ndarray):
         return self.mask.sub_shape_slim
 
     @property
+    def shape_native(self):
+        return self.mask.shape
+
+    @property
+    def sub_shape_native(self):
+        return self.mask.sub_shape_native
+
+    @property
     def pixel_scales(self):
         return self.mask.pixel_scales
 
