@@ -77,8 +77,29 @@ class AbstractGrid1D(abstract_structure.AbstractStructure1D):
             grid=binned_grid_1d, mask=self.mask.mask_sub_1, store_slim=False
         )
 
-    def project_to_radial_grid_2d(self, angle=0.0):
+    def project_to_radial_grid_2d(
+        self, angle: float = 0.0
+    ) -> grid_2d_irregular.Grid2DIrregular:
+        """
+        Project the 1D grid of (y,x) coordinates to an irregular 2d grid of (y,x) coordinates. The projection works
+        as follows:
 
+        1) Map the 1D (x) coordinates to 2D along the x-axis, such that the x value of every 2D coordinate is the
+        corresponding (x) value in the 1D grid, and every y value is 0.0.
+
+        2) Rotate this project 2D grid clockwise by the input angle.
+
+        Parameters
+        ----------
+        angle : float
+            The angle with which the project 2D grid of coordinates is rotated clockwise.
+
+        Returns
+        -------
+        grid_2d_irregular.Grid2DIrregular
+            The projected and rotated 2D grid of (y,x) coordinates.
+
+        """
         grid = np.zeros((self.sub_shape_native[0], 2))
 
         grid[:, 1] = self
