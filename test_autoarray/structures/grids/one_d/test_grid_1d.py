@@ -86,3 +86,23 @@ class TestGrid2D:
         assert grid_2d.slim == pytest.approx(
             np.array([[0.0, 1.0], [0.0, 2.0], [0.0, 3.0], [0.0, 4.0]]), 1.0e-4
         )
+
+        grid_2d = grid_1d.project_to_radial_grid_2d(angle=90.0)
+
+        assert grid_2d.slim == pytest.approx(
+            np.array([[-1.0, 0.0], [-2.0, 0.0], [-3.0, 0.0], [-4.0, 0.0]]), 1.0e-4
+        )
+
+        grid_2d = grid_1d.project_to_radial_grid_2d(angle=45.0)
+
+        assert grid_2d.slim == pytest.approx(
+            np.array(
+                [
+                    [-0.5 * np.sqrt(2), 0.5 * np.sqrt(2)],
+                    [-1.0 * np.sqrt(2), 1.0 * np.sqrt(2)],
+                    [-1.5 * np.sqrt(2), 1.5 * np.sqrt(2)],
+                    [-2.0 * np.sqrt(2), 2.0 * np.sqrt(2)],
+                ]
+            ),
+            1.0e-4,
+        )

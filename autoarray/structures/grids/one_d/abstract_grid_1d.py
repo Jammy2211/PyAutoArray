@@ -2,6 +2,7 @@ from autoarray.structures import abstract_structure
 from autoarray.structures.grids.one_d import grid_1d
 from autoarray.structures.grids.one_d import grid_1d_util
 from autoarray.structures.grids.two_d import grid_2d_irregular
+from autoarray.geometry import geometry_util
 
 import numpy as np
 
@@ -81,5 +82,9 @@ class AbstractGrid1D(abstract_structure.AbstractStructure1D):
         grid = np.zeros((self.sub_shape_native[0], 2))
 
         grid[:, 1] = self
+
+        grid = geometry_util.transform_grid_2d_to_reference_frame(
+            grid_2d=grid, centre=(0.0, 0.0), angle=angle
+        )
 
         return grid_2d_irregular.Grid2DIrregular(grid=grid)
