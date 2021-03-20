@@ -100,9 +100,9 @@ class AbstractGrid1D(abstract_structure.AbstractStructure1D):
             The projected and rotated 2D grid of (y,x) coordinates.
 
         """
-        grid = np.zeros((self.sub_shape_native[0], 2))
+        grid = np.zeros((self.sub_shape_slim, 2))
 
-        grid[:, 1] = self
+        grid[:, 1] = self.slim
 
         grid = geometry_util.transform_grid_2d_to_reference_frame(
             grid_2d=grid, centre=(0.0, 0.0), angle=angle

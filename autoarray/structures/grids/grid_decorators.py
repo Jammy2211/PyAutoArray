@@ -74,7 +74,9 @@ def grid_like_to_structure(func):
             result = func(profile, grid, *args, **kwargs)
             return grid.structure_from_result(result=result)
         elif isinstance(grid, abstract_grid_1d.AbstractGrid1D):
-            return
+            grid_2d_radial = grid.project_to_radial_grid_2d()
+            result = func(profile, grid_2d_radial, *args, **kwargs)
+            return grid.structure_from_result(result=result)
 
         if not isinstance(grid, grid_2d_irregular.Grid2DIrregular) and not isinstance(
             grid, grid_2d.Grid2D
@@ -160,6 +162,10 @@ def grid_like_to_structure_list(func):
             return grid.structure_list_from_result_list(result_list=result_list)
         elif isinstance(grid, grid_2d.Grid2D):
             result_list = func(profile, grid, *args, **kwargs)
+            return grid.structure_list_from_result_list(result_list=result_list)
+        elif isinstance(grid, abstract_grid_1d.AbstractGrid1D):
+            grid_2d_radial = grid.project_to_radial_grid_2d()
+            result_list = func(profile, grid_2d_radial, *args, **kwargs)
             return grid.structure_list_from_result_list(result_list=result_list)
 
         if not isinstance(grid, grid_2d_irregular.Grid2DIrregular) and not isinstance(
