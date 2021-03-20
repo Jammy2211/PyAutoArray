@@ -4,7 +4,7 @@ import numpy as np
 from typing import List, Tuple, Union
 
 from autoarray import exc
-from autoarray.mask import abstract_mask
+from autoarray.mask import abstract_mask, mask_2d
 from autoarray.structures.grids.one_d import grid_1d
 from autoarray.structures.grids.one_d import grid_1d_util
 from autoarray.structures.arrays.two_d import array_2d_util
@@ -103,6 +103,26 @@ class AbstractMask1d(abstract_mask.AbstractMask):
 
         return grid_1d.Grid1D(
             grid=grid_slim, mask=self.unmasked_mask.mask_sub_1, store_slim=True
+        )
+
+    @property
+    def to_mask_2d(self) -> mask_2d.Mask2D:
+        """
+        Map the Mask1D to a Mask2D of shape [total_mask_1d_pixel, 1].
+
+        The change in shape and dimensions of the mask is necessary for mapping results from 1D data structures to 2D.
+
+        Returns
+        -------
+        mask_2d.Mask2D
+            The 1D mask mapped to a 2D mask of shape [total_mask_1d_pixel, 1].
+        """
+
+        return mask_2d.Mask2D.manual(
+            [self],
+            pixel_scales=(self.pixel_scale, self.pixel_scale),
+            sub_size=self.sub_size,
+            origin=(0.0, 0.0),
         )
 
     def output_to_fits(self, file_path: str, overwrite: bool = False):
