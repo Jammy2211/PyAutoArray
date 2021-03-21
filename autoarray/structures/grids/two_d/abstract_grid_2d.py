@@ -325,7 +325,7 @@ class AbstractGrid2D(abstract_structure.AbstractStructure2D):
         )
         return array_2d.Array2D.manual_mask(array=distances, mask=self.mask)
 
-    def grid_2d_radial_projected_from(self, centre=(0.0, 0.0), angle: float = 0.0):
+    def grid_2d_radial_projected_from(self, centre=(0.0, 0.0), angle: float = 0.0) -> grid_2d_irregular.Grid2DIrregular:
         """
         Determine a projected radial grid of points from a 2D region of coordinates defined by an
         extent [xmin, xmax, ymin, ymax] and with a (y,x) centre. This functions operates as follows:
@@ -375,7 +375,7 @@ class AbstractGrid2D(abstract_structure.AbstractStructure2D):
 
         Returns
         -------
-        ndarray
+        grid_2d_irregular.Grid2DIrregular
             A radial set of points sampling the longest distance from the centre to the edge of the extent in along the
             positive x-axis.
         """
