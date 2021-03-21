@@ -15,59 +15,26 @@ def make_plot_path_setup():
     )
 
 
-class TestArray1DPlotter:
-    def _test__plot_line__works_with_all_extras_included(self, plot_path, plot_patch):
+class TestYX1DPlotter:
+    def test__plot_yx_line__works_with_all_extras_included(self, plot_path, plot_patch):
 
-        array_1d_plotter = aplt.Array1DPlotter(
-            mat_plot_1d=aplt.MatPlot1D(
-                output=aplt.Output(path=plot_path, filename="line1", format="png")
-            )
+        visuals_1d = aplt.Visuals1D(vertical_line=1.0)
+
+        mat_plot_1d = aplt.MatPlot1D(
+            yx_plot=aplt.YXPlot(plot_axis_type="loglog"),
+            output=aplt.Output(path=plot_path, filename="yx_1", format="png"),
         )
 
-        array_1d_plotter.figure(
+        yx_1d_plotter = aplt.YX1DPlotter(
             y=np.array([1.0, 2.0, 3.0]),
             x=np.array([0.5, 1.0, 1.5]),
-            plot_axis_type="loglog",
-            vertical_lines=[1.0, 2.0],
-            label="line0",
-            vertical_line_labels=["line1", "line2"],
+            mat_plot_1d=mat_plot_1d,
+            visuals_1d=visuals_1d,
         )
 
-        assert path.join(plot_path, "line1.png") in plot_patch.paths
+        yx_1d_plotter.figure()
 
-        array_1d_plotter = aplt.Array1DPlotter(
-            mat_plot_1d=aplt.MatPlot1D(
-                output=aplt.Output(path=plot_path, filename="line2", format="png")
-            )
-        )
-
-        array_1d_plotter.figure(
-            y=np.array([1.0, 2.0, 3.0]),
-            x=np.array([0.5, 1.0, 1.5]),
-            plot_axis_type="semilogy",
-            vertical_lines=[1.0, 2.0],
-            label="line0",
-            vertical_line_labels=["line1", "line2"],
-        )
-
-        assert path.join(plot_path, "line2.png") in plot_patch.paths
-
-        array_1d_plotter = aplt.Array1DPlotter(
-            mat_plot_1d=aplt.MatPlot1D(
-                output=aplt.Output(path=plot_path, filename="line3", format="png")
-            )
-        )
-
-        array_1d_plotter.figure(
-            y=np.array([1.0, 2.0, 3.0]),
-            x=np.array([0.5, 1.0, 1.5]),
-            plot_axis_type="loglog",
-            vertical_lines=[1.0, 2.0],
-            label="line0",
-            vertical_line_labels=["line1", "line2"],
-        )
-
-        assert path.join(plot_path, "line3.png") in plot_patch.paths
+        assert path.join(plot_path, "yx_1.png") in plot_patch.paths
 
 
 class TestArray2DPlotter:
