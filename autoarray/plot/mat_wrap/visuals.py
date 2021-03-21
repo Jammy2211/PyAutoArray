@@ -8,6 +8,7 @@ from autoarray.plot.mat_wrap import mat_plot, include as inc
 from autoarray.mask import mask_2d
 from matplotlib import patches as ptch
 import typing
+from typing import Optional
 from abc import ABC
 
 
@@ -66,9 +67,9 @@ class AbstractVisuals(ABC):
 class Visuals1D(AbstractVisuals):
     def __init__(
         self,
-        mask: mask_1d.Mask1D = None,
-        origin: grid_2d.Grid2D = None,
-        vertical_line: float = None,
+        mask: Optional[mask_1d.Mask1D] = None,
+        origin: Optional[grid_2d.Grid2D] = None,
+        vertical_line: Optional[float] = None,
     ):
 
         self.mask = mask

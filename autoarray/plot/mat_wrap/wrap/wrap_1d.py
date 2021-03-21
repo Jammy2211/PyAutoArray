@@ -84,7 +84,7 @@ class YXPlot(AbstractMatWrap1D):
 
 class AXVLine(AbstractMatWrap1D):
     def axvline_vertical_line(
-        self, vertical_line: float, vertical_line_label: typing.Optional[str] = None
+        self, vertical_line: float, label: typing.Optional[str] = None
     ):
         """
         Plots vertical lines on 1D plot of y versus x using the method `plt.axvline`.
@@ -99,11 +99,11 @@ class AXVLine(AbstractMatWrap1D):
         ----------
         vertical_line : [np.ndarray]
             The vertical lines of data that are plotted on the figure.
-        vertical_line_label : [str]
+        label : [str]
             Labels for each vertical line used by a `Legend`.
         """
 
         if vertical_line is [] or vertical_line is None:
             return
 
-        plt.axvline(x=vertical_line, label=vertical_line_label, **self.config_dict)
+        plt.axvline(x=vertical_line, label=label, **self.config_dict)
