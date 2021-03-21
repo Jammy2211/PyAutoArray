@@ -43,6 +43,7 @@ class YXPlot(AbstractMatWrap1D):
         y: typing.Union[np.ndarray, array_1d.Array1D],
         x: typing.Union[np.ndarray, array_1d.Array1D],
         label: str = None,
+        plot_axis_type_override=None,
     ):
         """
         Plots 1D y-data against 1D x-data using the matplotlib method `plt.plot`, `plt.semilogy`, `plt.loglog`,
@@ -61,13 +62,18 @@ class YXPlot(AbstractMatWrap1D):
             Optionally include a label on the plot for a `Legend` to display.
         """
 
-        if self.plot_axis_type == "linear":
+        plot_axis_type = self.plot_axis_type
+
+        if plot_axis_type_override is not None:
+            plot_axis_type = plot_axis_type_override
+
+        if plot_axis_type == "linear":
             plt.plot(x, y, label=label, **self.config_dict)
-        elif self.plot_axis_type == "semilogy":
+        elif plot_axis_type == "semilogy":
             plt.semilogy(x, y, label=label, **self.config_dict)
-        elif self.plot_axis_type == "loglog":
+        elif plot_axis_type == "loglog":
             plt.loglog(x, y, label=label, **self.config_dict)
-        elif self.plot_axis_type == "scatter":
+        elif plot_axis_type == "scatter":
             plt.scatter(x, y, label=label, **self.config_dict)
         else:
             raise exc.PlottingException(

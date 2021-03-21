@@ -110,7 +110,7 @@ class AbstractFitInterferometerPlotter(abstract_plotters.AbstractPlotter):
                     ylabel="V$_{R,data}$ - V$_{R,model}$",
                     xlabel=r"UV$_{distance}$ (k$\lambda$)",
                 ),
-                plot_axis_type="scatter",
+                plot_axis_type_override="scatter",
             )
         if residual_map_imag:
             self.mat_plot_1d.plot_yx(
@@ -124,7 +124,7 @@ class AbstractFitInterferometerPlotter(abstract_plotters.AbstractPlotter):
                     ylabel="V$_{R,data}$ - V$_{R,model}$",
                     xlabel=r"UV$_{distance}$ (k$\lambda$)",
                 ),
-                plot_axis_type="scatter",
+                plot_axis_type_override="scatter",
             )
 
         if normalized_residual_map_real:
@@ -140,7 +140,7 @@ class AbstractFitInterferometerPlotter(abstract_plotters.AbstractPlotter):
                     ylabel="V$_{R,data}$ - V$_{R,model}$",
                     xlabel=r"UV$_{distance}$ (k$\lambda$)",
                 ),
-                plot_axis_type="scatter",
+                plot_axis_type_override="scatter",
             )
         if normalized_residual_map_imag:
             self.mat_plot_1d.plot_yx(
@@ -154,7 +154,7 @@ class AbstractFitInterferometerPlotter(abstract_plotters.AbstractPlotter):
                     ylabel="V$_{R,data}$ - V$_{R,model}$",
                     xlabel=r"UV$_{distance}$ (k$\lambda$)",
                 ),
-                plot_axis_type="scatter",
+                plot_axis_type_override="scatter",
             )
 
         if chi_squared_map_real:
@@ -170,7 +170,7 @@ class AbstractFitInterferometerPlotter(abstract_plotters.AbstractPlotter):
                     ylabel="V$_{R,data}$ - V$_{R,model}$",
                     xlabel=r"UV$_{distance}$ (k$\lambda$)",
                 ),
-                plot_axis_type="scatter",
+                plot_axis_type_override="scatter",
             )
         if chi_squared_map_imag:
             self.mat_plot_1d.plot_yx(
@@ -184,7 +184,7 @@ class AbstractFitInterferometerPlotter(abstract_plotters.AbstractPlotter):
                     ylabel="V$_{R,data}$ - V$_{R,model}$",
                     xlabel=r"UV$_{distance}$ (k$\lambda$)",
                 ),
-                plot_axis_type="scatter",
+                plot_axis_type_override="scatter",
             )
 
     def subplot(
