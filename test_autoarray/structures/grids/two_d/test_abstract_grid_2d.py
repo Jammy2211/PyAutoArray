@@ -58,13 +58,15 @@ class TestGrid:
             grid.native_flipped == np.array([[[2.0, 1.0], [4.0, 3.0], [6.0, 5.0]]])
         ).all()
 
-    def test__grid_radii_from__same_as_grid_util(self):
+    def test__grid_radial_projected_from__same_as_grid_util_but_also_includes_angle(
+        self
+    ):
 
         grid = aa.Grid2D.uniform(shape_native=(3, 3), pixel_scales=(1.0, 2.0))
 
-        grid_radii = grid.grid_radii_from(centre=(0.0, 0.0))
+        grid_radii = grid.grid_radial_projected_from(centre=(0.0, 0.0))
 
-        grid_radii_util = aa.util.grid_2d.grid_scaled_2d_slim_radii_from(
+        grid_radii_util = aa.util.grid_2d.grid_scaled_2d_slim_radial_projected_from(
             extent=grid.extent,
             centre=(0.0, 0.0),
             pixel_scales=grid.pixel_scales,
@@ -75,9 +77,9 @@ class TestGrid:
 
         grid = aa.Grid2D.uniform(shape_native=(3, 4), pixel_scales=(3.0, 2.0))
 
-        grid_radii = grid.grid_radii_from(centre=(0.3, 0.1))
+        grid_radii = grid.grid_radial_projected_from(centre=(0.3, 0.1))
 
-        grid_radii_util = aa.util.grid_2d.grid_scaled_2d_slim_radii_from(
+        grid_radii_util = aa.util.grid_2d.grid_scaled_2d_slim_radial_projected_from(
             extent=grid.extent,
             centre=(0.3, 0.1),
             pixel_scales=grid.pixel_scales,
@@ -85,6 +87,14 @@ class TestGrid:
         )
 
         assert (grid_radii == grid_radii_util).all()
+
+        grid_radii = grid.grid_radial_projected_from(centre=(0.3, 0.1), angle=60.0)
+
+        grid_radii_util_angle = aa.util.geometry.transform_grid_2d_to_reference_frame(
+            grid_2d=grid_radii_util, centre=(0.0, 0.0), angle=60.0
+        )
+
+        assert (grid_radii == grid_radii_util_angle).all()
 
     def test__in_radians(self):
         mask = np.array(

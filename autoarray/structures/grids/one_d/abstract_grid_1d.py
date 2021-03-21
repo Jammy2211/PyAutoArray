@@ -98,7 +98,6 @@ class AbstractGrid1D(abstract_structure.AbstractStructure1D):
         -------
         grid_2d_irregular.Grid2DIrregular
             The projected and rotated 2D grid of (y,x) coordinates.
-
         """
         grid = np.zeros((self.sub_shape_slim, 2))
 

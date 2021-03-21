@@ -824,10 +824,12 @@ class TestGrid2DFromShape:
         ).all()
 
 
-class TestGridRadii:
-    def test__grid_radii_from_scaled_2d__vary_all_x_dimension_parameters(self):
+class TestGridRadialProjected:
+    def test__grid_radial_projected_from_scaled_2d__vary_all_x_dimension_parameters(
+        self
+    ):
 
-        grid_radii = aa.util.grid_2d.grid_scaled_2d_slim_radii_from(
+        grid_radii = aa.util.grid_2d.grid_scaled_2d_slim_radial_projected_from(
             extent=np.array([-1.0, 1.0, -1.0, 1.0]),
             centre=(0.0, 0.0),
             pixel_scales=(1.0, 1.0),
@@ -836,7 +838,7 @@ class TestGridRadii:
 
         assert (grid_radii == np.array([[0.0, 0.0], [0.0, 1.0]])).all()
 
-        grid_radii = aa.util.grid_2d.grid_scaled_2d_slim_radii_from(
+        grid_radii = aa.util.grid_2d.grid_scaled_2d_slim_radial_projected_from(
             extent=np.array([-1.0, 3.0, -1.0, 1.0]),
             centre=(0.0, 0.0),
             pixel_scales=(1.0, 1.0),
@@ -847,7 +849,7 @@ class TestGridRadii:
             grid_radii == np.array([[0.0, 0.0], [0.0, 1.0], [0.0, 2.0], [0.0, 3.0]])
         ).all()
 
-        grid_radii = aa.util.grid_2d.grid_scaled_2d_slim_radii_from(
+        grid_radii = aa.util.grid_2d.grid_scaled_2d_slim_radial_projected_from(
             extent=np.array([-1.0, 3.0, -1.0, 1.0]),
             centre=(0.0, 1.0),
             pixel_scales=(1.0, 1.0),
@@ -856,7 +858,7 @@ class TestGridRadii:
 
         assert (grid_radii == np.array([[0.0, 1.0], [0.0, 2.0], [0.0, 3.0]])).all()
 
-        grid_radii = aa.util.grid_2d.grid_scaled_2d_slim_radii_from(
+        grid_radii = aa.util.grid_2d.grid_scaled_2d_slim_radial_projected_from(
             extent=np.array([-2.0, 1.0, -1.0, 1.0]),
             centre=(0.0, 1.0),
             pixel_scales=(1.0, 1.0),
@@ -867,7 +869,7 @@ class TestGridRadii:
             grid_radii == np.array([[0.0, 1.0], [0.0, 2.0], [0.0, 3.0], [0.0, 4.0]])
         ).all()
 
-        grid_radii = aa.util.grid_2d.grid_scaled_2d_slim_radii_from(
+        grid_radii = aa.util.grid_2d.grid_scaled_2d_slim_radial_projected_from(
             extent=np.array([-1.0, 1.0, -1.0, 1.0]),
             centre=(0.0, 1.0),
             pixel_scales=(0.1, 0.5),
@@ -879,7 +881,7 @@ class TestGridRadii:
             == np.array([[0.0, 1.0], [0.0, 1.5], [0.0, 2.0], [0.0, 2.5], [0.0, 3.0]])
         ).all()
 
-        grid_radii = aa.util.grid_2d.grid_scaled_2d_slim_radii_from(
+        grid_radii = aa.util.grid_2d.grid_scaled_2d_slim_radial_projected_from(
             extent=np.array([-1.0, 1.0, -1.0, 1.0]),
             centre=(0.0, 1.0),
             pixel_scales=(0.1, 1.0),
@@ -891,7 +893,7 @@ class TestGridRadii:
             == np.array([[0.0, 1.0], [0.0, 1.5], [0.0, 2.0], [0.0, 2.5], [0.0, 3.0]])
         ).all()
 
-        grid_radii = aa.util.grid_2d.grid_scaled_2d_slim_radii_from(
+        grid_radii = aa.util.grid_2d.grid_scaled_2d_slim_radial_projected_from(
             extent=np.array([5.0, 8.0, 99.9, 100.1]),
             centre=(100.0, 7.0),
             pixel_scales=(10.0, 0.25),
@@ -917,7 +919,7 @@ class TestGridRadii:
 
     def test__grid_radii_from_scaled_2d__vary_all_y_dimension_parameters(self):
 
-        grid_radii = aa.util.grid_2d.grid_scaled_2d_slim_radii_from(
+        grid_radii = aa.util.grid_2d.grid_scaled_2d_slim_radial_projected_from(
             extent=np.array([-1.0, 1.0, -1.0, 3.0]),
             centre=(0.0, 0.0),
             pixel_scales=(1.0, 1.0),
@@ -928,7 +930,7 @@ class TestGridRadii:
             grid_radii == np.array([[0.0, 0.0], [0.0, 1.0], [0.0, 2.0], [0.0, 3.0]])
         ).all()
 
-        grid_radii = aa.util.grid_2d.grid_scaled_2d_slim_radii_from(
+        grid_radii = aa.util.grid_2d.grid_scaled_2d_slim_radial_projected_from(
             extent=np.array([-1.0, 1.0, -2.0, 1.0]),
             centre=(1.0, 0.0),
             pixel_scales=(1.0, 1.0),
@@ -939,7 +941,7 @@ class TestGridRadii:
             grid_radii == np.array([[1.0, 0.0], [1.0, 1.0], [1.0, 2.0], [1.0, 3.0]])
         ).all()
 
-        grid_radii = aa.util.grid_2d.grid_scaled_2d_slim_radii_from(
+        grid_radii = aa.util.grid_2d.grid_scaled_2d_slim_radial_projected_from(
             extent=np.array([-1.0, 1.0, -1.0, 1.0]),
             centre=(1.0, 0.0),
             pixel_scales=(0.5, 0.1),
@@ -951,7 +953,7 @@ class TestGridRadii:
             == np.array([[1.0, 0.0], [1.0, 0.5], [1.0, 1.0], [1.0, 1.5], [1.0, 2.0]])
         ).all()
 
-        grid_radii = aa.util.grid_2d.grid_scaled_2d_slim_radii_from(
+        grid_radii = aa.util.grid_2d.grid_scaled_2d_slim_radial_projected_from(
             extent=np.array([-1.0, 1.0, -1.0, 1.0]),
             centre=(1.0, 0.0),
             pixel_scales=(0.5, 0.1),
@@ -975,7 +977,7 @@ class TestGridRadii:
             )
         ).all()
 
-        grid_radii = aa.util.grid_2d.grid_scaled_2d_slim_radii_from(
+        grid_radii = aa.util.grid_2d.grid_scaled_2d_slim_radial_projected_from(
             extent=np.array([99.9, 100.1, -1.0, 3.0]),
             centre=(-1.0, 100.0),
             pixel_scales=(1.5, 10.0),
