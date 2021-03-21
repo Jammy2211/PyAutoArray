@@ -64,7 +64,7 @@ class TestGrid:
 
         grid = aa.Grid2D.uniform(shape_native=(3, 3), pixel_scales=(1.0, 2.0))
 
-        grid_radii = grid.grid_radial_projected_from(centre=(0.0, 0.0))
+        grid_radii = grid.grid_2d_radial_projected_from(centre=(0.0, 0.0))
 
         grid_radii_util = aa.util.grid_2d.grid_scaled_2d_slim_radial_projected_from(
             extent=grid.extent,
@@ -77,7 +77,7 @@ class TestGrid:
 
         grid = aa.Grid2D.uniform(shape_native=(3, 4), pixel_scales=(3.0, 2.0))
 
-        grid_radii = grid.grid_radial_projected_from(centre=(0.3, 0.1))
+        grid_radii = grid.grid_2d_radial_projected_from(centre=(0.3, 0.1))
 
         grid_radii_util = aa.util.grid_2d.grid_scaled_2d_slim_radial_projected_from(
             extent=grid.extent,
@@ -88,7 +88,7 @@ class TestGrid:
 
         assert (grid_radii == grid_radii_util).all()
 
-        grid_radii = grid.grid_radial_projected_from(centre=(0.3, 0.1), angle=60.0)
+        grid_radii = grid.grid_2d_radial_projected_from(centre=(0.3, 0.1), angle=60.0)
 
         grid_radii_util_angle = aa.util.geometry.transform_grid_2d_to_reference_frame(
             grid_2d=grid_radii_util, centre=(0.0, 0.0), angle=60.0
@@ -223,6 +223,7 @@ class TestGrid:
         )
 
     def test__square_distance_from_coordinate_array(self):
+
         mask = aa.Mask2D.manual(
             [[True, False], [False, False]], pixel_scales=1.0, origin=(0.0, 1.0)
         )
@@ -232,11 +233,13 @@ class TestGrid:
 
         square_distances = grid.squared_distances_from_coordinate(coordinate=(0.0, 0.0))
 
+        assert isinstance(square_distances, aa.Array2D)
         assert (square_distances.slim == np.array([2.0, 13.0, 5.0])).all()
         assert (square_distances.mask == mask).all()
 
         square_distances = grid.squared_distances_from_coordinate(coordinate=(0.0, 1.0))
 
+        assert isinstance(square_distances, aa.Array2D)
         assert (square_distances.slim == np.array([1.0, 8.0, 2.0])).all()
         assert (square_distances.mask == mask).all()
 

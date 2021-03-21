@@ -5,6 +5,7 @@ wrap_base.set_backend()
 import matplotlib.pyplot as plt
 import numpy as np
 import typing
+from typing import Optional
 
 from autoarray.structures.arrays.one_d import array_1d
 from autoarray import exc
@@ -23,21 +24,24 @@ class AbstractMatWrap1D(wrap_base.AbstractMatWrap):
         return "mat_wrap_1d"
 
 
-class LinePlot(AbstractMatWrap1D):
-    """
-    Plots a `Line` data structure as a y vs x figure.
+class YXPlot(AbstractMatWrap1D):
+    def __init__(self, plot_axis_type: str = "linear", **kwargs):
+        """
+        Plots 1D data structures as a y vs x figure.
 
-    This object wraps the following Matplotlib methods:
+        This object wraps the following Matplotlib methods:
 
-    - plt.plot: https://matplotlib.org/3.3.3/api/_as_gen/matplotlib.pyplot.plot.html
-    - plt.avxline: https://matplotlib.org/3.3.2/api/_as_gen/matplotlib.pyplot.axvline.html
-    """
+        - plt.plot: https://matplotlib.org/3.3.3/api/_as_gen/matplotlib.pyplot.plot.html
+        """
+
+        super().__init__(**kwargs)
+
+        self.plot_axis_type = plot_axis_type
 
     def plot_y_vs_x(
         self,
         y: typing.Union[np.ndarray, array_1d.Array1D],
         x: typing.Union[np.ndarray, array_1d.Array1D],
-        plot_axis_type: str,
         label: str = None,
     ):
         """
@@ -57,13 +61,13 @@ class LinePlot(AbstractMatWrap1D):
             Optionally include a label on the plot for a `Legend` to display.
         """
 
-        if plot_axis_type == "linear":
+        if self.plot_axis_type == "linear":
             plt.plot(x, y, label=label, **self.config_dict)
-        elif plot_axis_type == "semilogy":
+        elif self.plot_axis_type == "semilogy":
             plt.semilogy(x, y, label=label, **self.config_dict)
-        elif plot_axis_type == "loglog":
+        elif self.plot_axis_type == "loglog":
             plt.loglog(x, y, label=label, **self.config_dict)
-        elif plot_axis_type == "scatter":
+        elif self.plot_axis_type == "scatter":
             plt.scatter(x, y, label=label, **self.config_dict)
         else:
             raise exc.PlottingException(
@@ -73,13 +77,17 @@ class LinePlot(AbstractMatWrap1D):
 
 
 class AXVLine(AbstractMatWrap1D):
-    def plot_vertical_line(
+    def axvline_vertical_line(
         self, vertical_line: float, vertical_line_label: typing.Optional[str] = None
     ):
         """
         Plots vertical lines on 1D plot of y versus x using the method `plt.axvline`.
 
         This method is typically called after `plot_y_vs_x` to add vertical lines to the figure.
+
+        This object wraps the following Matplotlib methods:
+
+        - plt.avxline: https://matplotlib.org/3.3.2/api/_as_gen/matplotlib.pyplot.axvline.html
 
         Parameters
         ----------
