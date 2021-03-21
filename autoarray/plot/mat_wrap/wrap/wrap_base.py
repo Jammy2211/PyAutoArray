@@ -774,7 +774,7 @@ class Legend(AbstractMatWrap):
         if self.include:
 
             config_dict = self.config_dict
-            print(config_dict)
+            config_dict.pop("include") if "include" in config_dict else None
             config_dict.pop("include_2d") if "include_2d" in config_dict else None
 
             plt.legend(**config_dict)

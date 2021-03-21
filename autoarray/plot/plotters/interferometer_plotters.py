@@ -88,7 +88,7 @@ class InterferometerPlotter(abstract_plotters.AbstractPlotter):
                     filename="u_wavelengths",
                     ylabel="Wavelengths",
                 ),
-                plot_axis_type="linear",
+                plot_axis_type_override="linear",
             )
 
         if v_wavelengths:
@@ -102,7 +102,7 @@ class InterferometerPlotter(abstract_plotters.AbstractPlotter):
                     filename="v_wavelengths",
                     ylabel="Wavelengths",
                 ),
-                plot_axis_type="linear",
+                plot_axis_type_override="linear",
             )
 
         if uv_wavelengths:
@@ -130,7 +130,7 @@ class InterferometerPlotter(abstract_plotters.AbstractPlotter):
                     ylabel="amplitude (Jy)",
                     xlabel="U-Wavelengths ($\lambda$)",
                 ),
-                plot_axis_type="scatter",
+                plot_axis_type_override="scatter",
             )
 
         if phases_vs_uv_distances:
@@ -145,7 +145,7 @@ class InterferometerPlotter(abstract_plotters.AbstractPlotter):
                     ylabel="phase (deg)",
                     xlabel=r"UV$_{distance}$ (k$\lambda$)",
                 ),
-                plot_axis_type="scatter",
+                plot_axis_type_override="scatter",
             )
 
     def subplot(

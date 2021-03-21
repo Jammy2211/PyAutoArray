@@ -13,6 +13,7 @@ from autoarray.plot.mat_wrap import visuals as vis
 from autoarray.inversion import mappers
 
 import typing
+from typing import Optional
 
 
 class AutoLabels:
@@ -281,10 +282,11 @@ class MatPlot1D(AbstractMatPlot):
         x,
         visuals_1d: vis.Visuals1D,
         auto_labels: AutoLabels,
+        plot_axis_type_override: Optional[str] = None,
         bypass: bool = False,
     ):
 
-        if y is None or x is None:
+        if y is None:
             return
 
         if not self.is_for_subplot:
@@ -298,7 +300,12 @@ class MatPlot1D(AbstractMatPlot):
         if x is None:
             x = np.arange(len(y))
 
-        self.yx_plot.plot_y_vs_x(y=y, x=x, label=auto_labels.legend)
+        self.yx_plot.plot_y_vs_x(
+            y=y,
+            x=x,
+            label=auto_labels.legend,
+            plot_axis_type_override=plot_axis_type_override,
+        )
 
         self.ylabel.set(units=self.units, include_brackets=False)
         self.xlabel.set(units=self.units, include_brackets=False)
