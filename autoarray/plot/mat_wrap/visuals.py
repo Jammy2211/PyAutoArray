@@ -9,7 +9,7 @@ from autoarray.mask import mask_2d
 from matplotlib import patches as ptch
 import typing
 from abc import ABC
-
+from typing import List, Union
 
 class AbstractVisuals(ABC):
     def __add__(self, other):
@@ -95,12 +95,12 @@ class Visuals2D(AbstractVisuals):
         origin: grid_2d.Grid2D = None,
         mask: mask_2d.Mask2D = None,
         border: grid_2d.Grid2D = None,
-        lines: typing.List[array_1d.Array1D] = None,
-        positions: grid_2d_irregular.Grid2DIrregular = None,
+        lines: List[array_1d.Array1D] = None,
+        positions: Union[grid_2d_irregular.Grid2DIrregular, List[grid_2d_irregular.Grid2DIrregular]] = None,
         grid: grid_2d.Grid2D = None,
         pixelization_grid: grid_2d.Grid2D = None,
         vector_field: vector_field_irregular.VectorField2DIrregular = None,
-        patches: typing.List[ptch.Patch] = None,
+        patches: List[ptch.Patch] = None,
         array_overlay: array_2d.Array2D = None,
         parallel_overscan=None,
         serial_prescan=None,
