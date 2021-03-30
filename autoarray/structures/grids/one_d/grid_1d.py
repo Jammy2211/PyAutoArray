@@ -1,10 +1,15 @@
+from autoarray.structures.arrays.one_d import array_1d
 from autoarray.structures.grids import abstract_grid
 from autoarray.structures.grids.one_d import abstract_grid_1d
 from autoarray.structures.grids.one_d import grid_1d_util
+from autoarray.structures.grids.two_d import grid_2d
+from autoarray.structures.grids.two_d import grid_2d_irregular
 from autoarray.geometry import geometry_util
-from autoarray.mask import mask_1d
+from autoarray.mask import mask_1d, mask_2d
 
 from autoarray import exc
+
+import numpy as np
 
 
 class Grid1D(abstract_grid_1d.AbstractGrid1D):
@@ -254,3 +259,67 @@ class Grid1D(abstract_grid_1d.AbstractGrid1D):
             )
 
         return Grid1D(grid=grid, mask=mask)
+
+    @classmethod
+    def from_mask(cls, mask):
+        """
+        Create a Grid1D (see *Grid1D.__new__*) from a mask, where only unmasked pixels are included in the grid (if the
+        grid is represented in its native 1D masked values are 0.0).
+
+        The mask's pixel_scales, sub_size and origin properties are used to compute the grid (x) coordinates.
+
+        Parameters
+        ----------
+        mask : Mask1D
+            The mask whose masked pixels are used to setup the sub-pixel grid.
+        """
+
+        sub_grid_1d = grid_1d_util.grid_1d_slim_via_mask_from(
+            mask_1d=mask,
+            pixel_scales=mask.pixel_scales,
+            sub_size=mask.sub_size,
+            origin=mask.origin,
+        )
+
+        return Grid1D(grid=sub_grid_1d, mask=mask)
+
+    def structure_from_result(self, result: np.ndarray):
+        """
+        Convert a result from an ndarray to an aa.Array2D or aa.Grid2D structure, where the conversion depends on
+        type(result) as follows:
+
+        - 1D np.ndarray   -> aa.Array2D
+        - 2D np.ndarray   -> aa.Grid2D
+
+        This function is used by the grid_like_to_structure decorator to convert the output result of a function
+        to an autoarray structure when a `Grid2D` instance is passed to the decorated function.
+
+        Parameters
+        ----------
+        result : np.ndarray or [np.ndarray]
+            The input result (e.g. of a decorated function) that is converted to a PyAutoArray structure.
+        """
+        if len(result.shape) == 1:
+            return array_1d.Array1D(array=result, mask=self.mask)
+        else:
+            if isinstance(result, grid_2d.Grid2DTransformedNumpy):
+                return grid_2d.Grid2DTransformed(grid=result, mask=self.mask)
+            return grid_2d.Grid2D(grid=result, mask=self.mask.to_mask_2d)
+
+    def structure_list_from_result_list(self, result_list: list):
+        """
+        Convert a result from a list of ndarrays to a list of aa.Array2D or aa.Grid2D structure, where the conversion
+        depends on type(result) as follows:
+
+        - [1D np.ndarray] -> [aa.Array2D]
+        - [2D np.ndarray] -> [aa.Grid2D]
+
+        This function is used by the grid_like_list_to_structure-list decorator to convert the output result of a
+        function to a list of autoarray structure when a `Grid2D` instance is passed to the decorated function.
+
+        Parameters
+        ----------
+        result_list : np.ndarray or [np.ndarray]
+            The input result (e.g. of a decorated function) that is converted to a PyAutoArray structure.
+        """
+        return [self.structure_from_result(result=result) for result in result_list]

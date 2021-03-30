@@ -13,6 +13,7 @@ from autoarray.plot.mat_wrap import visuals as vis
 from autoarray.inversion import mappers
 
 import typing
+from typing import Optional
 
 
 class AutoLabels:
@@ -48,7 +49,7 @@ class AbstractMatPlot:
         """
         Visualizes data structures (e.g an `Array2D`, `Grid2D`, `VectorField`, etc.) using Matplotlib.
         
-        The `Plotter` is passed objects from the `mat_wrap` package which wrap matplotlib plot functions and customize
+        The `Plotter` is passed objects from the `wrap_base` package which wrap matplotlib plot functions and customize
         the appearance of the plots of the data structure. If the values of these matplotlib wrapper objects are not
         manually specified, they assume the default values provided in the `config.visualize.mat_*` `.ini` config files.
         
@@ -63,38 +64,38 @@ class AbstractMatPlot:
         
         Parameters
         ----------
-        units : mat_wrap.Units
+        units : wrap_base.Units
             The units of the figure used to plot the data structure which sets the y and x ticks and labels.
-        figure : mat_wrap.Figure
+        figure : wrap_base.Figure
             Opens the matplotlib figure before plotting via `plt.figure` and closes it once plotting is complete
             via `plt.close`
-        axis : mat_wrap.Axis
+        axis : wrap_base.Axis
             Sets the extent of the figure axis via `plt.axis` and allows for a manual axis range.
-        cmap : mat_wrap.Cmap
+        cmap : wrap_base.Cmap
             Customizes the colormap of the plot and its normalization via matplotlib `colors` objects such 
             as `colors.Normalize` and `colors.LogNorm`.
-        colorbar : mat_wrap.Colorbar
+        colorbar : wrap_base.Colorbar
             Plots the colorbar of the plot via `plt.colorbar` and customizes its tick labels and values using method
             like `cb.set_yticklabels`.
-        colorbar_tickparams : mat_wrap.ColorbarTickParams
+        colorbar_tickparams : wrap_base.ColorbarTickParams
             Customizes the yticks of the colorbar plotted via `plt.colorbar`.
-        tickparams : mat_wrap.TickParams
+        tickparams : wrap_base.TickParams
             Customizes the appearances of the y and x ticks on the plot (e.g. the fontsize) using `plt.tick_params`.
-        yticks : mat_wrap.YTicks
+        yticks : wrap_base.YTicks
             Sets the yticks of the plot, including scaling them to new units depending on the `Units` object, via
             `plt.yticks`.
-        xticks : mat_wrap.XTicks
+        xticks : wrap_base.XTicks
             Sets the xticks of the plot, including scaling them to new units depending on the `Units` object, via
             `plt.xticks`.
-        title : mat_wrap.Title
+        title : wrap_base.Title
             Sets the figure title and customizes its appearance using `plt.title`.        
-        ylabel : mat_wrap.YLabel
+        ylabel : wrap_base.YLabel
             Sets the figure ylabel and customizes its appearance using `plt.ylabel`.
-        xlabel : mat_wrap.XLabel
+        xlabel : wrap_base.XLabel
             Sets the figure xlabel and customizes its appearance using `plt.xlabel`.
-        legend : mat_wrap.Legend
+        legend : wrap_base.Legend
             Sets whether the plot inclues a legend and customizes its appearance and labels using `plt.legend`.
-        output : mat_wrap.Output
+        output : wrap_base.Output
             Sets if the figure is displayed on the user's screen or output to `.png` using `plt.show` and `plt.savefig`
         """
 
@@ -198,12 +199,13 @@ class MatPlot1D(AbstractMatPlot):
         xlabel: wrap_base.XLabel = wrap_base.XLabel(),
         legend: wrap_base.Legend = wrap_base.Legend(),
         output: wrap_base.Output = wrap_base.Output(),
-        line_plot: wrap_1d.LinePlot = wrap_1d.LinePlot(),
+        yx_plot: wrap_1d.YXPlot = wrap_1d.YXPlot(),
+        vertical_line_axvline: wrap_1d.AXVLine = wrap_1d.AXVLine(),
     ):
         """
         Visualizes 1D data structures (e.g a `Line`, etc.) using Matplotlib.
 
-        The `Plotter` is passed objects from the `mat_wrap` package which wrap matplotlib plot functions and customize
+        The `Plotter` is passed objects from the `wrap_base` package which wrap matplotlib plot functions and customize
         the appearance of the plots of the data structure. If the values of these matplotlib wrapper objects are not
         manually specified, they assume the default values provided in the `config.visualize.mat_*` `.ini` config files.
 
@@ -213,39 +215,43 @@ class MatPlot1D(AbstractMatPlot):
 
         Parameters
         ----------
-        units : mat_wrap.Units
+        units : wrap_base.Units
             The units of the figure used to plot the data structure which sets the y and x ticks and labels.
-        figure : mat_wrap.Figure
+        figure : wrap_base.Figure
             Opens the matplotlib figure before plotting via `plt.figure` and closes it once plotting is complete
             via `plt.close`.
-        axis : mat_wrap.Axis
+        axis : wrap_base.Axis
             Sets the extent of the figure axis via `plt.axis` and allows for a manual axis range.
-        cmap : mat_wrap.Cmap
+        cmap : wrap_base.Cmap
             Customizes the colormap of the plot and its normalization via matplotlib `colors` objects such 
             as `colors.Normalize` and `colors.LogNorm`.
-        colorbar : mat_wrap.Colorbar
+        colorbar : wrap_base.Colorbar
             Plots the colorbar of the plot via `plt.colorbar` and customizes its tick labels and values using method
             like `cb.set_yticklabels`.
-        colorbar_tickparams : mat_wrap.ColorbarTickParams
+        colorbar_tickparams : wrap_base.ColorbarTickParams
             Customizes the yticks of the colorbar plotted via `plt.colorbar`.
-        tickparams : mat_wrap.TickParams
+        tickparams : wrap_base.TickParams
             Customizes the appearances of the y and x ticks on the plot, (e.g. the fontsize), using `plt.tick_params`.
-        yticks : mat_wrap.YTicks
+        yticks : wrap_base.YTicks
             Sets the yticks of the plot, including scaling them to new units depending on the `Units` object, via
             `plt.yticks`.
-        xticks : mat_wrap.XTicks
+        xticks : wrap_base.XTicks
             Sets the xticks of the plot, including scaling them to new units depending on the `Units` object, via
             `plt.xticks`.
-        title : mat_wrap.Title
+        title : wrap_base.Title
             Sets the figure title and customizes its appearance using `plt.title`.        
-        ylabel : mat_wrap.YLabel
+        ylabel : wrap_base.YLabel
             Sets the figure ylabel and customizes its appearance using `plt.ylabel`.
-        xlabel : mat_wrap.XLabel
+        xlabel : wrap_base.XLabel
             Sets the figure xlabel and customizes its appearance using `plt.xlabel`.
-        legend : mat_wrap.Legend
+        legend : wrap_base.Legend
             Sets whether the plot inclues a legend and customizes its appearance and labels using `plt.legend`.
-        output : mat_wrap.Output
+        output : wrap_base.Output
             Sets if the figure is displayed on the user's screen or output to `.png` using `plt.show` and `plt.savefig`
+        yx_plot : wrap_1d.YXPlot
+            Sets how the y versus x plot appears, for example if it each axis is linear or log, using `plt.plot`.
+        vertical_line_axvline : wrao_1d
+            Sets how a vertical line plotted on the figure using the `plt.axvline` method.
         """
 
         super().__init__(
@@ -265,19 +271,18 @@ class MatPlot1D(AbstractMatPlot):
             output=output,
         )
 
-        self.line_plot = line_plot
+        self.yx_plot = yx_plot
+        self.vertical_line_axvline = vertical_line_axvline
 
         self.is_for_subplot = False
 
-    def plot_line(
+    def plot_yx(
         self,
         y,
         x,
         visuals_1d: vis.Visuals1D,
         auto_labels: AutoLabels,
-        plot_axis_type="semilogy",
-        vertical_lines=None,
-        vertical_line_labels=None,
+        plot_axis_type_override: Optional[str] = None,
         bypass: bool = False,
     ):
 
@@ -295,19 +300,15 @@ class MatPlot1D(AbstractMatPlot):
         if x is None:
             x = np.arange(len(y))
 
-        self.line_plot.plot_y_vs_x(
-            y=y, x=x, plot_axis_type=plot_axis_type, label=auto_labels.legend
+        self.yx_plot.plot_y_vs_x(
+            y=y,
+            x=x,
+            label=auto_labels.legend,
+            plot_axis_type_override=plot_axis_type_override,
         )
 
         self.ylabel.set(units=self.units, include_brackets=False)
         self.xlabel.set(units=self.units, include_brackets=False)
-
-        # self.line_plot.plot_vertical_lines(
-        #     vertical_lines=vertical_lines, vertical_line_labels=vertical_line_labels
-        # )
-
-        if auto_labels.legend is not None:  # or vertical_line_labels is not None:
-            self.legend.set()
 
         self.tickparams.set()
         self.xticks.set(
@@ -317,6 +318,11 @@ class MatPlot1D(AbstractMatPlot):
         self.title.set(auto_title=auto_labels.title)
         self.ylabel.set(units=self.units, auto_label=auto_labels.ylabel)
         self.xlabel.set(units=self.units, auto_label=auto_labels.xlabel)
+
+        visuals_1d.plot_via_plotter(plotter=self)
+
+        if auto_labels.legend is not None:  # or vertical_line_labels is not None:
+            self.legend.set()
 
         if not self.is_for_subplot:
             self.output.to_figure(structure=None, auto_filename=auto_labels.filename)
@@ -359,7 +365,7 @@ class MatPlot2D(AbstractMatPlot):
         """
         Visualizes 2D data structures (e.g an `Array2D`, `Grid2D`, `VectorField`, etc.) using Matplotlib.
 
-        The `Plotter` is passed objects from the `mat_wrap` package which wrap matplotlib plot functions and customize
+        The `Plotter` is passed objects from the `wrap` package which wrap matplotlib plot functions and customize
         the appearance of the plots of the data structure. If the values of these matplotlib wrapper objects are not
         manually specified, they assume the default values provided in the `config.visualize.mat_*` `.ini` config files.
 
@@ -374,68 +380,68 @@ class MatPlot2D(AbstractMatPlot):
 
         Parameters
         ----------
-        units : mat_wrap.Units
+        units : wrap_base.Units
             The units of the figure used to plot the data structure which sets the y and x ticks and labels.
-        figure : mat_wrap.Figure
+        figure : wrap_base.Figure
             Opens the matplotlib figure before plotting via `plt.figure` and closes it once plotting is complete
             via `plt.close`.
-        axis : mat_wrap.Axis
+        axis : wrap_base.Axis
             Sets the extent of the figure axis via `plt.axis` and allows for a manual axis range.
-        cmap : mat_wrap.Cmap
+        cmap : wrap_base.Cmap
             Customizes the colormap of the plot and its normalization via matplotlib `colors` objects such 
             as `colors.Normalize` and `colors.LogNorm`.
-        colorbar : mat_wrap.Colorbar
+        colorbar : wrap_base.Colorbar
             Plots the colorbar of the plot via `plt.colorbar` and customizes its tick labels and values using method
             like `cb.set_yticklabels`.
-        colorbar_tickparams : mat_wrap.ColorbarTickParams
+        colorbar_tickparams : wrap_base.ColorbarTickParams
             Customizes the yticks of the colorbar plotted via `plt.colorbar`.
-        tickparams : mat_wrap.TickParams
+        tickparams : wrap_base.TickParams
             Customizes the appearances of the y and x ticks on the plot, (e.g. the fontsize), using `plt.tick_params`.
-        yticks : mat_wrap.YTicks
+        yticks : wrap_base.YTicks
             Sets the yticks of the plot, including scaling them to new units depending on the `Units` object, via
             `plt.yticks`.
-        xticks : mat_wrap.XTicks
+        xticks : wrap_base.XTicks
             Sets the xticks of the plot, including scaling them to new units depending on the `Units` object, via
             `plt.xticks`.
-        title : mat_wrap.Title
+        title : wrap_base.Title
             Sets the figure title and customizes its appearance using `plt.title`.        
-        ylabel : mat_wrap.YLabel
+        ylabel : wrap_base.YLabel
             Sets the figure ylabel and customizes its appearance using `plt.ylabel`.
-        xlabel : mat_wrap.XLabel
+        xlabel : wrap_base.XLabel
             Sets the figure xlabel and customizes its appearance using `plt.xlabel`.
-        legend : mat_wrap.Legend
+        legend : wrap_base.Legend
             Sets whether the plot inclues a legend and customizes its appearance and labels using `plt.legend`.
-        output : mat_wrap.Output
+        output : wrap_base.Output
             Sets if the figure is displayed on the user's screen or output to `.png` using `plt.show` and `plt.savefig`
-        array_overlay: wrappers.ArrayOverlay
+        array_overlay: wrap_2d.ArrayOverlay
             Overlays an input `Array2D` over the figure using `plt.imshow`.
-        grid_scatter : wrappers.GridScatter
+        grid_scatter : wrap_2d.GridScatter
             Scatters a `Grid2D` of (y,x) coordinates over the figure using `plt.scatter`.
-        grid_plot: wrappers.LinePlot
+        grid_plot: wrap_2d.Grid2DPlot
             Plots lines of data (e.g. a y versus x plot via `plt.plot`, vertical lines via `plt.avxline`, etc.)
-        vector_field_quiver: wrappers.VectorFieldQuiver
+        vector_field_quiver: wrap_2d.VectorFieldQuiver
             Plots a `VectorField` object using the matplotlib function `plt.quiver`.
-        patch_overlay: wrappers.PatchOverlay
+        patch_overlay: wrap_2d.PatchOverlay
             Overlays matplotlib `patches.Patch` objects over the figure, such as an `Ellipse`.
-        voronoi_drawer: wrappers.VoronoiDrawer
+        voronoi_drawer: wrap_2d.VoronoiDrawer
             Draws a colored Voronoi mesh of pixels using `plt.fill`.
-        origin_scatter : wrappers.OriginScatter
+        origin_scatter : wrap_2d.OriginScatter
             Scatters the (y,x) origin of the data structure on the figure.
-        mask_scatter : wrappers.MaskScatter
+        mask_scatter : wrap_2d.MaskScatter
             Scatters an input `Mask2d` over the plotted data structure's figure.
-        border_scatter : wrappers.BorderScatter
+        border_scatter : wrap_2d.BorderScatter
             Scatters the border of an input `Mask2d` over the plotted data structure's figure.
-        positions_scatter : wrappers.PositionsScatter
+        positions_scatter : wrap_2d.PositionsScatter
             Scatters specific (y,x) coordinates input as a `Grid2DIrregular` object over the figure.
-        index_scatter : wrappers.IndexScatter
+        index_scatter : wrap_2d.IndexScatter
             Scatters specific coordinates of an input `Grid2D` based on input values of the `Grid2D`'s 1D or 2D indexes.
-        pixelization_grid_scatter : wrappers.PixelizationGridScatter
+        pixelization_grid_scatter : wrap_2d.PixelizationGridScatter
             Scatters the `PixelizationGrid` of a `Pixelization` object.
-        parallel_overscan_plot : wrappers.ParallelOverscanPlot
+        parallel_overscan_plot : wrap_2d.ParallelOverscanPlot
             Plots the parallel overscan on an `Array2D` data structure representing a CCD imaging via `plt.plot`.
-        serial_prescan_plot : wrappers.SerialPrescanPlot
+        serial_prescan_plot : wrap_2d.SerialPrescanPlot
             Plots the serial prescan on an `Array2D` data structure representing a CCD imaging via `plt.plot`.
-        serial_overscan_plot : wrappers.SerialOverscanPlot
+        serial_overscan_plot : wrap_2d.SerialOverscanPlot
             Plots the serial overscan on an `Array2D` data structure representing a CCD imaging via `plt.plot`.
         """
 

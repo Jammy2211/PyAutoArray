@@ -262,27 +262,29 @@ def grid_2d_via_shape_native_from(
 
 
 @decorator_util.jit()
-def grid_scaled_2d_slim_radii_from(
+def grid_scaled_2d_slim_radial_projected_from(
     extent: np.ndarray,
     centre: (float, float),
     pixel_scales: (float, float),
     sub_size: int,
 ) -> np.ndarray:
     """
-    Determine a radial grid of points from a region of coordinates defined by an extent and with a (y,x) centre. This
-    functions operates as follows:
+    Determine a projected radial grid of points from a 2D region of coordinates defined by an
+    extent [xmin, xmax, ymin, ymax] and with a (y,x) centre. This functions operates as follows:
 
-    - Given the region defined by the extent [xmin, xmax, ymin, ymax], the algorithm finds the longest 1D distance of
+    1) Given the region defined by the extent [xmin, xmax, ymin, ymax], the algorithm finds the longest 1D distance of
     the 4 paths from the (y,x) centre to the edge of the region (e.g. following the positive / negative y and x axes).
 
-    - Use the pixel-scale corresponding to the direction chosen (e.g. if the positive x-axis was the longest, the
+    2) Use the pixel-scale corresponding to the direction chosen (e.g. if the positive x-axis was the longest, the
     pixel_scale in the x dimension is used).
 
-    - Determine the number of pixels between the centre and the edge of the region using the longest path between the
+    3) Determine the number of pixels between the centre and the edge of the region using the longest path between the
     two chosen above.
 
-    - Create a (y,x) grid of radial points where all points are at the centre's y value = 0.0 and the x values iterate
+    4) Create a (y,x) grid of radial points where all points are at the centre's y value = 0.0 and the x values iterate
     from the centre in increasing steps of the pixel-scale.
+
+    5) Rotate these radial coordinates by the input `angle` clockwise.
 
     A schematric is shown below:
 

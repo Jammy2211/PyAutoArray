@@ -72,6 +72,14 @@ class AbstractStructure(np.ndarray):
         return self.mask.sub_shape_slim
 
     @property
+    def shape_native(self):
+        return self.mask.shape
+
+    @property
+    def sub_shape_native(self):
+        return self.mask.sub_shape_native
+
+    @property
     def pixel_scales(self):
         return self.mask.pixel_scales
 
@@ -95,6 +103,21 @@ class AbstractStructure(np.ndarray):
     def total_pixels(self):
         return self.shape[0]
 
+    def resized_from(self, new_shape):
+        raise NotImplementedError
+
+    def padded_before_convolution_from(self, kernel_shape):
+        raise NotImplementedError
+
+    def trimmed_after_convolution_from(self, kernel_shape):
+        raise NotImplementedError
+
+    def structure_from_result(self, result: np.ndarray):
+        raise NotImplementedError
+
+    def structure_list_from_result_list(self, result_list: list):
+        raise NotImplementedError
+
     @classmethod
     def load(cls, file_path, filename):
         with open(path.join(file_path, f"{filename}.pickle"), "rb") as f:
@@ -106,15 +129,6 @@ class AbstractStructure(np.ndarray):
         """
         with open(path.join(file_path, f"{filename}.pickle"), "wb") as f:
             pickle.dump(self, f)
-
-    def resized_from(self, new_shape):
-        raise NotImplementedError
-
-    def padded_before_convolution_from(self, kernel_shape):
-        raise NotImplementedError
-
-    def trimmed_after_convolution_from(self, kernel_shape):
-        raise NotImplementedError
 
     def output_to_fits(self, file_path, overwrite):
         raise NotImplementedError

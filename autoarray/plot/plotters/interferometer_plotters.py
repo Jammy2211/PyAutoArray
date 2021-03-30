@@ -79,7 +79,7 @@ class InterferometerPlotter(abstract_plotters.AbstractPlotter):
 
         if u_wavelengths:
 
-            self.mat_plot_1d.plot_line(
+            self.mat_plot_1d.plot_yx(
                 y=self.interferometer.uv_wavelengths[:, 0],
                 x=None,
                 visuals_1d=self.visuals_1d,
@@ -88,12 +88,12 @@ class InterferometerPlotter(abstract_plotters.AbstractPlotter):
                     filename="u_wavelengths",
                     ylabel="Wavelengths",
                 ),
-                plot_axis_type="linear",
+                plot_axis_type_override="linear",
             )
 
         if v_wavelengths:
 
-            self.mat_plot_1d.plot_line(
+            self.mat_plot_1d.plot_yx(
                 y=self.interferometer.uv_wavelengths[:, 1],
                 x=None,
                 visuals_1d=self.visuals_1d,
@@ -102,7 +102,7 @@ class InterferometerPlotter(abstract_plotters.AbstractPlotter):
                     filename="v_wavelengths",
                     ylabel="Wavelengths",
                 ),
-                plot_axis_type="linear",
+                plot_axis_type_override="linear",
             )
 
         if uv_wavelengths:
@@ -120,7 +120,7 @@ class InterferometerPlotter(abstract_plotters.AbstractPlotter):
 
         if amplitudes_vs_uv_distances:
 
-            self.mat_plot_1d.plot_line(
+            self.mat_plot_1d.plot_yx(
                 y=self.interferometer.amplitudes,
                 x=self.interferometer.uv_distances / 10 ** 3.0,
                 visuals_1d=self.visuals_1d,
@@ -130,12 +130,12 @@ class InterferometerPlotter(abstract_plotters.AbstractPlotter):
                     ylabel="amplitude (Jy)",
                     xlabel="U-Wavelengths ($\lambda$)",
                 ),
-                plot_axis_type="scatter",
+                plot_axis_type_override="scatter",
             )
 
         if phases_vs_uv_distances:
 
-            self.mat_plot_1d.plot_line(
+            self.mat_plot_1d.plot_yx(
                 y=self.interferometer.phases,
                 x=self.interferometer.uv_distances / 10 ** 3.0,
                 visuals_1d=self.visuals_1d,
@@ -145,7 +145,7 @@ class InterferometerPlotter(abstract_plotters.AbstractPlotter):
                     ylabel="phase (deg)",
                     xlabel=r"UV$_{distance}$ (k$\lambda$)",
                 ),
-                plot_axis_type="scatter",
+                plot_axis_type_override="scatter",
             )
 
     def subplot(

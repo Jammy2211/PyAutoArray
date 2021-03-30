@@ -112,6 +112,17 @@ class TestMask1D:
 
         assert mask.is_all_false == False
 
+    def test__to_mask_2d(self):
+
+        mask_1d = aa.Mask1D.manual(mask=[False, True], pixel_scales=1.0, sub_size=2)
+
+        mask_2d = mask_1d.to_mask_2d
+
+        assert (mask_2d == np.array([[False, True]])).all()
+        assert mask_2d.pixel_scales == (1.0, 1.0)
+        assert mask_2d.sub_size == 2
+        assert mask_2d.origin == (0.0, 0.0)
+
     def test__unmasked_mask(self):
 
         mask = aa.Mask1D.manual(

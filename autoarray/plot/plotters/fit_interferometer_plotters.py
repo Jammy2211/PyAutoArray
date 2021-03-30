@@ -99,7 +99,7 @@ class AbstractFitInterferometerPlotter(abstract_plotters.AbstractPlotter):
             )
 
         if residual_map_real:
-            self.mat_plot_1d.plot_line(
+            self.mat_plot_1d.plot_yx(
                 y=np.real(self.fit.residual_map),
                 x=self.fit.masked_interferometer.interferometer.uv_distances
                 / 10 ** 3.0,
@@ -110,10 +110,10 @@ class AbstractFitInterferometerPlotter(abstract_plotters.AbstractPlotter):
                     ylabel="V$_{R,data}$ - V$_{R,model}$",
                     xlabel=r"UV$_{distance}$ (k$\lambda$)",
                 ),
-                plot_axis_type="scatter",
+                plot_axis_type_override="scatter",
             )
         if residual_map_imag:
-            self.mat_plot_1d.plot_line(
+            self.mat_plot_1d.plot_yx(
                 y=np.imag(self.fit.residual_map),
                 x=self.fit.masked_interferometer.interferometer.uv_distances
                 / 10 ** 3.0,
@@ -124,12 +124,12 @@ class AbstractFitInterferometerPlotter(abstract_plotters.AbstractPlotter):
                     ylabel="V$_{R,data}$ - V$_{R,model}$",
                     xlabel=r"UV$_{distance}$ (k$\lambda$)",
                 ),
-                plot_axis_type="scatter",
+                plot_axis_type_override="scatter",
             )
 
         if normalized_residual_map_real:
 
-            self.mat_plot_1d.plot_line(
+            self.mat_plot_1d.plot_yx(
                 y=np.real(self.fit.residual_map),
                 x=self.fit.masked_interferometer.interferometer.uv_distances
                 / 10 ** 3.0,
@@ -140,10 +140,10 @@ class AbstractFitInterferometerPlotter(abstract_plotters.AbstractPlotter):
                     ylabel="V$_{R,data}$ - V$_{R,model}$",
                     xlabel=r"UV$_{distance}$ (k$\lambda$)",
                 ),
-                plot_axis_type="scatter",
+                plot_axis_type_override="scatter",
             )
         if normalized_residual_map_imag:
-            self.mat_plot_1d.plot_line(
+            self.mat_plot_1d.plot_yx(
                 y=np.imag(self.fit.residual_map),
                 x=self.fit.masked_interferometer.interferometer.uv_distances
                 / 10 ** 3.0,
@@ -154,12 +154,12 @@ class AbstractFitInterferometerPlotter(abstract_plotters.AbstractPlotter):
                     ylabel="V$_{R,data}$ - V$_{R,model}$",
                     xlabel=r"UV$_{distance}$ (k$\lambda$)",
                 ),
-                plot_axis_type="scatter",
+                plot_axis_type_override="scatter",
             )
 
         if chi_squared_map_real:
 
-            self.mat_plot_1d.plot_line(
+            self.mat_plot_1d.plot_yx(
                 y=np.real(self.fit.residual_map),
                 x=self.fit.masked_interferometer.interferometer.uv_distances
                 / 10 ** 3.0,
@@ -170,10 +170,10 @@ class AbstractFitInterferometerPlotter(abstract_plotters.AbstractPlotter):
                     ylabel="V$_{R,data}$ - V$_{R,model}$",
                     xlabel=r"UV$_{distance}$ (k$\lambda$)",
                 ),
-                plot_axis_type="scatter",
+                plot_axis_type_override="scatter",
             )
         if chi_squared_map_imag:
-            self.mat_plot_1d.plot_line(
+            self.mat_plot_1d.plot_yx(
                 y=np.imag(self.fit.residual_map),
                 x=self.fit.masked_interferometer.interferometer.uv_distances
                 / 10 ** 3.0,
@@ -184,7 +184,7 @@ class AbstractFitInterferometerPlotter(abstract_plotters.AbstractPlotter):
                     ylabel="V$_{R,data}$ - V$_{R,model}$",
                     xlabel=r"UV$_{distance}$ (k$\lambda$)",
                 ),
-                plot_axis_type="scatter",
+                plot_axis_type_override="scatter",
             )
 
     def subplot(

@@ -3,13 +3,6 @@ from autoarray.structures.arrays.one_d import array_1d_util
 
 
 class AbstractArray1D(abstract_structure.AbstractStructure1D):
-    def __new__(cls, line, mask, *args, **kwargs):
-
-        obj = line.view(cls)
-        obj.mask = mask
-
-        return obj
-
     @property
     def native(self):
 
