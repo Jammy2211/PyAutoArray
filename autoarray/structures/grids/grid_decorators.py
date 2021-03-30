@@ -153,7 +153,7 @@ def grid_like_to_structure_list(func):
                 grid_compute.structure_from_result(result=result)
                 for result in result_list
             ]
-            result_list = [result.slim_binned for result in result_list]
+            result_list = [result.binned for result in result_list]
             return grid.grid.structure_list_from_result_list(result_list=result_list)
         elif isinstance(grid, grid_2d_interpolate.Grid2DInterpolate):
             return func(profile, grid, *args, **kwargs)

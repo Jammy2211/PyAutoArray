@@ -152,7 +152,7 @@ class AbstractInversion:
         interpolated_reconstruction = griddata(
             points=self.mapper.source_pixelization_grid,
             values=values,
-            xi=grid.native_binned,
+            xi=grid.binned.native,
             method="linear",
         )
 
@@ -404,7 +404,6 @@ class InversionImagingMatrix(AbstractInversion, AbstractInversionMatrix):
         return array_2d.Array2D(
             array=reconstructed_image,
             mask=self.mapper.source_grid_slim.mask.mask_sub_1,
-            store_slim=True,
         )
 
     @property
@@ -521,7 +520,6 @@ class AbstractInversionInterferometer(AbstractInversion):
         return array_2d.Array2D(
             array=mapped_reconstructed_image,
             mask=self.mapper.source_grid_slim.mask.mask_sub_1,
-            store_slim=True,
         )
 
     @property

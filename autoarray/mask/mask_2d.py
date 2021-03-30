@@ -149,7 +149,7 @@ class AbstractMask2D(abstract_mask.AbstractMask):
 
         pad_size_0 = self.shape[0] - image_shape[0]
         pad_size_1 = self.shape[1] - image_shape[1]
-        trimmed_array = padded_array.native_binned[
+        trimmed_array = padded_array.binned.native[
             pad_size_0 // 2 : self.shape[0] - pad_size_0 // 2,
             pad_size_1 // 2 : self.shape[1] - pad_size_1 // 2,
         ]
@@ -306,7 +306,7 @@ class AbstractMask2D(abstract_mask.AbstractMask):
         )
 
         return grid_2d.Grid2D(
-            grid=grid_slim, mask=self.unmasked_mask.mask_sub_1, store_slim=True
+            grid=grid_slim, mask=self.unmasked_mask.mask_sub_1,
         )
 
     @property
@@ -318,7 +318,7 @@ class AbstractMask2D(abstract_mask.AbstractMask):
             origin=self.origin,
         )
         return grid_2d.Grid2D(
-            grid=sub_grid_1d, mask=self.edge_mask.mask_sub_1, store_slim=True
+            grid=sub_grid_1d, mask=self.edge_mask.mask_sub_1,
         )
 
     @property
@@ -327,7 +327,7 @@ class AbstractMask2D(abstract_mask.AbstractMask):
         grid_slim = grid_2d_util.grid_2d_slim_via_mask_from(
             mask_2d=self, pixel_scales=self.pixel_scales, sub_size=1, origin=self.origin
         )
-        return grid_2d.Grid2D(grid=grid_slim, mask=self.mask_sub_1, store_slim=True)
+        return grid_2d.Grid2D(grid=grid_slim, mask=self.mask_sub_1)
 
     @property
     def edge_grid_sub_1(self):
@@ -338,7 +338,7 @@ class AbstractMask2D(abstract_mask.AbstractMask):
         """
         edge_grid_1d = self.masked_grid_sub_1[self._edge_1d_indexes]
         return grid_2d.Grid2D(
-            grid=edge_grid_1d, mask=self.edge_mask.mask_sub_1, store_slim=True
+            grid=edge_grid_1d, mask=self.edge_mask.mask_sub_1,
         )
 
     @property
@@ -359,7 +359,7 @@ class AbstractMask2D(abstract_mask.AbstractMask):
         """
         border_grid_1d = self.masked_grid_sub_1[self._border_1d_indexes]
         return grid_2d.Grid2D(
-            grid=border_grid_1d, mask=self.border_mask.mask_sub_1, store_slim=True
+            grid=border_grid_1d, mask=self.border_mask.mask_sub_1,
         )
 
     def grid_pixels_from_grid_scaled_1d(self, grid_scaled_1d):
@@ -385,7 +385,7 @@ class AbstractMask2D(abstract_mask.AbstractMask):
             origin=self.origin,
         )
         return grid_2d.Grid2D(
-            grid=grid_pixels_1d, mask=self.mask_sub_1, store_slim=True
+            grid=grid_pixels_1d, mask=self.mask_sub_1,
         )
 
     def grid_pixel_centres_from_grid_scaled_1d(self, grid_scaled_1d):
@@ -411,7 +411,7 @@ class AbstractMask2D(abstract_mask.AbstractMask):
         ).astype("int")
 
         return grid_2d.Grid2D(
-            grid=grid_pixel_centres_1d, mask=self.edge_mask.mask_sub_1, store_slim=True
+            grid=grid_pixel_centres_1d, mask=self.edge_mask.mask_sub_1,
         )
 
     def grid_pixel_indexes_from_grid_scaled_1d(self, grid_scaled_1d):
@@ -441,7 +441,7 @@ class AbstractMask2D(abstract_mask.AbstractMask):
         ).astype("int")
 
         return array_2d.Array2D(
-            array=grid_pixel_indexes_1d, mask=self.edge_mask.mask_sub_1, store_slim=True
+            array=grid_pixel_indexes_1d, mask=self.edge_mask.mask_sub_1,
         )
 
     def grid_scaled_from_grid_pixels_1d(self, grid_pixels_1d):
@@ -465,7 +465,7 @@ class AbstractMask2D(abstract_mask.AbstractMask):
             origin=self.origin,
         )
         return grid_2d.Grid2D(
-            grid=grid_scaled_1d, mask=self.edge_mask.mask_sub_1, store_slim=True
+            grid=grid_scaled_1d, mask=self.edge_mask.mask_sub_1,
         )
 
     def grid_scaled_from_grid_pixels_1d_for_marching_squares(
@@ -486,7 +486,7 @@ class AbstractMask2D(abstract_mask.AbstractMask):
         grid_scaled_1d[:, 1] += self.pixel_scales[1] / (2.0 * self.sub_size)
 
         return grid_2d.Grid2D(
-            grid=grid_scaled_1d, mask=self.edge_mask.mask_sub_1, store_slim=True
+            grid=grid_scaled_1d, mask=self.edge_mask.mask_sub_1,
         )
 
     @property

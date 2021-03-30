@@ -12,7 +12,7 @@ from autoarray import exc
 
 
 class Grid2DInterpolate(abstract_grid_2d.AbstractGrid2D):
-    def __new__(cls, grid, mask, pixel_scales_interp, store_slim=True, *args, **kwargs):
+    def __new__(cls, grid, mask, pixel_scales_interp, *args, **kwargs):
         """
         Represents a grid of coordinates as described in the `Grid2D` class, but allows for a sparse grid to be used
         to evaluate functions on the grid, the results of which are then interpolated to the grid's native resolution.
@@ -45,19 +45,10 @@ class Grid2DInterpolate(abstract_grid_2d.AbstractGrid2D):
         pixel_scales_interp : float
             The resolution of the sparse grid used to evaluate the function, from which the results are interpolated
             to the full resolution grid.
-        store_slim : bool
-            If True, the grid is stored in 1D as an ndarray of shape [total_unmasked_pixels, 2]. If False, it is
-            stored in 2D as an ndarray of shape [total_y_pixels, total_x_pixels, 2].
         """
-        if store_slim and len(grid.shape) != 2:
-            raise exc.GridException(
-                "An grid input into the grid_2d.Grid2D.__new__ method has store_slim = `True` but"
-                "the input shape of the array is not 1."
-            )
 
         obj = grid.view(cls)
         obj.mask = mask
-        obj.store_slim = store_slim
         obj.pixel_scales_interp = pixel_scales_interp
 
         rescale_factor = mask.pixel_scale / pixel_scales_interp[0]
@@ -78,7 +69,7 @@ class Grid2DInterpolate(abstract_grid_2d.AbstractGrid2D):
         )
 
         obj.grid_interp = grid_2d.Grid2D.manual_mask(
-            grid=grid_interp, mask=mask_interp, store_slim=store_slim
+            grid=grid_interp, mask=mask_interp,
         )
 
         obj.vtx, obj.wts = obj.interp_weights
@@ -101,8 +92,9 @@ class Grid2DInterpolate(abstract_grid_2d.AbstractGrid2D):
         if hasattr(obj, "wts"):
             self.wts = obj.wts
 
-    def _new_structure(self, grid, mask, store_slim):
-        """Conveninence method for creating a new instance of the Grid2DInterpolate class from this grid.
+    def _new_structure(self, grid, mask):
+        """
+        Conveninence method for creating a new instance of the Grid2DInterpolate class from this grid.
 
         This method is used in the 'slim', 'native', etc. convenience methods. By overwriting this method such that a
         Grid2DInterpolate is created the slim and native methods will return instances of the Grid2DInterpolate.
@@ -114,15 +106,11 @@ class Grid2DInterpolate(abstract_grid_2d.AbstractGrid2D):
         mask : msk.Mask2D
             The 2D mask associated with the grid, defining the pixels each grid coordinate is paired with and
             originates from.
-        store_slim : bool
-            If True, the grid is stored in 1D as an ndarray of shape [total_unmasked_pixels, 2]. If False, it is
-            stored in 2D as an ndarray of shape [total_y_pixels, total_x_pixels, 2].
         """
         return Grid2DInterpolate(
             grid=grid,
             mask=mask,
             pixel_scales_interp=self.pixel_scales_interp,
-            store_slim=store_slim,
         )
 
     @classmethod
@@ -134,9 +122,9 @@ class Grid2DInterpolate(abstract_grid_2d.AbstractGrid2D):
         pixel_scales_interp,
         sub_size=1,
         origin=(0.0, 0.0),
-        store_slim=True,
     ):
-        """Create a Grid2DInterpolate (see `Grid2DInterpolate.__new__`) by inputting the grid coordinates in 1D, for
+        """
+        Create a Grid2DInterpolate (see `Grid2DInterpolate.__new__`) by inputting the grid coordinates in 1D, for
         example:
 
         grid=np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0]])
@@ -161,9 +149,6 @@ class Grid2DInterpolate(abstract_grid_2d.AbstractGrid2D):
             to the full resolution grid.
         origin : (float, float)
             The origin of the grid's mask.
-        store_slim : bool
-            If True, the grid is stored in 1D as an ndarray of shape [total_unmasked_pixels, 2]. If False, it is
-            stored in 2D as an ndarray of shape [total_y_pixels, total_x_pixels, 2].
         """
         grid = abstract_grid.convert_grid(grid=grid)
         pixel_scales = geometry_util.convert_pixel_scales_2d(pixel_scales=pixel_scales)
@@ -178,23 +163,10 @@ class Grid2DInterpolate(abstract_grid_2d.AbstractGrid2D):
             origin=origin,
         )
 
-        if store_slim:
-            return Grid2DInterpolate(
-                grid=grid,
-                mask=mask,
-                pixel_scales_interp=pixel_scales_interp,
-                store_slim=store_slim,
-            )
-
-        grid_2d = grid_2d_util.grid_2d_native_from(
-            grid_2d_slim=grid, mask_2d=mask, sub_size=sub_size
-        )
-
         return Grid2DInterpolate(
-            grid=grid_2d,
+            grid=grid,
             mask=mask,
             pixel_scales_interp=pixel_scales_interp,
-            store_slim=store_slim,
         )
 
     @classmethod
@@ -205,9 +177,9 @@ class Grid2DInterpolate(abstract_grid_2d.AbstractGrid2D):
         pixel_scales_interp,
         sub_size=1,
         origin=(0.0, 0.0),
-        store_slim=True,
     ):
-        """Create a Grid2DInterpolate (see `Grid2DInterpolate.__new__`) as a uniform grid of (y,x) values given an input
+        """
+        Create a Grid2DInterpolate (see `Grid2DInterpolate.__new__`) as a uniform grid of (y,x) values given an input
         shape_native and pixel scale of the grid:
 
         Parameters
@@ -222,9 +194,6 @@ class Grid2DInterpolate(abstract_grid_2d.AbstractGrid2D):
             to the full resolution grid.
         origin : (float, float)
             The origin of the grid's mask.
-        store_slim : bool
-            If True, the grid is stored in 1D as an ndarray of shape [total_unmasked_pixels, 2]. If False, it is
-            stored in 2D as an ndarray of shape [total_y_pixels, total_x_pixels, 2].
         """
 
         pixel_scales = geometry_util.convert_pixel_scales_2d(pixel_scales=pixel_scales)
@@ -246,12 +215,12 @@ class Grid2DInterpolate(abstract_grid_2d.AbstractGrid2D):
             pixel_scales_interp=pixel_scales_interp,
             sub_size=sub_size,
             origin=origin,
-            store_slim=store_slim,
         )
 
     @classmethod
-    def from_mask(cls, mask, pixel_scales_interp, store_slim=True):
-        """Create a Grid2DInterpolate (see `Grid2DInterpolate.__new__`) from a mask, where only unmasked pixels are included in
+    def from_mask(cls, mask, pixel_scales_interp):
+        """
+        Create a Grid2DInterpolate (see `Grid2DInterpolate.__new__`) from a mask, where only unmasked pixels are included in
         the grid (if the grid is represented in 2D masked values are (0.0, 0.0)).
 
         The mask's pixel_scales and origin properties are used to compute the grid (y,x) coordinates.
@@ -263,9 +232,6 @@ class Grid2DInterpolate(abstract_grid_2d.AbstractGrid2D):
         pixel_scales_interp : float
             The resolution of the sparse grid used to evaluate the function, from which the results are interpolated
             to the full resolution grid.
-        store_slim : bool
-            If True, the grid is stored in 1D as an ndarray of shape [total_unmasked_pixels, 2]. If False, it is
-            stored in 2D as an ndarray of shape [total_y_pixels, total_x_pixels, 2].
         """
 
         pixel_scales_interp = geometry_util.convert_pixel_scales_2d(
@@ -279,28 +245,15 @@ class Grid2DInterpolate(abstract_grid_2d.AbstractGrid2D):
             origin=mask.origin,
         )
 
-        if store_slim:
-            return Grid2DInterpolate(
-                grid=grid_slim,
-                mask=mask,
-                pixel_scales_interp=pixel_scales_interp,
-                store_slim=store_slim,
-            )
-
-        grid_2d = grid_2d_util.grid_2d_native_from(
-            grid_2d_slim=grid_slim, mask_2d=mask.mask_sub_1, sub_size=1
-        )
-
         return Grid2DInterpolate(
-            grid=grid_2d,
+            grid=grid_slim,
             mask=mask,
             pixel_scales_interp=pixel_scales_interp,
-            store_slim=store_slim,
         )
 
     @classmethod
     def blurring_grid_from_mask_and_kernel_shape(
-        cls, mask, kernel_shape_native, pixel_scales_interp, store_slim=True
+        cls, mask, kernel_shape_native, pixel_scales_interp,
     ):
         """Setup a blurring-grid from a mask, where a blurring grid consists of all pixels that are masked (and
         therefore have their values set to (0.0, 0.0)), but are close enough to the unmasked pixels that their values
@@ -319,9 +272,6 @@ class Grid2DInterpolate(abstract_grid_2d.AbstractGrid2D):
         pixel_scales_interp : float
             The resolution of the sparse grid used to evaluate the function, from which the results are interpolated
             to the full resolution grid.
-        store_slim : bool
-            If True, the grid is stored in 1D as an ndarray of shape [total_unmasked_pixels, 2]. If False, it is
-            stored in 2D as an ndarray of shape [total_y_pixels, total_x_pixels, 2].
         """
 
         blurring_mask = mask.blurring_mask_from_kernel_shape(
@@ -331,7 +281,6 @@ class Grid2DInterpolate(abstract_grid_2d.AbstractGrid2D):
         return cls.from_mask(
             mask=blurring_mask,
             pixel_scales_interp=pixel_scales_interp,
-            store_slim=store_slim,
         )
 
     def blurring_grid_from_kernel_shape(self, kernel_shape_native):
@@ -350,7 +299,6 @@ class Grid2DInterpolate(abstract_grid_2d.AbstractGrid2D):
             mask=self.mask,
             kernel_shape_native=kernel_shape_native,
             pixel_scales_interp=self.pixel_scales_interp,
-            store_slim=self.store_slim,
         )
 
     def padded_grid_from_kernel_shape(self, kernel_shape_native):
@@ -462,7 +410,7 @@ class Grid2DInterpolate(abstract_grid_2d.AbstractGrid2D):
             "nj,nj->n", np.take(array_interp, self.vtx), self.wts
         )
         return array_2d.Array2D(
-            array=interpolated_array, mask=self.mask, store_slim=True
+            array=interpolated_array, mask=self.mask,
         )
 
     def interpolated_grid_from_grid_interp(self, grid_interp) -> grid_2d.Grid2D:
@@ -486,7 +434,7 @@ class Grid2DInterpolate(abstract_grid_2d.AbstractGrid2D):
             array_interp=grid_interp[:, 1]
         )
         grid = np.asarray([y_values, x_values]).T
-        return grid_2d.Grid2D(grid=grid, mask=self.mask, store_slim=True)
+        return grid_2d.Grid2D(grid=grid, mask=self.mask)
 
     def structure_from_result(self, result: np.ndarray):
         """Convert a result from an ndarray to an aa.Array2D or aa.Grid2D structure, where the conversion depends on
@@ -505,13 +453,13 @@ class Grid2DInterpolate(abstract_grid_2d.AbstractGrid2D):
         """
 
         if len(result.shape) == 1:
-            return array_2d.Array2D(array=result, mask=self.mask, store_slim=True)
+            return array_2d.Array2D(array=result, mask=self.mask)
         else:
             if isinstance(result, grid_2d.Grid2DTransformedNumpy):
                 return grid_2d.Grid2DTransformed(
-                    grid=result, mask=self.mask, store_slim=True
+                    grid=result, mask=self.mask,
                 )
-            return grid_2d.Grid2D(grid=result, mask=self.mask, store_slim=True)
+            return grid_2d.Grid2D(grid=result, mask=self.mask)
 
     def structure_list_from_result_list(self, result_list: list):
         """Convert a result from a list of ndarrays to a list of aa.Array2D or aa.Grid2D structure, where the conversion

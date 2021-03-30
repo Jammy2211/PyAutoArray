@@ -121,7 +121,7 @@ class TestAbstractMaskedData:
         )
 
         assert isinstance(masked_imaging_7x7.grid, aa.Grid2D)
-        assert (masked_imaging_7x7.grid.slim_binned == grid_7x7).all()
+        assert (masked_imaging_7x7.grid.binned == grid_7x7).all()
         assert (masked_imaging_7x7.grid.slim == sub_grid_7x7).all()
 
         masked_imaging_7x7 = abstract_dataset.AbstractMaskedDataset(
@@ -133,7 +133,7 @@ class TestAbstractMaskedData:
         )
 
         assert isinstance(masked_imaging_7x7.grid, aa.Grid2DIterate)
-        assert (masked_imaging_7x7.grid.slim_binned == grid_iterate_7x7).all()
+        assert (masked_imaging_7x7.grid.binned == grid_iterate_7x7).all()
 
         masked_imaging_7x7 = abstract_dataset.AbstractMaskedDataset(
             dataset=imaging_7x7,
@@ -166,7 +166,7 @@ class TestAbstractMaskedData:
         )
 
         assert masked_imaging_7x7.grid_inversion.sub_size == 2
-        assert (masked_imaging_7x7.grid_inversion.slim_binned == grid_7x7).all()
+        assert (masked_imaging_7x7.grid_inversion.binned == grid_7x7).all()
         assert (masked_imaging_7x7.grid_inversion.slim == sub_grid_7x7).all()
 
         masked_imaging_7x7 = abstract_dataset.AbstractMaskedDataset(

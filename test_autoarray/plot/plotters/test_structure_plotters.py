@@ -57,7 +57,7 @@ class TestArray2DPlotter:
         assert array_plotter.visuals_2d.border == None
         assert (
             array_plotter.visuals_with_include_2d.border
-            == array_7x7.mask.border_grid_sub_1.slim_binned
+            == array_7x7.mask.border_grid_sub_1.binned
         ).all()
 
         assert array_plotter.visuals_2d.vector_field == 2
@@ -110,7 +110,7 @@ class TestArray2DPlotter:
         visuals_2d = aplt.Visuals2D(
             origin=grid_irregular_7x7_list,
             mask=mask_7x7,
-            border=mask_7x7.border_grid_sub_1.slim_binned,
+            border=mask_7x7.border_grid_sub_1.binned,
             grid=grid_7x7,
             positions=grid_irregular_7x7_list,
             #       lines=grid_irregular_7x7_list,
@@ -174,7 +174,7 @@ class TestFrame2DPlotter:
         assert frame_plotter.visuals_2d.border == None
         assert (
             frame_plotter.visuals_with_include_2d.border
-            == frame_7x7.mask.border_grid_sub_1.slim_binned
+            == frame_7x7.mask.border_grid_sub_1.binned
         ).all()
 
         assert frame_plotter.visuals_2d.parallel_overscan == None
@@ -241,7 +241,7 @@ class TestFrame2DPlotter:
         visuals_2d = aplt.Visuals2D(
             origin=grid_irregular_7x7_list,
             mask=mask_7x7,
-            border=mask_7x7.border_grid_sub_1.slim_binned,
+            border=mask_7x7.border_grid_sub_1.binned,
             grid=grid_7x7,
             positions=grid_irregular_7x7_list,
             lines=grid_irregular_7x7_list,
@@ -349,7 +349,7 @@ class TestGrid2DPlotter:
         visuals_2d = aplt.Visuals2D(
             origin=grid_irregular_7x7_list,
             mask=mask_7x7,
-            border=mask_7x7.border_grid_sub_1.slim_binned,
+            border=mask_7x7.border_grid_sub_1.binned,
             grid=grid_7x7,
             positions=grid_irregular_7x7_list,
             lines=grid_irregular_7x7_list,

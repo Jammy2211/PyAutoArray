@@ -19,8 +19,8 @@ class TestAPI:
         assert type(grid_1d) == aa.Grid1D
         assert (grid_1d.native == np.array([1.0, 2.0, 3.0, 4.0])).all()
         assert (grid_1d.slim == np.array([1.0, 2.0, 3.0, 4.0])).all()
-        assert (grid_1d.native_binned == np.array([1.5, 3.5])).all()
-        assert (grid_1d.slim_binned == np.array([1.5, 3.5])).all()
+        assert (grid_1d.binned.native == np.array([1.5, 3.5])).all()
+        assert (grid_1d.binned == np.array([1.5, 3.5])).all()
         assert grid_1d.pixel_scales == (1.0,)
         assert grid_1d.origin == (0.0,)
 
@@ -31,8 +31,8 @@ class TestAPI:
         assert type(grid_1d) == aa.Grid1D
         assert (grid_1d.native == np.array([1.0, 2.0, 3.0, 4.0])).all()
         assert (grid_1d.slim == np.array([1.0, 2.0, 3.0, 4.0])).all()
-        assert (grid_1d.native_binned == np.array([1.5, 3.5])).all()
-        assert (grid_1d.slim_binned == np.array([1.5, 3.5])).all()
+        assert (grid_1d.binned.native == np.array([1.5, 3.5])).all()
+        assert (grid_1d.binned == np.array([1.5, 3.5])).all()
         assert grid_1d.pixel_scales == (1.0,)
         assert grid_1d.origin == (0.0,)
 
@@ -43,8 +43,8 @@ class TestAPI:
         assert type(grid_1d) == aa.Grid1D
         assert (grid_1d.native == np.array([1.0, 2.0, 3.0, 4.0])).all()
         assert (grid_1d.slim == np.array([1.0, 2.0, 3.0, 4.0])).all()
-        assert (grid_1d.native_binned == np.array([1.5, 3.5])).all()
-        assert (grid_1d.slim_binned == np.array([1.5, 3.5])).all()
+        assert (grid_1d.binned.native == np.array([1.5, 3.5])).all()
+        assert (grid_1d.binned == np.array([1.5, 3.5])).all()
         assert grid_1d.pixel_scales == (1.0,)
         assert grid_1d.origin == (1.0,)
 
@@ -56,8 +56,8 @@ class TestAPI:
         assert type(grid) == aa.Grid1D
         assert (grid.native == np.array([1.0, 2.0, 3.0, 4.0])).all()
         assert (grid.slim == np.array([1.0, 2.0, 3.0, 4.0])).all()
-        assert (grid.native_binned == np.array([1.5, 3.5])).all()
-        assert (grid.slim_binned == np.array([1.5, 3.5])).all()
+        assert (grid.binned.native == np.array([1.5, 3.5])).all()
+        assert (grid.binned == np.array([1.5, 3.5])).all()
         assert grid.pixel_scales == (1.0,)
         assert grid.origin == (0.0,)
 
@@ -67,10 +67,13 @@ class TestAPI:
         assert type(grid) == aa.Grid1D
         assert (grid.native == np.array([0.0, 0.0, 3.0, 4.0, 5.0, 6.0])).all()
         assert (grid.slim == np.array([3.0, 4.0, 5.0, 6.0])).all()
-        assert (grid.native_binned == np.array([0.0, 3.5, 5.5])).all()
-        assert (grid.slim_binned == np.array([3.5, 5.5])).all()
+        assert (grid.binned.native == np.array([0.0, 3.5, 5.5])).all()
+        assert (grid.binned == np.array([3.5, 5.5])).all()
         assert grid.pixel_scales == (1.0,)
         assert grid.origin == (0.0,)
+
+        assert (grid.slim.native == np.array([0.0, 0.0, 3.0, 4.0, 5.0, 6.0])).all()
+        assert (grid.native.slim == np.array([3.0, 4.0, 5.0, 6.0])).all()
 
     def test__from_mask(self):
 
@@ -80,8 +83,8 @@ class TestAPI:
         assert type(grid) == aa.Grid1D
         assert (grid.native == np.array([-1.5, -0.5, 0.5, 1.5])).all()
         assert (grid.slim == np.array([-1.5, -0.5, 0.5, 1.5])).all()
-        assert (grid.native_binned == np.array([-1.5, -0.5, 0.5, 1.5])).all()
-        assert (grid.slim_binned == np.array([-1.5, -0.5, 0.5, 1.5])).all()
+        assert (grid.binned.native == np.array([-1.5, -0.5, 0.5, 1.5])).all()
+        assert (grid.binned == np.array([-1.5, -0.5, 0.5, 1.5])).all()
         assert grid.pixel_scales == (1.0,)
         assert grid.origin == (0.0,)
 
@@ -91,8 +94,8 @@ class TestAPI:
         assert type(grid) == aa.Grid1D
         assert (grid.native == np.array([0.0, 0.0, 0.25, 0.75])).all()
         assert (grid.slim == np.array([0.25, 0.75])).all()
-        assert (grid.native_binned == np.array([0.0, 0.5])).all()
-        assert (grid.slim_binned == np.array([0.5])).all()
+        assert (grid.binned.native == np.array([0.0, 0.5])).all()
+        assert (grid.binned == np.array([0.5])).all()
         assert grid.pixel_scales == (1.0,)
         assert grid.origin == (0.0,)
 
@@ -104,11 +107,24 @@ class TestAPI:
         assert type(grid) == aa.Grid1D
         assert (grid.native == np.array([0.0, -0.5, 0.5, 1.5])).all()
         assert (grid.slim == np.array([-0.5, 0.5, 1.5])).all()
-        assert (grid.native_binned == np.array([0.0, -0.5, 0.5, 1.5])).all()
-        assert (grid.slim_binned == np.array([-0.5, 0.5, 1.5])).all()
+        assert (grid.binned.native == np.array([0.0, -0.5, 0.5, 1.5])).all()
+        assert (grid.binned == np.array([-0.5, 0.5, 1.5])).all()
         assert grid.pixel_scales == (1.0,)
         assert grid.origin == (0.0,)
 
+    def test__recursive_shape_storage(self):
+
+        mask = aa.Mask1D.unmasked(shape_slim=(2,), pixel_scales=1.0, sub_size=2)
+        grid = aa.Grid1D.manual_mask(grid=[1.0, 2.0, 3.0, 4.0], mask=mask)
+
+        assert (grid.slim.native.slim == np.array([1.0, 2.0, 3.0, 4.0])).all()
+        assert (grid.native.slim.native == np.array([1.0, 2.0, 3.0, 4.0])).all()
+
+        mask = aa.Mask1D.manual(mask=[True, False, False], pixel_scales=1.0, sub_size=2)
+        grid = aa.Grid1D.manual_mask(grid=[1.0, 2.0, 3.0, 4.0, 5.0, 6.0], mask=mask)
+
+        assert (grid.slim.native.slim == np.array([3.0, 4.0, 5.0, 6.0])).all()
+        assert (grid.native.slim.native == np.array([0.0, 0.0, 3.0, 4.0, 5.0, 6.0])).all()
 
 class TestGrid1D:
     def test__grid_2d_with_other_value_out(self):

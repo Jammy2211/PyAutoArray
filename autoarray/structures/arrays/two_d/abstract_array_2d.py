@@ -14,73 +14,45 @@ logger = logging.getLogger(__name__)
 
 
 def check_array_2d(array_2d):
-    if array_2d.store_slim and len(array_2d.shape) != 1:
+    if len(array_2d.shape) != 1:
         raise exc.ArrayException(
-            "An array input into the array_2d.Array2D.__new__ method has store_slim = `True` but"
-            "the input shape of the array is not 1."
+            "An array input into the array_2d.Array2D.__new__ method is not of shape 1."
         )
 
 
-def convert_manual_array_2d_slim(array_2d_slim, mask, store_slim):
+def convert_array_2d(array_2d, mask_2d):
     """
-    Manual 1D Array2D functions take as input a list or ndarray which is to be returned as an Array2D. This function
+    Manual array functions take as input a list or ndarray which is to be returned as an Array2D. This function
     performs the following and checks and conversions on the input:
 
-    1) If the input is a list, convert it to a 1D ndarray of shape [total_values].
+    1) If the input is a list, convert it to an ndarray.
     2) Check that the number of sub-pixels in the array is identical to that of the mask.
-    3) Return the array in 1D if it is to be stored in 1D, else return it in 2D.
+    3) Map the input ndarray to its `slim` representation.
 
-    For Arrays, `1d' refers to a 1D NumPy array of shape [total_values] and '2d' a 2D NumPy array of shape
-    [total_y_values, total_values].
-
-    Parameters
-    ----------
-    array_2d_slim : np.ndarray or list
-        The input structure which is converted to a 1D ndarray if it is a list.
-    mask : Mask2D
-        The mask of the output Array2D.
-    store_slim : bool
-        Whether the memory-representation of the array is in 1D or 2D.
-    """
-
-    array_2d_slim = abstract_array.convert_array(array=array_2d_slim)
-
-    if array_2d_slim.shape[0] != mask.sub_pixels_in_mask:
-        raise exc.ArrayException(
-            "The input 1D array does not have the same number of entries as sub-pixels in"
-            "the mask."
-        )
-
-    if store_slim:
-        return array_2d_slim
-
-    return array_2d_util.array_2d_native_from(
-        array_2d_slim=array_2d_slim, mask_2d=mask, sub_size=mask.sub_size
-    )
-
-
-def convert_manual_native_array_2d(array_2d, mask_2d, store_slim):
-    """
-    Manual 2D Array2D functions take as input a list or ndarray which is to be returned as an Array2D. This function
-    performs the following and checks and conversions on the input:
-
-    1) If the input is a list, convert it to a 2D ndarray.
-    2) Check that the number of sub-pixels in the array is identical to that of the mask.
-    3) Return the array in 1D if it is to be stored in 1D, else return it in 2D.
-
-    For Arrays, `1d' refers to a 1D NumPy array of shape [total_values] and '2d' a 2D NumPy array of shape
+    For an Array2D, `slim` refers to a 1D NumPy array of shape [total_values] and `native` a 2D NumPy array of shape
     [total_y_values, total_values].
 
     Parameters
     ----------
     array_2d : np.ndarray or list
-        The input structure which is converted to a 2D ndarray if it is a list.
+        The input structure which is converted to an ndarray if it is a list.
     mask_2d : Mask2D
         The mask of the output Array2D.
-    store_slim : bool
-        Whether the memory-representation of the array is in 1D or 2D.
     """
+
     array_2d = abstract_array.convert_array(array=array_2d)
+
+    if len(array_2d.shape) == 1:
+
+        array_2d_slim = abstract_array.convert_array(array=array_2d)
+
+        if array_2d_slim.shape[0] != mask_2d.sub_pixels_in_mask:
+            raise exc.ArrayException(
+                "The input 1D array does not have the same number of entries as sub-pixels in"
+                "the mask."
+            )
+
+        return array_2d_slim
 
     if array_2d.shape != mask_2d.sub_shape_native:
         raise exc.ArrayException(
@@ -92,49 +64,15 @@ def convert_manual_native_array_2d(array_2d, mask_2d, store_slim):
         array_2d_native=array_2d, mask_2d=mask_2d, sub_size=mask_2d.sub_size
     )
 
-    if store_slim:
-        return sub_array_1d
-
-    return array_2d_util.array_2d_native_from(
-        array_2d_slim=sub_array_1d, mask_2d=mask_2d, sub_size=mask_2d.sub_size
-    )
-
-
-def convert_manual_array_2d(array_2d, mask_2d, store_slim):
-    """
-    Manual array functions take as input a list or ndarray which is to be returned as an Array2D. This function
-    performs the following and checks and conversions on the input:
-
-    1) If the input is a list, convert it to an ndarray.
-    2) Check that the number of sub-pixels in the array is identical to that of the mask.
-    3) Return the array in 1D if it is to be stored in 1D, else return it in 2D.
-
-    Parameters
-    ----------
-    array_2d : np.ndarray or list
-        The input structure which is converted to an ndarray if it is a list.
-    mask_2d : Mask2D
-        The mask of the output Array2D.
-    store_slim : bool
-        Whether the memory-representation of the array is in 1D or 2D.
-    """
-
-    array_2d = abstract_array.convert_array(array=array_2d)
-
-    if len(array_2d.shape) == 1:
-        return convert_manual_array_2d_slim(
-            array_2d_slim=array_2d, mask=mask_2d, store_slim=store_slim
-        )
-    return convert_manual_native_array_2d(
-        array_2d=array_2d, mask_2d=mask_2d, store_slim=store_slim
-    )
+    return sub_array_1d
 
 
 class AbstractArray2D(abstract_structure.AbstractStructure2D):
+
     exposure_info = None
 
-    def _new_structure(self, array, mask, store_slim):
-        return self.__class__(array=array, mask=mask, store_slim=store_slim)
+    def _new_structure(self, array, mask):
+        return self.__class__(array=array, mask=mask)
 
     @property
     def readout_offsets(self):
@@ -144,104 +82,66 @@ class AbstractArray2D(abstract_structure.AbstractStructure2D):
 
     @property
     def slim(self):
-        """Convenience method to access the array's 1D representation, which is an ndarray of shape
-        [total_unmasked_pixels*(sub_size**2)].
+        """
+        Return an `Array2D` where the data is stored its `slim` representation, which is an ndarray of shape
+        [total_unmasked_pixels * sub_size**2].
 
-        If the grid is stored in 1D it is return as is. If it is stored in 2D, it must first be mapped from 2D to 1D."""
-        if self.store_slim:
+        If it is already stored in its `slim` representation it is returned as it is. If not, it is  mapped from
+        `native` to `slim` and returned as a new `Array2D`.
+        """
+
+        if len(self.shape) == 1:
             return self
 
         sub_array_1d = array_2d_util.array_2d_slim_from(
             array_2d_native=self, mask_2d=self.mask, sub_size=self.mask.sub_size
         )
 
-        return self._new_structure(array=sub_array_1d, mask=self.mask, store_slim=True)
+        return self._new_structure(array=sub_array_1d, mask=self.mask)
 
     @property
     def native(self):
-        """Convenience method to access the array's 2D representation, which is an ndarray of shape
-        [sub_size*total_y_pixels, sub_size*total_x_pixels, 2] where all masked values are given values (0.0, 0.0).
+        """
+        Return a `Array2D` where the data is stored in its `native` representation, which is an ndarray of shape
+        [sub_size*total_y_pixels, sub_size*total_x_pixels].
 
-        If the array is stored in 2D it is return as is. If it is stored in 1D, it must first be mapped from 1D to 2D."""
-        if self.store_slim:
-            sub_array_2d = array_2d_util.array_2d_native_from(
-                array_2d_slim=self, mask_2d=self.mask, sub_size=self.mask.sub_size
-            )
-            return self._new_structure(
-                array=sub_array_2d, mask=self.mask, store_slim=False
-            )
+        If it is already stored in its `native` representation it is return as it is. If not, it is mapped from
+        `slim` to `native` and returned as a new `Array2D`.
+        """
 
-        return self
+        if len(self.shape) != 1:
+            return self
+
+        sub_array_2d = array_2d_util.array_2d_native_from(
+            array_2d_slim=self, mask_2d=self.mask, sub_size=self.mask.sub_size
+        )
+        return self._new_structure(
+            array=sub_array_2d, mask=self.mask,
+        )
 
     @property
-    def slim_binned(self):
-        """Convenience method to access the binned-up array in its 1D representation, which is a Grid2D stored as an
+    def binned(self):
+        """
+        Convenience method to access the binned-up array in its 1D representation, which is a Grid2D stored as an
         ndarray of shape [total_unmasked_pixels, 2].
 
         The binning up process converts a array from (y,x) values where each value is a coordinate on the sub-array to
         (y,x) values where each coordinate is at the centre of its mask (e.g. a array with a sub_size of 1). This is
         performed by taking the mean of all (y,x) values in each sub pixel.
 
-        If the array is stored in 1D it is return as is. If it is stored in 2D, it must first be mapped from 2D to 1D."""
+        If the array is stored in 1D it is return as is. If it is stored in 2D, it must first be mapped from 2D to 1D.
+        """
 
-        if not self.store_slim:
-
-            sub_array_1d = array_2d_util.array_2d_slim_from(
-                array_2d_native=self, mask_2d=self.mask, sub_size=self.mask.sub_size
-            )
-
-        else:
-
-            sub_array_1d = self
+        array_2d_slim = self.slim
 
         binned_array_1d = np.multiply(
             self.mask.sub_fraction,
-            sub_array_1d.reshape(-1, self.mask.sub_length).sum(axis=1),
+            array_2d_slim.reshape(-1, self.mask.sub_length).sum(axis=1),
         )
 
         return self._new_structure(
-            array=binned_array_1d, mask=self.mask.mask_sub_1, store_slim=True
+            array=binned_array_1d, mask=self.mask.mask_sub_1,
         )
-
-    @property
-    def native_binned(self):
-        """Convenience method to access the binned-up array in its 2D representation, which is a Grid2D stored as an
-        ndarray of shape [total_y_pixels, total_x_pixels, 2].
-
-        The binning up process conerts a array from (y,x) values where each value is a coordinate on the sub-array to
-        (y,x) values where each coordinate is at the centre of its mask (e.g. a array with a sub_size of 1). This is
-        performed by taking the mean of all (y,x) values in each sub pixel.
-
-        If the array is stored in 2D it is return as is. If it is stored in 1D, it must first be mapped from 1D to 2D."""
-        if not self.store_slim:
-
-            sub_array_1d = array_2d_util.array_2d_slim_from(
-                array_2d_native=self, mask_2d=self.mask, sub_size=self.mask.sub_size
-            )
-
-        else:
-
-            sub_array_1d = self
-
-        binned_array_1d = np.multiply(
-            self.mask.sub_fraction,
-            sub_array_1d[:].reshape(-1, self.mask.sub_length).sum(axis=1),
-        )
-
-        binned_array_2d = array_2d_util.array_2d_native_from(
-            array_2d_slim=binned_array_1d, mask_2d=self.mask, sub_size=1
-        )
-
-        return self._new_structure(
-            array=binned_array_2d, mask=self.mask.mask_sub_1, store_slim=False
-        )
-
-    @property
-    def binned(self):
-        if self.store_slim:
-            return self.slim_binned
-        else:
-            return self.native_binned
 
     @property
     def extent(self):
@@ -304,11 +204,11 @@ class AbstractArray2D(abstract_structure.AbstractStructure2D):
             origin=self.mask.mask_centre,
         )
 
-        array = convert_manual_native_array_2d(
-            array_2d=extracted_array_2d, mask_2d=mask, store_slim=self.store_slim
+        array = convert_array_2d(
+            array_2d=extracted_array_2d, mask_2d=mask,
         )
 
-        return self._new_structure(array=array, mask=mask, store_slim=self.store_slim)
+        return self._new_structure(array=array, mask=mask)
 
     def extent_of_zoomed_array(self, buffer=1):
         """For an extracted zoomed array computed from the method *zoomed_around_mask* compute its extent in scaled
@@ -361,12 +261,12 @@ class AbstractArray2D(abstract_structure.AbstractStructure2D):
 
         resized_mask = self.mask.resized_mask_from_new_shape(new_shape=new_shape)
 
-        array = convert_manual_native_array_2d(
-            array_2d=resized_array_2d, mask_2d=resized_mask, store_slim=self.store_slim
+        array = convert_array_2d(
+            array_2d=resized_array_2d, mask_2d=resized_mask,
         )
 
         return self._new_structure(
-            array=array, mask=resized_mask, store_slim=self.store_slim
+            array=array, mask=resized_mask,
         )
 
     def padded_before_convolution_from(self, kernel_shape):
@@ -413,12 +313,12 @@ class AbstractArray2D(abstract_structure.AbstractStructure2D):
             new_shape=trimmed_array_2d.shape
         )
 
-        array = convert_manual_native_array_2d(
-            array_2d=trimmed_array_2d, mask_2d=resized_mask, store_slim=self.store_slim
+        array = convert_array_2d(
+            array_2d=trimmed_array_2d, mask_2d=resized_mask,
         )
 
         return self.__class__(
-            array=array, mask=resized_mask, store_slim=self.store_slim
+            array=array, mask=resized_mask,
         )
 
     def output_to_fits(self, file_path, overwrite=False):

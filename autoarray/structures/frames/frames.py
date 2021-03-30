@@ -43,7 +43,6 @@ class Frame2D(abstract_frame.AbstractFrame2D):
 
         obj = array.view(cls)
         obj.mask = mask
-        obj.store_slim = False
         obj.zoom_for_plot = False
         obj.original_roe_corner = original_roe_corner
         obj.scans = scans or abstract_frame.Scans()

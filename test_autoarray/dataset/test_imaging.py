@@ -18,12 +18,12 @@ class TestImaging:
     ):
 
         image = aa.Array2D.full(
-            fill_value=20.0, shape_native=(2, 2), pixel_scales=1.0, store_slim=True
+            fill_value=20.0, shape_native=(2, 2), pixel_scales=1.0,
         )
         image[3] = 5.0
 
         noise_map_array = aa.Array2D.full(
-            fill_value=5.0, shape_native=(2, 2), pixel_scales=1.0, store_slim=True
+            fill_value=5.0, shape_native=(2, 2), pixel_scales=1.0,
         )
         noise_map_array[3] = 2.0
 
@@ -233,7 +233,7 @@ class TestMaskedImaging:
         )
 
         assert isinstance(masked_imaging_7x7.grid, aa.Grid2D)
-        assert (masked_imaging_7x7.grid.slim_binned == grid_7x7).all()
+        assert (masked_imaging_7x7.grid.binned == grid_7x7).all()
         assert (masked_imaging_7x7.grid.slim == sub_grid_7x7).all()
         assert isinstance(masked_imaging_7x7.blurring_grid, aa.Grid2D)
         assert (masked_imaging_7x7.blurring_grid.slim == blurring_grid_7x7).all()
@@ -245,7 +245,7 @@ class TestMaskedImaging:
         )
 
         assert isinstance(masked_imaging_7x7.grid, aa.Grid2DIterate)
-        assert (masked_imaging_7x7.grid.slim_binned == grid_iterate_7x7).all()
+        assert (masked_imaging_7x7.grid.binned == grid_iterate_7x7).all()
         assert isinstance(masked_imaging_7x7.blurring_grid, aa.Grid2DIterate)
         assert (masked_imaging_7x7.blurring_grid.slim == blurring_grid_7x7).all()
 

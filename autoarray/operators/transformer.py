@@ -19,7 +19,7 @@ class TransformerDFT(pylops.LinearOperator):
 
         self.uv_wavelengths = uv_wavelengths.astype("float")
         self.real_space_mask = real_space_mask.mask_sub_1
-        self.grid = self.real_space_mask.masked_grid_sub_1.slim_binned.in_radians
+        self.grid = self.real_space_mask.masked_grid_sub_1.binned.in_radians
 
         self.total_visibilities = uv_wavelengths.shape[0]
         self.total_image_pixels = self.real_space_mask.pixels_in_mask
@@ -50,7 +50,7 @@ class TransformerDFT(pylops.LinearOperator):
         if self.preload_transform:
 
             visibilities = transformer_util.visibilities_via_preload_jit_from(
-                image_1d=image.slim_binned,
+                image_1d=image.binned,
                 preloaded_reals=self.preload_real_transforms,
                 preloaded_imags=self.preload_imag_transforms,
             )
@@ -58,7 +58,7 @@ class TransformerDFT(pylops.LinearOperator):
         else:
 
             visibilities = transformer_util.visibilities_jit(
-                image_1d=image.slim_binned,
+                image_1d=image.binned,
                 grid_radians=self.grid,
                 uv_wavelengths=self.uv_wavelengths,
             )
@@ -171,7 +171,7 @@ class TransformerNUFFT(NUFFT_cpu, pylops.LinearOperator):
 
         return vis.Visibilities(
             visibilities=self.forward(
-                image.native_binned[::-1, :]
+                image.binned.native[::-1, :]
             )  # flip due to PyNUFFT internal flip
         )
 
@@ -193,7 +193,7 @@ class TransformerNUFFT(NUFFT_cpu, pylops.LinearOperator):
             )
 
             image = array_2d.Array2D(
-                array=image_2d, mask=self.grid.mask, store_slim=False
+                array=image_2d, mask=self.grid.mask,
             )
 
             visibilities = self.visibilities_from_image(image=image)

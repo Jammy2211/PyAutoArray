@@ -53,8 +53,8 @@ class TestAPI:
             arr.native == np.array([[1.0, 2.0], [3.0, 4.0], [5.0, 6.0], [7.0, 8.0]])
         ).all()
         assert (arr.slim == np.array([1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0])).all()
-        assert (arr.native_binned == np.array([[2.5], [6.5]])).all()
-        assert (arr.slim_binned == np.array([2.5, 6.5])).all()
+        assert (arr.binned.native == np.array([[2.5], [6.5]])).all()
+        assert (arr.binned == np.array([2.5, 6.5])).all()
         assert arr.pixel_scales == (2.0, 2.0)
         assert arr.origin == (0.0, 0.0)
         assert arr.mask.sub_size == 2
@@ -94,7 +94,7 @@ class TestAPI:
 
         mask = aa.Mask2D.manual(mask=[[False], [True]], pixel_scales=2.0, sub_size=2)
         arr = aa.Array2D.manual_mask(
-            array=[1.0, 2.0, 3.0, 4.0], mask=mask, store_slim=True
+            array=[1.0, 2.0, 3.0, 4.0], mask=mask,
         )
 
         assert type(arr) == aa.Array2D
@@ -103,24 +103,8 @@ class TestAPI:
             arr.native == np.array([[1.0, 2.0], [3.0, 4.0], [0.0, 0.0], [0.0, 0.0]])
         ).all()
         assert (arr.slim == np.array([1.0, 2.0, 3.0, 4.0])).all()
-        assert (arr.native_binned == np.array([[2.5], [0.0]])).all()
-        assert (arr.slim_binned == np.array([2.5])).all()
-        assert arr.pixel_scales == (2.0, 2.0)
-        assert arr.origin == (0.0, 0.0)
-        assert arr.mask.sub_size == 2
-
-        arr = aa.Array2D.manual_mask(
-            array=[1.0, 2.0, 3.0, 4.0], mask=mask, store_slim=False
-        )
-
-        assert type(arr) == aa.Array2D
-        assert (arr == np.array([[1.0, 2.0], [3.0, 4.0], [0.0, 0.0], [0.0, 0.0]])).all()
-        assert (
-            arr.native == np.array([[1.0, 2.0], [3.0, 4.0], [0.0, 0.0], [0.0, 0.0]])
-        ).all()
-        assert (arr.slim == np.array([1.0, 2.0, 3.0, 4.0])).all()
-        assert (arr.native_binned == np.array([[2.5], [0.0]])).all()
-        assert (arr.slim_binned == np.array([2.5])).all()
+        assert (arr.binned.native == np.array([[2.5], [0.0]])).all()
+        assert (arr.binned.slim == np.array([2.5])).all()
         assert arr.pixel_scales == (2.0, 2.0)
         assert arr.origin == (0.0, 0.0)
         assert arr.mask.sub_size == 2
@@ -225,17 +209,10 @@ class TestAPI:
         assert (arr.native == np.array([[1.0, 1.0], [1.0, 1.0]])).all()
         assert (arr.slim == np.array([1.0, 1.0, 1.0, 1.0])).all()
 
-        arr = aa.Array2D.zeros(shape_native=(2, 2), pixel_scales=1.0, store_slim=True)
+        arr = aa.Array2D.zeros(shape_native=(2, 2), pixel_scales=1.0)
 
         assert type(arr) == aa.Array2D
         assert (arr == np.array([0.0, 0.0, 0.0, 0.0])).all()
-        assert (arr.native == np.array([[0.0, 0.0], [0.0, 0.0]])).all()
-        assert (arr.slim == np.array([0.0, 0.0, 0.0, 0.0])).all()
-
-        arr = aa.Array2D.zeros(shape_native=(2, 2), pixel_scales=1.0, store_slim=False)
-
-        assert type(arr) == aa.Array2D
-        assert (arr == np.array([[0.0, 0.0], [0.0, 0.0]])).all()
         assert (arr.native == np.array([[0.0, 0.0], [0.0, 0.0]])).all()
         assert (arr.slim == np.array([0.0, 0.0, 0.0, 0.0])).all()
 
@@ -293,23 +270,10 @@ class TestAPI:
             file_path=path.join(test_data_dir, "4x3_ones.fits"),
             hdu=0,
             pixel_scales=1.0,
-            store_slim=True,
         )
 
         assert type(arr) == aa.Array2D
         assert (arr == np.ones((12,))).all()
-        assert (arr.native == np.ones((4, 3))).all()
-        assert (arr.slim == np.ones((12,))).all()
-
-        arr = aa.Array2D.from_fits(
-            file_path=path.join(test_data_dir, "4x3_ones.fits"),
-            hdu=0,
-            pixel_scales=1.0,
-            store_slim=False,
-        )
-
-        assert type(arr) == aa.Array2D
-        assert (arr == np.ones((4, 3))).all()
         assert (arr.native == np.ones((4, 3))).all()
         assert (arr.slim == np.ones((12,))).all()
 

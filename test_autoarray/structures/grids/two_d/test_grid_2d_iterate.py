@@ -19,7 +19,6 @@ class TestObj:
             pixel_scales=2.0,
             fractional_accuracy=0.1,
             sub_steps=[2, 3],
-            store_slim=True,
         )
 
         grid_deflected = grid.grid_from_deflection_grid(deflection_grid=grid)
@@ -41,37 +40,6 @@ class TestObj:
         assert grid_deflected.origin == (0.0, 0.0)
         assert grid_deflected.fractional_accuracy == 0.1
         assert grid_deflected.sub_steps == [2, 3]
-        assert grid.store_slim == True
-
-        grid = aa.Grid2DIterate.uniform(
-            shape_native=(2, 2),
-            pixel_scales=2.0,
-            fractional_accuracy=0.1,
-            sub_steps=[2, 3],
-            store_slim=False,
-        )
-
-        grid_deflected = grid.grid_from_deflection_grid(deflection_grid=grid)
-
-        assert type(grid_deflected) == aa.Grid2DIterate
-        assert (
-            grid_deflected
-            == np.array([[[0.0, 0.0], [0.0, 0.0]], [[0.0, 0.0], [0.0, 0.0]]])
-        ).all()
-        assert (
-            grid_deflected.native
-            == np.array([[[0.0, 0.0], [0.0, 0.0]], [[0.0, 0.0], [0.0, 0.0]]])
-        ).all()
-        assert (
-            grid_deflected.slim
-            == np.array([[0.0, 0.0], [0.0, 0.0], [0.0, 0.0], [0.0, 0.0]])
-        ).all()
-        assert (grid_deflected.mask == grid.mask).all()
-        assert grid_deflected.pixel_scales == (2.0, 2.0)
-        assert grid_deflected.origin == (0.0, 0.0)
-        assert grid_deflected.fractional_accuracy == 0.1
-        assert grid_deflected.sub_steps == [2, 3]
-        assert grid.store_slim == False
 
     def test__blurring_grid_from_mask__compare_to_array_util(self):
         mask = np.array(
@@ -143,14 +111,6 @@ class TestObj:
         assert blurring_grid == pytest.approx(blurring_grid_util, 1e-4)
         assert blurring_grid.pixel_scales == (2.0, 2.0)
 
-        blurring_grid = aa.Grid2DIterate.blurring_grid_from_mask_and_kernel_shape(
-            mask=mask, kernel_shape_native=(3, 5), store_slim=False
-        )
-
-        assert isinstance(blurring_grid, aa.Grid2DIterate)
-        assert len(blurring_grid.shape) == 3
-        assert blurring_grid.pixel_scales == (2.0, 2.0)
-
     def test__padded_grid_from_kernel_shape__matches_grid_2d_after_padding(self):
 
         grid = aa.Grid2DIterate.uniform(
@@ -220,7 +180,7 @@ class TestIteratedArray:
         )
 
         fractional_mask = grid.fractional_mask_from_arrays(
-            array_lower_sub_2d=arr.native_binned, array_higher_sub_2d=arr.native_binned
+            array_lower_sub_2d=arr.binned.native, array_higher_sub_2d=arr.binned.native
         )
 
         assert (
@@ -256,8 +216,8 @@ class TestIteratedArray:
         )
 
         fractional_mask = grid.fractional_mask_from_arrays(
-            array_lower_sub_2d=result_array_lower_sub.native_binned,
-            array_higher_sub_2d=result_array_higher_sub.native_binned,
+            array_lower_sub_2d=result_array_lower_sub.binned.native,
+            array_higher_sub_2d=result_array_higher_sub.binned.native,
         )
 
         assert (
@@ -295,8 +255,8 @@ class TestIteratedArray:
         )
 
         fractional_mask = grid.fractional_mask_from_arrays(
-            array_lower_sub_2d=result_array_lower_sub.native_binned,
-            array_higher_sub_2d=result_array_higher_sub.native_binned,
+            array_lower_sub_2d=result_array_lower_sub.binned.native,
+            array_higher_sub_2d=result_array_higher_sub.binned.native,
         )
 
         assert (
@@ -356,8 +316,8 @@ class TestIteratedArray:
         )
 
         fractional_mask = grid.fractional_mask_from_arrays(
-            array_lower_sub_2d=array_lower_sub.native_binned,
-            array_higher_sub_2d=array_higher_sub.native_binned,
+            array_lower_sub_2d=array_lower_sub.binned.native,
+            array_higher_sub_2d=array_higher_sub.binned.native,
         )
 
         assert (
@@ -400,7 +360,7 @@ class TestIteratedArray:
         values = grid.iterated_array_from_func(
             func=ndarray_1d_from_grid,
             cls=None,
-            array_lower_sub_2d=values_sub_1.native_binned,
+            array_lower_sub_2d=values_sub_1.binned.native,
         )
 
         mask_sub_3 = mask.mask_new_sub_size_from_mask(mask=mask, sub_size=3)
@@ -408,7 +368,7 @@ class TestIteratedArray:
         values_sub_3 = ndarray_1d_from_grid(grid=grid_sub_3, profile=None)
         values_sub_3 = grid_sub_3.structure_from_result(result=values_sub_3)
 
-        assert (values == values_sub_3.slim_binned).all()
+        assert (values == values_sub_3.binned).all()
 
         # This test ensures that if the fractional accuracy is met on the last sub_size jump (e.g. 2 doesnt meet it,
         # but 3 does) that the sub_size of 3 is used. There was a bug where the mask was not updated correctly and the
@@ -421,10 +381,10 @@ class TestIteratedArray:
         values = grid.iterated_array_from_func(
             func=ndarray_1d_from_grid,
             cls=None,
-            array_lower_sub_2d=values_sub_1.native_binned,
+            array_lower_sub_2d=values_sub_1.binned.native,
         )
 
-        assert (values == values_sub_3.slim_binned).all()
+        assert (values == values_sub_3.binned).all()
 
         grid = aa.Grid2DIterate.from_mask(
             mask=mask, fractional_accuracy=0.000001, sub_steps=[2, 4, 8, 16, 32]
@@ -433,7 +393,7 @@ class TestIteratedArray:
         values = grid.iterated_array_from_func(
             func=ndarray_1d_from_grid,
             cls=None,
-            array_lower_sub_2d=values_sub_1.native_binned,
+            array_lower_sub_2d=values_sub_1.binned.native,
         )
 
         mask_sub_2 = mask.mask_new_sub_size_from_mask(mask=mask, sub_size=2)
@@ -441,7 +401,7 @@ class TestIteratedArray:
         values_sub_2 = ndarray_1d_from_grid(grid=grid_sub_2, profile=None)
         values_sub_2 = grid_sub_2.structure_from_result(result=values_sub_2)
 
-        assert (values == values_sub_2.slim_binned).all()
+        assert (values == values_sub_2.binned).all()
 
     def test__iterated_array_from_func__check_values_computed_to_fractional_accuracy(
         self,
@@ -471,7 +431,7 @@ class TestIteratedArray:
         values = grid.iterated_array_from_func(
             func=ndarray_1d_from_grid,
             cls=None,
-            array_lower_sub_2d=values_sub_1.native_binned,
+            array_lower_sub_2d=values_sub_1.binned.native,
         )
 
         mask_sub_2 = mask.mask_new_sub_size_from_mask(mask=mask, sub_size=2)
@@ -484,11 +444,11 @@ class TestIteratedArray:
         values_sub_4 = ndarray_1d_from_grid(grid=grid_sub_4, profile=None)
         values_sub_4 = grid_sub_4.structure_from_result(result=values_sub_4)
 
-        assert values.native[1, 1] == values_sub_2.native_binned[1, 1]
-        assert values.native[2, 2] != values_sub_2.native_binned[2, 2]
+        assert values.native[1, 1] == values_sub_2.binned.native[1, 1]
+        assert values.native[2, 2] != values_sub_2.binned.native[2, 2]
 
-        assert values.native[1, 1] != values_sub_4.native_binned[1, 1]
-        assert values.native[2, 2] == values_sub_4.native_binned[2, 2]
+        assert values.native[1, 1] != values_sub_4.binned.native[1, 1]
+        assert values.native[2, 2] == values_sub_4.binned.native[2, 2]
 
     def test__func_returns_all_zeros__iteration_terminated(self):
 
@@ -543,7 +503,7 @@ class TestIteratedGrid:
         )
 
         fractional_mask = iterate.fractional_mask_from_grids(
-            grid_lower_sub_2d=grid.native_binned, grid_higher_sub_2d=grid.native_binned
+            grid_lower_sub_2d=grid.binned.native, grid_higher_sub_2d=grid.binned.native
         )
 
         assert (
@@ -579,8 +539,8 @@ class TestIteratedGrid:
         )
 
         fractional_mask = iterate.fractional_mask_from_grids(
-            grid_lower_sub_2d=grid_lower_sub.native_binned,
-            grid_higher_sub_2d=grid_higher_sub.native_binned,
+            grid_lower_sub_2d=grid_lower_sub.binned.native,
+            grid_higher_sub_2d=grid_higher_sub.binned.native,
         )
 
         assert (
@@ -618,8 +578,8 @@ class TestIteratedGrid:
         )
 
         fractional_mask = iterate.fractional_mask_from_grids(
-            grid_lower_sub_2d=grid_lower_sub.native_binned,
-            grid_higher_sub_2d=grid_higher_sub.native_binned,
+            grid_lower_sub_2d=grid_lower_sub.binned.native,
+            grid_higher_sub_2d=grid_higher_sub.binned.native,
         )
 
         assert (
@@ -681,8 +641,8 @@ class TestIteratedGrid:
         )
 
         fractional_mask = iterate.fractional_mask_from_grids(
-            grid_lower_sub_2d=grid_lower_sub.native_binned,
-            grid_higher_sub_2d=grid_higher_sub.native_binned,
+            grid_lower_sub_2d=grid_lower_sub.binned.native,
+            grid_higher_sub_2d=grid_higher_sub.binned.native,
         )
 
         assert (
@@ -725,7 +685,7 @@ class TestIteratedGrid:
         values = grid.iterated_grid_from_func(
             func=ndarray_2d_from_grid,
             cls=None,
-            grid_lower_sub_2d=values_sub_1.native_binned,
+            grid_lower_sub_2d=values_sub_1.binned.native,
         )
 
         mask_sub_3 = mask.mask_new_sub_size_from_mask(mask=mask, sub_size=3)
@@ -733,7 +693,7 @@ class TestIteratedGrid:
         values_sub_3 = ndarray_2d_from_grid(grid=grid_sub_3, profile=None)
         values_sub_3 = grid_sub_3.structure_from_result(result=values_sub_3)
 
-        assert (values == values_sub_3.slim_binned).all()
+        assert (values == values_sub_3.binned).all()
 
         # This test ensures that if the fractional accuracy is met on the last sub_size jump (e.g. 2 doesnt meet it,
         # but 3 does) that the sub_size of 3 is used. There was a bug where the mask was not updated correctly and the
@@ -746,10 +706,10 @@ class TestIteratedGrid:
         values = grid.iterated_grid_from_func(
             func=ndarray_2d_from_grid,
             cls=None,
-            grid_lower_sub_2d=values_sub_1.native_binned,
+            grid_lower_sub_2d=values_sub_1.binned.native,
         )
 
-        assert (values == values_sub_3.slim_binned).all()
+        assert (values == values_sub_3.binned).all()
 
         grid = aa.Grid2DIterate.from_mask(
             mask=mask, fractional_accuracy=0.000001, sub_steps=[2, 4, 8, 16, 32]
@@ -758,7 +718,7 @@ class TestIteratedGrid:
         values = grid.iterated_grid_from_func(
             func=ndarray_2d_from_grid,
             cls=None,
-            grid_lower_sub_2d=values_sub_1.native_binned,
+            grid_lower_sub_2d=values_sub_1.binned.native,
         )
 
         mask_sub_2 = mask.mask_new_sub_size_from_mask(mask=mask, sub_size=2)
@@ -766,7 +726,7 @@ class TestIteratedGrid:
         values_sub_2 = ndarray_2d_from_grid(grid=grid_sub_2, profile=None)
         values_sub_2 = grid_sub_2.structure_from_result(result=values_sub_2)
 
-        assert (values == values_sub_2.slim_binned).all()
+        assert (values == values_sub_2.binned).all()
 
     def test__iterated_grid_from_func__check_values_computed_to_fractional_accuracy(
         self,
@@ -796,7 +756,7 @@ class TestIteratedGrid:
         values = grid.iterated_grid_from_func(
             func=ndarray_2d_from_grid,
             cls=None,
-            grid_lower_sub_2d=values_sub_1.native_binned,
+            grid_lower_sub_2d=values_sub_1.binned.native,
         )
 
         mask_sub_2 = mask.mask_new_sub_size_from_mask(mask=mask, sub_size=2)
@@ -809,17 +769,17 @@ class TestIteratedGrid:
         values_sub_4 = ndarray_2d_from_grid(grid=grid_sub_4, profile=None)
         values_sub_4 = grid_sub_4.structure_from_result(result=values_sub_4)
 
-        assert values.native[1, 1, 0] == values_sub_2.native_binned[1, 1, 0]
-        assert values.native[2, 2, 0] != values_sub_2.native_binned[2, 2, 0]
+        assert values.native[1, 1, 0] == values_sub_2.binned.native[1, 1, 0]
+        assert values.native[2, 2, 0] != values_sub_2.binned.native[2, 2, 0]
 
-        assert values.native[1, 1, 0] != values_sub_4.native_binned[1, 1, 0]
-        assert values.native[2, 2, 0] == values_sub_4.native_binned[2, 2, 0]
+        assert values.native[1, 1, 0] != values_sub_4.binned.native[1, 1, 0]
+        assert values.native[2, 2, 0] == values_sub_4.binned.native[2, 2, 0]
 
-        assert values.native[1, 1, 1] == values_sub_2.native_binned[1, 1, 1]
-        assert values.native[2, 2, 1] != values_sub_2.native_binned[2, 2, 1]
+        assert values.native[1, 1, 1] == values_sub_2.binned.native[1, 1, 1]
+        assert values.native[2, 2, 1] != values_sub_2.binned.native[2, 2, 1]
 
-        assert values.native[1, 1, 1] != values_sub_4.native_binned[1, 1, 1]
-        assert values.native[2, 2, 1] == values_sub_4.native_binned[2, 2, 1]
+        assert values.native[1, 1, 1] != values_sub_4.binned.native[1, 1, 1]
+        assert values.native[2, 2, 1] == values_sub_4.binned.native[2, 2, 1]
 
     def test__func_returns_all_zeros__iteration_terminated(self):
 
@@ -858,7 +818,6 @@ class TestAPI:
             fractional_accuracy=0.1,
             sub_steps=[2, 3, 4],
             origin=(0.0, 1.0),
-            store_slim=True,
         )
 
         assert type(grid) == aa.Grid2DIterate
@@ -866,34 +825,6 @@ class TestAPI:
         assert type(grid.native) == aa.Grid2DIterate
         assert (
             grid == np.array([[1.0, 2.0], [3.0, 4.0], [5.0, 6.0], [7.0, 8.0]])
-        ).all()
-        assert (
-            grid.native
-            == np.array([[[1.0, 2.0], [3.0, 4.0]], [[5.0, 6.0], [7.0, 8.0]]])
-        ).all()
-        assert (
-            grid.slim == np.array([[1.0, 2.0], [3.0, 4.0], [5.0, 6.0], [7.0, 8.0]])
-        ).all()
-        assert grid.pixel_scales == (1.0, 1.0)
-        assert grid.fractional_accuracy == 0.1
-        assert grid.sub_steps == [2, 3, 4]
-        assert grid.origin == (0.0, 1.0)
-
-        grid = aa.Grid2DIterate.manual_slim(
-            grid=[[1.0, 2.0], [3.0, 4.0], [5.0, 6.0], [7.0, 8.0]],
-            shape_native=(2, 2),
-            pixel_scales=1.0,
-            fractional_accuracy=0.1,
-            sub_steps=[2, 3, 4],
-            origin=(0.0, 1.0),
-            store_slim=False,
-        )
-
-        assert type(grid) == aa.Grid2DIterate
-        assert type(grid.slim) == aa.Grid2DIterate
-        assert type(grid.native) == aa.Grid2DIterate
-        assert (
-            grid == np.array([[[1.0, 2.0], [3.0, 4.0]], [[5.0, 6.0], [7.0, 8.0]]])
         ).all()
         assert (
             grid.native
@@ -923,23 +854,7 @@ class TestAPI:
         )
 
         grid = aa.Grid2DIterate.from_mask(
-            mask=mask, fractional_accuracy=0.1, sub_steps=[2, 3, 4], store_slim=True
-        )
-
-        assert type(grid) == aa.Grid2DIterate
-        assert type(grid.slim) == aa.Grid2DIterate
-        assert type(grid.native) == aa.Grid2DIterate
-        assert grid == pytest.approx(grid_via_util, 1e-4)
-        assert grid.pixel_scales == (2.0, 2.0)
-        assert grid.sub_steps == [2, 3, 4]
-        assert grid.sub_size == 1
-
-        grid_via_util = aa.util.grid_2d.grid_2d_via_mask_from(
-            mask_2d=mask, sub_size=1, pixel_scales=(2.0, 2.0)
-        )
-
-        grid = aa.Grid2DIterate.from_mask(
-            mask=mask, fractional_accuracy=0.1, sub_steps=[2, 3, 4], store_slim=False
+            mask=mask, fractional_accuracy=0.1, sub_steps=[2, 3, 4],
         )
 
         assert type(grid) == aa.Grid2DIterate
@@ -957,7 +872,6 @@ class TestAPI:
             pixel_scales=2.0,
             fractional_accuracy=0.1,
             sub_steps=[2, 3, 4],
-            store_slim=True,
         )
 
         assert type(grid) == aa.Grid2DIterate
@@ -965,32 +879,6 @@ class TestAPI:
         assert type(grid.native) == aa.Grid2DIterate
         assert (
             grid == np.array([[1.0, -1.0], [1.0, 1.0], [-1.0, -1.0], [-1.0, 1.0]])
-        ).all()
-        assert (
-            grid.native
-            == np.array([[[1.0, -1.0], [1.0, 1.0]], [[-1.0, -1.0], [-1.0, 1.0]]])
-        ).all()
-        assert (
-            grid.slim == np.array([[1.0, -1.0], [1.0, 1.0], [-1.0, -1.0], [-1.0, 1.0]])
-        ).all()
-        assert grid.pixel_scales == (2.0, 2.0)
-        assert grid.fractional_accuracy == 0.1
-        assert grid.sub_steps == [2, 3, 4]
-        assert grid.origin == (0.0, 0.0)
-
-        grid = aa.Grid2DIterate.uniform(
-            shape_native=(2, 2),
-            pixel_scales=2.0,
-            fractional_accuracy=0.1,
-            sub_steps=[2, 3, 4],
-            store_slim=False,
-        )
-
-        assert type(grid) == aa.Grid2DIterate
-        assert type(grid.slim) == aa.Grid2DIterate
-        assert type(grid.native) == aa.Grid2DIterate
-        assert (
-            grid == np.array([[[1.0, -1.0], [1.0, 1.0]], [[-1.0, -1.0], [-1.0, 1.0]]])
         ).all()
         assert (
             grid.native
