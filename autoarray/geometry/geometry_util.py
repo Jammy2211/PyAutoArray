@@ -1,5 +1,6 @@
 from autoarray import decorator_util
 from typing import Tuple, Union
+import numpy as np
 
 
 def convert_pixel_scales_1d(pixel_scales: Union[float, Tuple[float]]) -> Tuple[float]:
@@ -268,3 +269,69 @@ def scaled_coordinates_2d_from(
     )
 
     return (y_pixel, x_pixel)
+
+
+def transform_grid_2d_to_reference_frame(
+    grid_2d: np.ndarray, centre: Tuple[float, float], angle: float
+) -> np.ndarray:
+    """
+    Transform a 2D grid of (y,x) coordinates to a new reference frame.
+
+    This transformation includes:
+
+    1) A translation to a new (y,x) centre value, by subtracting the centre from every coordinate on the grid.
+    2) A rotation of the grid around this new centre, which is performed clockwise from an input angle.
+
+    Parameters
+    ----------
+    grid : ndarray
+        The 2d grid of (y, x) coordinates which are transformed to a new reference frame.
+    """
+    shifted_grid_2d = np.subtract(grid_2d, centre)
+    radius = np.sqrt(np.sum(shifted_grid_2d ** 2.0, 1))
+    theta_coordinate_to_profile = np.arctan2(
+        shifted_grid_2d[:, 0], shifted_grid_2d[:, 1]
+    ) - np.radians(angle)
+    return np.vstack(
+        (
+            radius * np.sin(theta_coordinate_to_profile),
+            radius * np.cos(theta_coordinate_to_profile),
+        )
+    ).T
+
+
+def transform_grid_2d_from_reference_frame(
+    grid_2d: np.ndarray, centre: Tuple[float, float], angle: float
+) -> np.ndarray:
+    """
+    Transform a 2D grid of (y,x) coordinates to a new reference frame, which is the reverse frame computed via the
+     method `transform_grid_2d_to_reference_frame`.
+
+     This transformation includes:
+
+    1) A translation to a new (y,x) centre value, by adding the centre to every coordinate on the grid.
+    2) A rotation of the grid around this new centre, which is performed counter-clockwise from an input angle.
+
+    Parameters
+    ----------
+    grid : ndarray
+        The 2d grid of (y, x) coordinates which are transformed to a new reference frame.
+    """
+
+    cos_angle = np.cos(np.radians(angle))
+    sin_angle = np.sin(np.radians(angle))
+
+    y = np.add(
+        np.add(
+            np.multiply(grid_2d[:, 1], sin_angle), np.multiply(grid_2d[:, 0], cos_angle)
+        ),
+        centre[0],
+    )
+    x = np.add(
+        np.add(
+            np.multiply(grid_2d[:, 1], cos_angle),
+            -np.multiply(grid_2d[:, 0], sin_angle),
+        ),
+        centre[1],
+    )
+    return np.vstack((y, x)).T

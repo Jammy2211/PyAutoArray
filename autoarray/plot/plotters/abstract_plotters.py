@@ -27,6 +27,39 @@ class AbstractPlotter:
         self.include_2d = include_2d
         self.mat_plot_2d = mat_plot_2d
 
+    def extract_1d(self, name, value, include_name=None):
+        """
+        Extracts an attribute for plotting in a `Visuals1D` object based on the following criteria:
+
+        1) If `visuals_1d` already has a value for the attribute this is returned, over-riding the input `value` of
+          that attribute.
+
+        2) If `visuals_1d` do not contain the attribute, the input `value` is returned provided its corresponding
+          entry in the `Include1D` class is `True`.
+
+        3) If the `Include1D` entry is `False` a None is returned and the attribute is therefore plotted.
+
+        Parameters
+        ----------
+        name : str
+            The name of the attribute which is to be extracted.
+        value :
+            The `value` of the attribute, which is used when criteria 2) above is met.
+
+        Returns
+        -------
+            The collection of attributes that can be plotted by a `Plotter1D` object.
+        """
+
+        if include_name is None:
+            include_name = name
+
+        if getattr(self.visuals_1d, name) is not None:
+            return getattr(self.visuals_1d, name)
+        else:
+            if getattr(self.include_1d, include_name):
+                return value
+
     def extract_2d(self, name, value, include_name=None):
         """
         Extracts an attribute for plotting in a `Visuals2D` object based on the following criteria:

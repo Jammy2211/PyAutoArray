@@ -8,6 +8,7 @@ from autoarray.plot.mat_wrap import mat_plot, include as inc
 from autoarray.mask import mask_2d
 from matplotlib import patches as ptch
 import typing
+from typing import Optional
 from abc import ABC
 from typing import List, Union
 
@@ -66,14 +67,14 @@ class AbstractVisuals(ABC):
 class Visuals1D(AbstractVisuals):
     def __init__(
         self,
-        mask: mask_1d.Mask1D = None,
-        lines: typing.List[array_1d.Array1D] = None,
-        origin: grid_2d.Grid2D = None,
+        mask: Optional[mask_1d.Mask1D] = None,
+        origin: Optional[grid_2d.Grid2D] = None,
+        vertical_line: Optional[float] = None,
     ):
 
         self.mask = mask
-        self.lines = lines
         self.origin = origin
+        self.vertical_line = vertical_line
 
     @property
     def plotter(self):
@@ -85,8 +86,10 @@ class Visuals1D(AbstractVisuals):
 
     def plot_via_plotter(self, plotter):
 
-        if self.lines is not None:
-            plotter.grid_plot.plot_grid(grid=self.lines)
+        if self.vertical_line is not None:
+            plotter.vertical_line_axvline.axvline_vertical_line(
+                vertical_line=self.vertical_line
+            )
 
 
 class Visuals2D(AbstractVisuals):
