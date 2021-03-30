@@ -103,7 +103,6 @@ class AbstractDataset:
         return self.data._new_structure(
             array=np.divide(np.abs(self.data), self.noise_map),
             mask=self.data.mask,
-            store_slim=self.data.store_slim,
         )
 
     @property
@@ -118,7 +117,6 @@ class AbstractDataset:
         return self.data._new_structure(
             array=np.square(self.absolute_signal_to_noise_map),
             mask=self.data.mask,
-            store_slim=self.data.store_slim,
         )
 
     @property
@@ -295,7 +293,6 @@ class AbstractMaskedDataset:
         return self.data._new_structure(
             array=np.divide(np.abs(self.data), self.noise_map),
             mask=self.data.mask,
-            store_slim=self.data.store_slim,
         )
 
     @property
@@ -305,7 +302,6 @@ class AbstractMaskedDataset:
         return self.data._new_structure(
             array=np.square(self.absolute_signal_to_noise_map),
             mask=self.data.mask,
-            store_slim=self.data.store_slim,
         )
 
     def modify_noise_map(self, noise_map):

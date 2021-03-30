@@ -25,7 +25,7 @@ class AbstractImagingPlotter(abstract_plotters.AbstractPlotter):
             ),
             mask=self.extract_2d("mask", self.imaging.image.mask),
             border=self.extract_2d(
-                "border", self.imaging.image.mask.border_grid_sub_1.slim_binned
+                "border", self.imaging.image.mask.border_grid_sub_1.binned
             ),
         )
 

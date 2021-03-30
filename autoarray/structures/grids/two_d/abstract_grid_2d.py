@@ -23,12 +23,6 @@ def check_grid_2d(grid_2d):
     if 2 < len(grid_2d.shape) > 3:
         raise exc.GridException("The dimensions of the input grid array is not 2 or 3")
 
-    if grid_2d.store_slim and len(grid_2d.shape) != 2:
-        raise exc.GridException(
-            "An grid input into the grid_2d.Grid2D.__new__ method has store_slim = `True` but"
-            "the input shape of the array is not 1."
-        )
-
 
 def check_grid_2d_and_mask_2d(grid_2d, mask_2d):
 
@@ -49,80 +43,17 @@ def check_grid_2d_and_mask_2d(grid_2d, mask_2d):
             )
 
 
-def convert_manual_grid_2d_slim(grid_2d_slim, mask_2d, store_slim):
-    """
-    Manual 1D Grid2D functions take as input a list or ndarray which is to be returned as an Grid2D. This function
-    performs the following and checks and conversions on the input:
-
-    1) If the input is a list, convert it to a 2D ndarray of shape [total_coordinates, 2].
-    2) Check that the number of sub-pixels in the grid is identical to that of the mask.
-    3) Return the grid in 1D if it is to be stored in 1D, else return it in 2D.
-
-    For Grids, `1D' refers to a 2D NumPy array of shape [total_coordinates ,2] and '2D' a 3D NumPy array of shape
-    [total_y_coordinates, total_x_coordinates, 2].
-
-    Parameters
-    ----------
-    grid_2d_slim : np.ndarray or list
-        The input structure which is converted to a 2D ndarray if it is a list.
-    mask_2d : Mask2D
-        The mask of the output Array2D.
-    store_slim : bool
-        Whether the memory-representation of the grid is in 1D or 2D.
-    """
-
-    grid_2d_slim = abstract_grid.convert_grid(grid=grid_2d_slim)
-
-    if store_slim:
-        return grid_2d_slim
-
-    return grid_2d_util.grid_2d_native_from(
-        grid_2d_slim=grid_2d_slim, mask_2d=mask_2d, sub_size=mask_2d.sub_size
-    )
-
-
-def convert_manual_grid_2d_native(grid_2d_native, mask_2d, store_slim):
-    """
-    Manual 2D Grid2D functions take as input a list or ndarray which is to be returned as a Grid2D. This function
-    performs the following and checks and conversions on the input:
-
-    1) If the input is a list, convert it to a 3D ndarray of shape  [total_y_coordinates, total_x_coordinates, 2]
-    2) Check that the number of sub-pixels in the array is identical to that of the mask.
-    3) Return the array in 1D if it is to be stored in 1D, else return it in 2D.
-
-    For Grids, `1D' refers to a 2D NumPy array of shape [total_coordinates ,2] and '2D' a 3D NumPy array of shape
-    [total_y_coordinates, total_x_coordinates, 2]
-
-    Parameters
-    ----------
-    grid_2d_native : np.ndarray or list
-        The input structure which is converted to a 3D ndarray if it is a list.
-    mask_2d : Mask2D
-        The mask of the output Grid2D.
-    store_slim : bool
-        Whether the memory-representation of the array is in 1D or 2D.
-    """
-
-    grid_slim = grid_2d_util.grid_2d_slim_from(
-        grid_2d_native=grid_2d_native, mask=mask_2d, sub_size=mask_2d.sub_size
-    )
-
-    if store_slim:
-        return grid_slim
-
-    return grid_2d_util.grid_2d_native_from(
-        grid_2d_slim=grid_slim, mask_2d=mask_2d, sub_size=mask_2d.sub_size
-    )
-
-
-def convert_manual_grid_2d(grid_2d, mask_2d, store_slim):
+def convert_grid_2d(grid_2d, mask_2d):
     """
     Manual Grid2D functions take as input a list or ndarray which is to be returned as an Grid2D. This function
     performs the following and checks and conversions on the input:
 
     1) If the input is a list, convert it to an ndarray.
     2) Check that the number of sub-pixels in the array is identical to that of the mask.
-    3) Return the array in 1D if it is to be stored in 1D, else return it in 2D.
+    3)  Map the input ndarray to its `slim` representation.
+
+    For a Grid2D, `slim` refers to a 2D NumPy array of shape [total_coordinates, 2] and `native` a 3D NumPy array of
+    shape [total_y_coordinates, total_x_coordinates, 2]
 
     Parameters
     ----------
@@ -130,22 +61,19 @@ def convert_manual_grid_2d(grid_2d, mask_2d, store_slim):
         The input structure which is converted to an ndarray if it is a list.
     mask_2d : Mask2D
         The mask of the output Array2D.
-    store_slim : bool
-        Whether the memory-representation of the array is in 1D or 2D.
     """
 
     grid_2d = abstract_grid.convert_grid(grid=grid_2d)
 
     if len(grid_2d.shape) == 2:
-        return convert_manual_grid_2d_slim(
-            grid_2d_slim=grid_2d, mask_2d=mask_2d, store_slim=store_slim
-        )
-    return convert_manual_grid_2d_native(
-        grid_2d_native=grid_2d, mask_2d=mask_2d, store_slim=store_slim
+        return abstract_grid.convert_grid(grid=grid_2d)
+    return grid_2d_util.grid_2d_slim_from(
+        grid_2d_native=grid_2d, mask=mask_2d, sub_size=mask_2d.sub_size
     )
 
 
 class AbstractGrid2D(abstract_structure.AbstractStructure2D):
+
     def __array_finalize__(self, obj):
 
         super().__array_finalize__(obj)
@@ -156,43 +84,46 @@ class AbstractGrid2D(abstract_structure.AbstractStructure2D):
     @property
     def slim(self):
         """
-        Convenience method to access the grid's 1D representation, which is a Grid2D stored as an ndarray of shape
-        [total_unmasked_pixels*(sub_size**2), 2].
+        Return a `Grid2D` where the data is stored its `slim` representation, which is an ndarray of shape
+        [total_unmasked_pixels * sub_size**2, 2].
 
-        If the grid is stored in 1D it is return as is. If it is stored in 2D, it must first be mapped from 2D to 1D.
+        If it is already stored in its `slim` representation  it is returned as it is. If not, it is  mapped from
+        `native` to `slim` and returned as a new `Grid2D`.
         """
-        if self.store_slim:
+
+        if len(self.shape) == 2:
             return self
 
-        sub_grid_2d_slim = grid_2d_util.grid_2d_slim_from(
+        grid_2d_slim = grid_2d_util.grid_2d_slim_from(
             grid_2d_native=self, mask=self.mask, sub_size=self.mask.sub_size
         )
 
         return self._new_structure(
-            grid=sub_grid_2d_slim, mask=self.mask, store_slim=True
+            grid=grid_2d_slim, mask=self.mask,
         )
 
     @property
     def native(self):
         """
-        Convenience method to access the grid's 2D representation, which is a Grid2D stored as an ndarray of shape
-        [sub_size*total_y_pixels, sub_size*total_x_pixels, 2] where all masked values are given values (0.0, 0.0).
+        Return a `Grid2D` where the data is stored in its `native` representation, which is an ndarray of shape
+        [sub_size*total_y_pixels, sub_size*total_x_pixels, 2].
 
-        If the grid is stored in 2D it is return as is. If it is stored in 1D, it must first be mapped from 1D to 2D.
+        If it is already stored in its `native` representation it is return as it is. If not, it is mapped from
+        `slim` to `native` and returned as a new `Grid2D`.
         """
 
-        if self.store_slim:
+        if len(self.shape) != 2:
+            return self
 
-            grid_2d = grid_2d_util.grid_2d_native_from(
-                grid_2d_slim=self, mask_2d=self.mask, sub_size=self.mask.sub_size
-            )
+        grid_2d_native = grid_2d_util.grid_2d_native_from(
+            grid_2d_slim=self, mask_2d=self.mask, sub_size=self.mask.sub_size
+        )
 
-            return self._new_structure(grid=grid_2d, mask=self.mask, store_slim=False)
+        return self._new_structure(grid=grid_2d_native, mask=self.mask)
 
-        return self
 
     @property
-    def slim_binned(self):
+    def binned(self) -> "AbstractGrid2D":
         """
         Convenience method to access the binned-up grid in its 1D representation, which is a Grid2D stored as an
         ndarray of shape [total_unmasked_pixels, 2].
@@ -203,15 +134,8 @@ class AbstractGrid2D(abstract_structure.AbstractStructure2D):
 
         If the grid is stored in 1D it is return as is. If it is stored in 2D, it must first be mapped from 2D to 1D.
         """
-        if not self.store_slim:
 
-            grid_2d_slim = grid_2d_util.grid_2d_slim_from(
-                grid_2d_native=self, mask=self.mask, sub_size=self.mask.sub_size
-            )
-
-        else:
-
-            grid_2d_slim = self
+        grid_2d_slim = self.slim
 
         grid_2d_slim_binned_y = np.multiply(
             self.mask.sub_fraction,
@@ -226,68 +150,15 @@ class AbstractGrid2D(abstract_structure.AbstractStructure2D):
         return self._new_structure(
             grid=np.stack((grid_2d_slim_binned_y, grid_2d_slim_binned_x), axis=-1),
             mask=self.mask.mask_sub_1,
-            store_slim=True,
         )
 
     @property
-    def native_binned(self):
-        """
-        Convenience method to access the binned-up grid in its 2D representation, which is a Grid2D stored as an
-        ndarray of shape [total_y_pixels, total_x_pixels, 2].
-
-        The binning up process conerts a grid from (y,x) values where each value is a coordinate on the sub-grid to
-        (y,x) values where each coordinate is at the centre of its mask (e.g. a grid with a sub_size of 1). This is
-        performed by taking the mean of all (y,x) values in each sub pixel.
-
-        If the grid is stored in 2D it is return as is. If it is stored in 1D, it must first be mapped from 1D to 2D.
-        """
-        if not self.store_slim:
-
-            grid_2d_slim = grid_2d_util.grid_2d_slim_from(
-                grid_2d_native=self, mask=self.mask, sub_size=self.mask.sub_size
-            )
-
-        else:
-
-            grid_2d_slim = self
-
-        grid_2d_slim_binned_y = np.multiply(
-            self.mask.sub_fraction,
-            grid_2d_slim[:, 0].reshape(-1, self.mask.sub_length).sum(axis=1),
-        )
-
-        grid_2d_slim_binned_x = np.multiply(
-            self.mask.sub_fraction,
-            grid_2d_slim[:, 1].reshape(-1, self.mask.sub_length).sum(axis=1),
-        )
-
-        grid_2d_slim_binned = np.stack(
-            (grid_2d_slim_binned_y, grid_2d_slim_binned_x), axis=-1
-        )
-
-        grid_2d_native_binned = grid_2d_util.grid_2d_native_from(
-            grid_2d_slim=grid_2d_slim_binned, mask_2d=self.mask, sub_size=1
-        )
-
-        return self._new_structure(
-            grid=grid_2d_native_binned, mask=self.mask.mask_sub_1, store_slim=False
-        )
-
-    @property
-    def slim_flipped(self) -> np.ndarray:
+    def flipped(self) -> np.ndarray:
         """Return the grid as an ndarray of shape [total_unmasked_pixels, 2] with flipped values such that coordinates
         are given as (x,y) values.
 
         This is used to interface with Python libraries that require the grid in (x,y) format."""
         return np.fliplr(self)
-
-    @property
-    def native_flipped(self):
-        """Return the grid as an ndarray array of shape [total_x_pixels, total_y_pixels, 2[ with flipped values such
-        that coordinates are given as (x,y) values.
-
-        This is used to interface with Python libraries that require the grid in (x,y) format."""
-        return np.stack((self.native[:, :, 1], self.native[:, :, 0]), axis=-1)
 
     @property
     @array_2d_util.Memoizer()

@@ -4,13 +4,11 @@ import pickle
 
 
 class AbstractStructure(np.ndarray):
+
     def __array_finalize__(self, obj):
 
         if hasattr(obj, "mask"):
             self.mask = obj.mask
-
-        if hasattr(obj, "store_slim"):
-            self.store_slim = obj.store_slim
 
     def __reduce__(self):
 
@@ -36,7 +34,7 @@ class AbstractStructure(np.ndarray):
 
         super().__setstate__(state[0:-1])
 
-    def _new_structure(self, grid, mask, store_slim):
+    def _new_structure(self, grid, mask):
         """Conveninence method for creating a new instance of the Grid2D class from this grid.
 
         This method is over-written by other grids (e.g. Grid2DIterate) such that the slim and native methods return
@@ -49,19 +47,16 @@ class AbstractStructure(np.ndarray):
         mask : msk.Mask2D
             The 2D mask associated with the grid, defining the pixels each grid coordinate is paired with and
             originates from.
-        store_slim : bool
-            If True, the grid is stored in 1D as an ndarray of shape [total_unmasked_pixels, 2]. If False, it is
-            stored in 2D as an ndarray of shape [total_y_pixels, total_x_pixels, 2].
         """
         raise NotImplementedError()
 
     @property
     def slim(self):
-        raise NotImplementedError
+        raise NotImplementedError()
 
     @property
     def native(self):
-        raise NotImplementedError
+        raise NotImplementedError()
 
     @property
     def shape_slim(self):

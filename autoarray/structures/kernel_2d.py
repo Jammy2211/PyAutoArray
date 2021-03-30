@@ -30,7 +30,7 @@ class Kernel2D(array_2d.Array2D):
         renormalize : bool
             If True, the Kernel2D's array values are renormalized such that they sum to 1.0.
         """
-        obj = super(Kernel2D, cls).__new__(cls=cls, array=array, mask=mask)
+        obj = super().__new__(cls=cls, array=array, mask=mask)
 
         if renormalize:
             obj[:] = np.divide(obj, np.sum(obj))
@@ -484,16 +484,6 @@ class Kernel2D(array_2d.Array2D):
         )
 
     @property
-    def native(self):
-        """Convenience method to access the kerne;'s 2D representation, which is an ndarray of shape
-        [sub_size*total_y_pixels, sub_size*total_x_pixels, 2] where all masked values are given values (0.0, 0.0).
-
-        If the array is stored in 2D it is return as is. If it is stored in 1D, it must first be mapped from 1D to 2D."""
-        return array_2d_util.array_2d_native_from(
-            array_2d_slim=self, mask_2d=self.mask, sub_size=self.mask.sub_size
-        )
-
-    @property
     def renormalized(self):
         """Renormalize the Kernel2D such that its data_vector values sum to unity."""
         return self.__class__(array=self, mask=self.mask, renormalize=True)
@@ -519,7 +509,7 @@ class Kernel2D(array_2d.Array2D):
         if self.mask.shape[0] % 2 == 0 or self.mask.shape[1] % 2 == 0:
             raise exc.KernelException("Kernel2D Kernel2D must be odd")
 
-        array_binned_2d = array.native_binned
+        array_binned_2d = array.binned.native
 
         convolved_array_2d = scipy.signal.convolve2d(
             array_binned_2d, self.native, mode="same"
@@ -530,7 +520,7 @@ class Kernel2D(array_2d.Array2D):
         )
 
         return array_2d.Array2D(
-            array=convolved_array_1d, mask=array_binned_2d.mask, store_slim=True
+            array=convolved_array_1d, mask=array_binned_2d.mask,
         )
 
     def convolved_array_from_array_and_mask(self, array, mask):
@@ -562,5 +552,5 @@ class Kernel2D(array_2d.Array2D):
         )
 
         return array_2d.Array2D(
-            array=convolved_array_1d, mask=mask.mask_sub_1, store_slim=True
+            array=convolved_array_1d, mask=mask.mask_sub_1,
         )

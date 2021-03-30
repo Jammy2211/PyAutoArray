@@ -7,6 +7,24 @@ from autoarray.mock.mock import MockGridRadialMinimum
 
 
 class TestGrid:
+
+    def test__recursive_shape_storage(self):
+
+        grid = aa.Grid2D.manual_native(
+            grid=[[[1.0, 2.0], [3.0, 4.0]], [[5.0, 6.0], [7.0, 8.0]]],
+            pixel_scales=1.0,
+            sub_size=1,
+        )
+
+        assert type(grid) == aa.Grid2D
+        assert (
+            grid.native.slim.native
+            == np.array([[[1.0, 2.0], [3.0, 4.0]], [[5.0, 6.0], [7.0, 8.0]]])
+        ).all()
+        assert (
+            grid.slim.native.slim == np.array([[1.0, 2.0], [3.0, 4.0], [5.0, 6.0], [7.0, 8.0]])
+        ).all()
+
     def test__masked_shape_native_scaled(self):
 
         mask = aa.Mask2D.circular(
@@ -39,11 +57,11 @@ class TestGrid:
         )
 
         assert (
-            grid.slim_flipped
+            grid.flipped.slim
             == np.array([[2.0, 1.0], [4.0, 3.0], [6.0, 5.0], [8.0, 7.0]])
         ).all()
         assert (
-            grid.native_flipped
+            grid.flipped.native
             == np.array([[[2.0, 1.0], [4.0, 3.0]], [[6.0, 5.0], [8.0, 7.0]]])
         ).all()
 
@@ -52,10 +70,10 @@ class TestGrid:
         )
 
         assert (
-            grid.slim_flipped == np.array([[2.0, 1.0], [4.0, 3.0], [6.0, 5.0]])
+            grid.flipped.slim == np.array([[2.0, 1.0], [4.0, 3.0], [6.0, 5.0]])
         ).all()
         assert (
-            grid.native_flipped == np.array([[[2.0, 1.0], [4.0, 3.0], [6.0, 5.0]]])
+            grid.flipped.native == np.array([[[2.0, 1.0], [4.0, 3.0], [6.0, 5.0]]])
         ).all()
 
     def test__grid_radial_projected_from__same_as_grid_util_but_also_includes_angle(

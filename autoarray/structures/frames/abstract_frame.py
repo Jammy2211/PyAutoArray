@@ -24,7 +24,7 @@ class AbstractFrame2D(abstract_array_2d.AbstractArray2D):
             if hasattr(obj, "exposure_info"):
                 self.exposure_info = obj.exposure_info
 
-    def _new_structure(self, array, mask, store_slim):
+    def _new_structure(self, array, mask):
 
         return self.__class__(
             array=array,

@@ -21,7 +21,6 @@ class Array2D(abstract_array_2d.AbstractArray2D):
         array,
         mask,
         exposure_info=None,
-        store_slim=True,
         zoom_for_plot=True,
         *args,
         **kwargs
@@ -35,7 +34,7 @@ class Array2D(abstract_array_2d.AbstractArray2D):
 
         The array can be stored in 1D or 2D, as detailed below.
 
-        Case 1: [sub-size=1, store_slim = True]:
+        Case 1: [sub-size=1, slim]:
         -----------------------------------------
 
         The Array2D is an ndarray of shape [total_unmasked_pixels].
@@ -77,7 +76,7 @@ class Array2D(abstract_array_2d.AbstractArray2D):
         IxIxIxIxIxIxIxIxIxIxI \/   array[8] = 8
         IxIxIxIxIxIxIxIxIxIxI      array[9] = 9
 
-        Case 2: [sub-size>1, store_slim=True]:
+        Case 2: [sub-size>1, slim]:
         ------------------
 
         If the masks's sub size is > 1, the array is defined as a sub-array where each entry corresponds to the values
@@ -146,7 +145,7 @@ class Array2D(abstract_array_2d.AbstractArray2D):
                  array[7] = value of first sub-pixel in pixel 7.
                  array[8] = value of first sub-pixel in pixel 8.
 
-        Case 3: [sub_size=1 store_slim=False]
+        Case 3: [sub_size=1, native]
         --------------------------------------
 
         The Array2D has the same properties as Case 1, but is stored as an an ndarray of shape
@@ -174,7 +173,7 @@ class Array2D(abstract_array_2d.AbstractArray2D):
         - array[3,4] = 0
         - array[3,4] = -1
 
-        Case 4: [sub_size>1 store_slim=False]
+        Case 4: [sub_size>, native]
         --------------------------------------
 
         The properties of this array can be derived by combining Case's 2 and 3 above, whereby the array is stored as
@@ -189,18 +188,14 @@ class Array2D(abstract_array_2d.AbstractArray2D):
         mask : msk.Mask2D
             The 2D mask associated with the array, defining the pixels each array value is paired with and
             originates from.
-        store_slim : bool
-            If True, the array is stored in 1D as an ndarray of shape [total_unmasked_pixels]. If False, it is
-            stored in 2D as an ndarray of shape [total_y_pixels, total_x_pixels].
         """
+
+        array = abstract_array.convert_array(array=array)
 
         obj = array.view(cls)
         obj.mask = mask
         obj.exposure_info = exposure_info
-        obj.store_slim = store_slim
         obj.zoom_for_plot = zoom_for_plot
-
-        abstract_array_2d.check_array_2d(array_2d=obj)
 
         return obj
 
@@ -213,7 +208,6 @@ class Array2D(abstract_array_2d.AbstractArray2D):
         sub_size=1,
         origin=(0.0, 0.0),
         exposure_info=None,
-        store_slim=True,
     ):
         """
         Create an Array2D (see `AbstractArray2D.__new__`) by inputting the array values in 1D, for example:
@@ -239,9 +233,6 @@ class Array2D(abstract_array_2d.AbstractArray2D):
             The size (sub_size x sub_size) of each unmasked pixels sub-array.
         origin : (float, float)
             The (y,x) scaled units origin of the mask's coordinate system.
-        store_slim : bool
-            If True, the array is stored in 1D as an ndarray of shape [total_unmasked_pixels]. If False, it is
-            stored in 2D as an ndarray of shape [total_y_pixels, total_x_pixels].
         """
 
         pixel_scales = geometry_util.convert_pixel_scales_2d(pixel_scales=pixel_scales)
@@ -258,11 +249,8 @@ class Array2D(abstract_array_2d.AbstractArray2D):
             origin=origin,
         )
 
-        array = abstract_array_2d.convert_manual_array_2d_slim(
-            array_2d_slim=array, mask=mask, store_slim=store_slim
-        )
         return cls(
-            array=array, mask=mask, exposure_info=exposure_info, store_slim=store_slim
+            array=array, mask=mask, exposure_info=exposure_info,
         )
 
     @classmethod
@@ -273,7 +261,6 @@ class Array2D(abstract_array_2d.AbstractArray2D):
         sub_size=1,
         origin=(0.0, 0.0),
         exposure_info=None,
-        store_slim=True,
     ):
         """Create an Array2D (see `AbstractArray2D.__new__`) by inputting the array values in 2D, for example:
 
@@ -298,9 +285,6 @@ class Array2D(abstract_array_2d.AbstractArray2D):
             The size (sub_size x sub_size) of each unmasked pixels sub-array.
         origin : (float, float)
             The (y,x) scaled units origin of the mask's coordinate system.
-        store_slim : bool
-            If True, the array is stored in 1D as an ndarray of shape [total_unmasked_pixels]. If False, it is
-            stored in 2D as an ndarray of shape [total_y_pixels, total_x_pixels].
         """
 
         pixel_scales = geometry_util.convert_pixel_scales_2d(pixel_scales=pixel_scales)
@@ -316,10 +300,11 @@ class Array2D(abstract_array_2d.AbstractArray2D):
             origin=origin,
         )
 
-        array = abstract_array_2d.convert_manual_native_array_2d(
-            array_2d=array, mask_2d=mask, store_slim=store_slim
+        array = abstract_array_2d.convert_array_2d(
+            array_2d=array, mask_2d=mask,
         )
-        return cls(array=array, mask=mask, store_slim=store_slim)
+
+        return cls(array=array, mask=mask)
 
     @classmethod
     def manual(
@@ -330,7 +315,6 @@ class Array2D(abstract_array_2d.AbstractArray2D):
         sub_size=1,
         origin=(0.0, 0.0),
         exposure_info=None,
-        store_slim=True,
     ):
         """Create an Array2D (see `AbstractArray2D.__new__`) by inputting the array values in 1D or 2D, automatically
         determining whether to use the 'manual_slim' or 'manual_native' methods.
@@ -351,9 +335,6 @@ class Array2D(abstract_array_2d.AbstractArray2D):
             The size (sub_size x sub_size) of each unmasked pixels sub-array.
         origin : (float, float)
             The (y,x) scaled units origin of the mask's coordinate system.
-        store_slim : bool
-            If True, the array is stored in 1D as an ndarray of shape [total_unmasked_pixels]. If False, it is
-            stored in 2D as an ndarray of shape [total_y_pixels, total_x_pixels].
         """
         if len(array.shape) == 1:
             return cls.manual_slim(
@@ -362,18 +343,16 @@ class Array2D(abstract_array_2d.AbstractArray2D):
                 shape_native=shape_native,
                 sub_size=sub_size,
                 origin=origin,
-                store_slim=store_slim,
             )
         return cls.manual_native(
             array=array,
             pixel_scales=pixel_scales,
             sub_size=sub_size,
             origin=origin,
-            store_slim=store_slim,
         )
 
     @classmethod
-    def manual_mask(cls, array, mask, exposure_info=None, store_slim=True):
+    def manual_mask(cls, array, mask, exposure_info=None):
         """Create an `Array2D` (see `AbstractArray2D.__new__`) by inputting the array values in 1D or 2D with its mask,
         for example:
 
@@ -387,15 +366,12 @@ class Array2D(abstract_array_2d.AbstractArray2D):
             lists.
         mask : Mask2D
             The mask whose masked pixels are used to setup the sub-pixel grid.
-        store_slim : bool
-            If True, the array is stored in 1D as an ndarray of shape [total_unmasked_pixels]. If False, it is
-            stored in 2D as an ndarray of shape [total_y_pixels, total_x_pixels].
         """
-        array = abstract_array_2d.convert_manual_array_2d(
-            array_2d=array, mask_2d=mask, store_slim=store_slim
+        array = abstract_array_2d.convert_array_2d(
+            array_2d=array, mask_2d=mask,
         )
         return cls(
-            array=array, mask=mask, exposure_info=exposure_info, store_slim=store_slim
+            array=array, mask=mask, exposure_info=exposure_info,
         )
 
     @classmethod
@@ -407,7 +383,6 @@ class Array2D(abstract_array_2d.AbstractArray2D):
         sub_size=1,
         origin=(0.0, 0.0),
         exposure_info=None,
-        store_slim=True,
     ):
         """
         Create an `Array2D` (see `AbstractArray2D.__new__`) where all values are filled with an input fill value,
@@ -429,9 +404,6 @@ class Array2D(abstract_array_2d.AbstractArray2D):
             The size (sub_size x sub_size) of each unmasked pixels sub-array.
         origin : (float, float)
             The (y,x) scaled units origin of the mask's coordinate system.
-        store_slim : bool
-            If True, the array is stored in 1D as an ndarray of shape [total_unmasked_pixels]. If False, it is
-            stored in 2D as an ndarray of shape [total_y_pixels, total_x_pixels].
         """
         if sub_size is not None:
             shape_native = (shape_native[0] * sub_size, shape_native[1] * sub_size)
@@ -441,7 +413,6 @@ class Array2D(abstract_array_2d.AbstractArray2D):
             pixel_scales=pixel_scales,
             sub_size=sub_size,
             origin=origin,
-            store_slim=store_slim,
         )
 
     @classmethod
@@ -452,7 +423,6 @@ class Array2D(abstract_array_2d.AbstractArray2D):
         sub_size=1,
         origin=(0.0, 0.0),
         exposure_info=None,
-        store_slim=True,
     ):
         """Create an Array2D (see `AbstractArray2D.__new__`) where all values are filled with ones, analogous to the
         method np.ones().
@@ -471,9 +441,6 @@ class Array2D(abstract_array_2d.AbstractArray2D):
             The size (sub_size x sub_size) of each unmasked pixels sub-array.
         origin : (float, float)
             The (y,x) scaled units origin of the mask's coordinate system.
-        store_slim : bool
-            If True, the array is stored in 1D as an ndarray of shape [total_unmasked_pixels]. If False, it is
-            stored in 2D as an ndarray of shape [total_y_pixels, total_x_pixels].
         """
         return cls.full(
             fill_value=1.0,
@@ -481,7 +448,6 @@ class Array2D(abstract_array_2d.AbstractArray2D):
             pixel_scales=pixel_scales,
             sub_size=sub_size,
             origin=origin,
-            store_slim=store_slim,
         )
 
     @classmethod
@@ -492,7 +458,6 @@ class Array2D(abstract_array_2d.AbstractArray2D):
         sub_size=1,
         origin=(0.0, 0.0),
         exposure_info=None,
-        store_slim=True,
     ):
         """Create an Array2D (see `AbstractArray2D.__new__`) where all values are filled with zeros, analogous to the
         method np.ones().
@@ -511,9 +476,6 @@ class Array2D(abstract_array_2d.AbstractArray2D):
             The size (sub_size x sub_size) of each unmasked pixels sub-array.
         origin : (float, float)
             The (y,x) scaled units origin of the mask's coordinate system.
-        store_slim : bool
-            If True, the array is stored in 1D as an ndarray of shape [total_unmasked_pixels]. If False, it is
-            stored in 2D as an ndarray of shape [total_y_pixels, total_x_pixels].
         """
         return cls.full(
             fill_value=0.0,
@@ -521,7 +483,6 @@ class Array2D(abstract_array_2d.AbstractArray2D):
             pixel_scales=pixel_scales,
             sub_size=sub_size,
             origin=origin,
-            store_slim=store_slim,
         )
 
     @classmethod
@@ -532,7 +493,6 @@ class Array2D(abstract_array_2d.AbstractArray2D):
         hdu=0,
         sub_size=1,
         origin=(0.0, 0.0),
-        store_slim=True,
     ):
         """
         Create an Array2D (see `AbstractArray2D.__new__`) by loading the array values from a .fits file.
@@ -551,9 +511,6 @@ class Array2D(abstract_array_2d.AbstractArray2D):
             The size (sub_size x sub_size) of each unmasked pixels sub-array.
         origin : (float, float)
             The (y,x) scaled units origin of the mask's coordinate system.
-        store_slim : bool
-            If True, the array is stored in 1D as an ndarray of shape [total_unmasked_pixels]. If False, it is
-            stored in 2D as an ndarray of shape [total_y_pixels, total_x_pixels].
         """
         array_2d = array_2d_util.numpy_array_2d_from_fits(file_path=file_path, hdu=hdu)
         return cls.manual_native(
@@ -561,7 +518,6 @@ class Array2D(abstract_array_2d.AbstractArray2D):
             pixel_scales=pixel_scales,
             sub_size=sub_size,
             origin=origin,
-            store_slim=store_slim,
         )
 
     @classmethod
@@ -595,9 +551,6 @@ class Array2D(abstract_array_2d.AbstractArray2D):
             The size (sub_size x sub_size) of each unmasked pixels sub-grid.
         origin : (float, float)
             The origin of the grid's mask.
-        store_slim : bool
-            If True, the grid is stored in 1D as an ndarray of shape [total_unmasked_pixels, 2]. If False, it is
-            stored in 2D as an ndarray of shape [total_y_pixels, total_x_pixels, 2].
         """
         pixel_scales = geometry_util.convert_pixel_scales_2d(pixel_scales=pixel_scales)
 

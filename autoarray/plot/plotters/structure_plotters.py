@@ -56,7 +56,7 @@ class Array2DPlotter(abstract_plotters.AbstractPlotter):
             ),
             mask=self.extract_2d("mask", self.array.mask),
             border=self.extract_2d(
-                "border", self.array.mask.border_grid_sub_1.slim_binned
+                "border", self.array.mask.border_grid_sub_1.binned
             ),
         )
 
@@ -116,7 +116,7 @@ class Frame2DPlotter(abstract_plotters.AbstractPlotter):
             ),
             mask=self.extract_2d("mask", self.frame.mask),
             border=self.extract_2d(
-                "border", self.frame.mask.border_grid_sub_1.slim_binned
+                "border", self.frame.mask.border_grid_sub_1.binned
             ),
             parallel_overscan=self.extract_2d(
                 "parallel_overscan", self.frame.scans.parallel_overscan
@@ -243,7 +243,7 @@ class MapperPlotter(abstract_plotters.AbstractPlotter):
             mask=self.extract_2d("mask", self.mapper.source_grid_slim.mask),
             border=self.extract_2d(
                 "border",
-                self.mapper.source_grid_slim.mask.border_grid_sub_1.slim_binned,
+                self.mapper.source_grid_slim.mask.border_grid_sub_1.binned,
             ),
             pixelization_grid=self.extract_2d(
                 "pixelization_grid",

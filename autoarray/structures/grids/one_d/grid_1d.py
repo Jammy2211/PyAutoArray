@@ -27,7 +27,7 @@ class Grid1D(abstract_grid_1d.AbstractGrid1D):
         - native: it retains the original shape of the grid so the ndarray is
           shape [total_y_coordinates*sub_size, total_x_coordinates*sub_size, 2].
 
-        Case 1: [sub-size=1, store_slim=True]:
+        Case 1: [sub-size=1, slim]:
         -----------------------------------------
 
         The Grid1D is an ndarray of shape [total_unmasked_coordinates].
@@ -60,7 +60,7 @@ class Grid1D(abstract_grid_1d.AbstractGrid1D):
          grid[1] = [-0.5]
          grid[2] = [1.5]
 
-        Case 2: [sub-size>1, store_slim=True]:
+        Case 2: [sub-size>1, slim]:
         ------------------
 
         If the mask's `sub_size` is > 1, the grid is defined as a sub-grid where each entry corresponds to the (x)
@@ -106,7 +106,7 @@ class Grid1D(abstract_grid_1d.AbstractGrid1D):
         grid[1] = [-0.5]
         grid[2] = [-0.166]
 
-        Case 3: [sub_size=1 store_slim=False]
+        Case 3: [sub_size=1 native]
         --------------------------------------
 
         The Grid2D has the same properties as Case 1, but is stored as an an ndarray of shape
@@ -126,7 +126,7 @@ class Grid1D(abstract_grid_1d.AbstractGrid1D):
         - grid[5] = 0.0 (it is masked, thus zero)
         - grid[6] = 0.5
 
-        Case 4: [sub_size>1 store_slim=False]
+        Case 4: [sub_size>1 native]
         --------------------------------------
 
         The properties of this grid can be derived by combining Case's 2 and 3 above, whereby the grid is stored as
@@ -156,9 +156,6 @@ class Grid1D(abstract_grid_1d.AbstractGrid1D):
         mask : msk.Mask2D
             The 2D mask associated with the grid, defining the pixels each grid coordinate is paired with and
             originates from.
-        store_slim : bool
-            If True, the grid is stored in 1D as an ndarray of shape [total_unmasked_coordinates, 2]. If False, it is
-            stored in 2D as an ndarray of shape [total_y_coordinates, total_x_coordinates, 2].
         """
 
         obj = grid.view(cls)

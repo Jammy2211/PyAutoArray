@@ -246,7 +246,7 @@ def test__grid_2d_iterate_in__output_values__use_iterated_array_function():
     values_sub_3 = ndarray_1d_from_grid(grid=grid_sub_3, profile=None)
     values_sub_3 = grid_sub_3.structure_from_result(result=values_sub_3)
 
-    assert (values == values_sub_3.slim_binned).all()
+    assert (values == values_sub_3.binned).all()
 
     grid_2d = aa.Grid2DIterate.from_mask(
         mask=mask, fractional_accuracy=0.000001, sub_steps=[2, 4, 8, 16, 32]
@@ -261,7 +261,7 @@ def test__grid_2d_iterate_in__output_values__use_iterated_array_function():
     values_sub_2 = ndarray_1d_from_grid(grid=grid_sub_2, profile=None)
     values_sub_2 = grid_sub_2.structure_from_result(result=values_sub_2)
 
-    assert (values == values_sub_2.slim_binned).all()
+    assert (values == values_sub_2.binned).all()
 
     grid_2d = aa.Grid2DIterate.from_mask(
         mask=mask, fractional_accuracy=0.5, sub_steps=[2, 4]
@@ -281,11 +281,11 @@ def test__grid_2d_iterate_in__output_values__use_iterated_array_function():
     values_sub_4 = ndarray_1d_from_grid(grid=grid_sub_4, profile=None)
     values_sub_4 = grid_sub_4.structure_from_result(result=values_sub_4)
 
-    assert values.native[1, 1] == values_sub_2.native_binned[1, 1]
-    assert values.native[2, 2] != values_sub_2.native_binned[2, 2]
+    assert values.native[1, 1] == values_sub_2.binned.native[1, 1]
+    assert values.native[2, 2] != values_sub_2.binned.native[2, 2]
 
-    assert values.native[1, 1] != values_sub_4.native_binned[1, 1]
-    assert values.native[2, 2] == values_sub_4.native_binned[2, 2]
+    assert values.native[1, 1] != values_sub_4.binned.native[1, 1]
+    assert values.native[2, 2] == values_sub_4.binned.native[2, 2]
 
 
 def test__grid_2d_iterate_in__output_is_list_of_arrays__use_maximum_sub_size_in_all_pixels():
@@ -315,7 +315,7 @@ def test__grid_2d_iterate_in__output_is_list_of_arrays__use_maximum_sub_size_in_
     values_sub_3 = ndarray_1d_from_grid(grid=grid_sub_3, profile=None)
     values_sub_3 = grid_sub_3.structure_from_result(result=values_sub_3)
 
-    assert (values[0] == values_sub_3.slim_binned).all()
+    assert (values[0] == values_sub_3.binned).all()
 
 
 def test__grid_2d_iterate_in__output_values__use_iterated_grid_function():
@@ -345,7 +345,7 @@ def test__grid_2d_iterate_in__output_values__use_iterated_grid_function():
     values_sub_3 = ndarray_2d_from_grid(grid=grid_sub_3, profile=None)
     values_sub_3 = grid_sub_3.structure_from_result(result=values_sub_3)
 
-    assert (values == values_sub_3.slim_binned).all()
+    assert (values == values_sub_3.binned).all()
 
     grid_2d = aa.Grid2DIterate.from_mask(
         mask=mask, fractional_accuracy=0.000001, sub_steps=[2, 4, 8, 16, 32]
@@ -360,7 +360,7 @@ def test__grid_2d_iterate_in__output_values__use_iterated_grid_function():
     values_sub_2 = ndarray_2d_from_grid(grid=grid_sub_2, profile=None)
     values_sub_2 = grid_sub_2.structure_from_result(result=values_sub_2)
 
-    assert (values == values_sub_2.slim_binned).all()
+    assert (values == values_sub_2.binned).all()
 
     grid_2d = aa.Grid2DIterate.from_mask(
         mask=mask, fractional_accuracy=0.5, sub_steps=[2, 4]
@@ -380,17 +380,17 @@ def test__grid_2d_iterate_in__output_values__use_iterated_grid_function():
     values_sub_4 = ndarray_2d_from_grid(grid=grid_sub_4, profile=None)
     values_sub_4 = grid_sub_4.structure_from_result(result=values_sub_4)
 
-    assert values.native[1, 1, 0] == values_sub_2.native_binned[1, 1, 0]
-    assert values.native[2, 2, 0] != values_sub_2.native_binned[2, 2, 0]
+    assert values.native[1, 1, 0] == values_sub_2.binned.native[1, 1, 0]
+    assert values.native[2, 2, 0] != values_sub_2.binned.native[2, 2, 0]
 
-    assert values.native[1, 1, 0] != values_sub_4.native_binned[1, 1, 0]
-    assert values.native[2, 2, 0] == values_sub_4.native_binned[2, 2, 0]
+    assert values.native[1, 1, 0] != values_sub_4.binned.native[1, 1, 0]
+    assert values.native[2, 2, 0] == values_sub_4.binned.native[2, 2, 0]
 
-    assert values.native[1, 1, 1] == values_sub_2.native_binned[1, 1, 1]
-    assert values.native[2, 2, 1] != values_sub_2.native_binned[2, 2, 1]
+    assert values.native[1, 1, 1] == values_sub_2.binned.native[1, 1, 1]
+    assert values.native[2, 2, 1] != values_sub_2.binned.native[2, 2, 1]
 
-    assert values.native[1, 1, 1] != values_sub_4.native_binned[1, 1, 1]
-    assert values.native[2, 2, 1] == values_sub_4.native_binned[2, 2, 1]
+    assert values.native[1, 1, 1] != values_sub_4.binned.native[1, 1, 1]
+    assert values.native[2, 2, 1] == values_sub_4.binned.native[2, 2, 1]
 
 
 def test__grid_2d_iterate_in__output_is_list_of_grids__use_maximum_sub_size_in_all_pixels():
@@ -420,8 +420,8 @@ def test__grid_2d_iterate_in__output_is_list_of_grids__use_maximum_sub_size_in_a
     values_sub_3 = ndarray_2d_from_grid(grid=grid_sub_3, profile=None)
     values_sub_3 = grid_sub_3.structure_from_result(result=values_sub_3)
 
-    assert (values[0][0] == values_sub_3.slim_binned[0]).all()
-    assert (values[0][1] == values_sub_3.slim_binned[1]).all()
+    assert (values[0][0] == values_sub_3.binned[0]).all()
+    assert (values[0][1] == values_sub_3.binned[1]).all()
 
 
 def test__grid_2d_interpolate_in__output_values__interpolation_used_and_accurate():

@@ -10,18 +10,30 @@ import autoarray as aa
 test_data_dir = path.join("{}".format(path.dirname(path.realpath(__file__))), "files")
 
 
-class TestConstructorMethods:
-    def test__constructor_class_method_native__store_slim(self):
+class TestArray:
+
+    def test__recursive_shape_storage(self):
 
         arr = aa.Array2D.manual_native(
-            array=np.ones((3, 3)), sub_size=1, pixel_scales=(1.0, 1.0), store_slim=True
+            array=[[1.0, 2.0], [3.0, 4.0]], pixel_scales=1.0, sub_size=1
+        )
+
+        assert (arr.native.slim.native == np.array([[1.0, 2.0], [3.0, 4.0]])).all()
+        assert (arr.slim.native.slim == np.array([1.0, 2.0, 3.0, 4.0])).all()
+
+class TestConstructorMethods:
+
+    def test__constructor_class_method_native(self):
+
+        arr = aa.Array2D.manual_native(
+            array=np.ones((3, 3)), sub_size=1, pixel_scales=(1.0, 1.0), 
         )
 
         assert (arr == np.ones((9,))).all()
         assert (arr.slim == np.ones((9,))).all()
         assert (arr.native == np.ones((3, 3))).all()
-        assert (arr.slim_binned == np.ones((9,))).all()
-        assert (arr.native_binned == np.ones((3, 3))).all()
+        assert (arr.binned == np.ones((9,))).all()
+        assert (arr.binned.native == np.ones((3, 3))).all()
         assert (arr.binned == np.ones((9,))).all()
         assert arr.pixel_scales == (1.0, 1.0)
         assert arr.mask.central_pixel_coordinates == (1.0, 1.0)
@@ -30,14 +42,14 @@ class TestConstructorMethods:
         assert arr.mask.scaled_minima == (-1.5, -1.5)
 
         arr = aa.Array2D.manual_native(
-            array=np.ones((4, 4)), sub_size=2, pixel_scales=(0.1, 0.1), store_slim=True
+            array=np.ones((4, 4)), sub_size=2, pixel_scales=(0.1, 0.1), 
         )
 
         assert (arr == np.ones((16,))).all()
         assert (arr.slim == np.ones((16,))).all()
         assert (arr.native == np.ones((4, 4))).all()
-        assert (arr.slim_binned == np.ones((4,))).all()
-        assert (arr.native_binned == np.ones((2, 2))).all()
+        assert (arr.binned == np.ones((4,))).all()
+        assert (arr.binned.native == np.ones((2, 2))).all()
         assert (arr.binned == np.ones((4,))).all()
         assert arr.pixel_scales == (0.1, 0.1)
         assert arr.mask.central_pixel_coordinates == (0.5, 0.5)
@@ -50,7 +62,6 @@ class TestConstructorMethods:
             pixel_scales=(0.1, 0.1),
             sub_size=2,
             origin=(1.0, 1.0),
-            store_slim=True,
         )
 
         assert (arr == np.array([1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0])).all()
@@ -60,9 +71,9 @@ class TestConstructorMethods:
         assert (
             arr.native == np.array([[1.0, 2.0], [3.0, 4.0], [5.0, 6.0], [7.0, 8.0]])
         ).all()
-        assert arr.native_binned.shape == (2, 1)
-        assert (arr.slim_binned == np.array([2.5, 6.5])).all()
-        assert (arr.native_binned == np.array([[2.5], [6.5]])).all()
+        assert arr.binned.native.shape == (2, 1)
+        assert (arr.binned == np.array([2.5, 6.5])).all()
+        assert (arr.binned.native == np.array([[2.5], [6.5]])).all()
         assert (arr.binned == np.array([2.5, 6.5])).all()
         assert arr.pixel_scales == (0.1, 0.1)
         assert arr.mask.central_pixel_coordinates == (0.5, 0.0)
@@ -75,7 +86,6 @@ class TestConstructorMethods:
             pixel_scales=(2.0, 1.0),
             sub_size=1,
             origin=(-1.0, -2.0),
-            store_slim=True,
         )
 
         assert arr == pytest.approx(np.ones((9,)), 1e-4)
@@ -88,113 +98,16 @@ class TestConstructorMethods:
         assert arr.mask.scaled_maxima == pytest.approx((2.0, -0.5), 1e-4)
         assert arr.mask.scaled_minima == pytest.approx((-4.0, -3.5), 1e-4)
 
-    def test__constructor_class_method_slim__store_slim(self):
+    def test__constructor_class_method_slim(self):
         arr = aa.Array2D.manual_slim(
             array=np.ones((9,)),
             shape_native=(3, 3),
             pixel_scales=(2.0, 1.0),
             sub_size=1,
             origin=(-1.0, -2.0),
-            store_slim=True,
         )
 
         assert arr == pytest.approx(np.ones((9,)), 1e-4)
-        assert arr.slim == pytest.approx(np.ones((9,)), 1e-4)
-        assert arr.native == pytest.approx(np.ones((3, 3)), 1e-4)
-        assert arr.pixel_scales == (2.0, 1.0)
-        assert arr.mask.central_pixel_coordinates == (1.0, 1.0)
-        assert arr.mask.shape_native_scaled == pytest.approx((6.0, 3.0))
-        assert arr.origin == (-1.0, -2.0)
-        assert arr.mask.scaled_maxima == pytest.approx((2.0, -0.5), 1e-4)
-        assert arr.mask.scaled_minima == pytest.approx((-4.0, -3.5), 1e-4)
-
-    def test__constructor_class_method_native__store_native(self):
-        arr = aa.Array2D.manual_native(
-            array=np.ones((3, 3)), sub_size=1, pixel_scales=(1.0, 1.0), store_slim=False
-        )
-
-        assert (arr == np.ones((3, 3))).all()
-        assert (arr.slim == np.ones((9,))).all()
-        assert (arr.native == np.ones((3, 3))).all()
-        assert (arr.slim_binned == np.ones((9,))).all()
-        assert (arr.native_binned == np.ones((3, 3))).all()
-        assert (arr.binned == np.ones((3, 3))).all()
-        assert arr.pixel_scales == (1.0, 1.0)
-        assert arr.mask.central_pixel_coordinates == (1.0, 1.0)
-        assert arr.mask.shape_native_scaled == pytest.approx((3.0, 3.0))
-        assert arr.mask.scaled_maxima == (1.5, 1.5)
-        assert arr.mask.scaled_minima == (-1.5, -1.5)
-
-        arr = aa.Array2D.manual_native(
-            array=np.ones((4, 4)), sub_size=2, pixel_scales=(0.1, 0.1), store_slim=False
-        )
-
-        assert (arr == np.ones((4, 4))).all()
-        assert (arr.slim == np.ones((16,))).all()
-        assert (arr.native == np.ones((4, 4))).all()
-        assert (arr.slim_binned == np.ones((4,))).all()
-        assert (arr.native_binned == np.ones((2, 2))).all()
-        assert (arr.binned == np.ones((2, 2))).all()
-        assert arr.pixel_scales == (0.1, 0.1)
-        assert arr.mask.central_pixel_coordinates == (0.5, 0.5)
-        assert arr.mask.shape_native_scaled == pytest.approx((0.2, 0.2))
-        assert arr.mask.scaled_maxima == pytest.approx((0.1, 0.1), 1e-4)
-        assert arr.mask.scaled_minima == pytest.approx((-0.1, -0.1), 1e-4)
-
-        arr = aa.Array2D.manual_native(
-            array=np.array([[1.0, 2.0], [3.0, 4.0], [5.0, 6.0], [7.0, 8.0]]),
-            pixel_scales=(0.1, 0.1),
-            sub_size=2,
-            origin=(1.0, 1.0),
-            store_slim=False,
-        )
-
-        assert (arr == np.array([[1.0, 2.0], [3.0, 4.0], [5.0, 6.0], [7.0, 8.0]])).all()
-        assert arr.shape_native == (2, 1)
-        assert arr.sub_shape_native == (4, 2)
-        assert (arr.slim == np.array([1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0])).all()
-        assert (
-            arr.native == np.array([[1.0, 2.0], [3.0, 4.0], [5.0, 6.0], [7.0, 8.0]])
-        ).all()
-        assert arr.native_binned.shape == (2, 1)
-        assert (arr.slim_binned == np.array([2.5, 6.5])).all()
-        assert (arr.native_binned == np.array([[2.5], [6.5]])).all()
-        assert (arr.binned == np.array([[2.5], [6.5]])).all()
-        assert arr.pixel_scales == (0.1, 0.1)
-        assert arr.mask.central_pixel_coordinates == (0.5, 0.0)
-        assert arr.mask.shape_native_scaled == pytest.approx((0.2, 0.1))
-        assert arr.mask.scaled_maxima == pytest.approx((1.1, 1.05), 1e-4)
-        assert arr.mask.scaled_minima == pytest.approx((0.9, 0.95), 1e-4)
-
-        arr = aa.Array2D.manual_native(
-            array=np.ones((3, 3)),
-            pixel_scales=(2.0, 1.0),
-            sub_size=1,
-            origin=(-1.0, -2.0),
-            store_slim=False,
-        )
-
-        assert arr == pytest.approx(np.ones((3, 3)), 1e-4)
-        assert arr.slim == pytest.approx(np.ones((9,)), 1e-4)
-        assert arr.native == pytest.approx(np.ones((3, 3)), 1e-4)
-        assert arr.pixel_scales == (2.0, 1.0)
-        assert arr.mask.central_pixel_coordinates == (1.0, 1.0)
-        assert arr.mask.shape_native_scaled == pytest.approx((6.0, 3.0))
-        assert arr.origin == (-1.0, -2.0)
-        assert arr.mask.scaled_maxima == pytest.approx((2.0, -0.5), 1e-4)
-        assert arr.mask.scaled_minima == pytest.approx((-4.0, -3.5), 1e-4)
-
-    def test__constructor_class_method_slim__store_native(self):
-        arr = aa.Array2D.manual_slim(
-            array=np.ones((9,)),
-            shape_native=(3, 3),
-            pixel_scales=(2.0, 1.0),
-            sub_size=1,
-            origin=(-1.0, -2.0),
-            store_slim=False,
-        )
-
-        assert arr == pytest.approx(np.ones((3, 3)), 1e-4)
         assert arr.slim == pytest.approx(np.ones((9,)), 1e-4)
         assert arr.native == pytest.approx(np.ones((3, 3)), 1e-4)
         assert arr.pixel_scales == (2.0, 1.0)

@@ -26,7 +26,6 @@ class Grid2DIterate(abstract_grid_2d.AbstractGrid2D):
         mask,
         fractional_accuracy=0.9999,
         sub_steps=None,
-        store_slim=True,
         *args,
         **kwargs,
     ):
@@ -61,23 +60,14 @@ class Grid2DIterate(abstract_grid_2d.AbstractGrid2D):
         sub_steps : [int] or None
             The sub-size values used to iteratively evaluated the function at high levels of sub-gridding. If None,
             they are setup as the default values [2, 4, 8, 16].
-        store_slim : bool
-            If True, the grid is stored in 1D as an ndarray of shape [total_unmasked_pixels, 2]. If False, it is
-            stored in 2D as an ndarray of shape [total_y_pixels, total_x_pixels, 2].
         """
 
         sub_steps = sub_steps_from_none(sub_steps=sub_steps)
-        if store_slim and len(grid.shape) != 2:
-            raise exc.GridException(
-                "An grid input into the grid_2d.Grid2D.__new__ method has store_slim = `True` but"
-                "the input shape of the array is not 1."
-            )
 
         obj = grid.view(cls)
         obj.mask = mask
-        obj.store_slim = store_slim
         obj.grid = grid_2d.Grid2D.manual_mask(
-            grid=np.asarray(obj), mask=mask, store_slim=store_slim
+            grid=np.asarray(obj), mask=mask,
         )
         obj.fractional_accuracy = fractional_accuracy
         obj.sub_steps = sub_steps
@@ -96,7 +86,7 @@ class Grid2DIterate(abstract_grid_2d.AbstractGrid2D):
         if hasattr(obj, "sub_steps"):
             self.sub_steps = obj.sub_steps
 
-    def _new_structure(self, grid, mask, store_slim):
+    def _new_structure(self, grid, mask):
         """
         Conveninence method for creating a new instance of the Grid2DIterate class from this grid.
 
@@ -110,16 +100,12 @@ class Grid2DIterate(abstract_grid_2d.AbstractGrid2D):
         mask : msk.Mask2D
             The 2D mask associated with the grid, defining the pixels each grid coordinate is paired with and
             originates from.
-        store_slim : bool
-            If True, the grid is stored in 1D as an ndarray of shape [total_unmasked_pixels, 2]. If False, it is
-            stored in 2D as an ndarray of shape [total_y_pixels, total_x_pixels, 2].
         """
         return Grid2DIterate(
             grid=grid,
             mask=mask,
             fractional_accuracy=self.fractional_accuracy,
             sub_steps=self.sub_steps,
-            store_slim=store_slim,
         )
 
     @classmethod
@@ -131,7 +117,6 @@ class Grid2DIterate(abstract_grid_2d.AbstractGrid2D):
         origin=(0.0, 0.0),
         fractional_accuracy=0.9999,
         sub_steps=None,
-        store_slim=True,
     ):
         """
         Create a Grid2DIterate (see *Grid2DIterate.__new__*) by inputting the grid coordinates in 1D, for example:
@@ -161,9 +146,6 @@ class Grid2DIterate(abstract_grid_2d.AbstractGrid2D):
             they are setup as the default values [2, 4, 8, 16].
         origin : (float, float)
             The origin of the grid's mask.
-        store_slim : bool
-            If True, the grid is stored in 1D as an ndarray of shape [total_unmasked_pixels, 2]. If False, it is
-            stored in 2D as an ndarray of shape [total_y_pixels, total_x_pixels, 2].
         """
         grid = abstract_grid.convert_grid(grid=grid)
         pixel_scales = geometry_util.convert_pixel_scales_2d(pixel_scales=pixel_scales)
@@ -175,25 +157,11 @@ class Grid2DIterate(abstract_grid_2d.AbstractGrid2D):
             origin=origin,
         )
 
-        if store_slim:
-            return Grid2DIterate(
-                grid=grid,
-                mask=mask,
-                fractional_accuracy=fractional_accuracy,
-                sub_steps=sub_steps,
-                store_slim=store_slim,
-            )
-
-        grid_2d = grid_2d_util.grid_2d_native_from(
-            grid_2d_slim=grid, mask_2d=mask, sub_size=1
-        )
-
         return Grid2DIterate(
-            grid=grid_2d,
+            grid=grid,
             mask=mask,
             fractional_accuracy=fractional_accuracy,
             sub_steps=sub_steps,
-            store_slim=store_slim,
         )
 
     @classmethod
@@ -204,7 +172,6 @@ class Grid2DIterate(abstract_grid_2d.AbstractGrid2D):
         origin=(0.0, 0.0),
         fractional_accuracy=0.9999,
         sub_steps=None,
-        store_slim=True,
     ):
         """
         Create a Grid2DIterate (see *Grid2DIterate.__new__*) as a uniform grid of (y,x) values given an input
@@ -225,9 +192,6 @@ class Grid2DIterate(abstract_grid_2d.AbstractGrid2D):
             they are setup as the default values [2, 4, 8, 16].
         origin : (float, float)
             The origin of the grid's mask.
-        store_slim : bool
-            If True, the grid is stored in 1D as an ndarray of shape [total_unmasked_pixels, 2]. If False, it is
-            stored in 2D as an ndarray of shape [total_y_pixels, total_x_pixels, 2].
         """
 
         pixel_scales = geometry_util.convert_pixel_scales_2d(pixel_scales=pixel_scales)
@@ -246,12 +210,11 @@ class Grid2DIterate(abstract_grid_2d.AbstractGrid2D):
             fractional_accuracy=fractional_accuracy,
             sub_steps=sub_steps,
             origin=origin,
-            store_slim=store_slim,
         )
 
     @classmethod
     def from_mask(
-        cls, mask, fractional_accuracy=0.9999, sub_steps=None, store_slim=True
+        cls, mask, fractional_accuracy=0.9999, sub_steps=None,
     ):
         """
         Create a Grid2DIterate (see *Grid2DIterate.__new__*) from a mask, where only unmasked pixels are included in
@@ -269,34 +232,17 @@ class Grid2DIterate(abstract_grid_2d.AbstractGrid2D):
         sub_steps : [int] or None
             The sub-size values used to iteratively evaluated the function at high levels of sub-gridding. If None,
             they are setup as the default values [2, 4, 8, 16].
-        store_slim : bool
-            If True, the grid is stored in 1D as an ndarray of shape [total_unmasked_pixels, 2]. If False, it is
-            stored in 2D as an ndarray of shape [total_y_pixels, total_x_pixels, 2].
         """
 
         grid_slim = grid_2d_util.grid_2d_slim_via_mask_from(
             mask_2d=mask, pixel_scales=mask.pixel_scales, sub_size=1, origin=mask.origin
         )
 
-        if store_slim:
-            return Grid2DIterate(
-                grid=grid_slim,
-                mask=mask.mask_sub_1,
-                fractional_accuracy=fractional_accuracy,
-                sub_steps=sub_steps,
-                store_slim=store_slim,
-            )
-
-        grid_2d = grid_2d_util.grid_2d_native_from(
-            grid_2d_slim=grid_slim, mask_2d=mask.mask_sub_1, sub_size=1
-        )
-
         return Grid2DIterate(
-            grid=grid_2d,
+            grid=grid_slim,
             mask=mask.mask_sub_1,
             fractional_accuracy=fractional_accuracy,
             sub_steps=sub_steps,
-            store_slim=store_slim,
         )
 
     @classmethod
@@ -306,7 +252,6 @@ class Grid2DIterate(abstract_grid_2d.AbstractGrid2D):
         kernel_shape_native,
         fractional_accuracy=0.9999,
         sub_steps=None,
-        store_slim=True,
     ):
         """
         Setup a blurring-grid from a mask, where a blurring grid consists of all pixels that are masked (and
@@ -329,9 +274,6 @@ class Grid2DIterate(abstract_grid_2d.AbstractGrid2D):
         sub_steps : [int] or None
             The sub-size values used to iteratively evaluated the function at high levels of sub-gridding. If None,
             they are setup as the default values [2, 4, 8, 16].
-        store_slim : bool
-            If True, the grid is stored in 1D as an ndarray of shape [total_unmasked_pixels, 2]. If False, it is
-            stored in 2D as an ndarray of shape [total_y_pixels, total_x_pixels, 2].
         """
 
         blurring_mask = mask.blurring_mask_from_kernel_shape(
@@ -342,7 +284,6 @@ class Grid2DIterate(abstract_grid_2d.AbstractGrid2D):
             mask=blurring_mask,
             fractional_accuracy=fractional_accuracy,
             sub_steps=sub_steps,
-            store_slim=store_slim,
         )
 
     def grid_from_deflection_grid(self, deflection_grid):
@@ -362,7 +303,6 @@ class Grid2DIterate(abstract_grid_2d.AbstractGrid2D):
             mask=self.mask,
             fractional_accuracy=self.fractional_accuracy,
             sub_steps=self.sub_steps,
-            store_slim=self.store_slim,
         )
 
     def blurring_grid_from_kernel_shape(self, kernel_shape_native):
@@ -382,7 +322,6 @@ class Grid2DIterate(abstract_grid_2d.AbstractGrid2D):
             kernel_shape_native=kernel_shape_native,
             fractional_accuracy=self.fractional_accuracy,
             sub_steps=self.sub_steps,
-            store_slim=self.store_slim,
         )
 
     def padded_grid_from_kernel_shape(self, kernel_shape_native):
@@ -424,7 +363,7 @@ class Grid2DIterate(abstract_grid_2d.AbstractGrid2D):
 
         grid_compute = grid_2d.Grid2D.from_mask(mask=mask_higher_sub)
         array_higher_sub = func(cls, grid_compute)
-        return grid_compute.structure_from_result(result=array_higher_sub).native_binned
+        return grid_compute.structure_from_result(result=array_higher_sub).binned.native
 
     @staticmethod
     def grid_at_sub_size_from_func_and_mask(func, cls, mask, sub_size):
@@ -433,7 +372,7 @@ class Grid2DIterate(abstract_grid_2d.AbstractGrid2D):
 
         grid_compute = grid_2d.Grid2D.from_mask(mask=mask_higher_sub)
         grid_higher_sub = func(cls, grid_compute)
-        return grid_compute.structure_from_result(result=grid_higher_sub).native_binned
+        return grid_compute.structure_from_result(result=grid_higher_sub).binned.native
 
     def fractional_mask_from_arrays(
         self, array_lower_sub_2d, array_higher_sub_2d
@@ -591,7 +530,7 @@ class Grid2DIterate(abstract_grid_2d.AbstractGrid2D):
             sub_size=self.sub_steps[-1],
         )
 
-        iterated_array_2d = iterated_array + array_higher_sub.native_binned
+        iterated_array_2d = iterated_array + array_higher_sub.binned.native
 
         return self.return_iterated_array_result(iterated_array=iterated_array_2d)
 
@@ -616,7 +555,7 @@ class Grid2DIterate(abstract_grid_2d.AbstractGrid2D):
         )
 
         return array_2d.Array2D(
-            array=iterated_array_1d, mask=self.mask.mask_sub_1, store_slim=True
+            array=iterated_array_1d, mask=self.mask.mask_sub_1,
         )
 
     @staticmethod
@@ -801,7 +740,7 @@ class Grid2DIterate(abstract_grid_2d.AbstractGrid2D):
                 )
 
                 return grid_2d.Grid2D(
-                    grid=iterated_grid_1d, mask=self.mask.mask_sub_1, store_slim=True
+                    grid=iterated_grid_1d, mask=self.mask.mask_sub_1,
                 )
 
             grid_lower_sub_2d = grid_higher_sub
@@ -814,14 +753,14 @@ class Grid2DIterate(abstract_grid_2d.AbstractGrid2D):
             sub_size=self.sub_steps[-1],
         )
 
-        iterated_grid_2d = iterated_grid + grid_higher_sub.native_binned
+        iterated_grid_2d = iterated_grid + grid_higher_sub.binned.native
 
         iterated_grid_1d = grid_2d_util.grid_2d_slim_from(
             mask=self.mask, grid_2d_native=iterated_grid_2d, sub_size=1
         )
 
         return grid_2d.Grid2D(
-            grid=iterated_grid_1d, mask=self.mask.mask_sub_1, store_slim=True
+            grid=iterated_grid_1d, mask=self.mask.mask_sub_1,
         )
 
     @staticmethod
@@ -868,7 +807,7 @@ class Grid2DIterate(abstract_grid_2d.AbstractGrid2D):
         result_sub_1_1d = func(cls, self.grid)
         result_sub_1_2d = self.grid.structure_from_result(
             result=result_sub_1_1d
-        ).native_binned
+        ).binned.native
 
         if len(result_sub_1_2d.shape) == 2:
             return self.iterated_array_from_func(

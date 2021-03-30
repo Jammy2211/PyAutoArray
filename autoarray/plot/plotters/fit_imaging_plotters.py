@@ -23,7 +23,7 @@ class AbstractFitImagingPlotter(abstract_plotters.AbstractPlotter):
             ),
             mask=self.extract_2d("mask", self.fit.mask),
             border=self.extract_2d(
-                "border", self.fit.mask.border_grid_sub_1.slim_binned
+                "border", self.fit.mask.border_grid_sub_1.binned
             ),
         )
 

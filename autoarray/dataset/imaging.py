@@ -80,7 +80,6 @@ class AbstractImaging(abstract_dataset.AbstractDataset):
         imaging.noise_map = array_2d.Array2D.manual_mask(
             array=noise_map_limit,
             mask=self.image.mask,
-            store_slim=self.noise_map.store_slim,
         )
 
         return imaging
@@ -198,13 +197,11 @@ class AbstractMaskedImaging(abstract_dataset.AbstractMaskedDataset):
         self.image = array_2d.Array2D.manual_mask(
             array=self.dataset.image.native,
             mask=mask.mask_sub_1,
-            store_slim=imaging.image.store_slim,
         )
 
         self.noise_map = array_2d.Array2D.manual_mask(
             array=self.dataset.noise_map.native,
             mask=mask.mask_sub_1,
-            store_slim=imaging.noise_map.store_slim,
         )
 
         psf = copy.deepcopy(imaging.psf)

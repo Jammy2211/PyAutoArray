@@ -102,7 +102,7 @@ class AbstractMask1d(abstract_mask.AbstractMask):
         )
 
         return grid_1d.Grid1D(
-            grid=grid_slim, mask=self.unmasked_mask.mask_sub_1, store_slim=True
+            grid=grid_slim, mask=self.unmasked_mask.mask_sub_1,
         )
 
     @property
