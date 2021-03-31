@@ -93,9 +93,7 @@ class TestAPI:
         assert arr.origin == (0.0, 1.0)
 
         mask = aa.Mask2D.manual(mask=[[False], [True]], pixel_scales=2.0, sub_size=2)
-        arr = aa.Array2D.manual_mask(
-            array=[1.0, 2.0, 3.0, 4.0], mask=mask,
-        )
+        arr = aa.Array2D.manual_mask(array=[1.0, 2.0, 3.0, 4.0], mask=mask)
 
         assert type(arr) == aa.Array2D
         assert (arr == np.array([1.0, 2.0, 3.0, 4.0])).all()
@@ -267,9 +265,7 @@ class TestAPI:
         assert (arr.slim == np.ones(9)).all()
 
         arr = aa.Array2D.from_fits(
-            file_path=path.join(test_data_dir, "4x3_ones.fits"),
-            hdu=0,
-            pixel_scales=1.0,
+            file_path=path.join(test_data_dir, "4x3_ones.fits"), hdu=0, pixel_scales=1.0
         )
 
         assert type(arr) == aa.Array2D

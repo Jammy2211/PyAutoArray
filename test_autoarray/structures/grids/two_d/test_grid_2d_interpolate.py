@@ -417,9 +417,7 @@ class TestAPI:
             mask_2d=mask, sub_size=1, pixel_scales=(2.0, 2.0)
         )
 
-        grid = aa.Grid2DInterpolate.from_mask(
-            mask=mask, pixel_scales_interp=0.1,
-        )
+        grid = aa.Grid2DInterpolate.from_mask(mask=mask, pixel_scales_interp=0.1)
 
         assert type(grid) == aa.Grid2DInterpolate
         assert type(grid.slim) == aa.Grid2DInterpolate
@@ -445,9 +443,7 @@ class TestAPI:
             mask_2d=mask, sub_size=2, pixel_scales=(2.0, 2.0)
         )
 
-        grid = aa.Grid2DInterpolate.from_mask(
-            mask=mask, pixel_scales_interp=0.1,
-        )
+        grid = aa.Grid2DInterpolate.from_mask(mask=mask, pixel_scales_interp=0.1)
 
         assert type(grid) == aa.Grid2DInterpolate
         assert type(grid.slim) == aa.Grid2DInterpolate
@@ -459,9 +455,7 @@ class TestAPI:
     def test__uniform(self):
 
         grid = aa.Grid2DInterpolate.uniform(
-            shape_native=(2, 2),
-            pixel_scales=2.0,
-            pixel_scales_interp=0.1,
+            shape_native=(2, 2), pixel_scales=2.0, pixel_scales_interp=0.1
         )
 
         assert type(grid) == aa.Grid2DInterpolate

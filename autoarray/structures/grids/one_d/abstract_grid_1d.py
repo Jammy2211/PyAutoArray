@@ -21,7 +21,9 @@ class AbstractGrid1D(abstract_structure.AbstractStructure1D):
         if self.shape[0] != self.mask.sub_shape_native[0]:
             return self
 
-        grid = grid_1d_util.grid_1d_slim_from(grid_1d_native=self, mask_1d=self.mask, sub_size=self.mask.sub_size)
+        grid = grid_1d_util.grid_1d_slim_from(
+            grid_1d_native=self, mask_1d=self.mask, sub_size=self.mask.sub_size
+        )
 
         return grid_1d.Grid1D(grid=grid, mask=self.mask)
 
@@ -34,7 +36,6 @@ class AbstractGrid1D(abstract_structure.AbstractStructure1D):
         If it is already stored in its `native` representation it is return as it is. If not, it is mapped from
         `slim` to `native` and returned as a new `Grid1D`.
         """
-
 
         if self.shape[0] == self.mask.sub_shape_native[0]:
             return self
@@ -61,7 +62,8 @@ class AbstractGrid1D(abstract_structure.AbstractStructure1D):
         grid_1d_slim = self.slim
 
         binned_grid_1d_slim = np.multiply(
-            self.mask.sub_fraction, grid_1d_slim.reshape(-1, self.mask.sub_length).sum(axis=1)
+            self.mask.sub_fraction,
+            grid_1d_slim.reshape(-1, self.mask.sub_length).sum(axis=1),
         )
 
         return grid_1d.Grid1D(grid=binned_grid_1d_slim, mask=self.mask.mask_sub_1)

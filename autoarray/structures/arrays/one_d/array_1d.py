@@ -7,7 +7,6 @@ from autoarray.geometry import geometry_util
 
 
 class Array1D(abstract_array_1d.AbstractArray1D):
-
     def __new__(cls, array, mask, *args, **kwargs):
 
         obj = array.view(cls)

@@ -402,8 +402,7 @@ class InversionImagingMatrix(AbstractInversion, AbstractInversionMatrix):
         )
 
         return array_2d.Array2D(
-            array=reconstructed_image,
-            mask=self.mapper.source_grid_slim.mask.mask_sub_1,
+            array=reconstructed_image, mask=self.mapper.source_grid_slim.mask.mask_sub_1
         )
 
     @property

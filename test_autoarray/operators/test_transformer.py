@@ -43,6 +43,7 @@ class MockMaskedGrid2:
         self.slim = MockMaskedGrid3(grid=grid)
         self.in_radians = grid
 
+
 class MockMaskedGrid3:
     def __init__(self, grid):
 

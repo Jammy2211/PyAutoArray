@@ -17,13 +17,11 @@ class TestImaging:
         self,
     ):
 
-        image = aa.Array2D.full(
-            fill_value=20.0, shape_native=(2, 2), pixel_scales=1.0,
-        )
+        image = aa.Array2D.full(fill_value=20.0, shape_native=(2, 2), pixel_scales=1.0)
         image[3] = 5.0
 
         noise_map_array = aa.Array2D.full(
-            fill_value=5.0, shape_native=(2, 2), pixel_scales=1.0,
+            fill_value=5.0, shape_native=(2, 2), pixel_scales=1.0
         )
         noise_map_array[3] = 2.0
 

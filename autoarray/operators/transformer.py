@@ -192,9 +192,7 @@ class TransformerNUFFT(NUFFT_cpu, pylops.LinearOperator):
                 sub_size=1,
             )
 
-            image = array_2d.Array2D(
-                array=image_2d, mask=self.grid.mask,
-            )
+            image = array_2d.Array2D(array=image_2d, mask=self.grid.mask)
 
             visibilities = self.visibilities_from_image(image=image)
 

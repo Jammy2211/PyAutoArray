@@ -519,9 +519,7 @@ class Kernel2D(array_2d.Array2D):
             mask_2d=array_binned_2d.mask, array_2d_native=convolved_array_2d, sub_size=1
         )
 
-        return array_2d.Array2D(
-            array=convolved_array_1d, mask=array_binned_2d.mask,
-        )
+        return array_2d.Array2D(array=convolved_array_1d, mask=array_binned_2d.mask)
 
     def convolved_array_from_array_and_mask(self, array, mask):
         """
@@ -551,6 +549,4 @@ class Kernel2D(array_2d.Array2D):
             mask_2d=mask, array_2d_native=convolved_array_2d, sub_size=1
         )
 
-        return array_2d.Array2D(
-            array=convolved_array_1d, mask=mask.mask_sub_1,
-        )
+        return array_2d.Array2D(array=convolved_array_1d, mask=mask.mask_sub_1)

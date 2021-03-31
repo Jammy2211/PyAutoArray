@@ -22,9 +22,7 @@ class AbstractFitImagingPlotter(abstract_plotters.AbstractPlotter):
                 "origin", grid_2d_irregular.Grid2DIrregular(grid=[self.fit.mask.origin])
             ),
             mask=self.extract_2d("mask", self.fit.mask),
-            border=self.extract_2d(
-                "border", self.fit.mask.border_grid_sub_1.binned
-            ),
+            border=self.extract_2d("border", self.fit.mask.border_grid_sub_1.binned),
         )
 
     def figures(

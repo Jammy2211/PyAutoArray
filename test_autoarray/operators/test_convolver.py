@@ -1215,12 +1215,10 @@ class TestCompareToFull2dConv:
             shape_native=(30, 30), pixel_scales=(1.0, 1.0), sub_size=1, radius=4.0
         )
 
-        masked_image = aa.Array2D.manual_mask(
-            array=image.native, mask=mask,
-        )
+        masked_image = aa.Array2D.manual_mask(array=image.native, mask=mask)
 
         blurred_masked_image = aa.Array2D.manual_mask(
-            array=blurred_image.native, mask=mask,
+            array=blurred_image.native, mask=mask
         )
 
         # Now reproduce this datas_ using the frame convolver_image
@@ -1230,9 +1228,7 @@ class TestCompareToFull2dConv:
         )
         convolver = aa.Convolver(mask=mask, kernel=kernel)
 
-        blurring_image = aa.Array2D.manual_mask(
-            array=image.native, mask=blurring_mask,
-        )
+        blurring_image = aa.Array2D.manual_mask(array=image.native, mask=blurring_mask)
 
         blurred_masked_im_1 = convolver.convolved_image_from_image_and_blurring_image(
             image=masked_image, blurring_image=blurring_image

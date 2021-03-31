@@ -11,7 +11,6 @@ test_data_dir = path.join("{}".format(path.dirname(path.realpath(__file__))), "f
 
 
 class TestArray:
-
     def test__recursive_shape_storage(self):
 
         arr = aa.Array2D.manual_native(
@@ -21,12 +20,12 @@ class TestArray:
         assert (arr.native.slim.native == np.array([[1.0, 2.0], [3.0, 4.0]])).all()
         assert (arr.slim.native.slim == np.array([1.0, 2.0, 3.0, 4.0])).all()
 
-class TestConstructorMethods:
 
+class TestConstructorMethods:
     def test__constructor_class_method_native(self):
 
         arr = aa.Array2D.manual_native(
-            array=np.ones((3, 3)), sub_size=1, pixel_scales=(1.0, 1.0), 
+            array=np.ones((3, 3)), sub_size=1, pixel_scales=(1.0, 1.0)
         )
 
         assert (arr == np.ones((9,))).all()
@@ -42,7 +41,7 @@ class TestConstructorMethods:
         assert arr.mask.scaled_minima == (-1.5, -1.5)
 
         arr = aa.Array2D.manual_native(
-            array=np.ones((4, 4)), sub_size=2, pixel_scales=(0.1, 0.1), 
+            array=np.ones((4, 4)), sub_size=2, pixel_scales=(0.1, 0.1)
         )
 
         assert (arr == np.ones((16,))).all()

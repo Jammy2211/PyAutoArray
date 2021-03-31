@@ -20,7 +20,9 @@ class TestAPI:
         assert array_1d.pixel_scales == (1.0,)
         assert array_1d.origin == (0.0,)
 
-        array_1d = aa.Array1D.manual_native(array=[1.0, 2.0, 3.0, 4.0], pixel_scales=1.0)
+        array_1d = aa.Array1D.manual_native(
+            array=[1.0, 2.0, 3.0, 4.0], pixel_scales=1.0
+        )
 
         assert type(array_1d) == aa.Array1D
         assert (array_1d.native == np.array([1.0, 2.0, 3.0, 4.0])).all()
@@ -61,5 +63,7 @@ class TestAPI:
             array=[100.0, 1.0, 2.0, 100.0, 3.0, 4.0], mask=mask
         )
 
-        assert (array_1d.native.slim.native == np.array([0.0, 1.0, 2.0, 0.0, 3.0, 4.0])).all()
+        assert (
+            array_1d.native.slim.native == np.array([0.0, 1.0, 2.0, 0.0, 3.0, 4.0])
+        ).all()
         assert (array_1d.slim.native.slim == np.array([1.0, 2.0, 3.0, 4.0])).all()

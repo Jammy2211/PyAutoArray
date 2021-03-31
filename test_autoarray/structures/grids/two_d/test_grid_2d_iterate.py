@@ -854,7 +854,7 @@ class TestAPI:
         )
 
         grid = aa.Grid2DIterate.from_mask(
-            mask=mask, fractional_accuracy=0.1, sub_steps=[2, 3, 4],
+            mask=mask, fractional_accuracy=0.1, sub_steps=[2, 3, 4]
         )
 
         assert type(grid) == aa.Grid2DIterate

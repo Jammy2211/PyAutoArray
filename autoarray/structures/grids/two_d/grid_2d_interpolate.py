@@ -68,9 +68,7 @@ class Grid2DInterpolate(abstract_grid_2d.AbstractGrid2D):
             origin=mask.origin,
         )
 
-        obj.grid_interp = grid_2d.Grid2D.manual_mask(
-            grid=grid_interp, mask=mask_interp,
-        )
+        obj.grid_interp = grid_2d.Grid2D.manual_mask(grid=grid_interp, mask=mask_interp)
 
         obj.vtx, obj.wts = obj.interp_weights
 
@@ -108,9 +106,7 @@ class Grid2DInterpolate(abstract_grid_2d.AbstractGrid2D):
             originates from.
         """
         return Grid2DInterpolate(
-            grid=grid,
-            mask=mask,
-            pixel_scales_interp=self.pixel_scales_interp,
+            grid=grid, mask=mask, pixel_scales_interp=self.pixel_scales_interp
         )
 
     @classmethod
@@ -164,9 +160,7 @@ class Grid2DInterpolate(abstract_grid_2d.AbstractGrid2D):
         )
 
         return Grid2DInterpolate(
-            grid=grid,
-            mask=mask,
-            pixel_scales_interp=pixel_scales_interp,
+            grid=grid, mask=mask, pixel_scales_interp=pixel_scales_interp
         )
 
     @classmethod
@@ -246,14 +240,12 @@ class Grid2DInterpolate(abstract_grid_2d.AbstractGrid2D):
         )
 
         return Grid2DInterpolate(
-            grid=grid_slim,
-            mask=mask,
-            pixel_scales_interp=pixel_scales_interp,
+            grid=grid_slim, mask=mask, pixel_scales_interp=pixel_scales_interp
         )
 
     @classmethod
     def blurring_grid_from_mask_and_kernel_shape(
-        cls, mask, kernel_shape_native, pixel_scales_interp,
+        cls, mask, kernel_shape_native, pixel_scales_interp
     ):
         """Setup a blurring-grid from a mask, where a blurring grid consists of all pixels that are masked (and
         therefore have their values set to (0.0, 0.0)), but are close enough to the unmasked pixels that their values
@@ -279,8 +271,7 @@ class Grid2DInterpolate(abstract_grid_2d.AbstractGrid2D):
         )
 
         return cls.from_mask(
-            mask=blurring_mask,
-            pixel_scales_interp=pixel_scales_interp,
+            mask=blurring_mask, pixel_scales_interp=pixel_scales_interp
         )
 
     def blurring_grid_from_kernel_shape(self, kernel_shape_native):
@@ -409,9 +400,7 @@ class Grid2DInterpolate(abstract_grid_2d.AbstractGrid2D):
         interpolated_array = np.einsum(
             "nj,nj->n", np.take(array_interp, self.vtx), self.wts
         )
-        return array_2d.Array2D(
-            array=interpolated_array, mask=self.mask,
-        )
+        return array_2d.Array2D(array=interpolated_array, mask=self.mask)
 
     def interpolated_grid_from_grid_interp(self, grid_interp) -> grid_2d.Grid2D:
         """Use the precomputed vertexes and weights of a Delaunay gridding to interpolate a grid of (y,x) values values
@@ -456,9 +445,7 @@ class Grid2DInterpolate(abstract_grid_2d.AbstractGrid2D):
             return array_2d.Array2D(array=result, mask=self.mask)
         else:
             if isinstance(result, grid_2d.Grid2DTransformedNumpy):
-                return grid_2d.Grid2DTransformed(
-                    grid=result, mask=self.mask,
-                )
+                return grid_2d.Grid2DTransformed(grid=result, mask=self.mask)
             return grid_2d.Grid2D(grid=result, mask=self.mask)
 
     def structure_list_from_result_list(self, result_list: list):

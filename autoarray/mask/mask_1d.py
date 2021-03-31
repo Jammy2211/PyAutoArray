@@ -101,9 +101,7 @@ class AbstractMask1d(abstract_mask.AbstractMask):
             mask_1d=self, pixel_scales=self.pixel_scales, sub_size=1, origin=self.origin
         )
 
-        return grid_1d.Grid1D(
-            grid=grid_slim, mask=self.unmasked_mask.mask_sub_1,
-        )
+        return grid_1d.Grid1D(grid=grid_slim, mask=self.unmasked_mask.mask_sub_1)
 
     @property
     def to_mask_2d(self) -> mask_2d.Mask2D:

@@ -4,7 +4,6 @@ import pickle
 
 
 class AbstractStructure(np.ndarray):
-
     def __array_finalize__(self, obj):
 
         if hasattr(obj, "mask"):
