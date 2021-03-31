@@ -325,7 +325,9 @@ class AbstractGrid2D(abstract_structure.AbstractStructure2D):
         )
         return array_2d.Array2D.manual_mask(array=distances, mask=self.mask)
 
-    def grid_2d_radial_projected_from(self, centre=(0.0, 0.0), angle: float = 0.0) -> grid_2d_irregular.Grid2DIrregular:
+    def grid_2d_radial_projected_from(
+        self, centre=(0.0, 0.0), angle: float = 0.0
+    ) -> grid_2d_irregular.Grid2DIrregular:
         """
         Determine a projected radial grid of points from a 2D region of coordinates defined by an
         extent [xmin, xmax, ymin, ymax] and with a (y,x) centre. This functions operates as follows:
@@ -387,7 +389,11 @@ class AbstractGrid2D(abstract_structure.AbstractStructure2D):
         )
 
         grid_radial_projected_2d = geometry_util.transform_grid_2d_to_reference_frame(
-            grid_2d=grid_radial_projected_2d, centre=(0.0, 0.0), angle=angle
+            grid_2d=grid_radial_projected_2d, centre=centre, angle=angle
+        )
+
+        grid_radial_projected_2d = geometry_util.transform_grid_2d_from_reference_frame(
+            grid_2d=grid_radial_projected_2d, centre=centre, angle=0.0
         )
 
         return grid_2d_irregular.Grid2DIrregular(grid=grid_radial_projected_2d)

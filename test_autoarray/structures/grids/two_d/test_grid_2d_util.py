@@ -917,6 +917,13 @@ class TestGridRadialProjected:
             )
         ).all()
 
+        grid_radii = aa.util.grid_2d.grid_scaled_2d_slim_radial_projected_from(
+            extent=np.array([5.0, 8.0, 99.9, 100.1]),
+            centre=(-10.0, -10.0),
+            pixel_scales=(1.0, 10.0),
+            sub_size=1,
+        )
+
     def test__grid_radii_from_scaled_2d__vary_all_y_dimension_parameters(self):
 
         grid_radii = aa.util.grid_2d.grid_scaled_2d_slim_radial_projected_from(
