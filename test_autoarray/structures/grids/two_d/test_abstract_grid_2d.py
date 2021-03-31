@@ -109,7 +109,11 @@ class TestGrid:
         grid_radii = grid.grid_2d_radial_projected_from(centre=(0.3, 0.1), angle=60.0)
 
         grid_radii_util_angle = aa.util.geometry.transform_grid_2d_to_reference_frame(
-            grid_2d=grid_radii_util, centre=(0.0, 0.0), angle=60.0
+            grid_2d=grid_radii_util, centre=(0.3, 0.1), angle=60.0
+        )
+
+        grid_radii_util_angle = aa.util.geometry.transform_grid_2d_from_reference_frame(
+            grid_2d=grid_radii_util_angle, centre=(0.3, 0.1), angle=0.0
         )
 
         assert (grid_radii == grid_radii_util_angle).all()

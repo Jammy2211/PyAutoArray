@@ -256,7 +256,11 @@ class AbstractGrid2D(abstract_structure.AbstractStructure2D):
         )
 
         grid_radial_projected_2d = geometry_util.transform_grid_2d_to_reference_frame(
-            grid_2d=grid_radial_projected_2d, centre=(0.0, 0.0), angle=angle
+            grid_2d=grid_radial_projected_2d, centre=centre, angle=angle
+        )
+
+        grid_radial_projected_2d = geometry_util.transform_grid_2d_from_reference_frame(
+            grid_2d=grid_radial_projected_2d, centre=centre, angle=0.0
         )
 
         return grid_2d_irregular.Grid2DIrregular(grid=grid_radial_projected_2d)
