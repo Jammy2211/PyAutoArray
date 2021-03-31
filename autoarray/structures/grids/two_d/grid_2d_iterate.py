@@ -21,13 +21,7 @@ def sub_steps_from_none(sub_steps):
 
 class Grid2DIterate(abstract_grid_2d.AbstractGrid2D):
     def __new__(
-        cls,
-        grid,
-        mask,
-        fractional_accuracy=0.9999,
-        sub_steps=None,
-        *args,
-        **kwargs,
+        cls, grid, mask, fractional_accuracy=0.9999, sub_steps=None, *args, **kwargs
     ):
         """
         Represents a grid of coordinates as described for the `Grid2D` class, but using an iterative sub-grid that
@@ -66,9 +60,7 @@ class Grid2DIterate(abstract_grid_2d.AbstractGrid2D):
 
         obj = grid.view(cls)
         obj.mask = mask
-        obj.grid = grid_2d.Grid2D.manual_mask(
-            grid=np.asarray(obj), mask=mask,
-        )
+        obj.grid = grid_2d.Grid2D.manual_mask(grid=np.asarray(obj), mask=mask)
         obj.fractional_accuracy = fractional_accuracy
         obj.sub_steps = sub_steps
         return obj
@@ -213,9 +205,7 @@ class Grid2DIterate(abstract_grid_2d.AbstractGrid2D):
         )
 
     @classmethod
-    def from_mask(
-        cls, mask, fractional_accuracy=0.9999, sub_steps=None,
-    ):
+    def from_mask(cls, mask, fractional_accuracy=0.9999, sub_steps=None):
         """
         Create a Grid2DIterate (see *Grid2DIterate.__new__*) from a mask, where only unmasked pixels are included in
         the grid (if the grid is represented in 2D masked values are (0.0, 0.0)).
@@ -247,11 +237,7 @@ class Grid2DIterate(abstract_grid_2d.AbstractGrid2D):
 
     @classmethod
     def blurring_grid_from_mask_and_kernel_shape(
-        cls,
-        mask,
-        kernel_shape_native,
-        fractional_accuracy=0.9999,
-        sub_steps=None,
+        cls, mask, kernel_shape_native, fractional_accuracy=0.9999, sub_steps=None
     ):
         """
         Setup a blurring-grid from a mask, where a blurring grid consists of all pixels that are masked (and
@@ -554,9 +540,7 @@ class Grid2DIterate(abstract_grid_2d.AbstractGrid2D):
             mask_2d=self.mask, array_2d_native=iterated_array, sub_size=1
         )
 
-        return array_2d.Array2D(
-            array=iterated_array_1d, mask=self.mask.mask_sub_1,
-        )
+        return array_2d.Array2D(array=iterated_array_1d, mask=self.mask.mask_sub_1)
 
     @staticmethod
     @decorator_util.jit()
@@ -739,9 +723,7 @@ class Grid2DIterate(abstract_grid_2d.AbstractGrid2D):
                     mask=self.mask, grid_2d_native=iterated_grid, sub_size=1
                 )
 
-                return grid_2d.Grid2D(
-                    grid=iterated_grid_1d, mask=self.mask.mask_sub_1,
-                )
+                return grid_2d.Grid2D(grid=iterated_grid_1d, mask=self.mask.mask_sub_1)
 
             grid_lower_sub_2d = grid_higher_sub
             fractional_mask_lower_sub = fractional_mask_higher_sub
@@ -759,9 +741,7 @@ class Grid2DIterate(abstract_grid_2d.AbstractGrid2D):
             mask=self.mask, grid_2d_native=iterated_grid_2d, sub_size=1
         )
 
-        return grid_2d.Grid2D(
-            grid=iterated_grid_1d, mask=self.mask.mask_sub_1,
-        )
+        return grid_2d.Grid2D(grid=iterated_grid_1d, mask=self.mask.mask_sub_1)
 
     @staticmethod
     @decorator_util.jit()

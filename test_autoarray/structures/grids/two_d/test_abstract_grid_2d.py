@@ -7,7 +7,6 @@ from autoarray.mock.mock import MockGridRadialMinimum
 
 
 class TestGrid:
-
     def test__recursive_shape_storage(self):
 
         grid = aa.Grid2D.manual_native(
@@ -22,7 +21,8 @@ class TestGrid:
             == np.array([[[1.0, 2.0], [3.0, 4.0]], [[5.0, 6.0], [7.0, 8.0]]])
         ).all()
         assert (
-            grid.slim.native.slim == np.array([[1.0, 2.0], [3.0, 4.0], [5.0, 6.0], [7.0, 8.0]])
+            grid.slim.native.slim
+            == np.array([[1.0, 2.0], [3.0, 4.0], [5.0, 6.0], [7.0, 8.0]])
         ).all()
 
     def test__masked_shape_native_scaled(self):

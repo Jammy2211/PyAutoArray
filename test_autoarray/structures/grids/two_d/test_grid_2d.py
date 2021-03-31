@@ -30,8 +30,7 @@ class TestAPI:
             == np.array([[[1.0, 2.0], [3.0, 4.0]], [[5.0, 6.0], [7.0, 8.0]]])
         ).all()
         assert (
-            grid.binned
-            == np.array([[1.0, 2.0], [3.0, 4.0], [5.0, 6.0], [7.0, 8.0]])
+            grid.binned == np.array([[1.0, 2.0], [3.0, 4.0], [5.0, 6.0], [7.0, 8.0]])
         ).all()
         assert grid.pixel_scales == (1.0, 1.0)
         assert grid.origin == (0.0, 0.0)
@@ -196,7 +195,7 @@ class TestAPI:
     def test__manual_yx__makes_grid_with_pixel_scale(self):
 
         grid = aa.Grid2D.manual_yx_2d(
-            y=[[1.0], [3.0]], x=[[2.0], [4.0]], pixel_scales=(2.0, 3.0),
+            y=[[1.0], [3.0]], x=[[2.0], [4.0]], pixel_scales=(2.0, 3.0)
         )
 
         assert type(grid) == aa.Grid2D
@@ -273,7 +272,7 @@ class TestAPI:
         assert grid.origin == (0.0, 0.0)
 
         grid = aa.Grid2D.uniform(
-            shape_native=(2, 2), pixel_scales=2.0, origin=(1.0, 1.0),
+            shape_native=(2, 2), pixel_scales=2.0, origin=(1.0, 1.0)
         )
 
         assert type(grid) == aa.Grid2D
@@ -331,8 +330,7 @@ class TestAPI:
             == np.array([[[2.0, 0.0], [2.0, 2.0]], [[0.0, 0.0], [0.0, 2.0]]])
         ).all()
         assert (
-            grid.binned
-            == np.array([[2.0, 0.0], [2.0, 2.0], [0.0, 0.0], [0.0, 2.0]])
+            grid.binned == np.array([[2.0, 0.0], [2.0, 2.0], [0.0, 0.0], [0.0, 2.0]])
         ).all()
         assert grid.pixel_scales == (2.0, 2.0)
         assert grid.origin == (1.0, 1.0)

@@ -55,9 +55,7 @@ class Array2DPlotter(abstract_plotters.AbstractPlotter):
                 "origin", grid_2d_irregular.Grid2DIrregular(grid=[self.array.origin])
             ),
             mask=self.extract_2d("mask", self.array.mask),
-            border=self.extract_2d(
-                "border", self.array.mask.border_grid_sub_1.binned
-            ),
+            border=self.extract_2d("border", self.array.mask.border_grid_sub_1.binned),
         )
 
     def figure(self):
@@ -115,9 +113,7 @@ class Frame2DPlotter(abstract_plotters.AbstractPlotter):
                 "origin", grid_2d_irregular.Grid2DIrregular(grid=[self.frame.origin])
             ),
             mask=self.extract_2d("mask", self.frame.mask),
-            border=self.extract_2d(
-                "border", self.frame.mask.border_grid_sub_1.binned
-            ),
+            border=self.extract_2d("border", self.frame.mask.border_grid_sub_1.binned),
             parallel_overscan=self.extract_2d(
                 "parallel_overscan", self.frame.scans.parallel_overscan
             ),
@@ -242,8 +238,7 @@ class MapperPlotter(abstract_plotters.AbstractPlotter):
             ),
             mask=self.extract_2d("mask", self.mapper.source_grid_slim.mask),
             border=self.extract_2d(
-                "border",
-                self.mapper.source_grid_slim.mask.border_grid_sub_1.binned,
+                "border", self.mapper.source_grid_slim.mask.border_grid_sub_1.binned
             ),
             pixelization_grid=self.extract_2d(
                 "pixelization_grid",

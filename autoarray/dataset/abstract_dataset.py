@@ -101,8 +101,7 @@ class AbstractDataset:
     def absolute_signal_to_noise_map(self):
         """The estimated absolute_signal-to-noise_maps mappers of the image."""
         return self.data._new_structure(
-            array=np.divide(np.abs(self.data), self.noise_map),
-            mask=self.data.mask,
+            array=np.divide(np.abs(self.data), self.noise_map), mask=self.data.mask
         )
 
     @property
@@ -115,8 +114,7 @@ class AbstractDataset:
         """The potential chi-squared-map of the imaging data_type. This represents how much each pixel can contribute to \
         the chi-squared-map, assuming the model fails to fit it at all (e.g. model value = 0.0)."""
         return self.data._new_structure(
-            array=np.square(self.absolute_signal_to_noise_map),
-            mask=self.data.mask,
+            array=np.square(self.absolute_signal_to_noise_map), mask=self.data.mask
         )
 
     @property
@@ -291,8 +289,7 @@ class AbstractMaskedDataset:
     def absolute_signal_to_noise_map(self):
         """The estimated absolute_signal-to-noise_maps mappers of the image."""
         return self.data._new_structure(
-            array=np.divide(np.abs(self.data), self.noise_map),
-            mask=self.data.mask,
+            array=np.divide(np.abs(self.data), self.noise_map), mask=self.data.mask
         )
 
     @property
@@ -300,8 +297,7 @@ class AbstractMaskedDataset:
         """The potential chi-squared-map of the imaging data_type. This represents how much each pixel can contribute to \
         the chi-squared-map, assuming the model fails to fit it at all (e.g. model value = 0.0)."""
         return self.data._new_structure(
-            array=np.square(self.absolute_signal_to_noise_map),
-            mask=self.data.mask,
+            array=np.square(self.absolute_signal_to_noise_map), mask=self.data.mask
         )
 
     def modify_noise_map(self, noise_map):

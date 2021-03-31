@@ -225,12 +225,7 @@ class Grid2D(abstract_grid_2d.AbstractGrid2D):
 
     @classmethod
     def manual_slim(
-        cls,
-        grid,
-        shape_native,
-        pixel_scales,
-        sub_size=1,
-        origin=(0.0, 0.0),
+        cls, grid, shape_native, pixel_scales, sub_size=1, origin=(0.0, 0.0)
     ):
         """Create a Grid2D (see *Grid2D.__new__*) by inputting the grid coordinates in 1D, for example:
 
@@ -266,16 +261,12 @@ class Grid2D(abstract_grid_2d.AbstractGrid2D):
             origin=origin,
         )
 
-        grid = abstract_grid_2d.convert_grid_2d(
-            grid_2d=grid, mask_2d=mask,
-        )
+        grid = abstract_grid_2d.convert_grid_2d(grid_2d=grid, mask_2d=mask)
 
         return Grid2D(grid=grid, mask=mask)
 
     @classmethod
-    def manual_native(
-        cls, grid, pixel_scales, sub_size=1, origin=(0.0, 0.0)
-    ):
+    def manual_native(cls, grid, pixel_scales, sub_size=1, origin=(0.0, 0.0)):
         """Create a Grid2D (see *Grid2D.__new__*) by inputting the grid coordinates in 2D, for example:
 
         grid=np.ndarray([[[1.0, 1.0], [2.0, 2.0]],
@@ -314,20 +305,13 @@ class Grid2D(abstract_grid_2d.AbstractGrid2D):
             origin=origin,
         )
 
-        grid = abstract_grid_2d.convert_grid_2d(
-            grid_2d=grid, mask_2d=mask,
-        )
+        grid = abstract_grid_2d.convert_grid_2d(grid_2d=grid, mask_2d=mask)
 
         return Grid2D(grid=grid, mask=mask)
 
     @classmethod
     def manual(
-        cls,
-        grid,
-        pixel_scales,
-        shape_native=None,
-        sub_size=1,
-        origin=(0.0, 0.0),
+        cls, grid, pixel_scales, shape_native=None, sub_size=1, origin=(0.0, 0.0)
     ):
         """Create a Grid2D (see *Grid2D.__new__*) by inputting the grid coordinates in 1D or 2D, automatically
         determining whether to use the 'manual_slim' or 'manual_native' methods.
@@ -358,10 +342,7 @@ class Grid2D(abstract_grid_2d.AbstractGrid2D):
                 origin=origin,
             )
         return cls.manual_native(
-            grid=grid,
-            pixel_scales=pixel_scales,
-            sub_size=sub_size,
-            origin=origin,
+            grid=grid, pixel_scales=pixel_scales, sub_size=sub_size, origin=origin
         )
 
     @classmethod
@@ -384,21 +365,13 @@ class Grid2D(abstract_grid_2d.AbstractGrid2D):
         grid = abstract_grid.convert_grid(grid=grid)
         abstract_grid_2d.check_grid_2d_and_mask_2d(grid_2d=grid, mask_2d=mask)
 
-        grid = abstract_grid_2d.convert_grid_2d(
-            grid_2d=grid, mask_2d=mask,
-        )
+        grid = abstract_grid_2d.convert_grid_2d(grid_2d=grid, mask_2d=mask)
 
         return Grid2D(grid=grid, mask=mask)
 
     @classmethod
     def manual_yx_1d(
-        cls,
-        y,
-        x,
-        shape_native,
-        pixel_scales,
-        sub_size=1,
-        origin=(0.0, 0.0),
+        cls, y, x, shape_native, pixel_scales, sub_size=1, origin=(0.0, 0.0)
     ):
         """Create a Grid2D (see *Grid2D.__new__*) by inputting the grid coordinates as 1D y and x values, for example:
 
@@ -441,9 +414,7 @@ class Grid2D(abstract_grid_2d.AbstractGrid2D):
         )
 
     @classmethod
-    def manual_yx_2d(
-        cls, y, x, pixel_scales, sub_size=1, origin=(0.0, 0.0),
-    ):
+    def manual_yx_2d(cls, y, x, pixel_scales, sub_size=1, origin=(0.0, 0.0)):
         """Create a Grid2D (see *Grid2D.__new__*) by inputting the grid coordinates as 2D y and x values, for example:
 
         y = np.array([[1.0, 2.0],
@@ -486,9 +457,7 @@ class Grid2D(abstract_grid_2d.AbstractGrid2D):
         )
 
     @classmethod
-    def uniform(
-        cls, shape_native, pixel_scales, sub_size=1, origin=(0.0, 0.0),
-    ):
+    def uniform(cls, shape_native, pixel_scales, sub_size=1, origin=(0.0, 0.0)):
         """Create a Grid2D (see *Grid2D.__new__*) as a uniform grid of (y,x) values given an input shape_native and pixel
         scale of the grid:
 
@@ -523,11 +492,7 @@ class Grid2D(abstract_grid_2d.AbstractGrid2D):
 
     @classmethod
     def bounding_box(
-        cls,
-        bounding_box,
-        shape_native,
-        sub_size=1,
-        buffer_around_corners=False,
+        cls, bounding_box, shape_native, sub_size=1, buffer_around_corners=False
     ):
         """Create a Grid2D (see *Grid2D.__new__*) from an input bounding box with coordinates [y_min, y_max, x_min, x_max],
         where the shape_native is used to compute the (y,x) grid values within this bounding box.
@@ -600,9 +565,7 @@ class Grid2D(abstract_grid_2d.AbstractGrid2D):
         return Grid2D(grid=sub_grid_1d, mask=mask)
 
     @classmethod
-    def from_fits(
-        cls, file_path, pixel_scales, sub_size=1, origin=(0.0, 0.0),
-    ):
+    def from_fits(cls, file_path, pixel_scales, sub_size=1, origin=(0.0, 0.0)):
         """Create a Grid2D (see *Grid2D.__new__*) from a mask, where only unmasked pixels are included in the grid (if the
         grid is represented in its native 2D masked values are (0.0, 0.0)).
 
@@ -624,9 +587,7 @@ class Grid2D(abstract_grid_2d.AbstractGrid2D):
         )
 
     @classmethod
-    def blurring_grid_from_mask_and_kernel_shape(
-        cls, mask, kernel_shape_native,
-    ):
+    def blurring_grid_from_mask_and_kernel_shape(cls, mask, kernel_shape_native):
         """
         Setup a blurring-grid from a mask, where a blurring grid consists of all pixels that are masked (and
         therefore have their values set to (0.0, 0.0)), but are close enough to the unmasked pixels that their values
@@ -717,9 +678,7 @@ class Grid2D(abstract_grid_2d.AbstractGrid2D):
             deflection_grid : np.ndarray
                 The grid of (y,x) coordinates which is subtracted from this grid.
         """
-        return Grid2D(
-            grid=self - deflection_grid, mask=self.mask,
-        )
+        return Grid2D(grid=self - deflection_grid, mask=self.mask)
 
     def blurring_grid_from_kernel_shape(self, kernel_shape_native):
         """
@@ -734,8 +693,7 @@ class Grid2D(abstract_grid_2d.AbstractGrid2D):
         """
 
         return Grid2D.blurring_grid_from_mask_and_kernel_shape(
-            mask=self.mask,
-            kernel_shape_native=kernel_shape_native,
+            mask=self.mask, kernel_shape_native=kernel_shape_native
         )
 
     def grid_with_coordinates_within_distance_removed(

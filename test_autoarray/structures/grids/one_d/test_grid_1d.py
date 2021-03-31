@@ -124,7 +124,10 @@ class TestAPI:
         grid = aa.Grid1D.manual_mask(grid=[1.0, 2.0, 3.0, 4.0, 5.0, 6.0], mask=mask)
 
         assert (grid.slim.native.slim == np.array([3.0, 4.0, 5.0, 6.0])).all()
-        assert (grid.native.slim.native == np.array([0.0, 0.0, 3.0, 4.0, 5.0, 6.0])).all()
+        assert (
+            grid.native.slim.native == np.array([0.0, 0.0, 3.0, 4.0, 5.0, 6.0])
+        ).all()
+
 
 class TestGrid1D:
     def test__grid_2d_with_other_value_out(self):

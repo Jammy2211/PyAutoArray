@@ -73,7 +73,6 @@ def convert_grid_2d(grid_2d, mask_2d):
 
 
 class AbstractGrid2D(abstract_structure.AbstractStructure2D):
-
     def __array_finalize__(self, obj):
 
         super().__array_finalize__(obj)
@@ -98,9 +97,7 @@ class AbstractGrid2D(abstract_structure.AbstractStructure2D):
             grid_2d_native=self, mask=self.mask, sub_size=self.mask.sub_size
         )
 
-        return self._new_structure(
-            grid=grid_2d_slim, mask=self.mask,
-        )
+        return self._new_structure(grid=grid_2d_slim, mask=self.mask)
 
     @property
     def native(self):
@@ -120,7 +117,6 @@ class AbstractGrid2D(abstract_structure.AbstractStructure2D):
         )
 
         return self._new_structure(grid=grid_2d_native, mask=self.mask)
-
 
     @property
     def binned(self) -> "AbstractGrid2D":
@@ -196,7 +192,9 @@ class AbstractGrid2D(abstract_structure.AbstractStructure2D):
         )
         return array_2d.Array2D.manual_mask(array=distances, mask=self.mask)
 
-    def grid_2d_radial_projected_from(self, centre=(0.0, 0.0), angle: float = 0.0) -> grid_2d_irregular.Grid2DIrregular:
+    def grid_2d_radial_projected_from(
+        self, centre=(0.0, 0.0), angle: float = 0.0
+    ) -> grid_2d_irregular.Grid2DIrregular:
         """
         Determine a projected radial grid of points from a 2D region of coordinates defined by an
         extent [xmin, xmax, ymin, ymax] and with a (y,x) centre. This functions operates as follows:

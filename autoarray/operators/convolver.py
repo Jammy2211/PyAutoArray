@@ -334,9 +334,7 @@ class Convolver:
             blurring_frame_1d_lengths=self.blurring_frame_1d_lengths,
         )
 
-        return array_2d.Array2D(
-            array=convolved_image, mask=self.mask.mask_sub_1,
-        )
+        return array_2d.Array2D(array=convolved_image, mask=self.mask.mask_sub_1)
 
     @staticmethod
     @decorator_util.jit()

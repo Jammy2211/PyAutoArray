@@ -17,13 +17,7 @@ logger = logging.getLogger(__name__)
 
 class Array2D(abstract_array_2d.AbstractArray2D):
     def __new__(
-        cls,
-        array,
-        mask,
-        exposure_info=None,
-        zoom_for_plot=True,
-        *args,
-        **kwargs
+        cls, array, mask, exposure_info=None, zoom_for_plot=True, *args, **kwargs
     ):
         """
         An array of values, which are paired to a uniform 2D mask of pixels and sub-pixels. Each entry
@@ -249,18 +243,11 @@ class Array2D(abstract_array_2d.AbstractArray2D):
             origin=origin,
         )
 
-        return cls(
-            array=array, mask=mask, exposure_info=exposure_info,
-        )
+        return cls(array=array, mask=mask, exposure_info=exposure_info)
 
     @classmethod
     def manual_native(
-        cls,
-        array,
-        pixel_scales,
-        sub_size=1,
-        origin=(0.0, 0.0),
-        exposure_info=None,
+        cls, array, pixel_scales, sub_size=1, origin=(0.0, 0.0), exposure_info=None
     ):
         """Create an Array2D (see `AbstractArray2D.__new__`) by inputting the array values in 2D, for example:
 
@@ -300,9 +287,7 @@ class Array2D(abstract_array_2d.AbstractArray2D):
             origin=origin,
         )
 
-        array = abstract_array_2d.convert_array_2d(
-            array_2d=array, mask_2d=mask,
-        )
+        array = abstract_array_2d.convert_array_2d(array_2d=array, mask_2d=mask)
 
         return cls(array=array, mask=mask)
 
@@ -345,10 +330,7 @@ class Array2D(abstract_array_2d.AbstractArray2D):
                 origin=origin,
             )
         return cls.manual_native(
-            array=array,
-            pixel_scales=pixel_scales,
-            sub_size=sub_size,
-            origin=origin,
+            array=array, pixel_scales=pixel_scales, sub_size=sub_size, origin=origin
         )
 
     @classmethod
@@ -367,12 +349,8 @@ class Array2D(abstract_array_2d.AbstractArray2D):
         mask : Mask2D
             The mask whose masked pixels are used to setup the sub-pixel grid.
         """
-        array = abstract_array_2d.convert_array_2d(
-            array_2d=array, mask_2d=mask,
-        )
-        return cls(
-            array=array, mask=mask, exposure_info=exposure_info,
-        )
+        array = abstract_array_2d.convert_array_2d(array_2d=array, mask_2d=mask)
+        return cls(array=array, mask=mask, exposure_info=exposure_info)
 
     @classmethod
     def full(
@@ -486,14 +464,7 @@ class Array2D(abstract_array_2d.AbstractArray2D):
         )
 
     @classmethod
-    def from_fits(
-        cls,
-        file_path,
-        pixel_scales,
-        hdu=0,
-        sub_size=1,
-        origin=(0.0, 0.0),
-    ):
+    def from_fits(cls, file_path, pixel_scales, hdu=0, sub_size=1, origin=(0.0, 0.0)):
         """
         Create an Array2D (see `AbstractArray2D.__new__`) by loading the array values from a .fits file.
 
@@ -514,10 +485,7 @@ class Array2D(abstract_array_2d.AbstractArray2D):
         """
         array_2d = array_2d_util.numpy_array_2d_from_fits(file_path=file_path, hdu=hdu)
         return cls.manual_native(
-            array=array_2d,
-            pixel_scales=pixel_scales,
-            sub_size=sub_size,
-            origin=origin,
+            array=array_2d, pixel_scales=pixel_scales, sub_size=sub_size, origin=origin
         )
 
     @classmethod

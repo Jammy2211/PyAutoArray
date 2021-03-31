@@ -115,9 +115,7 @@ class AbstractArray2D(abstract_structure.AbstractStructure2D):
         sub_array_2d = array_2d_util.array_2d_native_from(
             array_2d_slim=self, mask_2d=self.mask, sub_size=self.mask.sub_size
         )
-        return self._new_structure(
-            array=sub_array_2d, mask=self.mask,
-        )
+        return self._new_structure(array=sub_array_2d, mask=self.mask)
 
     @property
     def binned(self):
@@ -139,9 +137,7 @@ class AbstractArray2D(abstract_structure.AbstractStructure2D):
             array_2d_slim.reshape(-1, self.mask.sub_length).sum(axis=1),
         )
 
-        return self._new_structure(
-            array=binned_array_1d, mask=self.mask.mask_sub_1,
-        )
+        return self._new_structure(array=binned_array_1d, mask=self.mask.mask_sub_1)
 
     @property
     def extent(self):
@@ -204,9 +200,7 @@ class AbstractArray2D(abstract_structure.AbstractStructure2D):
             origin=self.mask.mask_centre,
         )
 
-        array = convert_array_2d(
-            array_2d=extracted_array_2d, mask_2d=mask,
-        )
+        array = convert_array_2d(array_2d=extracted_array_2d, mask_2d=mask)
 
         return self._new_structure(array=array, mask=mask)
 
@@ -261,13 +255,9 @@ class AbstractArray2D(abstract_structure.AbstractStructure2D):
 
         resized_mask = self.mask.resized_mask_from_new_shape(new_shape=new_shape)
 
-        array = convert_array_2d(
-            array_2d=resized_array_2d, mask_2d=resized_mask,
-        )
+        array = convert_array_2d(array_2d=resized_array_2d, mask_2d=resized_mask)
 
-        return self._new_structure(
-            array=array, mask=resized_mask,
-        )
+        return self._new_structure(array=array, mask=resized_mask)
 
     def padded_before_convolution_from(self, kernel_shape):
         """When the edge pixels of a mask are unmasked and a convolution is to occur, the signal of edge pixels will be
@@ -313,13 +303,9 @@ class AbstractArray2D(abstract_structure.AbstractStructure2D):
             new_shape=trimmed_array_2d.shape
         )
 
-        array = convert_array_2d(
-            array_2d=trimmed_array_2d, mask_2d=resized_mask,
-        )
+        array = convert_array_2d(array_2d=trimmed_array_2d, mask_2d=resized_mask)
 
-        return self.__class__(
-            array=array, mask=resized_mask,
-        )
+        return self.__class__(array=array, mask=resized_mask)
 
     def output_to_fits(self, file_path, overwrite=False):
         """
