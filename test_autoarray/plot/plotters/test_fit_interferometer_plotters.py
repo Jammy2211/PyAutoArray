@@ -24,7 +24,7 @@ def test__fit_quantities_are_output(fit_interferometer_7, plot_path, plot_patch)
         mat_plot_2d=aplt.MatPlot2D(output=aplt.Output(path=plot_path, format="png")),
     )
 
-    fit_interferometer_plotter.figures(
+    fit_interferometer_plotter.figures_2d(
         visibilities=True,
         noise_map=True,
         signal_to_noise_map=True,
@@ -68,7 +68,7 @@ def test__fit_quantities_are_output(fit_interferometer_7, plot_path, plot_patch)
 
     plot_patch.paths = []
 
-    fit_interferometer_plotter.figures(
+    fit_interferometer_plotter.figures_2d(
         visibilities=True,
         noise_map=False,
         signal_to_noise_map=False,

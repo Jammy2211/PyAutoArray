@@ -60,7 +60,7 @@ class Array2DPlotter(abstract_plotters.AbstractPlotter):
             ),
         )
 
-    def figure(self):
+    def figure_2d(self):
 
         self.mat_plot_2d.plot_array(
             array=self.array,
@@ -129,7 +129,7 @@ class Frame2DPlotter(abstract_plotters.AbstractPlotter):
             ),
         )
 
-    def figure(self):
+    def figure_2d(self):
 
         self.mat_plot_2d.plot_frame(
             frame=self.frame,
@@ -184,7 +184,7 @@ class Grid2DPlotter(abstract_plotters.AbstractPlotter):
             )
         )
 
-    def figure(self, color_array=None):
+    def figure_2d(self, color_array=None):
 
         self.mat_plot_2d.plot_grid(
             grid=self.grid,
@@ -298,7 +298,7 @@ class MapperPlotter(abstract_plotters.AbstractPlotter):
             ),
         )
 
-    def figure(self, source_pixelilzation_values=None):
+    def figure_2d(self, source_pixelilzation_values=None):
 
         self.mat_plot_2d.plot_mapper(
             mapper=self.mapper,
@@ -327,7 +327,7 @@ class MapperPlotter(abstract_plotters.AbstractPlotter):
                 grid=self.mapper.source_grid_slim.mask.masked_grid, indexes=indexes
             )
 
-        self.figure()
+        self.figure_2d()
 
         self.mat_plot_2d.output.subplot_to_figure(
             auto_filename="subplot_image_and_mapper"
@@ -335,7 +335,7 @@ class MapperPlotter(abstract_plotters.AbstractPlotter):
         self.close_subplot_figure()
 
 
-class Array1DPlotter(abstract_plotters.AbstractPlotter):
+class YX1DPlotter(abstract_plotters.AbstractPlotter):
     def __init__(
         self,
         y,
@@ -349,30 +349,19 @@ class Array1DPlotter(abstract_plotters.AbstractPlotter):
             visuals_1d=visuals_1d, include_1d=include_1d, mat_plot_1d=mat_plot_1d
         )
 
-    def visuals_from_line(self, line: array_1d.Array1D) -> "vis.Visuals1D":
+        self.y = y
+        self.x = x
 
-        origin = line.origin if self.include_1d.origin else None
-        mask = line.mask if self.include_1d.mask else None
+    @property
+    def visuals_with_include_1d(self) -> vis.Visuals1D:
 
-        return vis.Visuals1D(origin=origin, mask=mask)
+        return self.visuals_1d + self.visuals_1d.__class__(
+            origin=self.extract_1d("origin", self.x.origin),
+            mask=self.extract_1d("mask", self.x.mask),
+        )
 
-    def figure(
-        self,
-        y,
-        x,
-        label=None,
-        plot_axis_type="semilogy",
-        vertical_lines=None,
-        vertical_line_labels=None,
-    ):
+    def figure_1d(self):
 
-        self.mat_plot_1d.plot_line(
-            y=y,
-            x=x,
-            visuals_1d=self.visuals_1d,
-            auto_labels=mp.AutoLabels(),
-            label=label,
-            plot_axis_type=plot_axis_type,
-            vertical_lines=vertical_lines,
-            vertical_line_labels=vertical_line_labels,
+        self.mat_plot_1d.plot_yx(
+            y=self.y, x=self.x, visuals_1d=self.visuals_1d, auto_labels=mp.AutoLabels()
         )

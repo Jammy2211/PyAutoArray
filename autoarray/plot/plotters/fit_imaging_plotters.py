@@ -27,7 +27,7 @@ class AbstractFitImagingPlotter(abstract_plotters.AbstractPlotter):
             ),
         )
 
-    def figures(
+    def figures_2d(
         self,
         image=False,
         noise_map=False,

@@ -30,7 +30,7 @@ def test__individual_attributes_are_output_for_all_mappers(
         mat_plot_2d=aplt.MatPlot2D(output=aplt.Output(path=plot_path, format="png")),
     )
 
-    inversion_plotter.figures(
+    inversion_plotter.figures_2d(
         reconstructed_image=True,
         reconstruction=True,
         errors=True,
@@ -60,7 +60,7 @@ def test__individual_attributes_are_output_for_all_mappers(
         mat_plot_2d=aplt.MatPlot2D(output=aplt.Output(path=plot_path, format="png")),
     )
 
-    inversion_plotter.figures(
+    inversion_plotter.figures_2d(
         reconstructed_image=True,
         reconstruction=True,
         errors=True,
@@ -84,7 +84,7 @@ def test__individual_attributes_are_output_for_all_mappers(
 
     plot_patch.paths = []
 
-    inversion_plotter.figures(
+    inversion_plotter.figures_2d(
         reconstructed_image=True,
         errors=True,
         chi_squared_map=True,

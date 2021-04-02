@@ -2,6 +2,7 @@ import numpy as np
 
 from autoarray import decorator_util
 from autoarray import exc
+from autoarray.geometry import geometry_util
 from autoarray.structures import abstract_structure
 from autoarray.structures.arrays.two_d import array_2d
 from autoarray.structures.grids import abstract_grid
@@ -324,16 +325,78 @@ class AbstractGrid2D(abstract_structure.AbstractStructure2D):
         )
         return array_2d.Array2D.manual_mask(array=distances, mask=self.mask)
 
-    def grid_radii_from(self, centre=(0.0, 0.0)):
+    def grid_2d_radial_projected_from(
+        self, centre=(0.0, 0.0), angle: float = 0.0
+    ) -> grid_2d_irregular.Grid2DIrregular:
+        """
+        Determine a projected radial grid of points from a 2D region of coordinates defined by an
+        extent [xmin, xmax, ymin, ymax] and with a (y,x) centre. This functions operates as follows:
 
-        grid_radii = grid_2d_util.grid_scaled_2d_slim_radii_from(
+        1) Given the region defined by the extent [xmin, xmax, ymin, ymax], the algorithm finds the longest 1D distance
+        of the 4 paths from the (y,x) centre to the edge of the region (e.g. following the positive / negative y and
+        x axes).
+
+        2) Use the pixel-scale corresponding to the direction chosen (e.g. if the positive x-axis was the longest, the
+        pixel_scale in the x dimension is used).
+
+        3) Determine the number of pixels between the centre and the edge of the region using the longest path between
+        the two chosen above.
+
+        4) Create a (y,x) grid of radial points where all points are at the centre's y value = 0.0 and the x values
+        iterate from the centre in increasing steps of the pixel-scale.
+
+        5) Rotate these radial coordinates by the input `angle` clockwise.
+
+        A schematic is shown below:
+
+        -------------------
+        |                 |
+        |<- - -  - ->x    | x = centre
+        |                 | <-> = longest radial path from centre to extent edge
+        |                 |
+        -------------------
+
+        Using the centre x above, this function finds the longest radial path to the edge of the extent window.
+
+        The returned `grid_radii` represents a radial set of points that in 1D sample the 2D grid outwards from its
+        centre. This grid stores the radial coordinates as (y,x) values (where all y values are the same) as opposed to
+        a 1D data structure so that it can be used in functions which require that a 2D grid structure is input.
+
+        Parameters
+        ----------
+        extent : np.ndarray
+            The extent of the grid the radii grid is computed using, with format [xmin, xmax, ymin, ymax]
+        centre : (float, flloat)
+            The (y,x) central coordinate which the radial grid is traced outwards from.
+        pixel_scales : (float, float)
+            The (y,x) scaled units to pixel units conversion factor of the 2D mask array.
+        sub_size : int
+            The size of the sub-grid that each pixel of the 2D mask array is divided into.
+        angle : float
+            The angle with which the radial coordinates are rotated clockwise.
+
+        Returns
+        -------
+        grid_2d_irregular.Grid2DIrregular
+            A radial set of points sampling the longest distance from the centre to the edge of the extent in along the
+            positive x-axis.
+        """
+        grid_radial_projected_2d = grid_2d_util.grid_scaled_2d_slim_radial_projected_from(
             extent=self.extent,
             centre=centre,
             pixel_scales=self.pixel_scales,
             sub_size=self.sub_size,
         )
 
-        return grid_2d_irregular.Grid2DIrregular(grid=grid_radii)
+        grid_radial_projected_2d = geometry_util.transform_grid_2d_to_reference_frame(
+            grid_2d=grid_radial_projected_2d, centre=centre, angle=angle
+        )
+
+        grid_radial_projected_2d = geometry_util.transform_grid_2d_from_reference_frame(
+            grid_2d=grid_radial_projected_2d, centre=centre, angle=0.0
+        )
+
+        return grid_2d_irregular.Grid2DIrregular(grid=grid_radial_projected_2d)
 
     @property
     def shape_native_scaled(self) -> (float, float):

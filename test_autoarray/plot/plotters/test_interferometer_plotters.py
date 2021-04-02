@@ -24,7 +24,7 @@ def test__individual_attributes_are_output(interferometer_7, plot_path, plot_pat
         mat_plot_2d=aplt.MatPlot2D(output=aplt.Output(path=plot_path, format="png")),
     )
 
-    interferometer_plotter.figures(
+    interferometer_plotter.figures_2d(
         visibilities=True,
         noise_map=True,
         u_wavelengths=True,
@@ -44,7 +44,7 @@ def test__individual_attributes_are_output(interferometer_7, plot_path, plot_pat
 
     plot_patch.paths = []
 
-    interferometer_plotter.figures(
+    interferometer_plotter.figures_2d(
         visibilities=True,
         u_wavelengths=False,
         v_wavelengths=True,
