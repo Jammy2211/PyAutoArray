@@ -296,7 +296,11 @@ class Grid2D(abstract_grid_2d.AbstractGrid2D):
 
         pixel_scales = geometry_util.convert_pixel_scales_2d(pixel_scales=pixel_scales)
 
+        print(grid.shape[0], sub_size)
+
         shape = (int(grid.shape[0] / sub_size), int(grid.shape[1] / sub_size))
+
+        print(shape)
 
         mask = msk.Mask2D.unmasked(
             shape_native=shape,

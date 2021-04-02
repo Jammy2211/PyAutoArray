@@ -58,7 +58,7 @@ class Array2DPlotter(abstract_plotters.AbstractPlotter):
             border=self.extract_2d("border", self.array.mask.border_grid_sub_1.binned),
         )
 
-    def figure(self):
+    def figure_2d(self):
 
         self.mat_plot_2d.plot_array(
             array=self.array,
@@ -125,7 +125,7 @@ class Frame2DPlotter(abstract_plotters.AbstractPlotter):
             ),
         )
 
-    def figure(self):
+    def figure_2d(self):
 
         self.mat_plot_2d.plot_frame(
             frame=self.frame,
@@ -180,7 +180,7 @@ class Grid2DPlotter(abstract_plotters.AbstractPlotter):
             )
         )
 
-    def figure(self, color_array=None):
+    def figure_2d(self, color_array=None):
 
         self.mat_plot_2d.plot_grid(
             grid=self.grid,
@@ -293,7 +293,7 @@ class MapperPlotter(abstract_plotters.AbstractPlotter):
             ),
         )
 
-    def figure(self, source_pixelilzation_values=None):
+    def figure_2d(self, source_pixelilzation_values=None):
 
         self.mat_plot_2d.plot_mapper(
             mapper=self.mapper,
@@ -322,7 +322,7 @@ class MapperPlotter(abstract_plotters.AbstractPlotter):
                 grid=self.mapper.source_grid_slim.mask.masked_grid, indexes=indexes
             )
 
-        self.figure()
+        self.figure_2d()
 
         self.mat_plot_2d.output.subplot_to_figure(
             auto_filename="subplot_image_and_mapper"
@@ -355,7 +355,7 @@ class YX1DPlotter(abstract_plotters.AbstractPlotter):
             mask=self.extract_1d("mask", self.x.mask),
         )
 
-    def figure(self,):
+    def figure_1d(self):
 
         self.mat_plot_1d.plot_yx(
             y=self.y, x=self.x, visuals_1d=self.visuals_1d, auto_labels=mp.AutoLabels()

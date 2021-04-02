@@ -25,7 +25,7 @@ class AbstractFitImagingPlotter(abstract_plotters.AbstractPlotter):
             border=self.extract_2d("border", self.fit.mask.border_grid_sub_1.binned),
         )
 
-    def figures(
+    def figures_2d(
         self,
         image=False,
         noise_map=False,

@@ -32,7 +32,7 @@ class TestYX1DPlotter:
             visuals_1d=visuals_1d,
         )
 
-        yx_1d_plotter.figure()
+        yx_1d_plotter.figure_1d()
 
         assert path.join(plot_path, "yx_1.png") in plot_patch.paths
 
@@ -91,7 +91,7 @@ class TestArray2DPlotter:
             ),
         )
 
-        array_plotter.figure()
+        array_plotter.figure_2d()
 
         assert path.join(plot_path, "array1.png") in plot_patch.paths
 
@@ -103,7 +103,7 @@ class TestArray2DPlotter:
             ),
         )
 
-        array_plotter.figure()
+        array_plotter.figure_2d()
 
         assert path.join(plot_path, "array2.png") in plot_patch.paths
 
@@ -125,7 +125,7 @@ class TestArray2DPlotter:
             ),
         )
 
-        array_plotter.figure()
+        array_plotter.figure_2d()
 
         assert path.join(plot_path, "array3.png") in plot_patch.paths
 
@@ -143,7 +143,7 @@ class TestArray2DPlotter:
         if path.exists(plot_path):
             shutil.rmtree(plot_path)
 
-        array_plotter.figure()
+        array_plotter.figure_2d()
 
         arr = aa.util.array_2d.numpy_array_2d_from_fits(
             file_path=path.join(plot_path, "array.fits"), hdu=0
@@ -215,7 +215,7 @@ class TestFrame2DPlotter:
             ),
         )
 
-        frame_plotter.figure()
+        frame_plotter.figure_2d()
 
         assert path.join(plot_path, "frame1.png") in plot_patch.paths
 
@@ -234,7 +234,7 @@ class TestFrame2DPlotter:
             ),
         )
 
-        frame_plotter.figure()
+        frame_plotter.figure_2d()
 
         assert path.join(plot_path, "frame2.png") in plot_patch.paths
 
@@ -259,7 +259,7 @@ class TestFrame2DPlotter:
             ),
         )
 
-        frame_plotter.figure()
+        frame_plotter.figure_2d()
 
         assert path.join(plot_path, "frame3.png") in plot_patch.paths
 
@@ -277,7 +277,7 @@ class TestFrame2DPlotter:
         if path.exists(plot_path):
             shutil.rmtree(plot_path)
 
-        frame_plotter.figure()
+        frame_plotter.figure_2d()
 
         frame = aa.util.array_2d.numpy_array_2d_from_fits(
             file_path=path.join(plot_path, "frame.fits"), hdu=0
@@ -329,7 +329,7 @@ class TestGrid2DPlotter:
 
         color_array = np.linspace(start=0.0, stop=1.0, num=grid_7x7.shape_slim)
 
-        grid_plotter.figure(color_array=color_array)
+        grid_plotter.figure_2d(color_array=color_array)
 
         assert path.join(plot_path, "grid1.png") in plot_patch.paths
 
@@ -342,7 +342,7 @@ class TestGrid2DPlotter:
             include_2d=aplt.Include2D(origin=True, mask=True, border=True),
         )
 
-        grid_plotter.figure(color_array=color_array)
+        grid_plotter.figure_2d(color_array=color_array)
 
         assert path.join(plot_path, "grid2.png") in plot_patch.paths
 
@@ -365,7 +365,7 @@ class TestGrid2DPlotter:
             visuals_2d=visuals_2d,
         )
 
-        grid_plotter.figure(color_array=color_array)
+        grid_plotter.figure_2d(color_array=color_array)
 
         assert path.join(plot_path, "grid3.png") in plot_patch.paths
 
@@ -546,7 +546,7 @@ class TestMapperPlotter:
             ),
         )
 
-        mapper_plotter.figure()
+        mapper_plotter.figure_2d()
 
         assert path.join(plot_path, "mapper1.png") in plot_patch.paths
 
@@ -560,7 +560,7 @@ class TestMapperPlotter:
             ),
         )
 
-        mapper_plotter.figure()
+        mapper_plotter.figure_2d()
 
         assert path.join(plot_path, "mapper2.png") in plot_patch.paths
 
@@ -577,7 +577,7 @@ class TestMapperPlotter:
             ),
         )
 
-        mapper_plotter.figure()
+        mapper_plotter.figure_2d()
 
         assert path.join(plot_path, "mapper3.png") in plot_patch.paths
 
@@ -595,7 +595,7 @@ class TestMapperPlotter:
             ),
         )
 
-        mapper_plotter.figure()
+        mapper_plotter.figure_2d()
 
         assert path.join(plot_path, "mapper1.png") in plot_patch.paths
 
@@ -609,7 +609,7 @@ class TestMapperPlotter:
             ),
         )
 
-        mapper_plotter.figure()
+        mapper_plotter.figure_2d()
 
         assert path.join(plot_path, "mapper2.png") in plot_patch.paths
 
@@ -623,7 +623,7 @@ class TestMapperPlotter:
             ),
         )
 
-        mapper_plotter.figure()
+        mapper_plotter.figure_2d()
 
         assert path.join(plot_path, "mapper3.png") in plot_patch.paths
 

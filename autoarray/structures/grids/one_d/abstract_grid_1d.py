@@ -78,7 +78,7 @@ class AbstractGrid1D(abstract_structure.AbstractStructure1D):
         1) Map the 1D (x) coordinates to 2D along the x-axis, such that the x value of every 2D coordinate is the
         corresponding (x) value in the 1D grid, and every y value is 0.0.
 
-        2) Rotate this project 2D grid clockwise by the input angle.
+        2) Rotate this projected 2D grid clockwise by the input angle.
 
         Parameters
         ----------

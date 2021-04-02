@@ -200,7 +200,7 @@ class AbstractPlotter:
 
         for index, (key, value) in enumerate(figures_dict.items()):
             if value:
-                self.figures(**{key: True})
+                self.figures_2d(**{key: True})
 
         self.mat_plot_2d.output.subplot_to_figure(
             auto_filename=kwargs["auto_labels"].filename
@@ -214,7 +214,7 @@ class AbstractPlotter:
 
         for i, plotter in enumerate(plotter_list):
 
-            plotter.figures(**{name: True})
+            plotter.figures_2d(**{name: True})
 
         self.mat_plot_2d.output.subplot_to_figure(auto_filename=f"subplot_{name}")
 

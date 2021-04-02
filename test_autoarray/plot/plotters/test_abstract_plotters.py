@@ -160,7 +160,7 @@ class TestMultiPlotter:
         plotter_list = [plotter_0, plotter_1]
 
         multi_plotter = aplt.MultiPlotter(plotter_list=plotter_list)
-        multi_plotter.subplot_of_figure(func_name="figures", figure_name="image")
+        multi_plotter.subplot_of_figure(func_name="figures_2d", figure_name="image")
 
         assert path.join(plot_path, "subplot_image_list.png") in plot_patch.paths
 
@@ -168,7 +168,7 @@ class TestMultiPlotter:
 
         multi_plotter = aplt.MultiPlotter(plotter_list=plotter_list)
         multi_plotter.subplot_of_figure(
-            func_name="figures", figure_name="image", noise_map=True
+            func_name="figures_2d", figure_name="image", noise_map=True
         )
 
         assert path.join(plot_path, "subplot_image_list.png") in plot_patch.paths

@@ -34,7 +34,7 @@ class InterferometerPlotter(abstract_plotters.AbstractPlotter):
     def visuals_with_include_2d(self):
         return self.visuals_2d + self.visuals_2d.__class__()
 
-    def figures(
+    def figures_2d(
         self,
         visibilities=False,
         noise_map=False,

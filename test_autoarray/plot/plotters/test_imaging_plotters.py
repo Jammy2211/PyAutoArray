@@ -65,7 +65,7 @@ def test__individual_attributes_are_output(
         mat_plot_2d=aplt.MatPlot2D(output=aplt.Output(plot_path, format="png")),
     )
 
-    imaging_plotter.figures(
+    imaging_plotter.figures_2d(
         image=True,
         noise_map=True,
         psf=True,
@@ -81,7 +81,7 @@ def test__individual_attributes_are_output(
 
     plot_patch.paths = []
 
-    imaging_plotter.figures(
+    imaging_plotter.figures_2d(
         image=True, psf=True, inverse_noise_map=True, absolute_signal_to_noise_map=True
     )
 
@@ -117,7 +117,7 @@ def test__output_as_fits__correct_output_format(
         mat_plot_2d=aplt.MatPlot2D(output=aplt.Output(path=plot_path, format="fits")),
     )
 
-    imaging_plotter.figures(image=True, psf=True, absolute_signal_to_noise_map=True)
+    imaging_plotter.figures_2d(image=True, psf=True, absolute_signal_to_noise_map=True)
 
     image_from_plot = aa.util.array_2d.numpy_array_2d_from_fits(
         file_path=path.join(plot_path, "image.fits"), hdu=0

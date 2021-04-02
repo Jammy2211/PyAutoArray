@@ -223,11 +223,10 @@ class AbstractGrid2D(abstract_structure.AbstractStructure2D):
         |                 |
         -------------------
 
-        Using the centre x above, this function finds the longest radial path to the edge of the extent window.
+        4) Create a (y,x) grid of radial points where all points are at the centre's y value = 0.0 and the x values
+        iterate from the centre in increasing steps of the pixel-scale.
 
-        The returned `grid_radii` represents a radial set of points that in 1D sample the 2D grid outwards from its
-        centre. This grid stores the radial coordinates as (y,x) values (where all y values are the same) as opposed to
-        a 1D data structure so that it can be used in functions which require that a 2D grid structure is input.
+        5) Rotate these radial coordinates by the input `angle` clockwise.
 
         Parameters
         ----------

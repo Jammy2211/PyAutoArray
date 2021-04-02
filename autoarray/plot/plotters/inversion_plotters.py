@@ -25,7 +25,7 @@ class InversionPlotter(structure_plotters.MapperPlotter):
     def as_mapper(self, source_pixelization_values):
         return self.inversion.mapper.reconstruction_from(source_pixelization_values)
 
-    def figures(
+    def figures_2d(
         self,
         reconstructed_image=False,
         reconstruction=False,
