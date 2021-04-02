@@ -293,10 +293,8 @@ def transform_grid_2d_to_reference_frame(
         shifted_grid_2d[:, 0], shifted_grid_2d[:, 1]
     ) - np.radians(angle)
     return np.vstack(
-        (
-            radius * np.sin(theta_coordinate_to_profile),
-            radius * np.cos(theta_coordinate_to_profile),
-        )
+        radius
+        * (np.sin(theta_coordinate_to_profile), np.cos(theta_coordinate_to_profile))
     ).T
 
 
