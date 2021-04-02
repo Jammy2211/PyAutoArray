@@ -137,7 +137,7 @@ class Interferometer(abstract_dataset.AbstractDataset):
             visibilities=visibilities,
             noise_map=noise_map,
             uv_wavelengths=uv_wavelengths,
-            settings=settings
+            settings=settings,
         )
 
     def apply_settings(self, settings):

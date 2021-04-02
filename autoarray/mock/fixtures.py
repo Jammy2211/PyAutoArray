@@ -221,7 +221,9 @@ def make_interferometer_7():
         uv_wavelengths=make_uv_wavelengths_7x2(),
         real_space_mask=make_sub_mask_7x7(),
         settings=interferometer.SettingsInterferometer(
-            grid_class=grid_2d.Grid2D,  sub_size=1, transformer_class=transformer.TransformerDFT
+            grid_class=grid_2d.Grid2D,
+            sub_size=1,
+            transformer_class=transformer.TransformerDFT,
         ),
     )
 
@@ -249,7 +251,6 @@ def make_interferometer_7_lop():
             sub_size_inversion=1, transformer_class=transformer.TransformerNUFFT
         ),
     )
-
 
 
 def make_transformer_7x7_7():
