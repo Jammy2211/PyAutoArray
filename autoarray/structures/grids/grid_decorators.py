@@ -144,7 +144,7 @@ def grid_like_to_structure_list(func):
         """
 
         if isinstance(grid, grid_2d_iterate.Grid2DIterate):
-            mask = grid.mask.mask_new_sub_size_from_mask(
+            mask = grid.mask.mask_new_sub_size_from(
                 mask=grid.mask, sub_size=max(grid.sub_steps)
             )
             grid_compute = grid_2d.Grid2D.from_mask(mask=mask)

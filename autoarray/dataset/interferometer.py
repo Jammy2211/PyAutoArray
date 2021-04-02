@@ -16,12 +16,144 @@ from autoarray.operators import transformer as trans
 logger = logging.getLogger(__name__)
 
 
-class AbstractInterferometer(abstract_dataset.AbstractDataset):
-    def __init__(self, visibilities, noise_map, uv_wavelengths, name=None):
+class SettingsInterferometer(abstract_dataset.AbstractSettingsDataset):
+    def __init__(
+        self,
+        grid_class=grid_2d.Grid2D,
+        grid_inversion_class=grid_2d.Grid2D,
+        sub_size=2,
+        sub_size_inversion=2,
+        fractional_accuracy=0.9999,
+        sub_steps=None,
+        pixel_scales_interp=None,
+        signal_to_noise_limit=None,
+        transformer_class=trans.TransformerNUFFT,
+    ):
+        """
+          The lens dataset is the collection of data_type (image, noise-map), a mask, grid, convolver \
+          and other utilities that are used for modeling and fitting an image of a strong lens.
 
-        super().__init__(data=visibilities, noise_map=noise_map, name=name)
+          Whilst the image, noise-map, etc. are loaded in 2D, the lens dataset creates reduced 1D arrays of each \
+          for lens calculations.
+
+          Parameters
+          ----------
+        grid_class : ag.Grid2D
+            The type of grid used to create the image from the `Galaxy` and `Plane`. The options are `Grid2D`,
+            `Grid2DIterate` and `Grid2DInterpolate` (see the `Grid2D` documentation for a description of these options).
+        grid_inversion_class : ag.Grid2D
+            The type of grid used to create the grid that maps the `Inversion` source pixels to the data's image-pixels.
+            The options are `Grid2D`, `Grid2DIterate` and `Grid2DInterpolate` (see the `Grid2D` documentation for a
+            description of these options).
+        sub_size : int
+            If the grid and / or grid_inversion use a `Grid2D`, this sets the sub-size used by the `Grid2D`.
+        fractional_accuracy : float
+            If the grid and / or grid_inversion use a `Grid2DIterate`, this sets the fractional accuracy it
+            uses when evaluating functions.
+        sub_steps : [int]
+            If the grid and / or grid_inversion use a `Grid2DIterate`, this sets the steps the sub-size is increased by
+            to meet the fractional accuracy when evaluating functions.
+        pixel_scales_interp : float or (float, float)
+            If the grid and / or grid_inversion use a `Grid2DInterpolate`, this sets the resolution of the interpolation
+            grid.
+        signal_to_noise_limit : float
+            If input, the dataset's noise-map is rescaled such that no pixel has a signal-to-noise above the
+            signa to noise limit.
+          """
+
+        super().__init__(
+            grid_class=grid_class,
+            grid_inversion_class=grid_inversion_class,
+            sub_size=sub_size,
+            sub_size_inversion=sub_size_inversion,
+            fractional_accuracy=fractional_accuracy,
+            sub_steps=sub_steps,
+            pixel_scales_interp=pixel_scales_interp,
+            signal_to_noise_limit=signal_to_noise_limit,
+        )
+
+        self.transformer_class = transformer_class
+
+
+class Interferometer(abstract_dataset.AbstractDataset):
+    def __init__(
+        self,
+        visibilities,
+        noise_map,
+        uv_wavelengths,
+        real_space_mask,
+        settings=SettingsInterferometer(),
+        name=None,
+    ):
+
+        self.real_space_mask = real_space_mask
+
+        super().__init__(
+            data=visibilities, noise_map=noise_map, name=name, settings=settings
+        )
 
         self.uv_wavelengths = uv_wavelengths
+
+        self.transformer = self.settings.transformer_class(
+            uv_wavelengths=uv_wavelengths, real_space_mask=real_space_mask
+        )
+
+    @classmethod
+    def from_fits(
+        cls,
+        visibilities_path,
+        noise_map_path,
+        uv_wavelengths_path,
+        real_space_mask,
+        visibilities_hdu=0,
+        noise_map_hdu=0,
+        uv_wavelengths_hdu=0,
+        settings=SettingsInterferometer(),
+    ):
+        """Factory for loading the interferometer data_type from .fits files, as well as computing properties like the noise-map,
+        exposure-time map, etc. from the interferometer-data_type.
+
+        This factory also includes a number of routines for converting the interferometer-data_type from unit_label not supported by PyAutoLens \
+        (e.g. adus, electrons) to electrons per second.
+
+        Parameters
+        ----------
+        """
+
+        visibilities = vis.Visibilities.from_fits(
+            file_path=visibilities_path, hdu=visibilities_hdu
+        )
+
+        noise_map = vis.VisibilitiesNoiseMap.from_fits(
+            file_path=noise_map_path, hdu=noise_map_hdu
+        )
+
+        uv_wavelengths = array_2d_util.numpy_array_2d_from_fits(
+            file_path=uv_wavelengths_path, hdu=uv_wavelengths_hdu
+        )
+
+        return Interferometer(
+            real_space_mask=real_space_mask,
+            visibilities=visibilities,
+            noise_map=noise_map,
+            uv_wavelengths=uv_wavelengths,
+            settings=settings
+        )
+
+    def apply_settings(self, settings):
+
+        return Interferometer(
+            visibilities=self.visibilities,
+            noise_map=self.noise_map,
+            uv_wavelengths=self.uv_wavelengths,
+            real_space_mask=self.real_space_mask,
+            settings=settings,
+            name=self.name,
+        )
+
+    @property
+    def mask(self):
+        return self.real_space_mask
 
     @property
     def visibilities(self):
@@ -83,170 +215,13 @@ class AbstractInterferometer(abstract_dataset.AbstractDataset):
 
         return interferometer
 
-
-class AbstractSettingsMaskedInterferometer(
-    abstract_dataset.AbstractSettingsMaskedDataset
-):
-    def __init__(
-        self,
-        grid_class=grid_2d.Grid2D,
-        grid_inversion_class=grid_2d.Grid2D,
-        sub_size=2,
-        sub_size_inversion=2,
-        fractional_accuracy=0.9999,
-        sub_steps=None,
-        pixel_scales_interp=None,
-        signal_to_noise_limit=None,
-        transformer_class=trans.TransformerNUFFT,
-    ):
-        """
-          The lens dataset is the collection of data_type (image, noise-map), a mask, grid, convolver \
-          and other utilities that are used for modeling and fitting an image of a strong lens.
-
-          Whilst the image, noise-map, etc. are loaded in 2D, the lens dataset creates reduced 1D arrays of each \
-          for lens calculations.
-
-          Parameters
-          ----------
-        grid_class : ag.Grid2D
-            The type of grid used to create the image from the `Galaxy` and `Plane`. The options are `Grid2D`,
-            `Grid2DIterate` and `Grid2DInterpolate` (see the `Grid2D` documentation for a description of these options).
-        grid_inversion_class : ag.Grid2D
-            The type of grid used to create the grid that maps the `Inversion` source pixels to the data's image-pixels.
-            The options are `Grid2D`, `Grid2DIterate` and `Grid2DInterpolate` (see the `Grid2D` documentation for a
-            description of these options).
-        sub_size : int
-            If the grid and / or grid_inversion use a `Grid2D`, this sets the sub-size used by the `Grid2D`.
-        fractional_accuracy : float
-            If the grid and / or grid_inversion use a `Grid2DIterate`, this sets the fractional accuracy it
-            uses when evaluating functions.
-        sub_steps : [int]
-            If the grid and / or grid_inversion use a `Grid2DIterate`, this sets the steps the sub-size is increased by
-            to meet the fractional accuracy when evaluating functions.
-        pixel_scales_interp : float or (float, float)
-            If the grid and / or grid_inversion use a `Grid2DInterpolate`, this sets the resolution of the interpolation
-            grid.
-        signal_to_noise_limit : float
-            If input, the dataset's noise-map is rescaled such that no pixel has a signal-to-noise above the
-            signa to noise limit.
-          """
-
-        super().__init__(
-            grid_class=grid_class,
-            grid_inversion_class=grid_inversion_class,
-            sub_size=sub_size,
-            sub_size_inversion=sub_size_inversion,
-            fractional_accuracy=fractional_accuracy,
-            sub_steps=sub_steps,
-            pixel_scales_interp=pixel_scales_interp,
-            signal_to_noise_limit=signal_to_noise_limit,
-        )
-
-        self.transformer_class = transformer_class
-
-
-class AbstractMaskedInterferometer(abstract_dataset.AbstractMaskedDataset):
-    def __init__(
-        self,
-        interferometer,
-        visibilities_mask,
-        real_space_mask,
-        settings=AbstractSettingsMaskedInterferometer(),
-    ):
-        """
-        The lens dataset is the collection of data_type (image, noise-map), a mask, grid, convolver \
-        and other utilities that are used for modeling and fitting an image of a strong lens.
-
-        Whilst the image, noise-map, etc. are loaded in 2D, the lens dataset creates reduced 1D arrays of each \
-        for lens calculations.
-
-        Parameters
-        ----------
-        imaging: im.Imaging
-            The imaging data_type all in 2D (the image, noise-map, etc.)
-        real_space_mask: msk.Mask2D
-            The 2D mask that is applied to the image.
-        """
-
-        super().__init__(
-            dataset=interferometer, mask=real_space_mask, settings=settings
-        )
-
-        self.transformer = self.settings.transformer_class(
-            uv_wavelengths=interferometer.uv_wavelengths,
-            real_space_mask=real_space_mask,
-        )
-
-        self.visibilities = interferometer.visibilities
-        self.noise_map = interferometer.noise_map
-        self.visibilities_mask = visibilities_mask
-
-    @property
-    def interferometer(self):
-        return self.dataset
-
-    @property
-    def data(self):
-        return self.visibilities
-
-    @property
-    def uv_distances(self):
-        return self.interferometer.uv_distances
-
-    @property
-    def real_space_mask(self):
-        return self.mask
-
-    def signal_to_noise_map(self):
-        return self.visibilities / self.noise_map
-
     def modify_noise_map(self, noise_map):
 
-        masked_interferometer = copy.deepcopy(self)
+        interferometer = copy.deepcopy(self)
 
-        masked_interferometer.noise_map = noise_map
+        interferometer.noise_map = noise_map
 
-        return masked_interferometer
-
-
-class Interferometer(AbstractInterferometer):
-    @classmethod
-    def from_fits(
-        cls,
-        visibilities_path,
-        noise_map_path,
-        uv_wavelengths_path,
-        visibilities_hdu=0,
-        noise_map_hdu=0,
-        uv_wavelengths_hdu=0,
-    ):
-        """Factory for loading the interferometer data_type from .fits files, as well as computing properties like the noise-map,
-        exposure-time map, etc. from the interferometer-data_type.
-
-        This factory also includes a number of routines for converting the interferometer-data_type from unit_label not supported by PyAutoLens \
-        (e.g. adus, electrons) to electrons per second.
-
-        Parameters
-        ----------
-        """
-
-        visibilities = vis.Visibilities.from_fits(
-            file_path=visibilities_path, hdu=visibilities_hdu
-        )
-
-        noise_map = vis.VisibilitiesNoiseMap.from_fits(
-            file_path=noise_map_path, hdu=noise_map_hdu
-        )
-
-        uv_wavelengths = array_2d_util.numpy_array_2d_from_fits(
-            file_path=uv_wavelengths_path, hdu=uv_wavelengths_hdu
-        )
-
-        return Interferometer(
-            visibilities=visibilities,
-            noise_map=noise_map,
-            uv_wavelengths=uv_wavelengths,
-        )
+        return interferometer
 
     def output_to_fits(
         self,
@@ -270,16 +245,6 @@ class Interferometer(AbstractInterferometer):
                 file_path=uv_wavelengths_path,
                 overwrite=overwrite,
             )
-
-
-class SettingsMaskedInterferometer(AbstractSettingsMaskedInterferometer):
-
-    pass
-
-
-class MaskedInterferometer(AbstractMaskedInterferometer):
-
-    pass
 
 
 class AbstractSimulatorInterferometer:
@@ -380,6 +345,7 @@ class AbstractSimulatorInterferometer:
             visibilities=visibilities,
             noise_map=noise_map,
             uv_wavelengths=transformer.uv_wavelengths,
+            real_space_mask=image.mask,
             name=name,
         )
 

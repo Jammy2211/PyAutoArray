@@ -566,7 +566,7 @@ def blurring_mask_2d_from(
                      [True, False, True]
                      [True, True, True]])
 
-    blurring_mask = blurring_mask_from_mask_and_psf_shape(mask=mask, psf_shape_2d=(3,3))
+    blurring_mask = blurring_mask_from_mask_and_psf_shape(mask=mask)
 
     """
 

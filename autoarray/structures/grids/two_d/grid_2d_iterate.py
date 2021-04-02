@@ -345,7 +345,7 @@ class Grid2DIterate(abstract_grid_2d.AbstractGrid2D):
     @staticmethod
     def array_at_sub_size_from_func_and_mask(func, cls, mask, sub_size):
 
-        mask_higher_sub = mask.mask_new_sub_size_from_mask(mask=mask, sub_size=sub_size)
+        mask_higher_sub = mask.mask_new_sub_size_from(mask=mask, sub_size=sub_size)
 
         grid_compute = grid_2d.Grid2D.from_mask(mask=mask_higher_sub)
         array_higher_sub = func(cls, grid_compute)
@@ -354,7 +354,7 @@ class Grid2DIterate(abstract_grid_2d.AbstractGrid2D):
     @staticmethod
     def grid_at_sub_size_from_func_and_mask(func, cls, mask, sub_size):
 
-        mask_higher_sub = mask.mask_new_sub_size_from_mask(mask=mask, sub_size=sub_size)
+        mask_higher_sub = mask.mask_new_sub_size_from(mask=mask, sub_size=sub_size)
 
         grid_compute = grid_2d.Grid2D.from_mask(mask=mask_higher_sub)
         grid_higher_sub = func(cls, grid_compute)

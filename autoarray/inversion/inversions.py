@@ -32,29 +32,29 @@ class SettingsInversion:
 
 
 def inversion(
-    masked_dataset,
+    dataset,
     mapper: typing.Union[mappers.MapperRectangular, mappers.MapperVoronoi],
     regularization,
     settings=SettingsInversion(),
 ):
 
-    if isinstance(masked_dataset, imaging.MaskedImaging):
+    if isinstance(dataset, imaging.Imaging):
 
         return InversionImagingMatrix.from_data_mapper_and_regularization(
-            image=masked_dataset.image,
-            noise_map=masked_dataset.noise_map,
-            convolver=masked_dataset.convolver,
+            image=dataset.image,
+            noise_map=dataset.noise_map,
+            convolver=dataset.convolver,
             mapper=mapper,
             regularization=regularization,
             settings=settings,
         )
 
-    elif isinstance(masked_dataset, interferometer.MaskedInterferometer):
+    elif isinstance(dataset, interferometer.Interferometer):
 
         return AbstractInversionInterferometer.from_data_mapper_and_regularization(
-            visibilities=masked_dataset.visibilities,
-            noise_map=masked_dataset.noise_map,
-            transformer=masked_dataset.transformer,
+            visibilities=dataset.visibilities,
+            noise_map=dataset.noise_map,
+            transformer=dataset.transformer,
             mapper=mapper,
             regularization=regularization,
             settings=settings,

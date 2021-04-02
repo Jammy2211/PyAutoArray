@@ -16,75 +16,7 @@ from autoarray.operators import convolver
 logger = logging.getLogger(__name__)
 
 
-class AbstractImaging(abstract_dataset.AbstractDataset):
-    def __init__(
-        self,
-        image: array_2d.Array2D,
-        noise_map: array_2d.Array2D,
-        psf: kernel_2d.Kernel2D = None,
-        name: str = None,
-    ):
-        """A class containing the data, noise-map and point spread function of a 2D imaging dataset.
-
-        Parameters
-        ----------
-        image : aa.Array2D
-            The array of the image data, in units of electrons per second.
-        noise_map : aa.Array2D
-            An array describing the RMS standard deviation error in each pixel in units of electrons per second.
-        psf : aa.Array2D
-            An array describing the Point Spread Function kernel of the image.
-        """
-
-        super().__init__(data=image, noise_map=noise_map, name=name)
-
-        self.psf = psf
-
-    def __array_finalize__(self, obj):
-        if isinstance(obj, Imaging):
-            try:
-                for key, value in obj.__dict__.items():
-                    setattr(self, key, value)
-            except AttributeError:
-                logger.debug(
-                    "Original object in Imaging.__array_finalize__ missing one or more attributes"
-                )
-
-    @property
-    def shape_native(self):
-        return self.data.shape_native
-
-    @property
-    def image(self):
-        return self.data
-
-    @property
-    def pixel_scales(self):
-        return self.data.pixel_scales
-
-    def signal_to_noise_limited_from(self, signal_to_noise_limit, mask=None):
-
-        imaging = copy.deepcopy(self)
-
-        if mask is None:
-            mask = msk.Mask2D.unmasked(
-                shape_native=self.shape_native, pixel_scales=self.pixel_scales
-            )
-
-        noise_map_limit = np.where(
-            (self.signal_to_noise_map.native > signal_to_noise_limit) & (mask == False),
-            np.abs(self.image.native) / signal_to_noise_limit,
-            self.noise_map.native,
-        )
-
-        imaging.noise_map = array_2d.Array2D.manual_mask(
-            array=noise_map_limit, mask=self.image.mask
-        )
-
-        return imaging
-
-
-class AbstractSettingsMaskedImaging(abstract_dataset.AbstractSettingsMaskedDataset):
+class SettingsImaging(abstract_dataset.AbstractSettingsDataset):
     def __init__(
         self,
         grid_class=grid_2d.Grid2D,
@@ -96,8 +28,7 @@ class AbstractSettingsMaskedImaging(abstract_dataset.AbstractSettingsMaskedDatas
         pixel_scales_interp=None,
         signal_to_noise_limit=None,
         signal_to_noise_limit_radii=None,
-        psf_shape_2d=None,
-        renormalize_psf=True,
+        renormalize_psf=False,
     ):
         """
         The lens dataset is the collection of data_type (image, noise-map, PSF), a mask, grid, convolver \
@@ -146,100 +77,96 @@ class AbstractSettingsMaskedImaging(abstract_dataset.AbstractSettingsMaskedDatas
             signal_to_noise_limit_radii=signal_to_noise_limit_radii,
         )
 
-        self.psf_shape_2d = psf_shape_2d
         self.renormalize_psf = renormalize_psf
 
     def psf_reshaped_and_renormalized_from_psf(self, psf):
 
         if psf is not None:
 
-            if self.psf_shape_2d is None:
-                psf_shape_2d = psf.shape_native
-            else:
-                psf_shape_2d = self.psf_shape_2d
-
             return kernel_2d.Kernel2D.manual_native(
-                array=psf.resized_from(new_shape=psf_shape_2d).native,
+                array=psf.native,
                 pixel_scales=psf.pixel_scales,
                 renormalize=self.renormalize_psf,
             )
 
 
-class AbstractMaskedImaging(abstract_dataset.AbstractMaskedDataset):
-    def __init__(self, imaging, mask, settings=AbstractSettingsMaskedImaging()):
+class Imaging(abstract_dataset.AbstractDataset):
+    def __init__(
+        self,
+        image: array_2d.Array2D,
+        noise_map: array_2d.Array2D,
+        psf: kernel_2d.Kernel2D = None,
+        settings=SettingsImaging(),
+        name: str = None,
+        setup_convolver=False,
+    ):
         """
-        The lens dataset is the collection of data_type (image, noise-map, PSF), a mask, grid, convolver \
-        and other utilities that are used for modeling and fitting an image of a strong lens.
-
-        Whilst the image, noise-map, etc. are loaded in 2D, the lens dataset creates reduced 1D arrays of each \
-        for lens calculations.
+        A class containing the data, noise-map and point spread function of a 2D imaging dataset.
 
         Parameters
         ----------
-        imaging: im.Imaging
-            The imaging data_type all in 2D (the image, noise-map, PSF, etc.)
+        image : aa.Array2D
+            The array of the image data, in units of electrons per second.
+        noise_map : Array2D
+            An array describing the RMS standard deviation error in each pixel in units of electrons per second.
+        psf : aa.Array2D
+            An array describing the Point Spread Function kernel of the image.
         mask: msk.Mask2D
             The 2D mask that is applied to the image.
-        psf_shape_2d : (int, int)
-            The shape of the PSF used for convolving model image generated using analytic light profiles. A smaller \
-            shape will trim the PSF relative to the input image PSF, giving a faster analysis run-time.
-        pixel_scales_interp : float
-            If `True`, expensive to compute mass profile deflection angles will be computed on a sparse grid and \
-            interpolated to the grid, sub and blurring grids.
-        inversion_pixel_limit : int or None
-            The maximum number of pixels that can be used by an inversion, with the limit placed primarily to speed \
-            up run.
         """
 
-        super().__init__(dataset=imaging, mask=mask, settings=settings)
+        self.setup_convolver = setup_convolver
 
-        self.image = array_2d.Array2D.manual_mask(
-            array=self.dataset.image.native, mask=mask.mask_sub_1
-        )
+        if setup_convolver and psf is not None:
 
-        self.noise_map = array_2d.Array2D.manual_mask(
-            array=self.dataset.noise_map.native, mask=mask.mask_sub_1
-        )
+            try:
+                image.mask.blurring_mask_from_kernel_shape(
+                    kernel_shape_native=psf.shape_native
+                )
+            except exc.MaskException:
+                image = image.padded_before_convolution_from(
+                    kernel_shape=psf.shape_native, mask_pad_value=1
+                )
+                noise_map = noise_map.padded_before_convolution_from(
+                    kernel_shape=psf.shape_native, mask_pad_value=1
+                )
+                print(
+                    f"The image and noise map of the `Imaging` objected had been padded to the dimensions"
+                    f"{image.shape}. This is because the blurring region around its mask, which defines where"
+                    f"PSF flux may be convolved into the masked region, extended beyond the edge of the image."
+                    f""
+                    f"This can be prevented by using a smaller mask, smaller PSF kernel size or manually padding"
+                    f"the image and noise-map yourself."
+                )
 
-        psf = copy.deepcopy(imaging.psf)
+        super().__init__(data=image, noise_map=noise_map, settings=settings, name=name)
+
+        self.psf = psf
 
         self.psf = settings.psf_reshaped_and_renormalized_from_psf(psf=psf)
 
-        if self.psf is not None:
+        if setup_convolver and psf is not None:
 
-            self.convolver = convolver.Convolver(mask=mask, kernel=self.psf)
+            self.convolver = convolver.Convolver(mask=self.mask, kernel=self.psf)
             self.blurring_grid = self.grid.blurring_grid_from_kernel_shape(
                 kernel_shape_native=self.psf.shape_native
             )
 
-    @property
-    def imaging(self):
-        return self.dataset
+        else:
 
-    @property
-    def data(self):
-        return self.image
+            self.convolver = None
+            self.blurring_grid = None
 
-    @property
-    def signal_to_noise_map(self):
-        return self.data / self.noise_map
+    def __array_finalize__(self, obj):
+        if isinstance(obj, Imaging):
+            try:
+                for key, value in obj.__dict__.items():
+                    setattr(self, key, value)
+            except AttributeError:
+                logger.debug(
+                    "Original object in Imaging.__array_finalize__ missing one or more attributes"
+                )
 
-    def modify_image_and_noise_map(self, image, noise_map):
-
-        masked_imaging = copy.deepcopy(self)
-
-        masked_imaging.image = image
-        masked_imaging.noise_map = noise_map
-
-        return masked_imaging
-
-
-class SettingsMaskedImaging(AbstractSettingsMaskedImaging):
-
-    pass
-
-
-class Imaging(AbstractImaging):
     @classmethod
     def from_fits(
         cls,
@@ -302,6 +229,88 @@ class Imaging(AbstractImaging):
 
         return Imaging(image=image, noise_map=noise_map, psf=psf, name=name)
 
+    def apply_mask(self, mask, settings=None):
+
+        if not self.image.mask.is_all_false:
+
+            raise exc.DatasetException(
+                "You cannot apply a mask to an `Imaging` dataset which has already had a mask applied."
+            )
+
+        if settings is None:
+            settings = self.settings
+            settings.renormalize_psf = True
+
+        image = array_2d.Array2D.manual_mask(
+            array=self.image.native, mask=mask.mask_sub_1
+        )
+
+        noise_map = array_2d.Array2D.manual_mask(
+            array=self.noise_map.native, mask=mask.mask_sub_1
+        )
+
+        return Imaging(
+            image=image,
+            noise_map=noise_map,
+            psf=self.psf,
+            settings=settings,
+            name=self.name,
+            setup_convolver=True,
+        )
+
+    def apply_settings(self, settings):
+
+        return Imaging(
+            image=self.image,
+            noise_map=self.noise_map,
+            psf=self.psf,
+            settings=settings,
+            name=self.name,
+            setup_convolver=self.setup_convolver,
+        )
+
+    @property
+    def shape_native(self):
+        return self.data.shape_native
+
+    @property
+    def image(self):
+        return self.data
+
+    @property
+    def pixel_scales(self):
+        return self.data.pixel_scales
+
+    def signal_to_noise_limited_from(self, signal_to_noise_limit, mask=None):
+
+        imaging = copy.deepcopy(self)
+
+        if mask is None:
+            mask = msk.Mask2D.unmasked(
+                shape_native=self.shape_native, pixel_scales=self.pixel_scales
+            )
+
+        noise_map_limit = np.where(
+            (self.signal_to_noise_map.native > signal_to_noise_limit) & (mask == False),
+            np.abs(self.image.native) / signal_to_noise_limit,
+            self.noise_map.native,
+        )
+
+        imaging.noise_map = array_2d.Array2D.manual_mask(
+            array=noise_map_limit, mask=self.image.mask
+        )
+
+        return imaging
+
+    def modify_image_and_noise_map(self, image, noise_map):
+
+        imaging = copy.deepcopy(self)
+
+        imaging.data = image
+        imaging.noise_map = noise_map
+
+        return imaging
+
     def output_to_fits(
         self, image_path, psf_path=None, noise_map_path=None, overwrite=False
     ):
@@ -312,11 +321,6 @@ class Imaging(AbstractImaging):
 
         if self.noise_map is not None and noise_map_path is not None:
             self.noise_map.output_to_fits(file_path=noise_map_path, overwrite=overwrite)
-
-
-class MaskedImaging(AbstractMaskedImaging):
-
-    pass
 
 
 class AbstractSimulatorImaging:

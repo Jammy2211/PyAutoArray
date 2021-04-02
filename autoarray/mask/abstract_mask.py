@@ -162,7 +162,7 @@ class AbstractMask(np.ndarray):
         """
         return int(self.pixels_in_mask * self.sub_size ** self.dimensions)
 
-    def mask_new_sub_size_from_mask(self, mask, sub_size=1) -> "AbstractMask":
+    def mask_new_sub_size_from(self, mask, sub_size=1) -> "AbstractMask":
         """
         Returns the mask on the same scaled coordinate system but with a sub-grid of an input``sub_size`` `.
         """

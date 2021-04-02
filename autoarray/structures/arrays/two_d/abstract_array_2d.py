@@ -234,8 +234,9 @@ class AbstractArray2D(abstract_structure.AbstractStructure2D):
 
         return mask.extent
 
-    def resized_from(self, new_shape):
-        """Resize the array around its centre to a new input shape.
+    def resized_from(self, new_shape, mask_pad_value: int = 0.0):
+        """
+        Resize the array around its centre to a new input shape.
 
         If a new_shape dimension is smaller than the current dimension, the data at the edges is trimmed and removed.
         If it is larger, the data is padded with zeros.
@@ -253,13 +254,15 @@ class AbstractArray2D(abstract_structure.AbstractStructure2D):
             array_2d=self.native, resized_shape=new_shape
         )
 
-        resized_mask = self.mask.resized_mask_from_new_shape(new_shape=new_shape)
+        resized_mask = self.mask.resized_mask_from_new_shape(
+            new_shape=new_shape, pad_value=mask_pad_value
+        )
 
         array = convert_array_2d(array_2d=resized_array_2d, mask_2d=resized_mask)
 
         return self._new_structure(array=array, mask=resized_mask)
 
-    def padded_before_convolution_from(self, kernel_shape):
+    def padded_before_convolution_from(self, kernel_shape, mask_pad_value: int = 0.0):
         """When the edge pixels of a mask are unmasked and a convolution is to occur, the signal of edge pixels will be
         'missing' if the grid is used to evaluate the signal via an analytic function.
 
@@ -276,7 +279,7 @@ class AbstractArray2D(abstract_structure.AbstractStructure2D):
             self.shape_native[0] + (kernel_shape[0] - 1),
             self.shape_native[1] + (kernel_shape[1] - 1),
         )
-        return self.resized_from(new_shape=new_shape)
+        return self.resized_from(new_shape=new_shape, mask_pad_value=mask_pad_value)
 
     def trimmed_after_convolution_from(self, kernel_shape):
         """When the edge pixels of a mask are unmasked and a convolution is to occur, the signal of edge pixels will be

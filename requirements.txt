@@ -1,3 +1,4 @@
+autoconf==0.8.0
 llvmlite
 numba
 numpy>=1.18.0

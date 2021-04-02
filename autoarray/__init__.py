@@ -4,13 +4,11 @@ from . import util
 from . import mock
 from .preloads import Preloads
 from .dataset import preprocess
+from .dataset.imaging import SettingsImaging
 from .dataset.imaging import Imaging
-from .dataset.imaging import MaskedImaging
-from .dataset.imaging import SettingsMaskedImaging
 from .dataset.imaging import SimulatorImaging
 from .dataset.interferometer import Interferometer
-from .dataset.interferometer import MaskedInterferometer
-from .dataset.interferometer import SettingsMaskedInterferometer
+from .dataset.interferometer import SettingsInterferometer
 from .dataset.interferometer import SimulatorInterferometer
 from .fit.fit import FitImaging
 from .fit.fit import FitInterferometer

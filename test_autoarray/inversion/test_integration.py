@@ -87,10 +87,10 @@ class TestRectangular:
 
         imaging = aa.Imaging(image=image, noise_map=noise_map, psf=psf)
 
-        masked_data = aa.MaskedImaging(imaging=imaging, mask=mask)
+        masked_imaging = imaging.apply_mask(mask=mask)
 
         inversion = aa.Inversion(
-            masked_dataset=masked_data,
+            dataset=masked_imaging,
             mapper=mapper,
             regularization=reg,
             settings=aa.SettingsInversion(check_solution=False),
@@ -205,10 +205,10 @@ class TestRectangular:
 
         imaging = aa.Imaging(image=image, noise_map=noise_map, psf=psf)
 
-        masked_data = aa.MaskedImaging(imaging=imaging, mask=mask)
+        masked_imaging = imaging.apply_mask(mask=mask)
 
         inversion = aa.Inversion(
-            masked_dataset=masked_data,
+            dataset=masked_imaging,
             mapper=mapper,
             regularization=reg,
             settings=aa.SettingsInversion(check_solution=False),
@@ -322,10 +322,10 @@ class TestRectangular:
 
         imaging = aa.Imaging(image=image, noise_map=noise_map, psf=psf)
 
-        masked_data = aa.MaskedImaging(imaging=imaging, mask=mask)
+        masked_imaging = imaging.apply_mask(mask=mask)
 
         inversion = aa.Inversion(
-            masked_dataset=masked_data,
+            dataset=masked_imaging,
             mapper=mapper,
             regularization=reg,
             settings=aa.SettingsInversion(check_solution=False),
@@ -412,10 +412,10 @@ class TestRectangular:
 
         imaging = aa.Imaging(image=image, noise_map=noise_map, psf=psf)
 
-        masked_data = aa.MaskedImaging(imaging=imaging, mask=mask)
+        masked_imaging = imaging.apply_mask(mask=mask)
 
         inversion = aa.Inversion(
-            masked_dataset=masked_data,
+            dataset=masked_imaging,
             mapper=mapper,
             regularization=reg,
             settings=aa.SettingsInversion(check_solution=False),
@@ -426,8 +426,6 @@ class TestRectangular:
         assert inversion.mapped_reconstructed_image == pytest.approx(np.ones(5), 1.0e-4)
 
     def test__interferometer_matrices(self):
-
-        visibilities_mask = np.full(fill_value=False, shape=(7,))
 
         real_space_mask = aa.Mask2D.unmasked(
             shape_native=(7, 7), pixel_scales=0.1, sub_size=1
@@ -463,16 +461,11 @@ class TestRectangular:
             visibilities=visibilities,
             noise_map=noise_map,
             uv_wavelengths=uv_wavelengths,
-        )
-
-        masked_data = aa.MaskedInterferometer(
-            interferometer=interferometer,
-            visibilities_mask=visibilities_mask,
             real_space_mask=real_space_mask,
         )
 
         inversion = aa.Inversion(
-            masked_dataset=masked_data,
+            dataset=interferometer,
             mapper=mapper,
             regularization=reg,
             settings=aa.SettingsInversion(check_solution=False),
@@ -486,8 +479,6 @@ class TestRectangular:
 
     def test__interferometer_linear_operator(self):
 
-        visibilities_mask = np.full(fill_value=False, shape=(7,))
-
         real_space_mask = aa.Mask2D.unmasked(
             shape_native=(7, 7), pixel_scales=0.1, sub_size=1
         )
@@ -522,19 +513,12 @@ class TestRectangular:
             visibilities=visibilities,
             noise_map=noise_map,
             uv_wavelengths=uv_wavelengths,
-        )
-
-        masked_data = aa.MaskedInterferometer(
-            interferometer=interferometer,
-            visibilities_mask=visibilities_mask,
             real_space_mask=real_space_mask,
-            settings=aa.SettingsMaskedInterferometer(
-                transformer_class=aa.TransformerNUFFT
-            ),
+            settings=aa.SettingsInterferometer(transformer_class=aa.TransformerNUFFT),
         )
 
         inversion = aa.Inversion(
-            masked_dataset=masked_data,
+            dataset=interferometer,
             mapper=mapper,
             regularization=reg,
             settings=aa.SettingsInversion(
@@ -653,10 +637,10 @@ class TestVoronoiMagnification:
 
         imaging = aa.Imaging(image=image, noise_map=noise_map, psf=psf)
 
-        masked_data = aa.MaskedImaging(imaging=imaging, mask=mask)
+        masked_imaging = imaging.apply_mask(mask=mask)
 
         inversion = aa.Inversion(
-            masked_dataset=masked_data,
+            dataset=masked_imaging,
             mapper=mapper,
             regularization=reg,
             settings=aa.SettingsInversion(check_solution=False),
@@ -739,10 +723,10 @@ class TestVoronoiMagnification:
 
         imaging = aa.Imaging(image=image, noise_map=noise_map, psf=psf)
 
-        masked_data = aa.MaskedImaging(imaging=imaging, mask=mask)
+        masked_imaging = imaging.apply_mask(mask=mask)
 
         inversion = aa.Inversion(
-            masked_dataset=masked_data,
+            dataset=masked_imaging,
             mapper=mapper,
             regularization=reg,
             settings=aa.SettingsInversion(check_solution=False),
@@ -847,10 +831,10 @@ class TestVoronoiMagnification:
 
         imaging = aa.Imaging(image=image, noise_map=noise_map, psf=psf)
 
-        masked_data = aa.MaskedImaging(imaging=imaging, mask=mask)
+        masked_imaging = imaging.apply_mask(mask=mask)
 
         inversion = aa.Inversion(
-            masked_dataset=masked_data,
+            dataset=masked_imaging,
             mapper=mapper,
             regularization=reg,
             settings=aa.SettingsInversion(check_solution=False),
@@ -934,10 +918,10 @@ class TestVoronoiMagnification:
 
         imaging = aa.Imaging(image=image, noise_map=noise_map, psf=psf)
 
-        masked_data = aa.MaskedImaging(imaging=imaging, mask=mask)
+        masked_imaging = imaging.apply_mask(mask=mask)
 
         inversion = aa.Inversion(
-            masked_dataset=masked_data,
+            dataset=masked_imaging,
             mapper=mapper,
             regularization=reg,
             settings=aa.SettingsInversion(check_solution=False),
@@ -987,16 +971,11 @@ class TestVoronoiMagnification:
             visibilities=visibilities,
             noise_map=noise_map,
             uv_wavelengths=uv_wavelengths,
-        )
-
-        masked_data = aa.MaskedInterferometer(
-            interferometer=interferometer,
-            visibilities_mask=visibilities_mask,
             real_space_mask=real_space_mask,
         )
 
         inversion = aa.Inversion(
-            masked_dataset=masked_data,
+            dataset=interferometer,
             mapper=mapper,
             regularization=reg,
             settings=aa.SettingsInversion(check_solution=False),

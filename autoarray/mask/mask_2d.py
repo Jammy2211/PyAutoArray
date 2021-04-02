@@ -114,7 +114,7 @@ class AbstractMask2D(abstract_mask.AbstractMask):
             mask=self, sub_size=1, pixel_scales=self.pixel_scales, origin=self.origin
         )
 
-    def resized_mask_from_new_shape(self, new_shape):
+    def resized_mask_from_new_shape(self, new_shape, pad_value: int = 0.0):
         """resized the array to a new shape and at a new origin.
 
         Parameters
@@ -126,7 +126,7 @@ class AbstractMask2D(abstract_mask.AbstractMask):
         mask = copy.deepcopy(self)
 
         resized_mask = array_2d_util.resized_array_2d_from_array_2d(
-            array_2d=mask, resized_shape=new_shape
+            array_2d=mask, resized_shape=new_shape, pad_value=pad_value
         ).astype("bool")
 
         return Mask2D(

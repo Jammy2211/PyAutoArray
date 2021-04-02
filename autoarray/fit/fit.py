@@ -180,14 +180,12 @@ class FitData:
 class FitDataset(FitData):
 
     # noinspection PyUnresolvedReferences
-    def __init__(
-        self, masked_dataset, model_data, inversion=None, use_mask_in_fit=True
-    ):
+    def __init__(self, dataset, model_data, inversion=None, use_mask_in_fit=True):
         """Class to fit a masked dataset where the dataset's data structures are any dimension.
 
         Parameters
         -----------
-        masked_dataset : MaskedDataset
+        dataset : MaskedDataset
             The masked dataset (data, mask, noise-map, etc.) that is fitted.
         model_data : np.ndarray
             The model data the masked dataset is fitted with.
@@ -196,7 +194,7 @@ class FitDataset(FitData):
             if the `log_likelihood` or `log_evidence` is used as the `figure_of_merit`.
         use_mask_in_fit : bool
             If `True`, masked data points are omitted from the fit. If `False` they are not (in most use cases the
-            `masked_dataset` will have been processed to remove masked points, for example the `slim` representation).
+            `dataset` will have been processed to remove masked points, for example the `slim` representation).
 
         Attributes
         -----------
@@ -215,13 +213,13 @@ class FitDataset(FitData):
             The overall log likelihood of the model's fit to the dataset, summed over evey data point.
         """
 
-        self.masked_dataset = masked_dataset
+        self.dataset = dataset
 
         super().__init__(
-            data=masked_dataset.data,
-            noise_map=masked_dataset.noise_map,
+            data=dataset.data,
+            noise_map=dataset.noise_map,
             model_data=model_data,
-            mask=masked_dataset.mask,
+            mask=dataset.mask,
             inversion=inversion,
         )
 
@@ -229,18 +227,16 @@ class FitDataset(FitData):
 
     @property
     def name(self) -> str:
-        return self.masked_dataset.dataset.name
+        return self.dataset.name
 
 
 class FitImaging(FitDataset):
-    def __init__(
-        self, masked_imaging, model_image, inversion=None, use_mask_in_fit=True
-    ):
+    def __init__(self, imaging, model_image, inversion=None, use_mask_in_fit=True):
         """Class to fit a masked imaging dataset.
 
         Parameters
         -----------
-        masked_imaging : MaskedImaging
+        imaging : MaskedImaging
             The masked imaging dataset that is fitted.
         model_image : Array2D
             The model image the masked imaging is fitted with.
@@ -249,7 +245,7 @@ class FitImaging(FitDataset):
             if the `log_likelihood` or `log_evidence` is used as the `figure_of_merit`.
         use_mask_in_fit : bool
             If `True`, masked data points are omitted from the fit. If `False` they are not (in most use cases the
-            `masked_dataset` will have been processed to remove masked points, for example the `slim` representation).
+            `dataset` will have been processed to remove masked points, for example the `slim` representation).
 
         Attributes
         -----------
@@ -269,15 +265,15 @@ class FitImaging(FitDataset):
         """
 
         super().__init__(
-            masked_dataset=masked_imaging,
+            dataset=imaging,
             model_data=model_image,
             inversion=inversion,
             use_mask_in_fit=use_mask_in_fit,
         )
 
     @property
-    def masked_imaging(self):
-        return self.masked_dataset
+    def imaging(self):
+        return self.dataset
 
     @property
     def image(self) -> abstract_structure.AbstractStructure:
@@ -290,17 +286,13 @@ class FitImaging(FitDataset):
 
 class FitInterferometer(FitDataset):
     def __init__(
-        self,
-        masked_interferometer,
-        model_visibilities,
-        inversion=None,
-        use_mask_in_fit=True,
+        self, interferometer, model_visibilities, inversion=None, use_mask_in_fit=True
     ):
         """Class to fit a masked interferometer dataset.
 
         Parameters
         -----------
-        masked_interferometer : MaskedInterferometer
+        interferometer : MaskedInterferometer
             The masked interferometer dataset that is fitted.
         model_visibilities : Visibilities
             The model visibilities the masked imaging is fitted with.
@@ -309,7 +301,7 @@ class FitInterferometer(FitDataset):
             if the `log_likelihood` or `log_evidence` is used as the `figure_of_merit`.
         use_mask_in_fit : bool
             If `True`, masked data points are omitted from the fit. If `False` they are not (in most use cases the
-            `masked_dataset` will have been processed to remove masked points, for example the `slim` representation).
+            `dataset` will have been processed to remove masked points, for example the `slim` representation).
 
         Attributes
         -----------
@@ -328,24 +320,20 @@ class FitInterferometer(FitDataset):
             The overall log likelihood of the model's fit to the dataset, summed over evey data point.
         """
 
-        super(FitInterferometer, self).__init__(
-            masked_dataset=masked_interferometer,
+        super().__init__(
+            dataset=interferometer,
             model_data=model_visibilities,
             inversion=inversion,
             use_mask_in_fit=use_mask_in_fit,
         )
 
     @property
-    def masked_interferometer(self):
-        return self.masked_dataset
+    def mask(self):
+        return np.full(shape=self.visibilities.shape, fill_value=False)
 
     @property
-    def mask(self) -> abstract_structure.AbstractStructure:
-        return self.masked_interferometer.visibilities_mask
-
-    @property
-    def visibilities_mask(self) -> abstract_structure.AbstractStructure:
-        return self.masked_interferometer.visibilities_mask
+    def interferometer(self):
+        return self.dataset
 
     @property
     def visibilities(self) -> abstract_structure.AbstractStructure:

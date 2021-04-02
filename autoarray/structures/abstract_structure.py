@@ -33,7 +33,7 @@ class AbstractStructure(np.ndarray):
 
         super().__setstate__(state[0:-1])
 
-    def _new_structure(self, grid, mask):
+    def _new_structure(self, structure: "AbstractStructure", mask):
         """Conveninence method for creating a new instance of the Grid2D class from this grid.
 
         This method is over-written by other grids (e.g. Grid2DIterate) such that the slim and native methods return
@@ -41,11 +41,10 @@ class AbstractStructure(np.ndarray):
 
         Parameters
         ----------
-        grid : np.ndarray or list
-            The (y,x) coordinates of the grid input as an ndarray of shape [total_sub_coordinates, 2] or list of lists.
+        data_structure : AbstractStructure
+            The structure which is to be turned into a new structure.
         mask : msk.Mask2D
-            The 2D mask associated with the grid, defining the pixels each grid coordinate is paired with and
-            originates from.
+            The mask associated with this structure.
         """
         raise NotImplementedError()
 

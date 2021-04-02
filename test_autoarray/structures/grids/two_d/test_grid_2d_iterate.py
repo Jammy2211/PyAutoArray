@@ -352,7 +352,7 @@ class TestIteratedArray:
             mask=mask, fractional_accuracy=1.0, sub_steps=[2, 3]
         )
 
-        mask_sub_1 = mask.mask_new_sub_size_from_mask(mask=mask, sub_size=1)
+        mask_sub_1 = mask.mask_new_sub_size_from(mask=mask, sub_size=1)
         grid_sub_1 = aa.Grid2D.from_mask(mask=mask_sub_1)
         values_sub_1 = ndarray_1d_from_grid(grid=grid_sub_1, profile=None)
         values_sub_1 = grid_sub_1.structure_from_result(result=values_sub_1)
@@ -363,7 +363,7 @@ class TestIteratedArray:
             array_lower_sub_2d=values_sub_1.binned.native,
         )
 
-        mask_sub_3 = mask.mask_new_sub_size_from_mask(mask=mask, sub_size=3)
+        mask_sub_3 = mask.mask_new_sub_size_from(mask=mask, sub_size=3)
         grid_sub_3 = aa.Grid2D.from_mask(mask=mask_sub_3)
         values_sub_3 = ndarray_1d_from_grid(grid=grid_sub_3, profile=None)
         values_sub_3 = grid_sub_3.structure_from_result(result=values_sub_3)
@@ -396,7 +396,7 @@ class TestIteratedArray:
             array_lower_sub_2d=values_sub_1.binned.native,
         )
 
-        mask_sub_2 = mask.mask_new_sub_size_from_mask(mask=mask, sub_size=2)
+        mask_sub_2 = mask.mask_new_sub_size_from(mask=mask, sub_size=2)
         grid_sub_2 = aa.Grid2D.from_mask(mask=mask_sub_2)
         values_sub_2 = ndarray_1d_from_grid(grid=grid_sub_2, profile=None)
         values_sub_2 = grid_sub_2.structure_from_result(result=values_sub_2)
@@ -423,7 +423,7 @@ class TestIteratedArray:
             mask=mask, fractional_accuracy=0.5, sub_steps=[2, 4]
         )
 
-        mask_sub_1 = mask.mask_new_sub_size_from_mask(mask=mask, sub_size=1)
+        mask_sub_1 = mask.mask_new_sub_size_from(mask=mask, sub_size=1)
         grid_sub_1 = aa.Grid2D.from_mask(mask=mask_sub_1)
         values_sub_1 = ndarray_1d_from_grid(grid=grid_sub_1, profile=None)
         values_sub_1 = grid_sub_1.structure_from_result(result=values_sub_1)
@@ -434,12 +434,12 @@ class TestIteratedArray:
             array_lower_sub_2d=values_sub_1.binned.native,
         )
 
-        mask_sub_2 = mask.mask_new_sub_size_from_mask(mask=mask, sub_size=2)
+        mask_sub_2 = mask.mask_new_sub_size_from(mask=mask, sub_size=2)
         grid_sub_2 = aa.Grid2D.from_mask(mask=mask_sub_2)
         values_sub_2 = ndarray_1d_from_grid(grid=grid_sub_2, profile=None)
         values_sub_2 = grid_sub_2.structure_from_result(result=values_sub_2)
 
-        mask_sub_4 = mask.mask_new_sub_size_from_mask(mask=mask, sub_size=4)
+        mask_sub_4 = mask.mask_new_sub_size_from(mask=mask, sub_size=4)
         grid_sub_4 = aa.Grid2D.from_mask(mask=mask_sub_4)
         values_sub_4 = ndarray_1d_from_grid(grid=grid_sub_4, profile=None)
         values_sub_4 = grid_sub_4.structure_from_result(result=values_sub_4)
@@ -677,7 +677,7 @@ class TestIteratedGrid:
             mask=mask, fractional_accuracy=1.0, sub_steps=[2, 3]
         )
 
-        mask_sub_1 = mask.mask_new_sub_size_from_mask(mask=mask, sub_size=1)
+        mask_sub_1 = mask.mask_new_sub_size_from(mask=mask, sub_size=1)
         grid_sub_1 = aa.Grid2D.from_mask(mask=mask_sub_1)
         values_sub_1 = ndarray_2d_from_grid(grid=grid_sub_1, profile=None)
         values_sub_1 = grid_sub_1.structure_from_result(result=values_sub_1)
@@ -688,7 +688,7 @@ class TestIteratedGrid:
             grid_lower_sub_2d=values_sub_1.binned.native,
         )
 
-        mask_sub_3 = mask.mask_new_sub_size_from_mask(mask=mask, sub_size=3)
+        mask_sub_3 = mask.mask_new_sub_size_from(mask=mask, sub_size=3)
         grid_sub_3 = aa.Grid2D.from_mask(mask=mask_sub_3)
         values_sub_3 = ndarray_2d_from_grid(grid=grid_sub_3, profile=None)
         values_sub_3 = grid_sub_3.structure_from_result(result=values_sub_3)
@@ -721,7 +721,7 @@ class TestIteratedGrid:
             grid_lower_sub_2d=values_sub_1.binned.native,
         )
 
-        mask_sub_2 = mask.mask_new_sub_size_from_mask(mask=mask, sub_size=2)
+        mask_sub_2 = mask.mask_new_sub_size_from(mask=mask, sub_size=2)
         grid_sub_2 = aa.Grid2D.from_mask(mask=mask_sub_2)
         values_sub_2 = ndarray_2d_from_grid(grid=grid_sub_2, profile=None)
         values_sub_2 = grid_sub_2.structure_from_result(result=values_sub_2)
@@ -748,7 +748,7 @@ class TestIteratedGrid:
             mask=mask, fractional_accuracy=0.5, sub_steps=[2, 4]
         )
 
-        mask_sub_1 = mask.mask_new_sub_size_from_mask(mask=mask, sub_size=1)
+        mask_sub_1 = mask.mask_new_sub_size_from(mask=mask, sub_size=1)
         grid_sub_1 = aa.Grid2D.from_mask(mask=mask_sub_1)
         values_sub_1 = ndarray_2d_from_grid(grid=grid_sub_1, profile=None)
         values_sub_1 = grid_sub_1.structure_from_result(result=values_sub_1)
@@ -759,12 +759,12 @@ class TestIteratedGrid:
             grid_lower_sub_2d=values_sub_1.binned.native,
         )
 
-        mask_sub_2 = mask.mask_new_sub_size_from_mask(mask=mask, sub_size=2)
+        mask_sub_2 = mask.mask_new_sub_size_from(mask=mask, sub_size=2)
         grid_sub_2 = aa.Grid2D.from_mask(mask=mask_sub_2)
         values_sub_2 = ndarray_2d_from_grid(grid=grid_sub_2, profile=None)
         values_sub_2 = grid_sub_2.structure_from_result(result=values_sub_2)
 
-        mask_sub_4 = mask.mask_new_sub_size_from_mask(mask=mask, sub_size=4)
+        mask_sub_4 = mask.mask_new_sub_size_from(mask=mask, sub_size=4)
         grid_sub_4 = aa.Grid2D.from_mask(mask=mask_sub_4)
         values_sub_4 = ndarray_2d_from_grid(grid=grid_sub_4, profile=None)
         values_sub_4 = grid_sub_4.structure_from_result(result=values_sub_4)
