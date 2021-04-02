@@ -641,7 +641,7 @@ class TestMaskAntiAnnular:
         ).all()
 
 
-class TestMaskElliptical:
+class TestMaskEll:
     def test__input_circular_params__small_medium_and_large_masks(self):
 
         mask = util.mask_2d.mask_2d_elliptical_from(
@@ -978,7 +978,7 @@ class TestMaskElliptical:
         ).all()
 
 
-class TestMaskEllipticalAnnular:
+class TestMaskEllAnnular:
     def test__mask_inner_radius_zero_outer_radius_small_medium_and_large__mask__all_circular_parameters(
         self,
     ):
