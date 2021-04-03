@@ -649,7 +649,7 @@ class TestMaskEll:
             pixel_scales=(1.0, 1.0),
             major_axis_radius=0.5,
             axis_ratio=1.0,
-            phi=0.0,
+            angle=0.0,
         )
 
         assert (
@@ -662,7 +662,7 @@ class TestMaskEll:
             pixel_scales=(1.0, 1.0),
             major_axis_radius=1.3,
             axis_ratio=1.0,
-            phi=0.0,
+            angle=0.0,
         )
 
         assert (
@@ -677,7 +677,7 @@ class TestMaskEll:
             pixel_scales=(1.0, 1.0),
             major_axis_radius=3.0,
             axis_ratio=1.0,
-            phi=0.0,
+            angle=0.0,
         )
 
         assert (
@@ -696,7 +696,7 @@ class TestMaskEll:
             pixel_scales=(1.0, 1.0),
             major_axis_radius=1.3,
             axis_ratio=0.1,
-            phi=0.0,
+            angle=0.0,
         )
 
         assert (
@@ -709,7 +709,7 @@ class TestMaskEll:
             pixel_scales=(1.0, 1.0),
             major_axis_radius=1.3,
             axis_ratio=0.1,
-            phi=180.0,
+            angle=180.0,
         )
 
         assert (
@@ -722,7 +722,7 @@ class TestMaskEll:
             pixel_scales=(1.0, 1.0),
             major_axis_radius=1.3,
             axis_ratio=0.1,
-            phi=360.0,
+            angle=360.0,
         )
 
         assert (
@@ -737,7 +737,7 @@ class TestMaskEll:
             pixel_scales=(1.0, 1.0),
             major_axis_radius=1.3,
             axis_ratio=0.1,
-            phi=90.0,
+            angle=90.0,
         )
 
         assert (
@@ -750,7 +750,7 @@ class TestMaskEll:
             pixel_scales=(1.0, 1.0),
             major_axis_radius=1.3,
             axis_ratio=0.1,
-            phi=270.0,
+            angle=270.0,
         )
 
         assert (
@@ -765,7 +765,7 @@ class TestMaskEll:
             pixel_scales=(1.0, 1.0),
             major_axis_radius=1.5,
             axis_ratio=0.1,
-            phi=45.0,
+            angle=45.0,
         )
 
         assert (
@@ -778,7 +778,7 @@ class TestMaskEll:
             pixel_scales=(1.0, 1.0),
             major_axis_radius=1.5,
             axis_ratio=0.1,
-            phi=135.0,
+            angle=135.0,
         )
 
         assert (
@@ -791,7 +791,7 @@ class TestMaskEll:
             pixel_scales=(1.0, 1.0),
             major_axis_radius=1.5,
             axis_ratio=0.1,
-            phi=225.0,
+            angle=225.0,
         )
 
         assert (
@@ -804,7 +804,7 @@ class TestMaskEll:
             pixel_scales=(1.0, 1.0),
             major_axis_radius=1.5,
             axis_ratio=0.1,
-            phi=315.0,
+            angle=315.0,
         )
 
         assert (
@@ -819,7 +819,7 @@ class TestMaskEll:
             pixel_scales=(1.0, 1.0),
             major_axis_radius=1.5,
             axis_ratio=0.9,
-            phi=90.0,
+            angle=90.0,
         )
 
         assert (
@@ -839,7 +839,7 @@ class TestMaskEll:
             pixel_scales=(1.0, 1.0),
             major_axis_radius=1.5,
             axis_ratio=0.1,
-            phi=270.0,
+            angle=270.0,
         )
 
         assert (
@@ -859,7 +859,7 @@ class TestMaskEll:
             pixel_scales=(1.0, 0.1),
             major_axis_radius=1.5,
             axis_ratio=0.1,
-            phi=270.0,
+            angle=270.0,
         )
 
         assert (
@@ -881,7 +881,7 @@ class TestMaskEll:
             pixel_scales=(1.0, 1.0),
             major_axis_radius=1.5,
             axis_ratio=0.9,
-            phi=0.0,
+            angle=0.0,
         )
 
         assert (
@@ -900,7 +900,7 @@ class TestMaskEll:
             pixel_scales=(1.0, 1.0),
             major_axis_radius=1.5,
             axis_ratio=0.1,
-            phi=180.0,
+            angle=180.0,
         )
 
         assert (
@@ -919,7 +919,7 @@ class TestMaskEll:
             pixel_scales=(0.1, 1.0),
             major_axis_radius=1.5,
             axis_ratio=0.1,
-            phi=180.0,
+            angle=180.0,
         )
 
         assert (
@@ -940,7 +940,7 @@ class TestMaskEll:
             pixel_scales=(3.0, 3.0),
             major_axis_radius=4.8,
             axis_ratio=0.1,
-            phi=45.0,
+            angle=45.0,
             centre=(-3.0, 0.0),
         )
 
@@ -954,7 +954,7 @@ class TestMaskEll:
             pixel_scales=(3.0, 3.0),
             major_axis_radius=4.8,
             axis_ratio=0.1,
-            phi=45.0,
+            angle=45.0,
             centre=(0.0, 3.0),
         )
 
@@ -968,7 +968,7 @@ class TestMaskEll:
             pixel_scales=(3.0, 3.0),
             major_axis_radius=4.8,
             axis_ratio=0.1,
-            phi=45.0,
+            angle=45.0,
             centre=(-3.0, 3.0),
         )
 

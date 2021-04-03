@@ -452,7 +452,7 @@ class TestFromGaussian:
             pixel_scales=1.0,
             centre=(0.1, 0.1),
             axis_ratio=0.9,
-            phi=45.0,
+            angle=45.0,
             sigma=1.0,
             renormalize=True,
         )

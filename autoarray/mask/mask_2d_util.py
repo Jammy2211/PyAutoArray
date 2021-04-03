@@ -349,10 +349,10 @@ def mask_2d_via_pixel_coordinates_from(
 
 @decorator_util.jit()
 def elliptical_radius_from(
-    y_scaled: float, x_scaled: float, phi: float, axis_ratio: float
+    y_scaled: float, x_scaled: float, angle: float, axis_ratio: float
 ) -> float:
     """
-    Returns the elliptical radius of an ellipse from its (y,x) scaled centre, rotation angle `phi` defined in degrees
+    Returns the elliptical radius of an ellipse from its (y,x) scaled centre, rotation angle `angle` defined in degrees
     counter-clockwise from the positive x-axis and its axis-ratio.
 
     This is used by the function `mask_elliptical_from` to determine the radius of every (y,x) coordinate in elliptical
@@ -364,7 +364,7 @@ def elliptical_radius_from(
         The scaled y coordinate in Cartesian coordinates which is converted to elliptical coordinates.
     x_scaled : float
         The scaled x coordinate in Cartesian coordinates which is converted to elliptical coordinates.
-    phi : float
+    angle : float
         The rotation angle in degrees counter-clockwise from the positive x-axis
     axis_ratio : float
         The axis-ratio of the ellipse (minor axis / major axis).
@@ -376,7 +376,7 @@ def elliptical_radius_from(
     """
     r_scaled = np.sqrt(x_scaled ** 2 + y_scaled ** 2)
 
-    theta_rotated = np.arctan2(y_scaled, x_scaled) + np.radians(phi)
+    theta_rotated = np.arctan2(y_scaled, x_scaled) + np.radians(angle)
 
     y_scaled_elliptical = r_scaled * np.sin(theta_rotated)
     x_scaled_elliptical = r_scaled * np.cos(theta_rotated)
@@ -392,11 +392,11 @@ def mask_2d_elliptical_from(
     pixel_scales: Tuple[float, float],
     major_axis_radius: float,
     axis_ratio: float,
-    phi: float,
+    angle: float,
     centre: Tuple[float, float] = (0.0, 0.0),
 ) -> np.ndarray:
     """
-    Returns an elliptical mask from an input major-axis mask radius, axis-ratio, rotational angle phi, shape and
+    Returns an elliptical mask from an input major-axis mask radius, axis-ratio, rotational angle, shape and
     centre.
 
     This creates a 2D array where all values within the ellipse are unmasked and therefore `False`.
@@ -411,7 +411,7 @@ def mask_2d_elliptical_from(
         The major-axis (in scaled units) of the ellipse within which pixels are unmasked.
     axis_ratio : float
         The axis-ratio of the ellipse within which pixels are unmasked.
-    phi : float
+    angle : float
         The rotation angle of the ellipse within which pixels are unmasked, (counter-clockwise from the positive
          x-axis).
     centre: (float, float)
@@ -441,7 +441,7 @@ def mask_2d_elliptical_from(
             x_scaled = (x - centres_scaled[1]) * pixel_scales[1]
 
             r_scaled_elliptical = elliptical_radius_from(
-                y_scaled, x_scaled, phi, axis_ratio
+                y_scaled, x_scaled, angle, axis_ratio
             )
 
             if r_scaled_elliptical <= major_axis_radius:
@@ -463,7 +463,7 @@ def mask_2d_elliptical_annular_from(
     centre: Tuple[float, float] = (0.0, 0.0),
 ) -> np.ndarray:
     """
-    Returns an elliptical annular mask from an input major-axis mask radius, axis-ratio, rotational angle phi for
+    Returns an elliptical annular mask from an input major-axis mask radius, axis-ratio, rotational angle for
     both the inner and outer elliptical annuli and a shape and centre for the mask.
 
     This creates a 2D array where all values within the elliptical annuli are unmasked and therefore `False`.

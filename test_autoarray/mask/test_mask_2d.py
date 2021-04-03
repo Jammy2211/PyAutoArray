@@ -310,7 +310,7 @@ class TestClassMethods:
             pixel_scales=(2.7, 2.7),
             major_axis_radius=5.7,
             axis_ratio=0.4,
-            phi=40.0,
+            angle=40.0,
             centre=(0.0, 0.0),
         )
 
@@ -320,7 +320,7 @@ class TestClassMethods:
             sub_size=1,
             major_axis_radius=5.7,
             axis_ratio=0.4,
-            phi=40.0,
+            angle=40.0,
             centre=(0.0, 0.0),
         )
 
@@ -334,7 +334,7 @@ class TestClassMethods:
             pixel_scales=(2.7, 2.7),
             major_axis_radius=5.7,
             axis_ratio=0.4,
-            phi=40.0,
+            angle=40.0,
             centre=(0.0, 0.0),
         )
 
@@ -344,7 +344,7 @@ class TestClassMethods:
             sub_size=1,
             major_axis_radius=5.7,
             axis_ratio=0.4,
-            phi=40.0,
+            angle=40.0,
             centre=(0.0, 0.0),
             invert=True,
         )

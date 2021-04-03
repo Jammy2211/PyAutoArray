@@ -281,7 +281,7 @@ class Kernel2D(array_2d.Array2D):
         sigma,
         centre=(0.0, 0.0),
         axis_ratio=1.0,
-        phi=0.0,
+        angle=0.0,
         renormalize=False,
     ):
         """Setup the Kernel2D as a 2D symmetric elliptical Gaussian profile, according to the equation:
@@ -302,7 +302,7 @@ class Kernel2D(array_2d.Array2D):
             The (y,x) central coordinates of the Gaussian.
         axis_ratio : float
             The axis-ratio of the elliptical Gaussian.
-        phi : float
+        angle : float
             The rotational angle of the Gaussian's ellipse defined counter clockwise from the positive x-axis.
         renormalize : bool
             If True, the Kernel2D's array values are renormalized such that they sum to 1.0.
@@ -315,7 +315,7 @@ class Kernel2D(array_2d.Array2D):
         grid_radius = np.sqrt(np.sum(grid_shifted ** 2.0, 1))
         theta_coordinate_to_profile = np.arctan2(
             grid_shifted[:, 0], grid_shifted[:, 1]
-        ) - np.radians(phi)
+        ) - np.radians(angle)
         grid_transformed = np.vstack(
             (
                 grid_radius * np.sin(theta_coordinate_to_profile),
@@ -368,7 +368,7 @@ class Kernel2D(array_2d.Array2D):
             pixel_scales=pixel_scales,
             sigma=y_stddev,
             axis_ratio=axis_ratio,
-            phi=90.0 - theta,
+            angle=90.0 - theta,
             centre=centre,
             renormalize=renormalize,
         )

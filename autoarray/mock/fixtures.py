@@ -266,18 +266,14 @@ def make_masked_imaging_7x7():
 
     imaging_7x7 = make_imaging_7x7()
 
-    return imaging_7x7.apply_mask(
-        mask=make_sub_mask_7x7(), settings=imaging.SettingsImaging(sub_size=1)
-    )
+    return imaging_7x7.apply_mask(mask=make_sub_mask_7x7())
 
 
 def make_masked_imaging_no_blur_7x7():
 
     imaging_7x7 = make_imaging_no_blur_7x7()
 
-    return imaging_7x7.apply_mask(
-        mask=make_sub_mask_7x7(), settings=imaging.SettingsImaging(sub_size=1)
-    )
+    return imaging_7x7.apply_mask(mask=make_sub_mask_7x7())
 
 
 def make_imaging_fit_x1_plane_7x7():

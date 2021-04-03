@@ -88,7 +88,7 @@ class VectorField2DIrregular(np.ndarray):
     @property
     def phis(self) -> values.ValuesIrregular:
         """
-        If we treat this vector field as a set of weak lensing shear measurements, the position angle phi defined
+        If we treat this vector field as a set of weak lensing shear measurements, the position angle defined
         counter clockwise from the positive x-axis of each galaxy ellipticity that each vector corresponds too.
         """
         return values.ValuesIrregular(
@@ -103,8 +103,10 @@ class VectorField2DIrregular(np.ndarray):
         """
 
         return [
-            Ellipse(xy=(x, y), width=semi_major_axis, height=semi_minor_axis, angle=phi)
-            for x, y, semi_major_axis, semi_minor_axis, phi in zip(
+            Ellipse(
+                xy=(x, y), width=semi_major_axis, height=semi_minor_axis, angle=angle
+            )
+            for x, y, semi_major_axis, semi_minor_axis, angle in zip(
                 self.grid[:, 1],
                 self.grid[:, 0],
                 self.semi_major_axes,

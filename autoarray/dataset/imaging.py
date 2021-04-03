@@ -21,8 +21,8 @@ class SettingsImaging(abstract_dataset.AbstractSettingsDataset):
         self,
         grid_class=grid_2d.Grid2D,
         grid_inversion_class=grid_2d.Grid2D,
-        sub_size=2,
-        sub_size_inversion=2,
+        sub_size=1,
+        sub_size_inversion=4,
         fractional_accuracy=0.9999,
         sub_steps=None,
         pixel_scales_interp=None,
@@ -114,6 +114,8 @@ class Imaging(abstract_dataset.AbstractDataset):
         mask: msk.Mask2D
             The 2D mask that is applied to the image.
         """
+
+        self.unmasked = None
 
         self.setup_convolver = setup_convolver
 
@@ -229,27 +231,25 @@ class Imaging(abstract_dataset.AbstractDataset):
 
         return Imaging(image=image, noise_map=noise_map, psf=psf, name=name)
 
-    def apply_mask(self, mask, settings=None):
+    def apply_mask(self, mask):
 
-        if not self.image.mask.is_all_false:
+        if self.image.mask.is_all_false:
+            unmasked_imaging = self
+        else:
+            unmasked_imaging = self.unmasked
 
-            raise exc.DatasetException(
-                "You cannot apply a mask to an `Imaging` dataset which has already had a mask applied."
-            )
-
-        if settings is None:
-            settings = self.settings
-            settings.renormalize_psf = True
+        settings = self.settings
+        settings.renormalize_psf = True
 
         image = array_2d.Array2D.manual_mask(
-            array=self.image.native, mask=mask.mask_sub_1
+            array=unmasked_imaging.image.native, mask=mask.mask_sub_1
         )
 
         noise_map = array_2d.Array2D.manual_mask(
-            array=self.noise_map.native, mask=mask.mask_sub_1
+            array=unmasked_imaging.noise_map.native, mask=mask.mask_sub_1
         )
 
-        return Imaging(
+        imaging = Imaging(
             image=image,
             noise_map=noise_map,
             psf=self.psf,
@@ -257,6 +257,10 @@ class Imaging(abstract_dataset.AbstractDataset):
             name=self.name,
             setup_convolver=True,
         )
+
+        imaging.unmasked = unmasked_imaging
+
+        return imaging
 
     def apply_settings(self, settings):
 

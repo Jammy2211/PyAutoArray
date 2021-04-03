@@ -968,7 +968,7 @@ class Mask2D(AbstractMask2D):
         shape_native: (int, int),
         major_axis_radius: float,
         axis_ratio: float,
-        phi: float,
+        angle: float,
         pixel_scales: (float, float),
         sub_size: int = 1,
         origin: (float, float) = (0.0, 0.0),
@@ -988,7 +988,7 @@ class Mask2D(AbstractMask2D):
             The major-axis in scaled units of the ellipse within which pixels are unmasked.
         axis_ratio : float
             The axis-ratio of the ellipse within which pixels are unmasked.
-        phi : float
+        angle : float
             The rotation angle of the ellipse within which pixels are unmasked, (counter-clockwise from the positive \
              x-axis).
         pixel_scales: (float, float) or float
@@ -1013,7 +1013,7 @@ class Mask2D(AbstractMask2D):
             pixel_scales=pixel_scales,
             major_axis_radius=major_axis_radius,
             axis_ratio=axis_ratio,
-            phi=phi,
+            angle=angle,
             centre=centre,
         )
 

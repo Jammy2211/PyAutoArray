@@ -241,8 +241,9 @@ class TestImagingApplyMask:
         grid_iterate_7x7,
     ):
 
-        masked_imaging_7x7 = imaging_7x7.apply_mask(
-            mask=sub_mask_7x7, settings=aa.SettingsImaging(grid_class=aa.Grid2D)
+        masked_imaging_7x7 = imaging_7x7.apply_mask(mask=sub_mask_7x7)
+        masked_imaging_7x7 = masked_imaging_7x7.apply_settings(
+            settings=aa.SettingsImaging(grid_class=aa.Grid2D, sub_size=2)
         )
 
         assert isinstance(masked_imaging_7x7.grid, aa.Grid2D)
@@ -251,8 +252,9 @@ class TestImagingApplyMask:
         assert isinstance(masked_imaging_7x7.blurring_grid, aa.Grid2D)
         assert (masked_imaging_7x7.blurring_grid.slim == blurring_grid_7x7).all()
 
-        masked_imaging_7x7 = imaging_7x7.apply_mask(
-            mask=sub_mask_7x7, settings=aa.SettingsImaging(grid_class=aa.Grid2DIterate)
+        masked_imaging_7x7 = imaging_7x7.apply_mask(mask=sub_mask_7x7)
+        masked_imaging_7x7 = masked_imaging_7x7.apply_settings(
+            settings=aa.SettingsImaging(grid_class=aa.Grid2DIterate)
         )
 
         assert isinstance(masked_imaging_7x7.grid, aa.Grid2DIterate)
@@ -260,11 +262,11 @@ class TestImagingApplyMask:
         assert isinstance(masked_imaging_7x7.blurring_grid, aa.Grid2DIterate)
         assert (masked_imaging_7x7.blurring_grid.slim == blurring_grid_7x7).all()
 
-        masked_imaging_7x7 = imaging_7x7.apply_mask(
-            mask=sub_mask_7x7,
+        masked_imaging_7x7 = imaging_7x7.apply_mask(mask=sub_mask_7x7)
+        masked_imaging_7x7 = masked_imaging_7x7.apply_settings(
             settings=aa.SettingsImaging(
-                grid_class=aa.Grid2DInterpolate, pixel_scales_interp=1.0
-            ),
+                grid_class=aa.Grid2DInterpolate, pixel_scales_interp=1.0, sub_size=2
+            )
         )
 
         grid = aa.Grid2DInterpolate.from_mask(
@@ -294,11 +296,9 @@ class TestImagingApplyMask:
         self, imaging_7x7, mask_7x7
     ):
 
-        masked_imaging_7x7 = imaging_7x7.apply_mask(
-            mask=mask_7x7,
-            settings=aa.SettingsImaging(
-                grid_class=aa.Grid2D, signal_to_noise_limit=0.1
-            ),
+        masked_imaging_7x7 = imaging_7x7.apply_mask(mask=mask_7x7)
+        masked_imaging_7x7 = masked_imaging_7x7.apply_settings(
+            settings=aa.SettingsImaging(grid_class=aa.Grid2D, signal_to_noise_limit=0.1)
         )
 
         imaging_snr_limit = imaging_7x7.signal_to_noise_limited_from(
@@ -314,13 +314,13 @@ class TestImagingApplyMask:
             == imaging_snr_limit.noise_map.native * np.invert(mask_7x7)
         ).all()
 
-        masked_imaging_7x7 = imaging_7x7.apply_mask(
-            mask=mask_7x7,
+        masked_imaging_7x7 = imaging_7x7.apply_mask(mask=mask_7x7)
+        masked_imaging_7x7 = masked_imaging_7x7.apply_settings(
             settings=aa.SettingsImaging(
                 grid_class=aa.Grid2D,
                 signal_to_noise_limit=0.1,
                 signal_to_noise_limit_radii=1.0,
-            ),
+            )
         )
 
         assert (
