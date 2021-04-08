@@ -28,7 +28,7 @@ class SettingsImaging(abstract_dataset.AbstractSettingsDataset):
         pixel_scales_interp=None,
         signal_to_noise_limit=None,
         signal_to_noise_limit_radii=None,
-        renormalize_psf=False,
+        use_normalized_psf=True,
     ):
         """
         The lens dataset is the collection of data_type (image, noise-map, PSF), a mask, grid, convolver \
@@ -77,17 +77,7 @@ class SettingsImaging(abstract_dataset.AbstractSettingsDataset):
             signal_to_noise_limit_radii=signal_to_noise_limit_radii,
         )
 
-        self.renormalize_psf = renormalize_psf
-
-    def psf_reshaped_and_renormalized_from_psf(self, psf):
-
-        if psf is not None:
-
-            return kernel_2d.Kernel2D.manual_native(
-                array=psf.native,
-                pixel_scales=psf.pixel_scales,
-                renormalize=self.renormalize_psf,
-            )
+        self.use_normalized_psf = use_normalized_psf
 
 
 class Imaging(abstract_dataset.AbstractDataset):
@@ -143,9 +133,13 @@ class Imaging(abstract_dataset.AbstractDataset):
 
         super().__init__(data=image, noise_map=noise_map, settings=settings, name=name)
 
-        self.psf = psf
+        self.psf_unormalized = psf
 
-        self.psf = settings.psf_reshaped_and_renormalized_from_psf(psf=psf)
+        if psf is not None:
+
+            self.psf_normalized = kernel_2d.Kernel2D.manual_native(
+                array=psf.native, pixel_scales=psf.pixel_scales, normalize=True
+            )
 
         if setup_convolver and psf is not None:
 
@@ -169,6 +163,12 @@ class Imaging(abstract_dataset.AbstractDataset):
                     "Original object in Imaging.__array_finalize__ missing one or more attributes"
                 )
 
+    @property
+    def psf(self):
+        if self.settings.use_normalized_psf:
+            return self.psf_normalized
+        return self.psf_unormalized
+
     @classmethod
     def from_fits(
         cls,
@@ -189,7 +189,6 @@ class Imaging(abstract_dataset.AbstractDataset):
 
         Parameters
         ----------
-        renormalize_psf
         noise_map_non_constant
         name
         image_path : str
@@ -222,7 +221,7 @@ class Imaging(abstract_dataset.AbstractDataset):
                 file_path=psf_path,
                 hdu=psf_hdu,
                 pixel_scales=pixel_scales,
-                renormalize=True,
+                normalize=False,
             )
 
         else:
@@ -238,9 +237,6 @@ class Imaging(abstract_dataset.AbstractDataset):
         else:
             unmasked_imaging = self.unmasked
 
-        settings = self.settings
-        settings.renormalize_psf = True
-
         image = array_2d.Array2D.manual_mask(
             array=unmasked_imaging.image.native, mask=mask.mask_sub_1
         )
@@ -252,8 +248,8 @@ class Imaging(abstract_dataset.AbstractDataset):
         imaging = Imaging(
             image=image,
             noise_map=noise_map,
-            psf=self.psf,
-            settings=settings,
+            psf=self.psf_unormalized,
+            settings=self.settings,
             name=self.name,
             setup_convolver=True,
         )
@@ -267,7 +263,7 @@ class Imaging(abstract_dataset.AbstractDataset):
         return Imaging(
             image=self.image,
             noise_map=self.noise_map,
-            psf=self.psf,
+            psf=self.psf_unormalized,
             settings=settings,
             name=self.name,
             setup_convolver=self.setup_convolver,
@@ -333,7 +329,7 @@ class AbstractSimulatorImaging:
         exposure_time: float,
         background_sky_level: float = 0.0,
         psf: kernel_2d.Kernel2D = None,
-        renormalize_psf: bool = True,
+        normalize_psf: bool = True,
         read_noise: float = None,
         add_poisson_noise: bool = True,
         noise_if_add_noise_false: float = 0.1,
@@ -350,8 +346,8 @@ class AbstractSimulatorImaging:
             The exposure time of the simulated imaging.
         background_sky_level : float
             The level of the background sky of the simulated imaging.
-        renormalize_psf : bool
-            If `True`, the PSF kernel is renormalized so all values sum to 1.0.
+        normalize_psf : bool
+            If `True`, the PSF kernel is normalized so all values sum to 1.0.
         read_noise : float
             The level of read-noise added to the simulated imaging by drawing from a Gaussian distribution with
             sigma equal to the value `read_noise`.
@@ -364,8 +360,8 @@ class AbstractSimulatorImaging:
             The random seed used to add random noise, where -1 corresponds to a random seed every run.
         """
 
-        if psf is not None and renormalize_psf:
-            psf = psf.renormalized
+        if psf is not None and normalize_psf:
+            psf = psf.normalized
 
         self.psf = psf
 

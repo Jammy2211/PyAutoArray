@@ -131,7 +131,7 @@ class TestImaging:
             == np.array([[4.0, 2.0], [2.0, 2.5]])
         ).all()
 
-    def test__from_fits__loads_arrays_and_psf_is_renormalized(self):
+    def test__from_fits__loads_arrays_and_psf_is_normalized(self):
 
         imaging = aa.Imaging.from_fits(
             pixel_scales=0.1,
@@ -438,7 +438,7 @@ class TestSimulatorImaging:
         )
 
         simulator = aa.SimulatorImaging(
-            exposure_time=1.0, psf=psf, add_poisson_noise=False, renormalize_psf=False
+            exposure_time=1.0, psf=psf, add_poisson_noise=False, normalize_psf=False
         )
 
         imaging = simulator.from_image(image=image)
@@ -513,7 +513,7 @@ class TestSimulatorImaging:
             psf=psf,
             add_poisson_noise=True,
             noise_seed=1,
-            renormalize_psf=False,
+            normalize_psf=False,
         )
 
         imaging = simulator.from_image(image=image)

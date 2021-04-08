@@ -13,7 +13,7 @@ from autoarray import exc
 class Kernel2D(array_2d.Array2D):
 
     # noinspection PyUnusedLocal
-    def __new__(cls, array, mask, renormalize=False, *args, **kwargs):
+    def __new__(cls, array, mask, normalize=False, *args, **kwargs):
         """An array of values, which are paired to a uniform 2D mask of pixels and sub-pixels. Each entry
         on the array corresponds to a value at the centre of a sub-pixel in an unmasked pixel. See the *Array2D* class
         for a full description of how Arrays work.
@@ -27,19 +27,19 @@ class Kernel2D(array_2d.Array2D):
         mask : msk.Mask2D
             The 2D mask associated with the array, defining the pixels each array value is paired with and
             originates from.
-        renormalize : bool
-            If True, the Kernel2D's array values are renormalized such that they sum to 1.0.
+        normalize : bool
+            If True, the Kernel2D's array values are normalized such that they sum to 1.0.
         """
         obj = super().__new__(cls=cls, array=array, mask=mask)
 
-        if renormalize:
+        if normalize:
             obj[:] = np.divide(obj, np.sum(obj))
 
         return obj
 
     @classmethod
     def manual_slim(
-        cls, array, shape_native, pixel_scales, origin=(0.0, 0.0), renormalize=False
+        cls, array, shape_native, pixel_scales, origin=(0.0, 0.0), normalize=False
     ):
         """Create a Kernel2D (see *Kernel2D.__new__*) by inputting the kernel values in 1D, for example:
 
@@ -64,8 +64,8 @@ class Kernel2D(array_2d.Array2D):
             The size (sub_size x sub_size) of each unmasked pixels sub-array.
         origin : (float, float)
             The (y,x) scaled units origin of the mask's coordinate system.
-        renormalize : bool
-            If True, the Kernel2D's array values are renormalized such that they sum to 1.0.
+        normalize : bool
+            If True, the Kernel2D's array values are normalized such that they sum to 1.0.
         """
         array = array_2d.Array2D.manual_slim(
             array=array,
@@ -74,10 +74,10 @@ class Kernel2D(array_2d.Array2D):
             origin=origin,
         )
 
-        return cls(array=array, mask=array.mask, renormalize=renormalize)
+        return cls(array=array, mask=array.mask, normalize=normalize)
 
     @classmethod
-    def manual_native(cls, array, pixel_scales, origin=(0.0, 0.0), renormalize=False):
+    def manual_native(cls, array, pixel_scales, origin=(0.0, 0.0), normalize=False):
         """Create an Kernel2D (see *Kernel2D.__new__*) by inputting the kernel values in 2D, for example:
 
         kernel=np.ndarray([[1.0, 2.0],
@@ -101,23 +101,18 @@ class Kernel2D(array_2d.Array2D):
             The size (sub_size x sub_size) of each unmasked pixels sub-array.
         origin : (float, float)
             The (y,x) scaled units origin of the mask's coordinate system.
-        renormalize : bool
-            If True, the Kernel2D's array values are renormalized such that they sum to 1.0.
+        normalize : bool
+            If True, the Kernel2D's array values are normalized such that they sum to 1.0.
         """
         array = array_2d.Array2D.manual_native(
             array=array, pixel_scales=pixel_scales, origin=origin
         )
 
-        return cls(array=array, mask=array.mask, renormalize=renormalize)
+        return cls(array=array, mask=array.mask, normalize=normalize)
 
     @classmethod
     def manual(
-        cls,
-        array,
-        pixel_scales,
-        shape_native=None,
-        origin=(0.0, 0.0),
-        renormalize=False,
+        cls, array, pixel_scales, shape_native=None, origin=(0.0, 0.0), normalize=False
     ):
         """Create a Kernel2D (see *Kernel2D.__new__*) by inputting the kernel values in 1D or 2D, automatically
         determining whether to use the 'manual_slim' or 'manual_native' methods.
@@ -137,8 +132,8 @@ class Kernel2D(array_2d.Array2D):
             The size (sub_size x sub_size) of each unmasked pixels sub-array.
         origin : (float, float)
             The (y,x) scaled units origin of the mask's coordinate system.
-        renormalize : bool
-            If True, the Kernel2D's array values are renormalized such that they sum to 1.0.
+        normalize : bool
+            If True, the Kernel2D's array values are normalized such that they sum to 1.0.
         """
         if len(array.shape) == 1:
             return cls.manual_slim(
@@ -146,13 +141,10 @@ class Kernel2D(array_2d.Array2D):
                 shape_native=shape_native,
                 pixel_scales=pixel_scales,
                 origin=origin,
-                renormalize=renormalize,
+                normalize=normalize,
             )
         return cls.manual_native(
-            array=array,
-            pixel_scales=pixel_scales,
-            origin=origin,
-            renormalize=renormalize,
+            array=array, pixel_scales=pixel_scales, origin=origin, normalize=normalize
         )
 
     @classmethod
@@ -163,7 +155,7 @@ class Kernel2D(array_2d.Array2D):
         pixel_scales,
         sub_size=1,
         origin=(0.0, 0.0),
-        renormalize=False,
+        normalize=False,
     ):
         """Create a Kernel2D (see *Kernel2D.__new__*) where all values are filled with an input fill value, analogous to
          the method numpy ndarray.full.
@@ -184,8 +176,8 @@ class Kernel2D(array_2d.Array2D):
             The size (sub_size x sub_size) of each unmasked pixels sub-array.
         origin : (float, float)
             The (y,x) scaled units origin of the mask's coordinate system.
-        renormalize : bool
-            If True, the Kernel2D's array values are renormalized such that they sum to 1.0.
+        normalize : bool
+            If True, the Kernel2D's array values are normalized such that they sum to 1.0.
         """
         if sub_size is not None:
             shape_native = (shape_native[0] * sub_size, shape_native[1] * sub_size)
@@ -194,11 +186,11 @@ class Kernel2D(array_2d.Array2D):
             array=np.full(fill_value=fill_value, shape=shape_native),
             pixel_scales=pixel_scales,
             origin=origin,
-            renormalize=renormalize,
+            normalize=normalize,
         )
 
     @classmethod
-    def ones(cls, shape_native, pixel_scales, origin=(0.0, 0.0), renormalize=False):
+    def ones(cls, shape_native, pixel_scales, origin=(0.0, 0.0), normalize=False):
         """Create an Kernel2D (see *Kernel2D.__new__*) where all values are filled with ones, analogous to the method numpy
         ndarray.ones.
 
@@ -216,19 +208,19 @@ class Kernel2D(array_2d.Array2D):
             The size (sub_size x sub_size) of each unmasked pixels sub-array.
         origin : (float, float)
             The (y,x) scaled units origin of the mask's coordinate system.
-        renormalize : bool
-            If True, the Kernel2D's array values are renormalized such that they sum to 1.0.
+        normalize : bool
+            If True, the Kernel2D's array values are normalized such that they sum to 1.0.
         """
         return cls.full(
             fill_value=1.0,
             shape_native=shape_native,
             pixel_scales=pixel_scales,
             origin=origin,
-            renormalize=renormalize,
+            normalize=normalize,
         )
 
     @classmethod
-    def zeros(cls, shape_native, pixel_scales, origin=(0.0, 0.0), renormalize=False):
+    def zeros(cls, shape_native, pixel_scales, origin=(0.0, 0.0), normalize=False):
         """Create an Kernel2D (see *Kernel2D.__new__*) where all values are filled with zeros, analogous to the method numpy
         ndarray.ones.
 
@@ -246,15 +238,15 @@ class Kernel2D(array_2d.Array2D):
             The size (sub_size x sub_size) of each unmasked pixels sub-array.
         origin : (float, float)
             The (y,x) scaled units origin of the mask's coordinate system.
-        renormalize : bool
-            If True, the Kernel2D's array values are renormalized such that they sum to 1.0.
+        normalize : bool
+            If True, the Kernel2D's array values are normalized such that they sum to 1.0.
         """
         return cls.full(
             fill_value=0.0,
             shape_native=shape_native,
             pixel_scales=pixel_scales,
             origin=origin,
-            renormalize=renormalize,
+            normalize=normalize,
         )
 
     @classmethod
@@ -282,7 +274,7 @@ class Kernel2D(array_2d.Array2D):
         centre=(0.0, 0.0),
         axis_ratio=1.0,
         angle=0.0,
-        renormalize=False,
+        normalize=False,
     ):
         """Setup the Kernel2D as a 2D symmetric elliptical Gaussian profile, according to the equation:
 
@@ -304,8 +296,8 @@ class Kernel2D(array_2d.Array2D):
             The axis-ratio of the elliptical Gaussian.
         angle : float
             The rotational angle of the Gaussian's ellipse defined counter clockwise from the positive x-axis.
-        renormalize : bool
-            If True, the Kernel2D's array values are renormalized such that they sum to 1.0.
+        normalize : bool
+            If True, the Kernel2D's array values are normalized such that they sum to 1.0.
         """
 
         grid = grid_2d.Grid2D.uniform(
@@ -339,7 +331,7 @@ class Kernel2D(array_2d.Array2D):
             array=gaussian,
             shape_native=shape_native,
             pixel_scales=pixel_scales,
-            renormalize=renormalize,
+            normalize=normalize,
         )
 
     @classmethod
@@ -351,7 +343,7 @@ class Kernel2D(array_2d.Array2D):
         x_stddev,
         theta,
         centre=(0.0, 0.0),
-        renormalize=False,
+        normalize=False,
     ):
 
         x_stddev = (
@@ -370,12 +362,12 @@ class Kernel2D(array_2d.Array2D):
             axis_ratio=axis_ratio,
             angle=90.0 - theta,
             centre=centre,
-            renormalize=renormalize,
+            normalize=normalize,
         )
 
     @classmethod
     def from_fits(
-        cls, file_path, hdu, pixel_scales, origin=(0.0, 0.0), renormalize=False
+        cls, file_path, hdu, pixel_scales, origin=(0.0, 0.0), normalize=False
     ):
         """
         Loads the Kernel2D from a .fits file.
@@ -392,18 +384,18 @@ class Kernel2D(array_2d.Array2D):
             it is converted to a (float, float) structure.
         origin : (float, float)
             The (y,x) scaled units origin of the mask's coordinate system.
-        renormalize : bool
-            If True, the Kernel2D's array values are renormalized such that they sum to 1.0.
+        normalize : bool
+            If True, the Kernel2D's array values are normalized such that they sum to 1.0.
         """
 
         array = array_2d.Array2D.from_fits(
             file_path=file_path, hdu=hdu, pixel_scales=pixel_scales, origin=origin
         )
 
-        return cls(array=array[:], mask=array.mask, renormalize=renormalize)
+        return cls(array=array[:], mask=array.mask, normalize=normalize)
 
     def rescaled_with_odd_dimensions_from_rescale_factor(
-        self, rescale_factor, renormalize=False
+        self, rescale_factor, normalize=False
     ):
         """
         If the PSF kernel has one or two even-sized dimensions, return a PSF object where the kernel has odd-sized
@@ -421,8 +413,8 @@ class Kernel2D(array_2d.Array2D):
         rescale_factor : float
             The factor by which the kernel is rescaled. If this has a value of 1.0, the kernel is rescaled to the
             closest odd-sized dimensions (e.g. 20 -> 19). Higher / lower values scale to higher / lower dimensions.
-        renormalize : bool
-            Whether the PSF should be renormalized after being rescaled.
+        normalize : bool
+            Whether the PSF should be normalized after being rescaled.
         """
 
         kernel_rescaled = rescale(
@@ -480,13 +472,13 @@ class Kernel2D(array_2d.Array2D):
             pixel_scales = None
 
         return self.__class__.manual_native(
-            array=kernel_rescaled, pixel_scales=pixel_scales, renormalize=renormalize
+            array=kernel_rescaled, pixel_scales=pixel_scales, normalize=normalize
         )
 
     @property
-    def renormalized(self):
-        """Renormalize the Kernel2D such that its data_vector values sum to unity."""
-        return self.__class__(array=self, mask=self.mask, renormalize=True)
+    def normalized(self):
+        """Normalize the Kernel2D such that its data_vector values sum to unity."""
+        return self.__class__(array=self, mask=self.mask, normalize=True)
 
     def convolved_array_from_array(self, array):
         """

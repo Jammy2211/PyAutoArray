@@ -16,7 +16,7 @@ class TestAPI:
         self,
     ):
         kernel = aa.Kernel2D.ones(
-            shape_native=(3, 3), pixel_scales=1.0, renormalize=False
+            shape_native=(3, 3), pixel_scales=1.0, normalize=False
         )
 
         assert kernel.shape_native == (3, 3)
@@ -25,7 +25,7 @@ class TestAPI:
         assert kernel.origin == (0.0, 0.0)
 
         kernel = aa.Kernel2D.ones(
-            shape_native=(4, 3), pixel_scales=1.0, renormalize=False
+            shape_native=(4, 3), pixel_scales=1.0, normalize=False
         )
 
         assert kernel.shape_native == (4, 3)
@@ -83,12 +83,12 @@ class TestAPI:
         assert kernel.pixel_scales == (2.0, 2.0)
 
 
-class TestRenormalize:
+class TestNormalize:
     def test__input_is_already_normalized__no_change(self):
 
         kernel_data = np.ones((3, 3)) / 9.0
         kernel = aa.Kernel2D.manual_native(
-            array=kernel_data, pixel_scales=1.0, renormalize=True
+            array=kernel_data, pixel_scales=1.0, normalize=True
         )
 
         assert kernel.native == pytest.approx(kernel_data, 1e-3)
@@ -98,24 +98,24 @@ class TestRenormalize:
         kernel_data = np.ones((3, 3))
 
         kernel = aa.Kernel2D.manual_native(
-            array=kernel_data, pixel_scales=1.0, renormalize=True
+            array=kernel_data, pixel_scales=1.0, normalize=True
         )
 
         assert kernel.native == pytest.approx(np.ones((3, 3)) / 9.0, 1e-3)
 
         kernel = aa.Kernel2D.manual_native(
-            array=kernel_data, pixel_scales=1.0, renormalize=False
+            array=kernel_data, pixel_scales=1.0, normalize=False
         )
 
-        kernel = kernel.renormalized
+        kernel = kernel.normalized
 
         assert kernel.native == pytest.approx(np.ones((3, 3)) / 9.0, 1e-3)
 
-    def test__same_as_above__renomalized_false_does_not_renormalize(self):
+    def test__same_as_above__renomalized_false_does_not_normalize(self):
         kernel_data = np.ones((3, 3))
 
         kernel = aa.Kernel2D.manual_native(
-            array=kernel_data, pixel_scales=1.0, renormalize=False
+            array=kernel_data, pixel_scales=1.0, normalize=False
         )
 
         assert kernel.native == pytest.approx(np.ones((3, 3)), 1e-3)
@@ -127,40 +127,40 @@ class TestBinnedUp:
     ):
         array_2d = np.ones((6, 6))
         kernel = aa.Kernel2D.manual_native(
-            array=array_2d, pixel_scales=1.0, renormalize=False
+            array=array_2d, pixel_scales=1.0, normalize=False
         )
         kernel = kernel.rescaled_with_odd_dimensions_from_rescale_factor(
-            rescale_factor=0.5, renormalize=True
+            rescale_factor=0.5, normalize=True
         )
         assert kernel.pixel_scales == (2.0, 2.0)
         assert (kernel.native == (1.0 / 9.0) * np.ones((3, 3))).all()
 
         array_2d = np.ones((9, 9))
         kernel = aa.Kernel2D.manual_native(
-            array=array_2d, pixel_scales=1.0, renormalize=False
+            array=array_2d, pixel_scales=1.0, normalize=False
         )
         kernel = kernel.rescaled_with_odd_dimensions_from_rescale_factor(
-            rescale_factor=0.333333333333333, renormalize=True
+            rescale_factor=0.333333333333333, normalize=True
         )
         assert kernel.pixel_scales == (3.0, 3.0)
         assert (kernel.native == (1.0 / 9.0) * np.ones((3, 3))).all()
 
         array_2d = np.ones((18, 6))
         kernel = aa.Kernel2D.manual_native(
-            array=array_2d, pixel_scales=1.0, renormalize=False
+            array=array_2d, pixel_scales=1.0, normalize=False
         )
         kernel = kernel.rescaled_with_odd_dimensions_from_rescale_factor(
-            rescale_factor=0.5, renormalize=True
+            rescale_factor=0.5, normalize=True
         )
         assert kernel.pixel_scales == (2.0, 2.0)
         assert (kernel.native == (1.0 / 27.0) * np.ones((9, 3))).all()
 
         array_2d = np.ones((6, 18))
         kernel = aa.Kernel2D.manual_native(
-            array=array_2d, pixel_scales=1.0, renormalize=False
+            array=array_2d, pixel_scales=1.0, normalize=False
         )
         kernel = kernel.rescaled_with_odd_dimensions_from_rescale_factor(
-            rescale_factor=0.5, renormalize=True
+            rescale_factor=0.5, normalize=True
         )
         assert kernel.pixel_scales == (2.0, 2.0)
         assert (kernel.native == (1.0 / 27.0) * np.ones((3, 9))).all()
@@ -170,28 +170,28 @@ class TestBinnedUp:
     ):
 
         kernel = aa.Kernel2D.ones(
-            shape_native=(2, 2), pixel_scales=1.0, renormalize=False
+            shape_native=(2, 2), pixel_scales=1.0, normalize=False
         )
         kernel = kernel.rescaled_with_odd_dimensions_from_rescale_factor(
-            rescale_factor=2.0, renormalize=True
+            rescale_factor=2.0, normalize=True
         )
         assert kernel.pixel_scales == (0.4, 0.4)
         assert (kernel.native == (1.0 / 25.0) * np.ones((5, 5))).all()
 
         kernel = aa.Kernel2D.ones(
-            shape_native=(40, 40), pixel_scales=1.0, renormalize=False
+            shape_native=(40, 40), pixel_scales=1.0, normalize=False
         )
         kernel = kernel.rescaled_with_odd_dimensions_from_rescale_factor(
-            rescale_factor=0.1, renormalize=True
+            rescale_factor=0.1, normalize=True
         )
         assert kernel.pixel_scales == (8.0, 8.0)
         assert (kernel.native == (1.0 / 25.0) * np.ones((5, 5))).all()
 
         kernel = aa.Kernel2D.ones(
-            shape_native=(2, 4), pixel_scales=1.0, renormalize=False
+            shape_native=(2, 4), pixel_scales=1.0, normalize=False
         )
         kernel = kernel.rescaled_with_odd_dimensions_from_rescale_factor(
-            rescale_factor=2.0, renormalize=True
+            rescale_factor=2.0, normalize=True
         )
 
         assert kernel.pixel_scales[0] == pytest.approx(0.4, 1.0e-4)
@@ -199,10 +199,10 @@ class TestBinnedUp:
         assert (kernel.native == (1.0 / 45.0) * np.ones((5, 9))).all()
 
         kernel = aa.Kernel2D.ones(
-            shape_native=(4, 2), pixel_scales=1.0, renormalize=False
+            shape_native=(4, 2), pixel_scales=1.0, normalize=False
         )
         kernel = kernel.rescaled_with_odd_dimensions_from_rescale_factor(
-            rescale_factor=2.0, renormalize=True
+            rescale_factor=2.0, normalize=True
         )
         assert kernel.pixel_scales[0] == pytest.approx(0.4444444, 1.0e-4)
         assert kernel.pixel_scales[1] == pytest.approx(0.4, 1.0e-4)
@@ -212,40 +212,40 @@ class TestBinnedUp:
         self,
     ):
         kernel = aa.Kernel2D.ones(
-            shape_native=(6, 4), pixel_scales=1.0, renormalize=False
+            shape_native=(6, 4), pixel_scales=1.0, normalize=False
         )
         kernel = kernel.rescaled_with_odd_dimensions_from_rescale_factor(
-            rescale_factor=0.5, renormalize=True
+            rescale_factor=0.5, normalize=True
         )
 
         assert kernel.pixel_scales == pytest.approx((2.0, 1.3333333333), 1.0e-4)
         assert (kernel.native == (1.0 / 9.0) * np.ones((3, 3))).all()
 
         kernel = aa.Kernel2D.ones(
-            shape_native=(9, 12), pixel_scales=1.0, renormalize=False
+            shape_native=(9, 12), pixel_scales=1.0, normalize=False
         )
         kernel = kernel.rescaled_with_odd_dimensions_from_rescale_factor(
-            rescale_factor=0.33333333333, renormalize=True
+            rescale_factor=0.33333333333, normalize=True
         )
 
         assert kernel.pixel_scales == pytest.approx((3.0, 2.4), 1.0e-4)
         assert (kernel.native == (1.0 / 15.0) * np.ones((3, 5))).all()
 
         kernel = aa.Kernel2D.ones(
-            shape_native=(4, 6), pixel_scales=1.0, renormalize=False
+            shape_native=(4, 6), pixel_scales=1.0, normalize=False
         )
         kernel = kernel.rescaled_with_odd_dimensions_from_rescale_factor(
-            rescale_factor=0.5, renormalize=True
+            rescale_factor=0.5, normalize=True
         )
 
         assert kernel.pixel_scales == pytest.approx((1.33333333333, 2.0), 1.0e-4)
         assert (kernel.native == (1.0 / 9.0) * np.ones((3, 3))).all()
 
         kernel = aa.Kernel2D.ones(
-            shape_native=(12, 9), pixel_scales=1.0, renormalize=False
+            shape_native=(12, 9), pixel_scales=1.0, normalize=False
         )
         kernel = kernel.rescaled_with_odd_dimensions_from_rescale_factor(
-            rescale_factor=0.33333333333, renormalize=True
+            rescale_factor=0.33333333333, normalize=True
         )
         assert kernel.pixel_scales == pytest.approx((2.4, 3.0), 1.0e-4)
         assert (kernel.native == (1.0 / 15.0) * np.ones((5, 3))).all()
@@ -454,7 +454,7 @@ class TestFromGaussian:
             axis_ratio=0.9,
             angle=45.0,
             sigma=1.0,
-            renormalize=True,
+            normalize=True,
         )
 
         assert kernel.native == pytest.approx(
@@ -506,7 +506,7 @@ class TestFromAlmaGaussian:
             y_stddev=2.0e-5,
             x_stddev=2.0e-5,
             theta=0.0,
-            renormalize=True,
+            normalize=True,
         )
 
         assert kernel_astropy == pytest.approx(kernel.native, 1e-4)
@@ -549,7 +549,7 @@ class TestFromAlmaGaussian:
             y_stddev=2.0e-5,
             x_stddev=2.0e-5,
             theta=0.0,
-            renormalize=True,
+            normalize=True,
         )
 
         assert kernel_astropy == pytest.approx(kernel.native, 1e-4)
@@ -595,7 +595,7 @@ class TestFromAlmaGaussian:
             y_stddev=2.0e-5,
             x_stddev=1.0e-5,
             theta=theta_deg,
-            renormalize=True,
+            normalize=True,
         )
 
         assert kernel_astropy == pytest.approx(kernel.native, 1e-4)
@@ -641,7 +641,7 @@ class TestFromAlmaGaussian:
             y_stddev=2.0e-5,
             x_stddev=3.0e-5,
             theta=theta_deg,
-            renormalize=True,
+            normalize=True,
         )
 
         assert kernel_astropy == pytest.approx(kernel.native, 1e-4)
@@ -685,7 +685,7 @@ class TestFromAlmaGaussian:
             y_stddev=2.0e-5,
             x_stddev=1.0e-5,
             theta=theta_deg,
-            renormalize=True,
+            normalize=True,
         )
 
         assert kernel_astropy == pytest.approx(kernel.native, 1e-4)
@@ -729,7 +729,7 @@ class TestFromAlmaGaussian:
             y_stddev=2.0e-5,
             x_stddev=1.0e-5,
             theta=theta_deg,
-            renormalize=True,
+            normalize=True,
         )
 
         assert kernel_astropy == pytest.approx(kernel.native, 1e-4)
