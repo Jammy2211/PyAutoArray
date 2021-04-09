@@ -8,7 +8,6 @@ from autoarray.structures.grids.one_d import grid_1d
 from autoarray.structures.grids.two_d import grid_2d
 from autoarray.structures.grids.two_d import grid_2d_interpolate
 from autoarray.structures.grids.two_d import grid_2d_iterate
-from autoarray.mask import abstract_mask
 from autoarray.mask import mask_1d
 from autoarray.mask import mask_2d
 
@@ -175,7 +174,7 @@ class AbstractDataset:
                 self.noise_map.native,
             )
 
-            noise_map = noise_map._new_structure(noise_map_limit, mask=mask)
+            noise_map = noise_map._new_structure(noise_map_limit, mask=mask).slim
 
         mask_grid = mask.mask_new_sub_size_from(mask=mask, sub_size=settings.sub_size)
         self.grid = settings.grid_from_mask(mask=mask_grid)

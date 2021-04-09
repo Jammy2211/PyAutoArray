@@ -7,7 +7,7 @@ from autoarray import exc
 from autoarray.mask import abstract_mask, mask_2d
 from autoarray.structures.grids.one_d import grid_1d
 from autoarray.structures.grids.one_d import grid_1d_util
-from autoarray.structures.arrays.two_d import array_2d_util
+from autoarray.structures.arrays.one_d import array_1d_util
 
 logging.basicConfig()
 logger = logging.getLogger(__name__)
@@ -123,26 +123,6 @@ class AbstractMask1d(abstract_mask.AbstractMask):
             origin=(0.0, 0.0),
         )
 
-    @property
-    def to_mask_2d(self) -> mask_2d.Mask2D:
-        """
-        Map the Mask1D to a Mask2D of shape [total_mask_1d_pixel, 1].
-
-        The change in shape and dimensions of the mask is necessary for mapping results from 1D data structures to 2D.
-
-        Returns
-        -------
-        mask_2d.Mask2D
-            The 1D mask mapped to a 2D mask of shape [total_mask_1d_pixel, 1].
-        """
-
-        return mask_2d.Mask2D.manual(
-            [self],
-            pixel_scales=(self.pixel_scale, self.pixel_scale),
-            sub_size=self.sub_size,
-            origin=(0.0, 0.0),
-        )
-
     def output_to_fits(self, file_path: str, overwrite: bool = False):
         """
         Write the 1D mask to a .fits file.
@@ -164,7 +144,7 @@ class AbstractMask1d(abstract_mask.AbstractMask):
         mask = Mask1D(mask=np.full(shape=(5,), fill_value=False))
         mask.output_to_fits(file_path='/path/to/file/filename.fits', overwrite=True)
         """
-        array_2d_util.numpy_array_1d_to_fits(
+        array_1d_util.numpy_array_1d_to_fits(
             array_1d=self.astype("float"), file_path=file_path, overwrite=overwrite
         )
 
@@ -246,7 +226,7 @@ class Mask1D(AbstractMask1d):
         """
 
         return cls.manual(
-            array_2d_util.numpy_array_1d_from_fits(file_path=file_path, hdu=hdu),
+            array_1d_util.numpy_array_1d_from_fits(file_path=file_path, hdu=hdu),
             pixel_scales=pixel_scales,
             sub_size=sub_size,
             origin=origin,
@@ -254,7 +234,7 @@ class Mask1D(AbstractMask1d):
 
     def output_to_fits(self, file_path: str, overwrite: bool = False):
 
-        array_2d_util.numpy_array_1d_to_fits(
+        array_1d_util.numpy_array_1d_to_fits(
             array_1d=self.astype("float"), file_path=file_path, overwrite=overwrite
         )
 
