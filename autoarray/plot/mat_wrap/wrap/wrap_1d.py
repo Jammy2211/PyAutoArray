@@ -83,6 +83,12 @@ class YXPlot(AbstractMatWrap1D):
 
 
 class AXVLine(AbstractMatWrap1D):
+    def __init__(self, no_label=False, **kwargs):
+
+        super().__init__(**kwargs)
+
+        self.no_label = no_label
+
     def axvline_vertical_line(
         self, vertical_line: float, label: typing.Optional[str] = None
     ):
@@ -105,5 +111,8 @@ class AXVLine(AbstractMatWrap1D):
 
         if vertical_line is [] or vertical_line is None:
             return
+
+        if self.no_label:
+            label = None
 
         plt.axvline(x=vertical_line, label=label, **self.config_dict)

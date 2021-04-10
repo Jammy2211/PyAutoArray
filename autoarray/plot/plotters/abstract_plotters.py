@@ -109,6 +109,12 @@ class AbstractPlotter:
         if self.mat_plot_2d is not None:
             self.mat_plot_2d.output.filename = filename
 
+    def set_mat_plot_1d_for_multi_plot(self, is_for_multi_plot, color: str):
+
+        self.mat_plot_1d.set_for_multi_plot(
+            is_for_multi_plot=is_for_multi_plot, color=color
+        )
+
     def set_mat_plots_for_subplot(self, is_for_subplot, number_subplots=None):
         if self.mat_plot_1d is not None:
             self.mat_plot_1d.set_for_subplot(is_for_subplot=is_for_subplot)
@@ -219,30 +225,3 @@ class AbstractPlotter:
         self.mat_plot_2d.output.subplot_to_figure(auto_filename=f"subplot_{name}")
 
         self.close_subplot_figure()
-
-
-class MultiPlotter:
-    def __init__(self, plotter_list):
-
-        self.plotter_list = plotter_list
-
-    def subplot_of_figure(self, func_name, figure_name, **kwargs):
-
-        number_subplots = len(self.plotter_list)
-
-        self.plotter_list[0].open_subplot_figure(number_subplots=number_subplots)
-
-        for i, plotter in enumerate(self.plotter_list):
-
-            func = getattr(plotter, func_name)
-            func(**{**{figure_name: True}, **kwargs})
-
-        if self.plotter_list[0].mat_plot_1d is not None:
-            self.plotter_list[0].mat_plot_1d.output.subplot_to_figure(
-                auto_filename=f"subplot_{figure_name}_list"
-            )
-        if self.plotter_list[0].mat_plot_2d is not None:
-            self.plotter_list[0].mat_plot_2d.output.subplot_to_figure(
-                auto_filename=f"subplot_{figure_name}_list"
-            )
-        self.plotter_list[0].close_subplot_figure()

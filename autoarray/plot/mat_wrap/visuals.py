@@ -88,6 +88,7 @@ class Visuals1D(AbstractVisuals):
     def plot_via_plotter(self, plotter):
 
         if self.vertical_line is not None:
+
             plotter.vertical_line_axvline.axvline_vertical_line(
                 vertical_line=self.vertical_line
             )

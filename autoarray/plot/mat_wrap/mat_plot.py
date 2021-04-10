@@ -274,7 +274,29 @@ class MatPlot1D(AbstractMatPlot):
         self.yx_plot = yx_plot
         self.vertical_line_axvline = vertical_line_axvline
 
+        self.is_for_multi_plot = False
         self.is_for_subplot = False
+
+    def set_for_multi_plot(self, is_for_multi_plot: bool, color: str):
+        """
+        Sets the `is_for_subplot` attribute for every `MatWrap` object in this `MatPlot` object by updating
+        the `is_for_subplot`. By changing this tag:
+
+            - The [subplot] section of the config file of every `MatWrap` object is used instead of [figure].
+            - Calls which output or close the matplotlib figure are over-ridden so that the subplot is not removed.
+
+        Parameters
+        ----------
+        is_for_subplot : bool
+            The entry the `is_for_subplot` attribute of every `MatWrap` object is set too.
+        """
+        self.is_for_multi_plot = is_for_multi_plot
+        self.output.bypass = is_for_multi_plot
+
+        self.yx_plot.kwargs["c"] = color
+        self.vertical_line_axvline.kwargs["c"] = color
+
+        self.vertical_line_axvline.no_label = True
 
     def plot_yx(
         self,
@@ -289,11 +311,12 @@ class MatPlot1D(AbstractMatPlot):
         if y is None:
             return
 
-        if not self.is_for_subplot:
+        if (not self.is_for_subplot) and (not self.is_for_multi_plot):
             self.figure.open()
         else:
             if not bypass:
-                self.setup_subplot()
+                if self.is_for_subplot:
+                    self.setup_subplot()
 
         self.title.set(auto_title=auto_labels.title)
 
@@ -324,7 +347,7 @@ class MatPlot1D(AbstractMatPlot):
         if auto_labels.legend is not None:  # or vertical_line_labels is not None:
             self.legend.set()
 
-        if not self.is_for_subplot:
+        if (not self.is_for_subplot) and (not self.is_for_multi_plot):
             self.output.to_figure(structure=None, auto_filename=auto_labels.filename)
             self.figure.close()
 
