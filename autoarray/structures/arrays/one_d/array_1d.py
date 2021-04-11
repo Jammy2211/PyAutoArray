@@ -2,6 +2,7 @@ import numpy as np
 from autoarray.structures.arrays import abstract_array
 from autoarray.structures.arrays.one_d import abstract_array_1d
 from autoarray.mask import mask_1d as msk
+from autoarray.structures.grids.one_d import grid_1d
 from autoarray.structures.arrays.one_d import array_1d_util
 from autoarray.geometry import geometry_util
 
@@ -103,5 +104,10 @@ class Array1D(abstract_array_1d.AbstractArray1D):
 
         return Array1D(array=array, mask=mask)
 
-    # @property
-    # def grid_radial(self):
+    @property
+    def grid_radial(self):
+        return grid_1d.Grid1D.uniform_from_zero(
+            shape_native=self.shape_native,
+            pixel_scales=self.pixel_scales,
+            sub_size=self.sub_size,
+        )

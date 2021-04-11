@@ -8,8 +8,11 @@ from autoarray.structures.grids.two_d import grid_2d_interpolate
 from autoarray.structures.grids.two_d import grid_2d_iterate
 from autoarray.structures.grids.two_d import grid_2d_irregular
 from autoarray.structures.arrays.one_d import array_1d
+from autoarray.structures.arrays import values
 
 from autoarray import exc
+
+from typing import Union
 
 
 def grid_1d_to_structure(func):
@@ -28,7 +31,9 @@ def grid_1d_to_structure(func):
     """
 
     @wraps(func)
-    def wrapper(obj, grid, *args, **kwargs):
+    def wrapper(
+        obj, grid, *args, **kwargs
+    ) -> Union[array_1d.Array1D, values.ValuesIrregular]:
         """
         This decorator homogenizes the input of a "grid_like" 2D structure (`Grid2D`, `Grid2DIterate`,
         `Grid2DInterpolate`, `Grid2DIrregular` or `AbstractGrid1D`) into a function. It allows these classes to be
@@ -77,7 +82,6 @@ def grid_1d_to_structure(func):
                 centre=centre, angle=angle
             )
             result = func(obj, grid_2d_projected, *args, **kwargs)
-
             return array_1d.Array1D.manual_slim(
                 array=result, pixel_scales=grid.pixel_scale
             )
@@ -274,7 +278,12 @@ def transform(func):
         """
 
         if not isinstance(
-            grid, (grid_2d.Grid2DTransformed, grid_2d.Grid2DTransformedNumpy)
+            grid,
+            (
+                grid_2d.Grid2DTransformed,
+                grid_2d.Grid2DTransformedNumpy,
+                grid_2d_irregular.Grid2DIrregularTransformed,
+            ),
         ):
             result = func(
                 cls, cls.transform_grid_to_reference_frame(grid), *args, **kwargs

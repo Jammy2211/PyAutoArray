@@ -9,6 +9,7 @@ import json
 from autoarray.structures.arrays import values
 
 # from autoarray.structures.arrays.one_d import array_1d
+from autoarray.structures.grids.two_d import grid_2d
 from autoarray.structures.grids.two_d import grid_2d_util
 from autoarray.geometry import geometry_util
 from autoarray import exc
@@ -147,6 +148,8 @@ class Grid2DIrregular(np.ndarray):
     def grid_from_grid_slim(self, grid_slim):
         """Create a `Grid2DIrregular` object from a 2D NumPy array of values of shape [total_coordinates, 2]. The
         `Grid2DIrregular` are structured following this *Grid2DIrregular* instance."""
+        if isinstance(grid_slim, grid_2d.Grid2DTransformedNumpy):
+            return Grid2DIrregularTransformed(grid=grid_slim)
         return Grid2DIrregular(grid=grid_slim)
 
     def grid_from_deflection_grid(self, deflection_grid):
@@ -401,6 +404,11 @@ class Grid2DIrregular(np.ndarray):
         """
         with open(path.join(file_path, f"{filename}.pickle"), "wb") as f:
             pickle.dump(self, f)
+
+
+class Grid2DIrregularTransformed(Grid2DIrregular):
+
+    pass
 
 
 class Grid2DIrregularUniform(Grid2DIrregular):

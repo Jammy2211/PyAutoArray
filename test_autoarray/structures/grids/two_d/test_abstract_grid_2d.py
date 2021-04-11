@@ -83,7 +83,7 @@ class TestGrid:
         grid = aa.Grid2D.uniform(shape_native=(3, 3), pixel_scales=(1.0, 2.0))
 
         grid_radii = grid.grid_2d_radial_projected_from(
-            centre=(0.0, 0.0), remove_origin=False
+            centre=(0.0, 0.0),
         )
 
         grid_radii_util = aa.util.grid_2d.grid_scaled_2d_slim_radial_projected_from(
@@ -98,7 +98,7 @@ class TestGrid:
         grid = aa.Grid2D.uniform(shape_native=(3, 4), pixel_scales=(3.0, 2.0))
 
         grid_radii = grid.grid_2d_radial_projected_from(
-            centre=(0.3, 0.1), remove_origin=False
+            centre=(0.3, 0.1),
         )
 
         grid_radii_util = aa.util.grid_2d.grid_scaled_2d_slim_radial_projected_from(
@@ -111,7 +111,7 @@ class TestGrid:
         assert (grid_radii == grid_radii_util).all()
 
         grid_radii = grid.grid_2d_radial_projected_from(
-            centre=(0.3, 0.1), angle=60.0, remove_origin=False
+            centre=(0.3, 0.1), angle=60.0,
         )
 
         grid_radii_util_angle = aa.util.geometry.transform_grid_2d_to_reference_frame(
@@ -123,12 +123,6 @@ class TestGrid:
         )
 
         assert (grid_radii == grid_radii_util_angle).all()
-
-        grid_radii = grid.grid_2d_radial_projected_from(
-            centre=(0.3, 0.1), angle=60.0, remove_origin=True
-        )
-
-        assert (grid_radii == grid_radii_util_angle[1:, :]).all()
 
     def test__in_radians(self):
         mask = np.array(
@@ -413,7 +407,7 @@ class TestGridRadialMinimum:
         grid = np.array([[2.5, 0.0], [4.0, 0.0], [6.0, 0.0]])
         mock_profile = MockGridRadialMinimum()
 
-        deflections = mock_profile.deflections_from_grid(grid=grid)
+        deflections = mock_profile.deflections_2d_from_grid(grid=grid)
         assert (deflections == grid).all()
 
     def test__mock_profile__grid_radial_minimum_is_above_some_radial_coordinates__moves_them_grid_radial_minimum(
@@ -422,7 +416,7 @@ class TestGridRadialMinimum:
         grid = np.array([[2.0, 0.0], [1.0, 0.0], [6.0, 0.0]])
         mock_profile = MockGridRadialMinimum()
 
-        deflections = mock_profile.deflections_from_grid(grid=grid)
+        deflections = mock_profile.deflections_2d_from_grid(grid=grid)
 
         assert (deflections == np.array([[2.5, 0.0], [2.5, 0.0], [6.0, 0.0]])).all()
 
@@ -437,7 +431,7 @@ class TestGridRadialMinimum:
 
         mock_profile = MockGridRadialMinimum()
 
-        deflections = mock_profile.deflections_from_grid(grid=grid)
+        deflections = mock_profile.deflections_2d_from_grid(grid=grid)
 
         assert deflections == pytest.approx(
             np.array(

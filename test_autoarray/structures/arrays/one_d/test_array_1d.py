@@ -16,6 +16,7 @@ class TestAPI:
         assert type(array_1d) == aa.Array1D
         assert (array_1d.native == np.array([1.0, 2.0, 3.0, 4.0])).all()
         assert (array_1d.slim == np.array([1.0, 2.0, 3.0, 4.0])).all()
+        assert (array_1d.grid_radial == np.array(([0.0, 1.0, 2.0, 3.0]))).all()
         assert array_1d.pixel_scale == 1.0
         assert array_1d.pixel_scales == (1.0,)
         assert array_1d.origin == (0.0,)
@@ -27,6 +28,7 @@ class TestAPI:
         assert type(array_1d) == aa.Array1D
         assert (array_1d.native == np.array([1.0, 2.0, 3.0, 4.0])).all()
         assert (array_1d.slim == np.array([1.0, 2.0, 3.0, 4.0])).all()
+        assert (array_1d.grid_radial == np.array(([0.0, 1.0, 2.0, 3.0]))).all()
         assert array_1d.pixel_scale == 1.0
         assert array_1d.pixel_scales == (1.0,)
         assert array_1d.origin == (0.0,)
