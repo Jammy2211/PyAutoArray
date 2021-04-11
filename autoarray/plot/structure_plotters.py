@@ -1,8 +1,7 @@
-from autoarray.plot.plotters import abstract_plotters
+from autoarray.plot import abstract_plotters
 from autoarray.plot.mat_wrap import visuals as vis
 from autoarray.plot.mat_wrap import include as inc
 from autoarray.plot.mat_wrap import mat_plot as mp
-from autoarray.structures.arrays.one_d import array_1d
 from autoarray.structures.arrays.two_d import array_2d
 from autoarray.structures.frames import frames
 from autoarray.structures.grids.two_d import grid_2d

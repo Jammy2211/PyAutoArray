@@ -1,7 +1,7 @@
 from autoarray.plot.mat_wrap import visuals as vis
 from autoarray.plot.mat_wrap import include as inc
 from autoarray.plot.mat_wrap import mat_plot as mp
-from autoarray.plot.plotters import structure_plotters
+from autoarray.plot import structure_plotters
 from autoarray.inversion import inversions as inv
 
 

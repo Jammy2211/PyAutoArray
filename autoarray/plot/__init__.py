@@ -39,16 +39,16 @@ from autoarray.plot.mat_wrap.mat_plot import MatPlot2D
 from autoarray.plot.mat_wrap.include import Include2D
 from autoarray.plot.mat_wrap.visuals import Visuals2D
 
-from autoarray.plot.plotters.structure_plotters import Array2DPlotter
-from autoarray.plot.plotters.structure_plotters import Frame2DPlotter
-from autoarray.plot.plotters.structure_plotters import Grid2DPlotter
-from autoarray.plot.plotters.structure_plotters import MapperPlotter
-from autoarray.plot.plotters.structure_plotters import YX1DPlotter
-from autoarray.plot.plotters.inversion_plotters import InversionPlotter
-from autoarray.plot.plotters.imaging_plotters import ImagingPlotter
-from autoarray.plot.plotters.interferometer_plotters import InterferometerPlotter
-from autoarray.plot.plotters.fit_imaging_plotters import FitImagingPlotter
-from autoarray.plot.plotters.fit_interferometer_plotters import FitInterferometerPlotter
+from autoarray.plot.structure_plotters import Array2DPlotter
+from autoarray.plot.structure_plotters import Frame2DPlotter
+from autoarray.plot.structure_plotters import Grid2DPlotter
+from autoarray.plot.structure_plotters import MapperPlotter
+from autoarray.plot.structure_plotters import YX1DPlotter
+from autoarray.plot.inversion_plotters import InversionPlotter
+from autoarray.plot.imaging_plotters import ImagingPlotter
+from autoarray.plot.interferometer_plotters import InterferometerPlotter
+from autoarray.plot.fit_imaging_plotters import FitImagingPlotter
+from autoarray.plot.fit_interferometer_plotters import FitInterferometerPlotter
 
-from autoarray.plot.plotters.multi_plotters import MultiFigurePlotter
-from autoarray.plot.plotters.multi_plotters import MultiYX1DPlotter
+from autoarray.plot.multi_plotters import MultiFigurePlotter
+from autoarray.plot.multi_plotters import MultiYX1DPlotter

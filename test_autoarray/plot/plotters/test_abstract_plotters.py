@@ -2,7 +2,7 @@ from os import path
 import pytest
 import matplotlib.pyplot as plt
 import autoarray.plot as aplt
-from autoarray.plot.plotters import abstract_plotters
+from autoarray.plot import abstract_plotters
 
 directory = path.dirname(path.realpath(__file__))
 
