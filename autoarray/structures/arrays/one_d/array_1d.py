@@ -102,3 +102,6 @@ class Array1D(abstract_array_1d.AbstractArray1D):
         )
 
         return Array1D(array=array, mask=mask)
+
+    # @property
+    # def grid_radial(self):

@@ -27,13 +27,13 @@ def grid_1d_slim_via_shape_slim_from(
 
     Parameters
     ----------
-    shape_slim : (int, int)
+    shape_slim
         The (x) shape of the 1D array the sub-grid of coordinates is computed for.
-    pixel_scales : (float, float)
+    pixel_scales
         The (x) scaled units to pixel units conversion factor of the 1D mask array.
-    sub_size : int
+    sub_size
         The size of the sub-grid that each pixel of the 1D mask array is divided into.
-    origin : (float, flloat)
+    origin
         The (x) origin of the 1D array, which the sub-grid is shifted around.
 
     Returns

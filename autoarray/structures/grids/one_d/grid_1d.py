@@ -1,3 +1,4 @@
+from autoarray.geometry import geometry_util
 from autoarray.structures.arrays.one_d import array_1d
 from autoarray.structures.grids import abstract_grid
 from autoarray.structures.grids.one_d import abstract_grid_1d
@@ -10,6 +11,8 @@ from autoarray.mask import mask_1d, mask_2d
 from autoarray import exc
 
 import numpy as np
+
+from typing import Union, Tuple
 
 
 class Grid1D(abstract_grid_1d.AbstractGrid1D):
@@ -174,15 +177,15 @@ class Grid1D(abstract_grid_1d.AbstractGrid1D):
 
         Parameters
         ----------
-        grid : np.ndarray or list
+        grid
             The (y,x) coordinates of the grid input as an ndarray of shape [total_unmasked_pixells*(sub_size**2), 2]
             or a list of lists.
-        pixel_scales: (float, float) or float
+        pixel_scales
             The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a ``float``,
             it is converted to a (float, float) structure.
-        sub_size : int
+        sub_size
             The size (sub_size x sub_size) of each unmasked pixels sub-grid.
-        origin : (float, float)
+        origin
             The origin of the grid's mask.
         """
 
@@ -279,6 +282,77 @@ class Grid1D(abstract_grid_1d.AbstractGrid1D):
         )
 
         return Grid1D(grid=sub_grid_1d, mask=mask)
+
+    @classmethod
+    def uniform(
+        cls,
+        shape_native: Tuple[float],
+        pixel_scales: Union[float, Tuple[float]],
+        sub_size: int = 1,
+        origin: Tuple[float] = (0.0, 0.0),
+    ) -> "Grid1D":
+        """
+        Create a `Grid1D` (see `Grid`D.__new__`) as a uniform grid of (x) values given an input `shape_native` and
+        `pixel_scales` of the grid.
+
+        Parameters
+        ----------
+        shape_native
+            The 1D shape of the uniform grid and the mask that it is paired with.
+        pixel_scales
+            The (x) scaled units to pixel units conversion factor of every pixel. If this is input as a `float`,
+            it is converted to a (float,) tuple.
+        sub_size
+            The size (sub_size) of each unmasked pixels sub-grid.
+        origin
+            The origin of the grid's mask and coordinate system.
+        """
+        pixel_scales = geometry_util.convert_pixel_scales_1d(pixel_scales=pixel_scales)
+
+        grid_slim = grid_1d_util.grid_1d_slim_via_shape_slim_from(
+            shape_slim=shape_native,
+            pixel_scales=pixel_scales,
+            sub_size=sub_size,
+            origin=origin,
+        )
+
+        return cls.manual_slim(
+            grid=grid_slim, pixel_scales=pixel_scales, sub_size=sub_size, origin=origin
+        )
+
+    @classmethod
+    def uniform_from_zero(
+        cls,
+        shape_native: Tuple[float],
+        pixel_scales: Union[float, Tuple[float, float]],
+        sub_size: int = 1,
+    ) -> "Grid1D":
+        """
+        Create a `Grid1D` (see `Grid`D.__new__`) as a uniform grid of (x) values given an input `shape_native` and
+        `pixel_scales` of the grid, where the first (x) coordinate of the grid is 0.0 and all other values ascend
+        positively.
+
+        Parameters
+        ----------
+        shape_native
+            The 1D shape of the uniform grid and the mask that it is paired with.
+        pixel_scales
+            The (x) scaled units to pixel units conversion factor of every pixel. If this is input as a `float`,
+            it is converted to a (float,) tuple.
+        sub_size
+            The size (sub_size) of each unmasked pixels sub-grid.
+        """
+        pixel_scales = geometry_util.convert_pixel_scales_1d(pixel_scales=pixel_scales)
+
+        grid_slim = grid_1d_util.grid_1d_slim_via_shape_slim_from(
+            shape_slim=shape_native, pixel_scales=pixel_scales, sub_size=sub_size
+        )
+
+        grid_slim -= np.min(grid_slim)
+
+        return cls.manual_slim(
+            grid=grid_slim, pixel_scales=pixel_scales, sub_size=sub_size
+        )
 
     def structure_2d_from_result(self, result: np.ndarray):
         """

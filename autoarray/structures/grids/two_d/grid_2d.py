@@ -9,6 +9,8 @@ from autoarray.mask import mask_2d as msk, mask_2d_util
 from autoarray.structures.grids.two_d import grid_2d_util, sparse_util
 from autoarray.geometry import geometry_util
 
+from typing import Union, Tuple
+
 
 class Grid2D(abstract_grid_2d.AbstractGrid2D):
     def __new__(cls, grid, mask, *args, **kwargs):
@@ -461,20 +463,27 @@ class Grid2D(abstract_grid_2d.AbstractGrid2D):
         )
 
     @classmethod
-    def uniform(cls, shape_native, pixel_scales, sub_size=1, origin=(0.0, 0.0)):
-        """Create a Grid2D (see *Grid2D.__new__*) as a uniform grid of (y,x) values given an input shape_native and pixel
-        scale of the grid:
+    def uniform(
+        cls,
+        shape_native: Tuple[float, float],
+        pixel_scales: Union[float, Tuple[float, float]],
+        sub_size: int = 1,
+        origin: Tuple[float, float] = (0.0, 0.0),
+    ) -> "Grid2D":
+        """
+        Create a `Grid2D` (see *Grid2D.__new__*) as a uniform grid of (y,x) values given an input `shape_native` and
+        `pixel_scales` of the grid:
 
         Parameters
         ----------
-        shape_native : (float, float)
+        shape_native
             The 2D shape of the uniform grid and the mask that it is paired with.
-        pixel_scales: (float, float) or float
-            The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a ``float``,
-            it is converted to a (float, float) structure.
-        sub_size : int
+        pixel_scales
+            The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a `float`,
+            it is converted to a (float, float) tuple.
+        sub_size
             The size (sub_size x sub_size) of each unmasked pixels sub-grid.
-        origin : (float, float)
+        origin
             The origin of the grid's mask.
         """
         pixel_scales = geometry_util.convert_pixel_scales_2d(pixel_scales=pixel_scales)

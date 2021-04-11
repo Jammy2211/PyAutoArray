@@ -112,6 +112,76 @@ class TestAPI:
         assert grid.pixel_scales == (1.0,)
         assert grid.origin == (0.0,)
 
+    def test__uniform(self):
+
+        grid_1d = aa.Grid1D.uniform(
+            shape_native=(2,), pixel_scales=1.0, sub_size=1, origin=(0.0,)
+        )
+
+        assert type(grid_1d) == aa.Grid1D
+        assert (grid_1d.native == np.array([-0.5, 0.5])).all()
+        assert (grid_1d.slim == np.array([-0.5, 0.5])).all()
+        assert (grid_1d.binned.native == np.array([-0.5, 0.5])).all()
+        assert grid_1d.pixel_scales == (1.0,)
+        assert grid_1d.origin == (0.0,)
+
+        grid_1d = aa.Grid1D.uniform(
+            shape_native=(2,), pixel_scales=1.0, sub_size=2, origin=(0.0,)
+        )
+
+        assert type(grid_1d) == aa.Grid1D
+        assert (grid_1d.native == np.array([-0.75, -0.25, 0.25, 0.75])).all()
+        assert (grid_1d.slim == np.array([-0.75, -0.25, 0.25, 0.75])).all()
+        assert (grid_1d.binned.native == np.array([-0.5, 0.5])).all()
+        assert grid_1d.pixel_scales == (1.0,)
+        assert grid_1d.origin == (0.0,)
+
+        grid_1d = aa.Grid1D.uniform(
+            shape_native=(2,), pixel_scales=1.0, sub_size=1, origin=(1.0,)
+        )
+
+        assert type(grid_1d) == aa.Grid1D
+        assert (grid_1d.native == np.array([0.5, 1.5])).all()
+        assert (grid_1d.slim == np.array([0.5, 1.5])).all()
+        assert (grid_1d.binned.native == np.array([0.5, 1.5])).all()
+        assert grid_1d.pixel_scales == (1.0,)
+        assert grid_1d.origin == (1.0,)
+
+    def test__uniform_from_zero(self):
+
+        grid_1d = aa.Grid1D.uniform_from_zero(
+            shape_native=(2,), pixel_scales=1.0, sub_size=1
+        )
+
+        assert type(grid_1d) == aa.Grid1D
+        assert (grid_1d.native == np.array([0.0, 1.0])).all()
+        assert (grid_1d.slim == np.array([0.0, 1.0])).all()
+        assert (grid_1d.binned.native == np.array([0.0, 1.0])).all()
+        assert grid_1d.pixel_scales == (1.0,)
+        assert grid_1d.origin == (0.0,)
+
+        grid_1d = aa.Grid1D.uniform_from_zero(
+            shape_native=(3,), pixel_scales=1.5, sub_size=1
+        )
+
+        assert type(grid_1d) == aa.Grid1D
+        assert (grid_1d.native == np.array([0.0, 1.5, 3.0])).all()
+        assert (grid_1d.slim == np.array([0.0, 1.5, 3.0])).all()
+        assert (grid_1d.binned.native == np.array([0.0, 1.5, 3.0])).all()
+        assert grid_1d.pixel_scales == (1.5,)
+        assert grid_1d.origin == (0.0,)
+
+        grid_1d = aa.Grid1D.uniform_from_zero(
+            shape_native=(3,), pixel_scales=1.5, sub_size=2
+        )
+
+        assert type(grid_1d) == aa.Grid1D
+        assert (grid_1d.native == np.array([0.0, 0.75, 1.5, 2.25, 3.0, 3.75])).all()
+        assert (grid_1d.slim == np.array([0, 0.75, 1.5, 2.25, 3.0, 3.75])).all()
+        assert (grid_1d.binned.native == np.array([0.375, 1.875, 3.375])).all()
+        assert grid_1d.pixel_scales == (1.5,)
+        assert grid_1d.origin == (0.0,)
+
     def test__recursive_shape_storage(self):
 
         mask = aa.Mask1D.unmasked(shape_slim=(2,), pixel_scales=1.0, sub_size=2)

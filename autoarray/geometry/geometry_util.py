@@ -63,12 +63,12 @@ def central_scaled_coordinate_1d_from(
     origin: Tuple[float] = (0.0, 0.0),
 ):
     """
-    Returns the central coordinates of a 1d data structure (e.g. a `Frame2D`, `Grid2D`) in scaled units.
+    Returns the central coordinates of a 1d data structure (e.g. a`Grid1D`) in scaled units.
 
     This is computed by using the data structure's shape and converting it to scaled units using an input
     pixel-coordinates to scaled-coordinate conversion factor `pixel_scales`.
 
-    The origin of the scaled grid can also be input and moved from (0.0, 0.0).
+    The origin of the scaled grid can also be input and moved from (0.0,).
 
     Parameters
     ----------
