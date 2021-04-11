@@ -7,6 +7,8 @@ import typing
 import json
 
 from autoarray.structures.arrays import values
+
+# from autoarray.structures.arrays.one_d import array_1d
 from autoarray.structures.grids.two_d import grid_2d_util
 from autoarray.geometry import geometry_util
 from autoarray import exc
@@ -175,10 +177,11 @@ class Grid2DIrregular(np.ndarray):
 
         return Grid2DIrregular(grid=np.asarray(inside))
 
-    def structure_from_result(
+    def structure_2d_from_result(
         self, result: np.ndarray or list
     ) -> typing.Union[values.ValuesIrregular, list]:
-        """Convert a result from a non autoarray structure to an aa.ValuesIrregular or aa.Grid2DIrregular structure, where
+        """
+        Convert a result from a non autoarray structure to an aa.ValuesIrregular or aa.Grid2DIrregular structure, where
         the conversion depends on type(result) as follows:
 
         - 1D np.ndarray   -> aa.ValuesIrregular
@@ -208,8 +211,11 @@ class Grid2DIrregular(np.ndarray):
             elif len(result[0].shape) == 2:
                 return [self.grid_from_grid_slim(grid_slim=value) for value in result]
 
-    def structure_list_from_result_list(self, result_list: list) -> typing.Union[list]:
-        """Convert a result from a list of non autoarray structures to a list of aa.ValuesIrregular or aa.Grid2DIrregular
+    def structure_2d_list_from_result_list(
+        self, result_list: list
+    ) -> typing.Union[list]:
+        """
+        Convert a result from a list of non autoarray structures to a list of aa.ValuesIrregular or aa.Grid2DIrregular
         structures, where the conversion depends on type(result) as follows:
 
         - [1D np.ndarray] -> [aa.ValuesIrregular]

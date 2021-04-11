@@ -280,7 +280,7 @@ class Grid1D(abstract_grid_1d.AbstractGrid1D):
 
         return Grid1D(grid=sub_grid_1d, mask=mask)
 
-    def structure_from_result(self, result: np.ndarray):
+    def structure_2d_from_result(self, result: np.ndarray):
         """
         Convert a result from an ndarray to an aa.Array2D or aa.Grid2D structure, where the conversion depends on
         type(result) as follows:
@@ -303,7 +303,7 @@ class Grid1D(abstract_grid_1d.AbstractGrid1D):
                 return grid_2d.Grid2DTransformed(grid=result, mask=self.mask)
             return grid_2d.Grid2D(grid=result, mask=self.mask.to_mask_2d)
 
-    def structure_list_from_result_list(self, result_list: list):
+    def structure_2d_list_from_result_list(self, result_list: list):
         """
         Convert a result from a list of ndarrays to a list of aa.Array2D or aa.Grid2D structure, where the conversion
         depends on type(result) as follows:
@@ -319,4 +319,4 @@ class Grid1D(abstract_grid_1d.AbstractGrid1D):
         result_list : np.ndarray or [np.ndarray]
             The input result (e.g. of a decorated function) that is converted to a PyAutoArray structure.
         """
-        return [self.structure_from_result(result=result) for result in result_list]
+        return [self.structure_2d_from_result(result=result) for result in result_list]

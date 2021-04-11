@@ -141,7 +141,30 @@ class MockGridLikeIteratorObj:
         ]
 
 
-class MockGridLikeObj:
+class MockGrid1DLikeObj:
+    def __init__(self, centre=(0.0, 0.0), angle=0.0):
+
+        self.centre = centre
+        self.angle = angle
+
+    @grid_decorators.grid_1d_to_structure
+    def ndarray_1d_from_grid(self, grid):
+        return np.ones(shape=grid.shape[0])
+
+    # @grid_decorators.grid_1d_to_structure
+    # def ndarray_2d_from_grid(self, grid):
+    #     return np.multiply(2.0, grid)
+
+    # @grid_decorators.grid_1d_to_structure_list
+    # def ndarray_1d_list_from_grid(self, grid):
+    #     return [np.ones(shape=grid.shape[0]), 2.0 * np.ones(shape=grid.shape[0])]
+    #
+    # @grid_decorators.grid_1d_to_structure_list
+    # def ndarray_2d_list_from_grid(self, grid):
+    #     return [np.multiply(1.0, grid), np.multiply(2.0, grid)]
+
+
+class MockGrid2DLikeObj:
     def __init__(self):
         pass
 

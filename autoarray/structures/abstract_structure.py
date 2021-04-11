@@ -105,10 +105,10 @@ class AbstractStructure(np.ndarray):
     def trimmed_after_convolution_from(self, kernel_shape):
         raise NotImplementedError
 
-    def structure_from_result(self, result: np.ndarray):
+    def structure_2d_from_result(self, result: np.ndarray):
         raise NotImplementedError
 
-    def structure_list_from_result_list(self, result_list: list):
+    def structure_2d_list_from_result_list(self, result_list: list):
         raise NotImplementedError
 
     @classmethod

@@ -349,7 +349,9 @@ class Grid2DIterate(abstract_grid_2d.AbstractGrid2D):
 
         grid_compute = grid_2d.Grid2D.from_mask(mask=mask_higher_sub)
         array_higher_sub = func(cls, grid_compute)
-        return grid_compute.structure_from_result(result=array_higher_sub).binned.native
+        return grid_compute.structure_2d_from_result(
+            result=array_higher_sub
+        ).binned.native
 
     @staticmethod
     def grid_at_sub_size_from_func_and_mask(func, cls, mask, sub_size):
@@ -358,7 +360,9 @@ class Grid2DIterate(abstract_grid_2d.AbstractGrid2D):
 
         grid_compute = grid_2d.Grid2D.from_mask(mask=mask_higher_sub)
         grid_higher_sub = func(cls, grid_compute)
-        return grid_compute.structure_from_result(result=grid_higher_sub).binned.native
+        return grid_compute.structure_2d_from_result(
+            result=grid_higher_sub
+        ).binned.native
 
     def fractional_mask_from_arrays(
         self, array_lower_sub_2d, array_higher_sub_2d
@@ -785,7 +789,7 @@ class Grid2DIterate(abstract_grid_2d.AbstractGrid2D):
             The class the function belongs to.
         """
         result_sub_1_1d = func(cls, self.grid)
-        result_sub_1_2d = self.grid.structure_from_result(
+        result_sub_1_2d = self.grid.structure_2d_from_result(
             result=result_sub_1_1d
         ).binned.native
 

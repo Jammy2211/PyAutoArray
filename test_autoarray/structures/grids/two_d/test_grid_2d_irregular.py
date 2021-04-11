@@ -171,32 +171,36 @@ class TestGrid2DIrregular:
             == np.array([[0.0, 0.0], [0.0, 0.0], [0.0, 1.0], [0.0, 0.0]])
         ).all()
 
-    def test__structure_from_result__maps_numpy_array_to__auto_array_or_grid(self):
+    def test__structure_2d_from_result__maps_numpy_array_to__auto_array_or_grid(self):
 
         grid = aa.Grid2DIrregular(grid=[(1.0, -1.0), (1.0, 1.0)])
 
-        result = grid.structure_from_result(result=np.array([1.0, 2.0]))
+        result = grid.structure_2d_from_result(result=np.array([1.0, 2.0]))
 
         assert isinstance(result, aa.ValuesIrregular)
         assert result.in_list == [1.0, 2.0]
 
-        result = grid.structure_from_result(result=np.array([[1.0, 1.0], [2.0, 2.0]]))
+        result = grid.structure_2d_from_result(
+            result=np.array([[1.0, 1.0], [2.0, 2.0]])
+        )
 
         assert isinstance(result, aa.Grid2DIrregular)
         assert result.in_list == [(1.0, 1.0), (2.0, 2.0)]
 
-    def test__structure_list_from_result_list__maps_list_to_auto_arrays_or_grids(self):
+    def test__structure_2d_list_from_result_list__maps_list_to_auto_arrays_or_grids(
+        self
+    ):
 
         grid = aa.Grid2DIrregular(grid=[(1.0, -1.0), (1.0, 1.0)])
 
-        result = grid.structure_list_from_result_list(
+        result = grid.structure_2d_list_from_result_list(
             result_list=[np.array([1.0, 2.0])]
         )
 
         assert isinstance(result[0], aa.ValuesIrregular)
         assert result[0].in_list == [1.0, 2.0]
 
-        result = grid.structure_list_from_result_list(
+        result = grid.structure_2d_list_from_result_list(
             result_list=[np.array([[1.0, 1.0], [2.0, 2.0]])]
         )
 
