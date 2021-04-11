@@ -186,7 +186,7 @@ class Grid2DIrregular(np.ndarray):
         - [1D np.ndarray] -> [aa.ValuesIrregular]
         - [2D np.ndarray] -> [aa.Grid2DIrregular]
 
-        This function is used by the grid_like_to_structure decorator to convert the output result of a function
+        This function is used by the grid_2d_to_structure decorator to convert the output result of a function
         to an autoarray structure when a `Grid2DIrregular` instance is passed to the decorated function.
 
         Parameters

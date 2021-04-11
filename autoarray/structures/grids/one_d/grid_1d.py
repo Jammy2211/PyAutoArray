@@ -288,7 +288,7 @@ class Grid1D(abstract_grid_1d.AbstractGrid1D):
         - 1D np.ndarray   -> aa.Array2D
         - 2D np.ndarray   -> aa.Grid2D
 
-        This function is used by the grid_like_to_structure decorator to convert the output result of a function
+        This function is used by the grid_2d_to_structure decorator to convert the output result of a function
         to an autoarray structure when a `Grid2D` instance is passed to the decorated function.
 
         Parameters
