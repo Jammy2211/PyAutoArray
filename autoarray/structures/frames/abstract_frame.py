@@ -51,9 +51,9 @@ class AbstractFrame2D(abstract_array_2d.AbstractArray2D):
     @property
     def parallel_overscan_frame(self):
         """Extract an arrays of all of the parallel trails in the parallel overscan region, that are to the side of a
-        charge-injection scans from a charge injection ci_frame.
+        charge-injection scans from a charge injection frame_ci.
 
-        The diagram below illustrates the arrays that is extracted from a ci_frame:
+        The diagram below illustrates the arrays that is extracted from a frame_ci:
 
         ---KEY---
         ---------
@@ -79,7 +79,7 @@ class AbstractFrame2D(abstract_array_2d.AbstractArray2D):
         []     [=====================]
                <---------S----------
 
-        The extracted ci_frame keeps just the trails following all charge injection scans and replaces all other
+        The extracted frame_ci keeps just the trails following all charge injection scans and replaces all other
         values with 0s:
 
                [000000000000000000000]
@@ -136,9 +136,9 @@ class AbstractFrame2D(abstract_array_2d.AbstractArray2D):
     @property
     def serial_overscan_frame(self):
         """Extract an arrays of all of the serial trails in the serial overscan region, that are to the side of a
-        charge-injection scans from a charge injection ci_frame.
+        charge-injection scans from a charge injection frame_ci.
 
-        The diagram below illustrates the arrays that is extracted from a ci_frame:
+        The diagram below illustrates the arrays that is extracted from a frame_ci:
 
         ---KEY---
         ---------
@@ -164,7 +164,7 @@ class AbstractFrame2D(abstract_array_2d.AbstractArray2D):
         []     [=====================]
                <---------S----------
 
-        The extracted ci_frame keeps just the trails following all charge injection scans and replaces all other
+        The extracted frame_ci keeps just the trails following all charge injection scans and replaces all other
         values with 0s:
 
                [000000000000000000000]

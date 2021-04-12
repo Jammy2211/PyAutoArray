@@ -29,11 +29,11 @@ class Frame2D(abstract_frame.AbstractFrame2D):
         Parameters
         -----------
         parallel_overscan : frame.Region2D
-            The parallel overscan region of the ci_frame.
+            The parallel overscan region of the frame_ci.
         serial_prescan : frame.Region2D
-            The serial prescan region of the ci_frame.
+            The serial prescan region of the frame_ci.
         serial_overscan : frame.Region2D
-            The serial overscan region of the ci_frame.
+            The serial overscan region of the frame_ci.
         """
 
         if type(array) is list:
@@ -71,11 +71,11 @@ class Frame2D(abstract_frame.AbstractFrame2D):
         Parameters
         -----------
         parallel_overscan : frame.Region2D
-            The parallel overscan region of the ci_frame.
+            The parallel overscan region of the frame_ci.
         serial_prescan : frame.Region2D
-            The serial prescan region of the ci_frame.
+            The serial prescan region of the frame_ci.
         serial_overscan : frame.Region2D
-            The serial overscan region of the ci_frame.
+            The serial overscan region of the frame_ci.
         """
 
         array = abstract_array.convert_array(array=array)
@@ -120,11 +120,11 @@ class Frame2D(abstract_frame.AbstractFrame2D):
         Parameters
         -----------
         parallel_overscan : Region2D
-            The parallel overscan region of the ci_frame.
+            The parallel overscan region of the frame_ci.
         serial_prescan : Region2D
-            The serial prescan region of the ci_frame.
+            The serial prescan region of the frame_ci.
         serial_overscan : Region2D
-            The serial overscan region of the ci_frame.
+            The serial overscan region of the frame_ci.
         """
 
         array = abstract_array.convert_array(array=array)
@@ -241,7 +241,7 @@ class Frame2D(abstract_frame.AbstractFrame2D):
         hdu : int
             The HDU number in the fits file containing the image ci_data.
         frame_geometry : FrameArray.FrameGeometry
-            The geometry of the ci_frame, defining the direction of parallel and serial clocking and the \
+            The geometry of the frame_ci, defining the direction of parallel and serial clocking and the \
             locations of different scans of the CCD (overscans, prescan, etc.)
         """
 

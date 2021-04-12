@@ -94,8 +94,8 @@ def rotate_region_from_roe_corner(
         )
 
 
-def rotate_ci_pattern_from_roe_corner(
-    ci_pattern, shape_native: (int, int), roe_corner: (int, int)
+def rotate_pattern_ci_from_roe_corner(
+    pattern_ci, shape_native: (int, int), roe_corner: (int, int)
 ):
     """
     Rotates a ``ChargeInjectionPattern` such that its read-out electronics corner (``roe_corner``) are positioned at
@@ -103,7 +103,7 @@ def rotate_ci_pattern_from_roe_corner(
 
     Parameters
     ----------
-    ci_pattern : ac.CIPaattern
+    pattern_ci : ac.CIPaattern
         The charge-injection pattern of the ``CIFrame`` that is rotated.
     shape_native : (int, int)
         The 2D shape of the ``CIFrame`` the regions are located on, required to determine the rotated ``region``.
@@ -116,16 +116,16 @@ def rotate_ci_pattern_from_roe_corner(
     aa.Region2D
         The rotated (y0, y1, x0, x1) ``Region2D`` where the read out electronics are at the bottom left corner, (1, 0).
     """
-    new_ci_pattern = deepcopy(ci_pattern)
+    new_pattern_ci = deepcopy(pattern_ci)
 
-    new_ci_pattern.regions = [
+    new_pattern_ci.regions = [
         rotate_region_from_roe_corner(
             region=region, shape_native=shape_native, roe_corner=roe_corner
         )
-        for region in ci_pattern.regions
+        for region in pattern_ci.regions
     ]
 
-    return new_ci_pattern
+    return new_pattern_ci
 
 
 def region_after_extraction(

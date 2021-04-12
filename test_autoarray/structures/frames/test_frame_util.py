@@ -118,59 +118,59 @@ class TestRotations:
 
         assert region_tr == (0, 2, 1, 3)
 
-    # def test__rotate_ci_pattern__all_4_rotations_with_rotation_back(self):
+    # def test__rotate_pattern_ci__all_4_rotations_with_rotation_back(self):
     #
-    #     pattern = ci_pattern.CIPatternUniform(
+    #     pattern = pattern_ci.PatternCIUniform(
     #         regions=[(0, 1, 1, 2), (0, 2, 0, 2)], normalization=10.0
     #     )
     #
     #     shape_native = (2, 2)
     #
-    #     pattern_bl = aa.util.frame.rotate_ci_pattern_from_roe_corner(
-    #         ci_pattern=pattern, shape_native=shape_native, roe_corner=(1, 0)
+    #     pattern_bl = aa.util.frame.rotate_pattern_ci_from_roe_corner(
+    #         pattern_ci=pattern, shape_native=shape_native, roe_corner=(1, 0)
     #     )
     #
     #     assert pattern_bl.regions == [(0, 1, 1, 2), (0, 2, 0, 2)]
     #     assert pattern_bl.normalization == 10.0
     #
-    #     pattern_bl = aa.util.frame.rotate_ci_pattern_from_roe_corner(
-    #         ci_pattern=pattern_bl, shape_native=shape_native, roe_corner=(1, 0)
+    #     pattern_bl = aa.util.frame.rotate_pattern_ci_from_roe_corner(
+    #         pattern_ci=pattern_bl, shape_native=shape_native, roe_corner=(1, 0)
     #     )
     #
     #     assert pattern_bl.regions == [(0, 1, 1, 2), (0, 2, 0, 2)]
     #
-    #     pattern_br = aa.util.frame.rotate_ci_pattern_from_roe_corner(
-    #         ci_pattern=pattern, shape_native=shape_native, roe_corner=(1, 1)
+    #     pattern_br = aa.util.frame.rotate_pattern_ci_from_roe_corner(
+    #         pattern_ci=pattern, shape_native=shape_native, roe_corner=(1, 1)
     #     )
     #
     #     assert pattern_br.regions == [(0, 1, 0, 1), (0, 2, 0, 2)]
     #
-    #     pattern_br = aa.util.frame.rotate_ci_pattern_from_roe_corner(
-    #         ci_pattern=pattern_br, shape_native=shape_native, roe_corner=(1, 1)
+    #     pattern_br = aa.util.frame.rotate_pattern_ci_from_roe_corner(
+    #         pattern_ci=pattern_br, shape_native=shape_native, roe_corner=(1, 1)
     #     )
     #
     #     assert pattern_br.regions == [(0, 1, 1, 2), (0, 2, 0, 2)]
     #
-    #     pattern_tl = aa.util.frame.rotate_ci_pattern_from_roe_corner(
-    #         ci_pattern=pattern, shape_native=shape_native, roe_corner=(0, 0)
+    #     pattern_tl = aa.util.frame.rotate_pattern_ci_from_roe_corner(
+    #         pattern_ci=pattern, shape_native=shape_native, roe_corner=(0, 0)
     #     )
     #
     #     assert pattern_tl.regions == [(1, 2, 1, 2), (0, 2, 0, 2)]
     #
-    #     pattern_tl = aa.util.frame.rotate_ci_pattern_from_roe_corner(
-    #         ci_pattern=pattern_tl, shape_native=shape_native, roe_corner=(0, 0)
+    #     pattern_tl = aa.util.frame.rotate_pattern_ci_from_roe_corner(
+    #         pattern_ci=pattern_tl, shape_native=shape_native, roe_corner=(0, 0)
     #     )
     #
     #     assert pattern_tl.regions == [(0, 1, 1, 2), (0, 2, 0, 2)]
     #
-    #     pattern_tr = aa.util.frame.rotate_ci_pattern_from_roe_corner(
-    #         ci_pattern=pattern, shape_native=shape_native, roe_corner=(0, 1)
+    #     pattern_tr = aa.util.frame.rotate_pattern_ci_from_roe_corner(
+    #         pattern_ci=pattern, shape_native=shape_native, roe_corner=(0, 1)
     #     )
     #
     #     assert pattern_tr.regions == [(1, 2, 0, 1), (0, 2, 0, 2)]
     #
-    #     pattern_tr = aa.util.frame.rotate_ci_pattern_from_roe_corner(
-    #         ci_pattern=pattern_tr, shape_native=shape_native, roe_corner=(0, 1)
+    #     pattern_tr = aa.util.frame.rotate_pattern_ci_from_roe_corner(
+    #         pattern_ci=pattern_tr, shape_native=shape_native, roe_corner=(0, 1)
     #     )
     #
     #     assert pattern_tr.regions == [(0, 1, 1, 2), (0, 2, 0, 2)]

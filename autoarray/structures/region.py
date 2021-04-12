@@ -91,7 +91,7 @@ def check_parallel_front_edge_size(region, rows):
         or rows[1] > region.y1 - region.y0
         or rows[0] >= rows[1]
     ):
-        raise exc.CIPatternException(
+        raise exc.PatternCIException(
             "The number of rows to extract from the leading edge is bigger than the entire"
             "ci ci_region"
         )
@@ -105,7 +105,7 @@ def check_serial_front_edge_size(region, columns):
         or columns[1] > region.x1 - region.x0
         or columns[0] >= columns[1]
     ):
-        raise exc.CIPatternException(
+        raise exc.PatternCIException(
             "The number of columns to extract from the leading edge is bigger than the entire"
             "ci ci_region"
         )
