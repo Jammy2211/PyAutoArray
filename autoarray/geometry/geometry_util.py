@@ -3,23 +3,48 @@ from typing import Tuple, Union
 import numpy as np
 
 
+def convert_shape_native_1d(shape_native: Union[int, Tuple[int]]) -> Tuple[int]:
+    """
+    Converts an input `shape_native` of type int to a tuple (int,). If the input is already a (int, ) tuple it 
+    is unchanged
+
+    This enables users to input `shape_native` as a single value and have the type automatically converted to type
+    (int,) which is used internally for data structures.
+
+    Parameters
+    ----------
+    pixel_scales
+        The input pixel
+
+    Returns
+    -------
+    pixel_scales
+        The `shape_native` as a tuple of format (int,).
+    """
+
+    if type(shape_native) is int:
+        shape_native = (shape_native,)
+
+    return shape_native
+
+
 def convert_pixel_scales_1d(pixel_scales: Union[float, Tuple[float]]) -> Tuple[float]:
     """
-    Converts an input pixel-scale of type float to a pixel-scale of tuple (float, float). If the input is already
-    type (float, float) it is unchanged
+    Converts an input pixel-scale of type float to a tuple (float,). If the input is already a (float, ) it is 
+    unchanged
 
     This enables users to input the pixel scale as a single value and have the type automatically converted to type
     (float, float) which is used for rectangular grids.
 
     Parameters
     ----------
-    pixel_scales : float or (float, float)
+    pixel_scales
         The input pixel
 
     Returns
     -------
     pixel_scales
-        The pixel_scales of type (float, float).
+        The pixel_scales as a tuple of format (float,).
     """
 
     if type(pixel_scales) is float:

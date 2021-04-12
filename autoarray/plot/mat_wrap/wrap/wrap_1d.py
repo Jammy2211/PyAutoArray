@@ -25,7 +25,7 @@ class AbstractMatWrap1D(wrap_base.AbstractMatWrap):
 
 
 class YXPlot(AbstractMatWrap1D):
-    def __init__(self, plot_axis_type = None, **kwargs):
+    def __init__(self, plot_axis_type=None, **kwargs):
         """
         Plots 1D data structures as a y vs x figure.
 

@@ -41,7 +41,7 @@ class Array1D(abstract_array_1d.AbstractArray1D):
         pixel_scales = geometry_util.convert_pixel_scales_1d(pixel_scales=pixel_scales)
 
         mask = msk.Mask1D.unmasked(
-            shape_slim=array.shape[0],
+            shape_slim=array.shape[0] // sub_size,
             pixel_scales=pixel_scales,
             sub_size=sub_size,
             origin=origin,
@@ -103,6 +103,41 @@ class Array1D(abstract_array_1d.AbstractArray1D):
         )
 
         return Array1D(array=array, mask=mask)
+
+    @classmethod
+    def full(cls, fill_value, shape_native, pixel_scales, sub_size=1, origin=(0.0,)):
+        """
+        Create an `Array1D` (see `AbstractArray1D.__new__`) where all values are filled with an input fill value,
+        analogous to the method np.full().
+
+        From 1D input the method cannot determine the 1D shape of the array and its mask, thus the `shape_native` must
+        be input into this method. The mask is setup as a unmasked `Mask1D` of size `shape_native`.
+
+        Parameters
+        ----------
+        fill_value : float
+            The value all array elements are filled with.
+        shape_native : (int,)
+            The `D shape of the mask the array is paired with.
+        pixel_scales: (float, ) or float
+            The (y,x) scaled units to pixel units conversion factors of every pixel. If this is input as a `float`,
+            it is converted to a (float,) structure.
+        sub_size : int
+            The size (sub_size) of each unmasked pixels sub-array.
+        origin : (float,)
+            The (x) scaled units origin of the mask's coordinate system.
+        """
+        shape_native = geometry_util.convert_shape_native_1d(shape_native=shape_native)
+
+        if sub_size is not None:
+            shape_native = (shape_native[0] * sub_size,)
+
+        return cls.manual_native(
+            array=np.full(fill_value=fill_value, shape=shape_native[0]),
+            pixel_scales=pixel_scales,
+            sub_size=sub_size,
+            origin=origin,
+        )
 
     @property
     def grid_radial(self):

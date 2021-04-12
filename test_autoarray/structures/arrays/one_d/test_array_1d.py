@@ -50,6 +50,29 @@ class TestAPI:
         assert array_1d.pixel_scales == (1.0,)
         assert array_1d.origin == (0.0,)
 
+    def test__full__makes_array_1d_with_pixel_scale__filled_with_input_value(self):
+
+        array_1d = aa.Array1D.full(fill_value=1.0, shape_native=4, pixel_scales=1.0)
+
+        assert type(array_1d) == aa.Array1D
+        assert (array_1d.native == np.array([1.0, 1.0, 1.0, 1.0])).all()
+        assert (array_1d.slim == np.array([1.0, 1.0, 1.0, 1.0])).all()
+        assert array_1d.pixel_scale == 1.0
+        assert array_1d.pixel_scales == (1.0,)
+        assert array_1d.origin == (0.0,)
+
+        array_1d = aa.Array1D.full(
+            fill_value=2.0, shape_native=3, pixel_scales=3.0, sub_size=2, origin=(4.0,)
+        )
+
+        assert type(array_1d) == aa.Array1D
+        print(array_1d.native)
+        assert (array_1d.native == np.array([2.0, 2.0, 2.0, 2.0, 2.0, 2.0])).all()
+        assert (array_1d.slim == np.array([2.0, 2.0, 2.0, 2.0, 2.0, 2.0])).all()
+        assert array_1d.pixel_scale == 3.0
+        assert array_1d.pixel_scales == (3.0,)
+        assert array_1d.origin == (4.0,)
+
     def test__recursive_shape_storage(self):
 
         array_1d = aa.Array1D.manual_slim(array=[1.0, 2.0, 3.0, 4.0], pixel_scales=1.0)
