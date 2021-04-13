@@ -6,26 +6,95 @@ import autoarray as aa
 from autoarray import exc
 
 
-@pytest.fixture(scope="class")
-def euclid_data():
-    euclid_data = np.zeros((2086, 2119))
-    return euclid_data
+class TestRegion1D:
+    def test__sanity_check__first_row_or_column_equal_too_or_bigger_than_second__raise_errors(
+        self
+    ):
+
+        with pytest.raises(exc.RegionException):
+            aa.Region1D(region=(2, 2))
+
+        with pytest.raises(exc.RegionException):
+            aa.Region1D(region=(2, 1))
+
+    def test__sanity_check__negative_coordinates_raise_errors(self):
+
+        with pytest.raises(exc.RegionException):
+
+            aa.Region1D(region=(-1, 0))
+
+        with pytest.raises(exc.RegionException):
+            aa.Region1D(region=(0, -1))
+
+    def test__extraction_via_slice(self):
+
+        arr_1d = aa.Array1D.manual_native(
+            array=np.array([1.0, 2.0, 3.0, 4.0, 5.0, 6.0]), pixel_scales=1.0
+        )
+
+        region = aa.Region1D(region=(0, 2))
+
+        new_arr_1d = arr_1d[region.slice]
+
+        assert (new_arr_1d == np.array([1.0, 2.0])).all()
+
+        region = aa.Region1D(region=(1, 3))
+
+        new_arr_1d = arr_1d[region.slice]
+
+        assert (new_arr_1d == np.array([2.0, 3.0])).all()
+
+    def test__add_region_to_arr_1d_via_slice(self):
+
+        arr_1d = aa.Array1D.manual_native(
+            array=np.array([1.0, 2.0, 3.0, 4.0]), pixel_scales=1.0
+        )
+
+        image = aa.Array1D.full(fill_value=1.0, shape_native=6, pixel_scales=1.0)
+
+        region = aa.Region1D(region=(0, 1))
+
+        arr_1d[region.slice] += image[region.slice]
+
+        assert (arr_1d == np.array([2.0, 2.0, 3.0, 4.0])).all()
+
+        arr_1d = aa.Array1D.manual_native(
+            array=np.array([1.0, 2.0, 3.0, 4.0]), pixel_scales=1.0
+        )
+
+        region = aa.Region1D(region=(2, 4))
+
+        arr_1d[region.slice] += image[region.slice]
+
+        assert (arr_1d == np.array([1.0, 2.0, 4.0, 5.0])).all()
+
+    def test__set_region_to_zero_via_slice(self):
+
+        arr_1d = aa.Array1D.manual_native(
+            array=np.array([1.0, 2.0, 3.0, 4.0]), pixel_scales=1.0
+        )
+
+        region = aa.Region1D(region=(0, 1))
+
+        arr_1d[region.slice] = 0
+
+        assert (arr_1d == np.array([0.0, 2.0, 3.0, 4.0])).all()
+
+        arr_1d = aa.Array1D.manual_native(
+            array=np.array([1.0, 2.0, 3.0, 4.0]), pixel_scales=1.0
+        )
+
+        region = aa.Region1D(region=(2, 4))
+
+        arr_1d[region.slice] = 0
+
+        assert (arr_1d == np.array([1.0, 2.0, 0.0, 0.0])).all()
 
 
-class TestConstructor:
-    def test__constructor__converts_region_to_cartesians(self):
-        region = aa.Region2D(region=(0, 1, 2, 3))
-
-        assert region == (0, 1, 2, 3)
-
-        assert region.y0 == 0
-        assert region.y1 == 1
-        assert region.x0 == 2
-        assert region.x1 == 3
-        assert region.total_rows == 1
-        assert region.total_columns == 1
-
-    def test__first_row_or_column_equal_too_or_bigger_than_second__raise_errors(self):
+class TestRegion2D:
+    def test__sanity_check__first_row_or_column_equal_too_or_bigger_than_second__raise_errors(
+        self
+    ):
         with pytest.raises(exc.RegionException):
             aa.Region2D(region=(2, 2, 1, 2))
 
@@ -38,7 +107,8 @@ class TestConstructor:
         with pytest.raises(exc.RegionException):
             aa.Region2D(region=(0, 1, 3, 2))
 
-    def test__negative_coordinates_raise_errors(self):
+    def test__sanity_check__negative_coordinates_raise_errors(self):
+
         with pytest.raises(exc.RegionException):
             aa.Region2D(region=(-1, 0, 1, 2))
 
@@ -51,9 +121,8 @@ class TestConstructor:
         with pytest.raises(exc.RegionException):
             aa.Region2D(region=(0, 1, 2, -1))
 
+    def test__extraction_via_slice(self):
 
-class TestExtractRegionFromFrame:
-    def test__extracts_2x2_region_of_3x3_array(self):
         frame = aa.Frame2D.manual(
             array=np.array([[1.0, 2.0, 3.0], [4.0, 5.0, 6.0], [7.0, 8.0, 9.0]]),
             pixel_scales=1.0,
@@ -65,7 +134,6 @@ class TestExtractRegionFromFrame:
 
         assert (new_frame == np.array([[1.0, 2.0], [4.0, 5.0]])).all()
 
-    def test__extracts_2x3_region_of_3x3_array(self):
         frame = aa.Frame2D.manual(
             array=np.array([[1.0, 2.0, 3.0], [4.0, 5.0, 6.0], [7.0, 8.0, 9.0]]),
             pixel_scales=1.0,
@@ -77,9 +145,8 @@ class TestExtractRegionFromFrame:
 
         assert (new_frame == np.array([[4.0, 5.0, 6.0], [7.0, 8.0, 9.0]])).all()
 
+    def test__add_region_to_frame_via_slice(self):
 
-class TestAddRegionToArrayFromImage:
-    def test__array_is_all_zeros__image_goes_into_correct_region_of_array(self):
         frame = aa.Frame2D.manual(array=np.zeros((2, 2)), pixel_scales=1.0)
         image = np.ones((2, 2))
         region = aa.Region2D(region=(0, 1, 0, 1))
@@ -88,9 +155,6 @@ class TestAddRegionToArrayFromImage:
 
         assert (frame == np.array([[1.0, 0.0], [0.0, 0.0]])).all()
 
-    def test__array_is_all_1s__image_goes_into_correct_region_of_array_and_adds_to_it(
-        self,
-    ):
         frame = aa.Frame2D.manual(array=np.ones((2, 2)), pixel_scales=1.0)
         image = np.ones((2, 2))
         region = aa.Region2D(region=(0, 1, 0, 1))
@@ -99,7 +163,6 @@ class TestAddRegionToArrayFromImage:
 
         assert (frame == np.array([[2.0, 1.0], [1.0, 1.0]])).all()
 
-    def test__different_region(self):
         frame = aa.Frame2D.manual(array=np.ones((3, 3)), pixel_scales=1.0)
         image = np.ones((3, 3))
         region = aa.Region2D(region=(1, 3, 2, 3))
@@ -110,9 +173,8 @@ class TestAddRegionToArrayFromImage:
             frame == np.array([[1.0, 1.0, 1.0], [1.0, 1.0, 2.0], [1.0, 1.0, 2.0]])
         ).all()
 
+    def test__set_region_to_zero_via_slice(self):
 
-class TestSetRegionToZeros:
-    def test__region_is_corner__sets_to_0(self):
         frame = aa.Frame2D.manual(array=np.ones((2, 2)), pixel_scales=1.0)
 
         region = aa.Region2D(region=(0, 1, 0, 1))
@@ -121,7 +183,6 @@ class TestSetRegionToZeros:
 
         assert (frame == np.array([[0.0, 1.0], [1.0, 1.0]])).all()
 
-    def test__different_region___sets_to_0(self):
         frame = aa.Frame2D.manual(array=np.ones((3, 3)), pixel_scales=1.0)
 
         region = aa.Region2D(region=(1, 3, 2, 3))

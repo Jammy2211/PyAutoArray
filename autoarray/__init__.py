@@ -44,9 +44,9 @@ from .structures.grids.two_d.grid_2d_irregular import Grid2DIrregularUniform
 from .structures.grids.two_d.grid_2d_pixelization import Grid2DRectangular
 from .structures.grids.two_d.grid_2d_pixelization import Grid2DVoronoi
 from .structures.vector_fields.vector_field_irregular import VectorField2DIrregular
+from .structures.region import Region1D
 from .structures.region import Region2D
 from .structures.kernel_2d import Kernel2D
-from .structures.region import Region2D
 from .structures.visibilities import Visibilities
 from .structures.visibilities import VisibilitiesNoiseMap
 

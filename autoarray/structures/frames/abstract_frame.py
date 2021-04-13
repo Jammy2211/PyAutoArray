@@ -115,8 +115,6 @@ class AbstractFrame2D(abstract_array_2d.AbstractArray2D):
 
     def parallel_front_edge_of_region(self, region, rows):
 
-        reg.check_parallel_front_edge_size(region=region, rows=rows)
-
         y_coord = region.y0
         y_min = y_coord + rows[0]
         y_max = y_coord + rows[1]
@@ -191,7 +189,6 @@ class AbstractFrame2D(abstract_array_2d.AbstractArray2D):
         return self.serial_overscan_frame.binned_across_parallel
 
     def serial_front_edge_of_region(self, region, columns=(0, 1)):
-        reg.check_serial_front_edge_size(region, columns)
         x_min, x_max = self.x_limits(region, columns)
         return reg.Region2D(region=(region.y0, region.y1, x_min, x_max))
 
