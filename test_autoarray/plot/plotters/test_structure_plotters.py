@@ -22,6 +22,7 @@ class TestYX1DPlotter:
 
         mat_plot_1d = aplt.MatPlot1D(
             yx_plot=aplt.YXPlot(plot_axis_type="loglog", c="k"),
+            vertical_line_axvline=aplt.AXVLine(c="k"),
             output=aplt.Output(path=plot_path, filename="yx_1", format="png"),
         )
 
