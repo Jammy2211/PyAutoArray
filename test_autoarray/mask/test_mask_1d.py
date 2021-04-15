@@ -80,37 +80,37 @@ class TestMask1D:
 
         mask = aa.Mask1D.manual(mask=[False, False, False, False], pixel_scales=1.0)
 
-        assert mask.is_all_true == False
+        assert mask.is_all_true is False
 
         mask = aa.Mask1D.manual(mask=[False, False], pixel_scales=1.0)
 
-        assert mask.is_all_true == False
+        assert mask.is_all_true is False
 
         mask = aa.Mask1D.manual(mask=[False, True, False, False], pixel_scales=1.0)
 
-        assert mask.is_all_true == False
+        assert mask.is_all_true is False
 
         mask = aa.Mask1D.manual(mask=[True, True, True, True], pixel_scales=1.0)
 
-        assert mask.is_all_true == True
+        assert mask.is_all_true is True
 
     def test__is_all_false(self):
 
         mask = aa.Mask1D.manual(mask=[False, False, False, False], pixel_scales=1.0)
 
-        assert mask.is_all_false == True
+        assert mask.is_all_false is True
 
         mask = aa.Mask1D.manual(mask=[False, False], pixel_scales=1.0)
 
-        assert mask.is_all_false == True
+        assert mask.is_all_false is True
 
         mask = aa.Mask1D.manual(mask=[False, True, False, False], pixel_scales=1.0)
 
-        assert mask.is_all_false == False
+        assert mask.is_all_false is False
 
         mask = aa.Mask1D.manual(mask=[True, True, False, False], pixel_scales=1.0)
 
-        assert mask.is_all_false == False
+        assert mask.is_all_false is False
 
     def test__to_mask_2d(self):
 

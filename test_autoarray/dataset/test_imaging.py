@@ -212,20 +212,21 @@ class TestImaging:
 
 
 class TestImagingApplyMask:
-    def test__apply_mask__masks_dataset(self, imaging_7x7, sub_mask_7x7):
+    def test__apply_mask__masks_dataset(self, imaging_7x7, sub_mask_2d_7x7):
 
-        masked_imaging_7x7 = imaging_7x7.apply_mask(mask=sub_mask_7x7)
+        masked_imaging_7x7 = imaging_7x7.apply_mask(mask=sub_mask_2d_7x7)
 
         assert (masked_imaging_7x7.image.slim == np.ones(9)).all()
 
         assert (
-            masked_imaging_7x7.image.native == np.ones((7, 7)) * np.invert(sub_mask_7x7)
+            masked_imaging_7x7.image.native
+            == np.ones((7, 7)) * np.invert(sub_mask_2d_7x7)
         ).all()
 
         assert (masked_imaging_7x7.noise_map.slim == 2.0 * np.ones(9)).all()
         assert (
             masked_imaging_7x7.noise_map.native
-            == 2.0 * np.ones((7, 7)) * np.invert(sub_mask_7x7)
+            == 2.0 * np.ones((7, 7)) * np.invert(sub_mask_2d_7x7)
         ).all()
 
         assert (masked_imaging_7x7.psf.slim == (1.0 / 9.0) * np.ones(9)).all()
@@ -234,35 +235,35 @@ class TestImagingApplyMask:
     def test__grid(
         self,
         imaging_7x7,
-        sub_mask_7x7,
-        grid_7x7,
-        sub_grid_7x7,
-        blurring_grid_7x7,
-        grid_iterate_7x7,
+        sub_mask_2d_7x7,
+        grid_2d_7x7,
+        sub_grid_2d_7x7,
+        blurring_grid_2d_7x7,
+        grid_2d_iterate_7x7,
     ):
 
-        masked_imaging_7x7 = imaging_7x7.apply_mask(mask=sub_mask_7x7)
+        masked_imaging_7x7 = imaging_7x7.apply_mask(mask=sub_mask_2d_7x7)
         masked_imaging_7x7 = masked_imaging_7x7.apply_settings(
             settings=aa.SettingsImaging(grid_class=aa.Grid2D, sub_size=2)
         )
 
         assert isinstance(masked_imaging_7x7.grid, aa.Grid2D)
-        assert (masked_imaging_7x7.grid.binned == grid_7x7).all()
-        assert (masked_imaging_7x7.grid.slim == sub_grid_7x7).all()
+        assert (masked_imaging_7x7.grid.binned == grid_2d_7x7).all()
+        assert (masked_imaging_7x7.grid.slim == sub_grid_2d_7x7).all()
         assert isinstance(masked_imaging_7x7.blurring_grid, aa.Grid2D)
-        assert (masked_imaging_7x7.blurring_grid.slim == blurring_grid_7x7).all()
+        assert (masked_imaging_7x7.blurring_grid.slim == blurring_grid_2d_7x7).all()
 
-        masked_imaging_7x7 = imaging_7x7.apply_mask(mask=sub_mask_7x7)
+        masked_imaging_7x7 = imaging_7x7.apply_mask(mask=sub_mask_2d_7x7)
         masked_imaging_7x7 = masked_imaging_7x7.apply_settings(
             settings=aa.SettingsImaging(grid_class=aa.Grid2DIterate)
         )
 
         assert isinstance(masked_imaging_7x7.grid, aa.Grid2DIterate)
-        assert (masked_imaging_7x7.grid.binned == grid_iterate_7x7).all()
+        assert (masked_imaging_7x7.grid.binned == grid_2d_iterate_7x7).all()
         assert isinstance(masked_imaging_7x7.blurring_grid, aa.Grid2DIterate)
-        assert (masked_imaging_7x7.blurring_grid.slim == blurring_grid_7x7).all()
+        assert (masked_imaging_7x7.blurring_grid.slim == blurring_grid_2d_7x7).all()
 
-        masked_imaging_7x7 = imaging_7x7.apply_mask(mask=sub_mask_7x7)
+        masked_imaging_7x7 = imaging_7x7.apply_mask(mask=sub_mask_2d_7x7)
         masked_imaging_7x7 = masked_imaging_7x7.apply_settings(
             settings=aa.SettingsImaging(
                 grid_class=aa.Grid2DInterpolate, pixel_scales_interp=1.0, sub_size=2
@@ -270,7 +271,7 @@ class TestImagingApplyMask:
         )
 
         grid = aa.Grid2DInterpolate.from_mask(
-            mask=sub_mask_7x7, pixel_scales_interp=1.0
+            mask=sub_mask_2d_7x7, pixel_scales_interp=1.0
         )
 
         blurring_grid = grid.blurring_grid_from_kernel_shape(kernel_shape_native=(3, 3))
@@ -285,18 +286,18 @@ class TestImagingApplyMask:
         assert (masked_imaging_7x7.blurring_grid.vtx == blurring_grid.vtx).all()
         assert (masked_imaging_7x7.blurring_grid.wts == blurring_grid.wts).all()
 
-    def test__psf_and_convolvers(self, imaging_7x7, sub_mask_7x7):
+    def test__psf_and_convolvers(self, imaging_7x7, sub_mask_2d_7x7):
 
-        masked_imaging_7x7 = imaging_7x7.apply_mask(mask=sub_mask_7x7)
+        masked_imaging_7x7 = imaging_7x7.apply_mask(mask=sub_mask_2d_7x7)
 
         assert type(masked_imaging_7x7.psf) == aa.Kernel2D
         assert type(masked_imaging_7x7.convolver) == aa.Convolver
 
     def test__masked_imaging__uses_signal_to_noise_limit_and_radii(
-        self, imaging_7x7, mask_7x7
+        self, imaging_7x7, mask_2d_7x7
     ):
 
-        masked_imaging_7x7 = imaging_7x7.apply_mask(mask=mask_7x7)
+        masked_imaging_7x7 = imaging_7x7.apply_mask(mask=mask_2d_7x7)
         masked_imaging_7x7 = masked_imaging_7x7.apply_settings(
             settings=aa.SettingsImaging(grid_class=aa.Grid2D, signal_to_noise_limit=0.1)
         )
@@ -307,14 +308,14 @@ class TestImagingApplyMask:
 
         assert (
             masked_imaging_7x7.image.native
-            == imaging_snr_limit.image.native * np.invert(mask_7x7)
+            == imaging_snr_limit.image.native * np.invert(mask_2d_7x7)
         ).all()
         assert (
             masked_imaging_7x7.noise_map.native
-            == imaging_snr_limit.noise_map.native * np.invert(mask_7x7)
+            == imaging_snr_limit.noise_map.native * np.invert(mask_2d_7x7)
         ).all()
 
-        masked_imaging_7x7 = imaging_7x7.apply_mask(mask=mask_7x7)
+        masked_imaging_7x7 = imaging_7x7.apply_mask(mask=mask_2d_7x7)
         masked_imaging_7x7 = masked_imaging_7x7.apply_settings(
             settings=aa.SettingsImaging(
                 grid_class=aa.Grid2D,
@@ -359,10 +360,10 @@ class TestImagingApplyMask:
         assert (masked_imaging.noise_map == np.array([2.0])).all()
 
     def test__modified_image_and_noise_map(
-        self, image_7x7, noise_map_7x7, imaging_7x7, sub_mask_7x7
+        self, image_7x7, noise_map_7x7, imaging_7x7, sub_mask_2d_7x7
     ):
 
-        masked_imaging_7x7 = imaging_7x7.apply_mask(mask=sub_mask_7x7)
+        masked_imaging_7x7 = imaging_7x7.apply_mask(mask=sub_mask_2d_7x7)
 
         image_7x7[0] = 10.0
         noise_map_7x7[0] = 11.0

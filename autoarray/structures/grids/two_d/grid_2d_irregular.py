@@ -175,7 +175,7 @@ class Grid2DIrregular(np.ndarray):
 
         inside = []
         for i in range(len(mask)):
-            if mask[i] == True:
+            if mask[i] is True:
                 inside.append(self[i])
 
         return Grid2DIrregular(grid=np.asarray(inside))

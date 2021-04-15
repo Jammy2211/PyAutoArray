@@ -54,10 +54,10 @@ def test__visuals_in_constructor_use_imaging_and_include(imaging_7x7):
 
 
 def test__individual_attributes_are_output(
-    imaging_7x7, grid_irregular_7x7_list, mask_7x7, plot_path, plot_patch
+    imaging_7x7, grid_2d_irregular_7x7_list, mask_2d_7x7, plot_path, plot_patch
 ):
 
-    visuals_2d = aplt.Visuals2D(mask=mask_7x7, positions=grid_irregular_7x7_list)
+    visuals_2d = aplt.Visuals2D(mask=mask_2d_7x7, positions=grid_2d_irregular_7x7_list)
 
     imaging_plotter = aplt.ImagingPlotter(
         imaging=imaging_7x7,
@@ -73,7 +73,7 @@ def test__individual_attributes_are_output(
         signal_to_noise_map=True,
     )
 
-    assert path.join(plot_path, "image.png") in plot_patch.paths
+    assert path.join(plot_path, "image_2d.png") in plot_patch.paths
     assert path.join(plot_path, "noise_map.png") in plot_patch.paths
     assert path.join(plot_path, "psf.png") in plot_patch.paths
     assert path.join(plot_path, "inverse_noise_map.png") in plot_patch.paths
@@ -85,7 +85,7 @@ def test__individual_attributes_are_output(
         image=True, psf=True, inverse_noise_map=True, absolute_signal_to_noise_map=True
     )
 
-    assert path.join(plot_path, "image.png") in plot_patch.paths
+    assert path.join(plot_path, "image_2d.png") in plot_patch.paths
     assert not path.join(plot_path, "noise_map.png") in plot_patch.paths
     assert path.join(plot_path, "psf.png") in plot_patch.paths
     assert path.join(plot_path, "inverse_noise_map.png") in plot_patch.paths
@@ -95,7 +95,7 @@ def test__individual_attributes_are_output(
 
 
 def test__subplot_is_output(
-    imaging_7x7, grid_irregular_7x7_list, mask_7x7, plot_path, plot_patch
+    imaging_7x7, grid_2d_irregular_7x7_list, mask_2d_7x7, plot_path, plot_patch
 ):
 
     imaging_plot = aplt.ImagingPlotter(
@@ -109,7 +109,7 @@ def test__subplot_is_output(
 
 
 def test__output_as_fits__correct_output_format(
-    imaging_7x7, grid_irregular_7x7_list, mask_7x7, plot_path, plot_patch
+    imaging_7x7, grid_2d_irregular_7x7_list, mask_2d_7x7, plot_path, plot_patch
 ):
 
     imaging_plotter = aplt.ImagingPlotter(

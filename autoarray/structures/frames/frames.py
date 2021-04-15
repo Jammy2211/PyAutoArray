@@ -36,7 +36,7 @@ class Frame2D(abstract_frame.AbstractFrame2D):
             The serial overscan region of the frame_ci.
         """
 
-        if type(array) is list:
+        if type(array) == list:
             array = np.asarray(array)
 
         array[mask == True] = 0.0

@@ -6,18 +6,18 @@ class TestInclude2D:
 
         include = aplt.Include2D()
 
-        assert include.origin == True
+        assert include.origin is True
         assert include.mask == True
-        assert include.border == True
-        assert include.parallel_overscan == True
-        assert include.serial_prescan == True
-        assert include.serial_overscan == False
+        assert include.border is True
+        assert include.parallel_overscan is True
+        assert include.serial_prescan is True
+        assert include.serial_overscan is False
 
         include = aplt.Include2D(origin=False, border=False, serial_overscan=True)
 
-        assert include.origin == False
+        assert include.origin is False
         assert include.mask == True
-        assert include.border == False
-        assert include.parallel_overscan == True
-        assert include.serial_prescan == True
-        assert include.serial_overscan == True
+        assert include.border is False
+        assert include.parallel_overscan is True
+        assert include.serial_prescan is True
+        assert include.serial_overscan is True

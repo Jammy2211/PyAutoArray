@@ -37,24 +37,29 @@ def set_config_path(request):
     )
 
 
-@pytest.fixture(name="mask_7x7")
-def make_mask_7x7():
-    return fixtures.make_mask_7x7()
+@pytest.fixture(name="mask_1d_7")
+def make_mask_1d_7():
+    return fixtures.make_mask_1d_7()
 
 
-@pytest.fixture(name="sub_mask_7x7")
-def make_sub_mask_7x7():
-    return fixtures.make_sub_mask_7x7()
+@pytest.fixture(name="mask_2d_7x7")
+def make_mask_2d_7x7():
+    return fixtures.make_mask_2d_7x7()
 
 
-@pytest.fixture(name="mask_7x7_1_pix")
-def make_mask_7x7_1_pix():
-    return fixtures.make_mask_7x7_1_pix()
+@pytest.fixture(name="sub_mask_2d_7x7")
+def make_sub_mask_2d_7x7():
+    return fixtures.make_sub_mask_2d_7x7()
 
 
-@pytest.fixture(name="array_7x7")
-def make_array_7x7():
-    return fixtures.make_array_7x7()
+@pytest.fixture(name="mask_2d_7x7_1_pix")
+def make_mask_2d_7x7_1_pix():
+    return fixtures.make_mask_2d_7x7_1_pix()
+
+
+@pytest.fixture(name="array_2d_7x7")
+def make_array_2d_7x7():
+    return fixtures.make_array_2d_7x7()
 
 
 @pytest.fixture(name="scans_7x7")
@@ -67,34 +72,44 @@ def make_frame_7x7():
     return fixtures.make_frame_7x7()
 
 
-@pytest.fixture(name="grid_7x7")
-def make_grid_7x7():
-    return fixtures.make_grid_7x7()
+@pytest.fixture(name="grid_1d_7")
+def make_grid_1d_7():
+    return fixtures.make_grid_1d_7()
 
 
-@pytest.fixture(name="sub_grid_7x7")
-def make_sub_grid_7x7():
-    return fixtures.make_sub_grid_7x7()
+@pytest.fixture(name="sub_grid_1d_7")
+def make_sub_grid_1d_7():
+    return fixtures.make_sub_grid_1d_7()
 
 
-@pytest.fixture(name="grid_iterate_7x7")
-def make_grid_iterate_7x7():
-    return fixtures.make_grid_iterate_7x7()
+@pytest.fixture(name="grid_2d_7x7")
+def make_grid_2d_7x7():
+    return fixtures.make_grid_2d_7x7()
 
 
-@pytest.fixture(name="grid_irregular_7x7")
-def make_grid_irregular_7x7():
-    return fixtures.make_grid_irregular_7x7()
+@pytest.fixture(name="sub_grid_2d_7x7")
+def make_sub_grid_2d_7x7():
+    return fixtures.make_sub_grid_2d_7x7()
 
 
-@pytest.fixture(name="grid_irregular_7x7_list")
-def make_grid_irregular_7x7_list():
-    return fixtures.make_grid_irregular_7x7_list()
+@pytest.fixture(name="grid_2d_iterate_7x7")
+def make_grid_2d_iterate_7x7():
+    return fixtures.make_grid_2d_iterate_7x7()
 
 
-@pytest.fixture(name="blurring_grid_7x7")
-def make_blurring_grid_7x7():
-    return fixtures.make_blurring_grid_7x7()
+@pytest.fixture(name="grid_2d_irregular_7x7")
+def make_grid_2d_irregular_7x7():
+    return fixtures.make_grid_2d_irregular_7x7()
+
+
+@pytest.fixture(name="grid_2d_irregular_7x7_list")
+def make_grid_2d_irregular_7x7_list():
+    return fixtures.make_grid_2d_irregular_7x7_list()
+
+
+@pytest.fixture(name="blurring_grid_2d_7x7")
+def make_blurring_grid_2d_7x7():
+    return fixtures.make_blurring_grid_2d_7x7()
 
 
 @pytest.fixture(name="image_7x7")

@@ -7,19 +7,19 @@ class TestSettingsPixelization:
 
         settings = aa.SettingsPixelization(is_stochastic=False)
         settings = settings.settings_with_is_stochastic_true()
-        assert settings.is_stochastic == True
+        assert settings.is_stochastic is True
 
         settings = aa.SettingsPixelization(is_stochastic=True)
         settings = settings.settings_with_is_stochastic_true()
-        assert settings.is_stochastic == True
+        assert settings.is_stochastic is True
 
 
 class TestRectangular:
-    def test__pixelization_grid_returns_none_as_not_used(self, sub_grid_7x7):
+    def test__pixelization_grid_returns_none_as_not_used(self, sub_grid_2d_7x7):
 
         pixelization = aa.pix.Rectangular(shape=(3, 3))
 
-        assert pixelization.sparse_grid_from_grid(grid=sub_grid_7x7) == None
+        assert pixelization.sparse_grid_from_grid(grid=sub_grid_2d_7x7) == None
 
 
 class TestVoronoiMagnification:
@@ -30,12 +30,12 @@ class TestVoronoiMagnification:
         assert pixelization.shape == (3, 3)
 
     def test__pixelization_grid_returns_same_as_computed_from_grids_module(
-        self, sub_grid_7x7
+        self, sub_grid_2d_7x7
     ):
 
         pixelization = aa.pix.VoronoiMagnification(shape=(3, 3))
 
-        sparse_grid = pixelization.sparse_grid_from_grid(grid=sub_grid_7x7)
+        sparse_grid = pixelization.sparse_grid_from_grid(grid=sub_grid_2d_7x7)
 
         pixelization_grid = aa.Grid2DVoronoi(
             grid=sparse_grid,
@@ -115,7 +115,7 @@ class TestVoronoiBrightness:
         assert (weight_map == np.array([3.0, 3.5, 4.0])).all()
 
     def test__pixelization_grid_returns_same_as_computed_from_grids_module(
-        self, sub_grid_7x7
+        self, sub_grid_2d_7x7
     ):
 
         pixelization = aa.pix.VoronoiBrightnessImage(
@@ -128,7 +128,7 @@ class TestVoronoiBrightness:
 
         sparse_grid = aa.Grid2DSparse.from_total_pixels_grid_and_weight_map(
             total_pixels=pixelization.pixels,
-            grid=sub_grid_7x7,
+            grid=sub_grid_2d_7x7,
             weight_map=weight_map,
             seed=1,
         )
@@ -146,7 +146,7 @@ class TestVoronoiBrightness:
 
 
 class TestRegression:
-    def test__grid_is_relocated_via_border(self, sub_grid_7x7):
+    def test__grid_is_relocated_via_border(self, sub_grid_2d_7x7):
         pixelization = aa.pix.VoronoiMagnification(shape=(3, 3))
 
         mask = aa.Mask2D.circular(

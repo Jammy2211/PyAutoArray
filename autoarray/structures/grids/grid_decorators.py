@@ -70,8 +70,17 @@ def grid_1d_to_structure(func):
             The function values evaluated on the grid with the same structure as the input grid_like object.
         """
 
-        centre = obj.centre if hasattr(obj, "centre") else (0.0, 0.0)
-        angle = obj.angle + 90.0 if hasattr(obj, "angle") else 0.0
+        centre = (0.0, 0.0)
+
+        if hasattr(obj, "centre"):
+            if obj.centre is not None:
+                centre = obj.centre
+
+        angle = 0.0
+
+        if hasattr(obj, "angle"):
+            if obj.angle is not None:
+                angle = obj.angle + 90.0
 
         if (
             isinstance(grid, grid_2d.Grid2D)

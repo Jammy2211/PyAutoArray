@@ -54,25 +54,25 @@ class TestAbstractPlotter:
 
         plotter.mat_plot_2d.figure.open()
 
-        assert plt.fignum_exists(num=1) == True
+        assert plt.fignum_exists(num=1) is True
 
         plotter.mat_plot_2d.figure.close()
 
-        assert plt.fignum_exists(num=1) == False
+        assert plt.fignum_exists(num=1) is False
 
         plotter = abstract_plotters.AbstractPlotter(
             mat_plot_2d=aplt.MatPlot2D(figure=figure)
         )
 
-        assert plt.fignum_exists(num=1) == False
+        assert plt.fignum_exists(num=1) is False
 
         plotter.open_subplot_figure(number_subplots=4)
 
-        assert plt.fignum_exists(num=1) == True
+        assert plt.fignum_exists(num=1) is True
 
         plotter.mat_plot_2d.figure.close()
 
-        assert plt.fignum_exists(num=1) == False
+        assert plt.fignum_exists(num=1) is False
 
     def test__uses_figure_or_subplot_configs_correctly(self):
 

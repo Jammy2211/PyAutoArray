@@ -962,7 +962,7 @@ class TestGrid2DSparse:
         ).all()
 
     def test__unmasked_2d__from_grid_and_unmasked_shape__sets_up_with_correct_shape_and_pixel_scales(
-        self, mask_7x7
+        self, mask_2d_7x7
     ):
 
         mask = aa.Mask2D.manual(

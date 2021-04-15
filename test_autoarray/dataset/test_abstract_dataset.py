@@ -107,10 +107,10 @@ class TestAbstractDatasetApplyMask:
         self,
         image_7x7,
         noise_map_7x7,
-        sub_mask_7x7,
-        grid_7x7,
-        sub_grid_7x7,
-        grid_iterate_7x7,
+        sub_mask_2d_7x7,
+        grid_2d_7x7,
+        sub_grid_2d_7x7,
+        grid_2d_iterate_7x7,
     ):
 
         masked_imaging_7x7 = abstract_dataset.AbstractDataset(
@@ -122,11 +122,11 @@ class TestAbstractDatasetApplyMask:
         assert isinstance(masked_imaging_7x7.grid, aa.Grid1D)
 
         masked_image_7x7 = aa.Array2D.manual_mask(
-            array=image_7x7.native, mask=sub_mask_7x7.mask_sub_1
+            array=image_7x7.native, mask=sub_mask_2d_7x7.mask_sub_1
         )
 
         masked_noise_map_7x7 = aa.Array2D.manual_mask(
-            array=noise_map_7x7.native, mask=sub_mask_7x7.mask_sub_1
+            array=noise_map_7x7.native, mask=sub_mask_2d_7x7.mask_sub_1
         )
 
         masked_imaging_7x7 = abstract_dataset.AbstractDataset(
@@ -136,8 +136,8 @@ class TestAbstractDatasetApplyMask:
         )
 
         assert isinstance(masked_imaging_7x7.grid, aa.Grid2D)
-        assert (masked_imaging_7x7.grid.binned == grid_7x7).all()
-        assert (masked_imaging_7x7.grid.slim == sub_grid_7x7).all()
+        assert (masked_imaging_7x7.grid.binned == grid_2d_7x7).all()
+        assert (masked_imaging_7x7.grid.slim == sub_grid_2d_7x7).all()
 
         masked_imaging_7x7 = abstract_dataset.AbstractDataset(
             data=masked_image_7x7,
@@ -148,7 +148,7 @@ class TestAbstractDatasetApplyMask:
         )
 
         assert isinstance(masked_imaging_7x7.grid, aa.Grid2DIterate)
-        assert (masked_imaging_7x7.grid.binned == grid_iterate_7x7).all()
+        assert (masked_imaging_7x7.grid.binned == grid_2d_iterate_7x7).all()
 
         masked_imaging_7x7 = abstract_dataset.AbstractDataset(
             data=masked_image_7x7,
@@ -159,7 +159,7 @@ class TestAbstractDatasetApplyMask:
         )
 
         grid = aa.Grid2DInterpolate.from_mask(
-            mask=sub_mask_7x7, pixel_scales_interp=1.0
+            mask=sub_mask_2d_7x7, pixel_scales_interp=1.0
         )
 
         assert isinstance(masked_imaging_7x7.grid, aa.Grid2DInterpolate)
@@ -169,7 +169,7 @@ class TestAbstractDatasetApplyMask:
         assert (masked_imaging_7x7.grid.wts == grid.wts).all()
 
     def test__grid_inversion(
-        self, image_7x7, noise_map_7x7, sub_mask_7x7, grid_7x7, sub_grid_7x7
+        self, image_7x7, noise_map_7x7, sub_mask_2d_7x7, grid_2d_7x7, sub_grid_2d_7x7
     ):
 
         masked_imaging_7x7 = abstract_dataset.AbstractDataset(
@@ -181,11 +181,11 @@ class TestAbstractDatasetApplyMask:
         assert isinstance(masked_imaging_7x7.grid, aa.Grid1D)
 
         masked_image_7x7 = aa.Array2D.manual_mask(
-            array=image_7x7.native, mask=sub_mask_7x7.mask_sub_1
+            array=image_7x7.native, mask=sub_mask_2d_7x7.mask_sub_1
         )
 
         masked_noise_map_7x7 = aa.Array2D.manual_mask(
-            array=noise_map_7x7.native, mask=sub_mask_7x7.mask_sub_1
+            array=noise_map_7x7.native, mask=sub_mask_2d_7x7.mask_sub_1
         )
 
         masked_imaging_7x7 = abstract_dataset.AbstractDataset(
@@ -197,8 +197,8 @@ class TestAbstractDatasetApplyMask:
         )
 
         assert masked_imaging_7x7.grid_inversion.sub_size == 2
-        assert (masked_imaging_7x7.grid_inversion.binned == grid_7x7).all()
-        assert (masked_imaging_7x7.grid_inversion.slim == sub_grid_7x7).all()
+        assert (masked_imaging_7x7.grid_inversion.binned == grid_2d_7x7).all()
+        assert (masked_imaging_7x7.grid_inversion.slim == sub_grid_2d_7x7).all()
 
         masked_imaging_7x7 = abstract_dataset.AbstractDataset(
             data=masked_image_7x7,
@@ -220,7 +220,7 @@ class TestAbstractDatasetApplyMask:
         )
 
         grid = aa.Grid2DInterpolate.from_mask(
-            mask=sub_mask_7x7, pixel_scales_interp=1.0
+            mask=sub_mask_2d_7x7, pixel_scales_interp=1.0
         )
 
         assert isinstance(masked_imaging_7x7.grid_inversion, aa.Grid2DInterpolate)

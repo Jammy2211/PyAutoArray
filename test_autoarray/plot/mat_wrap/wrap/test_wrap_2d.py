@@ -323,7 +323,7 @@ class TestVoronoiDrawer:
 
 
 class TestDerivedClasses:
-    def test__all_class_load_and_inherit_correctly(self, grid_irregular_7x7_list):
+    def test__all_class_load_and_inherit_correctly(self, grid_2d_irregular_7x7_list):
 
         origin_scatter = aplt.OriginScatter()
         origin_scatter.scatter_grid(
@@ -347,12 +347,12 @@ class TestDerivedClasses:
         assert border_scatter.config_dict["s"] == 13
 
         positions_scatter = aplt.PositionsScatter()
-        positions_scatter.scatter_grid(grid=grid_irregular_7x7_list)
+        positions_scatter.scatter_grid(grid=grid_2d_irregular_7x7_list)
 
         assert positions_scatter.config_dict["s"] == 15
 
         index_scatter = aplt.IndexScatter()
-        index_scatter.scatter_grid_list(grid_list=grid_irregular_7x7_list)
+        index_scatter.scatter_grid_list(grid_list=grid_2d_irregular_7x7_list)
 
         assert index_scatter.config_dict["s"] == 20
 

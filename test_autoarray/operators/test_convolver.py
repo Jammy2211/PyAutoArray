@@ -5,8 +5,8 @@ import autoarray as aa
 from autoarray import exc
 
 
-@pytest.fixture(name="simple_mask_7x7")
-def make_simple_mask_7x7():
+@pytest.fixture(name="simple_mask_2d_7x7")
+def make_simple_mask_2d_7x7():
 
     mask = [
         [True, True, True, True, True, True, True],
@@ -148,10 +148,10 @@ def test__frame_extraction__frame_and_kernel_frame_at_coords(simple_mask_5x5):
     ).all()
 
 
-def test__frame_extraction__more_complicated_frames(simple_mask_7x7):
+def test__frame_extraction__more_complicated_frames(simple_mask_2d_7x7):
 
     convolver = aa.Convolver(
-        mask=simple_mask_7x7,
+        mask=simple_mask_2d_7x7,
         kernel=aa.Kernel2D.manual_native(
             [
                 [1.0, 2.0, 3.0, 4.0, 5.0],
@@ -166,7 +166,7 @@ def test__frame_extraction__more_complicated_frames(simple_mask_7x7):
 
     frame, kernel_frame = convolver.frame_at_coordinates_jit(
         coordinates=(2, 2),
-        mask=simple_mask_7x7,
+        mask=simple_mask_2d_7x7,
         mask_index_array=convolver.mask_index_array,
         kernel_2d=convolver.kernel.native,
     )
@@ -206,7 +206,7 @@ def test__frame_extraction__more_complicated_frames(simple_mask_7x7):
 
     frame, kernel_frame = convolver.frame_at_coordinates_jit(
         coordinates=(3, 2),
-        mask=simple_mask_7x7,
+        mask=simple_mask_2d_7x7,
         mask_index_array=convolver.mask_index_array,
         kernel_2d=convolver.kernel.native,
     )
@@ -246,7 +246,7 @@ def test__frame_extraction__more_complicated_frames(simple_mask_7x7):
 
     frame, kernel_frame = convolver.frame_at_coordinates_jit(
         coordinates=(3, 3),
-        mask=simple_mask_7x7,
+        mask=simple_mask_2d_7x7,
         mask_index_array=convolver.mask_index_array,
         kernel_2d=convolver.kernel.native,
     )
@@ -285,7 +285,7 @@ def test__frame_extraction__more_complicated_frames(simple_mask_7x7):
     ).all()
 
 
-def test__image_frame_indexes__for_different_masks(cross_mask, simple_mask_7x7):
+def test__image_frame_indexes__for_different_masks(cross_mask, simple_mask_2d_7x7):
 
     convolver = aa.Convolver(
         mask=cross_mask,
@@ -317,7 +317,7 @@ def test__image_frame_indexes__for_different_masks(cross_mask, simple_mask_7x7):
     ).all()
 
     convolver = aa.Convolver(
-        mask=simple_mask_7x7,
+        mask=simple_mask_2d_7x7,
         kernel=aa.Kernel2D.ones(shape_native=(3, 5), pixel_scales=1.0),
     )
 
@@ -359,7 +359,7 @@ def test__image_frame_indexes__for_different_masks(cross_mask, simple_mask_7x7):
     ).all()
 
     convolver = aa.Convolver(
-        mask=simple_mask_7x7,
+        mask=simple_mask_2d_7x7,
         kernel=aa.Kernel2D.ones(shape_native=(5, 3), pixel_scales=1.0),
     )
 
@@ -401,7 +401,7 @@ def test__image_frame_indexes__for_different_masks(cross_mask, simple_mask_7x7):
     ).all()
 
     convolver = aa.Convolver(
-        mask=simple_mask_7x7,
+        mask=simple_mask_2d_7x7,
         kernel=aa.Kernel2D.ones(shape_native=(5, 5), pixel_scales=1.0),
     )
 
@@ -695,7 +695,9 @@ def test__image_frame_indexes__for_different_masks(cross_mask, simple_mask_7x7):
     ).all()
 
 
-def test_image_frame_kernels__different_shape_masks(simple_mask_5x5, simple_mask_7x7):
+def test_image_frame_kernels__different_shape_masks(
+    simple_mask_5x5, simple_mask_2d_7x7
+):
 
     convolver = aa.Convolver(
         mask=simple_mask_5x5,
@@ -712,7 +714,7 @@ def test_image_frame_kernels__different_shape_masks(simple_mask_5x5, simple_mask
     ).all()
 
     convolver = aa.Convolver(
-        mask=simple_mask_7x7,
+        mask=simple_mask_2d_7x7,
         kernel=aa.Kernel2D.manual_native(
             [
                 [1.0, 2.0, 3.0, 4.0, 5.0],
@@ -773,7 +775,7 @@ def test_image_frame_kernels__different_shape_masks(simple_mask_5x5, simple_mask
     ).all()
 
     convolver = aa.Convolver(
-        mask=simple_mask_7x7,
+        mask=simple_mask_2d_7x7,
         kernel=aa.Kernel2D.manual_native(
             [
                 [1.0, 2.0, 3.0],
@@ -890,11 +892,11 @@ def test__blurring_frame_kernels__blurring_region_3x3_kernel(cross_mask):
 
 
 def test__frame_lengths__frames_are_from_examples_above__lengths_are_right(
-    simple_mask_7x7
+    simple_mask_2d_7x7
 ):
 
     convolver = aa.Convolver(
-        mask=simple_mask_7x7,
+        mask=simple_mask_2d_7x7,
         kernel=aa.Kernel2D.ones(shape_native=(3, 5), pixel_scales=1.0),
     )
 

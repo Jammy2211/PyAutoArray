@@ -658,13 +658,13 @@ class TestRectangularMapper:
         assert (recon_pix.native == recon_pix_util).all()
         assert recon_pix.shape_native == (3, 4)
 
-    def test__pixel_signals__compare_to_mapper_util(self, grid_7x7, image_7x7):
+    def test__pixel_signals__compare_to_mapper_util(self, grid_2d_7x7, image_7x7):
         pixelization_grid = aa.Grid2DRectangular.overlay_grid(
-            shape_native=(3, 3), grid=grid_7x7
+            shape_native=(3, 3), grid=grid_2d_7x7
         )
 
         mapper = aa.Mapper(
-            source_grid_slim=grid_7x7,
+            source_grid_slim=grid_2d_7x7,
             source_pixelization_grid=pixelization_grid,
             hyper_data=image_7x7,
         )
@@ -675,19 +675,19 @@ class TestRectangularMapper:
             pixels=9,
             signal_scale=2.0,
             pixelization_index_for_sub_slim_index=mapper.pixelization_index_for_sub_slim_index,
-            slim_index_for_sub_slim_index=grid_7x7.mask._slim_index_for_sub_slim_index,
+            slim_index_for_sub_slim_index=grid_2d_7x7.mask._slim_index_for_sub_slim_index,
             hyper_image=image_7x7,
         )
 
         assert (pixel_signals == pixel_signals_util).all()
 
-    def test__image_from_source__different_types_of_lists_input(self, sub_grid_7x7):
+    def test__image_from_source__different_types_of_lists_input(self, sub_grid_2d_7x7):
 
         rectangular_pixelization_grid = aa.Grid2DRectangular.overlay_grid(
-            grid=sub_grid_7x7, shape_native=(3, 3)
+            grid=sub_grid_2d_7x7, shape_native=(3, 3)
         )
         rectangular_mapper = aa.Mapper(
-            source_grid_slim=sub_grid_7x7,
+            source_grid_slim=sub_grid_2d_7x7,
             source_pixelization_grid=rectangular_pixelization_grid,
         )
 
@@ -774,7 +774,9 @@ class TestVoronoiMapper:
         assert sub_to_pix[4] == 0
         assert sub_to_pix[5] == 5
 
-    def test__sub_to_pix_of_mapper_matches_nearest_neighbor_calculation(self, grid_7x7):
+    def test__sub_to_pix_of_mapper_matches_nearest_neighbor_calculation(
+        self, grid_2d_7x7
+    ):
         pixelization_grid = aa.Grid2D.manual_slim(
             [[0.1, 0.1], [1.1, 0.1], [2.1, 0.1], [0.1, 1.1], [1.1, 1.1], [2.1, 1.1]],
             shape_native=(3, 2),
@@ -782,7 +784,7 @@ class TestVoronoiMapper:
         )
 
         sub_to_pix_nearest_neighbour = grid_to_pixel_pixels_via_nearest_neighbour(
-            grid_7x7, pixelization_grid
+            grid_2d_7x7, pixelization_grid
         )
 
         nearest_pixelization_index_for_slim_index = np.array(
@@ -795,14 +797,14 @@ class TestVoronoiMapper:
         )
 
         mapper = aa.Mapper(
-            source_grid_slim=grid_7x7, source_pixelization_grid=pixelization_grid
+            source_grid_slim=grid_2d_7x7, source_pixelization_grid=pixelization_grid
         )
 
         assert (
             mapper.pixelization_index_for_sub_slim_index == sub_to_pix_nearest_neighbour
         ).all()
 
-    def test__pixel_scales___for_voronoi_mapper(self, grid_7x7, image_7x7):
+    def test__pixel_scales___for_voronoi_mapper(self, grid_2d_7x7, image_7x7):
         pixelization_grid = aa.Grid2D.manual_slim(
             [[0.1, 0.1], [1.1, 0.1], [2.1, 0.1], [0.1, 1.1], [1.1, 1.1], [2.1, 1.1]],
             shape_native=(3, 2),
@@ -819,7 +821,7 @@ class TestVoronoiMapper:
         )
 
         mapper = aa.Mapper(
-            source_grid_slim=grid_7x7,
+            source_grid_slim=grid_2d_7x7,
             source_pixelization_grid=pixelization_grid,
             hyper_data=image_7x7,
         )
@@ -830,7 +832,7 @@ class TestVoronoiMapper:
             pixels=6,
             signal_scale=2.0,
             pixelization_index_for_sub_slim_index=mapper.pixelization_index_for_sub_slim_index,
-            slim_index_for_sub_slim_index=grid_7x7.mask._slim_index_for_sub_slim_index,
+            slim_index_for_sub_slim_index=grid_2d_7x7.mask._slim_index_for_sub_slim_index,
             hyper_image=image_7x7,
         )
 

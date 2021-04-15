@@ -2879,7 +2879,7 @@ class TestSubMask2DForSubMask1D:
 
 
 class TestRescaledMaskFromMask:
-    def test__mask_7x7_central_pixel__rescale_factor_is_1__returns_same_mask(self):
+    def test__mask_2d_7x7_central_pixel__rescale_factor_is_1__returns_same_mask(self):
 
         mask = np.array(
             [

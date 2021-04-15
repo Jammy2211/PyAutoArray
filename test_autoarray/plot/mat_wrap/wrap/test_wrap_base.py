@@ -16,14 +16,14 @@ class TestUnits:
 
         units = aplt.Units()
 
-        assert units.use_scaled == True
-        assert units.in_kpc == False
+        assert units.use_scaled is True
+        assert units.in_kpc is False
         assert units.conversion_factor == None
 
         units = aplt.Units(in_kpc=True, conversion_factor=2.0)
 
-        assert units.use_scaled == True
-        assert units.in_kpc == True
+        assert units.use_scaled is True
+        assert units.in_kpc is True
         assert units.conversion_factor == 2.0
 
 
@@ -76,11 +76,11 @@ class TestFigure:
 
         figure.open()
 
-        assert plt.fignum_exists(num=1) == True
+        assert plt.fignum_exists(num=1) is True
 
         figure.close()
 
-        assert plt.fignum_exists(num=1) == False
+        assert plt.fignum_exists(num=1) is False
 
 
 class TestAxis:
@@ -88,21 +88,21 @@ class TestAxis:
 
         axis = aplt.Axis()
 
-        assert axis.config_dict["emit"] == True
+        assert axis.config_dict["emit"] is True
 
         axis = aplt.Axis(emit=False)
 
-        assert axis.config_dict["emit"] == False
+        assert axis.config_dict["emit"] is False
 
         axis = aplt.Axis()
         axis.is_for_subplot = True
 
-        assert axis.config_dict["emit"] == False
+        assert axis.config_dict["emit"] is False
 
         axis = aplt.Axis(emit=True)
         axis.is_for_subplot = True
 
-        assert axis.config_dict["emit"] == True
+        assert axis.config_dict["emit"] is True
 
     def test__sets_axis_correct_for_different_settings(self):
 
@@ -488,24 +488,24 @@ class TestLegend:
 
         legend = aplt.Legend()
 
-        assert legend.include == True
+        assert legend.include is True
         assert legend.config_dict["fontsize"] == 12
 
         legend = aplt.Legend(include=False, fontsize=11)
 
-        assert legend.include == False
+        assert legend.include is False
         assert legend.config_dict["fontsize"] == 11
 
         legend = aplt.Legend()
         legend.is_for_subplot = True
 
-        assert legend.include == True
+        assert legend.include is True
         assert legend.config_dict["fontsize"] == 13
 
         legend = aplt.Legend(include=False, fontsize=14)
         legend.is_for_subplot = True
 
-        assert legend.include == False
+        assert legend.include is False
         assert legend.config_dict["fontsize"] == 14
 
     def test__set_legend_works_for_plot(self):

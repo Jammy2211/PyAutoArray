@@ -19,7 +19,7 @@ def make_plot_path_setup():
 def test__individual_attributes_are_output_for_all_mappers(
     rectangular_inversion_7x7_3x3,
     voronoi_inversion_9_3x3,
-    grid_irregular_7x7_list,
+    grid_2d_irregular_7x7_list,
     plot_path,
     plot_patch,
 ):
