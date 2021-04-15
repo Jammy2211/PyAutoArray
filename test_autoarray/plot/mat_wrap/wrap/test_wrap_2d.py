@@ -160,7 +160,7 @@ class TestGridPlot:
         grid_plot = aplt.GridPlot()
 
         assert grid_plot.config_dict["linewidth"] == 3
-        assert grid_plot.config_dict["c"] == ["k", "w"]
+        assert grid_plot.config_dict["c"] == "k"
 
         grid_plot = aplt.GridPlot(c=["k", "b"])
 
