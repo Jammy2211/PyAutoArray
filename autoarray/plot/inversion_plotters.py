@@ -1,9 +1,11 @@
+from autoconf import conf
 from autoarray.plot.mat_wrap import visuals as vis
 from autoarray.plot.mat_wrap import include as inc
 from autoarray.plot.mat_wrap import mat_plot as mp
 from autoarray.plot import structure_plotters
 from autoarray.inversion import inversions as inv
 
+import numpy as np
 
 class InversionPlotter(structure_plotters.MapperPlotter):
     def __init__(
@@ -64,6 +66,16 @@ class InversionPlotter(structure_plotters.MapperPlotter):
 
         if reconstruction:
 
+            vmax_custom = False
+
+            if "vmax" in self.mat_plot_2d.cmap.kwargs:
+                if self.mat_plot_2d.cmap.kwargs["vmax"] is None:
+
+                    reconstruction_vmax_factor = conf.instance["visualize"]["general"]["inversion"]["reconstruction_vmax_factor"]
+
+                    self.mat_plot_2d.cmap.kwargs["vmax"] = reconstruction_vmax_factor * np.max(self.inversion.reconstruction)
+                    vmax_custom = True
+
             self.mat_plot_2d.plot_mapper(
                 mapper=self.inversion.mapper,
                 visuals_2d=self.visuals_source_with_include_2d,
@@ -74,6 +86,9 @@ class InversionPlotter(structure_plotters.MapperPlotter):
                     self.inversion.reconstruction
                 ),
             )
+
+            if vmax_custom:
+                self.mat_plot_2d.cmap.kwargs["vmax"] = None
 
         if errors:
 
