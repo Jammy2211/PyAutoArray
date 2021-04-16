@@ -7,6 +7,7 @@ from autoarray.inversion import inversions as inv
 
 import numpy as np
 
+
 class InversionPlotter(structure_plotters.MapperPlotter):
     def __init__(
         self,
@@ -71,9 +72,14 @@ class InversionPlotter(structure_plotters.MapperPlotter):
             if "vmax" in self.mat_plot_2d.cmap.kwargs:
                 if self.mat_plot_2d.cmap.kwargs["vmax"] is None:
 
-                    reconstruction_vmax_factor = conf.instance["visualize"]["general"]["inversion"]["reconstruction_vmax_factor"]
+                    reconstruction_vmax_factor = conf.instance["visualize"]["general"][
+                        "inversion"
+                    ]["reconstruction_vmax_factor"]
 
-                    self.mat_plot_2d.cmap.kwargs["vmax"] = reconstruction_vmax_factor * np.max(self.inversion.reconstruction)
+                    self.mat_plot_2d.cmap.kwargs["vmax"] = (
+                        reconstruction_vmax_factor
+                        * np.max(self.inversion.reconstruction)
+                    )
                     vmax_custom = True
 
             self.mat_plot_2d.plot_mapper(
