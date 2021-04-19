@@ -155,13 +155,7 @@ class Layout2D:
             pixel_scales=array.pixel_scales,
         )
 
-    def parallel_overscan_binned_array_1d_from(self, array):
-        parallel_overscan_array = self.extract_parallel_overscan_array_2d_from(
-            array=array
-        )
-        return parallel_overscan_array.binned_across_columns
-
-    def serial_overscan_array_from(self, array):
+    def extract_serial_overscan_array_from(self, array):
         """
         Extract an arrays of all of the serial trails in the serial overscan region, that are to the side of a
         charge-injection scans from a charge injection frame_ci.
@@ -208,13 +202,27 @@ class Layout2D:
         []     [=====================]
                <---------S----------
         """
-        return array_2d.Array2D.extracted_array_from_array_and_extraction_region(
-            array=array, extraction_region=self.serial_overscan
+
+        layout = Layout2D.after_extraction(
+            layout=self, extraction_region=self.serial_overscan
         )
 
+        return array_2d.Array2D.manual(
+            array=array.native[self.serial_overscan.slice],
+            exposure_info=array.exposure_info,
+            layout=layout,
+            pixel_scales=array.pixel_scales,
+        )
+
+    def parallel_overscan_binned_array_1d_from(self, array):
+        parallel_overscan_array = self.extract_parallel_overscan_array_2d_from(
+            array=array
+        )
+        return parallel_overscan_array.binned_across_columns
+
     def serial_overscan_binned_array_1d_from(self, array):
-        serial_overscan_array = self.serial_overscan_array_from(array=array)
-        return serial_overscan_array.binned_across_parallel
+        serial_overscan_array = self.extract_serial_overscan_array_from(array=array)
+        return serial_overscan_array.binned_across_rows
 
     @property
     def serial_trails_columns(self):
