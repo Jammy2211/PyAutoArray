@@ -151,7 +151,7 @@ class Array2DACS(array_2d.Array2D):
 
         layout_2d = lo.Layout2D.rotated_from_roe_corner(
             roe_corner=(1, 0),
-            shape_native=array_electrons.shape_2d,
+            shape_native=array_electrons.shape,
             parallel_overscan=parallel_overscan,
             serial_prescan=serial_prescan,
         )

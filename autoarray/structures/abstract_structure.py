@@ -9,6 +9,9 @@ class AbstractStructure(np.ndarray):
         if hasattr(obj, "mask"):
             self.mask = obj.mask
 
+        if hasattr(obj, "exposure_info"):
+            self.exposure_info = obj.exposure_info
+
     def __reduce__(self):
 
         # Get the parent's __reduce__ tuple
