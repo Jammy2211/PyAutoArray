@@ -96,7 +96,7 @@ class Layout2D:
             array=array, roe_corner=self.original_roe_corner
         )
 
-    def extract_parallel_overscan_array_from(self, array):
+    def extract_parallel_overscan_array_2d_from(self, array):
         """
         Extract an arrays of all of the parallel trails in the parallel overscan region, that are to the side of a
         charge-injection scans from a charge injection frame_ci.
@@ -156,8 +156,10 @@ class Layout2D:
         )
 
     def parallel_overscan_binned_array_1d_from(self, array):
-        parallel_overscan_array = self.extract_parallel_overscan_array_from(array=array)
-        return parallel_overscan_array.binned_across_serial
+        parallel_overscan_array = self.extract_parallel_overscan_array_2d_from(
+            array=array
+        )
+        return parallel_overscan_array.binned_across_columns
 
     def serial_overscan_array_from(self, array):
         """

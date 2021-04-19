@@ -155,14 +155,14 @@ class AbstractArray2D(abstract_structure.AbstractStructure2D):
         )
 
     @property
-    def binned_across_columns(self):
+    def binned_across_rows(self):
         binned_array = np.mean(np.ma.masked_array(self.native, self.mask), axis=0)
         return array_1d.Array1D.manual_native(
             array=binned_array, pixel_scales=self.pixel_scale
         )
 
     @property
-    def binned_across_rows(self):
+    def binned_across_columns(self):
         binned_array = np.mean(np.ma.masked_array(self.native, self.mask), axis=1)
         return array_1d.Array1D.manual_native(
             array=binned_array, pixel_scales=self.pixel_scale
