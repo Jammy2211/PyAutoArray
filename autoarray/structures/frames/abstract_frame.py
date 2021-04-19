@@ -106,11 +106,15 @@ class AbstractFrame2D(abstract_array_2d.AbstractArray2D):
         return self.parallel_overscan_frame.binned_across_serial
 
     def parallel_trail_from_y(self, y, dy):
-        """Grid2DIrregular of a parallel trail of size dy from coordinate y"""
+        """
+        Grid2DIrregular of a parallel trail of size dy from coordinate y.
+        """
         return (int(y - dy), int(y + 1))
 
     def serial_trail_from_x(self, x, dx):
-        """Grid2DIrregular of a serial trail of size dx from coordinate x"""
+        """
+        Grid2DIrregular of a serial trail of size dx from coordinate x.
+        """
         return (int(x), int(x + 1 + dx))
 
     def parallel_front_edge_of_region(self, region, rows):
@@ -122,13 +126,17 @@ class AbstractFrame2D(abstract_array_2d.AbstractArray2D):
         return reg.Region2D((y_min, y_max, region.x0, region.x1))
 
     def parallel_trails_of_region(self, region, rows=(0, 1)):
+
         y_coord = region.y1
         y_min = y_coord + rows[0]
         y_max = y_coord + rows[1]
+
         return reg.Region2D((y_min, y_max, region.x0, region.x1))
 
     def parallel_side_nearest_read_out_region(self, region, columns=(0, 1)):
+
         x_min, x_max = self.x_limits(region, columns)
+
         return reg.Region2D(region=(0, self.shape_native[0], x_min, x_max))
 
     @property
