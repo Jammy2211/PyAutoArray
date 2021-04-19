@@ -1,7 +1,11 @@
 from copy import deepcopy
 import numpy as np
 
-from autoarray.structures import region as reg
+from autoarray.layout import region as reg
+from copy import deepcopy
+import numpy as np
+
+from autoarray.layout import region as reg
 
 
 def rotate_array_from_roe_corner(
@@ -11,21 +15,21 @@ def rotate_array_from_roe_corner(
     Rotates an input array such that its read-out electronics corner (``roe_corner``) are positioned at the
     'bottom-left' (e.g. [1,0]) of the ndarray data structure.
 
-    This is used to homogenize frames to a common observation orientation, especially for the project **PyAutoCTI**
+    This is used to homogenize arrays to a common orientation, especially for the project **PyAutoCTI**
     which performs clocking for Charge Transfer Inefficiency.
 
     Parameters
     ----------
     array : np.ndarray
-        The frame which is rotated.
+        The array which is rotated.
     roe_corner : (int, int)
-        The corner of the frame at which the read-out electronics are located (e.g. (1, 1) is the bottom-right corner).
+        The corner of the array at which the read-out electronics are located (e.g. (1, 1) is the bottom-right corner).
         The rotation is based on this such that the the read-out electronics are in the bottom-left (e.g. (1, 0)).
 
     Returns
     -------
     ndarray
-        The rotated frame where the read out electronics are at the bottom left corner, (1, 0).
+        The rotated array where the read out electronics are at the bottom left corner, (1, 0).
     """
     if roe_corner == (1, 0):
         return array.copy()
@@ -50,9 +54,9 @@ def rotate_region_from_roe_corner(
     region : (int, int, int, int)
         The coordinates on the image of the (y0, y1, x0, y1) ``Region2D`` that are rotated.
     shape_native : (int, int)
-        The 2D shape of the ``Frame2D``the regions are located on, required to determine the rotated ``region``.
+        The 2D shape of the `Array2D` the regions are located on, required to determine the rotated `region`.
     roe_corner : (int, int)
-        The corner of the ``Frame2D``at which the read-out electronics are located (e.g. (1, 1) is the bottom-right corner).
+        The corner of the ``Array2D``at which the read-out electronics are located (e.g. (1, 1) is the bottom-right corner).
         The rotation is based on this such that the the read-out electronics are in the bottom-left (e.g. (1, 0)).
 
     Returns
@@ -104,11 +108,11 @@ def rotate_pattern_ci_from_roe_corner(
     Parameters
     ----------
     pattern_ci : ac.CIPaattern
-        The charge-injection pattern of the ``CIFrame`` that is rotated.
+        The charge-injection pattern of the ``Array2D`` that is rotated.
     shape_native : (int, int)
-        The 2D shape of the ``CIFrame`` the regions are located on, required to determine the rotated ``region``.
+        The 2D shape of the ``Array2D`` the regions are located on, required to determine the rotated ``region``.
     roe_corner : (int, int)
-        The corner of the ``Frame2D``at which the read-out electronics are located (e.g. (1, 1) is the bottom-right corner).
+        The corner of the ``Array2D``at which the read-out electronics are located (e.g. (1, 1) is the bottom-right corner).
         The rotation is based on this such that the the read-out electronics are in the bottom-left (e.g. (1, 0)).
 
     Returns
@@ -156,12 +160,12 @@ def region_after_extraction(
 
 def x0x1_after_extraction(x0o: int, x1o: int, x0e: int, x1e: int):
     """
-    When we extract a frame from a frame, we also update the extracted frame's regions by mapping each region
-    from their coordinates on the original frame (which has a shape_native) to the extracted frame (which is a 2D section
-    on this frame).
+    When we extract an array, we also update the extracted array's regions by mapping each region from their
+    coordinates on the original array (which has a shape_native) to the extracted array (which is a 2D section
+    on this array).
 
-    This function compares the 1D coordinates of a regions original coordinates on a frame to the 1D coordinates of the
-    extracted frame, determining where the original region lies on the extracted frame.
+    This function compares the 1D coordinates of a regions original coordinates on a array to the 1D coordinates of the
+    extracted array, determining where the original region lies on the extracted array.
 
     For example, for a 1D array with shape 8 we may have a region whose 1D coordinates span x0o=2 -> x1o=6. From the
     original 1D array we then extract the region x0e=5 -> x1e = 7. This looks as follows:
@@ -175,7 +179,7 @@ def x0x1_after_extraction(x0o: int, x1o: int, x0e: int, x1e: int):
 
      In the above example this function will recognise that the extracted region will contain a small section of the
      original region and for the extracted region give it coordinates (0, 1). This function covers all possible
-     ways the original region and extracted frame could over lap.
+     ways the original region and extracted array could over lap.
 
     If the extraction completely the region a None is returned.
     """

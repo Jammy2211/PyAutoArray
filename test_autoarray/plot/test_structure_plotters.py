@@ -154,7 +154,7 @@ class TestArray2DPlotter:
 
 
 class TestFrame2DPlotter:
-    def test___visuals_in_constructor_use_frame_and_include(self, frame_7x7):
+    def test___visuals_in_constructor_use_frame_and_include(self, array_2d_layout_7x7):
 
         visuals_2d = aplt.Visuals2D(origin=(1.0, 1.0), vector_field=2)
 
@@ -163,25 +163,27 @@ class TestFrame2DPlotter:
         )
 
         frame_plotter = aplt.Frame2DPlotter(
-            frame=frame_7x7, visuals_2d=visuals_2d, include_2d=include
+            frame=array_2d_layout_7x7, visuals_2d=visuals_2d, include_2d=include
         )
 
         assert frame_plotter.visuals_2d.origin == (1.0, 1.0)
         assert frame_plotter.visuals_with_include_2d.origin == (1.0, 1.0)
 
         assert frame_plotter.visuals_2d.mask == None
-        assert (frame_plotter.visuals_with_include_2d.mask == frame_7x7.mask).all()
+        assert (
+            frame_plotter.visuals_with_include_2d.mask == array_2d_layout_7x7.mask
+        ).all()
 
         assert frame_plotter.visuals_2d.border == None
         assert (
             frame_plotter.visuals_with_include_2d.border
-            == frame_7x7.mask.border_grid_sub_1.binned
+            == array_2d_layout_7x7.mask.border_grid_sub_1.binned
         ).all()
 
         assert frame_plotter.visuals_2d.parallel_overscan == None
         assert (
             frame_plotter.visuals_with_include_2d.parallel_overscan
-            == frame_7x7.scans.parallel_overscan
+            == array_2d_layout_7x7.scans.parallel_overscan
         )
 
         include = aplt.Include2D(
@@ -189,7 +191,7 @@ class TestFrame2DPlotter:
         )
 
         frame_plotter = aplt.Frame2DPlotter(
-            frame=frame_7x7, visuals_2d=visuals_2d, include_2d=include
+            frame=array_2d_layout_7x7, visuals_2d=visuals_2d, include_2d=include
         )
 
         assert frame_plotter.visuals_with_include_2d.origin == (1.0, 1.0)
@@ -200,17 +202,17 @@ class TestFrame2DPlotter:
 
     def test__works_with_all_extras_included(
         self,
-        frame_7x7,
+        array_2d_layout_7x7,
         mask_2d_7x7,
         grid_2d_7x7,
         grid_2d_irregular_7x7_list,
-        scans_7x7,
+        layout_2d_7x7,
         plot_path,
         plot_patch,
     ):
 
         frame_plotter = aplt.Frame2DPlotter(
-            frame=frame_7x7,
+            frame=array_2d_layout_7x7,
             mat_plot_2d=aplt.MatPlot2D(
                 output=aplt.Output(path=plot_path, filename="frame1", format="png")
             ),
@@ -221,7 +223,7 @@ class TestFrame2DPlotter:
         assert path.join(plot_path, "frame1.png") in plot_patch.paths
 
         frame_plotter = aplt.Frame2DPlotter(
-            frame=frame_7x7,
+            frame=array_2d_layout_7x7,
             include_2d=aplt.Include2D(
                 origin=True,
                 mask=True,
@@ -246,14 +248,14 @@ class TestFrame2DPlotter:
             grid=grid_2d_7x7,
             positions=grid_2d_irregular_7x7_list,
             lines=grid_2d_irregular_7x7_list,
-            array_overlay=frame_7x7,
-            parallel_overscan=scans_7x7.parallel_overscan,
-            serial_prescan=scans_7x7.serial_prescan,
-            serial_overscan=scans_7x7.serial_overscan,
+            array_overlay=array_2d_layout_7x7,
+            parallel_overscan=layout_2d_7x7.parallel_overscan,
+            serial_prescan=layout_2d_7x7.serial_prescan,
+            serial_overscan=layout_2d_7x7.serial_overscan,
         )
 
         frame_plotter = aplt.Frame2DPlotter(
-            frame=frame_7x7,
+            frame=array_2d_layout_7x7,
             visuals_2d=visuals_2d,
             mat_plot_2d=aplt.MatPlot2D(
                 output=aplt.Output(path=plot_path, filename="frame3", format="png")
@@ -264,12 +266,12 @@ class TestFrame2DPlotter:
 
         assert path.join(plot_path, "frame3.png") in plot_patch.paths
 
-    def test__fits_files_output_correctly(self, frame_7x7, plot_path):
+    def test__fits_files_output_correctly(self, array_2d_layout_7x7, plot_path):
 
         plot_path = path.join(plot_path, "fits")
 
         frame_plotter = aplt.Frame2DPlotter(
-            frame=frame_7x7,
+            frame=array_2d_layout_7x7,
             mat_plot_2d=aplt.MatPlot2D(
                 output=aplt.Output(path=plot_path, filename="frame", format="fits")
             ),
@@ -284,7 +286,7 @@ class TestFrame2DPlotter:
             file_path=path.join(plot_path, "frame.fits"), hdu=0
         )
 
-        assert (frame == frame_7x7.native).all()
+        assert (frame == array_2d_layout_7x7.native).all()
 
 
 class TestGrid2DPlotter:

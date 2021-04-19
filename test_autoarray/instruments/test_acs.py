@@ -87,7 +87,7 @@ class TestFrameACS:
         assert acs_frame.scans.serial_prescan == (0, 2070, 0, 28)
 
         acs_frame = aa.acs.FrameACS.right(
-            array=acs_quadrant,
+            array_electrons=acs_quadrant,
             parallel_size=2068,
             serial_size=2072,
             serial_prescan_size=24,
@@ -101,7 +101,7 @@ class TestFrameACS:
         assert acs_frame.scans.serial_prescan == (0, 2068, 0, 24)
 
         acs_frame = aa.acs.FrameACS.right(
-            array=acs_quadrant,
+            array_electrons=acs_quadrant,
             parallel_size=2070,
             serial_size=2072,
             serial_prescan_size=28,

@@ -62,14 +62,14 @@ def make_array_2d_7x7():
     return fixtures.make_array_2d_7x7()
 
 
-@pytest.fixture(name="scans_7x7")
-def make_scans_7x7():
-    return fixtures.make_scans_7x7()
+@pytest.fixture(name="layout_2d_7x7")
+def make_layout_2d_7x7():
+    return fixtures.make_layout_2d_7x7()
 
 
-@pytest.fixture(name="frame_7x7")
-def make_frame_7x7():
-    return fixtures.make_frame_7x7()
+@pytest.fixture(name="array_2d_layout_7x7")
+def make_array_2d_layout_7x7():
+    return fixtures.make_array_2d_layout_7x7()
 
 
 @pytest.fixture(name="grid_1d_7")

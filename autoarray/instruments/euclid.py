@@ -1,6 +1,6 @@
-from autoarray.structures.frames import abstract_frame
-from autoarray.structures.frames import frames as f
-from autoarray.structures import region as reg
+from autoarray.layout import layout as lo, layout_util
+from autoarray.layout import region as reg
+from autoarray.structures.arrays.two_d import array_2d
 
 
 def roe_corner_from(ccd_id, quadrant_id):
@@ -25,7 +25,7 @@ def roe_corner_from(ccd_id, quadrant_id):
         return (1, 1)
 
 
-class FrameEuclid(f.Frame2D):
+class Array2DEuclid(array_2d.Array2D):
     """
     In the Euclid FPA, the quadrant id ('E', 'F', 'G', 'H') depends on whether the CCD is located
     on the left side (rows 1-3) or right side (rows 4-6) of the FPA:
@@ -82,7 +82,7 @@ class FrameEuclid(f.Frame2D):
         Use an input array of a Euclid quadrant and its corresponding .fits file header to rotate the quadrant to
         the correct orientation for arCTIc clocking.
 
-        See the docstring of the `FrameEuclid` class for a complete description of the Euclid FPA, quadrants and
+        See the docstring of the `Array2DEuclid` class for a complete description of the Euclid FPA, quadrants and
         rotations.
         """
 
@@ -124,14 +124,14 @@ class FrameEuclid(f.Frame2D):
         Use an input array of a Euclid quadrant, its ccd_id and quadrant_id  to rotate the quadrant to
         the correct orientation for arCTIc clocking.
 
-        See the docstring of the `FrameEuclid` class for a complete description of the Euclid FPA, quadrants and
+        See the docstring of the `Array2DEuclid` class for a complete description of the Euclid FPA, quadrants and
         rotations.
         """
 
         row_index = ccd_id[-1]
 
         if (row_index in "123") and (quadrant_id == "E"):
-            return FrameEuclid.bottom_left(
+            return Array2DEuclid.bottom_left(
                 array=array,
                 parallel_size=parallel_size,
                 serial_size=serial_size,
@@ -140,7 +140,7 @@ class FrameEuclid(f.Frame2D):
                 parallel_overscan_size=parallel_overscan_size,
             )
         elif (row_index in "123") and (quadrant_id == "F"):
-            return FrameEuclid.bottom_right(
+            return Array2DEuclid.bottom_right(
                 array=array,
                 parallel_size=parallel_size,
                 serial_size=serial_size,
@@ -149,8 +149,8 @@ class FrameEuclid(f.Frame2D):
                 parallel_overscan_size=parallel_overscan_size,
             )
         elif (row_index in "123") and (quadrant_id == "G"):
-            return FrameEuclid.top_right(
-                array=array,
+            return Array2DEuclid.top_right(
+                array_electrons=array,
                 parallel_size=parallel_size,
                 serial_size=serial_size,
                 serial_prescan_size=serial_prescan_size,
@@ -158,7 +158,7 @@ class FrameEuclid(f.Frame2D):
                 parallel_overscan_size=parallel_overscan_size,
             )
         elif (row_index in "123") and (quadrant_id == "H"):
-            return FrameEuclid.top_left(
+            return Array2DEuclid.top_left(
                 array_electrons=array,
                 parallel_size=parallel_size,
                 serial_size=serial_size,
@@ -167,8 +167,8 @@ class FrameEuclid(f.Frame2D):
                 parallel_overscan_size=parallel_overscan_size,
             )
         elif (row_index in "456") and (quadrant_id == "E"):
-            return FrameEuclid.top_right(
-                array=array,
+            return Array2DEuclid.top_right(
+                array_electrons=array,
                 parallel_size=parallel_size,
                 serial_size=serial_size,
                 serial_prescan_size=serial_prescan_size,
@@ -176,7 +176,7 @@ class FrameEuclid(f.Frame2D):
                 parallel_overscan_size=parallel_overscan_size,
             )
         elif (row_index in "456") and (quadrant_id == "F"):
-            return FrameEuclid.top_left(
+            return Array2DEuclid.top_left(
                 array_electrons=array,
                 parallel_size=parallel_size,
                 serial_size=serial_size,
@@ -185,7 +185,7 @@ class FrameEuclid(f.Frame2D):
                 parallel_overscan_size=parallel_overscan_size,
             )
         elif (row_index in "456") and (quadrant_id == "G"):
-            return FrameEuclid.bottom_left(
+            return Array2DEuclid.bottom_left(
                 array=array,
                 parallel_size=parallel_size,
                 serial_size=serial_size,
@@ -194,7 +194,7 @@ class FrameEuclid(f.Frame2D):
                 parallel_overscan_size=parallel_overscan_size,
             )
         elif (row_index in "456") and (quadrant_id == "H"):
-            return FrameEuclid.bottom_right(
+            return Array2DEuclid.bottom_right(
                 array=array,
                 parallel_size=parallel_size,
                 serial_size=serial_size,
@@ -217,11 +217,11 @@ class FrameEuclid(f.Frame2D):
         Use an input array of a Euclid quadrant corresponding to the top-left of a Euclid CCD and rotate the quadrant
         to the correct orientation for arCTIc clocking.
 
-        See the docstring of the `FrameEuclid` class for a complete description of the Euclid FPA, quadrants and
+        See the docstring of the `Array2DEuclid` class for a complete description of the Euclid FPA, quadrants and
         rotations.
         """
 
-        scans = ScansEuclid.top_left(
+        layout_2d = Layout2DEuclid.top_left(
             parallel_size=parallel_size,
             serial_size=serial_size,
             serial_prescan_size=serial_prescan_size,
@@ -229,14 +229,16 @@ class FrameEuclid(f.Frame2D):
             parallel_overscan_size=parallel_overscan_size,
         )
 
-        return cls.manual(
-            array=array_electrons, pixel_scales=0.1, roe_corner=(0, 0), scans=scans
+        array_electrons = layout_util.rotate_array_from_roe_corner(
+            array=array_electrons, roe_corner=(0, 0)
         )
+
+        return cls.manual(array=array_electrons, pixel_scales=0.1, layout=layout_2d)
 
     @classmethod
     def top_right(
         cls,
-        array,
+        array_electrons,
         parallel_size=2086,
         serial_size=2128,
         parallel_overscan_size=20,
@@ -247,11 +249,11 @@ class FrameEuclid(f.Frame2D):
         Use an input array of a Euclid quadrant corresponding the top-left of a Euclid CCD and rotate the  quadrant to
         the correct orientation for arCTIc clocking.
 
-        See the docstring of the `FrameEuclid` class for a complete description of the Euclid FPA, quadrants and
+        See the docstring of the `Array2DEuclid` class for a complete description of the Euclid FPA, quadrants and
         rotations.
         """
 
-        scans = ScansEuclid.top_right(
+        layout_2d = Layout2DEuclid.top_right(
             parallel_size=parallel_size,
             serial_size=serial_size,
             serial_prescan_size=serial_prescan_size,
@@ -259,7 +261,11 @@ class FrameEuclid(f.Frame2D):
             parallel_overscan_size=parallel_overscan_size,
         )
 
-        return cls.manual(array=array, pixel_scales=0.1, roe_corner=(0, 1), scans=scans)
+        array_electrons = layout_util.rotate_array_from_roe_corner(
+            array=array_electrons, roe_corner=(0, 1)
+        )
+
+        return cls.manual(array=array_electrons, pixel_scales=0.1, layout=layout_2d)
 
     @classmethod
     def bottom_left(
@@ -275,11 +281,11 @@ class FrameEuclid(f.Frame2D):
         Use an input array of a Euclid quadrant corresponding to the bottom-left of a Euclid CCD and rotate the
         quadrant to the correct orientation for arCTIc clocking.
 
-        See the docstring of the `FrameEuclid` class for a complete description of the Euclid FPA, quadrants and
+        See the docstring of the `Array2DEuclid` class for a complete description of the Euclid FPA, quadrants and
         rotations.
         """
 
-        scans = ScansEuclid.bottom_left(
+        layout_2d = Layout2DEuclid.bottom_left(
             parallel_size=parallel_size,
             serial_size=serial_size,
             serial_prescan_size=serial_prescan_size,
@@ -287,7 +293,7 @@ class FrameEuclid(f.Frame2D):
             parallel_overscan_size=parallel_overscan_size,
         )
 
-        return cls.manual(array=array, pixel_scales=0.1, roe_corner=(1, 0), scans=scans)
+        return cls.manual(array=array, pixel_scales=0.1, layout=layout_2d)
 
     @classmethod
     def bottom_right(
@@ -303,11 +309,11 @@ class FrameEuclid(f.Frame2D):
         Use an input array of a Euclid quadrant corresponding to the bottom-right of a Euclid CCD and rotate the
         quadrant to the correct orientation for arCTIc clocking.
 
-        See the docstring of the `FrameEuclid` class for a complete description of the Euclid FPA, quadrants and
+        See the docstring of the `Array2DEuclid` class for a complete description of the Euclid FPA, quadrants and
         rotations.
         """
 
-        scans = ScansEuclid.bottom_right(
+        layout_2d = Layout2DEuclid.bottom_right(
             parallel_size=parallel_size,
             serial_size=serial_size,
             serial_prescan_size=serial_prescan_size,
@@ -315,10 +321,10 @@ class FrameEuclid(f.Frame2D):
             parallel_overscan_size=parallel_overscan_size,
         )
 
-        return cls.manual(array=array, pixel_scales=0.1, roe_corner=(1, 1), scans=scans)
+        return cls.manual(array=array, pixel_scales=0.1, layout=layout_2d)
 
 
-class ScansEuclid(abstract_frame.Scans):
+class Layout2DEuclid(lo.Layout2D):
     @classmethod
     def top_left(
         cls,
@@ -354,7 +360,9 @@ class ScansEuclid(abstract_frame.Scans):
             )
         )
 
-        return abstract_frame.Scans(
+        return Layout2DEuclid(
+            shape_2d=(parallel_size, serial_size),
+            original_roe_corner=(0, 0),
             parallel_overscan=parallel_overscan,
             serial_prescan=serial_prescan,
             serial_overscan=serial_overscan,
@@ -392,7 +400,9 @@ class ScansEuclid(abstract_frame.Scans):
             (0, parallel_size - parallel_overscan_size, 0, serial_overscan_size)
         )
 
-        return abstract_frame.Scans(
+        return Layout2DEuclid(
+            shape_2d=(parallel_size, serial_size),
+            original_roe_corner=(0, 1),
             parallel_overscan=parallel_overscan,
             serial_prescan=serial_prescan,
             serial_overscan=serial_overscan,
@@ -433,7 +443,9 @@ class ScansEuclid(abstract_frame.Scans):
             )
         )
 
-        return abstract_frame.Scans(
+        return Layout2DEuclid(
+            shape_2d=(parallel_size, serial_size),
+            original_roe_corner=(1, 0),
             parallel_overscan=parallel_overscan,
             serial_prescan=serial_prescan,
             serial_overscan=serial_overscan,
@@ -471,7 +483,9 @@ class ScansEuclid(abstract_frame.Scans):
             (0, parallel_size - parallel_overscan_size, 0, serial_overscan_size)
         )
 
-        return abstract_frame.Scans(
+        return Layout2DEuclid(
+            shape_2d=(parallel_size, serial_size),
+            original_roe_corner=(1, 1),
             parallel_overscan=parallel_overscan,
             serial_prescan=serial_prescan,
             serial_overscan=serial_overscan,

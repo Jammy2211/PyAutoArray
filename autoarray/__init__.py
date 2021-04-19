@@ -32,8 +32,7 @@ from .structures.arrays.one_d.array_1d import Array1D
 from .structures.arrays.two_d.array_2d import Array2D
 from .structures.arrays.values import ValuesIrregular
 from .structures.arrays.abstract_array import ExposureInfo
-from .structures.frames.abstract_frame import Scans
-from .structures.frames.frames import Frame2D
+from autoarray.layout.frames import Frame2D
 from .structures.grids.one_d.grid_1d import Grid1D
 from .structures.grids.two_d.grid_2d import Grid2D
 from .structures.grids.two_d.grid_2d import Grid2DSparse
@@ -44,8 +43,8 @@ from .structures.grids.two_d.grid_2d_irregular import Grid2DIrregularUniform
 from .structures.grids.two_d.grid_2d_pixelization import Grid2DRectangular
 from .structures.grids.two_d.grid_2d_pixelization import Grid2DVoronoi
 from .structures.vector_fields.vector_field_irregular import VectorField2DIrregular
-from .structures.region import Region1D
-from .structures.region import Region2D
+from autoarray.layout.region import Region1D
+from autoarray.layout.region import Region2D
 from .structures.kernel_2d import Kernel2D
 from .structures.visibilities import Visibilities
 from .structures.visibilities import VisibilitiesNoiseMap
