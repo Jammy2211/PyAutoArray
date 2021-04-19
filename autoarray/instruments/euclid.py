@@ -229,7 +229,7 @@ class Array2DEuclid(array_2d.Array2D):
             parallel_overscan_size=parallel_overscan_size,
         )
 
-        layout_2d = layout_2d.rotated_from_roe_corner(roe_corner=(0, 0))
+        layout_2d = layout_2d.new_rotated_from_roe_corner(roe_corner=(0, 0))
 
         array_electrons = layout_util.rotate_array_from_roe_corner(
             array=array_electrons, roe_corner=(0, 0)
@@ -263,7 +263,7 @@ class Array2DEuclid(array_2d.Array2D):
             parallel_overscan_size=parallel_overscan_size,
         )
 
-        layout_2d = layout_2d.rotated_from_roe_corner(roe_corner=(0, 1))
+        layout_2d = layout_2d.new_rotated_from_roe_corner(roe_corner=(0, 1))
 
         array_electrons = layout_util.rotate_array_from_roe_corner(
             array=array_electrons, roe_corner=(0, 1)
@@ -297,7 +297,7 @@ class Array2DEuclid(array_2d.Array2D):
             parallel_overscan_size=parallel_overscan_size,
         )
 
-        layout_2d = layout_2d.rotated_from_roe_corner(roe_corner=(1, 0))
+        layout_2d = layout_2d.new_rotated_from_roe_corner(roe_corner=(1, 0))
 
         array_electrons = layout_util.rotate_array_from_roe_corner(
             array=array_electrons, roe_corner=(1, 0)
@@ -331,7 +331,7 @@ class Array2DEuclid(array_2d.Array2D):
             parallel_overscan_size=parallel_overscan_size,
         )
 
-        layout_2d = layout_2d.rotated_from_roe_corner(roe_corner=(1, 1))
+        layout_2d = layout_2d.new_rotated_from_roe_corner(roe_corner=(1, 1))
 
         array_electrons = layout_util.rotate_array_from_roe_corner(
             array=array_electrons, roe_corner=(1, 1)

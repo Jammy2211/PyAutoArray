@@ -264,7 +264,7 @@ class AbstractSimulatorInterferometer:
         Parameters
         ----------
         real_space_shape_native : (int, int)
-            The shape of the observation. Note that we do not simulator a full Imaging frame (e.g. 2000 x 2000 pixels for \
+            The shape of the observation. Note that we do not simulator a full Imaging array (e.g. 2000 x 2000 pixels for \
             Hubble imaging), but instead just a cut-out around the strong lens.
         real_space_pixel_scales : float
             The size of each pixel in scaled units.

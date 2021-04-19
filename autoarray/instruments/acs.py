@@ -39,7 +39,7 @@ def array_eps_to_counts(array_eps, bscale, bzero):
 
 class Array2DACS(array_2d.Array2D):
     """
-    An ACS frame consists of four quadrants ('A', 'B', 'C', 'D') which have the following layout:
+    An ACS array consists of four quadrants ('A', 'B', 'C', 'D') which have the following layout:
 
        <--------S-----------   ---------S----------->
     [] [========= 2 =========] [========= 3 =========] []          /\
@@ -235,7 +235,9 @@ class Array2DACS(array_2d.Array2D):
 
         hdulist = fits.open(new_file_path)
 
-        hdulist[self.exposure_info.hdu].data = self.original_orientation
+        hdulist[self.exposure_info.hdu].data = self.layout.original_orientation_from(
+            array=self
+        )
 
         ext_header = hdulist[4].header
         bscale = ext_header["BSCALE"]
@@ -247,7 +249,7 @@ class Array2DACS(array_2d.Array2D):
 
 class ImageACS(Array2DACS):
     """
-    The layout of an ACS frame and image is given in `FrameACS`.
+    The layout of an ACS array and image is given in `FrameACS`.
 
     This class handles specifically the image of an ACS observation, assuming that it contains specific
     header info.

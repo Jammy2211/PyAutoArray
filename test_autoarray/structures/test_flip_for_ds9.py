@@ -40,17 +40,17 @@ def test__from_fits__all_imaging_data_structures_are_flipped_for_ds9():
     arr = np.array(hdu_list[0].data).astype("float64")
     assert (arr == np.array([[1.0, 0.0], [0.0, 0.0]])).all()
 
-    frame = np.array([[2.0, 0.0], [0.0, 0.0]])
-    frame_path = path.join(fits_path, "frame.fits")
-    create_fits(fits_path=frame_path, array=frame)
+    array = np.array([[2.0, 0.0], [0.0, 0.0]])
+    array_path = path.join(fits_path, "array.fits")
+    create_fits(fits_path=array_path, array=array)
 
-    frame = aa.Frame2D.from_fits(file_path=frame_path, hdu=0, pixel_scales=1.0)
-    assert (frame.native == np.array([[0.0, 0.0], [2.0, 0.0]])).all()
+    array = aa.Array2D.from_fits(file_path=array_path, hdu=0, pixel_scales=1.0)
+    assert (array.native == np.array([[0.0, 0.0], [2.0, 0.0]])).all()
 
-    frame.output_to_fits(file_path=frame_path, overwrite=True)
-    hdu_list = fits.open(frame_path)
-    frame = np.array(hdu_list[0].data).astype("float64")
-    assert (frame == np.array([[2.0, 0.0], [0.0, 0.0]])).all()
+    array.output_to_fits(file_path=array_path, overwrite=True)
+    hdu_list = fits.open(array_path)
+    array = np.array(hdu_list[0].data).astype("float64")
+    assert (array == np.array([[2.0, 0.0], [0.0, 0.0]])).all()
 
     kernel = np.array([[3.0, 0.0], [0.0, 0.0]])
     kernel_path = path.join(fits_path, "kernel.fits")

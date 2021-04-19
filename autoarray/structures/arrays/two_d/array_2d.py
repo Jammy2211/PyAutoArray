@@ -197,7 +197,7 @@ class Array2D(abstract_array_2d.AbstractArray2D):
         obj = array.view(cls)
         obj.mask = mask
         obj.exposure_info = exposure_info
-        obj.layout = layout
+        obj.layout = layout or lo.Layout2D(shape_2d=mask.shape)
         obj.zoom_for_plot = zoom_for_plot
 
         return obj

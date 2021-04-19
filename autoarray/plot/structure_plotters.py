@@ -3,7 +3,6 @@ from autoarray.plot.mat_wrap import visuals as vis
 from autoarray.plot.mat_wrap import include as inc
 from autoarray.plot.mat_wrap import mat_plot as mp
 from autoarray.structures.arrays.two_d import array_2d
-from autoarray.layout import frames
 from autoarray.structures.grids.two_d import grid_2d
 from autoarray.structures.grids.two_d import grid_2d_irregular
 from autoarray.inversion import mappers
@@ -55,6 +54,15 @@ class Array2DPlotter(abstract_plotters.AbstractPlotter):
             ),
             mask=self.extract_2d("mask", self.array.mask),
             border=self.extract_2d("border", self.array.mask.border_grid_sub_1.binned),
+            parallel_overscan=self.extract_2d(
+                "parallel_overscan", self.array.layout.parallel_overscan
+            ),
+            serial_prescan=self.extract_2d(
+                "serial_prescan", self.array.layout.serial_prescan
+            ),
+            serial_overscan=self.extract_2d(
+                "serial_overscan", self.array.layout.serial_overscan
+            ),
         )
 
     def figure_2d(self):
@@ -63,73 +71,6 @@ class Array2DPlotter(abstract_plotters.AbstractPlotter):
             array=self.array,
             visuals_2d=self.visuals_with_include_2d,
             auto_labels=mp.AutoLabels(title="Array2D", filename="array"),
-        )
-
-
-class Frame2DPlotter(abstract_plotters.AbstractPlotter):
-    def __init__(
-        self,
-        frame: frames.Frame2D,
-        mat_plot_2d: mp.MatPlot2D = mp.MatPlot2D(),
-        visuals_2d: vis.Visuals2D = vis.Visuals2D(),
-        include_2d: inc.Include2D = inc.Include2D(),
-    ):
-        super().__init__(
-            visuals_2d=visuals_2d, include_2d=include_2d, mat_plot_2d=mat_plot_2d
-        )
-
-        self.frame = frame
-
-    @property
-    def visuals_with_include_2d(self):
-        """
-        Extracts from a `Frame2D` attributes that can be plotted and return them in a `Visuals` object.
-
-        Only attributes already in `self.visuals_2d` or with `True` entries in the `Include` object are extracted
-        for plotting.
-
-        From an `Frame2D` the following attributes can be extracted for plotting:
-
-        - origin: the (y,x) origin of the structure's coordinate system.
-        - mask: the mask of the structure.
-        - border: the border of the structure's mask.
-        - parallel_overscan: the parallel overscan of the frame data.
-        - serial_prescan: the serial prescan of the frame data.
-        - serial_overscan: the serial overscan of the frame data.
-
-        Parameters
-        ----------
-        frame : frames.Frame2D
-            The frame whose attributes are extracted for plotting.
-
-        Returns
-        -------
-        vis.Visuals2D
-            The collection of attributes that can be plotted by a `Plotter2D` object.
-        """
-        return self.visuals_2d + self.visuals_2d.__class__(
-            origin=self.extract_2d(
-                "origin", grid_2d_irregular.Grid2DIrregular(grid=[self.frame.origin])
-            ),
-            mask=self.extract_2d("mask", self.frame.mask),
-            border=self.extract_2d("border", self.frame.mask.border_grid_sub_1.binned),
-            parallel_overscan=self.extract_2d(
-                "parallel_overscan", self.frame.scans.parallel_overscan
-            ),
-            serial_prescan=self.extract_2d(
-                "serial_prescan", self.frame.scans.serial_prescan
-            ),
-            serial_overscan=self.extract_2d(
-                "serial_overscan", self.frame.scans.serial_overscan
-            ),
-        )
-
-    def figure_2d(self):
-
-        self.mat_plot_2d.plot_frame(
-            frame=self.frame,
-            visuals_2d=self.visuals_with_include_2d,
-            auto_labels=mp.AutoLabels(title="Frame2D", filename="frame"),
         )
 
 
