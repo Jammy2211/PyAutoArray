@@ -132,7 +132,7 @@ class Array2DEuclid(array_2d.Array2D):
 
         if (row_index in "123") and (quadrant_id == "E"):
             return Array2DEuclid.bottom_left(
-                array=array,
+                array_electrons=array,
                 parallel_size=parallel_size,
                 serial_size=serial_size,
                 serial_prescan_size=serial_prescan_size,
@@ -141,7 +141,7 @@ class Array2DEuclid(array_2d.Array2D):
             )
         elif (row_index in "123") and (quadrant_id == "F"):
             return Array2DEuclid.bottom_right(
-                array=array,
+                array_electrons=array,
                 parallel_size=parallel_size,
                 serial_size=serial_size,
                 serial_prescan_size=serial_prescan_size,
@@ -186,7 +186,7 @@ class Array2DEuclid(array_2d.Array2D):
             )
         elif (row_index in "456") and (quadrant_id == "G"):
             return Array2DEuclid.bottom_left(
-                array=array,
+                array_electrons=array,
                 parallel_size=parallel_size,
                 serial_size=serial_size,
                 serial_prescan_size=serial_prescan_size,
@@ -195,7 +195,7 @@ class Array2DEuclid(array_2d.Array2D):
             )
         elif (row_index in "456") and (quadrant_id == "H"):
             return Array2DEuclid.bottom_right(
-                array=array,
+                array_electrons=array,
                 parallel_size=parallel_size,
                 serial_size=serial_size,
                 serial_prescan_size=serial_prescan_size,
@@ -229,6 +229,8 @@ class Array2DEuclid(array_2d.Array2D):
             parallel_overscan_size=parallel_overscan_size,
         )
 
+        layout_2d = layout_2d.rotated_from_roe_corner(roe_corner=(0, 0))
+
         array_electrons = layout_util.rotate_array_from_roe_corner(
             array=array_electrons, roe_corner=(0, 0)
         )
@@ -261,6 +263,8 @@ class Array2DEuclid(array_2d.Array2D):
             parallel_overscan_size=parallel_overscan_size,
         )
 
+        layout_2d = layout_2d.rotated_from_roe_corner(roe_corner=(0, 1))
+
         array_electrons = layout_util.rotate_array_from_roe_corner(
             array=array_electrons, roe_corner=(0, 1)
         )
@@ -270,7 +274,7 @@ class Array2DEuclid(array_2d.Array2D):
     @classmethod
     def bottom_left(
         cls,
-        array,
+        array_electrons,
         parallel_size=2086,
         serial_size=2128,
         serial_prescan_size=51,
@@ -293,12 +297,18 @@ class Array2DEuclid(array_2d.Array2D):
             parallel_overscan_size=parallel_overscan_size,
         )
 
-        return cls.manual(array=array, pixel_scales=0.1, layout=layout_2d)
+        layout_2d = layout_2d.rotated_from_roe_corner(roe_corner=(1, 0))
+
+        array_electrons = layout_util.rotate_array_from_roe_corner(
+            array=array_electrons, roe_corner=(1, 0)
+        )
+
+        return cls.manual(array=array_electrons, pixel_scales=0.1, layout=layout_2d)
 
     @classmethod
     def bottom_right(
         cls,
-        array,
+        array_electrons,
         parallel_size=2086,
         serial_size=2128,
         serial_prescan_size=51,
@@ -321,7 +331,13 @@ class Array2DEuclid(array_2d.Array2D):
             parallel_overscan_size=parallel_overscan_size,
         )
 
-        return cls.manual(array=array, pixel_scales=0.1, layout=layout_2d)
+        layout_2d = layout_2d.rotated_from_roe_corner(roe_corner=(1, 1))
+
+        array_electrons = layout_util.rotate_array_from_roe_corner(
+            array=array_electrons, roe_corner=(1, 1)
+        )
+
+        return cls.manual(array=array_electrons, pixel_scales=0.1, layout=layout_2d)
 
 
 class Layout2DEuclid(lo.Layout2D):

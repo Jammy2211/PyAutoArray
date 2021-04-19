@@ -42,7 +42,7 @@ class Layout2D:
         self.serial_overscan = serial_overscan
 
     @classmethod
-    def rotated_from_roe_corner(
+    def rotated_from_roe_corner_cls(
         cls,
         roe_corner,
         shape_native,
@@ -86,6 +86,32 @@ class Layout2D:
         return Layout2D(
             original_roe_corner=layout.original_roe_corner,
             shape_2d=layout.shape_2d,
+            parallel_overscan=parallel_overscan,
+            serial_prescan=serial_prescan,
+            serial_overscan=serial_overscan,
+        )
+
+    def rotated_from_roe_corner(self, roe_corner):
+
+        parallel_overscan = layout_util.rotate_region_from_roe_corner(
+            region=self.parallel_overscan,
+            shape_native=self.shape_2d,
+            roe_corner=roe_corner,
+        )
+        serial_prescan = layout_util.rotate_region_from_roe_corner(
+            region=self.serial_prescan,
+            shape_native=self.shape_2d,
+            roe_corner=roe_corner,
+        )
+        serial_overscan = layout_util.rotate_region_from_roe_corner(
+            region=self.serial_overscan,
+            shape_native=self.shape_2d,
+            roe_corner=roe_corner,
+        )
+
+        return Layout2D(
+            original_roe_corner=roe_corner,
+            shape_2d=self.shape_2d,
             parallel_overscan=parallel_overscan,
             serial_prescan=serial_prescan,
             serial_overscan=serial_overscan,
