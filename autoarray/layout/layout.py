@@ -143,8 +143,16 @@ class Layout2D:
         []     [=====================]
                <---------S----------
         """
-        return array_2d.Array2D.extracted_array_from_array_and_extraction_region(
-            array=array, extraction_region=self.scans.parallel_overscan
+
+        layout = Layout2D.after_extraction(
+            layout=self, extraction_region=self.parallel_overscan
+        )
+
+        return array_2d.Array2D.manual(
+            array=array.native[self.parallel_overscan.slice],
+            exposure_info=array.exposure_info,
+            layout=layout,
+            pixel_scales=array.pixel_scales,
         )
 
     def parallel_overscan_binned_array_1d_from(self, array):
@@ -199,7 +207,7 @@ class Layout2D:
                <---------S----------
         """
         return array_2d.Array2D.extracted_array_from_array_and_extraction_region(
-            array=array, extraction_region=self.scans.serial_overscan
+            array=array, extraction_region=self.serial_overscan
         )
 
     def serial_overscan_binned_array_1d_from(self, array):

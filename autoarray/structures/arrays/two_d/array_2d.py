@@ -590,17 +590,3 @@ class Array2D(abstract_array_2d.AbstractArray2D):
             exposure_info=exposure_info,
             layout=layout,
         )
-
-    @classmethod
-    def extracted_array_from_array_and_extraction_region(cls, array, extraction_region):
-
-        layout = lo.Layout2D.after_extraction(
-            layout=array.layout, extraction_region=extraction_region
-        )
-
-        return cls.manual(
-            array=array[extraction_region.slice],
-            exposure_info=array.exposure_info,
-            layout=layout,
-            pixel_scales=array.pixel_scales,
-        )

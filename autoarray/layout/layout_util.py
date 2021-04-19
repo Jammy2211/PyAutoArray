@@ -2,10 +2,8 @@ from copy import deepcopy
 import numpy as np
 
 from autoarray.layout import region as reg
-from copy import deepcopy
-import numpy as np
 
-from autoarray.layout import region as reg
+from typing import Union, Tuple
 
 
 def rotate_array_from_roe_corner(
@@ -43,7 +41,9 @@ def rotate_array_from_roe_corner(
 
 
 def rotate_region_from_roe_corner(
-    region: reg.Region2D, shape_native: (int, int), roe_corner: (int, int)
+    region: Union[Tuple, reg.Region2D],
+    shape_native: Tuple[int, int],
+    roe_corner: Tuple[int, int],
 ) -> reg.Region2D:
     """
     Rotates a (y0, y1, x0, x1) region such that its read-out electronics corner (``roe_corner``) are positioned at
@@ -51,11 +51,11 @@ def rotate_region_from_roe_corner(
 
     Parameters
     ----------
-    region : (int, int, int, int)
+    region
         The coordinates on the image of the (y0, y1, x0, y1) ``Region2D`` that are rotated.
-    shape_native : (int, int)
+    shape_native
         The 2D shape of the `Array2D` the regions are located on, required to determine the rotated `region`.
-    roe_corner : (int, int)
+    roe_corner
         The corner of the ``Array2D``at which the read-out electronics are located (e.g. (1, 1) is the bottom-right corner).
         The rotation is based on this such that the the read-out electronics are in the bottom-left (e.g. (1, 0)).
 
