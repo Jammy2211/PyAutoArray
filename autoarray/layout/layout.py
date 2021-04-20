@@ -69,23 +69,22 @@ class Layout2D:
             serial_overscan=serial_overscan,
         )
 
-    @classmethod
-    def after_extraction(cls, extraction_region, layout):
+    def after_extraction(self, extraction_region):
 
         parallel_overscan = layout_util.region_after_extraction(
-            original_region=layout.parallel_overscan,
+            original_region=self.parallel_overscan,
             extraction_region=extraction_region,
         )
         serial_prescan = layout_util.region_after_extraction(
-            original_region=layout.serial_prescan, extraction_region=extraction_region
+            original_region=self.serial_prescan, extraction_region=extraction_region
         )
         serial_overscan = layout_util.region_after_extraction(
-            original_region=layout.serial_overscan, extraction_region=extraction_region
+            original_region=self.serial_overscan, extraction_region=extraction_region
         )
 
         return Layout2D(
-            original_roe_corner=layout.original_roe_corner,
-            shape_2d=layout.shape_2d,
+            original_roe_corner=self.original_roe_corner,
+            shape_2d=self.shape_2d,
             parallel_overscan=parallel_overscan,
             serial_prescan=serial_prescan,
             serial_overscan=serial_overscan,
@@ -170,8 +169,8 @@ class Layout2D:
                <---------S----------
         """
 
-        layout = Layout2D.after_extraction(
-            layout=self, extraction_region=self.parallel_overscan
+        layout = array.layout.after_extraction(
+            extraction_region=self.parallel_overscan
         )
 
         return array_2d.Array2D.manual(
@@ -229,8 +228,8 @@ class Layout2D:
                <---------S----------
         """
 
-        layout = Layout2D.after_extraction(
-            layout=self, extraction_region=self.serial_overscan
+        layout = array.layout.after_extraction(
+            extraction_region=self.serial_overscan
         )
 
         return array_2d.Array2D.manual(

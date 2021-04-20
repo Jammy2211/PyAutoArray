@@ -338,6 +338,8 @@ class Array2D(abstract_array_2d.AbstractArray2D):
         origin : (float, float)
             The (y,x) scaled units origin of the mask's coordinate system.
         """
+        array = abstract_array.convert_array(array=array)
+
         if len(array.shape) == 1:
             return cls.manual_slim(
                 array=array,
