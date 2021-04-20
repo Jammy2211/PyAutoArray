@@ -40,6 +40,10 @@ class Pixelization:
             "pixelization_mapper_from_grids_and_borders should be overridden"
         )
 
+    def weight_map_from_hyper_image(self, hyper_image: np.ndarray):
+
+        raise NotImplementedError()
+
     def __str__(self):
         return "\n".join(["{}: {}".format(k, v) for k, v in self.__dict__.items()])
 
